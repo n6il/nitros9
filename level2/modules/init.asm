@@ -37,9 +37,13 @@ start    equ   *
          fcb   OS9Vrsn    OS version
          fcb   OS9Major   OS major revision
          fcb   OS9Minor   OS minor revision
-         fcb   $00        compatibility flag #1
+         fcb   $00        feature byte #1
+         fcb   $00        feature byte #2
+         fcb   0,0,0,0,0,0,0,0  reserved
+
 * CC3IO section
          fcb   Monitor    monitor type
+         fcb   0          mouse info
          fcb   $1E        key repeat start constant
          fcb   $03        key repeat delay constant
 
