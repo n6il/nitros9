@@ -27,14 +27,14 @@ edition  set   $08
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   1
-u0001    rmb   1
+srcpath  rmb   1		path of source disk
+dstpath  rmb   1		path of destination disk
 u0002    rmb   2
 u0004    rmb   5
 u0009    rmb   1
-u000A    rmb   1
-u000B    rmb   1
-u000C    rmb   1
+errabrt  rmb   1		abort if read error flag (1 = abort, 0 = don't)
+pmptsng  rmb   1		single disk copy prompt flag (1 = prompt for single, 0 = don't)
+dontvfy  rmb   1		don't verify backup (1 = Don't!, 0 = do)
 u000D    rmb   1
 u000E    rmb   1
 u000F    rmb   1
@@ -44,8 +44,8 @@ u0013    rmb   1
 u0014    rmb   1
 u0015    rmb   32
 u0035    rmb   32
-u0055    rmb   2
-u0057    rmb   424
+bufptr   rmb   2		buffer pointer
+strbuf   rmb   424		buffer
 u01FF    rmb   81
 u0250    rmb   256
 u0350    rmb   3840
@@ -68,31 +68,27 @@ HelpMsg  fcb   C$LF
          fcb   C$LF
          fcc   " -v - inhibit verify pass"
          ENDC
-L00A0    fcb   $8D 
+L00A0    fcb   $80+C$CR
 L00A1    fcc   "Ready to backup from"
-L00B5    fcb   $A0 
-L00B6    fcc   " to"
-         fcb   $A0 
+L00B5    fcb   $80+C$SPAC
+L00B6    fcs   " to "
 L00BA    fcc   "Ok"
-L00BC    fcc   " ?:"
-         fcb   $A0 
-L00C0    fcc   "Ready Source, hit a key:"
-         fcb   $A0 
-L00D9    fcc   "Ready Destination, hit a key:"
-         fcb   $A0 
+L00BC    fcs   " ?: "
+L00C0    fcs   "Ready Source, hit a key: "
+L00D9    fcs   "Ready Destination, hit a key: "
 L00F7    fcs   "Sector $"
 L00FF    fcs   "Sectors   copied: $"
 L0112    fcb   C$LF
          fcc   "Verify pass"
-         fcb   $8D 
+         fcb   $80+C$CR
 L011F    fcs   "Sectors verified: $"
 L0132    fcb   C$LF
          fcc   " is being scratched"
-         fcb   $8D 
-L0147    fcc   "Disks not formatted identically"
+         fcb   $80+C$CR
+NotSame  fcc   "Disks not formatted identically"
          fcb   C$LF
 L0167    fcc   "Backup Aborted"
-         fcb   $8D 
+         fcb   $80+C$CR
 
 start    leas  >u01FF,u
          pshs  b,a
@@ -101,54 +97,54 @@ start    leas  >u01FF,u
          subd  ,s++
          subd  #$0250
          sta   <u0013
-         clr   <u000B
-         clr   <u000A
-         clr   <u000C
+         clr   <pmptsng
+         clr   <errabrt
+         clr   <dontvfy
          clr   <u000D
-         leay  <u0057,u
-         sty   <u0055
+         leay  <strbuf,u		get address of our buffer
+         sty   <bufptr			and save its pointer here
          ldd   ,s++
          beq   L01E3
-L0199    ldd   ,x+
-         cmpa  #C$SPAC
-         beq   L0199
-         cmpa  #C$COMA
-         beq   L0199
-         eora  #'E
-         anda  #$DF
-         bne   L01B1
-         cmpb  #$30
-         bcc   L01B1
-         inc   <u000A
-         bra   L0199
-L01B1    lda   -$01,x
-         eora  #'S
-         anda  #$DF
-         bne   L01C1
-         cmpb  #$30
-         bcc   L01C1
-         inc   <u000B
-         bra   L0199
-L01C1    ldd   -$01,x
-         cmpa  #'-
-         bne   L01D7
+L0199    ldd   ,x+			get two bytes of command line prompt
+         cmpa  #C$SPAC			space?
+         beq   L0199			continue if so
+         cmpa  #C$COMA			comma?
+         beq   L0199			continue if so
+         eora  #'E			check for "abort if read error" flag
+         anda  #$DF			mask it
+         bne   Chk4S			branch if not option
+         cmpb  #'0
+         bcc   Chk4S			branch if char after option is > $30
+         inc   <errabrt			else set flag
+         bra   L0199			and continue parsing
+Chk4S    lda   -$01,x			load A with prev char and backup X one byte
+         eora  #'S			check for "single drive prompts" flag
+         anda  #$DF			mask it
+         bne   L01C1			branch if not option
+         cmpb  #'0
+         bcc   L01C1			branch if char after optoin is > $30
+         inc   <pmptsng			else set flag
+         bra   L0199			and continue parsing
+L01C1    ldd   -$01,x			load A with prev char and backup X one byte
+         cmpa  #'-			dash?
+         bne   L01D7			branch if not
          eorb  #'V
          andb  #$DF
          bne   L01D7
          ldd   ,x+
-         cmpb  #$30
+         cmpb  #'0
          bcc   L01D7
-         inc   <u000C
+         inc   <dontvfy
          bra   L0199
 L01D7    lda   ,-x
-         cmpa  #PDELIM
-         beq   L01E7
-         cmpa  #C$CR
-         lbne  ShowHelp
+         cmpa  #PDELIM			path delimiter?
+         beq   L01E7			branch if so
+         cmpa  #C$CR			carriage return?
+         lbne  ShowHelp			if not, show some help
 L01E3    leax  >L0014,pcr
 L01E7    leay  >L00A1,pcr
          lbsr  L044B
-         ldy   <u0055
+         ldy   <bufptr
          sty   <u0002
          lbsr  L043A
 L01F7    lda   ,x+
@@ -158,15 +154,15 @@ L01F7    lda   ,x+
          beq   L01F7
          cmpa  #C$CR
          bne   L020B
-         inc   <u000B
+         inc   <pmptsng
          ldx   <u0002
          lda   ,x+
-L020B    cmpa  #PDELIM
-         lbne  ShowHelp
+L020B    cmpa  #PDELIM			path delimiter?
+         lbne  ShowHelp			if not, show some help
          leax  -$01,x
          leay  >L00B6,pcr
          lbsr  L044B
-         ldy   <u0055
+         ldy   <bufptr
          sty   <u0004
          lbsr  L043A
          leay  >L00BC,pcr
@@ -176,24 +172,24 @@ L020B    cmpa  #PDELIM
          anda  #$DF
          lbne  L03BA
          ldx   <u0002
-         ldd   #$4020
+         ldd   #'@*256+C$SPAC
 L0238    cmpb  ,x+
          bne   L0238
          std   -$01,x
          ldx   <u0002
          lda   #READ.
-         os9   I$Open   
-         bcs   L027C
+         os9   I$Open   		open source device (the one we're backing up)
+         bcs   L027C			branch if error
          leax  >u0350,u
-         ldy   #$0100
-         os9   I$Read   
+         ldy   #256
+         os9   I$Read   		read LSN 0
          bcs   L027C
          os9   I$Close  
          ldx   <u0002
          lda   #READ.
          os9   I$Open   
          bcs   L027C
-         sta   <u0000
+         sta   <srcpath			save path to source
          ldx   <u0004
          leay  <u0015,u
 L0267    ldb   ,x+
@@ -204,32 +200,32 @@ L0267    ldb   ,x+
          std   -$01,y
          leax  <u0015,u
          lda   #READ.+WRITE.
-         os9   I$Open   
+         os9   I$Open   		open destination device (the one we're writing to)
 L027C    lbcs  L03AF
-         sta   <u0001
+         sta   <dstpath			save destination path
          clr   <u000E
          clr   <u000F
          clr   <u0010
          lbsr  L0419
-         lda   <u0001
+         lda   <dstpath			get destination path
          leax  >u0250,u
-         ldy   #$0100
-         os9   I$Read   
+         ldy   #256
+         os9   I$Read   		read LSN0
          pshs  u,x
          ldx   #$0000
          leau  ,x
-         os9   I$Seek   
+         os9   I$Seek   		reseek to start of disk
          puls  u,x
-         bcs   L027C
-         ldd   >$0100,x
+         bcs   L027C			branch if error
+         ldd   >256,x			check for source/dest disk having same format
          cmpd  ,x
-         bne   L02B7
+         bne   DsksNOk			branch if different
          ldb   >$0102,x
          cmpb  $02,x
-         beq   L02BE
-L02B7    leay  >L0147,pcr
+         beq   DsksOk
+DsksNOk leay  >NotSame,pcr
          lbra  L03B6
-L02BE    leax  >u0250,u
+DsksOk   leax  >u0250,u
          lda   #$BF
          sta   <$3F,x
          leay  <$1F,x
@@ -242,25 +238,25 @@ L02BE    leax  >u0250,u
          eora  #'Y
          anda  #$DF
          lbne  L03BA
-         lda   <u0001
+         lda   <dstpath			get destination path
          leax  >u0350,u
-         ldy   #$0100
+         ldy   #256
          os9   I$Write  
          lbcs  L03AF
          pshs  u
          ldx   #$0000
          leau  ,x
-         os9   I$Seek   
+         os9   I$Seek   		seek to LSN0
          puls  u
          leax  >u0350,u
          os9   I$Read   
          lbcs  L03AF
-         os9   I$Close  
+         os9   I$Close  		close path
          leax  <u0015,u
-         lda   #$02
-         os9   I$Open   
+         lda   #WRITE.
+         os9   I$Open   		open destination in write only mode
          lbcs  L03AF
-         sta   <u0001
+         sta   <dstpath			save new destination path
          leax  <u0035,u
          ldb   #SS.OPT
          os9   I$GetStt 
@@ -282,7 +278,7 @@ L0332    leay  >L00C0,pcr
          subd  <u0011
          beq   L035C
          tfr   d,y
-         lda   <u0001
+         lda   <dstpath
          os9   I$Write  
          bcs   L03AF
 L035C    lda   <u000D
@@ -290,21 +286,22 @@ L035C    lda   <u000D
          bne   L0332
          leay  >L00FF,pcr
          lbsr  L0470
-         tst   <u000C
+         tst   <dontvfy
          bne   L03BA
+* Verification code
          leay  >L0112,pcr
          lbsr  L0456
-         lda   <u0000
-         os9   I$Close  
+         lda   <srcpath
+         os9   I$Close  		close source path
          bcs   L03AF
-         lda   <u0001
-         os9   I$Close  
+         lda   <dstpath
+         os9   I$Close  		close destination path
          bcs   L03AF
          leax  <u0015,u
          lda   #READ.
-         os9   I$Open   
+         os9   I$Open   		open source path in READ mode
          bcs   L03AF
-         sta   <u0000
+         sta   <srcpath			save newly acquired path number
          clr   <u000E
          clr   <u000F
          clr   <u0010
@@ -325,8 +322,8 @@ L03B6    lbsr  L0456
          comb  
 L03BA    ldb   #$00
          os9   F$Exit   
-L03BF    ldy   #$0100
-         lda   <u0000
+L03BF    ldy   #256
+         lda   <srcpath
          os9   I$Read   
          bcc   L03DC
          stb   <u000D
@@ -334,7 +331,7 @@ L03BF    ldy   #$0100
          beq   L040D
          lbsr  L046C
          ldb   <u000D
-         tst   <u000A
+         tst   <errabrt
          bne   L03AF
          os9   F$PErr   
 L03DC    ldd   <u000F
@@ -349,40 +346,41 @@ L03E7    tst   <u000D
          tfr   b,a
          clrb  
          tfr   d,u
-         lda   <u0000
+         lda   <srcpath
          os9   I$Seek   
          puls  u
          clr   <u000D
 L03FD    ldx   <u0011
-         leax  >$0100,x
+         leax  >256,x
 L0403    stx   <u0011
          lda   <u0014
          suba  #$01
          sta   <u0014
          bcc   L03BF
 L040D    rts   
+
 ShowHelp equ   *
          IFNE  DOHELP
-         leax  <u0057,u
-         stx   <u0055
-         leay  >HelpMsg,pcr
+         leax  <strbuf,u		get address of buffer
+         stx   <bufptr			store as current buffer pointer
+         leay  >HelpMsg,pcr		point to help message data
          bra   L03B6
          ELSE
          bra   L03BA
          ENDC
 L0419    leay  >L00D9,pcr
-L041D    tst   <u000B
+L041D    tst   <pmptsng
          beq   L0439
 L0421    bsr   L0456
          pshs  y,x,b,a
          leax  ,s
          ldy   #$0001
          clra  
-         os9   I$Read   
+         os9   I$Read   		read byte from stdin
          leay  >L00A0,pcr
          bsr   L0456
          puls  y,x,b,a
-         anda  #$7F
+         anda  #$7F			clear hi bit
 L0439    rts   
 L043A    pshs  x
          os9   F$PrsNam 
@@ -393,18 +391,19 @@ L0443    lda   ,x+
          decb  
          bpl   L0443
          rts   
-L044B    lda   ,y
-         anda  #$7F
+
+L044B    lda   ,y			get char at Y
+         anda  #$7F			strip off hi bit
          bsr   L04A5
          lda   ,y+
          bpl   L044B
 L0455    rts   
 L0456    bsr   L044B
          pshs  y,x,a
-         ldd   <u0055
-         leax  <u0057,u
-         stx   <u0055
-         subd  <u0055
+         ldd   <bufptr
+         leax  <strbuf,u
+         stx   <bufptr
+         subd  <bufptr
          tfr   d,y
          lda   #$02
          os9   I$WritLn 
@@ -438,10 +437,10 @@ L0499    tst   <u0009
          cmpa  #$39
          bls   L04A5
          adda  #$07
-L04A5    pshs  x
-         ldx   <u0055
-         sta   ,x+
-         stx   <u0055
+L04A5    pshs  x			save X on stack
+         ldx   <bufptr			load 'next' ptr
+         sta   ,x+			save A at location anc inc ptr
+         stx   <bufptr			save 'next' ptr
          puls  pc,x
 
          emod

@@ -16,9 +16,9 @@
 	.include	"/Users/boisy/Projects/nitros9/defs/syscall.d"
 	.include	"/Users/boisy/Projects/nitros9/defs/module.d"
 
-         .module   tee,Prgrm+Objct,ReEnt+1,3,dsize
+         .module	Tee,Prgrm+Objct,ReEnt+0,start,dsize
 
-	.area	DATA
+	.area	_DATA
 
 u0000:    .blkb   1
 parray:   .blkb   13
@@ -27,8 +27,10 @@ buff:     .blkb   256
           .blkb   450
 dsize     ==      .
 
+	.area	_CODE
+
 start:   clrb  
-         clr   pcount,u		; clear path counter
+         clr   <pcount,u		; clear path counter
          cmpy  #0h0000		; any parameters?
          lbeq  exitok		; exit if none
          leay  parray,u		; else point Y to path array
