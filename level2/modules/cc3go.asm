@@ -16,9 +16,9 @@
          nam   CC3Go
          ttl   Kickstart program module
 
-         ifp1
+         IFP1
          use   defsfile
-         endc
+         ENDC
 
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
@@ -38,22 +38,22 @@ name     fcs   /CC3Go/
          fcb  edition
 
 Banner
-         ifne  NitrOS9
+         IFNE  NitrOS9
          fcc   /NitrOS-9 Level Two Vr. 0/
-         else
+         ELSE
          fcc   /  OS-9 Level Two Vr. 0/
-         endc
+         ENDC
          fcb   48+OS9Vrsn
          fcc   /.0/
          fcb   48+OS9Major
          fcc   /.0/
          fcb   48+OS9Minor
          fcb   C$CR,C$LF
-         ifne  NitrOS9
+         IFNE  NitrOS9
          fcc   " ORION BETA3 Release ??/??/2003"
-         else
+         ELSE
          fcc   " ARIES BETA3 Release ??/??/2003"
-         endc
+         ENDC
          fcb   C$CR,C$LF
          fcc   /   "A CoCo Community Project"/
          fcb   C$CR,C$LF
@@ -63,25 +63,35 @@ Banner
          fcb   C$CR,C$LF
          fcb   C$LF
 BannLen  equ   *-Banner
-         ifeq  ROM
-DefDev   fcc   "/H0"
+         IFEQ  ROM
+DefDev   equ   *
+         IFNE  DD
+         fcc   "/DD"
+         ELSE
+         fcc   "/H0"
+         ENDC
          fcb   C$CR
-HDDev    fcc   "/H0/"
+HDDev    equ   *
+         IFNE  DD
+         fcc   "/DD/"
+         ELSE
+         fcc   "/H0/"
+         ENDC
 ExecDir  fcc   "CMDS"
          fcb   C$CR
          fcc   ",,,,,"
-         endc
+         ENDC
 Shell    fcc   "Shell"
          fcb   C$CR
          fcc   ",,,,,"
 AutoEx   fcc   "AutoEx"
          fcb   C$CR
          fcc   ",,,,,"
-         ifeq  ROM
+         IFEQ  ROM
 Startup  fcc   "STARTUP -P"
          fcb   C$CR
          fcc   ",,,,,"
-         endc
+         ENDC
 ShellPrm fcc   "i=/1"
 CRtn     fcb   C$CR
          fcc   ",,,,,"
@@ -100,7 +110,7 @@ start    leax  >IcptRtn,pcr
          os9   I$Write                 write out banner
          leax  >DefTime,pcr
          os9   F$STime                 set time to default
-         ifeq  ROM
+         IFEQ  ROM
          leax  >ExecDir,pcr
          lda   #EXEC.
          os9   I$ChgDir                change exec. dir
@@ -111,7 +121,7 @@ start    leax  >IcptRtn,pcr
          leax  >HDDev,pcr
          lda   #EXEC.
          os9   I$ChgDir                change exec. dir to HD
-         endc
+         ENDC
 L0125    pshs  u,y
          os9   F$ID
          bcs   L01A9
@@ -136,7 +146,7 @@ L0151    lda   b,y
          sta   b,u
          decb
          bpl   L0151
-         ifeq  ROM
+         IFEQ  ROM
 * Fork shell startup here
          leax  >Shell,pcr
          leau  >Startup,pcr
@@ -145,7 +155,7 @@ L0151    lda   b,y
          os9   F$Fork
          bcs   DoAuto
          os9   F$Wait
-         endc
+         ENDC
 * Fork AutoEx here
 DoAuto   leax  >AutoEx,pcr
          leau  >CRtn,pcr
