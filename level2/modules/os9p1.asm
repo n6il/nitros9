@@ -992,7 +992,7 @@ L05B5
          beq   NOCRC      if none, DON'T DO CRC checking ++ BGP
          endc  
 
-         lda   Compat1,x  get compat1 byte ++BGP
+         lda   Feature1,x get compat1 byte ++BGP
          bita  #CRCOn     test CRCOn bit ++BGP
          bne   L05CX      if set, check CRC ++BGP
 NOCRC    clra             else clra ++BGP
