@@ -189,11 +189,13 @@ X4D3C    equ $4D3C    new side value
 X4D3D    equ $4D3D
 X4D3E    equ $4D3E
 X71B1    equ $71B1
+
+* subroutines in sub6 that get loaded into the data area
 X72C3    equ $72C3
 X72F3    equ $72F3   seems to proceed character strings
-X7304    equ $7304
-X735B    equ $735B
-X7477    equ $7477   some sort of copy routine ???
+X7304    equ $7304   calcs an integer based on input in d
+X735B    equ $735B   Change palette routine
+X7477    equ $7477   some sort of copy routine accepts acsii between $20-$5F ???
 X74CC    equ $74CC
 X74D9    equ $74D9
 X7691    equ $7691
@@ -201,7 +203,7 @@ X76A4    equ $76A4
 X76B9    equ $76B9
 X7747    equ $7747
 X77E5    equ $77E5
-X782E    equ $782E
+X782E    equ $782E   2 place formatted integer output based on input in b
 X7843    equ $7843
 X7866    equ $7866
 X7BF4    equ $7BF4
@@ -1365,6 +1367,7 @@ ReadKey lbsr  L087F
         cmpb  #C$CR          carriage return
         lbeq  EndKey
         
+*                            argument passed in b to this routine        
         jsr   X7477          some sort of copy routine ??
         cmpx  #$4275         so we read 16 bytes ?
         blo   NextKey        bump x and read again
@@ -1382,6 +1385,7 @@ IsBSP   cmpx  #$4265
         leax  -$01,x
         
         ldb   #C$SPAC
+*                            argument passed in b to this routine        
         jsr   X7477          some sort of copy routine ??
         ldy   X1DA5
         leay  -16,y
@@ -1397,6 +1401,7 @@ IsEOF   ldb   #C$EOF
 
 L087F   pshs  a,b
         ldb   #'_            $5F
+*                            argument passed in b to this routine
         jsr   X7477          some sort of copy routine ??
 
         ldd   X1DA5
@@ -1561,7 +1566,7 @@ ErrMsg  pshs  a,b,x,y,u
         
         pshs  b
         clra  
-        jsr   X7304
+        jsr   X7304          calcs a integer based on input in d
         
         jsr   X72F3          this writes the strings?
         fcc   " : "
@@ -1684,7 +1689,8 @@ L0A4B   ldx   #$4265         addr to stow the data
         
         cmpb  #C$LF          is it a line feed
         beq   L0A7D
-        
+
+*                            argument passed in b to this routine        
         jsr   X7477          nope then some sort of copy routine ??
         bra   L0A4B          loop again
         
@@ -1866,6 +1872,7 @@ L0B9E   ldx   #$4265         addr to stow data
         
         lbsr  MCode
 
+*                            argument passed in b to this routine
 L0BD0   jsr   X7477          some sort of copy routine ??
         bra   L0B9E          loop again
         
@@ -1946,11 +1953,11 @@ L0C42   pshs  a,b,x,y,u
         ldu   X1D8B
         lbsr  Decode_copy
        
-        ldd   #$0109
-        jsr   X735B
+        ldd   #$0109         PRN,CTN
+        jsr   X735B          call Change palette 
        
-        ldd   #$0236
-        jsr   X735B
+        ldd   #$0236         PRN,CTN
+        jsr   X735B          call Change palette
        
         lda   #$03
         sta   X1D88
@@ -2062,7 +2069,7 @@ L0D40   pshs  a,b,x,y,u
         std   X1DA5
         
         ldb   X4D11
-        jsr   X782E
+        jsr   X782E          2 place formatted output
         
         puls  a,b,x,y,u,pc
         
@@ -2075,7 +2082,7 @@ L0D56   pshs  a,b,x,y,u
         std   X1DA5
         
         ldb   X4D12
-        jsr   X782E
+        jsr   X782E          2 place formatted output
         puls  a,b,x,y,u,pc
         
         
@@ -2116,7 +2123,7 @@ L0D8E   pshs  a,b,x,y,u
         std   X1DA5
         
         ldb   X4D13
-        jsr   X782E
+        jsr   X782E          2 place formatted output
         puls  a,b,x,y,u,pc
 
 
@@ -2133,7 +2140,7 @@ L0DA4   pshs  a,b,x,y,u
         ldb   X1E1D
         leax  >ByteTblE,pcr
         ldb   b,x
-        jsr   X782E
+        jsr   X782E          2 place formatted output
         
         ldx   #$0128
         stx   X1DA5
@@ -2141,6 +2148,7 @@ L0DA4   pshs  a,b,x,y,u
         leax  >ByteTblD,pcr
         ldb   X1E1D
         ldb   b,x
+*                            argument passed in b to this routine
         jsr   X7477          some sort of copy routine ??
         
         puls  a,b,x,y,u,pc
@@ -2753,7 +2761,7 @@ L12C7   jsr   X72F3          this writes the strings?
         fcc   "After a leave of "
         fcb   C$NULL
 
-        jsr   X7304          writes the days ??
+        jsr   X7304          calcs a integer based on input passed in d 
 
         jsr   X72F3          this writes the strings?
         fcc   " days,"
