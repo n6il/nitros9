@@ -207,8 +207,8 @@ L010B    clr   ,-s
          decb  
          bpl   L010B
          stu   <$16,s     save caller regs
-         lda   $01,u
-         sta   $09,s
+         lda   R$A,u      access mode
+         sta   $09,s      save on stack
          ldx   <D.Proc
          stx   <$14,s     save proc desc
          leay  <P$DATImg,x
@@ -294,8 +294,8 @@ L01BD    ldx   V$DESC,u
          bra   L015B
 L01CA    ldb   #E$BMode
          bra   L015B
-L01CE    ldx   $02,s
-         lbne  L0205
+L01CE    ldx   $02,s      get driver static in X
+         lbne  L0205      if not zero, already alloced
          stu   $0E,s
          ldx   ,s         get ptr to driver
          ldd   M$Mem,x    get driver mem size
@@ -312,27 +312,29 @@ L01E7    clr   ,u+        clear driver mem
          clr   ,u
          std   $01,u
          ldy   $04,s
-         ldx   ,s
-         ldd   $09,x
-         jsr   d,x
+         ldx   ,s         get ptr to driver
+         ldd   $09,x      D holds entry to driver
+         jsr   d,x        call init routine
          lbcs  L015B
          ldu   $0E,s
-L0205    ldb   #$08
-L0207    lda   b,s
-         sta   b,u
+* Copy device table entry here
+L0205    ldb   #$08       size of device table
+L0207    lda   b,s        get from src
+         sta   b,u        save in dest
          decb  
          bpl   L0207
-L020E    ldx   $04,u
-         ldb   $07,x
-         lda   $09,s
-         anda  $0D,x
-         ldx   ,u
-         anda  $0D,x
-         cmpa  $09,s
-         lbne  L01CA
-         inc   $08,u
-         bne   L0226
-         dec   $08,u
+* Here, U points to Device Table
+L020E    ldx   $04,u  get desc ptr in X
+         ldb   $07,x  get lang byte in desc
+         lda   $09,s  get access mode byte passed in A
+         anda  $0D,x  AND with mode byte in desc
+         ldx   ,u     X points to driver module
+         anda  $0D,x  AND with mode byte in driver
+         cmpa  $09,s  same as ??
+         lbne  L01CA  if not, bad mode error
+         inc   $08,u  else inc user count
+         bne   L0226  if not zero, continue
+         dec   $08,u  else dec to $FF
 L0226    ldx   <$16,s
          stu   $08,x
          leas  <$18,s
