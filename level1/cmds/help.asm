@@ -76,7 +76,9 @@ resetcl lda     <ncols
         stx     <bufptr
 readlp  lbsr    readlin
         bcc     readlp2
-        lbsr    printcr
+        lda     <colcopy
+        cmpa    <ncols
+        blt     doeol
         bra     askusr2
 readlp2 leax    filbuff,u
         lda     ,x+
@@ -187,7 +189,7 @@ reread  bsr     readlin        read line from helpfile file
         bcc     rered0
         cmpb    #E$EOF         did we find end-of-file?
         lbeq    unknown        yep, tell user we don't know his command
-rered0  lbsr    compare        compare user number with 1st 3 chars of line
+rered0  bsr     compare        compare user number with 1st 3 chars of line
         beq     reread         compare returns 0 if failed
         bsr     print          else go print the helpfile line
         bcc     rered1         exit if I$WritLn problem
@@ -235,15 +237,11 @@ print3  lda     ,x
         os9     I$WritLn
         bra     print2
 printout
-        bsr     printcr
-        puls    x,y,a,pc
-
-printcr
         lda     #1
         leax    return,pcr
         ldy     #256           max of 256 chars
         os9     I$WritLn
-        rts
+        puls    x,y,a,pc
 
 compare pshs    x,y
         clr     <same          comparison indicator
@@ -287,7 +285,7 @@ unknown
         leax    1,x            increment past null byte
         clrb
         cmpx    prmend
-        lblt    unk2
+        blt     unk2
         jmp     [exitvec,u]
 unk2    stx     <prmptr        store X
         bsr     seek0          rewind file
