@@ -6,14 +6,14 @@ CMDS		= attr binex build cobbler copy date \
 		deiniz del deldir dir display dump echo exbin \
 		free ident iniz link list load login makdir mdir \
 		merge mfree montype procs pwd pxd rename save \
-		setime shell_21 sleep swread swset tee tmode tsmon unlink \
+		setime shell_21 sleep tee tmode tsmon unlink \
 		verify wcreate xmode
 SUBS            = gfx inkey
 ALLOBJS		= $(CMDS) $(SUBS)
 
 SHELLMODS	= shell_21 build copy date deiniz del dir display echo iniz \
 		link list load mdir merge mfree procs tmode unlink
-UTILPAK1        = attr deldir free ident rename setime tmode xmode
+UTILPAK1        = attr deldir ident rename setime xmode
 
 LEVEL1FILES	= binex.asm attr.asm build.asm date.asm deiniz.asm del.asm deldir.asm \
 		dump.asm echo.asm exbin.asm free.asm ident.asm iniz.asm inkey.asm link.asm \
@@ -24,8 +24,8 @@ LEVEL2FILES	= gfx.asm mdir.asm mfree.asm montype.asm procs.asm \
 		unlink.asm wcreate.asm
 
 # Files not compilable by os9asm: Config attr cmp dcheck dir dsave
-all:	$(ALLOBJS) shell utilpak1 utilpak2 $(DEPENDS)
-	$(CHMOD) a+rx $(ALLOBJS) shell utilpak1 utilpak2
+all:	$(ALLOBJS) shell utilpak1 $(DEPENDS)
+	$(CHMOD) a+rx $(ALLOBJS) shell utilpak1
 
 shell:  $(SHELLMODS) $(DEPENDS)
 	$(MERGE) $(SHELLMODS)>$@
@@ -39,19 +39,13 @@ utilpak1:  $(UTILPAK1) $(DEPENDS)
 	@ls -l $@
 	@$(ECHO)
 
-utilpak2:  $(UTILPAK2) $(DEPENDS)
-	$(MERGE) $(UTILPAK2)>$@
-	@$(ECHO) "*** Be sure the size of this file is less than 7681 bytes! ***"
-	@ls -l $@
-	@$(ECHO)
-
 $(LEVEL1FILES): ../../level1/CMDS/$@
 	-ln -s ../../level1/CMDS/$@
 
 $(LEVEL2FILES): ../../level2/CMDS/$@
 	-ln -s ../../level2/CMDS/$@
 clean:
-	$(RM) $(ALLOBJS) $(LEVEL1FILES) $(LEVEL2FILES) shell utilpak1 utilpak2
+	$(RM) $(ALLOBJS) $(LEVEL1FILES) $(LEVEL2FILES) shell utilpak1
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
