@@ -19,11 +19,7 @@
 
 
 * Interface Address
-         ifne  SuperSCSI 
-ADDR     equ   $FF50     
-         else            
-ADDR     equ   $FF74     
-         endc            
+ADDR     set   $FF50     
 
 * Driver specific fields
 ITDRV    set   $00       

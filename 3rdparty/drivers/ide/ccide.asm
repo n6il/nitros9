@@ -1,3 +1,22 @@
+********************************************************************
+* CCIDE - IDE device driver for CoCo
+*
+* $Id$
+*
+* DO NOT FORGET TO SET H6309 FLAG IN DEFSFILE APPROPRIATELY FOR 6809 VS.
+*   6309 CODE WHEN ASSEMBLING!!
+*
+*  Driver originally from Jim Hathaway, originally 8-bit only
+*  Converted to 16 bit by Alan DeKok
+*  Disassembled (OK, so I didn't have the source version at first!)
+*     by Eddie Kuns, ATA specs followed carefully and sector buffering
+*     on writes handled more carefully
+* This driver uses 16-bit transfers *only*
+* Check with Glenside - can we switch to 16 bit only, so there is less to
+*   maintain? With the cacheing stuff, the speed is fairly decent, although
+*   some 6309 optimizations are still possible (cache copies, drive table
+*   copies, hardware divide for CHS translation, etc.)
+*
 * NOTE: Currently, will return RAW error #'s from drive (see ATA bit flags
 *   in error register). After driver finalized, switch back to OS9 error
 *   codes.
@@ -63,23 +82,6 @@
 *    taking any more system RAM then it is already. These can be shared in
 *    whatever combination you need for your (up to) 2 physical drives.
 * ALSO, RBF CALLS THE INIT ROUTINE ONLY ONCE PER _DRIVER_, NOT DRIVE!
-********************************************************************
-* DO NOT FORGET TO SET H6309 FLAG IN DEFSFILE APPROPRIATELY FOR 6809 VS.
-*   6309 CODE WHEN ASSEMBLING!!
-* CCIDE - IDE device driver for CoCo
-*
-* $Id$
-*
-*  Driver originally from Jim Hathaway, originally 8-bit only
-*  Converted to 16 bit by Alan DeKok
-*  Disassembled (OK, so I didn't have the source version at first!)
-*     by Eddie Kuns, ATA specs followed carefully and sector buffering
-*     on writes handled more carefully
-* This driver uses 16-bit transfers *only*
-* Check with Glenside - can we switch to 16 bit only, so there is less to
-*   maintain? With the cacheing stuff, the speed is fairly decent, although
-*   some 6309 optomizations are still possible (cache copies, drive table
-*   copies, hardware divide for CHS translation, etc.)
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
@@ -90,7 +92,7 @@
 * 7      Change to use real 16 bits                     LCB 99/09/06
 *        partitions (both LBA & CHS)                     to 99/10/31
 *        better error reporting
-*        slightly optomized read
+*        slightly optimized read
 *        Half sector & LSN0 caches for current drive
 *        Auto-sense/run LBA & CHS modes
 *        Full CHS calculations (up to 4096 cylinders)
