@@ -1,5 +1,5 @@
 ********************************************************************
-* CO32 - Hardware VDG co-driver for CCIO
+* CO32 - VDG Console Output Subroutine for CCIO
 *
 * $Id$
 *
@@ -13,13 +13,13 @@
 * recoded dispatch table fcbs, fixed cursor color bug
 
          nam   CO32
-         ttl   Hardware VDG co-driver for CCIO
+         ttl   VDG Console Output Subroutine for CCIO
 
 * Disassembled 98/08/23 17:47:40 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
-         use   co32defs
+         use   cciodefs
          endc
 
 tylg     set   Systm+Objct   
