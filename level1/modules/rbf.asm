@@ -29,7 +29,8 @@ size     equ   .
 
 name     fcs   /RBF/
          fcb   edition
-L0011    fcb   $26
+
+L0011    fcb   DRVMEM
 
 * All routines are entered with
 * (Y) = Path descriptor pointer
