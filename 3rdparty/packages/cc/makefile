@@ -6,7 +6,9 @@ CMDS		= cc1 c.prep c.pass1 c.pass2 c.opt c.asm c.link
 ALLOBJS		= $(CMDS)
 
 # Make all components
-all:	$(ALLOBJS)
+all:	banner $(ALLOBJS)
+
+banner:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "*                    C Compiler                  *"

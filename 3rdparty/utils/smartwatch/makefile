@@ -1,12 +1,14 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 CMDS		= getclk swread swset
 
 ALLOBJS		= $(CMDS)
 
-all:	$(ALLOBJS) $(DEPENDS)	
+all:	banner $(ALLOBJS) $(DEPENDS)	
+
+banner:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "*               SmartWatch Utilities             *"

@@ -1,12 +1,14 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 CMDS		= supercomm
 
 ALLOBJS		= $(CMDS)
 
-all:	$(ALLOBJS) $(DEPENDS)	
+all:	banner $(ALLOBJS) $(DEPENDS)	
+
+banner:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "*           Dave Phillipsen's Supercomm          *"

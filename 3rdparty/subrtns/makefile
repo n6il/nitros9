@@ -1,6 +1,6 @@
-include ../../Makefile.rules
+include ../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 CMDS		= cpu hires_l1 hires_l2 joystk
 

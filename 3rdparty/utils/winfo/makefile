@@ -1,13 +1,15 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 CMDS		= witesta
 SUBS		= winfo
 
 ALLOBJS		= $(CMDS) $(SUBS)
 
-all:	$(ALLOBJS) $(DEPENDS)	
+all:	banner $(ALLOBJS) $(DEPENDS)	
+
+banner:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "*                   WInfo Utility                *"

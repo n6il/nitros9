@@ -1,16 +1,18 @@
 # OS-9 Commands/Utilities
 #
 
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 CMDS		= bawk del grep mode send timer bigbro font makdir \
 		more tee joypoll
 
 ALLOBJS		= $(CMDS)
 
-all:	$(ALLOBJS) $(DEPENDS)	
+all:	banner $(ALLOBJS) $(DEPENDS)	
+
+banner:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "*             Boisy Pitre's Utilities            *"
