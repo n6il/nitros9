@@ -131,7 +131,7 @@ L01A5    lda   ,y+
          ldx   #$0000
          stx   <u0006
          ldu   #$4000
-         ldb   #SS.SIZ
+         ldb   #SS.Size
          os9   I$SetStt 
          lbcs  L036C
          ldu   <u0000
@@ -180,7 +180,7 @@ L022E    cmpb  #$D3
          lda   <u0002
          ldx   #$0000
          ldu   <u0006
-         ldb   #SS.SIZ
+         ldb   #SS.Size
          os9   I$SetStt 
          lbcs  L036C
          ldu   <u0000
