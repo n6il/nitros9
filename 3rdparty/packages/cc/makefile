@@ -1,7 +1,7 @@
 include ../../../rules.mak
 
 DISK		= cc.dsk
-CMDS		= cc1 c.prep c.pass1 c.pass2 c.opt c.asm c.link
+CMDS		= cc1 c.prep c.pass1 c.pass2 c.opt c.asm c.link make
 
 ALLOBJS		= $(CMDS)
 
