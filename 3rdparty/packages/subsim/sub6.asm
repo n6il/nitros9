@@ -1,383 +1,1629 @@
 
-L0000    fcb   $87,$CD,$0B,$ED,$00,$0D,$21,$81   .M.m..!.
-L0008    fcb   $FE,$00,$11,$00,$00,$73,$75,$62   .....sub
-L0010    fcb   $B6,$34,$76,$FC,$1D,$A5,$10,$83   64v..%..
-L0018    fcb   $01,$38,$24,$07,$C6,$20,$17,$02   .8$.F ..
-L0020    fcb   $3F,$20,$F0,$35,$F6,$34,$76,$7F   ? p5v4v
-L0028    fcb   $1D,$6B,$FC,$1D,$8B,$C3,$2B,$20   .k...C+ 
-L0030    fcb   $FD,$1D,$EB,$83,$02,$D0,$FD,$1D   ..k..P..
-L0038    fcb   $ED,$86,$09,$B7,$1D,$EA,$1A,$50   m..7.j.P
-L0040    fcb   $10,$FF,$1D,$DA,$FE,$1D,$EB,$10   ...Z..k.
-L0048    fcb   $FE,$1D,$ED,$33,$5A,$37,$36,$33   ..m3Z763
-L0050    fcb   $54,$34,$36,$37,$36,$33,$54,$34   T46763T4
-L0058    fcb   $36,$37,$36,$33,$54,$34,$36,$37   6763T467
-L0060    fcb   $36,$33,$54,$34,$36,$37,$36,$33   63T46763
-L0068    fcb   $54,$34,$36,$37,$36,$33,$54,$34   T46763T4
-L0070    fcb   $36,$37,$36,$33,$54,$34,$36,$37   6763T467
-L0078    fcb   $36,$33,$54,$34,$36,$37,$36,$33   63T46763
-L0080    fcb   $54,$34,$36,$37,$36,$33,$57,$34   T46763W4
-L0088    fcb   $36,$37,$12,$34,$12,$33,$C8,$EC   67.4.3Hl
-L0090    fcb   $32,$E8,$EF,$7A,$1D,$EA,$26,$B3   2hoz.j&3
-L0098    fcb   $10,$FE,$1D,$DA,$1C,$AF,$CC,$00   ...Z./L.
-L00A0    fcb   $48,$FD,$1D,$A5,$CC,$00,$82,$FD   H..%L...
-L00A8    fcb   $1D,$A7,$35,$F6,$34,$16,$17,$FF   .'5v4...
-L00B0    fcb   $74,$CC,$00,$48,$FD,$1D,$A5,$CC   tL.H..%L
-L00B8    fcb   $00,$82,$FD,$1D,$A7,$4F,$AE,$64   ....'O.d
-L00C0    fcb   $E6,$80,$27,$06,$17,$01,$99,$4C   f.'....L
-L00C8    fcb   $20,$F6,$81,$1E,$2C,$0A,$C6,$20    v..,.F 
-L00D0    fcb   $17,$01,$8D,$4C,$81,$1E,$2D,$F6   ...L..-v
-L00D8    fcb   $AF,$64,$35,$96,$34,$14,$AE,$63   /d5.4..c
-L00E0    fcb   $E6,$80,$27,$05,$17,$01,$79,$20   f.'...y 
-L00E8    fcb   $F7,$AF,$63,$35,$94,$34,$76,$7F   w/c5.4v
-L00F0    fcb   $42,$65,$10,$83,$00,$0A,$25,$37   Be....%7
-L00F8    fcb   $30,$8D,$00,$3A,$30,$02,$10,$A3   0..:0..#
-L0100    fcb   $84,$25,$F9,$7C,$42,$65,$A3,$84   .%y|Be#.
-L0108    fcb   $10,$A3,$84,$24,$F6,$FD,$42,$66   .#.$v.Bf
-L0110    fcb   $F6,$42,$65,$CB,$30,$17,$01,$48   vBeK0..H
-L0118    fcb   $7F,$42,$65,$30,$02,$CC,$00,$00   Be0.L..
-L0120    fcb   $10,$A3,$84,$27,$0F,$FC,$42,$66   .#.'..Bf
-L0128    fcb   $10,$A3,$84,$25,$E0,$20,$D4,$CB   .#.%` TK
-L0130    fcb   $30,$17,$01,$2C,$35,$F6,$00,$00   0..,5v..
-L0138    fcb   $27,$10,$03,$E8,$00,$64,$00,$0A   '..h.d..
-L0140    fcb   $00,$01,$00,$00,$34,$30,$8E,$42   ....40.B
-L0148    fcb   $65,$10,$8E,$1B,$31,$10,$AF,$84   e...1./.
-L0150    fcb   $ED,$02,$86,$01,$10,$8E,$00,$04   m.......
-L0158    fcb   $10,$3F,$8A,$35,$B0,$34,$36,$B6   .?.50466
-L0160    fcb   $1D,$92,$C6,$50,$3D,$10,$BE,$1D   ..FP=.>.
-L0168    fcb   $8B,$31,$AB,$FC,$1D,$8F,$44,$56   .1+...DV
-L0170    fcb   $44,$56,$31,$AB,$30,$8D,$0A,$5E   DV1+0..^
-L0178    fcb   $F6,$1D,$90,$C4,$03,$A6,$A4,$A4   v..D.&$$
-L0180    fcb   $85,$34,$06,$F6,$1D,$88,$30,$8D   .4.v..0.
-L0188    fcb   $0A,$44,$A6,$85,$A8,$A4,$E6,$61   .D&.($fa
-L0190    fcb   $30,$8D,$0A,$3E,$A4,$85,$AA,$E1   0..>$.*a
-L0198    fcb   $A7,$A4,$35,$B6,$34,$16,$FC,$1D   '$564...
-L01A0    fcb   $8F,$10,$B3,$1D,$93,$23,$15,$BE   ..3..#.>
-L01A8    fcb   $1D,$93,$FD,$1D,$93,$BF,$1D,$8F   .....?..
-L01B0    fcb   $FC,$1D,$91,$BE,$1D,$95,$FD,$1D   ...>....
-L01B8    fcb   $95,$BF,$1D,$91,$FC,$1D,$93,$B3   .?.....3
-L01C0    fcb   $1D,$8F,$FD,$1D,$B1,$8E,$00,$01   ....1...
-L01C8    fcb   $FC,$1D,$95,$B3,$1D,$91,$24,$07   ...3..$.
-L01D0    fcb   $30,$1E,$43,$53,$C3,$00,$01,$BF   0.CSC..?
-L01D8    fcb   $1D,$B5,$FD,$1D,$B3,$10,$B3,$1D   .5..3.3.
-L01E0    fcb   $B1,$10,$2E,$00,$3E,$FC,$1D,$B1   1...>..1
-L01E8    fcb   $44,$56,$FD,$1D,$B7,$17,$FF,$6D   DV..7..m
-L01F0    fcb   $BE,$1D,$8F,$BC,$1D,$93,$10,$27   >..<...'
-L01F8    fcb   $00,$64,$BE,$1D,$8F,$30,$01,$BF   .d>..0.?
-L0200    fcb   $1D,$8F,$FC,$1D,$B7,$F3,$1D,$B3   ....7s.3
-L0208    fcb   $FD,$1D,$B7,$10,$B3,$1D,$B1,$2D   ..7.3.1-
-L0210    fcb   $DC,$B3,$1D,$B1,$FD,$1D,$B7,$FC   \3.1..7.
-L0218    fcb   $1D,$91,$F3,$1D,$B5,$FD,$1D,$91   ..s.5...
-L0220    fcb   $16,$FF,$CA,$44,$56,$FD,$1D,$B7   ..JDV..7
-L0228    fcb   $17,$FF,$32,$BE,$1D,$91,$BC,$1D   ..2>..<.
-L0230    fcb   $95,$10,$27,$00,$29,$FC,$1D,$91   ..'.)...
-L0238    fcb   $F3,$1D,$B5,$FD,$1D,$91,$FC,$1D   s.5.....
-L0240    fcb   $B7,$F3,$1D,$B1,$FD,$1D,$B7,$10   7s.1..7.
-L0248    fcb   $B3,$1D,$B3,$2D,$DB,$B3,$1D,$B3   3.3-[3.3
-L0250    fcb   $FD,$1D,$B7,$BE,$1D,$8F,$30,$01   ..7>..0.
-L0258    fcb   $BF,$1D,$8F,$16,$FF,$CA,$35,$96   ?....J5.
-L0260    fcb   $34,$32,$C0,$1F,$23,$45,$C1,$60   42@.#EA`
-L0268    fcb   $2C,$41,$86,$08,$3D,$8E,$4D,$3F   ,A..=.M?
-L0270    fcb   $30,$8B,$B6,$1D,$A8,$C6,$50,$3D   0.6.(FP=
-L0278    fcb   $10,$BE,$1D,$8B,$31,$AB,$FC,$1D   .>..1+..
-L0280    fcb   $A5,$44,$56,$44,$56,$31,$AB,$C6   %DVDV1+F
-L0288    fcb   $08,$33,$8D,$09,$4D,$A6,$80,$34   .3..M&.4
-L0290    fcb   $06,$44,$44,$44,$44,$E6,$C6,$E7   .DDDDfFg
-L0298    fcb   $A0,$A6,$E4,$84,$0F,$E6,$C6,$E7    &d..fFg
-L02A0    fcb   $A4,$31,$A8,$4F,$35,$06,$5A,$10   $1(O5.Z.
-L02A8    fcb   $26,$FF,$E2,$BE,$1D,$A5,$30,$08   &.b>.%0.
-L02B0    fcb   $BF,$1D,$A5,$35,$B2,$34,$06,$E6   ?.%524.f
-L02B8    fcb   $80,$27,$05,$17,$FF,$A2,$20,$F7   .'..." w
-L02C0    fcb   $35,$86,$34,$20,$7F,$1E,$0B,$7F   5.4 ..
-L02C8    fcb   $1E,$0C,$EC,$21,$A3,$41,$FD,$1E   ..l!#A..
-L02D0    fcb   $06,$A6,$A4,$A2,$C4,$B7,$1E,$05   .&$"D7..
-L02D8    fcb   $24,$14,$7C,$1E,$0B,$CC,$00,$00   $.|..L..
-L02E0    fcb   $B3,$1E,$06,$FD,$1E,$06,$86,$00   3.......
-L02E8    fcb   $B2,$1E,$05,$B7,$1E,$05,$EC,$24   2..7..l$
-L02F0    fcb   $A3,$44,$FD,$1E,$09,$A6,$23,$A2   #D...&#"
-L02F8    fcb   $43,$B7,$1E,$08,$24,$14,$7C,$1E   C7..$.|.
-L0300    fcb   $0C,$CC,$00,$00,$B3,$1E,$09,$FD   .L..3...
-L0308    fcb   $1E,$09,$86,$00,$B2,$1E,$08,$B7   ....2..7
-L0310    fcb   $1E,$08,$10,$8E,$1E,$05,$CE,$1E   ......N.
-L0318    fcb   $08,$A6,$A4,$A1,$C4,$22,$0B,$25   .&$!D".%
-L0320    fcb   $07,$EC,$21,$10,$A3,$41,$22,$02   .l!.#A".
-L0328    fcb   $1E,$32,$A6,$C4,$44,$B7,$1D,$DA   .2&DD7.Z
-L0330    fcb   $EC,$41,$46,$56,$E3,$21,$1F,$03   lAFVc!..
-L0338    fcb   $B6,$1D,$DA,$A9,$A4,$35,$A0,$10   6.Z)$5 .
-L0340    fcb   $8E,$1E,$05,$CE,$1E,$08,$6D,$A4   ...N..m$
-L0348    fcb   $26,$08,$6D,$C4,$26,$04,$31,$21   &.mD&.1!
-L0350    fcb   $33,$41,$EC,$A4,$10,$A3,$C4,$25   3Al$.#D%
-L0358    fcb   $0A,$EE,$C4,$17,$00,$3C,$50,$CB   .nD..<PK
-L0360    fcb   $5A,$20,$07,$EC,$C4,$EE,$A4,$17   Z .lDn$.
-L0368    fcb   $00,$30,$58,$49,$58,$49,$7D,$1E   .0XIXI}.
-L0370    fcb   $0C,$26,$0F,$7D,$1E,$0B,$27,$06   .&.}..'.
-L0378    fcb   $43,$53,$C3,$01,$69,$39,$C3,$01   CSC.i9C.
-L0380    fcb   $68,$39,$7D,$1E,$0B,$26,$06,$43   h9}..&.C
-L0388    fcb   $53,$C3,$04,$39,$39,$C3,$04,$38   SC.99C.8
-L0390    fcb   $10,$83,$05,$A0,$25,$03,$CC,$00   ... %.L.
-L0398    fcb   $00,$39,$11,$83,$00,$00,$10,$27   .9.....'
-L03A0    fcb   $00,$47,$7F,$1D,$DC,$FD,$1D,$DA   .G.\..Z
-L03A8    fcb   $FF,$1D,$DE,$86,$18,$B7,$1D,$EA   ..^..7.j
-L03B0    fcb   $4F,$5F,$78,$1D,$DC,$79,$1D,$DB   O_x.\y.[
-L03B8    fcb   $79,$1D,$DA,$59,$49,$10,$B3,$1D   y.ZYI.3.
-L03C0    fcb   $DE,$25,$06,$B3,$1D,$DE,$7C,$1D   ^%.3.^|.
-L03C8    fcb   $DC,$7A,$1D,$EA,$26,$E4,$1F,$03   \z.j&d..
-L03D0    fcb   $7D,$1D,$DA,$10,$26,$00,$12,$FC   }.Z.&...
-L03D8    fcb   $1D,$DB,$C3,$00,$80,$10,$25,$00   .[C...%.
-L03E0    fcb   $08,$1F,$03,$CC,$43,$80,$16,$00   ...LC...
-L03E8    fcb   $B9,$CC,$00,$00,$39,$B7,$1D,$DA   9L..97.Z
-L03F0    fcb   $F6,$1D,$F1,$3D,$B7,$1D,$F4,$7F   v.q=7.t
-L03F8    fcb   $1D,$F3,$7F,$1D,$F2,$B6,$1D,$DA   .s.r6.Z
-L0400    fcb   $F6,$1D,$F0,$3D,$F3,$1D,$F3,$FD   v.p=s.s.
-L0408    fcb   $1D,$F3,$B6,$1D,$DA,$F6,$1D,$EF   .s6.Zv.o
-L0410    fcb   $3D,$F3,$1D,$F2,$FD,$1D,$F2,$B6   =s.r..r6
-L0418    fcb   $1E,$04,$B8,$1D,$F5,$27,$11,$CC   ..8.u'.L
-L0420    fcb   $00,$00,$B3,$1D,$F3,$FD,$1D,$F3   ..3.s..s
-L0428    fcb   $86,$00,$B2,$1D,$F2,$B7,$1D,$F2   ..2.r7.r
-L0430    fcb   $39,$10,$83,$05,$9F,$2E,$07,$10   9.......
-L0438    fcb   $83,$00,$00,$2D,$06,$39,$83,$05   ...-.9..
-L0440    fcb   $A0,$20,$EE,$C3,$05,$A0,$20,$E9     nC.  i
-L0448    fcb   $10,$83,$02,$CF,$2E,$07,$10,$83   ...O....
-L0450    fcb   $FD,$30,$2D,$06,$39,$83,$05,$A0   .0-.9.. 
-L0458    fcb   $20,$EE,$C3,$05,$A0,$20,$E9,$79    nC.  iy
-L0460    fcb   $1D,$3F,$79,$1D,$40,$76,$1D,$41   .?y.@v.A
-L0468    fcb   $79,$1D,$42,$79,$1D,$3F,$FC,$1D   y.By.?..
-L0470    fcb   $3F,$F3,$1D,$41,$8B,$05,$FD,$1D   ?s.A....
-L0478    fcb   $3F,$39,$34,$02,$34,$04,$17,$FF   ?94.4...
-L0480    fcb   $DE,$4C,$84,$7F,$35,$04,$C4,$7F   ^L.5.D
-L0488    fcb   $17,$00,$55,$35,$82,$34,$40,$10   ..U5.4@.
-L0490    fcb   $83,$00,$00,$27,$0B,$1F,$03,$17   ...'....
-L0498    fcb   $FF,$C5,$5C,$17,$00,$04,$1F,$30   .E\....0
-L04A0    fcb   $35,$C0,$34,$10,$1F,$31,$8C,$00   5@4..1..
-L04A8    fcb   $00,$27,$2D,$FD,$1D,$DA,$FF,$1D   .'-..Z..
-L04B0    fcb   $DC,$86,$10,$B7,$1D,$EA,$4F,$5F   \..7.jO_
-L04B8    fcb   $78,$1D,$DB,$79,$1D,$DA,$59,$49   x.[y.ZYI
-L04C0    fcb   $10,$B3,$1D,$DC,$25,$06,$B3,$1D   .3.\%.3.
-L04C8    fcb   $DC,$7C,$1D,$DB,$7A,$1D,$EA,$26   \|.[z.j&
-L04D0    fcb   $E7,$1F,$03,$FC,$1D,$DA,$35,$90   g....Z5.
-L04D8    fcb   $CC,$00,$00,$CE,$00,$00,$35,$90   L..N..5.
-L04E0    fcb   $5D,$27,$1A,$F7,$1D,$DB,$C6,$08   ]'.w.[F.
-L04E8    fcb   $F7,$1D,$EA,$5F,$48,$59,$F1,$1D   w.j_HYq.
-L04F0    fcb   $DB,$25,$04,$F0,$1D,$DB,$4C,$7A   [%.p.[Lz
-L04F8    fcb   $1D,$EA,$26,$F0,$39,$CC,$00,$00   .j&p9L..
-L0500    fcb   $39,$83,$01,$68,$2A,$03,$C3,$05   9..h*.C.
-L0508    fcb   $A0,$7F,$1E,$04,$10,$83,$02,$D0    .....P
-L0510    fcb   $25,$06,$7C,$1E,$04,$83,$02,$D0   %.|....P
-L0518    fcb   $10,$83,$01,$68,$23,$09,$FD,$1D   ...h#...
-L0520    fcb   $DA,$CC,$02,$D0,$B3,$1D,$DA,$34   ZL.P3.Z4
-L0528    fcb   $10,$8E,$01,$26,$A6,$8B,$35,$90   ...&&.5.
-L0530    fcb   $34,$76,$10,$FF,$1D,$DA,$CC,$42   4v...ZLB
-L0538    fcb   $52,$FD,$1D,$EB,$FC,$1D,$8D,$C3   R..k...C
-L0540    fcb   $24,$3E,$FD,$1D,$ED,$86,$73,$B7   $>..m.s7
-L0548    fcb   $1D,$EA,$B6,$1D,$43,$81,$02,$22   .j6.C.."
-L0550    fcb   $1F,$FC,$1D,$B9,$27,$1A,$FC,$1D   ...9'...
-L0558    fcb   $EB,$83,$02,$80,$FD,$1D,$EB,$FC   k.....k.
-L0560    fcb   $1D,$ED,$83,$02,$80,$FD,$1D,$ED   .m.....m
-L0568    fcb   $B6,$1D,$EA,$80,$08,$B7,$1D,$EA   6.j..7.j
-L0570    fcb   $1A,$50,$FE,$1D,$EB,$10,$FE,$1D   .P..k...
-L0578    fcb   $ED,$33,$5A,$37,$36,$33,$54,$34   m3Z763T4
-L0580    fcb   $36,$37,$36,$33,$54,$34,$36,$37   6763T467
-L0588    fcb   $36,$33,$54,$34,$36,$37,$36,$33   63T46763
-L0590    fcb   $54,$34,$36,$37,$36,$33,$54,$34   T46763T4
-L0598    fcb   $36,$37,$36,$33,$54,$34,$36,$37   6763T467
-L05A0    fcb   $36,$33,$54,$34,$36,$37,$36,$33   63T46763
-L05A8    fcb   $54,$34,$36,$37,$36,$33,$54,$34   T46763T4
-L05B0    fcb   $36,$37,$36,$33,$59,$34,$36,$37   6763Y467
-L05B8    fcb   $02,$34,$02,$32,$E8,$ED,$33,$C8   .4.2hm3H
-L05C0    fcb   $EC,$7A,$1D,$EA,$26,$B3,$10,$FE   lz.j&3..
-L05C8    fcb   $1D,$DA,$1C,$AF,$35,$F6,$34,$76   .Z./5v4v
-L05D0    fcb   $B7,$1D,$DC,$B7,$1D,$DD,$50,$CB   7.\7.]PK
-L05D8    fcb   $74,$F7,$1D,$EA,$10,$FF,$1D,$DA   tw.j...Z
-L05E0    fcb   $86,$50,$3D,$C3,$1E,$25,$1A,$50   .P=C.%.P
-L05E8    fcb   $1F,$04,$FC,$1D,$DC,$BE,$1D,$DC   ....\>.\
-L05F0    fcb   $FE,$1D,$DC,$10,$BE,$1D,$DC,$32   ..\.>.\2
-L05F8    fcb   $E8,$ED,$34,$76,$34,$76,$34,$76   hm4v4v4v
-L0600    fcb   $34,$76,$34,$76,$34,$76,$34,$76   4v4v4v4v
-L0608    fcb   $34,$32,$7A,$1D,$EA,$26,$E8,$10   42z.j&h.
-L0610    fcb   $FE,$1D,$DA,$1C,$AF,$35,$F6,$34   ..Z./5v4
-L0618    fcb   $76,$C1,$09,$2E,$09,$34,$04,$C6   vA...4.F
-L0620    fcb   $30,$17,$FC,$3C,$35,$04,$4F,$17   0..<5.O.
-L0628    fcb   $FA,$C3,$35,$F6,$34,$76,$CC,$00   zC5v4vL.
-L0630    fcb   $A2,$FD,$1D,$A7,$CC,$01,$12,$FD   "..'L...
-L0638    fcb   $1D,$A5,$4F,$F6,$4D,$01,$17,$FA   .%OvM..z
-L0640    fcb   $AC,$CC,$01,$20,$FD,$1D,$A5,$F6   ,L. ..%v
-L0648    fcb   $4C,$FF,$17,$FF,$CA,$35,$F6,$34   L...J5v4
-L0650    fcb   $76,$CC,$00,$B2,$FD,$1D,$A7,$CC   vL.2..'L
-L0658    fcb   $01,$12,$FD,$1D,$A5,$4F,$F6,$4D   ....%OvM
-L0660    fcb   $02,$17,$FA,$89,$CC,$01,$20,$FD   ..z.L. .
-L0668    fcb   $1D,$A5,$F6,$4D,$00,$17,$FF,$A7   .%vM...'
-L0670    fcb   $35,$F6,$34,$16,$34,$04,$BE,$1D   5v4.4.>.
-L0678    fcb   $8B,$BF,$1D,$89,$86,$03,$B7,$1D   .?....7.
-L0680    fcb   $88,$7F,$1D,$8F,$7F,$1D,$91,$8E   ......
-L0688    fcb   $02,$AF,$B6,$02,$A4,$48,$30,$86   ./6.$H0.
-L0690    fcb   $EC,$84,$B7,$1D,$90,$F7,$1D,$92   l.7..w..
-L0698    fcb   $35,$04,$17,$FA,$C0,$7C,$1D,$90   5..z@|..
-L06A0    fcb   $17,$FA,$BA,$7C,$1D,$92,$17,$FA   .z:|...z
-L06A8    fcb   $B4,$7A,$1D,$90,$17,$FA,$AE,$17   4z...z..
-L06B0    fcb   $00,$AE,$FC,$1D,$93,$E7,$80,$FD   .....g..
-L06B8    fcb   $1D,$8F,$FC,$1D,$95,$E7,$84,$FD   .....g..
-L06C0    fcb   $1D,$91,$17,$FA,$98,$7C,$1D,$90   ...z.|..
-L06C8    fcb   $17,$FA,$92,$7C,$1D,$92,$17,$FA   .z.|...z
-L06D0    fcb   $8C,$7A,$1D,$90,$17,$FA,$86,$35   .z...z.5
-L06D8    fcb   $96,$34,$76,$10,$83,$00,$64,$2C   .4v...d,
-L06E0    fcb   $18,$34,$04,$C6,$30,$17,$FB,$78   .4.F0..x
-L06E8    fcb   $35,$04,$10,$83,$00,$0A,$2C,$09   5.....,.
-L06F0    fcb   $34,$04,$C6,$30,$17,$FB,$69,$35   4.F0..i5
-L06F8    fcb   $04,$17,$F9,$F1,$35,$F6,$34,$76   ..yq5v4v
-L0700    fcb   $17,$00,$5D,$86,$03,$B7,$1D,$88   ..]..7..
-L0708    fcb   $BE,$1D,$8B,$BF,$1D,$89,$FC,$1D   >..?....
-L0710    fcb   $8F,$83,$00,$0C,$FD,$1D,$A5,$FC   ......%.
-L0718    fcb   $1D,$91,$C3,$00,$04,$FD,$1D,$A7   ..C....'
-L0720    fcb   $CE,$1D,$8F,$37,$16,$34,$16,$37   N..7.4.7
-L0728    fcb   $16,$34,$16,$B6,$02,$A4,$48,$8E   .4.6.$H.
-L0730    fcb   $02,$A7,$30,$86,$EC,$84,$B7,$1D   .'0.l.7.
-L0738    fcb   $94,$F7,$1D,$96,$17,$FA,$5D,$FC   .w...z].
-L0740    fcb   $02,$A5,$17,$FF,$94,$35,$06,$FD   .%...5..
-L0748    fcb   $1D,$93,$E7,$80,$35,$06,$FD,$1D   ..g.5...
-L0750    fcb   $95,$E7,$84,$35,$16,$FD,$1D,$8F   .g.5....
-L0758    fcb   $BF,$1D,$91,$17,$FA,$3E,$35,$F6   ?...z>5v
-L0760    fcb   $34,$76,$1F,$03,$34,$04,$8E,$00   4v..4...
-L0768    fcb   $20,$BF,$1D,$8F,$30,$8D,$01,$94    ?..0...
-L0770    fcb   $B6,$02,$A4,$E6,$86,$4F,$FD,$1D   6.$f.O..
-L0778    fcb   $91,$35,$04,$30,$8D,$01,$29,$C1   .5.0..)A
-L0780    fcb   $2C,$22,$24,$58,$34,$06,$30,$88   ,"$X4.0.
-L0788    fcb   $5A,$1F,$10,$A3,$E1,$1F,$01,$4F   Z..#a..O
-L0790    fcb   $E6,$80,$F3,$1D,$8F,$FD,$1D,$93   f.s.....
-L0798    fcb   $E6,$84,$34,$06,$FC,$1D,$91,$A3   f.4....#
-L07A0    fcb   $E1,$FD,$1D,$95,$16,$00,$63,$C1   a.....cA
-L07A8    fcb   $59,$22,$17,$C0,$2D,$58,$30,$85   Y".@-X0.
-L07B0    fcb   $E6,$80,$F3,$1D,$8F,$FD,$1D,$93   f.s.....
-L07B8    fcb   $E6,$84,$F3,$1D,$91,$FD,$1D,$95   f.s.....
-L07C0    fcb   $20,$48,$C1,$86,$22,$26,$C0,$5A    HA."&@Z
-L07C8    fcb   $58,$34,$06,$30,$88,$5A,$1F,$10   X4.0.Z..
-L07D0    fcb   $A3,$E1,$1F,$01,$4F,$E6,$80,$34   #a..Of.4
-L07D8    fcb   $06,$FC,$1D,$8F,$A3,$E1,$FD,$1D   ....#a..
-L07E0    fcb   $93,$4F,$E6,$84,$F3,$1D,$91,$FD   .Of.s...
-L07E8    fcb   $1D,$95,$20,$1E,$C0,$87,$58,$30   .. .@.X0
-L07F0    fcb   $85,$E6,$80,$34,$06,$FC,$1D,$8F   .f.4....
-L07F8    fcb   $A3,$E1,$FD,$1D,$93,$4F,$E6,$84   #a...Of.
-L0800    fcb   $34,$06,$FC,$1D,$91,$A3,$E1,$FD   4....#a.
-L0808    fcb   $1D,$95,$35,$F6,$17,$FC,$22,$FD   ..5v..".
-L0810    fcb   $4C,$F3,$44,$56,$44,$56,$FD,$02   LsDVDV..
-L0818    fcb   $A5,$44,$56,$86,$01,$B7,$02,$A4   %DV..7.$
-L0820    fcb   $16,$FE,$DB,$FD,$4C,$F1,$2A,$05   ..[.Lq*.
-L0828    fcb   $43,$53,$C3,$00,$01,$FD,$02,$A5   CSC....%
-L0830    fcb   $F6,$4C,$F2,$2A,$02,$CB,$1C,$F7   vLr*.K.w
-L0838    fcb   $1D,$DA,$86,$73,$3D,$B7,$1D,$DB   .Z.s=7.[
-L0840    fcb   $F6,$1D,$DA,$86,$06,$3D,$FB,$1D   v.Z..=..
-L0848    fcb   $DB,$86,$02,$B7,$02,$A4,$16,$FE   [..7.$..
-L0850    fcb   $AD,$FD,$4C,$F9,$2A,$02,$CB,$1C   -.Ly*.K.
-L0858    fcb   $F7,$1D,$DA,$86,$73,$3D,$B7,$1D   w.Z.s=7.
-L0860    fcb   $DB,$F6,$1D,$DA,$86,$06,$3D,$FB   [v.Z..=.
-L0868    fcb   $1D,$DB,$86,$02,$B7,$02,$A4,$16   .[..7.$.
-L0870    fcb   $FE,$00,$FD,$4C,$EF,$FD,$02,$A5   ...Lo..%
-L0878    fcb   $86,$03,$B7,$02,$A4,$B6,$4C,$F0   ..7.$6Lp
-L0880    fcb   $C6,$2E,$3D,$34,$02,$B6,$4C,$EF   F.=4.6Lo
-L0888    fcb   $C6,$2E,$3D,$EB,$E0,$16,$FE,$6E   F.=k`..n
-L0890    fcb   $FD,$4C,$F7,$86,$2E,$3D,$34,$02   .Lw..=4.
-L0898    fcb   $86,$03,$B7,$02,$A4,$B6,$4C,$F7   ..7.$6Lw
-L08A0    fcb   $C6,$2E,$3D,$EB,$E0,$16,$FD,$CA   F.=k`..J
-L08A8    fcb   $13,$00,$13,$01,$13,$01,$13,$02   ........
-L08B0    fcb   $13,$02,$12,$03,$12,$03,$12,$04   ........
-L08B8    fcb   $12,$04,$12,$05,$12,$05,$11,$06   ........
-L08C0    fcb   $11,$06,$10,$07,$10,$07,$10,$08   ........
-L08C8    fcb   $10,$08,$0F,$09,$0F,$09,$0E,$0A   ........
-L08D0    fcb   $0E,$0A,$0D,$0B,$0D,$0B,$0C,$0B   ........
-L08D8    fcb   $0B,$0C,$0B,$0C,$0A,$0D,$0A,$0D   ........
-L08E0    fcb   $09,$0D,$09,$0D,$08,$0E,$07,$0E   ........
-L08E8    fcb   $07,$0E,$06,$0E,$06,$0E,$05,$0E   ........
-L08F0    fcb   $05,$0E,$04,$0F,$04,$0F,$03,$0F   ........
-L08F8    fcb   $03,$0F,$02,$0F,$02,$0F,$01,$0F   ........
-L0900    fcb   $01,$0F,$00,$0F,$18,$49,$78,$A8   .....Ix(
-L0908    fcb   $34,$76,$FC,$1D,$A3,$27,$44,$BE   4v..#'D>
-L0910    fcb   $1D,$91,$BC,$1D,$AB,$25,$3C,$BC   ..<.+%<<
-L0918    fcb   $1D,$AF,$22,$37,$FC,$1D,$8F,$10   ./"7....
-L0920    fcb   $B3,$1D,$AD,$2E,$2E,$F3,$1D,$A3   3.-..s.#
-L0928    fcb   $10,$B3,$1D,$A9,$2D,$25,$FC,$1D   .3.)-%..
-L0930    fcb   $8F,$B3,$1D,$A9,$2A,$0C,$F3,$1D   .3.)*.s.
-L0938    fcb   $A3,$FD,$1D,$A3,$FC,$1D,$A9,$FD   #..#..).
-L0940    fcb   $1D,$8F,$FC,$1D,$AD,$B3,$1D,$8F   ....-3..
-L0948    fcb   $10,$B3,$1D,$A3,$2C,$03,$FD,$1D   .3.#,...
-L0950    fcb   $A3,$20,$04,$35,$F6,$34,$76,$B6   # .5v4v6
-L0958    fcb   $1D,$92,$C6,$50,$3D,$10,$BE,$1D   ..FP=.>.
-L0960    fcb   $89,$31,$AB,$FC,$1D,$8F,$44,$56   .1+...DV
-L0968    fcb   $44,$56,$31,$AB,$33,$8D,$02,$5E   DV1+3..^
-L0970    fcb   $F6,$1D,$88,$A6,$C5,$B7,$1D,$DA   v..&E7.Z
-L0978    fcb   $BE,$1D,$A3,$F6,$1D,$90,$C4,$03   >.#v..D.
-L0980    fcb   $27,$26,$33,$8D,$02,$4C,$B6,$1D   '&3..L6.
-L0988    fcb   $DA,$A4,$C5,$B7,$1D,$DB,$33,$8D   Z$E7.[3.
-L0990    fcb   $02,$44,$A6,$A4,$A4,$C5,$BA,$1D   .D&$$E:.
-L0998    fcb   $DB,$A7,$A4,$30,$1F,$10,$27,$00   ['$0..'.
-L09A0    fcb   $3A,$5C,$C1,$04,$26,$DC,$31,$21   :\A.&\1!
-L09A8    fcb   $1F,$10,$F7,$1D,$DB,$44,$56,$44   ..w.[DVD
-L09B0    fcb   $56,$27,$08,$B6,$1D,$DA,$A7,$A0   V'.6.Z' 
-L09B8    fcb   $5A,$26,$FB,$F6,$1D,$DB,$C4,$03   Z&.v.[D.
-L09C0    fcb   $27,$19,$33,$8D,$02,$00,$B6,$1D   '.3...6.
-L09C8    fcb   $DA,$A4,$C5,$B7,$1D,$DB,$33,$8D   Z$E7.[3.
-L09D0    fcb   $01,$F8,$A6,$A4,$A4,$C5,$BA,$1D   .x&$$E:.
-L09D8    fcb   $DB,$A7,$A4,$35,$F6,$34,$16,$FC   ['$5v4..
-L09E0    fcb   $1D,$91,$2A,$06,$CC,$00,$00,$FD   ..*.L...
-L09E8    fcb   $1D,$91,$FC,$1D,$95,$2A,$06,$CC   .....*.L
-L09F0    fcb   $00,$00,$FD,$1D,$95,$FC,$1D,$8F   ........
-L09F8    fcb   $10,$B3,$1D,$93,$23,$15,$BE,$1D   .3..#.>.
-L0A00    fcb   $93,$FD,$1D,$93,$BF,$1D,$8F,$FC   ....?...
-L0A08    fcb   $1D,$91,$BE,$1D,$95,$FD,$1D,$95   ..>.....
-L0A10    fcb   $BF,$1D,$91,$FC,$1D,$93,$B3,$1D   ?.....3.
-L0A18    fcb   $8F,$FD,$1D,$B1,$8E,$00,$01,$FC   ...1....
-L0A20    fcb   $1D,$95,$B3,$1D,$91,$24,$07,$30   ..3..$.0
-L0A28    fcb   $1E,$43,$53,$C3,$00,$01,$BF,$1D   .CSC..?.
-L0A30    fcb   $B5,$FD,$1D,$B3,$10,$B3,$1D,$B1   5..3.3.1
-L0A38    fcb   $10,$2E,$00,$3E,$FC,$1D,$B1,$44   ...>..1D
-L0A40    fcb   $56,$FD,$1D,$B7,$17,$00,$70,$BE   V..7..p>
-L0A48    fcb   $1D,$8F,$BC,$1D,$93,$10,$27,$00   ..<...'.
-L0A50    fcb   $64,$BE,$1D,$8F,$30,$01,$BF,$1D   d>..0.?.
-L0A58    fcb   $8F,$FC,$1D,$B7,$F3,$1D,$B3,$FD   ...7s.3.
-L0A60    fcb   $1D,$B7,$10,$B3,$1D,$B1,$2D,$DC   .7.3.1-\
-L0A68    fcb   $B3,$1D,$B1,$FD,$1D,$B7,$FC,$1D   3.1..7..
-L0A70    fcb   $91,$F3,$1D,$B5,$FD,$1D,$91,$16   .s.5....
-L0A78    fcb   $FF,$CA,$44,$56,$FD,$1D,$B7,$17   .JDV..7.
-L0A80    fcb   $00,$35,$BE,$1D,$91,$BC,$1D,$95   .5>..<..
-L0A88    fcb   $10,$27,$00,$29,$FC,$1D,$91,$F3   .'.)...s
-L0A90    fcb   $1D,$B5,$FD,$1D,$91,$FC,$1D,$B7   .5.....7
-L0A98    fcb   $F3,$1D,$B1,$FD,$1D,$B7,$10,$B3   s.1..7.3
-L0AA0    fcb   $1D,$B3,$2D,$DB,$B3,$1D,$B3,$FD   .3-[3.3.
-L0AA8    fcb   $1D,$B7,$BE,$1D,$8F,$30,$01,$BF   .7>..0.?
-L0AB0    fcb   $1D,$8F,$16,$FF,$CA,$35,$96,$34   ....J5.4
-L0AB8    fcb   $36,$FC,$1D,$91,$10,$B3,$1D,$AB   6....3.+
-L0AC0    fcb   $25,$50,$10,$B3,$1D,$AF,$22,$4A   %P.3./"J
-L0AC8    fcb   $FC,$1D,$8F,$10,$B3,$1D,$A9,$25   ....3.)%
-L0AD0    fcb   $41,$10,$B3,$1D,$AD,$22,$3B,$B6   A.3.-";6
-L0AD8    fcb   $1D,$92,$C6,$50,$3D,$10,$BE,$1D   ..FP=.>.
-L0AE0    fcb   $8B,$31,$AB,$FC,$1D,$8F,$44,$56   .1+...DV
-L0AE8    fcb   $44,$56,$31,$AB,$30,$8D,$00,$E6   DV1+0..f
-L0AF0    fcb   $F6,$1D,$90,$C4,$03,$34,$04,$A6   v..D.4.&
-L0AF8    fcb   $A4,$A4,$85,$A7,$A4,$F6,$1D,$88   $$.'$v..
-L0B00    fcb   $30,$8D,$00,$CA,$A6,$85,$30,$8D   0..J&.0.
-L0B08    fcb   $00,$C8,$35,$04,$A4,$85,$AA,$A4   .H5.$.*$
-L0B10    fcb   $A7,$A4,$35,$B6,$34,$06,$FF,$1E   '$564...
-L0B18    fcb   $02,$F7,$1D,$EF,$FC,$1E,$02,$17   .w.o....
-L0B20    fcb   $F9,$DF,$17,$00,$0F,$31,$A6,$FC   y_...1&.
-L0B28    fcb   $1E,$02,$17,$F9,$DC,$17,$00,$04   ...y\...
-L0B30    fcb   $30,$86,$35,$86,$F6,$1D,$EF,$3D   0.5.v.o=
-L0B38    fcb   $7D,$1E,$04,$27,$01,$40,$39,$34   }..'.@94
-L0B40    fcb   $76,$7C,$1D,$6B,$B6,$1D,$6B,$81   v|.k6.k.
-L0B48    fcb   $1E,$25,$11,$7F,$1D,$6B,$17,$F4   .%..k.t
-L0B50    fcb   $D4,$4F,$C6,$20,$17,$F7,$09,$4C   TOF .w.L
-L0B58    fcb   $81,$1E,$2D,$F6,$35,$F6,$EC,$41   ..-v5vlA
-L0B60    fcb   $84,$7F,$1F,$02,$EC,$44,$84,$7F   ...lD.
-L0B68    fcb   $1F,$01,$A6,$44,$E6,$43,$49,$59   ..&DfCIY
-L0B70    fcb   $49,$84,$01,$7D,$4C,$75,$26,$05   I..}Lu&.
-L0B78    fcb   $83,$00,$4C,$20,$03,$83,$00,$60   ..L ...`
-L0B80    fcb   $F7,$1D,$DA,$A6,$41,$E6,$C4,$49   w.Z&AfDI
-L0B88    fcb   $59,$49,$84,$01,$7D,$4C,$75,$26   YI..}Lu&
-L0B90    fcb   $05,$83,$00,$74,$20,$03,$83,$00   ...t ...
-L0B98    fcb   $9C,$B6,$1D,$DA,$39,$34,$52,$34   .6.Z94R4
-L0BA0    fcb   $02,$86,$1C,$3D,$8E,$05,$CF,$30   ...=..O0
-L0BA8    fcb   $8B,$A6,$E4,$44,$44,$44,$30,$86   .&dDDD0.
-L0BB0    fcb   $35,$02,$84,$07,$33,$8D,$00,$06   5...3...
-L0BB8    fcb   $E6,$C6,$E4,$84,$35,$D2,$80,$40   fFd.5R.@
-L0BC0    fcb   $20,$10,$08,$04,$02,$01,$00,$C0    ......@
-L0BC8    fcb   $F0,$FC,$FF,$3F,$0F,$03,$00,$55   p..?...U
-L0BD0    fcb   $AA,$FF,$C0,$30,$0C,$03,$3F,$CF   *.@0..?O
-L0BD8    fcb   $F3,$FC,$00,$03,$0C,$0F,$30,$33   s.....03
-L0BE0    fcb   $3C,$3F,$C0,$C3,$CC,$CF,$F0,$F3   <?@CLOps
-L0BE8    fcb   $FC,$FF,$9F,$97,$9C                .....
+********************************************************************
+* sub6 - Sub Battle Simulator  utility routines
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 0      Disassembly of original distribution           PWZ 03/04/10
+*
+* Disassembly by Os9disasm of sub6
+
+
+          nam sub6
+          ttl Sub6 Sub Battle Simulator subroutine
+
+          ifp1
+            use defsfile
+          endc
+
+* I/O path definitions
+StdIn     equ   0
+StdOut    equ   1
+StdErr    equ   2
+
+
+* class X external label equates
+X02A4     equ $02A4
+X02A5     equ $02A5
+X1D3F     equ $1D3F
+X1D40     equ $1D40
+X1D41     equ $1D41
+X1D42     equ $1D42
+X1D43     equ $1D43
+X1D6B     equ $1D6B
+X1D88     equ $1D88
+X1D89     equ $1D89
+X1D8B     equ $1D8B
+X1D8D     equ $1D8D
+X1D8F     equ $1D8F
+X1D90     equ $1D90
+X1D91     equ $1D91
+X1D92     equ $1D92
+X1D93     equ $1D93
+X1D94     equ $1D94
+X1D95     equ $1D95
+X1D96     equ $1D96
+X1DA3     equ $1DA3
+X1DA5     equ $1DA5
+X1DA7     equ $1DA7
+X1DA8     equ $1DA8
+X1DA9     equ $1DA9
+X1DAB     equ $1DAB
+X1DAD     equ $1DAD
+X1DAF     equ $1DAF
+X1DB1     equ $1DB1
+X1DB3     equ $1DB3
+X1DB5     equ $1DB5
+X1DB7     equ $1DB7
+X1DB9     equ $1DB9
+X1DDA     equ $1DDA
+X1DDB     equ $1DDB
+X1DDC     equ $1DDC
+X1DDD     equ $1DDD
+X1DDE     equ $1DDE
+X1DEA     equ $1DEA
+X1DEB     equ $1DEB
+X1DED     equ $1DED
+X1DEF     equ $1DEF
+X1DF0     equ $1DF0
+X1DF1     equ $1DF1
+X1DF2     equ $1DF2
+X1DF3     equ $1DF3
+X1DF4     equ $1DF4
+X1DF5     equ $1DF5
+X1E02     equ $1E02
+X1E04     equ $1E04
+X1E05     equ $1E05
+X1E06     equ $1E06
+X1E08     equ $1E08
+X1E09     equ $1E09
+X1E0B     equ $1E0B
+X1E0C     equ $1E0C
+X4265     equ $4265   Scratch area
+X4266     equ $4266
+X4C75     equ $4C75
+X4CEF     equ $4CEF
+X4CF0     equ $4CF0
+X4CF1     equ $4CF1
+X4CF2     equ $4CF2
+X4CF3     equ $4CF3
+X4CF7     equ $4CF7
+X4CF9     equ $4CF9
+X4CFF     equ $4CFF
+X4D00     equ $4D00
+X4D01     equ $4D01
+X4D02     equ $4D02
+
+
+
+tylg      set   SbRtn+Objct
+atrv      set   ReEnt+rev
+rev       set   $01
+*edition  set  $01
+
+          mod   eom,name,tylg,atrv,start,size
+
+* OS9 data area definitions
+
+size      equ .
+
+name      fcs "sub6"
+*         fcb  edition       not included in original code
+
+*X7228
+start     pshs  a,b,x,y,u
+loopsb1   ldd   X1DA5
+          cmpd  #$0138
+          bhs   Ex_sub1
+          ldb   #$20
+          lbsr  L0260
+          bra   loopsb1
+Ex_sub1   puls  a,b,x,y,u,pc
+
+
+*X723C
+* nothing passed by caller
+* uses a.b.u and s
+* restores them on exit
+
+L0025     pshs  a,b,x,y,u
+          clr   X1D6B        clear a flag
+
+          ldd   X1D8B        get a base address
+          addd  #$2B20       add an offset to it
+          std   X1DEB        from address
+
+          subd  #$02D0       subtract from base+offset
+          std   X1DED        stow that as to address
+
+          lda   #$09         set up loop counter
+          sta   X1DEA        store the loop counter
+
+          orcc  #IntMasks    mask interrupts          $50
+          sts   X1DDA        save the current stack pointer
+
+          ldu   X1DEB        set the from address
+          lds   X1DED        set the to address
+
+L004B     leau  -6,u
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+
+          pulu  d,x,y
+          leau  -9,u
+          pshs  d,x,y
+
+          pulu  a,x
+          pshs  a,x
+
+          leau  -20,u
+          leas  -17,s
+
+          dec   X1DEA        decrement the loop counter
+          bne   L004B        gone 9 times ? nope go again
+
+          lds   X1DDA        restore the stack pointer
+          andcc #^IntMasks   un mask interrupts
+
+          ldd   #$0048       set some values
+          std   X1DA5
+
+          ldd   #$0082
+          std   X1DA7
+          puls  a,b,x,y,u,pc and return
+
+
+*X72C3
+N00AC     pshs  a,b,x
+          lbsr  L0025
+
+          ldd   #$0048
+          std   X1DA5
+
+          ldd   #$0082
+          std   X1DA7
+
+          clra
+          ldx   4,s
+L00C0     ldb   ,x+
+          beq   L00CA
+
+          lbsr  L0260
+
+          inca
+          bra   L00C0
+
+L00CA     cmpa  #$1E
+          bge   L00D8
+
+L00CE     ldb   #$20
+          lbsr  L0260
+          inca
+          cmpa  #$1E
+          blt   L00CE
+
+L00D8     stx   4,s
+          puls  a,b,x,pc
+
+
+*X72F3
+N00DC     pshs  b,x
+          ldx   3,s
+L00E0     ldb   ,x+
+          beq   L00E9
+          lbsr  L0260
+          bra   L00E0
+L00E9     stx   3,s
+          puls  b,x,pc
+
+
+*X7304
+* argument passed in d converted to digit(s)
+* calls L0260 for further handling
+hex_to_digits
+L00ED     pshs  a,b,x,y,u
+          clr   X4265        clear scratch for digit counter
+          cmpd  #$000A       compare to 10
+          blo   ZeroBase     add '0 to and call screen writer
+
+          leax  >DecimalTbl,pcr load table base
+Findplc   leax  2,x          index onto 10K entry (why they didn't load a base and work from there??)
+          cmpd  ,x           compare input to table value
+          blo   Findplc      less than table value move down one place
+
+Digitcnt  inc   X4265        bump the digit counter
+          subd  ,x           subtract x from d and store result in d
+          cmpd  ,x           compare that value to current x
+          bhs   Digitcnt     if d is still greater or equal x go again
+
+Placedone std   X4266        store remaining value
+          ldb   X4265        get the digit counter value
+          addb  #'0          and an ascii zero $30
+          lbsr  L0260        process it
+
+          clr   X4265        clear scratch for digit counter
+          leax  2,x          index next lower value
+          ldd   #$0000       check if we are at the end of the table
+          cmpd  ,x
+          beq   Ex_h2d       if so exit routine
+          ldd   X4266        otherwise get the remaining value
+          cmpd  ,x           compare to current x
+          blo   Placedone    less than pocess and move to next place down
+          bra   Digitcnt     greater or equal go get the count
+
+ZeroBase  addb  #'0          add an ascci zero $30
+          lbsr  L0260        process it
+Ex_h2d    puls  a,b,x,y,u,pc
+
+
+DecimalTbl
+L0136     fdb $0000        0
+          fdb $2710    10000
+          fdb $03E8     1000
+          fdb $0064      100
+          fdb $000A       10
+          fdb $0001        1
+          fdb $0000        0
+
+*X735B
+* Change Palette
+* PRN,CTN are passed by caller in d
+N0144     pshs  x,y
+          ldx   #$4265       scratch area
+          ldy   #$1B31       palette change code
+          sty   ,x           save it at scratch
+          std   2,x          save prn,ctn at second word
+          lda   #StdOut      set path to screen
+          ldy   #4           write four bytes
+          os9   I$Write      write it
+          puls  x,y,pc
+
+
+*X7374
+L015D     pshs  a,b,x,y
+          lda   X1D92
+          ldb   #$50
+          mul
+          ldy   X1D8B
+          leay  d,y
+          ldd   X1D8F
+          lsra
+          rorb
+          lsra
+          rorb
+          leay  d,y
+          leax  ByteTbl7,pcr
+          ldb   X1D90
+          andb  #3
+          lda   ,y
+          anda  b,x
+          pshs  a,b
+          ldb   X1D88
+          leax  ByteTbl5,pcr
+          lda   b,x
+          eora  ,y
+          ldb   1,s
+          leax  ByteTbl6,pcr
+          anda  b,x
+          ora   ,s++
+          sta   ,y
+          puls  a,b,x,y,pc
+
+
+*X73B3
+L019C     pshs  a,b,x
+          ldd   X1D8F
+          cmpd  X1D93
+          bls   L01BC
+
+          ldx   X1D93
+          std   X1D93
+
+          stx   X1D8F
+          ldd   X1D91
+
+          ldx   X1D95
+          std   X1D95
+
+          stx   X1D91
+L01BC     ldd   X1D93
+          subd  X1D8F
+          std   X1DB1
+
+          ldx   #1
+          ldd   X1D95
+          subd  X1D91
+          bcc   L01D7
+          leax  -2,x
+          coma
+          comb
+          addd  #1
+L01D7     stx   X1DB5
+          std   X1DB3
+          cmpd  X1DB1
+          lbgt  L0223
+
+          ldd   X1DB1
+          lsra
+          rorb
+          std   X1DB7
+
+L01ED     lbsr  L015D
+
+          ldx   X1D8F
+          cmpx  X1D93
+          lbeq  L025E
+
+          ldx   X1D8F
+          leax  1,x
+          stx   X1D8F
+
+          ldd   X1DB7
+          addd  X1DB3
+          std   X1DB7
+          cmpd  X1DB1
+          blt   L01ED
+          subd  X1DB1
+          std   X1DB7
+
+          ldd   X1D91
+          addd  X1DB5
+          std   X1D91
+
+          lbra  L01ED
+
+L0223     lsra
+          rorb
+          std   X1DB7
+L0228     lbsr  L015D
+          ldx   X1D91
+          cmpx  X1D95
+          lbeq  L025E
+          ldd   X1D91
+          addd  X1DB5
+          std   X1D91
+          ldd   X1DB7
+          addd  X1DB1
+          std   X1DB7
+          cmpd  X1DB3
+          blt   L0228
+          subd  X1DB3
+          std   X1DB7
+          ldx   X1D8F
+          leax  1,x
+          stx   X1D8F
+          lbra  L0228
+L025E     puls  a,b,x,pc
+
+
+*X7477
+* receives data in b from caller
+* validates value is between $20 and $5F ascii
+
+L0260     pshs  a,x,y
+          subb  #C$SPAC-1    subtract 1 less than a space (unit sep) $1F
+          bls   L02AB        less than or equal time to go
+
+          cmpb  #'_+1        compare value now to underscore +1 $60
+          bge   L02AB        greater or equal were done it was >=$7F to start with
+
+          lda   #$08
+          mul                mul b value times 8 and stow in d
+          ldx   #$4D3F       load a base address
+          leax  d,x          using our calculated offset adjust x
+
+          lda   X1DA8        get the value
+          ldb   #$50
+          mul                multiply it by 80 and stow in d
+          ldy   X1D8B        load a base
+          leay  d,y          using our calc'ed offset adjust y
+
+          ldd   X1DA5        get the value
+          lsra               divide d by 2
+          rorb
+          lsra               and again by 2 for a total of 4
+          rorb
+          leay  d,y          using our calc'ed offset adjust y
+
+          ldb   #$08
+          leau  ByteTbl8,pcr
+L028D     lda   ,x+
+          pshs  d
+          lsra
+          lsra
+          lsra
+          lsra
+          ldb   a,u
+          stb   ,y+
+          lda   ,s
+          anda  #$0F
+          ldb   a,u
+          stb   ,y
+          leay  79,y
+          puls  a,b
+          decb
+          lbne  L028D
+
+L02AB     ldx   X1DA5
+          leax  8,x
+          stx   X1DA5
+          puls  a,x,y,pc
+
+
+*X74CC
+N02B5     pshs  a,b
+L02B7     ldb   ,x+
+          beq   L02C0
+          lbsr  L0260
+          bra   L02B7
+L02C0     puls  a,b,pc
+
+
+*X74D9
+N02C2     pshs  y
+          clr   X1E0B
+          clr   X1E0C
+          ldd   1,y
+          subd  1,u
+          std   X1E06
+          lda   ,y
+          sbca  ,u
+          sta   X1E05
+          bcc   L02EE
+          inc   X1E0B
+          ldd   #0
+          subd  X1E06
+          std   X1E06
+          lda   #0
+          sbca  X1E05
+          sta   X1E05
+L02EE     ldd   4,y
+          subd  4,u
+          std   X1E09
+          lda   3,y
+          sbca  3,u
+          sta   X1E08
+          bcc   L0312
+          inc   X1E0C
+          ldd   #0
+          subd  X1E09
+          std   X1E09
+          lda   #0
+          sbca  X1E08
+          sta   X1E08
+L0312     ldy   #$1E05
+          ldu   #$1E08
+          lda   ,y
+          cmpa  ,u
+          bhi   L032A
+          bcs   L0328
+          ldd   1,y
+          cmpd  1,u
+          bhi   L032A
+L0328     exg   u,y
+L032A     lda   ,u
+          lsra
+          sta   X1DDA
+          ldd   1,u
+          rora
+          rorb
+          addd  1,y
+          tfr   d,u
+          lda   X1DDA
+          adca  ,y
+          puls  y,pc
+          ldy   #$1E05
+          ldu   #$1E08
+          tst   ,y
+          bne   L0352
+          tst   ,u
+          bne   L0352
+          leay  1,y
+          leau  1,u
+L0352     ldd   ,y
+          cmpd  ,u
+          bcs   L0363
+          ldu   ,u
+          lbsr  L039A
+          negb
+          addb  #$5A
+          bra   L036A
+L0363     ldd   ,u
+          ldu   ,y
+          lbsr  L039A
+L036A     lslb
+          rola
+          lslb
+          rola
+          tst   X1E0C
+          bne   L0382
+          tst   X1E0B
+          beq   L037E
+          coma
+          comb
+          addd  #$0169
+          rts
+
+*X7595
+L037E     addd  #$0168
+          rts
+
+
+*X7599
+L0382     tst   X1E0B
+          bne   L038D
+          coma
+          comb
+          addd  #$0439
+          rts
+
+
+*X75A4
+L038D     addd  #$0438
+          cmpd  #$05A0
+          bcs   L0399
+          ldd   #0
+L0399     rts
+
+
+
+*X75B1
+L039A     cmpu  #0
+          lbeq  L03E9
+          clr   X1DDC
+          std   X1DDA
+          stu   X1DDE
+          lda   #$18
+          sta   X1DEA
+          clra
+          clrb
+L03B2     asl   X1DDC
+          rol   X1DDB
+          rol   X1DDA
+          rolb
+          rola
+          cmpd  X1DDE
+          bcs   L03C9
+          subd  X1DDE
+          inc   X1DDC
+L03C9     dec   X1DEA
+          bne   L03B2
+          tfr   d,u
+          tst   X1DDA
+          lbne  L03E9
+          ldd   X1DDB
+          addd  #$0080
+          lblo  L03E9
+          tfr   d,u
+          ldd   #$4380
+          lbra  L04A2
+L03E9     ldd   #0
+          rts
+
+
+*X7604
+N03ED     sta   X1DDA
+          ldb   X1DF1
+          mul
+          sta   X1DF4
+          clr   X1DF3
+          clr   X1DF2
+          lda   X1DDA
+          ldb   X1DF0
+          mul
+          addd  X1DF3
+          std   X1DF3
+          lda   X1DDA
+          ldb   X1DEF
+          mul
+          addd  X1DF2
+          std   X1DF2
+          lda   X1E04
+          eora  X1DF5
+          beq   L0430
+          ldd   #0
+          subd  X1DF3
+          std   X1DF3
+          lda   #0
+          sbca  X1DF2
+          sta   X1DF2
+L0430     rts
+
+
+*X7648
+L0431     cmpd  #$059F
+          bgt   L043E
+          cmpd  #0
+          blt   L0443
+          rts
+
+
+*X7655
+L043E     subd  #$05A0
+          bra   L0431
+L0443     addd  #$05A0
+          bra   L0431
+L0448     cmpd  #$02CF
+          bgt   L0455
+          cmpd  #$FD30
+          blt   L045A
+          rts
+
+
+*X766C
+L0455     subd  #$05A0
+          bra   L0448
+L045A     addd  #$05A0
+          bra   L0448
+L045F     rol   X1D3F
+          rol   X1D40
+          ror   X1D41
+          rol   X1D42
+          rol   X1D3F
+          ldd   X1D3F
+          addd  X1D41
+          adda  #5
+          std   X1D3F
+          rts
+
+
+
+*X7691
+N047A     pshs  a
+          pshs  b
+          lbsr  L045F
+          inca
+          anda  #$7F
+          puls  b
+          andb  #$7F
+          lbsr  L04E0
+          puls  a,pc
+
+
+*X76A4
+N048D     pshs  u
+          cmpd  #0
+          beq   L04A0
+          tfr   d,u
+          lbsr  L045F
+          incb
+          lbsr  L04A2
+          tfr   u,d
+L04A0     puls  u,pc
+
+
+
+*X76B9
+L04A2     pshs  x
+          tfr   u,x
+          cmpx  #0
+          beq   L04D8
+          std   X1DDA
+          stu   X1DDC
+          lda   #$10
+          sta   X1DEA
+          clra
+          clrb
+L04B8     asl   X1DDB
+          rol   X1DDA
+          rolb
+          rola
+          cmpd  X1DDC
+          bcs   L04CC
+          subd  X1DDC
+          inc   X1DDB
+L04CC     dec   X1DEA
+          bne   L04B8
+          tfr   d,u
+          ldd   X1DDA
+          puls  x,pc
+
+
+*X76EF
+L04D8     ldd   #0
+          ldu   #0
+          puls  x,pc
+
+
+*X76F7
+L04E0     tstb
+          beq   L04FD
+          stb   X1DDB
+          ldb   #8
+          stb   X1DEA
+          clrb
+L04EC     asla
+          rolb
+          cmpb  X1DDB
+          bcs   L04F7
+          subb  X1DDB
+          inca
+L04F7     dec   X1DEA
+          bne   L04EC
+          rts
+
+
+*X7714
+L04FD     ldd   #0
+          rts
+
+
+
+*X7718
+L0501     subd  #$0168
+          bpl   L0509
+          addd  #$05A0
+L0509     clr   X1E04
+          cmpd  #$02D0
+          bcs   L0518
+          inc   X1E04
+          subd  #$02D0
+L0518     cmpd  #$0168
+          bls   L0527
+          std   X1DDA
+          ldd   #$02D0
+          subd  X1DDA
+L0527     pshs  x
+          ldx   #$0126
+          lda   d,x
+          puls  x,pc
+
+
+*X7747
+N0530     pshs  a,b,x,y,u
+          sts   X1DDA
+
+          ldd   #$4252
+          std   X1DEB
+
+          ldd   X1D8D
+          addd  #$243E
+          std   X1DED
+
+          lda   #$73
+          sta   X1DEA
+
+          lda   X1D43
+          cmpa  #2
+          bhi   L0570
+
+          ldd   X1DB9
+          beq   L0570
+
+          ldd   X1DEB
+          subd  #$0280
+          std   X1DEB
+
+          ldd   X1DED
+          subd  #$0280
+          std   X1DED
+
+          lda   X1DEA
+          suba  #8
+          sta   X1DEA
+
+L0570     orcc  #$50
+          ldu   X1DEB
+          lds   X1DED
+L0579     leau  -6,u
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+          pulu  d,x,y
+          leau  -12,u
+          pshs  d,x,y
+          pulu  d,x,y
+          leau  -7,u
+          pshs  d,x,y
+          pulu  a
+          pshs  a
+          leas  -19,s
+          leau  -20,u
+
+          dec   X1DEA
+          bne   L0579
+          lds   X1DDA
+
+          andcc #$AF
+          puls  a,b,x,y,u,pc
+
+
+*X77E3
+N05CC     pshs  a,b,x,y,u
+          sta   X1DDC
+          sta   X1DDD
+          negb
+          addb  #$74
+          stb   X1DEA
+          sts   X1DDA
+          lda   #$50
+          mul
+          addd  #$1E25
+          orcc  #$50
+          tfr   d,s
+          ldd   X1DDC
+          ldx   X1DDC
+          ldu   X1DDC
+          ldy   X1DDC
+
+L05F7     leas  -19,s
+          pshs  d,x,y,u
+          pshs  d,x,y,u
+          pshs  d,x,y,u
+          pshs  d,x,y,u
+          pshs  d,x,y,u
+          pshs  d,x,y,u
+          pshs  d,x,y,u
+          pshs  a,x,y
+
+          dec   X1DEA
+          bne   L05F7
+
+          lds   X1DDA
+          andcc #$AF
+          puls  a,b,x,y,u,pc
+
+
+*X782E
+* receives a value from caller in b
+* so range of input 0-255
+* if less that 10 pads with leading zero
+format_2_places
+L0617     pshs  a,b,x,y,u     save everybody its always safe unless you forget to pull them :-)
+          cmpb  #$09          test input for single digit
+          bgt   No_pad        will be at least 2 places normal processing
+          pshs  b             otherwise save value
+          ldb   #'0           load a zero $30
+          lbsr  L0260         process that
+          puls  b             pull value
+No_pad    clra                clear up anything left hanging around in a
+          lbsr  hex_to_digits call normal processing  L00ED
+          puls  a,b,x,y,u,pc  we done
+
+
+*X7843
+* apparently no args passed
+N062C     pshs  a,b,x,y,u
+          ldd   #$00A2
+          std   X1DA7
+
+          ldd   #$0112
+          std   X1DA5
+
+          clra
+          ldb   X4D01             load a value and pass it to
+          lbsr  hex_to_digits
+
+          ldd   #$0120
+          std   X1DA5
+
+          ldb   X4CFF             load a value and pass it to
+          lbsr  format_2_places
+          puls  a,b,x,y,u,pc
+
+
+*X7866
+N064F     pshs  a,b,x,y,u
+          ldd   #$00B2
+          std   X1DA7
+          ldd   #$0112
+          std   X1DA5
+          clra
+          ldb   X4D02
+          lbsr  hex_to_digits        L00ED
+          ldd   #$0120
+          std   X1DA5
+          ldb   X4D00
+          lbsr  L0617
+          puls  a,b,x,y,u,pc
+
+
+*X7889
+L0672     pshs  a,b,x
+          pshs  b
+          ldx   X1D8B
+          stx   X1D89
+          lda   #3
+          sta   X1D88
+          clr   X1D8F
+          clr   X1D91
+          ldx   #$02AF
+          lda   X02A4
+          asla
+          leax  a,x
+          ldd   ,x
+          sta   X1D90
+          stb   X1D92
+          puls  b
+          lbsr  L015D
+          inc   X1D90
+          lbsr  L015D
+          inc   X1D92
+          lbsr  L015D
+          dec   X1D90
+          lbsr  L015D
+          lbsr  L0760
+          ldd   X1D93
+          stb   ,x+
+          std   X1D8F
+          ldd   X1D95
+          stb   ,x
+          std   X1D91
+          lbsr  L015D
+          inc   X1D90
+          lbsr  L015D
+          inc   X1D92
+          lbsr  L015D
+          dec   X1D90
+          lbsr  L015D
+          puls  a,b,x,pc
+
+
+*X78F0
+L06D9     pshs  a,b,x,y,u
+          cmpd  #$0064
+          bge   L06F9
+          pshs  b
+          ldb   #$30
+          lbsr  L0260
+          puls  b
+          cmpd  #$000A
+          bge   L06F9
+          pshs  b
+          ldb   #$30
+          lbsr  L0260
+          puls  b
+L06F9     lbsr  hex_to_digits        L00ED
+          puls  a,b,x,y,u,pc
+
+
+*X7915
+L06FE     pshs  a,b,x,y,u
+          lbsr  L0760
+          lda   #3
+          sta   X1D88
+          ldx   X1D8B
+          stx   X1D89
+          ldd   X1D8F
+          subd  #$000C
+          std   X1DA5
+          ldd   X1D91
+          addd  #4
+          std   X1DA7
+          ldu   #$1D8F
+          pulu  d,x
+          pshs  d,x
+          pulu  d,x
+          pshs  d,x
+          lda   X02A4
+          asla
+          ldx   #$02A7
+          leax  a,x
+          ldd   ,x
+          sta   X1D94
+          stb   X1D96
+          lbsr  L019C
+          ldd   X02A5
+          lbsr  L06D9
+          puls  d
+          std   X1D93
+          stb   ,x+
+          puls  d
+          std   X1D95
+          stb   ,x
+          puls  d,x
+          std   X1D8F
+          stx   X1D91
+          lbsr  L019C
+          puls  a,b,x,y,u,pc
+
+
+*X7977
+L0760     pshs  a,b,x,y,u
+          tfr   d,u
+          pshs  b
+          ldx   #$0020
+          stx   X1D8F
+          leax  ByteTbl1,pcr
+          lda   X02A4
+          ldb   a,x
+          clra
+          std   X1D91
+          puls  b
+          leax  WordTbl2,pcr
+          cmpb  #$2C
+          bhi   L07A7
+          lslb
+          pshs  d
+          leax  90,x         last entry in table
+          tfr   x,d
+          subd  ,s++
+          tfr   d,x
+          clra
+          ldb   ,x+
+          addd  X1D8F
+          std   X1D93
+          ldb   ,x
+          pshs  d
+          ldd   X1D91
+          subd  ,s++
+          std   X1D95
+          lbra  L080A
+L07A7     cmpb  #$59
+          bhi   L07C2
+          subb  #$2D
+          lslb
+          leax  b,x
+          ldb   ,x+
+          addd  X1D8F
+          std   X1D93
+          ldb   ,x
+          addd  X1D91
+          std   X1D95
+          bra   L080A
+L07C2     cmpb  #$86
+          bhi   L07EC
+          subb  #$5A
+          lslb
+          pshs  d
+          leax  90,x
+          tfr   x,d
+          subd  ,s++
+          tfr   d,x
+          clra
+          ldb   ,x+
+          pshs  d
+          ldd   X1D8F
+          subd  ,s++
+          std   X1D93
+          clra
+          ldb   ,x
+          addd  X1D91
+          std   X1D95
+          bra   L080A
+L07EC     subb  #$87
+          lslb
+          leax  b,x
+          ldb   ,x+
+          pshs  d
+          ldd   X1D8F
+          subd  ,s++
+          std   X1D93
+          clra
+          ldb   ,x
+          pshs  d
+          ldd   X1D91
+          subd  ,s++
+          std   X1D95
+L080A     puls  a,b,x,y,u,pc
+
+
+*X7A23
+N080C     lbsr  L0431
+          std   X4CF3
+          lsra
+          rorb
+          lsra
+          rorb
+          std   X02A5
+          lsra
+          rorb
+          lda   #1
+          sta   X02A4
+          lbra  L06FE
+          std   X4CF1
+          bpl   L082D
+          coma
+          comb
+          addd  #1
+L082D     std   X02A5
+          ldb   X4CF2
+          bpl   L0837
+          addb  #$1C
+L0837     stb   X1DDA
+          lda   #$73
+          mul
+          sta   X1DDB
+          ldb   X1DDA
+          lda   #6
+          mul
+          addb  X1DDB
+          lda   #2
+          sta   X02A4
+          lbra  L06FE
+          std   X4CF9
+          bpl   L0858
+          addb  #$1C
+L0858     stb   X1DDA
+          lda   #$73
+          mul
+          sta   X1DDB
+          ldb   X1DDA
+          lda   #6
+          mul
+          addb  X1DDB
+          lda   #2
+          sta   X02A4
+          lbra  L0672
+          std   X4CEF
+          std   X02A5
+          lda   #3
+          sta   X02A4
+          lda   X4CF0
+          ldb   #$2E
+          mul
+          pshs  a
+          lda   X4CEF
+          ldb   #$2E
+          mul
+          addb  ,s+
+          lbra  L06FE
+          std   X4CF7
+          lda   #$2E
+          mul
+          pshs  a
+          lda   #3
+          sta   X02A4
+          lda   X4CF7
+          ldb   #$2E
+          mul
+          addb  ,s+
+          lbra  L0672        exits from there
+
+WordTbl2
+L08A8     fdb $1300
+          fdb $1301
+          fdb $1301
+          fdb $1302
+          fdb $1302
+          fdb $1203
+          fdb $1203
+          fdb $1204
+          fdb $1204
+          fdb $1205
+          fdb $1205
+          fdb $1106
+          fdb $1106
+          fdb $1007
+          fdb $1007
+          fdb $1008
+          fdb $1008
+          fdb $0F09
+          fdb $0F09
+          fdb $0E0A
+          fdb $0E0A
+          fdb $0D0B
+          fdb $0D0B
+          fdb $0C0B
+          fdb $0B0C
+          fdb $0B0C
+          fdb $0A0D
+          fdb $0A0D
+          fdb $090D
+          fdb $090D
+          fdb $080E
+          fdb $070E
+          fdb $070E
+          fdb $060E
+          fdb $060E
+          fdb $050E
+          fdb $050E
+          fdb $040F
+          fdb $040F
+          fdb $030F
+          fdb $030F
+          fdb $020F
+          fdb $020F
+          fdb $010F
+          fdb $010F
+          fdb $000F
+
+ByteTbl1
+L0904     fcb $18,$49,$78,$A8
+
+
+*X7B1F
+N0908     pshs  a,b,x,y,u
+          ldd   X1DA3
+          beq   L0953
+          ldx   X1D91
+          cmpx  X1DAB
+          bcs   L0953
+          cmpx  X1DAF
+          bhi   L0953
+          ldd   X1D8F
+          cmpd  X1DAD
+          bgt   L0953
+          addd  X1DA3
+          cmpd  X1DA9
+          blt   L0953
+          ldd   X1D8F
+          subd  X1DA9
+          bpl   L0942
+          addd  X1DA3
+          std   X1DA3
+          ldd   X1DA9
+          std   X1D8F
+L0942     ldd   X1DAD
+          subd  X1D8F
+          cmpd  X1DA3
+          bge   L0951
+          std   X1DA3
+L0951     bra   L0957
+L0953     puls  a,b,x,y,u,pc
+
+
+
+*X7B6C
+N0955     pshs  a,b,x,y,u
+L0957     lda   X1D92
+          ldb   #$50
+          mul
+          ldy   X1D89
+          leay  d,y
+          ldd   X1D8F
+          lsra
+          rorb
+          lsra
+          rorb
+          leay  d,y
+          leau  ByteTbl5,pcr
+          ldb   X1D88
+          lda   b,u
+          sta   X1DDA
+          ldx   X1DA3
+          ldb   X1D90
+          andb  #3
+          beq   L09A8
+L0982     leau  ByteTbl6,pcr
+          lda   X1DDA
+          anda  b,u
+          sta   X1DDB
+          leau  ByteTbl7,pcr
+          lda   ,y
+          anda  b,u
+          ora   X1DDB
+          sta   ,y
+          leax  -1,x
+          lbeq  L09DB
+          incb
+          cmpb  #4
+          bne   L0982
+          leay  1,y
+L09A8     tfr   x,d
+          stb   X1DDB
+          lsra
+          rorb
+          lsra
+          rorb
+          beq   L09BB
+          lda   X1DDA
+L09B6     sta   ,y+
+          decb
+          bne   L09B6
+L09BB     ldb   X1DDB
+          andb  #3
+          beq   L09DB
+          leau  ByteTbl3,pcr
+          lda   X1DDA
+          anda  b,u
+          sta   X1DDB
+          leau  ByteTbl4,pcr
+          lda   ,y
+          anda  b,u
+          ora   X1DDB
+          sta   ,y
+L09DB     puls  a,b,x,y,u,pc
+
+
+
+*X7BF4
+N09DD     pshs  a,b,x
+          ldd   X1D91
+          bpl   L09EA
+          ldd   #0
+          std   X1D91
+L09EA     ldd   X1D95
+          bpl   L09F5
+          ldd   #0
+          std   X1D95
+L09F5     ldd   X1D8F
+          cmpd  X1D93
+          bls   L0A13
+          ldx   X1D93
+          std   X1D93
+          stx   X1D8F
+          ldd   X1D91
+          ldx   X1D95
+          std   X1D95
+          stx   X1D91
+L0A13     ldd   X1D93
+          subd  X1D8F
+          std   X1DB1
+          ldx   #1
+          ldd   X1D95
+          subd  X1D91
+          bcc   L0A2E
+          leax  -2,x
+          coma
+          comb
+          addd  #1
+L0A2E     stx   X1DB5
+          std   X1DB3
+          cmpd  X1DB1
+          lbgt  L0A7A
+          ldd   X1DB1
+          lsra
+          rorb
+          std   X1DB7
+L0A44     lbsr  L0AB7
+          ldx   X1D8F
+          cmpx  X1D93
+          lbeq  L0AB5
+          ldx   X1D8F
+          leax  1,x
+          stx   X1D8F
+          ldd   X1DB7
+          addd  X1DB3
+          std   X1DB7
+          cmpd  X1DB1
+          blt   L0A44
+          subd  X1DB1
+          std   X1DB7
+          ldd   X1D91
+          addd  X1DB5
+          std   X1D91
+          lbra  L0A44
+L0A7A     lsra
+          rorb
+          std   X1DB7
+L0A7F     lbsr  L0AB7
+          ldx   X1D91
+          cmpx  X1D95
+          lbeq  L0AB5
+          ldd   X1D91
+          addd  X1DB5
+          std   X1D91
+          ldd   X1DB7
+          addd  X1DB1
+          std   X1DB7
+          cmpd  X1DB3
+          blt   L0A7F
+          subd  X1DB3
+          std   X1DB7
+          ldx   X1D8F
+          leax  1,x
+          stx   X1D8F
+          lbra  L0A7F
+L0AB5     puls  a,b,x,pc
+
+
+*X7CCE
+L0AB7     pshs  a,b,x,y
+          ldd   X1D91
+          cmpd  X1DAB
+          bcs   L0B12
+          cmpd  X1DAF
+          bhi   L0B12
+          ldd   X1D8F
+          cmpd  X1DA9
+          bcs   L0B12
+          cmpd  X1DAD
+          bhi   L0B12
+          lda   X1D92
+          ldb   #$50
+          mul
+          ldy   X1D8B
+          leay  d,y
+          ldd   X1D8F
+          lsra
+          rorb
+          lsra
+          rorb
+          leay  d,y
+          leax  >ByteTbl7,pcr
+          ldb   X1D90
+          andb  #3
+          pshs  b
+          lda   ,y
+          anda  b,x
+          sta   ,y
+          ldb   X1D88
+          leax  >ByteTbl5,pcr
+          lda   b,x
+          leax  >ByteTbl6,pcr
+          puls  b
+          anda  b,x
+          ora   ,y
+          sta   ,y
+L0B12     puls  a,b,x,y,pc
+
+
+*X7D28
+N0B14     pshs  a,b
+          stu   X1E02
+          stb   X1DEF
+          ldd   X1E02
+          lbsr  L0501
+          lbsr  L0B34
+          leay  a,y
+          ldd   X1E02
+          lbsr  L0509
+          lbsr  L0B34
+          leax  a,x
+          puls  a,b,pc
+L0B34     ldb   X1DEF
+          mul
+          tst   X1E04
+          beq   L0B3E
+          nega
+L0B3E     rts
+
+
+*X7D56
+N0B3F     pshs  a,b,x,y,u
+          inc   X1D6B
+          lda   X1D6B
+          cmpa  #$1E
+          bcs   L0B5C
+          clr   X1D6B
+          lbsr  L0025
+          clra
+L0B52     ldb   #$20
+          lbsr  L0260
+          inca
+          cmpa  #$1E
+          blt   L0B52
+L0B5C     puls  a,b,x,y,u,pc
+
+
+*X7D75
+* input passed in u from caller is base address
+* returns a value in a,b,x and y
+
+N0B5E     ldd   1,u
+          anda  #$7F
+          tfr   d,y
+          ldd   4,u
+          anda  #$7F
+          tfr   d,x
+          lda   4,u
+          ldb   3,u
+          rola
+          rolb
+          rola
+          anda  #1
+          tst   X4C75
+          bne   L0B7D
+          subd  #$004C
+          bra   L0B80
+L0B7D     subd  #$0060
+L0B80     stb   X1DDA
+          lda   1,u
+          ldb   ,u
+          rola
+          rolb
+          rola
+          anda  #1
+          tst   X4C75
+          bne   L0B96
+          subd  #$0074
+          bra   L0B99
+L0B96     subd  #$009C
+L0B99     lda   X1DDA
+          rts
+
+
+*X7DB4
+* input passed in a and b from caller
+* and uses the first byte on the stack
+* modifies a, b, x and u
+* restores a, x, and u on exit
+* sets b for the return
+N0B9D     pshs  a,x,u            save regs to be restored
+          pshs  a                save the value passed by the caller(again)
+
+          lda   #$1C             load a with 28
+          mul                    multiply a x b stow in d
+          ldx   #$05CF           load a base address
+          leax  d,x              using offset calculated reposition x
+
+          lda   ,s               using the value passed in a last pushed on the stack
+          lsra                   divide by 2
+          lsra                   and again divide by 2  (by 4)
+          lsra                   and finally by 2 again (by 8 total)
+          leax  a,x              using that offset calculated reposition x again
+
+          puls  a                pop that input off the stack
+          anda  #7               take the modulo 8 of the value
+          leau  >ByteTbl2,pcr    load the address of an 8 byte table
+          ldb   a,u              using the modulo val for index select a value
+          andb  ,x               and that value with the contents of x and save in b
+          puls  a,x,u,pc         clean up the stack and return
+
+
+
+ByteTbl2
+L0BBE     fcb $80,$40,$20,$10,$08,$04,$02,$01
+
+ByteTbl3
+L0BC6     fcb $00,$C0,$F0,$FC
+
+ByteTbl4
+L0BCA     fcb $FF,$3F,$0F,$03
+
+ByteTbl5
+L0BCE     fcb $00,$55,$AA,$FF
+
+ByteTbl6
+L0BD2     fcb $C0,$30,$0C,$03
+
+ByteTbl7
+L0BD6     fcb $3F,$CF,$F3,$FC
+
+ByteTbl8
+L0BDA     fcb $00,$03,$0C,$0F,$30,$33
+          fcb $3C,$3F,$C0,$C3,$CC,$CF
+          fcb $F0,$F3,$FC,$FF
+
+          emod
+
+eom       equ *
+
+          end
