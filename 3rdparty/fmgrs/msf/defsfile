@@ -1,4 +1,4 @@
-H6309 equ 0
+H6309 equ 1
 Level equ 2
  use os9defs
  use systype
