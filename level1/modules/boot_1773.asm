@@ -216,7 +216,10 @@ L00EA    bsr   L013C
 * density flags are or'd in. This does not make any sense at all for a
 * read command. I suppose the command may not even be needed but $28 just
 * ensures that motor on and double density are set.
-         orb   #$28		was $30 which RG thinks is an error
+*         orb   #$28		was $30 which RG thinks is an error
+* 09/02/03: Futher investigation shows that the OS-9 Level One Booter will
+* FAIL if orb #$28 is used.  It does not fail if orb #$30 is used. ????
+         orb   #$30		was $30 which RG thinks is an error
          tst   u0009,u
          beq   L0107
          orb   #$40
