@@ -1,2095 +1,2578 @@
 ********************************************************************
-* RBF - Random Block file manager
+* RBF - Random Block File Manager
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 30     Given to me by Gene Heskett                    BGP 98/10/10
+*        NitrOS-9 2.00 distribution                         ??/??/??
+*  35    Fixed FD.SEG bug                               GH  ??/??/??
 
          nam   RBF
-         ttl   Random Block file manager
+         ttl   Random Block File Manager
 
-* Disassembled 98/08/24 22:41:27 by Disasm v1.6 (C) 1988 by RML
-
-         ifp1
+         ifp1  
          use   defsfile
-         endc
+         use   rbfdefs
+         endc  
 
-tylg     set   FlMgr+Objct   
+rev      set   $01
+ty       set   FlMgr
+         IFNE  H6309
+lg       set   Obj6309
+         ELSE
+lg       set   Objct
+         ENDC
+tylg     set   ty+lg
 atrv     set   ReEnt+rev
-rev      set   $02
-edition  set   30
+edition  set   35
 
-         mod   eom,name,tylg,atrv,start,size
-u0000    rmb   0
+         org   $00
 size     equ   .
 
-name     fcs   /RBF/
-         fcb   30
-L0011    fcb   $26 
+         mod   eom,name,tylg,atrv,start,size
 
-start    equ   *
-         lbra  L0039
-         lbra  L018D
-         lbra  L0220
-         lbra  L02EC
-         lbra  L031F
-         lbra  L0407
-         lbra  L04B2
-         lbra  L0569
-         lbra  L0429
-         lbra  L0542
-         lbra  L05E2
-         lbra  L064E
-         lbra  L0288
-L0039    pshs  y
+name     fcs   /RBF/
+         fcb   edition
+
+L0012    fcb   $26
+
+start    bra   Create
+         nop   
+         lbra  Open
+         lbra  MakDir
+         lbra  ChgDir
+         lbra  Delete
+         lbra  Seek
+         lbra  Read
+         lbra  Write
+         lbra  ReadLn
+         lbra  WriteLn
+         lbra  GetStat
+         lbra  SetStat
+         lbra  Close
+
+************
+* Create, according to the book, needs
+* A=access mode desired
+* B=file attributes
+* X=address of the pathlist
+*  Exits with
+*  A=pathnum
+*  X=last byte of pathlist address
+* if error
+*  CC.C set
+*  B=errcode
+Create   pshs  y          ptr to descriptor
          leas  -$05,s
-         lda   $02,u
-         anda  #$7F
-         sta   $02,u
-         lbsr  L07B5
-         bcs   L004A
-         ldb   #$DA
-L004A    cmpb  #$D8
-         bne   L0082
-         cmpa  #$2F
-         beq   L0082
+         IFNE  H6309
+         aim   #^DIR.,R$B,u
+         ELSE
+         lda   R$B,u
+         anda  #^DIR.
+         sta   R$B,u
+         ENDC
+         lbsr  FindFile
+         bcs   Creat47    carry=not found
+         ldb   #E$CEF     else exists error
+Creat47  cmpb  #E$PNNF    not found?
+         bne   Creat7E
+         cmpa  #'/        full path?
+         beq   Creat7E    yes, go
          pshs  x
-         ldx   $06,y
-         stu   $04,x
-         ldb   <$16,y
-         ldx   <$17,y
-         lda   <$19,y
-         ldu   <$1A,y
+         ldx   PD.RGS,y
+         stu   R$X,x
+         ldb   PD.SBP,y   these 4 did have < in front
+         ldx   PD.SBP+1,y made 3 byte cmnds but some are 2!
+         lda   PD.SSZ,y
+         ldu   PD.SSZ+1,y
          pshs  u,x,b,a
-         ldx   $06,y
-         lda   $01,x
+         ldx   PD.RGS,y
+         lda   R$A,x
          clrb  
-         anda  #$20
-         beq   L0071
-         ldd   $06,x
-L0071    addd  #$0001
-         bcc   L0079
+         anda  #PEXEC.    $20
+         beq   Creat6E
+         ldd   R$Y,x
+Creat6E  addd  #1         bug fix, thanks Gene K.
+         bcc   Creat75
          ldd   #$FFFF
-L0079    lbsr  L0DBE
-         bcc   L0087
-         leas  $06,s
-L0080    leas  $02,s
-L0082    leas  $05,s
-         lbra  L02B1
-L0087    std   $0B,s
-         ldb   <$16,y
-         ldx   <$17,y
+Creat75  lbsr  FatScan
+         bcc   Creat83
+         leas  6,s
+Creat7C  leas  2,s
+Creat7E  leas  5,s
+         lbra  ErMemRtn
+
+Creat83  std   $0B,s      sectors alloc'd
+         ldb   PD.SBP,y
+         ldx   PD.SBP+1,y starting LSN
          stb   $08,s
          stx   $09,s
          puls  u,x,b,a
-         stb   <$16,y
-         stx   <$17,y
-         sta   <$19,y
-         stu   <$1A,y
-         ldd   <$3A,y
-         std   $0B,y
-         ldd   <$3C,y
-         std   $0D,y
-         lbsr  L0960
-         bcs   L00B9
-L00B0    tst   ,x
-         beq   L00CB
-         lbsr  L094B
-         bcc   L00B0
-L00B9    cmpb  #$D3
-         bne   L0080
-         ldd   #$0020
-         lbsr  L05A2
-         bcs   L0080
-         lbsr  L0275
-         lbsr  L0960
-L00CB    leau  ,x
-         lbsr  L0173
+         stb   PD.SBP,y
+         stx   PD.SBP+1,y
+         sta   PD.SSZ,y
+         stu   PD.SSZ+1,y
+         IFNE  H6309
+         ldq   PD.DCP,y
+         stq   PD.CP,y
+         ELSE
+         ldd   PD.DCP,y
+         std   PD.CP,y
+         ldd   PD.DCP+2,y
+         std   PD.CP+2,y
+         ENDC
+         lbsr  L0957      find start of dir
+         bcs   CreatB5
+CreatAC  tst   ,x         empty slot?
+         beq   CreatC7    empty spot, go
+         lbsr  L0942      else get next slot
+         bcc   CreatAC
+CreatB5  cmpb  #E$EOF
+         bne   Creat7C    some other error
+         ldd   #DIR.SZ
+         lbsr  Writ599    extend dir by $20
+         bcs   Creat7C    out of alloc?
+         lbsr  MDir263
+         lbsr  L0957
+CreatC7  leau  ,x
+         lbsr  Creat169
          puls  x
-         os9   F$PrsNam 
-         bcs   L0082
-         cmpb  #$1D
-         bls   L00DD
-         ldb   #$1D
-L00DD    clra  
+         os9   F$PrsNam
+         bcs   Creat7E
+         cmpb  #29
+         bls   CreatD9
+         ldb   #29
+CreatD9  clra  
          tfr   d,y
-         lbsr  L05D4
+         lbsr  Writ5CB
          tfr   y,d
          ldy   $05,s
          decb  
+         IFNE  H6309
+         oim   #$80,b,u
+         ELSE
          lda   b,u
          ora   #$80
          sta   b,u
+         ENDC
          ldb   ,s
          ldx   $01,s
-         stb   <$1D,u
-         stx   <$1E,u
-         lbsr  L120E
-         bcs   L015B
-         ldu   $08,y
-         bsr   L017A
-         lda   #$04
-         sta   $0A,y
-         ldx   $06,y
-         lda   $02,x
+         stb   DIR.FD,u
+         stx   DIR.FD+1,u
+         lbsr  L1205
+         bcs   Creat151
+         ldu   PD.BUF,y
+         bsr   Creat170
+         lda   #FDBUF
+         sta   PD.SMF,y
+         ldx   PD.RGS,y
+         lda   R$B,x
          sta   ,u
-         ldx   <$0050
-         ldd   $08,x
-         std   $01,u
+         ldx   <D.Proc
+         ldd   P$User,x
+         std   FD.OWN,u
          lbsr  L02D1
-         ldd   $03,u
-         std   $0D,u
-         ldb   $05,u
-         stb   $0F,u
+         ldd   FD.DAT,u
+         std   FD.Creat,u
+         ldb   FD.DAT+2,u
+         stb   FD.Creat+2,u
          ldb   #$01
-         stb   $08,u
-         ldd   $03,s
+         stb   FD.LNK,u
+         ldd   3,s
+         IFNE  H6309
+         decd  
+         ELSE
          subd  #$0001
-         beq   L013A
-         leax  <$10,u
-         std   $03,x
-         ldd   $01,s
-         addd  #$0001
-         std   $01,x
+         ENDC
+         beq   Creat131
+         leax  FD.SEG,u
+         std   FDSL.B,x
+         ldd   1,s
+         addd  #1         bug fix, thanks Gene K.
+         std   FDSL.A+1,x
          ldb   ,s
-         adcb  #$00
-         stb   ,x
-L013A    ldb   ,s
-         ldx   $01,s
-         lbsr  L1210
-         bcs   L015B
-         lbsr  L0A99
-         stb   <$34,y
-         stx   <$35,y
-         lbsr  L0A33
+         adcb  #$00       need carry status of addd
+         stb   FDSL.A,x
+Creat131 ldb   ,s
+         ldx   1,s
+         lbsr  L1207
+         bcs   Creat151
+         lbsr  L0A90
+         stb   PD.FD,y
+         stx   PD.FD+1,y
+         lbsr  L0A2A
          leas  $05,s
-         ldx   <$30,y
-         lda   #$04
-         sta   $07,x
-         lbra  L01DB
-L015B    puls  u,x,a
-         sta   <$16,y
-         stx   <$17,y
-         clr   <$19,y
-         stu   <$1A,y
+         ldx   PD.Exten,y
+         lda   #EofLock
+         sta   PE.Lock,x
+         bra   Open1CC
+Creat151 puls  u,x,a
+         sta   PD.SBP,y
+         stx   PD.SBP+1,y
+         clr   PD.SSZ,y
+         stu   PD.SSZ+1,y
          pshs  b
-         lbsr  L0FD5
+         lbsr  ClrFBits
          puls  b
-L0170    lbra  L02B1
-L0173    pshs  u,x,b,a
-         leau  <$20,u
-         bra   L0180
-L017A    pshs  u,x,b,a
-         leau  >$0100,u
-L0180    clra  
-         clrb  
-         tfr   d,x
-L0184    pshu  x,b,a
-         cmpu  $04,s
-         bhi   L0184
-         puls  pc,u,x,b,a
-L018D    pshs  y
-         lbsr  L07B5
-         bcs   L0170
-         ldu   $06,y
-         stx   $04,u
-         ldd   <$35,y
-         bne   L01CA
-         lda   <$34,y
-         bne   L01CA
-         ldb   $01,y
-         andb  #$80
-         lbne  L02AF
-         std   <$16,y
-         sta   <$18,y
-         std   <$13,y
-         sta   <$15,y
-         ldx   <$1E,y
-         lda   $02,x
-         std   <$11,y
-         sta   <$1B,y
-         ldd   ,x
-         std   $0F,y
-         std   <$19,y
+RtnMemry lbra  ErMemRtn
+
+* clear a dir entry
+Creat169 
+         IFNE  H6309
+         ldw   #DIR.SZ    zeroing a dir entry before use
+         ELSE
+         ldb   #DIR.SZ    zeroing a dir entry before use
+         ENDC
+         bra   Creat174
+
+* clear a sector buffer
+Creat170 
+         IFNE  H6309
+         ldw   #$0100     zeroing a sector before use
+         ELSE
+         clrb
+         ENDC
+Creat174 pshs  u,x
+         IFNE  H6309
+         leax  <Creat170+3,pcr
+         tfm   x,u+
+         ELSE
+l1       clr   ,u+
+         decb
+         bne   l1 
+         ENDC
+         puls  pc,u,x
+
+Open     pshs  y
+         lbsr  FindFile
+         bcs   RtnMemry   and to ErMemRtn
+         ldu   PD.RGS,y
+         stx   R$X,u
+         ldd   PD.FD+1,y
+         bne   Open1BB
+         lda   PD.FD,y
+         bne   Open1BB
+
+* File Descr doesn't exist
+         ldb   PD.MOD,y
+         andb  #DIR.
+         lbne  Clos29D    oops, is dir, go
+         std   PD.SBP,y   regs.a zeroed above
+         sta   PD.SBP+2,y
+         std   PD.SBL,y
+         sta   PD.SBL+2,y
+         ldx   PD.DTB,y
+         lda   DD.TOT+2,x
+         std   PD.SIZ+2,y
+         sta   PD.SSZ+2,y
+         ldd   DD.TOT,x
+         std   PD.SIZ,y
+         std   PD.SSZ,y
          puls  pc,y
-L01CA    lda   $01,y
-         lbsr  L09E6
-         bcs   L0170
-         bita  #$02
-         beq   L01DB
+
+Open1BB  lda   PD.MOD,y
+         lbsr  ChkAttrs
+         bcs   RtnMemry
+         bita  #WRITE.
+         beq   Open1CC
          lbsr  L02D1
-         lbsr  L1206
-L01DB    puls  y
-L01DD    clra  
+         lbsr  L11FD
+Open1CC  puls  y
+
+Open1CE  
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra  
          clrb  
-         std   $0B,y
-         std   $0D,y
-         std   <$13,y
-         sta   <$15,y
-         sta   <$19,y
-         lda   ,u
-         sta   <$33,y
-         ldd   <$10,u
-         std   <$16,y
-         lda   <$12,u
-         sta   <$18,y
-         ldd   <$13,u
-         std   <$1A,y
-         ldd   $09,u
-         ldx   $0B,u
-         ldu   <$30,y
-         cmpu  $05,u
-         beq   L0218
-         ldu   $05,u
-         ldu   $01,u
-         ldd   $0F,u
-         ldx   <$11,u
-L0218    std   $0F,y
-         stx   <$11,y
-         clr   $0A,y
+         ENDC
+         std   PD.CP+2,y  to orig
+         std   PD.CP,y
+         std   PD.SBL,y
+         sta   PD.SBL+2,y
+         sta   PD.SSZ,y
+         lda   FD.ATT,u
+         sta   PD.ATT,y
+         ldd   FD.SEG,u
+         std   PD.SBP,y
+         lda   FD.SEG+2,u
+         sta   PD.SBP+2,y
+         ldd   FD.SEG+FDSL.B,u
+         std   PD.SSZ+1,y
+         ldd   FD.SIZ,u
+         ldx   FD.SIZ+2,u
+         ldu   PD.Exten,y
+         cmpu  PE.Confl,u
+         beq   Open209
+         ldu   PE.Confl,u
+         ldu   PE.PDptr,u
+         ldd   PD.SIZ,u
+         ldx   PD.SIZ+2,u
+Open209  std   PD.SIZ,y
+         stx   PD.SIZ+2,y
+         clr   PD.SMF,y
          rts   
-L0220    lbsr  L0039
-         bcs   L0273
-         lda   <$33,y
-         ora   #$40
-         lbsr  L09E6
-         bcs   L0273
-         ldd   #$0040
-         std   <$11,y
-         bsr   L0285
-         bcs   L0273
-         lbsr  L0C78
-         bcs   L0273
-         lbsr  L112C
-         ldu   $08,y
-         lda   ,u
-         ora   #$80
-         sta   ,u
-         bsr   L0278
-         bcs   L0273
-         lbsr  L017A
-         ldd   #$2EAE
+
+* Makedir entry point
+MakDir   lbsr  Create
+         bcs   MDir261
+         lda   PD.ATT,y
+         ora   #SHARE.
+         lbsr  ChkAttrs
+         bcs   MDir261
+         ldd   #DIR.SZ*2
+         std   PD.SIZ+2,y
+         bsr   MDir273
+         bcs   MDir261
+         lbsr  L0C6F
+         bcs   MDir261
+         lbsr  RdFlDscr
+         ldu   PD.BUF,y
+         IFNE  H6309
+         oim   #DIR.,FD.ATT,u
+         ELSE
+         lda   FD.ATT,u
+         ora   #DIR.
+         sta   FD.ATT,u
+         ENDC
+         bsr   MDir266
+         bcs   MDir261
+         lbsr  Creat170
+         ldd   #$2EAE     ..
          std   ,u
-         stb   <$20,u
-         lda   <$37,y
-         sta   <$1D,u
-         ldd   <$38,y
-         std   <$1E,u
-         lda   <$34,y
-         sta   <$3D,u
-         ldd   <$35,y
-         std   <$3E,u
-         lbsr  L120E
-L0273    bra   L02B4
-L0275    lbsr  L112C
-L0278    ldx   $08,y
-         ldd   $0F,y
-         std   $09,x
-         ldd   <$11,y
-         std   $0B,x
-         clr   $0A,y
-L0285    lbra  L1206
-L0288    clra  
-         tst   $02,y
-         bne   L02AE
-         lbsr  L1240
-         bcs   L02B4
-         ldb   $01,y
-         bitb  #$02
-         beq   L02B4
-         ldd   <$34,y
-         bne   L02A2
-         lda   <$36,y
-         beq   L02B4
-L02A2    bsr   L0275
-         lbsr  L05EE
-         bcc   L02B4
-         lbsr  L0F07
-         bra   L02B4
-L02AE    rts   
-L02AF    ldb   #$D6
-L02B1    coma  
-L02B2    puls  y
-L02B4    pshs  b,cc
-         ldu   $08,y
-         beq   L02CF
+         stb   DIR.SZ,u
+         lda   PD.DFD,y
+         sta   DIR.FD,u
+         ldd   PD.DFD+1,y
+         std   DIR.FD+1,u
+         lda   PD.FD,y
+         sta   DIR.SZ+DIR.FD,u
+         ldd   PD.FD+1,y
+         std   DIR.SZ+DIR.FD+1,u
+         lbsr  L1205
+MDir261  bra   Rt100Mem
+
+* set new file size in descriptor
+MDir263  lbsr  RdFlDscr
+MDir266  ldx   PD.BUF,y
+         IFNE  H6309
+         ldq   PD.SIZ,y
+         stq   FD.SIZ,x
+         ELSE
+         ldd   PD.SIZ,y
+         std   FD.SIZ,x
+         ldd   PD.SIZ+2,y
+         std   FD.SIZ+2,x
+         ENDC
+         clr   PD.SMF,y
+MDir273  lbra  L11FD
+
+Close    clra  
+         tst   PD.CNT,y
+         bne   Clos29C
+         lbsr  L1237
+         bcs   Rt100Mem
+         ldb   PD.MOD,y
+         bitb  #WRITE.
+         beq   Rt100Mem
+         ldd   PD.FD,y
+         bne   Clos290
+         lda   PD.FD+2,y
+         beq   Rt100Mem
+Clos290  bsr   MDir263
+         lbsr  Gst5E5
+         bcc   Rt100Mem
+         lbsr  L0EFE
+         bra   Rt100Mem
+Clos29C  rts   
+
+
+Clos29D  ldb   #E$FNA
+ErMemRtn coma  
+Clos2A0  puls  y
+
+* generalized return to system
+Rt100Mem pshs  b,cc
+         ldu   PD.BUF,y
+         beq   RtMem2CF
          ldd   #$0100
-         os9   F$SRtMem 
-         ldx   <$30,y
-         beq   L02CF
-         lbsr  L0A99
-         lda   ,x
-         ldx   <$0088
-         os9   F$Ret64  
-L02CF    puls  pc,b,cc
-L02D1    lbsr  L112C
-         ldu   $08,y
-         lda   $08,u
-         ldx   <$0050
+         os9   F$SRtMem
+         ldx   PD.Exten,y
+         beq   RtMem2CF
+         lbsr  L0A90
+         lda   PE.PE,x
+         ldx   <D.PthDBT
+         os9   F$Ret64
+RtMem2CF puls  pc,b,cc
+
+
+L02D1    lbsr  RdFlDscr
+         ldu   PD.BUF,y
+         lda   FD.LNK,u
+         ldx   <D.Proc
          pshs  x,a
-         ldx   <$004A
-         stx   <$0050
-         leax  $03,u
-         os9   F$Time   
-         puls  x,a
-         stx   <$0050
-         sta   $08,u
+         ldx   <D.SysPrc
+         stx   <D.Proc
+         leax  FD.DAT,u
+         os9   F$Time
+         puls  x,a        backar is GONE!
+         stx   <D.Proc
+         sta   FD.LNK,u
          rts   
-L02EC    pshs  y
-         lda   $01,y
+
+
+ChgDir   pshs  y
+         IFNE  H6309
+         oim   #$80,PD.MOD,y
+         ELSE
+         lda   PD.MOD,y
          ora   #$80
-         sta   $01,y
-         lbsr  L018D
-         bcs   L02B2
-         ldx   <$0050
-         ldu   <$35,y
-         ldb   $01,y
-         bitb  #$03
-         beq   L030D
-         ldb   <$34,y
-         stb   <$23,x
-         stu   <$24,x
-L030D    ldb   $01,y
-         bitb  #$04
-         beq   L031C
-         ldb   <$34,y
-         stb   <$29,x
-         stu   <$2A,x
-L031C    clrb  
-         bra   L02B2
-L031F    pshs  y
-         lbsr  L07B5
-         bcs   L02B2
-         ldd   <$35,y
-         bne   L0332
-         tst   <$34,y
-         lbeq  L02AF
-L0332    lda   #$42
-         lbsr  L09E6
-         lbcs  L02B2
-         ldu   $06,y
-         stx   $04,u
-         lbsr  L112C
-         lbcs  L03D7
-         ldx   $08,y
-         dec   $08,x
-         beq   L0358
-         lbsr  L1206
-         nop   
+         sta   PD.MOD,y
+         ENDC
+         lbsr  Open
+         bcs   Clos2A0
+         ldx   <D.Proc
+         ldu   PD.FD+1,y
+         ldb   PD.MOD,y
+         bitb  #UPDAT.
+         beq   CD30D
+
+* change current data dir
+         ldb   PD.FD,y
+         stb   P$DIO+3,x
+         stu   P$DIO+4,x
+CD30D    ldb   PD.MOD,y
+         bitb  #EXEC.
+         beq   CD31C
+
+* change current exec dir
+         ldb   PD.FD,y
+         stb   P$DIO+9,x
+         stu   P$DIO+10,x
+CD31C    clrb  
+         bra   Clos2A0
+
+Delete   pshs  y
+         lbsr  FindFile
+         bcs   Clos2A0
+         ldd   PD.FD+1,y
+         bne   Del332
+         tst   PD.FD,y
+         IFNE  H6309
+         beq   Clos29D
+         ELSE
+         lbeq  Clos29D
+         ENDC
+Del332   lda   #SHARE.+WRITE.
+         lbsr  ChkAttrs
+         lbcs  Clos2A0
+         ldu   PD.RGS,y
+         stx   R$X,u
+         lbsr  RdFlDscr
+         lbcs  Del3D4
+         ldx   PD.BUF,y
+         dec   FD.LNK,x
+         beq   Del358
+         lbsr  L11FD
          pshs  u,x,b
+         IFNE  H6309
+         clrd  
+         ELSE
          clra  
          clrb  
+         ENDC
          std   $03,s
-         bra   L03A2
-L0358    ldb   <$34,y
-         ldx   <$35,y
+         bra   Del39F
+Del358   ldb   PD.FD,y
+         ldx   PD.FD+1,y
          pshs  u,x,b
          ldd   #$0100
-         os9   F$SRqMem 
-         bcc   L036C
+         os9   F$SRqMem
+         bcc   Del36C
+         IFNE  H6309
+         clrd  
+         ELSE
          clra  
          clrb  
-         bra   L037A
-L036C    stu   $03,s
-         ldx   $08,y
-         clrb  
-L0371    lda   ,x+
+         ENDC
+         bra   Del37A
+Del36C   stu   $03,s
+         ldx   PD.BUF,y
+         IFNE  H6309
+         ldw   #$0100
+         tfm   x+,u+
+         ELSE
+         clrb
+DelLoop  lda   ,x+
          sta   ,u+
-         decb  
-         bne   L0371
+         decb
+         bne   DelLoop
+         ENDC
          ldd   $03,s
-L037A    std   $03,s
+Del37A   std   $03,s
+         IFNE  H6309
+         clrd  
+         ELSE
          clra  
          clrb  
-         std   $0F,y
-         std   <$11,y
-         lbsr  L0F07
-         bcs   L03F7
-         ldb   <$34,y
-         ldx   <$35,y
-         stb   <$16,y
-         stx   <$17,y
-         ldx   $08,y
-         ldd   <$13,x
-         addd  #$0001
-         std   <$1A,y
-         lbsr  L0FD5
-L03A2    bcs   L03F7
-         lbsr  L1240
-         lbsr  L0A99
-         lda   <$37,y
-         sta   <$34,y
-         ldd   <$38,y
-         std   <$35,y
-         lbsr  L112C
-         bcs   L03F7
-         lbsr  L0A33
-         ldu   $08,y
-         lbsr  L01DD
-         ldd   <$3A,y
-         std   $0B,y
-         ldd   <$3C,y
-         std   $0D,y
-         lbsr  L0960
-         bcs   L03F7
+         ENDC
+         std   PD.SIZ,y
+         std   PD.SIZ+2,y
+         lbsr  L0EFE
+         bcs   Del3EF
+         ldb   PD.FD,y
+         ldx   PD.FD+1,y
+         stb   PD.SBP,y
+         stx   PD.SBP+1,y
+         ldx   PD.BUF,y
+* my problem with this fix from rbf28 is in proveing to me
+* $13,x is the correct location to read! I can't seem to find
+* the defines to match the $13,x address -GH
+         ldd   <$13,x     this code is REQUIRED for multiple
+         IFNE  H6309
+         incd             sector/cluster operation, don't remove!
+         ELSE
+         addd  #$0001 sector cluster operation, DO NOT REMOVE!
+         ENDC
+         std   PD.SSZ+1,y
+         lbsr  ClrFBits
+Del39F   bcs   Del3EF
+         lbsr  L1237
+         lbsr  L0A90
+         lda   PD.DFD,y
+         sta   PD.FD,y
+         ldd   PD.DFD+1,y
+         std   PD.FD+1,y
+         lbsr  RdFlDscr
+         bcs   Del3EF
+         lbsr  L0A2A
+         ldu   PD.BUF,y
+         lbsr  Open1CE
+         IFNE  H6309
+         ldq   PD.DCP,y
+         stq   PD.CP,y
+         ELSE
+         ldd   PD.DCP,y
+         std   PD.CP,y
+         ldd   PD.DCP+2,y
+         std   PD.CP+2,y
+         ENDC
+         lbsr  L0957
+         bcs   Del3EF
          clr   ,x
-         lbsr  L120E
-L03D7    ldu   $03,s
-         beq   L0402
+         lbsr  L1205
+Del3D4   ldu   $03,s
+* the patch at Del3EF-3F9 munged the stack for this one - GH
+         beq   Del3F9
          ldb   ,s
          ldx   $01,s
-         stb   <$34,y
-         stx   <$35,y
-         ldx   <$08,y
-         stx   <$01,s
-         stu   <$08,y
-         lbsr  L1206
-         ldu   <$01,s
-         stu   <$08,y
-L03F7    ldu   <$03,s
-         beq   L0402
+         stb   PD.FD,y
+         stx   PD.FD+1,y
+         ldx   PD.BUF,y
+         stx   1,s
+         stu   PD.BUF,y
+         lbsr  L11FD
+         ldu   1,s
+         stu   PD.BUF,y
+Del3EF   pshs  b,cc       raises stack offsets +2
+         ldu   $05,s      this was a 3
+         beq   Del3F5     different, new label! no mem to return
          ldd   #$0100
-         os9   F$SRtMem 
-L0402    leas  $05,s
-         lbra  L02B2
-L0407    ldb   $0A,y
-         bitb  #$02
-         beq   L0420
-         lda   $05,u
-         ldb   $08,u
-         subd  $0C,y
-         bne   L041B
-         lda   $04,u
-         sbca  $0B,y
-         beq   L0424
-L041B    lbsr  L1240
-         bcs   L0428
-L0420    ldd   $04,u
-         std   $0B,y
-L0424    ldd   $08,u
-         std   $0D,y
-L0428    rts   
-L0429    bsr   L046C
-         beq   L044F
-         bsr   L0450
+         os9   F$SRtMem
+Del3F5   puls  b,cc
+Del3F9   leas  5,s
+         lbra  Clos2A0
+
+* Seek entry
+Seek     ldb   PD.SMF,y
+         bitb  #SINBUF
+         beq   Seek417
+         lda   R$X+1,u
+         ldb   R$U,u
+         subd  PD.CP+1,y
+         bne   Seek412
+         lda   R$X,u
+         sbca  PD.CP,y
+         beq   Seek41B
+Seek412  lbsr  L1237
+         bcs   Seek41F
+Seek417  ldd   R$X,u
+         std   PD.CP,y
+Seek41B  ldd   R$U,u
+         std   PD.CP+2,y
+Seek41F  rts   
+
+ReadLn   bsr   RdLn463
+         beq   RdLn446
+         bsr   RdLn447
          pshs  u,y,x,b,a
          exg   x,u
+         IFNE  H6309
+         tfr   0,y
+         ELSE
          ldy   #$0000
+         ENDC
          lda   #$0D
-L0439    leay  $01,y
+RdLn430  leay  1,y
          cmpa  ,x+
-         beq   L0442
+         beq   RdLn439
          decb  
-         bne   L0439
-L0442    ldx   $06,s
-         bsr   L04A4
+         bne   RdLn430
+RdLn439  ldx   6,s
+         bsr   RdLn49B
          sty   $0A,s
          puls  u,y,x,b,a
          ldd   $02,s
          leax  d,x
-L044F    rts   
-L0450    lbsr  L04DC
-         leax  -$01,x
-         lbsr  L0988
+RdLn446  rts   
+
+RdLn447  lbsr  Read4D3
+         leax  -1,x
+         lbsr  L097F
          cmpa  #$0D
-         beq   L0462
+         beq   RdLn459
          ldd   $02,s
-         lbne  L04E2
-L0462    ldu   $06,y
-         ldd   $06,u
+         bne   Read4D9
+RdLn459  ldu   PD.RGS,y
+         ldd   R$Y,u
          subd  $02,s
-         std   $06,u
-         bra   L04C9
-L046C    ldd   $06,u
-         lbsr  L0B15
-         bcs   L04A0
-         ldd   $06,u
-         bsr   L047C
-         bcs   L04A0
-         std   $06,u
+         std   R$Y,u
+         bra   Read4C0
+
+RdLn463  ldd   R$Y,u
+         lbsr  L0B0C
+         bcs   RdLn497
+         ldd   R$Y,u
+         bsr   RdLn473
+         bcs   RdLn497
+         std   R$Y,u
          rts   
-L047C    pshs  b,a
-         ldd   <$11,y
-         subd  $0D,y
+
+RdLn473  pshs  d
+         IFNE  H6309
+         ldq   PD.SIZ,y   puts 3-4 bytes in w, not x
+         subw  PD.CP+2,y
+         tfr   w,x        save it in the old register
+         sbcd  PD.CP,y
+         ELSE
+         ldd   PD.SIZ+2,y
+         subd  PD.CP+2,y
          tfr   d,x
-         ldd   $0F,y
-         sbcb  $0C,y
-         sbca  $0B,y
-         bcs   L049D
-         bne   L049A
+         ldd   PD.SIZ,y
+         sbcb  PD.CP+1,y
+         sbca  PD.CP,y
+         ENDC
+         bcs   RdLn494
+         bne   RdLn491
          tstb  
-         bne   L049A
-         cmpx  ,s
-         bcc   L049A
-         stx   ,s
-         beq   L049D
-L049A    clrb  
+         bne   RdLn491
+
+         cmpx  ,s         we saved in x, use it
+         bhs   RdLn491
+         stx   ,s         ditto
+         beq   RdLn494
+RdLn491  clrb  
          puls  pc,b,a
-L049D    comb  
-         ldb   #$D3
-L04A0    leas  $02,s
-         bra   L04CE
-L04A4    pshs  x
-         ldx   <$0050
-         lda   <$00D0
-         ldb   $06,x
+RdLn494  comb  
+         ldb   #E$EOF
+RdLn497  leas  $02,s
+         bra   Read4C5
+RdLn49B  pshs  x
+         ldx   <D.Proc
+         lda   <D.SysTsk
+         ldb   P$Task,x
          puls  x
-         os9   F$Move   
+         os9   F$Move
          rts   
-L04B2    bsr   L046C
-         beq   L04C4
-         bsr   L04C5
-L04B8    pshs  u,y,x,b,a
+
+Read     bsr   RdLn463
+         beq   Read4BB
+         bsr   Read4BC
+Read4AF  pshs  u,y,x,b,a
          exg   x,u
          tfr   d,y
-         bsr   L04A4
+         bsr   RdLn49B
          puls  u,y,x,b,a
-         leax  d,x
-L04C4    rts   
-L04C5    bsr   L04DC
-         bne   L04E2
-L04C9    clrb  
-L04CA    leas  -$02,s
-L04CC    leas  $0A,s
-L04CE    pshs  b,cc
-         lda   $01,y
-         bita  #$02
-         bne   L04D9
-         lbsr  L0B0B
-L04D9    puls  b,cc
-         rts   
-L04DC    ldd   $04,u
-         ldx   $06,u
+         leax  d,x        back to leax from addr here
+Read4BB  rts   
+
+Read4BC  bsr   Read4D3
+         bne   Read4D9
+Read4C0  clrb  
+Read4C1  leas  -2,s
+Read4C3  leas  $0A,s
+
+Read4C5  pshs  b,cc
+         lda   PD.MOD,y
+         bita  #WRITE.
+         bne   Read4D0
+         lbsr  L0B02
+Read4D0  puls  b,cc,pc
+
+Read4D3  ldd   R$X,u
+         ldx   R$Y,u
          pshs  x,b,a
-L04E2    lda   $0A,y
-         bita  #$02
-         bne   L0502
-         tst   $0E,y
-         bne   L04FD
+Read4D9  lda   PD.SMF,y
+         bita  #SINBUF
+         bne   Read4F9
+         tst   PD.CP+3,y
+         bne   Read4F4
          tst   $02,s
-         beq   L04FD
-         leax  >L057A,pcr
+         beq   Read4F4
+         leax  >Writ571,pcr
          cmpx  $06,s
-         bne   L04FD
-         lbsr  L10A1
-         bra   L0500
-L04FD    lbsr  L125F
-L0500    bcs   L04CA
-L0502    ldu   $08,y
+         bne   Read4F4
+         lbsr  L1098
+         bra   Read4F7
+Read4F4  lbsr  L1256
+Read4F7  bcs   Read4C1
+Read4F9  ldu   PD.BUF,y
          clra  
-         ldb   $0E,y
+         ldb   PD.CP+3,y
          leau  d,u
          negb  
          sbca  #$FF
          ldx   ,s
          cmpd  $02,s
-         bls   L0515
+         bls   Read50C
          ldd   $02,s
-L0515    pshs  b,a
-         jsr   [<$08,s]
+Read50C  pshs  b,a
+         jsr   [$08,s]
          stx   $02,s
-         lda   $0A,y
-         anda  #$BF
-         sta   $0A,y
+         IFNE  H6309
+         aim   #^BufBusy,PD.SMF,y
+         ELSE
+         ldb   PD.SMF,y
+         andb  #^BufBusy
+         stb   PD.SMF,y
+         ENDC
          ldb   $01,s
-         addb  $0E,y
-         stb   $0E,y
-         bne   L0539
-         lbsr  L1240
-         inc   $0D,y
-         bne   L0537
-         inc   $0C,y
-         bne   L0537
-         inc   $0B,y
-L0537    bcs   L04CC
-L0539    ldd   $04,s
+         addb  PD.CP+3,y
+         stb   PD.CP+3,y
+         bne   Read530
+         lbsr  L1237
+         inc   PD.CP+2,y
+         bne   Read52E
+         inc   PD.CP+1,y
+         bne   Read52E
+         inc   PD.CP,y
+Read52E  bcs   Read4C3
+Read530  ldd   $04,s
          subd  ,s++
          std   $02,s
-         jmp   [<$04,s]
-L0542    pshs  y
+         jmp   [$04,s]
+
+WriteLn  pshs  y
          clrb  
-         ldy   $06,u
-         beq   L0567
-         ldx   <$0050
-         ldb   $06,x
-         ldx   $04,u
-L0550    leay  -$01,y
-         beq   L0567
-         os9   F$LDABX  
+         ldy   R$Y,u
+         beq   WtLn55E
+         ldx   <D.Proc
+         ldb   P$Task,x
+         ldx   R$X,u
+WtLn547  leay  -$01,y
+         beq   WtLn55E
+         os9   F$LDABX
          leax  $01,x
          cmpa  #$0D
-         bne   L0550
+         bne   WtLn547
          tfr   y,d
-         nega  
-         negb  
+         nega             \
+* a negd was tried here, but may have caused runaway writes>64k
+         negb             /
          sbca  #$00
-         addd  $06,u
-         std   $06,u
-L0567    puls  y
-L0569    ldd   $06,u
-         lbsr  L0B15
-         bcs   L05A1
-         ldd   $06,u
-         beq   L05A0
-         bsr   L05A2
-         bcs   L05A1
-         bsr   L058B
-L057A    pshs  y,b,a
+         addd  R$Y,u
+         std   R$Y,u
+WtLn55E  puls  y
+
+Write    ldd   R$Y,u
+         lbsr  L0B0C
+         bcs   Writ598
+         ldd   R$Y,u
+         beq   Writ597
+         bsr   Writ599
+         bcs   Writ598
+         bsr   Writ582
+Writ571  pshs  y,b,a
          tfr   d,y
-         bsr   L05D4
+         bsr   Writ5CB
          puls  y,b,a
          leax  d,x
-         lda   $0A,y
-         ora   #$03
-         sta   $0A,y
+         IFNE  H6309
+         oim   #(BUFMOD!SINBUF),PD.SMF,y
+         ELSE
+         pshs  a
+         lda   PD.SMF,y
+         ora   #(BUFMOD!SINBUF)
+         sta   PD.SMF,y
+         puls  a
+         ENDC
          rts   
-L058B    lbsr  L04DC
-         lbne  L04E2
+
+Writ582  lbsr  Read4D3
+         lbne  Read4D9
          leas  $08,s
-         ldy   <$30,y
+         ldy   PD.Exten,y
          lda   #$01
-         lbsr  L0ADA
-         ldy   $01,y
-L05A0    clrb  
-L05A1    rts   
-L05A2    addd  $0D,y
+         lbsr  L0AD1
+         ldy   PE.PDptr,y
+Writ597  clrb  
+Writ598  rts   
+
+Writ599  addd  PD.CP+2,y
          tfr   d,x
-         ldd   $0B,y
-         adcb  #$00
-         adca  #$00
-L05AC    cmpd  $0F,y
-         bcs   L05A0
-         bhi   L05B8
-         cmpx  <$11,y
-         bls   L05A0
-L05B8    pshs  u
-         ldu   <$11,y
-         stx   <$11,y
-         ldx   $0F,y
-         std   $0F,y
+         ldd   PD.CP,y
+         IFNE  H6309
+         adcd  #0
+         ELSE
+         adcb  #0
+         adca  #0
+         ENDC
+Writ5A3  cmpd  PD.SIZ,y
+         bcs   Writ597
+         bhi   Writ5AF
+         cmpx  PD.SIZ+2,y
+         bls   Writ597
+Writ5AF  pshs  u
+         ldu   PD.SIZ+2,y
+         stx   PD.SIZ+2,y
+         ldx   PD.SIZ,y
+         std   PD.SIZ,y
          pshs  u,x
-         lbsr  L0C78
+         lbsr  L0C6F
          puls  u,x
-         bcc   L05D2
-         stx   $0F,y
-         stu   <$11,y
-L05D2    puls  pc,u
-L05D4    pshs  x
-         ldx   <$0050
-         lda   $06,x
-         ldb   <$00D0
+         bcc   Writ5C9
+         stx   PD.SIZ,y
+         stu   PD.SIZ+2,y
+Writ5C9  puls  pc,u
+
+Writ5CB  pshs  x
+         ldx   <D.Proc
+         lda   P$Task,x
+         ldb   <D.SysTsk
          puls  x
-         os9   F$Move   
+         os9   F$Move
          rts   
-L05E2    ldb   $02,u
-         cmpb  #$00
-         beq   L0608
-         cmpb  #$06
-         bne   L05F4
-         clr   $02,u
-L05EE    clra  
+
+* SS.OPT
+* Entry A=path number
+*       B=$00
+*       X=address to put 32 byte packet
+GetStat  ldb   R$B,u      $02,u
+         beq   Gst5FF
+         cmpb  #SS.EOF
+         bne   Gst5EB
+         clr   R$B,u
+Gst5E5   clra  
          ldb   #$01
-         lbra  L047C
-L05F4    cmpb  #$01
-         bne   L05FB
-         clr   $02,u
+         lbra  RdLn473
+
+* SS.Ready
+* check for data avail on dev
+* Entry A=path number
+*       B=$01
+Gst5EB   cmpb  #SS.Ready
+         bne   Gst5F2
+         clr   R$B,u
          rts   
-L05FB    cmpb  #$02
-         bne   L0609
-         ldd   $0F,y
-         std   $04,u
-         ldd   <$11,y
-         std   $08,u
-L0608    rts   
-L0609    cmpb  #$05
-         bne   L0616
-         ldd   $0B,y
-         std   $04,u
-         ldd   $0D,y
-         std   $08,u
-         rts   
-L0616    cmpb  #$0F
-         bne   L0630
-         lbsr  L112C
-         bcs   L0608
-         ldu   $06,y
-         ldd   $06,u
+
+* SS.SIZ
+* Entry A=path num
+*       B=$02
+* Exit  X=msw of files size
+*       U=lsw of files size
+Gst5F2   cmpb  #SS.Size
+         bne   Gst600
+         IFNE  H6309
+         ldq   PD.SIZ,y
+Gst5F8   std   R$X,u
+         stw   R$U,u
+         ELSE
+         ldd   PD.SIZ,y
+         std   R$X,u
+         ldd   PD.SIZ+2,y
+         std   R$U,u
+         ENDC
+Gst5FF   rts   
+
+* SS.POS
+* Entry A=path num
+*       B=$05
+* Exit  X=msw of pos
+*       U=lsw of pos
+Gst600   cmpb  #SS.POS
+         bne   Gst60D
+         IFNE  H6309
+         ldq   PD.CP,y
+         bra   Gst5F8
+         ELSE
+         ldd   PD.CP,y
+         std   R$X,u
+         ldd   PD.CP+2,y
+         std   R$U,u
+         rts
+         ENDC
+
+* Getstt(SS.FD)
+* Entry: R$A = Path #
+*        R$B = SS.FD ($0F)
+*        R$X = ptr to 256 byte buffer
+*        R$Y = # of bytes of FD required
+Gst60D   cmpb  #SS.FD
+         bne   Gst627
+         lbsr  RdFlDscr
+         bcs   Gst5FF
+         ldu   PD.RGS,y
+         ldd   R$Y,u
          tsta  
-         beq   L0629
+         beq   Gst620
          ldd   #$0100
-L0629    ldx   $04,u
-         ldu   $08,y
-         lbra  L04B8
-L0630    cmpb  #$20
-         bne   L0649
-         lbsr  L1240
-         bcs   L0608
-         ldb   $06,u
-         ldx   $08,u
-         lbsr  L1143
-         bcs   L0608
-         ldu   $06,y
-         ldd   $06,u
+Gst620   ldx   R$X,u
+         ldu   PD.BUF,y
+         lbra  Read4AF
+
+* Getstt(SS.FDInf)
+* Entry: R$A = Path #
+*        R$B = SS.FDInf ($20)
+*        R$X = ptr to 256 byte buffer
+*        R$Y = msb - Length of read
+*              lsb - MSB of LSN
+*        R$U = LSW of LSN
+Gst627   cmpb  #SS.FDInf
+         bne   Gst640
+         lbsr  L1237
+         bcs   Gst5FF
+         ldb   R$Y,u
+         ldx   R$U,u
+         lbsr  L113A
+         bcs   Gst5FF
+         ldu   PD.RGS,y
+         ldd   R$Y,u
          clra  
-         bra   L0629
-L0649    lda   #$09
-         lbra  L1145
-L064E    ldb   $02,u
-         cmpb  #$00
-         bne   L0662
-         ldx   $04,u
+         bra   Gst620
+Gst640   lda   #D$GSTA
+         lbra  L113C
+
+SetStat  ldb   R$B,u
+         cmpb  #SS.OPT
+         bne   Sst659
+         ldx   R$X,u
          leax  $02,x
-         leau  <$22,y
-         ldy   #$000D
-         lbra  L05D4
-L0662    cmpb  #$02
-         bne   L06A4
-         ldd   <$35,y
-         bne   L0672
-         tst   <$34,y
-         lbeq  L07B1
-L0672    lda   $01,y
-         bita  #$02
-         beq   L06A0
-         ldd   $04,u
-         ldx   $08,u
-         cmpd  $0F,y
-         bcs   L068B
-         bne   L0688
-         cmpx  <$11,y
-         bcs   L068B
-L0688    lbra  L05AC
-L068B    std   $0F,y
-         stx   <$11,y
-         ldd   $0B,y
-         ldx   $0D,y
+         leau  PD.STP,y
+         ldy   #(PD.TFM-PD.STP)
+         lbra  Writ5CB
+Sst659   cmpb  #SS.Size
+         bne   Sst69B
+         ldd   PD.FD+1,y
+         bne   Sst669
+         tst   PD.FD,y
+         lbeq  Sst7A8
+Sst669   lda   PD.MOD,y
+         bita  #WRITE.
+         beq   Sst697
+         ldd   R$X,u
+         ldx   R$U,u
+         cmpd  PD.SIZ,y
+         bcs   Sst682
+         bne   Sst67F
+         cmpx  PD.SIZ+2,y
+         bcs   Sst682
+Sst67F   lbra  Writ5A3
+Sst682   std   PD.SIZ,y
+         stx   PD.SIZ+2,y
+         ldd   PD.CP,y
+         ldx   PD.CP+2,y
          pshs  x,b,a
-         lbsr  L0F07
+         lbsr  L0EFE
          puls  u,x
-         stx   $0B,y
-         stu   $0D,y
+         stx   PD.CP,y
+         stu   PD.CP+2,y
          rts   
-L06A0    comb  
-         ldb   #$CB
-L06A3    rts   
-L06A4    cmpb  #$0F
-         bne   L06E2
-         lda   $01,y
-         bita  #$02
-         beq   L06A0
-         lbsr  L112C
-         bcs   L06A3
+Sst697   comb  
+         ldb   #E$BMode
+Sst69A   rts   
+
+* SetStt(SS.FD) #$0F - returns FD to disk
+* Entry: R$A = Path #
+*        R$B = SS.FD ($0F)
+*        R$X = ptr to 256 byte buffer
+*        R$Y = # bytes to write
+Sst69B   cmpb  #SS.FD
+         bne   Sst6D9
+         lda   PD.MOD,y
+         bita  #WRITE.
+         beq   Sst697
+         lbsr  RdFlDscr
+         bcs   Sst69A
          pshs  y
-         ldx   $04,u
-         ldu   $08,y
-         ldy   <$0050
-         ldd   $08,y
-         bne   L06C5
+         ldx   R$X,u
+         ldu   PD.BUF,y
+         ldy   <D.Proc
+         ldd   P$User,y
+         bne   Sst6BC
          ldd   #$0102
-         bsr   L06D4
-L06C5    ldd   #$0305
-         bsr   L06D4
+         bsr   Sst6CB
+Sst6BC   ldd   #$0305
+         bsr   Sst6CB
          ldd   #$0D03
-         bsr   L06D4
+         bsr   Sst6CB
          puls  y
-         lbra  L1206
-L06D4    pshs  u,x
+         lbra  L11FD
+Sst6CB   pshs  u,x
          leax  a,x
          leau  a,u
          clra  
          tfr   d,y
-         lbsr  L05D4
+         lbsr  Writ5CB
          puls  pc,u,x
-L06E2    cmpb  #$11
-         bne   L0701
-         ldd   $08,u
-         ldx   $04,u
+Sst6D9   cmpb  #SS.Lock
+         bne   Sst6F8
+         ldd   R$U,u
+         ldx   R$X,u
          cmpx  #$FFFF
-         bne   L06FE
-         cmpx  $08,u
-         bne   L06FE
-         ldu   <$30,y
-         lda   $07,u
-         ora   #$02
-         sta   $07,u
+         bne   Sst6F5
+         cmpx  R$U,u
+         bne   Sst6F5
+         ldu   PD.Exten,y
+         IFNE  H6309
+         oim   #FileLock,PE.Lock,u
+         ELSE
+         lda   PE.Lock,u
+         ora   #FileLock
+         sta   PE.Lock,u
+         ENDC
          lda   #$FF
-L06FE    lbra  L0B24
-L0701    cmpb  #$10
-         bne   L070E
-         ldd   $04,u
-         ldx   <$30,y
-         std   <$12,x
+Sst6F5   lbra  L0B1B
+
+* SS.Ticks
+Sst6F8   cmpb  #SS.Ticks
+         bne   Sst705
+         ldd   R$X,u
+         ldx   PD.Exten,y
+         std   PE.TmOut,x
          rts   
-L070E    cmpb  #$1E
-         bne   L071E
-         ldx   <$1E,y
-         lda   $05,u
-         sta   <$1E,x
-         clr   <$1D,x
-L071D    rts   
-L071E    cmpb  #$1C
-         bne   L078D
-         lbsr  L112C
-         bcs   L071D
-         ldx   <$0050
-         lda   $08,x
-         beq   L0733
-         ldx   $08,y
-         cmpa  $01,x
-         bne   L0789
-L0733    lda   $05,u
+
+* SS.RsBit 
+Sst705   cmpb  #SS.RsBit
+         bne   Sst715
+         ldx   PD.DTB,y
+         lda   R$X+1,u
+         sta   V.ResBit,x
+         clr   V.MapSct,x
+Sst714   rts   
+
+* SS.Attr 
+Sst715   cmpb  #SS.Attr
+         bne   Sst784
+         lbsr  RdFlDscr
+         bcs   Sst714
+         ldx   <D.Proc
+         ldd   P$User,x   lda?, P$User is INT
+         beq   Sst72A
+         ldx   PD.BUF,y
+         cmpd  FD.OWN,x   FD.OWN is INT!
+         bne   Sst780
+Sst72A   lda   R$X+1,u    ditto
          tfr   a,b
-         ldu   $08,y
-         eorb  ,u
-         bpl   L0784
+         ldu   PD.BUF,y
+         eorb  FD.ATT,u
+         bpl   Sst77B
          tsta  
-         bmi   L076D
-         ldx   <$1E,y
-         ldd   $08,x
-         cmpd  <$34,y
-         bne   L0752
-         ldb   $0A,x
-         cmpb  <$36,y
-         beq   L0789
-L0752    ldb   $0B,y
-         ldx   $0C,y
+         bmi   Sst764
+         ldx   PD.DTB,y
+         ldd   DD.DIR,x
+         cmpd  PD.FD,y
+         bne   Sst749
+         ldb   DD.DIR+2,x
+         cmpb  PD.FD+2,y
+         beq   Sst780
+Sst749   ldb   PD.CP,y
+         ldx   PD.CP+1,y
          pshs  x,b
-         std   $0B,y
-         ldb   #$20
-         std   $0D,y
-L075E    lbsr  L094B
-         bcs   L0771
+         std   PD.CP,y
+         ldb   #DIR.SZ
+         std   PD.CP+2,y
+Sst755   lbsr  L0942
+         bcs   Sst768
          tst   ,x
-         beq   L075E
+         beq   Sst755
          puls  x,b
-         stb   $0B,y
-         stx   $0C,y
-L076D    ldb   #$EE
-         bra   L078B
-L0771    puls  x,a
-         sta   $0B,y
-         stx   $0C,y
-         cmpb  #$D3
-         bne   L078B
-         lbsr  L112C
-         ldu   $08,y
-         ldx   $06,y
-         lda   $05,x
-L0784    sta   ,u
-         lbra  L1206
-L0789    ldb   #$D6
-L078B    coma  
+         stb   PD.CP,y
+         stx   PD.CP+1,y
+Sst764   ldb   #E$DNE
+         bra   Sst782
+Sst768   puls  x,a
+         sta   PD.CP,y
+         stx   PD.CP+1,y
+         cmpb  #E$EOF
+         bne   Sst782
+         lbsr  RdFlDscr
+         ldu   PD.BUF,y
+         ldx   PD.RGS,y
+         lda   R$X+1,x
+Sst77B   sta   FD.ATT,u
+         lbra  L11FD
+Sst780   ldb   #E$FNA
+Sst782   coma  
          rts   
-L078D    cmpb  #$2C
-         bne   L07AC
-         lda   <$33,y
-         bita  #$40
-         lbne  L0A94
-         ldx   <$30,y
-         lda   $05,u
-         sta   <$18,x
-         ldu   <$0050
-         lda   <$0000,u
-         sta   <$17,x
+
+* SetStt(SS.FSig)
+Sst784   cmpb  #SS.FSig   this not in v31
+         bne   Sst7A3
+         lda   PD.ATT,y
+         bita  #SHARE.
+         lbne  L0A8B
+         ldx   PD.Exten,y
+         lda   R$X+1,u
+         sta   PE.SigSg,x
+         ldu   <D.Proc
+         lda   P$ID,u     was <P$ID,u
+         sta   PE.SigID,x
          clrb  
          rts   
-L07AC    lda   #$0C
-         lbra  L1145
-L07B1    comb  
-         ldb   #$D0
-L07B4    rts   
-L07B5    ldd   #$0100
-         stb   $0A,y
-         os9   F$SRqMem 
-         bcs   L07B4
-         stu   $08,y
-         leau  ,y
-         ldx   <$0088
-         os9   F$All64  
-         exg   y,u
-         bcs   L07B4
-         stu   <$30,y
-         clr   <$17,u
-         sty   $01,u
-         stu   <$10,u
-         ldx   $06,y
-         ldx   $04,x
+
+Sst7A3   lda   #$0C
+         lbra  L113C
+Sst7A8   comb  
+         ldb   #E$UnkSvc  #$D0
+Sst7AB   rts   
+FindFile ldd   #$0100
+         stb   PD.FST,y   s/b 0
+         os9   F$SRqMem
+         bcs   Sst7AB
+         stu   PD.BUF,y
+         leau  ,y         move PD.ptr to regs.U
+         ldx   <D.PthDBT
+         os9   F$All64
+         exg   y,u        *PD>y; memadd to regs.U
+         bcs   Sst7AB
+         stu   PD.Exten,y
+         clr   PE.SigID,u
+         sty   PE.PDptr,u
+         stu   PE.Wait,u
+         ldx   PD.RGS,y
+         ldx   R$X,x
          pshs  u,y,x
          leas  -$04,s
+         IFNE  H6309
+         clrd             was clra, clrb  
+         ELSE
          clra  
          clrb  
-         sta   <$34,y
-         std   <$35,y
-         std   <$1C,y
-         lbsr  L0988
+         ENDC
+         sta   PD.FD,y
+         std   PD.FD+1,y
+         std   PD.DSK,y
+         lbsr  L097F
          sta   ,s
-         cmpa  #$2F
-         bne   L0804
-         lbsr  L0993
+         cmpa  #'/
+         bne   Sst7FB
+         lbsr  GtDvcNam
          sta   ,s
-         lbcs  L0916
+         lbcs  L090D
          leax  ,y
          ldy   $06,s
-         bra   L0827
-L0804    anda  #$7F
-         cmpa  #$40
-         beq   L0827
-         lda   #$2F
+         bra   Sst81E
+Sst7FB   anda  #$7F
+         cmpa  #'@
+         beq   Sst81E
+         lda   #'/
          sta   ,s
          leax  -$01,x
-         lda   $01,y
-         ldu   <$0050
-         leau  <$20,u
-         bita  #$04
-         beq   L081D
+         lda   PD.MOD,y
+         ldu   <D.Proc
+         leau  P$DIO,u
+         bita  #EXEC.
+         beq   Sst814
          leau  $06,u
-L081D    ldb   $03,u
-         stb   <$34,y
+Sst814   ldb   $03,u
+         stb   PD.FD,y
          ldd   $04,u
-         std   <$35,y
-L0827    ldu   $03,y
-         stu   <$3E,y
-         lda   <$21,y
-         ldb   >L0011,pcr
+         std   PD.FD+1,y
+Sst81E   ldu   PD.DEV,y
+         stu   PD.DVT,y
+         lda   PD.DRV,y
+         ldb   >L0012,pcr confusion reigns supreme here,
+* one source loaction says its number of drive tables,
+* and the next says its the size of the table! And a 3rd
+* says its D.TYP.
          mul   
-         addd  $02,u
-         addd  #$000F
-         std   <$1E,y
+         addd  V$STAT,u
+         addd  #DRVBEG
+         std   PD.DTB,y
          lda   ,s
          anda  #$7F
-         cmpa  #$40
-         bne   L0848
+         cmpa  #'@
+         bne   Sst83F
          leax  $01,x
-         bra   L086A
-L0848    lbsr  L1119
-         lbcs  L091E
-         ldu   $08,y
-         ldd   $0E,u
-         std   <$1C,y
-         ldd   <$35,y
-         bne   L086A
-         lda   <$34,y
-         bne   L086A
-         lda   $08,u
-         sta   <$34,y
-         ldd   $09,u
-         std   <$35,y
-L086A    stx   $04,s
+         bra   Sst861
+Sst83F   lbsr  L1110
+         lbcs  L0915
+         ldu   PD.BUF,y
+         ldd   DD.DSK,u
+         std   PD.DSK,y
+         ldd   PD.FD+1,y
+         bne   Sst861
+         lda   PD.FD,y
+         bne   Sst861
+         lda   DD.DIR,u
+         sta   PD.FD,y
+         ldd   DD.DIR+1,u
+         std   PD.FD+1,y
+Sst861   stx   $04,s
          stx   $08,s
-L086E    lbsr  L1240
-         lbcs  L091E
+Sst865   lbsr  L1237
+         lbcs  L0915
          lda   ,s
          anda  #$7F
-         cmpa  #$40
-         beq   L0884
-         lbsr  L112C
-         lbcs  L091E
-L0884    lbsr  L0A33
+         cmpa  #'@
+         beq   Sst87B
+         lbsr  RdFlDscr
+         lbcs  L0915
+Sst87B   lbsr  L0A2A
          lda   ,s
-         cmpa  #$2F
-         bne   L08F8
+         cmpa  #'/
+         bne   L08EF
          clr   $02,s
          clr   $03,s
-         lda   $01,y
-         ora   #$80
-         lbsr  L09E6
-         bcs   L0916
-         lbsr  L01DD
+         lda   PD.MOD,y
+         ora   #DIR.
+         lbsr  ChkAttrs
+         bcs   L090D
+         lbsr  Open1CE
          ldx   $08,s
          leax  $01,x
-         lbsr  L0993
+         lbsr  GtDvcNam
          std   ,s
          stx   $04,s
          sty   $08,s
          ldy   $06,s
-         bcs   L0916
+         bcs   L090D
          pshs  u,y
-         ldu   <$30,y
-         leau  <$20,u
+         ldu   PD.Exten,y
+         leau  PE.FilNm,u
          clra  
          tfr   d,y
-         lbsr  L05D4
+         lbsr  Writ5CB
          puls  u,y
-         lbsr  L0960
-         bra   L08CA
-L08C5    bsr   L0921
-L08C7    lbsr  L094B
-L08CA    bcs   L0916
+         lbsr  L0957
+         bra   L08C1
+L08BC    bsr   L0918
+         IFNE  H6309
+L08BE    bsr   L0942
+         ELSE
+L08BE    lbsr  L0942
+         ENDC
+L08C1    bcs   L090D
          tst   ,x
-         beq   L08C5
+         beq   L08BC
          clra  
          ldb   $01,s
          exg   x,y
-         ldx   <$30,x
-         leax  <$20,x
-         lbsr  L09C8
+         ldx   PD.Exten,x
+         leax  PE.FilNm,x
+         lbsr  L09BF
          ldx   $06,s
          exg   x,y
-         bcs   L08C7
-         bsr   L092F
-         lda   <$1D,x
-         sta   <$34,y
-         ldd   <$1E,x
-         std   <$35,y
-         lbsr  L0A99
-         lbra  L086E
-L08F8    ldx   $08,s
+         bcs   L08BE
+         bsr   L0926
+         lda   DIR.FD,x
+         sta   PD.FD,y
+         ldd   DIR.FD+1,x
+         std   PD.FD+1,y
+         lbsr  L0A90
+         lbra  Sst865
+
+L08EF    ldx   $08,s
          tsta  
-         bmi   L0905
-         os9   F$PrsNam 
+         bmi   L08FC
+         os9   F$PrsNam
          leax  ,y
          ldy   $06,s
-L0905    stx   $04,s
+L08FC    stx   $04,s
          clra  
-L0908    lda   ,s
+L08FF    lda   ,s
          leas  $04,s
          pshs  b,a,cc
-         lda   $0A,y
-         anda  #$BF
-         sta   $0A,y
+         IFNE  H6309
+         aim   #^BufBusy,PD.SMF,y
+         ELSE
+         lda   PD.SMF,y
+         anda  #^BufBusy
+         sta   PD.SMF,y
+         ENDC
          puls  pc,u,y,x,b,a,cc
-L0916    cmpb  #$D3
-         bne   L091E
-         bsr   L0921
-         ldb   #$D8
-L091E    coma  
-         bra   L0908
-L0921    pshs  b,a
+
+L090D    cmpb  #E$EOF
+         bne   L0915
+         bsr   L0918
+         ldb   #E$PNNF
+L0915    coma  
+         bra   L08FF
+L0918    pshs  d
          lda   $04,s
-         cmpa  #$2F
-         beq   L0949
+         cmpa  #'/
+         beq   L0940
          ldd   $06,s
-         bne   L0949
-         puls  b,a
-L092F    pshs  b,a
-         stx   $06,s
-         lda   <$34,y
-         sta   <$37,y
-         ldd   <$35,y
-         std   <$38,y
-         ldd   $0B,y
-         std   <$3A,y
-         ldd   $0D,y
-         std   <$3C,y
-L0949    puls  pc,b,a
-L094B    ldb   $0E,y
-         addb  #$20
-         stb   $0E,y
-         bcc   L0960
-         lbsr  L1240
-         inc   $0D,y
-         bne   L0960
-         inc   $0C,y
-         bne   L0960
-         inc   $0B,y
-L0960    ldd   #$0020
-         lbsr  L047C
-         bcs   L0987
-         ldd   #$0020
-         lbsr  L0B15
-         bcs   L0987
-         lda   $0A,y
-         bita  #$02
-         bne   L0980
-         lbsr  L10A1
-         bcs   L0987
-         lbsr  L125F
-         bcs   L0987
-L0980    ldb   $0E,y
-         lda   $08,y
+         bne   L0940
+         bra   L0928      fewer clock cycles
+L0926    pshs  d
+L0928    stx   $06,s
+         lda   PD.FD,y
+         sta   PD.DFD,y
+         ldd   PD.FD+1,y
+         std   PD.DFD+1,y
+         IFNE  H6309
+         ldq   PD.CP,y    was ldd,std here
+         stq   PD.DCP,y
+         ELSE
+         ldd   PD.CP,y
+         std   PD.DCP,y
+         ldd   PD.CP+2,y
+         std   PD.DCP+2,y
+         ENDC
+L0940    puls  pc,b,a
+L0942    ldb   PD.CP+3,y
+         addb  #DIR.SZ
+         stb   PD.CP+3,y
+         bcc   L0957
+         lbsr  L1237
+         inc   PD.CP+2,y
+         bne   L0957
+         inc   PD.CP+1,y
+         bne   L0957
+         inc   PD.CP,y
+
+L0957    ldd   #DIR.SZ
+         lbsr  RdLn473
+         bcs   L097E
+         ldd   #DIR.SZ
+         lbsr  L0B0C
+         bcs   L097E
+         lda   PD.SMF,y
+         bita  #SINBUF
+         bne   L0977
+         lbsr  L1098
+         bcs   L097E
+         lbsr  L1256
+         bcs   L097E
+L0977    ldb   PD.CP+3,y
+         lda   PD.BUF,y
          tfr   d,x
          clrb  
-L0987    rts   
-L0988    pshs  u,x,b
-         ldu   <$0050
-         ldb   $06,u
-         os9   F$LDABX  
+L097E    rts   
+
+* Get a byte from other task
+L097F    pshs  u,x,b
+         ldu   <D.Proc
+         ldb   P$Task,u
+         os9   F$LDABX
          puls  pc,u,x,b
-L0993    os9   F$PrsNam 
+
+*
+GtDvcNam os9   F$PrsNam
          pshs  x
-         bcc   L09C0
+         bcc   L09B7
          clrb  
-L099B    pshs  a
+L0992    pshs  a
          anda  #$7F
-         cmpa  #$2E
+         cmpa  #'.
          puls  a
-         bne   L09B6
+         bne   L09AD
          incb  
-         leax  $01,x
+         leax  1,x
          tsta  
-         bmi   L09B6
-         bsr   L0988
+         bmi   L09AD
+         bsr   L097F
          cmpb  #$03
-         bcs   L099B
-         lda   #$2F
+         bcs   L0992
+         lda   #'/
          decb  
-         leax  -$03,x
-L09B6    tstb  
-         bne   L09BE
-L09B9    comb  
-         ldb   #$D7
+         leax  -3,x
+L09AD    tstb  
+         bne   L09B5
+L09B0    comb  
+         ldb   #E$BPNam
          puls  pc,x
-L09BE    leay  ,x
-L09C0    cmpb  #$20
-         bhi   L09B9
-         andcc #^Carry
+L09B5    leay  ,x
+
+L09B7    cmpb  #DIR.FD-DIR.NM this IS correct, 33 was wrong!
+         bhi   L09B0
+         andcc  #^Carry
          puls  pc,x
-L09C8    pshs  y,x,b,a
-L09CA    lda   ,y+
-         bmi   L09DA
+
+L09BF    pshs  y,x,b,a
+L09C1    lda   ,y+
+         bmi   L09D1
          decb  
-         beq   L09D7
+         beq   L09CE
          eora  ,x+
          anda  #$DF
-         beq   L09CA
-L09D7    comb  
+         beq   L09C1
+L09CE    comb  
          puls  pc,y,x,b,a
-L09DA    decb  
-         bne   L09D7
+
+L09D1    decb  
+         bne   L09CE
          eora  ,x
          anda  #$5F
-         bne   L09D7
+         bne   L09CE
          clrb  
          puls  pc,y,x,b,a
-L09E6    tfr   a,b
-         anda  #$07
-         andb  #$C0
+
+*
+ChkAttrs tfr   a,b
+         anda  #(EXEC.!UPDAT.)
+         andb  #(DIR.!SHARE.)
          pshs  x,b,a
-         lbsr  L112C
-         bcs   L0A15
-         ldu   $08,y
-         ldx   <$0050
-         ldd   $08,x
-         beq   L09FE
-         cmpd  $01,u
-L09FE    puls  a
-         beq   L0A05
+         lbsr  RdFlDscr
+         bcs   L0A0C
+         ldu   PD.BUF,y
+         ldx   <D.Proc
+         ldd   P$User,x
+         beq   L09F5
+         cmpd  FD.OWN,u
+L09F5    puls  a
+         beq   L09FC
          lsla  
          lsla  
          lsla  
-L0A05    ora   ,s
-         anda  #$BF
+L09FC    ora   ,s
+         anda  #^SHARE.
          pshs  a
-         ora   #$80
-         anda  ,u
+         ora   #DIR.
+         anda  FD.ATT,u
          cmpa  ,s
-         beq   L0A1E
-         ldb   #$D6
-L0A15    leas  $02,s
+         beq   L0A15
+         ldb   #E$FNA
+L0A0C    leas  $02,s
          coma  
          puls  pc,x
-L0A1A    ldb   #$FD
-         bra   L0A15
-L0A1E    ldb   $01,s
-         orb   ,u
-         bitb  #$40
-         beq   L0A31
-         ldx   <$30,y
-         cmpx  $05,x
-         bne   L0A1A
-         lda   #$02
-         sta   $07,x
-L0A31    puls  pc,x,b,a
-L0A33    pshs  u,y,x
+
+L0A11    ldb   #E$Share,s
+         bra   L0A0C
+L0A15    ldb   1,s
+         orb   FD.ATT,u
+         bitb  #SHARE.
+         beq   L0A28
+         ldx   PD.Exten,y
+         cmpx  PE.Confl,x
+         bne   L0A11
+         lda   #FileLock
+         sta   PE.Lock,x
+L0A28    puls  pc,x,b,a
+
+
+L0A2A    pshs  u,y,x
+         IFNE  H6309
+         clrd             was clra, clrb  
+         ELSE
          clra  
          clrb  
-         std   $0B,y
-         std   $0D,y
-         sta   <$19,y
-         std   <$1A,y
-         ldb   <$34,y
-         ldx   <$35,y
+         ENDC
+         std   PD.CP,y
+         std   PD.CP+2,y
+         sta   PD.SSZ,y
+         std   PD.SSZ+1,y
+         ldb   PD.FD,y
+         ldx   PD.FD+1,y
          pshs  x,b
-         ldu   <$1E,y
-         ldy   <$30,y
-         sty   $05,y
-         leau  <$15,u
-         bra   L0A5A
-L0A58    ldu   $03,u
-L0A5A    ldx   $03,u
-         beq   L0A88
-         ldx   $01,x
-         ldd   <$34,x
+         ldu   PD.DTB,y
+         ldy   PD.Exten,y
+         sty   PE.Confl,y
+         leau  DD.SIZ,u
+         bra   L0A51
+L0A4F    ldu   V.FileHd-DD.SIZ,u
+L0A51    ldx   V.FileHd-DD.SIZ,u
+         beq   L0A7F
+         ldx   PE.PDptr,x
+         ldd   PD.FD,x
          cmpd  ,s
-         bcs   L0A58
-         bhi   L0A88
-         ldb   <$36,x
-         cmpb  $02,s
-         bcs   L0A58
-         bhi   L0A88
-         ldx   <$30,x
-         lda   $07,y
-         bita  #$02
-         bne   L0A94
-         sty   $03,y
-         ldd   $05,x
-         std   $05,y
-         sty   $05,x
-         bra   L0A8F
-L0A88    ldx   $03,u
-         stx   $03,y
-         sty   $03,u
-L0A8F    clrb  
-L0A90    leas  $03,s
+         bcs   L0A4F
+         bhi   L0A7F
+         ldb   PD.FD+2,x
+         cmpb  2,s
+         blo   L0A4F
+         bhi   L0A7F
+         ldx   PD.Exten,x
+         IFNE  H6309
+         tim   #FileLock,PE.Lock,y
+         ELSE
+         ldb   PE.Lock,y
+         bitb  #FileLock
+         ENDC
+         bne   L0A8B
+         sty   PE.NxFil,y
+         ldd   PE.Confl,x
+         std   PE.Confl,y
+         sty   PE.Confl,x
+         bra   L0A86
+
+L0A7F    ldx   PE.NxFil,u
+         stx   PE.NxFil,y
+         sty   PE.NxFil,u
+
+L0A86    clrb  
+L0A87    leas  $03,s
          puls  pc,u,y,x
-L0A94    comb  
-         ldb   #$FD
-         bra   L0A90
-L0A99    pshs  u,y,x,b,a
-         ldu   <$1E,y
-         leau  <$15,u
-         ldx   <$30,y
+
+L0A8B    comb  
+         ldb   #E$Share
+         bra   L0A87
+
+L0A90    pshs  u,y,x,b,a
+         ldu   PD.DTB,y
+         leau  DD.SIZ,u
+         ldx   PD.Exten,y
          leay  ,x
-         bsr   L0AD8
-         bra   L0AAE
-L0AAA    ldx   $05,x
-         beq   L0AD3
-L0AAE    cmpy  $05,x
-         bne   L0AAA
-         ldd   $05,y
-         std   $05,x
-         bra   L0ABB
-L0AB9    ldu   $03,u
-L0ABB    ldd   $03,u
-         beq   L0AD3
-         cmpy  $03,u
-         bne   L0AB9
-         ldx   $03,y
-         cmpy  $05,y
-         beq   L0AD1
-         ldx   $05,y
-         ldd   $03,y
-         std   $03,x
-L0AD1    stx   $03,u
-L0AD3    sty   $05,y
+         bsr   L0ACF
+         bra   L0AA5
+L0AA1    ldx   PE.Confl,x
+         beq   L0ACA
+L0AA5    cmpy  PE.Confl,x
+         bne   L0AA1
+         ldd   PE.Confl,y
+         std   PE.Confl,x
+         bra   L0AB2
+L0AB0    ldu   PE.NxFil,u
+L0AB2    ldd   PE.NxFil,u
+         beq   L0ACA
+         cmpy  PE.NxFil,u
+         bne   L0AB0
+         ldx   PE.NxFil,y
+         cmpy  PE.Confl,y
+         beq   L0AC8
+         ldx   PE.Confl,y
+         ldd   PE.NxFil,y
+         std   PE.NxFil,x
+L0AC8    stx   PE.NxFil,u
+L0ACA    sty   PE.Confl,y
          puls  pc,u,y,x,b,a
-L0AD8    lda   #$07
-L0ADA    pshs  u,y,x,b,a
-         bita  $07,y
-         beq   L0AE9
-         coma  
-         anda  $07,y
-         sta   $07,y
-         bita  #$02
-         bne   L0B06
-L0AE9    leau  ,y
-L0AEB    ldx   <$10,u
-         cmpy  <$10,u
-         beq   L0B03
-         stu   <$10,u
+
+L0ACF    lda   #(EofLock!FileLock!RcdLock)
+L0AD1    pshs  u,y,x,b,a
+         bita  PE.Lock,y
+         beq   L0AE0
+         coma             an AIM below doesn't update regs.a
+         anda  PE.Lock,y
+         sta   PE.Lock,y
+         bita  #FileLock
+         bne   L0AFD
+L0AE0    leau  ,y
+L0AE2    ldx   PE.Wait,u
+         cmpy  PE.Wait,u
+         beq   L0AFA
+         stu   PE.Wait,u
          leau  ,x
-         lda   <$14,u
-         ldb   #$01
-         os9   F$Send   
-         bra   L0AEB
-L0B03    stu   <$10,u
-L0B06    puls  pc,u,y,x,b,a
-L0B08    comb  
-         ldb   #$FD
-L0B0B    pshs  y,b,cc
-         ldy   <$30,y
-         bsr   L0AD8
+         lda   PE.Owner,u
+         ldb   #S$Wake
+         os9   F$Send
+         bra   L0AE2
+L0AFA    stu   PE.Wait,u
+L0AFD    puls  pc,u,y,x,b,a
+
+L0AFF    comb  
+         ldb   #E$Share
+L0B02    pshs  y,b,cc
+         ldy   PD.Exten,y
+         bsr   L0ACF
          puls  pc,y,b,cc
-L0B15    ldx   #$0000
-         bra   L0B24
-L0B1A    ldu   <$30,y
-         lda   <$15,u
-         sta   $07,u
-         puls  u,y,x,b,a
-L0B24    pshs  u,y,x,b,a
-         ldu   <$30,y
-         lda   $07,u
-         sta   <$15,u
+L0B0C    equ   *
+         IFNE  H6309
+         tfr   0,x
+         ELSE
+         ldx   #$0000
+         ENDC
+         bra   L0B1B
+
+L0B11    ldu   PD.Exten,y
+         lda   PE.Req,u
+         sta   PE.Lock,u
+         bra   L0B1D      was a puls all below
+L0B1B    pshs  u,y,x,b,a
+L0B1D    ldu   PD.Exten,y
+         lda   PE.Lock,u
+         sta   PE.Req,u
          lda   ,s
-         bsr   L0BA8
-         bcc   L0BA6
-         ldu   <$0050
-         lda   <$14,x
-L0B39    os9   F$GProcP 
-         bcs   L0B4B
-         lda   <$1E,y
-         beq   L0B4B
-         cmpa  ,u
-         bne   L0B39
-         ldb   #$FE
-         bra   L0BA3
-L0B4B    lda   <$14,x
-         sta   <$1E,u
-         ldy   $04,s
-         lda   $0A,y
-         anda  #$BF
-         sta   $0A,y
-         ldu   <$30,y
-         ldd   <$10,x
-         stu   <$10,x
-         std   <$10,u
-         lbsr  L0C5F
-         ldx   <$12,u
-         os9   F$Sleep  
+         bsr   L0B9F
+         bcc   L0B9D
+         ldu   <D.Proc
+         lda   PE.Owner,x
+L0B30    os9   F$GProcP
+         bcs   L0B42
+         lda   P$DeadLk,y
+         beq   L0B42
+         cmpa  P$ID,u     ,u
+         bne   L0B30
+         ldb   #E$DeadLk
+         bra   L0B9A
+
+L0B42    lda   PE.Owner,x
+         sta   P$DeadLk,u
+         ldy   4,s
+         IFNE  H6309
+         aim   #^BufBusy,PD.SMF,y
+         ELSE
+         lda   PD.SMF,y
+         anda  #^BufBusy
+         sta   PD.SMF,y
+         ENDC
+         ldu   PD.Exten,y
+         ldd   PE.Wait,x
+         stu   PE.Wait,x
+         std   PE.Wait,u
+         lbsr  L0C56
+         ldx   PE.TmOut,u
+         os9   F$Sleep
          pshs  x
          leax  ,u
-         bra   L0B78
-L0B75    ldx   <$10,x
-L0B78    cmpu  <$10,x
-         bne   L0B75
-         ldd   <$10,u
-         std   <$10,x
-         stu   <$10,u
+         bra   L0B6F
+L0B6C    ldx   PE.Wait,x
+L0B6F    cmpu  PE.Wait,x
+         bne   L0B6C
+         ldd   PE.Wait,u
+         std   PE.Wait,x
+         stu   PE.Wait,u
          puls  x
-         ldu   <$0050
-         clr   <$1E,u
-         lbsr  L105C
-         bcs   L0BA3
+         ldu   <D.Proc
+         clr   P$DeadLk,u
+         lbsr  L1053
+         bcs   L0B9A
          leax  ,x
-         bne   L0B1A
-         ldu   <$30,y
-         ldx   <$12,u
-         lbeq  L0B1A
-         ldb   #$FC
-L0BA3    coma  
+         bne   L0B11
+         ldu   PD.Exten,y
+         ldx   PE.TmOut,u
+         lbeq  L0B11
+         ldb   #E$Lock
+L0B9A    coma  
          stb   $01,s
-L0BA6    puls  pc,u,y,x,b,a
-L0BA8    std   -$02,s
-         bne   L0BB3
-         cmpx  #$0000
-         lbeq  L0B0B
-L0BB3    bsr   L0BCB
-         lbcs  L0B08
+L0B9D    puls  pc,u,y,x,b,a
+
+L0B9F    
+         IFNE  H6309
+         tstd             std -$02,s only to set cc.flags? 4 cycles to 1!
+         ELSE
+         cmpd  #$0000
+         ENDC
+         bne   L0BAA
+         cmpx  #$0000     the leax may be buggy
+         lbeq  L0B02
+L0BAA    bsr   L0BC2
+         lbcs  L0AFF
          pshs  u,y,x
-         ldy   <$30,y
+         ldy   PD.Exten,y
          lda   #$01
-         lbsr  L0ADA
-         ora   $07,y
-         sta   $07,y
+         lbsr  L0AD1
+         ora   PE.Lock,y
+         sta   PE.Lock,y
          clrb  
          puls  pc,u,y,x
-L0BCB    pshs  u,y,b,a
+
+L0BC2    pshs  u,y,b,a
          leau  ,y
-         ldy   <$30,y
+         ldy   PD.Exten,y
          subd  #$0001
-         bcc   L0BDA
-         leax  -$01,x
-L0BDA    addd  $0D,u
+         bcc   L0BD1
+         leax  -1,x
+L0BD1    addd  PD.CP+2,u
          exg   d,x
-         adcb  $0C,u
-         adca  $0B,u
-         bcc   L0BE9
+         IFNE  H6309
+         adcd  PD.CP,u    oughta do same - GH
+         ELSE
+         adcb  PD.CP+1,u
+         adca  PD.CP,u
+         ENDC
+         bcc   L0BE0
          ldx   #$FFFF
          tfr   x,d
-L0BE9    std   $0C,y
-         stx   $0E,y
-         cmpd  $0F,u
-         bcs   L0C01
-         bhi   L0BF9
-         cmpx  <$11,u
-         bcs   L0C01
-L0BF9    lda   $07,y
-         ora   #$04
-         sta   $07,y
-         bra   L0C0A
-L0C01    lda   #$04
-         bita  $07,y
-         beq   L0C0A
-         lbsr  L0ADA
-L0C0A    ldd   $0B,u
-         ldx   $0D,u
-         std   $08,y
-         stx   $0A,y
-         lda   $05,u
-         sta   <$14,y
+L0BE0    std   PE.HiLck,y
+         stx   PE.HiLck+2,y
+         cmpd  PD.SIZ,u
+         bcs   L0BF8
+         bhi   L0BF0
+         cmpx  PD.SIZ+2,u
+         bcs   L0BF8
+L0BF0    equ   *
+         IFNE  H6309
+         oim   #EofLock,PE.Lock,y
+         ELSE
+         lda   PE.Lock,y
+         ora   #EofLock
+         sta   PE.Lock,y
+         ENDC
+         bra   L0C01
+L0BF8    lda   #EofLock
+         bita  PE.Lock,y
+         beq   L0C01
+         lbsr  L0AD1
+L0C01    equ   *
+         IFNE  H6309
+         ldq   PD.CP,u
+         stq   PE.LoLck,y
+         ELSE
+         ldd   PD.CP,u
+         std   PE.LoLck,y
+         ldd   PD.CP+2,u
+         std   PE.LoLck+2,y
+         ENDC
+         lda   PD.CPR,u
+         sta   PE.Owner,y
          leax  ,y
-L0C19    cmpy  $05,x
-         beq   L0C5D
-         ldx   $05,x
-         ldb   <$14,y
-         cmpb  <$14,x
-         beq   L0C19
-         lda   $07,x
-         beq   L0C19
-         ora   $07,y
-         bita  #$02
-         bne   L0C5C
-         lda   $07,x
-         anda  $07,y
-         bita  #$04
-         bne   L0C5C
-         ldd   $08,x
-         cmpd  $0C,y
-         bhi   L0C19
-         bcs   L0C4C
-         ldd   $0A,x
-         cmpd  $0E,y
-         bhi   L0C19
-         beq   L0C5C
-L0C4C    ldd   $0C,x
-         cmpd  $08,y
-         bcs   L0C19
-         bhi   L0C5C
-         ldd   $0E,x
-         cmpd  $0A,y
-         bcs   L0C19
-L0C5C    comb  
-L0C5D    puls  pc,u,y,b,a
-L0C5F    pshs  y,x,b,a
-         ldx   <$0050
-         lda   <$10,x
-         beq   L0C75
-         clr   <$10,x
-         ldb   #$01
-         os9   F$Send   
-         os9   F$GProcP 
-         clr   $0F,y
-L0C75    clrb  
+L0C10    cmpy  PE.Confl,x
+         beq   L0C54
+         ldx   PE.Confl,x
+         ldb   PE.Owner,y
+         cmpb  PE.Owner,x
+         beq   L0C10
+         lda   PE.Lock,x
+         beq   L0C10
+         ora   PE.Lock,y
+         bita  #FileLock
+         bne   L0C53
+         lda   PE.Lock,x
+         anda  PE.Lock,y
+         bita  #EofLock
+         bne   L0C53
+         ldd   PE.LoLck,x
+         cmpd  PE.HiLck,y
+         bhi   L0C10
+         bcs   L0C43
+         ldd   PE.LoLck+2,x
+         cmpd  PE.HiLck+2,y
+         bhi   L0C10
+         beq   L0C53
+L0C43    ldd   PE.HiLck,x
+         cmpd  PE.LoLck,y
+         bcs   L0C10
+         bhi   L0C53
+         ldd   PE.HiLck+2,x
+         cmpd  PE.LoLck+2,y
+         bcs   L0C10
+L0C53    comb  
+L0C54    puls  pc,u,y,b,a
+L0C56    pshs  y,x,b,a
+         ldx   <D.Proc
+         lda   P$IOQN,x
+         beq   L0C6C
+         clr   P$IOQN,x
+         ldb   #S$Wake
+         os9   F$Send
+         os9   F$GProcP
+         clr   P$IOQP,y
+L0C6C    clrb  
          puls  pc,y,x,b,a
-L0C78    pshs  u,x
-L0C7A    bsr   L0CDA
-         bne   L0C8A
-         cmpx  <$1A,y
-         bcs   L0CD1
-         bne   L0C8A
-         lda   <$12,y
-         beq   L0CD1
-L0C8A    lbsr  L112C
-         bcs   L0CCE
-         ldx   $0B,y
-         ldu   $0D,y
+
+L0C6F    pshs  u,x
+L0C71    bsr   L0CD1
+         bne   L0C81
+         cmpx  PD.SSZ+1,y
+         bcs   L0CC8
+         bne   L0C81
+         lda   PD.SIZ+3,y
+         beq   L0CC8
+L0C81    lbsr  RdFlDscr
+         bcs   L0CC5
+         ldx   PD.CP,y
+         ldu   PD.CP+2,y
          pshs  u,x
-         ldd   $0F,y
-         std   $0B,y
-         ldd   <$11,y
-         std   $0D,y
-         lbsr  L10BB
+         IFNE  H6309
+         ldq   PD.SIZ,y   these were ldd's too
+         stq   PD.CP,y
+         ELSE
+         ldd   PD.SIZ,y
+         std   PD.CP,y
+         ldd   PD.SIZ+2,y
+         std   PD.CP+2,y
+         ENDC
+         lbsr  L10B2
          puls  u,x
-         stx   $0B,y
-         stu   $0D,y
-         bcc   L0CD1
-         cmpb  #$D5
-         bne   L0CCE
-         bsr   L0CDA
-         bne   L0CBA
-         tst   <$12,y
-         beq   L0CBD
-         leax  $01,x
-         bne   L0CBD
-L0CBA    ldx   #$FFFF
-L0CBD    tfr   x,d
+         stx   PD.CP,y
+         stu   PD.CP+2,y
+         bcc   L0CC8
+         cmpb  #E$NES
+         bne   L0CC5
+         bsr   L0CD1
+         bne   L0CB1
+         tst   PD.SIZ+3,y
+         beq   L0CB4
+         leax  1,x
+         bne   L0CB4
+L0CB1    ldx   #$FFFF
+L0CB4    tfr   x,d
          tsta  
-         bne   L0CCA
-         cmpb  <$2E,y
-         bcc   L0CCA
-         ldb   <$2E,y
-L0CCA    bsr   L0D10
-         bcc   L0C7A
-L0CCE    coma  
+         bne   L0CC1
+         cmpb  PD.SAS,y
+         bcc   L0CC1
+         ldb   PD.SAS,y
+L0CC1    bsr   L0D07
+         bcc   L0C71
+L0CC5    coma  
          puls  pc,u,x
-L0CD1    lbsr  L10A1
-         bcs   L0CCE
-         bsr   L0CE8
+
+L0CC8    lbsr  L1098
+         bcs   L0CC5
+         bsr   L0CDF
          puls  pc,u,x
-L0CDA    ldd   <$10,y
-         subd  <$14,y
+L0CD1    ldd   PD.SIZ+1,y
+         subd  PD.SBL+1,y
          tfr   d,x
-         ldb   $0F,y
-         sbcb  <$13,y
+         ldb   PD.SIZ,y
+         sbcb  PD.SBL,y
          rts   
-L0CE8    clra  
+
+L0CDF    clra  
          ldb   #$02
          pshs  u,x
-         ldu   <$30,y
-         bra   L0D06
-L0CF2    ldu   $01,u
-         ldx   $0F,y
-         stx   $0F,u
-         ldx   <$11,y
-         stx   <$11,u
-         bitb  $01,y
-         beq   L0D03
+         ldu   PD.Exten,y
+         bra   L0CFD
+
+L0CE9    ldu   PE.PDptr,u
+         ldx   PD.SIZ,y
+         stx   PD.SIZ,u
+         ldx   PD.SIZ+2,y
+         stx   PD.SIZ+2,u
+         bitb  PD.MOD,y
+         beq   L0CFA
          inca  
-L0D03    ldu   <$30,u
-L0D06    ldu   $05,u
-         cmpy  $01,u
-         bne   L0CF2
+L0CFA    ldu   PD.Exten,u
+L0CFD    ldu   PE.Confl,u
+         cmpy  PE.PDptr,u
+         bne   L0CE9
          tsta  
          puls  pc,u,x
-L0D10    pshs  u,x
-         lbsr  L0DBE
-         bcs   L0D57
-         lbsr  L112C
-         bcs   L0D57
-         ldu   $08,y
+
+L0D07    pshs  u,x
+         lbsr  FatScan
+         bcs   L0D4E
+         lbsr  RdFlDscr
+         bcs   L0D4E
+         ldu   PD.BUF,y
+         IFNE  H6309
+         clrd  
+         tfr   d,w
+         stq   FD.SIZ,u
+         ELSE
          clra  
          clrb  
-         std   $09,u
-         std   $0B,u
-         leax  <$10,u
-         ldd   $03,x
-         beq   L0D9F
-         ldd   $08,y
+         std   FD.SIZ,u
+         std   FD.SIZ+2,u
+         ENDC
+         leax  FD.SEG,u
+         ldd   FDSL.B,x
+         beq   L0D96
+         ldd   PD.BUF,y
          inca  
-         pshs  b,a
-         bra   L0D3F
-L0D32    clrb  
+         pshs  d
+         bra   L0D36
+L0D29    clrb  
          ldd   -$02,x
-         beq   L0D53
-         addd  $0A,u
-         std   $0A,u
-         bcc   L0D3F
-         inc   $09,u
-L0D3F    leax  $05,x
+         beq   L0D4A
+         addd  FD.SIZ+1,u
+         std   FD.SIZ+1,u
+         bcc   L0D36
+         inc   FD.SIZ,u
+L0D36    leax  FDSL.S,x
          cmpx  ,s
-         bcs   L0D32
-         lbsr  L0FD5
+         bcs   L0D29
+         lbsr  ClrFBits
+         IFNE  H6309
+         clrd  
+         ELSE
          clra  
          clrb  
-         sta   <$19,y
-         std   <$1A,y
+         ENDC
+         sta   PD.SSZ,y
+         std   PD.SSZ+1,y
          comb  
-         ldb   #$D9
-L0D53    leas  $02,s
-         leax  -$05,x
-L0D57    bcs   L0DBC
-         ldd   -$04,x
-         addd  -$02,x
+         ldb   #E$SLF
+L0D4A    leas  2,s
+         leax  -FDSL.S,x
+L0D4E    bcs   L0DB3
+         ldd   -4,x
+         addd  -2,x
          pshs  b,a
-         ldb   -$05,x
+         ldb   -5,x
          adcb  #$00
-         cmpb  <$16,y
-         puls  b,a
-         bne   L0D9F
-         cmpd  <$17,y
-         bne   L0D9F
-         ldu   <$1E,y
-         ldd   $06,u
-         ldu   $08,y
-         subd  #$0001
+         cmpb  PD.SBP,y
+         puls  d
+         bne   L0D96
+         cmpd  PD.SBP+1,y
+         bne   L0D96
+         ldu   PD.DTB,y
+         ldd   DD.BIT,u
+         ldu   PD.BUF,y
+         subd  #1
          coma  
-         comb  
-         pshs  b,a
+         comb             comd is prolly wrong reg order!
+         pshs  d
          ldd   -$05,x
-         eora  <$16,y
-         eorb  <$17,y
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-         lsra  
-         rorb  
+         IFNE  H6309
+         eord  PD.SBP,y
+         lsrd  
+         lsrd  
+         lsrd  
+         andd  ,s++
+         tstd  
+         ELSE
+         eora  PD.SBP,y
+         eorb  PD.SBP+1,y
+         lsra
+         rorb
+         lsra
+         rorb
+         lsra
+         rorb
          anda  ,s+
          andb  ,s+
-         std   -$02,s
-         bne   L0D9F
-         ldd   -$02,x
-         addd  <$1A,y
-         bcs   L0D9F
-         std   -$02,x
-         bra   L0DAE
-L0D9F    ldd   <$16,y
+         cmpd  #$0000
+         ENDC
+         bne   L0D96
+         ldd   -2,x
+         addd  PD.SSZ+1,y
+         bcs   L0D96
+         std   -2,x
+         bra   L0DA5
+L0D96    ldd   PD.SBP,y
          std   ,x
-         lda   <$18,y
-         sta   $02,x
-         ldd   <$1A,y
-         std   $03,x
-L0DAE    ldd   $0A,u
-         addd  <$1A,y
-         std   $0A,u
-         bcc   L0DB9
-         inc   $09,u
-L0DB9    lbsr  L1206
-L0DBC    puls  pc,u,x
-L0DBE    pshs  u,y,x,b,a
+         lda   PD.SBP+2,y
+         sta   2,x
+         ldd   PD.SSZ+1,y
+         std   3,x
+L0DA5    ldd   FD.SIZ+1,u
+         addd  PD.SSZ+1,y
+         std   FD.SIZ+1,u
+         bcc   L0DB0
+         inc   FD.SIZ,u
+L0DB0    lbsr  L11FD
+L0DB3    puls  pc,u,x
+
+
+FatScan  pshs  u,y,x,b,a
          ldb   #$0C
-L0DC2    clr   ,-s
+L0DB9    clr   ,-s
          decb  
-         bne   L0DC2
-         ldx   <$1E,y
-         ldd   $04,x
-         std   $04,s
-         ldd   $06,x
-         std   $02,s
-         std   $0A,s
-         ldx   $03,y
-         ldx   $04,x
-         leax  <$12,x
-         subd  #$0001
-         addb  $0E,x
-         adca  #$00
-         bra   L0DE6
-L0DE4    lsra  
-         rorb  
-L0DE6    lsr   $0A,s
+         bne   L0DB9
+         ldx   PD.DTB,y
+         ldd   DD.MAP,x
+         std   4,s
+         ldd   DD.BIT,x
+         std   2,s
+         std   10,s
+         ldx   PD.DEV,y
+         ldx   V$DESC,x
+         leax  M$DTyp,x
+         subd  #1
+         addb  IT.SAS-M$DTyp,x
+         adca  #0
+         bra   L0DDD
+L0DDB    
+         IFNE  H6309
+         lsrd  
+         ELSE
+         lsra
+         rorb
+         ENDC
+L0DDD    lsr   $0A,s
          ror   $0B,s
-         bcc   L0DE4
+         bcc   L0DDB
          std   ,s
-         ldd   $02,s
+         ldd   2,s
          std   $0A,s
          subd  #$0001
          addd  $0C,s
-         bcc   L0E00
+         bcc   L0DF7
          ldd   #$FFFF
-         bra   L0E00
-L0DFE    lsra  
-         rorb  
-L0E00    lsr   $0A,s
+         bra   L0DF7
+L0DF5    
+         IFNE  H6309
+         lsrd  
+         ELSE
+         lsra
+         rorb
+         ENDC
+L0DF7    lsr   $0A,s
          ror   $0B,s
-         bcc   L0DFE
-         cmpa  #$08
-         bcs   L0E0D
+         bcc   L0DF5
+         cmpa  #8
+         bcs   L0E04
          ldd   #$0800
-L0E0D    std   $0C,s
-         lbsr  L103F
-         lbcs  L0EFB
-         ldx   <$1E,y
-         ldd   <$1A,x
-         cmpd  $0E,x
-         bne   L0E2F
-         lda   <$1C,x
-         cmpa  $04,x
-         bne   L0E2F
-         ldb   <$1D,x
-         cmpb  $04,x
-         bcs   L0E3D
-L0E2F    ldd   $0E,x
-         std   <$1A,x
-         lda   $04,x
-         sta   <$1C,x
+L0E04    std   $0C,s
+         lbsr  L1036
+         lbcs  L0EF2
+         ldx   PD.DTB,y
+         ldd   V.DiskID,x
+         cmpd  DD.DSK,x
+         bne   L0E26
+         lda   V.BMapSz,x
+         cmpa  DD.MAP,x
+         bne   L0E26
+         ldb   V.MapSct,x
+         cmpb  DD.MAP,x
+         bcs   L0E34
+L0E26    ldd   DD.DSK,x
+         std   V.DiskID,x
+         lda   DD.MAP,x
+         sta   V.BMapSz,x
          clrb  
-         stb   <$1D,x
-L0E3D    incb  
-         stb   $06,s
-         ldx   <$1E,y
-         cmpb  <$1E,x
-         beq   L0E79
-         lbsr  L109A
-         lbcs  L0EFB
-         ldb   $06,s
-         cmpb  $04,s
-         bls   L0E5A
+         stb   V.MapSct,x
+L0E34    incb  
+         stb   6,s
+         ldx   PD.DTB,y
+         cmpb  V.ResBit,x
+         beq   L0E70
+         lbsr  L1091
+         lbcs  L0EF2
+         ldb   6,s
+         cmpb  4,s
+         bls   L0E51
          clra  
-         ldb   $05,s
-         bra   L0E5D
-L0E5A    ldd   #$0100
-L0E5D    ldx   $08,y
+         ldb   5,s
+         bra   L0E54
+L0E51    ldd   #$0100
+L0E54    ldx   PD.BUF,y
          leau  d,x
          ldy   $0C,s
+         IFNE  H6309
+         clrd  
+         ELSE
          clra  
          clrb  
-         os9   F$SchBit 
-         bcc   L0EA6
-         cmpy  $08,s
-         bls   L0E79
-         sty   $08,s
+         ENDC
+         os9   F$SchBit
+         bcc   L0E9D
+         cmpy  8,s
+         bls   L0E70
+         sty   8,s
          std   $0A,s
-         lda   $06,s
-         sta   $07,s
-L0E79    ldy   <$10,s
-         ldb   $06,s
-         cmpb  $04,s
-         bcs   L0E8A
-         bhi   L0E89
-         tst   $05,s
-         bne   L0E8A
-L0E89    clrb  
-L0E8A    ldx   <$1E,y
-         cmpb  <$1D,x
-         bne   L0E3D
-         ldb   $07,s
-         beq   L0EF9
-         cmpb  $06,s
-         beq   L0E9F
-         stb   $06,s
-         lbsr  L109A
-L0E9F    ldx   $08,y
+         lda   6,s
+         sta   7,s
+L0E70    ldy   <$10,s
+         ldb   6,s
+         cmpb  4,s
+         bcs   L0E81
+         bhi   L0E80
+         tst   5,s
+         bne   L0E81
+L0E80    clrb  
+L0E81    ldx   PD.DTB,y
+         cmpb  V.MapSct,x
+         bne   L0E34
+         ldb   7,s
+         beq   L0EF0
+         cmpb  6,s
+         beq   L0E96
+         stb   6,s
+         lbsr  L1091
+L0E96    ldx   PD.BUF,y
          ldd   $0A,s
-         ldy   $08,s
-L0EA6    std   $0A,s
-         sty   $08,s
-         os9   F$AllBit 
-         ldy   <$10,s
+         ldy   8,s
+L0E9D    std   $0A,s
+         sty   8,s
+         os9   F$AllBit
+         ldy   $10,s
          ldb   $06,s
-         lbsr  L1072
-         bcs   L0EFB
-         ldx   <$1E,y
-         lda   $06,s
+         lbsr  L1069
+         bcs   L0EF2
+         ldx   PD.DTB,y
+         lda   6,s
          deca  
-         sta   <$1D,x
+         sta   V.MapSct,x
          clrb  
-         lsla  
-         rolb  
-         lsla  
-         rolb  
-         lsla  
-         rolb  
-         stb   <$16,y
+         lsla             lsb a forced 0,msb->carry
+         rolb             but carry out of a to lsb
+         lsla             now 2 lsb of a=%00
+         rolb             and top 2 bits of a now in b
+         lsla             3 cleared bits
+         rolb             and 3 roll-ins
+         stb   PD.SBP,y   <$16,y
          ora   $0A,s
          ldb   $0B,s
-         ldx   $08,s
-         ldy   <$10,s
-         std   <$17,y
-         stx   <$1A,y
-         ldd   $02,s
-         bra   L0EEF
-L0EE0    lsl   <$18,y
-         rol   <$17,y
-         rol   <$16,y
-         lsl   <$1B,y
-         rol   <$1A,y
-L0EEF    lsra  
-         rorb  
-         bcc   L0EE0
+         ldx   8,s
+         ldy   $10,s
+         std   PD.SBP+1,y
+         stx   PD.SSZ+1,y
+         ldd   2,s
+         bra   L0EE6
+L0ED7    lsl   PD.SBP+2,y
+         rol   PD.SBP+1,y
+         rol   PD.SBP,y
+         lsl   PD.SSZ+2,y
+         rol   PD.SSZ+1,y
+L0EE6   
+         IFNE  H6309
+         lsrd  
+         ELSE
+         lsra
+         rorb
+         ENDC
+         bcc   L0ED7
          clrb  
-         ldd   <$1A,y
-         bra   L0F03
-L0EF9    ldb   #$F8
-L0EFB    ldy   <$10,s
-         lbsr  L1079
+         ldd   PD.SSZ+1,y
+         bra   L0EFA
+L0EF0    ldb   #E$Full
+L0EF2    ldy   $10,s
+         lbsr  L1070
          coma  
-L0F03    leas  $0E,s
+L0EFA    leas  $0E,s
          puls  pc,u,y,x
-L0F07    clra  
-         lda   $01,y
-         bita  #$80
-         bne   L0F78
-         ldd   $0F,y
-         std   $0B,y
-         ldd   <$11,y
-         std   $0D,y
+L0EFE    clra  
+         lda   PD.MOD,y
+         bita  #DIR.      #$80
+         bne   L0F6F
+         IFNE  H6309
+         ldq   PD.SIZ,y
+         stq   PD.CP,y
+         ELSE
+         ldd   PD.SIZ,y
+         std   PD.CP,y
+         ldd   PD.SIZ+2,y
+         std   PD.CP+2,y
+         ENDC
          ldd   #$FFFF
          tfr   d,x
-         lbsr  L0B24
-         bcs   L0F77
-         lbsr  L0CE8
-         bne   L0F78
-         lbsr  L10BB
-         bcc   L0F2F
-         cmpb  #$D5
-         bra   L0F70
-L0F2F    ldd   <$14,y
-         subd  $0C,y
-         addd  <$1A,y
-         tst   $0E,y
-         beq   L0F3E
+         lbsr  L0B1B
+         bcs   L0F6E
+         lbsr  L0CDF
+         bne   L0F6F
+         lbsr  L10B2
+         bcc   L0F26
+         cmpb  #E$NES
+         bra   L0F67
+L0F26    ldd   PD.SBL+1,y
+         subd  PD.CP+1,y
+         addd  PD.SSZ+1,y
+         tst   PD.CP+3,y
+         beq   L0F35
+         IFNE  H6309
+         decd             ok here, carry NOT used below
+         ELSE
          subd  #$0001
-L0F3E    pshs  b,a
-         ldu   <$1E,y
-         ldd   $06,u
+         ENDC
+L0F35    pshs  d
+         ldu   PD.DTB,y
+         ldd   DD.BIT,u
+         IFNE  H6309
+         decd  
+         comd  
+         andd  ,s++
+         ELSE
          subd  #$0001
-         coma  
-         comb  
+         coma
+         comb
          anda  ,s+
          andb  ,s+
-         ldu   <$1A,y
-         std   <$1A,y
-         beq   L0F72
+         ENDC
+         ldu   PD.SSZ+1,y
+         std   PD.SSZ+1,y
+         beq   L0F69
          tfr   u,d
-         subd  <$1A,y
+         subd  PD.SSZ+1,y
          pshs  x,b,a
-         addd  <$17,y
-         std   <$17,y
-         bcc   L0F68
-         inc   <$16,y
-L0F68    bsr   L0FD5
+         addd  PD.SBP+1,y
+         std   PD.SBP+1,y
+         bcc   L0F5F
+         inc   PD.SBP,y
+L0F5F    bsr   ClrFBits
+         bcc   L0F70
+         leas  4,s
+         cmpb  #E$IBA
+L0F67    bne   L0F6E
+L0F69    lbsr  RdFlDscr
          bcc   L0F79
-         leas  $04,s
-         cmpb  #$DB
-L0F70    bne   L0F77
-L0F72    lbsr  L112C
-         bcc   L0F82
-L0F77    coma  
-L0F78    rts   
-L0F79    lbsr  L112C
-         bcs   L0FD2
+L0F6E    coma  
+L0F6F    rts   
+
+L0F70    lbsr  RdFlDscr
+         bcs   L0FC9
          puls  x,b,a
-         std   $03,x
-L0F82    ldu   $08,y
-         ldd   <$11,y
-         std   $0B,u
-         ldd   $0F,y
-         std   $09,u
-         tfr   x,d
+         std   FDSL.B,x
+L0F79    ldu   PD.BUF,y
+         IFNE  H6309
+         ldq   PD.SIZ,y   $0F,y
+         stq   FD.SIZ,u   $09,u
+         ELSE
+         ldd   PD.SIZ,y   $0F,y
+         std   FD.SIZ,u   $09,u
+         ldd   PD.SIZ+2,y   $11,y
+         std   FD.SIZ+2,u   $0B,u
+         ENDC
+         tfr   x,d        fixes d
          clrb  
          inca  
-         leax  $05,x
+         leax  FDSL.S,x
          pshs  x,b,a
-         bra   L0FBD
-L0F97    ldd   -$02,x
-         beq   L0FCA
-         std   <$1A,y
-         ldd   -$05,x
-         std   <$16,y
-         lda   -$03,x
-         sta   <$18,y
-         bsr   L0FD5
-         bcs   L0FD2
-         stx   $02,s
-         lbsr  L112C
-         bcs   L0FD2
-         ldx   $02,s
+         bra   L0FB4
+L0F8E    ldd   -2,x
+         beq   L0FC1
+         std   PD.SSZ+1,y
+         ldd   -FDSL.S,x
+         std   PD.SBP,y
+         lda   -FDSL.B,x
+         sta   PD.SBP+2,y
+         bsr   ClrFBits
+         bcs   L0FC9
+         stx   2,s
+         lbsr  RdFlDscr
+         bcs   L0FC9
+         ldx   2,s
+         IFNE  H6309
+         clrd  
+         ELSE
          clra  
          clrb  
-         std   -$05,x
+         ENDC
+         std   -$05,x     is this "-FDSL.?" stuffs
          sta   -$03,x
          std   -$02,x
-L0FBD    lbsr  L1206
-         bcs   L0FD2
-         ldx   $02,s
-         leax  $05,x
+L0FB4    lbsr  L11FD
+         bcs   L0FC9
+         ldx   2,s
+         leax  FDSL.S,x
          cmpx  ,s
-         bcs   L0F97
-L0FCA    clra  
-         clrb  
-         sta   <$19,y
-         std   <$1A,y
-L0FD2    leas  $04,s
-         rts   
-L0FD5    pshs  u,y,x,a
-         ldx   <$1E,y
-         ldd   $06,x
-         subd  #$0001
-         addd  <$17,y
-         std   <$17,y
-         ldd   $06,x
-         bcc   L0FFD
-         inc   <$16,y
-         bra   L0FFD
-L0FEE    lsr   <$16,y
-         ror   <$17,y
-         ror   <$18,y
-         lsr   <$1A,y
-         ror   <$1B,y
-L0FFD    lsra  
-         rorb  
-         bcc   L0FEE
-         clrb  
-         ldd   <$1A,y
-         beq   L103D
-         ldd   <$16,y
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-         tfr   b,a
-         ldb   #$DB
-         cmpa  $04,x
-         bhi   L103C
-         inca  
-         sta   ,s
-L101B    bsr   L103F
-         bcs   L101B
-         ldb   ,s
-         bsr   L109A
-         bcs   L103C
-         ldx   $08,y
-         ldd   <$17,y
-         anda  #$07
-         ldy   <$1A,y
-         os9   F$DelBit 
-         ldy   $03,s
-         ldb   ,s
-         bsr   L1072
-         bcc   L103D
-L103C    coma  
-L103D    puls  pc,u,y,x,a
-L103F    lbsr  L1240
-         bra   L104C
-L1044    lbsr  L0C5F
-         os9   F$IOQu   
-         bsr   L105C
-L104C    bcs   L105B
-         ldx   <$1E,y
-         lda   <$17,x
-         bne   L1044
-         lda   $05,y
-         sta   <$17,x
-L105B    rts   
-L105C    ldu   <$0050
-         ldb   <$19,u
-         cmpb  #$01
-         bls   L1069
-         cmpb  #$03
-         bls   L1070
-L1069    clra  
-         lda   $0C,u
-         bita  #$02
-         beq   L1071
-L1070    coma  
-L1071    rts   
-L1072    clra  
-         tfr   d,x
-         clrb  
-         lbsr  L1210
-L1079    pshs  cc
-         ldx   <$1E,y
-         lda   $05,y
-         cmpa  <$17,x
-         bne   L1098
-         clr   <$17,x
-         ldx   <$0050
-         lda   <$10,x
-         beq   L1098
-         lbsr  L0C5F
-         ldx   #$0001
-         os9   F$Sleep  
-L1098    puls  pc,cc
-L109A    clra  
-         tfr   d,x
-         clrb  
-         lbra  L1143
-L10A1    ldd   $0C,y
-         subd  <$14,y
-         tfr   d,x
-         ldb   $0B,y
-         sbcb  <$13,y
-         cmpb  <$19,y
-         bcs   L10B9
-         bhi   L10BB
-         cmpx  <$1A,y
-         bcc   L10BB
-L10B9    clrb  
-L10BA    rts   
-L10BB    pshs  u
-         bsr   L112C
-         bcs   L1117
+         bcs   L0F8E
+L0FC1
+         IFNE  H6309
+         clrd  
+         ELSE
          clra  
          clrb  
-         std   <$13,y
-         stb   <$15,y
-         ldu   $08,y
-         leax  <$10,u
-         lda   $08,y
+         ENDC
+         sta   PD.SSZ,y
+         std   PD.SSZ+1,y
+L0FC9    leas  4,s
+         rts   
+
+ClrFBits pshs  u,y,x,a
+         ldx   PD.DTB,y
+         ldd   DD.BIT,x
+         IFNE  H6309
+         decd  
+         ELSE
+         subd  #$0001
+         ENDC
+         addd  PD.SBP+1,y
+         std   PD.SBP+1,y
+         ldd   DD.BIT,x
+         bcc   L0FF4
+         inc   PD.SBP,y
+         bra   L0FF4
+L0FE5    lsr   PD.SBP,y
+         ror   PD.SBP+1,y
+         ror   PD.SBP+2,y
+         lsr   PD.SSZ+1,y
+         ror   PD.SSZ+2,y
+L0FF4    
+         IFNE  H6309
+         lsrd  
+         ELSE
+         lsra
+         rorb
+         ENDC
+         bcc   L0FE5
+         clrb  
+         ldd   PD.SSZ+1,y
+         beq   L1034
+         ldd   PD.SBP,y
+         IFNE  H6309
+         lsrd  
+         lsrd  
+         lsrd  
+         ELSE
+         lsra
+         rorb
+         lsra
+         rorb
+         lsra
+         rorb
+         ENDC
+         tfr   b,a
+         ldb   #E$IBA
+         cmpa  DD.MAP,x
+         bhi   L1033
+         inca  
+         sta   ,s
+L1012    bsr   L1036
+         bcs   L1012
+         ldb   ,s
+         bsr   L1091
+         bcs   L1033
+         ldx   PD.BUF,y
+         ldd   PD.SBP+1,y
+         anda  #$07
+         ldy   PD.SSZ+1,y
+         os9   F$DelBit
+         ldy   3,s
+         ldb   ,s
+         bsr   L1069
+         bcc   L1034
+L1033    coma  
+L1034    puls  pc,u,y,x,a
+L1036    lbsr  L1237
+         bra   L1043
+
+L103B    lbsr  L0C56
+         os9   F$IOQu
+         bsr   L1053
+L1043    bcs   L1052
+         ldx   PD.DTB,y
+         lda   V.BMB,x
+         bne   L103B
+         lda   PD.CPR,y
+         sta   V.BMB,x
+L1052    rts   
+
+
+L1053    ldu   <D.Proc
+         ldb   P$Signal,u
+         cmpb  #S$Wake
+         bls   L1060
+         cmpb  #S$Intrpt
+         bls   L1067
+L1060    clra  
+         IFNE  H6309
+         tim   #Condem,P$State,u
+         ELSE
+         lda   P$State,u
+         bita  #Condem         
+         ENDC
+         beq   L1068
+L1067    coma  
+L1068    rts   
+
+* write FAT sector
+* Entry B=logical sector #
+L1069    clra  
+         tfr   d,x
+         clrb  
+         lbsr  L1207
+L1070    pshs  cc
+         ldx   PD.DTB,y
+         lda   PD.CPR,y
+         cmpa  V.BMB,x
+         bne   L108F
+         clr   V.BMB,x
+         ldx   <D.Proc
+         lda   P$IOQN,x
+         beq   L108F
+         lbsr  L0C56
+         ldx   #1
+         os9   F$Sleep
+L108F    puls  pc,cc
+
+* Read a FAT sector
+* Entry B=logical sector #
+L1091    clra  
+         tfr   d,x
+         clrb  
+         lbra  L113A
+* Y=Path descriptor ptr
+L1098    ldd   PD.CP+1,y
+         subd  PD.SBL+1,y
+         tfr   d,x
+         ldb   PD.CP,y
+         sbcb  PD.SBL,y
+         cmpb  PD.SSZ,y
+         bcs   L10B0
+         bhi   L10B2
+         cmpx  PD.SSZ+1,y
+         bcc   L10B2
+L10B0    clrb  
+L10B1    rts   
+
+
+
+
+L10B2    pshs  u
+         bsr   RdFlDscr
+         bcs   L110E
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra  
+         clrb  
+         ENDC
+         std   PD.SBL,y
+         stb   PD.SBL+2,y
+         ldu   PD.BUF,y
+         leax  FD.SEG,u
+         lda   PD.BUF,y
          ldb   #$FC
          pshs  b,a
-L10D4    ldd   $03,x
-         beq   L10F9
-         addd  <$14,y
+
+L10CB    ldd   FDSL.B,x
+         beq   L10F0
+         addd  PD.SBL+1,y
          tfr   d,u
-         ldb   <$13,y
-         adcb  #$00
-         cmpb  $0B,y
-         bhi   L1106
-         bne   L10ED
-         cmpu  $0C,y
-         bhi   L1106
-L10ED    stb   <$13,y
-         stu   <$14,y
-         leax  $05,x
+         ldb   PD.SBL,y
+         adcb  #0
+         cmpb  PD.CP,y
+         bhi   L10FD
+         bne   L10E4
+         cmpu  PD.CP+1,y
+         bhi   L10FD
+L10E4    stb   PD.SBL,y
+         stu   PD.SBL+1,y
+         leax  FDSL.S,x
          cmpx  ,s
-         bcs   L10D4
-L10F9    clra  
+         bcs   L10CB
+
+L10F0    
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra  
          clrb  
-         sta   <$19,y
-         std   <$1A,y
+         ENDC
+         sta   PD.SSZ,y
+         std   PD.SSZ+1,y
          comb  
-         ldb   #$D5
-         bra   L1115
-L1106    ldd   ,x
-         std   <$16,y
-         lda   $02,x
-         sta   <$18,y
-         ldd   $03,x
-         std   <$1A,y
-L1115    leas  $02,s
-L1117    puls  pc,u
-L1119    pshs  x,b
-         lbsr  L1240
-         bcs   L1128
+         ldb   #E$NES
+         bra   L110C
+
+L10FD    ldd   FDSL.A,x
+         std   PD.SBP,y
+         lda   FDSL.A+2,x
+         sta   PD.SBP+2,y
+         ldd   FDSL.B,x
+         std   PD.SSZ+1,y
+L110C    leas  2,s
+L110E    puls  pc,u
+
+* Read LSN0 from disk
+* Y=Path descr ptr
+L1110    pshs  x,b
+         lbsr  L1237
+         bcs   L111F
          clrb  
          ldx   #$0000
-         bsr   L1143
-         bcc   L112A
-L1128    stb   ,s
-L112A    puls  pc,x,b
-L112C    ldb   $0A,y
-         bitb  #$04
-         bne   L10B9
-         lbsr  L1240
-         bcs   L10BA
-         ldb   $0A,y
-         orb   #$04
-         stb   $0A,y
-         ldb   <$34,y
-         ldx   <$35,y
-L1143    lda   #$03
-L1145    pshs  u,y,x,b,a
-         lda   $0A,y
-         ora   #$20
-         sta   $0A,y
-         ldx   <$0050
-         lda   $0A,x
+         bsr   L113A
+         bcc   L1121
+L111F    stb   ,s
+L1121    puls  pc,x,b
+
+* Read file descr
+* Y=ptr to bfr
+RdFlDscr 
+         IFNE  H6309
+         tim   #FDBUF,PD.SMF,y
+         ELSE
+         ldb   PD.SMF,y
+         bitb  #FDBUF 
+         ENDC
+         bne   L10B0
+         lbsr  L1237
+         bcs   L10B1
+         IFNE  H6309
+         oim   #FDBUF,PD.SMF,y
+         ELSE
+         lda   PD.SMF,y
+         ora   #FDBUF
+         sta   PD.SMF,y
+         ENDC
+         ldb   PD.FD,y
+         ldx   PD.FD+1,y
+L113A    lda   #D$READ
+
+* Send cmd to dev dvr
+* A=cmd offset
+* B=MSB lgcl sct #
+* X=LSW lgcl sct #
+* Y=Path descr ptr
+L113C    pshs  u,y,x,b,a
+         IFNE  H6309
+         oim   #InDriver,PD.SMF,y
+         ELSE
+         lda   PD.SMF,y
+         ora   #InDriver
+         sta   PD.SMF,y
+         ENDC
+         ldx   <D.Proc
+         lda   P$Prior,x
          tfr   a,b
-         addb  #$03
-         bcc   L1159
+         addb  #3
+         bcc   L1150
          ldb   #$FF
-L1159    stb   $0A,x
-         stb   $0B,x
-         ldx   <$30,y
-         sta   <$16,x
-         ldu   $03,y
-         ldu   $02,u
-         bra   L116F
-L1169    lbsr  L0C5F
-         os9   F$IOQu   
-L116F    lda   $04,u
-         bne   L1169
-         lda   $05,y
-         sta   $04,u
+L1150    stb   P$Prior,x
+         stb   P$Age,x
+         ldx   PD.Exten,y
+         sta   PE.Prior,x
+         ldu   PD.DEV,y
+         ldu   V$STAT,u
+         bra   L1166
+* wait for device
+L1160    lbsr  L0C56
+         os9   F$IOQu
+* dev rdy, send cmnd
+L1166    lda   V.BUSY,u
+         bne   L1160
+         lda   PD.CPR,y
+         sta   V.BUSY,u
          ldd   ,s
-         ldx   $02,s
+         ldx   2,s
          pshs  u
-         bsr   L11F4
+         bsr   L11EB
          puls  u
-         ldy   $04,s
+         ldy   4,s
          pshs  cc
-         bcc   L118A
-         stb   $02,s
-L118A    lda   $0A,y
-         anda  #$DF
-         sta   $0A,y
-         clr   $04,u
-         ldx   <$30,y
-         lda   <$16,x
-         ldx   <$0050
-         sta   $0A,x
+         bcc   L1181
+         stb   2,s
+L1181
+         IFNE  H6309
+         aim   #^InDriver,PD.SMF,y
+         ELSE
+         lda   PD.SMF,y
+         anda  #^InDriver
+         sta   PD.SMF,y
+         ENDC
+         clr   V.BUSY,u
+         ldx   PD.Exten,y
+         lda   PE.Prior,x
+         ldx   <D.Proc
+         sta   P$Prior,x
+******
+* this code is in v31 only
          lda   ,s
-         bita  #$01
-         bne   L11D4
-         lda   $01,s
-         cmpa  #$06
-         bne   L11D4
+         bita  #Carry
+         bne   L11CB
+         lda   1,s
+         cmpa  #D$WRIT
+         bne   L11CB
          pshs  u,y,x
-         ldy   <$30,y
+         ldy   PD.Exten,y
          leau  ,y
-L11B0    ldx   <$05,u
-         cmpy  <$05,u
-         beq   L11D2
+L11A7    ldx   PE.Confl,u
+         cmpy  PE.Confl,u
+         beq   L11C9
          leau  ,x
-         lda   <$17,u
-         beq   L11B0
-         ldx   <$0050
-         cmpa  <$00,x
-         beq   L11B0
-         clr   <$17,u
-         ldb   <$18,u
-         os9   F$Send   
-         bra   L11B0
-L11D2    puls  u,y,x
-L11D4    lda   <$10,x
-         beq   L11F2
+
+         lda   PE.SigID,u
+         beq   L11A7
+         ldx   <D.Proc
+         cmpa  P$ID,x
+         beq   L11A7
+         clr   PE.SigID,u
+         ldb   PE.SigSg,u
+         os9   F$Send
+         bra   L11A7
+
+L11C9    puls  u,y,x
+L11CB    lda   P$IOQN,x
+         beq   L11E9
          lda   $01,y
          bita  #$04
-         bne   L11F2
-         ldx   <$1E,y
-         lda   $05,y
-         cmpa  <$17,x
-         beq   L11F2
-         lbsr  L0C5F
-         ldx   #$0001
-         os9   F$Sleep  
-L11F2    puls  pc,u,y,x,b,a,cc
-L11F4    pshs  pc,x,b,a
+         bne   L11E9
+         ldx   PD.DTB,y
+         lda   PD.CPR,y
+         cmpa  V.BMB,x
+         beq   L11E9
+         lbsr  L0C56
+         ldx   #1
+         os9   F$Sleep
+L11E9    puls  pc,u,y,x,b,a,cc
+
+* Exec Dev Drvr
+* leave this alone till V1.22 is out!
+L11EB    pshs  pc,x,b,a
          ldx   $03,y
          ldd   ,x
          ldx   ,x
@@ -2098,98 +2581,116 @@ L11F4    pshs  pc,x,b,a
          adca  #$00
          std   $04,s
          puls  pc,x,b,a
-L1206    ldb   <$34,y
-         ldx   <$35,y
-         bra   L1210
-L120E    bsr   L1229
-L1210    lda   #$06
-         pshs  x,b,a
-         ldd   <$1C,y
-         beq   L121F
-         ldx   <$1E,y
-         cmpd  $0E,x
-L121F    puls  x,b,a
-         lbeq  L1145
-         comb  
-         ldb   #$FB
-         rts   
-L1229    ldd   $0C,y
-         subd  <$14,y
-         tfr   d,x
-         ldb   $0B,y
-         sbcb  <$13,y
-         exg   d,x
-         addd  <$17,y
-         exg   d,x
-         adcb  <$16,y
-         rts   
-L1240    clrb  
-         pshs  u,x
-         ldb   $0A,y
-         andb  #$46
-         beq   L125D
-         tfr   b,a
-         eorb  $0A,y
-         stb   $0A,y
-         andb  #$01
-         beq   L125D
-         eorb  $0A,y
-         stb   $0A,y
-         bita  #$02
-         beq   L125D
-         bsr   L120E
-L125D    puls  pc,u,x
-L125F    pshs  u,x
-         lbsr  L10A1
-         bcs   L12CF
-         bsr   L1240
-         bcs   L12CF
-L126A    ldb   $0B,y
-         ldu   $0C,y
-         leax  ,y
-         ldy   <$30,y
-L1274    ldx   <$30,x
-         cmpy  $05,x
-         beq   L12BE
-         ldx   $05,x
-         ldx   $01,x
-         cmpu  $0C,x
-         bne   L1274
-         cmpb  $0B,x
-         bne   L1274
-         lda   $0A,x
-         bita  #$02
-         beq   L1274
-         bita  #$20
-         bne   L1297
-         bita  #$40
-         beq   L12A9
-L1297    lda   $05,x
-         ldy   $01,y
-         lbsr  L0C5F
-         os9   F$IOQu   
-         lbsr  L105C
-         bcc   L126A
-         bra   L12CF
-L12A9    ldy   $01,y
-         ldd   $08,x
-         ldu   $08,y
-         std   $08,y
-         stu   $08,x
-         lda   $0A,x
-         ora   #$40
-         sta   $0A,y
-         clr   $0A,x
-         puls  pc,u,x
-L12BE    ldy   $01,y
-         lbsr  L1229
-         lbsr  L1143
-         bcs   L12CF
-         lda   $0A,y
-         ora   #$42
-         sta   $0A,y
-L12CF    puls  pc,u,x
 
-         emod
+* Write fd to disk
+L11FD    ldb   PD.FD,y
+         ldx   PD.FD+1,y
+         bra   L1207
+
+
+* flsh bfr 2 disk
+L1205    bsr   L1220
+L1207    lda   #D$WRIT
+         pshs  x,b,a
+         ldd   PD.DSK,y
+         beq   L1216
+         ldx   PD.DTB,y
+         cmpd  DD.DSK,x
+L1216    puls  x,b,a
+         lbeq  L113C
+         comb  
+         ldb   #E$DIDC
+         rts   
+
+L1220    ldd   PD.CP+1,y
+         subd  PD.SBL+1,y
+         tfr   d,x
+         ldb   PD.CP,y
+         sbcb  PD.SBL,y
+         exg   d,x
+         addd  PD.SBP+1,y
+         exg   d,x
+         adcb  PD.SBP,y
+         rts   
+
+* chk if sctr bfr needs flshd to disk
+L1237    clrb  
+         pshs  u,x
+         ldb   PD.SMF,y
+         andb  #(BufBusy!FDBUF!SINBUF)
+         beq   L1254
+         tfr   b,a
+         eorb  PD.SMF,y
+         stb   PD.SMF,y
+         andb  #BUFMOD
+         beq   L1254
+         eorb  PD.SMF,y
+         stb   PD.SMF,y
+         bita  #SINBUF
+         beq   L1254
+         bsr   L1205
+L1254    puls  pc,u,x
+
+L1256    pshs  u,x
+         lbsr  L1098
+         bcs   L12C6
+         bsr   L1237
+         bcs   L12C6
+L1261    ldb   PD.CP,y
+         ldu   PD.CP+1,y
+         leax  ,y
+         ldy   PD.Exten,y
+L126B    ldx   PD.Exten,x
+         cmpy  PE.Confl,x
+         beq   L12B5
+         ldx   PE.Confl,x
+         ldx   PE.PDptr,x
+         cmpu  PD.CP+1,x
+         bne   L126B
+         cmpb  PD.CP,x
+         bne   L126B
+         lda   PD.SMF,x
+         bita  #SINBUF
+         beq   L126B
+         bita  #InDriver
+         bne   L128E
+         bita  #BufBusy
+         beq   L12A0
+L128E    lda   PD.CPR,x
+         ldy   PE.PDptr,y
+         lbsr  L0C56
+         os9   F$IOQu
+         lbsr  L1053
+         bcc   L1261
+         puls  u,x,pc
+
+L12A0    ldy   PE.PDptr,y
+         ldd   PD.BUF,x
+         ldu   PD.BUF,y
+         std   PD.BUF,y
+         stu   PD.BUF,x
+         lda   PD.SMF,x   \ careful, don't use oim here
+         ora   #BufBusy   >takes state from x and
+         sta   PD.SMF,y   / stores to y, is infamous "lha" bug
+         clr   PD.SMF,x
+         puls  pc,u,x
+
+L12B5    ldy   PE.PDptr,y
+         lbsr  L1220
+         lbsr  L113A
+         bcs   L12C6
+         IFNE  H6309
+         oim   #(BufBusy!SINBUF),PD.SMF,y
+         ELSE
+         pshs  a
+         lda   PD.SMF,y
+         ora   #(BufBusy!SINBUF)
+         sta   PD.SMF,y
+         puls  a
+         ENDC
+L12C6    puls  pc,u,x
+
+         emod  
 eom      equ   *
          end
+
