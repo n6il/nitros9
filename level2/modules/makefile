@@ -17,7 +17,7 @@ DEPENDS		= ./makefile
 TPB		= ../../3rdparty/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		 boot_burke boot_idelba boot_rampak boot_wd1002
+		 boot_burke boot_rampak boot_wd1002
 BOOTTRACK	= rel_32 rel_40 rel_80 $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_h0 sysgo_dd
