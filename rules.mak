@@ -18,8 +18,8 @@ DSKDIR		= $(BASEDIR)/dsks
 #ASOUT		= o=
 
 # Use the cross assembler
-AS		= $(OS9TOOLSDIR)/os9asm -i=$(DEFDIR)
-ASOUT		= -o=
+AS		= $(OS9TOOLSDIR)/mamou -i=$(DEFDIR)
+ASOUT		= -o
 AFLAGS		= -q
 
 # Commands
@@ -28,8 +28,8 @@ RM		= rm -f
 MERGE		= cat
 ECHO		= /bin/echo
 CD		= cd
-CP		= $(OS9TOOLSDIR)/os9 copy
-CPL		= $(OS9TOOLSDIR)/os9 copy -l
+CP		= $(OS9TOOLSDIR)/os9 copy -o=0
+CPL		= $(CP) -l
 TAR		= tar
 CHMOD		= chmod
 IDENT		= $(OS9TOOLSDIR)/os9 ident
