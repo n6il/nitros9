@@ -69,7 +69,7 @@ L0000    mod   eom,name,tylg,atrv,OS9Cold,size
 
 size     equ   .
 
-name     fcs   /krn/
+name     fcs   /Krn/
          fcb   edition
 
 InitNam  fcs   /Init/

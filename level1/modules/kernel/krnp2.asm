@@ -23,7 +23,7 @@ edition  set   10
 
 size     equ   .
 
-name     fcs   /krnp2/
+name     fcs   /KrnP2/
          fcb   edition
 
 SvcTbl   fcb   $7F
