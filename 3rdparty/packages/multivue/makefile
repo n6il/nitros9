@@ -70,7 +70,7 @@ dsk:	all
 	$(MAKDIR) $(DISK68),SYS
 	$(MAKDIR) $(DISK68),DEMO
 	$(CD) cmds_6809; $(CP) $(CMDS68) ../$(DISK68),CMDS
-	$(foreach file, $(CMDS68), $(OS9ATTR_EXEC) $(DISK68),CMDS/$(file);)
+	$(foreach file, $(CMDS68), $(OS9ATTR_EXEC) $(DISK68),CMDS/$(notdir $(file));)
 	$(OS9RENAME) $(DISK68),CMDS/gshell AutoEx
 	$(CD) icons; $(CP) $(ICONS) ../$(DISK68),CMDS/ICONS
 	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $(DISK68),CMDS/ICONS/$(file);)
@@ -93,7 +93,7 @@ dsk:	all
 	$(MAKDIR) $(DISK63),SYS
 	$(MAKDIR) $(DISK63),DEMO
 	$(CD) cmds_6309; $(CP) $(CMDS63) ../$(DISK63),CMDS
-	$(foreach file, $(CMDS63), $(OS9ATTR_EXEC) $(DISK63),CMDS/$(file);)
+	$(foreach file, $(CMDS63), $(OS9ATTR_EXEC) $(DISK63),CMDS/$(notdir $(file));)
 	$(OS9RENAME) $(DISK63),CMDS/gshell AutoEx
 	$(CD) icons; $(CP) $(ICONS) ../$(DISK63),CMDS/ICONS
 	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $(DISK63),CMDS/ICONS/$(file);)

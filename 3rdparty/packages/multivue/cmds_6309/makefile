@@ -1,40 +1,28 @@
 include ../../../../rules.mak
 
-vpath %.asm $(6809L2)/cmds:$(6809L1)/cmds:../cmds_6809
+vpath %.asm ../cmds_6809
 
 AFLAGS		+= -e
 DEPENDS		= ./makefile
 
-CMDS		= shell utilpak1 grfdrv \
-		gshell cocopr control demo fstat \
-		gcal gcalc gclock gport gprint \
-		backup format free help
+OSCMDS		= $(6309L2)/cmds/shell $(6309L2)/cmds/utilpak1 \
+		$(6309L2)/cmds/grfdrv $(6309L2)/cmds/backup \
+		$(6309L2)/cmds/format $(6309L2)/cmds/free $(6309L2)/cmds/help
+CMDS		= gshell cocopr control demo fstat \
+		gcal gcalc gclock gport gprint
 
-SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
-UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
-		merge mfree procs rename sleep tmode
+ALLOBJS		= $(OSCMDS) $(CMDS)
 
-ALLOBJS		= $(CMDS)
+all:	cmds $(ALLOBJS)
 
-all:	$(ALLOBJS)
+cmds:
+	$(CD) $(6309L2)/cmds; make
 
 gshell: gshell.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS)
 
-shell:  $(SHELLMODS) $(DEPENDS)
-	$(MERGE) $(SHELLMODS)>$@
-	@$(ECHO) "*** Be sure the size of this file is less than 7681 bytes! ***"
-	@ls -l $@
-	@$(ECHO) ""
-
-utilpak1: $(UTILPAK1) $(DEPENDS)
-	$(MERGE) $(UTILPAK1)>$@
-	@$(ECHO) "*** Be sure the size of this file is less than 7681 bytes! ***"
-	@ls -l $@
-	@$(ECHO) ""
-
 clean:
-	$(RM) $(ALLOBJS)
+	$(RM) $(CMDS)
 
 showobjs:
 	@$(ECHO) $(ALLOBJS)
