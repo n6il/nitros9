@@ -34,9 +34,9 @@ name     fcs   /CC3Go/
 
 Banner
          ifne  NitrOS9
-         fcc   / NitrOS-9 Level Two Vr. 0/
+         fcc   /NitrOS-9 Level Two Vr. 0/
          else
-         fcc   / OS-9 LEVEL TWO VR. 0/
+         fcc   /  OS-9 Level Two Vr. 0/
          endc
          fcb   48+OS9Vrsn
          fcc   /.0/
@@ -45,18 +45,16 @@ Banner
          fcb   48+OS9Minor
          fcb   C$CR,C$LF
          ifne  NitrOS9
-         fcc   !SAURON BETA1 RELEASE 09/01/02!
+         fcc   " ORION BETA1 Release 09/01/2002"
          else
-         fcc   !ARIES BETA1 RELEASE 08/22/02!
+         fcc   " ARIES BETA2 Release ??/??/2002"
          endc
          fcb   C$CR,C$LF
-         fcc   /     COPYRIGHT 1988 BY/
+         fcc   /   "A CoCo Community Project"/
          fcb   C$CR,C$LF
-         fcc   /   MICROWARE SYSTEMS CORP./
+         fcc   /      Visit us on the web:/
          fcb   C$CR,C$LF
-         fcc   /   LICENSED TO TANDY CORP./
-         fcb   C$CR,C$LF
-         fcc   /    ALL RIGHTS RESERVED./
+         fcc   !http://cocoos9.sourceforge.net/!
          fcb   C$CR,C$LF
          fcb   C$LF
 BannLen  equ   *-Banner
