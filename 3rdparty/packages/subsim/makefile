@@ -41,7 +41,8 @@ dsk:	all
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $(DISK),CMDS
 	$(CP) $(CMDS) $(DISK),CMDS
-	$(OS9RENAME) $(DISK),CMDS/sierra AutoEx
+	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK),CMDS/shell
+	$(OS9RENAME) $(DISK),CMDS/presub AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
 	$(UNIX2OS9) $(SCRIPTS)
 	$(CP) $(SCRIPTS) $(DISK),.
