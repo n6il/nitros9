@@ -8,7 +8,7 @@ COCOCMDS	= asm attr backup binex build cmp cobbler config copy date \
 		echo edit error exbin format free grfo help ident iniz link \
 		list load login makdir mdir merge mfree \
 		os9gen park printerr procs pwd pxd \
-		rename runb save setime shell sleep tee tmode tsmon \
+		rename runb save setime shell sleep tee tmode touch tsmon \
 		tuneport unlink verify xmode gfx inkey syscall
 DRAGONCMDS	= cobbler_d64 format_d64 os9gen_d64 drvr51.dr go51
 ALLOBJS		= $(COCOCMDS) $(DRAGONCMDS)
