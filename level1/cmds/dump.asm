@@ -20,6 +20,8 @@
 *        Removed -d option                              BGP 03/01/17
 *        Narrow screen now shows properly, only dumps   BGP 03/01/21
 *        16 bits worth of address data to make room.
+*        Fixed bug where header would be shown even if  BGP 03/03/03
+*        there was no data in a file.
 
          nam   Dump
          ttl   Show file contents in hex
@@ -31,7 +33,7 @@
 * Tweakable options
 DOSCSIZ  set   1	1 = include SS.ScSiz code, 0 = leave out
 DOHELP   set   0	1 = include help message, 0 = leave out
-BufSz    set   80        
+BUFSZ    set   80        
 
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
@@ -238,7 +240,11 @@ notbg    stx   <D.Adr
          ENDC
 flpag    tstb            
          bne   nohed     
-         leax  caret,pcr
+         lbsr  iseof
+         bcc   flpag2
+         ldx   <D.Prm    
+         rts
+flpag2   leax  caret,pcr
          lbsr  print     
          ldb   #16       
          leax  title,pcr 
@@ -262,9 +268,11 @@ nohed    leax  Txtbuf,u
          lda   #3        
          mul             
          addd  #2        
+         IFNE  DOSCSIZ
          tst   <narrow
          beq   leayit
          subd  #4
+         ENDC
 leayit   leay  d,x       
          sty   <D.Txt    
          lda   #C$SPAC   
@@ -273,10 +281,12 @@ clbuf    sta   b,x
          decb            
          bpl   clbuf     
          ldb   #D.Adr    
+         IFNE  DOSCSIZ
          tst   <narrow
          beq   adlop
          incb				we skip first two bytes ...
          incb				... if on a narrow screen
+         ENDC
 adlop    lda   b,u       
          lbsr  onbyt     
          incb            
@@ -293,10 +303,12 @@ onlin    lbsr  onchr
          lbsr  onchr     
          decb
          ble   enlin     
+         IFNE  DOSCSIZ
          tst   <narrow
          bne   onlin
+         ENDC
          lda   #C$SPAC   
-         bsr   savec     
+         lbsr  savec     
          bra   onlin     
 enlin    lda   #C$CR     
          ldx   <D.Txt    
@@ -322,12 +334,9 @@ readi    ldy   <D.Len
          bcs   reded     
          tfr   y,d       
 reded    rts             
-redad    ldd   <D.End    
-         ldx   <D.Beg    
-         subd  <D.Beg    
-         bne   setct     
-         coma            
-         ldb   #E$EOF    
+
+redad    bsr   iseofm
+         bcc   setct
          rts             
 setct    subd  <D.Len    
          bcs   redof     
@@ -338,12 +347,32 @@ redof    addd  <D.Len
          leay  d,x       
          sty   <D.Beg    
          rts             
+
 eofck    cmpb  #E$EOF    
          orcc  #Carry    
          lbne  DoExit     
          clrb            
          ldx   <D.Prm    
          rts
+
+iseof    tst   <D.Mem    
+         bne   iseofm
+         lda   <D.Opn
+         ldb   #SS.EOF
+         os9   I$GetStt
+         cmpb  #E$EOF
+         beq   iseofex
+         clrb
+iseofok  rts
+iseofex  orcc  #Carry
+         ldb   #E$EOF
+         rts
+iseofm   ldd   <D.End
+         ldx   <D.Beg    
+         subd  <D.Beg    
+         beq   iseofex
+         andcc  #^Carry
+         rts             
 
 onibl    anda  #15       
          cmpa  #9        
