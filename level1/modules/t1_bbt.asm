@@ -1,3 +1,12 @@
+********************************************************************
+* T1 - CoCo serial device descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+*        Tandy/Microware original version
+
          nam   T1
          ttl   CoCo serial device descriptor
 
@@ -15,7 +24,7 @@ rev      set   $01
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
          fcb   READ.+WRITE. mode byte
-         fcb   $FF        extended controller address
+         fcb   HW.Page    extended controller address
          fdb   $0000      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf

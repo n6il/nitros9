@@ -1,3 +1,12 @@
+********************************************************************
+* M2 - Tandy DC Modem Pak device descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+*        Tandy/Microware original version
+
          nam   M2
          ttl   Tandy DC Modem Pak device descriptor
 
@@ -15,7 +24,7 @@ rev      set   $01
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
          fcb   READ.+WRITE. mode byte
-         fcb   $FF        extended controller address
+         fcb   HW.Page    extended controller address
          fdb   $FF6C      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf

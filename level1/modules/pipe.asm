@@ -1,5 +1,14 @@
+********************************************************************
+* Pipe - PipeMan device descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+*        Tandy/Microware original version
+
          nam   Pipe
-         ttl   os9 device descriptor
+         ttl   PipeMan device descriptor
 
 * Disassembled 98/08/23 21:15:32 by Disasm v1.6 (C) 1988 by RML
 
