@@ -1,0 +1,114 @@
+<?xml version="1.0" ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+  <!ENTITY replstart "&lt;">
+  <!ENTITY replend   "&gt;">
+  <!ENTITY repeatst   "{">
+  <!ENTITY repeaten   "}">
+  <!ENTITY vendor     "OS9 Consortium">
+  <!ENTITY make   "Dragon/Color">
+  <!ENTITY preface       SYSTEM "intro.preface">
+  <!ENTITY chap1         SYSTEM "chap1.chapter">
+  <!ENTITY chap2         SYSTEM "chap2.chapter">
+  <!ENTITY chap3         SYSTEM "chap3.chapter">
+  <!ENTITY chap4         SYSTEM "chap4.chapter">
+  <!ENTITY chap5         SYSTEM "chap5.chapter">
+  <!ENTITY chap6         SYSTEM "chap6.chapter">
+  <!ENTITY chap7         SYSTEM "chap7.chapter">
+  <!ENTITY errorcodesapp SYSTEM "errorcodes.appendix">
+  <!ENTITY displayapp    SYSTEM "display.appendix">
+  <!ENTITY keysapp       SYSTEM "keys.appendix">
+  <!ENTITY go51app       SYSTEM "go51.appendix">
+  <!ENTITY acia51app     SYSTEM "acia51.appendix">
+
+  <!ENTITY attrref       SYSTEM "attr.refentry">
+  <!ENTITY backupref     SYSTEM "backup.refentry">
+  <!ENTITY binexref      SYSTEM "binex.refentry">
+  <!ENTITY buildref      SYSTEM "build.refentry">
+  <!ENTITY chdref        SYSTEM "chd.refentry">
+  <!ENTITY cmpref        SYSTEM "cmp.refentry">
+  <!ENTITY cobblerref    SYSTEM "cobbler.refentry">
+  <!ENTITY configref     SYSTEM "config.refentry">
+  <!ENTITY copyref       SYSTEM "copy.refentry">
+  <!ENTITY dateref       SYSTEM "date.refentry">
+  <!ENTITY dcheckref     SYSTEM "dcheck.refentry">
+  <!ENTITY delref        SYSTEM "del.refentry">
+  <!ENTITY deldirref     SYSTEM "deldir.refentry">
+  <!ENTITY dirref        SYSTEM "dir.refentry">
+  <!ENTITY displayref    SYSTEM "display.refentry">
+  <!ENTITY dsaveref      SYSTEM "dsave.refentry">
+  <!ENTITY dumpref       SYSTEM "dump.refentry">
+  <!ENTITY echoref       SYSTEM "echo.refentry">
+  <!ENTITY exref         SYSTEM "ex.refentry">
+  <!ENTITY formatref     SYSTEM "format.refentry">
+  <!ENTITY freeref       SYSTEM "free.refentry">
+  <!ENTITY go51ref       SYSTEM "go51.refentry">
+  <!ENTITY helpref       SYSTEM "help.refentry">
+  <!ENTITY identref      SYSTEM "ident.refentry">
+  <!ENTITY inizref       SYSTEM "iniz.refentry">
+  <!ENTITY killref       SYSTEM "kill.refentry">
+  <!ENTITY linkref       SYSTEM "link.refentry">
+  <!ENTITY listref       SYSTEM "list.refentry">
+  <!ENTITY loadref       SYSTEM "load.refentry">
+  <!ENTITY loginref      SYSTEM "login.refentry">
+  <!ENTITY makdirref     SYSTEM "makdir.refentry">
+  <!ENTITY mdirref       SYSTEM "mdir.refentry">
+  <!ENTITY mergeref      SYSTEM "merge.refentry">
+  <!ENTITY mfreeref      SYSTEM "mfree.refentry">
+  <!ENTITY os9genref     SYSTEM "os9gen.refentry">
+  <!ENTITY printerrref   SYSTEM "printerr.refentry">
+  <!ENTITY procsref      SYSTEM "procs.refentry">
+  <!ENTITY pwdref        SYSTEM "pwd.refentry">
+  <!ENTITY renameref     SYSTEM "rename.refentry">
+  <!ENTITY saveref       SYSTEM "save.refentry">
+  <!ENTITY setimeref     SYSTEM "setime.refentry">
+  <!ENTITY setprref      SYSTEM "setpr.refentry">
+  <!ENTITY shellref      SYSTEM "shell.refentry">
+  <!ENTITY sleepref      SYSTEM "sleep.refentry">
+  <!ENTITY teeref        SYSTEM "tee.refentry">
+  <!ENTITY tmoderef      SYSTEM "tmode.refentry">
+  <!ENTITY tsmonref      SYSTEM "tsmon.refentry">
+  <!ENTITY tuneportref   SYSTEM "tuneport.refentry">
+  <!ENTITY unlinkref     SYSTEM "unlink.refentry">
+  <!ENTITY verifyref     SYSTEM "verify.refentry">
+  <!ENTITY xmoderef      SYSTEM "xmode.refentry">
+ ]>
+<book id="os9guide" lang="en">
+<bookinfo>
+ <title>OS-9 Operating System User's Guide</title>
+ <subtitle>for OS-9 Level I</subtitle>
+
+ <publisher>
+  <publishername>Cleglen Publishing Limited</publishername>
+  <address>
+   <city>Cardiff</city>
+  </address>
+ </publisher>
+
+<copyright>
+  <year>1983</year>
+  <holder>Dragon Data Ltd., and Microware Systems Corporation.</holder>
+</copyright>
+
+ <legalnotice>
+  <para>All Rights Reserved. Reproduced under license from
+Microware Systems Corporation.</para>
+ </legalnotice>
+
+
+</bookinfo>
+
+&preface;
+&chap1;
+&chap2;
+&chap3;
+&chap4;
+&chap5;
+&chap6;
+&chap7;
+&errorcodesapp;
+&displayapp;
+&keysapp;
+&acia51app;
+
+</book>
