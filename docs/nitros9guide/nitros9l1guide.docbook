@@ -11,6 +11,7 @@
   <!ENTITY minmem        "64K">
   <!ENTITY DOSCMD        "DOS">
   <!ENTITY ctrlkey       "CLEAR">
+  <!ENTITY os9guide      SYSTEM "os9guide.book">
   <!ENTITY preface       SYSTEM "intro.preface">
   <!ENTITY chap1         SYSTEM "chap1.chapter">
   <!ENTITY chap2         SYSTEM "chap2.chapter">
@@ -22,9 +23,9 @@
   <!ENTITY errorcodesapp SYSTEM "errorcodes.appendix">
   <!ENTITY displayapp    SYSTEM "display.appendix">
   <!ENTITY keysapp       SYSTEM "keys.appendix">
-  <!ENTITY go51app       SYSTEM "go51.appendix">
   <!ENTITY acia51app     SYSTEM "acia51.appendix">
 
+  <!ENTITY asmref        "">
   <!ENTITY attrref       SYSTEM "attr.refentry">
   <!ENTITY backupref     SYSTEM "backup.refentry">
   <!ENTITY basic09ref    SYSTEM "basic09.refentry">
@@ -52,6 +53,7 @@
   <!ENTITY dumpref       SYSTEM "dump.refentry">
   <!ENTITY echoref       SYSTEM "echo.refentry">
   <!ENTITY exref         SYSTEM "ex.refentry">
+  <!ENTITY exbinref      SYSTEM "exbin.refentry">
   <!ENTITY exmoderef     SYSTEM "exmode.refentry">
   <!ENTITY formatref     SYSTEM "format.refentry">
   <!ENTITY freeref       SYSTEM "free.refentry">
@@ -71,6 +73,7 @@
   <!ENTITY mfreeref      SYSTEM "mfree.refentry">
   <!ENTITY os9genref     SYSTEM "os9gen.refentry">
   <!ENTITY printerrref   SYSTEM "printerr.refentry">
+  <!ENTITY procref      "">
   <!ENTITY procsref      SYSTEM "procs.refentry">
   <!ENTITY pwdref        SYSTEM "pwd.refentry">
   <!ENTITY renameref     SYSTEM "rename.refentry">
@@ -80,50 +83,16 @@
   <!ENTITY setprref      SYSTEM "setpr.refentry">
   <!ENTITY shellref      SYSTEM "shell.refentry">
   <!ENTITY sleepref      SYSTEM "sleep.refentry">
+  <!ENTITY smapref      "">
   <!ENTITY teeref        SYSTEM "tee.refentry">
   <!ENTITY tmoderef      SYSTEM "tmode.refentry">
   <!ENTITY tsmonref      SYSTEM "tsmon.refentry">
   <!ENTITY tuneportref   SYSTEM "tuneport.refentry">
   <!ENTITY unlinkref     SYSTEM "unlink.refentry">
   <!ENTITY verifyref     SYSTEM "verify.refentry">
+  <!ENTITY wcreateref    "">
   <!ENTITY xmoderef      SYSTEM "xmode.refentry">
  ]>
 <book id="os9guide" lang="en">
-<bookinfo>
- <title>OS-9 Operating System User's Guide</title>
- <subtitle>for OS-9 Level One</subtitle>
-
-<copyright>
-  <year>1983</year>
-  <holder>Dragon Data Ltd., and Microware Systems Corporation.</holder>
-</copyright>
-
- <legalnotice>
-  <para>All Rights Reserved. Reproduced under license from
-Microware Systems Corporation.</para>
- </legalnotice>
-
-<revhistory>
-<revision>
-<revnumber>C</revnumber>
-<date>March 2003</date>
-<revremark>Updated with the changes made by Boisy Pitre</revremark>
-</revision>
-</revhistory>
-
-</bookinfo>
-
-&preface;
-&chap1;
-&chap2;
-&chap3;
-&chap4;
-&chap5;
-&chap6;
-&chap7;
-&errorcodesapp;
-&displayapp;
-&keysapp;
-&acia51app;
-
+&os9guide;
 </book>

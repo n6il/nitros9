@@ -295,7 +295,7 @@ upward for data areas, as shown below:
 When performing a fork operation, OS-9's first step is to attempt
 to locate the requested program module by searching the &quot;module
 directory&quot;, which has the address of every module present in memory.
-The &CPU instruction set supports a type of program called
+The &CPU; instruction set supports a type of program called
 &quot;reentrant code&quot; which means the exact same &quot;copy&quot; of a program can
 be shared by two or more different processes simultaneously without
 affecting each other, provided that each &quot;incarnation&quot; of the
@@ -400,7 +400,7 @@ code&quot;, or &quot;PIC&quot;. PIC programs do not have to be loaded into
 specific, predetermined memory addresses to work correctly, and can
 therefore be loaded at different memory addresses at different
 times. PIC programs require special types of machine language instructions
-which few computers have. The ability of the &CPU
+which few computers have. The ability of the &CPU;
 microprocessor to use this type of program is one of its most
 powerful features.
 </para>

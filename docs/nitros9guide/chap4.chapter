@@ -644,7 +644,7 @@ command has been previously executed.
 <title>Running Compiled Intermediate Code Programs</title>
 <para>
 Before the shell executes a program, it checks the program
-module's language type. If its type is not &CPU machine language,
+module's language type. If its type is not &CPU; machine language,
 shell will call the appropriate run-time system for that module.
 Versions of the shell supplied for various systems are capable of
 calling different run-time systems. Most versions of shell call
