@@ -175,7 +175,7 @@ L0123    lda   >$FF4B
          stb   >$FF40
          bra   L0123
 
-NMIRtn   leas  $0C,s
+NMIRtn   leas  R$Size,s
          puls  y
          ldb   >$FF48
          bitb  #$04
