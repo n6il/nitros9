@@ -1,8 +1,13 @@
 # Rules for making OS-9/6X09 modules
 
-# This macro should change according to where the base directory of the
+# These macros should change according to where the base directory of the
 # OS-9 source tree is located
 BASEDIR		= /home/boisy/os9
+OS9TOOLSDIR	= /home/boisy/bin
+
+
+#################### DO NOT CHANGE ANYTHING BELOW THIS LINE ####################
+
 
 # If we're using the OS-9 emulator and the *real* OS-9 assembler,
 # uncomment the following two lines.
@@ -10,20 +15,32 @@ BASEDIR		= /home/boisy/os9
 #ASOUT		= o=
 
 # Use the cross assembler
-AS		= os9asm
+AS		= $(OS9TOOLSDIR)/os9asm
 ASOUT		= -o=
 AFLAGS		= -q
 
 # Commands
+MAKDIR		= mkdir
 RM		= rm -f
 MERGE		= cat
-PADROM		= os9padrom
 ECHO		= echo
+CD		= cd
+CP		= cp
+TAR		= tar
 CHMOD		= chmod
-IDENT		= os9ident
-IDENT_SHORT	= os9ident -s
-UNIX2OS9	= $(BASEDIR)/hosttools/u2o
-OS92UNIX	= $(BASEDIR)/hosttools/o2u
+IDENT		= $(OS9TOOLSDIR)/os9ident
+IDENT_SHORT	= $(IDENT) -s
+UNIX2OS9	= $(OS9TOOLSDIR)/u2o
+OS92UNIX	= $(OS9TOOLSDIR)/o2u
+OS9FORMAT	= $(OS9TOOLSDIR)/os9format
+OS9GEN		= $(OS9TOOLSDIR)/os9gen
+PADROM		= $(OS9TOOLSDIR)/os9padrom
+MOUNT		= sudo mount
+UMOUNT		= sudo umount
+LOREMOVE	= sudo /sbin/losetup -d
+LOSETUP		= sudo /sbin/losetup
+LINK		= ln
+SOFTLINK	= $(LINK) -s
 
 # File managers
 %.mn: %.asm
