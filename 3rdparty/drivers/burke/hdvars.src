@@ -1,0 +1,120 @@
+*  COPYRIGHT 1987 BURKE & BURKE
+*  COPYRIGHT 1992 BURKE & BURKE
+*  ALL RIGHTS RESERVED
+*
+*  Variables for all CoCo XT hard disk drivers.
+*
+*  Chris Burke  Schaumburg, IL
+*
+*   Modification History
+*   --------------------
+*
+*   Date        Who     Description
+*   --------    ---     ---------------------------------------
+*   10/01/87    CJB     Added PCCYL variable.
+*                       Added unique drive parameters for each drive
+*   12/20/87    CJB     Added park track copied from DD for each drive
+*   12/23/87    CJB     Added level-dependent equates for use w/ 2 drives.
+*   01/28/88    CJB     Added area to preserve active slot 100%
+*   02/08/88    CJB     Eliminated DIVA, DIVY; changed read cache
+*   04/15/92    CJB     Added RETRYEN (should have been there already!?)
+*
+
+*
+*  Static Storage
+*
+    org     XDrvBeg             ;(level dependent)
+
+*   The controller handles up to 2 drives.
+*   The size of the drive table differs between 
+*   level 1 and level 2.
+
+DRVTBL  rmb     XDrvMen*Drives
+
+    ifne    (Drives-1)          ;If 2 drives,
+ACTDRV  rmb     2
+PRVDRV  rmb     1               ;Previous drive #
+    endc
+
+DRVSEM  rmb     1               ;New drive semaphore
+
+*  Register image for disk controller
+*
+*  SDHREG  00D0HHHH
+*  HICYL   MM0SSSSS
+*  LOWCYL  LLLLLLLL
+*  SECCNT  NNNNNNNN
+*
+*  D = drive #
+*  H = head #
+*  M = MSB's of cylinder #
+*  S = sector # on cylinder
+*  L = LSB's of cylinder #
+*  N = sector count or interleave
+
+IMAGE equ .
+
+SDHREG  RMB     1       ;Drive and head number
+HICYL   RMB     1       ;High cylinder # and sector number
+LOWCYL  RMB     1       ;Low cylinder number
+SECCNT  RMB     1       ;Sector count (interleave factor for format)
+OPTION  RMB     1       ;Options / step rate
+
+    ifne    cchflg      ;If read cache supported,
+
+*  Sector number for pre-read
+
+OLDLSN  rmb     3       ;Old LSN -- this + 1 in buffer if BFRFLG
+BFRFLG  rmb     1       ;$FF = pre-read sector is in verify buffer
+
+    endc
+
+*  Miscellaneous flags
+
+Temp    rmb     2    ;Scratch variable
+SECNUM  rmb     1    ;Used for sector splitting
+PSECNM  rmb     1    ;Previous sector number (used for pre-read feature)
+OLDSLT  rmb     1       ;Old MPAK slot # (to leave it as we found it)
+
+*   Variables for park track location and pre-comp.
+
+OBSTART equ     .   ;Base of option variables
+
+*   Drive #0 variables
+
+PCCYL   rmb     1   ;precomp cylinder / 4
+PRKLSN  rmb     3   ;Park LSN -- sector 0, head 0 of park track
+
+OBSIZE  equ     (.-OBSTART)
+
+     ifne    (Drives-1)
+
+*   Drive #1 variables
+
+PCCYL1  rmb     1   ;precomp cylinder / 4
+PRKLSN1 rmb     3
+
+     endc
+
+*   Value of stack pointer, in case we have to recover from an
+*   error.  This is used by CMEXEC and it's subroutines.
+
+AbtStk  rmb     2   ;Saved stack pointer
+RetryEn rmb     1   ;non-zero if hard disk hardware retries are enabled
+ErrHCyl rmb     2   ;store clyinder number of formatting error here
+
+*   Sector buffer for read caching, write verification,
+*   and pre-reading of adjacent "write" sectors.
+*
+*   Note that this buffer is shared between both drives, so
+*   the read cache is invalidated by switching drives.
+
+VRFBUF  rmb     256
+VB.END  equ     .
+
+*   Reserve some room for the stack
+
+        rmb     128         ;Stack
+
+endmem equ .
+

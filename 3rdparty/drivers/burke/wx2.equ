@@ -1,0 +1,63 @@
+    opt -l
+*
+*   Hardware equates for Western Digital WX1 and WX2 controllers
+*
+*   Revised 4/21/88
+*
+
+*  Disk Controller Addresses
+HDDATA equ $FF50    ;read or write data here
+HDSTAT equ $FF51    ;read status here
+HDCONF equ $FF52    ;read parallel input lines here
+
+HDRSET equ $FF51    ;write here to reset controller
+HDATTN equ $FF52    ;write here to get controller's attention
+HDMASK equ $FF53    ;write here to control DMA and IRQ (both off)
+
+*  Command op-codes
+WX$TST  equ     0       ;Test drive ready
+WX$TK0  equ     1       ;Recalibrate to track 0
+WX$STS  equ     3       ;Status of last operation
+WX$FMT  equ     4       ;Format drive
+WX$VFY  equ     5       ;Verify sectors
+WX$FTK  equ     6       ;Format track
+WX$FBT  equ     7       ;Format bad track
+WX$RDD  equ     8       ;Read sector(s)
+WX$WRT  equ     $0A     ;Write sector(s)
+WX$SIK  equ     $0B     ;Seek
+WX$INI  equ     $0C     ;Initialize drive parameters
+WX$ECC  equ     $0D     ;Read ECC burst length
+WX$RBF  equ     $0E     ;Read sector buffer
+WX$WBF  equ     $0F     ;Write sector buffer
+
+WX$SBD  equ     $E0     ;Sector buffer diagnostic
+WX$DRD  equ     $E3     ;Drive diagnostic
+WX$CTD  equ     $E4     ;Controller diagnostic
+
+WX$RDL  equ     $E5     ;Read long
+WX$WRL  equ     $E6     ;Write long
+
+*   Bogus "special init" command
+
+WX$XIN  equ     $FF     ;Init w/ special parameters
+
+*   Error codes
+WE$AOK  equ     $00     ;No error
+WE$NSC  equ     $02     ;"Seek complete" not received
+WE$WRF  equ     $03     ;Write fault
+WE$NRD  equ     $04     ;Drive not ready
+WE$NT0  equ     $06     ;Track 0 not found
+WE$DSS  equ     $08     ;Drive still seeking
+WE$UER  equ     $11     ;Uncorrectable data error
+WE$DAM  equ     $12     ;Data address mark not found
+WE$SIK  equ     $15     ;Seek error
+WE$CER  equ     $18     ;Correctable data error occured
+WE$BTK  equ     $19     ;Track is flagged as bad
+WE$CMD  equ     $20     ;Invalid command
+WE$ISA  equ     $21     ;Illegal sector address
+WE$SBF  equ     $30     ;Sector buffer diagnostic failed
+WE$ROM  equ     $31     ;Controller ROM checksum error
+WE$ECC  equ     $32     ;ECC polynomial hardware failure
+
+    opt l
+

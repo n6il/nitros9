@@ -1,0 +1,849 @@
+*******************************************
+***                                     ***
+***     HDCMD.SRC                       ***
+***                                     ***
+***     COPYRIGHT BURKE & BURKE 1987    ***
+***     ALL RIGHTS RESERVED             ***
+***                                     ***
+***     COPYRIGHT BURKE & BURKE 1992    ***
+***     ALL RIGHTS RESERVED             ***
+***                                     ***
+*******************************************
+
+*
+*   This is the routine that executes controller commands, and
+*   its support routines.
+*
+*   Modification History
+*   --------------------
+*
+*   Date        Who     Description
+*   --------    ---     ------------------------------------
+*   12/20/87    CJB     Modified GetDat and PutDat to call
+*                        SNOOZE routine if not ready for data.
+*                        This causes the driver to sleep 
+*                        during disk seeks.
+*                       Modified s25flg stuff for generic
+*                        32x4x?? drives.
+*   02/07/88    CJB     Added CMEXIN to process special drive
+*                        parameters during formatting
+*
+*   04/17/88    cjb     Added WaitIdl, which waits for controller
+*                        ready to receive a command.
+*                       Added call to Snooze in WaitIdl.
+*   04/21/88    cjb     Added code to OR RetryEn into step rate
+*                        byte.  This allows retries to be disabled
+*                        by RetryEn = $80.
+*   05/18/88    cjb     Checked all paths for proper handling of
+*                        premature command termination
+*   06/12/88    cjb     Added WaitId2 to assure sleep for at least
+*                        one tick.
+*                       Fixed DrvCmd to check for WX$XIN opcode
+*                        if formatting enabled.
+*   07/01/88    cjb     Fixed bug in CMESTS -- changed "<" to ">"
+*   10/10/88    cjb     Modified to save error track if format enabled
+*   02/01/89    cjb     Fixed bug in error routine -- now dumps
+*                        cache on any uncorrectable error
+*                       Fixed bug in error routine to save
+*                        error track # correctly
+*   05/05/90    cjb     Added kludge for ST11R in WAIRDY
+*                       Added support for drives in multiple slots
+*   04/15/92    cjb     Fixed bug in location of DBLRDD - caused
+*                       driver to hang up on an error message.
+*                       Lenghtened a bit for speed, and to allow
+*                       easy 6309E overlays.
+*
+
+ page
+*
+*   Byte saver.
+*
+*   Call here to send command in Reg-A to drive in Reg-B,
+*   with 0's as the rest of the command.  
+*
+*   Note that this command sets the step rate to 3 ms!
+*
+DrvCmd  pshs    y,x,a           ;Save registers same as CmExec
+        sts     AbtStk,U        ;Save stack pointer for error recovery
+
+*   Enter here to send WX$STS -- stack etc. already set up
+
+DrvCm2  bsr     WAIRDY          ;Wait for ready for command -- preserves B
+        lda     ,S              ; recover reg-A
+
+    ifne    fmtflg
+        bsr     ChkCmd          ; translate cmd. if necessary
+    endc
+
+    ifne    (Drives-1)          ;If multiple drives,
+        andb    #$01            ; 2 drives per controller, different slots
+        aslb
+        aslb
+        aslb                    ;convert drive # to controller's format
+        aslb
+        aslb
+    else
+        clrb                    ;drive # is always 0
+    endc
+
+        bsr     PutCm2          ;Send command & drive #
+
+*  Send the rest of the command as 0's (including step rate . . . 3ms)
+*  Note that RetryEn is ignored here.
+
+        clra
+        clrb
+        bsr     PutCm2
+        bsr     PutCm2          ;Send 4 zeros for rest of command
+
+*  Pass control to dispatch routine, and wait for end when done
+
+        bra     CmDisp
+
+    page
+*
+*   Put Reg-D to controller as command bytes
+*
+*   Assumes AbtStk is valid.
+*
+    ifne    icdflg              ;If ignoring C/D status bit
+
+PutCm2  lbra    PutDt2
+
+    else
+
+PutCm2  bsr     PutCmd
+        tfr     B,A             ;Fall through to PutCm2
+
+    endc
+
+*
+*   Wait for controller to indicate it is ready to receive
+*   a command byte, then send it from Reg-A.
+*
+*   Assumes AbtStk,U has been set to the error recovery
+*   stack pointer.
+*   If the command aborts, the stack is cleaned and control
+*   passed to CmdDun.
+*
+    ifne    icdflg              ;If ignoring C/D status bit
+
+PutCmd  lbra    PutDat
+
+    else
+
+PutCmd  pshs    A
+
+PCM0    bsr     ChkAbt              ;Get status, check for abort
+        cmpa    #%00001101          ;Check for command request
+         bne    PCM0
+
+*  Ready.  Put the data
+
+        puls    A
+        sta     >HDDATA
+        rts
+
+    endc
+
+*
+*   Get status of hard disk controller, and abort command in
+*   progress if controller says so.
+*
+*   Assumes AbtStk,U has been set to the error recovery
+*   stack pointer.
+*   If the command aborts, the stack is cleaned and control
+*   passed to CmdDun.
+*
+ChkAbt  lda     >HDSTAT
+        cmpa    >HDSTAT             ;Data must be stable
+         bne    ChkAbt
+
+        anda    #%00001111
+        cmpa    #%00001111          ;Check for abort
+         bne    CKA9
+
+*  Well, the command is complete.  This normally means it
+*  aborted.  Pass control to CmdDun
+
+        lds     AbtStk,U            ;Clean stack
+        bra     CmdDun
+
+*  Not done yet.  Return current status to caller
+
+CKA9    rts
+
+    ifne    fmtflg          ;If formatting allowed,
+*
+*   Convert command op-code before transmission to controller
+*   if necessary.
+*
+*   The special initialization code WX$XIN is not a real controller
+*   op-code.
+*
+ChkCmd  cmpa    #WX$XIN         ;Check for bogus INITIALIZE PARAMETERS
+         bne    CCM9
+        lda     #WX$INI         ; convert to real INITIALIZE PARAMETERS
+CCM9    rts
+    endc
+
+*
+*   Wait for controller ready to receive a command, then
+*   get its attention.  Blows away Reg-A.  
+*
+*   Does not time out.
+*
+WAIRDY  bsr     WaitIdl         ;Wait for controller idle
+        clr     >HDATTN         ;Get attention of controller
+        rts
+
+*   Wait for controller ready to receive a command
+
+WaitIdl lda     >HDSTAT
+*        anda    #%00001111
+        anda    #%00001001      ;Special mask works for ST11R, too
+        cmpa    #%00000000      ; (all bits must be clear if ready)
+         beq    WaitId9
+
+*   Enter here to sleep for at least one tick.
+*   Waste time while waiting for HD.
+
+WaitId2 lbsr    Snooze          ;Give up slot, sleep.
+        bra     WaitIdl
+
+WaitId9 rts
+
+ page
+*
+*   Command execution module for CoCo XT.
+*
+*   Enter with:
+*
+*   Command op-code in Reg-A
+*   Buffer pointer in Reg-X (points to buffer for data part of cmd)
+*   Command image set up at IMAGE,U
+*   Reg-Y points to real or bogus path descriptor (for drive # and
+*   step rate).
+*   Slot 3 is assumed to be selected, with interrupts disabled.
+*
+*   Exits w/ carry clear if success, otherwise carry set and
+*   error code in Reg-B.
+*
+CMEXEC  pshs    y,x,a           ;Save caller's registers
+        sts     AbtStk,U        ;Save stack pointer for error recovery
+
+*   Wait for drive ready to accept a command
+
+        bsr     WaiRdy
+
+*   Point to the command block
+
+        leax    IMAGE,U
+
+*   Issue the command . . . op-code 1st
+*   PutCmd and PutCm2 will automatically abort the command
+*   if the controller indicates that this is necessary.
+
+        lda     0,S             ;Recover command op-code
+
+    ifne    fmtflg
+        bsr     ChkCmd          ;Translate command op-code if needed
+    endc
+
+CMX1    bsr     PutCmd
+
+        ldd     ,X++            ; (send head & sector)
+        bsr     PutCm2
+
+        ldd     ,X++            ; (send cylinder & block count)
+        bsr     PutCm2
+
+        lda     PD.STP,Y        ; (send step rate)
+        ora     RetryEn,U       ; (and send retry flag)
+        bsr     PutCmd
+
+*   Now dispatch the command based on it's op-code.  If a command
+*   isn't explicitly checked for in this loop, it is assumed that
+*   the command has no data arguments and is now executing.
+
+CmDisp  equ     *
+
+*   Command in progress.  Dispatch to service routine.
+*   Note that the service routine must check for premature
+*   command termination via CHKABT.
+
+        ldx     1,S             ;Recover possible data pointer
+        lda     0,S             ;Recover op-code
+
+        cmpa    #WX$RDD         ;READ SECTOR
+         beq    CMERDD
+
+        cmpa    #WX$WRT         ;WRITE SECTOR
+         beq    CMEWRT
+
+        cmpa    #WX$INI         ;SET DRIVE PARAMETERS
+         lbeq   CMEINI
+
+    ifne    fmtflg
+        cmpa    #WX$WBF         ;WRITE SECTOR BUFFER (for format)
+         lbeq   CMEWBF
+
+        cmpa    #WX$XIN         ;Bogus SET DRIVE PARAMETERS
+         lbeq   CMEXIN
+    endc
+
+        cmpa    #WX$STS         ;DETAILED STATUS REQUEST
+         lbeq   CMESTS
+
+*   Wait for end of command execution.  Then get completion status
+*   byte and decode any errors encountered.
+
+WaiEnd  bsr     ewait           ;Wait for command done
+
+*   Get completion status byte
+*   Stack pointer and ABTSTK,U match
+
+CmdDun  clrb                    ;Clear carry, assume no error
+
+        lda     >HDDATA
+        bita    #%00000010
+         beq    NoErr
+
+*   Error bit is set -- note this could still be a "null" error
+*   or a correctable error, so we have to get the status packet.
+
+        lda     0,S             ;Check op-code
+        cmpa    #WX$STS         ;Was it an error status request?
+         bne    GetErr
+
+*   Unknown error, or error while trying to determine error.
+
+NotRdy  comb
+        ldb     #E$Read         ;Report it as a "read" error
+
+*   Generic exit
+
+NoErr   equ     *
+CMEXIT  puls    a,x,y,pc
+
+*   Issue command to read error from controller.  This command
+*   will return the error code in Reg-B w/ carry set.
+
+GetErr  lda     #WX$STS         ;Recurse to get detailed status (implicit bfr)
+
+    ifne    Drives-1            ;If more than 1 drive,
+        ldb     PD.DRV,Y
+    endc
+
+        lds     AbtStk,U        ;Recover stack pointer
+        sta     0,S             ;Put command on stack
+        lbra    DrvCm2          ;Go try again.
+
+*   Wait for command to terminate
+
+ewait   lda     >HDSTAT
+        anda    #%00000111      ;NOTE:  IGNORE BUSY BIT
+        cmpa    #%00000111      ; (all bits set for command completion byte)
+         beq    ewx
+
+*  Not done.  Sleep for the rest of this tick, then try again.
+
+        lbsr    Snooze          ;Give up slot, sleep, get back slot
+        bra     ewait
+
+*   Exit
+
+ewx     rts
+
+ page
+*
+*   Handle tail end of sector read.
+*   Get the data to the caller's buffer.
+*
+CMERDD  lda     secnum,u
+        bita    #1
+         bne    CMRODD
+
+*  Read even logical sector on track -- 1st half of physical sector
+*  Save 2nd half if necessary.
+
+        bsr keep256
+
+    ifne    cchflg          ;If read cache supported,
+
+        tst BFRFLG,U
+         beq CMRE1
+
+*  Copy 2nd half of sector to verify buffer (possible cache)
+        leax    vrfbuf,U
+        bsr     keep256
+        bra     WaiEnd
+
+    endc
+
+*  Discard 2nd half of sector
+CMRE1   bsr     dump256
+        bra     WAIEND
+
+*  Read odd logical sector on track -- 2nd half of physical sector
+*  Throw away the 1st half
+CMRODD  bsr     dump256
+        bsr     keep256
+        bra     WAIEND
+
+ page
+*
+*   Handle tail end of sector write.
+*   Get the data from the caller's buffer.
+*
+CMEWRT  lda     secnum,u
+        bita    #1
+         bne    CMWODD
+
+*  Write even lsn on track -- uses 1st half, get 2nd half from verify bfr
+        bsr     writ256
+        bsr     copy256
+        bra     WAIEND
+
+*  Write odd lsn on track -- uses 2nd half, get 1st half from verify bfr
+CMWODD  bsr     copy256
+        bsr     writ256
+        bra     WAIEND
+
+    ifne    fmtflg          ;If hard formatting enabled,
+
+ page
+*
+*  Process command to fill sector buffer with (A).
+*
+*  This is only used at the beginning of a FORMAT command.
+*
+CMEWBF  ldd     #$E600      ; ($00 -> 256 iterations)
+        bsr     CMF0
+        bsr     CMF0        ; Reg-B is still 0 from previous iteration
+        lbra    WAIEND
+
+CMF0    bsr     PutDat      ;Fill 256 bytes of sector buffer with (A)
+        decb
+        bne     CMF0
+
+        rts
+
+    endc
+
+ page
+*
+*  Copy 256 bytes from sector buffer to (X)
+*
+
+    ifne    fstflg              ;If fast transfers,
+
+Keep256 bsr     GetDat          ;Full handshake on 1st byte
+        sta     ,X+
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD9
+    endc
+        bsr     GetDat          ;Get 2nd (quick move goes in pairs)
+        sta     ,X+
+        ldb     #$7F            ;pair count
+        pshs    B
+
+RDD1    lda     >HDDATA         ;Read the rest of the block w/o handshake
+        ldb     >HDDATA
+        std     ,X++
+        dec     ,S
+         bne    RDD1
+
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD8
+    endc
+
+        puls    A,PC            ;Flush counter
+
+    else                        ;If slow transfers,
+
+Keep256 clrb                    ;Copy 256 bytes
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD9
+    endc
+
+RDD1    bsr     GetDat          ;Full handshake on every byte
+        sta     ,X+
+        decb
+         bne    RDD1
+
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD8
+    endc
+
+        rts
+
+    endc
+
+*
+*  Copy 256 bytes from sector buffer to bit bucket
+*
+
+    ifne    fstflg              ;If fast transfers,
+
+Dump256 bsr     GetDat          ;Full handshake on 1st byte
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD9
+    endc
+        bsr     GetDat          ;Quick dump goes in pairs
+        ldb     #$7F
+
+RDD2    lda     >HDDATA         ;Read the rest of the block w/o handshake
+        lda     >HDDATA
+        decb
+         bne    RDD2
+
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD8
+    endc
+        rts
+
+    else                        ;If slow transfers,
+
+Dump256  clrb                   ;Copy 256 bytes
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD9
+    endc
+
+RDD2    bsr     GetDat          ;Full handshake on every byte
+        decb
+         bne    RDD2
+
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD8
+    endc
+        rts
+
+    endc
+
+*
+*   Wait for controller to indicate it is ready to transmit
+*   a data byte, then get it to Reg-A.
+*
+*   Assumes AbtStk,U has been set to the error recovery
+*   stack pointer.
+*   If the command aborts, the stack is cleaned and control
+*   passed to CmdDun.
+*
+GetDat  equ     *
+
+GDT0    lbsr    ChkAbt              ;Get status, check for abort
+    ifne    icdflg                  ;If ignoring C/D bit,
+        anda    #%00001011
+    endc
+        cmpa    #%00001011          ;Check for data request
+         beq    GDT1                ; (branch if request present)
+
+*   New -- sleep if controller not ready (D.DMAReq only)
+
+        lbsr    Snooze
+        bra     GDT0
+
+*  Ready.  Get the data
+
+GDT1    lda     >HDDATA
+        rts
+
+ page
+*
+*  Copy 256 bytes from (X) to sector buffer
+*
+
+    ifne    fstflg              ;If fast transfers,
+
+Writ256 ldd     ,X++
+        bsr     PutDt2          ;Full handshake on 1st byte pair
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD9
+    endc
+        ldb     #$7F
+        pshs    B
+
+WRT1    ldd     ,X++
+        sta     >HDDATA         ;Write the rest of the block w/o handshake
+        stb     >HDDATA
+        dec     ,S
+         bne    WRT1
+
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD8
+    endc
+        puls    A,PC            ;clean up counter
+
+    else                        ;If slow transfers,
+
+Writ256  clrb                    ;Copy 256 bytes
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD9
+    endc
+
+WRT1    lda     ,X+
+        bsr     PutDat          ;Full handshake on every byte
+        decb
+         bne    WRT1
+
+    ifne    tboflg              ;If 2 MHz for transfers,
+        clr     >$FFD8
+    endc
+        rts
+
+    endc
+
+*
+*  Copy 256 bytes from verify buffer to sector buffer
+*
+
+copy256 pshs    X
+
+        leax    vrfbuf,u        ;Get verify buffer pointer
+        bsr     writ256
+
+        puls    X,PC
+
+*
+*   Put Reg-D to controller as data bytes
+*
+*   Assumes AbtStk is valid.
+*
+PutDt2  bsr     PutDat
+        tfr     B,A             ;Fall through to PutCm2
+
+*
+*   Wait for controller to indicate it is ready to receive
+*   a data byte, then send it from Reg-A.
+*
+*   Assumes AbtStk,U has been set to the error recovery
+*   stack pointer.
+*   If the command aborts, the stack is cleaned and control
+*   passed to CmdDun.
+*
+PutDat  pshs    A
+
+PDT0    lbsr    ChkAbt              ;Get status, check for abort
+    ifne    icdflg                  ;If ignoring C/D bit,
+        anda    #%00001011
+    endc
+        cmpa    #%00001001          ;Check for data request
+         beq    PDT1                ; (branch if request present)
+
+*   New -- sleep if controller not ready (D.DMAReq only)
+
+        lbsr    Snooze
+        bra     PDT0
+
+*  Ready.  Put the data
+
+PDT1    puls    A
+        sta     >HDDATA
+        rts
+
+ page
+*
+*   Process detailed status request command.
+*   This routine performs the status request, then
+*   translates the controller's error code and returns
+*   it as the error status of the operation w/ C-bit set.
+*   "Null" and correctable errors do not cause C-bit set.
+*
+CMESTS  equ     *
+
+*  Recover error status from controller
+
+        bsr     GetDat      ;Read result of last disk command
+        pshs    a           ; (save)
+
+    ifne    FMTFLG
+        bsr     GetDat      ; (dump head #)
+        bsr     GetDat      ;Get shifted cyl # MS byte
+        tfr     A,B
+        bsr     GetDat      ;Get shifted cyl # LS byte
+        exg     A,B
+        std     ERRHCYL,U   ;Save cylinder # of error for FORMAT
+    else
+        bsr     DBLRDD      ;Dump last 3 response bytes
+        bsr     GetDat      ; (dump last response byte)
+    endc
+
+        lbsr    ewait       ; Wait for command complete
+        lda     >HDDATA     ;  and dump completion byte
+
+        puls    a           ; (recover error code)
+
+*  Look up error code in Reg-A -> Reg-B
+
+        anda    #$3F        ;Keep only error bits
+         beq    NULERR
+
+        cmpa    #WE$CER     ;Correctable error
+         bne    EL0
+
+*   Special processing for correctable errors.
+*   If formatting (RetryEn,U != 0), report these
+*   as READ ERRORS
+
+        tst     RetryEn,U       ;If retries disabled, error out.
+         beq    NULERR          ; (retries enabled -- ignore error)
+
+EL0     equ     *
+
+    ifne    cchflg          ;If read cache supported,
+        clr     BFRFLG,U        ;Dump cache on any error
+    endc
+    ifne    errflg      ;If good error messages enabled,
+
+        leax    ERRTBL,PCR     ;Point to lookup table
+
+*  Search error list.  Error code is in Reg-A
+
+EL1     tst     ,X
+         bmi    XXXERR
+        cmpa    ,X++
+         bne    EL1
+
+*  Found error code
+        comb                ;Set carry
+        ldb     -1,X            ;Fetch error code
+        bra     XCMXIT
+
+    endc
+
+*  Didn't find error code.  Note that errors that translate
+*  to E$Read are not in the table -- we just let them default
+*  to here.
+
+XXXERR  comb
+        ldb     #E$Read
+        bra     XCMXIT          ;Return status to caller
+
+NULERR  clrb                    ;Force carry clear
+XCMXIT  lbra    CMEXIT          ;Return status to caller
+
+*  Byte saver
+
+DBLRDD  lbsr    GetDat          ;Read 1 byte
+        lbra    GetDat
+
+ page
+    ifne    fmtflg      ;If formatting allowed,
+*
+*   Process special drive parameters command.
+*
+*   This command sends the legal track count rather
+*   than the park track count.
+*
+CMEXIN  ldd     PD.CYL,Y        ;get track count
+        bra     CMIN01
+    endc
+
+*
+*   Process command to send drive parameters to controller.
+*   Assumes Reg-Y points to real or bogus *PATH* descriptor.
+*
+*   This routine fetches the drive parameters from the descriptor,
+*   and sends them to the controller.
+*
+CMEINI  equ     *
+
+*   Send # of cylinders.  We send the park track, since it
+*   is the largest track # that will be used.
+
+    ifne    (Drives-1)      ;if 2 drives,
+     ifne   trsflg          ; if optimized for 32 SPT, 4 heads,
+        bsr     GtPkLSN         ;Get park LSN to B:X
+        pshs    X,B
+        ldd     ,S
+        addd    ,S
+        leas    3,S             ;Convert to track by dividing by 128
+     else
+        bsr     GtPkLSN         ;Get park LSN to B:X
+        lbsr    LSNDIV
+        tfr     X,D             ;Calculate track and get to D
+     endc
+    else                    ;if 1 drive,
+     ifne   trsflg          ; if optimized for 32 SPT, 4 heads,
+        ldd     PRKLSN,U
+        addd    PRKLSN,U        ;park track = park LSN/128
+     else
+        ldb     (PRKLSN+0),U
+        ldx     (PRKLSN+1),U    ;get park LSN
+        lbsr    LSNDIV
+        tfr     X,D             ;Calculate track and get to D
+     endc
+    endc
+
+*   Enter here w/ track count in Reg-D
+
+CMIN01  addd    #1              ; (advance track count by 1)
+        bsr     PutDt2          ;Send last legal track to controller
+
+*  Send # of heads
+
+        lda     PD.SID,Y
+        bsr     PutDat
+
+*  Send (bogus) reduced write current cylinder
+
+        ldd     PD.CYL,Y
+        lbsr    PutDt2
+
+*  Send write pre-comp cylinder (DD had wpc/4)
+
+    ifne    (Drives-1)         ;if 2 drives,
+        pshs    Y
+        ldb     PD.DRV,Y        ;Get drive #
+        lbsr    GOBPtr          ;Get option pointer for this drive
+        ldb     (PCCYL-OBSTART),Y
+        puls    Y
+    else
+        ldb     PCCYL,U         ;Get precomp cylinder / 4
+    endc
+        lda     #4
+        mul                     ;Convert to real cyl # in D
+        lbsr    PutDt2
+
+*   Send maximum error correction burst length (WD recommends 4)
+
+        lda     #4
+        lbsr    PutDat
+
+*   Wait for end of command, etc.
+
+        lbra    WaiEnd
+
+    ifne    (Drives-1)
+    page
+*
+*   Utility to get park lsn to B:X for systems with 2 drives.
+*
+GtPkLSN pshs    Y
+        ldb     PD.DRV,Y        ;Get drive #
+        lbsr    GOBPtr          ;Get option pointer for this drive
+        ldb     (PRKLSN+0-OBSTART),Y
+        ldx     (PRKLSN+1-OBSTART),Y
+        puls    Y,PC
+    endc
+
+    ifne    errflg      ;If good errors enabled,
+    page
+*
+*   Table of error code followed by OS9 error code
+*   This translation is somewhat arbitrary.
+*   Remember, E$Read errors are not in the table.
+*
+
+ERRTBL  fcb     WE$NSC,E$Seek,WE$WRF,E$Write,WE$NRD,E$NotRdy,WE$NT0,E$Seek
+        fcb     WE$DSS,E$Seek,WE$SIK,E$Seek,WE$BTK,E$Read,WE$CMD,E$Unit
+        fcb     WE$ISA,E$Sect
+        fcb     -1
+
+    endc
+
+*
+*   End of hdcmd.src
+*
+

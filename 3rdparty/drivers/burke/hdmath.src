@@ -1,0 +1,508 @@
+*   COPYRIGHT BURKE & BURKE 1990
+*   ALL RIGHTS RESERVED
+*
+*   COCO XT LSN / DRIVE -> TASK FILE CONVERSION
+*
+*   Version 2.0
+*
+*   Date        Who     Description
+*   --------    ---     --------------------------
+*   01-08-88    CJB     Coded from version 1.0
+*                       Added GOBPtr routine and support for 2
+*                        drives with different characteristics.
+*                       Changed ST-225 support to work with any
+*                        drive having 32 SPT and 4 heads (e.g.
+*                        ST-238 w/ RLL & W9 in).
+*   01/28/88    CJB     Changed LSN bounds check in XSETUP --
+*                        compare to park LSN!
+*   02/06/88    CJB     Fixed bug that caused loss of LSN MSbyte
+*                        when supporting 2 drives.
+*                       Eliminated need for DIVA and DIVY parameters
+*   05/18/88            Added CNV99 to check for seek errors
+*   12/12/88    cjb     Fixed bug in 1-drive XSETUP for park track
+*   05/18/90    cjb     Added support for drives in multiple slots
+*
+
+*
+*  Get ready to read or write a sector
+*
+SETUP   lbsr    SELDRV
+         bcs    SETXIT
+
+        bsr     XSETUP
+
+SETXIT  rts 
+
+    ifeq    trsflg              ;If not optimized for 4 heads, 32 SPT
+
+*
+*  General setup for read or write.
+*  Drive is already selected.
+*
+XSETUP  pshs    y,x,b
+
+    ifne    (Drives-1)
+        ldb     PD.DRV,Y
+        lbsr    GOBPTR          ;Point Y to park LSN area
+
+        ldb     ,S              ;Recover MSByte of LSN
+        cmpb    (PRKLSN-OBSTART+0),Y
+         lbhi   BADSEC
+         bcs    XSET2           ;Branch if OK
+
+        cmpx    (PRKLSN-OBSTART+1),Y
+         lbhi   BADSEC
+
+*  LSN is OK.  Still in B:X
+
+XSET2   ldy     3,S     ;Recover PD pointer
+
+    else
+        cmpb    PRKLSN+0,U
+         lbhi   BADSEC
+         bcs    XSET2
+
+        cmpx    PRKLSN+1,U
+         lbhi   BADSEC
+
+*  LSN is OK.  Still in B:X
+
+XSET2   equ     *
+
+    endc
+
+*
+*   Convert LSN to cylinder, sector, head #'s
+*   Save head.sector in TEMP
+*
+CNVLSN  equ     *
+
+        bsr LSNDIV          ;track -> X, Head -> A, sector ->B
+        std temp,u          ;save head & sector for later
+
+        clrb                ; (clear carry for ROR)
+        tfr x,d             ;Cylinder number
+        RORA
+        RORA                ;get cylinder MSB's to top of byte
+        RORA
+        std hicyl,u
+
+        ldb     temp+1,U    ;Process sector #
+        andb    #%00111111  ; (0-31 normal, 0-47 RLL)
+        stb     secnum,u    ;Save logical sector number
+        lsrb                ; / 2 to get physical sector #
+        orb     hicyl,U     ; OR in the physical sector number
+        stb     hicyl,U
+
+        lda     sdhreg,U    ;save drive #; OR in head
+        anda    #%00100000
+        ora     temp+0,U
+        sta     sdhreg,U
+
+        lda     #1          ;read only 1 sector
+        sta     seccnt,U
+
+        tst    drvsem,u    ;is drive ready?
+         beq   CNVOK
+
+*
+*   Drive is not ready.
+*
+CNV7    clr     drvsem,U
+
+    ifne    (Drives-1)      ;If multiple drives,
+*        ldy     actdrv,u
+*        lda     V.TRAK,y
+        ldy     3,s         ;Restore PD pointer
+*        cmpa    #$FF
+*         bne    CNVOK       ;Implicit seek if current track known
+        lbsr    Seek        ;Explicit seek
+    else
+        lda     DRVTBL+V.TRAK,U
+        cmpa    #$FF
+         bne    CNVOK       ;Implicit seek if current track known
+        lbsr    SEEKT0      ;Else seek to track 0
+    endc
+         bcs    CNV99       ; report error if any encountered
+
+*  Generic exit w/o error from conversion
+
+CNVOK   clrb
+
+CNV9    bcc     CNVXIT
+
+CNV99   stb     ,s          ;Set error code
+
+CNVXIT  puls    b,x,y,PC
+
+*  Return bad sector error
+
+BADSEC  puls    b
+        comb 
+        ldb     #E$Sect
+        puls    x,y,PC
+
+ page
+*
+*   Convert LSN in B:X to track # in X
+*   and head.sector (remainder) in D.  Enter with
+*   Reg-U -> static storage and Reg-Y -> path descriptor.
+*
+*   Routine assumes that MSB of LSN is 0, and that
+*   MSB of H*S is 0.
+*
+*   Start by dividing LSN by SPT*heads.  The quotient
+*   is the track number.  Then divide the remainder by
+*   SPT; the quotient is the head, and the remainder
+*   is the sector.
+*
+LSNDIV  pshs    Y,X,B               ;Save Y, stack LSN for division
+
+*   Calculate SPT * heads
+
+        lda     PD.SID,Y            ;Get sides
+        ldb     (PD.SCT+1),Y        ;Get reg-B = SPT
+        mul
+
+        pshs    D
+        clr     ,-S                 ;Now stack = heads*spt
+
+*   Calculate track # to X
+
+        bsr     div24               ;divide, X=quotient, D=remainder
+        leas    6,S                 ; discard temps
+
+        pshs    X                   ;Save track to return
+
+*   Now divide heads*SPT by SPT -- quickly
+
+        clr     ,-s
+        com     ,s
+
+LDV000  inc     ,s
+        subb    (PD.SCT+1),Y
+        sbca    #0
+         bhs    LDV000
+
+        addb    (PD.SCT+1),Y        ;Get sector # to B
+
+        puls    A,X,Y,PC            ;Get head to A, sector to B, track X
+
+*
+*   Divide 24 bit 'M' by 24 bit 'N'.  Return 16 bit quotient
+*   in Reg-X, 16 bit remainder in Reg-D.  Destroys M, N; leaves
+*   carcasses on stack.  Preserves U, Y.
+*
+*   Entry:
+*       M.l
+*       M.m
+*       M.h
+*       N.l
+*       N.m
+*       N.h
+*       P.l
+*   SP->P.h
+*
+
+div24   pshs    Y
+
+*   Push special division guys
+
+        ldd     #1
+        pshs    D
+        pshs    A                   ;24 bit "1" flag
+
+        clrb
+        pshs    D
+        pshs    A                   ;24 bits of 0's (result)
+
+*   Lotsa good stuff on stack.  Find biggest multiple of heads*spt
+*   smaller than or = LSN
+
+LDV001  ldd     (8+2+3+0),S
+        cmpd    (8+2+0+0),S
+         bne    LDV002              ;carry set w/ which is more
+
+        lda     (8+2+3+2),S
+        cmpa    (8+2+0+2),S
+
+*   Now CC set for LSN-HS
+LDV002  bcs     LDV005              ;branch if HS > LSN
+
+*   Get to multiply HS etc by 2
+
+        asl     (3+2),S             ;bit flag * 2
+        rol     (3+1),S
+        rol     (3+0),S
+
+        asl     (8+2+0+2),S         ;HS * 2
+        rol     (8+2+0+1),S
+        rol     (8+2+0+0),S
+
+        bra     LDV001
+
+*   Now HS is bigger than LSN.  Start dividing.
+
+LDV005  lsr     (8+2+0+0),S         ;HS / 2
+        ror     (8+2+0+1),S
+        ror     (8+2+0+2),S
+
+        lsr     (3+0),S             ;bit flag / 2
+        ror     (3+1),S
+        ror     (3+2),S
+         bcs    LDV008              ; (branch if ready for remainder)
+
+        ldd     (8+2+3+1),S         ;LSN - HS.scaled
+        subd    (8+2+0+1),S
+        std     (8+2+3+1),S
+        lda     (8+2+3+0),S
+        sbca    (8+2+0+0),S
+        sta     (8+2+3+0),S
+
+         bcc    LDV007
+
+*   No good.  Restore LSN
+
+        leay    (8+2+3),S
+        leax    (8+2+0),S
+        bsr     addxtoy             ;LSN + HS.scaled
+         bra    LDV005
+
+*   Good.  Add bit to result
+
+LDV007  leay    0,S                 ;Quotient + bit
+        leax    3,S
+        bsr     addxtoy
+         bra    LDV005
+
+*   Now we've checked for all multiples of HS.
+*   Quotient is at 0-2,S; remainder is where dividend was.
+*   Quotient and remainder are known to be < 65536
+
+LDV008  ldx     (0+1),S             ;get 16 bit quotient
+        leas    6,S                 ;Deallocate quotient & temps
+        ldd     (4+3+1),S           ;get 16 bit remainder
+
+        puls    Y,PC
+
+*
+*   Add 24 bits @X to 24 bits @Y
+*
+addxtoy ldd     1,Y
+        addd    1,X
+        std     1,Y
+        lda     0,Y
+        adca    0,X
+        sta     0,Y
+        rts
+
+    else
+
+*
+*   General setup for read or write.
+*   Drive is already selected.
+*
+*   Optimized for drives such as ST-225, with
+*   32 double-sectors / track.  This version
+*   works only with 4 heads.
+*
+*  Reg-Y points to path descriptor.
+*  Drive # already set up in SDHREG,U
+*
+XSETUP  pshs    y,x,b
+
+    ifne    (Drives-1)
+        ldy     actdrv,u    ;Verify legal LSN (fetch drive table pointer)
+
+        cmpb    DD.TOT,y
+         lbhi   BADSEC
+         bcs    XSET2      ;Branch if OK
+
+        cmpx    DD.TOT+1,y
+         lbcc   BADSEC
+
+*  LSN is OK.  Still in B:X
+
+XSET2   ldy     3,S     ;Recover PD pointer
+
+    else
+        cmpb    DRVTBL+DD.TOT,U
+         lbhi   BADSEC
+         bcs    XSET2
+
+        cmpx    DRVTBL+DD.TOT+1,U
+         lbcc   BADSEC
+
+*  LSN is OK.  Still in B:X
+
+XSET2   equ     *
+
+    endc
+
+*
+*   These drives have 4 heads, 32 sectors / track.
+*   The LSN is known to be in range.
+*
+
+        pshs    x,b     ;Calculate track = LSN / (32*4); format for controller
+        ldd     ,s
+        addd    ,s          ;double MS word of LSN; /128 is like *2 / 256.
+        tst     2,s         ; (there's never a carry from ADDD)
+         bpl    XSET3
+
+        incb                ;add in MSB of LS byte if needed -- never a carry
+
+*  NOTE -- carry must be clear here.
+
+XSET3   rora            ;Controller likes 2 MS bits of cylinder in MS bits of A
+        rora
+        rora
+        std     hicyl,U     ; (don't need to format Reg-B)
+
+        ldb     2,s         ;Calculate logical sector and physical sector
+        andb    #%00011111  ; (0-31 ALWAYS -- W9 in for RLL)
+        stb     secnum,u
+        lsrb                ; (physical sector is 1/2 logical -- 0-15)
+        orb     hicyl,u
+        stb     hicyl,u     ;format correctly
+
+        ldb     2,s         ;Calculate head number = LSN / 32
+        lda     #8
+        mul                 ; now head number is in Reg-A
+        anda    #%00000011
+        pshs    a
+        lda     sdhreg,u
+        anda    #%00100000  ; (save only the drive # from SELDRV)
+        ora     ,s+
+        sta     sdhreg,u    ; format for controller and save
+
+        lda     #1          ;Set up sector count
+        sta     seccnt,u
+
+        leas    3,s         ;Discard stack stuff
+
+*  Done with task file.
+        tst     drvsem,u    ;Is drive ready?
+         beq    CNVOK
+
+*  Drive not ready; perform seek
+CNV7    clr     drvsem,u
+
+    ifne    (Drives-1)      ;If multiple drives,
+*        ldy     actdrv,u
+*        lda     V.TRAK,y
+        ldy     3,s         ;Restore PD pointer
+*        cmpa    #$FF
+*         bne    CNVOK       ;Implicit seek if current track known
+        lbsr    Seek        ;Explicit seek
+    else
+        lda     DRVTBL+V.TRAK,U
+        cmpa    #$FF
+         bne    CNVOK       ;Implicit seek if current track known
+        lbsr    SEEKT0      ;Else seek to track 0
+    endc
+         bcs    CNV99
+
+*  Generic conversion exit with no error
+CNVOK   clrb 
+
+CNV9    bcc     CNVXIT
+
+CNV99   stb     ,s
+
+CNVXIT  puls    b,x,y,PC
+
+*  Return bad sector error
+BADSEC  puls    b
+        comb 
+        ldb     #E$Sect
+        puls    x,y,PC
+
+    endc
+
+*
+*   Perform drive selection calculations
+*
+SELDRV  equ     *
+
+    ifne    (Drives-1)          ;If multiple drives supported,
+
+        lda     PD.DRV,Y
+        cmpa    #Drives         ;Is drive # OK?
+         bcs    SD0
+
+*  Illegal drive error
+        comb
+        ldb     #E$Unit
+
+SD.XIT  rts
+
+*   Drive # in A is OK.  Set semaphore based on 
+*   current and prev. drive;
+
+SD0     clr     drvsem,U        ;Assume same drive.
+        cmpa    prvdrv,U        ;Same as previous?
+         beq    SD1             ; (if so, we're already set up)
+
+*  Set flag to indicate new drive, and wait for drive ready
+
+        sta     prvdrv,U
+        dec     drvsem,U
+        lbsr    WaiDrv          ;Wait -- preserve D,X,Y,U
+         bcs    SD.XIT          ; (abort if drive not ready)
+    ifne    cchflg          ;If cache supported,
+        clr     BfrFlg,U        ;Mark cache data invalid
+    endc
+
+*  Convert drive # to controller's format
+
+SD1     anda    #$01            ;2 drives / controller, but allow slots
+        asla
+        asla
+        asla
+        asla
+        asla
+        pshs    a
+        lda     sdhreg,U        ;get old value
+        anda    #%00001111      ; (save head #)
+        ora     ,s+
+        sta     sdhreg,U
+
+        pshs    x
+        ldx     PD.DTB,Y        ;get pointer to drive table
+        stx     ACTDRV,U
+        puls    x
+
+    else
+
+        lda     sdhreg,U        ;get old value
+        anda    #%00001111      ; save head #, force drive # to 0
+        sta     sdhreg,U
+
+    endc
+
+*  Carry clear unless error
+SDXIT   rts
+
+    ifne    (Drives-1)          ;For 2 drive systems,
+
+    page
+*
+*   Calculate pointer to drive PCCYL, DIVA, DIVY, and PRKTRK
+*   parameters, based on drive # in Reg-B.  Return ptr in Y.
+*
+*   Assumes U->static storage
+*
+GOBPtr  pshs    D
+        lda     #OBSIZE         ;(size of option packet for each drive)
+        mul
+        leay    OBSTART,U
+        leay    D,Y             ;Point to options for correct drive
+        puls    D,PC
+
+    endc
+
+*
+*   end of hdmath.src
+*
+
