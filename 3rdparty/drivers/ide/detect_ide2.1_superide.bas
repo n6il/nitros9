@@ -88,19 +88,19 @@ ENDIF
 drivenumber=1
 
 (* Select drive 0 in NON-LBA mode, and do a Execute Drive Diagnostic command
-10 POKE baseaddress+7.,driveselect(drivenumber)
-POKE baseaddress+8.,$90
+10 POKE baseaddress+$c,driveselect(drivenumber)
+POKE baseaddress+$e,$90
 
 (* Need both DRDY (Drive Ready) & DSC (Drive Seek Complete) flags set
 ready=$50
 counter=5000
 WHILE counter>0 DO
-  idestatus=PEEK(baseaddress+8.)
+  idestatus=PEEK(baseaddress+$e)
 EXITIF idestatus=ready THEN
 ENDEXIT
 EXITIF LAND(idestatus,1)<>0 THEN
   PRINT "Error detected during Drive Diagnostic"
-  ideerror=PEEK(baseaddress+2.)
+  ideerror=PEEK(baseaddress+$2)
   temp=LAND(ideerror,$7f)
   IF temp>1 THEN
     PRINT "Error on drive 0"
@@ -115,12 +115,12 @@ EXITIF LAND(idestatus,1)<>0 THEN
   IF ideerror>=$80 THEN
     PRINT "Error on drive 1"
     drivefound(2)=3
-    POKE baseaddress+7.,driveselect(2)
+    POKE baseaddress+$c,driveselect(2)
     counter=5000
     REPEAT
-      idestatus=PEEK(baseaddress+8.)
+      idestatus=PEEK(baseaddress+$e)
     UNTIL LAND(idestatus,$80)=0 OR counter=0
-    ideerror=PEEK(baseaddress+2.)
+    ideerror=PEEK(baseaddress+$2)
     IF ideerror>0 AND ideerror<6 THEN
       PRINT " - ";driveerrors(ideerror)
     ELSE
@@ -146,14 +146,14 @@ ELSE
 ENDIF
 
 (* Now, select drive 1 - check if it is there
-POKE baseaddress+7.,driveselect(2)
+POKE baseaddress+$c,driveselect(2)
 REPEAT
-  idestatus=PEEK(baseaddress+8.)
+  idestatus=PEEK(baseaddress+$e)
 UNTIL LAND(idestatus,$80)=0
 IF LAND(idestatus,1)<>0 OR LAND(idestatus,$20)<>0 THEN
   PRINT "Error flag or Write Fault flag set on status register for drive 1"
   IF LAND(idestatus,1)=1 THEN
-    ideerror=PEEK(baseaddress+2.)
+    ideerror=PEEK(baseaddress+$2)
     PRINT "Drive 1 error code=$";
     PRINT USING "h2",iderror
   ELSE
@@ -179,18 +179,18 @@ FOR drivenumber=1 TO 2
   PUT #1,undoff
   IF drivefound(drivenumber)=1 THEN
     PRINT "Sending IDE identify device command to drive ";drivenumber-1
-    POKE baseaddress+7.,driveselect(drivenumber)
-    POKE baseaddress+8.,$ec
+    POKE baseaddress+$c,driveselect(drivenumber)
+    POKE baseaddress+$e,$ec
     counter=2000
     REPEAT
       counter=counter-1
-    UNTIL PEEK(baseaddress+8.)=ready+8 OR counter=0
+    UNTIL PEEK(baseaddress+$e)=ready+8 OR counter=0
     IF counter=0 THEN
-      POKE baseaddress+8.,$a1
+      POKE baseaddress+$e,$a1
       counter=2000
       REPEAT
         counter=counter-1
-      UNTIL PEEK(baseaddress+8.)=ready+8 OR counter=0
+      UNTIL PEEK(baseaddress+$e)=ready+8 OR counter=0
     ELSE
       PRINT "ATA Identified:"
       GOTO 20
