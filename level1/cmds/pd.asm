@@ -1,5 +1,5 @@
 ********************************************************************
-* pxd - Print execution directory
+* p[wx]d - Print work/execution directory
 *
 * $Id$
 *
@@ -7,8 +7,8 @@
 * ------------------------------------------------------------------
 *   1    From Tandy OS-9 Level One VR 02.00.00
 
-         nam   pxd
-         ttl   Print execution directory
+         nam   p[wx]d
+         ttl   Print work/execution directory
 
 * Disassembled 98/09/10 23:50:10 by Disasm v1.6 (C) 1988 by RML
 
@@ -34,10 +34,22 @@ buffer   rmb   1
 sttbuf   rmb   282
 size     equ   .
 
+         IFNE   PXD
 name     fcs   /pxd/
+         ELSE
+         IFNE  PWD
+name     fcs   /pwd/
+         ENDC
+         ENDC
          fcb   edition
 
+         IFNE   PXD
 badnam   fcc   "pxd: bad name in path"
+         ELSE
+         IFNE  PWD
+badnam   fcc   "pwd: bad name in path"
+         ENDC
+         ENDC
          fcb   C$CR
 dotdot   fcc   "."
 dot      fcc   "."
@@ -83,10 +95,22 @@ L0079    lbsr  L00FB
          os9   I$Close  
          clrb  
 L008D    os9   F$Exit   
+         IFNE  PXD
 chdir    lda   #DIR.+EXEC.+READ.
+         ELSE
+         IFNE  PWD
+chdir    lda   #DIR.+READ.
+         ENDC
+         ENDC
          os9   I$ChgDir 
          rts   
+         IFNE  PXD
 open     lda   #DIR.+EXEC.+READ.
+         ELSE
+         IFNE  PWD
+open     lda   #DIR.+READ.
+         ENDC
+         ENDC
          os9   I$Open   
          rts   
 
