@@ -15,9 +15,9 @@ DESCS		= d0.dd d1.dd d2.dd d3.dd h0_15.dd h1_15.dd h0_35.dd \
 		h1_35.dd m1.dd m2.dd nil.dd p.dd pipe.dd ssc.dd t1.dd \
 		t2.dd t3.dd term32.dd term80.dd
 SYSGOS		= sysgo sysgo_rom
-HELP		= CO32.hp CO80.hp D0.hp D1.hp D2.hp D3.hp GRFO.hp H0_15.hp \
-		H0_35.hp H1_15.hp H1_35.hp M1.hp M2.hp NIL.hp P.hp PIPE.hp \
-		SSC.hp T1.hp T2.hp T3.hp TERM32.hp TERM80.hp config.hp
+HELP		= co32.hp co80.hp d0.hp d1.hp d2.hp d3.hp grfo.hp h0_15.hp \
+		h0_35.hp h1_15.hp h1_35.hp m1.hp m2.hp nil.hp p.hp pipe.hp \
+		ssc.hp t1.hp t2.hp t3.hp term32.hp term80.hp config.hp
 
 ALLOBJS		= $(BOOTERS) $(KERNELS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
 		$(DRIVERS) $(IOSUBS) $(DESCS) $(SYSGOS)
