@@ -328,15 +328,14 @@ L0177    ldx   V$DESC,u   		get dev desc ptr
          IFNE  H6309     
          lde   V$USRS,u  		get user count
          beq   L0177      		branch if zero
-         pshs  u,b       
-         lbsr  FIOQu2    		call F$IOQu directly
-         puls  u,b       
          ELSE
          pshs  a			save off A
          lda   V$USRS,u   		get user count
          beq   L0188			branch if zero
-         os9   F$IOQu
          ENDC
+         pshs  u,b       
+         lbsr  FIOQu2    		call F$IOQu directly
+         puls  u,b       
          IFEQ  H6309
 L0188    puls  a			pull A from stack
          ENDC
@@ -391,15 +390,15 @@ L01D1
          lsrd            		/32
          ELSE
          lsra
-         rolb				/2
+         rorb				/2
          lsra
-         rolb				/4
+         rorb				/4
          lsra
-         rolb				/8
+         rorb				/8
          lsra
-         rolb				/16
+         rorb				/16
          lsra
-         rolb				/32
+         rorb				/32
          ENDC
          clra            
          rts             
@@ -422,7 +421,6 @@ Loop2    clr   ,u+       	clear newly alloc'ed mem
          bhi   Loop2     
          ENDC            
          ldd   HWPG,s     get hwpage and upper addr
-         IFNE  H6309
 *         IFNE  H6309
          bsr   L01D1     
          std   <DATBYT2,s     save off
@@ -462,7 +460,6 @@ L023B    sty   <DATBYT1,s
 L023F    ldd   HWPORT,s  
          anda  #$1F      
          addd  <DATBYT1,s    
-         ENDC
 *         ENDC
          ldu   VSTAT,s    load U with static storage of drvr
          clr   ,u         clear ??
@@ -553,7 +550,6 @@ L02D1    ldx   $01,s     	get ptr to dev table
          os9   F$SRtMem  	return mem
          ldx   $01,s      	get old U on stack
          ldx   V$DESC,x  
-         IFNE  H6309
 *         IFNE  H6309
          ldd   M$Port,x  
          beq   L032B     
@@ -625,7 +621,6 @@ L0323
          ora   #ImgChg   
          sta   P$State,x 
          ENDC            
-         ENDC
 *         ENDC
 L032B    puls  u,b       
          ldx   V$DESC,u     	get descriptor in X
@@ -831,18 +826,14 @@ L0459    pshs  y         	save off path desc ptr in Y
          cmpf  #PD.OPT
          bcs   L047E     
          ldf   #$20      
+L047E    clre            
+         tfm   x+,u+     
          ELSE            
          ldb   ,x+       	get options count
          leau  <PD.OPT,y    
          cmpb  #PD.OPT
          bls   L03E5
          ldb   #PD.OPT-1
-         ENDC            
-L047E                    
-         IFNE  H6309     
-         clre            
-         tfm   x+,u+     
-         ELSE            
 KeepLoop lda   ,x+
          sta   ,u+       
 L03E5    decb
