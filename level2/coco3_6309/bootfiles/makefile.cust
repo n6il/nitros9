@@ -57,7 +57,7 @@ BOOTFILE_TC3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vi.dd $(MD)/ftdd.dd \
 		$(MD)/sc6551.dr $(MD)/t2_sc6551.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_tc3
+		$(MD)/clock_60hz $(MD)/clock2_cloud9
 
 # OS-9 disk bootfile to allow booting from TC^3 SCSI controller
 # This is a custom bootfile made by Boisy for his system
@@ -75,7 +75,7 @@ BOOTFILE_EXP	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vi.dd $(MD)/ftdd.dd \
 		$(MD)/sc6551.dr $(MD)/t2_sc6551.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_tc3
+		$(MD)/clock_60hz $(MD)/clock2_cloud9
 #		$(C9)/products/SuperSCSI/softwarev2/6809l2/superdriver.dr \
 #		$(C9)/products/SuperSCSI/softwarev2/6809l2/lltc3.dr \
 #		$(C9)/products/SuperSCSI/softwarev2/6809l2/h5_ez135_tc3.dd \
@@ -96,47 +96,48 @@ BOOTFILE_LUCKEY  = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
                 $(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
                 $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-                $(MD)/clock_60hz \
-                $(MD)/clock2_soft
+                $(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILE_CUST   = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_CUST2  = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(MD)/rbf.mn \
-                $(C9)/Products/SuperDrivers/software/6809l2/rbsuper.dr \
-                $(C9)/Products/SuperDrivers/software/6809l2/llide.dr \
-                $(C9)/Products/SuperDrivers/software/6809l2/lltc3.dr \
-                $(C9)/Products/SuperDrivers/software/6809l2/i0_ide.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/i1_ide.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/ih_ide.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/s0_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/s1_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/s2_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/s3_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/s4_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/s5_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/s6_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/s7_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/sh_tc3.dd \
                 $(C9)/Products/DriveWire/software/6809l2/drivewire.dr \
                 $(C9)/Products/DriveWire/software/6809l2/ddx0.dd \
                 $(C9)/Products/DriveWire/software/6809l2/x1.dd \
                 $(C9)/Products/DriveWire/software/6809l2/x2.dd \
                 $(C9)/Products/DriveWire/software/6809l2/x3.dd \
-                $(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
-                $(MD)/scf.mn $(MD)/cc3io.dr \
+                $(MD)/scf.mn \
+                $(MD)/cc3io.dr \
                 $(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
                 $(MD)/grfint.io \
                 $(MD)/term_win80.dt \
-                $(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
-                $(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
-                $(MD)/sc6551.dr $(MD)/t2_sc6551.dd $(MD)/t3_sc6551.dd \
+		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
+                $(MD)/sc6551.dr \
+                $(MD)/t2_sc6551.dd \
                 $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-                $(MD)/clock_60hz \
-                $(C9)/Products/DriveWire/software/6809l2/clock2_dw
-#                $(C9)/Products/SuperDrivers/software/6809l2/lldw.dr \
-#                $(C9)/Products/SuperDrivers/software/6809l2/ddx0.dd \
-#                $(C9)/Products/SuperDrivers/software/6809l2/x1.dd \
-#                $(C9)/Products/SuperDrivers/software/6809l2/x2.dd \
-#                $(C9)/Products/SuperDrivers/software/6809l2/x3.dd \
+                $(MD)/clock_60hz $(MD)/clock2_soft \
+                $(C9)/Products/NitrOS-9\ ROM\ Kit/software/6809l2/sysgo_rom \
+		$(CD)/shell_21 $(CD)/devs $(CD)/deiniz $(CD)/dmem \
+		$(CD)/pmap
+                
+BOOTFILE_CUST   = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+                $(MD)/rbf.mn \
+                $(C9)/Products/DriveWire/software/6809l2/drivewire.dr \
+                $(C9)/Products/DriveWire/software/6809l2/ddx0.dd \
+                $(MD)/rammer.dr \
+                $(MD)/r0_8k.dd \
+                $(MD)/scf.mn \
+                $(MD)/sc6551.dr \
+                $(MD)/term_sc6551.dt \
+                $(MD)/cc3io.dr \
+                $(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+                $(MD)/grfint.io \
+		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+                $(MD)/clock_60hz $(MD)/clock2_soft \
+                $(MD)/sysgo_dd
+#                $(C9)/Products/DriveWire/software/6809l2/clock2_dw \
 
 
 BOOTFILES	= bootfile_1773 bootfile_cust
