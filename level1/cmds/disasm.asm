@@ -1771,8 +1771,8 @@ sopt8    ldx   <xreghold
          tst   <pass
          lbeq  getprm
          lbsr  clrline
-         tst   <s.opt
-         lbne  sopt7
+         tst   <s.opt       for manual start & stop RG 
+         bne   sopt7
          leay  line280,pcr
          ldb   #ln280sz
          lbsr  mergline
@@ -1785,7 +1785,7 @@ sopt8    ldx   <xreghold
          lbsr  mergline
          lbsr  writline
          lbsr  writline
-         leax  holdobj,u
+sopt7    leax  holdobj,u
          tst   <o.opt
          bne   time010 
          leax  holdline,u
@@ -1849,6 +1849,8 @@ time025
          ldb   #ln030sz
          lbsr  mergline
          lbsr  writline
+         tst   <s.opt
+         bne   sopt5
          ldb   <tylghold
          bsr   movehdr
          leay  hldtylg,u
@@ -1867,8 +1869,8 @@ time025
          ldb   #$50
          lbsr  mergline
          lbsr  writline
-         ldx   <xreghold
-sopt7    tst   <diskio
+sopt5    ldx   <xreghold
+         tst   <diskio
          lbne  diskmod
          lbra  mem020
 
@@ -1923,15 +1925,16 @@ gtopt040 equ   *
          inc   <u.opt
          inc   <op.cnt
          bra   getopt
-gtoptS   lda   ,x+
+gtoptS   lda   ,x+         for manual start & stop RG 
          cmpa  #'$
          bne   gtoptS2
          lbsr  u$hexin
+         clrb              clear carry
          ldd   ,x
-         andcc #^1
+         leax  4,x
          rts
-gtoptS2  leax  4,x
-         orcc  #1
+gtoptS2  equ   *
+         comb
          rts
 gtopt050 equ   *
          cmpa  #'S               add start & stop option RG
@@ -2013,10 +2016,10 @@ gotmod   equ   *
          ldu   <ureghold
          ldx   #0
          stx   <address
+         tst   <s.opt            for manual start & stop RG
+         lbne  getstart 
          lbsr  getbyte
          lbsr  getbyte2
-         tst   <s.opt            for manual start & stop RG
-         bne   sopt1
          std   <modend
          lbsr  clrline
          lda   #$87
@@ -2043,18 +2046,14 @@ gotmod   equ   *
 prtmod   equ   *
          lbsr  mergline
          lbsr  writline
-sopt1    lbsr  getbyte2
-         tst   <s.opt        for manual start & stop RG
-         bne   sopt2
+         lbsr  getbyte2
          std   <nameadr
          leay  hldtylg,u
          lbsr  clrhld
          leay  line290,pcr
          ldb   #ln290sz
          lbsr  mergline
-sopt2    lbsr  getbyte
-         tst   <s.opt        for manual start & stop RG
-         lbne   sopt3
+         lbsr  getbyte
          stb   <tylghold
          andb  #TypeMask
          tstb
@@ -2129,9 +2128,7 @@ chkattr  equ   *
          leay  line300,pcr
          ldb   #ln300sz
          lbsr  mergline
-sopt3    lbsr  getbyte
-         tst   <s.opt        for manual start & stop RG
-         bne   sopt4
+         lbsr  getbyte
          stb   <atrvhold
          andb  #AttrMask
          cmpb  #ReEnt
@@ -2165,17 +2162,13 @@ chkrevs  leay  line320,pcr
          lbsr  merghex
          lda   #$0d
          lbsr  movechar
-sopt4    lbsr  getbyte
+         lbsr  getbyte
          tst   <descript
          lbne  descrhdr
          lbsr  getbyte2
-         tst   <s.opt        for manual start & stop RG
-         bne   sopt5
          std   <startadr
-sopt5    lbsr  getbyte2
+         lbsr  getbyte2
          std   <size
-         tst   <s.opt        for manual start & stop RG
-         lbne  getstart
          ldx   <utabend
          std   ,x
          lbsr  clrline
@@ -2264,9 +2257,9 @@ getstart lbsr  getbyte
          lbsr  fcbline
          bra   getstart
 gotstart equ   *
+         lbsr  clrline
          tst   <s.opt        for manual start & stop RG
          bne   sopt6
-         lbsr  clrline
          lbsr  adrmove
          leay  line130,pcr
          ldb   #ln130sz
@@ -2962,6 +2955,8 @@ endit022 ldb   ,x+
          dec   <readcnt
          bne   endit022
 endit024 tst   <z.opt
+         lbne  clrexit
+         tst   <s.opt
          lbne  clrexit
          clr   <readclr
          lbsr  clrline
