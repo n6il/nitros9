@@ -1,3 +1,7 @@
+         ifeq  PIPEDEFS
+
+PIPEDEFS set   1
+
          nam   PipeDefs
          ttl   OS-9 Pipe Definitions
 
@@ -73,4 +77,5 @@ IT.ESiz  rmb   1          ;Size of each queue element
 IT.ECnt  rmb   2          ;Max. elements in queue (initial position)
 
 *   End of pipedefs
+         endc
 

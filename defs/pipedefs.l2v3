@@ -1,3 +1,7 @@
+         ifeq  PIPEDEFS
+
+PIPEDEFS set   1
+
          opt   -l
          ttl   OS9 Level 2 Pipe Definitions
 
@@ -99,4 +103,6 @@ IT.ECnt  rmb   2          ;Max. elements in queue (initial position)
 *   End of pipedefs
 
          opt   l
+
+         endc
 

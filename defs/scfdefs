@@ -1,3 +1,7 @@
+         ifeq  SCFDEFS
+
+SCFDEFS  set   1
+
          nam   SCFDefs
          ttl   Sequential File Manager (SCF) Definitions
 
@@ -189,4 +193,5 @@ PARSPACE equ   %11100000
 * Stop bits
 STOP1    equ   %00000000
 STOP2    equ   %00010000
+         endc
 
