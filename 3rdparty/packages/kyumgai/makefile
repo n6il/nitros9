@@ -1,0 +1,54 @@
+include ../../../Makefile.rules
+
+DEPENDS		= ./Makefile
+
+DISK		= kyumgai.dsk
+CMDS		= ninja ninja.snd1 ninja.snd2
+SCRIPTS		= install2dd
+MD		= $(LEVEL2)/MODULES
+
+# We make our own bootfile and kernel track
+KERNEL		= $(MD)/rel $(MD)/boot_1773 $(MD)/os9p1
+OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/cc3disk.dr $(MD)/ddd0_40d.dd \
+		$(MD)/scf.mn $(MD)/cc3io.dr \
+		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/vdgint.io $(MD)/term_vdg.dt \
+		$(MD)/clock_soft $(MD)/cc3go
+
+SUPPORTFILES	= backgnd.dat backgnd2.dat bigblocks.dat blakguy.dat \
+		gameover.dat giant.dat kyumgai.pla level1.dat level2.dat \
+		level3.dat level4.dat level5.dat level6.dat level7.dat \
+		level8.dat monmap1.dat monmap2.dat monmap3.dat monmap4.dat \
+		monmap5.dat monmap6.dat monmap7.dat monmap8.dat ninja.dat \
+		objects.dat playscn.vef staffguy.dat tanguy.dat tobe.pla \
+		tobe.vef window.dat winner.vef
+
+ALLOBJS		= $(CMDS)
+
+all:	$(ALLOBJS)
+	$(CHMOD) 755 $(CMDS)
+
+clean:	dskclean
+	$(RM) $(ALLOBJS)
+	$(OS92UNIX) $(SCRIPTS)
+
+dsk:	all
+	$(RM) $(DISK)
+	$(CD) $(LEVEL2); make
+	$(OS9FORMAT) $(DISK) -t40 -h2 -n"Kyum-Gai: To Be Ninja"
+	$(MERGE) $(OS9BOOT)>os9boot
+	$(MERGE) $(KERNEL)>kernel_1773
+	$(OS9GEN) $(DISK) os9boot kernel_1773
+	$(RM) os9boot kernel_1773
+	$(MAKDIR) $(DISK),CMDS
+	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK),CMDS/shell
+	$(CP) $(CMDS) $(DISK),CMDS
+	$(OS9RENAME) $(DISK),CMDS/ninja AutoEx
+	$(CP) $(SUPPORTFILES) $(DISK),.
+	$(UNIX2OS9) $(SCRIPTS)
+	$(CP) $(SCRIPTS) $(DISK),.
+
+dskclean:
+	$(RM) $(DISK)
