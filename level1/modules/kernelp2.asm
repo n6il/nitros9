@@ -85,9 +85,9 @@ start    equ   *
          tfr   s,d
          deca
          ldb   #$01
-         std   $07,y
-         lda   #$80
-         sta   $0D,y
+         std   P$ADDR,y
+         lda   #SysState
+         sta   P$State,y
          ldu   <D.Init
          bsr   ChdDir
          bcc   L006A
@@ -108,11 +108,11 @@ L0081    jmp   [<$FFFE]
 *
 * U = address of init module
 ChdDir   clrb
-         ldd   <$10,u
-         beq   ChdDir10
+         ldd   <SysStr,u		get system device
+         beq   ChdDir10			branch if none
          leax  d,u
          lda   #READ.+EXEC.
-         os9   I$ChgDir
+         os9   I$ChgDir			else change directory to it
 ChdDir10 rts
 
 * open console device
@@ -123,48 +123,49 @@ OpenCons clrb
          lda   #UPDAT.
          os9   I$Open
          bcs   OpenCn10
-         ldx   <D.Proc
-         sta   P$Path+0,x
+         ldx   <D.Proc			get process descriptor
+         sta   P$Path+0,x		save path to console to stdin...
          os9   I$Dup
-         sta   P$Path+1,x
+         sta   P$Path+1,x		...stdout
          os9   I$Dup
-         sta   P$Path+2,x
+         sta   P$Path+2,x		...and stderr
 OpenCn10 rts
 
-FUnlink  ldd   R$U,u
+FUnlink  ldd   R$U,u			D = ptr to module to unlink
          beq   L00F9
-         ldx   <D.ModDir
-L00B8    cmpd  ,x
-         beq   L00C5
-         leax  $04,x
-         cmpx  <D.ModDir+2
-         bcs   L00B8
-         bra   L00F9
-L00C5    lda   $02,x
-         beq   L00CE
-         deca
-         sta   $02,x
-         bne   L00F9
-L00CE    ldy   ,x
-         cmpy  <D.BTLO
+         ldx   <D.ModDir		X = ptr to 1st module dir entry
+L00B8    cmpd  MD$MPtr,x	 	module match?
+         beq   L00C5			branch if so
+         leax  MD$ESize,x		go to next entry
+         cmpx  <D.ModDir+2		is this end?
+         bcs   L00B8			if not, go check next entry for match
+         bra   L00F9			else exit
+L00C5    lda   MD$Link,x		get link count
+         beq   L00CE			branch if zero
+         deca				else decrement by one
+         sta   MD$Link,x		and save count
+         bne   L00F9			branch if post-dec wasn't zero
+* If here, deallocate module
+L00CE    ldy   MD$MPtr,x		get module pointer
+         cmpy  <D.BTLO			compare against boot lo mem
          bcc   L00F9
-         ldb   $06,y
-         cmpb  #$D0
-         bcs   L00E5
-         os9   F$IODel
-         bcc   L00E5
-         inc   $02,x
-         bra   L00FA
+         ldb   M$Type,y			get type of module
+         cmpb  #FlMgr			is it a file manager?
+         bcs   L00E5			branch if not
+         os9   F$IODel			determine if I/O module is in use
+         bcc   L00E5			branch if not
+         inc   MD$Link,x		else cancel out prior dec
+         bra   L00FA			and exit call
 L00E5    clra
          clrb
-         std   ,x
-         std   ,y
-         ldd   $02,y
+         std   MD$MPtr,x		clear out moddir entry's module address
+         std   M$ID,y			and destroy module's first 2 bytes
+         ldd   M$Size,y			get size of module in D
          lbsr  L0236
          exg   d,y
          exg   a,b
-         ldx   <D.FMBM
-         os9   F$DelBit
+         ldx   <D.FMBM			get free mem bitmap ptr
+         os9   F$DelBit			delete the corresponding bits
 L00F9    clra
 L00FA    rts
 
@@ -360,11 +361,11 @@ L025E    pshs  y,a
          ldx   <D.Proc
          ldd   P$User,x
          beq   L026F
-         cmpd  $09,y
+         cmpd  P$User,y
          bne   L0259
-L026F    lda   $0D,y
-         ora   #$02
-         sta   $0D,y
+L026F    lda   P$State,y
+         ora   #Condem
+         sta   P$State,y
 L0275    orcc  #FIRQMask+IRQMask
          lda   <P$Signal,y
          beq   L0284
@@ -380,22 +381,22 @@ L0284    ldb   P$SID,u
          bra   L02B4
 L028E    cmpx  $01,s
          bne   L02B4
-         lda   $0D,x
+         lda   P$State,x
          bita  #$40
          beq   L02C7
-         ldu   $04,x
-         ldd   $04,u
+         ldu   P$SP,x
+         ldd   R$X,u
          beq   L02C7
-         ldu   $0E,x
+         ldu   P$Queue,x
          beq   L02C7
          pshs  b,a
-         lda   $0D,u
+         lda   P$State,u
          bita  #$40
          puls  b,a
          beq   L02C7
-         ldu   $04,u
-         addd  $04,u
-         std   $04,u
+         ldu   P$SP,u
+         addd  P$SP,u
+         std   P$SP,u
          bra   L02C7
 L02B4    leay  ,x
          ldx   P$Queue,y
