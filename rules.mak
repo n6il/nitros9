@@ -43,11 +43,11 @@ CHMOD		= chmod
 
 # 60Hz clocks
 %.60hz: %.asm
-	$(AS) -aTkPerSec=60 $(AFLAGS) $< $(ASOUT)$@
+	$(AS) -aTPS=60 $(AFLAGS) $< $(ASOUT)$@
 
 # 50Hz clocks
 %.50hz: %.asm
-	$(AS) -aTkPerSec=50 $(AFLAGS) $< $(ASOUT)$@
+	$(AS) -aTPS=50 $(AFLAGS) $< $(ASOUT)$@
 
 # All other modules
 %: %.asm
