@@ -22,12 +22,12 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   4
 
-LINESIZE equ   80
+linebsiz equ   80
 
          mod   eom,name,tylg,atrv,start,size
 
          org   0
-readbuf  rmb   LINESIZE+1
+readbuf  rmb   linebsiz+1
 stack    rmb   64
 size     equ   .
 
@@ -52,7 +52,7 @@ AttachIt clra
 
 ReadnInz clra			from stdin
          leax  readbuf,u	point to read buffer
-         ldy   #LINESIZE	get LINESIZE bytes
+         ldy   #linebsiz	get linebsiz bytes
          os9   I$ReadLn 	read it!
          bcc   InizDev		branch if error
          cmpb  #E$EOF		end of file?
