@@ -1,77 +1,85 @@
 ********************************************************************
-* Merge - Copy and combine files to standard output
+* Merge - Merge files into one file
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*   4    From Tandy OS-9 Level One VR 02.00.00
+*   4    From OS-9 Level One VR 02.00.00
 
          nam   Merge
-         ttl   Copy and combine files to standard output
-
-* Disassembled 02/04/03 23:06:27 by Disasm v1.6 (C) 1988 by RML
+         ttl   Merge files into one file
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $04
+edition  set   4
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   1
-u0001    rmb   2
-u0003    rmb   2
-u0005    rmb   2
-u0007    rmb   2496
+path     rmb   1
+param    rmb   2
+d.ptr    rmb   2
+d.size   rmb   2
+d.buffer rmb   2496       should reserve 7k, leaving some room for parameters
 size     equ   .
 
 name     fcs   /Merge/
-         fcb   edition
+         fcb   edition    change to 6, as merge 5 has problems?
 
-start    equ   *
-         pshs  u
-         stx   <u0001
+start    pshs  u          save start address of memory
+         stx   <param     and parameter area start
          tfr   x,d
-         subd  #$0107
-         subd  ,s++
-         std   <u0005
-         leau  u0007,u
-         stu   <u0003
-L0024    ldx   <u0001
-         bsr   L005C
+         subd  #$0107     take out 1 bytes in DP, and 1 page for the stack
+         subd  ,s++       take out start address of data area
+         std   <d.size    save size of data buffer
+         leau  d.buffer,u point to some data
+         stu   <d.ptr     save another pointer
+
+do.file  ldx   <param     get first filename
+         bsr   space
+
          clrb  
-         cmpa  #$0D
-         beq   L0059
-         lda   #$01
-         os9   I$Open   
-         bcs   L0059
-         sta   <u0000
-         stx   <u0001
-L0038    lda   <u0000
-         ldy   <u0005
-         ldx   <u0003
-         os9   I$Read   
-         bcs   L004D
-         lda   #$01
-         os9   I$Write  
-         bcc   L0038
-         bra   L0059
-L004D    cmpb  #$D3
-         bne   L0058
-         lda   <u0000
-         os9   I$Close  
-         bcc   L0024
-L0058    coma  
-L0059    os9   F$Exit   
-L005C    lda   ,x+
-         cmpa  #$20
-         beq   L005C
-         leax  -$01,x
-         rts   
+         cmpa  #C$CR      was the character a CR?
+         beq   Exit       yes, exit
+
+         lda   #READ.
+         os9   I$Open     open the file for reading
+         bcs   Exit       crap out if error
+         sta   <path      save path number
+         stx   <param     and save new address of parameter area
+
+read.lp  lda   <path      get the current path number
+         ldy   <d.size    and size of data to read
+         ldx   <d.ptr     and pointer to data buffer
+         os9   I$Read     read data into the buffer
+         bcs   chk.err    check errors
+
+         lda   #$01       to STDOUT
+         os9   I$Write    dump it out in one shot
+         bcc   read.lp    loop if no errors
+         bra   Exit       otherwise exit ungracefully
+
+chk.err  cmpb  #E$EOF     end of the file?
+         bne   Error      no, error out
+         lda   <path      otherwise get the current path number
+         os9   I$Close    close it
+         bcc   do.file    if no error, go get next filename
+
+Error    coma             set carry
+Exit     os9   F$Exit     and exit
+
+space    lda   ,x+        grab a character
+         cmpa  #C$SPAC    space?
+         beq   space      yes, skip it
+         leax  -1,x       otherwise point to last non-space
+         rts
+
          emod
 eom      equ   *
+         end
+
