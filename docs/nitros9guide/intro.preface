@@ -44,7 +44,7 @@ book are:
 </para>
 <orderedlist numeration="arabic">
 
-<listitem><para>Friendly Unix<footnoteref linkend="unixdesc">-type
+<listitem><para>Friendly Unix<footnoteref linkend="unixdesc"/>-type
 user interface and environment</para></listitem>
 
 <listitem><para>Multiuser/Multitasking Real-Time Operating System</para></listitem>

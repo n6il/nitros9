@@ -55,8 +55,8 @@ Available DSAVE options are:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="4in">
+<colspec colwidth="1in"/>
+<colspec colwidth="4in"/>
 <tbody>
 <row>
 <entry>-b</entry>

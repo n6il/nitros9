@@ -62,8 +62,8 @@ The devices you can select are:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="4in">
+<colspec colwidth="1in"/>
+<colspec colwidth="4in"/>
 <tbody>
 <row>
 <entry>term32</entry>
@@ -157,8 +157,8 @@ You have the following modules from which to make your selections:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="4in">
+<colspec colwidth="1in"/>
+<colspec colwidth="4in"/>
 <tbody>
 <row>
 <entry>CO32</entry>
@@ -281,8 +281,8 @@ describes the type of file, as noted in the following table:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="3in">
+<colspec colwidth="1in"/>
+<colspec colwidth="3in"/>
 <thead>
 <row>
 <entry>Extension</entry>

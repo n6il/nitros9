@@ -93,8 +93,8 @@ Available DCHECK options are:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
-<colspec colwidth="3in">
+<colspec colwidth="1.3in"/>
+<colspec colwidth="3in"/>
 <tbody>
 <row>
 <entry>-w=&replstart;path&replend;</entry>
