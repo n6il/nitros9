@@ -70,14 +70,14 @@ VD.SBAdd equ   $47 (2) address of block screen is in
 VD.Blk   equ   $49 Block number of screen
 VD.GBuff equ   $4A allocation for graphics buffers (block#)
 VD.AGBuf equ   $4B (2) additional graphics buffer
-VD.HiRes equ   $4D hi-res screen table (block value
+VD.HiRes equ   $4D hi-res screen table (block value)
 VD.NBlk  equ   $4E number of blocks in this screen
 VD.SType equ   $4F screen type 0-4
 VD.HR2   equ   $50 (3) for screen number 2
 VD.HR3   equ   $53 (3) for screen 3 (same 3 bytes as above)
-VD.FF3   equ   $56 (2) data for flood fill
-VD.FF4   equ   $58 (2)  "
-VD.FF5   equ   $5A (2)  "
+VD.FFMem equ   $56 (2) bottom of stack for flood fill
+VD.FFSPt equ   $58 (2) flood fill stack pointer
+VD.FFSTp equ   $5A (2) flood fill stack top pointer
 VD.FF6   equ   $5C  flood fill flag
 VD.MTabl equ   $5D (2) address of mask table for pixels in byte
 VD.PixBt equ   $5F bit mask for modes (0=$07, 1=$03 )#pixels/byte
@@ -85,9 +85,9 @@ VD.GCrsX equ   $60 graphics cursor X value
 VD.GCrsY equ   $61 graphics cursor Y
 VD.Msk1  equ   $62 mask byte 1
 VD.Msk2  equ   $63 mask byte 2 (00,55,AA,FF)
-VD.MCol  equ   $64 color? (C003,8001
+VD.MCol  equ   $64 color? (C003,8001)
 VD.MCol2 equ   $65 color
-VD.PMask equ   $66 pixel mask for colors (i.e. $55, $CC etc
+VD.PMask equ   $66 pixel mask for colors (i.e. $55, $CC etc)
 VD.FF1   equ   $67 data for flood fill
 VD.FF2   equ   $68 data for flood fill
 VD.FFMsk equ   $69 flood fill mask
