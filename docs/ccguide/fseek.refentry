@@ -22,4 +22,12 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+System call
+<link linkend="lseek">lseek()</link>.
+</para>
+</refsect1>
+
 </refentry>

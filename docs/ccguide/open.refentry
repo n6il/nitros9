@@ -14,9 +14,26 @@
 
 </refsynopsisdiv>
 
+<refsect1><title>Assembler Equivalent</title>
+<para>
+os9 I$OPEN
+</para>
+</refsect1>
+
 <refsect1><title>Description</title>
 <para>
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="creat">creat()</link>,
+<link linkend="read">read()</link>,
+<link linkend="write">write()</link>,
+<link linkend="dup">dup()</link>,
+<link linkend="close">close()</link>
+</para>
+</refsect1>
+
 </refentry>

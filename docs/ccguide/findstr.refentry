@@ -19,4 +19,11 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="strcat">index(), rindex()</link>
+</para>
+</refsect1>
+
 </refentry>

@@ -14,9 +14,23 @@
 
 </refsynopsisdiv>
 
+<refsect1><title>Assembler Equivalent</title>
+<para>
+os9 F$ID
+</para>
+</refsect1>
+
 <refsect1><title>Description</title>
 <para>
 Placeholder
+</para>
+</refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="os9fork">os9fork()</link>,
+Standard Library function
+<link linkend="mktemp">mktemp()</link>.
 </para>
 </refsect1>
 </refentry>

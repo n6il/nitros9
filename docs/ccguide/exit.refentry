@@ -15,9 +15,21 @@
 
 </refsynopsisdiv>
 
+<refsect1><title>Assembler Equivalent</title>
+<para>
+os9 F$EXIT
+</para>
+</refsect1>
+
 <refsect1><title>Description</title>
 <para>
 Placeholder
+</para>
+</refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="wait">wait()</link>
 </para>
 </refsect1>
 </refentry>

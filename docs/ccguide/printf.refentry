@@ -48,4 +48,13 @@ standard output, and sprintf in the buffer pointed to by
 that this buffer is large enough.
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+Kernighan &amp; Ritchie pages 145-147.
+<link linkend="Putc">putc()</link>,
+<link linkend="scanf">scanf()</link>
+</para>
+</refsect1>
+
 </refentry>

@@ -22,4 +22,15 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="putc">Putc()</link>,
+<link linkend="fread">fread()</link>,
+<link linkend="fopen">fopen()</link>,
+<link linkend="gets">gets()</link>,
+<link linkend="ungetc">ungetc()</link>
+</para>
+</refsect1>
+
 </refentry>
