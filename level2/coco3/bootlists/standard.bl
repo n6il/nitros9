@@ -178,7 +178,7 @@
 * Select only one clock module.
 * Besides support for the internal software clock, the following
 * hardware clocks are supported: Burke & Burke, Disto 2-N-1, Disto 4-N-1,
-* Eliminator, Harris, SmartWatch, TC^3
+* Eliminator, Harris, SmartWatch, TC^3, DriveWire
 ../MODULES/CLOCKS/clock_soft
 *../MODULES/CLOCKS/clock_bnb
 *../MODULES/CLOCKS/clock_disto2
@@ -187,6 +187,7 @@
 *../MODULES/CLOCKS/clock_harris
 *../MODULES/CLOCKS/clock_smart
 *../MODULES/CLOCKS/clock_tc3
+*../MODULES/CLOCKS/clock_dw
 *
 ***************************************
 * System Kick-Start Module
