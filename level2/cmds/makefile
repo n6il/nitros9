@@ -5,7 +5,7 @@ DEPENDS		= ./Makefile
 CMDS		= attr backup binex build cmp cobbler copy date \
 		deiniz del deldir dir display dsave dump echo edit error exbin format \
 		free grfdrv help ident iniz link list load login makdir mdir \
-		merge mfree modpatch montype os9gen procs pwd pxd rename save \
+		merge mfree modpatch montype os9gen procs pwd pxd rename runb save \
 		setime shell_21 shellplus sleep tee tmode tsmon unlink \
 		verify wcreate xmode
 SUBS            = gfx2 gfx inkey syscall
@@ -14,7 +14,7 @@ SHELLMODS	= shellplus deiniz display echo iniz link load save unlink
 UTILPAK1	= attr build copy date del deldir dir list makdir mdir \
 		merge mfree procs pwd pxd rename sleep tee tmode
 
-BASIC09FILES	= gfx.asm inkey.asm syscall.asm
+BASIC09FILES	= runb.asm gfx.asm inkey.asm syscall.asm
 LEVEL1FILES	= attr.asm backup.asm binex.asm build.asm cmp.asm cobbler.asm copy.asm date.asm deiniz.asm del.asm deldir.asm \
 		dir.asm display.asm dsave.asm dump.asm echo.asm edit.asm error.asm exbin.asm format.asm free.asm help.asm ident.asm iniz.asm link.asm \
 		list.asm load.asm login.asm makdir.asm merge.asm os9gen.asm pwd.asm pxd.asm rename.asm \
