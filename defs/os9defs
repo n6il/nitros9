@@ -1229,6 +1229,8 @@ Bt.Start equ   $ED00      Start address of the boot track in memory
 
          ENDC
 
+Bt.Track equ   34         Boot track
+
 
          IFGT  Level-2
 ***************************
