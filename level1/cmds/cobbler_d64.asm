@@ -45,7 +45,7 @@ size     equ   .
 name     fcs   /Cobbler/
          fcb   edition
 
-L0015    fcb   C$LF 
+HelpMsg  fcb   C$LF 
          fcc   "Use: Cobbler </devname>"
          fcb   C$LF 
          fcc   "    to create a new system disk"
@@ -192,7 +192,7 @@ SkLSN1   pshs  u
          os9   I$Seek   Seek to allocation map at LSN 1
          puls  pc,u
 
-Usage    leax  >L0015,pcr
+Usage    leax  >HelpMsg,pcr
 wrerr    pshs  b
          lda   #$02
          ldy   #$0100

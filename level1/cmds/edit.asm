@@ -125,7 +125,7 @@ size     equ   .
 name     fcs   /Edit/
          fcb   edition
 
-         fcc   "(C)1981Microware"
+*         fcc   "(C)1981Microware"
 
 L0022    fcb   $01 
          lbra  L0292

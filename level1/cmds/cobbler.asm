@@ -19,6 +19,8 @@
          use   rbfdefs
          endc
 
+DOHELP   set   0
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
@@ -59,12 +61,14 @@ name     fcs   /Cobbler/
 L0015    fcb   $00 
          fcb   $00 
 
-Help     fcb   C$LF
+         IFNE  DOHELP
+HelpMsg  fcb   C$LF
          fcc   "Use: COBBLER </devname>"
          fcb   C$LF
          fcc   "     to create a new system disk"
          fcb   C$CR
-WritErr    fcb   C$LF
+         ENDC
+WritErr  fcb   C$LF
          fcc   "Error writing kernel track"
          fcb   C$CR
          fcb   C$LF
@@ -93,12 +97,12 @@ RelNam   fcc   "Rel"
 start    clrb  
          lda   #PDELIM
          cmpa  ,x
-         lbne  L0473
+         lbne  ShowHelp
          os9   F$PrsNam 
-         lbcs  L0473
+         lbcs  ShowHelp
          lda   #PDELIM
          cmpa  ,y
-         lbeq  L0473
+         lbeq  ShowHelp
          leay  <FullBName,u
 L013C    sta   ,y+
          lda   ,x+
@@ -112,7 +116,7 @@ L013C    sta   ,y+
          lda   #UPDAT.
          os9   I$Open   
          sta   <DevPath
-         lbcs  L0473
+         lbcs  ShowHelp
          ldx   <u001E
          leay  >BootName,pcr
          lda   #PDELIM
@@ -229,7 +233,7 @@ L0203    pshs  y
          lbcs  Bye
          lda   <NewBPath
          os9   I$Close  
-         lbcs  L0473
+         lbcs  ShowHelp
          pshs  u
          ldx   <PathOpts+(PD.FD-PD.OPT),u
          lda   <PathOpts+(PD.FD+2-PD.OPT),u
@@ -492,7 +496,13 @@ WriteLSN0
          bcs   Bye		branch if error
          rts
 
-L0473    leax  >Help,pcr
+ShowHelp equ   *
+         IFNE  DOHELP
+         leax  >HelpMsg,pcr
+         ELSE
+         clrb
+         bra   Bye
+         ENDC
 L0477    pshs  b
          lda   #$02
          ldy   #256

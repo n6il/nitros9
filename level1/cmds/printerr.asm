@@ -35,7 +35,7 @@ name     fcs   /Printerr/
 
 ErrFile  fcc   "/DD/SYS/ERRMSG"
          fcb   C$CR
-         fcc   ",,,,,,,,,,,,"
+*         fcc   ",,,,,,,,,,,,"
 
 ErrMsg   fcc   "Error #"
          fcb   $FF

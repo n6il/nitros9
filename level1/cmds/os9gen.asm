@@ -12,12 +12,13 @@
 
 * Disassembled 02/07/06 13:11:11 by Disasm v1.6 (C) 1988 by RML
 
-BTrack   set   34
-
          IFP1
          use   defsfile
          use   rbfdefs
          ENDC
+
+DOHELP   set   0
+BTrack   set   34
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
@@ -65,7 +66,8 @@ size     equ   .
 name     fcs   /OS9gen/
          fcb   edition
 
-Help     fcb   C$LF
+         IFNE  DOHELP
+HelpMsg  fcb   C$LF
          fcc   "Use (CAUTION): OS9GEN </devname> [-s]"
          fcb   C$LF
          fcc   " ..reads (std input) pathnames until EOF,"
@@ -74,6 +76,7 @@ Help     fcb   C$LF
          fcb   C$LF
          fcc   " -s = single drive operation"
          fcb   C$LF,C$CR
+         ENDC
          fcc   "Can't find: "
 ErrWrit  fcb   C$LF
          fcc   "Error writing kernel track"
@@ -656,7 +659,13 @@ Seek2LSN pshs  u,y,x,b,a
 WriteErr leax  >ErrWrit,pcr
          bra   WritExit
 BadName  ldb   #E$BPNam
-ShowHelp leax  >Help,pcr
+ShowHelp equ   *
+         IFNE  DOHELP
+         leax  >HelpMsg,pcr
+         ELSE
+         clrb
+         bra   Bye
+         ENDC
 WritExit pshs  b
          lda   #$02
          ldy   #256

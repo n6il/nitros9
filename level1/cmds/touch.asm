@@ -18,7 +18,7 @@
          endc
 
 * Here are some tweakable options
-DOHELP   set   1	1 = include help info
+DOHELP   set   0	1 = include help info
 STCKSIZE set   64	our stack size in bytes
 ZOPTSIZ  set   64	max size of -z option's parameter
 
