@@ -7,6 +7,7 @@ all:
 	@$(ECHO) "*             3rd Party Software            *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
+	cd booters; make
 	cd drivers; make
 	cd fmgrs; make
 	cd p2mods; make
@@ -16,6 +17,7 @@ all:
 
 # Clean all components
 clean:
+	-cd booters; make clean
 	-cd drivers; make clean
 	-cd fmgrs; make clean
 	-cd p2mods; make clean
