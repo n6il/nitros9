@@ -1,0 +1,22 @@
+<refentry id="cputype">
+<refnamediv>
+<refname>CPUTYPE</refname>
+<refpurpose>Identify 6809 or 6309</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>CPUTYPE</command>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+Identify 6809 or 6309
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+</screen>
+</refsect1>
+</refentry>
