@@ -1,11 +1,10 @@
 SRC=os9sysprog
-#STYLESHEET=
 STYLESHEET=docbook-utils.dsl
 
 all: $(SRC).html
 
 $(SRC).pdf: $(SRC).docbook $(STYLESHEET)
-	 docbook2pdf -d $(STYLESHEET) $(SRC).docbook
+	 docbook2pdf $(SRC).docbook
 
 $(SRC).ps: $(SRC).docbook $(STYLESHEET)
 	 docbook2ps $(SRC).docbook
