@@ -1,6 +1,6 @@
 include ../Makefile.rules
 
-RELEASE		= os9l1v020100cc
+RELEASE		= os9l1v030100
 BOOTFILE	= bootfile_stock
 KERNEL		= kernel_stock
 
