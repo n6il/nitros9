@@ -63,6 +63,7 @@ RBFDEFS  set   1
 *
 *          2003/06/02  Boisy G. Pitre
 * Updated comments for clarity.
+* Added TYP.256-TYP.2048 definitions for future expansion.
 
          nam   RBFDefs
          ttl   Random Block File Manager Definitions
@@ -90,6 +91,11 @@ IT.SAS   rmb   1          Segment allocation size
 
 * IT.TYP/IT.DNS/IT.STP bit definitions
 *
+TYP.256  equ   %00000000	256 byte sector device
+TYP.512  equ   %00000010	512 byte sector device
+TYP.1024 equ   %00000100	1024 byte sector device
+TYP.2048 equ   %00000110	2048 byte sector device
+TYP.SSM  equ   %00000110        Sector size mask
 TYP.FLP  equ   %00000000	Floppy disk
 TYP.HARD equ   %10000000	Hard disk
 
