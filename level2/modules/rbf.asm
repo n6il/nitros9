@@ -85,7 +85,6 @@
 
          ifp1  
          use   defsfile
-         use   rbfdefs
          endc  
 
 rev      set   $01
