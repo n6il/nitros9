@@ -188,7 +188,6 @@ L003A    ldu    <D.Init     get init module pointer
          lda    #(EXEC.+READ.) get file mode
          os9    I$ChgDir    change to it
          bcc    L004F       went ok, go on
- jmp <D.Crash
          os9    F$Boot      try & load boot file
          bcc    L003A       go try again
 L004F    ldu    <D.Init     get pointer to init
@@ -232,7 +231,7 @@ L0083    ldu    <D.Init     get init module pointer
          ldy    #$0000
          ENDC
          os9    F$Fork      fork it
-         bcc   L0093      if no error, go execute it
+         bcc    L0093      if no error, go execute it
          jmp   <D.Crash   otherwise crash the system
 L0093    os9    F$NProc     let it take over
 
