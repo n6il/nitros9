@@ -56,6 +56,7 @@ ZIP		= zip -D
 LEVEL1		= $(BASEDIR)/level1
 LEVEL2		= $(BASEDIR)/level2v3
 NLEVEL2		= $(BASEDIR)/nitros
+C9		= $(HOME)/cloud9
 
 # File managers
 %.mn: %.asm
