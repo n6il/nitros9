@@ -3,17 +3,22 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 204    Original OS-9 L2 Tandy distribution
-* 205    Added CC3IO and Clock sections                 BGP 98/10/12
-* 205b   Removed clock information from here            BGP 98/10/20
-*   1    Restarted edition number back to 1,            BGP 03/01/08
-*        removed CMDS/cc3go reference and just
-*        have cc3go so that in certain cases, cc3go
-*        can be in the bootfile, and so that ROMmed
-*        systems don't have to have a special init
-*        module.
+* 204      1998/10/12  Boisy G. Pitre
+* Original OS-9 L2 Tandy distribution.
+*
+* 205      1998/10/20  Boisy G. Pitre
+* Added CC3IO and Clock sections.
+*
+* 205r2    1998/10/20  Boisy G. Pitre
+* Removed clock information from here.
+*
+*   1      2003/01/08  Boisy G. Pitre
+* Restarted edition number back to 1, removed CMDS/cc3go reference and
+* just have cc3go so that in certain cases, cc3go can be in the bootfile,
+* and so that ROMmed systems don't have to have a special init module.
 
          nam   Init
          ttl   OS-9 Level Two Configuration module

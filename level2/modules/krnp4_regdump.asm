@@ -17,9 +17,11 @@
 * NOTE: All registers EXCEPT 'CC' are preserved....OS9 internally resets
 *       the condition code register upon service call exit.
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    Started                                        RL  89/02/??
+*   1      1989/02/??  Ron Lammardo
+* Started.
 
          nam   os9p4 
          ttl   User Register Dump System Call for OS9 Level Two

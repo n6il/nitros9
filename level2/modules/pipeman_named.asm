@@ -3,19 +3,29 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*        Pipeman Modified to Include the SS.Ready       KDM 86/02/23
-*        I$GETSTT Call.
-*        Major Bug Corrected                            KDM 86/03/26
-*        Upgraded to Level II version                   KDM 88/06/29
-*        Added new labels and special defs
-*        Added code to detect EOF in SS.Ready
-*        Reformatted to make the module easier          CJB 88/11/11
-*        to understand during coding
-*        Added named pipes, etc for Level 2 upgrade     CJB 88/12/03
-*        Includes SS.SSig, SS.Relea, SS.Attr, SS.FD
-* 1      Release 1.0 for Tandy CoCo OS9                 CJB 88/12/26
+*          1986/02/23  Kent D. Meyers
+* Pipeman Modified to Include the SS.Ready I$GETSTT Call.
+*
+*          1986/03/26  Kent D. Meyers
+* Major Bug Corrected.
+*
+*          1988/06/29  Kent D. Meyers
+* Upgraded to Level II version.
+*
+*          1988/11/11  Chris J. Burke
+* Added new labels and special defs.
+* Added code to detect EOF in SS.Ready
+* Reformatted to make the module easier to understand during coding.
+*
+*          1988/12/03  Chris J. Burke
+* Added named pipes, etc for Level 2 upgrade, includes SS.SSig,
+* SS.Relea, SS.Attr, SS.FD
+*
+*   1      1988/12/26  Chris J. Burke
+* Release 1.0 for Tandy CoCo OS-9.
 
          nam   PipeMan
          ttl   OS9 Level Two Named Pipe File Manager

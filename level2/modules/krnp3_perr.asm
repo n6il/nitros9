@@ -47,9 +47,12 @@
 *    Kev for this idea.  Now we can keep additions to the kernel in nice
 *    separate chunks.  (How long 'til OS9p11 comes around...?)
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    First release                                  PED 87/06/23
+*   1      1987/06/23  Peter E. Durham
+* First release.
+
          nam   OS9p3
          ttl   Printerr functionality for Level II
 

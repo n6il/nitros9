@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 12     Original Tandy distribution version
-* 14     Obtained from L2 Upgrade archive               BGP 98/10/12
+*  12      ????/??/??  ???
+* Original Tandy distribution version
+*
+*  14      1998/10/12  Boisy G. Pitre
+* Obtained from L2 Upgrade archive.
 
          nam   ModPak
          ttl   Tandy RS-232/DCM Modem Pak driver

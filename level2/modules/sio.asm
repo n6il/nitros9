@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 9      Original Tandy L2 distribution version
-* 10     Added baud delay table for NitrOS-9
+*   9      ????/??/??  ???
+* Original Tandy L2 distribution version.
+*
+*  10      ????/??/??  ???
+* Added baud delay table for NitrOS-9.
 
          nam   SIO
          ttl   CoCo 3 Serial driver

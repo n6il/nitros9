@@ -5,21 +5,24 @@
 *
 * Alan DeKok's version of RAMMER - Based on original Keving Darling version
 *
-* Ed.    Comments                                       Who YY/MM/DD
-* ------------------------------------------------------------------
-*   4    Original Kevin Darling Version
-*   5    Several changes by L. Curtis Boyle             LCB 00/03/14
-*        1) Allowed driver to go past 400K                  00/05/09
-*        2) Attempted some fixes for handling /MD, so
-*           that setting vfy=0 on /R0 would not
-*           completely crash the system.
-*        3) Fixed some error reporting bugs that would
-*           crash the system
-*        4) Moved entry table to between READ/WRITE to
-*           allow short branches to both
-*
 * NOTE: For some reason, when DEINIZing /r0, the INIT routine gets called...
 *       but it still deallocates memory!
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*   4      ????/??/??  ???
+* Original Kevin Darling Version.
+*
+*   5      2000/03/14  L. Curtis Boyle
+* Several changes
+*
+*   5r2    2000/05/09  L. Curtis Boyle
+* Allowed driver to go past 400K, attempted some fixes for handling /MD,
+* so that setting vfy=0 on /R0 would not completely crash the system.
+* Fixed some error reporting bugs that would crash the system, and
+* moved entry table to between READ/WRITE to allow short branches to both.
+
 
 * Following CAN be set higher, but will take another page of system RAM then.
 * 200 will allow maximum of 1,638,400 byte RAM drive.

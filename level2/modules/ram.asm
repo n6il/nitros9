@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 4      Given to me by Gene Heskett                    BGP 98/10/10
+*   4      1998/10/10  Boisy G. Pitre
+* Given to me by Gene Heskett.
 
          opt d68
          opt w110

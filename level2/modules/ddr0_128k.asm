@@ -3,8 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
+*   1      2003/02/08  Boisy G. Pitre
+* Started.
 
          nam   DD
          ttl   RAM device descriptor
