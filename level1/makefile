@@ -11,8 +11,8 @@ DEFS		= $(shell $(CD) DEFS; make showobjs)
 ROOTFILES	= startup
 
 PACKAGENAME	= $(RELEASE).zip
-DSK_DS40_1	= $(RELEASE)_ds40_1.dsk
-DSK_DS40_2	= $(RELEASE)_ds40_2.dsk
+DSK_SS35_1	= $(RELEASE)_ss35_1.dsk
+DSK_SS35_2	= $(RELEASE)_ss35_2.dsk
 
 # Make all components
 all:
@@ -39,26 +39,27 @@ clean:	dskclean
 	-$(OS92UNIX) $(ROOTFILES)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK_DS40_1) $(DSK_DS40_2)
+	-$(RM) $(PACKAGENAME) $(DSK_SS35_1) $(DSK_SS35_2)
 
 dsk: all $(PACKAGENAME)
 
-$(PACKAGENAME): $(DSK_DS40_1) $(DSK_DS40_2)
-	$(ZIP) $(PACKAGENAME) $(DSK_DS40_1) $(DSK_DS40_2) ReleaseNotes ChangeLog
+$(PACKAGENAME): $(DSK_SS35_1) $(DSK_SS35_2)
+	$(ZIP) $(PACKAGENAME) $(DSK_SS35_1) $(DSK_SS35_2) ReleaseNotes ChangeLog
 
-$(DSK_DS40_1):
-	$(RM) $(DSK_DS40_1)
-	$(OS9FORMAT) $(DSK_DS40_1) -t40 -h1 -n"OS-9 Level One System Disk"
-	$(OS9GEN) $(DSK_DS40_1) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
-	$(MAKDIR) $(DSK_DS40_1),CMDS
-	$(MAKDIR) $(DSK_DS40_1),SYS
-	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_DS40_1),CMDS
-	$(CD) SYS; $(CP) $(SYS) ../$(DSK_DS40_1),SYS
-	$(CP) $(ROOTFILES) $(DSK_DS40_1),.
+$(DSK_SS35_1):
+	$(RM) $(DSK_SS35_1)
+	$(OS9FORMAT) $(DSK_SS35_1) -t35 -h1 -n"OS-9 Level One System Disk"
+	$(OS9GEN) $(DSK_SS35_1) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
+	$(MAKDIR) $(DSK_SS35_1),CMDS
+	$(MAKDIR) $(DSK_SS35_1),SYS
+	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_SS35_1),CMDS
+	$(CD) SYS; $(CP) $(SYS) ../$(DSK_SS35_1),SYS
+	$(CP) $(ROOTFILES) $(DSK_SS35_1),.
 
-$(DSK_DS40_2):
-	-$(RM) $(DSK_DS40_2)
-	$(OS9FORMAT) $(DSK_DS40_2) -t40 -h1 -n"OS-9 Level One Development Disk"
-	$(MAKDIR) $(DSK_DS40_2),DEFS
-	$(CD) DEFS; $(CP) $(DEFS) ../$(DSK_DS40_2),DEFS
-
+$(DSK_SS35_2):
+	$(RM) $(DSK_SS35_2)
+	$(OS9FORMAT) $(DSK_SS35_2) -t35 -h1 -n"OS-9 Level One Modules Disk"
+	$(MAKDIR) $(DSK_SS35_2),MODULES
+	$(MAKDIR) $(DSK_SS35_2),DEFS
+	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK_SS35_2),MODULES
+	$(CD) DEFS; $(CP) $(DEFS) ../$(DSK_SS35_2),DEFS

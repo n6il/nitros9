@@ -16,10 +16,10 @@
          nam   SysGo
          ttl   OS-9 Level One 2 SysGo
 
-         ifp1
+         IFP1
          use   defsfile
          use   scfdefs
-         endc
+         ENDC
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
@@ -46,8 +46,8 @@ BootMsg  fcc   "OS-9 LEVEL ONE VR. 0"
          fdb   C$CR,C$LF
 
 * For ROM version, cut down on verbage
-         ifne  DiskGo
-         fcc   !'BETA1' RELEASE 08/21/2002!
+         IFNE  DiskGo
+         fcc   !PHOENIX RELEASE 11/04/2002!
          fdb   C$CR,C$LF
          fcc   "HTTP://COCOOS9.SOURCEFORGE.NET"
          fdb   C$CR,C$LF
@@ -59,19 +59,19 @@ BootMsg  fcc   "OS-9 LEVEL ONE VR. 0"
          fdb   C$CR,C$LF
          fcc   "ALL RIGHTS RESERVED."
          fdb   C$CR,C$LF
-         endc
+         ENDC
 
          fcb   C$LF
 MsgEnd   equ   *
 
-         ifne  DiskGo
+         IFNE  DiskGo
 ChdDev   fcc   "/DD"
          fcb   C$CR
 ChxDev   fcc   "/DD/"
 ChxPath  fcc   "CMDS"
          fcb   C$CR
          fcc   ",,,,,,,,,,"
-         endc
+         ENDC
 
 Shell    fcc   "Shell"
 CrRtn    fcb   C$CR
@@ -79,12 +79,12 @@ CrRtn    fcb   C$CR
 AutoEx   fcc   "AutoEx"
          fcb   C$CR
 
-         ifne  DiskGo
+         IFNE  DiskGo
 Startup  fcc   "startup -p"
          fcb   C$CR
          fcc   ",,,,,,,,,,"
 StartupL equ   *-Startup
-         endc
+         ENDC
 
 * Default time packet
 *               YY MM DD HH MM SS
@@ -120,7 +120,7 @@ CopyLoop lda   ,x+
          leax  >TimePckt,pcr
          os9   F$STime
 
-         ifne  DiskGo
+         IFNE  DiskGo
          leax  >ChxPath,pcr
          lda   #EXEC.
          os9   I$ChgDir
@@ -132,14 +132,14 @@ CopyLoop lda   ,x+
          lda   #EXEC.
          os9   I$ChgDir
          bcc   DoStrtup
-         endc
+         ENDC
 
 * Set priority and do startup file
 DoStrtup os9   F$ID
          ldb   #DefPrior
          os9   F$SPrior
 
-         ifne  DiskGo
+         IFNE  DiskGo
 * First, do startup
          leax  >Shell,pcr
          leau  >Startup,pcr
@@ -148,7 +148,7 @@ DoStrtup os9   F$ID
          os9   F$Fork
          bcs   DeadEnd
          os9   F$Wait
-         endc
+         ENDC
 
 * Second, attempt to find AutoEx
 FrkAuto  leax  >AutoEx,pcr
