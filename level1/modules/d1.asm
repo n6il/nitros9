@@ -17,7 +17,17 @@
          use   rbfdefs
          endc  
 
-dnum     equ   1
+dnum     set   1
+steprate set   0
+dtype    set   TYP.CCF+TYP.5
+density  set   DNS.MFM
+tracks   set   35
+sides    set   1
+verify   set   1
+nsect    set   18
+nsect0   set   nsect
+ilv      set   2
+sas      set   8
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
@@ -27,20 +37,20 @@ rev      set   $01
 
          fcb   DIR.!ISIZ.!SHARE.!PEXEC.!PWRIT.!PREAD.!EXEC.!UPDAT. mode byte
          fcb   HW.Page    extended controller address
-         fdb   $FF40      physical controller address
+         fdb   DPort      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.RBF     device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   dnum       drive number
-         fcb   $00        step rate
-         fcb   TYP.CCF+TYP.5 drive device type
-         fcb   DNS.MFM    media density:0=single,1=double
-         fdb   35         number of cylinders (tracks)
-         fcb   1          number of sides
-         fcb   0          verify disk writes:0=on
-         fdb   18         # of sectors per track
-         fdb   18         # of sectors per track (track 0)
-         fcb   2          sector interleave factor
-         fcb   8          minimum size of sector allocation
+         fcb   steprate   step rate
+         fcb   dtype      drive device type
+         fcb   density    media density:0=single,1=double
+         fdb   tracks     number of cylinders (tracks)
+         fcb   sides      number of sides
+         fcb   verify     verify disk writes:0=on
+         fdb   nsect      # of sectors per track
+         fdb   nsect0     # of sectors per track (track 0)
+         fcb   ilv        sector interleave factor
+         fcb   sas        minimum size of sector allocation
 initsize equ   *
 
 name     fcc   /D/

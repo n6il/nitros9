@@ -27,7 +27,7 @@ rev      set   $01
 
          fcb   DIR.!ISIZ.!SHARE.!PEXEC.!PWRIT.!PREAD.!EXEC.!UPDAT. mode byte
          fcb   HW.Page    extended controller address
-         fdb   $FF40      physical controller address
+         fdb   DPort      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.RBF     device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   dnum       drive number
