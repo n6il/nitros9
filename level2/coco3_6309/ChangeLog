@@ -1,4 +1,12 @@
 OS-9 Level Two V03.01.02:
+- Drivers and descriptors for Tandy's Hard Disk Interface have
+  been added to the MODULES directory.
+- The MODULES directory structure has been enhanced to include
+  multiple subdirectories for better module organization.
+- Booter modules for Burke & Burke, Disto RAMPak, Eliminator and 
+  IDE-LBA have been added.
+- The BOOTLISTS/ directory has been added on the Modules disk, and
+  contains bootlist files for various configurations.
 - The cputype command has been optimized for size.
 - Slight performance modifications were made to RBF and SCF.
 - More commands have been added to the merged utilpak1 file.

@@ -1,4 +1,10 @@
 OS-9 Level One V03.01.02:
+- The MODULES directory structure has been enhanced to include
+  multiple subdirectories for better module organization.
+- Booter modules for Burke & Burke, Disto RAMPak, Eliminator and
+  IDE-LBA have been added.
+- The BOOTLISTS/ directory has been added on the Modules disk, and
+  contains bootlist files for various configurations.
 - The cputype command has been optimized for size.
 
 OS-9 Level One V03.01.01:
