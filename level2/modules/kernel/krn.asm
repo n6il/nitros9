@@ -33,7 +33,8 @@ MName    fcs   /OS9p1/
          fcc   /0123456789ABCDEF/
          fcc   /01234567/
          ELSE
-         fcc   /123456789ABCD/
+         fcc   /123456789ABCDEF/
+         fcc   /123/
          ENDC
 
 * Might as well have this here as just past the end of OS9p1...
@@ -601,7 +602,8 @@ Sys.Vec  jmp    ,x          execute service call
 * Execute system call
 * Entry: B=Function call #
 *        Y=Function dispatch table pointer (D.SysDis or D.UsrDis)
-L033B    lslb               is it a I/O call? (Also multiplys by 2 for offset)
+L033B    
+         lslb               is it a I/O call? (Also multiplys by 2 for offset)
          bcc    L0345       no, go get normal vector
 * Execute I/O system calls
          ldx    IOEntry,y   get IOMan vector
@@ -612,7 +614,7 @@ L034F    pshs   u           preserve register stack pointer
 L0355    tfr    cc,a        move CC to A for stack update
          bcc    L035B       go update it if no error from call
          stb    R$B,u       save error code to caller's B
-L035B    ldb    ,u          get callers CC, R$CC=$00
+L035B    ldb    R$CC,u      get callers CC, R$CC=$00
          IFNE   H6309
          andd   #$2FD0      [A]=H,N,Z,V,C [B]=E,F,I
          orr    b,a         merge them together
@@ -622,11 +624,12 @@ L035B    ldb    ,u          get callers CC, R$CC=$00
          pshs   b
          ora    ,s+
          ENDC
-         sta    ,u          return it to caller, R$CC=$00
+         sta    R$CC,u      return it to caller, R$CC=$00
          rts
 
 * Execute regular system calls
-L0345    clra               clear MSB of offset
+L0345    
+         clra               clear MSB of offset
          ldx    d,y         get vector to call
          bne    L034F       it's initialized, go execute it
          comb               set carry for error
