@@ -27,7 +27,7 @@ edition  set   7
 u0000    rmb   1
 u0001    rmb   1
 u0002    rmb   1
-u0003    rmb   1
+devpath  rmb   1
 u0004    rmb   1
 u0005    rmb   2
 u0007    rmb   1
@@ -52,7 +52,7 @@ size     equ   .
 
 name     fcs   /Free/
          fcb   edition
-L0012    fcb   C$LF
+HelpMsg  fcb   C$LF
          fcc   "Use: free [/diskname]"
          fcb   C$LF
          fcc   "  tells how many disk sectors are unused"
@@ -73,11 +73,11 @@ start    leay  u000D,u
          beq   L00E0
          cmpa  #PDELIM
          beq   L00CC
-L00BC    leax  >L0012,pcr
-         ldy   #$0040
-         lda   #$02
-         os9   I$WritLn 
-         lbra  L01CC
+L00BC    leax  >HelpMsg,pcr		point to help message
+         ldy   #64			max bytes
+         lda   #$02			stderr
+         os9   I$WritLn 		write it
+         lbra  ExitOk			and branch
 L00CC    leax  -$01,x
          pshs  x
          os9   F$PrsNam 
@@ -94,12 +94,12 @@ L00E0    lda   #$40
          stx   <u0001
          lda   #READ.
          os9   I$Open   
-         sta   <u0003
+         sta   <devpath
          bcs   L00FF
          leax  <u005D,u
          ldy   #$003F
          os9   I$Read   
-L00FF    lbcs  L01CD
+L00FF    lbcs  Exit
          lbsr  L0222
          lda   #$22
          lbsr  L0218
@@ -134,7 +134,7 @@ L00FF    lbcs  L01CD
          std   <u000B
          sta   <u0007
          std   <u0008
-         lda   <u0003
+         lda   <devpath
          ldx   #$0000
          pshs  u
          ldu   #$0100
@@ -148,9 +148,9 @@ L016A    leax  >u009E,u
 L0178    leay  d,x
          sty   <u009C
          tfr   d,y
-         lda   <u0003
+         lda   <devpath
          os9   I$Read   
-         bcs   L01CD
+         bcs   Exit
 L0186    lda   ,x+
          bsr   L01D0
          stb   ,-s
@@ -179,11 +179,11 @@ L019C    leas  $01,s
          leay  >L009F,pcr
          bsr   L020C
          bsr   L0222
-         lda   <u0003
+         lda   <devpath
          os9   I$Close  
-         bcs   L01CD
-L01CC    clrb  
-L01CD    os9   F$Exit   
+         bcs   Exit
+ExitOk   clrb  
+Exit     os9   F$Exit   
 L01D0    clrb  
          cmpa  #$FF
          beq   L01ED
@@ -273,6 +273,7 @@ L0281    bita  #$03
          bsr   L0218
          bra   L025C
 L0291    puls  pc,y,x,b,a
+
 L0293    leax  <u0077,u
          bsr   L02C3
          bsr   L029A
