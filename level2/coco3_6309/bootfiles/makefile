@@ -4,17 +4,13 @@ include ../../Makefile.rules
 MD		= ../MODULES
 # Commands directory
 CD		= ../CMDS
-# Third Party directory
-3PB		= $(3RDPARTY)/booters
-3PD		= $(3RDPARTY)/drivers
 
 DEPENDS		= ./Makefile
 
-KERNEL_1773	= $(MD)/rel $(MD)/boot_1773 $(MD)/os9p1
-KERNEL_ROM	= $(MD)/rel $(3PB)/boot_rom $(MD)/os9p1
+KERNEL_STOCK	= $(MD)/rel $(MD)/boot_1773 $(MD)/os9p1
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
-BOOTFILE_1773	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+BOOTFILE_STOCK	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_80d.dd \
 		$(MD)/ddd0_40d.dd \
@@ -27,48 +23,19 @@ BOOTFILE_1773	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock $(MD)/clock2_soft
 
-BOOTFILE_1773_ROM = $(MD)/rominfo
-
-# OS-9 ROM image to allow booting from ROM
-BOOTFILE_ROM	= $(MD)/rominfo $(MD)/os9p2 $(MD)/init $(MD)/ioman \
-		$(MD)/scf.mn $(MD)/sio.dr $(MD)/term_t1.dd \
-		$(MD)/sspak.dr $(MD)/ssp.dd \
-		$(MD)/clock $(MD)/clock2_soft $(MD)/cc3go_rom \
-		$(CD)/shell $(CD)/mdir $(CD)/mfree $(CD)/procs
-
-BOOTFILES	= bootfile_1773 bootfile_rom
-KERNELS		= kernel_1773 kernel_rom
+BOOTFILES	= bootfile_stock
+KERNELS		= kernel_stock
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
 all:	$(ALLOBJS)
 	$(CHMOD) 600 $(ALLOBJS)
 
-bootfile_1773: $(BOOTFILE_1773) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_1773)>$@
+bootfile_stock: $(BOOTFILE_STOCK) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_STOCK)>$@
 
-kernel_1773: $(KERNEL_1773) $(DEPENDS)
-	$(MERGE) $(KERNEL_1773)>$@
-
-kernel_rom: $(KERNEL_ROM) $(DEPENDS)
-	$(MERGE) $(KERNEL_ROM)>$@
-
-# ROM image (32,768 bytes long) to burn into ROM on CoCo 3
-bootfile_1773_rom: $(BOOTFILE_1773_ROM) $(DEPENDS) kernel_1773
-	$(MERGE) $(BOOTFILE_1773_ROM)>$@
-	$(PADROM) \$$6C00 $@ -c=\$$FF
-	$(MERGE) kernel_1773>>$@
-	$(PADROM) \$$7FF0 $@ -c=\$$FF
-	$(MERGE) $(MD)/rom_vectors>>$@
-
-# ROM image (32,768 bytes long) to burn into ROM on CoCo 3
-bootfile_rom: $(BOOTFILE_ROM) $(DEPENDS) kernel_rom
-	$(MERGE) $(BOOTFILE_ROM)>$@
-	ls -l $@
-	$(PADROM) \$$6C00 $@ -c=\$$FF
-	$(MERGE) kernel_rom>>$@
-	$(PADROM) \$$7FF0 $@ -c=\$$FF
-	$(MERGE) $(MD)/rom_vectors>>$@
+kernel_stock: $(KERNEL_STOCK) $(DEPENDS)
+	$(MERGE) $(KERNEL_STOCK)>$@
 
 clean:
 	$(RM) $(ALLOBJS)
