@@ -206,7 +206,7 @@ L0151    lda   b,y
          IFEQ  ROM
 * Fork shell startup here
 * Added 12/14/03: If SHIFT is held down, startup is not run
-         clra
+         lda   #$01			standard output
          ldb   #SS.KySns
          os9   I$GetStt
          bcs   DoStartup
