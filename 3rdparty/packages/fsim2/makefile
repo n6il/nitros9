@@ -38,6 +38,7 @@ dsk:	all
 	$(MAKDIR) $(DISK),CMDS
 	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK),CMDS/shell
 	$(CP) $(CMDS) $(DISK),CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR) $(DISK),CMDS/$(file) -epe -pr;)
 	$(OS9RENAME) $(DISK),CMDS/fs AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
 
