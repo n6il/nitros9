@@ -2667,7 +2667,7 @@ eat      clra                 Standard in path
          os9   I$GetStt       Get current path options
          lda   ,x             Get device type
          beq   Eatkey         SCF (not script file) so go eat key
-NoChar   leas  $20,s          Eat temp buffer
+NoChar   leas  PD.OPT,s       Eat temp buffer
          bra   NotSCF         Exit with signal code (script file got signal)
          
 * Have to eat key: Shut echo off 1st
@@ -2687,7 +2687,7 @@ Eatkey   clr   4,x            PD.EKO flag off
          clra                 Std In
          clrb                 Set Options
          os9   I$SetStt       Turn echo back on
-         leas  $20,s          Deallocate temp buffer
+         leas  PD.OPT,s       Deallocate temp buffer
          ldb   u180D,u        Get current history line #
          cmpb  #1             First one?
          bhi   Previous       No, B=previous one
@@ -3599,7 +3599,7 @@ L1AB1    pshs  x,d            Preserve regs
          bsr   L1AD8
          lda   #$02           Do same for Standard Error path
          bsr   L1AD8
-         leas  <$20,s         Eat stack buffer
+         leas  <PD.OPT,s      Eat stack buffer
          clr   >u1812,u       Reset PD.OPT flags to 0
          clr   >u180D,u
 L1AD6    puls  pc,x,d         Restore regs & return
