@@ -34,7 +34,28 @@ os9 I$READLN
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+The path number, "pn" is an integer which is one of the
+standard path numbers 0, 1, or 2, or the path number should
+have been returned by a successful call to "open", "creat", or
+"dup". "Buffer" is a pointer to space with at least "count"
+bytes of memory into which read will put the data from the
+file.
+</para>
+<para>
+It is guaranteed that at most "count" bytes will be read, but
+often less will be, either because, for <function>readln</function>, the file
+represents a terminal and input stops at the end of a line, or
+for both, end-of-file has been reached.
+</para>
+<para>
+Readln causes "line-editing" such as echoin to take place and
+returns once the first "\n" is encountered in the input or the
+number of bytes requested has been read. Readln is the
+preferred call for reading from the user's terminal.
+</para>
+<para>
+Read does not cause any such editing. See the OS-9 manual for
+a fuller description of the actions of these calls.
 </para>
 </refsect1>
 
