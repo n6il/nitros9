@@ -11,8 +11,10 @@
          ttl   CoCo 3 Graphics interface module
 
          ifp1  
-         use   defsfile
+Level    equ   2
+         use   os9defs
          use   scfdefs
+         use   systype
          endc  
 
 rev      set   $01
@@ -611,7 +613,7 @@ L034E    lslb             account for 4 bytes per table entry
          clra  
          lda   d,x        get # parameters
          bmi   L0333      blank, exit with error
-         sta   parmcnt,u
+         sta   <parmcnt,u
          pshs  x
          abx   
          lda   3,x        get callcode #
@@ -619,7 +621,7 @@ L034E    lslb             account for 4 bytes per table entry
          ldd   1,x        get vector
          puls  x          restore table pointer
          leax  d,x        point to routine
-         tst   parmcnt,u  still processing parameters?
+         tst   <parmcnt,u  still processing parameters?
          bne   L038B      yes, go
          jmp   ,x         execute it
 
@@ -634,7 +636,7 @@ L0371    cmpa  #$1F       $1f codes?
          ldb   #$3A       get grfdrv code for Alpha put
          bra   L03C5
 L0385    leax  <L0390,pcr
-L0388    sta   parmcnt,u  save parameter count
+L0388    sta   <parmcnt,u  save parameter count
 L038B    stx   parmvct,u  save processing vector
          clra             clear carry
          rts              return
