@@ -3022,10 +3022,10 @@ L11E9    puls  pc,u,y,x,b,a,cc	restore & return
 *        Y=Path descriptor pointer
 *        U=Static memory pointer
 L11EB    pshs  pc,x,b,a
-         ldx   $03,y
-         ldd   ,x
-         ldx   ,x
-         addd  $09,x
+         ldx   PD.DEV,y
+         ldd   V$DRIV,x
+         ldx   V$DRIV,x
+         addd  M$Exec,x
          addb  ,s		
          adca  #$00
          std   $04,s
