@@ -104,16 +104,18 @@ IT.RWC   rmb   2          Reduced write current cylinder (HD)
 
 * IT.TYP Definitions
 *
-TYP.FLP  equ   %00000000	Floppy disk
 TYP.HARD equ   %10000000	Hard disk
+TYP.FLP  equ   %00000000	Floppy disk
+TYP.NSF  equ   %01000000	Non-standard format
+TYP.SOF  equ   %00000000	Standard NitrOS-9 format
 
 * IT.TYP bit definitions if bit 7 of IT.TYP is set (hard disk)
-TYPH.256  equ   %00000000	256 byte sector media
-TYPH.512  equ   %00000001	512 byte sector media
-TYPH.1024 equ   %00000010	1024 byte sector media
-TYPH.2048 equ   %00000011	2048 byte sector media
-TYPH.SSM  equ   %00000011	Sector size mask
-TYPH.DSQ  equ   %00010000       Drive size query flag
+TYPH.256  equ  %00000000	256 byte sector media
+TYPH.512  equ  %00000001	512 byte sector media
+TYPH.1024 equ  %00000010	1024 byte sector media
+TYPH.2048 equ  %00000011	2048 byte sector media
+TYPH.SSM  equ  %00000011	Sector size mask
+TYPH.DSQ  equ  %00010000       Drive size query flag
 
 * IT.TYP bit definitions if bit 7 of IT.TYP is clear (floppy disk)
 TYP.5    equ   %00000000	5" media
@@ -122,11 +124,12 @@ TYP.256  equ   %00000000	256 byte sector media
 TYP.512  equ   %00000100	512 byte sector media
 TYP.CCF  equ   %00100000	CoCo format
 TYP.NCCF equ   %00000000	Non-CoCo format
-TYP.SOF  equ   %00000000	Standard NitrOS-9 format
-TYP.NSF  equ   %01000000	Non-standard format
 
 * IT.DNS Definitions
 *
+
+* If bit 7 of IT.TYP is set, IT.DNS is driver-dependent
+
 * IT.DNS bit definitions if bit 7 of IT.TYP is clear (floppy disk)
 DNS.FM   equ   %00000000        Single-density (FM)
 DNS.MFM  equ   %00000001        Double-density (MFM)
