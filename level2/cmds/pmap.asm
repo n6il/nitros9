@@ -13,6 +13,11 @@
 *
 *   2      1989/09/12  Ken Drexler
 * Revised to handle 4K or 8K blocks.
+*
+*   3      2004/05/28  Rodney Hamilton
+* Revised for NitrOS-9/OS9Tools compatibility.
+* Revised to build for either 8K or 4K blocksize
+* based on DAT parameters in SysType file.
 
          nam   PMap
          ttl   Show process map information
@@ -24,7 +29,7 @@
 Type     set   Prgrm+Objct
 Revs     set   ReEnt+0
 Bufsiz   set   512
-edition  set   2
+edition  set   3
 
 stdout   set   1
 maxnam   set   30
@@ -46,7 +51,6 @@ number   rmb   3
 leadflag rmb   1
 pid      rmb   1
 hdr      rmb   12
-blkcnt   rmb   1          no. blocks/64k
 outbuf   rmb   80
 buffer   rmb   bufsiz*2   working proc. desc.
 stack    rmb   200
@@ -56,17 +60,18 @@ datsiz   equ   .
 *
 * Messages
 *
-Head1A   fcc   / ID   01 23 45 67 89 AB CD EF  Program    /
+        IFEQ  DAT.BlSz-8192	8K blocks
+Head1    fcc   / ID   01 23 45 67 89 AB CD EF  Program    /
          fcb   C$CR
 
-Head2A   fcc   /____  __ __ __ __ __ __ __ __  ___________/
+Head2    fcc   /____  __ __ __ __ __ __ __ __  ___________/
+        ELSE			4K blocks
+Head1    fcc   / ID   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F   Program/
+         fcb   C$CR
+
+Head2    fcc   /____  __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __  _______/
+        ENDC
 Hdrcr    fcb   C$CR
-
-Head1B   fcc   / ID   0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F   Program/
-         fcb   C$CR
-
-Head2B   fcc   /____  __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __  _______/
-         fcb   C$CR
 
 SysNam   fcs   "SYSTEM"
 syslen   equ   *-Sysnam
@@ -82,40 +87,29 @@ Entry    stu   Umem
          leax  buffer,u   point at storage
          os9   F$GBlkMp   get block info
          bcs   Error
+        IFEQ  DAT.BlSz-8192
          cmpd  #8192      8k?
-         beq   Set8k
+        ELSE
          cmpd  #4096      4k?
-         beq   Set4k
-         bra   Error      we only do 4k/8k
+        ENDC
+         bne   Error      we only do 4k/8k
 
-Set8k    lda   #64/8
-         bra   Entry1
-
-Set4k    lda   #64/4
-Entry1   sta   blkcnt     save size
          leax  Hdrcr,pcr  print line
          lbsr  PrintL1    print it
-         lda   blkcnt
-         cmpa  #64/4      4k?
-         beq   Headr4
-Headr8   leax  Head1A,pcr
+         leax  Head1,pcr
          lbsr  PrintL1    print it
-         leax  Head2A,pcr
-         bra   Head41
+         leax  Head2,pcr
 
-Headr4   leax  Head1B,pcr
          lbsr  PrintL1
-         leax  Head2B,pcr
-Head41   lbsr  PrintL1
 
 * Main Program Loop
 Main     ldu   umem
-         leax  OutBuf,U   set line pointer
+         leax  OutBuf,u   set line pointer
          stx   Lineptr
          inc   Pid        next process
          beq   Bye        >= 255 --> exit
          lda   Pid        get proc id
-         leax  Buffer,U   set destination
+         leax  Buffer,u   set destination
          os9   F$GPrDsc
          bcs   Main       loop if no descriptor
          bsr   Output     print data for descriptor
@@ -126,7 +120,7 @@ Error    os9   F$Exit
 
 * Subroutines
 
-Output   lda   P$ID,X     process id
+Output   lda   P$ID,x     process id
          lbsr  Outdecl
          lbsr  Space
          lbsr  Space
@@ -134,16 +128,20 @@ Output   lda   P$ID,X     process id
 * Print Process DAT Image
 *  IN:  x = process descriptor
 *
-         pshs  X
+         pshs  x
          leax  P$DATImg,x point to DAT image
-         ldb   blkcnt     set count
+        IFEQ  DAT.BlSz-8192
+         ldb   #DAT.BlCt  set count
+        ELSE
+         ldb   #64/4      set count
+        ENDC
          pshs  b
 
 PrntImg  ldd   ,x++       get DAT block
-         cmpd  #$00FC     empty?
+         cmpd  #DAT.Free  empty?
          bne   prntimg2
          ldy   lineptr
-         ldd   #"..
+         ldd   #$2E2E     was #".. (os9asm beta bug)
          std   ,y++
          sty   lineptr
          lbsr  space
@@ -160,10 +158,10 @@ PrntImg3 dec   ,s         count -= 1
 * IN: X - process descriptor
 *
          lbsr  Space
-         leay  P$DATImg,X
-         tfr   Y,D        d=dat image
+         leay  P$DATImg,x
+         tfr   y,d        d=dat image
          std   datimg     save pointer
-         ldx   P$PModul,X x=offset in map
+         ldx   P$PModul,x x=offset in map
          bne   doname
          leax  >sysnam,pcr point at name
          ldy   lineptr
@@ -181,9 +179,9 @@ Doname   bsr   Printnam
 * Print Line
 Printlin ldx   lineptr    terminate line
          lda   #C$CR
-         sta   ,X
+         sta   ,x
          ldu   umem
-         leax  outbuf,U
+         leax  outbuf,u
 
 * Print line
 PrintL1  ldy   #80
