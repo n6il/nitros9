@@ -10,12 +10,9 @@
          nam   WindInt
          ttl   CoCo 3 Graphics interface module
 
-Level    equ   2
-
          ifp1  
-         use   os9defs.l2v3
+         use   defsfile
          use   scfdefs
-         use   systype.l2
          endc  
 
 rev      set   $01

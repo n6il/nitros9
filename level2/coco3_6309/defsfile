@@ -4,5 +4,5 @@ OS9Vrsn  equ   3
 OS9Major equ   0
 OS9Minor equ   2
 
-         use   os9defs.l2v3
+         use   os9defs
          use   systype.l2
