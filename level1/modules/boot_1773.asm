@@ -19,6 +19,9 @@
 *
 *   6r3    2003/08/31  Robert Gault
 * Put BLOB-stop code in place, changed orb #$30 to orb #$28
+*
+*   6r4    2004/02/17  Rodney Hamilton
+* Minor optimizations, improvements in source comments
 
          nam   Boot
          ttl   WD1773 Boot module
@@ -28,17 +31,23 @@
          use   rbfdefs
          ENDC
 
-* Drive select bits at $FF40
-SIDESEL  equ   %01000000
-DRVSEL2  equ   %00100000
+* FDC Control Register bits at $FF40
+HALTENA  equ   %10000000
+SIDESEL  equ   %01000000	DRVSEL3 if no DS drives
+DDEN     equ   %00100000
+READY    equ   %00010000	READY for Tandy WD1773-based controllers
 MOTON    equ   %00001000
-PRECOMP  equ   %00000100
+DRVSEL2  equ   %00000100
 DRVSEL1  equ   %00000010
 DRVSEL0  equ   %00000001
 
-* WD17x3 Definitions
-CMDREG   equ   8+0
-STATREG  equ   CMDREG
+* Default Boot Drive is /d0
+BootDr   set DRVSEL0
+
+* WD17x3 DPort offsets
+CONTROL  equ   0
+CMDREG   equ   8+0		write-only
+STATREG  equ   CMDREG		read-only
 TRACKREG equ   8+1
 SECTREG  equ   8+2
 DATAREG  equ   8+3
@@ -46,27 +55,21 @@ DATAREG  equ   8+3
 * Sector Size
 SECTSIZE equ   256
 
-
-* Step Rate:
-*      $00  = 6ms
-*      $01  =
-*      $02  =
-*      $03  = 30ms
+* Step Rates:
+*	$00  = 6ms
+*	$01  = 12ms
+*	$02  = 20ms
+*	$03  = 30ms
 STEP     set   $00
-
-*Drive value & number
-*        $01 = 0
-*        $02 = 1
-*        $03 = 2
-BootDr   set $01
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $03
+rev      set   $04
 edition  set   6
 
          mod   eom,name,tylg,atrv,start,size
 
+* NOTE: these are U-stack offsets, not DP
 drvsel   rmb   1
 buffptr  rmb   2
 currtrak rmb   1
@@ -74,7 +77,7 @@ currtrak rmb   1
 ddtks    rmb   1		no. of sectors per track
 *ddtot    rmb   1
 dblsided rmb   1
-side     rmb   1
+side     rmb   1		side 2 flag
 size     equ   .
 
 name     fcs   /Boot/
@@ -89,10 +92,10 @@ MakeStak pshs  a		save 0 on stack
          tfr   s,u		put 'stack statics' in U
 *         ldx   #DPort
          lda   #%11010000	($D0) Force Interrupt (stops any command in progress)
-         sta   DPort+CMDREG	write command to command register
+         sta   >DPort+CMDREG	write command to command register
 *         sta   CMDREG,x		write command to command register
-         lbsr  Delay2		delay a bit
-         lda   DPort+STATREG	read status register
+         lbsr  Delay2		delay 54~
+         lda   >DPort+STATREG	clear status register
 *         lda   STATREG,x	read status register
          lda   #$FF
          sta   currtrak,u	set current track to 255
@@ -105,13 +108,13 @@ MakeStak pshs  a		save 0 on stack
          sta   >D.XNMI
          ENDC
          lda   #MOTON+BootDr	turn on drive motor
-         sta   >DPort
+         sta   >DPort+CONTROL
 
-* delay loop to allow disk to spin up
+* MOTOR ON spin-up delay loop (~307 mSec)
          IFGT  Level-1
-         ldd   #$C350
+         ldd   #50000
          ELSE
-         ldd   #$61A8
+         ldd   #25000
          ENDC
          IFNE  H6309
          nop
@@ -144,51 +147,52 @@ L003A    nop
 * From LSN0, we get various pieces of info.
 *         ldd   DD.TOT+1,y
 *         std   ddtot,u
-         lda   <DD.FMT,y		get format byte of LSN0
-*         sta   ddfmt,u			save it for ???
-         anda  #FMT.SIDE		keep side bit
-         sta   dblsided,u		and save it
-         lda   DD.TKS,y			get sectors per track
-         sta   ddtks,u			and save
-         ldd   <DD.BSZ,y		get bootfile size
-         std   ,s			save on stack
-         ldx   <DD.BT+1,y		get start sector of bootfile
-         pshs  x			push on the stack
-         ldd   #SECTSIZE		load D with sector size
-         ldu   buffptr,u		and point to the buffer pointer
-         os9   F$SRtMem			return the memory
-         ldd   $02,s			get the bootfile size
+         lda   <DD.FMT,y	get format byte of LSN0
+*         sta   ddfmt,u		save it for ???
+         anda  #FMT.SIDE	keep side bit
+         sta   dblsided,u	and save it
+         lda   DD.TKS,y		get sectors per track
+         sta   ddtks,u		and save
+         ldd   <DD.BSZ,y	get bootfile size
+         std   ,s		save on stack
+         ldx   <DD.BT+1,y	get start sector of bootfile
+         pshs  x		push on the stack
+         ldd   #SECTSIZE	load D with sector size
+         ldu   buffptr,u	and point to the buffer pointer
+         os9   F$SRtMem		return the memory
+         ldd   $02,s		get the bootfile size
          IFGT  Level-1
          os9   F$BtMem
          ELSE
-         os9   F$SRqMem			get the memory from the system
+         os9   F$SRqMem		get the memory from the system
          ENDC
-         puls  x			pull bootfile start sector off stack
-         bcs   L00AA			branch if error
-         stu   $02,s			save pointer to bootfile mem on stack
-         tfr   u,d			transfer to D for later store
-         ldu   $06,s			restore original U
-*         ldd   $02,s			get pointer to bootfile mem
-         std   buffptr,u		and save pointer
-         ldd   ,s			get bootfile size
-         beq   L00A3			branch if zero
+         puls  x		pull bootfile start sector off stack
+         bcs   L00AA		branch if error
+         stu   2,s		save pointer to bootfile mem on stack
+         stu   8+buffptr,s	also save to buffptr,u
+         ldu   6,s		reload original U
+*         ldd   2,s		get pointer to bootfile mem
+*         std   buffptr,u	and save pointer
+         ldd   ,s		get bootfile size
+         beq   L00A3		branch if zero
 
 * this loop reads a sector at a time from the bootfile
 * X = start sector
 * D = bootfile size
-L0091    pshs  x,b,a			save params
+L0091    pshs  x,b,a		save params
          clrb
-         bsr   ReadSect			read sector
-         bcs   L00A8			branch if error
+         bsr   ReadSect		read sector
+         bcs   L00A8		branch if error
          IFGT  Level-1
-         lda   #'.			dump out a period for boot debugging
-         jsr   <D.BtBug			do the debug stuff     
+         lda   #'.		dump out a period for boot debugging
+         jsr   <D.BtBug		do the debug stuff     
          ENDC
-         puls  x,b,a			get params
-         inc   buffptr,u		point to next 256 bytes
-         leax  1,x			move to next sector
-         subd  #SECTSIZE		subtract sector bytes from size
-         bhi   L0091			continue if more space
+         puls  x,b,a		restore params
+* RVH NOTE: the next 3 lines assume sector size=256=LSN size?
+         inc   buffptr,u	point to next 256 bytes
+         leax  1,x		move to next sector
+         subd  #SECTSIZE	subtract sector bytes from size
+         bhi   L0091		continue if more space
 L00A3    clrb
          puls  b,a
          bra   L00AC
@@ -196,15 +200,15 @@ L00A8    leas  $04,s
 L00AA    leas  $02,s
 L00AC    puls  u,y,x
          leas  size,s		clean up stack
-         clr   >DPort		shut off floppy disk
+         clr   >DPort+CONTROL	shut off floppy disk
          rts
 
-L00B7    lda   #DRVSEL2+MOTON+BootDr    permit alternate drives
+L00B7    lda   #DDEN+MOTON+BootDr	permit alternate drives
          sta   drvsel,u			save drive selection byte
          clr   currtrak,u		clear current track
          lda   #$05
          lbsr  L0170
-         ldb   #STEP
+         ldb   #0+STEP		RESTORE cmd
          lbra  L0195
 
 * Read a sector from the 1773
@@ -224,7 +228,7 @@ L00D7    bcc   L00DF
          puls  x,b,a
 L00DF    pshs  x,b,a		save LSN, command
          bsr   L00EA
-         puls  x,b,a		get LSN, command
+         puls  x,b,a		restore LSN, command
          bcc   L00D6		branch if OK
          lsra
          bne   L00D7
@@ -236,35 +240,27 @@ L00EA    bsr   L013C
          ldy   #$FFFF
          ldb   #%10000000	($80) READ SECTOR command
          stb   >DPort+CMDREG	write to command register
-         ldb   drvsel,u
-* Notes on the next line:
-* The byte in question comes after telling the controller that it should
-* read a sector. RegB is then loaded (ldb drvsel,u) which means it is set to $29
-* (%00101001) or the default boot drive if sub L00B7 has been run. At this
-* point an orb #$30 or orb #%00110000 means that write precomp and double
-* density flags are or'd in. This does not make any sense at all for a
-* read command. I suppose the command may not even be needed but $28 just
-* ensures that motor on and double density are set.
-*         orb   #$28		was $30 which RG thinks is an error
-* 09/02/03: Futher investigation shows that the OS-9 Level One Booter will
-* FAIL if orb #$28 is used.  It does not fail if orb #$30 is used. ????
-         orb   #$30		RG thinks is an error
-         tst   side,u
+         ldb   drvsel,u		(DDEN+MOTORON+BootDr)
+* NOTE: The 1773 FDC multiplexes the write precomp enable and ready
+* signals on the ENP/RDY pin, so the READY bit must always be ON for
+* read and seek commands.  (from the FD502 FDC Service Manual)
+         orb   #DDEN+READY	set DDEN+READY bits ($30)
+         tst   side,u		are we on side 2?
          beq   L0107
-         orb   #SIDESEL
-L0107    stb   >DPort
-         lbsr  Delay2
-         orb   #$80
-*         lda   #%00000010	($02) RESTORE
+         orb   #SIDESEL		set side 2 bit
+L0107    stb   >DPort+CONTROL
+         lbsr  Delay2		delay 54~
+         orb   #HALTENA		HALT enable ($80)
+*         lda   #%00000010	RESTORE cmd ($02)
 *L0111    bita  >DPort+STATREG
 *         bne   L0123
 *         leay  -$01,y
 *         bne   L0111
 *         lda   drvsel,u
-*         sta   >DPort
+*         sta   >DPort+CONTROL
 *         puls  y
 *         bra   L0138
-         stb   >DPort
+         stb   >DPort+CONTROL
          nop
          nop
          bra   L0123
@@ -272,9 +268,14 @@ L0107    stb   >DPort
 * Sector READ Loop
 L0123    lda   >DPort+DATAREG	read from WD DATA register
          sta   ,x+
-*         stb   >DPort
+*         stb   >DPort+CONTROL
          nop
          bra   L0123
+* RVH NOTE: This ONLY works for double density boot disks!  The Tandy
+* controllers internally gate HALT enable with the DDEN bit, which
+* means that reading a single-density boot disk will not generate the
+* NMI signal needed to exit the read loop!  Single-density disks must
+* use a polled I/O loop instead.
 
 NMIRtn   leas  R$Size,s		adjust stack
          puls  y
@@ -289,16 +290,16 @@ RetOK    rts
 
 L013C    lda   #MOTON+BootDr	permit alternate drives
          sta   drvsel,u		save byte to static mem
-         clr   side,u		assume side 0
+         clr   side,u		start on side 1
          tfr   x,d
          cmpd  #$0000
          beq   L016C
          clr   ,-s		clear space on stack
-         tst   dblsided,u	disk double sided?
+         tst   dblsided,u	double sided disk?
          beq   L0162		branch if not
          bra   L0158
 * Double-sided code
-L0152    com   side,u
+L0152    com   side,u		flag side 2
          bne   L0158
          inc   ,s
 L0158    subb  ddtks,u		
@@ -315,15 +316,15 @@ L016C    incb
          stb   >DPort+SECTREG	save in sector register
 L0170    ldb   currtrak,u	get current track in B
          stb   >DPort+TRACKREG	save in track register
-         cmpa  currtrak,u	same as A
+         cmpa  currtrak,u	same as A?
          beq   L018D		branch if so
          sta   currtrak,u
          sta   >DPort+DATAREG
          ldb   #$10+STEP	SEEK command
          bsr   L0195		send command to controller
          pshs  x
-* Delay
-         ldx   #$222E
+* Seek Delay
+         ldx   #$222E		delay ~39 mSec (78mS L1)
 L0187    leax  -$01,x
          bne   L0187
          puls  x
@@ -335,24 +336,25 @@ L018D    clrb
 *         clrb
 *         rts
 
-L0195    bsr   Delay1
+L0195    bsr   L01A8		issue FDC cmd, wait 54~
 L0197    ldb   >DPort+STATREG
-         bitb  #$01
-         bne   L0197
+         bitb  #$01		still BUSY?
+         bne   L0197		loop until command completes
          rts
 
 * Entry: B = command byte
 L019F    lda   drvsel,u
-         sta   >DPort
+         sta   >DPort+CONTROL
          stb   >DPort+CMDREG
          rts
 
-* Delay branches
-Delay1 
-         IFNE  H6309
-         nop
-         ENDC
+* issue command and wait 54 clocks
+* Controller requires a min delay of 14uS (DD) or 28uS (SD)
+* following a command write before status register is valid
+L01A8 
          bsr   L019F
+* Delay branches
+* 54 clock delay including bsr (=30uS/L2,60us/L1)
 Delay2  
          IFNE  H6309
          nop
@@ -379,4 +381,3 @@ Filler   fill  $39,$1D0-3-*
          emod
 eom      equ   *
          end
-
