@@ -1,6 +1,6 @@
 include ../../../Makefile.rules
 
-DISK	= basic09.dsk
+DISK	= basic09v010100.dsk
 
 # NitrOS-9
 H6309		= $(AFLAGS) -aH6309=1
