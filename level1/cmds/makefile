@@ -3,7 +3,7 @@ include ../../Makefile.rules
 DEPENDS		= ./Makefile
 
 BASIC09FILES	= runb.asm gfx.asm inkey.asm syscall.asm
-COCOCMDS	= asm attr backup binex build cmp cobbler config copy date \
+COCOCMDS	= asm attr backup binex build cmp cobbler config copy cputype date \
 		dcheck debug ded deiniz del deldir devs dir disasm display \
 		dmode dsave dump echo edit error exbin exmode format free grfo \
 		help ident iniz irqs link list load login makdir mdir merge \
