@@ -30,7 +30,6 @@
 
         IFP1
          use   defsfile
-         use   rbfdefs
         ENDC
 
 rev      set   $02
