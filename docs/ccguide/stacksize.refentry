@@ -24,4 +24,12 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="sbrk">ibrk(), sbrk()</link>,
+Global variable "memend" and value "end".
+</para>
+</refsect1>
+
 </refentry>
