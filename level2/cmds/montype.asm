@@ -10,11 +10,11 @@
 * 3      Fixed a bug where a non dash option would      BGP 03/03/10
 *        crash the system.  Also shows the monitor
 *        type when no parameters are passed.
+* 4      Made dash optional to accept parameters as     RVH 03/05/27
+*        args or options, streamlined code flow.
 
          nam   MonType
          ttl   Change monitor type
-
-* Disassembled 98/09/10 23:52:51 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
@@ -22,8 +22,8 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
-edition  set   3
+rev      set   $00
+edition  set   4
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -34,7 +34,6 @@ size     equ   .
 name     fcs   /MonType/
          fcb   edition
 
-CurOn    fdb   $1B21
          IFNE  DOHELP
 HelpMsg  fcb   C$CR
          fcb   C$LF
@@ -47,7 +46,7 @@ HelpMsg  fcb   C$CR
          fcc   "Options: -r = rgb monitor"
          fcb   C$CR
          fcb   C$LF
-         fcc   "         -c = composite monitor (t.v.)"
+         fcc   "         -c = composite monitor (TV)"
          fcb   C$CR
          fcb   C$LF
          fcc   "         -m = monochrome monitor"
@@ -69,63 +68,69 @@ CMPType  fcc   /Composite/
 MonoType fcc   /Monochrome/
          fcb   C$CR
 
-ShowMTyp lda   #1			standard out
-         ldb   #SS.Montr		monitor type
-         os9   I$GetStt 		get it!
+CurOn    fdb   $1B21
+
+start    equ   *
+SkipSpcs lda   ,x+
+         cmpa  #C$SPAC
+         beq   SkipSpcs
+         cmpa  #'-		dash option flag
+         beq   SkipSpcs
+
+         anda  #$5F		make uppercase
+         clrb			type=0
+         cmpa  #'C		Composite?
+         beq   SetMType
+         incb			type=1
+L00C7    cmpa  #'R		RGB?
+         beq   SetMType
+         incb			type=2
+L00D0    cmpa  #'M		Monochrome?
+         beq   SetMType
+
+         IFNE  DOHELP
+         cmpa  #C$CR		if no arg, show type
+         bne   ShowHelp		unknown arg, do help
+         ENDC
+
+ShowMTyp lda   #1		standard out
+         ldb   #SS.Montr	monitor type
+         os9   I$GetStt 	get it!
          bcs   Exit
          pshs  x 
-         leax  TypeMsg,pcr
+         leax  <TypeMsg,pcr
          ldy   #TypeMsgL
          os9   I$Write
          puls  d
-         leax  TypeTbl,pcr
+         leax  <TypeTbl,pcr
          ldb   b,x
          abx 
          lda   #1
          ldy   #80
          os9   I$WritLn
          bra   ExitOk
-         
-start    bsr   SkipSpcs
-         cmpa  #C$CR
-         beq   ShowMTyp
-         andb  #$5F			make uppercase
-         cmpd  #$2D52			-R ?
-         bne   L00C7
-         ldx   #$0001
-         bra   L00D7
-L00C7    cmpd  #$2D43			-C ?
-         bne   L00D0
-         ldx   #$0000
-         bra   L00D7
-L00D0    cmpd  #$2D4D			-M ?
-         bne   ShowHelp
-         ldx   #$0002
-L00D7    lda   #1			standard output
-         ldb   #SS.Montr		monitor setstat
-         os9   I$SetStt 		do it!
-         bcs   Exit			branch if error
-         leax  >CurOn,pcr		point to cursor on
-         lda   #1			to stdout
-         ldy   #2			two bytes
-         os9   I$Write  		write it!
-         bcs   Exit			branch if error
+
+SetMType ldx   #$0000
+         abx			set monitor type
+         lda   #1		standard output
+         ldb   #SS.Montr	monitor setstat
+         os9   I$SetStt 	do it!
+         bcs   Exit		branch if error
+         leax  <CurOn,pcr	point to cursor on
+         lda   #1		to stdout
+         ldy   #2		two bytes
+         os9   I$Write  	write it!
+         bcs   Exit		branch if error
 ExitOk   clrb  
 Exit     os9   F$Exit   
 
-SkipSpcs ldd   ,x+
-         cmpa  #C$SPAC
-         beq   SkipSpcs
-         rts   
-
-ShowHelp equ   *
          IFNE  DOHELP
-         lda   #1
+ShowHelp lda   #1
          leax  >HelpMsg,pcr
          ldy   #HelpMsgL
          os9   I$Write  
-         ENDC
          bra   ExitOk
+         ENDC
 
          emod
 eom      equ   *
