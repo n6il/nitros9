@@ -5,7 +5,6 @@ all:
 	$(CD) boisy; make
 	$(CD) dasm; make
 	$(CD) enhanced; make
-	$(CD) kdutils; make
 	$(CD) smartwatch; make
 	$(CD) winfo; make
 
@@ -14,6 +13,5 @@ clean:
 	-$(CD) boisy; make clean
 	-$(CD) dasm; make clean
 	-$(CD) enhanced; make clean
-	-$(CD) kdutils; make clean
 	-$(CD) smartwatch; make clean
 	-$(CD) winfo; make clean
