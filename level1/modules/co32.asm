@@ -43,8 +43,8 @@ start    equ   *
          lbra  SetStat
 Term     pshs  y,x
          pshs  u		save U
-         ldd   #$0200		32x16 VDG memory size
-         ldu   <VD.ScrnA,u $1D	get pointer to memory
+         ldd   #512		32x16 VDG memory size
+         ldu   <VD.ScrnA,u 	get pointer to memory
          os9   F$SRtMem 	return to system
          puls  u		restore U
          ldb   <$70,u
@@ -53,7 +53,7 @@ Term     pshs  y,x
 * Init
 Init     pshs  y,x		save regs
          lda   #$AF
-         sta   <VD.CColr,u $2C save default color cursor
+         sta   <VD.CColr,u	save default color cursor
          pshs  u		save static ptr
          ldd   #768		allocate 768 bytes for now
          os9   F$SRqMem 	get it
@@ -67,19 +67,19 @@ L0052    leau  >512,u		else move X up 512 bytes
 L0056    ldd   #256		and return last 256 bytes
          os9   F$SRtMem 	free it!
          puls  u		restore static ptr
-         stx   <VD.ScrnA,u $1D	save VDG screen memory
+         stx   <VD.ScrnA,u 	save VDG screen memory
          pshs  y
          leay  -$0E,y
          clra  
          clrb  
          jsr   [<$5B,u]
          puls  y
-         stx   <VD.CrsrA,u $21	save start cursor position
+         stx   <VD.CrsrA,u 	save start cursor position
          leax  >512,x		point to end of screen
-         stx   <VD.ScrnE,u $1F	save it
+         stx   <VD.ScrnE,u 	save it
          lda   #$60		get default character
-         sta   <VD.CChar,u $23	put character under the cursor
-         sta   <VD.Chr1,u $2B   only referenced here ??
+         sta   <VD.CChar,u 	put character under the cursor
+         sta   <VD.Chr1,u	only referenced here ??
          lbsr  ClrScrn		clear the screen
          ldb   <$70,u
          orb   #$02		set to CO32 found (?)
@@ -94,7 +94,7 @@ Write    tsta
          bmi   L00D0
          cmpa  #$1F			byte $1F?
          bls   Dispatch			branch if lower or same
-         ldb   <VD.CFlag,u $71
+         ldb   <VD.CFlag,u
          beq   L00B0
          cmpa  #$5E
          bne   L00A0
@@ -124,42 +124,43 @@ L00C8    cmpa  #$40
          bcs   L00CE
          suba  #$40
 L00CE    eora  #$40
-L00D0    ldx   <VD.CrsrA,u $21
-         sta   ,x+
-         stx   <VD.CrsrA,u $21
-         cmpx  <VD.ScrnE,u $1F
-         bcs   L00DF
-         bsr   SScrl			if at end of screen, scroll it
+L00D0    ldx   <VD.CrsrA,u		get cursor address in X
+         sta   ,x+			store character at address
+         stx   <VD.CrsrA,u 		update cursor address
+         cmpx  <VD.ScrnE,u 		end of screen?
+         bcs   L00DF			branch if not
+         bsr   SScrl			else if at end of screen, scroll it
 L00DF    bsr   ShowCrsr			ends with a CLRB/RTS anyhow
 
 * no operation entry point
 NoOp     clrb  
          rts   
 
-SScrl    ldx   <VD.ScrnA,u $1D
-         leax  <32,x
-L00E9    ldd   ,x++
-         std   <-34,x
-         cmpx  <VD.ScrnE,u $1F
-         bcs   L00E9
-         leax  <-32,x
-         stx   <VD.CrsrA,u $21
-         lda   #32
-         ldb   #$60
-L00FD    stb   ,x+
-         deca  
-         bne   L00FD
+* Screen Scroll Routine
+SScrl    ldx   <VD.ScrnA,u		get address of screen
+         leax  <32,x			move to 2nd line
+L00E9    ldd   ,x++			copy from this line
+         std   <-34,x			to prevous
+         cmpx  <VD.ScrnE,u		at end of screen yet?
+         bcs   L00E9			branch if not
+         leax  <-32,x			else back up one line
+         stx   <VD.CrsrA,u		save address of cursor (first col of last row)
+         lda   #32			clear out row...
+         ldb   #$60			...width spaces
+L00FD    stb   ,x+			do it...
+         deca  				end of rope?
+         bne   L00FD			branch if not
 L0102    rts   
 
-Dispatch cmpa  #$1B
-         bcc   L0113
-         cmpa  #$0E
-         bhi   L0102
-         leax  <DCodeTbl,pcr
-         lsla  
-         ldd   a,x
-         jmp   d,x
-L0113    comb  
+Dispatch cmpa  #$1B		escape code?
+         bcc   bad@		branch if same or greater
+         cmpa  #$0E		$0E?
+         bhi   L0102		branch if higher than
+         leax  <DCodeTbl,pcr	deal with screen codes
+         lsla  			adjust for table entry size
+         ldd   a,x		get address in D
+         jmp   d,x		and jump to routine
+bad@     comb  
          ldb   #E$Write
          rts   
 
@@ -169,7 +170,7 @@ DCodeTbl fdb   NoOp-DCodeTbl   $ffca  $00:no-op (null)
          fdb   CurXY-DCodeTbl  $00c9  $02:CURSOR XY
          fdb   DelLine-DCodeTbl  $0107  $03:ERASE LINE
          fdb   ErEOLine-DCodeTbl  $00f9  $04:CLEAR TO EOL
-         fdb   CrsrSw-DCodeTbl  $0091  $05:CURSOR ON/OFF
+         fdb   Do05-DCodeTbl  $0091  $05:CURSOR ON/OFF
          fdb   CurRght-DCodeTbl  $005e  $06:CURSOR RIGHT
          fdb   NoOp-DCodeTbl  $ffca  $07:no-op (bel:handled in CCIO)
          fdb   CurLeft-DCodeTbl  $0050  $08:CURSOR LEFT
@@ -181,10 +182,10 @@ DCodeTbl fdb   NoOp-DCodeTbl   $ffca  $00:no-op (null)
          fdb   DoAlpha-DCodeTbl  $012a  $0E:DISPLAY ALPHA
 
 * $0D - move cursor to start of line (carriage return)
-Retrn    bsr   HideCrsr
-         tfr   x,d
-         andb  #$E0
-         stb   <$22,u
+Retrn    bsr   HideCrsr		hide cursor
+         tfr   x,d		put cursor address in D
+         andb  #$E0		place at start of line
+         stb   <VD.CrsAL,u	and save low cursor address
 ShowCrsr ldx   <VD.CrsrA,u $21	get cursor address
          lda   ,x		get char at cursor position
          sta   <VD.CChar,u $23	save it
@@ -249,14 +250,14 @@ HideCrsr ldx   <VD.CrsrA,u $21	get address of cursor in X
          rts   
 
 * $05 XX - set cursor off/on/color per XX-32
-CrsrSw   ldb   #$01
-         leax  <L01AF,pcr	
+Do05     ldb   #$01		need additional byte
+         leax  <CrsrSw,pcr	
          bra   L01E5
 
-L01AF    lda   <VD.NChar,u $29	get next char
+CrsrSw   lda   <VD.NChar,u 	get next char
          suba  #C$SPAC		take out ASCII space
          bne   L01BB		branch if not zero
-         sta   <VD.CColr,u $2C	else save cursor color zero (no cursor)
+         sta   <VD.CColr,u 	else save cursor color zero (no cursor)
          bra   HideCrsr		and hide cursor
 L01BB    cmpa  #$0B		greater than $0B?
          bge   L014D		yep, just ignore byte
@@ -275,8 +276,8 @@ L01CF    suba  #$03		** BUG FIXED! ** !!! Was SUBB
          lsla  
          lsla  
          ora   #$8F
-L01D7    sta   <VD.CColr,u $2C	save new cursor
-         ldx   <VD.CrsrA,u $21	get cursor address
+L01D7    sta   <VD.CColr,u 	save new cursor
+         ldx   <VD.CrsrA,u 	get cursor address
          lbra  L014B		branch to save cursor in X
 
 * $02 XX YY - move cursor to col XX-32, row YY-32
@@ -334,11 +335,11 @@ DoAlpha  clra
          jmp   [<$5B,u]
 
 * GetStat
-GetStat  ldx   PD.RGS,y
-         cmpa  #SS.AlfaS	$1C
-         beq   Rt.AlfaS
-         cmpa  #SS.Cursr	$25
-         beq   Rt.Cursr
+GetStat  ldx   PD.RGS,y		get caller's regs
+         cmpa  #SS.AlfaS	AlfaS?
+         beq   Rt.AlfaS		branch if so
+         cmpa  #SS.Cursr	Cursr?
+         beq   Rt.Cursr		branch if so
 
 * SetStat
 SetStat  comb  
@@ -346,21 +347,21 @@ SetStat  comb
          rts   
 
 * SS.AlfaS getstat
-Rt.AlfaS ldd   <VD.ScrnA,u $1D	memory address of buffer
-         std   R$X,x
-         ldd   <VD.CrsrA,u $21
-         std   R$Y,x
-         lda   <VD.Caps,u $50	save caps lock status in A and exit
-         bra   L02BA
+Rt.AlfaS ldd   <VD.ScrnA,u 	memory address of buffer
+         std   R$X,x		save in caller's X
+         ldd   <VD.CrsrA,u 	get cursor address
+         std   R$Y,x		save in caller's Y
+         lda   <VD.Caps,u 	save caps lock status in A and exit
+         bra   SaveA
 
 * SS.Cursr getstat
-Rt.Cursr ldd   <VD.CrsrA,u $21
-         subd  <VD.ScrnA,u $1D
-         pshs  b,a
+Rt.Cursr ldd   <VD.CrsrA,u	get address of cursor
+         subd  <VD.ScrnA,u	subtract screen address
+         pshs  b,a		D now holds cursor position relative to screen
          clra  
          andb  #$1F
-         addb  #$20
-         std   R$X,x		save column position in ASCII
+         addb  #$20		compute column position
+         std   R$X,x		save column position to caller's X
          puls  b,a		then divide by 32
          lsra  
          rolb  
@@ -370,38 +371,38 @@ Rt.Cursr ldd   <VD.CrsrA,u $21
          clra  
          andb  #$0F		only 16 line to a screen
          addb  #$20
-         std   $06,x
-         ldb   <VD.CFlag,u $71
-         lda   <VD.CChar,u $23
-         bmi   L02BA
-         cmpa  #$60
-         bcc   L02A5
-         cmpa  #$20
+         std   R$Y,x		and save column to caller's Y
+         ldb   <VD.CFlag,u
+         lda   <VD.CChar,u	get character under cursor
+         bmi   SaveA		if hi bit set, go on
+         cmpa  #$60		VDG space?
+         bcc   L02A5		branch if greater than
+         cmpa  #$20		
          bcc   L02A9
-         tstb  
+         tstb 
          beq   L02A3
          cmpa  #$00
          bne   L029B
          lda   #$5E
-         bra   L02BA		save it and exit
+         bra   SaveA		save it and exit
 
 L029B    cmpa  #$1F
          bne   L02A3
          lda   #$5F
-         bra   L02BA
-L02A3    ora   #$20		turn it into ASCII from vDG codes
+         bra   SaveA
+L02A3    ora   #$20		turn it into ASCII from VDG codes
 L02A5    eora  #$40
-         bra   L02BA
+         bra   SaveA
 L02A9    tstb  
-         bne   L02BA
+         bne   SaveA
          cmpa  #$21		remap specific codes
          bne   L02B4
          lda   #$7C
-         bra   L02BA
+         bra   SaveA
 L02B4    cmpa  #$2D
-         bne   L02BA
+         bne   SaveA
          lda   #$7E
-L02BA    sta   $01,x
+SaveA    sta   R$A,x
          clrb  
          rts   
 
