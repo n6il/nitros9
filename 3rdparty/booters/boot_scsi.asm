@@ -33,9 +33,9 @@ rev      set   2
 edition  set   1
 
 * The default SCSI ID is here
-scsiid   equ   %00000001
+scsiid   set   %00000001
 
-* Hard Disk Interface registers for the Ken-ton and RGB HDI
+* Hard Disk Interface registers for the Ken-Ton and RGB HDI
          ifne  Kenton
 dataport equ   $FF74
 status   equ   dataport+1
