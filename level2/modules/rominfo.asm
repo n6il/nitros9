@@ -23,6 +23,10 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   1
 
+         ifne  ROMPak
+         jmp   $C000+start
+         endc
+
          mod   eom,name,tylg,atrv,start,size
 
 size     equ   .
