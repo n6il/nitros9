@@ -8,7 +8,7 @@
 *        Tandy/Microware original version
 
          nam   P
-         ttl   CoCo serial priner device descriptor
+         ttl   CoCo serial printer device descriptor
 
 * Disassembled 98/08/23 21:15:24 by Disasm v1.6 (C) 1988 by RML
 
@@ -24,7 +24,7 @@ rev      set   $01
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
          fcb   READ.+WRITE. mode byte
-         fcb   HW.page    extended controller address
+         fcb   HW.Page    extended controller address
          fdb   $0000      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf
