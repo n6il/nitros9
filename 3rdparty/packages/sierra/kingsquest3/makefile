@@ -49,7 +49,7 @@ dsk:	all
 	$(OS9FORMAT_DS40) $(DISK_1) -n"King's Quest III Disk 1"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
-	$(OS9GEN) $(DISK_1) os9boot kernel_1773
+	$(OS9GEN) $(DISK_1) -b=os9boot -t=kernel_1773
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $(DISK_1),CMDS
 	$(CP) $(CMDS) $(DISK_1),CMDS
