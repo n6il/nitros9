@@ -97,7 +97,7 @@ ClrLoop  clr   ,x+			clear a byte
          os9   F$Ret64   
          leax  >IRQPoll,pcr		point to polling routine
          stx   <D.Poll   		save the vector address
-         leay  <L005F,pcr		point to service vector table
+         leay  <IOCalls,pcr		point to service vector table
          os9   F$SSvc    		set up calls
          rts             		and return to system
 
@@ -111,12 +111,14 @@ Crash    jmp   <D.Crash
 *
 * System service routine vector table
 *
-L005F    fcb   $7F       
+IOCalls  fcb   $7F       
          fdb   UsrIO-*-2 
          fcb   F$Load    
          fdb   FLoad-*-2 
+         IFGT  Level-1
          fcb   I$Detach  
          fdb   IDetach0-*-2
+         ENDC
          fcb   F$PErr    
          fdb   FPErr-*-2 
          fcb   F$IOQu+$80
@@ -127,10 +129,12 @@ L005F    fcb   $7F
          fdb   FIRQ-*-2  
          fcb   F$IODel+$80
          fdb   FIODel-*-2
+         IFGT  Level-1
          fcb   F$NMLink  
          fdb   FNMLink-*-2
          fcb   F$NMLoad  
          fdb   FNMLoad-*-2
+         ENDC
          fcb   $80       
 
 ******************************
@@ -200,11 +204,13 @@ SysIODis fdb   IAttach-SysIODis
          fdb   SIClose-SysIODis
          fdb   IDeletX-SysIODis
 
+
+* Entry to User and System I/O dispatch table
+* B = I/O system call code
 UsrIO    leax  <UsrIODis,pcr
          bra   IODsptch     
 SysIO    leax  <SysIODis,pcr
-IODsptch equ   *
-         cmpb  #$20      
+IODsptch cmpb  #$20      
          bhi   L00F9     
          IFNE  H6309     
          ldw   b,x       
@@ -262,14 +268,20 @@ IALoop   clr   ,-s       		clear each byte
          stu   <CALLREGS,s		save caller regs
          lda   R$A,u     		access mode
          sta   AMODE,s   		save on stack
+         IFGT  Level-1
          ldx   <D.Proc   		get curr proc desc
          stx   <ODPROC,s 		save on stack
          leay  <P$DATImg,x		point to DAT img of curr proc
          ldx   <D.SysPrc 		get sys proc
          stx   <D.Proc   		make sys proc current proc
+         ENDC
          ldx   R$X,u    		get caller's X 
-         lda   #Devic    		link to device desc
+         lda   #Devic+0    		link to device desc
+         IFGT  Level-1
          os9   F$SLink   		link to it
+         ELSE
+         os9   F$Link   		link to it
+         ENDC
          bcs   L0155     		branch if error
          stu   VDESC,s    		save dev desc ptr
          ldy   <CALLREGS,s		get caller regs
@@ -285,7 +297,7 @@ IALoop   clr   ,-s       		clear each byte
          ldd   M$PDev,u   		get driver name ptr
          leax  d,u              	add D to U and put in X
          ENDC            
-         lda   #Drivr    		driver
+         lda   #Drivr+0    		driver
          os9   F$Link			link to driver
          bcs   L0155     		branch if error
          stu   VDRIV,s    		else save addr save on stack
@@ -298,11 +310,15 @@ IALoop   clr   ,-s       		clear each byte
          ldd   M$FMgr,u   		get fm name
          leax  d,u       		add D to U and put in X
          ENDC            
-         lda   #FlMgr			link to fm
+         lda   #FlMgr+0			link to fm
          os9   F$Link    		link to it!
-L0155    ldx   <ODPROC,s		get caller's proc desc
+L0155   
+         IFGT  Level-1
+         ldx   <ODPROC,s		get caller's proc desc
          stx   <D.Proc    		restore orig proc desc
+         ENDC
          bcc   L016A     		branch if not error
+* Error on attach, so detach
 L015C    stb   <RETERR,s 		save off error code
          leau  VDRIV,s    		point U to device table entry
          os9   I$Detach   		detach
@@ -403,11 +419,11 @@ L01D1
          clra            
          rts             
 
-L01DD    ldx   VSTAT,s    get static storage off stack
-         bne   L0259      branch if already alloced
-         stu   <CURDTE,s  else store off ptr to dev table entry
-         ldx   VDRIV,s    get ptr to driver
-         ldd   M$Mem,x    get driver storage req
+L01DD    ldx   VSTAT,s		get static storage off stack
+         bne   L0259		branch if already alloced
+         stu   <CURDTE,s	else store off ptr to dev table entry
+         ldx   VDRIV,s		get ptr to driver
+         ldd   M$Mem,x		get driver storage req
          os9   F$SRqMem  	allocate memory
          lbcs  L015C     	branch if error
          stu   VSTAT,s		save newly alloc'ed driver static storage ptr
@@ -632,6 +648,7 @@ L032B    puls  u,b
          clr   V$DESC+1,u     
          clr   V$USRS,u     	and users
 L0335                    
+         IFGT  Level-1
          IFNE  H6309     
          ldw   <D.Proc   
          ELSE            
@@ -640,6 +657,7 @@ L0335
          ENDC            
          ldd   <D.SysPrc 	make system the current process
          std   <D.Proc   
+         ENDC
          ldy   V$DRIV,u        	get file manager module address
          ldu   V$FMGR,u     	get driver module address
          os9   F$UnLink  	unlink file manager
@@ -647,45 +665,52 @@ L0335
          os9   F$UnLink  	unlink driver
          leau  ,x        	point to descriptor
          os9   F$UnLink  	unlink it
+         IFGT  Level-1
          IFNE  H6309     
          stw   <D.Proc   
          ELSE            
          puls  d         	restore current process
          std   <D.Proc   
          ENDC            
+         ENDC
 L0351    lbsr  L0595     
          clrb            
          rts             
 
-UIDup    bsr   LocFrPth  
-         bcs   L0376     
-         pshs  x,a       
-         lda   R$A,u     
-         lda   a,x       
+* User State I$Dup
+UIDup    bsr   LocFrPth  	look for a free path
+         bcs   L0376     	branch if error
+         pshs  x,a       	else save off
+         lda   R$A,u     	get path to dup
+         lda   a,x       	point to path to dup
          bsr   L036F     
          bcs   L036B     
          puls  x,b       
-         stb   R$A,u     
+         stb   R$A,u     	save off new path to caller's A
          sta   b,x       
          rts             
 L036B    puls  pc,x,a    
 
+* System State I$Dup
 SIDup    lda   R$A,u     
-L036F    lbsr  GetPDesc     
-         bcs   L0376     
-         inc   PD.CNT,y  
+L036F    lbsr  GetPDesc     	find path descriptor
+         bcs   L0376     	exit if error
+         inc   PD.CNT,y  	else increment path descriptor
 L0376    rts             
 
-* Locate a free path in D.Proc
-LocFrPth ldx   <D.Proc   
-         leax  <P$Path,x 
-         clra            
-L037D    tst   a,x       
-         beq   L038A     
-         inca            
-         cmpa  #Numpaths
-         bcs   L037D     
-         comb            
+* Find next free path position in current proc
+* Exit: X = Ptr to proc's path table
+*       A = Free path number (valid if carry clear)
+*
+LocFrPth ldx   <D.Proc   	get ptr to current proc desc
+         leax  <P$Path,x 	point X to proc's path table
+         clra            	start from 0
+L037D    tst   a,x       	this path free?
+         beq   L038A     	branch if so...
+         inca            	...else try next path
+         cmpa  #Numpaths	are we at the end?
+         bcs   L037D     	branch if not
+         comb            	else path table is full
          ldb   #E$PthFul 
          rts             
 L038A    andcc  #^Carry   
@@ -714,6 +739,7 @@ ISysCall pshs  b
          rts             
 L03B4    puls  pc,a      
 
+* Make Directory
 IMakDir  pshs  b         
          ldb   #DIR.+WRITE.
 L03BA    bsr   AllcPDsc  
@@ -728,6 +754,7 @@ L03C3    pshs  b,cc
          os9   F$Ret64   
          puls  pc,b,cc   
 
+* Change Directory
 IChgDir  pshs  b         
          ldb   R$A,u     
          orb   #DIR.     
@@ -768,8 +795,7 @@ IDelete  pshs  b
          ldb   #WRITE.   
          bra   L03BA     
 
-IDeletX  
-         ldb   #7		Delete offset in file manager
+IDeletX  ldb   #7		Delete offset in file manager
          pshs  b         
          ldb   R$A,u     
          bra   L03BA     
@@ -777,18 +803,26 @@ IDeletX
 * Allocate path descriptor
 * Entry:
 *    B = mode
-AllcPDsc ldx   <D.Proc   	get pointer to curr proc in X
+AllcPDsc 
+         ldx   <D.Proc   	get pointer to curr proc in X
          pshs  u,x       	save U/X
          ldx   <D.PthDBT	get ptr to path desc base table
          os9   F$All64   	allocate 64 byte page
          bcs   L0484     	branch if error
          inc   PD.CNT,y  	set path count
          stb   PD.MOD,y  	save mode byte
+         IFGT  Level-1
          ldx   <D.Proc   	get curr proc desc
          ldb   P$Task,x  	get task #
+         ENDC
          ldx   R$X,u     	X points to pathlist
-L042C    os9   F$LDABX   	get byte at X
+L042C    
+         IFGT  Level-1
+         os9   F$LDABX   	get byte at X
          leax  1,x       	move to next
+         ELSE
+         lda   ,x+
+         ENDC
          cmpa  #C$SPAC		space?
          beq   L042C     	continue if so
          leax  -1,x      	else back up
@@ -807,8 +841,10 @@ L042C    os9   F$LDABX   	get byte at X
          bra   L044C     	and branch
 L0449    ldx   <P$DIO,x  	get dev entry for data path
 L044C    beq   L0489     	branch if empty
+         IFGT  Level-1
          ldd   <D.SysPrc 	get system proc ptr
          std   <D.Proc   	get curr proc
+         ENDC
          ldx   V$DESC,x     	get descriptor pointer
          ldd   M$Name,x     	get name offset
          IFNE  H6309
@@ -848,7 +884,9 @@ L03E5    decb
          ENDC            
          clrb            
 L0484    puls  u,x       
+         IFGT  Level-1
          stx   <D.Proc   
+         ENDC
          rts             
 
 L0489    ldb   #E$BPNam
@@ -936,6 +974,7 @@ L04E7    bsr   GetPDesc     	get path descriptor from path in A
          beq   L051C     	branch if zero count
          addd  R$X,u     	else update buffer pointer with size
          bcs   L04A5     	branch if carry set
+         IFGT  Level-1
          IFNE  H6309
          decd
          ELSE            
@@ -978,6 +1017,7 @@ L051X    dec   ,s
          IFEQ  H6309     
          puls  a         
          ENDC            
+         ENDC
 L051C    puls  b         
 CallFMgr equ   *
          subb  #$03      
@@ -1036,12 +1076,22 @@ L0568    pshs  x,b,a
          beq   SSDevNm     
          puls  pc,u,y,b,cc
 
-SSOpt    lda   <D.SysTsk 
+SSOpt    equ   *
+         IFGT  Level-1
+         lda   <D.SysTsk 
          ldb   P$Task,x  
+         ENDC
          leax  <PD.OPT,y    
 SSCopy   ldy   #PD.OPT
          ldu   R$X,u     
+         IFGT  Level-1
          os9   F$Move    
+         ELSE
+Looper   lda   ,x+
+         sta   ,u+
+         decb
+         bne   Looper
+         ENDC
          leas  $2,s     
          clrb            
          puls  pc,u,y    
@@ -1226,6 +1276,7 @@ L067E    ldu   Q$STAT,y  	get device static storage
          bcs   L0677     	go to next device if error
          rts             	return
 
+         IFGT  Level-1
 FNMLoad  pshs  u		save caller's regs ptr
          ldx   R$X,u     
          lbsr  LoadMod		allocate proc desc
@@ -1268,6 +1319,7 @@ L06DE    rts
 L06DF    comb            
          ldb   #E$ModBsy 
 L06E2    puls  pc,u      
+         ENDC
 
 FLoad    pshs  u         	place caller's reg ptr on stack
          ldx   R$X,u     	get pathname to load
