@@ -1,4 +1,3 @@
-
 *********************************************************************
 * MSF (msf.v2.3.a)
 *
@@ -24,7 +23,6 @@
 
            ifp1
            use   defsfile
-           use   msfdefs
            endc
 
 type       set   FlMgr+Objct
