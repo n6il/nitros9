@@ -6,6 +6,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * 20     Original Tandy distribution version            BGP 02/04/05
+* 21     CHD no longer requires WRITE permission        BGP 02/04/05
 
          nam   Shell
          ttl   OS-9 Command Interpreter
@@ -360,7 +361,9 @@ L0260    pshs  a
 
 Chx      lda   #DIR.+EXEC.
          bra   L026A
-Chd      lda   #DIR.+UPDAT.
+*Chd      lda   #DIR.+UPDAT.
+* Removed WRITE. requirement above (some devices are read only)
+Chd      lda   #DIR.+READ.
 L026A    os9   I$ChgDir 
          rts   
 Prompt   clra  
