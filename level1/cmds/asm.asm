@@ -610,13 +610,13 @@ L03A0    cmpa  #$41
          cmpa  #$5A
          bhi   L03AD
 L03A8    anda  #$5F
-         andcc #$FE
+         andcc #^Carry
          rts   
 L03AD    cmpa  #$61
          bcs   L03B5
          cmpa  #$7A
          bls   L03A8
-L03B5    orcc  #$01
+L03B5    orcc  #Carry
 L03B7    rts   
 L03B8    fcs   "ORG"
          fdb   $000C
@@ -1136,9 +1136,9 @@ L0924    fdb   $05BF
          fdb   $05D8
          fdb   $05DD
 L0932    fcb   $17,$08,$2f,$81,$23,$26,$05,$30,$01
-         andcc #$FE
+         andcc #^Carry
          rts   
-L093E    orcc  #$01
+L093E    orcc  #Carry
          rts   
 L0941    ldb   <u0047
          bitb  #$40
@@ -1180,12 +1180,12 @@ L098F    ldx   ,s
          leay  $03,y
          decb  
          bne   L0973
-         orcc  #$01
+         orcc  #Carry
          puls  pc,x
 L099A    decb  
          leas  $02,s
          lda   $02,y
-         andcc #$FE
+         andcc #^Carry
          rts   
 L09A2    lsra  
          negb  
@@ -1347,10 +1347,10 @@ L0AC7    lda   ,x+
          ldb   #$60
          cmpa  #$53
          bne   L0AE5
-L0AE2    andcc #$FE
+L0AE2    andcc #^Carry
          rts   
 L0AE5    leax  -$01,x
-         orcc  #$01
+         orcc  #Carry
          rts   
 L0AEA    ldb   #$20
          orb   <u0062
@@ -1758,7 +1758,7 @@ L0E1D    leas  $01,s
 L0E21    lbsr  L10B4
          bcc   L0E2B
          lbsr  L02FA
-         orcc  #$01
+         orcc  #Carry
 L0E2B    rts   
 L0E2C    ldb   #$30
          stb   <u002B
@@ -1955,9 +1955,9 @@ L0F83    cmpa  #$00
          beq   L0F9E
          std   $09,x
          ldb   #$0A
-L0F9A    orcc  #$01
+L0F9A    orcc  #Carry
          puls  pc,u,y,x
-L0F9E    andcc #$FE
+L0F9E    andcc #^Carry
          puls  pc,u,y,x
 L0FA2    pshs  u,y,x
          bsr   L0FC3
@@ -2002,7 +2002,7 @@ L0FE9    puls  y
          bra   L0FF7
 L0FF3    ldx   $0D,y
          bne   L0FCD
-L0FF7    orcc  #$01
+L0FF7    orcc  #Carry
          rts   
 L0FFA    ldx   <u0016
          ldb   ,x
@@ -2179,22 +2179,22 @@ L113B    ldb   ,x+
          bcs   L1145
          cmpb  #$39
          bls   L1148
-L1145    orcc  #$01
+L1145    orcc  #Carry
          rts   
 L1148    subb  #$30
-         andcc #$FE
+         andcc #^Carry
          rts   
 L114D    leax  -$01,x
          tst   $01,s
          beq   L1159
          ldd   $02,s
-         andcc #$FE
+         andcc #^Carry
          bra   L115D
-L1159    orcc  #$04
-L115B    orcc  #$01
+L1159    orcc  #Zero
+L115B    orcc  #Carry
 L115D    leas  $04,s
          rts   
-L1160    andcc #$FB
+L1160    andcc #^Zero
          bra   L115B
 L1164    lda   ,x+
          cmpa  #$20
@@ -2222,7 +2222,7 @@ L116D    pshs  x,b,a
 L118E    pshs  y,x,b,a
          ldd   ,s
          bne   L1198
-         orcc  #$01
+         orcc  #Carry
          bra   L11B8
 L1198    ldd   #$0010
          stb   $04,s
@@ -2240,7 +2240,7 @@ L11AE    dec   $04,s
          bne   L119E
          tfr   d,x
          ldd   $02,s
-         andcc #$FE
+         andcc #^Carry
 L11B8    leas  $06,s
          rts   
 L11BB    sta   ,x+
@@ -2251,7 +2251,7 @@ L11C2    pshs  u,y
          leau  ,s
          bsr   L1164
          bsr   L11D0
-         andcc #$FE
+         andcc #^Carry
          puls  pc,u,y
 L11CE    leax  $01,x
 L11D0    bsr   L1211
@@ -2284,7 +2284,7 @@ L11EE    tsta
          beq   L120D
 L1205    ldb   #$06
 L1207    leas  ,u
-         orcc  #$01
+         orcc  #Carry
          puls  pc,u,y
 L120D    puls  pc,b,a
 L120F    leax  $01,x
@@ -2399,7 +2399,7 @@ L12E4    lbsr  L0368
          bcs   L12D6
          lbsr  L0FA2
          bcs   L129F
-L12EE    andcc #$FE
+L12EE    andcc #^Carry
          rts   
 L12F1    lbsr  L11C2
          bcs   L1304
@@ -2413,7 +2413,7 @@ L12F7    lbsr  L11C2
          ldb   #$0E
 L1304    lbsr  L02FA
          ldd   #$FFFF
-         orcc  #$01
+         orcc  #Carry
          rts   
 L130D    bsr   L134D
          pshs  x,b,a
@@ -2663,7 +2663,7 @@ L156A    puls  pc,u,y,x,b,a
 L156C    ldu   <u001F
 L156E    cmpu  <u0006
          bne   L1576
-         orcc  #$01
+         orcc  #Carry
          rts   
 L1576    lda   <u0018
          pulu  b
