@@ -78,7 +78,7 @@ Banner   equ   *
          IFNE  DEVEL
          dts
          ELSE
-         fcc   "September 1, 2004"
+         fcc   "Release Date: 08/01/2004"
          ENDC
          fcb   C$CR,C$LF
          fcc   !http://www.nitros9.org!

@@ -1,6 +1,4 @@
 NitrOS-9/6309 Level 2 V03.02.03:
-- swread and swset have been added as command line utilities for SmartWatch
-  support, as the clock2 SmartWatch module does not work.
 - format has been enhanced to show more information about the disk being
   formatted.
 - dirm has been removed from the commands list.

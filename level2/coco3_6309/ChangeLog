@@ -1,6 +1,4 @@
 NitrOS-9/6309 Level 2 V03.02.03:
-- swread and swset have been added as command line utilities for SmartWatch
-  support, as the clock2 SmartWatch module does not work.
 - format has been enhanced to show more information about the disk being
   formatted.
 - dirm has been removed from the commands list.
@@ -8,6 +6,7 @@ NitrOS-9/6309 Level 2 V03.02.03:
 - tmode now uses the new xmode format for parameters.
 - disasm has a new -s option which is used to specify the start and end
   addresses to disassemble within a module.
+- An RBF bug that was introduced in V03.02.02 has been fixed.
 - A bug in the clock2_jvemu module has been fixed.
 
 NitrOS-9/6809 Level 2 V03.02.02:

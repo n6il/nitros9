@@ -7,4 +7,4 @@ NOS9Major equ   2
 NOS9Minor equ   3
 * If DEVEL is 1, then sysgo shows that a development
 * version is being run.
-DEVEL     equ   1
+DEVEL     equ   0

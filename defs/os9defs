@@ -399,6 +399,7 @@ SS.DrvCh equ SS.WnSet     SDisk3 (DMC ONLY) Set drive number to cache, or return
          org   $00
 D.WDAddr rmb   2          FHL/Isted WD1002-05 interface base address
 D.WDBtDr rmb   1          FHL/Isted WD1002-05 boot physical device drive num.
+D.SWPage rmb   1          SmartWatch page # (see clock2_smart)
          rmb   5
 D.COCOXT rmb   1          Busy flag for CoCo-XT driver (one drive at a time)
 
@@ -476,6 +477,7 @@ SVCTSZ   equ   (256-BMAPSZ)/SVCTNM-2 Service request table size
          org   $00
 D.WDAddr rmb   2          FHL/Isted WD1002-05 interface base address
 D.WDBtDr rmb   1          FHL/Isted WD1002-05 boot physical device drive num.
+D.SWPage rmb   1          SmartWatch page # (see clock2_smart)
          rmb   5
 D.COCOXT rmb   1          Busy flag for CoCo-XT driver (one drive at a time)
 

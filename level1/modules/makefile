@@ -1,14 +1,15 @@
 include ../../rules.mak
 
-CLOCKELIM       = -aRTCElim=1 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
-CLOCKDISTO2     = -aRTCElim=0 -aRTCDsto2=1 -aRTCDsto4=0 -aRTCBB=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
-CLOCKDISTO4     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=1 -aRTCBB=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
-CLOCKBNB        = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=1 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
-CLOCKHARRIS     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCHarrs=1 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
-CLOCKCLOUD9     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCHarrs=0 -aRTCCloud9=1 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
-CLOCKJVEMU      = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=1 -aRTCMESSEmu=0 -aMPIFlag=0
-CLOCKMESSEMU    = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=1 -aMPIFlag=0
-CLOCKSOFT       = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=1 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
+CLOCKELIM       = -aRTCElim=1
+CLOCKDISTO2     = -aRTCDsto2=1
+CLOCKDISTO4     = -aRTCDsto4=1
+CLOCKBNB        = -aRTCBB=1
+CLOCKSMART      = -aRTCSmart=1 -aMPIFlag=1
+CLOCKHARRIS     = -aRTCHarrs=1
+CLOCKCLOUD9     = -aRTCCloud9=1
+CLOCKSOFT       = -aRTCSoft=1
+CLOCKMESSEMU    = -aRTCMessEmu=1
+CLOCKJVEMU      = -aRTCJVEmu=1
 
 DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
@@ -20,7 +21,7 @@ KERNEL		= krn krnp2
 SYSMODS		= ioman init sysgo_dd sysgo_h0
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
-                clock2_harris clock2_cloud9 clock2_soft \
+                clock2_smart clock2_harris clock2_cloud9 clock2_soft \
 		clock2_messemu clock2_jvemu
 
 RBF		= rbf.mn \
@@ -81,6 +82,9 @@ clock2_disto4: clock2.asm
 
 clock2_bnb: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKBNB)
+
+clock2_smart: clock2.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSMART)
 
 clock2_harris: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKHARRIS)

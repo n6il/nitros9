@@ -2,7 +2,7 @@ include ../rules.mak
 
 CPU		= 6809
 DISTRO		= $(CPU)L2
-RELEASE		= nos9$(CPU)l2v030202
+RELEASE		= nos9$(CPU)l2v030203
 BOOTFILE	= bootfiles/bootfile_win80
 BOOTFILE_DS80	= bootfiles/bootfile_win80_ds80
 KERNELFILE	= bootfiles/kernel_1773

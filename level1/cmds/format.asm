@@ -52,13 +52,12 @@ diskpath rmb   1                disk path number
 currtrak rmb   2                current track on
 currside rmb   2
 currsect rmb   1                current sector on
-sectcount rmb   1                counted sectors
-u0009    rmb   1
-u000A    rmb   2
+sectcount rmb  2                counted sectors
+sectdata rmb   2		sector data pointer
 u000C    rmb   2
 u000E    rmb   2
 mfm      rmb   1                denisity (double/single)
-u0011    rmb   1
+maxdns   rmb   1
 tpi      rmb   1
 numsides rmb   1
 *u0014    rmb   1
@@ -80,7 +79,7 @@ clustspecified rmb   1                cluster size specified on command line
 ClustSz  rmb   1                cluster size
 u0029    rmb   1
 u002A    rmb   1
-u002B    rmb   1
+clustcnt rmb   1
 u002C    rmb   1
 u002D    rmb   1
 u002E    rmb   1
@@ -259,7 +258,7 @@ L0143    ldb   PD.DNS-PD.OPT,x  density capability
          pshs  b                save it
          andb  #DNS.MFM         check double-density
          stb   <mfm             save double-density (Yes/No)
-         stb   <u0011           save it again
+         stb   <maxdns          save it again
          ldb   ,s               get saved PD.DNS byte
          lsrb                   checking
          pshs  b                save it
@@ -267,7 +266,7 @@ L0143    ldb   PD.DNS-PD.OPT,x  density capability
          stb   <tpi             save it
          puls  b                get checking
          lsrb                   
-         andb  <u0011
+         andb  <maxdns
          stb   <u004C
          puls  b
          stb   <u004D
@@ -418,8 +417,8 @@ opt.18   fcb   C$SPAC
 * S/D - density; single or double
 ********************************************************************
 
-DoDsity  cmpb  <u0011
-         bgt   OptAbort
+DoDsity  cmpb  <maxdns		compare against maximum
+         bgt   OptAbort		if greater than, abort
          cmpb  <u004C
          blt   OptAbort
          stb   <mfm
@@ -634,7 +633,7 @@ Input    pshs  u,y,x,b,a        save registers
 ********************************************************************
 
 GetDTyp  leax  >hdsdat,pcr      assume hard drive data for now
-         stx   <u000A           sector data pointer
+         stx   <sectdata        sector data pointer
          ldb   <dtype           get disk drive type
          bitb  #TYP.HARD+TYP.NSF hard disk or non-standard type?
          bne   L0323            no, check track data
@@ -645,11 +644,11 @@ GetDTyp  leax  >hdsdat,pcr      assume hard drive data for now
 L031B    leax  >sgtdat,pcr
          tst   <mfm             double-density?
          beq   L032D            no,
-L0323    stx   <u000A
+L0323    stx   <sectdata
          leax  >dbtdat,pcr
          tst   <u004C
          beq   L032F
-L032D    stx   <u000A
+L032D    stx   <sectdata
 L032F    stx   <u000C
          tst   <sectmode	LBA values already in place?
          beq   ack@
@@ -861,18 +860,18 @@ L046C    ldy   <u000C
          bne   L047E
          tst   <currside
          bne   L047E
-         ldy   <u000A
+         ldy   <sectdata
 *         ldb   <u001C
          ldb   <sectors0+1
 L047E    sty   <u000E
-         stb   <u0009
+         stb   <sectcount+1
          stb   <u0018
          bsr   L04EC
          leax  >LSN0,u
          bsr   L0451
          sty   <u000E
 L0490    bsr   L044E
-         dec   <u0009
+         dec   <sectcount+1
          bne   L0490
          lda   ,y+
          sty   <u000E
@@ -888,7 +887,7 @@ L04A6    std   ,x++
          std   <u003F
          ldd   ,y
          std   <u0041
-         clr   <u0009
+         clr   <sectcount+1
          leax  >LSN0,u
          ldd   <u003F
          leay  >u008F,u
@@ -896,15 +895,15 @@ L04C3    leax  d,x
          ldd   <currtrak+1
          adda  <stoff
          std   ,x
-         ldb   <u0009
+         ldb   <sectcount+1
          lda   b,y
          incb  
-         stb   <u0009
+         stb   <sectcount+1
          ldb   <currsect
          adda  <u004B
          bcs   L04E5
          std   $02,x
-         lda   <u0009
+         lda   <sectcount+1
          cmpa  <u0018
          bcc   L04E4
          ldd   <u0041
@@ -1101,7 +1100,7 @@ nothd    ldd   <sectors0	get sectors/track at track 0
          clrb  
          sta   <oksects		clear OK sectors
          std   <oksects+1
-         std   <currtrak	clear current rack
+         std   <currtrak	clear current track
          std   <sectcount	clear counted sectors
          std   <u0032
          stb   <u0031
@@ -1109,13 +1108,13 @@ nothd    ldd   <sectors0	get sectors/track at track 0
          leax  >optbuf,u
          stx   <u0038
          lbsr  ClrSec
-         leax  >$0100,x
+         leax  256,x
          stx   <u003A
          clra  
          ldb   #$01		D = 1
          std   <u0034
          lda   <clustsiz        get cluster size
-         sta   <u002B           store in cluster counter
+         sta   <clustcnt        store in cluster counter
          clr   <u002A
          clra  
          ldb   <ClustSz
@@ -1177,7 +1176,7 @@ OutScrn  ldd   <sectcount       get counted sectors
          cmpd  <u0017           good sector count?
          bcs   L0745            next segment
          clr   <sectcount       clear counted sectors
-         clr   <u0009           
+         clr   <sectcount+1           
          tst   <dovfy           are we verifying?
          bne   L073A            no,
          lda   #C$SPAC          yes, get space
@@ -1201,7 +1200,7 @@ L073A    ldd   <currtrak        get current track
          std   <currtrak        save it back
          ldd   <sectors         get number of sectors
          std   <u0017           save it
-L0745    dec   <u002B           decrement cluster counter
+L0745    dec   <clustcnt        decrement cluster counter
          bne   L075B
          bsr   L0784
          tst   <u002A
@@ -1213,7 +1212,7 @@ L0745    dec   <u002B           decrement cluster counter
          inc   <oksects
 L0755    clr   <u002A
          lda   <clustsiz        get cluster size
-         sta   <u002B           save in cluster counter
+         sta   <clustcnt        save in cluster counter
 L075B    ldb   <u0031
          ldx   <u0032
          leax  $01,x
@@ -1562,7 +1561,7 @@ FmtMLen  equ   *-FmtMsg
 Query
 *         fcc   "y (yes) or n (no)"
 *         fcb   C$LF
-         fcc   "proceed?  "
+         fcc   "Ready?  "
 QueryLen equ   *-Query
 CapErr   fcc   "ABORT can't get media capacity"
          fcb   C$CR
