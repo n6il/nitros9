@@ -237,7 +237,7 @@ L0083    ldu    <D.Init     get init module pointer
          bra    L009B       crash machine
 L0093    os9    F$NProc     let it take over
 
-L0096    fcs    /OS9p3/
+L0096    fcs    /KernelP3/
 
 L009B    jmp    <D.Crash
 
