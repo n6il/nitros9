@@ -37,7 +37,7 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+These functions perform the complement to "printf()" etc.
 </para>
 <para>
 Fscanf performs conversions from the file "fp", scanf from the
@@ -79,8 +79,8 @@ over until the next field is found.
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="0.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 <entry>d</entry>
