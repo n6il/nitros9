@@ -16,6 +16,7 @@ all:
 	$(CD) sdisk; make
 	$(CD) sdisk3; make
 	$(CD) tccc; make
+	$(CD) emudsk; make
 
 # Clean all components
 clean:
@@ -28,3 +29,4 @@ clean:
 	-$(CD) sdisk; make clean
 	-$(CD) sdisk3; make clean
 	-$(CD) tccc; make clean
+	-$(CD) emudsk; make clean
