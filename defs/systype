@@ -1,4 +1,4 @@
-         IFEQ  SYSTYPE
+         IFNE  SYSTYPE-1
 
 SYSTYPE  set   1
 

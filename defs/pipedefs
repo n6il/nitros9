@@ -1,4 +1,4 @@
-         IFEQ  PIPEDEFS
+         IFNE  PIPEDEFS-1
 
 PIPEDEFS set   1
 

@@ -1,4 +1,4 @@
-         IFEQ  RBFDEFS
+         IFNE  RBFDEFS-1
 
 RBFDEFS  set   1
 

@@ -1,4 +1,4 @@
-         IFEQ  SCFDEFS
+         IFNE  SCFDEFS-1
 
 SCFDEFS  set   1
 
