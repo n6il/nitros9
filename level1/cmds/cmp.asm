@@ -13,12 +13,13 @@
 * Disassembled 02/04/03 23:09:47 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   50
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -2867,13 +2868,10 @@ L0B66    ldd   $06,s
          lbsr  L0AA0
          leas  $02,s
          lbra  L0C16
-L0C12    neg   <u0000
-         stu   >$E216
-         stu   >$A716
-         oim   #$03,<u00EC
-         andb  >LF00D,pcr
-         cmpb  -$01,x
-         oim   #$E6,<u0084
+L0C12    fcb   $00,$00,$FF,$E2
+L0C16    fcb   $16,$FF,$A7
+L0C19    fcb   $16,$01,$03
+L0C1C    fcb   $ec,$e4,$ed,$e3,$ec,$e1,$1f,$01,$e6,$84
          sex   
          std   ,--s
          ldd   #$002D
@@ -3154,123 +3152,50 @@ L0ECD    leax  >u0006,u
          leas  $04,s
 L0EED    leas  $08,s
          rts   
-L0EF0    coma  
-         tst   -$10,s
-         abx   
-         bra   L0F6B
-         jmp   $0B,s
-         jmp   $0F,s
-         asr   >$6E20
-         clr   -$10,s
-         lsr   >$696F
-         jmp   $00,y
-         blt   L0F2B
-         com   $0A,x
-         neg   <u0073
-         lsr   >$616E
-         lsr   $01,s
-         aim   #$64,>$2069
-         jmp   -$10,s
-         eim   #$74,>$0072
-         neg   <u0063
-         oim   #$6E,$0E,s
-         clr   -$0C,s
-         bra   L0F91
-         neg   >$656E
-         abx   
-         bra   L0F4D
-         com   >$0A00
-L0F2B    eim   #$73,>$653A
-         bra   L0F94
-         tst   -$10,s
-         bra   L0FB0
-         blt   L0FA6
-         neg   >$747D
-         bra   L0FAC
-         oim   #$74,$08,s
-         leay  $00,y
-         neg   >$6174
-         lsl   -$0E,y
-         dec   <u0000
-L0F48    dec   <u0020
-         lsra  
-         rol   $06,s
-L0F4D    ror   $05,s
-         aim   #$65,>$6E63
-         eim   #$73,$0A,x
-         neg   <u000A
-         aim   #$79,-$0C,s
-         eim   #$20,$00,y
-         bra   L0F80
-         bra   L0F82
-         bls   L0F95
-         bra   L0F89
-         leas  $0A,x
-         mul   
-         mul   
-         mul   
-L0F6B    mul   
-         mul   
-         mul   
-         mul   
-         mul   
-         bra   L0F92
-         mul   
-         mul   
-         bra   L0FB3
-         mul   
-         dec   <u0000
-L0F79    bcs   L0FAB
-         fcb   $38 8
-         inc   -$08,s
-         bra   L0FA0
-L0F80    bcs   L0FB2
-L0F82    leas  -$08,s
-         bra   L0FAB
-         leax  -$0E,y
-         lsl   >$0A00
-L0F8B    dec   <u0020
-         bra   L0FAF
-         fcb   $4E N
-         clr   $0E,s
-L0F92    eim   #$20,$0E,y
-L0F95    bgt   L0FC5
-         dec   <u0000
-L0F99    dec   <u0042
-         rol   >$7465
-         com   >$2063
-         clr   $0D,s
-         neg   >$6172
-L0FA6    eim   #$64,-$06,y
-         bra   L0FCB
-L0FAB    bra   L0FD2
-         leax  -$08,y
-L0FAF    inc   -$08,s
-         dec   <u0000
-L0FB3    fcb   $42 B
-         rol   >$7465
-         com   >$2064
-         rol   $06,s
-         ror   $05,s
-         aim   #$65,>$6E74
-         abx   
-         bra   L0FE5
-L0FC5    bcs   L0FF7
-         fcb   $38 8
-         inc   -$08,s
-         dec   <u0000
-L0FCC    dec   <u0025
-         com   >$2069
-         com   >$206C
-         clr   $0E,s
-         asr   $05,s
-         aim   #$0A,>$000A
-         bcs   L1051
-         bra   L1049
-         com   >$206C
-         clr   $0E,s
-L0FE5    asr   $05,s
-         aim   #$0A,>$0010
+L0EF0    fcc   "Cmp: unknown option -%c"
+         fcb   C$LF,$00
+L0F09    fcc   "standard input"
+         fcb   $00
+L0F18    fcc   "r"
+         fcb   $00
+L0F1A    fcc   "cannot open: %s"
+         fcb   C$LF,$00
+L0F2B    fcc   "use: cmp {-opt} path1 path2"
+         fcb   C$LF
+         fcb   $00
+L0F48    fcb   C$LF
+         fcc   " Differences"
+         fcb   C$LF
+         fcb   $00
+L0F57    fcb   C$LF
+         fcc   "byte      #1 #2"
+         fcb   C$LF
+         fcc   "========  == =="
+         fcb   C$LF
+         fcb   $00
+L0F79    fcc   "%08lx  %02x %02x"
+         fcb   C$LF
+         fcb   $00
+L0F8B    fcb   C$LF
+         fcc   "   None ..."
+         fcb   C$LF
+         fcb   $00
+L0F99    fcb   C$LF
+         fcc   "Bytes compared:   %08lx"
+         fcb   C$LF
+         fcb   $00
+L0FB3    fcc   "Bytes different:  %08lx"
+         fcb   C$LF
+         fcb   $00
+L0FCC    fcb   C$LF
+         fcc   "%s is longer"
+         fcb   C$LF
+         fcb   $00
+L0FDB    fcb   C$LF
+         fcc   "%s is longer"
+         fcb   C$LF
+         fcb   $00
+L0FEA    fcb   $10
          ldx   $02,s
          ldx   ,y
          cmpx  $04,y
@@ -3292,5 +3217,7 @@ L100C    ldb   ,x+
          rts   
 L1012    ldd   #$FFFF
          rts   
+
          emod
 eom      equ   *
+         end
