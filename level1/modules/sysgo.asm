@@ -47,7 +47,7 @@ BootMsg  fcc   "OS-9 LEVEL ONE VR. 0"
 
 * For ROM version, cut down on verbage
          ifne  DiskGo
-         fcc   !'PHOENIX' RELEASE 08/01/2002!
+         fcc   !'BETA1' RELEASE 08/21/2002!
          fdb   C$CR,C$LF
          fcc   "HTTP://COCOOS9.SOURCEFORGE.NET"
          fdb   C$CR,C$LF
