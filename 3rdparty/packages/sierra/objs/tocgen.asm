@@ -49,7 +49,7 @@
 * Disassembled 03/01/07 13:59:26 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
 
 * Params

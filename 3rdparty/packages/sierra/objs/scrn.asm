@@ -26,7 +26,7 @@
 * Disassembled 00/00/00 00:15:39 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
 
 tylg     set   Prgrm+Objct   
