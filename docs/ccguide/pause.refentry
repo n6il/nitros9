@@ -22,7 +22,11 @@ os9 I$SLEEP (with a value of 0)
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Pause may be used to halt a task until an interrupt is received
+from "kill".
+</para>
+<para>
+Pause always returns -1.
 </para>
 </refsect1>
 
