@@ -194,9 +194,18 @@ virqent  ldx   ,y++
          ora   <D.IRQS      Check to see if other hardware IRQ pending.
          bita  #%10110111   Any V/IRQ interrupts pending?
          beq   toggle
+         IFGT  Level-2
+         lbsr  DoPoll       Yes, go service them.
+         ELSE
          bsr   DoPoll       Yes, go service them.
+         ENDC
          bra   KbdCheck
-toggle   bsr   DoToggle     No, toggle GIME anyway
+toggle   equ   *
+         IFGT  Level-2
+         lbsr  DoToggle     No, toggle GIME anyway
+         ELSE
+         bsr   DoToggle     No, toggle GIME anyway
+         ENDC
 
 KbdCheck equ   *
          IFGT  Level-2

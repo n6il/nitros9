@@ -5,9 +5,11 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 4      Original Tandy distribution version
-* 6      Obtained from L2 Upgrade archive, has 6ms step BGP 98/10/12
+*   4    Original Tandy distribution version
+*   6    Obtained from L2 Upgrade archive, has 6ms step BGP 98/10/12
 *        rate and disk timeout changes
+*   6r2  Added '.' output for each sector under NitrOS9 BGP 03/05/18
+*        for Mark Marlette (a special request :)
 
          nam   Boot
          ttl   WD1773 Boot module
@@ -25,7 +27,7 @@ STEP     equ   $00
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $02
 edition  set   6
 
          mod   eom,name,tylg,atrv,start,size
@@ -43,12 +45,12 @@ size     equ   .
 name     fcs   /Boot/
          fcb   edition
 
-start    clra
-         ldb   #size
-L0015    pshs  a
-         decb
-         bne   L0015
-         tfr   s,u
+start    clra			clear A
+         ldb   #size		get our 'stack' size
+L0015    pshs  a		save 0 on stack
+         decb			and continue...
+         bne   L0015		until we've created our stack
+         tfr   s,u		put 'stack statics' in U
          ldx   #$FF48
          lda   #$D0
          sta   ,x
@@ -61,16 +63,16 @@ L0015    pshs  a
          lda   #$09
          sta   >$FF40
          ldd   #$C350
-         ifne  NitrOS9
+         IFNE  NitrOS9
          nop
-         endc
+         ENDC
 L003A    nop
          nop
-         ifne  NitrOS9
+         IFNE  NitrOS9
          nop
          nop
          nop
-         endc
+         ENDC
          subd  #$0001
          bne   L003A
          pshs  u,y,x,b,a
@@ -82,7 +84,7 @@ L003A    nop
          std   u0002,u
          clrb
          ldx   #$0000
-         bsr   L00C7
+         bsr   ReadSect
          bcs   L00AA
          ldd   $01,y
          std   u0007,u
@@ -111,8 +113,14 @@ L003A    nop
          beq   L00A3
 L0091    pshs  x,b,a
          clrb
-         bsr   L00C7
+         bsr   ReadSect
          bcs   L00A8
+
+         IFNE  NitrOS9
+         lda   #'.		dump out a period for boot debugging
+         jsr   <D.BtBug		do the debug stuff     
+         ENDC
+
          puls  x,b,a
          inc   u0002,u
          leax  1,x
@@ -123,11 +131,12 @@ L00A3    clrb
          bra   L00AC
 L00A8    leas  $04,s
 L00AA    leas  $02,s
-L00AC    sta   >$FFD9
+L00AC    sta   >$FFD9		unnecessary - rel does this for us
          puls  u,y,x
-         leas  $0A,s
-         clr   >$FF40
+         leas  size,s		clean up stack
+         clr   >$FF40		shut off floppy disk
          rts
+
 L00B7    lda   #$29
          sta   ,u
          clr   u0004,u
@@ -135,8 +144,11 @@ L00B7    lda   #$29
          lbsr  L0170
          ldb   #STEP
          lbra  L0195
-L00C7    lda   #$91
-         cmpx  #$0000
+
+* Read a sector from the 1773
+* Entry: X = LSN to read
+ReadSect lda   #$91
+         cmpx  #$0000		LSN0?
          bne   L00DF
          bsr   L00DF
          bcs   L00D6
@@ -245,26 +257,26 @@ L019F    lda   ,u
          stb   >$FF48
          rts
 L01A8 
-         ifne  NitrOS9
+         IFNE  NitrOS9
          nop
-         endc
+         ENDC
          bsr   L019F
 L01AA  
-         ifne  NitrOS9
+         IFNE  NitrOS9
          nop
          nop
-         endc
+         ENDC
          lbsr  L01AD
 L01AD 
-         ifne  NitrOS9
+         IFNE  NitrOS9
          nop
          nop
-         endc
+         ENDC
          lbsr  L01B0
 L01B0 
-         ifne  NitrOS9
+         IFNE  NitrOS9
          nop
-         endc
+         ENDC
          rts
 
 * Filler to get $1D0

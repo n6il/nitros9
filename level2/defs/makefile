@@ -1,3 +1,5 @@
+# Makefile for OS-9 Level Two DEFS/
+
 include ../../Makefile.rules
 
 DEPENDS		= ./Makefile

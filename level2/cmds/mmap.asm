@@ -8,7 +8,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * ?      Original verison                               KKD 88/??/??
-* 4      Modified by Ken Drexler fr various block sizes KD  89/07/30
+* 4      Modified by Ken Drexler for other block sizes  KD  89/07/30
 
          nam   MMap
          ttl   Memory Block Utility
