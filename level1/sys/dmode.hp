@@ -1,0 +1,3 @@
+@DMODE
+Syntax: DMode <devname> [params]
+Usage : Displays or changes the parameters of an RBF type device
