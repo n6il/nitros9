@@ -15,6 +15,7 @@ all:
 	$(CD) lsl; make
 	$(CD) rof; make
 	$(CD) multivue; make
+	$(CD) mm; make
 
 clean:
 	-$(CD) basic09; make clean
@@ -24,3 +25,4 @@ clean:
 	-$(CD) lsl; make clean
 	-$(CD) rof; make clean
 	-$(CD) multivue; make clean
+	-$(CD) mm; make clean
