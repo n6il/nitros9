@@ -1,3 +1,7 @@
+         ifeq  SYSTYPE
+
+SYSTYPE  set   1
+
          nam   SysType
          ttl   CoCo 1/2/3 OS-9 Level 1/2 System Type Definitions
 
@@ -652,7 +656,12 @@ gr00A3   rmb   2          Vector for shifting GP buffers
 gr00A5   rmb   2          Vector for shifting GP buffers (can dupe A1)
 gr00A7   rmb   2
 gr00A9   rmb   2          NEW: Window tbl ptr for last window GRFDRV used
-gr00AB   rmb   256-.      ??? UNUSED?
+grBigFnt rmb    2           Flag for 224 char font/gfx mode on (0=No) V2.00a
+gr00AD   rmb    2           FFill:orig. start X coord|Circ/Ell saved start X
+gr00AF   rmb    2           FFill:orig. start Y coord|Circ/Ell saved end X
+gr00B1   rmb    1           Flag in FFill: 1=1st time through, 0=not 1st time
+gr00B2   rmb    1           Filled (circle,ellipse) flag 0=Not filled
+gr00B3   rmb    256-.       ??? UNUSED
 * GPLoad buffer - $1200 in system block 0
 GPBuf    rmb   72         common move buffer for gpload/get/put
 gb0000   equ   72         Size of get/put buffer ($48)
@@ -831,6 +840,8 @@ Red.     rmb   1
 Yellow.  rmb   1
 Magenta. rmb   1
 Cyan.    rmb   1
+
+         endc
 
          endc
 

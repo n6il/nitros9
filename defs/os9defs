@@ -1,3 +1,7 @@
+         ifeq  OS9DEFS
+
+OS9DEFS  set   1
+
          nam   OS9Defs
          ttl   OS-9 Level 1 & 2 and NitrOS-9 System Symbol Definitions
 
@@ -899,6 +903,7 @@ V$USRS   rmb   1          use count
          ifne  NitrOS9
 V$DRIVEX rmb   1          Device Driver execution address
 V$FMGREX rmb   1          File Manager execution address
+         rmb   2          Padding to make DEVSIZ = $0D
          endc
 DEVSIZ   equ   .
 
@@ -1177,6 +1182,8 @@ L3.Blks  equ   L3.Size/$20 Number of slots
 L3.End   equ   L3.Start+L3.Size*$0100 end of L3 memory
 L3.SCF   equ   $0660      SCF block ptr
 L3.RBF   equ   L3.SCF+1   RBF block ptr
+         endc
+
          endc
 
          end

@@ -1,3 +1,7 @@
+         ifeq  RBFDEFS
+
+RBFDEFS  set   1
+
          nam   RBFDefs
          ttl   Random Block File Manager Definitions
 
@@ -224,4 +228,6 @@ V.ScOfst rmb   1          Sector offset split from byte above
 V.TkOfst rmb   1          Track offset split from byte above
          rmb   4          reserved
 DRVMEM   equ   .
+
+         endc
 

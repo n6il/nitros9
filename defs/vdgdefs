@@ -1,3 +1,7 @@
+         ifeq   VDGINT
+
+VDGINT   set    1
+
  ttl DEFs from VDGint
 
 **********************
@@ -94,3 +98,6 @@ VD.NChar equ   $7C character to process
 VD.NChr2 equ   $7D and the next one
 
 * and RMB until we get 256 bytes reserved
+
+         endc
+
