@@ -26,7 +26,7 @@ rev      set   2
 edition  set   1
 
 * Hard Disk Interface registers for the TC3
-dataport equ   $FF76
+dataport equ   $FF74
 status   equ   dataport+1
 select   equ   dataport+1
 
