@@ -1,5 +1,5 @@
-         nam   SysType.l2
-         ttl   CoCo 3 OS-9 Level 2 System Type Definitions
+         nam   SysType
+         ttl   CoCo 1/2/3 OS-9 Level 1/2 System Type Definitions
 
 *****************
 * Edition History
@@ -8,21 +8,29 @@
 * -------- ------------------------------------------------------------ ---
 * 98/10/13 Added defs by Bruce Isted from his Eliminator archive        BGP
 * 98/10/31 Merged cc3global.defs into this file                         BGP
+* 02/04/30 Merged Level One and Level Two sysdefs                       BGP
 
 **********************
 * CPU Type Definitions
 *
-         org   1
-Color    rmb   1
-COLOR3   rmb   1
-CPUType  set   COLOR3
+Color    set   1
+Color3   set   2
+         ifeq  Level-1
+CPUType  set   Color
+         else
+CPUType  set   Color3
+         endc
 
 ******************************
 * Clock Speed Type Definitions
 *
 OneMHz   equ   1
 TwoMHz   equ   2
+         ifeq  CPUType-Color
 CPUSpeed set   OneMHz
+         else
+CPUSpeed set   TwoMHz
+         endc
 
 **********************************
 * Power Line Frequency Definitions
@@ -30,6 +38,15 @@ CPUSpeed set   OneMHz
 Hz50     equ   1          Assemble clock for 50 hz power
 Hz60     equ   2          Assemble clock for 60 hz power
 PwrLnFrq set   Hz60       Set to Appropriate freq
+
+**********************************
+* Ticks per second
+*
+         ifeq  PwrLnFrq-Hz50
+TkPerSec equ   50
+         else
+TkPerSec equ   60
+         endc
 
 ******************
 * ACIA type set up
@@ -39,6 +56,57 @@ ACIA6850 rmb   1          MC6850 acia.
 ACIA6551 rmb   1          SY6551 acia.
 ACIA2661 rmb   1          SC2661 acia.
 ACIATYPE set   ACIA6551
+
+****************************************
+* Special character Bit position equates
+*
+SHIFTBIT equ   %00000001
+CNTRLBIT equ   %00000010
+ALTERBIT equ   %00000100
+UPBIT    equ   %00001000
+DOWNBIT  equ   %00010000
+LEFTBIT  equ   %00100000
+RIGHTBIT equ   %01000000
+SPACEBIT equ   %10000000
+
+******************
+* Device addresses
+*
+A.AciaP  set   $FF68      Aciapak Address
+A.ModP   set   $FF6C      ModPak Address
+DPort    set   $FF40      Disk controller base address
+MPI.Slct set   $FF7F      Multi-Pak slot select
+MPI.Slot set   $03        Multi-Pak default slot
+
+*
+* VDG Devices
+*
+A.TermV  set   $FFC0      VDG Term
+A.V1     set   $FFC1      Possible additional VDG Devices
+A.V2     set   $FFC2
+A.V3     set   $FFC3
+A.V4     set   $FFC4
+A.V5     set   $FFC5
+A.V6     set   $FFC6
+A.V7     set   $FFC7
+
+         ifeq  Level-1
+
+*************************************************
+*
+* OS-9 Level One CoCo 1/2 Section
+*
+*************************************************
+
+HW.Page  set   $FF        Device descriptor hardware page
+
+         else
+
+*************************************************
+*
+* OS-9 Level Two CoCo 3 Section
+*
+*************************************************
 
 ****************************************
 * Dynamic Address Translator Definitions
@@ -91,32 +159,6 @@ PIA1Base equ   $FF20
 
 HW.Page  set   $07        Device descriptor hardware page
 
-******************
-* Device addresses
-*
-A.AciaP  set   $FF68      Aciapak Address
-A.ModP   set   $FF6C      ModPak Address
-DPort    set   $FF40      Disk controller base address
-MPI.Slct set   $FF7F      Multi-Pak slot select
-MPI.Slot set   $03        Multi-Pak default slot
-*** Eliminator addresses
-WD05Port set   $FF70
-A.DACIA1 set   $FF60
-A.DACIA2 set   A.DACIA1+4
-PPIABase set   WD05Port+6
-RTC.Base set   WD05Port+2
-
-*
-* VDG Devices
-*
-A.TermV  set   $FFC0      VDG Term
-A.V1     set   $FFC1      Possible additional VDG Devices
-A.V2     set   $FFC2
-A.V3     set   $FFC3
-A.V4     set   $FFC4
-A.V5     set   $FFC5
-A.V6     set   $FFC6
-A.V7     set   $FFC7
 *
 * Window Devices
 *
@@ -138,18 +180,6 @@ A.W12    rmb   1          $FFAC
 A.W13    rmb   1          $FFAD
 A.W14    rmb   1          $FFAE
 A.W15    rmb   1          $FFAF
-
-****************************************
-* Special character Bit position equates
-*
-SHIFTBIT equ   %00000001
-CNTRLBIT equ   %00000010
-ALTERBIT equ   %00000100
-UPBIT    equ   %00001000
-DOWNBIT  equ   %00010000
-LEFTBIT  equ   %00100000
-RIGHTBIT equ   %01000000
-SPACEBIT equ   %10000000
 
 **********************************
 * Pointer Device Packet Definition
@@ -800,4 +830,5 @@ Yellow.  rmb   1
 Magenta. rmb   1
 Cyan.    rmb   1
 
-* end of cc3global.defs
+         endc
+
