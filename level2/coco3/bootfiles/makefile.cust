@@ -40,12 +40,14 @@ BOOTFILE_ROM	= $(MD)/rominfo $(MD)/os9p2 $(MD)/init $(MD)/ioman \
 		$(CD)/shell $(CD)/mdir $(CD)/mfree $(CD)/procs
 
 BOOTFILE_DW	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/cc3disk.dr \
+		$(MD)/d0_40d.dd \
 		$(C9)/drivewire/drivewire_l2.dr \
 		$(C9)/drivewire/ddx0_l2.dd \
 		$(C9)/drivewire/x1_l2.dd \
 		$(C9)/drivewire/x2_l2.dd \
 		$(C9)/drivewire/x3_l2.dd \
-		$(MD)/rbf.mn \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
 		$(MD)/windint.io \
