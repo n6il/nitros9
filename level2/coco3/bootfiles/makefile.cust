@@ -28,7 +28,7 @@ BOOTFILE_1773	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_tc3
+		$(MD)/clock_60hz $(MD)/clock2_tc3
 
 BOOTFILE_1773_ROM = $(MD)/rominfo
 
@@ -36,7 +36,7 @@ BOOTFILE_1773_ROM = $(MD)/rominfo
 BOOTFILE_ROM	= $(MD)/rominfo $(MD)/os9p2 $(MD)/init $(MD)/ioman \
 		$(MD)/scf.mn $(MD)/sio.dr $(MD)/term_t1.dd \
 		$(MD)/sspak.dr $(MD)/ssp.dd \
-		$(MD)/clock_soft $(MD)/cc3go_rom \
+		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(CD)/shell $(CD)/mdir $(CD)/mfree $(CD)/procs
 
 BOOTFILE_DW	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
@@ -59,7 +59,7 @@ BOOTFILE_DW	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
 		$(MD)/vrn.dr $(MD)/vi.dd $(MD)/ftdd.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(C9)/drivewire/clock_dw_l2
+		$(MD)/clock_60hz $(C9)/drivewire/level2/clock2_dw
 		
 # OS-9 disk bootfile to allow booting from Ken-Ton SCSI controller
 # This is a custom boot for Boisy's system
@@ -79,7 +79,7 @@ BOOTFILE_TC3	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_tc3
+		$(MD)/clock_60hz $(MD)/clock2_tc3
 		
 # OS-9 disk bootfile to allow booting from Ken-Ton SCSI controller
 BOOTFILE_KENTON	= $(C9)/superscsi/superscsi_ktlr_l2.dr \
@@ -96,7 +96,7 @@ BOOTFILE_KENTON	= $(C9)/superscsi/superscsi_ktlr_l2.dr \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
 		$(3PD)/s16550/s16550_large.dr $(3PD)/s16550/t2_s16550.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_soft
+		$(MD)/clock_60hz $(MD)/clock2_soft
 		
 BOOTFILES	= bootfile_1773 bootfile_drivewire bootfile_tc3 bootfile_kenton bootfile_rom
 KERNELS		= kernel_1773 kernel_tc3 kernel_drivewire kernel_kenton kernel_rom
