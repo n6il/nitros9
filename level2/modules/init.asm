@@ -25,7 +25,7 @@
 tylg     set   Systm+$00
 atrv     set   ReEnt+rev
 rev      set   $02
-edition  set   $CD
+edition  set   1
 
          mod   eom,name,tylg,atrv,$0FE0,$0015
 
