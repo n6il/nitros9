@@ -247,7 +247,7 @@ S$Alarm  rmb   1          CoCo individual process' alarm signal
 
          pag
 **********************************
-* Status Codes for GetStat/PutStat
+* Status Codes for GetStat/GetStat
 *
          org   0
 SS.Opt   rmb   1          Read/Write PD Options
@@ -288,20 +288,20 @@ SS.FDInf equ   $20        to serve 68K/RBF/GetStat only, thru NET
 SS.SetMF rmb   1          reserve $24 for Gimix G68 (Flex compatability?)
 SS.Cursr rmb   1          Cursor information for COCO
 SS.ScSiz rmb   1          Return screen size for COCO
-SS.KySns rmb   1          Getstat/Putstat for COCO keyboard
-SS.ComSt rmb   1          Getstat/Putstat for Baud/Parity
-SS.Open  rmb   1          Putstat to tell driver a path was opened
-SS.Close rmb   1          Putstat to tell driver a path was closed
-SS.HngUp rmb   1          Putstat to tell driver to hangup phone
-SS.FSig  rmb 1 new signal for temp locked files
+SS.KySns rmb   1          Getstat/SetStat for COCO keyboard
+SS.ComSt rmb   1          Getstat/SetStat for Baud/Parity
+SS.Open  rmb   1          SetStat to tell driver a path was opened
+SS.Close rmb   1          SetStat to tell driver a path was closed
+SS.HngUp rmb   1          SetStat to tell driver to hangup phone
+SS.FSig  rmb   1          new signal for temp locked files
 
 * System Specific and User defined codes above $80
          org   $80
-SS.AAGBf rmb   1          Putstat to Allocate Additional Graphic Buffer
-SS.SLGBf rmb   1          Putstat to Select a different Graphic Buuffer
+SS.AAGBf rmb   1          SetStat to Allocate Additional Graphic Buffer
+SS.SLGBf rmb   1          SetStat to Select a different Graphic Buffer
 SS.Mount rmb   1          Network 4 Mount Setstat
 SS.RdNet rmb   1          Read Raw Sector from Network 4 Omnidrive
-SS.MpGPB rmb   1          Putstat to request a Get/Put Buffer be mapped in workspace
+SS.MpGPB rmb   1          SetStat to request a Get/Put Buffer be mapped in workspace
 SS.Slots rmb   1          Network 4 slots? getstat
 
          IFGT  Level-1
@@ -309,9 +309,9 @@ SS.Slots rmb   1          Network 4 slots? getstat
 * Level 2 Windowing
 SS.WnSet rmb   1          Set up High Level Windowing Information
 SS.MnSel rmb   1          Request High level Menu Handler take determine next event
-SS.SBar  rmb   1          Putstat to set position block on Window scroll bars
+SS.SBar  rmb   1          SetStat to set position block on Window scroll bars
 SS.Mouse rmb   1          Return Mouse information packet (COCO)
-SS.MsSig rmb   1          Putstat to tell driver to send signal on mouse event
+SS.MsSig rmb   1          SetStat to tell driver to send signal on mouse event
 SS.AScrn rmb   1          Allocate a screen for application poking
 SS.DScrn rmb   1          Display a screen allocated by SS.AScrn
 SS.FScrn rmb   1          Free a screen allocated by SS.AScrn
