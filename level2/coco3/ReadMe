@@ -10,11 +10,17 @@ known features of that never-officially-released version of OS-9.
 DISTRIBUTION
 ============
 There are two double-sided 40 track DSK images ending in '_ds40_1.dsk',
-and '_ds40_3.dsk' for disks 1 and 2, respectively.
+and '_ds40_2.dsk' for disks 1 and 2, respectively.  There is also a
+single-sided 40 track DSK image included for emulator use.  It is an
+abridged version doesn't include all of the files found on the double
+sided disks.  It ends in '_ss40.dsk'.
 
 USING THE DISK IMAGES
 =====================
-If you wish to transfer the disk images to a 5.25" or 3.5" floppy disk
+The included 40 track single-sided DSK file has been tested to work with
+Jeff Vavasour's CoCo 3 emulator as well as MESS.
+
+If you wish to transfer the disk images to a 5.25" floppy disk
 for use with a real CoCo, and have a Linux system equipped with such a
 disk drive unit, follow the steps below (root login is assumed):
 
@@ -27,16 +33,11 @@ disk drive unit, follow the steps below (root login is assumed):
      "COCO360":
       DS DD sect=18 cyl=40 ssize=256 tpi=48 fm=0 gap=8
 
-     "COCO720":
-      DS DD sect=18 cyl=80 ssize=256 tpi=96 fm=0 gap=8
-
 3. Insert your blank floppy into the drive on your Linux box.
 
 4. Type the following command:
 
              setfdprm /dev/fd1 coco360    (360K 5.25" floppy disk)
-                    OR
-             setfdprm /dev/fd1 coco720    (720K 3.5" floppy disk)
 
    This assumes your floppy drive is /dev/fd1.  You may need to make
    adjustments to the above commands for your environment.
