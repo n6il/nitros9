@@ -1,4 +1,4 @@
-         IFEQ  OS9DEFS
+         IFNE  OS9DEFS-1
 
 OS9DEFS  set   1
 

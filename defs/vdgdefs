@@ -1,4 +1,4 @@
-         IFEQ   VDGDEFS
+         IFNE   VDGDEFS-1
 
 VDGDEFS  set    1
 
