@@ -1,4 +1,4 @@
-OS-9 Level One V2.01.01 'Lawtell' Beta1 Release (03/07/2003):
+OS-9 Level One V2.01.01 Beta1 Release (03/07/2003):
 - Many commands have been updated and optimized:
    o For size reasons, command help information is no longer embedded in the
      utilites, but is instead available through the helpmsg file in /DD/SYS
