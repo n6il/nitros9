@@ -22,8 +22,9 @@ clean:
 	-$(CD) CMDS; make clean
 	-$(CD) SYS; make clean
 	-$(CD) DEMO; make clean
+	-$(RM) $(DISK)
 
-dsk:
+dsk: all
 	$(RM) $(DISK)
 	$(OS9FORMAT) $(DISK) -n"Multi-Vue"
 	$(MAKDIR) $(DISK):CMDS
