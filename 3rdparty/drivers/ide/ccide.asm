@@ -142,6 +142,18 @@ ErrorFnd equ   %00000001 1=Error detected - see error register
 
 * IDE hardware offsets
 DataReg  equ   0         Data (1st 8 bits, non-latched)
+         IFNE  SuperIDE
+Latch    equ   1         Latch (2nd 8 bits of 16 bit word)
+Error    equ   2         Error # when read
+Features equ   2         Features when write
+SectCnt  equ   3         Sector count
+SectNum  equ   4         Sector #
+CylLow   equ   5         Low byte of cylinder
+CylHigh  equ   6         High byte of cylinder
+DevHead  equ   7         Device/Head
+Status   equ   8         Status when read
+Command  equ   8         Command when write
+         ELSE
 Error    equ   1         Error # when read
 Features equ   1         Features when write
 SectCnt  equ   2         Sector count
@@ -152,6 +164,7 @@ DevHead  equ   6         Device/Head
 Status   equ   7         Status when read
 Command  equ   7         Command when write
 Latch    equ   8         Latch (2nd 8 bits of 16 bit word)
+         ENDC
 
 * Special flags (Mini extra drive table - 1 byte per drive) - starts at
 *    DriveFlg,u
@@ -226,7 +239,11 @@ size     equ   .
 
          fcb   $FF         mode byte
 
+         IFNE  SuperIDE
+name     fcs   /SuperIDE/  module name
+         ELSE
 name     fcs   /CCIDE/     module name
+         ENDC
          fcb   edition     module edition
 
 * INIT - appears to only be called on 1ST try on ANY IDE device IF link counts
@@ -654,6 +671,16 @@ InitRead ldb   #ReadRtry      Read sector (with retry) IDE command
 Read256  lda   #$20           # of loops (of 8 bytes)
          pshs  y,a            Save y & counter
          ldy   V.PORT,u       Get ptr to IDE controller for this drive
+         IFNE  SuperIDE
+ReadLp   ldd   ,y             Get 16 bits of data, and save in buffer, 8 times
+         std   ,x
+         ldd   ,y
+         std   2,x
+         ldd   ,y
+         std   4,x
+         ldd   ,y
+         std   6,x
+         ELSE
 ReadLp   lda   ,y             Get 16 bits of data, and save in buffer, 8
          ldb   Latch,y          times
          std   ,x
@@ -666,6 +693,7 @@ ReadLp   lda   ,y             Get 16 bits of data, and save in buffer, 8
          lda   ,y
          ldb   Latch,y
          std   6,x
+         ENDC
          leax  8,x            Bump ptr up
          dec   ,s             Done all bytes?
          bne   ReadLp         No, keep going
@@ -775,6 +803,16 @@ FinWrite lbsr  WaitOK       Wait for IDE to be done command
 Write256 lda   #$20         # of 8 byte loops
          pshs  y,a          Save Y & loop counter
          ldy   V.PORT,u     Get IDE base address
+         IFNE  SuperIDE
+WritLp   ldd   ,x           Copy 256 bytes from buffer to IDE
+         std   ,y
+         ldd   2,x
+         std   ,y
+         ldd   4,x
+         std   ,y
+         ldd   6,x
+         std   ,y
+         ELSE
 WritLp   ldd   ,x           Copy 256 bytes from buffer to IDE
          stb   Latch,y
          sta   ,y
@@ -787,6 +825,7 @@ WritLp   ldd   ,x           Copy 256 bytes from buffer to IDE
          ldd   6,x
          stb   Latch,y
          sta   ,y
+         ENDC
          leax  8,x
          dec   ,s
          bne   WritLp
