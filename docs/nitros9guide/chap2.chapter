@@ -216,12 +216,12 @@ Deletes (destroys) the file specified.
 <screen>
 DIR [filename] [-e] [-x]                   dir myfiles -e
 </screen>
-List names of files contained in a directory. If the &quot;x&quot; option is
+List names of files contained in a directory. If the &quot;-x&quot; option is
 used the files in the current <emphasis>execution</emphasis>
 directory are listed,
 othervise, if no directory name is given, the current
 <emphasis>data</emphasis> directory will be listed.
-The &quot;e&quot; option selects the long format
+The &quot;-e&quot; option selects the long format
 which shows detailed information about each file.
 <screen>
 FREE devicename                            free /d1
