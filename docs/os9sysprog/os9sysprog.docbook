@@ -60,7 +60,7 @@ OS-9 systems. It assumes that the reader is familiar with the 6809
 architecture, instruction set, and assembly language.</para>
 
 <sect1>
-<title>HISTORY AND DESIGN PHILOSOPHY</title>
+<title>History And Design Philosophy</title>
 
 <para>OS-9 Level One is one of the products of the BASIC09 Advanced 6809
 Programming Language development effort undertaken by Microware and
@@ -1038,7 +1038,7 @@ $01 I I I
 I
 4,... . a...a.e.,a4. I
 $02 1
-+-- Module Size (bytes) --+
++-- Module Size (bytes) =-+
 I
 $03 I I 1 1,
 ,.,.., ...m.aa..a.a.....in.a.,.......,...a4.. 1
@@ -2134,7 +2134,7 @@ parameters.</para>
 <sect2>
 <title>NAME: INIT</title>
 
-<para>INPUT: (U) - ADDRESS OF DEVICE STATIC STORAGE (Y) - ADDRESS OF THE
+<para>INPUT: (U) = ADDRESS OF DEVICE STATIC STORAGE (Y) = ADDRESS OF THE
 DEVICE DESCRIPTOR MODULE 
 </para>
 
@@ -2172,45 +2172,36 @@ used on the corresponding drive.</para>
 <sect2>
 <title>NAME: READ</title>
 
-<para>INPUT: (U) s. ADDRESS OF THE DEVICE STATIC STORAGE
-(Y. -
-ADDRESS OF THE PATH DESCRIPTOR
-(B) - NSB OF DISK LOGICAL SECTOR
-NUMBER
-(X) - LSB's OF DISK LOGICAL SECTOR NUMBER
-</para>
-
-<para>OUTPUT: SECTOR IS RETURNED IN THE SECTOR BUFFER</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
-	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
-</row>
-<row>
-	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>NAME:</entry>
+	<entry>READ</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(U) = ADDRESS OF THE DEVICE STATIC STORAGE
+(Y) = ADDRESS OF THE PATH DESCRIPTOR
+(B) = NSB OF DISK LOGICAL SECTOR NUMBER
+(X) = LSB's OF DISK LOGICAL SECTOR NUMBER</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>SECTOR IS RETURNED IN THE SECTOR BUFFER</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+<row>
+	<entry>FUNCTION:</entry>
+	<entry>READ A 256 BYTE SECTOR</entry>
 </row>
 </tbody>
 </tgroup>
 </informaltable>
-<para>
-FUNCTION: READ A 256 BYTE SECTOR</para>
 
 <para>
 Read a sector from the disk and place it in the sector buffer
@@ -2258,18 +2249,16 @@ LEAX D,X           Compute address of table N
 <title>NAME: WRITE</title>
 
 <para>INPUT: (U) = ADDRESS OF TEE DEVICE STATIC STORAGE AREA 
-(Y)
-ADDRESS OF THE PATH DESCRIPTOR
- (B) - MSB OF THE DISK LOGICAL
-SECTOR NUMBER 
-(X) - LSB's OF THE DISK LOGICAL SECTOR NUMBER 
+(Y) = ADDRESS OF THE PATH DESCRIPTOR
+ (B) = MSB OF THE DISK LOGICAL SECTOR NUMBER 
+(X) = LSB's OF THE DISK LOGICAL SECTOR NUMBER 
 </para>
 
 <para>OUTPUT: THE SECTOR BUFFER IS WRITTEN OUT TO DISK</para>
 
 
 <para>
-FUNCTION. WRITE A SECTOR</para>
+FUNCTION: WRITE A SECTOR</para>
 
 <para>
 Wtite the sector buffer (256 bytes) to the disk. Below are the
@@ -2309,10 +2298,9 @@ corresponding drive table as shown for the READ routine.</para>
 <sect2>
 <title>NAME: GETSTA PUTSTA</title>
 
-<para>INPUT: (U) - ADDRESS OF TEE DEVICE STATIC STORAGE AREA
-(Y) -
-ADDRESS OF THE PATH DESCRIPTOR
-(A) - STATUS CODE
+<para>INPUT: (U) = ADDRESS OF TEE DEVICE STATIC STORAGE AREA
+(Y) = ADDRESS OF THE PATH DESCRIPTOR
+(A) = STATUS CODE
 </para>
 
 <para>OUTPUT: (DEPENDS UPON TEE FUNCTION CODE)
@@ -2480,9 +2468,8 @@ it must clear the array and exit with an RTS instruction.</para>
 
 <para>INPUT: None.</para>
 
-<para>OUTPUT: (U) - SIZE OF THE BOOT FILE (in bytes)
-(X) - ADDRESS OF
-WHERE THE BOOT FILE WAS LOADED IN MEMORY 
+<para>OUTPUT: (U) = SIZE OF THE BOOT FILE (in bytes)
+(X) = ADDRESS OF WHERE THE BOOT FILE WAS LOADED IN MEMORY 
 </para>
 
 <para>ERROR OUTPUT:</para>
@@ -2542,7 +2529,7 @@ where the boot file will be loaded into.</para>
 manager module that supports devices that operate on a character-
 by-character basis, such as terminals, printers, modems, etc. SCFMAN
 can handle any number or type of such devices. It is a reentrant
-subroutine package called by XOMAN for I/O service requests to
+subroutine package called by IOMAN for I/O service requests to
 sequentia~ character ~oriented devices. It includes the extensive
 input and output e~diting functions typical of line- oriented
 operat~.on such as: backspace, line delete, repeat line, auto line
@@ -2583,7 +2570,7 @@ functions:
 ~A. .Z~ 
 </para>
 
-<para>If PD.rXO &lt;&gt; 0, input bytes are echoed, except that
+<para>If PD.EXO &lt;&gt; 0, input bytes are echoed, except that
 undefined control characters in the range $0~~$lF print as ~ 
 </para>
 
@@ -2662,80 +2649,56 @@ settings for these values for specific devices.</para>
 <para>The table below describes the path descriptors used by SCFMAN and
 SCFMAN-type device drivers.</para>
 
-<para>Name Offset Size Description</para>
+<literallayout>
+Name Offset Size Description
 
-<para>Universal Section (Same for all file managers)
-PD.PD $00 1 Path
-number
-PD.MOD $01 I Mode (read/write/update)
-PD.CNT $02 I
-Number of open images
-PD.DEV $03 2 Address of device table
-entry
-PD.CPR $03 I Current process ID
-PD.RGS $06 2 Address of
-callers MPU register stack
-PD.BUF $08 I Butter address</para>
+Universal Section (Same for all file managers)
+PD.PD $00 1 Path number
+PD.MOD $01 1 Mode (read/write/update)
+PD.CNT $02 1 Number of open images
+PD.DEV $03 2 Address of device table entry
+PD.CPR $03 1 Current process ID
+PD.RGS $06 2 Address of callers MPU register stack
+PD.BUF $08 1 Butter address
 
-<para>SCFMAN Path Descriptor Definitions
-PD.DVI $OA 2 Device table
-addr of 2nd (echo) device
-PD.RAW $OC I Edit flag: 0-raw mode,
-1-edit mode
-PD.MAX $OD 2 Headline maximum character count
-PD.MIN
-$OF 1. Devices are wininew it cleared
-PD.STS $10 2 Status routine
-module address
+SCFMAN Path Descriptor Definitions
+PD.DVI $0A 2 Device table addr of 2nd (echo) device
+PD.RAW $0C I Edit flag: 0-raw mode, 1-edit mode
+PD.MAX $0D 2 Headline maximum character count
+PD.MIN $0F 1. Devices are wininew it cleared
+PD.STS $10 2 Status routine module address
 PD.STh $12 2 Reserved for status routine 
-</para>
 
-<para>SCFMAN Option Section Definition
-$20 1 Device class 0-SC F
-2PIPE 35
-PD.UPC $21 1 Oase (0-BOTH, 1-UPPER ONLY)
-PD.BSO $22 1
-Backsp (0-835, 1-835 SP 8SE)
-PD.DLO $23 1 Delete (0 - 855 over
-line, 1-CR LF)
+
+SCFMAN Option Section Definition
+$20 1 Device class 0-SCF 2 PIPE 35
+PD.UPC $21 1 Case (0-BOTH, 1-UPPER ONLY)
+PD.BSO $22 1 Backsp (0-835, 1-835 SP 8SE)
+PD.DLO $23 1 Delete (0 - 855 over line, 1-CR LF)
 PD.EXO $24 I Echo (0-no echo)
-PD.AtF $25 1 Auto
-LF (0-no auto LF)
+PD.AtF $25 1 Auto LF (0-no auto LF)
 PD.NtTL $26 1 End of line null count
-PD.PAU
-$27 1 Pause (0= no end of page pause)
-PD.PAG $28 1 Lines per
-page
+PD.PAU $27 1 Pause (0= no end of page pause)
+PD.PAG $28 1 Lines per page
 PD.HSP $29 1 Backspace character
-PD.DEL $2A I Delete line
-character
+PD.DEL $2A I Delete line character
 PD.EOR $25 1 End of record character (read only)
-PD.EoF
-$2C I End of file character (read only)
-PD.RPR $2D I Reprint line
-character
+PD.EoF $2C I End of file character (read only)
+PD.RPR $2D I Reprint line character
 PD.DUP $25 1 Duplicate last line character
-PD.PSC $2F
-I Pause character
-PD.INT $30 I Meyboard interrupt character (CTL
-C)
+PD.PSC $2F I Pause character
+PD.INT $30 I Meyboard interrupt character (CTL C)
 PD.QUT $31 1 Eeyboard abort character (CTL 0)
-PD.BSE $32 1
-Backspace echo character (BSE)
-PD.OVF $33 1 Line overflow
-character (bell)
-PD.PAR $34 1 Device initialization value
-(parity)
-PD.BAQ 335 1 Software settable baud rate
-PD.D2P $36 2
-Offset to 2nd device name string
-PD.STN $38 2 Offset of status
-routine name
+PD.BSE $32 1 Backspace echo character (BSE)
+PD.OVF $33 1 Line overflow character (bell)
+PD.PAR $34 1 Device initialization value (parity)
+PD.BAQ $35 1 Software settable baud rate
+PD.D2P $36 2 Offset to 2nd device name string
+PD.STN $38 2 Offset of status routine name
 PD.ERR $3A 1 Most recent I/O error status
+</literallayout>
 
 
-
-</para>
 
 <para>The first section is universal for all file managers, the second
 and third section are specific~for SCFMAN and SCFMAN-type device
@@ -2752,58 +2715,42 @@ corresponding control character value to zero</para>
 </sect1>
 
 <sect1>
-<title>SCF DEVICE DESCRIPTOR MODULES</title>
+<title>SCF Device Descriptor Modules</title>
 
 <para>Device descriptor modules for SCF-type devices contain the device
 address and an initialization table which defines inital values for
 the I/O editing features, as listed below.</para>
 
-<para>
+<literallayout>
 MODULE
-OFFSET ORG $12
-TABLE 500 , BEGINING OF OPTION
-TABLE
-$12 IT.DVC HItS I DEVICE CLASS (0-SCF l-RBF 2-PIPE
-3-8512)
+OFFSET
+ORG $12 TABLE 500 , BEGINING OF OPTION TABLE
+$12 IT.DVC HItS I DEVICE CLASS (0-SCF l-RBF 2-PIPE 3-8512)
 $13 IT.UPC RMB I CASE (0-BOTH, J.UPPER ONLY)
-$14 IT.BSO
-HItS 1 SACS SPACE (0-855, l BSE,SP.BSE)
-$15 IT.DLO HItS 1 DELETE
-(0-885 OVER LINE, 1-CR)
+$14 IT.BSO HItS 1 SACS SPACE (0-855, l BSE,SP.BSE)
+$15 IT.DLO HItS 1 DELETE (0-885 OVER LINE, 1-CR)
 $16 IT.EXO RItE 1 50130 (OWNO ECHO)
-$17
-IT.A.LF RItE I. AUTO LINE FEED (0- NO AUTO LF)
-$18 IT.NUL HItS 1
-END OF LINE NULL COUNT
-$19 IT.PAU 5103 1 PAUSE (0 NO END OF PAGE
-PAUSE)
+$17 IT.A.LF RItE I. AUTO LINE FEED (0- NO AUTO LF)
+$18 IT.NUL HItS 1 END OF LINE NULL COUNT
+$19 IT.PAU 5103 1 PAUSE (0 NO END OF PAGE PAUSE)
 $1A IT. PAG RItE 1 LINES PER PAGE
-$13 IT. ES? HItS 1
-BACXSPACE CHARACTER
+$13 IT. ES? HItS 1 BACXSPACE CHARACTER
 $10 IT.DED HItS 1 DEDETE LINE CHARACTER
-$11)
-IT.EOR RItE 1 END OF RECORD CHARACTER
-$15 IT.EOF RItE 1 END OF
-FILE CHARACTER
+$11 IT.EOR RItE 1 END OF RECORD CHARACTER
+$15 IT.EOF RItE 1 END OF FILE CHARACTER
 $1F IT.R~PR RItE 1 REPRINT LINE CHARACTER
-$20
-IT.DUP RItE 1 SUP LAST LINE CHARACTER
-$21 IT.PSC RItE 1 PAUSE
-CHARACTER
+$20 IT.DUP RItE 1 SUP LAST LINE CHARACTER
+$21 IT.PSC RItE 1 PAUSE CHARACTER
 $22 IT.INT RItE 1 INTERRUPT CHARACTER
-$23 IT.00T RItE
-1 QUIT CHARACTER
+$23 IT.00T RItE 1 QUIT CHARACTER
 $24 IT.BSE RItE 1 BACKSPACE ECHO CHARACTER
-$25
-IT.OVF RItE I LINE OVERFL~ CHARACTER (BELL)
-$26 IT.PAR. RItE 1
-INITIALIZATION VALUE (PARITY)
+$25 IT.OVF RItE I LINE OVERFL~ CHARACTER (BELL)
+$26 IT.PAR. RItE 1 INITIALIZATION VALUE (PARITY)
 $27 IT.UAI2 RItE I BAUD RATE
-$28
-IT.D2F RItE 2 ATYACEED DEVICE NAME STING O12FSET
-$2A IT.STN RItE 2
-OFPSET TO STATUS ROUTINE
-320 IT.ERR RItE 1 INITIAL ERROR STATUS</para>
+$28 IT.D2F RItE 2 ATYACEED DEVICE NAME STING O12FSET
+$2A IT.STN RItE 2 OFPSET TO STATUS ROUTINE
+320 IT.ERR RItE 1 INITIAL ERROR STATUS
+</literallayout>
 
 <para>
 NOTES:</para>
@@ -2817,7 +2764,7 @@ register when a path is opened to it.</para>
 </sect1>
 
 <sect1>
-<title>SCF DEVICE DRIVER STORAGE DEFINITIONS</title>
+<title>SCF Device Driver Storage Definitions</title>
 
 <para>An SCFMAN-type device driver module contains a package of
 subroutines that perform raw I/o transfers to or from a specific
@@ -2830,34 +2777,28 @@ of the storage area is given in the device driver module header. Some
 of this storage area will be used by IOMAN and SCFMAN, the device
 driver is free to use the remainder in any way (typically as
 variables and butters). This static storage is defined as:
+</para>
+<literallayout>
 OFFSET
 ORG 0
 $0 V.PAGE RItE 1 PORT EXTENDED ADDRESS
-$1 V.PCRT RItE 2
-DEVICE BASE ADDRESS
+$1 V.PCRT RItE 2 DEVICE BASE ADDRESS
 $3 V.LPRC RItE 1 LAST ACTIVE PROCESS ID
-$4
-V.BUSY RItE I ACTIVE PROCESS ID (0 NOT BUSY)
-$5 V. WAKE HItS I
-PROCESS II) TO REAWAZEN
+$4 V.BUSY RItE I ACTIVE PROCESS ID (0 NOT BUSY)
+$5 V. WAKE HItS I PROCESS II) TO REAWAZEN
+
 V. USER EQU . END OF OS9 DEFINITIONS
-$6
-V.TYPE RItE I DEVICE TYPE OR PARITY
-$7 V.LINt RItE 1 LINES LEFT
-TILL END OF PAGE
+$6 V.TYPE RItE I DEVICE TYPE OR PARITY
+$7 V.LINt RItE 1 LINES LEFT TILL END OF PAGE
 $8 V.PAUS RItE 1 PAUSE REQUEST (0 - NO PAUSE)
-$9
-V.DEV2 RItE 2 ATTACHEs DEVICE STATIC STORAGE
-$5 V. INTH RItE 1
-INTERRUPT CHARACTER
+$9 V.DEV2 RItE 2 ATTACHEs DEVICE STATIC STORAGE
+$5 V. INTH RItE 1 INTERRUPT CHARACTER
 $0 V.00IT RItE 1 QUIT CHARACTER
-$1) V.PCHR
-RItE I PAUSE CHARACTER
+$1) V.PCHR RItE I PAUSE CHARACTER
 $E V. ERR RItE 1 ERROR ACCUMULATOR
-$F
-V.SCF EQU END OF SCFMAN DEFINITIONS
-FREE EQU . FREE FOR DEVICE
-DRIVER TO USE</para>
+$F V.SCF EQU END OF SCFMAN DEFINITIONS
+FREE EQU . FREE FOR DEVICE DRIVER TO USE
+</literallayout>
 
 <para>V.PAGE, V.PORT These three bytes are defined by IOMAN to be the 24
 bit device address.</para>
@@ -2915,7 +2856,7 @@ be reported later when SCFMAN calls one of the device driver routines</para>
 </sect1>
 
 <sect1>
-<title>SCFMAN DEVICE DRIVER SUBROUTINES</title>
+<title>SCFMAN Device Driver Subroutines</title>
 
 <para>As with all device drivers. SCFMAN device drivers use a standard
 executable memory module format with a module type of
@@ -2973,7 +2914,7 @@ parameters.</para>
 <sect2>
 <title>NAME: INIT</title>
 
-<para>INPUT: (U) - ADDRESS OP DEVICE STATIC STORAGE (Y) - ADDRESS OF
+<para>INPUT: (U) = ADDRESS OP DEVICE STATIC STORAGE (Y) = ADDRESS OF
 DEVICE DESCRIPTOR MODULE 
 </para>
 
@@ -3006,9 +2947,9 @@ of static stora e used by 1011AM and SCFr4AN.</para>
 <sect2>
 <title>NAME: READ</title>
 
-<para>INPUT: (U) - ADDRESS OF DEVICE STATIC STORAGE</para>
+<para>INPUT: (U) = ADDRESS OF DEVICE STATIC STORAGE</para>
 
-<para>(Y) - ADDRESs OP PATH DESCRIPTOR OUTPUT: (A) - CHARACTER READ</para>
+<para>(Y) = ADDRESs OP PATH DESCRIPTOR OUTPUT: (A) = CHARACTER READ</para>
 
 <para>ERROR OUTPUT:</para>
 
@@ -3040,9 +2981,8 @@ used, they should be defined in the device's static storage area.</para>
 <title>NAME: WRITE</title>
 
 <para>INPUT: (U) = ADDRESS OF DEVICE STATIC STORAGE
-(Y) = ADDRESS OF
-THE PATH DESCRIPTOR 
-(A) - CHAR TO WRITE 
+(Y) = ADDRESS OF THE PATH DESCRIPTOR 
+(A) = CHAR TO WRITE 
 </para>
 
 <para>OUTPUT: NONE</para>
@@ -3079,7 +3019,7 @@ used, they should be defined in the device's static storage.</para>
 <title>NAME: GETSTA/SETSTA</title>
 
 <para>INPUT: (U) = ADDRESS OP DEVICE STATIC STORAGE
-(Y) - ADDRESS OF
+(Y) = ADDRESS OF
 PATH DESCRIPTOR 
 (A) = STATUS CODE</para>
 
@@ -3187,7 +3127,7 @@ packet:</para>
 <sect2>
 <title>NAME. TERM</title>
 
-<para>INPUT: (U) - PTR TO DEVICE STATIC STORAGE
+<para>INPUT: (U) = PTR TO DEVICE STATIC STORAGE
 </para>
 
 <para>OUTPUT: NONE
@@ -3285,9 +3225,9 @@ special capabilities to assist the programmer in creating programs
 and memory modules for the OS-9 execution environment.</para>
 
 <sect1>
-<title>HOW TO WRITE POSITION-INDEPENDENT CODE</title>
+<title>How to Write Position-Independent Code</title>
 
-<para>The 6809 irsstruct~on set was cpttmized to allow efficient use of
+<para>The 6809 instruction set was optimized to allow efficient use of
 Position Independent Code (PIC)~ The basic technique is to always use
 PC-relative addressing; for example BRA, LBRA, BSR and L8SR~ Get
 addresses of constants and tables using LEA instructions instead of
@@ -3320,9 +3260,7 @@ of RELATIVE, not absolute, addresses.</para>
 </sect1>
 
 <sect1>
-<title>
-ADDRESSING VARIABLES AND DATA STRUCTURES 
-</title>
+<title>Addressing Variables and Data Structures</title>
 
 <para>Programs executed as processes (by FORK and CHAIN system calls or
 by the Shell) are assigned a RAM memory area for variables, stacks,
@@ -3358,7 +3296,7 @@ the program is inherently reentrant</para>
 </sect1>
 
 <sect1>
-<title>STACK REQUIREMENTS</title>
+<title>Stack Requirements</title>
 
 <para>Because OS-9 uses interrupts extensively, and also because many
 reentrant 6809 programs use the MPU stack for local variable storage,
@@ -3367,7 +3305,7 @@ minimum is approximately 200 bytes.</para>
 </sect1>
 
 <sect1>
-<title>INTERRUPT MASKS</title>
+<title>Interrupt Masks</title>
 
 <para>User programs should keep the condition codes register F (FIRQ
 mask) and I (IRQ mask) bits off. They can be set during critical
@@ -3450,10 +3388,11 @@ device.
 </sect1>
 
 <sect1>
-    <title>A SAMPLE PROGRAM</title>
+<title>A SAMPLE PROGRAM</title>
 
 <para>The OS-9 &quot;list&quot; utility command program is shown on this
 and the next page as an example of assembly language programming.</para>
+
 <programlisting>
 Microware OS-9 Assembler 2.1    01/04/82 23:39:37         Page 001
 LIST - File List Utility
@@ -3585,30 +3524,35 @@ reassemble the two modules used during system startup, INIT and SYSGO</para>
 OS-9 modules to include in ROM. The following checklist is designed
 to help you do so:</para>
 <orderedlist  numeration="Loweralpha">
-	<listitem><para>Include OS9P1, OS9P2, SYSGO, and INIT. These modules are
-	required in any OS-9 system.</para></listitem>
-	<listitem><para>If the target system is perform any I/O or interrupt
-	functions include IOMAN.</para></listitem>
-	<listitem><para>If the target system is to perform I/O to character-oriented
-	I/O devices using ACIAs, PIAs, eta,,, include SCFM~AN, required
-	device drivers (such as ACIA and PIA, and/or your own), and device
-	descriptors as needed (such as TERM, TI, 1?, and/or your own),, If
-	device addresses and/or initialization functions need to be changed,
-	the device descriptor modules must be modified before being ROMed.</para></listitem>
-	<listitem><para>Ii the target system is to perform disk I/O, include RBFMAN,
-	and appropriate disk driver and device descriptor modules. As in (c)
-	above, change device addresses and initialization if needed, ii
-	RBFMAN ~JJJ, n~,t. be included, the INIT and SYSGO modules ~ be
-	altered to remove references to disk tiles.</para></listitem>
-	<listitem><para>Ii the target system requires multiprogramming, time-cf-day,~
-	or other time-related functions, include a CLOCK module for the
-	target system's real-time clock. Also consider how the clock is to
-	be started,. You may want to ROM the &quot;Setime&quot; command, or
-	have SYSGQ start the clock.</para></listitem>
-	<listitem><para>It tne target system will receive commands manually, or if
-	any application program uses Shell functions, include the SHELL and
-	SYSGO modules, otherwise include a modified SYSGO module which calls
-	your application program instead of Shell.</para></listitem>
+    <listitem><para>Include OS9P1, OS9P2, SYSGO, and INIT. These modules are
+    required in any OS-9 system.</para></listitem>
+
+    <listitem><para>If the target system is perform any I/O or interrupt
+    functions include IOMAN.</para></listitem>
+
+    <listitem><para>If the target system is to perform I/O to character-oriented
+    I/O devices using ACIAs, PIAs, eta,,, include SCFM~AN, required
+    device drivers (such as ACIA and PIA, and/or your own), and device
+    descriptors as needed (such as TERM, TI, 1?, and/or your own),, If
+    device addresses and/or initialization functions need to be changed,
+    the device descriptor modules must be modified before being ROMed.</para></listitem>
+
+    <listitem><para>Ii the target system is to perform disk I/O, include RBFMAN,
+    and appropriate disk driver and device descriptor modules. As in (c)
+    above, change device addresses and initialization if needed, ii
+    RBFMAN ~JJJ, n~,t. be included, the INIT and SYSGO modules ~ be
+    altered to remove references to disk tiles.</para></listitem>
+
+    <listitem><para>Ii the target system requires multiprogramming, time-cf-day,~
+    or other time-related functions, include a CLOCK module for the
+    target system's real-time clock. Also consider how the clock is to
+    be started,. You may want to ROM the &quot;Setime&quot; command, or
+    have SYSGQ start the clock.</para></listitem>
+
+    <listitem><para>It tne target system will receive commands manually, or if
+    any application program uses Shell functions, include the SHELL and
+    SYSGO modules, otherwise include a modified SYSGO module which calls
+    your application program instead of Shell.</para></listitem>
 </orderedlist>
 </sect1>
 
@@ -3644,8 +3588,9 @@ $10,$11 Offset to the default
 directory name string (normally /D0). This device is assumed when
 device names are omitted from pathlists. If the system will not use
 disks (e.g., RBFMAN will not be used) this offset <emphasis>must</emphasis>be
-zero.
-$12,$13 Offset to the initial standard path string
+zero.</para>
+
+<para>$12,$13 Offset to the initial standard path string
 (typically /TERM). This path is opened as the standard paths for the
 initial startup module. This offset <emphasis>must</emphasis> contain zero if there
 is none.</para>
@@ -3730,20 +3675,21 @@ call to branch on error/no error~</para>
 
 <para>9ere an e pie system call for the ~ULOSE~ service request:</para>
 
-<para>LDA PATHNUM 
+<programlisting>
+LDA PATHNUM 
 SWI2 
 FCB $8B 
 BCS ERROR 
-</para>
+</programlisting>
 
 <para>
 Using the assembler~s ~OS9~ directive simplifies the call:</para>
 
-<para>
+<programlisting>
 LDA PATHNUM 
 OS9 I$CLOS 
 BCS ERROR 
-</para>
+</programlisting>
 
 <para>The I/O service requests are simpler to use than in many other
 operating systems because the calling program does not have to
@@ -3772,43 +3718,31 @@ cbaracter.</para>
 <sect2>
 <title>ABIT Set bits in an allocation bit map F$ABIT</title>
 
-<para>ASSEMBLER CALL: OS9 F$ABIT
-</para>
-
-<para>MACHINE CODE: 103F 13</para>
-
-<para>INPUT: (X) - Base address of glocation bit map.
-(D) m Bit
-number of first bit to set.
-(Y) m Bit count (number of bits to
-set)
-</para>
-
-<para>OUTPUT: None.</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$ABIT</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 13</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(X) = Base address of glocation bit map.
+(D) = Bit number of first bit to set.
+(Y) = Bit count (number of bits to set)</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>None.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -3824,35 +3758,24 @@ the allocation bit map.</para>
 <sect2>
 <title>CHAIN Load and execute a new primary module, F$CHAN</title>
 
-<para>ASSEMBLER CALL: OS9 F$CHAN 
-</para>
-
-<para>MACHINE CODE: 103F 05</para>
-
-<para>INPUT: (X) - Address of module name or file name</para>
-
-<para>(Y) = Parameter area sime (25~ byte pages)</para>
-
-<para>(U) = Beginning address of parameter area</para>
-
-<para>(A) - Lanquage / type code</para>
-
-<para>(B) = Optional data area size (256 byte pages)</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$CHAN</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 05</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(X) = Address of module name or file name
+(Y) = Parameter area sime (256 byte pages)
+(U) = Beginning address of parameter area
+(A) = Lanquage / type code
+(B) = Optional data area size (256 byte pages)</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
@@ -3860,8 +3783,8 @@ the allocation bit map.</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -3894,7 +3817,9 @@ file)</para>
 the new primary module's header</para>
 
 <para>The diagram below shows bow CHAIN sets up the data memory area and
-registers for the new module,
+registers for the new module.</para>
+
+<para>
 +-----------------+ &lt;-- Y
 (highest address)
 I Parameter I
@@ -3945,8 +3870,8 @@ description.</para>
 <para>MACHINE CODE: 103F 11 
 </para>
 
-<para>INPUT: (X) - Address of first name,
-(B) =Length of first name,
+<para>INPUT: (X) = Address of first name,
+(B) = Length of first name,
 (Y) = Address of secorrd name.</para>
 
 <para>OUTPUT: (CC) = C bit clear if the strings match.</para>
@@ -3972,7 +3897,7 @@ character set.</para>
 </para>
 
 <para>INPUT: (X) m Starting byte address,
-(Y) - Byte count,
+(Y) = Byte count,
 (U) =
 Address of 3 byte CRC accumulator.</para>
 
@@ -3995,28 +3920,20 @@ be stored) are not included in the CRC generation</para>
 <sect2>
 <title>DBIT Deallocate in a bit map F$DBIT</title>
 
-<para>ASSEMBLER CALL: OS9 F$DBIT 
-</para>
-
 <para>MACHINE CODE: 103F 14 
 </para>
 
 <para>INPUT: (X) = B e address of an allocation bit map. 
-(D} - Bit
-number of firs bit to clear.
-(Y) - Bit count (number ~f bits to
-clear).
+(D) = Bit number of firs bit to clear.
+(Y) = Bit count (number ~f bits to clear).
 </para>
 
-<para>OUTPUT: None.
-</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$DBIT</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -4028,12 +3945,12 @@ clear).
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>None.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -4083,19 +4000,19 @@ return an OS-9 error code or zero if no error occutred</para>
 </para>
 
 <para>INPUT: (X) ? Addre s o module name or file name.
-(Y) -
+(Y) =
 Parameter area size.
-(U) - Beginning address of the parameter
+(U) = Beginning address of the parameter
 area.
 (A) = Language / Type code,
 (B) = Optional data area size
 (pages).</para>
 
 <para>OUTPUT: (X) = Updated path the name string.
-(A) - New process
+(A) = New process
 ID number.</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -4116,8 +4033,8 @@ ID number.</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -4203,11 +4120,11 @@ continue until the process table becomes full.</para>
 </para>
 
 <para>INPUT: (X) = Address of the intercept routine.
-(U) - Address of
+(U) = Address of
 the intercept routine local storage.
 OUTPUT: None.</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -4228,8 +4145,8 @@ OUTPUT: None.</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -4281,12 +4198,12 @@ instruction</para>
 <para>INPUT: None 
 </para>
 
-<para>OUTPUT:(A) - Process ID.</para>
+<para>OUTPUT:(A) = Process ID.</para>
 
 <para>(Y) &quot; User ID.
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -4307,8 +4224,8 @@ instruction</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -4329,20 +4246,20 @@ Several processes can have the same user ID.</para>
 
 <para>MACHINE CODE: 103F 00</para>
 
-<para>INPUT: (X) - Address of the module name string.
-(A) - Module
+<para>INPUT: (X) = Address of the module name string.
+(A) = Module
 type / language byte.</para>
 
 <para>OUTPUT:(X) = Advanced past the module name,
 (Y) = Module entry
 point absolute address.
-(U) - Module header absolute address.
+(U) = Module header absolute address.
 (A)
 - Module type / language.
-(B) - Module attributes / revision
+(B) = Module attributes / revision
 level.</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -4363,8 +4280,8 @@ level.</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -4399,20 +4316,17 @@ not reentrant) only one process may link to it at a time</para>
 <para>MACHINE CODE: 103F Dl</para>
 
 <para>INPUT: (X) = Address of pathlist (file name)
-(A) = Language /
-type (0 = any language / type) 
+(A) = Language / type (0 = any language / type) 
 </para>
 
-<para>OUTPUT:(X) - Advanced past pathlist
-(Y) - Primary module entry
-point address 
-(U) - Address of module header 
-(A; - Language /
-type 
-(B) - Attributes / revision level 
+<para>OUTPUT:(X) = Advanced past pathlist
+(Y) = Primary module entry point address 
+(U) = Address of module header 
+(A; - Language / type 
+(B) = Attributes / revision level 
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -4433,8 +4347,8 @@ type
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -4464,13 +4378,13 @@ that occur on OPEN, READ, CLOSE and LINK system calls.</para>
 <para>MACHINE CODE: 103F 07 
 </para>
 
-<para>INPUT: (0) - Desired new memory area size in bytes</para>
+<para>INPUT: (0) = Desired new memory area size in bytes</para>
 
 <para>OUTPUT: (P) = Address of new memory area upper bound</para>
 
-<para>(D) - Actual new memory .area size in bytes</para>
+<para>(D) = Actual new memory .area size in bytes</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -4491,8 +4405,8 @@ that occur on OPEN, READ, CLOSE and LINK system calls.</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -4533,7 +4447,7 @@ own &quot;address space&quot;</para>
 
 <para>OUTPUT: None.</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -4554,8 +4468,8 @@ own &quot;address space&quot;</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -4583,13 +4497,13 @@ routine use the F$SSVC service request</para>
 
 <para>INPUT: (X) = Address of the pathlist</para>
 
-<para>OUTPUT: (X) - Updated past the optional / 
+<para>OUTPUT: (X) = Updated past the optional / 
 </para>
 
-<para>(Y) - Address of the 14st character of the name + 1~ 
+<para>(Y) = Address of the 14st character of the name + 1~ 
 </para>
 
-<para>(B) - Length of the name</para>
+<para>(B) = Length of the name</para>
 
 <para>ERROR OUTPUT:</para>
 
@@ -4597,7 +4511,7 @@ routine use the F$SSVC service request</para>
 
 <para>(B) = Appropriate error code.</para>
 
-<para>(X) - Updated past space characters.</para>
+<para>(X) = Updated past space characters.</para>
 
 <para>Parses the input text string for a legal OS-9 name. The name is
 terminated by any character that is not a legal component character,
@@ -4631,15 +4545,15 @@ ASSEMBLER CALL: OS9 F$SBIT
 
 <para>MACHINE CODE: 103F 12</para>
 
-<para>INPUT: (X) - Beginning address of a bit map.
-(0) - Beginning
+<para>INPUT: (X) = Beginning address of a bit map.
+(0) = Beginning
 bit number.
 (Y) = Bit count (free bit block size).
 (U) = End of
 bit map address.</para>
 
-<para>OUTPUT: (D) - Beginning bit number.
-(Y) - Bit count.</para>
+<para>OUTPUT: (D) = Beginning bit number.
+(Y) = Bit count.</para>
 
 <para>This system mode service request searches the specified allocation
 bit map starting at the &quot;beginning bit number&quot; for a free
@@ -4663,7 +4577,7 @@ carry set, beginning bit number and size of the largest block.</para>
 
 <para>OUTPUT: None</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -4684,8 +4598,8 @@ carry set, beginning bit number and size of the largest block.</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -4740,7 +4654,7 @@ request descriptions</para>
 <para>OUTPUT: (X) = Decremented by the number of ticks that the process
 was asleep</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -4761,8 +4675,8 @@ was asleep</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -4803,7 +4717,7 @@ queue</para>
 
 <para>OUTPUT: None.</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -4824,8 +4738,8 @@ queue</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -4844,7 +4758,7 @@ another process' priority only if it has the same user ID.</para>
 
 <para>MACHINE CODE: 103F 32</para>
 
-<para>INPUT: (Y) - Address of service request initialization table.</para>
+<para>INPUT: (Y) = Address of service request initialization table.</para>
 
 <para>OUTPUT: None.</para>
 
@@ -4910,7 +4824,7 @@ X I $4 R$X
 - a
 a am - - - - m~* + 
 Y I $6 R$Y
-------- -&quot;4. 
+------- -
 U 
 $8 R$tY
 4-.. 
@@ -4953,7 +4867,7 @@ are free for user definition.</para>
 
 <para>OUTPUT: None</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -4974,8 +4888,8 @@ are free for user definition.</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -5010,7 +4924,7 @@ three vectors, you will not be able to call OS-9 at all.</para>
 
 <para>OUTPUT:  Time/date is set.</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5031,8 +4945,8 @@ three vectors, you will not be able to call OS-9 at all.</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -5065,7 +4979,7 @@ OFFSET VALUE</para>
 <para>OUTPUT: Time packet (see below).
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5086,8 +5000,8 @@ OFFSET VALUE</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -5121,7 +5035,7 @@ month
 <para>OUTPUT: None
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5142,8 +5056,8 @@ month
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -5177,7 +5091,7 @@ the module directory</para>
 
 <para>(B) = Child process' exit status code</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5198,8 +5112,8 @@ the module directory</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -5244,7 +5158,7 @@ has not yet been allocated)</para>
 
 <para>(Y) = Address of block</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5265,8 +5179,8 @@ has not yet been allocated)</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -5324,11 +5238,11 @@ BLOCK? I
 <para>MACHINE CODE: 103F 2C 
 </para>
 
-<para>INPUT: (N) - Address of process descriptor</para>
+<para>INPUT: (N) = Address of process descriptor</para>
 
 <para>OUTPUT: None</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5349,8 +5263,8 @@ BLOCK? I
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -5376,12 +5290,12 @@ process is in user state, it is inserted according to its age</para>
 <para>MACHINE CODE: 103F 2F
 </para>
 
-<para>INPUT: (K) = Add ess o base page, (A) - Block number.
+<para>INPUT: (K) = Add ess o base page, (A) = Block number.
 </para>
 
 <para>OUTPUT: (Y) = Address of block</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5428,11 +5342,11 @@ descriptors when given their number.</para>
 
 <para>MACHINE CODE: 103F 33</para>
 
-<para>INPUT: (K) - Address of an I/O module, (see description)</para>
+<para>INPUT: (K) = Address of an I/O module, (see description)</para>
 
 <para>OUTPUT: None</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5485,7 +5399,7 @@ limited or no use for other applications</para>
 
 <para>OUTPUT: None.</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5530,7 +5444,7 @@ will send a wakeup signal to the calling process.</para>
 <para>MACHINE CODE: 103F 2A 
 </para>
 
-<para>INPUT: (X) - Zero to remove device from table, or the address of a
+<para>INPUT: (X) = Zero to remove device from table, or the address of a
 packet as defined below to add a device to 
 </para>
 
@@ -5546,15 +5460,15 @@ packet as defined below to add a device to
 <para>(X+21 - priority
 </para>
 
-<para>(U) - Address of service routine's static Storage area</para>
+<para>(U) = Address of service routine's static Storage area</para>
 
-<para>(Y) - Device IRQ service routine address</para>
+<para>(Y) = Device IRQ service routine address</para>
 
 <para>(D) = Address of the device status register</para>
 
 <para>OUTPUT: None</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5640,11 +5554,11 @@ active process queue again.</para>
 
 <para>INPUT: (K) = Address of the base page.</para>
 
-<para>(A) - Block number.</para>
+<para>(A) = Block number.</para>
 
 <para>OUTPUT: None</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5685,11 +5599,11 @@ memory as described in the F$A64 service request</para>
 
 <para>MACHINE CODE: 103F 28</para>
 
-<para>INPUT: (D) - Byte count.</para>
+<para>INPUT: (D) = Byte count.</para>
 
 <para>OUTPUT: (U) = Beginning address ,of memory area</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5732,7 +5646,7 @@ rounded to the next 256 byte page boundary.</para>
 
 <para>MACHINE CODE: 103F 29</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5767,7 +5681,7 @@ rounded to the next 256 byte page boundary.</para>
 
 <para>ASSEMBLER CALL: OS9</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5804,16 +5718,7 @@ rounded to the next 256 byte page boundary.</para>
 <sect2>
 <title>ATTACH Attach a new device to the system. I$ATCH</title>
 
-<para>MACHINE CODE: 103F 80
-</para>
-
-<para>INPUT: (X) - Address of device name string</para>
-
-<para>(A) - Access mode</para>
-
-<para>OUTPUT: (U) = Address of device table entry</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5822,15 +5727,16 @@ rounded to the next 256 byte page boundary.</para>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 80</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(X) = Address of device name string
+(A) = Access mode.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>(U) = Address of device table entry</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -5852,43 +5758,34 @@ OS-9 will link to its file manager and device driver, and then place
 their address' in a new device table entry. Any permanent storage
 needed by the device driver is allocated, and the driver's
 initialization routine is called (which usually initializes the
-hardware)</para>
+hardware).</para>
 
 <para>If the device has already been attached, it will not be
-reinitialized</para>
+reinitialized.</para>
 
 <para>An ATTACH system call is not required to perform routine I/O. It
 does NOT reserve' the device in question - it just prepares it for
 subsequent use by any process. Most devices are automatically
 installed, so it is used mostly when devices are dynamically
-installed or to verify the existence of a device</para>
+installed or to verify the existence of a device.</para>
 
 <para>The access mode parameter specifies which subsequent read and/or
-write operations will be permitted as follows: 
+write operations will be permitted as follows:
 </para>
 
-<para>0 = Use device capabilities</para>
+<para>0 = Use device capabilities.</para>
 
-<para>1 = Read only</para>
+<para>1 = Read only.</para>
 
-<para>2 a = Write only</para>
+<para>2 = Write only.</para>
 
-<para>3 a = Both read and write</para>
+<para>3 = Both read and write.</para>
 </sect2>
 
 <sect2>
 <title>CHDIR Change working directory. I$CDIR</title>
 
-<para>MACHINE CODE: 103F 86
-</para>
-
-<para>INPUT: (X) - Address of the pathlist</para>
-
-<para>(A) - Access mode</para>
-
-<para>OUTPUT: None</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5897,15 +5794,16 @@ write operations will be permitted as follows:
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 86</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(X) = Address of the pathlist.
+(A) = Access mode.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>None.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -5921,9 +5819,9 @@ specified by the pathlist. Dependinq on the access mode given, the
 current execution or the current data directory may be changed (but
 only one may be changed per call). The file specified must be a
 directory file, and the caller must have read permission for it
-(public read if not owned by the calling process)</para>
+(public read if not owned by the calling process).</para>
 
-<para>ACCESS MODES 
+<para>ACCESS MODES
 </para>
 
 <para>1  = Read</para>
@@ -5936,20 +5834,13 @@ directory file, and the caller must have read permission for it
 
 <para>If the access mode is read, write, or update the current data
 directory is changed. If the access mode is execute, the current
-execution directory is changed</para>
+execution directory is changed.</para>
 </sect2>
 
 <sect2>
 <title>CLOSE Close a path to a file/device. I$CLOS</title>
 
-<para>MACHINE CODE: 103F 8F
-</para>
-
-<para>INPUT: (A) = Path number</para>
-
-<para>OUTPUT: None</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -5958,15 +5849,15 @@ execution directory is changed</para>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 8F</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry>(A) = Path number.</entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>None.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -5981,33 +5872,20 @@ execution directory is changed</para>
 longer be performed to the file/device, unless another OPEN or CREATE
 call is used. Devices that are non-sharable become available to other
 requesting processes. All OS-9 internally managed buffers and
-descriptors are deallocated</para>
+descriptors are deallocated.</para>
 
 <para>Note: Because the OS9 F$EXIT service request automatically closes
 all open paths (except the standard I/O paths), it may not he
-necessary to close them individually with the OS9 I$CLOS service r eq
-U e St</para>
+necessary to close them individually with the OS9 I$CLOS service request.</para>
 
 <para>Standard I/O paths are not typically closed except when it is
-desired to change the files/devices they correspond to</para>
+desired to change the files/devices they correspond to.</para>
 </sect2>
 
 <sect2>
 <title>CREATE Create a path to a new file. I$CREA</title>
 
-<para>MACHINE CODE: 103F 83 
-</para>
-
-<para>INPUT: (N) = Address of the pathlist</para>
-
-<para>(A) - Access mode</para>
-
-<para>(B) = File attributes</para>
-
-<para>OUTPUT: (X) = Updated past the pathlist (trailing blanks skipped)
-(A) = Path number</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6016,15 +5894,18 @@ desired to change the files/devices they correspond to</para>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 83</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(X) = Address of the pathlist.
+(A) = Access mode.
+(B) = File attributes.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(X) = Updated past the pathlist (trailing blanks skipped)
+(A) = Path number.</literallayout></entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6035,61 +5916,56 @@ desired to change the files/devices they correspond to</para>
 </tgroup>
 </informaltable>
 
-<para>Used to create a new file on a mnu~1tifiIe mass storage device,
+<para>Used to create a new file on a multifiIe mass storage device.
 The pathlist is parsed, and the new file name is entered in the
 specified (or default working) directory. The file is given the
 attributes passed in the B register, which has individual bits
-defined as follows</para>
-
-<para>bit 0 = read permit
-</para>
-
-<para>bit 3. = write permit bit 2 = execute permit bit 3 = public read
-permit bit 4 = public write permit bit $ - public execute permit bit
-6 = sbarable file
-</para>
+defined as follows:</para>
+<literallayout>
+bit 0 = read permit
+bit 1 = write permit
+bit 2 = execute permit
+bit 3 = public read permit
+bit 4 = public write permit
+bit 5 - public execute permit
+bit 6 = sharable file
+</literallayout>
 
 <para>The access mode parameter passed in register A must be either
 &quot;WRITE&quot; or &quot;UPDATE&quot;. This only affects the file
 until it is closed; it can be reopened later in any access mode
 allowed by the file attributes (see OPEN). Files open for &quot;WRITE&quot;
-may allow faster dat~i transfer than &quot;UPDATE&quot;, which
-sometimes needs to pre- read setors. These access codes are defined
-as given below: 
+may allow faster data transfer than &quot;UPDATE&quot;, which
+sometimes needs to preread setors. These access codes are defined
+as given below:
 </para>
-
-<para>2 = Write only</para>
-
-<para>3 = Update (read and write)</para>
+<literallayout>
+2 = Write only
+3 = Update (read and write)
+</literallayout>
 
 <para>NOTE: If the execute bit (bit 2) is set, the file will be created
 in the working execution directory instead of the working data
-directory</para>
+directory.</para>
 
 <para>The path number returned by OS-9 is used to identify the file in
-subsequent I/O service requests until the file is closed</para>
+subsequent I/O service requests until the file is closed.</para>
 
 <para>No data storage is initially allocated for the file at the time it
 is created; this is done automatically by WRITE or explicitly by the
-PUTSTAT call</para>
+PUTSTAT call.</para>
 
 <para>An error will occur if the file name already exists in the
 directory. CREATE calls that specify non-multiple file devices (such
 as printers, terminals, etc.) work correctly: the CREATE behaves the
 same as OPEN. Create cannot be used to make directory files (see
-MAKDIR)</para>
+MAKDIR).</para>
 </sect2>
 
 <sect2>
 <title>DELETE Delete a file. I$DLET</title>
 
-<para>MACHINE CODE: 103F 87</para>
-
-<para>INPUT: (K) = Address of pathlist.</para>
-
-<para>OUTPUT: (X) = Updated past pathlist (trailing spaces skipped).</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6098,15 +5974,15 @@ MAKDIR)</para>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 87</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry>(X) = Address of pathlist.</entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>(X) = Updated past pathlist (trailing spaces skipped).</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6117,8 +5993,8 @@ MAKDIR)</para>
 </tgroup>
 </informaltable>
 
-<para>This service request deletes the file specified by the pathlist,
-The file must have write permission attributes (public write if ~ot
+<para>This service request deletes the file specified by the pathlist.
+The file must have write permission attributes (public write if not
 the owner), and reside on a multifile mass storage device. Attempts
 to delete devices will result in an error.</para>
 </sect2>
@@ -6126,13 +6002,7 @@ to delete devices will result in an error.</para>
 <sect2>
 <title>DETACH Remove a device from the system. I$DTCH</title>
 
-<para>MACHINE CODE: 103F 81</para>
-
-<para>INPUT: (U) = Address of the device table entry.</para>
-
-<para>OUTPUT: None.</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6141,15 +6011,15 @@ to delete devices will result in an error.</para>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 81</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry>(U) = Address of the device table entry.</entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>None.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6168,22 +6038,14 @@ unlinked (and may be destroyed if not in use by another process</para>
 
 <para>The I$DTCH service request must be used to un-attach devices that
 were attached with the I$ATCH service request. Both of these are used
-mainly by IOHAN and are of limited (or no use) to the typical user,
-SCFMAN also uses ATTACH/DETACH to setup its second (echo) devile 
-</para>
+mainly by IOMAN and are of limited (or no use) to the typical user,
+SCFMAN also uses ATTACH/DETACH to setup its second (echo) device.</para>
 </sect2>
 
 <sect2>
 <title>DUP Duplicate a path. I$DUP</title>
 
-<para>MACHINE CODE: 103F 82 </para>
-
-<para>INPUT: (A) = Path number of path to duplicate.</para>
-
-<para>OUTPUT: (B) = New path number.
-</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6192,15 +6054,15 @@ SCFMAN also uses ATTACH/DETACH to setup its second (echo) devile
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 82</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry>(A) = Path number of path to duplicate.</entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>(B) = New path number.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6224,7 +6086,7 @@ descriptor is not copied.</para>
 
 <sect2>
 <title>GETSTAT Get file device status. I$GSTT</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6238,7 +6100,7 @@ descriptor is not copied.</para>
 <row>
 	<entry>INPUT:</entry>
 	<entry><literallayout>(A) = Path number.
-(B) Status code
+(B) Status code.
 (Other registers depend upon status code)</literallayout></entry>
 </row>
 <row>
@@ -6254,12 +6116,235 @@ descriptor is not copied.</para>
 </tgroup>
 </informaltable>
 
+<para>This system is a &quot;wild card&quot; call used to handle individual
+device parameters that:</para>
+<orderedlist numeration="Loweralpha">
+<listitem><para>are not uniform on all devices</para></listitem>
+<listitem><para>are highly hardware dependent</para></listitem>
+<listitem><para>need to be user-changable</para></listitem>
+</orderedlist>
+
+<para>The exact operation of this call depends on the device driver an
+file manager associated with the path. A typical use is to
+determine a terminal's parameters for backspace character, delete
+character, echo on/off, null padding, paging, etc. It is commonly
+used in conjunction with the SETSTAT service request which is
+used to set the device operating parameters. Below are presently
+defined function codes for GETSTAT:</para>
+
+<informaltable frame="none">
+<tgroup cols="3">
+<thead>
+<row rowsep="1">
+<entry>MNEMONIC</entry>
+<entry>CODE</entry>
+<entry>FUNCTION</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>SS.OPT</entry>
+<entry>0</entry>
+<entry>Read the 32 byte option section of the path descriptor.</entry>
+</row>
+<row>
+<entry>SS.RDY</entry>
+<entry>1</entry>
+<entry>Test for data ready on SCFMAN-type device.</entry>
+</row>
+<row>
+<entry>SS.SIZ</entry>
+<entry>2</entry>
+<entry>Return current file size (on RBFMAN-type devices).</entry>
+</row>
+<row>
+<entry>SS.POS</entry>
+<entry>5</entry>
+<entry>Get current file position.</entry>
+</row>
+<row>
+<entry>SS.EOF</entry>
+<entry>6</entry>
+<entry>Test for end of file.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>CODES 7-127 Reserved for future use</para>
+
+<para>CODES 128-255 These getstat codes and their parameter passing
+conventions are user definable (see the sections of this manual on
+writing device drivers). The function code and register stack are
+passed to the device driver.</para>
+
+<para>Parameter Passing Conventions</para>
+
+<para>The parameter passing conventions for each of these function codes
+are given below:</para>
+
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>SS.OPT (code 0):</entry>
+	<entry>Read option section of the path descriptor.</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 0
+(X) = Address of place to put a 32 byte status packet.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>Status packet.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This getstat function reads the option section of the path
+descriptor and copies it into the 32 byte area pointed to by the X
+register. It is typically used to determine the current settings for
+echo, auto line feed, etc. For a complete description of the
+status packet, please see the section of this manual on path
+descriptors.</para>
+
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>SS.RDY (code 1):</entry>
+	<entry>Test for data available on SCFMAN supported devices.</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 1</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entrytbl cols=4>
+	<thead>
+	<row><entry rowsep="1"></entry>
+	<entry rowsep="1">Ready</entry>
+	<entry rowsep="1">Not Ready</entry>
+	<entry rowsep="1">Error</entry></row>
+	</thead>
+	<tbody>
+	<row><entry rowsep="1">(CC)</entry>
+	<entry rowsep="1">C bit clear</entry>
+	<entry rowsep="1">C bit set</entry>
+	<entry rowsep="1">C bit set</entry></row>
+	<row><entry rowsep="1">(B)</entry>
+	<entry rowsep="1">zero</entry>
+	<entry rowsep="1">$F6 (E$NRDY)</entry>
+	<entry rowsep="1">ERROR Code</entry></row>
+	</tbody>
+	</entrytbl>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>SS.SIZ (code 2):</entry>
+	<entry>Get current file size (RBFMAN supported devices only)</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 2</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(X) = M.S. 16 bits of current file size.
+(U) = L.S. 16 bits of current file size.</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>SS.POS (code 5):</entry>
+	<entry>Get current file position (RBFMAN supported devices only)</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 5</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry><literallayout>(X) = M.S. 16 bits of current file position.
+(U) = L.S. 16 bits of current file position.</literallayout></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>SS.EOF (code 6):</entry>
+	<entry>Test for end of file.</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 6</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entrytbl cols=4>
+	<thead>
+	<row><entry rowsep="1"></entry>
+	<entry rowsep="1">Not EOF</entry>
+	<entry rowsep="1">EOF</entry>
+	<entry rowsep="1">Error</entry></row>
+	</thead>
+	<tbody>
+	<row><entry rowsep="1">(CC)</entry>
+	<entry rowsep="1">C bit clear</entry>
+	<entry rowsep="1">C bit set</entry>
+	<entry rowsep="1">C bit set</entry></row>
+	<row><entry rowsep="1">(B)</entry>
+	<entry rowsep="1">zero</entry>
+	<entry rowsep="1">$D3 (E$EOF)</entry>
+	<entry rowsep="1">ERROR Code</entry></row>
+	</tbody>
+	</entrytbl>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 </sect2>
 
 <sect2>
 <title>MAKDIR Make a new directory</title>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6272,11 +6357,12 @@ descriptor is not copied.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(X) = Address of pathlist.
+(B) = Directory attributes.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>(X) = Updated path pathlist (trailing spaces skipped).</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6286,12 +6372,34 @@ descriptor is not copied.</para>
 </tbody>
 </tgroup>
 </informaltable>
+<para>MAKDIR is the only way a new directory file can be created. It
+will create and initialize a new directory as specified by the
+pathlist. The new directory file contains no entries, except for
+an entry for itself (".") and its parent directory ("..")</para>
 
+<para>The caller is made the owner of the directory. MAKDIR dies not
+return a path number because directory files are not "opened" by
+this request (use OPEN to do so). The new directory will
+automatically have its "directory" bit set in the access
+permission attributes. The remaining attributes are specified by
+the byte passed in the B register, which has individual bits
+defined as follows:</para>
+
+<literallayout>
+bit 0 = read permit
+bit 1 = write permit
+bit 2 = execute permit
+bit 3 = public read permit
+bit 4 = public write permit
+bit 5 - public execute permit
+bit 6 = sharable file
+bit 7 = (don't care)
+</literallayout>
 </sect2>
 
 <sect2>
 <title>OPEN Open a path to a file or device</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6304,11 +6412,13 @@ descriptor is not copied.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(X) = Address of pathlist.
+(A) = Access mode (D S PE PW PR E W R)</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(X) = Updated past pathlist (trailing spaces skipped).
+(A) = Path number.</literallayout></entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6318,12 +6428,49 @@ descriptor is not copied.</para>
 </tbody>
 </tgroup>
 </informaltable>
+
+<para>Opens a path to an existing file or device as specified by the
+pathlist. A path number is returned which is used in subsequent
+service requests to identify the file.</para>
+
+<para>The access mode parameter specifies which subsequent read and/or
+write operation are permitted as follows:</para>
+
+<literallayout>
+1 = read mode
+2 = write mode
+3 = update mode (both read and write)
+</literallayout>
+
+<para>Update mode can be slightly slower because pre-reading of sectors
+may be required for random access of bytes within sectors. The
+access mode must conform to the access permission attributes
+associated with the file or device (see CREATE). Only the owner
+may access a file unless the appropiate "public permit" bits are
+set.</para>
+
+<para>Files can be opened by several processes (users) simultaneously.
+Devices have an attribute that specifies whether or not they are
+sharable on an individual basis.</para>
+
+<para>NOTES:</para>
+
+<para>If the execution bit is set in the access mode, OS-9 will begin
+searching for the file in the working execution directory (unless
+the pathlist begins with a slash).</para>
+
+<para>The sharable bit (bit 6) in the access mode can not lock other
+users out of  file in OS-9 Level I. It is present only for
+upward compatibility with OS-9 Level II.</para>
+
+<para>Directory files may be read or written if the D bit (bit 7) is set
+in the access mode.</para>
 </sect2>
 
 <sect2>
-<title>READ Read data from a file or device</title>
+<title>READ Read data from a file or device I$READ</title>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6336,11 +6483,13 @@ descriptor is not copied.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(X) = Address to store data.
+(Y) = Number of bytes to read.
+(A) = Path number.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>(Y) = Number of bytes actually read.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6350,12 +6499,37 @@ descriptor is not copied.</para>
 </tbody>
 </tgroup>
 </informaltable>
+
+<para>Reads a specified number of bytes from the path number given. The
+path must previously have been opened in READ or UPDATE mode. The
+data is returned exactly as read from the file/device without
+additional processing or editing such as backspace, line delete,
+end-of-file, etc.</para>
+
+<para>After all data in a file has been read, the next I$READ service
+request will return an end of file error.</para>
+
+<para>NOTES:</para>
+
+<para>The keyboard abort, keyboard interrupt, and end-of-file characters
+may be filtered out of the input data on SCFMAN-type devices
+unless the coresponding entries in the path descriptor have been
+set to zero. It may be desirable to modify the device descriptor
+so that these values in the path descriptor are initialized to
+zero when the path is opened.</para>
+
+<para>The number of bytes requested will be read unless:</para>
+<literallayout>
+A. An end-of-file occurs
+B. An end-of-record occurs (SCFMAN only)
+C. An error condition occurs.
+</literallayout>
 </sect2>
 
 <sect2>
-<title>READLN Read a text line with editing</title>
+<title>READLN Read a text line with editing. I$RDLN</title>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6364,15 +6538,17 @@ descriptor is not copied.</para>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 8B</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(X) = Address to store data.
+(Y) = Number of bytes to read.
+(A) = Path number.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>(Y) = Actual number of bytes read.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6382,12 +6558,29 @@ descriptor is not copied.</para>
 </tbody>
 </tgroup>
 </informaltable>
+
+<para>This system call is the same as "READ" except it reads data from
+the input file or device until a carriage return character is
+encountered or until the maximum byte count specified is reached,
+and that line editing will occur on SCFMAN-type devices. Line
+editing refers to backspace, line delete, echo automatic line
+feed, etc.</para>
+
+<para>SCFMAN requires that the last byte entered be an end-of-record
+character (normally carriage return). If more data is entered
+than the maximum specified, it will not be accepted and a PD.OVF
+character (normally bell) will be echoed.</para>
+
+<para>After all data in the file has been read, the next I$RDLN service
+request will return an end of file error.</para>
+
+<para>NOTE: For more information on line editing, see 7.1.</para>
 </sect2>
 
 <sect2>
-<title>SEEK Reposition the logical file pointer</title>
+<title>SEEK Reposition the logical file pointer I$SEEK</title>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6400,11 +6593,13 @@ descriptor is not copied.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(A) = Path number.
+(X) = M.S. 16 bits of desired file position.
+(U) = L.S. 16 bits of desired file position.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>None.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6414,11 +6609,24 @@ descriptor is not copied.</para>
 </tbody>
 </tgroup>
 </informaltable>
+
+<para>This system call repositions the path's "file pointer"; which is
+the 32-bit addres of the next byte in the file to be read
+from or written to.</para>
+
+<para>A seek may be performed to any value even if the file is not large
+enough. Subsequent WRITEs will automatically expand the file to
+the required size (if possible), but READs will return an end-of-file
+condition. Note that a SEEK to address zero is the same as a
+"rewind" operation.</para>
+
+<para>Seeks to non-random access devices are usually ignored and return
+without error.</para>
 </sect2>
 
 <sect2>
-<title>SETSTAT Set file/device status</title>
-<informaltable>
+<title>SETSTAT Set file/device status I$SSTT</title>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6427,15 +6635,17 @@ descriptor is not copied.</para>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 8E</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(A) = Path number.
+(B) Function code.
+(Other registers depend upon function code)</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>(depends upon function code)</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6445,23 +6655,230 @@ descriptor is not copied.</para>
 </tbody>
 </tgroup>
 </informaltable>
+<para>This system is a &quot;wild card&quot; call used to handle individual
+device parameters that:</para>
+<orderedlist numeration="Loweralpha">
+<listitem><para>are not uniform on all devices</para></listitem>
+<listitem><para>are highly hardware dependent</para></listitem>
+<listitem><para>need to be user-changable</para></listitem>
+</orderedlist>
 
+<para>The exact operation of this call depends on the device driver and
+file manager associated with the path. A typical use is to
+set a terminal's parameters for backspace character, delete
+character, echo on/off, null padding, paging, etc. It is commonly
+used in conjunction with the GETSTAT service request which is
+used to read the device operating parameters. Below are presently
+defined function codes:</para>
+
+<informaltable frame="none">
+<tgroup cols="3">
+<thead>
+<row rowsep="1">
+<entry>MNEMONIC</entry>
+<entry>CODE</entry>
+<entry>FUNCTION</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>SS.OPT</entry>
+<entry>$0</entry>
+<entry>Write the 32 byte option section of the path descriptor</entry>
+</row>
+<row>
+<entry>SS.SIZ</entry>
+<entry>$2</entry>
+<entry>Set the file size (RBF)</entry>
+</row>
+<row>
+<entry>SS.RST</entry>
+<entry>$3</entry>
+<entry>Restore head to track zero (RBF)</entry>
+</row>
+<row>
+<entry>SS.WRT</entry>
+<entry>$4</entry>
+<entry>Write (format) track (RBF)</entry>
+</row>
+<row>
+<entry>SS.FEE</entry>
+<entry>$9</entry>
+<entry>Issue Form Feed (SCF)</entry>
+</row>
+<row>
+<entry>SS.FRZ</entry>
+<entry>$A</entry>
+<entry>Freeze DD. Information (RBF)</entry>
+</row>
+<row>
+<entry>SS.SPT</entry>
+<entry>$B</entry>
+<entry>Set Sectors per track (RBF)</entry>
+</row>
+<row>
+<entry>SS.SQD</entry>
+<entry>$C</entry>
+<entry>Sequence down disk drive (RBF)</entry>
+</row>
+<row>
+<entry>SS.DCM</entry>
+<entry>$D</entry>
+<entry>Direct command to hard disk controller (RBF)</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Codes 128 through 255  their parameter passing
+conventions are user definable (see the sections of this manual on
+writing device drivers). The function code and register stack are
+passed to the device driver.</para>
+
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>SS.OPT (code 0):</entry>
+	<entry>Write option section of the path descriptor.</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 0
+(X) = Address of a 32 byte status packet.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This setstat function writes the option section of the path
+descriptor from the 32 byte status packet pointed to by the X
+register. It is typically used to set the device operating
+parameters, such as echo, auto line feed, etc.</para>
+
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>SS.SIZ (code 2):</entry>
+	<entry>Set the file size (RBF)</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 2
+(X) = M.S. 16 bits of desired file size.
+(U) = L.S. 16 bits of desired file size.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This setstat function is used to change the file's size.</para>
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>SS.RST (code 3):</entry>
+	<entry>Set the file size (RBF)</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 3</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Home disk head to track zero. Used for formatting and
+for error recovery.</para>
+
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>SS.WTK (code 4):</entry>
+	<entry>Write track</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number
+(B) = Function code 4
+(X) = Address of track buffer.
+(U) = Track number (L.S. 8 bits)
+(Y) = Side/density
+         Bit B0 = SIDE (0 = side zero, 1 = side one)
+	 Bit B1 = DENSITY (0 = single, 1 = double)</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>This code causes a format track (most floppy disks)
+operation to occur. For hard disks or floppy disks with a "format
+entire disk" command, this command should format the entire media
+only when the track number equals zero.</para>
+
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>SS.FRZ (code $A):</entry>
+	<entry>Freeze DD. Information</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>none</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>none</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>Inhibits the reading of identification sector (LSN 0) to
+DD.xxx variables (that define disk formats) so non-standard disks
+may be read.</para>
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>SS.SPT (code $B):</entry>
+	<entry>Set Sectors Per Track</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>X = new sectors per track</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 </sect2>
 
 <sect2>
 <title>WRITE Write Data to File or Device I$WRITE</title>
 
-<para>/3- Path number
-</para>
-
-<para>INPUT: ~&quot; dl .1 Number of bytes to write (aO) Address of
-buffer
-</para>
-
-<para>OUTPUT: I did Number of bytes actually written
-</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6473,12 +6890,13 @@ buffer
 	<entry>103F 8A</entry>
 </row>
 <row>
-	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(A) = Path number.
+(X ) = Address of buffer.
+(Y) = Maximum number of bytes to write</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>(Y)  = Actual number of bytes written.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6491,37 +6909,19 @@ buffer
 
 <para>DESCRIPTION:</para>
 
-<para>I$Write outputs bytes to a file or device associated with the path
+<para>I$WRITE outputs bytes to a file or device associated with the path
 number specified. The path must have been opened or created in the
 write or update access modes.</para>
 
 <para>Data is written to the tile or device without processing or
-editing. If data is written past the present end~of~file, the file is
+editing. If data is written past the present end-of-file, the file is
 automatically expanded.</para>
-
-<para>NOTE: The IOMan module implements I$Write.
-</para>
-
-<para>NOTE: On RBF devices, any record that was locked is released.
-</para>
-
-
 </sect2>
 
 <sect2>
-<title>WritLn Write Line of Text with Editing</title>
+<title>WritLn Write Line of Text with Editing I$WRLN</title>
 
-<para>INPUT: (A) Path number
-</para>
-
-<para>(Y) = Maximum number of bytes to write</para>
-
-<para>(X ) = Address of buffer
-</para>
-
-<para>OUTPUT: (Y) Actual number of bytes written</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -6534,11 +6934,13 @@ automatically expanded.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(A) = Path number.
+(X ) = Address of buffer.
+(Y) = Maximum number of bytes to write</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>(Y)  = Actual number of bytes written</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6549,23 +6951,17 @@ automatically expanded.</para>
 </tgroup>
 </informaltable>
 
-<para>I$WritLn is similar to I$Write except it writes data until a
-carriage return character or (di) bytes are encountered. Line editing
-is also activated for character~oriented devices such as terminals,
+<para>I$WRLN is similar to I$Write except it writes data until a
+carriage return character or (Y) bytes are encountered. Line editing
+is also activated for character-oriented devices such as terminals,
 printers, etc. The line editing refers to auto line feed, null
-padding at en&amp;of line, etc.</para>
+padding at end of line, etc.</para>
 
-<para>The number of bytes actually written (returned in dl .1) does not
+<para>The number of bytes actually written (returned in Y) does not
 reflect any additional bytes that may have been added by file
 managers or device drivers for device control. For example, if SCF
 appends a line feed and nulls after carriage return characters, these
-extrt bytes are not counted,
-
-</para>
-
-<para>NOTE: On RBF devices, any record that was locked is released.</para>
-
-<para>NOTE: The IOMan module implements I$WritLn</para>
+extrt bytes are not counted.</para>
 
 </sect2>
 </sect1>
@@ -6983,8 +7379,213 @@ extrt bytes are not counted,
 
 <appendix>
 <title>Error Codes</title>
-
-<para>These did not OCR well</para>
+<table frame="none">
+<title>OS-9 Error Codes</title>
+<tgroup cols="3">
+<tbody>
+<row>
+ <entry>$</entry>
+ <entry>200</entry>
+ <entry>PATH TABLE FULL - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>201</entry>
+ <entry>ILLEGAL PATH NUMBER - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>202</entry>
+ <entry>INTERRUPT POLLING TABLE FULL - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>203</entry>
+ <entry>ILLEGAL MODE - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>204</entry>
+ <entry>DEVICE TABLE FULL - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>205</entry>
+ <entry>ILLEGAL MODULE HEADER - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>206</entry>
+ <entry>MODULE DIRECTORY FULL - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>207</entry>
+ <entry>MEMORY FULL - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>208</entry>
+ <entry>ILLEGAL SERVICE REQUEST - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>209</entry>
+ <entry>MODULE BUSY - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>210</entry>
+ <entry>BOUNDARY ERROR - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>211</entry>
+ <entry>END OF FILE - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>212</entry>
+ <entry>RETURNING NON-ALLOCATED MEMORY - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>213</entry>
+ <entry>NON-EXISTING SEGMENT - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>214</entry>
+ <entry>NO PERMISSION - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>215</entry>
+ <entry>BAD PATH NAME - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>216</entry>
+ <entry>PATH NAME NOT FOUND - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>217</entry>
+ <entry>SEGMENT LIST FULL - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>218</entry>
+ <entry>FILE ALREADY EXISTS - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>219</entry>
+ <entry>ILLEGAL BLOCK ADDRESS - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>221</entry>
+ <entry>MODULE NOT FOUND - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>223</entry>
+ <entry>SUICIDE ATTEMPT - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>224</entry>
+ <entry>ILLEGAL PROCESS NUMBER - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>226</entry>
+ <entry>NO CHILDREN - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>227</entry>
+ <entry>ILLEGAL SWI CODE - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>228</entry>
+ <entry>PROCESS ABORTED - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>229</entry>
+ <entry>PROCESS TABLE FULL - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>230</entry>
+ <entry>ILLEGAL PARAMETER AREA - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>231</entry>
+ <entry>KNOWN MODULE - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>232</entry>
+ <entry>INCORRECT MODULE CRC - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>233</entry>
+ <entry>SIGNAL ERROR - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>234</entry>
+ <entry>NON-EXISTENT MODULE - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>235</entry>
+ <entry>BAD NAME - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>237</entry>
+ <entry>RAM FULL - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>238</entry>
+ <entry>UNKNOWN PROCESS ID - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>239</entry>
+ <entry>NO TASK NUMBER AVAILABLE - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>240</entry>
+ <entry>UNIT ERROR - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>241</entry>
+ <entry>SECTOR ERROR - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>242</entry>
+ <entry>WRITE PROTECT - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>243</entry>
+ <entry>CRC ERROR - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>244</entry>
+ <entry>READ ERROR - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>245</entry>
+ <entry>WRITE ERROR - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>246</entry>
+ <entry>NOT READY - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>247</entry>
+ <entry>SEEK ERROR - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>248</entry>
+ <entry>MEDIA FULL - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>249</entry>
+ <entry>WRONG TYPE - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>250</entry>
+ <entry>DEVICE BUSY - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>251</entry>
+ <entry>DISK ID CHANGE - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>252</entry>
+ <entry>RECORD IS LOCKED-OUT - </entry></row>
+<row>
+ <entry>$</entry>
+ <entry>253</entry>
+ <entry>NON-SHARABLE FILE BUSY - </entry></row>
+</tbody>
+</tgroup>
+</table>
 </appendix>
 
 
@@ -6995,11 +7596,8 @@ extrt bytes are not counted,
 <title>Level Two System Service Requests</title>
 
 <sect1>
-<title>$3A*F$AllImg Allocate Image RAM blocks F$AllImg</title>
+<title>$3A* F$AllImg Allocate Image RAM blocks F$AllImg</title>
 
-<para>ASSEMBLER CALL: OS9 F$AllImg</para>
-
-<para>MACHINE CODE: 103F 3A</para>
 
 <para>INPUT:  (V B~~g block nu~er 
 </para>
@@ -7010,16 +7608,16 @@ extrt bytes are not counted,
 <para>Process Z~esc:iptor pointer 
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$AllImg</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 3A</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7054,7 +7652,7 @@ extrt bytes are not counted,
 <para>INPUT: 
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -7098,7 +7696,7 @@ extrt bytes are not counted,
 <para>U) a Desr~re~ block crocnt a t~eVto~ng PAM block numier 
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -7137,23 +7735,20 @@ blocks
 <sect1>
 <title>AlhC ~sk Allocate process Task number</title>
 
-<para>ASSEMBLER CALL: OS9 F$AllTsk</para>
-
-<para>MACHINE CODE: 103F 3F</para>
 
 <para>X a Process Descrrptor pointer 
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$AllTsk</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 3F</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7180,13 +7775,13 @@ blocks
 </sect1>
 
 <sect1>
-<title>Bootstrap syste~r F$Bcc t</title>
+<title>Bootstrap syste~r F$Boot</title>
 
 <para>ASSEMBLER CALL: OS9 F$Boot</para>
 
 <para>MACHINE CODE: 103F</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -7223,20 +7818,19 @@ a ea ~ ~ tbtn se&amp;rclred for fl~ modules</para>
 </sect1>
 
 <sect1>
-<title>Bootstrap M~ory request OS9 F$13tMen</title>
+<title>Bootstrap M~ory request OS9 F$BtMem</title>
 
 <para>ASSEMBLER CALL: OS9</para>
 
-<para>MACHINE CODE: 103F 36</para>
 
-<para>U a Byte count reouested~ 
+<para>U = Byte count reouested~ 
 </para>
 
-<para>U - Byte count cran~ed~ 
+<para>U = Byte count cran~ed~ 
 - p~ ~ter to memory sIlo ~ated~
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -7245,7 +7839,7 @@ a ea ~ ~ tbtn se&amp;rclred for fl~ modules</para>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 36</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7274,7 +7868,7 @@ i~n tbe systesOs address space~</para>
 <sect1>
 <title>Clear specific Block</title>
 
-<para>ASSEMBLER CALL: OS9 F$CIrBlk
+<para>ASSEMBLER CALL: OS9 F$ClrBlk
 </para>
 
 <para>MACHINE CODE: 103F
@@ -7285,7 +7879,7 @@ i~n tbe systesOs address space~</para>
 
 <para>aAl~ess of first block
 </para>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -7321,9 +7915,6 @@ i~n tbe systesOs address space~</para>
 <sect1>
 <title>Copy external Memory F$CpyMem</title>
 
-<para>ASSEMBLER CALL: OS9 F$CpyMem</para>
-
-<para>MACHINE CODE: 103F</para>
 
 <para>~F V (D)-Start~ng Memory Block number
 </para>
@@ -7331,12 +7922,12 @@ i~n tbe systesOs address space~</para>
 <para>~X aCftset ~n block to begin copy QU -Byte count
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$CpyMem</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -7368,7 +7959,6 @@ the system ~iy be vrewed in t.his wav~</para>
 
 <para>ASSEMBLER CALL: OS9 Y~ATLcg</para>
 
-<para>MACHINE CODE: 103F 44</para>
 
 <para>P - ~AT xmaqe offset
 - Block offset
@@ -7376,7 +7966,7 @@ the system ~iy be vrewed in t.his wav~</para>
 
 <para>I - ~oqic&amp;~. address~</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -7385,7 +7975,7 @@ the system ~iy be vrewed in t.his wav~</para>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 44</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7404,41 +7994,33 @@ the system ~iy be vrewed in t.his wav~</para>
 </tgroup>
 </informaltable>
 
-<para>a DAT inaqe block n~ber and block offset V.
-a oo Al addreza~</para>
+<para>Converts a DAT imaqe block number and block offset to its
+equivalent logical address.</para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
 
 <sect1>
-<title>Make Temporary DAT riuace</title>
+<title>$45* F$DATTmp Make Temporary DAT image F$DATTmp</title>
 
-<para>ASSEMBLER CALL: OS9 F$~DATTmp
-</para>
-
-<para>MACHINE CODE: 103F 45
-</para>
-
-<para>U V. a Block number
-7 - ~AT ~na~e porrter</para>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$DATTmp</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 45</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry>(D) = Block number</entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>(Y) = DAT image pointer</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -7449,33 +8031,35 @@ a oo Al addreza~</para>
 </tgroup>
 </informaltable>
 
-<para>~pora~; DAD r~age to access ins given memory bloc</para>
+<para>Builds a temporary DAT image to access the given memory block.</para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST
 </para>
 </sect1>
 
 <sect1>
-<title>$3B* F$DelImg Deallocate tmaqe RAM blocks F$DelImg</title>
+<title>$3B* F$DelImg Deallocate Imaqe RAM blocks F$DelImg</title>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$DelImg</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 3B</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(A) = Beginning block number
+(B) = Block count
+(X) = Process Descriptor pointer</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>None.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -7486,29 +8070,32 @@ a oo Al addreza~</para>
 </tgroup>
 </informaltable>
 
+<para>Deallocated memory from the process' address space.</para>
+
+<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
 
 <sect1>
 <title>$4C* Deallocate Process descriptor F$DelPrc</title>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$DelPrc</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 4C</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry>(A) = Process ID.</entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>None.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -7519,25 +8106,29 @@ a oo Al addreza~</para>
 </tgroup>
 </informaltable>
 
+<para>Returns process descriptor memory to system free memory pool.</para>
+
+<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
 
 <sect1>
 <title>Deallocate RAM blocks</title>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$DelRam</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 51</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(B) = Number of blocks
+(X) = Beginning block number.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
@@ -7552,29 +8143,30 @@ a oo Al addreza~</para>
 </informaltable>
 
 <para>Marks blocks in system memory block map as unallocated.</para>
+
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
 
 <sect1>
 <title>$40* F$DelTsk Deallocate process Task number F$DelTsk</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$DelTsk</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 40</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry>(X) = Process Descriptor pointer</entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>None.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -7584,21 +8176,25 @@ a oo Al addreza~</para>
 </tbody>
 </tgroup>
 </informaltable>
+
+<para>Releases the Task number in use by the process.</para>
+
+<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 
 </sect1>
 
 <sect1>
 <title>$4D* F$ELink Link using module directory Entry F$ELink</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$ELink</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 4D</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7617,32 +8213,39 @@ a oo Al addreza~</para>
 </tgroup>
 </informaltable>
 
-<para>a a Ltrt3V given a pointer to a. module directory entry~ Note oail
-differs from F$Link in that a pointer to the inodc~e
-rec~ . ~y
-ent~y is supplied rather than a pointer to a module name</para>
+<para>Performs a "Link" given a pointer to a module directory entry. Note
+that this call differs from F$Link in that a pointer to the module
+directory entry is supplied rather than a pointer to a module name.</para>
+
+<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+
 </sect1>
 
 <sect1>
 <title>$4E* F$FModul Find Module directory entry F$FModul</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$FModul</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 4E</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(A) = Module type.
+(X) = Module Name string pointer.
+(Y) = Name string DAT image pointer.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(A) = Module Type.
+(B) = Module Revision.
+(X) = Updated past name string.
+(U) = Module directory entry pointer.</literallayout></entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -7653,20 +8256,24 @@ ent~y is supplied rather than a pointer to a module name</para>
 </tgroup>
 </informaltable>
 
+<para>This call returns a pointer to the module directory entry given the
+module name.</para>
+
+<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
 
 <sect1>
 <title>$3E* F$FreeHB get Free High block  F$FreeHB</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$FreeHB</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 3E</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7684,12 +8291,14 @@ ent~y is supplied rather than a pointer to a module name</para>
 </tbody>
 </tgroup>
 </informaltable>
+
+<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 
 </sect1>
 
 <sect1>
 <title>$3D* F$FreeLB get Free Low block  F$FreeLB</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -7724,12 +8333,12 @@ ent~y is supplied rather than a pointer to a module name</para>
 
 <sect1>
 <title>$19 F$GBlkMp Get system Block Map copy F$GBlkMp</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$GBlkMp</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -7757,16 +8366,16 @@ ent~y is supplied rather than a pointer to a module name</para>
 
 <sect1>
 <title>$1A F$GModDr Get Module Directory copy F$GModDr</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$GModDr</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F1A </entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7793,24 +8402,23 @@ ent~y is supplied rather than a pointer to a module name</para>
 <sect1>
 <title>$18 F$GPrDsc  Get Process Descriptor copy  F$GPrDsc</title>
 
-<para>ASSEMBLER CALL: OS9 F$GPrDsc</para>
 
-<para>MACHINE CODE: 103F 18
+<para>
 (A) a Requested process
 ID.
 - 512 byte buffer pointer&gt;
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$GPrDsc</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 18</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7837,20 +8445,16 @@ descrIptor&gt;</para>
 <sect1>
 <title>$37* F$GProcP Get Process Pointer  F$GProcP</title>
 
-<para>ASSEMBLER CALL: OS9 F$GIProcP</para>
-
-<para>MACHINE CODE: 103F 37</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$GProcP</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 37</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7879,16 +8483,16 @@ system address space
 <sect1>
 <title>$49* F$LDABX Load A from 0,1 in task B  F$LDABX</title>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$LDABX</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 49</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7922,16 +8526,16 @@ address space&gt; This is typically used to get one
 <sect1>
 <title>$46* F$LDAXY Load A [X, [Y] ]  F$LDAXY</title>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$LDAXY</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 46</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7964,7 +8568,7 @@ address space&gt; This is typically used to get one
 
 <para>MACHINE CODE: 103F 47</para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -8004,16 +8608,16 @@ at
 <sect1>
 <title>$48* F$LDDDXY Load D [D+X, [Y] ]  F$LDDDXY</title>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$LDDDXY</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 48</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -8042,16 +8646,16 @@ at
 
 <sect1>
 <title>$4F* F$MapBlk Map specific Block F$MapBlk</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$MapBlk</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 4F</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -8079,27 +8683,23 @@ at
 <sect1>
 <title>$38* F$Move Move data (low bound first) F$Move</title>
 
-<para>ASSEMBLER CALL: OS9 F$Mo've</para>
-
-<para>MACHINE CODE: 103F 38</para>
 
 <para>5) = Source Task number
 U = Dsstanataon Task number
-~X) -
-Source poInter
-7') - Byte count
+(X) = Source poInter
+7') = Byte count
 = Deatinatior pointer
 </para>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$Move</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 38</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -8131,13 +8731,37 @@ to Cse&gt;7s, or vice-versa,
 <sect1>
 <title>$43* F$RelTsk Ralease Task number F$RelTsk</title>
 
-<para>ASSEMBLER CALL: OS9 F$RelTsk
-</para>
-
-<para>MACHINE CODE: 103F 43
+<para>
 &quot;&quot;1 U) Task number</para>
 <para>a t,~e spec'&gt;fred DAT Task number&gt;
 </para>
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+        <entry>ASSEMBLER CALL:</entry>
+        <entry>OS9  F$RelTsk</entry>
+</row>
+<row>
+        <entry>MACHINE CODE:</entry>
+        <entry>103F 43</entry>
+</row>
+<row>
+        <entry>INPUT:</entry>
+        <entry></entry>
+</row>
+<row>
+        <entry>OUTPUT:</entry>
+        <entry>None.</entry>
+</row>
+<row>
+        <entry>ERROR OUTPUT:</entry>
+        <entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
@@ -8145,40 +8769,60 @@ to Cse&gt;7s, or vice-versa,
 <sect1>
 <title>$42* F$ResTsk Reserve Task number F$ResTsk</title>
 
-<para>ASSEMBLER CALL: OS9 F$ResTsk</para>
-
-<para>MACHINE CODE: 103F 42</para>
-
 <para> DAT task number.
 </para>
+<informaltable frame="none">
+<tgroup cols="2">
+<tbody>
+<row>
+        <entry>ASSEMBLER CALL:</entry>
+        <entry>OS9  F$ResTsk</entry>
+</row>
+<row>
+        <entry>MACHINE CODE:</entry>
+        <entry>103F 42</entry>
+</row>
+<row>
+        <entry>INPUT:</entry>
+        <entry></entry>
+</row>
+<row>
+        <entry>OUTPUT:</entry>
+        <entry>None.</entry>
+</row>
+<row>
+        <entry>ERROR OUTPUT:</entry>
+        <entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
 
 <sect1>
-<title>$3C* F$SetImq Set process DAT Image F$SetImq</title>
+<title>$3C* F$SetImg Set process DAT Image F$SetImg</title>
 
-<para>ASSEMBLER CALL: OS9 F$SetImq</para>
-
-<para>MACHINE CODE: 103F 3C</para>
 
 <para>A = 9e5&gt;3nnarrg image block number
-&quot;13) - l3lock
+&quot;13) = l3lock
 count
 (I - Process Descriptor pointer
 7) New image pointer
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$SetImg</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 3C</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -8206,30 +8850,27 @@ count
 <sect1>
 <title>$41* F$SetTsk Set process Task DAT registers  F$SetTsk</title>
 
-<para>ASSEMBLER CALL: OS9 F$SetTsk</para>
-
-<para>MACHINE CODE: 103F 41</para>
 
 <para>I) = Process Descriptor pointer
 </para>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$SetTsk</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 41</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry>(X) = Process Descriptor pointer</entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>None.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -8240,7 +8881,7 @@ count
 </tgroup>
 </informaltable>
 
-<para>a in roinss Task DAT registers.</para>
+<para>Sets the process Task DAT registers.</para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
@@ -8248,37 +8889,30 @@ count
 <sect1>
 <title>$34* F$SLink  System Link  F$SLink</title>
 
-<para>ASSEMBLER CALL: OS9 F$SLink</para>
-
-<para>MACHINE CODE: 103F 34
-N' (A) = Mccc. e Type&gt;
-(I = Module Name string pointer.
-7 ) - Name string DAT image pointer&gt;</para>
-
-<para>(A) = Moduts Type&gt;
-73' = Moc~u3Le Revision,
-Vt - tlpdated Name string pointer
-7&gt; - Module Entry point
-(73 - Module pointer&gt;</para>
-
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$SLink</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 34</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(A) = Module Type.
+(X) = Module Name string pointer.
+(Y) = Name string DAT image pointer.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(A) = Module Type.
+(B) = Module Revision.
+(X) = Updated Name string pointer.
+(Y) = Module Entry point.
+(U) = Module pointer.</literallayout></entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -8289,8 +8923,8 @@ Vt - tlpdated Name string pointer
 </tgroup>
 </informaltable>
 
-<para>lc.k~ a moou~le whose name is outside the current (system) pro&gt;
-ess scAres space into the address space that contains its name.</para>
+<para>Links a module whose name is outside the current (system) process'
+adress space into the Address space that contains its name.</para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
@@ -8298,24 +8932,23 @@ ess scAres space into the address space that contains its name.</para>
 <sect1>
 <title>$28* F$RqMem System Memory Request  F$RqMem</title>
 
-<para>ASSEMBLER CALL: OS9 F$RqMem</para>
 
-<para>MACHINE CODE: 103F 22
+<para>
 5 &quot;' a b te count of requested
 memory
 a byte co~ ot of memory granted</para>
 
 <para>37 = pointer to memory block allocated</para>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$RqMem</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
-	<entry>103F </entry>
+	<entry>103F 28</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -8345,18 +8978,17 @@ bc/tars s '~ ~ in &gt;iao'&gt;'&gt;pervanent system memory&gt;</para>
 <sect1>
 <title>$29* F$SRtMem System Memory Return  F$SRtMem</title>
 
-<para>ASSEMBLER CALL: OS9 F$SRtMem</para>
 
-<para>- B~rte count of memory betng returned (17 - address of memory
+<para>- Byte count of memory betng returned (17 - address of memory
 block being returned
 </para>
 
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$</entry>
+	<entry>OS9  F$SRtMem</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -8372,8 +9004,8 @@ block being returned
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 </tbody>
 </tgroup>
@@ -8389,7 +9021,7 @@ ro onger needed
 
 <sect1>
 <title>$4A* F$STABX Store A at 0,X in task B F$STABX</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -8404,7 +9036,7 @@ ro onger needed
 	<entry>INPUT:</entry>
 	<entry><literallayout>(A) = Data byte to store in Task's address space
 (B) = Task number
-(X) - Logical address in task's address space to store</literallayout></entry>
+(X) = Logical address in task's address space to store</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
@@ -8412,8 +9044,8 @@ ro onger needed
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 
 </tbody>
@@ -8429,7 +9061,7 @@ rather than the current address space.</para>
 
 <sect1>
 <title>$1C F$SUser Set User ID number F$SUser</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -8450,8 +9082,8 @@ rather than the current address space.</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 
 </tbody>
@@ -8465,7 +9097,7 @@ erro a It' It.</para>
 
 <sect1>
 <title>$1D F$UnLoad Unlink module by name F$UnLoad</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -8478,7 +9110,7 @@ erro a It' It.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry><literallayout>(A) - Module Type
+	<entry><literallayout>(A) = Module Type
 (X) = Module Name pointer</literallayout></entry>
 </row>
 <row>
@@ -8487,8 +9119,8 @@ erro a It' It.</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 
 </tbody>
@@ -8502,7 +9134,7 @@ name is supplied rather than the address of the module header.</para>
 
 <sect1>
 <title>DELETE Delete a file I$DeletX</title>
-<informaltable>
+<informaltable frame="none">
 <tgroup cols="2">
 <tbody>
 <row>
@@ -8515,7 +9147,7 @@ name is supplied rather than the address of the module header.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry><literallayout>(X) - Address of pathlist
+	<entry><literallayout>(X) = Address of pathlist
 (A) = Access mode.</literallayout></entry>
 </row>
 <row>
@@ -8524,8 +9156,8 @@ name is supplied rather than the address of the module header.</para>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
-	<entry><literallayout>(CC) - C bit set.
-(B) Appropriate error code.</literallayout></entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
 </row>
 
 </tbody>
