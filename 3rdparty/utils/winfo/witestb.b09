@@ -1,0 +1,113 @@
+PROCEDURE witestb
+
+(* Witestb
+(* Copyright November 1987 by Ron Lammardo
+(* This program placed into the Public Domain as demonstration
+(* detailing use of the WInfo subroutine from a Basic09 calling 
+(* program
+(* 
+
+TYPE winf=buff1(7):BYTE; buff2(10):BYTE; bpr:INTEGER; buff3(11):
+BYTE; drcrx,drcry:INTEGER; edtn:BYTE; weadr,devm:INTEGER; filler:
+STRING[33]; pregs(16):BYTE; ermsg:STRING[40]
+DIM wi:winf
+DIM wname:STRING[32]
+DIM minedition:BYTE
+DIM indx1:INTEGER
+PRINT 
+INPUT "Window name :",wname
+PRINT 
+RUN winfo(wname,wi)
+IF wi.buff1(1)=$FF THEN 
+PRINT "The Buffer size is to small for WInfo"
+END 
+ENDIF 
+minedition=1
+IF wi.edtn<minedition THEN 
+
+PRINT "You must have WInfo edition #"; 
+PRINT USING "h2"; minedition; 
+PRINT " or higher"
+PRINT 
+END 
+ENDIF 
+PRINT "WI$Stat   :  "; 
+PRINT USING "h2"; wi.buff1(1); 
+PRINT "        WI$VDG    :  "; 
+PRINT USING "h2"; wi.buff1(2)
+PRINT "WI$Sty    :  "; 
+PRINT USING "h2"; wi.buff1(3); 
+PRINT "        WI$Block  :  "; 
+PRINT USING "h2"; wi.buff1(4)
+PRINT "WI$BlCnt  :  "; 
+PRINT USING "h2"; wi.buff1(5); 
+PRINT "        WI$Offst  :"; 
+PRINT USING "h4"; wi.buff1(6)*256+wi.buff1(7)
+PRINT "WI$Cpx    :  "; 
+PRINT USING "h2"; wi.buff2(1); 
+PRINT "        WI$Cpy    :  "; 
+PRINT USING "h2"; wi.buff2(2)
+PRINT "WI$Szx    :  "; 
+PRINT USING "h2"; wi.buff2(3); 
+PRINT "        WI$Szy    :  "; 
+PRINT USING "h2"; wi.buff2(4)
+PRINT "WI$CWCpx  :  "; 
+PRINT USING "h2"; wi.buff2(5); 
+PRINT "        WI$CWCpy  :  "; 
+PRINT USING "h2"; wi.buff2(6)
+PRINT "WI$CWSzx  :  "; 
+PRINT USING "h2"; wi.buff2(7); 
+PRINT "        WI$CWSzy  :  "; 
+PRINT USING "h2"; wi.buff2(8)
+PRINT "WI$Curx   :  "; 
+PRINT USING "h2"; wi.buff2(9); 
+PRINT "        WI$Cury   :  "; 
+PRINT USING "h2"; wi.buff2(10)
+PRINT "WI$BPR    :"; 
+PRINT USING "h4"; wi.bpr; 
+PRINT "        WI$CBsw   :  "; 
+PRINT USING "h2"; wi.buff3(1)
+PRINT "WI$FGPRN  :  "; 
+PRINT USING "h2"; wi.buff3(2); 
+PRINT "        WI$BGPRN  :  "; 
+PRINT USING "h2"; wi.buff3(3)
+PRINT "WI$BDPRN  :  "; 
+PRINT USING "h2"; wi.buff3(4); 
+PRINT "        WI$Lset   :  "; 
+PRINT USING "h2"; wi.buff3(5)
+PRINT "WI$FntGr  :  "; 
+PRINT USING "h2"; wi.buff3(6); 
+PRINT "        WI$FntBf  :  "; 
+PRINT USING "h2"; wi.buff3(7)
+PRINT "WI$PstGr  :  "; 
+PRINT USING "h2"; wi.buff3(8); 
+PRINT "        WI$PstBf  :  "; 
+PRINT USING "h2"; wi.buff3(9)
+PRINT "WI$GcrGr  :  "; 
+PRINT USING "h2"; wi.buff3(10); 
+PRINT "        WI$GcrBf  :  "; 
+PRINT USING "h2"; wi.buff3(11)
+PRINT "WI$DrCrx  :"; 
+PRINT USING "h4"; wi.drcrx; 
+PRINT "        WI$DrCry  :"; 
+PRINT USING "h4"; wi.drcry
+PRINT "WI$Edtn   :  "; 
+PRINT USING "h2"; wi.edtn; 
+PRINT "        WI$WEAdr  :"; 
+PRINT USING "h4"; wi.weadr
+PRINT "WI$Devm   :"; 
+PRINT USING "h4"; wi.devm
+PRINT "WI$PRegs  :"; 
+FOR indx1=1 TO 16
+PRINT USING "h2"; wi.pregs(indx1); 
+PRINT " "; 
+IF indx1=8 THEN 
+PRINT 
+PRINT "           "; 
+ENDIF 
+NEXT indx1
+PRINT 
+PRINT wi.ermsg
+END 
+
+
