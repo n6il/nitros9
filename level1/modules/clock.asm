@@ -189,7 +189,7 @@ Init     pshs  dp,cc
          tfr   a,dp
 
          leax  <Clock2,pcr
-         lda   #Systm+Objct
+         lda   #Sbrtn+Objct
          os9   F$Link    
          bcc   LinkOk    
          jmp   >$FFFE		reset
@@ -665,7 +665,7 @@ Init     ldx   <D.Proc    save user proc
          stx   <D.Proc   
 
          leax  <Clock2,pcr
-         lda   #Systm+Objct
+         lda   #Sbrtn+Objct
          os9   F$Link    
 
 * And here, we restore the original D.Proc value

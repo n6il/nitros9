@@ -76,7 +76,7 @@ RTC.Base equ   0          Have to have one defined.
 *
 * Start of module
 *
-         mod   len,name,Systm+Objct,ReEnt+0,JmpTable,RTC.Base
+         mod   len,name,Sbrtn+Objct,ReEnt+0,JmpTable,RTC.Base
 
 name     fcs   "Clock2"  
          fcb   1         
@@ -126,15 +126,16 @@ cnt      lda   4,x
          std   <D.Year     tell OS-9
          IFNE  H6309
          ldq   3,x         get all time values
-         stq   <D.Day
+         sta   <D.Day
+         stw   <D.Hour
          ELSE
          lda   3,x         get day
          sta   <D.Day
          ldd   5,x         get hour/minute
          std   <D.Hour
+         ENDC
          lda   7,x
          sta   <D.Sec
-         ENDC
          rts
          ENDC
 
@@ -639,9 +640,10 @@ UpdHour  std   <D.Day     save day,hour
 UpdMin   clrb             seconds=00
          std   <D.Min     save min,secs
 UpdTExit rts             
-         ENDC            
 
 months   fcb   31,28,31,30,31,30,31,31,30,31,30,31 Days in each month
+         ENDC            
+
 
 
 SetTime  equ   *         
