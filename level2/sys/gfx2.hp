@@ -1,0 +1,4 @@
+@GFX2
+Syntax: RUN GFX2([path]<funct><args>)
+Usage : Graphics interface package for BASIC09 to handle enhanced
+        graphics/windowing commands.

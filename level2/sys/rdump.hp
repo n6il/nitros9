@@ -1,0 +1,8 @@
+@RDUMP
+Syntax: RDump <relocatable file> [-opts]
+Usage : Dump a relocatable file
+Opts  : -a = all information
+        -g = add global definition info
+        -o = add reference and local offset info
+        -r = add reference info
+        
