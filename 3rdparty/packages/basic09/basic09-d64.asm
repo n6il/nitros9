@@ -8,6 +8,9 @@
 *  -     Original Basic09 from Dragon Data distribution version
 *
 * $Log$
+* Revision 1.1  2002/04/06 15:05:31  roug
+* Added the COCO basic09 also
+*
 * Revision 1.1  2002/04/06 14:47:31  roug
 * Prego; The basic09 interpreter.
 *
