@@ -1,4 +1,4 @@
 @DATE
-Syntax: Date [t]
+Syntax: Date [-t]
 Usage : Specifies current system time and date
-Opts  : t = specify time also
+Opts  : -t = specify time also
