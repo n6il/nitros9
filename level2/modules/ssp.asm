@@ -6,7 +6,6 @@
 
          ifp1  
          use   defsfile
-         use   scfdefs
          endc  
 
 PageAddr equ   $07        extended page address (set to $FF for level 1)

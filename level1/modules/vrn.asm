@@ -21,7 +21,6 @@
 
          ifp1  
          use   defsfile
-         use   scfdefs
          endc  
 
 VTCount  equ   4          number of VIRQ tables

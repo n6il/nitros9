@@ -11,10 +11,7 @@
          ttl   CoCo 3 Graphics interface module
 
          ifp1  
-Level    equ   2
-         use   os9defs
-         use   scfdefs
-         use   systype
+         use   defsfile
          endc  
 
 rev      set   $01

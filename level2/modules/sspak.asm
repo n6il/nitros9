@@ -29,7 +29,6 @@
 
          ifp1  
          use   defsfile
-         use   scfdefs
          endc  
 
 BuffCnt  equ   200        character count before flushing buffer (0-255)
