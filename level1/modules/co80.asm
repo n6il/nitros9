@@ -1,7 +1,10 @@
 ********************************************************************
-* CO80 - WordPak 80-RS co-driver for CCIO
+* CO80 - Mysterious 80 column co-driver for CCIO
 *
 * $Id$
+*
+* This driver came with OS-9 Level One V2.00, yet it does not
+* seem to be written for the WordPak RS.
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
@@ -13,9 +16,9 @@
 * recoded dispatch table fcbs
 
          nam   CO80
-         ttl   WordPak 80-RS co-driver for CCIO
+         ttl   Mysterious 80 column co-driver for CCIO
 
-* Disassembled 98/08/23 17:58:20 by Disasm v1.6 (C) 1988 by RML
+BASEADDR equ   $FF78
 
          ifp1
          use   defsfile
@@ -24,7 +27,7 @@
 
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
@@ -44,19 +47,19 @@ start    equ   *
          lbra  Term
 
 * Init
-Init     ldx   #$FF78
-         lda   #$06
+Init     ldx   #BASEADDR
+         lda   #$06		Vertical Displayed Rows
          sta   $01,x
          sta   ,x
-         lda   #$08
+         lda   #$08		Mode Control
          sta   $01,x
          clr   ,x
-         lda   #$0E
+         lda   #$0E		Cursor Position Address
          sta   $01,x
          clr   ,x
-         lbsr  L0152
-         lbsr  L0229
-         ldd   #$07D0
+         lbsr  CurHome
+         lbsr  CurOn
+         ldd   #80*25
          lbsr  L0189
          ldb   <V.COLoad,u
          orb   #ModCo80
@@ -78,84 +81,85 @@ GetStat  cmpa  #SS.Cursr
          ldb   <V.C80Y,u
          addb  #$20
          std   R$X,y
-         ldx   #$FF78
-         lda   #$0D
+         ldx   #BASEADDR
+         lda   #$0D			Display Start Address
          sta   $01,x
-         lbsr  L0174
+         lbsr  WaitBUSY
          lda   ,x
-         lbsr  L0174
+         lbsr  WaitBUSY
          lda   ,x
          sta   $01,y
 * no operation entry point
-L007D    clrb  
+NoOp     clrb  
          rts   
 * SetStat
 SetStat  ldb   #E$UnkSvc
          coma  
          rts   
 * Write
-Write    ldx   #$FF78
-         cmpa  #$0E
-         bcs   L00B6
-         cmpa  #$1E
-         bcs   L007D
-         cmpa  #$20
-         lbcs  L01F2
-         cmpa  #$7F
-         bcs   L0106
-         cmpa  #$C0
-         bls   L00A6
+Write    ldx   #BASEADDR	get HW addr in X
+         cmpa  #$0E		$0E?
+         bcs   L00B6		branch if less than
+         cmpa  #$1E		$1E?
+         bcs   NoOp		branch if less than
+         cmpa  #C$SPAC		space?
+         lbcs  Check1F		branch if less than
+         cmpa  #$7F		$7F?
+         bcs   ChrOut		ASCII char, branch if less than
+         cmpa  #$C0		$C0?
+         bls   L00A6		branch if lower or same
          anda  #$1F
          suba  #$01
          cmpa  #$19
          bhi   L00B2
-         bra   L0106
-L00A6    cmpa  #$AA
-         bcs   L00B2
+         bra   ChrOut
+L00A6    cmpa  #$AA		$AA?
+         bcs   L00B2		branch if less than
          ora   #$10
          anda  #$1F
          cmpa  #$1A
-         bcc   L0106
+         bcc   ChrOut
 L00B2    lda   #$7F
-         bra   L0106
-L00B6    leax  >L00C5,pcr
+         bra   ChrOut
+
+L00B6    leax  >FuncTbl,pcr
          lsla  
          ldd   a,x
          leax  d,x
          pshs  x
-         ldx   #$FF78
+         ldx   #BASEADDR
          rts   
 
 * display functions dispatch table
-L00C5    fdb   L007D-L00C5  $ffb8  $00:no-op (null)
-         fdb   L0152-L00C5  $008d  $01:HOME cursor
-         fdb   L01A2-L00C5  $00dd  $02:CURSOR XY
-         fdb   L0179-L00C5  $00b4  $03:ERASE LINE
-         fdb   L017B-L00C5  $00b6  $04:ERASE TO EOL
-         fdb   L0211-L00C5  $014c  $05:CURSOR ON/OFF
-         fdb   L0115-L00C5  $0050  $06:CURSOR RIGHT
-         fdb   L007D-L00C5  $ffb8  $07:no-op (bel:handled in CCIO)
-         fdb   L00E1-L00C5  $001c  $08:CURSOR LEFT
-         fdb   L00F3-L00C5  $002e  $09:CURSOR UP
-         fdb   L0121-L00C5  $005c  $0A:CURSOR DOWN
-         fdb   L0186-L00C5  $00c1  $0B:ERASE TO EOS
-         fdb   L0184-L00C5  $00bf  $0C:CLEAR SCREEN
-         fdb   Do0D-L00C5  $003c  $0D:RETURN
+FuncTbl  fdb   NoOp-FuncTbl	$00:no-op (null)
+         fdb   CurHome-FuncTbl	$01:HOME cursor
+         fdb   CurXY-FuncTbl	$02:CURSOR XY
+         fdb   ErLine-FuncTbl	$03:ERASE LINE
+         fdb   ErEOL-FuncTbl	$04:ERASE TO EOL
+         fdb   CurOnOff-FuncTbl	$05:CURSOR ON/OFF
+         fdb   CurRgt-FuncTbl	$06:CURSOR RIGHT
+         fdb   NoOp-FuncTbl	$07:no-op (bel:handled in CCIO)
+         fdb   CurLft-FuncTbl	$08:CURSOR LEFT
+         fdb   CurUp-FuncTbl	$09:CURSOR UP
+         fdb   CurDown-FuncTbl	$0A:CURSOR DOWN
+         fdb   ErEOS-FuncTbl	$0B:ERASE TO EOS
+         fdb   ClrScrn-FuncTbl	$0C:CLEAR SCREEN
+         fdb   CrRtn-FuncTbl	$0D:RETURN
 
 * $08 - cursor left
-L00E1    ldd   <V.C80X,u	get CO80 X/Y
+CurLft   ldd   <V.C80X,u	get CO80 X/Y
          bne   L00E8		branch if not at start
          clrb  	
          rts   	
 L00E8    decb  
          bge   L00EE
-         ldb   #$4F
+         ldb   #79
          deca  
 L00EE    std   <V.C80X,u
          bra   L014F
 
 * $09 - cursor up
-L00F3    lda   <V.C80X,u
+CurUp    lda   <V.C80X,u
          beq   L00FF
          deca  
          sta   <V.C80X,u
@@ -164,55 +168,57 @@ L00FF    clrb
          rts   
 
 * $0D - move cursor to start of line (carriage return)
-Do0D     clr   <V.C80Y,u
+CrRtn    clr   <V.C80Y,u
          bra   L014C
 
-L0106    ora   <V.5A,u
-         pshs  a
-         bsr   L0174
-         puls  a
-         ldb   #$0D
+* ChrOut - output a readable character
+* Entry: A = ASCII value of character to output
+ChrOut   ora   <V.Invers,u	add inverse video flag
+         pshs  a		save char
+         bsr   WaitBUSY		wait for HW
+         puls  a		restore char
+         ldb   #$0D		Display Start Address
          stb   $01,x
-         sta   ,x
+         sta   ,x		write character
 
 * $06 - cursor right
-L0115    inc   <V.C80Y,u
+CurRgt   inc   <V.C80Y,u
          lda   <V.C80Y,u
-         cmpa  #$4F
+         cmpa  #79
          ble   L014C
-         bsr   Do0D
+         bsr   CrRtn
 
 * $0A - cursor down (line feed)
-L0121    lda   <V.C80X,u
-         cmpa  #$17
+CurDown  lda   <V.C80X,u
+         cmpa  #23
          bge   L012E
          inca  
          sta   <V.C80X,u
          bra   L014F
-L012E    ldd   <V.54,u
+L012E    ldd   <V.Co80X,u
          lbsr  L01DC
-         ldd   <V.54,u
+         ldd   <V.Co80X,u
          addd  #80
          bsr   L0161
-         std   <V.54,u
+         std   <V.Co80X,u
          bsr   L018E
-         ldd   <V.54,u
+         ldd   <V.Co80X,u
          bsr   L016B
-         lda   #$08
+         lda   #$08		Mode Control
          sta   $01,x
          stb   ,x
 L014C    lda   <V.C80X,u
 L014F    lbra  L01CC
 
 * $01 - home cursor
-L0152    clr   <V.C80X,u
+CurHome  clr   <V.C80X,u
          clr   <V.C80Y,u
-         ldd   <V.54,u
-         std   <V.56,u
+         ldd   <V.Co80X,u
+         std   <V.ColPtr,u
          lbra  L01DC
-L0161    cmpd  #$07D0
+L0161    cmpd  #80*25
          blt   L016A
-         subd  #$07D0
+         subd  #80*25
 L016A    rts   
 L016B    lsra  
          rorb  
@@ -223,31 +229,33 @@ L016B    lsra
          lsra  
          rorb  
          rts   
-L0174    lda   $01,x
-         bpl   L0174
+
+* X = address of WordPak
+WaitBUSY lda   $01,x
+         bpl   WaitBUSY
          rts   
 
 * $03 - erase line
-L0179    bsr   Do0D		do a CR
-L017B    lda   <V.C80X,u
+ErLine   bsr   CrRtn		do a CR
+ErEOL    lda   <V.C80X,u
          inca  
          ldb   #80		line length
          mul   
          bra   L0189
 
 * $0C - clear screen
-L0184    bsr   L0152		do home cursor, then erase to EOS
+ClrScrn  bsr   CurHome		do home cursor, then erase to EOS
 
 * $0B - erase to end of screen
-L0186    ldd   #80*24
-L0189    addd  <V.54,u
+ErEOS    ldd   #80*24
+L0189    addd  <V.Co80X,u
          bsr   L0161
 L018E    bsr   L016B
-         bsr   L0174
-         lda   #$0B
+         bsr   WaitBUSY
+         lda   #$0B		Cursor End Line
          sta   $01,x
          stb   ,x
-         lda   #$0D
+         lda   #$0D		Display Start Address
          sta   $01,x
          lda   #$20
          sta   ,x
@@ -255,76 +263,79 @@ L01A0    clrb
          rts   
 
 * $02 XX YY - move cursor to col XX-32, row YY-32
-L01A2    leax  >L01B0,pcr
+CurXY    leax  >L01B0,pcr
          ldb   #$02
 L01A8    stx   <V.RTAdd,u
          stb   <V.NGChr,u
          clrb  
          rts   
-L01B0    ldx   #$FF78
-         lda   <V.NChr2,u
-         ldb   <V.NChar,u
-         subb  #$20
-         blt   L01A0
-         cmpb  #$4F
-         bgt   L01A0
-         suba  #$20
-         blt   L01A0
-         cmpa  #$17
-         bgt   L01A0
-         std   <V.C80X,u
-L01CC    ldb   #$50
+L01B0    ldx   #BASEADDR	get HW address
+         lda   <V.NChr2,u	get char2 in A
+         ldb   <V.NChar,u	and char1 in B
+         subb  #32		subtract 32 from B
+         blt   L01A0		if less than 0, we're done
+         cmpb  #79		compare against greatest column
+         bgt   L01A0		branch if >79
+         suba  #32		else subtract 32 from A
+         blt   L01A0		if less than 0, we're done
+         cmpa  #23		compare against greatest row
+         bgt   L01A0		branch if >23
+         std   <V.C80X,u	else store A/B in new col/row position
+L01CC    ldb   #80		multiply A*80 to find new row
          mul   
          addb  <V.C80Y,u
          adca  #$00
-         addd  <V.54,u
+         addd  <V.Co80X,u
          bsr   L0161
-         std   <V.56,u
+         std   <V.ColPtr,u
 L01DC    pshs  b,a
-         bsr   L0174
-         lda   #$0A
+         bsr   WaitBUSY
+         lda   #$0A		Cursor Start Line
          sta   $01,x
          lda   ,s+
          sta   ,x
-         lda   #$09
+         lda   #$09		Number of Scan Lines
          sta   $01,x
          lda   ,s+
          sta   ,x
          clrb  
          rts   
-L01F2    cmpa  #$1F
-         bne   L0201
+
+Check1F  cmpa  #$1F
+         bne   WritErr
          lda   <V.NChr2,u
          cmpa  #$21
-         beq   L0205
+         beq   InvOn
          cmpa  #$20
-         beq   L020C
-L0201    comb  
+         beq   InvOff
+WritErr  comb  
          ldb   #E$Write
          rts   
-L0205    lda   #$80
-         sta   <V.5A,u
+
+InvOn    lda   #$80
+         sta   <V.Invers,u
          clrb  
          rts   
-L020C    clr   <V.5A,u
+
+InvOff   clr   <V.Invers,u
 L020F    clrb  
          rts   
 
 * $05 XX - set cursor off/on/color per XX-32
-L0211    leax  >L0219,pcr
+CurOnOff leax  >L0219,pcr
          ldb   #$01
          bra   L01A8
-L0219    ldx   #$FF78
+L0219    ldx   #BASEADDR
          lda   <V.NChr2,u	get next character
          cmpa  #$20		cursor code valid?
-         blt   L0201		 no, error
+         blt   WritErr		no, error
          beq   L022D
          cmpa  #$2A		color code in range?
-         bgt   L020F		 no, ignore
-L0229    lda   #$05		cursor on (all colors=on)
+         bgt   L020F		no, ignore
+CurOn    lda   #$05		cursor on (all colors=on)
          bra   L022F
 L022D    lda   #$45		cursor off
-L022F    ldb   #$0C
+L022F    ldb   #$0C		
          stb   $01,x
          sta   ,x
          clrb  
@@ -333,4 +344,3 @@ L022F    ldb   #$0C
          emod
 eom      equ   *
          end
-
