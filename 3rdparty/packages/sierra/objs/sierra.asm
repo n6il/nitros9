@@ -76,7 +76,7 @@ u0046    rmb   2
 u0048    rmb   2
 u004A    rmb   5
 u004F    rmb   4
-u0053    rmb   2    monitor type
+u0053    rmb   2   
 u0055    rmb   10
 u005F    rmb   163
 
@@ -93,7 +93,12 @@ u024C    rmb   497
 
 *u043D   rmb   7106 ---disassembly
 
-u043D    rmb   433
+u043D    rmb   245
+u0532    rmb   16   vol_handle_table (pointer to file structures)
+u0542    rmb   15  
+u0551    rmb   2    pointer to a linked list of picture data
+u0553    rmb   1    monitor type V26_MONITORTYPE
+u0554    rmb   154
 int5EE   rmb   107  Signal Intercept routine from 452 - 4BD
 sub659   rmb   116  Slot to hold subroutine for others uses at 4DA - 54F
 u0xxx    rmb   6450
