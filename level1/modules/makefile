@@ -18,7 +18,7 @@ DESCS		= ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd \
 		h0_15.dd h1_15.dd h0_35.dd h1_35.dd \
 		m1.dd m2.dd nil.dd p.dd pipe.dd ssc.dd \
-		t1.dd t2.dd t3.dd term32.dd term80.dd \
+		term_t1.dd t1.dd t2.dd t3.dd term32.dd term80.dd \
 		p1_d64.dd term_d64.dd t1_d64.dd \
 		dd_d64.dd d0_d64.dd d1_d64.dd d2_d64.dd d3_d64.dd
 HELP		= co32.hp co80.hp \
