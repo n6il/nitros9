@@ -1,5 +1,5 @@
 ********************************************************************
-* Shellplus - Enhanced shell for OS-9 Level Two
+* Shellplus - Enhanced shell for NitrOS-9
 *
 * Modified by L. Curtis Boyle from original 2.2 disassembly
 *
@@ -15,7 +15,7 @@
 * History and numerous features added.
 
          nam   Shell
-         ttl   program module       
+         ttl   Enhanced shell for NitrOS-9
 
 * Disassembled 93/04/15 14:58:18 by Disasm v1.6 (C) 1988 by RML
 * Signals: Signals 2 & 3 are assigned new keys to handle forward/backward
@@ -497,12 +497,18 @@ L02D4    inc   <u0018         Set 'immortal shell' flag
          clr   <u0019
          tst   <u0013         Do we want to kill the parent process?
          beq   L02FC
+         IFEQ  Level-1
+         ldx   <D.Proc
+         ELSE
          os9   F$ID           Get our process ID # into A
          pshs  x              Preserve X
          leax  >u166D,u       Point to process descriptor buffer
          os9   F$GPrDsc       Get our process descriptor
+         ENDC
          lda   P$PID,x        Get our parents process #
+         IFGT  Level-1
          puls  x              Restore X
+         ENDC
          beq   L02A3          If parent's process # is 0 (system), skip back
          clrb                 S$Kill signal code
          os9   F$Send         Send it to parent
@@ -1211,8 +1217,10 @@ L07E7    pshs  x
 L07F5    lda   ,x
          cmpa  #'*
          beq   L0832
+         IFGT  Level-1
          ldy   #$0000         Force temporarily to super-user
          os9   F$SUser
+         ENDC
          leax  >u0CBD,u
          ldd   #$0203
          lbsr  L0C79
@@ -1230,8 +1238,11 @@ L07F5    lda   ,x
          os9   I$WritLn 
 L082D    lda   <u0012
          os9   I$Close  
-L0832    ldy   <u005A         Get original user # back
+L0832   
+         IFGT  Level-1 
+         ldy   <u005A         Get original user # back
          os9   F$SUser        Change user # to original
+         ENDC
          puls  pc,x
 
 * Parse input line
@@ -1407,7 +1418,11 @@ L0969    pshs  u,y,x          Preserve regs
          leax  L000D,pc       Point to 'shell' (module name)
          leau  L0961,pc       Point to 'startup' (parameter for 'shell')
          ldy   #$0008         Size of 'startup<CR>'
+         IFGT  Level-1
          ldd   #$111F         Program+Objct / 7.5K data area
+         ELSE
+         ldd   #$1102         Program+Objct / 512 byte data area
+         ENDC
          os9   F$Fork         Fork a shell to run the startup file
          bcs   L0983          Couldn't fork, exit
          os9   F$Wait         Wait until 'startup' is done
@@ -2496,9 +2511,11 @@ L11CF    ldy   #394           Write up to 394 chars of pause string
          ldx   #$000A         Signal $A is the one to send
          os9   I$SetStt 
          lbcs  L0191          Error, use main shell error handler
+         IFGT  Level-1
          ldb   #SS.MsSig      Send signal on mouse button press
          os9   I$SetStt 
          lbcs  L0191
+         ENDC
          ldx   #$0000         Go to sleep until one of the 2 is received
          os9   F$Sleep  
          ldb   #SS.Relea      Signal gotten, release all signals
@@ -2708,7 +2725,7 @@ NotSCF   puls  b,x,y          Restore regs (and exit status byte in B)
 errexit  coma                 Yes, set carry & exit
 L1308    puls  pc,a
 
-* If data area <4.25K, force up to 7.5K
+* Level 2: If data area <4.25K, force up to 7.5K
 * Exit: A=Type/language
 *       X=Current source line parsing ptr (module name to chain)
 *       Y=Size of parameter area
@@ -2716,10 +2733,12 @@ L1308    puls  pc,a
 *       B=Size of data area
 L130A    lda   #Prgrm+Objct   Module type/language
          ldb   <u0003         Get # pages of data mem needed for forked module
+         IFGT  Level-1
          cmpb  #$11           Is it at least 17?
          bhs   L1316          Yes, skip ahead
          ldb   #$1F           Otherwise, force to 7.5K minimum
          stb   <u0003         Save it
+         ENDC
 L1316    andcc #^Carry        Clear carry
          ldx   <u0004         Get mem module ptr
          ldy   <u0006         Get size of current command group
@@ -2818,10 +2837,22 @@ L13CE    pshs  b,cc         Preserve error status
          lbcs  L162B
          lbra  L14AF
 L13EF    leax  >u00E3,u
-         os9   F$NMLink 
+         IFGT  Level-1
+         os9   F$NMLink
+         ELSE
+         pshs  u
+         os9   F$Link
+         puls  u
+         ENDC
          bcc   L1400
          ldx   <u0004
-         os9   F$NMLoad 
+         IFGT  Level-1
+         os9   F$NMLoad
+         ELSE
+         pshs  u
+         os9   F$Load
+         puls  u
+         ENDC
          bcc   L1400
          rts   
 L1400    leax  >u00E3,u
@@ -2848,7 +2879,15 @@ L1427    clra                 Type/language byte to wildcard:any will match
          puls  u              Restore U
          lbcs  L162B          If we couldn't link, Exit with error
          ldx   <u0004         Get ptr to module name again
+         IFGT  Level-1
          os9   F$UnLoad       Unlink it
+         ELSE
+         pshs  a,b,x,y,u
+         os9   F$Link
+         os9   F$Unlink
+         os9   F$Unlink
+         puls  a,b,x,y,u
+         ENDC
          lbcs  L162B          If we couldn't unlink exit with error
          ldx   <u0008         Get ptr to current group (param ptr for shellsub)
          ldd   <u0006         Get size of param area for shellsub
@@ -2859,7 +2898,15 @@ L1427    clra                 Type/language byte to wildcard:any will match
          clrb  
          std   <u0010         ? (originally pointing to E3 if type $11 module)
          ldx   <u0004         Get shellsub module ptr
+         IFGT  Level-1
          os9   F$UnLoad       Unlink it
+         ELSE
+         pshs  a,b,x,y,u
+         os9   F$Link
+         os9   F$Unlink
+         os9   F$Unlink
+         puls  a,b,x,y,u
+         ENDC
          std   <u0004         Clear shellsub module ptr
          inc   <u005D         Set flag that we should wait for module to exit?
          puls  pc,u,y,x,d,cc  restore regs & return
@@ -2878,12 +2925,26 @@ L145D    clr   <u0060
          lbra  L162B
 
 L1473    clra                 Wildcard NMLink
+         IFGT  Level-1
          os9   F$NMLink       Link to module
+         ELSE
+         pshs  u
+         os9   F$Link         Link to module
+         puls  u
+         ENDC
          lbcs  L1329          Error, do something
          cmpa  #ShellSub+Objct  ShellSub module?
          beq   L1427          Yes, go set up for it
          ldx   <u0004         Get ptr to name back
+         IFGT  Level-1
          os9   F$UnLoad       Drop the link count back down
+         ELSE
+         pshs  a,b,x,y,u
+         os9   F$Link
+         os9   F$Unlink
+         os9   F$Unlink
+         puls  a,b,x,y,u
+         ENDC
          pshs  y              Save data area size
          ldx   <u0004         Get ptr to module name again
          leay  >L000D,pc      Point to 'Shell'
@@ -3046,11 +3107,29 @@ L15BE    ldx   <u0008         Get ptr to start of current group
 L15D5    stx   <u0004         Save ptr to module name to fork
 L15D7    ldx   <u0004         Get ptr to module name to fork
          lda   #Prgrm+Objct
+         IFGT  Level-1
          os9   F$NMLink       Get memory requirement stuff from it
+         ELSE
+         pshs  u
+         os9   F$Link         Get memory requirement stuff from it
+         tfr   u,y
+         puls  u
+         ENDC
          bcc   L15E5          Got it, continue
+         IFGT  Level-1
          os9   F$NMLoad       Couldn't get, try loading it
+         ELSE
+         pshs  u
+         os9   F$Load         Couldn't get, try loading it
+         tfr   u,y
+         puls  u
+         ENDC
          bcs   L162B          Still couldn't get, can't fork
-L15E5    tst   <u0003         Memory size specified?
+L15E5    
+         IFEQ  Level-1
+         ldy   M$Mem,y
+         ENDC
+         tst   <u0003         Memory size specified?
          bne   L15F2          Yes, skip ahead
          tfr   y,d            No, tfr modules mem size to D
          addd  <u000A         ??? Add to something
@@ -3059,9 +3138,13 @@ L15E5    tst   <u0003         Memory size specified?
 L15F2    clr  ,-s             Clear byte on stack to store original priority
          ldb   <u0022         Get priority we want to set new program at
          beq   DnePrior       0=Use inherited priority, skip ahead
+         IFEQ  Level-1
+         ldx   <D.Proc
+         ELSE
          leax  >u166D,u       Point to place to hold Process descriptor
          os9   F$ID           Get our process #
          os9   F$GPrDsc       Get our process descriptor
+         ENDC
          ldb   P$Prior,x      Get our priority
          stb   ,s             Save it
          ldb   <u0022         Get priority for new process
@@ -3077,7 +3160,16 @@ L1609    lda   #Prgrm+Objct   Std 6809 module
          ldx   <u0010         Get ptr to some other module name (?)
          bne   L1611          There is one, unlink it instead
          ldx   <u0004         Get ptr to command name
-L1611    os9   F$UnLoad       Bump link count down back to normal?
+L1611    
+         IFGT  Level-1
+         os9   F$UnLoad       Bump link count down back to normal?
+         ELSE
+         pshs  a,b,x,y,u
+         os9   F$Link
+         os9   F$Unlink
+         os9   F$Unlink
+         puls  a,b,x,y,u
+         ENDC
          clra  
          clrb  
          std   <u0010         Zero out other module name ptr
@@ -3087,7 +3179,15 @@ L1611    os9   F$UnLoad       Bump link count down back to normal?
          bne   L1627          No, skip ahead
          lda   #Data          Data module
          ldx   <u0061         Get ptr to name of data module
+         IFGT  Level-1
          os9   F$UnLoad       Bump link count down back to normal
+         ELSE
+         pshs  a,b,x,y,u
+         os9   F$Link
+         os9   F$Unlink
+         os9   F$Unlink
+         puls  a,b,x,y,u
+         ENDC
 L1627    puls  cc,d           Get back F$FORK error/process #
          leas  1,s            Eat priority byte
          puls  pc,u,y,x       Restore regs & return
