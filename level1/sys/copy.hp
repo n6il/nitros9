@@ -1,4 +1,10 @@
 @COPY
-Syntax: Copy pathname pathname [-s]
-Usage : copies data from one file to a second file
-Opts  : -s = single drive copy 
+Syntax: Copy [<opts>] <srcpath> [<dstpath>] [<opts>]
+Usage : copies files
+Opts  :
+  -a = abort on error
+  -p = don't print files copied (use with -w)
+  -r = rewrite destination
+  -s = single drive copy 
+  -w=<dir> = copy files to <dir>
+  -x = copy from exec dir

@@ -1,4 +1,5 @@
 @DATE
 Syntax: Date [-t]
-Usage : Specifies current system time and date
-Opts  : -t = specify time also
+Usage : Displays current system date
+Opts  :
+  -t = display time also
