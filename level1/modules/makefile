@@ -11,11 +11,11 @@ FMGRS		= scf.mn rbf.mn pipeman.mn
 DRIVERS		= aciapak.dr cchdisk.dr ccdisk.dr modpak.dr nildrv.dr \
 		piper.dr printer.dr rs232.dr sscpak.dr ccio.dr
 IOSUBS		= co32.io co80.io grfo.io
-DESCS		= d0.dd d1.dd d2.dd d3.dd h0_15.dd h1_15.dd h0_35.dd \
+DESCS		= dd.dd d0.dd d1.dd d2.dd d3.dd h0_15.dd h1_15.dd h0_35.dd \
 		h1_35.dd m1.dd m2.dd nil.dd p.dd pipe.dd ssc.dd t1.dd \
 		t2.dd t3.dd term32.dd term80.dd
 SYSGOS		= sysgo sysgo_rom
-HELP		= co32.hp co80.hp d0.hp d1.hp d2.hp d3.hp grfo.hp h0_15.hp \
+HELP		= co32.hp co80.hp dd.hp d0.hp d1.hp d2.hp d3.hp grfo.hp h0_15.hp \
 		h0_35.hp h1_15.hp h1_35.hp m1.hp m2.hp nil.hp p.hp pipe.hp \
 		ssc.hp t1.hp t2.hp t3.hp term32.hp term80.hp config.hp
 
