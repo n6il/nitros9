@@ -33,434 +33,450 @@ Pointers to such types, however are allowed. (10.1)
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>argument storage</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>bad character</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>both must be integral</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>break error</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>can't take address</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>cannot cast</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>cannot evaluate data</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>cannot initialize</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>compiler trouble</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>condition needed</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>constant expression required</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>constant overflow</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>constant required</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>continue error</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>declaration mismatch</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>divide by zero</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>? expected</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>expression missing</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>function header missing</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>function type error</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>function unfinished</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>identifier missing</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>illegal declaration</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>label required</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>label undefined</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>lvalue required</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>multiple defaults</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>multiple definition</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>must be integral</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>name clash</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>name in cast</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>named twice</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>no 'if' for 'else'</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>no switch statement</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>not a function</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>not an argument</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>operand expected</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>out of memory</term>
+<listitem>
+<para>
+Compiler dynamic memory overflow. The compiler requires
+dynamic memory for symbol table entries, block level
+declarations and code generation. Three major factors affect
+this memory usage. Permanent declarations (those appearing on
+the outer block level (used in include files)) must be
+reserved from the dynamic memory for the duration of the
+compilation of the file. Each { causes the compiler to perform
+a block-level recursion which may involve "pushing down"
+previous declarations which consume memory. Auto class
+initializers require saving expression trees until past the
+declarations which may be very memory-expensive if may exist.
+Avoiding excessive declarations, both permanent and inside
+compound statement blocks conserve memory. If this error
+occurs on an auto initializer, try initializing the value in
+the code body.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry><term>pointer mismatch</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>pointer or integer required</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>pointer required</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>primary expected</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>should be NULL</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>**** STACK OVERFLOW ****</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>storage error</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>struct member mismatch</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>struct member required</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>struct syntax</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>struct or union inappropiate</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>syntax error</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>third expression missing</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>too long</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>too many brackets</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>too many elements</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>type error</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>type mismatch</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>typedef - not a variable</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>undeclared variable</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>undefined structure</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>unions not allowed</term>
 <listitem>
 <para>
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
+<varlistentry><term>unterminated character constant</term>
 <listitem>
 <para>
+Unmatched ' character delimiters. (2.4.3)
 </para>
 </listitem>
 </varlistentry>
 
-<varlistentry><term></term>
-<listitem>
-<para>
-</para>
-</listitem>
-</varlistentry>
-
-<varlistentry><term></term>
+<varlistentry><term>unterminated string</term>
 <listitem>
 <para>
 Unmatched " string delimiters. (2.5)
@@ -471,7 +487,7 @@ Unmatched " string delimiters. (2.5)
 <varlistentry><term>while expected</term>
 <listitem>
 <para>
-No while found for do statements (9.5)
+No while found for do statement. (9.5)
 </para>
 </listitem>
 </varlistentry>
