@@ -1,5 +1,5 @@
          nam   OS9Defs
-         ttl   OS-9 Level 1 & 2 System Symbol Definitions
+         ttl   OS-9 Level 1 & 2 and NitrOS-9 System Symbol Definitions
 
 *****************
 * Edition History
@@ -18,6 +18,14 @@
 * 86/09/30 Created Color Computer 3 Version of OS9Defs                  MGH
 * 98/10/03 Consoldated Level 1/Level 2 os9defs                          BGP
 * 02/04/04 Consoldated Level 2/Level 2 V3 os9defs                       BGP
+* 02/04/30 Added NitrOS-9 definitions                                   BGP
+
+true     equ   1          useful name
+false    equ   0          useful name
+
+         ifne  NitrOS9
+H6309    set   true
+         endc
 
          pag
 *****************************************
@@ -56,9 +64,7 @@ F$SUser  rmb   1          Set User ID number
 F$UnLoad rmb   1          Unlink Module by name
 
          ifeq  Level-1
-
          rmb   3
-
          else
 
 * Level 2 system calls
@@ -119,20 +125,31 @@ F$ClrBlk rmb   1          Clear Specific Block
 F$DelRAM rmb   1          Deallocate RAM blocks
 F$GCMDir rmb   1          Pack module directory
 F$AlHRam rmb   1          Allocate HIGH RAM Blocks
+
+         ifne  NitrOS9
+* NitrOS9 additions
+* F$ReBoot is unimplemented at this time
+F$ReBoot rmb   1          Reboot machine (reload OS9Boot) or drop to RSDOS
+F$CRCMod rmb   1          CRC mode, toggle or report current status
+F$XTime  rmb   1          Get Extended time packet from RTC (fractions of second)
+
+* Alan DeKok's NitrOS-9 additions here
+F$VBlock rmb   1          Verify modules in a block of memory, add to module directory
+         endc
+
 *
 * Numbers $70 through $7F are reserved for user definitions
 *
          org   $70
 
 	 ifeq  Level-1
-
 	 rmb   16         Reserved for user definition
-
          else
 
-F$RegDmp rmb   1          Register dump
-F$NVRAM  rmb   1          Non Volatile RAM
+F$RegDmp rmb   1          Ron Lammardo's debugging register dump
+F$NVRAM  rmb   1          Non Volatile RAM (RTC battery backed static) read/write
 
+         rmb   $80-.      Reserved for user definitions
          endc
 
          pag
@@ -181,7 +198,7 @@ S$Wake   rmb   1          Wake-up Sleeping Process
 S$Abort  rmb   1          Keyboard Abort
 S$Intrpt rmb   1          Keyboard Interrupt
 S$Window rmb   1          Window Change
-S$Alarm  rmb   1
+S$Alarm  rmb   1          CoCo individual process' alarm signal
 
          pag
 **********************************
@@ -240,6 +257,17 @@ SS.RdNet rmb   1          Read Raw Sector from Network 4 Omnidrive
 SS.MpGPB rmb   1          Putstat to request a Get/Put Buffer be mapped in workspace
 SS.Slots rmb   1          Network 4 slots? getstat
 
+* SDisk 3 Definition Equates
+SS.DRead equ SS.AAGBf     SDisk3 Direct Sector Read
+SS.DWrit equ SS.DRead     SDisk3 Direct sector Write
+SS.UnFrz equ SS.SLGBf     SDisk3 UNFreeze DD info
+SS.MOFF  equ SS.Mount     SDisk3 fast motor off call
+SS.MoTim equ SS.RdNet     SDisk3 Set motor shut off time
+SS.SDRD  equ SS.MgGPD     SDisk3 System direct read
+SS.SDWRT equ SS.SDRD      SDisk3 System direct writes
+SS.Sleep equ SS.Slots     SDisk3 (DMC ONLY) Enable/disable F$Sleep calls in read/write 1773 I/O
+SS.DrvCh equ SS.WnSet     SDisk3 (DMC ONLY) Set drive number to cache, or return drive number being cached
+
          ifgt  Level-1
 
 * Level 2 Windowing
@@ -252,7 +280,8 @@ SS.AScrn rmb   1          Allocate a screen for application poking
 SS.DScrn rmb   1          Display a screen allocated by SS.AScrn
 SS.FScrn rmb   1          Free a screen allocated by SS.AScrn
 SS.PScrn rmb   1          Polymorph Screen into different screen type
-         rmb   2          Reserved
+SS.ScInf rmb   1          Get Current screen info for direct writes (new call - NitrOS9)
+         rmb   1          Reserved
 SS.Palet rmb   1          Return palette information
 SS.Montr rmb   1          Get and Set Monitor Type
 SS.ScTyp rmb   1          Get screen type information
@@ -268,6 +297,30 @@ SS.FndBf rmb   1          Find named buffer (L2V3)
 SS.CDSta equ   SS.GIP2    XACIA
 SS.CDSig equ   SS.AnPal   XACIA
 SS.CDRel equ   SS.FndBf   XACIA
+
+         org   $A0
+*
+* New Default SCF input buffer Set status call (NitrOS9)
+SS.Fill  rmb   1          Pre-load SCF device input buffer
+SS.Hist  rmb   1          Enable command-line history easily
+
+
+         org   $B0
+*
+* New WDDisk get/set status calls
+SS.ECC   rmb   1          ECC corrected data error enable/disable (GetStat/SetStat)
+
+*
+* VRN get/set status calls.  Named by Alan DeKok.
+SS.VCtr  equ  $80         Return FS2 total VIRQ counter
+SS.VSig  equ  $81         Return FS2 number of signals sent
+
+SS.FClr  equ  $81         Set/clear FS2 VIRQ
+SS.FSet  equ  $C7         Set FS2+ VIRQ
+SS.KSet  equ  $C8         Set KQ3 VIRQ
+SS.KClr  equ  $C9         Clr KQ3 VIRQ
+SS.ARAM  equ  $CA         Allocate RAM blocks
+SS.DRAM  equ  $CB         De-allocate RAM blocks
 
          endc
 
@@ -341,8 +394,10 @@ SVCTSZ   equ   (256-BMAPSZ)/SVCTNM-2 SERVICE REQUEST TABLE SIZE
 
 * Level 2 DP vars
          org   $00
-D.WDAddr rmb   2
-D.WDBtDr rmb   1
+D.WDAddr rmb   2          FHL/Isted WD1002-05 interface base address
+D.WDBtDr rmb   1          FHL/Isted WD1002-05 boot physical device drive num.
+         rmb   5
+D.COCOXT rmb   1          Busy flag for CoCo-XT driver (one drive at a time)
 
 	 org   $20
 D.Tasks  rmb   2          Task User Table
@@ -366,6 +421,18 @@ D.Daywk  rmb   1          day of week, com-trol clock
 D.TkCnt  rmb   1          Tick Counter
 D.BtPtr  rmb   2          Address of Boot in System Address space
 D.BtSz   rmb   2          Size of Boot
+
+         ifne  NitrOS9
+* NitrOS9 additions
+* 58d begins here
+D.MDREG  rmb   1          6309 MD (mode) shadow register
+D.CRC    rmb   1          CRC checking mode flag
+D.Tenths rmb   1          Tenths and hundredths of second for F$Xtime
+D.Task1N rmb   1          Map type 1 task number*2 - offset into [D.TskIPt]
+D.Quick  rmb   1          Quick system call return flag - 0 =stack is at $FEE1
+D.QIRQ   rmb   1          Quick IRQ flag - 0 =IRQ wasn't clock, so quick return
+         endc
+
          org   $40
 D.BlkMap rmb   4          Memory Block Map ptr
 D.ModDir rmb   4          Module Directory ptrs
@@ -380,9 +447,19 @@ D.SProcQ rmb   2          Sleeping Process Queue
 D.ModEnd rmb   2          Module Directory end ptr
 D.ModDAT rmb   2          Module Dir DAT image end ptr
 D.CldRes rmb   2          Cold Restart vector
+         ifne  NitrOS9
+D.BtBug  rmb   3          Boot debug information
+D.Pipe   rmb   2
+         endc
+
          org   $6B
 D.Crash  rmb   6          Pointer to CC Crash Routine
 D.CBStrt rmb   $B         Reserved for CC warmstart ($71)
+
+         ifne  NitrOS9
+D.QCnt   rmb   1          Count of number of quick system calls performed
+         endc
+
          org   $80
 D.DevTbl rmb   2          I/O Device Table
 D.PolTbl rmb   2          I/O Polling Table
@@ -444,7 +521,11 @@ D.XIRQ   rmb   2
 D.XSWI   rmb   2
 D.XNMI   rmb   2
 D.ErrRst rmb   2
-         org   $F2
+         ifne  NitrOS9
+D.SysVec rmb   2          OS-9 F$xxx system call vector for NitrOS-9 Level 3
+         else
+         rmb   2
+         endc
 D.SWI3   rmb   2
 D.SWI2   rmb   2
 D.FIRQ   rmb   2
@@ -456,6 +537,7 @@ D.NMI    rmb   2
 * Level II Block Map flags
 *
 NotRAM   equ   %10000000  Block Not RAM flag
+VidRAM   equ   %00000100  Block is being used as Video RAM
 ModBlock equ   %00000010  Module in Block
 RAMinUse equ   %00000001  RAM Block in use flag
 *
@@ -477,7 +559,7 @@ MD$MPtr  rmb   2          Module ptr
 MD$Link  rmb   2          Module Link count
 MD$ESize equ   .          Module Directory Entry size
 
-********************
+************************************
 * Module Definitions
 *
 * Universal Module Offsets
@@ -582,6 +664,7 @@ PCode    equ   3          Pascal P-code
 CCode    equ   4          C I-code
 CblCode  equ   5          Cobol I-code
 FrtnCode equ   6          Fortran I-code
+Obj6309  equ   7          6309 object code
 *
 * Module Attributes / Revision byte
 *
@@ -593,7 +676,8 @@ RevsMask equ   %00001111  Revision Level Field
 * Attribute Flags
 *
 ReEnt    equ   %10000000  Re-Entrant Module
-Modprot  equ   %01000000  Gimix Module protect bit (0=protected, 1=write enable)
+ModProt  equ   %01000000  Gimix Module protect bit (0=protected, 1=write enable)
+ModNat   equ   %00100000  6309 native mode attribute
 
 ********************
 * Device Type Values
@@ -755,7 +839,8 @@ PDSIZE   equ   .
 PDELIM   equ   '/         Pathlist Name Separator
 PDIR     equ   '.         Directory
 PENTIR   equ   '@         Entire Device
-         page  
+
+         pag  
 ****************************
 * File Manager Entry Offsets
 *
@@ -794,6 +879,10 @@ V$STAT   rmb   2          Device Driver Static storage
 V$DESC   rmb   2          Device Descriptor module
 V$FMGR   rmb   2          File Manager module
 V$USRS   rmb   1          use count
+         ifne  NitrOS9
+V$DRIVEX rmb   1          Device Driver execution address
+V$FMGREX rmb   1          File Manager execution address
+         endc
 DEVSIZ   equ   .
 
 *******************************
@@ -817,6 +906,7 @@ Q$MASK   rmb   1          Polling Mask (after Flip)
 Q$SERV   rmb   2          Absolute Service routine Address
 Q$STAT   rmb   2          Static Storage Address
 Q$PRTY   rmb   1          Priority (Low Numbers=Top Priority)
+Q$MAP    rmb   2          Added by NitrOS-9
 POLSIZ   equ   .
 
 ********************
@@ -829,7 +919,7 @@ Vi.Stat  rmb   1          status byte
 
 Vi.IFlag equ   %00000001  status byte virq flag
 
-         page  
+         pag  
 *************************************
 * Machine Characteristics Definitions
 *
@@ -872,9 +962,6 @@ TwosOvfl equ   %00000010  Two's Comp Overflow flag
 Carry    equ   %00000001  Carry bit
 IntMasks equ   IRQMask+FIRQMask
 Sign     equ   %10000000  sign bit
-
-true     equ   1          useful name
-false    equ   0          useful name
 
          ttl   Error Code Definitions
          pag
@@ -961,6 +1048,13 @@ E$NoData rmb   1 Missing data statement
 
          ifgt  Level-1
 
+         ifne  NitrOS9
+         org   183
+E$IWTyp  rmb   1         Illegal window type
+E$WADef  rmb   1         Window already defined
+E$NFont  rmb   1         Font not found
+         endc
+
 * Level 2 windowing error codes
          org   186
 E$StkOvf rmb   1          Stack overflow
@@ -975,7 +1069,14 @@ E$BadBuf rmb   1          Bad/Undefined buffer number
 E$IWDef  rmb   1          Illegal window definition
 E$WUndef rmb   1          Window undefined
 
+         ifne  NitrOS9
+E$Up     rmb   1          Up arrow pressed on SCF I$ReadLn with PD.UP enabled
+E$Dn     rmb   1          Down arrow pressed on SCF I$ReadLn with PD.DOWN enabled
+E$Alias  rmb   1
          endc
+
+         endc
+
 
 *
 * Standard OS-9 Error Codes
@@ -1038,4 +1139,26 @@ E$DIDC   rmb   1          Disk ID Change
 E$Lock   rmb   1          Record is busy (locked out)
 E$Share  rmb   1          Non-sharable file busy
 E$DeadLk rmb   1          I/O Deadlock error
+
+         ifne  NitrOS9
+*****************************
+* Boot defs for Coco NitrOS-9
+* These defs are not strictly for 'Boot', but are for booting the
+* system.
+Bt.Block equ   $3B        Block to map in for the 'OS9BOOT' screen
+Bt.Flag  equ   $8A34      Flag in Bt.Block to verify that it's unchanged
+Bt.Offst equ   2          Offset into the screen where the current ptr is
+Bt.Start equ   $ED00      Start address of the boot track in memory
+
+***************************
+* Level III Defs
+L3.Start equ   $2000      Start off at slot 1
+L3.Size  equ   $40        Go for 64 pages: 2 slots total
+L3.Blks  equ   L3.Size/$20 Number of slots
+L3.End   equ   L3.Start+L3.Size*$0100 end of L3 memory
+L3.SCF   equ   $0660      SCF block ptr
+L3.RBF   equ   L3.SCF+1   RBF block ptr
+         endc
+
+         end
 
