@@ -1,16 +1,26 @@
 # The NitrOS-9 Project
 # Project-Wide Rules
 
-# These macros should change according to where the base directory of
-# your project source tree is located.
-BASEDIR		= $(HOME)/nitros9
-OS9TOOLSDIR	= $(HOME)/bin
-#OS9TOOLSDIR	= /usr/local/bin
-DEFDIR		= $(BASEDIR)/defs
-DSKDIR		= $(BASEDIR)/dsks
-
+# NOTE: THERE IS NO NEED TO MODIFY THIS FILE ANYMORE!
+# Environment variables are now used to specify any directories other
+# than the defaults below:
+#
+#   NITROS9DIR   - base directory of the NitrOS-9 project on your system
+#   COCOTOOLSBIN - directory where CoCoTools binaries are (assembler, etc)
+#
+# If the defaults below are fine, then there is no need to set any
+# environment variables.
 
 #################### DO NOT CHANGE ANYTHING BELOW THIS LINE ####################
+
+ifndef	NITROS9DIR
+NITROS9DIR	= $(HOME)/nitros9
+endif
+ifndef	COCOTOOLSBIN
+COCOTOOLSBIN	= $(HOME)/bin
+endif
+DEFDIR		= $(NITROS9DIR)/defs
+DSKDIR		= $(NITROS9DIR)/dsks
 
 
 # If we're using the OS-9 emulator and the *real* OS-9 assembler,
@@ -19,38 +29,38 @@ DSKDIR		= $(BASEDIR)/dsks
 #ASOUT		= o=
 
 # Use the cross assembler
-AS		= $(OS9TOOLSDIR)/mamou -i=$(DEFDIR)
-#AS		= $(OS9TOOLSDIR)/os9asm -i=$(DEFDIR)
+AS		= $(COCOTOOLSBIN)/mamou -i=$(DEFDIR)
+#AS		= $(COCOTOOLSBIN)/os9asm -i=$(DEFDIR)
 ASOUT		= -o
 AFLAGS		= -q
 
 # Commands
-MAKDIR		= $(OS9TOOLSDIR)/os9 makdir
+MAKDIR		= $(COCOTOOLSBIN)/os9 makdir
 RM		= rm -f
 MERGE		= cat
 MOVE		= mv
 ECHO		= /bin/echo
 CD		= cd
-CP		= $(OS9TOOLSDIR)/os9 copy -o=0
+CP		= $(COCOTOOLSBIN)/os9 copy -o=0
 CPL		= $(CP) -l
 TAR		= tar
 CHMOD		= chmod
-IDENT		= $(OS9TOOLSDIR)/os9 ident
+IDENT		= $(COCOTOOLSBIN)/os9 ident
 IDENT_SHORT	= $(IDENT) -s
-#UNIX2OS9	= $(OS9TOOLSDIR)/u2o
-#OS92UNIX	= $(OS9TOOLSDIR)/o2u
-OS9FORMAT	= $(OS9TOOLSDIR)/os9 format
-OS9FORMAT_SS35	= $(OS9TOOLSDIR)/os9 format -t35 -ss -dd -4
-OS9FORMAT_SS40	= $(OS9TOOLSDIR)/os9 format -t40 -ss -dd -4
-OS9FORMAT_SS80	= $(OS9TOOLSDIR)/os9 format -t80 -ss -dd -9
-OS9FORMAT_DS40	= $(OS9TOOLSDIR)/os9 format -t40 -ds -dd -4
-OS9FORMAT_DS80	= $(OS9TOOLSDIR)/os9 format -t80 -ds -dd -9
-OS9GEN		= $(OS9TOOLSDIR)/os9 gen
-OS9RENAME	= $(OS9TOOLSDIR)/os9 rename
-OS9ATTR		= $(OS9TOOLSDIR)/os9 attr -q
+#UNIX2OS9	= $(COCOTOOLSBIN)/u2o
+#OS92UNIX	= $(COCOTOOLSBIN)/o2u
+OS9FORMAT	= $(COCOTOOLSBIN)/os9 format
+OS9FORMAT_SS35	= $(COCOTOOLSBIN)/os9 format -t35 -ss -dd -4
+OS9FORMAT_SS40	= $(COCOTOOLSBIN)/os9 format -t40 -ss -dd -4
+OS9FORMAT_SS80	= $(COCOTOOLSBIN)/os9 format -t80 -ss -dd -9
+OS9FORMAT_DS40	= $(COCOTOOLSBIN)/os9 format -t40 -ds -dd -4
+OS9FORMAT_DS80	= $(COCOTOOLSBIN)/os9 format -t80 -ds -dd -9
+OS9GEN		= $(COCOTOOLSBIN)/os9 gen
+OS9RENAME	= $(COCOTOOLSBIN)/os9 rename
+OS9ATTR		= $(COCOTOOLSBIN)/os9 attr -q
 OS9ATTR_TEXT	= $(OS9ATTR) -npe -npw -pr -ne -w -r
 OS9ATTR_EXEC	= $(OS9ATTR) -pe -npw -pr -e -w -r
-PADROM		= $(OS9TOOLSDIR)/os9 padrom
+PADROM		= $(COCOTOOLSBIN)/os9 padrom
 MOUNT		= sudo mount
 UMOUNT		= sudo umount
 LOREMOVE	= sudo /sbin/losetup -d
@@ -60,10 +70,10 @@ SOFTLINK	= $(LINK) -s
 ARCHIVE		= zip -D
 
 # Directories
-3RDPARTY	= $(BASEDIR)/3rdparty
-6809L1		= $(BASEDIR)/6809l1
-6809L2		= $(BASEDIR)/6809l2
-6309L2		= $(BASEDIR)/6309l2
+3RDPARTY	= $(NITROS9DIR)/3rdparty
+6809L1		= $(NITROS9DIR)/6809l1
+6809L2		= $(NITROS9DIR)/6809l2
+6309L2		= $(NITROS9DIR)/6309l2
 C9		= $(HOME)/cloud9
 
 # File managers
