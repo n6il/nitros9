@@ -1,4 +1,14 @@
-* F$GProcP entry point
+**************************************************
+* System Call: F$GProcP
+*
+* Function: Get process pointer
+*
+* Input:  A = Process ID
+*
+* Output: Y = Pointer to process descriptor
+*
+* Error:  CC = C bit set; B = error code
+*
 FGProcP  lda   R$A,u        get process #
          bsr   L0B2E        Get ptr to process descriptor
          bcs   L0B2D        If error, exit with it

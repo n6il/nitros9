@@ -1,7 +1,19 @@
-* F$GCMDir entry point
+**************************************************
+* System Call: F$GCMDir
 *
-* This system call is only used by OS9p1 to get rid of all the empty spaces
-* in the module directory to keep it small & compact.
+* Notes:
+* This system call is only used by OS9p1 to get rid of all
+* the empty spaces in the module directory to keep it small
+* and compact.
+*
+* Input:  X = Address of allocation bitmap
+*         D = Number of first bit to set
+*         Y = Bit count (number of bits to set)
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FGCMDir  ldx   <D.ModDir    get pointer to module directory start
          bra   L0C1D        skip ahead
 L0C17    ldu   MD$MPDAT,x   DAT initialized?

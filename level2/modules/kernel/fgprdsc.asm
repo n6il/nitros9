@@ -1,4 +1,15 @@
-* F$GPrDsc entry point
+**************************************************
+* System Call: F$GPrDsc
+*
+* Function: Get copy of process descriptor
+*
+* Input:  A = Desired process ID
+*         X = 512 byte buffer pointer
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FGPrDsc  ldx   <D.Proc     Get current process dsc. ptr.
          ldb   P$Task,x    Get task number
          lda   R$A,u       Get requested process ID #

@@ -1,4 +1,15 @@
-* F$DATLog entry point
+**************************************************
+* System Call: F$DATLog
+*
+* Function: Convert DAT block/offset to logical address
+*
+* Input:  B = DAT image offset
+*         X = Block offset
+*
+* Output: X = Logical address
+*
+* Error:  CC = C bit set; B = error code
+*
 FDATLog  ldb   R$B,u          Get logical Block #
          ldx   R$X,u          Get offset into block
          bsr   CmpLBlk        Go modify X to be Logical address

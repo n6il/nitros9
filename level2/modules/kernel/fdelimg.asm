@@ -1,4 +1,16 @@
-* F$DelImg entry point
+**************************************************
+* System Call: F$DelImg
+*
+* Function: Deallocate image RAM blocks
+*
+* Input:  A = Beginning block number
+*         B = Block count
+*         X = Process descriptor pointer
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FDelImg  ldx   R$X,u        get process pointer
          ldd   R$D,u        get start block & block count
          leau  <P$DATImg,x  point to DAT image

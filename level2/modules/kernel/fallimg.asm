@@ -1,5 +1,16 @@
-* F$AllImg entry point
-* Entry: U=Register stack pointer
+**************************************************
+* System Call: F$AllImg
+*
+* Function: Allocate image RAM blocks
+*
+* Input:  A = Starting block number
+*         B = Number of blocks
+*         X = Process descriptor pointer
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FAllImg  ldd   R$D,u        get starting block # & # of blocks
          ldx   R$X,u        get process descriptor pointer
 * Entry point from F$SRqMem

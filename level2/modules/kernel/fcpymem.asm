@@ -1,10 +1,26 @@
+**************************************************
+* System Call: F$CpyMem
+*
+* Function: Copy external memory
+*
+* Input:  D = Starting memory block number
+*         X = Offset in block to begin copy
+*         Y = Byte count
+*         U = Caller's destination buffer
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
          IFNE  H6309
-
-* F$CpyMem entry point
-* NOTE: It currently checks to see if the end of the buffer you are copying to
-*   will overflow past $FFFF, and exits if it does. Should this be changed to 
-*   check if it overflows past the data area of a process, or at least into
-*   Vector page RAM & I/O ($FE00-$FFFF)?
+* F$CpyMem for NitrOS-9 Level Two
+* Notes:
+* We currently check to see if the end of the buffer we are
+* copying to will overflow past $FFFF, and exit if it does.
+* Should this be changed to check if it overflows past the
+* data area of a process, or at least into Vector page RAM
+* and I/O ($FE00-$FFFF)???
+*
 FCpyMem  ldd   R$Y,u        get byte count
          beq   L0A01        nothing there so nothing to move, return
          addd  R$U,u        add it caller's buffer start ptr.
@@ -60,9 +76,7 @@ L0A01    clrb               No error & exit
 
          ELSE
 
-*------------------------------------------------*
-*                     F$CpyMem
-*------------------------------------------------*
+* F$CpyMem for OS-9 Level Two
 FCpyMem  ldd   R$Y,u      byte count
          beq   L0A01      ..skip if none
          addd  R$U,u      plus dest buff

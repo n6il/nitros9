@@ -10,7 +10,6 @@
 *
 * Error:  CC = C bit set; B = error code
 *
-*
 FFind64  ldx   R$X,u        Get block tbl ptr
          lda   R$A,u        get path block #
 * Find a empty path block

@@ -1,4 +1,15 @@
-* F$MapBlk entry point
+**************************************************
+* System Call: F$MapBlk
+*
+* Function: Map specific block
+*
+* Input:  B = Number of blocks
+*         X = Beginning block number
+*
+* Output: U = Address of first block
+*
+* Error:  CC = C bit set; B = error code
+*
 FMapBlk  lda   R$B,u        get # blocks
          beq   L0BAA        can't map 0 blocks, return error
          cmpa  #DAT.BlCt    within range of DAT image?

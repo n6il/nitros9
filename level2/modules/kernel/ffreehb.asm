@@ -1,4 +1,17 @@
-* F$FreeHB entry point (Called from F$MapBlk - called from SS.MpGPB)
+**************************************************
+* System Call: F$FreeHB
+*
+* Function: Get free high block
+*
+* Called from F$MapBlk and from SS.MpGPB)
+*
+* Input:  B = Block count
+*         Y = DAT image pointer
+*
+* Output: A = High block number
+*
+* Error:  CC = C bit set; B = error code
+*
 FFreeHB  ldb   R$B,u          Get # blocks requested
          ldy   R$Y,u          Get DAT Img ptr
          bsr   L0A31          Go find free blocks in high part of DAT
@@ -41,8 +54,9 @@ L0A75    lslb                 Multiply block # by 2
 L0A82    leas  2,s            Eat temporary stack
          puls  d,x,pc         Restore reg, error code & return
 
-* F$FreeLB entry point (WHERE DOES THIS EVER GET CALLED FROM???)
-* Rodney says: "it's called via os9p1 syscall vector in line 393"
+
+* WHERE DOES THIS EVER GET CALLED FROM???
+* Rodney says: "It's called via os9p1 syscall vector in line 393"
 FSFreeLB ldb   R$B,u          Get block count
          ldy   R$Y,u          Get ptr to DAT Image
          bsr   L0A4B          Go find block #'s
@@ -57,7 +71,19 @@ L0A4B    lda   #$FF           Value to start loop at block 0
          negb                 Negate so it is a positive # again
          bra   L0A56          Go into main find loop
 
-* F$FreeLB entry point
+
+**************************************************
+* System Call: F$FreeLB
+*
+* Function: Get free low block
+*
+* Input:  B = Block count
+*         Y = DAT image pointer
+*
+* Output: A = Low block number
+*
+* Error:  CC = C bit set; B = error code
+*
 FFreeLB  ldd   R$D,u
          ldx   R$X,u
          ldu   R$U,u

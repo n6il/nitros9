@@ -1,4 +1,15 @@
-* F$LDABX entry point
+**************************************************
+* System Call: F$LDABX
+*
+* Function: Load A from 0,X in task B
+*
+* Input:  B = Task number
+*         X = Data pointer
+*
+* Output: A = Data byte at 0,x in task's address space
+*
+* Error:  CC = C bit set; B = error code
+*
 FLDABX   ldb   R$B,u        Get task # to get byte from
          ldx   R$X,u        Get offset into task's DAT image to get byte from
 ***         bsr   L0C40        Go get the byte into B
@@ -27,7 +38,20 @@ L0C40    pshs  cc,a,x,u
 *         ldu   b,u          get pointer to task image (doesn't affect carry)
 *         rts                restore & return
 
-* F$STABX entry point
+
+**************************************************
+* System Call: F$STABX
+*
+* Function: Store A at 0,X in task B
+*
+* Input:  A = Data byte to store in task's address space
+*         B = Task number
+*         X = Logical address in task's address space
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FSTABX   ldd   R$D,u
          ldx   R$X,u
 * Store a byte in another task

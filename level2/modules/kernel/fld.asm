@@ -1,4 +1,15 @@
-* F$LDAXY entry point
+**************************************************
+* System Call: F$LDAXY
+*
+* Function: Load A [X,[Y]]
+*
+* Input:  X = Block offset
+*         Y = DAT image pointer
+*
+* Output: A = data byte at X offset of Y
+*
+* Error:  CC = C bit set; B = error code
+*
 FLDAXY   ldx   R$X,u          Get offset within block (S/B $0000-$1FFF)
          ldy   R$Y,u          Get ptr to DAT block entry
          bsr   L0AC8          Go get byte
@@ -42,7 +53,20 @@ AdjBlk0  cmpx  #DAT.BlSz      Going to wrap out of our block?
          bhs   L0AEA          Yes, go adjust
          rts                  No, return
 
-* F$LDDDXY entry point
+
+**************************************************
+* System Call: F$LDDXY
+*
+* Function: Load D [D+X,[Y]]
+*
+* Input:  D = Offset to offset
+*         X = Offset
+*         Y = DAT image pointer
+*
+* Output: D = bytes address by [D+X,Y]
+*
+* Error:  CC = C bit set; B = error code
+*
 FLDDDXY  ldd   R$D,u          Get offset to offset within DAT Image
          leau  R$X,u          Point U to Offset
          pulu  x,y            Y=Offset within DAT Image, X=DAT Image ptr

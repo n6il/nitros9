@@ -1,4 +1,16 @@
-* F$GBlkMp entry point
+**************************************************
+* System Call: F$GBlkMp
+*
+* Function: 
+*
+* Input:  X = 1024 byte buffer pointer
+*
+* Output: D = Number of bytes per block
+*         Y = Size of system's memory block map
+*
+*
+* Error:  CC = C bit set; B = error code
+*
 FGBlkMp  ldd   #DAT.BlSz   # bytes per MMU block (8k)
          std   R$D,u       Put into caller's D register
          ldd   <D.BlkMap+2 Get end of system block map ptr

@@ -3,6 +3,8 @@
 *
 * Function: Parse a path name
 *
+* Modification to allow '-' in filenames by WG
+*
 * Input:  X = Address of pathlist
 *
 * Output: X = Updated past optional "/" character
@@ -10,8 +12,6 @@
 *         B = Length of pathlist
 *
 * Error:  CC = C bit set; B = error code
-*
-* Modification to allow '-' in filenames by WG
 *
 FPrsNam  ldx   <D.Proc      proc desc
          leay  <P$DATImg,x  Y=DAT image ptr
