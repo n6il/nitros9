@@ -37,7 +37,6 @@ ALLOBJS		= $(BOOTERS) $(KERNELS) $(ROMMODS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
 
 all:	$(ALLOBJS) $(HELP)
 	$(CHMOD) 755 $(ALLOBJS)
-	$(UNIX2OS9) $(HELP)
 	$(CHMOD) 644 $(HELP)
 
 # Special cases here
@@ -108,7 +107,6 @@ clock_bb: clock.asm
 
 clean:
 	$(RM) $(ALLOBJS)
-	$(OS92UNIX) $(HELP)
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
