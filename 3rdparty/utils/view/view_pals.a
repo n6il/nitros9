@@ -1,0 +1,250 @@
+*
+* Palette operations:
+*
+*    palconv:  16 3-byte palette specs (R, G, B for each color)
+*              is converted into CoCo format palette info.
+*    palscale: 16 3-byte palette specs are scaled so largest coordinate
+*              is 255.
+*    setpals:  Set palettes from data in "palette" global buffer
+*    docycle:  Cycle palettes
+*    dorotate: Rotate through one palette slot
+*    cmpconv:  Convert "palette" buffer from Composite color to RGB color
+*
+  ifp1
+  use /dd/defs/os9defs.a
+  endc
+
+StdOut equ 1
+
+  psect view_pals_a,0,0,0,0,0
+
+scaletable
+  fcb $00,$ff,$80,$55
+  fcb $40,$33,$2b,$24
+  fcb $20,$1c,$1a,$17
+  fcb $15,$14,$12,$11
+
+palscale:
+ pshs a,b,x,y,u
+palscale1
+ bsr  findmax   First, rotate down so largest is <16
+ cmpa #15
+ bls  palscale2
+ bsr  divide
+ bra  palscale1
+palscale2
+
+ leax scaletable,pcr  Get multiplier for scaling.
+ ldb  a,x
+ pshs b
+
+ leax palette,y     Now scale each 4-bit palette value to 8 bits.
+ ldb  #48           The chosen multiplier should make the highest
+ pshs b                   palette value be 255 (or at least close).
+palscale3
+ ldb  ,x
+ lda  1,s
+ mul
+ cmpd #$100    Truncate to $ff.
+ blo  palscale4
+ ldb  #$ff
+palscale4
+ stb  ,x+
+ dec  ,s
+ bne  palscale3
+ puls d          Clean up stack.
+ puls a,b,x,y,u,pc
+
+* Divide each palette coordinate by 2
+divide
+ pshs b,x
+ leax palette,y
+ ldb  #48
+divide1
+ lda  ,x
+ lsra
+ sta  ,x+
+ decb
+ bne  divide1
+ puls b,x,pc
+
+* Return largest palette coordinate in A.
+findmax
+ pshs b,x
+ leax palette,y
+ ldb  #48
+ clra
+findmax1
+ cmpa ,x+
+ bhs  findmax2
+ lda  -1,x
+findmax2
+ decb
+ bne  findmax1
+ puls b,x,pc
+
+palconv:
+  pshs a,b,x,u,y
+  leax palette,y
+  leau pctable,pcr
+  leay palette,y
+  ldb  #16  Number of bytes to deal with
+palconvloop
+  clra
+  bsr  pcsub  Add one color component into A.
+  bsr  pcsub
+  bsr  pcsub
+  sta  ,y+
+  decb
+  bne  palconvloop
+  puls a,b,x,u,y,pc
+pctable
+  fcb 0,1,8,9
+
+pcsub
+  pshs b
+  pshs a
+  clrb
+  pshs b
+  ldb  ,x+
+  clra
+pcsloop
+  cmpd #42
+  ble  pcsend
+  inc  ,s
+  subd #85
+  bra  pcsloop
+pcsend
+  puls b
+  puls a
+  lsla
+  ora  b,u
+  puls b,pc
+
+*
+* Set up palette registers
+*
+setpals:
+ pshs x
+ leax palette,y
+ bsr  setpal
+ puls x,pc
+
+ vsect dp
+currot rmb 1
+ endsect
+
+ vsect
+setpCom rmb 64  Space for 16 Set Palette commands.
+curpals rmb 16
+ endsect
+
+setpal
+ pshs a,b,x,y,u
+ leau curpals,y
+ leay setpCom,y
+ pshs y
+ clrb
+setloop
+ lda  #$1b
+ sta  ,y+  Set palette command is $1b $31 <pal#> <value>
+ lda  #$31
+ sta  ,y+
+ stb  ,y+  Put palette number in.
+ lda  ,x+  Get palette value.
+ sta  ,u+  Copy it to curpals storage.
+ sta  ,y+  Put palette value in.
+ incb
+ cmpb #16
+ bne setloop
+ puls x        Pull address of command string.
+ lda  <outpath
+ ldy  #64
+ OS9  I$Write
+ lbcs _error
+ puls a,b,x,y,u,pc
+
+*
+* Rotate palletes down, from cyclestart to cycleend
+*
+
+docycle:
+ pshs  a,b,x
+ leax  curpals,y
+ ldb   <cycleend
+ cmpb  <cyclestart
+ bls   rollcycle     Unreasonable limits?  If so, end.
+ leax  b,x
+ lda   ,x
+ pshs  a
+rollloop
+ lda   ,-x
+ sta   1,x
+ decb
+ cmpb  <cyclestart
+ bne   rollloop
+ puls  a
+ sta   ,x
+ leax  curpals,y
+ bsr   setpal
+rollcycle
+ puls  a,b,x,pc
+
+ vsect
+onepal fcb $1b,$31,0,0
+ endsect
+
+dorotate:
+ pshs  a,b,x,y,u
+ leax  onepal,y
+ ldb   <extranum    If no extra pals to rotate, don't
+ beq   dorotend
+ ldb   currot       Get current rotation value.
+ incb
+ cmpb  <extranum    Should we wrap?
+ blo   dorot
+ clrb               Yes, wrap to zero.
+dorot
+ stb   currot
+
+ leau  extrapals,y  Get new palette value.
+ lda   b,u
+
+ ldb   <extraslot   Set up palette command.
+ stb   2,x          Store palette number
+ sta   3,x          Store color
+
+ leau  curpals,y    Store it into correct palette slot.
+ sta   b,u
+
+ ldy   #4
+ lda   <outpath
+ os9   I$Write 
+ lbcs  _error
+dorotend
+ puls a,b,x,y,u,pc
+
+cmpconv:
+ pshs a,b,x,u
+ leax palette,y
+ leau cmptable,pcr
+ ldb  #16
+cmploop
+ lda  ,x
+ lda  a,u
+ sta  ,x+
+ decb
+ bne  cmploop
+ puls a,b,x,u,pc
+
+cmptable
+ fcb 00,02,02,06,00,04,33,32   From Greg Law.
+ fcb 32,45,05,09,13,08,01,00
+ fcb 07,16,18,21,20,34,38,36
+ fcb 37,44,40,42,11,15,10,27
+ fcb 56,23,19,49,48,55,38,39
+ fcb 37,46,47,41,11,25,24,26
+ fcb 58,63,50,51,62,52,53,60
+ fcb 60,46,61,61,57,59,58,63
+
+ endsect

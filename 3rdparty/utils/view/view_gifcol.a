@@ -1,0 +1,456 @@
+*
+* GIFcolors: Analyze GIF color map, generate CoCo palette and Gif->coco
+*       translation tables.  Expects X to point to GIF color map, D to hold
+*       number of palettes in that color map, and U to point to buffer
+*       to receive translation table.
+*
+* Data structures
+*   Color translation table contains three bytes for each GIF color:
+*       primary color, secondary color, fraction of secondary color for dither
+*
+* Algorithm
+*      First, convert each GIF color to closest CoCo color, and choose
+*   16 "furthest" apart from those for the palette.
+*      For each GIF color in the original GIF palette, interpolate it
+*   between 2 closest colors in the palette.
+*
+* Notes&Assumptions
+*   There are no more than 256 colors in the GIF palette.  So, B holds
+* the number of palettes, where 0 indicates 256.
+*
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+  psect view_gifcol_a,0,0,0,0,0
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+ vsect dp
+numpals rmb 1
+ endsect
+
+GIFcolors:
+ pshs a,b,x,y,u
+ pshs a
+ lda  <format
+ cmpa #GIFBWFormat Or if GIFBW format specified.
+ beq  GIFcol0
+ lda  <type
+ cmpa #5    Was type 5,6,7 forced?
+ blo  GIFcol1 Illegal mode, do auto-determine
+ cmpa #7
+ bhi  GIFcol1 Type 8, use full color.
+GIFcol0
+ puls a
+ bsr  bwpals  If yes, convert pals to grey scales, gen b/w palette.
+ bra  GIFcol2
+
+GIFcol1
+ puls a
+ leau  linebuff,y Temporary storage.
+ bsr  copypals   Copy the palettes over.
+ tfr  u,x
+ lbsr genpals    Use GIF palettes to generate a CoCo palette
+GIFcol2
+
+ ldx  2,s
+ ldu  6,s
+ lbsr gentable   Generate a GIF->CoCo translation table
+
+ lbsr palconv    Now convert actual palette values
+
+ lda  <type
+ cmpa #5       
+ blo  GIFcol3    If legal screen type already, skip this.
+ cmpa #8
+ bls  GIFcolend
+GIFcol3
+ lda  #8      Default to type 8 screen
+ ldb  numpals
+ cmpb #4
+ bhi  GIFcolend
+ lda  #7    Use type 7 if 4 or fewer palette colors.
+GIFcolend
+ sta  <type
+
+ puls a,b,x,y,u,pc
+
+* Copy D pals from X to U
+copypals
+ pshs a,b,x,y,u
+ tfr  d,y
+ leay d,y
+ leay d,y
+copyloop
+ lda  ,x+
+ sta  ,u+
+ leay -1,y
+ bne  copyloop
+ puls a,b,x,y,u,pc
+
+* Convert palettes to grey scale values.
+*   D pals pointed to by X.
+bwpals
+ pshs a,b,x,u
+ tfr  x,u
+ pshs b
+bwpals1
+ ldb  ,u
+ lda  #5
+ mul
+ tfr  d,x
+ ldb 1,u
+ lda  #3
+ mul
+ leax d,x
+ ldb 2,u
+ lda  #1
+ mul
+ leax d,x
+ lda  #9
+ lbsr div168
+ stb  ,u+
+ stb  ,u+
+ stb  ,u+
+ dec  ,s
+ bne  bwpals1
+ puls b
+
+ clra
+ leax palette,y
+bwpals2
+ sta  ,x+
+ sta  ,x+
+ sta  ,x+
+ adda #$55
+ bcc  bwpals2
+ lda  #4
+ sta  numpals
+
+ lda  <type   Type 5 only has 2 colors
+ cmpa #5
+ bne  bwpals3
+ leax palette+3,y
+ ldb  #$ff
+ stb  ,x+     Set 2nd color to white
+ stb  ,x+
+ stb  ,x+
+ lda  #2
+ sta  numpals
+bwpals3
+
+ puls a,b,x,u,pc
+
+*
+* Use D pals pointed to by X to create a CoCo palette stored in "palette"
+* in 3-byte format. (one byte each of R, G, B)
+genpals
+ pshs a,b,x,y,u
+ lbsr normpals   Normalize palettes
+ leau palette,y
+ clra
+ bsr  copypal    First one we get for free
+ inca
+* X points to GIF palettes, U points to palettes, A holds number
+* of palettes we've generated so far.
+genloop
+ ldb  1,s
+ ldx  2,s
+ bsr  minmax   Get the farthest palette from the ones already chosen.
+ tstb
+ beq  genpend  If dist is zero, quit now.
+ bsr  copypal  Copy it to the palette.
+ inca
+ cmpa #16
+ bne  genloop
+genpend
+ sta  numpals
+ puls a,b,x,y,u,pc
+
+* From the B many GIF palettes at [X], choose the one farthest from the A many
+* palettes already selected at [U].
+* Local vars:  ,s -- counts down GIF palettes
+*             1,s -- Max dist so far
+*           2:3,s -- Farthest palette seen so far.
+minmax
+ pshs a,y,u
+ pshs x    Init farthest to first
+ clr  ,-s  Init max dist to zero
+ pshs b    Init counter
+minmaxloop
+ bsr  setdist  Get distance from first palette to set of pals.
+ cmpb 1,s      Is it further??
+ bls  minmaxend  If no farther, keep going.
+ stb  1,s     Set new dist, palette.
+ stx  2,s
+minmaxend
+ leax 3,x
+ dec  ,s   Count down palettes.
+ bne  minmaxloop
+ puls b    Remove null counter.
+ puls b    Get distance into B.
+ puls x    Get pointer to farthest one.
+ puls a,y,u,pc
+
+*  X points to a palette, U points to A many palettes.
+* Return (in B) the minimum distance from [X] to [U]
+setdist
+ pshs u
+ bsr  closest
+ puls u,pc
+
+ vsect dp
+nextclose rmb 2
+nextdist  rmb 1
+ endsect
+* X points to one palette, U to A many palettes.
+* Return minimum distance in B, pointer to closest in U.
+closest
+ pshs a,x
+ pshs a    Number of pals on stack.
+ ldb  #$ff  Min dist starts out as $FF.
+ pshs b,u   Store the min so far on the stack
+ stb  nextdist  ... and in the 2nd closest vars.
+ stu  nextclose
+setdistloop
+ bsr  distance
+ cmpb ,s      Is this one closer than the closest so far?
+ bhs  setdist1
+ lda  ,s      Yes, make old closest into 2nd closest.
+ sta  nextdist
+ stb  ,s      and make this closest.
+ ldd  1,s
+ std  nextclose
+ stu  1,s
+ bra  setdist2
+setdist1
+ cmpb nextdist  Is it closer than the 2nd closest so far?
+ bhs  setdist2
+ stb  nextdist  Yes, store it.
+ stu  nextclose
+setdist2
+ leau 3,u
+ dec  3,s
+ bne  setdistloop
+ puls b,u  Get the minimum into B, and the closest in U.
+ puls a
+ puls a,x,pc
+
+* Copy one palette from [X] to [3*A,U] 
+copypal
+ pshs a,u,x
+ leau a,u
+ leau a,u
+ leau a,u
+ lda  ,x+
+ sta  ,u+
+ lda  ,x+
+ sta  ,u+
+ lda  ,x+
+ sta  ,u+
+ puls a,u,x,pc
+
+* Return the distance from the palette value pointed to by X to the value
+* pointed to by U in B
+distance
+ pshs a,x,u
+ clra
+ ldb  ,x+
+ subb ,u+
+ bhi  dist1
+ negb
+dist1
+ pshs d
+ ldb  ,x+
+ subb ,u+
+ bhi  dist2
+ negb
+dist2
+ pshs d
+ ldb  ,x+
+ subb ,u+
+ bhi  dist3
+ negb
+dist3
+ addd ,s++
+ addd ,s++
+ lsra    divide to get it in one byte.
+ rorb
+ lsra
+ rorb
+ puls a,x,u,pc
+
+
+* Normalize D pals pointed to by X into a CoCo 3-byte format
+normpals
+ pshs a,b,x
+normloop
+ bsr  normcoord
+ bsr  normcoord
+ bsr  normcoord
+ subd #1
+ bne  normloop
+ puls a,b,x,pc
+normcoord
+ pshs a,b
+ lda  ,x
+ ldb  #85
+ lbsr divAB Divide by 85.
+ lslb       Round to nearest integer.
+ adca #0
+ ldb  #85   Mult by 85 to get normed value.
+ mul
+ stb  ,x+
+ puls a,b,pc
+
+* X points to D many GIF palettes
+* U points to destination for translation table.
+*
+* Stage 2 algorithm:
+*  For each GIF color, dither the two closest CoCo colors.
+*  Use the ratio of distances as the dithering percentage.
+ csect
+gentpals  rmb 2  Pointer to CoCo palette
+gentcnt   rmb 1  Counts down number of GIF colors
+gentgif   rmb 2  Ptr to GIF colors
+gentred   rmb 1  Holds one palette value.
+gentgrn   rmb 1
+gentblu   rmb 1
+genttrans rmb 2  Ptr to trans table.
+gent1dist rmb 1  Distance to primary color
+gent2dist rmb 1  Distance to secondary color.
+gent1pal  rmb 2  Ptr to primary color
+gent2pal  rmb 2  Ptr to secondary color
+gentvars  rmb 0  Total number of local vars.
+ endsect
+
+gentable
+ pshs a,b,x,y,u
+ leas -gentvars,s
+ stx  gentgif,s
+ stb  gentcnt,s
+ leay palette,y
+ sty  gentpals,s
+ tfr  u,y
+* Y points to trans table address
+* gentgif,s  points to GIF palettes
+* gentpals,s points to CoCo palettes.
+gentloop
+
+* First, try to get a "primary" color.  Use the closest match.
+ lda  numpals     Number of palettes.
+ ldu  gentpals,s  Palette ptr.
+ ldx  gentgif,s   Ptr to GIF palette.
+ lbsr closest     Get closest coco palette (U points to it)
+ stu  gent1pal,s  Save primary color ptr
+ tfr  u,d         Set primary color.
+ subd gentpals,s  D holds offset to closest palette.
+ lbsr div3        Divide B by 3 to get a palette #.
+ stb  ,y
+
+* Now, get an "ideal" secondary color to dither with it.
+ sty  genttrans,s Save Y
+ ldx  gentgif,s   Get ptr to GIF palette that we're trying to match
+ leay gentred,s   Put result in gentred, etc.
+ bsr  opp3
+ ldy  genttrans,s restore Y.
+
+* The closest to this "ideal" color will be our secondary color
+ lda  numpals     Number of palettes.
+ ldu  gentpals,s  Palette ptr.
+* leax gentred,s   Ptr to "ideal" dither match.
+ ldx  gentgif,s
+ lbsr closest
+ cmpu gent1pal,s  Is the closest same as the primary color?
+ bne  gent2c2     No, use the closest.
+ ldu  nextclose  Otherwise, use the second closest.
+gent2c2
+ tfr  u,d
+ stu  gent2pal,s
+ subd gentpals,s
+ bsr  div3
+ stb  1,y
+
+* Calculate distance from desired color to primary color
+ ldu  gent1pal,s
+ ldx  gentgif,s
+ lbsr distance
+ stb  gent1dist,s
+
+* Calculate distance from desired color to secondary color
+ ldu  gent2pal,s
+ ldx  gentgif,s
+ lbsr distance
+ stb  gent2dist,s
+
+* Now, use the two distances to get the dithering percentage.
+ ldb  gent1dist,s   Set % secondary.= (1st dist) / ( (1st dist) + (2nd dist) )
+ beq  gentzero
+ tfr  b,a
+ addb gent2dist,s Add distances, 9 bit result (B + Carry)
+ rorb             Divide B by 2 (include carry from addition)
+ lsra             Div A by 2.
+ lbsr divAB
+gentzero
+ stb  2,y
+
+ leay 3,y         Point to next trans table entry.
+
+ ldx  gentgif,s
+ leax 3,x
+ stx  gentgif,s   Point to next GIF palette.
+
+ dec  gentcnt,s Count down number.
+ bne  gentloop
+
+ leas gentvars,s  Clean up stack.
+ puls a,b,x,y,u,pc
+
+* Returns in [Y], palette value on other side of [X] from [U]
+opp3
+  pshs a,b,x,y,u
+  bsr  opp31
+  bsr  opp31
+  bsr  opp31
+  puls a,b,x,y,u,pc
+opp31
+  ldb  ,x+
+  lda  ,u+
+  bsr  opposite
+  stb  ,y+
+  rts
+
+* returns in B palette value on other side of B from A.
+*  i.e. calculate 2B-A, truncating at zero and at $ff.
+opposite
+  pshs a
+  clra
+  lslb
+  rola
+  subb ,s
+  sbca #0
+  bpl  opp1
+  ldd  #0   If result is negative, chop at zero.
+opp1
+  tsta      If >255, chop there.
+  beq  opp2
+  ldb  #$ff
+opp2
+  puls a,pc
+
+* Divide positive B by 3.
+div3
+ pshs a
+ tfr  b,a
+ ldb  #3
+ lbsr divAB
+ tfr  a,b
+ puls a,pc
+
+ endsect

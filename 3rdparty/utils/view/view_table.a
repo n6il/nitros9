@@ -1,0 +1,372 @@
+*
+*
+* Table to drive command line parser.  The routines to process individual
+*  options are also in this file.
+*
+* Three global symbols:
+*   PTable: options table
+*   DefFormat: Set up Default format (VEF)
+*   Help:  Give usage message.
+*
+*
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+StdOut equ 1
+StdErr equ 2
+
+ psect view_table_a,0,0,0,0,0
+
+
+* Options parsing table.
+*  Each entry: null-terminated option string,
+*              one-byte option code,
+*              Lbra instruction to subroutine to process that option.
+* The subroutine is called with the option code in register A, and
+*   X points to the first byte on the command line after the option
+*   (for use in parsing arguments to options).
+* This simplifies the handling of format codes, in particular.
+*
+* In order to prevent incorrect matches, longer options should occur
+*   earlier in the table, since the matching code will match the first
+*   legal option that matches the first part of the given option.
+*   i.e.  if "opt" occurs before "opt1", then "opt1" will never get
+*   a match
+*
+PTable:
+ fcc  "formats"   -formats
+ fcb  0,0
+ lbra ShowFormats
+ fcc  "savemge"   -savemge
+ fcb  0,MGEFormat
+ lbra SetSave
+ fcc  "save640"   -save640
+ fcb  0,MGE640Format
+ lbra SetSave
+ fcc  "savevef"   -savevef
+ fcb  0,VEFFormat
+ lbra SetSave
+ fcc  "savecm3"   -savecm3
+ fcb  0,CM3Format
+ lbra SetSave
+ fcc  "signal"    -signal
+ fcb  0,0
+ lbra SetSignal
+ fcc  "nobuff"    -nobuff forces a very small buffer
+ fcb  0,0
+ lbra NoBuff
+ fcc  "save"      -save    (VEF Squashed)
+ fcb  0,VEFSqFormat
+ lbra SetSave
+ fcc  "small"     -small
+ fcb  0,0
+ lbra SetSize
+ fcc  "large"     -large
+ fcb  0,1
+ lbra SetSize
+ fcc  "huge"      -huge
+ fcb  0,2
+ lbra SetSize
+ fcc  "sml"       -sml
+ fcb  0,0
+ lbra SetSize
+ fcc  "big"       -big
+ fcb  0,1
+ lbra SetSize
+ fcc  "lrg"       -lrg
+ fcb  0,1
+ lbra SetSize
+ fcc  "maxcmp"    -maxcmp
+ fcb  0,MAXCMPFormat
+ lbra SetMAXCMP
+ fcc  "pixcmp"    -pixcmp
+ fcb  0,MAXCMPFormat
+ lbra SetMAXCMP
+ fcc  "artcmp"    -artcmp
+ fcb  0,ARTCMPFormat
+ lbra SetMAXCMP
+ fcc  "pix256"    -pix256   (DS69B 256x256 format)
+ fcb  0,PIX256Format
+ lbra SetFormat
+ fcc  "pix128"    -pix128   (DS69B 128x128 format)
+ fcb  0,PIX128Format
+ lbra SetFormat
+ fcc  "pix"       -pix     (Note: _must_ occur after pix256 & pix128)
+ fcb  0,PIXFormat
+ lbra SetFormat
+ fcc  "vef"       -vef
+ fcb  0,1
+ lbra SetVF       only 1 picture VEF format.
+ fcc  "vf2"       -vf2 option
+ fcb  0,2
+ lbra SetVF
+ fcc  "vf3"       -vf3 option
+ fcb  0,3
+ lbra SetVF
+ fcc  "vf4"       -vf4 option
+ fcb  0,4
+ lbra SetVF
+ fcc  "vf5"       -vf5 option
+ fcb  0,5
+ lbra SetVF
+ fcc  "vf6"       -vf6
+ fcb  0,6
+ lbra SetVF
+ fcc  "vf7"       -vf7
+ fcb  0,7
+ lbra SetVF
+ fcc  "vf8"       -vf8
+ fcb  0,8
+ lbra SetVF
+ fcc  "vf9"       -vf9
+ fcb  0,9
+ lbra SetVF
+ fcc  "mge"       -mge option
+ fcb  0,MGEFormat
+ lbra SetFormat
+ fcc  "cm3"       -cm3 option
+ fcb  0,CM3Format
+ lbra SetFormat
+ fcc  "640"       -640 option
+ fcb  0,MGE640Format
+ lbra SetFormat
+ fcc  "clp"       -clp option
+ fcb  0,CLPFormat
+ lbra SetFormat
+ fcc  "pub"       -pub option  (Home Publisher ClipArt format)
+ fcb  0,PUBFormat
+ lbra SetFormat
+ fcc  "img"       -img option
+ fcb  0,IMGFormat
+ lbra SetFormat
+ fcc  "rat"       -rat option
+ fcb  0,RATFormat
+ lbra SetFormat
+ fcc  "art"       -art option
+ fcb  0,ARTFormat
+ lbra SetFormat
+ fcc  "bin"       -bin same as -max
+ fcb  0,MAXFormat
+ lbra SetFormat
+ fcc  "max"       -max option
+ fcb  0,MAXFormat
+ lbra SetFormat
+ fcc  "p00"       -p00 option
+ fcb  0,P00Format
+ lbra SetFormat
+ fcc  "p01"       -p01 option
+ fcb  0,P01Format
+ lbra SetFormat
+ fcc  "p10"       -p10 option
+ fcb  0,P10Format
+ lbra SetFormat
+ fcc  "p11"       -p11 option
+ fcb  0,P11Format
+ lbra SetFormat
+ fcc  "p20"       -p20 option
+ fcb  0,P20Format
+ lbra SetFormat
+ fcc  "p21"       -p21 option
+ fcb  0,P21Format
+ lbra SetFormat
+ fcc  "p30"       -p30 option
+ fcb  0,P30Format
+ lbra SetFormat
+ fcc  "p31"       -p31 option
+ fcb  0,P31Format
+ lbra SetFormat
+ fcc  "p40"       -p40 option
+ fcb  0,P40Format
+ lbra SetFormat
+ fcc  "p41"       -p41 option
+ fcb  0,P41Format
+ lbra SetFormat
+ fcc  "rle"       -rle option
+ fcb  0,RLEFormat
+ lbra SetFormat
+ fcc  "mac"       -mac option
+ fcb  0,MACFormat
+ lbra SetFormat
+ fcc  "mcp"       -mcp option
+ fcb  0,MACFormat
+ lbra SetFormat
+ fcc  "gifbw"     -gifbw option
+ fcb  0,GIFBWFormat
+ lbra SetGIF
+ fcc  "bwgif"     -bwgif option
+ fcb  0,GIFBWFormat
+ lbra SetGIF
+ fcc  "gbw"       -gbw option
+ fcb  0,GIFBWFormat
+ lbra SetGIF
+ fcc  "gif"       -gif option
+ fcb  0,GIFFormat
+ lbra SetGIF
+ fcc  "stp"       -stp  is synonym for -st, for MultiVue
+ fcb  0,STFormat
+ lbra SetFormat
+ fcc  "st"        -st option
+ fcb  0,STFormat
+ lbra SetFormat
+ fcc  "t"         -t#  Set screen to this type.
+ fcb  0,0
+ lbra Settype
+ fcc  "s"         -s   Use same screen
+ fcb  0,0
+ lbra Setsame
+ fcc  "c"         -c   Enable color cycling
+ fcb  0,0
+ lbra Setcycle
+ fcc  "f"         -f  Fit on one screen
+ fcb  0,0             Now is a synonym for -small
+ lbra SetSize
+ fcc  "y"         -y#  Skip this many lines at top.
+ fcb  0,0
+ lbra Setskip
+ fcc  "x"         -x#  Skip this many columns at left
+ fcb  0,0
+ lbra Setcols
+ fcc  "help"      -help   Give help message
+ fcb  0,0
+ lbra Help
+ fcc  "h"         -h   Give help message
+ fcb  0,0
+ lbra Help
+ fcc  "?"         -?   Give help message
+ fcb  0,0
+ lbra Help
+ fcc  "q"         -q#  Quit after this many seconds
+ fcb  0,0
+ lbra Quit
+* Additional options here
+ fcb  0
+
+Help:
+ pshs x
+ leax Usage,pcr
+ lbsr O_Write
+ ldb  #1
+ os9  F$Exit
+ puls x,pc
+
+ShowFormats
+ pshs x
+ leax Formats,pcr   -formats exits after message.
+ lbsr O_Write
+ ldb  #1
+ os9  F$Exit
+ puls x,pc
+ 
+
+***********************
+*
+* Subroutines to process specific options
+*
+***********************
+*
+* Default Format sets VEF format.
+*
+DefFormat:
+ tst <format    If format already set, ignore.
+ bne SetVEF1
+ lda #1         One-picture VEF is default.
+ lbsr SetVF
+SetVEF1
+ rts
+
+* -t option
+*
+Settype
+ lbsr Getnum   Get argument, check for validity
+ cmpb #5
+ blo  Settype1
+ cmpb #8
+ bhi  Settype1
+
+ lda  <type   Has it already been set?
+ cmpa #5
+ blo  Settype0
+ cmpa #8
+ bls  Settype1
+Settype0
+ stb  <type  All okay, set it.
+Settype1
+ rts
+
+* -s option
+*
+Setsame
+ lda #$FF
+ sta <Samescreen
+ rts
+
+* Size options
+*
+SetSize
+ tst <Size
+ bpl SetSize1  If Size is >=0, then it's already been set.
+ sta <Size
+SetSize1
+ rts
+
+* -c option
+Setcycle
+ lda #$FF
+ sta <cycle
+ rts
+
+* -y option
+Setskip
+ lbsr Getnum
+ pshs d
+ ldd  <Skiplines
+ bpl  noskip
+ ldd  ,s
+ std  <Skiplines
+noskip
+ puls d,pc
+
+* -x option
+Setcols
+ lbsr Getnum
+ pshs d
+ ldd  <Skipcols
+ bpl  nocols
+ ldd  ,s
+ std  <Skipcols
+nocols
+ puls d,pc
+
+* -q option
+Quit
+ lbsr Getnum
+ lda  #60      Multiply by 60 ticks/second.
+ mul
+ std  <MaxTime
+ rts
+
+* -nobuff option
+NoBuff
+ ldd #16      16 bytes of buffer.
+ std <MaxBuff
+ rts
+
+* Handle format options
+* On entry, A holds the format code
+SetFormat
+ tst <format
+ bne SetForm1
+ sta <format
+SetForm1
+ rts
+
+* Set signal PID and value
+SetSignal
+ lbsr Getnum
+ stb  <SigPID
+ lbsr Getnum
+ stb  <SigOut
+ rts
+ 
+ endsect

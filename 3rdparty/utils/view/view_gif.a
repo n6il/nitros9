@@ -1,0 +1,488 @@
+*
+* GIF supervisor and LZW decoding stuff.
+*
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+ psect view_gif_a,0,0,0,0,0
+
+*
+* GIFshowpic
+*
+* Display a GIF picture
+*
+ vsect dp
+* These are initialized by SetGIF in view_gifset.a
+giftable: rmb 2   Pointer to 12k decode table
+gifstack: rmb 2   Pointer to 4k space for reversing codes
+* These are used by the actual screen output routines in view_gifpix.a
+gifiheight: rmb 2 Image height
+gifiwidth:  rmb 2 image width
+gifinterlace: rmb 1 T=Use interlace in displaying picture.
+* These are all used locally.
+sheight rmb 2 Screen height  (We use the image size instead of these).
+swidth  rmb 2 Screen width
+domap   rmb 1 T= Color map follows
+*cr      rmb 1 Number bits of color resolution 
+pixel   rmb 1 Number bits per pixel
+background rmb 1  Background color
+screenset  rmb 1  T= screen has been set.
+ endsect
+
+GIFshowpic:
+ clr  screenset
+ lbsr signature  Find signature in input stream
+ lbsr screendesc Parse the screen descriptor information
+ tst  <domap
+ beq  noglobal
+ lbsr colormap  Read and parse the colormap and set up the screen.
+ clr  <domap
+noglobal
+*
+* Main image processing loop
+*  Searches the input stream for one of the following separator characters,
+* and acts accordingly:
+*    0x2c (comma) - GIF image follows
+*    0x21 (exclamation point) - extension block follows
+*    0x3b (semicolon) - end of GIF file
+GIFLoop
+ lbsr I_GetByte
+ lbcs _error
+ cmpa #$3b    semicolon marks the end of the file
+ beq  GIFend
+ cmpa #$21
+ bne  gif2
+ lbsr skipextension
+ bra  GIFLoop
+gif2
+ cmpa #$2c
+ bne  GIFLoop
+ bsr  gifimage
+ bra  GIFLoop
+GIFend
+ lbsr EndGIF  Return extra memory area.
+ rts
+
+ vsect dp
+mincode rmb 1  Starting code size
+lastcode rmb 2 Last code input
+thiscode rmb 2 the current code
+endcode  rmb 2 Code signifying end of picture
+clrcode  rmb 2 code indicating that we clear the table
+firstcolor rmb 1 First color of code just processed
+codesize   rmb 1 Current code size in bits
+*bethy   rmb 50    How much I love Beth.  (Needs to be MUCH bigger...)
+ endsect
+
+* Process a GIF image
+gifimage
+ pshs a,b,x,y,u
+* First, handle the image descriptor
+ lbsr  GIFgetword   offset of pic from left edge of screen
+ lbsr  GIFgetword   offset of pic from top of screen
+ lbsr  GIFgetword   image width
+ std  gifiwidth
+ lbsr  GIFgetword   image height
+ std  gifiheight
+ lbsr I_GetByte    bitmapped option byte
+ tfr  a,b
+ sex
+ sta  domap       top bit:  T=local map follows
+ tfr  b,a
+ anda #$3
+ inca
+ sta  pixel      Bottom 3 bits: bits/pixel less one.
+ lslb
+ sex
+ sta  gifinterlace  Bit 6: T=Use interlace
+ tst  domap     Is there a local color map?
+ beq  nolocal
+ lbsr colormap  Yes, handle it.
+nolocal
+* Now, we're down to the actual image.
+ lbsr I_GetByte  Get the starting code size.
+ sta  mincode
+ cmpa #8        Does code size make sense?
+ bls  gifcodeok
+ lbra E$Format  No, report a format error.
+gifcodeok
+ lbsr lzwinit    Initialize some machinery
+ lbsr gifoutinit
+* From here on, U holds the address of the next entry in the decode table.
+ lbsr clrtable   Clear table, set endcode and clrcode
+imageloop
+ lbsr nexttoken  Get a code.
+ stx  thiscode
+ cmpx endcode    Is it an end-of-pic code?
+ beq  imageend
+ cmpx clrcode    Is it a clear code?
+ bne  imagenormal
+ lbsr clrtable   If so, reinitialize everything.
+ lbsr nexttoken  Get the next token (always a root)
+ stx  lastcode
+ lbsr outcode    Output it.
+ bra  imageloop
+imagenormal
+ lbsr outcode    Output the code, set the initial color var.
+ ldx  lastcode
+ lda  firstcolor
+ stx  ,u++       Add the code to the decode table.
+ sta  ,u+
+ cmpu <codelimit  Are we at the point where we change code size?
+ blo  addcend
+ lbsr setlimit  Yes, do it.
+addcend
+ ldx  thiscode
+ stx  lastcode
+ bra  imageloop
+imageend
+ puls a,b,x,y,u,pc
+
+* This is an extension block, so skip it.
+skipextension
+ pshs a,b,x,y
+ lbsr I_GetByte  Get function code
+extensloop
+ bsr  getpacket  Get packet, size in A.
+ tsta
+ bne  extensloop  Non-zero, get another.
+ puls a,b,x,y,pc
+
+* Get a packet from input into AltBuff, return packet size in A.
+getpacket
+ pshs b,x,y
+ lbsr I_GetByte
+ tsta
+ beq  getpackend
+ pshs a
+ tfr  a,b
+ clra
+ leax altbuff,y
+ tfr  d,y
+ lbsr I_Read
+ lbcs _error
+ puls a
+getpackend
+ puls b,x,y,pc
+
+* Read and process colormap
+colormap
+ pshs a,b,x,y,u
+ lda  pixel
+ bsr  powertwo
+ leax altbuff,y
+ leau alt2buff,y
+ pshs y
+ tfr  d,y
+ leay d,y
+ leay d,y      Y:=3*D
+ lbsr I_Read   Read global color map
+ lbcs _error
+ puls y
+ tst  <screenset Is screen already set?
+ bne  endcmap    Yes, don't process stuff.
+ com  screenset  No, mark it as set.
+ lbsr GIFcolors  Translate colors, and generate color translation table.
+ lbsr setscreen
+ lbsr setbuffer
+ lbsr setpals    Set the palettes
+ lda  background Translate background color through the translation table
+ leau a,u
+ leau a,u
+ lda  a,u
+ lbsr setborder  Set the border color.
+endcmap
+ puls a,b,x,y,u,pc
+
+* Take value in A and return 2**A in D (assumes A<15).
+powertwo
+ pshs a
+ ldd  #1
+ tst  ,s
+powerloop
+ beq  powerend
+ lslb
+ rola
+ dec  ,s
+ bra  powerloop
+powerend
+ leas 1,s
+ rts
+
+* Read and process screen descriptor
+screendesc
+ pshs a,b
+ bsr  GIFgetword
+ std  swidth   First word is screen width in pixels
+ bsr  GIFgetword
+ std  sheight   Next is screen height in pixels
+ lbsr I_GetByte   This is bit-mapped
+ lbcs _error      Bit 7: T= global map follows
+ tfr  a,b         Bits 6:5:4: number bits of "color resolution" - 1
+ andb #7          Bits 2:1:0: Number of bits per pixel - 1
+ incb                     (Determines size of color map)
+ stb  pixel
+ tfr  a,b
+ sex
+ sta  domap  Top bit is true if global color map follows
+ lbsr I_GetByte
+ lbcs _error
+ sta  background
+ lbsr I_GetByte
+ lbcs _error
+ tsta
+ lbne E$Format
+ puls a,b,pc
+
+GIFgetword
+ lbsr I_GetByte
+ lbcs _error
+ tfr  a,b
+ lbsr I_GetByte
+ lbcs _error
+ rts
+
+* Signature: scan input to find "GIF###", the GIF signature string,
+*   where ### is two digits followed by a lowercase letter, e.g.
+*   '87a'
+sigsub
+  lbsr  I_GetByte
+  lbcs  _error
+  rts
+
+signature
+  pshs a,b
+Sig0
+  bsr   sigsub
+Sig1
+  cmpa  #'G     Search for "GIF"
+  bne   Sig0
+  bsr   sigsub
+  cmpa  #'I
+  bne   Sig1
+  bsr   sigsub
+  cmpa  #'F
+  bne   Sig1
+  clrb
+Sig2
+  bsr   sigsub  Get two digits
+  cmpa  #'0
+  blo   Sig1
+  cmpa  #'9
+  bhi   Sig1
+  comb
+  bne   Sig2
+  bsr   sigsub  and one lowercase letter
+  cmpa  #'a
+  blo   Sig1
+  cmpa  #'z
+  bhi   Sig1
+  puls  a,b,pc
+
+
+*
+*LZW decode subs.
+*
+ vsect dp
+codelimit rmb 2  Point at which we must switch code sizes.
+ endsect
+
+* Miscellaneous initialization
+lzwinit
+ pshs a,b,x
+ clr  <packsiz
+ clr  <numbits
+ puls a,b,x,pc
+
+* Initialize the decode table
+*
+clrtable
+ pshs a,b,x,y
+ ldx  giftable  Get start of table
+ lda  mincode
+ lbsr powertwo
+ pshs y
+ tfr  d,y
+ clra
+ clrb
+clrloop
+ sta  ,x+     Roots have 0 for pointer, themselves for suffix
+ std  ,x++
+ incb
+ leay -1,y
+ bne  clrloop
+ puls y
+ stx  clrcode
+ leax 3,x
+ stx  endcode
+ leax 3,x
+ tfr  x,u        Set up nextentry pointer in U
+ lda  mincode
+ sta  codesize   Pretend we were doing "mincode".
+ lbsr setlimit   Bump to next codesize.
+ puls a,b,x,y,pc
+
+ vsect dp
+packptr rmb 2
+packsiz rmb 1 
+ endsect
+* Return next byte from file
+nextbyte
+ pshs x
+ tst  packsiz
+ bne  nextbyte1
+ lbsr getpacket
+ sta  packsiz
+ leax altbuff,y
+ stx  packptr
+nextbyte1
+ dec  packsiz
+ ldx  packptr
+ lda  ,x+
+ stx  packptr
+ puls x,pc
+
+ vsect dp
+numbits rmb 1  Number of bits in bit buffer
+bitbuff rmb 3  Buffer bits from file here
+codemask rmb 2 Mask off just codesize bits.
+ endsect
+* Return next token from file
+nexttoken
+ pshs d
+ ldb  numbits    First, fill bitbuffer with enough bits to make up codesize
+ bra  nexttokst
+nexttokloop
+ ldx  bitbuff    Move other 16 bits forward.
+ stx  bitbuff+1
+ bsr  nextbyte  Get 8 more bits
+ sta  bitbuff
+ addb #8         Increase bit count.
+nexttokst
+ cmpb codesize
+ blo  nexttokloop
+ stb  numbits
+ cmpb #17     Do we have to deal with three bytes?
+ blo  nexttok2 No, 16 or fewer bits, so just deal with two.
+ ldb  #20
+ subb numbits First, we shift until we get to bit #20.
+ clra
+ tfr  d,x
+ ldd  bitbuff We keep first two bytes in D, leave 3rd one in place.
+nexttok31
+ lsra        Analysis shows that we are never past bit 19, so we will
+ rorb        always have to process this loop at least once.
+ ror  bitbuff+2
+ leax -1,x
+ bne  nexttok31
+ tfr  b,a      Now, the first bit of the token we want is out of the first
+ ldb  bitbuff+2 byte, so we're down to two bytes.
+ lsra
+ rorb    Since we start with the least sig bit in bit #20, and we want it
+ lsra    in bit #24, we must shift exactly 4 times.
+ rorb
+ lsra
+ rorb
+ lsra
+ rorb
+ bra  nexttok10  Now we have our token.
+nexttok2
+ cmpb #9      Do we have to deal with two bytes?
+ blo  nexttok1
+ ldb  #16
+ subb numbits
+ clra
+ tfr  d,x
+ ldd  bitbuff
+ stx  -2,s   Test X for zero.
+ beq  nexttok10
+nexttok21
+ lsra
+ rorb
+ leax -1,x
+ bne  nexttok21
+ bra  nexttok10
+nexttok1
+ ldb  bitbuff
+ lda  #8
+ suba numbits
+ beq  nexttok10
+nexttok11
+ lsrb
+ deca
+ bne  nexttok11
+nexttok10
+ anda codemask
+ andb codemask+1
+ ldx  <giftable
+ leax d,x
+ leax d,x
+ leax d,x
+ ldb  numbits
+ subb codesize
+ stb  numbits
+ puls d,pc
+
+outcode
+ pshs a,b,x,y,u
+ ldu  <gifstack
+ cmpx 6,s        U is on the stack.
+ lbhi E$Format   If the code is too large, report a format error
+ beq  outcode1
+ bsr  outcsub    If it's in the table, process it.
+ bra  outcode2
+outcode1
+ ldx  lastcode   If it's not in the table, then it is the last code
+ bsr  outcsub    followed by the first color of the last code.
+ lda  firstcolor
+ lbsr gifoutpix
+outcode2
+ puls a,b,x,y,u,pc
+
+outcsub
+ pshs y 
+ ldy  #0000
+outc1
+ lda  2,x
+ leay 1,y
+ pshu a
+ ldx  ,x
+ bne  outc1
+ tfr  y,x   Put the count in X
+ puls y
+
+ sta  firstcolor  Now we know the first color, so store it.
+
+outc2
+ pulu a
+ lbsr gifoutpix
+ leax -1,x
+ bne  outc2
+ rts
+
+* Add a code to the table
+addcode
+ pshs a,b
+ puls a,b,pc
+
+setlimit
+ pshs a,b,x
+ lda  codesize
+ cmpa #12
+ bhs  setlim1
+ inca
+setlim1
+ sta  codesize
+ lbsr powertwo
+ ldx  giftable
+ leax d,x
+ leax d,x
+ leax d,x
+ stx  codelimit
+ subd #1
+ std  <codemask
+ puls a,b,x,pc
+
+ endsect

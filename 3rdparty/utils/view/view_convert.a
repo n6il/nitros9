@@ -1,0 +1,178 @@
+*
+* Routines for converting screen types.
+* Each routine expects a pointer in X to one line of screen data.
+* Data is converted in-place.
+*
+* These conversions lose no data.
+*   MGE57:  Converts type 5 line to type 7 line.
+*   MGE67:  Converts type 6 line to type 7 line.
+*   MGE68:  Converts type 6 line to type 8 line.
+* These conversions, of necessity, lose some data.
+*   MGE76:  Converts type 7 line to type 6 line by throwing out odd pixels
+*   MAC75:  Converts type 7 line to type 5 line by keeping hi-order bit of pixel
+*   MAC76:  Converts type 7 line to type 6 line by averaging pairs of pixels
+*
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+ psect view_convert_a,0,0,0,0,0
+
+*
+* Converts type 6 (320 4-color) into type 7 (640 4-color)
+*
+MGE67tab fcb $00,$05,$0a,$0f,$50,$55,$5a,$5f,$a0,$a5,$aa,$af,$f0,$f5,$fa,$ff
+MGE67:
+ pshs y
+ leay MGE67tab,pcr
+ bsr  MGEconv
+ puls y,pc
+
+*
+* Converts type 5 (2-color) line of data into type 7 (4-color)
+*
+MGE57tab fcb $00,$01,$04,$05,$10,$11,$14,$15,$40,$41,$44,$45,$50,$51,$54,$55
+MGE57:
+ pshs y
+ leay MGE57tab,pcr
+ bsr  MGEconv
+ puls y,pc
+
+MGE68tab fcb $00,$01,$02,$03,$10,$11,$12,$13,$20,$21,$22,$23,$30,$31,$32,$33
+MGE68:
+ pshs y
+ leay MGE68tab,pcr
+ bsr  MGEconv
+ puls y,pc
+
+MGEconv
+ pshs a,b,x,y,u
+ leau 80,x   U pts to end of source.
+ leax 160,x   X pts to end of destination.
+ ldb  #80
+MGEconvloop
+ lda  ,-u
+ anda #$0f
+ lda  a,y
+ sta  ,-x
+ lda  ,u
+ lsra
+ lsra
+ lsra
+ lsra
+ lda  a,y
+ sta  ,-x
+ decb
+ bne  MGEconvloop
+ puls a,b,x,y,u,pc
+
+*
+* Throw out every other pixel to convert 640 4-color to 320 4-color
+MGE76table fcb $00,$10,$20,$30,$40,$50,$60,$70,$80,$90,$a0,$b0,$c0,$d0,$e0,$f0
+MGE76:
+ pshs a,b,x,u,y
+ leay MGE76table,pcr
+ tfr  x,u
+ ldb  #160
+ pshs b
+MGE76loop
+ lda  1,x
+ anda #$0f
+ ldb  ,x++
+ andb #$0f
+ ora  b,y
+ sta  ,u+
+ dec  ,s
+ bne  MGE76loop
+ puls b
+ puls a,b,x,u,y,pc
+
+
+*
+* Convert type 7 data to type 5 data for MAC screen.
+*
+MAC75:
+ pshs a,b,x,y,u
+ leau ,x
+ ldy  #160
+MAC75loop
+ ldb  ,x+
+ lslb
+ rola
+ lslb
+ lslb
+ rola
+ lslb
+ lslb
+ rola
+ lslb
+ lslb
+ rola
+ ldb  ,x+
+ lslb
+ rola
+ lslb
+ lslb
+ rola
+ lslb
+ lslb
+ rola
+ lslb
+ lslb
+ rola
+ sta  ,u+
+ leay -1,y
+ bne  MAC75loop
+ puls a,b,x,y,u,pc 
+
+* Convert type 7 to type 6 by averaging pairs of pixels.
+MAC76table fcb $00,$40,$40,$80,$00,$40,$80,$80,$40,$40,$80,$c0,$40,$80,$80,$c0
+MAC76:
+ pshs a,b,x,y,u
+ leau ,x
+ leay MAC76table,pcr
+ ldb  #160
+ pshs b
+MAC76loop
+ ldb  ,x
+ lsrb
+ lsrb
+ lsrb
+ lsrb
+ ldb  b,y
+ lslb
+ rola
+ lslb
+ rola
+ ldb  ,x+
+ andb #$0f
+ ldb  b,y
+ lslb
+ rola
+ lslb
+ rola
+ ldb  ,x
+ lsrb
+ lsrb
+ lsrb
+ lsrb
+ ldb  b,y
+ lslb
+ rola
+ lslb
+ rola
+ ldb  ,x+
+ andb #$0f
+ ldb  b,y
+ lslb
+ rola
+ lslb
+ rola
+ sta  ,u+
+ dec  ,s
+ bne  MAC76loop
+ puls b
+ puls a,b,x,y,u,pc
+
+ endsect

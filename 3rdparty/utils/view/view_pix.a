@@ -1,0 +1,267 @@
+*
+*
+* SUBS for pix picture format
+*
+* PIXshowpic -- Displays picture, using putline routine
+*
+*
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+ psect  view_pix_a,0,0,0,0,0 
+
+ vsect dp
+pixfirstcol:  rmb 2
+pictwidth rmb 2
+linesize rmb 2
+linecount rmb 2
+updown   rmb 2
+pixsize  rmb 2
+ endsect
+
+PIXshowpic:
+ bsr  header       Get header info
+ lbsr setscreen    Set up screen
+ lbsr setpals      Set up palettes
+ lbsr setvert      Set up Get/Put Buffer
+ std  linesize     Store size of line in bytes.
+
+ lbsr getline
+ ldd  #0
+ std  updown
+showpicloop
+ std  linecount
+
+ ldd  updown       If necessary, get a new line
+ cmpd pictwidth
+ blo  spl1
+ lbsr getline
+ subd pictwidth         Subtract 640.
+ std  updown
+spl1
+
+* Now, dither it and put it on the screen
+ leax altbuff,y    Read from altbuff
+ leau linebuff,y   ... into linebuff.
+ ldd  linesize
+ lbsr pixditherline
+
+ ldd  updown      Add 256 to count.
+ addd pixsize
+ std  updown
+
+ ldd  linecount
+ addd #1
+ cmpd pictwidth
+ bne  showpicloop
+
+ lbsr endvert   Trash Get/Put buffer.
+
+ rts
+
+*
+* read header info from file, and set window type information
+*
+ vsect dp
+endoffile   fcb 0
+double      fcb 0   T=128x128, so we need to double things
+count       rmb 1   Counts down lines
+ endsect
+
+
+header
+ pshs a,b,x,y,u
+ lda  <format
+ cmpa #PIX256Format  Is this definitely 256x256?
+ beq  headbig
+ cmpa #PIX128Format  Is it definitely 128x128?
+ beq  headsmall
+ lbsr I_Size     If neither of those was specified, let's try to use file size
+ lbcs _error     to determine the format.
+ cmpd #10000     If it's over 10000 bytes, we'll take it as 256x256
+ bhi  headbig    Yes, treat it as a 256x256.
+ com  double     Otherwise, treat it as a 128x128 picture.
+headsmall
+ ldd  #128
+ std  pixsize
+ bra  headend
+headbig
+ ldd  #256
+ std  pixsize
+headend
+* Set screen type
+ lda  #7
+ sta  <type
+* Set some miscellaneous variables
+ lda  #0
+ sta  <cyclestart
+ sta  <cycleend
+* Set palettes
+ leax ourpals,pcr
+ leau palette,y
+ ldd  ,x++
+ std  ,u++
+ ldd  ,x++
+ std  ,u++
+* Set Skiplines default
+ ldd  <Skiplines
+ cmpd #$ffff
+ bne  head27
+ ldd  #20
+ std  <Skiplines
+head27
+ cmpd #64    Is it too big?
+ blo  head28
+ ldd  #64
+ std  <Skiplines
+head28
+* Set Size default to BIG
+ lda  <Size
+ bpl  headsize
+ lda  #1
+ sta  <Size
+headsize
+* Set picture width
+ ldd  #600   Default picture width
+ tst  <Size
+ bne  head30
+ ldd  #450   width for fitted picture
+head30
+ std  pictwidth
+* Set the first column to  (640-pictwidth)/2
+ ldd  #640
+ subd pictwidth
+ lsra
+ rorb
+ andb #$fc   Force it to a multiple of 4 for put speed
+ std  pixfirstcol
+
+ puls a,b,x,y,u,pc
+
+ourpals fcb  0,7,56,63
+
+*
+* Getline
+*
+getline
+ pshs a,b,x,y,u
+* First, fill buffers with all zeros
+ leau alt2buff,y
+ leax altbuff,y
+ ldb  #200
+getline3
+ clr  ,u+
+ clr  ,x+
+ decb
+ bne  getline3
+* If at end of file, leave it that way
+ tst  endoffile
+ bne  getline1
+* Get a line into alt2buff
+ leax alt2buff,y
+ pshs y
+ ldd  pixsize
+ lsra
+ rorb
+ tfr  d,y     Number of bytes is 1/2 picture size
+ lbsr I_Read
+ puls y
+ lbcc getline2
+ cmpb #E$EOF
+ bne  getline4
+ com  endoffile
+getline2
+* Now, expand it into altbuff
+ leax alt2buff,y
+ leau altbuff,y
+ ldd  #128     Get number of bytes in altbuff to expand into D.
+ tst  double       If we're doubling, only expand half as many bytes.
+ beq  getline21
+ lsra
+ rorb
+getline21
+ bsr  expandline 
+ bsr  scrunchline  Scrunch it down to 192 pixels.
+ bra  getline1
+* Error exit point
+getline4
+ lbra _error      If not EOF, just exit with error.
+getline1
+ puls a,b,x,y,u,pc
+
+*
+* Expand line by nybbles.
+*
+* Take buffer [X], copy each nybble to a separate byte in [U].
+*    Number of bytes in [X] is in D.
+*
+expandline
+ pshs a,b,x,y,u
+ tfr  d,y
+expand1
+ lda  ,x+
+ tfr  a,b
+ andb #$0f
+ lsra
+ lsra
+ lsra
+ lsra
+ tst  <double
+ beq  expand2
+ sta  ,u+
+ sta  ,u+
+ stb  ,u+
+ stb  ,u+
+ bra  expand3
+expand2
+ std  ,u++
+expand3
+ leay -1,y
+ bne  expand1
+ puls a,b,x,y,u,pc
+
+*
+* Take data in altbuff, and either remove bytes to "fit" it down to
+*    192 bytes, or remove "Skiplines" number from beginning.
+scrunchline
+  pshs a,b,x,y,u
+  leax altbuff,y
+  tfr  x,u
+  tst  <Size
+  bne  scrbegin
+* Fit the data into 192 bytes
+  ldb #192
+scrloop
+  lda  ,u+   Take 4 bytes, and copy 3 of them.
+  sta  ,x+
+  lda  ,u+
+  sta  ,x+
+  lda  ,u+
+  sta  ,x+
+  lda  ,u+
+  subb #3
+  bne  scrloop
+  bra  scrend
+* Remove bytes from beginning.
+scrbegin
+  ldd  <Skiplines
+  leau d,u
+  ldb  #192
+scrloop2
+  lda  ,u+
+  sta  ,x+
+  decb
+  bne  scrloop2
+scrend
+  puls a,b,x,y,u,pc
+
+ endsect

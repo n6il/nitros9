@@ -1,0 +1,174 @@
+*****************************************************************************
+*                                                                           *
+* SUBS for RLE  picture format                                              *
+*                                                                           *
+* RLEshowpic -- Displays picture, using putline routine                     *
+*                                                                           *
+*****************************************************************************
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+ psect  view_rle_a,0,0,0,0,0 
+
+ vsect dp
+double      rmb 1  Yes, double each line, and double each pixel count.
+ endsect
+
+RLEshowpic:
+ bsr  header       Read header info, set palettes, etc.
+
+ lbsr setscreen
+ lbsr setpals
+ lbsr setbuffer
+
+ ldd  #0
+showpicloop
+ lbsr getline
+ lbsr putline
+ tst  double
+ beq  nodoub
+ lbsr putline
+nodoub
+ addd #1
+ cmpd #192
+ bne  showpicloop
+ rts
+
+*
+* read header info from file, and set window type information
+*
+ vsect dp
+endoffile   rmb 1
+ endsect
+
+
+header
+ pshs a,b,x,y,u
+ ldd  #$003f     Set palettes to white on black
+ std  palette,y
+ lda  #6
+ sta  <type
+
+head0
+ lbsr I_GetByte  The start of an RLE picture is an ESC G sequence.
+ lbcs _error
+ cmpa #27
+ bne  head0
+head1
+ lbsr I_GetByte
+ lbcs _error
+ cmpa #27
+ beq  head1
+ cmpa #'G
+ bne  head0
+
+ lbsr I_GetByte
+ lbcs _error
+ cmpa #'H
+ beq  headmisc
+ cmpa #'M
+ lbne E$Format  Illegal format!
+ com  double    Turn on double flag.
+
+headmisc
+* Set some miscellaneous variables
+ clr  <cyclestart
+ lda  #1
+ sta  <cycleend   So we can toggle black/white
+ ldd  #120
+ std  <cyclerate
+
+ clr  <cycle      Turn off cycling
+ clr  <extranum    No color rotation
+ ldd  <Skiplines
+ cmpd #$ffff        Is Skiplines still default?
+ bne  headskip      No, don't change it.
+ ldd  #0
+ std  <Skiplines   Set it to 0
+headskip
+ puls a,b,x,y,u,pc
+
+ vsect dp
+mask       fcb $40   Mask to set a pixel
+foreground rmb 1     In foreground or background? default=0.
+count      rmb 1
+ endsect
+
+*
+* Getline
+*
+getline
+ pshs a,b,x,y,u
+* Clear out linebuff
+ leau linebuff,y
+ ldb  #160
+getline3
+ clr  ,u+
+ decb
+ bne  getline3
+* If at end of file, leave it that way
+ tst  endoffile
+ lbne getline1
+* Get a line from the file
+ leax linebuff+8,y
+ clrb
+ lda  count
+ bne  setdoit
+getbyte
+ com  foreground
+ lbsr I_GetByte
+ bcs  geteof
+ suba #$20
+ blo  getbyte
+ tst  double
+ beq  setdoit
+ lsla            Double count.
+setdoit
+ sta  count
+ beq  getbyte
+setloop
+ bsr  pixset   Set/reset this pixel
+ dec  count
+ decb          Count down pixels on line
+ beq  getline1
+ tst  count
+ beq  getbyte  End of repeat, get another byte.
+ bra  setloop  End of line, save leftover and quit.
+* Handle EOF situation, any I/O error should come here.
+geteof
+ cmpb #E$EOF
+ bne  getline4
+ com  endoffile
+ bra  getline1
+getline4
+ lbra _error      If not EOF, just exit with error.
+getline1
+ puls a,b,x,y,u,pc
+
+pixset
+ pshs a
+ tst  foreground
+ bne  pixreset   If in background, don't set the pixel.
+ lda  ,x
+ ora  mask
+ sta  ,x
+ andcc #^Carry  clear the carry flag.
+pixreset
+ ror  mask
+ bcc  pixend    If we went past the end of the byte,
+ ror  mask      Get the two mask bits out of the carry
+ leax 1,x       Bump X to next byte.
+pixend
+ ror  mask
+ puls a,pc
+
+ endsect

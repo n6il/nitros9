@@ -1,0 +1,308 @@
+*****************************************************************************
+*                                                                           *
+* SUBS for vef picture format                                               *
+*                                                                           *
+* VEFshowpic -- Displays picture, using putline routine                     *
+*                                                                           *
+*****************************************************************************
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+ psect  view_vef_a,0,0,0,0,0 
+
+ vsect dp
+linesize rmb 2
+endofpic rmb 1
+VEFtype  rmb 1
+numpics  rmb 1  Total number of pictures to load.
+ endsect
+
+SetVF:
+ tst  <format
+ bne  SetVF1
+ sta  numpics  Set total number of pictures.
+ lda  #VEFFormat
+ sta  <format
+SetVF1
+ rts
+
+VEFshowpic:
+ clra
+VEFshow1
+ bsr  showvef
+ inca
+ cmpa numpics
+ bne  VEFshow1
+
+* Now, were we displaying multiple pix??
+ lda  numpics
+ cmpa #1
+ beq  onepic
+ lda  <cyclestart   Disable cycling
+ sta  <cycleend
+ lda  #$ff
+ sta  <flipping    Enable flipping.
+ ldd  #2
+ std  <fliprate
+onepic
+ rts
+  
+showvef
+ pshs a,b,x,y,u
+ bsr  header       Get header info
+ lbsr setscreen    Set up screen
+ lbsr setpals      Set up palettes
+
+ lbsr setbuffer    Set up Get/Put Buffer
+ std  linesize     Store size of line in bytes.
+ lda  VEFtype
+ cmpa #2
+ bne  showvef00
+ ldd  linesize   Screen type 2 is simulated, so halve the linesize value
+ lsra
+ rorb
+ std  linesize
+showvef00
+
+ ldd  <Skiplines  Skip lines at top.
+ beq  skip01
+skip00
+ lbsr getline
+ subd #1
+ bne  skip00
+skip01
+
+ ldd  #00        Now display 192 lines
+showpicloop
+ lbsr getline
+ lbsr putline
+ addd #1
+ cmpd #192
+ bne  showpicloop
+
+showpicclear
+ lbsr getline    Now read until end of picture (to prepare for next file).
+ tst  endofpic
+ beq  showpicclear
+
+ puls a,b,x,y,u,pc
+
+*
+* read header info from file, and set window type information
+*
+ vsect dp
+endoffile   rmb 1
+compression rmb 1   0= Normal, $80=Squashed
+count       rmb 1   Counts number packets to decode
+linesleft   rmb 1   Counts down lines in picture.
+ endsect
+
+header
+ pshs a,b,x,y,u
+ clr  endofpic
+ ldb  #200
+ stb  linesleft
+ leax altbuff,y read in type and palettes into altbuff
+ pshs y
+ ldy  #18
+ lbsr I_Read
+ lbcs _error
+ puls y
+ leax altbuff,y
+ lda  ,x+      This byte is the compression type: 0=none, $80=squashed.
+ beq  header10
+ cmpa #$80     Squashed format
+ lbne E$Format
+header10
+ sta  compression
+ lda  ,x+
+ cmpa #4
+ lbhi E$Format
+ sta  VEFtype
+ tst  <type
+ bne  headtype
+ leau headtable,pcr
+ lda  a,u
+ sta  <type
+headtype
+ leau palette,y
+ ldb  #16
+headloop
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  headloop
+ bra  headmisc
+headtable fcb 8,7,8,6,5
+headmisc
+* Set some miscellaneous variables
+ lda  #8            Set first, last palette for animation
+ sta  <cyclestart
+ lda  #15
+ sta  <cycleend
+ ldd  #5            Default animation delay
+ std  <cyclerate
+ lda  #0            No color rotation
+ sta  <extranum
+ ldd  <Skiplines
+ cmpd #$ffff        Is Skiplines still default?
+ bne  headskip      No, don't change it.
+ ldd  #8
+ std  <Skiplines   Set it to 8.
+headskip
+ puls a,b,x,y,u,pc
+
+*
+* Getline
+*
+getline
+ pshs a,b,x,y,u
+* First, fill buffers with all zeros
+ leau linebuff,y
+ ldb  #160
+getline3
+ clr  ,u+
+ decb
+ bne  getline3
+* If at end of file, leave it that way
+ tst  endoffile
+ bne  getline1
+* If at end of picture, leave it that way
+ tst  endofpic
+ bne  getline1
+* Decrement lines left in pic, set endofpic if appropriate
+ dec  linesleft
+ bne  morelines
+ com  endofpic
+morelines
+* Test compression method
+ tst  compression
+ bmi  squash
+* Get an unsquashed line
+ pshs y
+ leax linebuff,y     read in one line of screen
+ ldy  linesize
+ lbsr I_Read
+ puls y
+ lbcs getline2       Error through EOF check.
+ bra  getline0       Now exit.
+* Get a squashed line
+squash
+ leau linebuff,y
+ ldb  #2
+ stb  count
+squash1
+ lbsr I_GetByte
+ bcs  getline2
+ tfr  a,b
+ clra
+ leax altbuff,y    Use AltBuff to store data to unsquash
+ pshs y
+ tfr  d,y
+ lbsr I_Read
+ puls y
+ lbcs getline2
+ ldd  linesize
+ lsra
+ rorb          Always decode half a line at a time.
+ bsr  unsquash
+ dec  count
+ bne  squash1
+ bra  getline0
+* Handle read error
+getline2
+ cmpb #E$EOF
+ bne  getline4
+ com  endoffile
+ bra  getline1
+* Finished reading line
+getline0
+ lda  VEFtype
+ cmpa #2
+ bne  getline1
+ bsr  expand
+ bra  getline1
+* Handle bad errors
+getline4
+ lbra _error      If not EOF, just exit with error.
+* Exit getline
+getline1
+ puls a,b,x,y,u,pc
+
+*
+* Expand a 160 pixel 16-color line to a 320 pixel 16-color line
+*
+expand
+ pshs a,b,x,y,u
+ leax linebuff,y
+ leay exptable,pcr
+ ldd  linesize  (Actually fits in just B)
+ leax d,x   X points to end of 160 pixel line
+ leau d,x   U points to end of 320 pixel line
+exploop
+ lda  ,-x
+ anda #$0f
+ lda  a,y
+ sta  ,-u
+ lda  ,x
+ lsra
+ lsra
+ lsra
+ lsra
+ lda  a,y
+ sta  ,-u
+ decb
+ bne  exploop
+ puls a,b,x,y,u,pc
+
+exptable fcb $00,$11,$22,$33,$44,$55,$66,$77,$88,$99,$AA,$BB,$CC,$DD,$EE,$FF
+
+*
+* X points to data to unsquash, U points to destination buffer
+*    unsquashed result will be exactly B bytes.
+* Exit: U points to end of unsquashed, all else unchanged.
+*
+ vsect dp
+unsq_count rmb 1
+ endsect
+
+unsquash
+ pshs a,b,x
+ stb  unsq_count
+unsq_loop
+ ldb  ,x+
+ beq  unsq_end
+ bpl  gl_straight
+ lda  ,x+
+* Deal with repeated byte
+gl_comp
+ andb #$7f       Strip off high bit
+gl_comp2
+ sta  ,u+         Store a copy of this byte
+ dec  unsq_count
+ beq  unsq_end
+ decb             decrement repeat count
+ bne  gl_comp2    Not done, loop
+ bra  unsq_loop   Done, get another control value from file.
+* Deal with straight section
+gl_straight
+ lda  ,x+
+ sta  ,u+          store it
+ dec  unsq_count
+ beq  unsq_end
+ decb              count down bytes left
+ bne  gl_straight
+ bra  unsq_loop    If done, get next section
+unsq_end
+ puls a,b,x,pc
+
+ endsect

@@ -1,0 +1,390 @@
+*******************************************************************************
+*
+* SUBS for CM3 picture formats
+*
+* CM3showpic -- display picture, using putline routine
+*
+*******************************************************************************
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+StdOut equ 1
+StdErr equ 2
+
+ psect view_cm3_a,0,0,0,0,0
+
+ vsect dp
+endoffile  rmb 1     T= EOF reached, so always return linebuff all 0
+patterns   rmb 1     T= patterns must be skipped
+totscreens fcb 1   Total number of screens in picture
+numscreens fcb 1   Number of screens remaining in picture- for Getline sub.
+lines      rmb 1    Number of lines remaining on this screen
+lastbyte   rmb 1
+ endsect
+
+
+ vsect
+image     rmb 20
+action    rmb 25
+ endsect
+
+*
+* Main picture display function
+*
+CM3showpic:
+ bsr  header
+
+ pshs d
+ ldd  <Skiplines
+ beq  skip01
+skip00
+ lbsr getline
+ subd #1
+ bne  skip00
+skip01
+
+ lbsr setscreen    
+ lbsr setpals
+ lbsr setbuffer
+ lbsr getline
+
+spscreens
+ ldd  #0
+showpicloop
+ lbsr putline
+ lbsr getline
+ tst  <Size
+ bgt  spnoskip    Size >0, don't do skip.
+ pshs a
+ lda  <totscreens
+ cmpa #2          Two screens?
+ puls a
+ blo  spnoskip    No, ignore this.
+spskip
+ lbsr getline     Yes, get another line.
+spnoskip
+ addd #1
+ cmpd #192
+ bne  showpicloop
+ tst  <Size
+ beq  showpicend   Only do another screen if not small size.
+ lbsr getline
+ tst  <endoffile
+ bne  showpicend
+ lbsr setscreen    
+ lbsr setpals
+ bra  spscreens
+showpicend
+ puls d,pc
+
+*
+* read header info from file, and set window type information
+*      Uses  altbuff  to store header as it's read from disk.
+*
+header
+ pshs a,b,x,y,u
+ leax altbuff,y read in type and palettes
+ pshs y
+ ldy  #29
+ lbsr I_Read
+ puls y
+ lbcs _error
+ leax altbuff,y
+ lda  ,x+      
+ cmpa #1       No patterns
+ beq  head2
+ cmpa #0       0 or $80 are types for screens with patterns
+ beq  head0
+ cmpa #$80
+ lbne E$Format
+ lda  #2
+ sta  numscreens
+ sta  totscreens
+head0
+ com  patterns
+head2
+
+ leau palette,y   Set palettes
+ ldb  #16
+headloop
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  headloop
+
+ ldb  ,x+         Store rate for palette rotation
+ clra
+ std  <cyclerate
+
+ ldd  #$0b0e        Palette cycling starts at palette 11, ends at 14
+ sta  <cyclestart
+ stb  <cycleend
+
+ ldb  ,x+         Get rate for color cycling
+ clra
+ std  <extrarate
+
+ ldb  #8
+ leau extrapals,y  Set palette values for color cycling
+head2loop
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  head2loop
+
+ lda  #10
+ sta  <extraslot
+
+ lda  ,x+
+ bmi  headanim       If no animation, set cyclestart=cycleend
+ lda  <cyclestart
+ sta  <cycleend
+headanim
+
+ ldb  #8
+ lda  ,x+
+ bmi  headrot       Set number of values for color rotation.
+ clrb
+headrot
+ stb  <extranum
+
+ lda  <type
+ bne  headtype
+ lda  #8        Set screen type to 8
+ sta  <type
+headtype
+
+ lda  #$ff
+ sta  <cycle    Turn cycling on.
+
+ tst  patterns     Do we need to skip pattern info?
+ beq  head3
+ leax linebuff,y
+ pshs y
+ ldy  #243         This many bytes of pattern info must be skipped.
+ lbsr I_Read
+ puls y
+ lbcs _error
+head3
+
+ ldd  <Skiplines  Set lines to skip if not already set.
+ cmpd #$ffff
+ bne  headskip
+ ldd  #0
+ std  <Skiplines
+headskip
+
+ lda  <Size
+ bpl  headsize
+ lda  #1        Default size is BIG.
+ sta  <Size
+headsize
+
+ ldd  #120
+ std  <fliprate    Set to flip every 2 seconds.
+
+ leax altbuff,y  Clear out buffer with "last line" info.
+ clrb
+headclear
+ clr  ,x+
+ decb
+ bne  headclear
+ 
+ puls a,b,x,y,u,pc
+
+
+*
+* Getline
+*
+getline
+ pshs a,b,x,y,u
+* Clear line and check for end-of-file condition
+ leau linebuff,y
+ ldb  #160
+getl1
+ clr  ,u+
+ decb
+ bne  getl1
+ tst  endoffile    Are we at end-of-file?
+ lbne getline1
+* Check if we're at the beginning of a new screen.
+ tst  lines
+ bne  getl2
+* If so, and numscreens=0, then end-of-file
+ dec  numscreens
+ bpl  getl3
+ com  endoffile
+ lbra getline1
+getl3 
+ lbsr I_GetByte
+ sta  lines
+getl2
+* get header byte
+ lbsr I_GetByte
+* Test for compressed/uncompressed line.
+ tsta
+ bpl  getcomp
+*
+* Get uncompressed line.
+*
+getnormal
+ leax linebuff,y   read in one line of screen
+ pshs y
+ ldy  #160
+ lbsr I_Read
+ puls y
+ lbcc getnor2
+geteof
+ cmpb #E$EOF      watch for end-of-file
+ bne  getnor1
+ com  endoffile   Flag end-of-file condition
+ bra  getnor2    Keep on going.
+getnor1
+ lbra _error      If not EOF, just exit with error.
+*
+* Get compressed line.
+*
+getcomp
+ leax image,y    Initialize counters for image and action bits.
+ stx  <imptr
+ leax action,y
+ stx  <actptr
+ ldb  #8
+ stb  <imcnt
+ stb  <actcnt
+
+ tfr  a,b
+ clra
+ cmpd #21
+ lbhi E$Format if >21 action bytes, then error.
+ addd #20      Get total number of bytes for image + action.
+ tfr  d,u
+ leax image,y
+ exg  y,u
+ lbsr I_Read
+ exg  y,u
+ lbcs geteof   Test for end-of-file, etc.
+
+* decode a compressed packet
+ leax altbuff,y
+ leau linebuff,y
+ ldb  #160
+ lda  lastbyte   A always holds the last byte on the line.
+getcomp0
+ bsr tstimage
+ bcc  getcomp9     image byte 0 -> repeat last byte
+ lda  ,x         
+ bsr tstaction    1 image & 0 action -> repeat from above
+ bcc  getcomp9
+ lbsr I_GetByte    1 image & 1 action -> get new value
+getcomp9
+ sta  lastbyte
+ sta  ,u+
+ leax 1,x
+ decb
+ bne  getcomp0
+*
+*  Now, put line where it belongs.
+*
+getnor2
+ leax linebuff,y
+ leau altbuff,y  Copy linebuff to altbuff, to save last line
+ ldb  #160
+getnor3
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  getnor3
+ sta  lastbyte
+* If small and double-screen, then do horizontal compression.
+ tst  <Size
+ bne  getline1
+ lda  <totscreens
+ cmpa #2
+ bne  getline1
+ bsr  squishline
+* Exit getline
+getline1
+ dec  lines
+ puls a,b,x,y,u,pc
+
+*
+* These subs return consecutive bits from the appropriate bit arrays
+*
+ vsect dp
+actptr rmb 2
+actcnt rmb 1
+imptr rmb 2
+imcnt rmb 1
+ endsect
+
+tstaction
+ rol  [actptr]
+ dec  actcnt
+ bne  tstact1
+ pshs a,x
+ ldx  actptr
+ leax 1,x
+ stx  actptr
+ lda  #8
+ sta  actcnt
+ puls a,x
+tstact1
+ rts
+
+tstimage
+ rol  [imptr]
+ dec  imcnt
+ bne  tstim1
+ pshs a,x
+ ldx  imptr
+ leax 1,x
+ stx  imptr
+ lda  #8
+ sta  imcnt
+ puls a,x
+tstim1
+ rts
+
+squishline
+ pshs a,b,x,y,u
+ leax linebuff,y
+ tfr  x,u
+ ldy  #80   Total # of pairs of bytes.
+squish1
+ ldd  ,x++
+ lsrb   Top nybble of B to bottom.
+ lsrb
+ lsrb
+ lsrb
+ andb #$0f  Mask off bottom nybble of B.
+ anda #$f0  .. and top of A.
+ pshs b     Or them together.
+ ora  ,s+
+ sta  ,u+
+ leay -1,y
+ bne  squish1
+
+ ldy  #40   Clear out 40 bytes on right side.
+squish2
+ clr  ,-x
+ leay -1,y
+ bne  squish2
+
+ ldy  #80   Move 80 bytes to center of screen.
+squish3
+ lda  ,-u
+ sta  ,-x
+ leay -1,y
+ bne  squish3
+
+ ldy  #40   Clear out 40 bytes on left side.
+squish4
+ clr  ,-x
+ leay -1,y
+ bne  squish4
+ puls a,b,x,y,u,pc
+
+ endsect

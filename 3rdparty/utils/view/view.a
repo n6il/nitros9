@@ -1,0 +1,226 @@
+*
+* View:  view a picture file on a window screen
+*
+* Global labels:
+*   main:   Main entry point, called by root.a
+*   _exit:  Exit with no error
+*   _error: Exit with error code in B
+*   _abort: Clean up and then exit with no error.
+*   E$Format: Exit with message about illegal file format.
+*
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+StdOut equ 1
+StdErr equ 2
+
+ psect View_a,0,0,0,0,0
+
+main:
+ lbsr SetSig     Install signal trap
+ com  <abort     Set for abort on signal.
+ lbsr select     Send select code to current screen.
+
+ pshs a
+ pshs y
+ os9  F$ID       Get our PID, for use with graphics
+ puls y
+ sta  <PID
+ lbsr killbuffs  Kill off buffers in our group before we start
+ lbsr saveopts   Get StdOut options, and save them.
+ puls a
+
+ pshs d,x
+ leax end,y      Set up free space pool.
+ stx  <MemTop
+ pshs x
+ tfr  s,d
+ subd #stacksize
+ subd ,s++
+ std  <MemSiz
+ puls d,x
+
+ lbsr Parse      Parse command line options, open input file
+
+ lda  <format
+ pshs y
+ lbsr showpic    Display the picture
+ puls y
+
+ lbsr bell
+ lbsr sendsig
+
+ lbsr keywait    Wait for a keypress.
+ lbsr DoSave     Save the picture.
+_abort:
+ lbsr sendsig
+ lbsr cleanup    Cleanup-- Select Stdout, turn on cursor, restore options.
+ lbsr killbuffs  Kill any buffers we used.
+
+* Exit with no error
+_exit:
+ clrb
+_error:
+ OS9  F$Exit
+
+BEL fcb $07
+
+bell
+ pshs a,b,x,y
+ tst  <SigPID
+ bne  bellend  Don't bell if we should send a signal.
+ lda  <outpath
+ leax BEL,pcr
+ ldy  #1
+ os9  I$Write
+bellend
+ puls a,b,x,y,pc
+
+sendsig
+ pshs a,b
+ lda  <SigPID
+ beq  nosig
+ ldb  <SigOut
+ os9  F$Send
+ lbcs _error
+ clr  <SigPID
+nosig
+ puls a,b,pc
+
+E$Format:
+ leax  ErrFmt,pcr
+ ldy   #ErrFmt2-ErrFmt
+ bra   DoError
+ErrFmt fcc "Illegal file format."
+ fcb $0d
+ErrFmt2
+DoError
+ lda   #StdErr
+ os9   I$WritLn
+ ldb   #1
+ bra   _error
+
+*
+* Expects allocation size requested in D,
+*  returns pointer in X.  Error is generated if not enough mem.
+malloc:
+  pshs a,b,y
+  clra
+  clrb
+  os9  F$Mem
+  lbcs _error
+  std  <oldmemsize
+  pshs y
+
+  addd 2,s
+  os9  F$Mem
+  lbcs _error
+  std  <newmemsize
+  puls x
+  puls a,b,y,pc
+
+unmalloc:
+  pshs a,b,y
+  ldd  #0
+  os9  F$Mem
+  lbcs _error
+  cmpd <newmemsize
+  bne  unmalend
+  ldd  <oldmemsize
+  os9  F$Mem
+  lbcs _error
+unmalend
+  puls a,b,y,pc
+
+***************************************
+*                                     *
+* Select according to picture format  *
+*                                     *
+***************************************
+
+SPTable
+ fcb   MAXFormat
+ lbra  MAXshowpic   MAXshowpic also handles all the pmodes
+ fcb   P00Format
+ lbra  MAXshowpic
+ fcb   P01Format
+ lbra  MAXshowpic
+ fcb   P10Format
+ lbra  MAXshowpic
+ fcb   P11Format
+ lbra  MAXshowpic
+ fcb   P20Format
+ lbra  MAXshowpic
+ fcb   P21Format
+ lbra  MAXshowpic
+ fcb   P30Format
+ lbra  MAXshowpic
+ fcb   P31Format
+ lbra  MAXshowpic
+ fcb   P40Format
+ lbra  MAXshowpic
+ fcb   P41Format
+ lbra  MAXshowpic
+ fcb   ARTFormat
+ lbra  MAXshowpic
+ fcb   MGEFormat
+ lbra  MGEshowpic
+ fcb   MGE640Format
+ lbra  MGEshowpic
+ fcb   CM3Format
+ lbra  CM3showpic
+ fcb   CLPFormat
+ lbra  CLPshowpic
+ fcb   PUBFormat
+ lbra  CLPshowpic
+ fcb   VEFFormat
+ lbra  VEFshowpic
+ fcb   PIX256Format
+ lbra  PIXshowpic
+ fcb   PIX128Format
+ lbra  PIXshowpic
+ fcb   PIXFormat
+ lbra  PIXshowpic
+ fcb   IMGFormat
+ lbra  IMGshowpic
+ fcb   RATFormat
+ lbra  RATshowpic
+ fcb   STFormat
+ lbra  STshowpic
+ fcb   MACFormat
+ lbra  MACshowpic
+ fcb   RLEFormat
+ lbra  RLEshowpic
+ fcb   GIFFormat
+ lbra  GIFshowpic
+ fcb   GIFBWFormat
+ lbra  GIFshowpic
+ fcb   MAXCMPFormat
+ lbra  MAXshowpic
+ fcb   ARTCMPFormat
+ lbra  MAXshowpic
+ 
+*
+* Does a jump to the appropriate subr entry point.
+*   Expects picture format code in A.
+*
+showpic
+ pshs  x        Space to store jump destination
+ pshs  x        Save X register
+ leax  SPTable-3,pcr
+sploop
+ leax  3,x
+ cmpa  ,x+      Does the format match?
+ bne   sploop
+ stx   2,s      Jump address is table entry
+ puls  x,pc     restore X and jump.
+
+ endsect

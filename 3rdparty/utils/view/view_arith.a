@@ -1,0 +1,57 @@
+*
+* Arithmetic routines for VIEW
+*
+*
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+ psect view_arith_a,0,0,0,0,0
+*
+* Divide A by B, return fixed-point result in A.B, rounded.
+*
+divAB:
+  pshs b  Put divisor on stack
+  ldb  #17 17-bit result, with last bit in C.
+  pshs b
+  clrb
+  pshs b
+divABloop
+  rol  ,s
+  rola
+  rolb        Shift into B.
+  cmpb  2,s
+  blo   divAB1
+  subb  2,s
+  orcc  #Carry
+  bra   divAB2
+divAB1
+  andcc #^Carry
+divAB2
+  dec   1,s
+  bne   divABloop
+  puls  b     Get fraction part into B
+  adcb  #0    Round by adding in extra decimal place.
+  adca  #0
+  leas  2,s   Clear up stack.
+  rts
+
+* Divide 16-bit value in X by 8-bit value in A, return 16-bit result in D.
+*
+div168:
+  pshs x     The division we want is (XH * 256 + XL) / A
+  pshs d
+  lda  3,s   First, calculate  XL / A
+  ldb  ,s
+  bsr  divAB
+  sta  1,s   Save it.
+  lda  2,s   Now do (XH/A) *256
+  ldb  ,s
+  clr  ,s
+  bsr  divAB
+  addd ,s    Add them to get answer.
+  std  ,s
+  puls d
+  puls x,pc
+ 
+ endsect

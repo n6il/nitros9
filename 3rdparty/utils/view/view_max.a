@@ -1,0 +1,411 @@
+*
+*
+* SUBS for Pmode 4  picture format
+*
+* MAXshowpic -- Displays picture, using putline routine
+*
+*
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+ psect  view_max_a,0,0,0,0,0 
+
+ vsect dp
+totlines rmb 2
+fitcount rmb 2
+linesize rmb 2
+ endsect
+
+MAXshowpic:
+ bsr  header       Read header info, set palettes, etc.
+
+ pshs d
+ ldd  <Skiplines
+ beq  skip01
+skip00
+ lbsr getline
+ subd #1
+ bne  skip00
+skip01
+
+ lbsr setscreen
+ lbsr setpals
+ lbsr setbuffer
+ lda  <border
+ lbsr setborder  Set the border appropriately.
+ lbsr getline
+
+spscreens
+ lbsr nextline
+ ldd  fitcount
+ addd totlines
+spget
+ std  fitcount
+ lbsr getline
+ tst  <Size
+ bne  spnofit
+ ldd  fitcount
+ subd #192
+ bge  spget
+ std  fitcount
+spnofit
+ tst  <endoffile
+ beq  spscreens
+
+showpicend
+ lbsr flipscreens
+
+ lda  <format
+ cmpa #MAXCMPFormat  If it's MAXCMP or ARTCMP, return extra memory.
+ beq  spspecial
+ cmpa #ARTCMPFormat
+ bne  spnormal
+spspecial
+ lbsr EndMAXCMP
+spnormal
+
+ puls d,pc
+
+*
+* read header info from file, and set window type information
+*
+ vsect dp
+endoffile   rmb 1
+totsize   rmb 2
+double rmb 1   True: each line gets doubled.
+doublef rmb 1  True: this is first time this line's been returned.
+fillval rmb 1  Value to blank out lines with.
+pmode   rmb 1  Pmode 0,1,2,3,4,5=Art.
+pformat rmb 1  Pseudo-format: maxcmpformat ->p41format, artcmp -> art
+ endsect
+
+sizetable fcb 16,32,16,32,32,32  Bytes/line in PMode 0,1,2,3,4, ART
+
+header
+ pshs a,b,x,y,u
+
+ lda  <format
+ cmpa #MAXCMPFormat   Handle MAXCMP specially
+ bne  headmode1
+ lda  #P41Format      MAXCMP looks like PMode 4
+ bra  headmode2
+headmode1
+ cmpa #ARTCMPFormat  Handle ARTCMP specially
+ bne  headmode2
+ lda  #ARTFormat     ARTCMP looks like ART
+headmode2
+ sta  <pformat
+
+ lda  <pformat
+ suba #P00Format
+ lsra           Divide by two, so A holds the pmode
+ sta  pmode
+ leax sizetable,pcr
+ ldb  a,x
+ clra
+ std  linesize   Set number bytes/line
+
+ lda  <pformat
+ cmpa #ARTFormat
+ beq  headbord    ART is _really_ a 2-color mode. 
+ suba #P00Format  2-color modes need border set to 3, 4 color to 0
+ anda #2
+ bne  headbord1
+headbord
+ lda  #3
+ sta  <border
+ lda  #$ff
+ sta  fillval
+headbord1
+
+ lda  <pmode
+ cmpa #1      For PMode's 0 and 1, we double each line to simulate
+ bhi  headdoub    96 line graphics screen
+ com  double
+headdoub
+
+ leax altbuff,y Read in header into altbuff
+ lda  <format
+ cmpa #MAXCMPFormat  First, is this MAXCMP or ARTCMP?
+ beq  headspecial
+ cmpa #ARTCMPFormat
+ beq  headspecial    If so, go decode it, etc.
+ pshs y
+ ldy  #5       Otherwise, just read the header.
+ lbsr I_Read
+ lbcs _error
+ puls y
+ bra  headnormal
+headspecial
+ lbsr MAXCMPdecode  Decode MAXCMP picture, set up header info at ,X
+headnormal
+
+ lda  #6
+ sta  <type   Use screen type 6: 320x192 by 4 color
+
+ leax altbuff,y Now, interpret header.
+ lda  ,x+
+ lbne E$Format  This must be zero.
+ ldd  ,x++
+ std  totsize   This gives total # bytes in file.
+ ldu  linesize  Calculate total number of lines in file.
+ pshs u
+ lsr  1,s
+calclines
+ lsra        Since linesize is always a power of two, this works.
+ rorb
+ lsr  1,s
+ bne  calclines
+ puls u
+ tst  double   Are we doubling lines?
+ beq  doubtot  
+ lsla        Yes, double the number of lines for proper scaling.
+ rolb
+doubtot
+ std  totlines
+
+ leax pals01,pcr  First, handle artifacted stuff as a special case.
+ ldb  <pmode
+ cmpb #5
+ beq  headpals
+ leax pals00,pcr
+ ldb  <pformat
+ subb #P00Format  Formats alternate between the 4 palette choices.
+ andb #3          So, interpret mod 4.
+ lslb             Times 4 to get the beginning of the palette
+ lslb
+ abx
+
+headpals
+ leau palette,y
+ ldb  #16
+ pshs b
+headloop
+ lda  ,x+
+ sta  ,u+
+ dec  ,s
+ bne  headloop
+ puls b
+
+* Set some miscellaneous variables
+ lda  #1
+ sta  <cyclestart   Cycle palettes 1 and 2 to allow switching artifact modes
+ lda  #2
+ sta  <cycleend
+ clr  <cycle
+ clr  <extranum lda  No color rotation
+
+ ldd  <Skiplines
+ cmpd #$ffff        Is Skiplines still default?
+ bne  headskip      No, don't change it.
+ ldd  #0
+ std  <Skiplines   Set it to 0
+headskip
+
+ lda  <Size
+ bpl  headsize
+ lda  #1      Default to BIG size
+ sta  <Size
+headsize
+
+ puls a,b,x,y,u,pc
+
+* Palettes for 2-color set 0, 2-color set 1, 4-color set 0, and 4-color set 1
+pals00  fcb 0,0,0,18   Black and green.
+pals01  fcb 0,9,36,63  Includes artifacted colors.
+pals10  fcb 18,54,36,9
+pals11  fcb 63,27,45,38
+
+
+*
+* Getline
+*
+getline
+ pshs a,b,x,y,u
+* If doublef is set, return same line again
+ tst  double  Is double in effect?
+ beq  nodoub  No, just do normal thing.
+ tst  doublef
+ bne  getline1
+nodoub
+* First, clear out buffer
+ leau linebuff,y
+ lda  fillval
+ ldb  #160
+getline3
+ sta  ,u+
+ decb
+ bne  getline3
+* If at end of file, leave it that way
+ tst  endoffile
+ lbne getline1
+* Get a line from the file
+ leax linebuff+8,y     read in one line of screen
+ ldd  <totsize
+ cmpd linesize
+ bhs  getlok
+ com  endoffile  If <1 line left, mark end of file and quit.
+ lbra getline1
+getlok
+ pshs y
+ ldy  linesize     Get 1 line's worth
+ lbsr getmaxline
+ puls y
+ lbcs geteof       Error through EOF check.
+ ldd  <totsize
+ subd linesize     Count down bytes in file.
+ std  <totsize
+* Now, we have to expand the bytes to get a good picture format.
+ ldb  <pmode
+ bitb #1       Odd pmode's are 4-color
+ bne  cnvcol
+cnvbw
+ bsr  oneexpand    Everything else is 2-color.
+ bra  cnvfinish
+cnvcol
+ bsr  twoexpand
+cnvfinish
+ ldd  linesize
+ lslb    We already doubled the line size once.
+cnfloop
+ cmpb #64
+ bhs  getline7
+ bsr  twoexpand  Expand out line until it's 64 bytes long.
+ lslb
+ bra  cnfloop
+
+getline7
+ tst  <Size
+ bne  getline1  If Big or larger, don't do horizontal scaling
+ ldd  <totlines
+ cmpd #300
+ blo  getline1  If not double-page, don't do scaling.
+ bsr  horscale  Do the scaling
+ bra  getline1  End.
+
+geteof
+ cmpb #E$EOF
+ bne  getline4
+ com  endoffile
+ bra  getline1
+getline4
+ lbra _error      If not EOF, just exit with error.
+getline1
+ com  doublef     Complement double flag.
+ puls a,b,x,y,u,pc
+
+* X points to location, Y holds needed count
+getmaxline
+ pshs a
+ lda  <format
+ cmpa #MAXCMPFormat
+ beq  getlinespecial
+ cmpa #ARTCMPFormat
+ beq  getlinespecial
+
+ lbsr I_Read     Just Read line if normal file
+ bra  getlinenormal
+getlinespecial
+
+ lbsr MAXCMPline
+getlinenormal
+ puls a,pc
+
+arttable fcb $00,$05,$0A,$0F,$50,$55,$5A,$5F,$A0,$A5,$AA,$AF,$F0,$F5,$FA,$FF
+pm4table fcb $00,$03,$0C,$0F,$30,$33,$3C,$3F,$C0,$C3,$CC,$CF,$F0,$F3,$FC,$FF
+
+oneexpand
+ pshs a,b,x,y,u
+ leay pm4table,pcr  Expand each 1 bit to 2 bits
+ bra  cnvdo
+twoexpand
+ pshs a,b,x,y,u
+ leay arttable,pcr  Double each 2 bits
+cnvdo
+ leau 64,x
+ leax 32,x  Expand 32 bytes out to 64.
+ lda  #32
+ pshs a
+cnvloop
+ lda  ,-x
+ tfr  a,b
+ lsra
+ lsra
+ lsra
+ lsra
+ andb #$0f
+ lda  a,y
+ ldb  b,y
+ std  ,--u
+ dec  ,s
+ bne  cnvloop
+ puls a
+ puls a,b,x,y,u,pc
+
+*
+* Take the picture line and squeeze it horizontally by half.
+*
+horscale
+ pshs a,b,x,u
+ leax linebuff+8,y
+ leau linebuff+8,y
+ bsr  horsub1
+ leax linebuff+72,y
+ leau linebuff+40,y
+ bsr  horsub2
+ puls a,b,x,u,pc
+
+horsub0
+ bsr  horsuba  Do it twice.
+horsuba
+ lslb   Move 1 pixel over, skip one.
+ rola
+ lslb
+ rola
+ lslb
+ lslb
+ rts
+
+* Compress the picture.
+horsub1
+ ldb  #32  We do two bytes at a time.
+ pshs b
+horsloop
+ ldb  ,x+
+ bsr  horsub0
+ ldb  ,x+
+ bsr  horsub0
+ sta  ,u+
+ dec  ,s
+ bne  horsloop
+ puls b
+ rts
+
+* Center result data on line.
+horsub2
+ bsr  horsub3 Clear out last 16 bytes on line.
+ ldb  #32
+horsloop2
+ lda  ,-u     Move 32 bytes to center.
+ sta  ,-x
+ decb
+ bne  horsloop2
+horsub3
+ lda  linebuff,y
+ ldb  #16
+horsloop3
+ sta  ,-x     Clear out first 16 bytes.
+ decb
+ bne  horsloop3
+ rts 
+
+ endsect

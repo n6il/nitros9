@@ -1,0 +1,192 @@
+*
+* Debug routines
+*
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+ psect debug_a,0,0,0,0,0
+*
+* Output bin byte in A to stdout
+*
+binout:
+  pshs a,b,cc,x,y
+  ldx  #8   8 bits to write out.
+binout1
+  ldb  #'0  
+  lsra      Get next least significant bit
+  adcb #0   B will be 0 or 1
+  pshs b    Save the digit.
+  leax -1,x
+  bne  binout1
+  tfr  s,x  Now, output the 8 digits.
+  ldy  #8
+  lda  #2
+  os9  I$Write
+  leas 8,s
+  puls a,b,cc,x,y,pc  
+
+  
+*
+* Output hex byte in A to stdout
+*
+hexout:
+  pshs a,b,cc,x,y
+  tfr  a,b
+  anda #$0f
+  adda #$90
+  daa
+  adca #$40
+  daa
+  pshs a
+  lda  #$10
+  mul
+  adda #$90
+  daa
+  adca #$40
+  daa
+  pshs a
+  lda  #2
+  tfr  s,x
+  ldy  #2
+  os9  I$Write
+  leas 2,s
+  puls a,b,cc,x,y,pc
+
+CCdat fcc "efhinzvc"
+
+CCOut
+  pshs cc,dp,a,b,x,y,u
+  pshs a
+  leau CCdat,pcr
+  pulu cc,dp,a,b,x,y   Move 8 bytes to the stack.
+  pshs cc,dp,a,b,x,y
+  leax -1,s            X points to CC info - 1
+  ldb  #8
+  lda  #'-
+CCOloop
+  ror  8,s
+  bcs  CCOSet
+  sta  b,x
+CCOSet
+  decb
+  bne  CCOloop
+  lda  #2
+  leax ,s  
+  ldy  #8
+  os9  I$Write
+  leas 9,s      Clean up stack
+  puls a,b,cc,dp,x,y,u,pc
+
+*
+* Output byte in D to stderr
+hexout2
+  pshs a,b,cc
+  bsr  hexout
+  exg  b,a
+  bsr  hexout
+  puls a,b,cc,pc
+
+*
+* for single-byte regs, output hex + ASCII
+hexout1
+  pshs a,b,x,y,cc
+  bsr  hexout
+  anda #$7f   Strip off high bit
+  cmpa #$7f
+  beq  ho0
+  cmpa #$20
+  bhs  ho1
+ho0
+  lda  #'.
+ho1
+  pshs a      Put character on stack.
+  ldb  #$20
+  pshs b      Put space before it.
+  lda  #2
+  ldy  #2
+  tfr  s,x
+  os9  I$Write
+  puls x       Clean up stack.
+  puls a,b,x,y,cc,pc
+
+CCreg fcc " CC:"
+Areg  fcc "  A:"
+Breg  fcc "  B:"
+DPreg fcc " DP:"
+Xreg  fcc "  X:"
+Yreg  fcc "  Y:"
+Sreg  fcc "  S:"
+Ureg  fcc "  U:"
+PCreg fcc " PC:"
+
+regdmp:
+   pshs u    Push actual U
+   leau 4,s  Make U be S  (Note: no CC flags affected.)
+   pshs cc,a,b,dp,x,y,u  Now push rest.
+   tfr  s,u
+
+   leax CCreg,pcr
+   ldy  #4         First do CC register.
+   lda  #2
+   os9  I$Write
+   lda  ,u+
+   lbsr CCOut
+   leax 4,x
+
+   ldb  #3
+dmpregs1
+   pshs b
+   ldy  #4  
+   lda  #2
+   os9  I$Write
+   lda  ,u+
+   bsr  hexout1
+   leax 4,x
+   puls b
+   decb
+   bne  dmpregs1   
+
+   ldb  #5
+dmpregs2
+   pshs b
+   ldy  #4  
+   lda  #2
+   os9  I$Write
+   ldd  ,u++
+   lbsr hexout2
+   leax 4,x
+   puls b
+   decb
+   bne  dmpregs2
+
+   bsr  crlf         Output the final CR.
+
+*   ldx  #300      Sleep for 5 seconds.
+*   os9  F$Sleep
+
+   puls cc,a,b,dp,x,y,u
+   puls u,pc
+
+
+*
+* Miscellaneous output routines
+*
+crlf:
+   pshs a,b,cc,x,y
+   lda  #$0d
+   bra  Chrout
+Space:
+   pshs a,b,cc,x,y
+   lda  #$20
+Chrout
+   pshs a
+   tfr  s,x
+   ldy  #1
+   lda  #2
+   os9  I$WritLn
+   puls a
+   puls a,b,cc,x,y,pc
+
+   endsect

@@ -1,0 +1,108 @@
+*
+* Save current picture to a file
+*   SetSave:  - Expects Picture format code in A, X points to filename.
+*               Opens save file, prompts for overwrite, sets up save variables.
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+StdIn  equ 0
+StdOut equ 1
+StdErr equ 2
+
+ psect view_setsave_a,0,0,0,0,0
+
+* vsect dp
+*SaveFormat rmb 1  These are all declared in view_save.a
+*SavePath   rmb 1
+* endsect
+
+
+SetSave:
+ pshs a,b,y,u
+ sta  <SaveFormat  Set picture format for save.
+ clr  <SavePath    SavePath = 0 will flag no save.
+ 
+* Try to Create the file specified.
+ lda  #WRITE.     
+ ldb  #READ.+WRITE.
+ pshs x
+ os9  I$Create    Create the file for Write.
+ puls x
+ bcc  SetSaveOK
+
+* We got an error.
+ cmpb #E$CEF      File already exist?
+ lbne _error
+
+* The error was "file already exists", so ask if the user wants to overwrite.
+ lda  #StdErr
+ pshs y,x
+ leax overwrite,pcr
+ ldy  #owlength
+ os9  I$Write    Output the prompt.
+ puls y,x
+ lbcs _error
+ lda  #StdErr    Read from StdErr, in case StdIn is busy....
+ pshs x,y
+ leax altbuff,y
+ ldy  #2
+ os9  I$ReadLn   Read the response.
+ puls x,y
+ lbcs _error
+ lda  altbuff,y
+ cmpa #'y
+ beq  SetSave5
+ cmpa #'Y
+ bne  SetSaveEnd  It wasn't "y" or "Y", so just quit.
+SetSave5
+ lda  #WRITE.
+ pshs x
+ os9  I$Open   Try to open in write mode.
+ puls x
+ lbcs _error
+ 
+* Exit here after successfully opening the file.
+SetSaveOK
+ sta  <SavePath
+
+* Move X past the end of the filename.
+SetSaveEnd
+ 
+SetSave11
+ lda  ,x+           Skip any leading whitespace.
+ cmpa #$20  Space?
+ beq  SetSave11
+ cmpa #$09  Tab?
+ beq  SetSave11
+ cmpa #$0d
+ beq  SetSave14
+
+SetSave12
+ lda  ,x+       Now skip until we find whitespace.
+ cmpa #$20
+ beq  SetSave14
+ cmpa #$09
+ beq  SetSave14
+ cmpa #$0d
+ beq  SetSave14
+ bra  SetSave12
+
+SetSave14
+ leax -1,x  Backup to last character.
+ 
+ puls a,b,y,u,pc
+
+overwrite fcc "Save file already exists. Overwrite (y/n)?  "
+owlength equ *-overwrite
+
+
+ endsect

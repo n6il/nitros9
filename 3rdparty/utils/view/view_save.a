@@ -1,0 +1,501 @@
+*
+* Save current picture to a file
+*   DoSave:   - Save current screen to file in specified format
+*               Currently supports VEFFormat, VEFSqFormat, MGEFormat, CM3Format
+*  Note: Since SetSave does not clear a file (DoSave resets the filesize to
+*       zero when it starts), VIEW can be used to convert a file in place
+*       by just saving back to the original file.
+*
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+StdIn  equ 0
+StdOut equ 1
+StdErr equ 2
+
+ psect view_save_a,0,0,0,0,0
+
+ vsect dp
+SaveFormat: rmb 1  Also used in view_setsave.a
+SavePath:   rmb 1
+LineSize   rmb 2
+ endsect
+
+
+*
+* Do the actual save.
+*
+DoSave:
+ pshs a,b,x,y,u
+ lda  #$ff
+ sta  <abort  Set to abort on signal.
+
+* Set up line buffer for screen I/O
+ lbsr setbuffer
+
+*  First, set file size to zero, in case it was pre-existing.
+ lda  SavePath
+ lbeq DoSaveEnd
+
+ ldb  #SS.Size
+ ldx  #0
+ tfr  x,u
+ os9  I$SetStt
+ lbcs _error
+
+
+* We'll need to know the size in bytes of one line, so figure that out
+ lda  <type
+ ldb  #80  Types 5 and 6 are 80 bytes/line
+ cmpa #7
+ blo  Dosize
+ ldb  #160  Types 7 and 8 are 160 bytes/line
+Dosize
+ clra
+ std  LineSize
+
+ lda  SaveFormat   If MGE Format save, write an MGE format header.
+ cmpa #MGE640Format
+ beq  DoMGE1
+ cmpa #MGEFormat
+ bne  DoMGE
+DoMGE1
+ lbsr MGEHeader
+DoMGE
+
+ lda  SaveFormat   If VEF Format save, write a VEF format header.
+ cmpa #VEFFormat
+ beq  DoVEF1
+ cmpa #VEFSqFormat
+ bne  DoVEF
+DoVEF1
+ lbsr VEFHeader
+DoVEF
+
+ lda  SaveFormat
+ cmpa #CM3Format
+ bne  DoCM3
+ lbsr CM3Header
+DoCM3
+
+* Now output rest of file
+ ldd  #0
+DoOut
+ lbsr fetchline
+ lbsr comline
+ lbsr putline       Copy the line back to the screen, for visual feedback.
+ lbsr comline
+ lbsr outline
+ lbsr putline
+ addd #1
+ cmpd #192
+ bne  DoOut
+
+ lda  SaveFormat   For MGE format, add 8 blank lines to end of file.
+ cmpa #MGE640Format
+ beq  DoMGE11
+ cmpa #MGEFormat
+ bne  DoMGE10
+DoMGE11
+ lbsr Save8
+DoMGE10
+
+* Now close the file
+ lda  SavePath
+ os9  I$Close
+ lbcs _error
+
+* Print message on successful completion
+ leax  str1done,pcr  Output first part of message
+ lbsr  O_Write
+
+ ldb  SaveFormat
+ leax strVEF,pcr
+ cmpb #VEFFormat  Is it VEF?
+ beq  DoneSave
+
+ leax strMGE,pcr
+ cmpb #MGEFormat  Is it MGE?
+ bne  DoneSave1
+ ldb  <type
+ cmpb #6       Type 6/8 are MGE
+ beq  DoneSave
+ cmpb #8
+ beq  DoneSave
+ leax str640,pcr  Types 5/7 are 640.
+ bra  DoneSave
+DoneSave1
+
+ leax str640,pcr
+ cmpb #MGE640Format  Is it 640?
+ bne  DoneSave2
+ ldb  <type
+ cmpb #8       Type 8 is MGE
+ bne  DoneSave
+ leax strMGE,pcr
+ bra  DoneSave
+DoneSave2
+
+ leax strVEFSq,pcr
+ cmpb #VEFSqFormat  Is it VEF Squashed?
+ beq  DoneSave
+
+ leax strCM3,pcr
+ cmpb #CM3Format  CM3 format
+ bne  DoneSave3
+ ldb  <type
+ cmpb #6       Type 6/8 are normal CM3
+ beq  DoneSave
+ cmpb #8
+ beq  DoneSave
+ leax strCM3640,pcr  Types 5/7 are 640 across CM3.
+ bra  DoneSave
+DoneSave3
+
+* Add other formats here
+DoneSave
+ lbsr O_Write
+
+ leax str2done,pcr   Output second part.
+ lbsr O_Write
+ 
+DoSaveEnd
+ puls a,b,x,y,u,pc
+
+strVEF fcc "normal VEF"
+       fcb 0
+strMGE fcc "MGE"
+       fcb 0
+str640 fcc "640 (MGE 640x200)"
+       fcb 0
+strVEFSq fcc "VEF Squashed"
+         fcb 0
+strCM3 fcc "CM3"
+       fcb 0
+strCM3640 fcc "CM3 (640x192)"
+       fcb 0
+str1done fcc "Picture saved in "
+         fcb 0
+str2done fcc " format."
+         fcb $0d,0
+
+* Clear out linebuff
+clrline
+ pshs a,b,x
+ leax linebuff,y
+ clra
+ ldb  #200
+DoClear
+ sta  ,x+
+ decb
+ bne  DoClear
+ puls a,b,x,pc
+
+* Complement linebuff
+comline
+ pshs b,x
+ ldb  #160
+ leax linebuff,y
+comline1
+ com  ,x+
+ decb
+ bne  comline1
+ puls b,x,pc
+
+* Output an MGE header
+MGEHeader
+ pshs a,b,x,y,u
+ leax altbuff,y
+ clr  ,x+         Initial 0 byte.
+ lbsr copypals
+ clr  ,x+         Mark RGB
+ lda  #$ff
+ sta  ,x+         We're not using MGE compression (blech!)
+ leau MGEname,pcr Give this a generic name.
+ ldb  #30
+MGEhead1
+ lda  ,u+
+ sta  ,x+
+ decb
+ bne  MGEhead1
+ ldd  <cyclerate
+ stb  ,x+        Save cycle rate
+ lda  <cyclestart
+ lsla
+ lsla
+ lsla
+ lsla
+ ora  <cycleend
+ sta  ,x+        Save first/last palette rotation values.
+
+ leax altbuff,y  Write the actual header.
+ lda  SavePath
+ ldy  #51
+ os9  I$Write
+ puls a,b,x,y,u,pc
+
+MGEname fcc "OS9 picture"
+ fcb 0
+
+* Output a CM3 header
+CM3Header
+ pshs a,b,x,y,u
+ leax altbuff,y
+ lda  #1        Single screen w/o patterns
+ sta  ,x+
+ lbsr copypals  16 palette values
+ ldd  <cyclerate
+ bne  CM3head0
+ ldb  #1
+CM3head0
+ stb  ,x+       Cycle rate
+ ldd  <extrarate
+ bne  CM3head1
+ ldb  #1
+CM3head1
+ stb  ,x+       Extra rate
+ leau extrapals,y
+ ldd  ,u++
+ std  ,x++  Copy extrapals to header
+ ldd  ,u++
+ std  ,x++
+ ldd  ,u++
+ std  ,x++
+ ldd  ,u++
+ std  ,x++
+ lda  <cycle
+ beq  CM3head2
+ lda  #$80
+CM3head2
+ sta  ,x+   Cycle enable flag
+ lda  <extranum
+ beq  CM3head3
+ lda  #$80
+CM3head3
+ sta  ,x+   Extra enable flag
+ lda  #192
+ sta  ,x+   Number lines in picture
+
+ pshs y
+ lda  SavePath
+ leax altbuff,y  Now, save the header.
+ ldy  #30
+ os9  I$Write
+ lbcs _error
+ puls y
+
+ leax alt2buff,y  CM3 uses alt2buff to store last line data
+ ldy  #500
+ clra
+ clrb
+CM3head4
+ std  ,x++
+ leay -1,y
+ bne  CM3head4
+
+ puls a,b,x,y,u,pc
+
+* Output a VEF header
+VEFHeader
+ pshs a,b,x,y,u
+ leax altbuff,y
+ clra            For normal format
+ ldb  SaveFormat
+ cmpb #VEFFormat Plain vanilla??
+ beq  Do1
+ lda  #$80       For Squashed format
+Do1
+ sta  ,x+
+ lda  #9
+ suba  <type     Get VEF screen type
+ cmpa #2
+ bhi  Do2
+ deca
+Do2 
+ sta  ,x+
+
+ bsr  copypals   Now copy the palettes.
+
+* Now save the header out to the file.
+ leax altbuff,y
+ lda  SavePath
+ pshs y
+ ldy  #18
+ os9  I$Write
+ lbcs _error
+ puls y
+ bsr  Save8
+ puls a,b,x,y,u,pc
+
+* Write out 8 blank lines to file.
+Save8
+ pshs b
+ lbsr clrline
+ ldb  #8
+DoBlank
+ lbsr outline
+ decb
+ bne  DoBlank
+ puls b,pc
+
+*
+* Copy palettes to X, advance X by 16 bytes.
+*
+copypals
+ pshs a,b
+ lda  <outpath
+ ldb  #SS.Palet
+ os9  I$GetStt
+ leax 16,x
+ puls a,b,pc
+ 
+*
+* Output linebuff to file
+outline
+ pshs a
+ lda  SaveFormat
+ cmpa #VEFSqFormat
+ bne outline1
+ puls a
+ lbra outsqline    Only VEF Squashed format uses outsqline
+outline1
+ cmpa #VEFFormat
+ bne  outline2
+ puls a
+ lbra outVEFline   Unsquashed VEF line.
+outline2
+ cmpa #MGEFormat
+ bne outline3
+ puls a
+ bra  outMGEline  Unsquashed MGE line.
+outline3
+ cmpa #MGE640Format
+ bne outline4
+ puls a
+ bra  outMGEline  Unsquashed MGE line.
+outline4
+ cmpa #CM3Format
+ bne outline5
+ puls a
+ bra  outCM3line  Output CM3 line.
+outline5
+* Additional formats go here.
+outlineend
+ puls a
+ rts
+
+*
+* Output linebuff to file in normal MGE format
+*
+outMGEline
+ pshs a,b,x,y,u
+ lbsr MGEsame
+ leax altbuff,y
+ lda  <type
+ cmpa #5
+ bne  outMGE1
+ lbsr MGE57    Convert type 5 to type 7.
+ bra  outMGE3
+outMGE1
+ cmpa #6
+ bne  outMGE2
+ ldb  SaveFormat
+ cmpb #MGE640Format
+ beq  outMGE11
+ lbsr MGE68    For MGE, convert type 6 to type 8.
+ bra  outMGE3
+outMGE11
+ lbsr MGE67    For 640, convert type 6 to type 7.
+ bra  outMGE3
+outMGE2
+* Other conversions here.
+outMGE3
+ lda  SavePath
+ leax altbuff,y
+ ldy  #160       After conversion, we always have 160 bytes/line
+ os9  I$Write
+ lbcs _error
+ puls a,b,x,y,u,pc
+
+*
+* Output linebuff to file in CM3 format
+*
+outCM3line
+ pshs a,b,x,y,u
+ lbsr MGEsame copy data to altbuff
+ leax altbuff,y
+ lda  <type
+ cmpa #5
+ bne  outCM31
+ lbsr MGE57  Convert type 5 -> type 7
+ bra  outCM33
+outCM31
+ cmpa #6
+ bne  outCM32
+ lbsr MGE68  Convert type 6 -> type 8
+ bra  outCM33
+outCM32
+outCM33 
+
+ lbsr CM3compress compress data from linebuff into altbuff
+
+ lda  SavePath
+ leax altbuff,y Output line data.
+ ldy  ,x++      Get size of data.
+ os9  I$Write
+ lbcs _error
+ puls a,b,x,y,u,pc
+
+*
+* Output linebuff to file in normal VEF format
+*
+outVEFline
+ pshs a,b,x,y,u
+ lda  SavePath
+ leax linebuff,y
+ ldy  LineSize
+ os9  I$Write
+ lbcs _error
+ puls a,b,x,y,u,pc
+
+*
+* Output linebuff to file in Squashed VEF format
+*
+outsqline
+ pshs a,b,x,y,u
+ ldd  LineSize
+ lsrb
+ rora Divide by two.
+ leax linebuff,y
+ lbsr VEFSquash      Squash the first half of the line
+ bsr  sqoutline   output the packet
+ leax d,x
+ lbsr VEFSquash      Squash the second half
+ bsr  sqoutline   output it.
+ puls a,b,x,y,u,pc
+
+*
+* Output packet in Altbuff to SavePath
+sqoutline
+ pshs a,b,x,y
+ leax altbuff,y
+ ldb  ,x
+ incb
+ clra
+ tfr  d,y
+ lda  SavePath
+ os9  I$Write
+ lbcs _error
+ puls a,b,x,y,pc
+
+
+ endsect

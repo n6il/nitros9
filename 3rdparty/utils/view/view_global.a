@@ -1,0 +1,175 @@
+*
+* Global definitions for "view" program.
+*
+* This thing is starting to grow, so I figured I'd put all the
+*  global variables in one file for easy reference.
+* Note: root.a initializes all variables to zero, before it sets up
+*   the explicitly initialized variables.  So, all DP vars not explicitly
+*   initialized will be set to zero.  By not including explicit initializations
+*   for such variables, we actually save on code size, since initializing
+*   constants are stored in the module (by RLink).
+*
+
+* stacksize has to be global, because view_io.a uses it to calculate the
+*  amount of buffer space it can use.  If some format needs a lot of
+*  stack space (for large dynamic data structures, or recursive routines),
+*  then this value will have to be changed.
+stk equ 200 Stack space.  This should be enough for everything.
+
+* This seems a good compromise between keeping a large buffer for efficient
+*  throughput, and keeping a small buffer so we don't stall so long on
+*  slowly growing (i.e. downloading) files.
+buffer equ 2000    Space for input buffering and free pool.
+
+   psect  view_global_a,0,0,0,stk+buffer,0
+
+* !"$# RMA won't make something global unless it's in a PSect, so...
+stacksize: equ stk
+
+*   Constant internal codes for various screen formats.
+ csect 0
+ rmb 1        We can't have a zero format code.
+VEFFormat: rmb 1
+VEFSqFormat: rmb 1 VEF Squash format, only used by Save routine.
+MGEFormat: rmb 1   Color Max 3
+MGE640Format: rmb 1  Color Max 3: 640x200x4color
+CM3Format: rmb 1   CoCo Max 3
+CLPFormat: rmb 1   MVCanvas/OS9 CLP clipboard format
+PIXFormat: rmb 1   DS69 16-level 256x256 and 128x128 pictures
+PIX256Format: rmb 1 Force us to interpret it as 256x256
+PIX128Format: rmb 1 as above, 128x128.
+IMGFormat: rmb 1   Rascan IMG format
+RATFormat: rmb 1   RAT format
+P00Format: rmb 1   Support for various Pmodes.
+P01Format: rmb 1
+P10Format: rmb 1   First digit is "Pmode" type, second is 0 or 1
+P11Format: rmb 1   for standard or alternate color set.
+P20Format: rmb 1
+P21Format: rmb 1
+P30Format: rmb 1
+P31Format: rmb 1
+P40Format: rmb 1
+P41Format: rmb 1
+MAXFormat: equ P41Format   Non-artifacted Pmode-4 pictures (Color Max 2)
+ARTFormat: rmb 1   Artifacted Pmode-4 pictures     (Color Max 2)
+MAXCMPFormat: rmb 1 MAXCMP/PIXCMP
+ARTCMPFormat: rmb 1 Above, with artifacting
+RLEFormat: rmb 1   CIS RLE format
+STFormat:  rmb 1   Degas ST format
+MACFormat: rmb 1   Macintosh MacPaint format
+GIFFormat: rmb 1   GIF format
+GIFBWFormat: rmb 1 GIF with B/W rendering.
+PUBFormat: rmb 1   Home publisher clipart format
+ endsect
+
+ csect 128
+MButton:  rmb 1   signal to return on mouse click (by SS.MsSig)
+KButton:  rmb 1   signal to return on keypress.   (by SS.SSig)
+ endsect
+
+ vsect dp
+PID:        rmb 1       Holds Process ID, for Get/Put buffer stuff
+outpath:    fcb 1       Holds path number for current output screen
+format:     rmb 1       Current format code. $ff -> none.
+
+*
+* For better handling of slowly growing files (i.e. viewing files while
+*   they are downloading), set this small (i.e. 100), which will limit
+*   the size of disk reads.
+MaxBuff:    fdb $ffff
+
+* Routines that need large tables can allocate them by moving up
+* MemTop and decreasing MemSiz.  Note that the I/O routines use up
+* all of this when the input file is opened, so such allocation
+* should be done very early.
+MemTop:     rmb 2       Top of allocated data = bottom of free pool
+MemSiz:     rmb 2       Size of free pool
+
+*
+* These are used by view_gfx.a routines for setting up new screens.
+*  Note: for multi-screen displays, "Samescreen" only affects
+*   the first call to "setscreen".
+Samescreen: rmb 1       T = Use same screen, rather than making new one.
+type:       rmb 1       Type of window.  Set before calling "setscreen"
+border:     rmb 1       Border palette to use for this window.
+
+* View sets up a signal trap at the beginning, and sets this variable.
+*  It also sets a mouse signal (MButton).
+*  This variable instructs the signal handler to abort the program
+*  (through the _abort vector in view.a) if a signal occurs.
+* If you want to use the signal, you should clear this variable first.
+*  The keywait routine clears it in order to handle mouse clicks and
+*  such.
+SigCode:    rmb 1       Signal value received by Signal handler. 0=no signal
+abort:      rmb 1       T= abort on any signal.
+
+* For use with slideshow-type programs, the -signal # # option will
+*   set these variables, which will cause VIEW to send the specified
+*   signal rather than ringing the terminal bell.
+SigPID:     rmb 1
+SigOut:     rmb 1
+
+*
+* These are set by command line parameters.
+*   If used by a picture format, it should first check for out-of-range
+*   values.  In particular, if Skiplines is $ffff, it should be re-set
+*   to an appropriate default value.  Ditto for Skipcols
+Skiplines:  fdb $ffff   Number of lines to skip. $ffff -> not set.
+Skipcols:   fdb $ffff   Number of cols to skip.  Used by very wide formats.
+
+* This determines the size of the picture display.  The following
+* values are used:  0=Small (fits on one screen), 1=Big (normal size)
+* 2=Huge (show as much detail as possible, for non-CoCo formats).
+Size:       fcb $ff     $ff -> Use "default" size.
+
+* Variables for various animation effects.
+*   "cycling" refers to rotating a group of palettes
+*       (What CM3 calls "animation)
+*   "extra" variables control rotating several colors through one palette.
+*   To disable cycling, set cyclestart=cycleend
+*   To disable extra rotation, set extranum = 0
+*
+cycle:      rmb 1       T = All animation effects enabled.
+cyclestart: fcb 8       First palette for palette cycling.
+cycleend:   fcb 15      Last palette for palette cycling.
+cyclerate:  fdb 5       Time in ticks between palette cycles.
+extraslot:  rmb 1       Palette slot for color rotation
+extranum:   rmb 1       Number of colors to rotate through that slot
+extrarate:  fdb 5       Time in ticks between color rotation.
+
+*
+*  Flipping is a technique of quickly switching several screens in order
+*    to provide the appearance of a wider palette.
+*  Setting flipping disables all other animation effects.
+*    This variable is ignored if numscreens < 2.  (see view_gfx.a)
+*  Multi-screen displays can set fliprate high (like 100 to 200) to
+*    allow automatic slow cycling between the screens (CM3, for example)
+flipping:   rmb 1       T = multiple screen flipping should be used.
+fliprate:   fdb 2       2 gives best performance for most.
+
+*
+* Set by -q option to 60 times the number of seconds.
+*  counted down by the keywait routine to timeout the display.
+*  the default of 65,536 ticks is a little over 18 minutes.
+* View ends when this variable hits zero.  In reality, due to overhead
+*  in "keywait", the actual delay time tends to be longer than is
+*  actually set here, especially if animation effects are on.
+MaxTime:    fdb $ffff   Max number of ticks to show picture.
+
+* Used by malloc to dynamically request/return memory from the system
+*
+oldmemsize: rmb 2
+newmemsize: rmb 2
+ endsect
+
+*
+* Large buffers.
+ vsect
+extrapals:  rmb 16      Palette codes to rotate through one palette register.
+palette:    rmb 48      Palette codes to be used by "setpals" call.
+linebuff:   rmb 1024    Space for storing lines of graphics to be output.
+altbuff:    rmb 1024    Extra buffer for various uses.
+alt2buff:   rmb 1024    Extra buffer for various uses.
+ endsect
+
+ endsect

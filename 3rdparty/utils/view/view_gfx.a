@@ -1,0 +1,452 @@
+*
+* Graphics support routines for "view"
+*
+* Global DP variables:
+*     numscreens:  Total number of graphics screens in use.
+*     curscreen:   Number of currently selected screen
+*     screenpaths: array of path numbers for open screens
+* Global subroutines:
+*     setscreen:   Set a screen to correct type, open new one if appropriate
+*     setborder:   Set border of current screen to palette A.
+*     select:      Select StdOut.
+*     flipscreen:  Select next screen.
+*     flipback:    Select previous screen.
+*     echooff:     Turn off echo to current screen
+*     saveopts:    Get StdOut options packet and save it.
+*     cleanup:     Select StdOut, turn on cursor, restore StdOut.
+*     newscreen:   open a new screen, put path num in "outpath" var.
+*     killscreen:  DWEnd current screen.
+*     killbuffs:   Kill all of our buffers.
+*     setbuffer:   Create one-line buffer for putting stuff on screen.
+*                  Returns number of bytes/line in D.
+*     putline:     Put data in linebuff onto screen line D.
+*     fetchline:   Get screen line D into linebuff
+*
+  ifp1
+  use /dd/defs/os9defs.a
+  endc
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+StdOut equ 1
+
+  psect view_gfx_a,0,0,0,0,0
+
+ vsect dp
+numscreens:  rmb 1   Total number of screens allocated.
+curscreen:   rmb 1   Current screen
+
+buffadd     rmb 2   Address of Get/Put buffer.
+buffsiz     rmb 1   Size of Get/Put buffer.
+ endsect
+
+ vsect
+screenpaths: rmb 16  
+ endsect
+
+********************************
+*
+* Create appropriate screen
+*
+*******************************
+
+
+  vsect
+setscCom 
+  fdb $1b20       DWSet
+  fcb 8           type
+  fcb 0,0
+  fcb 40          screen width
+  fcb 24          screen length
+  fcb 1,0,0       palettes
+  fcb $1b,$21     Select code
+  fcb $05,$20     Cursor off
+  endsect
+
+setscreen:
+  pshs a,b,x,u,y
+  tst  <numscreens
+  bne  setSame0     If we already have 1 screen, we _must_ create a new one.
+  tst  <Samescreen
+  bne  setSame1
+setSame0
+  lbsr newscreen   Open a new screen.
+  lda  <outpath      Store path number to paths array
+  leax screenpaths,y
+  ldb  <numscreens
+  sta  b,x
+  bra  setSame2
+setSame1
+  lbsr killscreen  Kill this screen, so we can re-open with correct type.
+  lda  #1          This screen is StdOut
+  sta  screenpaths,y Set first path.
+setSame2
+  ldb  <numscreens
+  stb  <curscreen   Set current screen to most recent one.
+  incb
+  stb  <numscreens  We now have one more screen.
+  lda  <type      type from header interp
+  sta  setscCom+2,y
+  anda #1
+  nega
+  anda #40
+  adda #40
+  sta  setscCom+5,y    bottom corner
+  leax setscCom,y      Now output this string.
+  lda  <outpath
+  pshs y
+  ldy  #14
+  os9  I$Write
+  lbcs _error
+  puls y
+
+  lbsr echooff        Turn off echo on screen.
+  lbsr setmouse       Turn on mouse signal everywhere.
+  puls a,b,x,u,y,pc
+
+selectCom
+ fdb $1b21     Select screen
+
+select:
+  pshs a,b,x,y
+  leax selectCom,pcr
+  ldy  #2
+  lda  #StdOut
+  os9  I$Write
+  puls a,b,x,y,pc
+
+flipscreen:
+  pshs a,b,x,y
+  ldb  <curscreen
+  incb
+  cmpb <numscreens
+  blo  flip1
+  clrb
+flip1
+  bra  doflip
+flipback:
+  pshs a,b,x,y
+  ldb  <curscreen
+  bne  flip2
+  ldb  <numscreens
+flip2
+  decb
+* Send the select code to the new screen.
+doflip
+  stb  curscreen
+  leax screenpaths,y
+  lda  b,x
+  sta  <outpath
+  leax selectCom,pcr
+  ldy  #2
+  os9  I$Write
+  lbcs _error
+  puls a,b,x,y,pc
+
+ vsect
+borderCom fcb $1b,$34,00,$1b,$33,00,$0c   Set border, set background, cls
+ endsect
+
+setborder:
+  pshs a,b,x,y
+  leax borderCom,y
+  sta  2,x
+  sta  5,x
+  ldy  #7
+  lda  <outpath
+  os9  I$Write
+  lbcs _error
+  puls a,b,x,y,pc
+
+*
+* Set screen modes on outpath
+*
+ vsect dp
+optvalid rmb 1   T = options packet is valid.
+ endsect
+
+ vsect
+options rmb 32
+newopts rmb 32
+ endsect
+
+saveopts:
+ pshs   a,b,x
+ lda    #StdOut    Get options for StdOut, and save them.
+ ldb    #SS.Opt
+ leax   options,y
+ os9    I$GetStt
+ lbcs   _error
+ com    optvalid
+ puls   a,b,x,pc
+
+echooff:
+ pshs   a,b,x
+ lda    <outpath
+ ldb    #SS.Opt
+ leax   newopts,y
+ os9    I$GetStt
+ lbcs   _error
+ clr    4,x      Turn off echo.
+ os9    I$SetStt
+ lbcs   _error
+ puls   a,b,x,pc
+
+
+cleanCom
+ fdb $0521     Turn on cursor.
+ fdb $1b21     Select screen
+
+cleanup:
+ pshs a,b,x,y
+ leax cleanCom,pcr
+ lda  #StdOut
+ pshs y
+ ldy  #4
+ os9  I$Write   Select StdOut and turn on cursor.
+ puls y
+
+ tst  optvalid  If options is valid,
+ beq  echoend
+ ldb  #SS.Opt
+ leax options,y
+ os9  I$SetStt  then restore the initial options.
+ lbcc echoend
+ os9  F$Exit
+echoend
+ puls a,b,x,y,pc
+
+*
+* Open new window
+*
+Winname fcc "/w"
+ fcb  $0d
+
+newscreen:
+ pshs a,b,x
+ leax Winname,pcr
+ lda  #3           Update mode
+ os9  I$Open
+ lbcs _error
+ sta  <outpath
+ puls a,b,x,pc
+ 
+killCom fdb $1b24
+
+killscreen:
+ pshs a,b,x,y
+ leax killCom,pcr
+ lda  <outpath
+ ldy  #2
+ os9  I$Write
+ bcc  killscrend
+ cmpb #E$WUndef   Was it window undefined??  That we can ignore.
+ lbne _error      No, abort.
+killscrend
+ puls a,b,x,y,pc
+
+ vsect
+killbcom  fcb $1b,$2a,0,0
+ endsect
+
+killbuffs:
+ pshs a,b,x,y
+ lda  <PID
+ leax killbcom,y 
+ sta  2,x
+ ldy  #4
+ lda  <outpath
+ os9  I$Write
+ puls a,b,x,y,pc
+
+**************************************************************
+*
+* Create get/put buffer for horizontal imaging
+*
+**************************************************************
+
+ vsect dp
+buflegit rmb 1  True= buffer already allocated and mapped
+ endsect
+
+ vsect
+setbufCom
+ fdb $1b2c
+ fdb 0001    Group/buffer
+ fdb 0000
+ fdb 0000
+ fdb 320
+ fdb 1
+ endsect
+
+setbuffer:
+ pshs x,y
+ tst  buflegit   If buffer already created/mapped, then don't do it again.
+ bne  setbufend
+ com  buflegit
+
+ lda  <PID
+ sta  setbufCom+2,y
+ leax setbufCom,y
+ lda <outpath
+ pshs y
+ ldy #12
+ OS9 I$Write 
+ lbcs _error
+ puls y
+
+ lda <PID
+ ldb #1
+ tfr d,x
+ lda #1
+ ldb #SS.MpGPB map in buffer
+ pshs y
+ ldy #1
+ os9 I$SetStt  Now try to map it.
+ lbcs _error
+ tfr y,d
+ puls y
+ stx buffadd
+
+ lda <type
+ ldb #40
+ cmpa #7
+ beq setbuf8
+ cmpa #8
+ bne  setbuf9
+setbuf8
+ addb #40
+setbuf9
+ stb  buffsiz
+
+setbufend
+ ldb  buffsiz
+ clra
+ lsla
+ rolb
+ puls x,y,pc
+
+
+*
+* Putline: expects number of row in D
+*
+ vsect
+putCom fdb $1b2d
+ fcb 0,1         Grp/Buf
+ fdb 0           Xloc
+ fdb 0           Yloc
+ endsect
+
+
+putline:
+ pshs a,b,x,y,u
+ std  putCom+6,y     Set up PUT buffer command
+ lda  <PID
+ sta  putCom+2,y
+ ldd  #0      First X value is zero.
+ std  putCom+4,y
+
+ leax linebuff,y
+ ldu  buffadd
+ ldb  buffsiz
+
+put1
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  put1
+
+ pshs x,y 
+ leax putCom,y
+ lda  <outpath
+ ldy  #8
+ OS9  I$Write
+ lbcs _error
+ puls x,y
+
+ ldd  #320      Second X value is 320= 1/2 screen.
+ std  putCom+4,y
+
+ ldb  buffsiz
+ ldu  buffadd
+put2
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  put2
+
+ leax putCom,y
+ lda  <outpath
+ ldy  #8
+ OS9  I$Write
+ lbcs _error
+
+ puls a,b,x,y,u,pc
+
+*
+* fetchline: expects number of row in D
+*
+ vsect
+fetchCom fdb $1b2c
+ fcb 0,1  Grp/Buf
+ fdb 0    Xloc
+ fdb 0    Yloc
+ fdb 320  XSize
+ fdb 1    YSize
+ endsect
+
+
+fetchline:
+ pshs a,b,x,y,u
+ std  fetchCom+6,y     Set up GET buffer command
+ lda  <PID
+ sta  fetchCom+2,y
+ ldd  #0      First X value is zero.
+ std  fetchCom+4,y
+
+ pshs x,y 
+ leax fetchCom,y
+ lda  <outpath
+ ldy  #12
+ OS9  I$Write
+ lbcs _error
+ puls x,y
+
+ leax linebuff,y
+ ldu  buffadd
+ ldb  buffsiz
+
+fetch1
+ lda  ,u+
+ sta  ,x+
+ decb
+ bne  fetch1
+
+ ldd  #320      Second X value is 320= 1/2 screen.
+ std  fetchCom+4,y
+
+ pshs x,y
+ leax fetchCom,y
+ lda  <outpath
+ ldy  #12
+ OS9  I$Write
+ lbcs _error
+ puls x,y
+
+ ldb  buffsiz
+ ldu  buffadd
+fetch2
+ lda  ,u+
+ sta  ,x+
+ decb
+ bne  fetch2
+
+
+ puls a,b,x,y,u,pc
+
+ endsect

@@ -1,0 +1,115 @@
+
+* Additional gfx operations.
+*
+* Uses some variables from view_gfx.a
+*    numscreens  - total number of screens allocated
+*    screenpaths - array of path number for screens
+*    curscreen   - current screen displayed
+*
+* Routines included:
+*    getkey:     - poll each open screen for keypress.
+*                  (returns Carry set if no key available)
+*    setmouse:   - Set mouse signal on each open screen
+*    setkey:     - Set key signal on each open screen
+*    nextline:   - Higher-level interface to "putline".
+*                  Automatically increments to next line,
+*                  allocates next screen as appropriate.
+*                  Uses "border" to set screen border for new screens.
+*
+ ifp1
+ use  /dd/defs/os9defs.a
+ endc
+
+check macro
+      pshs  b,cc
+      ldb   #\1
+      os9   F$PErr
+      puls  b,cc
+      endm
+
+ psect view_gfx2_a,0,0,0,0,0
+
+*
+* Poll each open screen
+getkey:
+ pshs  b,x,y
+ leax  screenpaths,y
+ clrb
+getkeyloop
+ lda   b,x
+ pshs  b
+ ldb   #SS.Ready
+ os9   I$GetStt
+ bcc   getkeyok
+ cmpb  #E$NotRdy
+ lbne  _error
+ puls  b
+ incb
+ cmpb  <numscreens
+ bne   getkeyloop
+ clra
+ orcc  #Carry     Turn on carry
+ bra   getkeyend
+getkeyok
+ tfr   s,x
+ ldy   #1
+ os9   I$Read   Read one character
+ lbcs  _error
+ puls  a        Get the char into A.
+ andcc #^Carry  Turn off carry
+getkeyend
+ puls  b,x,y,pc
+
+setmouse:
+  pshs a,b,x,y,u
+  ldb  <numscreens     Get the number of screens.
+  clra
+  leau screenpaths,y
+  tfr  d,y
+  ldx  #MButton       Return this signal code.
+  ldb  #SS.MsSig
+setmloop
+  lda  ,u+     Get path number
+  os9  I$SetStt       Set the mouse signal.
+  lbcs _error
+  leay -1,y
+  bne  setmloop       If we haven't done all paths, keep going
+  puls a,b,x,y,u,pc
+
+setkeysig:
+  pshs a,b,x,y,u
+  ldb  <numscreens     Get the number of screens.
+  clra
+  leau screenpaths,y
+  tfr  d,y
+  ldx  #KButton       Return this signal code.
+  ldb  #SS.SSig
+setkloop
+  lda  ,u+     Get path number
+  os9  I$SetStt       Set the mouse signal.
+  lbcs _error
+  leay -1,y
+  bne  setkloop       If we haven't done all paths, keep going
+  puls a,b,x,y,u,pc
+
+ vsect dp
+curline rmb 2
+ endsect
+
+nextline:
+ pshs a,b
+ ldd  curline
+ cmpd #192       Are we off the screen?
+ blo  nextdoit
+ lbsr setscreen  Get a new screen
+ lbsr setpals    Set the palettes
+ lda  <border
+ lbsr setborder  Set the border color
+ ldd  #0
+nextdoit
+ lbsr putline  Put this line
+ addd #1
+ std  curline
+ puls a,b,pc
+
+ endsect

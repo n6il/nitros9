@@ -1,0 +1,258 @@
+*
+*
+* Graphics subs for PIX picture format.
+*   setvert: Create buffer for vertical imaging.
+*   endvert: Trash the buffer.
+*   pixditherline: Output one vertical row to screen.
+*
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+ psect  view_pix_gfx_a,0,0,0,0,0 
+
+* vsect dp
+*pixfirstcol  rmb 2   Declared in view_pix.a
+* endsect
+
+*
+* These are essentially cloned from the row-at-a-time routines in
+*   view_gfx.a, but since I never expect to see another graphics format
+*   that does column-at-a-time imaging, I decided it should be safe
+*   to just put them here, so I could optimize them for this format.
+* In order to be fully general, they just need to take into account
+*   the screen type (here assumed to be type 7).
+*
+ vsect dp
+buffadd rmb 2   Address of mapped-in get/put buffer
+ endsect
+
+ vsect
+setbufCom
+ fdb $1b2c
+ fdb $0002    Group/buffer
+ fdb 0000    XLoc
+ fdb 0000    YLoc
+ fdb 4       XDim
+ fdb 96      YDim
+ endsect
+
+setvert:
+ pshs x,y
+
+ leax setbufCom,y
+ lda  <PID
+ sta  2,x
+ lda <outpath
+ pshs y
+ ldy #12
+ OS9 I$Write 
+ lbcs _error
+ puls y
+
+ lda <PID
+ ldb #2
+ tfr d,x       Set up group/buffer in X.
+ lda #1
+ ldb #SS.MpGPB map in buffer
+ pshs y
+ ldy #1
+ os9 I$SetStt
+ lbcs _error
+ tfr y,d
+ puls y
+ stx buffadd
+
+ ldd  #192    Return size of vertical buffer.
+ puls x,y,pc
+
+*
+* Endvert:  Kill and unmap buffer
+*
+ vsect
+endbufCom
+ fcb $1b,$2a,$00,$02
+ endsect
+
+endvert:
+ pshs a,b,x,y
+ lda  <PID
+ ldb  #2
+ tfr  d,x
+ lda  #1
+ ldb  #SS.MpGPB
+ pshs y
+ ldy  #0    Unmap buffer.
+ os9  I$SetStt
+ puls y
+
+ leax endbufCom,y
+ lda  <PID
+ sta  2,x
+ lda <outpath
+ ldy #4
+ OS9 I$Write 
+ lbcs _error
+ puls a,b,x,y,pc
+
+*
+* Ditherline:
+*   Takes buffer pointed to by X, of size D, and dithers it into U.
+* 15Feb90- now buffers 4 columns, then calls putvert with all 4 cols.
+* 01Jun90- Changed dither patterns to 12x6, for smoother dithering.
+*
+ vsect dp
+dithmask fcb $c0  Mask off appropriate bits from dither values.
+dithwhich  fcb 0  track which byte column we're in.
+ endsect
+
+pixditherline:
+ pshs a,b,x,y,u
+ pshs y
+ lda  #$2b          Approx 1/6
+ mul                Divide by six, since we do things six bytes at a time.
+ pshs a             Save number of bytes.
+ leay dith1table,pcr
+ lda  <dithwhich
+ cmpa #1
+ bne  dithmod1
+ leay dith2table,pcr
+dithmod1
+ cmpa #2
+ bne  dithmod2
+ leay dith3table,pcr
+dithmod2
+ ldb  <dithmask     Get current dither column
+ pshs b
+dither1
+ ldd  ,x++   Get two bytes,
+ lda  a,y    . translate to color
+ anda ,s     . mask off only pertinent pixel
+ addb #16    . offset into second table
+ ldb  b,y    . translate this color
+ andb ,s     . mask off pixel
+ ora  ,u     . or new pixel into target array
+ orb  1,u    . "
+ std  ,u++   . store it.
+ ldd  ,x++   Get two more bytes,
+ adda #32    . offset into third table
+ lda  a,y    . translate to color
+ anda ,s     . mask off only pertinent pixel
+ addb #48    . offset into fourth table
+ ldb  b,y    . translate this color
+ andb ,s     . mask off pixel
+ ora  ,u     . or new pixel into target array
+ orb  1,u    . "
+ std  ,u++   . store it.
+ ldd  ,x++   Get two more bytes,
+ adda #64    . offset into fifth table
+ lda  a,y    . translate to color
+ anda ,s     . mask off only pertinent pixel
+ addb #80    . offset into sixth table
+ ldb  b,y    . translate this color
+ andb ,s     . mask off pixel
+ ora  ,u     . or new pixel into target array
+ orb  1,u    . "
+ std  ,u++   . store it.
+ dec  1,s
+ bne  dither1
+ puls a,b
+ puls y
+ ldb  <dithmask
+ andcc #^Carry     Clear carry, so we don't mung our pixel mask
+ rorb
+ rorb
+ bcc  dither3
+ rorb
+ lbsr putvert
+ lda  dithwhich   Bump dithwhich mod 3
+ inca
+ cmpa #3
+ blo  dithermod
+ clra
+dithermod
+ sta  dithwhich
+dither3
+ stb  <dithmask
+ puls a,b,x,y,u,pc
+
+dith1table
+ fcb $00,$10,$10,$51,$51,$55,$56,$65,$69,$a6,$aa,$ba,$ae,$be,$fb,$ff
+ fcb $00,$01,$41,$45,$15,$55,$65,$96,$a6,$6a,$aa,$ab,$ba,$fb,$bf,$ff
+dith3table
+ fcb $00,$10,$04,$14,$51,$55,$56,$59,$9a,$a6,$aa,$ba,$eb,$ef,$fb,$ff
+ fcb $00,$01,$10,$51,$15,$55,$65,$65,$69,$6a,$aa,$ab,$ae,$be,$bf,$ff
+dith2table
+ fcb $00,$10,$41,$45,$51,$55,$56,$96,$a6,$a6,$aa,$ba,$ba,$fb,$fb,$ff
+ fcb $00,$01,$04,$14,$15,$55,$65,$59,$9a,$6a,$aa,$ab,$eb,$ef,$bf,$ff
+ fcb $00,$10,$10,$51,$51,$55,$56,$65,$69,$a6,$aa,$ba,$ae,$be,$fb,$ff
+ fcb $00,$01,$41,$45,$15,$55,$65,$96,$a6,$6a,$aa,$ab,$ba,$fb,$bf,$ff
+ fcb $00,$10,$04,$14,$51,$55,$56,$59,$9a,$a6,$aa,$ba,$eb,$ef,$fb,$ff
+ fcb $00,$01,$10,$51,$15,$55,$65,$65,$69,$6a,$aa,$ab,$ae,$be,$bf,$ff
+
+*
+* Putvert
+*
+ vsect dp
+putcol rmb 2
+ endsect
+
+ vsect
+putCom  fdb $1b2d
+        fcb 0,2 Grp/Buf
+putcol2 fdb 0   Xloc
+        fdb 0   Yloc
+ endsect
+
+putvert
+ pshs a,b,x,y,u
+ leax putCom,y
+ ldd  putcol
+ addd #4
+ std  putcol
+ addd <pixfirstcol
+ std  putcol2
+ lda  <PID
+ sta  2,x     Set group number
+
+ leax linebuff,y   Copy linebuff data into get/put buffer
+ bsr  putvert0     Copy first half of data.
+ ldd  #00
+ bsr  putvert1     Put on screen starting at Y offset 0
+ bsr  putvert0     Copy second half.
+ ldd  #96
+ bsr  putvert1     Put at Y offset 96.
+ puls a,b,x,y,u,pc
+
+putvert0
+ pshs a,b,u
+ ldu  buffadd
+ ldb  #96
+putv1
+ lda  ,x
+ clr  ,x+          Clear out linebuff as we go along.
+ coma              Complement our data.
+ sta  ,u+
+ decb
+ bne  putv1
+ puls a,b,u,pc
+
+putvert1
+ pshs a,b,x,y
+ leax putCom,y
+ std  6,x
+ lda  <outpath
+ ldy  #8
+ os9  I$Write
+ lbcs _error
+ puls a,b,x,y,pc
+
+ endsect

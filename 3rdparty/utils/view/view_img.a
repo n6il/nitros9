@@ -1,0 +1,317 @@
+********************************************************************************
+*
+* SUBS for IMG picture formats
+*
+* IMGshowpic -- displays picture on screen
+*
+********************************************************************************
+
+check macro
+      pshs b,cc      This macro will print "ERROR #xxx", where xxx is the
+      ldb  #\1       . number given as an argument.  Very useful for
+      os9  F$PErr    . checkpointing, to make sure certain routines are
+      puls b,cc      . executed.  Printed to StdErr path.
+      endm
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+StdOut equ 1
+StdErr equ 2
+
+ psect view_img_a,0,0,0,0,0
+
+ vsect dp
+nscreens rmb 1   Number of screens in this picture.
+ endsect 
+
+IMGshowpic:
+ bsr  header
+*lbsr setscreen  Unlike some formats, these are handled by "header".
+*lbsr setpals
+ lbsr setbuffer
+
+spscreens
+ lbsr flipscreen   Select next screen
+ ldd  <Skiplines  First, skip any lines.
+ beq  skip01
+skip00
+ lbsr getline
+ subd #1
+ bne  skip00
+skip01
+
+ ldd  #00
+ ldx  #25
+showpicloop
+ lbsr getline
+
+ tst  <Size     If we're displaying a "small" pic, skip every 25th line.
+ bne  showpic2
+ leax -1,x
+ bne  showpic2
+ ldx  #25
+ bra  spnoput
+showpic2
+
+ lbsr putline
+ addd #1
+spnoput
+ cmpd #192
+ bne  showpicloop
+spfinish
+ lbsr getline   Read rest of this screen.
+ tst  <endofpic
+ beq  spfinish
+ clr  <endofpic  Clear for next screen.
+spendscreen
+ dec  nscreens  Any more?
+ bne  spscreens Yes, get it.
+ rts
+
+*
+* read header info from file, and set window type information
+*    Uses altbuff.
+*
+ vsect dp
+count      rmb 1     Count/value is used for compressed packets
+value      rmb 1
+straight   rmb 1     Number of straight bytes.
+compressed fcb $ff   T=we're in a compressed block.
+endoffile  rmb 1     T= EOF reached, so always return linebuff all 0
+endofpic   rmb 1     T= end-of-picture seen.
+zeroflag   rmb 1     T= We've seen one zero.. another will be end-of-pic
+ endsect
+
+header
+ pshs a,b,x,y,u
+
+* Set default Skiplines.
+ ldd  <Skiplines
+ cmpd #$ffff
+ bne  headskip
+ ldd  #0
+ std  <Skiplines
+headskip
+
+* Set default Size
+ lda  <Size
+ bpl  headsize
+ lda  #1
+ sta  <Size
+headsize
+
+* Cancel any color cycling or rotation
+ lda  <cyclestart   one-palette cycle is effectively none
+ sta  <cycleend
+ clr  <extranum     no colors to rotate.
+
+* Now, read in header
+ leax altbuff,y read in type and palettes
+ pshs y
+ ldy  #18      Number of bytes in header.
+ lbsr I_Read
+ lbcs _error
+ puls y
+ leax altbuff,y
+ lda  ,x+      This byte contains RGB/CMP bit and other useless info.
+
+ lda  ,x+      This specifies the picture format and palettes to be used.
+
+ cmpa #0       Dithered grey
+ bne  header0
+ lda  #7
+ sta  <type
+ lbsr setscreen
+ lda  #1
+ sta  nscreens
+ lda  #3
+ lbsr setborder
+ leax greypals,pcr
+ lbsr headpals
+ bra  headend
+header0
+
+ cmpa #1       false 16-color
+ bne  header1
+ lda  #8
+ sta  <type
+ lbsr setscreen
+ lda  #1
+ sta  nscreens
+ lda  #15
+ lbsr setborder
+ lbsr  headpals  Use palettes in header
+ bra   headend
+header1
+
+ cmpa #2        Solid grey
+ bne  header2
+ leax greypals,pcr  Set pals to grey palettes.
+ lda  #7            Use type 7 screen
+ sta  <type
+ lbsr setscreen     Set it.
+ lda  #1
+ sta  nscreens  Only one screen for this format.
+ lda  #3
+ lbsr setborder
+ lbsr headpals
+ bra  headend
+header2
+
+ cmpa #3
+ bne  header3
+ lda  #7
+ sta  <type
+ lda  #3
+ sta  nscreens
+ lda  #$ff
+ sta  <flipping   Turn on flipping.
+ lbsr setscreen   Set up red screen
+ lda  #3
+ lbsr setborder
+ leax redpals,pcr
+ lbsr headpals
+ lbsr setscreen   Set up green screen
+ lbsr setborder
+ leax greenpals,pcr
+ lbsr headpals
+ lbsr setscreen   Set up blue screen
+ lbsr setborder
+ leax bluepals,pcr
+ lbsr headpals
+ bra  headend
+header3
+
+ lbsr E$Format   Illegal file format.
+
+
+headend
+ puls a,b,x,y,u,pc
+
+headpals 
+ pshs a,b,x,u    Set the palettes.
+ leau palette,y
+ ldb  #16
+headloop
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  headloop
+ lbsr setpals
+ puls a,b,x,u,pc
+
+greypals  fcb $3f,$38,$07,$00  Only first four palettes matter here.
+redpals   fcb $24,$20,$04,$00
+greenpals fcb $12,$10,$02,$00
+bluepals  fcb $09,$08,$01,$00
+
+*
+* Getline
+*
+getline
+ pshs a,b,x,y,u
+ leau linebuff,y   First, clear out line buffer to $ff, the background pattern.
+ ldx  #160
+ lda  #$ff   Since palette 3 is the background, use this for fill pattern.
+getl1
+ sta  ,u+
+ leax -1,x
+ bne  getl1
+
+ tst  endoffile    Are we at end-of-file?
+ lbne getline1     Yes, just leave buffer of zeros
+ tst  endofpic
+ lbne getline1
+
+* Get a line from file
+ leau linebuff,y   Where we'll put the line.
+ ldx  #160         Number of bytes in one line.
+* Check if we're in a compressed or uncompressed packet.
+ tst  count      Did we reach the end of the line in a compressed packet?
+ bne  uncompress Yes, finish uncompressing
+ tst  straight   Did we reach it in a straight packet?
+ bne  copystraight Yes, finish the packet.
+ tst  compressed Did we just finish a straight packet?
+ beq  getcomp    Yes, we're just starting a compressed one.
+* Get a straight packet
+getstraight
+ clr  compressed    Mark that we're in a straight packet
+ lbsr I_GetByte
+ bcs  geteof
+ sta  straight
+ bne  copystraight non-zero count, handle it.
+ tst  zeroflag
+ bne  geteop       If already one zero, set endofpic
+ com  zeroflag     Otherwise, set zeroflag.
+ bra  getcomp      If zero, next type of packet.
+* Read in straight data
+copystraight
+ clr  zeroflag
+ ldb  straight     Get number of bytes
+getstr1
+ lbsr I_GetByte    Get the next byte
+ bcs  geteof
+ sta  ,u+          Store the byte.
+ decb              Count down number of reps
+ leax -1,x         Count down size of line
+ beq  getstr2      If end of line, finish.
+ tstb
+ bne  getstr1
+ stb  straight
+ bra  getcomp      Get a compressed packet.
+getstr2
+ stb  straight     Hit end of line, store remaining count.
+ bra  getline1
+* Get a compressed packet
+getcomp
+ com  compressed    Mark that we're in a compressed packet
+ lbsr I_GetByte
+ bcs  geteof
+ sta  count
+ bne  getcomp1
+ tst  zeroflag
+ bne  geteop       If already one zero, set endofpic
+ com  zeroflag     Otherwise, set zeroflag.
+ bra  getstraight  If zero, next type of packet.
+getcomp1
+ lbsr I_GetByte
+ bcs  geteof
+ sta  value
+* Expand compressed data
+uncompress
+ clr  zeroflag
+ ldd  count        Get count/value
+getunc1
+ stb  ,u+          Store a copy of current value
+ deca              Count down number of reps
+ leax -1,x         Count down size of line
+ beq  getunc2      If end of line, finish.
+ tsta
+ bne  getunc1
+ std  count
+ bra  getstraight  Get a straight packet.
+getunc2
+ std  count        Otherwise, store remaining count.
+ bra  getline1
+
+geteop
+ lda  #$ff
+ sta  endofpic    Mark end of picture.
+ sta  compressed
+ clr  straight
+ clr  count
+ clr  zeroflag    Clear zeroflag.
+ bra  getline1
+geteof
+ cmpb #E$EOF
+ lbne _error
+ lda  #$ff
+ sta  endoffile   endoffile is also endofpic
+ sta  endofpic
+getline1
+ puls a,b,x,y,u,pc
+
+
+ endsect
