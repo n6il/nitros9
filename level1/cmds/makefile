@@ -9,7 +9,7 @@ CMDS		= asm attr backup binex build cobbler cobbler_d64 copy date \
 		park printerr procs pwd pxd \
 		rename save setime shell sleep tee tmode tsmon \
 		tuneport unlink verify xmode
-SUBRTNS		= inkey syscall
+SUBRTNS		= inkey syscall gfx
 ALLOBJS		= $(CMDS) $(SUBRTNS)
 
 all:	$(ALLOBJS)
