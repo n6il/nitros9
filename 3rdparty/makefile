@@ -8,7 +8,6 @@ all:
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
 	$(CD) booters; make
-	$(CD) clocks; make
 	$(CD) drivers; make
 	$(CD) fmgrs; make
 	$(CD) p2mods; make
@@ -19,7 +18,6 @@ all:
 # Clean all components
 clean:
 	-$(CD) booters; make clean
-	-$(CD) clocks; make clean
 	-$(CD) drivers; make clean
 	-$(CD) fmgrs; make clean
 	-$(CD) p2mods; make clean
