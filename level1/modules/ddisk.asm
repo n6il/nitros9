@@ -18,9 +18,14 @@
          use   defsfile
          use   rbfdefs
          endc
+
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   3
+
+MaxDrv   set   4
+
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   3
 u0003    rmb   2
@@ -34,7 +39,7 @@ u0040    rmb   3
 u0043    rmb   5
 u0048    rmb   95
 u00A7    rmb   2
-u00A9    rmb   1
+DrivSel  rmb   1
 u00AA    rmb   1
 u00AB    rmb   1
 u00AC    rmb   1
@@ -43,7 +48,8 @@ size     equ   .
          fcb   $FF 
 name     equ   *
          fcs   /DDisk/
-         fcb   $03 
+         fcb   edition
+
 start    lbra  Init
          lbra  Read
          lbra  Write
@@ -51,16 +57,26 @@ start    lbra  Init
          lbra  SetStat
          lbra  Term
 
+* Init
+*
+* Entry:
+*    Y  = address of device descriptor
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
 Init     clra  
          sta   >$006F
-         sta   >$FF48
-         ldx   #$FF40
+         sta   >DPort+8
+         ldx   #DPort
          lda   #$D0
          sta   ,x
          lbsr  L02AB
          lda   ,x
          lda   #$FF
-         ldb   #$04
+         ldb   #MaxDrv
          leax  u000F,u
 L003F    sta   ,x
          sta   <$15,x
@@ -76,10 +92,10 @@ L003F    sta   ,x
          os9   F$SRqMem 
          tfr   u,x
          puls  u
-         bcs   L0069
+         bcs   Return
          stx   >u00AD,u
          clrb  
-L0069    rts   
+Return   rts   
 
 * GetStat
 *
@@ -138,6 +154,7 @@ L008D    bcc   L0096
          pshs  x,b,a
          lbsr  L02E9
          puls  x,b,a
+
 L0096    pshs  x,b,a
          bsr   L00A1
          puls  x,b,a
@@ -187,11 +204,11 @@ L00DE    orcc  #$50
          lda   <u0022
          ldy   #$FFFF
          lda   #$24
-         ora   >u00A9,u
+         ora   >DrivSel,u
          stb   <u0040
          sta   <u0048
          rts   
-L0107    lda   >u00A9,u
+L0107    lda   >DrivSel,u
          ora   #$04
          sta   <u0048
          lda   >u00AB,u
@@ -203,6 +220,18 @@ L0107    lda   >u00A9,u
          sta   <u0006
          rts   
 
+* Write
+*
+* Entry:
+*    B  = MSB of the disk's LSN
+*    X  = LSB of the disk's LSN
+*    Y  = address of path descriptor
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
 Write    lda   #$91
 L0124    pshs  x,b,a
          bsr   L0148
@@ -243,7 +272,7 @@ L016C    sta   <u0043
 L0172    leas  $0C,s
          bsr   L0107
          puls  y,dp,cc
-         ldb   >$FF40
+         ldb   >DPort
          bitb  #$04
          lbne  L0288
          lbra  L025A
@@ -295,23 +324,23 @@ L01E0    subd  #$0012
          cmpa  #$10
          bls   L01FB
          pshs  a
-         lda   >u00A9,u
+         lda   >DrivSel,u
          ora   #$10
-         sta   >u00A9,u
+         sta   >DrivSel,u
          puls  a
 L01FB    incb  
-L01FC    stb   >$FF42
+L01FC    stb   >DPort+2
          lbsr  L02AB
-         cmpb  >$FF42
+         cmpb  >DPort+2
          bne   L01FC
 L0207    ldb   <$15,x
-         stb   >$FF41
+         stb   >DPort+1
          tst   >u00AA,u
          bne   L0218
          cmpa  <$15,x
          beq   L022D
 L0218    sta   <$15,x
-         sta   >$FF43
+         sta   >DPort+3
          ldb   #$12
          bsr   L028C
          pshs  x
@@ -321,15 +350,17 @@ L0227    leax  -$01,x
          puls  x
 L022D    clrb  
          rts   
+
 L022F    lbsr  L0305
          lda   <$21,y
-         cmpa  #$04
+         cmpa  #MaxDrv
          bcs   L023D
          comb  
-         ldb   #$F0
+         ldb   #E$Unit
          rts   
+
 L023D    pshs  x,b,a
-         sta   >u00A9,u
+         sta   >DrivSel,u
          leax  u000F,u
          ldb   #$26
          mul   
@@ -354,40 +385,51 @@ L025A    bitb  #$F8
 L0272    clrb  
          rts   
 L0274    comb  
-         ldb   #$F6
+         ldb   #E$NotRdy
          rts   
 L0278    comb  
-         ldb   #$F2
+         ldb   #E$WP
          rts   
 L027C    comb  
-         ldb   #$F5
+         ldb   #E$Write
          rts   
 L0280    comb  
-         ldb   #$F7
+         ldb   #E$Seek
          rts   
 L0284    comb  
-         ldb   #$F3
+         ldb   #E$CRC
          rts   
 L0288    comb  
-         ldb   #$F4
+         ldb   #E$Read
          rts   
 L028C    bsr   L02A9
-L028E    ldb   >$FF40
+L028E    ldb   >DPort
          bitb  #$01
          beq   L02B1
          lda   #$F0
          sta   >$006F
          bra   L028E
 L029C    lda   #$04
-         ora   >u00A9,u
-         sta   >$FF48
-         stb   >$FF40
+         ora   >DrivSel,u
+         sta   >DPort+8
+         stb   >DPort
          rts   
 L02A9    bsr   L029C
 L02AB    lbsr  L02AE
 L02AE    lbsr  L02B1
 L02B1    rts   
 
+* SetStat
+*
+* Entry:
+*    A  = function code
+*    Y  = address of path descriptor
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
 SetStat  ldx   $06,y
          ldb   $02,x
          cmpb  #$03
@@ -401,9 +443,9 @@ L02C2    lbsr  L022F
          lda   $09,x
          cmpa  #$10
          bls   L02D5
-         ldb   >u00A9,u
+         ldb   >DrivSel,u
          orb   #$10
-         stb   >u00A9,u
+         stb   >DrivSel,u
 L02D5    ldx   >u00A7,u
          lbsr  L0207
          bcs   L02C1
@@ -428,7 +470,7 @@ L0305    pshs  x,b,a
          lda   >$006F
          bne   L031A
          lda   #$04
-         sta   >$FF48
+         sta   >DPort+8
          ldx   #$A000
 L0314    nop   
          nop   
@@ -437,5 +479,7 @@ L0314    nop
 L031A    lda   #$F0
          sta   >$006F
          puls  pc,x,b,a
+
          emod
 eom      equ   *
+         end
