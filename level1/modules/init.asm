@@ -36,10 +36,7 @@ start    equ   *
          fcb   OS9Major   OS major revision
          fcb   OS9Minor   OS minor revision
          fcb   CRCOn      feature byte #1
-* CCIO section
-         fcb   $00        unused
-         fcb   $1E        key repeat start constant
-         fcb   $03        key repeat
+         fcb   $00        feature byte #2
 
 name     fcs   "Init"
 

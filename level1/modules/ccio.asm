@@ -773,9 +773,10 @@ L055F    pshs  b
          clra
          lbra  L0393
 
+* Reserve an additional graphics buffer (up to 2)
 SSAAGBF  ldb   <u0031,u
          lbeq  L0660
-         pshs  b
+         pshs  b		get buffer number
          leay  <u0037,u
          ldd   ,y
          beq   L058E
@@ -786,33 +787,34 @@ SSAAGBF  ldb   <u0031,u
 L058E    lbsr  L0685
          bcs   L05A1
          std   ,y
-         std   $04,x
-         puls  b
-         clra
-         std   $06,x
-         clrb
-         rts
+         std   R$X,x
+         puls  b		get buffer number off stack
+         clra			clear hi byte of D
+         std   R$Y,x		and put in caller's Y
+         clrb			call is ok
+         rts			and return
 L059E    ldb   #E$BMode
          coma
 L05A1    puls  pc,a
 
+* Select a graphics buffer
 SSSLGBF  ldb   <u0031,u
          lbeq  L0660
-         ldd   R$Y,x
-         cmpd  #$0002
-         bhi   L05C8
+         ldd   R$Y,x		get buffer number from caller
+         cmpd  #$0002		compare against high
+         bhi   BadMode		branch if error
          leay  <u0035,u
-         lslb
-         ldd   b,y
-         beq   L05C8
-         std   <u0033,u
-         ldd   $04,x
-         beq   L05C3
-         ldb   #$01
-L05C3    stb   <u0032,u
+         lslb			multiply by 2
+         ldd   b,y		get pointer
+         beq   BadMode		branch if error
+         std   <u0033,u		else save in current
+         ldd   R$X,x		get select flag
+         beq   L05C3		if zero, do nothing
+         ldb   #$01		else set display flag
+L05C3    stb   <u0032,u		save display flag
          clrb
          rts
-L05C8    comb
+BadMode  comb
          ldb   #E$BMode
          rts
 
@@ -902,7 +904,7 @@ L067F    puls  y,a
 L0681    clra
          lbra  L0391
 L0685    pshs  u
-         ldd   #$1900
+         ldd   #6144+256
          os9   F$SRqMem
          bcc   L0691
          puls  pc,u
@@ -918,7 +920,7 @@ L06A1    pshs  u,a
          tfr   b,a
          clrb
          tfr   d,u
-         ldd   #$0100
+         ldd   #256
          os9   F$SRtMem
          puls  u,a
          bcs   L06B3
@@ -991,7 +993,7 @@ L0746    fcb   $80,$40,$20,$10,$08,$04,$02,$01
          fcb   $FF,$6F,$30,$C8,$35,$10,$8E,$00,$00
          fcb   $C6,$03,$34,$44
 
-L076D    ldd   #$1800
+L076D    ldd   #6144		size of graphics screen
          ldu   ,x++
          beq   L077A
          sty   -$02,x
@@ -1000,7 +1002,7 @@ L077A    dec   ,s
          bgt   L076D
          ldu   ,x
          beq   L0788
-         ldd   #$0200
+         ldd   #512
          os9   F$SRtMem
 L0788    puls  u,b
          clra
@@ -1021,7 +1023,7 @@ L07A7    anda  #$03
          bra   L07B2
 L07B1    clrb
 L07B2    ldx   <u0033,u
-         leax  >$1801,x
+         leax  >6144+1,x
 L07B9    stb   ,-x
          cmpx  <u0033,u
          bhi   L07B9
@@ -1058,8 +1060,8 @@ L07E6    lda   #$FE
          puls  pc,b,a
 
 L0800    sta   >PIA.U8
-* Delay
-         lda   #$80
+* some type of settle delay
+         lda   #128
 L0805    inca
          bne   L0805
          rts
