@@ -18,14 +18,11 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 
 SUPPORTFILES	= body heads larms legs lips panel1 rofvar rship.c rtitle.c scores
 
-SCRIPTFILES	= install2dd
-
 all:	$(ALLOBJS)
 	$(CHMOD) 755 $(CMDS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)
-	$(OS92UNIX) $(SCRIPTFILES)
 
 dsk:	all
 	$(RM) $(DISK)
@@ -40,8 +37,6 @@ dsk:	all
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(OS9RENAME) $(DISK),CMDS/rescue AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
-	$(UNIX2OS9) $(SCRIPTFILES)
-	$(CP) $(SCRIPTFILES) $(DISK),.
 
 dskclean:
 	$(RM) $(DISK)
