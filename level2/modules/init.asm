@@ -50,7 +50,7 @@ start    equ   *
 name     fcs   "Init"
          fcb   edition
 
-DefProg  fcs   "CC3Go"
+DefProg  fcs   "CMDS/CC3Go"
 DefDev   fcs   "/DD"
 DefCons  fcs   "/Term"
 DefBoot  fcs   "Boot"
