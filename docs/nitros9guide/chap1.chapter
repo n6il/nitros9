@@ -1,0 +1,307 @@
+<chapter>
+<title>Getting Started...</title>
+
+<section>
+<title>What You Need to Run OS-9</title>
+<para>
+OS-9 has been tailored to run on your standard, unmodified Dragon
+Computer. To use it you'll need the following things:
+</para>
+<itemizedlist mark="bullet">
+  <listitem><para>A 64K Memory Dragon Computer</para></listitem>
+  <listitem><para>A Dragon Disk Drive With Contoller Cartridge</para></listitem>
+  <listitem><para>An OS-9 Dragon System Disk</para></listitem>
+</itemizedlist>
+<para>
+OS-9 is also ready to use the following optional equipment that you
+may have now or may obtain in the future:
+</para>
+<itemizedlist mark="bullet">
+  <listitem><para>Additional Expansion Disk Drive(s)</para></listitem>
+  <listitem><para>A Parallel Printer</para></listitem>
+  <listitem><para>Game Joysticks</para></listitem>
+  <listitem><para>Other OS-9 Compatible Languages and Software</para></listitem>
+</itemizedlist>
+
+<section>
+<title>Starting the System</title>
+<para>
+To start up OS-9 follow these steps:
+
+<orderedlist numeration="arabic">
+<listitem><para>Turn the Dragon Computer and disk drive(s) on. You should see
+the usual Basic greeting message on the screen.</para></listitem>
+
+<listitem><para>Insert the OS-9 System Disk in drive zero and close the door.</para></listitem>
+
+<listitem><para>Type &quot;BOOT&quot;. After a few seconds of disk activity you should
+see a screen with the words &quot;OS9BOOT&quot;.</para></listitem>
+
+<listitem><para>OS-9 will then begin
+its &quot;bootstrap&quot; loading process, which
+involves ten to twenty seconds of disk activity. When the system
+startup has finished, a message followed by an &quot;OS9:&quot; prompt will be
+displayed.</para></listitem>
+</orderedlist>
+</para>
+</section>
+
+<section>
+<title>In Case You Have Problems Starting OS-9</title>
+<itemizedlist>
+<listitem><para>If Basic gives an error message after you
+type &quot;BOOT&quot;, remove the
+disk, turn the computer off and on, then try again. If this
+repeatedly fails your OS-9 diskette may be bad.</para></listitem>
+
+<listitem><para>Did you remember to turn the disk drive power switch on?</para></listitem>
+
+<listitem><para>Does your Dragon Computer have 64K RAM? This is a must!</para></listitem>
+
+<listitem><para>If your Dragon Computer doesn't seem to understand the BOOT
+command, contact your dealer.</para></listitem>
+
+<listitem><para>If the &quot;OS9BOOT message is displayed but nothing else happens,
+you may have a corrupted system disk. Hopefully you did make a
+backup!</para></listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>A Quick Introduction to the Use of the Keyboard and Disks</title>
+<para>
+For now, the only special keys on the keyboard of interest are
+the SHIFT key which works like a typewriter shift key; the ENTER key
+which you always use after typing a command or response to OS-9; and
+the &lt;- left arrow key which you can use to erase typing mistakes.
+</para>
+<para>
+Your main disk drive is known to to OS-9 as &quot;/D0&quot; and is often
+called &quot;drive zero&quot;. If you have a second disk drive (drive one),
+OS-9 recognizes it as &quot;/D1&quot;. Why would anybody put a &quot;/&quot; in a name?
+Because all input and output devices have names like files, and
+names that start with &quot;/&quot; are always device names.
+</para>
+</section>
+
+<section>
+<title>Initial Explorations</title>
+<para>
+When OS-9 first starts up, it will display a welcoming message,
+and then ask you to enter the date and time. This allows OS-9 to
+keep track of the date and time of creation of new files and disks.
+Enter the current date and time in the format requested like this:
+<screen>
+             YY/MM/DD HH:MM:SS
+     TIME ?  83 7 14 1420
+</screen>
+In the example above, the date entered was July 14, 1983. OS-9
+uses 24-hour time so the date entered was 1420 hours or 2:20 PM.
+Next, OS-9 will print an &quot;OS9:&quot; prompt to let you know it is ready
+for you to type in a command.
+</para>
+<para>
+Now you're ready to try some commands. A good first command to
+try is DIR (for &quot;<emphasis>dir</emphasis>ectory&quot;).
+This will display a list of the files
+on the System Disk. Just type:
+<screen>
+dir
+</screen>
+followed by a &quot;return&quot;. OS-9 should respond with a listing of file
+names which should look something like this:
+<screen>
+ OS9Boot     startup     CMDS      SYS      DEFS
+</screen>
+The file &quot;OS9Boot&quot; contains the OS-9 program in 6809 machine
+language, which was loaded into memory during the bootstrap
+operation.
+</para>
+<para>
+The file &quot;startup&quot; is a &quot;command file&quot; which is automatically run
+when the system starts up, and has the commands that printed the
+welcoming message and asked for the time. Later, You may want to
+replace this startup file with your own customized version after you
+are more familiar with OS-9. Do you want to see the contents of
+this file? If so, just type
+<screen>
+list startup
+</screen>
+As you can see, the LIST command displays the contents of files
+that contain text (alphabetic characters). Some files like the
+&quot;OS9Boot&quot; file contain binary data such as machine language
+programs. These files are called &quot;binary files&quot;, and attempts to
+list them will result in a jumbled, meaningless display. On the
+other hand, OS-9 will complain mightily if you try to run a text
+file as a program!
+</para>
+<para>
+As you may have surmised by now, the way you ask OS-9 to run a
+program or command (they're really the same thing) is to simply type
+its name. Some commands like LIST require one or more names of
+files or options. If so, they are typed on the same line using
+spaces to separate each item.
+</para>
+<para>
+But where did the LIST and DIR programs come from? There are
+really more files on the disk than you suspect. The DIR command
+showed you what is the disk's
+<emphasis>root directory</emphasis> - so named because the
+OS-9 filing system resembles a tree. Growing out of the root
+directory are three &quot;branches&quot; - files which are additional
+directories of file names instead of programs or data. They in turn
+can have even more &quot;branches&quot; - ad infinitum. If you draw a map on
+paper of how this works it does look like a tree.
+</para>
+<para>
+The directory files on your system disk are called &quot;CMDS&quot;,
+&quot;SYS&quot;, and &quot;DEFS&quot;.
+The file &quot;CMDS&quot; is a directory that consists of
+all the system commands such as DIR, LIST, FORMAT, etc. To see the
+files contained in this directory, enter:
+<screen>
+DIR CMDS
+</screen>
+which tells DIR to show files on the directory file CMDS  instead
+of the root directory. After you type this you should see a long
+list of file names. These are the complete set of command programs
+that come with OS-9 and perform a myriad of functions. Chapter
+Seven explains each one in detail. The DIR command also has a handy
+option to display the CMDS  directory with less typing:
+<screen>
+DIR X
+</screen>
+Whenever you want a list of available commands you can use this so
+you don't have to look it up in the book. The DIR command has
+options which can give you more detailed information about each file
+(see sections 3.4 and 3.8.1).
+</para>
+</section>
+</section>
+<section>
+<title>Making a Backup of the System Disk</title>
+<para>
+Before getting too much more involved in further experimentation,
+NOW is the time to make one or more exact copies of your System Disk
+in case some misfortune befalls your one and only master System
+Disk. Making a backup involves two steps: formatting a blank disk
+and running a backup program.
+</para>
+<section>
+<title>Formatting Blank Disks</title>
+<para>
+Before the actual backup procedure can be done (or any fresh
+diskette is used for any purpose), the blank disk which is to become
+the backup disk must be initialized by OS-9's FORMAT command.
+</para>
+<para>
+IF YOU HAVE ONLY ONE DISK DRIVE you have to be extra careful not to
+accidentally FORMAT your system disk. Type:
+
+<screen>
+FORMAT /D0
+</screen>
+
+and when you see the message
+
+<screen>
+DRAGON DISK FORMATTER 1 . 2
+FORMAT DRIVE /D0
+Y (YES) OR N (NO)
+READY?
+</screen>
+
+immediately remove your system disk and insert a blank disk
+<emphasis>before</emphasis> you type &quot;Y&quot;.
+
+IF YOU HAVE TWO DISK DRIVES place the blank disk in drive one and
+type:
+</para>
+<screen>
+FORMAT /D1
+</screen>
+<para>
+WHEN THE BLANK DISK IS IN THE RIGHT PLACE, type &quot;Y&quot;, then &quot;ENTER&quot;.
+This initiates the formatting process. IF THE CORRECT DEVICE NAME
+(/D1) IS NOT DISPLAYED: TYPE N  RIGHT NOW and start over, OR YOU
+MAY ERASE your System Disk.
+</para>
+<para>
+When you are asked for a disk name, type any letter, then ENTER.
+The name you give is not important. If you have only one drive,
+replace the system disk after the FORMAT program has finished. If
+the FORMAT program reported any errors, try again. Disks used for
+backups can't have any errors. You're now ready to run the BACKUP
+program.
+</para>
+<para>
+It takes several minutes for the FORMAT program to run. During
+its second phase the hexadecimal number of each track will be
+displayed as it is checked for bad sectors. If any are found an
+error message for each bad sector is given.
+</para>
+</section>
+
+<section>
+<title>Running the Backup Program</title>
+<para>
+The BACKUP program makes an exact duplicate of a disk. It can be
+used even if you only have one disk drive.
+</para>
+<para>
+IF YOU HAVE ONE DRIVE type
+</para>
+<screen>
+BACKUP /D0 #32k
+</screen>
+<para>
+The BACKUP program will prompt you to alternately insert the source
+disk (the system disk) and the destination disk (the freshly
+formatted disk).
+</para>
+<para>
+IF YOU HAVE TWO DRIVES type
+</para>
+<screen>
+BACKUP #32K
+</screen>
+<para>
+
+The BACKUP program will respond with
+</para>
+<screen>
+Ready to BACKUP from /D0 to /D0 (or /D1) ?
+</screen>
+<para>
+Now enter Y  for yes. It will then ask:
+</para>
+<screen>
+X IS BEING SCRATCHED
+OK ?:
+</screen>
+<para>
+Answer &quot;Y&quot; for yes again, and the BACKUP process should begin.
+</para>
+<para>
+The BACKUP command has two phases: the first phase copies
+everything from drive zero to drive one checking for errors while
+reading from the master but not for &quot;write&quot; errors. The second
+phase is the &quot;verify&quot; pass which makes sure everything was copied
+onto the new disk correctly.  If any errors are reported during the
+first (copy) pass, there is a problem with the master disk or its
+drive. If errors occur during the second (verify) pass, there is a
+problem with the new disk and the BACKUP program should be run
+again. If BACKUP repeatedly fails on the second pass, reformat the
+disk and try to BACKUP again. If BACKUP fails again, the disk is
+physically defective.
+</para>
+<para>
+After you have made your backup disk, try turning the Dragon
+Computer off and restarting the system with the copy you just made.
+If it works OK, store it in a safe place in case it is needed later.
+You should always have a backup copy of your system disk and all
+other important disks.
+</para>
+</section>
+</section>
+</chapter>
