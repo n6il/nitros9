@@ -95,14 +95,71 @@ Line number.
 <section>
 <title>Section Location Counters</title>
 <para>
+Each section contains the following location counters:
 </para>
+<variablelist termlength="5">
+<varlistentry><term>PSECT</term>
+<listitem><literallayout>instruction location counter</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry><term>VSECT</term>
+<listitem><literallayout>initialized direct page location counter
+non-initialized direct page location counter
+initialized data location counter
+non-initialized data location counter</literallayout>
+</listitem>
+</varlistentry>
+<varlistentry><term>CSECT</term>
+<listitem><literallayout>base offset counter</literallayout>
+</listitem>
+</varlistentry>
+</variablelist>
 </section>
 
 <section>
 <title>Section Directives</title>
 <para>
+RMA contains 3 section directives. PSECT indicates to the linker
+the beginning of a relocatable-object-format file (<acronym>ROF</acronym>) and
+initializes the instruction and data location counters and assembles
+code into the <acronym>ROF</acronym> object code area. VSECT causes RMA to change to
+the data location counters and place any generated code into the
+appropiate <acronym>ROF</acronym> data area. CSECT initializes a base value for
+assigning offsets to symbols. The end of these sections is indicated by the
+ENDSECT directive.
 </para>
-
+<para>
+The source statements placed in a particular section cause the
+linker to perform a function appropiate for the statement.
+Therefore, the mnemonics allowed within a section are restricted as
+follows:
+</para>
+<itemizedlist>
+<listitem>
+<para>
+The mnemonics are allowed inside or outside any section: nam,
+opt, ttl, pag, spc, use, fail, rept, endr, ifeq, ifne, iflt,
+ifle, ifge, ifgt, ifpl, endc, else, equ, set, macro, endm,
+csect, and endsect.
+</para>
+</listitem>
+<listitem>
+<para>
+Within a CSECT: rmb
+</para>
+</listitem>
+<listitem>
+<para>
+Within a PSECT: any 6809 instruction mnemonic, fcc, fdb,fcs,
+fcb, rzb, vsect, endsect, os9 and end.
+</para>
+</listitem>
+<listitem>
+<para>
+Within a VSECT: rmb, fcc, fdb, fcs, fcb, rzb and endsect.
+</para>
+</listitem>
+</itemizedlist>
 <section>
 <title>PSECT Directive</title>
 <para>
@@ -130,19 +187,26 @@ the names are different.</entry>
 </row> 
 <row>
 <entry>typelang</entry>
-<entry></entry>
+<entry>byte expression for the executable module type/language
+byte. If this PSECT is not a "mainline"
+(a module that has been designed to be forked to) module
+this byte must be zero.</entry>
 </row> 
 <row>
 <entry>attrrev</entry>
-<entry></entry>
+<entry>byte expression for executable module attribute/revision byte.</entry>
 </row> 
 <row>
 <entry>edition</entry>
-<entry></entry>
+<entry>byte expression for executable module edition byte.</entry>
 </row> 
 <row>
 <entry>stacksize</entry>
-<entry></entry>
+<entry>word expression estimating the amount of stack storage
+required by this psect. The linker totals this
+value in all PSECTs to appear in the executable module and
+adds this value to any data storage requirement
+for the entire program.</entry>
 </row> 
 <row>
 <entry>entrypoint</entry>
@@ -154,23 +218,73 @@ be set to zero.</entry>
 </tgroup>
 </informaltable>
 </informalexample>
+<para>
+PSECT must have either no operand list or an operand list
+containing a name and five expressions. If no operand list is
+provided, the PSECT name defaults to "program" and all other
+expressions to zero. The can only be one PSECT per assembly
+language file.
+</para>
+<para>
+The PSECT directive initializes all counter orgs and marks the
+start of the program module. No VSECT data reservations or
+object code may appear before or after the PSECT/ENDSECT block.
+</para>
+<para>
+Example:
+<programlisting>
+psect myprog,Prgrm+Objct,Reent+1,Edit,0,progent
+psect another_prog,0,0,0,0,0
+</programlisting>
+</para>
 </section>
 
 <section>
 <title>VSECT Directive</title>
 <para>
+VSECT {DP}
+</para>
+<para>
+The VSECT directive causes RMA to change to the data location
+counters. If DP appears after VSECT, the direct page counters are
+used, otherwise the non-direct page data is used. The RMB directive
+within this section reserves the specified number of bytes in the
+appropiate uninitialized data section. The fcc, fdb, fcs, fcb and
+rzb (reserve zeroed bytes) directives place data into the
+appropiate initialized data section. If an operand for fdb or fcb
+contains an external reference, this information is placed in the
+external reference part of the ROF to be adjusted at link or
+execution time. ENDSECT marks the end of the VSECT block. Any
+number of VSECT blocks can appear within a PSECT. Note, however,
+that the data location counters maintain their values between one
+VSECT block and the next. Since the linker handles the actual data
+allocation, there is no facility provided to adjust the data
+location counters.
 </para>
 </section>
 
 <section>
 <title>CSECT Directive</title>
 <para>
+CSECT {expression}
+</para>
+<para>
+The CSECT directive provides a means for assigning consecutive
+offsets to labels without resorting to EQUs. If the expression is
+present, the CSECT base counter is set to that value, otherwise it
+is set to zero.
 </para>
 </section>
 
 <section>
 <title>RZB statement</title>
 <para>
+RZB &lt;expression&gt;
+</para>
+<para>
+The reserve zeroed bytes pseudo-instruction generates sequences of
+zero bytes in the code or initialized data sections, the number of
+which is specified by the expression.
 </para>
 </section>
 </section>
@@ -189,16 +303,54 @@ new relocating assembler. The differences are apparent.
           use ..../defs/os9defs.a
           endc
 
+PRGRM     equ $10
+OBJCT     equ $01
 
+stk       equ 200
+          psect rmatest,$11,$81,0,stk,entry
+          
+name      fcs /basic09/
+prm       fcb $D
+prmsize   equ *-prm
+
+entry     leax name,pcr
+          leau prm,pcr
+          ldy #prmsize
+          lda #PRGRM+OBJCT
+          clrb
+          os9 F$FORK
+          os9 F$WAIT
+          os9 F$EXIT
+          endsect
 </programlisting>
 <section>
 <title>Macro Interactive Assembler Source</title>
 <programlisting>
           ifp1
           use defsfile
+          endc
 
+          mod siz,prnam,type,revs,start,size
+prnam     fcs /testshell/
+type      set prgm+objct
+revs      set reent+1
+
+          rmb 250
+          rmb 200
+name      fcs /basic09/
+prm       fcb $D
 prmsize   equ *-prm
-
+size      equ .
+start     equ *
+          leax name,pcr
+          leau prm,pcr
+          ldy #prmsize
+          lda #PRGRM+OBJCT
+          clrb
+          os9 F$FORK
+          os9 F$WAIT
+          os9 F$EXIT
+          emod
 siz       equ
 </programlisting>
 </section>
@@ -207,6 +359,31 @@ siz       equ
 <section>
 <title>Introduction to Macros</title>
 <para>
+In programming applications it is frequently necessary to use a
+repeated sequence or pattern of instructions in many different
+places in a program. For example, suppose a group of program
+statements creates a file a number of times throughout the program.
+The code might look like the following statements:
+</para>
+<screen>
+    leax name,pcr
+    lda $02
+    ldb $03
+    os9 I$CREATE
+</screen>
+<para>
+The sequence must be replicated each time that a new file is
+created. A macro assembler eliminates the need for coding duplicate
+statement patterns by allowing the programmer to define macro
+instructions that are equivalent to longer code sequences.
+</para>
+<para>
+When a macro is called, it is the same as calling a subrouting to
+perform a defined function. A macro produces in-line code that is
+inserted into the normal flow of the program beginning at the
+location of the macro call. The statements that may be generated by
+a macro are generally unrestricted, and the statements may contain
+substitutable arguments.
 </para>
 </section>
 
@@ -216,12 +393,115 @@ siz       equ
 <section>
 <title>Macro Definition</title>
 <para>
+A macro definition consists of three sections:
+</para>
+<screen>
+      &lt;Label&gt; MACRO    /* macro header */
+              .        /* &lt;Label&gt; is the name of the macro */
+              .
+              body     /* macro body */
+              .
+              .
+              ENDM     /* macro terminator */
+</screen>
+<orderedlist numeration="arabic" spacing="compact">
+<listitem>
+<para>The macro header - assigns a name to the macro</para>
+</listitem>
+<listitem>
+<para>The body - contains the macro statements</para>
+</listitem>
+<listitem>
+<para>The terminator - indicates the end of the macro</para>
+</listitem>
+</orderedlist>
+<para>
+A macro can have up to nine arguments (\1 to \9) in the operand
+fields. The arguments are used to refer to symbols, registers, etc.
+</para>
+<para>
+The following macro below could represent the file creation pattern:
+</para>
+<programlisting>
+CREATE MACRO
+       leax \1,pcr
+       lda $\2
+       ldb $\3
+       os9 I$CREATE
+       ENDM
+</programlisting>
+<para>
+Calls can be made to create files with different names, access
+modes, and attributes as follows:
+</para>
+<programlisting>
+CREATE name2,02,03
+CREATE name3,01,02
+</programlisting>
+<para>
+The above macro calls will produce the following in-line code:
+</para>
+<programlisting>
+       leax name2, pcr
+       lda $02
+       ldb $03
+       os9 I$CREATE
+
+       leax name3, pcr
+       lda $01
+       ldb $02
+       os9 I$CREATE
+</programlisting>
+<para>
+If an argument has multiple parts, for example if d1,d2 is to be
+passed to the macro called frud, it must be passed in double quotes.
+For example:
+</para>
+<programlisting>
+frud "0,s","2,s"
+</programlisting>
+<para>
+If frud looks like the following macro:
+<programlisting>
+frud MACRO
+\@   leau \1
+     ldd  \2
+     beq  \@
+     ENDM
+</programlisting>
+The previous call to frud would expand the macro as follows:
+<programlisting>
+@xxx  leau 0,s
+      ldd  2,s
+      beq  @xxx
+</programlisting>
+Where "\@" is a label, and "xxx" would be replaced
+by a three digit number.
+</para>
+<para>
+An argument may be declared null by leaving it blank in the macro
+call. For example, if the macro instruction was "ldd \1ZZ\2", then
+the call to the macro with arguments AA,BB would expand the
+instruction to "ldd AAZZBB", and the call with argument ,BB will
+expand it to "ldd ZZBB".
 </para>
 </section>
 
 <section>
 <title>Nested Macro Calls</title>
 <para>
+Macro calls may be nested, that is, the body of a macro definition
+may contain a call to another macro. For example, the macro prepw
+could be defined as follows:
+<programlisting>
+prepw MACRO
+      lda \1
+      getw
+      ENDM
+</programlisting>
+Getw is a macro call. The code to getw is substituted in-line at
+expansion time. However, the definition of a new macro within
+another is not permitted. Macro calls may be nested up to eight deep.
 </para>
 </section>
 
@@ -235,7 +515,13 @@ expanded code <quote>\@</quote> will take on the form <quote>@xxx</quote>, where
 will be a decimal number between 000 to 999.
 </para>
 <para>
-More...
+More than one label may be specified in a macro by the addition of
+an extra character(s). For example, if two different labels are
+required in a macro, they can be specified by "\@A" and "\@B". In
+the first expansion of te macro, the labels would be "@001A" and
+"@001B", and in the second expansion they would be "@002A" and
+"@002B". The extra characters may be appended before the "\" or
+after the "@".
 </para>
 </section>
 

@@ -7,10 +7,6 @@ fi
 # <!ENTITY quot CDATA  "&#22;">
 cat -  > temp$$ <<wrapper
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
-  <!ENTITY replstart "&lt;">
-  <!ENTITY replend   "&gt;">
-  <!ENTITY repeatst   "{">
-  <!ENTITY repeaten   "}">
   <!ENTITY refentrypage SYSTEM "$1.refentry">
  ]>
 <article>
