@@ -1024,7 +1024,7 @@ E$DNE    rmb   1          Directory not empty
 E$NoTask rmb   1          No available Task number
          rmb   $F0-.      reserved
 E$Unit   rmb   1          Illegal Unit (drive)
-E$Sect   rmb   1          Bad SECTor number
+E$Sect   rmb   1          Bad Sector number
 E$WP     rmb   1          Write Protect
 E$CRC    rmb   1          Bad Check Sum
 E$Read   rmb   1          Read Error
