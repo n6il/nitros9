@@ -290,7 +290,7 @@ SvcIRQ   lda   >IRQEnR    Get GIME IRQ Status and save it.
 
 NoClock  leax  DoPoll,pcr If not clock IRQ, just poll IRQ source
          IFNE  H6309     
-         oim              #$FF,<D.QIRQ    ---x set flag to NOT clock IRQ
+         oim   #$FF,<D.QIRQ    ---x set flag to NOT clock IRQ
          ELSE            
          lda   #$FF      
          sta   <D.QIRQ   
@@ -715,10 +715,13 @@ InitCont ldx   #PIA0Base  point to PIA0
          leay  NewSvc,pcr insert syscalls
          os9   F$SSvc    
          IFGT  Level-1
-* H6309 optimization opportunity here using oim
+         IFNE  H6309
+         oim   #$08,<D.IRQER
+         ELSE
          lda   <D.IRQER   get shadow GIME IRQ enable register
          ora   #$08       set VBORD bit
          sta   <D.IRQER   save shadow register
+         ENDC
          sta   >IRQEnR    enable GIME VBORD IRQs
          ENDC
 
