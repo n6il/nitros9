@@ -116,9 +116,11 @@ TWarn    fcb   C$LF
 BootFrag fcb   C$LF
          fcc   "Error - OS9Boot file fragmented"
          fcb   C$CR
+         IFNE  0
 BadTkMsg fcc   "Error - Boot track file must be 4608 bytes"
          fcb   C$CR
 BadTkMsgL equ   *-BadTkMsg
+         ENDC
 Source   fcc   "Ready SOURCE,      hit C to continue: "
 SourceL  equ   *-Source
 Destin   fcc   "Ready DESTINATION, hit C to continue: "
@@ -524,6 +526,7 @@ L0531
          os9   I$Open
          lbcs  Bye
 
+         IFNE  0
 * Determine if the size of the file is 4608 bytes
 * Note, this assumes 18 sectors per track and 256
 * bytes per sector.
@@ -542,6 +545,9 @@ BadBTrak leax  BadTkMsg,pcr
          lda   #$02
          os9   I$WritLn
          lbra  Bye
+         ELSE
+         ldy   #$1200
+         ENDC
 
 
 * Read in boot track file
