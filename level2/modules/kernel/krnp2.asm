@@ -188,6 +188,8 @@ L003A    ldu    <D.Init     get init module pointer
          lda    #(EXEC.+READ.) get file mode
          os9    I$ChgDir    change to it
          bcc    L004F       went ok, go on
+ tfr b,a
+ jsr <D.BtBug
          os9    F$Boot      try & load boot file
          bcc    L003A       go try again
 L004F    ldu    <D.Init     get pointer to init
@@ -283,6 +285,12 @@ svctab   fcb    F$UnLink
          fdb    FGBlkMp-*-2
          fcb    F$GModDr
          fdb    FGModDr-*-2
+         IFEQ   NitrOS9
+         fcb    F$CpyMem
+         fdb    FCpyMem-*-2
+         fcb    F$DelRAM
+         fdb    FDelRAM-*-2
+         ENDC
          fcb    F$SUser      Added back here for room in OS9p1
          fdb    FSUser-*-2
          fcb    F$UnLoad
@@ -364,6 +372,12 @@ IOMan    fcs    /IOMan/
          use    fsprior.asm
 
          use    fid.asm
+
+         IFEQ   NitrOS9
+         use    fcpymem.asm
+
+         use    fdelram.asm
+         ENDC
 
          use    fsswi.asm
 

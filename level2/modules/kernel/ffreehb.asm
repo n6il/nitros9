@@ -71,11 +71,11 @@ L0A8C    pshs  d,x,y,u
          tfm   u+,y+
          oim   #ImgChg,P$State,x
          ELSE
-L0ALoop  ldx   ,u++
-         stx   ,y++
+         lslb
+L0ALoop  lda   ,u+
+         sta   ,y+
          decb
          bne   L0ALoop
-         ldx   2,s
          lda   P$State,x
          ora   #ImgChg
          sta   P$State,x
