@@ -1,7 +1,7 @@
 include ../Makefile.rules
 
 RELEASE		= os9l2v030002beta2
-BOOTFILE	= bootfile_stock
+BOOTFILE	= bootfile_win80
 KERNEL		= kernel_stock
 
 CMDS            = $(shell $(CD) CMDS; make showobjs)
@@ -12,6 +12,7 @@ ROOTFILES	= startup upgrade_song
 SYSGO           = MODULES/cc3go
 
 PACKAGENAME     = $(RELEASE).zip
+DSK_SS40_1      = $(RELEASE)_ss40_1.dsk
 DSK_DS40_1      = $(RELEASE)_ds40_1.dsk
 DSK_DS40_2      = $(RELEASE)_ds40_2.dsk
 DSK_DS80	= $(RELEASE)_ds80.dsk
@@ -44,12 +45,21 @@ clean: dskclean
 	-$(OS92UNIX) $(ROOTFILES)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK_DS40_1) $(DSK_DS40_2) $(DSK_DS80)
+	-$(RM) $(PACKAGENAME) $(DSK_SS40_1) $(DSK_DS40_1) $(DSK_DS40_2) $(DSK_DS80)
 
 dsk: all $(PACKAGENAME)
 
-$(PACKAGENAME): $(DSK_DS40_1) $(DSK_DS40_2) $(DSK_DS80)
-	$(ZIP) $(PACKAGENAME) $(DSK_DS40_1) $(DSK_DS40_2) $(DSK_DS80) ReleaseNotes ChangeLog
+$(PACKAGENAME): $(DSK_SS40_1) $(DSK_DS40_1) $(DSK_DS40_2) $(DSK_DS80)
+	$(ZIP) $(PACKAGENAME) $(DSK_SS40_1) $(DSK_DS40_1) $(DSK_DS40_2) $(DSK_DS80) ReleaseNotes ChangeLog
+
+$(DSK_SS40_1):
+	-$(RM) $(DSK_SS40_1)
+	$(OS9FORMAT) $(DSK_SS40_1) -t40 -h1 -n"OS-9 Level Two System Disk"
+	$(OS9GEN) $(DSK_SS40_1) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
+	$(MAKDIR) $(DSK_SS40_1),CMDS
+	$(CP) $(SYSGO) $(DSK_SS40_1),CMDS
+	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_SS40_1),CMDS
+	$(CP) $(ROOTFILES) $(DSK_SS40_1),.
 
 $(DSK_DS40_1):
 	-$(RM) $(DSK_DS40_1)
