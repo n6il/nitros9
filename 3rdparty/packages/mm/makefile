@@ -8,14 +8,14 @@ CMDS		= mm mod1.dat mod2.dat mod3.dat mod4.dat mod5.dat \
 MD		= $(LEVEL2)/MODULES
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel $(MD)/boot_1773 $(MD)/os9p1
+KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/os9p1
 OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
-		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/vdgint_small.io $(MD)/term_vdg.dt \
-		$(MD)/clock_soft $(MD)/cc3go
+		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/cc3go_dd
 
 SUPPORTFILES	= global.dat mm.lib mm.pnl mm.ttl mod7.lib
 
