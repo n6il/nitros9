@@ -57,25 +57,17 @@ Banner   equ   *
          fcc   /6809 /
          ENDC
          fcc   /Level /
-         IFEQ  Level-3
-         fcc   /3/
-         ENDC
-         IFEQ  Level-2
-         fcc   /2/
-         ENDC
-         IFEQ  Level-1
-         fcc   /1/
-         ENDC
+         fcb   '0+Level
          fcc   / V0/
-         fcb   48+NOS9Vrsn
+         fcb   '0+NOS9Vrsn
          fcc   /.0/
-         fcb   48+NOS9Major
+         fcb   '0+NOS9Major
          fcc   /.0/
-         fcb   48+NOS9Minor
+         fcb   '0+NOS9Minor
          fcb   C$CR,C$LF
 * For ROM version, cut down on verbage
          IFEQ  ROM
-         fcc   "Release Date: Feb 01, 2004"
+         fcc   "Release Date: Mar 01, 2004"
          fcb   C$CR,C$LF
          fcc   !http://www.nitros9.org!
          fcb   C$CR,C$LF
@@ -121,7 +113,7 @@ ShellPL  equ   *-ShellPrm
 
 * Default time packet
 *               YY/MM/DD HH:MM:SS
-DefTime  fcb   103,09,01,00,00,59
+DefTime  fcb   104,02,01,00,00,59
 
          IFEQ  Level-1
 * BASIC reset code      
