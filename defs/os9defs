@@ -1,18 +1,18 @@
-         ifeq  OS9DEFS
+         IFEQ  OS9DEFS
 
 OS9DEFS  set   1
 
          nam   OS9Defs
-         ifeq  Level-1
+         IFEQ  Level-1
          ttl   OS-9 Level One System Symbol Definitions
-         endc
-         ifeq  Level-2
-         ifne  NitrOS9
+         ENDC
+         IFEQ  Level-2
+         IFNE  NitrOS9
          ttl   NitrOS-9 Level Two System Symbol Definitions
-         else
+         ELSE
          ttl   OS-9 Level Two System Symbol Definitions
-         endc
-         endc
+         ENDC
+         ENDC
 
 *****************
 * Edition History
@@ -36,9 +36,9 @@ OS9DEFS  set   1
 true     equ   1          useful name
 false    equ   0          useful name
 
-         ifne  NitrOS9
+         IFNE  NitrOS9
 H6309    set   true
-         endc
+         ENDC
 
          pag
 *****************************************
@@ -70,7 +70,7 @@ F$Time   rmb   1          Get Current Time
 F$STime  rmb   1          Set Current Time
 F$CRC    rmb   1          Generate CRC
 
-         ifgt  Level-1
+         IFGT  Level-1
 
 * OS-9 Level 2 system calls
 F$GPrDsc rmb   1          Get Process Descriptor copy
@@ -87,7 +87,7 @@ F$NMLoad rmb   1          Color Computer 3 Non-Mapping Load
 F$TPS    rmb   1          Return System's Ticks Per Second
 F$TimAlm rmb   1          CoCo individual process alarm call
 
-         endc
+         ENDC
 
          org   $27        Beginning of System Reserved Calls
 F$VIRQ   rmb   1          Install/Delete Virtual IRQ
@@ -104,7 +104,7 @@ F$Ret64  rmb   1          Return Process/Path Descriptor
 F$SSvc   rmb   1          Service Request Table Initialization
 F$IODel  rmb   1          Delete I/O Module
 
-         ifgt  Level-1
+         IFGT  Level-1
 
 F$SLink  rmb   1          System Link
 F$Boot   rmb   1          Bootstrap System
@@ -139,7 +139,7 @@ F$DelRAM rmb   1          Deallocate RAM blocks
 F$GCMDir rmb   1          Pack module directory
 F$AlHRam rmb   1          Allocate HIGH RAM Blocks
 
-         ifne  NitrOS9
+         IFNE  NitrOS9
 * NitrOS9 additions
 * F$ReBoot is unimplemented at this time
 F$ReBoot rmb   1          Reboot machine (reload OS9Boot) or drop to RSDOS
@@ -148,24 +148,24 @@ F$XTime  rmb   1          Get Extended time packet from RTC (fractions of second
 
 * Alan DeKok's NitrOS-9 additions here
 F$VBlock rmb   1          Verify modules in a block of memory, add to module directory
-         endc
+         ENDC
 
-         endc
+         ENDC
 
 *
 * Numbers $70 through $7F are reserved for user definitions
 *
          org   $70
 
-	 ifeq  Level-1
+	 IFEQ  Level-1
 	 rmb   16         Reserved for user definition
-         else
+         ELSE
 
 F$RegDmp rmb   1          Ron Lammardo's debugging register dump
 F$NVRAM  rmb   1          Non Volatile RAM (RTC battery backed static) read/write
 
          rmb   $80-.      Reserved for user definitions
-         endc
+         ENDC
 
          pag
 **************************************
@@ -274,7 +274,7 @@ SS.RdNet rmb   1          Read Raw Sector from Network 4 Omnidrive
 SS.MpGPB rmb   1          Putstat to request a Get/Put Buffer be mapped in workspace
 SS.Slots rmb   1          Network 4 slots? getstat
 
-         ifgt  Level-1
+         IFGT  Level-1
 
 * Level 2 Windowing
 SS.WnSet rmb   1          Set up High Level Windowing Information
@@ -339,7 +339,7 @@ SS.SDWRT equ SS.SDRD      SDisk3 System direct writes ($84)
 SS.Sleep equ SS.Slots     SDisk3 (DMC ONLY) Enable/disable F$Sleep calls in read/write 1773 I/O ($85)
 SS.DrvCh equ SS.WnSet     SDisk3 (DMC ONLY) Set drive number to cache, or return drive number being cached ($86)
 
-         endc
+         ENDC
 
 	 ttl   Direct Page Definitions
          pag
@@ -347,7 +347,7 @@ SS.DrvCh equ SS.WnSet     SDisk3 (DMC ONLY) Set drive number to cache, or return
 **********************************
 * Direct Page Variable Definitions
 *
-         ifeq  Level-1
+         IFEQ  Level-1
 
 * Level 1 DP vars
 	 org   $20
@@ -418,7 +418,7 @@ BMAPSZ   equ   32         BIT MAP SIZE
 SVCTNM   equ   2          NUMBER OF SERVICE REQUEST TABLES
 SVCTSZ   equ   (256-BMAPSZ)/SVCTNM-2 SERVICE REQUEST TABLE SIZE
 
-         else
+         ELSE
 
 * Level 2 DP vars
          org   $00
@@ -450,24 +450,24 @@ D.TkCnt  rmb   1          Tick Counter
 D.BtPtr  rmb   2          Address of Boot in System Address space
 D.BtSz   rmb   2          Size of Boot
 
-         ifne  NitrOS9
+         IFNE  NitrOS9
 * NitrOS9 additions
 * 58d begins here
 D.MDREG  rmb   1          6309 MD (mode) shadow register
-         else
+         ELSE
          rmb   1          Currently unused in OS-9 Level Two
-         endc
+         ENDC
 
 D.CRC    rmb   1          CRC checking mode flag
 
 * Commented out -- to be part of OS-9 Level Two as well
-*         ifne  NitrOS9
+*         IFNE  NitrOS9
 * NitrOS9 additions
 D.Tenths rmb   1          Tenths and hundredths of second for F$Xtime
 D.Task1N rmb   1          Map type 1 task number*2 - offset into [D.TskIPt]
 D.Quick  rmb   1          Quick system call return flag - 0 =stack is at $FEE1
 D.QIRQ   rmb   1          Quick IRQ flag - 0 =IRQ wasn't clock, so quick return
-*         endc
+*         ENDC
 
          org   $40
 D.BlkMap rmb   4          Memory Block Map ptr
@@ -483,18 +483,18 @@ D.SProcQ rmb   2          Sleeping Process Queue
 D.ModEnd rmb   2          Module Directory end ptr
 D.ModDAT rmb   2          Module Dir DAT image end ptr
 D.CldRes rmb   2          Cold Restart vector
-         ifne  NitrOS9
+         IFNE  NitrOS9
 D.BtBug  rmb   3          Boot debug information
 D.Pipe   rmb   2
-         endc
+         ENDC
 
          org   $6B
 D.Crash  rmb   6          Pointer to CC Crash Routine
 D.CBStrt rmb   $B         Reserved for CC warmstart ($71)
 
-         ifne  NitrOS9
+         IFNE  NitrOS9
 D.QCnt   rmb   1          Count of number of quick system calls performed
-         endc
+         ENDC
 
          org   $80
 D.DevTbl rmb   2          I/O Device Table
@@ -557,11 +557,11 @@ D.XIRQ   rmb   2
 D.XSWI   rmb   2
 D.XNMI   rmb   2
 D.ErrRst rmb   2
-         ifne  NitrOS9
+         IFNE  NitrOS9
 D.SysVec rmb   2          OS-9 F$xxx system call vector for NitrOS-9 Level 3
-         else
+         ELSE
          rmb   2
-         endc
+         ENDC
 D.SWI3   rmb   2
 D.SWI2   rmb   2
 D.FIRQ   rmb   2
@@ -581,7 +581,7 @@ RAMinUse equ   %00000001  RAM Block in use flag
 *
 IOEntry  equ   254
 
-         endc
+         ENDC
 
          ttl   Structure Formats
          pag
@@ -589,10 +589,10 @@ IOEntry  equ   254
 * Module Directory Entry Definitions
 *
          org   0
-         ifgt  Level-1
+         IFGT  Level-1
 MD$MPDAT rmb   2          Module DAT Image ptr
 MD$MBSiz rmb   2          Memory Block size
-         endc
+         ENDC
 MD$MPtr  rmb   2          Module ptr
 MD$Link  rmb   2          Module Link count
 MD$ESize equ   .          Module Directory Entry size
@@ -656,13 +656,13 @@ Feature1 rmb   1          feature byte 1
 Feature2 rmb   1          feature byte 2
          rmb   8          reserved for future use
 
-         ifgt  Level-1
+         IFGT  Level-1
 * -- CC3IO area -- (OS-9 Level Two only) *
 MonType  rmb   1          Monitor type (0=CMP,1=RGB,2=MONO)
 MouseInf rmb   1          Mouse resolution/Mouse port
 KeyRptS  rmb   1          Key repeat start constant
 KeyRptD  rmb   1          Key repeat delay constant
-         endc
+         ENDC
 
 * Feature1 byte definitions
 CRCOn    equ   %00000001  CRC checking on
@@ -727,16 +727,16 @@ DT.SCF   equ   0          Sequential Character File Type
 DT.RBF   equ   1          Random Block File Type
 DT.Pipe  equ   2          Pipe File Type
 
-         ifeq  Level-1
+         IFEQ  Level-1
 
 DT.NFM   equ   3
 
-         else
+         ELSE
 
 DT.SBF   equ   3
 DT.NFM   equ   4          Network File Manager
 
-         endc
+         ENDC
 
 *********************
 * CRC Result Constant
@@ -749,7 +749,7 @@ CRCCon23 equ   $0FE3
 ********************************
 * Process Descriptor Definitions
 *
-         ifeq  Level-1
+         IFEQ  Level-1
 
 * Level 1 process descriptor defs
 DefIOSiz equ   12
@@ -794,7 +794,7 @@ ImgChg   equ   %00010000
 Condem   equ   %00000010
 Dead     equ   %00000001
 
-         else
+         ELSE
 
 * Level 2 process descriptor defs
 DefIOSiz equ   16         Default I/O Data Length
@@ -853,7 +853,7 @@ Suspend  equ   %00001000
 Condem   equ   %00000010
 Dead     equ   %00000001
 
-         endc
+         ENDC
 
          ttl   OS-9 I/O Symbolic Definitions
          pag
@@ -970,7 +970,7 @@ R$CC     equ   0          Condition Codes register
 R$A      equ   1          A Accumulator
 R$B      equ   2          B Accumulator
 R$D      equ   R$A        Combined A:B Accumulator
-         ifne  H6309
+         IFNE  H6309
 R$E      equ   3          Accumulator
 R$F      equ   4          Accumulator
 R$W      equ   R$E        Combined E:F Accumulator
@@ -981,14 +981,14 @@ R$Y      equ   8          Y Index register
 R$U      equ   10         User Stack register
 R$PC     equ   12         Program Counter register
 R$Size   equ   14         Total register package size
-         else
+         ELSE
 R$DP     equ   3          Direct Page register
 R$X      equ   4          X Index register
 R$Y      equ   6          Y Index register
 R$U      equ   8          User Stack register
 R$PC     equ   10         Program Counter register
 R$Size   equ   12         Total register package size
-         endc
+         ENDC
 
 * MD register masks
 * 6309 definitions - NitrOS9
@@ -1089,12 +1089,12 @@ E$NoData rmb   1 Missing data statement
 * System Dependent Error Codes
 *
 
-         ifne  NitrOS9
+         IFNE  NitrOS9
          org   183
 E$IWTyp  rmb   1         Illegal window type
 E$WADef  rmb   1         Window already defined
 E$NFont  rmb   1         Font not found
-         endc
+         ENDC
 
 * Level 2 windowing error codes
          org   186
@@ -1110,11 +1110,11 @@ E$BadBuf rmb   1          Bad/Undefined buffer number
 E$IWDef  rmb   1          Illegal window definition
 E$WUndef rmb   1          Window undefined
 
-         ifne  NitrOS9
+         IFNE  NitrOS9
 E$Up     rmb   1          Up arrow pressed on SCF I$ReadLn with PD.UP enabled
 E$Dn     rmb   1          Down arrow pressed on SCF I$ReadLn with PD.DOWN enabled
 E$Alias  rmb   1
-         endc
+         ENDC
 
 
 *
@@ -1179,16 +1179,18 @@ E$Lock   rmb   1          Record is busy (locked out)
 E$Share  rmb   1          Non-sharable file busy
 E$DeadLk rmb   1          I/O Deadlock error
 
-         ifne  NitrOS9
+         IFGT  Level-1
 *****************************
-* Boot defs for Coco NitrOS-9
+* Boot defs for CoCo 3 OS-9
 * These defs are not strictly for 'Boot', but are for booting the
 * system.
 Bt.Block equ   $3B        Block to map in for the 'OS9BOOT' screen
 Bt.Flag  equ   $8A34      Flag in Bt.Block to verify that it's unchanged
 Bt.Offst equ   2          Offset into the screen where the current ptr is
 Bt.Start equ   $ED00      Start address of the boot track in memory
+         ENDC
 
+         IFGT  Level-2
 ***************************
 * Level III Defs
 L3.Start equ   $2000      Start off at slot 1
@@ -1197,9 +1199,9 @@ L3.Blks  equ   L3.Size/$20 Number of slots
 L3.End   equ   L3.Start+L3.Size*$0100 end of L3 memory
 L3.SCF   equ   $0660      SCF block ptr
 L3.RBF   equ   L3.SCF+1   RBF block ptr
-         endc
+         ENDC
 
-         endc
+         ENDC
 
          end
 
