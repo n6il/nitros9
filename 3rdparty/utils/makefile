@@ -4,11 +4,11 @@ dirs	= boisy dasm smartwatch winfo
 
 # Make all components
 all:
-	@$(ECHO) "*********************************************"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*                 Utilities                 *"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*********************************************"
+	@$(ECHO) "**************************************************"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "*                    Utilities                   *"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "**************************************************"
 	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
 
 # Clean all components
