@@ -32,26 +32,26 @@ name     fcs   /Clock/
          fcb   edition
 
 * If no RTC defines are set, then this is a software clock
-         IFEQ RTCBB+RTCTC3
-SOFT     set  1
+         IFEQ  RTCBB+RTCTC3
+SOFT     set   1
          ENDC
 
-         IFNE RTCBB
-MPIFlag  set  1
-SlotSlct set  $22
-RTC.Base equ $FF5C
+         IFNE  RTCBB
+MPIFlag  set   1
+SlotSlct set   $22
+RTC.Base equ   $FF5C
          ENDC
-         IFNE RTCTC3
-RTC.Base equ $FF7C
+         IFNE  RTCTC3
+RTC.Base equ   $FF7C
          ENDC
-         IFNE SOFT
-RTC.Base equ size
+         IFNE  SOFT
+RTC.Base equ   size
          ENDC
 
-         IFNE RTCBB+RTCTC3
-RTC.Zero equ -4     Send zero bit by writing this offset
-RTC.One  equ -3     Send one bit by writing this offset
-RTC.Read equ 0      Read data from this offset
+         IFNE  RTCBB+RTCTC3
+RTC.Zero equ   -4     Send zero bit by writing this offset
+RTC.One  equ   -3     Send one bit by writing this offset
+RTC.Read equ   0      Read data from this offset
          ENDC
 
 SysTbl   fcb   F$Time
@@ -94,12 +94,12 @@ FSTime   ldx   R$X,u
 	 ldd   4,x
 	 std   <D.Min
          andcc #^Carry
-         pshs  u,y,cc
 
          ENDC
 
          IFNE  RTCBB+RTCTC3
 
+         pshs  u,y,cc
          leay  SendBCD,pcr   Send bytes of clock
 	 lbra  TfrTime
 *
@@ -189,6 +189,44 @@ BCDEnter suba  #$10
          puls  b,pc
          ENDC
 
+         IFNE  RTCDriveWire
+         rts
+
+         use   bbwrite.asm
+
+UpdTime  pshs  y,x,cc
+         lda   #'#              Time packet
+         orcc  #IntMasks        Disable interrupts  
+         lbsr  SerWrite
+         bsr   SerRead          Read year byte
+         bcs   UpdLeave
+         sta   <D.Year
+         bsr   SerRead          Read month byte
+         bcs   UpdLeave
+         sta   <D.Month
+         bsr   SerRead          Read day byte
+         bcs   UpdLeave
+         sta   <D.Day
+         bsr   SerRead          Read hour byte
+         bcs   UpdLeave
+         sta   <D.Hour
+         bsr   SerRead          Read minute byte
+         bcs   UpdLeave
+         sta   <D.Min
+         bsr   SerRead          Read second byte
+         bcs   UpdLeave
+         sta   <D.Sec
+         bsr   SerRead          Read day of week (0-6) byte
+UpdLeave puls  cc,x,y,pc
+
+         use   bbread.asm
+
+         ENDC
+
+
+*
+* Clock IRQ Entry Point
+*
 ClockIRQ clra
          tfr   a,dp                    set direct page to zero
          lda   PIA.U4+3                get hw byte
@@ -203,13 +241,18 @@ L0032    lda   PIA.U4+2                clear interrupt?
          cmpb  #60                     full minute?
          bcs   L0079                   nope...
 
-         IFNE  RTCBB+RTCTC3
+         IFNE  RTCBB+RTCTC3+RTCDriveWire
+*
+* Hardware clock code
+*
 
          lbsr   UpdTime
 	 bra    L007B
 
-         ELSE
-
+         ELSE 
+*
+* Software clock code
+*
 * Minutes increment
          inca                          else increment minute
          cmpa  #60                     full hour?
