@@ -120,7 +120,7 @@ TYPH.DSQ  equ  %00010000        Drive size query flag
 
 * IT.TYP bit definitions if bit 7 of IT.TYP is clear (floppy disk)
 TYP.5    equ   %00000000	5" media
-TYP.8    equ   %00000001	8" media
+TYP.3    equ   %00000001	3.5" media
 TYP.256  equ   %00000000	256 byte sector media
 TYP.512  equ   %00000100	512 byte sector media
 TYP.CCF  equ   %00100000	CoCo format
