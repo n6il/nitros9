@@ -1,0 +1,19 @@
+<refentry id="date">
+<refnamediv>
+<refname>DEBUG</refname>
+<refpurpose>Interactive Debugger</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>DEBUG</command>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+Interactive Debugger.
+</para>
+</refsect1>
+</refentry>
+
