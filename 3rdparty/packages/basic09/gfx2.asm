@@ -267,9 +267,9 @@ L0262    tst   -$01,u
 L027D    leau  <$2D,s
 L0280    ldd   <$23,s
          jmp   ,y
-L0285    ldb   #$30
+L0285    ldb   #E$NoRout
          bra   L028B
-L0289    ldb   #$38
+L0289    ldb   #E$ParmEr
 L028B    coma  
          leas  <$21,s
          rts   
