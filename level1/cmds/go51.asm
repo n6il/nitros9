@@ -26,7 +26,7 @@ edition  set   1
 u0000    rmb   2
 u0002    rmb   2
 u0004    rmb   2
-u0006    rmb   32
+OptBuf   rmb   32
 size     equ   .
 
 name     fcs   /go51/
@@ -37,13 +37,13 @@ Driver   fcs   /drvr51/
 Desc     fcs   /term/
 
 start    leax  >IOMod,pcr
-         lbsr  L00CB
-         lbcs  L00C8
+         lbsr  DoLink
+         lbcs  Bye
          stx   ,u
-         lbsr  L00D6
+         lbsr  DoUnlink
          leax  >Driver,pcr
-         lbsr  L00CB
-         lbcs  L00C8
+         lbsr  DoLink
+         lbcs  Bye
          stx   u0002,u
          ldd   $02,x
          std   u0004,u
@@ -73,7 +73,7 @@ L0054    lda   ,u+
          sta   $03,x
          puls  u,cc
          ldx   u0002,u
-         lbsr  L00D6
+         lbsr  DoUnlink
          ldx   ,u
          ldd   $04,x
          leax  d,x
@@ -85,35 +85,37 @@ L008B    lda   ,y+
          bne   L008B
          lda   #$01
          ldb   #SS.Opt
-         leax  u0006,u
+         leax  OptBuf,u
          os9   I$GetStt 
-         bcs   L00C8
-         clr   $01,x
-         lda   #$18
-         sta   $08,x
+         bcs   Bye
+         clr   (PD.UPC-PD.OPT),x
+         lda   #24
+         sta   (PD.PAG-PD.OPT),x
          lda   #$01
          ldb   #SS.Opt
          os9   I$SetStt 
-         bcs   L00C8
+         bcs   Bye
          leax  >Desc,pcr
          lda   #Devic+Objct
          pshs  u
          os9   F$Link   
          tfr   u,x
          puls  u
-         bcs   L00C8
+         bcs   Bye
          clr   <$13,x
          lda   #$18
          sta   <$1A,x
-         bsr   L00D6
+         bsr   DoUnlink
          clrb  
-L00C8    os9   F$Exit   
-L00CB    pshs  u
+Bye      os9   F$Exit   
+
+DoLink   pshs  u
          lda   #Drivr+Objct
          os9   F$Link   
          tfr   u,x
          puls  pc,u
-L00D6    pshs  u
+
+DoUnlink pshs  u
          tfr   x,u
          os9   F$UnLink 
          puls  pc,u
