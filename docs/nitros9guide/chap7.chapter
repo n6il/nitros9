@@ -8,12 +8,13 @@ family programs such as BASIC09, Interactive Debugger, Macro Text
 Editor, etc. Unless otherwise noted, these programs are designed to
 run as individual processes.
 </para>
+<warning>
 <para>
-<emphasis>WARNING</emphasis>
-- ALTHOUGH MANY OS-9 COMMANDS MAY WORK ON LEVEL ONE OR LEVEL
-TWO SYSTEMS, THERE ARE DIFFERENCES. TAKE CARE NOT TO MIX COMMAND
-FILES FROM LEVEL ONE SYSTEMS ON LEVEL TWO, OR THE REVERSE.
+Although many os-9 commands may work on Level One or Level
+Two systems, there are differences. Take care not to mix command
+files from Level One systems on Level Two, or the reverse.
 </para>
+</warning>
 <section>
 <title>Formal Syntax Notation</title>
 <para>

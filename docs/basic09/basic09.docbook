@@ -21,7 +21,7 @@
 <year>1983</year>
 <holder>Microware Systems Corporation.
 All Rights Reserved.
-Basic 09 is a trademark of Microware Systems Corporation and Motorola Inc.
+Basic09 is a trademark of Microware Systems Corporation and Motorola Inc.
 </holder>
 
 </copyright>
@@ -60,7 +60,7 @@ scientific, business, industrial control, education and more.
 has the best of both kinds of language system: it gives
 the fast execution speed typical of compiler languages plus the ease of use
 and memory space efficiency typical of interpreter languages.
-&b09; is a complete PROGRAMMING SYSTEM that
+&b09; is a complete <emphasis>programming system</emphasis> that
 includes a powerful text editor, multi-pass compiler,
 run-time interpreter, high-level interactive debugger, and a system
 executive. Each of these components was carefully integrated
@@ -313,9 +313,9 @@ you are editing the correct program.
 <para>
 When &b09; responds with the edit prompt "E:", it is in the
 edit mode. Now you can enter "edit commands" which help us enter
-the computer program. While in edit mode, &b09; ALWAYS TAKES THE
-FIRST CHARACTER OF EVERY LINE AS AN EDIT COMMAND. Some of the basic
-edit commands are:
+the computer program. While in edit mode, <emphasis>&b09; always takes the
+first character of every line as an edit command.</emphasis>
+Some of the basic edit commands are:
 <programlisting>
 &lt;space> &lt;program statement> &lt;cr>  insert line
 ? &lt;cr>  go to next line down (just &lt;cr> also does the same)
@@ -998,7 +998,6 @@ They have completely different functions.
 <command>E [&lt;procname>]</command>
 </cmdsynopsis>
 <para>
-
 Exits command mode and enters the text editor/compiler mode. If the specified
 procedure does not exist, a new one is created. See the Chapter 4 for a
 complete description of how edit mode works.
@@ -1132,16 +1131,16 @@ MEM 18000
 </cmdsynopsis>
 <para>
 This command
- causes an extra compiler pass on the procedure(s) specified, which
+causes an extra compiler pass on the procedure(s) specified, which
 removes names, line numbers, non-executable statements, etc. The result is
-a smaller, faster procedure(s) that CANNOT be edited or debugged but can be
+a smaller, faster procedure(s) that <emphasis>cannot</emphasis> be edited or debugged but can be
 executed by &b09; or by the &b09; run-time-only program called "RunB".
 If a pathlist is not given, the name of the first procedure in the list will be
 used as a default pathname.
 The procedure is written to the file/device specified in OS-9 memory
 module format suitable for loading in ROM or RAM outside the
 workspace.
-THE RESULTING FILE CANNOT BE LOADED INTO THE WORKSPACE LATER ON,
+<emphasis>The resulting file cannot be loaded into the workspace later on,</emphasis>
 so you should always perform a regular SAVE before PACKing a procedure!
 </para>
 <para>
@@ -1534,8 +1533,6 @@ The second form of the command is identical exect it renumbers all lines in the 
 </para></sect1>
 <sect1><title>String-Oriented Editing</title>
 <para>
-
-
 Most editor commands are string-oriented. This means that you can enter or
 change whole or partial lines without using line numbers at all.  You will
 find that string-oriented editing is generally faster and more convenient.
@@ -1623,14 +1620,12 @@ pointer location.
 The second form deletes ALL lines in the procedure (caution!).
 The editor accepts
 "+*" and "-*" to mean to the end, or to the beginning of the procedure
-respectively. If the number is negative, that many lines BEFORE the
+respectively. If the number is negative, that many lines <emphasis>before</emphasis> the
 current line is deleted.
 If a line number is omitted, only the current line is deleted.
 </para></sect2>
 <sect2><title>Listing Lines</title>
 <para>
-
-
 The "l" command is used to display one or more lines.
 It also has the forms:
 <programlisting>
@@ -1638,7 +1633,7 @@ l [&lt;number>] &lt;CR>
 l*
 </programlisting>
 The first form will display the &lt;number> of lines starting at the current
-edit pointer position. If the number is NEGATIVE, previous lines
+edit pointer position. If the number is <emphasis>negative</emphasis>, previous lines
 will be listed.
 
 The second form displays the entire procedure. Neither change the
@@ -2369,7 +2364,7 @@ storage for a string only defines the maximum-length string which can
 be stored there.  When a STRING value is assigned to a STRING variable,
 the bytes composing the string are copied into the variable storage
 byte-by-byte. The beginning of a string is always character number one,
-and this is NOT affected by the BASE0 or BASE1 statements. Operations
+and this is <emphasis>not</emphasis> affected by the BASE0 or BASE1 statements. Operations
 which result in strings too long to fit in the dimensioned storage
 truncate the string on the right and no error is generated.
 </para>
@@ -2415,7 +2410,7 @@ and are appropriate for logical flags and expressions.  ( result:=a AND
 b AND c ).
 
 Do not confuse BOOLEAN operations AND, OR, XOR, and NOT (which operate
-on the Boolean values TRUA end FALSE) with the logical functions LAND,
+on the Boolean values TRUE end FALSE) with the logical functions LAND,
 LOR, LXOR, and LNOT (which use integer values to produce results on a
 bit-by-bit basis).  Attempting to store a non-BOOLEAN value in a BOOLEAN
 variable (or the reverse) will cause a run-time error.
@@ -3173,7 +3168,7 @@ The following functions can return results of type INTEGER or BYTE:
 </informaltable>
 
 The following functions perform bit-by-bit logical operations on integer
-or byte data types and return integer results. They should NOT be confused
+or byte data types and return integer results. They should <emphasis>not</emphasis> be confused
 with the BOOLEAN-type operators.
 
 <informaltable frame="none">
@@ -3421,7 +3416,7 @@ POKE ADDR(alphabet$)+26,$FF
 <para>
 This class of statements affect the (usually) sequential execution of
 program statements.  They are used to construct loops or make decisions
-that alter program flow.  &b09; provides a selection of looping statements
+that alter program flow. &b09; provides a selection of looping statements
 that allow you to create any kind of loop using sound structured
 programming style.
 </para>
@@ -3628,7 +3623,7 @@ Note that if there is no EXITIF clause, you will create a loop that never ends.
 <para>
 The EXITIF clause evaluates an expression to a boolean result. If the
 result is FALSE, the statement following the ENDEXIT is executed next.
-Otherwise, the statement(s) between the EXITIF AND ENDEXIT are
+Otherwise, the statement(s) between the EXITIF and ENDEXIT are
 executed, then control is transferred to the statement following 
 the body of the loop.  This exit clause
 is often used to perform some specific function upon termination of the
@@ -3890,7 +3885,7 @@ KILL statement should be used to get rid of it so its memory space can be
 used for other purposes.
 <figure>
 <title>Stack Frame Passed to Machine Language Procedures</title>
-<literallayout>
+<screen>
 +----------------------+         ^
 |                      |         |
                           higher addresses
@@ -3914,14 +3909,14 @@ used for other purposes.
 |                      |         |
 +----------------------+        ---  &lt;- &CPU; Stack Pointer
                                         Register value
-</literallayout>
+</screen>
 </figure>
 </para>
 <para>
 Machine language modules return error status by setting the "C"
 bit of the MPU condition codes register, and by setting the B
 register to the appropiate error code. For an example of a machine
-language subroutine ("INKEY"), See Appendix A.
+language subroutine ("INKEY"), See <xref linkend="sample-programs"/>.
 </para>
 <para>
 Example of use of the RUN statement:
@@ -3968,7 +3963,7 @@ It can be fatal to OS-9 to KILL a procedure that is still "active".
 </listitem>
 <listitem>
 <para>
-When KILL is used together with a RUN statement, the RUN statement MUST use the
+When KILL is used together with a RUN statement, the RUN statement <emphasis>must</emphasis> use the
 same string variable which contains the name of the procedure.
 See the first example below:
 </para>
@@ -4438,7 +4433,7 @@ amount of storage expected for each parameter in the called procedure as
 specified by the PARAM statement.
 &b09; checks the size of each parameter (to prevent
 accidental access to storage other than the parameter)
-but DOES NOT CHECK TYPE. However, in most cases the programmer
+but <emphasis>does not check type</emphasis>. However, in most cases the programmer
 should ensure that the parameters evaluated in the RUN statement and
 sent to the called procedure agree exactly with the PARAM statement
 specification with respect to: the number of parameters, their order, size,
@@ -4755,7 +4750,7 @@ GET #0,char
 </informalexample>
 For a function to test if data is available from the keyboard without
 "hanging" the program, see the "INKEY" assembly language program included
-in Appendix A.
+in <xref linkend="sample-programs"/>.
 </para></sect2>
 <sect2><title>PRINT Statement</title>
 <para>
@@ -4848,7 +4843,7 @@ The OPEN statement may also specify the path's desired "access mode" which
 can be READ, WRITE, UPDATE, EXEC, or DIR. This defines which direction I/O
 transfers will occur. If no access mode is specified, UPDATE is assumed
 and both reading and writing are permitted. The DIR mode allows OS-9
-directory type-files to be accessed but should NOT be used in combination
+directory type-files to be accessed but should <emphasis>not</emphasis> be used in combination
 with WRITE or UPDATE modes. The EXEC mode causes the current execution
 directory to be used instead of the current data directory.  Refer to the
 "OS-9 User's Guide" for more information on how files access modes.
@@ -5351,7 +5346,7 @@ written to the standard output path (usually the terminal).
 The string expression is evaluated and used as a "format specification"
 which contains specific formatting directives for each item in the "output
 list".  The items in the output list can be constants, variables, or
-expressions of any atomic type. BLANKS ARE NOT ALLOWED IN FORMAT STRINGS!
+expressions of any atomic type. <emphasis>Blanks are not allowed in format strings!</emphasis>
 As each output item is processed, it is matched up with a specification
 in the format list. The type of each expression result must be compatible
 with the corresponding format specification. If there are fewer format
@@ -5399,7 +5394,7 @@ identifier:
 </informaltable>
 The identifier letter is followed by a constant number called the "field
 width". This number indicates the exact number of print columns the
-output is to occupy and must allow for the data AND "overhead" character
+output is to occupy and must allow for the data <emphasis>and</emphasis> "overhead" character
 positions such as sign characters, decimal points, exponents, etc.
 Some formats have additional mandatory or optional parameters that
 control subfields or select editing options. One of these options is
@@ -5715,7 +5710,7 @@ double quotes, backslash or carriage return characters.</entry>
 </tgroup>
 </informaltable>
 Warning: Control specifications at the end of the format
-specification list will NOT be processed if all output items have
+specification list will <emphasis>not</emphasis> be processed if all output items have
 been exhausted.
 </para>
 <para>
@@ -5892,7 +5887,7 @@ point will slow this particular operation down by about ten times!
 This table can be used to deduce some interesting points. For
 example, "value*2" is not optimum - "value+value" can produce the
 same result in less time because multiplication takes longer than
-addition. Similarly, "value*value" or "SQ(value)" is MUCH faster
+addition. Similarly, "value*value" or "SQ(value)" is <emphasis>much</emphasis> faster
 than the equivalent "value^2". Another interesting case is "x/2.0".
 The REAL divide will cost 3870 cycles, but REAL multiplcation takes
 only 990 cycles. The mathematical equivalent to division by a
@@ -5909,8 +5904,8 @@ preferable. Other kinds of loops also run faster if INTEGER type variables
 are used for loop counters.
 </para>
 <para>
-When writing program loops, remember that statements INSIDE the loop
-may be executed many times for each single execution OUTSIDE the loop.
+When writing program loops, remember that statements <emphasis>inside</emphasis> the loop
+may be executed many times for each single execution <emphasis>outside</emphasis> the loop.
 Thus, any value which can be computed before entering a loop will increase
 program speed.
 </para></sect1>
@@ -5927,7 +5922,7 @@ Note that the assignment statement (LET) can copy identically sized data
 structures. This feature is much faster than copying arrays or structures
 element-by-element inside a loop.
 </para></sect1>
-<sect1><title>The PACK Command</title>
+<sect1 id="pack" xreflabel="PACK"><title>The PACK Command</title>
 <para>
 The PACK command produces a compressed version of a &b09;
 procedure. Depending on the number of comments, line numbers, etc.,
@@ -5989,7 +5984,7 @@ in itself.
 
 
 
-<appendix>
+<appendix id="sample-programs">
 <title>Sample Programs</title>
 <para>
 <programlisting>

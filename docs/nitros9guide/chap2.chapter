@@ -132,8 +132,8 @@ of this manual which describe the correct usage of the parameters of
 each command.
 </para>
 <para>
-For example, the LIST program is used to display the contents of
-a text file on your display. It is necessary to tell to the LIST
+For example, the <command>list</command> program is used to display the contents of
+a text file on your display. It is necessary to tell to the <command>list</command>
 program which file it is to be displayed, therefore, the name of the
 desired file is given as a parameter in the command line. For
 example, to list the file called startup  (the system initialization

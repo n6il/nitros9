@@ -7,21 +7,27 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>help</command>
-<arg choice="opt">
-  <option>command - the command for which you want syntax help.  Include
-as many command names in one <command>help</command> line as you wish.  The proper form and
-syntax appears for each valid command you include.
-</option>
+<arg choice="plain">
+&repeatst;<replaceable>command</replaceable>&repeaten;
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
-<refsect1><title>Notes</title>
-
+<refsect1><title>Description</title>
 <para>
-To use <command>help</command>, first copy Cmds.hp from the SYS directory of the CONFIG/BOOT
-Diskette to the SYS directory of your system diskette.  Next, copy <command>help</command>
-from the CMDS directory of the CONFIG/BOOT Diskette to the CMDS directory
+Provide as argument the command for which you want syntax help.  Include
+as many command names in one <command>help</command> line as you wish.  The proper form and
+syntax appears for each valid command you include.
+</para>
+</refsect1>
+
+<refsect1><title>Notes</title>
+<para>
+To use <command>help</command>, first copy <filename>Cmds.hp</filename> from the <filename class="directory">SYS</filename> directory of the CONFIG/BOOT
+Diskette to the <filename class="directory">SYS</filename> directory of your system diskette.
+Next, copy <command>help</command>
+from the <filename class="directory">CMDS</filename> directory of
+the CONFIG/BOOT Diskette to the <filename class="directory">CMDS</filename> directory
 of your system diskette as follows:
 </para>
 <para>
