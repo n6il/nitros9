@@ -65,10 +65,13 @@ Banner   equ   *
          fcc   /.0/
          fcb   '0+NOS9Minor
          fcb   C$CR,C$LF
+         IFNE  TEST
+         fcc   "** PRE-RELEASE TEST VERSION **"
+         fcb   C$CR,C$LF
+         ENDC
 * For ROM version, cut down on verbage
          IFEQ  ROM
-*         fcc   "Release Date: May 14, 2004"
-         fcc   "ALPHA VERSION!!!!"
+         date
          fcb   C$CR,C$LF
          fcc   !http://www.nitros9.org!
          fcb   C$CR,C$LF
@@ -114,7 +117,7 @@ ShellPL  equ   *-ShellPrm
 
 * Default time packet
 *               YY/MM/DD HH:MM:SS
-DefTime  fcb   104,05,01,00,00,59
+DefTime  fcb    70,11,20,00,00,59
 
          IFEQ  Level-1
 * BASIC reset code      

@@ -346,9 +346,9 @@ L00F0Lp  lda   ,x+
          beq   L0115          No, all drives can read single, skip ahead
          bitb  #DNS.MFM       Can our path dsc. handle double density?
          beq   erbtyp         No, illegal
-L0115    bita  #FMT.TDNS      Is new disk 96 tpi?
-         beq   L011D          No, all drives handle 48 tpi, so skip ahead
-         bitb  #DNS.DTD       Can path dsc. handle 96 tpi?
+L0115    bita  #FMT.TDNS      Is new disk 96/135 tpi?
+         beq   L011D          No, so skip ahead
+         bitb  #DNS.DTD       Can path dsc. handle 96/135 tpi?
          beq   erbtyp         No, illegal
 L011D    bita  #FMT.SIDE      Is new disk double sided?
          beq   L0128          No, all drives handle single sided, we're done
@@ -585,7 +585,7 @@ verify   pshs  x,d
          ldy   >sectbuf,u     Get sector buffer ptr
          andb  #%00000100     512 byte sector?
          beq   L028D          No, skip ahead
-         ldd   >loglsn,u       Get OS9's sector #
+         ldd   >loglsn,u      Get OS9's sector #
          andb  #$01           Odd/even sector?
          beq   L028D          Even; compare first half
          leay  >$0100,y       Odd, compare second half

@@ -169,7 +169,7 @@ ChkBusy  tst   Status,y
          sta   DevHead,y  0L0d/0hhh device=LBA 
 RdyHuh1  lda   Status,y   is IDE ready for commands? 
          anda  #BusyBit+DrdyBit   ready ? 
-         cmpa  #%01000000
+         cmpa  #DrdyBit
          bne   RdyHuh1    loop until Drdy=1 and Busy=0
 
          lda   #$01       only one at a time 
@@ -194,6 +194,9 @@ BlkLp
          std   ,x++       into RAM 
          inc   ,s
          bpl   BlkLp      go get the rest 
+b@       lda   RData,y	  read remainig 256 bytes
+         dec   ,s
+         bne   b@
          puls  b
 
 *         lda   Status,y   check for error-bit 
