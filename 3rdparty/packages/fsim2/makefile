@@ -19,6 +19,8 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 
 SUPPORTFILES	= fa fd fp sf.standard
 
+SCRIPTS		= install2dd
+
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
@@ -26,6 +28,7 @@ all:	$(ALLOBJS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)
+	$(OS92UNIX) $(SCRIPTS)
 
 dsk:	all
 	$(RM) $(DISK)
@@ -40,6 +43,8 @@ dsk:	all
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(OS9RENAME) $(DISK),CMDS/fs AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
+	$(UNIX2OS9) $(SCRIPTS)
+	$(CP) $(SCRIPTS) $(DISK),.
 
 dskclean:
 	$(RM) $(DISK)
