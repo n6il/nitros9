@@ -18,7 +18,7 @@ SUBS            = gfx2 gfx inkey syscall
 
 SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
 UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
-		merge mfree procs rename sleep tee tmode
+		merge mfree procs rename sleep tmode
 
 ALLOBJS		= $(CMDS) $(SUBS)
 

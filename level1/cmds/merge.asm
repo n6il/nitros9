@@ -8,6 +8,9 @@
 * ------------------------------------------------------------------
 *   4      ????/??/??
 * From Tandy OS-9 Level One VR 02.00.00.
+*
+*   5      2003/09/06
+* Added -z option to read files from stdin
 
          nam   Merge
          ttl   Merge files into one file
@@ -19,7 +22,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   4
+edition  set   5
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -28,13 +31,17 @@ path     rmb   1
 param    rmb   2
 d.ptr    rmb   2
 d.size   rmb   2
+d.buff   rmb   128
 d.buffer rmb   2496       should reserve 7k, leaving some room for parameters
 size     equ   .
 
 name     fcs   /Merge/
          fcb   edition    change to 6, as merge 5 has problems?
 
-start    pshs  u          save start address of memory
+start    subd  #$0001     if this becomes zero,
+         beq   Exit       we have no parameters
+
+         pshs  u          save start address of memory
          stx   <param     and parameter area start
          tfr   x,d
          subd  #$0107     take out 1 bytes in DP, and 1 page for the stack
@@ -43,16 +50,41 @@ start    pshs  u          save start address of memory
          leau  d.buffer,u point to some data
          stu   <d.ptr     save another pointer
 
-do.file  ldx   <param     get first filename
-         bsr   space
+do.opts  ldx   <param     get first option
+do.opts2 lbsr  space
 
-         clrb  
          cmpa  #C$CR      was the character a CR?
-         beq   Exit       yes, exit
+         beq   do.file    yes, parse files
 
-         lda   #READ.
+         cmpa  #'-        was the character a dash?
+         beq   do.dash    yes, parse option
+         lbsr  nonspace   else skip nonspace chars
+
+         cmpa  #C$CR      end of line?
+         beq   do.file    branch if so
+         bra   do.opts2   else continue parsing for options
+
+do.file  ldx   <param
+         lbsr  space
+
+         cmpa  #C$CR      CR?
+         beq   Exit       exit if so
+
+         cmpa  #'-        option?
+         bne   itsfile
+
+         bsr   nonspace
+
+         cmpa  #C$CR      CR?
+         beq   Exit       exit if so
+
+itsfile  bsr   readfile
+         bcs   Error
+         bra   do.file
+
+readfile lda   #READ.
          os9   I$Open     open the file for reading
-         bcs   Exit       crap out if error
+         bcs   read.ex    crap out if error
          sta   <path      save path number
          stx   <param     and save new address of parameter area
 
@@ -65,21 +97,66 @@ read.lp  lda   <path      get the current path number
          lda   #$01       to STDOUT
          os9   I$Write    dump it out in one shot
          bcc   read.lp    loop if no errors
-         bra   Exit       otherwise exit ungracefully
+read.ex  rts
 
 chk.err  cmpb  #E$EOF     end of the file?
-         bne   Error      no, error out
+         bne   read.ex    no, error out
+ 
          lda   <path      otherwise get the current path number
          os9   I$Close    close it
-         bcc   do.file    if no error, go get next filename
+         rts              return to caller
 
 Error    coma             set carry
-Exit     os9   F$Exit     and exit
+         fcb   $21        skip next byte
+Exit     clrb
+         os9   F$Exit     and exit
+
+do.dash  leax  1,x        skip over dash
+         lda   ,x+        get char after dash
+         cmpa  #C$CR      CR?
+         beq   Exit       yes, exit
+
+         anda  #$DF       make uppercase
+         cmpa  #'Z        input from stdin?
+         bne   Exit
+
+* read from stdin until eof or blank line
+* skip lines that begin with * (these are comments)
+do.z     leax  d.buff,u
+         ldy   #127
+         clra             stdin
+         os9   I$ReadLn
+         bcc   do.z2
+         cmpb  #E$EOF     end-of-file?
+         bne   Error      nope, exit with error
+
+do.z2    lda   ,x
+         cmpa  #'*        asterisk? (comment)
+         beq   do.z       yep, ignore and get next line
+         bsr   space      skip space at X
+         cmpa  #C$CR      end of line?
+         beq   Exit       yup, we're done
+
+* X points to a filename...
+         pshs  x
+         bsr   readfile    read contents of file and send to stdout
+         puls  x
+         bcc   do.z        branch if ok
+         bra   Error 
+
 
 space    lda   ,x+        grab a character
          cmpa  #C$SPAC    space?
          beq   space      yes, skip it
          leax  -1,x       otherwise point to last non-space
+         rts
+
+nonspace lda   ,x+        grab a character
+         cmpa  #C$CR      cr?
+         beq   nospacex   yes, skip it
+         cmpa  #C$SPAC    nonspace?
+         bne   nonspace   yes, skip it
+nospacex leax  -1,x       otherwise point to last space
          rts
 
          emod
