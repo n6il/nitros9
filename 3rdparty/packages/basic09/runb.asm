@@ -4604,11 +4604,19 @@ L22a0    fcb   $00
 L22A1    fcb   $0e
          fdb   $1214,$a2bb,$40e6,$2d36,$1962
          fcb   $e9
-RND      fcb   $4f
-         fdb   $5fdd
-L22b0    fdb   $4cdd,$4e34,$02a6,$2227,$16e6,$25c5,$0126,$0463
-L22c0    fdb   $e420
-         fcb   $0c
+
+RND      clra
+         clrb
+         std   <u004C
+         std   <u004E
+         pshs  a
+         lda   $02,y
+         beq   L22CF
+         ldb   $05,y
+         bitb  #$01
+         bne   L22C3
+         com   ,s
+         bra   L22CF
 
 L22C3    addb  #$FE
          addb  $01,y
