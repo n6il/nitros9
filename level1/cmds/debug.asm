@@ -8,6 +8,7 @@
 *   6    From Tandy OS-9 Level One VR 02.00.00
 *   9    From Tandy OS-9 Level Two Development System,  BGP 03/01/03
 *        back ported to OS-9 Level One
+*  10    Start of optimizations, works under NitrOS-9   BGP 03/01/05
 
          nam   debug
          ttl   6809 debugger
@@ -21,7 +22,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   9
+edition  set   10
 
 * Changable settings
 NumBrkPt equ   12		number of breakpoints
@@ -139,6 +140,12 @@ L00A0    stb   ,s		save value on stack
          ldd   $02,s		get two bytes from stack
          bita  #$F0		upper nibble set?
          bne   L0123		branch if so
+         IFNE  H6309
+         lsld
+         lsld
+         lsld
+         lsld
+         ELSE
          lslb  
          rola  
          lslb  
@@ -147,6 +154,7 @@ L00A0    stb   ,s		save value on stack
          rola  
          lslb  
          rola  
+         ENDC
          addb  ,s
          adca  #$00
          std   $02,s
@@ -160,13 +168,22 @@ L00BE    bsr   AtoInt		convert ASCII char in A
          bcs   L0110
          stb   ,s		save integer char
          ldd   $02,s		get word on stack
+         IFNE  H6309
+         lsld
+         ELSE
          lslb
          rola  			D * 2
+         ENDC
          std   $02,s		save
+         IFNE  H6309
+         lsld
+         lsld
+         ELSE
          lslb  
          rola  			D * 4
          lslb  
          rola  			D * 8
+         ENDC
          bcs   L0123
          addd  $02,s		add to word on stack
          bcs   L0123
@@ -295,21 +312,22 @@ L0181    dec   $04,s
 L018B    leas  $06,s
          rts   
 
-* Copy from X to Y until byte zero is encountered
+* Copy from Y to X until byte zero is encountered
 L018E    sta   ,x+
-CopyXY   lda   ,y+
+CopyY2X  lda   ,y+
          bne   L018E
          rts   
-
 
 L0195    pshs  u,y
          tfr   s,u
          bsr   L01A7
          andcc #^Carry
          puls  pc,u,y
+
 L019F    tfr   u,s
          orcc  #Carry
          puls  pc,u,y
+
 L01A5    leax  $01,x
 L01A7    bsr   L01C9
          pshs  b,a
@@ -379,7 +397,7 @@ L0222    bsr   L021D
          comb  			not B
          coma  			not A
          bra   L0238
-L022E    cmpa  #'-		minus?
+L022E    cmpa  #'-		negate?
          bne   L023B
          bsr   ParsExp
          nega  
@@ -396,11 +414,7 @@ L023B    bsr   L021D
          bsr   L021D
          cmpa  #')		close paren?
          beq   L0282
-*         IFGT  Level-1
-         ldb   #$04
-*         ELSE
-*         ldb   <u0004
-*         ENDC
+         ldb   #E$RParen
          bra   L0265
 L0250    cmpa  #'[
          bne   L026A
@@ -463,7 +477,7 @@ L02B3    rts   			return
 L02B4    lbsr  L006F
          bcc   L02B3
          beq   L02BF
-         ldb   #$03
+         ldb   #E$OpMsng
          bra   L0267
 L02BF    ldb   #E$BadCnt
          bra   L0267
@@ -589,12 +603,13 @@ L036A    clr   ,x+
          lbsr  WritCR		write carriage return
          ldx   <buffptr
          leay  >Title,pcr	point to title
-         bsr   L03C2		print it
+*         bsr  L03C2		print it
+         lbsr  CopyY2X		print it
          lbsr  WritCR2
 
 * Show prompt and get input from standard input to process
 GetInput leay  >Prompt,pcr	point to prompt
-         lbsr  L07EF		print it
+         lbsr  PrintY		print it
          lbsr  ReadLine		read line from std input
          leay  >CmdTbl,pcr	point to command table
          lda   ,x		get character from read buffer
@@ -622,7 +637,7 @@ SyntxErr ldb   #E$CmdErr
 ShowErr  os9   F$PErr   
          rts   
 
-L03C2    lbra  CopyXY
+*L03C2    lbra  CopyY2X
 
 * Show byte at current memptr
 DotCmd   lda   ,x		get byte after cmd byte
@@ -679,7 +694,8 @@ NextByte ldd   <curraddr	get current memory address
 L0415    ldx   <buffptr		load X with buffer pointer
          pshs  b,a
          leay  >Spaces,pcr	point to spaces
-         bsr   L03C2
+*         bsr   L03C2
+         lbsr   CopyY2X
          puls  pc,b,a
 
 * Calc expression
@@ -766,38 +782,38 @@ L04AF    tst   <isnarrow	wide screen?
          ldx   <buffptr		point to buffer
          leay  <ShrtHdr,pcr
          ldu   <u0002
-         lbsr  L03C2
+         lbsr  CopyY2X
          ldd   R$PC,u
          IFNE  H6309
          lbsr  L0505
          ELSE
          bsr   L0505
          ENDC
-         lbsr  L03C2
+         lbsr  CopyY2X
          ldb   R$A,u
          IFNE  H6309
          lbsr  L050F
          ELSE
          bsr   L050F
          ENDC
-         lbsr  L03C2
+         lbsr  CopyY2X
          ldb   R$B,u
          bsr   L050F
-         lbsr  L03C2
+         lbsr  CopyY2X
          IFNE  H6309
          ldb   R$E,u
          bsr   L050F
-         lbsr  L03C2
+         lbsr  CopyY2X
          ldb   R$F,u
          bsr   L050F
          pshs  y
          lbsr  WritCR2
          puls  y
-         lbsr  L03C2
+         lbsr  CopyY2X
          ENDC
          ldb   R$CC,u
          bsr   L050F
-         lbsr  L03C2
+         lbsr  CopyY2X
          ldb   R$DP,u
          bsr   L050F
          IFEQ  H6309
@@ -805,16 +821,16 @@ L04AF    tst   <isnarrow	wide screen?
          lbsr  WritCR2
          puls  y
          ENDC
-         lbsr  L03C2
+         lbsr  CopyY2X
          tfr   u,d
          bsr   L0505
-         lbsr  L03C2
+         lbsr  CopyY2X
          ldd   R$X,u
          bsr   L0505
-         lbsr  L03C2
+         lbsr  CopyY2X
          ldd   R$Y,u
          bsr   L0505
-         lbsr  L03C2
+         lbsr  CopyY2X
          ldd   R$U,u
          bsr   L0505
          lbsr  WritCR2
@@ -822,7 +838,7 @@ L04AF    tst   <isnarrow	wide screen?
 * Show registers in wide form
 WidRegs  lbsr  L0415
          leay  >RegHdr,pcr
-         lbsr  L03C2
+         lbsr  CopyY2X
          lbsr  WritCR2
          lbsr  L0415
          ldd   <u0002
@@ -876,7 +892,11 @@ L0538    lbsr  L0195
          pshs  b,a		save desired breakpoint address
          bsr   SrchBkpt		search to see if it is already in table
          beq   L0551		if duplicate, just exit
+         IFNE  H6309
+         clrd			else load D with empty address
+         ELSE
          ldd   #$0000		else load D with empty address
+         ENDC
          bsr   SrchBkpt		search for empty
          beq   L0551		branch if found
          ldb   #E$BPTFull	else table is full
@@ -896,11 +916,7 @@ L055F    cmpu  ,y		match?
          leay  $03,y		else move to next entry
          decb  			dec couner
          bne   L055F		if not 0, continue search
-*         IFGT  Level-1
          ldb   #E$NoBkPt
-*         ELSE
-*         ldb   <bptable
-*         ENDC
          andcc #^Zero
 L056D    puls  pc,u
 
@@ -911,8 +927,12 @@ KillBkpt bsr   L0512		any parameters?
          bcs   L054E		branch if error
          bsr   SrchBkpt
          bne   L054E
+         IFNE  H6309
+         clrd
+         ELSE
          clra  
          clrb  
+         ENDC
          std   ,y
          rts   
 * Kill all breakpoints
@@ -1039,8 +1059,13 @@ L064E    leau  1,u
          bra   L0626
 
 * Intercept routine
-IcptRtn  clra  
+IcptRtn  equ   *
+         IFNE  H6309
+         tfr  0,dp
+         ELSE
+         clra  
          tfr   a,dp
+         ENDC
          IFEQ  Level-1
          ldx   <D.Proc		get curr proc ptr
          lda   P$ADDR,x		get hi word of user addr
@@ -1072,7 +1097,7 @@ L067F    leay  $03,y		move to next entry
          lbsr  WritCR
          lbsr  L0415
          leay  >L07A9,pcr
-         lbsr  L03C2
+         lbsr  CopyY2X
          lbsr  WritCR2
          lbsr  L04AF
          lbra  GetInput
@@ -1088,7 +1113,8 @@ LinkMod  bsr   LinkIt		link to module
          bra   L06CC
 
 LinkIt   lbsr  EatSpace		skip over blank spaces at X
-         lda   #$00
+*         lda   #$00
+         clra
          os9   F$Link   	link to module name at X
          rts   
 
@@ -1139,8 +1165,12 @@ L06DC    lda   ,-x		get parameter char
 
 * Fork program (default is shell)
 ForkPrg  lbsr  EatSpace		skip leading spaces
+         IFNE  H6309
+         clrd
+         ELSE
          clra  
          clrb  
+         ENDC
          tfr   x,u		move param ptr to U
          tfr   d,y
 L0715    leay  $01,y
@@ -1178,11 +1208,7 @@ L0746    cmpb  ,x+		byte in B match byte at ,X?
          puls  pc,u		else we're done
 L0750    cmpd  ,x+		byte in B match byte at ,X?
          beq   L075C		branch if so
-*         IFGT  Level-1
          cmpx  ,s
-*         ELSE
-*         cmps  ,s		this appears to be a bug
-*         ENDC
          bne   L0750		branch if not
          puls  pc,u
 L075C    leax  -$01,x		back up to mem location found
@@ -1252,17 +1278,19 @@ WritCR2  lda   #C$CR
          ldy   #81
          bra   WrStdOut
 
-L07EF    tfr   y,x
+PrintY   tfr   y,x
          tfr   y,u
          ldy   #$0000
-L07F7    ldb   ,u+		get next char
+PrintYL  ldb   ,u+		get next char
          beq   WrStdOut		write it
          leay  $01,y		increase Y
-         bra   L07F7		get more
+         bra   PrintYL		get more
 
 * Write To Standard Output
 * Entry:
 *    X = address of buffer to write
+* Exit:
+*    X = address of program's buffptr
 WrStdOut lda   #$01		stdout
          os9   I$WritLn 	write it!
          ldx   <buffptr
