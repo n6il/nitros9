@@ -1,8 +1,16 @@
+********************************************************************
+* H0 - IDE device descriptor
+*
+* $Id$
+*
+* IDE Defined Offsets
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+
          nam   H0        
          ttl   IDE device descriptor
 
-* IDE Defined Offsets
-*
 * IT.STP (offset $14)
 *  Bit Meaning
 *  --- ---------------------------------------------------------------
@@ -16,16 +24,25 @@
 * IT.DNS (offset $16)
 *  Bit Meaning
 *  --- ---------------------------------------------------------------
-
+*  1   Force CHS:     1 = Use CHS, 0 = Use LBA if drive supports it
+*  0   Master/Slave:  0 = master, 1 = slave
+*
 
 * Interface Address
 ADDR     set   $FF50     
+
+Master   set   %00000000
+Slave    set   %00000001
+ForceCHS set   %00000010
+
+DriveSel set   Master
+
 
 * Driver specific fields
 ITDRV    set   $00       
 ITSTP    set   $00       
 ITTYP    set   $80       
-ITDNS    set   $00       
+ITDNS    set   ITDRV
 
 ITSOFS1  set   $00       
 ITSOFS2  set   $00       
