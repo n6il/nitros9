@@ -19,6 +19,10 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_soft $(MD)/cc3go
 
+BOOTCMDS	= $(LEVEL2)/CMDS/shell_21 $(LEVEL2)/CMDS/date \
+		$(LEVEL2)/CMDS/echo $(LEVEL2)/CMDS/link \
+		$(LEVEL2)/CMDS/setime
+
 SUPPORTFILES_D1	= Startup logDir object picDir sndDir tOC viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 vol.12 vol.14 words.tok tOC.txt
 
@@ -29,12 +33,15 @@ SUPPORTFILES_D3	= logDir object picDir sndDir tOC viewDir vol.0 \
 		vol.5 vol.6 vol.7 vol.9 vol.11 vol.12 vol.14 words.tok
 
 ALLOBJS		= $(CMDS)
+TEXTFILES	= tOC.txt Startup
 
 all:	$(ALLOBJS)
+	$(UNIX2OS9) $(TEXTFILES)
 	$(CHMOD) 755 $(CMDS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)
+	$(OS92UNIX) $(TEXTFILES)
 
 dsk:	all
 	$(RM) $(DISK_1) $(DISK_2) $(DISK_3)
@@ -46,7 +53,10 @@ dsk:	all
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $(DISK_1),CMDS
 	$(CP) $(CMDS) $(DISK_1),CMDS
-	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK_1),CMDS/shell
+	$(MERGE) $(BOOTCMDS)>shell
+	$(CP) shell $(DISK_1),CMDS
+	$(RM) shell
+	$(OS9ATTR) $(DISK_1),CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $(DISK_1),CMDS/sierra AutoEx
 	$(CP) $(SUPPORTFILES_D1) $(DISK_1),.
 	$(OS9FORMAT) $(DISK_2) -t40 -h2 -n"King's Quest III Disk 2"
