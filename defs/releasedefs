@@ -4,4 +4,4 @@
 * OS-9 Version equates
 OS9Vrsn  equ   3
 OS9Major equ   1
-OS9Minor equ   1
+OS9Minor equ   2

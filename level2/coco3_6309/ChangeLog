@@ -1,4 +1,5 @@
 OS-9 Level Two V03.01.02:
+- A bug in the help utility has been fixed.
 - Drivers and descriptors for Tandy's Hard Disk Interface have
   been added to the MODULES directory.
 - The MODULES directory structure has been enhanced to include
