@@ -1,12 +1,1 @@
-INSTALLATION
-============
-The installation scripts assume that /DD/CMDS is the target directory.
-If this is not the case for your system, then edit the scripts accordingly.
-
-To install Basic09 for the 6809, type:
-
-	chd /d0; install6809
-
-For 6309 installation, type:
-
-	chd /d0; install6309
+INSTALLATION============The installation scripts assume that /DD/CMDS is the target directory.If this is not the case for your system, then edit the scripts accordingly.To install Basic09 for the 6809, type:	chd /d0; install6809For 6309 installation, type:	chd /d0; install6309
