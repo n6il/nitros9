@@ -1,0 +1,24 @@
+-x
+t
+***************************************************
+* Rescue on Fractalus Install Script for the CoCo 3
+* Files are copied to the /DD device
+*
+* Creating directories
+makdir /DD/GAMES
+makdir /DD/GAMES/ROF
+makdir /DD/GAMES/ROF/CMDS
+* Copying commands to /DD/GAMES/ROF/CMDS
+copy -r CMDS/AutoEx /DD/GAMES/ROF/CMDS/rescue
+* Copying support files to /DD/GAMES/ROF
+copy -r body -w=/DD/GAMES/ROF
+copy -r heads -w=/DD/GAMES/ROF
+copy -r larms -w=/DD/GAMES/ROF
+copy -r legs -w=/DD/GAMES/ROF
+copy -r lips -w=/DD/GAMES/ROF
+copy -r panel1 -w=/DD/GAMES/ROF
+copy -r rofvar -w=/DD/GAMES/ROF
+copy -r rship.c -w=/DD/GAMES/ROF
+copy -r rtitle.c -w=/DD/GAMES/ROF
+copy -r scores -w=/DD/GAMES/ROF
+* All Done!
