@@ -19,6 +19,7 @@
 
          ifp1  
          use   defsfile
+         use   systype
          endc  
 
 type     set   prgrm+objct
@@ -51,7 +52,6 @@ size     equ   .
 
 rom      equ   $FFDE
 ram      equ   $FFDF
-multipac equ   $FF7F
 cartI    equ   $FF22
 skp1     equ   $21
 skp2     equ   $8C        code for cmpx #nn
@@ -90,7 +90,7 @@ s2loop   clr   ,x+        clear out the time date data
          decb  
          bne   s2loop
          dec   ,x         mark stop byte
-         lda   multipac
+         lda   MPI.Slct
          anda  #3         keep IRQ
          ora   #$30       start with slot 4
          sta   mpiimage   save setting
@@ -199,7 +199,7 @@ data1    lda   ,x+
          bcs   error
          cmpa  #9
          bhi   error
-         orcc  #4
+         orcc  #Zero
          rts   
 data2    tst   temp2
          beq   data1
@@ -259,17 +259,17 @@ killit   lda   #C$SPAC
 
 reloc    pshs  cc
          lda   d.hinit,x  get $FF90 image
-         ldb   multipac
+         ldb   MPI.Slct
          pshs  d
          anda  #$CC       external disk rom access
-         orcc  #$50
+         orcc  #IntMasks
          sta   $FF90      set for external ROM
          sta   rom
          ldx   locblk3E
          ldb   mpiimage   get new value
          clr   clkflag
 
-findclk  stb   multipac   set new slot
+findclk  stb   MPI.Slct   set new slot
          leay  allert,pcr
          lda   4,x        clear clock
          clrb  
@@ -324,7 +324,7 @@ found    tst   clkflag
          bsr   nxtbyte
 noclk1   sta   ram
          puls  d
-         stb   multipac
+         stb   MPI.Slct
          tst   cartI
          sta   $ff90
          puls  cc,pc
@@ -356,5 +356,7 @@ mesage5  fcb   C$LF
          fcb   C$LF
          fcc   /->/
 endmes   equ   *
+
          emod  
 pgrmend  equ   *
+         end
