@@ -17,7 +17,7 @@
 *
 *  10r2    2004/05/03  Boisy G. Pitre
 * Fixed numerous issues with 6809 and Level 1 versions.
-* Tested 6809 Level 1 and Level 2
+* Tested 6809 Level 1 and Level 2.
 
            nam   sc6551
            ttl   6551 Driver
@@ -176,6 +176,9 @@ WritFlag   rmb   1              initial write attempt flag
 Wrk.Type   rmb   1              type work byte (MUST immediately precede Wrk.Baud)
 Wrk.Baud   rmb   1              baud work byte (MUST immediately follow Wrk.Type)
 Wrk.XTyp   rmb   1              extended type work byte
+           IFEQ  Level-1
+orgDFIRQ   rmb   2
+           ENDC
 regWbuf    rmb   2              substitute for regW
 RxBufDSz   equ   256-.          default Rx buffer gets remainder of page...
 RxBuff     rmb   RxBufDSz       default Rx buffer
@@ -207,10 +210,21 @@ BaudTabl   equ   *
            fcb   BR.01200,BR.02400,BR.04800
            fcb   BR.09600,BR.19200
 
+           IFEQ  Level-1
+FIRQRtn    tst   ,s		'Entire' bit of carry set?
+           bmi   L003B		branch if so
+           leas  -$01,s		make room on stack
+           pshs  y,x,dp,b,a	save regs
+           lda   $08,s		get original CC on stack
+           stu   $07,s		save U
+           ora   #$80		set 'Entire' bit
+           pshs  a		save CC
+L003B      jmp   [>D.SvcIRQ]	jump to IRQ service routine
+           ENDC
+
 * NOTE:  SCFMan has already cleared all device memory except for V.PAGE and
 *        V.PORT.  Zero-default variables are:  CDSigPID, CDSigSig, Wrk.XTyp.
 Init       clrb                 default to no error...
-*           pshs  cc,b,dp        save IRQ/Carry status, dummy B, system DP
            pshs  cc,dp        save IRQ/Carry status, system DP
            IFNE  H6309
            tfr   u,w
@@ -236,6 +250,12 @@ Init       clrb                 default to no error...
            puls  y
            ENDC
            lbcs  ErrExit        go report error...
+           IFEQ  Level-1
+           ldd   >D.FIRQ
+           std   <orgDFIRQ
+           leax  >FIRQRtn,pcr
+           stx   >D.FIRQ
+           ENDC 
            ldb   M$Opt,y        get option size
            cmpb  #IT.XTYP-IT.DTP room for extended type byte?
            bls   DfltInfo       no, go use defaults...
@@ -300,6 +320,9 @@ NoDTR      ldx   <V.PORT        get port address
            ELSE
            lda   >PIA1Base+3
            anda  #$FC
+           IFEQ  Level-1
+           ora   #$01
+           ENDC
            sta   >PIA1Base+3
            ENDC
            lda   >PIA1Base+2    clear possible pending PIA CART* FIRQ
@@ -338,6 +361,12 @@ Term       clrb                 default to no error...
            tfr   u,d
            tfr   a,dp
            ENDC
+           IFEQ  Level-1
+           ldx   >D.Proc
+           lda   P$ID,x
+           sta   <V.BUSY
+           sta   <V.LPRC
+           ENDC
            ldx   <V.PORT
            lda   CmdReg,x       get current Command register contents
            anda  #^(Cmd.TIRB!Cmd.DTR) disable Tx IRQs, RTS, and DTR
@@ -354,7 +383,12 @@ KeepDTR    sta   CmdReg,x       set DTR and RTS enable/disable
            ldu   <RxBufPtr      get address of system memory
            os9   F$SRtMem
            puls  u              recover data pointer
-TermExit   ldd   <V.PORT        base hardware address is status register
+TermExit   
+           IFEQ  Level-1
+           ldd   <orgDFIRQ
+           std   >D.FIRQ
+           ENDC
+           ldd   <V.PORT        base hardware address is status register
            IFNE  H6309
            incd                 point to 6551 status register
            ELSE
@@ -784,7 +818,11 @@ SetPort    pshs  cc             save IRQ enable and Carry status
            std   CmdReg,x       set command+control registers
            puls  cc,pc          recover IRQ enable and Carry status, return...
 
-IRQSvc     pshs  dp             save system DP
+IRQSvc
+           IFEQ  Level-1
+           lda   >PIA1Base+2	clear FIRQ
+           ENDC
+           pshs  dp             save system DP
            IFNE  H6309
            tfr   u,w            setup our DP
            tfr   e,dp
