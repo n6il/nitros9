@@ -33,7 +33,7 @@ prn3     set   Green.     border color
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
-         fcb   READ.+WRITE. mode byte
+         fcb   UPDAT.     mode byte
          fcb   HW.Page    extended controller address
          fdb   A.TermW    physical controller address
          fcb   initsize-*-1 initilization table size
