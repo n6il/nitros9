@@ -1,5 +1,6 @@
 OS-9 Level One V03.01.05:
 - OS-9 Level One now has a REL module similar to OS-9 Level Two.
+- The clock and clock2 architecture has been back-ported from OS-9 Level Two.
 - The faster PipeMan, Piper and Pipe have been back-ported from OS-9 Level Two.
 - The MDir utility now shows proper module revision of 0 and other minor
   improvements in extended output.
