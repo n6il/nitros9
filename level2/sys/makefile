@@ -23,7 +23,7 @@ HELPFILES	= asm.hp attr.hp \
 		link.hp list.hp load.hp login.hp \
 		makdir.hp mdir.hp merge.hp mfree.hp mmap.hp modpatch.hp montype.hp \
 		os9gen.hp \
-		park.hp pmap.hp proc.hp procs.hp prompt.hp pwd.hp pxd.hp \
+		padrom.hp park.hp pmap.hp proc.hp procs.hp prompt.hp pwd.hp pxd.hp \
 		reboot.hp rename.hp runb.hp \
 		save.hp setime.hp setpr.hp shell.hp sleep.hp smap.hp \
 		tee.hp tmode.hp touch.hp tsmon.hp tuneport.hp \

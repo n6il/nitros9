@@ -1,0 +1,5 @@
+@PADROM
+Syntax: PadROM <padsize> <pathlist> [<devname>] [<opts>]
+Usage : Pads a file to 'padsize' bytes
+Opts  :
+  -c=<char> = character to pad file with (in hex)
