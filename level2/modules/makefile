@@ -40,7 +40,7 @@ SCF		= scf.mn \
 		joydrv_6551M.sb joydrv_6552M.sb \
 		nil.dd p.dd \
 		t1.dd t2_sc6551.dd t3_sc6551.dd \
-		ftdd.dd vi.dd ssp.dd term_t1.dd \
+		ftdd.dd vi.dd ssp.dd term_sio.dd term_sc6551.dd \
 		term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
 		w3.dw w4.dw w5.dw w6.dw w7.dw v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw

@@ -1,3 +1,6 @@
+NitrOS-9/6809 Level 1 V03.02.02:
+- cc3disk has been renamed to rb1773 and has been back-ported to NitrOS-9 Level 1.
+- term_t1.dd has been renamed to term_sio.dd and term_sc6551.dd has been added.
 NitrOS-9/6809 Level 1 V03.02.01 (May 14, 2004):
 - CCDisk has been replaced by a more reliable version from Dave Lewis. Also,
   step rate codes now match that of NitrOS-9 Level 2.
