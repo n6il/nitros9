@@ -44,6 +44,11 @@ all:	$(ALLOBJS)
 
 # Special cases
 
+# Kernel
+kernel kernelp2:
+	$(CD) krnl; make $@
+	$(CP) krnl/$@ .
+
 boot_1773_6ms:	boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=0
 
