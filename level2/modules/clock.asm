@@ -34,6 +34,10 @@ Vrsn     equ 4              NitrOS-9 version
 *
 * Setup for specific RTC chip
 *
+         IFNE RTCDriveWire
+RTC.Base equ  $0000
+         ENDC
+
          IFNE RTCElim
 RTC.Sped equ $20 32.768 KHz, rate=0
 RTC.Strt equ $06 binary, 24 Hour, DST disabled
@@ -407,6 +411,42 @@ GetVal1  stb   1,x
 
 
 *
+* Update time from DriveWire
+*
+         IFNE  RTCDriveWire
+
+         use   bbwrite.asm
+
+UpdTime  pshs  y,x,cc
+         lda   #'#		Time packet
+         orcc  #IntMasks	Disable interrupts
+         lbsr  SerWrite
+         bsr   SerRead		Read year byte
+         bcs   UpdLeave         
+         sta   <D.Year
+         bsr   SerRead		Read month byte
+         bcs   UpdLeave         
+         sta   <D.Month
+         bsr   SerRead		Read day byte
+         bcs   UpdLeave         
+         sta   <D.Day
+         bsr   SerRead		Read hour byte
+         bcs   UpdLeave         
+         sta   <D.Hour
+         bsr   SerRead		Read minute byte
+         bcs   UpdLeave         
+         sta   <D.Min
+         bsr   SerRead		Read second byte
+         bcs   UpdLeave         
+         sta   <D.Sec
+         bsr   SerRead		Read day of week (0-6) byte
+UpdLeave puls  cc,x,y,pc 
+
+         use   bbread.asm
+
+         ENDC
+
+*
 * Update time from B&B RTC
 *
          IFNE  RTCBB+RTCTc3
@@ -769,7 +809,7 @@ F.STime  ldx   <D.Proc   Caller's process descriptor
 *
 * No RTC, just end  (Also for SmartWatch, temporarily)
 *
-         IFNE  RTCSoft+RTCSmart
+         IFNE  RTCSoft+RTCSmart+RTCDriveWire
          rts
          ENDC
 
