@@ -14,12 +14,15 @@
          use   defsfile
          endc
 
+tylg     set   Prgrm+Objct
+atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   $01 
 
-         mod   eom,name,Prgrm+Objct,ReEnt+rev,start,DSize
+         mod   eom,name,tylg,atrv,start,dsize
 
 name     fcs   /SuperComm/
-Edition  fcb   $01 
+         fcb   edition
 
 *************************************************
 *
@@ -231,7 +234,7 @@ u1449    rmb   112
 u14B9    rmb   512
 u16B9    rmb   $2000-200-.  ASCII recieve buffer (expanded by #xxK modifier)
 u1F38    rmb   200          stack
-DSize    equ   .
+dsize    equ   .
 
          fcc   'Program by Dave Philipsen Copyright (c) 1988, 1989,1992'
          fcc   / ('92 updates by Randy K. Wilson)/
