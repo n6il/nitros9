@@ -20,12 +20,12 @@ ASOUT		= -o=
 AFLAGS		= -q
 
 # Commands
-MAKDIR		= mkdir
+MAKDIR		= os9makdir
 RM		= rm -f
 MERGE		= cat
 ECHO		= echo
 CD		= cd
-CP		= cp
+CP		= os9copy
 TAR		= tar
 CHMOD		= chmod
 IDENT		= $(OS9TOOLSDIR)/os9ident
