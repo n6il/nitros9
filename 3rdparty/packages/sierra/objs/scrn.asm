@@ -1,17 +1,8 @@
-
 ********************************************************************
 * SCRN - Kings Quest III screen module
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
-* ------------------------------------------------------------------
-* 0      Disassembly of original distribution           PWZ 03/03/06
-*        Note the header shows a data size of 0
-*        called from the sierra module and accesses
-*        data set up in that module
-
-
 *       Header for : scrn
 *       Module size: $7C5  #1989
 *       Module CRC : $F3E370 (Good)
@@ -21,7 +12,13 @@
 *       Edition    : $00  #0
 *       Ty/La At/Rv: $11 $81
 *       Prog mod, 6809 Obj, re-ent, R/O
-
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 0      Disassembly of original distribution           PWZ 03/03/06
+*        Note the header shows a data size of 0
+*        called from the sierra module and accesses
+*        data set up in that module
 
          nam   scrn
          ttl   program module       
@@ -31,9 +28,11 @@
          ifp1
          use   os9defs
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
 
 *  equates for common data used in this module
