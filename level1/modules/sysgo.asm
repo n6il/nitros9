@@ -84,7 +84,7 @@ StartupL equ   *-Startup
 
 * Default time packet
 *               YY MM DD HH MM SS
-TimePckt fcb   102,08,01,00,00,00
+TimePckt fcb   102,08,01,00,00,59
 
 * BASIC reset code
 BasicRst fcb   $55
