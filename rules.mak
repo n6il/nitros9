@@ -18,7 +18,7 @@ DEFDIR		= $(BASEDIR)/defs
 # Use the cross assembler
 AS		= $(OS9TOOLSDIR)/os9asm -i=$(DEFDIR)
 ASOUT		= -o=
-AFLAGS		= -q
+AFLAGS		= -q $(ADDOPTS)
 
 # Commands
 MAKDIR		= $(OS9TOOLSDIR)/os9 makdir
