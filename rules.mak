@@ -16,6 +16,8 @@ MERGE		= cat
 PADROM		= os9padrom
 ECHO		= echo
 CHMOD		= chmod
+IDENT		= os9ident
+IDENT_SHORT	= os9ident -s
 
 # File managers
 %.mn: %.asm
