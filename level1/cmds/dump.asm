@@ -3,6 +3,13 @@
 *
 * $Id$
 *
+* Dump follows the function of the original Microware version but now
+* supports large files over 64K, and is free from the problems of garbage
+* in wide listings.
+*
+* In addition it now allows dumping of memory modules and command modules
+* in the execution directory.
+*
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   5    From Tandy OS-9 Level One VR 02.00.00
@@ -11,13 +18,8 @@
 *        assemble without help or screen size check
 *
 *        Removed -d option                              BGP 03/01/17
-*
-* Dump follows the function of the original Microware version but now
-* supports large files over 64K, and is free from the problems of garbage
-* in wide listings.
-*
-* In addition it now allows dumping of memory modules and command modules
-* in the execution directory.
+*        Narrow screen now shows properly, only dumps   BGP 03/01/21
+*        16 bits worth of address data to make room.
 
          nam   Dump
          ttl   Show file contents in hex
@@ -42,7 +44,7 @@ D.Prm    rmb   2
 D.Hdr    rmb   1         
 D.Mem    rmb   1         
          IFNE  DOSCSIZ
-DoWide   rmb   1         
+narrow   rmb   1         
          ENDC
 Mode     rmb   1         
 D.Opn    rmb   1         
@@ -64,15 +66,16 @@ name     fcs   /Dump/
          fcb   edition   
 
 title    fcc   /Address   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0 2 4 6 8 A C E/
+titlelen equ   *-title
 caret    fcb   C$CR      
 flund    fcc   /-------- ---- ---- ---- ---- ---- ---- ---- ----  ----------------/
          fcb   C$CR      
          IFNE  DOSCSIZ
-short    fcc   /         0 1 2 3 4 5 6 7  0 2 4 6/
+short    fcc   /     0 1 2 3 4 5 6 7  0 2 4 6/
          fcb   C$LF      
-         fcc   /Address  8 9 a b c d e f  8 a c e/
+         fcc   /Addr 8 9 A B C D E F  8 A C E/
          fcb   C$CR      
-shund    fcc   /======== +-+-+-+-+-+-+-+- + + + + /
+shund    fcc   /==== +-+-+-+-+-+-+-+- +-+-+-+-/
          fcb   C$CR      
          ENDC
 
@@ -85,17 +88,17 @@ start    stx   <D.Prm
          sta   <Mode            READ.
 
          IFNE  DOSCSIZ
-         sta   <DoWide          assume wide
+         clr   <narrow          assume wide
 
 * Check screen size
          ldb   #SS.ScSiz
          os9   I$GetStt
          bcs   Pass1
 
-         cmpx  #64
+         cmpx  #titlelen+1
          bge   PrePass
 
-         clr   <DoWide
+         sta   <narrow
 
 PrePass  ldx   <D.Prm
          ENDC
@@ -203,13 +206,13 @@ mlink    clra
          bcc   DumpIn     
          bra   DoExit
 
-DumpFile
-* ldx   <D.Prm    
-         tst   <D.Mem    
+DumpFile tst   <D.Mem    
          bne   mlink     
          lda   <Mode
-opath    os9   I$Open    
+opath    tfr   x,y
+         os9   I$Open    
          bcc   DumpIn
+         tfr   y,x
          ora   #DIR.		try directory mode
          os9   I$Open		open it
          bcs   DoExit		branch if error
@@ -229,8 +232,8 @@ notbg    stx   <D.Adr
          tst   <D.Hdr    
          bne   nohed     
          IFNE  DOSCSIZ
-         tst   <DoWide
-         bne   flpag     
+         tst   <narrow
+         beq   flpag     
          aslb            
          ENDC
 flpag    tstb            
@@ -241,8 +244,8 @@ flpag    tstb
          leax  title,pcr 
          leay  flund,pcr 
          IFNE  DOSCSIZ
-         tst   <DoWide
-         bne   doprt     
+         tst   <narrow
+         beq   doprt     
          ldb   #8        
          leax  short,pcr
          leay  shund,pcr
@@ -259,7 +262,10 @@ nohed    leax  Txtbuf,u
          lda   #3        
          mul             
          addd  #2        
-         leay  d,x       
+         tst   <narrow
+         beq   leayit
+         subd  #4
+leayit   leay  d,x       
          sty   <D.Txt    
          lda   #C$SPAC   
          ldb   #BUFSZ-1  
@@ -267,6 +273,10 @@ clbuf    sta   b,x
          decb            
          bpl   clbuf     
          ldb   #D.Adr    
+         tst   <narrow
+         beq   adlop
+         incb				we skip first two bytes ...
+         incb				... if on a narrow screen
 adlop    lda   b,u       
          lbsr  onbyt     
          incb            
@@ -282,8 +292,9 @@ onlin    lbsr  onchr
          ble   enlin
          lbsr  onchr     
          decb
-*         bitb  #1
          ble   enlin     
+         tst   <narrow
+         bne   onlin
          lda   #C$SPAC   
          bsr   savec     
          bra   onlin     
