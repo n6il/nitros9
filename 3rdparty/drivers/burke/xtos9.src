@@ -1,0 +1,953 @@
+*******************************************
+***                                     ***
+***     COPYRIGHT 1990 BURKE & BURKE    ***
+***     ALL RIGHTS RESERVED             ***
+***                                     ***
+***     COPYRIGHT 1992 BURKE & BURKE    ***
+***     ALL RIGHTS RESERVED             ***
+***                                     ***
+*******************************************
+
+*
+*  CoCo XT Hard Disk Driver  Version 2.0
+*
+*  For Western Digital WD1002-WX1 (or 27X) Controller.
+*
+*  The controller can only handle 512 bytes per sector,
+*  so these routines must synthesize 2 logical 256 byte
+*  sectors from each physical 512 byte sector.  This
+*  increases the time it takes to read or write a sector.
+*
+*  To counteract this, the 2nd half of each "even" sector
+*  is retained during a read.  If the next read accesses the
+*  "odd" half, the sector contents is read from the "verify"
+*  buffer instead of the hard disk.
+*
+*  This version can be optimized for a single ST-225 hard disk,
+*  via conditional assembly.  Several other parameters can also
+*  be controlled by conditional assembly.
+*
+*  Conditional assembly control:
+*
+*   Drives              ;Number of drives supported (1-2)
+*
+*   irqflg              ;non-zero to mask IRQ during disk access.
+*   fmtflg              ;non-zero if hard formatting supported
+*   fstflg              ;non-zero if fast transfers supported
+*   cchflg              ;non-zero if read cache supported
+*   vrfflg              ;non-zero if write verification supported
+*   tboflg              ;non-zero if jump to 2 MHz for block moves
+*   errflg              ;non-zero for good error messages
+*   icdflg              ;non-zero to ignore C/D status bit
+*   trsflg              ;non-zero if optimized for 32 SPT, 4 hd disks
+*   sysram              ;non-zero to use system RAM for verf buffer
+*   sizflg              ;non-zero if drives may be different sizes
+*
+*   XLEVEL              ;Special level 2 flag -- to use L1 assembler
+*
+*  Chris Burke  Schaumburg, IL  10/14/87
+*
+*   Modification History
+*   --------------------
+*
+*   Date        Who     Description
+*   --------    ---     -------------------------------------
+*   11/20/87    CJB     Fixed bug in PARK.
+*   12/23/87    CJB     Corrected table size and location
+*                       equates for L2 compatibility.  
+*                       Deleted support for Level 1, Version 
+*                       1.X OS9.
+*   12/27/87    CJB     Added code to grab parameters from
+*                       device descriptor if not obtained
+*                       by INIT.
+*   01/28/88    CJB     Added support for any slot.
+*   02/07/88    CJB     Changed FORMAT to reset drive parameters
+*                       Added speedy read cache algorithm.
+*                       Eliminated DIVA, DIVY, etc.
+*   02/23/88    CJB     Recoded for TRSFLG
+*   03/03/88    CJB     Changed module names to BBhdisk etc.
+*   04/17/88    cjb     Modified INIT to call WaitIdl before
+*                        shutting off controller interrupts & DMA
+*                       Fixed bugs in INIT which confused path
+*                        descriptor and device descriptor pointers
+*   04/21/88    cjb     Added code to disable I/O retries after
+*                        formatting hard drive.
+*   06/12/88    cjb     Changed to call WaitId2 instead of WaitIdl
+*   07/01/88    cjb     Changed revision from 2 to 3
+*   10/10/88    cjb     Modified for format error recovery
+*   05/18/90    cjb     Modified copyright
+*                       Added support for up to 4 drives
+*   07/07/91    cjb     Rev 2.5 (allow disabling of recalibration)
+*   04/15/92    cjb     Rev 2.6 (speed-ups, bug fix for DBLRDD)
+*
+
+ page
+*
+*  Equates
+*
+
+ ifp1
+        use     defsfile
+        use     wx2.equ
+ endc
+
+*  Index into device descriptor (using PD.XXX)
+
+DD.BASE equ M$DTYP-PD.OPT
+DD.HDSK equ $25              ;Start of extra hard disk stuff
+
+*  Multi-PAK Addresses
+MPAK equ $FF7F
+
+*
+*   Bogus equates for Level 2
+*
+
+D.DMARq2    equ     $008A       ;Bogus Level 2 D.DMAReq
+D.PROC2     equ     $0050       ;Bogus Level 2 D.PROC
+DRVMEM2     equ     $26         ;Level 2 drive table size
+DRVBEG2     equ     $0F         ;Level 2 start of drive tables
+
+*
+*   Bogus equates for Level 1
+*
+
+D.DMARq1    equ     $006A       ;Bogus Level 1 D.DMAReq
+D.PROC1     equ     $004B       ;Bogus Level 1 D.PROC
+DRVMEM1     equ     $18         ;Level 1 drive table size
+DRVBEG1     equ     $07         ;Level 1 start of drive tables
+
+    ifne    XLEVEL-1
+DMASEM  set     D.DMARq2        ;Level 2 DMA stuff (multi-pak)
+DPROC   set     D.PROC2         ;Level 2 process control stuff
+XDrvBeg set     DRVBEG2
+XDrvMen set     DRVMEM2
+
+    else
+DMASEM  set     D.DMARq1        ;Level 1 DMA stuff (multi-pak)
+DPROC   set     D.PROC1         ;Level 1 process control stuff
+XDrvBeg set     DRVBEG1
+XDrvMen set     DRVMEM1
+    endc
+
+ page
+*
+*   Module Header
+*
+verson  equ     2
+        mod     cchend,cchnam,drivr+objct,reent+verson,JmpTbl,endmem
+        fcb     DIR.+SHARE.+PEXEC.+PREAD.+PWRIT.+EXEC.+READ.+WRITE.
+
+*  Dynamic module name generation
+
+cchnam  equ     *
+
+    ifeq  testing
+        fcc     "BB"        ; (normal name)
+    else
+        fcc     "BK"        ; (special name)
+    endc
+
+    ifeq    (XLEVEL-1)      ;If level 1,
+        ifne    irqflg      ;If Level 1, Version 1 OS9
+            fcc /X/
+        else                ;If Level 1, Version 2 OS9
+            fcc /1/
+        endc
+    endc
+
+    ifne    fmtflg          ;If this driver can format hard disk,
+        fcc     /F/
+    endc
+
+    ifne    tboflg          ;If 2MHz transfers supported,
+        fcc     /T/
+    endc
+
+    ifne    trsflg          ;If "terse" version
+        fcs     /hd/        ;NOTE -- set MSB of last byte
+    else                    ;If "normal" version
+        fcs     /hdisk/     ;NOTE -- set MSB of last byte
+    endc
+
+        fcb     $06         ;revision - 2.6
+
+*   Copyright notice
+
+        fcc     /COPR. 1992 BURKE & BURKE/
+
+ page
+*
+*  Static Storage
+*
+
+    use     hdvars.src
+
+ page
+*
+*  Jump table
+*
+JmpTbl  lbra    INIT
+        lbra    READ
+        lbra    WRITE
+        lbra    GETSTA
+        lbra    SETSTA
+        lbra    TERM
+
+    ifne    sizflg              ;If drives may be different sizes,
+    page
+*
+*   Post-initialization for drives.
+*
+*   If we ever call a driver routine (other than INIT)
+*   with PARK LSN = 0, we know this drive has not been
+*   initialized.
+*
+*   Enter w/ Reg-Y = path descriptor pointer,
+*            Reg-U = static storage
+*
+*   Must save A and B:X as well as Y, U.
+*
+*   Returns carry set if error initializing drive
+*
+PostIni pshs    Y,X,D
+
+        ldb     PD.DRV,Y
+        lbsr    GOBPtr              ;Point Y to extra variables
+        clrb                        ;Force no carry (success)
+        ldb     (PRKLSN-OBSTART+0),Y
+        orb     (PRKLSN-OBSTART+1),Y
+         bne    PSTI0               ; (branch if OK)
+
+*   Perform drive info and controller intialization
+
+        ldy     4,S                 ;Get path pointer
+        ldy     PD.DEV,Y            ; get device table pointer
+        ldy     V$DESC,Y            ;  get device descriptor pointer
+        lbsr    CtlInit             ;Call routine to init. controller
+
+*   Done initiailizing this drive.
+
+PSTI0   puls  D,X,Y,PC
+
+    endc
+
+ page
+*
+*   Initialize driver routines
+*
+*   Reg-Y points to device descriptor
+*
+INIT    pshs    y
+
+*   This section calls routines that expect a *PATH* descriptor
+*   pointer in Reg-Y
+
+        leay    DD.BASE,Y   ;Make Y look like path descriptor to get slot
+
+        lbsr    Semfor      ;Wait, then select HD controller.
+        sta     >HDRSET     ;Reset controller
+        lbsr    WaitId2     ;Sleep -- wait for controller to reset
+*** Extra call to give WD1004 time to reset
+        lbsr    WaitId2     ;Sleep -- wait for controller to reset
+*** ENDK
+        ldy     ,S          ;Restore y -> device descriptor
+
+*   Set up controller for non-interrupt, non-DMA operation
+
+        clr     >HDMASK     ;Turn off controller interrupts and DMA
+
+*   Set # of drives we can handle
+
+        lda     #Drives
+        sta     V.NDRV,U
+
+*   Set up drive switching info
+
+    ifne    (Drives-1)
+        ldd     #$FFFF
+        std     prvdrv,u    ; (set PRVDRV unknown, DRVSEM for new drive)
+        std     actdrv,u    ;Pointer to active drive table
+    else
+        lda     #$FF
+        sta     DRVSEM,U
+    endc
+
+*   Enable hardware I/O retries.  These will be disabled by a FORMAT
+*   setstat, and will be re-enabled by an INIT call or a reboot.
+*   The main use of this is to disable retries during disk formatting.
+
+        clr     RetryEn,U   ;Enable hardware retries
+
+*   Program controller w/ drive parameters.  
+*   Y points to device descriptor.
+
+        bsr     CtlInit     ; (also clears BFRFLG,U and changes Y)
+         bcs    INIT9       ; (abort if error)
+
+*  Initialize the drive tables for all drives
+
+        ldd     #(-1)               ;Current track is unknown
+        stb     XDrvBeg+V.TRAK,U
+        std     XDrvBeg+DD.TOT,U    ;Set total sectors non-zero to allow LSN0
+    ifne    (Drives-1)
+        stb     XDrvBeg+XDrvMen*1+V.TRAK,U    ; (do all drives)
+        std     XDrvBeg+XDrvMen*1+DD.TOT,U
+      ifge  (Drives-3)
+        stb     XDrvBeg+XDrvMen*2+V.TRAK,U    ; (do all drives)
+        std     XDrvBeg+XDrvMen*2+DD.TOT,U
+      endc
+      ifge  (Drives-4)
+        stb     XDrvBeg+XDrvMen*3+V.TRAK,U    ; (do all drives)
+        std     XDrvBeg+XDrvMen*3+DD.TOT,U
+      endc
+    endc
+
+*   Reg-Y points to bogus path descriptor (courtesy of CtlInit).
+*   Wait for drive to be ready.  
+*
+*   Note that WaiDrv returns Reg-B=0 and carry clear to OK, 
+*   else reg-B = E$NotRdy and carry set.
+
+        bsr     WaiDrv          ;Note:  WaiDrv requires *PATH* descriptor
+
+*  Error hook
+INIT9   puls    Y               ;restore saved Y register (DD pointer)
+        bra     HDXIT
+
+*  Generic error-free exit
+OKXIT   clrb 
+
+*
+*  Generic exit.  Restore MULTI-PAK to
+*  slot #4 so floppy disk works, and release semaphore
+*
+*   Preserves CC and B
+*
+*   RELEASE also clears the V.WAKE flag.
+*
+HDXIT   lbsr    Release
+        rts 
+
+*
+*   Wait for drive ready
+*   Assumes reg-Y points to real or bogus path
+*   descriptor (for drive # and step rate)
+*
+WaiDrv  pshs    y,x,a,b
+
+        clr     ,-s                 ;Time out
+
+WaiDr2  lda     #WX$TST     ;Test drive ready
+
+    ifne    (Drives-1)              ;If more than 1 drive
+        ldb     PD.DRV,Y            ;get drive #
+    endc
+
+        lbsr    DrvCmd
+         bcc    WaiDr3              ; (branch if drive ready)
+
+        dec     ,s                  ;Decrement timeout
+         beq    WaiDr4              ; (branch if timeout)
+
+        lbsr    Snooze              ;Give drive some time
+        bra     WaiDr2              ; then retry.
+
+*   Timeout
+
+WaiDr4  comb
+        ldb     #E$NotRdy           ;Drive not ready
+        stb     1+1,S
+
+*   Carry clear if ready, else carry set
+
+WaiDr3  leas    1,S                 ;Discard counter
+        puls    a,b,x,y,pc
+
+*
+*   Get extra bytes from this drive's descriptor.
+*   Send them to the controller.  
+*
+*   Enter w/ 
+*   Reg-Y = Dev Desc pointer, and 
+*   Reg-U = static storage pointer.
+*
+*   Note that if there is a 2nd drive with different
+*   parameters, they must be obtained in a different
+*   manner.
+*
+*   Modifies Reg-Y to make it look like a bogus *PATH*
+*   descriptor
+*
+
+CtlInit equ     *
+
+    ifne    cchflg              ;If read cache,
+        clr     BFRFLG,U            ;Buffer contents invalid
+    endc
+
+        bsr     GetXtra             ;Call subroutine DDPTR in Y.
+
+*   Send drive parameters to controller.  Reg-Y points to device
+*   descriptor, but we adjust it to look like a path descriptor.
+
+        leay    DD.BASE,Y           ;Make Y look like path descriptor
+
+        lda     #WX$INI             ;Command to send drive parameters
+
+    ifne    (Drives-1)              ;If more than 1 drive
+        ldb     PD.DRV,Y            ;get drive #
+    endc
+
+        lbsr    DrvCmd              ;Set up drive parameters
+        rts
+
+    page
+*
+*   Copy precomp cylinder and park LSN from descriptor 
+*   (also gives max. tracks!)
+*
+
+GetXtra ldd     DD.HDSK+(PCCYL-OBSTART),Y       ;get prec, MSB of park LSN
+        ldx     DD.HDSK+(PRKLSN+1-OBSTART),Y    ;get rest of park LSN
+     ifne   (Drives-1)          ; If 2 drives,
+      ifne  sizflg              ;  of different sizes,
+        pshs    Y,X,D
+        ldb     DD.BASE+PD.DRV,Y    ;get drive #
+        lbsr    GOBPtr              ;get dest. pointer to Y
+        puls    D,X
+        std     (PCCYL-OBSTART),Y
+        stx     (PRKLSN+1-OBSTART),Y
+        puls    Y,PC                ;Recover DD ptr and exit
+      else                      ;  of same size,
+        std     PCCYL,U
+        stx     (PRKLSN+1),U        ;set up both tables at once
+        std     (PCCYL+OBSIZE),U
+        stx     (PRKLSN+1+OBSIZE),U
+        rts
+      endc
+     else                       ; If 1 drive,
+        std     PCCYL,U
+        stx     (PRKLSN+1),U
+        rts
+     endc
+
+    page
+*
+*   Terminate hard disk processing
+*
+TERM    lbsr    Semfor      ;Wait on semaphore, select controller
+        bra     OKXIT       ;Clear semaphore and successful exit
+
+*
+*  Dummy routine for GETSTA
+*
+GETSTA  comb                ;Set carry
+        ldb     #E$UnkSVC
+        rts 
+
+ page
+*
+*   Read a sector from disk
+*
+*   LSN in B:X.  If it is 1+OLDLSN,
+*   and the drive # is right, and the
+*   read cache is full, don't even bother
+*   doing address computations
+*
+*   There are always an even number of sectors
+*   per track, so if the new LSN is the old LSN
+*   with MSB set, we have a winner!  We always
+*   store the old LSN with MSB set.
+*
+
+READ    equ     *
+
+    ifne    cchflg      ;If read cache,
+
+        pshs    X,B         ;Save LSN
+        lbsr    SavSlt      ;Save old slot #, but don't change yet
+
+        tst     BFRFLG,U    ;Is buffer valid?
+         beq    READXX      ; (branch if no luck)
+     ifne   (Drives-1)
+        lda     PD.DRV,Y
+        cmpa    PRVDRV,U
+         bne    READXX      ; (branch if drive different)
+     endc
+        puls    B,X
+        cmpx    OLDLSN+1,U
+         bne    READXY
+        cmpb    OLDLSN+0,U
+         bne    READXY
+
+*   Use verify buffer for sector data -- no read necessary!
+*   The OLDLSN and PRVDRV variables are already set right.
+
+        pshs    u,y,x
+
+        ldb     #128
+        ldx     PD.BUF,Y        ;Get destination pointer
+        leay    vrfbuf,U        ;Get source pointer
+
+DR0     ldu     ,y++
+        stu     ,x++
+        decb
+         bne    DR0
+
+        puls    x,y,u
+        bra     OKXIT3          ;Successful exit
+
+*   Not a cache read.  Restore LSN
+
+READXX  puls    B,X
+
+*   Save LSN in case we can do a cache read next time.
+*   We always set the LSB of the saved LSN; the BFRFLG
+*   will be set only if the actual LSB is 0!
+
+READXY  clr     BFRFLG,U        ;Assume future cache read invalid
+        stb     OLDLSN+0,U      ;Save LSN for next time
+
+        pshs    B
+        tfr     X,D
+        bitb    #%00000001      ;If LSB is 0, cache read valid next time
+         bne    READXZ
+
+        com     BFRFLG,U        ; (cache read next time)
+
+READXZ  orb     #%00000001      ; (always set LSB in possible match)
+        std     OLDLSN+1,U
+        puls    B
+
+    endc
+
+*   Perform normal read -- LSN in B:X
+
+        lbsr    Semfor      ;Wait, select hard disk controller slot
+
+    ifne    sizflg      ;If drives can be different sizes,
+        lbsr    PostIni
+         bcs    HDXIT3
+    endc
+
+*   Check for LSN0
+
+        cmpx    #0          ;Check for LSN 0 -- SPECIAL
+         bne    NotLS0
+        tstb 
+         bne    NotLS0
+
+**   Wants to read LSN 0.
+**   See if LSN 0 has already been read once.
+**
+**   We must use PD.DTB,Y instead of ACTDRV,U because
+**   SELDRV has not been called yet.
+**
+**   Actually, we still read -- we just don't update
+**   the drive table
+*
+*        pshs    X,B         ;Save LSN
+*    ifne    (Drives-1)          ;If 2 drives,
+*        ldx     PD.DTB,Y    ;Point to drive table
+*    else
+*        leax    DRVTBL,U    ;Point to drive table
+*    endc
+*        ldd     DD.TOT,x    ;Get total sectors
+*        cmpd    #-1         ; -1 is a special value set by INIT routine
+*        puls    B,X         ;Restore LSN (always $000000)
+*         bne    NotLS0      ;If not -1, LSN 0 already read; no special stuff
+
+*   Special treatment for LSN0 -- refresh drive table when done
+
+        bsr     DoRead
+         bcs    HDXIT3
+
+        ldx     PD.BUF,y    ;Get buffer address
+        pshs    Y,X         ;Save old buffer and device descriptor ptrs
+
+*   Note that the SELDRV routine, called by DOREAD, sets up
+*   the drive table pointer in actdrv,U if there are 2 drives.
+
+    ifne    (Drives-1)          ;If 2 drives,
+        ldy     actdrv,u
+    else
+        leay    DRVTBL,U
+    endc
+
+        ldb     #DD.SIZ-1
+
+*  Update drive table from buffer
+
+RCPY1   lda     b,x
+        sta     b,y
+        decb 
+         bpl    RCPY1
+
+        puls    y,x
+        bra     OKXIT3
+
+*  Read (not LSN0)
+
+NotLS0  bsr     DoRead
+HDXIT3   lbcs   HDXIT
+
+OKXIT3  lbra    OKXIT
+
+ page
+*
+*  Utility to read a sector
+*
+DoRead  lbsr    SETUP
+         bcs    DORXIT
+
+*  Entry point for VERIFY
+VrfRdd  ldx     PD.BUF,Y    ;Get buffer address
+
+*  General read sector
+GetSec  lda     #WX$RDD        ;Create "READ SINGLE SECTOR" command
+        lbsr    CMEXEC
+DORXIT  rts 
+
+ page
+*
+*  Write a sector to disk.
+*
+*  This routine must pre-read the sector in order to
+*  pack 2 logical sectors into 1 physical sector.
+*  This invalidates any data that might have been pre-read
+*  into the verify buffer.
+*
+WRITE   lbsr    Semfor      ;Wait, then select HD controller
+
+    ifne    sizflg      ;If drives can be different sizes,
+        lbsr    PostIni
+         bcs    HDXIT3
+    endc
+
+*  Pre-read the "other" half of the sector to the verify buffer
+
+        pshs    X,B        ;Save LSN
+        lbsr    SETUP      ;Set up head, track, sector #'s
+        bsr     flphlf      ;flip LSB of SECNUM
+
+    ifne    cchflg      ;If read cache supported
+        clr     BFRFLG,u    ;2nd half of sector should not be saved
+    endc
+
+        leax    vrfbuf,U    ;Use verify buffer
+        bsr     GetSec      ; (re-use code)
+
+        puls    X,B
+         bcs    HDXIT3      ; branch to abort if pre-read fails
+
+        bsr     flphlf       ;fix up sector #
+
+*  Perform the write.  The "other" half of the physical sector
+*  has been pre-read into the verify buffer.
+
+        pshs    x,b       ;save LSN
+        bsr     DoWrit
+        puls    x,b
+         bcs    HDXIT3
+
+    ifne    vrfflg              ;If verify enabled,
+
+        tst     PD.VFY,Y   ;Verify writes?
+         bne    OKXIT3
+
+*  Verify the write
+        bsr     VERIFY
+         bcc    OKXIT3
+
+*  Verify failed; carry set
+        ldb     #E$Write
+        bra     HDXIT3
+
+    else
+
+        bra    OKXIT3
+
+    endc
+
+*
+*  Flip LSB of SECNUM.  This is used to pre-read the half of the sector
+*  that should not be changed by a write.
+*
+flphlf  lda     secnum,u
+        EORA    #1
+        sta     secnum,u
+        rts
+
+ page
+*
+*  Utility to write a sector
+*
+DoWRIT  lbsr    SETUP
+         bcs    DOWXIT
+
+        ldx     PD.BUF,Y        ;Get buffer pointer
+        lda     #WX$WRT         ;Create "WRITE SINGLE SECTOR" command
+        lbsr    CMEXEC
+
+DOWXIT  rts 
+
+    ifne    vrfflg          ;If verify supported,
+
+*
+*  Verify last sector written
+*
+*  Don't copy unused part of sector to verify buffer
+*
+VERIFY  pshs    x,b,a
+
+        ldx     PD.BUF,y    ;Save buffer pointer
+        pshs    x
+
+        leax    vrfbuf,U
+        stx     PD.BUF,y    ;Force dummy buffer pointer
+        ldx     4,s         ;Recover LSN
+
+        lbsr    setup
+         bcs    VF1
+
+    ifne    cchflg          ;If read cache supported,
+        clr     BFRFLG,u    ;Mark don't save 2nd half of sector
+    endc
+
+        lbsr    VrfRdd     ;Actual read done here
+
+VF1     puls    x
+        stx     PD.BUF,y    ;Restore buffer pointer
+         bcs    VRFXIT
+
+*  Look only at every 8th byte to speed up the verify
+        lda     #(256/8)    ;Iteration count
+        pshs    u,y,a
+
+        leay    vrfbuf,U    ;Point at sector buffer
+        tfr     x,u
+
+*  Compare the data read back to the data written
+VRF1    ldx     ,u
+        cmpx    ,y
+         bne    VRFERR
+
+        leau    8,u         ;next byte
+        leay    8,y
+        dec     ,s
+         bne    VRF1
+
+        bra     VRFOK
+
+*  Error exit
+VRFERR  orcc    #$01
+
+*  Deallocate temporaries
+VRFOK   puls    u,y,a
+
+*  Generic verify exit
+VRFXIT  puls    a,b,x,PC
+
+    endc
+
+ page
+*
+*   Set Status.
+*
+*   Reg-Y has path descriptor, and Reg-A has status code.
+*
+SETSTA  lbsr    Semfor      ;Wait, then select HD controller
+
+    ifne    sizflg      ;If drives can be different sizes,
+        lbsr    PostIni
+         lbcs   HDXIT
+    endc
+
+        lbsr    SELDRV
+
+        ldx     PD.RGS,y    ;Point at register stack
+        ldb     R$B,x       ;Recover service code
+
+        cmpb    #SS.Reset
+         bne    SS1
+
+        lbsr    SEEKT0
+        bra     SSXIT
+
+SS1     equ     *
+
+    ifne    fmtflg              ;If hard formatting supported,
+        cmpb    #SS.WTrk
+         bne    SS2
+
+        bsr     FmtTrk
+        bra     SSXIT
+    endc
+
+SS2     cmpb    #SS.SQD
+         bne    SS9
+
+        bsr     PwrDwn
+        bra     SSXIT
+
+*  Error - unrecognized SETSTA code
+
+SS9     comb 
+        ldb     #E$UnkSvc
+
+*  Generic exit.  Return error if carry set.
+
+SSXIT   lbcs    HDXIT
+        lbra    OKXIT
+
+ page
+*
+*  Power-down (park) disk
+*
+PwrDwn  equ     *
+
+*   Get park LSN to B:X
+
+    ifne    (Drives-1)      ;If 2 drives,
+        lbsr    GtPkLSN         ;Call routine to get park LSN to B:X
+    else
+        ldb     PRKLSN+0,U
+        ldx     PRKLSN+1,U
+    endc
+
+*   Seek to this LSN
+
+PwrDn2  lbsr    SETUP
+        lbsr    SEEK            ;Park head at last track
+        rts 
+
+    ifne    fmtflg          ;If hard format supported
+
+*
+*   Format a track.
+*
+*   Now we format one track at a time.
+*
+*   At entry Reg-X points to the register packet,
+*   and Reg-Y points to the path descriptor
+*
+FmtTrk  lda     #$80            ;Disable hardware retries
+        sta     RetryEn,U
+
+        ldd     R$U,x           ;Get track number -- must be zero.
+        cmpd    #0
+         bne    FMTXIT
+
+        ldd     R$Y,x           ;Check side/density -- MSB must be zero
+        cmpa    #0
+         beq    FMT1
+
+*  Ignore repeated calls, returning success
+FMTXIT  clrb 
+        rts 
+
+*  Perform the format if not write protected
+FMT1    pshs    u,y,x
+
+*  Proceed, disk not write protected
+FMT11   equ     *
+
+*   Set up reduced drive characteristics (only legal tracks)
+
+        lda     #WX$XIN     ;Bogus command to init. special parameters
+        lbsr    CmExec
+         bcs    FMTERR
+
+*  Initialize sector buffer
+
+        lda     #WX$WBF
+        lbsr    CmExec
+         bcs    FMTERR
+
+*   Begin formatting at track 0
+
+        ldd     #$C0FF          ;Set initial cylinder to (-1)
+        std     ERRHCYL,u
+
+*  Set up starting track for format
+
+FMT2    ldd     ERRHCYL,u       ;Use last good cylinder
+        anda    #%11000000
+        incb
+         bne    FMT3
+        adda    #%01000000
+FMT3    std     hicyl,U         ; (set track number, sector 0)
+
+*        clr     lowcyl,u        ;Clear LOWCYL
+*        clr     hicyl,u         ;Clear HICYL (and sector #)
+
+    ifne    (Drives-1)          ;If multiple drives,
+        lda     PD.DRV,Y        ;Set up drive #
+        ldb     #32
+        mul
+        stb     sdhreg,u        ;Select correct drive, clear head number
+    else
+        clr     sdhreg,u
+    endc
+
+        lda     PD.ILV,Y        ;Set interleave factor
+        lsra                    ; / 2 since physical sectors are 2X
+        sta     seccnt,u
+
+        lda     #WX$FMT         ;Command to FORMAT ENTIRE DRIVE
+*        lda     #WX$FTK         ;Command to FORMAT TRACK
+        lbsr    CmExec
+         bcs    FMT2            ;Try next track if error
+
+*   Return error code in B, C set or no error, C clear
+
+FMTERR  pshs    b,cc            ;Stack error status
+
+*   Set up correct drive characteristics (park track allowed)
+
+        lda     #WX$INI     ;Init. original parameters
+        lbsr    CmExec
+
+*   Get back error status
+
+        puls    cc,b
+
+*  End of format routine
+
+FMTEND  puls    x,y,u,PC
+
+    endc
+
+*
+*   End of main line of XTOS9.SRC.
+*   "USE" files follow.
+*
+
+ page
+*
+*   Include routines to issue command to controller
+*   and return completion status.
+*
+
+        use     hdcmd.src
+
+ page
+*
+*   Include routines to translate LSN & drive #
+*   to a controller task file.
+*
+
+        use     hdmath.src
+
+ page
+*
+*   Include utility routines.
+*
+
+        use     hdutil3.src
+
+ emod
+cchend equ *
+
+ end

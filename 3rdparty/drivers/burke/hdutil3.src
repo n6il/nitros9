@@ -1,0 +1,207 @@
+*   COPYRIGHT BURKE & BURKE 1987
+*   ALL RIGHTS RESERVED
+*
+*   COCO XT UTILITY ROUTINES
+*
+*   Date        Who     Description
+*   --------    ---     ---------------------------------
+*   08-14-87    CJB     Added modification history.
+*                       Added assembly switch for controller
+*                        in slot 1.
+*
+*   10-26-87    CJB     Added conditional assembly to leave
+*                       interrupts enabled if IRQFLG zero.
+*
+*   11-20-87    CJB     Fixed IRQ DISABLE bug (uses switch IRQFLG)
+*                       Added work-around for F$SLEEP bug (GRFDRV ONLY)
+*
+*   12-20-87    CJB     Added routine to sleep or delay while waiting
+*                       for disk seeks (SNOOZE)
+*
+*   01/28/88    CJB     Added improved slot switching and slot
+*                       independence.  Slot # in PD.DNS
+*
+*   02/08/88    CJB     Added SAVSLT for improved read cache performance
+*   05/18/88    cjb     Added CLR V.WAKE,U in SLOT4 routine
+*   07/14/91    cjb     Rev. 2.5 added support for fast recalibration
+*
+
+ page
+*
+*   Select HD controller slot SPARESEL in multi-Pak.
+*
+*   Enter w/ Reg-U -> static storage,
+*   Reg-Y -> path descriptor
+*
+*   The active ROM/CART slot is preserved.
+*
+*   This routine is normally called with interrupts enabled.
+*   It disables them if IRQFLG is 1, for use on L1, V1
+*   systems.
+*
+*   Note that this routine does *NOT* set the DMA semaphore.
+*   This is only done once, at the very beginning of each command.
+*
+SLOT3   equ     *
+
+    ifeq    IRQFLG              ;If level 2, or version 2 of level 1
+        pshs    CC              ;Save entry CC
+    endc
+
+        orcc    #$50        ;No interrupts during MPAK update
+
+        bsr     SavSlt          ;Save old slot #, get to A
+        anda    #%11110000
+        ora     PD.DNS,Y        ;Use device's slot #
+        sta     >MPAK
+
+    ifeq    IRQFLG              ;If level 2, or version 2 of level 1
+        puls    CC,PC           ; restore entry CC
+    else
+        rts                     ; exit with interrupts disabled
+    endc
+
+*   Utility to save old slot
+*   Preserves B:X
+
+SavSlt  lda     >MPAK
+        sta     OldSlt,U
+        rts
+
+*
+*   Restore original slot SPARESEL in multi-PAK.
+*
+*   Enter w/ Reg-U -> static storage
+*
+*   This routine preserves carry and B, since it is called
+*   before returning an error code.
+*
+*   The active ROM slot and CART interrupt is also preserved.
+*
+*   This routine is always called with interrupts disabled.
+*   (or with interrupts enabled and SLOT4 selected already)
+*   It always enables interrupts.
+*
+*   Note that this routine does *NOT* clear the DMA semaphore
+*   unless entered at Release.  This is only done once, at 
+*   the very end of each command.
+*
+Release orcc    #$50            ;Force no interrupts during updates
+
+        lda     #0              ;preserve carry
+*        sta     >D.DMAReq       ;clear "DMA in use" semaphore
+        sta     >DMASEM         ;Zero OS9 level-dependent semaphore
+
+SLOT4   orcc    #$50            ;Force no interrupts during update
+
+        lda     OLDSLT,U        ;Recover old slot
+        sta     >MPAK
+        lda     #0              ;Preserve carry
+        sta     V.WAKE,U        ;Free anyone waiting on us.
+
+        andcc   #$AF            ;Enable interrupts
+        rts
+
+*
+*   Wait for end of other processes disk I/O.  This is
+*   indicated by semaphore $6A = 0.  Grab semaphore
+*   as soon as it frees up.
+*
+*   Assumes slot 3 is selected at entry, and interrupts
+*   are enabled.
+*
+*   Always exits with slot 3 selected and interrupts disabled.
+*
+Semfor  pshs    U,X,Y,B,A,CC
+
+*  Wait for semaphore loop . . .
+Sem0    orcc    #$50            ;No interrupts!
+
+        tst     >DMASEM         ;Check OS9 level-dependent semaphore
+*        tst     >D.DMAReq       ;Check semaphore
+         bne    W6.SLP
+
+*  Semaphore is free.  Grab it.
+
+        dec     >DMASEM         ;Grab OS9 level-dependent semaphore
+*        dec     >D.DMAReq       ;Grab semaphore!
+        puls    CC,A,B,Y,X,U    ;restore interrupts, etc
+        bra     Slot3           ; and select hard disk controller
+
+*
+*   Routine to waste time during disk seeks, etc.
+*
+*   On systems that support D.DMAReq, we set the slot to 4 and
+*   give up the processor.  Otherwise, we return immediately.
+*
+Snooze  pshs    U,Y,X,D
+
+    ifeq    IRQFLG              ;If D.DMAReq,
+        bsr     TikNap          ; surrender slot and processor
+        bsr     Slot3           ; map controller in again
+    endc
+
+        puls    D,X,Y,U,PC
+
+*  Semaphore is busy.  Sleep a bit.
+W6.SLP  bsr     TikNap          ;Surrender the processor
+        bra     Sem0
+
+*
+*   Force slot 4, enable interrupts,
+*   Sleep for the rest of this tick.
+*
+TikNap  pshs    X               ;Save entry X
+        bsr     Slot4           ;Select slot 4, enable interrupts
+
+    ifne    (XLEVEL-1)      ;If Level 2,
+        ldx     <D.SYSPRC
+        cmpx    <DPROC
+         beq    TikXit          ;WORKAROUND -- IF LOADING GRFDRV, NO SLEEP!
+    endc
+
+        ldx     #1
+        OS9     F$Sleep         ;Give up the rest of this tick
+
+TikXit  puls    X,PC
+
+ page
+*
+*  Perform a SEEK command
+*
+SEEK    lda     #WX$SIK    ;Construct "SEEK" command
+        lbsr    CmExec
+        rts 
+
+*
+*  Seek to track 0
+*
+SEEKT0  tst     PD.STP,Y
+         bpl    ST0A
+
+*   Here for drives that don't need recalibration
+*   Just return immediately.
+
+        clrb
+        rts
+
+*   Here for drives that need it
+
+ST0A    lda     #WX$TK0      ;Create "RECALIBRATE" command
+        lbsr    CmExec
+         bcs ST0XIT
+
+    ifne    (Drives-1)
+        ldx     actdrv,u   ;Clear track number in active drive table
+        clr     V.TRAK,x
+        clr     V.TRAK+1,x
+    else
+        clr     DRVTBL+V.TRAK,U
+        clr     DRVTBL+V.TRAK+1,U
+    endc
+
+ST0XIT  rts
+
+*
+*   end of hdutil3.src
+*
