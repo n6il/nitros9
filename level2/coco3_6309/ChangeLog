@@ -5,5 +5,4 @@ OS-9 Level One V2.01.00 Beta2:
   new improvements and features from that platform.
 - ASM now assembles 6309 op-codes.
 - Window descriptors now have proper initialization count.
-- EXMode (Extended XMode) utility added, written by Bruce Isted.
 
