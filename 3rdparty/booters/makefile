@@ -18,7 +18,7 @@ boot_rampak: boot_rampak.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2
 
 boot_tc3: boot_scsi.asm
-	$(AS) -l $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aKenton=0 -aTC3=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aKenton=0 -aTC3=1
 
 boot_ide: boot_ide.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2
