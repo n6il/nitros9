@@ -2462,13 +2462,13 @@ dread      pshs  x
            tfr   d,y
            ldb   #SS.SREAD
        ifeq   H6309-1
-           pshs  dp,x,y,u,pc
+           pshs  pc,u,y,x,dp
            pshsw
-           pshs  cc,d
+           pshs  d,cc
        else
            pshs  pc,u,y,x,dp,d,cc push all parameters
        endc
-           ldy   16,s           point to path descriptor
+           ldy   R$Size+4,s           point to path descriptor
            sts   PD.RGS,y       save pointer to register params
            lbsr  getstat0
            leas  R$Size,s
@@ -2604,13 +2604,13 @@ dwrite     pshs  x
            tfr   d,y
            ldb   #SS.SREAD
        ifeq   H6309-1
-           pshs  dp,x,y,u,pc
+           pshs  pc,u,y,x,dp
            pshsw
-           pshs  cc,d
+           pshs  d,cc
        else
            pshs  pc,u,y,x,dp,d,cc push all parameters
        endc
-           ldy   16,s           point to path descriptor
+           ldy   R$Size+4,s           point to path descriptor
            sts   PD.RGS,y       save pointer to register params
            lbsr  putstat0       call the driver
            leas  R$Size,s
