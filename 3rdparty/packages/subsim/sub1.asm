@@ -63,7 +63,7 @@ D0030    equ $0030
 
 * class X external label equates
 
-X0107    equ $0107
+X0107    equ $0107     address of subroutine module entry point
 X0291    equ $0291
 X0295    equ $0295
 X0296    equ $0296
@@ -225,17 +225,28 @@ size    equ .
 name    fcs "sub1"
 *       fcb  edition                           no edition byte included in orig code
 
+* b contains an offset passed by call to smap
 start   leax  >JumpTbl,pcr
-        ldd   b,x
-        ldx   X0107
-        jmp   d,x
+        ldd   b,x                index to subroutine offset
+        ldx   X0107              holds the address of start from smap call
+        jmp   d,x                nuttin' to it but to jump to it
 
 JumpTbl      
-L001C   fcb   $00,$23,$0F,$C5,$0A,$05
-        fcb   $08,$80,$08,$BC,$04,$68
-        fcb   $0B,$42,$05,$47,$0D,$F1
-        fcb   $12,$43,$14,$5C,$0E,$3C
-        fcb   $17,$0D,$A6
+L001C   fdb   GoOpts-start        $0023
+        fdb   GameSetup-start     $0FC5
+        fdb   Read_mission-start  $0A05
+        fdb   MakeFile-start      $0880
+        fdb   ReadNewFile-start   $08BC
+        fdb   L0479-start         $0468
+        fdb   Read_mission2-start $0B42
+        fdb   SetParms2-start     $0547
+        fdb   XmtSOS-start        $0DF1
+        fdb   Return2Sea-start    $1243
+        fdb   TransferTorp-start  $145C
+        fdb   XmtPOS-start        $0E3C
+        
+GoOpts  lbsr  GetOPts
+
       
         ldd   #$0073
         std   X1DAF
@@ -857,14 +868,15 @@ RCLend  leay  $16,y           set y up for the next $16 byte read
         os9   I$Close         and close the file
         puls  a,b,x,y,u,pc    return
         
-        
+
+*  what do I do in the great scheme of things???        
 L0479   pshs  a,b,x,y,u       our generic save all
 
         ldb   X0296
         lda   #$16
         mul                   calc an offset
         ldx   #$0579          get the base address
-        leax  d,x             set the pointer to bae + offset
+        leax  d,x             set the pointer to base + offset
         lda   $04,x        
         bpl   PosVal          is it positive ? branch
         lda   $02,x           otherwise shift a couple bytes
@@ -1412,10 +1424,11 @@ L087F   pshs  a,b
 
 
 *   Not explicitly called not labeled by disasm
+MakeFile
 N0891   pshs  a,b,x,y,u
         lbsr  GetFile
         cmpb  #C$EOF
-        lbeq  L08C8
+        lbeq  DontMake
 
 * Delete File - Deletes a specified disk file
 *            
@@ -1487,15 +1500,16 @@ CallErr lbsr  ErrMsg
 NoError lda   X1DD9          load the path number
         os9   I$Close        close the file
 
+DontMake
 L08C8   inc   X0297      
         puls  a,b,x,y,u,pc
 
 
-*   Not explicitly called not labeled by disasm
+ReadNewFile
 N08CD   pshs  a,b,x,y,u
         lbsr  GetFile
         cmpb  #C$EOF
-        lbeq  L0922
+        lbeq  NoFile
         
         ldu   X1D8B          we overwrite this below
         pshs  u              so we save it now
@@ -1548,7 +1562,7 @@ NoErr   puls  u              get our old value
         lda   X1DD9      l   Looks like this gets overwriten too?
 *                            $0109 + $7E04 = $7F0D  
         os9   I$Close        close the file
-L0922   inc   X0297
+NoFile  inc   X0297
         puls  a,b,x,y,u,pc
 
 * b contains error code from calling routine
@@ -1810,6 +1824,7 @@ MVLoop  ldd   ,x++           load a word from x and bump by a word
 
 *   Not explicitly called not labeled by disasm
 *   similar to Read_mission at L0A16
+Read_mission2
 N0B53   pshs  a,b,x,y,u
         lda   #$FF
         sta   X0297
@@ -2159,11 +2174,9 @@ L0DD3   fcb  $53,$53,$53,$4D,$48         SSSMH
 
 
 ByteTblE
-L0DD8   fcb  $01,$05,$1E,$0A,$04,$34,$36
+L0DD8   fcb  $01,$05,$1E,$0A,$04
 
 
-* NO label assigned by disassembler not called explicitly
-*  possibly through jump table calc?
 
 * Get Status - Returns the status of a file or device
 * entry:
@@ -2177,8 +2190,9 @@ L0DD8   fcb  $01,$05,$1E,$0A,$04,$34,$36
 *       CC -> Carry set on error
 *       b  -> error code (if any)
 
-
-N0DDF   ldd   #(StdOut*$100)+SS.Opt
+GetOpts
+L0DDD   pshs a,b,x,y
+        ldd   #(StdOut*$100)+SS.Opt
         ldx   #$4265
         pshs  x              unneeded
         os9   I$GetStt
@@ -2196,8 +2210,7 @@ N0DDF   ldd   #(StdOut*$100)+SS.Opt
         puls  a,b,x,y,pc
 
 
-* NO label assigned by disassembler not called explicitly
-*  possibly through jump table calc?
+XmtSOS
 N0E02   tst   X4D2E
         beq   SendSOS
         jsr   X72C3
@@ -2223,8 +2236,7 @@ L0E21   jsr   X72C3
         stb   X4C83
         rts   
 
-* NO label assigned by disassembler not called explicitly
-*  possibly through jump table calc?
+XmtPOS
 N0E4D   tst   X4D2E
         beq   SendPOS
         jsr   X72C3
@@ -2706,7 +2718,8 @@ L1250   leas  $04,s          clean up the stack
         puls  a,b,x,y,u,pc
         
         
-*       not explicitly called and not labeled by disasm        
+
+Return2Sea
 N1254   pshs  a,b,x,y,u
         ldd   #$0000
         std   X029A
@@ -2865,7 +2878,8 @@ L143C   fcb   $04            seems to flag number of choices
         fcb   C$NULL
 
 
-*       not explicitly called and not labeled by the disasm
+
+TransferTorp
 N146D   pshs  a,b,x,y,u
         leax  >TorpTrans,pcr
         lbsr  MenuSelect
