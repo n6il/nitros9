@@ -1,8 +1,18 @@
-OS-9 Level One V2.01.?? Release (??/??/2003):
-- mdir and date now require a - in front of their options
+OS-9 Level One V2.01.01 'Lawtell' Beta1 Release (03/07/2003):
+- Many commands have been updated and optimized:
+   o For size reasons, command help information is no longer embedded in the
+     utilites, but is instead available through the helpmsg file in /DD/SYS
+   o date, dir, mdir, procs and verify now require a dash (-) before options
+   o format now has a cluster option and now shows the correct number of
+     good sectors on large sector devices
+   o Numerous commands have been optimized for size
+   o cputype, ded, devs, disasm, dmode and irqs have been added to the
+     CMDS directory
+   o cmp, error, help and touch have been rewritten in assembly for size
+   o copy has been enhanced to include OS-9/68K-like features
+
 OS-9 Level One V2.01.00 'Phoenix' Release (11/04/2002):
 - Defs files now have properly terminated lines and 'pag' is now emitted
   as a comment.
 - SYS/password now references /DD instead of /D0
 - ASM now assembles 6309 op-codes
-
