@@ -54,7 +54,7 @@ ZIP		= zip -D
 # Directories
 3RDPARTY	= $(BASEDIR)/3rdparty
 LEVEL1		= $(BASEDIR)/level1
-LEVEL2		= $(BASEDIR)/level2v3
+LEVEL2		= $(BASEDIR)/level2
 NLEVEL2		= $(BASEDIR)/nitros
 C9		= $(HOME)/cloud9
 
