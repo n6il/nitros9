@@ -1422,14 +1422,15 @@ SCROLBAR ldd   NSCREENS   Get # of screens of icons
          ldd   #21        Maximum # of screens
          IFNE  H6309
          divd  3,s        B= # of Y positions per screen
+* remainder = A, quotient = B
          ELSE
          clr   ,-s
 SCROLBRa inc   ,s
          subb  4,s
          sbca  #0
          bcc   SCROLBRa
-*         addb  4,s
-*         tfr   b,a
+         addb  4,s
+         tfr   b,a
          puls  b
          decb
          ENDC
@@ -1450,8 +1451,8 @@ SCROLBRb inc   ,s
          subb  4,s
          sbca  #0
          bcc   SCROLBRb
-*         addb  4,s
-*         tfr   b,a
+         addb  4,s
+         tfr   b,a
          puls  b
          decb
          ENDC
@@ -1679,11 +1680,11 @@ CNTSCRNS
          subd  #$0001
          clr   ,-s
 CNTSCRNa inc   ,s
-         subb  #MAXICONS+1
+         subb  MAXICONS+1
          sbca  #0
          bcc   CNTSCRNa
-*         addb  #MAXICONS+1
-*         tfr   b,a
+         addb  MAXICONS+1
+         tfr   b,a
          puls  b
          decb
          ENDC
@@ -7687,7 +7688,6 @@ ATOI4    ldd   1,S        Get current result (so far)
          pshs  x,y,u
          ldx   #10
          lbsr  MUL16
-         tfr   y,d
          ldb   6,s
          sex
          pshs  u
