@@ -19,7 +19,6 @@
 DCDStBit equ   %00100000  DCD status bit for SS.CDSta call
 DSRStBit equ   %01000000  DSR status bit for SS.CDSta call
 Edtn     equ   10
-TkPerSec equ   60         system clock ticks per second
 Vrsn     equ   1
 
 * conditional assembly flags

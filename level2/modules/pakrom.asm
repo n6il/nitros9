@@ -14,7 +14,7 @@
 * 1      Created                                        BGP 99/05/09
 
          ifp1  
-         use   systype.l2
+         use   systype
          endc
 
          org   $C000
