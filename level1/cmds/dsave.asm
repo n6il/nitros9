@@ -743,23 +743,22 @@ BuildCopy
          pshs  x
          leax  Copy,pcr
          lbsr  CopyCmd
-         tst   <rewrite
-         beq   BuildCopy2
-         ldd   #$2D72			-r
-         std   ,y++
-         lda   #C$SPAC
-         sta   ,y+
-BuildCopy2
          ldb   <sopt			-s option specified?
-         beq   BuildCopy3
+         beq   BuildCopy2
          lda   #'#
          sta   ,y+
          lbsr  Byte2ASC
          ldd   #$4B20			K'space'
          std   ,y++
+BuildCopy2
+         tst   <rewrite
+         beq   BuildCopy3
+         ldd   #$2D72			-r
+         std   ,y++
+         lda   #C$SPAC
+         sta   ,y+
 BuildCopy3
          ldx   <srcptr			get source path from statics
-BuildCopy4
          lbsr  StrCpy			copy to buffer
          lda   #C$SPAC			get space
          sta   ,y+			and store it after command in buff
