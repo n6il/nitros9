@@ -366,9 +366,13 @@ TermExit   ldd   <V.PORT        base hardware address is status register
            os9   F$IRQ
            puls  dp,pc          restore dummy A, system DP, return
 
-ReadSlp    ldd   >D.Proc        process descriptor address
+ReadSlp    
+           IFEQ  Level-1
+           lda   <V.BUSY
+           sta   <V.WAKE
+           ELSE
+           ldd   >D.Proc        process descriptor address
            sta   <V.WAKE        save MSB for IRQ service routine
-           IFGT  Level-1
            tfr   d,x            copy process descriptor address
            IFNE  H6309
            oim   #Suspend,P$State,x
@@ -517,6 +521,10 @@ Writ       clrb                 default to no error...
            bra   WritChr
 WritLoop   lda   <WritFlag
            beq   WritFast
+           IFEQ  Level-1
+           lda   <V.BUSY
+           sta   <V.WAKE
+           ENDC
            lbsr  Sleep1
 WritFast   inc   <WritFlag
 WritChr    ldx   <V.PORT
@@ -619,7 +627,12 @@ BreakSlp   ldx   #SlpBreak      SS.Break duration
 HngUpSlp   ldx   #SlpHngUp      SS.HngUp duration
            bra   TimedSlp
 
-Sleep1     ldx   #1             give up balance of tick
+Sleep1
+           IFEQ  Level-1
+           ldx   #$0000
+           ELSE
+           ldx   #1             give up balance of tick
+           ENDC
 TimedSlp   pshs  cc             save IRQ enable status
            andcc #^Intmasks     enable IRQs
            os9   F$Sleep
@@ -1030,8 +1043,12 @@ SgnlDCD    lda   <CDSigPID      get process ID, send a DCD signal?
 CkSuspnd   clrb                 clear Carry (for exit) and LSB of process descriptor address
            lda   <V.WAKE        anybody waiting? ([D]=process descriptor address)
            beq   IRQExit        no, go return...
+           IFEQ  Level-1
+           clr   <V.WAKE
+           ldb   #S$Wake
+           os9   F$Send
+           ELSE
            stb   <V.WAKE        mark I/O done
-           IFGT  Level-1
            tfr   d,x            copy process descriptor pointer
            lda   P$State,x      get state flags
            anda  #^Suspend      clear suspend state
