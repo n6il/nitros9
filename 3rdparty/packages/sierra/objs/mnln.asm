@@ -3664,13 +3664,13 @@ L2112    ldb   >$0177
          lbsr  L4734
          rts
 
-L211D    fcc   'toc'
+tOC      fcc   'toc'
          fcb   C$NULL
 
-L2121    fcc   'words.tok'
+WordsTok fcc   'words.tok'
          fcb   C$NULL
 
-L212B    fcc   'object'
+Object   fcc   'object'
          fcb   C$NULL
 
 
@@ -3691,7 +3691,7 @@ L2132    ldd   #$E000   looks like our block 8 address boundary?
          lbsr  L45BA
          lbsr  L5BAD
          lbsr  L1294
-         leau  >L211D,pcr  "toc"
+         leau  >tOC,pcr
          ldd   #$0000
          pshs  b,a
          ldd   #$0089
@@ -3712,7 +3712,7 @@ L217F    ldd   <u0089
          std   ,u++
          leax  -$01,x
          bne   L217F
-         leau  >L2121,pcr "words.tok"
+         leau  >WordsTok,pcr
          ldd   #$01AB
          pshs  b,a
          ldd   #$01A9
@@ -3741,7 +3741,7 @@ L219C    pshs  u
          rts
 
 L21CC    leas  -$01,s
-         leau  >L212B,pcr  object
+         leau  >Object,pcr
          ldx   <u0038
          beq   L21DA
          leax  -$03,x
@@ -9424,9 +9424,10 @@ L523B    orcc  #IntMasks         $50
          sta   >$FF03
          lda   >$FF23
          sta   >L4F6A,pcr        data byte
-         ora   #$08
-         sta   >$FF23
+         ora   #$08		enable sound flag
+         sta   >$FF23		tell hardware to do it
          rts
+
 L5265    lda   >L4F68,pcr        data byte
          sta   >$FF01
          lda   >L4F69,pcr        data byte
@@ -11091,4 +11092,4 @@ L6026    fcc   'mnln'
 
          emod
 eom      equ   *
-
+         end
