@@ -1,5 +1,5 @@
 ********************************************************************
-* SIERRA - Leisure Suit Larry set up module
+* sierra - Leisure Suit Larry setup module
 *
 * $Id$
 *
@@ -21,9 +21,7 @@ StdOut   equ   1
 StdErr   equ   2
 
          nam   sierra
-         ttl   program module       
-
-* Disassembled 03/01/29 23:22:42 by Disasm v1.6 (C) 1988 by RML
+         ttl   Leisure Suit Larry setup module
 
          ifp1
          use   defsfile
@@ -70,7 +68,6 @@ u003E    rmb   1
 u003F    rmb   2
 u0041    rmb   1
 u0042    rmb   1   MMU Block # of SIERRA's dsc.
-
 u0043    rmb   2
 u0045    rmb   1   flag after color table sets
 u0046    rmb   2
@@ -80,11 +77,7 @@ u004F    rmb   4
 u0053    rmb   2   
 u0055    rmb   10
 u005F    rmb   163
-
-*u0102   rmb   327  ---disassembly
-
-*u0102    rmb  113
-u0102    rmb  112
+u0102    rmb   112
 mtf173   rmb   1    multitasking flag
 scr174   rmb   1    screen number?
 x01076   rmb   212 
@@ -92,9 +85,6 @@ u0249    rmb   1
 u024A    rmb   1
 u024B    rmb   1
 u024C    rmb   497
-
-*u043D   rmb   7106 ---disassembly
-
 u043D    rmb   245
 u0532    rmb   16   vol_handle_table (pointer to file structures)
 u0542    rmb   15  
@@ -1215,5 +1205,8 @@ L04DA    ldd   ,s++       load d with current stack pointer and bump it
 
 L054F    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
 L0557    fcb   $73,$69,$65,$72,$72,$61,$00       sierra.
+
          emod
 eom      equ   *
+         end
+
