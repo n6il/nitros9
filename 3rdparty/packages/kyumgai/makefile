@@ -4,7 +4,6 @@ DEPENDS		= ./Makefile
 
 DISK		= kyumgai.dsk
 CMDS		= ninja ninja.snd1 ninja.snd2
-SCRIPTS		= install2dd
 MD		= $(LEVEL2)/MODULES
 
 # We make our own bootfile and kernel track
@@ -32,7 +31,6 @@ all:	$(ALLOBJS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)
-	$(OS92UNIX) $(SCRIPTS)
 
 dsk:	all
 	$(RM) $(DISK)
@@ -47,8 +45,6 @@ dsk:	all
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(OS9RENAME) $(DISK),CMDS/ninja AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
-	$(UNIX2OS9) $(SCRIPTS)
-	$(CP) $(SCRIPTS) $(DISK),.
 
 dskclean:
 	$(RM) $(DISK)
