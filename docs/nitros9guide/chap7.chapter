@@ -81,8 +81,10 @@ command line before it is passed to the program being called.
 
 &attrref;
 &backupref;
+&basic09ref;
 &binexref;
 &buildref;
+&ccref;
 &chdref;
 &cmpref;
 &cobblerref;
@@ -119,6 +121,7 @@ command line before it is passed to the program being called.
 &procsref;
 &pwdref;
 &renameref;
+&runbref;
 &saveref;
 &setimeref;
 &setprref;

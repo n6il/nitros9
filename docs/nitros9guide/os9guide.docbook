@@ -23,8 +23,10 @@
 
   <!ENTITY attrref       SYSTEM "attr.refentry">
   <!ENTITY backupref     SYSTEM "backup.refentry">
+  <!ENTITY basic09ref    SYSTEM "basic09.refentry">
   <!ENTITY binexref      SYSTEM "binex.refentry">
   <!ENTITY buildref      SYSTEM "build.refentry">
+  <!ENTITY ccref         SYSTEM "cc.refentry">
   <!ENTITY chdref        SYSTEM "chd.refentry">
   <!ENTITY cmpref        SYSTEM "cmp.refentry">
   <!ENTITY cobblerref    SYSTEM "cobbler.refentry">
@@ -61,6 +63,7 @@
   <!ENTITY procsref      SYSTEM "procs.refentry">
   <!ENTITY pwdref        SYSTEM "pwd.refentry">
   <!ENTITY renameref     SYSTEM "rename.refentry">
+  <!ENTITY runbref       SYSTEM "runb.refentry">
   <!ENTITY saveref       SYSTEM "save.refentry">
   <!ENTITY setimeref     SYSTEM "setime.refentry">
   <!ENTITY setprref      SYSTEM "setpr.refentry">
