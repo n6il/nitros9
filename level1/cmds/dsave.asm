@@ -6,7 +6,6 @@
 * Syntax: dsave [<opts>] <destpath>
 * Opts  :
 *   -b = include bootfile (doesn't work)
-*   -e = execute files
 *   -i = indent dir levels
 *   -l = only one dir level
 *   -m = omit makdirs
@@ -47,8 +46,8 @@ parmptr  rmb   2	pointer to our command line params
 bufptr   rmb   2	pointer to user expandable buffer
 bufsiz   rmb   2	size of user expandable buffer
 * These vars are used for this example, it will probably change for you
-dirlevel rmb   1	current directory level
-doexec   rmb   1	execute flag
+dirlevel rmb   1	current directory level (0 = top)
+*doexec   rmb   1	execute flag
 errcode  rmb   1	error code storage
 plistcnt rmb   1	command line pathlist count
 doboot   rmb   1
@@ -61,12 +60,15 @@ doverify rmb   1
 dstpath  rmb   2	pointer to second (optional) pathlist on cmd line
 lineptr  rmb   2
 sopt     rmb   1
+ddbt     rmb   3		copy of source disk's DD.BT from LSN0
 * vars for pwd integrated code
 fildes   rmb   1
 srcptr   rmb   2		
 dotdotfd rmb   3		LSN of ..
 dotfd    rmb   3		LSN of .
 ddcopy   rmb   3
+bootlen  rmb   2		length of param after -b=
+bbuff    rmb   64		-b= buffer
 dentry   rmb   DIR.SZ*2
 srcpath  rmb   128
 buffend  rmb   1
@@ -103,7 +105,7 @@ UnkOpt   fcc   /unknown option: /
 UnkOptL  equ   *-UnkOpt
 
 ShlEko   fcc   "t"
-         fcb   C$CR
+CR       fcb   C$CR
 
 Chd      fcc   "chd"
          fcb   C$CR
@@ -130,7 +132,10 @@ Unlink   fcc   "unlink"
 Copy     fcc   "copy"
          fcb   C$CR
 
-OS9Boot  fcc   "OS9BOOT "
+OS9Gen   fcc   "os9gen"
+         fcb   C$CR
+
+OS9Boot  fcs   "OS9BOOT"
 
 DotDot   fcc   "."
 Dot      fcc   "."
@@ -212,11 +217,26 @@ GetDash2 ldd   ,x+		load option char and char following
 IsItB    cmpa  #'b		is it this option?
          bne   IsItE		branch if not
          sta   <doboot
-         bra  FixCmdLn
-IsItE    cmpa  #'e		is it this option?
-         bne   IsItI		branch if not
-         sta   <doexec
+         cmpb  #'=		= follows?
+         bne   FixCmdLn		if not, continue
+         leax  1,x		move X past dash
+         pshs  x
+         leay  bbuff,u		point to buffer
+         lbsr  ParmCpy		copy parameter from X to Y
+         lda   #C$CR
+         sta   ,y
+         stb   bootlen,u	save length
+         lda   #C$SPAC
+IsItBLp  sta   ,-x
+         cmpx  ,s
+         bne   IsItBLp
+         puls  x
          bra   FixCmdLn
+IsItE    equ   *
+*         cmpa  #'e		is it this option?
+*         bne   IsItI		branch if not
+*         sta   <doexec
+*         bra   FixCmdLn
 IsItI    cmpa  #'i		is it this option?
          bne   IsItL		branch if not
          sta   <indent
@@ -291,6 +311,27 @@ DoDSave  dec   <plistcnt	we should have only one path on cmdline
 
 * Get entire pathlist to working directory
          lbsr  pwd
+* Open source device as raw and obtain 24 bit LSN to bootfile
+         ldd   #$400D		@ + CR
+         pshs  d		save on stack
+         leax  ,s		point X to stack
+         lda   #READ.		read mode
+         os9   I$Open		open
+         puls  x		clean stack
+         lbcs  Exit		branch if error
+         pshs  a		save path
+         ldx   #0000
+         tfr   u,y
+         ldu   #DD.BT
+         os9   I$Seek		seek to DD.BT in LSN0
+         tfr   y,u
+         lbcs  Exit
+         leax  ddbt,u		point to buffer
+         ldy   #3		read 3 bytes at DD.BT
+         os9   I$Read 
+         lbcs  Exit		exit of error
+         puls  a		get path on stack
+         os9   I$Close		and close it
 
 * Do dsave "pre" commands
          lbsr  DoEcho
@@ -379,11 +420,19 @@ ItsADir2 ldx   3,s
          bra   FileLoop
 
 * Here, we know that the file we just opened and closed was NOT a directory
-ItsAFile tst   <doboot		test for allowance of os9boot
-         bne   ItsAFile2	branch if so
-         ldx   1,s
-         lbsr  BootCmp		compare against os9boot
-         beq   FileLoop		if a match, don't copy
+ItsAFile tst   <dirlevel	are we at root level?
+         bne   ItsAFile2	no, don't even do os9boot test
+         ldx   1,s		else get ptr to current filename
+         lbsr  BootCmp		is it os9boot?
+         bcs   ItsAFile2	no, copy away!
+         tst   <doboot		-b option specified?
+         beq   FileLoop		nope, ignore bootfile
+
+* Here we have a file named OS9Boot in the top level directory
+* We must os9gen the sucker
+         lbsr  BuildOS9Gen
+         bra   FileLoop
+         
 ItsAFile2 
          ldx   1,s
          lbsr  BuildCopy
@@ -447,8 +496,22 @@ CopyFnLp lda   ,x+
          leau  1,u
          tstb
          bpl   CopyFnLp
-*         clr   ,y+		add null byte at end
 CopyFnEx tfr   u,d
+         puls  u,pc
+
+* Works like StrCpy, but stops if a space is encountered
+ParmCpy  pshs  u
+         ldu   #$0000
+ParmFnLp lda   ,x+
+         tfr   a,b
+         anda  #$7F
+         cmpa  #C$SPAC
+         ble   ParmFnEx
+         sta   ,y+
+         leau  1,u
+         tstb
+         bpl   ParmFnLp
+ParmFnEx tfr   u,d
          puls  u,pc
 
 * Compare two filenames to see if they match
@@ -456,20 +519,9 @@ CopyFnEx tfr   u,d
 BootCmp  pshs  y,x
          lbsr  StrLen		get length of passed filename
          puls  x		get pointer to passed filename
-         cmpy  #7		compare stlren of X against OS9Boot
-         bne   FileCmpEx	if not the same length, they aren't equal
-* Here we know the filenames are the same length
-         ldb   #6 
-FIleCmp2 leay  OS9Boot,pcr
-         lda   b,x
-         bsr   MakeUp
-         cmpa  b,y
-         bne   FileCmpEx
-         decb
-         bpl   FileCmp2
-         clrb			clear carry
-         puls  y,pc
-FileCmpEx orcc  #Carry
+         tfr   y,d
+         leay  OS9Boot,pcr
+         os9   F$CmpNam
          puls  y,pc
 
 MakeUp   cmpa  #'a
@@ -533,10 +585,10 @@ DoMakDir
          bsr   CopyParm
          bsr   WriteIt
          puls  x
-         tst   <doexec			are we executing?
-         beq   Ret			if not, just return
-         lda   #DIR.+PREAD.+PEXEC.+EXEC.+UPDAT.
-         os9   I$MakDir
+*         tst   <doexec			are we executing?
+*         beq   Ret			if not, just return
+*         lda   #DIR.+PREAD.+PEXEC.+EXEC.+UPDAT.
+*         os9   I$MakDir
          rts
          
 * Entry: X = path to chd to
@@ -548,12 +600,12 @@ DoChd
          bsr   CopyParm
          bsr   WriteIt
          puls  x
-         tst   <doexec			are we executing?
-         beq   Ret			if not, just return
-         lda   #DIR.+READ.
-         os9   I$ChgDir
-         bcc   Ret
-         os9   F$PErr
+*         tst   <doexec			are we executing?
+*         beq   Ret			if not, just return
+*         lda   #DIR.+READ.
+*         os9   I$ChgDir
+*         bcc   Ret
+*         os9   F$PErr
 Ret      rts
          
 WriteIt  ldy   #1024
@@ -561,8 +613,9 @@ WriteIt  ldy   #1024
          os9   I$WritLn
 Rts      rts
 
-DoEcho   tst   <doexec			are we executing?
-         bne   Rts			if so, ignore this shell command
+DoEcho   equ   *
+*         tst   <doexec			are we executing?
+*         bne   Rts			if so, ignore this shell command
          leax  ShlEko,pcr		else point to shell echo command
          bra   WriteIt
 
@@ -590,8 +643,8 @@ DoPauseOn
          bsr   CopyCmd
          leax  TPause,pcr		get pause command
          bsr   CopyParm
-         bsr   WriteIt
-         bra   ExecCmd 
+         bra   WriteIt
+*         bra   ExecCmd 
 
 * Copy parameters into linebuff and put CR after it, then write it out to stdout
 CopyParm lbsr  StrCpy			copy it
@@ -601,62 +654,75 @@ CopyParm lbsr  StrCpy			copy it
 CPRts    rts
 
 * Entry: X = command to execute, with parameters
-ExecCmd  tst   <doexec
-         beq   CPRts
-         lbsr  SkipSpcs		skip any leading spaces at X
-         tfr   x,y		transfer command ptr to Y temporarily
-         lbsr  SkipNSpc		skip command
-         clr   ,x+		clear white space char and move X
-         pshs  u		save our statics
-         tfr   x,u		move paramter pointer to Y
-         tfr   y,x		move command ptr from Y back to X
-         ldy   #256
-         clra
-         os9   F$Fork
-         os9   F$Wait
-         bcc   ExecRTS
-         os9   F$PErr
-ExecRTS  puls  u,pc
+*ExecCmd  tst   <doexec
+*         beq   CPRts
+*         lbsr  SkipSpcs		skip any leading spaces at X
+*         tfr   x,y		transfer command ptr to Y temporarily
+*         lbsr  SkipNSpc		skip command
+*         clr   ,x+		clear white space char and move X
+*         pshs  u		save our statics
+*         tfr   x,u		move paramter pointer to Y
+*         tfr   y,x		move command ptr from Y back to X
+*         ldy   #256
+*         clra
+*         os9   F$Fork
+*         os9   F$Wait
+*         bcc   ExecRTS
+*         os9   F$PErr
+*ExecRTS  puls  u,pc
 
 DoPauseOff 
          leax  TMode,pcr
          bsr   CopyCmd
          leax  TNoPause,pcr
          bsr   CopyParm
-         lbsr  WriteIt
-         bra   ExecCmd
+         lbra  WriteIt
+*         bra   ExecCmd
 
 DoLoadCmp
          leax  Load,pcr			point to load command
          bsr   CopyCmd			copy it to buffer
          leax  Cmp,pcr			point to copy command
          bsr   CopyParm			copy it to buffer
-         lbsr  WriteIt
-         bra   ExecCmd
+         lbra  WriteIt
+*         bra   ExecCmd
 
 DoUnlinkCmp
          leax  Unlink,pcr
          lbsr  CopyCmd
          leax  Cmp,pcr
          bsr   CopyParm
-         lbsr  WriteIt
-         bra   ExecCmd
+         lbra  WriteIt
+*         bra   ExecCmd
 
 DoLoadCopy
          leax  Load,pcr			point to load command
          lbsr  CopyCmd			copy it to buffer
          leax  Copy,pcr			point to copy command
          bsr   CopyParm			copy it to buffer
-         lbsr  WriteIt
-         bra   ExecCmd
+         lbra  WriteIt
+*         bra   ExecCmd
 
 DoUnlinkCopy
          leax  Unlink,pcr
          lbsr  CopyCmd
          leax  Copy,pcr
          lbsr  CopyParm
+         lbra  WriteIt
+*         bra   ExecCmd
+
+BuildOS9Gen
+         pshs  x
+         leax  OS9Gen,pcr
+         lbsr  CopyCmd
+         leax  dstpath,u
+         bsr   BuildCopy4
+* write file name, then CR
+         leax  bbuff,u
          lbsr  WriteIt
-         bra   ExecCmd
+         leax  CR,pc
+         lbsr  WriteIt
+         puls  x,pc
 
 BuildCmp pshs  x
          leax  Cmp,pcr
@@ -683,6 +749,7 @@ BuildCopy2
          std   ,y++
 BuildCopy3
          ldx   <srcptr			get source path from statics
+BuildCopy4
          lbsr  StrCpy			copy to buffer
          lda   #C$SPAC			get space
          sta   ,y+			and store it after command in buff
@@ -691,9 +758,9 @@ BuildCopy3
          lda   #C$CR			get space
          sta   ,y+			and store it after command in buff
          leax  linebuff,u
-         lbsr  WriteIt
-         lbsr  ExecCmd
-         rts
+         lbra  WriteIt
+*         lbsr  ExecCmd
+*         rts
 
 * Code to get current working directory
 pwd      leax  >buffend,u		point X to buffer
