@@ -51,7 +51,7 @@ module found in the CoCo distribution of OS-9 Level One.
 
 Command		Edition		Comments
 -------		-------		-----------------------------------
-asm		6		Y2K issues resolved
+asm		6		Y2K issues resolved, 6309 compatible
 attr		11		From OS-9 Level Two V2.00.01
 backup		8		Unchanged from last Tandy release
 binex		68		Put proper edition in place in code

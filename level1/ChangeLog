@@ -1,5 +1,6 @@
-OS-9 Level One V2.01.00 Beta2:
+OS-9 Level One V2.01.00 'Phoenix' Release (11/04/2002):
 - Defs files now have properly terminated lines and 'pag' is now emitted
   as a comment.
 - SYS/password now references /DD instead of /D0
+- ASM now assembles 6309 op-codes
 
