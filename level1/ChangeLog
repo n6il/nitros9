@@ -1,5 +1,6 @@
 OS-9 Level One V03.01.03:
-- A pause command has been added to the standard command set.
+- The asm program now supports 6309 bitfield instructions.
+- The prompt command has been added to the standard command set.
 - os9gen now supports the -t= option which allows one to specify an
   alternate boot track file.
 - Two new directories have been added: BOOTLISTS and BOOTSCRIPTS.
