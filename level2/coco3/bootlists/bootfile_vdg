@@ -1,0 +1,22 @@
+* OS-9 Level Two Bootfile (VDG term, 40 track DS)
+MODULES/KERNEL/os9p2
+MODULES/SYSMODS/ioman
+MODULES/SYSMODS/init
+MODULES/RBF/rbf.mn
+MODULES/RBF/cc3disk.dr
+MODULES/RBF/d0_40d.dd
+MODULES/RBF/d1_40d.dd
+MODULES/RBF/ddd0_40d.dd
+MODULES/SCF/scf.mn
+MODULES/SCF/cc3io.dr
+MODULES/SCF/vdgint.io
+MODULES/SCF/keydrv
+MODULES/SCF/joydrv_joy
+MODULES/SCF/snddrv
+MODULES/SCF/term_vdg.dt
+MODULES/PIPE/pipeman.mn
+MODULES/PIPE/piper.dr
+MODULES/PIPE/pipe.dd
+MODULES/CLOCKS/clock_soft
+MODULES/SYSMODS/cc3go
+
