@@ -1,4 +1,4 @@
-include ../Makefile.rules
+include ../rules.mak
 
 all:
 	$(CD) basic09; make
