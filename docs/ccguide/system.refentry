@@ -25,7 +25,9 @@ is needed, use os9fork.
 </refsect1>
 <refsect1><title>See Also</title>
 <para>
-System calls "os9fork()","wait()".
+System calls
+<link linkend="os9fork">os9fork()</link>,
+<link linkend="wait">wait()</link>.
 </para>
 </refsect1>
 </refentry>

@@ -127,7 +127,7 @@ ensure that string space does not overflow.
 </refsect1>
 <refsect1><title>See Also</title>
 <para>
-Findstr().
+<link linkend="findstr">findstr()</link>.
 </para>
 </refsect1>
 </refentry>
