@@ -10,12 +10,12 @@
          nam   TunePort
          ttl   Tune Printer Port
 
-* Disassembled 02/07/05 21:58:02 by Disasm v1.6 (C) 1988 by RML
-
          ifp1
          use   os9defs
          use   scfdefs
          endc
+
+DOHELP   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
@@ -90,6 +90,7 @@ DoneMsg  fcb   C$LF
          fcb   C$CR
 DoneLen  equ   *-DoneMsg
 
+         IFNE  DOHELP
 HelpMsg  fcc   "USE:TUNEPORT </P OR /T1> [-OPT]"
          fcb   C$CR
          fcb   C$LF
@@ -105,6 +106,7 @@ HelpMsg  fcc   "USE:TUNEPORT </P OR /T1> [-OPT]"
          fcc   "        FOR CURRENT BAUD VALUE"
          fcb   C$CR
 HelpLen  equ   *-HelpMsg
+         ENDC
 
 ErrMsg   fcc   "TUNEPORT: CURRENT BAUD RATE"
          fcb   C$CR
@@ -276,11 +278,14 @@ L03E9    lda   #$02
          bcs   L03E6
          clrb  
          bra   L03E6
-L03FB    lda   #$02
+L03FB    equ   *
+         IFNE  DOHELP
+         lda   #$02
          leax  >HelpMsg,pcr
          ldy   #HelpLen
          os9   I$Write  
          bcs   L03E6
+         ENDC
          clrb  
          bra   L03E6
 L040D    lda   #$01
