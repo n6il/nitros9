@@ -1,0 +1,47 @@
+<refentry id="tsmon">
+<refnamediv>
+<refname>TSMON</refname>
+<refpurpose>Timesharing monitor</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>TSMON</command>
+<arg choice="opt">&replstart;pathlist&replend;</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+This command is used to supervise idle terminals and initiate the
+login sequence in timesharing applications. If a pathlist is given,
+standard I/O paths are opened for the device. When a carriage return
+is typed, TSMON will automatically call the &quot;LOGIN&quot; command. If the
+login fails because the user could not supply a valid user name or
+password, it will return to TSMON.
+</para>
+<para>
+Note: The LOGIN command and its password file must be present for
+TSMON to work correctly (see the LOGIN command description).
+</para>
+<refsect2>
+<title>Logging Off the System</title>
+<para>
+Most programs will terminate when an end of file character (escape)
+is entered as the first character on a command line. This will log
+you off of the system and return control to TSMON.
+</para>
+<para>
+For more information see: 2.5, LOGIN
+</para>
+</refsect2>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+
+OS9:tsmon /t1&amp;
+&amp;005
+</screen>
+</refsect1>
+</refentry>
+
