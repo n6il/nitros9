@@ -4,11 +4,11 @@ DEPENDS		= ./makefile
 
 DISK		= fsim2.dsk
 CMDS		= fs f2 f3 f4
-MD		= $(6809L2)/MODULES
+MD		= $(6809L2)/modules
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/os9p1
-OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/kernel
+OS9BOOT		= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
