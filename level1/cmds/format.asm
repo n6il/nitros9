@@ -14,6 +14,12 @@
 * Fixed bug where format showed an improper number of sectors formatted
 * at the summary if the number of sectors was a large number.
 * This was most notable when formatting large disks, such as hard drives.
+*
+*  24      2004/07/20  Boisy G. pitre
+* Revamped to display summary similar to OS-9/68K. Also, format now
+* checks the TYPH.DSQ bit in order to query the drive for its size.
+* Also, if a cluster size is not specified on the command line,
+* the best one is automatically calculated.
 
          nam   Format
          ttl   Disk format program
@@ -30,7 +36,7 @@ DOROLL   set   0
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   23
+edition  set   24
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -40,6 +46,7 @@ edition  set   23
 
 savedu   rmb   2                save the u register
 totsects rmb   3
+tmpnum   rmb   4
 sectmode rmb   1
 diskpath rmb   1                disk path number
 currtrak rmb   2                current track on
@@ -54,20 +61,22 @@ mfm      rmb   1                denisity (double/single)
 u0011    rmb   1
 tpi      rmb   1
 numsides rmb   1
-u0014    rmb   1
+*u0014    rmb   1
 ncyls    rmb   2                total number of cylinders
 u0017    rmb   1
 u0018    rmb   1
-sectors  rmb   1                total number of sectors
-u001A    rmb   1                total number of sectors
+sectors  rmb   2                total number of sectors
 sectors0 rmb   2                total number of sectors
 bps      rmb   1                bytes per sector (returned from SS.DSize)
 dtype    rmb   1                disk device type (5", 8", hard disk)
+dns      rmb   1                density byte
+sas      rmb   1                density byte
 ready    rmb   1                ready to proceed, skip warning
 dresult  rmb   2                decimal number in binary
 interlv  rmb   1                sector interleave value
 u0022    rmb   2
 clustsiz rmb   1                cluster size
+clustspecified rmb   1                cluster size specified on command line
 ClustSz  rmb   1                cluster size
 u0029    rmb   1
 u002A    rmb   1
@@ -108,6 +117,7 @@ dskname  rmb   32               quoted delimited disk name buffer
 u008F    rmb   40
 LSN0     rmb   256              LSN0 build buffer
 optbuf   rmb   256
+numbuf   rmb   32
 fdtbuf1  rmb   3
 fdtbuf2  rmb   9924
 u297E    rmb   451
@@ -151,6 +161,7 @@ start    stu   <savedu          save our data pointer
          bsr   OpenDev          get device name and open it
          bsr   Default          handle all the options
          lbsr  GetDTyp          initialize the device
+         lbsr  Proceed
          lbsr  Format           physically format device
          lbsr  InitLSN0         initialize LSN0
          lbsr  ReadLSN0		attempt to read back LSN0
@@ -217,12 +228,14 @@ MovNam   sta   ,y+              save pathname character
 
 Default  bsr   Geometry
          lbsr  DoOpts
-         lbsr  Proceed
+*         lbsr  Proceed
          rts   
 
 ********************************************************************
 * get rbf device geometry
 ********************************************************************
+
+ssztbl   fcb   $1,$2,$4,$8
 
 Geometry leax  >optbuf,u        status packet address
          clrb                   SS.OPT function
@@ -242,6 +255,7 @@ Geometry leax  >optbuf,u        status packet address
          lsrb                   foreign high nibble
          stb   <u004B           save it
 L0143    ldb   PD.DNS-PD.OPT,x  density capability
+         stb   <dns
          pshs  b                save it
          andb  #DNS.MFM         check double-density
          stb   <mfm             save double-density (Yes/No)
@@ -256,8 +270,6 @@ L0143    ldb   PD.DNS-PD.OPT,x  density capability
          andb  <u0011
          stb   <u004C
          puls  b
-         ldb   #$01
-         stb   <bps		assume 256 byte/sector
          stb   <u004D
          beq   L0169
          stb   <u004B
@@ -266,16 +278,21 @@ L0169    ldd   PD.CYL-PD.OPT,x  number of cylinders
          std   <ncyls           save it
          ldb   PD.TYP-PD.OPT,x  disk device type
          stb   <dtype           save it
+         andb  #TYPH.SSM	mask out all but sector size
+         leay  ssztbl,pcr
+         ldb   b,y
+         stb   <bps		and save bytes per sector
          ldd   PD.SCT-PD.OPT,x  default sectors/track
          std   <sectors         save it
          ldd   PD.T0S-PD.OPT,x  default sectors/track tr00,s0
          std   <sectors0        save it
          ldb   PD.ILV-PD.OPT,x  sector interleave offset
          stb   <interlv         save it
+         ldb   PD.SAS-PD.OPT,x  minimum sector allocation
+         stb   <sas             save it
          ldb   #$01             default cluster size
          stb   <clustsiz        save it
          stb   <sectmode        and sector mode
-
 *** ADDED CODE -- BGP.  CHECK FOR PRESENCE OF SS.DSIZE
          lda   PD.TYP-PD.OPT,x	get type byte
          bita  #TYPH.DSQ	drive size query bit set?
@@ -283,7 +300,7 @@ L0169    ldd   PD.CYL-PD.OPT,x  number of cylinders
          lda   <diskpath        get disk path number
          ldb   #SS.DSize        disk size getstat
          os9   I$GetStt         attempt
-         bcs   nogo@
+         bcs   err@
          sta   <bps		save bytes/sector
          stb   <sectmode
          tstb			LBA mode?
@@ -301,6 +318,13 @@ chs@
 nogo@
          clrb                   no error
          rts                    return
+err@     pshs  b
+         leax  CapErr,pcr
+         lda   #$02
+         ldy   #100
+         os9   I$WritLn
+         puls  b
+         lbra  PrtError
 
 ********************************************************************
 * find a option and call, until all options are processed
@@ -505,6 +529,7 @@ DoClust  lbsr  Decimal          proccess cluster size
          beq   L0250            no, save it
          ldb   #$01             yes, default size
 L0250    stb   <clustsiz        save it
+         stb   <clustspecified  save fact that cluster was specified
          negb                   get two's complement
          decb                   power of 2
          andb  <clustsiz        in range?
@@ -518,14 +543,21 @@ L025D    rts                    return
 * print title, format (Y/N), and get response
 ********************************************************************
 
-Proceed  leax  >Title,pcr       coco formatter message
-         lbsr  PrintLn          print it
-         leay  >optbuf,u        point to option buffer
+Proceed  
+*         leax  >Title,pcr       coco formatter message
+*         lbsr  PrintLn          print it
+         tst   <dtype		disk type...
+         bmi   h@
+         lbsr  FloppySummary
+         bra   n@
+h@       lbsr  HDSummary
+n@       leay  >optbuf,u        point to option buffer
          ldx   PD.T0S-PD.OPT,y  default sectors/track tr00,s0
          tst   <mfm             double-density?
          beq   L0271            no,
          ldx   PD.SCT-PD.OPT,y  default sectors/track
 L0271    stx   <sectors         save it
+         lbsr  LineFD
          leax  >FmtMsg,pcr      formatting drive message
          ldy   #FmtMLen         length of message
          lbsr  Print            print it
@@ -543,11 +575,11 @@ L0283    lda   ,y+              get input
          sta   -$01,y
          lda   <ready           ok to proceed? ready
          bne   L02BC            yes, were ready skip ahead
-         tst   <dtype           is this a floppy or hard drive?
-         bpl   L02AB            it is a floppy
-         leax  >HDFmt,pcr       it is a hard drive
-         ldy   #$002A           length of message
-         lbsr  Print            print message
+*         tst   <dtype           is this a floppy or hard drive?
+*         bpl   L02AB            it is a floppy
+*         leax  >HDFmt,pcr       it is a hard drive
+*         ldy   #$002A           length of message
+*         lbsr  Print            print message
 L02AB    leax  >Query,pcr       query message
          ldy   #QueryLen        length of message
          lbsr  Input            show it and get response (Y/N)
@@ -573,7 +605,7 @@ L02D5    clrb                   clear error
 * print usage message and return
 ********************************************************************
 
-LineFD   leax  >HelpCR,pcr      point to line feed
+LineFD   leax  >CrRtn,pcr       point to line feed
 PrintLn  ldy   #80              size of message
 Print    lda   #$01             standard output path
          os9   I$WritLn         print line
@@ -663,12 +695,18 @@ mlex@
          ldb   <totsects
          bsr   Div24by8		divide totsects by 8
          lda   <clustsiz        get cluster size
-         pshs  a                save it
+         pshs  a                save it as divisor
          bsr   Div24by8
          tstb  			B = 0?
          beq   L0374		branch if so
 * Too small a cluster size comes here
-         leax  >ClustMsg,pcr    cluster size mismatch message
+         tst   <clustspecified  did user specify cluster on command line?
+         bne   u@		branch if so (show error message)
+         lsl   <clustsiz	multiply by 2
+         bcs   u@		if carry set to stop
+         leas  2,s		else eat stack
+         bra   mlex@		and continue trying
+u@       leax  >ClustMsg,pcr    cluster size mismatch message
          lbsr  PrintLn          print mismatch message
          lbra  L05B1            abort message and exit
 L0374    leas  $02,s
@@ -818,7 +856,7 @@ L046B    rts
 ********************************************************************
 
 L046C    ldy   <u000C
-         ldb   <u001A
+         ldb   <sectors+1
          tst   <currtrak+1
          bne   L047E
          tst   <currside
@@ -1495,9 +1533,9 @@ PrtError lda   #$02             standard error
 * messages
 ********************************************************************
 
-Title    fcb   C$LF
-         fcc   "COLOR COMPUTER FORMATTER"
-HelpCR   fcb   C$CR
+*Title    fcb   C$LF
+*         fcc   "COLOR COMPUTER FORMATTER"
+*HelpCR   fcb   C$CR
          IFNE  DOHELP
 HelpMsg  fcc   "Use: FORMAT /devname <opts>"
          fcb   C$LF
@@ -1519,12 +1557,15 @@ HelpMsg  fcc   "Use: FORMAT /devname <opts>"
          fcb   C$CR
 HelpLen  equ   *-HelpMsg
          ENDC
-FmtMsg   fcc   "Formatting drive "
+FmtMsg   fcc   "Formatting device: "
 FmtMLen  equ   *-FmtMsg
-Query    fcc   "y (yes) or n (no)"
-         fcb   C$LF
-         fcc   "Ready?  "
+Query
+*         fcc   "y (yes) or n (no)"
+*         fcb   C$LF
+         fcc   "proceed?  "
 QueryLen equ   *-Query
+CapErr   fcc   "ABORT can't get media capacity"
+         fcb   C$CR
 AbortIlv fcc   "ABORT Interleave value out of range"
          fcb   C$CR
 AbortSct fcc   "ABORT Sector number out of range"
@@ -1538,21 +1579,414 @@ BadSectM fcc   "Bad system sector, "
 Aborted  fcc   "FORMAT ABORTED"
          fcb   C$CR
 ClustMsg fcc   "Cluster size mismatch"
-         fcb   C$CR
-         fcc   "Double density? "
-         fcc   "Track 0 Double density? "
-TPIChg   fcc   "Change from 96tpi to 48tpi? "
-DSided   fcc   "Double sided? "
+CrRtn    fcb   C$CR
+*         fcc   "Double density? "
+*         fcc   "Track 0 Double density? "
+*TPIChg   fcc   "Change from 96tpi to 48tpi? "
+*DSided   fcc   "Double sided? "
 NumGood  fcc   "Number of good sectors: $"
 NGoodLen equ *-NumGood
-HDFmt    fcc   "WARNING: You are formatting a HARD Disk.."
-         fcb   C$LF
-         fcc   "Are you sure? "
+HDFmt    fcc   "this is a HARD disk - are you sure? "
+*HDFmt    fcc   "WARNING: You are formatting a HARD Disk.."
+*         fcb   C$LF
+*         fcc   "Are you sure? "
 HDFmtLen equ   *-HDFmt
 Both     fcc   "Both PHYSICAL and LOGICAL format? "
 BothLen  equ   *-Both
 Verify   fcc   "Physical Verify desired? "
 VerifyL  equ   *-Verify
+SUMH    
+         fcb   C$CR,C$LF
+         fcc   "      NitrOS-9 RBF Disk Formatter"
+         fcb   C$CR,C$LF
+         fcc   "------------  Format Data  ------------"
+         fcb   C$CR,C$LF
+*         fcb   C$CR,C$LF
+*         fcc   "Fixed values:"
+         fcb   C$CR,C$LF
+SUMHL    equ   *-SUMH
+PFS      fcc   "    Physical floppy size: "
+PFSL     equ   *-PFS
+DC       fcc   "           Disk capacity: "
+DCL      equ   *-DC
+CSZ      fcc   "            Cluster size: "
+CSZL     equ   *-CSZ
+*SSZ      fcc   "             Sector size: "
+*SSZL     equ   *-SSZ
+SST      fcc   "           Sectors/track: "
+SSTL     equ   *-SST
+TZST     fcc   "     Track zero sect/trk: "
+TZSTL    equ   *-TZST
+*LSNOF    fcc   "              LSN offset: $"
+*LSNOFL   equ   *-LSNOF
+TPC      fcc   "Total physical cylinders: "
+TPCL     equ   *-TPC
+MSA      fcc   " Minimum sect allocation: "
+MSAL     equ   *-MSA
+RF       fcc   "        Recording format: "
+RFL      equ   *-RF
+TD       fcc   "    Track density in TPI: "
+TDL      equ   *-TD
+NLC      fcc   "Number of log. cylinders: "
+NLCL     equ   *-NLC
+NS       fcc   "      Number of surfaces: "
+NSL      equ   *-NS
+SI       fcc   "Sector interleave offset: "
+SIL      equ   *-SI
+SCTS     fcc   " sectors"
+         fcb   C$CR
+SPPR     fcc   "                         ("
+SPPRL    equ   *-SPPR
+PRSP     fcc   " bytes)"
+         fcb   C$CR
+PRSPL    equ   *-PRSP
+*VAR      fcb   C$CR,C$LF
+*         fcc   "Variables:"
+*         fcb   C$CR,C$LF
+*VARL     equ   *-VAR
+Three5   fcc   !3 1/2"!
+         fcb   C$CR
+FiveQ    fcc   !5 1/4"!
+         fcb   C$CR
+_MFM     fcc   /M/
+FM       fcc   /FM/
+         fcb   C$CR
+TPI48    fcc   /48/
+         fcb   C$CR
+TPI96    fcc   !96/135!
+         fcb   C$CR
+
+
+HDSummary
+         bsr   ShowHeader
+         bsr   ShowDiskCapacity
+         ldb   <dtype
+         andb  #TYPH.DSQ
+         bne   o@
+         lbsr  ShowSectorsTrack
+         lbsr  ShowSectorsTrackZero
+         lbsr  ShowNumberSurfaces
+         lbsr  ShowTotalPhysCylinders
+o@       lbsr  ShowClusterSize
+*         lbsr  ShowSectorSize
+*         lbsr  ShowLSNOffset
+         lbsr  ShowSAS
+         rts
+
+FloppySummary
+         bsr   ShowHeader
+         bsr   ShowPhysFloppy
+         lbsr  ShowSectorsTrack
+         lbsr  ShowSectorsTrackZero
+         lbsr  ShowTotalPhysCylinders
+         lbsr  ShowSAS
+*         lbsr  ShowVariables
+         lbsr  ShowRecordingFormat
+         lbsr  ShowTrackDensity
+         lbsr  ShowNumberLogCylinders
+         lbsr  ShowNumberSurfaces
+         lbsr  ShowSectorInterleaveOffset
+         rts
+
+ShowHeader
+         lda   #$01
+         leax  SUMH,pcr
+         ldy   #SUMHL
+         os9   I$Write
+         rts
+
+ShowPhysFloppy
+         leax  PFS,pcr
+         ldy   #PFSL
+         os9   I$Write
+         ldb   <dtype
+         leax  FiveQ,pcr
+         bitb  #TYP.8
+         beq   n@
+t@       leax  Three5,pcr
+n@       ldy   #80
+         os9   I$WritLn 
+         rts
+
+ShowDiskCapacity
+         leax  DC,pcr
+         ldy   #DCL
+         os9   I$Write
+         clra
+         ldb   <totsects
+         std   <tmpnum
+         ldd   <totsects+1
+         std   <tmpnum+2
+         leax  <tmpnum,u
+         leay  numbuf,u
+         lbsr  itoa
+* X points to buffer, Y holds size
+         pshs  x
+         tfr   y,d
+         leax  d,x
+* X points at character after last member
+         leay  SCTS,pcr
+go@      lda   ,y+
+         sta   ,x+
+         cmpa  #C$CR
+         bne   go@
+         puls  x
+         ldy   #80
+         lda   #$01
+         os9   I$WritLn
+* Put out leading spaces and (
+         leax  SPPR,pcr
+         ldy   #SPPRL
+         os9   I$Write
+* Copy number from totsects
+         clra
+         ldd   totsects,u
+         std   tmpnum,u
+         lda   totsects+2,u
+         clrb
+         std   tmpnum+2,u
+         leax  <tmpnum,u
+         leay  numbuf,u
+         lbsr  itoa
+* X points to the ASCII number
+* Y holds length
+         lda   #$01
+         os9   I$Write
+         leax  PRSP,pcr
+         ldy   #PRSPL
+         os9   I$WritLn
+         rts         
+
+*ShowSectorSize
+*         leax  SSZ,pcr
+*         ldy   #SSZL
+*         os9   I$Write
+*         lbra  LineFD
+
+ShowSectorsTrack
+         leax  SST,pcr
+         ldy   #SSTL
+         os9   I$Write
+         ldd   <sectors
+         lbra  PrintNum
+
+ShowSectorsTrackZero
+         leax  TZST,pcr
+         ldy   #TZSTL
+         os9   I$Write
+         ldd   <sectors0
+         lbra  PrintNum
+
+ShowTotalPhysCylinders
+         leax  TPC,pcr
+         ldy   #TPCL
+         os9   I$Write
+         ldd   <ncyls
+         lbra  PrintNum
+
+ShowClusterSize
+         leax  CSZ,pcr
+         ldy   #CSZL
+         os9   I$Write
+         clra
+         ldb   <clustsiz
+         lbra  PrintNum
+
+ShowSAS
+         leax  MSA,pcr
+         ldy   #MSAL
+         os9   I$Write
+         clra
+         ldb   <sas
+         lbra  PrintNum
+
+*ShowVariables
+*         leax  VAR,pcr
+*         ldy   #VARL
+*         os9   I$Write
+*         rts
+
+ShowRecordingFormat
+         leax  RF,pcr
+         ldy   #RFL
+         os9   I$Write
+         leax  _MFM,pcr
+         tst   <mfm
+         bne   n@
+         leax  FM,pcr
+n@       ldy   #80
+         os9   I$WritLn 
+         rts
+
+ShowTrackDensity
+         leax  TD,pcr
+         ldy   #TDL
+         os9   I$Write
+         leax  TPI48,pcr
+         ldb   <dns
+         bitb  #DNS.DTD
+         beq   n@
+         leax  TPI96,pcr
+n@       ldy   #80
+         os9   I$WritLn 
+         rts
+
+ShowNumberLogCylinders
+         leax  NLC,pcr
+         ldy   #NLCL
+         os9   I$Write
+         ldd   <ncyls
+         lbra  PrintNum
+
+ShowNumberSurfaces
+         leax  NS,pcr
+         ldy   #NSL
+         os9   I$Write
+         clra
+         ldb   <numsides
+         bra   PrintNum
+
+ShowSectorInterleaveOffset
+         leax  SI,pcr
+         ldy   #SIL
+         os9   I$Write
+         clra
+         ldb   <interlv
+         bra   PrintNum
+
+* Output decimal number to stdout with CR tacked at end
+* Entry: B = number
+* Leading zeros are NOT printed
+PrintNum
+         pshs  d
+         clr   ,-s 
+         clr   ,-s 
+         leax  ,s
+         leay  numbuf,u
+         bsr   itoa
+         lda   #$01
+         os9   I$Write
+         leas  4,s
+         lbra  LineFd
+
+Base     fcb   $3B,$9A,$CA,$00       1,000,000,000
+         fcb   $05,$F5,$E1,$00         100,000,000
+         fcb   $00,$98,$96,$80		10,000,000
+         fcb   $00,$0f,$42,$40		 1,000,000
+         fcb   $00,$01,$86,$a0		   100,000
+         fcb   $00,$00,$27,$10		    10,000
+         fcb   $00,$00,$03,$e8		     1,000
+         fcb   $00,$00,$00,$64		       100
+         fcb   $00,$00,$00,$0a		        10
+         fcb   $00,$00,$00,$01		         1
+
+* Entry:
+* X = address of 24 bit value
+* Y = address of buffer to hold hexadecimal number
+* Exit:
+* X = address of buffer holding hexadecimal number
+* Y = length of number string in bytes (always 6)
+*i24toha  pshs  y
+*         ldb   #3
+*         pshs  b
+*a@       lda   ,x
+*         anda  #$F0
+*         lsra
+*         lsra
+*         lsra
+*         lsra
+*         cmpa  #10
+*         blt   o@
+*         adda  #$41
+*o@       sta   ,y+
+*         lda   ,x+
+*         anda  #$0F
+*         cmpa  #10
+*         blt   p@
+*         adda  #$41
+*p@       sta   ,y+
+*         dec   ,s
+*         bne   a@
+*         leas  1,s
+*         ldy   #0006
+*         puls  x,pc
+
+* Entry:
+* X = address of 32 bit value
+* Y = address of buffer to hold number
+* Exit:
+* X = address of buffer holding number
+* Y = length of number string in bytes
+itoa     pshs  u,y
+         tfr   y,u
+         ldb   #10		max number of numbers (1^10)
+         pshs  b		save count on stack
+         leay  Base,pcr		point to base of numbers
+s@       lda   #$30		put #'0
+         sta   ,u		at U
+s1@      bsr   Sub32		,X=,X-,Y
+         inc   ,u
+         bcc   s1@		if X>0, continue
+         bsr   Add32		add back in
+         dec   ,u+
+         dec   ,s		decrement counter
+         beq   done@
+         lda   ,s
+         cmpa  #$09
+         beq   comma@
+         cmpa  #$06
+         beq   comma@
+         cmpa  #$03
+         bne   s2@
+comma@   ldb   #',
+         stb   ,u+
+s2@      leay  4,y		point to next
+         bra   s@
+done@    leas  1,s
+* 1,234,567,890
+         ldb   #14		length of string with commas + 1
+         ldx   ,s++		get pointer to buffer
+a@       decb
+         lda   ,x+		get byte
+         cmpa  #'0
+         beq   a@
+         cmpa  #',
+         beq   a@
+         clra
+         tfr   d,y		transfer count into Y
+         leax  -1,x
+         puls  u,pc
+
+* Entry:
+* X = address of 32 bit minuend
+* Y = address of 32 bit subtrahend
+* Exit:
+* X = address of 32 bit difference
+Sub32    ldd   2,x
+         subd  2,y
+         std   2,x
+         ldd   ,x
+         sbcb  1,y
+         sbca  ,y
+         std   ,x
+         rts
+
+
+* Entry:
+* X = address of 32 bit number
+* Y = address of 32 bit number
+* Exit:
+* X = address of 32 bit sum
+Add32    ldd   2,x
+         addd  2,y
+         std   2,x
+         ldd   ,x
+         adcb  1,y
+         adca  ,y
+         std   ,x
+         rts
+
+
          IFNE  DOROLL
 RollMsg  fcc   "        Recording Format:  FM/MFM"
          fcb   C$LF
@@ -1573,6 +2007,7 @@ RollMsg  fcc   "        Recording Format:  FM/MFM"
          fcc   "Sector: 00  Track: 00  Side: 00"
 RollLen  equ   *-RollMsg
          ENDC
+
          emod
 eom      equ   *
          end
