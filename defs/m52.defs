@@ -1,0 +1,105 @@
+
+* miscellaneous definitions
+HResMaxX equ 639 high resolution X limit
+HResMaxY equ 191 high resolution Y limit
+MousData equ $0008 arbitrary choice for mouse data area ($0008-$000E)
+PcktSize equ 3 number of bytes in mouse data packet
+SyncData equ %01000000 initial mouse data byte pattern
+
+* 65C52 register definitions
+ org 0
+ISReg rmb 1 IRQ Status (read only)
+IEReg equ ISReg IRQ Enable (write only)
+CSReg rmb 1 Control Status (read only)
+CFReg equ CSReg Control/Format (write only)
+CDReg rmb 1 Compare Data (write only, unused in this driver)
+TBReg equ CDReg Transmit Break (write only)
+DataReg rmb 1 receive/transmit Data (read Rx / write Tx)
+
+* IRQ Status/Enable bit definitions
+ISE.IRQ equ %10000000 IRQ occurred/enable
+ISE.TxE equ %01000000 Tx data register Empty
+ISE.CTS equ %00100000 CTS transition
+ISE.DCD equ %00010000 DCD transition
+ISE.DSR equ %00001000 DSR transition
+ISE.FOB equ %00000100 receive data Framing or Overrun error, or Break
+ISE.Par equ %00000010 Parity error in Rx data
+ISE.RxF equ %00000001 Rx data register Full
+
+ISE.Errs equ ISE.FOB!ISE.Par IRQ Status error bits
+ISE.Flip equ $00 all ISR bits active when set
+ISE.Mask equ ISE.FOB!ISE.Par!ISE.RxF active IRQs
+
+* Control Status bit definitions
+CS.Frame equ %10000000 framing error (set=error)
+CS.TxE equ %01000000 Tx data empty (set=empty)
+CS.CTS equ %00100000 CTS input (set=disabled)
+CS.DCD equ %00010000 DCD input (set=disabled)
+CS.DSR equ %00001000 DSR input (set=disabled)
+CS.Break equ %00000100 Rx line break (set=received break)
+CS.DTR equ %00000010 DTR output (set=disabled)
+CS.RTS equ %00000001 RTS output (set=disabled)
+
+* Control bit definitions
+C.TBRCDR equ %01000000 Tx Break/Compare Data register access (set=Tx Break)
+C.StpBit equ %00100000 stop bits (set=two, clear=one)
+C.Echo equ %00010000 local echo (set=activated)
+C.Baud equ %00001111 see baud rate table below
+
+* baud rate table
+ org 0
+BR.00050 rmb 1 50 baud
+BR.00110 rmb 1 109.2 baud
+BR.00135 rmb 1 134.58 baud
+BR.00150 rmb 1 150 baud
+BR.00300 rmb 1 300 baud
+BR.00600 rmb 1 600 baud
+BR.01200 rmb 1 1200 baud
+BR.01800 rmb 1 1800 baud
+BR.02400 rmb 1 2400 baud
+BR.03600 rmb 1 3600 baud
+BR.04800 rmb 1 4800 baud
+BR.07200 rmb 1 7200 baud
+BR.09600 rmb 1 9600 baud
+BR.19200 rmb 1 19200 baud
+BR.38400 rmb 1 38400 baud
+BR.ExClk rmb 1 external Rx and Tx clocks
+
+* Format bit definitions
+F.Slct equ %10000000 register select (set=Format, clear=Control)
+F.DatBit equ %01100000 see data bit table below
+F.Par equ %00011100 see parity table below
+F.DTR equ %00000010 DTR output (set=disabled)
+F.RTS equ %00000001 RTS output (set=disabled)
+
+* data bit table
+DB.5 equ %00000000 five data bits per character
+DB.6 equ %00100000 six data bits per character
+DB.7 equ %01000000 seven data bits per character
+DB.8 equ %01100000 eight data bits per character
+
+* parity table
+Par.None equ %00000000
+Par.Odd equ %00000100
+Par.Even equ %00001100
+Par.Mark equ %00010100
+Par.Spac equ %00011100
+
+* Transmit Break bit definitions
+TB.Brk equ %00000010 Tx break control (set=transmit continuous line Break)
+TB.Par equ %00000001 parity check (set=parity bit to ISE.Par, clear=normal)
+
+* Buffer (0,u only) bit definitions
+B.Butn1 equ %00100000 button #1 (left, 1 = pressed)
+B.Butn2 equ %00010000 button #2 (right, 1 = pressed)
+
+B.Butns equ B.Butn1!B.Butn2 mask for all buttons
+
+
+* mouse static data area definitions
+ org 0
+Buffer rmb 2 Rx buffer for mouse data (must start at 0,u)
+Counter rmb 1 Rx data counter
+CrntXPos rmb 2 mouse X position (0 to HResMaxX)
+CrntYPos rmb 2 mouse Y position (0 to HResMaxY*2)
+

@@ -489,8 +489,8 @@ G.LastCh  rmb   1          last keyboard character (ASCII value)
 G.LKeyCd  rmb   1          last keyboard code
 G.KyRept rmb   1          key repeat counter
 * A secondary 3 key table (same format as g002D below)
-G.2Key1  rmb   1
-G.2Key2  rmb   1
+G.2Key1  rmb   1		$2A
+G.2Key2  rmb   1		$2B
 G.2Key3  rmb   1
 * Up to 3 keys can be registerd at once, and they are stored here. If more
 * than 3 are hit, the last key is overwritten with the very last key down that
