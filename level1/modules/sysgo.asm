@@ -72,9 +72,9 @@ Banner   equ   *
          fcb   C$CR,C$LF
 * For ROM version, cut down on verbage
          IFEQ  ROM
-         fcc   "Release Date: 10/01/2003"
+         fcc   "Release Date: Jan 01, 2004"
          fcb   C$CR,C$LF
-         fcc   !www.nitros9.org!
+         fcc   !http://www.nitros9.org!
          fcb   C$CR,C$LF
          ENDC
          fcb   C$LF
