@@ -1,24 +1,27 @@
 ********************************************************************
-* Mfree - Display Free System RAM
+* Mfree - Show free memory
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  5     Original Microware distribution version
+*  5     Original Tandy version                         BGP 02/04/05
 
          nam   Mfree
-         ttl   Display Free System RAM
+         ttl   Show free memory
 
-* Disassembled 02/04/03 22:42:18 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 02/04/05 15:22:05 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   2
 u0002    rmb   2
 u0004    rmb   1
@@ -29,105 +32,29 @@ u000A    rmb   1
 u000B    rmb   2
 u000D    rmb   530
 size     equ   .
-name     equ   *
-         fcs   /Mfree/
+
+name     fcs   /Mfree/
          fcb   $05 
-L0013    fcb   $0A 
-         fcb   $20 
-         fcb   $41 A
-         fcb   $64 d
-         fcb   $64 d
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $73 s
-         fcb   $20 
-         fcb   $20 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20 
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $8D 
-L0034    fcb   $0A 
-         fcb   $54 T
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $20 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20 
-         fcb   $66 f
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $65 e
-         fcb   $20 
-         fcb   $3D =
-         fcb   $A0 
-L0048    fcb   $47 G
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $68 h
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $73 s
-         fcb   $20 
-         fcb   $4D M
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $A0 
-L0058    fcb   $4E N
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $41 A
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $E4 d
-L0065    fcb   $61 a
-         fcb   $74 t
-         fcb   $3A :
-         fcb   $20 
-         fcb   $A4 $
-start    equ   *
-         leay  u000D,u
+
+L0013    fcb   C$LF
+         fcc   " Address  pages"
+         fcb   C$LF
+         fcc   "--------- -----"
+         fcb   $80+C$CR
+L0034    fcb   C$LF
+         fcs   "Total pages free = "
+L0048    fcs   "Graphics Memory "
+L0058    fcs   "Not Allocated"
+L0065    fcs   "at: $"
+
+start    leay  u000D,u
          sty   <u000B
          leay  <L0013,pcr
          bsr   L00E1
          bsr   L00EC
-         ldx   >$0020
+         ldx   >D.FMBM
          stx   <u0000
-         ldx   >$0022
+         ldx   >D.FMBM+2
          stx   <u0002
          clra  
          clrb  
@@ -189,10 +116,11 @@ L00EC    pshs  y,x,a
          bsr   L012C
          leax  u000D,u
          stx   <u000B
-         ldy   #$0050
+         ldy   #80
          lda   #$01
          os9   I$WritLn 
          puls  pc,y,x,a
+
 L0101    lda   #$FF
          clr   <u0004
 L0105    inca  
@@ -237,7 +165,7 @@ L014A    pshs  y,x
          leay  >L0048,pcr
          bsr   L00E1
          lda   #$01
-         ldb   #$12
+         ldb   #SS.DStat
          os9   I$GetStt 
          bcc   L0163
          leay  >L0058,pcr
@@ -249,5 +177,8 @@ L0163    leay  >L0065,pcr
          bsr   L0136
 L016E    puls  y,x
          lbra  L00EC
+
          emod
 eom      equ   *
+         end
+

@@ -1,31 +1,34 @@
 ********************************************************************
-* Display - Display converted characters
+* Display  - display control codes
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  2     Original Microware distribution version
+*  2     Original Tandy version                         BGP 02/04/05
 
          nam   Display
-         ttl   Display converted characters
+         ttl   display control codes
 
-* Disassembled 02/04/03 22:44:19 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 02/04/05 15:13:55 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   450
 size     equ   .
-name     equ   *
-         fcs   /Display/
+
+name     fcs   /Display/
          fcb   $02 
-start    equ   *
-         cmpd  #$0001
+
+start    cmpd  #$0001
          bls   L0036
          pshs  x
          leay  ,x
@@ -43,10 +46,10 @@ L0027    tfr   x,d
 L0036    clrb  
 L0037    os9   F$Exit   
 L003A    ldb   ,y+
-         cmpb  #$2C
+         cmpb  #C$COMA
          bne   L0042
 L0040    ldb   ,y+
-L0042    cmpb  #$20
+L0042    cmpb  #C$SPAC
          beq   L0040
          leay  -$01,y
          bsr   L0062
@@ -63,6 +66,7 @@ L0042    cmpb  #$20
 L005E    clrb  
          puls  b
 L0061    rts   
+
 L0062    ldb   ,y
          subb  #$30
          cmpb  #$09
@@ -80,5 +84,8 @@ L007A    andcc #$FE
          rts   
 L007F    comb  
          rts   
+
          emod
 eom      equ   *
+         end
+

@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  5     Original Tandy version
+*  5     Original Tandy version                         BGP 02/04/05
 
          nam   Procs
          ttl   program module       

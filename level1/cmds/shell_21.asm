@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 20     Original Microware distribution version
+* 20     Original Tandy distribution version            BGP 02/04/05
 
          nam   Shell
          ttl   OS-9 Command Interpreter
