@@ -18,7 +18,7 @@ TPB		= ../../3rdparty/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		 boot_burke boot_idelba boot_rampak boot_wd1002
-BOOTTRACK	= rel $(BOOTERS) os9p1
+BOOTTRACK	= rel_32 rel_40 rel_80 $(BOOTERS) os9p1
 KERNEL		= os9p2 os9p3_perr os9p4_regdump
 SYSMODS		= ioman init cc3go_h0 cc3go_dd
 CLOCKS          = clock_elim clock_disto2 clock_disto4 clock_bnb \
@@ -52,16 +52,25 @@ PIPE		= pipeman.mn pipeman_named.mn \
 # The following macros represent a collection of modules for various
 # kernel tracks and bootfile configurations.
 #
-KERNEL_1773	= rel boot_1773 os9p1
-KERNEL_RAMPAK	= rel $(TPB)/boot_rampak os9p1
-KERNEL_KENTON	= rel $(TPB)/boot_kenton os9p1
-KERNEL_IDE	= rel $(TPB)/boot_ide os9p1
+KERNEL_1773	= rel_32 boot_1773 os9p1
+KERNEL_RAMPAK	= rel_32 $(TPB)/boot_rampak os9p1
+KERNEL_KENTON	= rel_32 $(TPB)/boot_kenton os9p1
+KERNEL_IDE	= rel_32 $(TPB)/boot_ide os9p1
 
 ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
 
 all:	$(ALLOBJS)
 
 # Special cases
+rel_32: rel.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=32
+
+rel_40: rel.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=40
+
+rel_80: rel.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=80
+
 boot_1773_6ms: boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSTEP=0
 
