@@ -7,8 +7,8 @@ KERNELFILE	= bootfiles/kernel_stock
 DIRS		= cmds modules defs sys bootfiles
 
 # Specify which shell should be used
-WHICHSHELL	= shellplus
-#WHICHSHELL	= shell_21
+#WHICHSHELL	= shellplus
+WHICHSHELL	= shell_21
 
 CMDS		= $(shell $(CD) cmds; make showcocoobjs)
 BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
