@@ -661,11 +661,7 @@ Delete
          ldd   PD.FD+1,y	do we have a file descriptor?
          bne   Del332		yes, skip ahead
          tst   PD.FD,y
-         IFNE  H6309
-         beq   Clos29D		no, return not accessible error
-         ELSE
          lbeq  Clos29D
-         ENDC
 Del332   lda   #SHARE.+WRITE.	get attributes to check
          lbsr  ChkAttrs		can user delete ths file?
          lbcs  Clos2A0		no, return error
@@ -1511,16 +1507,19 @@ FindFile
          sta   R$B,x		restore caller's original B
          bcc   ok@		branch if no error on GetStat
          cmpb  #E$UnkSvc	Unknown Service call error?
-         bne   Sst7AB		if not, return with error
+         bne   Sst782		if not, return with error
 ****
 ok@      ldd   #$0100		get size of sector
 * Note, following line is stb PD.SMF,y in v30!
+         IFGT  Level-1
          stb   PD.FST,y		clear state flags??
+         ENDC
          os9   F$SRqMem		request a 256 byte sector buffer
          bcs   Sst7AB		couldn't get memory, return with error
          stu   PD.BUF,y		save ptr to sector buffer
+         IFGT  Level-1
          leau  ,y		point U to path descriptor
-         ldx   <D.PthDBT	get ptr to path escriptor block tables
+         ldx   <D.PthDBT	get ptr to path descriptor block tables
          os9   F$All64		allocate path descriptor
          exg   y,u		exchange pointers
          bcs   Sst7AB		couldn't get path descriptor, return error
@@ -1528,6 +1527,7 @@ ok@      ldd   #$0100		get size of sector
          clr   PE.SigID,u	clear send signal proc. ID
          sty   PE.PDptr,u	save back pointer to path descriptor
          stu   PE.Wait,u	init waiting extension to myself
+         ENDC
          ldx   PD.RGS,y		get register stack pointer
          ldx   R$X,x		get pointer to pathname
          pshs  u,y,x
@@ -1630,6 +1630,7 @@ Sst87B   lbsr  L0A2A		check if directory is busy
          sty   $08,s
          ldy   $06,s		get path descriptor pointer
          bcs   L090D		error in pathname, return
+         IFGT  Level-1
          pshs  u,y
          ldu   PD.Exten,y	get pointer to path extension
          leau  PE.FilNm,u	point to filename buffer
@@ -1637,6 +1638,7 @@ Sst87B   lbsr  L0A2A		check if directory is busy
          tfr   d,y		move it to Y
          lbsr  Writ5CB		move filename to temp area
          puls  u,y
+         ENDC
          lbsr  L0957		read in a directory sector
          bra   L08C1
 
