@@ -315,7 +315,7 @@ Creat169
          IFNE  H6309
          ldw   #DIR.SZ		get size of directory entry (name & LSN of FD)
          ELSE
-         ldd   #DIR.SZ
+         ldd   #DIR.SZ		A = 0 so clear loop passes once +BGP+
          ENDC
          bra   Creat174		clear it out
 
@@ -327,19 +327,19 @@ Creat170
          ELSE
          clrb
          ENDC
-         lbsr  SSBits
+         lbsr  SSBits		+BGP+
 Creat174 pshs  u,x		preserve regs
          IFNE  H6309
          leax  <Creat170+3,pcr	point to NULL byte
-CreatL   tfm   x,u+		clear buffer
-         deca
-         bpl   CreatL
+CreatL   tfm   x,u+		clear buffer 
+         deca			+BGP+
+         bpl   CreatL		+BGP+
          ELSE
 l1       clr   ,u+
          decb
          bne   l1 
-         deca
-         bpl   l1
+         deca			+BGP+
+         bpl   l1		+BGP+
          ENDC
          puls  pc,u,x		restore & return
 
@@ -541,8 +541,8 @@ Clos2A0  puls  y
 Rt100Mem pshs  b,cc		preserve error status
          ldu   PD.BUF,y		get sector buffer pointer
          beq   RtMem2CF		none, skip ahead
-         lbsr  SSize
-*         ldd   #$0100		get size of sector buffer
+         lbsr  SSize		+BGP+
+*         ldd   #$0100		get size of sector buffer -BGP-
          os9   F$SRtMem		return the memory to system
          ldx   PD.Exten,y	get path extension pointer
          beq   RtMem2CF		none, return
@@ -691,8 +691,8 @@ SSize    pshs  x
 Del358   ldb   PD.FD,y		get LSN of file descriptor
          ldx   PD.FD+1,y
          pshs  u,x,b		preserve 'em
-         bsr   SSize
-*         ldd   #$0100		allocate a temporary sector buffer
+         bsr   SSize		+BGP+
+*         ldd   #$0100		allocate a temporary sector buffer -BGP-
          os9   F$SRqMem
          bcc   Del36C		got it, skip ahead
          IFNE  H6309
@@ -708,18 +708,18 @@ Del36C   stu   $03,s		save pointer to sector buffer
          IFNE  H6309
          ldw   #$0100
 DelCpy   tfm   x+,u+		copy the sector
-         deca
-         bne   DelCpy
+         deca			+BGP+
+         bne   DelCpy		+BGP+
          ELSE
          clrb
-         pshs  a
+         pshs  a		+BGP+
 DelLoop  lda   ,x+
          sta   ,u+
          decb
          bne   DelLoop
-         dec   ,s
-         bne   DelLoop
-         puls  a
+         dec   ,s		+BGP+
+         bne   DelLoop		+BGP+
+         puls  a		+BGP+
          ENDC
          ldd   $03,s
 Del37A   std   $03,s		save buffer pointer to U on stack
@@ -802,8 +802,8 @@ Del3D4   ldu   $03,s		get temporary sector buffer pointer
 Del3EF   pshs  b,cc		preserve rror status & code if any (WP bug fix - raises stack offsets+2)
          ldu   $05,s		get temporary sector buffer pointer (this was a 3)
          beq   Del3F5		didn't allocate one, skip ahead (different, new label! no mem to return)
-         lbsr  SSize
-*         ldd   #$0100		get size of it
+         lbsr  SSize		+BGP+
+*         ldd   #$0100		get size of it -BGP-
          os9   F$SRtMem		return the memory back to the system
 Del3F5   puls  b,cc		restore error status & code (WP bug fix)
 Del3F9   leas  5,s		purge stack
@@ -1175,7 +1175,7 @@ Writ5CB  pshs  x
 GetStat  ldb   R$B,u		get function code
          beq   Gst5FF		it's SS.Opt, go process
 
-* SS.OPT
+* SS.Opt
 * Entry A=path number
 *       B=$00
 *       X=address to put 32 byte packet
@@ -1215,12 +1215,12 @@ Gst5F8   std   R$X,u		save to the user
          ENDC
 Gst5FF   rts   			return
 
-* SS.POS
+* SS.Pos
 * Entry A=path num
 *       B=$05
 * Exit  X=msw of pos
 *       U=lsw of pos
-Gst600   cmpb  #SS.POS		is it SS.Pos?
+Gst600   cmpb  #SS.Pos		is it SS.Pos?
          bne   Gst60D		no, keep checking
          IFNE  H6309
 * use 2 LDD, STD, same size as ldq/std/stw, PD.CP+2 <$0F, we can use short n,R
@@ -1288,9 +1288,9 @@ Gst640   lda   #D$GSTA		get getstat function offset
 *        B = errcode
 *
 SetStat  ldb   R$B,u		get function code
-* TODO: remove next line since SS.OPT is 0
-         cmpb  #SS.OPT		
-         bne   Sst659		not SS.OPT, skip ahead
+* TODO: remove next line since SS.Opt is 0
+         cmpb  #SS.Opt		
+         bne   Sst659		not SS.Opt, skip ahead
          ldx   R$X,u		get pointer to option packet
          leax  $02,x		skip device type and drive #
          leau  PD.STP,y		get pointer to start of data
@@ -1500,8 +1500,8 @@ Sst7AB   rts
 * Entry: U=caller's stack reg. ptr
 *        Y=Path dsc. ptr
 FindFile 
-         lbsr  SSize
-*         ldd   #$0100		get size of sector
+         lbsr  SSize		+BGP+
+*         ldd   #$0100		get size of sector -BGP-
 * Note, following line is stb PD.SMF,y in v30!
          stb   PD.FST,y		clear state flags??
          os9   F$SRqMem		request a 256 byte sector buffer
@@ -1542,7 +1542,7 @@ FindFile
 Sst7FB   anda  #$7F		strip high bit
          cmpa  #PENTIR		entire device flag?
          beq   Sst81E		yes, go process
-         lda   #PDELIm		place delimiter as last char
+         lda   #PDELIM		place delimiter as last char
          sta   ,s
          leax  -$01,x		bump path pointer back 1
          lda   PD.MOD,y		get file mode
@@ -1712,7 +1712,6 @@ L0940    puls  pc,b,a
 L0942    ldb   PD.CP+3,y	get current byte pointer
          addb  #DIR.SZ		add in diretory entry size
          stb   PD.CP+3,y	save it back
-
          bcc   L0957		didn't wrap, skip ahead (need new sector)
          lbsr  L1237		check for sector flush
          inc   PD.CP+2,y
