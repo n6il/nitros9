@@ -22,7 +22,7 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   5
 
-L0000    mod   eom,name,tylg,atrv,L0014,size
+L0000    mod   eom,name,tylg,atrv,start,size
 
 u0000    rmb   1
 u0001    rmb   1
