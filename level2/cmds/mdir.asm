@@ -6,11 +6,14 @@
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*   7      ????/??/??
+*  7       ????/??/??
 * Original Tandy/Microware version
 *
 *  8       2003/01/14  Boisy Pitre
 * Changed option to -e, optimized slightly. Could use greater optimization.
+*
+*  9       2003/08/24  Rodney Hamilton
+* Corrected leading zero supression, more optimizations
 
          nam   MDir
          ttl   Show module information
@@ -24,25 +27,25 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   8
+edition  set   9
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   2
-u0002    rmb   1
-u0003    rmb   1
-u0004    rmb   1
-u0005    rmb   3
-u0008    rmb   3
+ParamPtr rmb   2
+zflag    rmb   1	supress leading zeros flag
+bufptr   rmb   2	current position in the line buffer
+datebuf  rmb   3
+timebuf  rmb   3
 narrow   rmb   1
-u000C    rmb   1
-u000D    rmb   1
-u000E    rmb   80
-u005E    rmb   2
-u0060    rmb   2
+u000C    rmb   1	name field width
+u000D    rmb   1	last starting column
+linebuf  rmb   80
+u005E    rmb   2	ptr to module dir end
+u0060    rmb   2	ptr to module dir start
 u0062    rmb   4096
-u1062    rmb   64
-u10A2    rmb   269
+u1062    rmb   64	module name buffer
+u10A2    rmb   13	module stats ??
+         rmb   256	stack area
 size     equ   .
 
 name     fcs   /MDir/
@@ -62,67 +65,69 @@ L00D4    clr   ,-u
          cmpu  ,s
          bhi   L00D4
          puls  u
-         clr   <narrow
-         ldd   #$0C30
+         clr   <zflag		clear leading zero supression
+         clr   <narrow		default to wide
+         ldd   #$0C30		wide column width=12/last start col=48
          std   <u000C
-         stx   <u0000
-         leax  u000E,u
-         stx   <u0003
-         lbsr  L02A3
+         stx   <ParamPtr	save args ptr
+         leax  linebuf,u
+         stx   <bufptr
+         lbsr  writeBUF
          lda   #$01		standard output
          ldb   #SS.ScSiz	get size of screen
          os9   I$GetStt 	get it!
          bcc   L00FF		branch if ok
          cmpb  #E$UnkSvc	unknown service?
-         lbne  L0241		branch if not
+         lbne  L0241		exit with error if not
          bra   L010C		else ignore screen width test
+
 L00FF    cmpx  #50		compare against 50
          bge   L010C		if greater or equal, go on
          inc   <narrow		else set narrow flag
-         ldd   #$0A15
+         ldd   #$0A15		narrow column width=10/last start col=21
          std   <u000C
-L010C    leay  >header,pcr	point to header
-         lbsr  L0298
-         leax  u0005,u
-         os9   F$Time   
-         leax  u0008,u
-         lbsr  L02B8
-         lbsr  L02A3
-         leax  <u0062,u
+L010C    leay  >header,pcr	point to main header
+         lbsr  copySTR
+         leax  datebuf,u	date/time buffer
+         os9   F$Time		get current date & time
+         leax  timebuf,u	only wanted the time
+         lbsr  L02B8		print TIME as HH:MM:SS
+         lbsr  writeBUF
+         leax  <u0062,u		buffer for module directory
          pshs  u
-         os9   F$GModDr 
-         sty   <u005E
-         stu   <u0060
+         os9   F$GModDr 	get module directory
+         sty   <u005E		save local end ptr
+         stu   <u0060		save system start ptr
          puls  u
-         leax  -$08,x
-         ldy   <u0000
+         leax  -MD$ESize,x
+         ldy   <ParamPtr
          ldd   ,y+
          andb  #$DF
          cmpd  #$2D45		-e option?
          bne   L018E
-         lbsr  L02A3
-         tst   <narrow
-         beq   L0149
-         leay  >sheader1,pcr
-         bra   L014D
+         lbsr  writeBUF
 L0149    leay  >header2,pcr
-L014D    lbsr  L0298
-         lbsr  L02A3
          tst   <narrow
-         beq   L015D
-         leay  >sheader2,pcr
-         bra   L0161
+         beq   L014D
+         leay  >sheader1,pcr
+L014D    lbsr  copySTR
+         lbsr  writeBUF
 L015D    leay  >header3,pcr
-L0161    lbsr  L0298
-         lbsr  L02A3
+         tst   <narrow
+         beq   L0161
+         leay  >sheader2,pcr
+L0161    lbsr  copySTR
+         lbsr  writeBUF
          leax  <u0062,u
          lbra  L023A
+
+* just print the module names, no E flag
 L016D    lbsr  L0308
          beq   L018E
          lbsr  L02DE
-         lbsr  L0298
-L0178    lbsr  L0285
-         ldb   <u0004
+         lbsr  copySTR
+L0178    lbsr  outSP
+         ldb   <bufptr+1
          subb  #$0E
          cmpb  <u000D
          bhi   L018B
@@ -130,190 +135,203 @@ L0183    subb  <u000C
          bhi   L0183
          bne   L0178
          bra   L018E
-L018B    lbsr  L02A3
-L018E    leax  $08,x
+
+L018B    lbsr  writeBUF
+L018E    leax  MD$ESize,x
          cmpx  <u005E
          bcs   L016D
-         lbsr  L02A3
-         lbra  L0240
+         lbsr  writeBUF		final/partial line
+         lbra  L0240		exit OK
+
+* print extended info line for each module
 L019A    lbsr  L0308
-         lbeq  L0238
+         lbeq  L0238		skip if DAT image ptr==0
          tfr   d,y
          ldd   ,y
          tst   <narrow
          beq   L01B1
-         lbsr  L0285
-         lbsr  L024C
-         bra   L01B4
-L01B1    lbsr  L0244
-L01B4    tst   <narrow
-         bne   L01BE
-         lbsr  L0285
-         lbsr  L0285
-L01BE    ldd   $04,x
-         lbsr  L0244
+         lbsr  outSP
+         lbsr  outb2HS		2-digit block number
+         bra   L01BE
+L01B1    lbsr  out4HS		4-digit block number
+         lbsr  outSP
+         lbsr  outSP
+* module offset
+L01BE    ldd   MD$MPtr,x
+         bsr   out4HS		4-digit offset
          tst   <narrow
          bne   L01CA
-         lbsr  L0285
-L01CA    lbsr  L02DE
+         lbsr  outSP
+L01CA    lbsr  L02DE		read module's header info
          leay  >u10A2,u
-         ldd   $02,y
-         bsr   L0244
+* module size
+         ldd   M$Size,y
+         bsr   out4HS		4-digit size
          tst   <narrow
          bne   L01DC
-         lbsr  L0285
-L01DC    lda   $06,y
-         bsr   L0252
+         lbsr  outSP
+* type/lang
+L01DC    lda   M$Type,y
+         bsr   out2HS		2-digit type/lang
          tst   <narrow
          bne   L01E7
-         lbsr  L0285
-L01E7    lda   $07,y
-         anda  #$0F
-         bsr   L0252
-         ldb   $07,y
-         lda   #$72
-         lbsr  L0291
+         lbsr  outSP
+* att/rev
+L01E7    lda   M$Revs,y
+         anda  #RevsMask
+         bsr   out2HS		2-digit revision
+         ldb   M$Revs,y		upper half = attributes
+         lda   #'r
+         bsr   L0291		bit7: ReEnt (reentrant module)
          tst   <narrow
          bne   L0207
-         lda   #$3F
-         lbsr  L0291
-         lda   #$3F
-         lbsr  L0291
-         lda   #$3F
-         lbsr  L0291
-L0207    bsr   L0285
-         ldd   $06,x
-         cmpd  #$FFFF
+         lda   #'w		bit6: ModProt (writeable module)
+         bsr   L0291
+         lda   #'3		bit5: ModNat (native mode 6309)
+         bsr   L0291
+         lda   #'?		bit4 undefined
+         bsr   L0291
+* user count
+L0207    bsr   outSP
+         ldd   MD$Link,x	D=user count
+         cmpd  #$FFFF		if -1,
          bne   L0223
+L021B    leay  >lock,pcr	print "Lock"
          tst   <narrow
-         beq   L021B
+         bne   L021F
          leay  >slock,pcr
-         bra   L021F
-L021B    leay  >lock,pcr
-L021F    bsr   L0298
+L021F    bsr   copySTR
          bra   L0230
+
 L0223    tst   <narrow
          beq   L022E
-         lbsr  L0285
-         bsr   L024C
+         bsr   outSP
+         bsr   outb2HS		2-digit user count
          bra   L0230
-L022E    bsr   L0244
-L0230    leay  >u1062,u
-         bsr   L0298
-         bsr   L02A3
-L0238    leax  $08,x
-L023A    cmpx  <u005E
-         lbcs  L019A
+
+L022E    bsr   out4HS		4-digit user count
+* module name
+L0230    leay  >u1062,u		point to name buffer
+         bsr   copySTR
+         bsr   writeBUF
+L0238    leax  MD$ESize,x	next entry
+L023A    cmpx  <u005E		more to do?
+         lbcs  L019A		yes, continue
 L0240    clrb  
 L0241    os9   F$Exit   
-L0244    bsr   L0256
-         tst   <u0002
-         bne   L024C
-         dec   <u0002
-L024C    tfr   b,a
-         bsr   L0258
-         bra   L0285
-L0252    bsr   L0256
-         bra   L0285
-L0256    clr   <u0002
-L0258    pshs  a
+
+* print regD as 4 hex digits plus space
+out4HS   inc   <zflag		supress leading zeros
+         inc   <zflag
+         bsr   out2H		print MSB as 2 hex
+         dec   <zflag
+* print regB as 2 hex digits plus space
+outb2HS  tfr   b,a		print LSB as 2 hex
+
+* print regA as 2 hex digits plus space
+out2HS   bsr   out2H
+         bra   outSP
+
+out2H    inc   <zflag		supress leading zero
+         pshs  a
          lsra  
          lsra  
          lsra  
          lsra  
-         bsr   L026C
-         tst   <u0002
-         bpl   L0268
-         lda   #$01
-         sta   <u0002
-L0268    lda   ,s+
-         anda  #$0F
-L026C    tsta  
-         beq   L0271
-         sta   <u0002
-L0271    tst   <u0002
-         bmi   L0277
-         bne   L027B
-L0277    lda   #C$SPAC
-         bra   L0287
-L027B    adda  #'0
+         bsr   L026C		print MSdigit
+         puls  a		print LSdigit
+         anda  #$0F		is this a zero?
+L026C    bne   L027B		no, print it
+         tst   <zflag		still supressing zeros?
+         bgt   outZSP		yes, count it and print space
+L027B    clr   <zflag		nonzero, print all the rest
+         adda  #'0
          cmpa  #'9
-         bls   L0287
+         bls   outCH
          adda  #$07
-         bra   L0287
-L0285    lda   #C$SPAC
-L0287    pshs  x
-         ldx   <u0003
+         bra   outCH
+
+* process attribute flag bit
+L0291    rolb  
+         bcs   outCH
+         lda   #'.
+         bra   outCH
+
+outZSP   dec   <zflag		count down to last digit
+outSP    lda   #C$SPAC		append a SPACE to the line buffer
+
+* Append character in regA to the line buffer
+outCH    pshs  x
+         ldx   <bufptr
          sta   ,x+
-         stx   <u0003
+         stx   <bufptr
          puls  pc,x
 
-L0291    rolb  
-         bcs   L0287
-         lda   #'.
-         bra   L0287
-
-L0298    lda   ,y
+* Copy an FCS string to the line buffer
+L0296    bsr   outCH
+copySTR  lda   ,y+
+         bpl   L0296
          anda  #$7F
-         bsr   L0287
-         lda   ,y+
-         bpl   L0298
-         rts   
+         bra   outCH
 
-L02A3    pshs  y,x,a
+* Append a CR and send entire line to stdout
+writeBUF pshs  y,x,a
          lda   #C$CR
-         bsr   L0287
-         leax  u000E,u
-         stx   <u0003
+         bsr   outCH
+         leax  linebuf,u
+         stx   <bufptr
          ldy   #80
          lda   #$01
          os9   I$WritLn 
          puls  pc,y,x,a
-L02B8    bsr   L02C0
-         bsr   L02BC
+
+* Print TIME as HH:MM:SS
+L02B8    bsr   L02C0		print HH
+         bsr   L02BC		print :MM
+*				print :SS and return
 L02BC    lda   #':
-         bsr   L0287
+         bsr   outCH
 L02C0    ldb   ,x+
-         lda   #$2F
-L02C4    inca  
-         subb  #100
+L02C4    subb  #100
          bcc   L02C4
-         cmpa  #'0
-         beq   L02CF
-         bsr   L0287
-L02CF    lda   #$3A
+* code to print 100's digit removed - max timefield value is 59
+L02CF    lda   #'9+1
 L02D1    deca  
          addb  #10
          bcc   L02D1
-         bsr   L0287
+         bsr   outCH		tens digit
          tfr   b,a
          adda  #'0
-         bra   L0287
+         bra   outCH		units digit
+
+* copy module header & name to local buffers
 L02DE    pshs  u,x
-         bsr   L0308
-         ldx   $04,x
-         ldy   #$000D
-         leau  >u10A2,u
-         os9   F$CpyMem 
-         pshs  b,a
-         ldd   u0004,u
-         leax  d,x
-         puls  b,a
-         ldu   $02,s
-         leau  >u1062,u
+         bsr   L0308		D=ptr to mdir entry
+         ldx   4,x		X=MD$MPtr
+         ldy   #13
+         leau  >u10A2,u		buffer for module header data
+         os9   F$CpyMem		copy 13 bytes of module header
+         pshs  b,a		save DAT image ptr
+         ldd   4,u		name offset
+         leax  d,x		X=name ptr
+         puls  b,a		restore DAT image ptr
+         ldu   2,s
+         leau  >u1062,u		U=ptr to name buffer
          ldy   #64
-         os9   F$CpyMem 
-         tfr   u,y
+         os9   F$CpyMem		copy 64 bytes of name data
+         tfr   u,y		Y=ptr to name buf
          puls  pc,u,x
-L0308    ldd   ,x
-         beq   L0319
+
+* calculate local buffer address for current mdir entry (DAT image ptr)
+L0308    ldd   ,x		D=MD$MPDAT
+         beq   L0319		if 0, skip empty slot
          pshs  y
-         leay  <u0062,u
+         leay  <u0062,u		Y=local MDIR buffer
          pshs  y
-         subd  <u0060
-         addd  ,s++
+         subd  <u0060		D=offset (MD$MPDAT-mdstart)
+         addd  ,s++		D=ptr to local mdir entry
          puls  y
-L0319    rts   
+L0319    rts
 
          emod
 eom      equ   *
