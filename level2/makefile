@@ -2,7 +2,7 @@ include ../rules.mak
 
 CPU		= 6809
 DISTRO		= $(CPU)L2
-RELEASE		= nos9$(CPU)l2v030204
+RELEASE		= nos9$(CPU)l2v030205
 BOOTFILE_40D	= bootfiles/bootfile_40d
 BOOTFILE_80D	= bootfiles/bootfile_80d
 BOOTFILE_40D_50HZ	= bootfiles/bootfile_40d_50hz
