@@ -20,8 +20,9 @@ DEFS		= $(shell $(CD) defs; make showobjs)
 ROOTFILES	= startup
 
 PACKAGENAME	= $(RELEASE).zip
-DSK1		= $(RELEASE)_ds40_1.dsk
-DSK2		= $(RELEASE)_ds40_2.dsk
+DSK360K_1	= $(RELEASE)_ds40_1.dsk
+DSK360K_2	= $(RELEASE)_ds40_2.dsk
+DSK720K		= $(RELEASE)_ds80.dsk
 
 
 # Make all components
@@ -38,17 +39,17 @@ clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK1) $(DSK2)
+	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(DSK360K_2) $(DSK720K)
 
 dsk: all $(PACKAGENAME)
 
 dskcopy: dsk
-	$(CP) $(DSK1) $(DSK2) $(PACKAGENAME) $(DSKDIR)
+	$(CP) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(PACKAGENAME) $(DSKDIR)
 
-$(PACKAGENAME): $(DSK1) $(DSK2) ReadMe ChangeLog
+$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) ReadMe ChangeLog
 	$(ARCHIVE) $@ $^
 
-$(DSK1):
+$(DSK360K_1):
 	$(RM) $@
 	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/6809 Level 1 Disk 1"
 	$(OS9GEN) $@ -b=$(BOOTFILE) -t=$(KERNELFILE)
@@ -64,7 +65,7 @@ $(DSK1):
 	$(CPL) $(ROOTFILES) $@,.
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
-$(DSK2):
+$(DSK360K_2):
 	$(RM) $@
 	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/6809 Level 1 Disk 2"
 	$(MAKDIR) $@,NITROS9
@@ -98,4 +99,52 @@ $(DSK2):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
+
+$(DSK720K):
+	$(RM) $@
+	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/6809 Level 1"
+	$(OS9GEN) $@ -b=$(BOOTFILE) -t=$(KERNELFILE)
+	$(MAKDIR) $@,CMDS
+	$(MAKDIR) $@,SYS
+	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
+	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(MAKDIR) $@,DEFS
+	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
+	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(CPL) $(ROOTFILES) $@,.
+	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(MAKDIR) $@,NITROS9
+	$(MAKDIR) $@,NITROS9/6809L1
+	$(MAKDIR) $@,NITROS9/6809L1/CMDS
+	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/6809L1/CMDS
+	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/CMDS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/BOOTTRACK/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/KERNEL
+	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/6809L1/MODULES/KERNEL
+	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/KERNEL/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SYSMODS
+	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/6809L1/MODULES/SYSMODS
+	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SYSMODS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/CLOCKS
+	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/6809L1/MODULES/CLOCKS
+	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/CLOCKS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/RBF
+	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/6809L1/MODULES/RBF
+	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/RBF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SCF
+	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/6809L1/MODULES/SCF
+	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SCF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/PIPE
+	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/6809L1/MODULES/PIPE
+	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/PIPE/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/BOOTLISTS
+	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
+	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
+	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
+
 
