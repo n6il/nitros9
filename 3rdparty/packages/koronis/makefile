@@ -36,7 +36,7 @@ dsk:	all
 	$(OS9FORMAT_SS35) $(DISK) -n"Koronis Rift"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
-	$(OS9GEN) $(DISK) os9boot kernel_1773
+	$(OS9GEN) $(DISK) -b=os9boot -t=kernel_1773
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $(DISK),CMDS
 	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK),CMDS/shell
