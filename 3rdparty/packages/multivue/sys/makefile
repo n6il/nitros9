@@ -2,7 +2,7 @@ include ../../../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
-SYSFILES	= LogBook
+SYSFILES	= LogBook env.file
 SYSWINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs
 HELPFILES	= cocopr.hp control.hp gcal.hp gcalc.hp gclock.hp gport.hp \
 		gprint.hp gshell.hp
