@@ -1,7 +1,7 @@
 <refentry id="tuneport">
 <refnamediv>
 <refname>TUNEPORT</refname>
-<refpurpose>Tune the printer port on the Color Computer</refpurpose>
+<refpurpose>Tune the printer port on the &make; Computer</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -49,4 +49,3 @@ system startup file to set the value using the -S option.
 </para>
 </refsect1>
 </refentry>
-
