@@ -155,7 +155,7 @@ L00C2    leax  ,y                      X = end of RAM
 * Copy vector code over to address $100
          pshs  y,x
          leax  >VectCode,pcr
-         ldy   #$0100
+         ldy   #D.XSWI3
          ldb   #VectCSz
 L00D2    lda   ,x+
          sta   ,y+
@@ -241,7 +241,7 @@ SWI3     pshs  pc,x,b
 SWI2     pshs  pc,x,b
          ldb   #P$SWI2
          bra   L018C
-L0183    rti
+DUMMY    rti
 SVCIRQ   jmp   [>D.SvcIRQ]
 SWI      pshs  pc,x,b
          ldb   #P$SWI
@@ -1134,12 +1134,12 @@ InstSSvc ldb   ,y+                     get system call code in B
 eom      equ   *
 
          fdb   Clock
-Vectors  fdb   SWI3 
-         fdb   SWI2 
-         fdb   L0183
-         fdb   SVCIRQ
-         fdb   SWI
-         fdb   L0183
+Vectors  fdb   SWI3			SWI3 
+         fdb   SWI2 			SWI2
+         fdb   DUMMY			FIRQ
+         fdb   SVCIRQ			IRQ
+         fdb   SWI			SWI
+         fdb   DUMMY			NMI
 
          end
 
