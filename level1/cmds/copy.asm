@@ -51,6 +51,7 @@ filecnt  rmb   1
 srccnt   rmb   1
 srcmode  rmb   1
 wopt     rmb   1
+vopt     rmb   1
 srcfname rmb   2
 dstfptr  rmb   2
 wfileptr rmb   2
@@ -58,11 +59,14 @@ wfilelen rmb   2
 lstfopen rmb   2		pointer to name of last file attempted open
 lstfopln rmb   2		length of last file atteppted open
 srcattr  rmb   1
+writemsb rmb   2
+writelsb rmb   2
 fdbufcpy rmb   16
 optbuf   rmb   32
 wdest    rmb   DDIRBSIZ		portion after '-w='
          rmb   DDIRBSIZ		additional space
 * Note: copy buffer must come just before the stack
+vfybuff  rmb   256		verify buffer
          IFGT  Level-1
 copybuff rmb   8*1024		8K default buffer for Level 2
          ELSE
@@ -90,6 +94,8 @@ HlpMsg   fcb   C$LF
          fcc   /  -r = rewrite destination/
          fcb   C$LF
          fcc   /  -s = single drive copy/
+         fcb   C$LF
+         fcc   /  -v = verify the copy/
          fcb   C$LF
          fcc   /  -w=<dir> = copy to <dir>/
          fcb   C$LF
@@ -170,10 +176,14 @@ GetDash2 ldd   ,x+		load option char and char following
 IsItA    cmpa  #'A		abort option?
          bne   IsItP		branch if not
          inc   <abortflg
-         bra   FixCmdLn
+         lbra  FixCmdLn
 IsItP    cmpa  #'P		supress output?
-         bne   IsItX		branch if not
+         bne   IsItV		branch if not
          inc   <quiet
+         bra   FixCmdLn
+IsItV    cmpa  #'V		supress output?
+         bne   IsItX		branch if not
+         inc   <vopt
          bra   FixCmdLn
 IsItX    cmpa  #'X		execution dir?
          bne   IsItW		branch if not
@@ -353,7 +363,7 @@ L0450    ldx   <dstfptr		point to destination file
          lbsr  StrLen		get length
          std   <lstfopln	save length
          puls  x
-         lda   #WRITE.		write mode
+         lda   #UPDAT.		update mode (in case we have to verify)
          ldb   <srcattr		get source attributes
          stx   <lstfopen
          os9   I$Create 	create file
@@ -419,7 +429,10 @@ CopyLoop ldx   <rdbufptr	get ptr to read buffer
          lda   <dstpath		get dest path
          os9   I$Write  	write it out!
          lbcs  ShutDown		branch if error
-         lda   <srcpath		get source path
+         tst   <vopt		verify on?
+         bne   chkeof
+         lbsr  DoVerify
+chkeof   lda   <srcpath		get source path
          ldb   #SS.EOF
          os9   I$GetStt 	are we at end of file?
          bcc   CopyLoop		branch if not
@@ -666,6 +679,55 @@ L06D2    lda   -$02,x
          beq   BadPName
          bra   ParseOk
 
+DoVerify
+         pshs  u,y        save registers
+         ldx   <writemsb  get 2 msb's of last write
+         ldu   <writelsb  get 2 lsb's of last write
+         lda   <dstpath   get out path number
+         os9   I$Seek
+         lbcs  Exit       exit on error
+         ldu   2,s        get original u back
+         leau  copybuff,u point to buffer start
+         ldd   ,s         get bytes written
+         addd  <writelsb  add on to current 2 lsb positions
+         std   <writelsb  save them
+         ldd   ,s         get bytes written
+         bcc   vfy000     skip if no carry
+         leax  1,x        bump up 2 msb's
+         stx   <writemsb  and save them
+
+vfy000   ldy   #$0100     chars to read for verify
+         std   ,s         save it
+         tsta             did we write more than 255 bytes ?
+         bne   vfy010     yes...only read 256
+         tfr   d,y        else xfer amount we did write
+
+vfy010   ldx   2,s        get u register
+         leax  vfybuff,x  point to start of verify buffer
+         lda   <dstpath   get output path number
+         os9   I$Read     read a block in
+         lbcs  Exit       exit on error
+
+vfy020   lda   ,u+        get char from in buffer
+         cmpa  ,x+        get char from out buffer
+         bne   snderr1    not equal...send write verfiy msg
+         leay  -1,y       decrement read count
+         bne   vfy020     if more..loop back
+         ldd   ,s         get write count back
+         subd  #$0100     subtract verify buffer size
+         bhi   vfy000     if more left...loop back
+         puls  u,y,pc     else restore registers and return
+
+snderr1  leax  errmsg1,pcr address of 'write verify failed' msg
+         lbsr  WrLine     send it
+         comb             set carry
+         ldb   #$01       set error
+         lbra  Exit       exit
+
+errmsg1  fcb   C$BELL
+         fcc   /Error - write verification failed./
+         fcb   C$CR
+         
          emod
 eom      equ   *
          end
