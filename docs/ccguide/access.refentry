@@ -8,7 +8,7 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>access</function></funcdef>
-  <paramdef>char *<parameter>name</parameter></paramdef>
+  <paramdef>char *<parameter>fname</parameter></paramdef>
   <paramdef>int <parameter>perm</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
@@ -17,7 +17,20 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Access returns 0 if the access modes specified in "perm" are
+correct for the user to access "fname". -1 is returned if the
+file cannot be accessed.
+</para>
+<para>
+The value for "perm" may be any legal OS-9 mode as used for
+"open()" or "creat()", it may be zero, which tests whether the
+file exists, or the path to it may be searched.
+</para>
+</refsect1>
+<refsect1><title>Caveats</title>
+<para>
+NOTE that the "perm" value is <emphasis>not</emphasis> compatible with other
+systems.
 </para>
 </refsect1>
 <refsect1><title>Diagnostics</title>

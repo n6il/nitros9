@@ -28,7 +28,18 @@ os9 F$EXIT
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Exit is the normal means of terminating a task. Exit does any
+cleaning up operations required before terminating, such as
+flushing out any file buffers (see Standard i/o), but _exit
+does not.
+</para>
+<para>
+A task finishing normally, that is returning from "main()",
+is equivalent to a call - "exit(0)".
+</para>
+<para>
+The status passed to exit is available to the parent task if it
+is executing a "wait".
 </para>
 </refsect1>
 

@@ -24,7 +24,13 @@ os9 F$CRC
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+This call accumulates a crc into a three byte array at "accum"
+for "count" bytes starting at "start". All three bytes of
+"accum" should be initialized to 0xff before the first call to
+"crc()". However, repeated calls can be subsequently made to
+cover an entire module. If the result is to be used as an OS-9
+module crc, it should have its bytes complemented before
+insertion at the end of the module.
 </para>
 </refsect1>
 </refentry>
