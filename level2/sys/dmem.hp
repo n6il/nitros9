@@ -1,0 +1,4 @@
+@DMEM
+Syntax: DMem [<block> | -<id>] <offset> [<length>]
+Usage : Displays raw memory from a block or offset
+Opts  :
