@@ -56,8 +56,8 @@
 *../MODULES/RBF/hb_255_d4n1.dd
 *../MODULES/RBF/hb_255_hdii.dd
 *
-* CC3Disk - WD1773 floppy support
-../MODULES/RBF/cc3disk.dr
+* WD1773 floppy support
+../MODULES/RBF/rb1773.dr
 * Floppy device descriptors
 * DD - default device - choose one if needed
 *../MODULES/RBF/ddd0_35s.dd

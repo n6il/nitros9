@@ -19,7 +19,7 @@ KERNEL_IDE	= $(MD)/rel_80 $(MD)/boot_idelba $(MD)/kernel
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_1773	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_80d.dd \
+		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_80d.dd \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -60,7 +60,7 @@ BOOTFILE_TC3	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 # This is a custom bootfile made by Boisy for his system
 BOOTFILE_CUST	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/cc3disk.dr \
+		$(MD)/rb1773.dr \
 		$(MD)/d0_80d.dd $(MD)/d1_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -81,7 +81,7 @@ BOOTFILE_CUST	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
                 $(C9)/Products/DriveWire/software/6809l2/x1.dd \
                 $(C9)/Products/DriveWire/software/6809l2/x2.dd \
                 $(C9)/Products/DriveWire/software/6809l2/x3.dd \
-                $(MD)/cc3disk.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+                $(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
                 $(MD)/scf.mn $(MD)/cc3io.dr \
                 $(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
                 $(MD)/windint.io $(MD)/vdgint.io \

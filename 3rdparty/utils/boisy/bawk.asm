@@ -166,12 +166,12 @@ Finish   equ     .
 
 
 HelpMess fcc     /Usage:  BAWK [-d? -i -l -a# -f -F] "format_string" [file] [...]/
-         fcb     $0d
+         fcb     C$CR
 
 Shell    fcc     "Shell"
-         fcb     $0d
+         fcb     C$CR
 
-FileHead fdb     $0a0d
+FileHead fdb     C$LF,C$CR
          fcc     "*** File: "
 FileHLen equ     *-FileHead
 
@@ -212,11 +212,11 @@ cnvdone   leax     -1,x
 SaveFile pshs    x
          leay    FileBuff,u
 SaveF2   lda     ,x+
-         cmpa    #$20
+         cmpa    #C$SPAC
          bne     SaveF3
-         lda     #$0d
+         lda     #C$CR
 SaveF3   sta     ,y+
-         cmpa    #$0d
+         cmpa    #C$CR
          bne     SaveF2
          puls    x
          rts
@@ -235,7 +235,7 @@ AncLine  pshs    b                     save counter
          beq     Return                Nope, process at first column
 AncLoop  ldb     Anchor                else move X to anchor point
 Anc2     lda     ,x+
-         cmpa    #$0d
+         cmpa    #C$CR
          beq     BackUp
          decb
          bne     Anc2
@@ -277,7 +277,7 @@ PrnFile  pshs    x
 
 EatSpace pshs    a
 Eat2     lda     ,x+
-         cmpa    #$20
+         cmpa    #C$SPAC
          beq     Eat2
          leax    -1,x
          puls    a
@@ -295,7 +295,7 @@ Start    decb                          any params?
          clr     Anchor                Anchor to first column
          clr     FEFlag                Clear Fork/Echo flag
          clr     ForkFlag              Clear Fork flag
-         lda     #$20                  put space as extra delimiter
+         lda     #C$SPAC               put space as extra delimiter
          sta     Delim
 
 ****************************************
@@ -303,7 +303,7 @@ Start    decb                          any params?
 
 Parse    bsr     EatSpace
          lda     ,x+
-         cmpa    #$0d
+         cmpa    #C$CR
          beq     Help
          cmpa    #'-
          bne     IsItQ
@@ -346,18 +346,18 @@ IsItQ    cmpa    #'"                   Is it a '"' format string?
 * Save the format string
 SaveFmat leay    Format,u
 SaveFmt2 lda     ,x+                   Point to char after first '"'
-         cmpa    #$0d
+         cmpa    #C$CR
          beq     Help
          cmpa    #'"                   is it the second '"'?
          bne     SaveFmt3              no, save char
-         lda     #$0d
+         lda     #C$CR
          sta     ,y
          bra     ChkFile
 SaveFmt3 sta     ,y+                   else save char
          bra     SaveFmt2
 ChkFile  lbsr    EatSpace              Check after last '"' for a filename
          lda     ,x
-         cmpa    #$0d                  if no filename, execute from StdIn
+         cmpa    #C$CR                 if no filename, execute from StdIn
          beq     MainLine
          bra     OpenFile
 
@@ -397,7 +397,7 @@ Error    os9     F$Exit
 
 FilePrs  lbsr    EatSpace              eat spaces
          lda     ,x                    check char
-         cmpa    #$0d                  if CR,
+         cmpa    #C$CR                 if CR,
          beq     Done
 
 OpenFile lbsr    SaveFile
@@ -436,7 +436,7 @@ ParseFmt lda     ,x+
          cmpa    #'$                   Is it the '$' field character?
          beq     FieldPar              Check Field Parameter
 PFmt2    sta     ,y+
-         cmpa    #$0d
+         cmpa    #C$CR
          bne     ParseFmt
          tst     ForkFlag
          bne     PFmt3
@@ -461,7 +461,7 @@ FieldP2  lbsr    Str2Byte              convert the number
          leax    Line,u                at this point we copy the entire...
          lbsr    AncLine               Anchor the line
 CopyAll  lda     ,x+                   and transfer the rest of the line
-         cmpa    #$0d                  line since we've encountered a $0
+         cmpa    #C$CR                 line since we've encountered a $0
          beq     Field3                and continue parsing
          sta     ,y+
          bra     CopyAll
@@ -491,25 +491,25 @@ Field3   puls    x                     get position in format string
 SetField leax    Line,u
          lbsr    AncLine               Anchor the line
 Skip     lda     ,x+
-         cmpa    #$20
+         cmpa    #C$SPAC
          beq     Skip
          cmpa    Delim
          beq     Skip
-         cmpa    #$0d
+         cmpa    #C$CR
          beq     Leave2
          decb
          beq     Leave
 EatField lda     ,x+
-         cmpa    #$20
+         cmpa    #C$SPAC
          beq     Skip
          cmpa    Delim
          beq     Skip
-         cmpa    #$0d
+         cmpa    #C$CR
          beq     Leave2
          bra     EatField
 Leave    clrb
 Leave2   leax    -1,x
-         rts
+ExExit   rts
          
 
 ****************************************
@@ -517,15 +517,14 @@ Leave2   leax    -1,x
 *
 
 Expand   lda     ,x+
-         cmpa    #$20
+         cmpa    #C$SPAC
          beq     ExExit
          cmpa    Delim
          beq     ExExit
-         cmpa    #$0d
+         cmpa    #C$CR
          beq     ExExit
          sta     ,y+
          bra     Expand
-ExExit   rts
 
 
 ****************************************

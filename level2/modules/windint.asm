@@ -1,5 +1,5 @@
 *******************************************************************
-* WindInt - NitrOS-9 Window Module
+* GrfInt/WindInt - NitrOS-9 Text/Graphics Window Module
 *
 * $Id$
 *
@@ -13,7 +13,7 @@
 * Patches to scrollbar windows to recover arrows and markers.
 * Includes new stdfonts with graphics added to the end.
 
-         nam   WindInt
+         nam   GrfInt/WindInt
          ttl   NitrOS-9 Window Module
 
          ifp1  
@@ -35,7 +35,12 @@ WColor3  equ   3          (white)
          mod   eom,name,tylg,atrv,entry,size
 size     equ   .
 
-name     fcs   /WindInt/
+name     equ   *
+         IFEQ  GrfInt-1
+         fcs   /GrfInt/
+         ELSE
+         fcs   /WindInt/
+         ENDC
          fcb   edition
 
 ****************************
@@ -924,6 +929,8 @@ L052C    puls  y,u,pc     restore & return
 * Overlay removed, check if we activate menu bar on parent window
 L052E    puls  y,u        Restore static mem & path dsc. ptrs
          lbsr  L0436      set lines per page in path descriptor
+        
+         IFNE  GrfInt-1
          IFNE  H6309
          tste		is screen type a regular no box window?
          ELSE
@@ -942,6 +949,9 @@ L052E    puls  y,u        Restore static mem & path dsc. ptrs
          lda   >WGlobal+G.CrDvFl     Are we the current active window?
          beq   L0591      no, no need to update menu bar
          lbra  L13F5      set menu bar to active state
+         ELSE
+         rts
+         ENDC
 
 ****************************
 * Select entry point
@@ -1022,6 +1032,8 @@ CWArea   pshs  y,u        Save device mem ptr & path dsc. ptr on stack
          pshs  d
          ldd   Wt.DfSZX,y Get default X/Y sizes from window table
          pshs  d          Make them the ending X,Y coords
+
+         IFNE  GrfInt-1
          lda   ,x         get graphics table window type
          beq   L05E3      If normal window, skip all adjustments
          deca             Is it a WT.FWin (framed window=1)?
@@ -1042,6 +1054,8 @@ L05D3    inc   2,s        add 1 to X start for left border
 L05DD    inc   3,s        add 1 to Y start for menu bar
          dec   1,s        decrement Y size by 2 for menu & bottom borders
          dec   1,s
+         ENDC
+
 L05E3    ldd   Wt.SZX,y   get current X/Y sizes
          cmpa  ,s         will X size fit?
          bhi   L0606      no return error
@@ -2038,8 +2052,10 @@ GetStt   cmpa  #SS.ScSiz  get screen size?
          lbeq  L0AF4      yes, go process
          cmpa  #SS.DfPal  get default colors?
          beq   L0AC3      yes, go process
+         IFNE  GrfInt-1
          cmpa  #SS.MnSel  menu select?
          lbeq  L1515      yes, go process
+         ENDC
          cmpa  #SS.ScInf  screen info?
          beq   SS.SInf    yes, go process
          lbra  L0A96      All others illegal
@@ -2178,12 +2194,14 @@ SetStt   cmpa  #SS.Open   Open window call (for /W)
          lbeq  L0BD1
          cmpa  #SS.DfPal  Set default palettes
          beq   L0B38
+         IFNE  GrfInt-1
          cmpa  #SS.WnSet
          lbeq  L0D23
          cmpa  #SS.SBar
          lbeq  L1AB9
          cmpa  #SS.UmBar  Update menu bar
          lbeq  L13F5
+         ENDC
          lbra  L0A96
 
 * SS.DfPal entry point
@@ -2408,11 +2426,17 @@ L0CF1    rts              return
 L0C68    tsta             Screen change?
          beq   L0C7F      Yes, go do
          deca             Update mouse packet?
+* TODO: Does update mouse packet go in GrfInt?
+         IFNE  GrfInt-1
          lbeq  L1CC8      Yes, go do
+         ENDC
          deca             Update cursors?
          beq   L0CE7      Yes, go do
+* TODO: Does auto-follow mouse go in GrfInt?
+         IFNE  GrfInt-1
          deca             Update auto-follow mouse?
          lbeq  L1B4D      Yes, go do
+         ENDC
          lbra  L0A96
 
 * Active window has changed, update everything
@@ -2429,9 +2453,11 @@ L0C86    clr   ,-s        clear activate/deactivate flag
          ldu   >WGlobal+G.PrWMPt     get previous device static mem pointer
          beq   L0CB3      nothing there, skip ahead
          pshs  y          preserve new window table pointer
+         IFNE  GrfInt-1
          bsr   L0CF2      any overlay windows or frames?
          bcs   L0CA3      no, skip ahead
          lbsr  L1034      set menu bar to in-active state
+         ENDC
 L0CA3    lda   >WGlobal+g00BE     get new window table flag
          bmi   L0CB1      not used, skip ahead
          ldu   >WGlobal+G.PrWMPt     get previous device static mem pointer
@@ -2445,9 +2471,11 @@ L0CB3    ldb   #$10       Get select callcode
          tst   ,s         did we de-activate last used window?
          beq   L0CE1      no, skip activate
          pshs  y,u        Preserve regs
+         IFNE  GrfInt-1
          bsr   L0CF2      any overlay or framed windows?
          bcs   L0CCA      no, skip ahead
          lbsr  L13E9      set menu bar to active state
+         ENDC
 L0CCA    ldy   >WGlobal+G.CurDev     get current device mem pointer
          sty   >WGlobal+G.PrWMPt     save it as previous
          puls  u,y        Get Y & static mem ptr back for possible overlay
@@ -2475,9 +2503,11 @@ L0CEC    ldb   #$46       get set window code
 L0CF2    lda   #$FF       initialize new window table flag
          sta   >WGlobal+g00BE
 L0CFA    lbsr  L06AE      get window table pointer of this window
+         IFNE  GrfInt-1
          lbsr  L0E34      framed or scroll barred window?
          bcs   L0D06      no, skip ahead
          rts   
+         ENDC
 
 * No framed or scroll barred window, check for overlay window
 L0D06    lda   Wt.BLnk,y  is this a overlay window?
@@ -2492,6 +2522,7 @@ L0D1B    sta   V.WinNum,u   save back link as current window in static mem
 L0D20    coma             set carry & return
          rts   
 
+         IFNE  GrfInt-1
 * SS.WnSet SetStt call processor
 L0D23    lbsr  L1358      setup the graphics table entry
          ldx   PD.RGS,y   get register stack pointer
@@ -2892,6 +2923,7 @@ L0FFC    ldy   >WGlobal+g00BB     Get ptr to work window table
          puls  a,pc
          ENDC
 
+         IFNE  GrfInt-1
 * Draw a 3D frame around window for scroll barred window
 FSWin    ldy   >WGlobal+g00BB     Get ptr to work window table
          lbsr  L12BE      clear screen
@@ -3138,6 +3170,8 @@ ScBar    fcb   WColor3    white line below up arrow
          fdb   -7
          fdb   -1
          fcb   $4a
+
+         ENDC
 
 * Check if window is a graphic window
 L115F    bsr   L116C      copy window table to work table
@@ -5308,6 +5342,9 @@ L1D47    pshs  d
          ENDC
          rts              return
 
+         ENDC
+
+
 ****************************
 * Scale/DWProtSw/TCharSw/BoldSw
 DWProtSw
@@ -5453,6 +5490,7 @@ BoldOff  equ    *
          clrb             No error & return
          rts   
 
+         IFNE  GrfInt-1
 * FIXMENU - redos the graphics on the menu bar affected by menu pulldown
 * Entry: X=Ptr to menu text (NUL terminated)
 *        Y=Window table ptr
@@ -5548,6 +5586,7 @@ normalmn clra
          lbsr  DrawBar
          leas  10,s       Restore stack
          puls  d,x,pc     Restore regs & return
+         ENDC
 
          emod  
 eom      equ   *
