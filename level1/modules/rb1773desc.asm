@@ -21,7 +21,11 @@ atrv     set   ReEnt+rev
 rev      set   $00
 
 DNum     set   0
+         IFNE  D35
+Type     set   TYP.CCF+TYP.3
+         ELSE
 Type     set   TYP.CCF+TYP.5
+         ENDC
 Density  set   DNS.MFM
 Step     set   STP.6ms
 Cyls     set   35

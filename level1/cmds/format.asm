@@ -1694,7 +1694,7 @@ ShowPhysFloppy
          os9   I$Write
          ldb   <dtype
          leax  FiveQ,pcr
-         bitb  #TYP.8
+         bitb  #TYP.3
          beq   n@
 t@       leax  Three5,pcr
 n@       ldy   #80
