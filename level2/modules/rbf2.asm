@@ -315,29 +315,31 @@ Creat169
          IFNE  H6309
          ldw   #DIR.SZ		get size of directory entry (name & LSN of FD)
          ELSE
-         ldd   #$0100+DIR.SZ
+         ldd   #DIR.SZ
          ENDC
          bra   Creat174		clear it out
 
 * Clear out sector buffer
 * Entry: U = Sector buffer pointer
 Creat170 
-         lbsr  GrabSS
          IFNE  H6309
          ldw   #$0100		get size of sector buffer
-Creat174 pshs  u,x		preserve regs
-         leax  <Creat170+3,pcr	point to NULL byte
-Creat17X tfm   x,u+		clear buffer
-         deca
-         bne   Creat17X
          ELSE
          clrb
+         ENDC
+         lbsr  SSBits
 Creat174 pshs  u,x		preserve regs
+         IFNE  H6309
+         leax  <Creat170+3,pcr	point to NULL byte
+CreatL   tfm   x,u+		clear buffer
+         deca
+         bpl   CreatL
+         ELSE
 l1       clr   ,u+
          decb
          bne   l1 
          deca
-         bne   l1
+         bpl   l1
          ENDC
          puls  pc,u,x		restore & return
 
@@ -539,7 +541,8 @@ Clos2A0  puls  y
 Rt100Mem pshs  b,cc		preserve error status
          ldu   PD.BUF,y		get sector buffer pointer
          beq   RtMem2CF		none, skip ahead
-         lbsr  GetSSize		get size of sector buffer
+         lbsr  SSize
+*         ldd   #$0100		get size of sector buffer
          os9   F$SRtMem		return the memory to system
          ldx   PD.Exten,y	get path extension pointer
          beq   RtMem2CF		none, return
@@ -655,11 +658,41 @@ Del332   lda   #SHARE.+WRITE.	get attributes to check
          std   $03,s
          bra   Del39F
 
+
+* Return Sector Size bits
+* Entry:
+*    Y = path desc ptr
+* Exit:
+*    A = sector size (0 = 256, 1 = 512, 2 = 1024, 3 = 2048)
+SSBits   lda   PD.TYP,y		get type byte
+         anda  #TYP.SSM		mask out non-sector size bits
+         lsra			shift bits into place
+         rts
+
+
+* Sector Size mask table
+SSTable  fcb   $01,$02,$04,$08
+
+
+* Return Sector Size
+* Entry:
+*    Y = path desc ptr
+* Exit:
+*    D = sector size (256, 512, 1024, 2048)
+SSize    pshs  x
+         leax  SSTable,pc
+         bsr   SSBits
+         lda   a,x
+         clrb
+         puls  x,pc
+
+
 * RBF30 start
 Del358   ldb   PD.FD,y		get LSN of file descriptor
          ldx   PD.FD+1,y
          pshs  u,x,b		preserve 'em
-         bsr   GetSSize		allocate a temporary sector buffer
+         bsr   SSize
+*         ldd   #$0100		allocate a temporary sector buffer
          os9   F$SRqMem
          bcc   Del36C		got it, skip ahead
          IFNE  H6309
@@ -670,63 +703,23 @@ Del358   ldb   PD.FD,y		get LSN of file descriptor
          ENDC
          bra   Del37A		return with eror
 
-* Convert sector size TYP bits into sector size in D
-*
-* Entry: Y = path descriptor ptr
-* Exit:  D = sector size (256, 512, 1024, 2048)
-*        
-GetSSize lda   PD.TYP,y
-         anda  #TYP.SSM		mask out sector size bits
-         clrb			B is always 0
-         lsra			shift into position
-         beq   Bit256
-         deca
-         beq   Bit512
-         deca
-         beq   Bit1024
-         lda   #8
-         rts
-Bit1024  lda  #4
-         rts
-Bit512   lda  #2
-         rts
-Bit256   inca
-         rts
-
-
-* Grab Sector Size bits from TYP and put in A
-*
-* Entry: Y = path descriptor ptr
-* Exit:  A = sector size bits (1=256, 2=512, 3=1024, 4=2048)
-GrabSS   lda   PD.TYP,y
-         anda  #TYP.SSM		mask out sector size bits
-         lsra			shift into position
-         inca
-         rts
-         
 Del36C   stu   $03,s		save pointer to sector buffer
          ldx   PD.BUF,y
          IFNE  H6309
          ldw   #$0100
-         bsr   GrabSS
-DelMore  tfm   x+,u+
+DelCpy   tfm   x+,u+		copy the sector
          deca
-         bne   DelMore
+         bne   DelCpy
          ELSE
-         bsr   GrabSS
-         pshs  a
          clrb
-CopyMore bsr   DelLoop
-         dec   ,s
-         bne   CopyMore
-         puls  a
-         bra   DelOut
+         pshs  a
 DelLoop  lda   ,x+
          sta   ,u+
          decb
          bne   DelLoop
-         rts
-DelOut
+         dec   ,s
+         bne   DelLoop
+         puls  a
          ENDC
          ldd   $03,s
 Del37A   std   $03,s		save buffer pointer to U on stack
@@ -809,7 +802,8 @@ Del3D4   ldu   $03,s		get temporary sector buffer pointer
 Del3EF   pshs  b,cc		preserve rror status & code if any (WP bug fix - raises stack offsets+2)
          ldu   $05,s		get temporary sector buffer pointer (this was a 3)
          beq   Del3F5		didn't allocate one, skip ahead (different, new label! no mem to return)
-         lbsr  GetSSize		get size of sector buffer
+         lbsr  SSize
+*         ldd   #$0100		get size of it
          os9   F$SRtMem		return the memory back to the system
 Del3F5   puls  b,cc		restore error status & code (WP bug fix)
 Del3F9   leas  5,s		purge stack
@@ -1505,10 +1499,12 @@ Sst7AB   rts
 *
 * Entry: U=caller's stack reg. ptr
 *        Y=Path dsc. ptr
-FindFile lbsr  GetSSize		get size of sector
+FindFile 
+         lbsr  SSize
+*         ldd   #$0100		get size of sector
 * Note, following line is stb PD.SMF,y in v30!
          stb   PD.FST,y		clear state flags??
-         os9   F$SRqMem		request a sector buffer
+         os9   F$SRqMem		request a 256 byte sector buffer
          bcs   Sst7AB		couldn't get memory, return with error
          stu   PD.BUF,y		save ptr to sector buffer
          leau  ,y		point U to path descriptor
@@ -1535,7 +1531,7 @@ FindFile lbsr  GetSSize		get size of sector
          std   PD.DSK,y		init disk ID
          lbsr  L097F		get a byte from caller's X
          sta   ,s		save it
-         cmpa  #PDELIm		is it a device?
+         cmpa  #PDELIM		is it a device?
          bne   Sst7FB		no, skip ahead
          lbsr  GtDvcNam		go parse it
          sta   ,s		save last character
@@ -1712,9 +1708,11 @@ L0928    stx   $06,s
 L0940    puls  pc,b,a
 
 * Move to next directory entry
+* BGP - Sector Size issue needs to be resolved here
 L0942    ldb   PD.CP+3,y	get current byte pointer
          addb  #DIR.SZ		add in diretory entry size
          stb   PD.CP+3,y	save it back
+
          bcc   L0957		didn't wrap, skip ahead (need new sector)
          lbsr  L1237		check for sector flush
          inc   PD.CP+2,y
@@ -2258,6 +2256,13 @@ L0D07    pshs  u,x
          beq   L0D96		exit if zero
          ldd   PD.BUF,y		grab the buffer pointer
          inca  			point to the end of it
+         
+* Following 3 lines support larger sector sizes that
+* allow the segment list to extend beyond 48 entries.
+*         pshs  a
+*         lbsr  SSBits
+*         adda  ,s+
+
          pshs  d		save on-stack
          bra   L0D36		skip ahead
 
