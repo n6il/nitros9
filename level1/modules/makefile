@@ -32,8 +32,9 @@ HELP		= co32.hp co80.hp \
 KERNEL_1773	= oscode os9 os9p2 init boot_1773
 KERNEL_D64	= oscode_d64 os9 os9p2 init boot_d64
 KERNEL_ROM	= oscode os9 os9p2 init $(TPB)/boot_rom_l1
+KERNEL_IDE	= oscode os9 os9p2 init $(TPB)/boot_ide_l1
 
-BOOT_TRACKS	= kernel_1773 kernel_rom
+BOOT_TRACKS	= kernel_1773 kernel_rom kernel_ide
 ALLOBJS		= $(BOOTERS) $(KERNELS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
 		$(DRIVERS) $(IOSUBS) $(DESCS) $(SYSGOS) $(BOOT_TRACKS)
 
@@ -48,6 +49,11 @@ kernel_rom: $(KERNEL_ROM) $(DEPENDS)
 # Kernel track for Tandy/RS controller (WD1773)
 kernel_1773: $(KERNEL_1773) $(DEPENDS)
 	$(MERGE) $(KERNEL_1773)>$@
+	$(PADROM) \$$1200 $@ -c=\$$E5
+
+# Kernel track for Tandy/RS controller (WD1773)
+kernel_ide: $(KERNEL_IDE) $(DEPENDS)
+	$(MERGE) $(KERNEL_IDE)>$@
 	$(PADROM) \$$1200 $@ -c=\$$E5
 
 kernel_d64: $(KERNEL_D64) $(DEPENDS)
