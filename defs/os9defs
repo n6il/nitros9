@@ -102,7 +102,7 @@ F$CRC    rmb   1          Generate CRC
 
          IFGT  Level-1
 
-* OS-9 Level 2 system calls
+* NitrOS-9 Level 2 system calls
 F$GPrDsc rmb   1          Get Process Descriptor copy
 F$GBlkMp rmb   1          Get System Block Map copy
 F$GModDr rmb   1          Get Module Directory copy
@@ -485,7 +485,7 @@ D.BtSz   rmb   2          Size of Boot
          IFNE  H6309
 D.MDREG  rmb   1          6309 MD (mode) shadow register
          ELSE
-         rmb   1          Currently unused in OS-9 Level Two
+         rmb   1          Currently unused in NitrOS-9/6809
          ENDC
 
 D.CRC    rmb   1          CRC checking mode flag
@@ -578,7 +578,7 @@ D.XIRQ   rmb   2
 D.XSWI   rmb   2
 D.XNMI   rmb   2
 D.ErrRst rmb   2
-D.SysVec rmb   2          OS-9 F$xxx system call vector for NitrOS-9 Level 3
+D.SysVec rmb   2          F$xxx system call vector for NitrOS-9 Level 3
 D.SWI3   rmb   2
 D.SWI2   rmb   2
 D.FIRQ   rmb   2
@@ -674,7 +674,7 @@ Feature2 rmb   1          feature byte 2
          rmb   8          reserved for future use
 
          IFGT  Level-1
-* -- CC3IO area -- (OS-9 Level Two only) *
+* -- CC3IO area -- (NitrOS-9 Level 2 and above) *
 MonType  rmb   1          Monitor type (0=CMP,1=RGB,2=MONO)
 MouseInf rmb   1          Mouse resolution/Mouse port
 KeyRptS  rmb   1          Key repeat start constant
@@ -689,7 +689,7 @@ CRCOff   equ   %00000000  CRC checking off
 **************************
 * Module Field Definitions
 *
-* ID Field - First two bytes of an OS-9 module
+* ID Field - First two bytes of a NitrOS-9 module
 *
 M$ID1    equ   $87        Module ID code byte one
 M$ID2    equ   $CD        Module ID code byte two
@@ -870,7 +870,7 @@ Dead     equ   %00000001
 
          ENDC
 
-         ttl   OS-9 I/O Symbolic Definitions
+         ttl   NitrOS-9 I/O Symbolic Definitions
          pag
 *************************
 * Path Descriptor Offsets
@@ -963,7 +963,7 @@ Q$SERV   rmb   2          Absolute Service routine Address
 Q$STAT   rmb   2          Static Storage Address
 Q$PRTY   rmb   1          Priority (Low Numbers=Top Priority)
          IFGT  Level-1
-Q$MAP    rmb   2          Added by NitrOS-9
+Q$MAP    rmb   2          NitrOS-9 Level 2 and above
          ENDC
 POLSIZ   equ   .
 
@@ -1127,7 +1127,7 @@ E$Alias  rmb   1
 
 
 *
-* Standard OS-9 Error Codes
+* Standard NitrOS-9 Error Codes
 *
          org   200
 E$PthFul rmb   1          Path Table full
@@ -1191,8 +1191,8 @@ E$DeadLk rmb   1          I/O Deadlock error
 
          IFEQ  Level-1
 
-*****************************
-* Boot defs for CoCo 1/2 OS-9
+********************************
+* Boot defs for NitrOS-9 Level 1
 *
 * These defs are not strictly for 'Boot', but are for booting the
 * system.
@@ -1202,8 +1202,8 @@ Bt.Size  equ   $1080      Maximum size of bootfile
 
          ELSE
 
-*****************************
-* Boot defs for CoCo 3 OS-9
+******************************************
+* Boot defs for NitrOS-9 Level 2 and above
 *
 * These defs are not strictly for 'Boot', but are for booting the
 * system.
@@ -1222,7 +1222,7 @@ Bt.Track equ   34         Boot track
 ***************************
 * Level 3 Defs
 *
-* These definitions apply to OS-9 Level 3 as created by Alan DeKok
+* These definitions apply to NitrOS-9 Level 3
 *
 L3.Start equ   $2000      Start off at slot 1
 L3.Size  equ   $40        Go for 64 pages: 2 slots total
