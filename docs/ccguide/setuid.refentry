@@ -14,9 +14,22 @@
 
 </refsynopsisdiv>
 
+<refsect1><title>Assembler Equivalent</title>
+<para>
+os9 F$SUSER
+</para>
+</refsect1>
+
 <refsect1><title>Description</title>
 <para>
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="getuid">getuid()</link>
+</para>
+</refsect1>
+
 </refentry>

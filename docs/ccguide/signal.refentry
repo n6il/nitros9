@@ -22,4 +22,13 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="intercept">intercept()</link>,
+OS-9 shell command "kill",
+<link linkend="kill">kill()</link>
+</para>
+</refsect1>
+
 </refentry>
