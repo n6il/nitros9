@@ -1,20 +1,19 @@
 include ../../../../rules.mak
 
-H6309		= $(AFLAGS) -aH6309=1 -e
+vpath %.asm $(6809L2)/cmds:../cmds_6809
+
+AFLAGS		+= -e
 DEPENDS		= ./makefile
 
-CMDS		= gshell_6309 gshell_6809 \
-		cocopr control demo fstat gcal gcalc gclock gport gprint
+CMDS		= grfdrv \
+		gshell cocopr control demo fstat gcal gcalc gclock gport \
+		gprint
 
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
-	$(CD) icons; make
 
-gshell_6309: gshell.asm
-	$(AS) $(ASOUT)$@ $< $(H6309)
-
-gshell_6809: gshell.asm
+gshell: gshell.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS)
 
 clean:
