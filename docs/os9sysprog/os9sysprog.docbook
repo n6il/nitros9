@@ -4807,7 +4807,7 @@ be stored) are not included in the CRC generation.</para>
 <row>
 	<entry>INPUT:</entry>
 	<entry><literallayout>(X) = Base address of an allocation bit map.
-(D) = Bit number of firs bit to clear.
+(D) = Bit number of first bit to clear.
 (Y) = Bit count (number of bits to clear).</literallayout></entry>
 </row>
 <row>
