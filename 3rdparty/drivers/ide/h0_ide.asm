@@ -23,7 +23,7 @@ rev      set   $01
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
          fcb   DIR.!ISIZ.!SHARE.!PEXEC.!PWRIT.!PREAD.!EXEC.!UPDAT. mode byte
-         fcb   $FF        extended controller address
+         fcb   HW.Page    extended controller address
          fdb   $FF70      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.RBF     device type:0=scf,1=rbf,2=pipe,3=scf
