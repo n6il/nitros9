@@ -3,17 +3,47 @@
 *
 * $Id$
 *
+*
+* RTC Specific Notes:
+*
+* Dallas Semiconductor DS1216 SmartWatch
+*
+* Wakeup sequence $C5 3A A3 5C C5 3A A3 5C
+*
+* Time byte sequence in Binary Coded Decimal
+*
+* byte	bit 7     6     5     4     3     2     1      0
+* 0        |       0.1 sec MSB       |        0.1 sec LSB     |
+* 1        |  0  |   10 sec          |        seconds         |
+* 2        |  0  |   10 min          |        minutes         |	
+* 3        |12/24|  0   | AM/PM | HR |        Hour            |
+*                       |  10 HR     |        Hour            |
+*        0=12, 1=24       0=AM, 1=PM
+* 4        | 0   |  0   |  OSC |RESET|  0  |  Weekday         |
+* 5        | 0   |  0   |  10  Date  |        Date            |
+* 6        | 0   |  0   |   0  |10 Month|     Month           |
+* 7        |        10 Year          |        Year            |
+*
+* OSC = 1;  turns off clock to save battery. RESET not used in Coco circuit.
+*
+* When inserted in external ROM socket, the clock is addressed at:
+* $C000     bit = 0
+* $C001     bit = 1
+* $C004     read byte to wakeup then send wakeup sequence to bit toggles.
+*           Then either read or send time.
+*
+*
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
 *   1      2003/08/18  Boisy G. Pitre
 * Stripped from clock.asm in order to modularize clocks.
 *
-*          2004/7/13   Robert Gault
+*          2004/07/13  Robert Gault
 * Added Vavasour/Collyer emulator & MESS (Disto) versions and relocated
 * 'GetTime equ'   statement so it is not within a chip heading.
 *
-*          2004/7/28   Robert Gault
+*          2004/07/28  Robert Gault
 * Complete rewrite of SmartWatch segment which would never have worked.
 * See previous versions for old code if desired. Routine now will search
 * through all MPI slots to find clock and accept either AM/PM or military
@@ -22,12 +52,15 @@
 * Initialization routine contains code that bypasses OS-9 system calls to
 * acquire needed low RAM that can't become ROM. This type of code is not
 * recommended in most cases but nothing else was usable.
-*          2004/7/31   Robert Gault
+*          2004/07/31  Robert Gault
 * Added a settime routine and changed "no clock found" routine. If the
 * clock is not found, the D.Time entries are cleared but no message is sent.
 * Date -t will never get passed one minute.
-*          2004/7/31   Rodney Hamilton
+*          2004/07/31  Rodney Hamilton
 * Improved RTCJVEmu code, conditionalized RTC type comments.
+*          2004/08/2   Robert Gault
+* Alphabetized all clock listings so things can be found much more easily.
+* Placed list of clock types at beginning of source for record keeping.
 
          nam   Clock2    
          ttl   Real-Time Clock Subroutines
@@ -36,31 +69,20 @@
          use   defsfile  
          endc            
 
-*
+*---------------------------------------------------------------------------
 * Setup for specific RTC chip
 *
-         IFNE  RTCJVEmu
-RTC.Base equ   $FFC0
-         ENDC
-
-         IFNE  RTCMESSEmu
-RTC.Base equ   $FF50
-         ENDC
-
-         IFNE  RTCDriveWire
-RTC.Base equ   $0000     
-         ENDC            
-
-         IFNE  RTCElim   
-RTC.Sped equ   $20        32.768 KHz, rate=0
-RTC.Strt equ   $06        binary, 24 Hour, DST disabled
-RTC.Stop equ   $86        bit 7 set stops clock to allow setting time
-RTC.Base equ   $FF72      I don't know base for this chip.
-         ENDC            
-
-         IFNE  RTCDsto2+RTCDsto4
-RTC.Base equ   $FF50      Base address of clock
-         ENDC            
+* CHIP TYPES INCLUDED:
+*
+* RTCBB+RTCCloud9
+* RTCDriveWire
+* RTCDsto2+RTCDsto4
+* RTCElim
+* RTCHarrs
+* RTCJVEmu
+* RTCMESSEmu
+* RTCSmart
+* RTCSoft
 
          IFNE  RTCBB+RTCCloud9
          IFNE  RTCBB     
@@ -73,21 +95,44 @@ RTC.One  equ   -3         Send one bit by writing this offset
 RTC.Read equ   0          Read data from this offset
          ENDC            
 
+         IFNE  RTCDriveWire
+RTC.Base equ   $0000     
+         ENDC            
+
+         IFNE  RTCDsto2+RTCDsto4
+RTC.Base equ   $FF50      Base address of clock
+         ENDC            
+
+         IFNE  RTCElim   
+RTC.Sped equ   $20        32.768 KHz, rate=0
+RTC.Strt equ   $06        binary, 24 Hour, DST disabled
+RTC.Stop equ   $86        bit 7 set stops clock to allow setting time
+RTC.Base equ   $FF72      I don't know base for this chip.
+         ENDC            
+
+         IFNE  RTCHarrs  
+RTC.Base equ   $FF60      Base address for clock
+         ENDC            
+
+         IFNE  RTCJVEmu
+RTC.Base equ   $FFC0
+         ENDC
+
+         IFNE  RTCMESSEmu
+RTC.Base equ   $FF50
+         ENDC
+
          IFNE  RTCSmart  
 RTC.Base equ   $C000      clock mapped to $C000-$DFFF; $FFA6 MMU slot
 RTC.Zero equ   0          Send zero bit
 RTC.One  equ   1          Send ones bit
 RTC.Read equ   4
-*D.SWPage equ   $1F        on system DP
+*D.SWPage                 on system DP; Refer to os9defs.
 D.RTCSlt equ   0          on SmartWatch ?data? page
 D.RTCFlg equ   1          on SW page
 D.RTCMod equ   2
 D.Temp   equ   3          on SW page, holds "clock" data
 D.Start  equ   4          on SW page, code starts here
-         ENDC            
-
-         IFNE  RTCHarrs  
-RTC.Base equ   $FF60      Base address for clock
          ENDC            
 
          IFNE  RTCSoft   
@@ -119,7 +164,7 @@ JmpTable
          nop             
          lbra  SetTime   
 
-*
+*--------------------------------------------------------------------------
 * GetTime Subroutine
 *
 * This subroutine is called by the main clock module.
@@ -127,125 +172,129 @@ JmpTable
 
 GetTime  equ   *
 
-         IFNE  RTCJVEmu
+         IFNE  RTCBB+RTCCloud9
 *
-* Vavasour / Collyer Emulator (ignores MPI slot)
+* Update time from B&B RTC
 *
-         ldx   #RTC.Base
-         ldd   ,x	get year (CCYY)
-         suba  #20
-         bmi   yr1	19xx, OK as is
-yr0      addb  #100	20xx adjustment
-         deca		also check for
-         bpl   yr0	21xx (optional)
-yr1      stb   <D.Year	set year (~YY)
-         ldd   2,x	get date
-         std   <D.Month	set date (MMDD)
-         IFNE  Level-1
-         ldd   4,x	get time (wwhh)
-         sta   <D.Daywk	set day of week
-         ELSE
-         ldb   5,x	get hour (hh)
-         ENDC
-         stb   <D.Hour	set hour (hh)
-         ldd   6,x	get time (mmss)
-         std   <D.Min	set time (mmss)
-*        rts		fall thru to Setime/Init rts
-         ENDC
+         pshs  u,y,cc    
+         leay  ReadBCD,pcr Read bytes of clock
 
-         IFNE  RTCMESSEmu
-*
-* MESS time update in Disto mode (ignores MPI)
-*   Assumes that PC clock is in AM/PM mode!!!
-*
-         ldx   #RTC.Base
-         ldy   #D.Time
-         ldb   #12           counter for data
-         stb   1,x
-         lda   ,x
-         anda  #7
-         IFNE  Level-1
-         sta   <D.Daywk
-         ENDC
-         decb
-         bsr   getval
-         lda   -1,y
-         cmpa  #70          if >xx70 then its 19xx
-         bhi   not20
-         adda  #100
-         sta   -1,y
-not20    bsr   getval       month
-         bsr   getval       day
-         lda   #7           AM/PM mask
-         stb   1,x
-         anda  ,x
-         bitb  #4
-         pshs  cc
-         anda  #3
-         bsr   getval1
-         puls  cc
-         beq   AM
-         lda   #12         convert to 24hr time as it is PM
-         adda  -1,y
-         sta   -1,y
-AM       bsr   getval      minute
-* and now fall through into get second
-getval   lda   #$0f
-         stb   1,x
-         anda  ,x
-getval1  decb
-         pshs  b
-         ldb   #10
-         mul
-         stb   ,y
-         puls  b
-         stb   1,x
-         decb
-         lda   ,x
-         anda  #$0f
-         adda  ,y
-         sta   ,y+
-*        rts		fall thru to Setime/Init rts
-         ENDC
+TfrTime  orcc  #IntMasks  turn off interrupts
+         ldu   M$Mem,pcr  Get base address
 
-         IFNE  RTCElim   
-*
-* Eliminator time update  (lacks MPI slot select ability)
-*
-         ldx   M$Mem,pcr  get RTC base address from fake memory requirement
-         ldb   #$0A       UIP status register address
-         stb   ,x         generate address strobe
-         lda   1,x        get UIP status
-         bpl   NoUIP      Update In Progress, go shift next RTC read
-         lda   #TkPerSec/2 set up next RTC read attempt in 1/2 second
-         sta   <D.Tick    save tick
-         bra   UpdTExit   and return
+         IFNE  MPIFlag   
+         ldb   >MPI.Slct  Select slot
+         pshs  b         
+         andb  #$F0      
+         orb   SlotSlct,pcr
+         stb   >MPI.Slct 
+         ENDC            
 
-NoUIP    decb             year register address
-         stb   ,x         generate address strobe
-         lda   1,x        get year
+         lbsr  SendMsg    Initialize clock
+         ldx   #D.Sec    
+         ldb   #8         Tfr 8 bytes
+
+tfrloop  jsr   ,y         Tfr 1 byte
+
+         bitb  #$03      
+         beq   skipstuf   Skip over day-of-week, etc.
+         leax  -1,x      
+skipstuf decb            
+         bne   tfrloop   
+
+         IFNE  MPIFlag   
+         puls  b         
+         stb   >MPI.Slct  restore MPAK slot
+         ENDC            
+
+         puls  u,y,cc,pc 
+
+ClkMsg   fcb   $C5,$3A,$A3,$5C,$C5,$3A,$A3,$5C
+* Enable clock with message $C53AA35CC53AA35C
+SendMsg  lda   RTC.Read,u Send Initialization message to clock
+         leax  <ClkMsg,pcr
+         ldb   #8        
+msgloop  lda   ,x+       
+         bsr   SendByte  
+         decb            
+         bne   msgloop   
+         rts             
+
+SendBCD  pshs  b          Send byte to clock, first converting to BCD
+         bitb  #$03      
+         bne   BCDskip    Send zero for day-of-week, etc.
+         lda   #0        
+         bra   SndBCDGo  
+BCDskip  lda   ,x        
+SndBCDGo tfr   a,b       
+         bra   binenter  
+binloop  adda  #6        
+binenter subb  #10       
+         bhs   binloop   
+         puls  b         
+SendByte coma             Send one byte to clock
+         rora            
+         bcc   sendone   
+sendzero tst   RTC.Zero,u
+         lsra            
+         bcc   sendone   
+         bne   sendzero  
+         rts             
+sendone  tst   RTC.One,u 
+         lsra            
+         bcc   sendone   
+         bne   sendzero  
+         rts             
+
+ReadBCD  pshs  b         
+         ldb   #$80       High bit will rotate out after we read 8 bits
+readbit  lda   RTC.Read,u Read a bit
+         lsra            
+         rorb             Shift it into B
+         bcc   readbit    Stop when marker bit appears
+         tfr   b,a       
+         bra   BCDEnter   Convert BCD number to Binary
+BCDLoop  subb  #6         by subtracting 6 for each $10
+BCDEnter suba  #$10      
+         bhs   BCDLoop   
+         stb   ,x        
+         puls  b,pc      
+         ENDC            
+
+         IFNE  RTCDriveWire
+*
+* Update time from DriveWire
+*
+         lbra  DoDW      
+
+         use   bbwrite.asm
+
+DoDW     pshs  y,x,cc    
+         lda   #'#        Time packet
+         orcc  #IntMasks  Disable interrupts
+         lbsr  SerWrite  
+         bsr   SerRead    Read year byte
+         bcs   UpdLeave  
          sta   <D.Year   
-         decb             month register address
-         stb   ,x        
-         lda   1,x       
+         bsr   SerRead    Read month byte
+         bcs   UpdLeave  
          sta   <D.Month  
-         decb             day of month register address
-         stb   ,x        
-         lda   1,x       
+         bsr   SerRead    Read day byte
+         bcs   UpdLeave  
          sta   <D.Day    
-         ldb   #4         hour register address
-         stb   ,x        
-         lda   1,x       
+         bsr   SerRead    Read hour byte
+         bcs   UpdLeave  
          sta   <D.Hour   
-         ldb   #2         minute register address
-         stb   ,x        
-         lda   1,x       
+         bsr   SerRead    Read minute byte
+         bcs   UpdLeave  
          sta   <D.Min    
-         clrb             second register address
-         stb   ,x        
-         lda   1,x       
-SaveSec  sta   <D.Sec    
-UpdTExit rts             
+         bsr   SerRead    Read second byte
+         bcs   UpdLeave  
+         sta   <D.Sec    
+         bsr   SerRead    Read day of week (0-6) byte
+UpdLeave puls  cc,x,y,pc 
+
+         use   bbread.asm
          ENDC            
 
          IFNE  RTCDsto2  
@@ -363,367 +412,47 @@ GetVal1  stb   1,x
          adda  ,y        
          sta   ,y+       
          rts             
-
          ENDC            
 
-         IFNE  RTCDriveWire
+         IFNE  RTCElim   
 *
-* Update time from DriveWire
+* Eliminator time update  (lacks MPI slot select ability)
 *
-         lbra  DoDW      
+         ldx   M$Mem,pcr  get RTC base address from fake memory requirement
+         ldb   #$0A       UIP status register address
+         stb   ,x         generate address strobe
+         lda   1,x        get UIP status
+         bpl   NoUIP      Update In Progress, go shift next RTC read
+         lda   #TkPerSec/2 set up next RTC read attempt in 1/2 second
+         sta   <D.Tick    save tick
+         bra   UpdTExit   and return
 
-         use   bbwrite.asm
-
-DoDW     pshs  y,x,cc    
-         lda   #'#        Time packet
-         orcc  #IntMasks  Disable interrupts
-         lbsr  SerWrite  
-         bsr   SerRead    Read year byte
-         bcs   UpdLeave  
+NoUIP    decb             year register address
+         stb   ,x         generate address strobe
+         lda   1,x        get year
          sta   <D.Year   
-         bsr   SerRead    Read month byte
-         bcs   UpdLeave  
-         sta   <D.Month  
-         bsr   SerRead    Read day byte
-         bcs   UpdLeave  
-         sta   <D.Day    
-         bsr   SerRead    Read hour byte
-         bcs   UpdLeave  
-         sta   <D.Hour   
-         bsr   SerRead    Read minute byte
-         bcs   UpdLeave  
-         sta   <D.Min    
-         bsr   SerRead    Read second byte
-         bcs   UpdLeave  
-         sta   <D.Sec    
-         bsr   SerRead    Read day of week (0-6) byte
-UpdLeave puls  cc,x,y,pc 
-
-         use   bbread.asm
-
-         ENDC            
-
-         IFNE  RTCBB+RTCCloud9
-*
-* Update time from B&B RTC
-*
-         pshs  u,y,cc    
-         leay  ReadBCD,pcr Read bytes of clock
-
-TfrTime  orcc  #IntMasks  turn off interrupts
-         ldu   M$Mem,pcr  Get base address
-
-         IFNE  MPIFlag   
-         ldb   >MPI.Slct  Select slot
-         pshs  b         
-         andb  #$F0      
-         orb   SlotSlct,pcr
-         stb   >MPI.Slct 
-         ENDC            
-
-         lbsr  SendMsg    Initialize clock
-         ldx   #D.Sec    
-         ldb   #8         Tfr 8 bytes
-
-tfrloop  jsr   ,y         Tfr 1 byte
-
-         bitb  #$03      
-         beq   skipstuf   Skip over day-of-week, etc.
-         leax  -1,x      
-skipstuf decb            
-         bne   tfrloop   
-
-         IFNE  MPIFlag   
-         puls  b         
-         stb   >MPI.Slct  restore MPAK slot
-         ENDC            
-
-         puls  u,y,cc,pc 
-
-ClkMsg   fcb   $C5,$3A,$A3,$5C,$C5,$3A,$A3,$5C
-* Enable clock with message $C53AA35CC53AA35C
-SendMsg  lda   RTC.Read,u Send Initialization message to clock
-         leax  <ClkMsg,pcr
-         ldb   #8        
-msgloop  lda   ,x+       
-         bsr   SendByte  
-         decb            
-         bne   msgloop   
-         rts             
-
-SendBCD  pshs  b          Send byte to clock, first converting to BCD
-         bitb  #$03      
-         bne   BCDskip    Send zero for day-of-week, etc.
-         lda   #0        
-         bra   SndBCDGo  
-BCDskip  lda   ,x        
-SndBCDGo tfr   a,b       
-         bra   binenter  
-binloop  adda  #6        
-binenter subb  #10       
-         bhs   binloop   
-         puls  b         
-SendByte coma             Send one byte to clock
-         rora            
-         bcc   sendone   
-sendzero tst   RTC.Zero,u
-         lsra            
-         bcc   sendone   
-         bne   sendzero  
-         rts             
-sendone  tst   RTC.One,u 
-         lsra            
-         bcc   sendone   
-         bne   sendzero  
-         rts             
-
-ReadBCD  pshs  b         
-         ldb   #$80       High bit will rotate out after we read 8 bits
-readbit  lda   RTC.Read,u Read a bit
-         lsra            
-         rorb             Shift it into B
-         bcc   readbit    Stop when marker bit appears
-         tfr   b,a       
-         bra   BCDEnter   Convert BCD number to Binary
-BCDLoop  subb  #6         by subtracting 6 for each $10
-BCDEnter suba  #$10      
-         bhs   BCDLoop   
+         decb             month register address
          stb   ,x        
-         puls  b,pc      
-
+         lda   1,x       
+         sta   <D.Month  
+         decb             day of month register address
+         stb   ,x        
+         lda   1,x       
+         sta   <D.Day    
+         ldb   #4         hour register address
+         stb   ,x        
+         lda   1,x       
+         sta   <D.Hour   
+         ldb   #2         minute register address
+         stb   ,x        
+         lda   1,x       
+         sta   <D.Min    
+         clrb             second register address
+         stb   ,x        
+         lda   1,x       
+SaveSec  sta   <D.Sec    
+UpdTExit rts             
          ENDC            
-
-SetTime  equ   *
-         IFNE  RTCSmart
-*
-* Update time from Smartwatch RTC
-*
-* This set time routine forces military time. It can't turn off clock but can
-* be used as a timer if time set to 0:0:0  hr:min:sec
-         pshs  cc,d,x,y,u
-         orcc  #$50
-         lda   D.SWPage
-         clrb
-         tfr   d,u         point to working space
-         lda   $FF7F
-         pshs  a
-         lda   D.RTCSlt,u  info for MPI slot
-         sta   $FF7F
-         lda   #-1
-         sta   D.RTCMod,u  indicate set time rather than read
-         IFGT  Level-1
-         ldx   #D.Slice
-         ELSE
-         ldx   #D.TSec
-         ENDC
-         tfr   u,y                          get location of safe region
-         leay  >D.Start+alrtend-reloc,y     point to end of wakeup code
-         lda   ,-x                          get D.Time data and store it
-         ldb   #4                           convert tenths sec, sec, min, hours
-         lbsr  binbcd                       to binary coded decimal
-         IFGT  Level-1
-         lda   D.Daywk
-         ELSE
-         clra
-         ENDC
-         sta  ,y+                           set day of week if present
-         lda  ,x
-         ldb  #3                            convert day of month, month, year
-         bsr  binbcd                        to BCD
-         jsr   >D.Start,u                   send data to clock
-         lbra  exit
-         
-mem_mes  fcc   /There is no system memory for/
-         fcb   $0a
-         fcc   /the SmartWatch. Please reduce/
-         fcb   $0a
-         fcc   /os9boot size or use soft clock./
-         fcb   $0d
-
-Read     pshs  cc,d,x,y,u
-         orcc  #$50
-         lda   D.SWPage
-         clrb
-         tfr   d,u         point to working space
-         lda   $FF7F
-         pshs  a
-         lda   D.RTCSlt,u  info for MPI slot
-         sta   $FF7F
-         clr   D.RTCMod,u  set for read time
-         jsr   D.Start,u   jsr to it
-         lbra  exit
-
-binbcd   pshs b
-bcd3     clrb
-bcd1     cmpa #10
-         bcs  bcd2
-         addd #$f610      decrease bin regA by 10 add bcd $10 to regB
-         bra  bcd1
-bcd2     pshs a
-         addb ,s+         add in remainder; BCD = binary when less than 10
-         stb  ,y+         place in message to clock
-         lda  ,-x         get next byte of D.Time
-         dec  ,s          decrease counter
-         bne  bcd3
-         puls b,pc
-         
-* This becomes D.Start
-reloc    equ   *
-         IFGT  Level-1
-         lda   D.HINIT
-         anda  #$CC
-         sta   $FF90
-         ENDC
-         ldb   $FFA6       choose to use normal location
-         pshs  b
-         ldb   #$3E
-         stb   $FFA6       reset MMU for clock
-         sta   $FFDE
-         ldd   #RTC.Base
-         tfr   a,dp        DP now points to clock
-         tst   D.RTCMod,u  are we reading the clock or setting it?
-         beq   findclk     go if reading
-         lbsr  wakeup      we are setting a found clock
-         lbra  found
-findclk  lbsr  wakeup      wakeup the clock
-*         IFGT  Level-1
-         ldx   #D.Sec      one incoming byte dropped
-*         ELSE
-*         ldx   #$58        Level1 D.Sec
-*         ENDC
-         lda   #8          bytes to get
-         pshs  a
-L0050    ldb   #8
-L0052    lsr   <RTC.Read   get a bit
-         rora
-         decb  
-         bne   L0052
-         tst   D.RTCFlg,u
-         bne   maybe
-         cmpa  D.Temp,u
-         beq   maybe       clock might look like ROM
-         inc   D.RTCFlg,u  found the clock
-maybe    sta   ,x          transfer it to time
-         lda   ,s          check loop counter
-         cmpa  #8
-         beq   L006F       skip if 0.1 sec
-         cmpa  #4
-         bne   L006B       skip if not day of week
-         IFGT  Level-1
-         lda   ,x          move to correct location
-         anda  #7
-         sta   D.Daywk-D.Day,x
-         ENDC
-         bra   L006F
-L006B    cmpa  #5          hour byte
-         bne   wd
-         lda   ,x
-         bita  #%10000000  12/24hr
-         beq   wd
-         bita  #%00100000  AM/PM
-         pshs  cc
-         anda  #%00011111  keep only time
-         puls  cc
-         bne   pm
-         cmpa  #$12        these are BCD tests
-         bne   am
-         clr   ,x          12AM=0hr military
-         bra   wd
-pm       cmpa  #$12        12PM=12hr military
-         beq   wd
-         adda  #$12        1-11PM add 12 for military
-am       sta   ,x
-wd       leax  -1,x        update time slot
-         bsr   L0087       convert from BCD to binary
-L006F    dec   ,s
-         bne   L0050       get the next byte from clock
-         lda   1,x         get year
-         cmpa  #50         half assed test for century
-         bhs   c19
-         adda  #100        make it 20th
-c19      sta   1,x
-         leas  1,s
-         tst   D.RTCFlg,u
-         bne   found
-         ldb   D.RTCSlt,u
-         bitb  #$30
-         beq   found
-         subb  #$10        not found so move to next slot
-         stb   D.RTCSlt,u
-         stb   $FF7F
-         bra   findclk
-found    clra              system DP is always 0
-         tfr   a,dp
-         IFGT  Level-1
-         lda   D.HINIT     reset system before rts
-         sta   $FF90
-         ENDC
-         sta   $FFDF
-         puls  a
-         sta   $FFA6
-         rts               go back to normal code location
-         
-* Convert BCD to binary
-L0087    lda   1,x
-         clrb  
-L008A    cmpa  #$10        BCD 10
-         bcs   L0094
-         addd  #$F00A      decrease BCD by $10 and add binary 10
-         bra   L008A
-L0094    pshs  a
-         addb  ,s+
-         stb   1,x
-term     rts   
-
-wakeup   lda   <RTC.Read   clear the clock for input
-* When getting time data, bit0 is rotated into a full byte. This
-* means the result is $00 or $FF for ROM. Any other value used for a test
-* will give a false positive for the clock.
-         clrb
-         bita  #1
-         beq   w1
-         comb
-w1       stb   D.Temp,u
-         leax  alert,pcr   point to message
-nxtbyte  ldb   #8          8 bytes to send
-         lda   ,x+
-         cmpa  #-1         changed from 0 terminator to -1 to accomodate
-         beq   term        settime
-nxtbit   lsra              bits sent to clock by toggling
-         bcs   high        Zero and One
-         cmpa  <RTC.Zero   faster than tst
-         bra   nxtbit2
-high     cmpa  <RTC.One
-nxtbit2  decb  
-         bne   nxtbit
-         bra   nxtbyte
-
-* SmartWatch wakeup sequence
-alert    fcb   $c5,$3a,$a3,$5c,$c5,$3a,$a3,$5c
-* The next 8 bytes become time data when setting the clock. Terminator is
-* now $FF instead of $00 to permit $00 as data.
-alrtend  fcb   $FF
-alrtime  rmb   7
-         fcb   $FF
-
-exit     equ   *
-         puls  a
-         sta   $FF7F       restore MPI
-         tst   D.RTCFlg,u  was clock found?
-         beq   noclock
-         puls  cc,d,x,y,u,pc
-
-noclock  equ   *
-         ldd   #7          seven time bytes to clear
-         ldx   #D.Time
-         IFGT  Level-1
-         sta   D.Daywk
-         ENDC
-nc       sta   ,x+
-         decb
-         bne   nc
-         puls  cc,d,x,y,u,pc
-         ENDC
 
          IFNE  RTCHarrs  
 *
@@ -754,6 +483,106 @@ nc       sta   ,x+
 
          puls  cc,pc      Re-enable interrupts
          ENDC            
+
+         IFNE  RTCJVEmu
+*
+* Vavasour / Collyer Emulator (ignores MPI slot)
+*
+         ldx   #RTC.Base
+         ldd   ,x	get year (CCYY)
+         suba  #20
+         bmi   yr1	19xx, OK as is
+yr0      addb  #100	20xx adjustment
+         deca		also check for
+         bpl   yr0	21xx (optional)
+yr1      stb   <D.Year	set year (~YY)
+         ldd   2,x	get date
+         std   <D.Month	set date (MMDD)
+         IFNE  Level-1
+         ldd   4,x	get time (wwhh)
+         sta   <D.Daywk	set day of week
+         ELSE
+         ldb   5,x	get hour (hh)
+         ENDC
+         stb   <D.Hour	set hour (hh)
+         ldd   6,x	get time (mmss)
+         std   <D.Min	set time (mmss)
+*        rts		fall thru to Setime/Init rts
+         ENDC
+
+         IFNE  RTCMESSEmu
+*
+* MESS time update in Disto mode (ignores MPI)
+*   Assumes that PC clock is in AM/PM mode!!!
+*
+         ldx   #RTC.Base
+         ldy   #D.Time
+         ldb   #12           counter for data
+         stb   1,x
+         lda   ,x
+         anda  #7
+         IFNE  Level-1
+         sta   <D.Daywk
+         ENDC
+         decb
+         bsr   getval
+         lda   -1,y
+         cmpa  #70          if >xx70 then its 19xx
+         bhi   not20
+         adda  #100
+         sta   -1,y
+not20    bsr   getval       month
+         bsr   getval       day
+         lda   #7           AM/PM mask
+         stb   1,x
+         anda  ,x
+         bitb  #4
+         pshs  cc
+         anda  #3
+         bsr   getval1
+         puls  cc
+         beq   AM
+         lda   #12         convert to 24hr time as it is PM
+         adda  -1,y
+         sta   -1,y
+AM       bsr   getval      minute
+* and now fall through into get second
+getval   lda   #$0f
+         stb   1,x
+         anda  ,x
+getval1  decb
+         pshs  b
+         ldb   #10
+         mul
+         stb   ,y
+         puls  b
+         stb   1,x
+         decb
+         lda   ,x
+         anda  #$0f
+         adda  ,y
+         sta   ,y+
+*        rts		fall thru to Setime/Init rts
+         ENDC
+
+         IFNE  RTCSmart
+*
+* Update time from Smartwatch RTC
+*
+
+         pshs  cc,d,x,y,u
+         orcc  #$50
+         lda   D.SWPage
+         clrb
+         tfr   d,u         point to working space
+         lda   $FF7F
+         pshs  a
+         lda   D.RTCSlt,u  info for MPI slot
+         sta   $FF7F
+         clr   D.RTCMod,u  set for read time
+         jsr   D.Start,u   jsr to it
+         lbra  exit
+         ENDC 
 
          IFNE  RTCSoft   
 *
@@ -796,6 +625,111 @@ UpdMin   clrb             seconds=00
 UpdTExit rts             
 
 months   fcb   31,28,31,30,31,30,31,31,30,31,30,31 Days in each month
+         ENDC            
+
+
+*--------------------------------------------------------------------------
+* SetTime Subroutine
+*
+* This subroutine is called by the main clock module.
+*
+
+SetTime  equ   *
+
+         IFNE  RTCBB+RTCCloud9
+*
+* Set B&B RTC from Time variables
+*
+         pshs  u,y,cc    
+         leay  SendBCD,pcr Send bytes of clock
+         lbra  TfrTime   
+         ENDC            
+
+         IFNE  RTCDsto2  
+*
+* Set Disto 2-in-1 RTC from Time variables
+*
+         pshs  a,cc      
+         lbsr  RTCPre     Initialize
+
+         bsr   SetVal     Set Year
+         bsr   SetVal     Set Month
+         bsr   SetVal     Set Day
+         ldd   #$0805     $08 in A, $05 in B
+         bsr   SetVal1    Set Hour   (OR value in A ($08) with hour)
+         bsr   SetVal     Set Minute
+         bsr   SetVal     Set Second
+
+         lbra  RTCPost    Clean up + return
+
+SetVal   clra            
+SetVal1  stb   2,x        Set Clock address
+         decb            
+         pshs  b         
+         ldb   ,y+        Get current value
+DvLoop   subb  #10        Get Tens digit in A, ones digit in B
+         bcs   DvDone    
+         inca            
+         bra   DvLoop    
+DvDone   addb  #10       
+         sta   ,x         Store tens digit
+         tfr   b,a       
+         puls  b          Get back original clock address
+         stb   2,x       
+         decb            
+         sta   ,x         Store ones digit
+         rts             
+         ENDC            
+
+         IFNE  RTCDsto4  
+*
+* Set Disto 4-in-1 RTC from Time variables
+*
+         pshs  cc        
+         orcc  #IntMasks 
+
+         IFNE  MPIFlag   
+         ldb   >MPI.Slct  Save currently selected MPak slot
+         pshs  b         
+         andb  #$F0      
+         orb   >SlotSlct,pcr Get slot to select
+         stb   >MPI.Slct  Select MPak slot for clock
+         ENDC            
+
+         ldy   #D.Time+6 
+         ldx   M$Mem,pcr 
+         clrb            
+         bsr   SetVal     Set Second
+         bsr   SetVal     Set Minute
+         bsr   SetVal     Set Hour
+         bsr   SetVal     Set Day
+         bsr   SetVal     Set Month
+         bsr   SetVal     Set Year
+
+         IFNE  MPIFlag   
+         puls  b          Restore old MPAK slot
+         stb   >MPI.Slct 
+         ENDC            
+
+         puls  cc        
+         clrb             No error
+         rts             
+
+SetVal   clr   ,-s        Create variable for tens digit
+         lda   ,-y        Get current value
+DvLoop   suba  #10        Get Tens digit on stack, ones digit in A
+         bcs   DvDone    
+         inc   ,s        
+         bra   DvLoop    
+DvDone   adda  #10       
+         stb   1,x        Set Clock address
+         incb            
+         sta   ,x         Store ones digit
+         stb   1,x       
+         incb            
+         puls  a         
+         sta   ,x         Store tens digit
+         rts             
          ENDC            
 
          IFNE  RTCElim   
@@ -927,105 +861,8 @@ NVR.Err  puls  y,u        recover caller's stack and data pointers
          os9   F$SRtMem  
          comb             set       Carry for error
          puls  b,pc       recover error code, return...
-
          ENDC
-         ENDC            
-
-         IFNE  RTCDsto2  
-*
-* Set Disto 2-in-1 RTC from Time variables
-*
-         pshs  a,cc      
-         lbsr  RTCPre     Initialize
-
-         bsr   SetVal     Set Year
-         bsr   SetVal     Set Month
-         bsr   SetVal     Set Day
-         ldd   #$0805     $08 in A, $05 in B
-         bsr   SetVal1    Set Hour   (OR value in A ($08) with hour)
-         bsr   SetVal     Set Minute
-         bsr   SetVal     Set Second
-
-         lbra  RTCPost    Clean up + return
-
-SetVal   clra            
-SetVal1  stb   2,x        Set Clock address
-         decb            
-         pshs  b         
-         ldb   ,y+        Get current value
-DvLoop   subb  #10        Get Tens digit in A, ones digit in B
-         bcs   DvDone    
-         inca            
-         bra   DvLoop    
-DvDone   addb  #10       
-         sta   ,x         Store tens digit
-         tfr   b,a       
-         puls  b          Get back original clock address
-         stb   2,x       
-         decb            
-         sta   ,x         Store ones digit
-         rts             
-         ENDC            
-
-         IFNE  RTCDsto4  
-*
-* Set Disto 4-in-1 RTC from Time variables
-*
-         pshs  cc        
-         orcc  #IntMasks 
-
-         IFNE  MPIFlag   
-         ldb   >MPI.Slct  Save currently selected MPak slot
-         pshs  b         
-         andb  #$F0      
-         orb   >SlotSlct,pcr Get slot to select
-         stb   >MPI.Slct  Select MPak slot for clock
-         ENDC            
-
-         ldy   #D.Time+6 
-         ldx   M$Mem,pcr 
-         clrb            
-         bsr   SetVal     Set Second
-         bsr   SetVal     Set Minute
-         bsr   SetVal     Set Hour
-         bsr   SetVal     Set Day
-         bsr   SetVal     Set Month
-         bsr   SetVal     Set Year
-
-         IFNE  MPIFlag   
-         puls  b          Restore old MPAK slot
-         stb   >MPI.Slct 
-         ENDC            
-
-         puls  cc        
-         clrb             No error
-         rts             
-
-SetVal   clr   ,-s        Create variable for tens digit
-         lda   ,-y        Get current value
-DvLoop   suba  #10        Get Tens digit on stack, ones digit in A
-         bcs   DvDone    
-         inc   ,s        
-         bra   DvLoop    
-DvDone   adda  #10       
-         stb   1,x        Set Clock address
-         incb            
-         sta   ,x         Store ones digit
-         stb   1,x       
-         incb            
-         puls  a         
-         sta   ,x         Store tens digit
-         rts             
-         ENDC            
-
-         IFNE  RTCBB+RTCCloud9
-*
-* Set B&B RTC from Time variables
-*
-         pshs  u,y,cc    
-         leay  SendBCD,pcr Send bytes of clock
-         lbra  TfrTime   
-         ENDC            
+         ENDC  
 
          IFNE  RTCHarrs  
 *
@@ -1059,11 +896,210 @@ DvDone   adda  #10
          puls  cc,pc      Re-enable interrupts
          ENDC            
 
-
+         IFNE  RTCSmart
 *
+* Update time from Smartwatch RTC
+*
+* This set time routine forces military time. It can't turn off clock but can
+* be used as a timer if time set to 0:0:0  hr:min:sec
+         pshs  cc,d,x,y,u
+         orcc  #$50
+         lda   D.SWPage
+         clrb
+         tfr   d,u         point to working space
+         lda   $FF7F
+         pshs  a
+         lda   D.RTCSlt,u  info for MPI slot
+         sta   $FF7F
+         lda   #-1
+         sta   D.RTCMod,u  indicate set time rather than read
+         IFGT  Level-1
+         ldx   #D.Slice
+         ELSE
+         ldx   #D.TSec
+         ENDC
+         tfr   u,y                          get location of safe region
+         leay  >D.Start+alrtend-reloc,y     point to end of wakeup code
+         lda   ,-x                          get D.Time data and store it
+         ldb   #4                           convert tenths sec, sec, min, hours
+         bsr   binbcd                       to binary coded decimal
+         IFGT  Level-1
+         lda   D.Daywk
+         ELSE
+         clra
+         ENDC
+         sta  ,y+                           set day of week if present
+         lda  ,x
+         ldb  #3                            convert day of month, month, year
+         bsr  binbcd                        to BCD
+         jsr   >D.Start,u                   send data to clock
+         lbra  exit
+         
+binbcd   pshs b
+bcd3     clrb
+bcd1     cmpa #10
+         bcs  bcd2
+         addd #$f610      decrease bin regA by 10 add bcd $10 to regB
+         bra  bcd1
+bcd2     pshs a
+         addb ,s+         add in remainder; BCD = binary when less than 10
+         stb  ,y+         place in message to clock
+         lda  ,-x         get next byte of D.Time
+         dec  ,s          decrease counter
+         bne  bcd3
+         puls b,pc
+
+* This becomes D.Start
+reloc    equ   *
+         IFGT  Level-1
+         lda   D.HINIT
+         anda  #$CC
+         sta   $FF90
+         ENDC
+         ldb   $FFA6       choose to use normal location
+         pshs  b
+         ldb   #$3E
+         stb   $FFA6       reset MMU for clock
+         sta   $FFDE
+         ldd   #RTC.Base
+         tfr   a,dp        DP now points to clock
+         tst   D.RTCMod,u  are we reading the clock or setting it?
+         beq   findclk     go if reading
+         lbsr  wakeup      we are setting a found clock
+         lbra  found
+findclk  lda   #-1
+         sta   alrtend,pcr
+         lbsr  wakeup      wakeup the clock
+         ldx   #D.Sec      one incoming byte dropped
+         lda   #8          bytes to get
+         pshs  a
+L0050    ldb   #8          bits to get
+L0052    lsr   <RTC.Read   get a bit
+         rora
+         decb  
+         bne   L0052
+         tst   D.RTCFlg,u
+         bne   maybe
+         cmpa  D.Temp,u
+         beq   maybe       clock might look like ROM
+         inc   D.RTCFlg,u  found the clock
+maybe    sta   ,x          transfer it to time
+         lda   ,s          check loop counter
+         cmpa  #8
+         beq   L006F       skip if 0.1 sec
+         cmpa  #4
+         bne   L006B       skip if not day of week
+         IFGT  Level-1
+         lda   ,x          move to correct location
+         anda  #7
+         sta   D.Daywk
+         ENDC
+         bra   L006F
+L006B    cmpa  #5          hour byte
+         bne   wd
+         lda   ,x
+         bita  #%10000000  12/24hr
+         beq   wd
+         bita  #%00100000  AM/PM
+         pshs  cc
+         anda  #%00011111  keep only time
+         puls  cc
+         bne   pm
+         cmpa  #$12        these are BCD tests
+         bne   am
+         clr   ,x          12AM=0hr military
+         bra   wd
+pm       cmpa  #$12        12PM=12hr military
+         beq   wd
+         adda  #$12        1-11PM add 12 for military
+am       sta   ,x
+wd       leax  -1,x        update time slot
+         bsr   L0087       convert from BCD to binary
+L006F    dec   ,s
+         bne   L0050       get the next byte from clock
+         lda   1,x         get year
+         cmpa  #50         half assed test for century
+         bhs   c19
+         adda  #100        make it 20th
+c19      sta   1,x
+         leas  1,s
+         tst   D.RTCFlg,u
+         bne   found
+         ldb   D.RTCSlt,u
+         bitb  #$30
+         beq   found
+         subb  #$10        not found so move to next slot
+         stb   D.RTCSlt,u
+         stb   $FF7F
+         lbra  findclk
+found    clra              system DP is always 0
+         tfr   a,dp
+         IFGT  Level-1
+         lda   D.HINIT     reset system before rts
+         sta   $FF90
+         ENDC
+         sta   $FFDF
+         puls  a
+         sta   $FFA6
+         rts               go back to normal code location
+         
+* Convert BCD to binary
+L0087    lda   1,x
+         clrb  
+L008A    cmpa  #$10        BCD 10
+         bcs   L0094
+         addd  #$F00A      decrease BCD by $10 and add binary 10
+         bra   L008A
+L0094    pshs  a
+         addb  ,s+
+         stb   1,x
+term     rts   
+
+wakeup   lda   <RTC.Read   clear the clock for input
+* When getting time data, bit0 is rotated into a full byte. This
+* means the result is $00 or $FF for ROM. Any other value used for a test
+* will give a false positive for the clock.
+         clrb
+         bita  #1
+         beq   w1
+         comb
+w1       stb   D.Temp,u
+         leax  alert,pcr   point to message
+nxtbyte  ldb   #8          8 bytes to send
+         lda   ,x+
+         cmpa  #-1         changed from 0 to -1 to accommodate settime
+         beq   term
+nxtbit   lsra              bits sent to clock by toggling
+         bcs   high        Zero and One
+         cmpa  <RTC.Zero   faster than tst
+         bra   nxtbit2
+high     cmpa  <RTC.One
+nxtbit2  decb  
+         bne   nxtbit
+         bra   nxtbyte
+
+* SmartWatch wakeup sequence
+alert    fcb   $c5,$3a,$a3,$5c,$c5,$3a,$a3,$5c
+* The next 8 bytes become time data when setting the clock. Terminator is
+* now $FF instead of $00 to permit $00 as data.
+alrtend  fcb   $FF
+alrtime  rmb   7
+         fcb   $FF
+
+exit     equ   *
+         puls  a
+         sta   $FF7F       restore MPI
+         tst   D.RTCFlg,u  was clock found?
+         beq   noclock
+         puls  cc,d,x,y,u,pc
+         ENDC
+
+*-----------------------------------------------------------------------
 * RTC-specific initializations here
 *
-Init     equ   *         
+
+Init     equ   *   
+      
          IFNE  RTCDsto4  
 * Disto 4-N-1 RTC specific initialization
          ldx   M$Mem,pcr 
@@ -1177,10 +1213,31 @@ B3       lda   ,u+
          bne   B3
          ENDC
          puls  d,x,y,u,pc
+
+noclock  equ   *
+         ldd   #7          seven time bytes to clear
+         ldx   #D.Time
+         IFGT  Level-1
+         sta   D.Daywk
+         ENDC
+nc       sta   ,x+
+         decb
+         bne   nc
+         puls  cc,d,x,y,u,pc
+
+mem_mes  fcc   /There is no system memory for/
+         fcb   $0a
+         fcc   /the SmartWatch. Please reduce/
+         fcb   $0a
+         fcc   /os9boot size or use soft clock./
+         fcb   $0d
+
          ELSE
-         rts             
+
+         rts                    used for clocks without Init routines
          ENDC
 
          emod            
 len      equ   *         
          end             
+
