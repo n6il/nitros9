@@ -26,6 +26,7 @@ fewer system calls are necessary.
 &longjmpref;
 &mallocref;
 &mktempref;
+&printfref;
 &putcref;
 &putsref;
 &qsortref;

@@ -26,5 +26,139 @@ there are some differences. The differences mostly reflect
 parts of C that are obsolete or the constraints imposed by memory
 size limitations.
 </para>
+
+</section>
+<section>
+<title>Compiler Option Flags</title>
+<para>
+The compiler recognizes several command-line option flags which
+modify the compilation process where needed. All flags are
+recognized before compilation commences so the flags may be placed
+anywhere on the command line. Flags may be ran together as in "-ro",
+except where a flag is followed by something else; see "-f=" and
+"-d" for examples.
+</para>
+<para>
+-A
+suppresses assembly, leaving the output as assembler code in a
+file whose name is postfixed ".a".
+</para>
+<para>
+-E=&lt;number&gt;
+Set the edition number constant byte to the number given. This is
+an OS-9 convention for memory modules.
+</para>
+<para>
+-O
+inhibits the assembly code optimizer pass. The optimizer will
+shorten object code by about 11% with a comparable increase in speed
+and is recommended for production versions of de-bugged programs.
+</para>
+<para>
+-P
+invokes the profiler to generate function frequency
+statistics after program execution.
+</para>
+<para>
+-R
+suppresses linking library modules into an executable program.
+Outputs are left in files with postfixes ".r".
+</para>
+<para>
+-M=&lt;memory size&gt;
+will instruct the linker to allocate &lt;memory size&gt;
+for data, stack, and parameter area. Memory size may be expressed
+in pages (an integer) or in kilobytes by appending "k" to an 
+integer. For more details of the use of this option, see the
+"Memory Management" section of this manual.
+</para>
+<para>
+-L=&lt;filename&gt;
+specifies a library to be searched by the linker
+before the Standard Library and system interface.
+</para>
+<para>
+-F=&lt;path&gt;
+overrides the above output file naming. The output file
+will be left with &lt;filename&gt; as its name. This flag does not make
+sense in multiple source mode, and either the -a or -r flag is also
+present. The module will be called the last name in &lt;path&gt;.
+</para>
+<para>
+-C
+will output the source code as comments with the assembler code.
+</para>
+<para>
+-S
+stops the generation of stack-checking code. -S should only be
+used with great care when the appication is extremely time-critical
+and when the use of the stack by compiler generated code is fully
+understood.
+</para>
+<para>
+-D&lt;identifier&gt;
+is equivalent to "#define &lt;identifier&gt;" written in
+the source file. -D is useful where different versions of a program
+are maintained in one source file and differentiated by means of the
+"#ifdef" of "#ifndef" pre-processor directives. If the &lt;identifier&gt;
+is used as a macro for expansion by the pre-processor, "1"(one) will
+be the expanded "value" unless the form "-d&lt;identifier&gt;=&lt;string&gt;" is
+used in which case the expansion will be &lt;string&gt;.
+</para>
+<table frame="none">
+<title>Command Line and Option Flag Examples</title>
+<tgroup cols="3">
+<colspec colwidth="1.5in" colname="c1">
+<colspec colwidth="1.5in" colname="c2">
+<colspec colwidth="1.5in" colname="c3">
+<thead>
+    <row>
+	<entry>command line</entry>
+	<entry>action</entry>
+	<entry>output file(s)</entry>
+    </row>
+</thead>
+<tbody>
+    <row>
+	<entry>cc prg.c</entry>
+	<entry>compile to an executable program</entry>
+	<entry>prg</entry>
+	<entry></entry>
+    </row>
+    <row>
+	<entry>cc prg.c -a</entry>
+	<entry>compile to assembly language source code</entry>
+	<entry>prg.a</entry>
+    </row>
+    <row>
+	<entry>cc prg.c -r</entry>
+	<entry>compile to relocatable module</entry>
+	<entry>prg.r</entry>
+    </row>
+    <row>
+	<entry>cc prg1.c prg2.c prg3.c</entry>
+	<entry>compile to executable program</entry>
+	<entry>prg1.r, prg2.r, prg3.r, output</entry>
+    </row>
+    <row>
+	<entry>cc prg1.c prg2.a prg3.r</entry>
+	<entry>compile prg1.c, assemble prg2.a and combine all into
+and executable program</entry>
+	<entry>prg1.r, prg2.r</entry>
+    </row>
+    <row>
+	<entry>cc prg1.c prg2.c -a</entry>
+	<entry>compile to assembly language source code</entry>
+	<entry>prg1.a, prg2.a</entry>
+    </row>
+    <row>
+	<entry>cc prg1.c prg2.c -f=prg</entry>
+	<entry>compile to executable program</entry>
+	<entry>prg</entry>
+    </row>
+    </tbody>
+</tgroup>
+</table>
+
 </section>
 </chapter>

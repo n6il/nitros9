@@ -71,6 +71,7 @@
   <!ENTITY longjmpref       SYSTEM "longjmp.refentry">
   <!ENTITY mallocref       SYSTEM "malloc.refentry">
   <!ENTITY mktempref       SYSTEM "mktemp.refentry">
+  <!ENTITY printfref       SYSTEM "printf.refentry">
   <!ENTITY putcref       SYSTEM "putc.refentry">
   <!ENTITY putsref       SYSTEM "puts.refentry">
   <!ENTITY qsortref       SYSTEM "qsort.refentry">
