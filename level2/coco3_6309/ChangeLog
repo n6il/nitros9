@@ -4,6 +4,7 @@ NitrOS-9/6809 Level 2 V03.02.02:
 - cc3disk has been renamed to rb1773 and has been back-ported to NitrOS-9 Level 1.
 - grfint.io now exists and can be used to replace windint.io in bootfiles where
   Multi-Vue windowing functionality is not needed, in order to save system RAM.
+- The copy command now has write verification with -v.
 - term_t1.dd has been renamed to term_sio.dd and term_sc6551.dd has been added.
 NitrOS-9/6809 Level 2 V03.02.01 (May 14, 2004):
 - Bugs in the mpi and megaread utilities have been fixed.
