@@ -48,7 +48,7 @@ Term     pshs  y,x
          os9   F$SRtMem 	return to system
          puls  u		restore U
          ldb   <V.COLoad,u
-         andb  #$FD
+         andb  #~ModCo32
          bra   L0086
 * Init
 Init     pshs  y,x		save regs
@@ -82,7 +82,7 @@ L0056    ldd   #256		and return last 256 bytes
          sta   <V.Chr1,u	only referenced here ??
          lbsr  ClrScrn		clear the screen
          ldb   <V.COLoad,u
-         orb   #$02		set to CO32 found (?)
+         orb   #ModCo32		set to CO32 found (?)
 L0086    stb   <V.COLoad,u
          clrb  
          puls  pc,y,x

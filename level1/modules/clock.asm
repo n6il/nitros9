@@ -116,10 +116,6 @@ FSTime	equ	*
 Clock2	fcs	"Clock2"
 		
 Init
-	pshs	y
-	ldy	#$aa55
-	puls	y
-	
 	ifeq	Level-1
 	pshs	dp,cc		save DP and CC
 	clra	

@@ -1,8 +1,10 @@
 include ../rules.mak
 
+# TERMWIDTH can be either 32 or 51
+TERMWIDTH	= 51
 RELEASE		= nos96809l1v030204_dragon
-BOOTFILE	= bootfiles/bootfile_d64
-BOOTFILE_DS80	= bootfiles/bootfile_d64
+BOOTFILE	= bootfiles/bootfile_d64_$(TERMWIDTH)
+BOOTFILE_DS80	= bootfiles/bootfile_d64_$(TERMWIDTH)
 KERNELFILE	= bootfiles/kernel_d64
 DIRS		= cmds defs sys 
 #modules bootfiles
@@ -17,12 +19,12 @@ BOOTTRACK	= $(shell $(CD) modules; make -f makefile.dragon showboottrack)
 KERNEL		= $(shell $(CD) modules; make -f makefile.dragon showkernel)
 SYSMODS		= $(shell $(CD) modules; make -f makefile.dragon showsysmods)
 CLOCKS		= $(shell $(CD) modules; make -f makefile.dragon showclocks)
-RBF			= $(shell $(CD) modules; make -f makefile.dragon showrbf)
-SCF			= $(shell $(CD) modules; make -f makefile.dragon showscf)
+RBF		= $(shell $(CD) modules; make -f makefile.dragon showrbf)
+SCF		= $(shell $(CD) modules; make -f makefile.dragon showscf)
 PIPE		= $(shell $(CD) modules; make -f makefile.dragon showpipe)
 MODULECMDS	= $(WHICHSHELL) del echo format makdir merge os9gen prompt tmode
 
-SYS			= $(shell $(CD) sys; make showobjs)
+SYS		= $(shell $(CD) sys; make showobjs)
 DEFS		= $(shell $(CD) defs; make showobjs)
 ROOTFILES	= 
 STARTUP		= startup.dragon
