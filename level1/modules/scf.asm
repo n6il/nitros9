@@ -78,7 +78,7 @@ L0059    sty   R$X,u
          bsr   L0091
 
 * cute message
-         fcb   $62,$1B,$59,$6B,$65,$65,$2A,$11,$1C,$0D,$0F
+cute     fcb   $62,$1B,$59,$6B,$65,$65,$2A,$11,$1C,$0D,$0F
          fcb   $42,$0C,$6C,$62,$6D,$31,$13,$0F,$0B,$49,$0C
          fcb   $72,$7C,$6A,$2B,$08,$00,$02,$11,$00,$79
 
@@ -88,7 +88,7 @@ L0091    puls  x                       get PC into X
 L0094    eora  ,x+
          sta   ,u+
          decb
-         cmpa  #$0D
+         cmpa  #C$CR
          bne   L0094
 L009D    sta   ,u+
          decb
@@ -187,19 +187,19 @@ GetStat  lda   <$3F,y
          lbne  L0404
          ldx   PD.RGS,y
          lda   R$B,x                   get status code
-         cmpa  #$00
+         cmpa  #SS.Opt
          bne   L0179                   branch if not
          pshs  y,x,a
-         lda   #$28
-         sta   $02,x
-         ldu   $06,x
+         lda   #SS.ComSt               call driver's SS.ComSt
+         sta   R$B,x
+         ldu   R$Y,x
          pshs  u
          bsr   L0179
          puls  u
          puls  y,x,a
-         sta   $02,x
-         ldd   $06,x
-         stu   $06,x
+         sta   R$B,x
+         ldd   R$Y,x
+         stu   R$Y,x
          bcs   L0177
          std   <$34,y
 L0177    clrb
@@ -238,7 +238,7 @@ L01A9    lda   ,x+
          puls  y
 
 L01B2    ldx   <$34,y
-         lda   #$28
+         lda   #SS.ComSt
          pshs  x,a
          bsr   L01BD
          puls  pc,x,a
@@ -270,11 +270,11 @@ L01E8    rts
 Read     lbsr  L03E0
          bcs   L01E8
          inc   PD.RAW,y
-         ldx   $06,u
+         ldx   R$Y,u
          beq   L0235
          pshs  x
          ldx   #$0000
-         ldu   $04,u
+         ldu   R$X,u
          lbsr  L0348
          bcs   L020A
          tsta
@@ -290,33 +290,33 @@ L020A    leas  2,s
 
 L0213    lbsr  L0348
          bcs   L020A
-L0218    tst   <$24,y
+L0218    tst   <PD.EKO,y
          beq   L0220
          lbsr  L046C
-L0220    leax  $01,x
+L0220    leax  1,x
          sta   ,u+
          beq   L022B
-         cmpa  <$2B,y
+         cmpa  <PD.EOR,y
          beq   L022F
 L022B    cmpx  ,s
          bcs   L0213
 L022F    leas  $02,s
-L0231    ldu   $06,y
-         stx   $06,u
+L0231    ldu   PD.RGS,y
+         stx   R$Y,u
 L0235    lbra  L0391
 
 
 * readln routine
 ReadLn   lbsr  L03E0
          bcs   L01E8
-         ldx   $06,u
+         ldx   R$Y,u
          beq   L0231
-         tst   $06,u
+         tst   R$Y,u
          beq   L0248
-         ldx   #$0100
+         ldx   #256
 L0248    pshs  x
          ldd   #$FFFF
-         std   $0D,y
+         std   PD.MAX,y
          lbsr  L030D
 L0252    lbsr  L0348
          bcs   L02C8
@@ -328,15 +328,15 @@ L025C    cmpa  b,y
          incb
          cmpb  #$31
          bls   L025C
-L0265    cmpx  $0D,y
+L0265    cmpx  PD.MAX,y
          bls   L026B
-         stx   $0D,y
-L026B    leax  $01,x
+         stx   PD.MAX,y
+L026B    leax  1,x
          cmpx  ,s
          bcs   L027B
          lda   <$33,y
          lbsr  L046C
-         leax  -$01,x
+         leax  -1,x
          bra   L0252
 L027B    lbsr  L0369
          sta   ,u+
@@ -347,7 +347,7 @@ L0285    pshs  pc,x
          subb  #$29
          lslb
          leax  b,x
-         stx   $02,s
+         stx   2,s
          puls  x
          jsr   [,s++]
          bra   L0252
@@ -360,110 +360,114 @@ L0298    bra   L0313
          puls  pc
          bra   L02FD
          bra   L02FD
-L02AA    leas  $02,s
+L02AA    leas  2,s
          sta   ,u
          lbsr  L0379
-         ldu   $06,y
-         leax  $01,x
-         stx   $06,u
+         ldu   R$Y,y
+         leax  1,x
+         stx   R$Y,u
          bsr   L0332
-         leas  $02,s
+         leas  2,s
          lbra  L0391
-L02BE    leas  $02,s
+L02BE    leas  2,s
          leax  ,x
          lbeq  L0208
          bra   L0265
+
 L02C8    pshs  b
-         lda   #$0D
+         lda   #C$CR
          sta   ,u
          bsr   L02D5
          puls  b
          lbra  L020A
-L02D5    lda   #$0D
+L02D5    lda   #C$CR
          bra   L032F
-L02D9    lda   <$2B,y
+L02D9    lda   <PD.EOR,y
          sta   ,u
          bsr   L030D
 L02E0    lbsr  L037E
-L02E3    cmpx  $0D,y
+L02E3    cmpx  PD.MAX,y
          beq   L02FA
-         leax  $01,x
-         cmpx  $02,s
+         leax  1,x
+         cmpx  2,s
          bcc   L02F8
          lda   ,u+
          beq   L02E0
-         cmpa  <$2B,y
+         cmpa  <PD.EOR,y
          bne   L02E0
-         leau  -$01,u
-L02F8    leax  -$01,x
+         leau  -1,u
+L02F8    leax  -1,x
 L02FA    rts   
 L02FB    bsr   L0317
 L02FD    leax  ,x
          beq   L030D
-         tst   <$23,y
+         tst   <PD.DLO,y
          beq   L02FB
-         tst   <$24,y
+         tst   <PD.EKO,y
          beq   L030D
          bsr   L02D5
 L030D    ldx   #$0000
-         ldu   $08,y
+         ldu   PD.BUF,y
 L0312    rts
 L0313    leax  ,x
          beq   L02FA
-L0317    leau  -$01,u
-         leax  -$01,x
-         tst   <$24,y
+L0317    leau  -1,u
+         leax  -1,x
+         tst   <PD.EKO,y
          beq   L0312
-         tst   <$22,y
+         tst   <PD.BSO,y
          beq   L032C
          bsr   L032C
-         lda   #$20
+         lda   #C$SPAC
          lbsr  L046C
-L032C    lda   <$32,y
+L032C    lda   <PD.BSE,y
 L032F    lbra  L046C
-L0332    ldx   $04,u
-         ldu   $08,y
+L0332    ldx   R$X,u
+         ldu   PD.BUF,y
 L0336    lda   ,u+
          sta   ,x+
-         cmpa  <$2B,y
+         cmpa  <PD.EOR,y
          bne   L0336
          rts
+
 L0340    pshs  u,y,x
-         ldx   $0A,y
-         ldu   $03,y
+         ldx   PD.DV2,y
+         ldu   PD.DEV,y
          bra   L0350
+
 L0348    pshs  u,y,x
-         ldx   $03,y
-         ldu   $0A,y
+         ldx   PD.DEV,y
+         ldu   PD.DV2,y		U now points to dev table entry of device 2
          beq   L0357
-L0350    ldu   $02,u
-         ldb   <$28,y
-         stb   $07,u
+L0350    ldu   V$STAT,u		U now points to static storage of device 2
+         ldb   <PD.PAG,y
+         stb   V.LINE,u
 L0357    leax  ,x
          beq   L0367
-         tfr   u,d
-         ldu   $02,x
-         std   $09,u
+         tfr   u,d		D now holds pointer to static storage of device 2
+         ldu   V$STAT,x		U now holds ???
+         std   V.DEV2,u
          ldu   #$0003
          lbsr  L04D3
 L0367    puls  pc,u,y,x
-L0369    tst   <$21,y
+
+L0369    tst   <PD.UPC,y
          beq   L0378
-         cmpa  #$61
+         cmpa  #'a
          bcs   L0378
-         cmpa  #$7A
+         cmpa  #'z
          bhi   L0378
-         suba  #$20
+         suba  #32
 L0378    rts
-L0379    tst   <$24,y
+L0379    tst   <PD.EKO,y
          beq   L0378
-L037E    cmpa  #$20
+L037E    cmpa  #C$SPAC
          bcc   L0386
-         cmpa  #$0D
+         cmpa  #C$CR
          bne   L0389
 L0386    lbra  L046C
 L0389    pshs  a
-         lda   #$2E
+         lda   #C$PERD
          bsr   L0386
          puls  pc,a
 
@@ -519,21 +523,21 @@ L03E5    ldx   <D.Proc
          ldx   PD.DEV,y
          bsr   L03A6
          bcs   L03FF
-         ldx   $0A,y
+         ldx   PD.DV2,y
          beq   L03F9
          bsr   L03A6
          bcs   L03FF
-L03F9    tst   $0F,y
+L03F9    tst   PD.MIN,y
          bne   L03E0
-         clr   $0C,y
-L03FF    ldu   $06,y
+         clr   PD.RAW,y
+L03FF    ldu   PD.RGS,y
          rts
 L0402    leas  2,s
-L0404    ldb   #$DC
+L0404    ldb   #E$HangUp
          cmpa  #$02
          bcs   L0411
-         lda   $05,y
-         ldb   #$00
+         lda   PD.CPR,y
+         ldb   #S$Kill
          os9   F$Send
 L0411    inc   <$3F,y
          orcc  #Carry
@@ -586,7 +590,7 @@ L0464    leas  2,s
          puls  pc,b,cc
 
 L046C    pshs  u,x,a
-         ldx   $0A,y
+         ldx   PD.DV2,y
          beq   L0478
          cmpa  #C$CR
          beq   L04A9
@@ -636,10 +640,10 @@ L04CE    puls  pc,u,x,a
 
 L04D0    ldu   #$0006
 L04D3    pshs  u,y,x,a
-         ldu   $02,x
-         clr   $05,u
-         ldx   ,x
-         ldd   $09,x
+         ldu   V$STAT,x
+         clr   V.WAKE,u
+         ldx   V$DRIV,x
+         ldd   M$Exec,x
          addd  $05,s
          leax  d,x
          lda   ,s+
