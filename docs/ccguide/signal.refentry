@@ -21,6 +21,30 @@
 <para>
 Placeholder
 </para>
+<para>
+The signals used by OS-9 are defined in the header file as
+follows:
+</para>
+<programlisting>
+/* OS-9 signals */
+#define        SIGKILL 0  /* system abort (cannot be caught or ignored)*/
+#define        SIGWAKE 1    /* wake up */
+#define        SIGQUIT 2    /* keyboard abort */
+#define        SIGINT  3    /* keyboard interrupt */
+
+/* special addresses */
+#define        SIG_DFL 0    /* reset to default */
+#define        SIG_IGN 1    /* ignore */
+</programlisting>
+<para>
+Please note that there is another method of trapping signals,
+namely "intercept()" (q.v.). However, since "signal()" and
+"intercept()" are mutually incompatible, calls to both of them
+must not appear in the same program. The link-loader will
+preven the creation of an executable program in which both are
+called by aborting with an "entry name clash" error for
+"_sigint".
+</para>
 </refsect1>
 
 <refsect1><title>See Also</title>
