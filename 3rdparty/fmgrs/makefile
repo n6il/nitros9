@@ -8,7 +8,9 @@ all:
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
 #	cd msf; make
+	cd cdf; make
 
 # Clean all components
 clean:
 #	cd msf; make clean
+	cd cdf; make clean
