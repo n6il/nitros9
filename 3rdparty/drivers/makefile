@@ -15,6 +15,7 @@ all:
 	cd scsisys; make
 	cd sdisk; make
 	cd sdisk3; make
+	cd tccc; make
 
 # Clean all components
 clean:
@@ -26,3 +27,4 @@ clean:
 	-cd scsisys; make clean
 	-cd sdisk; make clean
 	-cd sdisk3; make clean
+	-cd tccc; make clean
