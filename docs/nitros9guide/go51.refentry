@@ -50,8 +50,8 @@ the various escape sequences and control characters described below:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <thead>
 <row>
 <entry>Escape Sequence (Hex)</entry>
@@ -112,8 +112,8 @@ screen. Cursor position remains unchanged.</entry>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <thead>
 <row>
 <entry>Control Character (Hex)</entry>

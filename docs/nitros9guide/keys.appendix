@@ -1,6 +1,6 @@
 <appendix>
 <title>Key Definitions With Hexadecimal Values</title>
-<literallayout class="Monospaced">
+<literallayout class="monospaced">
 NORM  SHFT   CTRL     NORM  SHFT   CTRL     NORM  SHFT   CTRL
 ----  ----  ------    ----  ----  ------    ----  ----  ------
 0 30  0 30      --    @ 40  ' 60  NUL 00    P 50  p 70  DLE 10

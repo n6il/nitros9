@@ -45,8 +45,8 @@ initial operating parameter (see the System Programmer's Manual).
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="4in">
+<colspec colwidth="1in"/>
+<colspec colwidth="4in"/>
 <tbody>
 <row>
 <entry>upc</entry>
