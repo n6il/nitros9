@@ -46,13 +46,13 @@
 *../MODULES/RBF/s5_tc3.dd
 *../MODULES/RBF/s6_tc3.dd
 *../MODULES/RBF/s7_tc3.dd
-* SCSI HDB-DOS descriptor for drive 255
-*../MODULES/RBF/sh_ide_255.dd
+* SCSI HDB-DOS descriptor
+*../MODULES/RBF/sh_ide.dd
 * IDE descriptors (master/slave)
 *../MODULES/RBF/i0_ide.dd
 *../MODULES/RBF/i1_ide.dd
-* IDE HDB-DOS descriptor for drive 255
-*../MODULES/RBF/ih_ide_255.dd
+* IDE HDB-DOS descriptor
+*../MODULES/RBF/ih_ide.dd
 *
 * SuperSCSI drivers (Cloud-9 product)
 * Select SCSI driver for TC^3, Ken-Ton or Disto Controller

@@ -755,7 +755,27 @@ L0619    comb
          ldb   #E$UnkSvc
 L061C    rts
 
-L061D    ldd   #256
+L061D
+**** ADDED 06/19/2004 ****
+* Call to SS.VarSect in Driver:
+*
+* This code calls the driver's SS.VarSect GetStat, which will
+* update the PD.TYP byte in the path descriptor to the sector
+* size of the media to which this path references.
+* If the driver doesn't support the GetStat, it will return
+* an error, and won't touch the PD.TYP anyway, so we ignore it.
+         ldx   PD.RGS,y         get caller's regs
+         lda   R$B,x            get caller's B
+         pshs  x,a              save PD.RGS ptr and caller's original B
+         ldd   #D$GSTA*256+SS.VarSect   getstat function/SS.VarSect GetStat
+         stb   R$B,x            put SS.VarSect into caller's B
+         lbsr  L0CED            send it to driver
+         puls  a,x              get caller's original B and saved PD.RGS
+         bcs   L061C
+         sta   R$B,x            restore caller's original B
+****
+
+         ldd   #256
          stb   PD.BUF+2,y
          os9   F$SRqMem
          bcs   L061C
