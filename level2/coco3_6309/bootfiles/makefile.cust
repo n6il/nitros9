@@ -1,20 +1,20 @@
-include ../../Makefile.rules
+include ../../rules.mak
 
 # Module directory
-MD		= ../MODULES
+MD		= ../modules
 # Commands directory
-CD		= ../CMDS
-# Third Party directory
+CD		= ../cmds
+# Third Party directories
 3PB		= $(3RDPARTY)/booters
+3PM		= $(3RDPARTY)/fmgrs
 3PD		= $(3RDPARTY)/drivers
+P2D		= $(3RDPARTY)/p2mods
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile.cust
 
-KERNEL_1773	= $(MD)/rel $(MD)/boot_1773_6ms $(MD)/kernel
-KERNEL_ROM	= $(MD)/rel $(3PB)/boot_rom $(MD)/kernel
-KERNEL_KENTON	= $(MD)/rel $(C9)/superscsi/boot_id0_ktlr_l2 $(MD)/kernel
-KERNEL_TC3	= $(MD)/rel $(C9)/superscsi/boot_id0_tc3_l2 $(MD)/kernel
-KERNEL_DW	= $(MD)/rel $(C9)/drivewire/boot_drivewire_l2 $(MD)/kernel
+KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/kernel
+KERNEL_TC3	= $(MD)/rel_80 $(C9)/Products/SuperDrivers/software/6809l2/boot_id0_tc3 $(MD)/kernel
+KERNEL_IDE	= $(MD)/rel_80 $(MD)/boot_idelba $(MD)/kernel
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_1773	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
@@ -23,83 +23,79 @@ BOOTFILE_1773	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
-		$(MD)/windint.io $(MD)/vdgint.io \
-		$(MD)/term_vdg.dt \
-		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
-		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
-		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_tc3
-
-BOOTFILE_1773_ROM = $(MD)/rominfo
-
-# OS-9 ROM image to allow booting from ROM
-BOOTFILE_ROM	= $(MD)/rominfo $(MD)/kernelp2 $(MD)/init $(MD)/ioman \
-		$(MD)/scf.mn $(MD)/sio.dr $(MD)/term_t1.dd \
-		$(MD)/sspak.dr $(MD)/ssp.dd \
-		$(MD)/clock_60hz $(MD)/clock2_soft \
-		$(CD)/shell $(CD)/mdir $(CD)/mfree $(CD)/procs
-
-BOOTFILE_DW	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
-		$(MD)/rbf.mn \
-		$(MD)/cc3disk.dr \
-		$(MD)/d0_40d.dd \
-		$(3PD)/ide/ccide_l2.dr \
-		$(3PD)/ide/h0_ide_l2.dd \
-		$(C9)/drivewire/drivewire_l2.dr \
-		$(C9)/drivewire/ddx0_l2.dd \
-		$(C9)/drivewire/x1_l2.dd \
-		$(C9)/drivewire/x2_l2.dd \
-		$(C9)/drivewire/x3_l2.dd \
-		$(MD)/scf.mn $(MD)/cc3io.dr \
-		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
-		$(MD)/windint.io \
-		$(MD)/vdgint_small.io \
-		$(MD)/term_vdg.dt \
-		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
-		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
-		$(MD)/vrn.dr $(MD)/vi.dd $(MD)/ftdd.dd \
-		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(C9)/drivewire/level2/clock2_dw
-		
-# OS-9 disk bootfile to allow booting from Ken-Ton SCSI controller
-# This is a custom boot for Boisy's system
-BOOTFILE_TC3	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
-		$(C9)/superscsi/superscsi_tc3_l2.dr \
-		dd_ez135_l2.dd \
-		$(C9)/superscsi/c3_cdrom_l2.dd \
-		$(C9)/superscsi/h5_zip100_l2.dd \
-		$(MD)/rbf.mn \
-		$(3PD)/disto/rampak.dr $(3PD)/disto/r0_512_l2.dd \
-		$(MD)/cc3disk.dr \
-		$(MD)/d0_40d.dd $(MD)/d1_80d.dd \
-		$(MD)/scf.mn $(MD)/cc3io.dr \
-		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io \
 		$(MD)/term_win80.dt \
 		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_tc3
-		
-# OS-9 disk bootfile to allow booting from Ken-Ton SCSI controller
-BOOTFILE_KENTON	= $(C9)/superscsi/superscsi_ktlr_l2.dr \
-		$(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+		$(MD)/clock_60hz $(MD)/clock2_soft
+
+# OS-9 disk bootfile to allow booting from TC^3 SCSI controller
+# This is a custom bootfile made by Boisy for his system
+BOOTFILE_TC3	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(C9)/superscsi/h0_ez135_l2.dd \
-		$(C9)/superscsi/c3_cdrom_l2.dd \
+		$(C9)/superscsi/6809l2/superscsi_tc3.dr \
+		$(C9)/superscsi/6809l2/dd_ez135_tc3.dd \
+		$(C9)/superscsi/6809l2/h5_zip100_tc3.dd \
+		$(C9)/superscsi/6809l2/c3_cdrom_tc3.dd \
+		$(C9)/superscsi/6809l2/hb_255_tc3.dd \
+		$(C9)/drivewire/6809l2/drivewire.dr \
+		$(C9)/drivewire/6809l2/x0.dd \
+		$(C9)/drivewire/6809l2/x1.dd \
+		$(C9)/drivewire/6809l2/x2.dd \
+		$(C9)/drivewire/6809l2/x3.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
-		$(MD)/keydrv_cc3.sb $(MD)/joydrv_6551L.sb $(MD)/snddrv_cc3.sb \
-		$(3PD)/disto/rampak.dr $(3PD)/disto/r0_256_l2.dd \
-		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_80d.dd \
-		$(MD)/windint.io $(MD)/term_win80.dt \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/windint.io $(MD)/vdgint_small.io \
+		$(MD)/term_win80.dt \
 		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
-		$(3PD)/s16550/s16550_large.dr $(3PD)/s16550/t2_s16550.dd \
+		$(MD)/vrn.dr $(MD)/nil.dd \
+		$(MD)/vi.dd $(MD)/ftdd.dd \
+		$(MD)/sc6551.dr $(MD)/t2_sc6551.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_soft
-		
-BOOTFILES	= bootfile_1773 bootfile_drivewire bootfile_tc3 bootfile_kenton bootfile_rom
-KERNELS		= kernel_1773 kernel_tc3 kernel_drivewire kernel_kenton kernel_rom
+		$(MD)/clock_60hz $(MD)/clock2_tc3
+
+# OS-9 disk bootfile to allow booting from TC^3 SCSI controller
+# This is a custom bootfile made by Boisy for his system
+BOOTFILE_CUST	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/cc3disk.dr \
+		$(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+		$(MD)/scf.mn $(MD)/cc3io.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/windint.io $(MD)/vdgint_small.io \
+		$(MD)/term_win80.dt \
+		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
+		$(MD)/vrn.dr $(MD)/nil.dd \
+		$(MD)/vi.dd $(MD)/ftdd.dd \
+		$(MD)/sc6551.dr $(MD)/t2_sc6551.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_tc3 $(CD)/sysgo_dd
+
+BOOTFILE_CUST	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+                $(MD)/rbf.mn \
+                $(C9)/Products/DriveWire/software/6809l2/drivewire.dr \
+                $(C9)/Products/DriveWire/software/6809l2/ddx0.dd \
+                $(C9)/Products/DriveWire/software/6809l2/x1.dd \
+                $(C9)/Products/DriveWire/software/6809l2/x2.dd \
+                $(C9)/Products/DriveWire/software/6809l2/x3.dd \
+                $(MD)/cc3disk.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+                $(MD)/scf.mn $(MD)/cc3io.dr \
+                $(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+                $(MD)/windint.io $(MD)/vdgint.io \
+                $(MD)/term_win80.dt \
+                $(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+                $(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
+                $(MD)/sc6551.dr $(MD)/t2_sc6551.dd $(MD)/t3_sc6551.dd \
+                $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+                $(MD)/clock_60hz $(C9)/Products/DriveWire/software/6809l2/clock2_dw \
+		$(MD)/sysgo_dd
+
+
+BOOTFILES	= bootfile_1773 bootfile_cust
+KERNELS		= kernel_1773 kernel_tc3
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -108,14 +104,8 @@ all:	$(ALLOBJS)
 bootfile_1773: $(BOOTFILE_1773) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_1773)>$@
 
-bootfile_tc3: $(BOOTFILE_TC3) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_TC3)>$@
-
-bootfile_drivewire: $(BOOTFILE_DW) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_DW)>$@
-
-bootfile_kenton: $(BOOTFILE_KENTON) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_KENTON)>$@
+bootfile_cust: $(BOOTFILE_CUST) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_CUST)>$@
 
 kernel_1773: $(KERNEL_1773) $(DEPENDS)
 	$(MERGE) $(KERNEL_1773)>$@
@@ -123,42 +113,33 @@ kernel_1773: $(KERNEL_1773) $(DEPENDS)
 kernel_tc3: $(KERNEL_TC3) $(DEPENDS)
 	$(MERGE) $(KERNEL_TC3)>$@
 
-kernel_drivewire: $(KERNEL_DW) $(DEPENDS)
-	$(MERGE) $(KERNEL_DW)>$@
-
-kernel_rom: $(KERNEL_ROM) $(DEPENDS)
-	$(MERGE) $(KERNEL_ROM)>$@
-
-kernel_kenton: $(KERNEL_KENTON) $(DEPENDS)
-	$(MERGE) $(KERNEL_KENTON)>$@
-
-dd_ez135_l2.dd: $(C9)/superscsi/h0.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aLevel=2 -aDD=1
+kernel_ide: $(KERNEL_IDE) $(DEPENDS)
+	$(MERGE) $(KERNEL_IDE)>$@
 
 # ROM image (32,768 bytes long) to burn into ROM on CoCo 3
-bootfile_drivewire_rom: $(BOOTFILE_1773_ROM) $(DEPENDS) kernel_drivewire
-	$(MERGE) $(BOOTFILE_1773_ROM)>$@
-	$(PADROM) \$$6C00 $@ -c=\$$FF
-	$(MERGE) kernel_drivewire>>$@
-	$(PADROM) \$$7FF0 $@ -c=\$$FF
-	$(MERGE) $(MD)/rom_vectors>>$@
+#bootfile_1773_rom: $(BOOTFILE_1773_ROM) $(DEPENDS) kernel_1773
+#	$(MERGE) $(BOOTFILE_1773_ROM)>$@
+#	$(PADROM) \$$6C00 $@ -c=\$$FF
+#	$(MERGE) kernel_1773>>$@
+#	$(PADROM) \$$7FF0 $@ -c=\$$FF
+#	$(MERGE) $(MD)/rom_vectors>>$@
 
 # ROM image (32,768 bytes long) to burn into ROM on CoCo 3
-bootfile_1773_rom: $(BOOTFILE_1773_ROM) $(DEPENDS) kernel_1773
-	$(MERGE) $(BOOTFILE_1773_ROM)>$@
-	$(PADROM) \$$6C00 $@ -c=\$$FF
-	$(MERGE) kernel_1773>>$@
-	$(PADROM) \$$7FF0 $@ -c=\$$FF
-	$(MERGE) $(MD)/rom_vectors>>$@
+#bootfile_drivewire_rom: $(BOOTFILE_ROM) $(DEPENDS) kernel_drivewire
+#	$(MERGE) $(BOOTFILE_ROM)>$@
+#	$(PADROM) \$$6C00 $@ -c=\$$FF
+#	$(MERGE) kernel_drivewire>>$@
+#	$(PADROM) \$$7FF0 $@ -c=\$$FF
+#	$(MERGE) $(MD)/rom_vectors>>$@
 
 # ROM image (32,768 bytes long) to burn into ROM on CoCo 3
-bootfile_rom: $(BOOTFILE_ROM) $(DEPENDS) kernel_rom
-	$(MERGE) $(BOOTFILE_ROM)>$@
-	ls -l $@
-	$(PADROM) \$$6C00 $@ -c=\$$FF
-	$(MERGE) kernel_rom>>$@
-	$(PADROM) \$$7FF0 $@ -c=\$$FF
-	$(MERGE) $(MD)/rom_vectors>>$@
+#bootfile_rom: $(BOOTFILE_ROM) $(DEPENDS) kernel_rom
+#	$(MERGE) $(BOOTFILE_ROM)>$@
+#	ls -l $@
+#	$(PADROM) \$$6C00 $@ -c=\$$FF
+#	$(MERGE) kernel_rom>>$@
+#	$(PADROM) \$$7FF0 $@ -c=\$$FF
+#	$(MERGE) $(MD)/rom_vectors>>$@
 
 clean:
 	$(RM) $(ALLOBJS)

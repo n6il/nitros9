@@ -370,6 +370,7 @@ ReadSlp
            IFEQ  Level-1
            lda   <V.BUSY
            sta   <V.WAKE
+           lbsr  Sleep0         go suspend process...
            ELSE
            ldd   >D.Proc        process descriptor address
            sta   <V.WAKE        save MSB for IRQ service routine
@@ -381,8 +382,8 @@ ReadSlp
            orb   #Suspend
            stb   P$State,x
            ENDC
-           ENDC
            lbsr  Sleep1         go suspend process...
+           ENDC
            ldx   >D.Proc        process descriptor address
            ldb   P$Signal,x     pending signal for this process?
            beq   ChkState       no, go check process state...
@@ -521,10 +522,6 @@ Writ       clrb                 default to no error...
            bra   WritChr
 WritLoop   lda   <WritFlag
            beq   WritFast
-           IFEQ  Level-1
-           lda   <V.BUSY
-           sta   <V.WAKE
-           ENDC
            lbsr  Sleep1
 WritFast   inc   <WritFlag
 WritChr    ldx   <V.PORT
@@ -627,12 +624,11 @@ BreakSlp   ldx   #SlpBreak      SS.Break duration
 HngUpSlp   ldx   #SlpHngUp      SS.HngUp duration
            bra   TimedSlp
 
-Sleep1
            IFEQ  Level-1
-           ldx   #$0000
-           ELSE
-           ldx   #1             give up balance of tick
+Sleep0     ldx   #$0000
+           bra   TimedSlp
            ENDC
+Sleep1     ldx   #1             give up balance of tick
 TimedSlp   pshs  cc             save IRQ enable status
            andcc #^Intmasks     enable IRQs
            os9   F$Sleep
