@@ -16,7 +16,7 @@ CLOCKS		= $(shell $(CD) modules; make showclocks)
 RBF		= $(shell $(CD) modules; make showrbf)
 SCF		= $(shell $(CD) modules; make showscf)
 PIPE		= $(shell $(CD) modules; make showpipe)
-MODULECMDS	= shell grfdrv del echo format makdir merge os9gen prompt
+MODULECMDS	= shell grfdrv del echo format makdir merge os9gen prompt tmode
 
 DEFS		= $(shell $(CD) defs; make showobjs)
 SYSBIN		= $(shell $(CD) sys; make showbinobjs)
