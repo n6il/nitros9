@@ -1,8 +1,8 @@
 include ../rules.mak
 
 RELEASE		= nos96809l2v030200
-BOOTFILE	= bootfiles/bootfile_vdg
-BOOTFILE_DS80	= bootfiles/bootfile_vdg_ds80
+BOOTFILE	= bootfiles/bootfile_win80
+BOOTFILE_DS80	= bootfiles/bootfile_win80_ds80
 KERNELFILE	= bootfiles/kernel_stock
 DIRS		= cmds modules defs sys bootfiles
 
