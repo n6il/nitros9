@@ -6,6 +6,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * 11     Tandy/Microware original version
+* 12     I/O Queue sort bug and I$Attach static storage BGP 02/05/11
+*        premature deallocation bug fixed
 
          nam   IOMan
          ttl   OS-9 Level One V2 I/O Manager module
@@ -17,9 +19,9 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-* edition $0B = Stock OS-9 Level One Vr. 2.00 IOMan
-* edition $0C = IO Queue sort bug fixed
-edition  equ   $0C
+* edition 11 = Stock OS-9 Level One Vr. 2.00 IOMan
+* edition 12 = IO Queue sort bug fixed, IAttach bug fixed
+edition  equ   12
 
          mod   eom,name,tylg,atrv,IOManEnt,size
 
@@ -294,17 +296,26 @@ L01FE    ldx   <$10,s                  get caller regs
 
 IDetach  ldu   R$U,u
          ldx   V$DESC,u
+         IFEQ  edition-11
+* Note:  the following lines constitute a bug that can, in certain
+*        circumstances, wipe out a device's static storage out from
+*        underneath it.
          ldb   V$USRS,u                get user count
          bne   L0218                   branch if not zero
          pshs  u,b
          ldu   V$STAT,u
          pshs  u
          bra   L0254
+         ELSE
+         tst   V$USRS,u
+         beq   IDetach2
+         ENDC
 L0218    lda   #255
          cmpa  V$USRS,u                255 users?
          lbeq  L0283                   branch if so
          dec   V$USRS,u                else dec user count
          lbne  L0271                   branch if dec not 0
+IDetach2
          ldx   <D.Init
          ldb   DevCnt,x
          pshs  u,b
@@ -926,7 +937,7 @@ L06AB    leax  ,y                      X = proc desc
          bcs   L070F
          ldb   P$Age,u
 
-         ifeq  edition-$0B
+         ifeq  edition-11
 
 * Note:  the following line is a bug
          cmpd  P$Age,y
