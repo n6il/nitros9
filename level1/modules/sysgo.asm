@@ -46,7 +46,7 @@ BootMsg  fcc   !OS-9 LEVEL ONE VR. 0!
          fdb   C$CR,C$LF
 
 * For ROM version, cut down on verbage
-         IFNE  DiskGo
+         IFEQ  ROM
          fcc   !Release Date: 08/01/2003!
          fcb   C$CR,C$LF
          fcc   !"A CoCo Community Project"!
@@ -60,10 +60,20 @@ BootMsg  fcc   !OS-9 LEVEL ONE VR. 0!
          fcb   C$LF
 MsgEnd   equ   *
 
-         IFNE  DiskGo
-ChdDev   fcc   "/DD"
+         IFEQ  ROM
+ChdDev   equ   *
+         IFNE  DD
+         fcc   "/DD"
+         ELSE
+         fcc   "/H0"
+         ENDC
          fcb   C$CR
-ChxDev   fcc   "/DD/"
+ChxDev   equ   *
+         IFNE  DD
+         fcc   "/DD/"
+         ELSE
+         fcc   "/H0/"
+         ENDC
 ChxPath  fcc   "CMDS"
          fcb   C$CR
 *         fcc   ",,,,,,,,,,"
@@ -75,7 +85,7 @@ CrRtn    fcb   C$CR
 AutoEx   fcc   "AutoEx"
          fcb   C$CR
 
-         IFNE  DiskGo
+         IFEQ  ROM
 Startup  fcc   "startup -p"
          fcb   C$CR
          fcc   ",,,,,,,,,,"
@@ -116,7 +126,7 @@ CopyLoop lda   ,x+
          leax  >TimePckt,pcr
          os9   F$STime
 
-         IFNE  DiskGo
+         IFEQ  ROM
          leax  >ChxPath,pcr
          lda   #EXEC.
          os9   I$ChgDir
@@ -135,7 +145,7 @@ DoStrtup os9   F$ID
          ldb   #DefPrior
          os9   F$SPrior
 
-         IFNE  DiskGo
+         IFEQ  ROM
 * First, do startup
          leax  >Shell,pcr
          leau  >Startup,pcr
