@@ -39,234 +39,30 @@ size     equ   .
 name     equ   *
          fcs   /Cobbler/
          fcb   $05 
-L0015    fcb   $0A 
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $3A :
-         fcb   $20 
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $42 B
-         fcb   $42 B
-         fcb   $4C L
-         fcb   $45 E
-         fcb   $52 R
-         fcb   $20 
-         fcb   $3C <
-         fcb   $2F /
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $3E >
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $63 c
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $20 
-         fcb   $61 a
-         fcb   $20 
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $77 w
-         fcb   $20 
-         fcb   $73 s
-         fcb   $79 y
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $6B k
-         fcb   $0D 
-L004F    fcb   $0A 
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $77 w
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20 
-         fcb   $6B k
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $20 
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $0D 
-L006B    fcb   $0A 
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $2D -
-         fcb   $20 
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $64 d
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $6B k
-         fcb   $0D 
-L008C    fcb   $0A 
-         fcb   $57 W
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $6E n
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20 
-         fcb   $2D -
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $28 (
-         fcb   $73 s
-         fcb   $29 )
-         fcb   $20 
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $0A 
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $20 
-         fcb   $33 3
-         fcb   $34 4
-         fcb   $20 
-         fcb   $2D -
-         fcb   $20 
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $20 
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $0A 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $77 w
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $2E .
-         fcb   $0D 
-L00CF    fcb   $0A 
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $2D -
-         fcb   $20 
-         fcb   $4F O
-         fcb   $53 S
-         fcb   $39 9
-         fcb   $62 b
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $66 f
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $0D 
-L00F0    fcb   $4F O
-         fcb   $53 S
-         fcb   $39 9
-         fcb   $42 B
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
+L0015    fcb   C$LF
+         fcc   "Use: COBBLER </devname>"
+         fcb   C$LF
+         fcc   "     to create a new system disk"
+         fcb   C$CR
+L004F    fcb   C$LF
+         fcc   "Error writing kernel track"
+         fcb   C$CR
+L006B    fcb   C$LF
+         fcc   "Error - cannot gen to hard disk"
+         fcb   C$CR
+L008C    fcb   C$LF
+         fcc   "Warning - file(s) present"
+         fcb   C$LF
+         fcc   "on track 34 - this track"
+         fcb   C$LF
+	 fcc   "not rewritten."
+         fcb   C$CR
+L00CF    fcb   C$LF
+         fcc   "Error - OS9boot file fragmented"
+         fcb   C$CR
+L00F0    fcc   "OS9Boot "
          fcb   $FF 
+
 start    equ   *
          clrb  
          lda   #$2F
