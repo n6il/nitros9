@@ -306,7 +306,8 @@ WGlobal  equ   $1000      useful value (points to address starting below)
 G.CurTik rmb   1          Constant - # Clock ticks/cursor updates (2)
 G.CntTik rmb   1          Current tick count for cursor updates
 G.GfBusy rmb   1          Grfdrv is busy flag (1=busy)
-g0003    rmb   2          NEW: UNUSED
+G.OrgAlt rmb   2          Place to store D.AltIRQ before altering
+*g0003    rmb   2          NEW: UNUSED
 g0005    rmb   2          Temp save in Windint RG
 G.GrfStk rmb   2          grfdrv stack pointer ($07)
 G.MonTyp rmb   1          monitor type
