@@ -67,7 +67,6 @@ srcptr   rmb   2
 dotdotfd rmb   3		LSN of ..
 dotfd    rmb   3		LSN of .
 ddcopy   rmb   3
-bootlen  rmb   2		length of param after -b=
 bbuff    rmb   64		-b= buffer
 dentry   rmb   DIR.SZ*2
 srcpath  rmb   128
@@ -135,7 +134,7 @@ Copy     fcc   "copy"
 OS9Gen   fcc   "os9gen"
          fcb   C$CR
 
-OS9Boot  fcs   "OS9BOOT"
+OS9Boot  fcs   "OS9Boot"
 
 DotDot   fcc   "."
 Dot      fcc   "."
@@ -218,19 +217,26 @@ IsItB    cmpa  #'b		is it this option?
          bne   IsItE		branch if not
          sta   <doboot
          cmpb  #'=		= follows?
-         bne   FixCmdLn		if not, continue
-         leax  1,x		move X past dash
+         beq   DoEqual
+* -b alone, copy default bootfile name to bbuff
+         pshs  x
+         leax  OS9Boot,pcr
+         leay  bbuff,u
+         lbsr  StrCpy
+         lda   #C$CR
+         sta   ,y
+         bra   IsItBEx
+DoEqual  leax  1,x		move X past dash
          pshs  x
          leay  bbuff,u		point to buffer
          lbsr  ParmCpy		copy parameter from X to Y
          lda   #C$CR
          sta   ,y
-         stb   bootlen,u	save length
          lda   #C$SPAC
 IsItBLp  sta   ,-x
          cmpx  ,s
          bne   IsItBLp
-         puls  x
+IsItBEx  puls  x
          bra   FixCmdLn
 IsItE    equ   *
 *         cmpa  #'e		is it this option?
@@ -312,26 +318,26 @@ DoDSave  dec   <plistcnt	we should have only one path on cmdline
 * Get entire pathlist to working directory
          lbsr  pwd
 * Open source device as raw and obtain 24 bit LSN to bootfile
-         ldd   #$400D		@ + CR
-         pshs  d		save on stack
-         leax  ,s		point X to stack
-         lda   #READ.		read mode
-         os9   I$Open		open
-         puls  x		clean stack
-         lbcs  Exit		branch if error
-         pshs  a		save path
-         ldx   #0000
-         tfr   u,y
-         ldu   #DD.BT
-         os9   I$Seek		seek to DD.BT in LSN0
-         tfr   y,u
-         lbcs  Exit
-         leax  ddbt,u		point to buffer
-         ldy   #3		read 3 bytes at DD.BT
-         os9   I$Read 
-         lbcs  Exit		exit of error
-         puls  a		get path on stack
-         os9   I$Close		and close it
+*         ldd   #$400D		@ + CR
+*         pshs  d		save on stack
+*         leax  ,s		point X to stack
+*         lda   #READ.		read mode
+*         os9   I$Open		open
+*         puls  x		clean stack
+*         lbcs  Exit		branch if error
+*         pshs  a		save path
+*         ldx   #0000
+*         tfr   u,y
+*         ldu   #DD.BT
+*         os9   I$Seek		seek to DD.BT in LSN0
+*         tfr   y,u
+*         lbcs  Exit
+*         leax  ddbt,u		point to buffer
+*         ldy   #3		read 3 bytes at DD.BT
+*         os9   I$Read 
+*         lbcs  Exit		exit of error
+*         puls  a		get path on stack
+*         os9   I$Close		and close it
 
 * Do dsave "pre" commands
          lbsr  DoEcho
@@ -715,9 +721,13 @@ BuildOS9Gen
          pshs  x
          leax  OS9Gen,pcr
          lbsr  CopyCmd
-         leax  dstpath,u
-         bsr   BuildCopy4
+         ldx   <dstpath
+         lbsr  StrCpy			copy to buffer
 * write file name, then CR
+         lda   #C$CR			get space
+         sta   ,y+			and store it after command in buff
+         leax  linebuff,u
+         lbsr  WriteIt
          leax  bbuff,u
          lbsr  WriteIt
          leax  CR,pc
