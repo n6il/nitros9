@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; errno
+; errno - NitrOS-9 Error Definitions
 ;
 ; $Id$
 ;
@@ -7,7 +7,7 @@
 ; Comment
 ; ------------------------------------------------------------------
 ;          2004/07/02  Boisy G. Pitre
-; Started
+; Created.
 
            .title   NitrOS-9 Error Definitions
 

@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; stat
+; stat - GetStat/SetStat Code Definitions
 ;
 ; $Id$
 ;
@@ -7,7 +7,7 @@
 ; Comment
 ; ------------------------------------------------------------------
 ;          2004/07/02  Boisy G. Pitre
-; Started
+; Created.
 
            .title   GetStat/SetStat Code Definitions
 

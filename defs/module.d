@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; module
+; module - Module Definitions
 ;
 ; $Id$
 ;
@@ -7,7 +7,7 @@
 ; Comment
 ; ------------------------------------------------------------------
 ;          2004/05/17  Boisy G. Pitre
-; Started.
+; Created.
 
            .title   Module Definitions
 
@@ -43,11 +43,11 @@ M$IDSize   ==       9          ; Module ID Size
 ;
 ; System, File Manager, Device Driver, Program Module
 ;
-M$Exec     ==       10         ; Execution Entry Offset
+M$Exec     ==       9         ; Execution Entry Offset
 ;
 ; Device Driver, Program Module
 ;
-M$Mem      ==       12         ; Stack Requirement
+M$Mem      ==       11         ; Stack Requirement
 ;
 ; Device Driver, Device Descriptor Module
 ;

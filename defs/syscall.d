@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; syscall
+; syscall - NitrOS-9 System Call Definitions
 ;
 ; $Id$
 ;
@@ -7,9 +7,9 @@
 ; Comment
 ; ------------------------------------------------------------------
 ;          2004/07/02  Boisy G. Pitre
-; Started
+; Created.
 
-           .title   NitrOS-9 System Definitions
+           .title   NitrOS-9 System Call Definitions
 
            .area    SYS (ABS)
 

@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; sysglobs
+; sysglobs - System Global Definitions
 ;
 ; $Id$
 ;
@@ -7,9 +7,9 @@
 ; Comment
 ; ------------------------------------------------------------------
 ;          2004/05/17  Boisy G. Pitre
-; Started.
+; Created.
 
-           .title   System Globals
+           .title   System Global Definitions
 
            .area    SYSGLOBS (ABS)
 
