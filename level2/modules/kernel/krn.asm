@@ -33,7 +33,7 @@ MName    fcs   /Kernel/
          fcb   Edition 
 
 * FILL - all unused bytes are now here
-         fcc   /www.katvixen.net/
+         fcc   /www.katvixen.com/
          IFNE  H6309
          fcc   /0123456789ABCDEF/
          fcc   /0123456789ABCDEF/
