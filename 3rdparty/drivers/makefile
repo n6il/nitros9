@@ -9,6 +9,7 @@ all:
 	@$(ECHO) "*********************************************"
 	cd ide; make
 	cd flash; make
+	cd s16550; make
 	cd scsisys; make
 	cd sdisk; make
 	cd sdisk3; make
@@ -17,6 +18,7 @@ all:
 clean:
 	-cd ide; make clean
 	-cd flash; make clean
+	-cd s16550; make clean
 	-cd scsisys; make clean
 	-cd sdisk; make clean
 	-cd sdisk3; make clean
