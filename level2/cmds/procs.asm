@@ -5,7 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 14     Original Tandy/Microware version
+*  14    Original Tandy/Microware version
+*  15    Changed e to -e                                BGP 03/01/14
 
          nam   Procs
          ttl   program module       
@@ -19,13 +20,13 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   14
+edition  set   15
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   1
+showall  rmb   1
 u0001    rmb   1
-u0002    rmb   1
+narrow   rmb   1
 u0003    rmb   1
 u0004    rmb   1
 u0005    rmb   1
@@ -41,23 +42,23 @@ size     equ   .
 
 name     fcs   /Procs/
          fcb   edition
-L0013    fcs   "         User                     Mem Stack"
-L003E    fcs   "Id  PId Number  Pty Age Sts Signl Siz  Ptr   Primary Module"
-L0079    fcs   "--- --- ------- --- --- --- ----- --- ----- ----------------"
-L00B5    fcs   "Id  PId  User#  Pty  Age  Sts"
-L00D2    fcs   " Sigl  Mem    StPtr   Primary"
-L00EF    fcs   "============================="
-L010C    fcs   "DEAD"
+header1  fcs   "         User                     Mem Stack"
+header2  fcs   "Id  PId Number  Pty Age Sts Signl Siz  Ptr   Primary Module"
+header3  fcs   "--- --- ------- --- --- --- ----- --- ----- ----------------"
+sheader1 fcs   "Id  PId  User#  Pty  Age  Sts"
+sheader2 fcs   " Sigl  Mem    StPtr   Primary"
+sheader3 fcs   "============================="
+ItsDead  fcs   "DEAD"
 
-start    clr   <u0000
-         clr   <u0002
+start    clr   <showall
+         clr   <narrow		assume wide screen
          lda   #$01
          sta   <u0001
-         lda   ,x+
-         eora  #'E
-         anda  #$DF
-         bne   L0122
-         inc   <u0000
+         ldd   ,x+
+         andb  #$DF
+         cmpd  #$2D45			-e?
+         bne   L0122			branch if nnot
+         inc   <showall
 L0122    leax  <u002A,u
          stx   <u0006
          leax  <u007A,u
@@ -75,31 +76,31 @@ L0134    inca
          lbsr  L024F
          lda   #$01
          ldb   #SS.ScSiz
-         os9   I$GetStt 
-         bcc   L0154
-         cmpb  #E$UnkSvc
-         lbne  L0241
-         bra   L017B
-L0154    cmpx  #$003C
-         bge   L017B
-         inc   <u0002
-         leay  >L00B5,pcr
+         os9   I$GetStt 		get window size
+         bcc   L0154			branch if gotten
+         cmpb  #E$UnkSvc		unknown service?
+         lbne  L0241			if not, erroor
+         bra   L017B			else assume wide screen
+L0154    cmpx  #60			at least this wide?
+         bge   L017B			branch if so
+         inc   <narrow			else set narrow flag
+         leay  >sheader1,pcr
          lbsr  L0244
          lbsr  L024F
-         leay  >L00D2,pcr
+         leay  >sheader2,pcr
          lbsr  L0244
          lbsr  L024F
-         leay  >L00EF,pcr
+         leay  >sheader3,pcr
          lbsr  L0244
          lbsr  L024F
          bra   L0199
-L017B    leay  >L0013,pcr
+L017B    leay  >header1,pcr
          lbsr  L0244
          lbsr  L024F
-         leay  >L003E,pcr
+         leay  >header2,pcr
          lbsr  L0244
          lbsr  L024F
-         leay  >L0079,pcr
+         leay  >header3,pcr
          lbsr  L0244
          lbsr  L024F
 L0199    inc   <u0001
@@ -111,7 +112,7 @@ L0199    inc   <u0001
          ldd   <u0003
          cmpd  $08,x
          beq   L01B4
-         tst   <u0000
+         tst   <showall
          beq   L0199
 L01B4    ldb   ,x
          lbsr  L026F
@@ -127,13 +128,13 @@ L01B4    ldb   ,x
          ldb   $0A,x
          lbsr  L026F
          lbsr  L0292
-         tst   <u0002
+         tst   <narrow
          beq   L01E1
          lbsr  L0292
 L01E1    ldb   $0B,x
          lbsr  L026F
          lbsr  L0292
-         tst   <u0002
+         tst   <narrow
          beq   L01F0
          lbsr  L0292
 L01F0    lda   #$24
@@ -141,7 +142,7 @@ L01F0    lda   #$24
          lda   $0C,x
          lbsr  L02A0
          clra  
-         tst   <u0002
+         tst   <narrow
          beq   L0202
          lbsr  L024F
 L0202    ldb   <$19,x
@@ -151,7 +152,7 @@ L0202    ldb   <$19,x
          ldb   $07,x
          bsr   L026F
          bsr   L0292
-         tst   <u0002
+         tst   <narrow
          beq   L021E
          bsr   L0292
          bsr   L0292
@@ -163,7 +164,7 @@ L021E    lda   #$24
          lda   $05,x
          bsr   L02A0
          bsr   L0292
-         tst   <u0002
+         tst   <narrow
          beq   L0234
          bsr   L0292
          bsr   L0292
@@ -185,7 +186,7 @@ L024F    pshs  y,x,a
          bsr   L0296
          leax  <u002A,u
          stx   <u0006
-         tst   <u0002
+         tst   <narrow
          beq   L0264
          ldy   #$0020
          bra   L0268
@@ -259,7 +260,7 @@ L02F4    bsr   L0296
          leas  $02,s
          puls  pc,y,x,b,a
 L02FA    pshs  u,x
-         leay  >L010C,pcr
+         leay  >ItsDead,pcr
          lda   $0C,x
          bita  #$01
          bne   L0330
