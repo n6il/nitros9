@@ -76,7 +76,7 @@ L007E    bsr   L0086
          sta   -2,x
          bra   L007B
 L0086    lda   ,x+
-         eora  #$58
+         eora  #'X
          anda  #$DF
          bne   L0093
          lda   #$04
