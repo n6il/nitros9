@@ -625,23 +625,20 @@ StdStr   rmb   2          Standard I/O Pathlist
 BootStr  rmb   2          Bootstrap Module name
 ProtFlag rmb   1          Write protect enable flag
 
-*         ifgt  Level-1
-
 OSLevel  rmb   1          OS level
 OSVer    rmb   1          OS version
 OSMajor  rmb   1          OS major
 OSMinor  rmb   1          OS minor
-Compat1  rmb   1          compatibility byte
+Feature1 rmb   1          feature byte 1
 
 * -- CCIO/CC3IO area -- *
 MonType  rmb   1          Monitor type (0=CMP,1=RGB,2=MONO) (unused in OS-9 Level One)
 KeyRptS  rmb   1          Key repeat start constant
 KeyRptD  rmb   1          Key repeat delay constant
 
-* Compatiblity byte definitions
-CRCOn    equ   %00000001  CRC checking on if set, off if clear
-
-*         endc
+* Feature1 byte definitions
+CRCOn    equ   %00000001  CRC checking on
+CRCOff   equ   %00000000  CRC checking off
 
          pag
 **************************
