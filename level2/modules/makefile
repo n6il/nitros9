@@ -58,6 +58,7 @@ DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 		-aInterlv=3 -aSAS=8
 
+# Floppy descriptors
 ddd0_35s.dd: dx.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0 -aDD=1
 
@@ -96,6 +97,31 @@ d1_80d.dd: dx.asm
 
 d2_80d.dd: dx.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
+
+# RAM Disk descriptors
+r0_8k.dd: rx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=32
+
+ddr0_8k.dd: rx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=32 -aDD=1
+
+r0_96k.dd: rx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=384
+
+ddr0_96k.dd: rx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=384 -aDD=1
+
+r0_128k.dd: rx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=512
+
+ddr0_128k.dd: rx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=512 -aDD=1
+
+r0_192k.dd: rx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=768
+
+ddr0_192k.dd: rx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=768 -aDD=1
 
 cc3go_rom: cc3go.asm
 	$(AS) -aROM=1 $(AFLAGS) $< $(ASOUT)$@
