@@ -9,8 +9,8 @@ all:
 	@$(ECHO) "*           3rd Software Packages           *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	cd rof; make
+	$(CD) rof; make
  
 clean:
-	-cd rof; make clean
+	-$(CD) rof; make clean
 
