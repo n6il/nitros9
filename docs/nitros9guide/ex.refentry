@@ -1,0 +1,56 @@
+<refentry id="ex">
+<refnamediv>
+<refname>EX</refname>
+<refpurpose>Execute program as overlay</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>EX</command>
+<arg choice="plain">
+  &replstart;module name&replend;
+</arg>
+<arg choice="opt">
+  &replstart;modifiers&replend;
+</arg>
+<arg choice="opt">
+  &replstart;parameters&replend;
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+This a shell built-in command that causes the process executing the
+shell to start execution of another program. It permits a transition
+from the shell to another program without creating another process,
+thus conserving system memory.
+</para>
+<para>
+This command is often used when the shell is called from another
+program to execute a specific program, after which the shell is not
+needed. For instance, applications which only use BASIC09 need not
+waste memory space on SHELL.
+</para>
+<para>
+The &quot;ex&quot; command should always be the last command on a shell input
+line because any command line following will never be processed.
+</para>
+<para>
+NOTE: Since this is a built-in SHELL command, it does not appear in
+the CMDS directory.
+</para>
+<para>
+For more information see: 4.5, 4.6, 4.9
+
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+ex BASIC09
+
+tsmon /t1&amp;; tsmon /t2&amp;; ex tsmon /term
+</screen>
+</refsect1>
+</refentry>
+

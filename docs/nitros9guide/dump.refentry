@@ -1,0 +1,61 @@
+<refentry id="dump">
+<refnamediv>
+<refname>DUMP</refname>
+<refpurpose>Formatted File Data Dump in Hexadecimal and ASCII</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>DUMP</command>
+<arg choice="opt">
+  &replstart;path&replend;
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+This command produces a formatted display of the physical data
+contents of the path specified which may be a mass storage file or
+any other I/O device. If a pathlist is omitted, the standard input
+path is used. The output is written to standard output. This command is
+commonly used to examine the contents of non-text files.
+</para>
+<para>
+The data is displayed 16 bytes per line in both hexadecimal and
+ASCII character format. Data bytes that have non-displayable values
+are represented by periods in the character area.
+</para>
+<para>
+The addresses displayed on the dump are relative to the beginning of
+the file. Because memory modules are position-independent and stored
+on files exactly as they exist in memory, the addresses shown on the
+dump correspond to the relative load addresses of memory-module
+files.
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+DUMP              (display keyboard input in hex)
+DUMP myfile &gt;/P   (dump myfile to printer)
+DUMP shortfile
+</screen>
+</refsect1>
+
+<refsect1><title>Sample Output</title>
+<screen>
+   Addr  0 1  2 3  4 5  6 7  8 9  A B  C D  E F   0 2 4 6 8 A C E
+   ---- ---- ---- ---- ---- ---- ---- ---- ----  ----------------
+   0000 87CD 0038 002A P181 2800 2E00 3103 FFE0  .M.8.*q.(...1..'
+   0010 0418 0000 0100 0101 0001 1808 180D 1B04  ................
+   0020 0117 0311 0807 1500 002A 5445 S2CD 5343  .........*TERMSC
+   0030 C641 4349 C10E 529E                      FACIA.R.
+
+    ^                     ^                              ^
+
+starting       data bytes in hexadecimal           data bytes in
+address                format                      ASCII format
+</screen>
+</refsect1>
+</refentry>
+

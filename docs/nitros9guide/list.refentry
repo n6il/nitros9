@@ -1,0 +1,64 @@
+<refentry id="list">
+<refnamediv>
+<refname>LIST</refname>
+<refpurpose>List the contents of a text file</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>LIST</command>
+<arg choice="plain">
+  &replstart;path&replend;
+</arg>
+<arg choice="plain">
+  &repeatst; &replstart;path&replend; &repeaten;
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+This command copies text lines from the path(s) given as parameters
+to the standard output path. The program terminates upon reaching
+the end-of-file of the last input path. If more than one path is
+specified, the first path will be copied to standard output, the
+second path will be copied next, etc.
+</para>
+<para>
+This command is most commonly used to examine or print text files.
+</para>
+<para>
+For more information see: 2.3, 3.9.2
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<literallayout>
+list /d0/startup &gt;/P &amp;        (output is redirected to printer)
+
+list /D1/user5/document /d0/myfile /d0/Bob/text
+
+list /TERM &gt;/p                    (copy keyboard to printer - use
+                                  &quot;escape&quot; key to terminate input)
+</literallayout>
+<screen>
+
+OS9: build animals
+? cat
+? cow
+? dog
+? elephant
+? bird
+? fish
+? [RETURN]
+
+OS9: list animals
+cat
+cow
+dog
+elephant
+bird
+fish
+</screen>
+</refsect1>
+</refentry>
+

@@ -1,0 +1,49 @@
+<refentry id="printerr">
+<refnamediv>
+<refname>PRINTERR</refname>
+<refpurpose>Print Full Text Error Messages</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>PRINTERR</command>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+This command replaces the basic OS-9 error printing routine (F$PERR
+service request) which only prints error code numbers, with a
+routine the reads and displays textual error messages from the file
+&quot;/d0/SYS/errmsg&quot;. Printerr's effect is system-wide.
+</para>
+<para>
+A standard error message file is supplied with OS-9. This file can
+be edited or replaced by the system manager. The file is a normal
+text file with variable length line. Each error message line begins
+with the error number code (in ASCII characters), a delimiter, and
+the error message text. The error messages need not be in any
+particular order. Delimiters are spaces or any character numerically lower then
+$20. Any line having a delimiter as its first
+character is considered a contintjation of the previous line(s) which
+permits multi-line error messages.
+</para>
+<para>
+WARNING: Once the printerr command has been used, it can not be undone. Once
+installed, the PRINTERR module should not be unlinked.
+PRINTERR uses the current user's stack for an I/O buffer, so users
+are encouraged to reserve reasonably large stacks.
+</para>
+<para>
+For more information see: 4.7, 6.2
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+
+OS9: printerr
+
+</screen>
+</refsect1>
+</refentry>
+
