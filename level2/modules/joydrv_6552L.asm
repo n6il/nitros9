@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 6      L2 Upgrade distribution version
+*   6      1988/??/??
+* L2 Upgrade distribution version.
 
          nam   JoyDrv
          ttl   Joystick Driver for 6552/Logitech Mouse
@@ -19,7 +21,7 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   6
 
 MPISlot  set   $00

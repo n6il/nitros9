@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 6      L2 Upgrade distribution version
-*        Annotations by Robert Gault                    RG  98/10/09
+*   6      1988/??/??
+* L2 Upgrade distribution version.
+*
+*          1998/10/09  Robert Gault
+* Annotations.
 
          nam   JoyDrv
          ttl   Joystick Driver for CoCo 3 Hi-Res Mouse
@@ -19,7 +23,7 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   6
 
          mod   eom,name,tylg,atrv,start,size

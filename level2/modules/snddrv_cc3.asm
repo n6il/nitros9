@@ -6,11 +6,17 @@
 * Should be fully compatible with old SS.Tone.
 * (needs cleaning up for space)
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*        First working version                          KKD 88/08/24
-*        Bell version for critics <grin>                KKD 88/11/14
-* 6      Upgrade to edition 3 from Monk-o-Ware          BGP 98/09/26
+*          1988/08/24  Kevin Darling
+*          First working version.
+*
+*          1988/11/14  Kevin Darling
+* Bell version for critics <grin>.
+*
+*   6      1998/09/26  Boisy G. Pitre
+* Upgrade to edition 3 from Monk-o-Ware.
 
          nam   SndDrv
          ttl   Sound Driver for CoCo 3
