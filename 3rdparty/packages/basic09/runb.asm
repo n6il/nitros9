@@ -3,12 +3,15 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 22     Tandy/Microware version                        BGP 02/12/26
-*        Tables L000D, L00E9    removed some UNID       RG  03/05/13
-*        Translated jump vectors L00D9, L0442           RG  03/05/13
+*  22      2002/12/26  Boisy G. Pitre
+* Acquired Tandy/Microware version.
 *
+*          2003/05/13  Robert Gault
+* Tables L000D, L00E9 removed some UNID, translated jump
+* vectors L00D9, L0442.
          nam   RunB
          ttl   Basic09 Runtime
 
@@ -20,7 +23,8 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
+edition  set   22
 
 L0000    mod   eom,name,tylg,atrv,start,dsize
 
@@ -219,7 +223,7 @@ L000D    fdb   L00D9
          fdb   $0000 
 
 name     fcs   /RunB/
-         fcb   22
+         fcb   edition
 
          fcb   $06 
          fcb   $0C 
