@@ -7,7 +7,7 @@ DEPENDS		= ./makefile
 BASIC09FILES	= runb.asm gfx.asm inkey.asm syscall.asm
 CMDS		= asm attr backup binex build cmp cobbler config copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir disasm \
-		display dmode dsave dump echo edit error exbin exmode format \
+		display dmode dsave dump echo edit error exbin format \
 		free grfo help ident iniz irqs link list load login makdir \
 		megaread mdir merge mfree mpi os9gen padrom park prompt printerr procs pwd pxd \
 		rename runb save setime shellplus shell_21 sleep \
