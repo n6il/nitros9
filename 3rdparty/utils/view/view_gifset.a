@@ -5,7 +5,7 @@
 *   SetGIF   -- Initialization. Reserves tables, sets format
 *
  ifp1
- use  /dd/defs/os9defs.a
+ use  os9defs.a
  endc
 
  psect view_gifset_a,0,0,0,0,0

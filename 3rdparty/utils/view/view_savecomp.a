@@ -6,7 +6,7 @@
 *
 
  ifp1
- use /dd/defs/os9defs.a
+ use os9defs.a
  endc
 
 check macro

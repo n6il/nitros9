@@ -11,7 +11,7 @@
 *    cmpconv:  Convert "palette" buffer from Composite color to RGB color
 *
   ifp1
-  use /dd/defs/os9defs.a
+  use os9defs.a
   endc
 
 StdOut equ 1

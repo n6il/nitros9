@@ -14,7 +14,7 @@ check macro
       endm
 
  ifp1
- use /dd/defs/os9defs.a
+ use os9defs.a
  endc
 
  psect  view_pix_gfx_a,0,0,0,0,0 
