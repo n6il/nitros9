@@ -19,9 +19,11 @@ atrv     set   ReEnt+rev
 rev      set   $02
 edition  set   $12
 
+maxdrv   set   3
+
          mod   eom,name,tylg,atrv,start,size
 
-         rmb   DRVBEG+(DRVMEM*3)
+         rmb   DRVBEG+(DRVMEM*maxdrv)
 u0081    rmb   2
 u0083    rmb   1
 u0084    rmb   1
@@ -41,7 +43,7 @@ name     fcs   /SDisk/
          fcb   edition
 
          fcc   "Copyright 1984 D.P.Johnson"
-         fcb   $0D 
+         fcb   C$CR
          fcc   "ALL RIGHTS RESERVED"
 
 start    lbra  Init
@@ -59,15 +61,15 @@ Init     clra
          lbsr  L0419
          lda   >$FF48
          lda   #$FF
-         ldb   #$03
+         ldb   #maxdrv
          leax  DRVBEG,u
 L006D    sta   $01,x
          sta   <$15,x
-         leax  <$26,x
+         leax  <DRVMEM,x
          decb  
          bne   L006D
          leax  >L0235,pcr
-         stx   >$010A
+         stx   >D.XNMI
          lda   #$7E
          sta   >$0109
          ldd   #256
@@ -279,10 +281,10 @@ L0262    comb
          tfr   a,b
          rts   
 L0266    comb  
-         ldb   #$F5
+         ldb   #E$Write
          rts   
 L026A    comb  
-         ldb   #$F4
+         ldb   #E$Read
          rts   
 L026E    pshs  x,b,a
          ldx   $08,y
@@ -335,7 +337,7 @@ L02D3    tstb
          cmpd  $01,x
          bcs   L02EB
 L02E7    comb  
-         ldb   #$F1
+         ldb   #E$Sect
          rts   
 L02EB    subd  <$2B,y
          bcc   L02F5
@@ -390,7 +392,7 @@ L034E    pshs  a
          beq   L0375
          leas  $02,s
          comb  
-         ldb   #$F9
+         ldb   #E$BTyp
          rts   
 L036B    eorb  <$24,y
          bitb  #$02
@@ -433,7 +435,7 @@ L03C1    lbsr  L04F8
          cmpa  #$03
          bcs   L03CF
          comb  
-         ldb   #$F0
+         ldb   #E$Unit
          rts   
 L03CF    pshs  x,b,a
          leax  >L03BE,pcr
@@ -467,8 +469,8 @@ L0419    lbsr  L041C
 L041C    lbsr  L041F
 L041F    rts   
 
-GetStat  ldx   $06,y
-         ldb   $02,x
+GetStat  ldx   PD.RGS,y
+         ldb   R$B,x
          cmpb  #$80
          bne   L046F
          bsr   L0439
@@ -490,8 +492,8 @@ L0439    ldd   $08,y
          stb   >u008E,u
          rts   
 
-SetStat  ldx   $06,y
-         ldb   $02,x
+SetStat  ldx   PD.RGS,y
+         ldb   R$B,x
          cmpb  #$03
          beq   L04D4
          cmpb  #$04
@@ -504,7 +506,7 @@ SetStat  ldx   $06,y
          cmpb  #$80
          beq   L047B
 L046F    comb  
-         ldb   #$D0
+         ldb   #E$UnkSvc
 L0472    rts   
 L0473    lda   #$FF
 L0475    sta   >u0086,u
@@ -574,8 +576,8 @@ L0507    nop
 L050D    lda   #$F0
          sta   >$006F
          puls  pc,x,b,a
-         fcb   $01 
-         fcb   $E9 i
+
+         fdb   $01E9
 
          emod
 eom      equ   *
