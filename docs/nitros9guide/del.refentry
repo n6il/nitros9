@@ -1,0 +1,62 @@
+<refentry id="del">
+<refnamediv>
+<refname>DEL</refname>
+<refpurpose>Delete a file</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>DEL</command>
+<arg choice="opt">
+  <option>-x</option>
+</arg>
+<arg choice="plain">
+  &replstart;path&replend;
+</arg>
+<arg choice="plain">
+  &repeatst;&replstart;path&replend;&repeaten;
+</arg>
+<arg choice="opt">
+  <option>-x</option>
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+This command is used to delete the file(s) specified by the
+pathllst(s). The user must have write permission for the file(s).
+Directory files cannot be deleted unless their type is changed to
+non-directory: see the &quot;ATTR&quot; command description.
+</para>
+<para>
+If the -x option appears, the current
+<emphasis>execution</emphasis> directory is assumed.
+</para>
+<para>
+For more information see: 3.5, 3.8.1
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+del test_program old_test_program
+
+del /D1/number_five
+
+OS9:dir /D1
+
+   Directory of /D1 14:29:46
+myfile          newfile
+
+OS9:del /D1/newfile
+OS9:dir /D1
+
+   Directory of /D1 14:30:37
+myfile
+
+OS9:del myprog -x
+OS9:del -x CMDS.SUBDIR/file
+</screen>
+</refsect1>
+</refentry>
+
