@@ -20,8 +20,6 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 SUPPORTFILES	= logDir object picDir sndDir tOC viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 words.tok
 
-SCRIPTS		= install2dd
-
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
@@ -29,7 +27,6 @@ all:	$(ALLOBJS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)
-	$(OS92UNIX) $(SCRIPTS)
 
 dsk:	all
 	$(RM) $(DISK)
@@ -43,8 +40,6 @@ dsk:	all
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(OS9RENAME) $(DISK),CMDS/sierra AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
-	$(UNIX2OS9) $(SCRIPTS)
-	$(CP) $(SCRIPTS) $(DISK),.
 
 dskclean:
 	$(RM) $(DISK)
