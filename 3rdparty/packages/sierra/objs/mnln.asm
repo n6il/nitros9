@@ -20,7 +20,10 @@
 
 *  >$0154  flag for using extended lookups
 *  >$0541  joystick button status
+*  >$0532  vol_handle_table
+*  >$05B9  input_edit_disabled
 
+ 
 StdIn  equ 0
 StdOut equ 1
 StdErr equ 2
@@ -2634,6 +2637,8 @@ L145D    lbsr  L1572       close open path
          leas  <$22,s      clean up stack
          rts
 
+
+* lib_get_disk (state_info.c)
 L1464    leas  -$0A,s
          leay  ,s          
          bsr   L142B       opens a path and gets device name
@@ -3082,18 +3087,23 @@ L17E9    fcb   $00,$00,$00,$00
          fcb   $00,$00,$00,$00
          fcb   $00,$00,$00,$00
 
+* save_disk_check (state_info.c)
 L1829    fcc   'save'
          fcb   C$NULL
 
+* save_disk_check (state_info.c)
 L182E    fcc   'restore'
          fcb   C$NULL
 
 L1836    fcc   ' - %s'
          fcb   C$NULL
 
+
+* state_get_info strings (state_info.c)
 L183C    fcc   'How would you like to describe this saved game?'
          fcb   C$LF,C$LF,C$NULL
 
+* save_disk_check strings (state_info.c)
 L186E    fcc   'Please put your save game'
          fcb   C$LF
          fcc   'disk in drive %s.'
@@ -3105,9 +3115,11 @@ L186E    fcc   'Please put your save game'
          fcc   '%s a game.'
          fcb   C$NULL
 
+* state_get_path strings (state_info.c)
 L18D7    fcc   '(For example, "/d1" or "/h0/savegame")'
          fcb   C$NULL
 
+* state_get_path strings (state_info.c)
 L18FE    fcc   '         SAVE GAME'
          fcb   C$LF,C$LF
          fcc   'On which disk or in which directory do you '
@@ -3117,6 +3129,7 @@ L18FE    fcc   '         SAVE GAME'
          fcb   C$LF,C$LF
          fcb   C$NULL
 
+* state_get_path strings (state_info.c)
 L195B    fcc   '        RESTORE GAME'
          fcb   C$LF,C$LF
          fcc   'On which disk or in which directory is the '
@@ -3126,6 +3139,7 @@ L195B    fcc   '        RESTORE GAME'
          fcb   C$LF,C$LF
          fcb   C$NULL
 
+* state_get_filename strings (state_info.c)
 L19C1    fcc   'Use the arrow keys to move'
          fcb   C$LF
          fcc   '     the pointer to your name.'
@@ -3134,6 +3148,7 @@ L19C1    fcc   'Use the arrow keys to move'
          fcb   C$LF
          fcb   C$NULL
 
+* state_get_path strings (state_info.c)
 L1A0E    fcc   'There is no directory named:'
          fcb   C$LF
          fcc   '%s.'
@@ -3143,6 +3158,7 @@ L1A0E    fcc   'There is no directory named:'
          fcc   'Press CTRL-BREAK to cancel.'
          fcb   C$NULL
 
+* state_get_filename strings (state_info.c)
 L1A65    fcc   'There are no games to'
          fcb   C$LF
          fcc   'restore in:'
@@ -3152,17 +3168,20 @@ L1A65    fcc   'There are no games to'
          fcc   'Press ENTER to continue.'
          fcb   C$NULL
 
+* state_get_filename strings (state_info.c)
 L1AA5    fcc   'Use the arrow keys to select the slot '
          fcc   'in which you wish to save the game. '
          fcc   'Press ENTER to save in the slot, '
          fcc   'CTRL-BREAK to not save a game.'
          fcb    C$NULL
 
+* state_get_filename strings (state_info.c)
 L1B2F    fcc   'Use the arrow keys to select the game which you '
          fcc   'wish to restore. Press ENTER to restore the game, '
          fcc   'CTRL-BREAK to not restore a game.'
          fcb    C$NULL
 
+* state_get_filename strings (state_info.c)
 L1BB3    fcc   '   Sorry, this disk is full.'
          fcb   C$LF
          fcc   'Position pointer and press ENTER'
@@ -3177,16 +3196,18 @@ L1BB3    fcc   '   Sorry, this disk is full.'
 
 
 
-
+* state_get_info  (state_info.c)
 L1C49    leas  -$02,s
          clr   $01,s
-         lda   >$05B9
+         lda   >$05B9    input_edit_disabled
          sta   ,s
-         lbsr  L5B7A
+         lbsr  L5B7A     input_edit_on
          lbsr  L464E
          lbsr  L47AA
+         
          ldd   #$000F
          lbsr  L45BA
+         
          ldd   $04,s
          pshs  d
          lbsr  L1D10
@@ -3194,7 +3215,7 @@ L1C49    leas  -$02,s
 L1C6A    beq   L1CAB
          ldd   $04,s
          pshs  b,a
-         lbsr  L1CBD
+         lbsr  L1CBD        save_disk_check
          leas  $02,s
          beq   L1CAB
          ldd   $04,s
@@ -3206,7 +3227,7 @@ L1C6A    beq   L1CAB
          lda   $05,s
          cmpa  #$73
          bne   L1CA2
-         lda   >L41E5,pcr
+         lda   >L41E5,pcr     FILE struct datablock ???
          bne   L1CA2
          leax  >L17CA,pcr     31 byte data block
          leau  >L183C,pcr     describe game msg
@@ -3226,33 +3247,35 @@ L1CAB    lbsr  L47BE
 L1CB8    lda   $01,s
          leas  $02,s
          rts
-
+         
+* save_disk_check
+* passed in  state_type for checking
 L1CBD    leas  >-$00A5,s
          lda   #$01
-         sta   ,s
+         sta   ,s            tempa2
          leau  >$00A1,s
-         lbsr  L1464
-         lda   >L4423,pcr    data byte
+         lbsr  L1464         lib_get_disk
+         lda   >L4423,pcr    save_drive
          cmpa  >$00A4,s
-         bne   L1D09
+         bne   L1D09         clean up and return
          cmpa  #$10
-         bcc   L1D09
-         lbsr  L4BBA
-         leau  >L1829,pcr    save msg
-         lda   >$00A8,s
-         cmpa  #$73
-         beq   L1CED
-         leau  >L182E,pcr    restore msg
-L1CED    pshs  u
-         leau  >$00A3,s
-         pshs  u
+         bcc   L1D09         clean up and return 
+         lbsr  L4BBA         volumes_close
+         leau  >L1829,pcr    load the "save" string
+         lda   >$00A8,s      load the state_type passed to function
+         cmpa  #'s           is it an 's' for save? $73
+         beq   L1CED         it was s so don't load the restore string
+         leau  >L182E,pcr    restore string
+L1CED    pshs  u             push state_type string on stack
+         leau  >$00A3,s      address of out temp buffer
+         pshs  u             push on stack
          leau  >L186E,pcr    save game disk in drive msg
          leax  $05,s
          pshs  u
          pshs  x
-         lbsr  L3C21
+         lbsr  L3C21         ???         
          leas  $08,s
-         lbsr  L37F2
+         lbsr  L37F2         assume this puts message to screen ???
          sta   ,s
 L1D09    lda   ,s
          leas  >$00A5,s
@@ -3264,7 +3287,7 @@ L1D10    leas  >-$00C8,s
          leau  >L17AB,pcr   31 byte data block
          lbsr  L1486
          leas  ,s
-L1D23    tst   >L41E5,pcr
+L1D23    tst   >L41E5,pcr   FILE struct data block ???
          bne   L1D7E
 L1D29    leau  >L18D7,pcr   example msg
          pshs  u
@@ -3412,7 +3435,7 @@ L1EA8    inc   >$024B,s
          lbra  L1E0B
 L1EB3    lda   >$024A,s
          bne   L1EDD
-         lda   >L41E5,pcr
+         lda   >L41E5,pcr   FILE struct data block
          bne   L1EE5
          leau  >L17AB,pcr   31 byte data block
          pshs  u
@@ -3425,11 +3448,11 @@ L1EB3    lda   >$024A,s
          lbsr  L37F2
          clra
          lbra  L2091
-L1EDD    lda   >L41E5,pcr
+L1EDD    lda   >L41E5,pcr    FILE struct datablock ???
          lbeq  L1F65
 L1EE5    lda   >L17AA,pcr    data byte
          bne   L1F56
-         leax  >L41E5,pcr
+         leax  >L41E5,pcr    FILE struct datablock
          leau  >L17CA,pcr     31 byte data block
          lbsr  L1152
          clrb
@@ -3470,9 +3493,9 @@ L1F4A    lda   >$0259,s
          lbeq  L2091
          bra   L1F65
 L1F56    leau  >$0182,s
-         lbsr  L1464
+         lbsr  L1464         lib_get_disk
          lda   >$0185,s
-         sta   >L4423,pcr    data byte
+         sta   >L4423,pcr    save_drive
 L1F65    ldd   #$0001
          pshs  b,a
          ldd   #$0022
@@ -3481,7 +3504,7 @@ L1F65    ldd   #$0001
          stb   >$0251,s
          addb  >$024E,s
          pshs  b,a
-         ldb   >L41E5,pcr
+         ldb   >L41E5,pcr    FILE struct datablock
          beq   L1F91
          leau  >L1BB3,pcr    disk full msg
          ldb   >L17AA,pcr    data byte
@@ -3535,9 +3558,9 @@ L1FFF    lbsr  L12F0
          bne   L2037
          lbsr  L3997
          leau  >L17CA,pcr     31 byte data block
-         lda   >L41E5,pcr
+         lda   >L41E5,pcr     FILE struct data block ???
          beq   L2021
-         leau  >L41E5,pcr
+         leau  >L41E5,pcr     FILE struct datablock ???
 L2021    lda   >$024B,s
          ldb   #$20
          mul
@@ -7181,7 +7204,7 @@ L3E1B    lbsr  L5B26
 L3E23    sta   ,s
          lbsr  L2778
          lbsr  L21CC
-         lbsr  L4BBA
+         lbsr  L4BBA         volumes_close
          lda   >$01AF
          ora   #$02
          sta   >$01AF
@@ -7204,6 +7227,7 @@ L3E5D    lbsr  L5B69
          leas  $01,s
          rts
 
+* cmd_restore_game text strings
 L3E63    fcc   'About to restore the game'
          fcb   C$LF
          fcc   'described as:'
@@ -7237,21 +7261,22 @@ L3EE5    fcc   'Press ENTER to continue.'
 L3F1A    fcb   $00
 
 
+* cmd_restore_game (state_io.c)
 L3F1B    leas  >-$00FD,s
-         sty   ,s
+         sty   ,s        code_ret (arg passed in)
          lda   #$01
-         sta   >$0102
-         lda   >$0101
-         sta   $02,s
-         lda   #$40
-         sta   >$0101
+         sta   >$0102    clock_state? 
+         lda   >$0101    msgstate.newline_char
+         sta   $02,s     save original 
+         lda   #'@       $40 load value for msgstate.newline_char
+         sta   >$0101    save it
 L3F31    ldd   #$0072
-         pshs  b,a
+         pshs  d
          lbsr  L1C49
          leas  $02,s
          tsta
          lbeq  L4040
-         lda   >L41E5,pcr   31 byte data block
+         lda   >L41E5,pcr   FILE struct datablock ???
          bne   L3F86
          leau  >L3EE5,pcr   continue/cancel message
          pshs  u
@@ -7344,15 +7369,16 @@ L401A    lda   >L3F1A,pcr  data byte
          lda   >$01B0
          ora   #$08
          sta   >$01B0 
-         lbsr  L4BBA
+         lbsr  L4BBA         volumes_close
          ldd   #$0000
          std   ,s
          lbsr  L2902
-L4040    lbsr  L3997
-         lda   $02,s
-         sta   >$0101
-         clr   >$0102
-         ldy   ,s
+rest_end         
+L4040    lbsr  L3997        cmd_close_window
+         lda   $02,s        pull newline_org          
+         sta   >$0101       save it in msgstate.newline_char
+         clr   >$0102       clock_state = 0
+         ldy   ,s           code_ret
          leas  >$00FD,s
          rts
 
@@ -7531,7 +7557,8 @@ L41D5    mul
          rts
 
 
-
+* FILE struct data block ??
+* rest_stream 
 *        block of 31 data bytes
 L41E5    fcb   $00,$00,$00,$00
          fcb   $00,$00,$00,$00
@@ -7578,6 +7605,7 @@ L429D    lda   ,y+
          ldx   #$0252
          leax  d,x          from address
 L42A7    leau  >L41E5,pcr   to address block of 31 data bytes
+*                           FILE struct data block ???
          ldd   #$001F       load d with 31
          lbsr  L115D        copy routine
          rts                return 
@@ -7597,7 +7625,7 @@ L42CF    lbsr  L1C49
          leas  $02,s
          tsta
          lbeq  L43D9
-L42D9    lda   >L41E5,pcr
+L42D9    lda   >L41E5,pcr     FILE struct data block ???
          bne   L431F
 L42DF    leau  >L3EE5,pcr     continue / cancel message
          pshs  u
@@ -7726,8 +7754,8 @@ L43F9    lda   >L429C,pcr       data byte
 L4421    clra
 L4422    rts
 
-
-L4423    fcb   $00
+*save_drive
+L4423    fcb   $00            drive number to hold working disk 
 
 L4424    fcc   '%s%s'
 L4428    fcc   '%ssg.%d'
@@ -7767,6 +7795,7 @@ L444D    clra
          leas  $05,s
          rts
 
+* (state_info.c)
 L4478    leas  <-$45,s
          clr   ,s
          leau  ,s
@@ -7776,9 +7805,9 @@ L4478    leas  <-$45,s
          bcs   L449E
          clr   <$40,s
          leau  <$40,s
-         lbsr  L1464
+         lbsr  L1464         lib_get_disk
 L4493    ldb   <$43,s
-         stb   >L4423,pcr    data byte
+         stb   >L4423,pcr    save_drive
          lda   #$01
          bra   L449F
 L449E    clra
@@ -8115,6 +8144,7 @@ L470C    rts
          std   >L4676,pcr   data word
          rts
 
+* window_put_char cmd_input.c ???
 L4734    leas  -$02,s
          pshs  u,x
          leau  $04,s
@@ -8370,7 +8400,7 @@ L498C    leas  -$0E,s
          pshs  y
          ldu   <u004F
          stu   $06,s
-         lda   >$0532
+         lda   >$0532       vol_handle_table
          cmpa  #$FF
          bne   L49BC
          ldd   >L4963,pcr    data byte
@@ -8390,11 +8420,11 @@ L49BC    ldu   $02,s
          lsra
          lsra
          sta   $08,s
-         ldx   #$0532
+         ldx   #$0532       vol_handle_table
          ldb   a,x
          cmpb  #$FF
          bne   L4A0A
-         lbsr  L4BBA
+         lbsr  L4BBA         volumes_close
          ldb   $08,s
          beq   L49DB
          cmpb  >$05ED
@@ -8446,7 +8476,7 @@ L4A46    ldd   $09,s
          lda   $0B,s
          cmpa  $08,s
          beq   L4A73
-L4A54    lbsr  L4BBA
+L4A54    lbsr  L4BBA         volumes_close
          lda   #$01
          sta   >L4962,pcr    data byte
          ldb   $08,s
@@ -8587,7 +8617,7 @@ L4B8C    lbsr  L10E4
          sta   <u0009
          ldx   <u0022
          jsr   >$0659
-L4B9C    ldu   #$0532
+L4B9C    ldu   #$0532       vol_handle_table
          ldb   $02,s
          sta   b,u
          ldx   ,s
@@ -8601,23 +8631,25 @@ L4BAD    ldx   >L4963,pcr    data byte
 L4BB7    leas  $0D,s
          rts
 
+* volumes_close (res_vol.c)
 L4BBA    leas  -$01,s
          clrb
-         ldx   #$0532
-L4BC0    cmpb  #$0F
-         bcc   L4BD8
-         stb   ,s
-         lda   ,x
-         cmpa  #$FF
-         beq   L4BD1
+         ldx   #$0532      vol_handle_table
+L4BC0    cmpb  #$0F        There are 15 vols in kq3 (0-14)
+         bhs   L4BD8       >= 15 were finished so leave
+         stb   ,s          save the index
+         lda   ,x          get the val of the vol_handle
+         cmpa  #$FF        is it flagged closed ??
+         beq   L4BD1       if so no need to close it but 
+*                          store stow FF there so we can inc the x
          lbsr  L13D6       Close path routine
-         lda   #$FF
-L4BD1    sta   ,x+
-         ldb   ,s
-         incb
-         bra   L4BC0
-L4BD8    leas  $01,s
-         rts
+         lda   #$FF        we had a good close so set the close flag
+L4BD1    sta   ,x+         stow it in the table and bump the pointer
+         ldb   ,s          grab our index back again
+         incb              bump it
+         bra   L4BC0       go again
+L4BD8    leas  $01,s       clean up stack and were 
+         rts               back at ya
 
 L4BDB    leas  <-$65,s
          pshs  y
@@ -10421,16 +10453,17 @@ L5B69    lda   >$05B9
          lbsr  L4734
 L5B79    rts
 
-L5B7A    lda   >$05B9
-         beq   L5B8C
-         com   >$05B9
-         lda   >$01AE
-         beq   L5B8C
-         lda   #$08
-         lbsr  L4734
+* input_edit_on 
+L5B7A    lda   >$05B9    load input_edit_disabled flag
+         beq   L5B8C     is it zero ?? good edit is on were done
+         com   >$05B9    not zero make it so
+         lda   >$01AE    state.cursor ???
+         beq   L5B8C     if it's clear were out a here
+         lda   #$08      otherwise load arg to window_put_char
+         lbsr  L4734     and go for it
 L5B8C    rts
 
-         bsr   L5B7A
+         bsr   L5B7A    input_edit_on
          lda   >$01D8
          clrb
          stb   >$01D6
