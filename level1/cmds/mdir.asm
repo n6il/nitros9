@@ -19,34 +19,35 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+stdout   set   1
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   2
-u0002    rmb   2
+MdirSt   rmb   2
+MdirEn   rmb   2
 u0004    rmb   2
 u0006    rmb   1
-u0007    rmb   1
+bufptr   rmb   1
 u0008    rmb   1
 u0009    rmb   3
 u000C    rmb   3
 u000F    rmb   1
 u0010    rmb   1
 u0011    rmb   1
-u0012    rmb   530
+buffer   rmb   530
 size     equ   .
 
 name     fcs   /Mdir/
          fcb   $05 
 
-L0012    fcb   C$LF
+tophead  fcb   C$LF
          fcc   "  Module directory at "
-L0029    fcb   C$LF
+ltitle   fcb   C$LF
          fcc   "Addr Size Typ Rev Attr Use Module name"
          fcb   C$LF
          fcc   "---- ---- --- --- ---- --- ------------"
          fcb   C$CR
-L0079    fcb   C$LF
+stitle    fcb   C$LF
          fcc   "Addr Size Ty Rv At Uc   Name"
          fcb   C$LF
          fcc   "---- ---- -- -- -- -- ---------"
@@ -57,12 +58,12 @@ start    stx   <u0004
          ldb   #$30
          std   <u000F
          clr   <u0011
-         lda   #$01
+         lda   #stdout
          ldb   #SS.ScSiz
          os9   I$GetStt 
          bcc   L00D2
          cmpb  #E$UnkSvc
-         lbne  L01BE
+         lbne  exit
          bra   L00DF
 L00D2    cmpx  #80
          beq   L00DF
@@ -70,22 +71,23 @@ L00D2    cmpx  #80
          lda   #$0A
          ldb   #$15
          std   <u000F
-L00DF    leax  >L0012,pcr
+L00DF    leax  >tophead,pcr
          ldy   #$0017
-         lda   #$01
+         lda   #stdout
          os9   I$WritLn 
          leax  u0009,u
          os9   F$Time   
-         leax  <u0012,u
-         stx   <u0007
+         leax  <buffer,u
+         stx   <bufptr
          leax  u000C,u
          lbsr  L0224
-         lbsr  L0210
+         lbsr  write
          ldx   >D.ModDir
-         stx   <u0000
+         stx   <MdirSt
          ldd   >D.ModDir+2
-         std   <u0002
+         std   <MdirEn
          leax  -$04,x
+* Check for 'E' given as argument
          ldy   <u0004
          lda   ,y+
          eora  #'E
@@ -93,16 +95,16 @@ L00DF    leax  >L0012,pcr
          bne   L0157
          tst   <u0011
          bne   L0123
-         leax  >L0029,pcr
-         ldy   #80
+         leax  >ltitle,pcr
+         ldy   #80            Maxlength to write
          bra   L012B
-L0123    leax  >L0079,pcr
-         ldy   #$003E
-L012B    lda   #$01
+L0123    leax  >stitle,pcr
+         ldy   #$003E         Maxlength to write
+L012B    lda   #stdout
          os9   I$WritLn 
-         ldx   <u0000
+         ldx   <MdirSt
          lbra  L01B9
-L0135    ldy   ,x
+loop     ldy   ,x
          beq   L015D
          ldd   $04,y
          leay  d,y
@@ -116,18 +118,21 @@ L014C    subb  <u000F
          bhi   L014C
          bne   L0141
          bra   L015D
-L0154    lbsr  L0210
-L0157    leay  <u0012,u
-         sty   <u0007
+L0154    lbsr  write
+L0157    leay  <buffer,u
+         sty   <bufptr
 L015D    leax  $04,x
-         cmpx  <u0002
-         bcs   L0135
-         lbsr  L0210
+         cmpx  <MdirEn
+         bcs   loop
+         lbsr  write
          bra   L01BD
-L0168    leay  <u0012,u
-         sty   <u0007
+*
+* A module entry is 2 twobyte pointers.
+* If the first pointer is $0000, then the slot is unused
+L0168    leay  <buffer,u
+         sty   <bufptr
          ldy   ,x
-         beq   L01B7
+         beq   gotonxt         Is slot unused? If yes, branch
          ldd   ,x
          bsr   L01C1
          ldd   $02,y
@@ -161,12 +166,14 @@ L01A7    bsr   L01F2
          ldd   $04,y
          leay  d,y
          bsr   L0205
-         bsr   L0210
-L01B7    leax  $04,x
-L01B9    cmpx  <u0002
+         bsr   write
+gotonxt  leax  $04,x
+L01B9    cmpx  <MdirEn
          bcs   L0168
+
 L01BD    clrb  
-L01BE    os9   F$Exit   
+exit     os9   F$Exit   
+
 L01C1    bsr   L01CD
          tfr   b,a
          bsr   L01CF
@@ -188,40 +195,48 @@ L01DB    tsta
 L01E0    tst   <u0006
          bne   L01E8
          lda   #$20
-         bra   L01F4
-L01E8    adda  #$30
-         cmpa  #$39
-         bls   L01F4
-         adda  #$07
-         bra   L01F4
+         bra   ApndA
+L01E8    adda  #'0
+         cmpa  #'9
+         bls   ApndA
+         adda  #$07    Make it A-F
+         bra   ApndA
 L01F2    lda   #$20
-L01F4    pshs  x
-         ldx   <u0007
+*
+* append a char (in reg a) to buffer
+*
+ApndA    pshs  x
+         ldx   <bufptr
          sta   ,x+
-         stx   <u0007
+         stx   <bufptr
          puls  pc,x
+
 L01FE    rolb  
-         bcs   L01F4
-         lda   #$2E
-         bra   L01F4
+         bcs   ApndA
+         lda   #'.
+         bra   ApndA
 L0205    lda   ,y
          anda  #$7F
-         bsr   L01F4
+         bsr   ApndA
          lda   ,y+
          bpl   L0205
          rts   
-L0210    pshs  y,x,a
-         lda   #$0D
-         bsr   L01F4
-         leax  <u0012,u
+*
+* Append a CR to buffer and write it
+*
+write    pshs  y,x,a
+         lda   #C$CR
+         bsr   ApndA
+         leax  <buffer,u
          ldy   #80
-         lda   #$01
+         lda   #stdout
          os9   I$WritLn 
          puls  pc,y,x,a
+
 L0224    bsr   L022C
          bsr   L0228
-L0228    lda   #$3A
-         bsr   L01F4
+L0228    lda   #':
+         bsr   ApndA
 L022C    ldb   ,x+
          lda   #$2F
 L0230    inca  
@@ -229,15 +244,15 @@ L0230    inca
          bcc   L0230
          cmpa  #$30
          beq   L023B
-         bsr   L01F4
+         bsr   ApndA
 L023B    lda   #$3A
 L023D    deca  
          addb  #$0A
          bcc   L023D
-         bsr   L01F4
+         bsr   ApndA
          tfr   b,a
-         adda  #$30
-         bra   L01F4
+         adda  #'0
+         bra   ApndA
 
          emod
 eom      equ   *
