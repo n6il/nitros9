@@ -18,7 +18,7 @@ BASIC09FILES	= runb.asm gfx.asm gfx2.asm inkey.asm syscall.asm
 LEVEL1FILES	= asm.asm attr.asm backup.asm binex.asm build.asm cmp.asm cobbler.asm copy.asm date.asm dcheck.asm debug.asm deiniz.asm del.asm deldir.asm \
 		dir.asm display.asm dsave.asm dump.asm echo.asm edit.asm error.asm exbin.asm format.asm free.asm help.asm ident.asm iniz.asm link.asm \
 		list.asm load.asm login.asm makdir.asm merge.asm os9gen.asm pd.asm rename.asm \
-		save.asm setime.asm sleep.asm tee.asm tmode.asm tuneport.asm tsmon.asm verify.asm xmode.asm
+		save.asm setime.asm sleep.asm tee.asm tmode.asm touch.asm tuneport.asm tsmon.asm verify.asm xmode.asm
 
 ALLOBJS		= $(CMDS) $(SUBS)
 
