@@ -3,7 +3,7 @@ include ../../Makefile.rules
 DEPENDS		= ./Makefile
 TPB		= ../../3rdparty/booters
 
-BOOTERS		= oscode oscode_d64 boot_1773 $(TPB)/boot_rom_l1 rom_vectors
+BOOTERS		= oscode oscode_d64 boot_1773 boot_d64 $(TPB)/boot_rom_l1 rom_vectors
 KERNELS		= os9 os9p2
 SYSMODS		= rominfo ioman init
 CLOCKS		= clock.60hz clock.50hz
@@ -20,6 +20,7 @@ HELP		= co32.hp co80.hp dd.hp d0.hp d1.hp d2.hp d3.hp grfo.hp h0_15.hp \
 		ssc.hp t1.hp t2.hp t3.hp term32.hp term80.hp config.hp
 
 KERNEL_1773	= oscode os9 os9p2 init boot_1773
+KERNEL_D64	= oscode_d64 os9 os9p2 init boot_d64
 KERNEL_ROM	= oscode os9 os9p2 init $(TPB)/boot_rom_l1
 
 BOOT_TRACKS	= kernel_1773 kernel_rom
@@ -38,6 +39,10 @@ kernel_rom: $(KERNEL_ROM) $(DEPENDS)
 kernel_1773: $(KERNEL_1773) $(DEPENDS)
 	$(MERGE) $(KERNEL_1773)>$@
 	$(PADROM) \$$1200 $@ -c=\$$E5
+
+kernel_d64: $(KERNEL_D64) $(DEPENDS)
+	$(MERGE) $(KERNEL_D64)>$@
+	$(PADROM) \$$1000 $@ -c=\$$E5
 
 oscode: oscode.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0
