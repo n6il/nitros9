@@ -47,8 +47,8 @@ The truth tested by each function is a follows:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="3in">
+<colspec colwidth="1in"/>
+<colspec colwidth="3in"/>
 <tbody>
 <row>
 <entry>isalpha</entry>
