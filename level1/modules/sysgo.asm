@@ -8,6 +8,8 @@
 *  12    From Tandy OS-9 Level One VR 02.00.00
 *  13    Incremented version number to reflect Y2K      BGP 99/05/11
 *        fixes
+*  14    Updated to reflect new release, changed /H0    BGP 02/07/19
+*        to /DD
 
          nam   SysGo
          ttl   OS-9 Level One 2 SysGo
@@ -20,7 +22,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   13
+edition  set   14
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -40,6 +42,8 @@ BootMsg  fcc   "OS-9 LEVEL ONE VR. 0"
          fcc   ".0"
          fcb   48+OS9Minor
          fdb   C$CR,C$LF
+         fcc   "COPR. 2002 ACADIAN EMBEDDED"
+         fdb   C$CR,C$LF
          fcc   "COPR. 1980 BY MOTOROLA INC. AND"
          fdb   C$CR,C$LF
          fcc   "MICROWARE SYSTEMS CORP."
@@ -51,26 +55,26 @@ BootMsg  fcc   "OS-9 LEVEL ONE VR. 0"
          fcb   C$LF
 MsgEnd   equ   *
 
-ChdDev   fcc   "/H0"
+ChdDev   fcc   "/DD"
          fcb   C$CR
-ChxDev   fcc   "/H0/"
-ChxPath  fcc   "Cmds"
+ChxDev   fcc   "/DD/"
+ChxPath  fcc   "CMDS"
          fcb   C$CR
          fcc   ",,,,,,,,,,"
 
 Shell    fcc   "Shell"
          fcb   C$CR
 
-         fcc   "TSMON"
+         fcc   "tsmon"
          fcb   C$CR
-Startup  fcc   "STARTUP -P"
+Startup  fcc   "startup -p"
          fcb   C$CR
          fcc   ",,,,,,,,,,"
 StartupL equ   *-Startup
 
 * Default time packet
 *              YY MM DD HH MM SS
-TimePckt fcb   85,06,01,00,00,00
+TimePckt fcb   102,08,01,00,00,00
 
 * BASIC reset code
 BasicRst fcb   $55

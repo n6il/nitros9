@@ -51,7 +51,8 @@ u00BE    rmb   1
 u00BF    rmb   2
 u00C1    rmb   2
 size     equ   .
-         fcb   $FF
+
+         fcb   DIR.+SHARE.+PREAD.+PWRIT.+PEXEC.+READ.+WRITE.+EXEC.
 
 name     fcs   /CCHDisk/
          fcb   edition

@@ -46,7 +46,7 @@ u00AD    rmb   4
 DevStRg  rmb   1
 size     equ   .
 
-         fcb   $FF
+         fcb   DIR.+SHARE.+PREAD.+PWRIT.+PEXEC.+READ.+WRITE.+EXEC.
 
 name     fcs   /CCDisk/
          fcb   edition

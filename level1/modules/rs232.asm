@@ -33,7 +33,8 @@ u0022    rmb   2
 u0024    rmb   1
 u0025    rmb   1
 size     equ   .
-         fcb   $03 
+
+         fcb   UPDAT.
 
 name     fcs   /RS232/
          fcb   edition

@@ -25,7 +25,8 @@ edition  set   3
 
 u0000    rmb   6
 size     equ   .
-         fcb   $03 
+
+         fcb   UPDAT.
 
 name     fcs   /NilDrv/
          fcb   edition

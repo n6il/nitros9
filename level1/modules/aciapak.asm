@@ -48,10 +48,11 @@ u006D    rmb   17
 u007E    rmb   2
 u0080    rmb   128
 size     equ   .
-         fcb   $03 
+
+         fcb   UPDAT.
 
 name     fcs   /ACIAPAK/
-         fcb   $0A 
+         fcb   edition
 
 start    lbra  Init
          lbra  Read
@@ -60,7 +61,7 @@ start    lbra  Init
          lbra  SetStat
          lbra  Term
 
-IRQPckt  fcb   $00,$80,$0a
+IRQPckt  fcb   $00,$80,$0A
 
 * Driver supplied D.FIRQ routine
 FIRQRtn  tst   ,s
@@ -189,13 +190,13 @@ L00FF    pshs  x,b,a
          ldx   <D.Proc
          ldb   <P$Signal,x
          beq   L0118
-         cmpb  #$03
+         cmpb  #S$Intrpt
          bls   L012E
 L0118    clra
          lda   P$State,x
          bita  #Condem
          bne   L012E
-         ldb   #$DC
+         ldb   #E$HangUp
          lda   V.ERR,u
          bita  #$20
          bne   L0129
@@ -408,8 +409,8 @@ L024E    ldb   >PIA.U8+2
          beq   L02EC
          ldx   <V.PDLHd,u
          beq   L0286
-L027E    inc   <$3F,x
-         ldx   <$3D,x
+L027E    inc   <PD.PST,x
+         ldx   <PD.PLP,x
          bne   L027E
 L0286    lda   #$20
          bsr   L02F6
@@ -527,11 +528,11 @@ L037F    orb   V.TYPE,u
          rts   
 L0385    ldx   V.DEV2,u
          beq   L032A
-         sta   $08,x
+         sta   V.PAUS,x
          bra   L032A
-L038D    ldb   #$03
+L038D    ldb   #S$Intrpt
          bra   L0393
-L0391    ldb   #$02
+L0391    ldb   #S$Abort
 L0393    pshs  a
          lda   V.LPRC,u
          lbsr  L02E5

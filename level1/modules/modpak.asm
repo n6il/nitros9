@@ -46,7 +46,8 @@ u0080    rmb   1
 u0081    rmb   45
 u00AE    rmb   82
 size     equ   .
-         fcb   $03 
+
+         fcb   UPDAT.
 
 name     fcs   /MODPAK/
          fcb   edition

@@ -35,7 +35,8 @@ u0024    rmb   2
 u0026    rmb   2
 u0028    rmb   1
 size     equ   .
-         fcb   $03
+
+         fcb   UPDAT.
 
 name     fcs   /PRINTER/
          fcb   edition
