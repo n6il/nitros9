@@ -1,0 +1,26 @@
+<refentry id="asm">
+<refnamediv>
+<refname>ASM</refname>
+<refpurpose>Assembler</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>ASM</command>
+<arg choice="opt">
+  <option>t</option>
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+The assembler.
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+</screen>
+</refsect1>
+</refentry>
+
