@@ -7,7 +7,7 @@
 * Comment
 * ------------------------------------------------------------------
 *   2      ????/??/??
-* From Tandy OS-9 Level One VR 02.00.00.
+* Original Tandy/Microware version
 
          nam   Unlink
          ttl   Unlink memory module
@@ -33,21 +33,22 @@ name     fcs   /Unlink/
          fcb   edition
 
 start    clra  
+         IFGT  Level-1
+         os9   F$UnLoad
+         ELSE
          clrb  
          os9   F$Link   
-         bcs   L0032
+         bcs   exit
          os9   F$UnLink 
-         bcs   L0032
+         bcs   exit
          os9   F$UnLink 
-         bcs   L0032
-         lda   ,x+
-         cmpa  #C$COMA
-         beq   start
+         ENDC
+         bcs   exit
          lda   ,-x
          cmpa  #C$CR
          bne   start
          clrb  
-L0032    os9   F$Exit   
+exit     os9   F$Exit   
 
          emod
 eom      equ   *
