@@ -1,5 +1,10 @@
 * F$Move entry point
 * Entry: U=Register stack pointer
+         IFEQ  H6309
+L0A01    clrb
+         rts
+         ENDC
+
 FMove    ldd   R$D,u        get source & destination task #'s
 L0B25    ldy   R$Y,u        Get # bytes to move
          beq   L0A01        None, exit without error

@@ -1,5 +1,5 @@
 ********************************************************************
-* OS9p1 - NitrOS-9 kernel
+* OS9p1 - OS-9 Level Two Kernel Part 1
 *
 * $Id$
 *
@@ -10,7 +10,7 @@
 * 19r7   Added check for CRC feature bit in init module BGP 02/09/26
 
          nam   OS9p1
-         ttl   NitrOS-9 kernel
+         ttl   OS-9 Level Two Kernel Part 1
 
          IFP1
          use   defsfile
@@ -26,11 +26,14 @@ Where    equ   $F000      absolute address of where OS9p1 starts in memory
 MName    fcs   /OS9p1/
          fcb   Edition 
 
+         IFNE  H6309
 * FILL - all unused bytes are now here
          fcc   /0123456789ABCDEF/
          fcc   /0123456789ABCDEF/
          fcc   /0123456789ABCDEF/
          fcc   /01234567/
+         ELSE
+         ENDC
 
 * Might as well have this here as just past the end of OS9p1...
 DisTable fdb   L0CD2+Where   D.Clock absolute address at the start
@@ -220,7 +223,7 @@ L00EF    stu   ,x++
          deca
          bne   L00EF
          ldu   #$003F      Block $3F is in use, at the top of system DAT image
-         stu    ,x
+         stu   ,x
          ldx   <D.Tasks     Point to task user table
          inc   ,x           mark first 2 in use (system & GrfDrv)
          inc   1,x
@@ -360,7 +363,7 @@ L0200    fcb   F$Link
          fcb   F$BtMem+SysState
          fdb   FSRqMem-*-2
          IFNE  H6309
-         fcb   F$CpyMem      Now here in OS9P1
+         fcb   F$CpyMem
          fdb   FCpyMem-*-2
          ENDC
          fcb   F$Move+SysState
@@ -403,8 +406,10 @@ L0200    fcb   F$Link
          fdb   FAlHRam-*-2
          fcb   F$VBlock+SysState
          fdb   FVBlock-*-2
+         IFNE  H6309
          fcb   F$DelRAM
          fdb   FDelRAM-*-2
+         ENDC
          fcb   $80
 
 * SWI3 vector entry
@@ -630,7 +635,10 @@ L0345    clra               clear MSB of offset
 
          use   fallram.asm
 
+
+         IFNE  H6309
          use   fdelram.asm
+         ENDC
 
          use   fallimg.asm
 
@@ -640,7 +648,9 @@ L0345    clra               clear MSB of offset
 
          use   fld.asm
 
+         IFNE  H6309
          use   fcpymem.asm
+         ENDC
 
          use   fmove.asm
 
@@ -924,7 +934,10 @@ NMIVCT   ldx    #D.NMI      get DP offset of vector
 eom      equ   *
 
 *SWIStack fcc   /REGISTER STACK/ R$Size data bytes
-SWIStack fcb   $88,$03,$00,$45,$72,$00,$cd,$00,$12,$00,$00,$00,$e5,$7f
+SWIStack fcb   $88,$03,$00,$45,$72,$00,$cd,$00,$12,$00,$00,$00
+         IFNE  H6309
+         fcb   $e5,$7f
+         ENDC
 
          fcb   $55        D.ErrRst
 
