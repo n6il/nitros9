@@ -5,7 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 21     Original Tandy/Microware version
+*  21    Original Tandy/Microware version
+*  21r2  CHD no longer sets WRITE. permission           BGP 03/01/22
 
          nam   Shell
          ttl   OS-9 command line interpreter
@@ -18,11 +19,12 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $02
 edition  set   21
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 u0000    rmb   1
 u0001    rmb   2
 u0003    rmb   1
@@ -35,7 +37,7 @@ u000A    rmb   1
 u000B    rmb   1
 u000C    rmb   1
 u000D    rmb   1
-u000E    rmb   1
+kbdsignl rmb   1
 u000F    rmb   1
 u0010    rmb   1
 u0011    rmb   1
@@ -74,20 +76,22 @@ L0013    fcb   $13
          fcb   $00 
          fcb   $00 
          fcb   $00 
-L002E    fcb   C$LF
+Intro    fcb   C$LF
          fcc   "Shell"
          fcb   C$CR
-L0035    fcb   C$LF
-L0036    fcc   "OS9:"
-L003A    fcs   "W"
-         fcb   $0E 
-         fcc   ";"
+DefPrmpt fcb   C$LF
+OS9Prmpt fcc   "OS9:"
+OS9PrmL  equ   *-OS9Prmpt
+DefPrmL  equ   *-DefPrmpt
+
+IcptRtn  stb   <kbdsignl
+         rti
 
 start    leas  -$05,s
          pshs  y,x,b,a
          ldb   #$6F
          lbsr  L0175
-         leax  <L003A,pcr
+         leax  <IcptRtn,pcr
          os9   F$Icpt   
          puls  x,b,a
          std   <u0006
@@ -97,22 +101,22 @@ start    leas  -$05,s
          tst   <u000C
          bne   L00C1
 L005B    lds   ,s++
-L005E    leax  <L002E,pcr
+L005E    leax  <Intro,pcr
          tst   <u0012
          bne   L0076
-         bsr   L00CB
-         bcs   L00C8
-L0069    leax  <L0035,pcr
-         ldy   #$0005
+         bsr   WriteLin
+         bcs   Exit
+L0069    leax  <DefPrmpt,pcr
+         ldy   #DefPrmL
 L0070    tst   <u0012
          bne   L0076
-         bsr   L00CF
+         bsr   WritLin2
 L0076    clra  
          leax  <u0070,u
          ldy   #$00C8
          os9   I$ReadLn 
          bcc   L0094
-         cmpb  #$D3
+         cmpb  #E$EOF
          beq   L00B8
 L0087    tst   <u000F
          bne   L008F
@@ -122,40 +126,45 @@ L008F    os9   F$PErr
          bra   L0069
 L0094    cmpy  #$0001
          bhi   L00A4
-         leax  >L0036,pcr
-         ldy   #$0004
+         leax  >OS9Prmpt,pcr
+         ldy   #OS9PrmL
          bra   L0070
 L00A4    tst   <u0013
          beq   L00AA
-         bsr   L00CB
+         bsr   WriteLin
 L00AA    lbsr  L017B
          bcc   L0069
          tstb  
          bne   L0087
          bra   L0069
-L00B4    fcc   "eof"
+
+eofmsg   fcc   "eof"
          fcb   C$CR
+
 L00B8    tst   <u0012
          bne   L00C1
-         leax  <L00B4,pcr
-         bsr   L00CB
+         leax  <eofmsg,pcr
+         bsr   WriteLin
 L00C1    clrb  
 L00C2    lda   <u000F
          lbne  L0331
-L00C8    os9   F$Exit   
-L00CB    ldy   #$0050
-L00CF    lda   #$02
-         os9   I$WritLn 
+Exit     os9   F$Exit   
+
+WriteLin ldy   #80
+WritLin2 lda   #$02			stderr
+         os9   I$WritLn 		write line
          rts   
-         lbsr  L03B3
+
+* I=...
+Immortal lbsr  L03B3
          lbcs  L02ED
          pshs  x
-         ldb   #$0E
+         ldb   #SS.DevNm
          leax  <u0016,u
-         lda   #$2F
+         lda   #PDELIM
          sta   ,x+
-         clra  
-         os9   I$GetStt 
+         clra  				stdin
+         os9   I$GetStt 		get device name
          puls  x
          lbcs  L02ED
          inc   <u000F
@@ -163,51 +172,64 @@ L00CF    lda   #$02
          lbsr  L02ED
          clr   <u0010
          rts   
-L00FB    fcb   $01,$e3,$aa,$03,$60
-L0100    fcs   "W"
-         fcb   $01,$BF
+
+L00FB    fdb   Comment-*
+         fcs   "*"
+         fdb   Wait-*
+         fcs   "W"
+         fdb   Chd-*
          fcs   "CHD"
-         fcb   $01,$B6
+         fdb   Chx-*
          fcs   "CHX"
-         fcb   $01,$8B
+         fdb   Ex-*
          fcs   "EX"
-         fcb   $04,$AF
+         fdb   Kill-*
          fcs   "KILL"
-         fcb   $01,$C1
-         fcb   $d8,$01,$c2,$2d,$d8,$01,$aa,$d0,$01
-         fcb   $aa
+         fdb   X-*
+         fcs   "X"
+         fdb   NOX-*
+         fcs   "-X"
+         fdb   Prompt-*
+         fcs   "P"
+         fdb   NoPrompt-*
          fcs   "-P"
-         fcb   $01,$ab
+         fdb   Echo-*
          fcs   "T"
-         fcb   $01,$ac
+         fdb   NoEcho-*
          fcs   "-T"
-         fcb   $04,$c0
+         fdb   SetPr-*
          fcs   "SETPR"
-         fcb   $FF,$a4
+         fdb   Immortal-*
          fcs   "I="
-         fcb   $01,$2c
+         fdb   NextCmd-*
          fcs   ";"
-         fcb   $00,$00
-L013A    fcb   $04,$30,$a1,$02,$fb,$bb,$03,$11
+         fdb   $0000
+L013A    fdb   Pipe-*
+         fcs   "!"
+         fdb   NextCmd2-*
+         fcs   ";"
+         fdb   Backgrnd-*
          fcs   "&"
-         fcb   $02,$ee,$8d
-L0146    fcb   $02,$69
+         fdb   Return-*
+         fcb   $8D
+L0146    fdb   AllRedir-*
          fcs   "<>>>"
-         fcb   $02,$79
+         fdb   InErrRedir-*
          fcs   "<>>"
-         fcb   $02,$67
+         fdb   InOutRedir-*
          fcs   "<>"
-         fcb   $02,$7d
+         fdb   OutErrRedir-*
          fcs   ">>>"
-         fcb   $01,$fb
+         fdb   ErrRedir-*
          fcs   ">>"
-         fcb   $01,$f2
+         fdb   InRedir-*
          fcs   "<"
-         fcb   $01,$fb
+         fdb   OutRedir-*
          fcs   ">"
-         fcb   $02,$ab
+         fdb   StkSize-*
          fcs   "#"
-         fcb   $00,$00
+         fdb   $0000
+
 L0169    fcb   $0d
          fcc   "()"
          fcb   $ff
@@ -222,14 +244,14 @@ L0175    clr   b,u
 L017B    ldb   #$0E
          bsr   L0175
 L017F    clr   <u0003
-         clr   <u000E
+         clr   <kbdsignl
          leay  >L00FB,pcr
          lbsr  L020F
          bcs   L01DE
-         cmpa  #$0D
+         cmpa  #C$CR
          beq   L01DE
          sta   <u000C
-         cmpa  #$28
+         cmpa  #'(
          bne   L01BA
          leay  >L000D,pcr
          sty   <u0004
@@ -238,9 +260,9 @@ L017F    clr   <u0003
 L01A1    inc   <u000D
 L01A3    leay  <L0169,pcr
          bsr   L0227
-         cmpa  #$28
+         cmpa  #'(
          beq   L01A1
-         cmpa  #$29
+         cmpa  #')
          bne   L01D6
          dec   <u000D
          bne   L01A3
@@ -260,7 +282,7 @@ L01BE    leay  <L016D,pcr
          bcs   L01DE
          ldy   <u0004
 L01D6    lbne  L0326
-         cmpa  #$0D
+         cmpa  #C$CR
          bne   L017F
 L01DE    lbra  L02ED
 L01E1    stx   <u0004
@@ -275,7 +297,7 @@ L01F3    rts
 L01F4    os9   F$PrsNam 
          bcc   L0205
          lda   ,x+
-         cmpa  #$2E
+         cmpa  #C$PERD
          bne   L0209
          cmpa  ,x+
          beq   L0207
@@ -285,7 +307,7 @@ L0207    clra
          rts   
 L0209    comb  
          leax  -$01,x
-         ldb   #$D7
+         ldb   #E$BPNAM
          rts   
 L020F    bsr   L0241
          pshs  y
@@ -315,20 +337,20 @@ L023B    cmpa  ,y+
          puls  pc,y
 L0241    pshs  x
          lda   ,x+
-         cmpa  #$20
+         cmpa  #C$SPAC
          beq   L0257
-         cmpa  #$2C
+         cmpa  #C$COMA
          beq   L0257
          leax  >L016D,pcr
 L0251    cmpa  ,x+
          bhi   L0251
          puls  pc,x
 L0257    leas  $02,s
-         lda   #$20
+         lda   #C$SPAC
 L025B    cmpa  ,x+
          beq   L025B
          leax  -$01,x
-         andcc #^Carry
+NextCmd  andcc #^Carry
          rts   
 L0264    pshs  y,x
          leay  $02,y
@@ -356,12 +378,13 @@ L0288    lda   ,y+
          bne   L0268
          comb  
          puls  pc,y,x
-         lbsr  L01E1
+
+Ex       lbsr  L01E1
          clra  
          bsr   L02B8
          bsr   L02B7
          bsr   L02B7
-         bsr   L02DE
+         bsr   Comment
          leax  $01,x
          tfr   x,d
          subd  <u0008
@@ -373,32 +396,41 @@ L0288    lda   ,y+
 L02B7    inca  
 L02B8    pshs  a
          bra   L0313
-         lda   #$84
+
+Chx      lda   #DIR.+EXEC.
          bra   L02C2
-         lda   #$83
+*Chd      lda   #DIR.+UPDAT.		note write mode!!
+* Removed WRITE. requirement above (some devices are read only)
+Chd      lda   #DIR.+READ.		note write mode!!
 L02C2    os9   I$ChgDir 
          rts   
-         clra  
+
+Prompt   clra  
          bra   L02CB
-         lda   #$01
+
+NoPrompt lda   #$01
 L02CB    sta   <u0012
          rts   
-         lda   #$01
+
+Echo     lda   #$01
          bra   L02D3
-         clra  
+NoEcho   clra  
 L02D3    sta   <u0013
          rts   
-         lda   #$01
+
+X        lda   #$01
          bra   L02DB
-         clra  
+
+NOX      clra  
 L02DB    sta   <u0014
          rts   
-L02DE    lda   #$0D
+Comment  lda   #$0D
 L02E0    cmpa  ,x+
          bne   L02E0
          cmpa  ,-x
          rts   
 L02E7    pshs  b,a,cc
+
          lda   #$01
          bra   L02F1
 L02ED    pshs  b,a,cc
@@ -426,14 +458,17 @@ L0313    ldb   ,s
          clr   b,u
 L031B    os9   I$Close  
 L031E    puls  pc,a
+
 L0320    fcc   "WHAT?"
          fcb   C$CR
+
 L0326    bsr   L02ED
          leax  <L0320,pcr
-         lbsr  L00CB
+         lbsr  WriteLin
          clrb  
          coma  
          rts   
+
 L0331    inc   <u0010
          bsr   L02ED
          lda   #$FF
@@ -441,18 +476,19 @@ L0331    inc   <u0010
          bsr   L02E7
          leax  <u0016,u
          bsr   L03BC
-         lbcs  L00C8
+         lbcs  Exit
          lda   #$02
          bsr   L02FF
          lbsr  L03DC
          clr   <u0010
          lbra  L005E
-L0350    ldd   #$0001
+InRedir  ldd   #$0001
          bra   L036E
-         ldd   #$020D
+ErrRedir ldd   #$020D
          stb   -$02,x
          bra   L035E
-         lda   #$01
+
+OutRedir lda   #$01
 L035E    ldb   #$02
          bra   L036E
 L0362    tst   a,u
@@ -485,30 +521,34 @@ L0398    bita  #$02
          bne   L03A1
          os9   I$Open   
          bra   L03A6
-L03A1    ldb   #$0B
+L03A1    ldb   #PREAD.+READ.+WRITE.
          os9   I$Create 
 L03A6    stb   $01,s
 L03A8    puls  pc,b,a
 L03AA    clra  
 L03AB    ldb   #$03
          bra   L0362
-         lda   #$0D
+
+AllRedir lda   #$0D
 L03B1    sta   -$04,x
 L03B3    bsr   L03BC
          bcc   L03DC
 L03B7    rts   
+InOutRedir
          lda   #$0D
          sta   -$02,x
 L03BC    bsr   L03AA
          bcs   L03B7
          ldd   #$0180
          bra   L0362
+InErrRedir
          lda   #$0D
          sta   -$03,x
          bsr   L03AA
          bcs   L03B7
          ldd   #$0280
          bra   L0362
+OutErrRedir
          lda   #$0D
          sta   -$03,x
          lda   #$01
@@ -537,12 +577,13 @@ L0404    orb   #$80
          leas  $02,s
          rts   
 L040D    puls  pc,x,b,a
-         ldb   #$0D
+
+StkSize  ldb   #$0D
          stb   -$01,x
          ldb   <u0003
          lbne  L0326
-         lbsr  L05CC
-         eora  #$4B
+         lbsr  ASC2Int
+         eora  #'K
          anda  #$DF
          bne   L042C
          leax  $01,x
@@ -552,10 +593,12 @@ L040D    puls  pc,x,b,a
          lbne  L0326
 L042C    stb   <u0003
          lbra  L0241
-         leax  -$01,x
+
+Return   leax  -$01,x
          lbsr  L04CA
          bra   L043B
-         lbsr  L04C6
+
+NextCmd2 lbsr  L04C6
 L043B    bcs   L044E
          lbsr  L02ED
          bsr   L045F
@@ -566,18 +609,20 @@ L0442    bcs   L044E
          leas  $04,s
 L044D    clrb  
 L044E    lbra  L02ED
-         bsr   L04C6
+
+Backgrnd bsr   L04C6
          bcs   L044E
          bsr   L044E
          ldb   #$26
          lbsr  L0597
          bra   L0442
-         clra  
+
+Wait     clra  
 L045F    pshs  a
 L0461    os9   F$Wait   
-         tst   <u000E
+         tst   <kbdsignl
          beq   L0479
-         ldb   <u000E
+         ldb   <kbdsignl
          cmpb  #$02
          bne   L0491
          lda   ,s
@@ -601,13 +646,13 @@ L0491    tstb
          beq   L0495
          coma  
 L0495    puls  pc,a
-L0497    lda   #$11
+L0497    lda   #Prgrm+Objct
          ldb   <u0003
          ldx   <u0004
          ldy   <u0006
          ldu   <u0008
          rts   
-L04A3    lda   #$04
+L04A3    lda   #EXEC.
          os9   I$Open   
          bcs   L0500
          leax  <u005E,u
@@ -625,11 +670,15 @@ L04C6    lda   #$0D
 L04CA    pshs  u,y,x
          clra  
          ldx   <u0004
+         IFGT  Level-1
          os9   F$NMLink 
+         ELSE
+         os9   F$Link
+         ENDC
          bcs   L04A3
          ldx   <u0004
          os9   F$UnLoad 
-L04D9    cmpa  #$11
+L04D9    cmpa  #Prgrm+Objct
          beq   L0527
          sty   <u000A
          leax  >L0013,pcr
@@ -652,7 +701,7 @@ L0500    ldx   <u0006
          stx   <u0006
          ldx   <u0004
          ldu   $04,s
-         lbsr  L0350
+         lbsr  InRedir
          bcs   L0561
          ldu   <u0008
          ldd   #$5820
@@ -665,10 +714,18 @@ L0500    ldx   <u0006
          leax  >L000D,pcr
 L0525    stx   <u0004
 L0527    ldx   <u0004
-         lda   #$11
+         lda   #Prgrm+Objct
+         IFGT  Level-1
          os9   F$NMLink 
+         ELSE
+         os9   F$Link
+         ENDC
          bcc   L0535
-         os9   F$NMLoad 
+         IFGT  Level-1
+         os9   F$NMLoad
+         ELSE
+         os9   F$Load
+         ENDC
          bcs   L0561
 L0535    tst   <u0003
          bne   L0542
@@ -682,20 +739,22 @@ L0542    lbsr  L0497
          bcs   L0552
          ldx   #$0001
          os9   F$Sleep  
-L0552    lda   #$11
+L0552    lda   #Prgrm+Objct
          ldx   <u0004
          clr   <u0004
          clr   <u0005
          os9   F$UnLoad 
          puls  pc,u,y,x,b,a,cc
-L055F    ldb   #$EA
+
+L055F    ldb   #E$NEMod
 L0561    coma  
          puls  pc,u,y,x
 
-L0564    fcc   "/pipe"
+PipeName fcc   "/pipe"
          fcb   C$CR
-L0569    pshs  x
-         leax  <L0564,pcr
+
+Pipe     pshs  x
+         leax  <PipeName,pcr
          ldd   #$0103
          lbsr  L0362
          puls  x
@@ -718,7 +777,7 @@ L0597    pshs  y,x,b,a
          leax  $01,s
          ldb   #$2F
 L059F    incb  
-         suba  #$64
+         suba  #100
          bcc   L059F
          stb   ,x+
          ldb   #$3A
@@ -730,23 +789,28 @@ L05A8    decb
          ldb   #$0D
          std   ,x
          leax  ,s
-         lbsr  L00CB
+         lbsr  WriteLin
          leas  $05,s
          puls  pc,y,x,b,a
-         bsr   L05CC
-         cmpb  #$02
-         bls   L05E7
-         tfr   b,a
-         ldb   #$00
-         os9   F$Send   
+
+* Kill a process
+Kill     bsr   ASC2Int
+         cmpb  #$02		compare against first user process ID
+         bls   L05E7		if lower or same, 
+         tfr   b,a		transfer process ID to A
+         ldb   #S$Kill		load B with kill signal
+         os9   F$Send   	and send to process in A
 L05CB    rts   
-L05CC    clrb  
+
+* Entry: X = ASCII representation of number
+* Exit : B = decimal value of ASCII number
+ASC2Int  clrb  
 L05CD    lda   ,x+
          suba  #$30
          cmpa  #$09
          bhi   L05DE
          pshs  a
-         lda   #$0A
+         lda   #10
          mul   
          addb  ,s+
          bcc   L05CD
@@ -756,10 +820,11 @@ L05DE    lda   ,-x
          bne   L05CB
 L05E5    leas  $02,s
 L05E7    lbra  L0326
-         bsr   L05CC
+
+SetPr    bsr   ASC2Int
          stb   <u0015
          lbsr  L0241
-         bsr   L05CC
+         bsr   ASC2Int
          lda   <u0015
          os9   F$SPrior 
          rts   
