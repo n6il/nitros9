@@ -31,10 +31,10 @@
 
          ifp1  
          use   defsfile
+         use   systype
          endc  
 
 cartI    equ   $FF22      cartridge IRQ report
-multipac equ   $FF7F
 rom      equ   $FFDE
 ram      equ   $FFDF
 IEN      equ   %00100000
@@ -69,21 +69,21 @@ stack    rmb   200
 size     equ   .
 
 message1 fcc   /no clock found/
-         fcb   $0D
+         fcb   C$CR
 setime   fcc   /setime/   forced chain to setime routine
-         fcb   $0D
+         fcb   C$CR
 
-errmes   fcb   $0a
+errmes   fcb   C$LF
          fcc   /Swread syntax:/
-         fdb   $a0a
+         fcb   C$LF,C$LF
          fcc   /swread [n&]/
-         fcb   $0a
+         fcb   C$LF
          fcc   /           The parameter string is optional; n = 1 to 60 min/
-         fcb   $0a
+         fcb   C$LF
          fcc   /           permitting the watch to be poled in background every/
-         fcb   $0a
+         fcb   C$LF
          fcc   /           n minutes. Use decimal time values./
-         fcb   $0d
+         fcb   C$CR
 allert   fcb   $C5,$3A,$A3,$5C,$C5,$3A,$A3,$5C,0
 
 start    clr   <sleepflg
@@ -119,7 +119,7 @@ storeit  stb   <timer
          com   <sleepflg
 
 noparams equ   *
-         lda   multipac
+         lda   MPI.Slct
          anda  #3         retain IRQ settings
          ora   #$30       start at slot 4; ROM setting
          sta   <mpiimage
@@ -127,11 +127,11 @@ noparams equ   *
 doit     pshs  u
          ldb   #1         single block
          ldx   #$3E       disk rom; $07C000-$07DFFF
-         os9   f$mapblk   map into user space clock ROM
+         os9   F$MapBlk   map into user space clock ROM
          bcs   exit2
          stu   locblk3E   save pointer
          ldx   #0         system direct page
-         os9   f$mapblk   system direct page
+         os9   F$MapBlk   system direct page
          bcs   exit2
          leax  ,u         faster but = to TFR; get pointer for system DP
          stu   locblk0    save pointer
@@ -142,10 +142,10 @@ doit     pshs  u
 
          ldb   #1         unmap blocks from user space
          ldu   locblk3E   get pointer
-         os9   f$clrblk
+         os9   F$ClrBlk
          ldb   #1
          ldu   locblk0    get pointer
-         os9   f$clrblk
+         os9   F$ClrBlk
          puls  u
 
          tst   <clkflag   was clock found?
@@ -154,7 +154,7 @@ doit     pshs  u
          beq   exit
 
 snooze   ldx   #3540      = one minute of ticks minus one second for overhead
-         os9   f$sleep
+         os9   F$Sleep
          cmpx  #0
          bne   exit       received signal so quit
 
@@ -167,16 +167,16 @@ snooze   ldx   #3540      = one minute of ticks minus one second for overhead
 
 exit2    leas  2,s        puls u
          coma             set cc
-         os9   F$exit
-error    ldb   #e$illarg
-         os9   F$exit
+         os9   F$Exit
+error    ldb   #E$IllArg
+         os9   F$Exit
 
 error2   lda   #2         error path
          leax  message1,pcr
          ldy   #40
          os9   I$WritLn
 * force a normal Setime as SmartWatch was not detected
-         lda   #$11       modul type
+         lda   #Prgrm+Objct  modul type
          ldb   #2         size of data area
          leax  setime,pcr
          ldy   #0         parameter size
@@ -190,10 +190,10 @@ exit     clrb
 * regX regU point to system direct page
 readclk  pshs  cc
          lda   d.hinit,x  get $FF90 image
-         ldb   multipac   get current setting
+         ldb   MPI.Slct   get current setting
          pshs  d          save them
          anda  #^(IEN+FEN+ROM1+ROM0) no GIME IRQ/FIRQ; external access
-         orcc  #$50       stop interrupts
+         orcc  #IntMasks  stop interrupts
          sta   $FF90
          sta   rom        go to ROM mode
          ldx   <locblk3E  point to clock ROM
@@ -202,7 +202,7 @@ readclk  pshs  cc
          lda   locblk3E
          tfr   a,dp       point to clock
 
-findclk  stb   multipac   set new slot
+findclk  stb   MPI.Slct   set new slot
          leay  allert,pcr point to clock wakeup code
          lda   <4         clear clock at $C004
          clrb  
@@ -263,7 +263,7 @@ found    lda   >dpsave
          tfr   a,dp       back to program DP
          sta   ram        go back to RAM mode
          puls  d
-         stb   multipac   restore to original setting
+         stb   MPI.Slct   restore to original setting
          tst   cartI      clear CART flag incase autostart ROM pack was present in MPI
          sta   $FF90      restore GIME mode
          puls  cc         restore IRQs
