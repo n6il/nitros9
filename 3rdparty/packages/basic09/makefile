@@ -16,7 +16,6 @@ OBJS6309	= basic09_6309 runb_6309
 ALLOBJS		= $(OBJS) $(OBJS6809) $(OBJS6309)
 
 all:	$(ALLOBJS) $(DEPENDS)
-	$(UNIX2OS9) $(TXTFILES)
 	$(CHMOD) 755 $(ALLOBJS)
 
 basic09_6309: basic09.asm
@@ -36,14 +35,13 @@ runbt_6809: basic09.asm
 
 clean: dskclean
 	$(RM) $(ALLOBJS)
-	$(OS92UNIX) $(TXTFILES)
 
 dsk:	all
 	$(RM) $(DISK)
 	$(OS9FORMAT) $(DISK) -n"Basic09"
 	$(MAKDIR) $(DISK),CMDS
 	$(CP) $(ALLOBJS) $(DISK),CMDS
-	$(CP) $(TXTFILES) $(DISK),.
+	$(CPL) $(TXTFILES) $(DISK),.
 
 dskclean:
 	-$(RM) $(DISK)
