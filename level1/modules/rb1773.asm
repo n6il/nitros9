@@ -37,16 +37,27 @@ rev      set   $01
 edition  set   11
 
 * Configuration Settings
-N.Drives equ   4		number of drives to support
+N.Drives equ   4              number of drives to support
 TC9      equ   0              Set to 1 for TC9 special slowdowns
 PRECOMP  equ   0              Set to 1 to turn on write precompensation
 
 * WD-17X3 Definitions
+CtrlReg  equ   $00		Control register for Tandy controllers; not part of WD
 WD_Cmd   equ   $08
 WD_Stat  equ   WD_Cmd
 WD_Trak  equ   $09
 WD_Sect  equ   $0A
 WD_Data  equ   $0B
+
+* Control Register Definitions
+C_HALT   equ   %10000000	Halt line to CPU is active when set
+C_SIDSEL equ   %01000000	Side select (0 = front side, 1 = back side)
+C_DBLDNS equ   %00100000	Density (0 = single, 1 = double)
+C_WPRCMP equ   %00010000	Write precompensation (0 = off, 1 = on)
+C_MOTOR  equ   %00001000	Drive motor (0 = off, 1 = on)
+C_DRV2   equ   %00000100	Drive 2 selected when set
+C_DRV1   equ   %00000010	Drive 1 selected when set
+C_DRV0   equ   %00000001	Drive 0 selected when set
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -186,7 +197,7 @@ Term     leay  >u00B1,u       Point to VIRQ packet
          ldd   #512           Return sector buffer memory
          os9   F$SRtMem 
          puls  u              Restore device mem ptr
-         clr   >DPort         shut off drive motors
+         clr   >DPort+CtrlReg shut off drive motors
          IFEQ  Level-1
          clr   >D.DskTmr      Clear out drive motor timeout flag
          ELSE
@@ -356,12 +367,12 @@ L0176    ldx   >sectbuf,u     Get physical sector buffer ptr
 *         leay  -1,y           bump timeout timer down
 *         bne   L0180          keep trying until it reaches 0 or sector read
 *         lda   >u00A9,u       get current drive settings
-*         ora   #%00001000     turn drive motor on
-*         sta   >DPort         send to controller
+*         ora   #C_MOTOR       turn drive motor on
+*         sta   >DPort+CtrlReg send to controller
 *         puls  y,cc           restore regs
 *         lbra  L03E0          exit with Read Error
 *** Blobstop fixes
-         stb   >DPort         send command to FDC
+         stb   >DPort+CtrlReg send B to control register
          nop                  allow HALT to take effect
          nop
          bra   L0197          and a bit more time
@@ -370,17 +381,19 @@ L0176    ldx   >sectbuf,u     Get physical sector buffer ptr
 *        B=Control register settings
 L0197    lda   >DPort+WD_Data get byte from controller
          sta   ,x+            store into sector buffer
-*         stb   >DPort        drive info
+*         stb   >DPort+CtrlReg drive info
          nop               -- blobstop fix
          bra   L0197          Keep reading until sector done
 
 L01A1    orcc  #IntMasks      Shut off IRQ & FIRQ
          stb   >DPort+WD_Cmd  Send command
 *         ldy   #$FFFF
-         ldb   #%00101000     Double density & motor on
+         ldb   #C_DBLDNS+C_MOTOR  Double density & motor on
+*         ldb   #%00101000     Double density & motor on
          orb   >u00A9,u       Merge with current drive settings
-         stb   >DPort         Send to control register
-         ldb   #%10101000     Enable halt, double density & motor on
+         stb   >DPort+CtrlReg Send to control register
+         ldb   #C_HALT+C_DBLDNS+C_MOTOR Enable halt, double density & motor on
+*         ldb   #%10101000     Enable halt, double density & motor on
          orb   >u00A9,u       Merge that with current drive settings
          lbra  L0406          Time delay to wait for command to settle
 *         lda   #$02
@@ -462,8 +475,8 @@ L0224     lbsr  L01A1          Send command to controller (including delay)
 *         leay  -$01,y         No, bump wait counter
 *         bne   L0229          Still more tries, continue
 *         lda   >u00A9,u       Get current drive control register settings
-*         ora   #%00001000     Drive motor on (but drive select off)
-*         sta   >DPort         Send to controller
+*         ora   #C_MOTOR       Drive motor on (but drive select off)
+*         sta   >DPort+CtrlReg Send to controller
 *         puls  y,cc           Restore regs
 *         lbra  L03AF          Check for errors from status register
 
@@ -474,7 +487,7 @@ L0224     lbsr  L01A1          Send command to controller (including delay)
          sta   >$FFA1          otherwise map the block in
          ENDC
 
-L0230    stb   >DPort          send command to FDC
+L0230    stb   >DPort+CtrlReg  send command to FDC
          bra   L0240           wait a bit for HALT to enable
 * Write sector routine (Entry: B= drive/side select) (NMI will break out)
 L0240    nop               --- wait a bit more
@@ -485,7 +498,7 @@ L0240    nop               --- wait a bit more
          nop
          nop
          ENDC
-*         stb   >DPort        Set up to read next byte
+*         stb   >DPort+CtrlReg Set up to read next byte
          bra   L0240          Go read it
 
 * NMI routine
@@ -551,7 +564,8 @@ L02AC    lbsr  L0376          Go set up controller for drive, spin motor up
          lda   >u00AD,u       Get side 1/2 flag
          beq   L02C4          Side 1, skip ahead
          lda   >u00A9,u       Get control register settings
-         ora   #%01000000     Set side 2 (drive 3) select
+         ora   #C_SIDSEL      Set side 2 (drive 3) select
+*         ora   #%01000000     Set side 2 (drive 3) select
          sta   >u00A9,u       Save it back
 L02C4    lda   <PD.TYP,y      Get drive type settings
          bita  #%00000010     ??? (Base 0/1 for sector #?)
@@ -585,7 +599,8 @@ L02E9    stb   >DPort+WD_Trak Save current track # onto controller
 L02F9    cmpa  ,s+            Is track # high enough to warrant precomp?
          bls   L0307          No, continue normally
          ldb   >u00A9,u
-         orb   #%00010000     Turn on Write precomp
+         orb   #C_WRPCMP     Turn on Write precomp
+*         orb   #%00010000     Turn on Write precomp
          stb   >u00A9,u
          ENDC
 
@@ -724,9 +739,10 @@ L03E6    ldb   >DPort+WD_Stat Check FDC status register
          bra   L03E6          Wait for controller to finish previous command
 
 * Send command to FDC
-L03F7    lda   #%00001000     Mask in Drive motor on bit
+L03F7    lda   #C_MOTOR
+*        lda   #%00001000     Mask in Drive motor on bit
          ora   >u00A9,u       Merge in drive/side selects
-         sta   >DPort         Turn the drive motor on & select drive
+         sta   >DPort+CtrlReg Turn the drive motor on & select drive
          stb   >DPort+WD_Cmd  Save command & return
 L0403    rts   
 
@@ -816,7 +832,8 @@ SSWTrk   pshs  u,y            preserve register stack & descriptor
          beq   L0465          Side 1, skip ahead
          com   >u00AD,u
          ldb   >u00A9,u       Get current control register settings
-         orb   #%01000000     Mask in side 2
+*         orb   #%01000000     Mask in side 2
+         orb   #C_SIDSEL      Mask in side 2
          stb   >u00A9,u       Save updated control register
 L0465    lda   R$U+1,x        Get caller's track #
          ldx   >u00A7,u       Get current drive table ptr
@@ -884,8 +901,9 @@ L04B3    pshs  y,x,d          Preserve regs
          ldd   >VIRQCnt,pc    Get VIRQ initial count value
          std   >u00B1,u       Save it
          lda   >u00A9,u       ?Get drive?
-         ora   #%00001000     Turn drive motor on for that drive
-         sta   >DPort         Send drive motor on command to FDC
+         ora   #C_MOTOR       Turn drive motor on for that drive
+*         ora   #%00001000     Turn drive motor on for that drive
+         sta   >DPort+CtrlReg Send drive motor on command to FDC
          IFEQ  Level-1
          lda   >D.DskTmr      Get VIRQ flag
          ELSE
@@ -930,7 +948,7 @@ IRQSvc   pshs  a
          beq   L0509
          bsr   InsVIRQ
          bra   IRQOut
-L0509    sta   >DPort
+L0509    sta   >DPort+CtrlReg
          IFNE  H6309
          aim   #$FE,>u00B5,u
          ELSE
