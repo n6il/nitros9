@@ -30,8 +30,8 @@ distribution disk's &quot;OS9Boot&quot; file contains the following modules:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
   <row>
     <entry>IOMAN</entry>
@@ -111,8 +111,8 @@ The directory &quot;/d0/SYS&quot; contains two important files:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="4in">
+<colspec colwidth="1in"/>
+<colspec colwidth="4in"/>
 <tbody>
   <row>
 <entry>password</entry>
@@ -172,8 +172,8 @@ contained in this directory are:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="4in">
+<colspec colwidth="1in"/>
+<colspec colwidth="4in"/>
 <tbody>
   <row>
 <entry>OS9Defs</entry>
