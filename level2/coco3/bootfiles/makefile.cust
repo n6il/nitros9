@@ -41,7 +41,7 @@ BOOTFILE_ROM	= $(MD)/rominfo $(MD)/os9p2 $(MD)/init $(MD)/ioman \
 
 BOOTFILE_DW	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(C9)/drivewire/drivewire_l2.dr \
-		$(C9)/drivewire/ddg0_l2.dd \
+		$(C9)/drivewire/ddx0_l2.dd \
 		$(MD)/rbf.mn \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
