@@ -1,7 +1,4 @@
-pdf: os9software.pdf diskcrash.pdf
+pdf: articles.pdf
 
-os9software.pdf: os9software.article
-	xmlto pdf os9software.article
-
-diskcrash.pdf: diskcrash.article
-	xmlto pdf diskcrash.article
+articles.pdf: os9software.article diskcrash.article
+	docbook2pdf articles.docbook

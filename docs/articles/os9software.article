@@ -1,6 +1,3 @@
-<?xml version="1.0" ?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
-   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 <!--
     The author has not been contacted about adding this article to the
     documentation set.
@@ -566,7 +563,7 @@ this is a parameter[CR]
 </para>
 </section>
 <section>
-<title>Other Progamming Tips</title>
+<title>Other Programming Tips</title>
 <para>
 Generally, thats about all there is to writing OS9 programs. Remember, that an 
 OS9 process should exit by calling os9 f$exit (with the B register containing 
