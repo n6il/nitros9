@@ -1,5 +1,5 @@
 ********************************************************************
-* CC3Disk - WD1773 Disk Controller Driver
+* ccxdisk - CoCo Disk Controller Driver
 *
 * A lot of references to **.CYL or <u00B6 using 16 bit registers can be
 * changed to 8 bit registers with a +1 offset, since track #'s >255 are
@@ -24,7 +24,7 @@
 *  11r1    2003/09/03  Boisy G. Pitre
 * Added code to sense if HW is present or not and return error if not.
 
-         nam   CC3Disk
+         nam   ccxdisk
          ttl   WD1773 Disk Controller Driver
 
 TC9      equ   0              Set to 1 for TC9 special slowdowns
@@ -50,7 +50,9 @@ sectbuf  rmb   2              Ptr to 512 byte sector buffer
 u00AD    rmb   1
 u00AE    rmb   1
 FBlock   rmb   2              block number for format
+         IFGT  Level-1
 FTask    rmb   1              task number for format
+         ENDC
 u00B1    rmb   2              Vi.Cnt word for VIRQ
 u00B3    rmb   2              Vi.Rst word for VIRQ
 u00B5    rmb   1              Vi.Stat byte for VIRQ (drive motor timeout)
@@ -60,7 +62,12 @@ size     equ   .
 
          fcb   DIR.+SHARE.+PEXEC.+PWRIT.+PREAD.+EXEC.+UPDAT.
 
-name     fcs   /CC3Disk/
+name     equ   *
+         IFEQ  Level-1
+         fcs   /CCDisk/
+         ELSE
+         fcs   /CC3Disk/
+         ENDC
          fcb   edition
 
 VIRQCnt  fdb   $00F0          Initial count for VIRQ (240)
@@ -443,10 +450,12 @@ L0224     lbsr  L01A1          Send command to controller (including delay)
 *         puls  y,cc           Restore regs
 *         lbra  L03AF          Check for errors from status register
 
+         IFGT  Level-1
 *** added blobstop
          lda   FBlock+1,u      get the block number for format
          beq   L0230           if not format, don't do anything
          sta   >$FFA1          otherwise map the block in
+         ENDC
 
 L0230    stb   >DPort+$00 send command to FDC
          bra   L0240           wait a bit for HALT to enable
@@ -465,10 +474,14 @@ L0240    nop               --- wait a bit more
 * NMI routine
 NMISvc   leas  R$Size,s       Eat register stack
 *         puls  y,cc           Get path dsc. ptr & CC
+         IFGT  Level-1
          ldx   <D.SysDAT  get pointer to system DAT image
          lda   3,x        get block number 1
          sta   >$FFA1     map it back into memory
          andcc #^IntMasks turn IRQ's on again
+         ELSE
+*         puls  y,cc           Get path dsc. ptr & CC
+         ENDC
          ldb   >DPort+$08     Get status register
          bitb  #%00000100     Did we lose data in the transfer?
 *         lbne  L03E0          Yes, exit with Read Error
@@ -732,11 +745,16 @@ SetStat  ldx   PD.RGS,y       Get caller's register stack ptr
          ldb   #E$UnkSvc      return illegal service request error
          rts   
 
-         IFGT   Level-1
 SSWTrk   pshs  u,y            preserve register stack & descriptor
-*         ldd   #$1A00         Size of buffer to hold entire track image
-*         os9   F$SRqMem       Request memory from system
-*         bcs   L0489          Error requesting, exit with it
+
+         IFEQ   Level-1
+
+         ldd   #$1A00         Size of buffer to hold entire track image
+         os9   F$SRqMem       Request memory from system
+         bcs   L0489          Error requesting, exit with it
+         stu   >FBlock,x
+
+         ELSE
 
 *--- new code
          ldb   #1         1 block to allocate
@@ -769,6 +787,9 @@ SSWTrk   pshs  u,y            preserve register stack & descriptor
          ldy   #$1A00         Size of track buffer
          os9   F$Move         Copy from caller to temporary task
          bcs   L0479          Error copying, exit
+
+         ENDC
+
          puls  u,y
          pshs  u,y
          lbsr  L0376          Go check drive #/wait for it to spin up
@@ -786,31 +807,43 @@ L0465    lda   R$U+1,x        Get caller's track #
          bcs   L0489
          ldb   #$F0           Write track command?
 *---
-*         ldx   >FBlock,u
+         IFEQ  Level-1
+         ldx   >FBlock,u
+         ELSE
          ldx   #$2000     start writing from block 1
+         ENDC
+
          lbsr  L0224          Go write the track
 L0479    ldu   2,s
          pshs  b,cc           Preserve error
 
-*         ldu   >FBlock,u       Get ptr to track buffer
-*         ldd   #$1A00         Return track buffer
-*         os9   F$SRtMem 
+         IFEQ  Level-1
+
+         ldu   >FBlock,u       Get ptr to track buffer
+         ldd   #$1A00         Return track buffer
+         os9   F$SRtMem 
+
+         ELSE
 
          ldb   >FTask,u   point to task
          os9   F$RelTsk   release the task
          fcb   $8C        skip 2 bytes
 
+         ENDC
+
 * format comes here when block allocation passes, but task allocation
 * gives error.  So er de-allocate the block.
-FError   pshs  b,cc       save error code, cc
+FError   
+         IFGT  Level-1
+         pshs  b,cc       save error code, cc
          ldx   >FBlock,u   point to block
          ldb   #1         1 block to return
          os9   F$DelRAM   de-allocate image RAM blocks
          clr   FBlock+1,u ensure that the block # in FBlock is zero.
          puls  b,cc           Restore error
-L0489    puls  pc,u,y         Restore regs & return
-         ELSE
          ENDC
+
+L0489    puls  pc,u,y         Restore regs & return
 
 * seek the head to track 0
 sktrk0   lbsr  chkdrv
