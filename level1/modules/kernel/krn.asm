@@ -74,7 +74,7 @@ name     fcs   /krn/
 
 InitNam  fcs   /Init/
 
-P2Nam    fcs   /KernelP2/
+P2Nam    fcs   /krnp2/
 
 VectCode bra   SWI3Jmp		$0100
          nop
