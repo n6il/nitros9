@@ -97,7 +97,7 @@ size     equ   .
 name     fcs   /RBF/
          fcb   edition
 
-L0012    fcb   $26
+L0012    fcb   DRVMEM
 
 
 ****************************

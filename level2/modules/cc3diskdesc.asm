@@ -1,13 +1,13 @@
 ********************************************************************
-* DX - CC3Disk device descriptor
+* CC3DiskDesc - CC3Disk Device Descriptor Template
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 
-         nam   DX
-         ttl   CC3Disk device descriptor
+         nam   CC3DiskDesc
+         ttl   CC3Disk Device Descriptor Template
 
 * Disassembled 98/08/23 17:09:41 by Disasm v1.6 (C) 1988 by RML
 
@@ -34,12 +34,12 @@ SAS      set   8
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
-         fcb   DIR.!ISIZ.!SHARE.!PEXEC.!PWRIT.!PREAD.!EXEC.!UPDAT. mode byte
+         fcb   DIR.!SHARE.!PEXEC.!PWRIT.!PREAD.!EXEC.!UPDAT. mode byte
          fcb   HW.Page    extended controller address
          fdb   $FF40      physical controller address
-         fcb   initsize-*-1 initilization table size
+         fcb   initsize-*-1 initalization table size
          fcb   DT.RBF     device type:0=scf,1=rbf,2=pipe,3=scf
-         fcb   dnum       drive number
+         fcb   DNum       drive number
          fcb   Step       step rate
          fcb   Type       drive device type
          fcb   Density    media density:0=single,1=double
@@ -52,12 +52,11 @@ SAS      set   8
          fcb   SAS        minimum size of sector allocation
 initsize equ   *
 
-         ifne  DD
+         IFNE  DD
 name     fcs   /DD/
-         else
-name     fcc   /D/
-         fcb   176+dnum
-         endc
+         ELSE
+name     fcb   'D,'0+DNum+$80
+         ENDC
 mgrnam   fcs   /RBF/
 drvnam   fcs   /CC3Disk/
 
