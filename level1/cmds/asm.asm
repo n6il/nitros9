@@ -25,6 +25,12 @@
 * Copied the W indexed addressing code from ASM6309
 * 0-register bug fixed, TFR now accepts R16->R8 xfers
 * Added new IFDEF/IFNDF conditionals
+*
+*  10      2004/06/15  Rodney V. Hamilton
+* Arbitrary-length labels allowed. (first 8 chars must be unique)
+* Listing buffer overruns prevented. Opt W linewidth now 132 max.
+* 6309 Reg2Reg ops now allow R16->R8 xfers. (sets warning flag)
+* Listing fields spaced correctly, comment field auto-aligned.
 
          nam   Asm
          ttl   6809/6309 Assembler
@@ -36,7 +42,7 @@
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   $09
+edition  set   10
 DOCASE   equ   1		enable case-sensitive symbols
 NEWDEF   equ   1		enable IFDEF/IFNDF conditionals
          mod   eom,name,tylg,atrv,asm,size
@@ -72,7 +78,7 @@ u000D    rmb   1		unused
 u000E    rmb   2		Ptr to object code buffer (256 bytes)
 u0010    rmb   2		Ptr to symbol first letter index table
 u0012    rmb   2		Ptr to end of symbol table
-u0014    rmb   2		Temp - stack ptr
+u0014    rmb   2		Ptr to end of listing buffer
 u0016    rmb   2		Ptr to symbol name buffer (8 chars + nul)
 u0018    rmb   1		Path number of current source file
 u0019    rmb   1		Path number of object file, O flag
@@ -113,7 +119,7 @@ u004B    rmb   1		LSB of 16 bit #
 u004C    rmb   1		Flag for DP($ff), Extended($01) or other($00) modes
 u004D    rmb   1		Indirect mode flag (0=no, >0=Yes)
 u004E    rmb   1		Indexed mode calc completed flag (0=no)
-u004F    rmb   1
+u004F    rmb   1		Warning count for current line
 u0050    rmb   1		Header parity byte
 u0051    rmb   3		CRC buffer
 u0054    rmb   1		Inactive (non-coding) nested IF depth
@@ -141,34 +147,35 @@ name     equ   *
          fcs   /Asm/
          fcb   edition
 asm      tfr   u,d
-         addd  #$01C0
-         std   <u0014
+         addd  #$01C0		allocate local stack
+         tfr   d,s
          std   <u0016
-         addd  #$0009
+         addd  #9		symbol name buffer (8 char+null)
          std   <u0000         Start of current line in source ($1C9)
-         addd  #$0051
+         addd  #81		source buffer (120 char+CR, overlaps hdr buf)
          std   <u0002
-         addd  #$0085
-         std   <u0004
-         addd  #$0092
+         addd  #133		header buffer (132 char+CR)
+         std   <u0004         Start of listing buffer
+         addd  #133-1		point to end of listbuf (132 char+CR)
+         std   <u0014		to detect buffer overruns
+         addd  #13+1		allocate open path stack (+CR for listbuf)
          std   <u0006
          std   <u001F
          std   <u0008
-         addd  #$0050
+         addd  #80		TITLE buffer (79 char+null)
          std   <u000A
-         addd  #$0028
+         addd  #40		NAME buffer (39 char+null)
          std   <u000E
-         adda  #$01
+         adda  #1		allocate 256-byte code buffer
          std   <u0010
         IFNE  DOCASE
          addd  #52*2		52 symbol vectors, A-Za-z
         ELSE
          addd  #26*2		26 symbol vectors, A-Z
         ENDC  DOCASE
-         std   <u001D
+         std   <u001D		start of symbol table
          leau  -$01,y
-         stu   <u0012
-         lds   <u0014
+         stu   <u0012		end of symbol table
          clra
          ldb   #$01
          sta   <u0059		F opt=0
@@ -189,14 +196,10 @@ asm      tfr   u,d
          sta   <u0057
          ldb   #66            Default page height
          stb   <u0036
-         ldb   #80            Default page width
+         ldb   #79            Default page width
          stb   <u0037
         IFNE  DOCASE
-        IFGT  Level-1
          ldb   #$7F		Default symbol case mask
-        ELSE
-         ldb   #$5F		Default symbol case mask
-        ENDC  Level
          stb   <u000D
         ENDC  DOCASE
          lbsr  L1696
@@ -479,20 +482,14 @@ L028F    ldb   <u002B
          bsr   L02E2		Update listing ptr
          ldy   <u0031
          lbsr  L11BD
-         lda   #C$SPAC
-         sta   ,x+
 L02A3    ldb   <u002B
          bitb  #Comment		Comment field to print?
          beq   L02B9
          ldb   #50		Yes, set to column 50
 * Copy comment field to listing buffer
 L02AB    bsr   L02E2		Update listing ptr
-L02AD    lda   ,y+
-         cmpa  #C$CR		EOL?
-         beq   L02B7
-         sta   ,x+
-         bra   L02AD
-*
+         bsr   L02C9		skip leading spaces, copy first word
+         lbsr  L11BD		copy rest of comment
 L02B7    ldb   <u002B
 L02B9    andb  #^Comment
          cmpb  #NoObjct
@@ -502,27 +499,27 @@ L02B9    andb  #^Comment
          bne   L02C8
          inc   <u0038		msb
 L02C8    rts
-*
+
+* copy whitespace-delimited text to print buffer
 L02C9    lda   ,y+
-         cmpa  #C$SPAC
+         cmpa  #C$SPAC		skip leading spaces
          beq   L02C9
 L02CF    cmpa  #C$CR
          beq   L02DF
-         cmpx  <u001F
-         bcc   L02D9
+         cmpx  <u0014		end of buffer?
+         bhs   L02D9		yes, stop copying
          sta   ,x+
 L02D9    lda   ,y+
          cmpa  #C$SPAC
          bne   L02CF
-L02DF    leay  -$01,y
+L02DF    leay  -$01,y		rewind to terminating char
          rts
 
 * Move listing buffer ptr to column [B], ignore if already past
 L02E2    pshs  u
+         leax  $01,x		Force at least ONE space
          tst   <u0060		Narrow listing?
-         beq   L02EC
-         leax  $01,x		Yes, single space only
-         bra   L02F8
+         bne   L02F8		Yes, single space only
 L02EC    ldu   <u0004		Point to start of listing buffer
          leau  b,u		Offset to column [B] (0-based)
          pshs  u		Compare new offset
@@ -550,24 +547,22 @@ L02FA    pshs  u,y,x,d        Preserve regs
          cmpb  #$18
          bne   L0322
          ldy   $02,s
-         bsr   L033D
+         lbsr  L11BD
 L0322    lbsr  L1368
 L0325    inc   <u0021
          inc   <u0028+1		lsb
          bne   L032D
          inc   <u0028		msb
 L032D    puls  pc,u,y,x,d     Restore regs & return
-         lbsr  L01E5
-         ldb   #$18
-         bsr   L02E2
-         ldy   <u0000
-         bra   L033D
+* unreferenced/dead code, commented out -RVH
+**         lbsr  L01E5
+**         ldb   #$18
+**         bsr   L02E2
+**         ldy   <u0000
+**         bra   L033D
 
-L033B    sta   ,x+            Copy string up until CR & return
-L033D    lda   ,y+
-         cmpa  #$0D
-         bne   L033B
-         rts
+* L033D CR copy loop merged into L11BD code -RVH
+
 * Find opcode match
 * Entry: Y=Table ptr to look in for match
 *        X=Ptr to part of source we are currently checking
@@ -596,16 +591,19 @@ L035E    eora  ,x+            Do last characters match?
          clrb                 No error & return
          rts
 
-* Copy label into symbol name buffer (8 chars max, force uppercase)
+* Copy label field into symbol name buffer
+* First 8 characters of label MUST be unique
 L0368    lbsr  L1164
          bsr   L03A0		first char MUST be alphabetic
          bcs   L03B7
          pshs  u,y
          ldu   <u0016		symbol name buffer
          ldb   #$08           Max # chars in label
-         leax  1,x
-         bra   L0393
-
+         leax  1,x            advance to 2nd char
+* A=letter, number, period, dollar sign or underscore
+L0393    decb                 Copy the first 8 chars
+         bmi   L0379          But check them all
+         sta   ,u+            Store character in label buffer
 * Copy rest of label into buffer
 L0379    lda   ,x+            Get char
          bsr   L03A0          Check text chars
@@ -619,14 +617,9 @@ L0379    lda   ,x+            Get char
          cmpa  #'.            Is it a period?
          beq   L0393          Yes, go process
          cmpa  #'$            Is it a dollar sign?
-         bne   L039A          No, skip ahead
-* A=letter, number, period, dollar sign or underscore
-L0393    sta   ,u+            Store character in label index
-         decb                 Do all 8 chars
-         bne   L0379
-         bra   L039C          Skip ahead
-L039A    leax  -1,x
-L039C    clr   ,u+            Append a NUL
+         beq   L0393          Yes, go process
+L039A    leax  -1,x           No, rewind to non-label char
+         clr   ,u+            Append a NUL to symbol buf
          puls  pc,u,y         Restore regs & return
 
 * Test for alphabetic [A-Za-z] set carry if not (shorter & faster RVH)
@@ -1261,10 +1254,10 @@ gotnum   leas  8,s		free work area
 dohex32  lbsr  L113B
          bcc   notAF
          cmpb  #'a
-         bcs   nxtlt
-         subb  #$20
+         blo   nxtlt
+         subb  #'a-'A
 nxtlt    cmpb  #'A
-         bcs   notnum
+         blo   notnum
          cmpb  #'F
          bhi   notnum
          subb  #'A-10
@@ -1476,8 +1469,6 @@ getbit   lbsr  L12F7	get bit number
          bra   TypeFx	fix stack and exit
 * do syntax check for comma, "expr syntax" error if not
 synchk   lda   ,x+	check for delimiter
-         cmpa  #$20	space?
-         beq   synchk	eat it
          cmpa  #',	is it a comma?
          bne   TypeF6	No, syntax error
 TypeF5   rts
@@ -1587,11 +1578,12 @@ chksz    lda   <u0064         Get source register back
          anda  ,s		if not, check if R0=16bit
          bne   sizerr		No, 8->16 always bad
          lda   <u0062		but 16->8 is OK
-         cmpa  #$1F		only if op=TFR
-         beq   L0879		according to Motorola's asm
+         cmpa  #$1E		unless op=EXG
+         bne   sizewarn		if not, issue a mismatch warning
 sizerr   ldb   #16		Otherwise, 'reg sizes' error
          leas  $02,s		Eat copies of regs
          bra   L0854		and exit
+sizewarn inc   <u004F		warning flag: reg size mismatch
 
 * Create operand byte
 * Entry: Stack contains Source & Destination register masks
@@ -1737,7 +1729,7 @@ L0951    lbsr  L12F1
          bgt   L096A
          cmpd  #$FF80
          blt   L096A
-         inc   <u004F        friendly warning flag that we could use short rel
+         inc   <u004F		warning flag: we could use short rel here
 L096A    rts
 
 * Entry: X=ptr to start of reg name from source
@@ -1881,7 +1873,7 @@ L0A31    leax  1,x            Bump src ptr up by 1
 L0A35    ldd   <u004A         Get 16 bit address
          inc   <u0046         Add 2 to # bytes for instruction
          inc   <u0046
-         inc   <u004F         ???
+         inc   <u004F         warning flag: extended addressing mode
          tst   <u004D         Indirect mode on?
          bne   L0A4A          Yes, Need to add $9F postbyte first
          std   <u0063         Save extended address
@@ -2317,7 +2309,7 @@ L0CD7    lbsr  L12F1
 L0CEA    puls  pc,x
 L0CEC    ldb   <u0046
          cmpb  #$04
-         bcs   L0CF4
+         blo   L0CF4
          bsr   L0D03
 L0CF4    pshs  b,a
          tfr   dp,a
@@ -2539,7 +2531,10 @@ L0E73    lda   ,x+
 * 'W' (line width) option
 L0E80    bsr   L0E21		process linewidth arg
          bcs   L0E63		'opt list' error if bad arg
-         stb   <u0037		set new line width (chars/line)
+         cmpb  #132		bugfix: to avoid a
+         bls   L0E84		:printbuf overrun, set
+         ldb   #132		:max line width to 132
+L0E84    stb   <u0037		set new line width (chars/line)
          bra   L0E73
 * 'D' (page depth) option
 L0E88    bsr   L0E21		process pagedepth arg
@@ -2770,17 +2765,18 @@ L0FFA    ldx   <u0016
          subb  #'A		map A-Z to 0-25
 * support code for lowercase symbols
          cmpb  #'a-'A		lowercase symbol?
-         bcs   L1008
+         blo   L1008
          subb  #'a-'Z-1		map a-z to 26-51
 L1008    lslb			convert index into table offset
          abx			point x to list vector for 1st letter of symbol
          rts
+
 * add new symbol to table if there's room
 L100B    ldx   <u001D		get addr of next empty slot
          pshs  x,a
          leax  $0F,x		is there room for one more?
          cmpx  <u0012
-         bcs   L1023		yes!
+         blo   L1023		yes!
          ldb   #11		"symbol table full" error
 L1017    clr   <u0056
          lda   #$01
@@ -2790,10 +2786,12 @@ L1017    clr   <u0056
 L1023    stx   <u001D
          sty   ,--s
          bne   L1032
+* start new linked list, add first symbol
          leas  $02,s
          bsr   L0FFA
          leay  -$0B,x
          bra   L1040
+* append new symbol to existing linked list
 L1032    ldx   <u0016
 L1034    lda   ,x+
          cmpa  ,y+
@@ -2885,10 +2883,10 @@ L10B4    leas  -$04,s		reserve a workspace on stack
 L10C9    bsr   L113B
          bcc   L10DD
          cmpb  #'a		lowercase?
-         bcs   L10D3
+         blo   L10D3
          subb  #'a-'A		yes, make uppercase
 L10D3    cmpb  #'A		valid ASCII hex?
-         bcs   L114D
+         blo   L114D
          cmpb  #'F
          bhi   L114D
          subb  #'A-10		yes, convert to hex digit
@@ -2933,7 +2931,7 @@ L10FB    bsr   L113B
          bra   L10FB
 * binary string conversion
 L1121    ldb   ,x+
-         subb  #$30
+         subb  #'0
          bcs   L114D
          lsrb
          bne   L114D
@@ -2952,7 +2950,7 @@ L1121    ldb   ,x+
 
 L113B    ldb   ,x+
          cmpb  #'0
-         bcs   L1145
+         blo   L1145
          cmpb  #'9
          bls   L1148
 L1145    orcc  #$01
@@ -3031,11 +3029,7 @@ L11AE    dec   $04,s
 L11B8    leas  $06,s
          rts
 
-* Copy a null-terminated string from Y-buf to X-buf
-L11BB    sta   ,x+
-L11BD    lda   ,y+		Enter here:
-         bne   L11BB
-         rts
+* L11BD copy loop moved to L1408 area -RVH
 
 * expression evaluator
 L11C2    pshs  u,y            Preserve regs
@@ -3218,7 +3212,7 @@ L130D    bsr   L134D		Update CRC
          sta   ,x+		write new byte
          stx   <u001B		update ptr
          cmpx  <u0010		buffer full?
-         bcs   L1321		no, return
+         blo   L1321		no, return
          bsr   L1323		yes, write it out
          ldx   <u000E
          stx   <u001B		and reset ptr to start
@@ -3341,16 +3335,27 @@ L13F0    leas  $06,s		release date buffer
 L13F2    lda   #C$SPAC
          sta   ,x+		and write another space
          rts
-* write A reg to buffer as 2-digit decimal ASCII
+* write Reg.A to buffer as 2-digit decimal ASCII
 L13F7    pshs  b
          ldb   #'0-1
 L13FB    incb
          suba  #10
-         bcc   L13FB
+         bhs   L13FB
          stb   ,x+
          adda  #'0+10
          sta   ,x+
          puls  pc,b
+
+* Copy a string from Y-buf (src) to X-buf (listing buffer)
+* until Null or EOL terminator or end of buffer.
+L11BB    cmpx  <u0014		reached end of listbuf?
+         bhs   L11BD		yes, stop copying
+         sta   ,x+
+L11BD    lda   ,y+		Enter here:
+         beq   L11C1		exit if Null
+         cmpa  #C$CR		..or EOL
+         bne   L11BB		else copy
+L11C1    rts
 *
 L1408    lda   <u0056
          bmi   L1476
@@ -3370,7 +3375,7 @@ L141A    ldx   <u0004
          stb   <u0035
          lbsr  L01E5
          leay  <L14A5,pc      Point to 'Microware OS-9 Assembler' etc.
-         lbsr  L11BD
+         bsr   L11BD
          lbsr  L13BD
          ldx   <u0004
          clra
@@ -3384,17 +3389,17 @@ L141A    ldx   <u0004
          inc   <u003A		msb
 L1447    leax  -$08,x
          leay  <L149F,pc      Point to 'Page'
-         lbsr  L11BD
+         bsr   L11BD
          leax  $03,x
          lbsr  L1370
-         ldy   <u000A
-         lbsr  L11BD
-         bsr   L13F2
-         lda   #$2D
+         ldy   <u000A		print NAM field
+         bsr   L11BD
+         bsr   L13F2		print " - "
+         lda   #'-
          sta   ,x+
          bsr   L13F2
-         ldy   <u0008
-         lbsr  L11BD
+         ldy   <u0008		print TTL field
+         bsr   L11BD
          lbsr  L1370
          puls  x
          stx   <u0004
