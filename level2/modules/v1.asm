@@ -25,10 +25,10 @@ prn3     set   Black.     border color
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
          fcb   READ.+WRITE. mode byte
-         fcb   $07        extended controller address
+         fcb   HW.Page    extended controller address
          fdb   A.V1       physical controller address
          fcb   initsize-*-1 initilization table size
-         fcb   $00        device type:0=scf,1=rbf,2=pipe,3=scf
+         fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   $00        case:0=up&lower,1=upper only
          fcb   $01        backspace:0=bsp,1=bsp then sp & bsp
          fcb   $00        delete:0=bsp over line,1=return

@@ -11,7 +11,7 @@ Vrsn     equ   1
          mod   ModSize,DvcNam,Devic+Objct,ReEnt+Vrsn,MgrNam,DrvNam
 
          fcb   UPDAT.     access mode(s)
-         fcb   $07        hardware page
+         fcb   HW.Page    hardware page
          fdb   $FF02      hardware port
          fcb   OptSize
 OptStart fcb   DT.SCF
