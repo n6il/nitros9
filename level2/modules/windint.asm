@@ -1,4627 +1,5541 @@
-********************************************************************
-* WindInt - CoCo 3 Graphics interface module
+*******************************************************************
+* WindInt - NitrOS-9 Window Module
 *
 * $Id$
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*  29      1998/10/21  Boisy G. Pitre
-* Obtained from L2 Upgrade archive.
+*  19r0    2003/09/23  Robert Gault
+* Many new patches for 6809 code use.
+*
+*  19r1    2003/11/14  Robert Gault
+* Patches to scrollbar windows to recover arrows and markers.
+* Includes new stdfonts with graphics added to the end.
 
          nam   WindInt
-         ttl   CoCo 3 Graphics interface module
+         ttl   NitrOS-9 Window Module
 
          ifp1  
          use   defsfile
-         endc  
+         endc
+  
+tylg     set   Systm+Objct
+atrv     set   ReEnt+rev
+rev      set   $01
+edition  equ   19
 
-rev      set   $00
-edition  set   29
+* Color table for 3D look stuff & others - WILL NEED TO SWAP 1 & 2 FOR MENUS
+* This should now match VIEW's color table
+WColor0  equ   0          black
+WColor1  equ   2          dark grey (was lite grey)
+WColor2  equ   1          light grey (dark grey)
+WColor3  equ   3          (white)
 
-         mod   eom,name,Systm+Objct,ReEnt+rev,WindInt,$60
+         mod   eom,name,tylg,atrv,entry,size
+size     equ   .
 
 name     fcs   /WindInt/
          fcb   edition
 
-******************************
-*
-* Main entry point from CC3IO
-*
-* Entry: U=Device memory pointer
-*        Y=Path descriptor pointer
-*
-
-WindInt  lbra  Init       Initialization routine
-         lbra  Write      Write routine
-         lbra  GetStat      GetStat routine
-         lbra  SetStat      SetStat routine
-         lbra  Term       Termination routine
-         lbra  L0CAC
-
-******************************
-*
+****************************
 * Escape code parameter vector table
-*
-* Format:
-*
-* Byte 1  : Length of parameters required
-* Byte 2-3: Routine entry offset
-* Byte 4  : Internal function code for GrfDrv
-*
+* Format: Byte 1  : Length of parameters required (in bytes)
+*         Byte 2  : Internal function code for GrfDrv
+*         Byte 3-4: Vector offset of routine from Byte 1
 
-EscTbl   fcb   $07        DWSet
-         fdb   DWSet-EscTbl
-         fcb   $04
-         fcb   $00        Select
-         fdb   Select-EscTbl
-         fcb   $10
-         fcb   $07        OWSet
-         fdb   OWSet-EscTbl
-         fcb   $0a
-         fcb   $00        OWEnd
-         fdb   OWEnd-EscTbl
-         fcb   $0c
-         fcb   $00        DWEnd
-         fdb   DWEnd-EscTbl
-         fcb   $08
-         fcb   $04        CWArea
-         fdb   CWArea-EscTbl
-         fcb   $0e
-         fcb   $ff        Blank
+L0027    fcb   7,$04      DWSet
+         fdb   L03AE-*+2
+         fcb   0,$10      Select
+         fdb   L0549-*+2
+         fcb   7,$0A      OWSet
+         fdb   L049C-*+2
+         fcb   0,$0C      OWEnd
+         fdb   L04FC-*+2
+         fcb   0,$08      DWEnd
+         fdb   L0446-*+2
+         fcb   4,$0E      CWArea
+         fdb   L05A0-*+2
+         fcb   $ff,$00    Blank
          fdb   $0000
-         fcb   $00
-         fcb   $ff        Blank
+         fcb   $ff,$00    Blank
          fdb   $0000
-         fcb   $00
-         fcb   $ff        Blank
+         fcb   $ff,$00    Blank
          fdb   $0000
-         fcb   $00
-         fcb   $04        DefGPB
-         fdb   DefGPB-EscTbl
-         fcb   $2c
-         fcb   $02        KillBuf
-         fdb   KillBuf-EscTbl
-         fcb   $2e
-         fcb   $09        GPLoad
-         fdb   GPLoad-EscTbl
-         fcb   $30
-         fcb   $0a        GetBlk
-         fdb   GetBlk-EscTbl
-         fcb   $34
-         fcb   $06        PutBlk
-         fdb   PutBlk-EscTbl
-         fcb   $36
-         fcb   $02        PSet
-         fdb   PSet-EscTbl
-         fcb   $12
-         fcb   $01        LSet
-         fdb   LSet-EscTbl
-         fcb   $1e
-         fcb   $00        DefPal
-         fdb   DefPal-EscTbl
-         fcb   $1c
-         fcb   $02        Palette
-         fdb   Palette-EscTbl
-         fcb   $16
-         fcb   $01        FColor
-         fdb   FColor-EscTbl
-         fcb   $20
-         fcb   $01        BColor
-         fdb   BColor-EscTbl
-         fcb   $22
-         fcb   $01        Border
-         fdb   Border-EscTbl
-         fcb   $14
-         fcb   $01        Scale
-         fdb   ScaleS-EscTbl
-         fcb   $28
-         fcb   $01        DWProtSw
-         fdb   DWProtSw-EscTbl
-         fcb   $06
-         fcb   $ff        Blank
+         fcb   4,$2C      DefGPB
+         fdb   L0803-*+2
+         fcb   2,$2E      KillBuf
+         fdb   L0687-*+2
+         fcb   9,$30      GPLoad
+         fdb   L0870-*+2
+         fcb   10,$34     GetBlk
+         fdb   L0825-*+2
+         fcb   6,$36      PutBlk
+         fdb   L0837-*+2
+         fcb   2,$12      PSet
+         fdb   L0674-*+2
+         fcb   1,$1E      LSet
+         fdb   L062D-*+2
+         fcb   0,$1C      DefPal
+         fdb   L064E-*+2
+         fcb   2,$16      Palette
+         fdb   L0656-*+2
+         fcb   1,$20      FColor
+         fdb   L0641-*+2
+         fcb   1,$22      BColor
+         fdb   L0641-*+2
+         fcb   1,$14      Border
+         fdb   L0637-*+2
+         fcb   1,$28      Scale
+         fdb   L068F-*+2
+         fcb   1,$06      DWProtSw
+         fdb   L068F-*+2
+         fcb   $ff,$00    Blank
          fdb   $0000
-         fcb   $00
-         fcb   $ff        Blank
+         fcb   $ff,$00    Blank
          fdb   $0000
-         fcb   $00
-         fcb   $02        GCSet
-         fdb   GCSet-EscTbl
-         fcb   $1a
-         fcb   $02        Font
-         fdb   Font-EscTbl
-         fcb   $18
-         fcb   $ff        Blank
+         fcb   2,$1A      GCSet
+         fdb   L060C-*+2
+         fcb   2,$18      Font
+         fdb   L0674-*+2
+         fcb   $ff,$00    Blank
          fdb   $0000
-         fcb   $00
-         fcb   $01        TCharSw
-         fdb   TCharSw-EscTbl
-         fcb   $24
-         fcb   $01        Bold
-         fdb   BoldSw-EscTbl
-         fcb   $2a
-         fcb   $ff        Blank
+         fcb   1,$24      TCharSw
+         fdb   L068F-*+2
+         fcb   1,$2A      Bold
+         fdb   L068F-*+2
+         fcb   $ff,$00    Blank
          fdb   $0000
-         fcb   $00
-         fcb   $01        PropSw
-         fdb   PropSw-EscTbl
-         fcb   $26
-         fcb   $04        SetDP
-         fdb   SetDP-EscTbl
-         fcb   $00
-         fcb   $04        RSetDPtr
-         fdb   RSetDP-EscTbl
-         fcb   $00
-         fcb   $04        Point
-         fdb   Point-EscTbl
-         fcb   $48
-         fcb   $04        RPoint
-         fdb   RPoint-EscTbl
-         fcb   $48
-         fcb   $04        Line
-         fdb   Line-EscTbl
-         fcb   $4a
-         fcb   $04        RLine
-         fdb   RLine-EscTbl
-         fcb   $4a
-         fcb   $04        LineM
-         fdb   LineM-EscTbl
-         fcb   $4a
-         fcb   $04        RLineM
-         fdb   RLineM-EscTbl
-         fcb   $4a
-         fcb   $04        Box
-         fdb   Box-EscTbl
-         fcb   $4c
-         fcb   $04        RBox
-         fdb   RBox-EscTbl
-         fcb   $4c
-         fcb   $04        Bar
-         fdb   Bar-EscTbl
-         fcb   $4e
-         fcb   $04        RBar
-         fdb   RBar-EscTbl
-         fcb   $4e
-         fcb   $08        Curved box (new)
-         fdb   CBox-EscTbl
-         fcb   $58
-         fcb   $08        Curved box (new)
-         fdb   RCBox-EscTbl
-         fcb   $58
-         fcb   $04        PutGC
-         fdb   PutGC-EscTbl
-         fcb   $44
-         fcb   $00        FFill
-         fdb   FFill-EscTbl
-         fcb   $56
-         fcb   $02        Circle
-         fdb   Circle-EscTbl
-         fcb   $50
-         fcb   $04        Ellipse
-         fdb   Ellipse-EscTbl
-         fcb   $52
-         fcb   $0c        Arc
-         fdb   Arc-EscTbl
-         fcb   $54
-         fcb   $02        Filled circle (new)
-         fdb   FCircle-EscTbl
-         fcb   $5a
-         fcb   $04        Filled ellipse (new)
-         fdb   FEllipse-EscTbl
-         fcb   $5c
-         fcb   $ff        Blank
+         fcb   1,$26      PropSw
+         fdb   L068F-*+2
+         fcb   4,$00      SetDP
+         fdb   L091E-*+2
+         fcb   4,$00      RSetDPtr
+         fdb   L093C-*+2
+         fcb   4,$48      Point
+         fdb   L0953-*+2
+         fcb   4,$48      RPoint
+         fdb   L0968-*+2
+         fcb   4,$4A      Line
+         fdb   L0978-*+2
+         fcb   4,$4A      RLine
+         fdb   L0997-*+2
+         fcb   4,$4A      LineM
+         fdb   L09AC-*+2
+         fcb   4,$4A      RLineM
+         fdb   L09CA-*+2
+         fcb   4,$4C      Box
+         fdb   L0978-*+2
+         fcb   4,$4C      RBox
+         fdb   L0997-*+2
+         fcb   4,$4E      Bar
+         fdb   L0978-*+2
+         fcb   4,$4E      RBar
+         fdb   L0997-*+2
+         fcb   $ff,$00    Blank
          fdb   $0000
-         fcb   $00
+         fcb   $ff,$00    Blank
+         fdb   $0000
+         fcb   4,$44      PutGC
+         fdb   L0908-*+2
+         fcb   0,$56      FFill
+         fdb   L09DC-*+2
+         fcb   2,$50      Circle
+         fdb   L09DC-*+2
+         fcb   4,$52      Ellipse
+         fdb   L09DC-*+2
+         fcb   12,$54     Arc
+         fdb   L09DC-*+2
+         fcb   2,$50      Filled Circle (flag set to differentiate) $53
+         fdb   Filled-*+2
+         fcb   4,$52      Filled Ellipse (flag set to differentiate) $54
+         fdb   Filled-*+2
+         fcb   $ff,$00    Blank
+         fdb   $0000
 
-******************************
-*
-* Execute grfdrv
-*
-
-L00FF    ldu   >WGlobal+G.CurDvM     get device static mem
-         ldb   CallCde,u        get Callcode
-L0105    ldu   <D.CCMem   get global mem pointer
-         ldx   <G.GrfEnt,u   get grfdrv entry address
-         orcc  #Entire    make sure we pull all registers
-         pshs  cc         save conditions
-         orcc  #IntMasks  disable interupts
-         leas  1,s        purge stack
-         sts   G.GrfStk,u    Save stack pointer for grfdrv
-         lds   <D.CCStk   get new stack pointer
-         leau  $0100,u    Point to grfdrv memory
-         pshs  pc,u,y,x,dp,b,a,cc dump all registers to stack for fake IRQ
-         stx   R$PC,s     put grfdrv entry in place of PC
-         ldx   >G.GrfStk+WGlobal get grfdrv stack pointer
-         lda   -1,x       get it's CC register
-         sta   R$CC,s     save it for new CC
-         inc   >$1002     flag we're in opposite task
-         jmp   [D.Flip1]  swap and execute other task
-
-* Path for GrfDrv
-
-GrfDrvDk fcc   "../CMDS/"
-GrfDrv   fcs   "grfdrv"
+L0129    fcc   "../CMDS/"
+L0131    fcs   "grfdrv"
 
 ******************************
 *
 * Initialization routine
-*
-* Entry: U=Device memory pointer
-*        Y=Path descriptor pointer
-*
+Init     pshs  u,y        Preserve regs
+         ldd   >WGlobal+G.GrfEnt     Grfdrv there?
+         lbne  L01DB      Yes, go on
+* Setup window allocation bit map table
+         IFNE  H6309
+         clrd  
+         clrw
+         stq   >WGlobal+G.WUseTb     Set all 32 windows to be unused
+         ELSE
+         clra
+         clrb
+         std   >GrfMem+gr00B5
+         std   >WGlobal+G.WUseTb
+         std   >WGlobal+G.WUseTb+2
+         ENDC
+* Get grfdrv setup
+         leax  <L0131,pc  Point to grfdrv module name
+         lbsr  L01FB      Does it exist in memory?
+         bcc   L0169      Yes, go on
+         cmpb  #E$MNF     Module not found?
+         bne   L0166      No, exit with error
+L0159    leax  <L0129,pc  Point to full pathname
+         lbsr  L021F      Load ok?
+         bcs   L0167      No, exit with error
+* Initialize grfdrv
+         lbsr  L020C      Check grfdrv load address
+         bcc   L0169      It's ok, go on
+L0166    coma             Set carry
+L0167    puls  y,u,pc     Return
 
-Init     pshs  u,y        preserve entrys
-         ldu   <D.CCMem   get global mem
-         ldd   G.GrfEnt,u    grfdrv exist?
-         lbne  L0206      yes, don't bother
+* Default palette color settings
+L02F3    fcb   $3f,$09,$00,$12 Colors 0-3 & 8-11
+L02F7    fcb   $24,$36,$2d,$1b Colors 4-7 & 12-15
 
-* Initialize 32 byte ????
-
-         leax  $1C0,u
-         clrb  
-L014C    stb   b,x
-         incb  
-         cmpb  #$20
-         bne   L014C
-
-* Setup window tables
-
-         leax  G.WUseTb,u    get pointer to window table
-         clra             get init value
-         ldb   #4         get # bytes
-L0159    sta   ,x+        set 8 windows
-         decb             done?
-         bne   L0159      no, go back
-
-* Get grfdrv going
-
-L015E    leax  <GrfDrvDk,pcr point to full path
-         leas  -2,s       make a buffer for process pointer
-         lbsr  L023B      swap to system process
-         lda   #Systm+Objct get access mode
-         os9   F$NMLoad   load it
-         lbsr  L0247      swap back to current process
-         leas  2,s        purge stack
-         lda   #Systm+Objct get acess mode
-         leax  <GrfDrv,pcr point to grfdrv name
-
-* Get address of GrfDrv
-
-L0175    ldy   <D.SysPrc  get system process pointer
-         leay  P$DatImg,y move to DAT image
-         os9   F$FModul   find module in module directory
-         bcs   L01C9      error, return
-         ldd   MD$MPtr,u  already pointing to something?
-         bne   L01C6      yes, return bad page address
-         ldy   MD$MPDAT,u get module DAT image pointer
-         ldd   #M$Exec    get offset to execution address
-         ldx   #0         get offset to start of module
-         os9   F$LDDDXY   get execution address
-         ldu   <D.CCMem   get pointer to cc mem
-         anda  #$1F       make it start at $4xxx
+* Execute Grfdrv's init routine
+* Grfdrv will move itself over to task 1 & setup it's own memory map
+L0169    pshs  y,u        Preserve regs
+         ldu   #GrfMem    Point to GRFDRV global mem
+         clrb             Get code to initialize grfdrv
+         stb   >WGlobal+g0038
+         jsr   ,y         Execute it
+* unlink grfdrv from user map
+         lda   #Systm+Objct Get module type
+         leax  <L0131,pc  Point to grfdrv name
+         ldy   <D.SysPrc  Get system process dsc. ptr.
+         leay  <P$DATImg,y Point to the DAT image
+         os9   F$FModul   Get module directory pointer to grfdrv
+         inc   MD$Link+1,u Increment it's link count
+         ldu   2,s        Get pointer to Grfdrv module
+         lbsr  L022F      Unlink it (it's already in system state)
+         puls  d          Get pointer to Grfdrv entry
+         anda  #$1F       Calculate new entry point
          ora   #$40
-         std   G.GrfEnt,u    save it as entry address
+         std   >WGlobal+G.GrfEnt     Save it
+         leas  2,s        Purge stack
+         IFNE  H6309
+         oim   #$80,>WGlobal+G.BCFFlg Indicate that Grfdrv has been found?
+         ELSE
+         lda   >WGlobal+G.BCFFlg
+         ora   #$80
+         sta   >WGlobal+G.BCFFlg
+         ENDC
+* Initialize GFX tables
+         ldd   #$02FF     Get how many bytes we need
+         os9   F$SRqMem   Reserve it (note: only $2cf is used so far)
+         bcs   L0166      Can't get memory, exit
+         stu   >WGlobal+G.GfxTbl  Save the pointer to GFX tables (NOT IN GLOBAL!)
+         IFNE  H6309
+         tfr   d,w        Move mem size to W
+         leay  <Nul0+2,pc Clear them all to NUL's
+         tfm   y,u+
+         stw   >WGlobal+G.PrWMPt     initialize previous window table pointer to 0
+         ldu   #WGlobal+G.WrkWTb     Point to work window table
+Nul0
+         ldw   #$0040
+         tfm   y,u+
+         ELSE
+ClrLp1   clr   ,u+ 
+         subd  #$0001
+         bne   ClrLp1
+         std   >WGlobal+G.PrWMPt     initialize previous window table pointer to 0
+         ldu   #WGlobal+G.WrkWTb     Point to work window table
+         ldb   #$0040
+ClrLp2   clr   ,u+
+         decb
+         bne   ClrLp2 
+         ENDC
+* Set default palettes
+         ldy   #$10c7     Point to default palette register buffer
+         sty   >WGlobal+G.DefPal     Save it
+         IFNE  H6309
+         ldq   <L02F3,pc  Get 4 of default palettes
+         stq   ,y         Save 0-3
+         stq   8,y        Save 8-11
+         ldq   <L02F7,pc  Get other 4 default palettes
+         stq   4,y        Save 4-7
+         stq   12,y       Save 12-15
+         ELSE
+         ldd   L02F7+2,pc
+         std   6,y
+         std   14,y
+         ldd   L02F3+2,pc
+         std   2,y
+         std   10,y
+         ldd   L02F3,pc
+         std   ,y
+         std   8,y
+         ldd   L02F7,pc
+         std   4,y
+         std   12,y
+         ENDC
+L01DB    ldu   2,s        Get device static mem
+         ldy   ,s         Get path descriptor pointer
+         leax  CC3Parm,u  Point to parameters
+         stx   V.PrmStrt,u  Save it as param start pointer
+         stx   V.NxtPrm,u   Save it as pointer to next param
+         ldb   IT.WND,y   Get window # from device dsc
+         stb   V.DWNum,u    Save it as window # in static mem
+* If normal window # (0-31), mark as used in window bit table
+* If high bit set (like /W's $FF), don't allocate, let SS.Open call use next
+*  available one and let it mark which one it found
+         bmi   L01F4      Skip ahead if /w type (Wildcard)
+         clra             Clear MSB of window #
+         bsr   L024A      Allocate window in 32 bit window used table
+L01F4    lbsr  L07B0      Find empty window tbl entry & put in linked list
+         clrb             No error & return
+         puls  u,y,pc
 
-* Setup GrfDrv DAT image
+* Link to module
+L01FB    leas  -2,s       Make buffer for current process dsc.
+         bsr   L0238      Swap to system process
+         lda   #Systm+Objct Link module
+         os9   F$Link
+         bsr   L0244      Swap back to current process
+         bcs   L022C      Return if error
+         bsr   L020C      Check load address
+         bra   L022C      Return
 
-         tfr   y,d        move DAT ptr to D
-         leax  gr0087+$100,u point to grfdrv DAT map
-         ldy   <D.TskIPt  get task image pointer
-         stx   2,y        save it as task 1
-         tfr   d,y        get DAT pointer back
-         ldd   ,y         get first 1st block
-         std   4,x        save it for $4000-$5fff
-         ldd   2,y        get next block
-         std   6,x        save it for $6000-$7fff
-         ldd   #$333E     get blank DAT block marker
-         std   2,x        save it for $2000-$3fff
-         std   8,x        save it for $8000-$9fff
-         std   10,x       Save it for $a000-$bfff
-         std   12,x       save it for $c000-$dfff
-         std   14,x       save it for $e000-$ffff
-         clra             get system global block #
-         clrb  
-         std   ,x         save it for $0000-$1fff
-         lbsr  L0105      go execute grfdrv init routine
-         ldu   <D.CCMem   get global pointer
-         bra   L01CB      mask grfdrv mapped
+* Check grfdrv load/link address
+L020C    tfr   u,d        Move module header ptr to D
+         IFNE  H6309
+         andd  #$1FFF     Make sure on even 8K boundary
+         ELSE
+         anda  #$1F
+         bne   L0217
+         andb  #$FF
+         ENDC
+         bne   L0217      It's not, exit with Bad Page Address error
+         clrb             No error, exit
+         rts   
 
-* process bad page error
+L0217    comb             Exit with Bad Page Address error
+         ldb   #E$BPAddr
+         rts   
 
-L01C6    ldb   #E$BPAddr  get bad page error
-L01C8    coma             set carry
-L01C9    puls  y,u,pc     restore & return
+* Load a module
+L021F    leas  -2,s       Make a buffer for current process ptr
+         bsr   L0238      Switch to system process descriptor
+         lda   #Systm+Objct Load module
+         ldu   <D.Proc
+         os9   F$Load
+L022A    bsr   L0244      Swap back to current process
+L022C    leas  2,s        Purge stack & return
+         rts   
 
-* Mark GrfDrv initialized
+* Unlink a module
+L022F    leas  -2,s       Make buffer for current process ptr
+         bsr   L0238      Switch to system process dsc.
+         os9   F$UnLink   Unlink module
+         bra   L022A      Return
 
-L01CB    ldb   G.BCFFlg,u    get co-module init masks
-         orb   #$80       mark grfdrv init'd
-         stb   G.BCFFlg,u    save it back
+* Switch to system process descriptor
+L0238    pshs  d          Preserve D
+         ldd   <D.Proc    Get current process dsc. ptr
+         std   4,s        Preserve on stack
+         ldd   <D.SysPrc  Get system process dsc. ptr
+         std   <D.Proc    Make it the current process
+         puls  d,pc       Restore D & return
 
-* Get buffer for GFX tables
+* Switch back to current process
+L0244    pshs  d          Preserve D
+         ldd   4,s        Get current process ptr
+         std   <D.Proc    Make it the current process
+         puls  d,pc       Restore D & return
 
-         ldd   #767       get number of bytes
-         os9   F$SRqMem   ask for the memory
-         bcs   L01C8      can't get memory error out
-         ldx   <D.CCMem   get pointer to global mem
-         stu   G.GfxTbl,x    save the pointer to GFX tables
-         tfr   d,y        move size recived to Y
-         clra             get init value
-         clrb  
-L01E4    std   ,u++       initialize 2 bytes
-         leay  -2,y       done?
-         bne   L01E4      no, keep going
-
-* Initialize ??????
-
-         std   G.PrWMPt,x    initilaize ??? and screen change flag
-         leay  G.WrkWTb,x
-         clra  
-         ldb   #$40
-L01F3    sta   ,y+
-         decb  
-         bne   L01F3
-
-* set default palette registers
-
-         ldu   <D.CCMem   get global pointer
-         leay  G.DefPls,u    point to palette registers
-         sty   G.DefPal+WGlobal save pointer to them
-         bsr   L0225      do 8
-         bsr   L0225      do another 8
-
-L0206    puls  u,y        restore path & device mem pointers
-         leax  CC3Parm,u  point to parameter area
-         stx   prmstrt,u  save pointer to start
-         stx   nxtprm,u   save pointer to next
-         ldb   IT.WND,y   get window number
-         stb   DWNum,u    save it as DWNum
-         bmi   L021C      window?
-         clra             no, start at the front of table
-         bsr   L024D      allocate the window
-L021C    lda   #$FF       start at the back
-         sta   WinNum,u   save it
-         lbsr  L0802
-         rts              initialization done, return
-
-******************************
-*
-* Load 8 palette register colors
-*
-* Entry: Y=Pointer to destination
-*
-
-L0225    leax  L0233,pcr  point to default colors
-         ldb   #8         get # colors to move
-L022B    lda   ,x+        get color
-         sta   ,y+        put color
-         decb             done?
-         bne   L022B      nope, go on
-         rts              return
-
-* Default palette colors
-
-L0233    fcb   $3f,$09,$00,$12,$24,$36,$2d,$1b
-
-******************************
-*
-* Swap to system process descriptor
-*
-* Entry: 2 byte buffer at current stack (before bsr/lbsr)
-*
-
-L023B    pshs  u,b,a      Preserve registers
-         ldd   <D.Proc    get current process descriptor
-         std   6,s        save it in buffer
-         ldd   <D.SysPrc  get system process descriptor
-L0243    std   <D.Proc    set it as current
-         puls  d,u,pc     restore & return
-
-******************************
-*
-* Swap to back to current process
-*
-* Entry: 2 byte buffer at current stack (before bsr/lbsr)
-*
-
-L0247    pshs  u,b,a      preserve registers
-         ldd   6,s        get process pointer
-         bra   L0243      save it and return
-
-******************************
-*
 * Allocate a window
-*
-* Entry: D  = Window number
-*
+* Entry: D=Window # to allocate
+L024A    pshs  d,u        Preserve U
+         bsr   L0238      Swap to system process dsc
+         bsr   L0279      Get pointer to window allocation table
+         os9   F$AllBit   Allocate it
+L0255    bsr   L0244      Swap back to current process
+         leas  2,s        Purge stack
+         puls  u,pc       Restore U & return
 
-L024D    pshs  x,u        make a buffer for current process and preserve U
-         bsr   L023B      swap to system process descriptor
-         bsr   L0276      point to window allocation table
-         os9   F$AllBit   allocate the window
-L0256    bsr   L0247      swap back to current descriptor
-         leas  2,s        purge stack
-         puls  u,pc       restore & return
+* Search for a free window
+* Entry: D=Starting window #
+L025B    pshs  d,u        Preserve U
+         bsr   L0238      Swap to system process dsc
+         bsr   L0279      Get ptr to window map
+         leau  4,x        Point to end of map
+         os9   F$SchBit   Find it
+         bra   L0255      Return with it
 
-******************************
-*
-* Search for a window
-*
-* Entry: D=Window number
-*
+* De-Allocate a window
+* Entry: D=Window # to delete
+L026A    bmi   L0282      Illegal window #
+         pshs  d,u        Preserve U
+         bsr   L0238      Swap to system process dsc
+         bsr   L0279      Get ptr to window map
+         os9   F$DelBit   Delete it & return
+         bra   L0255
 
-L025C    pshs  u,x        preserve registers
-         bsr   L023B      swap to system process
-         bsr   L0276      get pointer to window allocation table
-         leau  4,x        get end pointer to map
-         os9   F$SchBit   search for it
-         bra   L0256      return
-
-******************************
-*
-* Deallocate a window
-*
-* Entry: D=Window number
-*
-
-L0269    bmi   L027F      exit if error?
-         pshs  u,x        preserve registers
-         bsr   L023B      swap to system process
-L026F    bsr   L0276      get pointer to allocation map
-         os9   F$DelBit   delete the window
-         bra   L0256      return
-
-******************************
-*
 * Point to window allocation table
-*
-
-L0276    ldu   <D.CCMem   get global mem pointer
-         leax  G.WUseTb,u    get pointer to window allocation table
-         ldy   #1         get # bits to set
-L027F    rts              return
+L0279    ldx   #WGlobal+G.WUseTb  Point to window bit table
+         ldy   #1         Get # windows to allocate/de-allocate
+L0282    rts              Return
 
 ******************************
-*
-* Termination routine
-*
+* Terminate routine
+* Entry: U=Static mem ptr
+*        Y=Path dsc. ptr
+Term     clra             Get start window # for de-allocate
+         ldb   V.DWNum,u    Get device window # from static mem
+         pshs  u,y        Preserve static mem & path dsc. ptrs
+         bsr   L026A      De-allocate it from window map
+         lbsr  L06AE      Get window table pointer
+         lda   Wt.STbl,y  Get MSB of screen table ptr
+         cmpa  #$FF       Set?
+         bne   L0298      Yes, go on
+         sta   Wt.STbl+1,y Get rid of table ptr
+         bra   L02A5      Go on
+
+* Send DWEnd to grfdrv
+L0298    ldy   ,s         Get path dsc. ptr
+         ldu   2,s        Get static mem ptr
+         ldb   #$08       Get callcode for DWEnd
+         stb   V.CallCde,u  Save it in static mem area
+         lbsr  L0452      Go do it
+* Clear out device static memory
+L02A5    puls  u,y        Restore static mem & path dsc. ptrs
+         leax  V.WinNum,u   Point to window entry #
+         IFNE  H6309
+         leay  <Nul1+2,pc Point to NUL byte
+Nul1     
+         ldw   #$00CB     Size of block to clear
+         tfm   y,x+
+         ELSE
+         ldd   #$00CB
+Lp4      sta   ,x+
+         decb
+         bne   Lp4
+         ENDC
+         clr   V.InfVld,u   Clear 'rest of info valid' flag
+* Scan window tables for a valid window
+         ldx   #WinBase   Point to base of window tables
+         ldd   #$2040     # of window tables & Size of each table
+L02B9    equ   *
+         IFNE  H6309
+         ldw   Wt.STbl,x  Get screen table ptr
+         cmpe  #$FF       MSB indicate unused?
+         bne   L02F1      No, exit without error
+* Just a guess, but if 2nd byte is $FE with 1st being $FF, could be a flag
+*  for that this is a "copy" of a window to do overlapped device windows
+         cmpf  #$FF       LSB indicate unused?
+         bne   L02F1      No, exit without error 
+         ELSE
+         pshs  d
+         ldd   Wt.STbl,x
+         std   >GrfMem+gr00B5
+         cmpa  #$FF
+         bne   L02F1B
+         cmpb  #$FF
+         bne   L02F1B      No, exit without error
+         puls  d 
+         ENDC
+         abx              Point to next window table
+         deca             Decrement counter
+         bne   L02B9      Do until all 32 entries are checked
+* All windows are unallocated, terminate GRFDRV
+         tfr   x,y        Move to proper register again
+         ldb   #$02       get grfdrv terminate code
+         lbsr  L0101      go do it
+         ldd   >WGlobal+G.GrfEnt     get grfdrv address
+         clrb             Make it even page
+         tfr   d,u        Move to proper reg for Unlink
+         os9   F$UnLink   Unlink GRFDRV
+         bcs   L02F2      If error unlinking, exit
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra  
+         clrb  
+         ENDC
+         std   >WGlobal+G.GrfEnt     GRFDRV address to non-existant
+         ldu   >WGlobal+G.GfxTbl     Get ptr to gfx tables
+         ldd   #$02FF     Size of graphics tables
+         os9   F$SRtMem   Return graphics table memory to system
+         bcs   L02F2      If error, exit with it
+         clrb  
+         rts   
+
+         IFEQ  H6309
+L02F1B   puls  d
+         ENDC
+L02F1    clrb             No error & return
+         tfr   x,y        Move to proper register
+L02F2    rts   
+
+****************************
+* Main Entry point from CC3IO
 * Entry: U=Device memory pointer
 *        Y=Path descriptor pointer
-*
 
-Term           
-L0280    clra             get MSB of window #
-         ldb   DWNum,u    get LSB of window
-         pshs  y,u        preserve pointers
-         bsr   L0269      deallocate window
-         lbsr  L0706      get window table pointer
-         lda   Wt.STbl,y  get screen table pointer MSB
-         cmpa  #$FF
-         beq   L02AE
-         ldu   2,s        get device mem pointer
-         lbsr  L1F66
-         tfr   x,y
-         ldx   Wt.STbl,y
-         pshs  u,y,x
-         ldy   6,s        get path descriptor pointer
-*         ldb   #DWEnd         get callcode
-         ldb   #08
-         stb   CallCde,u  save it
-         lbsr  L04B4
-         puls  u,y,x
-         lbsr  L1FE3
-         lda   #$FF
-L02AE    sta   -$0F,y
+entry    lbra  Init       Initialization
+         bra   Write      Write
+         nop   
+         lbra  GetStt     Get status
+         lbra  SetStt     Set status
+         lbra  Term       Terminate
+         lbra  L0C68      Window special processing
 
-* Clear parameter & read buffers
+L0A96    comb             Set error flag
+         ldb   #E$UnkSvc  Unknown service error
+         rts   
 
-         puls  u,y
-         leax  <$0035,u
-         ldb   #$CB
-L02B7    clr   ,x+
-         decb  
-         bne   L02B7
-
-         clr   <$001E,u
-         lbsr  L0722
-         ldd   #$FF20
-L02C5    cmpa  Wt.STbl,y
-         bne   L0301
-         cmpa  Wt.STbl+1,y
-         bne   L0301
-         leay  <$40,y
-         decb  
-         bne   L02C5
-         pshs  u
-         ldb   #$02
-         lbsr  L0105
-         leas  -$02,s
-         lbsr  L023B
-         leax  >GrfDrv,pcr
-         lda   #$C1
-         os9   F$UnLoad
-         lbsr  L0247
-         leas  $02,s
-         puls  u
-         bcs   L0302
-         clra  
-         clrb  
-         std   <$6E,u
-         ldu   <$75,u
-         ldd   #$02FF
-         os9   F$SRtMem
-         bcs   L0302
-L0301    clrb  
-L0302    rts   
-
-******************************
-*
-* Suspend process for every escape code except Select & DWEnd
-*
-
-L0303    cmpb  #$21       is it Select call?
-         beq   L032F      yes, return
-         cmpb  #$24       is it DWEnd?
-         beq   L032F      yes, return
-
-******************************
-*
-* Suspend current process
-*
-
-L030B    pshs  cc,d,x     preserve registers
-         orcc  #IntMasks  disable interupts
-         clr   >$100E
-L0312    ldx   <D.Proc    get current process pointer
-         lda   P$State,x  suspend it
-         ora   #Suspend
-         sta   P$State,x
-         tfr   x,d        get process # to A
-         sta   <$7D,u     save it in device parameter area
-         ldx   #1         sleep for remainder of my tick
-         os9   F$Sleep
-         lda   <$7F,u     still processing?
-         bne   L0312      yes, go back to sleep
-         inc   >$100E
-         puls  cc,d,x     restore registers & interupts
-L032F    clr   <$7D,u     clear suspended process #
-         rts              return
-
-******************************
-*
-* Device write entry point
-*
-* Entry: A=Character to write
-*
-
-L0333    lbra  L0AC9
-Write    cmpa  #$1B       Escape code?
-         bne   L0371      no, keep checking
-         ldx   prmstrt,u  get pointer to parameter start
-         ldb   ,x         get escape call number
-         cmpb  #$54       past maximum?
-         bhi   L0333      Yes, return error
-         subb  #$20       Below minimum?
-         bmi   L0333      Yes, return error
-         tst   <$7F,u     we already proccesing something?
-         beq   L034E      no, process it
-         bsr   L0303      go suspend process till were done
-L034E    lslb             account for 4 bytes per table entry
+****************************
+* Write routine: Optomized for normal text
+* Entry: A=Char to write
+*        U=Device memory pointer
+*        Y=Path descriptor pointer
+Write    ldb   #$3a       get grfdrv function for Alpha put as default
+         cmpa  #C$SPAC    Space or higher?
+         bhs   L03A1      Yes, do alpha put
+         cmpa  #$1B       Escape code?
+         bne   L0347      No, keep checking
+         ldb   [V.PrmStrt,u] get first parameter from parameter area
+         cmpb  #$55       Past maximum supported escape code?
+         bhi   L0A96      Yes, exit with error
+         subb  #$20       Adjust it down for table offset
+         bmi   L0A96      Below minimum supported code, exit with error
+         lslb             Adjust for 4 bytes/entry
          lslb  
-         leax  EscTbl,pcr  point to escape table
-         clra  
-         lda   d,x        get # parameters
-         bmi   L0333      blank, exit with error
-         sta   <parmcnt,u
-         pshs  x
-         abx   
-         lda   3,x        get callcode #
-         sta   CallCde,u  save it
-         ldd   1,x        get vector
-         puls  x          restore table pointer
-         leax  d,x        point to routine
-         tst   <parmcnt,u  still processing parameters?
-         bne   L038B      yes, go
-         jmp   ,x         execute it
-
-L0371    cmpa  #$1F       $1f codes?
-         beq   L03B6      yes, go process
-         cmpa  #$02       CurXY code?
-         beq   L0385      yes, go process
-         cmpa  #$05       CurOn/CurOff?
-         beq   L03BA      yes, go process
-         cmpa  #$20       above ASCII space?
-         bcs   L03C3      no,
-         ldb   #$3A       get grfdrv code for Alpha put
-         bra   L03C5
-L0385    leax  <L0390,pcr
-L0388    sta   <parmcnt,u  save parameter count
-L038B    stx   parmvct,u  save processing vector
-         clra             clear carry
-         rts              return
-
-* Process a cursor X/Y code
-
-L0390    pshs  u          save device static mem pointer
-         lbsr  L06E7      get window table pointer
-         puls  u          restore device mem pointer
-         ldx   prmstrt,u  get pointer to parameter start
-         ldd   ,x++       get co-ordinates
-         ldu   <D.CCMem   get pointer to global mem
-         sta   $0147,u    save co-ordinates in global mem
-         stb   $0149,u
-         ldb   #$42       get grfdrv goto x/y code
-
-* Send write parameters to grfdrv
-
-L03A8    ldu   WGlobal+G.CurDvM get device mem pointer
-         tst   <$7F,u     still processing?
-         beq   L03B3      no, send it to grfdrv
-         lbsr  L030B      suspend process til it's done
-L03B3    lbra  L0105      execute grfdrv
-
-* Process $1F codes
-
-L03B6    ldb   #$40
-         bra   L03BC
-
-* Process CurOn/CurOff code
-
-L03BA    ldb   #$3E       get grfdrv call #
-L03BC    ldx   <$002F,u
-         lda   ,x
-         bra   L03C5
-
-L03C3    ldb   #$3C
-L03C5    pshs  b,a
-         lbsr  L06E7
-         puls  b,a
-         bra   L03A8
-
-L03CE    lda   -$0E,y
-         bpl   L042E
-         clr   $09,y
-         pshs  x
-         lbsr  L0546
-         ldu   4,s
-         cmpu  >$1020
-         beq   L03E4
-         lbsr  L201D
-L03E4    ldx   Wt.STbl,y
-         lda   $06,x
-         sta   $07,y
-         lda   #$0C
-         ldb   #$3C
-         pshs  y,x
-         lbsr  L0105
-         puls  y,x
-         ldu   4,s
-         lbsr  L1FE3
-         lda   #$FF
-         ldu   <D.CCMem
-         sta   (GrfMem+Gr.STYMk)-WGlobal+,u save STY marker
-*         sta   G.STYMrk-WGlobal,u save STY marker
-         puls  x
-         lbsr  L046B
-         bcs   L042E
-         bra   L0454
-
-******************************
-*
-* DWSet
-*
-
-DWSet    pshs  u,y        preserve registers
-         lbsr  L0706      point to window table entry
-         lda   Wt.STbl,y  window inized?
-         cmpa  #$FF
-         beq   L041F      no, go set it up
-         lda   ,x+        current screen?
-         beq   L03CE      yes, go process
-         comb             set carry
-         ldb   #$B8       get window already defined error code
-         puls  y,u,pc     return
-
-L041F    lda   ,x+        get window type
-         lbsr  L0845
-         bcs   L042E      error, return with illegal window
-         stb   >$0160,u
-         bsr   L046B      move rest of data to window table
-         bcc   L0432      no error, go on
-L042E    ldb   #E$IWDef
-         bra   L0460
-L0432    cmpb  #$FF       current screen?
-         beq   L044D      yes, 
-         leax  <L0440,pcr
-         lda   #$01
-         puls  u,y
-         lbra  L0388
-
-L0440    pshs  u,y
-         lbsr  L0706
-         lda   ,x
-         sta   >$015A,u
-         bra   L0454
-
-L044D    ldx   ,s
-         lbsr  L07B0
-         bcs   L0460
-L0454    lbsr  L1F1D
-         bcs   L0462
-         puls  u,y
-         inc   <$001E,u
-         bra   L048E
-L0460    puls  pc,u,y
-L0462    pshs  b
-         ldd   #$FFFF
-         std   Wt.STbl,y
-         puls  pc,u,y,b
-
-L046B    pshs  b,a
-         bsr   L047B
-         bcs   L0477
-         ldd   ,x++
-         std   $06,y
-L0475    puls  pc,b,a
-L0477    stb   $01,s
-         bra   L0475
-L047B    ldd   ,x++
-         std   -$0B,y
-         lda   ,x+
-         ble   L0487
-         ldb   ,x+
-         bgt   L048A
-L0487    lbra  L06DE
-L048A    std   -$09,y
-         clrb  
-L048D    rts   
-
-L048E    pshs  u,y
-         lbsr  L0706
-         ldb   -$08,y
-         puls  u,y
-         stb   $0007,u
-         stb   <$28,y
-         clrb  
-         rts   
-
-******************************
-*
-* DWEnd
-*
-
-DWEnd    lbsr  L1F66
-         tfr   x,y
-         ldx   Wt.STbl,y
-         pshs  u,y,x
-         bsr   L04B4
-         puls  u,y,x
-         bcs   L048D
-         lbsr  L1FE3
-         clr   <$001E,u
-         rts   
-
-L04B4    pshs  u
-         cmpu  >$1020
-         beq   L04BF
-         lbsr  L201D
-L04BF    lbsr  L0706
-         lda   Wt.STbl,y
-         bpl   L04E2
-         comb  
-         ldb   #E$WUndef
-         puls  pc,u
-
-L04CB    pshs  a
-         bsr   L0544
-         ldu   $01,s
-         bsr   L04FF
-         ldb   #$0C
-         lbsr  L0105
-         puls  a
-         ldu   ,s
-         sta   WinNum,u
-         lbsr  L0706
-L04E2    ldu   ,s
-         lda   -$0E,y
-         bpl   L04CB
-         bsr   L0544
-         puls  u
-         bsr   L04FF
-         lda   >$100B
-         bmi   L04FC
-         clra  
-         std   >$012E,u
-         std   >$0130,u
-L04FC    lbra  L00FF
-L04FF    lbsr  L1BAD
-         lbsr  L0711
-L0505    ldb   #$12
-L0507    clr   ,x+
-         decb  
-         bne   L0507
-         rts   
-
-******************************
-*
-* OWSet
-*
-
-OWSet    pshs  u,y
-         lbsr  L06EC
-         ldu   $02,s
-         lbsr  L0802
-         bcc   L051B
-         puls  pc,u,y
-L051B    lda   ,x+
-         sta   >$0159,u
-         lbsr  L046B
-         bcs   L0534
-         pshs  y
-         lbsr  L00FF
-         puls  y
-         bcs   L0534
-         puls  u,y
-         lbra  L048E
-L0534    puls  u,x
+         leax  >L0027,pc  Point to ESC code vector table
+         abx              Point to 4 byte entry
+         IFNE  H6309
+         ldq   ,x         A=# param bytes,B=GRFDRV code,W=vector offset
+         ELSE
+         ldd   2,x
+         std   >GrfMem+gr00B5
+         ldd   ,x
+         ENDC
+         stb   V.CallCde,u  Save GRFDRV code in Static mem (need for L00F7)
+         tsta             Any parameter bytes needed?
+         beq   L0339      No, just go do function
+         bmi   L0A96      $FF=Empty, exit with error
+         sta   V.ParmCnt,u  Preserve for CC3IO to get the rest
+L032F    equ   *
+         IFNE  H6309
+         addr  w,x        Point to vector
+         ELSE
          pshs  b
-         lda   -$0E,y
-         sta   <$0035,u
-         ldd   #$FFFF
-         std   Wt.STbl,y
-         puls  pc,b
-L0544    ldu   <$00A5
-L0546    clra  
-         clrb  
-         std   -$0B,y
-         ldd   <$28,y
-         std   -$09,y
-         ldb   #$0E
-         pshs  u,y
-         lbsr  L0105
-L0556    puls  pc,u,y
-
-******************************
-*
-* OWEnd
-*
-
-OWEnd    pshs  u,y
-         lbsr  L06EC
-         lda   -$0E,y
-         bpl   L0564
-         lbra  L06DC
-L0564    lbsr  L1BAD
-         ldu   $02,s
-         lbsr  L0711
-         lda   ,x
-         pshs  a
-         lda   -$0E,y
-         ldx   $03,s
-         sta   <$35,x
-         bsr   L0546
-         ldb   #$0C
-         lbsr  L0105
-         bcc   L0582
-         puls  pc,u,y,a
-L0582    ldu   $03,s
-         ldy   $01,s
-         lbsr  L048E
-         lda   ,s+
-         beq   L0556
-         cmpa  #$02
-         bhi   L0556
-         puls  u,y
-         tst   >$100A
-         beq   L05E3
-         lbra  L1316
-
-******************************
-*
-* Select entry point
-*
-
-Select   ldx   PD.RGS,y   get register stack pointer
-         lda   R$A,x      get callers selected path
-         ldx   <D.Proc    get current process pointer
-         cmpa  P$SelP,x   was it same as selected path?
-         beq   L05E4      yes, return
-         ldb   P$SelP,x   get selected path
-         sta   P$SelP,x   save new path
-         pshs  y          preserve device pointer
-         bsr   L05E5      get device table pointer
-         ldy   V$STAT,y   get static storage pointer
-         ldx   <D.CCMem   get global pointer
-         cmpy  G.CurDev,x      same as active device?
-         puls  y
-         bne   L05E3      no, return
-         pshs  b
-         leax  ,u
-         lbsr  L06F8
-         puls  b
-         bcc   L05D5
-         ldx   <D.Proc
-         stb   P$SelP,x
-         ldb   #E$WUndef
-         rts   
-L05D5    inc   <$23,x     flag screen change in new window device mem
-         ldy   <$20,u     get old current device mem pointer
-         sty   <$22,u     save it old de
-         stx   <$20,u
-L05E3    clrb  
-L05E4    rts   
-
-******************************
-*
-* Get device table pointer
-*
-* Entry: X=Process descriptor pointer
-*        B=Path #
-* Exit : Y=Device table pointer
-*
-
-L05E5    leax  P$Path,x
-         lda   b,x
-         ldx   <D.PthDBT
-         os9   F$Find64
-         ldy   PD.DEV,y
-         rts   
-
-******************************
-*
-* CWArea
-*
-
-CWArea   pshs  u,y
-         lbsr  L06EC
-         ldd   -$09,y
-         pshs  b,a
-         ldd   -$0B,y
-         pshs  y,b,a
-         lbsr  L047B
-         bcs   L065B
-         ldu   $08,s
-         lbsr  L0711
-         clra  
-         clrb  
-         pshs  b,a
-         ldd   <$28,y
-         pshs  b,a
-         lda   ,x
-         anda  #$0F
-         cmpa  #$01
-         bne   L0621
-         dec   $01,s
-         inc   $03,s
-         bra   L0639
-L0621    cmpa  #$02
-         bne   L0629
-         dec   ,s
-         bra   L0633
-L0629    cmpa  #$00
-         beq   L0639
-         inc   $02,s
-         dec   ,s
-         dec   ,s
-L0633    inc   $03,s
-         dec   $01,s
-         dec   $01,s
-L0639    ldd   -$09,y
-         cmpa  ,s
-         bhi   L0659
-         cmpb  $01,s
-         bhi   L0659
-         ldd   -$0B,y
-         cmpa  $02,s
-         bcs   L0659
-         cmpb  $03,s
-         bcs   L0659
-         lbsr  L00FF
-         bcs   L0659
-         leas  $0A,s
-         puls  u,y
-         lbra  L048E
-L0659    leas  $04,s
-L065B    puls  u,y,b,a
-         std   -$0B,y
-         stu   -$09,y
-         comb  
-         ldb   #E$ICoord
-         puls  pc,u,y
-
-GCSet    pshs  u
-         bsr   L06E7
-         ldd   ,x
-         lbsr  L0896
-         lbsr  L00FF
-         puls  u
-         lbsr  L0711
-         lda   <$18,y
-         sta   $0B,x
-         ldd   <$19,y
-         std   $0C,x
-         rts   
-
-LSet     bsr   L06E2
-         lda   ,x
-         sta   $0A,y
-         bra   L069A
-
-Border   pshs  u
-         bsr   L06E7
-         lda   ,x
-         bra   L06AD
-
-BColor         
-FColor   bsr   L06E2
-         lda   ,x
-         sta   >$015A,u
-L069A    lbra  L00FF
-
-DefPal   pshs  u
-         bsr   L06E7
-         bra   L06B1
-
-Palette  pshs  u
-         bsr   L06E7
-         ldd   ,x
-         stb   >$0186,u
-L06AD    sta   >$015A,u
-L06B1    lbsr  L00FF
-         puls  u
-         tst   >$100A
-         beq   L06BE
-         inc   <$0023,u
-L06BE    rts   
-
-Font           
-PSet     bsr   L06E2
-         ldd   ,x
-         beq   L06CB
-         cmpb  #$00
-         lbeq  L086C
-L06CB    lbsr  L0896
-         bra   L069A
-
-******************************
-*
-* KillBuf
-*
-
-KillBuf  bsr   L06E2
-         ldd   ,x
-         bra   L06CB
-
-PropSw         
-BoldSw         
-TCharSw        
-DWProtSw       
-ScaleS   bsr   L06E2
-         lda   ,x
-         bra   L069A
-
-L06DC    leas  $04,s
-L06DE    comb  
-         ldb   #E$IWDef
-         rts   
-
-L06E2    bsr   L06F8
-         bcs   L06F4
-         rts   
-
-L06E7    bsr   L06F8
-         bcs   L06F2
-L06EB    rts   
-
-L06EC    bsr   L06F8
-         bcc   L06EB
-         leas  $02,s
-L06F2    leas  $02,s
-L06F4    ldb   #$C4
-         puls  pc,y
-
-L06F8    pshs  x          preserve X
-         tfr   y,x
-         bsr   L0706      get window number
-         pshs  u,y        save device mem pointer & window table pointer
-         bsr   L0729
-         puls  u,y
-         puls  pc,x
-
-******************************
-*
-* Get pointer to window table entry
-*
-* Entry: U=Device static storage pointer
-* Exit : Y=Window table pointer
-*
-
-L0706    ldb   WinNum,u   get entry number from device memory
-         lda   #$40       get size of window tables
-         mul              find offset
-         bsr   L0722      get pointer to window table
-         leay  d,y        point to window entry
-         rts              return
-
-L0711    pshs  b,a
-         lda   WinNum,u
-         ldb   #$12
-         mul   
-         ldu   <D.CCMem
-         ldx   G.GfxTbl,u
+         ldd   2,x
          leax  d,x
-         puls  pc,b,a
-
-L0722    ldu   <D.CCMem
-         leay  >$0290,u
-         rts   
-
-L0729    ldd   Wt.STbl,y  screen table exist?
-         beq   L06DE      no, exit with illegal window defintion error
-         cmpa  #$FF
-         beq   L0733
-         clra  
-         rts   
-
-L0733    pshs  x
-         ldx   PD.DEV,x
-         pshs  x
-         ldx   V$DESC,x
-         ldb   IT.VAL,x
-         bne   L0744
-         coma  
-L0741    leas  4,s
-         rts   
-
-L0744    lda   IT.STY,x   get screen type
-         lbsr  L0845
-         bcs   L0741
-         stb   >$0160,u   save new STY marker
-         cmpb  #$FF
-         beq   L075D
-*         lda   PD.BDC,x       get border color
-         fcb   $a6,$88,$35
-         sta   >$015A,u   save new PRN
-         bra   L0767
-
-L075D    pshs  x
-         ldx   4,s        get path descriptor pointer
-         bsr   L07B0
-         puls  x
-         bcs   L0741
-L0767    ldd   IT.CPX,x   get CPX from descriptor
-         std   -$0B,y     save new CPX/CPY
-         ldd   IT.COL,x   get size from descriptor
-         std   -$09,y     save new SZX/SZY
-         ldd   IT.FGC,x   get Fore/Back colors
-         std   $06,y      save new Fore/Back colors
-         lbsr  L1F1D
-         puls  x
-         bcc   L0784
-         ldd   #$FFFF
-         std   Wt.STbl,y
-         puls  pc,x
-
-L0784    ldx   $02,x
-         inc   <$1E,x
-         leau  ,x
-         tfr   y,d
-         puls  y
-         pshs  b,a
-         lbsr  L048E
-         puls  y
-         tst   >$100A
-         beq   L07AF
-         ldu   <D.CCMem
-         pshs  y
-         ldy   <$0020,u
-         sty   <$0022,u
-         puls  y
-         stx   <$0020,u
-         lbsr  L0CCA
-L07AF    rts   
-
-L07B0    cmpa  #$FF
-         bne   L07C1
-         ldd   >$0130,u
-         bne   L07BE
-         comb  
-         ldb   #E$WUndef
-         rts   
-
-L07BE    std   Wt.STbl,y
-         rts   
-
-L07C1    pshs  y,x
-         ldx   <D.Proc
-         ldb   P$SelP,x
-         lbsr  L05E5
-         ldx   ,s
-         ldx   PD.DEV,x
-         ldd   V$DRIV,x
-         cmpd  V$DRIV,y
-         bne   L07FF
-         ldy   V$STAT,y
-         lda   V.TYPE,y
-         bpl   L07FF
-         lda   <$1D,y
-         bne   L07FF
-         lda   <$1E,y
-         beq   L07FF
-         leau  ,y
-         lbsr  L0706
-         lda   Wt.STbl,y
-         cmpa  #$FF
-         beq   L07FF
-         leas  $02,s
-         puls  x
-         ldd   Wt.STbl,y
-         std   Wt.STbl,x
-         tfr   x,y
-         clra  
-         rts   
-L07FF    lbra  L06DC
-
-*
-
-L0802    pshs  x,b,a
-         leax  ,u
-         lbsr  L0722
-         clrb  
-L080A    lda   Wt.STbl,y
-         bpl   L0836
-         lda   -$0F,y
-         cmpa  #$FF
-         bne   L0836
-         lda   <$35,x
-         sta   -$0E,y
-         stb   <$35,x
-         dec   -$0F,y
-         tfr   x,d
-         sta   <$2B,y
-         clr   <$7D,x
-         clr   <$7E,x
-         clr   <$7F,x
-         tfr   x,u
-         lbsr  L0711
-         lbsr  L0505
-         puls  pc,x,b,a
-
-L0836    leay  <$40,y
-         incb  
-         cmpb  #$20
-         bls   L080A
-         comb  
-         ldb   #$C1
-         stb   $01,s
-         puls  pc,x,b,a
-
-L0845    pshs  y,a
-         inca  
-         cmpa  #$09
-         bhi   L0854
-         leay  <L0857,pcr
-         ldb   a,y
-         clra  
-         puls  pc,y,a
-L0854    comb  
-         puls  pc,y,a
-
-L0857    fcb   $ff,$ff,$86,$85,$96,$95,$01,$02,$03,$04
-
-******************************
-*
-* DefGPB
-*
-
-DefGPB   lbsr  L06E2
-         lda   ,x+
-         beq   L086C
-         cmpa  #$FF
-         bne   L0870
-L086C    comb  
-         ldb   #$C2
-         rts   
-
-L0870    ldb   ,x+
-         beq   L086C
-         bsr   L0896
-         ldd   ,x++
-         std   >$0180,u
-L087C    lbra  L00FF
-
-GetBlk   lbsr  L06E2
-         bsr   L089B
-         bcs   L086C
-         bsr   L08AE
-         bcc   L087C
-         ldb   #$BF
-         rts   
-
-PutBlk   lbsr  L06E2
-         bsr   L089B
-         bcs   L086C
-         bra   L087C
-L0896    std   >$0157,u
-         rts   
-
-L089B    lda   ,x+
-         beq   L08C0
-         cmpa  #$FF
-         beq   L08C0
-         ldb   ,x+
-         beq   L08C0
-         bsr   L0896
-         lbsr  L0A5E
-         bra   L08BE
-L08AE    ldd   ,x++
-         beq   L08C0
-         std   >$014F,u
-         ldd   ,x++
-         beq   L08C0
-         std   >$0151,u
-L08BE    clra  
-         rts   
-L08C0    coma  
-         rts   
-
-GPLoad   pshs  u,y
-         lbsr  L0706
-         lda   ,x+
-         beq   L08CF
-         cmpa  #$FF
-         bne   L08D3
-L08CF    puls  u,y
-         bra   L086C
-L08D3    ldb   ,x+
-         beq   L08CF
-         bsr   L0896
-         lda   ,x+
-         lbsr  L0845
-         bcs   L08E3
-         tstb  
-         bpl   L08E6
-L08E3    lbra  L06DC
-L08E6    stb   >$0160,u
-         bsr   L08AE
-         ldd   ,x++
-         std   <$1F,y
-         pshs  u,y
-         lbsr  L00FF
-         puls  u,y
-         bcs   L0919
-L08FA    ldd   <$1F,y
-         cmpd  #$0040
-         bhi   L091C
-         stb   <$70,u
-         tfr   b,a
-         leax  <L0910,pcr
-L090B    puls  u,y
-         lbra  L0388
-
-L0910    pshs  u,y
-         lbsr  L0706
-         bsr   L0939
-         bsr   L094B
-L0919    leas  $04,s
-         rts   
-
-L091C    subd  #$0040
-         std   <$1F,y
-         lda   #$40
-         sta   <$70,u
-         leax  <L092C,pcr
-         bra   L090B
-
-L092C    pshs  u,y
-         lbsr  L0706
-         bsr   L0939
-         bsr   L094B
-         bcs   L0919
-         bra   L08FA
-
-L0939    pshs  y,b,a
-         leay  >$0200,u
-         ldb   <$70,u
-L0942    lda   ,x+
-         sta   ,y+
-         decb  
-         bne   L0942
-         puls  pc,y,b,a
-
-L094B    lda   <$70,u
-         pshs  u
-         ldb   #$32
-         lbsr  L0105
-         puls  pc,u
-
-L0957    ldd   ,x++
-         std   ,y
-         ldd   -$08,y
-         subd  -$0C,y
-         lsra  
-         rorb  
-         cmpd  ,y++
-         bcc   L096B
-         leas  $08,s
-         comb  
-         ldb   #$BD
-L096B    rts   
-
-PutGC    lbsr  L06E2
-         ldd   ,x++
-         std   >$015B,u
-         ldd   ,x++
-         std   >$015D,u
-         bra   L09A5
-
-SetDP    bsr   L09CB
-         ldd   ,x++
-         std   $01,y
-         ldd   ,x++
-L0985    stb   $03,y
-         puls  y
-         leas  $04,s
-         clrb  
-         rts   
-
-RSetDP   bsr   L09CB
-         ldd   ,x++
-         addd  $01,y
-         std   $01,y
-         clra  
-         ldb   $03,y
-         addd  ,x++
-         bra   L0985
-
-Point    bsr   L09CB
-         lbsr  L0A5E
-L09A1    puls  y
-         leas  $04,s
-L09A5    lbra  L00FF
-
-RPoint   bsr   L09CB
-         lbsr  L0A69
-         bra   L09A1
-
-CBox           
-Bar            
-Box            
-Line     bsr   L09CB
-         lbsr  L0A7F
-L09B4    ldu   $04,s
-         ldb   <$0037,u
-         ldu   <D.CCMem
-         cmpb  #$58
-         bne   L09A1
-         leay  >$0153,u
-         lbsr  L0957
-         lbsr  L0957
-         bra   L09A1
-L09CB    ldd   ,s++
-         pshs  u,x,b,a
-         pshs  b,a
-         lbsr  L06F8
-         bcs   L09E3
-         sty   $02,s
-         ldu   $06,s
-         lbsr  L0711
-         tfr   x,y
-         ldx   $04,s
-         rts   
-
-L09E3    leas  $06,s
-         lbra  L06F4
-
-RCBox          
-RBar           
-RBox           
-RLine    bsr   L09CB
-         lbsr  L0A8C
-         bra   L09B4
-
-LineM    bsr   L09CB
-         lbsr  L0A7F
-L09F4    ldx   >$014B,u
-         ldd   >$014D,u
-         stx   $01,y
-         stb   $03,y
-         bra   L09A1
-
-RLineM   bsr   L09CB
-         lbsr  L0A8C
-         bra   L09F4
-
-Arc            
-FEllipse       
-FCircle        
-Ellipse        
-Circle         
-FFill    pshs  u,x
-         lbsr  L06EC
-         pshs  y
-         ldu   $04,s
-         ldb   <$0037,u
-         pshs  b
-         lbsr  L0711
-         tfr   x,y
-         ldx   $03,s
-         bsr   L0A76
-         ldb   ,s
-         cmpb  #$56
-         beq   L0A59
-         leau  >$0150,u
-         ldd   ,x++
-         std   $0003,u
-         ldb   ,s
-         cmpb  #$50
-         beq   L0A59
-         cmpb  #$5A
-         beq   L0A59
-         ldd   ,x++
-         std   $0005,u
-         ldb   ,s
-         cmpb  #$52
-         beq   L0A59
-         cmpb  #$5C
-         beq   L0A59
-         leau  <-$0030,u
-         ldd   ,x++
-         std   ,u
-         ldd   ,x++
-         std   $0002,u
-         ldd   ,x++
-         std   $0004,u
-         ldd   ,x++
-         std   $0006,u
-L0A59    puls  b
-         lbra  L09A1
-L0A5E    ldd   ,x++
-         bsr   L0A9B
-         ldd   ,x++
-L0A64    std   >$0149,u
-         rts   
-
-L0A69    ldd   ,x++
-         addd  $01,y
-         bsr   L0A9B
-         clra  
-         ldb   $03,y
-         addd  ,x++
-         bra   L0A64
-L0A76    ldd   $01,y
-         bsr   L0A9B
-         clra  
-         ldb   $03,y
-         bra   L0A64
-L0A7F    bsr   L0A76
-         ldd   ,x++
-         bsr   L0AA0
-         ldd   ,x++
-L0A87    std   >$014D,u
-         rts   
-
-L0A8C    bsr   L0A76
-         ldd   ,x++
-         addd  $01,y
-         bsr   L0AA0
-         clra  
-         ldb   $03,y
-         addd  ,x++
-         bra   L0A87
-L0A9B    std   >$0147,u
-         rts   
-L0AA0    std   >$014B,u
-         rts   
-
-         bsr   L0A64
-         bra   L0A87
-
-******************************
-*
-* Device GetStt routine
-*
-* Entry: A=Function code
-*
-
-GetStat  cmpa  #SS.Cursr
-         lbeq  L0B43
-         cmpa  #SS.ScSiz
-         beq   L0ACD
-         cmpa  #SS.Palet
-         beq   L0ADA
-         cmpa  #SS.ScTyp
-         beq   L0B0A
-         cmpa  #SS.FBRgs
-         beq   L0B20
-         cmpa  #SS.DFPal
-         beq   L0AF6
-         cmpa  #SS.MnSel
-         lbeq  L144C
-L0AC9    comb  
-         ldb   #E$UnkSvc
-         rts   
-
-* Process SS.ScSiz
-
-L0ACD    bsr   L0AFE
-         clra  
-         ldb   -$09,y
-         std   $04,x
-         ldb   -$08,y
-         std   $06,x
-         clrb  
-         rts   
-
-* Process SS.Palet
-
-L0ADA    bsr   L0AFE
-         ldy   Wt.STbl,y
-         leay  <$10,y
-L0AE2    ldu   $04,x
-         ldx   <$0050
-         ldb   $06,x
-         ldx   <$004A
-         lda   $06,x
-         tfr   y,x
-L0AEE    ldy   #$0010
-         os9   F$Move
-         rts   
-
-* Process SS.DFPal
-
-L0AF6    ldx   $06,y
-         ldy   >$1019
-         bra   L0AE2
-L0AFE    ldx   $06,y
-         lbsr  L06E7
-L0B03    rts   
-
-* Process SS.ScTyp
-
-L0B04    fcb   $05,$06,$07,$08,$02,$01
-
-L0B0A    bsr   L0AFE
-         lda   [Wt.STbl,y]
-         anda  #$07
-         leay  <L0B03,pcr
-         ldb   a,y
-         stb   $01,x
-         clrb  
-         rts   
-
-L0B1A    fcb   $01,$03,$03,$0f,$0f,$0f
-
-L0B20    bsr   L0AFE
-         bsr   L0B2D
-         std   1,x
-         ldb   $0005,u
-         clra  
-         std   $04,x
-         clrb  
-         rts   
-
-L0B2D    ldu   Wt.STbl,y
-         pshs  u
-         ldb   ,u
-         decb  
-         andb  #$07
-         leau  <L0B1A,pcr
-         leau  b,u
-         ldd   $06,y
-         anda  ,u
-         andb  ,u
-         puls  pc,u
-
-L0B43    lbsr  L0AFE
-         pshs  u,x
-         ldb   #$5E
-         lbsr  L0105
-         puls  u,x
-         leau  >$0147,u
-         ldd   ,u++
-         sta   $01,x
-         clra  
-         std   $04,x
-         ldb   ,u+
-         std   $06,x
-         rts   
-
-******************************
-*
-* Device SetStt entry point
-*
-* Entry: A  = Function call #
-*        Y  = path descriptor
-*
-
-SetStat  cmpa  #SS.Open
-         beq   SSOpen
-         cmpa  #SS.MpGPB
-         lbeq  SSMpGPB
-         cmpa  #SS.DfPal
-         beq   SSDfPal
-         cmpa  #SS.WnSet  SS.WnSet call?
-         lbeq  SSWnSet      yes, go process
-         cmpa  #SS.SBar
-         lbeq  SSSBar
-         cmpa  #SS.UMBar
-         lbeq  SSUMBar
-         cmpa  #SS.GIP2
-         lbeq  SSGIP2
-         lbra  L0AC9
-
-SSDfPal  ldx   PD.RGS,y
-         ldx   R$X,x
-         ldu   <D.Proc
-         lda   P$Task,u
-         ldu   <D.SysPrc
-         ldb   P$Task,u
-         ldu   >WGlobal+G.DefPal
-         lbra  L0AEE
-
-L0B9A    fcb   $77
-
-SSOpen   pshs  u,y
-         ldx   PD.DEV,y
-         ldx   V$DESC,x
-         ldb   <IT.WND,x get window number
-         bpl   L0C14 branch if not /w (/w's win num == $FF)
-         pshs  x
-L0BA8    clra  
-         clrb  
-         lbsr  L025C
-         bcc   L0BB3
-         ldb   #E$MNF
-         puls  pc,u,y,x
-
-L0BB3    pshs  b
-         ldu   <D.CCMem
-         lbsr  L024D
-         leax  <L0B9A,pcr
-         leay  >$0200,u
-         ldb   ,x
-         stb   ,y+
-         ldb   ,s
-         clra  
-L0BC8    subb  #$0A
-         bmi   L0BCF
-         inca  
-         bra   L0BC8
-L0BCF    addb  #$0A
-         tsta  
-         beq   L0BD8
-         ora   #$30
-         sta   ,y+
-L0BD8    orb   #$B0
-         stb   ,y+
-         leas  -$02,s
-         lbsr  L023B
-         leax  >$0200,u
-         lda   #$F1
-         os9   F$Link
-         lbsr  L0247
-         leas  $02,s
-         bcc   L0BF5
-L0BF1    leas  $01,s
-         bra   L0BA8
-L0BF5    lda   <$0026,u
-         bpl   L0BF1
-         tfr   u,d
-         ldy   $03,s
-         ldx   $03,y
-         std   $04,x
-         ldb   ,s
-         ldu   $05,s
-         stb   <$0036,u
-         ldu   $01,s
-         os9   F$UnLink
-         ldu   $05,s
-         leas  $07,s
-         rts   
-L0C14    puls  u,y
-         clrb  
-         rts   
-
-SSMpGPB  ldx   $06,y
-         pshs  x
-         lbsr  L06F8
-         ldd   $04,x
-         std   >$0157,u
-         ldb   #$38
-         lbsr  L0105
-         puls  x
-         bcc   L0C2F
-         rts   
-
-L0C2F    ldu   <D.CCMem
-         ldb   >$0197,u
-         lda   >$0199,u
-         tst   $07,x
-         beq   L0C65
-         pshs  u,x,b,a
-         bsr   L0C76
-         bcc   L0C53
-         clra  
-         ldb   $01,s
-         tfr   d,x
-         ldb   ,s
-         os9   F$MapBlk
-         stb   $01,s
-         bcs   L0C63
-         tfr   u,d
-L0C53    ldu   <D.CCMem
-         ldx   $02,s
-         addd  >$019D,u
-         std   $04,x
-         ldd   >$019B,u
-         std   $06,x
-L0C63    puls  pc,u,x,b,a
-
-L0C65    pshs  y,x,a
-         bsr   L0C76
-         bcs   L0C74
-         ldd   #$333E
-L0C6E    std   ,x++
-         dec   ,s
-         bne   L0C6E
-L0C74    puls  pc,y,x,a
-
-L0C76    pshs  b,a
-         lda   #$08
-         sta   $01,s
-         ldx   <$0050
-         leax  <$50,x
-         clra  
-         addb  ,s
-         decb  
-L0C85    dec   $01,s
-         bmi   L0CA7
-         cmpd  ,--x
-         bne   L0C85
-         dec   ,s
-         beq   L0C9E
-L0C92    decb  
-         cmpd  ,--x
-         bne   L0CA7
-         dec   $01,s
-         dec   ,s
-         bne   L0C92
-L0C9E    puls  b,a
-         lda   #$20
-         mul   
-         exg   a,b
-         clrb  
-         rts   
-L0CA7    com   ,s++
-         ldb   #$D2
-L0CAB    rts   
-
-L0CAC    cmpa  #$00
-         beq   L0CC3
-         cmpa  #$01
-         lbeq  L1ADC
-         cmpa  #$03
-         lbeq  L1990
-         cmpa  #$02
-         beq   L0D34
-         lbra  L0AC9
-L0CC3    lbsr  L0706
-         ldd   Wt.STbl,y
-         bmi   L0CAB
-L0CCA    clr   ,-s
-         pshs  u,y
-         ldb   #$10
-         lbsr  L0105
-         puls  u,y
-         ldx   <$0022,u
-         cmpx  <$0020,u
-         beq   L0D04
-         inc   ,s
-         pshs  u,y
-         ldx   <D.CCMem
-         ldu   <$0022,u
-         beq   L0D02
-         lbsr  L0D60
-         bcs   L0CF4
-         bsr   L0D3C
-         bcc   L0CF4
-         lbsr  L1060
-L0CF4    ldx   <D.CCMem
-         lda   >$00BE,x
-         bmi   L0D02
-         ldu   <$22,x
-         sta   <$0035,u
-L0D02    puls  u,y
-L0D04    ldx   <D.CCMem
-         ldu   <$20,x
-         tst   ,s+
-         beq   L0D30
-         pshs  u,y,x
-         lbsr  L1F4E
-         bsr   L0D60
-         bcs   L0D19
-         lbsr  L1316
-L0D19    ldx   <D.CCMem
-         ldy   <$20,x
-         sty   <$22,x
-         ldu   $04,s
-         lda   >$00BE,x
-         bmi   L0D2E
-         sta   <$0035,u
-L0D2E    puls  u,y,x
-L0D30    jmp   [>$00C4,x]
-L0D34    lbsr  L06E2
-L0D37    ldb   #$46
-         lbra  L0105
-L0D3C    pshs  u,y,x
-         ldu   Wt.STbl,y
-         leax  >$0290,x
-         ldd   #$0020
-L0D47    cmpu  Wt.STbl,x
-         bne   L0D51
-         tst   -$0E,x
-         bpl   L0D51
-         inca  
-L0D51    leax  <$40,x
-         decb  
-         bne   L0D47
-         deca  
-         bne   L0D5D
-         clrb  
-         puls  pc,u,y,x
-L0D5D    comb  
-         puls  pc,u,y,x
-
-L0D60    pshs  u,x
-         lda   #$FF
-         leax  >$00BE,x
-         sta   ,x
-L0D6A    lbsr  L0706
-         ldu   $02,s
-         lbsr  L0EA7
-         bcs   L0D76
-         puls  pc,u,x
-
-L0D76    lda   -$0E,y
-         bmi   L0D8A
-         ldu   $02,s
-         ldb   <$0035,u
-         tst   ,x
-         bpl   L0D85
-         stb   ,x
-L0D85    sta   <$0035,u
-         bra   L0D6A
-L0D8A    coma  
-         puls  pc,u,x
-
-* Process SS.WnSet call
-
-SSWnSet  lbsr  L1292
-         ldx   PD.RGS,y   get register stack pointer
-         ldb   R$Y+1,x    get window type
-         cmpb  #Wt.PBox   within range?
-         lbhi  L06DE      no, exit with error
-         pshs  d,y,u      preserve registers
-         lbsr  L0706      get pointer to window table
-         lbsr  L1BAD
-         puls  d,y,u      restore registers
-         lslb             adjust type for vector table
-         leax  <L0DAC,pcr point to vector table
-         ldd   b,x        get offset
-         jmp   d,x        process type
-
-L0DAC    fdb   L0F97-L0DAC Wt.NBox
-         fdb   L0DB8-L0DAC Wt.FWin
-         fdb   L0E5F-L0DAC Wt.FSWin
-         fdb   $0131      Wt.SBox
-         fdb   $01a0      Wt.DBox
-         fdb   $0241      Wt.PBox
-
-* Setup a framed window
-
-L0DB8    lbsr  L0E7C
-         bcc   L0DC5
-         tst   >$100A
-         beq   L0DC5
-         lbsr  L0E89
-L0DC5    lbsr  L10A9
-         lda   #$01
-         bsr   L0DF0
-         bcc   L0DDA
-L0DCE    pshs  b,cc
-         tst   >$100A
-         beq   L0DD8
-         lbsr  L0EC0
-L0DD8    puls  pc,b,cc
-
-L0DDA    tst   >$100A
-         beq   L0DE4
-         lbsr  L130E
-         bra   L0DE7
-L0DE4    lbsr  L1063
-L0DE7    bcs   L0DEF
-         ldu   <D.CCMem
-         lbsr  L1163
-         clrb  
-L0DEF    rts   
-
-L0DF0    leas  -$24,s
-         ldu   $06,y
-         pshs  a
-         lda   6,u
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         ora   ,s+
-         sta   ,x
-         ldu   4,u
-         stu   $05,x
-         ldu   <D.Proc
-         lda   P$ID,u
-         sta   $0E,x
-         tfr   u,d
-         sta   $0F,x
-         leau  ,s
-         pshs  x
-         ldx   <D.CCMem
-         ldx   <$75,x
-         leax  >$0240,x
-         stx   <$24,s
-         bsr   L0E55
-         ldu   <D.CCMem
-         ldx   ,s
-         lbsr  L12AB
-         lbsr  L0F46
-         leau  ,x
-         puls  x
-         lda   -$09,y
-         cmpa  <$15,u
-         bcs   L0E3D
-         lda   -$08,y
-         cmpa  <$16,u
-         bcc   L0E4D
-L0E3D    clr   ,x
-         leax  ,s
-         ldu   <$22,s
-         bsr   L0E55      move window descriptor
-         comb  
-         ldb   #$BD
-         leas  <$24,s
-         rts   
-L0E4D    ldu   <D.CCMem
-         leas  <$24,s
-         lbra  L2112
-
-* Move window descriptor from caller
-
-L0E55    lda   #WN.SIZ
-L0E57    ldb   ,x+
-         stb   ,u+
-         deca  
-         bne   L0E57
-         rts   
-
-* Setup a framed window with scroll bars
-
-L0E5F    bsr   L0E7C      window defined?
-         bcc   L0E6A      yes, go on
-         tst   >$100A
-         beq   L0E6A
-         bsr   L0E89
-L0E6A    lbsr  L10A9
-         lda   #$02
-         lbsr  L0DF0
-         lbcs  L0DCE
-         lbsr  L21CB
-         lbra  L0DDA
-
-L0E7C    pshs  y,u
-         lbsr  L0706      get pointer to window table
-         coma             set carry
-         lda   -$0E,y     window initialized?
-         bpl   L0E87      yes, go on
-         clra             clear carry
-L0E87    puls  y,u,pc
-
-L0E89    pshs  u,y
-         lbsr  L0706
-         lda   -$0E,y
-         puls  u,y
-         ldb   <$0035,u
-         pshs  u,y,b
-         sta   <$0035,u
-         bsr   L0EA7
-         bcs   L0EA1
-         lbsr  L1060
-L0EA1    puls  u,y,b
-         stb   <$0035,u
-         rts   
-
-L0EA7    pshs  u,x,a
-         tst   $0006,u
-         bpl   L0EBD
-         lbsr  L0711
-         lda   ,x
-         anda  #$0F
-         beq   L0EBD
-         cmpa  #$02
-         bhi   L0EBD
-         clra  
-L0EBB    puls  pc,u,x,a
-L0EBD    coma  
-         bra   L0EBB
-
-L0EC0    ldu   <D.CCMem
-         ldu   >$00B7,u
-L0EC6    lda   -$0E,y
-         ldb   <$0035,u
-         pshs  u,b
-         sta   <$0035,u
-         bsr   L0EA7
-         bcs   L0ED7
-         lbsr  L1316
-L0ED7    puls  u,b
-         stb   <$0035,u
-         rts   
-
-L0EDD    lbsr  L0FB4
-         lbsr  L10A9
-         leas  -$04,s
-         lda   #$03
-         sta   ,x
-         bsr   L0F46
-         lbsr  L1209
-         pshs  x
-         bsr   L0F41
-         leax  <L0F0B,pcr
-         bita  #$01
-         beq   L0EFC
-         leax  <L0F26,pcr
-L0EFC    lbsr  L102B
-         lbsr  L1029
-         puls  x
-L0F04    lbsr  L113B
-         clrb  
-L0F08    leas  $04,s
-         rts   
-
-L0F0B    fdb   $0000
-         fdb   $0000
-         fdb   $ffff
-         fdb   $ffff
-         fdb   $4cff
-         fdb   $fe00
-         fdb   $0280
-         fdb   $0080
-         fdb   $004e
-         fdb   $0002
-         fdb   $8000
-         fdb   $8000
-         fdb   $8000
-         fcb   $4a
-
-L0F26    fdb   $0000
-         fdb   $0000
-         fdb   $fffd
-         fdb   $ffff
-         fdb   $4cff
-         fdb   $fe00
-         fdb   $0280
-         fdb   $0080
-         fdb   $004e
-         fdb   $0004
-         fdb   $8000
-         fdb   $8000
-         fdb   $8000
-         fcb   $4a
-
-L0F41    lda   >$00BD,u
-         rts   
-L0F46    ldy   >$00BB,u
-         rts   
-
-         bsr   L0FB4
-         lbsr  L10A9
-         leas  -$04,s
-         lda   #$04
-         sta   ,x
-         lbsr  L0FF6
-         bcs   L0F08
-         bsr   L0F46
-         pshs  x
-         leax  <L0F73,pcr
-         lbsr  L1029
-         bsr   L0F41
-         bita  #$01
-         beq   L0F6F
-         lbsr  L1029
-L0F6F    puls  x
-         bra   L0F04
-
-L0F73    fdb   $0003
-         fdb   $0002
-         fdb   $fffd
-         fdb   $fffe
-         fdb   $4c00
-         fdb   $0400
-         fdb   $03ff
-         fdb   $fcff
-         fdb   $fd4c
-         fdb   $0005
-         fdb   $0003
-         fdb   $0006
-         fdb   $fffd
-         fdb   $4cff
-         fdb   $fa00
-         fdb   $03ff
-         fdb   $fbff
-         fdb   $fd4c
-
-L0F97    bsr   L0FB4
-         lbsr  L10B6
-         clr   ,x
-         ldy   >$00B9,u
-         clra  
-         clrb  
-         std   -$0B,y
-         ldd   <$28,y
-         pshs  u,y
-         lbsr  L114C
-         puls  u,y
-         lbra  L1209
-L0FB4    pshs  u,y
-         lbsr  L0E7C
-         bcc   L0FEB
-         lbsr  L0711
-         lda   ,x
-         anda  #$0F
-         beq   L0FEB
-         cmpa  #$02
-         bhi   L0FEB
-         tst   >$100A
-         beq   L0FEB
-         ldu   $02,s
-         lbsr  L0706
-         ldu   $02,s
-         lda   <$0035,u
-         pshs  a
-         lda   -$0E,y
-         sta   <$0035,u
-         lbsr  L0EA7
-         puls  a
-         sta   <$0035,u
-         bcs   L0FEB
-         lbsr  L0EC6
-L0FEB    puls  pc,u,y
-
-         bsr   L0FB4
-         lbsr  L10A9
-         lda   #$05
-         sta   ,x
-L0FF6    lbsr  L0F46
-         lbsr  L1209
-         lbsr  L1198
-         bsr   L100D
-         lbsr  L0AA0
-         bsr   L1009
-         lbra  L1173
-L1009    ldb   -$08,y
-         bra   L100F
-L100D    ldb   -$09,y
-L100F    clra  
-         tstb  
-         beq   L1018
-         bsr   L1019
-         subd  #$0001
-L1018    rts   
-
-L1019    clra  
-         lslb  
-         rola  
-         lslb  
-         rola  
-         lslb  
-         rola  
-         rts   
-
-L1021    asra  
-         rorb  
-         asra  
-         rorb  
-         asra  
-         rorb  
-         clra  
-         rts   
-
-L1029    bsr   L102B
-L102B    bsr   L1048
-         lbsr  L0A9B
-         bsr   L104C
-         lbsr  L0A64
-         bsr   L1048
-         lbsr  L0AA0
-         bsr   L104C
-         lbsr  L0A87
-         ldb   ,x+
-         pshs  u,y,x
-         lbsr  L0105
-         puls  pc,u,y,x
-
-L1048    bsr   L100D
-         bra   L104E
-L104C    bsr   L1009
-L104E    pshs  b,a
-         ldd   ,x++
-         bpl   L105D
-         cmpd  #$8000
-         bne   L105B
-         clra  
-L105B    addd  ,s
-L105D    leas  $02,s
-         rts   
-
-L1060    lbsr  L10B6
-L1063    lbsr  L2115
-         lbsr  L1989
-         lbsr  L12AB
-         bne   L1096
-         lbsr  L1264
-         lbsr  L1222
-         lbsr  L1289
-         lbsr  L11ED
-         subb  #$02
-         cmpb  -$09,y
-         bls   L1084
-         ldb   -$09,y
-         bra   L1086
-L1084    addb  #$02
-L1086    pshs  b
-         lda   -$09,y
-         suba  ,s
-         lsra  
-         clrb  
-         lbsr  L11CF
          puls  b
-         lbsr  L11F9
-L1096    clra  
-         bsr   L109A
+         ENDC
+         stx   V.ParmVct,u  Save vector for CC3IO to call
+         clra             No error & return so CC3IO can get rest of parms
          rts   
 
-L109A    pshs  u,y,x
-         ldu   <D.CCMem
-         ldu   >$00B7,u
-         lbsr  L0711
-         sta   $04,x
-         puls  pc,u,y,x
+* No param calls go here
+L0339    equ   *
+         IFNE  H6309
+         jmp   w,x        Go execute function
+         ELSE
+         pshs  d
+         ldd   >GrfMem+gr00B5
+         leax  d,x
+         puls  d
+         jmp   ,x 
+         ENDC
 
-L10A9    bsr   L10B6
-         lbsr  L0F41
-         bpl   L10B5
+* Check special display codes
+L0347    cmpa  #$1F       $1F codes?
+         beq   L038D      Yes, go process them
+L034D    cmpa  #$02       Cursor X,Y?
+         bne   L0356      No, check next
+         leax  <L036E,pc  Point to Cursor X,Y routine
+         bra   L0362      Let CC3IO get rest of parms
+
+L0356    cmpa  #$05       Cursor On/Off?
+         beq   L0396      Go to cursor on/off routine
+L039F    ldb   #$3C       Otherwise, GrfDrv function: Control codes
+L03A1    pshs  d          Preserve write char & GrfDrv function code
+         lbsr  L06A0      Get window table ptr & verify it
+         bcs   UnDef      Couldn't, exit with Window Undefined error
+         puls  d          Get back write char & GrfDrv function code
+
+* Execute GrfDrv
+* Entry: @ L0101 : B=Callcode for GRFDRV
+* All regs are thrown onto stack for 'fake' RTI done by [D.Flip1] (in vector
+* page RAM at the top of OS9p1) after switching to System Task #1 (GRFDRV)
+* Added protection for regE; RG 2003/10/15
+L0101    ldx   >WGlobal+G.GrfEnt     Get GrfDrv entry address
+         orcc  #Entire    Set up 'pull all regs' for RTI
+         IFNE  H6309
+         pshs  e
+         tfr   cc,e
+         ste   >WGlobal+g0005
+         puls  e
+         ELSE
+         pshs  d
+         ldd   >GrfMem+gr00B5
+         std   >GrfMem+gr00B5
+         tfr   cc,a
+         sta   >WGlobal+g0005
+         puls  d
+         ENDC
+         orcc  #IntMasks  Disable IRQ's
+         sts   >WGlobal+G.GrfStk     Save stack ptr for GRFDRV
+         lds   <D.CCStk   Get new stack ptr
+
+* Dump all registers to stack for fake RTI
+         pshs  dp,x,y,u,pc dump all registers to stack for fake RTI
+         IFNE  H6309
+         pshsw           no register to push for 6809
+         lde   >WGlobal+g0005	get back regDP 
+         ENDC
+         pshs  cc,d
+         stx   R$PC,s     Save grfdrv entry address as the PC on stack
+         IFNE  H6309
+         ste   R$CC,s     Save CC bitE into CC on stack
+         ste   >WGlobal+G.GfBusy     Flag grfdrv busy
+         ELSE
+         lda   >WGlobal+g0005
+         sta   R$CC,s
+         sta   >WGlobal+G.GfBusy     Flag grfdrv busy 
+         lda   R$A,s      may not be needed
+         ENDC
+         jmp   [>D.Flip1] Flip to GRFDRV and execute it
+
+* GRFDRV will execute function, then call [D.Flip0] to switch back to here. It
+* will use an RTS to return to the code here that called L00F7 or L0101 in the
+* first place. Only SP,PC & CC are set up- ALL OTHER REGISTERS MAY BE MODIFIED
+
+* Entry point for GRFDRV for most GFX commands
+L00F7    ldx   >WGlobal+G.CurDvM     Get current device memory ptr
+         ldb   V.CallCde,x  Get callcode from it
+         bra   L0101      Go call GRFDRV
+
+UnDef    leas  2,s        Eat stack
+UnDef2   ldb   #E$WUndef  Undefined Window error
+         rts   
+
+* Set counts up for CC3/TC9IO to get rest of needed parms
+L0362    sta   V.ParmCnt,u  Store # bytes to get for params in static mem
+         stx   V.ParmVct,u  Store vector to function in static mem
+         clra             No error & return so CC3IO can get rest of parms
+         rts   
+
+* Process CurXY after parms are gotten
+* Entry: U=Static mem ptr
+L036E    pshs  u          Save static mem ptr (in case DWSet modifies U)
+         lbsr  L06A0      Get window table ptr
+         puls  u          Get back static mem ptr
+         bcs   UnDef2     Couldn't, exit with Window undefined error
+         ldd   [V.PrmStrt,u] get the coords requested
+L0380    sta   >GrfMem+gr0047     Save X coord
+         stb   >GrfMem+gr0049     Save Y coord
+         ldb   #$42       GrfDrv function: Goto X/Y
+L038A    bra   L0101      Execute Grfdrv
+
+* Process $1f display codes
+L038D    lda   [V.PrmStrt,u] get type of $1f function
+         ldb   #$40       GrfDrv function: $1F codes
+         bra   L03A1      Go get window tbl ptr & execute GRFDRV
+
+* Cursor on/off
+L0396    lda   [V.PrmStrt,u] get cursor on/off parameter byte
+         ldb   #$3E       GrfDrv function: Cursor on/off
+         bra   L03A1      Go get window tbl ptr & execute GRFDRV
+
+******************************
+* DWSet entry point
+* Entry: U=Device static mem pointer
+*        Y=Path descriptor
+*        X=Param pointer
+L03AE    pshs  y,u        preserve static mem & path descriptor pointers
+         lbsr  L06AE      get window table pointer for current window
+* Window already defined?
+         lda   Wt.STbl,y  Get MSB of screen table ptr
+         cmpa  #$FF       Already defined?
+         beq   L03BF      No, skip ahead
+         comb             Exit with Window Already Defined error
+         ldb   #E$WADef   get window already defined error
+         puls  u,y,pc     Restore regs & return
+
+* Check screen type
+L03BF    lda   ,x+        Get screen type from parameters
+         lbsr  L07E0      Convert it to internal code
+         bcc   L03CB      it's good, skip ahead
+         puls  u,y        Exit with Illegal Window Definition error
+         lbra  L0697      return illegal window definition error
+
+* Legal window type, make sure coords & size are at least reasonable
+L03CB    stb   >GrfMem+Gr.STYMk     Save screen type in Grfdrv Mem
+         bsr   L0413      Move coord's, size & pals. to window table
+         bcc   L03D7      Legal values, skip ahead
+         ldb   #E$IWDef   Illegal Window Definition
+         puls  pc,u,y     restore regs & return with error
+
+* Coordinates & size are within 0-127, continue
+L03D7    cmpb  #$FF       is it same screen?
+         beq   L03F2      yes, don't bother getting border color
+         leax  <L03E5,pc  point to processor for border color
+         lda   #$01       get # bytes to get
+         puls  u,y        purge stack
+         bra   L0362      let cc3io get it for me
+
+* If the window was not on the current screen grab the optional border color
+L03E5    pshs  u,y        Preserve static mem & path dsc. ptrs
+         lbsr  L06AE      get window table pointer into Y
+         lda   ,x         get border color
+         sta   >GrfMem+gr005A     save it in grfdrv mem
+         bra   L03F9      continue processing
+
+* Current displayed screen or current process screen goes here
+L03F2    ldx   ,s         get path descriptor pointer
+         lbsr  L075C      check validity of screen table
+         bcs   L0408      error, return
+* all parameters are moved, let grfdrv do the rest
+L03F9    lbsr  L00F7      let grfdrv take over
+         bcs   L040A      grfdrv error, return
+         ldu   2,s        get static mem pointer
+         inc   V.InfVld,u   Set flag to indicate rest of static mem valid
+         IFNE  H6309
+         ldw   >WGlobal+G.CurDev     Get current window ptr
+         ELSE
+         ldy   >WGlobal+G.CurDev
+         sty   >GrfMem+gr00B5
+         ENDC
+         beq   Nowin      None, skip ahead
+         IFNE  H6309
+         lda   >V.ULCase,w  Get special keyflags
+         ELSE
+         lda   >V.ULCase,y
+         ENDC
+         sta   >V.ULCase,u   Save in new window
+Nowin    ldy   ,s         get path descriptor pointer
+         bsr   L0436      setup lines per page
+L0408    puls  pc,u,y     all done, return
+
+* DWSet didn't work, flag window table entry as free again
+L040A    ldu   #$FFFF     get table free value
+         stu   Wt.STbl,y  put it in window table
+         puls  y,u,pc     restore & return
+
+* Move co-ordinates/size & fore/back colors into window table
+L0413    pshs  d          Preserve D
+         bsr   L0423      Move coordinates & size
+         bcs   L041F      Error in size, return the error
+         ldd   ,x++       Get foreground/background colors
+         std   Wt.Fore,y  Put it in window table
+L041D    puls  d,pc       Restore D & return
+
+L041F    stb   1,s        Save error code into B on stack
+         puls  d,pc       Restore D & return
+
+* Move start coordinates & size into window table
+* Entry: X=Pointer to co-rdinates
+*        Y=Window table pointer
+L0423    ldd   ,x++       Get start coordinates
+         std   Wt.CPX,y   Save 'em
+         lda   ,x+        Get X size
+         ble   L042F      Too big or 0, exit with error
+         ldb   ,x+        Get Y size
+         bgt   L0432      Above 0, go on
+L042F    lbra  L0697      Return error
+
+L0432    std   Wt.SZX,y   Save size to window table
+         clrb             Clear error & return
+         rts   
+
+* Setup lines/page variables
+* Entry: Y=Path descriptor pointer
+*        U=Device static mem pointer for new window
+L0436    pshs  y          L06AE resets y
+         lbsr  L06AE      get window table pointer
+         ldb   Wt.SZY,y   Get Y size
+         puls  y          restore reg
+         stb   V.LINE,u   save it in static mem for SCF
+         stb   PD.PAG,y   Save it as the default in path descriptor
+         clrb             clear errors
+         rts              return
+
+****************************
+* DWEnd entry point
+* Entry: U=Static memory pointer
+*        Y=Path descriptor pointer
+L0446    pshs  u
+         bsr   L0452      process it
+         puls  u
+         bcs   L0451      error, return
+         clr   V.InfVld,u   clear flag - static mem no longer valid
+L0451    rts              return
+
+* Check for legal screen table (PRESERVES U)
+L0452    lbsr  L06AE      get pointer to window table into Y
+         lda   Wt.STbl,y  screen table exist?
+         bpl   L0461      screen table exists, skip ahead
+         comb             set carry for error
+         lbra  L069D      return undefined window error
+
+* Window legal, Delete any overlays (PRESERVES U)
+L0461    lda   Wt.BLnk,y  Any overlay windows?
+         bmi   L0479      No, skip ahead
+         pshs  a,u        save parent window # & static mem
+         IFNE  H6309
+         bsr   L04EA      Do a CWArea to full size
+         ELSE
+         lbsr  L04EA
+         ENDC
+         ldb   #$0C       Grfdrv function: Overlay window end
+         lbsr  L0101
+         puls  a,u        restore parent & static mem
+         sta   V.WinNum,u   save parent as current
+         lbsr  L06AE      get it's window table pointer
+         bra   L0461      keep going
+
+* Change to full window size & clear out the graphics table entry
+*   clear out the current window & screen table ptrs
+L0479    pshs  u          save static mem pointer
+         bsr   L04EA      Do a CWArea to full size
+* clear out gfx table entry
+         puls  u          Restore static mem ptr
+         lbsr  L06B9      Point to gfx table entry for this window
+         IFNE  H6309
+         leau  <Nul2+2,pc
+Nul2     ldw   #$0012
+         tfm   u,x+
+         ELSE
+         pshs  b
+         ldd   #$0012
+Nul2     sta   ,x+
+         decb
+         bne   Nul2
+         puls  b
+         ENDC
+         lda   >WGlobal+g000B     is this a window?
+         bmi   L0499      no, return
+         IFNE  H6309
+         clrd  
+         stq   >GrfMem+gr002E     clear window & screen table entrys
+         ELSE
+         clra
+         clrb
+         std   >GrfMem+gr00B5 
+         std   >GrfMem+gr002E     clear window & screen table entrys
+         std   >GrfMem+gr002E+2
+         ENDC
+L0499    lbra  L00F7      let grfdrv do the rest
+
+*****************************
+* OWSet entry point
+* Entry: U=Device static mem pointer
+*        Y=Path descriptor pointer
+*        X=Parameter pointer
+L049C    pshs  y,u        preserve path descriptor & static mem pointers
+         lbsr  L06A0      verify window table
+         puls  u,y        restore pointers
+         lbcs  L069D      not a legal window, return undefined window error
+         pshs  u,y        preserve path descriptor & static mem pointers
+         lbsr  L07B0      get a blank window table pointer
+         bcc   L04B6      we found one, skip ahead
+         puls  u,y,pc     purge stack & return
+
+L04B2    puls  u,y
+         bra   L04D5
+
+* We have a new window table for overlay, so process parameters
+L04B6    lda   ,x+        get save switch from parameters
+         sta   >GrfMem+gr0059     save it in grfdrv mem
+         lbsr  L0413      move rest of parameters to grfdrv mem
+         bcs   L04B2      error, return
+         pshs  y          preserve window table pointer
+         lbsr  L00F7      let grfdrv create overlay
+         puls  y          restore window table pointer
+         bcs   L04D1      error from grfdrv, return
+         puls  u,y        restore path descriptor & static mem pointers
+         lbra  L0436      setup lines per page & return from there
+
+L04D1    leas  2,s        Eat path dsc. ptr
+         puls  u          Get static mem ptr back
+
+* Could not find a window table for overlay, get rid of links & return
+L04D5    lda   Wt.BLnk,y  Get back window # link
+         sta   V.WinNum,u   Store it as current window #
+         IFNE  H6309
+         ldw   #$FFFF     Set screen table ptr to unused
+         stw   Wt.STbl,y
+         ELSE
+         pshs  x
+         ldx   #$FFFF
+         stx   >GrfMem+gr00B5
+         stx   Wt.STbl,y
+         puls  x
+         ENDC
+         coma             Set carry for error
+L04E7    rts   
+
+* Change window to full size reported in window table
+L04EA    equ   *
+* Relocated lines and removed regW; regE bug; RG
+         ldd   Wt.DfSZX,y Get default size of window
+         std   Wt.CPX+2,y	  Save current size
+         std   >GrfMem+gr00B5
+         IFNE  H6309 
+         clrd             set start coords to 0,0
+         ELSE
+         clra
+         clrb
+         ENDC
+         std   Wt.CPX,y   Store coords
+         ldb   #$0E       GrfDrv function: CWArea
+         pshs  y          preserve window table ptr
+         lbsr  L0101      Send it to GrfDrv
+         puls  y,pc       Restore reg & return
+
+****************************
+* OWEnd entry point
+* Entry: U=Device static mem pointer
+*        Y=Path descriptor pointer
+L04FC    pshs  u,y        preserve path descriptor & static mem pointers
+         lbsr  L06A0      get pointer to window table & verify it
+         bcc   L0508      went ok, skip ahead
+         puls  u,y        Restore regs
+         lbra  L069D      Exit with undefined window error
+
+L0508    lda   Wt.BLnk,y  is this an overlay?
+         bpl   L0511      yes, go remove it
+         puls  u,y        purge stack
+         lbra  L0697      return with illegal window definition error
+
+* We are in overlay, remove it
+L0511    ldu   2,s        get static mem pointer
+         lbsr  L06B9      get pointer to graphics table for this window
+         IFNE  H6309
+         lde   ,x         get menuing system screen type
+         ELSE
+         lda   ,x
+         sta   >GrfMem+gr00B5
+         ENDC
+         lda   Wt.BLnk,y  get parent window # of this overlay
+* We know this is a overlay window, continue
+         sta   V.WinNum,u   save new window #
+         bsr   L04EA      change to the full size window 
+         ldb   #$0C       get grfdrv function for OWEnd
+         lbsr  L0101      let grfdrv do the rest
+         bcc   L052E      grfdrv went ok, skip ahead
+L052C    puls  y,u,pc     restore & return
+
+
+* Overlay removed, check if we activate menu bar on parent window
+L052E    puls  y,u        Restore static mem & path dsc. ptrs
+         lbsr  L0436      set lines per page in path descriptor
+         IFNE  H6309
+         tste		is screen type a regular no box window?
+         ELSE
+         tst   >GrfMem+gr00B5
+         ENDC
+         beq   L04E7      yes, return
+         IFNE  H6309
+         cmpe  #WT.FSWin  do we have a menu bar on window?
+         ELSE
+         pshs  a
+         lda   >GrfMem+gr00B5
+         cmpa  #WT.FSWin
+         puls  a
+         ENDC
+         bhi   L04E7      no, return
+         lda   >WGlobal+G.CrDvFl     Are we the current active window?
+         beq   L0591      no, no need to update menu bar
+         lbra  L13F5      set menu bar to active state
+
+****************************
+* Select entry point
+* Entry: U=Static memory pointer
+*        Y=Path descriptor pointer
+L0549    ldx   PD.RGS,y   get register stack pointer
+         lda   R$A,x      get path # to new window
+         ldx   <D.Proc    get current process pointer
+         cmpa  P$SelP,x   same as current selected path?
+         beq   L0591      yes, nothing to do so return
+         ldb   P$SelP,x   get the current selected path
+         sta   P$SelP,x   save new path
+         pshs  y          save path descriptor pointer
+         bsr   L0592      Get the device table ptr for new window
+         ldx   V$STAT,y   Get static mem ptr
+         cmpx  >WGlobal+G.CurDev     Same as current device?
+         puls  y          restore path descriptor pointer
+         bne   L0590      no match on current device, return
+         pshs  b          save old window path block #
+         leax  ,u         point to static mem
+         lbsr  L06A0      verify window table of new window
+         puls  b          restore old window path block #
+         bcc   L0582      window exists, skip ahead
+         ldx   <D.Proc    get current process pointer
+         stb   P$SelP,x   save old window path number back
+         lbra  L069D      return undefined window error
+
+* New window exists, update screen to it
+L0582    ldu   >WGlobal+G.CurDev     Get current device mem ptr
+         stu   >WGlobal+G.PrWMPt     Save as previoius device mem ptr
+         stx   >WGlobal+G.CurDev     Save new current device mem ptr
+         inc   V.ScrChg,x   Flag screen has changed for AltIRQ routine
+L0590    clrb             clear errors
+L0591    rts              return
+
+* Get ptr to device table
+* Entry: X=Pointer to process descriptor
+*        B=Path block # to get
+* Exit : Y=Pointer to device table entry
+L0592    leax  P$Path,x   get pointer to path #'s
+         lda   b,x        get path block #
+         ldx   <D.PthDBT  get pointer to descriptor block table
+         os9   F$Find64   get pointer to path descriptor
+         ldy   PD.DEV,y   get pointer to device table entry
+         rts              return
+
+****************************
+* CWArea entry point
+* Entry: U=Static memory pointer
+*        Y=Path descriptor pointer
+*        X=Pointer to parameters
+L05A0    pshs  y,u        Save device mem ptr & path dsc. ptr on stack
+         lbsr  L06A0      verify window table
+         IFNE  H6309
+         ldq   Wt.CPX,y   get original start & size
+         pshsw             preserve them on the stack
+         ELSE
+         ldd   Wt.CPX+2,y
+         std   >GrfMem+gr00B5
+         pshs  d
+         ldd   Wt.CPX,y
+         ENDC
+         pshs  d
+         lbsr  L0423      move coords to window table
+         bcs   L0609      didn't pan out, restore originals & return error
+* The rest of this is unique to WindInt.  What it does is calculate the
+* maximum allowable window sizes based on the window type defined in the
+* menuing system.
+* NOTE: MAY BE ABLE TO USE E & F FOR SOME OF THE ,S STUFF
+         ldu   6,s        get device static memory pointer
+         lbsr  L06B9      get graphics table entry pointer for this window
+         IFNE  H6309
+         clrd             set starting X/Y coords to 0
+         ELSE
+         clra
+         clrb
+         ENDC
+         pshs  d
+         ldd   Wt.DfSZX,y Get default X/Y sizes from window table
+         pshs  d          Make them the ending X,Y coords
+         lda   ,x         get graphics table window type
+         beq   L05E3      If normal window, skip all adjustments
+         deca             Is it a WT.FWin (framed window=1)?
+         bne   L05CB      no, check for scroll bars
+         dec   1,s        Yes, subtract 1 from Y size
+         inc   3,s        Add 1 to Y start
+         bra   L05E3
+
+L05CB    deca             Is it a WT.FSWin (scroll barred window=2)?
+         bne   L05D3      No, has to be Shadowed,double or plain, skip ahead
+         dec   ,s         decrement X size by 1 for right scroll bar
+         bra   L05DD      skip ahead
+
+* Shadowed, double & plain go here - 1 char border on all 4 sides
+L05D3    inc   2,s        add 1 to X start for left border
+         dec   ,s         decrement X size by 2 for left & right borders
+         dec   ,s
+L05DD    inc   3,s        add 1 to Y start for menu bar
+         dec   1,s        decrement Y size by 2 for menu & bottom borders
+         dec   1,s
+L05E3    ldd   Wt.SZX,y   get current X/Y sizes
+         cmpa  ,s         will X size fit?
+         bhi   L0606      no return error
+         cmpb  1,s        will Y size fit?
+         bhi   L0606      no, return error
+         ldd   Wt.CPX,y   get current X/Y start
+         cmpa  2,s        will X start fit?
+         bcs   L0606      no, return error
+         cmpb  3,s        will Y start fit?
+         blo   L0606      no, return error
+         lbsr  L00F7      let grfdrv do the rest
+         bcs   L0606      error from grfdrv, return
+         leas  8,s        eat local data
+         puls  y,u        Get back path dsc. ptr & device mem ptr
+         lbra  L0436      setup lines per page
+
+L0606    leas  4,s        Eat stack buffer & return
+L0609    equ   *
+         IFNE  H6309
+         puls  d          Restore originals
+         pulsw  
+         stq   Wt.CPX,y
+         ELSE
+         ldd   2,s
+         std   Wt.CPX+2,y
+         std   >GrfMem+gr00B5
+         ldd   ,s
+         std   Wt.CPX,y
+         leas  4,s        eat the stack
+         ENDC
+         comb             Illegal coordinates error
+         ldb   #E$ICoord
+         puls  y,u,pc
+
+****************************
+* GCSet entry point
+* Entry: U=Static mem pointer
+*        Y=path descriptor pointer
+*        X=Parameter pointer
+L060C    pshs  u          save static mem pointer
+         lbsr  L06A0      verify window exists, or create it if it isn't
+         lbcs  L069B      couldn't create, exit with error
+         ldd   ,x         get group/buffer from parameters
+         std   >GrfMem+gr0057     Save in Grfdrv mem
+         lbsr  L00F7      let grfdrv do the rest
+         puls  u          restore static mem pointer
+         lbsr  L06B9      get graphics table pointer
+         lda   Wt.GBlk,y  Get graphics cursor memory block #
+         sta   Gt.GBlk,x  save it in graphics table
+         ldd   Wt.GOff,y  Get graphics cursor offset
+         std   Gt.GOff,x  save it in graphics table
+         rts              return
+
+****************************
+* LSet entry point
+L062D    equ   *
+         IFNE  H6309
+         bsr   L06A0      verify window table
+         bcs   L069D      no good, return error 
+         ELSE
+         lbsr  L06A0
+         lbcs   L069D      no good, return error 
+         ENDC
+         lda   ,x         Get LSET type from params
+         sta   Wt.LSet,y  store it in window table
+         lbra  L00F7      let grfdrv do the rest
+
+****************************
+* Border entry point
+L0637    pshs  u          preserve static mem
+         bsr   L06A0      verify window table
+         bcs   L069B      not good, return error
+         lda   ,x         Get border color from parm area
+         ldx   Wt.STbl,y  Get screen table ptr
+         sta   St.Brdr,x  Save as border color in screen tbl
+         bra   L0669      Flag for GIME update & exit
+
+****************************
+* FColor/BColor entry point
+L0641    bsr   L06A0      verify window table
+         bcs   L069D      not good, return error
+         lda   ,x         Get palette # from param area
+         sta   >GrfMem+gr005A     Put in GRFDRV's working palette #
+L064B    lbra  L00F7      Go into GrfDrv
+
+****************************
+* DefPal entry point
+L064E    pshs  u          preserve static mem pointer
+         bsr   L06A0      verify window
+         bcs   L069B      not good, return error
+         ldx   Wt.STbl,y  Get ptr to screen table
+         leax  St.Pals,x  Point to palettes in screen table
+         ldd   >WGlobal+G.DefPal     Get ptr to system default palettes
+         IFNE  H6309
+         ldw   #16        # palette registers to copy
+         tfm   d+,x+      Copy into screen table
+         ELSE
+         pshs  y
+         tfr   d,y
+         ldb   #16
+L064Eb   lda   ,y+
+         sta   ,x+
+         decb
+         bne   L064Eb
+         clra
+         std   >GrfMem+gr00B5
+         puls  y
+         ENDC   
+         bra   L0669      Flag for GIME update & exit
+
+****************************
+* Palette entry point
+L0656    pshs  u          preserve static mem pointer
+         bsr   L06A0      verify window table
+         bcs   L069B      not good, return error
+         ldd   ,x         Get palette # & color
+         ldx   Wt.STbl,y  Get screen table ptr
+         anda  #$0f       Only allow palettes 0-15
+         adda  #St.Pals   Palette tbl starts @ +$10
+         stb   a,x        Save in scrn tbl's palette
+L0669    clrb             No error
+         puls  u          restore static mem pointer
+         lda   >WGlobal+G.CrDvFl     Are we the current device?
+         beq   L0673      No, we are done
+         inc   V.ScrChg,u   Yes, flag AltIRQ for screen update
+L0673    rts              return
+
+****************************
+* PSet/Font entry point
+L0674    bsr   L06A0      verify window table
+         bcs   L069D      not good, return error
+         ldd   ,x         Get group & buffer #'s from parm area
+         beq   L0682      If caller wants to disable pattern set, skip
+         tstb             Is buffer=0?
+         lbeq  L0812      Yes, illegal
+L0682    std   >GrfMem+gr0057     Save group & buffer #'s
+         lbra  L00F7      Go to GrfDrv
+
+****************************
+* KillBuf entry point
+L0687    bsr   L06A0      verify window table
+         bcs   L069D      not good, return error
+         ldd   ,x         Get buffer & group #
+         bra   L0682      Save them
+
+* Return undefined window error
+L069B    leas  2,s        Eat stack
+L069D    ldb   #E$WUndef  Window undefined error
+         rts   
+
+* Get window table pointer & verify it
+* Entry: X=parm ptr
+*        Y=Path dsc. ptr
+*        U=Device mem ptr
+* Exit: Y=Window tbl ptr
+*       X=Parm ptr
+L06A0    ldb   V.WinNum,u   Get window # from device mem
+         lda   #Wt.Siz    Size of each entry
+         mul              Calculate window table offset
+         addd  #WinBase   Point to specific window table entry
+         IFNE  H6309
+         tfr   d,w        Move to W (has indexing mode)
+         lda   Wt.STbl,w  Get MSB of scrn tbl ptr
+         ELSE
+         pshs  y
+         tfr   d,y
+         std   >GrfMem+gr00B5
+         lda   Wt.STbl,y
+         puls  y
+         ENDC
+         bgt   VerExit    If $01-$7f, should be ok
+         cmpa  #$ff       Unused?
+         bne   L0697      No, in range of $80-$FE or $00, illegal
+         IFNE  H6309
+         pshsw            Preserve window tbl ptr
+         pshs  x          Preserve param ptr
+         tfr   y,x        Move path dsc. ptr to X
+         tfr   w,y        Move window tbl ptr to Y
+         ELSE
+         pshs  x,y
+         ldx   >GrfMem+gr00B5
+         stx   2,s        pshsw
+         exg   y,x        tfr y,x; tfr w,y
+         ENDC
+         bsr   L06DD      Window doesn't exist, see if we can create
+         puls  x,y,pc     Get parm ptr, window tbl ptr & return
+
+* X still parm ptr, just move window tbl ptr & return
+VerExit  clra             No error
+         IFNE  H6309
+         tfr   w,y        Move window tbl ptr to Y
+         ELSE
+         ldy   >GrfMem+gr00B5
+         ENDC
+         rts              Return
+
+* Return illegal window definition error
+L0697    comb             set carry
+         ldb   #E$IWDef   Illegal window definition error
+         rts
+
+* Get window table ptr for current window
+* Entry: U=Static memory pointer
+* Exit : Y=Window tbl ptr
+L06AE    ldb   V.WinNum,u   Get window # from device mem
+         lda   #Wt.Siz    Size of each entry
+         mul              Calculate window table offset
+         addd  #WinBase   Point to specific window tbl entry
+         tfr   d,y        Put into Y & return
+         rts   
+
+* Get graphics table pointer for current window
+* Entry: U=Static memory pointer
+L06B9    pshs  d          Preserve D
+         lda   V.WinNum,u   Get window #
+         ldb   #GTabSz    Size of each entry
+         mul              Calculate offset
+         ldx   >WGlobal+G.GfxTbl     Get ptr to GFX tables
+         IFNE  H6309
+         addr  d,x        Point to table entry
+         ELSE
+         leax  d,x        Point to table entry
+         ENDC
+         puls  d,pc       Restore D & return
+
+* Verify window table
+* Entry: Y=Window table ptr
+* Unused window, check if device dsc. default is valid
+L06DD    pshs  x          Preserve path dsc ptr
+         ldx   PD.DEV,x   Get device table ptr
+         pshs  x          Preserve it
+         ldx   V$DESC,x   Get device dsc ptr
+         ldb   IT.VAL,x   Window dsc contain a valid type?
+         bne   L06EE      Yes, skip ahead
+         coma             Otherwise, exit with error
+L06EB    leas  4,s        Eat stack & return
+         rts   
+
+* Unused window with valid device dsc type
+* X=Ptr to window's device dsc.
+L06EE    lda   IT.STY,x   Get descriptor's screen type
+         lbsr  L07E0      Go get GrfDrv internal screen type
+         bcc   L06FA      Good window type found, continue
+         leas  4,s        Eat stack & exit with error
+         bra   L0697
+
+* Valid screen type
+L06FA    stb   >GrfMem+Gr.STYMk     Preserve GrfDrv window type
+         cmpb  #$FF       Current screen?
+         beq   L070B      Yes, skip ahead
+         lda   IT.BDC,x   Get default border color
+         sta   >GrfMem+gr005A     Put into palette area in grfdrv mem
+         bra   L070F
+
+* If window is supposed to be on same screen, do this
+L070B    pshs  x          preserve device descriptor pointer
+         ldx   4,s        get path descriptor pointer
+         bsr   L075C      Set up screen table ptr in window table
+         puls  x          restore device descriptor pointer
+         bcs   L06EB      If error, eat stack & leave
+
+L070F    ldd   IT.CPX,x   Get start X coordinate from dsc
+         IFNE  H6309
+         ldw   IT.COL,x
+         stq   Wt.CPX,y   Put into window table
+         ELSE
+         std   Wt.CPX,y
+         ldd   IT.COL,x
+         std   >GrfMem+gr00B5
+         std   Wt.CPX+2,y
+         ENDC
+         ldd   IT.FGC,x   Get foreground & background default colors
+         std   Wt.Fore,y  Save in window table
+         ldb   #$04       GrfDrv function: DWSet
+         lbsr  L0101      Go make the window
+         puls  x          Get device dsc. ptr back
+         bcc   L0730      no error, skip ahead
+         ldd   #$FFFF     Error, Reset window table entry as 'unused'
+         std   Wt.STbl,y
+         leas  2,s        Eat stack & return
+L075B    rts   
+
+* Last part of DWSet
+L0730    ldx   V$STAT,x   Get device's static mem ptr
+         inc   V.InfVld,x   Set flag indicating rest of table is valid
+         leau  ,x         Point U to static storage
+         tfr   y,d        Move window table ptr to D
+         puls  y          Get path dsc. ptr back into Y
+         pshs  d          Save window table ptr on stack
+         lbsr  L0436      Set up some default size values
+         puls  y          Get window table ptr back
+         tst   >WGlobal+G.CrDvFl     Are we current device?
+         beq   L075B      No, skip ahead
+         IFNE  H6309
+         ldw   >WGlobal+G.CurDev     Get current device's static mem ptr
+         stw   >WGlobal+G.PrWMPt     Move to old device's static mem ptr
+         lda   >V.ULCase,w  Get old device's special keyboard flags
+         ELSE
+         pshs  x
+         ldx   >WGlobal+G.CurDev     Get current device's static mem ptr 
+         stx   >WGlobal+G.PrWMPt     Move to old device's static mem ptr
+         stx   >GrfMem+gr00B5 
+         lda   >V.ULCase,x  Get old device's special keyboard flags
+         puls  x
+         ENDC 
+         sta   V.ULCase,x   Save in new device (kybrd mouse in Gshell)
+         stx   >WGlobal+G.CurDev     Make it the current device's static mem ptr
+         lbra  L0C86      Select the window & do setmouse in CC3IO
+
+* If current screen window, go here
+* Entry: A=Screen type from caller
+*        B=Internal screen type
+*        X=Path descriptor ptr
+*        Y=Window table ptr
+* Exit: Screen table ptr in window dsc. table is set
+L075C    cmpa  #$FF       Current displayed screen?
+         bne   L076D      No, must be process' current screen
+         ldd   >GrfMem+gr0030     Get current screen table ptr
+         bne   L076A      There is one, continue
+         comb             Otherwise, window undefined error
+         lbra  L069D
+
+L076A    std   Wt.STbl,y  Store screen table ptr in window table & return
+         rts   
+
+* Verify that current process window is compatible with current window
+* Entry: X=Path descriptor pointer
+*        Y=Window table pointer of current window
+L076D    pshs  x,y        Preserve window table ptr & path dsc. ptr
+         ldx   <D.Proc    Get current process dsc. ptr
+         ldb   P$SelP,x   Get selected path for current window
+         lbsr  L0592      Get device table ptr for the path (into Y)
+         ldx   ,s         Get back path dsc. ptr
+         ldx   PD.DEV,x   Get device table entry address
+         ldd   V$DRIV,x   drivers match?
+         cmpd  V$DRIV,y
+         bne   L07AB      No, they aren't compatible, exit with error
+         ldy   V$STAT,y   Get device driver static storage ptr
+         lda   V.TYPE,y   Get device type
+         bpl   L07AB      not a window, exit with error
+         lda   V.WinType,y  Get type of window flag
+         bne   L07AB      If not a Grf/WindInt window, error
+         lda   V.InfVld,y   Get 'device mem info is valid' flag
+         beq   L07AB      If clear, error
+         leau  ,y         Point U to static mem
+         lbsr  L06AE      Get window table ptr for process window
+         lda   Wt.STbl,y  screen table active?
+         bmi   L07AB      no, exit with illegal window def. error
+         leas  2,s        Eat window device dsc. ptr
+         ldd   WT.STbl,y  Get screen table ptr of process window
+         puls  y          Get window tbl ptr
+         std   WT.Stbl,y  Put into current window's screen tbl ptr
+         clra             No error
+         rts              return
+
+L07AB    puls  y,x        Restore regs & illegal window definition error
+         lbra  L0697
+
+* Search for empty window table & setup window links
+* Entry: U=Device static mem ptr
+* Exit : Y=New window table pointer
+L07B0    pshs  d,x        Save regs used
+         leay  ,u         Point to device static storage
+         ldx   #WinBase   swap it into X for ABX
+         ldd   #Wt.Siz    A=Start entry #(0), B=Entry size
+         IFNE  H6309
+L07B8    ldw   Wt.STbl,x  get screen table pointer
+         ELSE
+L07B8    pshs  y
+         ldy   Wt.STbl,x
+         sty   >GrfMem+gr00B5
+         puls  y
+         ENDC
+         bpl   L07CF      if high bit clear, table used, skip to next
+         IFNE  H6309
+         cmpf  #$FF       if LSB not a $ff, then check next one
+         ELSE
+         pshs  b
+         ldb   >GrfMem+gr00B5+1
+         cmpb  #$FF
+         puls  b
+         ENDC
+         bne   L07CF
+* Found empty entry, link it in & make current device (static mem) point to
+* new table entry
+         ldb   V.WinNum,y   Get current window table #
+         stb   Wt.BLnk,x  Save it as back link #
+         sta   V.WinNum,y   Save new window table entry #
+         dec   Wt.STbl+1,x make LSB of screen table ptr $fe
+         tfr   x,y        move window table pointer to Y
+         clrb             Clear carry
+         puls  d,x,pc     Restore & return
+
+L07CF    inca             Move to next table #
+         cmpa  #$20       Past max table #?
+         bhi   L07D9      Yes, exit with error
+         abx              Nope, point to next one
+         bra   L07B8      Go try again
+
+* BUG @ approx L1789, it calls this routine, but does NOT check for a window
+* table full error... it just stores Y assuming it worked.
+L07D9    tfr   x,y        move window table pointer to Y
+         comb             Set carry
+         ldb   #E$TblFul  Get table full error code
+         stb   1,s        Save it in B on stack for restore
+         puls  d,x,pc     Restore & return
+
+* Convert STY mark to internal type
+* Entry: A=Requested screen type from parameters
+* Exit : B=Internal screen type marker
+L07E0    pshs  a,y        Preserve sty & window entry
+         inca             Bump up so $FF type is now 0
+         cmpa  #9         Past maximum allowable?
+         bhi   L07F5      Yes, exit with error
+         leay  <L07F9,pc  Point to conversion table (base 0)
+         ldb   a,y        Get internal code
+         cmpb  #$FE       Invalid?
+         beq   L07F5      Yes, exit
+         clra             Clear carry
+         puls  a,y,pc     Restore & return
+
+L07F5    comb             Set carry
+         puls  y,a,pc     Restore regs & return
+
+* Screen type conversion table
+L07F9    fcb   $ff        Current screen, sty=$ff
+         fcb   $ff        Current screen, sty=$00
+         fcb   $86        40 column, sty=$01
+         fcb   $85        80 column, sty=$02
+         fcb   $fe        Invalid, sty=$03
+         fcb   $fe        Invalid, sty=$04
+         fcb   $01        640 2 color, sty=$05
+         fcb   $02        320 4 color, sty=$06
+         fcb   $03        640 4 color, sty=$07
+         fcb   $04        320 16 color, sty=$08
+
+BadDef   comb  
+         ldb   #E$IllArg
+         rts   
+
+****************************
+* DefGPB entry point
+* Entry: U=Static memory pointer
+*        Y=Path descriptor pointer
+*        X=Parameter pointer
+L0803    lbsr  L06A0      verify window table
+         lbcs  L069D      not good, return error
+         IFNE  H6309
+         ldq   ,x         D=Group/Buffer W=Length
+         ELSE
+         ldd   2,x
+         std   >GrfMem+gr00B5
+         ldd   ,x
+         ENDC
+         tsta             group a zero?
+         beq   L0812      yes, illegal return error
+         cmpa  #$FF       is he trying to use overlay group?
+         bne   L0816      no, go on
+* Return bad buffer error
+L0812    comb             set carry
+         ldb   #E$BadBuf  get error code
+         rts              return to caller
+
+* check buffer #
+L0816    tstb             buffer a zero?
+         beq   L0812      yes, illegal return error
+         IFNE  H6309
+         tstw             length a zero?
+         ELSE
+         pshs  d
+         ldd   >GrfMem+gr00B5
+         puls  d
+         ENDC
+         beq   BadDef     yes, return error
+         std   >GrfMem+gr0057     save group/buffer #'s in global mem
+         IFNE  H6309
+         stw   >GrfMem+gr0080     save length in global mem
+         ELSE
+         pshs  d
+         ldd   >GrfMem+gr00B5
+         std   >GrfMem+gr0080     save length in global mem
+         puls  d
+         ENDC 
+L0822    lbra  L00F7      let grfdrv do the rest
+
+****************************
+* GetBlk entry point
+* Entry: U=Static memory pointer
+*        Y=Path descriptor pointer
+*        X=Parameter pointer
+L0825    lbsr  L06A0      verify window table
+         lbcs  L069D      couldn't get it, return error
+         bsr   L0849      check group/buffer #'s & move upper left coords
+         bcs   L0812      error, return bad buffer
+         bsr   L085C      get X/Y sizes
+         lbcc  L00F7      let grfdrv do the rest if no error
+SmlBuf   ldb   #E$BufSiz  get error code
+         rts              return
+
+****************************
+* PutBlk entry point
+L0837    lbsr  L06A0      verify window table
+         lbcs  L069D      exit if error
+         bsr   L0849      get parameters
+         bcs   L0812      exit if error
+         lbra  L00F7      let grfdrv do rest
+
+* Check passed Group & buffer parameters and move start co-ordinates
+L0849    ldd   ,x++       get group/buffer #'s
+         tsta             group a zero?
+         beq   L086E      yes, return error
+         cmpa  #$FF       trying to use overlay?
+         beq   L086E      yes, return error
+         tstb             buffer a zero?
+         beq   L086E      yes, return error
+         std   >GrfMem+gr0057     save group/buffer to global memory
+         lbsr  L0A32      move start coords
+         clra             clear errors
+         rts              return
+
+* Parse passed X/Y sizes & move if ok
+* Entry: X=Parameter pointer
+* Exit : X - Incremented by 4
+         IFNE  H6309
+L085C    ldq   ,x         D=X Size, W=Y size
+         tstd             X size a zero?
+         ELSE
+L085C    ldd   2,x
+         std   >GrfMem+gr00B5
+         ldd   ,x
+         ENDC
+         beq   L086E      yes, return error
+         IFNE  H6309
+         tstw             Y size a zero?
+         ELSE
+         ldd   2,x
+         ENDC
+         beq   L086E      yes, return error
+         IFNE  H6309
+         stq   >GrfMem+gr004F     save sizes into grfdrv mem
+         ELSE
+         std   >GrfMem+gr004F+2     save sizes into grfdrv mem
+         ldd   ,x
+         std   >GrfMem+gr004F     save sizes into grfdrv mem
+         ENDC
+         ldb   #4         adjust parameter pointer
+         abx   
+L086C    clra             clear errors
+         rts              return
+
+L086E    coma             set carry for error
+         rts              return
+
+****************************
+* GPLoad entry point
+* Entry: U=Static memory pointer
+*        Y=Path descriptor pointer
+*        X=Parameter pointer
+L0870    pshs  u,y        save regs
+         lbsr  L06AE      get window table pointer for this window
+         ldd   ,x++       get group & buffer
+         tsta             group a zero?
+         beq   L087D      yes, return error
+         cmpa  #$FF       is he using overlay group?
+         bne   L0881      no, so far so good
+L087D    puls  u,y        purge stack
+         IFNE  H6309
+         bra   L0812      return error
+         ELSE
+         lbra  L0812
+         ENDC
+
+* parse buffer & screen type parameters
+L0881    tstb             buffer a zero?
+         beq   L087D      yes, return error
+         std   >GrfMem+gr0057     save it in grfdrv mem.
+         lda   ,x+        get screen type
+         lbsr  L07E0      convert it to internal screen type
+         tstb             is it a graphics screen?
+         bpl   L0894      yes, skip ahead
+         puls  u,y        restore regs
+         lbra  L0697      return illegal window definition error
+
+* parse X/Y size & buffer size parameters
+L0894    stb   >GrfMem+Gr.STYMk     save screen type
+         bsr   L085C      get X/Y sizes
+         bcc   GdSiz      no error, skip ahead
+         leas  4,s        eat stack
+         bra   SmlBuf     return error
+
+GdSiz    ldd   ,x++       get size of buffer
+         std   Wt.BLen,y  save it in window table as a counter
+         pshs  y          preserve global mem & window table pointer
+         lbsr  L00F7      let grfdrv do some work
+         puls  y          restore pointers
+         bcs   L08CA      error from grfdrv, eat stack & return
+* get buffer count grfdrv made & start the move process
+L08A8    ldd   Wt.BLen,y  get buffer counter
+         cmpd  #72        more than 72 bytes left?
+         bhi   L08CD      yes, skip last move
+* last gpload buffer move
+         stb   >WGlobal+g0070     save LSB of count
+         tfr   b,a        copy count to A
+         leax  <L08BE,pc  get vector to buffer move processor
+L08B9    puls  u,y        restore static mem & path descriptor pointers
+         lbra  L0362      save into parameter area of static mem.
+
+* last buffer move parameter processor
+L08BE    pshs  u,y        preserve static mem & path descriptor pointers
+         lbsr  L06AE      get window table pointer
+         bsr   L08EA      Move data to shared buffer & then Grfdrv
+*         bcs   L08CA      error, return
+L08CA    leas  4,s        purge stack
+         rts              return
+
+* multi gpload buffer move
+L08CD    subd  #72        subtract 72 from count
+         std   Wt.BLen,y  save count
+         lda   #72
+         sta   >WGlobal+g0070
+         leax  <L08DD,pc  get vector
+         bra   L08B9      save into parameter area of static mem.
+
+* Place CC3IO comes to for next gpload sub-buffer
+L08DD    pshs  u,y        Preserve static & path dsc. ptrs
+         lbsr  L06AE      Get window tbl ptr
+         bsr   L08EA      Move data to shared buffer & then Grfdrv
+         bcc   L08A8      Continue moving until whole GPLoad done
+         bra   L08CA      Error from Grfdrv, exit with it
+
+* Move buffer to global area for GrfDrv
+L08EA    ldu   #$1200     Point to global move area
+         IFNE  H6309
+         ldf   >WGlobal+g0070     get byte count
+         clre  
+         tfm   x+,u+      move it
+         ELSE
+         pshs  a
+         ldb   >WGlobal+g0070     get byte count
+L08EAb   lda   ,x+
+         sta   ,u+
+         decb
+         bne   L08EAb
+         clra
+         std   >GrfMem+gr00B5
+         puls  a 
+         ENDC
+* Send move buffer to GrfDrv
+* Special problem. Seems to pass info via regF.
+L08FC    equ   *
+         IFNE  H6309
+         ldf   >WGlobal+g0070     get count
+         ELSE
+         ldb   >WGlobal+g0070
+*         stb   >GrfMem+$B6        grfdrv regF
+         stb   >GrfMem+gr00B5+1   windint regF
+         ENDC
+         ldb   #$32       get move buffer code
+         lbra  L0101      send it to grfdrv & return from there
+
+****************************
+* PutGC entry point
+L0908    lbsr  L06A0      verify window
+         lbcs  L069D
+         IFNE  H6309
+         ldq   ,x         get position requested
+         stq   >GrfMem+gr005B     save in grfdrv mem
+         ELSE
+         ldd   2,x
+         std   >GrfMem+gr005B+2     save in grfdrv mem
+         std   >GrfMem+gr00B5
+         ldd   ,x
+         std   >GrfMem+gr005B     save in grfdrv mem
+         ENDC 
+         lbra  L00F7      go do it
+
+****************************
+* SetDPtr entry point
+L091E    pshs  x,u        preserve static mem & param pointers
+         lbsr  L06A0      Verify/Create window
+         bcc   L092A      Got window, continue
+L0925    puls  x,u        Restore regs & exit with error
+         lbra  L069D
+
+L092A    pshs  y          save window table pointer
+         bsr   L098D      Get graphics table ptr into y
+         IFNE  H6309
+         ldq   ,x         get co-ordinates from parameters
+         stq   Gt.GXCur,y put co-ordinates into graphics table
+         ELSE
+         ldd   2,x
+         std   Gt.GXCur+2,y put co-ordinates into graphics table
+         std   >GrfMem+gr00B5
+         ldd   ,x
+         std   Gt.GXCur,y put co-ordinates into graphics table
+         ENDC 
+L0934    puls  y
+         leas  4,s
+         clrb  
+         rts   
+
+****************************
+* RSetDPtr
+L093C    pshs  u,x
+         lbsr  L06A0      Verify/create window
+         bcs   L0925
+         pshs  y
+         bsr   L098D      Get graphics table ptr into y
+         IFNE  H6309
+         ldq   ,x         Get graphics cursor coords
+         addd  Gt.GXCur,y Add to graphics cursor coords
+         addw  Gt.GYCur,y
+         stq   Gt.GXCur,y Save update cursor coords
+         ELSE
+         ldd   2,x
+         addd  Gt.GYCur,y
+         std   Gt.GXCur+2,y
+         std   >GrfMem+gr00B5 
+         ldd   ,x
+         addd  Gt.GXCur,y
+         std   Gt.GXCur,y
+         ENDC
+         bra   L0934
+
+****************************
+* Point entry point
+L0953    pshs  u,x
+         lbsr  L06A0
+         bcs   L0925
+         pshs  y
+         bsr   L098D
+         lbsr  L0A32
+L0961    puls  y
+         leas  4,s
+         lbra  L00F7
+
+****************************
+* RPoint entry point
+L0968    pshs  u,x
+         lbsr  L06A0
+         bcs   L0925
+         pshs  y
+         bsr   L098D
+         IFNE  H6309
+         ldq   ,x         Get coord offsets
+         addd  Gt.GXCur,y Add to X
+         addw  Gt.GYCur,y Add to Y
+         stq   >GrfMem+gr0047     Save in GRFDRV mem
+         ELSE
+         ldd   2,x
+         addd  Gt.GYCur,y
+         std   >GrfMem+gr0047+2
+         std   >GrfMem+gr00B5
+         ldd   ,x
+         addd  Gt.GXCur,y
+         std   >GrfMem+gr0047
+         ENDC
+         bra   L0961
+
+****************************
+* Line/Box/Bar entry point
+L0978    pshs  u,x
+         lbsr  L06A0
+         bcs   L0925
+L0984    pshs  y
+         bsr   L098D
+         lbsr  L0A51
+L098B    bra   L0961
+
+* Get graphics table pointer into Y
+L098D    ldu   6,s        get static mem pointer
+         lbsr  L06B9      get graphics table pointer
+         tfr   x,y        move it to Y
+         ldx   4,s        get parameter pointer
+         rts              return
+
+****************************
+* RLine/RBox/RBar entry point
+* Entry: U=Static memory pointer
+*        Y=Path descriptor pointer
+*        X=Parameter pointer
+L0997    pshs  u,x        save static & parameter pointers
+         lbsr  L06A0      get window table pointer
+         IFNE  H6309
+         bcs   L0925
+         ELSE
+         lbcs  L0925
+         ENDC
+L09A3    pshs  y          preserve window table pointer
+         bsr   L098D      get graphics table pointer
+         lbsr  L0A5E
+         bra   L0961
+
+****************************
+* LineM entry point
+L09AC    pshs  u,x
+         lbsr  L06A0
+         lbcs  L0925
+         pshs  y
+         bsr   L098D
+         IFNE  H6309
+         bsr   L0A51
+         ELSE
+         lbsr  L0A51
+         ENDC
+
+L09BC    equ   *
+         IFNE  H6309
+         ldq   >GrfMem+gr004B
+         stq   Gt.GXCur,y
+         ELSE
+         ldd   >GrfMem+gr004B+2
+         std   Gt.GXCur+2,y
+         std   >GrfMem+gr00B5
+         ldd   >GrfMem+gr004B
+         std   Gt.GXCur,y
+         ENDC
+         bra   L0961
+
+****************************
+* RLineM entry point
+L09CA    pshs  u,x
+         lbsr  L06A0
+         lbcs  L0925
+         pshs  y
+         bsr   L098D
+         IFNE  H6309
+         bsr   L0A5E
+         ELSE
+         lbsr  L0A5E
+         ENDC
+         bra   L09BC
+
+* Filled Circle/Ellipse entry point
+Filled   lda   #1         Filled flag
+         sta   >GrfMem+gr00B2     Save flag
+         bra   FlagSet    skip ahead
+
+* FFill/Circle/Ellipse/Arc entry point
+L09DC    clr   >GrfMem+gr00B2     Clear filled flag
+FlagSet  pshs  u,x        Preserve regs
+         lbsr  L06A0      verify window table
+         lbcs  L0925      error, return
+         pshs  y          preserve window table pointer
+         ldu   4,s        get device static mem pointer
+         ldb   V.CallCde,u  get grfdrv call #
+         pshs  b          save it
+         lbsr  L06B9      get graphics table pointer
+         tfr   x,y        move it to Y
+         ldx   3,s        get parameter pointer
+
+         IFNE  H6309
+         ldq   Gt.GXCur,y Get coords from graphics table
+         stq   >GrfMem+gr0047     Save in GRFDRV mem
+         ELSE
+         ldd   Gt.GXCur+2,y
+         std   >GrfMem+gr00B5
+         std   >GrfMem+gr0047+2
+         ldd   Gt.GXCur,y
+         std   >GrfMem+gr0047
+         ENDC
+         puls  b          restore callcode
+         cmpb  #$56       is it flood fill?
+         beq   L0A2D      yes, let grfdrv do it
+         IFNE  H6309
+         ldw   ,x++       get X radius from parameters
+         stw   >GrfMem+gr0053     save it in grfdrv mem
+         ELSE
+         pshs  y
+         ldy   ,x++       get X radius from parameters
+         sty   >GrfMem+gr0053     save it in grfdrv mem
+         sty   >GrfMem+gr00B5
+         puls  y
+         ENDC 
+         cmpb  #$50       is it circle?
+         beq   L0A2D      yes, let grfdrv do it
+         IFNE  H6309
+         ldw   ,x++       get Y radius from parameters
+         stw   >GrfMem+gr0055     save it in grfdrv mem
+         ELSE
+         pshs  y
+         ldy   ,x++       get Y radius from parameters
+         sty   >GrfMem+gr0055     save it in grfdrv mem
+         sty   >GrfMem+gr00B5
+         puls  y
+         ENDC
+         cmpb  #$52       is it ellipse?
+         beq   L0A2D      yes, let grfdrv do it
+         ldy   #GrfMem+gr0020     Move rest of parameters for ARC
+         IFNE  H6309
+         ldw   #8
+         tfm   x+,y+
+         ELSE
+         pshs  d
+         ldb   #8
+L0A2Db   lda   ,x+
+         sta   ,y+
+         decb
+         bne   L0A2Db
+         clra
+         std   >GrfMem+gr00B5
+         puls  d
+         ENDC
+L0A2D    lbra  L0961      let grfdrv do the rest
+
+* Move X/Y co-ordinates from parameters into GrfDrv memory
+
+L0A32    equ   *
+         IFNE  H6309
+         ldq   ,x         Get X/Y coords
+         stq   >GrfMem+gr0047     Save in GRFDRV mem
+         ELSE
+         ldd   2,x
+         std   >GrfMem+gr00B5 
+         std   >GrfMem+gr0047+2     Save in GRFDRV mem 
+         ldd   ,x
+         std   >GrfMem+gr0047     Save in GRFDRV mem
+         ENDC
+         ldb   #4         Bump param ptr up
+         abx   
+         rts   
+
+* Move current draw pointer co-ordinates from graphics table 
+* and destination co-ordinates from parameters into GrfDrv memory
+* Entry: X=Parameter pointer
+*        Y=Graphics table pointer
+
+         IFNE  H6309
+L0A51    ldq   Gt.GXCur,y Get coords from graphics table
+         stq   >GrfMem+gr0047     Save in GRFDRV mem
+         ldq   ,x         Get X/Y coords from params
+L0A59    stq   >GrfMem+gr004B
+         ELSE
+L0A51    ldd   Gt.GXCur,y Get coords from graphics table
+         std   >GrfMem+gr0047     Save in GRFDRV mem 
+         ldd   Gt.GXCur+2,y Get coords from graphics table
+         std   >GrfMem+gr0047+2     Save in GRFDRV mem
+         ldd   2,x
+         std   >GrfMem+gr00B5
+         ldd   ,x
+L0A59    pshs  d
+         ldd   >GrfMem+gr00B5
+         std   >GrfMem+gr004B+2
+         puls  d
+         std   >GrfMem+gr004B
+         ENDC
+         ldb   #4         Bump param ptr past bytes we got
+         abx   
+         rts   
+
+* Move current draw pointer co-ordinates from graphics table & calculate
+* Destination draw pointer from parameters & move into GrfDrv memory
+* Entry: X=Parameter pointer
+*        Y=Graphics table pointer
+
+         IFNE  H6309
+L0A5E    ldq   Gt.GXCur,y Get coords from graphics table
+         stq   >GrfMem+gr0047     Save in GRFDRV mem
+         ldq   ,x         Get X/Y coords from params
+         addd  Gt.GXCur,y Make relative
+         addw  Gt.GYCur,y
+         ELSE
+L0A5E    ldd   Gt.GXCur,y Get coords from graphics table 
+         std   >GrfMem+gr0047     Save in GRFDRV mem
+         ldd   Gt.GXCur+2,y Get coords from graphics table
+         std   >GrfMem+gr0047+2     Save in GRFDRV mem
+         ldd   2,x
+         addd  Gt.GYCur,y
+         std   >GrfMem+gr00B5
+         ldd   ,x         Get X/Y coords from params
+         addd  Gt.GXCur,y Make relative
+         ENDC
+         bra   L0A59      Save & bump param ptr
+
+****************************
+* Get status entry point
+* Entry: A=Function call #
+GetStt   cmpa  #SS.ScSiz  get screen size?
+         beq   L0A9A      yes, go process
+         cmpa  #SS.Palet  get palettes?
+         beq   L0AA7      yes, go process
+         cmpa  #SS.ScTyp  get screen type?
+         beq   L0AD5      yes, go process
+         cmpa  #SS.FBRgs  get colors?
+         lbeq  L0AF4      yes, go process
+         cmpa  #SS.DfPal  get default colors?
+         beq   L0AC3      yes, go process
+         cmpa  #SS.MnSel  menu select?
+         lbeq  L1515      yes, go process
+         cmpa  #SS.ScInf  screen info?
+         beq   SS.SInf    yes, go process
+         lbra  L0A96      All others illegal
+
+* SS.ScInf processor ($8F)
+* New call to get info on current screen for use with direct mapped video
+*  Programmer can even handle non-full sized window
+*  Programmer will still have to get screen type to determine # bytes/line &
+*  # of rows
+* Returns: X=Offset into first block of screen start
+*          A=# 8k blocks required for screen
+*          B=Start block #
+*          Y=High byte=X start of window
+*            Low byte= X size of window
+*          U=High byte=Y start of window
+*            Low byte= Y size of window
+* It should be noted that these are the current working area, not the original
+*  window start/sizes
+
+SS.SInf  bsr   L0ACB      get register & window table pointers
+         ldd   Wt.LStrt,y get current screen logical start
+         suba  #$80       make it a offset into 1st block
+         std   R$X,x      save it to caller
+         IFNE  H6309
+         ldq   Wt.CPX,y   Get X&Y coord starts & X/Y sizes
+         exg   b,e        Swap so registers easier for programmer
+         stq   R$Y,x      Save X values & Y values into callers Y & U
+         ELSE
+         ldd   Wt.CPX,y
+         sta   R$Y,x
+         stb   R$Y+2,x
+         stb   >GrfMem+gr00B5
+         ldd   Wt.CPX+2,y
+         sta   R$Y+1,x
+         stb   R$Y+3,x
+         stb   >GrfMem+gr00B5+1
+         ENDC
+         ldd   [Wt.STbl,y] get screen type & start block #
+         anda  #$0f       make it fit table
+         leau  <NmBlks-1,pc point to # blocks needed for screen type
+         lda   a,u        get # blocks
+         std   R$D,x      save it to caller
+         rts   
+
+NmBlks   fcb   2,2,4,4,1,1
+
+* SS.ScSiz processing - Current size (with CWArea's in effect), not DWSet size
+L0A9A    bsr   L0ACB      get register stack pointer & window table pointer
+         clra  
+         ldb   Wt.SZX,y   get X size
+         std   R$X,x      save it to caller
+         ldb   Wt.SZY,y   get Y size
+         std   R$Y,x      save it to caller
+         clrb  
+         rts   
+
+* SS.Palet processing
+L0AA7    bsr   L0ACB      get register stack & window table pointers
+         ldy   Wt.STbl,y  get screen table pointer
+         leay  St.Pals,y  point to palettes
+L0AAF    ldu   R$X,x      get callers buffer pointer
+         ldx   <D.Proc    get task # of caller
+         ldb   P$Task,x
+         ldx   <D.SysPrc  get task # of system
+         lda   P$Task,x
+         tfr   y,x
+L0ABB    ldy   #16        get # bytes to move
+         os9   F$Move     move 'em
+         rts              return
+
+* SS.DfPal processing
+L0AC3    ldx   PD.RGS,y   get register stack pointer
+         ldy   >WGlobal+G.DefPal     get pointer to default palettes
+         bra   L0AAF      go move 'em
+
+* Get register stack pointer into X, window table pointer into Y & global mem
+L0ACB    ldx   PD.RGS,y   Get ptr to caller's register stack
+         lbsr  L06A0      Go find window table entry
+         lbcs  L069B      Error, exit
+         rts              Return
+
+* SS.ScTyp processing
+L0AD5    bsr   L0ACB      get register stack & window table pointers
+         ldb   [Wt.STbl,y] get screen type
+         bmi   L0AE2      text, skip ahead
+         addb  #$04       add 4 to make it a user screen type
+         bra   L0AEC      go save it
+
+L0AE2    cmpb  #$86       40 column text?
+         bne   L0AEA      no, skip ahead
+         ldb   #$01       get screen type for 40 column text
+         bra   L0AEC      save it
+
+L0AEA    ldb   #$02       get screen type for 80 column text
+L0AEC    stb   R$A,x      save it to caller
+         clrb  
+         rts   
+
+* Color mask for fore/back palette registers
+L0AF0    fcb   $01        2 color screens
+         fcb   $03        4 color screens
+         fcb   $0f        16 color screens
+         fcb   $0f        16 color screens
+
+* SS.FBRgs processing
+L0AF4    bsr   L0ACB      get register stack & window table pointers
+         bsr   L0B01      Go get fore/back ground colors
+         std   R$D,x      Save in caller's D
+         ldb   St.Brdr,u  Get border register
+         clra             D=border color
+         std   R$X,x      Save in caller's X & return
+         rts   
+
+L0B01    ldb   [Wt.STbl,y] Get screen type from screen table
+         andb  #$07       Mask off text mode, etc.
+         lsrb             Divide by 2 (for similiar screens)
+         leau  <L0AF0,pc  Point to masking table
+         ldb   b,u        Get table entry
+         tfr   b,a        Dupe for background color too
+         IFNE  H6309
+         andd  Wt.Fore,y  Mask with fore/bckground colors from window tbl
+         ELSE
+         anda  Wt.Fore,y
+         andb  Wt.Fore+1,y
+         ENDC
+         ldu   Wt.STbl,y  Get screen table ptr for border reg
+         rts   
+
+****************************
+* Set status entry point
+* Entry: U=Static memory pointer
+*        Y=Path descriptor pointer
+SetStt   cmpa  #SS.Open   Open window call (for /W)
+         beq   L0B4B
+         cmpa  #SS.MpGPB  Map Get/Put buffer into callers program space
+         lbeq  L0BD1
+         cmpa  #SS.DfPal  Set default palettes
+         beq   L0B38
+         cmpa  #SS.WnSet
+         lbeq  L0D23
+         cmpa  #SS.SBar
+         lbeq  L1AB9
+         cmpa  #SS.UmBar  Update menu bar
+         lbeq  L13F5
+         lbra  L0A96
+
+* SS.DfPal entry point
+L0B38    ldx   PD.RGS,y   get register stack pointer
+         ldx   R$X,x      get pointer to palettes
+         ldu   <D.Proc    get task # of caller
+         lda   P$Task,u
+         ldu   <D.SysPrc  get task # of system
+         ldb   P$Task,u
+         ldu   >WGlobal+G.DefPal     get pointer to destination of palettes
+         lbra  L0ABB      move 'em
+
+* SS.Open processor
+* Entry: X=Register stack pointer
+*        U=Static memory pointer
+*        Y=Path descriptor pointer
+L0B4B    pshs  u,y        preserve registers
+         ldx   PD.DEV,y   get pointer to device table entry
+         ldx   V$DESC,x   get pointer to descriptor
+         ldb   IT.WND,x   get window # from descriptor
+         bpl   L0BCD      not a legal window descriptor, return
+         pshs  x          save device descriptor pointer
+L0B58    equ   *
+         IFNE  H6309
+         clrd             start window #=0
+         ELSE
+         clra
+         clrb
+         ENDC
+         lbsr  L025B      find a free window in bit map
+         bcc   L0B65      got one, skip ahead
+         puls  u,y,x      purge stack
+         comb             set carry
+         ldb   #E$MNF     get module not found error
+         rts              return
+
+* Found a free window
+L0B65    pshs  b          save window # of free entry
+         lbsr  L024A      allocate the window we found
+         ldy   #$1200     Point to a buffer area (GPLoad area)
+         ldb   #'w        get window name prefix
+         stb   ,y+        put it in buffer
+         ldb   ,s         get window # that was free
+* Convert window # in B to ASCII eqivalent with high bit set
+
+         IFNE  H6309
+         divd  #10        divide it by 10
+         ELSE
+         lda   #-1
+L0B87b   inca
+         subb  #10
+         bcc   L0B87b
+         addb  #10
+         exg   a,b
+         cmpb  #0
+         ENDC
+         beq   L0B87      if answer is 0 there is only 1 digit, skip ahead 
+         orb   #$30       make first digit ASCII
+         stb   ,y+        put it in buffer
+L0B87    ora   #$B0       make remainder ASCII with high bit set
+         sta   ,y+        put it in buffer
+L0B92    leas  -2,s       make a buffer for process decriptor pointer
+         lbsr  L0238      switch to system process descriptor
+         ldx   #$1200     Point to calculated dsc. name
+         lda   #Devic+Objct get module type
+         os9   F$Link     try & link it
+         lbsr  L0244      switch back to current process
+         leas  2,s        purge stack
+         bcc   L0BAB      it's linked, skip ahead
+L0BA7    leas  1,s        purge window #
+         bra   L0B58      go look for another one
+
+* Got a device descriptor, put into device table & save window # into static
+L0BAB    lda   IT.PAR,u   valid window?
+         bpl   L0BA7      no, go look for another one
+         ldy   3,s        get path descriptor pointer
+         ldx   PD.DEV,y   get pointer to device table
+         stu   V$DESC,x   save pointer to descriptor into it
+         ldb   ,s         get window #
+         ldu   5,s        get static mem pointer
+         stb   V.DWNum,u    save window # as active window in static mem
+         ldu   1,s        get pointer to descriptor
+         os9   F$UnLink   unlink it from system map
+         ldu   5,s        get static mem pointer
+         leas  7,s        purge stack
+         rts              Return with or without error
+
+L0BCD    clrb             No error
+         puls  u,y,pc     Restore regs & return
+
+* SS.MpGPB (map get/put buffer)
+* Parameters: X=Group/Buffer #'s
+*             Y=Map/Un-Map flag, 0=Un-Map, 1+=Map
+* Returns   : X=Start address of buffer in 64k user map
+*             Y=Length of buffer
+* Entry: U=Static memory pointer
+*        Y=Path descriptor pointer
+L0BD1    ldx   PD.RGS,y   get register stack pointer
+         pshs  x          preserve it
+         lbsr  L06A0      verify window table
+         ldd   R$X,x      get group/buffer #'s
+         std   >GrfMem+gr0057     save it to grfdrv mem
+         ldb   #$38       get grfdrv function call to map
+         lbsr  L0101      let grfdrv calculate block # & count
+         ldb   >GrfMem+gr0097     get block #
+         lda   >GrfMem+gr0099     get # blocks long
+         puls  x          Get register stack ptr back
+         tst   R$Y+1,x    mapping or un-mapping?
+         beq   L0C1F      un-map, remove it from process space
+* Map the get/put buffer into process space
+         pshs  d,x,u      save block #/# of blocks, reg stack & global
+         bsr   L0C31      Make sure all blocks needed are there
+         bcc   L0C1B      Yes, exit
+         clra  
+         ldb   1,s        get starting block #
+         tfr   d,x
+         ldb   ,s         get # blocks
+         os9   F$MapBlk   map blocks into process space
+         stb   1,s        save error code if any
+         bcs   L0C19      return if there was a error
+         tfr   u,d        copy start address to D
+         ldx   2,s        get register stack pointer
+         addd  >GrfMem+gr009D     add in offset to buffer
+         std   R$X,x      save offset into block of buffer
+         ldd   >GrfMem+gr009B     get length of buffer
+         std   R$Y,x      save it into callers Y
+L0C19    puls  d,x,u,pc   restore regs & return
+
+L0C1B    leas  2,s        purge stack
+         puls  pc,u,x
+
+* Remove get/put buffer from process space
+L0C1F    pshs  a,x,y      preserve # blocks, register stack & window table
+         bsr   L0C31      Go verify all blocks are correct & contiguous
+         bcs   L0C2E      Nope, exit with error
+         IFNE  H6309
+         lde   ,s         Get counter back
+         ELSE
+         lda   ,s
+         sta   >GrfMem+gr00B5
+         ENDC
+         ldd   #DAT.Free  Empty DAT marker
+
+L0C28    std   ,x++       Save them in DAT image
+         IFNE  H6309
+         dece             Keep marking unused blocks until done
+         ELSE
+         dec   >GrfMem+gr00B5
+         ENDC
+         bne   L0C28
+L0C2E    puls  a,x,y,pc   Restore regs & return
+
+* Verify blocks in process DAT image
+* Entry: A=# blocks in GP buffer
+*        B=Start block #
+*        X=Caller's register stack ptr
+* Exit:  A=block #*16 in DAT image
+
+         IFNE  H6309
+L0C31    tfr   a,e        copy start block
+         ldf   #8         get # DAT slots
+         ELSE
+L0C31    pshs  b
+         ldb   #8
+         std   >GrfMem+gr00B5
+         puls  b
+         ENDC
+         ldx   <D.Proc    get current process pointer
+         leax  P$DATImg+16,x point to end of DAT image
+         IFNE  H6309
+         addr  e,b        Add # blocks to start block #
+         ELSE
+         addb  >GrfMem+gr00B5
+         ENDC
+         clra             Clear high byte of D 
+         decb             Adjust for zero based
+L0C40    cmpd  ,--x       Same block as DAT image?
+         beq   L0C4B      yes, skip ahead
+         IFNE  H6309
+         decf             No, dec block counter
+         ELSE
+         dec   >GrfMem+gr00B5+1
+         ENDC
+         bne   L0C40      Do until all 8 blocks are checked
+L0C62    comb             Exit with boundary (bad page address) error
+         ldb   #E$BPAddr
+         rts   
+
+L0C4B    equ   *
+         IFNE  H6309
+         decf             Dec block # counter
+         dece             Dec # blocks in buffer counter
+         ELSE
+         dec   >GrfMem+gr00B5+1
+         dec   >GrfMem+gr00B5
+         ENDC
+         beq   L0C58      Do until GP blocks are checked
+         decb             Dec block #
+         cmpb  ,--x       Same as previous one in DAT image
+         beq   L0C4B      Yes, keep going
+         bra   L0C62      No, exit with bad page address error
+
+
+         IFNE  H6309
+L0C58    tfr   f,a        Move block # within DAT to proper reg
+         ELSE
+L0C58    lda   >GrfMem+gr00B5+1
+         ENDC
+         lsla             Multiply x 16
+         lsla  
+         lsla  
+         lsla  
+         clrb  
+L0CF1    rts              return
+
+******************************
+* Special windowing processor (called from AltIRQ in cc3io/tc9io)
+* Entry: A=$00 - Screen has changed in some way
+*          $01 - Update mouse packet window region (Pt.Stat)
+*          $02 - Update text & graphics cursor
+*          $03 - Update auto follow mouse
+L0C68    tsta             Screen change?
+         beq   L0C7F      Yes, go do
+         deca             Update mouse packet?
+         lbeq  L1CC8      Yes, go do
+         deca             Update cursors?
+         beq   L0CE7      Yes, go do
+         deca             Update auto-follow mouse?
+         lbeq  L1B4D      Yes, go do
+         lbra  L0A96
+
+* Active window has changed, update everything
+L0C7F    lbsr  L06AE      Get window table pointer
+         ldd   Wt.STbl,y  Screen table active?
+* NOTE: IS THIS THE WHITE SCREEN BUG???
+         bmi   L0CF1      No, return
+* Check for de-activation of previous window
+L0C86    clr   ,-s        clear activate/deactivate flag
+         ldx   >WGlobal+G.PrWMPt     get previous window static mem pointer
+         cmpx  >WGlobal+G.CurDev     Same as current device?
+         beq   L0CB3      Yes, activate current window
+         inc   ,s         flag de-activation of last used window
+         ldu   >WGlobal+G.PrWMPt     get previous device static mem pointer
+         beq   L0CB3      nothing there, skip ahead
+         pshs  y          preserve new window table pointer
+         bsr   L0CF2      any overlay windows or frames?
+         bcs   L0CA3      no, skip ahead
+         lbsr  L1034      set menu bar to in-active state
+L0CA3    lda   >WGlobal+g00BE     get new window table flag
+         bmi   L0CB1      not used, skip ahead
+         ldu   >WGlobal+G.PrWMPt     get previous device static mem pointer
+         sta   V.WinNum,u   save window table # into it
+L0CB1    puls  y          restore window table pointer
+* Send select to grfdrv
+L0CB3    ldb   #$10       Get select callcode
+         lbsr  L0101      Send it to grfdrv
+         ldu   >WGlobal+G.CurDev     Get current device static mem pointer
+* Check for activation of current window
+         tst   ,s         did we de-activate last used window?
+         beq   L0CE1      no, skip activate
+         pshs  y,u        Preserve regs
+         bsr   L0CF2      any overlay or framed windows?
+         bcs   L0CCA      no, skip ahead
+         lbsr  L13E9      set menu bar to active state
+L0CCA    ldy   >WGlobal+G.CurDev     get current device mem pointer
+         sty   >WGlobal+G.PrWMPt     save it as previous
+         puls  u,y        Get Y & static mem ptr back for possible overlay
+         lda   >WGlobal+g00BE     get overlay window #
+         bmi   L0CE1      Wasn't an overlay, skip ahead
+         sta   V.WinNum,u   save it as current
+L0CE1    leas  1,s        purge stack
+         jmp   [>WGlobal+G.MsInit]   initialize mouse & return
+
+* Update text & mouse cursors
+L0CE7    lbsr  L06A0      verify window table
+         bcs   L0CF1      not good, return error
+L0CEC    ldb   #$46       get set window code
+         lbra  L0101      send it to grfdrv
+
+* Checks for any overlay windows & framed or scroll barred windows
+* Entry: U=Static mem pointer
+* Exit : Carry set=No overlay windows & No framed/scroll barred window
+*                  $BE in global mem will be $FF
+*        Carry clear=There is 2 possibilitys here 1: Framed or scroll barred
+*                    window or 2: Overlay window is present, $BE in global
+*                    will contain the current window table # & $35 in static
+*                    memory of current device will be switched to the
+*                    parent window of the overlay
+L0CF2    lda   #$FF       initialize new window table flag
+         sta   >WGlobal+g00BE
+L0CFA    lbsr  L06AE      get window table pointer of this window
+         lbsr  L0E34      framed or scroll barred window?
+         bcs   L0D06      no, skip ahead
+         rts   
+
+* No framed or scroll barred window, check for overlay window
+L0D06    lda   Wt.BLnk,y  is this a overlay window?
+         bmi   L0D20      no, return carry set
+         ldb   V.WinNum,u   get current window table #
+         tst   >WGlobal+g00BE     already have one?
+         bpl   L0D1B      yes, skip ahead
+         stb   >WGlobal+g00BE     save current window #
+L0D1B    sta   V.WinNum,u   save back link as current window in static mem
+         bra   L0CFA      go check it out
+
+L0D20    coma             set carry & return
+         rts   
+
+* SS.WnSet SetStt call processor
+L0D23    lbsr  L1358      setup the graphics table entry
+         ldx   PD.RGS,y   get register stack pointer
+         ldb   R$Y+1,x    get requested window type
+         cmpb  #WT.PBox   past maximum?
+         lbhi  L0697      yes, return error
+         lslb             adjust for 2 bytes/entry
+         leax  <L0D3C,pc  point to vector table
+         ldd   b,x        get offset
+         jmp   d,x        continue from there
+
+L0D3C    fdb   L0F9A-L0D3C No box
+         fdb   L0D48-L0D3C Framed window
+         fdb   L0DE8-L0D3C Framed scroll barred window
+         fdb   L0E68-L0D3C shadowed window
+         fdb   L0EFC-L0D3C double box
+         fdb   L0FF2-L0D3C plain box
+
+* Process framed window setstat
+L0D48    lbsr  L0E04      is this an overlay window?
+         bcc   L0D55      no, skip ahead
+         tst   >WGlobal+G.CrDvFl     are we the active device?
+         beq   L0D55      No, skip ahead
+         lbsr  L0E13      de-activate parent window's menu bar
+L0D55    lbsr  L115F      copy window table & check for graphics screen
+         lda   #WT.FWin   get window type
+         bsr   L0D80      get window descriptor & setup graphics table entry
+         bcc   L0D6A      went ok, skip ahead
+* Error, re-draw parent window & return
+L0D5E    pshs  cc,b       Preserve error
+         tst   >WGlobal+G.CrDvFl     Are we active device?
+         beq   L0D68      No, exit with error
+         lbsr  L0E4B      activate parent window's menu bar
+L0D68    puls  cc,b,pc    Exit with error
+
+* Window descriptor is good, print it according to active/in-active
+L0D6A    tst   >WGlobal+G.CrDvFl     are we the active window?
+         beq   L0D74      no, skip ahead
+         lbsr  L13FA      print menu in active state
+         bra   L0D77      skip ahead
+
+L0D74    lbsr  L1037      print menu in in-active state
+L0D77    bcs   L0D7F      error on printing, return
+         lbra  L11F3      change window working size for frame & exit
+
+* Setup graphics table entry with window type & check sizes
+* Entry: A=Window type (Not related to grfdrv, windint specific)
+*        X=Graphics table entry pointer
+*        Y=Path descriptor pointer
+
+L0D80    leas  -WN.SIZ,s  make a buffer to preserve current window desc.
+         sta   ,x         save window type
+         ldu   PD.RGS,y   get pointer to register stack
+         ldu   R$X,u      get pointer to window descriptor
+         stu   Gt.DPtr,x  save it in graphics table
+         IFNE  H6309
+         ldw   <D.Proc    get process ID of creator
+         lda   P$ID,w
+         sta   Gt.Proc,x  save it in graphics table
+         ste   Gt.PBlk,x  Save process block # into graphics table
+         ELSE
+         pshs  y
+         ldy   <D.Proc    get process ID of creator
+         sty   >GrfMem+gr00B5
+         lda   <D.Proc
+         sta   Gt.PBlk,x  ste 
+         lda   P$ID,y
+         sta   Gt.Proc,x
+         puls  y
+         ENDC
+         leau  ,s         point to buffer
+         pshs  x          save graphics table pointer
+         ldx   >WGlobal+G.GfxTbl     get graphics table pointer
+         leax  >$0240,x   point to window descriptor buffer
+         IFNE  H6309
+         ldw   #WN.SIZ    Preserve window descriptor in stack buffer
+         tfm   x+,u+
+         ELSE
+         pshs  d
+         ldb   #WN.SIZ
+L0D80b   lda   ,x+
+         sta   ,u+
+         decb
+         bne   L0D80b
+         std   >GrfMem+gr00B5
+         puls  d
+         ENDC
+         ldx   ,s         restore graphics table entry pointer
+         lbsr  L1371      get window descriptor from caller
+         ldy   >WGlobal+g00BB     Get ptr to work window table
+         leau  ,x         point to window descriptor
+         puls  x          restore graphics table entry pointer
+* Check if window will fit
+         lda   Wt.SZX,y   get current X size from window table
+         cmpa  WN.XMIN,u  will it fit?
+         blo   L0DC0      no, clear entry & return
+         lda   Wt.SZY,y   get current Y size from window table
+         cmpa  WN.YMIN,u  will it fit?
+         bhs   L0DD6      yes, return
+* Window descriptor won't fit on window, restore old & return
+
+L0DC0    clr   Gt.WTyp,x  clear graphics table entry
+         ldu   >WGlobal+G.GfxTbl     get graphics table pointer
+         leau  >$0240,u   point to working buffer
+         IFNE  H6309
+         ldw   #WN.SIZ    Restore window descriptor from stack copy
+         tfm   s+,u+
+         ELSE
+         pshs  a
+         lda   #WN.SIZ
+L0DC0b   ldb   ,s+
+         stb   ,u+
+         deca
+         bne   L0DC0b
+         sta   >GrfMem+gr00B5
+         puls  a
+         ENDC
+         comb             set carry
+         ldb   #E$ICoord  get illegal co-ordinates error
+L0D7F    rts              return
+
+* Window table is good, return
+L0DD6    leas  WN.SIZ,s   purge stack
+         lda   Gt.WTyp,x  get screen type
+         cmpa  #WT.FSWin  scroll barred?
+         lbeq  FSWin      yes, do 3D frame
+         lbra  L0FFC      draw 3D frame & return
+
+* Process a framed scroll barred window
+L0DE8    bsr   L0E04      is this a overlay window?
+         bcc   L0DF3      no, skip ahead
+         tst   >WGlobal+G.CrDvFl     current device?
+         beq   L0DF3      no, skip ahead
+         bsr   L0E13      de-activate menu bar on parent window
+L0DF3    lbsr  L115F      setup window table & check if graphics screen
+         lda   #WT.FSWin  get code for scroll barred window
+         IFNE  H6309
+         bsr   L0D80      setup graphics table entry & check window desc.
+         ELSE
+         lbsr  L0D80
+         ENDC
+         lbcs  L0D5E      error, return
+         lbsr  L108C      go draw window
+         lbra  L0D6A      finish up by drawing menu bar & return
+
+* Check if this is a overlay window
+L0E04    pshs  y,u        preserve regs
+         lbsr  L06AE      get window table pointer
+         coma             set carry
+         lda   Wt.BLnk,y  any overlays?
+         bpl   L0E10      yes, return carry set
+         clra             clear carry
+L0E10    puls  y,u,pc     return
+
+* Place parent window in a in-active state if it's a framed or scroll barred
+* window.
+L0E13    pshs  y,u        preserve registers
+         lbsr  L06AE      get pointer to window table entry
+         lda   Wt.BLnk,y  get overlay window back link
+         ldu   2,s        get static mem pointer
+         ldy   ,s         get path descriptor pointer
+         ldb   V.WinNum,u   get current window #
+         pshs  b          save it
+         sta   V.WinNum,u   make overlay back link current
+         bsr   L0E34      framed or scroll barred?
+         bcs   L0E2E      no, skip ahead
+         lbsr  L1034      set menu bar to inactive state
+L0E2E    puls  b,y,u      restore
+         stb   V.WinNum,u   restore active window
+         rts              return
+
+* Check whether current window has a framed or framed scrolled barred window
+* Entry: U=Static mem pointer
+* Exit:  CC: Carry set if window is scroll barred or framed
+L0E34    pshs  a,x        preserve registers
+         tst   V.TYPE,u   is this a window?
+         bpl   L0E48      no, return with carry
+         lbsr  L06B9      get graphics table pointer
+         lda   Gt.WTyp,x  get windint screen type
+         beq   L0E48      if no box, return with carry set
+         cmpa  #WT.FSWin  scroll barred or framed?
+         bhi   L0E48      no, return carry set
+         clra             clear carry
+         puls  a,x,pc     return
+
+L0E48    coma             set carry
+         puls  a,x,pc     return
+
+* Place parent window in a active state if it's a framed or scroll barred
+* window.
+L0E4B    ldu   >WGlobal+g00B7     get static mem pointer
+L0E51    lda   Wt.BLnk,y  get overlay window link
+         ldb   V.WinNum,u   get current window #
+         pshs  b,u        save current window # & static mem
+         sta   V.WinNum,u   save back link as current
+         bsr   L0E34      framed or scroll barred?
+         bcs   L0E62      no, skip ahead
+         lbsr  L13F5      update menu bar
+L0E62    puls  b,u        restore static mem & current window #
+         stb   V.WinNum,u   restore static mem to current window
+         rts              return
+
+* Process a shadowed window
+L0E68    lbsr  L0FBB      update parent window if any
+         lbsr  L115F      check for graphic window
+         lda   #WT.SBox   save window type in graphics table entry
+         sta   Gt.WTyp,x
+         ldy   >WGlobal+g00BB     Get ptr to work window table
+         lbsr  L12BE      clear screen
+         leax  <SBox1,pc  point to draw table for 640 wide screen
+         IFNE  H6309
+         tim   #$01,>WGlobal+g00BD 640 wide screen?
+         ELSE
+         lda   >WGlobal+g00BD
+         anda  #$01
+         ENDC
+         bne   L0E91      no, skip ahead
+         leax  <SBox2,pc  point to draw table for 320 wide screen
+L0E91    lda   #$03       get # entrys in draw table
+         lbsr  DrawBar    draw window
+         lbsr  L11F3      change window to working size
+         clrb             clear errors
+         rts              return
+
+* Draw table for shadowed window on 640 wide screen
+* Draw table for Light Grey Box
+SBox1    fcb   WColor1    Color 1
+         fdb   0          Start X=0
+         fdb   0          Start Y=0
+         fdb   -3         End X=Width of window-3
+         fdb   -1         End Y=Height of window-1
+         fcb   $4c        Box function in GRFDRV
+
+* Draw table for Dark Grey shadow on right side
+         fcb   WColor2    Color 2
+         fdb   -2         Start X=Width of window-2
+         fdb   2          Start Y=2
+         fdb   $8000      End X=Width of window
+         fdb   $8000      End Y=Height of window
+         fcb   $4e        Bar function in GRFDRV
+
+* Draw table for Dark Grey shadow on bottom
+         fcb   WColor2    Color 2
+         fdb   2          Start X=2
+         fdb   $8000      Start Y=Height of window
+         fdb   $8000      End X=Width of window
+         fdb   $8000      End Y=Height of window
+         fcb   $4a        Line function in GRFDRV
+
+* Draw table for shadowed window on 320 wide screen
+* Draw table for Light Grey Box
+SBox2    fcb   WColor1    Color 1
+         fdb   0          Start X=0
+         fdb   0          Start Y=0
+         fdb   -1         End X=Width of window-1
+         fdb   -1         End Y=Height of window-1
+         fcb   $4c        Box function in GRFDRV
+
+* Draw table for Dark Grey shadow on right side
+         fcb   WColor2    Color 2
+         fdb   $8000      Start X=Width of window
+         fdb   2          Start Y=2
+         fdb   $8000      End X=Width of window
+         fdb   $8000      End Y=Height of window
+         fcb   $4a        Line function in GRFDRV
+
+* Draw table for Dark Grey shadow on bottom
+         fcb   WColor2    Color 2
+         fdb   2          Start X=2
+         fdb   $8000      Start Y=Height of window
+         fdb   $8000      End X=Width of window
+         fdb   $8000      End Y=Height of window
+         fcb   $4a        Line function in GRFDRV
+
+* Process a double box window
+L0EFC    bsr   L0FBB      update parent window if we have to
+         lbsr  L115F      if this comes back it's a graphic window
+         lda   #WT.DBox   get window type
+         sta   Gt.WTyp,x  save it into graphics table entry
+         ldy   >WGlobal+g00BB     Get ptr to work window table
+         lbsr  L12BE      clear screen
+         bsr   L1257      set text co-ordinates to 0,0
+         leax  <DBox,pc   point to draw table
+         lda   #3         get # entrys
+         lbsr  DrawBar    go draw it
+         lbsr  L11F3      setup window working area & return
+         clrb  
+         rts   
+
+* Draw table for double box window
+* Outside Box
+DBox     fcb   WColor2    Color 2
+         fdb   $0000      Start X=0
+         fdb   $0000      Start Y=0
+         fdb   $8000      End X=Width of window
+         fdb   $8000      End Y=Height of window
+         fcb   $4c        Box function in GRFDRV
+
+* Doubled up inside box - next 2
+         fcb   WColor2    Color 2
+         fdb   $0002      Start X=2
+         fdb   $0002      Start Y=2
+         fdb   -2         End X=Width of window-2
+         fdb   -2         End Y=Height of window-2
+         fcb   $4c        Box function
+
+         fcb   WColor2    Color 2
+         fdb   $0003      Start X=3
+         fdb   $0003      Start Y=3
+         fdb   -3         End X=Width of window-3
+         fdb   -3         End Y=Height of window-3
+         fcb   $4c        Box function
+
+* Process a no box window
+L0F9A    bsr   L0FBB      update parent window if we have to
+         lbsr  L116C      copy window table to working buffer
+         clra             WT.NBox =0
+         sta   Gt.WTyp,x
+         ldy   >WGlobal+g00B9     get pointer to window table
+         clrb             set start coord
+         std   Wt.CPX,y
+         ldd   Wt.DfSZX,y get default size
+         pshs  u,y
+         lbsr  L1204      set default size
+         puls  u,y
+         lbra  L12BE      clear screen & return from there
+
+* Check if we have to update a parent window
+L0FBB    pshs  y,u        preserve registers
+         lbsr  L0E04      we an overlay window?
+         bcc   L0FF0      no, return
+         lbsr  L06B9      get graphics table pointer
+         lda   Gt.WTyp,x  get windint screen type
+         beq   L0FF0      it's a plain window, return
+         cmpa  #WT.FSWin  framed or scroll barred window?
+         bhi   L0FF0      no, return
+         tst   >WGlobal+G.CrDvFl     Are we the current active device
+         beq   L0FF0      no, return
+         ldu   2,s        get static memory pointer
+         lbsr  L06AE      get window table pointer
+         ldu   2,s        get static memory pointer
+         lda   V.WinNum,u   get window #
+         pshs  a          save it
+         lda   Wt.BLnk,y  get back window link
+         sta   V.WinNum,u   save it as current
+         lbsr  L0E34      get framed or scroll barred window flag for this one
+         puls  a          restore window #
+         sta   V.WinNum,u   save it
+         bcs   L0FF0      if not a framed or scroll barred window, return
+         lbsr  L0E51      place parent window into a active state
+L0FF0    puls  y,u,pc     restore & return
+
+* Set current X/Y draw pointer to 0,0
+L1257    equ   *
+         IFNE  H6309
+         clrd  
+         clrw  
+         stq   >GrfMem+gr0047     Save X&Y coords
+         ELSE
+         clra  
+         clrb  
+         std   >GrfMem+gr0047     Save X&Y coords
+         std   >GrfMem+gr0047+2
+         std   >GrfMem+gr00B5
+         ENDC
+         rts   
+
+* Process a plain box window
+L0FF2    bsr   L0FBB
+         lbsr  L115F
+         lda   #WT.PBox
+         sta   Gt.WTyp,x
+* Draw a frame around full window
+ 
+L0FFC    ldy   >WGlobal+g00BB     Get ptr to work window table
+         lbsr  L12BE      clear screen
+         bsr   L1257      set text co-ordinates to 0,0
+         IFNE  H6309
+         lde   Wt.Fore,y  get current color mask
+         ELSE
+         lda   Wt.Fore,y
+         sta   >GrfMem+gr00B5
+         ENDC
+         lda   #1
+         lbsr  GetColr    convert it to mask
+         sta   Wt.Fore,y
+         lbsr  L1013      calculate X size
+         std   >GrfMem+gr004B
+         lbsr  L100F      calculate Y size
+         lbsr  L122B      draw the box
+         IFNE  H6309
+         ste   Wt.Fore,y
+         rts
+         ELSE
+         pshs  a
+         lda   >GrfMem+gr00B5
+         sta   Wt.Fore,y
+         puls  a,pc
+         ENDC
+
+* Draw a 3D frame around window for scroll barred window
+FSWin    ldy   >WGlobal+g00BB     Get ptr to work window table
+         lbsr  L12BE      clear screen
+         bsr   L1257      set text co-ordinates to 0,0
+         pshs  x          preserve graphics table pointer
+         lda   #11        get # entrys
+         leax  <FSWinTbl,pc point to draw table
+         lbsr  DrawBar
+         puls  x,pc
+
+FSWinTbl fcb   WColor1    left bar (Color 1)
+         fdb   0          From 0,8 to 7,bottom
+         fdb   8
+         fdb   7
+         fdb   $8000
+         fcb   $4e        Bar command for GRFDRV
+
+         fcb   WColor1    bottom bar (Color 1)
+         fdb   8          From 8,(bottom-7) to (Right-8),bottom
+         fdb   -7
+         fdb   -8
+         fdb   $8000
+         fcb   $4e
+
+         fcb   WColor1    right bar
+         fdb   -7
+         fdb   8
+         fdb   $8000
+         fdb   $8000
+         fcb   $4e
+
+         fcb   WColor3    left bar 3D look
+         fdb   0
+         fdb   8
+         fdb   7
+         fdb   8
+         fcb   $4a
+
+         fcb   WColor3    White - 0,8 to 0,bottom-1
+         fdb   0
+         fdb   8
+         fdb   0
+         fdb   -1
+         fcb   $4a
+
+         fcb   WColor2    Light grey - 7,9 to 7,bottom-7
+         fdb   7
+         fdb   9
+         fdb   7
+         fdb   -7
+         fcb   $4a
+
+* Bottom bar 3D look
+         fcb   WColor3    White
+         fdb   9          From 9,(bottom-7) to (right-7),(bottom-7)
+         fdb   -7
+         fdb   -7
+         fdb   -7
+         fcb   $4a        Line
+
+         fcb   WColor2    Light grey
+         fdb   1          From 1,(bottom-1) to Right,(bottom-1)
+         fdb   -1
+         fdb   $8000
+         fdb   -1
+         fcb   $4a        Line
+
+         fcb   WColor3    right bar 3D look
+         fdb   -7         right-7,8 to right,8
+         fdb   8
+         fdb   $8000
+         fdb   8
+         fcb   $4a
+
+         fcb   WColor3
+         fdb   -7         left+7,9 to left+7,bottom-8
+         fdb   9
+         fdb   -7
+         fdb   -8
+         fcb   $4a
+
+         fcb   WColor2
+         fdb   $8000      left,9 to right,bottom-1
+         fdb   9
+         fdb   $8000
+         fdb   -1
+         fcb   $4a
+
+* Set Menu bar to in-active state by printing the window title
+L1034    lbsr  L116C      setup work window table
+L1037    lbsr  L1240      draw 3D bar
+* Swap foreground/background colors
+         ldd   Wt.Fore,y  Get fore/background colors
+         sta   Wt.Back,y  Swap them
+         stb   Wt.Fore,y
+         lbsr  L1013      calculate X size in pixels
+         IFNE  H6309
+         decd             take off 1 of X co-ordinate
+         ELSE
+         subd  #$0001
+         ENDC
+         lbsr  L1371      get window descriptor pointer
+         bne   L107A      Not valid dsc., exit
+         ldd   #$0100     Valid, get X/Y text start coord
+         lbsr  L128E      place in grfdrv mem
+         IFNE  H6309
+         aim   #^TChr,Wt.BSW,y Turn on transparency
+         oim   #Prop,Wt.BSW,y Turn on proportional spacing
+         ELSE
+         pshs  a
+         lda   Wt.BSW,y
+         anda  #^TChr
+         ora   #Prop
+         sta   Wt.BSW,y
+         puls  a
+         ENDC
+         lbsr  L12A2      calculate string length of menu title
+         subb  #$02       subtract 2 to give 1 space on either side
+         cmpb  Wt.SZX,y   bigger than window?
+         bls   L1075      no, skip ahead
+         ldb   Wt.SZX,y   Use X size of window as length
+         lbra  L12AE      Print menu bar title & return from there
+
+L1075    addb  #2         get length back
+         lbra  L12AE      print menu bar title & return from there
+
+L107A    rts              return
+
+* Draw a framed scroll barred window
+L108C    ldy   >WGlobal+g00BB     Get ptr to work window table
+         IFNE  H6309
+         aim   #^TChr,Wt.BSW,y Turn on transparency
+         ELSE
+         lda   Wt.BSW,y
+         anda  #^TChr
+         sta   Wt.BSW,y
+         ENDC
+         pshs  x          Preserve old X
+         leas  -10,s      Make enough room for BS stack for R$X/Y
+         leax  ,s         Point X to stack
+         IFNE  H6309
+         clrd             get text co-ordinates
+         ELSE
+         clra
+         clrb
+         ENDC
+         std   R$X,x
+         std   R$Y,x
+         lbsr  DfltBar    Draw scroll bar markers
+         bsr   DrawArr    draw the 4 arrows
+         lda   #7         Draw 3D shading stuff
+         leax  <ScBar,pc  point to draw table
+         lbsr  DrawBar
+         leas  10,s       Restore stack to normal
+         puls  x,pc       restore X
+
+* Draw scroll bar arrows
+* Entry: Y=Window table pointer
+*        U=Global mem pointer
+* Exit : A=$00
+*        All other regs. preserved
+DrawArr  lda   #4         Get # arrows
+         pshs  x,a        preserve X & arrow counter
+         leax  <ScArr,pc  point to table
+NxtArr   ldd   ,x++       get group/buffer
+         std   >GrfMem+gr0057     save it to grfdrv mem
+         lbsr  CalXCord   calculate X start co-ordinate
+         std   >GrfMem+gr0047     save it in grfdrv mem.
+         lbsr  CalYCord   calculate Y start co-ordinate
+         std   >GrfMem+gr0049     save it in grfdrv mem
+         ldb   #$36       get grfdrv function code for PutBlk
+* NOTE: SHOULDN'T NEED U PRESERVED
+         pshs  x,y,u      preserve regs
+         lbsr  L0101      let grfdrv do the rest
+         puls  x,y,u      restore regs
+         dec   ,s         done?
+         bne   NxtArr     keep going till we're done
+         puls  a,x,pc
+
+* Draw table for scroll barred window arrows
+* This seems a major error in group number. $CE does not exist. RG
+ScArr    fdb   $ce01      group/buffer for up arrow
+         fdb   -7
+         fdb   8
+
+         fdb   $ce02      group/buffer for down arrow
+         fdb   -7
+         fdb   -15
+
+         fdb   $ce03      group/buffer for left arrow
+         fdb   0
+         fdb   -7
+
+         fdb   $ce04      group/buffer for right arrow
+         fdb   -15
+         fdb   -7
+
+* Draw table for for various lines on a scroll barred window
+ScBar    fcb   WColor3    white line below up arrow
+         fdb   -7
+         fdb   16
+         fdb   $8000
+         fdb   16
+         fcb   $4a
+
+         fcb   WColor2    gray line above down arrow
+         fdb   -7
+         fdb   -16
+         fdb   $8000
+         fdb   -16
+         fcb   $4a
+
+         fcb   WColor3    white line to the right of left arrow
+         fdb   8
+         fdb   -7
+         fdb   8
+         fdb   -1
+         fcb   $4a
+
+         fcb   WColor2    gray line to the left of right arrow
+         fdb   -16
+         fdb   -7
+         fdb   -16
+         fdb   -1
+         fcb   $4a
+
+         fcb   WColor2    gray line above left arrow
+         fdb   0
+         fdb   -8
+         fdb   7
+         fdb   -8
+         fcb   $4a
+
+         fcb   WColor3    white line to the right of right arrow
+         fdb   -7
+         fdb   -7
+         fdb   $8000
+         fdb   -7
+         fcb   $4a
+
+         fcb   WColor3    white line below the down arrow
+         fdb   -7
+         fdb   -7
+         fdb   -7
+         fdb   -1
+         fcb   $4a
+
+* Check if window is a graphic window
+L115F    bsr   L116C      copy window table to work table
+         lda   >WGlobal+g00BD     Get current screen type
+         bpl   L116B      graphics, skip ahead
          leas  2,s        purge return address
          comb             set carry
-         ldb   #$B7       get illegal window type error
-L10B5    rts              return to caller
+         ldb   #E$IWTyp   get illegal window type error code
+L116B    rts              return
 
-L10B6    pshs  y
-         ldx   <D.CCMem
-         stu   >$00B7,x
-         sty   >$00C0,x
-         lbsr  L06F8      get window table pointer & device mem pointer
-         sty   >$00B9,u
-         ldx   Wt.STbl,y
-         lda   ,x
-         sta   >$00BD,u
-         ldu   >$00B7,u
-         lbsr  L0711
-         leay  >$0087,u
-         sty   >$00BB,u
-         pshs  x
-         ldx   >$00B9,u
-         ldd   Wt.LStDf,x get screen logical start default
-         std   Wt.LStrt,y set it as screen start
-         ldd   Wt.DfCPX,x get CPX,CPY defaults
-         std   Wt.CPX,y   set it in current
-         ldd   Wt.DfSZX,x get SZX,SZY defaults
-         std   Wt.SZX,y   set it in current table
-         ldd   Wt.STbl,x
-         std   Wt.STbl,y
-         lda   Wt.BLnk,x  get back window link
-         sta   Wt.BLnk,y  set it in current table
-         ldd   Wt.Cur,x
-         std   Wt.Cur,y
-         ldd   -$02,x
-         std   -$02,y
-         ldd   Wt.XBCnt,x
+* Copy current window table into work table & set all default sizes in work
+* table
+
+L116C    pshs  y          save path descriptor pointer
+         stu   >WGlobal+g00B7     save device static in global
+         sty   >WGlobal+g00C0     save path descriptor in global
+         lbsr  L06A0      verify window table
+         sty   >WGlobal+g00B9     save window table pointer
+         lda   [Wt.STbl,y] get screen type
+         sta   >WGlobal+g00BD     save it in global
+         ldu   >WGlobal+g00B7     get static mem back
+         lbsr  L06B9      get graphics table pointer for this window
+         ldy   #WGlobal+G.WrkWTb+$10     Point to work window table
+         sty   >WGlobal+g00BB     save the pointer to work table
+         ldu   >WGlobal+g00B9     get pointer to current window table
+         IFNE  H6309
+         ldq   Wt.LStDf,u get default logical start & start X/Y co-ordinates
+         stq   Wt.LStrt,y save it in window table
+         ELSE
+         ldd   Wt.LStDf+2,u
+         std   Wt.LStrt+2,y
+         std   >GrfMem+gr00B5
+         ldd   Wt.LStDf,u
+         std   Wt.LStrt,y
+         ENDC
+         ldd   Wt.DfSZX,u get default X/Y sizes
+         std   Wt.SZX,y   save as current working area
+         ldd   Wt.STbl,u  get screen table pointer
+         std   Wt.STbl,y  save it in new
+         lda   Wt.BLnk,u  get overlay window link
+         sta   Wt.BLnk,y  save it in new
+         ldd   Wt.Cur,u   get cursor address
+         std   Wt.Cur,y   save it
+         ldd   Wt.CurX,u  get X/Y coord of cursor
+         std   Wt.CurX,y  save it
+         IFNE  H6309
+         ldq   Wt.XBCnt,u get X byte count & bytes/row
+         stq   Wt.XBCnt,y save it in window table
+         ELSE
+         ldd   Wt.XBCnt+2,u
+         std   Wt.XBCnt+2,y
+         std   >GrfMem+gr00B5
+         ldd   Wt.XBCnt,u 
          std   Wt.XBCnt,y
-         ldd   Wt.BRow,x
-         std   Wt.BRow,y
-         lda   Wt.FBlk,x
-         sta   Wt.FBlk,y
-         ldd   Wt.FOff,x
+         ENDC
+         lda   Wt.FBlk,u  get block # for font
+         sta   Wt.FBlk,y  save it
+         ldd   Wt.FOff,u  get offset for font
          std   Wt.FOff,y
-         clr   Wt.BSW,y
-         lbsr  L1279      set pattern
-         lbsr  L1282      set LSET #
-         ldb   Wt.DfSZX,x
-         lbsr  L100F
-         std   Wt.MaxX,y
-         ldb   Wt.DfSZY,x
-         lbsr  L100F
-         std   Wt.MaxY,y
-         puls  x
-         ldd   $07,x
-         std   $06,y
-         puls  y
-L113A    rts   
+         clr   Wt.BSW,y   clear window switches
+         lbsr  L1337      set pattern to normal plot
+         lbsr  L1342      set logic type to nothing
+         ldb   Wt.DfSZX,u get X size
+         lbsr  L1015      multiply by 8
+         std   Wt.MaxX,y  save max X coord
+         ldb   Wt.DfSZY,u get Y size
+         lbsr  L1015      multiply by 8
+         std   Wt.MaxY,y  save max Y co-ordinate
+         ldd   Gt.FClr,x  get fore/back colors
+         std   Wt.Fore,y  save 'em
+         puls  y,pc       restore path descriptor ptr & return
 
-L113B    ldy   >$00B9,u
-         ldd   #$0101
-         std   -$0B,y
-         ldd   <$28,y
-L1148    decb  
+* Change window size to leave a 1 character space on all 4 sides
+L11F3    ldy   >WGlobal+g00B9     get current window table pointer
+         ldd   #$0101     set X/Y start co-ordinate
+         std   Wt.CPX,y   save it
+         ldd   Wt.DfSZX,y get default X/Y sizes
+L1200    decb             take 2 off Y
          decb  
+         deca             take 2 off X
          deca  
-         deca  
-L114C    std   -$09,y
-         ldb   #$0E
-         lbsr  L0105
-         bcs   L113A
-         ldx   <D.CCMem
-         ldu   >$00B7,x
-         ldy   >$00C0,x
-         lbra  L048E
-L1163    ldy   >$00B9,u
-         ldd   #$0102
-         std   -$0B,y
-         ldd   <$28,y
-         decb  
-         bra   L1148
-L1173    lbsr  L0A87
-         ldb   #$4C
-L1178    pshs  u,y,x
-         lbsr  L0105
+L1204    std   Wt.SZX,y   save X/Y size
+         ldb   #$0E       get grfdrv function for CWArea
+         lbsr  L0101
+         bcs   L11F2
+         ldu   >WGlobal+g00B7     get static mem pointer
+         ldy   >WGlobal+g00C0     get path descriptor pointer
+         lbra  L0436      go setup lines per page & return
+
+* NOTE: ALL OF THESE MAY NOT NEED U PRESERVED ANYMORE
+* Draw a box
+L122B    std   >GrfMem+gr004d
+         pshs  u,y,x
+         ldb   #$4C       get code for box
+L1232    lbsr  L0101
          puls  pc,u,y,x
 
-         ldb   #$4A
-         bra   L1178
-         lbsr  L0F46
-         bsr   L1198
-         lbsr  L100D
-         lbsr  L0AA0
-         ldd   #$0007
-         lbsr  L0A87
-         ldb   #$4E
-         bra   L1178
-L1198    clra  
-         clrb  
-         lbsr  L0A9B
-         lbra  L0A64
-         lda   #$C1
-         bra   L11C6
-         lda   #$C2
-         bra   L11C6
-         lda   #$C3
-         bra   L11C6
-         lda   #$C4
-         bra   L11C6
-         lda   #$C9
-L11B2    bsr   L120D
-         bsr   L11C6
-         bra   L1222
-         lda   #$CA
-         bra   L11B2
-L11BC    lda   #$C7
-         bra   L11B2
-L11C0    lda   #$CB
-         bra   L11B2
-L11C4    lda   #$20
-L11C6    pshs  u,y,x,b,a
-         ldb   #$3A
-L11CA    lbsr  L0105
-         puls  pc,u,y,x,b,a
+* Draw a line
+L1237    std   >GrfMem+gr004d     save current Y coord
+L123A    pshs  u,y,x      preserve regs
+         ldb   #$4A       get grfdrv function for line
+         bra   L1232      send it to grfdrv
 
-L11CF    adda  #$20
+* Draw a bar at current color
+L124E    std   >GrfMem+gr004d
+         pshs  u,y,x
+         ldb   #$4E
+         bra   L1232
+
+* Draw a 3D bar starting at 0,0 to 639,7 in current colors
+L1240    ldy   >WGlobal+g00BB     Get ptr to work window table
+         pshs  x          preserve X
+         leax  <TopBar,pc point to draw table for top bar
+         lda   #4         get entry count
+         bsr   DrawBar    draw the bar
+         puls  x,pc       restore & return
+
+* Draw a graphic sequence that requires start & end co-ordinates
+* If the co-ordinate in draw table is negative, This will calculate the
+* co-ordinate based on the size of the window in pixels.
+* Entry: A=Number of draw table entrys
+*        X=Pointer to draw table
+*        Y=Pointer to window table
+*        U=Global mem pointer
+DrawBar  ldb   $06,y      get current color
+         pshs  d          save it and entry count
+DrawNxt  lda   ,x+        get foreground color
+         bsr   GetColr    get color mask
+         sta   WT.Fore,y  put it in window table
+         bsr   CalXCord   calculate X start co-ordinate
+         std   >GrfMem+gr0047     save it in grfdrv mem.
+         bsr   CalYCord   calculate Y start co-ordinate
+         std   >GrfMem+gr0049     save it in grfdrv mem
+         bsr   CalXCord   calculate X end co-ordinate
+         std   >GrfMem+gr004B     save it in grfdrv mem
+         bsr   CalYCord   calculate Y end co-ordinate
+         std   >GrfMem+gr004D     save it in grfdrv mem
+         ldb   ,x+        get grfdrv function code
+         pshs  x,y,u      preserve regs
+         lbsr  L0101      let grfdrv do the rest
+         puls  x,y,u      restore regs
+         dec   ,s         done?
+         bne   DrawNxt    keep going till we're done
+         puls  d          restore current color & purge stack
+         stb   Wt.Fore,y  put it back in window table
+L11F2    rts   
+
+* Calculate X coord based on the size of window
+CalXCord bsr   L1013      get window X size in pixels
+         bra   CalCord
+
+* Calculate Y co-ordinate based on the size of window
+CalYCord bsr   L100F      get window Y size in pixels
+CalCord  pshs  d          preserve size
+         ldd   ,x++       get coord
+         bpl   PosCord    it's positive, return coord
+         cmpd  #$8000     use actual size?
+         bne   NegCord    no, skip ahead
+         clra             clear MSB to zero D
+NegCord  addd  ,s         add it to the size (signed add!!)
+PosCord  leas  2,s        purge size from stack
+         rts              return
+
+* Get window Y size in pixels - NEED TO CHANGE TO ADJUST FOR 200 LINE ONLY
+L100F    ldb   Wt.SZY,y   Get window Y size in chars
+         bra   L1015
+
+* Get window X size in pixels
+L1013    ldb   Wt.SZX,y   Get window X size in chars
+L1015    clra             Clear MSB
+* NOTE: HOW OFTEN WILL WE GET A WINDOW SIZE OF ZERO? SHOULD CHANGE TO NOT
+* BOTHER WITH EITHER TSTB OR BEQ (UNLESS CALLING ROUTINE CHECKS FLAG)
+         tstb             0?
+         beq   L101E      Yes, don't bother with multiply
+         IFNE  H6309
+         lsld             Multiply by 8
+         lsld  
+         lsld  
+         decd             0 base
+         ELSE
+         lslb
+         rola
+         lslb
+         rola
+         lslb
+         rola
+         subd  #$0001
+         ENDC
+L101E    rts              Return
+
+* Get color mask
+GetColr  pshs  b,x        save color & table pointer
+         ldb   >WGlobal+g00BD     get screen type
+         leax  <ColrMsk-1,pc point to color mask table
+         ldb   b,x
+         mul   
+         tfr   b,a
+         puls  b,x,pc     restore & return
+
+ColrMsk  fcb   $ff,$55,$55,$11
+
+* Draw table for top menu bar
+TopBar   fcb   WColor1    Color 1- Draw Bar from 1,1 to (Right-1,6)
+         fdb   1          (Changed from original 0,0-Right,7)
+         fdb   1
+         fdb   -1
+         fdb   6
+         fcb   $4e
+
+         fcb   WColor3    Color 3-Draw Box from 0,0 to Right,7)
+         fdb   0
+         fdb   0
+         fdb   $8000
+         fdb   7
+         fcb   $4c
+
+         fcb   WColor2    Foreground color
+         fdb   $0000      Start X co-ordinate
+         fdb   $0007      Start Y co-ordinate
+         fdb   $8000      End X
+         fdb   $0007      End Y
+         fcb   $4a        grfdrv function code
+
+         fcb   WColor2    Foreground color
+         fdb   $8000      Start X co-ordinate
+         fdb   $0000      Start Y co-ordinate
+         fdb   $8000      End X
+         fdb   $0007      End Y
+         fcb   $4a        grfdrv function code
+
+* Print close box
+L127B    lda   #$C7
+* Generic routine for calling graphics font (font $c803) & resetting to normal
+L1271    bsr   L12C2      Go select graphics font
+         bsr   L1285      Print char on screen
+         bra   L12D7      Revert to normal font, return from there.
+
+* Print tandy menu icon
+L127F    lda   #$CB       Tandy icon character
+         bra   L1271      Put on screen
+
+* Print a space
+L1283    lda   #$20
+
+* Print a character
+* Entry: A=character to print
+L1285    pshs  d,x,y,u
+         ldb   #$3A       Regular alpha put
+L1289    lbsr  L0101
+         puls  d,x,y,u,pc
+
+* Set cursor co-ordinates
+* Entry: A=X co-ordinate
+*        B=Y co-ordinate
+L128E    adda  #$20       Set up for GRFDRV CurXY call
          addb  #$20
          pshs  u,y,x
-         sta   >$0147,u
-         stb   >$0149,u
-         ldb   #$42
-         lbsr  L0105
+         lbsr  L0380
          puls  pc,u,y,x
 
-L11E4    bsr   L11ED
-         cmpb  #$0F
-         bls   L11EC
-         ldb   #$0F
-L11EC    rts   
+L1299    bsr   L12A2      Calculate length of NUL terminated string @,X
+         cmpb  #15        >15 chars?
+         bls   L12A1      No, return
+         ldb   #15        Force to 15 chars
+L12A1    rts   
 
-L11ED    pshs  x,a
-         clrb  
-L11F0    lda   ,x+
-         beq   L11F7
-         incb  
-         bra   L11F0
-L11F7    puls  pc,x,a
+* Get length of a NULL terminated text string (not greater than 128)
+* Entry: X=Pointer to string
+* Exit : B=Length of string
+L12A2    pshs  a          preserve a
+         ldb   #$ff       Init count to 0
+L12A5    incb             Bump char count up
+         lda   b,x        Get char
+         bne   L12A5      Not end of string yet, keep looking
+L12AC    puls  a,pc       restore a & return
 
-L11F9    lda   ,x+
-         bsr   L11C6
-         decb  
-         bne   L11F9
-         rts   
+* Print a string of specific length
+* NOTE: ASSUMES LENGTH NEVER >128 CHARS!
+* Entry: B=Length of string
+*        X=Pointer to string
 
-L1201    lda   #$04
-L1203    pshs  u,y,x,b,a
+L12AE    pshs  d,x,y,u    Save regs
+         IFNE  H6309
+         clre  
+         tfr   b,f        W=String length
+         ldu   #$0180     Point to buffered write buffer
+         tfm   x+,u+      Copy to GRFDRV buffer
+         ELSE
+         pshs  b
+         ldu   #$0180
+L12AEb   lda   ,x+
+         sta   ,u+
+         decb
+         bne   L12AEb
+         clra
+         std   >GrfMem+gr00B5
+         puls  b
+         ENDC
+         ldu   #$0180     Point to buffered write buffer for GRFDRV
+         tfr   b,a        Move size of buffer to A for GRFDRV
+         ldb   #$06       Buffered Write call code for GRFDRV
+         lbsr  L0101      Call GRFDRV
+         puls  d,x,y,u,pc Restore regs & return
+
+* Erase to end of line
+L12B6    lda   #$04
+L12B8    pshs  u,y,x,d
          ldb   #$3C
-         bra   L11CA
-L1209    lda   #$0C
-         bra   L1203
-L120D    pshs  u,y,x,b,a
-         ldx   <$75,u
-         leax  >$02B9,x
-         lda   ,x
-         beq   L1234
-L121A    sta   $0B,y
-         ldd   $01,x
-         std   $0C,y
-         puls  pc,u,y,x,b,a
+         bra   L1289
 
-L1222    pshs  u,y,x,b,a
-         ldx   <$75,u
-         leax  >$02B6,x
-         lda   ,x
-         bne   L121A
-         ldd   #$C804
-         bra   L1237
-L1234    ldd   #$C803
-L1237    pshs  u,y,x
-         lbsr  L0896
-         ldb   #$18
-         lbsr  L0105
+* Clear screen
+L12BE    lda   #$0C
+         bra   L12B8
+
+L12C2    pshs  u,y,x,d
+         ldx   >WGlobal+G.GfxTbl     Get graphics table ptr
+         leax  >$02B9,x   Offset into it???
+         lda   Grf.Bck,x  DOUBT THIS IS RIGHT
+         beq   L12E9
+L12CF    sta   Wt.FBlk,y
+         ldd   Grf.Off,x
+         std   Wt.FOff,y
+         puls  pc,u,y,x,d
+
+* Switch to text font
+L12D7    pshs  u,y,x,d
+         ldx   >WGlobal+G.GfxTbl     Get graphics tables ptr
+         leax  >$02B6,x   Offset to ???
+         lda   Grf.Bck,x  Get ???
+         bne   L12CF      If non-0, copy 3 bytes back to original state
+         ldd   #$C801     Normal 8x8 text font
+         bra   L12EC      Call grfdrv to set font
+
+* Switch to graphic font
+L12E9    ldd   #$C803     Graphics font/buffer #
+L12EC    pshs  u,y,x
+         std   >GrfMem+gr0057     Save in Grfdrv mem
+         ldb   #$18       Set font command
+         lbsr  L0101      Set font in grfdrv
          puls  u,y,x
-         lda   $0B,y
-         sta   ,x
-         ldd   $0C,y
-         std   $01,x
-         puls  pc,u,y,x,b,a
+         lda   Wt.FBlk,y  Copy stuff back
+         sta   Grf.Bck,x
+         ldd   Wt.FOff,y
+         std   Grf.Off,x
+         puls  pc,u,y,x,d Restore & return
 
-L124D    lda   #$01
-L124F    pshs  u,y,x,a
-         lbsr  L0F41
-         bpl   L1258
-         puls  pc,u,y,x,a
-
-L1258    lda   ,s+
-         ldb   #$2A
-L125C    lbsr  L0105
+* Turn inverse on
+L1329    pshs  u,y,x
+         ldd   #$2040     Inverse ON
+L130D    lbsr  L0101      Go execute in grfdrv
          puls  pc,u,y,x
 
-L1261    clra  
-         bra   L124F
-L1264    lda   #$01
-L1266    ldb   #$24
-L1268    pshs  u,y,x
-         bra   L125C
-L126C    clra  
-         bra   L1266
-L126F    lda   #$20
-L1271    ldb   #$40
-         bra   L1268
-L1275    lda   #$21
-         bra   L1271
-L1279    clra  
-         clrb  
-         lbsr  L0896
-         ldb   #$12
-         bra   L1268
-L1282    clra  
-         sta   $0A,y
-         ldb   #$1E
-         bra   L1268
-L1289    lda   #$01
-L128B    ldb   #$26
-         bra   L1268
-L128F    clra  
-         bra   L128B
-L1292    pshs  u,y,x,b,a
-         lbsr  L06F8
-         ldu   $06,s
-         lbsr  L0711
-         ldd   $06,y
-         std   $07,x
-         lbsr  L0B2D
-         std   $09,x
+* Turn inverse off
+L1331    pshs  u,y,x
+         ldd   #$2140     Inverse off
+         bra   L130D
+
+* Set pattern
+L1337    pshs  u,y,x
+         IFNE  H6309
+         clrd  
+         ELSE
          clra  
          clrb  
-         std   $05,x
-         puls  pc,u,y,x,b,a
+         ENDC
+         std   >GrfMem+gr0057     Save in Grfdrv Mem
+         ldb   #$12
+         bra   L130D
 
-L12AB    pshs  u,y,b,a
-         bsr   L12D6
-         bcs   L12D1
-         ldx   $05,x
-         leau  >$0240,u
-         ldy   #$0022
-L12BB    leas  -$02,s
-         lbsr  L023B
-         os9   F$CpyMem
-         lbsr  L0247
-         leas  $02,s
-         tfr   u,x
-         ldd   <$17,x
-         cmpd  #$C0C0
-L12D1    puls  pc,u,y,b,a
+* Set logic type to 0 (normal gfx)
+L1342    pshs  u,y,x
+         clra  
+         sta   Wt.LSet,y
+         ldb   #$1E
+         bra   L130D
 
-L12D3    lbsr  L0711
-L12D6    ldu   <$75,u
-         ldy   <$0048
-         ldb   $0E,x
-         lda   b,y
-         cmpa  $0F,x
-         bne   L12E9
-         ldb   #$40
-         andcc  #^Carry
-         rts   
-L12E9    orcc  #Carry
-         rts   
+* Setup graphics table entry
+L1358    pshs  d,x,y,u
+         lbsr  L06A0      verify window table
+         ldu   6,s        get static memory pointer
+         lbsr  L06B9      get graphics table pointer
+         ldd   Wt.Fore,y  get current foreground/background colors
+         std   Gt.FClr,x  save it in graphics table
+         lbsr  L0B01      get mask value
+         std   Gt.FMsk,x  save it into graphics table
+         IFNE  H6309
+         clrd             init pointer to window descriptor
+         ELSE
+         clra
+         clrb
+         ENDC
+         std   Gt.DPtr,x
+         puls  d,x,y,u,pc
 
-L12EC    pshs  u,y,b,a
+* Copy a window descriptor from caller's process area
+* Entry: None
+L1371    pshs  d,y,u      preserve regs
+         bsr   L139E      is it the owner of the window?
+         bcs   L1397      no, return
+         ldx   Gt.DPtr,x  get pointer to window descriptor
+         leau  >$0240,u   point to a work buffer
+         ldy   #WN.SIZ    get size of descriptor
+L1381    leas  -2,s       make a buffer for current process
+         lbsr  L0238      switch to system process
+         os9   F$CpyMem   copy the window descriptor from process space
+         lbsr  L0244      switch back to current process
+         leas  2,s        purge stack
+         tfr   u,x        move destination to X
+         ldd   WN.SYNC,x  get sync bytes
+         cmpd  #WINSYNC   set flags for compare
+L1397    puls  d,y,u,pc   restore & return
+
+* Entry:
+* Exit : B=Offset to DAT image
+L139B    lbsr  L06B9      get pointer to graphics table entry
+L139E    ldu   >WGlobal+G.GfxTbl     get pointer to start of graphics table
+         ldy   <D.PrcDBT  get process descriptor block table pointer
+         ldb   Gt.Proc,x  get process number of owner
+         lda   b,y        get process # of user
+         cmpa  Gt.PBlk,x  match?
+         bne   L13B1      no, set carry & return
+         ldb   #P$DATImg  get offset to DAT image into D
+         andcc  #^Carry    clear carry
+L13B0    rts              return
+
+L13B1    orcc  #Carry     set carry
+         rts              return
+
+* Copy a menu descriptor from caller's process space
+L13B5    pshs  u,y,d
          pshs  x
-         bsr   L12D3
+         bsr   L139B      Get DAT image offset to copy menu descriptor from
          puls  x
-         bcs   L12D1
+         bcs   L1397
          leau  >$0262,u
-         ldy   #$0017
-         bra   L12BB
-L1300    pshs  u,y,x
-         lbsr  L0711
-         lda   $04,x
-         puls  pc,u,y,x
+         ldy   #MN.SIZ
+         bra   L1381      Copy the memory
 
-SSUMBar  clra  
+* Set the root window menu bar to active state (Called from CC3IO special calls)
+L13E9    lbsr  L116C      setup working window table
+         leas  -8,s       make a buffer
+         clr   2,s        clear a flag?
+         lbsr  L1240      draw 3D bar
+         bra   L1404      go print it
+
+* SS.UmBar enry point
+L13F5    lbsr  L116C      setup working window table
+
+* Called from SS.WnSet
+L13FA    lbsr  L1240      draw a 3D bar
+         leas  -8,s
+         clr   2,s
+         ldy   >WGlobal+g00BB     Get ptr to work window table
+
+* Print menu bar in active state
+L1404    lbsr  L1329      turn inverse on
+         IFNE  H6309
+         aim   #^TChr,Wt.BSW,y Turn on transparency
+         ELSE
          pshs  a
-         bra   L131A
-L130E    clra  
+         lda   Wt.BSW,y
+         anda  #^TChr
+         sta   Wt.BSW,y
+         puls  a
+         ENDC
+         lbsr  L12D7      set to text font
+         IFNE  H6309
+         clrd             x,y both to 0
+         ELSE
+         clra
+         clrb
+         ENDC
+         sta   5,s
+         lbsr  L128E      Set Text cursor to 0,0
+         ldb   Wt.SZX,y   get current window X size
+         subb  #2         take off 2 for space on either side of text
+         stb   ,s         save it
+         ldb   #2         get current text size (just the spaces so far)
+         stb   1,s        save it in buffer
+         lbsr  L1283      print leading space for menu
+         IFNE  H6309
+         aim   #^Bold,Wt.BSW,y Turn off Bold print
+         ELSE
          pshs  a
-         bra   L1321
-L1313    lbra  L140E
-L1316    bsr   L1300
-         pshs  a
-L131A    lbsr  L10B6
-         tst   ,s
-         bne   L1324
-L1321    lbsr  L2115
-L1324    puls  a
-         leas  -$09,s
-         sta   $08,s
-         clr   $02,s
-         lbsr  L0F46
-         tst   $08,s
-         bne   L133C
-         lbsr  L126F
-         lbsr  L1264
-         lbsr  L1222
-L133C    clra  
-         sta   $05,s
-         clrb  
-         tst   $08,s
-         bne   L1347
-         lbsr  L11CF
-L1347    ldb   -$09,y
-         subb  #$02
-         stb   ,s
-         ldb   #$02
-         stb   $01,s
-         tst   $08,s
-         bne   L135E
-         lbsr  L11C4
-         lbsr  L1261
-         lbsr  L11BC
-L135E    ldy   <$75,u
-         leay  >$028E,y
-         clr   ,y
-         lbsr  L12AB
-         bne   L1313
-         ldd   <$15,x
-         std   <$26,y
-         lda   <$14,x
-         beq   L1313
-         cmpa  #$0A
-         bhi   L1313
-         sta   $04,s
-         ldx   <$20,x
-L1381    stx   $06,s
+         lda   Wt.BSW,y
+         anda  #^Bold
+         sta   Wt.BSW,y
+         puls  a
+         ENDC
+         lbsr  L127B      print close box
+         ldy   >WGlobal+G.GfxTbl     Get graphics table ptr
+         leay  >$028E,y   point to handling table
+         clr   MnuXNum,y  Menu entry number=0
+         lbsr  L1371      get window descriptor pointer
+         lbne  L14E3      valid?
+         lda   WN.NMNS,x  yes, get number of menus in menu bar
+         lbeq  L14E3      none to print, return
+         cmpa  #10        more than 10?
+         lbhi  L14E3      yes, return
+         sta   4,s        save count
+         ldx   WN.BAR,x   get pointer to menu descriptor
+L144A    stx   6,s        save menu descriptor pointer
          pshs  u
-         ldu   <D.CCMem
-         ldu   >$00B7,u
-         lbsr  L12EC
+         ldu   >WGlobal+g00B7     get pointer to static mem
+         IFNE  H6309
+         bsr   L13B5      get menu descriptor
+         ELSE
+         lbsr  L13B5
+         ENDC
          puls  u
-         lbsr  L0F46
-         tst   $08,s
-         bne   L13A4
-         lda   <$12,x
-         beq   L13A1
-         lbsr  L124D
-         bra   L13A4
-L13A1    lbsr  L1261
-L13A4    lda   $0F,x
-         cmpa  #$14
-         bne   L13CC
-         lbsr  L0F46
-         tst   $08,s
-         bne   L13BA
-         lbsr  L11C4
-         lbsr  L11C0
-         lbsr  L11C4
-L13BA    ldb   #$01
-         stb   $03,s
+         ldy   >WGlobal+g00BB     Get ptr to work window table
+         lda   MN.ENBL,x  is menu enabled?
+         beq   L1466      no, skip ahead
+         IFNE  H6309
+         oim   #Bold,Wt.BSW,y Turn on Bold print
+         ELSE
+         lda   Wt.BSW,y
+         ora   #Bold
+         sta   Wt.BSW,y
+         ENDC
+         bra   L1469      skip ahead
+
+L1466    equ   *
+         IFNE  H6309
+         aim   #^Bold,Wt.BSW,y Turn off Bold print
+         ELSE
+         lda   Wt.BSW,y
+         anda  #^Bold
+         sta   Wt.BSW,y
+         ENDC
+L1469    lda   MN.ID,x    get ID number
+         cmpa  #MId.Tdy   is it tandy menu?
+         bne   L148D      no, skip ahead
+* Print tandy menu
+         ldy   >WGlobal+g00BB     Get ptr to work window table
+         lbsr  L1283      print a space
+         lbsr  L127F      print the tandy character
+         lbsr  L1283      print a space
+         ldb   #1         get this menu's length
+         stb   3,s        save it
          pshs  b
-         bsr   L1422
-         leas  $01,s
-         ldb   ,s
-         subb  #$03
-         stb   ,s
-         bra   L1401
-L13CC    leax  ,x
-         lbsr  L11E4
-         stb   $03,s
-         cmpb  ,s
-         bls   L13DF
-         ldb   ,s
-         subb  #$01
-         bls   L140E
-         inc   $02,s
-L13DF    pshs  b
-         lbsr  L0F46
-         tst   $09,s
-         bne   L13F5
-         lbsr  L11C4
-         lbsr  L11F9
-         tst   $03,s
-         bne   L13F5
-         lbsr  L11C4
-L13F5    bsr   L1422
-         inc   ,s
-         inc   ,s
-         ldb   $01,s
+         bsr   L14EE      add it into handling table
+         leas  1,s
+         ldb   ,s         get window size
+         subb  #3         take off length for tandy menu
+         stb   ,s         save it back
+         bra   L14C6      go to next entry
+
+* Print normal menu entry
+L148D    leax  MN.TTL,x   point to text
+         lbsr  L1299      get length of it up to maxium of 15
+         stb   3,s        save it
+         cmpb  ,s         will it fit in window?
+         bls   L14A4      yes, skip ahead
+         ldb   ,s         get window X size
+         subb  #1
+         bls   L14E3      no, return
+         inc   2,s        flag only 1 space
+* Print menu title text
+L14A4    pshs  b          save length of text
+         ldy   >WGlobal+g00BB     Get ptr to work window table
+         lbsr  L1283      print a space
+         lbsr  L12AE      print menu text
+         tst   3,s        was there anything to print?
+         bne   L14B6      yes, skip ahead
+         lbsr  L1283      print a space
+L14B6    bsr   L14EE      add menu to handling table
+         puls  a          get length of menu text
+         adda  #2         add 2 for space on each side
+         ldb   ,s         get size
+         IFNE  H6309
+         subr  a,b        subtract width from size left
+         ELSE
+         pshs  a
          subb  ,s+
-         stb   ,s
-L1401    ldx   $06,s
-         leax  <$17,x
-         inc   $05,s
-         dec   $04,s
-         lbne  L1381
-L140E    lbsr  L0F46
-         tst   $08,s
-         bne   L1418
-         lbsr  L1275
-L1418    lda   #$01
-         lbsr  L109A
-         ldu   <$00A5
-         leas  $09,s
-         rts   
+         ENDC
+         stb   ,s         save size left
 
-L1422    pshs  x,b,a
-         ldx   <$75,u
-         leax  >$028E,x
-         ldb   $0C,s
-         pshs  b
-         lda   #$03
-         mul   
+* Move to next menu descriptor
+L14C6    ldx   6,s        get menu descriptor pointer
+         leax  MN.SIZ,x   point to next menu descriptor
+         inc   5,s        add 1 to menu total
+         dec   4,s        done all descriptors?
+         lbne  L144A      no, go print next one
+L14E3    ldy   >WGlobal+g00BB     Get ptr to work window table
+         lbsr  L1331      turn inverse off
+         leas  8,s        purge stack
+         rts              return
+
+* Add menu entry to internal handling table.
+* Entry: Stack buffer pre loaded
+* This table is 4 bytes long for each entry and consists of:
+*        $00 - Menu # (starts at 1)
+*        $01 - X start co-ordinate
+*        $02 - X End co-ordinate
+*        $03 - Reserved as far as I can tell (possibly use for menu type
+*              flag: 0=normal, 1="sticky", etc.)
+L14EE    pshs  d,x
+         ldx   >WGlobal+G.GfxTbl     get pointer to special windowing table
+         leax  >$028E,x   point to menu handling table
+         ldb   12,s       get menu number
+         clra             multiply it by 4 (size of handling table entries)
+         IFNE  H6309
+         lsld  
+         lsld  
+         addr  d,x        add to handling table start
+         ELSE
+         lslb
+         rola
+         lslb
+         rola
          leax  d,x
-         puls  b
+         ENDC
+         ldb   12,s       get menu number
+         incb             Bump up by 1
+         stb   MnuXNum,x  save menu number
+         ldb   8,s        get X start coord
+         stb   MnuXStrt,x save it
+         addb  10,s       add length
+         incb             add 1 for space
+         stb   MnuXEnd,x  save end X coord
          incb  
-         stb   ,x
-         ldb   $08,s
-         stb   $01,x
-         addb  $0A,s
-         incb  
-         stb   $02,x
-         incb  
-         stb   $08,s
-         clr   $03,x
-         puls  pc,x,b,a
+         stb   8,s
+         clr   MnuHSiz,x  make sure next entry is clear
+         puls  d,x,pc
 
-L1449    lbra  L1559
-L144C    leas  <-$25,s
-         stu   ,s
-         sty   <$18,s
-         clr   <$22,s
-         tst   >$100A
-         beq   L1449
-         ldx   <$00A5
-         leax  <$3C,x
-         lbsr  L06F8
-         lbsr  L1B2E
-         leax  <$20,x
-         lbsr  L1A5C
-         bcs   L147E
-         lbsr  L156B
-         ldd   <$13,s
-         lbsr  L1D08
-         tsta  
-         lbne  L155B
-L147E    lda   <$14,s
-         beq   L1496
-         inca  
-         cmpa  <$29,y
-         beq   L1496
-         ldb   <$13,s
-         beq   L1496
-         incb  
-         cmpb  <$28,y
-         lbne  L1559
-L1496    ldx   <$00A5
-         lda   #$FF
-         sta   >$00BF,x
-         leax  <$3C,x
-         clr   >$100E
-L14A4    tst   $08,x
-         bne   L14A4
-         inc   >$100E
-         lbsr  L1B2E
-         leax  <$20,x
-         lbsr  L1A5C
-         bcs   L1449
-         lbsr  L156B
-         lda   <$14,s
-         bne   L14FA
-         ldb   <$13,s
-         lbeq  L1D64
-         cmpb  #$02
-         bhi   L14CD
-         lda   #$02
-         bra   L14F3
-L14CD    ldx   <$75,u
-         leax  >$028E,x
-L14D4    lda   ,x
-         lbeq  L1449
-         cmpb  $02,x
-         bhi   L14F6
-         lbsr  L15E2
-         pshs  u,a
-         ldu   $03,s
-         lda   <$24,s
-         sta   <$0026,u
-         ldu   <$00A5
-         clr   >$00C6,u
-         puls  u,a
-L14F3    lbra  L155B
-L14F6    leax  $03,x
-         bra   L14D4
-L14FA    pshs  u,y,x
-         ldu   $06,s
-         lbsr  L0711
-         ldd   <$10,x
-         std   <$29,s
-         lda   ,x
-         anda  #$07
-         cmpa  #$02
+* SS.MnSel entry point
+* Buffer breakdown:
+* $00-$01,s : Static mem ptr
+* $02-$17,s : ???
+* $18-$19,s : Window table ptr
+* $1A-$21,s : ???
+* $22,s     : ??? (Flag of some sort)
+* $23,s     : ???
+L1515    leas  <-$23,s    make a buffer
+         stu   ,s         save static mem pointer
+         sty   $18,s      save window table pointer
+         clr   $22,s      clear a flag
+         tst   >WGlobal+G.CrDvFl     Are we the current active device?
+         beq   L160A      No, return with nothing
+         ldx   #WGlobal+G.Mouse Get ptr to mouse packet
+         clr   >WGlobal+G.WIBusy     flag windint free
+L1530    tst   Pt.CBSA,x  button A still down?
+         bne   L1530      yes, wait for release
+         inc   >WGlobal+G.WIBusy     flag windint busy
+         lbsr  L06A0      verify window
+         lbsr  L1D24      copy current mouse coords to work cords.
+         leax  Pt.Siz,x   point to my work coords (hidden outside packet)
+         lbsr  L1C19      mouse on full window?
+         bcs   L160A      no, return with nothing
+         lbsr  L161B      calculate window start & end coords in pixels
+         ldd   7,s        get current mouse Y coord?
+         cmpd  #7         is it in the menu bar?
+         bhi   L158B      no, skip ahead
+         ldb   <$13,s     get current mouse text X coord
+         cmpb  #$01       past close box?
+         bgt   L155E      yes, skip ahead
+         lda   #MId.Cls   No, menu id=Close box
+         bra   L160C      return menu info
+
+* It wasn't close box scan menu handling table
+L155E    ldx   >WGlobal+G.GfxTbl     get graphics table pointer
+         leax  >$028E,x   point to menu handling table
+L1565    lda   MnuXNum,x  last entry?
+         beq   L160A      yes, return nothing
+         cmpb  MnuXEnd,x  within max X range?
+         bhi   L1587      no, point to next entry
+         lbsr  L16E6      process menu pulldown
+         pshs  a,u        save menu ID & global mem
+         ldu   3,s        get static mem pointer
+         lda   <$24,s     get mouse signal process #
+         sta   V.MSigID,u save it in static mem
+         clr   >WGlobal+G.MsSig     Clear mouse signal flag
+         puls  a,u
+         bra   L160C      Return menu id # & entry # to caller
+
+L1587    leax  MnuHSiz,x  move to next entry in handling table
+         bra   L1565      keep looking
+
+* Return no menu information received
+L160A    equ   *
+         IFNE  H6309
+         clrd             Menu # & ID # =0
+         ELSE
+         clra
+         clrb
+         ENDC
+         bra   L160C
+
+* Mouse wasn't on menu bar check scroll bars
+* NOTE: SHOULD ADD SO THAT IF MOUSE CLICKED BETWEEN SCROLL BARS, IT WILL
+*       RETURN THE POSITION (IN TEXT CHARS) ACROSS OR UP/DOWN WITHIN SCROLL
+*       BAR AREA
+L158B    pshs  u,y,x
+         ldu   6,s        get static mem pointer
+         lbsr  L06B9      get graphics table entry pointer
+         lda   ,x         get window type
+         cmpa  #WT.FSWin  do we have scroll bars?
          puls  u,y,x
-         lbne  L1CFB
+         bne   L160A      no, no need to check more return nothing
+* Check for left scroll bar arrow
+         ldd   5,s        get mouse X coord
+         cmpd  #7         X in range for left scroll bar arrow?
+         bhi   L15B0      no, check up arrow
          ldd   $0F,s
-         subd  #$0007
-         cmpd  $07,s
-         bhi   L153B
-         ldd   $0D,s
-         subd  #$0008
-         cmpd  $05,s
-         lbcs  L1D5F
-         lda   #$07
-         ldb   <$13,s
-         subb  #$01
-         bmi   L1539
-         cmpb  <$23,s
-         bcs   L1539
-         lda   #$06
-L1539    bra   L155B
-L153B    ldd   $0D,s
-         subd  #$0007
-         cmpd  $05,s
-         lbhi  L1CFB
-         lda   #$04
-         ldb   <$14,s
-         subb  #$02
-         bmi   L1557
-         cmpb  <$24,s
-         bcs   L1557
-         lda   #$05
-L1557    bra   L155B
-L1559    clra  
-         clrb  
-L155B    ldy   <$18,s
-         ldx   $06,y
-         std   $01,x
-         leas  <$25,s
-         clr   >$10BF
-         clrb  
+         subd  #7
+         cmpd  7,s
+         bhi   L15B0
+         lda   #MId.SLt   get menu ID for left scroll bar arrow
+* Return menu ID & item to caller
+* Entry: A=Menu ID
+*        B=Menu item #
+*        Y=Path descriptor pointer
+L160C    ldy   <$18,s     get path descriptor pointer
+         ldx   PD.RGS,y   get register stack pointer
+         std   R$D,x      save menu & item #
+         leas  <$23,s     Eat stack buffer
+         clrb             No error & return
          rts   
 
-L156B    bsr   L15AD
+* Check for up scroll bar arrow
+L15B0    ldd   7,s        get mouse Y coord
+         cmpd  #15        in range of up arrow?
+         bhi   L15C6      no, check right arrow
+         ldd   $D,s       get window X end coord pixel
+         subd  #7         subtract 7
+         cmpd  5,s        mouse X coord in range?
+         bhi   L15C6      no, check right arrow
+         lda   #MId.SUp   get menu ID for scroll up arrow
+         bra   L160C      return with menu ID
+
+* Check for right scroll bar arrow
+L15C6    ldd   $0F,s      get window Y end co-ordinate pixel
+         subd  #7         subtract 7
+         cmpd  7,s        mouse in range for Y
+         bhi   L15E8      no, check down arrow
+         ldd   $0D,s      get window X end co-ordinate pixel
+         subd  #8         subtract 8
+         cmpd  5,s        mouse below maximum range?
+         blo   L15E8      no, check down arrow
+         ldd   $0D,s
+         subd  #$000F
+         cmpd  5,s
+         bhi   L15E8
+         lda   #MId.SRt   get menu ID for right scroll arrow
+         bra   L160C
+
+* Check for down scroll bar arrow
+L15E8    ldd   $0D,s
+         subd  #$0007
+         cmpd  5,s
+         bhi   L160A      no, not on scroll bars, so return nothing
+         ldd   $0F,s
+         subd  #$0008
+         cmpd  7,s
+         blo   L160A
+         ldd   $0F,s
+         subd  #$000F
+         cmpd  7,s
+         lbhi  L160A
+         lda   #MId.SDn   get menu ID for down scroll arrow
+         bra   L160C      save it to caller & return
+
+* Calculate window start & end coords in pixels
+L161B    equ   *
+         IFNE  H6309
+         clrd
+         ELSE
+         clra
+         clrb
+         ENDC
          std   $0D,s
-         ldb   <$26,y
-         addb  $0D,s
-         lbsr  L100F
-         pshs  b,a
+         pshs  d
+         bsr   L1667      calculate coords
+         puls  d
+         ldb   Wt.DfCPX,y get full window X start coord
+         addb  $0D,s      add it to
+         lbsr  L1015      calculate size in pixels
+         IFNE  H6309
+         tfr   d,w        copy it to W
+         ldd   ,x         get mouse X co-ordinate
+         subr  w,d        calculate relative co-ordinate in window
+         ELSE
+         std   >GrfMem+gr00B5
          ldd   ,x
+         subd  >GrfMem+gr00B5
+         ENDC
+         std   7,s        save it on stack
+         bsr   L1027      divide it by 8
+         stb   <$15,s     save it as mouse text X co-ordinate
+         ldb   Wt.DfCPY,y get window default Y start co-ordinate
+         addb  $0E,s      add in size
+         lbsr  L1015      calculate window height in pixels
+         IFNE  H6309
+         ldw   $02,x      get mouse Y co-ordinate
+         subr  d,w        calculate relative co-ordinate within window
+         stw   9,s        save it
+         ELSE
+         pshs  d,dp
+         sta   2,s
+         ldd   2,x
          subd  ,s++
-         std   $07,s
-         lbsr  L1021
-         stb   <$15,s
-         ldb   <$27,y
-         addb  $0E,s
-         lbsr  L100F
-         pshs  b,a
-         ldd   $02,x
-         subd  ,s++
-         std   $09,s
-         lbsr  L1021
-         stb   <$16,s
-         ldb   <$28,y
-         lbsr  L100F
+         std   10,s
+         std   >GrfMem+gr00B5
+         puls  a
+         ENDC
+         ldb   Wt.DfCPX,y get window default X start co-ordinate
+         addb  $0D,s
+         addb  Wt.DfSZX,y
+         lbsr  L1015      calculate size in pixels
          std   $0F,s
-         ldb   <$29,y
-         lbsr  L100F
+         ldb   Wt.DfCPY,y
+         addb  $0E,s
+         addb  Wt.DfSZY,y
+         lbsr  L1015      calculate size in pixels
          std   <$11,s
          rts   
 
-L15AD    clra  
-         clrb  
-         pshs  x,b,a
-         lda   -$0E,y
-         bmi   L15C3
-L15B5    lbsr  L1AD0
-         lda   -$0E,x
-         bpl   L15B5
-         ldd   <$26,x
-         addd  -$0B,x
-         std   ,s
-L15C3    puls  pc,x,b,a
+* Seems to hunt down root device window given overlay window?
+* Entry: X=some sort of window tbl ptr
+*        Y=Some sort of window tbl ptr
+L1667    pshs  y,x
+         lda   Wt.BLnk,y  this a overlay window?
+L166B    bmi   L1688      no, return
+         lbsr  L1CBC      point X to the window table entry
+         ldd   Wt.DfCPX,x get window default start co-ordinates
+         addd  <$15,s
+         ldy   Wt.LStDf,x get window logical start address
+         cmpy  Wt.LStrt,x match current?
+         beq   L1681      yes, skip ahead
+         addd  Wt.CPX,x   add current start co-ordinates
+L1681    std   <$15,s
+         lda   Wt.Blnk,x  get back window link
+         bra   L166B      go calculate 
+L1688    puls  pc,y,x
 
-L15C5    pshs  u,x
-         bsr   L15AD
-         addb  <$27,y
-         incb  
-         ldx   ,s
-         lbsr  L100F
+* Signed Divide by 8
+* ONLY CALLED TWICE...SHOULD EMBED
+L1027    equ   *
+         IFNE  H6309
+         asrd  
+         asrd  
+         asrd  
+         ELSE
+         asra
+         rorb
+         asra
+         rorb
+         asra
+         rorb
+         ENDC
+         rts   
+
+* Calculate the current mouse Y text coord within a overlay window
+* used for menu pull down updates
+L168A    pshs  x,u        preserve pointer to mouse coords & global mem
+         lda   Wt.BLnk,y  get parent window # of this overlay
+         lbsr  L1CBC      point X to window table entry
+         lda   Wt.BLnk,x  parent window a overlay?
+         bpl   L169D      yes, skip ahead
+         ldb   Wt.DfCPY,y get current overlay window Y default start
+         addb  Wt.DfCPY,x add it to parent window default Y start
+         bra   L16A6      skip ahead
+
+L169D    ldb   Wt.DfCPY,y get default Y co-ordinate of current window
+         bsr   L16BC
+         tfr   a,b
+L16A6    ldx   ,s         get mouse coordinate pointer
+         lbsr  L1015      calculate it in pixels
+         IFNE  H6309
+         incd             Add 1
+         tfr   d,w        copy it to W
+         ldd   2,x        get mouse Y co-ordinate
+         subr  w,d        calculate the relative co-ordinate in window
+         ELSE
          addd  #$0001
-         pshs  b,a
-         ldd   $02,x
+         std   >GrfMem+gr00B5
+         pshs  d
+         ldd   2,x
          subd  ,s++
-         lbsr  L1021
-         tfr   b,a
-         puls  pc,u,x
+         ENDC
+         bsr   L1027      divide it by 8
+         decb             subtract 1
+         tfr   b,a        copy it to A
+         puls  x,u,pc     restore & return
 
-L15E2    stx   $0B,s
-         ldy   <$1A,s
-         ldu   $02,s
-         ldb   <$0026,u
-         stb   <$23,s
-         clr   <$0026,u
-         lbsr  L18BE
-         stx   <$1E,s
-         sty   <$13,s
-         ldx   <$75,u
-         leax  >$0240,x
-         ldx   <$20,x
-L1607    deca  
-         beq   L160F
-         leax  <$17,x
-         bra   L1607
-L160F    pshs  u
-         ldu   $04,s
-         lbsr  L12EC
-         puls  u
-         stx   $05,s
-         lda   <$12,x
-         bne   L1624
-         clra  
+* Calculate the current mouse Y text co-ordinate
+L16BC    pshs  x,y        preserve current & parent window table pointers
          clrb  
-         lbra  L17F9
-L1624    ldu   $0B,s
-         ldy   <$13,s
-         lda   $0001,u
-         clrb  
-         ldu   <$00A5
-         lbsr  L1222
-         lbsr  L11CF
-         lbsr  L124D
-         lbsr  L126C
-         lbsr  L11E4
-         lbsr  L190A
-         lbsr  L11C4
-         lda   $0F,x
-         cmpa  #$14
-         bne   L164F
-         lbsr  L11C0
-         bra   L1652
-L164F    lbsr  L11F9
-L1652    tst   <$19,s
-         bne   L165A
-         lbsr  L11C4
-L165A    lbsr  L1261
-         ldx   $05,s
-         lda   <$11,x
-         bne   L166A
-         lda   $0F,x
-         clrb  
-         lbra  L17F9
-L166A    lda   <$10,x
-         adda  #$02
-         pshs  a
-         ldu   $0C,s
-         adda  $0001,u
-         cmpa  -$09,y
-         bcc   L167D
-         lda   $0001,u
-         bra   L1681
-L167D    lda   -$09,y
-         suba  ,s
-L1681    puls  b
-         ldu   $02,s
-         lbsr  L0802
-         sty   <$1C,s
-         stb   -$09,y
-         ldb   #$01
-         ldy   <$13,s
-         tst   -$0E,y
-         bmi   L169B
-         addd  <$26,y
-L169B    ldy   <$1C,s
-         std   -$0B,y
-         lda   #$01
-         sta   >$0159,u
-         lda   <$11,x
-         adda  #$02
-         pshs  x
-         ldx   <$15,s
-         cmpa  -$08,x
-         bcs   L16C3
-         lda   -$08,x
-         deca  
-         sta   -$08,y
-         suba  #$02
-         puls  x
-         sta   <$11,x
-         bra   L16C7
-L16C3    puls  x
-         sta   -$08,y
-L16C7    ldx   <$1E,s
-         ldd   $09,x
-         std   $06,y
-         pshs  u,y
-         ldb   #$0A
-         lbsr  L0105
-         puls  u,y
-         bcc   L16ED
-         lda   -$0E,y
-         ldu   $02,s
-         sta   <$0035,u
-         ldd   #$FFFF
-         std   -$10,y
-         lbsr  L18AC
-         clra  
-         clrb  
-         lbra  L17F9
-L16ED    ldd   #$CA01
-         lbsr  L0896
-         pshs  y,x
-         ldb   #$1A
-         lbsr  L0105
-         puls  y,x
-         ldu   $02,s
-         lbsr  L1292
-         ldy   <$1A,s
-         lbsr  L0EDD
-         lbcs  L17F5
-         ldu   <$00A5
-         ldy   <$1C,s
-         pshs  u,y
-         lda   #$20
-         ldb   #$3E
-         lbsr  L0105
-         puls  u,y
-         ldx   $05,s
-         ldb   <$11,x
-         stb   <$18,s
-         clr   <$17,s
-         ldx   <$15,x
-         lbsr  L1222
-L172E    stx   <$20,s
-         lbsr  L1CCD
-         tst   $0F,x
-         bne   L173D
-         lbsr  L1261
-         bra   L1740
-L173D    lbsr  L124D
-L1740    clra  
-         ldb   <$17,s
-         lbsr  L11CF
-         lbsr  L11E4
-         lbsr  L11F9
-         ldx   <$20,s
-         leax  <$15,x
-         inc   <$17,s
-         dec   <$18,s
-         bne   L172E
-         lda   #$FF
-         sta   $04,s
-         ldu   <$00A5
-         sta   >$00BF,u
-         lda   <$0060,u
-         sta   <$22,s
-         lda   #$02
-         sta   <$0060,u
-         sta   <$003B,u
-L1773    clr   >$100E
-         ldx   #$0001
-         os9   F$Sleep
-         inc   >$100E
-         ldu   <$00A5
-         lda   >$00BF,u
-         bmi   L1791
-         beq   L1802
-         clr   >$00BF,u
-         lda   #$08
-         bra   L17F7
-L1791    leax  <$003C,u
-         tst   $08,x
-         bne   L17D4
-         lbsr  L1B2E
-         lbsr  L1A65
-         bcc   L17BF
-         bsr   L1809
-         leax  <$003C,u
-         leax  <$20,x
-         lbsr  L1A5C
-         bcs   L17B8
-         lda   #$01
-         sta   <$24,s
-         lda   #$FF
-         sta   $04,s
-         bra   L1773
-L17B8    tst   <$24,s
-         bne   L17F5
-         bra   L1773
-L17BF    lda   #$01
-         sta   <$24,s
-         lbsr  L15C5
-         sta   <$16,s
-         cmpa  $04,s
-         beq   L1773
-         bsr   L1809
-         bsr   L182F
-         bra   L1773
-L17D4    lbsr  L18B5
-         lbsr  L1B2E
-         lbsr  L1A65
-         bcs   L17F5
-         lda   $04,s
-         leas  -$02,s
-         lbsr  L1865
-         leas  $02,s
-         lda   $0F,x
-         beq   L17F5
-         ldx   $05,s
-         lda   $0F,x
-         ldb   $04,s
-         incb  
-         bra   L17F7
-L17F5    clra  
-         clrb  
-L17F7    bsr   L1876
-L17F9    pshs  b,a
-         ldu   $04,s
-         lbsr  L18E3
-         puls  pc,b,a
-
-L1802    clra  
-         clrb  
-         lbsr  L1887
-         bra   L17F9
-L1809    lda   $06,s
-         bmi   L182E
-         lbsr  L1275
-         lda   $06,s
-         bsr   L1865
-         tst   $0F,x
-         beq   L182E
-         lbsr  L124D
-         lbsr  L11E4
          pshs  b
-         clra  
-         ldb   $07,s
-         lbsr  L11CF
-         lbsr  L1201
-         puls  b
-         lbsr  L11F9
-L182E    rts   
-
-L182F    lbsr  L126F
-         lda   <$18,s
-         bsr   L1865
-         tst   $0F,x
-         beq   L185F
-         lbsr  L124D
-         lbsr  L11E4
-         pshs  b
-         clra  
-         ldb   <$19,s
-         lbsr  L11CF
-         ldb   ,s
-         lbsr  L11F9
-         ldx   $08,s
-         ldb   <$10,x
-         subb  ,s+
-         decb  
-L1857    decb  
-         bmi   L185F
-         lbsr  L11C4
-         bra   L1857
-L185F    lda   <$18,s
-         sta   $06,s
-         rts   
-
-L1865    ldx   $09,s
-         ldx   <$15,x
-L186A    deca  
-         bmi   L1872
-         leax  <$15,x
-         bra   L186A
-L1872    lbsr  L1CCD
-         rts   
-
-L1876    pshs  b,a
-         bsr   L188D
-         ldu   <$00A5
-         lda   <$26,s
-         sta   <$0060,u
-         sta   <$003B,u
-         bra   L18AE
-L1887    pshs  b,a
-         bsr   L188D
-         bra   L18AE
-L188D    ldy   <$22,s
-         ldu   $08,s
-         lda   -$0E,y
-         sta   <$0035,u
-         ldd   <$24,y
-         std   -$0D,y
-         ldd   <$26,y
-         std   -$0B,y
-         ldd   <$28,y
-         std   -$09,y
-         ldb   #$0C
-         lbra  L0105
-L18AC    pshs  b,a
-L18AE    ldu   $06,s
-         lbsr  SSUMBar
-         puls  pc,b,a
-
-L18B5    tst   $08,x
-         bne   L18B5
-         clr   $0A,x
-         clr   $0C,x
-         rts   
-
-L18BE    pshs  b,a
-         lbsr  L0706
-         ldx   <$75,u
-         leax  >$02CF,x
-         bsr   L18F0
-         lbsr  L0546
-         ldu   $06,s
-         lbsr  L0711
-         ldd   $07,x
-         std   $06,y
-         lbsr  L128F
-         lbsr  L1279
-         lbsr  L1282
-         puls  pc,b,a
-
-L18E3    lbsr  L0706
          tfr   y,x
-         ldy   <$75,u
-         leay  >$02CF,y
-L18F0    pshs  u,y,x,b,a
-         leax  -$10,x
-         leay  -$10,y
-         ldb   #$40
-L18F8    pshs  b
-         ldd   ,y++
-         ldu   ,y++
-         std   ,x++
-         stu   ,x++
-         puls  b
-         subb  #$04
-         bgt   L18F8
-         puls  pc,u,y,x,b,a
+L16C3    lda   Wt.BLnk,x  get window # of parent window
+         bmi   L16D3      we're at the bottom, skip ahead
+         lbsr  L1CBC      go calculate
+         ldb   Wt.DfCPY,x get parent window default Y start
+         addb  ,s         add it to current
+         stb   ,s         save it
+         bra   L16C3      keep going
 
-L190A    leas  -$02,s
-         bsr   L1911
-         leas  $02,s
+L16D3    ldy   Wt.LStDf,x
+         cmpy  Wt.LStrt,x
+         beq   L16E2
+         ldb   Wt.CPY,x
+         addb  ,s
+         stb   ,s
+L16E2    inc   ,s
+         puls  a,x,y,pc
+
+* Process a selected menu item on menu bar
+* Entry: A=Menu # from menu handling table
+*        X=Pointer to menu handling entry
+L16E6    stx   $0B,s      save current menu handling entry pointer
+         ldy   <$1A,s     get path descriptor pointer
+         ldu   $02,s      get static mem pointer
+         ldb   V.MSigID,u get process ID of mouse signal reciever
+         stb   <$23,s     save it
+         clr   V.MSigID,u clear it in device mem
+         lbsr  L1A3C      copy window table
+         stx   <$1E,s     save pointer to graphics table entry
+         sty   <$13,s     save pointer to window table
+         ldx   >WGlobal+G.GfxTbl     get graphics table pointer
+         leax  >$0240,x   point to working window descriptor
+         ldx   WN.BAR,x   get pointer to array of menu descriptors
+         deca             adjust current menu # to start at 0
+         ldb   #MN.SIZ    get size of menu descriptor
+         mul              calculate offset
+         IFNE  H6309
+         addr  d,x        add it to menu array pointer
+         ELSE
+         leax  d,x
+         ENDC
+         ldu   2,s        get static mem pointer
+         lbsr  L13B5      copy menu descriptor from user space
+         stx   5,s        save menu entry pointer
+         lda   MN.ENBL,x  menu enabled?
+         bne   L1728      yes, process pulldown
+         IFNE  H6309
+         clrd             clear menu ID & item #
+         ELSE
+         clra
+         clrb
+         ENDC
+         lbra  L193A      restore window table & return
+
+* Print selected menu text
+L1728    ldu   $0B,s      get menu handling entry pointer
+         ldy   <$13,s     get window table pointer
+         lda   MnuXStrt,u get start X co-ordinate
+         clrb             get start Y co-ordinate
+         pshs  y,x        preserve regs
+         lbsr  L12D7      switch to text font
+         lbsr  L128E      set text coords
+         IFNE  H6309
+         oim   #Bold+TChr,Wt.BSW,y Turn Bold ON/Transparency OFF
+         ELSE
+         pshs  a
+         lda   Wt.BSW,y
+         ora   #Bold+TChr
+         sta   Wt.BSW,y
+         puls  a
+         ENDC
+         puls  y,x        restore regs
+         lbsr  L1299      get length of text to a maximum of 15
+         lbsr  L1A88      calculate if we can print a space after menu text
+         lbsr  L1283      print a space
+         lda   MN.ID,x    get menu ID
+         cmpa  #MId.Tdy   is it tandy menu?
+         bne   L1757      no, skip ahead
+         lbsr  L127F      print tandy icon
+         bra   L175A      skip ahead
+
+L1757    lbsr  L12AE      print menu text
+L175A    tst   <$19,s     can we print a space here?
+         bne   L1762      no, skip ahead
+         lbsr  L1283      print a space
+L1762    equ   *
+         IFNE  H6309
+         aim   #^Bold,Wt.BSW,y Turn BOLD OFF
+         ELSE
+         lda   Wt.BSW,y
+         anda  #^Bold
+         sta   Wt.BSW,y
+         ENDC
+         ldx   $05,s      get pointer to menu descriptor
+         lda   MN.NITS,x  any items to print?
+         bne   L1772      yes, skip ahead
+         lda   MN.ID,x    get menu ID
+         clrb             clear item
+         lbra  L193A      return with menu info
+
+* Calculate X start position and size of pull down
+L1772    lda   MN.XSIZ,x  get horizontal size of pull down
+         adda  #$02       add 2 for the borders
+         pshs  a          save window width
+         ldu   $0C,s      get pointer to handling entry
+         adda  MnuXStrt,u add in the start coord to get end coord
+         cmpa  Wt.SZX,y   will it fit in current window?
+         bhs   L1785      no, skip ahead
+         lda   MnuXStrt,u get start coord
+         bra   L1789
+
+L1785    lda   Wt.SZX,y   get current window size
+         suba  ,s         subtract calculated width
+L1789    puls  b          restore width of pull down
+         ldu   2,s        get static mem pointer
+         lbsr  L07B0      find a new window table & link it to current
+         sty   <$1C,s     save the pointer to new window table
+         pshs  y          preserve new window table pointer
+         ldy   <$15,s     get old window table pointer
+         tst   Wt.BLnk,y  Is it an overlay window?
+         bmi   L17A5      No, skip ahead
+L17A2    adda  Wt.DfCPX,y Yes, add to Default X coord start
+L17A5    puls  y          Get new window table ptr back
+         sta   Wt.CPX,y   Save new current X coord start
+         stb   Wt.SZX,y   Save new current X size
+         pshs  y          Save new window table ptr again
+         ldy   <$15,s     get working window table pointer?
+         tst   Wt.BLnk,y  this a overlay window?
+         bpl   L17B9      yes, skip ahead
+         puls  y
+         bra   L17C1
+
+L17B9    lda   Wt.DfCPY,y get full window Y start
+         inca             add 1
+         puls  y          restore
+         bra   L17C3      skip ahead
+
+* Calculate Y start & size of pull down
+L17C1    lda   #$01       get Y co-ordinate start
+L17C3    sta   Wt.CPY,y   save it as current window Y start
+         sta   >GrfMem+gr0059     save it as save switch too
+         lda   MN.NITS,x  get # items in this menu
+         adda  #$02       add 2 to put a blank line on top & bottom
+         pshs  x          save pointer to menu descriptor
+         ldx   <$15,s
+         cmpa  Wt.SZY,x
+         blt   L17E5
+         lda   Wt.SZY,x
+         deca  
+         sta   Wt.SZY,y
+         suba  #2
+         puls  x          restore menu descriptor pointer
+         sta   MN.NITS,x  save as # items in menu descriptor
+         bra   L17E9
+
+L17E5    puls  x          restore menu descriptor pointer
+         sta   Wt.SZY,y   save overlay window size
+* Place pull down on screen
+L17E9    ldx   <$1E,s     get graphics table pointer
+         ldd   Gt.FMsk,x  get the foreground/background masks
+         std   Wt.Fore,y  set foreground/background masks in window table
+         pshs  y          Preserve window tbl ptr
+         ldb   #$0A       get code for OWSet
+         lbsr  L0101      do a overlay window
+         puls  y          Get window tbl ptr back
+         bcc   L181D      no errors on OWSet, print menu items
+         lda   Wt.BLnk,y  Error, get parent window #
+         ldu   2,s        Get static mem ptr
+         sta   V.WinNum,u   Save parent window
+         ldd   #$FFFF     Mark window table as unused
+         std   Wt.STbl,y
+         lbsr  L19F1
+         IFNE  H6309
+         clrd
+         ELSE
+         clra
+         clrb
+         ENDC
+         lbra  L193A
+
+* Move a menu item descriptor from caller
+* Exit: X=Ptr to destination
+L13C9    pshs  b,y,u      preserve regs
+         ldu   <D.Proc    get source task #
+         lda   P$Task,u
+         ldu   <D.SysPrc  get system task #
+         ldb   P$Task,u
+         ldu   >WGlobal+G.GfxTbl     get destination pointer
+         leau  >$0279,u
+         ldy   #MI.SIZ    get size of item descriptor
+         os9   F$Move     move it
+         tfr   u,x        make X point to destination
+         puls  b,y,u,pc
+
+* Setup for printing the item text in the pull down
+L181D    ldu   $02,s      get static memory pointer
+         lbsr  L1358      setup graphics table entry
+         ldy   <$1A,s     get working window table pointer
+         lbsr  L0E68      do a shadowed window on this overlay
+         lbcs  L1935      error, return nothing
+         ldy   <$1C,s     get window table pointer
+         pshs  y
+         ldd   #$203E     turn cursor off
+         lbsr  L0101
+         puls  y
+         ldx   $05,s      get pointer to menu descriptor
+         ldb   MN.NITS,x  get # items in menu
+         stb   <$18,s     save it as a counter
+         clra  
+         sta   <$17,s
+         ldx   MN.ITEMS,x get pointer to item descriptor
+         lbsr  L12D7      switch to text font
+* Print all items in the pull down
+L1852    stx   <$20,s     save pointer to item descriptor
+         bsr   L13C9      get item descriptor from caller
+         tst   MI.ENBL,x  item enabled?
+         bne   L1861      yes, turn bold on
+         IFNE  H6309
+         aim   #^Bold,Wt.BSW,y Turn BOLD OFF
+         ELSE
+         pshs  a
+         lda   Wt.BSW,y
+         anda  #^Bold
+         sta   Wt.BSW,y
+         puls  a
+         ENDC
+         bra   L1864      skip to printing
+
+L1861    equ   *
+         IFNE  H6309
+         oim   #Bold,Wt.BSW,y Turn BOLD ON
+         ELSE
+         lda   Wt.BSW,y
+         ora   #Bold
+         sta   Wt.BSW,y
+         ENDC
+L1864    clra             set X co-ordinate
+         ldb   <$17,s     get Y co-ordinate
+         pshs  x          preserve item pointer
+         lbsr  L128E      set text co-ordinate
+         puls  x          restore item pointer
+         lbsr  L1299      get length of text to a maximum of 15
+         lbsr  L12AE      print item text
+         ldx   <$20,s     get pointer to item descriptor
+         leax  MI.SIZ,x   move to next item
+         inc   <$17,s     add another item
+         dec   <$18,s     done all items?
+         bne   L1852      no, keep going
+* Setup some variables
+         lda   #$FF       set current selected item state
+         sta   $04,s
+         sta   >WGlobal+g00BF
+         lda   >WGlobal+G.MSmpRV     get current mouse scan rate
+         sta   <$22,s     preserve it
+         lda   #$02       set new mouse scan rate in global mem
+         sta   >WGlobal+G.MSmpRV
+         sta   >WGlobal+G.MSmpRt
+* Main pointer processing loop for a pulldown
+* waits for either a keypress or a mouse button click while updating
+* item text in pull down
+L18A5    clr   >WGlobal+G.WIBusy     flag windint not busy
+         ldx   #1         let cc3io scan keyboard & update mouse pointer
+         os9   F$Sleep
+         inc   >WGlobal+G.WIBusy     flag windint busy
+         lda   >WGlobal+g00BF     was a key pressed?
+         bmi   L18CB      no, skip ahead
+         beq   L1943      already processed, remove pull down & return
+         clr   >WGlobal+g00BF     clear key press flag
+         lda   #MId.Chr   get menu ID for key press
+         bra   L1937      remove pull down & return
+
+L18CB    ldx   #WGlobal+G.Mouse Point to mouse packet
+         tst   Pt.CBSA,x  button A down?
+         bne   L1911      yes, go check out where it is
+* No mouse button, check if mouse is in window
+         lbsr  L1D24      copy mouse co-ordinates to system co-ordinates
+         leax  Pt.Siz,x   point to 'em
+         lbsr  L1C25      mouse in current working area?
+         bcc   L18FC      yes, check for item update
+         bsr   L194A      print current item in non-inverse state
+         ldx   #WGlobal+g005C Get ptr to work mouse coords
+         lbsr  L1C19      mouse in current window?
+         bcs   L18F5      no, skip ahead
+         lda   #$01       set mouse in pulldown flag
+         sta   <$24,s
+         lda   #$FF       flag no current item selected
+         sta   $04,s
+         bra   L18A5      go back & wait
+
+L18F5    tst   <$24,s     mouse still in pull down?
+         bne   L1935      no, remove pulldown & return nothing
+         bra   L18A5      go back & wait
+
+* Check if we update current item text
+L18FC    lda   #$01       set mouse in pull down flag
+         sta   <$24,s
+         lbsr  L168A      calculate text Y co-ordinate from mouse
+         sta   <$16,s     save current Y co-ordinate
+         cmpa  $04,s      match current item?
+         beq   L18A5      yes, go back & wait
+         bsr   L194A      print item text
+         bsr   L1972      print next item in inverse state
+         bra   L18A5      go back & wait
+
+* Mouse button down but not released, check if it's a menu item
+L1911    lbsr  L1A33      wait for button release
+         lbsr  L1D24      get current mouse co-ordinates
+         leax  Pt.Siz,x   point to 'em
+         lbsr  L1C25      mouse still in current working area?
+         bcs   L1935      no, return nothing
+         lda   $04,s      get current item #
+         leas  -2,s
+* Was BSR
+         lbsr  L19A8      get item descriptor from caller
+         leas  2,s
+         lda   MI.ENBL,x  item enabled?
+         beq   L1935      no, return nothing
+         ldx   $05,s      get menu descriptor pointer
+         lda   MN.ID,x    get ID
+         ldb   $04,s      get item #
+         incb             add 1 to it (can't use zero)
+         bra   L1937      return with ID & item #
+
+L1935    equ   *
+         IFNE  H6309
+         clrd             clear menu ID & item #
+         ELSE
+         clra
+         clrb
+         ENDC
+L1937    equ   *
+         IFNE  H6309
+         bsr   L19B9      remove pulldown & redraw menu bar
+         ELSE
+         lbsr  L19B9
+         ENDC
+L193A    pshs  d          preserve menu id & item #
+         ldu   $04,s      get static mem pointer
+         lbsr  L1A61      copy the window table
+         puls  d,pc       restore & return
+
+L1943    equ   *
+         IFNE  H6309
+         clrd
+         bsr   L19CA
+         ELSE
+         clra
+         clrb
+         lbsr  L19CA
+         ENDC
+         bra   L193A
+
+* Print non-inversed item text
+L194A    lda   $06,s      get current item #
+         bmi   L1971      no item, return
+         pshs  a          preserve it
+         lbsr  L1331      turn inverse off
+         puls  a          restore item #
+         bsr   L19A8      get item descriptor from caller
+         tst   MI.ENBL,x  enabled?
+         beq   L1971      no, return
+         IFNE  H6309
+         oim   #Bold,Wt.BSW,y Turn BOLD ON
+         ELSE
+         pshs  a
+         lda   Wt.BSW,y
+         ora   #Bold
+         sta   Wt.BSW,y
+         puls  a
+         ENDC
+         lbsr  L1299      get length of item text
+         pshs  b          save length
+         clra             get text X co-ordinate
+         ldb   $07,s      get text Y co-ordinate of item
+         lbsr  L128E      set them
+         lbsr  L12B6      erase to end of line
+         puls  b          restore item text length
+         lbra  L12AE      print item text & return from there
+
+* Print inversed item text
+L1972    lbsr  L1329      turn inverse on
+         lda   <$18,s     get item #
+         bsr   L19A8      get item descriptor from caller
+         tst   MI.ENBL,x  enabled?
+         beq   L19A2      no, return
+         IFNE  H6309
+         oim   #Bold,Wt.BSW,y Turn BOLD ON
+         ELSE
+         pshs  a
+         lda   Wt.BSW,y
+         ora   #Bold
+         sta   Wt.BSW,y
+         puls  a
+         ENDC
+         lbsr  L1299      calculate length
+         pshs  b          save it
+         clra             get X coord of item
+         ldb   <$19,s     get Y coord of item
+         lbsr  L128E      set cursor
+         ldb   ,s         get length
+         lbsr  L12AE      print item text
+         ldx   $08,s      get menu descriptor pointer
+         ldb   MN.XSIZ,x  get width of pull down
+         subb  ,s+        subtract from text length
+         decb             take one off
+L199A    decb             done printing?
+         bmi   L19A2      yes, return
+         lbsr  L1283      print a space
+         bra   L199A      keep going till done
+
+L19A2    lda   <$18,s     get new item #
+         sta   6,s        save as current
+L1971    rts              return
+
+* Get a item descriptor from caller
+* Entry: A=Item #
+L19A8    ldx   $09,s      get menu descriptor pointer
+         ldx   MN.ITEMS,x get pointer to item descriptor array
+         ldb   #MI.SIZ    get size of item descriptor
+         mul              calculate offset
+         IFNE  H6309
+         addr  d,x        add it to pointer
+         ELSE
+         leax  d,x
+         ENDC
+         lbsr  L13C9      get item descriptor from caller
+         rts              return
+
+* Remove pull down menu & redraw menu bar
+L19B9    pshs  d          preserve menu ID and item number
+         bsr   L19D0      remove pull down overlay
+         lda   <$26,s     restore mouse sample rate
+         sta   >WGlobal+G.MSmpRV     put it in global
+         sta   >WGlobal+G.MSmpRt
+         bra   L19F3      redo menu text
+
+L19CA    pshs  d          preserve menu ID & item #
+         bsr   L19D0      remove pull down
+         puls  d,pc
+
+* Remove menu bar pull down
+L19D0    ldy   <$22,s     get window table pointer
+         ldu   $08,s      get static mem pointer
+         lda   Wt.BLnk,y  get window back link #
+         sta   V.WinNum,u   save as current window
+         ldd   Wt.LStDf,y get screen logical start of full window
+         std   Wt.LStrt,y save it as current
+         IFNE  H6309
+         ldq   Wt.DfCPX,y get start co-ordinates & sizes
+         stq   Wt.CPX,y   save 'em as current
+         ELSE
+         ldd   Wt.DfCPX+2,y
+         std   Wt.CPX+2,y
+         std   >GrfMem+gr00B5
+         ldd   Wt.DfCPX,y
+         std   Wt.CPX,y
+         ENDC
+         ldb   #$0C       get code for OWEnd
+         lbra  L0101
+
+* Print menu descriptor text
+* ENTRY: X=ptr to NUL terminated menu text
+L19F1    pshs  d          preserve menu ID & item #
+L19F3    ldu   $F,s       get pointer to menu handling entry
+         ldy   <$17,s     get window table pointer
+         ldx   $9,s       get menu text pointer
+         lda   MnuXStrt,u get start X coord
+         clrb             Y coord=0
+         lbsr  L128E      Do CurXY (preserves u,y,x)
+* Shut scaling off so it works properly (may be able to use A or B instead)
+         lda   Wt.BSW,y
+         IFNE  H6309
+         oim   #Bold,Wt.BSW,y BOLD ON
+         aim   #^(TChr+Scale),Wt.BSW,y Transparency on / Scaling off
+         ELSE
+         pshs  a
+         lda   Wt.BSW,y
+         ora   #Bold
+         anda  #^(TChr+Scale)
+         sta   Wt.BSW,y
+         puls  a
+         ENDC
+         sta   Wt.BSW
+         lbsr  L1329      turn inverse on (preserves u,y,x)
+         lbsr  L1299      get length of text (up to 15) into B
+         IFNE  H6309
+         bsr   L1A8F      Get size that we print into A/U=menu table ptr
+         ELSE
+         lbsr  L1A8F
+         ENDC
+         lbsr  FixMenu    Draw the graphics under current menu option
+         lbsr  L1283      print a space
+         lda   MN.ID,x    get menu ID
+         cmpa  #MId.Tdy   tandy menu?
+         bne   L1A23      no, print normal text
+         lbsr  L127F      print tandy icon (no spaces)
+         bra   L1A2E      return
+
+L1A23    lbsr  L12AE      print menu text
+L1A2E    equ   *
+         IFNE  H6309
+         aim   #^Bold,Wt.BSW,y turn BOLD OFF
+         ELSE
+         lda   Wt.BSW,y
+         anda  #^Bold
+         sta   Wt.BSW,y
+         ENDC
+         puls  d,pc
+
+* Wait for mouse button release
+L1A33    tst   Pt.CBSA,x  button A down?
+         bne   L1A33      yes, wait for release
+         clr   Pt.CCtA,x  clear click count
+         clr   Pt.TTSA,x  clear time this state
+         rts              return
+
+* Copy window table into a buffer for preservation while windint is processing
+* the menu bar selections. It does this for ease of restoration of window
+* to do overlays & such
+L1A3C    pshs  d          preserve registers
+         lbsr  L06AE      get window table pointer
+         ldx   >WGlobal+G.GfxTbl     point to a buffer for window table
+         leax  >$02CF,x   Point to buffer to preserve original window tbl
+         bsr   L1A6E      copy current window table into buffer
+         lbsr  L04EA      change window to full size
+         ldu   6,s
+         lbsr  L06B9      get graphics table pointer
+         ldd   Gt.FClr,x
+         std   Wt.Fore,y  save it into window table
+         IFNE  H6309
+         aim   #^Prop,Wt.BSW,y Proportional OFF
+         ELSE
+         pshs  a
+         lda   Wt.BSW,y
+         anda  #^Prop
+         sta   Wt.BSW,y
+         puls  a
+         ENDC
+         lbsr  L1337      set draw pattern to nothing
+         lbsr  L1342      set logic type to nothing
+         puls  d,pc       restore & return
+
+* Restore window table to original state
+L1A61    lbsr  L06AE
+         tfr   y,x
+         ldy   >WGlobal+G.GfxTbl
+         leay  >$02CF,y
+
+* Copy a window table
+* Entry: Y=Source pointer
+*        X=Destination pointer
+
+L1A6E    pshs  x,y
+         leax  Wt.STbl,x
+         leay  Wt.STbl,y
+         IFNE  H6309
+         ldw   #Wt.Siz
+         tfm   y+,x+
+         ELSE
+         pshs  d
+         ldb   #Wt.Siz
+L1A6Eb   lda   ,y+
+         sta   ,x+
+         decb
+         bne   L1A6Eb
+         clra
+         std   >GrfMem+gr00B5
+         puls  d
+         ENDC
+         puls  x,y,pc
+
+L1A88    leas  -2,s       adjust stack for L1a8f routine
+         bsr   L1A8F      Calc End X coord for menu entry
+         leas  2,s        restore stack & return
          rts   
 
-L1911    ldu   <$11,s
-         lda   $0001,u
+* Calculate what size of text we will write (preferably with 1 space in
+*   front & back). Set flag @ <$1d on stack as to whether spaces fit or not.
+* Entry: B=Size of text entry
+* Exit: <$1d,s (after puls a,pc) = 0 if fits with lead & trailing spaces
+*       <$1d,s = 1 if did not fit
+*       A=End X coord on menu bar of TEXT ONLY, NOT INCLUDING SPACES
+*       B=Maximum size of text to write (IF CAN'T FIT WITH 2 SPACES)
+*       U=menu table ptr
+*       E=End X coord including spaces
+* NOTE: A does calculate real end in the routine, but only to set flag on
+*       stack. It destroys the result before exiting.
+
+L1A8F    ldu   <$11,s     get menu table pointer
+         lda   MnuXStrt,u get X start co-ordinate
+         IFNE  H6309
+         addr  b,a        add size of text to it
+         ELSE
          pshs  b
          adda  ,s+
-         pshs  a
+         ENDC
+         pshs  a          save result (end coord)
+         inca             add 2 for space on either side
          inca  
-         inca  
-         cmpa  -$09,y
-         bls   L1932
-         lda   ,s
-         inca  
-         cmpa  -$09,y
-         bls   L192E
-         ldb   -$09,y
-         subb  $0001,u
-         decb  
-L192E    lda   #$01
-         bra   L1933
-L1932    clra  
-L1933    sta   <$20,s
-         ldu   <$00A5
-         puls  pc,a
+* Changed to use E
 
-******************************
-*
-* SS.Bar Entry point
-*
+         IFNE  H6309
+         tfr   a,e        Move to register we can preserve
+         cmpe  Wt.SZX,y   still fit in window?
+         bls   L1AB0      yes, skip ahead
+         dece             Subtract one of the 2 spaces
+         cmpe  Wt.SZX,y   fit in window now?
+         ELSE
+         sta   >GrfMem+gr00B5
+         cmpa  Wt.SZX,y
+         bls   L1AB0
+         deca
+         sta   >GrfMem+gr00B5
+         cmpa  Wt.SZX,y
+         ENDC
+         bls   L1AAC      yes, skip ahead
+         ldb   Wt.SZX,y   get window size
+         subb  MnuXStrt,u take off start coord
+         decb             take off another for space in front
+         IFNE  H6309
+         tfr   b,e
+         ELSE
+         stb   >GrfMem+gr00B5
+         ENDC
+L1AAC    lda   #$01
+         bra   L1AB1
 
-SSSBar   pshs  u          Save device mem pointer
-         lbsr  L10B6
-         ldx   PD.RGS,y
-         lbsr  L0F46
-         lbsr  L1264
-         pshs  u,y,x
-         lbsr  L2259
-         puls  u,y,x
-         bsr   L1989
-         lda   $05,x
-         adda  #$05
-         cmpa  -$09,y
-         bls   L195E
-         lda   -$09,y
-         suba  #$03
-         bra   L1960
-L195E    suba  #$04
-L1960    ldb   -$08,y
-         decb  
-         lbsr  L22E0
-         lda   -$09,y
-         deca  
-         ldb   $07,x
-         addb  #$06
-         cmpb  -$08,y
-         bls   L1977
-         ldb   -$08,y
-         subb  #$03
-         bra   L1979
-L1977    subb  #$04
-L1979    lbsr  L22E8
-         puls  u
-         lda   $05,x
-         ldb   $07,x
-         lbsr  L0711
-         std   <$10,x
-         rts   
+L1AB0    clra  
+L1AB1    sta   <$20,s
+         puls  a,pc       restore new X coord & return
 
-L1989    ldd   $06,y
-         exg   a,b
-         std   $06,y
-         rts   
-
-L1990    leas  -$05,s
-         clr   $04,s
-         ldu   <$00A5
-         leax  <$0054,u
-         ldd   ,x
-         std   ,s
-         ldd   $02,x
-         std   $02,s
-         ldu   <$0020,u
-         lbsr  L06F8
-         ldx   -$10,y
-         lda   ,x
-         bita  #$01
-         bne   L19BA
-         lsr   ,s
-         ror   $01,s
-         lda   <$67,u
-         lbeq  L1B46
-L19BA    leax  ,s
-         lbsr  L1A68
-         bcs   L19DA
-         ldu   <$00A5
-         ldu   <$0020,u
-         lbsr  L0711
-         lda   <$18,y
-         beq   L19D6
-         ldd   $0C,x
-         cmpd  <$19,y
-         beq   L1A1B
-L19D6    inc   $04,s
-         bra   L1A1B
-L19DA    ldx   <$75,u
-         leax  >$02BC,x
-         ldd   ,x
-         bne   L1A00
-         ldd   #$CA01
-         lbsr  L0896
-         pshs  u,y,x
-         ldb   #$1A
-         lbsr  L0105
-         puls  u,y,x
-         lda   <$18,y
-         sta   ,x
-         ldd   <$19,y
-         std   $01,x
-         bra   L1A14
-L1A00    pshs  a
-         ldd   <$19,y
-         cmpd  $01,x
-         puls  a
-         beq   L1A1B
-         sta   <$18,y
-         ldd   $01,x
-         std   <$19,y
-L1A14    pshs  u,y,x
-         lbsr  L0D37
-         puls  u,y,x
-L1A1B    ldd   ,s
-         std   >$015B,u
-         ldd   $02,s
-         std   >$015D,u
-         ldb   #$44
-         pshs  u,y
-         lbsr  L0105
-         puls  u,y
-         tst   $04,s
-         beq   L1A59
-         ldu   <$0020,u
-         lbsr  L0711
-         lda   $0B,x
-         bne   L1A4A
-         lda   <$18,y
-         sta   $0B,x
-         ldd   <$19,y
-         std   $0C,x
-         bra   L1A52
-L1A4A    sta   <$18,y
-         ldd   $0C,x
-         std   <$19,y
-L1A52    pshs  u,y,x
-         lbsr  L0D37
-         puls  u,y,x
-L1A59    lbra  L1B46
-L1A5C    pshs  pc,u,y
-
-         leay  <$26,y
-         bsr   L1AAF
-         bra   L1A6E
-L1A65    leax  <$20,x
-L1A68    pshs  pc,u,y
-
-         leay  -$0B,y
-         bsr   L1AA4
-L1A6E    ldb   $02,s
-         lbsr  L1019
-         cmpd  ,x
-         bhi   L1A9D
-         ldb   $02,s
-         addb  $04,s
-         lbsr  L1019
-         cmpd  ,x
-         bls   L1A9D
-         ldb   $03,s
-         lbsr  L1019
-         cmpd  $02,x
-         bhi   L1A9D
-         ldb   $03,s
-         addb  $05,s
-         lbsr  L1019
-         cmpd  $02,x
-         bls   L1A9D
-         clra  
-         bra   L1A9E
-L1A9D    coma  
-L1A9E    ldy   ,s
-         leas  $06,s
-         rts   
-
-L1AA4    pshs  x
-         ldx   $04,s
-         ldd   -$0B,x
-         addd  <$26,x
-         bra   L1AB3
-L1AAF    pshs  x
-         ldd   ,y
-L1AB3    std   $06,s
-         ldd   $02,y
-         std   $08,s
-         ldx   $04,s
-         lda   -$0E,x
-         bmi   L1ACE
-L1ABF    bsr   L1AD0
-         lda   -$0E,x
-         bpl   L1ABF
-         ldd   $06,s
-         addd  <$26,x
-         addd  -$0B,x
-         std   $06,s
-L1ACE    puls  pc,x
-
-L1AD0    ldb   #$40
-         mul   
-         ldu   <$00A5
-         leax  >$0290,u
-         leax  d,x
-         rts   
-
-L1ADC    lbsr  L06F8
-         bsr   L1B2E
-         pshs  x
-         lbsr  L1A65
-         bcs   L1AF3
-         bsr   L1B07
-         lda   #$00
-L1AEC    puls  x
-         sta   <$16,x
-         clrb  
-         rts   
-
-L1AF3    bsr   L1B00
-         lbsr  L1A5C
-         lda   #$01
-         bcc   L1AEC
-         lda   #$02
-         bra   L1AEC
-L1B00    clra  
-         clrb  
-         std   -$04,x
-         std   -$02,x
-         rts   
-
-L1B07    pshs  pc,u,y
-         leay  -$0B,y
-         lbsr  L1AA4
-         ldb   $02,s
-         lbsr  L1019
-         pshs  b,a
-         ldd   ,x
-         subd  ,s++
-         std   -$04,x
-         ldb   $03,s
-         lbsr  L1019
-         pshs  b,a
-         ldd   $02,x
-         subd  ,s++
-         std   -$02,x
-         ldy   ,s
-         leas  $06,s
-         rts   
-
-L1B2E    leax  <$003C,u
-         lda   [<-$10,y]
-         lsra  
-         ldd   <$1A,x
-         std   <$22,x
-         ldd   <$18,x
-         bcs   L1B42
-         lsra  
-         rorb  
-L1B42    std   <$20,x
-         rts   
-
-L1B46    ldx   -$10,y
-         pshs  y,x
-         ldu   <$00A5
-         lda   >$00BF,u
-         bmi   L1B9B
-         lda   <$0044,u
-         beq   L1B9B
-         leax  $04,s
-         lbsr  L1A5C
-         bcc   L1B9B
-         ldb   #$20
-         stb   $08,s
-         leax  >$01C0,u
-L1B66    lda   ,x+
-         ldb   #$40
-         mul   
-         leay  >$0290,u
-         leay  d,y
-         cmpy  $02,s
-         beq   L1B97
-         ldd   -$10,y
-         cmpd  ,s
-         bne   L1B97
-         lda   -$0E,y
-         bpl   L1B97
-         lda   <$2B,y
-         beq   L1B97
-         lda   $09,y
-         bita  #$01
-         beq   L1B97
-         pshs  x
-         leax  $06,s
-         lbsr  L1A5C
+* SS.SBar entry point
+L1AB9    lbsr  L116C      setup working window table
+         ldx   PD.RGS,y   get register stack pointer
+         ldy   >WGlobal+g00BB     Get ptr to work window table
+* Theoretically, this is where setting up a FSWIN should draw the scroll bars
+DfltBar  pshs  x          preserve register stack pointer
+         lda   #2         point to draw table to erase old markers
+         leax  <SBarErs,pc
+         lbsr  DrawBar    erase old markers
          puls  x
-         bcc   L1B9E
-L1B97    dec   $08,s
-         bne   L1B66
-L1B9B    leas  $09,s
-         rts   
+* Draw horizontal scroll bar marker
+         ldb   R$X+1,x    get requested coord
+         addb  #$05       Add 5 to it (min. size of horiz. scroll bar)
+         cmpb  Wt.SZX,y   Still within X size of window?
+         ble   L1B1E      Yes, bump X pos. back by 4 & go draw it
+         ldb   Wt.SZX,y   No, get X size of Window
+         subb  #$03       Bump down by 3
+         bra   L1B20      Go draw it
 
-L1B9E    lda   <$2B,y
-         clrb  
-         tfr   d,u
-         tfr   u,x
-         ldu   <$00A5
-         leas  $09,s
-         lbra  L05D5
-L1BAD    pshs  u,b,a
-         ldu   <$2E,y
-         beq   L1BBA
-         ldd   #$0100
-         os9   F$SRtMem
-L1BBA    clra  
-         clrb  
-         std   <$2E,y
-         puls  pc,u,b,a
+L1B1E    subb  #$04
+L1B20    clra             Multiply x 8
+         IFNE  H6309
+         lsld  
+         lsld  
+         lsld  
+         ELSE
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         ENDC
+         std   >GrfMem+gr0047     save X coord
+         ldb   Wt.SZY,y   get window Y size
+         decb             subtract 1 to start at 0
+         clra             Multiply x 8
+         IFNE  H6309
+         lsld  
+         lsld  
+         lsld  
+         incd             Bump down for new marker size
+         ELSE
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         addd   #$0001
+         ENDC
+         std   >GrfMem+gr0049
+         ldd   #$ce06     get group/buffer
+         bsr   DrawScrl   Go PutBlk on screen
+* Draw vertical scroll bar marker
+         ldb   Wt.SZX,y   get window X size
+         decb             subtract 1 to start at 0
+         clra             Multiply x 8
+         IFNE  H6309
+         lsld  
+         lsld  
+         lsld
+         incd            added RG
+         ELSE
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola
+         addd  #1        added RG
+         ENDC
+         std   >GrfMem+gr0047
+         ldb   R$Y+1,x    get requested Y position
+         addb  #$06
+         cmpb  Wt.SZY,y   will it fit in window?
+         ble   L1B3D
+         ldb   Wt.SZY,y
+         subb  #$03
+         bra   L1B3F
 
-* New SetStt call GIP2 entry point
+L1B3D    subb  #4
+L1B3F    clra             Multiply x 8
+         IFNE  H6309
+         lsld  
+         lsld  
+         lsld  
+         ELSE
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         ENDC
+         std   >GrfMem+gr0049
+         ldd   #$ce05     get group/buffer
+DrawScrl std   >GrfMem+gr0057
+         ldb   #$36       get grfdrv funtion for putblk
+         pshs  x,y
+         lbsr  L0101
+         puls  x,y,pc
 
-SSGIP2   ldx   PD.RGS,y   get callers register pointer
-         pshs  x          save it
-         lbsr  L06F8      get window table pointer
-         ldu   <$2E,y  get window number from dev desc
-         bne   L1BE1      something there, go on
-         ldd   #$0001     get a page of system memory
-         os9   F$SRqMem
-         bcs   L1BFA
-         tfr   u,x        move pointer of mem to X
-         stu   <$2E,y     save pointer in window table
-         clra             get initialization value
-         clrb             get size
-L1BDC    sta   ,x+        clear a byte
-         decb             done?
-         bne   L1BDC      no, keep going
+* Draw table for erasing scroll bars
+SBarErs  fcb   WColor1    Background of bar color
+         fdb   9          9,(bottom+6) to (Right-17),(Bottom -1)
+         fdb   -6
+         fdb   -17
+         fdb   -2
+         fcb   $4e
 
-L1BE1    ldx   ,s         get register stack pointer
-         ldx   R$X,x      get callers X
-         lbsr  L1CC2      move the 32 bytes
+         fcb   WColor1    Background of bar color
+         fdb   -6         (Right-6),17 to (Right-1),(Bottom-17)
+         fdb   17
+         fdb   -1
+         fdb   -17
+         fcb   $4e
 
-         ldb   #$14       get size of table??
-L1BEA    lda   1,u        already initialized?
-         beq   L1BFC      no, go move ???
-         cmpa  1,x        same?
-         beq   L1BFC      yes, go move ???
-         leau  11,u       move to next entry
-         decb             done?
-         bne   L1BEA      no, keep going
-         comb             set carry for error
-         ldb   #$64       get error code (new doesn't exist)
-L1BFA    puls  pc,x
-
-* U=Pointer to buffer from window table (offset $2e in table entry)
-* X=Pointer to callers data
-
-L1BFC    lda   1,x
-         sta   1,u
-         lda   8,x
-         sta   8,u
-         lda   2,x
-         sta   2,u
-         lda   ,x
-         sta   ,u
-         ldd   3,x
-         std   3,u
-         ldd   5,x
-         std   5,u
-         stx   9,u
-         puls  x          restore callers X pointer
-         ldd   4,x
-         ldx   9,u
-         std   9,u
-         lda   ,u
-         exg   x,u        swap pointers
-         bsr   L1C30
-         cmpa  #$00
-         lbeq  L1C78
-         cmpa  #$01
-         beq   L1C3D
-         clrb  
-         rts   
-
-L1C30    pshs  u,x,a      preserve registers
-         ldu   >$100C     get device static mem pointer
-         lbsr  L10B6
-         lbsr  L0F46
-         puls  pc,u,x,a   restore & return to caller
-
-L1C3D    clra  
-         clrb  
-         bsr   L1C54
-         ldd   $0009,u
-         lbsr  L1CB1
-         ldd   <$0011,u
-         bsr   L1C54
-         ldd   $000B,u
-         bsr   L1CB1
-         clrb  
-         rts   
-
-L1C51    lda   #$08
-         mul   
-L1C54    pshs  u,b,a
-         ldu   <$00A5
-         ldb   $04,x
-         lda   #$08
-         mul   
-         tst   $02,x
-         bne   L1C63
-         addd  ,s
-L1C63    std   >$0149,u
-         ldb   $03,x
-         lda   #$08
-         mul   
-         tst   $02,x
-         beq   L1C72
-         addd  ,s
-L1C72    std   >$0147,u
-         puls  pc,u,b,a
-
-L1C78    ldd   $000F,u
-         std   $09,x
-         ldb   $000E,u
-         beq   L1C8C
-         pshs  b
-         clrb  
-L1C83    bsr   L1C8E
-         incb  
-         dec   ,s
-         bne   L1C83
-         leas  $01,s
-L1C8C    clrb  
-         rts   
-
-L1C8E    pshs  u,y,x,b
-         bsr   L1C51
-         ldx   $09,x
-         lda   #$20
-         ldb   ,s
-         mul   
-         leax  d,x
-         bsr   L1CD8
-         lda   <$14,x
-         tfr   a,b
-         beq   L1CA8
-         deca  
-         beq   L1CA8
-         deca  
-L1CA8    lslb  
-         addb  #$16
-         ldd   b,x
-         bsr   L1CB1
-         puls  pc,u,y,x,b
-
-L1CB1    pshs  u,y,x
-         ldu   <$00A5
-         std   >$0157,u
-         beq   L1CC0
-         ldb   #$36       get callcode for PutBlk
-         lbsr  L0105      send it to grfdrv
-L1CC0    puls  pc,u,y,x   restore & return
-
-* Move 32 bytes of data to offset $0240 in GFX table
-
-L1CC2    pshs  u,y,b,a    preserve registers
-         ldd   #$0240     get offset to where it goes
-         ldy   #$0020     get # bytes
-         bra   L1CE1      go move 'em
-
-L1CCD    pshs  u,y,b,a
-         ldd   #$0279
-         ldy   #$0015
-         bra   L1CE1
-
-L1CD8    pshs  u,y,b,a
-         ldd   #$0260
-         ldy   #$0020
-
-******************************
-*
-* Move data to GFX tables
-*
-* Entry: X=Source pointer
-*        D=Offset into table
-*        Y=Number of bytes
-* Exit : X=Destination pointer
-*
-
-L1CE1    ldu   <D.CCMem   get global mem pointer
-         ldu   G.GfxTbl,u    get GFX table pointer
-         leau  d,u        offset to buffer
-         pshs  x          preserve source for a sec
-         ldx   <D.Proc    get current process descriptor
-         lda   P$Task,x   get it's task #
-         ldx   <D.SysPrc  get system process descriptor
-         ldb   P$Task,x   get system task #
-         puls  x          restore source pointer
-         os9   F$Move     move the data
-         tfr   u,x        move destination to X
-         puls  d,y,u,pc   restore & return
-
-L1CFB    ldu   ,s
-         lbsr  L0706
-         ldd   <$13,s
-         bsr   L1D08
-         lbra  L155B
-L1D08    ldx   <$2E,y
-         pshs  b,a
-         beq   L1D45
-L1D0F    tst   $01,x
-         beq   L1D45
-         tst   $08,x
-         beq   L1D41
-         lda   $03,x
-         cmpa  ,s
-         bhi   L1D41
-         adda  $05,x
-         deca  
-         cmpa  ,s
-         bcs   L1D41
-         lda   $04,x
-         cmpa  $01,s
-         bhi   L1D41
-         adda  $06,x
-         deca  
-         cmpa  $01,s
-         bcs   L1D41
-         puls  b,a
-         subb  $04,x
-         tst   $02,x
-         beq   L1D3D
-         suba  $03,x
-         tfr   a,b
-L1D3D    incb  
-         lda   $01,x
-         rts   
-
-L1D41    leax  $0B,x
-         bra   L1D0F
-L1D45    puls  b,a
-         clra  
-         clrb  
-         rts   
-
-L1D4A    pshs  b,a
-         ldd   #$0100
-         pshs  b,a
-         clra  
-         pshs  y,x,a
-         leax  ,s
-         ldy   $07,s
-         lbsr  DWSet
-         leas  $09,s
-         rts   
-
-L1D5F    ldd   #$0320
-         bra   L1D67
-L1D64    ldd   #$0110
-L1D67    ldu   ,s
-         lbsr  L0711
-         andb  ,x
-         beq   L1D7F
-         bsr   L1D82
-         beq   L1D7F
+* Update auto follow mouse cursor - ADD CHECK FOR MOUSE BUTTON DOWN ON AREA
+*  NOT IN OUR WINDOW, DO SELECT IF IN ANOTHER WINDOW
+* NOTE: THE AUTO-FOLLOW MOUSE FLAG REMAINS SET _EVEN_ IF WE END UP ON A TEXT
+*    WINDOW!!!
+* Theoretically, entry is:
+*   U=static mem ptr for current active window
+*   Y=Path descriptor (64 bytes) ptr for current active window
+L1B4D    leas  -5,s       make a buffer for flag & current mouse coords
+         clr   4,s        clear a flag (for different gfx cursor required)
+         ldx   #WGlobal+G.Mouse+Pt.AcX Point to mouse current coords
+         ldu   >WGlobal+G.CurDev     get current device static mem pointer
+         lbsr  L06A0      Go point to & verify window dsc. (preserves X)
+         IFNE  H6309
+         ldq   ,x         Get current X&Y Coords
+         tim   #$01,[Wt.STbl,y] 320 or 640 pixel wide screen?
+         ELSE
+         ldd   2,x
+         std   >GrfMem+gr00B5
+         ldd   ,x
          pshs  a
-         ldu   $01,s
-         ldd   <$19,s
-         bsr   L1D4A
-         puls  a
-L1D7F    lbra  L155B
-L1D82    pshs  a
-         lbsr  L1ECB
-         leas  <-$1A,s
-         lda   [<-$10,y]
-         anda  #$01
-         sta   <$18,s
-         ldu   <$00A5
-         lda   <$66,u
-         sta   <$19,s
-         clr   <$66,u
-         lda   #$FF
-         sta   >$00BF,u
-         lda   -$0E,y
-         bpl   L1DF2
-         ldx   <$75,u
-         leax  >$02B4,x
-         bsr   L1DD6
-         std   <$14,s
-         bsr   L1DD6
-         std   <$16,s
-         ldx   <$75,u
-         leax  >$02F5,x
-         bsr   L1DD1
-         std   $08,s
-         bsr   L1DD1
-         std   $0A,s
-         bsr   L1DD6
-         std   $0C,s
-         bsr   L1DD6
-         std   $0E,s
-         bra   L1DDB
-L1DD1    ldb   ,x+
-         lbra  L1019
-L1DD6    ldb   ,x+
-         lbra  L100F
-L1DDB    clr   >$100E
-         ldx   #$0001
-         os9   F$Sleep
-         inc   >$100E
-         ldu   <$00A5
-         leax  <$003C,u
-         ldb   >$00BF,u
-         bne   L1DF7
-L1DF2    clr   <$1A,s
-         bra   L1DFB
-L1DF7    ldb   $08,x
-         beq   L1E3B
-L1DFB    lbsr  L18B5
-         clr   >$00BF,u
-         lda   <$19,s
-         sta   <$66,u
-         ldu   <$1D,s
-         lbsr  L18E3
-         leax  ,s
-         ldd   $04,s
-         subd  ,s
-         std   $04,s
-         ldd   $06,s
-         subd  $02,s
-         std   $06,s
-         pshs  y,x
-         leay  ,s
-         bsr   L1E31
-         bsr   L1E31
-         inc   $02,s
-         inc   $03,s
-         puls  y,x
-         lda   <$1A,s
-         leas  <$1B,s
-         rts   
-
-L1E31    bsr   L1E33
-L1E33    ldd   ,x++
-         lbsr  L1021
-         stb   ,y+
-         rts   
-
-L1E3B    ldd   <$18,x
-         tst   <$18,s
-         bne   L1E45
-         lsra  
-         rorb  
-L1E45    std   <$10,s
-         ldd   <$1A,x
-         std   <$12,s
-         lda   <$1A,s
-         deca  
-         beq   L1E6C
-         ldd   $08,s
-         std   ,s
-         ldd   $0A,s
-         std   $02,s
-         ldd   <$10,s
-         orb   #$07
-         std   $04,s
-         ldd   <$12,s
-         orb   #$07
-         std   $06,s
-         bra   L1E94
-L1E6C    ldd   <$10,s
-         andb  #$F8
-         std   ,s
-         addd  $0C,s
-         cmpd  <$1B,y
-         bcs   L1E7E
-         ldd   <$1B,y
-L1E7E    std   $04,s
-         ldd   <$12,s
-         andb  #$F8
-         std   $02,s
-         addd  $0E,s
-         cmpd  #$00BF
-         bcs   L1E92
-         ldd   #$00BF
-L1E92    std   $06,s
-L1E94    ldd   <$14,s
-         addd  ,s
-         cmpd  $04,s
-         bls   L1EA0
-         std   $04,s
-L1EA0    ldd   <$16,s
-         addd  $02,s
-         cmpd  $06,s
-         bls   L1EAC
-         std   $06,s
-L1EAC    bsr   L1EB3
-         bsr   L1EB3
-         lbra  L1DDB
-L1EB3    pshs  u,y,x
-         leax  $08,s
-         leau  >$0147,u
-         ldb   #$08
-L1EBD    lda   ,x+
-         sta   ,u+
-         decb  
-         bne   L1EBD
-         ldb   #$4C
-         lbsr  L0105
-         puls  pc,u,y,x
-
-L1ECB    ldu   $05,s
-         lbsr  L18BE
-         ldx   -$10,y
-         ldd   $02,x
-         std   -$0D,y
-         std   <$24,y
-         lda   #$FF
-         sta   $06,y
-         clra  
-         clrb  
-         sta   <$18,y
-         std   <$19,y
-         std   -$0B,y
-         std   <$26,y
-         clr   $09,y
-         ldb   ,x
-         rorb  
-         bcs   L1EFB
-         ldd   #$013F
-         std   <$1B,y
-         lda   #$28
-         bra   L1F03
-L1EFB    ldd   #$027F
-         std   <$1B,y
-         lda   #$50
-L1F03    ldb   #$18
-         std   -$09,y
-         std   <$28,y
-         ldd   #$00BF
-         std   <$1D,y
-         lda   #$03
-         sta   $0A,y
-         ldb   #$1E
-         pshs  u,y,x
-         lbsr  L0105
-         puls  pc,u,y,x
-
-L1F1D    ldu   <$00A5
-         lda   >$0160,u
-         ldb   #$04
-         cmpa  #$FF
-         lbne  L0105
-         ldd   -$0B,y
-         std   <$26,y
-         ldd   -$09,y
-         std   <$28,y
-         lbsr  L20FF
-         lbsr  L201D
-         ldd   #$FF04
-         sta   >$1160
-         lbsr  L0105
-         pshs  b,cc
-         ldu   >$1020
-         lbsr  L20C3
-         puls  pc,b,cc
-
-L1F4E    lbsr  L20DB
-         lbsr  L201D
-         bsr   L1F5A
-         lbsr  L1FCA
-         rts   
-
-L1F5A    tst   <$7E,u
-         beq   L1F65
-         ldb   #$36
-         pshs  u,y,x,b
-         bra   L1F8A
-L1F65    rts   
-
-L1F66    ldb   <$0035,u
-         tfr   b,a
-         pshs  u,b,a
-L1F6D    sta   ,s
-         lbsr  L1AD0
-         lda   -$0E,x
-         bpl   L1F6D
-         puls  pc,u,b,a
-
-L1F78    ldb   #$34
-         pshs  u,y,x,b
-         bsr   L1F66
-         lda   [<-$10,x]
-         bpl   L1F85
-         puls  pc,u,y,x,b
-
-L1F85    lda   $05,s
-         sta   <$7E,u
-L1F8A    bsr   L1F66
-         pshs  b
-         sta   <$0035,u
-         lbsr  L10B6
-         ldu   <$00A5
-         ldb   $06,s
-         lda   #$F0
-         std   >$0157,u
-         clra  
-         clrb  
-         std   >$0147,u
-         std   >$0149,u
-         lbsr  L0F46
-         ldd   <$1B,y
-         addd  #$0001
-         std   >$014F,u
-         ldd   <$1D,y
-         addd  #$0001
-         std   >$0151,u
-         ldb   $01,s
-         lbsr  L0105
-         puls  u,y,x,b,a
-         sta   <$0035,u
-         rts   
-
-L1FCA    pshs  u,y,x
-         clr   <$7E,u
-         lbsr  L20C3
-         ldb   $04,s
-         ldu   <$00A5
-         lda   #$F0
-         std   >$0157,u
-         ldb   #$2E
-         lbsr  L0105
-         puls  pc,u,y,x
-
-L1FE3    bsr   L1FCA
-         ldb   #$20
-         pshs  u,y,x,b
-         ldu   <$00A5
-         leax  >$01E0,u
-L1FEF    lda   ,-x
-         ldb   #$40
-         mul   
-         ldu   <$00A5
-         leay  >$0290,u
-         leay  d,y
-         cmpy  $03,s
-         beq   L2017
-         ldd   -$10,y
-         cmpd  $01,s
-         bne   L2017
-         lda   -$0E,y
-         bpl   L2017
-         lbsr  L20FF
-         bsr   L201D
-         lbsr  L1F5A
-         lbsr  L1FCA
-L2017    dec   ,s
-         bne   L1FEF
-         puls  pc,u,y,x,b
-
-L201D    pshs  u,y,x
-         lbsr  L1F66
-         ldb   #$20
-         pshs  x,b
-         ldu   <$00A5
-         leax  >$01C0,u
-         pshs  x
-L202E    puls  x
-         lda   ,x+
-         pshs  x
-         ldb   #$40
-         mul   
-         leax  >$0290,u
-         leax  d,x
-         cmpx  $03,s
-         beq   L2053
-         ldd   -$10,x
-         bmi   L2053
-         ldy   $03,s
-         cmpd  -$10,y
-         bne   L2053
-         lda   -$0E,x
-         bpl   L2053
-         bsr   L205B
-L2053    dec   $02,s
-         bne   L202E
-         leas  $05,s
-         puls  pc,u,y,x
-
-L205B    pshs  u,y,x
-         lda   <$2B,x
-         lbsr  L2102
-         bne   L2081
-         bsr   L2083
-         bcc   L2081
-         cmpu  >$1020
-         bne   L2079
-         lbsr  L2109
-         pshs  u
-         lbsr  L1060
-         puls  u
-L2079    lbsr  L1F78
-         lda   #$FF
-         sta   <$7F,u
-L2081    puls  pc,u,y,x
-
-L2083    lda   $09,x
+         lda   [Wt.STbl,y]
          bita  #$01
-         beq   L20BF
-         leax  <$26,x
-         leay  <$26,y
-         lda   ,y
-         cmpa  ,x
-         bge   L209D
-         adda  $02,y
-         cmpa  ,x
-         bgt   L20A7
-         clrb  
-         rts   
+         puls  a
+         ENDC
+         bne   L1B72      640, skip ahead
+         IFNE  H6309
+         lsrd             Divide X coord by 2
+L1B72    stq   ,s         Save current mouse coords
+         ELSE
+         lsra             Divide X coord by 2
+         rorb
+L1B72    std   ,s         Save current mouse coords
+         ldd   >GrfMem+gr00B5
+         std   2,s
+         ldd   ,s
+         ENDC
+         leax  ,s         point to coord info
+*  1ST TRY - NEW ROUTINE
+         lbsr  L1C19      Check if mouse coord in current window at all
+         bcs   L1B8D      No, check to see if we switch windows
+* Mouse cursor within current physical window
+         lbsr  L1C25      Check if mouse coord in CWArea of current window
+         lbcs  AdjstCrs   No, must be in control region, adjust gfx cursor
+         ldu   >WGlobal+G.CurDev     get current device static mem
+         lbsr  L06B9      get gfx table pointer for this window
+         ldd   Gt.GOff,x  get offset into block of graphics cursor
+         cmpd  Wt.GOff,y  Same as ptr in window table itself?
+         lbeq  L1BD8      Yes, skip ahead
+         inc   4,s        No, set flag & then skip ahead
+         lbra  L1BD8
 
-L209D    ldb   ,x
-         addb  $02,x
-         pshs  b
-         cmpa  ,s+
-         bge   L20BF
-L20A7    lda   $01,y
-         cmpa  $01,x
-         bge   L20B5
-         adda  $03,y
-         cmpa  $01,x
-         bgt   L20C1
-         clrb  
-         rts   
+* Mouse cursor not within current window's CWArea. Please note that if running
+*   in a bordered window, this means it could be in the menu bar or scroll bar
+*   areas (within DWSet range, but not CWArea)
+* Gets here ok when cursor on different window
+* REQUIRES TC9/CC3IO TO SET MSEMOVE FLAG WHEN BUTTON PRESSED (DONE IN TC9IO)
+* May want to change to send MsSig here in WINDINT instead - then we can leave
+* Tc9/CC3 IO alone.
+* NOTE: WE _WILL_ HAVE TO MAKE SURE IT IS A WINDOW LINKED WITH A PROCESS IN
+*   SOME WAY (AS TC9IO'S CLEAR ROUTINE DOES), AS IT WILL SELECT "GHOST"
+*   WINDOWS FOR GSHELL (I THINK)
 
-L20B5    ldb   $01,x
-         addb  $03,x
-         pshs  b
-         cmpa  ,s+
-         blt   L20C1
-L20BF    clrb  
-         rts   
-L20C1    comb  
-         rts   
-
-L20C3    pshs  x,b,a
-         lda   <$7D,u
-         beq   L20D6
-         clrb  
-         stb   <$7D,u
-         tfr   d,x
-         lda   $0C,x
-         anda  #$F7
-         sta   $0C,x
-L20D6    clr   <$7F,u
-         puls  pc,x,b,a
-
-L20DB    pshs  u,y,x,b,a
-         lbsr  L1F66
-         ldu   <$00A5
-         leax  >$01E0,u
-         ldb   #$20
-         pshs  a
-L20EA    decb  
-         beq   L20F8
-         cmpa  ,-x
-         bne   L20EA
-L20F1    lda   ,-x
-         sta   $01,x
-         decb  
-         bne   L20F1
-L20F8    puls  a
-         sta   >$11C0
-         puls  pc,u,y,x,b,a
-
-L20FF    lda   <$2B,y
-L2102    clrb  
-         tfr   d,u
-         ldb   <$7E,u
-         rts   
-
-L2109    pshs  u,x
-         lbsr  L0711
-         lda   ,x
-         puls  pc,u,x
-
-L2112    lbra  L0FF6
-
-L2115    pshs  x
-         lbsr  L0F46
-         leax  <L213B,pcr
-         lbsr  L102B
-         lda   $06,y
-         pshs  a
-         lbsr  L2220
-         leax  <L215F,pcr
-         bsr   L2138
-         lbsr  L2227
-         bsr   L2138
-         puls  x,a
-         sta   $06,y
-         rts   
-L2136    bsr   L2138
-L2138    lbra  L1029
-
-* Data for top bar
-
-L213B    fdb   $0000
-         fdb   $0000
-         fdb   $8000
-         fdb   $0007
-         fcb   $4e
-
-* Data for left bar
-
-L2144    fdb   $0000
-         fdb   $0008
-         fdb   $0006
-         fdb   $fff9
-         fdb   $4e00
-         fdb   $00ff
-         fdb   $faff
-         fdb   $ffff
-         fdb   $ff4e
-         fdb   $fffa
-         fdb   $0008
-         fdb   $ffff
-         fdb   $fff9
-         fcb   $4e
-
-L215F    fdb   $0000
-         fdb   $0000
-         fdb   $8000
-         fdb   $0000
-         fdb   $4a00
-         fdb   $0000
-         fdb   $0000
-         fdb   $0000
-         fdb   $074a
-         fdb   $0001
-         fdb   $0007
-         fdb   $8000
-         fdb   $0007
-         fdb   $4a80
-         fdb   $0000
-         fdb   $0180
-         fdb   $0000
-         fdb   $074a
-
-L2183    fdb   $0000
-         fdb   $0008
-         fdb   $8000
-         fdb   $0008
-         fdb   $4a00
-         fdb   $0000
-         fdb   $0800
-         fdb   $0080
-         fdb   $004a
-         fdb   $0006
-         fdb   $fff9
-         fdb   $fff9
-         fdb   $fff9
-         fdb   $4aff
-         fdb   $f900
-         fdb   $09ff
-         fdb   $f9ff
-         fdb   $f94a
-
-L21A7    fdb   $0001
-         fdb   $8000
-         fdb   $8000
-         fdb   $8000
-         fdb   $4a80
-         fdb   $0000
-         fdb   $0880
-         fdb   $0080
-         fdb   $004a
-         fdb   $0006
-         fdb   $0009
-         fdb   $fff9
-         fdb   $0009
-         fdb   $4a00
-         fdb   $0600
-         fdb   $0900
-         fdb   $06ff
-         fdb   $f94a
-
-L21CB    lbsr  L0F46
-         lda   $06,y
-         pshs  x,a
-         leax  L2144,pcr
-         lbsr  L102B
-         lbsr  L1029
-         bsr   L2227
-         leax  L21A7,pcr
-         lbsr  L2136
-         bsr   L2220
-         leax  L2183,pcr
-         lbsr  L2136
-         puls  x,a
-         sta   $06,y
-         rts   
-
-L21F3    fdb   $0008
-         fdb   $fffc
-         fdb   $fff8
-         fdb   $fffc
-         fdb   $4aff
-         fdb   $fc00
-         fdb   $0aff
-         fdb   $fcff
-         fdb   $f84a
-         fdb   $0008
-         fdb   $fffd
-         fdb   $fff8
-         fdb   $fffd
-         fdb   $4aff
-         fdb   $f8ff
-         fdb   $fcff
-         fdb   $f8ff
-         fdb   $fd4a
-         fdb   $fffd
-         fdb   $000a
-         fdb   $fffd
-         fdb   $fff8
-         fcb   $4a
-
-L2220    pshs  x
-         leax  <L227D,pcr
-         bra   L222C
-L2227    pshs  x
-         leax  <L2281,pcr
-L222C    lbsr  L0F41
-         lda   a,x
-         sta   $06,y
-         puls  pc,x
-
-L2235    fdb   $0008
-         fdb   $fffb
-         fdb   $fff8
-         fdb   $fffb
-         fdb   $4a00
-         fdb   $08ff
-         fdb   $feff
-         fdb   $f8ff
-         fdb   $fe4a
-         fdb   $fffb
-         fdb   $000a
-         fdb   $fffb
-         fdb   $fff8
-         fdb   $4aff
-         fdb   $fe00
-         fdb   $0aff
-         fdb   $feff
-         fdb   $f84a
-
-L2259    lbsr  L0F46
-         lda   $06,y
-         pshs  x,a
-         leax  <L2235,pcr
-         lbsr  L2136
-         lbsr  L2227
-         leax  L21F3,pcr
-         lbsr  L1029
-         lbsr  L2220
-         lbsr  L1029
-         lbsr  L102B
-         puls  x,a
-         sta   $06,y
-L227D    rts   
-
-         fcb   $ff,$ff,$ff
-
-L2281    fcb   $33,$00,$aa,$aa,$22
-
-L2286    fcb   $00
-
-L2287    fdb   $0000
-         fdb   $0200
-         fdb   $0700
-         fdb   $054e
-         fdb   $0000
-         fdb   $0005
-         fdb   $0007
-         fdb   $0005
-         fdb   $4a00
-         fdb   $0700
-         fdb   $0200
-         fdb   $0700
-         fdb   $054a
-         fdb   $0000
-         fdb   $0002
-         fdb   $0007
-         fdb   $0002
-         fdb   $4a00
-         fdb   $0000
-         fdb   $0200
-         fdb   $0000
-         fdb   $054a
-
-L22B3    fdb   $0002
-         fdb   $0000
-         fdb   $0005
-         fdb   $0007
-         fdb   $4e00
-         fdb   $0300
-         fdb   $0700
-         fdb   $0500
-         fdb   $074a
-         fdb   $0005
-         fdb   $0001
-         fdb   $0005
-         fdb   $0007
-         fdb   $4a00
-         fdb   $0200
-         fdb   $0000
-         fdb   $0200
-         fdb   $074a
-         fdb   $0002
-         fdb   $0000
-         fdb   $0005
-         fdb   $0000
-         fcb   $4a
-
-L22E0    pshs  x
-         leax  L2286,pcr
-         bra   L22EE
-L22E8    pshs  x
-         leax  L22B3,pcr
-L22EE    leas  -$0D,s
-         pshs  a
-         lda   #$08
-         mul   
-         std   $0C,s
-         puls  b
-         lda   #$08
-         mul   
-         std   $09,s
-         clr   $06,y
-         bsr   L2314
-         lbsr  L2227
-         bsr   L2314
-         bsr   L2314
-         lbsr  L2220
-         bsr   L2314
-         bsr   L2314
-         leas  $0D,s
-         puls  pc,x
-
-L2314    ldd   ,x++
-         addd  $0B,s
-         std   $02,s
-         ldd   ,x++
-         addd  $0D,s
-         std   $04,s
-         ldd   ,x++
-         addd  $0B,s
-         std   $06,s
-         ldd   ,x++
-         addd  $0D,s
-         std   $08,s
-         lda   ,x+
-         sta   $0A,s
+L1B8D    ldd   >Pt.CBSA+G.Mouse+WGlobal Get both buttons
+         lbeq  AdjstCrs   Neither down, continue normally
+* Search through window tables looking for ones on the same screen (NO overlay
+         ldu   Wt.STbl,y  Get our screen table for comparison purposes
+         ldx   #WinBase   Point to start of internal window tables
+         ldd   #$2040     32 windows to check, $40 bytes/table entry
+         IFNE  H6309
+SrchLoop ldw   Wt.STbl,x  Get screen tbl ptr
+         cmpw  #$FFFF     unused, skip
+         beq   TryNext
+         cmpr  x,y        Our own ptr?
+         beq   TryNext
+         cmpr  w,u        On same screen?
+         ELSE
+SrchLoop pshs  x
+         ldx   Wt.STbl,x
+         stx   >GrfMem+gr00B5
+         cmpx  #-1
+         puls  x
+         beq   TryNext
          pshs  x
-         leax  $04,s
-         lbsr  L102B
-         puls  pc,x
+         cmpy  ,s++
+         beq   TryNext
+         cmpu   >GrfMem+gr00B5
+         ENDC
+         beq   CheckScn   Yes, check if mouse clicked on it.
+* inc >BordReg
+TryNext  abx              No, bump ptr up
+         deca             Dec # windows left to check
+         bne   SrchLoop
+         bra   AdjstCrs
+
+
+CheckScn equ   *
+         IFNE  H6309
+         lde   Wt.BLnk,x  Is this an overlay window?
+         ELSE
+         pshs  a
+         lda   Wt.Blnk,x
+         sta   >GrfMem+gr00B5
+         puls  a
+         ENDC
+         bpl   TryNext    Yes, don't bother with it (MAY BE WRONG?)
+         pshs  u,y,x,d    Preserve regs
+         leax  8,s        Point to mouse packet
+*         ldx   #WGlobal+G.Mouse+Pt.AcX   Point to mouse current coords
+         lbsr  L1C19      See if mouse on this window
+         puls  u,y,x,d    Restore regs
+         bcs   TryNext    Not on this window either, continue through table
+* Found window mouse was clicked on. Now, we must find the ptr to _this_
+*   windows' device mem ptr, load it into X, lbsr L0582 & bra L1C16
+* See TC9IO source, but basically, get Device Table ptr, get # of devices max,
+*   use that as range, Get our V$DRIV, check for match (going through Device
+*   table), if match, get V$STAT for static storage. Go in there, make sure
+*   $1d indicates GRFDRV/WINDINT, $1e >0 (Valid window). If so, we found our
+*   ptr. If not, skip to AdjstCrs. Do NOT have to go back in loop, as only
+*   one window can be in same area (at this time... until movable/resizable
+*   windows are implimented in 16K grfdrv)
+* This routine should preserve Y (window table ptr)
+* SEEMS TO WORK TO HERE NOW.
+* Entry: A=32-window entry #
+* NOTE: IF IT ALLOWS SELECTING THE UNDERLYING GSHELL "GHOST" WINDOW, WE ALSO
+*   HAVE TO ADD CODE TO MAKE SURE A PROCESS IS ACTIVE FOR THE WINDOW... WHICH
+*   MEANS RE-SEARCHING (PAST LAST FOUND POINT) THE WINDOW TABLE ITSELF
+         ldb   #$20       Invert window entry #
+         IFNE  H6309
+         subr  a,b
+         ELSE
+         pshs  a
+         subb  ,s+
+         ENDC
+         pshs  b,y        Preserve window entry # & Window table ptr
+         ldx   >WGlobal+G.CurDev     Get ptr to current device static mem
+         ldx   V.PORT,x   Get ptr to our device table entry
+         IFNE  H6309
+         ldw   V$DRIV,x   Get original window's driver ptr
+         ELSE
+         ldx   V$DRIV,x
+         stx   >GrfMem+gr00B5
+         ENDC
+         ldb   #DEVSIZ    Size of each device table entry
+         ldx   <D.Init    Get ptr to INIT module
+         lda   DevCnt,x   Get # of entries allowed in device table
+         ldx   <D.DevTbl  Get start of device table
+         mul              Calculate offset to end of device table
+         leay  d,x        Point Y to end of Device table
+         ldb   #DEVSIZ    Get device table entry size again
+DevLoop  ldu   V$DRIV,x   Get driver ptr for device we are checking
+         IFNE  H6309
+         cmpr  u,w        Same as original window?
+         ELSE
+         cmpu  >GrfMem+gr00B5
+         ENDC
+         bne   NextEnt    No, skip to next entry
+         ldu   V$STAT,x   Get static mem ptr for CC3/TC9IO device
+         lda   V.WinType,u  Is this a Windint/Grfint window?
+         bne   NextEnt    No, VDGINT so skip
+         lda   V.InfVld,u   Is this static mem properly initialized?
+         beq   NextEnt    No, skip
+         lda   V.WinNum,u   Get window table entry #
+         cmpa  ,s         Same as one we are looking for?
+         bne   NextEnt    No, wrong window
+* In some cases, it DOES deactivate the original window
+         ldd   >WGlobal+G.CurDev Copy old static mem ptr to previous
+         std   >WGlobal+G.PrWMPt
+         stu   >WGlobal+G.CurDev Found it, save as current device
+         inc   V.ScrChg,u   Flag that screen update needed
+         clr   >WGlobal+g000A Flag that we are not active device anymore
+         clr   >WGlobal+g00BF Clear Windint's key pressed flag
+         leas  8,s        Eat temp vars
+         rts   
+
+NextEnt  abx              Point to next entry in device table
+         IFNE  H6309
+         cmpr  y,x        Past end of table?
+         ELSE
+         pshs  y
+         cmpx  ,s++
+         ENDC
+         blo   DevLoop    No, keep trying
+NoGo     puls  b,y        Yes, restore window table ptr
+AdjstCrs ldx   >WGlobal+G.GfxTbl     get pointer to graphics table
+         ldd   >$02BC,x   graphics cursor been initialized?
+         bne   L1BB5      yes, skip ahead
+         ldd   #$CA01     get default group/buffer for arrow
+         std   >GrfMem+gr0057     Save in Grfdrv mem
+         pshs  y,x
+         ldb   #$1A       get function call for GCSet
+         lbsr  L0101      let grfdrv do it
+         puls  y,x
+         lda   Wt.GBlk,y  get graphics cursor block #
+         sta   >$02BC,x   save it in Gfx table mem
+         ldd   Wt.GOff,y  get offset in block to graphics cursor
+         std   >$02BD,x   save it
+         bra   L1BD1
+
+* Change mouse cursor if necessary
+L1BB5    pshs  a          save gcursor block #
+         ldd   Wt.GOff,y  get offset into block
+         cmpd  >$02BD,x   match current?
+         puls  a          restore block #
+         beq   L1BD8      Yes, skip next bit
+L1BC5    sta   Wt.GBlk,y  save it into window table
+         ldd   >$02BD,x   get offset from global mem
+         std   Wt.GOff,y  save it as offset in window table
+L1BD1    pshs  y,x        Preserve regs
+         lbsr  L0CEC      Update cursors in Grfdrv
+         puls  y,x        Restore regs
+
+L1BD8    equ   *
+         IFNE  H6309
+         ldq   ,s         get X&Y coords
+         stq   >GrfMem+gr005B     save them in grfdrv mem
+         ELSE
+         ldd   2,s
+         std   >GrfMem+gr005B+2
+         std   >GrfMem+gr00B5
+         ldd   ,s
+         std   >GrfMem+gr005B 
+         ENDC
+         ldb   #$44       get function call for PutGC
+         pshs  y          Preserve regs
+         lbsr  L0101      Put mouse cursor on screen
+         puls  y          Restore regs
+         tst   4,s        Was gfx cursor in window same as in gfx table?
+         beq   L1C16      Yes, skip ahead
+         ldu   >WGlobal+G.CurDev     No, get ptr to current device
+         lbsr  L06B9      get pointer to graphics tables for this window
+         lda   Gt.GBlk,x  Get gfx table block # for gfx cursor
+         bne   L1C07      There is one, make the it the same in window table
+         lda   Wt.GBlk,y  Isn't one, copy from window table to gfx table
+         sta   Gt.GBlk,x
+         ldd   Wt.GOff,y
+         std   Gt.GOff,x
+         bra   L1C11      Go update the cursors on screen
+
+L1C07    sta   Wt.GBlk,y  set block # of graphics cursor in window table
+         ldd   Gt.GOff,x  get offset into block
+         std   Wt.GOff,y
+L1C11    lbsr  L0CEC      Update cursors in GrfDrv
+L1C16    leas  5,s        Eat stack & return
+         rts   
+
+* Check if mouse is in current window (DWSet area)
+* Entry: X=pointer to current mouse coordinates in mouse packet
+*        Y=Pointer to window table
+* Stack use: 0,s   current window table pointer
+*            2,s   window start cords.
+*            4,s   window size
+L1C19    leas  -6,s       make a buffer
+         sty   ,s         save window table pointer
+         leay  Wt.DfCPX,y point to window default co-ordinates
+         bsr   L1C84      calculate co-ordinates
+         bra   L1C2E      go calculate it
+
+* Check if mouse is in current working area (CWArea)
+* Entry: X=pointer to current mouse coordinates in mouse packet
+*        Y=Pointer to window table
+* Stack use: 0,s   current window table pointer
+*            2,s   window start cords.
+*            4,s   window size
+* Exit: Carry clear - on current window area
+*       Carry set, off of current window area
+* Preserves X
+L1C25    leas  -6,s       make a buffer
+         sty   ,s         save window table pointer
+         leay  Wt.CPX,y   point to current window co-ordinates
+         bsr   L1C64      (preserves X)
+L1C2E    ldb   2,s        get window X co-ordinate max.
+         clra             Multiply x 8
+         IFNE  H6309
+         lsld  
+         lsld  
+         lsld  
+         ELSE
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         ENDC
+         cmpd  ,x         higher or lower than current mouse X co-ordinate
+         bhi   L1C5D      higher not in window, return carry set
+         ldb   $02,s      get window X co-ordinate
+         addb  $04,s      add it to size
+         clra             Multiply x 8
+         IFNE  H6309
+         lsld  
+         lsld  
+         lsld  
+         ELSE
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         ENDC
+         cmpd  ,x         within range?
+         bls   L1C5D
+* Check if mouse is within range of maximum Y co-ordinate of window
+         ldb   $03,s      get 
+         clra             Multiply x 8
+         IFNE  H6309
+         lsld  
+         lsld  
+         lsld  
+         ELSE
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         ENDC
+         cmpd  $02,x
+         bhi   L1C5D
+* Check if mouse is within Y lower range of window
+         ldb   $03,s      get Y co-ordinate of window
+         addb  $05,s      add in the size
+         clra             Multiply x 8
+         IFNE  H6309
+         lsld  
+         lsld  
+         lsld  
+         ELSE
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         ENDC
+         cmpd  $02,x      higher or lower than current mouse Y co-ordinate
+         bls   L1C5D      lower, return mouse off window
+         clra             flag mouse pointer is on this window
+         bra   L1C5E      return
+
+L1C5D    coma             flag pointer is off this window
+L1C5E    ldy   ,s         restore window table pointer
+         leas  6,s        purge stack
+         rts              return
+
+L1C64    pshs  x          preserve pointer to mouse working co-ordinates
+         pshs  y          save pointer to window X/Y start co-ordinates
+         ldy   6,s        get window table pointer
+         ldd   Wt.CPX,y   get current X & Y start co-ordinates
+         IFNE  H6309
+         ldw   Wt.LStDf,y get screen logical start of full window
+         cmpw  Wt.LStrt,y match current working area?
+         ELSE
+         pshs  x
+         ldx   Wt.LStDf,y get screen logical start of full window
+         stx   >GrfMem+gr00B5
+         cmpx  Wt.LStrt,y match current working area?
+         puls  x
+         ENDC
+         beq   L1C80      yes, skip ahead
+         addd  Wt.DfCPX,y add current X/Y start to actual X/Y start
+         puls  y
+         bra   L1C88
+
+L1C80    puls  y          restore pointer to window X/Y start coords
+         bra   L1C86      skip ahead
+
+L1C84    pshs  x          preserve pointer to mouse working coords
+L1C86    ldd   ,y         get active window start X/Y default coords
+L1C88    std   6,s        save 'em
+         ldd   2,y        get active window default sizes
+         std   8,s        save 'em
+         ldx   4,s        get current window table pointer
+         lda   Wt.BLnk,x  this a overlay window?
+         bmi   L1CBA      no we are the only window, return
+L1C94    bsr   L1CBC      get window table pointer to the parent window
+         lda   Wt.BLnk,x  we at the bottom of the pile?
+         bpl   L1C94      no, keep going
+         ldd   $06,s      get active window start coords
+         IFNE  H6309
+         ldw   Wt.LStDf,x get window logical start
+         cmpw  Wt.LStrt,x same as current working area?
+         ELSE
+         pshs  y
+         ldy   Wt.LStDf,x get window logical start
+         sty   >GrfMem+gr00B5
+         cmpy  Wt.LStrt,x same as current working area?
+         puls  y
+         ENDC
+         bne   L1CB1      no, skip ahead
+         addd  Wt.DfCPX,x add the start coord defaults of parent window
+         bra   L1CB8      save & return
+
+L1CB1    addd  Wt.DfCPX,x
+         addd  Wt.CPX,x   add current window start coords. of parent window
+L1CB8    std   $06,s      save window start coords
+L1CBA    puls  x,pc       retsore & return
+
+* Get pointer to window table entry
+* Entry: A=Window table entry #
+* Exit : X=Pointer to window table entry
+L1CBC    ldb   #Wt.Siz    get size of entrys
+         mul              calculate offset
+         ldx   #WinBase   Point X to window table start
+         IFNE  H6309
+         addr  d,x        add offset
+         ELSE
+         leax  d,x
+         ENDC
+         rts              return
+
+* Update mouse packet pointer status based on where it is (called from CC3IO)
+* Entry: None
+L1CC8    lbsr  L06A0      verify window (don't care about errors)
+         bsr   L1D24      copy current mouse coords to work area
+         pshs  x          save pointer to mouse packet
+         leax  Pt.Siz,x   point to working coord copies
+         lbsr  L1C25      mouse in menu bar area?
+         bcs   L1CE2      yes, clear relative coords from mouse packet
+         bsr   L1CFA      update window relative mouse coords
+         clra             get code for content region
+L1CDD    puls  x          restore mouse packet pointer
+         sta   Pt.Stat,x  save pointer type
+         clrb             clear errors
+         rts   
+
+* Mouse is either in control region or off window, calculate which
+L1CE2    equ   *
+         IFNE  H6309
+         clrd
+         clrw  
+         stq   -4,x       clear out relative coords in mouse packet
+         ELSE
+         clra
+         clrb
+         std   >GrfMem+gr00B5
+         std   -4,x
+         std   -2,x
+         ENDC
+         lbsr  L1C19      mouse on window?
+         lda   #WR.Cntrl  Default to Control Region (doesn't affect carry)
+         bcc   L1CDD      Yes, leave flag alone
+         inca             Not on window, change flag to 2
+         bra   L1CDD
+
+* Update window relative coords in mouse packet
+* Entry: X=Ptr to mouse working coords
+*        Y=Ptr to current window table
+L1CFA    leas  -6,s       make a buffer
+         sty   ,s         save window table pointer
+         leay  Wt.CPX,y   point to current window start coords
+         lbsr  L1C64      calculate window 
+         ldb   2,s        get window X size
+         clra             Multiply x 8
+         IFNE  H6309
+         lsld  
+         lsld  
+         lsld  
+         ldw   ,x         get current mouse X coord
+         subr  d,w        subtract it from size
+         stw   -4,x       save window relative X coord in mouse packet
+         ELSE
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         pshs  d
+         ldd   ,x
+         subd  ,s
+         std   -4,x
+         puls  d
+         ENDC
+         ldb   3,s        get window Y size
+         clra             Multiply x 8
+         IFNE  H6309
+         lsld  
+         lsld  
+         lsld  
+         ldw   2,x        get current mouse Y coord
+         subr  d,w        subtract it from size
+         stw   -2,x       save window relative Y coord in mouse packet
+         ELSE
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         pshs  d
+         ldd   2,x
+         subd  ,s
+         std   >GrfMem+gr00B5
+         std   -2,x
+         puls  d
+         ENDC
+         ldy   ,s         get window table pointer
+         leas  6,s        purge stack
+         rts              return
+
+* Copy current mouse coords to working area
+L1D24    ldx   #WGlobal+G.Mouse Point to mouse packet in global mem
+         IFNE  H6309
+         ldq   Pt.AcX,x   get current mouse coords
+         tim   #$01,[Wt.STbl,y] 640 pixel wide screen?
+         ELSE
+         ldd   Pt.AcX+2,x
+         std   >GrfMem+gr00B5
+         ldd   Pt.AcX,x
+         pshs  a
+         lda   [Wt.STbl,y]
+         anda  #$01
+         puls  a
+         ENDC
+         bne   L1D47      yes, skip ahead
+         IFNE  H6309
+         lsrd             Divide X coord by 2
+L1D47    stq   Pt.Siz,x   Save X&Y coords in working area
+         ELSE
+         lsra
+         rorb
+L1D47    pshs  d
+         ldd   >GrfMem+gr00B5
+         std   Pt.Siz+2,x
+         puls  d
+         std   Pt.Siz,x
+         ENDC
+         rts              return
+
+****************************
+* Scale/DWProtSW/TCharSW/Boldcheck
+L068F    lbsr  L06A0      verify window table
+         bcs   NoWind     not good, return error
+         lda   ,x         Get switch
+         ldx   >WGlobal+G.CurDvM     Get current devices' static mem ptr
+         ldb   V.CallCde,x  Get which switch we will be setting
+         subb  #$22       Bump down to 0-8 range
+         bpl   doswitch   If anything but DWProtSW, skip ahead
+         clrb             0=DWProtSW
+doswitch leax  <SwtchTbl,pc Point to switch table
+         tsta             On or Off?
+         bne   SwOn       On, go do
+         leax  10,x       Off, adjust for 2nd table
+SwOn     jmp   b,x        Go set/reset bit flag
+
+NoWind   ldb   #E$WUndef  Window Undefined error
+         rts   
+
+* Table for switches
+SwtchTbl bra   DProtOn    Device window protect On
+         bra   TChrOn     Transparent chars On
+         bra   PropOn     Proportional On
+         bra   ScaleOn    Scaling On
+         bra   BoldOn     Bold On
+         bra   DProtOff   Device window protect Off
+         bra   TChrOff    Transparent chars Off
+         bra   PropOff    Proportional Off
+         bra   ScaleOff   Scaling Off
+         bra   BoldOff    Bold Off
+
+DProtOn  equ    *
+         IFNE  H6309
+         oim   #Protect,Wt.BSW,y Turn Device window protect on
+         ELSE
+         ldb   Wt.BSW,y
+         orb   #Protect
+         stb   Wt.BSW,y
+         ENDC
+         clrb             No error & return
+         rts   
+
+DProtOff equ    *
+         IFNE  H6309
+         aim   #^Protect,Wt.BSW,y Turn Device window protect off
+         ELSE
+         ldb   Wt.BSW,y
+         andb  #^Protect
+         stb   Wt.BSW,y
+         ENDC
+         clrb             No error & return
+         rts   
+
+TChrOff  equ    *
+         IFNE  H6309
+         oim   #TChr,Wt.BSW,y Turn Transparency off
+         ELSE
+         ldb   Wt.BSW,y
+         orb   #TChr
+         stb   Wt.BSW,y
+         ENDC
+         clrb             No error & return
+         rts   
+
+TChrOn   equ    *
+         IFNE  H6309
+         aim   #^TChr,Wt.BSW,y Turn Transparency on
+         ELSE
+         ldb   Wt.BSW,y
+         andb  #^TChr
+         stb   Wt.BSW,y
+         ENDC
+         clrb             No error & return
+         rts   
+
+PropOn   equ    *
+         IFNE  H6309
+         oim   #Prop,Wt.BSW,y Turn Proportional on
+         ELSE
+         ldb   Wt.BSW,y
+         orb   #Prop
+         stb   Wt.BSW,y
+         ENDC
+         clrb             No error & return
+         rts   
+
+PropOff  equ    *
+         IFNE  H6309
+         aim   #^Prop,Wt.BSW,y Turn Proportional off
+         ELSE
+         ldb   Wt.BSW,y
+         andb  #^Prop
+         stb   Wt.BSW,y
+         ENDC
+         clrb             No error & return
+         rts   
+
+ScaleOn  equ    *
+         IFNE  H6309
+         oim   #Scale,Wt.BSW,y Turn Scaling on
+         ELSE
+         ldb   Wt.BSW,y
+         orb   #Scale
+         stb   Wt.BSW,y
+         ENDC
+         clrb             No error & return
+         rts   
+
+ScaleOff equ    *
+         IFNE  H6309
+         aim   #^Scale,Wt.BSW,y Turn Scaling off
+         ELSE
+         ldb   Wt.BSW,y
+         andb  #^Scale
+         stb   Wt.BSW,y
+         ENDC
+         clrb             No error & return
+         rts   
+
+BoldOn   equ    *
+         IFNE  H6309
+         oim   #Bold,Wt.BSW,y Turn Bold on
+         ELSE
+         ldb   Wt.BSW,y
+         orb   #Bold
+         stb   Wt.BSW,y
+         ENDC
+         clrb             No error & return
+         rts   
+
+BoldOff  equ    *
+         IFNE  H6309
+         aim   #^Bold,Wt.BSW,y Turn Bold off
+         ELSE
+         ldb   Wt.BSW,y
+         andb  #^Bold
+         stb   Wt.BSW,y
+         ENDC
+         clrb             No error & return
+         rts   
+
+* FIXMENU - redos the graphics on the menu bar affected by menu pulldown
+* Entry: X=Ptr to menu text (NUL terminated)
+*        Y=Window table ptr
+*        U=Ptr to menu handling table entry (4 byte packets)
+*        B=Size of text to write (dont' need here)
+*        A=End X coord of menu entry
+* Exit: preserves x,y,u registers
+* Stack offsets for temp stack:
+fixcolor equ   0
+fixstrtx equ   1
+fixstrty equ   3
+fixendx  equ   5
+fixendy  equ   7
+fixcode  equ   9
+
+* 1st, redo background
+
+FixMenu  pshs  d,x        Save # of chars & menu text ptr
+         leas  -10,s      Make room on stack for graphics "chunk"
+         IFNE  H6309
+         tfr   e,b        Move calculated End X coord to D
+         ELSE
+         ldb   >GrfMem+gr00B5
+         ENDC
+         lda   MN.ID,x    Get menu ID #
+         cmpa  #MId.Tdy   Tandy menu (in which case E is fried)
+         bne   normalmn
+         ldb   MnuXEnd,u  Get real end coord
+         incb             For space between it & next coord
+* Draw 6 pixel high bar in middle
+normalmn clra  
+         IFNE  H6309
+         lsld             D=D*8 (for graphics X coord)
+         lsld  
+         lsld  
+         ELSE
+         lslb
+         rola
+         lslb
+         rola
+         lslb
+         rola
+         ENDC
+         std   fixendx,s  Save End X Coord
+         ldd   #WColor1   Color 1
+         stb   fixcolor,s Save it
+         ldd   #1         Y Pix start=1 (added since WColor now changeable)
+         std   fixstrty,s
+         ldb   #6         Save Y pixel end
+         std   fixendy,s
+         ldb   MnuXStrt,u Get start X coord
+         IFNE  H6309
+         lsld             D=X coord in pixels
+         lsld  
+         lsld  
+         ELSE
+         lslb
+         rola
+         lslb
+         rola
+         lslb
+         rola
+         ENDC
+         std   fixstrtx,s Save X pixel start
+         ldd   #$014e     1 function & GRFDRV Bar function code
+         stb   fixcode,s
+         leax  ,s         Point to our "chunk"
+         lbsr  DrawBar    Draw the top line again
+* Now redo top line
+         lda   #WColor3   Color 3
+         sta   fixcolor,s
+         IFNE  H6309
+         clrd             Y coord=0
+         ELSE
+         clra
+         clrb
+         ENDC
+         std   fixstrty,s
+         std   fixendy,s
+         ldd   #$014a     1 function & Draw line GRFDRV function code
+         stb   fixcode,s
+         leax  ,s         Point to our "chunk"
+         lbsr  DrawBar
+* Now redo bottom line
+         lda   #WColor2   Color 2
+         sta   fixcolor,s
+         ldd   #7         Y coord=7
+         std   fixstrty,s
+         std   fixendy,s
+         ldd   #$014a     1 function & GRFDRV Draw Line function code
+         stb   fixcode,s
+         leax  ,s         Point to our "chunk"
+         lbsr  DrawBar
+         leas  10,s       Restore stack
+         puls  d,x,pc     Restore regs & return
 
          emod  
 eom      equ   *
          end
-

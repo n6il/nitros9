@@ -20,6 +20,10 @@
 *
 *  27      2003/08/18
 * Forward ported to NitrOS-9.
+*
+*          2003/11/16
+* Corrected several lines for keyboard mouse. RG
+* Corrected several lines in SSMOUSE where MS.Side used incorrectly. RG
 
          nam   CC3IO
          ttl   CoCo 3 I/O driver
@@ -140,7 +144,7 @@ Init     ldx   <D.CCMem		get ptr to CC mem
 * Uses new init module format to get monitor type and key info
 
          ldy   <D.Init		get init module ptr
-         lda   MonType,y	get monitor type byte
+         lda   MonType,y	get monitor type byte 0,1,2
          sta   <G.MonTyp,x	save off
          ldd   MouseInf,y	get mouse information
          sta   <G.Mouse+Pt.Res,x	save off hi-res/lo-res flag
@@ -176,9 +180,9 @@ Init     ldx   <D.CCMem		get ptr to CC mem
 * U = device memory area
 PerWinInit
          ldd   #$0078		set default SS.Mouse parameters
-         std   <MS.Smpl,u	(Mouse sample rate & fire button timeout value)
+         std   <V.MSmpl,u	(Mouse sample rate & fire button timeout value)
          ldd   <IT.PAR,y	get parity/baud bytes from dev desc
-         std   <DevPar,u	save it off in our static
+         std   <V.DevPar,u	save it off in our static
          lbra  FindCoMod	go find and init co-module
 
 KeyDrv   fcs   /KeyDrv/
@@ -214,13 +218,13 @@ Read     lda   V.PAUS,u		device paused?
          clra			clear carry (no error)
          rts			return
 
-read1    lda   <SS.SigID,u	data ready signal trap set up?
+read1    lda   <V.SSigID,u	data ready signal trap set up?
          lbne  NotReady		no, exit with not ready error
 * Data ready signal trap set up
          leax  >ReadBuf,u	point to keyboard buffer
-         ldb   <InpPtr,u	get current position in keyboard buffer
+         ldb   <V.InpPtr,u	get current position in keyboard buffer
          orcc  #IRQMask		disable IRQs
-         cmpb  <EndPtr,u	same as end of buffer ptr (no keys in buffer)?
+         cmpb  <V.EndPtr,u	same as end of buffer ptr (no keys in buffer)?
          beq   ReadSlp		yes, no new chars waiting, sleep/scan for them
 * Character(s) waiting in buffer
          abx   			move ptr to character
@@ -229,7 +233,7 @@ read1    lda   <SS.SigID,u	data ready signal trap set up?
          bpl   bumpdon		if it hasn't wrapped 128 bytes, go save it
 *         bsr   ChkWrap		check for wrap
          clrb
-bumpdon  stb   <InpPtr,u	save updated keyboard buffer ptr
+bumpdon  stb   <V.InpPtr,u	save updated keyboard buffer ptr
          andcc #^(IRQMask!Carry)	restore IRQ and clear carry
          rts   			return with A containing char read
 
@@ -267,11 +271,11 @@ ReadErr  coma  			major signal, return with error flag
 L0160    fcb   8,1		right arrow (normal, shifted)
          fdb   MaxRows-1	right arrow (control)
          fcb   -8,-1		left arrow (normal, shifted)
-         fdb   0		left arrow (control)
+         fdb   0		      left arrow (control)
          fcb   8,1		down arrow (normal, shifted)
          fdb   MaxLine		down arrow (control)
          fcb   -8,-1		up arrow (normal, shifted)
-         fdb   0		up arrow (control)
+         fdb   0		      up arrow (control)
  
 * Check mouse coordinate
 * Entry: D=Maximum allowed coordinate for current axis being checked
@@ -361,11 +365,11 @@ L01E6    tst   <G.Clear,u	clear key down?
          bne   L0223
          ldx   <G.CurDev,u	get dev mem pointer
          IFNE  H6309
-         eim   #CapsLck,<ULCase,x
+         eim   #CapsLck,<V.ULCase,x
          ELSE
-         ldb   <ULCase,x
+         ldb   <V.ULCase,x
          eorb  #CapsLck		reverse current CapsLock status
-         stb   <ULCase,x
+         stb   <V.ULCase,x
          ENDC
          bra   L0223		return
 * Check CLEAR key
@@ -386,11 +390,11 @@ L0211    cmpa  #$84		keyboard mouse toggle key?
          com   <G.KyMse,u
          ldx   <G.CurDev,u
          IFNE  H6309
-         eim   #KeyMse,<ULCase,x
+         eim   #KeyMse,<V.ULCase,x
          ELSE
-         ldb   <ULCase,x
+         ldb   <V.ULCase,x
          eorb  #KeyMse		reverse current Keyboard Mouse status
-         stb   <ULCase,x
+         stb   <V.ULCase,x
          ENDC
 L0223    clr   $01,s
 L0225    ldb   $01,s
@@ -465,12 +469,12 @@ L0276    lda   Pt.ToTm,x	get timeout initial value
          ENDC
          pshs  u		save ptr to CC mem
          ldu   <G.CurDev,u	get dev mem ptr
-         lda   <MS.SigID,u	get process ID requesting mouse signal
+         lda   <V.MSigID,u	get process ID requesting mouse signal
          beq   L02A9		branch if none
-         ldb   <MS.SigSg,u	else get signal code to send
+         ldb   <V.MSigSg,u	else get signal code to send
          os9   F$Send		and send it
          bcs   L02A5		branch if error
-         clr   <MS.SigID,u	clear signal ID (one shot)
+         clr   <V.MSigID,u	clear signal ID (one shot)
 L02A5    clr   >WGlobal+G.MsSig	clear read flag
 L02A9    puls  u		recover pointer to CC mem
 L02AB    ldd   Pt.TTSA,x	get button A&B time last state
@@ -486,9 +490,11 @@ L02B7    std   Pt.TTSA,x	save updated states
          incd			increment
          beq   L02C6		branch if zero
          ELSE
-         cmpd  #$FFFF		check upper bound
-         beq   L02C4		branch if so
-         addd  #$0001		else increment
+*         cmpd  #$FFFF		check upper bound
+*         beq   L02C4		branch if so
+*         addd  #$0001		else increment
+         addd   #1
+         beq   L02C6
          ENDC
 L02C4    std   Pt.TSST,x	save updated state count
 L02C6    leas  $05,s		purge locals
@@ -547,7 +553,7 @@ CC3Irq   ldu   <D.CCMem		get ptr to CC mem
 L0319    leax  <NullIRQ,pcr	set AltIRQ to do nothing routine so other IRQs
          stx   <D.AltIRQ	can fall through to IOMan polling routine
          andcc  #^(IntMasks)	re-enable interrupts
-         ldb   <ScrChg,y	check screen update request flag (cur screen)
+         ldb   <V.ScrChg,y	check screen update request flag (cur screen)
          beq   L0337		no update needed, skip ahead
          lda   V.TYPE,y		device a window?
          bpl   L032F		no, must be VDGInt, so go on
@@ -557,7 +563,7 @@ L0319    leax  <NullIRQ,pcr	set AltIRQ to do nothing routine so other IRQs
 *L032F    lda   #$00
 L032F    clra			special function: select new active window
          lbsr  L05DA		go execute co-module
-         clr   <ScrChg,y	clear screen change flag in device mem
+         clr   <V.ScrChg,y	clear screen change flag in device mem
 *
 * CHECK IF GFX/TEXT CURSORS NEED TO BE UPDATED            
 * G.GfBusy = 1 Grfdrv is busy processing something else
@@ -580,10 +586,11 @@ L034A    lda   #$02		update cursors sub-function code
          lbsr  L05DA		go update cursors through co-module
 * Check for mouse update
 L034F    equ   *
+* Major error here. Used regU which points to D.CCMem not G.CurDev. RG
          IFNE  H6309
-         tim   #KeyMse,<ULCase,u	keyboard mouse?
+         tim   #KeyMse,<V.ULCase,y   keyboard mouse?
          ELSE
-         lda   <ULCase,u	keyboard mouse?
+         lda   <V.ULCase,y     keyboard mouse?
          bita  #KeyMse
          ENDC
          bne   L0369		branch if so
@@ -605,11 +612,12 @@ L0369    equ   *
          clrb
          ENDC
          std   <G.KySns,u	initialize keysense & same key flag
+* Major error here. Was regU; see above. RG
          IFNE  H6309
-         tim   #KeyMse,>ULCase,u
+         tim   #KeyMse,>V.ULCase,y
          ELSE
          pshs  a
-         lda   >ULCase,u	is the keyboard mouse enabled?
+         lda   >V.ULCase,y      is the keyboard mouse enabled?
          bita  #KeyMse
          puls  a
          ENDC
@@ -669,19 +677,19 @@ L03DF    sta   <G.LastCh,u	store last keyboard character
 L03ED    stb   <G.KyRept,u	save updated repeat delay
          lbsr  L017E
          beq   L044E
-         ldb   #$01
-         stb   >g00BF,u
+         ldb   #$01         This may be wrong because regB was created in sub RG
+         stb   >g00BF,u       menu keypress flag
          ldu   <G.CurDev,u	get ptr to statics in U
-         ldb   <EndPtr,u
+         ldb   <V.EndPtr,u
          leax  >ReadBuf,u	point to keyboard buffer
          abx   			move to proper offset
          incb			inc keyboard buffer ptr
          bpl    bumpdon2	hasn't wrapped, skip ahead
          clrb			reset pointer
 *         lbsr  ChkWrap		check for wrap-around
-bumpdon2 cmpb  <InpPtr,u	same as start?
+bumpdon2 cmpb  <V.InpPtr,u	same as start?
          beq   L0411		yep, go on
-         stb   <EndPtr,u	save updated pointer
+         stb   <V.EndPtr,u	save updated pointer
 L0411    sta   ,x		save key in buffer
          beq   L0431		go on if it was 0
 * Check for special characters
@@ -700,12 +708,12 @@ L0421    ldb   #S$Intrpt	get signal code for key interrupt
          bne   L0431		no, check data ready signal
 L042D    lda   V.LPRC,u		get last process ID
          bra   L0447		go send the signal
-L0431    lda   <SS.SigID,u	send signal on data ready?
+L0431    lda   <V.SSigID,u	send signal on data ready?
          beq   L0443		no, just go wake up process
-         ldb   <SS.SigSg,u	else get signal code
+         ldb   <V.SSigSg,u	else get signal code
          os9   F$Send
          bcs   L044E
-         clr   <SS.SigID,u	clear signal ID
+         clr   <V.SSigID,u	clear signal ID
          bra   L044E		return
 L0443    ldb   #S$Wake		get signal code for wakeup
          lda   V.WAKE,u		get process ID to wake up
@@ -771,7 +779,7 @@ shftclr  pshs  u,y,x,b,a	preserve registers
 * 15-16,s : Ptr to the device table entry we are currently checking
 *
 L04A7    ldx   <D.CCMem		get ptr to CC mem
-         ldu   <$20,x		get active device's static mem ptr
+         ldu   <G.CurDev,x	get active device's static mem ptr
          lbeq  L0546		if none (no screens), exit without error
          ldx   V.PORT,u		get device table ptr for current device
          stx   $0B,s		save it on stack
@@ -795,8 +803,8 @@ L04C6    stx   $0F,s		save new device table ptr we are checking
          beq   L04BC		there is none, try next one
          cmpx  $0B,s		is this our own (have we come full circle)?
          beq   L0541		yes, obviously nowhere else to switch to
-* Found an initialized device controlled by CC3Io that is not current device
-         lda   <InfVld,u	is the extra window data in static mem valid?
+* Found an initialized device controlled by CC3IO that is not current device
+         lda   <V.InfVld,u	is the extra window data in static mem valid?
          beq   L04BA		no, not good enough, try next one
          ldx   <V.PDLHd,u	get ptr to list of open paths on device
          beq   L0536		no open paths, so switch to that device
@@ -812,16 +820,16 @@ L04C6    stx   $0F,s		save new device table ptr we are checking
          leay  <P$Path,y	move to the path table local to the process
          sta   ,s
          pshs  x
-L04FA    ldb   #$10
-         lda   ,x
-L04FE    decb  
-         cmpa  b,y
-         beq   L050F
-         tstb  
-         bne   L04FE
-         ldx   <$3D,x
-         bne   L04FA
-         puls  x
+L04FA    ldb   #NumPaths	for every possible path...
+         lda   ,x		get system path into A
+L04FE    decb  			decrement
+         cmpa  b,y		same?
+         beq   L050F		branch if so
+         tstb  			are we at start of paths?
+         bne   L04FE		branch if not
+         ldx   <PD.PLP,x	get ptr to next path dsc. list (linked list)
+         bne   L04FA		branch if valid
+         puls  x		else restore X
          bra   L0536
 L050F    puls  x
          lda   ,s
@@ -856,7 +864,7 @@ L0536    ldx   <D.CCMem		get ptr to CC mem
          clr   >g00BF,x		clear WindInt's key was pressed flag (new window)
 * If there is only one window, it comes here to allow the text/mouse cursors
 * to blink so you know you hit CLEAR or SHIFT-CLEAR
-L0541    inc   <ScrChg,u	flag device for a screen change
+L0541    inc   <V.ScrChg,u	flag device for a screen change
          bsr   setmouse		check mouse
 L0546    leas  <$11,s		purge stack buffer
          clrb  			clear carry
@@ -864,13 +872,14 @@ L0546    leas  <$11,s		purge stack buffer
 
 * Initialize mouse
 setmouse pshs  x		save register used
-         ldd   <MS.Smpl,u	get sample and timeout
+         ldd   <V.MSmpl,u	get sample and timeout
          ldx   <D.CCMem		get ptr to CC mem
          sta   <G.MSmpRt,x	set sample tick count
          sta   <G.MSmpRV,x	set sample rate
          stb   <G.Mouse+Pt.ToTm,x set timeout constant in mouse packet
-         ldd   <MS.Side,u	get mouse side to use
-         sta   <G.KyMse,x	set it
+*         ldd   <MS.Side,u	get mouse side to use
+         ldb   <V.MAutoF,u	get mouse side to use
+*         sta   <G.KyMse,x	set it
          stb   <G.AutoMs,x
          lda   V.TYPE,u		get device type
          sta   g000B,x		set it
@@ -889,9 +898,9 @@ setmouse pshs  x		save register used
 *    CC = carry set on error
 *    B  = error code
 *
-Write    ldb   <ParmCnt,u	are we in the process of getting parameters?
+Write    ldb   <V.ParmCnt,u	are we in the process of getting parameters?
          lbne  L0600		yes, go process
-         sta   <DevPar,u	save off character
+         sta   <V.DevPar,u	save off character
          cmpa  #C$SPAC		space or higher?
          bcc   L058E		yes, normal write
          cmpa  #$1E		1E escape code?
@@ -905,18 +914,18 @@ Write    ldb   <ParmCnt,u	are we in the process of getting parameters?
          jmp   [>WGlobal+G.BelVec]	for whom the bell tolls...
 
 L058E    ldb   #$03		write entry point in co-module
-L0590    lda   <DevPar,u	get character stored earlier
+L0590    lda   <V.DevPar,u	get character stored earlier
 L0593    ldx   <D.CCMem		get ptr to CC mem
          stu   G.CurDvM,x	save dev mem ptr for current device
 L0597    pshs  a
          leax  <G.CoTble,x	point to co-module entry vectors
-         lda   <WinType,u	get window type from device mem
+         lda   <V.WinType,u	get window type from device mem
          ldx   a,x		get vector to proper co-module
          puls  a
          beq   L05EB		vector empty, exit with module not found
          leax  b,x
          bsr   L05C0
-         ldb   <WinType,u
+         ldb   <V.WinType,u
          beq   L05B4
          jsr   ,x		go execute co-module
 L05B0    pshs  cc
@@ -930,7 +939,7 @@ L05BB    clr   >WGlobal+G.CrDvFl
 L05C0    pshs  x,b
          ldx   <D.CCMem		get ptr to CC mem
          clr   G.WIBusy,x	clear WindInt busy flag
-         ldb   <WinType,u	get window type (0 = WindInt)
+         ldb   <V.WinType,u	get window type (0 = WindInt)
          bne   L05CE		branch if VDGInt
          incb  			else make B = 1
          stb   G.WIBusy,x	and make WindInt busy
@@ -967,8 +976,8 @@ L05EF    cmpa  #$1E		$1E code?
 *  required action.
 L05F3    leax  <L058E,pcr	point to parameter vector entry point
          ldb   #$01		get parameter count (need 1 to determine code)
-         stx   <ParmVct,u	save vector
-         stb   <ParmCnt,u	save # param bytes needed before exec'ing vect.
+         stx   <V.ParmVct,u	save vector
+         stb   <V.ParmCnt,u	save # param bytes needed before exec'ing vect.
 Do1E     clrb  			no error
          rts   			return
 
@@ -976,24 +985,24 @@ Do1E     clrb  			no error
 * A=parameter byte from SCF
 * B=# parameter bytes left (not including one in A)
 * U=device mem ptr
-L0600    ldx   <NxtPrm,u	get ptr of where to put next param byte
+L0600    ldx   <V.NxtPrm,u	get ptr of where to put next param byte
          sta   ,x+		put it there
-         stx   <NxtPrm,u	update pointer
+         stx   <V.NxtPrm,u	update pointer
          decb  			decrement parameter count
-         stb   <ParmCnt,u	update it
+         stb   <V.ParmCnt,u	update it
          bne   Do1E		if still more to get, exit without error
 * B=0, flag to say we are not current device
 * We have all parameter bytes we need at this point.
          ldx   <D.CCMem		get ptr to CC mem
          bsr   L05C0
          stu   G.CurDvM,x
-         ldx   <PrmStrt,u	reset next param ptr to start
-         stx   <NxtPrm,u
-         ldb   <WinType,u	is this device using WindInt?
+         ldx   <V.PrmStrt,u	reset next param ptr to start
+         stx   <V.NxtPrm,u
+         ldb   <V.WinType,u	is this device using WindInt?
          beq   L0624		yes, special processing for WindInt
-         jsr   [<ParmVct,u]	go execute parameter handler
+         jsr   [<V.ParmVct,u]	go execute parameter handler
          bra   L05B0
-L0624    jsr   [<ParmVct,u]
+L0624    jsr   [<V.ParmVct,u]
          bra   L05B6
 
 
@@ -1032,12 +1041,12 @@ GSComSt  lda   V.TYPE,u		get device type
          std   R$Y,x		save it in register stack
          rts   			return
 
-GSReady  ldb   <EndPtr,u	get input buffer end pointer
-         cmpb  <InpPtr,u	anything there?
+GSReady  ldb   <V.EndPtr,u	get input buffer end pointer
+         cmpb  <V.InpPtr,u	anything there?
          beq   NotReady		nope, exit with error
          bhi   L0660		higher?
          addb  #$80		nope, add 128 to count
-L0660    subb  <InpPtr,u	calculate number of characters there
+L0660    subb  <V.InpPtr,u	calculate number of characters there
          stb   R$B,x		save it in register stack
 SSEOF    clrb  			clear errors
          rts   			return
@@ -1098,8 +1107,8 @@ L06B2    stb   R$A,y		save button status to caller
 *
          pshs  y		save ptr to caller's regs
          lda   R$X+1,y		get switch to indicate left or right joystick
-         inca  
-         ldy   #$0000
+         inca               now 1 or 2
+         ldy   #$0000   force low res??
          pshs  u		save driver static mem
          ldu   <D.CCMem		get ptr to CC mem
          ldx   >WGlobal+G.JoyEnt $10EA get address of joystick sub module
@@ -1239,27 +1248,27 @@ L07B5    ldb   #$09		call setstt entry point in co-module
 * SS.SSig - send signal on data ready
 SSSig    pshs  cc		save interrupt status
 * The next line doesn't exist in the NitrOS version
-*         clr   <SS.SigID,u
-         lda   <InpPtr,u	get input buffer pointer
-         suba  <EndPtr,u	get how many chars are there
+*         clr   <V.SSigID,u
+         lda   <V.InpPtr,u	get input buffer pointer
+         suba  <V.EndPtr,u	get how many chars are there
          pshs  a		save it temporarily
          bsr   L07EC		get current process ID
          tst   ,s+		anything in buffer?
          bne   L07F7		yes, go send the signal
-         std   <SS.SigID,u	save process ID & signal
+         std   <V.SSigID,u	save process ID & signal
          puls  pc,cc		restore interrupts & return
 
 * SS.MsSig - send signal on mouse button
 SSMsSig  pshs  cc		save interrupt status
 * The next line doesn't exist in the NitrOS version
-*         clr   <MS.SigID,u
+*         clr   <V.MSigID,u
          bsr   L07EC		get process ID
          ldx   <D.CCMem		get ptr to CC mem
          cmpu  <G.CurDev,x	are we active device?
          bne   L07E7		no, save ID & signal
          tst   >G.MsSig,x	has button been down?
          bne   L07F3		yes, go send the signal
-L07E7    std   <MS.SigID,u	save ID & signal code
+L07E7    std   <V.MSigID,u	save ID & signal code
          puls  pc,cc		restore interrupts & return
 
 L07EC    orcc  #IntMasks	disable interrupts
@@ -1274,32 +1283,43 @@ L07F7    puls  cc		restore interrupts
 
 * SS.Relea - release a path from SS.SSig
 SSRelea  lda   PD.CPR,y		get curr proc #
-         cmpa  <SS.SigID,u	same as keyboard?
+         cmpa  <V.SSigID,u	same as keyboard?
          bne   L0807		branch if not
-         clr   <SS.SigID,u	clear process ID
-L0807    cmpa  <MS.SigID,u	same as mouse?
+         clr   <V.SSigID,u	clear process ID
+L0807    cmpa  <V.MSigID,u	same as mouse?
          bne   L0871		no, return
-         clr   <MS.SigID,u	else clear process ID
+         clr   <V.MSigID,u	else clear process ID
          rts   			return
 
 * SS.Mouse - set mouse sample rate and button timeout
+*
+* Entry:
+*    R$X = mouse sample rate and timeout
+*          MSB = mouse sample rate
+*          LSB = mouse button timeout
+*    R$Y = mouse auto-follow feature
+*          MSB = don't care
+*          LSB = auto-follow ($00 = OFF, else = ON)
+*
 * NOTE: Default mouse params @ $28,u are $0078
 *       It modifies the static mem variables (for caller's window) first, and
 *       then modifies global memory only if we are the current active device.
 SSMouse  ldd   R$X,x		get sample rate & timeout from caller
          cmpa  #$FF		sample rate 256?
          beq   L0819		yes, can't have it so go on
-         sta   <MS.Smpl,u	save new timeout
+         sta   <V.MSmpl,u	save new timeout
 L0819    cmpb  #$FF		timeout 256?
          beq   L0820		yes, can't have it so go on
-         stb   <MS.Time,u	save new timeout
+         stb   <V.MTime,u	save new timeout
 L0820    ldb   R$Y+1,x		get auto-follow flag
-         stb   <MS.Side,u	save it
+         stb   <V.MAutoF,u	save it was MS.Side wrong RG
+* New line to compliment above. RG
+*         clr   MS.Side,u      force keymouse inactive
          ldy   <D.CCMem		get ptr to CC mem
          cmpu  <G.CurDev,y	are we current device?
          bne   L083D		no, exit without error
          stb   <G.AutoMs,y	save auto-follow flag for this dev
-         ldd   <MS.Smpl,u	get sample rate/timeout
+         ldd   <V.MSmpl,u	get sample rate/timeout
          sta   <G.MSmpRV,y	save it (reset value)
          sta   <G.MSmpRt,y	save it (current value)
          stb   <G.Mouse+Pt.ToTm,y	save timeout too
@@ -1331,7 +1351,7 @@ L0866    clrb  			clear errors
 SSKySns  ldd   R$X,x		get monitor type requested
          beq   L086E		below legal value?
          ldb   #$FF		no, exit with error
-L086E    stb   <KySnsFlg,u	save new sense mode
+L086E    stb   <V.KySnsFlg,u	save new sense mode
 L0871    clrb  			clear errors
          rts   			return
 
@@ -1346,7 +1366,7 @@ SSMontr  ldd   R$X,x		get monitor type requested
          ora   #$10		switch to monochrome
 L0885    sta   <D.VIDMD		update video mode register
          stb   >WGlobal+G.MonTyp	save new monitor type
-         inc   <ScrChg,u	flag a screen change
+         inc   <V.ScrChg,u	flag a screen change
          clrb  			clear errors
          rts   			return
 
@@ -1378,7 +1398,7 @@ FindCoMod
          bmi   FindWind		if hi-bit if A is set, we're a window
          pshs  u,y,a		..else VDG
          lda   #$02		get code for VDG type window
-         sta   <WinType,u	save it
+         sta   <V.WinType,u	save it
          leax  <VDGInt,pcr	point to VDGInt name
          bsr   L08D4		link to it if it exists
          puls  pc,u,y,a		restore regs & return
@@ -1390,7 +1410,7 @@ WindInt  fcs   /WindInt/
 *
 FindWind pshs  u,y		preserve regs
          clra  			set window type
-         sta   <WinType,u
+         sta   <V.WinType,u
          leax  <WindInt,pcr	point to WindInt name
          lda   #$80		get driver type code
          bsr   L08D4		try and link it
@@ -1401,7 +1421,7 @@ L08D2    clrb
 *
 * Check if co-module is in memory
 *
-L08D4    ldb   <PrmStrt,u	any parameter vector?
+L08D4    ldb   <V.PrmStrt,u	any parameter vector?
          bne   L08D2		no, return
          pshs  u		save statics
          ldu   <D.CCMem		get ptr to CC mem

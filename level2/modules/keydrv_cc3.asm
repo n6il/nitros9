@@ -134,7 +134,7 @@ L0095    sta   <G.LKeyCd	setup for last key pressed
          adda  #$40		convert to ASCII value; all caps
          ldb   <G.ShftDn	shift key flag
          ldy   <G.CurDev	get current device static memory pointer
-         eorb  <ULCase,y	caps lock and keyboard mouse flags
+         eorb  <V.ULCase,y	caps lock and keyboard mouse flags
          andb  #CapsLck		test caps flag
          bne   L00E0		not shifted so go
          adda  #$20		convert to ASCII lower case
