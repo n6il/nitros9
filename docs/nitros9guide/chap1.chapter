@@ -4,13 +4,13 @@
 <section>
 <title>What You Need to Run OS-9</title>
 <para>
-OS-9 has been tailored to run on your standard, unmodified Dragon
+OS-9 has been tailored to run on your standard, unmodified &make;
 Computer. To use it you'll need the following things:
 </para>
 <itemizedlist mark="bullet">
-  <listitem><para>A 64K Memory Dragon Computer</para></listitem>
-  <listitem><para>A Dragon Disk Drive With Contoller Cartridge</para></listitem>
-  <listitem><para>An OS-9 Dragon System Disk</para></listitem>
+  <listitem><para>A 64K Memory &make; Computer</para></listitem>
+  <listitem><para>A &make; Computer Disk Drive With Contoller Cartridge</para></listitem>
+  <listitem><para>An OS-9 &make; Computer System Disk</para></listitem>
 </itemizedlist>
 <para>
 OS-9 is also ready to use the following optional equipment that you
@@ -29,7 +29,7 @@ may have now or may obtain in the future:
 To start up OS-9 follow these steps:
 
 <orderedlist numeration="arabic">
-<listitem><para>Turn the Dragon Computer and disk drive(s) on. You should see
+<listitem><para>Turn the &make; Computer and disk drive(s) on. You should see
 the usual Basic greeting message on the screen.</para></listitem>
 
 <listitem><para>Insert the OS-9 System Disk in drive zero and close the door.</para></listitem>
@@ -56,9 +56,9 @@ repeatedly fails your OS-9 diskette may be bad.</para></listitem>
 
 <listitem><para>Did you remember to turn the disk drive power switch on?</para></listitem>
 
-<listitem><para>Does your Dragon Computer have 64K RAM? This is a must!</para></listitem>
+<listitem><para>Does your &make; Computer have 64K RAM? This is a must!</para></listitem>
 
-<listitem><para>If your Dragon Computer doesn't seem to understand the BOOT
+<listitem><para>If your &make; Computer doesn't seem to understand the BOOT
 command, contact your dealer.</para></listitem>
 
 <listitem><para>If the &quot;OS9BOOT message is displayed but nothing else happens,
@@ -296,7 +296,7 @@ disk and try to BACKUP again. If BACKUP fails again, the disk is
 physically defective.
 </para>
 <para>
-After you have made your backup disk, try turning the Dragon
+After you have made your backup disk, try turning the &make;
 Computer off and restarting the system with the copy you just made.
 If it works OK, store it in a safe place in case it is needed later.
 You should always have a backup copy of your system disk and all
