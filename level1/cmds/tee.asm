@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 2      Original Tandy distribution version
+* 2      Original Tandy distribution version            BGP 02/04/05
 
          nam   Tee
          ttl   Split output to multiple devices

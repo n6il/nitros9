@@ -1,24 +1,27 @@
 ********************************************************************
-* Copy - Copy data from one path to another
+* Copy - file copy utility
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  7     Original Microware distribution version
+*  7     Original Tandy version                         BGP 02/04/05
 
          nam   Copy
-         ttl   Copy data from one path to another
+         ttl   file copy utility
 
-* Disassembled 02/04/03 23:12:01 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 02/04/05 13:52:38 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 u0001    rmb   1
 u0002    rmb   1
@@ -34,209 +37,22 @@ u0010    rmb   496
 u0200    rmb   256
 u0300    rmb   4096
 size     equ   .
-name     equ   *
-         fcs   /Copy/
+
+name     fcs   /Copy/
          fcb   $07 
-L0012    fcb   $52 R
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $79 y
-         fcb   $20 
-         fcb   $53 S
-         fcb   $4F O
-         fcb   $55 U
-         fcb   $52 R
-         fcb   $43 C
-         fcb   $45 E
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $68 h
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $20 
-         fcb   $43 C
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $75 u
-         fcb   $65 e
-         fcb   $3A :
-         fcb   $20 
-L0033    fcb   $52 R
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $79 y
-         fcb   $20 
-         fcb   $44 D
-         fcb   $45 E
-         fcb   $53 S
-         fcb   $54 T
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $49 I
-         fcb   $4F O
-         fcb   $4E N
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $68 h
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $20 
-         fcb   $43 C
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $75 u
-         fcb   $65 e
-         fcb   $3A :
-         fcb   $20 
-L0059    fcb   $0D 
-L005A    fcb   $55 U
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $3A :
-         fcb   $20 
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $79 y
-         fcb   $20 
-         fcb   $3C <
-         fcb   $50 P
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $31 1
-         fcb   $3E >
-         fcb   $20 
-         fcb   $3C <
-         fcb   $50 P
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $32 2
-         fcb   $3E >
-         fcb   $20 
-         fcb   $5B [
-         fcb   $2D -
-         fcb   $73 s
-         fcb   $5D ]
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $2D -
-         fcb   $73 s
-         fcb   $20 
-         fcb   $3D =
-         fcb   $20 
-         fcb   $73 s
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $64 d
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $79 y
-         fcb   $20 
-         fcb   $28 (
-         fcb   $50 P
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $32 2
-         fcb   $20 
-         fcb   $6D m
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $20 
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $70 p
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $20 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $6C l
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $29 )
-         fcb   $0D 
-L00B4    fcb   $07 
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $2D -
-         fcb   $20 
-         fcb   $77 w
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $20 
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $66 f
-         fcb   $61 a
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $2E .
-         fcb   $0D 
-start    equ   *
-         leas  >u0200,u
+
+L0012    fcc   "Ready SOURCE, hit C to continue: "
+L0033    fcc   "Ready DESTINATION, hit C to continue: "
+L0059    fcb   C$CR
+L005A    fcc   "Use: Copy <Path1> <Path2> [-s]"
+         fcb   C$LF
+         fcc   "  -s = single drive copy (Path2 must be complete pathlist)"
+         fcb   C$CR
+L00B4    fcb   C$BELL
+         fcc   "Error - write verification failed."
+         fcb   C$CR
+
+start    leas  >u0200,u
          pshs  u
          leau  <u0010,u
 L00E1    clr   ,-u
@@ -324,7 +140,7 @@ L019C    tst   <u0003
          bne   L01AD
          ldb   #$01
          stb   $08,x
-         ldb   #$00
+         ldb   #SS.OPT
          os9   I$SetStt 
          lbcs  L027D
 L01AD    lda   <u0002
@@ -345,7 +161,7 @@ L01AD    lda   <u0002
          os9   I$GetStt 
          bcs   L01DD
          lda   <u0001
-         ldb   #$0F
+         ldb   #SS.FD
          os9   I$SetStt 
 L01DD    leax  >u0300,u
          clra  
@@ -396,12 +212,12 @@ L023A    lda   ,u+
          bhi   L0222
          puls  u,y
 L024D    lda   <u0000
-         ldb   #$06
+         ldb   #SS.EOF
          os9   I$GetStt 
          bcc   L01DD
-         cmpb  #$D3
+         cmpb  #E$EOF
          beq   L0262
-L025A    cmpb  #$D3
+L025A    cmpb  #E$EOF
          bne   L027D
          lda   #$01
          bsr   L028A
@@ -455,5 +271,8 @@ L02C8    pshs  y,x,a
          ldy   #$0050
          os9   I$WritLn 
          puls  pc,y,x,a
+
          emod
 eom      equ   *
+         end
+

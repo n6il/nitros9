@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 1      Original Tandy/Microware version
+* 1      Original Tandy/Microware version               BGP 02/04/05
 
          nam   pwd
          ttl   Print working directory
