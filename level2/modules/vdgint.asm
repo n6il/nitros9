@@ -792,7 +792,7 @@ L0522    lda   ,y+		get next block
          os9   F$DelRAM 	deallocate it
 L052D    dec   ,s		dec counter
          bgt   L0522		if not zero, get more
-* Note: this seems too be a bug.  Here, Y is pointing to VD.HiRes ($4D), which
+* Note: this seems to be a bug.  Here, Y is pointing to VD.HiRes ($4D), which
 * is the block number of any CoCo 3 Hi-Res screen.  This $0E command just
 * deals with CoCo 2 graphics modes.  What I think should happen here is
 * that the byte flood fill buffer should be checked for non-zero,
