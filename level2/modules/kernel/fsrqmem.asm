@@ -227,12 +227,14 @@ L090C    lda   #Systm+Objct
          jsr   <D.BtBug
 
 * added for IOMan system memory extentions
+         IFNE  H6309
          ldd   M$Name,x   grab the name offset
          ldd   d,x        find the first 2 bytes of the first module
          cmpd  #$4E69     'Ni' ? (NitrOS9 module?)
          bne   not.ext    no, not system memory extensions
          ldd   M$Exec,x   grab the execution ptr
          jmp   d,x        and go execute the system memory extension module
+         ENDC
 
 not.ext  ldd   <D.BtSz
          bsr   I.VBlock   internal verify block routine
