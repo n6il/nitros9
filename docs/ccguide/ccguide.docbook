@@ -1,10 +1,6 @@
 <?xml version="1.0" ?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" 
    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
-  <!ENTITY replstart "&lt;">
-  <!ENTITY replend   "&gt;">
-  <!ENTITY repeatst   "{">
-  <!ENTITY repeaten   "}">
   <!ENTITY vendor     "OS9 Consortium">
   <!ENTITY make   "Dragon/Color">
   <!ENTITY preface       SYSTEM "intro.preface">
