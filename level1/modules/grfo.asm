@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 1      Tandy/Microware original version
+*        From Tandy OS-9 Level One VR 02.00.00
 
          nam   GRFO
          ttl   CoCo 2 Graphics co-driver

@@ -7,8 +7,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 5      Tandy/Microware original version
-* 6      Modified to handle leap years properly for     BGP 99/05/03
+*   5    From Tandy OS-9 Level One VR 02.00.00
+*   6    Modified to handle leap years properly for     BGP 99/05/03
 *        1900 and 2100 A.D.
 
          nam   Clock
@@ -21,7 +21,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $06
+edition  set   6
 
          mod   eom,name,tylg,atrv,ClkEnt,size
 

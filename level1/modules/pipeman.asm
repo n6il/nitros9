@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 4      Tandy/Microware original version
+*   4    From Tandy OS-9 Level One VR 02.00.00
 
          nam   PipeMan
          ttl   Pipe file manager
@@ -19,7 +19,7 @@
 tylg     set   FlMgr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $04
+edition  set   4
 
          mod   eom,name,tylg,atrv,start,size
 

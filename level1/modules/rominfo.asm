@@ -8,7 +8,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 1      Created                                        BGP 98/05/03
+*   1    Created                                        BGP 98/05/03
 
          nam   ROMInfo
          ttl   OS-9 Level One ROM boot module
@@ -20,7 +20,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $01
+edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 

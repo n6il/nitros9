@@ -5,8 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 11     Tandy/Microware original version
-* 12     I/O Queue sort bug and I$Attach static storage BGP 02/05/11
+*  11    From Tandy OS-9 Level One VR 02.00.00
+*  12    I/O Queue sort bug and I$Attach static storage BGP 02/05/11
 *        premature deallocation bug fixed
 
          nam   IOMan

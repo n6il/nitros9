@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 10     Tandy/Microware original version
+*  10    From Tandy OS-9 Level One VR 02.00.00
 
          nam   MODPAK
          ttl   DC Modem Pak device driver

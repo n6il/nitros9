@@ -5,8 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 12     Tandy/Microware original version
-* 13     Incremented version number to reflect Y2K      BGP 99/05/11
+*  12    From Tandy OS-9 Level One VR 02.00.00
+*  13    Incremented version number to reflect Y2K      BGP 99/05/11
 *        fixes
 
          nam   SysGo

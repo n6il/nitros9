@@ -5,8 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 12     Tandy/Microware original version
-* 13     Y2K                                            BGP 99/05/11
+*  12    From Tandy OS-9 Level One VR 02.00.00
+*  13    Y2K                                            BGP 99/05/11
 
          nam   SysGo
          ttl   OS-9 Level One 2 ROM SysGo

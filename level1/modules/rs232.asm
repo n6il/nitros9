@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 7      Tandy/Microware original version
+*   7    From Tandy OS-9 Level One VR 02.00.00
 
          nam   RS232
          ttl   CoCo bit-banger driver
@@ -20,7 +20,7 @@
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $07
+edition  set   7
 
          mod   eom,name,tylg,atrv,start,size
 

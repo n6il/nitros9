@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 24     Tandy/Microware original version
+*  24    From Tandy OS-9 Level One VR 02.00.00
 
          nam   RBF
          ttl   Disk file manager
@@ -20,7 +20,7 @@
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $18
+edition  set   24
 
          mod   eom,name,tylg,atrv,start,size
 

@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 2      Tandy/Microware original version
+*   2    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Piper
          ttl   Pipe device driver
