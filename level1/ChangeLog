@@ -1,4 +1,6 @@
 OS-9 Level One V03.01.05:
+- PipeMan has been back-ported from OS-9 Level Two and now features
+  32 byte writes/reads.
 - The MDir utility now shows proper module revision of 0 and other minor
   improvements in extended output.
 OS-9 Level One V03.01.04:
