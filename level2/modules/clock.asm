@@ -1,7 +1,7 @@
 ********************************************************************
 * Clock - Clocks for OS-9 Level Two/NitrOS-9
 *
-* Clock module for CoCo 3 and TC9 OS9 Level 2 Version 02.00.01
+* Clock module for CoCo 3 and TC9 OS9 Level 2 and NitrOS-9
 *
 * Includes support for several different RTC chips, GIME Toggle
 * IRQ fix, numerous minor changes.
