@@ -49,12 +49,12 @@ edition  set   6
          mod   eom,name,tylg,atrv,start,size
 
 u0000    rmb   2
-u0002    rmb   2
-u0004    rmb   1
-u0005    rmb   1
-u0006    rmb   1
+buffptr  rmb   2
+currtrak rmb   1
+ddfmt    rmb   1
+ddtks    rmb   1		no. of sectors per track
 u0007    rmb   1
-u0008    rmb   1
+dblsided rmb   1
 u0009    rmb   1
 size     equ   .
 
@@ -74,7 +74,7 @@ MakeStak pshs  a		save 0 on stack
          lbsr  L01AA
          lda   ,x
          lda   #$FF
-         sta   u0004,u
+         sta   currtrak,u
          leax  >NMIRtn,pcr
          IFGT  Level-1
          stx   <D.NMI
@@ -113,7 +113,7 @@ L003A    nop
          bcs   L00AA
          tfr   u,d
          ldu   $06,s
-         std   u0002,u
+         std   buffptr,u
          clrb
 
 * go get LSN0
@@ -124,18 +124,18 @@ L003A    nop
 * get bootfile size from LSN0 and allocate memory for it
          ldd   DD.TOT+1,y
          std   u0007,u
-         lda   <DD.FMT,y
-         sta   u0005,u
-         anda  #$01
-         sta   u0008,u
-         lda   DD.TKS,y
-         sta   u0006,u
+         lda   <DD.FMT,y		get format byte of LSN0
+         sta   ddfmt,u			save it for ???
+         anda  #FMT.SIDE		keep side bit
+         sta   dblsided,u		and save it
+         lda   DD.TKS,y			get sectors per track
+         sta   ddtks,u			and save
          ldd   <DD.BSZ,y
          std   ,s
          ldx   <DD.BT+1,y
          pshs  x
          ldd   #256
-         ldu   u0002,u
+         ldu   buffptr,u
          os9   F$SRtMem
          ldd   $02,s
          IFGT  Level-1
@@ -148,7 +148,7 @@ L003A    nop
          stu   $02,s
          ldu   $06,s
          ldd   $02,s
-         std   u0002,u
+         std   buffptr,u
          ldd   ,s
          beq   L00A3
 
@@ -162,7 +162,7 @@ L0091    pshs  x,b,a
          jsr   <D.BtBug		do the debug stuff     
          ENDC
          puls  x,b,a
-         inc   u0002,u
+         inc   buffptr,u
          leax  1,x
          subd  #256
          bhi   L0091
@@ -178,7 +178,7 @@ L00AC    puls  u,y,x
 
 L00B7    lda   #$28+BootDr    permit alternate drives
          sta   ,u
-         clr   u0004,u
+         clr   currtrak,u
          lda   #$05
          lbsr  L0170
          ldb   #STEP
@@ -191,7 +191,7 @@ ReadSect lda   #$91
          bne   L00DF
          bsr   L00DF
          bcs   L00D6
-         ldy   u0002,u
+         ldy   buffptr,u
          clrb
 L00D6    rts
 
@@ -207,7 +207,7 @@ L00DF    pshs  x,b,a
          bne   L00D7
 L00EA    bsr   L013C
          bcs   L00D6
-         ldx   u0002,u
+         ldx   buffptr,u
          orcc  #IntMasks
          pshs  y
          ldy   #$FFFF
@@ -267,29 +267,29 @@ L013C    lda   #$08+BootDr   permit alternate drives
          cmpd  #$0000
          beq   L016C
          clr   ,-s
-         tst   u0008,u
-         beq   L0162
+         tst   dblsided,u	disk double sided?
+         beq   L0162		branch if not
          bra   L0158
 L0152    com   u0009,u
          bne   L0158
          inc   ,s
-L0158    subb  u0006,u
+L0158    subb  ddtks,u
          sbca  #$00
          bcc   L0152
          bra   L0168
 L0160    inc   ,s
-L0162    subb  u0006,u
+L0162    subb  ddtks,u
          sbca  #$00
          bcc   L0160
-L0168    addb  #$12
-         puls  a
+L0168    addb  #18		add sectors per track
+         puls  a		get current track indicator off of stack
 L016C    incb
          stb   >DPort+$0A
-L0170    ldb   u0004,u
+L0170    ldb   currtrak,u
          stb   >DPort+$09
-         cmpa  u0004,u
+         cmpa  currtrak,u
          beq   L018D
-         sta   u0004,u
+         sta   currtrak,u
          sta   >DPort+$0B
          ldb   #$10+STEP
          bsr   L0195
