@@ -45,7 +45,7 @@ start    leas  >u0106,u
          std   <u0008
          clr   <u0005
 L0023    lda   ,x+
-         cmpa  #$20
+         cmpa  #C$SPAC
          beq   L0023
          anda  #$5F
          cmpa  #$55
@@ -58,15 +58,15 @@ L0031    ldd   #$0009
          cmpy  #$0009
          bne   L0055
          ldd   ,x
-         cmpd  #$87CD
+         cmpd  #M$ID12
          bne   L0055
          bsr   L0059
          bra   L0031
-L004D    cmpb  #$D3
+L004D    cmpb  #E$EOF
          bne   L0052
          clrb  
 L0052    os9   F$Exit   
-L0055    ldb   #$CD
+L0055    ldb   #M$ID2
          bra   L0052
 L0059    clrb  
          lda   #$08

@@ -22,7 +22,7 @@ LEVEL1FILES	= binex.asm del.asm deldir.asm \
 		save.asm sleep.asm tee.asm verify.asm
 
 LEVEL2FILES	= attr.asm build.asm deiniz.asm gfx.asm iniz.asm mdir.asm \
-		mfree.asm montype.asm procs.asm shell_21.asm tmode.asm \
+		mfree.asm montype.asm procs.asm tmode.asm \
 		unlink.asm wcreate.asm
 
 # Files not compilable by os9asm: Config attr cmp dcheck dir dsave
@@ -48,10 +48,12 @@ utilpak2:  $(UTILPAK2) $(DEPENDS)
 	@$(ECHO)
 
 $(LEVEL1FILES): ../../level1/CMDS/$@
-	cp ../../level1/CMDS/$@ .
+	-ln -s ../../level1/CMDS/$@
 
+$(LEVEL2FILES): ../../level2/CMDS/$@
+	-ln -s ../../level2/CMDS/$@
 clean:
-	$(RM) $(ALLOBJS) $(LEVEL1FILES) shell utilpak1 utilpak2
+	$(RM) $(ALLOBJS) $(LEVEL1FILES) $(LEVEL2FILES) shell utilpak1 utilpak2
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
