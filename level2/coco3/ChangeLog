@@ -1,4 +1,5 @@
 OS-9 Level Two V03.01.05:
+- CC3Go has been renamed to SysGo.
 - The clock module has been divided into two modules: clock and clock2.
   clock_60hz and clock_50hz support 60Hz and 50Hz power configurations.
   clock2 contains code specific to a real-time clock or software clock.

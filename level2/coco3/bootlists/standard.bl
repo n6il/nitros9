@@ -198,10 +198,10 @@
 ***************************************
 * System Kick-Start Module
 *
-* Choose which startup module you wish to use. (cc3go_dd is recommended
+* Choose which startup module you wish to use. (sysgo_dd is recommended
 * for most configurations.)
 * 
 * Alternatively, this module can reside in the root directory of the
 * boot device, saving precious system RAM.
-../MODULES/SYSMODS/cc3go_dd
-*../MODULES/SYSMODS/cc3go_h0
+../MODULES/SYSMODS/sysgo_dd
+*../MODULES/SYSMODS/sysgo_h0

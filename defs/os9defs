@@ -442,6 +442,7 @@ D.URtoSs rmb   2          address of user to system routine (VIRQ) $84
 D.CLTb   rmb   2          Pointer to clock interrupt table (VIRQ) $86
 D.MDREG  rmb   1          6309 MD (mode) shadow register $88 (added in V2.01.00)
 D.CRC    rmb   1          CRC checking mode flag $89 (added in V2.01.00)
+D.Clock2 rmb   2          CC Clock2 entry address
 
          org   $100
 D.XSWI3  rmb   3

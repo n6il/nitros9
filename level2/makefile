@@ -21,7 +21,7 @@ DEFS		= $(shell $(CD) DEFS; make showobjs)
 SYSBIN		= $(shell $(CD) SYS; make showbinobjs)
 SYSTEXT		= $(shell $(CD) SYS; make showtextobjs)
 ROOTFILES	= startup
-SYSGO		= cc3go_dd
+SYSGO		= sysgo_dd
 
 PACKAGENAME	= $(RELEASE).zip
 DSK1		= $(RELEASE)_ds40_1.dsk
@@ -60,8 +60,8 @@ $(DSK1):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(CP) MODULES/$(SYSGO) $@,cc3go
-	$(OS9ATTR_EXEC) $@,cc3go
+	$(CP) MODULES/$(SYSGO) $@,sysgo
+	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) CMDS; $(CP) $(CMDS) ../$@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) SYS; $(CP) $(SYSBIN) ../$@,SYS

@@ -20,7 +20,7 @@ BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		 boot_burke boot_idelba boot_rampak boot_wd1002
 BOOTTRACK	= rel_32 rel_40 rel_80 $(BOOTERS) os9p1
 KERNEL		= os9p2 os9p3_perr os9p4_regdump
-SYSMODS		= ioman init cc3go_h0 cc3go_dd
+SYSMODS		= ioman init sysgo_h0 sysgo_dd
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
 		clock2_smart clock2_harris clock2_tc3 clock2_soft
@@ -88,10 +88,10 @@ boot_1773_30ms: boot_1773.asm
 cc3hdisk.dr: $(LEVEL1)/MODULES/cchdisk.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 
-cc3go_dd: cc3go.asm
+sysgo_dd: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1
 	
-cc3go_h0: cc3go.asm
+sysgo_h0: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 	
 # Floppy descriptors
