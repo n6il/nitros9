@@ -2,6 +2,24 @@
 
 SYSTYPE  set   1
 
+********************************************************************
+* SysType - CoCo OS-9 System Specific Definitions
+*
+* $Id$
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*          1998/10/13  Boisy G. Pitre
+* Added defs by Bruce Isted from his Eliminator archive.
+*
+*          1998/10/31  Boisy G. Pitre
+* Merged cc3global.defs into this file.
+*
+*          2002/04/30  Boisy G. Pitre
+* Merged Level One and Level Two sysdefs.
+
+
          nam   SysType
          IFEQ  Level-1
          ttl   CoCo OS-9 Level One System Type Definitions
@@ -14,14 +32,6 @@ SYSTYPE  set   1
          ENDC
          ENDC
 
-*****************
-* Edition History
-*
-* Date     Changes Made                                                 by
-* -------- ------------------------------------------------------------ ---
-* 98/10/13 Added defs by Bruce Isted from his Eliminator archive        BGP
-* 98/10/31 Merged cc3global.defs into this file                         BGP
-* 02/04/30 Merged Level One and Level Two sysdefs                       BGP
 
 **********************
 * CPU Type Definitions
@@ -113,6 +123,7 @@ A.V5     set   $FFC5
 A.V6     set   $FFC6
 A.V7     set   $FFC7
 
+
          IFEQ  Level-1
 
 *************************************************
@@ -122,7 +133,7 @@ A.V7     set   $FFC7
 *************************************************
 
 HW.Page  set   $FF        Device descriptor hardware page
-BTStart  set   $EF00		boot track memory start
+BTStart  set   $EF00      Boot track memory start
 
          ELSE
 
@@ -858,6 +869,5 @@ Magenta. rmb   1
 Cyan.    rmb   1
 
          ENDC
-
          ENDC
 

@@ -2,33 +2,22 @@
 
 PIPEDEFS set   1
 
+********************************************************************
+* PipeDefs - Pipe File Manager Definitions
 *
-*   Copyright 1988 by Microware Systems Corporation
-*   All Rights Reserved
+* $Id$
 *
-*   Named pipe equates by Burke & Burke.
-*   All rights assigned to Microware Systems Corporation.
-*
-*   This file contains proprietary information of Microware Systems
-*   Corporation.  Persons accessing this file will be held strictly
-*   accountable for their use of the information herein.
-*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*          1988/12/03  Chris J. Burke
+* Coded from new PIPEMAN comments.
 
-*
-*   OS9 Level 2 Pipe Definitions
-*
-*   Modification History
-*   --------------------
-*
-*   Date        Who     Description
-*   --------    ---     -----------------------------------------
-*   12/03/88    cjb     Coded from new PIPEMAN comments
-*
 
          nam   PipeDefs
-         ttl   OS-9 Pipe Definitions
+         ttl   Pipe File Manager Definitions
 
-*   OS-9 Pipe Definitions
+
 *
 *   IOMan equates duplicated for PipeMan use
 *
