@@ -1,7 +1,7 @@
 include ../Makefile.rules
 
 RELEASE		= os9l2v030002beta2
-BOOTFILE	= bootfile_win80
+BOOTFILE	= bootfile_vdg
 KERNEL		= kernel_stock
 
 CMDS            = $(shell $(CD) CMDS; make showobjs)
@@ -56,7 +56,7 @@ $(DSK_SS40_1):
 	$(OS9FORMAT) $(DSK_SS40_1) -t40 -h1 -n"OS-9 Level Two System Disk"
 	$(OS9GEN) $(DSK_SS40_1) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
 	$(MAKDIR) $(DSK_SS40_1),CMDS
-	$(CP) $(SYSGO) $(DSK_SS40_1),CMDS
+	$(CP) $(SYSGO) $(DSK_SS40_1),
 	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_SS40_1),CMDS
 	$(CP) $(ROOTFILES) $(DSK_SS40_1),.
 
@@ -67,7 +67,7 @@ $(DSK_DS40_1):
 	$(MAKDIR) $(DSK_DS40_1),CMDS
 	$(MAKDIR) $(DSK_DS40_1),SYS
 	$(MAKDIR) $(DSK_DS40_1),MODULES
-	$(CP) $(SYSGO) $(DSK_DS40_1),CMDS
+	$(CP) $(SYSGO) $(DSK_DS40_1),
 	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_DS40_1),CMDS
 	$(CD) SYS; $(CP) $(SYS) ../$(DSK_DS40_1),SYS
 	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK_DS40_1),MODULES
