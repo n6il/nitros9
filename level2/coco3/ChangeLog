@@ -1,5 +1,6 @@
-NitrOS-9/6809 Level 2 V03.02.00:
+NitrOS-9/6809 Level 2 V03.02.01:
 - Several bugs in dsave's -b option have been fixed.
+NitrOS-9/6809 Level 2 V03.02.00:
 - os9p1 and os9p2 have been renamed to kernel and kernelp2, and have
   been back-ported from NitrOS-9/6309 Level 2.
 - windint and grfdrv have been backported from NitrOS-9/6309 Level 2.
