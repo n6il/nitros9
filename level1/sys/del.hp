@@ -1,0 +1,4 @@
+@DEL
+Syntax: Del [-x] filename [...]
+Usage : Deletes the specified file(s)
+Opts  : -x = delete relative to execution directory

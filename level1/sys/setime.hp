@@ -1,0 +1,3 @@
+@SETIME
+Syntax: Setime [yyyy/mm/dd/hh:mm:ss]
+Usage : Sets and activates the system clock

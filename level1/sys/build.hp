@@ -1,0 +1,3 @@
+@BUILD
+Syntax: Build filename
+Usage : Builds short text files from standard input

@@ -1,0 +1,4 @@
+@DATE
+Syntax: Date [t]
+Usage : Specifies current system time and date
+Opts  : t = specify time also

@@ -1,0 +1,3 @@
+@MERGE
+Syntax: Merge <path> [...]
+Usage : Copies multiple input files to standard output
