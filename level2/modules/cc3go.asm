@@ -59,9 +59,9 @@ Banner
          fcb   C$LF
 BannLen  equ   *-Banner
          ifeq  ROM
-DefDev   fcc   "/H0"
+DefDev   fcc   "/DD"
          fcb   C$CR
-HDDev    fcc   "/H0/"
+HDDev    fcc   "/DD/"
 ExecDir  fcc   "Cmds"
          fcb   C$CR
          fcc   ",,,,,"
