@@ -60,7 +60,7 @@ cmp		50		Unchanged from last Tandy release
 cobbler		7		From OS-9 Level Two V2.00.01
                                 modified for OS-9 Level One,
                                 supports double-sided drives
-config		4		Unchanged from last Tandy release
+config		5		Modified references of /D0 to /DD
 copy		7		From OS-9 Level Two V2.00.01
 date		6		Y2K issues resolved
 dcheck		4		Unchanged from last Tandy release
@@ -75,7 +75,7 @@ dump		5		Unchanged from last Tandy release
 echo		5		Unchanged from last Tandy release
 edit		3		Unchanged from last Tandy release
 exbin		68		Put proper edition in place in code
-format		17		Unchanged from last Tandy release
+format		22		From OS-9 Level Two V2.00.01
 free		17		Y2K issues resolved
 grfo		1		Unchanged from last Tandy release
 help		5		From OS-9 Level Two V2.00.01
@@ -122,11 +122,19 @@ clock.50hz	5		Y2K issues resolved
 clock.60hz	5		Y2K issues resolved
 co32.io		1		Unchanged from last Tandy release
 co80.io		2		Unchanged from last Tandy release
-d0.dd				Unchanged from last Tandy release
-d1.dd				Unchanged from last Tandy release
-d2.dd				Unchanged from last Tandy release
-d3.dd				Unchanged from last Tandy release
-dd.dd				New descriptor
+ddd0_35s.dd			New addition
+d0_35s.dd			New addition, replaces Tandy d0.dd
+d1_35s.dd			New addition, replaces Tandy d1.dd
+d2_35s.dd			New addition, replaces Tandy d2.dd
+d3_35s.dd			New addition, replaces Tandy d3.dd
+ddd0_40d.dd			New addition
+d0_40d.dd			New addition
+d1_40d.dd			New addition
+d2_40d.dd			New addition
+ddd0_80d.dd			New addition
+d0_80d.dd			New addition
+d1_80d.dd			New addition
+d2_80d.dd			New addition
 grfo.io		1		Unchanged from last Tandy release
 h0_15.dd			Unchanged from last Tandy release
 h0_35.dd			Unchanged from last Tandy release
@@ -142,10 +150,9 @@ nildrv.dr	3		Unchanged from last Tandy release
 os9		15		Module validation now consists of a
                                 header parity check, and, if the
                                 system global D.CRC is non-zero,
-                                a CRC check.  Otherwise, CRC checking
-                                over the whole module is disabled.
-                                This is the default, so modules should
-                                load much faster.
+                                a CRC check.  D.CRC is set or
+                                cleared based upon a flag bit
+                                in Init.
 os9p2		10		Unchanged from last Tandy release
 p.dd				Unchanged from last Tandy release
 pipe.dd				Unchanged from last Tandy release
