@@ -21,7 +21,11 @@ DESCS		= ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		p1_d64.dd term_d64.dd t1_d64.dd \
 		dd_d64.dd d0_d64.dd d1_d64.dd d2_d64.dd d3_d64.dd
 SYSGOS		= sysgo sysgo_rom sysgo_d64
-HELP		= co32.hp co80.hp dd.hp d0.hp d1.hp d2.hp d3.hp grfo.hp h0_15.hp \
+HELP		= co32.hp co80.hp \
+		ddd0_35s.hp d0_35s.hp d1_35s.hp d2_35s.hp d3_35s.hp \
+		ddd0_40d.hp d0_40d.hp d1_40d.hp d2_40d.hp \
+		ddd0_80d.hp d0_80d.hp d1_80d.hp d2_80d.hp \
+		grfo.hp h0_15.hp \
 		h0_35.hp h1_15.hp h1_35.hp m1.hp m2.hp nil.hp p.hp pipe.hp \
 		ssc.hp t1.hp t2.hp t3.hp term32.hp term80.hp config.hp
 
