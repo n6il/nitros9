@@ -5,9 +5,9 @@ This section of the C compiler manual is a guide to the system
 calls available from C programs.
 </para>
 <para>
-It is NOT intended as a definitive description of OS-9 service
-requests as these are described in the OS-9 SYSTEM PROGRAMMER'S
-manual. However, for most calls, enough information is available
+It is <emphasis>not</emphasis> intended as a definitive description of OS-9 service
+requests as these are described in the OS-9 System Programmer's
+Manual. However, for most calls, enough information is available
 here to enable the programmer to write systems calls into programs
 without looking further.
 </para>
@@ -32,7 +32,7 @@ erroneous system call. Definitions for the errors for inclusion in
 the programs are in "&lt;errno.h&gt;".
 </para>
 <para>
-In the "SEE ALSO" sections on the following pages, unless
+In the "See Also" sections on the following pages, unless
 otherwise stated, the references are to other system calls.
 </para>
 <para>
