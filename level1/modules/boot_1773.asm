@@ -40,8 +40,17 @@ DRVSEL2  equ   %00000100
 DRVSEL1  equ   %00000010
 DRVSEL0  equ   %00000001
 
-* Default Boot Drive is /d0
+* Default Boot is from drive 0
 BootDr   set DRVSEL0
+         IFEQ  DNum-1
+BootDr   set DRVSEL1		Alternate boot from drive 1
+         ENDC
+         IFEQ  DNum-2
+BootDr   set DRVSEL2		Alternate boot from drive 2
+         ENDC
+         IFEQ  DNum-3
+BootDr   set SIDESEL		Alternate boot from drive 3
+         ENDC
 
 * WD17x3 DPort offsets
 CONTROL  equ   0

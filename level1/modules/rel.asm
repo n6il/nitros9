@@ -61,16 +61,19 @@ L001F    fcb   $6C MMU, IRQ, Vector page, SCS
          IFEQ  Width-80
          fcb   $34 200 lines, 80 column mode, no attribute byte (monochrome)
          fcb   $3F        white border
+BOOTLINE set   11	80-col start line for BOOT/FAIL messages
          ENDC
 
          IFEQ  Width-40
          fcb   $24 200 lines, 40-col, no attribute byte
          fcb   $3F        white border
+BOOTLINE set   13	40-col start line for BOOT/FAIL messages
          ENDC
 
          IFEQ  Width-32
          fcb   $20 200 lines, 32-col, no attribute byte
          fcb   $00        black border
+BOOTLINE set   13	32-col start line for BOOT/FAIL messages
          ENDC
 
          fcb   $00 display in lower 512k bank
@@ -104,7 +107,7 @@ start1   orcc  #IntMasks  turn off IRQ's
          stb   ,-s        save status of start, $00=cold, $01=warm
 * This is done so I can tell what went on in the direct page if there's
 * a crash. 0(crash) 1(reset) -1(startup)
-         beq   Cont       --don't clear out direct page is it's a crash
+         beq   Cont       --don't clear out direct page if it's a crash
          ldb   #$20       start out at $20
          tfr   d,x        here, too
 L0072    sta   ,x+        clear out the direct page
@@ -195,13 +198,13 @@ L00FD    lda   ,u+
          ENDC
          rts   
 
-L0011    fdb   ScStart+(11*Width)+((Width-L1)/2)
+L0011    fdb   ScStart+(BOOTLINE*Width)+((Width-L1)/2)
          fcb   L1         length of the text below
 T1       equ   *
          fcc   /NITROS9 BOOT/
 L1       equ   *-T1
 
-         fdb   ScStart+(13*Width)+((Width-LFail)/2)
+         fdb   ScStart+((BOOTLINE+2)*Width)+((Width-LFail)/2)
          fcb   LFail      length of the 'FAILED' string
 TFail    fcc   /FAILED/
 LFail    equ   *-TFail
