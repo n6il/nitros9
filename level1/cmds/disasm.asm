@@ -34,6 +34,9 @@
 *
 *          2003/08/14  Rodney V. Hamilton
 * Added code to output "end" line
+*
+*          2004/03/11  Rodney V. hamilton
+* Updated TFM register selection
 
          nam   Disasm
          ttl   6809/6309 disassembler
@@ -2403,20 +2406,17 @@ Tplus2   lbsr  mvchr008       Add '+'
 notTFM2  lbsr  writline       Write line & leave
          lbra  readbyte
 
-fa.020   lslb                 2 bytes/entry
+fa.020   tst   <TFMFlag       Is this a TFM command?
+         beq   normreg        No, allow all register names
+         cmpb  #4             D,X,Y,U or S?
+         bhi   badreg         No, illegal in TFM
+normreg  lslb                 2 bytes/entry
          leax  regtab,pc      Point to register field table
          ldd   b,x            Get register name
-         tst   <TFMFlag       Is this a TFM command?
-         beq   normreg        No, allow all register names
-         cmpb  #$20           2 char. register name?
-         bne   badreg         Yes, illegal in TFM
-         cmpa  #'s            Lower than S register?
-         blo   badreg
-         cmpa  #'w            W register?
-         bne   normreg        No, all others are legal
+         bra   movereg        Add to end of line and return
 badreg   ldd   #'?*256+'?     Illegal register, use question marks         
-normreg  bsr   movereg        Add to end of line (eating spaces)
-         rts
+*         bra   movereg        Add to end of line (eating spaces)
+* fall thru into movereg, which immediately follows
 
 movereg  lbsr  movechar       Add first char of reg. name to line
          cmpb  #$20           2nd char a space?
