@@ -255,15 +255,15 @@ L00F0Lp  lda   ,x+
          lda   <DD.FMT,y      Get format for disk in drive
          ldy   2,s            restore path descriptor pointer
          ldb   <PD.DNS,y      Get path's density settings
-         bita  #%00000010     Disk in drive double density?
+         bita  #FMT.DNS       Disk in drive double density?
          beq   L0115          No, all drives can read single, skip ahead
          bitb  #DNS.MFM       Can our path dsc. handle double density?
          beq   erbtyp         No, illegal
-L0115    bita  #%00000100     Is new disk 96 tpi?
+L0115    bita  #FMT.TDNS      Is new disk 96 tpi?
          beq   L011D          No, all drives handle 48 tpi, so skip ahead
          bitb  #DNS.DTD       Can path dsc. handle 96 tpi?
          beq   erbtyp         No, illegal
-L011D    bita  #%00000001     Is new disk double sided?
+L011D    bita  #FMT.SIDE      Is new disk double sided?
          beq   L0128          No, all drives handle single sided, we're done
          lda   <PD.SID,y      Get # sides path dsc. can handle
          suba  #2             sides higher or equal to 2?
