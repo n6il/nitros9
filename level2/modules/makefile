@@ -33,7 +33,7 @@ RBF		= rbf.mn \
 		h0_10.dd h1_10.dd h0_15.dd h1_15.dd h0_35.dd h1_35.dd
 
 SCF		= scf.mn \
-		cc3io.dr modpak.dr vrn.dr printer.dr sio.dr sspak.dr sacia.dr dacia.dr \
+		cc3io.dr vrn.dr printer.dr sio.dr sspak.dr sacia.dr dacia.dr \
 		windint.io vdgint.io vdgint_small.io \
 		keydrv joydrv_joy joydrv_6551L joydrv_6552L joydrv_6551M joydrv_6552M snddrv \
 		m1.dd m2.dd nil.dd p.dd t1.dd t2_sacia.dd \

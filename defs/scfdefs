@@ -211,6 +211,15 @@ PST.DCD  equ   %00000001  Set if DCD is lost on Serial port
 
 * PD.PAR definitions
 *
+* Parity
+PARNONE  equ   %00000000
+PARODD   equ   %00100000
+PAREVEN  equ   %01100000
+PARMARK  equ   %10100000
+PARSPACE equ   %11100000
+
+* PD.BAU definitions
+*
 * Baud rate
 B110     equ   0
 B300     equ   1
@@ -223,12 +232,6 @@ B19200   equ   7
 * Word size
 WORD8    equ   %00000000
 WORD7    equ   %00100000
-* Parity
-PARNONE  equ   %00000000
-PARODD   equ   %00100000
-PAREVEN  equ   %01100000
-PARMARK  equ   %10100000
-PARSPACE equ   %11100000
 * Stop bits
 STOP1    equ   %00000000
 STOP2    equ   %00010000
