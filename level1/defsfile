@@ -1,7 +1,3 @@
-* Main defsfile for OS-9 Level One
-*
-*
-* OS-9 Level
 Level    equ   1
 
          use   os9defs
