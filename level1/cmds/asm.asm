@@ -12,6 +12,7 @@
 * ------------------------------------------------------------------
 *   6    Made compliant with 1900-2155                  BGP 99/05/11
 *   7    Added 6309 bitfield instructions               RVH 03/06/27
+*   8    Enabled underscore and lowercase in symbols    RVH 03/07/28
 
          nam   Asm
          ttl   6809/6309 Assembler
@@ -23,7 +24,8 @@
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   $07
+edition  set   $08
+DOCASE   equ   1		enable case-sensitive symbols
 
          mod   eom,name,tylg,atrv,asm,size
 
@@ -39,85 +41,84 @@ DoNothng equ   %00000000      Do nothing (no flags set)
 
 Numop    equ   160            # of opcodes in table (including pseudo-ops)
 
-u0000    rmb   2              Ptr to start of current source line
-u0002    rmb   2
-u0004    rmb   2
-u0006    rmb   1
-u0007    rmb   1
-u0008    rmb   1
-u0009    rmb   1
-u000A    rmb   1
-u000B    rmb   1
-u000C    rmb   1
-u000D    rmb   1
-u000E    rmb   2
-u0010    rmb   2
-u0012    rmb   2
-u0014    rmb   2
-u0016    rmb   2
-u0018    rmb   1              Path number to source file
-u0019    rmb   1
-u001A    rmb   1              Some output path number
-u001B    rmb   2
-u001D    rmb   2
-u001F    rmb   2
-u0021    rmb   1
-u0022    rmb   2
-u0024    rmb   2
-u0026    rmb   2
-u0028    rmb   2
+u0000    rmb   2		Ptr to source line input buffer (80 + CR)
+u0002    rmb   2		Ptr to header output buffer    (132 + CR)
+u0004    rmb   2		Ptr to listing output buffer   (132 + CR)
+u0006    rmb   2		Ptr to open file path stack    (13, Ustk)
+u0008    rmb   2		Ptr to Title buffer (TTL, 79 chars + nul)
+u000A    rmb   2		Ptr to Name buffer  (NAM, 39 chars + nul)
+u000C    rmb   1		temp postbyte storage for 6309 bit ops
+        IFNE   DOCASE
+u000D    rmb   1		symbol case mask (was unused)
+        ELSE
+u000D    rmb   1		unused
+        ENDC
+u000E    rmb   2		Ptr to object code buffer (256 bytes)
+u0010    rmb   2		Ptr to symbol first letter index table
+u0012    rmb   2		Ptr to end of symbol table
+u0014    rmb   2		Temp - stack ptr
+u0016    rmb   2		Ptr to symbol name buffer (8 chars + nul)
+u0018    rmb   1		Path number of current source file
+u0019    rmb   1		Path number of object file, O flag
+u001A    rmb   1		Path number of output listing (stdout)
+u001B    rmb   2		Ptr into object code buffer
+u001D    rmb   2		Ptr to next empty symbol table slot
+u001F    rmb   2		Open file path stack ptr
+u0021    rmb   1		Error count for current line
+u0022    rmb   2		Total warnings
+u0024    rmb   2		Total program bytes generated
+u0026    rmb   2		Total data bytes allocated
+u0028    rmb   2		Total errors
 u002A    rmb   1
-u002B    rmb   1              Bit flags
+u002B    rmb   1		Bit flags
 u002C    rmb   1
-u002D    rmb   2
-u002F    rmb   2              Ptr to start of current mnemonic
-u0031    rmb   2              Ptr to next field (or operand start)
+u002D    rmb   2		Ptr to last symbol found/added (scratch)
+u002F    rmb   2		Ptr to start of current mnemonic
+u0031    rmb   2		Ptr to next field (or operand start)
 u0033    rmb   2
-u0035    rmb   1
-u0036    rmb   1              Page height (default=66)
-u0037    rmb   1              Page width (default=80)
-u0038    rmb   2
-u003A    rmb   2
+u0035    rmb   1		# lines to end of page
+u0036    rmb   1		Page height (default=66), D flag
+u0037    rmb   1		Page width (default=80), W flag
+u0038    rmb   2		line counter
+u003A    rmb   2		page number
 u003C    rmb   1
 u003D    rmb   1
-u003E    rmb   1
+u003E    rmb   1		Pass number
 u003F    rmb   1
-u0040    rmb   2
-u0042    rmb   2
+u0040    rmb   2		Current code address ('*')
+u0042    rmb   2		Current data address ('.')
 u0044    rmb   2
-u0046    rmb   1              # bytes in current instruction
-u0047    rmb   1              Current instructions flags/index handler byte
+u0046    rmb   1		# bytes in current instruction
+u0047    rmb   1		Current instructions flags/index handler byte
 u0048    rmb   1
 u0049    rmb   1
-u004A    rmb   1              MSB of 16 bit # (for addresses & offsets)
-u004B    rmb   1              LSB of 16 bit #
-u004C    rmb   1              Flag for DP($ff), Extended($01) or other($00) modes
-u004D    rmb   1              Indirect mode flag (0=no, >0=Yes)
-u004E    rmb   1              Indexed mode calc completed flag (0=no)
+u004A    rmb   1		MSB of 16 bit # (for addresses & offsets)
+u004B    rmb   1		LSB of 16 bit #
+u004C    rmb   1		Flag for DP($ff), Extended($01) or other($00) modes
+u004D    rmb   1		Indirect mode flag (0=no, >0=Yes)
+u004E    rmb   1		Indexed mode calc completed flag (0=no)
 u004F    rmb   1
-u0050    rmb   1
-u0051    rmb   2
-u0053    rmb   1
-u0054    rmb   1
-u0055    rmb   1
+u0050    rmb   1		Header parity byte
+u0051    rmb   3		CRC buffer
+u0054    rmb   1		Inactive (non-coding) nested IF depth
+u0055    rmb   1		Active (code enabled) nested IF depth
 u0056    rmb   1
 u0057    rmb   1
-u0058    rmb   1
-u0059    rmb   1
-u005A    rmb   1
-u005B    rmb   1
-u005C    rmb   1
-u005D    rmb   1
-u005E    rmb   1
-u005F    rmb   1
-u0060    rmb   1
+u0058    rmb   1		O opt flag
+u0059    rmb   1		F opt flag
+u005A    rmb   1		M opt flag
+u005B    rmb   1		G opt flag
+u005C    rmb   1		E opt flag
+u005D    rmb   1		I opt flag
+u005E    rmb   1		S opt flag
+u005F    rmb   1		C opt flag
+u0060    rmb   1		N opt flag
 * The currently assembled instruction goes here
 u0061    rmb   1              Current instruction's pre-byte (see u0046)
 u0062    rmb   1              Current instruction's opcode
 u0063    rmb   1              More bytes as needed by instruction
 u0064    rmb   1
 u0065    rmb   2
-u0067    rmb   1		temp postbyte storage for 6309 bit ops
          rmb   4096-.         Main buffer area
 size     equ   .
 name     equ   *
@@ -143,22 +144,26 @@ asm      tfr   u,d
          std   <u000E
          adda  #$01
          std   <u0010
-         addd  #$0034
+        IFNE   DOCASE
+         addd  #52*2		52 symbol vectors, A-Za-z
+        ELSE
+         addd  #26*2		26 symbol vectors, A-Z
+        ENDC
          std   <u001D
          leau  -$01,y
          stu   <u0012
          lds   <u0014
          clra
          ldb   #$01
-         sta   <u0059
-         sta   <u005B
-         sta   <u005E
-         sta   <u005D
-         stb   <u005C
-         sta   <u0058
-         sta   <u005A
-         stb   <u005F
-         sta   <u0060
+         sta   <u0059		F opt=0
+         sta   <u005B		G opt=0
+         sta   <u005E		S opt=0
+         sta   <u005D		I opt=0
+         stb   <u005C		E opt=1
+         sta   <u0058		O opt=0
+         sta   <u005A		M opt=0
+         stb   <u005F		C opt=1
+         sta   <u0060		N opt=0
          sta   <u003E
          sta   <u0018
          sta   <u0019
@@ -170,6 +175,10 @@ asm      tfr   u,d
          stb   <u0036
          ldb   #80            Default page width
          stb   <u0037
+        IFNE   DOCASE
+         ldb   #$5F		Default symbol case mask
+         stb   <u000D
+        ENDC
          lbsr  L1696
          lda   <u0056
          bmi   L0081
@@ -179,7 +188,7 @@ L0081    ldx   <u0008
          ldx   <u000A
          clr   ,x
          ldx   <u0010
-L008B    clr   ,x+
+L008B    clr   ,x+		clear symbol table
          cmpx  <u0012
          bls   L008B
          ldb   <u005D
@@ -187,7 +196,7 @@ L008B    clr   ,x+
          dec   <u003E
          bra   L00A0
 L0099    bsr   L00A5
-         lbsr  L1607
+         lbsr  L1607		seek to start of source file
          inc   <u003E
 L00A0    bsr   L00A5
          lbra  L159F
@@ -213,7 +222,7 @@ L00B1    clra
          std   <u0038
          ldd   <u000E
          std   <u001B
-         lbsr  L1360
+         lbsr  L1360		Initialize CRC buffer
          lbsr  L141A
          rts
 L00D5    clra
@@ -249,7 +258,7 @@ L00D5    clra
          stb   <u002B
          lbsr  L0368
          bcc   L0119
-         ldb   #$01
+         ldb   #01		'bad label' error
          lbsr  L02FA
          bra   L0125
 L0119    tst   <u0054
@@ -287,7 +296,7 @@ L0150    stx   <u0031         Save ptr to possible operand field
          lbsr  L0344          Go point to it's opcode/flag bytes
          bcc   L0172          Legal opcode, go process
 * Unknown mnemonic
-L015F    ldb   #$02           Internal error #?
+L015F    ldb   #02		'bad instr' error
          lbsr  L02FA          Print error message
          ldb   #$03           Set # bytes of current instruction to 3???
          stb   <u0046
@@ -298,13 +307,13 @@ L015F    ldb   #$02           Internal error #?
          bra   L01C4
 * Found mnemonic
 * Entry: Y=Ptr to opcode/flag bytes
-L0172    lda   <u0054         # of nested loop/if constructs???
+L0172    lda   <u0054         # of nested IF constructs???
          beq   L0195          If none, skip ahead???
          ldb   $01,y          Get flag bytes
          andb  #%00001111     Only want index handler #
          cmpb  #$0D           Pseudo op IFxx?
          bne   L0181          No, check next
-         inca                 Inc nested loop counter?
+         inca                 Inc nested conditional counter?
          bra   L018C          Go save it & continue
 L0181    cmpb  #$0E           Pseudo Op ELSE/ENDC?
          bne   L018E          No, check next
@@ -370,15 +379,15 @@ L01EF    ldx   <u0004
 
 L01F2    ldb   <u003E
          beq   L01EF
-         ldb   <u002B
-         beq   L01EF
+         ldb   <u002B		Any flags set?
+         beq   L01EF		No
          bsr   L01E5
          tst   <u0060
          bne   L0205
          ldd   <u0038
          lbsr  L1084
-L0205    ldb   <u002B
-         bitb  #$80
+L0205    ldb   <u002B		Literal line flag set?
+         bitb  #LitLine
          beq   L0213
          ldb   #$0D
          ldy   <u0000
@@ -403,7 +412,7 @@ L022F    ldb   #$06
 L0236    ldb   #$08
          lbsr  L02E2
          ldd   <u0044
-         lbsr  L1057
+         lbsr  L1057		call OUT4HS
 L0240    ldb   <u002B
          bitb  #$04
          beq   L0272
@@ -538,7 +547,7 @@ L033D    lda   ,y+
 *        X=Ptr to part of source we are currently checking
 *        B=# opcodes in current table
 * Exit: Carry set if no matching mnemonic found
-*       Carry clear & Y is ptr to opcode & flag bytes is match IS found
+*       Carry clear & Y is ptr to opcode & flag bytes if match IS found
 L0344    pshs  x,b            Preserve source code ptr & # opcodes in table
 L0346    lda   ,y+            Get byte from table
          bmi   L035E          If high bit set, skip ahead
@@ -561,19 +570,22 @@ L035E    eora  ,x+            Do last characters match?
          clrb                 No error & return
          rts
 
+* Copy label into symbol name buffer (8 chars max, force uppercase)
 L0368    lbsr  L1164
-         bsr   L03A0
+         bsr   L03A0		first char MUST be alphabetic
          bcs   L03B7
          pshs  u,y
-         ldu   <u0016
-         ldb   #$08           Max # chars in label?
+         ldu   <u0016		symbol name buffer
+         ldb   #$08           Max # chars in label
          leax  1,x
          bra   L0393
 
-* Copy label into label table (only use most significiant 8 chars)?
+* Copy rest of label into buffer
 L0379    lda   ,x+            Get char
          bsr   L03A0          Check text chars
          bcc   L0393          Found one, skip special parsing
+         cmpa  #'_            Is it an underscore?
+         beq   L0393          Yes, go process
          cmpa  #'9            Higher than a 9?
          bhi   L039A          Yes, skip ahead
          cmpa  #'0            Is it a number?
@@ -581,10 +593,8 @@ L0379    lda   ,x+            Get char
          cmpa  #'.            Is it a period?
          beq   L0393          Yes, go process
          cmpa  #'$            Is it a dollar sign?
-         beq   L0393          Yes, go process
-         cmpa  #'_            Is it an underscore?
          bne   L039A          No, skip ahead
-* A=numeric, period, dollar sign or underscore
+* A=letter, number, period, dollar sign or underscore
 L0393    sta   ,u+            Store character in label index
          decb                 Do all 8 chars
          bne   L0379
@@ -597,7 +607,11 @@ L03A0    cmpa  #'A            Uppercase A?
          blo   L03B5          Lower, return
          cmpa  #'Z            If higher than uppercase Z, check for lower
          bhi   L03AD
+        IFNE   DOCASE
+L03A8    anda  <u000D         Apply case mask (redundant if already upper)
+        ELSE
 L03A8    anda  #$5F           Force to uppercase (redundant if already upper)
+        ENDC
          andcc #$FE           Clear carry (found text byte) & return
          rts
 L03AD    cmpa  #'a            If between 'Z' & 'a', we didn't find text char
@@ -626,12 +640,12 @@ L03B7    rts
 * C= Pseudo op (label not allowed)
 * D= Pseudo op conditionals (IFxx)
 * E= Pseudo op (ELSE & ENDC)
-* F= 6309 bit ops (OIM,BAND,etc) (was UNUSED) -RVH
+* F= 6309 bit ops (OIM,BAND,etc) (was UNUSED)
 * Most significiant 4 bits
 * %00010000 : $10 prefix byte always needed
 * %00100000 : $11 prefix byte always needed
 * %01000000 : Immediate mode illegal
-* %10000000 : Default to extended mode
+* %10000000 : Default to extended mode - not used??? RVH
 
 L03B8    fcs   "ORG"
          fcb   $00,$0C
@@ -1089,7 +1103,7 @@ L079E    lda   #$03           # bytes require for instruction
 * orcc/andcc/cwai 2 byte immediate mode only, forced register name (type 1)
 L07A5    lbsr  L0932          Go find '# for immediate mode
          bcc   twobyte        Found it, skip ahead
-         ldb   #$0C           Error code $C 'address mode'
+         ldb   #12		'address mode' error
          lbsr  L02FA
 * Legal 8 bit immediate mode goes here
 twobyte  lda   #$01           Force # bytes of instruction to 1
@@ -1115,7 +1129,7 @@ L07B9    inc   <u0046         Add 1 to # bytes needed for instruction
          lda   #$5            # of bytes for LDQ immediate
          sta   <u0046
 * This is here since 32 bit numeric routines aren't here yet
-         ldb   #$c            Error code for 'addr mode'
+         ldb   #12		'address mode' error
          lbra  L02FA          Exit with it
 
 norm16bt lbsr  L12F1          Calculate immediate mode #'s
@@ -1218,7 +1232,7 @@ notE     ldb   #$50           Mask to opcode base for 'xxxB'
          bne   Legal10        Rest are legal, prefix a $10 & append opcode
 
 * Illegal instructions go here
-illegal     leas  $02,s          Eat JSR return address
+illegal  leas  $02,s          Eat JSR return address
          lbra  L015F          Exit with illegal opcode error
 notW     cmpa  #'F            is it an F?
          bne   L080B          Definately not a register, try memory modes
@@ -1250,7 +1264,7 @@ TypeF
 * OIM/AIM/EIM/TIM - format is op #bitmask,addr(direct,extended,indexed)
 * OIM group uses regular type 4 opcode mods for addressing modes
          lbsr  L07A5	Go process immediate mode (bitmask)
-         stb   <u0067	temp storage - addr handler overwrites postbyte
+         stb   <u000C	temp storage - addr handler overwrites postbyte
          clr   <u0063	which *MUST* be clean for address processing
          bsr   synchk	check for comma delimiter
          bsr   L080B	The Type 4 address handler also adjusts the opcode
@@ -1259,7 +1273,7 @@ fixpost  lda   <u0065	move 3 bytes
          sta   <u0065+1
          ldd   <u0063
          std   <u0063+1
-         lda   <u0067	grab the postbyte
+         lda   <u000C	grab the postbyte
          sta   <u0063	fill the hole
          rts
 
@@ -1271,18 +1285,18 @@ TypeF2   lbsr  L1164	Find next text field
          ldb   #4	only 4 entries
          lbsr  L0971	Use the TRF/EXG scan routine
          bcs   L0852	If no match, report "reg name" error
-         sta   <u0067	found register, save bitmask
+         sta   <u000C	found register, save bitmask
          bsr   synchk	check for comma
          bsr   getbit	get src bit number
-         orb   <u0067	update postbyte cc000xxx
-         stb   <u0067
+         orb   <u000C	update postbyte cc000xxx
+         stb   <u000C
          bsr   synchk	check for comma
          bsr   getbit	get dest bit number
          lslb		shift to 00xxx000
          lslb
          lslb
-         orb   <u0067	update postbyte ccdddsss
-         stb   <u0067
+         orb   <u000C	update postbyte ccdddsss
+         stb   <u000C
          bsr   synchk	check for comma
          lbsr  L09C6	Go process address
          lda   #$04	Force # bytes of instruction to 4
@@ -1294,8 +1308,8 @@ TypeF2   lbsr  L1164	Find next text field
 * get bit number - must be 0-7, else "out of range" error
 getbit   lbsr  L12F7	get bit number
          cmpd  #7
-         bls   TypeF5	valid bit number valid
-         ldb   #13	"out of range" error (??)
+         bls   TypeF5	bit number valid
+         ldb   #13		'out of range' error
          bra   TypeFx	fix stack and exit
 * do syntax check for comma, "expr syntax" error if not
 synchk   lda   ,x+	check for delimiter
@@ -1304,7 +1318,7 @@ synchk   lda   ,x+	check for delimiter
          cmpa  #',	is it a comma?
          bne   TypeF6	No, syntax error
 TypeF5   rts
-TypeF6   ldb   #$06	"expr syntax" error code
+TypeF6   ldb   #06		'expr syntax' error
 TypeFx   leas  2,s	eat return addr
          lbra  L02FA	exit, report error
 
@@ -1331,7 +1345,7 @@ L082F    inc   <u0046         Add 1 to # bytes this instruction
          std   <u0062         Save as opcodes
          ldb   #$02           Force # bytes this instruction to 2
          stb   <u0046
-L0841    ldb   #$0C           'address mode' error
+L0841    ldb   #12		'address mode' error
          lbra  L02FA
 * type 7 - TFR/EXG & Register to register
 L0846    inc   <u0046         at least 2 bytes in this instruction
@@ -1339,7 +1353,7 @@ L0846    inc   <u0046         at least 2 bytes in this instruction
          lbsr  L1164          Find next text field
          lbsr  L096B          Get 1st register name
          bcc   L0857          If we found them, skip ahead
-L0852    ldb   #$0F           If didn't, exit with 'reg name' error
+L0852    ldb   #15		else 'reg name' error
          lbra  L02FA
 
 L0857    lda   ,x+            Get next char
@@ -1358,7 +1372,7 @@ L0857    lda   ,x+            Get next char
          lda   #%00001100     '0' register mask
          cmpa  ,s             Is source register the 0 register?
          beq   L0879          Yes, destination size doesn't matter
-         ldb   #$10           Otherwise, 'reg sizes' error
+         ldb   #16		Otherwise, 'reg sizes' error
          leas  $02,s
          lbra  L02FA
 
@@ -1408,7 +1422,7 @@ L08BA    lda   #$02           Force # of bytes of instruction to 2
          bgt   L08D2
          cmpd  #$FF80
          bge   L08D9
-L08D2    ldb   #$0D
+L08D2    ldb   #13		'out of range' error
          lbsr  L02FA
          ldb   #$FE
 L08D9    stb   <u0063
@@ -1422,7 +1436,7 @@ L08DC    leau  <L08FE,pc      Point to table
 L08E1    ldb   <u002B
          bitb  #$08
          beq   L08EC
-         ldb   #$19
+         ldb   #25		'label not allowed' error
          lbsr  L02FA
 L08EC    leau  <L0912,pc      Point to table
 L08EF    lbsr  L1164          Hunt down next field in source string
@@ -1485,7 +1499,7 @@ L0941    ldb   <u0047         Get current opcode's flag byte
 
 L0948    ldb   #$03           Set size of illegal instruction to 3 bytes
          stb   <u0046
-         ldb   #$0C           Error code $C 'address mode'
+         ldb   #12		'address mode' error
          lbra  L02FA
 
 * Long Relative address calculation for LBRA/LBSR, etc
@@ -1504,7 +1518,7 @@ L096A    rts
 * Entry: X=ptr to start of reg name from source
 * Exit:  A=Bit mask for PSH/PUL
 *        B=Bit mask for EXG/TFR
-L096B    leay  >L09A2,pc      Point to register names
+L096B    leay  <L09A2,pc      Point to register names
          ldb   #16            # of register names to check
 L0971    pshs  x              Save start of current register we are checking
 L0973    lda   ,y             Get byte from reg. name
@@ -1700,7 +1714,7 @@ L0A97    stb   <u0063         Save mask in postbyte
          leax  1,x            Bump src ptr up 1 byte
          bsr   L0AC7          Go get base register (X,Y,U,S)
          bcc   L0AA5          Found it, merge in base register mask
-L0A9F    ldb   #$13           illegal 'index reg' error
+L0A9F    ldb   #19		illegal 'index reg' error
          lbsr  L02FA
          clrb                 So clear postbyte to 0
 L0AA5    orb   <u0063         Merge in mask into postbyte
@@ -1719,10 +1733,10 @@ L0AB5    leax  1,x            Bump up src ptr by 1
          stb   <u0063
          bra   L0AEA
 
-* Check ,-R or ,R+: only legal in NON-INDIRECT mode
+* Check ,-R or ,R+: illegal if INDIRECT mode
 L0ABD    tst   <u004D         Check indirect mode flag
          beq   L0AC6          Normal, exit
-         ldb   #$0C           Indirect ,-R is illegal, exit with error
+         ldb   #12		Indirect ,-R is illegal, 'address mode' error
          lbsr  L02FA
 L0AC6    rts
 
@@ -1766,7 +1780,7 @@ L0AEA    ldb   #%00100000     Mask bit for indexed instruction opcodes
          lda   ,x+            Get next char from source
          cmpa  #']            End of indirect mode?
          beq   L0B08          Yes, go check for end of line
-         ldb   #$14           '] missing' error
+         ldb   #20		'] missing' error
          bra   L0B14
 
 L0B08    lda   ,x             Get char from source
@@ -1774,7 +1788,7 @@ L0B08    lda   ,x             Get char from source
          beq   L0B17          Yes, exit
          cmpa  #$0D           CR?
          beq   L0B17          Yes, exit
-         ldb   #$0C           'Address mode' error
+         ldb   #12		'address mode' error
 L0B14    lbsr  L02FA
 L0B17    rts                  No error & return
 
@@ -1817,12 +1831,12 @@ L0B62    orb   <u0063
 L0B68    ldd   ,x
          anda  #$5F
          andb  #$5F
-         cmpd  #$5043
-         lbne  L0A9F
+         cmpd  #$5043		'PC' reg?
+         lbne  L0A9F		 else 'index reg' error
          leax  $02,x
          lda   ,x
          anda  #$5F
-         cmpa  #$52
+         cmpa  #$52		'pcR'?
          bne   L0B82
          leax  $01,x
 L0B82    inc   <u0046
@@ -1843,6 +1857,7 @@ L0B9B    subd  #$0001
          ldb   #$8D
          bra   L0B62
 
+** RMB pseudo op
 L0BA6    bsr   L0BE4
          pshs  d
          addd  <u0026
@@ -1887,35 +1902,37 @@ L0BEF    pshs  a
          bita  #$08
          puls  pc,a
 L0BF7    ldu   <u002D
-         ldb   u0008,u
+         ldb   $08,u
          bmi   L0C09
          cmpb  #$02
          bne   L0C07
          cmpa  #$02
          beq   L0C07
          ora   #$80
-L0C07    sta   u0008,u
+L0C07    sta   $08,u
 L0C09    rts
 L0C0A    tst   <u003E
          ble   L0C24
-         cmpd  u0009,u
+         cmpd  $09,u
          beq   L0C26
          pshs  b,a
-         lda   u0008,u
+         lda   $08,u
          bmi   L0C22
          cmpa  #$02
          beq   L0C22
-         ldb   #$0A
+         ldb   #10		'phasing' error
          lbsr  L02FA
 L0C22    puls  b,a
-L0C24    std   u0009,u
+L0C24    std   $09,u
 L0C26    rts
+** EQU pseudo op
 L0C27    lda   #$03
          bra   L0C2D
+** SET pseudo op
 L0C2B    lda   #$02
 L0C2D    bsr   L0BEF
          bne   L0C38
-         ldb   #$15
+         ldb   #21		'needs label' error
          lbsr  L02FA
          bra   L0C46
 L0C38    bsr   L0BF7
@@ -1926,6 +1943,7 @@ L0C38    bsr   L0BF7
          ldb   #$39
          stb   <u002B
 L0C46    rts
+** FCC pseudo op
 L0C47    lda   ,x+
          pshs  a
          cmpa  #$0D
@@ -1940,9 +1958,10 @@ L0C55    lda   ,x+
          beq   L0C64
          lbsr  L0CEC
          bra   L0C55
-L0C64    ldb   #$17
+L0C64    ldb   #23		'const def' error
          lbsr  L02FA
 L0C69    puls  pc,a
+** FCS pseudo op
 L0C6B    lda   ,x+
          pshs  a
          cmpa  #$0D
@@ -1976,15 +1995,17 @@ L0CA1    clr   ,x+
          bne   L0CAB
          sta   ,x
 L0CAB    puls  pc,x,a
+** FCB pseudo op
 L0CAD    bsr   L0CD5
 L0CAF    lbsr  L12F7
          tfr   b,a
          bsr   L0CEC
          lda   ,x+
-         cmpa  #$2C
+         cmpa  #$2C		comma?
          beq   L0CAF
          leax  -$01,x
          rts
+** FDB pseudo op
 L0CBF    bsr   L0CD5
 L0CC1    lbsr  L12F1
          pshs  b
@@ -1992,14 +2013,14 @@ L0CC1    lbsr  L12F1
          puls  a
          bsr   L0CEC
          lda   ,x+
-         cmpa  #$2C
+         cmpa  #$2C		comma?
          beq   L0CC1
          leax  -$01,x
          rts
 L0CD5    pshs  x
 L0CD7    lbsr  L12F1
          lda   ,x+
-         cmpa  #$2C
+         cmpa  #$2C		comma?
          beq   L0CD7
          clr   -$01,x
          stx   <u0033
@@ -2048,32 +2069,35 @@ L0D34    ldd   <u0040
          inc   <u002A
          clr   $01,s
          puls  pc,x,b,a
-L0D40    ldd   <u0051
-         coma
+** EMOD pseudo op
+L0D40    ldd   <u0051		load CRC value
+         coma			complement it
          comb
-         std   <u0062
-         ldb   <u0053
+         std   <u0062		copy to instruction buffer
+         ldb   <u0051+2		third byte too
          comb
-         lda   <u002B
+         lda   <u002B		clear "Operand field" bit
          anda  #$DF
          sta   <u002B
          bra   L0D59
-L0D51    ldd   #$103F
+** OS9 pseudo op
+L0D51    ldd   #$103F		opcode for SWI2
          std   <u0062
-         lbsr  L12F7
+         lbsr  L12F7		process byte operand
 L0D59    stb   <u0064
-         ldb   #$03
+         ldb   #$03		three bytes, to go
          stb   <u0046
          rts
+** MOD pseudo op
 L0D60    clra
          clrb
          stb   <u0050
          std   <u0040
          std   <u0044
          std   <u0042
-         lbsr  L1360
+         lbsr  L1360		Init CRC value
          lbsr  L0CD5
-         ldd   #$87CD
+         ldd   #$87CD		Module ID bytes
          bsr   L0D93
          bsr   L0D90
          bsr   L0D8E
@@ -2085,7 +2109,7 @@ L0D60    clra
          coma
          bsr   L0DA1
          lda   ,x
-         cmpa  #$2C
+         cmpa  #$2C		comma?
          bne   L0DB8
          bsr   L0D8E
 L0D8E    bsr   L0DA9
@@ -2101,16 +2125,18 @@ L0DA1    lbra  L0CEC
 L0DA4    lbsr  L12F7
          bra   L0D9B
 L0DA9    lda   ,x+
-         cmpa  #$2C
+         cmpa  #$2C		comma?
          beq   L0DB8
          leax  -$01,x
-         ldb   #$17
+         ldb   #23		'const def' error
          lbsr  L02FA
          leas  $02,s
 L0DB8    rts
+** ORG pseudo op
 L0DB9    lbsr  L0BE4
          std   <u0044
          lbra  L0BC0
+** END pseudo op
 L0DC1    ldb   <u002B
          andb  #$08
          orb   #$10
@@ -2120,33 +2146,37 @@ L0DC1    ldb   <u002B
          bcc   L0DD3
          leas  $04,s
 L0DD3    rts
-L0DD4    ldb   #$27
-         ldu   <u000A
+** NAM pseudo op
+L0DD4    ldb   #39		max name length
+         ldu   <u000A		name buffer
 L0DD8    lbsr  L1164
          lda   <u003E
          bne   L0DE3
          lda   ,u
          bne   L0DFC
-L0DE3    lda   ,x+
+L0DE3    lda   ,x+		copy text to buffer
          cmpa  #$0D
-         beq   L0DF4
+         beq   L0DF4		until end of line
          sta   ,u+
          decb
-         bne   L0DE3
+         bne   L0DE3		or max length
          lda   #$0D
-L0DF0    cmpa  ,x+
+L0DF0    cmpa  ,x+		eat rest of line
          bne   L0DF0
-L0DF4    clr   ,u
+L0DF4    clr   ,u		null terminate buffer
          leax  -$01,x
          ldb   #$30
          stb   <u002B
 L0DFC    rts
-L0DFD    ldb   #$4F
-         ldu   <u0008
+** TTL pseudo op
+L0DFD    ldb   #79		max title length
+         ldu   <u0008		title buffer
          bra   L0DD8
+** PAG pseudo op
 L0E03    lbsr  L1408
 L0E06    leas  $02,s
          rts
+** SPC pseudo op
 L0E09    bsr   L0E21
          bcc   L0E12
          ldb   #$30
@@ -2164,15 +2194,15 @@ L0E21    lbsr  L10B4
          lbsr  L02FA
          orcc  #$01
 L0E2B    rts
-* OPT arg processing
+** OPT arg processing
 L0E2C    ldb   #$30
          stb   <u002B
          lbsr  L1164
-L0E33    clr   ,-s            Clear flag?
+L0E33    clr   ,-s            Flag "Set"
          lda   ,x+            Get char
          cmpa  #'-            Dash?
-         bne   L0E3F          No, leave flag clear
-         com   ,s             Set flag
+         bne   L0E3F          No, leave flag set
+         com   ,s             Yes, flag "Clear"
          lda   ,x+            Get next char
 L0E3F    leau  <L0EA3,pc      Point to table
          ldb   #08            # of entries
@@ -2192,7 +2222,18 @@ L0E4A    cmpa  ,u++           Same as first 1/2 of table entry?
          beq   L0E90
          cmpa  #'N
          beq   L0E9B
-L0E63    ldb   #$16
+        IFNE   DOCASE
+* NEW! Symbol case control flag "U"
+         cmpa  #'U
+         bne   L0E63
+         lda   #$5F		uppercase-only case mask
+         tstb	
+         beq   *+5		"U" flag, force uppercase
+         lda   #$7F		"-U" flag, upper+lower OK
+         sta   <u000D		store new symbol case mask
+         bra   L0E73
+        ENDC
+L0E63    ldb   #22		'opt list' error
          lbra  L02FA
 L0E68    ldb   -1,u
          tfr   dp,a
@@ -2207,9 +2248,9 @@ L0E73    lda   ,x+
          beq   L0E2C
          leax  -$01,x
          rts
-L0E80    bsr   L0E21
+L0E80    bsr   L0E21		process pagewidth arg
          bcs   L0E63
-         stb   <u0037
+         stb   <u0037		new page width
          bra   L0E73
 L0E88    bsr   L0E21
          bcs   L0E63
@@ -2227,15 +2268,16 @@ L0E9B    inc   <u0060
          bra   L0E97
 
 * Option Flag Table: byte1=flag char, byte2=DP storage loc
-L0EA3    fcb   'C,u005f
+L0EA3    fcb   'C,u005F
          fcb   'F,u0059
-         fcb   'M,u005a
-         fcb   'G,u005b
-         fcb   'E,u005c
-         fcb   'S,u005e
-         fcb   'I,u005d
+         fcb   'M,u005A
+         fcb   'G,u005B
+         fcb   'E,u005C
+         fcb   'S,u005E
+         fcb   'I,u005D
          fcb   'O,u0058
 
+** SETDP pseudo op
 L0EB3    lbsr  L12F7
          bcs   L0EBA
          stb   <u003F
@@ -2245,6 +2287,7 @@ L0EBA    clra
          stb   <u002B
          inc   <u002C
          rts
+** USE pseudo op
 L0EC4    lbsr  L1164
          lbsr  L15FB
          bra   L0ECE
@@ -2260,25 +2303,25 @@ L0ECE    ldb   -$01,x
          ldb   #$30
          stb   <u002B
          rts
-L0EE3    bsr   L0F0F
+L0EE3    bsr   L0F0F		IFEQ
          bne   L0F0C
          rts
-L0EE8    bsr   L0F0F
+L0EE8    bsr   L0F0F		IFNE
          beq   L0F0C
          rts
-L0EED    bsr   L0F0F
+L0EED    bsr   L0F0F		IFLT
          bge   L0F0C
          rts
-L0EF2    bsr   L0F0F
+L0EF2    bsr   L0F0F		IFLE
          bgt   L0F0C
          rts
-L0EF7    bsr   L0F0F
+L0EF7    bsr   L0F0F		IFGE
          blt   L0F0C
          rts
-L0EFC    bsr   L0F0F
+L0EFC    bsr   L0F0F		IFGT
          ble   L0F0C
          rts
-L0F01    inc   <u0055
+L0F01    inc   <u0055		IFP1
          ldb   #$10
          bsr   L0F21
          lda   <u003E
@@ -2300,7 +2343,7 @@ L0F21    tst   <u005F
          clrb
 L0F26    stb   <u002B
          rts
-
+** ENDC/ELSE pseudo ops
 L0F29    ldb   #$10
          bsr   L0F21
          lda   <u0055
@@ -2314,10 +2357,11 @@ L0F3B    lda   <u0054
          beq   L0F0C
          dec   <u0054
 L0F41    rts
-L0F42    ldb   #$1A
+L0F42    ldb   #26		'cond nesting' error
          lbsr  L02FA
          clr   <u0054
          rts
+* add symbol to table??
 L0F4A    pshs  u,y,x
          bsr   L0FC3
          stx   <u002D
@@ -2337,14 +2381,14 @@ L0F63    cmpa  #$00
          sta   $08,x
          stu   $09,x
          bra   L0F9E
-L0F71    cmpa  #$02
+L0F71    cmpa  #$02		"set" symbol?
          beq   L0F9E
          ora   #$80
          sta   $08,x
-L0F79    ldb   #$08
+L0F79    ldb   #08		"redefined name" error
          bra   L0F9A
 L0F7D    bcc   L0F83
-L0F7F    ldb   #$09
+L0F7F    ldb   #09		"undefined name" error
          bra   L0F9A
 L0F83    cmpa  #$00
          beq   L0F7F
@@ -2356,7 +2400,7 @@ L0F83    cmpa  #$00
          cmpd  $09,x
          beq   L0F9E
          std   $09,x
-         ldb   #$0A
+         ldb   #10		"phasing" error
 L0F9A    orcc  #$01
          puls  pc,u,y,x
 L0F9E    andcc #$FE
@@ -2377,51 +2421,56 @@ L0FBB    lda   $08,x
          cmpa  #$00
          bne   L0FB7
          bra   L0F7F
-L0FC3    bsr   L0FFA
-         ldx   ,x
-         bne   L0FCD
-         leay  ,x
-         bra   L0FF7
+* scan symbol table for a match.  set carry if no match
+L0FC3    bsr   L0FFA		point to 1st letter's list vector
+         ldx   ,x		do any symbols start with this letter?
+         bne   L0FCD		yes, search the list for a match
+         leay  ,x		no, set y==vector slot
+         bra   L0FF7		and report symbol not in list
 L0FCD    pshs  x
-         ldy   <u0016
-         ldb   #$08
-L0FD4    lda   ,y+
-         beq   L0FE5
-         cmpa  ,x+
-         bne   L0FE9
-         decb
+         ldy   <u0016		point to "new" symbol name buffer
+         ldb   #$08		max symbol length
+L0FD4    lda   ,y+		fetch char from "new" symbol
+         beq   L0FE5		end found if null
+         cmpa  ,x+		compare with list symbol char
+         bne   L0FE9		not same, no match
+         decb			done all 8 yet?
          bne   L0FD4
-L0FDF    puls  x
-         lda   $08,x
-         clrb
+L0FDF    puls  x		yes, found matching symbol name
+         lda   $08,x		return symbol type in A
+         clrb			report symbol is in list (carry clear)
          rts
-L0FE5    cmpa  ,x+
-         beq   L0FDF
-L0FE9    puls  y
-         bhi   L0FF3
-         ldx   $0B,y
+L0FE5    cmpa  ,x+		is list symbol same length?
+         beq   L0FDF		yes, a match!
+L0FE9    puls  y		symbol names didn't match
+         bhi   L0FF3		"greater" alphabetically?
+         ldx   $0B,y		no, try "lesser" symbol
          bne   L0FCD
-         bra   L0FF7
-L0FF3    ldx   $0D,y
+         bra   L0FF7		none lesser, not in list
+L0FF3    ldx   $0D,y		yes, try "greater" symbol
          bne   L0FCD
-L0FF7    orcc  #$01
+L0FF7    orcc  #$01		symbol not in list (carry set)
          rts
+* use 1st char of symbol as index into array of linked list vectors
+* return x=address of list vector for this symbol
 L0FFA    ldx   <u0016
          ldb   ,x
-         ldx   <u0010
-         subb  #$41
-         cmpb  #$20
+         ldx   <u0010		address of linked list vector table
+         subb  #$41		map A-Z to 0-25
+* support code for lowercase symbols
+         cmpb  #$20		lowercase symbol?
          bcs   L1008
-         subb  #$06
-L1008    lslb
-         abx
+         subb  #$06		map a-z to 26-51
+L1008    lslb			convert index into table offset
+         abx			point x to list vector for 1st letter of symbol
          rts
-L100B    ldx   <u001D
+* add new symbol to table if there's room
+L100B    ldx   <u001D		get addr of next empty slot
          pshs  x,a
-         leax  $0F,x
+         leax  $0F,x		is there room for one more?
          cmpx  <u0012
-         bcs   L1023
-         ldb   #$0B
+         bcs   L1023		yes!
+         ldb   #11		"symbol table full" error
 L1017    clr   <u0056
          lda   #$01
          sta   <u003E
@@ -2453,16 +2502,21 @@ L1049    sta   ,x+
          stu   $09,x
          clrb
          rts
+* OUT4HS
 L1057    bsr   L1065
          bra   L105D
+* OUT2HS - not used
          bsr   L106B
+* write a space to X buffer
 L105D    pshs  a
          lda   #$20
          sta   ,x+
          puls  pc,a
+* write D reg to X buffer as 4 hex digits
 L1065    exg   a,b
          bsr   L106B
          tfr   a,b
+* write B reg to X buffer as 2 hex digits
 L106B    pshs  b
          andb  #$F0
          lsrb
@@ -2480,7 +2534,7 @@ L107F    addb  #$30
          rts
 * Take number in D and convert to 5 digit ASCII string (stored at X)
 L1084    pshs  u,y,b
-         leau  >L10AA,pc      Point to powers of 10 table
+         leau  <L10AA,pc      Point to powers of 10 table
          ldy   #$0005         5 entries (1-10000)
 L108E    clr   ,s             Clear flag
 L1090    subd  ,u             Repeated subtract
@@ -2502,14 +2556,17 @@ L10AA    fdb   10000
          fdb   100
          fdb   10
          fdb   1
+
+* numeric string evaluator
 L10B4    lbsr  L1164
          leax  $01,x
-         cmpa  #$25
+         cmpa  #'%		binary?
          beq   L111D
-         cmpa  #$24
+         cmpa  #'$		hex?
          beq   L10C5
          leax  -$01,x
          bra   L10F7
+* hex string conversion
 L10C5    leas  -$04,s
          bsr   L1134
 L10C9    bsr   L113B
@@ -2539,6 +2596,7 @@ L10DD    stb   ,s
          std   $02,s
          inc   $01,s
          bra   L10C9
+* decimal string conversion
 L10F7    leas  -$04,s
          bsr   L1134
 L10FB    bsr   L113B
@@ -2561,6 +2619,7 @@ L10FB    bsr   L113B
          std   $02,s
          inc   $01,s
          bra   L10FB
+* binary string conversion
 L111D    leas  -$04,s
          bsr   L1134
 L1121    ldb   ,x+
@@ -2695,7 +2754,7 @@ L11EE    tsta		Null?
          beq   L120D
          cmpa  #$5D	Rt bracket?
          beq   L120D
-L1205    ldb   #$06
+L1205    ldb   #06		'expr syntax' error
 L1207    leas  ,u
          orcc  #$01
          puls  pc,u,y
@@ -2706,16 +2765,16 @@ L1211    bsr   L123F
          pshs  d
 
 L1215    lda   ,x
-         cmpa  #'/
+         cmpa  #'/		Divide?
          bne   L122A
          bsr   L123D
          pshs  x
          ldx   $02,s
          lbsr  L118E
          bcc   L1237
-         ldb   #$04
+         ldb   #04		'div by 0' error
          bra   L1207
-L122A    cmpa  #'*
+L122A    cmpa  #'*		Multiply?
          bne   L120D
          bsr   L123D
          pshs  x
@@ -2773,17 +2832,17 @@ L1288    cmpa  #'(            Math grouping start symbol?
          cmpa  #')            Math grouping end symbol?
          puls  d
          beq   L12B6
-         ldb   <u0007
-         bra   L129D
+         ldb   #07		'parens' error
+*         bra   L129D	??
 L129D    leas  $02,s
 L129F    lbra  L1207
-L12A2    cmpa  #'*            Multiply?
+L12A2    cmpa  #'*            Asterisk? (current code address)
          bne   L12AA          No, check next
          ldd   <u0040
          bra   L12B6
 L12AA    tst   <u005A         If MOTOROLA flag is set, check next
          bne   L12B9
-         cmpa  #'.            Period?
+         cmpa  #'.            Period? (current data address)
          bne   L12B9          No, check next
          ldd   <u0042
          inc   <u002C
@@ -2809,7 +2868,7 @@ L12D6    lbra  L1205
 L12D9    lbsr  L10B4
          bcc   L12EE
          beq   L12E4
-         ldb   #$03
+         ldb   #03		'in number' error
          bra   L129F
 L12E4    lbsr  L0368
          bcs   L12D6
@@ -2821,60 +2880,65 @@ L12EE    andcc #$FE
 L12F1    lbsr  L11C2
          bcs   L1304
 L12F6    rts
-* Immediate mode parser
+* Immediate mode parser - byte operand
 L12F7    lbsr  L11C2
          bcs   L1304
          tsta
          beq   L12F6
          inca
          beq   L12F6
-         ldb   #$0E           Result >255 error
+         ldb   #14		'result>255' error
 L1304    lbsr  L02FA
          ldd   #$FFFF
          orcc  #$01
          rts
-L130D    bsr   L134D
+* write a byte to code buffer
+L130D    bsr   L134D		Update CRC
          pshs  x,d
-         ldx   <u001B
-         sta   ,x+
-         stx   <u001B
-         cmpx  <u0010
-         bcs   L1321
-         bsr   L1323
+         ldx   <u001B		current loc
+         sta   ,x+		write new byte
+         stx   <u001B		update ptr
+         cmpx  <u0010		buffer full?
+         bcs   L1321		no, exit
+         bsr   L1323		yes, write it out
          ldx   <u000E
-         stx   <u001B
+         stx   <u001B		and reset ptr to start
 L1321    puls  pc,x,d
+* flush code buffer contents
 L1323    pshs  y,x,d
-         lda   <u0058
-         beq   L1340
-         lda   <u003E
-         beq   L1340
-         ldd   <u001B
-         subd  <u000E
-         beq   L1340
-         tfr   d,y
-         ldx   <u000E
-         lda   <u0019
-         beq   L1340
-         os9   I$Write
-         bcs   L1342
+         lda   <u0058		O flag?
+         beq   L1340		no, exit (no outfile)
+         lda   <u003E		code generation (second) pass?
+         beq   L1340		no, exit
+         ldd   <u001B		is code ptr
+         subd  <u000E		still at start of buffer?
+         beq   L1340		yes, exit (it's empty)
+         tfr   d,y		Y=byte count
+         ldx   <u000E		X=buffer addr
+         lda   <u0019		A=outfile path #
+         beq   L1340		if path=0, no outfile, exit
+         os9   I$Write		write the buffer
+         bcs   L1342		errors?
 L1340    puls  pc,y,x,d
-L1342    os9   F$PErr
-         ldb   #$12
-         lbsr  L02FA
-         lbra  L15A2
+L1342    os9   F$PErr		yes, print OS9 error message
+         ldb   #18		'object path' error
+         lbsr  L02FA		then print ASM error message
+         lbra  L15A2		and exit
+* update running CRC value
 L134D    pshs  u,y,x,d
-         leax  ,s
-         ldy   #$0001
-         tfr   dp,a
-         ldb   #$51
-         tfr   d,u
-         os9   F$CRC
+         leax  ,s		X = addr of new code byte
+         ldy   #$0001		just one byte
+         tfr   dp,a		MSB of CRC buf
+         ldb   #u0051		LSB of CRC buf
+         tfr   d,u		U = addr of CRC buffer
+         os9   F$CRC		Update CRC
          puls  pc,u,y,x,d
+* initialize CRC to $FFFFFF
 L1360    ldd   #$FFFF
          std   <u0051
-         stb   <u0053
+         stb   <u0051+2
          rts
+*
 L1368    lda   <u0057
          beq   L139A
          lda   <u0056
@@ -2914,57 +2978,51 @@ L139A    lda   <u003E
          lda   <u001A
          os9   I$WritLn
          puls  pc,y,a
+* append a CR to end of string
 L13B8    lda   #$0D
          sta   ,x+
          rts
-L13BD    leas  -$06,s
+* print Date & Time as MM/DD/YYYY hh:mm:ss
+L13BD    leas  -$06,s		allocate a date buffer on stack
          pshs  x
-         leax  $02,s
-         os9   F$Time
+         leax  $02,s		X=addr of date buffer
+         os9   F$Time		get Date/Time packet
          puls  x
-         bcs   L13F0
-         lda   $01,s
-         bsr   L13F7
-         ldb   #$2F
-         stb   ,x+
-         lda   $02,s
-         bsr   L13F7
-         stb   ,x+
-         lda   ,s
-* 1900-2155 fix
+         bcs   L13F0		exit on error
+         lda   $01,s		get month byte
+         bsr   L13F7		write 2-digit month
+         ldb   #'/
+         stb   ,x+		and a slash
+         lda   $02,s		get day byte
+         bsr   L13F7		write 2-digit day
+         stb   ,x+		and another slash
+* shorter 1900-2155 fix
 * ++START++
-         cmpa  #100
-         blo   L1900
-         suba  #100
-         cmpa  #100
-         blo   L2000
-L2100    suba  #100
-         pshs  a
-         lda   #21
-         bra   PrtCty
-L2000    pshs  a
-         lda   #20
-         bra   PrtCty
-L1900    pshs  a
-         lda   #19
-PrtCty    bsr   L13F7
-         puls  a
+         ldb   ,s		system years in B (0-255)
+         lda   #19-1		century in A
+         inca			add a century
+         subb  #100		subtract 100 yrs
+         bhs   *-3		until yr<0
+         addb  #100		restore year to 00-99 range
+         bsr   L13F7		write 2-digit century
+         tfr   b,a		retrieve adjusted year
 * ++END++
-         bsr   L13F7
-         bsr   L13F2
-         lda   $03,s
-         bsr   L13F7
-         ldb   #$3A
-         stb   ,x+
-         lda   $04,s
-         bsr   L13F7
-         stb   ,x+
-         lda   $05,s
-         bsr   L13F7
-L13F0    leas  $06,s
+         bsr   L13F7		write 2-digit year
+         bsr   L13F2		and a space
+         lda   $03,s		get hours byte
+         bsr   L13F7		write 2-digit hours
+         ldb   #':
+         stb   ,x+		and a colon	
+         lda   $04,s		get minutes byte
+         bsr   L13F7		write 2-digit minutes
+         stb   ,x+		and another colon
+         lda   $05,s		get seconds byte
+         bsr   L13F7		write 2-digit seconds
+L13F0    leas  $06,s		release date buffer
 L13F2    lda   #$20
-         sta   ,x+
+         sta   ,x+		and write another space
          rts
+* write A reg to buffer as 2-digit decimal ASCII
 L13F7    pshs  b
          ldb   #$2F
 L13FB    incb
@@ -2974,6 +3032,7 @@ L13FB    incb
          adda  #$3A
          sta   ,x+
          puls  pc,b
+*
 L1408    lda   <u0056
          bmi   L1476
          lda   <u0059
@@ -3026,9 +3085,9 @@ L1471    bsr   L1479
          bne   L1471
 L1476    ldx   <u0004
          rts
-L1479    lda   #$0D
+L1479    lda   #$0D		do CRs
          bra   L147F
-L147D    lda   #$0C
+L147D    lda   #$0C		or form feed
 L147F    pshs  y,x,d
          lda   <u003E
          beq   L1498
@@ -3046,40 +3105,29 @@ L149A    ldx   <u0004
 
 L149F    fcc   'Page '
          fcb   $00
-
 L14A5    fcc   'Microware OS-9 Assembler RS Version 01.00.00    '
-         fcb   $00
-L14D6    fcc   ' error(s)'
-         fcb   $00
-L14E0    fcc   ' warning(s)'
-         fcb   $00
-L14EC    fcc   ' program bytes generated'
-         fcb   $00
-L1505    fcc   ' data bytes allocated'
-         fcb   $00
-L151B    fcc   ' bytes used for symbols'
          fcb   $00
 L1533    fcc   'ASM:'
 
 L1537    pshs  u,y,x,d
-         lda   <u005D
-         beq   L1549
+         lda   <u005D		Interactive mode?
+         beq   L1549		No, skip user prompt
          leax  <L1533,pc      Point to 'ASM:'
          ldy   #$0004         Size of text
          lda   <u001A         Get output path #
          os9   I$Write        Write it out
-L1549    ldx   <u0000
-         ldy   #$0078
-         lda   <u0018
+L1549    ldx   <u0000		input buffer
+         ldy   #$0078		read 120 max
+         lda   <u0018		input path number
 L1551    os9   I$ReadLn
-         bcc   L156A
-         cmpb  #$D3
+         bcc   TabFix		was->L156A
+         cmpb  #$D3		EOF?
          bne   L1560
          bsr   L156C
          bcc   L1549
 L155E    bra   L156A
 L1560    os9   F$PErr
-         ldb   #$11
+         ldb   #17		'input path' error
          lbsr  L02FA
          bsr   L156C
 L156A    puls  pc,u,y,x,d
@@ -3096,11 +3144,33 @@ L1576    lda   <u0018
          bcc   L1586
          os9   F$PErr
 L1586    rts
+* RVH add-on: accept tabs in source text by
+* converting them to spaces. X=inbuf,Y=count
+TabFix   ldd   #$0920		A=tab, B=space
+         cmpa  ,x+		is it a tab?
+         bne   *+4
+         stb   -1,x		yes, change to space
+         leay  -1,y
+         bne   *-8		scan to end of input
+         andcc #$FE		error flag off
+         bra   L156A		and return
+
+L14D6    fcc   ' error(s)'
+         fcb   $00
+L14E0    fcc   ' warning(s)'
+         fcb   $00
+L14EC    fcc   ' program bytes generated'
+         fcb   $00
+L1505    fcc   ' data bytes allocated'
+         fcb   $00
+L151B    fcc   ' bytes used for symbols'
+         fcb   $00
+
 L1587    pshs  b,a
-         lda   #$24
+         lda   #$24		'$'
          sta   ,x+
          ldd   ,s
-         lbsr  L1057
+         lbsr  L1057		call OUT4HS
          puls  b,a
 L1594    lbsr  L1084
          tfr   u,y
@@ -3109,33 +3179,33 @@ L1594    lbsr  L1084
 L159F    lbsr  L1323
 L15A2    lbsr  L149A
          ldd   <u0028
-         leau  >L14D6,pc
+         leau  <L14D6,pc
          bsr   L1594
          ldd   <u0022
-         leau  >L14E0,pc
+         leau  <L14E0,pc
          bsr   L1594
          ldd   <u0024
-         leau  >L14EC,pc
+         leau  <L14EC,pc
          bsr   L1587
          ldd   <u0026
-         leau  >L1505,pc
+         leau  <L1505,pc
          bsr   L1587
          ldd   <u001D
          subd  <u0010
-         leau  >L151B,pc
+         leau  <L151B,pc
          bsr   L1587
-         lda   <u005E
+         lda   <u005E		'S' flag?
          beq   L15D5
-         bsr   L1612
-L15D5    lda   <u005D
+         bsr   L1612		yes, print symbol table
+L15D5    lda   <u005D		'I' flag?
          bne   L15E9
-         lda   <u0059
+         lda   <u0059		'F' flag?
          beq   L15E2
-         lbsr  L147D
+         lbsr  L147D		yes, do a formfeed
          bra   L15E9
-L15E2    ldb   <u0035
-         addb  #$03
-         lbsr  L1471
+L15E2    ldb   <u0035		no, get remaining page length
+         addb  #$03		and footer?
+         lbsr  L1471		do a bunch of CRs
 L15E9    ldu   <u001F
 L15EB    cmpu  <u0006
          beq   L15F7
@@ -3146,10 +3216,11 @@ L15F7    clrb
          os9   F$Exit
 L15FB    lda   #$01
          os9   I$Open
-         ldb   #$18
-         lbcs  L1017
+         ldb   #24		'can't open' error
+         lbcs  L1017		if open fails
          rts
-L1607    lda   <u0018
+* seek to beginning of input file
+L1607    lda   <u0018		source file path number
          ldu   #$0000
          tfr   u,x
          os9   I$Seek
@@ -3157,16 +3228,20 @@ L1607    lda   <u0018
 L1612    ldb   <u0037
          clra
          tfr   d,x
-         ldb   #$10
+         ldb   #16		width of printed symbol entry
          lbsr  L118E
          stb   <u003D
          stb   <u003C
          lbsr  L149A
          ldu   <u0010
-         ldb   #$1A
+        IFNE   DOCASE
+         ldb   #52		number of vectors in "first letter" table
+        ELSE
+         ldb   #26		number of vectors in "first letter" table
+        ENDC
          pshs  b
-L1629    ldy   ,u++
-         beq   L1656
+L1629    ldy   ,u++		fetch link to chain for next letter
+         beq   L1656		if null, no symbol starts with this letter
 L162E    pshs  u,y
          bra   L1644
 L1632    leau  ,y
@@ -3175,32 +3250,33 @@ L1636    ldd   $0B,y
          bne   L1632
          bsr   L165F
          ldy   $0D,y
-         sty   u000B,u
+         sty   $0B,u
          bne   L1636
 L1644    ldu   ,s
-         ldy   u000B,u
+         ldy   $0B,u
          bne   L1636
          leay  ,u
          bsr   L165F
          puls  u,y
          ldy   $0D,y
          bne   L162E
-L1656    dec   ,s
-         bne   L1629
+L1656    dec   ,s		if not done,
+         bne   L1629		do next letter
          leas  $01,s
          lbra  L1370
+* print a symbol table entry
 L165F    pshs  u,y
-         ldd   $09,y
-         lbsr  L1057
-         lda   $08,y          Get offset into table
+         ldd   $09,y		get symbol value
+         lbsr  L1057		call OUT4HS
+         lda   $08,y		get symbol type
          leau  <L1691,pc      Point to table
          lda   a,u            Get table entry
          ldb   #$20           2nd char is a space
          std   ,x++           Store both of them
-         ldb   #$08
-L1673    lda   ,y+
+         ldb   #$08		max symbol length
+L1673    lda   ,y+		print symbol name
          bne   L1679
-         lda   #$20
+         lda   #$20		space padded
 L1679    sta   ,x+
          decb
          bne   L1673
@@ -3214,45 +3290,48 @@ L1688    lbsr  L1370
          stb   <u003C
 L168F    puls  pc,u,y
 
-* Single byte entry table
+* Symbol types table
 L1691    fcc   'ULSED'
+
+* parse command line args
 L1696    pshs  y,x
-         lbsr  L15FB
-         sta   <u0018
-L169D    lbsr  L1164
-         cmpa  #$0D
+         lbsr  L15FB		go open source file for read
+         sta   <u0018		store source path number
+L169D    lbsr  L1164		find next text field
+         cmpa  #$0D		EOL?
+         beq   L16CF		we're done
+         lbsr  L0E33		go process option flags
+         lda   <u0058		was there an 'O' flag?
          beq   L16CF
-         lbsr  L0E33
-         lda   <u0058
-         beq   L16CF
-         lda   -$01,x
+         lda   -$01,x		yes
          anda  #$5F
          cmpa  #$0D
-         beq   L16C7
+         beq   L16C7		no name given, use default
          ldb   ,x
-         cmpd  #$4F3D
+         cmpd  #$4F3D		"O=" object filepath option?
          bne   L16C7
-         ldb   #$16
-         lda   <u0019
-         bne   L16D1
-         leax  $01,x
-         bsr   L16D4
-         bra   L169D
-L16C7    lda   <u0019
+         ldb   #22		'opt list' error
+         lda   <u0019		if object file
+         bne   L16D1		is already open
+         leax  $01,x		else get pathname
+         bsr   L16D4		and open it
+         bra   L169D		resume option processing
+
+L16C7    lda   <u0019		if object file not yet open,
          bne   L16CF
-         ldx   ,s
+         ldx   ,s		use default name (=source name)
          bsr   L16D4
 L16CF    puls  pc,y,x
-L16D1    lbra  L1017
-L16D4    lda   #$06
-         ldb   #$2F
-         os9   I$Create
-         ldb   #$18
-         bcs   L16D1
-         sta   <u0019
-         rts
 
+L16D1    lbra  L1017
+* open object file
+L16D4    lda   #$06		mode=write+update
+         ldb   #$2F		permissions=pe pw pr e w r
+         os9   I$Create
+         ldb   #24		'can't open' error
+         bcs   L16D1		if create fails
+         sta   <u0019		store object path number
+         rts
          emod
 eom      equ   *
          end
-
