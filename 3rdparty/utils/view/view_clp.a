@@ -1,0 +1,130 @@
+*
+*
+*  CLP format display, and PUB format
+*
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+ psect view_clp_a,0,0,0,0,0
+
+ vsect
+gpload fcb $1b,$2b,0,2,0,0,0,0,0,0,0
+putblk fcb $1b,$2d,0,2,0,0,0,0
+size   rmb 2
+ endsect
+
+pals fcb $3f,$09,$00,$12,$24,$36,$2d,$1b   Same as OS9 default palettes
+ fcb $3f,$09,$00,$12,$24,$36,$2d,$1b
+
+CLPshowpic:
+* Set up some miscellaneous vars
+   lda  #8
+   sta  <cyclestart
+   lda  #15
+   sta  <cycleend
+   ldd  #5
+   std  <cyclerate
+   lda  #0
+   sta  <extranum
+
+* Set the palettes
+   ldb  #16
+   leax pals,pcr
+   leau palette,y
+paloop
+   lda  ,x+
+   sta  ,u+
+   decb
+   bne  paloop
+
+* Set up the GPLoad command parameters.
+   leax gpload,y
+
+* PUB format?
+   lda  <format
+   cmpa #PUBFormat
+   bne  noPUB
+   ldb  #4
+   leau PUBstuff,pcr
+PUBloop
+   lda  ,u+
+   sta  b,x
+   incb
+   cmpb #11
+   bne  PUBloop   
+   bra  dogpload
+
+* PUB format clips are type 5, 80x40, 400 bytes.
+PUBstuff fcb 5,0,80,0,40,1,$90
+
+noPUB
+
+* Handle CLP format.
+   ldb  #4           Start with byte 5 in GPLoad command.
+headloop
+   lbsr I_GetByte    Get remainder of GPLoad header.
+   lbcs _error
+   sta  b,x
+   incb
+   cmpb #11
+   bne  headloop
+
+dogpload
+   lda  <PID        Use PID for buffer number.
+   sta  2,x
+
+   lda  4,x         Set screen type.
+   sta  <type
+   lbsr setscreen
+   lbsr setpals
+
+   ldd  9,x          Set size of buffer.
+   std  size
+
+   pshs y
+   ldy  #11          Send the GPLoad.
+   lda  <outpath
+   os9  I$Write
+   puls y      
+
+   pshs y            Now copy buffer contents to screen.
+   leax linebuff,y
+loop
+   ldd  size        Read size bytes...
+   beq  loopend
+   cmpd #$100       ... But not more than 256 at a time.
+   bhi  toobig
+   ldd  #$100
+toobig
+   tfr  d,y
+   lbsr I_Read      Get it.
+   bcs  looperr     Exit on error or EOF.
+   pshs y
+   ldd  size        Count down the size to copy.
+   subd ,s++
+   std  size
+   lda  <outpath
+   os9  I$Write     Output it to screen
+   bra  loop
+
+looperr
+   cmpb #E$EOF
+   lbne _error
+
+loopend
+   puls y
+   leax putblk,y
+   lda  <PID
+   sta  2,x
+   lda  <outpath
+   pshs y
+   ldy  #8
+   os9  I$Write
+   lbcs _error
+   puls y
+
+   rts
+
+   endsect

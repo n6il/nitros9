@@ -1,0 +1,45 @@
+*
+* Setup for GIF
+*
+* Globals
+*   SetGIF   -- Initialization. Reserves tables, sets format
+*
+ ifp1
+ use  /dd/defs/os9defs.a
+ endc
+
+ psect view_gifset_a,0,0,0,0,0
+
+*
+* GIF initialization
+* Since GIF requires such large tables, we don't allocate them
+* statically, but instead request them from the operating system at
+* run time.
+*
+giftablesize equ 4096*3  3 bytes, 2^12 entries for 12-bit code size
+gifstacksize equ 4096    Stack for reversing the pixel strings from table
+
+SetGIF:
+ pshs a,b,x
+ tst  <format  If format already set, just ignore this.
+ bne  SetGIF1
+ sta  <format  Set format code.
+
+ ldd  #giftablesize+gifstacksize  Allocate the memory
+ lbsr malloc
+ stx  <giftable
+
+ leax giftablesize+gifstacksize,x
+ stx  <gifstack
+SetGIF1
+ puls a,b,x,pc
+
+*
+* Return memory reserved by SetGIF.
+*
+EndGIF:
+ lbsr unmalloc
+ rts
+
+ endsect
+

@@ -1,0 +1,419 @@
+********************************************************************************
+*
+* SUBS for MAC picture formats
+*
+* MACshowpic -- displays picture on screen
+*
+********************************************************************************
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+StdOut equ 1
+StdErr equ 2
+
+ psect view_mac_a,0,0,0,0,0
+
+ vsect dp
+curline  rmb 2
+pictheight rmb 2
+fitcount rmb 2
+ endsect
+
+MACshowpic:
+ bsr  header
+
+ ldd  <Skiplines
+ beq  skip01
+skip00
+ lbsr getline
+ subd #1
+ bne  skip00
+skip01
+
+ lbsr setscreen
+ lbsr setpals
+ lbsr setbuffer
+
+ ldd  #720
+ std  fitcount
+
+spscreens
+ ldd  #00
+showpicloop
+ tst  <endoffile  Quit on end-of-file.
+ bne  showpicend
+ std  curline
+ tst  fitcount
+ bpl  spget
+ lbsr outline
+ addd #1
+ std  curline
+ ldd  fitcount
+ addd #720
+ bra  spendloop
+spget
+ lbsr getline
+ ldd  fitcount
+ subd pictheight  Number of lines in screen display.
+spendloop
+ std  fitcount
+ ldd  curline
+ cmpd #192
+ bne  showpicloop
+
+ tst  <Size
+ beq  showpicend
+ lbsr getline
+ ldd  #720
+ subd pictheight
+ std  fitcount
+ tst  <endoffile
+ bne  showpicend
+ lbsr setscreen
+ lbsr setpals
+ bra  spscreens
+
+showpicend
+ lbsr flipscreens
+ rts
+
+*
+* read header info from file, and set window type information
+*    Uses altbuff to read header info into.
+*
+ vsect dp
+count      rmb 1     Count/value is used for compressed format
+value      rmb 1
+straight   rmb 1
+endoffile  rmb 1     T= EOF reached, so always return linebuff all 0
+numlines   rmb 2
+ endsect
+
+header
+ pshs a,b,x,y,u
+ lbsr I_GetByte
+ lbcs _error
+ lbsr I_GetByte
+ lbcs _error
+
+ leax altbuff,y read in type and palettes
+ pshs y
+ ldy  #255
+ lbsr I_Read
+ lbcs _error
+ ldy  #255
+ lbsr I_Read
+ lbcs _error
+ tsta
+ beq  shorthead
+ ldy  #128
+ lbsr I_Read
+ lbcs _error
+shorthead
+ puls y
+
+ ldx  #720
+ stx  numlines
+
+ lda  <type
+ bne  headtype
+ lda  #7
+ sta  <type
+headtype
+
+* Set limits for palette rotation
+ lda  <cyclestart
+ sta  <cycleend
+
+* Set default Skiplines.
+ ldd  <Skiplines
+ cmpd #$ffff
+ bne  headskip
+ ldd  #0
+ std  <Skiplines
+headskip
+
+ lda  <Size
+ bpl  headsize
+ lda  #0      Default size is small.
+ sta  <Size
+headsize
+
+* Set picture height.
+ ldx  #192    192 lines in "small" size picture.
+ cmpa #1
+ bne  headh2
+ ldx  #327    Big display is 327 lines
+headh2
+ cmpa #2
+ bne  headh3
+ ldx  #720   Huge display is 720 lines
+headh3
+ stx  pictheight
+
+* Set palette
+ ldd  #$3f38
+ std  palette,y
+ ldd  #$0700
+ std  palette+2,y
+
+ lda  <type
+ cmpa #5
+ bne  setpal5
+ ldd  #$3f00
+ std  palette,y
+setpal5
+
+ puls a,b,x,y,u,pc
+
+pal8 fcb $3f,$38,$38,7,$3f,$38,7,7,$38,$38,7,0,$38,7,7,0
+
+*
+* Getline
+*
+getline
+ pshs a,b,x,y,u
+* Clear out linebuffer,altbuff
+ leax altbuff,y
+ clra
+ ldb  #160
+getl1
+ sta  ,x+
+ decb
+ bne  getl1
+
+ tst  endoffile    Are we at end-of-file?
+ bne  getline1
+
+* Count down number of lines
+ ldd  numlines
+ beq  geteof1
+ subd #1
+ std  numlines
+
+* Get a line from compressed file
+ leau altbuff,y  Where we'll put the line.
+ ldb  #72        Number of bytes in one line.
+ lda  count
+ bne  getcomp1
+ lda  straight
+ bne  getstr1
+getpacket
+ lbsr I_GetByte
+ bcs  geteof
+ tsta
+ bpl  getstraight
+* Handle compressed packet
+getcomp
+ coma
+ adda #2
+ sta  count
+ lbsr I_GetByte
+ bcs  geteof
+ sta  value
+getcomp1
+ lda  value
+getcloop
+ sta  ,u+
+ dec  count
+ decb
+ beq  getline1
+ tst  count
+ beq  getpacket
+ bra  getcloop
+ 
+* Handle uncompressed section
+getstraight
+ adda #1
+getstr1
+ sta  straight
+getsloop
+ lbsr I_GetByte
+ bcs  geteof
+ sta  ,u+
+ dec  straight
+ decb
+ beq  getline1
+ tst  straight
+ beq  getpacket
+ bra  getsloop
+
+* Check for EOF.
+geteof
+ cmpb #E$EOF      We have a special message for premature EOF
+ bne  getnor1
+geteof1
+ com  endoffile   Flag end-of-file condition
+ bra  getline1    Keep on going.
+getnor1
+ lbra _error      If not EOF, just exit with error.
+getline1
+ tst  <Size
+ bne  getwide
+ lbsr squish     If small size, squish the data down.
+ bra  getdone
+getwide
+ lbsr widen
+getdone
+ lbsr expand     Now that we have the data, set it up in linebuff.
+ puls a,b,x,y,u,pc
+
+ vsect dp
+expcount rmb 1
+ endsect
+
+clrbuff
+ pshs a,b,x
+ leax linebuff,y
+ ldb  #160
+ clra
+ sta  expcount
+clrloop
+ sta  ,x+
+ decb
+ bne  clrloop
+ puls a,b,x,pc
+ 
+exptable fcb $00,$01,$04,$05,$10,$11,$14,$15,$40,$41,$44,$45,$50,$51,$54,$55
+
+expand
+ pshs a,b,x,u,y
+ lda  expcount  We can merge at most three lines.
+ inca
+ cmpa #4
+ bhs  expend   If four or more, then just skip this step.
+ sta  expcount
+
+ leax altbuff,y
+ leau linebuff,y
+ leay exptable,pcr
+ ldb  #72
+exploop
+ lda  ,x
+ lsra
+ lsra
+ lsra
+ lsra
+ lda  a,y
+ adda ,u
+ sta  ,u+
+ lda  ,x+
+ anda #$0f
+ lda  a,y
+ adda ,u
+ sta  ,u+
+ decb
+ bne  exploop
+expend
+ puls a,b,x,y,u,pc
+
+*
+* Output a line to the screen, and get ready for next one.
+*
+outline
+ lbsr expand  Make sure that a full 3 lines are expanded before output.
+ lbsr expand
+ pshs a,x
+ lda  <type
+ cmpa #7    Default screen type
+ beq  outline9
+ cmpa #8
+ beq  outline8
+ cmpa #6
+ beq  outline6
+outline5
+ leax linebuff,y  Handle conversion to type 5 screen
+ lbsr MAC75
+ bra  outline9
+outline6
+ leax linebuff,y  Handle conversion to type 6 screen
+ lbsr MAC76
+ bra  outline9
+outline8
+ leax linebuff,y
+ lbsr MAC76
+ lbsr MGE68
+outline9
+ puls a,x
+ lbsr putline
+ lbsr clrbuff
+ rts
+
+*
+* Squish a 576-pixel line down to preserve aspect ratio.
+* First try: 8 pixels down to 5
+*
+squish
+ pshs a,b,x,y,u
+ pshs y         Save this, we'll need it later.
+ leax altbuff,y
+ leau alt2buff,y
+ ldy  #72       Count down number of bytes.
+ ldb  #1    Prime B to receive bits.
+sqloop
+ lda  ,x
+ clr  ,x+  Clear altbuff as we go along.
+ lsla
+ bsr  addbit
+ lsla
+ bsr  addbit
+ lsla
+ lsla
+ bsr  addbit
+ lsla
+ bsr  addbit
+ lsla
+ lsla
+ bsr  addbit
+ leay -1,y
+ bne  sqloop
+ puls y 
+
+ leax altbuff+17,y  Now copy the squished line over to altbuff.
+ leau alt2buff,y
+ ldb  #45  Number bytes to move.
+sq1loop
+ lda  ,u+
+ sta  ,x+
+ decb
+ bne  sq1loop
+ puls a,b,x,y,u,pc
+
+addbit
+ rolb
+ bcc  addend
+ stb  ,u+
+ ldb  #1   Single 1 bit will tell us when we're done.
+addend
+ rts
+
+*
+* Move "wide" data into place.
+*
+widen
+ pshs a,b,x,y,u
+ leax altbuff,y
+ leax 72,x
+ leau altbuff,y
+ leau 76,x
+ ldy  #36       Move 36 double-bytes.
+wiloop
+ ldd  ,--x
+ std  ,--u
+ leay -1,y
+ bne  wiloop
+ ldd  #0
+ std  ,--u  Clear out remaining.
+ std  ,--u
+ puls a,b,x,y,u,pc
+
+ endsect

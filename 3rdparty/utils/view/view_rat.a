@@ -1,0 +1,187 @@
+********************************************************************************
+*
+* SUBS for RAT picture formats
+*
+* RATshowpic -- displays picture on screen
+*
+********************************************************************************
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+StdOut equ 1
+StdErr equ 2
+
+ psect view_rat_a,0,0,0,0,0
+
+ vsect dp
+Debug rmb 1
+ endsect
+
+RATshowpic:
+ bsr  header
+ lbsr setscreen
+ lbsr setpals
+ lbsr setbuffer
+
+ pshs d,x
+ ldd  <Skiplines
+ beq  skip01
+skip00
+ lbsr getline
+ subd #1
+ bne  skip00
+skip01
+
+ com  <Debug
+
+ ldd  #00
+showpicouter
+ ldx  #25
+showpicloop
+ lbsr getline
+ tst  <Size
+ bne  showpic2
+ leax -1,x
+ beq  showpicouter
+showpic2
+
+ lbsr putline
+ addd #1
+ cmpd #192
+ bne  showpicloop
+ puls d,x,pc
+
+*
+* read header info from file, and set window type information
+*    Uses altbuff to read header info into.
+*
+ vsect dp
+compressed rmb 1     T=Compressed format in use
+compmarker rmb 1     Marker for compressed pairs.
+count      rmb 1     Count/value is used for compressed format
+value      rmb 1
+endoffile  fcb 0     T= EOF reached, so always return linebuff all 0
+ endsect
+
+header
+ pshs a,b,x,y,u
+ leax altbuff,y read in type and palettes
+ pshs y
+ ldy  #19
+ lbsr I_Read
+ lbcs _error
+ puls y
+ leax altbuff,y
+ lda  ,x+
+ sta  compmarker   Escape value for compressed pairs.
+ lda  ,x+
+ sta  compressed   0=noncompressed, non-zero means compressed
+ clr  count
+
+ lda  ,x+         Border color, ignore for now.
+
+ leau palette,y   Next 16 bytes are palettes, store them.
+ ldb  #16
+headloop
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  headloop
+
+ lda  type,y
+ bne  headtype
+ lda  #8
+ sta  type,y
+headtype
+
+* Disable animation effects
+ lda  <cyclestart   Disable cycling.
+ sta  <cycleend
+ clr  <extranum
+ 
+* Set default Skiplines.
+ ldd  <Skiplines
+ cmpd #$ffff
+ bne  headskip
+ ldd  #0
+ std  <Skiplines
+headskip
+
+* Set default Size
+ lda  <Size
+ bpl  headsize
+ lda  #1
+ sta  <Size
+headsize
+
+ puls a,b,x,y,u,pc
+
+
+*
+* Getline
+*
+getline
+ pshs a,b,x,y,u
+ leau linebuff,y
+ ldx  #160
+getl1
+ clr  ,u+
+ leax -1,x
+ bne  getl1
+ tst  endoffile    Are we at end-of-file?
+ bne  getline1
+ tst  compressed   Is it compressed mode?
+ beq  getnormal    0 -> uncompressed.
+* Get a line from compressed file
+ leau linebuff,y   Where we'll put the line.
+ ldx  #160         Number of bytes in one line.
+ lda  value        Get value to repeat
+ tst  count        Is there a left-over compressed packet?
+ bne  getl3        Yes, go finish that packet.
+getl2
+ lbsr I_GetByte   Get a value
+ bcs  geteof
+ cmpa compmarker  Is this the code to mark a compressed pair?
+ beq  getl22      Yes, get the pair and expand.
+getl21
+ sta  ,u+         Store one byte as-is.
+ leax -1,x        Count down line length.
+ bne  getl2
+ bra getline1
+getl22
+ lbsr I_GetByte  Get count/value pair.
+ bcs  geteof
+ sta  count
+ lbsr I_GetByte Get value
+ bcs  geteof
+ sta  value
+getl3
+ sta  ,u+    Store a copy of current value
+ dec  count  Count down number of reps
+ leax -1,x   Count down size of line
+ lbeq  getline1 If end of line, exit
+ tst  count  Is that enough copies?
+ bne  getl3  No, keep going
+ bra  getl2  Yes, get next pair.
+* Get a line from uncompressed file
+getnormal
+ leax linebuff,y   read in one line of screen
+ ldy  #160         Warning!  Y munged.
+ lbsr I_Read
+ lbcc getline1
+* Check error value in B for EOF, mark EOF condition if that's the error,
+*   any other error, exit.
+geteof
+ cmpb #E$EOF      We have special handling for premature EOF
+ bne  getnor1
+ com  endoffile   Flag end-of-file condition
+ bra  getline1    Keep on going.
+getnor1
+ lbra _error      If not EOF, just exit with error.
+getline1
+ puls a,b,x,y,u,pc
+
+
+ endsect

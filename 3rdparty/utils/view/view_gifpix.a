@@ -1,0 +1,421 @@
+*
+* Setup and Screen support for GIF
+*
+* Globals
+*   gifoutinit  -- Initialize output machinery
+*   gifoutpix   -- output one pixel, with scaling, etc.
+*
+ ifp1
+ use  /dd/defs/os9defs.a
+ endc
+
+ psect view_gifpix_a,0,0,0,0,0
+
+*
+* Screen support-- output one GIF pixel to screen, with scaling and dithering.
+*
+ vsect dp
+pixpline  rmb 2  Number of pixels on a virtual screen line.
+pixscrn   rmb 2  Number of pixels on actual screen line.
+pixcnt    rmb 2  Count of pixels on actual screen line.
+lineptr   rmb 2  Pointer to linebuff, for putting pixels
+pixleft   rmb 2  Number of pixels left for this GIF line
+horscale  rmb 2  Horizontal scaling counter.
+linecount rmb 2  Current GIF line number
+linenumb  rmb 2  Current Coco Line number
+linemax   rmb 2  Max Coco line number
+lineinc   rmb 2  Increment between lines
+verscale  rmb 2  vertical scaling counter.
+ endsect
+
+*    gifinterlace  holds T if we do interlace.
+gifoutinit:
+ pshs d,x
+ ldd  #1
+ tst  <gifinterlace
+ beq  init1
+ ldd  #8
+init1
+ std  lineinc
+
+ ldd  #0
+ std  linecount
+ std  horscale
+ std  verscale
+
+ ldd  <Skipcols
+ bpl  init20   Default value is zero
+ ldd  #0
+ std  <Skipcols
+init20
+
+ ldd  <Skiplines
+ bpl  init21   Default value is zero
+ ldd  #0
+ std  <Skiplines
+init21
+
+ ldd  #0
+ subd <Skipcols
+ std  pixcnt
+
+ leax linebuff,y
+ stx  lineptr
+ ldd  <gifiwidth
+ std  pixleft
+
+ ldx  #320   Type 8 and 6 screens are 320 pixels across.
+ lda  <type
+ cmpa #8
+ beq  init8
+ cmpa #6
+ beq  init8
+ ldx  #640   Type 7 and 5 are 640 pixels across.
+init8
+ stx  pixscrn
+ stx  pixpline
+
+ ldd  #192    For default size, scale pic to 192 lines.
+ std  linemax
+
+ lda  <Size
+ bne  init98
+ ldx  <gifiheight  For small, choose divisor of actual height.
+ clra
+ pshs a
+init92
+ inc  ,s
+ lda  ,s
+ lbsr div168  Divide height by number
+ cmpd #200
+ bhi  init92  If not <200, keep going
+ std  linemax
+ puls a       Clear stack
+ bra  init99
+init98
+ cmpa #2
+ bne  init99
+ ldd  <gifiheight  Huge is 1:1 height
+ std  linemax
+ ldd  <gifiwidth   And 1:1 width
+ cmpd <pixscrn     ... but not less than screen width
+ blo  init99
+ std  pixpline
+init99
+
+ puls d,x,pc
+
+* Output pixel to screen
+*
+* Expects
+*    alt2buff holds color translation table
+*    A  holds pixel to output
+*    gifiheight, gifiwidth hold picture dimensions
+gifoutpix:
+ pshs a,b,x
+ tst  verscale
+ bmi  outpix5
+ ldx  lineptr
+ ldd  horscale
+ subd pixpline
+ std  horscale
+ bpl  outpix5
+outpix1
+ ldd  pixcnt
+ addd #1
+ std  pixcnt
+ bmi  outpix11
+ cmpd pixscrn
+ bgt  outpix11
+ lda  ,s
+ sta  ,x+
+outpix11
+ ldd  horscale
+ addd <gifiwidth
+ std  horscale
+ bmi  outpix1
+ stx  lineptr
+outpix5
+ ldx  pixleft  Count down number of GIF pixels on this line.
+ leax -1,x
+ stx  pixleft
+ bne  outpix9
+ tst  verscale
+ bmi  outpix7
+ lbsr dithline  Translate GIF pixels to CoCo colors
+ lbsr convline  Convert the pixels to bytes.
+ lbsr outline   If we're done, output the line.
+ lbsr clrline
+outpix7
+ lbsr setline
+ leax linebuff,y
+ stx  lineptr
+ ldx  <gifiwidth
+ stx  pixleft
+ ldx  #00
+ stx  horscale
+
+ ldd  #0
+ subd <Skipcols
+ std  pixcnt
+outpix9
+ puls a,b,x,pc
+
+dithline
+ pshs a,b,x,y,u
+ leau alt2buff,y  Color mapping table.
+ ldd  pixscrn    Number of pixels on this line.
+ lsra     Divide by 4, since main loop does 4 pixels at a time.
+ rorb
+ lsra
+ rorb
+ pshs b   Even for a 640-pixel line, this will be less than 256.
+ leay linebuff,y  Y points to line data.
+
+ lda  linenumb+1    What line (mod 4) are we on?
+ anda #3
+ leax dithtable,pcr
+ leax a,x
+ jsr  a,x
+ puls b
+ puls a,b,x,y,u,pc
+
+dithtable
+ bra  dithloop1  Different sub for each line (mod 4).
+ bra  dithloop2
+ bra  dithloop3
+ bra  dithloop4
+
+dithloop1
+ bsr  dofastdith
+ ldb  #$60
+ bsr  dodither
+ bsr  dofastdith
+ ldb  #$40
+ bsr  dodither
+ dec  3,s
+ bne  dithloop1
+ rts
+
+dithloop2
+ ldb  #$20
+ bsr  dodither
+ bsr  dofastdith
+ ldb  #$00
+ bsr  dodither
+ bsr  dofastdith
+ dec  3,s
+ bne  dithloop2
+ rts
+
+dithloop3
+ bsr  dofastdith
+ ldb  #$50
+ bsr  dodither
+ bsr  dofastdither
+ ldb  #$70
+ bsr  dodither
+ dec  3,s
+ bne  dithloop3
+ rts
+
+dithloop4
+ ldb  #$10
+ bsr  dodither
+ bsr  dofastdith
+ ldb  #$30
+ bsr  dodither
+ bsr  dofastdith
+ dec  3,s
+ bne  dithloop4
+ rts
+
+* Dither one pixel.  Get GIF color from ,y and convert it into primary
+* color iff B is above the threshold value.
+dodither
+ pshs b
+ ldb  ,y
+ clra
+ leax d,u
+ abx
+ abx
+ lda  ,x   Get primary color.
+ puls b
+ cmpb 2,x  Are we above the threshold?
+ bhs  dodither1
+ lda  1,x  If not, choose secondary color.
+dodither1
+ anda #$0f
+ sta  ,y+  Store the color.
+ rts
+
+* Since every other pixel is gauranteed to be a primary color, it seems
+* worthwhile to have a faster version of the dither sub for that case.
+dofastdith
+ ldb  ,y
+ clra
+ leax d,u
+ abx
+ lda  d,x  Get primary color.
+ anda #$0f
+ sta  ,y+  Store the color.
+ rts
+
+convline
+ pshs a,b,x,y,u
+ lda  <type
+ cmpa #8
+ bne  conv4no
+ bsr  conv4line    Type 8 screen has 4 bits/pixel
+ bra  conv10
+conv4no
+ cmpa #7
+ beq  conv2
+ cmpa #6
+ bne  conv2no
+conv2
+ bsr  conv2line type 7,6 are 2 bits/pix
+ bra  conv10
+conv2no
+ bsr  conv1line type 5 is 1 bit/pix
+conv10
+ puls a,b,x,y,u,pc
+
+conv4table fcb $00,$10,$20,$30,$40,$50,$60,$70,$80,$90,$a0,$b0,$c0,$d0,$e0,$f0
+conv4line
+ leax linebuff,y
+ tfr  x,u
+ leay conv4table,pcr
+ ldb  #160
+ pshs b
+conv4loop
+ lda  ,x+
+ ldb  ,x+
+ orb  a,y
+ stb  ,u+
+ dec  ,s
+ bne  conv4loop
+ puls b
+ rts
+
+conv2table fcb $00,$40,$80,$c0,$00,$10,$20,$30,$00,$04,$08,$0c
+conv2line
+ leax linebuff,y
+ tfr  x,u
+ leay conv2table,pcr
+ ldd  pixscrn
+ lsra
+ rorb
+ lsra
+ rorb
+ pshs b
+conv2loop
+ lda  ,x+
+ lda  a,y  Convert 1st pixel in byte.
+ ldb  ,x+
+ addb #4
+ ora  b,y
+ ldb  ,x+
+ addb #8
+ ora  b,y
+ ora  ,x+
+ sta  ,u+
+ dec  ,s
+ bne  conv2loop
+ puls b
+ rts
+
+conv1line
+ leax linebuff,y
+ tfr  x,u
+ ldy  #80
+conv1loop
+ ldb  #$80
+ pshs b
+ clra
+conv10loop
+ tst  ,x+
+ beq  conv11
+ ora  ,s 
+conv11
+ ror  ,s
+ bne  conv10loop
+ puls b
+ sta  ,u+
+ leay -1,y
+ bne  conv1loop
+ rts
+
+clrline
+ pshs a,b,x,y
+ leax linebuff,y
+ ldy  pixscrn
+ clra
+clrline1
+ sta  ,x+
+ leay -1,y
+ bne  clrline1
+ puls a,b,x,y,pc
+
+nextline
+ pshs d,x,u
+ ldx  lineinc
+ beq  nextline9
+ ldd  verscale
+nextline1
+ tsta           Actually, test sign of D
+ bmi  nextline2
+ subd <gifiheight  If it's positive, that's another screen line.
+ ldu  linenumb
+ leau 1,u
+ stu  linenumb
+ bra  nextline1
+nextline2
+ addd linemax
+ ldu  linecount   That's another gif line.
+ leau 1,u
+ stu  linecount
+ leax -1,x
+ bne  nextline1
+ std  verscale
+nextline9
+ puls d,x,u,pc
+
+setline
+ pshs a,b,x
+ bsr  nextline
+ ldd  linecount
+ cmpd <gifiheight
+ blo  setline5
+ andb #$7
+ beq  setline3
+ ldd  lineinc
+ lsrb
+ std  lineinc
+setline3
+ ldd  #0
+ std  linecount
+ std  linenumb
+ std  verscale
+ ldd  lineinc
+ lsrb
+ clra
+ std  lineinc  Start off by moving 1/2 of the increment
+ bsr  nextline
+ lslb
+ std  lineinc  Now, set the increment right.
+setline5
+ puls a,b,x,pc
+
+outline
+ pshs a,b,x
+ ldd  linenumb
+ subd <Skiplines
+ bmi  outline1
+ cmpd #192
+ bhs  outline1
+ lbsr putline   Put the line onto the screen
+outline1
+ puls a,b,x,pc
+
+ endsect

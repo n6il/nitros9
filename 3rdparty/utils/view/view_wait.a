@@ -1,0 +1,376 @@
+*
+* View_wait.a   -- End-of-picture pause... handles color cycling, screen
+*      flipping, and timeout.
+*
+* Global labels:
+*   keywait: Subroutine to handle end-of-picture pause.
+*   SetSig:  Sets trivial signal trap which stores signal in SigCode
+*
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+StdOut equ 1
+StdErr equ 2
+
+ psect View_wait_a,0,0,0,0,0
+
+*******************************************************
+*
+* Keywait- wait for keypress or mouse click
+*   Also, handle palette cycling.
+*
+*******************************************************
+ vsect dp
+cycleleft rmb 2
+extraleft rmb 2
+ endsect
+
+keywait:
+ pshs  a,b,x,y,u
+ clr   <abort
+
+ ldd   <cyclerate   Initialize cycle and extra count-down timers.
+ std   <cycleleft
+ ldd   <extrarate
+ std   <extraleft
+
+kwloop
+ lbsr  conscheck    Check for consistency, to make sure we don't waste time.
+ clr   <SigCode     Set up our signals.
+ lbsr  setmouse
+ lbsr  setkeysig
+
+kwchkey
+ lbsr  getkey       Is there a key waiting?
+ bcs   kwnokey
+ clr   <SigCode
+ lbsr  kwdokey      If so, handle it
+ bra   kwchkey      . and then check again.
+kwnokey
+
+ tst   <flipping    If flipping is on, do that.
+ beq   kwnoflip
+ lbsr  kwflip
+ bra   kwsig
+kwnoflip
+
+ tst   <cycle       If animation is on, do that.
+ beq   kwnocycle
+ lbsr  kwanimate
+ bra   kwsig
+kwnocycle
+
+ ldx   <MaxTime     If none of the above, just sleep for MaxTime
+ cmpx  #0
+ beq   kwsig
+ tst   <SigCode
+ bne   nosleep1
+ os9   F$Sleep
+nosleep1
+ stx   <MaxTime
+
+
+*
+* Handle a signal.
+kwsig
+ ldd   <MaxTime   If we timed out, end now.
+ beq   kwend
+ lda   <SigCode
+
+ cmpa  #KButton   Was it a keypress that woke us up?
+ bne   kwnokey1
+ clr   <SigCode   If so, clear sigcode,
+ lbsr  getkey     .  get the key
+ bsr   kwdokey    .  process it
+ bcc   kwloop     .  and keep going.
+ bra   kwend
+kwnokey1
+
+ cmpa  #MButton   Was it a mouse click?
+ bne   kwnomouse      None of the above, we just exit.
+ bsr   kwdomouse
+ lbcc  kwloop
+ bra   kwend
+kwnomouse
+
+kwend
+ puls  a,b,x,y,u,pc
+
+
+*
+* Process a mouse click.
+*
+kwdomouse
+ clr   <SigCode
+ orcc  #Carry    Set carry, since any mouse click should end.
+ rts
+
+*
+* process a key press.
+*  Expects: key in A.
+kwdokey
+ pshs  a,b,x
+ cmpa  #'Z        Convert key to lower case
+ bhi   kwlower
+ cmpa  #'A
+ blo   kwlower
+ suba  #'A-'a
+kwlower
+
+ cmpa  #$20       Was it a space?
+ bne   kwkey1
+ com   <cycle     Yes, turn cycling on/off
+ lbne  kwdonekey
+ lbsr  setpals    Restore original palettes, if we just turned cycling off.
+ lbra  kwdonekey
+kwkey1
+
+ cmpa  #',        Was it a "<"?
+ beq   kwkey21
+ cmpa  #'<
+ beq   kwkey21
+ cmpa  #'s        Was it an "S" (slower)
+ bne   kwkey2
+kwkey21
+ ldx   <cyclerate
+ leax  1,x         Increase the cycle delay
+ beq   kwkey22
+ stx   <cyclerate
+kwkey22
+ tst   <flipping
+ beq   kwkey23    If not flipping, don't do this...
+ ldd   <fliprate
+ addd  #1
+ cmpd  #6000
+ bhs   kwkey23
+ std   <fliprate
+kwkey23
+ lbra  kwdonekey
+kwkey2
+
+ cmpa  #'.
+ beq   kwkey31
+ cmpa  #'>
+ beq   kwkey31
+ cmpa  #'f        "F" (faster)
+ bne   kwkey3
+kwkey31
+ ldx   <cyclerate
+ leax  -1,x       Decrease the cycle delay
+ beq   kwkey32
+ stx   <cyclerate  Don't make it zero!
+kwkey32
+ tst   <flipping
+ beq   kwkey33    If not flipping, don't do this...
+ ldd   <fliprate
+ subd  #1
+ cmpd  #2
+ bls   kwkey33
+ std   <fliprate
+kwkey33
+ lbra  kwdonekey
+kwkey3
+
+ cmpa  #$B2      F2 key
+ beq   kwkey41
+ cmpa  #$0a      Down-arrow
+ bne   kwkey4
+kwkey41
+ lbsr  flipscreen
+ lbra  kwdonekey
+kwkey4
+
+ cmpa  #$0c     Up-arrow
+ bne   kwkey5
+ lbsr  flipback
+ lbra  kwdonekey
+kwkey5
+
+ cmpa  #$B1
+ bne   kwkey6
+ lda   <flipping
+ beq   kwkey61
+ lda   #$ff
+kwkey61
+ coma
+ sta   <flipping
+ lbra  kwdonekey
+kwkey6
+
+ lbsr  docycle   Any other key? Single step.
+ lbsr  dorotate
+ lbra  kwdonekey
+kwdonekey
+ andcc #^Carry   Clear carry flag, since no key forces an exit.
+ puls  a,b,x,pc
+
+*
+* Check cycle, extra, and flipping variables for consistency,
+*   since naive routines may end up with inconsistent or inefficient
+*   combinations of settings (for example, we might end up with
+*   flipping enabled, but only one screen allocated).
+*
+conscheck
+ pshs  a,b
+* Check "cycle" values for consistency.
+ lda   <cyclestart  Do a consistency check on the cycle values.
+ cmpa  <cycleend
+ blo   cons0
+ ldd   #$ffff       if cyclestart >= cycleend, then
+ std   <cyclerate   set cyclerate to $ffff.
+ bra   cons1
+cons0
+ ldd   <cyclerate   otherwise, make sure cyclerate is not 0
+ bne   cons1
+ ldd   #10          Just a random value.
+ std   <cyclerate
+cons1
+
+* Check "extra" palette values for consistency.
+ lda   <extranum    Do a consistency check on extra palette values.
+ bne   cons2
+ ldd   #$ffff       if extranum is zero,
+ std   <extrarate   set extrarate to $ffff.
+ bra   cons3
+cons2
+ ldd   <extrarate   otherwise, make sure extrarate is not 0
+ bne   cons3
+ ldd   #10          Just a random value.
+ std   <extrarate
+cons3
+
+* Check flipping vars for consistency
+ lda   <numscreens  Do a consistency check on flipping var.
+ cmpa  #2
+ bhs   cons4
+ clr   <flipping    If <2 screens, then ensure flipping is off.
+cons4
+
+* Check "cycle" variable for consistency.
+ lda   <cyclestart  A consistency check: If all animation effects
+ cmpa  <cycleend       are disabled, then turn off "cycle"
+ blo   cons5
+ lda   <extranum
+ bne   cons5
+ clr   <cycle    And turn off cycle flag.
+cons5
+
+ puls  a,b,pc
+
+*
+* Do screen flipping
+*    Return when MaxTime goes to zero, or when a signal is received.
+*
+kwflip
+ pshs a,b,x
+kwfliploop
+ ldd  <MaxTime  Count down one extra tick each time through
+ lbeq kwflipend
+ lbsr flipscreen   Do one flip
+ ldd  <fliprate    interval between flips
+ cmpd <MaxTime
+ lbls kwflip0      If MaxTime is shorter than this, use MaxTime instead.
+ ldd  <MaxTime
+kwflip0
+ tfr  d,x
+ pshs x
+ tst  <SigCode
+ bne  nosleep2
+ os9  F$Sleep
+nosleep2
+ pshs x
+ ldd  <MaxTime   Count down MaxTime
+ addd ,s++
+ subd ,s++
+ std  <MaxTime
+ tst  <SigCode   Did we end due to a signal?
+ beq  kwfliploop      No, keep flipping.
+kwflipend
+ puls a,b,x,pc
+
+*
+* Do animation
+*   Return when MaxTime goes to zero, or a signal is received.
+*
+kwanimate
+ pshs  a,b,x
+kwanimloop
+ ldd   <MaxTime
+ lbeq  kwanimend     If MaxTime is zero, quit now.
+
+ ldd   <cycleleft    Have we timed out for cycle?
+ bne   kwanim0
+ lbsr  docycle       Roll the palettes.
+ ldd   <cyclerate    Restore the countdown.
+ std   <cycleleft
+kwanim0
+
+ ldd   <extraleft    Have we timed out for extra?
+ bne   kwanim1
+ lbsr  dorotate      Rotate extra palettes.
+ ldd   <extrarate    Restore the countdown.
+ std   <extraleft    
+kwanim1
+
+ ldd   <cycleleft    Sleep for the appropriate delay
+ cmpd  <extraleft
+ blo   kwanim20      The appropriate delay is the least of
+ ldd   <extraleft    cycleleft, extraleft, and MaxTime.
+kwanim20
+ cmpd  <MaxTime
+ blo   kwanim2
+ ldd   <MaxTime
+kwanim2
+
+ tfr   d,x      Save original delay in D.
+ tst   <SigCode
+ bne   nosleep3
+ os9   F$Sleep  This returns the amount of time that we didn't sleep.
+nosleep3
+ pshs  x
+ subd  ,s     subtract time left
+ std   ,s     This gives total time slept
+ ldd   <MaxTime   Count down maximum time left
+ subd  ,s
+ std   <MaxTime
+ ldd   <cycleleft Count down cycle time left
+ subd  ,s
+ std   <cycleleft
+ ldd   <extraleft count down extra time left
+ subd  ,s++       Clean up the stack while we're at it.
+ std   <extraleft
+
+ tst   <SigCode    Were we woken up by a signal?
+ beq   kwanimloop   No, keep going.
+kwanimend
+ puls  a,b,x,pc
+
+*
+* Trivial signal handler... store signal value and exit
+*
+SigInter
+ stb   SigCode,u   Store the signal code.
+ tfr   u,y         Set up y as it should be.
+ tfr   u,d
+ tfr   a,dp        Set up DP too.
+ tst   <abort      Should we abort now?
+ lbne  _abort
+ rti
+
+SetSig:
+ pshs  x,y,u
+ leax  SigInter,pcr   Set the signal intercept
+ leau  ,y
+ os9   F$Icpt
+ lbcs  _error
+ puls  x,y,u,pc
+
+ endsect

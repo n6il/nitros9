@@ -1,0 +1,239 @@
+*
+* Parse options line for ``view'' utility.
+*
+* Global labels:
+*  Parse: Do command line parsing, set flags, open file
+*  Getnum: Interpret a number, for use by options subs in view_table.a
+*
+* The table of options is in the file view_table.a
+*   This file contains the actual parsing code.
+*
+*  An option without `-' is interpreted as a filename, and the corresponding
+*         file is opened for buffered input, via the routines in view_io.a
+*
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+StdIn  equ 0
+StdOut equ 1
+StdErr equ 2
+OPT.DTP equ 0  Offset to Device TyPe byte in Path Descriptor Options section
+
+ psect view_parse_a,0,0,0,0,0
+
+ vsect dp
+fnameptr  rmb 2      Pointer to filename
+ endsect
+
+ vsect
+Option rmb 20
+ endsect
+
+
+*
+* Entry point
+*
+Parse:
+ pshs a,b,x,y,u
+
+ ldd  #0000
+ std  <fnameptr
+
+Parse1
+ lbsr Skipblanks  Move past blanks, return first non-blank char.
+
+ cmpa #$0d      CR marks end of options.
+ beq  Openfile  Try to open the file
+
+ cmpa #'-       Does this word start with '-'?
+ beq  Parse2
+ stx  <fnameptr No, must be filename
+ lbsr Skipword
+ bra  Parse1 
+Parse2
+ leax 1,x       Bump past `-'
+
+ leau PTable,pcr Check table with format type options
+ lbsr DoOption   Try to perform this option.
+ beq  Parse3
+ lbsr Help
+ ldb  #1         Illegal argument error.
+ lbra _error     unrecognized option.
+
+Parse3
+ lda  ,x+       Skip any remaining chars in this option word
+ cmpa #$20
+ bgt  Parse3
+ beq  Parse4    Exit on Space
+ cmpa #$0d      Exit on CR
+ beq  Parse4
+ lbsr Help      Other control-- report error
+ ldb  #1
+ lbra _error
+Parse4
+ leax -1,x
+ bra  Parse1
+
+Openfile
+ ldx  <fnameptr
+ bne  Parse6    If ptr is null, then no name was given.
+
+ lda  #StdIn    Is StdIn from an SCF device?
+ ldb  #SS.Opt
+ leax altbuff,y
+ os9  I$GetStt  Get options section of StdIn path descriptor
+ lbcs _error
+ lda  OPT.DTP,x
+ bne  Parse7    Not SCF, so must be redirected picture coming in.
+
+ lbsr Help      If StdIn is SCF, then give help message and exit.
+ ldb  #1
+ lbra _error
+
+* "fnameptr" points to first char of filename, so search for period
+Parse6
+ lda  ,x+
+ cmpa #$20    If we find a space first, then there is no extension.
+ beq  Parse7
+ cmpa #$0d    ...or a CR.
+ beq  Parse7
+ cmpa #'.     If we find a period first, then we've found the extension.
+ bne  Parse6
+ leau PTable,pcr
+ lbsr DoOption  Treat extension as an option spec.
+ bra  Parse6
+
+* Set default format and open file for input
+Parse7
+ lbsr DefFormat  If no other file format specification, Set default format.
+
+ ldx  <fnameptr
+ lda  #READ. open file
+ lbsr I_Open
+ lbcs _error
+
+ puls a,b,x,y,u,pc
+
+*
+* Call subroutine indicated by option pointed to by X
+*
+* Returns B=1 if error, B=0 otherwise
+*
+DoOption
+ pshs a,u
+DoOpt1
+ tst  ,u         Is this the null string?
+ bne  DoOpt11    If yes, end of table.
+ ldb  #1         Illegal Argument error
+ bra  DoOpt3
+DoOpt11 
+ lbsr CompOptions Compare with this option.
+ beq  DoOpt2
+ leau 4,u        Skip format specifier, branch instruction.
+ bra  DoOpt1
+DoOpt2
+ lda  ,u        Get code to hand to option processor.
+ jsr  1,u       Jump to routine to handle this option.
+ clrb           Exit with no error.
+DoOpt3
+ tstb
+ puls a,u,pc
+
+*
+* Compare initial part of string at X to string at U.
+*         B=0 -> match
+* X is advanced to first character difft from string at U
+* U string is null-terminated, U advanced to point to byte after null.
+*
+CompOptions
+ pshs a,x   We'll overwrite X value if we get a match
+CompLoop
+ ldb  ,u+
+ bne  CompGo
+ stx  1,s     Return first different X
+ bra  CompEnd
+CompGo
+ lda  ,x+
+ cmpa #'A
+ blo  CompCase    Convert letter to lowercase
+ cmpa #'Z
+ bhi  CompCase
+ adda #'a-'A
+CompCase
+ pshs a
+ subb ,s+         Does this character match?
+ beq  CompLoop
+ leax -1,x
+Comp1
+ lda  ,u+         Match failed, advance U anyway
+ bne  Comp1
+CompEnd
+ tstb
+ puls a,x,pc
+
+*
+* Get decimal number at X into D, move X to first non-digit
+*
+Getnum:
+ ldd  #0
+ pshs d
+Getnum0
+ lda  ,x+    Skip leading spaces.
+ cmpa #$20
+ beq  Getnum0
+ leax -1,x
+Getnum1
+ lda  ,x+
+ cmpa #$0d
+ beq  Getnum2
+ cmpa #$20
+ bge Getnum10
+ lbsr Help
+ ldb  #1
+ lbra _error
+Getnum10
+ cmpa #'0
+ blo  Getnum2
+ cmpa #'9
+ bhi  Getnum2
+ suba #'0
+ pshs a
+ ldd  1,s
+ lslb
+ rola
+ pshs d
+ lslb
+ rola
+ lslb
+ rola
+ addd ,s++
+ addb ,s+
+ adca #0
+ std  ,s
+ bra  Getnum1
+Getnum2
+ leax -1,x
+ puls d
+ rts
+
+*
+* Move X to point to first non-blank char.  Return char in A.
+*
+Skipblanks
+ lda  ,x+
+ cmpa #$20
+ beq  Skipblanks
+ cmpa #$09
+ beq  Skipblanks
+ leax -1,x
+ rts
+
+Skipword
+ lda  ,x+
+ cmpa #$20
+ bgt  Skipword
+ leax -1,x
+ rts
+
+ endsect

@@ -1,0 +1,269 @@
+*
+* Setup for MaxCMP format
+*
+* Globals
+*   SetMAXCMP   -- Initialization. Reserves memory for decode buffer
+*   EndMAXCMP   -- return memory
+*   MAXCMPdecode -- decode entire file into buffer
+*   MAXCMPline   -- return next line: Y bytes to buffer at X
+*
+ ifp1
+ use  /dd/defs/os9defs.a
+ endc
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+ psect view_maxcmp_a,0,0,0,0,0
+
+ vsect dp
+buffer     rmb 2
+buffend    rmb 2
+increment  rmb 2
+ endsect
+
+*
+* MAXCMP initialization
+* Since MAXCMP requires a large (12k) decode buffer, we don't allocate
+* it statically, but instead request memory from the operating system at
+* run time.
+*
+SetMAXCMP:
+ pshs a,b,x,y
+ tst  <format  If format already set, just ignore this.
+ bne  SetMC1
+ sta  <format  Set format code.
+
+ ldd  #12*1024+1000  Reserve the memory (+1000 bytes for table overflow )
+ lbsr malloc
+ stx  <buffer
+ leax 12*1024,x
+ stx  <buffend
+SetMC1
+ puls a,b,x,y,pc
+
+*
+* Return memory reserved by SetMAXCMP.
+*
+EndMAXCMP:
+ lbsr unmalloc
+ rts
+
+* Return next line from MAXCMP decoded data.
+* Return Y bytes to buffer at X
+MAXCMPline:
+ pshs a,x,y,u
+
+ ldu  <buffer
+line1
+ lda  ,u   Move one byte
+ sta  ,x+
+ ldd  <increment  Bump to next byte
+ leau d,u
+ leay -1,y  Are we done yet?
+ bne  line1
+
+ ldu  <buffer   Bump start of buffer pointer by one
+ leau 1,u
+ stu  <buffer
+
+ andcc #^Carry
+ puls a,x,y,u,pc
+
+*
+* Do actual decoding of picture
+* After done, store header info at ,X
+*
+MAXCMPdecode:
+ pshs a,b,x,y,u
+ pshs x        Save pointer to header info
+
+ lbsr find_data   Find DATA 1 statement that marks the actual picture data
+
+ bsr  getbyte  First byte is the escape code
+ pshs a       Save the escape code
+ bcs  MCdec4
+ ldx  <buffer
+
+MCdec1
+ bsr  getbyte
+ bcs  MCdec4   If error, exit this loop
+ cmpa ,s
+ bne  MCdec2   If not escape, just store it.
+ bsr  getbyte
+ bcs  MCdec4   Exit on EOF error
+ tfr  a,b      B holds repeat count
+ bsr  getbyte  A holds value
+ bcs  MCdec4   exit on error
+MCdec11
+ sta  ,x+     Repeat value appropriate number of times
+ decb
+ bne  MCdec11
+ bra  MCdec3
+MCdec2
+ sta  ,x+     If not count/value code, just store it.
+MCdec3
+ cmpx <buffend  If we're still not at end of buffer,
+ blo  MCdec1   Keep going.
+MCdec4
+ puls a        Clean escape code from stack
+
+ tfr  x,d
+ subd <buffer  How many bytes did we end up with?
+
+ cmpd #7000   More than this -> 2-page picture
+ bhi  MCdec8
+ ldd  #6144   6k of data
+ ldx  #192    or 192 lines for 1 page pic
+ bra  MCdec9
+MCdec8
+ ldd  #12288  12k of data
+ ldx  #384    or 384 lines for 2 page pic
+MCdec9
+
+ stx  <increment
+
+ puls x       Get address to store header
+ clr  ,x
+ std  1,x     Store total length
+ ldd  #$e00
+ std  3,x     Store fake begin address
+ puls a,b,x,y,u,pc
+
+ vsect dp
+bytebuff rmb 1
+shiftval rmb 1
+ endsect
+
+* Return next byte of 4-for-3 encoded data
+*
+getbyte
+ pshs b,x
+ ldb  <shiftval
+ beq  getbyte1
+ bsr  getval
+ bcs  getbyterr
+ sta  <bytebuff
+getbyte1
+ incb
+ stb  <shiftval
+
+ bsr  getval
+ bcs  getbyterr
+ pshs b
+ tfr  a,b
+ lda  <bytebuff
+ stb  <bytebuff
+ lslb
+ lslb
+getbyte2
+ lslb
+ rola
+ lslb
+ rola
+ dec  ,s
+ bne  getbyte2
+ puls b
+
+ ldb  <shiftval
+ cmpb #3
+ blo  getbytend
+ clr  <shiftval
+ bra  getbytend
+
+getbyterr
+ stb  ,s   Store error code on stack to be popped into B
+ clra
+ orcc #Carry
+getbytend
+ lbsr regdmp
+ puls b,x,pc
+ 
+
+* Get next value from BASIC file
+*
+getval
+getval1
+ lbsr I_GetByte  Get next character from file
+ bcs  getvalerr
+ cmpa #$30
+ blo  getval2  If it's in range $30-$6F, return it
+ cmpa #$6f
+ bhi  getval2
+ suba #$30
+ bra  getval3
+
+getval2
+ lbsr I_GetByte  Otherwise, find beginning of next line
+ bcs  getvalerr
+ cmpa #$22       which is marked by a quote.
+ bne  getval2
+
+ bra  getval1    And return the next char after that.
+getvalerr
+ cmpb #E$EOF
+ lbne _error
+ clra
+ orcc #Carry
+getval3
+ rts
+
+ 
+*  Searches for "DATA 1" statement at the end of a line,
+*  then advances to following quote mark
+*
+DATAstring fcc "DATA"
+
+find_data
+ pshs a,b,x
+
+find_0
+ leax DATAstring,pcr
+ ldb  #4
+find_1
+ lbsr I_GetByte  First, we match "DATA" literal
+ bcs  find_err
+ cmpa ,x
+ bne  find_0
+ leax 1,x
+ decb
+ bne  find_1
+
+find_2
+ lbsr I_GetByte  Skip any spaces
+ bcs  find_err
+ cmpa #$20
+ beq  find_2
+
+ cmpa #'1      Must match "1"
+ bne  find_0
+
+find_3
+ lbsr I_GetByte  Skip any spaces
+ bcs  find_err
+ cmpa #$20
+ beq  find_3
+
+ cmpa #$0d     Must match CR
+ bne  find_0
+
+find_4
+ lbsr I_GetByte
+ bcs  find_err
+ cmpa #$22      Find quote mark
+ bne  find_4
+
+ bra  find_end  Matched it!
+
+find_err
+ lbra E$Format
+
+find_end
+ puls a,b,x,pc
+
+ endsect
+

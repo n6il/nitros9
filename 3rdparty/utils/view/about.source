@@ -1,0 +1,36 @@
+Brief description of the source files for VIEW.
+
+about.source   --- This text file
+debug.a        --- Contains debugging routines, esp. "regdmp", "hexout"
+makefile       --- for use with a "decent"  (i.e. non-Tandy) make.
+view.a         --- Main program loop.
+view_arith.a   --- Arithmetic routines
+view_clp.a     --- Support for "CLP", "PUB" formats
+view_cm3.a     --- Support for "CM3" format
+view_convert.a --- Routines to convert between screen formats
+view_gfx.a     --- Graphics Utility routines
+view_gfx2.a    --- more Graphics utility routines
+view_gif.a     --- Basic "GIF" support, LZW decoder
+view_gifcol.a  --- "GIF" color map generation
+view_gifpix.a  --- "GIF" per-pixel screen output, scaling
+view_gifset.a  --- Setup for GIF support... reserves mem for tables, etc.
+view_global.a  --- Global variables for View
+view_help.a    --- Text of help messages.
+view_img.a     --- "IMG" support.
+view_io.a      --- Buffered disk Input, terminal output.
+view_mac.a     --- "MAC" support.
+view_max.a     --- Pmode, BIN, ART, MAX support
+view_mge.a     --- MGE support
+view_pals.a    --- Palette manipulation, conversion
+view_parse.a   --- General-purpose command-line parser
+view_pix.a     --- PIX support
+view_pix2.a    --- Graphics routines for PIX
+view_rat.a     --- RAT support
+view_rle.a     --- RLE support
+view_save.a    --- Save handling
+view_savecomp.a --- Save compression subroutines
+view_setsave.a  --- Handle save command-line options, open file, etc.
+view_st.a      --- ST, STP support
+view_table.a   --- Table of command-line options.
+view_vef.a     --- VEF, VF2, etc. support
+view_wait.a    --- End-of-pic support for animation, etc., signal handler

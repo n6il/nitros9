@@ -1,0 +1,251 @@
+********************************************************************************
+*
+* SUBS for MGE picture formats
+*
+* MGEshowpic -- displays picture on screen
+*
+********************************************************************************
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+StdOut equ 1
+StdErr equ 2
+
+ psect view_mge_a,0,0,0,0,0
+
+ vsect
+picname rmb 30
+ endsect
+
+MGEshowpic:
+ bsr  header
+ lbsr setscreen
+ lbsr setpals
+ lbsr setbuffer
+ lbsr showname
+
+ ldd  <Skiplines
+ beq  skip01
+skip00
+ lbsr getline
+ subd #1
+ bne  skip00
+skip01
+
+ ldd  #00
+showpicouter
+ ldx  #25
+showpicloop
+ lbsr getline
+ tst  <Size
+ bne  showpic2
+ leax -1,x
+ beq  showpicouter
+showpic2
+
+ lbsr putline
+ addd #1
+ cmpd #192
+ bne  showpicloop
+ rts
+
+*
+* read header info from file, and set window type information
+*    Uses altbuff to read header info into.
+*
+ vsect dp
+compressed rmb 1     0=Compressed format in use
+count      rmb 1     Count/value is used for compressed format
+value      rmb 1
+endoffile  fcb 0     T= EOF reached, so always return linebuff all 0
+ endsect
+
+header
+ pshs a,b,x,y,u
+ leax altbuff,y read in type and palettes
+ pshs y
+ ldy  #51
+ lbsr I_Read
+ lbcs _error
+ puls y
+ leax altbuff,y
+ lda  ,x+      This byte must be zero.
+ lbne E$Format
+ leau palette,y
+ ldb  #16
+headloop
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  headloop
+
+ lda  ,x+
+ beq  headrgb
+ lbsr cmpconv
+headrgb
+
+ lda  <type
+ bne  headtype
+ lda  #8      Std MGE defaults to type 8
+ sta  <type
+ ldb  <format
+ cmpb #MGE640Format  640 defaults to type 7
+ bne  headtype
+ lda  #7
+ sta  <type
+headtype
+
+ lda  ,x+
+ sta  compressed
+ clr  count
+
+ ldb  #30
+ leau picname,y
+headname
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  headname
+
+* Set rotation speed
+ ldb  ,x+
+ clra
+ std  <cyclerate
+
+* Set limits for palette rotation
+ lda  ,x+
+ tfr  a,b
+ lsra
+ lsra
+ lsra
+ lsra
+ sta  <cyclestart
+ andb #$0f
+ stb  <cycleend
+
+* Set default Skiplines.
+ ldd  <Skiplines
+ cmpd #$ffff
+ bne  headskip
+ ldd  #0
+ std  <Skiplines
+headskip
+
+* Set default Size
+ lda  <Size
+ bpl  headsize  Default to Small size
+ lda  #0
+ sta  <Size
+headsize
+
+ puls a,b,x,y,u,pc
+
+*
+* Getpair
+*
+getpair
+ pshs x,y
+ leax count,y
+ ldy  #2
+ lbsr I_Read
+ lbcc getpair1  No error, don't worry.
+ cmpb #E$EOF    Was it EOF?
+ beq  getpair2
+ lbra _error    No, error.
+getpair2
+ ldd  #0        Yes, translate into compressed MGE 0,0 EOF marker
+ std  count
+getpair1
+ puls x,y
+ ldd  count
+ rts
+
+*
+* Getline
+*
+getline
+ pshs a,b,x,y,u
+ leau linebuff,y
+ ldb  #160
+getl1
+ clr  ,u+
+ decb
+ bne  getl1
+
+ tst  endoffile    Are we at end-of-file?
+ bne  getline1
+
+ tst  compressed   Is it compressed mode?
+ bne  getnormal    0 -> compressed.
+* Get a line from compressed file
+ leau linebuff,y   Where we'll put the line.
+ ldx  #160         Number of bytes in one line.
+ ldd  count        Get count/value
+getl2
+ tsta              Count non-zero?
+ bne  getl3
+ lbsr getpair      Yes, get another count/value pair.
+ cmpa #0           Zero count -> EOF
+ bne  getl3
+ com  endoffile    Set end-of-file flag
+ bra  getline1
+getl3
+ stb  ,u+          Store a copy of current value
+ deca              Count down number of reps
+ leax -1,x         Count down size of line
+ bne  getl2        If not end of line, continue
+ std  count        Otherwise, store remaining count.
+ bra  getline1
+* Get a line from uncompressed file
+getnormal
+ leax linebuff,y   read in one line of screen
+ ldy  #160         Warning!  Y munged.
+ lbsr I_Read
+ lbcc getline1
+ cmpb #E$EOF      We have a special message for premature EOF
+ bne  getnor1
+ com  endoffile   Flag end-of-file condition
+ bra  getline1    Keep on going.
+getnor1
+ lbra _error      If not EOF, just exit with error.
+getline1
+ puls a,b,x,y,u,pc
+
+CurPos fcb $1b,$32,$0f,$02,$25,$37 Set foreground to pal#15, position cursor
+showname
+ pshs a,b,x,y,u
+ leau picname,y
+
+ tfr  u,x
+ clr  29,x  Just to make sure we do hit a null...
+ ldy  #0
+shownloop
+ leay 1,y
+ ldb  ,x+
+ cmpb #$20
+ bge  shownloop
+
+ pshs y
+
+ leax CurPos,pcr   Position the cursor to the bottom of the screen.
+ tfr  y,d
+ subb #40
+ negb
+ lsrb
+ addb #$20
+ stb  4,x
+ ldy  #6
+ lda  <outpath
+ os9  I$Write
+ lbcs _error
+
+ puls y
+ tfr  u,x
+ lda  <outpath
+ os9  I$Write
+ lbcs _error
+ puls a,b,x,y,u,pc
+
+ endsect

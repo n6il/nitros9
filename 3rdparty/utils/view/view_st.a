@@ -1,0 +1,318 @@
+*****************************************************************************
+*                                                                           *
+* SUBS for st  picture format                                               *
+*                                                                           *
+* STshowpic -- Displays picture, using putline routine                      *
+*                                                                           *
+*****************************************************************************
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+ psect  view_st_a,0,0,0,0,0 
+
+ vsect dp
+linesize rmb 2   Bytes per line.
+totlines rmb 2   total lines in picture.
+curline  rmb 2   Number of current screen line.
+fitcount rmb 2   Used to decide what lines to skip.
+linesleft rmb 2  Lines left in picture.
+ endsect
+
+STshowpic:
+ bsr  header       Get header info
+
+ ldd  <Skiplines
+ beq  skip01
+skip00
+ lbsr getline
+ subd #1
+ bne  skip00
+skip01
+
+spscreens
+ lbsr getline
+
+ tst  <endoffile
+ bne  showpicend
+ lbsr setscreen    Set up screen
+ lbsr setpals      Set up palettes
+ lbsr setbuffer    Set up Get/Put Buffer
+
+ ldd  #00
+ std  curline
+showpicloop
+ lbsr putline
+ ldd  fitcount
+ addd totlines
+spget
+ std  fitcount
+ lbsr getline
+ tst  <Size
+ bne  spnofit
+ ldd  fitcount
+ subd #192
+ bge  spget
+ std  fitcount
+spnofit
+ ldd  curline
+ addd #1
+ std  curline
+ cmpd #192
+ bne  showpicloop
+ ldd  linesleft
+ cmpd #16
+ bhi  spscreens
+showpicend
+ rts
+
+*
+* read header info from file, and set window type information
+*
+ vsect dp
+endoffile   rmb 1
+ endsect
+
+header
+ pshs a,b,x,y,u
+ leax altbuff,y read in type and palettes into altbuff
+ pshs y
+ ldy  #34
+ lbsr I_Read
+ lbcs _error
+ puls y
+ leax altbuff,y
+ lda  ,x+
+ 
+ lda  ,x+      This byte is the screen type.
+
+ bne  head0
+ lda  #8
+ sta  <type
+ ldd  #200
+ std  totlines
+ std  linesleft
+ ldd  #160
+ std  linesize
+ bra  headpals
+head0
+
+ cmpa #1
+ bne  head1
+ lda  #7
+ sta  <type
+ ldd  #200
+ std  totlines
+ std  linesleft
+ ldd  #160
+ std  linesize
+ bra  headpals
+head1
+
+ cmpa #2
+ bne  head2
+ lda  #5       640  2-color screen.
+ sta  <type
+ ldd  #400
+ std  totlines
+ std  linesleft
+ ldd  #80
+ std  linesize
+ bra  headpals
+head2
+
+headpals
+ leau palette,y   Need to expand palettes out to 3 bytes/palette
+ ldb  #16          16 palettes to expand out.
+headexp
+ lda  ,x+
+ anda #$0f  Red is in lower nybble of first byte.
+ sta  ,u+
+ lda  ,x    Second byte is: upper nybble green, lower nybble blue.
+ lsra
+ lsra
+ lsra
+ lsra
+ sta  ,u+
+ lda  ,x+
+ anda #$0f
+ sta  ,u+
+ decb
+ bne  headexp
+
+ lbsr palscale    First, scale so largest is 255
+ lbsr palconv     Convert palette values from ST to CoCo format 
+
+* Set some miscellaneous variables
+ lda  <cyclestart   No cycling
+ sta  <cycleend
+ clr  <extranum  No color rotation
+
+ ldd  <Skiplines
+ cmpd #$ffff        Is Skiplines still default?
+ bne  headskip      No, don't change it.
+ ldd  #0
+ std  <Skiplines   Set it to 0
+headskip
+
+ lda  <Size
+ bpl  headsize  Default size is BIG
+ lda  #1
+ sta  <Size
+headsize
+
+ puls a,b,x,y,u,pc
+
+*
+* Getline
+*
+getline
+ pshs a,b,x,y,u
+* First, fill buffers with all zeros
+ leau linebuff,y
+ leax altbuff,y
+ ldb  #160
+getline3
+ clr  ,u+
+ clr  ,x+
+ decb
+ bne  getline3
+* If at end of file, leave it that way
+ tst  endoffile
+ beq  getline5
+ ldd  #0
+ std  linesleft  First, set number of lines remaining to zero.
+ lbra getline1
+getline5
+* Count down lines left
+ ldd  linesleft
+ bne  getline6
+ com  endoffile  If no lines left, force end of file condition.
+ lbra getline1
+getline6
+ subd #1
+ std  linesleft
+* Get a line from the file
+ leax altbuff,y     read in one line of screen
+ pshs y
+ ldy  <linesize       Warning:  Mung Y!
+ lbsr I_Read
+ puls y
+ lbcs geteof       Error through EOF check.
+* Now, we have to interleave the bits to get CoCo screen format.
+ leax altbuff,y
+ leau linebuff,y
+ ldy  <linesize  Total number of bytes to convert.
+ lda  <type
+
+ cmpa #5
+ bne  conv5
+cnv5loop
+ lda  ,x+    This type screen, just copy the data.
+ sta  ,u+
+ leay -1,y
+ bne  cnv5loop
+ lbra getline1
+conv5
+
+ cmpa #7    Type 7 screen requires 2-way interleaving.
+ bne  conv7
+cnv7loop
+ lbsr twolev
+ leax 1,x
+ lbsr twolev
+ leax 3,x
+ leay -4,y
+ bne  cnv7loop
+ lbra getline1  Now we're done.
+conv7
+
+ cmpa #8      Type 8 screen requires 4-way interleaving.
+ bne  conv8 
+cnv8loop
+ lbsr fourlev   Convert 4 bytes out of 8 --  X-X-X-X-
+ leax 1,x       Offset to next 4
+ lbsr fourlev   Convert 4 bytes out of 8 --  -X-X-X-X
+ leax 7,x       Now, skip to next 8.
+ leay -8,y      Count down number of bytes.
+ bne  cnv8loop
+ bra  getline1       Now exit.
+conv8
+ bra  getline1       Now exit.
+
+geteof
+ cmpb #E$EOF
+ bne  getline4
+ com  endoffile
+ bra  getline1
+getline4
+ lbra _error      If not EOF, just exit with error.
+getline1
+ puls a,b,x,y,u,pc
+
+* converts bytes 0,x 2,x 4,x and 6,x into 4 CoCo-format bytes
+* at [u].  U is advanced by 4, other regs unchanged.
+
+fourtab
+ fdb $0000,$0001,$0010,$0011,$0100,$0101,$0110,$0111
+ fdb $1000,$1001,$1010,$1011,$1100,$1101,$1110,$1111
+
+fourlev
+ pshs a,b,x,y
+ leay fourtab,pcr
+ ldb  #4
+ pshs b   4 bytes to worry about.
+ bra  fourlev1
+fourlev0
+ lsl  3,u
+ rol  2,u
+ rol  1,u
+ rol  ,u
+fourlev1
+ lda  ,x         Get high nybble of byte.
+ lsra
+ lsra
+ lsra
+ anda #$1e
+ ldd  a,y        Expand it out.
+ ora  ,u         Or it into stuff so far.
+ orb  1,u
+ std  ,u
+ lda  ,x++       Get low nybble, and advance to next byte.
+ anda #$0f
+ lsla
+ ldd  a,y        Expand it out.
+ ora  2,u        Or into stuff so far.
+ orb  3,u
+ std  2,u
+ dec  ,s         Have we done all four bytes?
+ bne  fourlev0
+ puls b          Clean up stack.
+ leau 4,u
+ puls a,b,x,y,pc
+
+twolev
+ bsr  twolev1
+twolev1
+ pshs a,b
+ ldb  #4
+twoloop
+ lsl  ,x
+ rola
+ lsl  2,x
+ rola
+ decb
+ bne  twoloop
+ sta  ,u+
+ puls a,b,pc
+
+
+ endsect

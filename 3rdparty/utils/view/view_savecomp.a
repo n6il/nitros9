@@ -1,0 +1,298 @@
+*
+* Save compression routines.
+* VEFSquash: Squashes data for VEF format.
+* CM3Compress: Compresses altbuff using CM3 compression
+* MGEsame: copy linebuff to altbuff
+*
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+check macro
+      pshs b,cc
+      ldb  #\1
+      os9  F$PErr
+      puls b,cc
+      endm
+
+ psect view_savecomp_a,0,0,0,0,0
+
+*
+* Compress one line with CM3 compression.
+* Expects: line data in altbuff
+* Returns: compressed line in altbuff, preceded by 2-byte size
+* Uses: alt2buff to store last line of data
+Stash equ 160    Stash new line at end of old line
+CM3compress:
+ pshs a,b
+ bsr  CM3stash   Stash line at alt2buff+Stash
+ lbsr CM3docomp  Try to compress it
+ ldd  altbuff,y  Get the result size
+ cmpd #160
+ bls  CM3comp0   If its small, use compressed line
+ bsr  CM3nocomp  Else don't compress it
+CM3comp0
+ bsr  CM3save    Save old line
+ puls a,b,pc
+
+* Copy from altbuff to stash area
+CM3stash
+ pshs a,b,x,u
+ leax altbuff,y
+ leau alt2buff+Stash,y
+ ldb  #160
+CM3st1
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  CM3st1
+ puls a,b,x,u,pc
+
+* Copy from stash area to save area
+CM3save
+ pshs a,b,x,u
+ leax alt2buff+Stash,y
+ leau alt2buff,y
+ ldb  #160
+CM3save1
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  CM3save1
+ puls a,b,x,u,pc
+
+* No compression: from stash area to altbuff
+CM3nocomp
+ pshs a,b,x,y,u
+ leax altbuff,y  First try, no compression at all.
+ ldd  #161
+ std  ,x++
+ ldb  #160
+ stb  ,x+
+ leau alt2buff+Stash,y  Get data from stash area.
+CM3noc1
+ lda  ,u+
+ sta  ,x+
+ decb
+ bne  CM3noc1
+ puls a,b,x,y,u,pc
+
+ vsect dp
+ImagePtr rmb 2
+ImageBit rmb 1
+ActionPtr rmb 2
+ActionBit rmb 1
+ endsect
+
+SetAction
+ pshs a,x
+ lda ActionBit
+ ldx ActionPtr
+ ora ,x
+ sta ,x
+ puls a,x
+ClrAction
+ pshs a,x
+ lda  ActionBit
+ lsra
+ bcc  ClrAct1
+ ldx  ActionPtr
+ leax 1,x
+ stx  ActionPtr
+ inc  altbuff+2,y  Increment count of Action bytes.
+ rora
+ClrAct1
+ sta  ActionBit
+ puls a,x,pc
+
+SetImage
+ pshs a,x
+ lda ImageBit
+ ldx ImagePtr
+ ora ,x
+ sta ,x
+ puls a,x
+ClrImage
+ pshs a,x
+ lda  ImageBit
+ lsra
+ bcc  ClrIm1
+ ldx  ImagePtr
+ leax 1,x
+ stx  ImagePtr
+ rora
+ClrIm1
+ sta  ImageBit
+ puls a,x,pc
+
+* Try doing CM3 compression
+CM3docomp
+ pshs a,b,x,y,u
+
+ leax altbuff,y  Clear out receiving area.
+ clrb
+CM3do1
+ clr  ,x+
+ decb
+ bne  CM3do1
+
+ leax altbuff+2+1,y  Set up Image and Action stuff
+ stx  ImagePtr
+ leax altbuff+2+1+20,y
+ stx  ActionPtr
+ lda  #$80
+ sta  ImageBit  Start with MSBit
+ sta  ActionBit
+ lda  #1
+ sta  altbuff+2,y  Set # Action bytes to 1
+
+ leax alt2buff+Stash,y  Point to line data
+ leau altbuff+2+1+20+20,y  Point to space for extra bytes.
+ ldb  #160  Number of bytes.
+CM3do3
+ lda  ,x+   Get next byte
+ cmpa -2,x  Same as previous?
+ bne  CM3do4
+ bsr  ClrImage  Yes, mark it.
+ bra  CM3do6
+CM3do4
+ bsr  SetImage
+ cmpa -(Stash+1),x  Same as above?
+ bne  CM3do5
+ bsr  ClrAction  Mark as such
+ bra  CM3do6
+CM3do5
+ lbsr SetAction
+ sta  ,u+       Store byte value
+CM3do6
+ decb
+ bne  CM3do3
+
+ ldb  altbuff+2,y  Minimize this value.
+ lda  ActionBit
+ cmpa #$80     If this is true, then last action byte hasn't been used.
+ bne  CM3do7
+ decb          so we can decrement it.
+ beq  CM3do7   ... but not to zero.
+ stb  altbuff+2,y
+CM3do7
+
+ leax altbuff+2+1+20+20,y Point to start of extra bytes
+ ldb  altbuff+2,y  Get # of action bytes
+ subb #20   Number of unused action bytes
+ bne  CM3do8  If none are unused, just leave extra bytes in place.
+ tfr  u,x     Set X to end.
+ bra  CM3do11
+CM3do8
+
+ pshs u    Save end of extra bytes
+CM3do9
+ cmpx ,s
+ beq  CM3do10
+ lda  ,x
+ sta  b,x
+ leax 1,x  Move extra bytes down
+ bra  CM3do9
+CM3do10
+
+ puls u
+ leax b,x  Point to new end of extra bytes.
+CM3do11
+
+ tfr  x,d
+ leax altbuff+2,y
+ pshs x
+ subd ,s  D holds size of compressed data
+ puls x
+ std  altbuff,y store size. 
+ puls a,b,x,y,u,pc
+
+*
+* Squash one packet worth of data
+* Expects: Number of bytes to squash in D.
+*          Bytes to squash pointed to by X.
+* Returns: Squashed packet in altbuff
+VEFSquash:
+ pshs a,b,x,y,u
+ leau altbuff+1,y Data goes here
+ tfr  d,y         Size of data to compress
+ clrb             This will count up size of compressed packet
+Sq1
+ lda  ,x
+ cmpa 1,x
+ bne  Sq2
+ cmpa 2,x   If three bytes are the same, then do compression.
+ bne  Sq2
+ bsr  sqcomprs  Get a compressed subpacket.
+ bra  Sq3
+Sq2
+ bsr  sqstraight
+Sq3
+ sty  -2,s  Same as tsty
+ bne  Sq1
+ ldy  4,s    Restore Y
+ stb  altbuff,y    Store packet size.
+ puls a,b,x,y,u,pc
+
+* Encode a sequence of straight data
+*
+sqstraight
+ pshs u      Save address of subpacket size.
+ clr  ,u+    Set zero count.
+ lda  ,x+
+sqstr1
+ sta  ,u+
+ incb        Increment total bytes
+ inc  [,s]   Increment subpacket size
+ leay -1,y   Count down bytes to compress
+ beq  sqstr2
+ lda  ,x+
+ cmpa ,x    Three like bytes mean we stop here.
+ bne  sqstr1
+ cmpa 1,x
+ bne  sqstr1
+ leax -1,x
+sqstr2
+ incb       Include subpacket size in total count.
+ leas 2,s   Clean up stack.
+ rts
+
+* Encode a sequence of compressed data
+* B is increased by 2, X points to byte after repeated data,
+* U is increased by 2, Y is decreased by number of bytes compressed.
+sqcomprs
+ lda  ,x+   Store the byte as the second byte.
+ sta  1,u
+ clr  ,u   Clear our count
+sqcomprs1
+ inc  ,u
+ leay -1,y
+ beq  sqcomprs2 Abort the loop if Y goes to zero.
+ cmpa ,x+
+ beq  sqcomprs1
+ leax -1,x     Backup to point to different byte
+sqcomprs2
+ lda  ,u
+ ora  #$80  Set high bit for compressed subpacket
+ sta  ,u
+ leau 2,u Move past this subpacket
+ addb #2  and bump total packet size.
+ rts
+
+*
+* MGEsame -- copy linebuff to altbuff
+*
+MGEsame:
+ pshs a,b,x,u
+ leax linebuff,y
+ leau altbuff,y
+ ldb  #160
+MGEsameloop
+ lda  ,x+
+ sta  ,u+
+ decb
+ bne  MGEsameloop
+ puls a,b,x,u,pc
+
+ endsect

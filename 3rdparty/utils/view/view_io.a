@@ -1,0 +1,232 @@
+*************************************************************************
+*
+* Buffered input routines
+*
+* I_Open    - Opens file.  X -> filename, A has permissions
+* I_Read    - Read Y bytes from file into [X]
+* I_GetByte - Returns one byte from file in A.
+* I_Close   - Closes file.
+* I_Size    - returns file size, truncated to $FFFF
+*
+* Terminal output routines
+*
+* O_Write   - Uses I$WritLn to output null-terminated string.
+*
+* Note: as with OS9 I$ system calls, all calls return Carry clear if
+*   no error.  If there is an error, Carry is set, and the error code is in B
+*
+* Global var:
+*    FilePos:  2-byte total number of bytes returned by I_Read or I_GetByte
+*
+*************************************************************************
+
+ ifp1
+ use /dd/defs/os9defs.a
+ endc
+
+StdIn  equ 0
+StdOut equ 1
+StdErr equ 2
+
+ psect View_IO_a,0,0,0,0,0
+
+
+ vsect dp
+FilePos:  rmb 2   Current File position
+Buffsize  rmb 2   Size of buffer area
+Buffer    rmb 2   Start of buffer
+Buffstart rmb 2   Start of data in buffer
+Buffend   rmb 2   End of data in buffer
+Path      rmb 1   Path number of file
+errorno   rmb 1   Last error number.
+ endsect
+
+*
+* Open file, initialize buffering
+*
+I_Open:
+ pshs x,a,b
+ clr  errorno
+ ldd  <MemSiz     Use as much memory as is free.
+ cmpd <MaxBuff    But in no case use more than MaxBuff space.
+ blo  IO1
+ ldd  <MaxBuff
+IO1
+ std  Buffsize
+ ldx  <MemTop    Buffer starts at MemTop
+ stx  Buffer
+ stx  Buffend
+ stx  Buffstart
+ leax d,x
+ stx  <MemTop    Move MemTop up
+ pshs d
+ ldd  <MemSiz    Decrease MemSiz accordingly
+ subd ,s++
+ std  <MemSiz
+ puls x,a,b
+ cmpx #0000
+ bne  IO2
+ lda  #StdIn
+ bra  IO3
+IO2
+ os9  I$Open
+ bcs  IOexit
+IO3
+ sta  Path
+IOexit
+ rts
+
+*
+* Return Y bytes from input file, to [X]
+*
+I_Read:
+ cmpy #0
+ beq  _I_R_quit
+ tst  errorno   If there's an error from the last operation,
+ beq  _I_Read     return that as an error code.
+ ldb  errorno
+ orcc #Carry    Set carry.
+_I_R_quit
+ rts
+
+_I_Read
+ pshs a,b,x,u
+ pshs x        Extra copy of initial pointer, for final calculation
+IR_Again
+ ldu  Buffstart  Get start of data
+IR_Loop
+ cmpu Buffend   Is this the end?
+ bne  IR_go
+ bsr  fillBuff  Yes, fill buffer from file
+ bcc  IR_Again
+ stb  errorno   store error if any
+ andcc #^Carry  clear carry
+ bra  IR_exit   return
+IR_go
+ lda  ,u+       move one byte
+ sta  ,x+
+ leay -1,y      Does this fill the request?
+ bne  IR_Loop   No, keep going.
+ andcc #^Carry
+IR_exit
+ pshs cc        Save condition codes, especially Carry
+ stu  Buffstart Save new start of buffer
+ tfr  x,d       Calculate number of bytes copied.
+ subd 1,s
+ tfr  d,y       Y has number of bytes copied
+ addd FilePos   Update FilePos counter.
+ std  FilePos
+ puls cc        Restore CC
+ puls d         Clean up stack.
+ puls a,b,x,u,pc
+
+
+*
+* Return a single byte from input file, return in A
+*
+I_GetByte:
+ tst  errorno   If there's an error from the last operation,
+ beq  _I_GetByte     return that as an error code.
+ ldb  errorno
+ orcc #Carry    Set carry.
+ rts
+_I_GetByte
+ pshs x,b
+ ldx  Buffstart  Get start of data
+ cmpx Buffend   Is this the end?
+ bne  IG_go
+ bsr  fillBuff  Yes, fill buffer from file
+ bcc  IG_go
+ stb  errorno   store error if any
+ andcc #^Carry  clear carry
+ bra  IG_exit   return
+IG_go
+ ldx  Buffstart
+ lda  ,x+       move one byte
+ stx  Buffstart
+ ldx  FilePos
+ leax 1,x
+ stx  FilePos
+ andcc #^Carry
+IG_exit
+ puls b,x,pc
+
+fillBuff
+ pshs a,x,y
+ lda  Path
+ ldy  Buffsize  Maximum number of characters we can buffer
+ ldx  Buffer    Location of buffer
+ stx  Buffstart First char in buffer
+ os9  I$Read
+ bcs  fillexit
+ pshs b
+ tfr  y,d
+ leax d,x
+ stx  Buffend  Set end of buffer
+ puls b
+ andcc #^Carry
+fillexit
+ puls a,x,y,pc
+
+*
+* Close input file
+*
+I_Close:
+  pshs a
+  lda  Path
+  os9  I$Close
+  puls a,pc
+
+*
+* Return size of file in D  (truncated to $ffff)
+*
+I_Size:
+  pshs x,u
+  lda  Path
+  ldb  #SS.Size
+  os9  I$GetStt
+  bcs  ISexit
+  tfr  u,d
+  cmpx #0000    Is top 16 bits = 0000 ??
+  beq  ISexit
+  ldd  #$ffff   No, return file size = $ffff
+ISexit  
+  puls x,u,pc
+
+*
+* Input: X points to null-terminated string, possibly containing embedded
+*    CR characters.
+* String is output to StdOut, with full line editing a la I$WritLn
+*
+O_Write:
+  pshs a,x,y
+  pshs x
+  ldy  #0
+  lda  ,x+
+  beq  OWexit
+OWloop
+  leay 1,y
+  lda  ,x+
+  bne  OWloop
+  ldx  ,s
+
+OWloop1
+  sty  ,s
+  lda  #StdOut
+  os9  I$WritLn
+  bcs  OWexit    
+  pshs y
+  ldd  ,s
+  leax d,x
+  ldd  2,s
+  subd ,s++
+  tfr  d,y
+  bne  OWloop1
+
+OWokay
+  andcc #^Carry
+OWexit
+  puls x
+  puls a,x,y,pc
+
+  endsect
