@@ -2,12 +2,26 @@ include ../../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
+DISK		= rof.dsk
 CMDS		= rescue
-
+SUPPORTFILES	= body heads larms legs lips panel1 rofvar rship.c rtitle.c \
+		scores
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
+	$(CHMOD) 755 $(CMDS)
 
-clean:
+clean:	dskclean
 	$(RM) $(ALLOBJS)
 
+dsk:	all
+	$(RM) $(DISK)
+	$(OS9FORMAT) $(DISK)
+	$(OS9GEN) $(DISK) $(LEVEL2)/BOOTFILES/bootfile_1773 $(LEVEL2)/BOOTFILES/kernel_1773
+	$(MAKDIR) $(DISK):CMDS
+	$(CP) $(CMDS) $(DISK):CMDS
+	$(OS9RENAME) $(DISK):CMDS/rescue AutoEx
+	$(CP) $(SUPPORTFILES) $(DISK):.
+
+dskclean:
+	$(RM) $(DISK)
