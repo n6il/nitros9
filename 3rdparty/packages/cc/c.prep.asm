@@ -2113,7 +2113,7 @@ L1331    fcc   "illegal macro name"
          fcb   $00
 L1344    fcc   "macro definition error"
          fcb   $00
-L135B    fcc   "/H0"
+L135B    fcc   "/dd"
          fcb   $00
 L135F    fcc   "/defs/"
          fcb   $00
