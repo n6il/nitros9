@@ -19,7 +19,7 @@ endif
 ifndef	COCOTOOLSBIN
 COCOTOOLSBIN	= $(HOME)/bin
 endif
-DEFDIR		= $(NITROS9DIR)/defs
+DEFSDIR		= $(NITROS9DIR)/defs
 DSKDIR		= $(NITROS9DIR)/dsks
 
 
@@ -29,8 +29,8 @@ DSKDIR		= $(NITROS9DIR)/dsks
 #ASOUT		= o=
 
 # Use the cross assembler
-AS		= $(COCOTOOLSBIN)/mamou -i=$(DEFDIR)
-#AS		= $(COCOTOOLSBIN)/os9asm -i=$(DEFDIR)
+AS		= $(COCOTOOLSBIN)/mamou -i=$(DEFSDIR)
+#AS		= $(COCOTOOLSBIN)/os9asm -i=$(DEFSDIR)
 ASOUT		= -o
 AFLAGS		= -q
 

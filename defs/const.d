@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; const
+; const - Constant Chracter Definitions
 ;
 ; $Id$
 ;
@@ -7,7 +7,7 @@
 ; Comment
 ; ------------------------------------------------------------------
 ;          2004/05/17  Boisy G. Pitre
-; Started.
+; Created.
 
            .title   Constant Character Definitions
 

@@ -1,10 +1,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; scf
+; scf - Sequential File Manager Definitions
 ;
 ; $Id$
 ;
-; SCF stands for 'Sequential Character Filemanager' and is a package of subroutines
-; that define the logical structure of a serial device.
+; SCF stands for 'Sequential Character Filemanager' and is a package of
+; subroutines that define the logical structure of a serial device.
 ;
 ; The data structures in this file give SCF its 'personality' and are used
 ; by SCF itself, as well as applications that will require disk I/O.
@@ -13,7 +13,7 @@
 ; Comment
 ; ------------------------------------------------------------------
 ;          2004/07/02  Boisy G. Pitre
-; Started
+; Created
 
            .title   Sequential File Manager Definitions
 

@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; signal
+; signal - Signal Definitions
 ;
 ; $Id$
 ;
@@ -7,9 +7,9 @@
 ; Comment
 ; ------------------------------------------------------------------
 ;          2004/07/02  Boisy G. Pitre
-; Started
+; Created.
 
-           .title   Signal definitions
+           .title   Signal Definitions
 
            .area    sys (ABS)
 

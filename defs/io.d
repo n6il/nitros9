@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; io
+; io - I/O Constant Definitions
 ;
 ; $Id$
 ;
@@ -7,7 +7,7 @@
 ; Comment
 ; ------------------------------------------------------------------
 ;          2004/05/17  Boisy G. Pitre
-; Started.
+; Created.
 
            .title   I/O Constant Definitions
 

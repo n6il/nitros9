@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; boot
+; boot - NitrOS-9 Boot Definitions
 ;
 ; $Id$
 ;
@@ -7,7 +7,7 @@
 ; Comment
 ; ------------------------------------------------------------------
 ;          2004/05/17  Boisy G. Pitre
-; Started.
+; Created.
 
            .title   Boot Definitions
 
