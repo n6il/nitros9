@@ -7,6 +7,9 @@
 * ------------------------------------------------------------------
 *  16    From Tandy OS-9 Level One VR 02.00.00
 *  17    Fixed for years 1900-2155                      BGP 99/05/11
+*  18    Changed icpt routine rts to rti, put in        BGP 02/07/20
+*        conditionals for Level One not to execute
+*        the os9 F$SUser command.
 
          nam   Login
          ttl   Timeshare login utility
@@ -20,15 +23,15 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   17
+edition  set   18
 
          mod   eom,name,tylg,atrv,start,size
 
 u0000    rmb   1
-u0001    rmb   1
+PassPath rmb   1
 u0002    rmb   1
 u0003    rmb   1
-u0004    rmb   1
+DefUID   rmb   1
 u0005    rmb   1
 u0006    rmb   2
 u0008    rmb   2
@@ -45,7 +48,7 @@ name     fcs   /Login/
          fcb   edition
 
 
-L0013    fcc   "SYS/PASSWORD"
+PassFile fcc   "SYS/PASSWORD"
          fcb   C$CR
          fcc   ",,,,,,,,,,,,,,,"
 WideMsg  fcb   C$LF,C$LF
@@ -119,15 +122,17 @@ MOTD     fcc   "SYS/MOTD"
 
 Root     fcc   "...... "
 
-L015C    rts
+L015C    rti			note, was rts in original code
 
 start    leas  >u010D,u
          pshs  y,x
          leax  <L015C,pcr
          os9   F$Icpt   
+         ifgt  Level-1
          bcs   L0172
-         ldy   #$0000
-         os9   F$SUser  
+         ldy   #$0000		super user ID
+         os9   F$SUser  	set user ID to super user
+         endc
 L0172    puls  y,x
          lbcs  L02F4
          clr   <u0000
@@ -155,10 +160,10 @@ L01AB    lda   #READ.
          leax  >Root,pcr
          os9   I$ChgDir 
          lda   #READ.
-         leax  >L0013,pcr
+         leax  >PassFile,pcr
          os9   I$Open   
          lbcs  L02F4
-         sta   <u0001
+         sta   <PassPath
          lda   #$03
          sta   <u0003
          ldd   ,s++
@@ -212,19 +217,21 @@ L0242    leax  >u018D,u
          bcc   L0217
          leax  >nvPass,pcr
          bra   L0212
-L0253    lda   <u0001
+L0253    lda   <PassPath
          os9   I$Close  
          lbsr  L0408
          tfr   d,y
+         ifgt  Level-1
          os9   F$SUser  
+         endc
          lbsr  L0408
          tsta  
          lbne  L031B
          tstb  
          lbeq  L031B
          stb   <u0005
-         os9   F$ID     
-         sta   <u0004
+         os9   F$ID     		get user id
+         sta   <DefUID			save off
          lda   #READ.
          leax  >MOTD,pcr
          os9   I$Open   
@@ -238,7 +245,7 @@ L0280    sta   <u0002
          leax  >ProcNum,pcr
          ldy   #ProcNumL
          lbsr  L033D
-         leax  u0004,u
+         leax  DefUID,u
          lbsr  L0471
          tst   <u0000
          beq   L02A8
@@ -259,11 +266,11 @@ L02C0    lda   ,u+
          bcc   L02C0
          cmpa  #C$COMA
          beq   L02CC
-         leau  -u0001,u
+         leau  -PassPath,u
 L02CC    lda   ,u+
          cmpa  #C$SPAC
          beq   L02CC
-         leau  -u0001,u
+         leau  -PassPath,u
          pshs  u
          ldy   #$0000
 L02DA    lda   ,u+
@@ -271,9 +278,9 @@ L02DA    lda   ,u+
          cmpa  #C$CR
          bne   L02DA
          puls  u
-         lda   <u0004
+         lda   <DefUID
          ldb   <u0005
-         os9   F$SPrior 
+         os9   F$SPrior 	set priority
          ldd   #256
          os9   F$Chain  
          os9   F$PErr   
@@ -349,12 +356,12 @@ L037F    pshs  x,b,a,cc
          os9   I$SetStt 
 L0391    puls  pc,x,b,a,cc
 L0393    pshs  u
-         lda   <u0001
+         lda   <PassPath
          ldx   #$0000
          leau  ,x
          os9   I$Seek   
          puls  u
-L03A1    lda   <u0001
+L03A1    lda   <PassPath
          leax  >u010D,u
          ldy   #128
          os9   I$ReadLn 
