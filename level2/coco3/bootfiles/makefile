@@ -73,7 +73,7 @@ BOOTFILE_KENTON	= $(3PD)/scsisys/scsisys_68_ktlr.dr \
 		$(MD)/clock $(MD)/clock2_soft
 		
 BOOTFILES	= bootfile_1773 bootfile_tc3 bootfile_kenton bootfile_rom
-KERNELS		= kernel_1773 kernel_tc3 kernel_kenton
+KERNELS		= kernel_1773 kernel_tc3 kernel_kenton kernel_rom
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
