@@ -20,7 +20,25 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+_os9 enables a programmer to access virtually any OS-9 system
+call directly from a C program without having to resort to
+assembly language routines.
+</para>
+<para>
+<varname>Code</varname> is one of the codes that are defines in os9.h. os9.h
+contains codes for the F$ and I$ function/service requests, and
+it also contains getstt, setstt, and error codes.
+</para>
+<para>
+The input registers(reg) for the system calls are accessed by
+the following structure that is defined in os9.h:
+<programlisting>
+struct registers {
+     char rg_cc,rg_a,rg_b,rg_dp;
+     unsigned rg_x,rg_y,rg_u;
+};
+</programlisting>
+An example program that uses _os9 is presented on the following page.
 </para>
 </refsect1>
 

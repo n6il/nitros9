@@ -26,9 +26,26 @@ os9 I$MAKDIR
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+This call may be used to create a new directory. "Fname"
+should point to a string containing the desired name of the
+directory. "Desc" is a descriptor specifying the desired mode
+(file type) and permissions of the new file.
 </para>
+<para>
+The include file defines the possible values for "desc" as
+follows:
+</para>
+<programlisting>
+#define  S_IREAD   0x01     /* owner read */
+#define  S_IWRITE  0x02     /* owner write */
+#define  S_IEXEC   0x04     /* owner execute */
+#define  S_IOREAD  0x08     /* public read */
+#define  S_IOWRITE 0x10     /* public write */
+#define  S_IOEXEC  0x20     /* public execute */
+#define  S_ISHARE  0x40     /* sharable */
+</programlisting>
 </refsect1>
+
 <refsect1><title>Diagnostics</title>
 <para>
 Zero is returned if the directory has been successfully made;
@@ -36,4 +53,9 @@ Zero is returned if the directory has been successfully made;
 </para>
 </refsect1>
 
+<refsect1><title>See Also</title>
+<para>
+OS-9 command "makdir"
+</para>
+</refsect1>
 </refentry>

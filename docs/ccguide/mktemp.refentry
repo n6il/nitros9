@@ -16,7 +16,19 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Mktemp may be used to ensure that the name of a temporary file
+is unique in the system and does not clash with any other file
+name.
+</para>
+<para>
+"Name" must point to a string whose last five characters are "X";
+the Xs will be replaced with the ascii representation of
+the task id.
+</para>
+<para>
+For example, if "name" points to "foo.XXXXX", and the task id
+is 351, the returned value points at the same place, but it
+now holds "foo.351".
 </para>
 </refsect1>
 

@@ -23,7 +23,19 @@ os9 I$OPEN
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+This call opens an existing file for reading if "mode" is 1,
+writing if "mode" is 2, or reading and writing if "mode" is 3.
+NOTE that these values are OS-9 specific and not compatible
+with other systems. "Fname" should point to a string
+representing the pathname of the file.
+</para>
+<para>
+Open returns an integer as "path number" which should be used
+by i/o system calls referring to the file.
+</para>
+<para>
+The position where reads or writes start is at the beginning of
+the file.
 </para>
 </refsect1>
 

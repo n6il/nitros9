@@ -38,7 +38,22 @@ os9 F$LOAD
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Each of these calls return a pointer to an OS-9 memory module.
+</para>
+<para>
+Modlink will search the module directory for a module with the
+same name as "modname" and, if found, increment its link count.
+</para>
+<para>
+Modload will open the file which has the path list specified by
+"filename" and loads modules from the file adding them to the
+module directory. The returned value is a pointer to the first
+module loaded.
+</para>
+<para>
+Above, each is shown as returning a pointer to an executable
+module, but it will return a pointer to whatever type of module
+is found.
 </para>
 </refsect1>
 
