@@ -77,6 +77,10 @@ A.ModP   set   $FF6C      ModPak Address
 DPort    set   $FF40      Disk controller base address
 MPI.Slct set   $FF7F      Multi-Pak slot select
 MPI.Slot set   $03        Multi-Pak default slot
+PIA0Base equ   $FF00
+PIA.U4   equ   PIA0Base
+PIA1Base equ   $FF20
+PIA.U8   equ   PIA1Base
 
 *
 * VDG Devices
@@ -154,8 +158,6 @@ GIMERegs equ   $FF00      Base address of GIME registers
 IrqEnR   equ   $FF92      GIME IRQ enable/status register
 BordReg  equ   $FF9A      Border color register
 PalAdr   equ   $FFB0      Palette registers
-PIA0Base equ   $FF00
-PIA1Base equ   $FF20
 
 HW.Page  set   $07        Device descriptor hardware page
 
