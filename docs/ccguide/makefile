@@ -48,6 +48,9 @@ $(BOOK).ps: $(BOOK).docbook
 	docbook2ps -d "docbook-utils-a4.dsl#print" $(BOOK).docbook
 #	docbook2ps -d $(STYLESHEET)#print $(BOOK).docbook
 
+$(BOOK).txt: $(BOOK).docbook
+	docbook2txt -d "docbook-utils-a4.dsl#print" $(BOOK).docbook
+
 # This rule is an alternative way to produce a PDF document
 xml-pdf:
 	openjade -t tex -o $(BOOK).tex -d $(DOCBOOKDSL) $(XMLDCL) $(BOOK).docbook
