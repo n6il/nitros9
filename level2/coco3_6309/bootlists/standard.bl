@@ -89,6 +89,8 @@
 *../MODULES/RBF/r0_96k.dd
 *../MODULES/RBF/r0_128k.dd
 *../MODULES/RBF/r0_192k.dd
+* Memory device descriptor
+*../MODULES/RBF/md.dd
 ***************************************
 * SCF Section
 *
