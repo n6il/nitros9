@@ -42,15 +42,20 @@ BOOTFILE_ROM	= $(MD)/rominfo $(MD)/os9p2 $(MD)/init $(MD)/ioman \
 BOOTFILE_DW	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(C9)/drivewire/drivewire_l2.dr \
 		$(C9)/drivewire/ddx0_l2.dd \
+		$(C9)/drivewire/x1_l2.dd \
+		$(C9)/drivewire/x2_l2.dd \
+		$(C9)/drivewire/x3_l2.dd \
 		$(MD)/rbf.mn \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
 		$(MD)/windint.io \
 		$(MD)/vdgint_small.io \
 		$(MD)/term_vdg.dt \
-		$(MD)/w7.dw \
+		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
 		$(MD)/vrn.dr $(MD)/vi.dd $(MD)/ftdd.dd \
-		$(MD)/clock_tc3
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(C9)/drivewire/clock_dw_l2
 		
 # OS-9 disk bootfile to allow booting from Ken-Ton SCSI controller
 # This is a custom boot for Boisy's system
