@@ -44,7 +44,7 @@ start    clra
          os9   F$UnLink 
          ENDC
          bcs   exit
-         lda   ,-x
+         lda   ,x
          cmpa  #C$CR
          bne   start
          clrb  
