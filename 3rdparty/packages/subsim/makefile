@@ -1,0 +1,50 @@
+include ../../../Makefile.rules
+
+DEPENDS		= ./Makefile
+
+DISK		= sub.dsk
+CMDS		= presub sub sub1 sub2 sub3 sub4 sub5 sub6
+MD		= $(LEVEL2)/MODULES
+
+# We make our own bootfile and kernel track
+KERNEL		= $(MD)/rel $(MD)/boot_1773 $(MD)/os9p1
+OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/cc3disk.dr $(MD)/ddd0_40d.dd \
+		$(MD)/scf.mn $(MD)/cc3io.dr \
+		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/vdgint_small.io $(MD)/term_vdg.dt \
+		$(MD)/clock_soft $(MD)/cc3go
+
+SUPPORTFILES	= control1.cmp convoys.dat diesel.dat fonts.dat germap.cmp \
+		hiscore.dat mission.txt missions.dat radar.dat shipmap2.dat \
+		sintbl.dat stitle.pic sub.dat sub.dump usamap.cmp 
+
+SCRIPTS		= install2dd
+
+ALLOBJS		= $(CMDS)
+
+all:	$(ALLOBJS)
+	$(CHMOD) 755 $(CMDS)
+
+clean:	dskclean
+	$(RM) $(ALLOBJS)
+	$(OS92UNIX) $(SCRIPTS)
+
+dsk:	all
+	$(RM) $(DISK)
+	$(CD) $(LEVEL2); make
+	$(OS9FORMAT) $(DISK) -t40 -h2 -n"Sub Battle Simulator"
+	$(MERGE) $(OS9BOOT)>os9boot
+	$(MERGE) $(KERNEL)>kernel_1773
+	$(OS9GEN) $(DISK) os9boot kernel_1773
+	$(RM) os9boot kernel_1773
+	$(MAKDIR) $(DISK),CMDS
+	$(CP) $(CMDS) $(DISK),CMDS
+	$(OS9RENAME) $(DISK),CMDS/sierra AutoEx
+	$(CP) $(SUPPORTFILES) $(DISK),.
+	$(UNIX2OS9) $(SCRIPTS)
+	$(CP) $(SCRIPTS) $(DISK),.
+
+dskclean:
+	$(RM) $(DISK)
