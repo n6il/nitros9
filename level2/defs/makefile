@@ -14,16 +14,16 @@ Defsfile: defsfile.asm
 	$(AS) $(DEFOPTS) -p $< > $@
 
 OS9Defs: $(DEFSDIR)/os9defs
-	$(AS) $(DEFOPTS) $< > $@
+	$(AS) $(DEFOPTS) -aOS9DEFS=0 $< > $@
 
 RBFDefs: $(DEFSDIR)/rbfdefs
-	$(AS) $(DEFOPTS) $< > $@
+	$(AS) $(DEFOPTS) -aRBFDEFS=0 $< > $@
 
 SCFDefs: $(DEFSDIR)/scfdefs
-	$(AS) $(DEFOPTS) $< > $@
+	$(AS) $(DEFOPTS) -aSCFDEFS=0 $< > $@
 
 SysType: $(DEFSDIR)/systype
-	$(AS) $(DEFOPTS) $< > $@
+	$(AS) $(DEFOPTS) -aSYSTYPE=0 $< > $@
 
 clean:
 	$(RM) $(DEFS)
