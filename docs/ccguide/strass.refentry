@@ -8,7 +8,9 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>_strass</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>char *<parameter>s1</parameter></paramdef>
+  <paramdef>char *<parameter>s2</parameter></paramdef>
+  <paramdef>int <parameter>count</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
@@ -16,7 +18,13 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Until such time as the compiler can deal with structure
+assignment, this function is useful for copying one structure
+to another.
+</para>
+<para>
+"Count" bytes are copied from memory location at "s2" to memory
+as "s1" regardless of the contents.
 </para>
 </refsect1>
 </refentry>
