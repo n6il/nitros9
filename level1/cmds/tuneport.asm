@@ -214,11 +214,11 @@ L035D    tst   <u0002
          ldb   ,x+
          cmpb  #'S
          beq   L037A
-         cmpb  #$73
+         cmpb  #'s
          beq   L037A
          lbra  L03FB
 L037A    ldb   ,x+
-         cmpb  #$3D
+         cmpb  #'=
          bne   L03FB
          stx   <u0009
          lbsr  L04F1
