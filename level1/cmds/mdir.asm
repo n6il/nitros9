@@ -6,6 +6,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   5    From Tandy OS-9 Level One VR 02.00.00
+*   6    Changed option to -e, optimized slightly       BGP 03/01/14
 
          nam   Mdir
          ttl   Show module directory
@@ -19,22 +20,23 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   5
+edition  set   6
 stdout   set   1
 
          mod   eom,name,tylg,atrv,start,size
 
-MdirSt   rmb   2
-MdirEn   rmb   2
-u0004    rmb   2
+         org   0
+mdstart  rmb   2
+mdend    rmb   2
+parmptr  rmb   2
 u0006    rmb   1
 bufptr   rmb   1
 u0008    rmb   1
-u0009    rmb   3
-u000C    rmb   3
+datebuf  rmb   3
+timebuf  rmb   3
 u000F    rmb   1
 u0010    rmb   1
-u0011    rmb   1
+narrow   rmb   1
 buffer   rmb   530
 size     equ   .
 
@@ -43,67 +45,65 @@ name     fcs   /Mdir/
 
 tophead  fcb   C$LF
          fcc   "  Module directory at "
+topheadl equ   *-tophead
 ltitle   fcb   C$LF
          fcc   "Addr Size Typ Rev Attr Use Module name"
          fcb   C$LF
          fcc   "---- ---- --- --- ---- --- ------------"
          fcb   C$CR
-stitle    fcb   C$LF
+stitle   fcb   C$LF
          fcc   "Addr Size Ty Rv At Uc   Name"
          fcb   C$LF
          fcc   "---- ---- -- -- -- -- ---------"
          fcb   C$CR
 
-start    stx   <u0004
-         lda   #$0C
-         ldb   #$30
+start    stx   <parmptr
+         ldd   #$0C30
          std   <u000F
-         clr   <u0011
-         lda   #stdout
-         ldb   #SS.ScSiz
-         os9   I$GetStt 
-         bcc   L00D2
-         cmpb  #E$UnkSvc
-         lbne  exit
+         clr   <narrow		assume wide output
+         lda   #stdout		standard output
+         ldb   #SS.ScSiz	we need screen size
+         os9   I$GetStt 	get it
+         bcc   L00D2		branch if we got it
+         cmpb  #E$UnkSvc	not a known service request error?
+         lbne  Exit		if not, exit
          bra   L00DF
-L00D2    cmpx  #80
-         beq   L00DF
-         inc   <u0011
-         lda   #$0A
-         ldb   #$15
+L00D2    cmpx  #80		80 columns?
+         bge   L00DF		branch if greater or equal to
+         inc   <narrow
+         ldd   #$0A15
          std   <u000F
 L00DF    leax  >tophead,pcr
-         ldy   #$0017
+         ldy   #topheadl
          lda   #stdout
          os9   I$WritLn 
-         leax  u0009,u
+         leax  datebuf,u
          os9   F$Time   
          leax  <buffer,u
          stx   <bufptr
-         leax  u000C,u
+         leax  timebuf,u
          lbsr  L0224
          lbsr  write
          ldx   >D.ModDir
-         stx   <MdirSt
+         stx   <mdstart
          ldd   >D.ModDir+2
-         std   <MdirEn
+         std   <mdend
          leax  -$04,x
 * Check for 'E' given as argument
-         ldy   <u0004
-         lda   ,y+
-         eora  #'E
-         anda  #$DF
+         ldy   <parmptr
+         ldd   ,y+
+         andb  #$DF
+         cmpd  #$2D45		-E ?	
          bne   L0157
-         tst   <u0011
+         tst   <narrow
          bne   L0123
          leax  >ltitle,pcr
-         ldy   #80            Maxlength to write
          bra   L012B
 L0123    leax  >stitle,pcr
-         ldy   #$003E         Maxlength to write
-L012B    lda   #stdout
+L012B    ldy   #80		max. length to write
+         lda   #stdout
          os9   I$WritLn 
-         ldx   <MdirSt
+         ldx   <mdstart
          lbra  L01B9
 loop     ldy   ,x
          beq   L015D
@@ -123,12 +123,12 @@ L0154    lbsr  write
 L0157    leay  <buffer,u
          sty   <bufptr
 L015D    leax  $04,x
-         cmpx  <MdirEn
+         cmpx  <mdend
          bcs   loop
          lbsr  write
-         bra   L01BD
+         bra   ExitOk
 *
-* A module entry is 2 twobyte pointers.
+* A module entry is 2 two byte pointers.
 * If the first pointer is $0000, then the slot is unused
 L0168    leay  <buffer,u
          sty   <bufptr
@@ -138,12 +138,12 @@ L0168    leay  <buffer,u
          bsr   L01C1
          ldd   $02,y
          bsr   L01C1
-         tst   <u0011
+         tst   <narrow
          bne   L0181
          bsr   L01F2
 L0181    lda   $06,y
          bsr   L01C9
-         tst   <u0011
+         tst   <narrow
          bne   L018B
          bsr   L01F2
 L018B    lda   $07,y
@@ -152,7 +152,7 @@ L018B    lda   $07,y
          ldb   $07,y
          lda   #$72
          bsr   L01FE
-         tst   <u0011
+         tst   <narrow
          bne   L01A7
          lda   #$3F
          bsr   L01FE
@@ -169,19 +169,20 @@ L01A7    bsr   L01F2
          bsr   L0205
          bsr   write
 gotonxt  leax  $04,x
-L01B9    cmpx  <MdirEn
+L01B9    cmpx  <mdend
          bcs   L0168
 
-L01BD    clrb  
-exit     os9   F$Exit   
+ExitOk   clrb  
+Exit     os9   F$Exit   
 
-L01C1    bsr   L01CD
+L01C1    bsr   Byt2Hex
          tfr   b,a
          bsr   L01CF
          bra   L01F2
-L01C9    bsr   L01CD
+L01C9    bsr   Byt2Hex
          bra   L01F2
-L01CD    clr   <u0006
+
+Byt2Hex  clr   <u0006
 L01CF    pshs  a
          lsra  
          lsra  
@@ -195,7 +196,7 @@ L01DB    tsta
          sta   <u0006
 L01E0    tst   <u0006
          bne   L01E8
-         lda   #$20
+         lda   #C$SPAC
          bra   ApndA
 L01E8    adda  #'0
          cmpa  #'9
@@ -234,22 +235,22 @@ write    pshs  y,x,a
          os9   I$WritLn 
          puls  pc,y,x,a
 
-L0224    bsr   L022C
-         bsr   L0228
-L0228    lda   #':
+L0224    bsr   Byt2ASC
+         bsr   Colon
+Colon    lda   #':
          bsr   ApndA
-L022C    ldb   ,x+
-         lda   #$2F
-L0230    inca  
-         subb  #$64
-         bcc   L0230
-         cmpa  #$30
-         beq   L023B
+Byt2ASC  ldb   ,x+
+         lda   #$2F		load A with '0 - 1
+Hundreds inca  
+         subb  #100
+         bcc   Hundreds
+         cmpa  #'0
+         beq   Tens		no leading zeros
          bsr   ApndA
-L023B    lda   #$3A
-L023D    deca  
-         addb  #$0A
-         bcc   L023D
+Tens     lda   #$3A		load A with '9 + 1
+TensLoop deca  
+         addb  #10
+         bcc   TensLoop
          bsr   ApndA
          tfr   b,a
          adda  #'0
