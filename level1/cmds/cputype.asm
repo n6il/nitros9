@@ -8,6 +8,7 @@
 *   1    Started                                        ADK ??/??/??
 *   2r1  Fixed a crash bug on 6809, now just reports    BGP 03/04/02
 *        6809 message on a 6809
+*   3r1  Rearranged code, used short offsets            RVH 03/04/23
 
          nam   CPUType
          ttl   Identify 6809 or 6309
@@ -19,7 +20,7 @@
 tylg     set   Prgrm+Objct
 atrv     set   Reent+Rev
 rev      set   1
-edition  set   2
+edition  set   3
 
          org   0
          rmb   $0100      for the stack
@@ -30,11 +31,11 @@ size     equ   .
 name     fcs   /CPUType/
          fcb   edition
 
-c.6309   fcc   /CPU: 6309, running in /
-L6309    equ   *-c.6309
 c.6809   fcc   /CPU: 6809/
          fcb   C$CR
-L6809    equ   *-c.6809
+
+c.6309   fcc   /CPU: 6309, running in /
+L6309    equ   *-c.6309
 
 m.6809   fcc   /6809 mode./
          fcb   C$CR
@@ -42,21 +43,15 @@ m.6809   fcc   /6809 mode./
 m.6309   fcc   /6309 native mode./
          fcb   C$CR
 
-is.6809  leax  c.6809,pc
-         ldy   #L6809
-         lda   #1
-         os9   I$WritLn
-         clrb
-         os9   F$Exit
-
 * Entry of program
 * First, let's determine if we have a 6309 or 6809
 Start    ldd   #$FFFF	make sure D is non-zero
+         leax  <c.6809,pc  default to 6809 cpu
          fdb   $104F	(CLRD) execs as pseudo-NOP ($10), and CLRA on 6809
-         tstb
-         bne   is.6809
-         leax  c.6309,pc
-save.1   ldy   #L6309
+         tstb		is this a 6309?
+         bne   print	no, print 6809 cpu and exit
+is.6309  leax  <c.6309,pc  yes, print 6309 message
+         ldy   #L6309
          lda   #1	to STDOUT
          OS9   I$Write	dump it out
 
@@ -64,8 +59,8 @@ save.1   ldy   #L6309
 * Determine if we are in native mode or not
          pshs  cc,dp,x,y,u   save all registers but D
          fdb   $1038	(PSHSW)
-         leay  native,pc   native mode PC
-         leax  emulate,pc  emulation mode PC
+         leay  <native,pc   native mode PC
+         leax  <emulate,pc  emulation mode PC
          pshs  x,y         save them
          pshs  cc,d,dp,x,y,u  and the rest of the registers, too.
          orcc  #Entire     set the entire bit in CC
@@ -79,10 +74,10 @@ native   ldb   #1         in native mode
          fdb   $1F36	(TFR U,W)
          puls  cc,dp,x,y,u  restore all of our other registers
 
-emumsg   leax  m.6809,pc  default to 6809
+emumsg   leax  <m.6809,pc  default to 6809
          tstb             are we in native mode?
          beq   print      no
-         leax  m.6309,pc  get the 6309 message
+         leax  <m.6309,pc  get the 6309 message
 
 print    ldy   #$0100     a lot
          lda   #1         to STDOUT
