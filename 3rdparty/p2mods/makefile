@@ -15,7 +15,7 @@ os9p4_regdump_6809: os9p4_regdump.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
 
 os9p4_regdump_6309: os9p4_regdump.asm
-	$(AS)  $(AFLAGS) $(ASOUT)$@ $< -aH6309=1
+	$(AS) -e $(AFLAGS) $(ASOUT)$@ $< -aH6309=1
 
 clean:
 	$(RM) $(ALLOBJS)
