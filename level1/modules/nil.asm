@@ -20,7 +20,7 @@ rev      equ   0
          mod   ModSize,DvcNam,Devic+Objct,ReEnt+rev,MgrNam,DrvNam
 
          fcb   UPDAT.     access mode(s)
-         fcb   $07        hardware page
+         fcb   HW.Page    hardware page
          fdb   $FF00      hardware port
          fcb   OptSize
 OptStart fcb   DT.SCF
