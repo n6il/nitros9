@@ -9,3 +9,4 @@ Opts  :
   -m = do not include makdir commands in procedure file
   -r = force rewrite of file on copy
   -s<num> = set copy size to num K
+  -v = verify copies
