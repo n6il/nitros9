@@ -40,6 +40,7 @@ Calloc allocates space for an array. Nel is the number of
 elements in the arrary, and elsize is the size of each element.
 Calloc initializes the space to zero.
 </para>
+</refsect1>
 <refsect1><title>Diagnostics</title>
 <para>
 Malloc, free, and calloc return NULL(0) if no free memory can
