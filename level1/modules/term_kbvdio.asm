@@ -23,8 +23,8 @@ rev      set   $00
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
-         fcb   READ.+WRITE.	mode byte
-         fcb   HW.PAGE		extended controller address
+         fcb   UPDAT.           mode byte
+         fcb   HW.Page		extended controller address
          fdb   $C000		physical controller address
          fcb   initsize-*-1	initilization table size
          fcb   DT.SCF		device type:0=scf,1=rbf,2=pipe,3=scf
