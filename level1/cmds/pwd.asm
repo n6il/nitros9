@@ -14,6 +14,7 @@
 
          ifp1
          use   defsfile
+         use   rbfdefs
          endc
 
 tylg     set   Prgrm+Objct   
@@ -25,15 +26,10 @@ edition  set   1
 
 fildes   rmb   1
 bufptr   rmb   2
-u0003    rmb   2
-u0005    rmb   1
-u0006    rmb   2
-u0008    rmb   1
-u0009    rmb   2
-u000B    rmb   3
-u000E    rmb   29
-u002B    rmb   2
-u002D    rmb   129
+DotDotFD rmb   3
+DotFD    rmb   3
+DDCopy   rmb   5
+dentry   rmb   160
 buffer   rmb   1
 sttbuf   rmb   282
 size     equ   .
@@ -57,10 +53,10 @@ start    leax  >buffer,u
          bsr   open
          sta   <fildes
          lbsr  rdtwo
-         ldd   <u0003
-         std   <u0009
-         lda   <u0005
-         sta   <u000B
+         ldd   <DotDotFD
+         std   <DDCopy
+         lda   <DotDotFD+2
+         sta   <DDCopy+2
 L0052    bsr   L00C6
          beq   L0079
          leax  >dotdot,pcr
@@ -73,10 +69,10 @@ L0052    bsr   L00C6
          bsr   rdtwo
          bsr   L00A8
          bsr   L00E2
-         ldd   <u0003
-         std   <u0009
-         lda   <u0005
-         sta   <u000B
+         ldd   <DotDotFD
+         std   <DDCopy
+         lda   <DotDotFD+2
+         sta   <DDCopy+2
          bra   L0052
 L0079    lbsr  L00FB
          ldx   <bufptr
@@ -93,42 +89,48 @@ chdir    lda   #DIR.+READ.
 open     lda   #DIR.+READ.
          os9   I$Open   
          rts   
+
 read32   lda   <fildes
-         leax  u000E,u
-         ldy   #$0020
+         leax  dentry,u
+         ldy   #DIR.SZ
          os9   I$Read   
          rts   
+
 L00A8    lda   <fildes
          bsr   read32
          bcs   L010F
-         leax  u000E,u
-         leax  <$1D,x
-         leay  u0009,u
+         leax  dentry,u
+         leax  <DIR.FD,x
+         leay  DDCopy,u
          bsr   attop
          bne   L00A8
          rts   
+
 attop    ldd   ,x++
          cmpd  ,y++
          bne   L00C5
          lda   ,x
          cmpa  ,y
 L00C5    rts   
-L00C6    leax  u0003,u
-         leay  u0006,u
+
+L00C6    leax  DotDotFD,u
+         leay  DotFD,u
          bsr   attop   * check if we're at the top
          rts   
+
 rdtwo    bsr   read32  * read "." from directory
-         ldd   <u002B
-         std   <u0006
-         lda   <u002D
-         sta   <u0008
+         ldd   <dentry+DIR.FD
+         std   <DotFD
+         lda   <dentry+DIR.FD+2
+         sta   <DotFD+2
          bsr   read32  * read ".." from directory
-         ldd   <u002B
-         std   <u0003
-         lda   <u002D
-         sta   <u0005
+         ldd   <dentry+DIR.FD
+         std   <DotDotFD
+         lda   <dentry+DIR.FD+2
+         sta   <DotDotFD+2
          rts   
-L00E2    leax  u000E,u
+
+L00E2    leax  dentry,u
 prsnam   os9   F$PrsNam 
          bcs   L0109
          ldx   <bufptr
@@ -137,7 +139,7 @@ L00EB    lda   ,-y
          sta   ,-x
          decb  
          bne   L00EB
-         lda   #$2F
+         lda   #PDELIM
          sta   ,-x
          stx   <bufptr
          rts   
