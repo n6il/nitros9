@@ -15,14 +15,14 @@ format /d1 1 '35' "OS-9 Floppy Boot Disk" r
 echo *
 echo * Step 2: Create a custom boot track
 del bttemp
-merge ../MODULES/BOOTTRACK/rel ../MODULES/BOOTTRACK/boot_1773_6ms ../MODULES/BOOTTRACK/os9p1>bttemp
+merge ../MODULES/BOOTTRACK/rel_32 ../MODULES/BOOTTRACK/boot_1773_6ms ../MODULES/BOOTTRACK/os9p1>bttemp
 echo *
 echo * Step 3: Create the bootfile and boot track
 os9gen #32k /d1 -t=bttemp<../BOOTLISTS/standard.bl
 del bttemp
 echo *
 echo * Step 4: Populate the disk with essential files
-copy -w=/d1 ../MODULES/SYSMODS/cc3go
+copy ../MODULES/SYSMODS/cc3go_dd /d1/cc3go
 makdir /d1/CMDS
 copy -w=/d1/CMDS ../CMDS/shell ../CMDS/grfdrv
 echo *
