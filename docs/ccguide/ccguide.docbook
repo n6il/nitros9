@@ -1,4 +1,6 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+<?xml version="1.0" ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" 
+   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY replstart "&lt;">
   <!ENTITY replend   "&gt;">
   <!ENTITY repeatst   "{">
@@ -16,72 +18,72 @@
   <!ENTITY asmapp        SYSTEM "asm.appendix">
 
 
-  <!ENTITY abortref       SYSTEM "abort.refentry">
-  <!ENTITY absref       SYSTEM "abs.refentry">
-  <!ENTITY accessref       SYSTEM "access.refentry">
-  <!ENTITY chainref       SYSTEM "chain.refentry">
-  <!ENTITY chdirref       SYSTEM "chdir.refentry">
-  <!ENTITY chmodref       SYSTEM "chmod.refentry">
-  <!ENTITY chownref       SYSTEM "chown.refentry">
-  <!ENTITY closeref       SYSTEM "close.refentry">
+  <!ENTITY abortref      SYSTEM "abort.refentry">
+  <!ENTITY absref        SYSTEM "abs.refentry">
+  <!ENTITY accessref     SYSTEM "access.refentry">
+  <!ENTITY chainref      SYSTEM "chain.refentry">
+  <!ENTITY chdirref      SYSTEM "chdir.refentry">
+  <!ENTITY chmodref      SYSTEM "chmod.refentry">
+  <!ENTITY chownref      SYSTEM "chown.refentry">
+  <!ENTITY closeref      SYSTEM "close.refentry">
   <!ENTITY crcref       SYSTEM "crc.refentry">
-  <!ENTITY creatref       SYSTEM "creat.refentry">
-  <!ENTITY defdriveref       SYSTEM "defdrive.refentry">
+  <!ENTITY creatref      SYSTEM "creat.refentry">
+  <!ENTITY defdriveref   SYSTEM "defdrive.refentry">
   <!ENTITY dupref       SYSTEM "dup.refentry">
   <!ENTITY exitref       SYSTEM "exit.refentry">
-  <!ENTITY getpidref       SYSTEM "getpid.refentry">
-  <!ENTITY getstatref       SYSTEM "getstat.refentry">
-  <!ENTITY getuidref       SYSTEM "getuid.refentry">
-  <!ENTITY interceptref       SYSTEM "intercept.refentry">
+  <!ENTITY getpidref     SYSTEM "getpid.refentry">
+  <!ENTITY getstatref    SYSTEM "getstat.refentry">
+  <!ENTITY getuidref     SYSTEM "getuid.refentry">
+  <!ENTITY interceptref  SYSTEM "intercept.refentry">
   <!ENTITY killref       SYSTEM "kill.refentry">
-  <!ENTITY lseekref       SYSTEM "lseek.refentry">
-  <!ENTITY mknodref       SYSTEM "mknod.refentry">
-  <!ENTITY modloadref       SYSTEM "modload.refentry">
-  <!ENTITY munlinkref       SYSTEM "munlink.refentry">
+  <!ENTITY lseekref      SYSTEM "lseek.refentry">
+  <!ENTITY mknodref      SYSTEM "mknod.refentry">
+  <!ENTITY modloadref    SYSTEM "modload.refentry">
+  <!ENTITY munlinkref    SYSTEM "munlink.refentry">
   <!ENTITY os9ref       SYSTEM "os9.refentry">
   <!ENTITY openref       SYSTEM "open.refentry">
-  <!ENTITY os9forkref       SYSTEM "os9fork.refentry">
-  <!ENTITY pauseref       SYSTEM "pause.refentry">
-  <!ENTITY prerrref       SYSTEM "prerr.refentry">
+  <!ENTITY os9forkref    SYSTEM "os9fork.refentry">
+  <!ENTITY pauseref      SYSTEM "pause.refentry">
+  <!ENTITY prerrref      SYSTEM "prerr.refentry">
   <!ENTITY readref       SYSTEM "read.refentry">
   <!ENTITY sbrkref       SYSTEM "sbrk.refentry">
-  <!ENTITY setprref       SYSTEM "setpr.refentry">
-  <!ENTITY setimeref       SYSTEM "setime.refentry">
-  <!ENTITY setuidref       SYSTEM "setuid.refentry">
-  <!ENTITY setstatref       SYSTEM "setstat.refentry">
-  <!ENTITY signalref       SYSTEM "signal.refentry">
-  <!ENTITY stacksizeref       SYSTEM "stacksize.refentry">
-  <!ENTITY strassref       SYSTEM "strass.refentry">
-  <!ENTITY tsleepref       SYSTEM "tsleep.refentry">
-  <!ENTITY unlinkref       SYSTEM "unlink.refentry">
+  <!ENTITY setprref      SYSTEM "setpr.refentry">
+  <!ENTITY setimeref     SYSTEM "setime.refentry">
+  <!ENTITY setuidref     SYSTEM "setuid.refentry">
+  <!ENTITY setstatref    SYSTEM "setstat.refentry">
+  <!ENTITY signalref     SYSTEM "signal.refentry">
+  <!ENTITY stacksizeref  SYSTEM "stacksize.refentry">
+  <!ENTITY strassref     SYSTEM "strass.refentry">
+  <!ENTITY tsleepref     SYSTEM "tsleep.refentry">
+  <!ENTITY unlinkref     SYSTEM "unlink.refentry">
   <!ENTITY waitref       SYSTEM "wait.refentry">
-  <!ENTITY writeref       SYSTEM "write.refentry">
+  <!ENTITY writeref      SYSTEM "write.refentry">
 
   <!ENTITY atofref       SYSTEM "atof.refentry">
-  <!ENTITY fcloseref       SYSTEM "fclose.refentry">
+  <!ENTITY fcloseref     SYSTEM "fclose.refentry">
   <!ENTITY feofref       SYSTEM "feof.refentry">
-  <!ENTITY findstrref       SYSTEM "findstr.refentry">
-  <!ENTITY fopenref       SYSTEM "fopen.refentry">
-  <!ENTITY freadref       SYSTEM "fread.refentry">
-  <!ENTITY fseekref       SYSTEM "fseek.refentry">
+  <!ENTITY findstrref    SYSTEM "findstr.refentry">
+  <!ENTITY fopenref      SYSTEM "fopen.refentry">
+  <!ENTITY freadref      SYSTEM "fread.refentry">
+  <!ENTITY fseekref      SYSTEM "fseek.refentry">
   <!ENTITY getcref       SYSTEM "getc.refentry">
   <!ENTITY getsref       SYSTEM "gets.refentry">
-  <!ENTITY isalpharef       SYSTEM "isalpha.refentry">
-  <!ENTITY l3tolref       SYSTEM "l3tol.refentry">
-  <!ENTITY longjmpref       SYSTEM "longjmp.refentry">
-  <!ENTITY mallocref       SYSTEM "malloc.refentry">
-  <!ENTITY mktempref       SYSTEM "mktemp.refentry">
-  <!ENTITY printfref       SYSTEM "printf.refentry">
+  <!ENTITY isalpharef    SYSTEM "isalpha.refentry">
+  <!ENTITY l3tolref      SYSTEM "l3tol.refentry">
+  <!ENTITY longjmpref    SYSTEM "longjmp.refentry">
+  <!ENTITY mallocref     SYSTEM "malloc.refentry">
+  <!ENTITY mktempref     SYSTEM "mktemp.refentry">
+  <!ENTITY printfref     SYSTEM "printf.refentry">
   <!ENTITY putcref       SYSTEM "putc.refentry">
   <!ENTITY putsref       SYSTEM "puts.refentry">
-  <!ENTITY qsortref       SYSTEM "qsort.refentry">
-  <!ENTITY scanfref       SYSTEM "scanf.refentry">
-  <!ENTITY setbufref       SYSTEM "setbuf.refentry">
-  <!ENTITY sleepref       SYSTEM "sleep.refentry">
-  <!ENTITY strcatref       SYSTEM "strcat.refentry">
-  <!ENTITY systemref       SYSTEM "system.refentry">
-  <!ENTITY toupperref       SYSTEM "toupper.refentry">
-  <!ENTITY ungetcref       SYSTEM "ungetc.refentry">
+  <!ENTITY qsortref      SYSTEM "qsort.refentry">
+  <!ENTITY scanfref      SYSTEM "scanf.refentry">
+  <!ENTITY setbufref     SYSTEM "setbuf.refentry">
+  <!ENTITY sleepref      SYSTEM "sleep.refentry">
+  <!ENTITY strcatref     SYSTEM "strcat.refentry">
+  <!ENTITY systemref     SYSTEM "system.refentry">
+  <!ENTITY toupperref    SYSTEM "toupper.refentry">
+  <!ENTITY ungetcref     SYSTEM "ungetc.refentry">
  ]>
 <book id="cc-guide" lang="en">
 <bookinfo>

@@ -97,7 +97,8 @@ PSECT {name,typelang,attrrev,edition,stacksize,entrypoint}
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
+<colspec colwidth="0.8in"/>
+<colspec colwidth="3.2in"/>
 <tbody>
 <row>
 <entry>name</entry>
