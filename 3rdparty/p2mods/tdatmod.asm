@@ -2,6 +2,8 @@
          use   os9defs
          endc
 
+F$DatMod equ   $25
+
 Type     set   Prgrm+Objct
 Revs     set   ReEnt+1
 edition  set   $01
