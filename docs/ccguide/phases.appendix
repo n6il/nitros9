@@ -10,9 +10,61 @@ options available to each phase.
 <variablelist>
 <varlistentry><term>cc1 &amp; cc2 (C executives)</term>
 <listitem>
+<cmdsynopsis>
+  <command>cc</command>
+  <arg>options</arg>
+  <arg rep="repeat" choice="plain"><replaceable>file</replaceable></arg>
+  <arg>options</arg>
+</cmdsynopsis>
 <para>
-cc [options] file {file} [options]
+Recognized file suffixes:
 </para>
+<informaltable frame="none">
+<tgroup cols="2">
+<colspec colwidth="0.5in">
+<colspec colwidth="3.0in">
+<tbody>
+<row>
+    <entry>.c</entry>
+    <entry>C source file</entry>
+</row>
+<row>
+    <entry>.a</entry>
+    <entry>Assembly language source file</entry>
+</row>
+<row>
+    <entry>.r</entry>
+    <entry>Relocatable module format file</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<para>
+Recognized options: (UPPER and lower case is equiv.)
+</para>
+<informaltable frame="none">
+<tgroup cols="2">
+<colspec colwidth="0.5in">
+<colspec colwidth="3.0in">
+<tbody>
+<row>
+    <entry>-a</entry>
+    <entry>Suppress assembly. Leave output in ".a" file.</entry>
+</row>
+<row>
+    <entry>-e=n</entry>
+    <entry>Edition number (n) is supplied to c.prep for
+    inclusion in module psect and/or to c.link for
+    inclusion as the edition number of the linked
+    module.</entry>
+</row>
+<row>
+    <entry>-o</entry>
+    <entry>Inhibits assembly code optimizer pass.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 </listitem>
 </varlistentry>
 </variablelist>

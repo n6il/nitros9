@@ -626,7 +626,7 @@ Any of the above file types may be mixed on the command line.
 </para>
 <table frame="none">
 <title>File Name Suffix Conventions</title>
-<tgroup cols="3">
+<tgroup cols="2">
 <colspec colwidth="0.5in">
 <colspec colwidth="3.0in">
 <thead>
