@@ -34,6 +34,12 @@ contained herein is subject to change without notice.</para>
 <revision>
 <revnumber>F-1</revnumber>
 <date>January 1983</date>
+<revremark>Original Microware edition</revremark>
+</revision>
+<revision>
+<revnumber>G</revnumber>
+<date>January 2003</date>
+<revremark>Updated to reflect OS-9 Level 1 Version 1.2</revremark>
 </revision>
 </revhistory>
 </bookinfo>
@@ -4557,7 +4563,7 @@ character.</para>
 
 
 <sect1>
-<title>ABIT Set bits in an allocation bit map F$AllBit</title>
+<title>F$AllBit - Set bits in an allocation bit map</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -4599,7 +4605,7 @@ the allocation bit map.</para>
 </sect1>
 
 <sect1>
-<title>CHAIN Load and execute a new primary module F$Chain</title>
+<title>F$Chain - Load and execute a new primary module</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -4705,7 +4711,7 @@ description.</para>
 </sect1>
 
 <sect1>
-<title>COMPARE NAMES Compare two names F$CmpNam</title>
+<title>F$CmpNam - Compare two names</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -4744,7 +4750,7 @@ character set.</para>
 </sect1>
 
 <sect1>
-<title>CRC Compute CRC F$CRC</title>
+<title>F$CRC - Compute CRC</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -4789,7 +4795,7 @@ be stored) are not included in the CRC generation.</para>
 </sect1>
 
 <sect1>
-<title>DBIT Deallocate in a bit map F$DelBit</title>
+<title>F$DelBit - Deallocate in a bit map</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -4831,7 +4837,7 @@ the allocation bit map.</para>
 </sect1>
 
 <sect1>
-<title>EXIT Terminate the calling process. F$Exit</title>
+<title>F$Exit - Terminate the calling process</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -4873,7 +4879,7 @@ return an OS-9 error code or zero if no error occurred.</para>
 </sect1>
 
 <sect1>
-<title>FORK Create a new process. F$Fork</title>
+<title>F$Fork - Create a new process</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -4985,7 +4991,7 @@ continue until the process table becomes full.</para>
 </sect1>
 
 <sect1>
-<title>INTERCEPT Set up a signal intercept trap. F$Icpt</title>
+<title>F$Icpt - Set up a signal intercept trap</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5054,7 +5060,7 @@ instruction.</para>
 </sect1>
 
 <sect1>
-<title>GET ID Get process ID / user ID F$ID</title>
+<title>F$ID - Get process ID / user ID</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5096,7 +5102,7 @@ Several processes can have the same user ID.</para>
 </sect1>
 
 <sect1>
-<title>LINK Link to memory module. F$LINK</title>
+<title>F$LINK - Link to memory module</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5154,7 +5160,7 @@ not reentrant) only one process may link to it at a time.</para>
 </sect1>
 
 <sect1>
-<title>LOAD Load module(s) from a file, F$LOAD</title>
+<title>F$LOAD - Load module(s) from a file</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5207,7 +5213,7 @@ that occur on OPEN, READ, CLOSE and LINK system calls.</para>
 </sect1>
 
 <sect1>
-<title>MEM Resize data memory area, F$Mem</title>
+<title>F$Mem - Resize data memory area</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5260,7 +5266,7 @@ own &quot;address space&quot;.</para>
 </sect1>
 
 <sect1>
-<title>PRERR Print error message. F$PErr</title>
+<title>F$PErr - Print error message</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5305,7 +5311,7 @@ routine use the F$SSVC service request.</para>
 </sect1>
 
 <sect1>
-<title>PARSENAME Parse a path name, F$PrsNam</title>
+<title>F$PrsNam - Parse a path name</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5370,7 +5376,7 @@ calls may be needed to process a pathlist that has more than one name.</para>
 </sect1>
 
 <sect1>
-<title>SBMAP Search bit map for a free area F$SchBit</title>
+<title>F$SchBit - Search bit map for a free area</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5410,7 +5416,7 @@ carry set, beginning bit number and size of the largest block.</para>
 </sect1>
 
 <sect1>
-<title>SEND Send a signal to another process, F$Send</title>
+<title>F$Send - Send a signal to another process</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5477,7 +5483,7 @@ request descriptions.</para>
 </sect1>
 
 <sect1>
-<title>SLEEP Put calling process to sleep. F$Sleep</title>
+<title>F$Sleep - Put calling process to sleep</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5531,7 +5537,7 @@ queue.</para>
 </sect1>
 
 <sect1>
-<title>SETPR Set process priority. F$SPrior</title>
+<title>F$SPrior - Set process priority</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5572,7 +5578,7 @@ another process' priority only if it has the same user ID.</para>
 </sect1>
 
 <sect1>
-<title>SSVC Install function request F$SSVC</title>
+<title>F$SSVC - Install function request</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5704,7 +5710,7 @@ are free for user definition.</para>
 </sect1>
 
 <sect1>
-<title>SETSWI Set SWI vector. F$SSWI</title>
+<title>F$SSWI - Set SWI vector</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5756,7 +5762,7 @@ three vectors, you will not be able to call OS-9 at all.</para>
 </sect1>
 
 <sect1>
-<title>SETIME Set system date and time. F$STime</title>
+<title>F$STime - Set system date and time</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5828,7 +5834,7 @@ a time packet as follows:</para>
 </sect1>
 
 <sect1>
-<title>TIME Get system date and time. F$Time</title>
+<title>F$Time - Get system date and time</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5900,7 +5906,7 @@ in X. The packet looks like:</para>
 </sect1>
 
 <sect1>
-<title>UNLINK Unlink a module. F$Unlink</title>
+<title>F$Unlink - Unlink a module</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5945,7 +5951,7 @@ the module directory.</para>
 </sect1>
 
 <sect1>
-<title>WAIT Wait for child process to die. F$WAIT</title>
+<title>F$Wait - Wait for child process to die</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -5954,7 +5960,7 @@ the module directory.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$WAIT</entry>
+	<entry>OS9  F$Wait</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5997,7 +6003,7 @@ children.</para>
 
 
 <sect1>
-<title>A64 Allocate a 64 byte memory block F$All64</title>
+<title>F$All64 - Allocate a 64 byte memory block</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6071,7 +6077,7 @@ BASE PAGE  ---&gt;   +-------------+         +-------------+
 </sect1>
 
 <sect1>
-<title>APRC Insert process in active process queue F$AProc</title>
+<title>F$AProc - Insert process in active process queue</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6116,7 +6122,7 @@ process is in user state, it is inserted according to its age.</para>
 </sect1>
 
 <sect1>
-<title>FIND-64 Find a 64 byte memory block F$Find64</title>
+<title>F$Find64 - Find a 64 byte memory block</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6160,7 +6166,7 @@ descriptors when given their number.</para>
 </sect1>
 
 <sect1>
-<title>IODEL Delete I/O device from system F$IODel</title>
+<title>F$IODel - Delete I/O device from system</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6206,7 +6212,7 @@ limited or no use for other applications.</para>
 </sect1>
 
 <sect1>
-<title>IOQUEUE Enter I/O queue F$IOQU</title>
+<title>F$IOQU - Enter I/O queue</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6247,7 +6253,7 @@ will send a wakeup signal to the calling process.</para>
 </sect1>
 
 <sect1>
-<title>SETIRQ Add or remove device from IRQ table. F$IRQ</title>
+<title>F$IRQ - Add or remove device from IRQ table</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6329,7 +6335,7 @@ identifies an active bit(s)</entry>
 </sect1>
 
 <sect1>
-<title>NXTPRCS Start next process F$NProc</title>
+<title>F$NProc - Start next process</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6365,7 +6371,7 @@ active process queue again.</para>
 </sect1>
 
 <sect1>
-<title>R64 Deallocate a 64 byte memory block F$Ret64</title>
+<title>F$Ret64 - Deallocate a 64 byte memory block</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6405,7 +6411,7 @@ memory as described in the F$All64 service request.</para>
 </sect1>
 
 <sect1>
-<title>SRQMEM System memory request F$SRqMem</title>
+<title>F$SRqMem - System memory request</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6445,7 +6451,7 @@ rounded to the next 256 byte page boundary.</para>
 </sect1>
 
 <sect1>
-<title>SRTMEM Return System Memory F$SRtMem</title>
+<title>F$SRtMem - Return System Memory</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6485,7 +6491,7 @@ The U register must point to an even page boundary.
 </sect1>
 
 <sect1>
-<title>VMOD Verify module F$VModul</title>
+<title>F$VModul - Verify module</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6528,7 +6534,7 @@ broken in favor of the established module.</para>
 
 
 <sect1>
-<title>ATTACH Attach a new device to the system. I$Attach</title>
+<title>I$Attach - Attach a new device to the system</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6597,7 +6603,7 @@ write operations will be permitted as follows:
 </sect1>
 
 <sect1>
-<title>CHDIR Change working directory. I$ChgDir</title>
+<title>I$ChgDir - Change working directory</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6654,7 +6660,7 @@ execution directory is changed.</para>
 </sect1>
 
 <sect1>
-<title>CLOSE Close a path to a file/device. I$Close</title>
+<title>I$Close - Close a path to a file/device</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6701,7 +6707,7 @@ desired to change the files/devices they correspond to.</para>
 </sect1>
 
 <sect1>
-<title>CREATE Create a path to a new file. I$Create</title>
+<title>I$Create - Create a path to a new file</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6783,7 +6789,7 @@ MAKDIR).</para>
 </sect1>
 
 <sect1>
-<title>DELETE Delete a file. I$Delete</title>
+<title>I$Delete - Delete a file</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6822,7 +6828,7 @@ to delete devices will result in an error.</para>
 </sect1>
 
 <sect1>
-<title>DETACH Remove a device from the system. I$Detach</title>
+<title>I$Detach - Remove a device from the system</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6867,7 +6873,7 @@ SCFMAN also uses ATTACH/DETACH to setup its second (echo) device.</para>
 </sect1>
 
 <sect1>
-<title>DUP Duplicate a path. I$Dup</title>
+<title>I$Dup Duplicate a path</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6911,7 +6917,7 @@ descriptor is not copied.</para>
 </sect1>
 
 <sect1>
-<title>GETSTAT Get file device status. I$GetStt</title>
+<title>I$GetStt - Get file device status</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -7214,7 +7220,7 @@ descriptors.</para>
 </sect1>
 
 <sect1>
-<title>MAKDIR Make a new directory I$MakDir</title>
+<title>I$MakDir - Make a new directory</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -7272,7 +7278,7 @@ bit 7 = (don't care)
 </sect1>
 
 <sect1>
-<title>OPEN Open a path to a file or device I$Open</title>
+<title>I$Open - Open a path to a file or device</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -7344,7 +7350,7 @@ in the access mode.</para>
 </sect1>
 
 <sect1>
-<title>READ Read data from a file or device I$Read</title>
+<title>I$Read - Read data from a file or device</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -7405,7 +7411,7 @@ C. An error condition occurs.
 </sect1>
 
 <sect1>
-<title>READLN Read a text line with editing. I$ReadLn</title>
+<title>I$ReadLn - Read a text line with editing</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -7458,7 +7464,7 @@ request will return an end of file error.</para>
 </sect1>
 
 <sect1>
-<title>SEEK Reposition the logical file pointer I$Seek</title>
+<title>I$Seek - Reposition the logical file pointer</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -7507,7 +7513,7 @@ without error.</para>
 </sect1>
 
 <sect1>
-<title>SETSTAT Set file/device status I$SetStt</title>
+<title>I$SetStt - Set file/device status</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -7775,7 +7781,7 @@ may be read.</para>
 </sect1>
 
 <sect1>
-<title>WRITE Write data to file or device I$Write</title>
+<title>I$Write - Write data to file or device</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -7820,7 +7826,7 @@ automatically expanded.</para>
 </sect1>
 
 <sect1>
-<title>WRITELN Write line of text with editing I$WritLn</title>
+<title>I$WritLn - Write line of text with editing</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9481,7 +9487,7 @@ requested file.</entry></row>
 <title>Level Two System Service Requests</title>
 
 <sect1>
-<title>$3A* F$AllImg Allocate Image RAM blocks F$AllImg</title>
+<title>F$AllImg - Allocate Image RAM blocks</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9522,7 +9528,7 @@ need to be contiguous.</para>
 </sect1>
 
 <sect1>
-<title>$4B* F$AllPrc Allocate Process descriptor F$AllPrc</title>
+<title>F$AllPrc - Allocate Process descriptor</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9560,7 +9566,7 @@ need to be contiguous.</para>
 </sect1>
 
 <sect1>
-<title>$39* F$AllRAMAllocate RAM blocks F$AllRAM</title>
+<title>F$AllRAM - Allocate RAM blocks</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9600,7 +9606,7 @@ free RAM blocks.</para>
 </sect1>
 
 <sect1>
-<title>$3F* F$AllTsk Allocate process Task number F$AllTsk</title>
+<title>F$AllTsk - Allocate process Task number</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9639,7 +9645,7 @@ free RAM blocks.</para>
 </sect1>
 
 <sect1>
-<title>$35* F$Boot Bootstrap system F$Boot</title>
+<title>F$Boot - Bootstrap system</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9679,7 +9685,7 @@ an area which is then searched for new modules.</para>
 </sect1>
 
 <sect1>
-<title>$36* F$BtMem Bootstrap Memory request F$BtMem</title>
+<title>F$BtMem - Bootstrap Memory request</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9720,7 +9726,7 @@ contigous memory in the system's address space.</para>
 </sect1>
 
 <sect1>
-<title>$50* F$ClrBlk Clear specific Block F$ClrBlk</title>
+<title>F$ClrBlk - Clear specific Block</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9759,7 +9765,7 @@ contigous memory in the system's address space.</para>
 </sect1>
 
 <sect1>
-<title>$1B F$CpyMem Copy external Memory F$CpyMem</title>
+<title>F$CpyMem - Copy external Memory</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9799,7 +9805,7 @@ memory in the system may be viewed in this way.</para>
 </sect1>
 
 <sect1>
-<title>$44* F$DATLog Convert DAT block/offset to Logical Addr F$DATLog</title>
+<title>F$DATLog - Convert DAT block/offset to Logical Addr</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9839,7 +9845,7 @@ equivalent logical address.</para>
 </sect1>
 
 <sect1>
-<title>$45* F$DATTmp Make Temporary DAT image F$DATTmp</title>
+<title>F$DATTmp - Make Temporary DAT image</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9878,7 +9884,7 @@ equivalent logical address.</para>
 </sect1>
 
 <sect1>
-<title>$3B* F$DelImg Deallocate Image RAM blocks F$DelImg</title>
+<title>F$DelImg - Deallocate Image RAM blocks</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9918,7 +9924,7 @@ equivalent logical address.</para>
 </sect1>
 
 <sect1>
-<title>$4C* Deallocate Process descriptor F$DelPrc</title>
+<title>F$DelPrc - Deallocate Process descriptor</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9956,7 +9962,7 @@ equivalent logical address.</para>
 </sect1>
 
 <sect1>
-<title>$51* F$DelRam Deallocate RAM blocks F$DelRam</title>
+<title>F$DelRam - Deallocate RAM blocks</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -9994,7 +10000,7 @@ equivalent logical address.</para>
 </sect1>
 
 <sect1>
-<title>$40* F$DelTsk Deallocate process Task number F$DelTsk</title>
+<title>F$DelTsk - Deallocate process Task number</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -10032,7 +10038,7 @@ equivalent logical address.</para>
 </sect1>
 
 <sect1>
-<title>$4D* F$ELink Link using module directory Entry F$ELink</title>
+<title>F$ELink - Link using module directory Entry</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10074,7 +10080,7 @@ directory entry is supplied rather than a pointer to a module name.</para>
 </sect1>
 
 <sect1>
-<title>$4E* F$FModul Find Module directory entry F$FModul</title>
+<title>F$FModul - Find Module directory entry</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -10117,7 +10123,7 @@ module name.</para>
 </sect1>
 
 <sect1>
-<title>$3E* F$FreeHB get Free High block  F$FreeHB</title>
+<title>F$FreeHB - Get Free High block</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -10156,7 +10162,7 @@ module name.</para>
 </sect1>
 
 <sect1>
-<title>$3D* F$FreeLB get Free Low block  F$FreeLB</title>
+<title>F$FreeLB - Get Free Low block</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -10194,7 +10200,7 @@ module name.</para>
 </sect1>
 
 <sect1>
-<title>$19 F$GBlkMp Get system Block Map copy F$GBlkMp</title>
+<title>F$GBlkMp - Get system Block Map copy</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -10230,7 +10236,7 @@ module name.</para>
 </sect1>
 
 <sect1>
-<title>$1A F$GModDr Get Module Directory copy F$GModDr</title>
+<title>F$GModDr - Get Module Directory copy</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -10261,7 +10267,7 @@ module name.</para>
 </sect1>
 
 <sect1>
-<title>$18 F$GPrDsc  Get Process Descriptor copy  F$GPrDsc</title>
+<title>F$GPrDsc - Get Process Descriptor copy</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10300,7 +10306,7 @@ descriptor.</para>
 </sect1>
 
 <sect1>
-<title>$37* F$GProcP Get Process Pointer  F$GProcP</title>
+<title>F$GProcP - Get Process Pointer</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10339,7 +10345,7 @@ descriptor in the system address space.</para>
 </sect1>
 
 <sect1>
-<title>$49* F$LDABX Load A from 0,1 in task B  F$LDABX</title>
+<title>F$LDABX - Load A from 0,1 in task B</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10381,7 +10387,7 @@ routine.</para>
 </sect1>
 
 <sect1>
-<title>$46* F$LDAXY Load A [X, [Y] ]  F$LDAXY</title>
+<title>F$LDAXY - Load A [X, [Y] ]</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10421,7 +10427,7 @@ routine.</para>
 </sect1>
 
 <sect1>
-<title>$47* F$LDAXYP  Load A [X+, [Y] ] F$LDAXYP</title>
+<title>F$LDAXYP - Load A [X+, [Y] ]</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10463,7 +10469,7 @@ image at (Y).</para>
 </sect1>
 
 <sect1>
-<title>$48* F$LDDDXY Load D [D+X, [Y] ]  F$LDDDXY</title>
+<title>F$LDDDXY - Load D [D+X, [Y] ]</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10505,7 +10511,7 @@ the memory block.</para>
 </sect1>
 
 <sect1>
-<title>$4F* F$MapBlk Map specific Block F$MapBlk</title>
+<title>F$MapBlk - Map specific Block</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10544,7 +10550,7 @@ the memory block.</para>
 </sect1>
 
 <sect1>
-<title>$38* F$Move Move data (low bound first) F$Move</title>
+<title>F$Move - Move data (low bound first)</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10587,7 +10593,7 @@ System's to User's, or vice-versa.</para>
 </sect1>
 
 <sect1>
-<title>$43* F$RelTsk Release Task number F$RelTsk</title>
+<title>F$RelTsk - Release Task number</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10625,9 +10631,9 @@ System's to User's, or vice-versa.</para>
 </sect1>
 
 <sect1>
-<title>$42* F$ResTsk Reserve Task number F$ResTsk</title>
+<title>F$ResTsk - Reserve Task number</title>
 
-<para> DAT task number.
+<para>DAT task number.
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10665,7 +10671,7 @@ System's to User's, or vice-versa.</para>
 </sect1>
 
 <sect1>
-<title>$3C* F$SetImg Set process DAT Image F$SetImg</title>
+<title>F$SetImg - Set process DAT Image</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10707,7 +10713,7 @@ System's to User's, or vice-versa.</para>
 </sect1>
 
 <sect1>
-<title>$41* F$SetTsk Set process Task DAT registers  F$SetTsk</title>
+<title>F$SetTsk - Set process Task DAT registers</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10745,7 +10751,7 @@ System's to User's, or vice-versa.</para>
 </sect1>
 
 <sect1>
-<title>$34* F$SLink  System Link  F$SLink</title>
+<title>F$SLink - System Link</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10790,7 +10796,7 @@ adress space into the Address space that contains its name.</para>
 </sect1>
 
 <sect1>
-<title>$28* F$SRqMem System Memory Request  F$SRqMem</title>
+<title>F$SRqMem - System Memory Request</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10831,7 +10837,7 @@ other semi-permanent system memory.</para>
 </sect1>
 
 <sect1>
-<title>$29* F$SRtMem System Memory Return  F$SRtMem</title>
+<title>F$SRtMem - System Memory Return</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -10868,7 +10874,7 @@ after it is no longer needed.</para>
 </sect1>
 
 <sect1>
-<title>$4A* F$STABX Store A at 0,X in task B F$STABX</title>
+<title>F$STABX - Store A at 0,X in task B</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -10910,7 +10916,7 @@ rather than the current address space.</para>
 </sect1>
 
 <sect1>
-<title>$1C F$SUser Set User ID number F$SUser</title>
+<title>F$SUser Set User ID number</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -10946,7 +10952,7 @@ rather than the current address space.</para>
 </sect1>
 
 <sect1>
-<title>$1D F$UnLoad Unlink module by name F$UnLoad</title>
+<title>F$UnLoad - Unlink module by name</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -10985,7 +10991,7 @@ name is supplied rather than the address of the module header.</para>
 </sect1>
 
 <sect1>
-<title>DELETE Delete a file I$DeletX</title>
+<title>I$DeletX - Delete a file</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
