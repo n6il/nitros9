@@ -222,7 +222,7 @@ L00FB    ldd   ,y++
          os9   F$Link
          lbcs  OS9Cold
          stu   <D.Init
-         lda   Compat1,u		get compatibility byte
+         lda   Feature1,u		get feature byte 1
          bita  #CRCOn			CRC on?
          beq   GetMem			branch if not (already cleared earlier)
          inc   <D.CRC			else turn on CRC checking
