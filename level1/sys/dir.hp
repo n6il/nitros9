@@ -1,6 +1,6 @@
 @DIR
-Syntax: Dir [e][x][dir or path]
+Syntax: Dir [opts] [path]
 Usage : Displays formatted list of the file names in a directory
 Opts  :
-  e = print extended directory
-  x = print execution directory
+  -e = extended dir
+  -x = execution dir
