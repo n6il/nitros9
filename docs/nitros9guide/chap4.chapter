@@ -1,7 +1,7 @@
 <chapter>
 <title>Advanced Features of the Shell</title>
 <para>
-The basic shell functions were introduced in Section 2 in order
+The basic shell functions were introduced in a prior chapter in order
 to provide an understanding of how basic OS-9 commands work. In
 this section the more advanced capabilities of the shell are
 discussed. In addition to basic command line processing, the shell
@@ -112,8 +112,7 @@ instead of its (smaller) default amount.</entry>
 The verb must be the first name in the command line. After it
 has been scanned, the shell first checks if it is a &quot;built-in&quot;
 command. If it is, it is immediately executed. Otherwise, the shell
-assumes it is a program name and attempts to locate and execute it
-as described in Sections 5.3 and 5.4.1.
+assumes it is a program name and attempts to locate and execute it.
 </para>
 </section>
 
@@ -136,7 +135,7 @@ When command programs are invoked by the shell, they are
 allocated the minimum amount of working RAM memory specified in the
 program's module header. A module header is part of all executable
 programs and holds the program's name, size, memory requirements,
-etc. (See 5.4). Sometimes it is desirable to increase this default
+etc. Sometimes it is desirable to increase this default
 memory size. Memory can be assigned in 256-byte pages using the
 modifier &quot;#n&quot; where n is the decimal number of pages, or in 1024
 byte increments using the modifier &quot;#nK&quot;. The two examples below
@@ -178,7 +177,7 @@ errors are sent on this path.
 </para>
 <para>
 When new processes are created, they inherit their parent process'
-standard I/O paths (See 5.3). Therefore, when the shell
+standard I/O paths. Therefore, when the shell
 creates new processes, they usually inherit its standard I/O paths.
 When you log-on the shell's standard input is the terminal keyboard;
 the standard output and error output is the terminal's display.
@@ -216,7 +215,7 @@ output of &quot;list&quot; can be redirected to write to the system printer
 instead of the terminal:
 </para>
 <screen>
-OS9: LIST correspondence &gt;/p
+OS9: list correspondence &gt;/p
 </screen>
 <para>
 Files referenced by I/O redirection modifiers are automatically
@@ -232,7 +231,7 @@ If the LIST command is used on the file &quot;/D1/savelisting&quot;, output
 from the DIR command will be displayed as shown below:
 </para>
 <screen>
-OS9: LIST /D1/savelisting
+OS9: list /d1/savelisting
 
    Directory of .   10:15:00
 myfile          savelisting       file1
@@ -266,7 +265,7 @@ shell command line by separating each
 from the next one with a &quot;;&quot; character. For example:
 </para>
 <screen>
-OS9: COPY myfile /D1/newfile ; DIR &gt;/p
+OS9: copy myfile /d1/newfile ; dir &gt;/p
 </screen>
 <para>
 This command line will first execute the COPY command and then the
@@ -288,9 +287,9 @@ OS9: dir &gt;/d1/myfile ; list temp &gt;/p; del temp
 </screen>
 <para>
 All programs executed sequentially are in fact separate, child
-processes of the shell (See 5.3). After initiating execution of a
+processes of the shell. After initiating execution of a
 program to be executed sequentially, the shell enters the &quot;wait&quot;
-state (See 5.2) until execution of the called program terminates.
+state until execution of the called program terminates.
 </para>
 </section>
 
@@ -299,7 +298,7 @@ state (See 5.2) until execution of the called program terminates.
 <para>
 The second kind of separator is the &quot;&amp;&quot; which implies concurrent
 execution, meaning that the program is run (as a separate, child
-process, see 5.3), but the shell does not wait for it to complete
+process), but the shell does not wait for it to complete
 before processing the next command.
 </para>
 <para>
@@ -311,7 +310,7 @@ system versus the memory requirements of the specific programs.
 Here is an example:
 </para>
 <screen>
-OS9: DIR &gt;/P&amp;
+OS9: dir &gt;/p&amp;
 &amp;007
 
 OS9:
@@ -326,7 +325,7 @@ processes you have created by using the PROCS command. Below is
 another example:
 </para>
 <screen>
-OS9: DIR &gt;/P&amp; LIST file1&amp; COPY file1 file2 ; DEL temp
+OS9: dir &gt;/p&amp; list file1&amp; copy file1 file2 ; del temp
 </screen>
 <para>
 
@@ -440,7 +439,7 @@ copy all files from a directory called WORKING to a directory called
 ARCHIVE:
 </para>
 <screen>
-OS9: chd /d0/WORKING; dsave ! (chd /d0/ARCHIVE)
+OS9: chd /d0/WORKING; dsave /d0/ARCHIVE ! shell -p
 </screen>
 </section>
 
@@ -467,12 +466,12 @@ The built-in commands and their functions are:
 <row>
 <entry>chd <replaceable>pathlist</replaceable></entry>
 <entry>change the working data directory to the directory
-specified by the pathlist (see 3.6).</entry>
+specified by the pathlist.</entry>
 </row>
 <row>
 <entry>chx <replaceable>pathlist</replaceable></entry>
 <entry>change the working execution directory to the
-directory specified by the pathlist (see 3.6).</entry>
+directory specified by the pathlist.</entry>
 </row>
 <row>
 <entry>ex name</entry>
@@ -495,7 +494,7 @@ its place.</entry>
 </row>
 <row>
 <entry>setpr <replaceable>proc ID</replaceable> <replaceable>priority</replaceable></entry>
-<entry>changes process' priority (see 5.1).</entry>
+<entry>changes process' priority.</entry>
 </row>
 <row>
 <entry>x</entry>
@@ -503,7 +502,7 @@ its place.</entry>
 </row>
 <row>
 <entry>-x</entry>
-<entry>causes shell not to abort on error (See 4.7)</entry>
+<entry>causes shell not to abort on error</entry>
 </row>
 <row>
 <entry>p</entry>
@@ -542,7 +541,7 @@ and modifiers can be used.
 The shell is a reentrant program that can be simultaneously
 executed by more than one process at a time. As is the case with
 most other OS-9 programs, it uses standard I/O paths for routine
-input and output (see 4.2.3). specifically, it requests command
+input and output. specifically, it requests command
 lines from the standard input path and writes its prompts and other
 data to the standard error path.
 </para>
@@ -551,7 +550,7 @@ The shell can start up another process also running the shell by
 means of the &quot;shell&quot; command. If the standard input path is
 redirected to a mass storage file, the new &quot;incarnation&quot; of the
 shell can accept and execute command lines from the file instead of
-a terminal keyboard. The text file (see 3.9.2) to be processed is
+a terminal keyboard. The text file to be processed is
 called a &quot;procedure file&quot;. It contains one or more command lines
 that are identical to command lines that are manually entered from
 the keyboard. This technique is sometimes called &quot;batch&quot; or
@@ -561,7 +560,7 @@ the keyboard. This technique is sometimes called &quot;batch&quot; or
 If the <replaceable>program name</replaceable> specified on a shell command line can not be
 found in memory or in the execution directory, shell will search the
 data directory for a file with the desired name. If one is found,
-shell will automatically execute it as a procedure file (see 2.0).
+shell will automatically execute it as a procedure file.
 </para>
 <para>
 Execution of procedure files have a number of valuable
@@ -597,8 +596,7 @@ OS9: procfile&amp;
 </screen>
 <para>
 OS-9 does not have any constraints on the number of jobs that can be
-simultaneously executed as long as there is memory available (see
-5.4). Also, the procedure files can themselves cause sequential or
+simultaneously executed as long as there is memory available. Also, the procedure files can themselves cause sequential or
 concurrent execution of additional procedure files. Here's a more
 complex example of initiating two processing streams with
 redirection of each shell's output to files:
@@ -627,18 +625,18 @@ output path. The standard error codes are listed in the Appendix of
 this manual. If desired, the &quot;printerr&quot; command can be executed,
 which replaces the smaller, built-in error display routine with a
 larger (and slower) routine that looks up descriptive error messages
-from a text file called &quot;/d0/sys/errmsg&quot;.
+from a text file called &quot;/dd/sys/errmsg&quot;.
 Once the &quot;printerr&quot;
 command has been run it cannot be turned off. Also, its effect is
 system-wide.
 </para>
 <para>
-Programs called by the shell can return an error code in the MPU
+Programs called by the shell can return an error code in the CPU's
 &quot;B&quot; register (otherwise B should be cleared) upon termination. This
 type of error, as well as errors detected by the shell itself, will
 cause an error message to be displayed and processing of the command
 line or procedure file to be terminated unless the &quot;-x&quot; built-in
-command has been previously executed (See 4.5).
+command has been previously executed.
 </para>
 </section>
 
@@ -646,7 +644,7 @@ command has been previously executed (See 4.5).
 <title>Running Compiled Intermediate Code Programs</title>
 <para>
 Before the shell executes a program, it checks the program
-module's language type. If its type is not 6809 machine language,
+module's language type. If its type is not &CPU machine language,
 shell will call the appropriate run-time system for that module.
 Versions of the shell supplied for various systems are capable of
 calling different run-time systems. Most versions of shell call
@@ -655,11 +653,11 @@ call the Pascal P-code interpreter (PascalN), or the CIS Cobol
 runtime system (RunC).
 </para>
 <para>
-For example, if you wanted to run a BASIC09 I-code module called
+For example, if you wanted to run a Basic09 I-code module called
 &quot;adventure&quot;, you could type the command given below:
 </para>
 <screen>
-OS9: BASIC09 adventure
+OS9: basic09 adventure
 </screen>
 <para>
 Or you could accomplish the same thing by typing the following:
@@ -703,7 +701,7 @@ tsmon /t3&amp;
 </programlisting>
 <para>
 NOTE: This LOGIN procedure will not work until a password file
-called &quot;/D0/SYS/PASSWORD&quot; has been created. For more information,
+called &quot;/DD/SYS/PASSWORD&quot; has been created. For more information,
 please see the LOGIN command description.
 </para>
 <para>

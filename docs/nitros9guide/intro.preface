@@ -2,11 +2,11 @@
 <title>Welcome to OS-9!</title>
 <titleabbrev>Introduction</titleabbrev>
 <para>
-The heart of your &make; Computer is an amazing device: the
-6809 microprocessor chip. This advanced microcomputer can run the
+The heart of your &make; is an amazing device: the
+&CPU microprocessor chip. This advanced microcomputer can run the
 kind of sophisticated software normally found only on much larger
 and costly computers. Because the OS-9 operating system was designed
-by the same people who designed the 6809 microcomputer, together
+by the same people who designed the 6809 microprocessor, together
 they provide an extremely efficient and powerful combination.
 </para>
 <para>
@@ -26,7 +26,7 @@ efficiency of its OS.
 <para>
 OS-9's overall structure was based on the famous UNIX<footnote id="unixdesc">
 <para>
-Unix is an operating system designed by Bell Telephone
+UNIX is an operating system designed by Bell Telephone
 Laboratories, which is becoming widely recognized as a standard for
 mini and micro operating systems because of its versatility and
 elegant structure.
@@ -44,7 +44,7 @@ book are:
 </para>
 <orderedlist numeration="arabic">
 
-<listitem><para>Friendly Unix<footnoteref linkend="unixdesc"/>-type
+<listitem><para>Friendly UNIX-like
 user interface and environment</para></listitem>
 
 <listitem><para>Multiuser/Multitasking Real-Time Operating System</para></listitem>
@@ -63,7 +63,7 @@ user interface and environment</para></listitem>
 <para>
 If you don't know what some of these thing mean yet - don't
 worry. As you explore OS-9 you'll soon learn how they enhance the
-capability of your &make; Computer and make it so much easier to use
+capability of your &make; and make it so much easier to use
 in almost any application.
 </para>
 <para>

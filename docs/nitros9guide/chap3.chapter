@@ -165,7 +165,7 @@ Here are examples of <emphasis>illegal</emphasis> names:
 Each physical input/output device supported by the system must
 have a unique name. The actual names used are defined when the
 system is set up and cannot be changed while the system is running.
-The device names used for the &make; Computer are:
+The device names used for the &make; are:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
@@ -407,7 +407,7 @@ Now we will create a new file and put in the new directory, using
 the COPY command to duplicate &quot;file1&quot;:
 </para>
 <screen>
-OS9: COPY /D1/file1 /D1/NEWDIR/file1.copy
+OS9: copy /d1/file1 /d1/newdir/file1.copy
 </screen>
 <para>
 Observe that the second pathlist now has three names: the name of
@@ -450,14 +450,14 @@ their storage to the unallocated storage pool. Therefore, the
 following sequence must be performed to delete a directory file:
 </para>
 <para>
-1 - All file names in the directory must be deleted.
+1. All file names in the directory must be deleted.
 </para>
 <para>
-2 - The &quot;attr&quot; command is used to turn off the files directory
+2. The &quot;attr&quot; command is used to turn off the files directory
 attrribute (-d option), making it an ordinary file (see 3.8).
 </para>
 <para>
-3 - The file may now be deleted using the &quot;del&quot; command.
+3. The file may now be deleted using the &quot;del&quot; command.
 </para>
 <para>
 A simpler alternative is to use the DELDIR command to automatically
@@ -485,7 +485,7 @@ files:
 <itemizedlist>
 <listitem><para>
 Directories have the same ownership and security attributes
-and rules as regular files. See Section 3.6.
+and rules as regular files.
 </para></listitem>
 <listitem><para>
 The name of a given file appears in exactly one directory.
@@ -584,7 +584,7 @@ directory, depending on the usage of the pathlist:
 ---&gt; OS-9 will search the execution directory when it attempts to
 load files into memory assumed to be executable programs. This
 means that programs to be run as commands or loaded into
-memory must be in the current execution directory (See 5.4.1).
+memory must be in the current execution directory.
 </para>
 <para>
 ---&gt; The data directory is used for all other file references (such
@@ -630,7 +630,7 @@ independently change the current working data and execution
 directories, respectively. These command names must be followed by
 a pathlist that describes the new directory file. You must have
 permission to access the directory according to normal file security
-rules (See 3.8). Here are some examples:
+rules. Here are some examples:
 </para>
 <screen>
 OS9: chd /D1/MY.DATAFILES
@@ -642,8 +642,8 @@ When using the CHD or CHX commands, pathlists work the same as they
 do for regular files, except for the last name in the pathlist must
 be a directory name. If the pathlist begins with a &quot;/&quot; , OS-9 will
 begin searching in the device directory for the new working
-directory, otherwise searching will begin with the present directory
-(See 3.6). For example, the following sequence of commands set the
+directory, otherwise searching will begin with the present directory.
+ For example, the following sequence of commands set the
 working directory to the same file:
 </para>
 <screen>
@@ -690,7 +690,7 @@ pathlist. Here are some examples:
 <entry>lists names in the working data directory's parent directory.</entry>
 </row>
 <row>
-<entry>OS9: DEL ../temp</entry>
+<entry>OS9: del ../temp</entry>
 <entry>deletes the file &quot;temp&quot; from the
 working data directory's parent directory.</entry>
 </row>
@@ -699,8 +699,8 @@ working data directory's parent directory.</entry>
 </informaltable>
 <para>
 The substitute names refer to either the execution or data
-directories, depending on the context in which they are used (See
-3.7.1). For example, if &quot;..&quot; is used in a pathlist of a file which
+directories, depending on the context in which they are used.
+For example, if &quot;..&quot; is used in a pathlist of a file which
 will be loaded and/or executed, it will represent the parent
 directory of the execution directory. Likewise, if &quot;.&quot; is used in a
 pathlist describing a program's input file, it will represent the
@@ -734,20 +734,19 @@ owner or by the &quot;public&quot; (all other users). Specifically, these six
 attributes are:
 </para>
 <para>
-WHITE PERMISSION FOR OWNER: If on, the owner may write to the file
+WRITE PERMISSION FOR OWNER: If on, the owner may write to the file
 or delete it. This permission can be used to protect important
 files from accidental deletion or modification.
 </para>
 <para>
 READ PERMISSION FOR OWNER: If on, the owner is allowed to read
 from the file. This can be used to prevent &quot;binary&quot; files from
-being used as &quot;text&quot; files (See 3.9)
+being used as &quot;text&quot; files
 </para>
 <para>
 EXECUTE PERMISSION FOR OWNER: If on, the owner can load the file into memory
 and execute it. Note that the file <emphasis>must</emphasis> contain one or
-more valid OS-9 format memory modules in order to actually load (See
-3.9.4 and 5.4.1).
+more valid OS-9 format memory modules in order to actually load
 </para>
 <para>
 The following &quot;public permissions&quot; work the same way as
@@ -784,12 +783,12 @@ attributes of the files in the current working directory is:
 <screen>
    Directory of . 10:20:44
 
-Owner Last Modified Attributes Sector Bytecount Name
------ ------------- ---------- ------ --------- ----
-   1  81/05/29 1402 --e--e-r       47        42 file1
-   0  81/10/12 0215 ---wr-wr       48        43 file2
-   3  81/04/29 2335 -s----wr       51        22 file3
-   1  82/01/06 1619 d--wr-wr       6D       800 NEWDIR
+Owner Last Modified     Attributes Sector Bytecount Name
+----- ----------------- ---------- ------ --------- ----
+   1  2002/05/29 14:02   --e--e-r       47        42 file1
+   0  2002/10/12 02:15   ---wr-wr       48        43 file2
+   3  2002/04/29 23:35   -s----wr       51        22 file3
+   1  2003/01/06 16:19   d--wr-wr       6D       800 NEWDIR
 </screen>
 
 <para>
@@ -829,9 +828,9 @@ permission for both the owner and the public.
 <para>
 The &quot;directory&quot; attribute behaves somewhat differently than the
 read, write, and execute permissions. This is because it would be
-quite dangerous to be able to change directory files to normal files
-(See 3.5), and creation of a directory requires special initialization
-(See 3.4). Therefore, the &quot;attr&quot; command
+quite dangerous to be able to change directory files to normal files,
+and creation of a directory requires special initialization.
+Therefore, the &quot;attr&quot; command
 <emphasis>cannot</emphasis> be used to turn
 the directory (d) attribute on (only &quot;makdir&quot; can), and can be used
 to turn it off <emphasis>only</emphasis> if the directory is empty.
@@ -960,14 +959,14 @@ OS-9 program modules resident in memory have a standard module
 format that, besides the object code, includes a &quot;module header&quot; and
 a CRC check value. Program module(s) stored in files contain exact
 binary copies of the programs as they will exist in memory, and not
-one byte more (See 5.4.1). OS-9 does not require a &quot;load record&quot;
+one byte more. OS-9 does not require a &quot;load record&quot;
 system commonly used by other operating systems because OS-9
 programs are position-independent code and therefore do not have to
 be loaded into specific memory addresses.
 </para>
 <para>
 In order for OS-9 to load the program module(s) from a file, the
-file itself must have execute permission (See 3.8) and each module
+file itself must have execute permission and each module
 must have a valid module header and CRC check value. If a program
 module has been altered in any way, either as a file or in memory,
 its CRC check value will be incorrect And OS-9 will refuse to load
@@ -1030,7 +1029,7 @@ previously discussed categories.
 <para>
 Examples of this category are COBOL Indexed Sequential (ISAM)
 files and some special word processor file formats which allow
-random access of text lines (See 3.9.2). As discussed in Sec.
+random access of text lines. As discussed in Sec.
 3.9.1, most OS-9 utility commands work with any file format including
 these special types. In general, the &quot;dump&quot; command is the preferred
 method for examining the contents of unusually formatted files.

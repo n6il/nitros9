@@ -151,7 +151,7 @@ If you wish to make further changes, press [N].
 </para>
 <para>
 When the driver selection is complete, a screen prompt requests that you
-select among the &make; Computer terminal I/O subroutines.  Select these
+select among the &make; terminal I/O subroutines.  Select these
 subroutines in the same manner that you selected the device drivers.
 You have the following modules from which to make your selections:
 </para>

@@ -1,26 +1,43 @@
-BOOK		= os9guide
+BOOKL1		= os9l1guide
+BOOKL2		= os9l2guide
 STYLESHEET	= docbook-utils.dsl
 
-all:	$(BOOK).pdf
+all:	$(BOOKL1).pdf $(BOOKL2).pdf
 
-$(BOOK).pdf: $(BOOK).docbook $(SRCS)
-	 docbook2pdf -d docbook-utils-a4.dsl#print $(BOOK).docbook
+$(BOOKL1).pdf: $(BOOKL1).docbook $(SRCS)
+	 docbook2pdf -d docbook-utils-a4.dsl#print $(BOOKL1).docbook
 
-$(BOOK).ps: $(BOOK).docbook $(SRCS)
-	 docbook2ps -d docbook-utils-a4.dsl#print $(BOOK).docbook
-#	 docbook2ps -d $(STYLESHEET) $(BOOK).docbook
+$(BOOKL2).pdf: $(BOOKL2).docbook $(SRCS)
+	 docbook2pdf -d docbook-utils-a4.dsl#print $(BOOKL2).docbook
 
-$(BOOK).html: $(BOOK).docbook $(SRCS)
+$(BOOKL1).ps: $(BOOKL1).docbook $(SRCS)
+	 docbook2ps -d docbook-utils-a4.dsl#print $(BOOKL1).docbook
+#	 docbook2ps -d $(STYLESHEET) $(BOOKL1).docbook
+
+$(BOOKL2).ps: $(BOOKL2).docbook $(SRCS)
+	 docbook2ps -d docbook-utils-a4.dsl#print $(BOOKL2).docbook
+#	 docbook2ps -d $(STYLESHEET) $(BOOKL2).docbook
+
+$(BOOKL1).html: $(BOOKL1).docbook $(SRCS)
 	$(RM) *.htm *.html
-#	jade -t sgml -V html-index -d /usr/share/sgml/docbook/dsssl-stylesheets-1.64/html/docbook.dsl $(BOOK).docbook
+#	jade -t sgml -V html-index -d /usr/share/sgml/docbook/dsssl-stylesheets-1.64/html/docbook.dsl $(BOOKL1).docbook
 #	collateindex.pl -p -o index.docbook HTML.index
-	docbook2html -d docbook-utils-a4.dsl#html $(BOOK).docbook
+	docbook2html -d docbook-utils-a4.dsl#html $(BOOKL1).docbook
 
-print: $(BOOK).ps
-	psnup -2 $(BOOK).ps | lpr
+$(BOOKL2).html: $(BOOKL2).docbook $(SRCS)
+	$(RM) *.htm *.html
+#	jade -t sgml -V html-index -d /usr/share/sgml/docbook/dsssl-stylesheets-1.64/html/docbook.dsl $(BOOKL2).docbook
+#	collateindex.pl -p -o index.docbook HTML.index
+	docbook2html -d docbook-utils-a4.dsl#html $(BOOKL2).docbook
+
+print: $(BOOKL1).ps $(BOOKL2).ps
+	psnup -2 $(BOOKL1).ps | lpr
+	psnup -2 $(BOOKL2).ps | lpr
 
 clean:
-	$(RM) *.htm *.html $(BOOK).pdf $(BOOK).ps
+	$(RM) *.htm *.html $(BOOKL1).pdf $(BOOKL1).ps $(BOOKL2).pdf \
+	$(BOOKL2).ps
+
 SRCS          = $(CHAPS) $(APXS) $(REFS)
 CHAPS         = intro.preface \
                 chap1.chapter chap2.chapter chap3.chapter chap4.chapter \

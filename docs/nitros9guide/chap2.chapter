@@ -9,7 +9,7 @@ keyboard. It was designed to provide a convenient, flexible, and
 easy-to-use interface between you and the powerful functions of the
 operating system. The shell is automatically entered after OS-9 is
 started up. You can tell when the shell is waiting for input
-because it displays the &quot;OS9:&quot; prompt. This prompt indicates that
+because it displays the shell prompt. This prompt indicates that
 the shell is active and awaiting a command from your keyboard. It
 makes no difference whether you use upper-case letters, lower-case
 letters, or a combination of both because OS-9 matches letters of
@@ -24,8 +24,8 @@ be:
 <listitem><para>The name of a machine language program on disk</para></listitem>
 <listitem><para>The name of a machine language program already in memory</para></listitem>
 <listitem><para>The name of an executable program compiled by a high-level
-language such as Basic09, Pascal, Cobol, etc. (See 4.8)</para></listitem>
-<listitem><para>The name of a procedure file (See 4.6)</para></listitem>
+language such as Basic09, Pascal, Cobol, etc.</para></listitem>
+<listitem><para>The name of a procedure file</para></listitem>
 </itemizedlist>
 <para>
 If you're a beginner, you will almost always use the first case,
@@ -39,13 +39,13 @@ program having the name specified in the following sequence:
 
 <orderedlist  numeration="arabic">
 
-<listitem><para>- If the program named is already in memory, it is run.</para></listitem>
+<listitem><para> If the program named is already in memory, it is run.</para></listitem>
 
-<listitem><para>- The &quot;execution directory&quot;, usually &quot;CMDS&quot;, is searched.
+<listitem><para> The &quot;execution directory&quot;, usually &quot;CMDS&quot;, is searched.
 If a file having the name given is found, it is loaded and
-run (See 5.4.1).</para></listitem>
+run.</para></listitem>
 
-<listitem><para>- The user's &quot;data directory&quot; is searched. If a file having
+<listitem><para> The user's &quot;data directory&quot; is searched. If a file having
 the name given is found, it is processed as a &quot;procedure
 file&quot; which means that the file is assumed to contain one
 or more command lines which are processed by the shell in
@@ -56,7 +56,7 @@ the same manner as if they had manually typed in one by one.</para></listitem>
 Mention is made above of the &quot;data directory&quot; and the &quot;execution
 directory&quot;. At all times each user is associated with two file
 directories. A more detailed explanation of directories is presented
-in section 3.3. The execution directory (usually CMDS) includes
+later. The execution directory (usually CMDS) includes
 files which are executable programs.
 </para>
 <para>
@@ -68,7 +68,7 @@ the shell.
 For example, in the command line:
 </para>
 <screen>
-LIST FILE1
+list file1
 </screen>
 <para>
 the program name is LIST, and the parameter passed to it is FILE1.
@@ -76,30 +76,29 @@ the program name is LIST, and the parameter passed to it is FILE1.
 <para>
 A command line may also include one or more &quot;modifiers&quot; which are
 specifications used by the shell to alter the program's standard
-input/output files or memory assignments (See 4.2).
+input/output files or memory assignments.
 
 
 </para>
 <section>
 <title>Sending Output to the Printer</title>
 <para>
-Normally, most commands and programs display output on the Color
-Computer video display. The output of these programs can
+Normally, most commands and programs display output on the &make video display. The output of these programs can
 alternatively be printed by specifying output redirection on the
 command line. This is done by including the following modifier to
 at the end of any command line:
 </para>
 <screen>
-&gt;/P
+&gt;/p
 </screen>
 <para>
 The &quot;&gt;&quot; character tells the shell to redirect output (See 4.3.2) to
-the printer using the &make; Computer's parallel port, which has the device
+the printer using the &make;'s printer port, which has the device
 name &quot;/P&quot; (See 3.2). For example, to redirect the output of the
 &quot;dir&quot; command to the printer, enter:
 </para>
 <screen>
-DIR &gt;/P
+dir &gt;/p
 </screen>
 <para>
 The &quot;xmode&quot; command can be used to set the printer port's
@@ -107,7 +106,7 @@ operating mode such as auto line feed, etc. For example, to examine
 the printer's current settings, type:
 </para>
 <screen>
-xmode /P
+xmode /p
 </screen>
 <para>
 To change any of these type XMODE  followed by the new value.
@@ -115,7 +114,7 @@ For example, to set the printer port for automatic line feeds at the
 end of every line, enter:
 </para>
 <screen>
-xmode /P lf;
+xmode /p lf;
 </screen>
 </section>
 </section>
@@ -141,7 +140,7 @@ example, to list the file called startup  (the system initialization
 procedure file), you enter the command line:
 </para>
 <screen>
-LIST STARTUP
+list startup
 </screen>
 <para>
 Some commands have two parameters. For example, the COPY command is
@@ -150,24 +149,24 @@ The name of the file to be copied and the name of the file which is
 to be the copy, for example:
 </para>
 <screen>
-COPY STARTUP NEWSTARTUP
+copy startup newstartup
 </screen>
 <para>
 Other commands have parameters which select options. For example:
 </para>
 <screen>
-DIR
+dir
 </screen>
 <para>
 shows the names of the files in the user's data directory. Normally
-it simply lists the file names only, but if the &quot;E&quot;
+it simply lists the file names only, but if the &quot;-e&quot;
 (for <emphasis>e</emphasis>ntire)
 option is given, it will also give complete statistics for each file
 such as the date and time created, size, security codes, etc. To do
 so enter:
 </para>
 <screen>
-DIR E
+dir -e
 </screen>
 <para>
 The DIR command also can accept a file name as a parameter which
@@ -175,17 +174,17 @@ specifies a directory file other than the (default) data directory.
 For example, to list file names in the directory sys , type:
 </para>
 <screen>
-DIR SYS
+dir sys
 </screen>
 <para>
 It is also possible to specify both a directory name parameter and
 the e  option, such as:
 </para>
 <screen>
-DIR SYS E
+dir sys -e
 </screen>
 <para>
-giving file names and complete statistics (See example in 3.8.1).
+giving file names and complete statistics.
 </para>
 </section>
 
@@ -195,7 +194,7 @@ giving file names and complete statistics (See example in 3.8.1).
 This section is a summary of some commands commonly used by new
 or casual OS-9 users, and some common formats. Each command is
 followed by an example. Refer to the individual command
-descriptions in Section 8 for more detailed information and
+descriptions later int his book for more detailed information and
 additional examples. Parameters or options shown in brackets are
 optional. Whenever a command references a directory file name, the
 file <emphasis>must</emphasis> be a directory file.
@@ -215,7 +214,7 @@ DEL filename                               del oldstuff
 </screen>
 Deletes (destroys) the file specified.
 <screen>
-DIR [filename] [e] [x]                     dir myfiles e
+DIR [filename] [-e] [-x]                   dir myfiles -e
 </screen>
 List names of files contained in a directory. If the &quot;x&quot; option is
 used the files in the current <emphasis>execution</emphasis>
@@ -261,12 +260,12 @@ as a file known by the name &quot;/TERM&quot;.
 <section>
 <title>Video Display Functions</title>
 <para>
-The &make; Computer uses reverse video (green letters in a black box) to
+The &make; uses reverse video (green letters in a black box) to
 represent lower-case letters. Normally they are not used, so you
 have to turn them on if you want to use them with the command:
 </para>
 <screen>
-TMODE -UPC
+tmode -upc
 </screen>
 <para>
 The screen pause feature stops programs after 16 lines have been
@@ -275,8 +274,8 @@ feature is on. It can be turned on or off with the TMODE command as
 follows:
 </para>
 <screen>
-TMODE -PAUSE              turns pause mode off
-TMODE PAUSE               turns pause mode on
+tmode -pause              turns pause mode off
+tmode pause               turns pause mode on
 </screen>
 <para>
 The display system also has a complete set of commands to emulate
@@ -290,13 +289,13 @@ These are described in detail in Appendix D.
 <para>
 Two keys are used in combination with other keys to change their
 meaning. The SHIFT KEY selects between upper case and lower case
-letters or punctuation, and the CLEAR key can be used to generate
-control characters .
+letters or punctuation, and the &ctrlkey key can be used to generate
+control characters.
 </para>
 <para>
 The keyboard has a shift lock function similar to a typewriter's,
 which is normally &quot;locked&quot;. The keyboard's shift lock may be
-reversed by depressing the control key (CLEAR) and 0 keys
+reversed by depressing the control key and 0 keys
 simultaneously. The shift lock only affects the letter (A-Z) keys.
 When the keyboard is locked, these keys generate upper case letters,
 and lower case only if the SHIFT key is depressed. When the
@@ -311,9 +310,9 @@ a letter key.
 <para>
 There are a number of useful control functions that can be
 generated from the keyboard. Many of these functions use &quot;control
-keys&quot; which are generated by simultaneously depressing the CLEAR key
+keys&quot; which are generated by simultaneously depressing the &ctrlkey key
 plus some other key. For example, to generate the character for
-CONTROL D press the CLEAR and D keys at the same time.
+CONTROL D press the &ctrlkey and D keys at the same time.
 </para>
 <variablelist>
 <varlistentry>

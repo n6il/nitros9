@@ -1,7 +1,7 @@
 <refentry id="cputype">
 <refnamediv>
 <refname>CPUTYPE</refname>
-<refpurpose>Identify 6809 or 6309</refpurpose>
+<refpurpose>Identify the CPU</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -12,7 +12,7 @@
 
 <refsect1><title>Description</title>
 <para>
-Identify 6809 or 6309
+Identifies the CPU as 6809 or 6309.
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

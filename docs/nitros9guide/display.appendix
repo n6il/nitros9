@@ -1,23 +1,22 @@
 <appendix>
-<title>Display System Functions</title>
+<title>VDG Display System Functions</title>
 
 <section>
-<title>The Video Display</title>
+<title>The Video Display Generator</title>
 <para>
-&vendor; OS-9 allows the video display to be used in
+&os9level allows the VDG display to be used in
 alphanumeric, semigraphic, and graphics modes. There are many
 built-in functions to control the display, which are activated by
 used of various ASCII control character. Thus, these functions are
 available for use by software written in any language using standard
-output statements (such as &quot;PRINT&quot; in BASIC). The &make;
-Computer's Basic09
+output statements (such as &quot;PRINT&quot; in BASIC). The &make;'s Basic09
 language has a Graphics Interface Module that can automatically
 generate these codes using Basic09 RUN statements.
 </para>
 <para>
 The display system has two display modes: Alphanumeric
 (&quot;Alpha&quot;) mode and Graphics mode. The Alphanumeric mode also
-includes &quot;semigraphic&quot; box-graphics. The &make; Computer's display
+includes &quot;semigraphic&quot; box-graphics. The &make;'s display
 system uses a separate - memory area for each display mode so
 operations on the Alpha display do not affect the Graphics display,
 and visa-versa. Either display can be selected under software
@@ -86,7 +85,7 @@ Each 8-bit character is assumed to be an ASCII character and is
 displayed if its high order bit (sign bit) is cleared. Lower case
 letters are displayed in reverse video. If the high order bit of
 the character is set it is assumed to be a &quot;Semigraphic 6&quot; graphics
-box. See the &make; Computer manual for an explanation of semigraphics
+box. See the &make; manual for an explanation of semigraphics
 functions.
 </para>
 
@@ -442,7 +441,7 @@ cursor position is not affected by this command.</entry>
 <section>
 <title>Get Status Commands</title>
 <para>
-The &make; Computer I/O driver includes OS-9 Get Status
+The &make; I/O driver includes OS-9 Get Status
 commands that return the display status and joystick values,
 respectively. These are accessable via the Basic09 Graphics
 Interface Module, or by the assembly language  system calls listed
