@@ -1,6 +1,6 @@
 @FORMAT
 Syntax: Format <devname> 
-Usage : Initializes an OS-9 diskette
+Usage : Initializes a NitrOS-9 diskette
 Opts  :
   R   - Ready
   L   - Logical format only

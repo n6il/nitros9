@@ -1,6 +1,6 @@
 @OS9GEN
 Syntax: OS9Gen devname [<opts>]
-Usage : Creates and links an OS-9 bootstrap file
+Usage : Creates and links a NitrOS-9 bootstrap file
 Opts  :
   -s = single drive option
   -t=<boottrack> = boot track file to use
