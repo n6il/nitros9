@@ -13,12 +13,15 @@
 * Disassembled 02/04/03 22:01:32 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 u0001    rmb   2
 u0003    rmb   1
@@ -53,8 +56,8 @@ u00D4    rmb   3
 u00D7    rmb   40
 u00FF    rmb   438
 size     equ   .
-name     equ   *
-L000D    fcs   /Shell/
+
+name     fcs   /Shell/
          fcb   $14 
 L0013    fcb   $13 
          fcb   $50 P
@@ -83,23 +86,16 @@ L0013    fcb   $13
          fcb   $00 
          fcb   $00 
          fcb   $00 
-L002E    fcb   $0A 
-         fcb   $53 S
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $0D 
-L0035    fcb   $0A 
-L0036    fcb   $4F O
-         fcb   $53 S
-         fcb   $39 9
-         fcb   $3A :
-L003A    fcb   $D7 W
-         fcb   $0E 
-         fcb   $3B ;
-start    equ   *
-         leas  -$05,s
+L002E    fcb   C$LF
+         fcc   "Shell"
+         fcb   C$CR
+L0035    fcb   C$LF
+L0036    fcc   "OS9:"
+
+L003A    stb   <u000E
+         rti
+
+start    leas  -$05,s
          pshs  y,x,b,a
          ldb   #$24
          lbsr  L00C9
@@ -146,11 +142,12 @@ L00A4    lbsr  L0131
          tstb  
          bne   L0085
          bra   L0067
-         eim   #$6F,$06,s
-         tst   <u000D
-         clr   <u0026
-         eim   #$30,<u008C
-         bitb  >$8D04
+L00AE    fcc   "eof"
+         fcb   C$CR
+L00B2    tst   <u000F
+         bne   L00BB
+         leax  <L00AE,pcr
+         bsr   L00BF
 L00BB    clrb  
 L00BC    os9   F$Exit   
 L00BF    ldy   #$0050
@@ -161,54 +158,59 @@ L00C9    clr   b,u
 L00CB    decb  
          bpl   L00C9
          rts   
-L00CF    oim   #$B7,<u00AA
-         aim   #$89,<u00D7
-         oim   #$93,<u0043
-         lsla  
-         andb  #$01
-         ora   #$43
-         lsla  
-         eorb  <u0001
-         clrb  
-         fcb   $45 E
-         eorb  <u0003
-         adcb  <u004B
-         rola  
-         inca  
-         ldd   #$0195
-         eorb  <u0001
-         lda   <u002D
-         eorb  <u0001
-         jmp   >$D001
-         jmp   >$2DD0
-         oim   #$7F,<u00D4
-         oim   #$80,<u002D
-         andb  <u0003
-         orb   -u000D,u
-         fcb   $45 E
-         lsrb  
-         negb  
-         sbcb  <u0001
-         lsr   <u00BB
-         neg   <u0000
-L010A    com   <u005E
-         cmpa  $02,x
-         beq   L00CB
-         aim   #$3D,<u00A6
-         aim   #$1A,<u008D
-L0116    oim   #$B8,<u003E
-         ldx   >$01AF
-         cmpx  >$01B8
-         ldx   >$01EF
-         subd  $00,x
-         neg   <u000D
-         bvc   L0151
-         stu   >$0D21
-         bls   L0153
-         rti   
-         cwai  #$3E
-         stu   >$C60E
-         bsr   L00C9
+L00CF    fdb   L0286-*
+         fcs   "*"
+         fdb   L035B-*
+         fcs   "W"
+         fdb   L0268-*
+         fcs   "CHD"
+         fdb   L0264-*
+         fcs   "CHX"
+         fdb   L023E-*
+         fcs   "EX"
+         fdb   L04BC-* 
+         fcs   "KILL"
+         fdb   L027E-*
+         fcs   "X"
+         fdb   L0282-*
+         fcs   "-X"
+         fdb   L026E-*
+         fcs   "P"
+         fdb   L0271-*
+         fcs   "-P"
+         fdb   L0276-*
+         fcs   "T"
+         fdb   L027A-*
+         fcs   "-T"
+         fdb   L04E8-*
+         fcs   "SETPR"
+         fdb   L0209-*
+         fcs   ";"
+         fdb   $0000
+L010A    fcb   $03
+         fcb   $5E       ^ symbol
+         fcb   $A1       ! symbol
+         fdb   L0334-*
+         fcs   ";"
+         fdb   L034D-*
+         fcs   "&"
+         fdb   L032D-*
+         fcb   $8D
+L0116    fdb   L02CE-*
+         fcs   ">>"
+         fdb   L02C9-*
+         fcs   "<"
+         fdb   L02D5-*
+         fcs   ">"
+         fdb   L030F-*
+         fcs   "#"
+         fdb   $0000
+L0125    fcb   $0d
+         fcc   "()"
+         fcb   $FF
+L0129    fcb   $0D
+         fcb   $21,$23,$26,$3b,$3c,$3e,$ff
+L0131    fcb   $c6,$0E,$8d,$94
 L0135    clr   <u0003
          clr   <u000E
          leay  <L00CF,pcr
@@ -219,7 +221,7 @@ L0135    clr   <u0003
          sta   <u000C
          cmpa  #$28
          bne   L016F
-         leay  >L000D,pcr
+         leay  >name,pcr
          sty   <u0004
          leax  $01,x
          stx   <u0008
@@ -310,7 +312,7 @@ L01FF    leas  $02,s
 L0203    cmpa  ,x+
          beq   L0203
          leax  -$01,x
-         andcc #$FE
+L0209    andcc #$FE
          rts   
 L020C    pshs  y,x
          leay  $02,y
@@ -338,7 +340,7 @@ L0230    lda   ,y+
          bne   L0210
          comb  
          puls  pc,y,x
-         lbsr  L0195
+L023E    lbsr  L0195
          clra  
          bsr   L0260
          bsr   L025F
@@ -355,24 +357,24 @@ L0230    lda   ,y+
 L025F    inca  
 L0260    pshs  a
          bra   L02AB
-         lda   #$84
+L0264    lda   #$84
          bra   L026A
-         lda   #$83
+L0268    lda   #$83
 L026A    os9   I$ChgDir 
          rts   
-         clra  
+L026E    clra  
          bra   L0273
-         lda   #$01
+L0271    lda   #$01
 L0273    sta   <u000F
          rts   
-         lda   #$01
+L0276    lda   #$01
          bra   L027B
-         clra  
+L027A    clra  
 L027B    sta   <u0010
          rts   
-         lda   #$01
+L027E    lda   #$01
          bra   L0283
-         clra  
+L0282    clra  
 L0283    sta   <u0011
          rts   
 L0286    lda   #$0D
@@ -414,10 +416,10 @@ L02BE    bsr   L028F
          rts   
 L02C9    ldd   #$0001
          bra   L02E3
-         ldd   #$020D
+L02CE    ldd   #$020D
          stb   -$02,x
          bra   L02D7
-         lda   #$01
+L02D5    lda   #$01
 L02D7    ldb   #$02
          bra   L02E3
          tst   a,u
@@ -444,7 +446,7 @@ L0306    ldb   #$0B
          os9   I$Create 
 L030B    stb   $01,s
 L030D    puls  pc,b,a
-         ldb   #$0D
+L030F    ldb   #$0D
          stb   -$01,x
          ldb   <u0003
          bne   L02BE
@@ -459,10 +461,10 @@ L030D    puls  pc,b,a
          bne   L02BE
 L0328    stb   <u0003
          lbra  L01E9
-         leax  -$01,x
+L032D    leax  -$01,x
          lbsr  L03C7
          bra   L0337
-         lbsr  L03C3
+L0334    lbsr  L03C3
 L0337    bcs   L034A
          lbsr  L028F
          bsr   L035C
@@ -473,13 +475,13 @@ L033E    bcs   L034A
          leas  $04,s
 L0349    clrb  
 L034A    lbra  L028F
-         lbsr  L03C3
+L034D    lbsr  L03C3
          bcs   L034A
          bsr   L034A
          ldb   #$26
          lbsr  L0495
          bra   L033E
-         clra  
+L035B    clra  
 L035C    pshs  a
 L035E    os9   F$Wait   
          tst   <u000E
@@ -569,7 +571,7 @@ L03FE    ldx   <u0006
          ldb   #$2D
          stb   ,-u
          stu   <u0008
-         leax  >L000D,pcr
+         leax  >name,pcr
 L0423    stx   <u0004
 L0425    ldx   <u0004
          lda   #$11
@@ -596,20 +598,14 @@ L0454    clr   <u0004
          os9   F$UnLink 
          puls  pc,u,y,x,b,cc
 L045D    ldb   #$EA
+
 L045F    coma  
          puls  pc,u,y,x
-         ble   L04D4
-         rol   -$10,s
-         eim   #$0D,-$0C,y
-         addr  a,0
-         bitb  >$CC01
-         com   <u0017
-         ldu   >$6835
-         lbcs  L568F
-         stu   >$4925
-         tsta  
-         lda   ,u
-         bne   L0487
+
+L0462    fcc   "/pipe"
+         fcb   C$CR
+L0468    fcb   $34,$10,$30,$8c,$f5,$cc,$01,$03
+         fdb   $17FE,$6835,$1025,$5217,$FF49,$254D,$A6C4,$2607
          os9   I$Dup    
          bcs   L04C9
          sta   ,u
@@ -639,7 +635,7 @@ L04A6    decb
          lbsr  L00BF
          leas  $05,s
          puls  pc,y,x,b,a
-         bsr   L04CA
+L04BC    bsr   L04CA
          cmpb  #$02
          bcs   L04E5
          tfr   b,a
@@ -662,7 +658,7 @@ L04DC    lda   ,-x
          bne   L04C9
 L04E3    leas  $02,s
 L04E5    lbra  L02BE
-         bsr   L04CA
+L04E8    bsr   L04CA
          stb   <u0012
          lbsr  L01E9
          bsr   L04CA
