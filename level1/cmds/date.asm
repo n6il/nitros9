@@ -35,6 +35,9 @@
 *
 *   7      2003/01/14  Boisy G. Pitre
 * New option is now -t, code compacted a bit.
+*
+*   8      2004/06/07  Rodney V. Hamilton
+* Compacted date conversion and printing.
 
          nam   Date
          ttl   Print Date/Time
@@ -46,7 +49,7 @@
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   7
+edition  set   8
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -124,31 +127,24 @@ L00C4    bsr   PrtStrng
          bsr   Byte2ASC
          ldd   #C$COMA*256+C$SPAC	get comma and space in D
          std   ,u++			store in buffer and increment twice
-         lda   #19
-         ldb   <sysyear		get year
-CntyLp   subb  #100
-         bcs   pr		we have century we need
-         inca
-         bra   CntyLp
-pr       addb  #100
-         pshs  b
-         tfr   a,b
-         bsr   Byte2ASC 
-         puls  b
+         lda   <sysyear		get year
+         ldb   #19-1		century in B
+CntyLp   incb			add a century
+         suba  #100		subtract 100 yrs
+         bhs   CntyLp		until yr<0
+         adda  #100		restore year to 00-99 range
+         pshs  a		save year
+         bsr   Byte2ASC		print century
+         puls  b		restore year & print
 
-Byte2ASC lda   #$2F		start A out just below $30 (0)
-Hundreds inca  			inc it
-         subb  #100		subtract 100
-         bcc   Hundreds		if result >= 0, continue
-         cmpa  #'0		zero?
-         beq   Tens		if so, don't add to buffer
-         sta   ,u+		else save at U and inc.
-Tens     lda   #$3A		start A out just above $39 (9)
-TensLoop deca  			dec it
-         addb  #10		add 10
-         bcc   TensLoop		if carry clear, continue
-         sta   ,u+		save 10's digit
-         addb  #'0	
+* write B reg to buffer as 2-digit decimal ASCII
+* we don't need to do 100s digit, value are 00-99
+Byte2ASC lda   #'0-1		start A out just below $30 (0)
+Tens     inca  			inc it
+         subb  #10		subtract 10
+         bcc   Tens		if result >= 0, continue
+         sta   ,u+		else save 10's digit
+         addb  #'0+10
          stb   ,u+		and 1's digit
          rts   
 
