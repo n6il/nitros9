@@ -1,0 +1,55 @@
+
+*
+*  WInfo subroutine return packet definitions
+*
+*  11/22/87 - First Edition (Ron Lammardo)
+
+WInfoBuf equ  .
+WI$Stat  rmb  1 status from WInfo call
+WI$VDG   rmb  1 VDG screen flag (1=yes)
+WI$Sty   rmb  1 screen type
+WI$Block rmb  1 first block containing window
+WI$BlCnt rmb  1 number of blocks in screen
+WI$Offst rmb  2 screen start offset within block
+WI$Cpx   rmb  1 x coordinate of window start on screen
+WI$Cpy   rmb  1 y coordinate of window start on screen
+WI$Szx   rmb  1 screen width (x coord)
+WI$Szy   rmb  1 screen hight (y coord)
+WI$CWCpx rmb  1 working area - x coordinate of window start on screen
+WI$CWCpy rmb  1 working area - y coordinate of window start on screen
+WI$CWSzx rmb  1 working area - screen width (x coord)
+WI$CWSzy rmb  1 working area - screen hight (y coord)
+WI$Curx  rmb  1 x coordinate of cursor
+WI$Cury  rmb  1 y coordinate of cursor
+WI$BPR   rmb  2 number of bytes/row
+WI$CBsw  rmb  1 character binary switch bits
+WI$FGPRN rmb  1 Foreground palette register number
+WI$BGPRN rmb  1 Background palette register number
+WI$BDPRN rmb  1 Border palette register number
+WI$Lset  rmb  1 Logic set code
+WI$FntGr rmb  1 Font group number
+WI$FntBf rmb  1 Font buffer number
+WI$PstGr rmb  1 Pattern set group number
+WI$PstBf rmb  1 Pattern set buffer number
+WI$GcrGr rmb  1 Gfx cursor group number
+WI$GcrBf rmb  1 Gfx cursor buffer number
+WI$DrCrx rmb  2 x coordinate of draw cursor
+WI$DrCry rmb  2 y coordinate of draw cursor
+WI$Edtn  rmb  1 Edition # of Winfo subroutine
+WI$WEAdr rmb  2 logical address of window entry in sys map (debug only)
+WI$Devm  rmb  2 logical address of window device static storage debug only)
+         rmb  33 reserved for future expansion
+WI$PRegs rmb  16 Palette registers
+WI$ErMsg rmb  40 Error Message
+WI$Size  equ  .-WInfobuf size of this buffer (should be $80 !!)
+
+* WI$CBsw defined as follows
+* TChr    equ  #%10000000
+* Under   equ  #%01000000
+* Bold    equ  #%00100000
+* Prop    equ  #%00010000
+* Scale   equ  #%00001000
+* Invers  equ  #%00000100
+* NoCurs  equ  #%00000010
+* Protect equ  #%00000001
+

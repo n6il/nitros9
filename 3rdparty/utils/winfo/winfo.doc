@@ -1,0 +1,101 @@
+  WInfo - v2.0 by Alan DeKok
+          Minor modifications to make WInfo use the I$Attach system call
+          to find the device table entry of the window in question.
+          The old WInfo rooted through system memory by hand, and used
+          a FIXED device table size which broke under NitrOS-9 v1.22
+
+          This corrected version will work properly under ANY version
+          of OS-9 or NitrOS-9, past, present, or future.
+
+          NitrOS-9 Level III patches by request of Erik Tromp, thanks!
+
+  WInfo - v1.0 copyright December,1987 by Ron Lammardo
+          Placed in the Public Domain December,1987
+          This subroutine may not be sold or used in any commercial package
+          without the permission of the author.
+
+WInfo is an OS9 Level II subroutine to return window information on any
+window in use. Although WInfo is written in ASM, it is set up to be callable
+from an ASM, Basic09, and (hopefully) C main programs. This subroutine directly
+accesses system window tables, screen tables, and device memory. As such, if a
+new level/version of OS9 were to be released, the subroutine module would
+possibly need to be re-written. However, by putting all the 'cheating' code
+into this subroutine, any applications program calling it would not need
+modification or re-assembling. To further ensure upward compatability between 
+editions of WInfo, a sizable amount of space is allocated in the return buffer 
+to allow additional fields to be added without impacting the position of 
+existing fields.
+
+ WInfo requires two parameters : a string containing the requested device
+name, and a return buffer (described below) to place the information into. To
+maintain compatability with basic09, the sizes of these two parameters along
+with the parameter count (always 2) must be passed if the calling program is
+ASM. WInfo also requires 512 bytes for its own use...ASM calling programs 
+should allow at least that much buffer space just below the stack address at
+the time of call.
+
+If WInfo encounters a system-type error, it will return with the carry bit
+set and the b register containing the appropriate error code. If a WInfo error
+condition is encountered, the first byte of the return buffer (WI$Stat) will
+contain the error number and the error message will be returned at the end of
+the buffer (WI$ErMsg). If the length of the buffer passed to WInfo is too
+small, the error status returned (WI$Stat) will be $FF with no error message,
+as the error message is normally placed at the end of the return buffer. 
+
+WInfo also returns its edition # (the byte after the module name) as part of
+the return packet (WI$Edtn). This edition # can be checked to determine if the
+correct minimum level of WInfo is being accessed by the main program. For
+example, if WInfo edition #4 is the first edition to return the # of users
+accessing a window, the main program could check the edition # to insure it
+was accessing WInfo edition #4 or higher, as any earlier edition would not
+return the needed information.
+
+Most of the return packet fields are self-explanitory, but a few might need 
+further clarification.
+
+WI$BPR - bytes per row. This is the number of bytes making up a line of
+         charactrers, not the number of bytes in 1 dot row. To get the number
+         of bytes per dot row,divide by 8.
+
+WI$Lset- Logic set # - see OS9 Level II manual page 3-21 in the winows section.
+
+WI$VDG - VDG type screen indicator. The following values are possible:
+    0 = Non-vdg type screen 
+    1 = VDG text type screen
+    2 = VDG medium-res (coco2) graphics screen - WI$Sty contains the screen
+        mode in the first 4 bits and the foreground color in the last 4 bits.
+        The modes and colors are fully described in the OS9 Level-II manual
+        pages B-5 & B-6 of the command reference.
+    3 = VDG hi-res (coco3) graphics screen - WI$Sty contains the screen type as
+        defined in the SS.AScrn Set Status call. This is the only VDG code
+        which will return valid palette information (WI$PRegs).
+
+        The following fields are never valid for VDG type screens:
+
+           WI$CBsw  - character binary switch bits
+           WI$BDPRN - Border palette register number
+           WI$FGPRN - Foreground palette register number
+           WI$BGPRN - Background palette register number
+           WI$Lset  - Logic set number
+           WI$FntGr - Active font group number
+           WI$FntBf - Active font buffer number
+           WI$PstGr - Pattern set group number
+           WI$PstBf - Pattern set buffer number
+           WI$GcrGr - Gfx cursor group number
+           WI$GcrBf - Gfx cursor buffer number
+           WI$DrCrx - Draw cursor x position
+           WI$DrCry - Draw cursor y position
+
+
+-------------------------------------------------------------------------------
+ 
+This subroutine is available for use by any and all for whatever application.
+Comments and suggestions for improvements/enhancements are greatly appreciated.
+However,due to the nature of the subroutine I would appreciate retaining
+control of any update issuances so that the edition numbers etc. stay
+controlled.
+
+Ron Lammardo
+75706,336
+
+
