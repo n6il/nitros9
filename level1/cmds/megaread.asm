@@ -1,8 +1,59 @@
+********************************************************************
+* MegaRead - Disk Performance Utility
+*
+* $Id$
+*
+* This dir initially started from the dir command that came with
+* the OS-9 Level Two package, then incorporated Glenside's Y2K
+* fix.
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*  10      1999/05/11  Boisy G. Pitre
+* Incorporated Glenside Y2K fixes.
+*
+*  11      2003/01/14  Boisy G. Pitre
+* Made option handling more flexible, now they must be preceeded
+* by a dash.
 
-L0000    fcb   $87,$CD,$00,$34,$00,$0D,$11,$81   .M.4....
-L0008    fcb   $1C,$00,$16,$04,$C8,$4D,$65,$67   ....HMeg
-L0010    fcb   $61,$52,$65,$61,$E4,$01,$8E,$04   aRead...
-L0018    fcb   $00,$34,$10,$30,$C4,$10,$8E,$04   .4.0D...
-L0020    fcb   $00,$4F,$10,$3F,$89,$25,$07,$35   .O.?.%.5
-L0028    fcb   $10,$30,$1F,$26,$EC,$5F,$10,$3F   .0.&l_.?
-L0030    fcb   $06,$FE,$97,$D8                   ...X
+         nam   MegaRead
+         ttl   Disk Performance Utilty
+
+         IFP1
+         use   defsfile
+         ENDC
+
+tylg     set   Prgrm+Objct   
+atrv     set   ReEnt+rev
+rev      set   $00
+edition  set   1
+
+ReadK    equ   1024       1024K is 1 megabyte (modify as desired)
+                         
+         mod   eom,name,tylg,atrv,start,size
+
+         org   0
+KiloBuff rmb   $0400     
+         rmb   200        stack space
+size     equ   .
+
+name     fcs   /MegaRead/
+         fcb   edition
+
+start    ldx   #ReadK    
+loop     pshs  x          save counter
+         leax  KiloBuff,u point (X) to buffer
+         ldy   #$0400     read 1K
+         clra             std input
+         os9   I$Read    
+         bcs   ex     
+         puls  x          recover counter
+         leax  -1,x       done yet?
+         bne   loop       no, go get another 1K
+         clrb            
+ex       os9   F$Exit    
+                         
+         emod            
+eom      equ   *         
+         end             
