@@ -1,3 +1,9 @@
-Level equ 2
     use os9defs
-*   use rbfdefs
+*    use rbfdefs
+
+    ifeq   Level-1
+    use    systype.l1
+    else
+    use    systype.l2
+    endc
+
