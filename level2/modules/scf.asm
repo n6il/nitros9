@@ -150,7 +150,8 @@ SCFName  fcs   /SCF/
 
 * Default input buffer setting for SCF devices when Opened/Created
 *               123456789!123456789!1234567890
-msg      fcc   'by B.Nobel,C.Boyle,W.Gale-1993'
+*msg      fcc   'by B.Nobel,C.Boyle,W.Gale-1993'
+msg      fcc   'OS-9 Rocks!'
 msgsize  equ   *-msg        Size of default input buffer message
          fcb   C$CR         2nd CR for buffer pad fill
 blksize  equ   256-msgsize  Size of blank space after it
@@ -241,7 +242,7 @@ CopyCR   sta   ,u+
          puls  y            Restore path descriptor pointer
          bcs   L0111        Couldn't attach to device, detach & exit with error
          stu   PD.DV2,y     Save new output (echo) device table pointer
-         ldu   PD.DEV,y     Get device table pointer
+*         ldu   PD.DEV,y     Get device table pointer
 L00CF    ldu   V$STAT,u     Point to it's static storage
 
          IFNE  H6309
