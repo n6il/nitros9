@@ -1,4 +1,4 @@
-         ifeq  SCFDEFS
+         IFEQ  SCFDEFS
 
 SCFDEFS  set   1
 
@@ -15,6 +15,7 @@ SCFDEFS  set   1
 * 85/04/21 Added PD.PLP and PD.PST for modem handling                   MGH
 * 87/06/23 Updated with Dev Desc info                                   KKD
 * 98/10/03 Consolidated L1/L2 scfdefs                                   BGP
+* 03/01/21 Added symbolics for enhanced SCF line editing                BGP
 
 
 *******************************
@@ -50,7 +51,7 @@ IT.COL   rmb   1          Number of columns for display
 IT.ROW   rmb   1          Number of rows for display
 IT.XTYP  rmb   1          Extended type (added by BRI)
 
-         ifgt  Level-1
+         IFGT  Level-1
 * Window Descriptor Additions
 * For CoCo window, where IT.PAR = $80
          org   IT.ROW+1
@@ -62,7 +63,7 @@ IT.CPY   rmb   1          Row start default
 IT.FGC   rmb   1          Foreground color default
 IT.BGC   rmb   1          Background color default
 IT.BDC   rmb   1          Border color default
-         endc
+         ENDC
 
          pag
 ************************************************************
@@ -107,8 +108,11 @@ C$CR     set   $0D        Carriage return
 C$FORM   set   $0C        (ctl L - FF ) Form Feed ... screen clear
 C$SI     set   $0F        Shift IN Code
 C$SO     set   $0E        Shift OUT Code
+C$DELETE set   $10        Delete char (for SCF enhanced line editing)
 C$XON    set   $11        (ctl Q - DC1) Transmit Enable
+C$INSERT set   C$XON      Insert char (for SCF enhanced line editing)
 C$XOFF   set   $13        (ctl S - DC3) Transmit Disable
+C$PLINE  set   C$XOFF     Print remaining line (for SCF enhanced line editing)
 C$PAUS   set   $17        (ctl W - ETB) Pause character
 C$DEL    set   $18        (ctl X - CAN) Delete line
 C$SHRARR set   $19        Shift Right-Arrow
@@ -195,5 +199,5 @@ PARSPACE equ   %11100000
 * Stop bits
 STOP1    equ   %00000000
 STOP2    equ   %00010000
-         endc
 
+         ENDC
