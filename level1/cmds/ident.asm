@@ -6,6 +6,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   7    From Tandy OS-9 Level One VR 02.00.00
+*   8    Now reports modules with a lang of Obj6309     BGP 03/04/11
 
          nam   Ident
          ttl   Show module information
@@ -21,7 +22,7 @@ DOHELP   set   0
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   7
+edition  set   8
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -149,7 +150,7 @@ L01D8    fcb   $10
          fcs   "C I-code,"
          fcs   "COBOL I-code,"
          fcs   "FORTRAN I-code,"
-         fcs   "????,"
+         fcs   "6309 obj,"
 
 start    leas  >u019C,u
          sts   <u0006
