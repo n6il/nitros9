@@ -11,6 +11,9 @@
 *
 *   8      2003/04/11  Boisy G. Pitre
 * Now reports modules with a lang of Obj6309.
+*
+*   8r1    2005/03/07  Boisy G. Pitre
+* Fixed so that an unsupported language shows ????
 
          nam   Ident
          ttl   Show module information
@@ -25,7 +28,7 @@ DOHELP   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   8
 
          mod   eom,name,tylg,atrv,start,size
@@ -38,11 +41,11 @@ u0003    rmb   1
 u0004    rmb   2
 u0006    rmb   2
 u0008    rmb   2
-u000A    rmb   1
-u000B    rmb   1
-u000C    rmb   1
-u000D    rmb   1
-u000E    rmb   2
+dolink   rmb   1
+short    rmb   1
+modvfy   rmb   1
+fperm    rmb   1
+modptr   rmb   2
 u0010    rmb   2
 u0012    rmb   1
 u0013    rmb   1
@@ -52,7 +55,7 @@ u0016    rmb   1
 u0017    rmb   1
 u0018    rmb   1
 path     rmb   1
-u001A    rmb   1
+mtype    rmb   1
 u001B    rmb   1
 u001C    rmb   2
 u001E    rmb   2
@@ -82,6 +85,7 @@ HelpMsg  fcb   C$LF
          fcc   "  -x = file in exec dir"
          fcb   C$CR
          ENDC
+
 M_MInc   fcs   "Module header is incorrect!"
 M_Hdr    fcs   "Header for: "
 M_MSiz   fcs   "Module size:"
@@ -99,22 +103,23 @@ M_RW     fcs   "R/W"
 M_Good   fcs   "(Good)"
 M_Bad    fcc   "(Bad)"
          fcb   $80+C$BELL 
-L016C    fcb   T_BAD-L016C
-         fcb   T_PR-L016C
-         fcb   T_SU-L016C
-         fcb   T_MU-L016C
-         fcb   T_DA-L016C
-         fcb   T_U5-L016C
-         fcb   T_U6-L016C
-         fcb   T_U7-L016C
-         fcb   T_U8-L016C
-         fcb   T_U9-L016C
-         fcb   T_UA-L016C
-         fcb   T_UB-L016C
-         fcb   T_SY-L016C
-         fcb   T_FM-L016C
-         fcb   T_DRV-L016C
-         fcb   T_DSC-L016C
+
+TypeTbl  fcb   T_BAD-TypeTbl
+         fcb   T_PR-TypeTbl
+         fcb   T_SU-TypeTbl
+         fcb   T_MU-TypeTbl
+         fcb   T_DA-TypeTbl
+         fcb   T_U5-TypeTbl
+         fcb   T_U6-TypeTbl
+         fcb   T_U7-TypeTbl
+         fcb   T_U8-TypeTbl
+         fcb   T_U9-TypeTbl
+         fcb   T_UA-TypeTbl
+         fcb   T_UB-TypeTbl
+         fcb   T_SY-TypeTbl
+         fcb   T_FM-TypeTbl
+         fcb   T_DRV-TypeTbl
+         fcb   T_DSC-TypeTbl
 T_BAD    fcs   "bad type for"
 T_PR     fcs   "Prog"
 T_SU     fcs   "Subr"
@@ -132,22 +137,22 @@ T_FM     fcs   "File Man"
 T_DRV    fcs   "Dev Dvr"
 T_DSC    fcs   "Dev Dsc"
 
-L01D8    fcb   L_DA-L01D8
-         fcb   L_68-L01D8
-         fcb   L_B09-L01D8
-         fcb   L_PSC-L01D8
-         fcb   L_C-L01D8
-         fcb   L_COB-L01D8
-         fcb   L_FOR-L01D8
-         fcb   L_63-L01D8
-         fcb   L_BAD-L01D8
-         fcb   L_BAD-L01D8
-         fcb   L_BAD-L01D8
-         fcb   L_BAD-L01D8
-         fcb   L_BAD-L01D8
-         fcb   L_BAD-L01D8
-         fcb   L_BAD-L01D8
-         fcb   L_BAD-L01D8
+LangTbl  fcb   L_DA-LangTbl
+         fcb   L_68-LangTbl
+         fcb   L_B09-LangTbl
+         fcb   L_PSC-LangTbl
+         fcb   L_C-LangTbl
+         fcb   L_COB-LangTbl
+         fcb   L_FOR-LangTbl
+         fcb   L_63-LangTbl
+         fcb   L_BAD-LangTbl
+         fcb   L_BAD-LangTbl
+         fcb   L_BAD-LangTbl
+         fcb   L_BAD-LangTbl
+         fcb   L_BAD-LangTbl
+         fcb   L_BAD-LangTbl
+         fcb   L_BAD-LangTbl
+         fcb   L_BAD-LangTbl
 L_DA     fcs   "Data,"
 L_68     fcs   "6809 obj,"
 L_B09    fcs   "BASIC09 I-code,"
@@ -156,7 +161,7 @@ L_C      fcs   "C I-code,"
 L_COB    fcs   "COBOL I-code,"
 L_FOR    fcs   "FORTRAN I-code,"
 L_63     fcs   "6309 obj,"
-L_BAD    fcs   "???"
+L_BAD    fcs   "????"
 
 start    leas  >u019C,u
          sts   <u0006
@@ -165,12 +170,12 @@ start    leas  >u019C,u
          std   <u0008
          leay  <u0022,u
          sty   <u0000
-         clr   <u000A
-         clr   <u000B
-         clr   <u000C
+         clr   <dolink
+         clr   <short
+         clr   <modvfy
          clr   <u0018
          lda   #READ.
-         sta   <u000D
+         sta   <fperm
          ldd   #$0000
          std   <u0002
          std   <u0004
@@ -195,39 +200,39 @@ L027E    lda   ,x+
          eora  #'M
          anda  #$DF
          bne   L0292
-         inc   <u000A
+         inc   <dolink
          bra   L027E
 L0292    lda   -$01,x
          eora  #'S
          anda  #$DF
          bne   L029E
-         inc   <u000B
+         inc   <short
          bra   L027E
 L029E    lda   -$01,x
          eora  #'V
          anda  #$DF
          bne   L02AA
-         inc   <u000C
+         inc   <modvfy
          bra   L027E
 L02AA    lda   -$01,x
          eora  #'X
          anda  #$DF
          bne   L02B8
          lda   #EXEC.+READ.
-         sta   <u000D
+         sta   <fperm
          bra   L027E
 L02B8    lbra  ShowHelp
 L02BB    ldx   <u0002
          lbeq  ShowHelp
          leax  -$01,x
-         tst   <u000A
+         tst   <dolink
          beq   L0314
          pshs  u
          clra  
          os9   F$Link   
          lbcs  L03D2
-         stu   <u000E
-         ldd   ,u
+         stu   <modptr
+         ldd   M$ID,u
          cmpd  #M$ID12
          beq   L02EB
          puls  u
@@ -249,14 +254,14 @@ L02FB    ldb   ,x+
          bne   L02FB
          puls  u
          lbsr  L03D5
-         ldu   <u000E
+         ldu   <modptr
          os9   F$UnLink 
          lbcs  L03D2
          clrb  
          lbra  L03D2
 L0314    lda   #$80
          sta   <u00A1
-         lda   <u000D
+         lda   <fperm
          os9   I$Open   
          lbcs  L03D2
          sta   <path 
@@ -279,8 +284,8 @@ L033B    pshs  u
          lbcs  L03D2
          puls  u
          leax  <u0072,u
-         stx   <u000E
-         ldy   #$000E
+         stx   <modptr
+         ldy   #M$Port
          os9   I$Read   
          bcc   L0360
          cmpb  #E$EOF
@@ -290,7 +295,7 @@ L0360    ldd   ,x
          cmpd  #M$ID12
          lbne  L02DD
          pshs  u,x
-         ldd   $02,x
+         ldd   M$Size,x
          std   <u001C
          addd  <u0020
          tfr   d,u
@@ -308,8 +313,8 @@ L037C    lda   <path
          os9   I$Read   
          bcs   L03D2
          pshs  u,x
-         ldy   <u000E
-         ldd   $04,y
+         ldy   <modptr
+         ldd   M$Name,y
          addd  <u0020
          tfr   d,u
          ldx   <u001E
@@ -337,7 +342,7 @@ ShowHelp equ   *
          ENDC
          clrb  
 L03D2    os9   F$Exit   
-L03D5    tst   <u000B
+L03D5    tst   <short
          lbne  L0502
          lbsr  L0612
          leay  >M_Hdr,pcr
@@ -346,13 +351,13 @@ L03D5    tst   <u000B
          lbsr  L0612
          leay  >M_MSiz,pcr
          lbsr  L05FC
-         ldy   <u000E
-         ldd   $02,y
+         ldy   <modptr
+         ldd   M$Size,y
          lbsr  L05D2
          leay  >M_MCRC,pcr
          lbsr  L05FC
          lbsr  L0543
-         tst   <u000C
+         tst   <modvfy
          bne   L041E
          lbsr  L0553
          tsta  
@@ -365,27 +370,27 @@ L0417    leay  >M_Good,pcr
 L041E    lbsr  L0612
          leay  >M_HdrP,pcr
          lbsr  L05FC
-         ldy   <u000E
-         ldb   $08,y
+         ldy   <modptr
+         ldb   M$Parity,y
          lbsr  L0633
          lbsr  L0612
-         ldy   <u000E
-         ldb   $06,y
-         stb   <u001A
-         andb  #$F0
-         cmpb  #$E0
+         ldy   <modptr
+         ldb   M$Type,y
+         stb   <mtype
+         andb  #TypeMask
+         cmpb  #Drivr
          beq   L0444
-         cmpb  #$10
+         cmpb  #Prgrm
          bne   L0462
 L0444    leay  >M_ExOff,pcr
          lbsr  L05FC
-         ldy   <u000E
-         ldd   $09,y
+         ldy   <modptr
+         ldd   M$Exec,y
          lbsr  L05D2
          leay  >M_DatSz,pcr
          lbsr  L05FC
-         ldy   <u000E
-         ldd   $0B,y
+         ldy   <modptr
+         ldd   M$Mem,y
          lbsr  L05D2
 L0462    leay  >M_Edtn,pcr
          lbsr  L05FC
@@ -400,27 +405,27 @@ L0462    leay  >M_Edtn,pcr
          lbsr  L0612
          leay  >M_TLAR,pcr
          lbsr  L05FC
-         ldb   <u001A
+         ldb   <mtype
          lbsr  L0633
-         ldy   <u000E
-         ldb   $07,y
+         ldy   <modptr
+         ldb   M$Revs,y
          stb   <u001B
          lbsr  L0633
          lbsr  L0612
-         ldb   <u001A
+         ldb   <mtype
          lsrb  
          lsrb  
          lsrb  
          lsrb  
-         leax  >L016C,pcr
+         leax  >TypeTbl,pcr
          lda   b,x
          leay  a,x
          lbsr  L05FC
          leay  >M_Mod,pcr
          lbsr  L05FC
-         ldb   <u001A
-         andb  #$0F
-         leax  >L01D8,pcr
+         ldb   <mtype
+         andb  #LangMask
+         leax  >LangTbl,pcr
          lda   b,x
          leay  a,x
          lbsr  L05FC
@@ -440,10 +445,10 @@ L04DE    leay  >M_RO,pcr
 L04E2    lbsr  L05FC
          lbsr  L0612
          rts   
-L04E9    tst   <u000A
+L04E9    tst   <dolink
          beq   L04F6
-         ldy   <u000E
-         ldd   $04,y
+         ldy   <modptr
+         ldd   M$Name,y
          leay  d,y
          bra   L04FA
 L04F6    leay  >u0080,u
@@ -453,11 +458,11 @@ L04FA    lbsr  L05FC
          rts   
 L0502    ldb   #$06
          lbsr  L0654
-         ldy   <u000E
-         ldb   $06,y
+         ldy   <modptr
+         ldb   M$Type,y
          lbsr  L0633
          bsr   L0543
-         tst   <u000C
+         tst   <modvfy
          beq   L0519
          lda   #$20
          bra   L0520
@@ -493,10 +498,10 @@ L0553    ldd   #$FFFF
          stb   <u0015
          pshs  u,y,x
          leau  <u0013,u
-         tst   <u000A
+         tst   <dolink
          beq   L0571
-         ldx   <u000E
-         ldy   $02,x
+         ldx   <modptr
+         ldy   M$Size,x
          os9   F$CRC    
          lbcs  L03D2
          bra   L058C
@@ -514,10 +519,10 @@ L0571    pshs  u,x
          std   <u001C
 L058C    puls  u,y,x
          lda   <u0013
-         cmpa  #$80
+         cmpa  #CRCCon1
          bne   L059E
          ldd   <u0014
-         cmpd  #$0FE3
+         cmpd  #CRCCon23
          bne   L059E
          bra   L05A1
 L059E    lda   #$3F
