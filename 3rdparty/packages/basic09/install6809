@@ -1,0 +1,17 @@
+-x
+* Installs 6809 modules to /DD/CMDS
+*
+* Deleting old objects from /DD/CMDS, if any
+del /DD/CMDS/runb
+del /DD/CMDS/basic09
+del /DD/CMDS/gfx
+del /DD/CMDS/inkey
+del /DD/CMDS/syscall
+* Copying commands to /DD/CMDS
+copy CMDS/basic09_6809 /DD/CMDS/basic09
+copy CMDS/runb_6809 /DD/CMDS/runb
+copy CMDS/gfx /DD/CMDS/gfx
+copy CMDS/inkey /DD/CMDS/inkey
+copy CMDS/syscall_6809 /DD/CMDS/syscall
+* All Done!
+
