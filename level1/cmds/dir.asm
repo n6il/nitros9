@@ -392,8 +392,10 @@ IsItE    cmpa  #'e		extended dir?
          sta   <extended
          bra   FixCmdLn
 IsItX    cmpa  #'x
-         lbne  Exit		bad option, just exit
-         lda   #EXEC.
+         beq   ItIsX
+         ldb   #E$IllArg
+         lbra  Exit		bad option, just exit
+ItIsX    lda   #EXEC.
          sta   <addmode
 FixCmdLn lda   #C$SPAC
          sta   -1,x
