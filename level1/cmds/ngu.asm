@@ -55,7 +55,8 @@
 
 * Here are some tweakable options
 DOHELP   set   1	1 = include help info
-STCKSIZE set   64	our stack size in bytes
+STACKSZ  set   128	estimated stack size in bytes
+PARMSZ   set   256	estimated parameter size in bytes
 COPTSIZ  set   64	max size of C option's parameter
 
 * Module header definitions
@@ -89,7 +90,7 @@ bigbuff  rmb   8*1024		8K default buffer for Level 2
 bigbuff  rmb   512		512 byte default buffer for Level 1
          ENDC
 * Finally the stack for any PSHS/PULS/BSR/LBSRs that we might do
-stack    rmb   STCKSIZE
+         rmb   STACKSZ+PARMSZ
 size     equ   .
 
 * The utility name and edition goes here
@@ -158,7 +159,7 @@ clrnxt   clr   ,u+		clear out
          pshs  y		save Y on stack
          subd  ,s++		get size of space between copybuf and X
          ENDC
-         subd  #STCKSIZE	subtract out our stack
+         subd  #STACKSZ+PARMSZ	subtract out our stack/param size
          std   <bufsiz		size of our buffer
 
 * At this point we have determined our buffer space and saved pointers

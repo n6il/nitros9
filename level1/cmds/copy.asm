@@ -26,7 +26,8 @@ edition  set   11
 
          mod   eom,name,tylg,atrv,start,size
 
-STCKSIZE equ   64	our stack size
+STACKSZ  equ   128	estimated stack size
+PARMSZ   equ   256	estimated parameter size
 DDIRBSIZ equ   64	destination directory buffer size
 
          org   0
@@ -62,7 +63,7 @@ copybuff rmb   8*1024		8K default buffer for Level 2
          ELSE
 copybuff rmb   512		512 byte default buffer for Level 1
          ENDC
-stack    rmb   STCKSIZE
+         rmb   STACKSZ+PARMSZ
 size     equ   .
 
 name     fcs   /Copy/
@@ -139,7 +140,7 @@ clrnxt   clr   ,u+
          tfr   s,d		place top of stack in D
          pshs  y		save Y on stack
          subd  ,s++		get size of space between copybuf and X
-         subd  #STCKSIZE	subtract out our stack
+         subd  #STACKSZ+PARMSZ	subtract out our stack
          std   <bufsiz		size of our buffer
          lbsr  SkipSpcs         move past any spaces on command line
          cmpa  #C$CR		CR?
