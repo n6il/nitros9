@@ -19,109 +19,120 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+stdout   set   1
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   2
-u0002    rmb   2
+fmbegin  rmb   2
+fmend    rmb   2
 u0004    rmb   1
 u0005    rmb   1
-u0006    rmb   2
-u0008    rmb   2
-u000A    rmb   1
-u000B    rmb   2
-u000D    rmb   530
+upper    rmb   2    Upper boundary of free segment
+lower    rmb   2    Lower boundary of free segment
+pages    rmb   1
+bufptr   rmb   2
+buffer   rmb   530
 size     equ   .
 
 name     fcs   /Mfree/
          fcb   $05 
 
-L0013    fcb   C$LF
+header   fcb   C$LF
          fcc   " Address  pages"
          fcb   C$LF
          fcc   "--------- -----"
          fcb   $80+C$CR
-L0034    fcb   C$LF
+totfree  fcb   C$LF
          fcs   "Total pages free = "
 L0048    fcs   "Graphics Memory "
-L0058    fcs   "Not Allocated"
-L0065    fcs   "at: $"
+notalloc fcs   "Not Allocated"
+ataddr   fcs   "at: $"
 
-start    leay  u000D,u
-         sty   <u000B
-         leay  <L0013,pcr
-         bsr   L00E1
-         bsr   L00EC
-         ldx   >D.FMBM
-         stx   <u0000
-         ldx   >D.FMBM+2
-         stx   <u0002
+start    leay  buffer,u
+         sty   <bufptr
+         leay  <header,pcr
+         bsr   ApndStr
+         bsr   print
+         ldx   >D.FMBM      The free memory bitmap pointer start
+         stx   <fmbegin
+         ldx   >D.FMBM+2    The free memory bitmap pointer end
+         stx   <fmend
          clra  
          clrb  
-         sta   <u0005
-         std   <u0006
-         std   <u0008
-         stb   <u000A
-         ldx   <u0000
-L008C    lda   ,x+
+         sta   <u0005       Clear
+         std   <upper       Clear
+         std   <lower       Clear
+         stb   <pages       Clear
+         ldx   <fmbegin
+nextbyte lda   ,x+
          bsr   L00A8
-         cmpx  <u0002
-         bcs   L008C
+         cmpx  <fmend
+         bcs   nextbyte
          bsr   L00B8
-         leay  <L0034,pcr
-         bsr   L00E1
+         leay  <totfree,pcr
+         bsr   ApndStr
          ldb   <u0005
-         bsr   L0101
-         bsr   L00EC
-         lbsr  L014A
+         bsr   bDeci
+         bsr   print
+         lbsr  display
          clrb  
          os9   F$Exit   
+*
 L00A8    bsr   L00AA
 L00AA    bsr   L00AC
 L00AC    bsr   L00AE
 L00AE    lsla  
          bcs   L00B8
          inc   <u0005
-         inc   <u000A
-         inc   <u0006
+         inc   <pages
+         inc   <upper
          rts   
 L00B8    pshs  b,a
-         ldb   <u000A
+         ldb   <pages
          beq   L00D7
-         ldd   <u0008
-         bsr   L0136
-         lda   #$2D
-         bsr   L012C
-         ldd   <u0006
+         ldd   <lower
+         bsr   dHexa
+         lda   #$2D     '-' char
+         bsr   ApndA
+         ldd   <upper
          subd  #$0001
-         bsr   L0136
-         bsr   L0122
-         bsr   L0122
-         ldb   <u000A
-         bsr   L0101
-         bsr   L00EC
-L00D7    inc   <u0006
-         ldd   <u0006
-         std   <u0008
-         clr   <u000A
+         bsr   dHexa
+         bsr   aspace   Append a space to buffer
+         bsr   aspace   Append a space to buffer
+         ldb   <pages
+         bsr   bDeci
+         bsr   print
+L00D7    inc   <upper
+         ldd   <upper
+         std   <lower
+         clr   <pages
          puls  pc,b,a
-L00E1    lda   ,y
+*
+* Append string (in reg y) to buffer
+*
+ApndStr  lda   ,y
          anda  #$7F
-         bsr   L012C
+         bsr   ApndA
          lda   ,y+
-         bpl   L00E1
+         bpl   ApndStr
          rts   
-L00EC    pshs  y,x,a
-         lda   #$0D
-         bsr   L012C
-         leax  u000D,u
-         stx   <u000B
-         ldy   #80
-         lda   #$01
+* 
+* Print the buffer
+*
+print    pshs  y,x,a
+         lda   #C$CR     Add form feed to buffer
+         bsr   ApndA
+         leax  buffer,u   Reset bufptr to start of buffer
+         stx   <bufptr
+         ldy   #80        Max line length = 80
+         lda   #stdout
          os9   I$WritLn 
          puls  pc,y,x,a
-
-L0101    lda   #$FF
+*
+* Appends the content of register B in decimal
+* to the buffer
+*
+bDeci    lda   #$FF
          clr   <u0004
 L0105    inca  
          subb  #$64
@@ -139,17 +150,23 @@ L0119    tsta
          sta   <u0004
 L011E    tst   <u0004
          bne   L0124
-L0122    lda   #$F0
-L0124    adda  #$30
+aspace   lda   #$F0
+L0124    adda  #$30    Offset to "0" in ascii table
          cmpa  #$3A
-         bcs   L012C
+         bcs   ApndA
          adda  #$07
-L012C    pshs  x
-         ldx   <u000B
+*
+* Append character (in a) to buffer
+*
+ApndA    pshs  x
+         ldx   <bufptr
          sta   ,x+
-         stx   <u000B
+         stx   <bufptr
          puls  pc,x
-L0136    clr   <u0004
+*
+* Append register D as hex string to buffer
+*
+dHexa    clr   <u0004
          bsr   L013C
          tfr   b,a
 L013C    pshs  a
@@ -161,22 +178,22 @@ L013C    pshs  a
          puls  a
 L0146    anda  #$0F
          bra   L0119
-L014A    pshs  y,x
+display  pshs  y,x
          leay  >L0048,pcr
-         bsr   L00E1
-         lda   #$01
+         bsr   ApndStr
+         lda   #stdout
          ldb   #SS.DStat
          os9   I$GetStt 
          bcc   L0163
-         leay  >L0058,pcr
-         bsr   L00E1
+         leay  >notalloc,pcr
+         bsr   ApndStr
          bra   L016E
-L0163    leay  >L0065,pcr
-         lbsr  L00E1
+L0163    leay  >ataddr,pcr
+         lbsr  ApndStr
          tfr   x,d
-         bsr   L0136
+         bsr   dHexa
 L016E    puls  y,x
-         lbra  L00EC
+         lbra  print
 
          emod
 eom      equ   *
