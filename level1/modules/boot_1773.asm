@@ -1,3 +1,13 @@
+********************************************************************
+* Boot - WD1773 Boot for OS-9
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+*   4    From Tandy OS-9 Level Two VR 02.00.01 and 
+*        modified to work properly under OS-9 Level One
+
          nam   Boot
          ttl   os9 system module    
 
@@ -18,7 +28,10 @@ STEP     equ   $00
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   4
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   2
 u0002    rmb   2
 u0004    rmb   1
@@ -30,11 +43,11 @@ u0009    rmb   1
 size     equ   .
 
 name     fcs   /Boot/
-edition  fcb   $04 
+         fcb   edition
 
 * First, we make a stack...
 start    clra  
-         ldb   #$0A
+         ldb   #size
 MakeStak pshs  a
          decb  
          bne   MakeStak
@@ -132,7 +145,7 @@ L00AC
          sta   >$FFD9
          endc
          puls  u,y,x
-         leas  $0A,s
+         leas  size,s
          rts   
 
 L00B4    lda   #$29
@@ -192,7 +205,7 @@ L0120    lda   >DPort+$B
          stb   >DPort
          bra   L0120
 
-NMIRtn   leas  $0C,s
+NMIRtn   leas  size+2,s
          puls  y
          ldb   >DPort+8
          bitb  #$04
