@@ -1698,13 +1698,13 @@ Rt.AScrn ldd   R$X,x		get screen type from caller's X
 BA010    inca			count up by one
          ldb   (VD.NBlk-VD.HiRes),y	get number of blocks
          pshs  a                needed to protect regA; RG.
-         os9   F$AlHRam		allocate a screen
+         os9   F$AlHRAM		allocate a screen
          puls  a
          bcs   DeAll		de-allocate ALL allocated blocks on error
          pshs  b		save starting block number of the screen
          andb  #$3F		keep block BL= block MOD 63
          pshs  b
-         addb   (VD.NBlk-VD.HiRes),y	add in the blcok size of the screen
+         addb   (VD.NBlk-VD.HiRes),y	add in the block size of the screen
          decb			in case last block is $3F,$7F,$BF,$FF; RG.
          andb  #$3F		(BL+S) mod 63 < BL? (overlap 512k bank)
          cmpb  ,s+		is all of it in this bank? 

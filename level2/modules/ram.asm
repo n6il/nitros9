@@ -673,7 +673,7 @@ Term     equ   *
 
          ldu   <u0038,u 
          beq   L022A
-L020A    ldb   #$01 is now the same as F$AllRam loop in
+L020A    ldb   #$01 is now the same as F$AllRAM loop in
          ldx   ,u++ the Init routine
          beq   L0213 this fixed some loose
          os9   F$DelRAM ends mmap showed
