@@ -1,4 +1,5 @@
 NitrOS-9/6809 Level 2 V03.02.01:
+- A minor bug in the unlink command has been fixed.
 - The mpi and megaread utilities have been added to the CMDS directory.
 - The dmode utility has been updated.
 - sacia has been renamed to sc6551.
