@@ -6,6 +6,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   4    From Tandy OS-9 Level One VR 02.00.00
+*   5    Changed /D0 references to /DD
 
          nam   Config
          ttl   Boot configurator
@@ -19,9 +20,9 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   4
+edition  set   5
 
-L0000    mod   eom,name,tylg,atrv,start,size
+L0000    mod   eom,name,tylg,atrv,L0014,size
 
 u0000    rmb   1
 u0001    rmb   1
@@ -86,17 +87,13 @@ size     equ   .
 name     fcs   /config/
          fcb   edition
 
-L0014    fcb   $A6 &
-         fcb   $A0 
-         fcb   $A7 '
-         fcb   $C0 @
-         fcb   $30 0
-         fcb   $1F 
-         fcb   $26 &
-         fcb   $F8 x
-         fcb   $39 9
-start    equ   *
-         pshs  y
+L0014    lda   ,y+
+         sta   ,u+
+         leax  -$01,x
+         bne   L0014
+         rts
+
+start    pshs  y
          pshs  u
          clra  
          clrb  
@@ -902,7 +899,7 @@ L07A2    leas  $02,s
          puls  pc,u
 L07A6    fcc   "cmds.hp"
          fcb   $00
-L07AE    fcc   "D0"
+L07AE    fcc   "DD"
          fcb   $00
 L07B1    fcc   "TERM"
          fcb   $00
@@ -2811,7 +2808,7 @@ L1AF0    fcc   "Shell"
 L1AF6    fcc   "Can't execute the OS9gen"
          fcb   $00 
 
-L1B0F    fcc   "/d0"
+L1B0F    fcc   "/dd"
          fcb   $00
 
 L1B13    pshs  u
@@ -3502,7 +3499,7 @@ L21CA    ldb   ,u
 
 L21D2    fcc   "copy"
          fcb   $00
-L21D7    fcc   "/d0"
+L21D7    fcc   "/dd"
          fcb   $00
 L21DB    fcc   "asm"
          fcb   $00
@@ -3514,27 +3511,27 @@ L2210    fcc   "Can't create SYS directory"
          fcb   $00
 L222B    fcc   "Can't create DEFS directory"
          fcb   $00
-L2247    fcc   "/d0/DEFS/OS9Defs"
+L2247    fcc   "/dd/DEFS/OS9Defs"
          fcb   $00
 L2258    fcc   "OS9Defs"
          fcb   $00
-L2260    fcc   "/d0/DEFS/RBFDefs"
+L2260    fcc   "/dd/DEFS/RBFDefs"
          fcb   $00
 L2271    fcc   "RBFDefs"
          fcb   $00
-L2279    fcc   "/d0/DEFS/SCFDefs"
+L2279    fcc   "/dd/DEFS/SCFDefs"
          fcb   $00
 L228A    fcc   "SCFDefs"
          fcb   $00
-L2292    fcc   "/d0/DEFS/SysType"
+L2292    fcc   "/dd/DEFS/SysType"
          fcb   $00
 L22A3    fcc   "SysType"
          fcb   $00
-L22AB    fcc   "/d0/DEFS/defsfile"
+L22AB    fcc   "/dd/DEFS/defsfile"
          fcb   $00
 L22BD    fcc   "defsfile"
          fcb   $00
-L22C6    fcc   "/d0"
+L22C6    fcc   "/dd"
          fcb   $00
 L22CA    fcc   "/d1"
          fcb   $00
@@ -3544,21 +3541,21 @@ L22E7    fcc   "Error reading commands file"
          fcb   $00
 L2303    fcc   "Error reading commands file"
          fcb   $00
-L231F    fcc   "/d0/startup"
+L231F    fcc   "/dd/startup"
          fcb   $00
 L232B    fcc   "startup"
          fcb   $00
-L2333    fcc   "/d0/CMDS/"
+L2333    fcc   "/dd/CMDS/"
          fcb   $00
-L233D    fcc   "/d0/SYS/errmsg"
+L233D    fcc   "/dd/SYS/errmsg"
          fcb   $00
 L234C    fcc   "errmsg"
          fcb   $00
-L2353    fcc   "/d0/SYS/password"
+L2353    fcc   "/dd/SYS/password"
          fcb   $00
 L2364    fcc   "password"
          fcb   $00
-L236D    fcc   "/d0/SYS/motd"
+L236D    fcc   "/dd/SYS/motd"
          fcb   $00
 L237A    fcc   "motd"
          fcb   $00
@@ -4218,6 +4215,7 @@ L2904    lda   $04,s
          ldd   $02,s
          leas  $08,s
          rts   
+
 L2918    fcb   $00
          fcc   ")"
          fcb   $00
@@ -4236,7 +4234,7 @@ L2921    fcc   "bootlist"
          fcb   $00
          fcb   $04
          fcs   "y"
-         fcc   "/D0/MODULES"
+         fcc   "/DD/MODULES"
          fcb   $00
          fcc   ".dd"
          fcb   $00
@@ -4314,9 +4312,9 @@ L2921    fcc   "bootlist"
          fcb   $00
          fcc   "SELECTION [1,2] "
          fcb   $00
-         fcc   "PLACE NEW DISK IN /D0 NOW"
+         fcc   "PLACE NEW DISK IN /DD NOW"
          fcb   $00
-         fcc   "PLACE CONFIG DISK IN /D0 NOW"
+         fcc   "PLACE CONFIG DISK IN /DD NOW"
          fcb   $00
          fcc   "CREATING NEW SYSTEM DISK"
          fcb   $00
@@ -4344,9 +4342,9 @@ L2921    fcc   "bootlist"
          fcb   $00
          fcc   "ALL RIGHTS RESERVED"
          fcb   $00
-         fcc   "os9gen /d1  #15k </d0/bootlist"
+         fcc   "os9gen /d1  #15k </dd/bootlist"
          fcb   C$CR,$00
-         fcc   "os9gen /d0 -s #15k </d0/bootlist"
+         fcc   "os9gen /dd -s #15k </dd/bootlist"
          fcb   C$CR,$00,$05,$dd
          fcc   "CMDS"
          fcb   $00
