@@ -24,13 +24,13 @@ CLOCKS          = clock_60hz clock_50hz \
 		clock2_smart clock2_harris clock2_tc3 clock2_soft
 
 RBF		= rbf.mn \
-		cc3disk.dr cc3hdisk.dr rammer.dr \
+		cc3disk.dr rammer.dr \
 		d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		d0_40d.dd d1_40d.dd d2_40d.dd d0_80d.dd \
 		d1_80d.dd d2_80d.dd ddd0_35s.dd ddd0_40d.dd \
 		ddd0_80d.dd r0_8k.dd r0_96k.dd r0_128k.dd r0_192k.dd \
-		ddr0_8k.dd ddr0_96k.dd ddr0_128k.dd ddr0_192k.dd md.dd \
-		h0_10.dd h1_10.dd h0_15.dd h1_15.dd h0_35.dd h1_35.dd
+		ddr0_8k.dd ddr0_96k.dd ddr0_128k.dd ddr0_192k.dd md.dd
+		
 
 SCF		= scf.mn \
 		cc3io.dr modpak.dr vrn.dr printer.dr sio.dr sspak.dr sacia.dr dacia.dr \
@@ -82,9 +82,6 @@ boot_1773_6ms: boot_1773.asm
 
 boot_1773_30ms: boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSTEP=3
-
-cc3hdisk.dr: $(6809L1)/modules/cchdisk.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 
 sysgo_dd: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1
