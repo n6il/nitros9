@@ -3,8 +3,8 @@
 *
 * $Id$
 *
-* This module allows booting from a hard drive that uses RGB-DOS
-* and is controlled by a TC^3 or Ken-Ton SCSI controller.
+* This module allows booting from a hard drive that uses HDB-DOS
+* and is controlled by a TC^3, Ken-Ton or Disto SCSI controller.
 *
 * It was later modified to handle hard drives with sector sizes
 * larger than 256 bytes, and works on both 256 byte and larger drives,
@@ -23,33 +23,55 @@
          nam   Boot
          ttl   SCSI Boot Module
 
-         ifp1
+         IFP1
          use   defsfile
-         endc
+         ENDC
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   2
 edition  set   1
 
-* The default SCSI ID is here
-scsiid   set   %00000001
+* Disto Hard Disk II Interface registers
+         IFNE  HDII
+dataport equ   $FF58
+status   equ   dataport-2
+select   equ   dataport-1
+reset    equ   dataport-2
+         ENDC
+
+* Disto 4-N-1 Hard Disk Interface registers
+         IFNE  D4N1
+dataport equ   $FF5B
+status   equ   dataport-2
+select   equ   dataport-1
+reset    equ   dataport-2
+         ENDC
 
 * Hard Disk Interface registers for the Ken-Ton and RGB HDI
-         ifne  Kenton
+         IFNE  KTLR
 dataport equ   $FF74
 status   equ   dataport+1
 select   equ   dataport+2
 reset    equ   dataport+3
-         endc
+         ENDC
 
-         ifne  TC3
+         IFNE  TC3
 dataport equ   $FF74
 status   equ   dataport+1
 select   equ   dataport+1
-         endc
+         ENDC
 
 * Status register equates
+         IFNE  DISTO
+req      equ   $80
+busy     equ   $01
+msg      equ   $04
+cmd      equ   $40
+inout    equ   $20
+ack      equ   $02
+sel      equ   $00
+         ELSE
 req      equ   $01
 busy     equ   $02
 msg      equ   $04
@@ -58,6 +80,7 @@ inout    equ   $10
 ack      equ   $20
 sel      equ   $40
 rst      equ   $80
+         ENDC
 
 *SCSI common command set
 c$rstr   equ   1
@@ -110,9 +133,9 @@ pause    decb
          bne   pause
          lda   $FF48                   clear controller
          clr   $FF40                   make sure motors are turned off
-         ifgt  Level-1
+         IFGT  Level-1
          sta   $FFD9                   fast clock
-         endc
+         ENDC
 
 * Recalibrate hard drive
          lbsr  restore
@@ -137,11 +160,11 @@ pause    decb
          ldu   blockloc,u
          os9   F$SRtMem
          puls  d
-         ifgt  Level-1
+         IFGT  Level-1
          os9   F$BtMem
          else
          os9   F$SRqMem
-         endc
+         ENDC
          bcs   error
          bsr   getpntr
          std   blockimg,u
@@ -220,7 +243,7 @@ wake     lda   status
          bne   wake
          bra   wake4
 wake1    bsr   wake3
-         lda   #scsiid
+         lda   defid,pcr
          sta   dataport
          bsr   wake3
          sta   select
@@ -305,10 +328,13 @@ restore  lda   #c$rstr
          clr   v$blks,u
          bra   command
 
-         ifgt  Level-1
+         IFGT  Level-1
 * Fillers to get to $1D0
-Pad      fill  $39,$1D0-3-*
-         endc
+Pad      fill  $39,$1D0-4-*
+         ENDC
+
+* The default SCSI ID is here
+defid    fcb   scsiid
 
          emod
 eom      equ   *

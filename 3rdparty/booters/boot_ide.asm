@@ -83,10 +83,10 @@ start
          bsr   GetSect    load in LSN0, U = buffer start 
          bcs   L00B0
 
-         ifne  NitrOS9
+         IFNE  NitrOS9
          lda   #'0        --- loaded in LSN0 
          jsr   <D.BtBug   --- 
-         endc  
+         ENDC  
 
          ldd   <DD.BSZ,u  size of the bootstrap file 
          std   btsiz,s    save it on the stack (0,s is junk) 
@@ -99,11 +99,11 @@ start
          os9   F$SRtMem   return the copy of LSN0 to free memory 
 
          ldd   btsiz,s    get size of boot memory to request 
-         ifeq  Level-2
+         IFEQ  Level-2
          os9   F$BtMem    ask for the boot memory 
-         else  
+         ELSE  
          os9   F$SRqMem   ask for the boot memory 
-         endc  
+         ENDC  
          bcs   L00AE      no memory: exit with error 
 
          std   btsiz,s
@@ -116,10 +116,10 @@ SectLp
          bsr   GetSect    read one sector 
          bcs   L00AE      if there's an error, exit 
 
-         ifne  NitrOS9
+         IFNE  NitrOS9
          lda   #'.        dump out a period for boot debugging 
          jsr   <D.BtBug   do the debug stuff 
-         endc  
+         ENDC  
 
          leau  256,u
          leax  1,x        go to the next sector 
@@ -203,9 +203,9 @@ Init
          clrb             no errors 
          puls  d,y,pc
 
-         ifeq  Level-2
+         IFEQ  Level-2
 Pad      fill  $39,$1D0-3-*
-         endc
+         ENDC
 
 
          emod  
