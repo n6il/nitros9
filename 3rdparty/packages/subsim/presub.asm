@@ -124,7 +124,7 @@ SwapDisk fcb   $0C,$02,$23,$25
          fcc   / and press any key to continue/
          fcb   C$LF,C$LF,C$CR,00
 Bell     fcb   C$BELL,$00
-NewDir   fcc   !/d0/cmds!
+NewDir   fcc   !/dd/cmds!
          fcb   C$CR
 SubPrg   fcc   /sub/
          fcb   C$CR
