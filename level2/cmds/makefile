@@ -6,11 +6,11 @@ CMDS		= attr backup binex build cmp cobbler copy date \
 		deiniz del deldir dir display dsave dump echo edit error exbin format \
 		free grfdrv help ident iniz link list load login makdir mdir \
 		merge mfree modpatch montype os9gen procs pwd pxd rename save \
-		setime shell_21 shell_22a sleep tee tmode tsmon unlink \
+		setime shell_21 shellplus sleep tee tmode tsmon unlink \
 		verify wcreate xmode
 SUBS            = gfx2 gfx inkey syscall
 
-SHELLMODS	= shell_22a deiniz display echo iniz link load save unlink
+SHELLMODS	= shellplus deiniz display echo iniz link load save unlink
 UTILPAK1	= attr build copy date del deldir dir list makdir mdir \
 		merge mfree procs pwd pxd rename sleep tee tmode
 
