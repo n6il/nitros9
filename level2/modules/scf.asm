@@ -1384,9 +1384,8 @@ VerExit  clra               No error
 
 call.grf pshs  d,x,y,u      save registers
          ldx   #$0180       where to put the text
-*         pshs  cc           save old CC
          IFNE  H6309
-         tfr   cc,e
+         pshs  cc           save old CC
          ELSE
          tfr   cc,a
          sta   -2,x
@@ -1407,7 +1406,7 @@ l@       lda   ,u+
          ldb   #6           alpha put
          stb   >WGlobal+G.GfBusy  flag grfdrv busy
          IFNE  H6309
-*         lde   ,s+          grab old CC off of the stack
+         lde   ,s+          grab old CC off of the stack
          lda   1,s          get the number of characters to write
          ELSE
 *         ldb   ,s+          grab old CC off of the stack
