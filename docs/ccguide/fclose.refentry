@@ -1,7 +1,8 @@
-<refentry id="fflush">
+<refentry id="fclose">
 <refnamediv>
-<refname>fflush</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Fclose</refname>
+<refname>Fflush</refname>
+<refpurpose>flush or close a file</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -9,10 +10,17 @@
 <funcsynopsisinfo>
 #include &lt;stdio.h&gt;
 </funcsynopsisinfo>
+
+<funcprototype>
+  <funcdef><function>fclose</function></funcdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
+</funcprototype>
+
 <funcprototype>
   <funcdef><function>fflush</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
 </funcprototype>
+
 </funcsynopsis>
 
 </refsynopsisdiv>

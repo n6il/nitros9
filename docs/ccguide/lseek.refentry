@@ -8,7 +8,9 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>lseek</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>int <parameter>pn</parameter></paramdef>
+  <paramdef>long <parameter>position</parameter></paramdef>
+  <paramdef>int <parameter>type</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 

@@ -1,7 +1,7 @@
 <refentry id="fopen">
 <refnamediv>
 <refname>fopen</refname>
-<refpurpose>Placeholder</refpurpose>
+<refpurpose>open a file and return a file pointer</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -162,7 +162,7 @@ Fopen returns NULL (0) if the call was unsuccessful.
 <para>
 System call
 <link linkend="open">open()</link>,
-<link linkend="fflush">fclose()</link>
+<link linkend="fclose">fclose()</link>
 </para>
 </refsect1>
 

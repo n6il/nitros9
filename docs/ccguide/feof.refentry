@@ -1,7 +1,10 @@
 <refentry id="feof">
 <refnamediv>
-<refname>feof</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Feof</refname>
+<refname>Ferror</refname>
+<refname>Clearerr</refname>
+<refname>Fileno</refname>
+<refpurpose>return status information of files</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -11,7 +14,22 @@
 </funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>feof</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef><function>ferror</function></funcdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef><function>clearerr</function></funcdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef><function>fileno</function></funcdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 

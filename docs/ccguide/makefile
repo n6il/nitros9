@@ -3,7 +3,7 @@ STYLESHEET	= docbook-utils.dsl
 
 PREFACE		= intro.preface
 CHAPTERS	= chap1.chapter chap2.chapter chap3.chapter chap4.chapter
-STDLIB		= atof.refentry fflush.refentry feof.refentry \
+STDLIB		= atof.refentry fclose.refentry feof.refentry \
 		findstr.refentry fopen.refentry fread.refentry \
 		fseek.refentry getc.refentry gets.refentry isalpha.refentry \
 		l3tol.refentry longjmp.refentry malloc.refentry \

@@ -9,7 +9,12 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>exit</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>int <parameter>status</parameter></paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef><function>_exit</function></funcdef>
+  <paramdef>int <parameter>status</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 

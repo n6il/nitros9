@@ -1,7 +1,16 @@
 <refentry id="isalpha">
 <refnamediv>
-<refname>isalpha</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Isalpha</refname>
+<refname>Isupper</refname>
+<refname>Islower</refname>
+<refname>Isdigit</refname>
+<refname>Isalnum</refname>
+<refname>Isspace</refname>
+<refname>Ispunct</refname>
+<refname>Isprint</refname>
+<refname>Iscntrl</refname>
+<refname>Isascii</refname>
+<refpurpose>character classification</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -9,9 +18,10 @@
 <funcsynopsisinfo>
 #include &lt;ctype.h&gt;
 </funcsynopsisinfo>
+
 <funcprototype>
   <funcdef><function>isalpha</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>int <parameter>c</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 

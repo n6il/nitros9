@@ -8,7 +8,8 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>intercept</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+    <paramdef>int <parameter>(* func)</parameter>
+        <funcparams>int</funcparams></paramdef>
 </funcprototype>
 </funcsynopsis>
 

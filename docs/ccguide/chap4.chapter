@@ -13,7 +13,7 @@ fewer system calls are necessary.
 </para>
 
 &atofref;
-&fflushref;
+&fcloseref;
 &feofref;
 &findstrref;
 &fopenref;
