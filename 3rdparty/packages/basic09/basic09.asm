@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 22     Obtained from Curtis Boyle, marked V1.1.0      BGP 02/10/09
+*  22      2002/10/09  Boisy G. Pitre
+* Obtained from Curtis Boyle, marked V1.1.0.
 *
 * BASIC09 - Copyright (C) 1980 by Microware & Motorola
 ***********
@@ -265,7 +267,7 @@ B09Minor equ   0
          USE   defsfile  
          ENDC            
 
-         mod   eom,name,Prgrm+Objct,ReEnt+1,start,size
+         mod   eom,name,Prgrm+Objct,ReEnt+0,start,size
 
 u0000    rmb   2          Start of data memory / DP pointer
 u0002    rmb   2          Size of Data area (including DP)
