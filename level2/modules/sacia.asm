@@ -169,6 +169,7 @@ WritFlag   rmb   1              initial write attempt flag
 Wrk.Type   rmb   1              type work byte (MUST immediately precede Wrk.Baud)
 Wrk.Baud   rmb   1              baud work byte (MUST immediately follow Wrk.Type)
 Wrk.XTyp   rmb   1              extended type work byte
+regWbuf    rmb   2              substitute for regW
 RxBufDSz   equ   256-.          default Rx buffer gets remainder of page...
 RxBuff     rmb   RxBufDSz       default Rx buffer
 MemSize    equ   .
@@ -271,6 +272,9 @@ SetRxBuf   std   <RxBufSiz      save Rx buffer size
            IFNE  H6309
            tim   #ForceDTR,<Wrk.XTyp
            ELSE
+* lines seemed to be missing here. RG
+           lda   #ForceDTR
+           bita  <Wrk.XTyp
            ENDC
            beq   NoDTR          no, don't enable DTR yet
            orb   #Cmd.DTR       set (enable) DTR bit
@@ -319,6 +323,10 @@ Term       clrb                 default to no error...
            tfr   u,w            setup our DP
            tfr   e,dp
            ELSE
+* missing lines
+           stu   <regWbuf
+           lda   <regWbuf
+           tfr   a,pd
            ENDC
            ldx   <V.PORT
            lda   CmdReg,x       get current Command register contents
@@ -382,6 +390,10 @@ Read       clrb                 default to no errors...
            tfr   u,w            setup our DP
            tfr   e,dp
            ELSE
+*missing lines
+           stu   <regWbuf
+           lda   <regWbuf
+           tfr   a,dp
            ENDC
 ReadLoop   orcc  #IntMasks      disable IRQs while checking Rx flow control
 ReadChk    lda   <FloCtlRx      get Rx flow control flags
@@ -402,7 +414,7 @@ NotTxBrk   equ   *
            tim   #Stat.TxE,StatReg,x
            ELSE
            pshs  a
-           lda   StatReg,x
+           lda   StatRegx
            bita  #Stat.TxE
            puls  a
            ENDC
@@ -481,6 +493,11 @@ Writ       clrb                 default to no error...
            tfr   e,dp
            tfr   a,e
            ELSE
+*missing lines
+           stu   <regWbuf
+           ldb   <regWbuf
+           tfr   b,dp
+           sta   <regWbuf
            ENDC
            orcc  #IntMasks      disable IRQs during error and Tx disable checks
            bra   WritChr
@@ -526,6 +543,9 @@ ChkTxE     equ   *
            IFNE  H6309
            ste   DataReg,x      write Tx character
            ELSE
+*missing lines
+           ldb   <regWbuf
+           stb   DataReg,x
            ENDC
            clr   <WritFlag      clear "initial write attempt" flag
            puls  cc,dp,pc       recover IRQ/Carry status, Tx character, system DP, return
@@ -536,6 +556,10 @@ GStt       clrb                 default to no error...
            tfr   u,w            setup our DP
            tfr   e,dp
            ELSE
+*missing lines
+           stu   <regWbuf
+           ldb   <regWbuf
+           tfr   b,dp
            ENDC
            ldx   PD.RGS,y       caller's register stack pointer
            cmpa  #SS.EOF
@@ -594,6 +618,10 @@ SStt       clrb                 default to no error...
            tfr   u,w            setup our DP
            tfr   e,dp
            ELSE
+*missing lines
+           stu   <regWbuf
+           ldb   <regWbuf
+           tfr   b,dp
            ENDC
            ldx   PD.RGS,y
            cmpa  #SS.HngUp
@@ -708,24 +736,38 @@ SetPort    pshs  cc             save IRQ enable and Carry status
            IFNE  H6309
            tfr   b,e            save it temporarily
            ELSE
+*missing line
+           stb   <regWbuf
            ENDC
            ldb   <Wrk.Baud      get baud info again
            andb  #^(Ctl.RxCS!Ctl.Baud) clear clock source + baud rate code bits
            IFNE  H6309
            orr   e,b            mask in clock source + baud rate and clean up stack
            ELSE
+*missing lines
+           pshs  b
+           orb   <regWbuf
+           stb   <regWbuf
+           puls  b
            ENDC
            ldx   <V.PORT        get port address
            anda  #Cmd.Par       clear all except parity bits
            IFNE  H6309
            tfr   a,e            save new command register contents temporarily
            ELSE
+*missing line
+           sta   <regWbuf
            ENDC
            lda   CmdReg,x       get current command register contents
            anda  #^Cmd.Par      clear parity control bits
            IFNE  H6309
            orr   e,a            mask in new parity
            ELSE
+*missing lines
+           pshs  a
+           ora   <regWbuf
+           sta   <regWbuf
+           puls  a
            ENDC
            std   CmdReg,x       set command+control registers
            puls  cc,pc          recover IRQ enable and Carry status, return...
@@ -735,6 +777,10 @@ IRQSvc     pshs  dp             save system DP
            tfr   u,w            setup our DP
            tfr   e,dp
            ELSE
+*missing lines
+           stu   <regWbuf
+           ldb   <regWbuf
+           tfr   b,dp
            ENDC
            ldx   <V.PORT
            ldb   StatReg,x      get current Status register contents
@@ -764,6 +810,9 @@ RxBreak    beq   SavRxDat       its a null, go save it...
            IFNE  H6309
            stf   <SigSent       clear signal sent flag
            ELSE
+*missing lines
+           ldb   <regWbuf+1
+           stb   <SigSent
            ENDC
            cmpa  <V.INTR        interrupt?
            bne   Chk.Quit       no, go on...
@@ -791,6 +840,10 @@ Chk.Flow   equ   *
            IFNE  H6309
            tim   #TxSwFlow,<Wrk.Type Tx data software flow control enabled?
            ELSE
+           pshs  a
+           lda   #TxSwFlow
+           bita  <Wrk.Type
+           puls  a
            ENDC
            beq   SavRxDat       no, go save Rx data...
            cmpa  <V.XON         XON?
@@ -798,6 +851,12 @@ Chk.Flow   equ   *
            IFNE  H6309
            aim   #^FCTxXOff,<FloCtlTx clear XOFF received bit
            ELSE
+*missing lines
+           pshs  a
+           lda   #^FCTxXOff
+           anda  <FloCtlTx
+           sta   <FloCtlTx
+           puls  a
            ENDC
            bra   SetTxFlo       go save new Tx flow control flags...
 
@@ -811,17 +870,33 @@ SavRxDat   equ   *
            IFNE  H6309
            aim   #^FCRxSend,<FloCtlRx clear possible pending XOFF flag
            ELSE
+*missing lines
+           pshs  a
+           lda   #^FCRxSend
+           anda  <FloCtlRx
+           sta   <FloCtlRx
+           puls  a 
            ENDC
            ldx   <RxBufPut      get Rx buffer input pointer
            IFNE  H6309
            ldw   <RxDatLen      Rx get Rx buffer data length
            cmpw  <RxBufSiz      Rx buffer already full?
            ELSE
+*missing lines
+           pshs  d
+           ldd   <RxDatLen
+           std   <regWbuf
+           cmpd  <RxBufSiz
+           puls  d
            ENDC
            blo   NotOvFlo       no, go skip overflow error...
            IFNE  H6309
            oim   #OvrFloEr,<V.ERR mark RX buffer overflow error
            ELSE
+*missing lines
+           ldb   #OvrFloEr
+           orb   <V.ERR
+           stb   <V.ERR
            ENDC
            bra   DisRxFlo       go ensure Rx is disabled (if possible)
 
@@ -835,6 +910,14 @@ SetLayDn   stx   <RxBufPut      set new Rx data laydown pointer
            stw   <RxDatLen      save new Rx data length
            cmpw  <RxBufMax      at or past maximum fill point?
            ELSE
+*missing lines
+           pshs  d
+           ldd   <regWbuf
+           addd  #1
+           std   <regWbuf
+           std   <RxDatLen
+           cmpd  <RxBufMax
+           puls  d
            ENDC
            blo   SgnlRxD        no, go check Rx data signal...
 DisRxFlo   ldx   <V.PORT
@@ -842,32 +925,52 @@ DisRxFlo   ldx   <V.PORT
            IFNE  H6309
            tim   #ForceDTR,<Wrk.XTyp forced DTR?
            ELSE
+*missing lines
+           lda   #ForceDTR
+           bita  <Wrk.XTyp
            ENDC
            bne   DisRxRTS       yes, go check RTS disable...
            IFNE  H6309
            tim   #DSRFlow,<Wrk.Type DSR/DTR Flow control?
            ELSE
+*missing lines
+           lda   #DSRFlow
+           bita  <Wrk.Type
            ENDC
            beq   DisRxRTS       no, go check RTS disable
            IFNE  H6309
            oim   #FCRxDTR,<Wrk.Type mark RX disabled due to DTR
            ELSE
+*missing lines
+           lda   #FCRxDTR
+           ora   <Wrk.Type
+           sta   <Wrk.Type
            ENDC
            andb  #^Cmd.DTR      clear (disable) DTR bit
 DisRxRTS   equ   *
            IFNE  H6309
            tim   #RTSFlow,<Wrk.Type
            ELSE
+*missing lines
+           lda   #RTSFlow
+           bita  <Wrk.Type
            ENDC
            beq   NewRxFlo       no, go set new Rx flow control...
            IFNE  H6309
            tim   #DSRFlow,<Wrk.Type line break?
            ELSE
+*missing lines
+           lda   #DRSFlow
+           bita  <Wrk.Type
            ENDC
            bne   NewRxFlo       yes, go set new Rx flow control...
            IFNE  H6309
            oim   #FCRxRTS,<FloCtlRx
            ELSE
+*missing lines
+           lda   #FCRxRTS
+           ora   <FloCtlRx
+           sta   <FloCtlRx
            ENDC
            andb  #^Cmd.TIRB     clear Tx IRQ/RTS/Break control bits (disable RTS)
 NewRxFlo   stb   CmdReg,x       set/clear DTR and RTS in Command register
