@@ -30,13 +30,13 @@ shell:  $(SHELLMODS) $(DEPENDS)
 	$(MERGE) $(SHELLMODS)>$@
 	@$(ECHO) "*** Be sure the size of this file is less than 7681 bytes! ***"
 	@ls -l $@
-	@$(ECHO)
+	@$(ECHO) ""
 
 utilpak1:  $(UTILPAK1) $(DEPENDS)
 	$(MERGE) $(UTILPAK1)>$@
 	@$(ECHO) "*** Be sure the size of this file is less than 7681 bytes! ***"
 	@ls -l $@
-	@$(ECHO)
+	@$(ECHO) ""
 
 $(BASIC09FILES): $(BASEDIR)/3rdparty/packages/basic09/$@
 	-$(SOFTLINK) $(BASEDIR)/3rdparty/packages/basic09/$@
