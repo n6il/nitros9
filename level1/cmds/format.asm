@@ -111,10 +111,10 @@ u0044    rmb   1
 dovfy    rmb   1
 dtentry  rmb   2
 u0048    rmb   1
-stoff    rmb   2
-u004B    rmb   1
+toffs    rmb   1		track offset (derived from PD.SToff)
+soffs    rmb   1		sector offset (derived from PD.SToff)
 t0sngdns rmb   1		track 0 single density flag
-u004D    rmb   1
+cocofmt  rmb   1		COCO disk format flag (1 = yes)
 dolog    rmb   1                logical format
 prmbuf   rmb   2
 u0051    rmb   4
@@ -160,7 +160,7 @@ dbsdat   fdb   $0C00,$03F5,$01FE,$0400,$01F7,$164E
 dbfidp   fdb   $0090
 dbsize   fdb   $0152
 
-* Double Density Color Computer Format (Disk BASIC)
+* Double Density Color Computer Format
 dctdat   fdb   $204E,$0000,$0C00,$03F5,$01FE,$0400
          fdb   $01F7,$164E,$0C00,$03F5,$01FB,$80E5
          fdb   $80E5,$01F7,$184E,$0000
@@ -259,41 +259,45 @@ Geometry leax  >optbuf,u        status packet address
          bcs   Exit             exit if error
          ldb   PD.SID-PD.OPT,x  number of surfaces
          stb   <numsides        save it
-         ldb   PD.SToff-PD.OPT,x foreign disk format?
-         beq   L0143            no,
-         tfr   b,a              yes, get copy
-         anda  #$0F             foreign low nibble
-         sta   <stoff           save it
+         ldb   PD.SToff-PD.OPT,x get track/sector offset values
+         beq   L0143            branch if they are zero
+         tfr   b,a              yes, make copy
+         anda  #$0F             isolate track offset (lower 4 bits)
+         sta   <toffs           save it
          lsrb
          lsrb
          lsrb
-         lsrb                   foreign high nibble
-         stb   <u004B           save it
+         lsrb                   isolate sector offset
+         stb   <soffs           save it
 L0143    ldb   PD.DNS-PD.OPT,x  density capability
          stb   <dns
-         pshs  b                save it
+*         pshs  b                save it
          andb  #DNS.MFM         check double-density
          stb   <mfm             save double-density (Yes/No)
          stb   <maxmfm          save it again as maximum mfm
-         ldb   ,s               get saved PD.DNS byte
-         lsrb                   now 96/135 TPI bit is in bit pos 0
+         ldb   <dns             get saved PD.DNS byte
+         lsrb                   now 96 TPI bit is in bit pos 0
          pshs  b                save it
-         andb  #$01             tpi (0=48, 1=96/135)
+         andb  #$01             tpi (0=48/135, 1=96)
          stb   <tpi             save it
-         puls  b                get bytes with bit shifted right once
+         puls  b                get byte with bit shifted right once
          lsrb                   shift original bit #2 into bit #0
          andb  <maxmfm		AND with mfm bit (1 = MFM, 0 = FM)
          stb   <t0sngdns	save as track 0 single density flag
-         puls  b		get original PD.DNS byte
-         andb  #DNS.MFM	
-         stb   <u004D		store it
-         beq   L0169
-         stb   <u004B
-         clr   <stoff
+*         puls  b		get original PD.DNS byte
+* NOTE: We check the TYP.CCF at this point
+         ldb   PD.TYP-PD.OPT,x  disk device type
+         stb   <dtype
+         andb  #TYP.CCF
+         stb   <cocofmt		store it
+         beq   L0169		branch if not CoCo format
+         ldb   #$01
+         stb   <soffs		CoCo has a sector offset of 1
+         clr   <toffs		and no track offset
 L0169    ldd   PD.CYL-PD.OPT,x  number of cylinders
          std   <ncyls           save it
-         ldb   PD.TYP-PD.OPT,x  disk device type
-         stb   <dtype           save it
+*         ldb   PD.TYP-PD.OPT,x  disk device type
+         ldb   <dtype           get IT.TYP byte
          andb  #TYPH.SSM	mask out all but sector size
          leay  ssztbl,pcr
          ldb   b,y
@@ -653,9 +657,9 @@ GetDTyp  leax  >hdsdat,pcr      assume hard drive data for now
          ldb   <dtype           get disk drive type
          bitb  #TYP.HARD+TYP.NSF hard disk or non-standard type?
          bne   L0323            yes, branch
-         tst   <u004D           
-         beq   L031B
-         leax  >dctdat,pcr	point to Disk BASIC data
+         tst   <cocofmt         is this a COCO formatted disk?
+         beq   L031B		branch if not
+         leax  >dctdat,pcr	point to COCO track data
          bra   L032D
 L031B    leax  >sgtdat,pcr	point to single density track data
          tst   <mfm             double-density?
@@ -815,8 +819,8 @@ L03FA    bsr   L045C
          addd  <u0048
          tfr   d,u
          clrb  
-         tst   <u004D
-         bne   L041B
+         tst   <cocofmt		do we format this as a COCO disk?
+         bne   L041B		branch if so
          tst   <mfm		single density?
          beq   L041D		branch if so
          tst   <t0sngdns	track 0 single density?
@@ -828,7 +832,7 @@ L03FA    bsr   L045C
 L041B    orb   #$02		else set side 1
 L041D    tst   <tpi   		48 tpi?
          beq   L0423		branch if so
-         orb   #$04		else set 96/135 tpi bit
+         orb   #$04		else set 96 tpi bit
 L0423    lda   <currside	get current side
          beq   L0429		branch if 0
          orb   #$01
@@ -912,14 +916,14 @@ L04A6    std   ,x++
          leay  >u008F,u
 L04C3    leax  d,x
          ldd   <currtrak+1
-         adda  <stoff
+         adda  <toffs			add in track offset
          std   ,x
          ldb   <sectcount+1
          lda   b,y
          incb  
          stb   <sectcount+1
          ldb   <currsect
-         adda  <u004B
+         adda  <soffs			add in sector offset
          bcs   L04E5
          std   $02,x
          lda   <sectcount+1
@@ -1009,7 +1013,7 @@ L0561    ldb   <numsides	get number of sides
          ora   #FMT.SIDE	else set double-sided bit
 L0569    tst   <tpi 		48tpi?
          beq   L056F		branch if so
-         ora   #FMT.TDNS	else set 96/135 tpi
+         ora   #FMT.TDNS	else set 96 tpi
 L056F    sta   <DD.FMT,x	save
          ldd   <ClustSz		get cluster size
          std   DD.MAP,x		save number of bytes in allocation bit map
@@ -1628,6 +1632,12 @@ SUMH
 *         fcc   "Fixed values:"
          fcb   C$CR,C$LF
 SUMHL    equ   *-SUMH
+FMT      fcc   "      Floppy Disk Format: "
+FMTL     equ   *-FMT
+TOF      fcc   "            Track Offset: "
+TOFL     equ   *-TOF
+SOF      fcc   "           Sector Offset: "
+SOFL     equ   *-SOF
 PFS      fcc   "    Physical floppy size: "
 PFSL     equ   *-PFS
 DC       fcc   "           Disk capacity: "
@@ -1663,6 +1673,10 @@ SPPRL    equ   *-SPPR
 PRSP     fcc   " bytes)"
          fcb   C$CR
 PRSPL    equ   *-PRSP
+CoCo     fcc   !CoCo!
+         fcb   C$CR
+Standard fcc   !Standard OS-9!
+         fcb   C$CR
 Three5   fcc   !3 1/2"!
          fcb   C$CR
 FiveQ    fcc   !5 1/4"!
@@ -1672,13 +1686,15 @@ FM       fcc   /FM/
          fcb   C$CR
 TPI48    fcc   /48/
          fcb   C$CR
-TPI96    fcc   !96/135!
+TPI96    fcc   !96!
+         fcb   C$CR
+TPI135   fcc   !135!
          fcb   C$CR
 
 
 HDSummary
          bsr   ShowHeader
-         bsr   ShowDiskCapacity
+         lbsr  ShowDiskCapacity
          ldb   <dtype
          andb  #TYPH.DSQ
          bne   o@
@@ -1692,10 +1708,13 @@ o@       lbsr  ShowClusterSize
 
 FloppySummary
          bsr   ShowHeader
+         bsr   ShowDiskType
          bsr   ShowPhysFloppy
          lbsr  ShowSectorsTrack
          lbsr  ShowSectorsTrackZero
          lbsr  ShowTotalPhysCylinders
+         lbsr  ShowTrackOffset
+         lbsr  ShowSectorOffset
          lbsr  ShowSAS
          lbsr  ShowRecordingFormat
          lbsr  ShowTrackDensity
@@ -1709,6 +1728,19 @@ ShowHeader
          leax  SUMH,pcr
          ldy   #SUMHL
          os9   I$Write
+         rts
+
+ShowDiskType
+         leax  FMT,pcr
+         ldy   #FMTL
+         os9   I$Write
+         ldb   <dtype
+         leax  CoCo,pcr
+         bitb  #TYP.CCF
+         bne   n@
+t@       leax  Standard,pcr
+n@       ldy   #80
+         os9   I$WritLn 
          rts
 
 ShowPhysFloppy
@@ -1780,6 +1812,22 @@ ShowSectorsTrack
          ldd   <sectors
          lbra  PrintNum
 
+ShowTrackOffset
+         leax  TOF,pcr
+         ldy   #TOFL
+         os9   I$Write
+         clra
+         ldb   <toffs
+         lbra  PrintNum
+
+ShowSectorOffset
+         leax  sOF,pcr
+         ldy   #SOFL
+         os9   I$Write
+         clra
+         ldb   <soffs
+         lbra  PrintNum
+
 ShowSectorsTrackZero
          leax  TZST,pcr
          ldy   #TZSTL
@@ -1826,7 +1874,11 @@ ShowTrackDensity
          leax  TD,pcr
          ldy   #TDL
          os9   I$Write
-         leax  TPI48,pcr
+         leax  TPI135,pcr
+         ldb   <dtype
+         lsrb
+         bcs   n@
+x@       leax  TPI48,pcr
          ldb   <dns
          bitb  #DNS.DTD
          beq   n@
@@ -1923,7 +1975,7 @@ Base     fcb   $3B,$9A,$CA,$00       1,000,000,000
 * Y = length of number string in bytes
 itoa     pshs  u,y
          tfr   y,u
-         ldb   #10		max number of numbers (1^10)
+         ldb   #10		max number of numbers (10^9)
          pshs  b		save count on stack
          leay  Base,pcr		point to base of numbers
 s@       lda   #$30		put #'0
@@ -1951,6 +2003,7 @@ done@    leas  1,s
          ldb   #14		length of string with commas + 1
          ldx   ,s++		get pointer to buffer
 a@       decb
+         beq   ex@
          lda   ,x+		get byte
          cmpa  #'0
          beq   a@
@@ -1958,8 +2011,10 @@ a@       decb
          beq   a@
          clra
          tfr   d,y		transfer count into Y
-         leax  -1,x
+v@       leax  -1,x
          puls  u,pc
+ex@      ldy   #0001
+         bra   v@
 
 * Entry:
 * X = address of 32 bit minuend
