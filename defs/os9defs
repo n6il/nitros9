@@ -683,6 +683,7 @@ Devic    equ   $F0        Device Descriptor Module
 Drivr    equ   $E0        Physical Device Driver
 FlMgr    equ   $D0        File Manager
 Systm    equ   $C0        System Module
+ShellSub equ   $50        Shell+ shell sub module
 Data     equ   $40        Data Module
 Multi    equ   $30        Multi-Module
 Sbrtn    equ   $20        Subroutine Module
