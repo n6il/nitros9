@@ -28,7 +28,7 @@ disk drive unit, follow the steps below (root login is assumed):
       DS DD sect=18 cyl=40 ssize=256 tpi=48 fm=0 gap=8
 
      "COCO720":
-      DS DD sect=18 cyl=80 ssize=256 tpi=48 fm=0 gap=8
+      DS DD sect=18 cyl=80 ssize=256 tpi=96 fm=0 gap=8
 
 3. Insert your blank floppy into the drive on your Linux box.
 
