@@ -16,6 +16,9 @@
 *   6r2    2003/05/18  Boisy G. Pitre
 * Added '.' output for each sector for OS-9 L2 and NitrOS9 for
 * Mark Marlette (a special request :).
+*
+*   6r3    2003/08/31  Robert Gault
+* Put BLOB-stop code in place, changed orb #$30 to orb #$28
 
          nam   Boot
          ttl   WD1773 Boot module
@@ -34,7 +37,7 @@ STEP     set   $00
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $02
+rev      set   $03
 edition  set   6
 
          mod   eom,name,tylg,atrv,start,size
@@ -209,25 +212,30 @@ L00EA    bsr   L013C
          ldb   #$80
          stb   >$FF48
          ldb   ,u
-         orb   #$30
+         orb   #$28		was $30 which RG thinks is an error
          tst   u0009,u
          beq   L0107
          orb   #$40
 L0107    stb   >$FF40
          lbsr  L01AA
          orb   #$80
-         lda   #$02
-L0111    bita  >$FF48
-         bne   L0123
-         leay  -$01,y
-         bne   L0111
-         lda   ,u
-         sta   >$FF40
-         puls  y
-         bra   L0138
+*         lda   #$02
+*L0111    bita  >$FF48
+*         bne   L0123
+*         leay  -$01,y
+*         bne   L0111
+*         lda   ,u
+*         sta   >$FF40
+*         puls  y
+*         bra   L0138
+         stb   $FF40
+         nop
+         nop
+         bra   L0123
 L0123    lda   >$FF4B
          sta   ,x+
-         stb   >$FF40
+*         stb   >$FF40
+         nop
          bra   L0123
 
 NMIRtn   leas  R$Size,s
