@@ -23,50 +23,50 @@ edition  set   3
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   451
+fpath    rmb   451
 size     equ   .
 
 name     fcs   /Save/
          fcb   edition
 
-start    leay  -1,y
-         pshs  y,x
-         cmpx  $02,s
-         bcc   L0060
-         ldd   #$022F
-         os9   I$Create 
-         bcs   L0061
-         sta   <u0000
-         lda   ,x
-         cmpa  #C$CR
-         bne   L002C
-         ldx   ,s
-L002C    lda   ,x+
-         cmpa  #C$SPAC
-         beq   L002C
-         cmpa  #C$COMA
-         beq   L002C
-         leax  -$01,x
-         clra  
-         os9   F$Link   
-         bcs   L0061
-         stx   ,s
-         leax  ,u
-         ldy   $02,x
-         lda   <u0000
-         os9   I$Write  
+start    leay  -1,y			back up Y by one
+         pshs  y,x			save X Y on stack
+         cmpx  $02,s			one byte on command line? (CR)
+         bcc   ExitOk			branch if so
+         ldd   #WRITE.*256+PEXEC.+PREAD.+EXEC.+UPDAT.
+         os9   I$Create 		create file of same name as arg
+         bcs   Exit			branch if error
+         sta   <fpath			save path
+         lda   ,x			get char after arg
+         cmpa  #C$CR			CR?
+         bne   NextMod			branch if not
+         ldx   ,s			else get ptr to start of cmd line
+NextMod  lda   ,x+			get char
+         cmpa  #C$SPAC			space?
+         beq   NextMod			branch if so
+         cmpa  #C$COMA			coma?
+         beq   NextMod			branch if so
+         leax  -$01,x			else backup 1
+         clra  				clear ty/lang
+         os9   F$Link   		link to module
+         bcs   Exit			branch if error
+         stx   ,s			save X
+         leax  ,u			point to start of module
+         ldy   M$Size,x			get module size in y
+         lda   <fpath			get path to file
+         os9   I$Write  		write module to file
          pshs  b,cc
-         os9   F$UnLink 
+         os9   F$UnLink 		unlink module
          ror   ,s+
          puls  b
-         bcs   L0061
-         ldx   ,s
-         cmpx  $02,s
-         bcs   L002C
-         os9   I$Close  
-         bcs   L0061
-L0060    clrb  
-L0061    os9   F$Exit   
+         bcs   Exit
+         ldx   ,s			get param pointer
+         cmpx  $02,s			end of param?
+         bcs   NextMod			branch of not
+         os9   I$Close  		else close path
+         bcs   Exit			branch if error
+ExitOk   clrb  
+Exit     os9   F$Exit   
 
          emod
 eom      equ   *
