@@ -1,0 +1,270 @@
+<chapter>
+<title>Use of the System Disk</title>
+<para>
+Disk-based OS-9 systems use a system disk to load many parts of
+the operating system during the system startup and to provide files
+frequently used during normal system operations. Therefore, the
+system disk is generally kept in disk drive zero (&quot;/D0&quot;) when the
+system is running.
+</para>
+<para>
+Two files used during the system startup operation, &quot;OS9Boot&quot; and
+&quot;startup&quot; <emphasis>must</emphasis>
+reside in the system disk's root directory. Other
+files are organized into three directories: CMDS (commands), DEFS
+(system-wide definitions), and SYS (other system files). Other files
+and directories created by the system manager and/or users may also
+reside on the system disk. These frequently include each user s
+initial data directory.
+</para>
+
+<section>
+<title>The OS9BOOT File</title>
+
+<para>
+The file called &quot;OS9Boot&quot; loaded into RAM memory by the
+&quot;bootstrap&quot; routine located in the OS-9 firmware. It includes file
+managers, device drivers and descriptors, and any other modules
+which are permanently resident in memory. A typical Microware OS-9
+distribution disk's &quot;OS9Boot&quot; file contains the following modules:
+</para>
+<informaltable frame="none">
+<tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
+<tbody>
+  <row>
+    <entry>IOMAN</entry>
+    <entry>OS-9 Input/Output Manager</entry>
+  </row>
+  <row>
+    <entry>RBF</entry>
+    <entry>Random Block (disk) File Manager</entry>
+  </row>
+  <row>
+    <entry>SCF</entry>
+    <entry>Sequential Character (terminal) File Manager</entry>
+  </row>
+  <row>
+    <entry>Pipeman</entry>
+    <entry>Pipeline File Manager</entry>
+  </row>
+  <row>
+    <entry>Piper</entry>
+    <entry>Pipeline Driver</entry>
+  </row>
+  <row>
+    <entry>Pipe</entry>
+    <entry>Pipeline Device Descriptor</entry>
+  </row>
+  <row>
+    <entry>KBDVID</entry>
+    <entry>Keyboard/video/Graphics Device Driver</entry>
+  </row>
+  <row>
+    <entry>PRINTER</entry>
+    <entry>Printer Device Driver</entry>
+  </row>
+  <row>
+    <entry>DDISK</entry>
+    <entry>Disk Driver</entry>
+  </row>
+  <row>
+    <entry>D0, D1</entry>
+    <entry>Disk Device Descriptor</entry>
+  </row>
+  <row>
+    <entry>TERM</entry>
+    <entry>Terminal Device Descriptor</entry>
+  </row>
+  <row>
+    <entry>P</entry>
+    <entry>Printer Device Descriptor</entry>
+  </row>
+  <row>
+    <entry>CLOCK</entry>
+    <entry>Real-Time Clock Module</entry>
+  </row>
+  <row>
+    <entry>SYSGO</entry>
+    <entry>System Startup Process</entry>
+  </row>
+</tbody>
+</tgroup>
+</informaltable>
+
+<para>
+Users may create new bootstrap files which may include additional
+modules (see &quot;OS9Gen&quot; command). Any module loaded as part of the
+bootstrap cannot be unlinked and is stored in memory with a minimum
+of fragmentation. It may be advantageous to include in the OS9Boot
+file any module used constantly during normal system operation.
+This can be done with the OS9GEN command.
+</para>
+</section>
+
+<section>
+<title>The SYS Directory</title>
+
+<para>
+The directory &quot;/d0/SYS&quot; contains two important files:
+</para>
+<informaltable frame="none">
+<tgroup cols="2">
+<colspec colwidth="1in">
+<colspec colwidth="4in">
+<tbody>
+  <row>
+<entry>password</entry>
+<entry>the system password file (see &quot;login&quot; command)</entry>
+  </row>
+  <row>
+<entry>errmsg</entry>
+<entry>the error message file (see 4.7)</entry>
+  </row>
+</tbody>
+</tgroup>
+</informaltable>
+<para>
+These files (and the SYS directory itself) are not absolutely
+required to boot OS-9, they are needed if &quot;login&quot;, &quot;tsmon&quot;, or
+&quot;printerr&quot; will be used. Users may add other system-wide files of
+similar nature if desired.
+</para>
+</section>
+
+<section>
+<title>The Startup File</title>
+
+<para>
+The file &quot;/d0/startup&quot; is a shell procedure file (see 4.6) which
+is automatically processed immediately after system startup. The
+user may include in &quot;startup&quot; any legal shell command line. Often
+this will include &quot;setime&quot; to start the system clock. If this file
+is not present the system will still start correctly but the user
+must run the SETIME command manually.
+</para>
+</section>
+
+<section>
+<title>The CMDS Directory</title>
+
+<para>
+The directory &quot;/d0/CMDS&quot; is the system-wide command object code
+directory, which is normally shared by all users as their working
+execution directory (see 3.7). If &quot;shell&quot; is not part of the
+&quot;OS9Boot&quot; file, it must be present in this directory. The system
+startup process &quot;sysgo&quot; makes CMDS the initial execution directory.
+</para>
+</section>
+
+<section>
+<title>The DEFS Directory</title>
+
+<para>
+The directory &quot;/d0/DEFS&quot; is a directory that contains assembly
+language source code files which contain common system-wide symbolic
+definitions, and are normally included in assembly language programs
+by means of the OS-9 Assembler &quot;use&quot; directive. The presence and
+use of this directory is optional, but highly recommended for any
+system used for assembly language programs. The files commonly
+contained in this directory are:
+</para>
+<informaltable frame="none">
+<tgroup cols="2">
+<colspec colwidth="1in">
+<colspec colwidth="4in">
+<tbody>
+  <row>
+<entry>OS9Defs</entry>
+<entry>main system-wide definition file</entry>
+  </row>
+  <row>
+<entry>RBFDefs</entry>
+<entry>RBF file manager definition file</entry>
+  </row>
+  <row>
+<entry>SCFDefs</entry>
+<entry>SCF file manager definition file</entry>
+  </row>
+  <row>
+<entry>Systype</entry>
+<entry>System types definition file</entry>
+  </row>
+</tbody>
+</tgroup>
+</informaltable>
+
+</section>
+
+<section>
+<title>Changing System Disks</title>
+
+<para>
+The system disk is not usually removed while the system is running, especially
+on multiuser systems. If it is, the &quot;chx&quot; and
+&quot;chd&quot; (if the working data directory was on the system disk)
+commands should be executed to reset the working directory pointers
+because the directories may be at different addresses on the new
+disk, for example:
+</para>
+
+<screen>
+chx /d0/cmds
+chd /d0
+</screen>
+
+<para>
+In general, it is unwise to remove a disk and replace it with
+another if any paths are open to files resident on the disk. It is
+<emphasis>dangerous</emphasis> to exchange <emphasis>any</emphasis>
+disk if any files on it are open in WRITE or UPDATE modes.
+</para>
+
+
+</section>
+
+<section>
+<title>Making New System Disks</title>
+
+<para>
+To make a system disk, the following steps must be performed:
+
+<orderedlist  numeration="arabic">
+<listitem><para>
+The new disk must be formatted.
+</para></listitem>
+
+<listitem><para>
+The &quot;OS9Boot&quot; file must be created and linked by the &quot;OS9Gen&quot; or
+&quot;Cobbler&quot; commands.
+</para></listitem>
+
+<listitem><para>
+The &quot;startup&quot; file must be created or copied.
+</para></listitem>
+
+<listitem><para>
+The CMDS and SYS directories and the files they contain must be
+copied.
+</para></listitem>
+</orderedlist>
+
+Steps 2 through 4 may be performed manually, or automatically by any
+of the following methods:
+<orderedlist  numeration="arabic">
+<listitem><para>
+By a shell procedure file created by the user.
+</para></listitem>
+
+<listitem><para>
+By a shell procedure file generated by the &quot;dsave&quot; command
+</para></listitem>
+
+<listitem><para>
+By the &quot;backup&quot; command
+</para></listitem>
+</orderedlist>
+</para>
+</section>
+</chapter>
