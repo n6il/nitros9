@@ -1,4 +1,8 @@
-*===========================================================================
+********************************************************************
+* CPU - CPU Determiner Subroutine Module
+*
+* $Id$
+*
 * Basic09 subroutine module to determine the CPU type of the computer
 * Test via:
 *
@@ -15,9 +19,13 @@
 *
 * returns: CPUType: 6809 or 6309  (decimal integer)
 *             Mode: 0=emulation mode, 1=native mode
-*===========================================================================
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+*   1    Created                                        ADK ??/??/??
 
          nam   CPU
+         ttl   CPU Determiner Subroutine Module
 
          ifp1
          use   defsfile
