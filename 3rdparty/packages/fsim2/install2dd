@@ -1,0 +1,26 @@
+-x
+t
+**************************************************
+* Flight Simulator 2 Install Script for the CoCo 3
+* Files are copied to the /DD device
+*
+* Creating directories
+makdir /DD/GAMES
+makdir /DD/GAMES/FS2
+makdir /DD/GAMES/FS2/CMDS
+* Deleting old objects from /DD/GAMES/FS2/CMDS, if any
+del /DD/GAMES/FS2/CMDS/fs
+del /DD/GAMES/FS2/CMDS/fs2
+del /DD/GAMES/FS2/CMDS/fs3
+del /DD/GAMES/FS2/CMDS/fs4
+* Copying commands to /DD/GAMES/FS2/CMDS
+copy CMDS/AutoEx /DD/GAMES/FS2/CMDS/fs
+copy CMDS/fs2 /DD/GAMES/FS2/CMDS/fs2
+copy CMDS/fs3 /DD/GAMES/FS2/CMDS/fs3
+copy CMDS/fs4 /DD/GAMES/FS2/CMDS/fs4
+* Copying support files to /DD/GAMES/FS2
+copy fa /DD/GAMES/FS2/fa
+copy fd /DD/GAMES/FS2/fd
+copy fp /DD/GAMES/FS2/fp
+copy fs.standard /DD/GAMES/FS2/fs.standard
+* All Done!
