@@ -64,9 +64,8 @@ Banner   equ   *
          fcb   '0+NOS9Major
          fcc   /.0/
          fcb   '0+NOS9Minor
-         IFNE  DEVEL
-         fcc   /+/
-         ENDC
+         fcb   C$CR,C$LF
+         fcc   /(C) 2004 The NitrOS-9 Project/
          fcb   C$CR,C$LF
          IFNE  DEVEL
          fcc   "**   DEVELOPMENT BUILD   **"
