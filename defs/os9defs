@@ -460,13 +460,14 @@ D.MDREG  rmb   1          6309 MD (mode) shadow register
 
 D.CRC    rmb   1          CRC checking mode flag
 
-         ifne  NitrOS9
+* Commented out -- to be part of OS-9 Level Two as well
+*         ifne  NitrOS9
 * NitrOS9 additions
 D.Tenths rmb   1          Tenths and hundredths of second for F$Xtime
 D.Task1N rmb   1          Map type 1 task number*2 - offset into [D.TskIPt]
 D.Quick  rmb   1          Quick system call return flag - 0 =stack is at $FEE1
 D.QIRQ   rmb   1          Quick IRQ flag - 0 =IRQ wasn't clock, so quick return
-         endc
+*         endc
 
          org   $40
 D.BlkMap rmb   4          Memory Block Map ptr
@@ -920,9 +921,8 @@ V$DESC   rmb   2          Device Descriptor module
 V$FMGR   rmb   2          File Manager module
 V$USRS   rmb   1          use count
          ifne  NitrOS9
-V$DRIVEX rmb   1          Device Driver execution address
-V$FMGREX rmb   1          File Manager execution address
-         rmb   2          Padding to make DEVSIZ = $0D
+V$DRIVEX rmb   2          Device Driver execution address
+V$FMGREX rmb   2          File Manager execution address
          endc
 DEVSIZ   equ   .
 
