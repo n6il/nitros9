@@ -18,6 +18,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * ???    Disassembled                                   BGP 03/01/12
+* ???    Patched so that standard output is used and    BGP 03/01/12
+*        that /TERM is no longer opened.
 
          nam   Koronis
          ttl   Koronis Rift Program
@@ -255,9 +257,17 @@ start    leax  >L0150,pcr
          lds   #$5EE4
          andcc #$AF
          leax  >L01A8,pcr
-         lda   #$03
-         os9   I$Open   
-         lbcs  L0156
+*         lda   #$03
+          nop
+          nop
+*         os9   I$Open   
+          nop
+          nop
+          nop
+*         lbcs  L0156
+          nop
+          nop
+         lda   #$01
          sta   >$0100
 L0036    lda   #$04
          lbsr  L4A6C
