@@ -16,6 +16,7 @@
 
          ifp1
          use   defsfile
+         use   rbfdefs
          endc
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
@@ -43,14 +44,14 @@ size     equ   .
 name     equ   *
          fcs   /DDisk/
          fcb   $03 
-start    equ   *
-         lbra  L0026
-         lbra  L006C
-         lbra  L0122
-         lbra  L006A
-         lbra  L02B2
-         lbra  L006A
-L0026    clra  
+start    lbra  Init
+         lbra  Read
+         lbra  Write
+         lbra  GetStat
+         lbra  SetStat
+         lbra  Term
+
+Init     clra  
          sta   >$006F
          sta   >$FF48
          ldx   #$FF40
@@ -79,9 +80,45 @@ L003F    sta   ,x
          stx   >u00AD,u
          clrb  
 L0069    rts   
-L006A    clrb  
+
+* GetStat
+*
+* Entry:
+*    A  = function code
+*    Y  = address of path descriptor
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
+GetStat
+
+* Term
+*
+* Entry:
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
+Term     clrb  
          rts   
-L006C    lda   #$91
+
+* Read
+*
+* Entry:
+*    B  = MSB of the disk's LSN
+*    X  = LSB of the disk's LSN
+*    Y  = address of path descriptor
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
+Read     lda   #$91
          cmpx  #$0000
          bne   L0096
          bsr   L0096
@@ -165,7 +202,8 @@ L0107    lda   >u00A9,u
          lda   >u00AC,u
          sta   <u0006
          rts   
-L0122    lda   #$91
+
+Write    lda   #$91
 L0124    pshs  x,b,a
          bsr   L0148
          puls  x,b,a
@@ -349,7 +387,8 @@ L02A9    bsr   L029C
 L02AB    lbsr  L02AE
 L02AE    lbsr  L02B1
 L02B1    rts   
-L02B2    ldx   $06,y
+
+SetStat  ldx   $06,y
          ldb   $02,x
          cmpb  #$03
          beq   L02E9
