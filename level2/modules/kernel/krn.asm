@@ -33,7 +33,7 @@ MName    fcs   /OS9p1/
          fcc   /0123456789ABCDEF/
          fcc   /01234567/
          ELSE
-         fcc   /012345/
+         fcc   /12345123/
          ENDC
 
 * Might as well have this here as just past the end of OS9p1...
@@ -71,7 +71,7 @@ R.Flip0  equ   *
 SubSiz   equ   *-SubStrt
 * Don't add any code here: See L0065, below.
 * Interrupt service routine
-L0271    jmp    [<-(D.SWI3-D.XSWI3),x]   (-$10) (Jmp to 2ndary vector)
+Vectors  jmp    [<-(D.SWI3-D.XSWI3),x]   (-$10) (Jmp to 2ndary vector)
 
 * Let's start by initializing system page
 OS9P1    equ    *
@@ -79,20 +79,20 @@ OS9P1    equ    *
          ldq    #$01001f00  Start address to clear & # bytes to clear
          leay   <OS9P1+2,pc Point to a 0
          tfm    y,d+
+         std    <D.CCStk    Set pointer to top of global memory to $2000
+         lda    #$01        set task user table to $0100
          ELSE
          ldx    #$100
-         ldy    #8192-$100
+         ldy    #$2000-$100
          clra
          clrb
 L001C    std    ,x++
          leay   -2,y
          bne    L001C
-         inca
-         inca
+         stx    <D.CCStk    Set pointer to top of global memory to $2000
+         inca			D = $0100
          ENDC
 * Setup system direct page variables
-         std    <D.CCStk    Set pointer to top of global memory to $2000
-         lda    #$01        set task user table to $0100
          std    <D.Tasks
          addb   #$20        set Task image table to $0120
          std    <D.TskIPt
@@ -122,7 +122,7 @@ L001C    std    ,x++
          adda   #$06        set secondary module directory start to $1000
          std    <D.ModDir+2
          std    <D.ModDAT   set module directory DAT pointer to $1000
-         std    <D.CCMem    set pointer to beggining of global memory to $1000
+         std    <D.CCMem    set pointer to beginning of global memory to $1000
 * In following line, CRC=ON if it is STA <D.CRC, CRC=OFF if it is a STB <D.CRC
          stb    <D.CRC      set CRC checking flag to off
 
@@ -156,9 +156,9 @@ Loop2    lda   ,y+
          bne   Loop2
          ENDC
 
-*         leau   <L0271,pc   point to vector
+*         leau   <Vectors,pc   point to vector
          tfr   y,u        move the pointer to a faster register
-L0065    stu    ,x++        Set all IRQ vectors to go to L0271 for now
+L0065    stu    ,x++        Set all IRQ vectors to go to Vectors for now
          cmpx   #D.NMI
          bls    L0065
 
@@ -167,30 +167,36 @@ L0065    stu    ,x++        Set all IRQ vectors to go to L0271 for now
          stx   <D.UsrSvc    Save it as user service routine pointer
          ldx   <D.XIRQ      Get IRQ service routine pointer
          stx   <D.UsrIRQ    Save it as user IRQ routine pointer
-         leax  >L0316,pc    Setup System service routine entry vector
+
+         leax  >SysCall,pc  Setup System service routine entry vector
          stx   <D.SysSvc
          stx   <D.XSWI2
-         leax  >L0E12,pc    Setup system IRQ service vector
+
+         leax  >S.SysIRQ,pc Setup system IRQ service vector
          stx   <D.SysIRQ
          stx   <D.XIRQ
-         leax  >L0E45,pc    Setup in system IRQ service vector
+
+         leax  >S.SvcIRQ,pc Setup in system IRQ service vector
          stx   <D.SvcIRQ
-         leax  >L0583,pc    Setup interrupt polling vector
+         leax  >S.Poll,pc   Setup interrupt polling vector
          stx   <D.Poll    ORCC #$01;RTS
-         leax  >L0E44,pc    Setup alternate IRQ vector: pts to an RTS
+         leax  >S.AltIRQ,pc    Setup alternate IRQ vector: pts to an RTS
          stx   <D.AltIRQ
 
          lda   #'1        --- in OS9p1
          jsr   <D.BtBug   ---
 
-         leax  >L0E7D,pc    Setup change to task 1 vector
+         leax  >S.Flip1,pc  Setup change to task 1 vector
          stx   <D.Flip1
+
 * Setup System calls
-         leay  >L0200,pc
-         lbsr  L037F
+         leay  >SysCalls,pc
+         lbsr  SysSvc
+
 * Initialize system process descriptor
          ldu   <D.PrcDBT    get process table pointer
          ldx   <D.SysPrc    get system process pointer
+
 * These overlap because it is quicker than trying to strip hi byte from X
          stx   ,u           save it as first process in table
          stx   1,u          save it as the second as well
@@ -218,16 +224,21 @@ L0065    stu    ,x++        Set all IRQ vectors to go to L0271 for now
          clrb
          ENDC
          std   ,x++         initialize 1st block to 0 (for this DP)
+
+* Dat.BlCt-ROMCount-RAMCount
          lda   #$06       initialize the rest of the blocks to be free
          ldu   #DAT.Free
 L00EF    stu   ,x++
          deca
          bne   L00EF
+
          ldu   #$003F      Block $3F is in use, at the top of system DAT image
          stu   ,x
+
          ldx   <D.Tasks     Point to task user table
          inc   ,x           mark first 2 in use (system & GrfDrv)
          inc   1,x
+
 * Setup system memory map
          ldx   <D.SysMem    Get system memory map pointer
          ldb   <D.CCStk     Get MSB of top of CC memory
@@ -250,17 +261,16 @@ L0111    asld               get next block #
          std    <D.BlkMap+2 save block map end pointer
          ELSE
          ldd    #$0008
-L0111    rolb
-         lsla
+L0111    aslb
+         rola
          stb    >$FFA5
          pshs   a
          lda    #$01
          sta    >-$6000,x
          cmpa   ,x
-         beq    L0112
          puls   a
-         bra    L0111
-L0112    stb    <D.MemSz
+         bne    L0111
+         stb    <D.MemSz
          pshs   x
          addd   ,s++
          std    <D.BlkMap+2
@@ -289,6 +299,7 @@ L0170    ldx   #Bt.Start  start address of the boot track in memory
          lbsr  I.VBlock   go verify it
 
          bsr   L01D2       go mark system map
+
 * See if init module is in memory already
 L01B0    leax  <init,pc    point to 'Init' module name
          bsr   link        try & link it
@@ -312,6 +323,7 @@ L01C1    leax  <os9p2,pc   Point to it's name
          bcc   L01C1       No error's, let's try to link it again
 L01CE    jmp   <D.Crash    obviously can't do it, crash machine
 L01D0    jmp   ,y          execute os9p2
+
 * Mark kernel in system memory map as used memory (256 byte blocks)
 L01D2    ldx   <D.SysMem   Get system mem ptr
          ldd   #NotRAM*256+$ED  $ED00 is the start of the boot
@@ -324,7 +336,7 @@ L01E1    sta   ,x+         save it
          bne   L01E1       no, keep going
          ldx   <D.BlkMap   get pointer to start of block map
          sta   <$3f,x      mark kernel block as RAMinUse, instead of ModInBlk
-L0E44    rts                return
+S.AltIRQ rts                return
 
 * Link module pointed to by X
 link     lda   #Systm      Attempt to link system module
@@ -335,7 +347,7 @@ init     fcs   'Init'
 os9p2    fcs   'OS9p2'
 
 * Service vector call pointers
-L0200    fcb   F$Link
+SysCalls fcb   F$Link
          fdb   FLink-*-2
          fcb   F$PrsNam
          fdb   FPrsNam-*-2
@@ -439,7 +451,7 @@ L028E    ldu    <D.SysSvc   set system call processor to system side
          IFNE   H6309
          oim    #SysState,P$State,x   mark process as in system state
          ELSE
-         pshs   d
+*****         pshs   d
          lda    P$State,x
          ora    #SysState
          sta    P$State,x
@@ -459,7 +471,7 @@ Loop3    lda   ,y-
          sta   ,u-
          decb
          bne   Loop3
-         puls  d
+*****         puls  d
          ENDC
          andcc #^IntMasks
          leau  ,s         needed because the TFM is u-, not -u (post, not pre)
@@ -473,9 +485,9 @@ Loop3    lda   ,y-
          IFNE   H6309
          aim    #^IntMasks,R$CC,u   Clear interrupt flags in caller's CC
          ELSE
-         lda    R$CC,u
-         anda   #^IntMasks
-         sta    R$CC,u
+         ldb    R$CC,u
+         andb   #^IntMasks
+         stb    R$CC,u
          ENDC
          ldx    <D.Proc     get current process ptr
          IFNE   H6309
@@ -501,7 +513,7 @@ DoFull   bsr   L02DA      move the stack frame back to user state
 AllClr   inc   <D.QCnt
          IFNE  H6309
          aim   #$1F,<D.QCnt
-         beq   DoFull     ever 32 system calls, do the full check
+         beq   DoFull     every 32 system calls, do the full check
          ldw   #R$Size    --- size of the register stack
          ldy   #Where+SWIStack  --- to stack at top of memory
          orcc  #IntMasks
@@ -566,7 +578,7 @@ Loop5    lda    ,x+
 
 * Process software interupts from system state
 * Entry: U=Register stack pointer
-L0316    leau   ,s          get pointer to register stack
+SysCall  leau   ,s          get pointer to register stack
          lda    <D.SSTskN   Get system task # (0=SYSTEM, 1=GRFDRV)
          clr    <D.SSTskN   Force to System Process
          pshs   a           Save the system task number
@@ -717,7 +729,7 @@ L0D83    bsr   L0D11       activate next process
 * they have to always be in the vector RAM page ($FE00-$FEFF)
 
 * Default routine for D.SysIRQ
-L0E12    lda   <D.SSTskN      Get current task's GIME task # (0 or 1)
+S.SysIRQ lda   <D.SSTskN      Get current task's GIME task # (0 or 1)
          beq   FastIRQ        Use super-fast version for system state
          clr   <D.SSTskN      Clear out memory copy (task 0)
          jsr   [>D.SvcIRQ]    (Normally routine in Clock calling D.Poll)
@@ -773,6 +785,7 @@ L0E4C    equ    *
          tfm   u+,y+      move the stack from top of memory to user memory
          ELSE
          ldb   #R$Size
+         ldu   #Where+SWIStack point to the stack
 RtiLoop  lda   ,u+
          sta   ,y+
          decb
@@ -796,7 +809,7 @@ L0E5E    equ    *
 
 * Flip to task 1 (used by GRF/WINDInt to switch to GRFDRV) (pointed to 
 *  by <D.Flip1). All regs are already preserved on stack for the RTI
-L0E7D    ldb    #2          get Task image entry numberx2 for Grfdrv (task 1)
+S.Flip1  ldb    #2          get Task image entry numberx2 for Grfdrv (task 1)
          bsr    L0E8D       copy over the DAT image
          IFNE   H6309
          oim    #$01,<D.TINIT
@@ -935,10 +948,11 @@ NMIVCT   ldx    #D.NMI      get DP offset of vector
 eom      equ   *
 
 *SWIStack fcc   /REGISTER STACK/ R$Size data bytes
-SWIStack fcb   $88,$03,$00,$45,$72,$00,$cd,$00,$12,$00,$00,$00
+SWIStack fcb   $88,$03,$00
          IFNE  H6309
-         fcb   $e5,$7f
+         fcb   $45,$72
          ENDC
+         fcb   $00,$cd,$00,$12,$00,$00,$00,$e5,$7f
 
          fcb   $55        D.ErrRst
 

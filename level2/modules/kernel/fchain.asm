@@ -27,10 +27,10 @@ L03B7    ldx   <D.Proc      get pointer to current process
          ldw   #$00fc       get size (P$SP+$FC)
          tfm   x+,u+        move it
          ELSE
-         ldy   #$007E
+         ldy   #$00FC
 L03C3    ldd   ,x++		copy bytes
          std   ,u++
-         leay  -1,y
+         leay  -2,y
          bne   L03C3
          ENDC
 L03CB    ldu   2,s          get new descriptor pointer
@@ -103,8 +103,8 @@ L040C    stu   ,y++         do all of them
          IFNE  H6309
          cmpr  x,u          check From/To addresses
          ELSE
-         pshs  u		src ptr
-         cmpx  ,s++		dest ptr
+         pshs  x		src ptr
+         cmpu  ,s++		dest ptr
          ENDC
          puls  y		size
          bhi   L0471        To < From: do F$Move
@@ -122,8 +122,8 @@ L040C    stu   ,y++         do all of them
          pshs  d,x
          tfr   y,d
          leax  d,x
-         pshs  u
-         cmpx  ,s++
+         pshs  x
+         cmpu  ,s++
          puls  d,x
          ENDC
          bls   L0471        end of FROM <= start of TO: do F$Move
@@ -136,7 +136,7 @@ L040C    stu   ,y++         do all of them
          ELSE
          tfr   y,d
          leax  d,x
-         leau  d,y
+         leau  d,u
          ENDC
 
 * This all appears to be doing a copy where destination <= source,

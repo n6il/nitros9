@@ -272,12 +272,11 @@ CheckBit equ   *
          IFNE  H6309
          tfr   w,d         Dupe current bit # into D
          subr  y,d         Calculate size we have free so far
-         cmpd  R$Y,u       As big as user requested?
          ELSE
          tfr   y,d
          subd  7,s
-         cmpd  R$Y,u
          ENDC
+         cmpd  R$Y,u       As big as user requested?
          bhs   WereDone    Yes, we are done
          cmpd  $03,s       As big as the largest one we have found so far?
          bls   MoveBit     No, move to next bit and keep going

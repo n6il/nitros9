@@ -142,20 +142,17 @@ L0AE1    equ   *
          IFNE  H6309
          lsld               ???Calculate 256 byte page #?
          lsld
-         ELSE
-         aslb
-         rola
-         aslb
-         rola
-         ENDC
          tfr   y,u          U=Ptr to start of new page
-         IFNE  H6309
          ldw   #$3f         Clear out the 64 byte block we are using
          leax  TFMNull,pc
          tfm   x,u+
          ELSE
+         aslb
+         rola
+         aslb
+         rola
          ldb   #$3f
-ClrIt    clr   ,u+
+ClrIt    clr   b,y
          decb
          bne   ClrIt
          ENDC

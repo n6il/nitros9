@@ -101,8 +101,8 @@ L04DE    ldd    ,y++
          oim    #ModBlock,d,x
          dece
          ELSE
-         pshs   a,x		save block size, blkmap
-L04DE    ldd    ,y++		D = image block #
+L04DE    pshs   a,x		save block size, blkmap
+         ldd    ,y++		D = image block #
          leax   d,x		X = blkmap ptr
          ldb    ,x		get block marker
          orb    #ModBlock	set module in block
@@ -185,21 +185,18 @@ L054C    puls   b,x,y,u,pc
 L054E    ldx    <D.ModDAT
          leax   d,x
          cmpx   <D.ModEnd
-         bcs    L0583
+         bcs    S.Poll
          ldu    7,s
          bne    L056E
-         IFEQ   H6309
-         pshs   x
-         ENDC
          ldy    <D.ModEnd
          leay   MD$ESize,y
          IFNE   H6309
-* TODO: Verify order of comparison
          cmpr   x,y
          ELSE
+         pshs   x
          cmpy   ,s++
          ENDC
-         bhi    L0583
+         bhi    S.Poll
          sty    <D.ModEnd
          leay   -MD$ESize,y
          sty    $07,s
@@ -226,7 +223,7 @@ L0577    ldu   ,y++       copy images
          rts
 
 * Default interrupt handling routine on first booting OS9p1
-L0583    orcc  #Carry
+S.Poll   orcc  #Carry
          rts   
 
 * Check module ID & calculate module header parity & CRC
@@ -256,8 +253,7 @@ L05A2    lbsr  LDAXY        get a byte from module
          ince               valid parity?
          ELSE
          leas  -1,s       make var
-         ldb   #$07       seven bytes
-         lda   #$4A       header crc
+         ldd   #($4A*256+M$Revs) Get initial value & count (7 bytes of header)
 L05A2    sta   ,s         save crc
          lbsr  LDAXY      get next byte
          eora  ,s         do crc      

@@ -75,7 +75,7 @@ L0ALoop  ldx   ,u++
          stx   ,y++
          decb
          bne   L0ALoop
-         ldx   2,s			get proc desc ptr
+         ldx   2,s
          lda   P$State,x
          ora   #ImgChg
          sta   P$State,x

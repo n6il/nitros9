@@ -99,4 +99,4 @@ L0DFD    equ   *
          clr   <P$Signal,x          Clear out the one in process dsc.
          os9   F$Exit               Exit with signal # being error code
 
-L0E45    jmp    [>D.Poll]   Call IOMAN for IRQ polling
+S.SvcIRQ jmp    [>D.Poll]   Call IOMAN for IRQ polling

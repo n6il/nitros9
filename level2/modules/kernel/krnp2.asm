@@ -18,7 +18,7 @@
 * 18.4   92/12/15 - Cut initial memory allocation routine - unnecessary
 * 18.5   93/01/18 - Fixed bug in F$Sleep (LCB)
 *                 - Optimized F$All64 to use tfm (BN)
-* NitrOS9 V1.09 - Move & optomized F$CpyMem to OS9P1
+* NitrOS9 V1.09 - Move & optimized F$CpyMem to OS9P1
 * V1.10  93/05/23 - Slight opt to UnLink
 * V1.11  93/07/26 - Slight opt in F$Icpt
 *                 - Slight opt in F$Wait alarm clearing
@@ -38,7 +38,7 @@
 *                   instead of CLR for clearing DAT block #'s (F$UnLink)
 *        93/12/17 - Moved F$CRCMod code here to give some room in OS9P1
 *        94/05/15 - Attempted opts in Unlink: Changed usage of W to D @ L0185
-*                   and L0198 and L01B5, also optomized L017C to eliminate a
+*                   and L0198 and L01B5, also optimized L017C to eliminate a
 *                   branch (speeds up module dir search by 3 cycles/module
 *                   checked)
 *                 - Changed BRA L032F @ L02EC (AllProc error) to RTS
@@ -117,6 +117,9 @@ SetProc  ldd    <D.SysSvc   set system call processor to system side
          IFNE   H6309
          oim    #SysState,P$State,x   mark process as system state
          ELSE
+         ldb    P$State,x
+         orb    #SysState
+         stb    P$State,x
          ENDC
 * copy register stack to process descriptor
          sts    P$SP,x      save stack pointer
@@ -185,6 +188,7 @@ L003A    ldu    <D.Init     get init module pointer
          lda    #(EXEC.+READ.) get file mode
          os9    I$ChgDir    change to it
          bcc    L004F       went ok, go on
+ jmp <D.Crash
          os9    F$Boot      try & load boot file
          bcc    L003A       go try again
 L004F    ldu    <D.Init     get pointer to init

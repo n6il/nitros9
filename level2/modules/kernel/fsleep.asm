@@ -26,15 +26,19 @@ L0715
          IFNE   H6309
          aim   #^Suspend,P$State,x
          ELSE
+         lda   P$State,x
+         anda  #^Suspend
+         sta   P$State,x
          ENDC
 L071B    puls  cc
          os9   F$AProc      activate the process
          bra   L0780
 L0722    ldd   R$X,u        get callers X (contains sleep tick count)
          beq   L076D        done, wake it up
-         IFNE   H6309
+         IFNE  H6309
          decd               subtract 1 from tick count
          ELSE
+         subd  #$0001
          ENDC
          std   R$X,u        save it back
          beq   L071B        zero, wake up process
@@ -47,6 +51,8 @@ L0732    std   R$X,u
          IFNE   H6309
          tim   #TimSleep,P$State,x
          ELSE
+         lda   P$State,x
+         bita  #TimSleep
          ENDC
          beq   L074F
          ldy   P$SP,x       get process stack pointer
@@ -64,6 +70,9 @@ L074F    puls  y,x
          IFNE  H6309
          oim   #TimSleep,P$State,x
          ELSE
+         lda   P$State,x
+         ora   #TimSleep
+         sta   P$State,x
          ENDC
          ldd   P$Queue,y
          stx   P$Queue,y
@@ -75,6 +84,9 @@ L074F    puls  y,x
          IFNE   H6309
          aim   #^TimSleep,P$State,x
          ELSE
+         lda   P$State,x
+         anda  #^TimSleep
+         sta   P$State,x
          ENDC
 SkpSleep puls  cc,pc
 

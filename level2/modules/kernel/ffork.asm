@@ -31,11 +31,10 @@ GotNPrc  pshs   u           save pointer to new descriptor
          std    P$User,u
          lda    P$Prior,x
          sta    P$Prior,u
-         pshs   x,u 
          ENDC
 * Copy network I/O pointers to new descriptor
          IFEQ   Network-1
-         pshs   x,u         preserve pointers to descriptors
+         pshs   x,u 
          leax   >P$NIO,x    point to current NIO pointers
          leau   >P$NIO,u    point to buffer for new ones
          IFNE   H6309
