@@ -193,22 +193,22 @@ L00FE    ldb   ,x+
          bcs   L0108
          cmpb  #$39
          bls   L010B
-L0108    orcc  #$01
+L0108    orcc  #Carry
          rts   
 L010B    subb  #$30
-         andcc #$FE
+         andcc #^Carry
          rts   
 L0110    leax  -$01,x
          tst   $01,s
          beq   L011C
          ldd   $02,s
-         andcc #$FE
+         andcc #^Carry
          bra   L0120
-L011C    orcc  #$04
-L011E    orcc  #$01
+L011C    orcc  #Zero
+L011E    orcc  #Carry
 L0120    leas  $04,s
          rts   
-L0123    andcc #$FB
+L0123    andcc #^Zero
          bra   L011E
 L0127    lda   ,x+
          cmpa  #$20
@@ -229,11 +229,11 @@ L0130    pshs  x,b,a
          lda   $05,s
          ldb   $06,s
          bsr   L0157
-         andcc #$FE
+         andcc #^Carry
          ldd   $02,s
          ldx   ,s
          beq   L0154
-         orcc  #$01
+         orcc  #Carry
 L0154    leas  $08,s
          rts   
 L0157    mul   
@@ -245,7 +245,7 @@ L0160    rts
 L0161    pshs  y,x,b,a
          ldd   ,s
          bne   L016B
-         orcc  #$01
+         orcc  #Carry
          bra   L018B
 L016B    ldd   #$0010
          stb   $04,s
@@ -263,7 +263,7 @@ L0181    dec   $04,s
          bne   L0171
          tfr   d,x
          ldd   $02,s
-         andcc #$FE
+         andcc #^Carry
 L018B    leas  $06,s
          rts   
 L018E    sta   ,x+
@@ -273,10 +273,10 @@ L0190    lda   ,y+
 L0195    pshs  u,y
          tfr   s,u
          bsr   L01A7
-         andcc #$FE
+         andcc #^Carry
          puls  pc,u,y
 L019F    tfr   u,s
-         orcc  #$01
+         orcc  #Carry
          puls  pc,u,y
 L01A5    leax  $01,x
 L01A7    bsr   L01C9
@@ -460,12 +460,12 @@ L0307    leax  $01,x
          andb  #$0F
          ldy   <u0002
          leay  b,y
-L0314    andcc #$FE
+L0314    andcc #^Carry
          puls  pc,b
 L0318    leay  $03,y
          dec   ,s
          bne   L02E6
-         orcc  #$01
+         orcc  #Carry
          puls  pc,b
 L0322    fcc   "CC"
          fcb   $00
@@ -541,11 +541,11 @@ L03BE    os9   F$PErr
          rts   
 L03C2    lbra  L0190
          lda   ,x
-         cmpa  #$2E
+         cmpa  #C$PERD
          bne   L03CF
          ldd   <u000A
          bra   L03DC
-L03CF    cmpa  #$0D
+L03CF    cmpa  #C$CR
          bne   L03D7
 L03D3    ldd   <u0000
          bra   L03DC
@@ -586,11 +586,11 @@ L0415    ldx   <u0006
          bcs   L03BE
          bsr   L0415
          pshs  b,a
-         lda   #$24
+         lda   #'$
          sta   ,x+
          lda   ,s
          lbsr  L0013
-         lda   #$23
+         lda   #'#
          sta   ,x+
          puls  b,a
          lbsr  L0040
@@ -600,7 +600,7 @@ L043F    lbsr  L0195
          tsta  
          beq   L044B
          ldb   #$08
-         orcc  #$01
+         orcc  #Carry
 L044B    rts   
          lbsr  L0512
          beq   L04AF
@@ -650,8 +650,8 @@ L0490    fcc   "PC="
          fcc   "U="
          fcb   $00
 
-L04AF    fcb   $34,$40
-     ldx   <u0006
+L04AF    pshs  u
+         ldx   <u0006
          leay  <L0490,pcr
          ldu   <u0002
          lbsr  L03C2
@@ -733,7 +733,7 @@ L055F    cmpu  ,y
          decb  
          bne   L055F
          ldb   <u000C
-         andcc #$FB
+         andcc #^Zero
 L056D    puls  pc,u
          bsr   L0512
          beq   L0581
