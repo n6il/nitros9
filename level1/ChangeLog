@@ -1,4 +1,4 @@
-NitrOS-9/6309 Level 2 V03.02.03:
+NitrOS-9/6809 Level 1 V03.02.03:
 - format has been enhanced to show more information about the disk being
   formatted.
 - dirm has been removed from the commands list.
@@ -6,7 +6,8 @@ NitrOS-9/6309 Level 2 V03.02.03:
 - tmode now uses the new xmode format for parameters.
 - disasm has a new -s option which is used to specify the start and end
   addresses to disassemble within a module.
-- A bug in the clock2_jvemu module has been fixed.
+- RBF for Level 1 now supports SS.VarSect
+- Bugs in the clock2_jvemu and clock2_smart modules have been fixed.
 
 NitrOS-9/6809 Level 1 V03.02.02:
 - Two new clocks have been added for Jeff Vavasour's CoCo emulator and MESS:
