@@ -11,7 +11,7 @@
 </funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>munlink</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>mod_exec *<parameter>mod</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
