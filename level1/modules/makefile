@@ -40,10 +40,10 @@ kernel_1773: $(KERNEL_1773) $(DEPENDS)
 	$(PADROM) \$$1200 $@ -c=\$$E5
 
 oscode: oscode.asm
-	$(AS) $(ASOUT)$@ $< -aDragon64=0
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0
 
 oscode_d64: oscode.asm
-	$(AS) $(ASOUT)$@ $< -aDragon64=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=1
 
 clean:
 	$(RM) $(ALLOBJS)
