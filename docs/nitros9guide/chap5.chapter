@@ -330,7 +330,7 @@ can be found in the &quot;OS-9 System Programmer's Manual&quot;.
 </para>
 <para>
 Programs can also be explicitly loaded into memory using the
-&quot;load&quot; command. As with fork, the program will actually be loaded
+<command>load</command> command. As with fork, the program will actually be loaded
 only if it is not already in memory. If the module is not in
 memory, OS-9 will copy a candidate memory module from the file into
 memory, verify the CRC, and then, if the module is not already in
@@ -353,22 +353,22 @@ be used frequently because the program will be kept in memory
 continuously, instead of being loaded repeatedly.
 </para>
 <para>
-The opposite of &quot;load&quot; is the &quot;unlink&quot; command, which decreases a
+The opposite of <command>load</command> is the <command>unlink</command> command, which decreases a
 program module's link count by one. Recall that when this count becomes zero
 (indicating the module in no longer used by any process),
 the module is deleted, e.g., its memory is deallocated and its name
-is removed from the module directory. The &quot;unlink&quot; command is
-generally used in conjunction with the &quot;load&quot; command (programs
+is removed from the module directory. The <command>unlink</command> command is
+generally used in conjunction with the <command>load</command> command (programs
 loaded by fork are automatically unlinked when the program
 terminates).
 </para>
 <para>
 Here is an example of the use of
-&quot;load&quot; and &quot;unlink&quot; to lock a
-program in memory. Suppose the &quot;copy&quot; command will be used five
+<command>load</command> and <command>unlink</command> to lock a
+program in memory. Suppose the <command>copy</command> command will be used five
 times. Normally, the copy command would be loaded each time the
-&quot;copy&quot; command is called. If the &quot;load&quot; command is used first,
-&quot;copy&quot; will be locked into memory first, for example:
+<command>copy</command> command is called. If the <command>load</command> command is used first,
+<command>copy</command> will be locked into memory first, for example:
 </para>
 <screen>
 OS9: load copy
@@ -378,7 +378,7 @@ OS9: copy file3 file3a
 OS9: unlink copy
 </screen>
 <para>
-It is important to use the &quot;unlink&quot; command after the program is no
+It is important to use the <command>unlink</command> command after the program is no
 longer needed, or the program will continue to occupy memory which
 otherwise could be used for other purposes. Be very careful
 <emphasis>not</emphasis> to
@@ -405,7 +405,7 @@ microprocessor to use this type of program is one of its most
 powerful features.
 </para>
 <para>
-The &quot;load&quot; command can therefore be used two or more times (or a
+The <command>load</command> command can therefore be used two or more times (or a
 single file may contain several memory modules), and each
 program module will be automatically loaded at different,
 non-overlapping addresses (most other operating systems write over the
@@ -438,8 +438,8 @@ space will exist in a single block to load a program module larger
 than the largest free space.
 </para>
 <para>
-The &quot;mfree&quot; command shows the location and size of each unused
-memory area and the &quot;mdir e&quot; command shows the address, size, and
+The <command>mfree</command> command shows the location and size of each unused
+memory area and the <command>mdir e</command> command shows the address, size, and
 link (use) count of each module in the address space. These
 commands can be used to detect fragmentation. Memory can usually be
 de-fragmemted by unlinking scattered modules and reloading them.

@@ -18,7 +18,7 @@
 This command displays the number of unused 256-byte sectors on a
 device which are available for new files or for expanding existing
 files. The device name given must be that of a mass-storage
-multifile device. &quot;Free&quot; also displays the disk's name, creation
+multifile device. <command>Free</command> also displays the disk's name, creation
 date, and cluster size.
 </para>
 <para>
@@ -27,7 +27,7 @@ of sectors per cluster depends on the storage capacity and physical
 characteristics of the specific device. This means that small
 amounts of free space may not be divisible into as many files. For
 example, if a given disk system uses 8 sectors per cluster, and a
-&quot;free&quot; command shows 32 sectors free, a maximum of four new files
+<command>free</command> command shows 32 sectors free, a maximum of four new files
 could be created even if each has only one cluster.
 </para>
 <para>

@@ -17,7 +17,7 @@
 <para>
 This command is used to &quot;lock&quot; a previously loaded module into
 memory. The link count of the module specified is incremented by one
-each time it is &quot;linked&quot;. The &quot;unlink&quot; command is
+each time it is &quot;linked&quot;. The <command>unlink</command> command is
 used to &quot;unlock&quot;
 the module when it is no longer needed.
 </para>

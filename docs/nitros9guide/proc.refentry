@@ -19,7 +19,7 @@ given, processes of all users are listed. The display is a
 can switch states rapidly, usually many times per second.
 </para>
 <para>
-PROC shows the user and process ID numbers, priority, state
+<command>Proc</command> shows the user and process ID numbers, priority, state
 (process status), memory size (in 256 byte pages), primary program
 module, and standard input path.
 </para>

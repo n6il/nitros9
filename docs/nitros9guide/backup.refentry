@@ -63,12 +63,12 @@ Number of sectors verified: $04D0
 OS9:
 </screen>
 <para>
-Below is an example of a single drive backup. BACKUP will read a
+Below is an example of a single drive backup. <command>backup</command> will read a
 portion of the source disk into memory, you remove the source disk
-and place the destination disk into the drive, BACKUP writes on the
+and place the destination disk into the drive, <command>backup</command> writes on the
 destination disk, you remove the destination disk and place the
 source disk into the drive. This continues until the entire disk
-has been copied. Giving BACKUP as much memory as possible will cause
+has been copied. Giving <command>backup</command> as much memory as possible will cause
 fewer disk exchanges to be required.
 </para>
 <para>

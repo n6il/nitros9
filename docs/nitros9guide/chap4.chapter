@@ -91,7 +91,7 @@ In this example:
 </row>
 <row>
 <entry>sourcefile l -o</entry>
-<entry>are parameters passed to &quot;asm</entry>
+<entry>are parameters passed to <command>asm</command></entry>
 </row>
 <row>
 <entry>&gt;/p</entry>
@@ -211,7 +211,7 @@ modifiers as given below:
 When redirection modifiers are used on a command line, they must
 be immediately followed by a pathlist describing the file or device
 the I/O is to be redirected to or from. For example, the standard
-output of &quot;list&quot; can be redirected to write to the system printer
+output of <command>list</command> can be redirected to write to the system printer
 instead of the terminal:
 </para>
 <screen>
@@ -220,15 +220,15 @@ OS9: list correspondence &gt;/p
 <para>
 Files referenced by I/O redirection modifiers are automatically
 opened or created, and closed (as appropriate) by the shell. Here is
-another example, the output of the DIR command is redirected to the
-file &quot;/D1/savelisting&quot;:
+another example, the output of the <command>dir</command> command is redirected to the
+file <filename>/D1/savelisting</filename>:
 </para>
 <screen>
 OS9: DIR &gt;/D1/savelisting
 </screen>
 <para>
-If the LIST command is used on the file &quot;/D1/savelisting&quot;, output
-from the DIR command will be displayed as shown below:
+If the LIST command is used on the file <filename>/D1/savelisting</filename>, output
+from the <command>dir</command> command will be displayed as shown below:
 </para>
 <screen>
 OS9: list /d1/savelisting
@@ -268,8 +268,8 @@ from the next one with a &quot;;&quot; character. For example:
 OS9: copy myfile /d1/newfile ; dir &gt;/p
 </screen>
 <para>
-This command line will first execute the COPY command and then the
-DIR command.
+This command line will first execute the <command>copy</command> command and then the
+<command>dir</command> command.
 </para>
 <para>
 If an error is returned by any program, subsequent commands on
@@ -316,12 +316,12 @@ OS9: dir &gt;/p&amp;
 OS9:
 </screen>
 <para>
-This command line will cause shell to start the DIR command
+This command line will cause shell to start the <command>dir</command> command
 executing, print the process ID number (&amp;007), and then immediately
 display the &quot;OS9:&quot; prompt and wait for another command to be
-entered. Meanwhile the DIR command will be busy sending a directory
+entered. Meanwhile the <command>dir</command> command will be busy sending a directory
 listing to the printer. You can display a &quot;status summary&quot; of all
-processes you have created by using the PROCS command. Below is
+processes you have created by using the <command>procs</command> command. Below is
 another example:
 </para>
 <screen>
@@ -331,9 +331,9 @@ OS9: dir &gt;/p&amp; list file1&amp; copy file1 file2 ; del temp
 
 </para>
 <para>
-Because they were followed by &quot;&amp;&quot; separators, the DIR, LIST, and
-COPY programs will run concurrently, but the DEL program will not
-run until the COPY program has terminated because sequential
+Because they were followed by &quot;&amp;&quot; separators, the <command>dir</command>, LIST, and
+<command>copy</command> programs will run concurrently, but the <command>del</command> program will not
+run until the <command>copy</command> program has terminated because sequential
 execution (&quot;;&quot;) was specified.
 </para>
 </section>
@@ -372,10 +372,10 @@ For example:
 OS9: update &lt;master_file ! sort ! write_report &gt;/p
 </screen>
 <para>
-In the example above, the program &quot;update&quot; has its input redirected
-from a path called &quot;master_file&quot;. Its standard output becomes the
-standard input for the program &quot;sort&quot;. Its output, in turn, becomes
-the standard input for the program &quot;write_report&quot;, which has its
+In the example above, the program <command>update</command> has its input redirected
+from a path called <filename>master_file</filename>. Its standard output becomes the
+standard input for the program <command>sort</command>. Its output, in turn, becomes
+the standard input for the program <command>write_report</command>, which has its
 standard output redirected to the printer.
 </para>
 <para>
@@ -388,7 +388,7 @@ useful applications of pipelines are jobs like character set
 conversion, print file formatting, data compression/decompression,
 etc. Programs which are designed to process data as components of a
 pipeline are often called &quot;filters&quot;.
-The &quot;tee&quot; command, which uses
+The <command>tee</command> command, which uses
 pipes to allow data to be simultaneously &quot;broadcast&quot; from a single
 input path to several output paths, is a useful filter.
 </para>
@@ -412,7 +412,7 @@ OS9: dir /d0 &gt;/p; dir /d1 &gt;/p
 </screen>
 except for the subtle difference that the printer is &quot;kept&quot;
 continuously in the first example; in the second case another user
-could &quot;steal&quot; the printer in between the &quot;dir&quot; commands.
+could &quot;steal&quot; the printer in between the <command>dir</command> commands.
 </para>
 <para>
 Command grouping can be used to cause a group of programs to be
@@ -431,12 +431,12 @@ OS9: (dir CMDS; dir SYS) ! makeuppercase ! transmit
 </screen>
 <para>
 Here is a very practical example of the use of pipelines. Recall
-that the &quot;DSAVE&quot; command generates a procedure file to copy all the
+that the <command>dsave</command> command generates a procedure file to copy all the
 files in a directory. The example below shows how the output of
-&quot;DSAVE&quot; can be pipelined to a shell which will execute the OS-9
-commands as they are generated by DSAVE. Assume that we want to
-copy all files from a directory called WORKING to a directory called
-ARCHIVE:
+<command>dsave</command> can be pipelined to a shell which will execute the OS-9
+commands as they are generated by <command>dsave</command>. Assume that we want to
+copy all files from a directory called <filename class="directory">WORKING</filename> to a directory called
+<filename class="directory">ARCHIVE</filename>:
 </para>
 <screen>
 OS9: chd /d0/WORKING; dsave /d0/ARCHIVE ! shell -p
@@ -464,36 +464,36 @@ The built-in commands and their functions are:
 <colspec colwidth="3.5in"/>
 <tbody>
 <row>
-<entry>chd <replaceable>pathlist</replaceable></entry>
+<entry><command>chd</command> <replaceable>pathlist</replaceable></entry>
 <entry>change the working data directory to the directory
 specified by the pathlist.</entry>
 </row>
 <row>
-<entry>chx <replaceable>pathlist</replaceable></entry>
+<entry><command>chx</command> <replaceable>pathlist</replaceable></entry>
 <entry>change the working execution directory to the
 directory specified by the pathlist.</entry>
 </row>
 <row>
-<entry>ex name</entry>
+<entry><command>ex</command> <replaceable>name</replaceable></entry>
 <entry>directly execute the module named. This
 transforms the shell process so it ceases
 to exist and a new module begins execution in
 its place.</entry>
 </row>
 <row>
-<entry>w</entry>
+<entry><command>w</command></entry>
 <entry>wait for any process to terminate.</entry>
 </row>
 <row>
-<entry>* text</entry>
+<entry>* <replaceable>text</replaceable></entry>
 <entry>comment: &quot;text&quot; is not processed.</entry>
 </row>
 <row>
-<entry>kill <replaceable>Proc ID</replaceable></entry>
+<entry><command>kill</command> <replaceable>Proc ID</replaceable></entry>
 <entry>abort the process specified.</entry>
 </row>
 <row>
-<entry>setpr <replaceable>proc ID</replaceable> <replaceable>priority</replaceable></entry>
+<entry><command>setpr</command> <replaceable>Proc ID</replaceable> <replaceable>priority</replaceable></entry>
 <entry>changes process' priority.</entry>
 </row>
 <row>
@@ -528,8 +528,8 @@ its place.</entry>
 <para>
 The change directory commands switch the shell's working directory
 and, by inheritance, any subsequently created child process. The
-&quot;ex&quot; command is used where the shell is needed to initiate execution
-of a program without the overhead of a suspended &quot;shell&quot; process.
+<command>ex</command> command is used where the shell is needed to initiate execution
+of a program without the overhead of a suspended <command>shell</command> process.
 The name used is processed according to standard shell operation,
 and modifiers can be used.
 </para>
@@ -547,7 +547,7 @@ data to the standard error path.
 </para>
 <para>
 The shell can start up another process also running the shell by
-means of the &quot;shell&quot; command. If the standard input path is
+means of the <command>shell</command> command. If the standard input path is
 redirected to a mass storage file, the new &quot;incarnation&quot; of the
 shell can accept and execute command lines from the file instead of
 a terminal keyboard. The text file to be processed is
@@ -588,7 +588,7 @@ OS9: procfile
 </screen>
 <para>
 Both do exactly the same thing: execute the commands of the file
-&quot;procfile&quot;. To run the procedure file in a &quot;background&quot; mode you
+<filename>procfile</filename>. To run the procedure file in a &quot;background&quot; mode you
 simply add the ampersand operator:
 </para>
 <screen>
@@ -622,11 +622,11 @@ exist.
 Many programs (including the shell) use OS-9's standard error
 reporting function, which displays an error number on the error
 output path. The standard error codes are listed in the Appendix of
-this manual. If desired, the &quot;printerr&quot; command can be executed,
+this manual. If desired, the <command>printerr</command> command can be executed,
 which replaces the smaller, built-in error display routine with a
 larger (and slower) routine that looks up descriptive error messages
-from a text file called &quot;/dd/sys/errmsg&quot;.
-Once the &quot;printerr&quot;
+from a text file called <filename>/dd/sys/errmsg</filename>.
+Once the <command>printerr</command>
 command has been run it cannot be turned off. Also, its effect is
 system-wide.
 </para>
@@ -654,7 +654,7 @@ runtime system (RunC).
 </para>
 <para>
 For example, if you wanted to run a Basic09 I-code module called
-&quot;adventure&quot;, you could type the command given below:
+<command>adventure</command>, you could type the command given below:
 </para>
 <screen>
 OS9: basic09 adventure
@@ -673,7 +673,7 @@ OS9: adventure
 <para>
 OS-9 systems used for timesharing usually have a procedure file
 that brings the system up by means of one simple command or by using
-the system &quot;startup&quot; file. A procedure file which initiates the
+the system <filename>startup</filename> file. A procedure file which initiates the
 timesharing monitor for each terminal is executed to start up the
 system. The procedure file first starts the system clock, then
 initiates concurrent execution of a number of processes that have
@@ -701,12 +701,12 @@ tsmon /t3&amp;
 </programlisting>
 <para>
 NOTE: This LOGIN procedure will not work until a password file
-called &quot;/DD/SYS/PASSWORD&quot; has been created. For more information,
+called <filename>/DD/SYS/PASSWORD</filename> has been created. For more information,
 please see the LOGIN command description.
 </para>
 <para>
 The example above deserves special attention. Note that the
-&quot;setime&quot; command has its input redirected to the system console
+<command>setime</command> command has its input redirected to the system console
 &quot;term&quot;, which is necessary because it would otherwise attempt to
 read the time information from its current standard input path,
 which is the procedure file and not the keyboard.

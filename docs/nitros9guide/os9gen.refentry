@@ -15,38 +15,38 @@
 
 <refsect1><title>Description</title>
 <para>
-OS9Gen is used to create and link the &quot;OS9Boot&quot; file required on any
-disk from which OS-9 is to be bootstrapped. OS9Gen is used to add
+<command>OS9Gen</command> is used to create and link the <filename>OS9Boot</filename> file required on any
+disk from which OS-9 is to be bootstrapped. <command>OS9Gen</command> is used to add
 modules to an existing boot or to create an entirely new boot file.
-If an exact copy of the existing OS9Boot file is desired, the
-COBBLER command should be used instead.
+If an exact copy of the existing <filename>OS9Boot</filename> file is desired, the
+<command>cobbler</command> command should be used instead.
 </para>
 <para>
-The name of the device on which the &quot;OS9Boot&quot; file is to be
-installed is passed to OS9Gen as a command line parameter. OS9Gen then
-creates a working file called &quot;TempBoot&quot; on the device specified.
+The name of the device on which the <filename>OS9Boot</filename> file is to be
+installed is passed to <command>OS9Gen</command> as a command line parameter. <command>OS9Gen</command> then
+creates a working file called <filename>TempBoot</filename> on the device specified.
 Next it reads file names (pathlists) from its standard input, one
 pathlist per line. Every file named is opened and copied to
-&quot;TempBoot&quot;. This is repeated until end-of-file or a blank line is
-reached on OS9Gen's standard input. All boot files must contain the
+<filename>TempBoot</filename>. This is repeated until end-of-file or a blank line is
+reached on <command>OS9Gen</command>'s standard input. All boot files must contain the
 OS-9 component modules listed in section 6.1.
 </para>
 <para>
-After all input files have been copied to &quot;TempBoot&quot;, the old
-&quot;OS9Boot&quot; file, if present, is deleted. &quot;TempBoot&quot; is then renamed
-to &quot;OS9Boot&quot;, and its starting address and size is linked in the
+After all input files have been copied to <filename>TempBoot</filename>, the old
+<filename>OS9Boot</filename> file, if present, is deleted. <filename>TempBoot</filename> is then renamed
+to <filename>OS9Boot</filename>, and its starting address and size is linked in the
 disk's Identification Sector (LSN 0) for use by the OS-9 bootstrap
 firmware.
 </para>
 <para>
-WARNING: Any &quot;OS9Boot&quot; file must be stored in physically contiguous
-sectors. Therefore, OS9Gen is normally used on a freshly formatted
-disk. If the &quot;OS9Boot&quot; file is fragmented, OS9Gen will print a
+WARNING: Any <filename>OS9Boot</filename> file must be stored in physically contiguous
+sectors. Therefore, <command>OS9Gen</command> is normally used on a freshly formatted
+disk. If the <filename>OS9Boot</filename> file is fragmented, <command>OS9Gen</command> will print a
 warning message indicated the disk cannot be used to bootstrap OS-9.
 </para>
 <para>
-The list of file names given to OS9Gen can be entered from a keyboard, or
-OS9Gen's standard input may be redirected to a text file
+The list of file names given to <command>OS9Gen</command> can be entered from a keyboard, or
+<command>OS9Gen</command>'s standard input may be redirected to a text file
 containing a list of file names (pathlists) . If names are entered
 manually, no prompts are given, and the end-of-file key (usually
 ESCAPE) or a blank line is entered after the line containing the
@@ -59,7 +59,7 @@ For more information see: 6.0, 6.1, 6.6
 <refsect1><title>Examples</title>
 <para>
 To manually install a boot file on device &quot;d1&quot; which is an exact
-copy of the &quot;OS9Boot&quot; file on device &quot;d0&quot;:
+copy of the <filename>OS9Boot</filename> file on device &quot;d0&quot;:
 </para>
 <screen>
 OS9: os9gen /d1          (run OS9Gen)
@@ -68,8 +68,8 @@ OS9: os9gen /d1          (run OS9Gen)
 </screen>
 <para>
 To manually install a boot file on device &quot;d1&quot; which is a copy of
-the &quot;OS9Boot&quot; file on device &quot;do&quot; with the addition of
-modules stored in the files &quot;/d0/tape.driver&quot; and &quot;/d2/video.driver&quot;:
+the <filename>OS9Boot</filename> file on device &quot;d0&quot; with the addition of
+modules stored in the files <filename>/d0/tape.driver</filename> and <filename>/d2/video.driver</filename>:
 </para>
 <screen>
 OS9: os9gen /d1          (run OS9Gen)
@@ -79,14 +79,14 @@ OS9: os9gen /d1          (run OS9Gen)
 [ESCAPE]                 (enter end-of-file)
 </screen>
 <para>
-As above, but automatically by redirecting OS9Gen standard input:
+As above, but automatically by redirecting <command>OS9Gen</command> standard input:
 </para>
 <screen>
-OS9: build /d0/bootlist  (use &quot;build&quot; to create file &quot;bootlist&quot;)
+OS9: build /d0/bootlist  (use <command>build</command> to create file <filename>bootlist</filename>)
 ? /d0/os9boot            (enter first file name)
 ? /d0/tape.driver        (enter second file name)
 ? /d2/video.driver       (enter third file name)
-? [RETURN]               (terminate &quot;build&quot;)
+? [RETURN]               (terminate <command>build</command>)
 OS9: os9gen /d1 &lt;/d0/bootlist  (run OS9gen with redirected input)
 </screen>
 </refsect1>

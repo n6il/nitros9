@@ -16,12 +16,12 @@
 <refsect1><title>Description</title>
 <para>
 The are two commands which invoke distinct versions of the
-compiler. "cc1" is for OS-9 Level I which uses a two pass compiler,
-and, "cc2" is for Level II which causes a single pass version. Both
+compiler. <command>cc1</command> is for OS-9 Level I which uses a two pass compiler,
+and, <command>cc2</command> is for Level II which causes a single pass version. Both
 versions of the compiler works identically, the main difference is
-that cc1 has been divided into two passes to fit the smaller memory
+that <command>cc1</command> has been divided into two passes to fit the smaller memory
 size of OS-9 Level I systems. In the following text, "cc" refers to
-either "cc1" or "cc2" as appropiate for your system.
+either <command>cc1</command> or <command>cc2</command> as appropiate for your system.
 </para>
 </refsect1>
 <refsect1><title>Options</title>

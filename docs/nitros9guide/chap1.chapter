@@ -62,7 +62,7 @@ repeatedly fails your OS-9 diskette may be bad.</para></listitem>
 <listitem><para>If your &make; doesn't seem to understand the &DOSCMD; command, your controller has DOS 1.0.  You will need to upgrade to
 DOS 1.1.</para></listitem>
 
-<listitem><para>If the &quot;OS9 BOOT message is displayed but nothing else happens,
+<listitem><para>If the &quot;OS9 BOOT&quot; message is displayed but nothing else happens,
 you may have a corrupted system disk. Hopefully you did make a
 backup!</para></listitem>
 </itemizedlist>
@@ -103,7 +103,7 @@ for you to type in a command.
 </para>
 <para>
 Now you're ready to try some commands. A good first command to
-try is DIR (for &quot;<emphasis>dir</emphasis>ectory&quot;).
+try is <command>dir</command> (for &quot;<emphasis>dir</emphasis>ectory&quot;).
 This will display a list of the files
 on the System Disk. Just type:
 <screen>
@@ -114,12 +114,12 @@ names which should look something like this:
 <screen>
  OS9Boot     startup     CMDS      SYS      DEFS
 </screen>
-The file &quot;OS9Boot&quot; contains the OS-9 program in &CPU; machine
+The file <filename>OS9Boot</filename> contains the OS-9 program in &CPU; machine
 language, which was loaded into memory during the bootstrap
 operation.
 </para>
 <para>
-The file &quot;startup&quot; is a &quot;command file&quot; which is automatically run
+The file <filename>startup</filename> is a &quot;command file&quot; which is automatically run
 when the system starts up, and has the commands that printed the
 welcoming message and asked for the time. Later, You may want to
 replace this startup file with your own customized version after you
@@ -128,9 +128,9 @@ this file? If so, just type
 <screen>
 list startup
 </screen>
-As you can see, the LIST command displays the contents of files
+As you can see, the <command>list</command> command displays the contents of files
 that contain text (alphabetic characters). Some files like the
-&quot;OS9Boot&quot; file contain binary data such as machine language
+<filename>OS9Boot</filename> file contain binary data such as machine language
 programs. These files are called &quot;binary files&quot;, and attempts to
 list them will result in a jumbled, meaningless display. On the
 other hand, OS-9 will complain mightily if you try to run a text
@@ -139,13 +139,13 @@ file as a program!
 <para>
 As you may have surmised by now, the way you ask OS-9 to run a
 program or command (they're really the same thing) is to simply type
-its name. Some commands like LIST require one or more names of
+its name. Some commands like <command>list</command> require one or more names of
 files or options. If so, they are typed on the same line using
 spaces to separate each item.
 </para>
 <para>
-But where did the LIST and DIR programs come from? There are
-really more files on the disk than you suspect. The DIR command
+But where did the <command>list</command> and <command>dir</command> programs come from? There are
+really more files on the disk than you suspect. The <command>dir</command> command
 showed you what is the disk's
 <emphasis>root directory</emphasis> - so named because the
 OS-9 filing system resembles a tree. Growing out of the root
@@ -155,25 +155,27 @@ can have even more &quot;branches&quot; - ad infinitum. If you draw a map on
 paper of how this works it does look like a tree.
 </para>
 <para>
-The directory files on your system disk are called &quot;CMDS&quot;,
-&quot;SYS&quot;, and &quot;DEFS&quot;.
-The file &quot;CMDS&quot; is a directory that consists of
-all the system commands such as DIR, LIST, FORMAT, etc. To see the
-files contained in this directory, enter:
+The directory files on your system disk are called <filename class="directory">CMDS</filename>,
+<filename class="directory">SYS</filename>, and <filename class="directory">DEFS</filename>.
+The file <filename class="directory">CMDS</filename> is a directory that consists of
+all the system commands such as <command>dir</command>, <command>list</command>,
+<command>format</command>, etc. To see the files contained in this directory, enter:
 <screen>
 dir cmds
 </screen>
-which tells DIR to show files on the directory file CMDS  instead
+which tells <command>dir</command> to show files on the directory file
+<filename class="directory">CMDS</filename>  instead
 of the root directory. After you type this you should see a long
 list of file names. These are the complete set of command programs
 that come with OS-9 and perform a myriad of functions. Chapter
-Seven explains each one in detail. The DIR command also has a handy
-option to display the CMDS  directory with less typing:
+Seven explains each one in detail. The <command>dir</command> command also has a handy
+option to display the
+<filename class="directory">CMDS</filename> directory with less typing:
 <screen>
 dir -x
 </screen>
 Whenever you want a list of available commands you can use this so
-you don't have to look it up in the book. The DIR command has
+you don't have to look it up in the book. The <command>dir</command> command has
 options which can give you more detailed information about each file.
 </para>
 </section>
@@ -192,7 +194,7 @@ and running a backup program.
 <para>
 Before the actual backup procedure can be done (or any fresh
 diskette is used for any purpose), the blank disk which is to become
-the backup disk must be initialized by OS-9's FORMAT command.
+the backup disk must be initialized by OS-9's <command>format</command> command.
 </para>
 <para>
 IF YOU HAVE ONLY ONE DISK DRIVE you have to be extra careful not to
@@ -231,7 +233,7 @@ When you are asked for a disk name, type any letter, then ENTER.
 The name you give is not important. If you have only one drive,
 replace the system disk after the FORMAT program has finished. If
 the FORMAT program reported any errors, try again. Disks used for
-backups can't have any errors. You're now ready to run the BACKUP
+backups can't have any errors. You're now ready to run the <command>backup</command>
 program.
 </para>
 <para>
@@ -245,7 +247,7 @@ error message for each bad sector is given.
 <section>
 <title>Running the Backup Program</title>
 <para>
-The BACKUP program makes an exact duplicate of a disk. It can be
+The <command>backup</command> program makes an exact duplicate of a disk. It can be
 used even if you only have one disk drive.
 </para>
 <para>
@@ -255,7 +257,7 @@ IF YOU HAVE ONE DRIVE type
 backup /d0 #32k
 </screen>
 <para>
-The BACKUP program will prompt you to alternately insert the source
+The <command>backup</command> program will prompt you to alternately insert the source
 disk (the system disk) and the destination disk (the freshly
 formatted disk).
 </para>
@@ -267,7 +269,7 @@ backup #32K
 </screen>
 <para>
 
-The BACKUP program will respond with
+The <command>backup</command> program will respond with
 </para>
 <screen>
 Ready to backup from /d0 to /d1?
@@ -280,19 +282,19 @@ X is being scratched
 Ok ?:
 </screen>
 <para>
-Answer &quot;Y&quot; for yes again, and the BACKUP process should begin.
+Answer &quot;Y&quot; for yes again, and the backup process should begin.
 </para>
 <para>
-The BACKUP command has two phases: the first phase copies
+The <command>backup</command> command has two phases: the first phase copies
 everything from drive zero to drive one checking for errors while
 reading from the master but not for &quot;write&quot; errors. The second
 phase is the &quot;verify&quot; pass which makes sure everything was copied
 onto the new disk correctly.  If any errors are reported during the
 first (copy) pass, there is a problem with the master disk or its
 drive. If errors occur during the second (verify) pass, there is a
-problem with the new disk and the BACKUP program should be run
-again. If BACKUP repeatedly fails on the second pass, reformat the
-disk and try to BACKUP again. If BACKUP fails again, the disk is
+problem with the new disk and the <command>backup</command> program should be run
+again. If <command>backup</command> repeatedly fails on the second pass, reformat the
+disk and try to <command>backup</command> again. If <command>backup</command> fails again, the disk is
 physically defective.
 </para>
 <para>

@@ -20,15 +20,15 @@
 <para>
 This command changes the CPU priority of a process. It may only be
 used with a process having the user's ID. The process number is a
-decimal number in the range of 1 (lowest) to 255. The &quot;procs&quot;
+decimal number in the range of 1 (lowest) to 255. The <command>procs</command>
 command can be used to obtain process ID numbers and present priority.
 </para>
 <para>
-NOTE: This command does not appear in the CMDS directory as it is
-built-in to the SHELL.
+NOTE: This command does not appear in the <filename class="directory">CMDS</filename> directory as it is
+built-in to the <command>shell</command>.
 </para>
 <para>
-For more information see: 5.1, PROCS
+For more information see: 5.1, <command>procs</command>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

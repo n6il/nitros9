@@ -190,10 +190,10 @@ tmode -upc lf null=4 bselF pause
 tmode pag=24 pause bsl -echo bsp=8 bsl=C
 </screen>
 <para>
-NOTE: If you use TMODE in a procedure file, it will be necessary to
+NOTE: If you use <command>tmode</command> in a procedure file, it will be necessary to
 specify one of the standard output paths (.1 or .2) since the
 shell's standard input path will have been redirected to the disk
-file (TMODE can be used on an SCFMAN-type devices only).
+file (<command>Tmode</command> can be used on an SCFMAN-type devices only).
 
 Example:
 </para>

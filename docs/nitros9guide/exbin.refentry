@@ -25,12 +25,12 @@ programs to load on non-OS-9 systems.
 </para>
 <para>
 &quot;Path1&quot; is assumed to be an
-S-Record format text file which EXBIN converts to pure binary form on
+S-Record format text file which <command>exbin</command> converts to pure binary form on
 a new file called &quot;path2&quot;. The load addresses of each data record
 must describe continguous data in ascending order.
 </para>
 <para>
-EXBIN does not generate or check for the proper OS-9 module
+<command>Exbin</command> does not generate or check for the proper OS-9 module
 headers or CRC check value required to actually load the binary
 file. The IDENT or VERIFY commands can be used to check the
 validity of the modules if they are to be loaded or run.

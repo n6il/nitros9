@@ -20,7 +20,7 @@ directories and files they contain. It is only used when
 <emphasis>all</emphasis> files in the directory system are to be deleted.
 </para>
 <para>
-When DELDIR is run, it prints a prompt message like this:
+When <command>deldir</command> is run, it prints a prompt message like this:
 </para>
 <screen>
 OS9: deldir OLDFILES
@@ -28,7 +28,7 @@ Deleting directory file.
 List directory, delete directory, or quit ? (l/d/q)
 </screen>
 <para>
-An &quot;l&quot; response will cause a &quot;dir e&quot; command to be run so you can
+An &quot;l&quot; response will cause a <command>dir e</command> command to be run so you can
 have an opportunity to see the files in the directory before they
 are deleted.
 </para>
@@ -40,19 +40,19 @@ A &quot;q&quot; response will abort the command before action is taken.
 </para>
 <para>
 The directory to be deleted may include directory files, which
-may themselves include directory files, etc. In this case, DELDIR
+may themselves include directory files, etc. In this case, <command>deldir</command>
 operates recursively (e.g., it calls itself) so all lower-level
 directories are deleted as well. In this case the lower-level
 directories are processed first.
 </para>
 <para>
 You must have correct access permission to delete all files and
-directories encountered.   If not, DELDIR will abort upon
+directories encountered.   If not, <command>deldir</command> will abort upon
 encountering the first file for which you do not have write
 permission.
 </para>
 <para>
-The DELDIR command automatically calls the DIR and ATTR
+The <command>deldir</command> command automatically calls the DIR and ATTR
 commands, so they both must reside in the current execution
 directory.
 </para>

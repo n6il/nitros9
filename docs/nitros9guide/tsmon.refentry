@@ -16,23 +16,23 @@
 This command is used to supervise idle terminals and initiate the
 login sequence in timesharing applications. If a pathlist is given,
 standard I/O paths are opened for the device. When a carriage return
-is typed, TSMON will automatically call the &quot;LOGIN&quot; command. If the
+is typed, <command>tsmon</command> will automatically call the <command>login</command> command. If the
 login fails because the user could not supply a valid user name or
-password, it will return to TSMON.
+password, it will return to <command>tsmon</command>.
 </para>
 <para>
-Note: The LOGIN command and its password file must be present for
-TSMON to work correctly (see the LOGIN command description).
+Note: The <command>login</command> command and its password file must be present for
+<command>tsmon</command> to work correctly (see the <command>login</command> command description).
 </para>
 <refsect2>
 <title>Logging Off the System</title>
 <para>
 Most programs will terminate when an end of file character (escape)
 is entered as the first character on a command line. This will log
-you off of the system and return control to TSMON.
+you off of the system and return control to <command>tsmon</command>.
 </para>
 <para>
-For more information see: 2.5, LOGIN
+For more information see: 2.5, <command>login</command>
 </para>
 </refsect2>
 </refsect1>

@@ -52,7 +52,7 @@ dir ..               (display parent of working data directory)
 
 dir newstuff         (display newstuff directory)
 
-dir -e test_programs (display entire description of &quot;test.programs)
+dir -e test_programs (display entire description of <filename class="directory">test_programs</filename>)
 </screen>
 </refsect1>
 </refentry>

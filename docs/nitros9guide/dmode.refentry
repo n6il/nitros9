@@ -28,7 +28,7 @@ Options may be prefixed with a "$". It is simply ignored.
 </refsect1>
 <refsect1><title>Examples</title>
 <para>
-Typical DMODE output:
+Typical <command>dmode</command> output:
 <screen>
 OS9: dmode /dd  {enter}
 
@@ -38,7 +38,7 @@ OS9: dmode /dd  {enter}
 
 Now, let's say we want to change the number of cylinders
 this descripter shows. The following command lines would
-all be valid and accepted by the new DMODE:
+all be valid and accepted by the new <command>dmode</command>:
 
 <screen>
 OS9:  dmode /dd CYL=276

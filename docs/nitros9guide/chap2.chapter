@@ -4,7 +4,7 @@
 <section>
 <title>Running Commands and Basic Shell Operation</title>
 <para>
-The &quot;shell&quot; is a the part of OS-9 that accepts commands from your
+The <command>shell</command> is a the part of OS-9 that accepts commands from your
 keyboard. It was designed to provide a convenient, flexible, and
 easy-to-use interface between you and the powerful functions of the
 operating system. The shell is automatically entered after OS-9 is
@@ -29,8 +29,8 @@ language such as Basic09, Pascal, Cobol, etc.</para></listitem>
 </itemizedlist>
 <para>
 If you're a beginner, you will almost always use the first case,
-which causes the program to be automatically loaded from the CMDS
-directory and run.
+which causes the program to be automatically loaded from the
+<filename class="directory">CMDS</filename> directory and run.
 </para>
 <para>
 When processing the command line, the shell searches for a
@@ -41,7 +41,7 @@ program having the name specified in the following sequence:
 
 <listitem><para> If the program named is already in memory, it is run.</para></listitem>
 
-<listitem><para> The &quot;execution directory&quot;, usually &quot;CMDS&quot;, is searched.
+<listitem><para> The &quot;execution directory&quot;, usually <filename class="directory">CMDS</filename>, is searched.
 If a file having the name given is found, it is loaded and
 run.</para></listitem>
 
@@ -56,7 +56,7 @@ the same manner as if they had manually typed in one by one.</para></listitem>
 Mention is made above of the &quot;data directory&quot; and the &quot;execution
 directory&quot;. At all times each user is associated with two file
 directories. A more detailed explanation of directories is presented
-later. The execution directory (usually CMDS) includes
+later. The execution directory (usually <filename class="directory">CMDS</filename>) includes
 files which are executable programs.
 </para>
 <para>
@@ -71,7 +71,7 @@ For example, in the command line:
 list file1
 </screen>
 <para>
-the program name is LIST, and the parameter passed to it is FILE1.
+the program name is <command>list</command>, and the parameter passed to it is FILE1.
 </para>
 <para>
 A command line may also include one or more &quot;modifiers&quot; which are
@@ -95,13 +95,13 @@ at the end of any command line:
 The &quot;&gt;&quot; character tells the shell to redirect output (See 4.3.2) to
 the printer using the &make;'s printer port, which has the device
 name &quot;/P&quot; (See 3.2). For example, to redirect the output of the
-&quot;dir&quot; command to the printer, enter:
+<command>dir</command> command to the printer, enter:
 </para>
 <screen>
 dir &gt;/p
 </screen>
 <para>
-The &quot;xmode&quot; command can be used to set the printer port's
+The <command>xmode</command> command can be used to set the printer port's
 operating mode such as auto line feed, etc. For example, to examine
 the printer's current settings, type:
 </para>
@@ -143,7 +143,7 @@ procedure file), you enter the command line:
 list startup
 </screen>
 <para>
-Some commands have two parameters. For example, the COPY command is
+Some commands have two parameters. For example, the <command>copy</command> command is
 used to make an exact copy of a file. It requires two parameters:
 The name of the file to be copied and the name of the file which is
 to be the copy, for example:
@@ -169,7 +169,7 @@ so enter:
 dir -e
 </screen>
 <para>
-The DIR command also can accept a file name as a parameter which
+The <command>dir</command> command also can accept a file name as a parameter which
 specifies a directory file other than the (default) data directory.
 For example, to list file names in the directory sys , type:
 </para>
@@ -235,7 +235,7 @@ Displays the (text) contents of the file on the terminal.
 MAKDIR filename                            makdir NEWFILES
 </screen>
 Creates a new directory file using the name given. Often followed
-by a &quot;chd&quot; command to make it the new working data directory.
+by a <command>chd</command> command to make it the new working data directory.
 <screen>
 RENAME filename1 filename2                 rename zip zap
 </screen>
@@ -270,7 +270,7 @@ tmode -upc
 <para>
 The screen pause feature stops programs after 16 lines have been
 displayed. Output will continue if you hit any key. Normally this
-feature is on. It can be turned on or off with the TMODE command as
+feature is on. It can be turned on or off with the <command>tmode</command> command as
 follows:
 </para>
 <screen>

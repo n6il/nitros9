@@ -9,7 +9,7 @@
 <command>HELP</command>
 <arg choice="opt">
   <option>command - the command for which you want syntax help.  Include
-as many command names in one HELP line as you wish.  The proper form and
+as many command names in one <command>help</command> line as you wish.  The proper form and
 syntax appears for each valid command you include.
 </option>
 </arg>
@@ -19,8 +19,8 @@ syntax appears for each valid command you include.
 <refsect1><title>Notes</title>
 
 <para>
-To use HELP, first copy Cmds.hp from the SYS directory of the CONFIG/BOOT
-Diskette to the SYS directory of your system diskette.  Next, copy HELP
+To use <command>help</command>, first copy Cmds.hp from the SYS directory of the CONFIG/BOOT
+Diskette to the SYS directory of your system diskette.  Next, copy <command>help</command>
 from the CMDS directory of the CONFIG/BOOT Diskette to the CMDS directory
 of your system diskette as follows:
 </para>
@@ -77,7 +77,7 @@ it on your screen or edit it with a standard text editor.  It contains help
 for standard OS-9 commands.
 </para>
 <para>
-HELP displays the form and syntax of the specified command.  If you use a
+<command>Help</command> displays the form and syntax of the specified command.  If you use a
 non-standard command name, a screen display tells you that help is not
 available for that command.
 </para>

@@ -50,7 +50,7 @@ CAFB   38 F1  1 R   2 TERM
 </screen>
 <para>
 
-WARNING: Many of the modules listed by MDIR are OS-9 system modules
+WARNING: Many of the modules listed by <command>mdir</command> are OS-9 system modules
 and NOT executable as programs: always check the module type code
 before running a module if you are not familiar with it!
 </para>

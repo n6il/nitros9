@@ -33,7 +33,7 @@ needed. For instance, applications which only use BASIC09 need not
 waste memory space on SHELL.
 </para>
 <para>
-The &quot;ex&quot; command should always be the last command on a shell input
+The <command>ex</command> command should always be the last command on a shell input
 line because any command line following will never be processed.
 </para>
 <para>

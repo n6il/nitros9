@@ -29,7 +29,7 @@ slash (/).
 <para>
 is the name of the device drivere you want to
 detach.  Specify as many device drivers as you
-wish with one DEINIZ command.
+wish with one <command>deiniz</command> command.
 </para>
 </listitem>
 </varlistentry>

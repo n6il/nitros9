@@ -19,7 +19,7 @@
 <para>
 Disasm was written to hack apart OS9 system modules,command modules,
 file managers and device drivers/descriptors either from memory or disk.
-Unlike most other disassemblers,DISASM is a two pass disassembler, creating
+Unlike most other disassemblers, <command>disasm</command> is a two pass disassembler, creating
 output using only referenced labels. This output can be redirected to a file
 and (after modifications if desired) then re-assembled.
 </para>

@@ -20,8 +20,8 @@ an initial file structure on a disk. All disks must be formatted
 before they can be used on an OS-9 system.
 </para>
 <para>
-NOTE: If the diskette is to be used as a system disk, &quot;OS9gen&quot; or
-&quot;cobbler&quot; must be run to create the bootstrap after the disk has
+NOTE: If the diskette is to be used as a system disk, <command>OS9gen</command> or
+<command>cobbler</command> must be run to create the bootstrap after the disk has
 been formatted.
 </para>
 <para>
@@ -53,7 +53,7 @@ sectors <emphasis>cannot</emphasis> be defective.
 </listitem>
 </orderedlist>
 <para>
-FORMAT will prompt for a disk volume name, which can be up to 32
+<command>Format</command> will prompt for a disk volume name, which can be up to 32
 characters long and may include spaces or punctuation. This name
 can later be displayed using the FREE command.
 </para>

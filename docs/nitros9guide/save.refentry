@@ -27,7 +27,7 @@ module directory when saved. The new file is given access
 permissions for all modes except public write.
 </para>
 <para>
-Note: SAVE's default directory is the current data directory.
+Note: <command>save</command>'s default directory is the current data directory.
 Executable modules should generally be saved in the default
 execution directory.
 </para>

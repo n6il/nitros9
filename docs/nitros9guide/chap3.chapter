@@ -230,7 +230,7 @@ that store data organized into separate logical entities called
 Every multifile device has a master directory (called the &quot;root
 directory&quot;) that includes the names of the files and sub-directories
 stored on the device. The root directory is created automatically
-when the disk is initialized by the &quot;format&quot; command.
+when the disk is initialized by the <command>format</command> command.
 </para>
 <para>
 Pathlists that refer to multifile devices may have more than one
@@ -258,7 +258,7 @@ The diagram below is a simplified file system tree of a typical
 OS-9 system disk. Note that device and directory names are capitalized
 and ordinary file names are not. This is a customary (but
 not mandatory) practice which allows you to easily identify directory
-files using the short form of the &quot;dir&quot; command.
+files using the short form of the <command>dir</command> command.
 </para>
 <literallayout class="monospaced">
                       System Device Directory
@@ -284,7 +284,7 @@ The device names in this example system are &quot;TERM&quot;,
 &quot;P&quot;, &quot;D0&quot; and
 &quot;D1&quot;. The root directory of device
 &quot;D0&quot; includes two directory
-files, DEFS and CMDS, and one ordinary file &quot;startup&quot;. Notice that
+files, <filename class="directory">DEFS</filename> and <filename class="directory">CMDS</filename>, and one ordinary file &quot;startup&quot;. Notice that
 device &quot;D1&quot; has in its root directory three ordinary files. In
 order to access the file &quot;file2&quot; on
 device &quot;d1&quot;, a pathlist having
@@ -294,7 +294,7 @@ list /d1/file2
 </screen>
 To construct a pathlist to access the file &quot;dir&quot; on device
 &quot;d0&quot; it is necessary to include in the pathlist the name of the
-intermediate directory file &quot;CMDS&quot;. For example, to copy this file
+intermediate directory file <filename class="directory">CMDS</filename>. For example, to copy this file
 requires a pathlist having three names to describe the &quot;from&quot; file:
 <screen>
 copy /d0/cmds/dir temp
@@ -306,7 +306,7 @@ copy /d0/cmds/dir temp
 <title>Creating and Using Directories</title>
 <para>
 It is possible to create a virtually unlimited number of levels
-of directories on a mass storage device using the &quot;makdir&quot; command.
+of directories on a mass storage device using the <command>makdir</command> command.
 Directories are a special type of file (see 3.8.1). They can be
 processed by the same I/O functions used to access regular files
 which makes directory-related processing fairly simple.
@@ -314,8 +314,8 @@ which makes directory-related processing fairly simple.
 <para>
 To demonstrate how directories work, assume that the disk in
 drive one (&quot;d1&quot;) has been freshly formatted so that it has a root
-directory only. The build command can be used to create a text file
-on &quot;d1&quot;. The build command will print out &quot;?&quot; as a prompt to
+directory only. The <command>build</command> command can be used to create a text file
+on &quot;d1&quot;. The <command>build</command> command will print out &quot;?&quot; as a prompt to
 indicate that it is waiting for a text line to be entered. It will
 place each line into the text file until an empty line with only a
 carriage return is entered, as shown below:
@@ -328,7 +328,7 @@ OS9: build /d1/file1
 </screen>
 
 <para>
-The &quot;dir&quot; command will now indicate the existence of the new file:
+The <command>dir</command> command will now indicate the existence of the new file:
 </para>
 
 <screen>
@@ -339,7 +339,7 @@ file1
 </screen>
 
 <para>
-The &quot;list&quot; command can be used to display the text stored in the
+The <command>list</command> command can be used to display the text stored in the
 file:
 </para>
 
@@ -351,7 +351,7 @@ that we created.
 </screen>
 
 <para>
-The &quot;build&quot; command again is again used to create two more text
+The <command>build</command> command again is again used to create two more text
 files:
 </para>
 
@@ -367,7 +367,7 @@ OS9: build /d1/file3
 </screen>
 
 <para>
-The dir command will now show three file names:
+The <command>dir</command> command will now show three file names:
 </para>
 
 <screen>
@@ -377,8 +377,8 @@ file1           file2           file3
 </screen>
 
 <para>
-To make a new directory in this directory, the &quot;makdir&quot; command is
-used. The new directory will be called &quot;NEWDIR&quot;. Notice that
+To make a new directory in this directory, the <command>makdir</command> command is
+used. The new directory will be called <filename class="directory">NEWDIR</filename>. Notice that
 throughout this manual directory names are always capitalized. This
 is <emphasis>not</emphasis> a requirement of OS-9 (see 3.1) . Rather, it is a
 practice popular with many OS-9 users because it allows easy identification
@@ -391,7 +391,7 @@ OS9: makdir /D1/NEWDIR
 </screen>
 
 <para>
-The directory file &quot;NEWDIR&quot; is now a file listed in D1's root
+The directory file <filename class="directory">NEWDIR</filename> is now a file listed in D1's root
 directory:
 </para>
 
@@ -404,7 +404,7 @@ file1           file2           file3          NEWDIR
 
 <para>
 Now we will create a new file and put in the new directory, using
-the COPY command to duplicate &quot;file1&quot;:
+the <command>copy</command> command to duplicate <filename>file1</filename>:
 </para>
 <screen>
 OS9: copy /d1/file1 /d1/newdir/file1.copy
@@ -412,7 +412,7 @@ OS9: copy /d1/file1 /d1/newdir/file1.copy
 <para>
 Observe that the second pathlist now has three names: the name of
 the root directory (&quot;D1&quot;), the name of the next lower directory
-(&quot;NEWDIR&quot;), then the actual file name (&quot;file1.copy&quot;). Here's what
+(<filename class="directory">NEWDIR</filename>), then the actual file name (<filename class="directory">file1.copy</filename>). Here's what
 the directories look like now:
 </para>
 <screen>
@@ -425,7 +425,7 @@ the directories look like now:
 file1.copy
 </screen>
 <para>
-The dir command can now show the files in the new directory:
+The <command>dir</command> command can now show the files in the new directory:
 </para>
 <screen>
 OS9: dir /D1/NEWDIR
@@ -434,8 +434,8 @@ OS9: dir /D1/NEWDIR
 file1.copy
 </screen>
 <para>
-It is possible to use &quot;makdir&quot; to create additional new directories
-within &quot;NEWDIR&quot;, and so on, limited only by available disk
+It is possible to use <command>makdir</command> to create additional new directories
+within <filename class="directory">NEWDIR</filename>, and so on, limited only by available disk
 space.
 </para>
 </section>
@@ -443,7 +443,7 @@ space.
 <section>
 <title>Deleting Directory Files</title>
 <para>
-The &quot;del&quot; command cannot be used to directly delete a directory
+The <command>del</command> command cannot be used to directly delete a directory
 file. If a directory file that still contained file names were to
 be deleted, OS-9 would have no way to access the files or to return
 their storage to the unallocated storage pool. Therefore, the
@@ -453,14 +453,14 @@ following sequence must be performed to delete a directory file:
 1. All file names in the directory must be deleted.
 </para>
 <para>
-2. The &quot;attr&quot; command is used to turn off the files directory
+2. The <command>attr</command> command is used to turn off the files directory
 attrribute (-d option), making it an ordinary file (see 3.8).
 </para>
 <para>
-3. The file may now be deleted using the &quot;del&quot; command.
+3. The file may now be deleted using the <command>del</command> command.
 </para>
 <para>
-A simpler alternative is to use the DELDIR command to automatically
+A simpler alternative is to use the <command>deldir</command> command to automatically
 perform all these steps for you.
 </para>
 </section>
@@ -542,7 +542,7 @@ all names in the file hierarchy tree to be implied instead of
 explicitly given. This not only makes pathlists shorter, but allows
 OS-9 to locate files faster because (typically) fewer directories
 need be searched. For example, if the current working directory is
-&quot;/D1/PETE/GAMES&quot; and a pathlist is given such as:
+<filename class="directory">/D1/PETE/GAMES</filename> and a pathlist is given such as:
 </para>
 <para>
 baseball
@@ -593,29 +593,29 @@ as text files, etc.)
 <para>
 Immediately after startup, OS-9 will set the data directory to be
 (the root directory of) the system disk drive (usually &quot;D0&quot;), and
-the working directory to be a directory called &quot;cmds&quot; on the same
-drive (&quot;/D0/cmds&quot;). On timesharing systems, the &quot;login&quot; command
+the working directory to be a directory called <filename class="directory">cmds</filename> on the same
+drive (<filename class="directory">/D0/cmds</filename>). On timesharing systems, the <command>login</command> command
 selects the initial execution and data directories to the file names
 specified in each user's information record stored in the system
 password file(ref. 5.4.2).
 </para>
 <para>
-Here is an example of a shell command statement using the default
+Here is an example of a <command>shell</command> command statement using the default
 working directory notation, and its equivalent expansion:
 </para>
 <screen>
 copy file1 file2
 </screen>
 <para>
-If the current execution directory is &quot;/D0/CMDS&quot; and the current
-data directory is &quot;/D0/JONES&quot;, the same command, fully expanded to
+If the current execution directory is <filename class="directory">/D0/CMDS</filename> and the current
+data directory is <filename class="directory">/D0/JONES</filename>, the same command, fully expanded to
 show complete pathlists implied is:
 </para>
 <screen>
 OS9: /D0/CMDS/copy /D0/JONES/filel /D0/JONES/file2
 </screen>
 <para>
-Notice that the first pathlist &quot;copy&quot; expands to the current working
+Notice that the first pathlist <command>copy</command> expands to the current working
 directory pathlist because it is assumed to be an executable program
 but the two other file names expand using the data directory because
 they are not assumed to be executable.
@@ -625,7 +625,7 @@ they are not assumed to be executable.
 <section>
 <title>Changing Current Working Directories</title>
 <para>
-The built-in shell commands &quot;chd&quot; and &quot;chx&quot; can be used to
+The built-in shell commands <command>chd</command> and <command>chx</command> can be used to
 independently change the current working data and execution
 directories, respectively. These command names must be followed by
 a pathlist that describes the new directory file. You must have
@@ -638,7 +638,7 @@ OS9: chd /D1/MY.DATAFILES
 OS9: chx /D0/TESTPROGRAMS
 </screen>
 <para>
-When using the CHD or CHX commands, pathlists work the same as they
+When using the <command>chd</command> or <command>chx</command> commands, pathlists work the same as they
 do for regular files, except for the last name in the pathlist must
 be a directory name. If the pathlist begins with a &quot;/&quot; , OS-9 will
 begin searching in the device directory for the new working
@@ -663,14 +663,14 @@ not be known. Because of this, special &quot;name substitutes&quot; are
 available. They are:
 </para>
 <para>
-&quot;.&quot; refers to the present working directory
+<filename class="directory">.</filename> refers to the present working directory
 </para>
 <para>
-&quot;..&quot; refers to the directory that contains the name of the present
+<filename class="directory">..</filename> refers to the directory that contains the name of the present
 directory (e.g., the next highest level directory)
 </para>
 <para>
-&quot;...&quot; refers to directory two levels up, and so on
+<filename class="directory">...</filename> refers to directory two levels up, and so on
 </para>
 <para>
 These can be used in place of pathlists and/or the first name in a
@@ -691,7 +691,7 @@ pathlist. Here are some examples:
 </row>
 <row>
 <entry>OS9: del ../temp</entry>
-<entry>deletes the file &quot;temp&quot; from the
+<entry>deletes the file <filename>temp</filename> from the
 working data directory's parent directory.</entry>
 </row>
 </tbody>
@@ -700,9 +700,9 @@ working data directory's parent directory.</entry>
 <para>
 The substitute names refer to either the execution or data
 directories, depending on the context in which they are used.
-For example, if &quot;..&quot; is used in a pathlist of a file which
+For example, if <filename class="directory">..</filename> is used in a pathlist of a file which
 will be loaded and/or executed, it will represent the parent
-directory of the execution directory. Likewise, if &quot;.&quot; is used in a
+directory of the execution directory. Likewise, if <filename class="directory">.</filename> is used in a
 pathlist describing a program's input file, it will represent the
 current data directory.
 </para>
@@ -775,9 +775,9 @@ execute it, but not read, copy, delete, or alter it.
 <section>
 <title>Examining and Changing File Attributes</title>
 <para>
-The &quot;DIR&quot; command may be used to examine the security permissions
+The <command>dir</command> command may be used to examine the security permissions
 of the files in any particular directory when the &quot;e&quot; option is
-used. An example using the &quot;dir e&quot; command to show the detailed
+used. An example using the <command>dir e</command> command to show the detailed
 attributes of the files in the current working directory is:
 </para>
 <screen>
@@ -803,8 +803,8 @@ of associated characters in the following format:
 <para>
 The character positions correspond to from left to right: directory;
 sharable; public execute; public write; public read; owner execute;
-owner write; owner read. The &quot;attr&quot; command is used to examine or
-change a file's attributes. Typing &quot;attr&quot; followed by a file name
+owner write; owner read. The <command>attr</command> command is used to examine or
+change a file's attributes. Typing <command>attr</command> followed by a file name
 will result in the present attributes to be displayed, for example:
 </para>
 
@@ -830,9 +830,9 @@ The &quot;directory&quot; attribute behaves somewhat differently than the
 read, write, and execute permissions. This is because it would be
 quite dangerous to be able to change directory files to normal files,
 and creation of a directory requires special initialization.
-Therefore, the &quot;attr&quot; command
+Therefore, the <command>attr</command> command
 <emphasis>cannot</emphasis> be used to turn
-the directory (d) attribute on (only &quot;makdir&quot; can), and can be used
+the directory (d) attribute on (only <command>makdir</command> can), and can be used
 to turn it off <emphasis>only</emphasis> if the directory is empty.
 </para>
 </section>
@@ -875,8 +875,8 @@ the file. Reading up to the last byte of a file will cause the next
 <para>
 Even though there is physically only one type of file, the logical
 usage of files in OS-9 covers a broad spectrum. Because all
-OS-9 files have the same physical type, commands such as &quot;copy&quot;,
-&quot;del&quot;, etc., can be used with any file regardless of its logical
+OS-9 files have the same physical type, commands such as <command>copy</command>,
+<command>del</command>, etc., can be used with any file regardless of its logical
 usage. Similarly, a particular file can be treated as having a
 different logical usage at different times by different programs. The
 main usage of files covered in this section are:
@@ -909,7 +909,7 @@ beginning of each line without actually reading the data to locate
 carriage return characters.
 </para>
 <para>
-The content of text files may be examined using the &quot;list&quot;
+The content of text files may be examined using the <command>list</command>
 command.
 </para>
 </section>
@@ -970,7 +970,7 @@ file itself must have execute permission and each module
 must have a valid module header and CRC check value. If a program
 module has been altered in any way, either as a file or in memory,
 its CRC check value will be incorrect And OS-9 will refuse to load
-the module. The &quot;verify&quot; command can be used to check the correctness
+the module. The <command>verify</command> command can be used to check the correctness
 of the check values, and update them to corrected values if
 necessary.
 </para>
@@ -979,9 +979,9 @@ On Level One systems, if a file has two or more modules, they are
 treated as independent entities after loading and reside at different memory regions.
 </para>
 <para>
-Like other files that contain &quot;binary&quot; data, attempts to &quot;list
+Like other files that contain &quot;binary&quot; data, attempts to &quot;list&quot;
 program files will result in the display of random characters on the
-terminal giving strange effects. The &quot;dump&quot; command can be used to
+terminal giving strange effects. The <command>dump</command> command can be used to
 safely examine the contents of this kind of file in hexadecimal and
 controlled ASCII format.
 </para>
@@ -990,7 +990,7 @@ controlled ASCII format.
 <section>
 <title>Directory Files</title>
 <para>
-Directory files play a key role in the OS-9 file system.  They can only be created by the &quot;makdir&quot; command, and
+Directory files play a key role in the OS-9 file system.  They can only be created by the <command>makdir</command> command, and
 can be identified by the &quot;d&quot; attribute being set (see 3.8.1). The
 file is organized into 32-byte records. Each record can be a
 directory entry. The first 29 bytes of the record is a string of
@@ -1002,13 +1002,13 @@ the logical sector number where the file header record (see 3.10) is
 located.
 </para>
 <para>
-The &quot;makdir&quot; command initializes all records in a new directory
+The <command>makdir</command> command initializes all records in a new directory
 to be unused entries except for the first two entries. These
-entries have the names &quot;.&quot; and &quot;..&quot; along with the logical sector
+entries have the names <filename class="directory">.</filename> and <filename class="directory">..</filename> along with the logical sector
 numbers of the directory and its parent directory, respectively (see 3.7.3).
 </para>
 <para>
-Directories cannot be copied or listed - the &quot;dir&quot; command is
+Directories cannot be copied or listed - the <command>dir</command> command is
 used instead. Directories also cannot be deleted directly (see 3.5).
 </para>
 </section>
@@ -1026,7 +1026,7 @@ Examples of this category are COBOL Indexed Sequential (ISAM)
 files and some special word processor file formats which allow
 random access of text lines. As discussed in Sec.
 3.9.1, most OS-9 utility commands work with any file format including
-these special types. In general, the &quot;dump&quot; command is the preferred
+these special types. In general, the <command>dump</command> command is the preferred
 method for examining the contents of unusually formatted files.
 </para>
 </section>

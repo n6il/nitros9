@@ -16,23 +16,14 @@
 <refsect1><title>Description</title>
 
 <para>
-
-TEE
-
-Copy standard input to multiple output paths
-
-Syntax: Tee {<replaceable>path</replaceable>}
-
-
-
 This command is a filter (see 4.3.3) that copies all text lines from
 its standard input path to the standard output path
 <emphasis>and</emphasis> any number
 of additional output paths whose pathlists are given as parameters.
 </para>
 <para>
-The example below uses a pipeline and TEE to simultaneously send the
-output listing of the &quot;dir&quot; command to the terminal, printer, and a
+The example below uses a pipeline and <command>tee</command> to simultaneously send the
+output listing of the <command>dir</command> command to the terminal, printer, and a
 disk file:
 </para>
 <screen>

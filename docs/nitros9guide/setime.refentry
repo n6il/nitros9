@@ -15,7 +15,7 @@
 <para>
 This command sets the system date and time, then activates the real
 time clock. The date and time can be entered as parameters, or if no
-parameters are given, SETIME will issue a prompt. Numbers are one
+parameters are given, <command>setime</command> will issue a prompt. Numbers are one
 or two decimal digits using space, colon, semicolon or slash
 delimiters. OS-9 system time uses the 24 hour clock, i.e., 1520 is
 3:20 PM.
@@ -27,7 +27,7 @@ time clock this command should still be used to set the date for the
 file system.
 </para>
 <para>
-SYSTEMS WITH BATTERY BACKED UP CLOCKS: Setime should still be run to
+SYSTEMS WITH BATTERY BACKED UP CLOCKS: <command>Setime</command> should still be run to
 start time-slicing, but only the <emphasis>year</emphasis> need be given,
 the date and time will be read from the clock.
 </para>
