@@ -1,4 +1,15 @@
-* F$UnLoad entry point
+**************************************************
+* System Call: F$UnLoad
+*
+* Function: Unlink a module by name
+*
+* Input:  A = Module type
+*         X = Pointer to module name
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code       
+*
 FUnLoad  pshs  u            preserve register stack pointer
          lda   R$A,u        get module type
          ldx   <D.Proc      get current process pointer

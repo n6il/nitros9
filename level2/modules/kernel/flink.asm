@@ -1,10 +1,36 @@
-* F$SLink entry point
-* Entry: U=Register stack pointer
+**************************************************
+* System Call: F$SLink
+*
+* Function: System Link
+*
+* Input:  A = Module type
+*         X = Module name string pointer
+*         Y = Name string DAT image pointer
+*
+* Output: A = Module type
+*         B = Module revision
+*         X = Updated name string pointer
+*         Y = Module entry point
+*         U = Module pointer
+*
+* Error:  CC = C bit set; B = error code
+*
 FSLink   ldy    R$Y,u       get DAT image pointer of name
          bra    L0398       skip ahead
 
-* F$ELink entry point
-* Entry: U=Register stack pointer
+
+**************************************************
+* System Call: F$ELink
+*
+* Function: Link using module directory entry
+*
+* Input:  B = Module type
+*         X = Pointer to module directory entry
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FELink   pshs   u           preserve register stack pointer
          ldb    R$B,u       get module type
          ldx    R$X,u       get pointer to module directory entry

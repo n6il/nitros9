@@ -1,5 +1,14 @@
-* F$AllPrc entry point
-* Entry: U=Register stack pointer
+**************************************************
+* System Call: F$AllPrc
+*
+* Function: Allocate process descriptor
+*
+* Input:  None
+*
+* Output: U = Process descriptor pointer
+*
+* Error:  CC = C bit set; B = error code
+*
 FAllPrc  pshs  u            preserve register stack pointer
          bsr   AllPrc       try & allocate descriptor
          bcs   L02E8        can't do, return
@@ -68,15 +77,41 @@ L0329    stx    ,y++
          clrb               clear carry
 L032F    rts                return
 
-* F$DelPrc entry point
+
+**************************************************
+* System Call: F$DelPrc
+*
+* Function: Deallocate Process Descriptor
+*
+* Input:  A = Process ID
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FDelPrc  lda    R$A,u		get process #
          bra    L0386		delete it
 
-* F$Wait entry point
-* Checks all children to see if any died (done through linked child process
-*   list through P$CID for 1st one & P$SID for rest)
-* Will stick process into Wait Queue until either Waiting process receives
-*  signal or until child dies. Child dying does NOT send signal to parent
+
+**************************************************
+* System Call: F$Wait
+*
+* Function: Wait for child process to die
+*
+* Notes:
+* Checks all children to see if any died (done through linked
+* child process list through P$CID for 1st one & P$SID for rest)
+* Will stick process into Wait Queue until either Waiting process
+* receives signal or until child dies. Child dying does NOT send
+* signal to parent.
+*
+* Input:  None
+*
+* Output: A = Deceased child process' process ID
+*         B = Child process' exit status code
+*
+* Error:  CC = C bit set; B = error code
+*
 FWait    ldx    <D.Proc     get current process
          lda    P$CID,x     any children?
          beq    L0368       no, exit with error

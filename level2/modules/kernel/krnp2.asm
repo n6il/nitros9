@@ -1,5 +1,5 @@
 ********************************************************************
-* OS9p2 - NitrOS-9 Kernel Part II
+* OS9p2 - OS-9 Level Two Kernel Part 2
 *
 * $Id$
 *
@@ -58,7 +58,7 @@
 * 18r6  Back-ported to OS-9 Level Two from NitrOS-9 Level Two
 
          nam    OS9p2
-         ttl    NitrOS-9 Kernel Part II
+         ttl    OS-9 Level Two Kernel Part 2
 
 ** If Network I/O ptrs are disabled, F$Fork runs 72 cycles faster
 Network  equ    0             Set to 1 to enable network I/O ptrs

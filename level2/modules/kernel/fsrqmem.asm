@@ -3,14 +3,14 @@
 *
 * Function: Request memory
 *
+* It also updates 8K DAT blocks-if it finds an empty block, it re-does the 32
+* entries in the SMAP table to indicate that they are free
+*
 * Input:  D = Byte count
 *
 * Output: U = Address of allocated memory area
 *
 * Error:  CC = C bit set; B = error code
-*
-* It also updates 8K DAT blocks-if it finds an empty block, it re-does the 32
-* entries in the SMAP table to indicate that they are free
 *
 FSRqMem  ldd   R$D,u        get size requested
          addd  #$00FF       round it up to nearest 256 byte page
@@ -194,8 +194,20 @@ L08EC    leax  2,x          move to next DAT block
 L08F2    clrb               clear errors
 L08F3    rts                return
 
-* Optimize F$Boot for size, as it's only called once...
-* F$Boot entry point
+
+**************************************************
+* System Call: F$Boot
+*
+* Function: Bootstrap the system
+*
+* Optimized for size, as it's only called once...
+*
+* Input:  None
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FBoot    lda   #'t        tried to boot
          jsr   <D.BtBug
          coma               Set boot flag
@@ -243,6 +255,19 @@ not.ext  ldd   <D.BtSz
          ldx   <D.BlkMap  point to the memory block map
          lbra  L01DF      and go mark the blocks as used.
 
+
+**************************************************
+* System Call: F$VBlock
+*
+* Function: ???
+*
+* Input:  D = Size of block to verify
+*         X = Start address to verify
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code       
+*
 FVBlock  ldd   R$D,u      size of block to verify
          ldx   R$X,u      start address to verify
 

@@ -1,4 +1,19 @@
-* F$FModul entry point
+**************************************************
+* System Call: F$FModul
+*
+* Function: Find module directory entry
+*
+* Input:  A = Module type
+*         X = Module name string pointer
+*         Y = Name string DAT image pointer
+*
+* Output: A = Module type
+*         B = Module revision
+*         X = Updated past name string
+*         U = Module directory entry pointer
+*
+* Error:  CC = C bit set; B = error code
+*
 FFModul  pshs  u            preserve register stack pointer
          lda   R$A,u        get module type
          ldx   R$X,u        get pointer to name

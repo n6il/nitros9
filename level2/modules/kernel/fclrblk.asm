@@ -1,4 +1,15 @@
-* F$ClrBlk entry point
+**************************************************
+* System Call: F$ClrBlk
+*
+* Function: Clear RAM blocks
+*
+* Input:  B = Number of blocks
+*         U = Address of first block
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FClrBlk  ldb   R$B,u
          beq   L0BE9
          ldd   R$U,u

@@ -1,11 +1,14 @@
-* F$CRCMod entry point - CHANGED 05/20/93
-* Entry : A = 0 Report current mode
-*           = 1 Shut CRC Checking off
-*           =>2 Turn CRC Checking on
-* Exit  : A = 0 CRC is off
-*             1 CRC is on
-*         no error can be returned
-*         except if call not available
+**************************************************
+* System Call: F$CRCMod
+*
+* Function: Changes CRC module reporting
+*
+* Input:  A = Flag (0 = report, 1 = CRC off, 2 = CRC on)
+*
+* Output: A = State (0 = CRC off, 1 = CRC on)
+*
+* Error:  CC = C bit set; B = error code
+*
 FCRCMod  lda    R$A,u       do they want a report or a toggle?
          beq    CRCRep      a report only
          deca               Check for OFF

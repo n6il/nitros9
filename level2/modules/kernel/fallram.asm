@@ -1,6 +1,14 @@
-* F$AllRam entry point
-* Entry: B=# blocks to allocate
-* Exit:  D=block # of start of contigously allocated blocks
+**************************************************
+* System Call: F$AllRAM
+*
+* Function: Allocate RAM blocks
+*
+* Input:  B = Desired block count
+*
+* Output: D = Beginning RAM block number
+*
+* Error:  CC = C bit set; B = error code
+*
 FAllRam  ldb   R$B,u        Get # blocks requested
          pshs  b,x,y        Save regs
          ldx   <D.BlkMap    Get ptr to start of block map
@@ -31,9 +39,18 @@ L0995    comb               Exit with No RAM error
          stb   ,s
          puls  b,x,y,pc
 
-* F$AlHRam entry point
-* Entry: B=# blocks to allocate
-* Exit:  D=block # of start of contigously allocated blocks
+
+**************************************************
+* System Call: F$AlHRAM
+*
+* Function: Allocate RAM blocks from top of RAM
+*
+* Input:  B = Desired block count
+*
+* Output: D = Beginning RAM block number
+*
+* Error:  CC = C bit set; B = error code
+*
 FAlHRam  ldb   R$B,u        Get # blocks to allocate
          pshs  b,x,y        Preserve regs
          ldx   <D.BlkMap+2  Get ptr to end of block map

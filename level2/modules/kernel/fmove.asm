@@ -1,15 +1,23 @@
-* F$Move entry point
-* Entry: U=Register stack pointer
+**************************************************
+* System Call: F$Move
+*
+* Function: Move data (low bound first)
+*
+* Input:  A = Source task #
+*         B = Destination task #
+*         X = Source pointer
+*         Y = Number of bytes to move
+*         U = Destination pointer
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
          IFEQ  H6309
 L0A01    clrb
          rts
          ENDC
 
-* A = source task #
-* B = destination task #
-* Y = bytes to move
-* X = source pointer
-* U = destination pointer
 FMove    ldd   R$D,u        get source & destination task #'s
 L0B25    ldy   R$Y,u        Get # bytes to move
          beq   L0A01        None, exit without error

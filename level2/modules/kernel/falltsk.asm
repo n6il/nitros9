@@ -1,4 +1,14 @@
-* F$AllTsk entry point
+**************************************************
+* System Call: F$AllTsk
+*
+* Function: Allocate process task number
+*
+* Input:  X = Process descriptor pointer
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FAllTsk  ldx   R$X,u        get pointer to process descriptor
 L0C58    ldb   P$Task,x     already have a task #?
          bne   L0C64        yes, return
@@ -9,7 +19,18 @@ L0C58    ldb   P$Task,x     already have a task #?
 L0C64    clrb               clear errors
 L0C65    rts                return
 
-* F$DelTsk entry point
+
+**************************************************
+* System Call: F$DelTsk
+*
+* Function: Deallocate process task number
+*
+* Input:  X = Process descriptor pointer
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FDelTsk  ldx   R$X,u
 L0C68    ldb   P$Task,x   grab the current task number
          beq   L0C64      if system (or released), exit
@@ -28,7 +49,18 @@ TstImg   equ   *
          beq   L0C65      if not, exit now: don't clear carry, it's not needed
          fcb   $8C        skip LDX, below
 
-* F$SetTsk entry point
+
+**************************************************
+* System Call: F$SetTsk
+*
+* Function: Set process task DAT registers
+*
+* Input:  X = Process descriptor pointer
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FSetTsk  ldx   R$X,u        get process descriptor pointer
 L0C79    equ   *
          IFNE  H6309
@@ -54,10 +86,22 @@ L0C79    equ   *
          lbsr  L0E93      go bash the hardware
 L0C9F    puls  cc,d,x,u,pc
 
-* F$ResTsk entry point
+
+**************************************************
+* System Call: F$ResTsk
+*
+* Function: Reserve task number
+*
+* Input:  None
+*
+* Output: B = Task number
+*
+* Error:  CC = C bit set; B = error code
+*
 FResTsk  bsr   L0CA6
          stb   R$B,u
 L0CA5    rts   
+
 
 * Find a free task in task map
 * Entry: None
@@ -79,8 +123,18 @@ L0CBA    stb   b,x          flag task used (1 cycle faster than inc)
          clra               clear carry
 L0CBF    puls  x,pc         restore & return
 
-* F$RelTsk entry point
-* no idea why B and X are saved.
+
+**************************************************
+* System Call: F$RelTsk
+*
+* Function: Release task number
+*
+* Input:  B = Task number
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FRelTsk  ldb   R$B,u        Get task # to release
 L0CC3    pshs  b,x          Preserve it & X
 * ??? No idea why this stuff is done.  D.SysTsk is ALWAYS 0.

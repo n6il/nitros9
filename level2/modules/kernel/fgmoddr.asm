@@ -1,4 +1,14 @@
-* F$GModDr entry point
+**************************************************
+* System Call: F$GModDr
+*
+* Function: Get copy of module directory
+*
+* Input:  X = 2048 byte buffer pointer
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
 FGModDr  ldd   <D.ModDir+2 Get end ptr of module directory
          subd  <D.ModDir   Calculate maximum size of module directory
          tfr   d,y         Put max. size in Y
