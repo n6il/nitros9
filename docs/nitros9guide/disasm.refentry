@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>DISASM</command>
+<command>disasm</command>
 <group>
 <arg choice="opt">-m <replaceable>module name</replaceable></arg>
 <arg choice="plain"><replaceable>filename</replaceable></arg>

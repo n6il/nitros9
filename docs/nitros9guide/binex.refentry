@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-    <command>BINEX</command>
+    <command>binex</command>
     <arg choice="plain"><replaceable>path1</replaceable></arg>
     <arg choice="plain"><replaceable>path2</replaceable></arg>
 </cmdsynopsis>

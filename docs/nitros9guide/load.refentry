@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>LOAD</command>
+<command>load</command>
 <arg choice="plain">
   <replaceable>path</replaceable>
 </arg>
@@ -22,7 +22,8 @@ type as a module already in memory, the module having the highest
 revision level is kept.
 </para>
 <para>
-For more information see: 3.9.4, 5.4.1, 5.4.2
+For more information see: <xref linkend="sec3.9.4"/>,
+<xref linkend="sec5.4.1"/>, <xref linkend="sec5.4.2"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>TEE</command>
+<command>tee</command>
 <arg choice="plain">
   &repeatst;<replaceable>path</replaceable>&repeaten;
 </arg>
@@ -16,7 +16,7 @@
 <refsect1><title>Description</title>
 
 <para>
-This command is a filter (see 4.3.3) that copies all text lines from
+This command is a filter (see <xref linkend="sec4.3.3"/>) that copies all text lines from
 its standard input path to the standard output path
 <emphasis>and</emphasis> any number
 of additional output paths whose pathlists are given as parameters.

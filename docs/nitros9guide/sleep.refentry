@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>SLEEP</command>
+<command>sleep</command>
 <arg choice="plain">
   <replaceable>tickcount</replaceable>
 </arg>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>DISPLAY</command>
+<command>display</command>
 <arg choice="plain">
   <replaceable>hex</replaceable>
 </arg>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>COBBLER</command>
+<command>cobbler</command>
 <arg choice="plain">
   <replaceable>device name</replaceable>
 </arg>
@@ -34,7 +34,7 @@ file, the old boot file may have been destroyed and OS-9 will not be
 able to boot from that disk until it is reformatted.
 </para>
 <para>
-For more information see: 1.1.2, 6.1
+For more information see: <xref linkend="sec1.1.2"/>, <xref linkend="sec6.1"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>VERIFY</command>
+<command>verify</command>
 <arg choice="opt">
   <option>-u</option>
 </arg>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>DUMP</command>
+<command>dump</command>
 <arg choice="opt">
   <replaceable>path</replaceable>
 </arg>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>DMODE</command>
+<command>dmode</command>
 <group>
 <arg choice="plain"><replaceable>devicename</replaceable></arg>
 <arg choice="plain">-<replaceable>filename</replaceable></arg>

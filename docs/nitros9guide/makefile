@@ -36,7 +36,7 @@ print: $(BOOKL1).ps $(BOOKL2).ps
 
 clean:
 	$(RM) *.htm *.html $(BOOKL1).pdf $(BOOKL1).ps $(BOOKL2).pdf \
-	$(BOOKL2).ps
+	$(BOOKL2).ps *.log *.out *.aux
 
 SRCS          = $(CHAPS) $(APXS) $(REFS)
 CHAPS         = intro.preface \

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>PROC</command>
+<command>proc</command>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -24,7 +24,8 @@ can switch states rapidly, usually many times per second.
 module, and standard input path.
 </para>
 <para>
-For more information see: 5.1, 5.2, 5.3
+For more information see: <xref linkend="sec5.1"/>,
+<xref linkend="sec5.2"/>, <xref linkend="sec5.3"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>BUILD</command>
+<command>build</command>
 <arg choice="plain"><replaceable>path</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>

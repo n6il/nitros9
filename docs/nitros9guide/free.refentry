@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>FREE</command>
+<command>free</command>
 <arg choice="plain">
   <replaceable>devname</replaceable>
 </arg>
@@ -31,7 +31,7 @@ example, if a given disk system uses 8 sectors per cluster, and a
 could be created even if each has only one cluster.
 </para>
 <para>
-For more information see: 3.10
+For more information see: <xref linkend="sec3.10"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

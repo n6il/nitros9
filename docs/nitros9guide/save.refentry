@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>SAVE</command>
+<command>save</command>
 <arg choice="plain">
   <replaceable>path</replaceable>
 </arg>

@@ -1,4 +1,4 @@
-<chapter>
+<chapter id="sec6">
 <title>Use of the System Disk</title>
 <para>
 Disk-based OS-9 systems use a system disk to load many parts of
@@ -20,7 +20,7 @@ reside on the system disk. These frequently include each user s
 initial data directory.
 </para>
 
-<section>
+<section id="sec6.1">
 <title>The OS9Boot File</title>
 
 <para>
@@ -121,7 +121,7 @@ This can be done with the OS9GEN command.
 </para>
 </section>
 
-<section>
+<section id="sec6.2">
 <title>The SYS Directory</title>
 
 <para>
@@ -151,7 +151,7 @@ similar nature if desired.
 </para>
 </section>
 
-<section>
+<section id="sec6.3">
 <title>The Startup File</title>
 
 <para>
@@ -164,7 +164,7 @@ must run the SETIME command manually.
 </para>
 </section>
 
-<section>
+<section id="sec6.4">
 <title>The CMDS Directory</title>
 
 <para>
@@ -176,7 +176,7 @@ startup process &quot;sysgo&quot; makes <filename class="directory">CMDS</filena
 </para>
 </section>
 
-<section>
+<section id="sec6.5">
 <title>The DEFS Directory</title>
 
 <para>
@@ -215,7 +215,7 @@ contained in this directory are:
 
 </section>
 
-<section>
+<section id="sec6.6">
 <title>Changing System Disks</title>
 
 <para>
@@ -242,7 +242,7 @@ disk if any files on it are open in WRITE or UPDATE modes.
 
 </section>
 
-<section>
+<section id="sec6.7">
 <title>Making New System Disks</title>
 
 <para>

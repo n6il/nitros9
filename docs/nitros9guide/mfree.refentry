@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>MFREE</command>
+<command>mfree</command>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -16,10 +16,10 @@ Displays a list of which areas of memory are not presently in use
 and available for assignment. The address and size of each free
 memory block are displayed. The size is given as the number of 256-byte
 pages. This information is useful to detect and correct memory
-fragmentation (see 5.4.3).
+fragmentation (see <xref linkend="sec5.4.3"/>).
 </para>
 <para>
-For more information see: 5.4, 5.4.3
+For more information see: <xref linkend="sec5.4"/>, <xref linkend="sec5.4.3"/>
 
 </para>
 </refsect1>

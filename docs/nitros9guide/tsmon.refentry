@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>TSMON</command>
+<command>tsmon</command>
 <arg choice="opt"><replaceable>pathlist</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
@@ -22,7 +22,7 @@ password, it will return to <command>tsmon</command>.
 </para>
 <para>
 Note: The <command>login</command> command and its password file must be present for
-<command>tsmon</command> to work correctly (see the <command>login</command> command description).
+<command>tsmon</command> to work correctly (see the <command moreinfo="refentry">login</command> command description).
 </para>
 <refsect2>
 <title>Logging Off the System</title>
@@ -32,7 +32,7 @@ is entered as the first character on a command line. This will log
 you off of the system and return control to <command>tsmon</command>.
 </para>
 <para>
-For more information see: 2.5, <command>login</command>
+For more information see: <xref linkend="sec4.9"/>, <command moreinfo="refentry">login</command>
 </para>
 </refsect2>
 </refsect1>

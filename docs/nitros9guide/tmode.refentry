@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>TMODE</command>
+<command>tmode</command>
 <arg choice="opt">
   .<replaceable>pathnum</replaceable>
 </arg>

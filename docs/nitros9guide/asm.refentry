@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>ASM</command>
+<command>asm</command>
 <arg choice="plain"><replaceable>filename</replaceable></arg>
 <arg choice="opt">opt</arg>
 <arg choice="opt">&gt;list</arg>

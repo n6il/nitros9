@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>GO51</command>
+<command>go51</command>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -37,14 +37,15 @@ This mode of display has a set of <emphasis>escape sequences</emphasis>
 emulate commercial data terminals. In addition to the video screen
 driver, <command>go51</command> provides a new keyboard driver which features auto-repeat.
 The keyboard code allocation is the same as described in
-section 2.4.3 and Appendix D.
+section <xref linkend="sec2.4.3"/> and <xref linkend="key-definitions"/>
 </para>
 </refsect1>
 <refsect1>
 <title>The GO51 Display Functions</title>
 <para>
 Like the normal 32 by 16 video display functions described in
-Appendix C the 51 by 24 mode provides many built in facilities to
+<xref linkend="video-display"/>
+the 51 by 24 mode provides many built in facilities to
 control the display. These functions are activated by the use of
 the various escape sequences and control characters described below:
 </para>

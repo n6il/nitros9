@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>HELP</command>
+<command>help</command>
 <arg choice="opt">
   <option>command - the command for which you want syntax help.  Include
 as many command names in one <command>help</command> line as you wish.  The proper form and

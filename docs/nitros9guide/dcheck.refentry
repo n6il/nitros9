@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>DCHECK</command>
+<command>dcheck</command>
 <arg choice="opt">
   <option>-opts</option>
 </arg>
@@ -22,7 +22,7 @@ It is possible for sectors on a disk to be marked as being allocated
 but in fact are not actually associated with a file or the disk's
 free space. This can happen if a disk is removed from a drive while
 files are still open, or if a directory which still contains files
-is deleted (see 3.5). <command>Dcheck</command> is a diagnostic that can be used to
+is deleted (see <xref linkend="sec3.5"/>). <command>Dcheck</command> is a diagnostic that can be used to
 detect this condition, as well as the general integrity of the directory/file linkages.
 </para>
 <para>
@@ -164,8 +164,10 @@ changing file structure.  <command>Dcheck</command> cannot process disks with a 
 depth greater than 39 levels.
 </para>
 <para>
-For more information see: 3.10, 3.5, FORMAT,
-                          6.1 of OS-9 Systems Programmer's Manual
+For more information see: <xref linkend="sec3.10"/>,
+<xref linkend="sec3.5"/>,
+<command>format</command>,
+6.1 of OS-9 Systems Programmer's Manual
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

@@ -6,13 +6,13 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>PRINTERR</command>
+<command>printerr</command>
 </cmdsynopsis>
 </refsynopsisdiv>
 
 <refsect1><title>Description</title>
 <para>
-This command replaces the basic OS-9 error printing routine (F$PERR
+This command replaces the basic OS-9 error printing routine (F$Perr
 service request) which only prints error code numbers, with a
 routine the reads and displays textual error messages from the file
 <filename>/d0/SYS/errmsg</filename>. Printerr's effect is system-wide.
@@ -25,18 +25,20 @@ with the error number code (in ASCII characters), a delimiter, and
 the error message text. The error messages need not be in any
 particular order. Delimiters are spaces or any character numerically lower then
 $20. Any line having a delimiter as its first
-character is considered a contintjation of the previous line(s) which
+character is considered a continuation of the previous line(s) which
 permits multi-line error messages.
 </para>
+<warning>
 <para>
-WARNING: Once the <command>printerr</command> command has been used,
+Once the <command>printerr</command> command has been used,
 it can not be undone. Once
 installed, the <command>printerr</command> module should not be unlinked.
 <command>Printerr</command> uses the current user's stack for an I/O buffer, so users
 are encouraged to reserve reasonably large stacks.
 </para>
+</warning>
 <para>
-For more information see: 4.7, 6.2
+For more information see: <xref linkend="sec4.7"/>, <xref linkend="sec6.2"/>.
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

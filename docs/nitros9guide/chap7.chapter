@@ -123,6 +123,7 @@ command line before it is passed to the program being called.
 &mergeref;
 &mfreeref;
 &os9genref;
+&printerrref;
 &procref;
 &procsref;
 &pwdref;

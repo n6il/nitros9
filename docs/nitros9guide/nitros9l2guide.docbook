@@ -76,6 +76,7 @@
   <!ENTITY modpatch      SYSTEM "modpatch.refentry">
   <!ENTITY os9genref     SYSTEM "os9gen.refentry">
   <!ENTITY pmapref       SYSTEM "pmap.refentry">
+  <!ENTITY printerrref   "">
   <!ENTITY procref       SYSTEM "proc.refentry">
   <!ENTITY procsref      "">
   <!ENTITY pwdref        SYSTEM "pwd.refentry">

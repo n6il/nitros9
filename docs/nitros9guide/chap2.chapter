@@ -1,7 +1,7 @@
 <chapter>
 <title>Basic Interactive Functions</title>
 
-<section>
+<section id="sec2.0">
 <title>Running Commands and Basic Shell Operation</title>
 <para>
 The <command>shell</command> is a the part of OS-9 that accepts commands from your
@@ -80,7 +80,7 @@ input/output files or memory assignments.
 
 
 </para>
-<section>
+<section id="sec2.0.1">
 <title>Sending Output to the Printer</title>
 <para>
 Normally, most commands and programs display output on the &make; video display. The output of these programs can
@@ -92,9 +92,9 @@ at the end of any command line:
 &gt;/p
 </screen>
 <para>
-The &quot;&gt;&quot; character tells the shell to redirect output (See 4.3.2) to
+The &quot;&gt;&quot; character tells the shell to redirect output (See <xref linkend="sec4.3.2"/>) to
 the printer using the &make;'s printer port, which has the device
-name &quot;/P&quot; (See 3.2). For example, to redirect the output of the
+name &quot;/P&quot; (See <xref linkend="sec3.2"/>). For example, to redirect the output of the
 <command>dir</command> command to the printer, enter:
 </para>
 <screen>
@@ -119,7 +119,7 @@ xmode /p lf;
 </section>
 </section>
 
-<section>
+<section id="sec2.1">
 <title>Shell Command Line Parameters</title>
 <para>
 Parameters are generally used to either specify file name(s) or
@@ -188,7 +188,7 @@ giving file names and complete statistics.
 </para>
 </section>
 
-<section>
+<section id="sec2.3">
 <title>Some Common Command Formats</title>
 <para>
 This section is a summary of some commands commonly used by new
@@ -243,7 +243,7 @@ Changes the name of filename1 to filename2.
 </para>
 </section>
 
-<section>
+<section id="sec2.4">
 <title>Using the Keyboard and Video Display</title>
 <para>
 OS-9 has many features to expand the capability of the &make;
@@ -251,7 +251,8 @@ keyboard and video display. The video display has screen pause,
 upper/lower case, and graphics functions. The keyboard can generate
 all ASCII characters and has a type-ahead feature that permits you
 to enter data before requested by a program (except if the disk is
-running because interrupts are temporarily disabled). Appendix C of
+running because interrupts are temporarily disabled).
+<xref linkend="video-display"/> of
 this manual is a list of the characters and codes that can be
 generated from the keyboard. The keyboard/video display can be used
 as a file known by the name &quot;/TERM&quot;.
@@ -280,7 +281,7 @@ tmode pause               turns pause mode on
 <para>
 The display system also has a complete set of commands to emulate
 commercial data terminals, plus a complete set of graphics commands.
-These are described in detail in Appendix D.
+These are described in detail in <xref linkend="key-definitions"/>.
 </para>
 </section>
 
@@ -305,7 +306,7 @@ a letter key.
 </para>
 </section>
 
-<section>
+<section id="sec2.4.3">
 <title>Control Key Functions</title>
 <para>
 There are a number of useful control functions that can be

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>XMODE</command>
+<command>xmode</command>
 <arg choice="plain"><replaceable>devname</replaceable></arg>
 <arg choice="opt"><replaceable>arglist</replaceable></arg>
 </cmdsynopsis>
@@ -25,7 +25,7 @@ control key definitions, etc.
 open paths so its effect is temporary. <command>Xmode</command> actually updates the
 device descriptor so the change persists as long as the computer is
 running, even if paths to the device are repetitively opened and
-closed. If <command>xmode</command> is used to change parameter(s) and the COBBLER
+closed. If <command>xmode</command> is used to change parameter(s) and the <command>cobbler</command>
 program is used to make a new system disk, the changed parameter
 will be permanently reflected on the new system disk.
 </para>

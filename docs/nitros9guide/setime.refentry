@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>SETIME</command>
+<command>setime</command>
 <arg choice="opt">y,m,d,h,m,s</arg>
 </cmdsynopsis>
 </refsynopsisdiv>

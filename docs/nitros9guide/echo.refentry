@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>ECHO</command>
+<command>echo</command>
 <arg choice="plain">
   <replaceable>text</replaceable>
 </arg>

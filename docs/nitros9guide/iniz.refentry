@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>INIZ</command>
+<command>iniz</command>
 <arg choice="opt">
   <option>devicename [...]</option>
 </arg>

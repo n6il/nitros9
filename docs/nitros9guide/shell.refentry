@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>SHELL</command>
+<command>shell</command>
 <arg choice="plain"><replaceable>arglist</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>

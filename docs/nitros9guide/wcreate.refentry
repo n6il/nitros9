@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>WCREATE</command>
+<command>wcreate</command>
 <group>
 <arg choice="opt">opts</arg>
 </group>

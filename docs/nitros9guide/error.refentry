@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>ERROR</command>
+<command>error</command>
 <arg choice="plain">
   <replaceable>errno</replaceable>
 </arg>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>MDIR</command>
+<command>mdir</command>
 <arg choice="opt">
   <option>-e</option>
 </arg>
@@ -55,7 +55,7 @@ and NOT executable as programs: always check the module type code
 before running a module if you are not familiar with it!
 </para>
 <para>
-For more information see: 5.4.1
+For more information see: <xref linkend="sec5.4.1"/>
 </para>
 </refsect1>
 </refentry>
