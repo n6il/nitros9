@@ -10,11 +10,11 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * 10     Incorporated Glenside Y2K fixes                BGP 99/05/11
+* 11     Made option handling more flexible, now they   BGP 03/01/14
+*        must be preceeded by a dash
 
          nam   Dir
          ttl   Show directory
-
-         ttl   program module       
 
 * Disassembled 99/04/11 16:36:40 by Disasm v1.6 (C) 1988 by RML
 
@@ -26,12 +26,12 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   10
+edition  set   11
 
          mod   eom,name,tylg,atrv,start,size
 
          org   0
-u0000    rmb   2
+nextdir  rmb   2
 dircount rmb   1
 dirpath  rmb   1
 extended rmb   1
@@ -91,7 +91,7 @@ start    leay  <linebuff,u	get ptr to line buffer
          ldd   #$1030
          std   <u0008
          pshs  y,x,b,a
-         lda   #$01
+         lda   #$01		standard output
          ldb   #SS.ScSiz	we want screen size
          os9   I$GetStt 	get it
          bcc   L0120		branch if gotten
@@ -101,7 +101,7 @@ start    leay  <linebuff,u	get ptr to line buffer
          lbra  L0268
 L0120    cmpx  #64		at least this wide?
          bge   NoScSiz		branch if so
-         inc   <narrow
+         inc   <narrow		else we're going narrow
          ldd   #$0A14
          std   <u0008
 NoScSiz  puls  y,x,b,a
@@ -112,7 +112,7 @@ NoScSiz  puls  y,x,b,a
          cmpa  #C$CR		any dir names?
          bne   opendir		branch if so
          leax  >Dot,pcr		else assume dot
-opendir  stx   <u0000
+opendir  stx   <nextdir
          lda   #DIR.+READ.
          ora   <addmode
          pshs  x,a		preserve mode, dir name
@@ -123,21 +123,21 @@ opendir  stx   <u0000
          os9   I$ChgDir 	change to dir
          lbcs  L0268		branch if error
          pshs  x		X now points just past name
-         leay  >DirOf,pcr
-         lbsr  L02E6
-         ldx   <u0000
-L0161    lda   ,x+
-         lbsr  PutNBuf
-         cmpx  ,s
-         bcs   L0161
-         leas  $02,s
-         lbsr  PutSpace
-         lbsr  PutSpace
-         leax  date,u
-         os9   F$Time   
-         leax  <time,u
-         lbsr  L0328
-         lbsr  L02F5
+         leay  >DirOf,pcr	point to "Dir of..."
+         lbsr  PutStr		put it in buffer
+         ldx   <nextdir		point to directory we are processing
+L0161    lda   ,x+		get char
+         lbsr  PutNBuf		put in buffer
+         cmpx  ,s		at end of char string?
+         bcs   L0161		branch if not
+         leas  $02,s		else clean  up stack
+         lbsr  PutSpace		and put a space
+         lbsr  PutSpace		and another one
+         leax  date,u		point to date buffer
+         os9   F$Time   	get current time
+         leax  <time,u		point to time
+         lbsr  ShowDate		show it
+         lbsr  CRnWrite
          tst   <extended
          beq   L01B3
          lda   #READ.
@@ -167,7 +167,7 @@ L01C5    tst   <u0013
          tst   <extended
          bne   L01E8
          leay  <u0013,u
-         lbsr  L02E6
+         lbsr  PutStr
 L01D5    lbsr  PutSpace
          ldb   <u000C
          subb  #$40
@@ -204,8 +204,8 @@ L01E8    pshs  u
          bsr   L026E
          bsr   L0280
          leay  <u0013,u
-         lbsr  L02E6
-L022C    lbsr  L02F5
+         lbsr  PutStr
+L022C    lbsr  CRnWrite
          bra   L0253
 L0231    lbsr  L030B
          ldd   <u0034
@@ -213,14 +213,14 @@ L0231    lbsr  L030B
          bsr   L0274
          bsr   PutSpace
          leay  <u0013,u
-         lbsr  L02E6
-         lbsr  L02F5
+         lbsr  PutStr
+         lbsr  CRnWrite
          lbsr  L02D3
          bsr   PutSpace
          bsr   PutSpace
          bsr   L026E
          bsr   L0280
-         lbsr  L02F5
+         lbsr  CRnWrite
 L0253    leax  <u0013,u
          ldy   #DIR.SZ
          lda   <dirpath
@@ -229,7 +229,7 @@ L0253    leax  <u0013,u
          cmpb  #E$EOF
          bne   L0268
          clrb  
-L0268    lbsr  L02F5
+L0268    lbsr  CRnWrite
 Exit     os9   F$Exit   
 L026E    lda   <u0030
          bsr   L0298
@@ -271,19 +271,22 @@ L02AB    adda  #'0
          bra   PutNBuf
 PutSpace lda   #C$SPAC
 
+* Entry: A = char to put in buffer
 PutNBuf  pshs  x		save caller's X
          ldx   <bufptr		get buffer next pointer
          cmpx  #$0090		past end?
          bne   PutOk		branch if not
-         bsr   L02F1
+         bsr   WriteBuf
          ldx   <bufptr		get pointer
 PutOk    sta   ,x+		save A
          stx   <bufptr		and update pointer
          puls  pc,x		return
 
-L02CA    fcc   "dsewrewr"
+PermMask fcc   "dsewrewr"
          fcb    $FF
-L02D3    fcb    $D6,$33,$30,$8C,$F2
+
+L02D3    ldb   <u0033
+         leax  <PermMask,pcr
          lda   ,x+
 L02DA    lslb  
          bcs   L02DF
@@ -292,18 +295,21 @@ L02DF    bsr   PutNBuf
          lda   ,x+
          bpl   L02DA
          rts   
-L02E6    lda   ,y
-         anda  #$7F
-         bsr   PutNBuf
-         lda   ,y+
-         bpl   L02E6
+
+* Put hi-bit terminated string at Y into line buffer
+PutStr   lda   ,y		get char in A from Y
+         anda  #$7F		strip off hi-bit
+         bsr   PutNBuf		put in buffer
+         lda   ,y+		get char again
+         bpl   PutStr		if hi-bit not set, continue
          rts   
-L02F1    pshs  y,x,b,a
-         bra   L02FB
-L02F5    pshs  y,x,b,a
+
+WriteBuf pshs  y,x,b,a
+         bra   DoWrite
+CRnWrite pshs  y,x,b,a
          lda   #C$CR
          bsr   PutNBuf
-L02FB    leax  <linebuff,u
+DoWrite  leax  <linebuff,u
          stx   <bufptr
          ldy   #80
          lda   #$01
@@ -314,23 +320,25 @@ L030E    bsr   L0338
          bsr   L0324
          bsr   L0324
          bsr   PutSpace
-         bsr   L034F
+         bsr   Byte2ASC
          tst   <narrow
          beq   L0320
-         bsr   L034F
+         bsr   Byte2ASC
          bra   PutSpace
-L0320    bsr   L0332
+L0320    bsr   DoColon
          bra   PutSpace
 L0324    lda   #'/
          bra   L0334
-L0328    tst   <narrow
-         bne   L0330
-         leax  date,u
-         bra   L030E
-L0330    bsr   L034F
-L0332    lda   #':
-L0334    bsr   PutNBuf
-         bra   L034F
+
+ShowDate tst   <narrow		are we on a narrow screen?
+         bne   ShowTime		branch if we are
+         leax  date,u		else point to date buffer
+         bra   L030E		and show date and time
+ShowTime bsr   Byte2ASC		show hours
+DoColon  lda   #':		put up colon
+L0334    bsr   PutNBuf		put in buffer
+         bra   Byte2ASC		show minutes
+
 L0338    lda   #$AE
          ldb   ,x
 L033C    inca  
@@ -343,7 +351,9 @@ L033C    inca
          bsr   L035F
 L034B    ldb   ,x+
          bra   L035F
-L034F    ldb   ,x+
+
+* Get byte at X and put ASCII value in buffer
+Byte2ASC ldb   ,x+
          lda   #$2F
 L0353    inca  
          subb  #100
