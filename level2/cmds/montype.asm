@@ -7,6 +7,9 @@
 * ------------------------------------------------------------------
 * 1      Original Tandy/Microware version
 * 2      Modified to require dash before option         BGP 03/01/20
+* 3      Fixed a bug where a non dash option would      BGP 03/03/10
+*        crash the system.  Also shows the monitor
+*        type when no parameters are passed.
 
          nam   MonType
          ttl   Change monitor type
@@ -20,7 +23,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   2
+edition  set   3
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -41,25 +44,51 @@ HelpMsg  fcb   C$CR
          fcc   "Syntax:  MonType [opt]"
          fcb   C$CR
          fcb   C$LF
-         fcc   "Options: r = rgb monitor"
+         fcc   "Options: -r = rgb monitor"
          fcb   C$CR
          fcb   C$LF
-         fcc   "         c = composite monitor (t.v.)"
+         fcc   "         -c = composite monitor (t.v.)"
          fcb   C$CR
          fcb   C$LF
-         fcc   "         m = monochrome monitor"
+         fcc   "         -m = monochrome monitor"
          fcb   C$CR
          fcb   C$LF
 HelpMsgL equ   *-HelpMsg
          ENDC
 
+TypeMsg  fcc   /Current setting: /
+TypeMsgL equ   *-TypeMsg
+TypeTbl  fcb   CMPType-TypeTbl
+         fcb   RGBType-TypeTbl
+         fcb   MonoType-TypeTbl
+
+RGBType  fcc   /RGB/
+         fcb   C$CR
+CMPType  fcc   /Composite/
+         fcb   C$CR
+MonoType fcc   /Monochrome/
+         fcb   C$CR
+
+ShowMTyp lda   #1			standard out
+         ldb   #SS.Montr		monitor type
+         os9   I$GetStt 		get it!
+         bcs   Exit
+         pshs  x 
+         leax  TypeMsg,pcr
+         ldy   #TypeMsgL
+         os9   I$Write
+         puls  d
+         leax  TypeTbl,pcr
+         ldb   b,x
+         abx 
+         lda   #1
+         ldy   #80
+         os9   I$WritLn
+         bra   ExitOk
+         
 start    bsr   SkipSpcs
          cmpa  #C$CR
-         IFNE  DOHELP
-         beq   ShowHelp
-         ELSE
-         beq   ExitOk
-         ENDC
+         beq   ShowMTyp
          andb  #$5F			make uppercase
          cmpd  #$2D52			-R ?
          bne   L00C7
@@ -95,8 +124,8 @@ ShowHelp equ   *
          leax  >HelpMsg,pcr
          ldy   #HelpMsgL
          os9   I$Write  
-         bra   ExitOk
          ENDC
+         bra   ExitOk
 
          emod
 eom      equ   *
