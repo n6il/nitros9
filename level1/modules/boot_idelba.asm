@@ -31,7 +31,7 @@ edition  set   7
 * Disassembled 94/06/25 11:37:47 by Alan DeKok 
 * ReDone by Paul T. Barton 99/08/17, for IDE 
 * 
-Port     equ   $FF70      still leaves room for SSPak & SSP & MPI 
+Port     equ   $FF50      still leaves room for SSPak & SSP & MPI 
 RData    equ   0          data 0..7 
 WData    equ   0          data 0..7 
 ErrReg   equ   1          Has the errors 
