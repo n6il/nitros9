@@ -33,7 +33,6 @@ edition    set   $23            version 2.3
            mod   modlen,modname,type,revs,modexec,modmem
 
 modname    fcs   'MSF'
-
            fcb   edition
 
 
@@ -2464,8 +2463,7 @@ dread      pshs  x
            ldb   #SS.SREAD
        ifeq   H6309-1
            pshs  dp,x,y,u,pc
-*          pshsw
-           fdb   $1038
+           pshsw
            pshs  cc,d
        else
            pshs  pc,u,y,x,dp,d,cc push all parameters
@@ -2607,8 +2605,7 @@ dwrite     pshs  x
            ldb   #SS.SREAD
        ifeq   H6309-1
            pshs  dp,x,y,u,pc
-*          pshsw
-           fdb   $1038
+           pshsw
            pshs  cc,d
        else
            pshs  pc,u,y,x,dp,d,cc push all parameters
@@ -3205,8 +3202,5 @@ modexec
            lbra  close
 
            emod
-
 modlen     equ   *
-
            end
-                                      
