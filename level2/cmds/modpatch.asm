@@ -1,1399 +1,368 @@
-********************************************************************
-* progname - program module
-*
-* $Id$
-*
-* Ed.    Comments                                       Who YY/MM/DD
-* ------------------------------------------------------------------
-*  -     Original Tandy distribution version
-*
-*
 
-         nam   modpatch
-         ttl   program module       
-
-* Disassembled 02/07/06 13:11:04 by Disasm v1.6 (C) 1988 by RML
-
-         ifp1
-         use   os9defs
-         endc
-tylg     set   Prgrm+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
-u0000    rmb   1
-u0001    rmb   1
-u0002    rmb   1
-u0003    rmb   1
-u0004    rmb   1
-u0005    rmb   1
-u0006    rmb   1
-u0007    rmb   2
-u0009    rmb   2
-u000B    rmb   2
-u000D    rmb   2
-u000F    rmb   1
-u0010    rmb   1
-u0011    rmb   1
-u0012    rmb   2
-u0014    rmb   2
-u0016    rmb   1
-u0017    rmb   1
-u0018    rmb   1
-u0019    rmb   7
-u0020    rmb   10
-u002A    rmb   5
-u002F    rmb   5
-u0034    rmb   55
-u006B    rmb   2
-u006D    rmb   26
-u0087    rmb   2
-u0089    rmb   2
-u008B    rmb   2
-u008D    rmb   2
-u008F    rmb   2
-u0091    rmb   2
-u0093    rmb   2
-u0095    rmb   2
-u0097    rmb   1
-u0098    rmb   1
-u0099    rmb   2
-u009B    rmb   2
-u009D    rmb   2
-u009F    rmb   35
-u00C2    rmb   31
-u00E1    rmb   92
-u013D    rmb   2
-u013F    rmb   58
-u0179    rmb   1
-u017A    rmb   3
-u017D    rmb   912
-size     equ   .
-name     equ   *
-         fcs   /modpatch/
-         fcb   $04 
-L0016    fcb   $A6 &
-         fcb   $A0 
-         fcb   $A7 '
-         fcb   $C0 @
-         fcb   $30 0
-         fcb   $1F 
-         fcb   $26 &
-         fcb   $F8 x
-         fcb   $39 9
-start    equ   *
-         pshs  y
-         pshs  u
-         clra  
-         clrb  
-L0025    sta   ,u+
-         decb  
-         bne   L0025
-         ldx   ,s
-         leau  ,x
-         leax  >$018D,x
-         pshs  x
-         leay  >L0A92,pcr
-         ldx   ,y++
-         beq   L0040
-         bsr   L0016
-         ldu   $02,s
-L0040    leau  >u0087,u
-         ldx   ,y++
-         beq   L004B
-         bsr   L0016
-         clra  
-L004B    cmpu  ,s
-         beq   L0054
-         sta   ,u+
-         bra   L004B
-L0054    ldu   $02,s
-         ldd   ,y++
-         beq   L0061
-         leax  >L0000,pcr
-         lbsr  L0164
-L0061    ldd   ,y++
-         beq   L006A
-         leax  ,u
-         lbsr  L0164
-L006A    leas  $04,s
-         puls  x
-         stx   >u017D,u
-         sty   >u013D,u
-         ldd   #$0001
-         std   >u0179,u
-         leay  >u013F,u
-         leax  ,s
-         lda   ,x+
-L0086    ldb   >u017A,u
-         cmpb  #$1D
-         beq   L00E2
-L008E    cmpa  #$0D
-         beq   L00E2
-         cmpa  #$20
-         beq   L009A
-         cmpa  #$2C
-         bne   L009E
-L009A    lda   ,x+
-         bra   L008E
-L009E    cmpa  #$22
-         beq   L00A6
-         cmpa  #$27
-         bne   L00C4
-L00A6    stx   ,y++
-         inc   >u017A,u
-         pshs  a
-L00AE    lda   ,x+
-         cmpa  #$0D
-         beq   L00B8
-         cmpa  ,s
-         bne   L00AE
-L00B8    puls  b
-         clr   -$01,x
-         cmpa  #$0D
-         beq   L00E2
-         lda   ,x+
-         bra   L0086
-L00C4    leax  -$01,x
-         stx   ,y++
-         leax  $01,x
-         inc   >u017A,u
-L00CE    cmpa  #$0D
-         beq   L00DE
-         cmpa  #$20
-         beq   L00DE
-         cmpa  #$2C
-         beq   L00DE
-         lda   ,x+
-         bra   L00CE
-L00DE    clr   -$01,x
-         bra   L0086
-L00E2    leax  >u013D,u
-         pshs  x
-         ldd   >u0179,u
-         pshs  b,a
-         leay  ,u
-         bsr   L00FC
-         lbsr  L017E
-         clr   ,-s
-         clr   ,-s
-         lbsr  L0A85
-L00FC    leax  >$018D,y
-         stx   >$0187,y
-         sts   >$017B,y
-         sts   >$0189,y
-         ldd   #$FF82
-L0111    leax  d,s
-         cmpx  >$0189,y
-         bcc   L0123
-         cmpx  >$0187,y
-         bcs   L013D
-         stx   >$0189,y
-L0123    rts   
-L0124    bpl   L0150
-         bpl   L0152
-         bra   L017D
-         lsrb  
-         fcb   $41 A
-         coma  
-         fcb   $4B K
-         bra   L017F
-         rorb  
-         fcb   $45 E
-         fcb   $52 R
-         rora  
-         inca  
-         clra  
-         asrb  
-         bra   L0163
-         bpl   L0165
-         bpl   L014A
-L013D    leax  <L0124,pcr
-         ldb   #$CF
-         pshs  b
-         lda   #$02
-         ldy   #$0064
-L014A    os9   I$WritLn 
-         clr   ,-s
-         lbsr  L0A8B
-L0152    ldd   >$017B,y
-         subd  >$0189,y
-         rts   
-         ldd   >$0189,y
-         subd  >$0187,y
-L0163    rts   
-L0164    pshs  x
-         leax  d,y
-         leax  d,x
-         pshs  x
-L016C    ldd   ,y++
-         leax  d,u
-         ldd   ,x
-         addd  $02,s
-         std   ,x
-         cmpy  ,s
-         bne   L016C
-         leas  $04,s
-L017D    rts   
-L017E    pshs  u
-         ldd   #$FFB6
-         lbsr  L0111
-         clra  
-         clrb  
-         std   <u0009
-         stb   <u0016
-         ldd   #$0001
-         stb   <u0018
-         stb   <u0017
-         clra  
-         clrb  
-         std   <u000D
-         ldd   $04,s
-         lbne  L0235
-         lbsr  L045A
-         lbra  L0235
-L01A3    ldx   $06,s
-         leax  $02,x
-         stx   $06,s
-         ldb   [,x]
-         cmpb  #$2D
-         lbne  L0213
-         ldd   [<$06,s]
-         bra   L0204
-L01B6    ldb   [>$0012,y]
-         sex   
-         pshs  b,a
-         lbsr  L07E5
-         leas  $02,s
-         tfr   d,x
-         bra   L01EC
-L01C6    ldd   #$0001
-         stb   <u0016
-         bra   L0202
-L01CD    clra  
-         clrb  
-         stb   <u0017
-         bra   L0202
-L01D3    clra  
-         clrb  
-         stb   <u0018
-         bra   L0202
-L01D9    lbsr  L045A
-L01DC    leax  >L074A,pcr
-         pshs  x
-         lbsr  L056A
-         leas  $02,s
-         lbsr  L045A
-         bra   L0202
-L01EC    cmpx  #$0053
-         beq   L01C6
-         cmpx  #$0057
-         beq   L01CD
-         cmpx  #$0043
-         beq   L01D3
-         cmpx  #$003F
-         beq   L01D9
-         bra   L01DC
-L0202    ldd   <u0012
-L0204    addd  #$0001
-         std   <u0012
-         ldb   [>$0012,y]
-         lbne  L01B6
-         bra   L0235
-L0213    ldd   #$0001
-         pshs  b,a
-         ldd   [<$08,s]
-         pshs  b,a
-         lbsr  L08DD
-         leas  $04,s
-         std   <u0003
-         cmpd  #$FFFF
-         bne   L0235
-         leax  >L0764,pcr
-         pshs  x
-         lbsr  L0533
-         leas  $02,s
-L0235    ldd   $04,s
-         addd  #$FFFF
-         std   $04,s
-         lbne  L01A3
-         lbra  L02C6
-L0243    ldb   <u0016
-         bne   L026D
-         ldb   <u0010
-         cmpb  #$0D
-         bne   L025D
-         ldd   #$0002
-         pshs  b,a
-         leax  >$000F,y
-         pshs  x
-         lbsr  L057D
-         bra   L026B
-L025D    ldd   #$0002
-         pshs  b,a
-         leax  >$000F,y
-         pshs  x
-         lbsr  L0550
-L026B    leas  $04,s
-L026D    ldb   <u000F
-         sex   
-         pshs  b,a
-         lbsr  L07E5
-         leas  $02,s
-         tfr   d,x
-         bra   L02A6
-L027B    lbsr  L0320
-         bra   L02C6
-L0280    lbsr  L0387
-         bra   L02C6
-L0285    lbsr  L0414
-         bra   L02C6
-L028A    lbsr  L030B
-         bra   L02C6
-L028F    lbsr  L0317
-         bra   L02C6
-L0294    lbsr  L048A
-         bra   L02C6
-L0299    leax  >$00A1,y
-         pshs  x
-         lbsr  L056A
-         leas  $02,s
-         bra   L02C6
-L02A6    cmpx  #$004C
-         beq   L027B
-         cmpx  #$0043
-         beq   L0280
-         cmpx  #$0056
-         beq   L0285
-         cmpx  #$004D
-         beq   L028A
-         cmpx  #$0055
-         beq   L028F
-         cmpx  #$002A
-         beq   L0294
-         bra   L0299
-L02C6    ldd   #$0002
-         pshs  b,a
-         leax  >$000F,y
-         pshs  x
-         ldd   <u0003
-         pshs  b,a
-         lbsr  L0959
-         leas  $06,s
-         std   <u000B
-         ldd   <u000B
-         lbgt  L0243
-         ldd   <u000B
-         cmpd  #$FFFF
-         bne   L02F5
-         leax  >L0786,pcr
-         pshs  x
-         lbsr  L0533
-         leas  $02,s
-L02F5    ldd   <u0009
-         beq   L02FB
-         bsr   L0317
-L02FB    ldd   <u000D
-         lbeq  L054E
-         ldd   <u000D
-         pshs  b,a
-         lbsr  L0A6B
-         lbra  L054C
-L030B    ldd   #$0001
-         std   <u0009
-         tfr   cc,b
-         stb   <u0011
-         orcc  #$50
-         rts   
-L0317    clra  
-         clrb  
-         std   <u0009
-         ldb   <u0011
-         tfr   b,cc
-         rts   
-L0320    pshs  u
-         ldd   #$FFB6
-         lbsr  L0111
-         ldd   <u000D
-         beq   L0335
-         ldd   <u000D
-         pshs  b,a
-         lbsr  L0A6B
-         leas  $02,s
-L0335    ldd   #$001D
-         pshs  b,a
-         leax  >$001A,y
-         pshs  x
-         ldd   <u0003
-         pshs  b,a
-         lbsr  L0967
-         leas  $06,s
-         std   <u000B
-         lble  L054E
-         ldb   <u0016
-         bne   L035E
-         leax  >$001A,y
-         pshs  x
-         lbsr  L056A
-         leas  $02,s
-L035E    clra  
-         clrb  
-         pshs  b,a
-         clra  
-         clrb  
-         pshs  b,a
-         leax  >$001A,y
-         pshs  x
-         lbsr  L0A3F
-         leas  $06,s
-         std   <u000D
-         cmpd  #$FFFF
-         lbne  L054E
-         leax  >L07A7,pcr
-         pshs  x
-         lbsr  L0533
-         lbra  L054C
-L0387    pshs  u
-         ldd   #$FFB4
-         lbsr  L0111
-         leas  -$02,s
-         ldd   #$0050
-         pshs  b,a
-         leax  >$0037,y
-         pshs  x
-         ldd   <u0003
-         pshs  b,a
-         lbsr  L0967
-         leas  $06,s
-         std   <u000B
-         lble  L054C
-         ldb   <u0016
-         bne   L03BA
-         leax  >$0037,y
-         pshs  x
-         lbsr  L056A
-         leas  $02,s
-L03BA    leax  >$0037,y
-         stx   ,s
-         leax  ,s
-         pshs  x
-         lbsr  L04B8
-         leas  $02,s
-         std   <u0001
-         leax  ,s
-         pshs  x
-         lbsr  L04B8
-         leas  $02,s
-         std   <u0005
-         leax  ,s
-         pshs  x
-         lbsr  L04B8
-         leas  $02,s
-         std   <u0007
-         ldd   <u000D
-         addd  <u0001
-         std   <u0014
-         ldb   [>$0014,y]
-         stb   <u0019
-         ldb   <u0019
-         clra  
-         tstb  
-         cmpd  <u0005
-         beq   L0405
-         ldb   <u0017
-         beq   L0405
-         leax  >L07C8,pcr
-         pshs  x
-         lbsr  L056A
-         leas  $02,s
-L0405    ldb   <u0018
-         lbeq  L054C
-         ldd   <u0007
-         stb   [>$0014,y]
-         lbra  L054C
-L0414    pshs  u
-         ldd   #$FFB6
-         lbsr  L0111
-         ldx   <u000D
-         ldd   $02,x
-         addd  #$FFFD
-         std   <u0001
-         ldd   <u000D
-         addd  <u0001
-         tfr   d,u
-         ldd   #$00FF
-         stb   u0002,u
-         stb   u0001,u
-         stb   ,u
-         pshs  u
-         ldd   <u0001
-         pshs  b,a
-         ldd   <u000D
-         pshs  b,a
-         lbsr  L0A19
-         leas  $06,s
-         ldb   ,u
-         sex   
-         coma  
-         comb  
-         stb   ,u
-         ldb   u0001,u
-         sex   
-         coma  
-         comb  
-         stb   u0001,u
-         ldb   u0002,u
-         sex   
-         coma  
-         comb  
-         stb   u0002,u
-         puls  pc,u
-L045A    pshs  u
-         ldd   #$FFB8
-         lbsr  L0111
-         leas  -$02,s
-         leau  >$0087,y
-         leax  >$00A1,y
-         stx   ,s
-         bra   L0479
-L0470    ldd   ,u++
-         pshs  b,a
-         lbsr  L056A
-         leas  $02,s
-L0479    cmpu  ,s
-         bcs   L0470
-         clra  
-         clrb  
-         pshs  b,a
-         lbsr  L0A85
-         leas  $02,s
-         lbra  L054C
-L048A    pshs  u
-         ldd   #$FFB6
-         lbsr  L0111
-         ldd   #$0050
-         pshs  b,a
-         leax  >$0037,y
-         pshs  x
-         ldd   <u0003
-         pshs  b,a
-         lbsr  L0967
-         leas  $06,s
-         ldb   <u0016
-         lbne  L054E
-         leax  >$0037,y
-         pshs  x
-         lbsr  L056A
-         lbra  L054C
-L04B8    pshs  u
-         ldd   #$FFB6
-         lbsr  L0111
-         leas  -$02,s
-         ldu   [<$06,s]
-         clra  
-         clrb  
-         std   ,s
-         bra   L04CD
-L04CB    leau  u0001,u
-L04CD    ldb   ,u
-         sex   
-         leax  >$00BD,y
-         leax  d,x
-         ldb   ,x
-         clra  
-         andb  #$40
-         beq   L04CB
-         bra   L0518
-L04DF    ldd   ,s
-         pshs  b,a
-         ldd   #$0004
-         lbsr  L08C2
-         std   ,s
-         pshs  b,a
-         ldb   ,u
-         sex   
-         leax  >$00BD,y
-         leax  d,x
-         ldb   ,x
-         clra  
-         andb  #$08
-         beq   L0505
-         ldb   ,u
-         sex   
-         addd  #$FFD0
-         bra   L0512
-L0505    ldb   ,u
-         sex   
-         pshs  b,a
-         lbsr  L07E5
-         leas  $02,s
-         addd  #$FFC9
-L0512    addd  ,s++
-         std   ,s
-         leau  u0001,u
-L0518    ldb   ,u
-         sex   
-         leax  >$00BD,y
-         leax  d,x
-         ldb   ,x
-         clra  
-         andb  #$40
-         bne   L04DF
-         leau  u0001,u
-         tfr   u,d
-         std   [<$06,s]
-         ldd   ,s
-         bra   L054C
-L0533    pshs  u
-         ldd   #$FFBA
-         lbsr  L0111
-         ldu   $04,s
-         pshs  u
-         bsr   L056A
-         leas  $02,s
-         ldd   >$018B,y
-         pshs  b,a
-         lbsr  L0A85
-L054C    leas  $02,s
-L054E    puls  pc,u
-L0550    pshs  u
-         ldd   #$FFB6
-         lbsr  L0111
-         ldu   $04,s
-         ldd   $06,s
-         pshs  b,a
-         pshs  u
-         ldd   #$0002
-         pshs  b,a
-         lbsr  L097D
-         bra   L0595
-L056A    pshs  u
-         ldd   #$FFB6
-         lbsr  L0111
-         ldu   $04,s
-         pshs  u
-         lbsr  L0818
-         std   ,s
-         bra   L058B
-L057D    pshs  u
-         ldd   #$FFB6
-         lbsr  L0111
-         ldu   $04,s
-         ldd   $06,s
-         pshs  b,a
-L058B    pshs  u
-         ldd   #$0002
-         pshs  b,a
-         lbsr  L098D
-L0595    leas  $06,s
-         puls  pc,u
-         tsta  
-         clr   $04,s
-         negb  
-         oim   #$74,$03,s
-         lsl   $00,y
-         cwai  #$66
-         rol   $0C,s
-         eim   #$6E,$01,s
-         tst   $05,s
-         fcb   $3E >
-         bra   L0609
-         clr   -$10,s
-         lsr   >$735D
-         tst   <u0000
-         fcb   $55 U
-         com   >$6167
-         eim   #$3A,$00,y
-         bra   L060E
-         oim   #$74,$03,s
-         lsl   $00,y
-         tst   $0F,s
-         lsr   -$0B,s
-         inc   $05,s
-         com   >$2069
-         jmp   $00,y
-         fcb   $52 R
-         fcb   $41 A
-         tsta  
-         tst   <u0000
-         clra  
-         neg   >$7473
-         bra   L0613
-         bra   L05FB
-         blt   L0650
-         bra   L061C
-         bra   L0654
-         rol   $0C,s
-         eim   #$6E,-$0C,s
-         bra   L0655
-         clr   $04,s
-         eim   #$0D,$00,x
-         bra   L060F
-         bra   L0611
-         bra   L0613
-         bra   L0615
-         blt   L066E
-         bra   L0636
-         bra   L066E
-L05FB    eim   #$70,>$7072
-         eim   #$73,-$0D,s
-         bra   L067B
-         oim   #$72,$0E,s
-         rol   $0E,s
-L0609    asr   -$0D,s
-         tst   <u0000
-         bra   L062F
-L060F    bra   L0631
-L0611    bra   L0633
-L0613    bra   L0635
-L0615    blt   L067A
-         bra   L0656
-         bra   L067E
-         clr   $0D,s
-         neg   >$6172
-         eim   #$20,$0F,s
-         jmp   $0C,s
-         rol   >$2C20
-         jmp   $0F,s
-         bra   L068F
-         lsl   $01,s
-         jmp   $07,s
-         eim   #$0D,$00,x
-L0633    bra   L0655
-L0635    bra   L0657
-         bra   L0659
-         bra   L065B
-         blt   L067C
-         bra   L067C
-         bra   L06A9
-         eim   #$6C,-$10,s
-         tst   <u0000
-         coma  
-         tst   $04,s
-         com   >$203A
-         bra   L066E
-         inca  
-         bra   L06BE
-         clr   $04,s
-         jmp   $01,s
-L0655    tst   $05,s
-L0657    bra   L0679
-L0659    blt   L067B
-L065B    inc   $09,s
-         jmp   $0B,s
-         bra   L06D5
-         clr   $00,y
-         tst   $0F,s
-         lsr   -$0B,s
-         inc   $05,s
-         tst   <u0000
-         bra   L068D
-         bra   L068F
-         bra   L0691
-         bra   L0693
-         coma  
-         bra   L06E5
-         ror   $06,s
-         bra   L06E9
-L067A    aim   #$79,-$0C,s
-         eim   #$20,$0E,s
-         aim   #$79,-$0C,s
-         eim   #$20,$0D,y
-         bra   L06EB
-         lsl   $01,s
-         jmp   $07,s
-         eim   #$20,$0F,s
-L068F    aim   #$79,-$0C,s
-         eim   #$20,$01,s
-         lsr   >$0D00
-         bra   L06BA
-         bra   L06BC
-         bra   L06BE
-         bra   L06C0
-         bra   L06C2
-         bra   L06C4
-         bra   L06C6
-         bra   L06C8
-         bra   L06CA
-         bra   L06CC
-         bra   L06CE
-         bra   L06D0
-         bra   L06D2
-         bra   L06D4
-         clr   $06,s
-         ror   $00,y
-         lsr   >$6F20
-         jmp   $02,s
-         rol   >$7465
-L06C0    tst   <u0000
-L06C2    bra   L06E4
-L06C4    bra   L06E6
-L06C6    bra   L06E8
-L06C8    bra   L06EA
-L06CA    rorb  
-         bra   L06FA
-         bra   L0745
-         eim   #$72,$09,s
-L06D2    ror   -$07,s
-L06D4    bra   L0743
-         clr   $04,s
-         eim   #$6C,>$6520
-         coma  
-         fcb   $52 R
-         coma  
-         tst   <u0000
-         bra   L0703
-         bra   L0705
-L06E5    bra   L0707
-         bra   L0709
-L06E9    tsta  
-L06EA    bra   L0719
-         bra   L073B
-         oim   #$73,$0B,s
-         bra   L073C
-         fcb   $52 R
-         fcb   $51 Q
-         com   >$2028
-         lsr   >$6F20
-         neg   >$6174
-         com   $08,s
-         bra   L074B
-         fcb   $52 R
-L0703    fcb   $51 Q
-         bra   L0779
-         eim   #$72,-$0A,s
-L0709    rol   $03,s
-         eim   #$20,-$0E,s
-         clr   -$0B,s
-         lsr   >$696E
-         eim   #$0D,$00,x
-         bra   L0738
-         bra   L073A
-         bra   L073C
-         bra   L073E
-         fcb   $55 U
-         bra   L074E
-         bra   L0778
-         jmp   u000D,u
-         oim   #$73,$0B,s
-         bra   L0773
-         fcb   $52 R
-         fcb   $51 Q
-         com   >$0D00
-         bra   L0751
-         bra   L0753
-         bra   L0755
-         bra   L0757
-         bpl   L0759
-         blt   L075B
-L073B    coma  
-L073C    clr   $0D,s
-L073E    tst   $05,s
-         jmp   -$0C,s
-         bra   L0790
-         rol   $0E,s
-         eim   #$0D,$0D,x
-         neg   <u006D
-L074B    clr   $04,s
-         neg   >$6174
-         com   $08,s
-         abx   
-L0753    bra   L07CA
-L0755    jmp   $0B,s
-L0757    jmp   $0F,s
-L0759    asr   >$6E20
-         clr   -$10,s
-         lsr   >$696F
-         jmp   $0D,x
-         neg   <u006D
-         clr   $04,s
-         neg   >$6174
-         com   $08,s
-         abx   
-         bra   L07D2
-         oim   #$6E,$07,y
-         lsr   >$206F
-         neg   >$656E
-L0778    bra   L07E3
-         jmp   -$10,s
-         eim   #$74,>$2066
-         rol   $0C,s
-         eim   #$0D,$0D,x
-         neg   <u006D
-         clr   $04,s
-         neg   >$6174
-         com   $08,s
-         abx   
-         bra   L07FA
-         jmp   -$10,s
-         eim   #$74,>$2066
-         rol   $0C,s
-         eim   #$20,-$0E,s
-         eim   #$61,$04,s
-         bra   L0806
-         aim   #$72,>$6F72
-         tst   <u0000
-L07A7    tst   $0F,s
-         lsr   -$10,s
-         oim   #$74,$03,s
-         lsl   -$06,y
-         bra   L0815
-         oim   #$6E,$07,y
-         lsr   >$206C
-         rol   $0E,s
-         tim   #$20,-$0C,s
-         clr   $00,y
-         tst   $0F,s
-         lsr   -$0B,s
-         inc   $05,s
-         tst   <u000D
-         neg   <u002A
-         bpl   L07F5
-         bra   L082F
-         rol   >$7465
-         bra   L0836
-L07D2    clr   $05,s
-         com   >$206E
-         clr   -$0C,s
-         bra   L0848
-         oim   #$74,$03,s
-         lsl   $00,y
-         bpl   L080C
-         bpl   L07F1
-         neg   <u0034
-         nega  
-         ldd   $04,s
-         leax  >$00BD,y
-         leax  d,x
-         ldb   ,x
-L07F1    clra  
-         andb  #$04
-         beq   L0814
-         ldd   $04,s
-         clra  
-         andb  #$DF
-         bra   L0816
-         pshs  u
-         ldd   $04,s
-         leax  >$00BD,y
-         leax  d,x
-         ldb   ,x
-         clra  
-         andb  #$02
-L080C    beq   L0814
-         ldd   $04,s
-         orb   #$20
-         bra   L0816
-L0814    ldd   $04,s
-L0816    puls  pc,u
-L0818    pshs  u
-         ldu   $04,s
-L081C    ldb   ,u+
-         bne   L081C
-         tfr   u,d
-         subd  $04,s
-         addd  #$FFFF
-         puls  pc,u
-         pshs  u
-         ldu   $06,s
-         leas  -$02,s
-L082F    ldd   $06,s
-         std   ,s
-L0833    ldb   ,u+
-         ldx   ,s
-         leax  $01,x
-         stx   ,s
-         stb   -$01,x
-         bne   L0833
-         bra   L0868
-         pshs  u
-         ldu   $06,s
-         leas  -$02,s
-         ldd   $06,s
-         std   ,s
-L084B    ldx   ,s
-         leax  $01,x
-         stx   ,s
-         ldb   -$01,x
-         bne   L084B
-         ldd   ,s
-         addd  #$FFFF
-         std   ,s
-L085C    ldb   ,u+
-         ldx   ,s
-         leax  $01,x
-         stx   ,s
-         stb   -$01,x
-         bne   L085C
-L0868    ldd   $06,s
-         leas  $02,s
-         puls  pc,u
-         pshs  u
-         ldu   $04,s
-         bra   L0884
-L0874    ldx   $06,s
-         leax  $01,x
-         stx   $06,s
-         ldb   -$01,x
-         bne   L0882
-         clra  
-         clrb  
-         puls  pc,u
-L0882    leau  u0001,u
-L0884    ldb   ,u
-         sex   
-         pshs  b,a
-         ldb   [<$08,s]
-         sex   
-         cmpd  ,s++
-         beq   L0874
-         ldb   [<$06,s]
-         sex   
-         pshs  b,a
-         ldb   ,u
-         sex   
-         subd  ,s++
-         puls  pc,u
-         tstb  
-         beq   L08B5
-L08A2    asr   $02,s
-         ror   $03,s
-         decb  
-         bne   L08A2
-         bra   L08B5
-         tstb  
-         beq   L08B5
-L08AE    lsr   $02,s
-         ror   $03,s
-         decb  
-         bne   L08AE
-L08B5    ldd   $02,s
-         pshs  b,a
-         ldd   $02,s
-         std   $04,s
-         ldd   ,s
-         leas  $04,s
-         rts   
-L08C2    tstb  
-         beq   L08B5
-L08C5    lsl   $03,s
-         rol   $02,s
-         decb  
-         bne   L08C5
-         bra   L08B5
-         ldx   $02,s
-         lda   $05,s
-         os9   I$Open   
-         bcs   L08DA
-         os9   I$Close  
-L08DA    lbra  L0A80
-L08DD    ldx   $02,s
-         lda   $05,s
-         os9   I$Open   
-         lbcs  L0A77
-         tfr   a,b
-         clra  
-         rts   
-         lda   $03,s
-         os9   I$Close  
-         lbra  L0A80
-         ldx   $02,s
-         ldb   $05,s
-         os9   I$MakDir 
-         lbra  L0A80
-         ldx   $02,s
-         lda   $05,s
-         tfr   a,b
-         andb  #$24
-         orb   #$0B
-         os9   I$Create 
-         bcs   L0911
-L090D    tfr   a,b
-         clra  
-         rts   
-L0911    cmpb  #$DA
-         lbne  L0A77
-         lda   $05,s
-         bita  #$80
-         lbne  L0A77
-         anda  #$07
-         ldx   $02,s
-         os9   I$Open   
-         lbcs  L0A77
-         pshs  u,a
-         ldx   #$0000
-         leau  ,x
-         ldb   #$02
-         os9   I$SetStt 
-         puls  u,a
-         bcc   L090D
-         pshs  b
-         os9   I$Close  
-         puls  b
-         lbra  L0A77
-         ldx   $02,s
-         os9   I$Delete 
-         lbra  L0A80
-         lda   $03,s
-         os9   I$Dup    
-         lbcs  L0A77
-         tfr   a,b
-         clra  
-         rts   
-L0959    pshs  y
-         lda   $05,s
-         ldx   $06,s
-         ldy   $08,s
-         os9   I$Read   
-         bra   L0973
-L0967    pshs  y
-         lda   $05,s
-         ldx   $06,s
-         ldy   $08,s
-         os9   I$ReadLn 
-L0973    bcc   L09A2
-         cmpb  #$D3
-         bne   L099D
-         clra  
-         clrb  
-         puls  pc,y
-L097D    pshs  y
-         ldy   $08,s
-         beq   L09A2
-         lda   $05,s
-         ldx   $06,s
-         os9   I$Write  
-         bra   L099B
-L098D    pshs  y
-         ldy   $08,s
-         beq   L09A2
-         lda   $05,s
-         ldx   $06,s
-         os9   I$WritLn 
-L099B    bcc   L09A2
-L099D    puls  y
-         lbra  L0A77
-L09A2    tfr   y,d
-         puls  pc,y
-         pshs  u
-         ldd   $0A,s
-         bne   L09B4
-         ldu   #$0000
-         ldx   #$0000
-         bra   L09E8
-L09B4    cmpd  #$0001
-         beq   L09DF
-         cmpd  #$0002
-         beq   L09D4
-         ldb   #$F7
-L09C2    clra  
-         std   >$018B,y
-         ldd   #$FFFF
-         leax  >$017F,y
-         std   ,x
-         std   $02,x
-         puls  pc,u
-L09D4    lda   $05,s
-         ldb   #$02
-         os9   I$GetStt 
-         bcs   L09C2
-         bra   L09E8
-L09DF    lda   $05,s
-         ldb   #$05
-         os9   I$GetStt 
-         bcs   L09C2
-L09E8    tfr   u,d
-         addd  $08,s
-         std   >$0181,y
-         tfr   d,u
-         tfr   x,d
-         adcb  $07,s
-         adca  $06,s
-         bmi   L09C2
-         tfr   d,x
-         std   >$017F,y
-         lda   $05,s
-         os9   I$Seek   
-         bcs   L09C2
-         leax  >$017F,y
-         puls  pc,u
-         rts   
-         ldx   #$0000
-         clrb  
-         os9   F$Sleep  
-         lbra  L0A77
-         rts   
-L0A19    pshs  u,y
-         ldx   $06,s
-         ldy   $08,s
-         ldu   $0A,s
-         os9   F$CRC    
-         puls  pc,u,y
-         lda   $03,s
-         ldb   $05,s
-         os9   F$PErr   
-         lbcs  L0A77
-         rts   
-         ldx   $02,s
-         os9   F$Sleep  
-         lbcs  L0A77
-         tfr   x,d
-         rts   
-L0A3F    pshs  u,y
-         ldx   $06,s
-         lda   $09,s
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         ora   $0B,s
-         os9   F$Link   
-         bcs   L0A66
-L0A50    tfr   u,d
-         puls  u,y
-         rts   
-         pshs  u,y
-         ldx   $06,s
-         lda   $09,s
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         ora   $0B,s
-         os9   F$Load   
-         bcc   L0A50
-L0A66    puls  u,y
-         lbra  L0A77
-L0A6B    pshs  u
-         ldu   $04,s
-         os9   F$UnLink 
-         puls  u
-         lbra  L0A80
-L0A77    clra  
-         std   >$018B,y
-         ldd   #$FFFF
-         rts   
-L0A80    bcs   L0A77
-         clra  
-         clrb  
-         rts   
-L0A85    lbsr  L0A90
-         lbsr  L0A91
-L0A8B    ldd   $02,s
-         os9   F$Exit   
-L0A90    rts   
-L0A91    rts   
-L0A92    neg   <u0001
-         neg   <u0000
-         lda   >$0599
-         eim   #$B5,<u0005
-         addd  <u0005
-         std   $06,x
-         tst   <u0006
-         leau  $06,x
-         rora  
-         ror   <u006B
-         ror   <u0098
-         ror   <u00C2
-         ror   <u00E1
-         asr   <u0016
-         asr   <u002F
-         tst   $0F,s
-         lsr   -$10,s
-         oim   #$74,$03,s
-         lsl   -$06,y
-         bra   L0B25
-         inc   $0C,s
-         eim   #$67,$01,s
-         inc   $00,y
-         com   $0F,s
-         tst   $0D,s
-         oim   #$6E,$04,s
-         tst   <u0000
-         neg   <u0001
-         oim   #$01,<u0001
-         oim   #$01,<u0001
-         oim   #$01,<u0011
-         fcb   $11 
-         oim   #$11,<u0011
-         oim   #$01,<u0001
-         oim   #$01,<u0001
-         oim   #$01,<u0001
-         oim   #$01,<u0001
-         oim   #$01,<u0001
-         oim   #$01,<u0001
-         leax  $00,y
-         bra   L0B11
-         bra   L0B13
-         bra   L0B15
-         bra   L0B17
-         bra   L0B19
-         bra   L0B1B
-         bra   L0B1D
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         bra   L0B29
-         bra   L0B2B
-         bra   L0B2D
-         bra   L0B51
-         fcb   $42 B
-         fcb   $42 B
-L0B11    fcb   $42 B
-         fcb   $42 B
-L0B13    fcb   $42 B
-         aim   #$02,<u0002
-L0B17    aim   #$02,<u0002
-         aim   #$02,<u0002
-L0B1D    aim   #$02,<u0002
-         aim   #$02,<u0002
-         aim   #$02,<u0002
-         aim   #$02,<u0020
-L0B29    bra   L0B4B
-L0B2B    bra   L0B4D
-L0B2D    bra   L0B73
-         lsra  
-         lsra  
-         lsra  
-         lsra  
-         lsra  
-         lsr   <u0004
-         lsr   <u0004
-         lsr   <u0004
-         lsr   <u0004
-         lsr   <u0004
-         lsr   <u0004
-         lsr   <u0004
-         lsr   <u0004
-         lsr   <u0004
-         lsr   <u0004
-         bra   L0B6A
-         bra   L0B6C
-         oim   #$00,<u000D
-         neg   <u0091
-L0B51    neg   <u008F
-         neg   <u008D
-         neg   <u008B
-         neg   <u0089
-         neg   <u0087
-         neg   <u009F
-         neg   <u009D
-         neg   <u009B
-         neg   <u0099
-         neg   <u0097
-         neg   <u0095
-         neg   <u0093
-         neg   <u0000
-         tst   $0F,s
-         lsr   -$10,s
-         oim   #$74,$03,s
-         lsl   $00,x
-         emod
-eom      equ   *
+L0000    fcb   $87,$CD,$0B,$77,$00,$0D,$11,$81   .M.w....
+L0008    fcb   $54,$00,$1F,$05,$0D,$6D,$6F,$64   T....mod
+L0010    fcb   $70,$61,$74,$63,$E8,$04,$A6,$A0   patch.& 
+L0018    fcb   $A7,$C0,$30,$1F,$26,$F8,$39,$34   '@0.&x94
+L0020    fcb   $20,$34,$40,$4F,$5F,$A7,$C0,$5A    4@O_'@Z
+L0028    fcb   $26,$FB,$AE,$E4,$33,$84,$30,$89   &..d3.0.
+L0030    fcb   $01,$8D,$34,$10,$31,$8D,$0A,$5A   ..4.1..Z
+L0038    fcb   $AE,$A1,$27,$04,$8D,$D8,$EE,$62   .!'..Xnb
+L0040    fcb   $33,$C9,$00,$87,$AE,$A1,$27,$03   3I...!'.
+L0048    fcb   $8D,$CC,$4F,$11,$A3,$E4,$27,$04   .LO.#d'.
+L0050    fcb   $A7,$C0,$20,$F7,$EE,$62,$EC,$A1   '@ wnbl!
+L0058    fcb   $27,$07,$30,$8D,$FF,$A2,$17,$01   '.0.."..
+L0060    fcb   $03,$EC,$A1,$27,$05,$30,$C4,$17   .l!'.0D.
+L0068    fcb   $00,$FA,$32,$64,$35,$10,$AF,$C9   .z2d5./I
+L0070    fcb   $01,$7D,$10,$AF,$C9,$01,$3D,$CC   .}./I.=L
+L0078    fcb   $00,$01,$ED,$C9,$01,$79,$31,$C9   ..mI.y1I
+L0080    fcb   $01,$3F,$30,$E4,$A6,$80,$E6,$C9   .?0d&.fI
+L0088    fcb   $01,$7A,$C1,$1D,$27,$54,$81,$0D   .zA.'T..
+L0090    fcb   $27,$50,$81,$20,$27,$04,$81,$2C   'P. '..,
+L0098    fcb   $26,$04,$A6,$80,$20,$F0,$81,$22   &.&. p."
+L00A0    fcb   $27,$04,$81,$27,$26,$1E,$AF,$A1   '..'&./!
+L00A8    fcb   $6C,$C9,$01,$7A,$34,$02,$A6,$80   lI.z4.&.
+L00B0    fcb   $81,$0D,$27,$04,$A1,$E4,$26,$F6   ..'.!d&v
+L00B8    fcb   $35,$04,$6F,$1F,$81,$0D,$27,$22   5.o...'"
+L00C0    fcb   $A6,$80,$20,$C2,$30,$1F,$AF,$A1   &. B0./!
+L00C8    fcb   $30,$01,$6C,$C9,$01,$7A,$81,$0D   0.lI.z..
+L00D0    fcb   $27,$0C,$81,$20,$27,$08,$81,$2C   '.. '..,
+L00D8    fcb   $27,$04,$A6,$80,$20,$F0,$6F,$1F   '.&. po.
+L00E0    fcb   $20,$A4,$30,$C9,$01,$3D,$34,$10    $0I.=4.
+L00E8    fcb   $EC,$C9,$01,$79,$34,$06,$31,$C4   lI.y4.1D
+L00F0    fcb   $8D,$0A,$17,$00,$89,$6F,$E2,$6F   .....obo
+L00F8    fcb   $E2,$17,$09,$89,$30,$A9,$01,$8D   b...0)..
+L0100    fcb   $AF,$A9,$01,$87,$10,$EF,$A9,$01   /)...o).
+L0108    fcb   $7B,$10,$EF,$A9,$01,$89,$CC,$FF   {.o)..L.
+L0110    fcb   $82,$30,$EB,$AC,$A9,$01,$89,$24   .0k,)..$
+L0118    fcb   $0A,$AC,$A9,$01,$87,$25,$1E,$AF   .,)..%./
+L0120    fcb   $A9,$01,$89,$39,$2A,$2A,$2A,$2A   )..9****
+L0128    fcb   $20,$53,$54,$41,$43,$4B,$20,$4F    STACK O
+L0130    fcb   $56,$45,$52,$46,$4C,$4F,$57,$20   VERFLOW 
+L0138    fcb   $2A,$2A,$2A,$2A,$0D,$30,$8C,$E4   ****.0.d
+L0140    fcb   $C6,$CF,$34,$04,$86,$02,$10,$8E   FO4.....
+L0148    fcb   $00,$64,$10,$3F,$8C,$6F,$E2,$17   .d.?.ob.
+L0150    fcb   $09,$39,$EC,$A9,$01,$7B,$A3,$A9   .9l).{#)
+L0158    fcb   $01,$89,$39,$EC,$A9,$01,$89,$A3   ..9l)..#
+L0160    fcb   $A9,$01,$87,$39,$34,$10,$30,$AB   )..94.0+
+L0168    fcb   $30,$8B,$34,$10,$EC,$A1,$30,$CB   0.4.l!0K
+L0170    fcb   $EC,$84,$E3,$62,$ED,$84,$10,$AC   l.cbm..,
+L0178    fcb   $E4,$26,$F1,$32,$64,$39,$34,$40   d&q2d94@
+L0180    fcb   $CC,$FF,$B6,$17,$FF,$8B,$4F,$5F   L.6...O_
+L0188    fcb   $DD,$09,$D7,$16,$CC,$00,$01,$D7   ].W.L..W
+L0190    fcb   $18,$D7,$17,$4F,$5F,$DD,$0D,$EC   .W.O_].l
+L0198    fcb   $64,$10,$26,$00,$98,$17,$02,$BA   d.&....:
+L01A0    fcb   $16,$00,$92,$AE,$66,$30,$02,$AF   ....f0./
+L01A8    fcb   $66,$E6,$94,$C1,$2D,$10,$26,$00   ff.A-.&.
+L01B0    fcb   $62,$EC,$F8,$06,$20,$4E,$E6,$B9   blx. Nf9
+L01B8    fcb   $00,$12,$1D,$34,$06,$17,$06,$25   ...4...%
+L01C0    fcb   $32,$62,$1F,$01,$20,$26,$CC,$00   2b.. &L.
+L01C8    fcb   $01,$D7,$16,$20,$35,$4F,$5F,$D7   .W. 5O_W
+L01D0    fcb   $17,$20,$2F,$4F,$5F,$D7,$18,$20   . /O_W. 
+L01D8    fcb   $29,$17,$02,$7E,$30,$8D,$05,$6A   )..~0..j
+L01E0    fcb   $34,$10,$17,$03,$85,$32,$62,$17   4....2b.
+L01E8    fcb   $02,$70,$20,$16,$8C,$00,$53,$27   .p ...S'
+L01F0    fcb   $D5,$8C,$00,$57,$27,$D7,$8C,$00   U..W'W..
+L01F8    fcb   $43,$27,$D8,$8C,$00,$3F,$27,$D9   C'X..?'Y
+L0200    fcb   $20,$DA,$DC,$12,$C3,$00,$01,$DD    Z\.C..]
+L0208    fcb   $12,$E6,$B9,$00,$12,$10,$26,$FF   .f9...&.
+L0210    fcb   $A5,$20,$22,$CC,$00,$01,$34,$06   % "L..4.
+L0218    fcb   $EC,$F8,$08,$34,$06,$17,$06,$BD   lx.4...=
+L0220    fcb   $32,$64,$DD,$03,$10,$83,$FF,$FF   2d].....
+L0228    fcb   $26,$0B,$30,$8D,$05,$36,$34,$10   &.0..64.
+L0230    fcb   $17,$03,$00,$32,$62,$EC,$64,$C3   ...2bldC
+L0238    fcb   $FF,$FF,$ED,$64,$10,$26,$FF,$63   ..md.&.c
+L0240    fcb   $16,$00,$83,$D6,$16,$26,$26,$D6   ...V.&&V
+L0248    fcb   $10,$C1,$0D,$26,$10,$CC,$00,$02   .A.&.L..
+L0250    fcb   $34,$06,$30,$A9,$00,$0F,$34,$10   4.0)..4.
+L0258    fcb   $17,$03,$22,$20,$0E,$CC,$00,$02   .." .L..
+L0260    fcb   $34,$06,$30,$A9,$00,$0F,$34,$10   4.0)..4.
+L0268    fcb   $17,$02,$E5,$32,$64,$D6,$0F,$1D   ..e2dV..
+L0270    fcb   $34,$06,$17,$05,$70,$32,$62,$1F   4...p2b.
+L0278    fcb   $01,$20,$2B,$17,$00,$A2,$20,$46   . +.." F
+L0280    fcb   $17,$01,$04,$20,$41,$17,$01,$8C   ... A...
+L0288    fcb   $20,$3C,$17,$00,$7E,$20,$37,$17    <..~ 7.
+L0290    fcb   $00,$85,$20,$32,$17,$01,$F3,$20   .. 2..s 
+L0298    fcb   $2D,$30,$A9,$00,$A1,$34,$10,$17   -0).!4..
+L02A0    fcb   $02,$C8,$32,$62,$20,$20,$8C,$00   .H2b  ..
+L02A8    fcb   $4C,$27,$D0,$8C,$00,$43,$27,$D0   L'P..C'P
+L02B0    fcb   $8C,$00,$56,$27,$D0,$8C,$00,$4D   ..V'P..M
+L02B8    fcb   $27,$D0,$8C,$00,$55,$27,$D0,$8C   'P..U'P.
+L02C0    fcb   $00,$2A,$27,$D0,$20,$D3,$CC,$00   .*'P SL.
+L02C8    fcb   $02,$34,$06,$30,$A9,$00,$0F,$34   .4.0)..4
+L02D0    fcb   $10,$DC,$03,$34,$06,$17,$06,$81   .\.4....
+L02D8    fcb   $32,$66,$DD,$0B,$DC,$0B,$10,$2E   2f].\...
+L02E0    fcb   $FF,$61,$DC,$0B,$10,$83,$FF,$FF   .a\.....
+L02E8    fcb   $26,$0B,$30,$8D,$04,$98,$34,$10   &.0...4.
+L02F0    fcb   $17,$02,$40,$32,$62,$DC,$09,$27   ..@2b\.'
+L02F8    fcb   $02,$8D,$1C,$DC,$0D,$10,$27,$02   ...\..'.
+L0300    fcb   $4D,$DC,$0D,$34,$06,$17,$07,$63   M\.4...c
+L0308    fcb   $16,$02,$41,$CC,$00,$01,$DD,$09   ..AL..].
+L0310    fcb   $1F,$A9,$D7,$11,$1A,$50,$39,$4F   .)W..P9O
+L0318    fcb   $5F,$DD,$09,$D6,$11,$1F,$9A,$39   _].V...9
+L0320    fcb   $34,$40,$CC,$FF,$B6,$17,$FD,$E9   4@L.6..i
+L0328    fcb   $DC,$0D,$27,$09,$DC,$0D,$34,$06   \.'.\.4.
+L0330    fcb   $17,$07,$38,$32,$62,$CC,$00,$1D   ..82bL..
+L0338    fcb   $34,$06,$30,$A9,$00,$1A,$34,$10   4.0)..4.
+L0340    fcb   $DC,$03,$34,$06,$17,$06,$20,$32   \.4... 2
+L0348    fcb   $66,$DD,$0B,$10,$2F,$01,$FF,$D6   f]../..V
+L0350    fcb   $16,$26,$0B,$30,$A9,$00,$1A,$34   .&.0)..4
+L0358    fcb   $10,$17,$02,$0E,$32,$62,$4F,$5F   ....2bO_
+L0360    fcb   $34,$06,$4F,$5F,$34,$06,$30,$A9   4.O_4.0)
+L0368    fcb   $00,$1A,$34,$10,$17,$06,$D0,$32   ..4...P2
+L0370    fcb   $66,$DD,$0D,$10,$83,$FF,$FF,$10   f]......
+L0378    fcb   $26,$01,$D3,$30,$8D,$04,$28,$34   &.S0..(4
+L0380    fcb   $10,$17,$01,$AF,$16,$01,$C5,$34   .../..E4
+L0388    fcb   $40,$CC,$FF,$B4,$17,$FD,$82,$32   @L.4...2
+L0390    fcb   $7E,$CC,$00,$50,$34,$06,$30,$A9   ~L.P4.0)
+L0398    fcb   $00,$37,$34,$10,$DC,$03,$34,$06   .74.\.4.
+L03A0    fcb   $17,$05,$C4,$32,$66,$DD,$0B,$10   ..D2f]..
+L03A8    fcb   $2F,$01,$A1,$D6,$16,$26,$0B,$30   /.!V.&.0
+L03B0    fcb   $A9,$00,$37,$34,$10,$17,$01,$B2   ).74...2
+L03B8    fcb   $32,$62,$30,$A9,$00,$37,$AF,$E4   2b0).7/d
+L03C0    fcb   $30,$E4,$34,$10,$17,$00,$F1,$32   0d4...q2
+L03C8    fcb   $62,$DD,$01,$30,$E4,$34,$10,$17   b].0d4..
+L03D0    fcb   $00,$E6,$32,$62,$DD,$05,$30,$E4   .f2b].0d
+L03D8    fcb   $34,$10,$17,$00,$DB,$32,$62,$DD   4...[2b]
+L03E0    fcb   $07,$DC,$0D,$D3,$01,$DD,$14,$E6   .\.S.].f
+L03E8    fcb   $B9,$00,$14,$D7,$19,$D6,$19,$4F   9..W.V.O
+L03F0    fcb   $5D,$10,$93,$05,$27,$0F,$D6,$17   ]...'.V.
+L03F8    fcb   $27,$0B,$30,$8D,$03,$CA,$34,$10   '.0..J4.
+L0400    fcb   $17,$01,$67,$32,$62,$D6,$18,$10   ..g2bV..
+L0408    fcb   $27,$01,$41,$DC,$07,$E7,$B9,$00   '.A\.g9.
+L0410    fcb   $14,$16,$01,$38,$34,$40,$CC,$FF   ...84@L.
+L0418    fcb   $B6,$17,$FC,$F5,$9E,$0D,$EC,$02   6..u..l.
+L0420    fcb   $C3,$FF,$FD,$DD,$01,$DC,$0D,$D3   C..].\.S
+L0428    fcb   $01,$1F,$03,$CC,$00,$FF,$E7,$42   ...L..gB
+L0430    fcb   $E7,$41,$E7,$C4,$34,$40,$DC,$01   gAgD4@\.
+L0438    fcb   $34,$06,$DC,$0D,$34,$06,$17,$05   4.\.4...
+L0440    fcb   $D8,$32,$66,$E6,$C4,$1D,$43,$53   X2ffD.CS
+L0448    fcb   $E7,$C4,$E6,$41,$1D,$43,$53,$E7   gDfA.CSg
+L0450    fcb   $41,$E6,$42,$1D,$43,$53,$E7,$42   AfB.CSgB
+L0458    fcb   $35,$C0,$34,$40,$CC,$FF,$B8,$17   5@4@L.8.
+L0460    fcb   $FC,$AF,$32,$7E,$33,$A9,$00,$87   ./2~3)..
+L0468    fcb   $30,$A9,$00,$A1,$AF,$E4,$20,$09   0).!/d .
+L0470    fcb   $EC,$C1,$34,$06,$17,$00,$F3,$32   lA4...s2
+L0478    fcb   $62,$11,$A3,$E4,$25,$F2,$4F,$5F   b.#d%rO_
+L0480    fcb   $34,$06,$17,$06,$00,$32,$62,$16   4....2b.
+L0488    fcb   $00,$C2,$34,$40,$CC,$FF,$B6,$17   .B4@L.6.
+L0490    fcb   $FC,$7F,$CC,$00,$50,$34,$06,$30   .L.P4.0
+L0498    fcb   $A9,$00,$37,$34,$10,$DC,$03,$34   ).74.\.4
+L04A0    fcb   $06,$17,$04,$C3,$32,$66,$D6,$16   ...C2fV.
+L04A8    fcb   $10,$26,$00,$A2,$30,$A9,$00,$37   .&."0).7
+L04B0    fcb   $34,$10,$17,$00,$B5,$16,$00,$94   4...5...
+L04B8    fcb   $34,$40,$CC,$FF,$B6,$17,$FC,$51   4@L.6..Q
+L04C0    fcb   $32,$7E,$EE,$F8,$06,$4F,$5F,$ED   2~nx.O_m
+L04C8    fcb   $E4,$20,$02,$33,$41,$E6,$C4,$1D   d .3AfD.
+L04D0    fcb   $30,$A9,$00,$BD,$30,$8B,$E6,$84   0).=0.f.
+L04D8    fcb   $4F,$C4,$40,$27,$EE,$20,$39,$EC   OD@'n 9l
+L04E0    fcb   $E4,$34,$06,$CC,$00,$04,$17,$03   d4.L....
+L04E8    fcb   $D9,$ED,$E4,$34,$06,$E6,$C4,$1D   Ymd4.fD.
+L04F0    fcb   $30,$A9,$00,$BD,$30,$8B,$E6,$84   0).=0.f.
+L04F8    fcb   $4F,$C4,$08,$27,$08,$E6,$C4,$1D   OD.'.fD.
+L0500    fcb   $C3,$FF,$D0,$20,$0D,$E6,$C4,$1D   C.P .fD.
+L0508    fcb   $34,$06,$17,$02,$D8,$32,$62,$C3   4...X2bC
+L0510    fcb   $FF,$C9,$E3,$E1,$ED,$E4,$33,$41   .Icamd3A
+L0518    fcb   $E6,$C4,$1D,$30,$A9,$00,$BD,$30   fD.0).=0
+L0520    fcb   $8B,$E6,$84,$4F,$C4,$40,$26,$B7   .f.OD@&7
+L0528    fcb   $33,$41,$1F,$30,$ED,$F8,$06,$EC   3A.0mx.l
+L0530    fcb   $E4,$20,$19,$34,$40,$CC,$FF,$BA   d .4@L.:
+L0538    fcb   $17,$FB,$D6,$EE,$64,$34,$40,$8D   ..Vnd4@.
+L0540    fcb   $29,$32,$62,$EC,$A9,$01,$8B,$34   )2bl)..4
+L0548    fcb   $06,$17,$05,$39,$32,$62,$35,$C0   ...92b5@
+L0550    fcb   $34,$40,$CC,$FF,$B6,$17,$FB,$B9   4@L.6..9
+L0558    fcb   $EE,$64,$EC,$66,$34,$06,$34,$40   ndlf4.4@
+L0560    fcb   $CC,$00,$02,$34,$06,$17,$04,$15   L..4....
+L0568    fcb   $20,$2B,$34,$40,$CC,$FF,$B6,$17    +4@L.6.
+L0570    fcb   $FB,$9F,$EE,$64,$34,$40,$17,$02   ..nd4@..
+L0578    fcb   $9F,$ED,$E4,$20,$0E,$34,$40,$CC   .md .4@L
+L0580    fcb   $FF,$B6,$17,$FB,$8C,$EE,$64,$EC   .6...ndl
+L0588    fcb   $66,$34,$06,$34,$40,$CC,$00,$02   f4.4@L..
+L0590    fcb   $34,$06,$17,$03,$F8,$32,$66,$35   4...x2f5
+L0598    fcb   $C0,$4D,$6F,$64,$50,$61,$74,$63   @ModPatc
+L05A0    fcb   $68,$20,$3C,$66,$69,$6C,$65,$6E   h <filen
+L05A8    fcb   $61,$6D,$65,$3E,$20,$5B,$6F,$70   ame> [op
+L05B0    fcb   $74,$73,$5D,$0D,$00,$55,$73,$61   ts]..Usa
+L05B8    fcb   $67,$65,$3A,$20,$20,$50,$61,$74   ge:  Pat
+L05C0    fcb   $63,$68,$20,$6D,$6F,$64,$75,$6C   ch modul
+L05C8    fcb   $65,$73,$20,$69,$6E,$20,$52,$41   es in RA
+L05D0    fcb   $4D,$0D,$00,$4F,$70,$74,$73,$20   M..Opts 
+L05D8    fcb   $3A,$20,$20,$2D,$73,$20,$3D,$20   :  -s = 
+L05E0    fcb   $73,$69,$6C,$65,$6E,$74,$20,$6D   silent m
+L05E8    fcb   $6F,$64,$65,$0D,$00,$20,$20,$20   ode..   
+L05F0    fcb   $20,$20,$20,$20,$20,$2D,$77,$20        -w 
+L05F8    fcb   $3D,$20,$73,$75,$70,$70,$72,$65   = suppre
+L0600    fcb   $73,$73,$20,$77,$61,$72,$6E,$69   ss warni
+L0608    fcb   $6E,$67,$73,$0D,$00,$20,$20,$20   ngs..   
+L0610    fcb   $20,$20,$20,$20,$20,$2D,$63,$20        -c 
+L0618    fcb   $3D,$20,$63,$6F,$6D,$70,$61,$72   = compar
+L0620    fcb   $65,$20,$6F,$6E,$6C,$79,$2C,$20   e only, 
+L0628    fcb   $6E,$6F,$20,$63,$68,$61,$6E,$67   no chang
+L0630    fcb   $65,$0D,$00,$20,$20,$20,$20,$20   e..     
+L0638    fcb   $20,$20,$20,$2D,$3F,$20,$3D,$20      -? = 
+L0640    fcb   $68,$65,$6C,$70,$0D,$00,$43,$6D   help..Cm
+L0648    fcb   $64,$73,$20,$3A,$20,$20,$4C,$20   ds :  L 
+L0650    fcb   $6D,$6F,$64,$6E,$61,$6D,$65,$20   modname 
+L0658    fcb   $20,$2D,$20,$6C,$69,$6E,$6B,$20    - link 
+L0660    fcb   $74,$6F,$20,$6D,$6F,$64,$75,$6C   to modul
+L0668    fcb   $65,$0D,$00,$20,$20,$20,$20,$20   e..     
+L0670    fcb   $20,$20,$20,$43,$20,$6F,$66,$66      C off
+L0678    fcb   $20,$6F,$62,$79,$74,$65,$20,$6E    obyte n
+L0680    fcb   $62,$79,$74,$65,$20,$2D,$20,$63   byte - c
+L0688    fcb   $68,$61,$6E,$67,$65,$20,$6F,$62   hange ob
+L0690    fcb   $79,$74,$65,$20,$61,$74,$0D,$00   yte at..
+L0698    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L06A0    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L06A8    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L06B0    fcb   $20,$20,$20,$20,$6F,$66,$66,$20       off 
+L06B8    fcb   $74,$6F,$20,$6E,$62,$79,$74,$65   to nbyte
+L06C0    fcb   $0D,$00,$20,$20,$20,$20,$20,$20   ..      
+L06C8    fcb   $20,$20,$56,$20,$2D,$20,$76,$65     V - ve
+L06D0    fcb   $72,$69,$66,$79,$20,$6D,$6F,$64   rify mod
+L06D8    fcb   $75,$6C,$65,$20,$43,$52,$43,$0D   ule CRC.
+L06E0    fcb   $00,$20,$20,$20,$20,$20,$20,$20   .       
+L06E8    fcb   $20,$4D,$20,$2D,$20,$4D,$61,$73    M - Mas
+L06F0    fcb   $6B,$20,$49,$52,$51,$73,$20,$28   k IRQs (
+L06F8    fcb   $74,$6F,$20,$70,$61,$74,$63,$68   to patch
+L0700    fcb   $20,$49,$52,$51,$20,$73,$65,$72    IRQ ser
+L0708    fcb   $76,$69,$63,$65,$20,$72,$6F,$75   vice rou
+L0710    fcb   $74,$69,$6E,$65,$0D,$00,$20,$20   tine..  
+L0718    fcb   $20,$20,$20,$20,$20,$20,$55,$20         U 
+L0720    fcb   $2D,$20,$55,$6E,$4D,$61,$73,$6B   - UnMask
+L0728    fcb   $20,$49,$52,$51,$73,$0D,$00,$20    IRQs.. 
+L0730    fcb   $20,$20,$20,$20,$20,$20,$20,$2A          *
+L0738    fcb   $20,$2D,$20,$43,$6F,$6D,$6D,$65    - Comme
+L0740    fcb   $6E,$74,$20,$4C,$69,$6E,$65,$0D   nt Line.
+L0748    fcb   $0D,$00,$6D,$6F,$64,$70,$61,$74   ..modpat
+L0750    fcb   $63,$68,$3A,$20,$75,$6E,$6B,$6E   ch: unkn
+L0758    fcb   $6F,$77,$6E,$20,$6F,$70,$74,$69   own opti
+L0760    fcb   $6F,$6E,$0D,$00,$6D,$6F,$64,$70   on..modp
+L0768    fcb   $61,$74,$63,$68,$3A,$20,$63,$61   atch: ca
+L0770    fcb   $6E,$27,$74,$20,$6F,$70,$65,$6E   n't open
+L0778    fcb   $20,$69,$6E,$70,$75,$74,$20,$66    input f
+L0780    fcb   $69,$6C,$65,$0D,$0D,$00,$6D,$6F   ile...mo
+L0788    fcb   $64,$70,$61,$74,$63,$68,$3A,$20   dpatch: 
+L0790    fcb   $69,$6E,$70,$75,$74,$20,$66,$69   input fi
+L0798    fcb   $6C,$65,$20,$72,$65,$61,$64,$20   le read 
+L07A0    fcb   $65,$72,$72,$6F,$72,$0D,$00,$6D   error..m
+L07A8    fcb   $6F,$64,$70,$61,$74,$63,$68,$3A   odpatch:
+L07B0    fcb   $20,$63,$61,$6E,$27,$74,$20,$6C    can't l
+L07B8    fcb   $69,$6E,$6B,$20,$74,$6F,$20,$6D   ink to m
+L07C0    fcb   $6F,$64,$75,$6C,$65,$0D,$0D,$00   odule...
+L07C8    fcb   $2A,$2A,$2A,$20,$62,$79,$74,$65   *** byte
+L07D0    fcb   $20,$64,$6F,$65,$73,$20,$6E,$6F    does no
+L07D8    fcb   $74,$20,$6D,$61,$74,$63,$68,$20   t match 
+L07E0    fcb   $2A,$2A,$2A,$0D,$00,$34,$40,$EC   ***..4@l
+L07E8    fcb   $64,$30,$A9,$00,$BD,$30,$8B,$E6   d0).=0.f
+L07F0    fcb   $84,$4F,$C4,$04,$27,$1E,$EC,$64   .OD.'.ld
+L07F8    fcb   $4F,$C4,$DF,$20,$19,$34,$40,$EC   OD_ .4@l
+L0800    fcb   $64,$30,$A9,$00,$BD,$30,$8B,$E6   d0).=0.f
+L0808    fcb   $84,$4F,$C4,$02,$27,$06,$EC,$64   .OD.'.ld
+L0810    fcb   $CA,$20,$20,$02,$EC,$64,$35,$C0   J  .ld5@
+L0818    fcb   $34,$40,$EE,$64,$E6,$C0,$26,$FC   4@ndf@&.
+L0820    fcb   $1F,$30,$A3,$64,$C3,$FF,$FF,$35   .0#dC..5
+L0828    fcb   $C0,$34,$40,$EE,$66,$32,$7E,$EC   @4@nf2~l
+L0830    fcb   $66,$ED,$E4,$E6,$C0,$AE,$E4,$30   fmdf@.d0
+L0838    fcb   $01,$AF,$E4,$E7,$1F,$26,$F4,$20   ./dg.&t 
+L0840    fcb   $27,$34,$40,$EE,$66,$32,$7E,$EC   '4@nf2~l
+L0848    fcb   $66,$ED,$E4,$AE,$E4,$30,$01,$AF   fmd.d0./
+L0850    fcb   $E4,$E6,$1F,$26,$F6,$EC,$E4,$C3   df.&vldC
+L0858    fcb   $FF,$FF,$ED,$E4,$E6,$C0,$AE,$E4   ..mdf@.d
+L0860    fcb   $30,$01,$AF,$E4,$E7,$1F,$26,$F4   0./dg.&t
+L0868    fcb   $EC,$66,$32,$62,$35,$C0,$34,$40   lf2b5@4@
+L0870    fcb   $EE,$64,$20,$10,$AE,$66,$30,$01   nd ..f0.
+L0878    fcb   $AF,$66,$E6,$1F,$26,$04,$4F,$5F   /ff.&.O_
+L0880    fcb   $35,$C0,$33,$41,$E6,$C4,$1D,$34   5@3AfD.4
+L0888    fcb   $06,$E6,$F8,$08,$1D,$10,$A3,$E1   .fx...#a
+L0890    fcb   $27,$E2,$E6,$F8,$06,$1D,$34,$06   'bfx..4.
+L0898    fcb   $E6,$C4,$1D,$A3,$E1,$35,$C0,$5D   fD.#a5@]
+L08A0    fcb   $27,$13,$67,$62,$66,$63,$5A,$26   '.gbfcZ&
+L08A8    fcb   $F9,$20,$0A,$5D,$27,$07,$64,$62   y .]'.db
+L08B0    fcb   $66,$63,$5A,$26,$F9,$EC,$62,$34   fcZ&ylb4
+L08B8    fcb   $06,$EC,$62,$ED,$64,$EC,$E4,$32   .lbmdld2
+L08C0    fcb   $64,$39,$5D,$27,$F0,$68,$63,$69   d9]'phci
+L08C8    fcb   $62,$5A,$26,$F9,$20,$E7,$AE,$62   bZ&y g.b
+L08D0    fcb   $A6,$65,$10,$3F,$84,$25,$03,$10   &e.?.%..
+L08D8    fcb   $3F,$8F,$16,$01,$A3,$AE,$62,$A6   ?...#.b&
+L08E0    fcb   $65,$10,$3F,$84,$10,$25,$01,$8F   e.?..%..
+L08E8    fcb   $1F,$89,$4F,$39,$A6,$63,$10,$3F   ..O9&c.?
+L08F0    fcb   $8F,$16,$01,$8C,$AE,$62,$E6,$65   .....bfe
+L08F8    fcb   $10,$3F,$85,$16,$01,$82,$AE,$62   .?.....b
+L0900    fcb   $A6,$65,$1F,$89,$C4,$24,$CA,$0B   &e..D$J.
+L0908    fcb   $10,$3F,$83,$25,$04,$1F,$89,$4F   .?.%...O
+L0910    fcb   $39,$C1,$DA,$10,$26,$01,$60,$A6   9AZ.&.`&
+L0918    fcb   $65,$85,$80,$10,$26,$01,$58,$84   e...&.X.
+L0920    fcb   $07,$AE,$62,$10,$3F,$84,$10,$25   ..b.?..%
+L0928    fcb   $01,$4D,$34,$42,$8E,$00,$00,$33   .M4B...3
+L0930    fcb   $84,$C6,$02,$10,$3F,$8E,$35,$42   .F..?.5B
+L0938    fcb   $24,$D3,$34,$04,$10,$3F,$8F,$35   $S4..?.5
+L0940    fcb   $04,$16,$01,$33,$AE,$62,$10,$3F   ...3.b.?
+L0948    fcb   $87,$16,$01,$34,$A6,$63,$10,$3F   ...4&c.?
+L0950    fcb   $82,$10,$25,$01,$22,$1F,$89,$4F   ..%."..O
+L0958    fcb   $39,$34,$20,$A6,$65,$AE,$66,$10   94 &e.f.
+L0960    fcb   $AE,$68,$10,$3F,$89,$20,$0C,$34   .h.?. .4
+L0968    fcb   $20,$A6,$65,$AE,$66,$10,$AE,$68    &e.f..h
+L0970    fcb   $10,$3F,$8B,$24,$2D,$C1,$D3,$26   .?.$-AS&
+L0978    fcb   $24,$4F,$5F,$35,$A0,$34,$20,$10   $O_5 4 .
+L0980    fcb   $AE,$68,$27,$1E,$A6,$65,$AE,$66   .h'.&e.f
+L0988    fcb   $10,$3F,$8A,$20,$0E,$34,$20,$10   .?. .4 .
+L0990    fcb   $AE,$68,$27,$0E,$A6,$65,$AE,$66   .h'.&e.f
+L0998    fcb   $10,$3F,$8C,$24,$05,$35,$20,$16   .?.$.5 .
+L09A0    fcb   $00,$D5,$1F,$20,$35,$A0,$34,$40   .U. 5 4@
+L09A8    fcb   $EC,$6A,$26,$08,$CE,$00,$00,$8E   lj&.N...
+L09B0    fcb   $00,$00,$20,$34,$10,$83,$00,$01   .. 4....
+L09B8    fcb   $27,$25,$10,$83,$00,$02,$27,$14   '%....'.
+L09C0    fcb   $C6,$F7,$4F,$ED,$A9,$01,$8B,$CC   FwOm)..L
+L09C8    fcb   $FF,$FF,$30,$A9,$01,$7F,$ED,$84   ..0).m.
+L09D0    fcb   $ED,$02,$35,$C0,$A6,$65,$C6,$02   m.5@&eF.
+L09D8    fcb   $10,$3F,$8D,$25,$E5,$20,$09,$A6   .?.%e .&
+L09E0    fcb   $65,$C6,$05,$10,$3F,$8D,$25,$DA   eF..?.%Z
+L09E8    fcb   $1F,$30,$E3,$68,$ED,$A9,$01,$81   .0chm)..
+L09F0    fcb   $1F,$03,$1F,$10,$E9,$67,$A9,$66   ....ig)f
+L09F8    fcb   $2B,$C8,$1F,$01,$ED,$A9,$01,$7F   +H..m).
+L0A00    fcb   $A6,$65,$10,$3F,$88,$25,$BB,$30   &e.?.%;0
+L0A08    fcb   $A9,$01,$7F,$35,$C0,$39,$8E,$00   ).5@9..
+L0A10    fcb   $00,$5F,$10,$3F,$0A,$16,$00,$5F   ._.?..._
+L0A18    fcb   $39,$34,$60,$AE,$66,$10,$AE,$68   94`.f..h
+L0A20    fcb   $EE,$6A,$10,$3F,$17,$35,$E0,$A6   nj.?.5`&
+L0A28    fcb   $63,$E6,$65,$10,$3F,$0F,$10,$25   cfe.?..%
+L0A30    fcb   $00,$45,$39,$AE,$62,$10,$3F,$0A   .E9.b.?.
+L0A38    fcb   $10,$25,$00,$3B,$1F,$10,$39,$34   .%.;..94
+L0A40    fcb   $60,$AE,$66,$A6,$69,$48,$48,$48   `.f&iHHH
+L0A48    fcb   $48,$AA,$6B,$10,$3F,$00,$25,$16   H*k.?.%.
+L0A50    fcb   $1F,$30,$35,$60,$39,$34,$60,$AE   .05`94`.
+L0A58    fcb   $66,$A6,$69,$48,$48,$48,$48,$AA   f&iHHHH*
+L0A60    fcb   $6B,$10,$3F,$01,$24,$EA,$35,$60   k.?.$j5`
+L0A68    fcb   $16,$00,$0C,$34,$40,$EE,$64,$10   ...4@nd.
+L0A70    fcb   $3F,$02,$35,$40,$16,$00,$09,$4F   ?.5@...O
+L0A78    fcb   $ED,$A9,$01,$8B,$CC,$FF,$FF,$39   m)..L..9
+L0A80    fcb   $25,$F5,$4F,$5F,$39,$17,$00,$08   %uO_9...
+L0A88    fcb   $17,$00,$06,$EC,$62,$10,$3F,$06   ...lb.?.
+L0A90    fcb   $39,$39,$00,$01,$00,$00,$B6,$05   99....6.
+L0A98    fcb   $99,$05,$B5,$05,$D3,$05,$ED,$06   ..5.S.m.
+L0AA0    fcb   $0D,$06,$33,$06,$46,$06,$6B,$06   ..3.F.k.
+L0AA8    fcb   $98,$06,$C2,$06,$E1,$07,$16,$07   ..B.a...
+L0AB0    fcb   $2F,$6D,$6F,$64,$70,$61,$74,$63   /modpatc
+L0AB8    fcb   $68,$3A,$20,$69,$6C,$6C,$65,$67   h: illeg
+L0AC0    fcb   $61,$6C,$20,$63,$6F,$6D,$6D,$61   al comma
+L0AC8    fcb   $6E,$64,$0D,$00,$00,$01,$01,$01   nd......
+L0AD0    fcb   $01,$01,$01,$01,$01,$01,$11,$11   ........
+L0AD8    fcb   $01,$11,$11,$01,$01,$01,$01,$01   ........
+L0AE0    fcb   $01,$01,$01,$01,$01,$01,$01,$01   ........
+L0AE8    fcb   $01,$01,$01,$01,$01,$30,$20,$20   .....0  
+L0AF0    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L0AF8    fcb   $20,$20,$20,$20,$20,$48,$48,$48        HHH
+L0B00    fcb   $48,$48,$48,$48,$48,$48,$48,$20   HHHHHHH 
+L0B08    fcb   $20,$20,$20,$20,$20,$20,$42,$42         BB
+L0B10    fcb   $42,$42,$42,$42,$02,$02,$02,$02   BBBB....
+L0B18    fcb   $02,$02,$02,$02,$02,$02,$02,$02   ........
+L0B20    fcb   $02,$02,$02,$02,$02,$02,$02,$02   ........
+L0B28    fcb   $20,$20,$20,$20,$20,$20,$44,$44         DD
+L0B30    fcb   $44,$44,$44,$44,$04,$04,$04,$04   DDDD....
+L0B38    fcb   $04,$04,$04,$04,$04,$04,$04,$04   ........
+L0B40    fcb   $04,$04,$04,$04,$04,$04,$04,$04   ........
+L0B48    fcb   $20,$20,$20,$20,$01,$00,$0D,$00       ....
+L0B50    fcb   $91,$00,$8F,$00,$8D,$00,$8B,$00   ........
+L0B58    fcb   $89,$00,$87,$00,$9F,$00,$9D,$00   ........
+L0B60    fcb   $9B,$00,$99,$00,$97,$00,$95,$00   ........
+L0B68    fcb   $93,$00,$00,$6D,$6F,$64,$70,$61   ...modpa
+L0B70    fcb   $74,$63,$68,$00,$F3,$89,$9A       tch.s..
