@@ -6,6 +6,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   1    Started                                        ADK ??/??/??
+*   2    Fixed a crash bug on 6809, now just reports    BGP 03/04/02
+*        6809 message on a 6809
 
          nam   CPUType
          ttl   Identify 6809 or 6309
@@ -16,8 +18,8 @@
 
 tylg     set   Prgrm+Objct
 atrv     set   Reent+Rev
-rev      set   1
-edition  set   1
+rev      set   0
+edition  set   2
 
          org   0
          rmb   $0100      for the stack
@@ -28,30 +30,33 @@ size     equ   .
 name     fcs   /CPUType/
          fcb   edition
 
-Start    ldd   #$FFFF     make sure it's non-zero
-*         clrd             executes as a pseudo-NOP ($10), and a CLRA
-         fdb   $104F
+c.6309   fcc   /CPU: 6309, /
+L6309    equ   *-c.6309
+c.6809   fcc   /CPU: 6809/
+         fcb   C$CR
+L6809    equ   *-c.6809
+
+is.6809  leax  c.6809,pc
+         ldy   #L6809
+         lda   #1
+         os9   I$WritLn
+         os9   F$Exit
+
+* Entry of program
+* First, let's determine if we have a 6309 or 6809
+Start    ldd   #$FFFF	make sure D is non-zero
+         fdb   $104F	(CLRD) execs as pseudo-NOP ($10), and CLRA on 6809
          tstb
          bne   is.6809
          leax  c.6309,pc
-         bra   save.1
+save.1   ldy   #L6309
+         lda   #1	to STDOUT
+         OS9   I$Write	dump it out
 
-c.6309   fcc   /CPU: 6309, /
-c.6809   fcc   /CPU: 6809, /
-
-is.6809  leax  c.6809,pc
-save.1   ldy   #11
-         lda   #1         to STDOUT
-         OS9   I$Write    dump it out
-
-* if it's a 6809, we don't need to do the next part, as we KNOW it's
-* running in 6809 emulation mode!
-
-* this is harder.... are we in native mode?
+* This code is executed only if we have a 6309
+* Determine if we are in native mode or not
          pshs  cc,dp,x,y,u   save all registers but D
-*         pshsw            a NOP on a 6809
-         fdb   $1038
-
+         fdb   $1038	(PSHSW)
          leay  native,pc   native mode PC
          leax  emulate,pc  emulation mode PC
          pshs  x,y         save them
@@ -64,11 +69,10 @@ emulate  leas  2,s        emulation mode: kill native mode PC
          fcb   $8C        skip 2 bytes
 native   ldb   #1         in native mode
          puls  u          restore W
-*         tfr   u,w        a PULSW is an RTS on a 6809
-         fdb   $1F36
+         fdb   $1F36	(TFR U,W)
          puls  cc,dp,x,y,u  restore all of our other registers
 
-         leax  m.6809,pc  default to 6809
+emumsg   leax  m.6809,pc  default to 6809
          tstb             are we in native mode?
          beq   print      no
          leax  m.6309,pc  get the 6309 message
