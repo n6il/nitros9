@@ -1,5 +1,5 @@
 @DEL
 Syntax: Del [<opts>] <path> [<path>] [<opts>]
-Usage : Deletes the specified file(s)
+Usage : Deletes one or more files
 Opts  :
   -x = delete relative to execution directory
