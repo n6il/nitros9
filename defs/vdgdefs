@@ -2,7 +2,7 @@
 
 VDGINT   set    1
 
- ttl DEFs from VDGint
+         ttl    DEFs from VDGint
 
 **********************
 * Defs from VDGint
@@ -65,7 +65,7 @@ VD.Col   equ   $42 number of columns for this screen
 VD.Row   equ   $43 number of rows
 VD.TFlg1 equ   $44 see WRITE ($0E)
 VD.Alpha equ   $45 0 when in alpha mode
-VD.Rdy   equ   $46 device ready (see SS.DStat 0=not ready
+VD.Rdy   equ   $46 device ready (see SS.DStat 0=not ready)
 VD.SBAdd equ   $47 (2) address of block screen is in
 VD.Blk   equ   $49 Block number of screen
 VD.GBuff equ   $4A allocation for graphics buffers (block#)
@@ -74,7 +74,7 @@ VD.HiRes equ   $4D hi-res screen table (block value
 VD.NBlk  equ   $4E number of blocks in this screen
 VD.SType equ   $4F screen type 0-4
 VD.HR2   equ   $50 (3) for screen number 2
-VD.HR3   equ   $53 (3) for screen 3 (same 3 bytes as above
+VD.HR3   equ   $53 (3) for screen 3 (same 3 bytes as above)
 VD.FF3   equ   $56 (2) data for flood fill
 VD.FF4   equ   $58 (2)  "
 VD.FF5   equ   $5A (2)  "
