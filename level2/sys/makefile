@@ -24,7 +24,7 @@ HELPFILES	= asm.hp attr.hp \
 		montype.hp os9gen.hp \
 		padrom.hp park.hp pmap.hp proc.hp procs.hp prompt.hp pwd.hp pxd.hp \
 		reboot.hp rename.hp runb.hp \
-		save.hp setime.hp setpr.hp shell.hp sleep.hp smap.hp swread.hp \
+		save.hp setime.hp setpr.hp shell.hp sleep.hp smap.hp \
 		tee.hp tmode.hp touch.hp tsmon.hp tuneport.hp \
 		unlink.hp \
 		verify.hp \
