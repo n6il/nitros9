@@ -1,13 +1,14 @@
 <preface>
-<title>Welcome to OS-9!</title>
+<title>Welcome to &os9level;!</title>
 <titleabbrev>Introduction</titleabbrev>
 <para>
-The heart of your &make; is an amazing device: the
-&CPU; microprocessor chip. This advanced microcomputer can run the
-kind of sophisticated software normally found only on much larger
-and costly computers. Because the OS-9 operating system was designed
-by the same people who designed the 6809 microprocessor, together
-they provide an extremely efficient and powerful combination.
+At the heart of your &make; is an amazing device: the
+&CPU; central processing unit (CPU).  When introduced in 1980, This
+microprocessor offered sophisticated features that were only
+found only on much larger and costly computers. Even today, it is
+architecture is considered feature-rich.  The OS-9 operating system
+was designed around the 6809 microprocessor to provide an extremely
+efficient and powerful operating system.
 </para>
 <para>
 The foundation of a computer's software system is its
@@ -78,7 +79,7 @@ enjoyment of OS-9.
 </para>
 <para>
 But if you can't wait, at least read the rest of this chapter,
-scan the command descriptions in Chapter 7, and have fun
+scan the command descriptions in a later chapter, and have fun
 experimenting!
 </para>
 </preface>
