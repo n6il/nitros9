@@ -1,7 +1,7 @@
 -x
 t
 **********************************************
-* Basic09 Install Script for the CoCo 3 w/ 6809
+* Basic09 Install Script for the CoCo w/ 6809
 * Files are copied to the /DD device
 *
 * Deleting old objects from /DD/CMDS, if any
@@ -13,8 +13,7 @@ del /DD/CMDS/inkey
 del /DD/CMDS/syscall
 * Copying commands to /DD/CMDS
 copy CMDS/basic09_6809 /DD/CMDS/basic09
-merge CMDS/runb_6809 CMDS/gfx CMDS/gfx2 CMDS/inkey CMDS/syscall>/DD/CMDS/runb
-attr /DD/CMDS/runb pe -pw -pr e w r
+copy CMDS/runb_6809 /DD/CMDS/runb
 copy CMDS/gfx /DD/CMDS/gfx
 copy CMDS/gfx2 /DD/CMDS/gfx2
 copy CMDS/inkey /DD/CMDS/inkey
