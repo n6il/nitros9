@@ -22,39 +22,41 @@
 *   9r6    2003/09/04  Boisy G. Pitre
 * Combined Level One and Level Two sources
 *
-* 	   2004/11/27  P.Harvey-Smith
+*   9r7    2004/11/27  Phill Harvey-Smith
 * Fixed bug in init routine that was causing DP and CC to
-* be pulled off the stack and stored in D.Proc under level 1
+* be pulled off the stack and stored in D.Proc under Level 1
 *		
 	nam	Clock     
 	ttl	OS-9 System Clock
 		
-	ifp1	
+	IFP1	
 	use	defsfile
-	ifgt	Level-1
+	IFGT	Level-1
 	use	cc3iodefs
-	endc	
-	endc	
+	ENDC	
+	ENDC	
 		
-Edtn	equ	9
-rev	equ	6
-		
-		
+tylg    set     Systm+Objct
+atrv    set     ReEnt+rev
+rev	set	7
+edition	set	9
+
+
 *------------------------------------------------------------
 *
 * Start of module
 *
-	mod	len,name,Systm+Objct,ReEnt+rev,Init,0
+	mod	len,name,tylg,atrv,init,0
 		
 name	fcs	"Clock"
-	fcb	Edtn
+	fcb	edition
 		
 		
-	ifeq	Level-1
+	IFEQ	Level-1
 TkPerTS	equ	TkPerSec/10	ticks per time slice
-        else
+        ELSE
 TkPerTS	equ	2	ticks per time slice
-	endc
+	ENDC
 		
 *
 * Table to set up Service Calls
@@ -63,10 +65,10 @@ NewSvc	fcb	F$Time
 	fdb	FTime-*-2
 	fcb	F$VIRQ
 	fdb	FVIRQ-*-2
-	ifgt	Level-1
+	IFGT	Level-1
 	fcb	F$Alarm
 	fdb	FALARM-*-2
-	endc
+	ENDC
 	fcb	F$STime
 	fdb	FSTime-*-2
 	fcb	$80		end of service call installation table
@@ -80,14 +82,14 @@ NewSvc	fcb	F$Time
 * variables, then fall through to code to update RTC.
 *
 FSTime	equ	*
-	ifgt	Level-1
+	IFGT	Level-1
 	ldx	<D.Proc		caller's process descriptor
 	lda	P$Task,x	source is in user map
 	ldx	R$X,u		address of caller's time packet
 	ldu	#D.Time		destination address
 	ldb	<D.SysTsk	destination is in system map
 	lbsr	STime.Mv	get time packet (ignore errors)
-	else	
+	ELSE	
 	ldx	R$X,u
 	ldd	,x
 	std	<D.Year
@@ -95,7 +97,7 @@ FSTime	equ	*
 	std	<D.Day
 	ldd	4,x
 	std	<D.Min
-	endc	
+	ENDC	
 	lda	#TkPerSec	reset to start of second
 	sta	<D.Tick
 	ldx	<D.Clock2	get entry point to Clock2
@@ -107,7 +109,7 @@ FSTime	equ	*
 * Clock Initialization
 *
 * This vector is called by the kernel to service the first F$STime
-* call.  F$STime is usually called by CC3Go (with a dummy argument)
+* call.  F$STime is usually called by SysGo (with a dummy argument)
 * in order to initialize the clock.  F$STime is re-vectored to the
 * service code above to handle future F$STime calls.
 *
@@ -115,38 +117,38 @@ FSTime	equ	*
 
 Clock2	fcs	"Clock2"
 		
-Init
-	ifeq	Level-1
+init
+	IFEQ	Level-1
 	pshs	dp,cc		save DP and CC
 	clra	
 	tfr	a,dp		set DP to zero
-	else
+	ELSE
 	ldx	<D.Proc		save user proc
 	pshs	x
 	ldx	<D.SysPrc	make sys for link
 	stx	<D.Proc
-	endc
-	
+	ENDC
+
 	leax	<Clock2,pcr
 	lda	#Sbrtn+Objct
 	os9	F$Link
-	
+
 	bcc	LinkOk
 
-	ifeq	Level-1
+	IFEQ	Level-1
 	jmp	>$FFFE		level 1: jump to reset vector
-	else
+	ELSE
 	lda	#E$MNF
 	jmp	<D.Crash	level 2: jump to CRASH vector
-	endc
+	ENDC
 	
 LinkOk	
-	ifeq	Level-1
+	IFEQ	Level-1
 	puls	cc,dp		; Restore saved dp and cc
-	else
+	ELSE
 	puls	x
 	stx	<D.Proc		restore user proc
-	endc
+	ENDC
 
 	sty	<D.Clock2	save entry point
 InitCont
@@ -155,15 +157,15 @@ InitCont
 	pshs	cc		save IRQ enable status (and Carry clear)
 	orcc	#IntMasks	stop interrupts
 		
-	ifgt	Level-1
+	IFGT	Level-1
 * Note: this code can go away once we have a rel_50hz
-	ifeq	TkPerSec-50
+	IFEQ	TkPerSec-50
 	ldb	<D.VIDMD	get video mode register copy
 	orb	#$08		set 50 Hz VSYNC bit
 	stb	<D.VIDMD	save video mode register copy
 	stb	>$FF98		set 50 Hz VSYNC
-	endc	
-	endc	
+	ENDC	
+	ENDC	
 		
 	sta	1,x		enable DDRA
 	sta	,x		set port A all inputs
@@ -175,9 +177,9 @@ InitCont
 	sta	1,x		CA2 (MUX0) out low, port A, disable HBORD high-to-low IRQs
 	stb	3,x		CB2 (MUX1) out low, port B, disable VBORD low-to-high IRQs
 
-	ifgt	Level-1
+	IFGT	Level-1
 	lda	,x		clear possible pending PIA0 HBORD IRQ
-	endc
+	ENDC
 	lda	2,x		clear possible pending PIA0 VBORD IRQ
 		
 * Don't need to explicitly read RTC during initialization
@@ -188,31 +190,31 @@ InitCont
 	leax	SvcIRQ,pcr	set IRQ handler
 	stx	<D.IRQ
 
-	ifgt	Level-1
+	IFGT	Level-1
 	leax	SvcVIRQ,pcr	set VIRQ handler
 	stx	<D.VIRQ
-	endc
+	ENDC
 	
 	leay	NewSvc,pcr	insert syscalls
 	os9	F$SSvc
 
-	ifgt	Level-1
-	ifne	H6309
+	IFGT	Level-1
+	IFNE	H6309
 	oim	#$08,<D.IRQER
-	else	
+	ELSE	
 	lda	<D.IRQER	get shadow GIME IRQ enable register
 	ora	#$08		set VBORD bit
 	sta	<D.IRQER	save shadow register
-	endc	
+	ENDC	
 	sta	>IRQEnR		enable GIME VBORD IRQs
-	endc	
+	ENDC	
 	
 * Call Clock2 init routine
 	ldy	<D.Clock2	get entry point to Clock2
 	jsr	,y		call init entry point of Clock2
 InitRts	puls	cc,pc		recover IRQ enable status and return
 
-	ifeq	Level-1
+	IFEQ	Level-1
 *
 * Clock IRQ Entry Point
 *
@@ -346,7 +348,7 @@ FTime	ldx	R$X,u
 		
 		
 		
-	else	
+	ELSE	
 		
 		
 		
@@ -377,12 +379,12 @@ SvcIRQ	lda	>IRQEnR		get GIME IRQ Status and save it.
 	bra	ContIRQ
 		
 NoClock	leax	DoPoll,pcr	if not clock IRQ, just poll IRQ source
-	ifne	H6309
+	IFNE	H6309
 	oim	#$FF,<D.QIRQ	---x set flag to NOT clock IRQ
-	else	
+	ELSE	
 	lda	#$FF
 	sta	<D.QIRQ
-	endc	
+	ENDC	
 ContIRQ	stx	<D.SvcIRQ
 	jmp	[D.XIRQ]	chain through Kernel to continue IRQ handling
 		
@@ -402,21 +404,21 @@ SvcVIRQ	clra			flag if we find any VIRQs to service
 	bra	virqent
 		
 virqloop
-	ifgt	Level-2
+	IFGT	Level-2
 	ldd	2,y		get Level 3 extended map type
 	orcc	#IntMasks
 	sta	>$0643
 	stb	>$0645
 	std	>$FFA1
 	andcc	#^IntMasks
-	endc	
+	ENDC	
 		
 	ldd	Vi.Cnt,x	decrement tick count
-	ifne	H6309
+	IFNE	H6309
 	decd			--- subd #1
-	else	
+	ELSE	
 	subd	#$0001
-	endc	
+	ENDC	
 	bne	notzero		is this one done?
 	lda	Vi.Stat,x	should we reset?
 	bmi	doreset
@@ -430,7 +432,7 @@ notzero	std	Vi.Cnt,x
 virqent	ldx	,y++
 	bne	virqloop
 		
-	ifgt	Level-2
+	IFGT	Level-2
 	puls	d
 	orcc	#Carry
 	stb	>$0643
@@ -439,28 +441,28 @@ virqent	ldx	,y++
 	stb	>$0645
 	stb	>$FFA1
 	andcc	#^IntMasks
-	else	
+	ELSE	
 	puls	a		get VIRQ status flag: high bit set if VIRQ
-	endc	
+	ENDC	
 		
 	ora	<D.IRQS	Check to see if other hardware IRQ pending.
 	bita	#%10110111	any V/IRQ interrupts pending?
 	beq	toggle
-	ifgt	Level-2
+	IFGT	Level-2
 	lbsr	DoPoll		yes, go service them.
-	else	
+	ELSE	
 	bsr	DoPoll		yes, go service them.
-	endc	
+	ENDC	
 	bra	KbdCheck
 toggle	equ	*
-	ifgt	Level-2
+	IFGT	Level-2
 	lbsr	DoToggle	no, toggle GIME anyway
-	else	
+	ELSE	
 	bsr	DoToggle	no, toggle GIME anyway
-	endc	
+	ENDC	
 		
 KbdCheck
-	ifgt	Level-2
+	IFGT	Level-2
 	lda	>$0643		grab current map type
 	ldb	>$0645
 	pshs	d		save it
@@ -471,18 +473,18 @@ KbdCheck
 	inca	
 	sta	>$0645
 	sta	>$FFA2		map in SCF, CC3IO, WindInt, etc.
-	endc	
+	ENDC	
 		
 	jsr	[>D.AltIRQ]	go update mouse, gfx cursor, keyboard, etc.
 		
-	ifgt	Level-2
+	IFGT	Level-2
 	puls	d		restore original map type ---x
 	orcc	#IntMasks
 	sta	>$0643		into system DAT image ---x
 	stb	>$0645
 	std	>$FFA1		and into RAM ---x
 	andcc	#$AF
-	endc	
+	ENDC	
 		
 	dec	<D.Tick		end of second?
 	bne	VIRQend		no, skip time update and alarm check
@@ -537,22 +539,22 @@ VIRQend	jmp	[>D.Clock]	jump to kernel's timeslice routine
 * Call [D.Poll] until all interrupts have been handled
 *
 DoPoll		
-	ifgt	Level-2
+	IFGT	Level-2
 	lda	>$0643		Level 3: get map type
 	ldb	>$0645
 	pshs	d		save for later
-	endc	
+	ENDC	
 d@	jsr	[>D.Poll]	call poll routine
 	bcc	d@		until error (error -> no interrupt found)
 		
-	ifgt	Level-2
+	IFGT	Level-2
 	puls	d
 	orcc	#IntMasks
 	sta	>$0643
 	stb	>$0645
 	std	>$FFA1
 	andcc	#^IntMasks
-	endc	
+	ENDC	
 		
 *
 * Reset GIME to avoid missed IRQs
@@ -582,11 +584,11 @@ FVIRQ	pshs	cc
 	ldb	PollCnt,x	number of polling table entries from INIT
 	ldx	R$X,u		zero means delete entry
 	beq	RemVIRQ
-	ifgt	Level-2
+	IFGT	Level-2
 	bra	FindVIRQ	---x
 		
 v.loop	leay	4,y		---x
-	endc	
+	ENDC	
 FindVIRQ
 	ldx	,y++		is VIRQ entry null?
 	beq	AddVIRQ		if yes, add entry here
@@ -598,27 +600,27 @@ FindVIRQ
 	rts	
 		
 AddVIRQ		
-	ifgt	Level-2
+	IFGT	Level-2
 	ldx	R$Y,u
 	stx	,y
 	lda	>$0643
 	ldb	>$0645
 	std	2,y
-	else	
+	ELSE	
 	leay	-2,y		point to first null VIRQ entry
 	ldx	R$Y,u
 	stx	,y
-	endc	
+	ENDC	
 	ldy	R$D,u
 	sty	,x
 	bra	virqexit
 		
-	ifgt	Level-2
+	IFGT	Level-2
 v.chk	leay	4,y
 RemVIRQ	ldx	,y
-	else	
+	ELSE	
 RemVIRQ	ldx	,y++
-	endc	
+	ENDC	
 	beq	virqexit
 	cmpx	R$Y,u
 	bne	RemVIRQ
@@ -629,22 +631,22 @@ virqexit	puls	cc
 		
 DelVIRQ	pshs	x,y
 DelVLup		
-	ifgt	Level-2
+	IFGT	Level-2
 	ldq	,y++		move entries up in table
 	leay	2,y
 	stq	-8,y
 	bne	DelVLup
 	puls	x,y,pc
-	else	
+	ELSE	
 	ldx	,y++		move entries up in table
 	stx	-4,y
 	bne	DelVLup
 	puls	x,y
 	leay	-2,y
 	rts	
-	endc	
+	ENDC	
 		
-	ifgt	Level-1
+	IFGT	Level-1
 *------------------------------------------------------------
 *
 * Handle F$Alarm call
@@ -679,14 +681,14 @@ AlarmErr
 	comb	
 	ldb	#E$IllArg
 	rts	
-	endc	
+	ENDC	
 		
 *------------------------------------------------------------
 *
 * Handle F$Time System call
 *
 FTime	equ	*
-	ifgt	Level-1
+	IFGT	Level-1
 	ldx	#D.Time		address of system time packet
 RetTime	ldy	<D.Proc		get pointer to current proc descriptor
 	ldb	P$Task,y	process Task number
@@ -695,7 +697,7 @@ RetTime	ldy	<D.Proc		get pointer to current proc descriptor
 STime.Mv
 	ldy	#6		move 6 bytes
 FMove	os9	F$Move
-	else	
+	ELSE	
 	ldx	R$X,u		get pointer to caller's space
 	ldd	<D.Year		get year and month
 	std	,x
@@ -704,13 +706,11 @@ FMove	os9	F$Move
 	ldd	<D.Min		get minute and second
 	std	4,x
 	clrb	
-	endc	
+	ENDC	
 	rts	
-		
-		
-	endc	
-		
-		
+
+	ENDC	
+
 	emod	
 len	equ	*
 	end	
