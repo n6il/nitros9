@@ -14,7 +14,7 @@ KERNEL_1773	= $(MD)/rel $(MD)/boot_1773 $(MD)/os9p1
 KERNEL_ROM	= $(MD)/rel $(3PB)/boot_rom $(MD)/os9p1
 KERNEL_KENTON	= $(MD)/rel $(C9)/superscsi/boot_id0_ktlr_l2 $(MD)/os9p1
 KERNEL_TC3	= $(MD)/rel $(C9)/superscsi/boot_id0_tc3_l2 $(MD)/os9p1
-KERNEL_GHOST	= $(MD)/rel $(C9)/ghost/boot_ghost_l2 $(MD)/os9p1
+KERNEL_DW	= $(MD)/rel $(C9)/drivewire/boot_drivewire_l2 $(MD)/os9p1
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_1773	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
@@ -39,15 +39,15 @@ BOOTFILE_ROM	= $(MD)/rominfo $(MD)/os9p2 $(MD)/init $(MD)/ioman \
 		$(MD)/clock_soft $(MD)/cc3go_rom \
 		$(CD)/shell $(CD)/mdir $(CD)/mfree $(CD)/procs
 
-BOOTFILE_GHOST	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
-		$(C9)/ghost/ghostdrv_l2.dr \
-		$(C9)/ghost/ddg0_l2.dd \
+BOOTFILE_DW	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+		$(C9)/drivewire/drivewire_l2.dr \
+		$(C9)/drivewire/ddg0_l2.dd \
 		$(MD)/rbf.mn \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
-		$(MD)/vdgint_small.io \
 		$(MD)/windint.io \
-		$(MD)/term_win80.dt \
+		$(MD)/vdgint_small.io \
+		$(MD)/term_vdg.dt \
 		$(MD)/w7.dw \
 		$(MD)/vrn.dr $(MD)/vi.dd $(MD)/ftdd.dd \
 		$(MD)/clock_tc3
@@ -89,8 +89,8 @@ BOOTFILE_KENTON	= $(C9)/superscsi/superscsi_ktlr_l2.dr \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_soft
 		
-BOOTFILES	= bootfile_1773 bootfile_ghost bootfile_tc3 bootfile_kenton bootfile_rom
-KERNELS		= kernel_1773 kernel_tc3 kernel_ghost kernel_kenton kernel_rom
+BOOTFILES	= bootfile_1773 bootfile_drivewire bootfile_tc3 bootfile_kenton bootfile_rom
+KERNELS		= kernel_1773 kernel_tc3 kernel_drivewire kernel_kenton kernel_rom
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -103,8 +103,8 @@ bootfile_1773: $(BOOTFILE_1773) $(DEPENDS)
 bootfile_tc3: $(BOOTFILE_TC3) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_TC3)>$@
 
-bootfile_ghost: $(BOOTFILE_GHOST) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_GHOST)>$@
+bootfile_drivewire: $(BOOTFILE_DW) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_DW)>$@
 
 bootfile_kenton: $(BOOTFILE_KENTON) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_KENTON)>$@
@@ -115,8 +115,8 @@ kernel_1773: $(KERNEL_1773) $(DEPENDS)
 kernel_tc3: $(KERNEL_TC3) $(DEPENDS)
 	$(MERGE) $(KERNEL_TC3)>$@
 
-kernel_ghost: $(KERNEL_GHOST) $(DEPENDS)
-	$(MERGE) $(KERNEL_GHOST)>$@
+kernel_drivewire: $(KERNEL_DW) $(DEPENDS)
+	$(MERGE) $(KERNEL_DW)>$@
 
 kernel_rom: $(KERNEL_ROM) $(DEPENDS)
 	$(MERGE) $(KERNEL_ROM)>$@
@@ -128,10 +128,10 @@ dd_ez135_l2.dd: $(C9)/superscsi/h0.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aLevel=2 -aDD=1
 
 # ROM image (32,768 bytes long) to burn into ROM on CoCo 3
-bootfile_ghost_rom: $(BOOTFILE_1773_ROM) $(DEPENDS) kernel_ghost
+bootfile_drivewire_rom: $(BOOTFILE_1773_ROM) $(DEPENDS) kernel_drivewire
 	$(MERGE) $(BOOTFILE_1773_ROM)>$@
 	$(PADROM) \$$6C00 $@ -c=\$$FF
-	$(MERGE) kernel_ghost>>$@
+	$(MERGE) kernel_drivewire>>$@
 	$(PADROM) \$$7FF0 $@ -c=\$$FF
 	$(MERGE) $(MD)/rom_vectors>>$@
 
