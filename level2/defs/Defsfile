@@ -1,4 +1,4 @@
-LEVEL    equ   2         
+Level    equ   2         
 
          ifp1            
          use   /dd/defs/os9defs
