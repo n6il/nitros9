@@ -12,15 +12,11 @@ all:	$(ALLOBJS)
 	@$(ECHO) "*                 C Compiler                *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	-$(CD) SOURCES; $(UNIX2OS9) *.a *.c
-	-$(CD) DEFS; $(UNIX2OS9) *.h
 	$(CHMOD) 755 $(CMDS)
 
 # Clean all components
 clean:	dskclean
 	$(RM) $(ALLOBJS)
-	-$(CD) SOURCES; $(OS92UNIX) *.a *.c
-	-$(CD) DEFS; $(OS92UNIX) *.h
 
 dsk:	all
 	$(RM) $(DISK)
@@ -31,10 +27,10 @@ dsk:	all
 	$(MAKDIR) $(DISK),SOURCES
 	$(MAKDIR) $(DISK),SOURCES/SYS
 	$(CP) $(CMDS) $(DISK),CMDS
-	$(CP) DEFS/*.h $(DISK),DEFS
+	$(CPL) DEFS/*.h $(DISK),DEFS
 	$(CP) LIB/*.l LIB/*.r $(DISK),LIB
-	$(CP) SOURCES/*.c $(DISK),SOURCES
-	$(CP) SOURCES/*.a $(DISK),SOURCES/SYS
+	$(CPL) SOURCES/*.c $(DISK),SOURCES
+	$(CPL) SOURCES/*.a $(DISK),SOURCES/SYS
 
 dskclean:
 	-$(RM) $(DISK)
