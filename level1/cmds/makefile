@@ -2,7 +2,7 @@ include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
-CMDS		= asm attr backup binex build cobbler cobbler_d64 copy date \
+CMDS		= asm attr backup binex build cobbler cobbler_d64 config copy date \
 		dcheck debug deiniz del deldir dir display dsave dump \
 		echo edit exbin format format_d64 free grfo ident iniz link \
 		list load login makdir mdir merge mfree os9gen os9gen_d64 \
