@@ -61,11 +61,8 @@
 *  Service calls
 *-
 
-
-Level    equ   2
-
          ifp1
-         use   os9defs
+         use   defsfile
          endc  
 *+
 *  C o d e
