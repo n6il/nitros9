@@ -73,6 +73,10 @@ C9		= $(BASEDIR)/cloud9
 %.dd: %.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@
 
+# Subroutine modules
+%.sb: %.asm
+	$(AS) $(AFLAGS) $< $(ASOUT)$@
+
 # Window device descriptors
 %.dw: %.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@
