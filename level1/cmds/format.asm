@@ -22,8 +22,8 @@
 * Disassembled 02/07/17 11:00:13 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   /dd/defs/defsfile
-         use   /dd/defs/rbfdefs
+         use   defsfile
+         use   rbfdefs
          endc
 
 DOHELP   set   0

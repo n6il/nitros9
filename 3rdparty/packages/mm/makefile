@@ -30,7 +30,7 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DISK)
 	$(CD) $(LEVEL2); make
-	$(OS9FORMAT) $(DISK) -t40 -h2 -n"Microscopic Mission"
+	$(OS9FORMAT_DS40) $(DISK) -n"Microscopic Mission"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK) os9boot kernel_1773
