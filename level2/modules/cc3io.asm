@@ -588,16 +588,16 @@ L0369    equ   *
          bita  #KeyMse
          puls  a
          ENDC
-         beq   L0381		no, try joystick
-         ldx   >WGlobal+G.KeyEnt $10E0 else get ptr to keydrv
-         leau  >G.KeyMem,u	and ptr to its statics
-         jsr   $06,x		call into it
-         ldu   <D.CCMem		get ptr to CC mem
-         sta   <G.KyButt,u	save key button
-L0381    ldx   >WGlobal+G.JoyEnt $10EA get ptr to joydrv
-         leau  >G.JoyMem,u	and ptr to its statics
-         jsr   $06,x		get X/Y info
-         ldu   <D.CCMem		get ptr to CC mem
+         beq   L0381			no, try joystick
+         ldx   >WGlobal+G.KeyEnt	else get ptr to keydrv
+         leau  >G.KeyMem,u		and ptr to its statics
+         jsr   $06,x			call into it
+         ldu   <D.CCMem			get ptr to CC mem
+         sta   <G.KyButt,u		save key button
+L0381    ldx   >WGlobal+G.JoyEnt	get ptr to joydrv
+         leau  >G.JoyMem,u		and ptr to its statics
+         jsr   $06,x			get X/Y info
+         ldu   <D.CCMem			get ptr to CC mem
          lda   #$82
          cmpb  #$80
          beq   L0397
@@ -617,9 +617,9 @@ L03A8    lda   <G.KyButt,u
          tstb  
          lbne  L044E
          pshs  u,y,x
-         ldx   >WGlobal+G.KeyEnt $10E0
+         ldx   >WGlobal+G.KeyEnt
          leau  >G.KeyMem,u
-         jsr   $09,x
+         jsr   $09,x			call Read Key routine
          puls  u,y,x
          bpl   L03C8
          clr   <G.LastCh,u
