@@ -149,7 +149,17 @@ SvcVIRQ  clra               Flag if we find any VIRQs to service
          ldy   <D.CLTb      Get address of VIRQ table
          bra   virqent
 
-virqloop ldd   Vi.Cnt,x     Decrement tick count
+virqloop equ   *
+         IFGT  Level-2
+         ldd   2,y		Get Level 3 extended map type
+         orcc  #IntMasks
+         sta   >$0643
+         stb   >$0645
+         std   >$FFA1
+         andcc #^IntMasks
+         ENDC
+
+         ldd   Vi.Cnt,x     Decrement tick count
          IFNE  H6309
          decd               --- subd #1
          ELSE
@@ -168,14 +178,50 @@ notzero  std   Vi.Cnt,x
 virqent  ldx   ,y++
          bne   virqloop
 
+         IFGT  Level-2
+         puls  d
+         orcc  #Carry
+         stb   >$0643
+         stb   >$FFA1
+         incb
+         stb   >$0645
+         stb   >$FFA1
+         andcc #^IntMasks
+         ELSE
          puls  a            Get VIRQ status flag: high bit set if VIRQ
+         ENDC
+
          ora   <D.IRQS      Check to see if other hardware IRQ pending.
          bita  #%10110111   Any V/IRQ interrupts pending?
          beq   toggle
          bsr   DoPoll       Yes, go service them.
          bra   KbdCheck
 toggle   bsr   DoToggle     No, toggle GIME anyway
-KbdCheck jsr   [>D.AltIRQ]  go update mouse, gfx cursor, keyboard, etc.
+
+KbdCheck equ   *
+         IFGT  Level-2
+         lda   >$0643		grab current map type
+         ldb   >$0645
+         pshs  d		save it
+         orcc  #IntMasks	IRQs off
+         lda   >$0660		SCF local memory ---x
+         sta   >$0643		into DAT image ---x
+         sta   >$FFA1		and into RAM ---x
+         inca
+         sta   >$0645
+         sta   >$FFA2		map in SCF, CC3IO, WindInt, etc.
+         ENDC
+
+         jsr   [>D.AltIRQ]  go update mouse, gfx cursor, keyboard, etc.
+
+         IFGT  Level-2
+         puls  d		restore original map type ---x
+         orcc  #IntMasks
+         sta   >$0643		into system DAT image ---x
+         stb   >$0645
+         std   >$FFA1		and into RAM ---x
+         andcc  #$AF
+         ENDC
 
          dec   <D.Tick      End of second?
          bne   VIRQend      No, skip time update and alarm check
@@ -225,8 +271,25 @@ VIRQend  jmp   [>D.Clock]   Jump to kernel's timeslice routine
 *
 * Call [D.Poll] until all interrupts have been handled
 *
-Dopoll   jsr   [>D.Poll]    Call poll routine
-         bcc   DoPoll       Until error (error -> no interrupt found)
+Dopoll
+         IFGT  Level-2
+         lda   >$0643		Level 3: get map type
+         ldb   >$0645
+         pshs  d		save for later
+         ENDC
+Dopoll.i
+         jsr   [>D.Poll]    Call poll routine
+         bcc   DoPoll.i     Until error (error -> no interrupt found)
+
+         IFGT  Level-2
+         puls  d
+         orcc  #IntMasks
+         sta   >$0643
+         stb   >$0645
+         std   >$FFA1
+         andcc #^IntMasks
+         ENDC
+
 *
 * Reset GIME to avoid missed IRQs
 *
@@ -711,7 +774,11 @@ F.VIRQ   pshs  cc
          ldb   PollCnt,x  Number of polling table entries from INIT
          ldx   R$X,u      Zero means delete entry
          beq   RemVIRQ
+         IFGT  Level-2
+         bra   FindVIRQ		---x
 
+v.loop   leay  4,y		---x
+         ENDC
 FindVIRQ ldx   ,y++       Is VIRQ entry null?
          beq   AddVIRQ    If yes, add entry here
          decb
@@ -721,14 +788,28 @@ FindVIRQ ldx   ,y++       Is VIRQ entry null?
          ldb   #E$Poll
          rts   
 
-AddVIRQ  leay  -2,y         point to first null VIRQ entry
+AddVIRQ  
+         IFGT  Level-2
          ldx   R$Y,u
          stx   ,y
+         lda   >$0643
+         ldb   >$0645
+         std   2,y
+         ELSE
+         leay  -2,y         point to first null VIRQ entry
+         ldx   R$Y,u
+         stx   ,y
+         ENDC
          ldy   R$D,u
          sty   ,x
          bra   virqexit
 
+         IFGT  Level-2
+v.chk    leay  4,y
+RemVIRQ  ldx   ,y
+         ELSE
 RemVIRQ  ldx   ,y++
+         ENDC
          beq   virqexit
          cmpx  R$Y,u
          bne   RemVIRQ
@@ -738,12 +819,21 @@ virqexit puls  cc
          rts   
 
 DelVIRQ  pshs  x,y
-DelVLup  ldx  ,y++ move entries up in table
+DelVLup  
+         IFGT  Level-2
+         ldq   ,y++		move entries up in table
+         leay  2,y
+         stq   -8,y
+         bne   DelVLup
+         puls  x,y,pc
+         ELSE
+         ldx  ,y++ move entries up in table
          stx  -4,y
          bne  DelVLup
          puls  x,y
          leay  -2,y
          rts
+         ENDC
 
 *------------------------------------------------------------
 *
