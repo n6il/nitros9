@@ -584,9 +584,10 @@ L0414    decb
          bne   L0407
          clrb
          puls  pc,x
-L041A    fcs   /GRFO/
-L041E    fcs   /CO32/
-L0422    fcs   /CO80/
+
+GRFO     fcs   /GRFO/
+CO32     fcs   /CO32/
+CO80     fcs   /CO80/
 
 * GetStat
 *
@@ -599,41 +600,42 @@ L0422    fcs   /CO80/
 *    CC = carry set on error
 *    B  = error code
 *
-GetStat  fcb   $A7
-         fcb   $C8
-         fcb   $52
-         cmpa  #$01
+GetStat  sta   <u0052,u
+         cmpa  #SS.Ready
          bne   L0439
          lda   <u0079,u
          suba  <u0078,u
          lbeq  L0660
-L0437    clrb
+SSEOF    clrb
          rts
-L0439    cmpa  #$06
-         beq   L0437
-         ldx   $06,y
-         cmpa  #$13
-         beq   L046A
-         cmpa  #$26
-         beq   L045D
-         cmpa  #$27
-         beq   L0456
-         cmpa  #$12
-         lbeq  L04D9
+L0439    cmpa  #SS.EOF
+         beq   SSEOF
+         ldx   PD.RGS,y
+         cmpa  #SS.Joy
+         beq   SSJOY
+         cmpa  #SS.ScSiz
+         beq   SSSCSIZ
+         cmpa  #SS.KySns
+         beq   SSKYSNS
+         cmpa  #SS.DStat
+         lbeq  SSDSTAT
          ldb   #$06
          lbra  L055F
-L0456    ldb   <u006A,u
-         stb   $01,x
+
+SSKYSNS  ldb   <u006A,u
+         stb   R$A,x
          clrb
          rts
-L045D    clra
+
+SSSCSIZ  clra
          ldb   <u002D,u
          std   $04,x
          ldb   <u002E,u
          std   $06,x
          clrb
          rts
-L046A    pshs  y,cc
+
+SSJOY    pshs  y,cc
          orcc  #IRQMask
          lda   #$FF
          sta   >PIA.U4+2
@@ -686,7 +688,8 @@ L04C7    pshs  b
          bra   L04BC
 L04D5    suba  ,s+
          bra   L04BC
-L04D9    lbsr  L065B
+
+SSDSTAT  lbsr  L065B
          bcs   L050E
          ldd   <u0045,u
          bsr   L050F
@@ -747,16 +750,16 @@ L0517    lsra
 *    B  = error code
 *
 SetStat  sta   <u0052,u
-         ldx   $06,y
-         cmpa  #$28
-         lbeq  L05CC
-         cmpa  #$80
-         beq   L0576
-         cmpa  #$81
-         beq   L05A3
-         cmpa  #$27
+         ldx   PD.RGS,y
+         cmpa  #SS.ComSt
+         lbeq  SSCOMST
+         cmpa  #SS.AAGBf
+         beq   SSAAGBF
+         cmpa  #SS.SLGBf
+         beq   SSSLGBF
+         cmpa  #SS.KySns
          bne   L055D
-         ldd   $04,x
+         ldd   R$X,x
          beq   L0558
          ldb   #$FF
 L0558    stb   <u006C,u
@@ -773,7 +776,8 @@ L055F    pshs  b
          tfr   a,b
          clra
          lbra  L0393
-L0576    ldb   <u0031,u
+
+SSAAGBF  ldb   <u0031,u
          lbeq  L0660
          pshs  b
          leay  <u0037,u
@@ -795,9 +799,10 @@ L058E    lbsr  L0685
 L059E    ldb   #E$BMode
          coma
 L05A1    puls  pc,a
-L05A3    ldb   <u0031,u
+
+SSSLGBF  ldb   <u0031,u
          lbeq  L0660
-         ldd   $06,x
+         ldd   R$Y,x
          cmpd  #$0002
          bhi   L05C8
          leay  <u0035,u
@@ -814,8 +819,8 @@ L05C3    stb   <u0032,u
 L05C8    comb
          ldb   #E$BMode
          rts
-L05CC    ldd   $06,x
 
+SSCOMST  ldd   R$Y,x
 L05CE    bita  #$02
          bne   L05E9
          ldb   #$10
@@ -826,12 +831,12 @@ L05D9    stb   <u0071,u
          lda   #$02
          ldx   #$2010
          pshs  u,y,x,a
-         leax  >L041E,pcr
+         leax  >CO32,pcr
          bra   L05F4
 L05E9    lda   #$04
          ldx   #$5018
          pshs  u,y,x,a
-         leax  >L0422,pcr
+         leax  >CO80,pcr
 L05F4    bsr   L0601
          puls  u,y,x,a
          bcs   L0600
@@ -890,7 +895,7 @@ L0664    bsr   L065B
          bne   L0681
          pshs  y,a
          bne   L067F
-         leax  >L041A,pcr
+         leax  >GRFO,pcr
          bsr   L062E
          bcc   L067B
          puls  pc,y,a
