@@ -1,0 +1,50 @@
+include ../../../Makefile.rules
+
+DEPENDS		= ./Makefile
+
+DISK		= mm.dsk
+CMDS		= mm mod1.dat mod2.dat mod3.dat mod4.dat mod5.dat \
+		mod6.sbr mod7.sbr mod8.sbr
+MD		= $(LEVEL2)/MODULES
+
+# We make our own bootfile and kernel track
+KERNEL		= $(MD)/rel $(MD)/boot_1773 $(MD)/os9p1
+OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/cc3disk.dr $(MD)/ddd0_40d.dd \
+		$(MD)/scf.mn $(MD)/cc3io.dr \
+		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/vdgint_small.io $(MD)/term_vdg.dt \
+		$(MD)/clock_soft $(MD)/cc3go
+
+SUPPORTFILES	= global.dat mm.lib mm.pnl mm.ttl mod7.lib
+
+SCRIPTS		= install2dd
+
+ALLOBJS		= $(CMDS)
+
+all:	$(ALLOBJS)
+	$(CHMOD) 755 $(CMDS)
+
+clean:	dskclean
+	$(RM) $(ALLOBJS)
+	$(OS92UNIX) $(SCRIPTS)
+
+dsk:	all
+	$(RM) $(DISK)
+	$(CD) $(LEVEL2); make
+	$(OS9FORMAT) $(DISK) -t40 -h2 -n"Microscopic Mission"
+	$(MERGE) $(OS9BOOT)>os9boot
+	$(MERGE) $(KERNEL)>kernel_1773
+	$(OS9GEN) $(DISK) os9boot kernel_1773
+	$(RM) os9boot kernel_1773
+	$(MAKDIR) $(DISK),CMDS
+	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK),CMDS/shell
+	$(CP) $(CMDS) $(DISK),CMDS
+	$(OS9RENAME) $(DISK),CMDS/mm AutoEx
+	$(CP) $(SUPPORTFILES) $(DISK),.
+	$(UNIX2OS9) $(SCRIPTS)
+	$(CP) $(SCRIPTS) $(DISK),.
+
+dskclean:
+	$(RM) $(DISK)
