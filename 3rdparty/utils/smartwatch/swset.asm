@@ -128,7 +128,7 @@ getday   leax  mesage2,pcr
          sta   daywk      convert from ascii to number
 tmode    leax  mesage3,pcr 12	or 24 hour time
          ldy   #mesage4-mesage3
-         bsr   query
+         lbsr  query
          cmpa  #'1        error trap
          blo   tmode
          cmpa  #'2
