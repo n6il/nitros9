@@ -184,52 +184,28 @@ clock_60hz: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=60
 
 clock_50hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aTkPerSec=50
-
-clock_elim: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKELIM)
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=50
 
 clock2_elim: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKELIM)
 
-clock_disto2: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO2)
-
 clock2_disto2: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO2)
-
-clock_disto4: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO4)
 
 clock2_disto4: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO4)
 
-clock_bnb: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKBNB)
-
 clock2_bnb: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKBNB)
-
-clock_smart: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSMART)
 
 clock2_smart: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSMART)
 
-clock_harris: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKHARRIS)
-
 clock2_harris: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKHARRIS)
 
-clock_tc3: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKTC3)
-
 clock2_tc3: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKTC3)
-
-clock_soft: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
 
 clock2_soft: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
