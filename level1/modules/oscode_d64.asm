@@ -1,4 +1,13 @@
-*        org 2600
+********************************************************************
+* oscode - OS-9 Level One V1.2 bootstrap code
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+*        From Dragon 
+
+*        org $2600
          nam Bootstrap
          ttl   Dragon Bootstrap code
 
@@ -15,7 +24,9 @@ Start    fcc "OS"
 L0010    sta   ,x++
          decb  
          bne   L0010
-         sta   $01,x
+         sta   1,x
+
+* clear screen at $8000
          ldx   #$8000
          ldy   #$0200
          lda   #$60
@@ -25,8 +36,8 @@ L0020    sta   ,x+
 
 * Write "OS9 BOOT" to the screen
          ldx   #$810C
-         leay  <L0056,pcr
-         ldb   #$08
+         leay  <BootMsg,pcr
+         ldb   #BootMLen
 L002E    lda   ,y+
          sta   ,x+
          decb  
@@ -34,7 +45,7 @@ L002E    lda   ,y+
          tst   <$72
          beq   L004C
 
-* Move the kernel to $F000
+* Move the kernel to top part of RAM
          leau  >Start,pcr
          ldx   #os9size
          ldy   #os9start
@@ -49,11 +60,12 @@ L004F    leax  <end,pcr
          ldd   $09,x
          jmp   d,x
 
-L0056    fcc  "OS"
+BootMsg  fcc  "OS"
          fcb  $79
          fcb  $60
          fcb  'B
          fcb  'O
          fcb  'O
          fcb  'T
+BootMLen equ   *-BootMsg
 end      equ *
