@@ -2589,7 +2589,7 @@ L842       ADDW  4,Y
            INC   7,Y
 L844       TSTA
            BMI   L850
-           andcc #$FE           clear carry
+           andcc #^Carry        clear carry
 L854       DEC   7,Y            shift to proper form
            BVS   equ0
            rolw
@@ -2844,7 +2844,7 @@ L938       DEC   ,Y
            ROL   $0A,Y
            ROL   9,Y
            ROL   8,Y
-           andcc #$FE
+           andcc #^Carry
            rolw
            rold
            BCC   L932
@@ -2866,14 +2866,14 @@ L926       tstw
            STB   ,Y
            LDA   $0B,Y
            LDB   #$80
-           andcc #$FE
+           andcc #^Carry
            BRA   L946
 
 L942       ADDB  #8
            STB   ,Y
            LDW   #$8000
            LDD   $0A,Y
-           andcc #$FE
+           andcc #^Carry
            BRA   L946
 
 L940       ADDB  #8
@@ -2881,7 +2881,7 @@ L940       ADDB  #8
            STB   ,Y
            LDQ   9,Y
            LDF   #$80
-           andcc #$FE
+           andcc #^Carry
            BRA   L946
 
 L948       ADDB  #7
@@ -3409,7 +3409,7 @@ L1072      ANDCC #$FE
            BMI   L1072
            BRA   L1070
 
-L1066      andcc #$FE
+L1066      andcc #^Carry
            BRA   L1074
 
 L1076      DEC   1,Y
@@ -4344,7 +4344,7 @@ L1326      CLR   1,Y
            PSHS  A
            lda   2,y
            BMI   L1322
-           andcc #$FE
+           andcc #^Carry
 L1324      DEC   ,S
            BEQ   L1322
            DEC   1,Y
@@ -4794,7 +4794,7 @@ L1454      LDB   #$20
            BRA   L1474
 L1472      TSTA
            BMI   L1476
-           andcc #$FE
+           andcc #^Carry
 L1478      DEC   1,Y
            rolw
            rold
@@ -5060,7 +5060,7 @@ L1574      lsrd
            BNE   L1574
            BRA   L1580
 
-L1572      andcc #$FE
+L1572      andcc #^Carry
            rolw
            rold
            ROL   <$7B
