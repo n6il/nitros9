@@ -1,6 +1,8 @@
 -x
 t
-* Installs 6309 modules to /DD/CMDS
+**********************************************
+* Basic09 Install Script for the Hitachi 6309
+* Files are copied to the /DD device
 *
 * Deleting old objects from /DD/CMDS, if any
 del /DD/CMDS/basic09
