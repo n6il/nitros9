@@ -3,7 +3,7 @@
 OS9DEFS  set   1
 
 ********************************************************************
-* OS9Defs - OS-9 System Definitions
+* OS9Defs - NitrOS-9 System Definitions
 *
 * $Id$
 *
@@ -586,8 +586,8 @@ D.IRQ    rmb   2
 D.SWI    rmb   2
 D.NMI    rmb   2
 
-**************************
-* Level II Block Map flags
+*************************
+* Level 2 Block Map flags
 *
 NotRAM   equ   %10000000  Block Not RAM flag
 VidRAM   equ   %00000100  Block is being used as Video RAM
@@ -1220,9 +1220,9 @@ Bt.Track equ   34         Boot track
 
          IFGT  Level-2
 ***************************
-* Level III Defs
+* Level 3 Defs
 *
-* These definitions apply to OS-9 Level III as created by Alan DeKok
+* These definitions apply to OS-9 Level 3 as created by Alan DeKok
 *
 L3.Start equ   $2000      Start off at slot 1
 L3.Size  equ   $40        Go for 64 pages: 2 slots total
