@@ -7352,17 +7352,17 @@ table on the next page.
 <table frame="none">
  <title>Colour Graphics Modes and Colour Codes</title>
 <tgroup cols="6">
-<colspec colname="c1">
-<colspec colname="c2">
-<colspec colname="c3">
-<colspec colname="c4">
-<colspec colname="c5">
-<colspec colname="c6">
+<colspec colname="c1" colwidth="0.6in">
+<colspec colname="c2" colwidth="0.4in">
+<colspec colname="c3" colwidth="1in">
+<colspec colname="c4" colwidth="1in">
+<colspec colname="c5" colwidth="1in">
+<colspec colname="c6" colwidth="1in">
 <thead>
 <row>
 <entry morerows=1 namest="c2">Colour Code</entry>
-<entry align="center" nameend="c4">Two Colour Format</entry>
-<entry align="center" nameend="c6">Four Colour Format</entry>
+<entry align="center" namest="c3" nameend="c4">Two Colour Format</entry>
+<entry align="center" namest="c5" nameend="c6">Four Colour Format</entry>
 </row>
 <row>
 <entry namest="c3">Background</entry>
