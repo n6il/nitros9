@@ -110,8 +110,7 @@ u009D equ $9D
 * Disassembled 03/02/06 21:32:32 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
-         use   scfdefs
+         use   defsfile
          endc
 
 tylg     set   Prgrm+Objct

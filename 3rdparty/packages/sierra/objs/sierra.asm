@@ -48,7 +48,7 @@ StdErr   equ   2
 * Disassembled 03/01/29 23:22:42 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          use   scfdefs
          endc
 
