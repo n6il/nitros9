@@ -18,13 +18,12 @@ all:
 	$(CD) DEMO; make
 
 # Clean all components
-clean:
+clean:	dskclean
 	-$(CD) CMDS; make clean
 	-$(CD) SYS; make clean
 	-$(CD) DEMO; make clean
-	-$(RM) $(DISK)
 
-dsk: all
+dsk:	all
 	$(RM) $(DISK)
 	$(OS9FORMAT) $(DISK) -n"Multi-Vue"
 	$(MAKDIR) $(DISK):CMDS
@@ -35,3 +34,7 @@ dsk: all
 	$(CD) CMDS/ICONS; $(CP) $(ICONS) ../../$(DISK):CMDS/ICONS
 	$(CD) SYS; $(CP) $(SYS) ../$(DISK):SYS
 	$(CD) DEMO; $(CP) $(DEMO) ../$(DISK):DEMO
+
+dskclean:
+	-$(RM) $(DISK)
+
