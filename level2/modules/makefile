@@ -18,7 +18,7 @@ TPB		= ../../3rdparty/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		 boot_burke boot_rampak boot_wd1002
-BOOTTRACK	= rel_32 rel_40 rel_80 $(BOOTERS) krn
+BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_h0 sysgo_dd
 CLOCKS          = clock_60hz clock_50hz \
@@ -72,9 +72,6 @@ krn krnp2:
 	$(CP) kernel/$@ .
 
 # Special cases
-rel_32: rel.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=32
-
 grfint.io: windint.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aGrfInt=1
 
@@ -84,11 +81,23 @@ rb1773_scii_ff74.dr:    rb1773.asm
 rb1773_scii_ff58.dr:    rb1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1 -aSCIIALT=1
                                                                             
+rel_32: rel.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=32
+
 rel_40: rel.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=40
 
 rel_80: rel.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=80
+
+rel_32_50hz: rel.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=32 -aTkPerSec=50
+
+rel_40_50hz: rel.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=40 -aTkPerSec=50
+
+rel_80_50hz: rel.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=80 -aTkPerSec=50
 
 boot_1773_6ms: boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSTEP=0
