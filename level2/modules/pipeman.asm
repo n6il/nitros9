@@ -81,7 +81,7 @@ SetStt   clrb
          nop
 Close    lda   PD.CNT,y
          bne   L008E
-         LDU   PD.BUF,y   if no one's using it,
+         ldu   PD.BUF,y   if no one's using it,
          clrb
          inca
          os9   F$SRtMem   return the memory
@@ -132,11 +132,11 @@ L0060    sty   R$X,u        save new pathname ptr
          ldd   #$0100
          os9   F$SRqMem   request one page for the pipe
          bcs   L007A        exit on error
-         stu   PD.BUF,Y     save ptr to the buffer
-         stu   <PD.NxtI,Y save write pointer
-         stu   <PD.NxtO,Y and read pointer
+         stu   PD.BUF,y     save ptr to the buffer
+         stu   <PD.NxtI,y save write pointer
+         stu   <PD.NxtO,y and read pointer
          leau  d,u          point to the end of the buffer
-         stu   <PD.End,Y    save save the ptr
+         stu   <PD.End,y    save save the ptr
 L007A    rts   
 
 L007B    comb  
@@ -147,13 +147,13 @@ ReadLn   ldb   #$0D
          fcb   $21	skip one byte
 
 Read     clrb
-         stb   PD.Read+P.FLAG,Y  raw read
-         leax  PD.Read,Y
+         stb   PD.Read+P.FLAG,y  raw read
+         leax  PD.Read,y
          lbsr  L0160      send wakeup signals to process
          bcs   L0100      on error, wake up writing process
-         ldx   R$Y,U
+         ldx   R$Y,u
          beq   L0100      if no bytes to rwad
-         ldd   R$X,U      start address to read from
+         ldd   R$X,u      start address to read from
          leax  d,x        add in number of bytes: end address
 
 * NOTE: PD.RGS,Y will change as the processes read/write the pipe,
@@ -168,7 +168,7 @@ Read     clrb
 L00DB    bsr   L01F2        are we blocked?
          bcs   L00C8        yes, send a signal
          sta   b,u          store the byte in the internal read buffer
-         leax  $01,X        go up by one byte
+         leax  $01,x        go up by one byte
          incb               one more byte in the buffer
          cmpb  #32          reached maximum size of the buffer?
          blo   L00E0        no, continue
@@ -178,22 +178,22 @@ L00E0    tst   PD.Read+P.FLAG,Y  was it a raw read?
          beq   L00ED      skip ahead if raw
          cmpa  #C$CR      was the character a CR?
          beq   L00F1      yes, we're done: flush and exit
-L00ED    cmpx  ,S         or at end of data to read?
+L00ED    cmpx  ,s         or at end of data to read?
          blo   L00DB        no, keep reading
 
 L00F1    bsr   read.out     flush the rest of the pipe buffer to the user
-L00F2    tfr   X,D        this is how far we got
-         subd  ,S++       take out start of buffer
+L00F2    tfr   x,d        this is how far we got
+         subd  ,s++       take out start of buffer
          leas  32,s         kill our on-stack buffer
          puls  u            restore caller's register stack ptr: NOT PD.RGS,Y
-         addd  R$Y,U      add in number of bytes
-         std   R$Y,U      save bytes read
+         addd  R$Y,u      add in number of bytes
+         std   R$Y,u      save bytes read
          bne   L00FF      if not zero
          ldb   #E$EOF     zero bytes read:EOF error
          fcb   $21          skip one byte
 
 L00FF    clrb               no errors
-L0100    leax  PD.Read,Y    read data ptr
+L0100    leax  PD.Read,y    read data ptr
          lbra  L01BD      signal other it's OK to go ahead
 
 read.out pshs  a,x,y,u      save registers
@@ -216,70 +216,70 @@ read.ex  puls  a,x,y,u,pc   restore registers and exit
 L00C8    pshs  x            save read pointer
          bsr   read.out     dump data out to the user
          pshs  b            save number of bytes read
-         leax  PD.Read,Y    read data area ptr
+         leax  PD.Read,y    read data area ptr
          lbsr  L018B      setup for signal
          puls  x,b          restore registers: note B=$00, but we CANNOT do a
          bcc   L00DB        clrb, because this line needs CC.C!
          bra   L00F2        don't write data out again, but exit
 
 * Check if we're blocked
-L01F2    lda   <PD.RFlg,Y  we blocked?
+L01F2    lda   <PD.RFlg,y  we blocked?
          bne   L01F9        no, skip ahead
          coma               set flag: blocked
          rts                and return to the caller
 
 L01F9    pshs  x            save read ptr
-         ldx   <PD.NxtO,Y   where to read from in the buffer
-         lda   ,X+        get a byte
-         cmpx  <PD.End,Y  at the end of the buffer?
+         ldx   <PD.NxtO,y   where to read from in the buffer
+         lda   ,x+        get a byte
+         cmpx  <PD.End,y  at the end of the buffer?
          blo   L0207        no, skip ahesd
-         ldx   PD.BUF,Y   yes, go to start
-L0207    stx   <PD.NxtO,Y   save new read ptr
-         cmpx  <PD.NxtI,Y caught up to the write pointer yet?
+         ldx   PD.BUF,y   yes, go to start
+L0207    stx   <PD.NxtO,y   save new read ptr
+         cmpx  <PD.NxtI,y caught up to the write pointer yet?
          bne   L0212        no, skeip ahead
-         clr   <PD.RFlg,Y yes, set read is blocked
+         clr   <PD.RFlg,y yes, set read is blocked
 L0212    andcc #^Carry      no errors
          puls  pc,x         restore regs and exit
 
-L0160    lda   P.CPR,X      get current process
+L0160    lda   P.CPR,x      get current process
          beq   L0185        none, exit
-         cmpa  PD.CPR,Y   current process ID
+         cmpa  PD.CPR,y   current process ID
          beq   L0189        none, exit
-         inc   P.CNT,X    one more process using this pipe
-         ldb   P.CNT,X
-         cmpb  PD.CNT,Y   same as the number for this path?
+         inc   P.CNT,x    one more process using this pipe
+         ldb   P.CNT,x
+         cmpb  PD.CNT,y   same as the number for this path?
          bne   L0173        no, skip ahead
          lbsr  L009C      no, send a wake-up signal
 L0173    os9   F$IOQu     and insert it in the others IO queue
-         dec   P.CNT,X    decrement count
+         dec   P.CNT,x    decrement count
          pshs  x
          ldx   <D.Proc      current process ptr
-         ldb   <P$Signal,X  signal code
+         ldb   <P$Signal,x  signal code
          puls  x
          beq   L0160      if no signal code sent, do another process
          coma               otherwise return CC.C set, and B=signal code
          rts   
 
-L0185    ldb   PD.CPR,Y     grab current PD process
-         stb   P.CPR,X      save as current reading/writing process
+L0185    ldb   PD.CPR,y     grab current PD process
+         stb   P.CPR,x      save as current reading/writing process
 L0189    clrb               no errors
          rts                and exit
 
 L01CC    pshs  b,x          save regs
-         ldx   <PD.NxtI,Y
-         ldb   <PD.RFlg,Y 0=READ, 1=WRITE
+         ldx   <PD.NxtI,y
+         ldb   <PD.RFlg,y 0=READ, 1=WRITE
          beq   L01DE      was reading, set to write and continue
-         cmpx  <PD.NxtO,Y caught up to the read pointer yet?
+         cmpx  <PD.NxtO,y caught up to the read pointer yet?
          bne   L01E3
          comb  
          puls  pc,x,b
 
-L01DE    inc   <PD.RFlg,Y set to writing into the pipe
+L01DE    inc   <PD.RFlg,y set to writing into the pipe
 L01E3    sta   ,X+        save the byte
-         cmpx  <PD.End,Y  if at the end of the buffer
+         cmpx  <PD.End,y  if at the end of the buffer
          blo   L01EC
-         ldx   PD.BUF,Y   reset to the beginning
-L01EC    stx   <PD.NxtI,Y
+         ldx   PD.BUF,y   reset to the beginning
+L01EC    stx   <PD.NxtI,y
          clrb  
          puls  pc,x,b
 
@@ -298,13 +298,13 @@ WritLn   ldb   #$0D
          fcb   $21        skip one byte
 
 Write    clrb
-         stb   <PD.Writ+P.FLAG,Y
-         leax  PD.Writ,Y
+         stb   <PD.Writ+P.FLAG,y
+         leax  PD.Writ,y
          bsr   L0160      make sure it's OK
          bcs   L015C
-         ldx   R$Y,U      get number of bytes to write
+         ldx   R$Y,u      get number of bytes to write
          beq   L015C
-         ldd   R$X,U      start address
+         ldd   R$X,u      start address
          leax  d,x        add in number of bytes
          pshs  u
          leau  ,s           point to the end of the buffer
@@ -318,13 +318,13 @@ Write    clrb
 L0137    lda   ,u
          bsr   L01CC      save it in the buffer
          bcs   L0124      caught up to reading process yet?
-         leax  $01,X      up by one byte
+         leax  $01,x      up by one byte
          leau  1,u
          decb
          bne   L0138
          bsr   write.in     fill the buffer again
 
-L0138    tst   <PD.Writ+P.FLAG,Y
+L0138    tst   <PD.Writ+P.FLAG,y
          beq   L014B
          cmpa  #C$CR      at the end of a line to output?
          beq   L014F
@@ -333,24 +333,24 @@ L014B    cmpx  ,S         at end yet?
 L014F    clrb             clear carry and error
 L0150    ldu   2+32,s       skip END, 32-byte write buffer, get U
          pshs  b,cc
-         tfr   X,D
-         subd  $02,S      take out end address
-         addd  R$Y,U      add in number of bytes
-         std   R$Y,U      save bytes written
+         tfr   x,d
+         subd  $02,s      take out end address
+         addd  R$Y,u      add in number of bytes
+         std   R$Y,u      save bytes written
          puls  x,b,cc
          leas  32,s         kill write buffer
          puls  u
 
-L015C    leax  PD.Writ,Y
+L015C    leax  PD.Writ,y
 * can probably lose saving 'U' in next few lines... but only minor difference
 * Signal read/write it's OK to go ahead
 L01BD    pshs  u,b,cc
-         clr   P.CPR,X    NO process currently using this device
+         clr   P.CPR,x    NO process currently using this device
          bsr   Other      signal other process to start
          puls  pc,u,b,cc
 
 L0124    pshs  x,b
-         leax  PD.Writ,Y
+         leax  PD.Writ,y
          bsr   L018B      send signal to other
          tfr   b,a          save error code, if applicable
          puls  x,b          restore pointer, byte count
@@ -358,22 +358,22 @@ L0124    pshs  x,b
          tfr   a,b          otherwise restore error code
          bra   L0150        exit, returning the error code to the user
 
-L018B    ldb   P.CNT,X
+L018B    ldb   P.CNT,x
          incb  
-         cmpb  PD.CNT,Y
+         cmpb  PD.CNT,y
          beq   L01B9
-         stb   P.CNT,X
+         stb   P.CNT,x
          ldb   #$01
-         stb   P.SIG,X
-         clr   PD.CPR,Y
+         stb   P.SIG,x
+         clr   PD.CPR,y
          pshs  x
          bsr   Other
          ldx   #$0000       make X=0
          os9   F$Sleep    sleep forever
          ldx   <D.Proc
-         ldb   <P$Signal,X  get signal code
+         ldb   <P$Signal,x  get signal code
          puls  x
-         dec   P.CNT,X
+         dec   P.CNT,x
          tstb  
          bne   L01BB      if a signal, we can't wake up
          clrb             the writing process
@@ -383,9 +383,9 @@ L01B9    ldb   #E$Write   write error
 L01BB    coma  
          rts   
 
-Other    exg   X,D
+Other    exg   x,d
          eorb  #$04       if r/w go to w/r
-         exg   D,X
+         exg   d,x
          lbra  L009C
 
          emod
