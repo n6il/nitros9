@@ -12,6 +12,8 @@
 *        default case.  By default, D.CRC is set
 *        to 0, thus there is no CRC checking.  Speeds
 *        up module loads quite a bit.
+*        The Init module has a bit in a compatibility
+*        byte that can turn on/off CRC checking
 
 
          nam   OS9
@@ -220,7 +222,11 @@ L00FB    ldd   ,y++
          os9   F$Link
          lbcs  OS9Cold
          stu   <D.Init
-         ldd   MaxMem+1,u
+         lda   Compat1,u		get compatibility byte
+         bita  #CRCOn			CRC on?
+         beq   GetMem			branch if not (already cleared earlier)
+         inc   <D.CRC			else turn on CRC checking
+GetMem   ldd   MaxMem+1,u
          clrb
          cmpd  <D.MLIM
          bcc   L0158

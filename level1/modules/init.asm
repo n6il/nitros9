@@ -25,11 +25,21 @@ size     equ   .
 
 * Init table
 start    equ   *
-         fcb   12                      number of IRQ polling entires
-         fdb   DefProg                 offset to program to fork
-         fdb   DefDev                  offset to default disk device
-         fdb   DefCons                 offset to default console device
-         fdb   DefBoot                 offset to boot module name
+         fcb   12         number of IRQ polling entires
+         fdb   DefProg    offset to program to fork
+         fdb   DefDev     offset to default disk device
+         fdb   DefCons    offset to default console device
+         fdb   DefBoot    offset to boot module name
+         fcb   $01        write protect flag (?)
+         fcb   Level      OS level
+         fcb   OS9Vrsn    OS version
+         fcb   OS9Major   OS major revision
+         fcb   OS9Minor   OS minor revision
+         fcb   CRCOn      compatibility flag #1
+* CCIO section
+         fcb   $00        unused
+         fcb   $1E        key repeat start constant
+         fcb   $03        key repeat
 
 name     fcs   "Init"
 
