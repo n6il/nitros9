@@ -9,11 +9,6 @@
 *        merged in comments from disasm dated 1992
 *   1    Monitor type bug now fixed                     BGP 03/03/10
 
-*Monitor defs
-COMP    equ   0
-RGB     equ   1
-MONO    equ   2
-
 
 * I/O path definitions
 StdIn    equ   0
