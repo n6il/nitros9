@@ -9,7 +9,7 @@ BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		boot_burke boot_idelba boot_rampak boot_wd1002
 BOOTTRACK	= oscode $(BOOTERS)
 KERNEL		= os9 os9p2
-SYSMODS		= ioman init sysgo
+SYSMODS		= ioman init sysgo_dd sysgo_h0
 CLOCKS          = clock_elim clock_disto2 clock_disto4 clock_bnb \
                 clock_smart clock_harris clock_tc3 clock_soft \
 		clock_soft_50hz
@@ -101,8 +101,11 @@ d2_80d.dd: ccdiskdesc.asm
 oscode: oscode.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0
 
-sysgo: sysgo.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDiskGo=1
+sysgo_dd: sysgo.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDD=1
+
+sysgo_h0: sysgo.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $<
 
 # Clocks
 clock_elim: clock.asm
