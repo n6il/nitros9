@@ -33,6 +33,71 @@ and a 4 page decrease in c.pass1.
 </listitem>
 </varlistentry>
 
+<varlistentry><term>Executives (cc1 and cc2):</term>
+<listitem>
+<para>
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry><term>Preprocessor (c.prep):</term>
+<listitem>
+<para>
+C.prep now prints a fatal error is a line exceeds 255 bytes.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry><term>Compiler (c.comp, c.pass1, c.pass2):</term>
+<listitem>
+<para>
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry><term>Optimizer (c.opt):</term>
+<listitem>
+<para>
+C.opt has been improved to use much less dynamic memory while
+performing optimizations.
+</para>
+<para>
+Some branches were erroneously converted to short branches
+when they should have been long.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry><term>Assembler (c.asm):</term>
+<listitem>
+<para>
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry><term>Linker (c.link):</term>
+<listitem>
+<para>
+C.link can now handle direct-page initialized data.
+</para>
+<para>
+C.link will now report if the direct page allocations exceeds 256 bytes.
+</para>
+<para>
+C.link is about three times faster using the improved V1.1 standard library.
+</para>
+<para>
+C.link can now output modules that can be entered by the BASIC09 "RUN" command.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry><term>Library (clib.l):</term>
+<listitem>
+<para>
+</para>
+</listitem>
+</varlistentry>
 
 </variablelist>
 </preface>
