@@ -20,9 +20,12 @@
 * time. User notified if clock not found or data memory not available.
 *
 * Initialization routine contains code that bypasses OS-9 system calls to
-* acquire needed low RAM that can?t become ROM. This type of code is not
+* acquire needed low RAM that can't become ROM. This type of code is not
 * recommended in most cases but nothing else was usable.
-*
+*          2004/7/31   Robert Gault
+* Added a settime routine and changed "no clock found" routine. If the
+* clock is not found, the D.Time entries are cleared but no message is sent.
+* Date -t will never get passed one minute.
 *          2004/7/31   Rodney Hamilton
 * Improved RTCJVEmu code, conditionalized RTC type comments.
 
@@ -75,10 +78,12 @@ RTC.Base equ   $C000      clock mapped to $C000-$DFFF; $FFA6 MMU slot
 RTC.Zero equ   0          Send zero bit
 RTC.One  equ   1          Send ones bit
 RTC.Read equ   4
+*D.SWPage equ   $1F        on system DP
 D.RTCSlt equ   0          on SmartWatch ?data? page
 D.RTCFlg equ   1          on SW page
-D.Temp   equ   2          on SW page, holds "clock" data
-D.Start  equ   3          on SW page, code starts here
+D.RTCMod equ   2
+D.Temp   equ   3          on SW page, holds "clock" data
+D.Start  equ   4          on SW page, code starts here
          ENDC            
 
          IFNE  RTCHarrs  
@@ -488,16 +493,45 @@ BCDEnter suba  #$10
 
          ENDC            
 
+SetTime  equ   *
          IFNE  RTCSmart
 *
 * Update time from Smartwatch RTC
 *
-mes_clk  fcc   /SmartWatch not present!/
-         fcb   $0a
-         fcc   /Reboot or replace clock2 in/
-         fcb   $0a
-         fcc   /os9boot with software version./
-         fcb   $0d
+* This set time routine forces military time. It can't turn off clock but can
+* be used as a timer if time set to 0:0:0  hr:min:sec
+         pshs  cc,d,x,y,u
+         orcc  #$50
+         lda   D.SWPage
+         clrb
+         tfr   d,u         point to working space
+         lda   $FF7F
+         pshs  a
+         lda   D.RTCSlt,u  info for MPI slot
+         sta   $FF7F
+         lda   #-1
+         sta   D.RTCMod,u  indicate set time rather than read
+         IFGT  Level-1
+         ldx   #D.Slice
+         ELSE
+         ldx   #D.TSec
+         ENDC
+         tfr   u,y                          get location of safe region
+         leay  >D.Start+alrtend-reloc,y     point to end of wakeup code
+         lda   ,-x                          get D.Time data and store it
+         ldb   #4                           convert tenths sec, sec, min, hours
+         lbsr  binbcd                       to binary coded decimal
+         IFGT  Level-1
+         lda   D.Daywk
+         ELSE
+         clra
+         ENDC
+         sta  ,y+                           set day of week if present
+         lda  ,x
+         ldb  #3                            convert day of month, month, year
+         bsr  binbcd                        to BCD
+         jsr   >D.Start,u                   send data to clock
+         lbra  exit
          
 mem_mes  fcc   /There is no system memory for/
          fcb   $0a
@@ -506,11 +540,6 @@ mem_mes  fcc   /There is no system memory for/
          fcc   /os9boot size or use soft clock./
          fcb   $0d
 
-start    equ   *
-         lbra  Init
-         lbra  Read
-         lbra  term
-         
 Read     pshs  cc,d,x,y,u
          orcc  #$50
          lda   D.SWPage
@@ -520,8 +549,24 @@ Read     pshs  cc,d,x,y,u
          pshs  a
          lda   D.RTCSlt,u  info for MPI slot
          sta   $FF7F
+         clr   D.RTCMod,u  set for read time
          jsr   D.Start,u   jsr to it
          lbra  exit
+
+binbcd   pshs b
+bcd3     clrb
+bcd1     cmpa #10
+         bcs  bcd2
+         addd #$f610      decrease bin regA by 10 add bcd $10 to regB
+         bra  bcd1
+bcd2     pshs a
+         addb ,s+         add in remainder; BCD = binary when less than 10
+         stb  ,y+         place in message to clock
+         lda  ,-x         get next byte of D.Time
+         dec  ,s          decrease counter
+         bne  bcd3
+         puls b,pc
+         
 * This becomes D.Start
 reloc    equ   *
          IFGT  Level-1
@@ -536,12 +581,16 @@ reloc    equ   *
          sta   $FFDE
          ldd   #RTC.Base
          tfr   a,dp        DP now points to clock
+         tst   D.RTCMod,u  are we reading the clock or setting it?
+         beq   findclk     go if reading
+         lbsr  wakeup      we are setting a found clock
+         lbra  found
 findclk  lbsr  wakeup      wakeup the clock
-         IFGT  Level-1
+*         IFGT  Level-1
          ldx   #D.Sec      one incoming byte dropped
-         ELSE
-         ldx   #$58        Level1 D.Sec
-         ENDC
+*         ELSE
+*         ldx   #$58        Level1 D.Sec
+*         ENDC
          lda   #8          bytes to get
          pshs  a
 L0050    ldb   #8
@@ -638,7 +687,8 @@ w1       stb   D.Temp,u
          leax  alert,pcr   point to message
 nxtbyte  ldb   #8          8 bytes to send
          lda   ,x+
-         beq   term
+         cmpa  #-1         changed from 0 terminator to -1 to accomodate
+         beq   term        settime
 nxtbit   lsra              bits sent to clock by toggling
          bcs   high        Zero and One
          cmpa  <RTC.Zero   faster than tst
@@ -649,7 +699,12 @@ nxtbit2  decb
          bra   nxtbyte
 
 * SmartWatch wakeup sequence
-alert    fcb   $c5,$3a,$a3,$5c,$c5,$3a,$a3,$5c,0
+alert    fcb   $c5,$3a,$a3,$5c,$c5,$3a,$a3,$5c
+* The next 8 bytes become time data when setting the clock. Terminator is
+* now $FF instead of $00 to permit $00 as data.
+alrtend  fcb   $FF
+alrtime  rmb   7
+         fcb   $FF
 
 exit     equ   *
          puls  a
@@ -659,12 +714,15 @@ exit     equ   *
          puls  cc,d,x,y,u,pc
 
 noclock  equ   *
-         lda   #2          error path #
-         leax  mes_clk,pcr
-         ldy   #200         max chars
-         OS9   I$WritLn
+         ldd   #7          seven time bytes to clear
+         ldx   #D.Time
+         IFGT  Level-1
+         sta   D.Daywk
+         ENDC
+nc       sta   ,x+
+         decb
+         bne   nc
          puls  cc,d,x,y,u,pc
-
          ENDC
 
          IFNE  RTCHarrs  
@@ -739,10 +797,6 @@ UpdTExit rts
 
 months   fcb   31,28,31,30,31,30,31,31,30,31,30,31 Days in each month
          ENDC            
-
-
-
-SetTime  equ   *         
 
          IFNE  RTCElim   
 *
@@ -1108,6 +1162,7 @@ A3       equ   *
          orb   #$30           force slot #4 to start search
          stb   D.RTCSlt,x     save the info
          clr   D.RTCFlg,x     set to no clock found
+         clr   D.RTCMod,x     set to read time
          leax  D.Start,x      safe location for moved code
          IFNE  H6309
          leay  reloc,pcr
