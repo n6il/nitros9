@@ -1,5 +1,5 @@
 @DCHECK
-Syntax: Dcheck [-opts] <devname>
+Syntax: Dcheck [<opts>] <devname>
 Usage : Check disk file structure
 Opts  :
   -w=path = pathlist to directory for work files

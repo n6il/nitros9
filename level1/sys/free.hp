@@ -1,3 +1,3 @@
 @FREE
-Syntax: Free [devname]
+Syntax: Free [<devname>]
 Usage : Displays number of free sectors on a device

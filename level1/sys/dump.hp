@@ -1,5 +1,5 @@
 @DUMP
-Syntax: Dump [opts] [<path>] [opts]
+Syntax: Dump [<opts>] [<path>] [<opts>]
 Usage : Formatted File Dump in Hexadecimal and ASCII
 Opts  :
   -h = no header

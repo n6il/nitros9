@@ -1,5 +1,5 @@
 @DIR
-Syntax: Dir [opts] [path]
+Syntax: Dir [<opts>] [<path>]
 Usage : Displays formatted list of the file names in a directory
 Opts  :
   -e = extended dir

@@ -1,5 +1,5 @@
 @TOUCH
-Syntax: Touch [<opts>] {<path> [<opts>]}
+Syntax: Touch [<opts>] <path> [<opts>]
 Usage : update the date of a file
 Opts  :
   -c = don't create files

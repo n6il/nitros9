@@ -1,3 +1,3 @@
 @ERROR
-Syntax: Error errno [...]
+Syntax: Error <errno> [<errno> [...]]
 Usage : Outputs text error messages for given error numbers

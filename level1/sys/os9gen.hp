@@ -1,5 +1,5 @@
 @OS9GEN
-Syntax: OS9Gen devname [-s]
+Syntax: OS9Gen devname [<opts>]
 Usage : Creates and links an OS-9 bootstrap file
 Opts  :
   -s = single drive option

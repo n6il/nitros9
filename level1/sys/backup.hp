@@ -1,5 +1,5 @@
 @BACKUP
-Syntax: Backup [e][s][-v][dev][dev]
+Syntax: Backup [<opts>] [<srcdev>] [<destdev>]
 Usage : Copies all data from one device to another
 Opts  :
   e = exit if read error occurs

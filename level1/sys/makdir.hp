@@ -1,3 +1,3 @@
 @MAKDIR
-Syntax: Makdir <pathname>
+Syntax: Makdir <pathlist>
 Usage : Creates a new directory file 

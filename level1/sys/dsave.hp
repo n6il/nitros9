@@ -1,5 +1,5 @@
 @DSAVE
-Syntax: Dsave [-opts][dev][pathname]
+Syntax: Dsave [<opts>] [<dev>] [<pathlist>]
 Usage : Generates procedure file to copy all files in a directory system
 Opts  :
   -b = make a system disk by using OS9boot if present
