@@ -1,4 +1,3 @@
-* OS-9 Level equates
 Level    equ   2
 
          use   os9defs
