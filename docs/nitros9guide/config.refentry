@@ -24,7 +24,7 @@ The CONFIG utility is on a separate CONFIG/BOOT Diskette.  Make a copy of this
 diskette using the OS-9 BACKUP command and use the copy as your working
 diskette.  Keep the original CONFIG/BOOT Diskette in a safe place to use
 for future backups.  You can use the CONFIG/BOOT Diskette for booting OS-9
-from Color Disk BASIC from Drive /D0.
+from &make; Disk BASIC from Drive /D0.
 </para>
 <para>
 CONFIG requires no initial parameters.  You establish parameters during the
@@ -59,7 +59,7 @@ page-by-page and [<-] to move back.
 <para>
 The devices you can select are:
 </para>
-<para>
+<literallayout>
 	term32	The computer keyboard and standard TV display
 	term80	The computer keyboard and optional 80 column video display
 	d0	Disk Drive 0
@@ -77,7 +77,7 @@ The devices you can select are:
 	m1	A modem
 	m2	A modem
 	ssc	Speech/Sound Cartridge
-</para>
+</literallayout>
 <para>
 To use your computer keyboard and video display, you must select one term.
 You must select d0 as your first disk drive.  Select d1, d2, and d3 for
@@ -92,15 +92,15 @@ If you wish to make further changes, press [N].
 </para>
 <para>
 When the driver selection is complete, a screen prompt requests that you
-select among the Color Computer terminal I/O subroutines.  Select these
+select among the &make; Computer terminal I/O subroutines.  Select these
 subroutines in the same manner that you selected the device drivers.
 You have the following modules from which to make your selections:
 </para>
-<para>
+<literallayout>
 	CO32	A video output module for a 32 column TV display
 	CO80	A video output module for a 80 column video display
 	GRFO	A graphics module for TV display
-</para>
+</literallayout>
 <para>
 When choosing subroutine modules, you must select the video output module
 that matches the terminal module you previously selected for your console
@@ -111,10 +111,10 @@ CONFIG builds a boot list from the selected devices and their associated
 drivers and managers.  "Bootlist" is created in the ROOT directory of
 Drive 0.  CONFIG next displays two clock options:
 </para>
-<para>
+<literallayout>
 	1 - 60Hz (American)
 	2 - 50Hz (European)
-</para>
+</literallayout>
 <para>
 If you live in the United States, Canada, or other country with 60Hz
 electrical power, press [1].  If you live in a country with 50Hz power,
@@ -135,13 +135,13 @@ file creation is automatic.
 Following the boot file generation, a menu lets you select the commands you
 wish to include on your system diskette.  You have the following choices:
 </para>
-<para>
+<screen>
 	[N]o Commands, Stop Now - Do not add any commands
 	[B]asic Command Set - Adds the basic OS-9 commands
 	[F]ull COmmand Set - Add all OS-9 commands
 	[I]ndividually Select - Select desired commands one by one
 	[?] Receive Help - Get help on the command set
-</para>
+</screen>
 <para>
 Press [N] if you want to create a boot file, but do not wish to add any
 commands to the new system diskette.  Use this option to create a new boot
@@ -201,13 +201,13 @@ The MODULES directory of the CONFIG/BOOT diskette contains all the device
 drivers and descriptors supported by OS-9.  The filename extension
 describes the type of file, as noted in the following table:
 </para>
-<para>
+<screen>
 	Extension 	Module Type
 	.dd		Device Descriptor module
 	.dr		Device Driver module
 	.io		Input/Output subroutine module
 	.hp		Help file
-</para>
+</screen>
 </refsect1>
 </refentry>
 

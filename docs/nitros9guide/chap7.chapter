@@ -86,6 +86,7 @@ command line before it is passed to the program being called.
 &chdref;
 &cmpref;
 &cobblerref;
+&configref;
 &copyref;
 &dateref;
 &dcheckref;
@@ -99,7 +100,9 @@ command line before it is passed to the program being called.
 &exref;
 &formatref;
 &freeref;
+&helpref;
 &identref;
+&inizref;
 &killref;
 &linkref;
 &listref;
@@ -122,8 +125,10 @@ command line before it is passed to the program being called.
 &teeref;
 &tmoderef;
 &tsmonref;
+&tuneportref;
 &unlinkref;
 &verifyref;
 &xmoderef;
+
 </section>
 </chapter>

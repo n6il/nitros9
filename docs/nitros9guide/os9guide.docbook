@@ -4,7 +4,7 @@
   <!ENTITY repeatst   "{">
   <!ENTITY repeaten   "}">
   <!ENTITY vendor     "Dragon Data">
-  <!ENTITY make   "Dragon">
+  <!ENTITY make   "Dragon/Color">
   <!ENTITY preface       SYSTEM "preface-dragon.preface">
   <!ENTITY chap1         SYSTEM "chap1.chapter">
   <!ENTITY chap2         SYSTEM "chap2.chapter">
@@ -19,6 +19,7 @@
   <!ENTITY keysapp       SYSTEM "keys.appendix">
   <!ENTITY go51app       SYSTEM "go51.appendix">
   <!ENTITY acia51app     SYSTEM "acia51.appendix">
+
   <!ENTITY attrref       SYSTEM "attr.refentry">
   <!ENTITY backupref     SYSTEM "backup.refentry">
   <!ENTITY binexref      SYSTEM "binex.refentry">
@@ -26,6 +27,7 @@
   <!ENTITY chdref        SYSTEM "chd.refentry">
   <!ENTITY cmpref        SYSTEM "cmp.refentry">
   <!ENTITY cobblerref    SYSTEM "cobbler.refentry">
+  <!ENTITY configref     SYSTEM "config.refentry">
   <!ENTITY copyref       SYSTEM "copy.refentry">
   <!ENTITY dateref       SYSTEM "date.refentry">
   <!ENTITY dcheckref     SYSTEM "dcheck.refentry">
@@ -39,7 +41,9 @@
   <!ENTITY exref         SYSTEM "ex.refentry">
   <!ENTITY formatref     SYSTEM "format.refentry">
   <!ENTITY freeref       SYSTEM "free.refentry">
+  <!ENTITY helpref       SYSTEM "help.refentry">
   <!ENTITY identref      SYSTEM "ident.refentry">
+  <!ENTITY inizref       SYSTEM "iniz.refentry">
   <!ENTITY killref       SYSTEM "kill.refentry">
   <!ENTITY linkref       SYSTEM "link.refentry">
   <!ENTITY listref       SYSTEM "list.refentry">
@@ -62,6 +66,7 @@
   <!ENTITY teeref        SYSTEM "tee.refentry">
   <!ENTITY tmoderef      SYSTEM "tmode.refentry">
   <!ENTITY tsmonref      SYSTEM "tsmon.refentry">
+  <!ENTITY tuneportref   SYSTEM "tuneport.refentry">
   <!ENTITY unlinkref     SYSTEM "unlink.refentry">
   <!ENTITY verifyref     SYSTEM "verify.refentry">
   <!ENTITY xmoderef      SYSTEM "xmode.refentry">
