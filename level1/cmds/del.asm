@@ -6,6 +6,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   5    From Tandy OS-9 Level One VR 02.00.00
+*   6    Now option can be anywhere on command line,    BGP 03/01/13
+*        and all files will be deleted.  Made smaller
 
          nam   Del
          ttl   File deletion utility
@@ -19,12 +21,13 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   5
+edition  set   6
 
          mod   eom,name,tylg,atrv,start,size
 
-InPath   rmb   1
-         rmb   450
+amode    rmb   1
+         rmb   250
+stack    rmb   200
 size     equ   .
 
 name     fcs   /Del/
@@ -34,60 +37,53 @@ HelpMsg  fcb   C$LF
          fcc   "Use: Del [-x] <path> {<path>} [-x]"
          fcb   C$CR
 
-start    lda   ,x
-         cmpa  #C$CR
-         beq   L0093
-         lda   #1
-         sta   <InPath
-         bsr   L0054
-         leax  -1,x
-L0043    lda   <InPath
+start    lda   ,x		get first char on command line
+         cmpa  #C$CR		carriage return?
+         beq   ShowHelp		if so, no params, show help
+         lda   #READ.
+         sta   <amode
+         pshs  x		save param pointer
+         bsr   GetOpts		get opts
+         puls  x		get param pointer
+L0043    lda   <amode
          os9   I$DeletX 
-         bcs   L0051
+         bcs   Exit
          lda   ,x
          cmpa  #C$CR
          bne   L0043
-         clrb  
-L0051    os9   F$Exit   
-L0054    lda   ,x+
+ExitOk   clrb  
+Exit     os9   F$Exit   
+
+GetOpts  ldd   ,x+
          cmpa  #C$SPAC
-         beq   L0054
+         beq   GetOpts
          cmpa  #C$COMA
-         beq   L0054
-         cmpa  #'-
-         bne   L0067
-         bsr   L0086
-         leax  1,x
-         rts   
-L0067    pshs  x
-L0069    lda   ,x+
-         cmpa  #C$SPAC
-         beq   L0069
-         cmpa  #C$COMA
-         beq   L0069
-         cmpa  #'-
-         beq   L007E
+         beq   GetOpts
          cmpa  #C$CR
-         bne   L0069
-L007B    puls  x
-         rts   
-L007E    bsr   L0086
-         lda   #C$CR
-         sta   -2,x
-         bra   L007B
-L0086    lda   ,x+
-         eora  #'X
-         anda  #$DF
-         bne   L0093
-         lda   #$04
-         sta   <InPath
-         rts   
-L0093    leax  >HelpMsg,pcr
+         beq   Return
+         cmpa  #'-
+         bne   SkipName
+         eorb  #'X
+         andb  #$DF
+         bne   ShowHelp
+         lda   #EXEC.
+         sta   <amode
+         ldd   #$2020
+         std   -1,x		write over option
+SkipName lda   ,x+
+         cmpa  #C$SPAC
+         beq   GetOpts
+         cmpa  #C$COMA
+         beq   GetOpts
+CheckCR  cmpa  #C$CR
+         bne   SkipName
+Return   rts   
+
+ShowHelp leax  >HelpMsg,pcr
          ldy   #80
-         clra  
-         os9   I$WritLn 
-         clrb  
-         bra   L0051
+         lda   #2		stderr
+         os9   I$WritLn 	write help
+         bra   ExitOk
 
          emod
 eom      equ   *
