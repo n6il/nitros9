@@ -21,8 +21,8 @@ Recognized file suffixes:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.5in">
-<colspec colwidth="3.0in">
+<colspec colwidth="0.5in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
     <entry>.c</entry>
@@ -44,8 +44,8 @@ Recognized options: (UPPER and lower case is equiv.)
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.5in">
-<colspec colwidth="3.0in">
+<colspec colwidth="0.5in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
     <entry>-a</entry>
