@@ -17,7 +17,7 @@ OS9P1		= os9p1
 OS9P2		= os9p2
 REL		= rel
 ROMMODS         = rominfo rom_vectors cc3go_rom pakrom
-SYSMODS		= ioman init cc3go
+SYSMODS		= ioman init cc3go os9p3_perr os9p4_regdump
 CLOCKS          = clock_elim clock_disto2 clock_disto4 clock_bnb \
 		clock_smart clock_harris clock_tc3 clock_soft
 FMGRS		= scf.mn rbf.mn pipeman.mn pipeman_named.mn
