@@ -41,11 +41,11 @@ all:	$(ALLOBJS) $(HELP)
 
 # Special cases here
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8
+		-aInterlv=3 -aSAS=8 -aDensity=1
 DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8
+		-aInterlv=3 -aSAS=8 -aDensity=1
 DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8
+		-aInterlv=3 -aSAS=8 -aDensity=3
 
 # Floppy descriptors
 ddd0_35s.dd: dx.asm
