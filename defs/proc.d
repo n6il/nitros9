@@ -28,23 +28,23 @@ P$SP::     .rmb   2          ; Stack ptr
 P$CHAP::   .rmb   1          ; process chapter number
 P$ADDR::   .rmb   1          ; user address beginning page number
 P$PagCnt:: .rmb   1          ; Memory Page Count
-P$User::   .rmb   2          ; User Index $09
-P$Prior::  .rmb   1          ; Priority $0B
-P$Age::    .rmb   1          ; Age $0C
-P$State$0D
-P$Queue::  .rmb   2          ; Queue Link (Process ptr) $0E
-P$IOQP::   .rmb   1          ; Previous I/O Queue Link (Process ID) $10
+P$User::   .rmb   2          ; User Index
+P$Prior::  .rmb   1          ; Priority
+P$Age::    .rmb   1          ; Age
+P$State:   .rmb   1          ; Process State
+P$Queue::  .rmb   2          ; Queue Link (Process ptr)
+P$IOQP::   .rmb   1          ; Previous I/O Queue Link (Process ID)
 P$IOQN::   .rmb   1          ; Next     I/O Queue Link (Process ID)
 P$PModul:: .rmb   2          ; Primary Module
 P$SWI::    .rmb   2          ; SWI Entry Point
 P$SWI2::   .rmb   2          ; SWI2 Entry Point
-P$SWI3::   .rmb   2          ; SWI3 Entry Point $18
-P$DIO::    .rmb   DefIOSiz   ; default I/O ptrs $1A
-P$PATH::   .rmb   NumPaths   ; I/O path table $26
-P$Signal:: .rmb   1          ; Signal Code $36
+P$SWI3::   .rmb   2          ; SWI3 Entry Point
+P$DIO::    .rmb   DefIOSiz   ; default I/O ptrs
+P$PATH::   .rmb   NumPaths   ; I/O path table
+P$Signal:: .rmb   1          ; Signal Code
 P$SigVec:: .rmb   2          ; Signal Intercept Vector
 P$SigDat:: .rmb   2          ; Signal Intercept Data Address
-P$NIO::    .rmb   4          ; additional dio pointers for net
+P$NIO::    .rmb   4          ; additional DIO pointers for net
                              ; unused
            .org   0h40
 P$Size     ==     .          ; Size of Process Descriptor
