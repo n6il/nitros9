@@ -1,0 +1,18 @@
+<chapter>
+<title>Characteristics of Compiled Programs</title>
+
+<section>
+<title>The Object Code Module</title>
+<para>
+OS-9 has been tailored to run on your standard, unmodified &make;
+Computer. To use it you'll need the following things:
+</para>
+
+</section>
+<section>
+<title>Starting the System</title>
+<para>
+To start up OS-9 follow these steps:
+</para>
+</section>
+</chapter>

@@ -1,0 +1,51 @@
+<refentry id="printf">
+
+<refnamediv>
+<refname>printf</refname>
+<refname>fprintf</refname>
+<refname>sprintf</refname>
+<refpurpose>formatted output</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+
+<funcsynopsis>
+<funcsynopsisinfo>
+#include &lt;stdio.h&gt;
+</funcsynopsisinfo>
+<funcprototype>
+  <funcdef><function>printf</function></funcdef>
+  <paramdef>char *<parameter>control</parameter></paramdef>
+  <paramdef>..</paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef><function>fprintf</function></funcdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
+  <paramdef>char *<parameter>control</parameter></paramdef>
+  <paramdef>...</paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef><function>sprintf</function></funcdef>
+  <paramdef>char *<parameter>string</parameter></paramdef>
+  <paramdef>char *<parameter>control</parameter></paramdef>
+  <paramdef>...</paramdef>
+</funcprototype>
+</funcsynopsis>
+
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+Thse three functions are used to place numbers and strings on
+the output in formatted, human readable form.
+</para>
+<para>
+Fprintf places its output on the file "fp", printf on the
+standard output, and sprintf in the buffer pointed to by
+"string". NOTE that it is the user's responsibility to ensure
+that this buffer is large enough.
+</para>
+</refsect1>
+</refentry>
