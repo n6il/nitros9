@@ -65,7 +65,11 @@ cont     ldd   #$0001     request one byte (will round up to 1 page)
          os9   F$SRtMem   return the copy of LSN0 to free memory
 
          ldd   R.X,s      get size of boot memory to request
+         ifgt  Level-1
          os9   F$BtMem    ask for the boot memory
+         else
+         os9   F$SRqMem   ask for the boot memory
+         endc
          puls  x          restore the starting sector number
          bcs   L00AE      no memory: exit with error
 
@@ -96,7 +100,7 @@ L00AE    puls  a
 
 L00B0    puls  x          restore start address of memory allocated
 *         leas  size,s     remove the on-stack buffer
-         clr   >$FF40     stop the disk
+         clr   >DPort     stop the disk
 L00BA    rts   
 
 * GetSect: read a sector off of the disk
@@ -117,25 +121,27 @@ ReadLp   stb   ,y         save byte number
          clrb             no errors
          puls  d,x,y,pc   restore registers and return
 
+         ifgt  Level-1
          fcc   /    JABBERWOCKY.          /
-         fcb   $0D
+         fcb   C$CR
          fcc   /'Twas brillig, and the slithy toves/
-         fcb   $0D
+         fcb   C$CR
          fcc   /  Did gyre and gimble in the wabe:/
-         fcb   $0D
+         fcb   C$CR
          fcc   /All mimsy were the borogroves,/
-         fcb   $0D
+         fcb   C$CR
          fcc   /  And the mome raths outgrabe./
-         fcb   $0D
-         fcb   $0D
+         fcb   C$CR
+         fcb   C$CR
          fcc   /"Beware the Jabberwock, my son!/
-         fcb   $0D
+         fcb   C$CR
          fcc   /  The jaws that bite, the claws that catch!/
-         fcb   $0D
+         fcb   C$CR
          fcc   /Beware the Jubjub bird, and shun/
-         fcb   $0D
+         fcb   C$CR
          fcc   /  The frumious Bandersnatch"/
-         fcb   $0D
+         fcb   C$CR
+         endc
 
 Address  fdb   $FF40      address of the device to boot from
 PakSlot  fcb   $01        multipak slot number
