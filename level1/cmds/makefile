@@ -14,7 +14,6 @@ DRAGONCMDS	= cobbler_d64 format_d64 os9gen_d64 go51
 ALLOBJS		= $(COCOCMDS) $(DRAGONCMDS)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 755 $(ALLOBJS)
 
 pwd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1

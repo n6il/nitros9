@@ -43,6 +43,8 @@ BOOTFILE_DW	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr \
 		$(MD)/d0_40d.dd \
+		$(3PD)/ide/ccide_l2.dr \
+		$(3PD)/ide/h0_ide_l2.dd \
 		$(C9)/drivewire/drivewire_l2.dr \
 		$(C9)/drivewire/ddx0_l2.dd \
 		$(C9)/drivewire/x1_l2.dd \

@@ -38,7 +38,6 @@ ALLOBJS		= $(CMDS)
 TEXTFILES	= tOC.txt Startup
 
 all:	$(ALLOBJS)
-	$(CHMOD) 755 $(CMDS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)

@@ -22,7 +22,6 @@ SUPPORTFILES	= global.dat mm.lib mm.pnl mm.ttl mod7.lib
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 755 $(CMDS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)

@@ -10,7 +10,6 @@ all:	$(ALLOBJS)
 	@$(ECHO) "*         3rd Party System Modules          *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	$(CHMOD) 755 $(CMDS)
 
 clean:
 	$(RM) $(ALLOBJS)

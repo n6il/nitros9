@@ -27,7 +27,6 @@ SUPPORTFILES	= backgnd.dat backgnd2.dat bigblocks.dat blakguy.dat \
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 755 $(CMDS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)

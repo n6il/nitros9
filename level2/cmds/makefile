@@ -22,7 +22,6 @@ ALLOBJS		= $(CMDS) $(SUBS)
 
 # Files not compilable by os9asm: config
 all:	$(ALLOBJS) shell utilpak1 $(DEPENDS)
-	$(CHMOD) 755 $(ALLOBJS) shell utilpak1
 
 pwd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1

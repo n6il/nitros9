@@ -9,7 +9,6 @@ DEFS		= OS9Defs RBFDefs SCFDefs SysType
 ALLOBJS		= $(DEFS) $(PERMDEFS)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 644 $(ALLOBJS)
 
 OS9Defs: $(DEFSDIR)/os9defs
 	$(AS) $(DEFOPTS) -aOS9DEFS=0 $< > $@

@@ -37,8 +37,6 @@ ALLOBJS		= $(BOOTERS) $(KERNELS) $(ROMMODS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
 		$(DRIVERS) $(IOSUBS) $(DESCS)
 
 all:	$(ALLOBJS) $(HELP)
-	$(CHMOD) 755 $(ALLOBJS)
-	$(CHMOD) 644 $(HELP)
 
 # Special cases here
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \

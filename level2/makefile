@@ -31,7 +31,6 @@ all:
 	$(CD) DEFS; make
 	$(CD) SYS; make
 	$(CD) BOOTFILES; make
-	$(CHMOD) 644 $(ROOTFILES)
 
 # Clean all components
 clean: dskclean

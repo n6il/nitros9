@@ -52,8 +52,6 @@ ALLOBJS		=  $(BOOTERS) $(OS9P1) $(OS9P2) $(REL) $(SYSMODS) $(CLOCKS) $(FMGRS) \
 		$(DRIVERS) $(IOSUBS) $(DESCS) $(WINDESCS)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 755 $(ALLOBJS)
-
 
 # Special cases here
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \

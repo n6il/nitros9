@@ -23,7 +23,6 @@ SUPPORTFILES	= logDir object picDir sndDir tOC viewDir vol.0 \
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 755 $(CMDS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)
