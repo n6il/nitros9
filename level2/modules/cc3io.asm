@@ -28,6 +28,12 @@
 *          2003/12/02  Boisy G. Pitre
 * Keyboard mouse is now either global or local to window, depending
 * on whether GLOBALKEYMOUSE is defined.
+*
+*          2004/08/14  Boisy G. Pitre
+* Fixed a bug where the last deiniz of the last window device caused
+* an infinite loop.  The problem was that IOMan clears the static
+* storage of a device whose use count has reached zero (in the
+* case of a hard detach).  See Note below.
 
          nam   CC3IO
          ttl   CoCo 3 I/O driver
@@ -74,19 +80,11 @@ Term     equ   *
          cmpu  G.CurDev,x	device to be terminated is current?
 *         cmpu  >WGlobal+G.CurDev	device to be terminated is current?
          bne   noterm		no, execute terminate routine in co-module
-         lbsr  shftclr		get last window memory pointer
+         lbsr  SHFTCLR		get last window memory pointer
          cmpu  G.CurDev,x	device to be terminated is current?
 *         cmpu  >WGlobal+G.CurDev	we the only window left?
          bne   noterm		no, execute terminate routine in co-module
 * We are last device that CC3IO has active; terminate ourself
-         pshs  u,x
-         ldx   #(WGlobal+G.JoyEnt) $10EA
-         bsr   TermSub
-         ldx   #(WGlobal+G.SndEnt) $10F4
-         bsr   TermSub
-         ldx   #(WGlobal+G.KeyEnt) $10E0
-         bsr   TermSub
-         puls  u,x
          pshs  cc
          orcc  #IRQMask
          IFNE  H6309
@@ -100,8 +98,17 @@ Term     equ   *
          ldx   <D.Clock		change altirq routine to go to clock
          stx   <D.AltIRQ
          puls  cc		restore IRQs
+
+         pshs  u,x
+         ldx   #(WGlobal+G.JoyEnt) $10EA
+         bsr   TermSub
+         ldx   #(WGlobal+G.SndEnt) $10F4
+         bsr   TermSub
+         ldx   #(WGlobal+G.KeyEnt) $10E0
+         bsr   TermSub
+         puls  u,x
 noterm   ldb   #$0C		branch table offset for terminate
-         lbra  L0590		go to terminate in co-module
+         lbra  CallCo		go to terminate in co-module
 
 * Call terminate routine in subroutine module (KeyDrv/JoyDrv/SndDrv)
 * X  = addr in statics of entry
@@ -123,9 +130,9 @@ Init     ldx   <D.CCMem		get ptr to CC mem
          ldd   <G.CurDev,x	has CC3IO itself been initialized?
          lbne  PerWinInit	yes, don't bother doing it again
 * CC3IO initialization code - done on the first init of ANY cc3io device
-         leax  >CC3Irq,pcr	set up AltIRQ vector in DP
-         stx   <D.AltIRQ
-         leax  >shftclr,pcr	point to SHIFT-CLEAR subroutine
+*         leax  >CC3Irq,pcr	set up AltIRQ vector in DP
+*         stx   <D.AltIRQ
+         leax  >SHFTCLR,pcr	point to SHIFT-CLEAR subroutine
          pshs  x		save it on stack
          leax  >setmouse,pcr	get address of setmouse routine
          tfr   x,d
@@ -184,6 +191,9 @@ Init     ldx   <D.CCMem		get ptr to CC mem
          puls  u,y,x,b,a	restore saved regs
          std   <D.Proc		and restore current process
 
+         leax  >CC3Irq,pcr	set up AltIRQ vector in DP
+         stx   <D.AltIRQ
+
 * This code is executed on init of every window
 * U = device memory area
 PerWinInit
@@ -192,12 +202,12 @@ PerWinInit
          ldd   <IT.PAR,y	get parity/baud bytes from dev desc
          std   <V.DevPar,u	save it off in our static
 *** Find CC3GfxInt
-         pshs  u,y,a		..else VDG
-         lda   #$02		get code for VDG type window
-         sta   <V.WinType,u	save it
-         leax  <CC3GfxInt,pcr	point to CC3GfxInt name
-         lbsr  L08D4		link to it if it exists
-         puls  u,y,a		restore regs & return
+*         pshs  u,y,a		..else VDG
+*         lda   #$02		get code for VDG type window
+*         sta   <V.WinType,u	save it
+*         leax  <CC3GfxInt,pcr	point to CC3GfxInt name
+*         lbsr  L08D4		link to it if it exists
+*         puls  u,y,a		restore regs & return
 ***
          lbra  FindCoMod	go find and init co-module
 
@@ -391,12 +401,12 @@ L01E6    tst   <G.Clear,u	clear key down?
 * Check CLEAR key
 L01FF    cmpa  #$82		was it clear key?
          bne   L0208		no, keep going
-         lbsr  L0485		find next window
+         lbsr  CLEAR		find next window
          bra   L0223		return
 * Check SHIFT-CLEAR
 L0208    cmpa  #$83		was it shift clear?
          bne   L0211		no, keep checking
-         lbsr  shftclr		yes, find back window
+         lbsr  SHFTCLR		yes, find back window
          bra   L0223		return
 * Check CTRL-CLEAR
 L0211    cmpa  #$84		keyboard mouse toggle key?
@@ -768,72 +778,98 @@ L046B    orcc  #IntMasks	mask interrupts
          stx   <D.AltIRQ	and store in AltIRQ
          rts   			return
 
+
+         org   4
+f.nbyte  rmb   1	# of bytes to next entry in table (signed #)
+f.tblend rmb   2	ptr to end of device table + 1
+f.ptrstr rmb   2	start of search ptr (if backwards, -1 entry)
+f.ptrend rmb   2	end of search ptr (if backwards, -1 entry)
+*f.ptrcur rmb   2	ptr to current device's device table entry
+f.ptrdrv rmb   2	ptr to current device's driver
+f.ptrchk rmb   2	ptr to the device table entry we are currently checking
+f.numdve rmb   1	number of device table entries in device table
+f.end    equ   .
+
+* Prepare for Window search in Device Table
 * Point to end of device table
-L0474    stb   $06,s		save # bytes to next (neg or pos)
+WinSearchInit
+         stb   f.nbyte+2,s	save # bytes to next (neg or pos)
          ldx   <D.Init		get pointer to init module
          lda   DevCnt,x		get max # of devices allowed
+         sta   f.numdve+2,s
          ldb   #DEVSIZ		get size of each device table entry
          mul   			calculate total size of device table
          ldy   <D.DevTbl	get device table ptr
          leax  d,y		point X to end of devtable + 1
-         stx   $07,s		save the ptr & return
+         stx   f.tblend+2,s	save the ptr & return
          rts   
 
 * CLEAR processor
-L0485    pshs  u,y,x,b,a	preserve registers
-         leas  <-$11,s		make a buffer on stack
+CLEAR    pshs  u,y,x,b,a	preserve registers
+         leas  <-f.end,s	make a buffer on stack
          ldb   #DEVSIZ		get # of bytes to move to next entry (forward)
-         bsr   L0474		get pointer to devtable
-         stx   $09,s		save end of devtable
-         sty   $07,s		save beginning of devtable
-         bra   L04A7
+         bsr   WinSearchInit	get pointer to devtable
+         stx   f.ptrend,s	save end of devtable
+         sty   f.ptrstr,s		save beginning of devtable
+         bra   FindWin
 
 * Shift-CLEAR processor
-shftclr  pshs  u,y,x,b,a	preserve registers
-         leas  <-$11,s		make a buffer on the stack
+SHFTCLR  pshs  u,y,x,b,a	preserve registers
+         leas  <-f.end,s	make a buffer on the stack
          ldb   #-DEVSIZ		# of bytes to move next entry (backwards)
-         bsr   L0474		make ptrs to devtable
+         bsr   WinSearchInit	make ptrs to devtable
+* Here, Y points to first entry of device table
+* and X points to last entry of device table + 1
          leay  -DEVSIZ,y	bump Y back by 1 entry (for start of loop)
-         sty   $09,s		save it
+         sty   f.ptrend,s	save it
          leax  -DEVSIZ,x	bump X back for start of loop
-         stx   $07,s		save it
+         stx   f.ptrstr,s	save it
 
+* FindWin - Find the next (or previous) window in the device table
+*
+* The search takes place just before or after the current window's
+* device table entry.
+*
 * NOTE: SS.OPEN for current window has changed V.PORT to be the ptr to the
 *   current window's entry in the device table     
-* Stack: (all offsets in decimal)
-* 4,s     : # bytes to next entry in table (signed #)
-* 5-6,s   : Ptr to end of device table + 1
-* 7-8,s   : Start of search ptr (if backwards, -1 entry)
-* 9-10,s  : End of search ptr (if backwards, -1 entry)
-* 11-12,s : Ptr to the current device's device table entry
-* 13-14,s : Ptr to current device's driver
-* 15-16,s : Ptr to the device table entry we are currently checking
-*
-L04A7    ldx   <D.CCMem		get ptr to CC mem
+FindWin  ldx   <D.CCMem		get ptr to CC mem
          ldu   <G.CurDev,x	get active device's static mem ptr
          lbeq  L0546		if none (no screens), exit without error
          ldx   V.PORT,u		get device table ptr for current device
-         stx   $0B,s		save it on stack
-         stx   $0F,s		save as default we are checking
+*         stx   f.ptrcur,s	save it on stack
+         stx   f.ptrchk,s	save as default we are checking
          ldd   V$DRIV,x		get ptr to current device driver's module
-         std   $0D,s		save it on stack
+         std   f.ptrdrv,s	save it on stack
 * Main search loop
-L04BA    ldx   $0F,s		get ptr to device tbl entry we are checking
-L04BC    ldb   $04,s		get # of bytes to next entry (signed)
+L04BA    ldx   f.ptrchk,s	get ptr to device tbl entry we are checking
+L04BC    ldb   f.nbyte,s	get # of bytes to next entry (signed)
+         dec   f.numdve,s	+ have we exhausted all entries?
+         bmi   L0541		+ yes, end
          leax  b,x		point to next entry (signed add)
-         cmpx  $09,s		did we hit end of search table?
+         cmpx  f.ptrend,s	did we hit end of search table?
          bne   L04C6		no, go check if it is a screen device
-         ldx   $07,s		otherwise wrap around to start of search ptr
+         ldx   f.ptrstr,s	otherwise wrap around to start of search ptr
 * Check device table entry (any entry we can switch to has to have CC3IO as
 *  the driver)
-L04C6    stx   $0F,s		save new device table ptr we are checking
+L04C6    stx   f.ptrchk,s	save new device table ptr we are checking
          ldd   V$DRIV,x		get ptr to driver
-         cmpd  $0D,s		same driver as us? (CC3IO)
+         cmpd  f.ptrdrv,s	same driver as us? (CC3IO)
          bne   L04BC		no, try next one
-         ldu   $02,x		get ptr to static storage for tbl entry
+* NOTE: The next two lines are moved down two lines, past the check
+* for our own device table pointer.  This fixes a bug where the last
+* deiniz of the last window device caused an infinite loop.  The problem
+* was that IOMan clears the static storage of a device whose use count
+* has reached zero (in the case of a hard detach), and we were testing for
+* a V$STAT of zero BEFORE seeing if we reached our own device table entry.
+
+* Next two lines moved...
+*         ldu   V$STAT,x	get ptr to static storage for tbl entry
+*         beq   L04BC		there is none, try next one
+*         cmpx  f.ptrcur,s	is this our own (have we come full circle)?
+*         beq   L0541		yes, obviously nowhere else to switch to
+* ...to here.
+         ldu   V$STAT,x		get ptr to static storage for tbl entry
          beq   L04BC		there is none, try next one
-         cmpx  $0B,s		is this our own (have we come full circle)?
-         beq   L0541		yes, obviously nowhere else to switch to
 * Found an initialized device controlled by CC3IO that is not current device
          lda   <V.InfVld,u	is the extra window data in static mem valid?
          beq   L04BA		no, not good enough, try next one
@@ -897,7 +933,7 @@ L0536    ldx   <D.CCMem		get ptr to CC mem
 * to blink so you know you hit CLEAR or SHIFT-CLEAR
 L0541    inc   <V.ScrChg,u	flag device for a screen change
          bsr   setmouse		check mouse
-L0546    leas  <$11,s		purge stack buffer
+L0546    leas  <f.end,s		purge stack buffer
          clrb  			clear carry
          puls  pc,u,y,x,b,a	restore regs and return
 
@@ -921,11 +957,11 @@ setmouse pshs  x		save register used
          lda   <V.ULCase,u     keyboard mouse?
          bita  #KeyMse
          ENDC
-         beq   setmous2
-         lda   #$FF
-         sta   <G.KyMse,x
+         bne   setmous2
+         clra
          fcb   $8c
-setmous2 clr   <G.KyMse,x 
+setmous2 lda   #$FF
+         sta   <G.KyMse,x
          ENDC
          clra  
          puls  pc,x		restore and return
@@ -946,7 +982,7 @@ Write    ldb   <V.ParmCnt,u	are we in the process of getting parameters?
          lbne  L0600		yes, go process
          sta   <V.DevPar,u	save off character
          cmpa  #C$SPAC		space or higher?
-         bcc   L058E		yes, normal write
+         bcc   CoWrite		yes, normal write
          cmpa  #$1E		1E escape code?
          bcc   L05EF		yes, go process
          cmpa  #$1B		$1B escape code?
@@ -954,11 +990,11 @@ Write    ldb   <V.ParmCnt,u	are we in the process of getting parameters?
          cmpa  #$05		$05 escape code? (cursor on/off)
          beq   L05F3		yep, go handle it
          cmpa  #C$BELL		Bell?
-         bne   L058E		no, control char
+         bne   CoWrite		no, control char
          jmp   [>WGlobal+G.BelVec]	for whom the bell tolls...
 
-L058E    ldb   #$03		write entry point in co-module
-L0590    lda   <V.DevPar,u	get character stored earlier
+CoWrite  ldb   #$03		write entry point in co-module
+CallCo   lda   <V.DevPar,u	get character stored earlier
 L0593    ldx   <D.CCMem		get ptr to CC mem
          stu   G.CurDvM,x	save dev mem ptr for current device
 L0597    pshs  a
@@ -1018,7 +1054,7 @@ L05EF    cmpa  #$1E		$1E code?
 *  but leaves the initial <ESC> ($1b) code there. The co-module checks it
 *  to see it as an ESC, and then checks for the first parameter byte for the
 *  required action.
-L05F3    leax  <L058E,pcr	point to parameter vector entry point
+L05F3    leax  <CoWrite,pcr	point to parameter vector entry point
          ldb   #$01		get parameter count (need 1 to determine code)
          stx   <V.ParmVct,u	save vector
          stb   <V.ParmCnt,u	save # param bytes needed before exec'ing vect.
@@ -1447,7 +1483,7 @@ FindCoMod
 
 WindInt  fcs   /WindInt/
 GrfInt   fcs   /GrfInt/ ++
-CC3GfxInt fcs   /CC3GfxInt/ ++
+*CC3GfxInt fcs   /CC3GfxInt/ ++
 
 *
 * Try WindInt
@@ -1496,7 +1532,7 @@ L08F0    puls  a		restore vector offset
          cmpa  #$02		was it WindInt?
          bgt   L08D2		no, return
 L0900    clrb
-         lbra  L0590		send it to co-module
+         lbra  CallCo		send it to co-module
 
 *
 * Link or load a co-module
