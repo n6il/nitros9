@@ -5,16 +5,15 @@ vpath %.asm $(3RDPARTY)/packages/basic09
 DEPENDS		= ./makefile
 
 BASIC09FILES	= runb.asm gfx.asm inkey.asm syscall.asm
-COCOCMDS	= asm attr backup binex build cmp cobbler config copy cputype \
+CMDS		= asm attr backup binex build cmp cobbler config copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir disasm \
 		display dmode dsave dump echo edit error exbin exmode format \
 		free grfo help ident iniz irqs link list load login makdir \
 		mdir merge mfree os9gen padrom park prompt printerr procs pwd pxd \
-		rename runb save setime shell sleep tee tmode touch tsmon \
-		tuneport unlink verify xmode
+		rename runb save setime shell_21 shellplus sleep \
+		tee tmode touch tsmon tuneport unlink verify xmode
 SUBS		= gfx inkey syscall
-DRAGONCMDS	= cobbler_d64 format_d64 os9gen_d64 go51
-ALLOBJS		= $(COCOCMDS) $(DRAGONCMDS) $(SUBS)
+ALLOBJS		= $(CMDS) $(DRAGONCMDS) $(SUBS)
 
 all:	$(ALLOBJS)
 
@@ -23,6 +22,9 @@ pwd:	pd.asm
 
 pxd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPXD=1
+
+shell:	shellplus.asm
+	$(AS) $(AFLAGS) $< $(ASOUT)$@
 
 clean:
 	$(RM) $(ALLOBJS)
@@ -34,7 +36,7 @@ showallobjs:
 	@$(ECHO) $(ALLOBJS)
 
 showcocoobjs:
-	@$(ECHO) $(COCOCMDS) $(SUBS)
+	@$(ECHO) $(CMDS) $(SUBS)
 
 showdragonobjs:
 	@$(ECHO) $(CMDS) $(DRAGONCMDS)
