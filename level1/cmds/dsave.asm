@@ -5,7 +5,7 @@
 *
 * Syntax: dsave [<opts>] <destpath>
 * Opts  :
-*   -b = include bootfile
+*   -b = include bootfile (doesn't work)
 *   -e = execute files
 *   -i = indent dir levels
 *   -l = only one dir level
@@ -28,7 +28,8 @@
 
 * Here are some tweakable options
 DOHELP   set   0	1 = include help info
-STACKSZ  set   128	estimated stack size in bytes
+INDENTSZ set   2	number of spaces to indent when -i is used
+STACKSZ  set   1024	estimated stack size in bytes
 PARMSZ   set   256	estimated parameter size in bytes
 
 * Module header definitions
@@ -94,14 +95,6 @@ name     fcs   /dsave/
 * Place constant strings here
          IFNE  DOHELP
 HlpMsg   fcb   C$LF
-         fcc   /Use: NGU [<opts>] <path> [<path>] [<opts>]/
-         fcb   C$LF
-         fcc   /   -a    option 1/
-         fcb   C$LF
-         fcc   /   -b    option 2/
-         fcb   C$LF
-         fcc   /   -c=f  option 3/
-         fcb   C$LF
          fcb   C$CR
 HlpMsgL  equ   *-HlpMsg
          ENDC
@@ -116,6 +109,9 @@ Chd      fcc   "chd"
          fcb   C$CR
 
 MakDir   fcc   "makdir"
+         fcb   C$CR
+
+Cmp      fcc   "cmp"
          fcb   C$CR
 
 TMode    fcc   "tmode"
@@ -133,6 +129,8 @@ Unlink   fcc   "unlink"
 
 Copy     fcc   "copy"
          fcb   C$CR
+
+OS9Boot  fcc   "OS9BOOT "
 
 DotDot   fcc   "."
 Dot      fcc   "."
@@ -216,7 +214,7 @@ IsItB    cmpa  #'b		is it this option?
          sta   <doboot
          bra  FixCmdLn
 IsItE    cmpa  #'e		is it this option?
-         bne   IsItL		branch if not
+         bne   IsItI		branch if not
          sta   <doexec
          bra   FixCmdLn
 IsItI    cmpa  #'i		is it this option?
@@ -246,6 +244,7 @@ SpcNext  sta   ,-x		erase everything after -s
          cmpx  ,s
          bne   SpcNext
          puls  x
+         clrb
          bra   FixCmdLn
 IsItV    cmpa  #'v		is it this option?
          bne   BadOpt		branch if not
@@ -299,6 +298,9 @@ DoDSave  dec   <plistcnt	we should have only one path on cmdline
          lbsr  DoChd		chd to it
          lbsr  DoPauseOff
          lbsr  DoLoadCopy
+         tst   <doverify
+         beq   PreRecurse
+         lbsr  DoLoadCmp
 
 * Steps in processing files:
 *    0. Open path to '.'
@@ -312,10 +314,15 @@ DoDSave  dec   <plistcnt	we should have only one path on cmdline
 *    5. goto 1
 *    6. Close path to source dir
          
+PreRecurse
          leay  buffend,u
          bsr   CopyDir
 
 * Do dsave "post" commands
+         tst   <doverify
+         beq   PostRecurse
+         lbsr  DoUnlinkCmp
+PostRecurse
          lbsr  DoUnlinkCopy
          lbsr  DoPauseOn
 
@@ -324,7 +331,7 @@ DoDSave  dec   <plistcnt	we should have only one path on cmdline
 CopyDir  ldx   <srcptr
          lda   #DIR.+READ.	permissions as DIR.
          os9   I$Open		open directory
-         bcs   CopyRts		branch if error
+         lbcs  CopyRts		branch if error
          ldb   #PDELIM
          stb   ,y+
          pshs  y
@@ -358,9 +365,12 @@ ItsADir
          pshs  y
          ldx   3,s
          lbsr  DoMakDir		makdir it
-         inc   <dirlevel
-         ldx   3,s
+         bcc   ItsADir2
+         os9   F$PErr
+ItsADir2 ldx   3,s
          lbsr  DoChd
+         bcs   FileLoop		if error, ignore dir
+         inc   <dirlevel
          puls  y
          bsr   CopyDir 
          leax  DotDot,pcr
@@ -369,7 +379,18 @@ ItsADir
          bra   FileLoop
 
 * Here, we know that the file we just opened and closed was NOT a directory
-ItsAFile lbsr  BuildCopy
+ItsAFile tst   <doboot		test for allowance of os9boot
+         bne   ItsAFile2	branch if so
+         ldx   1,s
+         lbsr  BootCmp		compare against os9boot
+         beq   FileLoop		if a match, don't copy
+ItsAFile2 
+         ldx   1,s
+         lbsr  BuildCopy
+         tst   <doverify	verify on?
+         beq   FileLoop		branch if not
+         ldx   1,s
+         lbsr  BuildCmp
          bra   FileLoop 
 Copy2Ex  puls  a		get path to .
          os9   I$Close		close path
@@ -380,7 +401,7 @@ ShowHelp equ   *
          IFNE  DOHELP
          leax  >HlpMsg,pcr	point to help message
          ldy   #HlpMsgL		get length
-         lda   #$02		std error
+         lda   #INDENTSZ	std error
          os9   I$WritLn 	write it
          ENDC
 ExitOk   clrb  			clear carry
@@ -429,6 +450,34 @@ CopyFnLp lda   ,x+
 *         clr   ,y+		add null byte at end
 CopyFnEx tfr   u,d
          puls  u,pc
+
+* Compare two filenames to see if they match
+* X = filename to compare against OS9boot
+BootCmp  pshs  y,x
+         lbsr  StrLen		get length of passed filename
+         puls  x		get pointer to passed filename
+         cmpy  #7		compare stlren of X against OS9Boot
+         bne   FileCmpEx	if not the same length, they aren't equal
+* Here we know the filenames are the same length
+         ldb   #6 
+FIleCmp2 leay  OS9Boot,pcr
+         lda   b,x
+         bsr   MakeUp
+         cmpa  b,y
+         bne   FileCmpEx
+         decb
+         bpl   FileCmp2
+         clrb			clear carry
+         puls  y,pc
+FileCmpEx orcc  #Carry
+         puls  y,pc
+
+MakeUp   cmpa  #'a
+         blt   MakeUpEx
+         cmpa  #'z
+         bgt   MakeUpEx
+         anda  #$DF		make uppercase
+MakeUpEx rts
 
 StrHCpy  pshs  u
          ldu   #$0000
@@ -507,7 +556,7 @@ DoChd
          os9   F$PErr
 Ret      rts
          
-WriteIt  ldy   #80
+WriteIt  ldy   #1024
          lda   #1
          os9   I$WritLn
 Rts      rts
@@ -520,7 +569,18 @@ DoEcho   tst   <doexec			are we executing?
 * Copy command into linebuff and put space after it
 * Entry: X = pointer to command to copy to linebuff
 CopyCmd  leay  linebuff,u		and point Y to line buffer
-         lbsr  StrCpy			copy command
+* Do level indention if specified
+         tst   <indent
+         beq   CopyCmd3
+         lda   <dirlevel
+         beq   CopyCmd3
+         ldb   #$02
+         mul
+         lda   #C$SPAC
+CopyCmd2 sta   ,y+
+         decb
+         bne   CopyCmd2
+CopyCmd3 lbsr  StrCpy			copy command
          lda   #C$SPAC			get space
          sta   ,y+			and store it after command in buff
          rts
@@ -543,6 +603,7 @@ CPRts    rts
 * Entry: X = command to execute, with parameters
 ExecCmd  tst   <doexec
          beq   CPRts
+         lbsr  SkipSpcs		skip any leading spaces at X
          tfr   x,y		transfer command ptr to Y temporarily
          lbsr  SkipNSpc		skip command
          clr   ,x+		clear white space char and move X
@@ -562,26 +623,48 @@ DoPauseOff
          bsr   CopyCmd
          leax  TNoPause,pcr
          bsr   CopyParm
-         bsr   WriteIt
+         lbsr  WriteIt
          bra   ExecCmd
 
-DoLoadCopy
+DoLoadCmp
          leax  Load,pcr			point to load command
          bsr   CopyCmd			copy it to buffer
-         leax  Copy,pcr			point to copy command
+         leax  Cmp,pcr			point to copy command
          bsr   CopyParm			copy it to buffer
-         bsr   WriteIt
+         lbsr  WriteIt
          bra   ExecCmd
 
-DoUnlinkCopy
+DoUnlinkCmp
          leax  Unlink,pcr
-         bsr   CopyCmd
-         leax  Copy,pcr
+         lbsr  CopyCmd
+         leax  Cmp,pcr
          bsr   CopyParm
          lbsr  WriteIt
          bra   ExecCmd
 
+DoLoadCopy
+         leax  Load,pcr			point to load command
+         lbsr  CopyCmd			copy it to buffer
+         leax  Copy,pcr			point to copy command
+         bsr   CopyParm			copy it to buffer
+         lbsr  WriteIt
+         bra   ExecCmd
+
+DoUnlinkCopy
+         leax  Unlink,pcr
+         lbsr  CopyCmd
+         leax  Copy,pcr
+         lbsr  CopyParm
+         lbsr  WriteIt
+         bra   ExecCmd
+
+BuildCmp pshs  x
+         leax  Cmp,pcr
+         lbsr  CopyCmd
+         bra   BuildCopy3
+
 BuildCopy
+         pshs  x
          leax  Copy,pcr
          lbsr  CopyCmd
          tst   <rewrite
@@ -601,6 +684,10 @@ BuildCopy2
 BuildCopy3
          ldx   <srcptr			get source path from statics
          lbsr  StrCpy			copy to buffer
+         lda   #C$SPAC			get space
+         sta   ,y+			and store it after command in buff
+         puls  x 
+         lbsr  StrCpy
          lda   #C$CR			get space
          sta   ,y+			and store it after command in buff
          leax  linebuff,u
@@ -729,8 +816,9 @@ ASC2BLp  lda   ,x+		get byte from X
          lda   #10		multiply by 10
          mul			do it
          addb  ,s+		add on stack
-         bcc   ASC2BLp		if carry clear, do it again
-ASC2BEx  leax  -1,x		load byte
+         bcc   ASC2BLp		if overflow clear, do it again
+ASC2BEx 
+*  leax  -1,x		load byte
          rts			return
 
 * Entry: Y = address to store number
