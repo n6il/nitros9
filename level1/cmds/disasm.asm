@@ -20,6 +20,9 @@
 *                 added code to display date/time run
 *
 * 01/23/93      - added code to handle 6309 instruction set additions
+*
+* 04/22/03      - added 4-digit year output
+* 07/09/03      - changed output format of 6309 Bit commands
 ********
 
          ifp1
@@ -1763,6 +1766,14 @@ time010
          lda   #6
          sta   <temp
          leay  timesplt,pcr
+* patch to output 4-digit year
+         ldb   ,x+
+         clra
+         addd  #1900
+         pshs  x
+         pshs  y
+         lbsr  mergdec
+         bra   time025
 time020
          ldb   ,x+
          clra
@@ -1773,6 +1784,7 @@ time020
          leay  decstrng+3,u
          ldb   #2
          lbsr  mergline
+time025
          puls  y
          lda   ,y+
          lbsr  movechar
@@ -2354,8 +2366,7 @@ normtf   lbsr  getbyte        Get register field byte
          lbsr  mvchr009       Add '-'
          bra   notTFM
 Tplus1   lbsr  mvchr008       Add '+'
-notTFM   lda   #',            Add comma to line
-         lbsr  movechar
+notTFM   lbsr  mvchr003       Add comma to line
          puls  b              Get back field byte
          andb  #$0f           Just destination reg.         
          bsr   fa.020         Add it to line
@@ -2766,26 +2777,27 @@ chk.f0   lbsr  getbyte        Get register/bit flags
          ldd   #'a*256+32     Add 'a '
          bra   gotregn
 tryb     cmpb  #%10000000     B?
-         bne   illeg          No, illegal register name
+         bne   is.e           No, must be E
          ldd   #'b*256+32     Add 'b '
          bra   gotregn
-illeg    ldd   #'?*256+'?     Add '??'
+is.e     ldd   #'e*256+32     Add 'e '
          bra   gotregn
 iscc     ldd   #'c*256+'c     cc register         
 gotregn  lbsr  movereg        Add register name
-         lbsr  mvchr011       Add '.'
+         lbsr  mvchr003       Add ','
          ldb   <byte          Get original byte again
          andb  #%00000111     Mask out all but register bit #
          bsr   getbit         Get Bit #
          lbsr  movechar       Add it to output
-         lbsr  mvchr003       Add ',
+         lbsr  mvchr003       Add ','
          ldb   <byte          Get original byte again
          andb  #%00111000     Mask out all but memory bit #
          lsrb                 Shift for subroutine
          lsrb
          lsrb
          bsr   getbit         Get ASCII value for memory bit #
-         pshs  a              Preserve until DP part is done
+         lbsr  movechar       Add it to output
+         lbsr  mvchr003       Add ','
          inc   <bitcom        Set bit command flag
 * Dupe of direct page stuff
          leay  line080,pc     Point to '<u'
@@ -2800,10 +2812,7 @@ f0.010   ldb   #2             In both cases, 2 chars to merge
          tst   <u.opt         Direct page currently @ 0?
          bne   nou            No, skip u stuff
          lbsr  indx046        put address in u table & write out line
-nou      lbsr  mvchr011       Add '.'
-         puls  a              Get back memory bit #
-         lbsr  movechar       Add it to output
-         lbra  chk.fd         Write it out & continue
+nou      lbra  chk.fd         Write it out & continue
 
 * Create ASCII of bit #
 getbit   lda   #'0            Bit # to 0
@@ -3209,7 +3218,7 @@ gethx030 sta   ,y+
          rts
 
 * 
-* get decimal value of bytes id d ,output in string pointed at by 'y'
+* get decimal value of bytes in d ,output in string pointed at by 'y'
 *
 getdec   pshs  x
          ldx   #10000
@@ -3463,40 +3472,35 @@ mvadr030 lda   #'L
          rts
 
 *
+* merge predefined characters with the output line
+*
+mvchr001 lda   #'[
+         bra   movechar
+mvchr002 lda   #']
+         bra   movechar
+mvchr003 lda   #',
+         bra   movechar
+mvchr004 lda   #'#
+         bra   movechar
+mvchr005 lda   #'$
+         bra   movechar
+mvchr006 lda   #'<
+         bra   movechar
+mvchr007 lda   #'>
+         bra   movechar
+mvchr008 lda   #'+
+         bra   movechar
+mvchr009 lda   #'-
+         bra   movechar
+mvchr010 lda   #'?
+*        bra   movechar  fall thru
+
+*
 * merge the char in 'a' with the output line
 *
 movechar ldx   <lineadr
          sta   ,x+
          stx   <lineadr
-         rts
-
-*
-* merge predefined characters with the output line
-*
-mvchr001 lda   #'[
-         bra   mvchr999
-mvchr002 lda   #']
-         bra   mvchr999
-mvchr003 lda   #',
-         bra   mvchr999
-mvchr004 lda   #'#
-         bra   mvchr999
-mvchr005 lda   #'$
-         bra   mvchr999
-mvchr006 lda   #'<
-         bra   mvchr999
-mvchr007 lda   #'>
-         bra   mvchr999
-mvchr008 lda   #'+
-         bra   mvchr999
-mvchr009 lda   #'-
-         bra   mvchr999
-mvchr010 lda   #'?
-         bra   mvchr999
-mvchr011 lda   #'.
-         bra   mvchr999
-         
-mvchr999 bsr   movechar
          rts
 
 movename pshs  y
@@ -3704,4 +3708,4 @@ exit     os9   f$exit
          emod
 eom      equ   *
          end
-   
+
