@@ -8,7 +8,7 @@
 * This system call can be used in an application program to dump the
 * current contents of all user registers in Hex,Decimal,Binary and Ascii 
 * (Registers "A" and "B" Only). This module MUST be present in the
-* bootfile. If no KernelP3 module is found,change the "mname" and "nextname"
+* bootfile. If no krnp5 module is found,change the "mname" and "nextname"
 * as appropriate.
 *
 * If there is a conflict with the code used for this system called, it can
@@ -30,8 +30,8 @@
          use   defsfile
          endc  
 
-tylg     set   systm+objct
-atrv     set   reent+revision
+tylg     set   Systm+Objct
+atrv     set   ReEnt+revision
 revision set   0
 edition  set   1
 
@@ -54,7 +54,7 @@ start    leay  <svctabl,pcr point to service table
 endsetup rts              return back to previous module
 
 nextname fcc   /krnp5/    next module name to link to
-         fcb   $0d
+         fcb   C$CR
 
 regdmp   equ   *
          IFNE  H6309
@@ -66,7 +66,7 @@ regdmp   equ   *
          leas  -60,s      back up for some variable storage
          leau  4,s        buffer starts here
          clr   ,u+        set flag to print ascii char
-         lda   #$20       get a space
+         lda   #C$SPAC    get a space
          ldb   #50        number of chars to clear
          tfr   u,x        set register for loop
 
@@ -101,11 +101,7 @@ clrloop  sta   ,x+        initialize a space
          bsr   reg000     dump register PC
          ldy   <D.Proc    get address of users process descriptor
          ldd   P$SP,y     get users stack address
-         IFNE  H6309
-         addd  #14        add on for registers which were saved
-         ELSE
-         addd  #12        add on for registers which were saved
-         ENDC
+         addd  #R$Size    add on for registers which were saved
          bsr   reg000     dump register S
          lbsr  reg060     send a <CR>
          leas  60,s       restore stack pointer
@@ -134,10 +130,10 @@ reg000   pshs  y          save y register
          bne   reg010     no...skip this
          ldd   2,u        get 2 lsb's
          std   ,u         store in msb's
-         ldd   #$2020     get two blanks
+         ldd   #C$SPAC*256+C$SPAC    get two spaces
          std   2,u        store in lsb's
 
-reg010   ldd   #$2023     get a space and  "#"
+reg010   ldd   #C$SPAC*256+'#   get a space and  "#"
          std   4,u        move in two spaces
          leau  6,u        point to start of decimal output buffer
          ldd   3,s        get register
@@ -148,10 +144,10 @@ reg010   ldd   #$2023     get a space and  "#"
          std   ,u         store as first two
          lda   4,u        get fifth char
          sta   2,u        store as third
-         ldd   #$2020     get two spaces
+         ldd   #C$SPAC*256+C$SPAC    get two spaces
          std   3,u        store as 4th & 5th chars
 
-reg020   ldd   #$2025     get a blank & "%"
+reg020   ldd   #C$SPAC*256+'%   get a blank & "%"
          std   5,u        move it to buffer
          leau  7,u        point to start of binary output area
          tfr   a,b        space in 'b'
@@ -164,7 +160,7 @@ reg020   ldd   #$2025     get a blank & "%"
 
 reg030   lda   8,u        get two chars from second 8 digits
          sta   ,u+        store in first 8 digits
-         lda   #$20       get two blanks
+         lda   #C$SPAC    get space
          sta   7,u        store in second 8 digits
          decb             decrement counter
          bne   reg030     loop back if not done
@@ -172,7 +168,7 @@ reg030   lda   8,u        get two chars from second 8 digits
          ldb   4,s        get lsb of register
          tst   -18,u      check if we want to print ascii char
          bne   reg040     nope..skip this
-         cmpb  #$20       compare char with space
+         cmpb  #C$SPAC    compare char with space
          blo   reg040     if lower..skip this
          cmpb  #'z        compare with last alpha char
          bhi   reg040     if higher..skip this
@@ -186,7 +182,7 @@ reg040   lda   #C$CR      get a <cr>
          puls  b,x,y,u    restore registers
          puls  y,pc       restore y & return
 
-reg050   fcb   $0d
+reg050   fcb   C$CR
 
 reg060   leax  <reg050,pcr point to <cr>
 
@@ -318,7 +314,7 @@ gtd020   cmpd  1,s        compare 'd' with 'x' on stack
 
 gtd030   std   1,s        save remainder of number
          ldb   ,s+        get counter
-         addb  #$30       make it ascii
+         addb  #'0        make it ascii
          stb   ,u+        and move it as output
          puls  d,pc       restore remainder & return
 
