@@ -1,9 +1,10 @@
 @SCRED
 Syntax: Scred [-opts][<filename>]
 Usage : Screen Editor
-Opts  : -e  = embedded attributes on terminal
-        -b=<int> redefine buffer size
-        -l=<int> redefine screen length
-        -w=<int> redefine screen width
-        -t=<term> define terminal name
-        -z=<path> path for termset file
+Opts  :
+  -e  = embedded attributes on terminal
+  -b=<int> redefine buffer size
+  -l=<int> redefine screen length
+  -w=<int> redefine screen width
+  -t=<term> define terminal name
+  -z=<path> path for termset file
