@@ -1,9 +1,10 @@
 @DCHECK
 Syntax: Dcheck [-opts] <devname>
 Usage : Check disk file structure
-Opts  : -w=path = pathlist to directory for work files
-        -p = print pathlists for questionable clusters
-        -m = save allocation map work files
-        -b = suppress listing of unused clusters
-        -s = display count of files and directories only
-        -o = print options for DCheck
+Opts  :
+  -w=path = pathlist to directory for work files
+  -p = print pathlists for questionable clusters
+  -m = save allocation map work files
+  -b = suppress listing of unused clusters
+  -s = display count of files and directories only
+  -o = print options for DCheck

@@ -1,4 +1,5 @@
 @DEL
-Syntax: Del [-x] filename [...]
+Syntax: Del [-x] <path> {<path>} [-x]
 Usage : Deletes the specified file(s)
-Opts  : -x = delete relative to execution directory
+Opts  :
+  -x = delete relative to execution directory

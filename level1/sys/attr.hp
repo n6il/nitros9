@@ -1,14 +1,16 @@
 @ATTR
 Syntax: Attr filename [permissions]
 Usage : Examine or change the security permissions of a file
-Opts  : -perm = turn off specified permission
-        perm  = turn on specified permission
-        -a = inhibit printing of attrs after change     
-Perms : d - directory file
-        s - non-sharable file
-        r - read permit to owner
-        w - write permit to owner
-        e - execute permit to owner
-        pr - read permit to public
-        pw - write permit to public
-        pe - execute permit to public
+Opts  :
+  -perm = turn off specified permission
+   perm = turn on specified permission
+  -a = inhibit printing of attrs after change     
+Perms :
+  d - directory file
+  s - non-sharable file
+  r - read permit to owner
+  w - write permit to owner
+  e - execute permit to owner
+  pr - read permit to public
+  pw - write permit to public
+  pe - execute permit to public
