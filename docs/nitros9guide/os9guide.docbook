@@ -3,9 +3,9 @@
   <!ENTITY replend   "&gt;">
   <!ENTITY repeatst   "{">
   <!ENTITY repeaten   "}">
-  <!ENTITY vendor     "Dragon Data">
+  <!ENTITY vendor     "OS9 Consortium">
   <!ENTITY make   "Dragon/Color">
-  <!ENTITY preface       SYSTEM "preface-dragon.preface">
+  <!ENTITY preface       SYSTEM "intro.preface">
   <!ENTITY chap1         SYSTEM "chap1.chapter">
   <!ENTITY chap2         SYSTEM "chap2.chapter">
   <!ENTITY chap3         SYSTEM "chap3.chapter">
@@ -41,6 +41,7 @@
   <!ENTITY exref         SYSTEM "ex.refentry">
   <!ENTITY formatref     SYSTEM "format.refentry">
   <!ENTITY freeref       SYSTEM "free.refentry">
+  <!ENTITY go51ref       SYSTEM "go51.refentry">
   <!ENTITY helpref       SYSTEM "help.refentry">
   <!ENTITY identref      SYSTEM "ident.refentry">
   <!ENTITY inizref       SYSTEM "iniz.refentry">
@@ -74,6 +75,7 @@
 <book id="os9guide" lang="en">
 <bookinfo>
  <title>OS-9 Operating System User's Guide</title>
+ <subtitle>Updated for the new millenium</subtitle>
 
  <publisher>
   <publishername>Cleglen Publishing Limited</publishername>
@@ -103,11 +105,9 @@ Microware Systems Corporation.</para>
 &chap5;
 &chap6;
 &chap7;
-&commandsapp;
 &errorcodesapp;
 &displayapp;
 &keysapp;
-&go51app;
 &acia51app;
 
 </book>
