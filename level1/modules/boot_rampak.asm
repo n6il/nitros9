@@ -19,7 +19,6 @@
 
          IFP1  
          use   defsfile
-         use   rbfdefs
          ENDC  
 
 tylg     set   Systm+Objct

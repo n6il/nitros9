@@ -28,7 +28,6 @@
 
          IFP1
          use   defsfile
-         use   rbfdefs
          ENDC
 
 * FDC Control Register bits at $FF40
