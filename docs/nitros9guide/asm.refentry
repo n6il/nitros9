@@ -7,15 +7,15 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>ASM</command>
-<arg choice="opt">
-  <option>t</option>
-</arg>
+<arg choice="plain">&replstart;filename&replend;</arg>
+<arg choice="opt">opt</arg>
+<arg choice="opt">&gt;list</arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
 <refsect1><title>Description</title>
 <para>
-The assembler.
+Standard OS-9 Assembler
 </para>
 </refsect1>
 <refsect1><title>Examples</title>
@@ -23,4 +23,3 @@ The assembler.
 </screen>
 </refsect1>
 </refentry>
-
