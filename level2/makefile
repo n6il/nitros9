@@ -3,7 +3,7 @@ include ../Makefile.rules
 RELEASE		= os9l2v030101
 BOOTFILE	= BOOTFILES/bootfile_vdg
 KERNEL		= BOOTFILES/kernel_stock
-DIRS		= CMDS MODULES SYS BOOTFILES
+DIRS		= CMDS MODULES DEFS SYS BOOTFILES
 
 CMDS		= $(shell $(CD) CMDS; make showobjs)
 MODULES		= $(shell $(CD) MODULES; make showcopyobjs)
