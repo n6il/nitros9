@@ -798,7 +798,11 @@ L04AF    tst   <isnarrow	wide screen?
          ENDC
          lbsr  CopyY2X
          ldb   R$B,u
+         IFNE  H6309
+         lbsr   L050F
+         ELSE
          bsr   L050F
+         ENDC
          lbsr  CopyY2X
          IFNE  H6309
          ldb   R$E,u
@@ -827,6 +831,11 @@ L04AF    tst   <isnarrow	wide screen?
          lbsr  CopyY2X
          ldd   R$X,u
          bsr   L0505
+         IFNE  H6309
+         pshs  y
+         lbsr  WritCR2
+         puls  y
+         ENDC
          lbsr  CopyY2X
          ldd   R$Y,u
          bsr   L0505
