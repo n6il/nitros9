@@ -36,7 +36,7 @@ wish with one DEINIZ command.
 </variablelist>
 </refsect2>
 <refsect2>
-<title>Notes:</title>
+<title>Notes</title>
 <para>
 Do not deiniz a module unless you have
 explicitly iniz-ed it. If you do deiniz a device that you have not
@@ -46,7 +46,7 @@ using the module.
 </refsect2>
 </refsect1>
 <refsect1>
-<title>Example:</title>
+<title>Example</title>
 <literallayout>
 	DEINIZ P T2 [ENTER]
 </literallayout>

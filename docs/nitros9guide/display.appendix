@@ -4,7 +4,7 @@
 <section>
 <title>The Video Display Generator</title>
 <para>
-&os9level allows the VDG display to be used in
+&os9level; allows the VDG display to be used in
 alphanumeric, semigraphic, and graphics modes. There are many
 built-in functions to control the display, which are activated by
 used of various ASCII control character. Thus, these functions are

@@ -3,7 +3,7 @@
 <titleabbrev>Introduction</titleabbrev>
 <para>
 The heart of your &make; is an amazing device: the
-&CPU microprocessor chip. This advanced microcomputer can run the
+&CPU; microprocessor chip. This advanced microcomputer can run the
 kind of sophisticated software normally found only on much larger
 and costly computers. Because the OS-9 operating system was designed
 by the same people who designed the 6809 microprocessor, together

@@ -79,6 +79,7 @@ command line before it is passed to the program being called.
 <section>
 <title>Commands</title>
 
+&asmref;
 &attrref;
 &backupref;
 &binexref;
@@ -104,6 +105,7 @@ command line before it is passed to the program being called.
 &dumpref;
 &echoref;
 &exref;
+&exbinref;
 &exmoderef;
 &formatref;
 &freeref;
@@ -121,6 +123,7 @@ command line before it is passed to the program being called.
 &mergeref;
 &mfreeref;
 &os9genref;
+&procref;
 &procsref;
 &pwdref;
 &renameref;
@@ -130,12 +133,14 @@ command line before it is passed to the program being called.
 &setprref;
 &shellref;
 &sleepref;
+&smapref;
 &teeref;
 &tmoderef;
 &tsmonref;
 &tuneportref;
 &unlinkref;
 &verifyref;
+&wcreateref;
 &xmoderef;
 
 </section>

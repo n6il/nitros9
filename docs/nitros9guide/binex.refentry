@@ -1,7 +1,7 @@
 <refentry id="binex">
 <refnamediv>
-<refname id="binexname">BINEX / EXBIN</refname>
-<refpurpose>Convert Binary To S-Record File / Convert S-Record To Binary File</refpurpose>
+<refname id="binexname">BINEX</refname>
+<refpurpose>Convert Binary To S-Record File</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -9,11 +9,6 @@
     <command>BINEX</command>
     <arg choice="plain"><replaceable>path1</replaceable></arg>
     <arg choice="plain"><replaceable>path2</replaceable></arg>
-</cmdsynopsis>
-<cmdsynopsis>
-    <command>EXBIN</command>
-    <arg choice="plain"><replaceable>path2</replaceable></arg>
-    <arg choice="plain"><replaceable>path1</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -51,22 +46,6 @@ To download the program to a device such as a PROM programmer
 </para>
 <screen>
 list scanner.S1 &gt;/T1
-</screen>
-<para>
-EXBIN is the inverse operation; &quot;path1&quot; is assumed to be a
-S-Record format text file which EXBIN converts to pure binary form on
-a new file called &quot;path2&quot;. The load addresses of each data record
-must describe continguous data in ascending order.
-</para>
-<para>
-EXBIN does not generate or check for the proper OS-9 module
-headers or CRC check value required to actually load the binary
-file. The IDENT or VERIFY commands can be used to check the
-validity of the modules if they are to be loaded or run.
-Example:
-</para>
-<screen>
-exbin program.S1 cmds/program
 </screen>
 </refsect1>
 </refentry>

@@ -11,6 +11,7 @@
   <!ENTITY minmem        "128K">
   <!ENTITY DOSCMD        "DOS">
   <!ENTITY ctrlkey       "CTRL">
+  <!ENTITY os9guide      SYSTEM "os9guide.book">
   <!ENTITY preface       SYSTEM "intro.preface">
   <!ENTITY chap1         SYSTEM "chap1.chapter">
   <!ENTITY chap2         SYSTEM "chap2.chapter">
@@ -22,6 +23,7 @@
   <!ENTITY errorcodesapp SYSTEM "errorcodes.appendix">
   <!ENTITY displayapp    SYSTEM "display.appendix">
   <!ENTITY keysapp       SYSTEM "keys.appendix">
+  <!ENTITY acia51app     "">
 
   <!ENTITY asmref        SYSTEM "asm.refentry">
   <!ENTITY attrref       SYSTEM "attr.refentry">
@@ -53,6 +55,7 @@
   <!ENTITY echoref       SYSTEM "echo.refentry">
   <!ENTITY error         SYSTEM "error.refentry">
   <!ENTITY exref         SYSTEM "ex.refentry">
+  <!ENTITY exbinref      SYSTEM "exbin.refentry">
   <!ENTITY exmoderef     SYSTEM "exmode.refentry">
   <!ENTITY formatref     SYSTEM "format.refentry">
   <!ENTITY freeref       SYSTEM "free.refentry">
@@ -74,7 +77,7 @@
   <!ENTITY os9genref     SYSTEM "os9gen.refentry">
   <!ENTITY pmapref       SYSTEM "pmap.refentry">
   <!ENTITY procref       SYSTEM "proc.refentry">
-  <!ENTITY procsref      SYSTEM "procs.refentry">
+  <!ENTITY procsref      "">
   <!ENTITY pwdref        SYSTEM "pwd.refentry">
   <!ENTITY rebootref     SYSTEM "reboot.refentry">
   <!ENTITY renameref     SYSTEM "rename.refentry">
@@ -96,39 +99,5 @@
   <!ENTITY xmoderef      SYSTEM "xmode.refentry">
  ]>
 <book id="os9guide" lang="en">
-<bookinfo>
- <title>&os9level Operating System User's Guide</title>
- <subtitle>&os9version</subtitle>
-
-<copyright>
-  <year>2003</year>
-  <holder>&vendor</holder>
-</copyright>
-
- <legalnotice>
-  <para>All Rights Reserved.</para>
- </legalnotice>
-
-<revhistory>
-<revision>
-<revnumber>A</revnumber>
-<date>March 2003</date>
-<revremark>Updated with the changes made by Boisy Pitre</revremark>
-</revision>
-</revhistory>
-
-</bookinfo>
-
-&preface;
-&chap1;
-&chap2;
-&chap3;
-&chap4;
-&chap5;
-&chap6;
-&chap7;
-&errorcodesapp;
-&displayapp;
-&keysapp;
-
+&os9guide;
 </book>
