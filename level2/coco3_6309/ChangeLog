@@ -1,0 +1,4 @@
+OS-9 Level One V2.01.00 Beta2:
+- Defs files now have properly terminated lines and 'pag' is now emitted
+  as a comment.
+
