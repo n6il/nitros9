@@ -5,7 +5,18 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  2     Original Microware distribution version
+*  7     Original Dragon Data distribution version
+
+* DragonDOS BOOT loads sectors (numbered from 0) 2-17 (3840 bytes) into
+* RAM at location 9728. The first two bytes of sector 2 must be ASCII 'OS'
+* for this to work. It then jumps to 9730 and begins execution.
+*
+* The boot code switches into RAM mode, and copies the entire section to
+* $F000 and jumps to $F04F.
+* The 3840 bytes contain a few bytes to do the RAM mode switch, then
+* immediately after comes the kernel modules; OS9, OS9p2, Init and Boot
+* The rest of the bootstrap is in the OS9Boot file. The disk head at LSN0
+* contains the LSN of the bootstrap file in field DD.BT.
 
          nam   OS9gen
          ttl   Build and Link a Bootstrap File
