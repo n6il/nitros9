@@ -712,7 +712,7 @@ L03E5    lda   <diskpath        device path number
          ldd   #$0000           get current track
          std   <currtrak        save it
          inca                   get current sector
-         sta   <currsect         save it
+         sta   <currsect        save it
 L03F8    clr   <u0005
 L03FA    bsr   L045C
          leax  >u00B7,u
@@ -1001,10 +1001,10 @@ Access   lda   <diskpath
 *
 ********************************************************************
 
-Stamps   lda   <dtype			get device type in A
+Stamps   lda   <dtype            get device type in A
          clr   <dovfy
-         bita  #TYP.HARD		hard drive?
-         beq   L0667			branch if not
+         bita  #TYP.HARD         hard drive?
+         beq   L0667             branch if not
 L0650    leax  >Verify,pcr
          ldy   #VerifyL
          lbsr  Input
@@ -1034,7 +1034,7 @@ L0667    ldd   <sectors0
          ldb   #$01
          std   <u0034
          lda   <clustsiz        get cluster size
-         sta   <u002B		store in cluster counter
+         sta   <u002B           store in cluster counter
          clr   <u002A
          clra  
          ldb   <ClustSz
@@ -1093,7 +1093,7 @@ PExit    lbsr  PrintLn          print message
 OutScrn  ldd   <u0008           get counted sectors
          addd  #$0001           increment it
          std   <u0008           save counted sectors
-         cmpd  <u0017            > good sector count?
+         cmpd  <u0017           good sector count?
          bcs   L0745            next segment
          clr   <u0008           clear counted sectors
          clr   <u0009           
@@ -1150,7 +1150,7 @@ L0745    dec   <u002B		decrement cluster counter
          inc   <oksects
 L0755    clr   <u002A
          lda   <clustsiz        get cluster size
-         sta   <u002B		save in cluster counter
+         sta   <u002B           save in cluster counter
 L075B    ldb   <u0031
          ldx   <u0032
          leax  $01,x
@@ -1310,14 +1310,14 @@ FDScipt  bsr   GetSec           get sector
          bsr   WritSec
          bsr   ClrBuf
          ldb   <u002C
-         decb                    make zero offset (0 - 255)
-NextCnt  decb                    decrement sector count
-         bne   NextWrt           if more to do
-         rts                     else return
-NextWrt  pshs  b                 save sector count
-         bsr   WritSec           write the sector
-         puls  b                 get count back
-         bra   NextCnt           do until done
+         decb                   make zero offset (0 - 255)
+NextCnt  decb                   decrement sector count
+         bne   NextWrt          if more to do
+         rts                    else return
+NextWrt  pshs  b                save sector count
+         bsr   WritSec          write the sector
+         puls  b                get count back
+         bra   NextCnt          do until done
 
 ********************************************************************
 * clear the 256 byte sector buffer
