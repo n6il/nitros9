@@ -22,6 +22,7 @@ edition  set   1
          mod   eom,name,tylg,atrv,start,size
 
          org   0
+inputbuf rmb   16
 devopts  rmb   32
          rmb   450
 size     equ   .
@@ -45,9 +46,11 @@ readkey  ldd   #$02*256		stderr
          bcs   exit
          clr   (PD.EKO-PD.OPT),x
          os9   I$SetStt		set 'em
+         leax  inputbuf,u
          ldy   #$0001		one character
          os9   I$Read		read one char from stderr
          clrb  
+         leax  devopts,u
          inc   (PD.EKO-PD.OPT),x	turn on echo
          os9   I$SetStt		set 'em
          leax  cr,pcr
