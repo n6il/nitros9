@@ -6,7 +6,7 @@ CMDS		= asm attr backup binex build cmp cobbler copy date dcheck debug \
 		deiniz del deldir dir display dsave dump echo edit error exbin format \
 		free grfdrv help ident iniz link list load login makdir mdir \
 		merge mfree modpatch montype os9gen procs pwd pxd rename runb save \
-		setime shell_21 shellplus sleep tee tmode tsmon unlink \
+		setime shell_21 shellplus sleep tee tmode touch tsmon unlink \
 		verify wcreate xmode
 SUBS            = gfx2 gfx inkey syscall
 
