@@ -31,9 +31,6 @@ atrv     set   ReEnt+rev
 rev      set   $02
 edition  set   10
 
-os9l1start equ $EF00
-os9l1size  equ $0F80
-
          mod   eom,name,tylg,atrv,start,size
 
          org   0
@@ -602,8 +599,8 @@ BTMem
 *         lda   #BTrack		boot track
 *         ldb   #$00		sector 1
          lbsr  Seek2LSN
-         ldx   #os9l1start
-         ldy   #os9l1size
+         ldx   #Bt.Start
+         ldy   #Bt.Size
 
          ENDC
 
