@@ -170,14 +170,14 @@ the following required information:
 A PRIMARY MODULE, which is the name of the program to be
 executed by the new process. The program can already be present
 in memory, or OS-9 may load it from a mass storage file having
-the same name (see 5.4.1).
+the same name.
 </para></listitem>
 <listitem><para>
 PARAMETERS, which is data specified by the parent to be
 passed to and used by the new process. This data is copied to
 part of the child process' memory area. Parameters are
 frequently used to pass file names, initialization values, etc.
-The shell, passes command line parameters this way (see 4.1).
+The shell, passes command line parameters this way.
 </para></listitem>
 </itemizedlist>
 <para>
@@ -191,18 +191,18 @@ is used to identify all processes belonging to a specific user
 (this is not the same as the &quot;process ID&quot;, which identifies a
 specific process) . This number is usually obtained from the
 system password file when a user logs on. The system manager
-always is user number zero (see 3.8).
+always is user number zero.
 </para></listitem>
 <listitem><para>
 STANDARD INPUT AND OUTPUT PATHS: the three paths (input,
 output, and error/status) used for routine input and output.
 Note that most paths (files) may be shared simultaneously by
-two or more processes (see 4.2.2). The two current working
+two or more processes. The two current working
 directories are also inherited.
 </para></listitem>
 <listitem><para>
 PROCESS PRIORITY which determines what proportion of CPU
-time the process receives with respect to others (see 5.1).
+time the process receives with respect to others.
 </para></listitem>
 </itemizedlist>
 <para>
@@ -212,7 +212,7 @@ As part of the fork operation, OS-9 automatically assigns:
 <listitem><para>
 A PROCESS ID: a number from 1 to 255, which is used to
 identify specific processes. Each process has a unique process
-ID number (see 4.3.2).
+ID number.
 </para></listitem>
 <listitem><para>
 MEMORY: enough memory required for the new process to run.
@@ -221,7 +221,7 @@ In Level One systems, all processes share the single address
 space. A &quot;data area&quot;, used for the program's parameters,
 variables, and stack is allocated for the process' exclusive
 use. A second memory area may also be required to load the
-program (primary module) if it is not resident in memory (see 5.4)..
+program (primary module) if it is not resident in memory.
 </para></listitem>
 </itemizedlist>
 <para>
@@ -295,7 +295,7 @@ upward for data areas, as shown below:
 When performing a fork operation, OS-9's first step is to attempt
 to locate the requested program module by searching the &quot;module
 directory&quot;, which has the address of every module present in memory.
-The 6809 instruction set supports a type of program called
+The &CPU instruction set supports a type of program called
 &quot;reentrant code&quot; which means the exact same &quot;copy&quot; of a program can
 be shared by two or more different processes simultaneously without
 affecting each other, provided that each &quot;incarnation&quot; of the
@@ -315,7 +315,7 @@ for other uses) when all processes using the module have terminated.
 <para>
 If the requested program module is not already in memory, the
 name is used as a pathlist (file name) and an attempt is made to
-load the program from mass storage (see 3.9.4).
+load the program from mass storage.
 </para>
 <para>
 Every program module has a &quot;module header&quot; that describes the
@@ -400,13 +400,13 @@ code&quot;, or &quot;PIC&quot;. PIC programs do not have to be loaded into
 specific, predetermined memory addresses to work correctly, and can
 therefore be loaded at different memory addresses at different
 times. PIC programs require special types of machine language instructions
-which few computers have. The ability of the 6809
+which few computers have. The ability of the &CPU
 microprocessor to use this type of program is one of its most
 powerful features.
 </para>
 <para>
 The &quot;load&quot; command can therefore be used two or more times (or a
-single file may contain several memory modules, see 3.9.4), and each
+single file may contain several memory modules), and each
 program module will be automatically loaded at different,
 non-overlapping addresses (most other operating systems write over the
 previous program's memory whenever a new program is loaded). This

@@ -1,7 +1,7 @@
 <refentry id="tuneport">
 <refnamediv>
 <refname>TUNEPORT</refname>
-<refpurpose>Tune the printer port on the &make; Computer</refpurpose>
+<refpurpose>Tune the printer port on the &make;</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

@@ -3,7 +3,7 @@
 <para>
 For those who wish to use the serial port, the input or
 output path of a program may be redirected to the serial port of
-your &make; computer.
+your &make;.
 </para>
 <para>
 This is done by including the following module in the OS-9 kernel:
@@ -43,7 +43,7 @@ command description.
 <section>
 <title>Serial Terminal Implementation</title>
 <para>
-For those who wish to connect two &make; computers, running
+For those who wish to connect two &make;s, running
 OS-9, together using the serial port, redirection of the input
 or output paths is possible using the following modifier at
 the end of a command line:

@@ -81,10 +81,8 @@ command line before it is passed to the program being called.
 
 &attrref;
 &backupref;
-&basic09ref;
 &binexref;
 &buildref;
-&ccref;
 &chdref;
 &cmpref;
 &cobblerref;
@@ -109,7 +107,6 @@ command line before it is passed to the program being called.
 &exmoderef;
 &formatref;
 &freeref;
-&go51ref;
 &helpref;
 &identref;
 &inizref;
@@ -124,7 +121,6 @@ command line before it is passed to the program being called.
 &mergeref;
 &mfreeref;
 &os9genref;
-&printerrref;
 &procsref;
 &pwdref;
 &renameref;

@@ -7,13 +7,12 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>DEVS</command>
-<arg choice="opt">-?</arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
 <refsect1><title>Description</title>
 <para>
-Show device table entries
+Show device table entries.
 </para>
 </refsect1>
 </refentry>

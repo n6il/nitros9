@@ -19,7 +19,7 @@ initial data directory.
 </para>
 
 <section>
-<title>The OS9BOOT File</title>
+<title>The OS9Boot File</title>
 
 <para>
 The file called &quot;OS9Boot&quot; loaded into RAM memory by the
@@ -34,8 +34,16 @@ distribution disk's &quot;OS9Boot&quot; file contains the following modules:
 <colspec colwidth="3.5in"/>
 <tbody>
   <row>
-    <entry>IOMAN</entry>
+    <entry>OS9P2</entry>
+    <entry>OS-9 Kernel, Part 2</entry>
+  </row>
+  <row>
+    <entry>IOMan</entry>
     <entry>OS-9 Input/Output Manager</entry>
+  </row>
+  <row>
+    <entry>Init</entry>
+    <entry>Initialization Data Module</entry>
   </row>
   <row>
     <entry>RBF</entry>
@@ -46,47 +54,55 @@ distribution disk's &quot;OS9Boot&quot; file contains the following modules:
     <entry>Sequential Character (terminal) File Manager</entry>
   </row>
   <row>
-    <entry>Pipeman</entry>
-    <entry>Pipeline File Manager</entry>
+    <entry>PipeMan</entry>
+    <entry>Pipe File Manager</entry>
   </row>
   <row>
     <entry>Piper</entry>
-    <entry>Pipeline Driver</entry>
+    <entry>Pipe Driver</entry>
   </row>
   <row>
     <entry>Pipe</entry>
-    <entry>Pipeline Device Descriptor</entry>
+    <entry>Pipe Device Descriptor</entry>
   </row>
   <row>
-    <entry>KBDVID</entry>
-    <entry>Keyboard/video/Graphics Device Driver</entry>
+    <entry>CC3IO</entry>
+    <entry>CoCo 3 Keyboard/Video Device Driver</entry>
   </row>
   <row>
-    <entry>PRINTER</entry>
-    <entry>Printer Device Driver</entry>
+    <entry>WindInt</entry>
+    <entry>CoCo 3 Graphics Co-Module</entry>
   </row>
   <row>
-    <entry>DDISK</entry>
-    <entry>Disk Driver</entry>
+    <entry>VDGInt</entry>
+    <entry>CoCo 2 Compatible Graphics Co-Module</entry>
   </row>
   <row>
-    <entry>D0, D1</entry>
-    <entry>Disk Device Descriptor</entry>
-  </row>
-  <row>
-    <entry>TERM</entry>
+    <entry>Term</entry>
     <entry>Terminal Device Descriptor</entry>
   </row>
   <row>
-    <entry>P</entry>
+    <entry>CC3Disk</entry>
+    <entry>CoCo 3 Disk Driver</entry>
+  </row>
+  <row>
+    <entry>DD, D0, D1</entry>
+    <entry>Disk Device Descriptors</entry>
+  </row>
+  <row>
+    <entry>Printer</entry>
+    <entry>Printer Device Driver</entry>
+  </row>
+  <row>
+    <entry>p</entry>
     <entry>Printer Device Descriptor</entry>
   </row>
   <row>
-    <entry>CLOCK</entry>
+    <entry>Clock</entry>
     <entry>Real-Time Clock Module</entry>
   </row>
   <row>
-    <entry>SYSGO</entry>
+    <entry>CC3Go</entry>
     <entry>System Startup Process</entry>
   </row>
 </tbody>
@@ -120,7 +136,7 @@ The directory &quot;/d0/SYS&quot; contains two important files:
   </row>
   <row>
 <entry>errmsg</entry>
-<entry>the error message file (see 4.7)</entry>
+<entry>the error message file</entry>
   </row>
 </tbody>
 </tgroup>
@@ -137,7 +153,7 @@ similar nature if desired.
 <title>The Startup File</title>
 
 <para>
-The file &quot;/d0/startup&quot; is a shell procedure file (see 4.6) which
+The file &quot;/d0/startup&quot; is a shell procedure file which
 is automatically processed immediately after system startup. The
 user may include in &quot;startup&quot; any legal shell command line. Often
 this will include &quot;setime&quot; to start the system clock. If this file
@@ -152,7 +168,7 @@ must run the SETIME command manually.
 <para>
 The directory &quot;/d0/CMDS&quot; is the system-wide command object code
 directory, which is normally shared by all users as their working
-execution directory (see 3.7). If &quot;shell&quot; is not part of the
+execution directory. If &quot;shell&quot; is not part of the
 &quot;OS9Boot&quot; file, it must be present in this directory. The system
 startup process &quot;sysgo&quot; makes CMDS the initial execution directory.
 </para>
