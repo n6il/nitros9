@@ -6,6 +6,12 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  14    From Tandy OS-9 Level One VR 02.00.00
+*  15    Module validation consists only of module      BGP 02/07/21
+*        header parity check.  CRC check is not done
+*        unless D.CRC is set to 1, which is NOT the
+*        default case.  By default, D.CRC is set
+*        to 0, thus there is no CRC checking.  Speeds
+*        up module loads quite a bit.
 
 
          nam   OS9
@@ -19,7 +25,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   14
+edition  set   15
 
 L0000    mod   eom,name,tylg,atrv,OS9Cold,size
 
