@@ -32,7 +32,7 @@ StpRat   set   Step06     drive stepping rate code
 Cyls     set   40         number of cylinders (tracks per side)
 SecTrk   set   18         number of sectors per track
 SecTr0   set   18         number of sectors per track (track 0, side 0)
-Density  set   0          48 tpi, MFM
+Density  set   1          48 tpi, MFM
 Sides    set   2          number of sides (1 or 2)
 
 * OPTION TABLE
