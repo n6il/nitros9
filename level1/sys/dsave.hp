@@ -7,5 +7,5 @@ Opts  :
   -i = indent for directory levels
   -l = do not process below the current level
   -m = do not include makdir commands in procedure file
-  -r = force rewrite of file on copyy
+  -r = force rewrite of file on copy
   -s<num> = set copy size to num K

@@ -3,4 +3,3 @@ Syntax: Help [<subject>] [<opts>]
 Usage : Give on-line help to users
         will prompt if no subjects given
 Opts  :
-  -? = give list of help topics
