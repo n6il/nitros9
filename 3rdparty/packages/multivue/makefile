@@ -1,5 +1,10 @@
 include ../../../Makefile.rules
 
+DISK	= multivue.dsk
+CMDS	= $(shell $(CD) CMDS; make showobjs)
+SYS	= $(shell $(CD) SYS; make showobjs)
+DEMO	= $(shell $(CD) DEMO; make showobjs)
+
 # Make all components
 all:
 	@$(ECHO) "*********************************************"
@@ -16,3 +21,13 @@ clean:
 	-$(CD) CMDS; make clean
 	-$(CD) SYS; make clean
 	-$(CD) DEMO; make clean
+
+dsk:
+	$(RM) $(DISK)
+	$(OS9FORMAT) $(DISK)
+	$(MAKDIR) $(DISK):CMDS
+	$(MAKDIR) $(DISK):SYS
+	$(MAKDIR) $(DISK):DEMO
+	$(CD) CMDS; $(CP) $(CMDS) ../$(DISK):CMDS
+	$(CD) SYS; $(CP) $(SYS) ../$(DISK):SYS
+	$(CD) DEMO; $(CP) $(DEMO) ../$(DISK):DEMO
