@@ -254,7 +254,7 @@ DD.OPT   rmb   32         Option area
 * DD.FMT Bit Definitions - valid only if device is a floppy disk
 FMT.SIDE equ   %00000001  Single Sided=0, Double Sided=1
 FMT.DNS  equ   %00000010  Single Density=0, Double Density=1
-FMT.TDNS equ   %00000100  Track Density: 48 TPI=0, 96/135 TPI=1
+FMT.TDNS equ   %00000100  Track Density: 48/135 TPI=0, 96 TPI=1
 FMT.T0DN equ   %00100000  Track 0 Density, see FMT.DNS
 
 
