@@ -48,7 +48,7 @@ start    equ   *
          ldd   $02,x
          std   u0004,u
          pshs  u,cc
-         orcc  #$50
+         orcc  #IntMasks
          ldx   >$006B
          stx   >$0032
          ldy   ,u

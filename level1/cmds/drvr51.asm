@@ -143,7 +143,7 @@ L0068    stx   <u0022,u
          lda   #$10
          sta   <u0037,u
          pshs  cc
-         orcc  #$50
+         orcc  #IntMasks
          leay  >L00AD,pcr
          sty   >$0032
          ldx   #$FF00
@@ -195,7 +195,7 @@ L00EE    tst   >L009E,pcr
          lbsr  L0027
          bcs   L011C
 L00F9    leax  <u003A,u
-         orcc  #$10
+         orcc  #IRQMask
          ldb   <u001D,u
          cmpb  <u001E,u
          beq   L00D2
@@ -205,7 +205,7 @@ L00F9    leax  <u003A,u
          bcs   L010E
          clrb  
 L010E    stb   <u001D,u
-         andcc #$EE
+         andcc #^(IRQMask+Carry)
          tst   u000E,u
          beq   L011C
          clr   u000E,u

@@ -1186,9 +1186,9 @@ L08D2    addd  ,s
          leay  -$01,y
          bne   L08D2
          std   ,s
-         andcc #$FB
+         andcc #^Zero
 L08DE    puls  pc,y,b,a
-L08E0    orcc  #$04
+L08E0    orcc  #Zero
          puls  pc,y,b,a
 
 ErrExit  lda   #$02

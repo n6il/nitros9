@@ -369,7 +369,7 @@ L024B    ldd   #$020B
          std   <u0002
          bra   L0260
 L0259    ldb   #$D8
-L025B    orcc  #$01
+L025B    orcc  #Carry
          os9   F$Exit   
 L0260    ldy   #$0000
          sty   <u0024
@@ -589,10 +589,10 @@ L044E    pshs  y
          ldd   -$02,y
          ldy   <u004B
          addd  $02,y
-         orcc  #$04
+         orcc  #Zero
          puls  pc,y
 L045D    leax  -$01,x
-         andcc #$FB
+         andcc #^Zero
          rts   
 L0462    lda   ,y+
          cmpa  #$0D
@@ -621,9 +621,9 @@ L0491    lda   ,x
          bsr   L04DA
          beq   L049D
          stx   $02,s
-         orcc  #$04
+         orcc  #Zero
          bra   L049F
-L049D    andcc #$FB
+L049D    andcc #^Zero
 L049F    puls  pc,y,x,b,a
 L04A1    pshs  u
          ldu   <u0014
@@ -639,12 +639,12 @@ L04A8    lda   u0004,u
          leau  d,u
          cmpu  <u001C
          bcs   L04A8
-L04C0    orcc  #$04
+L04C0    orcc  #Zero
          puls  pc,u
 L04C4    lbsr  L069A
          lbsr  L0691
          tfr   u,d
-         andcc #$FB
+         andcc #^Zero
          puls  pc,u
 L04D0    cmpa  #$61
          bcs   L04DA
@@ -661,9 +661,9 @@ L04DA    cmpa  #$5F
          bcs   L04F1
          cmpa  #$7A
          bhi   L04F1
-L04EE    orcc  #$04
+L04EE    orcc  #Zero
          rts   
-L04F1    andcc #$FB
+L04F1    andcc #^Zero
          rts   
 L04F4    clr   <u0042
          pshs  b,a
@@ -802,9 +802,9 @@ L0612    addd  ,s
          leay  -$01,y
          bne   L0612
          std   ,s
-         andcc #$FB
+         andcc #^Zero
          puls  pc,y,b,a
-L0622    orcc  #$04
+L0622    orcc  #Zero
          puls  pc,y,b,a
 L0626    pshs  y,x,b,a
          leax  >L05F4,pcr
@@ -840,7 +840,7 @@ L0668    pshs  x,b,a
          beq   L0683
          cmpd  #$FFFF
          bne   L067E
-         andcc #$FB
+         andcc #^Zero
          bra   L0683
 L067E    subd  #$0001
          std   -$02,x
@@ -873,7 +873,7 @@ L06B4    cmpx  <u001C
          lda   ,x+
          cmpa  #$0D
          bne   L06B4
-         andcc #$FB
+         andcc #^Zero
 L06C0    puls  pc,a
 L06C2    cmpx  <u001C
          beq   L06CE
@@ -881,7 +881,7 @@ L06C2    cmpx  <u001C
          cmpx  <u0018
          beq   L06CE
          leax  -$01,x
-L06CE    andcc #$FB
+L06CE    andcc #^Zero
          rts   
 L06D1    bsr   L06D7
          beq   L06E9
@@ -893,7 +893,7 @@ L06D9    cmpx  <u0018
          cmpa  #$0D
          bne   L06D9
          leax  $01,x
-         andcc #$FB
+         andcc #^Zero
 L06E7    puls  a
 L06E9    rts   
 L06EA    pshs  y,x,b,a
@@ -969,7 +969,7 @@ L0774    lda   $04,x
          beq   L0788
 L0781    lbsr  L089B
          bcs   L0774
-         andcc #$FB
+         andcc #^Zero
 L0788    puls  pc,b,a
          ldx   <u0012
          ldd   u0005,u
@@ -1245,9 +1245,9 @@ L09EB    cmpa  ,y
          beq   L09E9
          bsr   L09C0
          bra   L09E9
-L0A05    orcc  #$01
+L0A05    orcc  #Carry
          bra   L0A0B
-         andcc #$FE
+         andcc #^Carry
 L0A0B    puls  y,x
          puls  pc,y,b,a
 L0A0F    lbsr  L1126
@@ -1263,7 +1263,7 @@ L0A0F    lbsr  L1126
 L0A29    pulu  pc,u
 L0A2B    pshs  y,x,b,a
          lbsr  L0660
-         andcc #$FE
+         andcc #^Carry
          beq   L0A4E
          ldx   u0005,u
          lbsr  L0122
@@ -1275,11 +1275,11 @@ L0A39    ldy   u0005,u
          stx   <u001A
          lbsr  L0668
          bne   L0A39
-         andcc #$FE
+         andcc #^Carry
 L0A4E    puls  pc,y,x,b,a
 L0A50    pshs  y,x,b,a
          lbsr  L0660
-         andcc #$FE
+         andcc #^Carry
          beq   L0A94
          ldx   u0005,u
          lbsr  L0122
@@ -1304,7 +1304,7 @@ L0A67    ldd   $02,s
          lbsr  L0082
          lbsr  L0668
          bne   L0A67
-         andcc #$FE
+         andcc #^Carry
 L0A92    leas  $04,s
 L0A94    puls  pc,y,x,b,a
          lbsr  L0A2B
@@ -1427,9 +1427,9 @@ L0B9A    cmpy  <u001E
          sta   ,y+
          leau  -u0001,u
          bra   L0B9A
-L0BAD    andcc #$FB
+L0BAD    andcc #^Zero
          puls  pc,u,x,b,a
-L0BB1    orcc  #$04
+L0BB1    orcc  #Zero
          puls  pc,u,x,b,a
 L0BB5    pshs  x,b,a
          tfr   s,x
@@ -1782,9 +1782,9 @@ L0ECD    cmpb  ,y+
          bcs   L0EE1
          cmpy  ,s++
          bcc   L0EE1
-         orcc  #$04
+         orcc  #Zero
          puls  pc,y,x
-L0EE1    andcc #$FB
+L0EE1    andcc #^Zero
          puls  pc,y,x
          ldx   #$FFFF
          pshs  x
@@ -2026,7 +2026,7 @@ L10F9    cmpb  ,x
          lda   ,x+
          cmpa  ,y+
          beq   L10F9
-L1108    andcc #$FB
+L1108    andcc #^Zero
 L110A    rts   
          tst   <u0005
          bne   L10B3
