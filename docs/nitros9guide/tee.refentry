@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>TEE</command>
 <arg choice="plain">
-  &repeatst;&replstart;path&replend;&repeaten;
+  &repeatst;<replaceable>path</replaceable>&repeaten;
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>
@@ -21,7 +21,7 @@ TEE
 
 Copy standard input to multiple output paths
 
-Syntax: Tee {&replstart;path&replend;}
+Syntax: Tee {<replaceable>path</replaceable>}
 
 
 

@@ -8,13 +8,13 @@
 <cmdsynopsis>
 <command>SAVE</command>
 <arg choice="plain">
-  &replstart;path&replend;
+  <replaceable>path</replaceable>
 </arg>
 <arg choice="plain">
-  &replstart;modname&replend;
+  <replaceable>modname</replaceable>
 </arg>
 <arg choice="plain">
-  &repeatst;&replstart;modname&replend;&repeaten;
+  &repeatst;<replaceable>modname</replaceable>&repeaten;
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

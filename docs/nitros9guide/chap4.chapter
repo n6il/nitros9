@@ -262,7 +262,7 @@ programs are allowed to begin execution and run simultaneously.
 Programs are executed sequentially when each is entered on a
 separate line. More than one program can be specified on a single
 shell command line by separating each
-&replstart;program name&replend; &replstart;parameters&replend;
+<replaceable>program name</replaceable> <replaceable>parameters</replaceable>
 from the next one with a &quot;;&quot; character. For example:
 </para>
 <screen>
@@ -465,12 +465,12 @@ The built-in commands and their functions are:
 <colspec colwidth="3.5in"/>
 <tbody>
 <row>
-<entry>chd &replstart;pathlist&replend;</entry>
+<entry>chd <replaceable>pathlist</replaceable></entry>
 <entry>change the working data directory to the directory
 specified by the pathlist (see 3.6).</entry>
 </row>
 <row>
-<entry>chx &replstart;pathlist&replend;</entry>
+<entry>chx <replaceable>pathlist</replaceable></entry>
 <entry>change the working execution directory to the
 directory specified by the pathlist (see 3.6).</entry>
 </row>
@@ -490,11 +490,11 @@ its place.</entry>
 <entry>comment: &quot;text&quot; is not processed.</entry>
 </row>
 <row>
-<entry>kill &replstart;Proc ID&replend;</entry>
+<entry>kill <replaceable>Proc ID</replaceable></entry>
 <entry>abort the process specified.</entry>
 </row>
 <row>
-<entry>setpr &replstart;proc ID&replend; &replstart;priority&replend;</entry>
+<entry>setpr <replaceable>proc ID</replaceable> <replaceable>priority</replaceable></entry>
 <entry>changes process' priority (see 5.1).</entry>
 </row>
 <row>
@@ -558,7 +558,7 @@ the keyboard. This technique is sometimes called &quot;batch&quot; or
 &quot;background&quot; processing.
 </para>
 <para>
-If the &replstart;program name&replend; specified on a shell command line can not be
+If the <replaceable>program name</replaceable> specified on a shell command line can not be
 found in memory or in the execution directory, shell will search the
 data directory for a file with the desired name. If one is found,
 shell will automatically execute it as a procedure file (see 2.0).

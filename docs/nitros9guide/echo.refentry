@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>ECHO</command>
 <arg choice="plain">
-  &replstart;text&replend;
+  <replaceable>text</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

@@ -11,10 +11,10 @@
   <option>-x</option>
 </arg>
 <arg choice="plain">
-  &replstart;path&replend;
+  <replaceable>path</replaceable>
 </arg>
 <arg choice="plain">
-  &repeatst;&replstart;path&replend;&repeaten;
+  &repeatst;<replaceable>path</replaceable>&repeaten;
 </arg>
 <arg choice="opt">
   <option>-x</option>

@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>DELDIR</command>
 <arg choice="plain">
-  &replstart;directory name&replend;
+  <replaceable>directory name</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

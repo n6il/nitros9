@@ -8,8 +8,8 @@
 <cmdsynopsis>
 <command>DISASM</command>
 <group>
-<arg choice="opt">-m &replstart;module name&replend;</arg>
-<arg choice="plain">&replstart;filename&replend;</arg>
+<arg choice="opt">-m <replaceable>module name</replaceable></arg>
+<arg choice="plain"><replaceable>filename</replaceable></arg>
 </group>
 <arg choice="opt">options</arg>
 </cmdsynopsis>
@@ -31,7 +31,7 @@ very useful for building a customized boot file.
 <refsect1><title>Options</title>
 <variablelist>
 <varlistentry>
-<term>disasm -m &replstart;module name&replend;</term>
+<term>disasm -m <replaceable>module name</replaceable></term>
 <listitem>
 <para>
 will link to module in memory - if not found,will load module from exec
@@ -42,7 +42,7 @@ unlink the module.
 </varlistentry>
 
 <varlistentry>
-<term>disasm &replstart;pathlist/module name&replend;</term>
+<term>disasm <replaceable>pathlist/module name</replaceable></term>
 <listitem>
 <para>
 will 'read' the module from the specified path without loading.

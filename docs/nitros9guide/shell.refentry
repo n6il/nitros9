@@ -7,7 +7,7 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>SHELL</command>
-<arg choice="plain">&replstart;arglist&replend;</arg>
+<arg choice="plain"><replaceable>arglist</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -37,24 +37,24 @@ and 4 of this manual.
 </refsect1>
 <refsect1><title>Shell Input Line Formal Syntax</title>
 <synopsis>
-&replstart;pgm line&replend; := &replstart;pgm&replend; {&replstart;pgm&replend;}
-&replstart;pgm&replend; := [&replstart;params&replend;] [ &replstart;name&replend; [&replstart;modif&replend;] [&replstart;pgm params&replend;] [&replstart;modif&replend;] ] [&replstart;sep&replend;]
+<replaceable>pgm line</replaceable> := <replaceable>pgm</replaceable> {<replaceable>pgm</replaceable>}
+<replaceable>pgm</replaceable> := [<replaceable>params</replaceable>] [ <replaceable>name</replaceable> [<replaceable>modif</replaceable>] [<replaceable>pgm params</replaceable>] [<replaceable>modif</replaceable>] ] [<replaceable>sep</replaceable>]
 
 Program Specifications
 
-&replstart;name&replend; := &replstart;module name&replend;
-           := &replstart;pathlist&replend;
-           := ( &replstart;pgm list&replend; )
+<replaceable>name</replaceable> := <replaceable>module name</replaceable>
+           := <replaceable>pathlist</replaceable>
+           := ( <replaceable>pgm list</replaceable> )
 
 Parameters
 
-&replstart;params&replend;:= &replstart;param&replend; { &replstart;delim&replend; &replstart;param&replend; }
-&replstart;delim&replend; := space or comma characters
-&replstart;param&replend; := ex &replstart;name&replend; [&replstart;modif&replend;] chain to program specified
-         := chd &replstart;pathlist&replend;    change working directory
-         := kill &replstart;procID&replend;     send abort signal to process
-         := setpr&replstart;procID&replend; &replstart;pty&replend; change process priority
-         := chx &replstart;pathlist&replend;    change execution directory
+<replaceable>params</replaceable>:= <replaceable>param</replaceable> { <replaceable>delim</replaceable> <replaceable>param</replaceable> }
+<replaceable>delim</replaceable> := space or comma characters
+<replaceable>param</replaceable> := ex <replaceable>name</replaceable> [<replaceable>modif</replaceable>] chain to program specified
+         := chd <replaceable>pathlist</replaceable>    change working directory
+         := kill <replaceable>procID</replaceable>     send abort signal to process
+         := setpr<replaceable>procID</replaceable> <replaceable>pty</replaceable> change process priority
+         := chx <replaceable>pathlist</replaceable>    change execution directory
          := w                                   wait for any process to die
          := p                                   turn &quot;OS9:&quot; prompting on
          := -p                                  turn prompting off
@@ -62,21 +62,21 @@ Parameters
          := -t                                  don't echo input lines
          := -x                                  dont abort on error
          := x                                   abort on error
-         := * &replstart;text&replend;          comment line: not processed
-&replstart;sep&replend;   := ;     sequential execution separator
+         := * <replaceable>text</replaceable>          comment line: not processed
+<replaceable>sep</replaceable>   := ;     sequential execution separator
          := &amp;     concurrent execution separator
          := !     pipeline separator
-         := &replstart;cr&replend; end-of-line (sequential execution separator)
+         := <replaceable>cr</replaceable> end-of-line (sequential execution separator)
 
 
 Modifiers
 
-&replstart;modif&replend; := &replstart;mod&replend; { &replstart;delim&replend; &replstart;mod&replend; }
-&replstart;mod&replend;   := &lt; &replstart;pathlist&replend; redirect standard input
-        := &gt; &replstart;pathlist&replend; redirect standard output
-        := &gt;&gt; &replstart;pathlist&replend; redirect standard error output
-        := # &replstart;integer&replend; set process memory size in pages
-        := # &replstart;integer&replend; K   set program memory size in 1K increments
+<replaceable>modif</replaceable> := <replaceable>mod</replaceable> { <replaceable>delim</replaceable> <replaceable>mod</replaceable> }
+<replaceable>mod</replaceable>   := &lt; <replaceable>pathlist</replaceable> redirect standard input
+        := &gt; <replaceable>pathlist</replaceable> redirect standard output
+        := &gt;&gt; <replaceable>pathlist</replaceable> redirect standard error output
+        := # <replaceable>integer</replaceable> set process memory size in pages
+        := # <replaceable>integer</replaceable> K   set program memory size in 1K increments
 </synopsis>
 </refsect1>
 </refentry>

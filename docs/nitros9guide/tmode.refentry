@@ -8,10 +8,10 @@
 <cmdsynopsis>
 <command>TMODE</command>
 <arg choice="opt">
-  .&replstart;pathnum&replend;
+  .<replaceable>pathnum</replaceable>
 </arg>
 <arg choice="opt">
-  &replstart;arglist&replend;
+  <replaceable>arglist</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>
@@ -31,7 +31,7 @@ the standard input path is affected.
 </para>
 <para>
 NOTE: If this command is used in a shell procedure file, the
-option &quot;.&replstart;path num&replend;&quot; must be used to specify one of the standard
+option &quot;.<replaceable>path num</replaceable>&quot; must be used to specify one of the standard
 output paths (0, 1 or 2) to change the terminal's operating
 characteristics. The change will remain in effect until the path is
 closed. To effect a permanent change to a device characteristic,

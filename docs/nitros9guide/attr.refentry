@@ -8,9 +8,9 @@
 <cmdsynopsis>
 <command>ATTR</command>
 <arg choice="plain">
-  &replstart;path&replend;
+  <replaceable>path</replaceable>
 </arg>
-<arg choice="opt">&repeatst; &replstart;permission abbreviations&replend; &repeaten;</arg>
+<arg choice="opt">&repeatst; <replaceable>permission abbreviations</replaceable> &repeaten;</arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 

@@ -7,8 +7,8 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>XMODE</command>
-<arg choice="plain">&replstart;devname&replend;</arg>
-<arg choice="opt">&replstart;arglist&replend;</arg>
+<arg choice="plain"><replaceable>devname</replaceable></arg>
+<arg choice="opt"><replaceable>arglist</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 

@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>SLEEP</command>
 <arg choice="plain">
-  &replstart;tick count&replend;
+  <replaceable>tickcount</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

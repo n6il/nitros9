@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>COBBLER</command>
 <arg choice="plain">
-  &replstart;device name&replend;
+  <replaceable>device name</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

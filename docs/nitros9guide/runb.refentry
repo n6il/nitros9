@@ -7,7 +7,7 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>Runb</command>
-<arg choice="plain">&replstart;i-code module&replend;</arg>
+<arg choice="plain"><replaceable>i-code module</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 

@@ -11,7 +11,7 @@
   <option>-opts</option>
 </arg>
 <arg choice="plain">
-  &replstart;path&replend;
+  <replaceable>path</replaceable>
 </arg>
 <arg choice="opt">
   <option>-opts</option>
@@ -32,7 +32,7 @@ indicate the module edition.
 </para>
 <para>
 IDENT will display all modules contained in a disk file. If the
-&quot;-m&quot; option appears, &replstart;path&replend; is assumed to be a module in memory.
+&quot;-m&quot; option appears, <replaceable>path</replaceable> is assumed to be a module in memory.
 </para>
 <para>
 If the &quot;-v&quot; option is specified, the module CRC is not verified.

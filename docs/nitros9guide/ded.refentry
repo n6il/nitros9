@@ -7,7 +7,7 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>DED</command>
-<arg choice="plain">&replstart;pathlist&replend;</arg>
+<arg choice="plain"><replaceable>pathlist</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -27,7 +27,7 @@ and possibly others (CoCo Level II OS-9).
 </para><para>
 To use, type:
 <screen>
-dEd &lt;pathlist&gt;
+dEd <replaceable>pathlist</replaceable>
 </screen>
 where &lt;pathlist&gt; is of the form:  filename or dirname
 or  /path/filename

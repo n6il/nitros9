@@ -7,7 +7,7 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>BASIC09</command>
-<arg choice="opt">&replstart;filename&replend;</arg>
+<arg choice="opt"><replaceable>filename</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 

@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>DUMP</command>
 <arg choice="opt">
-  &replstart;path&replend;
+  <replaceable>path</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>
