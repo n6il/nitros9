@@ -1,10 +1,10 @@
-OS-9 Level One V3.01.01:
+OS-9 Level One V03.01.01:
 - ident now correctly reports modules with a language byte of Obj6309.
 - The LogBook file in the SYS directory has been removed.
 - A bug in the cputype command that caused crashing on a 6809 system
   has been fixed.
 
-OS-9 Level One V3.01.00:
+OS-9 Level One V03.01.00:
 - New common version among all releases of OS-9 for the CoCo
 - Many commands have been updated and optimized:
    o For size reasons, command help information is no longer embedded in the
@@ -18,7 +18,7 @@ OS-9 Level One V3.01.00:
    o cmp, error, help and touch have been rewritten in assembly for size
    o copy has been enhanced to include OS-9/68K-like features
 
-OS-9 Level One V2.01.00 'Phoenix' Release (11/04/2002):
+OS-9 Level One V02.01.00 'Phoenix' Release (11/04/2002):
 - Defs files now have properly terminated lines and 'pag' is now emitted
   as a comment.
 - SYS/password now references /DD instead of /D0

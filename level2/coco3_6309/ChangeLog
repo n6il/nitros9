@@ -1,4 +1,4 @@
-OS-9 Level Two V3.01.01:
+OS-9 Level Two V03.01.01:
 - ident now correctly reports modules with a language byte of Obj6309.
 - rbf.mn and cc3disk.dr have been back-ported from NitrOS-9 in order to
   unify the code base and bring non-6309 specific features to OS-9 Level Two.
@@ -10,7 +10,7 @@ OS-9 Level Two V3.01.01:
 - A bug in the cputype command that caused crashing on a 6809 system
   has been fixed.
 
-OS-9 Level Two V3.01.00:
+OS-9 Level Two V03.01.00:
 - New common version among all releases of OS-9 for the CoCo
 - Many commands have been updated and optimized:
    o For size reasons, command help information is no longer embedded in the
@@ -34,7 +34,7 @@ OS-9 Level Two V3.01.00:
   CC3Go will now try to fork AutoEx instead of jumping to the crash routine.
 - Several bugs that crept into IOMan during the last release have been fixed.
 
-OS-9 Level Two V2.01.00 Beta2:
+OS-9 Level Two V02.01.00 Beta2:
 - Defs files now have properly terminated lines and 'pag' is now emitted
   as a comment.
 - SCF, Rammer and PipeMan are now made from the NitrOS-9 version source base,
