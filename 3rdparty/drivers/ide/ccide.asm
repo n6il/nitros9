@@ -168,9 +168,9 @@ ReadOnly equ   %00001000  0=Read & write allowed, 1=Read only (CD-ROM)
          nam   CCIDE
          ttl   IDE device driver for CoCo
 
-         ifp1
+        IFP1
          use   defsfile
-         endc
+        ENDC
 
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
@@ -362,11 +362,11 @@ GetStat  ldx   PD.RGS,y      Get ptr to callers register stack
          ldd   R$Y,x         Get sub-function type
          beq   GoodFunc
          comb                Only sub-functions 0 allowed for IDE
-         ifeq  Level-2
+        IFGE  Level-2
          ldb   #E$IllArg
-         else
-         ldb   #167
-         endc
+        ELSE
+         ldb   #187
+        ENDC
 ExitGet  rts
 
 GoodFunc pshs  x,y,u         Preserve regs
@@ -390,7 +390,7 @@ SwapLoop ldd   ,y            Swap all words to Motorola order
          ldd   122,y
          stx   122,y
          std   120,y
-         ifeq  Level-2
+        IFGE  Level-2
          lda   <D.SysTsk     Get system task #
          ldx   <D.Proc       Get user task ptr
          ldb   P$Task,x      Get user's task #
@@ -399,8 +399,8 @@ SwapLoop ldd   ,y            Swap all words to Motorola order
          ldu   R$X,u         Get Destination ptr
          ldy   #512          Move 512 bytes to caller
          os9   F$Move
-         else
-         endc
+        ELSE
+        ENDC
          puls  x,y,u         Restore regs to normal
          bcc   SetUserR      No error, set exit registers for caller
          rts

@@ -56,9 +56,9 @@ SectTrk0 set   $0020
 Interlv  set   $01       
 SASiz    set   $08       
 
-         ifp1            
+        IFP1            
          use   defsfile  
-         endc            
+        ENDC            
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev 
@@ -90,18 +90,14 @@ initsize equ   *
 *       these values directly from the descriptor.
          fcb   0,0,0,0,0,0,0,0,0
 
-         ifne  DD        
+        IFEQ  DD-true
 name     fcs   /DD/      
-         else            
+        ELSE            
 name     fcc   /H/       
          fcb   ITDRV+$B0 
-         endc            
+        ENDC            
 mgrnam   fcs   /RBF/     
-         ifne  SuperIDE  
-drvnam   fcs   /SuperIDE/
-         else            
 drvnam   fcs   /CCIDE/   
-         endc            
 
          emod            
 eom      equ   *         
