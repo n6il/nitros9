@@ -1,5 +1,5 @@
 @IDENT
-Syntax: Ident [-opts] <path> [-opts]
+Syntax: Ident [<opts>] <path> [<opts>]
 Usage : Displays header information from OS-9 memory modules
 Opts  :
   -m = module in memory

@@ -1,3 +1,3 @@
 @BUILD
-Syntax: Build filename
+Syntax: Build <path>
 Usage : Builds short text files from standard input

@@ -1,5 +1,5 @@
 @MDIR
-Syntax: Mdir [-e]
+Syntax: Mdir [<opts>]
 Usage : Displays the present memory module directory
 Opts  :
   -e = print extended module directory
