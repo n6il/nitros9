@@ -73,7 +73,11 @@ MakeStak pshs  a
          sta   >DPort
 
 * delay loop
+         ifgt  Level-1
          ldd   #$C350
+         else
+         ldd   #$61A8
+         endc
 L003A    nop   
          nop   
          subd  #$0001
