@@ -6,213 +6,381 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   5    From Tandy OS-9 Level One VR 02.00.00
+*   6    Incorporated R. Telkman's additions from 1987, BGP 02/12/23
+*        added -d option, added defs to conditionally
+*        assemble without help or screen size check
+*
+* Dump follows the function of the original Microware version but now
+* supports large files over 64K, and is free from the problems of garbage
+* in wide listings.
+*
+* In addition it now allows dumping of memory modules and command modules
+* in the execution directory.
 
          nam   Dump
          ttl   Show file contents in hex
 
-* Disassembled 98/09/14 23:34:34 by Disasm v1.6 (C) 1988 by RML
+         use   defsfile  
 
-         ifp1
-         use   defsfile
-         endc
+* Tweakable options
+DOSCSIZ  set   0	1 = include SS.ScSiz code, 0 = leave out
+DOHELP   set   0	1 = include help message, 0 = leave out
 
-tylg     set   Prgrm+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-edition  set   5
+Edition  set   6         
+Revs     set   1         
+BufSz    set   80        
 
-         mod   eom,name,tylg,atrv,start,size
+         org   0         
+nonopts  rmb   1
+D.Prm    rmb   2         
+D.Hdr    rmb   1         
+D.Mem    rmb   1         
+         IFNE  DOSCSIZ
+DoWide   rmb   1         
+         ENDC
+Mode     rmb   1         
+D.Opn    rmb   1         
+D.Beg    rmb   2         
+D.End    rmb   2         
+D.Adr    rmb   4         
+D.Len    rmb   2         
+D.Ptr    rmb   2         
+D.Txt    rmb   2         
+Datbuf   rmb   16        
+Txtbuf   rmb   BUFSZ     
+         rmb   128
+datsz    equ   .         
 
-u0000    rmb   1
-u0001    rmb   1
-u0002    rmb   1
-u0003    rmb   1
-u0004    rmb   1
-u0005    rmb   1
-u0006    rmb   2
-u0008    rmb   2
-u000A    rmb   2
-u000C    rmb   16
-u001C    rmb   5
-u0021    rmb   1
-u0022    rmb   16
-u0032    rmb   8
-u003A    rmb   17
-u004B    rmb   16
-u005B    rmb   201
-size     equ   .
+typ      equ   Prgrm+Objct
+att      equ   ReEnt+Revs
 
-name     fcs   /Dump/
-         fcb   edition
-L0012    fcc   "Addr   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0 2 4 6 8 A C E"
-         fcb   C$CR
-L0051    fcc   "----  ---- ---- ---- ---- ---- ---- ---- ----  ----------------"
-L0090    fcb   C$CR
-L0091    fcb   C$LF
-         fcb   C$LF
-         fcb   C$LF
-         fcb   C$LF
-	 fcc   "     0 1 2 3 4 5 6 7  0 2 4 6"
-         fcb   C$LF
-         fcc   "ADDR 8 9 A B C D E F  8 A C E""
-         fcb   C$CR
-L00D1    fcc   "==== +-+-+-+-+-+-+-+- + + + + "
-         fcb   C$CR
+         mod   length,name,typ,att,entry,datsz
 
-L00F0    lda   ,x+
+name     fcs   /Dump/    
+         fcb   Edition   
+
+title    fcc   /Address   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0 2 4 6 8 A C E/
+caret    fcb   C$CR      
+flund    fcc   /-------- ---- ---- ---- ---- ---- ---- ---- ----  ----------------/
+         fcb   C$CR      
+         IFNE  DOSCSIZ
+short    fcc   /         0 1 2 3 4 5 6 7  0 2 4 6/
+         fcb   C$LF      
+         fcc   /Address  8 9 a b c d e f  8 a c e/
+         fcb   C$CR      
+shund    fcc   /======== +-+-+-+-+-+-+-+- + + + + /
+         fcb   C$CR      
+         ENDC
+
+entry    stx   <D.Prm    
+         clra            
+         sta   <D.Hdr    
+         sta   <D.Mem    
+         sta   <nonopts		assume no non-opts
+         inca
+         sta   <Mode            READ.
+
+         IFNE  DOSCSIZ
+         sta   <DoWide          assume wide
+
+* Check screen size
+         ldb   #SS.ScSiz
+         os9   I$GetStt
+         bcs   Pass1
+
+         cmpx  #64
+         bge   PrePass
+
+         clr   <DoWide
+
+PrePass  ldx   <D.Prm
+         ENDC
+
+* Pass1 - process any options
+* Entry: X = ptr to cmd line
+Pass1
+* Skip over spaces
+         lda   ,x+
          cmpa  #C$SPAC
-         beq   L00F0
-         leax  -1,x
+         beq   Pass1
+
+* Check for EOL
          cmpa  #C$CR
+         beq   Pass2
+
+* Check for option
+         cmpa  #'-
+         bne   Pass1
+
+* Here, X points to an option char
+OptPass  lda   ,x+
+         cmpa  #C$SPAC
+         beq   Pass1
+         cmpa  #C$CR
+         beq   Pass2
+
+         anda  #$DF
+
+         cmpa  #'D
+         bne   IsItH
+
+* Process D here
+         lda   <Mode
+         ora   #DIR.
+         sta   <Mode
+         bra   OptPass
+ 
+IsItH    cmpa  #'H
+         bne  IsItM
+
+* Process H here
+         sta  <D.Hdr
+         bra  OptPass
+
+IsItM    cmpa  #'M
+         bne   IsItX
+
+* Process M here 
+         sta   <D.Mem
+         bra   OptPass
+
+IsItX    cmpa  #'X
+         bne  ShowHelp
+
+* Process X here
+         lda   <Mode
+         ora   #EXEC.
+         sta   <Mode
+         bra   OptPass
+ 
+         IFNE  DOHELP
+ShowHelp leax  HelpMsg,pcr
+         lda   #2
+         ldy   #HelpLen
+         os9   I$Write
+         bra   ExitOk
+         ENDC
+
+* Pass2 - process any non-options
+* Entry: X = ptr to cmd line
+Pass2
+         ldx   <D.Prm
+Pass21
+* Skip over spaces
+         lda   ,x+
+         cmpa  #C$SPAC
+         beq   Pass21
+         cmpa  #'-
+         bne   Pass22
+
+EatOpts  lda   ,x+
+         cmpa  #C$SPAC
+         beq   Pass21
+         cmpa  #C$CR
+         bne   EatOpts
+
+* Check for EOL
+Pass22   cmpa  #C$CR
+         beq   EndOfL
+
+Call     leax  -1,x
+         sta   nonopts,u
+         bsr   DumpFile
+         bra   Pass21
+
+EndOfL   tst   <nonopts		any non-options on cmd line?
+         bne   ExitOk
+         tst   <D.Mem           memory option specified?
+         bne   ShowHelp		yes, no module specified, show help
+         clra                   stdin
+         bsr   DumpIn
+         IFEQ  DOHELP
+ShowHelp
+         ENDC
+ExitOk   clrb
+DoExit   os9   F$Exit
+
+mlink    clra            
+         pshs  u         
+         os9   F$Link    
+         stu   <D.Beg    
+         puls  u         
+         bcc   DumpIn     
+         bra   DoExit
+
+DumpFile
+* ldx   <D.Prm    
+         tst   <D.Mem    
+         bne   mlink     
+         lda   <Mode
+opath    os9   I$Open    
+         bcs   DoExit
+DumpIn   stx   <D.Prm    
+         sta   <D.Opn    
+         ldx   <D.Beg    
+         ldd   M$Size,x  
+         leax  d,x       
+         stx   <D.End    
+         clra            
+         clrb            
+         tfr   d,x       
+onpas    std   <D.Adr+2  
+         bcc   notbg     
+         leax  1,x       
+notbg    stx   <D.Adr    
+         tst   <D.Hdr    
+         bne   nohed     
+         IFNE  DOSCSIZ
+         tst   <DoWide
+         bne   flpag     
+         aslb            
+         ENDC
+flpag    tstb            
+         bne   nohed     
+         leax  caret,pcr
+         lbsr  print     
+         ldb   #16       
+         leax  title,pcr 
+         leay  flund,pcr 
+         IFNE  DOSCSIZ
+         tst   <DoWide
+         bne   doprt     
+         ldb   #8        
+         leax  short,pcr
+         leay  shund,pcr
+         ENDC
+doprt    pshs  y         
+         clra            
+         std   <D.Len    
+         bsr   print     
+         puls  x         
+         bsr   print     
+nohed    leax  Txtbuf,u  
+         stx   <D.Ptr    
+         ldb   <D.Len+1  
+         lda   #3        
+         mul             
+         addd  #2        
+         leay  d,x       
+         sty   <D.Txt    
+         lda   #C$SPAC   
+         ldb   #BUFSZ-1  
+clbuf    sta   b,x       
+         decb            
+         bpl   clbuf     
+         ldb   #D.Adr    
+adlop    lda   b,u       
+         lbsr  onbyt     
+         incb            
+         cmpb  #D.Adr+4  
+         bne   adlop     
+         ldx   <D.Ptr    
+         leax  1,x       
+         stx   <D.Ptr    
+         bsr   readi     
+         bcs   eofck     
+onlin    lbsr  onchr     
+         decb
+         ble   enlin
+         lbsr  onchr     
+         decb
+*         bitb  #1
+         ble   enlin     
+         lda   #C$SPAC   
+         bsr   savec     
+         bra   onlin     
+enlin    lda   #C$CR     
+         ldx   <D.Txt    
+         sta   ,x        
+         leax  Txtbuf,u  
+         bsr   print     
+         ldd   <D.Adr+2  
+         ldx   <D.Adr    
+         addd  <D.Len    
+         lbra  onpas     
+print    ldy   #BUFSZ    
+         lda   #1
+         os9   I$WritLn  
+         lbcs  DoExit
+         rts             
+readi    ldy   <D.Len    
+         clrb            
+         tst   <D.Mem    
+         bne   redad     
+         leax  Datbuf,u  
+         lda   <D.Opn    
+         os9   I$Read    
+         bcs   reded     
+         tfr   y,d       
+reded    rts             
+redad    ldd   <D.End    
+         ldx   <D.Beg    
+         subd  <D.Beg    
+         bne   setct     
+         coma            
+         ldb   #E$EOF    
+         rts             
+setct    subd  <D.Len    
+         bcs   redof     
+         clra            
+         clrb            
+redof    addd  <D.Len    
+         clr   -1,s      
+         leay  d,x       
+         sty   <D.Beg    
+         rts             
+eofck    cmpb  #E$EOF    
+         orcc  #Carry    
+         lbne  DoExit     
+         clrb            
+         ldx   <D.Prm    
          rts
 
-start    lda   #63
-         sta   <u000A
-         clr   <u0000
-         pshs  y,x,b,a
-         lda   #1
-         ldb   #SS.ScSiz
-         os9   I$GetStt  get size of window
-         bcc   L0115
-         cmpb  #E$UnkSvc
-         beq   L0120
-         puls  y,x,b,a
-         lbra  L01FE
-L0115    cmpx  #80
-         beq   L0120
-         ldb   #31
-         stb   <u000A
-         inc   <u0000
-L0120    puls  y,x,b,a
-         ldd   #$0001
-         std   <u0001
-         bsr   L00F0
-         beq   L0147
-         lda   #READ.
-         os9   I$Open   
-         lbcs  L01FE
-         sta   <u0001
-         bsr   L00F0
-         beq   L0147
-         lda   #WRITE.
-         ldb   #PREAD.+UPDAT.
-         os9   I$Create 
-         lbcs  L01FE
-         sta   <u0002
-L0147    ldd   #$0000
-L014A    std   <u0003
-         tst   <u0000
-         beq   L0156
-         bitb  #$3F
-         bne   L017D
-         bra   L0159
-L0156    tstb  
-         bne   L017D
-L0159    leax  >L0090,pcr
-         lbsr  L01EF
-         leax  >L0012,pcr
-         tst   <u0000
-         beq   L016C
-         leax  >L0091,pcr
-L016C    lbsr  L01EF
-         leax  >L0051,pcr
-         tst   <u0000
-         beq   L017B
-         leax  >L00D1,pcr
-L017B    bsr   L01EF
-L017D    leax  <u001C,u
-         lda   #$20
-         ldb   <u000A
-L0184    sta   ,x+
-         decb  
-         bne   L0184
-         leax  <u001C,u
-         stx   <u0006
-         lda   <u0003
-         bsr   L0201
-         lda   <u0004
-         bsr   L0201
-         leax  <u0022,u
-         stx   <u0006
-         leax  <u004B,u
-         stx   <u0008
-         ldy   #$0010
-         tst   <u0000
-         beq   L01B6
-         leax  <u0021,u
-         stx   <u0006
-         leax  <u0032,u
-         stx   <u0008
-         ldy   #$0008
-L01B6    leax  u000C,u
-         lda   <u0001
-         os9   I$Read   
-         bcs   L01F9
-         tfr   y,d
-         stb   <u0005
-L01C3    bsr   L0223
-         decb  
-         beq   L01D5
-         bsr   L0223
-         tst   <u0000
-         bne   L01D2
-         lda   #$20
-         bsr   L0219
-L01D2    decb  
-         bne   L01C3
-L01D5    lda   #$0D
-         sta   <u005B
-         tst   <u0000
-         beq   L01DF
-         sta   <u003A
-L01DF    leax  <u001C,u
-         bsr   L01EF
-         bcs   L01FE
-         ldd   <u0003
-         addb  <u0005
-         adca  #$00
-         lbra  L014A
-L01EF    ldy   #$0050
-         lda   <u0002
-         os9   I$WritLn 
-         rts   
-L01F9    cmpb  #E$EOF
-         bne   L01FE
-         clrb  
-L01FE    os9   F$Exit   
-L0201    pshs  a
-         lsra  
-         lsra  
-         lsra  
-         lsra  
-         bsr   L020F
-         lda   ,s
-         bsr   L020F
-         puls  pc,a
-L020F    anda  #$0F
-         cmpa  #$09
-         bls   L0217
-         adda  #$07
-L0217    adda  #$30
-L0219    pshs  x
-         ldx   <u0006
-         sta   ,x+
-         stx   <u0006
-         puls  pc,x
-L0223    lda   ,x+
-         bsr   L0201
-         pshs  x,a
-         anda  #$7F
-         cmpa  #$20
-         bcs   L0233
-         cmpa  #$7E
-         bcs   L0235
-L0233    lda   #$2E
-L0235    ldx   <u0008
-         sta   ,x+
-         stx   <u0008
-         puls  pc,x,a
+onibl    anda  #15       
+         cmpa  #9        
+         bls   nocom     
+         adda  #7        
+nocom    adda  #'0       
+savec    pshs  x         
+         ldx   <D.Ptr    
+         sta   ,x+       
+         stx   <D.Ptr    
+         puls  x,pc      
+onchr    lda   ,x+       
+         bsr   onbyt     
+         pshs  x,a       
+         anda  #127      
+         cmpa  #C$SPAC   
+         bcc   savet     
+         lda   #'.       
+savet    ldx   <D.Txt    
+         sta   ,x+       
+         stx   <D.Txt    
+         puls  a,x,pc    
+onbyt    pshs  a         
+         lsra            
+         lsra            
+         lsra            
+         lsra            
+         bsr   onibl     
+         lda   ,s        
+         bsr   onibl     
+         puls  a,pc      
 
-         emod
-eom      equ   *
-         end
+         IFNE  DOHELP
+HelpMsg  fcc   "Use: Dump [-opts] <file> [-opts]"
+         fcb   C$CR,C$LF
+         fcc   "  -d  dump directory"
+         fcb   C$CR,C$LF
+         fcc   "  -h  no header"
+         fcb   C$CR,C$LF
+         fcc   "  -m  for module in memory"
+         fcb   C$CR,C$LF
+         fcc   "  -x  for file in execution directory"
+         fcb   C$CR,C$LF
+HelpLen  equ   *-HelpMsg
+         ENDC
+
+         emod            
+length   equ   *         
+         end             
