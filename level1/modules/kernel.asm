@@ -125,7 +125,7 @@ L007F    std   ,x++
          addb  #$02
          std   <D.SysDis               $222 = addr of sys dispatch tbl
          addb  #$70
-         std   <D.UsrDis               $272 = addr of usr dispatch tbl
+         std   <D.UsrDis               $292 = addr of usr dispatch tbl
          clrb
          inca                          D = $300
          std   <D.ModDir               $300 = mod dir start
