@@ -1,5 +1,7 @@
 include ../Makefile.rules
 
+ROOTFILES	= startup
+
 # Make all components
 all:
 	@$(ECHO) "*********************************************"
@@ -13,6 +15,8 @@ all:
 	$(CD) DEFS; make
 	$(CD) SYS; make
 	$(CD) BOOTFILES; make
+	$(UNIX2OS9) $(ROOTFILES)
+	$(CHMOD) 644 $(ROOTFILES)
 
 # Clean all components
 clean:
@@ -21,3 +25,4 @@ clean:
 	-$(CD) DEFS; make clean
 	-$(CD) SYS; make clean
 	-$(CD) BOOTFILES; make clean
+	-$(OS92UNIX) $(ROOTFILES)
