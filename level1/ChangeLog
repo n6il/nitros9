@@ -6,6 +6,7 @@ OS-9 Level One V03.01.02:
 - The BOOTLISTS/ directory has been added on the Modules disk, and
   contains bootlist files for various configurations.
 - The cputype command has been optimized for size.
+- Minor help file updates have been made.
 
 OS-9 Level One V03.01.01:
 - SYS/helpmsg expanded to include new commands.
