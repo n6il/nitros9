@@ -97,13 +97,20 @@ TermSub  leau  2,x		point U to static area for sub module
          ldx   ,x		get entry pointer at ,X
          jmp   $03,x		call term routine in sub module
 
-* Device initialization routine
-* Entry: U=Static mem ptr for device to initialize
-*        Y=Path dsc. ptr  
-*        DP=0 (or we're in trouble)
+* Init
+*
+* Entry:
+*    Y  = address of device descriptor
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
 Init     ldx   <D.CCMem		get ptr to CC mem
          ldd   <G.CurDev,x	has CC3IO itself been initialized?
-         lbne  L00EF		yes, don't bother doing it again
+         lbne  PerWinInit	yes, don't bother doing it again
+* CC3IO initialization code - done on the first init of ANY cc3io device
          leax  >CC3Irq,pcr	set up AltIRQ vector in DP
          stx   <D.AltIRQ
          leax  >shftclr,pcr	point to SHIFT-CLEAR subroutine
@@ -164,11 +171,15 @@ Init     ldx   <D.CCMem		get ptr to CC mem
          jsr   ,y		call init routine of sub module
          puls  u,y,x,b,a	restore saved regs
          std   <D.Proc		and restore current process
-L00EF    ldd   #$0078		set default SS.Mouse parameters
+
+* This code is executed on init of every window
+* U = device memory area
+PerWinInit
+         ldd   #$0078		set default SS.Mouse parameters
          std   <MS.Smpl,u	(Mouse sample rate & fire button timeout value)
          ldd   <IT.PAR,y	get parity/baud bytes from dev desc
          std   <DevPar,u	save it off in our static
-         lbra  L08AA		go find and init co-module
+         lbra  FindCoMod	go find and init co-module
 
 KeyDrv   fcs   /KeyDrv/
 JoyDrv   fcs   /JoyDrv/
@@ -179,8 +190,22 @@ LinkSys  lda   #Systm+Objct	system module
          ldu   <D.CCMem		get ptr to CC mem
          rts   
 
-* NOTE: This just reads keys from the buffer. The physical reading of keys
-*   is done by the IRQ routine
+
+* Read
+*
+* NOTE:
+* This just reads keys from the buffer. The physical reading 
+* of keys is done by the IRQ routine.
+*
+* Entry:
+*    Y  = address of path descriptor
+*    U  = address of device memory area
+*
+* Exit:
+*    A  = character read
+*    CC = carry set on error
+*    B  = error code
+*
 Read     lda   V.PAUS,u		device paused?
          bpl   read1		no, do normal read (should this be bne?)
 * Device is paused; check for mouse button press
@@ -852,6 +877,18 @@ setmouse pshs  x		save register used
          clra  
          puls  pc,x		restore and return
 
+
+* Write
+*
+* Entry:
+*    A  = character to write
+*    Y  = address of path descriptor
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
 Write    ldb   <ParmCnt,u	are we in the process of getting parameters?
          lbne  L0600		yes, go process
          sta   <DevPar,u	save off character
@@ -1324,7 +1361,7 @@ SSComSt  ldd   R$Y,x		get requested window type
          anda  #$80		trying to flip from window to VDG?
          bne   L088F		yes, error
          lda   R$Y,x		no, get requested window type again
-         bsr   L08AA		go make sure co-module for new type exists
+         bsr   FindCoMod	go make sure co-module for new type exists
          lbcc  L07B5		carry it over to co-module
          rts   			return
 
@@ -1334,8 +1371,11 @@ VDGInt   fcs   /VDGInt/
 * Link to proper co-module
 * Try VDGInt first
 *
-L08AA    sta   V.TYPE,u		save new type
-         bmi   L08C3		if hi-bit if A is set, we're a window
+* Entry: A = window type (If bit 7 is set, it's a window, else VDG screen)
+*
+FindCoMod
+         sta   V.TYPE,u		save new type
+         bmi   FindWind		if hi-bit if A is set, we're a window
          pshs  u,y,a		..else VDG
          lda   #$02		get code for VDG type window
          sta   <WinType,u	save it
@@ -1348,7 +1388,7 @@ WindInt  fcs   /WindInt/
 *
 * Try WindInt
 *
-L08C3    pshs  u,y		preserve regs
+FindWind pshs  u,y		preserve regs
          clra  			set window type
          sta   <WinType,u
          leax  <WindInt,pcr	point to WindInt name
@@ -1383,7 +1423,6 @@ L08F0    puls  a		restore vector offset
          puls  y		restore path descriptor pointer
          cmpa  #$02		was it WindInt?
          bgt   L08D2		no, return
-*L0900    ldb   #$00
 L0900    clrb
          lbra  L0590		send it to co-module
 
