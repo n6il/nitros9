@@ -3,7 +3,7 @@
 # These macros should change according to where the base directory of the
 # OS-9 source tree is located
 BASEDIR		= $(HOME)/nitros9
-OS9TOOLSDIR	= $(HOME)/bin
+OS9TOOLSDIR	= /usr/local/bin
 DEFDIR		= $(BASEDIR)/defs
 DSKDIR		= $(BASEDIR)/dsks
 
