@@ -1,3 +1,5 @@
+DOCBOOKDSL      = /usr/share/sgml/docbook/dsssl-stylesheets/print/docbook.dsl
+XMLDCL          = /usr/share/doc/openjade-1.3.1/pubtext/xml.dcl
 BOOK		= ccguide
 STYLESHEET	= docbook-utils.dsl
 
@@ -31,12 +33,22 @@ SUPPORT		= $(PREFACE) $(CHAPTERS) $(APPS) $(STDLIB) $(SYSCALL)
 
 all:	$(BOOK).pdf
 
+xml:
+	openjade -t tex -o $(BOOK).tex  -d  $(DOCBOOKDSL) $(XMLDCL)  $(BOOK).docbook
+	pdfjadetex $(BOOK).tex
+
+lint:
+	xmllint --valid --noout $(BOOK).docbook
+
 $(BOOK).pdf: $(BOOK).docbook $(SUPPORT)
-	 docbook2pdf -d docbook-utils-a4.dsl#print $(BOOK).docbook
+	docbook2pdf -d docbook-utils-a4.dsl#print $(BOOK).docbook
+
+xmlto: $(BOOK).docbook
+	xmlto pdf $(BOOK).docbook
 
 $(BOOK).ps: $(BOOK).docbook
-	 docbook2ps -d docbook-utils-a4.dsl#print $(BOOK).docbook
-#	 docbook2ps -d $(STYLESHEET) $(BOOK).docbook
+	docbook2ps -d docbook-utils-a4.dsl#print $(BOOK).docbook
+#	docbook2ps -d $(STYLESHEET) $(BOOK).docbook
 
 $(BOOK).html: $(BOOK).docbook
 	$(RM) *.htm *.html
