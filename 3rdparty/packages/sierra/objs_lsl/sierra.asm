@@ -7,6 +7,7 @@
 * ------------------------------------------------------------------
 *   0    Disassembly of original distribution and       PWZ 03/01/31
 *        merged in comments from disasm dated 1992
+*   1    Monitor type bug now fixed                     BGP 03/03/10
 
 *Monitor defs
 COMP    equ   0
@@ -32,6 +33,7 @@ StdErr   equ   2
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -108,7 +110,7 @@ u0xxx    rmb   6281
 size     equ   .
 
 name     fcs   /sierra/
-         fcb   $00
+         fcb   edition
 
 start    equ   *
 L0014   lbra L007D  branch to entry process params
@@ -310,9 +312,9 @@ L0146    std   ,x++
          ldb   #SS.Montr   monitor type code (not listed for getstat $92  
          os9   I$GetStt    make the call
          tfr   x,d         save in d appears he expects montype returned
-         sta   >L0119,pcr  trim it to a byte and save it 
-         anda  #$01        mask out mono type only RGB or COMP
-         sta   >$0553      save that value off 
+         stb   >L0119,pcr  trim it to a byte and save it 
+         andb  #$01        mask out mono type only RGB or COMP
+         stb   >$0553      save that value off 
 
 *  set current montype
 *  SetStat Function Code $92 
