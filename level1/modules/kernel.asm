@@ -235,15 +235,15 @@ L0158    ldx   <D.FMBM
          os9   F$Link
          lbcs  OS9Cold
          jmp   ,y
-         pshs  pc,x,b
+SWI3     pshs  pc,x,b
          ldb   #P$SWI3
          bra   L018C
-         pshs  pc,x,b
+SWI2     pshs  pc,x,b
          ldb   #P$SWI2
          bra   L018C
-         rti
-         jmp   [>D.SvcIRQ]
-         pshs  pc,x,b
+L0183    rti
+SVCIRQ   jmp   [>D.SvcIRQ]
+SWI      pshs  pc,x,b
          ldb   #P$SWI
 L018C    ldx   >D.Proc
          ldx   b,x                     get SWI entry
@@ -1133,13 +1133,13 @@ InstSSvc ldb   ,y+                     get system call code in B
          emod
 eom      equ   *
 
-         fdb   $01D2
-Vectors  fdb   $0177
-         fdb   $017D
-         fdb   $0183
-         fdb   $0184
-         fdb   $0188
-         fdb   $0183
+         fdb   Clock
+Vectors  fdb   SWI3 
+         fdb   SWI2 
+         fdb   L0183
+         fdb   SVCIRQ
+         fdb   SWI
+         fdb   L0183
 
          end
 
