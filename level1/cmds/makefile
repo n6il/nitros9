@@ -4,7 +4,7 @@ DEPENDS		= ./Makefile
 
 COCOCMDS_D1	= attr backup binex build cmp copy date \
 		dcheck debug deiniz del deldir dir display dsave dump \
-		echo edit exbin free help ident iniz link \
+		echo edit error exbin free help ident iniz link \
 		list load login makdir mdir merge mfree \
 		printerr procs pwd pxd \
 		rename save setime shell sleep tee tmode tsmon \
