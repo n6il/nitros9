@@ -204,12 +204,12 @@ ClkEnt   equ   *
          clra
          tfr   a,dp
 
-         lda   #TkPerSec
+         lda   #TPS
 
          sta   <D.TSec
          sta   <D.Tick
 
-         lda   #TkPerSec/10
+         lda   #TPS/10
 
          sta   <D.TSlice
          sta   <D.Slice

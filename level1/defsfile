@@ -8,4 +8,4 @@ OS9Major equ   0
 OS9Minor equ   1
 
          use   os9defs
-         use   systype.l1
+         use   systype
