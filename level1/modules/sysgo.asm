@@ -67,7 +67,7 @@ Banner   equ   *
          fcb   C$CR,C$LF
 * For ROM version, cut down on verbage
          IFEQ  ROM
-         fcc   "Release Date: Mar 01, 2004"
+         fcc   "Release Date: May 01, 2004"
          fcb   C$CR,C$LF
          fcc   !http://www.nitros9.org!
          fcb   C$CR,C$LF
@@ -113,7 +113,7 @@ ShellPL  equ   *-ShellPrm
 
 * Default time packet
 *               YY/MM/DD HH:MM:SS
-DefTime  fcb   104,03,01,00,00,59
+DefTime  fcb   104,05,01,00,00,59
 
          IFEQ  Level-1
 * BASIC reset code      
