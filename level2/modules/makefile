@@ -67,6 +67,10 @@ DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 		-aInterlv=3 -aSAS=8 -aDensity=3
 
+# Special cases
+cc3hdisk.dr: ../../level1/MODULES/cchdisk.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS)
+
 # Floppy descriptors
 ddd0_35s.dd: dx.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0 -aDD=1
