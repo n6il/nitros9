@@ -19,6 +19,7 @@
 
          ifp1
          use   defsfile
+         use   cciodefs
          endc
 
 tylg     set   Systm+Objct   
@@ -57,26 +58,26 @@ Init     ldx   #$FF78
          lbsr  L0229
          ldd   #$07D0
          lbsr  L0189
-         ldb   <$70,u
+         ldb   <V.COLoad,u
          orb   #$04
          bra   L004F
 * Term
-Term     ldb   <$70,u
+Term     ldb   <V.COLoad,u
          andb  #$FB
-L004F    stb   <$70,u
+L004F    stb   <V.COLoad,u
          clrb  
          rts   
 * GetStat
-GetStat  cmpa  #$25
+GetStat  cmpa  #SS.Cursr
          bne   SetStat
-         ldy   $06,y
+         ldy   R$Y,y
          clra  
-         ldb   <$58,u
+         ldb   <V.C80X,u
          addb  #$20
          std   $06,y
-         ldb   <$59,u
+         ldb   <V.C80Y,u
          addb  #$20
-         std   $04,y
+         std   R$X,y
          ldx   #$FF78
          lda   #$0D
          sta   $01,x
@@ -139,33 +140,34 @@ L00C5    fdb   L007D-L00C5  $ffb8  $00:no-op (null)
          fdb   L0121-L00C5  $005c  $0A:CURSOR DOWN
          fdb   L0186-L00C5  $00c1  $0B:ERASE TO EOS
          fdb   L0184-L00C5  $00bf  $0C:CLEAR SCREEN
-         fdb   L0101-L00C5  $003c  $0D:RETURN
+         fdb   Do0D-L00C5  $003c  $0D:RETURN
 
 * $08 - cursor left
-L00E1    ldd   <$58,u
-         bne   L00E8
+L00E1    ldd   <V.C80X,u	get CO80 X/Y
+         bne   L00E8		branch if not at start
          clrb  	
          rts   	
 L00E8    decb  
          bge   L00EE
          ldb   #$4F
          deca  
-L00EE    std   <$58,u
+L00EE    std   <V.C80X,u
          bra   L014F
 
 * $09 - cursor up
-L00F3    lda   <$58,u
+L00F3    lda   <V.C80X,u
          beq   L00FF
          deca  
-         sta   <$58,u
+         sta   <V.C80X,u
          lbra  L01CC
 L00FF    clrb  
          rts   
 
 * $0D - move cursor to start of line (carriage return)
-L0101    clr   <$59,u
+Do0D     clr   <V.C80Y,u
          bra   L014C
-L0106    ora   <$5A,u
+
+L0106    ora   <V.5A,u
          pshs  a
          bsr   L0174
          puls  a
@@ -174,39 +176,39 @@ L0106    ora   <$5A,u
          sta   ,x
 
 * $06 - cursor right
-L0115    inc   <$59,u
-         lda   <$59,u
+L0115    inc   <V.C80Y,u
+         lda   <V.C80Y,u
          cmpa  #$4F
          ble   L014C
-         bsr   L0101
+         bsr   Do0D
 
 * $0A - cursor down (line feed)
-L0121    lda   <$58,u
+L0121    lda   <V.C80X,u
          cmpa  #$17
          bge   L012E
          inca  
-         sta   <$58,u
+         sta   <V.C80X,u
          bra   L014F
-L012E    ldd   <$54,u
+L012E    ldd   <V.54,u
          lbsr  L01DC
-         ldd   <$54,u
-         addd  #$0050
+         ldd   <V.54,u
+         addd  #80
          bsr   L0161
-         std   <$54,u
+         std   <V.54,u
          bsr   L018E
-         ldd   <$54,u
+         ldd   <V.54,u
          bsr   L016B
          lda   #$08
          sta   $01,x
          stb   ,x
-L014C    lda   <$58,u
+L014C    lda   <V.C80X,u
 L014F    lbra  L01CC
 
 * $01 - home cursor
-L0152    clr   <$58,u
-         clr   <$59,u
-         ldd   <$54,u
-         std   <$56,u
+L0152    clr   <V.C80X,u
+         clr   <V.C80Y,u
+         ldd   <V.54,u
+         std   <V.56,u
          lbra  L01DC
 L0161    cmpd  #$07D0
          blt   L016A
@@ -226,8 +228,8 @@ L0174    lda   $01,x
          rts   
 
 * $03 - erase line
-L0179    bsr   L0101		do a CR
-L017B    lda   <$58,u
+L0179    bsr   Do0D		do a CR
+L017B    lda   <V.C80X,u
          inca  
          ldb   #80		line length
          mul   
@@ -238,7 +240,7 @@ L0184    bsr   L0152		do home cursor, then erase to EOS
 
 * $0B - erase to end of screen
 L0186    ldd   #$0780
-L0189    addd  <$54,u
+L0189    addd  <V.54,u
          bsr   L0161
 L018E    bsr   L016B
          bsr   L0174
@@ -255,13 +257,13 @@ L01A0    clrb
 * $02 XX YY - move cursor to col XX-32, row YY-32
 L01A2    leax  >L01B0,pcr
          ldb   #$02
-L01A8    stx   <$26,u
-         stb   <$25,u
+L01A8    stx   <V.RTAdd,u
+         stb   <V.NGChr,u
          clrb  
          rts   
 L01B0    ldx   #$FF78
-         lda   <$29,u
-         ldb   <$28,u
+         lda   <V.NChr2,u
+         ldb   <V.NChar,u
          subb  #$20
          blt   L01A0
          cmpb  #$4F
@@ -270,14 +272,14 @@ L01B0    ldx   #$FF78
          blt   L01A0
          cmpa  #$17
          bgt   L01A0
-         std   <$58,u
+         std   <V.C80X,u
 L01CC    ldb   #$50
          mul   
-         addb  <$59,u
+         addb  <V.C80Y,u
          adca  #$00
-         addd  <$54,u
+         addd  <V.54,u
          bsr   L0161
-         std   <$56,u
+         std   <V.56,u
 L01DC    pshs  b,a
          bsr   L0174
          lda   #$0A
@@ -292,7 +294,7 @@ L01DC    pshs  b,a
          rts   
 L01F2    cmpa  #$1F
          bne   L0201
-         lda   <$29,u
+         lda   <V.NChr2,u
          cmpa  #$21
          beq   L0205
          cmpa  #$20
@@ -301,10 +303,10 @@ L0201    comb
          ldb   #E$Write
          rts   
 L0205    lda   #$80
-         sta   <$5A,u
+         sta   <V.5A,u
          clrb  
          rts   
-L020C    clr   <$5A,u
+L020C    clr   <V.5A,u
 L020F    clrb  
          rts   
 
@@ -313,7 +315,7 @@ L0211    leax  >L0219,pcr
          ldb   #$01
          bra   L01A8
 L0219    ldx   #$FF78
-         lda   <$29,u
+         lda   <V.NChr2,u	get next character
          cmpa  #$20		cursor code valid?
          blt   L0201		 no, error
          beq   L022D
