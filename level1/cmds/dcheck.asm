@@ -15,6 +15,7 @@
          ifp1
          use   os9defs
          endc
+start    set   $1A96
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
