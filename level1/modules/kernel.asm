@@ -153,7 +153,7 @@ ChkRAM   leay  ,x
          bne   L00C2                   nope, not RAM here!
          std   ,y                      else restore org contents
          leax  >$0100,y                check top of next 256 block
-         cmpx  #$EF00                  stop short of boot track mem
+         cmpx  #BTStart                stop short of boot track mem
          bcs   ChkRAM
          leay  ,x
 * Here, Y = end of RAM
@@ -1132,8 +1132,8 @@ SSvcLoop tfr   b,a                     put syscall code in A
          anda  #$7F                    kill hi bit
          cmpa  #$7F                    is code $7F?
          beq   SSvcOK
-         cmpa  #$37
-         bcs   SSvcOK                  branch if A less than $37
+         cmpa  #$37			compare against highest call allowed
+         bcs   SSvcOK                  branch if A less than highest call
          comb
          ldb   #E$ISWI
          rts

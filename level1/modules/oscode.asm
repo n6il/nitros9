@@ -13,8 +13,6 @@
          endc
 
 ScrnLoc  equ   $8000
-OS9Start equ   $EF00
-OS9Size  equ   $0F80
 
 * Initial code executed upon booting up to OS-9
 
@@ -68,13 +66,13 @@ L2649    lda   ,y+
 
          beq   L266E
          leau  >Start,pcr
-         ldx   #OS9Size
-         ldy   #OS9Start
+         ldx   #$FE80-BTStart
+         ldy   #BTStart
 L2663    lda   ,u+
          sta   ,y+
          leax  -1,x
          bne   L2663
-         jmp   >OS9Start+L266E
+         jmp   >BTStart+L266E
 L266E    leax  <eoc,pcr
          ldd   $09,x
          jmp   d,x
