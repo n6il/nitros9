@@ -29,8 +29,8 @@ u0025    rmb   1
 u0026    rmb   2
 u0028    rmb   1
 u0029    rmb   4
-u002D    rmb   1
-u002E    rmb   1
+ScreenX  rmb   1
+ScreenY  rmb   1
 u002F    rmb   1
 u0030    rmb   1
 u0031    rmb   1
@@ -48,7 +48,7 @@ u0049    rmb   2
 u004B    rmb   5
 u0050    rmb   1
 u0051    rmb   1
-u0052    rmb   1
+WrChar   rmb   1
 u0053    rmb   2
 u0055    rmb   6
 u005B    rmb   2
@@ -69,10 +69,10 @@ u006D    rmb   1
 u006E    rmb   1
 u006F    rmb   1
 u0070    rmb   1
-u0071    rmb   1
-u0072    rmb   6
-u0078    rmb   1
-u0079    rmb   1
+trulocas rmb   1
+SubEntry rmb   6
+IBufHead rmb   1
+IBufTail rmb   1
 u007A    rmb   128
 size     equ   .
 
@@ -100,9 +100,9 @@ start    lbra  Init
 *
 Init     stu   >D.KbdSta               store devmem ptr
          clra
-         leax  <$1D,u
+         leax  <u001D,u
          ldb   #$5D
-L002E    sta   ,x+
+L002E    sta   ,x+			clear mem
          decb
          bne   L002E
          coma                          A = $FF
@@ -112,14 +112,14 @@ L002E    sta   ,x+
          std   <u0061,u
          lda   #$3C
          sta   <u0051,u
-         leax  >AltIRQ,pcr
-         stx   >D.AltIRQ
+         leax  >AltIRQ,pcr		get IRQ routine ptr
+         stx   >D.AltIRQ		store in AltIRQ
          leax  >L03CC,pcr
          stx   <u005B,u
          leax  >L050F,pcr
          stx   <u005D,u
-         ldd   <$26,y
-         lbra  L05CE
+         ldd   <IT.PAR,y		get parity and baud
+         lbra  L05CE			process them
 
 * Term
 *
@@ -131,9 +131,9 @@ L002E    sta   ,x+
 *    B  = error code
 *
 Term     pshs  cc
-         orcc  #IRQMask
-         ldx   >D.Clock
-         stx   >D.AltIRQ
+         orcc  #IRQMask		mask interrupts
+         ldx   >D.Clock		get clock vector
+         stx   >D.AltIRQ	and put back in AltIRQ
          puls  pc,cc
 
 * Read
@@ -148,27 +148,28 @@ Term     pshs  cc
 *    B  = error code
 *
 Read     leax  <u007A,u
-         ldb   <u0079,u
-         orcc  #IRQMask
-         cmpb  <u0078,u
-         beq   L0082
-         abx
-         lda   ,x
+         ldb   <IBufTail,u	get tail pointer
+         orcc  #IRQMask		mask IRQ
+         cmpb  <IBufHead,u	same as head pointer
+         beq   Put2Bed		if so, buffer is empty, branch to sleep
+         abx			X now points to curr char
+         lda   ,x		get char
          bsr   L009D
-         stb   <u0079,u
-         andcc #^(IRQMask+Carry)
+         stb   <IBufTail,u
+         andcc #^(IRQMask+Carry)	unmask IRQ
          rts
-L0082    lda   V.BUSY,u
-         sta   V.WAKE,u
-         andcc #^IRQMask
+
+Put2Bed  lda   V.BUSY,u		get calling process ID
+         sta   V.WAKE,u		store in V.WAKE
+         andcc #^IRQMask	clear interrupts
          ldx   #$0000
-         os9   F$Sleep
-         clr   V.WAKE,u
-         ldx   <D.Proc
-         ldb   <P$Signal,x
-         beq   Read
-         cmpb  #$04
-         bcc   Read
+         os9   F$Sleep		sleep forever
+         clr   V.WAKE,u		clear wake
+         ldx   <D.Proc		get pointer to current proc desc
+         ldb   <P$Signal,x	get signal recvd
+         beq   Read		branch if no signal
+         cmpb  #S$Window	window signal?
+         bcc   Read		branch if so
          coma
          rts
 L009D    incb
@@ -177,7 +178,8 @@ L009D    incb
          clrb
 L00A3    rts
 
-AltIRQ   ldu   >D.KbdSta
+* IRQ routine for keyboard
+AltIRQ   ldu   >D.KbdSta	get keyboard static
          ldb   <u0032,u
          beq   L00B7
          ldb   <u002F,u
@@ -187,18 +189,18 @@ AltIRQ   ldu   >D.KbdSta
 L00B7    ldx   #PIA.U4
          clra
          clrb
-         std   <u006A,u
+         std   <u006A,u		clear
          bsr   L00E8
          bne   L00CC
          clr   $02,x
-         lda   ,x
-         coma
-         anda  #$7F
-         bne   L00F1
+         lda   ,x		get byte from PIA
+         coma			complement
+         anda  #$7F		strip off hi bit
+         bne   L00F1		branch if any bit set
 L00CC    clra
          clrb
-         std   <u006E,u
-         coma
+         std   <u006E,u		clear
+         coma			A = $FF
          tst   <u006D,u
          bne   L00DA
          sta   <u005F,u
@@ -213,6 +215,7 @@ L00E8    comb
          comb
          andb  #$03
          rts
+
 L00F1    bsr   L015C
          bmi   L00CC
          clrb
@@ -233,13 +236,13 @@ L010E    sta   <u006F,u
          bne   L0105
          ldb   #$3C
 L011A    stb   <u0051,u
-         ldb   <u0078,u
+         ldb   <IBufHead,u
          leax  <u007A,u
          abx
          lbsr  L009D
-         cmpb  <u0079,u
+         cmpb  <IBufTail,u
          beq   L012F
-         stb   <u0078,u
+         stb   <IBufHead,u
 L012F    sta   ,x
          beq   L014F
          cmpa  V.PCHR,u
@@ -248,10 +251,10 @@ L012F    sta   ,x
          beq   L014F
          sta   $08,x
          bra   L014F
-L013F    ldb   #$03
+L013F    ldb   #S$Intrpt
          cmpa  V.INTR,u
          beq   L014B
-         ldb   #$02
+         ldb   #S$Abort
          cmpa  V.QUIT,u
          bne   L014F
 L014B    lda   V.LPRC,u
@@ -338,6 +341,7 @@ L01E9    ldb   <u0069,u
 L01F8    ora   #$80
 L01FA    andcc #^Negative
          rts
+
 L01FD    inc   <u006D,u
          ldb   <u006B,u
          bne   L0208
@@ -501,25 +505,26 @@ L0321    fcb   $00
 *
 Write    ldb   <u0025,u
          bne   L03A3
-         sta   <u0052,u
-         cmpa  #$20
+         sta   <WrChar,u
+         cmpa  #C$SPAC
          bcc   L038E
-         cmpa  #$1E
+         cmpa  #$1E		escape sequence
          bcc   L03B8
          cmpa  #$0F
          lbcc  L063B
-         cmpa  #$07
-         lbeq  L07C6
+         cmpa  #C$BELL
+         lbeq  Ding		ring bell
 L038E    lda   <u0053,u
-L0391    ldb   #$03
-L0393    leax  <u0072,u
+L0391    ldb   #$03		offset into subroutine
+L0393    leax  <SubEntry,u	get subroutine entry pointer in X
          ldx   a,x
-         beq   L039F
-         lda   <u0052,u
-L039D    jmp   b,x
-L039F    comb  
-         ldb   #$DD
+         beq   NoIOMod		branch if no module
+         lda   <WrChar,u	get character to write
+L039D    jmp   b,x		call i/o subroutine
+NoIOMod  comb  
+         ldb   #E$MNF
          rts 
+
 L03A3    cmpb  #$02
          beq   L03B0
          sta   <u0029,u
@@ -545,7 +550,7 @@ L03CC    pshs  x,a
          ora   ,s+
          tstb
          bne   L03DE
-         ora   <u0071,u
+         ora   <trulocas,u
 L03DE    sta   >PIA.U8+2
          sta   <u0030,u
          tstb
@@ -589,13 +594,13 @@ CO80     fcs   /CO80/
 *    CC = carry set on error
 *    B  = error code
 *
-GetStat  sta   <u0052,u
+GetStat  sta   <WrChar,u
          cmpa  #SS.Ready
          bne   L0439
-         lda   <u0079,u
-         suba  <u0078,u
-         lbeq  L0660
-SSEOF    clrb
+         lda   <IBufTail,u		get buff tail ptr
+         suba  <IBufHead,u		Num of chars ready in A
+         lbeq  L0660			branch if empty
+SSEOF    clrb	
          rts
 L0439    cmpa  #SS.EOF
          beq   SSEOF
@@ -611,25 +616,26 @@ L0439    cmpa  #SS.EOF
          ldb   #$06
          lbra  L055F
 
-SSKYSNS  ldb   <u006A,u
-         stb   R$A,x
+SSKYSNS  ldb   <u006A,u		get key sense info
+         stb   R$A,x		put in caller's A
          clrb
          rts
 
 SSSCSIZ  clra
-         ldb   <u002D,u
-         std   $04,x
-         ldb   <u002E,u
-         std   $06,x
+         ldb   <ScreenX,u
+         std   R$X,x
+         ldb   <ScreenY,u
+         std   R$Y,x
          clrb
          rts
 
+* Get joytsick values
 SSJOY    pshs  y,cc
-         orcc  #IRQMask
+         orcc  #IRQMask		mask interrupts
          lda   #$FF
          sta   >PIA.U4+2
          ldb   >PIA.U4
-         ldy   $04,x
+         ldy   R$X,x		get joystick number to poll
          bne   L0481
          andb  #$01
          bne   L0485
@@ -637,26 +643,27 @@ SSJOY    pshs  y,cc
 L0481    andb  #$02
          beq   L0486
 L0485    clra
-L0486    sta   $01,x
+L0486    sta   R$A,x
          lda   >PIA.U4+3
          ora   #$08
-         ldy   $04,x
+         ldy   R$X,x
          bne   L0494
          anda  #$F7
 L0494    sta   >PIA.U4+3
          lda   >PIA.U4+1
          anda  #$F7
          bsr   L04B3
-         std   $04,x
+         std   R$X,x
          lda   >PIA.U4+1
          ora   #$08
          bsr   L04B3
          pshs  b,a
          ldd   #$003F
          subd  ,s++
-         std   $06,x
+         std   R$Y,x
          clrb
          puls  pc,y,cc
+
 L04B3    sta   >PIA.U4+1
          lda   #$7F
          ldb   #$40
@@ -738,7 +745,7 @@ L0517    lsra
 *    CC = carry set on error
 *    B  = error code
 *
-SetStat  sta   <u0052,u
+SetStat  sta   <WrChar,u
          ldx   PD.RGS,y
          cmpa  #SS.ComSt
          lbeq  SSCOMST
@@ -760,7 +767,7 @@ L055F    pshs  b
          lbsr  L0393
          puls  a
          bcc   L055B
-         tst   <u0072,u
+         tst   <SubEntry,u
          beq   L055C
          tfr   a,b
          clra
@@ -809,27 +816,27 @@ L05C8    comb
          ldb   #E$BMode
          rts
 
-SSCOMST  ldd   R$Y,x
-L05CE    bita  #$02
-         bne   L05E9
-         ldb   #$10
-         bita  #$01
-         bne   L05D9
-         clrb
-L05D9    stb   <u0071,u
+SSCOMST  ldd   R$Y,x		Get caller's Y
+L05CE    bita  #$02		CO80?
+         bne   GoCO80		branch if so
+         ldb   #$10		assume true lower case TRUE
+         bita  #$01		true lowercase bit set?
+         bne   GoCO32		branch if so
+         clrb			true lower case FALSE
+GoCO32   stb   <trulocas,u	save flag for later
          lda   #$02
-         ldx   #$2010
+         ldx   #$2010		32x16
          pshs  u,y,x,a
          leax  >CO32,pcr
          bra   L05F4
-L05E9    lda   #$04
-         ldx   #$5018
+GoCO80   lda   #$04
+         ldx   #$5018		80x24
          pshs  u,y,x,a
          leax  >CO80,pcr
 L05F4    bsr   L0601
          puls  u,y,x,a
          bcs   L0600
-         stx   <u002D,u
+         stx   <ScreenX,u	save screen size
          sta   <u0053,u
 L0600    rts
 L0601    bita  <u0070,u
@@ -837,22 +844,24 @@ L0601    bita  <u0070,u
 L0606    clrb
          rts
 L0608    pshs  y,x,a
-         lbsr  L062E
-         bcc   L061F
-         ldx   $01,s
+         lbsr  LinkSub
+         bcc   L061F		branch if link was successful
+         ldx   $01,s		get pointer to name on stack
          pshs  u
-         os9   F$Load
+         os9   F$Load		try to load subroutine I/O module
          puls  u
          bcc   L061F
          puls  y,x,a
-         lbra  L039F
-L061F    leax  <u0072,u
-         lda   ,s
+         lbra  NoIOMod
+L061F    leax  <SubEntry,u
+         lda   ,s		get A off stack
          sty   a,x
          puls  y,x,a
          ldb   #$00
          lbra  L0393
-L062E    pshs  u
+
+* Link to subroutine
+LinkSub  pshs  u
          lda   #Systm+Objct
          os9   F$Link
          puls  pc,u
@@ -880,15 +889,15 @@ L0660    comb
 L0663    rts
 L0664    bsr   L065B
          bcs   L0663
-         ldx   <u0072,u
+         ldx   <SubEntry,u
          bne   L0681
          pshs  y,a
          bne   L067F
          leax  >GRFO,pcr
-         bsr   L062E
+         bsr   LinkSub
          bcc   L067B
          puls  pc,y,a
-L067B    sty   <u0072,u
+L067B    sty   <SubEntry,u
 L067F    puls  y,a
 L0681    clra
          lbra  L0391
@@ -918,6 +927,7 @@ L06B3    rts
 L06B4    leax  <L06BC,pcr
          ldb   #$02
          lbra  L03BF
+
 L06BC    ldb   <u0031,u
          bne   L06D1
          bsr   L0685
@@ -1019,7 +1029,9 @@ L07B9    stb   ,-x
          clrb
          std   <u0045,u
          rts
-L07C6    pshs  b,a
+
+* Ding - tickle CoCo's PIA to emit a sound
+Ding     pshs  b,a
          lda   >PIA.U4+1
          ldb   >PIA.U4+3
          pshs  b,a
@@ -1044,7 +1056,9 @@ L07E6    lda   #$FE
          sta   >PIA.U4+1
          stb   >PIA.U4+3
          puls  pc,b,a
+
 L0800    sta   >PIA.U8
+* Delay
          lda   #$80
 L0805    inca
          bne   L0805
