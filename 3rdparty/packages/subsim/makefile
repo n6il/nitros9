@@ -18,7 +18,7 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 
 SUPPORTFILES	= control1.cmp convoys.dat diesel.dat fonts.dat germap.cmp \
 		hiscore.dat mission.txt missions.dat radar.dat shipmap2.dat \
-		sintbl.dat stitle.pic sub.dat usamap.cmp 
+		sintbl.dat stitle.pic sub.dat usamap.cmp status.dat substats.dat 
 
 ALLOBJS		= $(CMDS)
 
@@ -35,14 +35,16 @@ dsk:	all
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK) -b=os9boot -t=kernel_1773
 	$(RM) os9boot kernel_1773
-	$(MAKDIR) $(DISK),CMDS
+	$(MAKDIR) $(DISK),CMDS $(DISK),SUB
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
 	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK),CMDS/shell
 	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
 	$(OS9RENAME) $(DISK),CMDS/presub AutoEx
-	$(CP) $(SUPPORTFILES) $(DISK),.
-	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)
+	$(CP) $(SUPPORTFILES) $(DISK),SUB
+	$(CP) sub6 $(DISK),SUB
+	$(OS9ATTR_EXEC) $(DISK),SUB/sub6
+	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $(DISK),SUB/$(file);)
 
 dskcopy:
 	$(CP) $(DISK) $(DSKDIR)
