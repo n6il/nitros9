@@ -1,0 +1,4 @@
+@GFX
+Syntax: RUN GFX(<func>,<args>)
+Usage : Graphics interface package for BASIC09 to do compatible
+        VDG graphics commands
