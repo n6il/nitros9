@@ -20,6 +20,8 @@
 *        Also added 6809 conditional code for future
 *        integration into OS-9 Level Two.
 *  13r3  Conditionalized out Level 3 code               BGP 02/03/04
+*  13r4  Fixed bug where wrong address was being put    BGP 03/04/09
+*        in V$STAT when driver INIT was called.
 
          nam   IOMan     
          ttl   OS-9 Level Two I/O Manager module
@@ -32,7 +34,7 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev 
-rev      set   $03       
+rev      set   $04       
 edition  set   13        
 
          mod   eom,name,tylg,atrv,start,size
@@ -422,9 +424,9 @@ Loop2    clr   ,u+       	clear newly alloc'ed mem
          subd  #$0001    
          bhi   Loop2     
          ENDC            
-         ldd   HWPG,s     get hwpage and upper addr
 * Code here appears to be for Level III?
          IFGT  Level-2
+         ldd   HWPG,s     get hwpage and upper addr
          bsr   L01D1     
          std   <DATBYT2,s     save off
          ldu   #$0000    
@@ -460,16 +462,18 @@ L021D    leay  >$2000,y
          os9   F$ID      
          bra   L023F     
 L023B    sty   <DATBYT1,s    
+         ENDC
 L023F    ldd   HWPORT,s  
+         IFGT  Level-2
          anda  #$1F      
          addd  <DATBYT1,s    
          ENDC
-         ldu   VSTAT,s    load U with static storage of drvr
-         clr   ,u         clear ??
-         std   $01,u     
-         ldy   VDESC,s    load Y with desc ptr
-         jsr   [<DRVENT,s] call driver init routine
-         lbcs  L015C      branch if error
+         ldu   VSTAT,s		load U with static storage of drvr
+         clr   V.PAGE,u		clear page byte
+         std   V.PORT,u     	save port address
+         ldy   VDESC,s		load Y with desc ptr
+         jsr   [<DRVENT,s]	call driver init routine
+         lbcs  L015C		branch if error
          ldu   <CURDTE,s 
 L0259                    
          IFNE  H6309     
