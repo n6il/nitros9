@@ -11,7 +11,8 @@ DEFS		= $(shell $(CD) DEFS; make showobjs)
 ROOTFILES	= startup
 
 PACKAGENAME	= $(RELEASE).zip
-DSK_DS40	= $(RELEASE)_ds40.dsk
+DSK1		= $(RELEASE)_ds40_1.dsk
+DSK2		= $(RELEASE)_ds40_2.dsk
 
 # Make all components
 all:
@@ -36,24 +37,28 @@ clean:	dskclean
 	-$(CD) BOOTFILES; make clean
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK_DS40)
+	-$(RM) $(PACKAGENAME) $(DSK1) $(DSK2)
 
 dsk: all $(PACKAGENAME)
 
-$(PACKAGENAME): $(DSK_DS40)
-	$(ZIP) $(PACKAGENAME) $(DSK_DS40) ReadMe ChangeLog
+$(PACKAGENAME): $(DSK1) $(DSK2)
+	$(ZIP) $(PACKAGENAME) $(DSK1) $(DSK2) ReadMe ChangeLog
 
-$(DSK_DS40):
-	$(RM) $(DSK_DS40)
-	$(OS9FORMAT_DS40) $(DSK_DS40) -n"OS-9 Level One System Disk"
-	$(OS9GEN) $(DSK_DS40) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
-	$(MAKDIR) $(DSK_DS40),CMDS
-	$(MAKDIR) $(DSK_DS40),SYS
-	$(MAKDIR) $(DSK_DS40),MODULES
-	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_DS40),CMDS
-	$(CD) SYS; $(CPL) $(SYS) ../$(DSK_DS40),SYS
-	$(MAKDIR) $(DSK_DS40),DEFS
-	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK_DS40),MODULES
-	$(CD) DEFS; $(CPL) $(DEFS) ../$(DSK_DS40),DEFS
-	$(CPL) $(ROOTFILES) $(DSK_DS40),.
+$(DSK1):
+	$(RM) $(DSK1)
+	$(OS9FORMAT_DS40) $(DSK1) -n"OS-9 Level One System Disk"
+	$(OS9GEN) $(DSK1) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
+	$(MAKDIR) $(DSK1),CMDS
+	$(MAKDIR) $(DSK1),SYS
+	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK1),CMDS
+	$(CD) SYS; $(CPL) $(SYS) ../$(DSK1),SYS
+	$(MAKDIR) $(DSK1),DEFS
+	$(CD) DEFS; $(CPL) $(DEFS) ../$(DSK1),DEFS
+	$(CPL) $(ROOTFILES) $(DSK1),.
+
+$(DSK2):
+	$(RM) $(DSK2)
+	$(OS9FORMAT_DS40) $(DSK2) -n"OS-9 Level One Modules Disk"
+	$(MAKDIR) $(DSK2),MODULES
+	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK2),MODULES
 
