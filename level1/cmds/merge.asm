@@ -24,6 +24,10 @@ atrv     set   ReEnt+rev
 rev      set   $00
 edition  set   5
 
+* Here are some tweakable options
+STACKSZ  set   128      estimated stack size in bytes
+PARMSZ   set   256      estimated parameter size in bytes
+
          mod   eom,name,tylg,atrv,start,size
 
          org   0
@@ -33,6 +37,8 @@ d.ptr    rmb   2
 d.size   rmb   2
 d.buff   rmb   128
 d.buffer rmb   2496       should reserve 7k, leaving some room for parameters
+* Finally the stack for any PSHS/PULS/BSR/LBSRs that we might do
+         rmb   STACKSZ+PARMSZ
 size     equ   .
 
 name     fcs   /Merge/
@@ -41,14 +47,14 @@ name     fcs   /Merge/
 start    subd  #$0001     if this becomes zero,
          beq   Exit       we have no parameters
 
-         pshs  u          save start address of memory
+         leay  d.buffer,u point Y to buffer offset in U
          stx   <param     and parameter area start
-         tfr   x,d
-         subd  #$0107     take out 1 bytes in DP, and 1 page for the stack
-         subd  ,s++       take out start address of data area
+         tfr   s,d        place top of stack in D
+         pshs  y          save Y on stack
+         subd  ,s++       get size of space between buff and X
+         subd  #STACKSZ+PARMSZ subtract out our stack/param size
          std   <d.size    save size of data buffer
          leau  d.buffer,u point to some data
-         stu   <d.ptr     save another pointer
 
 do.opts  ldx   <param     get first option
 do.opts2 lbsr  space
@@ -128,7 +134,8 @@ do.z     leax  d.buff,u
          os9   I$ReadLn
          bcc   do.z2
          cmpb  #E$EOF     end-of-file?
-         bne   Error      nope, exit with error
+         beq   Exit      nope, exit with error
+         bra   Error
 
 do.z2    lda   ,x
          cmpa  #'*        asterisk? (comment)
