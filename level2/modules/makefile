@@ -16,7 +16,8 @@ CLOCKSOFT       = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -
 DEPENDS		= ./Makefile
 TPB		= ../../3rdparty/booters
 
-BOOTERS		= boot_1773 boot_burke boot_idelba boot_rampak boot_wd1002
+BOOTERS		= boot_1773_6ms boot_1773_30ms \
+		 boot_burke boot_idelba boot_rampak boot_wd1002
 BOOTTRACK	= rel $(BOOTERS) os9p1
 KERNEL		= os9p2 os9p3_perr os9p4_regdump
 SYSMODS		= ioman init cc3go
@@ -61,6 +62,12 @@ ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
 all:	$(ALLOBJS)
 
 # Special cases
+boot_1773_6ms: boot_1773.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSTEP=0
+
+boot_1773_30ms: boot_1773.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSTEP=3
+
 cc3hdisk.dr: $(LEVEL1)/MODULES/cchdisk.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 

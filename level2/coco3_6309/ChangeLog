@@ -1,6 +1,14 @@
 OS-9 Level Two V03.01.03:
-- M1 and M2 device descriptors now reference the SACIA driver, and
-  modpak.dr is no longer in the distribution.
+- A pause command has been added to the standard command set.
+- os9gen now supports the -t= option which allows one to specify an
+  alternate boot track file.
+- Two new directories have been added: BOOTLISTS and BOOTSCRIPTS.
+  The former contains bootlist files for building boot disks, while
+  the latter contains scripts to build boot disks.
+- There are now two booters for booting from a WD1773 based
+  floppy controller: boot_1773_6ms and boot_1773_30ms for
+  6 and 30 millisecond step rates.
+- The M1 device descriptor now references the SACIA driver.
 - The help utility has been enhanced to show help subjects if
   forked without any command line parameters.
 
