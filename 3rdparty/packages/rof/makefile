@@ -13,7 +13,7 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/cc3disk.dr $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
-		$(MD)/vdgint.io $(MD)/term_vdg.dt \
+		$(MD)/vdgint_small.io $(MD)/term_vdg.dt \
 		$(MD)/clock_soft $(MD)/cc3go
 
 SUPPORTFILES	= body heads larms legs lips panel1 rofvar rship.c rtitle.c scores
