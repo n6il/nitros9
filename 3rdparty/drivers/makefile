@@ -10,7 +10,7 @@ all:
 	cd ide; make
 	cd flash; make
 	cd flashpak; make
-	cd rampak; make
+	cd disto; make
 	cd s16550; make
 	cd scsisys; make
 	cd sdisk; make
@@ -22,7 +22,7 @@ clean:
 	-cd ide; make clean
 	-cd flash; make clean
 	-cd flashpak; make clean
-	-cd rampak; make clean
+	-cd disto; make clean
 	-cd s16550; make clean
 	-cd scsisys; make clean
 	-cd sdisk; make clean
