@@ -27,7 +27,17 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Fgets reads characters from the file "fp" and places them in
+the buffer pointed to by "s" up to a carriage return ('\n') but
+not more than "n" - 1 characters. A null character is appended
+to the end of the string.
+</para>
+<para>
+Gets is similar to fgets, but gets is applied to "stdin" and no
+maximum is stipulated and '\n' is replaced by a null.
+</para>
+<para>
+Both functions return their first arguments.
 </para>
 </refsect1>
 
