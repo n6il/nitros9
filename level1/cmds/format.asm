@@ -22,8 +22,8 @@
 * Disassembled 02/07/17 11:00:13 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   defsfile
-         use   rbfdefs
+         use   /dd/defs/defsfile
+         use   /dd/defs/rbfdefs
          endc
 
 DOHELP   set   0
@@ -476,8 +476,9 @@ L0243    stb   <interlv         save it
 
 ********************************************************************
 * quoted option /cluster size/ save size in clustsiz
-* cluster size is in decimal and the number of sectors
-* in a cluster must be a power of 2 and fit inside of two bytes
+* cluster size is in decimal. The number of sectors
+* in a cluster must be a power of 2 and the number
+* should max out at 32 for coco os9
 ********************************************************************
 
 DoClust  lbsr  Decimal          proccess cluster size
@@ -486,7 +487,7 @@ DoClust  lbsr  Decimal          proccess cluster size
          beq   L0250            no, save it
          ldb   #$01             yes, default size
 L0250    stb   <clustsiz        save it
-         negb                   one's complement
+         negb                   get two's complement
          decb                   power of 2
          andb  <clustsiz        in range?
          beq   L025C            yes, skip ahead
@@ -1065,15 +1066,15 @@ L06B5    ldb   <u002E
          beq   L06CC
          subd  #$0001
 L06CC    stb   <u002C
-L06CE    tst   <dovfy
-         bne   OutScrn          ouput screen display
-         lda   <diskpath        get rbf device path
-         leax  >u00B7,u         input buffer
-         ldy   #256             buffer size
-         os9   I$Read           read sector?
-         bcc   OutScrn          ouput screen display
+L06CE    tst   <dovfy           should we verify?
+         bne   OutScrn          no, ouput screen display
+         lda   <diskpath        yes, get rbf device path
+         leax  >u00B7,u         get sector buffer
+         ldy   #256             sector size
+         os9   I$Read           read a sector?
+         bcc   OutScrn          yes, ouput screen display
          os9   F$PErr           no, print error message
-         lbsr  NextSec          next sector
+         lbsr  NextSec          get next sector
          lda   #$FF
          sta   <u002A
          tst   <u0031
@@ -1097,53 +1098,35 @@ OutScrn  ldd   <u0008           get counted sectors
          bcs   L0745            next segment
          clr   <u0008           clear counted sectors
          clr   <u0009           
-         tst   <dovfy
-         bne   L073A
-         lda   #C$SPAC
-         pshs  a
-         lda   <currtrak+1
-         lbsr  HexDigit
-
-****************************************************************
-* Patch to "format" to give a 4 digit rolling track count rather
-* than the 3 digit scrolling one. Tim Koonce, Oct. 10, 1989
-* L0724  pshs  b,a
-*        lda   #C$CR
-*        nop
-*        pshs  a
-*        tfr   s,x
-*        ldy   #$0006
-*        lda   #$01
-*        os9   I$Write
-*        nop
-*        nop
-* L0738  ror   4,s
-****************************************************************
-
-L0724    pshs  b,a
-         lda   <currtrak
-         lbsr  HexDigit
-         pshs  b
-         tfr   s,x
-         ldy   #$0004
-         lbsr  Print
+         tst   <dovfy           are we verifying?
+         bne   L073A            no,
+         lda   #C$SPAC          yes, get space
+         pshs  a                save it
+         lda   <currtrak+1      track high byte
+         lbsr  HexDigit         make it ascii
+L0724    pshs  b,a              save two ascii digits
+         lda   <currtrak        track low byte
+         lbsr  HexDigit         make it ascii
+         pshs  b                save two ascii digits
+         tfr   s,x              get output from stack
+         ldy   #$0004           length of ouput
+         lbsr  Print            print it
          lda   $02,s
-         cmpa  #$46
-         bne   L0738
-         lbsr  LineFD
-L0738    leas  $04,s
-L073A    ldd   <currtrak	get current track
-         addd  #$0001		increment it
-         std   <currtrak	save it back
-         ldd   <sectors		get number of sectors
-         std   <u0017		save
-L0745    dec   <u002B		decrement cluster counter
+         cmpa  #$46             end of line?
+         bne   L0738            skip line feed
+         lbsr  LineFD           print linefeed
+L0738    leas  $04,s            pop ouput off stack
+L073A    ldd   <currtrak        get current track
+         addd  #$0001           increment it
+         std   <currtrak        save it back
+         ldd   <sectors         get number of sectors
+         std   <u0017           save it
+L0745    dec   <u002B           decrement cluster counter
          bne   L075B
          bsr   L0784
          tst   <u002A
          bne   L0755
-* Increment good sectors
-         ldd   <oksects+1
+         ldd   <oksects+1       increment good sectors
          addd  #$0001
          std   <oksects+1
          bcc   L0755
@@ -1213,7 +1196,7 @@ L07BE    rts                    return
 
 GoodSect lbsr  LineFD           print line feed
          leax  >NumGood,pcr     number of good sectors
-         ldy   #NumGoodLen      length of message
+         ldy   #NGoodLen        length of message
          lbsr  Print            print it
          ldb   <clustsiz        get cluster size
          lda   <oksects         get  24 bit counter
@@ -1295,10 +1278,10 @@ FDScipt  bsr   GetSec           get sector
          std   FD.SIZ+2,x       save it           (FD.SIZ+2)
          ldb   <u002C
          decb
-         stb   <FD.SEG+FDSL.B+1,x  save it    (FD.SEG+FDSL.B+1)
+         stb   <FD.SEG+FDSL.B+1,x save it  (FD.SEG+FDSL.B+1)
          ldd   <u0034
          addd  #$0001
-         std   <FD.SEG+FDSL.A+1,x  save it    (FD.SEG+FDSL.A+1)
+         std   <FD.SEG+FDSL.A+1,x save it  (FD.SEG+FDSL.A+1)
          bsr   WritSec
          bsr   ClrBuf
          ldd   #$2EAE           (#'.*256+'.+128)
@@ -1519,7 +1502,7 @@ ClustMsg fcc   "Cluster size mismatch"
 TPIChg   fcc   "Change from 96tpi to 48tpi? "
 DSided   fcc   "Double sided? "
 NumGood  fcc   "Number of good sectors: $"
-NumGoodLen equ *-NumGood
+NGoodLen equ *-NumGood
 HDFmt    fcc   "WARNING: You are formatting a HARD Disk.."
          fcb   C$LF
          fcc   "Are you sure? "
@@ -1528,6 +1511,24 @@ Both     fcc   "Both PHYSICAL and LOGICAL format? "
 BothLen  equ   *-Both
 Verify   fcc   "Physical Verify desired? "
 VerifyL  equ   *-Verify
+RollMsg  fcc   "        Recording Format:  FM/MFM"
+         fcb   C$LF
+         fcc   "    Track density in TPI:  48/96"
+         fcb   C$LF
+         fcc   "     Number of Cylinders:  0000"
+         fcb   C$LF
+         fcc   "      Number of Surfaces:  0000"
+         fcb   C$LF
+         fcc   "Sector Interleave Offset:  0000"
+         fcb   C$LF
+         fcc   "               Disk type:  0000"
+         fcb   C$LF
+         fcc   "         Clusters/Sector:  0000"
+         fcb   C$LF
+         fcc   "           Sectors/Track:  0000"
+         fdb   $0A0A
+         fcc   "Sector: 00  Track: 00  Side: 00"
+RollLen  equ   *-RollMsg
          emod
 eom      equ   *
          end
