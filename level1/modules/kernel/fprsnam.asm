@@ -13,11 +13,10 @@
 *
 * Error:  CC = C bit set; B = error code
 *
-FPrsNam  equ   *
          IFGT  Level-1
-         ldx   <D.Proc		proc desc
+
+FPrsNam  ldx   <D.Proc		proc desc
          leay  <P$DATImg,x	Y=DAT image ptr
-         ENDC
          ldx   R$X,u		X=name string
          bsr   ParseNam		get it and length
          std   R$D,u		return length in D
@@ -29,22 +28,13 @@ L073E    stx   R$Y,u		return Y=end of name ptr
 
 * Parse name
 ParseNam equ   *
-         IFGT  Level-1
          pshs  y		save DAT image pointer
          lbsr  AdjBlk0		go find map block...
          pshs  x,y		save X offset within block and Y block pointer
          bsr   GoGetAXY		go get byte at X in block Y...
-         ELSE
-         pshs  x		save X offset
-         lda   ,x+
-         ENDC
          cmpa  #'.		is the first character a period?
          bne   IsSlash		no, do proper first character checking
-         IFGT  Level-1
          lbsr  L0AC8		do a LDAXY, without changing X or Y
-         ELSE
-         lda   ,x
-         ENDC
          bsr   ChkFirst		is the next character non-period?
          lda   #'.		restore the period character the LDAXY destroyed
          bcc   Do.Loop		if NON-period character, skip 1st char checks
@@ -58,11 +48,7 @@ Do.Loop  clrb			initialize character counter
 LastLoop incb			add one character
          tsta			last character in name string?
          bmi   LastChar		yes, go return valid...
-         IFGT  Level-1
          bsr   GoGetAXY		go get next character...
-         ELSE
-         lda   ,x+
-         ENDC
          bsr   ChkValid		go check if valid character...
          bcc   LastLoop		valid, go check if last character...
 LastChar andcc #^Carry
@@ -70,13 +56,8 @@ LastChar andcc #^Carry
 
 GetChar
          stx   2,s          save current offset over old offset
-         IFGT  Level-1
          sty   4,s          save current block pointer over old block pointer
 GoGetAXY lbra  LDAXY        go get byte at X in block Y in A,  & return
-         ELSE
-         lda   ,x+
-         rts
-         ENDC
 
 NextLoop bsr   GetChar      go get character...
 NotValid cmpa  #',          comma?
@@ -86,13 +67,8 @@ NotValid cmpa  #',          comma?
          comb               error, set Carry
          ldb   #E$BNam      'Bad Name' error
 RtnValid equ   *
-         IFGT  Level-1
          puls  x,y          recover offset & pointer
          bra   L0720        go do a similar exit routine
-         ELSE
-         puls  x            recover offset
-         rts
-         ENDC
 
 ChkFirst pshs  a            save character
          anda  #$7F         drop msbit
@@ -124,3 +100,63 @@ ChkRst   cmpa  #'z          greater than "z"?
 InvalidC coma               invalid character, set carry
 ValidChr puls  a,pc
 
+         ELSE
+
+FPrsNam  ldx   R$X,u
+         bsr   ParseNam
+         std   R$D,u
+         bcs   L0749
+         stx   R$X,u
+L0749    sty   R$Y,u
+         rts
+ParseNam lda   ,x
+         cmpa  #PDELIM                 pathlist char?
+         bne   L0755                   branch if not
+         leax  1,x                     go past pathlist char
+L0755    leay  ,x
+         clrb
+         lda   ,y+
+         anda  #$7F
+         bsr   ChkRest
+         bcs   L0772
+L0760    incb
+         lda   -1,y
+         bmi   L076F                   hi bit set on this char, done
+         lda   ,y+
+         anda  #$7F
+         bsr   ChkFirst
+         bcc   L0760
+         lda   ,-y
+L076F    andcc #^Carry
+         rts
+L0772    cmpa  #C$COMA                 comma?
+         bne   L0778
+L0776    lda   ,y+
+L0778    cmpa  #C$SPAC                 space?
+         beq   L0776
+         lda   ,-y
+         comb
+         ldb   #E$BNam
+         rts
+
+* check for illegal characters in a pathlist
+ChkFirst cmpa  #C$PERD                 period?
+         beq   L07C9                   branch if so
+ChkRest  cmpa  #'0                     zero?
+         bcs   L07A2                   branch if less than
+         cmpa  #'9                     number?
+         bls   L07C9                   branch if lower/same
+         cmpa  #'_                     underscore?
+         beq   L07C9                   branch if so
+         cmpa  #'A                     A?
+         bcs   L07A2                   branch if less than
+         cmpa  #'Z                     Z?
+         bls   L07C9                   branch if less or equal
+         cmpa  #'a                     a?
+         bcs   L07A2                   branch if lower
+         cmpa  #'z                     z?
+         bls   L07C9                   branch if less or equal
+L07A2    orcc  #Carry
+         rts
+
+         ENDC
