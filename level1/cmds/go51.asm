@@ -27,22 +27,9 @@ size     equ   .
 name     equ   *
          fcs   /go51/
          fcb   $01 
-L0012    fcb   $4B K
-         fcb   $42 B
-         fcb   $56 V
-         fcb   $44 D
-         fcb   $49 I
-         fcb   $CF O
-L0018    fcb   $64 d
-         fcb   $72 r
-         fcb   $76 v
-         fcb   $72 r
-         fcb   $35 5
-         fcb   $B1 1
-L001E    fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $ED m
+L0012    fcs   /KBVDIO/
+L0018    fcs   /drvr51/
+L001E    fcs   /term/
 start    equ   *
          leax  >L0012,pcr
          lbsr  L00CB
