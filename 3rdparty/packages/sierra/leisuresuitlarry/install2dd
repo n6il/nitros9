@@ -9,20 +9,9 @@ makdir /DD/GAMES
 makdir /DD/GAMES/LSL
 makdir /DD/GAMES/LSL/CMDS
 * Copying commands to /DD/GAMES/LSL/CMDS
-copy -r CMDS/AutoEx /DD/GAMES/LSL/CMDS/sierra
-copy -r CMDS/mnln -w=/DD/GAMES/LSL/CMDS
-copy -r CMDS/scrn -w=/DD/GAMES/LSL/CMDS
-copy -r CMDS/shdw -w=/DD/GAMES/LSL/CMDS
+copy #48k -r CMDS/AutoEx /DD/GAMES/LSL/CMDS/sierra
+copy #48k -rw=/DD/GAMES/LSL/CMDS CMDS/mnln CMDS/scrn CMDS/shdw
 * Copying support files to /DD/GAMES/LSL
-copy -r vol.0 -w=/DD/GAMES/LSL
-copy -r vol.1 -w=/DD/GAMES/LSL
-copy -r vol.2 -w=/DD/GAMES/LSL
-copy -r vol.3 -w=/DD/GAMES/LSL
-copy -r vol.4 -w=/DD/GAMES/LSL
-copy -r tOC -w=/DD/GAMES/LSL
-copy -r object -w=/DD/GAMES/LSL
-copy -r logDir -w=/DD/GAMES/LSL
-copy -r picDir -w=/DD/GAMES/LSL
-copy -r sndDir -w=/DD/GAMES/LSL
-copy -r viewDir -w=/DD/GAMES/LSL
+copy #48k -rw=/DD/GAMES/LSL vol.0 vol.1 vol.2 vol.3 vol.4
+copy #48k -rw=/DD/GAMES/LSL tOC object logDir picDir sndDir viewDir words.tok
 * All Done!
