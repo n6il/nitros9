@@ -33,13 +33,13 @@ RBF		= rbf.mn \
 		
 
 SCF		= scf.mn \
-		cc3io.dr vrn.dr printer.dr sio.dr sspak.dr sacia.dr dacia.dr \
+		cc3io.dr vrn.dr printer.dr sio.dr sspak.dr sc6551.dr \
 		windint.io vdgint.io vdgint_small.io \
 		keydrv_cc3.sb snddrv_cc3.sb \
 		joydrv_joy.sb joydrv_6551L.sb joydrv_6552L.sb \
 		joydrv_6551M.sb joydrv_6552M.sb \
 		nil.dd p.dd \
-		t1.dd t2_sacia.dd t3_sacia.dd t2_dacia.dd t3_dacia.dd \
+		t1.dd t2_sc6551.dd t3_sc6551.dd \
 		ftdd.dd vi.dd ssp.dd term_t1.dd \
 		term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
 		w3.dw w4.dw w5.dw w6.dw w7.dw v1.dw v2.dw v3.dw v4.dw v5.dw \
@@ -160,12 +160,6 @@ r0_192k.dd: r0.asm
 
 ddr0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=192 -aDD=1
-
-sacia.dr: sacia.asm
-	$(AS) -aA6551=1 -aA6552=0 -aMPI.Slot=03 $(AFLAGS) $< $(ASOUT)$@
-	
-dacia.dr: sacia.asm
-	$(AS) -aA6551=0 -aA6552=1 -aMPI.Slot=03 $(AFLAGS) $< $(ASOUT)$@
 
 # VDGInt Modules
 vdgint.io: vdgint.asm
