@@ -1658,7 +1658,7 @@ L0E44    ldb   $01,y
          lbra  L0F4B          load a with #$01 and return
 
 * cmd_controller
-         lda   ,y+
+L0E5C    lda   ,y+
          ldx   #$05BA
          lda   a,x
          rts
@@ -1851,7 +1851,7 @@ L0F7A    lda   <$26,u
 L0FD2    leas  $03,s
          rts
 
-         lda   ,y+
+L0FD5    lda   ,y+
          pshs  y
          bsr   L0FDE
          puls  y
@@ -2601,7 +2601,7 @@ L141E    rts
 *       CC -> Carry set on error
 *       b  -> error code if any
 
-         clr   >$015B      clear error code holder
+L141F    clr   >$015B      clear error code holder
          os9   I$Dup
          bcc   L142A       good dup ? leave
          lbsr  L15E6       error go to error handler
@@ -2771,7 +2771,7 @@ L157C    clr   >$015B
          lbsr  L15E6       error go to error handler
 L1589    rts
 
-         lda   $05,s
+L158A    lda   $05,s
          ldy   $02,s
          lbsr  L139A       Open path routine
          bcs   L1598        leave
@@ -4170,11 +4170,11 @@ L2546    stu   <u0064         save value
          bne   L2546          not zero leave
 L2550    rts
 
-         ldb   ,y+
+L2551    ldb   ,y+
          bsr   L2561
          rts
 
-         ldb   ,y+
+L2556    ldb   ,y+
          ldx   #$0432
          abx
          ldb   ,x
@@ -4245,7 +4245,7 @@ L25D9    lbsr  L058A
 L25E3    leas  $07,s     clean up stack and leave
          rts
 
-         leas  -$02,s
+L25E6    leas  -$02,s
          ldb   ,y+
          sty   ,s
          bsr   L2612
@@ -4255,7 +4255,7 @@ L25E3    leas  $07,s     clean up stack and leave
 L25F6    leas  $02,s
          rts
 
-         leas  -$02,s
+L25F9    leas  -$02,s
          ldb   ,y+
          ldx   #$0432
          abx
@@ -4321,11 +4321,13 @@ L2676    ldu   $01,s
          lbsr  L27AF
 L2681    leas  $0A,s
          rts
-         ldx   <u0062
+         
+         
+L2684    ldx   <u0062
          sty   $08,x
          rts
 
-         ldx   <u0062
+L268A    ldx   <u0062
          ldd   $06,x
          std   $08,x
          rts
@@ -4490,7 +4492,7 @@ L27D6    fcb  $00
 L27D7    fcb  $00
 
 
-         leas  -$04,s
+L27D8    leas  -$04,s
          ldb   ,y+
          lbsr  L3B58
          stu   ,s
@@ -4541,7 +4543,7 @@ L2853    leas  $04,s
          rts
 
 *  no one seems to call here ?
-         leas  -$05,s
+L2856    leas  -$05,s
          ldb   ,y+
          lbsr  L3B58
          stu   ,s
@@ -4596,7 +4598,7 @@ L28D5    leas  $05,s
          rts
 
 *  no one seems to call here ?
-         ldu   >L27CC,pcr       data word
+L28D8    ldu   >L27CC,pcr       data word
          ldd   $0B,u
          bne   L28E2
          sta   $0A,u
@@ -4609,7 +4611,9 @@ L28E2    ldd   <u0055
          lda   #$01
          sta   >L27D7,pcr       data byte
          rts
-         lda   ,y+
+
+
+L28FB    lda   ,y+
          ldb   #$01
          bsr   L2929
          rts
@@ -4629,7 +4633,7 @@ L2918    ldu   ,u
          bne   L2908
 L2921    rts
 
-         lda   ,y+
+L2922    lda   ,y+
          ldb   #$00
          bsr   L2929
          rts
@@ -4653,7 +4657,7 @@ L2945    ldu   ,u
          leas  $02,s
          rts
 
-         lda   >$01B0 
+L2951    lda   >$01B0 
          anda  #$02
          beq   L295D
          lda   #$01
@@ -5051,7 +5055,7 @@ L2C0F    ldd   #$A8A0
          leas  $04,s
          rts
 
-         lda   ,y+
+L2C25    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -5079,7 +5083,7 @@ L2C4A    lda   ,y+
 L2C62    lbsr  L2F0A
          rts
 
-         lda   ,y+
+L2C66    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -5116,7 +5120,7 @@ L2C9D    lda   ,y+
 L2CB5    lbsr  L2F0A
          rts
 
-         lda   ,y+
+L2CB9    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -5139,7 +5143,7 @@ L2CD7    lda   ,y+
          sta   <$26,u
          rts
 
-         lda   ,y+
+L2CED    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -5154,7 +5158,7 @@ L2CD7    lda   ,y+
          clr   >$0251
 L2D0B    rts
 
-         lda   ,y+
+L20DC    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -5163,7 +5167,7 @@ L2D0B    rts
          sta   <$22,u
          rts
 
-         lda   ,y+
+L2D1B    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -5178,7 +5182,7 @@ L2D0B    rts
          sta   >$0251
 L2D38    rts
 
-         lda   ,y+
+L2D39    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -5192,7 +5196,7 @@ L2D38    rts
          sta   >$0251
 L2D54    rts
 
-         lda   ,y+
+L2D55    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -5204,7 +5208,7 @@ L2D54    rts
          sta   <$1E,u
          rts
 
-         lda   ,y+
+L2D6A    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -5217,7 +5221,7 @@ L2D54    rts
          sta   $01,u
          rts
 
-         lda   ,y+
+L2D80    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -5229,7 +5233,7 @@ L2D54    rts
          sta   <$21,u
          rts
 
-         lda   ,y+
+L2D95    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -5241,10 +5245,10 @@ L2D54    rts
          sta   ,x
          rts
 
-         clr   >$0251
+L2DAA    clr   >$0251
          rts
 
-         lda   #$01
+L2DAE    lda   #$01
          sta   >$0251
          ldu   <u0030
          lda   #$00
@@ -5482,7 +5486,7 @@ L2F93    ldd   $02,s
 L2F9E    lda   #$01
 L2FA0    rts
 
-         lda   ,y
+L2FA1    lda   ,y
          bsr   L2FB1
          rts
          ldb   ,y
@@ -5572,17 +5576,17 @@ L3058    lda   >$01AF
          leas  $01,s
          rts
 
-         bsr   L3085
+L3070    bsr   L3085
          lda   #$FF
          sta   $02,u
          rts
 
-         bsr   L309B
+L3077    bsr   L309B
          lda   #$FF
          sta   $02,u
          rts
 
-         bsr   L3085
+L307E    bsr   L3085
          lda   #$00
          sta   $02,u
          rts
@@ -5616,7 +5620,7 @@ L309B    ldb   ,y+
          lbsr  L10CE
 L30B6    rts
 
-         bsr   L3085
+L30B7    bsr   L3085
          ldb   ,y+
          ldx   #$0432
          abx
@@ -5845,7 +5849,7 @@ L3284    ldd   $05,s
          leas  $07,s
          rts
 
-         lda   >$01AF
+L328C    lda   >$01AF
          anda  #$DF
          sta   >$01AF
          lda   >$01AF
@@ -6001,7 +6005,7 @@ L33CC    lda   ,x+
          clr   -$01,x
 L33D6    rts
 
-         ldu   #$05B2
+L33D7    ldu   #$05B2
          lda   ,y+
          sta   ,u
          lda   ,y+
@@ -6020,7 +6024,7 @@ L33D6    rts
          bsr   L3431
          rts
 
-         ldu   #$05B2
+L33F7    ldu   #$05B2
          ldx   #$0432
          clra
          ldb   ,y+
@@ -6134,7 +6138,7 @@ L34D8    stu   >L34C8,pcr     data word
          bne   L34D8
 L34E4    rts
 
-         ldx   #$0432
+L34E5    ldx   #$0432
          ldb   ,y+
          abx
          ldb   ,x
@@ -6177,7 +6181,7 @@ L3538    lbsr  L058A
 L3542    leas  $05,s
          rts
 
-         ldx   #$0432
+L3545    ldx   #$0432
          ldb   ,y+
          abx
          ldb   ,x
@@ -6210,7 +6214,7 @@ L3567    ldd   $03,u
          leas  $01,s
          rts
 
-         ldx   #$0432
+L358C    ldx   #$0432
          ldb   ,y+
          abx
          ldb   ,x
@@ -6244,7 +6248,7 @@ L35AE    ldd   $03,u
          leas  $01,s
          rts
 
-         lda   >$01B0    
+L35D6    lda   >$01B0    
          anda  #$FE
          sta   >$01B0   
          lbsr  L3997
@@ -6253,7 +6257,7 @@ L35AE    ldd   $03,u
          sta   >$0100
          rts
 
-         ldx   #$0432
+L35EA    ldx   #$0432
          ldb   ,y+
          abx
          ldb   ,x
@@ -6287,7 +6291,7 @@ L3609    stu   $01,s
          leas  $03,s
          rts
 
-         lda   ,y+
+L3634    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -6298,7 +6302,7 @@ L3609    stu   $01,s
          rts
 
 
-         lda   ,y+
+L3645    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -6316,7 +6320,7 @@ L3609    stu   $01,s
          rts
 
 
-         lda   ,y+
+L3664    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -6334,7 +6338,7 @@ L3609    stu   $01,s
          rts
 
 
-         leas  -$02,s
+L3682    leas  -$02,s
          lda   ,y+
          ldb   #$2B
          mul
@@ -6372,7 +6376,7 @@ L36BD    stb   $04,u
          rts
 
 
-         lda   ,y+
+L36C5    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -6386,7 +6390,7 @@ L36BD    stb   $04,u
          rts
 
 
-         lda   ,y+
+L36DE    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -6407,7 +6411,7 @@ L36BD    stb   $04,u
          rts
 
 
-         lda   ,y+
+L3705    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -6417,8 +6421,7 @@ L36BD    stb   $04,u
          sta   <$25,u
          rts
 
-
-         lda   ,y+
+L3717    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -6429,7 +6432,7 @@ L36BD    stb   $04,u
          rts
 
 
-         lda   ,y+
+L3729    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -6439,12 +6442,12 @@ L36BD    stb   $04,u
          sta   <$25,u
          rts
 
-         lda   ,y+
+L373B    lda   ,y+
          sta   >$01D7
          rts
 
 
-         lda   ,y+
+L3741    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -6455,7 +6458,7 @@ L36BD    stb   $04,u
          rts
 
 
-         lda   ,y+
+L3753    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -6478,12 +6481,12 @@ L37A2    fcb   $FF
 L37A3    fcb   $FF
 L37A4    fcb   $FF
 
-         ldb   ,y+
+L37A5    ldb   ,y+
          lbsr  L3B58
          bsr   L37F2
          rts
 
-         ldx   #$0432
+L37AD    ldx   #$0432
          ldb   ,y+
          abx
          ldb   ,x
@@ -6491,11 +6494,11 @@ L37A4    fcb   $FF
          bsr   L37F2
          rts
 
-         ldb   ,y+
+L37BB    ldb   ,y+
          bsr   L37CB
          rts
 
-         ldx   #$0432
+L37C0    ldx   #$0432
          ldb   ,y+
          abx
          ldb   ,x
@@ -6908,7 +6911,7 @@ L3B79    exg   a,b
          leas  $01,s
          rts
 
-         leas  >-$03E8,s
+L3B80    leas  >-$03E8,s
          lbsr  L47AA
          ldd   ,y++
          std   <u0040
@@ -6929,7 +6932,7 @@ L3B79    exg   a,b
          leas  >$03E8,s
          rts
 
-         leas  >-$03E8,s
+L3BB0    leas  >-$03E8,s
          lbsr  L47AA
          ldx   #$0432
          ldb   ,y+
@@ -7099,7 +7102,7 @@ L3D17    ldu   >L3C1F,pcr   data word
 L3D1F    puls  u,x
          rts
 
-         lda   ,y+
+L3D22    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -7111,7 +7114,7 @@ L3D1F    puls  u,x
          sta   <$24,u
          rts
 
-         lda   ,y+
+L3D39    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -7121,7 +7124,7 @@ L3D1F    puls  u,x
          sta   <$26,u
          rts
 
-         lda   ,y+
+L394B    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -7133,7 +7136,7 @@ L3D1F    puls  u,x
          sta   ,x
          rts
 
-         lda   ,y+
+L3D60    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -7604,13 +7607,13 @@ L429D    lda   ,y+
          mul
          ldx   #$0252
          leax  d,x          from address
-L42A7    leau  >L41E5,pcr   to address block of 31 data bytes
+         leau  >L41E5,pcr   to address block of 31 data bytes
 *                           FILE struct data block ???
          ldd   #$001F       load d with 31
          lbsr  L115D        copy routine
          rts                return 
 
-         leas  >-$00FE,s
+L42B2    leas  >-$00FE,s
          sty   ,s
          clr   $02,s
          lda   #$01
@@ -7928,11 +7931,11 @@ L456C    lbsr  L5B7A
          jsr   >$0659
          rts
 
-         lbsr  L5B7A
+L457E    lbsr  L5B7A
          lbsr  L45D9
          rts
 
-         ldb   $02,y
+L4585    ldb   $02,y
          pshs  b,a
          ldb   $01,y
          pshs  b,a
@@ -7943,7 +7946,7 @@ L456C    lbsr  L5B7A
          leay  $03,y
          rts
 
-         ldb   $04,y
+L4599    ldb   $04,y
          pshs  b,a
          ldb   $03,y
          pshs  b,a
@@ -7958,7 +7961,7 @@ L456C    lbsr  L5B7A
          leay  $05,y
          rts
 
-         ldd   ,y++
+L45B7    ldd   ,y++
          bsr   L45BA
          rts
 
@@ -7990,7 +7993,7 @@ L45D9    lda   #$00
          lbsr  L5BAD
          rts
 
-         lda   ,y
+L45EE    lda   ,y
          sta   >$0242
          adda  #$15
          sta   >$0240
@@ -8006,7 +8009,7 @@ L45D9    lda   #$00
          sta   >$0248
          rts
 
-         leas  -$04,s
+L460D    leas  -$04,s
          pshs  y
          leax  >L454C,pcr  data table
          ldb   >$0553
@@ -8124,18 +8127,18 @@ L46F5    ldu   #$0000
          std   >L4678,pcr   data word
 L470C    rts
 
-         lda   ,y+
+L470D    lda   ,y+
          sta   >$0246
          lbsr  L057D
          lbsr  L467A
          lbsr  L058A
          rts
 
-         lda   >$0245
+L471C    lda   >$0245
          sta   >$0244
          rts
 
-         clra
+L4723    clra
          ldb   >$0244
          stb   >$0245
          lslb
@@ -8651,6 +8654,7 @@ L4BD1    sta   ,x+         stow it in the table and bump the pointer
 L4BD8    leas  $01,s       clean up stack and were 
          rts               back at ya
 
+* file_load(u8 *name u8 *buff)  res_vol.c
 L4BDB    leas  <-$65,s
          pshs  y
 L4BE0    lda   #$01
@@ -9195,7 +9199,7 @@ L507A    stu   >L4F66,pcr     data word
          bne   L507A
 L5086    rts
 
-         ldb   ,y+
+L5087    ldb   ,y+
          bsr   L508C
          rts
 
@@ -9236,7 +9240,7 @@ L50D6    lbsr  L058A
 L50E0    leas  $05,s
          rts
 
-         leas  -$0B,s
+L50E3    leas  -$0B,s
          ldb   ,y+
          stb   ,s
          lbsr  L5076
@@ -9734,7 +9738,7 @@ L5545    leax  >L52FA,pcr   Sound
          lbsr  L47BE
 L5558    rts
 
-         lda   #$01
+L5559    lda   #$01
          sta   >$0247
          bsr   L54F7
          rts
@@ -9797,7 +9801,7 @@ L55AF    ldb   $05,s
 L55DD    leas  >$0197,s
          rts
 
-         lda   ,y+
+L55E2         lda   ,y+
          ldb   #$28
          mul
          ldx   #$0252
@@ -9809,7 +9813,7 @@ L55DD    leas  >$0197,s
          lbsr  L115D     copy routine
          rts
 
-         lda   ,y+
+L55FA    lda   ,y+
          ldb   #$28
          mul
          ldu   #$0252
@@ -10025,7 +10029,7 @@ L5759    bne   L57CE
          leas  $06,s
 L57CE    rts
 
-         lda   ,y+
+L57CF    lda   ,y+
          lda   ,y+
          sta   >L5746,pcr     data byte
          lda   ,y+
@@ -10423,7 +10427,7 @@ L5B26    lda   >L5A22,pcr   data byte
          bra   L5B26
 L5B33    rts
 
-         lda   >$01D6
+L5B34    lda   >$01D6
          beq   L5B3B
          bsr   L5B3C
 L5B3B    rts
@@ -10464,17 +10468,19 @@ L5B7A    lda   >$05B9    load input_edit_disabled flag
          lbsr  L4734     and go for it
 L5B8C    rts
 
-         bsr   L5B7A    input_edit_on
+L5B8D    bsr   L5B7A    input_edit_on
          lda   >$01D8
          clrb
          stb   >$01D6
          lbsr  L47D0
          rts
-         lda   #$01
+
+L5B9A    lda   #$01
          sta   >$01D6
          bsr   L5BAD
          rts
-         ldb   ,y+
+
+L5BA2    ldb   ,y+
          lbsr  L3B58
          lda   ,u
          sta   >$01AE
@@ -10510,7 +10516,7 @@ L5BED    leas  <$50,s
          rts
 
 *                       1B0 jump table 2nd entry calls here
-L5bf1    ldb   ,y+     
+L5BF1    ldb   ,y+     
          ldx   #$0432
          abx
          lda   ,x
@@ -10519,7 +10525,7 @@ L5bf1    ldb   ,y+
          sta   ,x
 L5BFE    rts
 
-L5bff    ldb   ,y+
+L5BFF    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
@@ -10528,14 +10534,14 @@ L5bff    ldb   ,y+
          sta   ,x
 L5C0C    rts
 
-         ldb   ,y+
+L5C0D    ldb   ,y+
          ldx   #$0432
          lda   ,y+
          abx
          sta   ,x
          rts
 
-         ldb   $01,y
+L5C18    ldb   $01,y
          ldx   #$0432
          abx
          lda   ,x
@@ -10545,7 +10551,7 @@ L5C0C    rts
          sta   ,x
          rts
 
-         ldb   ,y+
+L5C29    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
@@ -10553,7 +10559,7 @@ L5C0C    rts
          sta   ,x
          rts
 
-         ldb   $01,y
+L5C36    ldb   $01,y
          ldx   #$0432
          abx
          lda   ,x
@@ -10564,7 +10570,7 @@ L5C0C    rts
          sta   ,x
          rts
 
-         ldb   ,y+
+L5C49    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
@@ -10572,7 +10578,7 @@ L5C0C    rts
          sta   ,x
          rts
 
-         ldb   $01,y
+L5C56    ldb   $01,y
          ldx   #$0432
          abx
          lda   ,x
@@ -10584,7 +10590,7 @@ L5C0C    rts
          sta   ,x
          rts
 
-         ldb   $01,y
+L5C6A    ldb   $01,y
          ldx   #$0432
          abx
          lda   ,x
@@ -10597,7 +10603,7 @@ L5C0C    rts
          sta   ,x
          rts
 
-         lda   $01,y
+L5C81    lda   $01,y
          ldb   ,y++
          ldx   #$0432
          abx
@@ -10607,7 +10613,7 @@ L5C0C    rts
          sta   ,x
          rts
 
-         ldb   $01,y
+L5C92    ldb   $01,y
          ldx   #$0432
          abx
          ldb   ,x
@@ -10620,7 +10626,7 @@ L5C0C    rts
          sta   ,x
          rts
 
-         ldx   #$0432
+L5CA9    ldx   #$0432
          ldb   ,y+
          abx
          lda   ,x
@@ -10629,7 +10635,7 @@ L5C0C    rts
          stb   ,x
          rts
 
-         ldb   $01,y
+L5CB7    ldb   $01,y
          ldx   #$0432
          abx
          lda   ,x
@@ -10641,7 +10647,7 @@ L5C0C    rts
          stb   ,x
          rts
 
-         ldx   #$0432
+L5CCB    ldx   #$0432
          ldb   ,y+
          abx
          ldb   ,x
@@ -10650,7 +10656,7 @@ L5C0C    rts
          stb   ,x
          rts
 
-         ldb   $01,y
+L5CDC    ldb   $01,y
          ldx   #$0432
          abx
          lda   ,x
@@ -10695,12 +10701,12 @@ L5D1B    stx   >L5D0B,pcr     data word
          bne   L5D1B
 L5D27    rts
 
-         lda   #$00
+L5D28    lda   #$00
          ldb   ,y+
          bsr   L5D3C
          rts
 
-         lda   #$00
+L5D2F    lda   #$00
          ldb   ,y+
          ldx   #$0432
          abx
@@ -10752,7 +10758,7 @@ L5D8F    lbsr  L058A
 L5D99    leas  $06,s
          rts
 
-         leas  -$02,s
+L5D9C    leas  -$02,s
          ldd   <u000A
          std   ,s
          lda   ,y+
@@ -10766,7 +10772,8 @@ L5D99    leas  $06,s
          lbsr  L27AF
          leas  $02,s
          rts
-         leas  -$02,s
+         
+L5DB7    leas  -$02,s
          ldd   <u000A
          std   ,s
          lda   ,y+
@@ -10805,7 +10812,7 @@ L5DE4    stb   $05,u
 L5DFE    bsr   L5E3D
          rts
 
-         leas  -$02,s
+L5E01    leas  -$02,s
          ldd   <u000A
          std   ,s
          lda   ,y+
@@ -10820,7 +10827,7 @@ L5DFE    bsr   L5E3D
          leas  $02,s
          rts
 
-         leas  -$02,s
+L5E1C    leas  -$02,s
          ldd   <u000A
          std   ,s
          lda   ,y+
@@ -10873,7 +10880,7 @@ L5E7A    bsr   L5EBB
          leas  $01,s
          rts
 
-         leas  -$02,s
+L5E7F    leas  -$02,s
          ldd   <u000A
          std   ,s
          lda   ,y+
@@ -10888,7 +10895,7 @@ L5E7A    bsr   L5EBB
          leas  $02,s
          rts
 
-         leas  -$02,s
+L5E9A    leas  -$02,s
          ldd   <u000A
          std   ,s
          lda   ,y+
@@ -10960,7 +10967,7 @@ L5F08    decb
 L5F29    leas  $01,s
          rts
 
-         lda   ,y+
+L5F2C    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -10973,7 +10980,7 @@ L5F29    leas  $01,s
          sta   ,x
          rts
 
-         lda   ,y+
+L5F41    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -10985,7 +10992,7 @@ L5F29    leas  $01,s
          sta   ,x
          rts
 
-         lda   ,y+
+L5F55    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -10997,7 +11004,7 @@ L5F29    leas  $01,s
          sta   ,x
          rts
 
-         lda   ,y+
+L5F69    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -11009,7 +11016,7 @@ L5F29    leas  $01,s
          sta   ,x
          rts
 
-         lda   ,y+
+L5F7C    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -11021,7 +11028,7 @@ L5F29    leas  $01,s
          sta   ,x
          rts
 
-         ldb   ,y+
+L5F91    ldb   ,y+
          bsr   L5FA1
          rts
          ldb   ,y+
