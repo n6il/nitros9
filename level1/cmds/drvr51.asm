@@ -156,8 +156,9 @@ L0068    stx   <u0022,u
          lbsr  L02C3
          clrb  
 L009C    puls  pc,u,a
-Term    neg   <u0034
-         oim   #$1A,<u0050
+Term     fcb   $00
+         pshs  cc
+         orcc  #IntMasks
          ldx   >D.AltIRQ
          stx   >D.IRQ
          puls  cc
