@@ -12,13 +12,13 @@ P2D		= $(3RDPARTY)/p2mods
 
 DEPENDS		= ./makefile.cust
 
-KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/kernel
-KERNEL_TC3	= $(MD)/rel_80 $(C9)/Products/SuperDrivers/software/6809l2/boot_id0_tc3 $(MD)/kernel
-KERNEL_IDE	= $(MD)/rel_80 $(MD)/boot_idelba $(MD)/kernel
-KERNEL_DW	= $(MD)/rel_80 $(C9)/Products/DriveWire/software/6809l2/boot_dw $(MD)/kernel
+KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/krn
+KERNEL_TC3	= $(MD)/rel_80 $(C9)/Products/SuperDrivers/software/6809l2/boot_id0_tc3 $(MD)/krn
+KERNEL_IDE	= $(MD)/rel_80 $(MD)/boot_idelba $(MD)/krn
+KERNEL_DW	= $(MD)/rel_80 $(C9)/Products/DriveWire/software/6809l2/boot_dw $(MD)/krn
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
-BOOTFILE_1773	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_1773	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_80d.dd \
 		$(MD)/ddd0_40d.dd \
@@ -33,7 +33,7 @@ BOOTFILE_1773	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 
 # OS-9 disk bootfile to allow booting from TC^3 SCSI controller
 # This is a custom bootfile made by Boisy for his system
-BOOTFILE_TC3	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_TC3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(C9)/superscsi/6809l2/superscsi_tc3.dr \
 		$(C9)/superscsi/6809l2/dd_ez135_tc3.dd \
@@ -61,7 +61,7 @@ BOOTFILE_TC3	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 
 # OS-9 disk bootfile to allow booting from TC^3 SCSI controller
 # This is a custom bootfile made by Boisy for his system
-BOOTFILE_EXP	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_EXP	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(3PD)/sdisk3/sdisk3_dmc_63.dr \
 		$(3PD)/sdisk3/d0_80d.dd $(3PD)/sdisk3/d1_40d.dd \
@@ -80,7 +80,7 @@ BOOTFILE_EXP	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 #		$(C9)/products/SuperSCSI/softwarev2/6809l2/lltc3.dr \
 #		$(C9)/products/SuperSCSI/softwarev2/6809l2/h5_ez135_tc3.dd \
 
-BOOTFILE_LUCKEY  = $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_LUCKEY  = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(MD)/rbf.mn \
                 $(C9)/Products/SuperDrivers/software/6809l2/rbsuper.dr \
                 $(C9)/Products/SuperDrivers/software/6809l2/llide.dr \
@@ -97,7 +97,7 @@ BOOTFILE_LUCKEY  = $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
                 $(MD)/clock_60hz \
                 $(MD)/clock2_tc3
 
-BOOTFILE_CUST   = $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_CUST   = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(MD)/rbf.mn \
                 $(C9)/Products/SuperDrivers/software/6809l2/rbsuper.dr \
                 $(C9)/Products/SuperDrivers/software/6809l2/llide.dr \
@@ -117,7 +117,7 @@ BOOTFILE_CUST   = $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
                 $(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
                 $(MD)/scf.mn $(MD)/cc3io.dr \
                 $(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
-                $(MD)/windint.io \
+                $(MD)/grfint.io \
                 $(MD)/term_win80.dt \
                 $(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
                 $(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \

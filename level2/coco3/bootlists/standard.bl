@@ -1,5 +1,5 @@
 ***************************************
-* NitrOS-9 Level Two Bootlist
+* NitrOS-9 Level 2 Bootlist
 *
 * $Id$
 *
@@ -11,7 +11,9 @@
 * Kernel/System Section
 *
 * These modules are mandatory.
-../MODULES/KERNEL/kernelp2
+../MODULES/KERNEL/krnp2
+*../MODULES/krnp3_perr
+*../MODULES/krnp4_regdump
 ../MODULES/SYSMODS/ioman
 ../MODULES/SYSMODS/init
 *
@@ -108,9 +110,15 @@
 *../MODULES/SCF/joydrv_6551L.sb
 *../MODULES/SCF/joydrv_6552L.sb
 *
-* WindInt and VDGInt I/O subroutine modules
-* Select one or both
+* GrfInt/WindInt subroutine module
+* Use WindInt with Multi-Vue; use GrfInt
+* for basic text and graphic window support..
+* Select only one.
+*../MODULES/SCF/grfint.io
 ../MODULES/SCF/windint.io
+*
+* VDGInt I/O subroutine module
+* Select one or both
 *../MODULES/SCF/vdgint.io
 *../MODULES/SCF/vdgint_small.io
 *
@@ -118,6 +126,8 @@
 *../MODULES/SCF/term_vdg.dt
 *../MODULES/SCF/term_win40.dt
 ../MODULES/SCF/term_win80.dt
+*../MODULES/SCF/term_sio.dt
+*../MODULES/SCF/term_sc6551.dt
 *
 * Select as many window descriptors as needed
 ../MODULES/SCF/w.dw
@@ -184,7 +194,7 @@
 * Select one clock2 module that supports your real-time clock, if any.
 * Besides support for the internal software clock, the following
 * hardware clocks are supported: Burke & Burke, Disto 2-N-1, Disto 4-N-1,
-* Eliminator, Harris, SmartWatch, TC^3, DriveWire
+* Eliminator, Harris, SmartWatch, Cloud-9, DriveWire
 ../MODULES/CLOCKS/clock2_soft
 *../MODULES/CLOCKS/clock2_bnb
 *../MODULES/CLOCKS/clock2_disto2
@@ -192,7 +202,7 @@
 *../MODULES/CLOCKS/clock2_elim
 *../MODULES/CLOCKS/clock2_harris
 *../MODULES/CLOCKS/clock2_smart
-*../MODULES/CLOCKS/clock2_tc3
+*../MODULES/CLOCKS/clock2_cloud9
 *../MODULES/CLOCKS/clock2_dw
 *
 ***************************************

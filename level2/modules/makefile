@@ -1,6 +1,6 @@
 include ../../rules.mak
 
-vpath %.asm krnl:$(6809L1)/modules
+vpath %.asm kernel:$(6809L1)/modules
 
 CLOCKELIM       = -aRTCElim=1 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
 CLOCKDISTO2     = -aRTCElim=0 -aRTCDsto2=1 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
@@ -8,7 +8,7 @@ CLOCKDISTO4     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=1 -aRTCBB=0 -aRTCSmart=0 -
 CLOCKBNB        = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=1 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
 CLOCKSMART      = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=1 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=1
 CLOCKHARRIS     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=1 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
-CLOCKTC3        = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=1 -aRTCSoft=0 -aMPIFlag=0
+CLOCKCLOUD9     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=1 -aRTCSoft=0 -aMPIFlag=0
 CLOCKSOFT       = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=1 -aMPIFlag=0
 
 DEPENDS		= ./makefile
@@ -16,12 +16,12 @@ TPB		= ../../3rdparty/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		 boot_burke boot_idelba boot_rampak boot_wd1002
-BOOTTRACK	= rel_32 rel_40 rel_80 $(BOOTERS) kernel
-KERNEL		= kernelp2 kernelp3_perr kernelp4_regdump
+BOOTTRACK	= rel_32 rel_40 rel_80 $(BOOTERS) krn
+KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_h0 sysgo_dd
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
-		clock2_smart clock2_harris clock2_tc3 clock2_soft
+		clock2_smart clock2_harris clock2_cloud9 clock2_soft
 
 RBF		= rbf.mn \
 		rb1773.dr rammer.dr \
@@ -40,7 +40,7 @@ SCF		= scf.mn \
 		joydrv_6551M.sb joydrv_6552M.sb \
 		nil.dd p.dd \
 		t1.dd t2_sc6551.dd t3_sc6551.dd \
-		ftdd.dd vi.dd ssp.dd term_sio.dd term_sc6551.dd \
+		ftdd.dd vi.dd ssp.dd term_sio.dt term_sc6551.dt \
 		term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
 		w3.dw w4.dw w5.dw w6.dw w7.dw v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw
@@ -53,19 +53,19 @@ PIPE		= pipeman.mn pipeman_named.mn \
 # The following macros represent a collection of modules for various
 # kernel tracks and bootfile configurations.
 #
-KERNEL_1773	= rel_32 boot_1773 kernel
-KERNEL_RAMPAK	= rel_32 $(TPB)/boot_rampak kernel
-KERNEL_KENTON	= rel_32 $(TPB)/boot_kenton kernel
-KERNEL_IDE	= rel_32 $(TPB)/boot_ide kernel
+KERNEL_1773	= rel_32 boot_1773 krn
+KERNEL_RAMPAK	= rel_32 $(TPB)/boot_rampak krn
+KERNEL_KENTON	= rel_32 $(TPB)/boot_kenton krn
+KERNEL_IDE	= rel_32 $(TPB)/boot_ide krn
 
 ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
 
 all:	$(ALLOBJS)
 
 # Kernel
-kernel kernelp2:
-	$(CD) krnl; make $@
-	$(CP) krnl/$@ .
+krn krnp2:
+	$(CD) kernel; make $@
+	$(CP) kernel/$@ .
 
 # Special cases
 rel_32: rel.asm
@@ -196,14 +196,14 @@ clock2_smart: clock2.asm
 clock2_harris: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKHARRIS)
 
-clock2_tc3: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKTC3)
+clock2_cloud9: clock2.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKCLOUD9)
 
 clock2_soft: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
 
 clean:
-	$(CD) krnl; make $@
+	$(CD) kernel; make $@
 	$(RM) $(ALLOBJS)
 
 showobjs:

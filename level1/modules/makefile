@@ -6,7 +6,7 @@ CLOCKDISTO4     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=1 -aRTCBB=0 -aRTCSmart=0 -
 CLOCKBNB        = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=1 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
 CLOCKSMART      = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=1 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=1
 CLOCKHARRIS     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=1 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
-CLOCKTC3        = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=1 -aRTCSoft=0 -aMPIFlag=0
+CLOCKCLOUD9     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=1 -aRTCSoft=0 -aMPIFlag=0
 CLOCKSOFT       = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=1 -aMPIFlag=0
 
 DEPENDS		= ./makefile
@@ -15,11 +15,11 @@ TPB		= $(3RDPARTY)/booters
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		boot_burke boot_idelba boot_rampak boot_wd1002
 BOOTTRACK	= rel $(BOOTERS)
-KERNEL		= kernel kernelp2
+KERNEL		= krn krnp2
 SYSMODS		= ioman init sysgo_dd sysgo_h0
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
-                clock2_smart clock2_harris clock2_tc3 clock2_soft
+                clock2_smart clock2_harris clock2_cloud9 clock2_soft
 
 RBF		= rbf.mn \
 		rb1773.dr \
@@ -31,8 +31,8 @@ SCF		= scf.mn \
 		sc6551.dr vrn.dr printer.dr sio.dr sspak.dr ccio.dr \
 		co32.io co80.io \
 		nil.dd p.dd pipe.dd ssp.dd \
-		term_sio.dd term_sc6551.dd t1.dd t2_sc6551.dd t3_sc6551.dd \
-		term32.dd term80.dd
+		term_sio.dt term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dt \
+		term32.dt term80.dt
 
 PIPE		= pipeman.mn \
 		piper.dr \
@@ -45,9 +45,9 @@ all:	$(ALLOBJS)
 # Special cases
 
 # Kernel
-kernel kernelp2:
-	$(CD) krnl; make $@
-	$(CP) krnl/$@ .
+krn krnp2:
+	$(CD) kernel; make $@
+	$(CP) kernel/$@ .
 
 boot_1773_6ms:	boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=0
@@ -80,8 +80,8 @@ clock2_smart: clock2.asm
 clock2_harris: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKHARRIS)
 
-clock2_tc3: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKTC3)  
+clock2_cloud9: clock2.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKCLOUD9)  
 
 clock2_soft: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
@@ -162,8 +162,8 @@ clock_smart: clock.asm
 clock_harris: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCHarrs=1 -aTPS=60
 
-clock_tc3: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCTC3=1 -aTPS=60
+clock_cloud9: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCCloud9=1 -aTPS=60
 
 clock_soft: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aTPS=60
@@ -172,7 +172,7 @@ clock_soft_50hz: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aTPS=50
 
 clean:
-	$(CD) krnl; make $@
+	$(CD) kernel; make $@
 	$(RM) $(ALLOBJS)
 
 showobjs:

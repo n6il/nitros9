@@ -16,6 +16,7 @@
 
          ifp1
          use   defsfile
+         use   cciodefs
          endc
 
 tylg     set   Systm+Objct   
@@ -26,104 +27,121 @@ edition  set   1
          mod   eom,name,tylg,atrv,start,size
 
          org   0
-u0000    rmb   0
 size     equ   .
 
          fcb   $07 
 name     fcs   /GRFO/
          fcb   edition
 
-start    lbra  Entry7
-         lbra  L002C
-         lbra  L0026
-         lbra  L0026
-         lbra  Entry7
+* Dispatch table
+start    lbra  Init
+         lbra  Write
+         lbra  GetStat
+         lbra  SetStat
+         lbra  Term
 
-L0022    fdb   $0055
-L0024    fdb   $aaff
-L0026    comb
+* 128x192 4 color pixel table
+Mode1Clr fdb   $0055,$aaff
+
+GetStat
+SetStat  comb
          ldb   #E$UnkSvc
          rts
 
-L002C    suba  #$15
+Write    suba  #$15
          leax  <Table,pcr
          lsla
          ldd   a,x
          jmp   d,x
 
-Table    fdb   Entry1-Table
-         fdb   Entry2-Table
-         fdb   Entry3-Table
-         fdb   Entry4-Table
-         fdb   Entry5-Table
-         fdb   Entry6-Table
-         fdb   Entry7-Table
-         fdb   Entry8-Table
-         fdb   Entry9-Table
-         fdb   Entry7-Table
-         fdb   Entry7-Table
+Table    fdb   Do15-Table
+         fdb   Do16-Table
+         fdb   Do17-Table
+         fdb   Do18-Table
+         fdb   Do19-Table
+         fdb   Do1A-Table
+         fdb   NoOp-Table
+         fdb   Do1C-Table
+         fdb   Do1D-Table
+         fdb   NoOp-Table
+         fdb   NoOp-Table
 
-L004A    ldd   <$28,u
-         cmpb  #$C0
-         bcs   L0053
-         ldb   #$BF
-L0053    tst   <$24,u
-         bmi   L0059
-         lsra  
-L0059    std   <$28,u
+* Fix X/Y coords:
+* - if Y > 191 then cap it at 191
+* - adjust X coord if in 128x192 mode
+FixXY    ldd   <V.NChar,u	get next 2 charas
+         cmpb  #192		Y greater than max?
+         bcs   L0053		branch if lower than
+         ldb   #191
+L0053    tst   <V.Mode,u	which mode?
+         bmi   L0059		branch if 256x192
+         lsra  			else divide X by 2
+L0059    std   <V.NChar,u	and save
          rts   
 
-Entry1   leax  <L0065,pcr
-L0060    ldb   #$02
-         lbra  L015A
-L0065    bsr   L004A
-         std   <$45,u
+* $15 - set graphics cursor
+Do15     leax  <SetGC,pcr	load X with return address
+GChar2   ldb   #$02		need two parameters
+         lbra  GChar
 
-Entry7   clrb  
+SetGC    bsr   FixXY		fix coords
+         std   <V.GCrsX,u	and save new gfx cursor pos
+
+NoOp
+Init
+Term     clrb  
          rts   
 
-Entry5   clr   <$47,u
-Entry4   leax  <L0074,pcr
-         bra   L0060
-L0074    bsr   L004A
-         std   <$45,u
-         bsr   L007E
+* $19 - erase point
+Do19     clr   <V.Msk1,u
+* $18 - set point
+Do18     leax  <DrawPnt,pcr
+         bra   GChar2
+
+DrawPnt  bsr   FixXY		fix coords
+         std   <V.GCrsX,u	save as new gfx cursor pos
+         bsr   DrwPt2
          lbra  L014A
-L007E    jsr   [<$5D,u]
+DrwPt2   jsr   [<V.CnvVct,u]
 L0081    tfr   a,b
          comb  
          andb  ,x
          stb   ,x
-         anda  <$47,u
+         anda  <V.Msk1,u	and with mask
          ora   ,x
          sta   ,x
          rts   
-Entry3   clr   <$47,u
-Entry2   leax  <L0098,pcr
-         bra   L0060
-L0098    bsr   L004A
-         leas  -$0E,s
-         std   $0C,s
-         jsr   [<$5D,u]
-         stx   $02,s
-         sta   $01,s
-         ldd   <$45,u
-         jsr   [<$5D,u]
+
+* $17 - erase line
+Do17     clr   <V.Msk1,u	clear mask value
+
+* $16 - draw line
+Do16     leax  <DrawLine,pcr	load X with return address
+         bra   GChar2		need two params
+
+DrawLine bsr   FixXY		fix up coords
+         leas  -$0E,s		make room on stack
+         std   $0C,s		save X/Y
+         jsr   [<V.CnvVct,u]	get address given X/Y
+         stx   $02,s		save on stack
+         sta   $01,s		and pixel too
+         ldd   <V.GCrsX,u	get current graphics cursor
+         jsr   [<V.CnvVct,u]	get address given X/Y
          sta   ,s
          clra  
          clrb  
          std   $04,s
          lda   #$BF
-         suba  <$46,u
-         sta   <$46,u
+         suba  <V.GCrsY,u
+         sta   <V.GCrsY,u
          lda   #$BF
-         suba  <$29,u
-         sta   <$29,u
+         suba  <V.NChr2,u
+         sta   <V.NChr2,u
          lda   #$FF
          sta   $06,s
          clra  
-         ldb   <$45,u
-         subb  <$28,u
+         ldb   <V.GCrsX,u
+         subb  <V.NChar,u
          sbca  #$00
          bpl   L00D6
          nega  
@@ -137,8 +155,8 @@ L00D6    std   $08,s
 L00DF    lda   #$E0
          sta   $07,s
          clra  
-         ldb   <$46,u
-         subb  <$29,u
+         ldb   <V.GCrsY,u
+         subb  <V.NChr2,u
          sbca  #$00
          bpl   L00F4
          nega  
@@ -169,38 +187,42 @@ L011D    lda   ,s
          ldb   $06,s
          bpl   L0133
          lsla  
-         ldb   <$24,u
-         bmi   L012A
+         ldb   <V.Mode,u	which mode?
+         bmi   L012A		branch if 256x192
          lsla  
 L012A    bcc   L00F8
-         lda   <$4A,u
+         lda   <V.4A,u
          leax  -$01,x
          bra   L00F8
 L0133    lsra  
-         ldb   <$24,u
-         bmi   L013A
+         ldb   <V.Mode,u	which mode?
+         bmi   L013A		branch if 256x196
          lsra  
 L013A    bcc   L00F8
-         lda   <$49,u
+         lda   <V.MCol,u
          leax  $01,x
          bra   L00F8
 L0143    ldd   $0C,s
-         std   <$45,u
+         std   <V.GCrsX,u
          leas  $0E,s
-L014A    lda   <$48,u
-         sta   <$47,u
+L014A    lda   <V.Msk2,u
+         sta   <V.Msk1,u
          clrb  
          rts   
-Entry8   clr   <$47,u
-Entry6   leax  <L0162,pcr
-         ldb   #$01
-L015A    stb   <$25,u
-         stx   <$26,u
+
+* $1C - erase circle
+Do1C     clr   <V.Msk1,u	clear mask value
+* $1A - draw circle
+Do1A     leax  <Circle,pcr
+         ldb   #$01		require another param -- radius
+GChar    stb   <V.NGChr,u	one more char
+         stx   <V.RTAdd,u	return address
          clrb  
          rts   
-L0162    leas  -$04,s
-         ldb   <$29,u
-         stb   $01,s
+
+Circle   leas  -$04,s		make room on stack
+         ldb   <V.NChr2,u	get radius
+         stb   $01,s		store on stack
          clra  
          sta   ,s
          addb  $01,s
@@ -287,7 +309,7 @@ L01B9    leas  -$08,s
          leas  $08,s
          rts   
 L0202    pshs  b,a
-         ldb   <$46,u
+         ldb   <V.GCrsY,u
          clra  
          leax  d,x
          cmpx  #$0000
@@ -295,9 +317,9 @@ L0202    pshs  b,a
          cmpx  #$00BF
          ble   L0216
 L0214    puls  pc,b,a
-L0216    ldb   <$45,u
+L0216    ldb   <V.GCrsX,u
          clra  
-         tst   <$24,u
+         tst   <V.Mode,u
          bmi   L0221
          lslb  
          rola  
@@ -308,32 +330,34 @@ L0221    addd  ,s++
 L0227    pshs  b
          tfr   x,d
          puls  a
-         tst   <$24,u
-         lbmi  L007E
-         lsra  
-         lbra  L007E
-Entry9   clr   <$41,u
+         tst   <V.Mode,u	which mode?
+         lbmi  DrwPt2		branch if 256x192
+         lsra  			else divide A by 2
+         lbra  DrwPt2
+
+* $1D - flood fill
+Do1D     clr   <V.FFFlag,u
          leas  -$07,s
          lbsr  L03AB
          lbcs  L0346
          lda   #$FF
-         sta   <$4F,u
-         ldd   <$45,u
+         sta   <V.4F,u
+         ldd   <V.GCrsX,u
          lbsr  L0351
-         lda   <$4C,u
-         sta   <$4D,u
-         tst   <$24,u
-         bpl   L0261
+         lda   <V.4C,u
+         sta   <V.4D,u
+         tst   <V.Mode,u	which mode?
+         bpl   L0261		branch if 128x192
          tsta  
          beq   L0267
          lda   #$FF
          bra   L0267
-L0261    leax  >L0022,pcr
+L0261    leax  >Mode1Clr,pcr
          lda   a,x
-L0267    sta   <$4E,u
-         cmpa  <$47,u
+L0267    sta   <V.4E,u
+         cmpa  <V.Msk1,u
          lbeq  L0346
-         ldd   <$45,u
+         ldd   <V.GCrsX,u
 L0274    suba  #$01
          bcs   L027F
          lbsr  L0351
@@ -350,11 +374,11 @@ L0282    lbsr  L0384
 L0290    deca  
          ldx   $01,s
          lbsr  L03D3
-         neg   <$4F,u
+         neg   <V.4F,u
          lbsr  L03D3
 L029C    lbsr  L03F9
          lbcs  L0346
-         tst   <$4F,u
+         tst   <V.4F,u
          bpl   L02B3
          subb  #$01
          bcs   L029C
@@ -392,10 +416,10 @@ L02D6    cmpd  $03,s
          decb  
          cmpd  $05,s
          beq   L02FB
-         neg   <$4F,u
+         neg   <V.4F,u
          ldx   $05,s
          lbsr  L03D3
-         neg   <$4F,u
+         neg   <V.4F,u
 L02FB    ldd   $05,s
 L02FD    std   $01,s
 L02FF    bsr   L0351
@@ -425,100 +449,103 @@ L0326    inc   $03,s
          ldd   $05,s
          cmpd  $03,s
          lbcs  L029C
-         neg   <$4F,u
+         neg   <V.4F,u
          ldx   $03,s
          lbsr  L03D3
          lbra  L029C
 L0346    leas  $07,s
          clrb  
-         ldb   <$41,u
+         ldb   <V.FFFlag,u
          beq   L0350
 L034E    orcc  #Carry
 L0350    rts   
 L0351    pshs  b,a
          cmpb  #$BF
          bhi   L0380
-         tst   <$24,u
-         bmi   L0360
+         tst   <V.Mode,u	which mode?
+         bmi   L0360		branch if 256x192
          cmpa  #$7F
          bhi   L0380
-L0360    jsr   [<$5D,u]
+L0360    jsr   [<V.CnvVct,u]
          tfr   a,b
          andb  ,x
 L0367    bita  #$01
          bne   L0376
          lsra  
          lsrb  
-         tst   <$24,u
-         bmi   L0367
+         tst   <V.Mode,u	which mode?
+         bmi   L0367		branch if 256x192
          lsra  
          lsrb  
          bra   L0367
-L0376    stb   <$4C,u
-         cmpb  <$4D,u
+L0376    stb   <V.4C,u
+         cmpb  <V.4D,u
          andcc #^Carry
          puls  pc,b,a
 L0380    orcc  #Carry
          puls  pc,b,a
 L0384    pshs  b,a
-         jsr   [<$5D,u]
+         jsr   [<V.CnvVct,u]
          bita  #$80
          beq   L03A6
-         ldb   <$4E,u
+         ldb   <V.4E,u
          cmpb  ,x
          bne   L03A6
-         ldb   <$47,u
+         ldb   <V.Msk1,u
          stb   ,x
          puls  b,a
-         tst   <$24,u
-         bmi   L03A3
+         tst   <V.Mode,u	which mode?
+         bmi   L03A3		branch if 256x192
          adda  #$03
          rts   
 L03A3    adda  #$07
          rts   
 L03A6    lbsr  L0081
          puls  pc,b,a
-L03AB    ldx   <$3F,u
-         beq   L03B5
-         stx   <$3D,u
+L03AB    ldx   <V.FFSTp,u	get top of flood fill stack
+         beq   L03B5		if zero, we need to allocate stack
+         stx   <V.FFSPt,u	else reset flood fill stack ptr
 L03B3    clrb  
          rts   
-L03B5    pshs  u
-         ldd   #$0200
-         os9   F$SRqMem 
-         bcc   L03C1
-         puls  pc,u
-L03C1    tfr   u,d
-         puls  u
-         std   <$3B,u
-         addd  #$0200
-         std   <$3F,u
-         std   <$3D,u
-         bra   L03B3
+
+* Allocate Flood Fill Stack
+L03B5    pshs  u		save U for now
+         ldd   #$0200		get 512 bytes
+         os9   F$SRqMem 	from system
+         bcc   AllocOk		branch if ok
+         puls  pc,u		else pull out with error
+AllocOk  tfr   u,d		move pointer to alloced mem to D
+         puls  u		get stat pointer we saved earlier
+         std   <V.FFMem,u	save pointer to alloc'ed mem
+         addd  #512		point D to end of alloc'ed mem
+         std   <V.FFSTp,u	and save here as top of fill stack
+         std   <V.FFSPt,u	and here
+         bra   L03B3		do a clean return
+
 L03D3    pshs  b,a
-         ldd   <$3D,u
+         ldd   <V.FFSPt,u
          subd  #$0004
-         cmpd  <$3B,u
+         cmpd  <V.FFMem,u
          bcs   L03F2
-         std   <$3D,u
+         std   <V.FFSPt,u
          tfr   d,y
-         lda   <$4F,u
+         lda   <V.4F,u
          sta   ,y
          stx   $01,y
          puls  b,a
          sta   $03,y
          rts   
 L03F2    ldb   #$F5
-         stb   <$41,u
+         stb   <V.FFFlag,u
          puls  pc,b,a
-L03F9    ldd   <$3D,u
-         cmpd  <$3F,u
+L03F9    ldd   <V.FFSPt,u
+         cmpd  <V.FFSTp,u		top of flood fill stack?
          lbcc  L034E
          tfr   d,y
          addd  #$0004
-         std   <$3D,u
+         std   <V.FFSPt,u
          lda   ,y
-         sta   <$4F,u
+         sta   <V.4F,u
          ldd   $01,y
          tfr   d,x
          lda   $03,y

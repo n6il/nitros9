@@ -1,5 +1,5 @@
 ********************************************************************
-* KernelP3 - Printerr functionality for Level 2
+* krnp3 - Printerr functionality for Level 2
 *
 * $Id$
 *
@@ -53,7 +53,7 @@
 *   1      1987/06/23  Peter E. Durham
 * First release.
 
-         nam   KernelP3
+         nam   krnp3
          ttl   Printerr functionality for Level 2
 
          ifp1
@@ -66,7 +66,7 @@ edition  set   1
 
          mod   eom,name,type,ReEnt+revs,entry,256
 
-name     fcs   "KernelP3"
+name     fcs   "krnp3"
          fcb   edition
 
 *+
@@ -310,7 +310,7 @@ OpenFil  equ   *
 ClosFil  equ   *
          os9   I$Close    ;Close file
          rts              ;Return
-P4Name   fcc   "KernelP4"
+P4Name   fcc   "krnp4"
          fcb   $D
 ErrMsg   fcc   "Error #000"
 ErrLen   equ   *-ErrMsg

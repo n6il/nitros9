@@ -191,6 +191,14 @@ PerWinInit
          std   <V.MSmpl,u	(Mouse sample rate & fire button timeout value)
          ldd   <IT.PAR,y	get parity/baud bytes from dev desc
          std   <V.DevPar,u	save it off in our static
+*** Find CC3GfxInt
+         pshs  u,y,a		..else VDG
+         lda   #$02		get code for VDG type window
+         sta   <V.WinType,u	save it
+         leax  <CC3GfxInt,pcr	point to CC3GfxInt name
+         lbsr  L08D4		link to it if it exists
+         puls  u,y,a		restore regs & return
+***
          lbra  FindCoMod	go find and init co-module
 
 KeyDrv   fcs   /KeyDrv/
@@ -1439,6 +1447,7 @@ FindCoMod
 
 WindInt  fcs   /WindInt/
 GrfInt   fcs   /GrfInt/ ++
+CC3GfxInt fcs   /CC3GfxInt/ ++
 
 *
 * Try WindInt

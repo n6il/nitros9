@@ -1,12 +1,12 @@
 include ../../../rules.mak
 
-vpath %.asm $(6809L1)/modules/krnl
+vpath %.asm $(6809L1)/modules/kernel
 
 DEPENDS		= ./makefile
-AFLAGS		+= -I$(6809L1)/modules/krnl
+AFLAGS		+= -I$(6809L1)/modules/kernel
 
-KERNEL		= kernel
-KERNELP2	= kernelp2
+KERNEL		= krn
+KERNELP2	= krnp2
 SYSCALLS	= fallimg.asm fallram.asm falltsk.asm faproc.asm fcmpnam.asm \
 		fcpymem.asm fdatlog.asm fdelram.asm ffmodul.asm ffreehb.asm \
 		fld.asm fldabx.asm flink.asm fmove.asm fnproc.asm fprsnam.asm \
@@ -21,9 +21,9 @@ ALLOBJS		= $(KERNEL) $(KERNELP2)
 
 all:	$(ALLOBJS)
 
-$(KERNEL):	kernel.asm $(SYSCALLS)
+$(KERNEL):	krn.asm $(SYSCALLS)
 
-$(KERNELP2):	kernelp2.asm $(SYSCALLS)
+$(KERNELP2):	krnp2.asm $(SYSCALLS)
 
 clean:
 	$(RM) $(ALLOBJS)
