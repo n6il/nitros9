@@ -6,9 +6,11 @@ SYSFILES	= LogBook
 SYSWINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs
 HELPFILES	= cocopr.hp control.hp gcal.hp gcalc.hp gclock.hp gport.hp \
 		gprint.hp gshell.hp
+ASSETFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs \
+		ibm_edc.fnt iso_latin1.fnt
 
 HELPMSG		= helpmsg
-ALLOBJS		= $(SYSFILES) $(HELPMSG)
+ALLOBJS		= $(SYSFILES) $(HELPMSG) $(ASSETFILES)
 
 all:	$(ALLOBJS) $(DEPENDS)
 	$(UNIX2OS9) $(SYSFILES)
