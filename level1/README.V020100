@@ -1,0 +1,139 @@
+**** OS-9 Level One VR 02.01.00 Release Notes ****
+
+This release of OS-9 Level One for the Tandy Color Computer and
+Dragon computers represents the first community-based release
+since the discontinuation of both the CoCo and Dragon in the 1980s.
+
+Why?
+====
+There were several reasons for releasing a new version of OS-9
+Level One:
+
+	o It was long overdue (16 years)
+
+	o Year 2000 fixes were needed
+
+	o Bringing both CoCo and Dragon OS-9 to the same code base
+	  was desireable
+
+	o This release served to test our methods for testing and
+	  packaging, which will come in handy as we continue to
+	  work on future possible releases
+
+One goal of this release was to consolidate commands and modules from
+both the CoCo and Dragon versions of OS-9 into a single distribution
+that would support both systems.  The last CoCo version of OS-9
+Level One was version 02.00.00, released in mid-1986.  The last Dragon
+version of OS-9 Level One was version 01.02.00, released ????.
+The CoCo version of OS-9, being newer, was the basis for this upgrade,
+and the Dragon distribution disk reflects the newer OS-9 modules from
+the CoCo version.
+
+
+Color Computer Modules
+======================
+
+The following list gives information on changes, if any, on each
+module found in the CoCo distribution of OS-9 Level One.
+
+Command		Edition		Comments
+-------		-------		-----------------------------------
+asm		6		Y2K issues resolved
+attr		11		From OS-9 Level Two V2.00.01
+backup		8		Unchanged from last Tandy release
+build		6		Unchanged from last Tandy release
+cmp		50		Unchanged from last Tandy release
+cobbler		5		Unchanged from last Tandy release
+config		4		Unchanged from last Tandy release
+copy		7		From OS-9 Level Two V2.00.01
+date		6		Y2K issues resolved
+dcheck		4		Unchanged from last Tandy release
+debug		6		Unchanged from last Tandy release
+del		5		Unchanged from last Tandy release
+deldir		3		Unchanged from last Tandy release
+dir		7		Y2K issues resolved
+display		2		Unchanged from last Tandy release
+dsave		2		Unchanged from last Tandy release
+dump		5		Unchanged from last Tandy release
+echo		5		Unchanged from last Tandy release
+edit		3		Unchanged from last Tandy release
+exbin		68		Put proper edition in place in code
+format		17		Unchanged from last Tandy release
+free		17		Y2K issues resolved
+grfo		1		Unchanged from last Tandy release
+help		2		Unchanged from last Tandy release
+ident		7		Unchanged from last Tandy release
+iniz		3		From OS-9 Level Two V2.00.01
+link		5		Unchanged from last Tandy release
+load		4		Unchanged from last Tandy release
+login		17		From nOS-9 Level Two V2.00.01
+makdir		4		Unchanged from last Tandy release
+mdir		5		Unchanged from last Tandy release
+merge		4		Unchanged from last Tandy release
+mfree		5		Unchanged from last Tandy release
+os9gen		7		Unchanged from last Tandy release
+park		2		Changed name from PARK to Park
+printerr	7		Changed /D0 to /DD
+procs		9		Unchanged from last Tandy release
+pwd		1		Unchanged from last Tandy release
+pxd		1		Unchanged from last Tandy release
+rename		6		Unchanged from last Tandy release
+save		3		Unchanged from last Tandy release
+setime		10		Y2K issues resolved
+shell		21		CHD no longer uses WRITE. mode
+sleep		2		Unchanged from last Tandy release
+tee		2		Unchanged from last Tandy release
+tmode		12		From OS-9 Level Two V2.00.01
+tsmon		8		From OS-9 Level Two V2.00.01
+tuneport	3		Unchanged from last Tandy release
+unlink		2		Unchanged from last Tandy release
+verify		5		Unchanged from last Tandy release
+xmode		5		From OS-9 Level Two V2.00.01
+
+Module		Edition		Comments
+-------		-------		-----------------------------------
+aciapak.dr	10		Unchanged from last Tandy release
+ccdisk.dr	5		Supports double-sided drives, 6ms
+                                step rate
+cchdisk.dr	4		Unchanged from last Tandy release
+ccio.dr		12		Unchanged from last Tandy release
+clock.50hz	5		Y2K issues resolved
+clock.60hz	5		Y2K issues resolved
+co32.io		1		Unchanged from last Tandy release
+co80.io		2		Unchanged from last Tandy release
+d0.dd				Unchanged from last Tandy release
+d1.dd				Unchanged from last Tandy release
+d2.dd				Unchanged from last Tandy release
+d3.dd				Unchanged from last Tandy release
+dd.dd				New descriptor
+grfo.io		1		Unchanged from last Tandy release
+h0_15.dd			Unchanged from last Tandy release
+h0_35.dd			Unchanged from last Tandy release
+h1_15.dd			Unchanged from last Tandy release
+h1_35.dd			Unchanged from last Tandy release
+init                            Changed /D0 reference to /DD
+ioman		12		Fixed I/O queue bug, I$Attach bug
+m1.dd				Unchanged from last Tandy release
+m2.dd				Unchanged from last Tandy release
+modpak.dr	10		Unchanged from last Tandy release
+nil.dd				Unchanged from last Tandy release
+nildrv.dr	3		Unchanged from last Tandy release
+os9		14		Unchanged from last Tandy release
+os9p2		10		Unchanged from last Tandy release
+p.dd				Unchanged from last Tandy release
+pipe.dd				Unchanged from last Tandy release
+pipeman.mn	4		Unchanged from last Tandy release
+piper.dr	2		Unchanged from last Tandy release
+printer.dr	10		Unchanged from last Tandy release
+rbf.mn		24		Unchanged from last Tandy release
+rs232.dr	7		Unchanged from last Tandy release
+scf.mn		10		Unchanged from last Tandy release
+ssc.dd				Unchanged from last Tandy release
+sscpak.dr	1		Unchanged from last Tandy release
+sysgo		13		Reflects new OS-9 version
+t1.dd				Unchanged from last Tandy release
+t2.dd				Unchanged from last Tandy release
+t3.dd				Unchanged from last Tandy release
+term32.dd			Unchanged from last Tandy release
+term80.dd			Unchanged from last Tandy release
+
