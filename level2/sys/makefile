@@ -12,7 +12,7 @@ HELPFILES	= asm.hp attr.hp \
 		backup.hp basic09.hp binex.hp build.hp \
 		chd.hp chx.hp cmp.hp cobbler.hp config.hp copy.hp cputype.hp \
 		date.hp dcheck.hp debug.hp ded.hp deiniz.hp del.hp deldir.hp devs.hp \
-		dir.hp dirm.hp disasm.hp display.hp dmem.hp dmode.hp dsave.hp dump.hp \
+		dir.hp disasm.hp display.hp dmem.hp dmode.hp dsave.hp dump.hp \
 		echo.hp edit.hp error.hp ex.hp exbin.hp \
 		format.hp free.hp \
 		gfx.hp gfx2.hp grfdrv.hp \
@@ -20,8 +20,8 @@ HELPFILES	= asm.hp attr.hp \
 		ident.hp iniz.hp inkey.hp irqs.hp \
 		kill.hp \
 		link.hp list.hp load.hp login.hp \
-		makdir.hp mdir.hp merge.hp mfree.hp mmap.hp modpatch.hp \
-		montype.hp os9gen.hp \
+		makdir.hp mdir.hp megaread.hp merge.hp mfree.hp mmap.hp modpatch.hp \
+		montype.hp mpi.hp os9gen.hp \
 		padrom.hp park.hp pmap.hp proc.hp procs.hp prompt.hp pwd.hp pxd.hp \
 		reboot.hp rename.hp runb.hp \
 		save.hp setime.hp setpr.hp shell.hp sleep.hp smap.hp \
