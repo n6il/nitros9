@@ -7,6 +7,7 @@ all:
 	$(CD) enhanced; make
 	$(CD) kdutils; make
 	$(CD) smartwatch; make
+	$(CD) winfo; make
 
 # Clean all components
 clean:
@@ -15,3 +16,4 @@ clean:
 	-$(CD) enhanced; make clean
 	-$(CD) kdutils; make clean
 	-$(CD) smartwatch; make clean
+	-$(CD) winfo; make clean
