@@ -998,8 +998,8 @@ R$A      equ   1          A Accumulator
 R$B      equ   2          B Accumulator
 R$D      equ   R$A        Combined A:B Accumulator
          IFNE  H6309
-R$E      equ   3          Accumulator
-R$F      equ   4          Accumulator
+R$E      equ   3          E Accumulator
+R$F      equ   4          F Accumulator
 R$W      equ   R$E        Combined E:F Accumulator
 R$Q      equ   R$A        Combined A:B:E:F Accumulator
 R$DP     equ   5          Direct Page register
