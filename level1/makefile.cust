@@ -1,7 +1,7 @@
 include ../rules.mak
 
 RELEASE		= nos96809l1cust
-BOOTFILE	= bootfiles/bootfile_drivewire
+BOOTFILE	= bootfiles/bootfile_cust
 KERNELFILE	= bootfiles/kernel_drivewire
 DIRS		= cmds modules defs sys bootfiles
 
