@@ -1,0 +1,117 @@
+         IFNE   CCIODEFS-1
+CCIODEFS set    1
+
+********************************************************************
+* CCIODefs - CCIO Driver Definitions
+*
+* $Id$
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+
+
+         nam    CCIODefs
+         ttl    CCIO Driver Definitions
+
+         pag
+
+         org   V.SCF
+V.ScrnA  rmb   2  (2) screen start address in system memory
+V.ScrnE  rmb   2  (2) address of end of screen
+V.CrsrA  rmb   1  (2) cursor address
+V.CrsAL  rmb   1  cursor address low
+V.CChar  rmb   1  value of character under cursor
+V.Mode   rmb   1  mode: 0=256x192 x2, 1=128x192 x4
+V.NGChr  rmb   1  number of additional characters to get
+V.RTAdd  rmb   2  (2) return address after getting characters
+V.NChar  rmb   1  character to process
+V.NChr2  rmb   1  and the next one
+         rmb   1
+V.Chr1   rmb   1  same as under cursor character
+V.CColr  rmb   1  cursor color
+V.Col    rmb   1  number of columns for this screen
+V.Row    rmb   1  number of rows
+V.Alpha  rmb   1  0 when in alpha mode
+V.PIA1   rmb   1  PIA1Base value
+V.Rdy    rmb   1  device ready (see SS.DStat 0=not ready)
+V.CFlg1  rmb   1  VDG display code values
+V.SBAdd  rmb   2  (2) address of block screen is in
+V.GBuff  rmb   2  allocation for graphics buffers (block#)
+V.AGBuf  rmb   4  (2) additional graphics buffer
+V.FFMem  rmb   2  Flood fill alloc'ed mem
+V.FFSPt  rmb   2  Flood fill current stack pointer
+V.FFSTp  rmb   1  Flood fill stack top
+V.FF6    rmb   1   flood fill flag
+V.FFFlag rmb   1  ??
+V.MTabl  rmb   2  (2) address of mask table for pixels in byte
+V.PixBt  rmb   1  bit mask for modes (0=$07, 1=$03 )#pixels/byte
+V.GCrsX  rmb   1  graphics cursor X value
+V.GCrsY  rmb   1  graphics cursor Y
+V.Msk1   rmb   1  mask byte 1
+V.Msk2   rmb   1  mask byte 2 (00,55,AA,FF)
+V.MCol   rmb   1  color? (C003,8001)
+V.4A     rmb   1
+V.PMask  rmb   1  pixel mask for colors (i.e. $55, $CC etc)
+V.4C     rmb   1
+V.4D     rmb   1
+V.4E     rmb   1
+V.4F     rmb   1
+V.Caps   rmb   1  caps lock info: $00=lower $FF=upper
+V.ClkCnt rmb   1  clock count ??
+V.WrChr  rmb   1  character to write
+V.CurCo  rmb   1  current CO-module in use
+* start of CO80-specific static memory
+V.54     rmb   1
+V.55     rmb   1
+V.56     rmb   1
+V.57     rmb   1
+V.C80X   rmb   1	CO80 X position
+V.C80Y   rmb   1	CO80 Y position
+V.5A     rmb   1
+* end of CO80-specific static memory
+V.DspVct rmb   2	vector to display screen
+V.CnvVct rmb   2	vector to X/Y to address conversion
+V.LKeyCd rmb   1	last key code
+V.2Key1  rmb   1	2nd Key 1
+V.2Key2  rmb   1	2nd Key 2
+V.2Key3  rmb   1	2nd Key 3
+V.Key1   rmb   1	Key 1
+V.Key2   rmb   1	Key 2
+V.Key3   rmb   1	Key 3
+V.ShftDn rmb   1	SHIFT/CTRL state
+V.CtrlDn rmb   1	CTRL key down
+V.KeyFlg rmb   1	key flag
+V.AltDwn rmb   1	ALT key down
+V.KySns  rmb   1	key sense flags
+V.KySame rmb   1	key same as last flag
+V.KySnsF rmb   1	key sense flag
+V.Spcl   rmb   1
+V.KTblLC rmb   1	key table entry #
+V.6F     rmb   1	???
+V.COLoad rmb   1	CO-module loaded flags
+V.CFlag  rmb   1  true lowercase flag $10=true, $00=false
+V.GRFOE  rmb   2  GRFO entry point
+V.CO32E  rmb   2  CO32 entry point
+V.CO80E  rmb   2  CO80 entry point
+V.IBufH  rmb   1  input buffer head
+V.IBufT  rmb   1  input buffer tail
+V.InBuf  rmb   1  input buffer tail
+         rmb   250-.
+V.Last   equ   .
+
+
+*VD.FFMem rmb   2  (2) bottom of stack for flood fill
+*VD.FFSPt rmb   2  (2) flood fill stack pointer
+*VD.FFSTp rmb   2  (2) flood fill stack top pointer
+*VD.FF6   rmb   1   flood fill flag
+*VD.MCol2 rmb   1  color
+*VD.FF1   rmb   1  data for flood fill
+*VD.FF2   rmb   1  data for flood fill
+*VD.FFMsk rmb   1  flood fill mask
+*VD.FFFlg rmb   1  flood fill flag
+*VD.Palet rmb   16 (16) current palette values
+*VD.PlFlg rmb   1  initialized to $08 by L00DB, and then unused!
+
+         ENDC
+
