@@ -8,6 +8,15 @@ speed. To effectively utilize this feature, one must be familiar
 with both C and BASIC09 internal data representation and procedure
 calling protocol.
 </para>
+<para>
+C type "int" and BASIC09 type "INTEGER" are identical; both are two
+byte two's complement integers. C type "char" and BASIC09 type
+"BYTE" and "BOOLEAN" are also identical. Keep in mind that C will
+sign-extend characters for comparisons yielding the range -128 to
+127.
+</para>
+<para>
+</para>
 
 <section>
 <title>Example 1 - Simple Integer Aritmetic Case</title>
@@ -198,6 +207,149 @@ FOR i=n TO m
 PRINT d(i); " ";
 NEXT i
 PRINT
+END
+</programlisting>
+<para>
+C string quicksort program:
+</para>
+<programlisting>
+/* qsort to be called by BASIC09:
+     dim cmemory:STRING[10] This should be at least as large as
+                            the linker says the data size should
+                            be.
+     dim d(100):INTERGER    Any size INTEGER array.
+
+     run cqsort(cmemory,d,100) calling qsort. Note that the pro-
+                            cedure name run in the linked OS-9
+                            subroutine module. The module name
+                            need not be the name of the C func-
+                            tion.
+*/
+
+int maxstr;    /* string maximum length */
+
+static strbcmp(str1,str2)            /* basic09 string compare */
+register char *str1,*str2;
+{
+     int maxlen;
+
+     for (maxlen = maxstr; *str1 == *str2 ;++str1)
+          if (maxlen-- >0 || *str2++ == 0xff)
+               return 0;
+     return (*str1 - *str2);
+}
+
+cssort(argcnt,stor,storsiz,iaarray,iasize,elemlen,elsiz,
+             icount,icsiz)
+int argcnt;          /* BASIC09 argument count */
+char *stor;         /* Pointer to string (C data storage) */
+char iarray[];      /* Pointer to BASIC09 integer array */
+int  iasize,          /* and it's size */
+     *elemlen,        /* Pointer integer value (string length) */
+     elsiz,           /* Size of integer */
+     *icount,         /* Pointer to integer (sort count) */
+     icsiz;           /* Size of integer */
+{
+/* The following assembly code loads Y with the first
+   arg provided by BASIC09.  This code MUST be the first code
+   in the function after the declarations.  This code assumes the
+   address of the data area is the first parameter in the BASIC09
+   RUN command. */
+#asm
+ ldy 6,s get addr for C storage
+#endasm
+
+/* Use the C library qsort function to do the sort. Our
+   own BASIC09 string compare function will compare the strings.
+*/
+
+     qsort(iarray,*icount,maxstr=*elemlen,strbcmp);
+}
+
+/* define stuff cstart.r normally defines */
+#asm
+_stkcheck:
+ rts dummy stack check function
+
+ vsect
+errno: rmb 2 C function system error number
+_flacc: rmb 8 C library float/long accumulator
+ endsect
+#endasm
+</programlisting>
+<para>
+The BASIC09 calling programs:  (words file contains strings to sort)
+</para>
+<programlisting>
+PROCEDURE ssorter
+DIM a(200):STRING[20]
+DIM cmemory:STRING[20]
+DIM i,n:INTEGER
+DIM path:INTEGER
+OPEN #path,"words":READ
+
+n=100
+FOR i=1 to n
+INPUT #path,a(i)
+NEXT i
+CLOSE #path
+RUN prin(a,n)
+RUN cssort(cmemory,a,20,n)
+RUN prin(a,n)
+END
+
+PROCEDURE prin
+PARAM a(100):STRING[20]; n:INTEGER
+DIM i:INTEGER
+FOR i=1 TO n
+PRINT i; " "; a(i)
+NEXT i
+PRINT i
+END
+</programlisting>
+</section>
+
+<section>
+<title>Example 5 - Floating Point</title>
+<para>
+The next example shows how to access BASIC09 reals from C functions:
+</para>
+<programlisting>
+flmult(cnt,cmemory,cmemsiz,realarg,realsize)
+</programlisting>
+</section>
+
+<section>
+<title>Example 6 - Matrix Elements</title>
+<para>
+The last program is an example of accessing BASIC09 matrix elements.
+The C program:
+</para>
+<programlisting>
+matmult(cnt,cmemory,cmemsiz,matxaddr,matxsize,scalar,scalsize)
+</programlisting>
+<para>
+BASIC09 calling program:
+</para>
+<programlisting>
+PROCEDURE btest
+DIM im(5,3):INTEGER
+DIM i,j:INTEGER
+DIM cmem:STRING[32]
+FOR i=1 TO 5
+    FOR j=1 TO 3
+        READ im(i,j)
+    NEXT j
+NEXT i
+DATA 11,13,7,3,4,0,5,7,2,8,15,0,0,14,4
+FOR i=1 TO 5
+    PRINT im(i,1),im(i,2),im(i,3)
+NEXT i
+PRINT
+RUN matmult(cmem,im,64)
+FOR i=1 TO 5
+    PRINT im(i,1),im(i,2),im(i,3)
+NEXT i
 END
 </programlisting>
 </section>
