@@ -13,7 +13,7 @@ HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
 		mdir.hp merge.hp mfree.hp os9gen.hp \
 		padrom.hp park.hp procs.hp prompt.hp pwd.hp pxd.hp \
 	 	rename.hp save.hp setime.hp \
-		setpr.hp shell.hp sleep.hp tee.hp tmode.hp touch.hp tsmon.hp \
+		setpr.hp shell.hp sleep.hp swread.hp tee.hp tmode.hp touch.hp tsmon.hp \
 		tuneport.hp unlink.hp verify.hp xmode.hp
 HELPMSG		= helpmsg
 ALLOBJS		= $(SYSFILES) $(HELPMSG)

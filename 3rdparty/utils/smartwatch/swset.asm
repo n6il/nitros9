@@ -13,6 +13,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * 1      Revised: clock disable; no relocation          RG  95/07/04
+*        Revised to accommodate Level1 & Level2 so      RG  04/07/28
+*        relocation of code brought back.
 
          nam   SWSet
          ttl   Set time in SmartWatch
@@ -36,7 +38,7 @@ temp2    rmb   1
 clkbyte  rmb   1
 clkflag  rmb   1
 mpiimage rmb   1
-alrtimag rmb   8          storage for the allert code with following:
+alrtimag rmb   8          storage for the alert code with following:
 csec     rmb   1
 sec      rmb   1
 min      rmb   1
@@ -47,6 +49,7 @@ month    rmb   1
 year     rmb   1
 stopbyte rmb   1
 rawdata  rmb   18
+relocimg rmb   300
 stack    rmb   200
 size     equ   .
 
@@ -76,11 +79,18 @@ query    lda   #1
          ldy   #1
          os9   I$Read
          lda   temp1      get key
-         rts   
+         rts
 
-start    leax  alrtimag,u point to image of allert code
+noroom   lda   #2
+         leax  mesroom,pcr
+         ldy   #50
+         os9   I$WritLn
+         clrb
+         os9   F$Exit   
+
+start    leax  alrtimag,u point to image of alert code
          ldb   #8
-         leay  allert,pcr
+         leay  alert,pcr
 s1loop   lda   ,y+        transfer to data
          sta   ,x+
          decb  
@@ -180,7 +190,7 @@ ascbcd   clr   temp2
          lslb  
          pshs  a
          addb  ,s+
-         inca  
+*        inca  
 endasc   rts   
 noinfo   leas  2,s
          bra   doit
@@ -209,7 +219,9 @@ nomore   com   temp1
 error    leas  4,s
          lbra  date
 
-doit     pshs  u
+doit     equ   *
+         IFGT  Level-1
+         pshs  u
          ldb   #1
          ldx   #$3E       disk rom
          os9   f$mapblk
@@ -229,6 +241,25 @@ doit     pshs  u
          ldu   locblk0
          os9   f$clrblk
          puls  u
+         ELSE
+         tfr   u,d        look at the start of the program data page
+         cmpa  #$7E
+         lbhs  noroom
+         ldx   #RTC.Base
+         stx   locblk3E
+         ldx   #0
+         stx   locblk0
+         leax  reloc,pcr
+         pshs  u
+         leau  relocimg,u
+         ldy   #endrel-reloc
+rl       lda   ,x+
+         sta   ,u+
+         leay  -1,y
+         bne   rl
+         puls  u
+         jsr   relocimg,u
+         ENDC
          tst   clkflag
          bne   exit
          lda   #2
@@ -257,20 +288,27 @@ killit   lda   #C$SPAC
          sta   daywk
          bra   doit
 
+* regX points to system DP, regU points to program DP
 reloc    pshs  cc
+         IFGT  Level-1
          lda   d.hinit,x  get $FF90 image
+         ENDC
          ldb   MPI.Slct
          pshs  d
+         IFGT  Level-1
          anda  #$CC       external disk rom access
+         ENDC
          orcc  #IntMasks
+         IFGT  Level-1
          sta   $FF90      set for external ROM
+         ENDC
          sta   rom
          ldx   locblk3E
          ldb   mpiimage   get new value
          clr   clkflag
 
 findclk  stb   MPI.Slct   set new slot
-         leay  allert,pcr
+         leay  alert,pcr
          lda   4,x        clear clock
          clrb  
          bita  #1
@@ -329,7 +367,12 @@ noclk1   sta   ram
          sta   $ff90
          puls  cc,pc
 
-allert   fcb   $C5,$3A,$A3,$5C,$C5,$3A,$A3,$5C,$ff
+alert    fcb   $C5,$3A,$A3,$5C,$C5,$3A,$A3,$5C,$ff
+endrel   equ   *
+
+mesroom  fcb   C$LF
+         fcc   /Don't have relocation memory!/
+         fcb   C$CR
 crmesage fcb   C$LF
          fcc   /Set Smartwatch/
          fcb   C$LF
