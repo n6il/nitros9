@@ -19,21 +19,22 @@
 ../MODULES/RBF/rbf.mn
 *
 * SuperSCSI - SCSI support for TC^3, Ken-Ton and Disto Controllers
-*../MODULES/SUPERSCSI/L2/superscsi_tc3_l2.dr
-*../MODULES/SUPERSCSI/L2/superscsi_ktlr_l2.dr
-*../MODULES/SUPERSCSI/L2/superscsi_disto_l2.dr
-*../MODULES/SUPERSCSI/L2/h0_ez135_tc3ktlr_l2.dd
-*../MODULES/SUPERSCSI/L2/h0_ez135_d4n1_l2.dd
-*../MODULES/SUPERSCSI/L2/h0_ez135_hdii_l2.dd
-*../MODULES/SUPERSCSI/L2/c3_cdrom_tc3ktlr_l2.dd
-*../MODULES/SUPERSCSI/L2/c3_cdrom_d4n1_l2.dd
-*../MODULES/SUPERSCSI/L2/c3_cdrom_hdii_l2.dd
-*../MODULES/SUPERSCSI/L2/h5_zip100_tc3ktlr_l2.dd
-*../MODULES/SUPERSCSI/L2/h5_zip100_d4n1_l2.dd
-*../MODULES/SUPERSCSI/L2/h5_zip100_hdii_l2.dd
-*../MODULES/SUPERSCSI/L2/hb_255_tc3ktlr_l2.dd
-*../MODULES/SUPERSCSI/L2/hb_255_d4n1_l2.dd
-*../MODULES/SUPERSCSI/L2/hb_255_hdii_l2.dd
+*../MODULES/RBF/superscsi_tc3.dr
+*../MODULES/RBF/superscsi_ktlr.dr
+*../MODULES/RBF/superscsi_disto.dr
+*../MODULES/RBF/dd_ez135_tc3ktlr.dd
+*../MODULES/RBF/h0_ez135_tc3ktlr.dd
+*../MODULES/RBF/h0_ez135_d4n1.dd
+*../MODULES/RBF/h0_ez135_hdii.dd
+*../MODULES/RBF/c3_cdrom_tc3ktlr.dd
+*../MODULES/RBF/c3_cdrom_d4n1.dd
+*../MODULES/RBF/c3_cdrom_hdii.dd
+*../MODULES/RBF/h5_zip100_tc3ktlr.dd
+*../MODULES/RBF/h5_zip100_d4n1.dd
+*../MODULES/RBF/h5_zip100_hdii.dd
+*../MODULES/RBF/hb_255_tc3ktlr.dd
+*../MODULES/RBF/hb_255_d4n1.dd
+*../MODULES/RBF/hb_255_hdii.dd
 *
 * CC3Disk - WD1773 floppy support
 ../MODULES/RBF/cc3disk.dr

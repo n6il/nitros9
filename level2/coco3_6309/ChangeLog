@@ -1,3 +1,7 @@
+OS-9 Level Two V03.01.04:
+- A compatibility issue with os9gen's -t option and OS-9 Level One     
+  has been resolved.
+
 OS-9 Level Two V03.01.03:
 - The asm program now supports 6309 bitfield instructions.
 - The prompt command has been added to the standard command set.

@@ -49,7 +49,7 @@ Banner
          fcc   /.0/
          fcb   48+OS9Minor
          fcb   C$CR,C$LF
-         fcc   "    Release Date: 07/01/2003"
+         fcc   "    Release Date: 08/01/2003"
          fcb   C$CR,C$LF
          fcc   /   "A CoCo Community Project"/
          fcb   C$CR,C$LF
