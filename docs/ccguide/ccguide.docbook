@@ -8,6 +8,7 @@
   <!ENTITY chap2         SYSTEM "chap2.chapter">
   <!ENTITY chap3         SYSTEM "chap3.chapter">
   <!ENTITY chap4         SYSTEM "chap4.chapter">
+  <!ENTITY crefapp       SYSTEM "creference.appendix">
   <!ENTITY errorsapp     SYSTEM "errors.appendix">
   <!ENTITY phasesapp     SYSTEM "phases.appendix">
   <!ENTITY basic09app    SYSTEM "basic09.appendix">
@@ -137,9 +138,9 @@ Ken Kaplan.
 &chap2;
 &chap3;
 &chap4;
+&crefapp;
 &errorsapp;
 &phasesapp;
 &basic09app;
 &asmapp;
-
 </book>
