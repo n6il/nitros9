@@ -16,9 +16,9 @@
 
 * Disassembled 02/07/13 23:49:05 by Disasm v1.6 (C) 1988 by RML
 
-         ifp1
+         IFP1
          use   defsfile
-         endc
+         ENDC
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
@@ -52,13 +52,18 @@ PassFile fcc   "SYS/PASSWORD"
          fcb   C$CR
          fcc   ",,,,,,,,,,,,,,,"
 WideMsg  fcb   C$LF,C$LF
+         IFNE  NitrOS9
+         fcc   "Nitr"
+         ENDC
          fcc   "OS-9 Timesharing system"
          fcb   C$LF
-         fcc   "Level I"
-         ifeq  Level-2
-         fcc   "I"
-         endc
-         fcc   "  RS VR. 0"
+         fcc   "Level "
+         IFEQ  Level-1
+         fcc   "One"
+         ELSE
+         fcc   "Two"
+         ENDC
+         fcc   " Vr. 0"
          fcb   48+OS9Vrsn
          fcc   ".0"
          fcb   48+OS9Major
@@ -67,11 +72,16 @@ WideMsg  fcb   C$LF,C$LF
          fcb   C$LF
 WideMsgL equ   *-WideMsg
 NrrwMsg  fcb   C$LF,C$LF
-         fcc   "OS-9 Level I"
-         ifeq  Level-2
-         fcc   "I"
-         endc
-         fcc   "  RS VR. 0"
+         IFNE  NitrOS9
+         fcc   "Nitr"
+         ENDC
+         fcc   "OS-9 Level "
+         IFEQ  Level-1
+         fcc   "One"
+         ELSE
+         fcc   "Two"
+         ENDC
+         fcc   " Vr. 0"
          fcb   48+OS9Vrsn
          fcc   ".0"
          fcb   48+OS9Major
@@ -122,17 +132,17 @@ MOTD     fcc   "SYS/MOTD"
 
 Root     fcc   "...... "
 
-L015C    rti			note, was rts in original code
+IcptRtn  rti			note, was rts in original code
 
 start    leas  >u010D,u
          pshs  y,x
-         leax  <L015C,pcr
+         leax  <IcptRtn,pcr
          os9   F$Icpt   
-         ifgt  Level-1
+         IFGT  Level-1
          bcs   L0172
          ldy   #$0000		super user ID
          os9   F$SUser  	set user ID to super user
-         endc
+         ENDC
 L0172    puls  y,x
          lbcs  L02F4
          clr   <u0000
@@ -221,9 +231,9 @@ L0253    lda   <PassPath
          os9   I$Close  
          lbsr  L0408
          tfr   d,y
-         ifgt  Level-1
+         IFGT  Level-1
          os9   F$SUser  
-         endc
+         ENDC
          lbsr  L0408
          tsta  
          lbne  L031B
@@ -454,21 +464,33 @@ L0461    bsr   L0471
          bsr   L0465
 L0465    lda   #$3A
          bra   L046F
-Y2K      ldb   ,x
-         cmpb  #100
-         blo   L1900
-         subb  #100
-         cmpb  #100
-         blo   L2000
-L2100    subb  #100
+
+Y2K      lda   #19			start out in 19th century
+         ldb   ,x			get year
+CntyLp   subb  #100			subtract
+         bcs   GotCntry			if carry set, we have century
+         inca
+         bra   CntyLp			continue
+GotCntry addb  #100
          stb   ,x
-         ldb   #21
-         bra   PrCnty
-L1900    stb   ,x
-         ldb   #19
-         bra   PrCnty
-L2000    stb   ,x
-         ldb   #20
+         tfr   a,b
+
+*         ldb   ,x
+*         cmpb  #100
+*         blo   L1900
+*         subb  #100
+*         cmpb  #100
+*         blo   L2000
+*L2100    subb  #100
+*         stb   ,x
+*         ldb   #21
+*         bra   PrCnty
+*L1900    stb   ,x
+*         ldb   #19
+*         bra   PrCnty
+*L2000    stb   ,x
+*         ldb   #20
+
 PrCnty   bsr   Slash
 L0469    bsr   L0471
          bsr   L046D
