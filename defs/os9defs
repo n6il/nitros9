@@ -2,6 +2,60 @@
 
 OS9DEFS  set   1
 
+********************************************************************
+* OS9Defs - OS-9 System Definitions
+*
+* $Id$
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*          1985/08/29  KMZ
+* Fixed DT.SBF/NFM values to 3/4
+*
+*          1985/09/01  KMZ
+* Added SS.FDInf, SS.Attr to accept 68K request thru NET.
+*
+*          1985/09/03  KMZ/Robert F. Doggett
+* Eliminated E$BPrcID, made Error #238 become E$DNE for
+* 68000 compatability.
+*
+*          1986/04/15  Mark G. Hawkins
+* F$AlHRam System call added for COCO.
+*
+*          1986/09/08  Mark G. Hawkins
+* F$Alarm for COCO Clock Module.
+*
+*          1986/09/17  Mark G. Hawkins
+* SS.Tone For COCO.
+*
+*          1986/09/23  Mark G. Hawkins
+* Added F$NMLink and F$NMLoad for COCO.
+*
+*          1986/09/30  Mark G. Hawkins
+* Added Reserved User $70 to $7f in sytem calls.
+*
+*          1986/09/30  Mark G. Hawkins
+* Created Color Computer 3 Version of OS9Defs.
+*
+*          1998/10/03  Boisy G. Pitre
+* Consoldated Level 1/Level 2 os9defs.
+*
+*          2002/04/04  Boisy G. Pitre
+* Consoldated Level 2/Level 2 V3 os9defs.
+*
+*          2002/04/30  Boisy G. Pitre
+* Added NitrOS-9 definitions.
+*
+*          2003/05/30  Boisy G. Pitre
+* Added WD1002 sys vars to Level One section.
+*
+*          2003/06/02  Boisy G. Pitre
+* Fixed incorrectly ordered D.X*** system globals for OS-9 Level One and
+* changed the sizes from 2 to 3 bytes.
+* DT.NFM is now the same for both Level One and Level Two.
+* Added DT.CDFM type for future CD-ROM file manager
+
          nam   OS9Defs
          IFEQ  Level-1
          ttl   OS-9 Level One System Symbol Definitions
@@ -14,33 +68,14 @@ OS9DEFS  set   1
          ENDC
          ENDC
 
-*****************
-* Edition History
-*
-* Date     Changes Made                                                 by
-* -------- ------------------------------------------------------------ ---
-* 85/08/29 Fixed DT.SBF/NFM values to 3/4                               Kmz
-* 85/09/01 Added SS.FDInf, SS.Attr to accept 68K request thru NET       Kmz
-* 85/09/03 Eliminated E$BPrcID, made Error #238
-*          become E$DNE for 68000 compatability                     Kmz/rfd
-* 86/04/15 F$AlHRam System call added for COCO                          MGH
-* 86/09/08 F$Alarm for COCO Clock Module                                MGH
-* 86/09/17 SS.Tone For COCO                                             MGH
-* 86/09/23 Added F$NMLink and F$NMLoad for COCO                         MGH
-* 86/09/30 added Reserved User $70 to $7f in sytem calls                MGH
-* 86/09/30 Created Color Computer 3 Version of OS9Defs                  MGH
-* 98/10/03 Consoldated Level 1/Level 2 os9defs                          BGP
-* 02/04/04 Consoldated Level 2/Level 2 V3 os9defs                       BGP
-* 02/04/30 Added NitrOS-9 definitions                                   BGP
-* 03/05/30 Added WD1002 sys vars to Level One section                   BGP
-* 03/06/02 Fixed incorrectly ordered D.X*** system globals for L-I      BGP
-
+* Common definitions
 true     equ   1          useful name
 false    equ   0          useful name
 
          IFNE  NitrOS9
 H6309    set   true
          ENDC
+
 
          pag
 *****************************************
@@ -666,20 +701,20 @@ CRCOff   equ   %00000000  CRC checking off
 **************************
 * Module Field Definitions
 *
-* ID Field
+* ID Field - First two bytes of an OS-9 module
 *
 M$ID1    equ   $87        Module ID code byte one
 M$ID2    equ   $CD        Module ID code byte two
 M$ID12   equ   M$ID1*256+M$ID2
+
 *
-* Module Type / Language byte
-*
-* Field Masks
+* Module Type/Language Field Masks
 *
 TypeMask equ   %11110000  Type Field
 LangMask equ   %00001111  Language Field
+
 *
-* Type Values
+* Module Type Values
 *
 Devic    equ   $F0        Device Descriptor Module
 Drivr    equ   $E0        Physical Device Driver
@@ -690,8 +725,9 @@ Data     equ   $40        Data Module
 Multi    equ   $30        Multi-Module
 Sbrtn    equ   $20        Subroutine Module
 Prgrm    equ   $10        Program Module
+
 *
-* Language Values
+* Module Language Values
 *
 Objct    equ   1          6809 Object Code Module
 ICode    equ   2          Basic09 I-code
@@ -717,20 +753,17 @@ ModNat   equ   %00100000  6309 native mode attribute
 ********************
 * Device Type Values
 *
-DT.SCF   equ   0          Sequential Character File Type
-DT.RBF   equ   1          Random Block File Type
-DT.Pipe  equ   2          Pipe File Type
-
-         IFEQ  Level-1
-
-DT.NFM   equ   3
-
-         ELSE
-
-DT.SBF   equ   3
+* These values define various classes of devices, which are
+* managed by a file manager module.  The Device Type is embedded
+* in a device's device descriptor.
+*
+DT.SCF   equ   0          Sequential Character File Manager
+DT.RBF   equ   1          Random Block File Manager
+DT.Pipe  equ   2          Pipe File Manager
+DT.SBF   equ   3          Sequential Block File Manager
 DT.NFM   equ   4          Network File Manager
+DT.CDFM  equ   5          CD-ROM File Manager
 
-         ENDC
 
 *********************
 * CRC Result Constant
@@ -1173,20 +1206,27 @@ E$Lock   rmb   1          Record is busy (locked out)
 E$Share  rmb   1          Non-sharable file busy
 E$DeadLk rmb   1          I/O Deadlock error
 
+
          IFGT  Level-1
 *****************************
 * Boot defs for CoCo 3 OS-9
+*
 * These defs are not strictly for 'Boot', but are for booting the
 * system.
+*
 Bt.Block equ   $3B        Block to map in for the 'OS9BOOT' screen
 Bt.Flag  equ   $8A34      Flag in Bt.Block to verify that it's unchanged
 Bt.Offst equ   2          Offset into the screen where the current ptr is
 Bt.Start equ   $ED00      Start address of the boot track in memory
          ENDC
 
+
          IFGT  Level-2
 ***************************
 * Level III Defs
+*
+* These definitions apply to OS-9 Level III as created by Alan DeKok
+*
 L3.Start equ   $2000      Start off at slot 1
 L3.Size  equ   $40        Go for 64 pages: 2 slots total
 L3.Blks  equ   L3.Size/$20 Number of slots
@@ -1196,6 +1236,3 @@ L3.RBF   equ   L3.SCF+1   RBF block ptr
          ENDC
 
          ENDC
-
-         end
-
