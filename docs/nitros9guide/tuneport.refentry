@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>TUNEPORT</command>
+<command>tuneport</command>
 <arg choice="opt">
   <option>-s=value</option>
 </arg>

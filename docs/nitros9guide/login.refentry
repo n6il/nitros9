@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>LOGIN</command>
+<command>login</command>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -41,10 +41,10 @@ is omitted, no password is required by the specific use.
 This number is used by the file security system and as the system-wide
 user ID to identify all processes initiated by the user. The
 system manager should assign a unique ID to each potential user.
-(See 3.8)
+(See <xref linkend="sec3.8"/>)
 </para>
 <para>
-4. Initial process (CPU time) priority: 1 - 255 (see 5.2)
+4. Initial process (CPU time) priority: 1 - 255 (see <xref linkend="sec5.2"/>)
 </para>
 <para>
 5. Pathlist of initial execution directory (usually <filename class="directory">/d0/CMDS</filename>)
@@ -80,7 +80,7 @@ logged into the system. <command>Login</command> initializes the user number, wo
 execution directory, working data directory, and executes the
 initial program specified by the password file. The date, time and
 process number (which is <emphasis>not</emphasis> the same as
-the user ID, see 5.3) are also displayed.
+the user ID, see <xref linkend="sec5.3"/>) are also displayed.
 </para>
 <para>
 Note: if the shell from which <command>login</command> was called will not be needed
@@ -100,14 +100,15 @@ character on a line.
 </para>
 </refsect2>
 <refsect2>
-<title>Displaying a &quot;Message-of-the-Day&quot;</title>
+<title>Displaying a <quote>Message-of-the-Day</quote></title>
 <para>
 If desired, a file named <filename>motd</filename> appearing in the SYS directory will
 cause <command>login</command> to display it's contents on the user's terminal after
 successful login. This file is not required for <command>login</command> to operate.
 </para>
 <para>
-For more information see: tsmon, 2.5, 3.8, 5.3
+For more information see: <command>tsmon</command>, <xref linkend="sec4.9"/>,
+<xref linkend="sec3.8"/>, <xref linkend="sec5.3"/>
 </para>
 </refsect2>
 </refsect1>

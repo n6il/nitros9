@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>DEL</command>
+<command>del</command>
 <arg choice="opt">
   <option>-x</option>
 </arg>
@@ -27,14 +27,14 @@
 This command is used to delete the file(s) specified by the
 pathlist(s). The user must have write permission for the file(s).
 Directory files cannot be deleted unless their type is changed to
-non-directory: see the <command>ATTR</command> command description.
+non-directory: see the <command>attr</command> command description.
 </para>
 <para>
 If the -x option appears, the current
 <emphasis>execution</emphasis> directory is assumed.
 </para>
 <para>
-For more information see: 3.5, 3.8.1
+For more information see: <xref linkend="sec3.5"/>, <xref linkend="sec3.8.1"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

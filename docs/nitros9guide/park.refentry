@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>PARK</command>
+<command>park</command>
 <arg choice="plain">
   <replaceable>device name</replaceable>
 </arg>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>COPY</command>
+<command>copy</command>
 <arg choice="plain">
   <replaceable>path</replaceable>
 </arg>

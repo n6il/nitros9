@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>SETPR</command>
+<command>setpr</command>
 <arg choice="plain">
   <replaceable>procID</replaceable>
 </arg>
@@ -28,7 +28,7 @@ NOTE: This command does not appear in the <filename class="directory">CMDS</file
 built-in to the <command>shell</command>.
 </para>
 <para>
-For more information see: 5.1, <command>procs</command>
+For more information see: <xref linkend="sec5.1"/>, <command>procs</command>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

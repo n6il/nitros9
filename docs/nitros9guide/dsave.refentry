@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>DSAVE</command>
+<command>dsave</command>
 <arg choice="opt">
   <option>-opts</option>
 </arg>
@@ -90,7 +90,7 @@ for the <filename>OS9Boot</filename> file.</entry>
 
 
 <para>
-For more information see: 1.1.3
+For more information see: <xref linkend="sec2.3"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

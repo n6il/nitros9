@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>FORMAT</command>
+<command>format</command>
 <arg choice="plain">
   <replaceable>devname</replaceable>
 </arg>
@@ -58,7 +58,7 @@ characters long and may include spaces or punctuation. This name
 can later be displayed using the FREE command.
 </para>
 <para>
-For more information see: 3.10
+For more information see: <xref linkend="sec3.10"/>
 </para>
 </refsect1>
 </refentry>

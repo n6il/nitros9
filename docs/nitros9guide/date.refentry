@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>DATE</command>
+<command>date</command>
 <arg choice="opt">
   <option>-t</option>
 </arg>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>LINK</command>
+<command>link</command>
 <arg choice="plain">
   <replaceable>memory module name</replaceable>
 </arg>
@@ -22,7 +22,8 @@ used to &quot;unlock&quot;
 the module when it is no longer needed.
 </para>
 <para>
-For more information see: 5.4, 5.4.1, 5.4.2, 5.4.3
+For more information see: <xref linkend="sec5.4"/>,
+<xref linkend="sec5.4.1"/>, <xref linkend="sec5.4.2"/>, <xref linkend="sec5.4.3"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

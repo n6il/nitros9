@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-    <command>EXBIN</command>
+    <command>exbin</command>
     <arg choice="plain"><replaceable>path2</replaceable></arg>
     <arg choice="plain"><replaceable>path1</replaceable></arg>
 </cmdsynopsis>

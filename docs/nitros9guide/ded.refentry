@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>DED</command>
+<command>ded</command>
 <arg choice="plain"><replaceable>pathlist</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>DIR</command>
+<command>dir</command>
 <arg choice="opt">
   <option>-e</option>
 </arg>
@@ -37,7 +37,7 @@ modification.
 
 </para>
 <para>
-For more information see: 1.0.3, 3.4, and 3.8.1
+For more information see: <xref linkend="sec1.0.3"/>, <xref linkend="sec3.4"/>, and <xref linkend="sec3.8.1"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

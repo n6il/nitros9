@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>ATTR</command>
+<command>attr</command>
 <arg choice="plain">
   <replaceable>path</replaceable>
 </arg>
@@ -46,10 +46,10 @@ The <command>attr</command> command may be used to change a directory file to a
 non-directory file if all entries have been deleted from it. Since the
 DEL command will only delete non-directory files, this is the only
 way a directory may be deleted. You cannot change a non-directory
-file to a directory file with this command (see MAKDIR).
+file to a directory file with this command (see <command>makdir</command>).
 </para>
 <para>
-For more information see: 3.8, 3.8.1
+For more information see: <xref linkend="sec3.8"/>, <xref linkend="sec3.8.1"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

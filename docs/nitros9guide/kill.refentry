@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>KILL</command>
+<command>kill</command>
 <arg choice="plain">
   <replaceable>procID</replaceable>
 </arg>
@@ -31,7 +31,8 @@ die.
 Since this is a built-in <command>shell</command> command, it does not appear in the
 CMDS directory.
 
-For more information see: 4.5, 5.2, <command>procs</command>
+For more information see: <xref linkend="sec4.5"/>,
+<xref linkend="sec5.2"/>, <command>procs</command>
 
 </para>
 </refsect1>

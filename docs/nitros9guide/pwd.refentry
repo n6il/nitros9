@@ -6,10 +6,10 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>PWD</command>
+<command>pwd</command>
 </cmdsynopsis>
 <cmdsynopsis>
-<command>PXD</command>
+<command>pxd</command>
 </cmdsynopsis>
 </refsynopsisdiv>
 

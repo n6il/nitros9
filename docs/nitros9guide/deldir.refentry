@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>DELDIR</command>
+<command>deldir</command>
 <arg choice="plain">
   <replaceable>directory name</replaceable>
 </arg>

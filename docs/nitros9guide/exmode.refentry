@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>EXMODE</command>
+<command>exmode</command>
 <arg choice="plain"><replaceable>devname</replaceable></arg>
 <arg choice="opt"><replaceable>arglist</replaceable></arg>
 </cmdsynopsis>

@@ -33,7 +33,7 @@ NOTE: These commands do not appear in the CMDS directory as they
 are built-in to the <command>shell</command>.
 </para>
 <para>
-For more information see: 3.7, 3.7.2
+For more information see: <xref linkend="sec3.7"/>, <xref linkend="sec3.7.2"/>
 
 
 </para>

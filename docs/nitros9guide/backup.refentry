@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>BACKUP</command>
+<command>backup</command>
 <arg choice="opt">
   <option>e</option>
 </arg>
@@ -72,7 +72,7 @@ has been copied. Giving <command>backup</command> as much memory as possible wil
 fewer disk exchanges to be required.
 </para>
 <para>
-For more information see: 1.1.2
+For more information see: <xref linkend="sec1.1.2"/>
 </para>
 <screen>
 OS9:backup /D0 #10k

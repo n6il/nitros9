@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>RENAME</command>
+<command>rename</command>
 <arg choice="plain">
   <replaceable>path</replaceable>
 </arg>

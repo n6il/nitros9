@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>LIST</command>
+<command>list</command>
 <arg choice="plain">
   <replaceable>path</replaceable>
 </arg>
@@ -28,7 +28,7 @@ second path will be copied next, etc.
 This command is most commonly used to examine or print text files.
 </para>
 <para>
-For more information see: 2.3, 3.9.2
+For more information see: <xref linkend="sec2.3"/>, <xref linkend="sec3.9.2"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

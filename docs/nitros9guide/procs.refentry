@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>PROCS</command>
+<command>procs</command>
 <arg choice="opt">
   <option>-e</option>
 </arg>
@@ -27,7 +27,8 @@ PROCS shows the user and process ID numbers, priority, state
 module, and standard input path.
 </para>
 <para>
-For more information see: 5.1, 5.2, 5.3
+For more information see: <xref linkend="sec5.1"/>,
+<xref linkend="sec5.2"/>, <xref linkend="sec5.3"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

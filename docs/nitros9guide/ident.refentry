@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>IDENT</command>
+<command>ident</command>
 <arg choice="opt">
   <option>-opts</option>
 </arg>

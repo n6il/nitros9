@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>CC</command>
+<command>cc</command>
 <arg>options</arg>
 <arg rep="repeat" choice="plain"><replaceable>file</replaceable></arg>
 <arg>options</arg>

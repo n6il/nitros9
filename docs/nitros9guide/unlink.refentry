@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>UNLINK</command>
+<command>unlink</command>
 <arg choice="plain">
   <replaceable>modname</replaceable>
 </arg>
@@ -34,7 +34,8 @@ Warning: never unlink a module you did not load or link to.
 <para>
 
 
-For more information see: 5.4, 5.4.1, 5.4.2
+For more information see: <xref linkend="sec5.4"/>,
+<xref linkend="sec5.4.1"/>, <xref linkend="sec5.4.2"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>Runb</command>
+<command>runb</command>
 <arg choice="plain"><replaceable>i-code module</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>

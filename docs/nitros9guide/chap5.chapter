@@ -41,7 +41,7 @@ Therefore, OS-9 uses many techniques and strategies to optimize
 system throughput and capacity.
 </para>
 
-<section>
+<section id="sec5.1">
 <title>Processor Time Allocation and Timeslicing</title>
 
 <para>
@@ -92,7 +92,7 @@ Process CPU Share = -------------------
 </screen>
 </section>
 
-<section>
+<section id="sec5.2">
 <title>Process States</title>
 
 <para>
@@ -133,7 +133,7 @@ change to the active state.
 </para>
 </section>
 
-<section>
+<section id="sec5.3">
 <title>Creation of New Processes</title>
 
 <para>
@@ -255,7 +255,7 @@ Memory
 
 </section>
 
-<section>
+<section id="sec5.4">
 <title>Basic Memory Management Functions</title>
 <para>
 An important OS-9 function is memory management. OS-9 automatically allocates
@@ -288,7 +288,7 @@ upward for data areas, as shown below:
                 !                           !
                 +---------------------------+  lowest address (0)
 </screen>
-<section>
+<section id="sec5.4.1">
 <title>Loading Program Modules Into Memory</title>
 
 <para>
@@ -389,7 +389,7 @@ unlinked module to crash.
 </para>
 </section>
 
-<section>
+<section id="sec5.4.2">
 <title>Loading Multiple Programs</title>
 
 <para>
@@ -416,7 +416,7 @@ can be loaded until available system memory is full.
 </para>
 </section>
 
-<section>
+<section id="sec5.4.3">
 <title>Memory Fragmentation</title>
 
 <para>

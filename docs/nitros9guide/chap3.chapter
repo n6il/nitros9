@@ -60,7 +60,7 @@ installed by the user.
 </itemizedlist>
 </section>
 
-<section>
+<section id="sec3.1">
 <title>Pathlists: How Paths Are Named</title>
 <para>
 Whenever a path is established (or &quot;opened&quot;), OS-9 must be given
@@ -159,7 +159,7 @@ Here are examples of <emphasis>illegal</emphasis> names:
 </para>
 </section>
 
-<section>
+<section id="sec3.2">
 <title>I/O Device Names</title>
 <para>
 Each physical input/output device supported by the system must
@@ -221,7 +221,7 @@ system is running.
 </para>
 </section>
 
-<section>
+<section id="sec3.3">
 <title>Multifile Devices And Directory Files</title>
 <para>
 Multifile devices are mass storage devices (usually disk systems)
@@ -302,12 +302,12 @@ copy /d0/cmds/dir temp
 </para>
 </section>
 
-<section>
+<section id="sec3.4">
 <title>Creating and Using Directories</title>
 <para>
 It is possible to create a virtually unlimited number of levels
 of directories on a mass storage device using the <command>makdir</command> command.
-Directories are a special type of file (see 3.8.1). They can be
+Directories are a special type of file (see <xref linkend="sec3.8.1"/>). They can be
 processed by the same I/O functions used to access regular files
 which makes directory-related processing fairly simple.
 </para>
@@ -380,7 +380,7 @@ file1           file2           file3
 To make a new directory in this directory, the <command>makdir</command> command is
 used. The new directory will be called <filename class="directory">NEWDIR</filename>. Notice that
 throughout this manual directory names are always capitalized. This
-is <emphasis>not</emphasis> a requirement of OS-9 (see 3.1) . Rather, it is a
+is <emphasis>not</emphasis> a requirement of OS-9 (see <xref linkend="sec3.1"/>) . Rather, it is a
 practice popular with many OS-9 users because it allows easy identification
 of directory files at all times (assuming all other file names use
 lower-case letters).
@@ -440,7 +440,7 @@ space.
 </para>
 </section>
 
-<section>
+<section id="sec3.5">
 <title>Deleting Directory Files</title>
 <para>
 The <command>del</command> command cannot be used to directly delete a directory
@@ -454,7 +454,7 @@ following sequence must be performed to delete a directory file:
 </para>
 <para>
 2. The <command>attr</command> command is used to turn off the files directory
-attrribute (-d option), making it an ordinary file (see 3.8).
+attrribute (-d option), making it an ordinary file (see <xref linkend="sec3.8"/>).
 </para>
 <para>
 3. The file may now be deleted using the <command>del</command> command.
@@ -465,7 +465,7 @@ perform all these steps for you.
 </para>
 </section>
 
-<section>
+<section id="sec3.6">
 <title>Additional Information About Directories</title>
 <para>
 The OS-9 directory system is very useful because it allows each
@@ -500,7 +500,7 @@ the same device.
 </itemizedlist>
 </section>
 
-<section>
+<section id="sec3.7">
 <title>Using and Changing Working Directories</title>
 <para>
 Each program (process) has two &quot;working directories&quot; associated
@@ -508,7 +508,7 @@ with it at all times: a &quot;data directory&quot; and an &quot;execution
 directory&quot;. The working directory mechanism allows the name searching
 involved in pathlist processing to start at any level (subtree)
 of the file system hierarchy. Any directory that the user has
-permission to access (see 3.8) can be made a working directory.
+permission to access (see <xref linkend="sec3.8"/>) can be made a working directory.
 </para>
 <para>
 The rules used to determine whether pathlists refer to the
@@ -568,7 +568,7 @@ implies the complete pathlist:
 /D1/PETE/GAMES/ACTION/racing
 </para>
 
-<section>
+<section id="sec3.7.1">
 <title>Automatic Selection of Working Directories</title>
 <para>
 Recall that two working directories are referred to as the
@@ -597,7 +597,7 @@ the working directory to be a directory called <filename class="directory">cmds<
 drive (<filename class="directory">/D0/cmds</filename>). On timesharing systems, the <command>login</command> command
 selects the initial execution and data directories to the file names
 specified in each user's information record stored in the system
-password file(ref. 5.4.2).
+password file(ref. <xref linkend="sec5.4.2"/>).
 </para>
 <para>
 Here is an example of a <command>shell</command> command statement using the default
@@ -622,7 +622,7 @@ they are not assumed to be executable.
 </para>
 </section>
 
-<section>
+<section id="sec3.7.2">
 <title>Changing Current Working Directories</title>
 <para>
 The built-in shell commands <command>chd</command> and <command>chx</command> can be used to
@@ -654,7 +654,7 @@ OS9: CHD /D1/SARAH/PROJECT1    (same effect as above)
 </screen>
 </section>
 
-<section>
+<section id="sec3.7.3">
 <title>Anonymous Directory Names</title>
 <para>
 Sometimes is useful to be able to refer to the current directory
@@ -709,7 +709,7 @@ current data directory.
 </section>
 </section>
 
-<section>
+<section id="sec3.8">
 <title>The File Security System</title>
 <para>
 Every file (including directory files) has properties called
@@ -772,7 +772,7 @@ would have unrestricted access to the file, but other users could
 execute it, but not read, copy, delete, or alter it.
 </para>
 
-<section>
+<section id="sec3.8.1">
 <title>Examining and Changing File Attributes</title>
 <para>
 The <command>dir</command> command may be used to examine the security permissions
@@ -838,7 +838,7 @@ to turn it off <emphasis>only</emphasis> if the directory is empty.
 </section>
 </section>
 
-<section>
+<section id="sec3.9">
 <title>Reading and Writing From Files</title>
 <para>
 A single file type and format is used for all mass storage files.
@@ -870,7 +870,7 @@ the file. Reading up to the last byte of a file will cause the next
 &quot;read&quot; request to return an end-of-file status.
 </para>
 
-<section>
+<section id="sec3.9.1">
 <title>File Usage in OS-9</title>
 <para>
 Even though there is physically only one type of file, the logical
@@ -890,7 +890,7 @@ main usage of files covered in this section are:
 </simplelist>
 </section>
 
-<section>
+<section id="sec3.9.2">
 <title>Text Files</title>
 <para>
 These files contain variable-length sequences (&quot;lines&quot;) of ASCII
@@ -914,7 +914,7 @@ command.
 </para>
 </section>
 
-<section>
+<section id="sec3.9.3">
 <title>Random Access Data Files</title>
 <para>
 Random-access data files are created and used primarily from
@@ -946,7 +946,7 @@ random-access files.
 </para>
 </section>
 
-<section>
+<section id="sec3.9.4">
 <title>Executable Program Module Files</title>
 <para>
 These files are used to hold program modules generated by the
@@ -987,33 +987,33 @@ controlled ASCII format.
 </para>
 </section>
 
-<section>
+<section id="sec3.9.5">
 <title>Directory Files</title>
 <para>
 Directory files play a key role in the OS-9 file system.  They can only be created by the <command>makdir</command> command, and
-can be identified by the &quot;d&quot; attribute being set (see 3.8.1). The
+can be identified by the &quot;d&quot; attribute being set (see <xref linkend="sec3.8.1"/>). The
 file is organized into 32-byte records. Each record can be a
 directory entry. The first 29 bytes of the record is a string of
 characters which is the file name. The last character of the name
 has its sign bit (most significant bit) set. If the record is not
 in use the first character position will have the value zero. The
 last three bytes of the record is a 24-bit binary number which is
-the logical sector number where the file header record (see 3.10) is
+the logical sector number where the file header record (see <xref linkend="sec3.10"/>) is
 located.
 </para>
 <para>
 The <command>makdir</command> command initializes all records in a new directory
 to be unused entries except for the first two entries. These
 entries have the names <filename class="directory">.</filename> and <filename class="directory">..</filename> along with the logical sector
-numbers of the directory and its parent directory, respectively (see 3.7.3).
+numbers of the directory and its parent directory, respectively (see <xref linkend="sec3.7.3"/>).
 </para>
 <para>
 Directories cannot be copied or listed - the <command>dir</command> command is
-used instead. Directories also cannot be deleted directly (see 3.5).
+used instead. Directories also cannot be deleted directly (see <xref linkend="sec3.5"/>).
 </para>
 </section>
 
-<section>
+<section id="sec3.9.6">
 <title>Miscellaneous File Usage</title>
 <para>
 OS-9's basic file functions are so versatile it is possible to
@@ -1032,7 +1032,7 @@ method for examining the contents of unusually formatted files.
 </section>
 </section>
 
-<section>
+<section id="sec3.10">
 <title>Physical File Organization</title>
 <para>
 OS-9's file system implements a universal logical organization
@@ -1081,7 +1081,7 @@ one sector per cluster
 </para></listitem>
 </itemizedlist>
 <para>
-Each file has a directory entry (see 3.9.5) which includes the
+Each file has a directory entry (see <xref linkend="sec3.9.5"/>) which includes the
 file name and the logical sector number of the file's &quot;file descriptor
 sector&quot;, which contains a complete description of the file
 including:

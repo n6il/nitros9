@@ -243,7 +243,7 @@ parameters, but each modifier can only be used once.
 </section>
 </section>
 
-<section>
+<section id="sec4.3">
 <title>Command Separators</title>
 <para>
 A single shell input line can request execution of more than one
@@ -255,7 +255,7 @@ programs are allowed to begin execution and run simultaneously.
 
 </para>
 
-<section>
+<section id="sec4.3.1">
 <title>Sequential Execution</title>
 <para>
 Programs are executed sequentially when each is entered on a
@@ -293,7 +293,7 @@ state until execution of the called program terminates.
 </para>
 </section>
 
-<section>
+<section id="sec4.3.2">
 <title>Concurrent Execution</title>
 <para>
 The second kind of separator is the &quot;&amp;&quot; which implies concurrent
@@ -338,7 +338,7 @@ execution (&quot;;&quot;) was specified.
 </para>
 </section>
 
-<section>
+<section id="sec4.3.3">
 <title>Pipes and Filters</title>
 <para>
 The third kind of separator is the &quot;!&quot; character which is used to
@@ -443,7 +443,7 @@ OS9: chd /d0/WORKING; dsave /d0/ARCHIVE ! shell -p
 </screen>
 </section>
 
-<section>
+<section id="sec4.5">
 <title>Built-in Shell Commands and Options</title>
 <para>
 When processing input lines, the shell looks for several special
@@ -535,7 +535,7 @@ and modifiers can be used.
 </para>
 </section>
 
-<section>
+<section id="sec4.6">
 <title>Shell Procedure Files</title>
 <para>
 The shell is a reentrant program that can be simultaneously
@@ -616,7 +616,7 @@ exist.
 </para>
 </section>
 
-<section>
+<section id="sec4.7">
 <title>Error Reporting</title>
 <para>
 Many programs (including the shell) use OS-9's standard error
@@ -640,7 +640,7 @@ command has been previously executed.
 </para>
 </section>
 
-<section>
+<section id="sec4.8">
 <title>Running Compiled Intermediate Code Programs</title>
 <para>
 Before the shell executes a program, it checks the program
@@ -667,7 +667,7 @@ OS9: adventure
 </screen>
 </section>
 
-<section>
+<section id="sec4.9">
 <title>Setting Up Timesharing System Procedure Files</title>
 
 <para>

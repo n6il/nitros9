@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>OS9GEN</command>
+<command>os9gen</command>
 <arg choice="plain">
   <replaceable>device name</replaceable>
 </arg>
@@ -29,7 +29,7 @@ Next it reads file names (pathlists) from its standard input, one
 pathlist per line. Every file named is opened and copied to
 <filename>TempBoot</filename>. This is repeated until end-of-file or a blank line is
 reached on <command>OS9Gen</command>'s standard input. All boot files must contain the
-OS-9 component modules listed in section 6.1.
+OS-9 component modules listed in section <xref linkend="sec6.1"/>.
 </para>
 <para>
 After all input files have been copied to <filename>TempBoot</filename>, the old
@@ -53,7 +53,8 @@ ESCAPE) or a blank line is entered after the line containing the
 last pathlist.
 </para>
 <para>
-For more information see: 6.0, 6.1, 6.6
+For more information see: <xref linkend="sec6"/>,
+<xref linkend="sec6.1"/>, <xref linkend="sec6.6"/>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

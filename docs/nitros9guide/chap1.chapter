@@ -1,7 +1,7 @@
 <chapter>
 <title>Getting Started...</title>
 
-<section>
+<section id="sec1.0">
 <title>What You Need to Run OS-9</title>
 <para>
 This version of &os9level; runs on the &make;. To use it you'll need the following:
@@ -24,7 +24,7 @@ may have now or may obtain in the future:
   <listitem><para>Other OS-9 Compatible Languages and Software</para></listitem>
 </itemizedlist>
 
-<section>
+<section id="sec1.0.1">
 <title>Starting the System</title>
 <para>
 To start up OS-9 follow these steps:
@@ -47,7 +47,7 @@ displayed.</para></listitem>
 </para>
 </section>
 
-<section>
+<section id="sec1.0.2">
 <title>In Case You Have Problems Starting OS-9</title>
 <itemizedlist>
 <listitem><para>If BASIC gives an error message after you
@@ -59,7 +59,8 @@ repeatedly fails your OS-9 diskette may be bad.</para></listitem>
 
 <listitem><para>Does your &make; have &minmem; RAM? This is a must!</para></listitem>
 
-<listitem><para>If your &make; doesn't seem to understand the &DOSCMD; command, your controller has DOS 1.0.  You will need to upgrade to
+<listitem><para>If your &make; doesn't seem to understand the &DOSCMD; command,
+your controller has DOS 1.0.  You will need to upgrade to
 DOS 1.1.</para></listitem>
 
 <listitem><para>If the &quot;OS9 BOOT&quot; message is displayed but nothing else happens,
@@ -68,7 +69,7 @@ backup!</para></listitem>
 </itemizedlist>
 </section>
 
-<section>
+<section id="sec1.0.3">
 <title>A Quick Introduction to the Use of the Keyboard and Disks</title>
 <para>
 For now, the only special keys on the keyboard of interest are
@@ -85,7 +86,7 @@ names that start with &quot;/&quot; are always device names.
 </para>
 </section>
 
-<section>
+<section id="sec1.0.4">
 <title>Initial Explorations</title>
 <para>
 When OS-9 first starts up, it will display a welcoming message,
@@ -180,7 +181,7 @@ options which can give you more detailed information about each file.
 </para>
 </section>
 </section>
-<section>
+<section id="sec1.1">
 <title>Making a Backup of the System Disk</title>
 <para>
 Before getting too much more involved in further experimentation,
@@ -189,7 +190,7 @@ in case some misfortune befalls your one and only master System
 Disk. Making a backup involves two steps: formatting a blank disk
 and running a backup program.
 </para>
-<section>
+<section id="sec1.1.1">
 <title>Formatting Blank Disks</title>
 <para>
 Before the actual backup procedure can be done (or any fresh
@@ -244,7 +245,7 @@ error message for each bad sector is given.
 </para>
 </section>
 
-<section>
+<section id="sec1.1.2">
 <title>Running the Backup Program</title>
 <para>
 The <command>backup</command> program makes an exact duplicate of a disk. It can be
