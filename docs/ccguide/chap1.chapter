@@ -106,6 +106,14 @@ size limitations.
 <section>
 <title>Access To Command Line Parameters</title>
 <para>
+The standard C arguments "argc" and "argv" are available to
+"main" as described in K &amp; R page 110. The start-up routine for C
+programs ensures that the parameter string passed to it by the
+parent process is converted into null-terminated strings as expected
+by the program. In addition, it will run together as a single
+argument any strings enclosed between single or double quotes ("'" or '"').
+If either is part of the string required, then the other
+should be used as a delimiter.
 </para>
 </section>
 </section>
