@@ -1,4 +1,10 @@
 OS-9 Level Two V03.01.04:
+- asm is now at edition 8 and includes the following fixes/additions:
+  o Symbols now allow underscores.                                
+  o The "parens error" bug has been fixed.
+  o Added support for case-sensitive symbols with the U option flag.
+  o Improved 4-digit year fix for date/time string.              
+  o Automatic conversion of tabs to spaces on input.             
 - A bug accidentally introduced into os9gen related to boot track on
   double-sided disks has been fixed.
 - The directory structure of the Modules disk has been modified.  All
