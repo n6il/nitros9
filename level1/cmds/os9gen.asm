@@ -452,16 +452,18 @@ L045F    ldu   <statptr
          lda   <devpath
          os9   I$Read   	read first part of LSN0
          lbcs  Bye
-         lda   #$00
-         ldb   #$01
+         ldd   #$0001
+*         lda   #$00
+*         ldb   #$01
          lbsr  Seek2LSN
          leax  sectbuff,u
          ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
          lda   <devpath
          os9   I$Read   
          lbcs  Bye
-         lda   #BTrack		boot track
-         clrb  			sector 1
+         ldd   #BTrack*256	boot track
+*         lda   #BTrack		boot track
+*         clrb  			sector 1
          ldy   #$0004		four bits
          lbsr  ABMClear
          bcc   L0520
