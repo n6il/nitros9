@@ -79,6 +79,11 @@ u00FC EQU $00FC
 u00FE EQU $00FE
 u00FF EQU $00FF
 
+X0100 equ $0100   pic_visible
+X024E equ $024E
+XFFA9 equ $FFA9
+
+
 size     equ   .
 name     equ   *
          fcs   /scrn/
@@ -122,17 +127,18 @@ L0071    cmpa  <u0012      check MMU block
          orcc  #IntMasks   Turn off interrupts 
          sta   <u0012      store the value passed in by a 
          lda   <u0042      get sierra process descriptor map block
-         sta   >$FFA9      map it in to $2000-$3FFF
+         sta   >XFFA9      map it in to $2000-$3FFF
          ldx   <u0043      2nd 8K data block in Sierra
          lda   <u0012      get mmu block num
          sta   ,x          store that 
          stb   $02,x
-         std   >$FFA9      Map it into task 1 block 2
+         std   >XFFA9      Map it into task 1 block 2
          andcc #^IntMasks  turn on interrupts $AF
 L008B    rts   
 
 
 * 16 marker bytes for some thing
+* coco_view_pal[]     vid_render.c
 L008C    fcb   $00
          fcb   $11
          fcb   $22
@@ -183,7 +189,7 @@ L00B3    bsr   L00AD     clear the screen
          leas  $04,s
          rts   
 
-L00C5    lda   >$024E
+L00C5    lda   >X024E
          tfr   a,b
          bsr   L009C
          ldd   #$0000    clears value at u0040
@@ -288,7 +294,7 @@ L015A    pshs  y            save our y  module entry abs addr
 
          orcc  #IntMasks    turn off interrupts $50
          lda   <u0042
-         sta   >$FFA9       second block in task 1
+         sta   >XFFA9       second block in task 1
          cmpx  #$A000
          bcs   L0192
 
@@ -300,7 +306,7 @@ L0192    ldd   <u001C
 L0198    ldu   <u0043
          sta   ,u
          stb   $02,u
-         std   >$FFA9        second block in task 1
+         std   >XFFA9        second block in task 1
          andcc #^IntMasks    turn on ints $AF
 
          leau  >L008C,pcr    point u to the  sequential data bytes
@@ -321,7 +327,7 @@ L01A9    lda   ,x+
 
          orcc  #IntMasks     turn off interrupts $50
          lda   <u0042
-         sta   >$FFA9        second block in task 1
+         sta   >XFFA9        second block in task 1
          ldd   <u001E
          leax  >-$4000,x
          bra   L0198
@@ -444,7 +450,7 @@ L029D    leas  $04,s
          rts   
 
 
-L02A0    lda   >$0100
+L02A0    lda   >X0100   pic_visible
          lbeq  L0344
          ldu   $02,s
          ldd   $08,u
@@ -786,7 +792,7 @@ L0345    fcb   $00,$00,$00,$00
 L0745    leas  -$02,s
          pshs  y
          ldx   $06,s
-         ldu   #$024E
+         ldu   #X024E
          lda   <u0040
          lsla  
          lsla  
