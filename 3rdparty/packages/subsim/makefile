@@ -20,8 +20,6 @@ SUPPORTFILES	= control1.cmp convoys.dat diesel.dat fonts.dat germap.cmp \
 		hiscore.dat mission.txt missions.dat radar.dat shipmap2.dat \
 		sintbl.dat stitle.pic sub.dat usamap.cmp 
 
-SCRIPTS		= install2dd
-
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
@@ -29,7 +27,6 @@ all:	$(ALLOBJS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)
-	$(OS92UNIX) $(SCRIPTS)
 
 dsk:	all
 	$(RM) $(DISK)
@@ -44,8 +41,6 @@ dsk:	all
 	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK),CMDS/shell
 	$(OS9RENAME) $(DISK),CMDS/presub AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
-	$(UNIX2OS9) $(SCRIPTS)
-	$(CP) $(SCRIPTS) $(DISK),.
 
 dskclean:
 	$(RM) $(DISK)
