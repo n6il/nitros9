@@ -30,14 +30,14 @@ StdErr equ 2
 
 *  equates for direct page vars
 *  shared with sierra module
-u0000 equ $00  holds size of data block
+u0000 equ $00    holds size of data block
 u0009 equ $09 
 u000A equ $0A 
-u0019 equ $19 
-u0021 equ $21 
+u0019 equ $19    scrn - offset from entry to the routine for the remap call 
+u0021 equ $21    shdw - offset from entry to the routine for the remap call
 u0022 equ $22 
-u0026 equ $26 
-u0028 equ $28 
+u0026 equ $26    scrn remap value holder 
+u0028 equ $28    shdw remap value holder 
 u002C equ $2C 
 u002E equ $2E 
 u0030 equ $30 
@@ -107,6 +107,124 @@ u009A equ $9A
 u009C equ $9C 
 u009D equ $9D 
 
+
+X0089 equ $0089  ???
+
+X0100 equ $0100   pic_visible
+X0101 equ $0101
+X0102 equ $0102   clock_state
+
+X0154 equ $0154   flag for extended table look up
+X0155 equ $0155
+
+X0157 equ $0157
+X0158 equ $0158
+X0159 equ $0159
+X015A equ $015A
+X015B equ $015B
+X015C equ $015C
+
+X0167 equ $0167
+
+X0172 equ $0172
+X0173 equ $0173
+X0176 equ $0176
+X0177 equ $0177
+X0178 equ $0178
+X0179 equ $0179
+X017B equ $017B
+X017C equ $017C
+X017D equ $017D
+X017E equ $017E
+X017F equ $017F
+X0180 equ $0180
+X01A9 equ $01A9
+X01AB equ $01AB
+X01AD equ $01AD    state.block_state
+X01AE equ $01AE    state.cursor
+X01AF equ $01AF    state.flag
+X01B0 equ $01B0    state.flag
+X01B1 equ $01B1
+X01D6 equ $01D6
+X01D7 equ $01D7
+X01D8 equ $01D8
+X023D equ $023D    state.block_x2
+X023E equ $023E    state.block_y2
+X0240 equ $0240
+X0241 equ $0241    state.pic_num
+X0242 equ $0242
+X0244 equ $0244    state.script_saved
+X0245 equ $0245    state.script_count
+X0246 equ $0246
+X0247 equ $0247    state.status_state
+X0248 equ $0248
+X0249 equ $0249
+X024B equ $024B
+X024D equ $024D
+
+X024E equ $024E    used in scrn
+
+X024F equ $024F    state.block_x1
+X0250 equ $0250    state.block_y1
+X0251 equ $0251    state.ego_control_state
+
+X0252 equ $0252    state.string
+
+X0432 equ $0432    state.var[]
+X0433 equ $0433    
+X0434 equ $0434
+X0435 equ $0435
+X0436 equ $0436
+X0437 equ $0437
+X0438 equ $0438
+X0439 equ $0439
+X043A equ $043A
+X043B equ $043B
+X043C equ $043C
+X043D equ $043D
+X043E equ $043E
+X043F equ $043F
+X0440 equ $0440
+X0441 equ $0441
+X0442 equ $0442
+X0443 equ $0443
+X0444 equ $0444
+X0445 equ $0445
+X0446 equ $0446
+X0447 equ $0447
+X0448 equ $0448
+X044A equ $044A
+X044B equ $044B
+X044C equ $044C
+X0532 equ $0532
+X0541 equ $0541
+X0542 equ $0542
+X0543 equ $0543
+X0545 equ $0545
+X0547 equ $0547
+X0550 equ $0550   gfx_picbuffrotate
+X0551 equ $0551   given_pic_data
+X0553 equ $0553
+X05AE equ $05AE
+X05AF equ $05AF
+X05B1 equ $05B1
+X05B8 equ $05B8
+X05B9 equ $05B9   input_edit_disabled
+X05EC equ $05EC   chgen_textmode
+X05ED equ $05ED
+X0659 equ $0659
+
+XFF01 equ $FF01  hsync control
+XFF02 equ $FF02  keyboard col
+XFF03 equ $FF03  vsync control
+XFF20 equ $FF20  d/a, cassette & rs232 out
+XFF22 equ $FF22  vdg control and rs-232 in
+XFF23 equ $FF23  control reg
+
+
+XFFA9 equ $FFA9   task 1 block 2
+
+
 * Program equates
 *  Cycle Types
 CY_NORM   equ   0
@@ -127,6 +245,30 @@ LEFT      equ   $01
 DOWN      equ   $02
 UP        equ   $03
 IGNORE    equ   $04
+
+
+* VIEW OBJECTS FLAGS
+
+O_DRAWN        equ $01   * 0  - object has been drawn
+O_BLKIGNORE    equ $02   * 1  - ignore blocks and condition lines
+O_PRIFIXED     equ $04   * 2  - fixes priority agi cannot change it based on position
+O_HRZNIGNORE   equ $08   * 3  - ignore horizon
+O_UPDATE       equ $10   * 4  - update every cycle
+O_CYCLE        equ $20   * 5  - the object cycles
+O_ANIMATE      equ $40   * 6  - animated
+O_BLOCK        equ $80   * 7  - resting on a block
+O_WATER        equ $100  * 8  - only allowed on water
+O_OBJIGNORE    equ $200  * 9  - ignore other objects when determining contacts
+O_REPOS        equ $400  * 10 - set whenever a obj is repositioned
+*                                that way the interpeter doesn't check it's next movement for one cycle
+O_LAND         equ $800  * 11 - only allowed on land
+O_SKIPUPDATE   equ $1000 * 12 - does not update obj for one cycle
+O_LOOPFIXED    equ $2000 * 13 - agi cannot set the loop depending on direction
+O_MOTIONLESS   equ $4000 * 14 - no movement.  
+*                                if position is same as position in last cycle then this flag is set.
+*                                follow/wander code can then create a new direction
+*                                (ie, if it hits a wall or something)
+O_UNUSED       equ $8000
 
          nam   mnln
          ttl   program module
@@ -257,15 +399,17 @@ L0156    clra
          lbne  L00C4
          lbsr  L068C
          lbra  L00C4
-         lda   #$01
-         sta   >$0102
+
+cmd_pause
+L0184    lda   #$01
+         sta   >X0102
          lbsr  L129A
          leau  >L0056,pcr  game paused msg
          lbsr  L37F2
-         clr   >$0102
+         clr   >X0102
          rts
 
-* called from jump table 1
+cmd_quit
 L0197    lda   ,y+
          cmpa  #$01
          beq   L01A6
@@ -285,185 +429,218 @@ L01AF    rts
 * Jump table of some kind  but what are the second words used 
 * to do ????
 
-*        Jump table 1
-L01B0    fdb   $570C,$0000
-         fdb   $5BF1,$0180
-         fdb   $5BFF,$0180
-         fdb   $5C0D,$0280
-         fdb   $5C18,$02C0
-         fdb   $5C29,$0280
-         fdb   $5C36,$02C0
-         fdb   $5C49,$0280
-         fdb   $5C56,$02C0
-         fdb   $5C6A,$02C0
-         fdb   $5C92,$02C0
-         fdb   $5C81,$0280
-         fdb   $16AB,$0100
-         fdb   $16AF,$0100
-         fdb   $16B3,$0100
-         fdb   $16B7,$0180
-         fdb   $16C1,$0180
-         fdb   $16CB,$0180
-         fdb   $2FA1,$0100
-         fdb   $2FA6,$0180
-         fdb   $2551,$0100
-         fdb   $2556,$0180
-         fdb   $25E6,$0100
-         fdb   $25F9,$0180
-         fdb   $34E5,$0180
-         fdb   $3545,$0180
-         fdb   $35D6,$0000
-         fdb   $35EA,$0180
-         fdb   $358C,$0180
-         fdb   $0C9F,$0000
-         fdb   $5D28,$0100
-         fdb   $5D2F,$0180
-         fdb   $5F91,$0100
-         fdb   $063E,$0100
-         fdb   $0674,$0000
-         fdb   $0F50,$0100
-         fdb   $0FD5,$0100
-         fdb   $3634,$0300
-         fdb   $3645,$0360
-         fdb   $3664,$0360
-         fdb   $3682,$0360
-         fdb   $5D9C,$0200
-         fdb   $5DB7,$0240
-         fdb   $5E01,$0200
-         fdb   $5E1C,$0240
-         fdb   $0529,$0100
-         fdb   $053B,$0100
-         fdb   $5E7F,$0200
-         fdb   $5E9A,$0240
-         fdb   $5F2C,$0240
-         fdb   $5F41,$0240
-         fdb   $5F55,$0240
-         fdb   $5F69,$0240
-         fdb   $5F7D,$0240
-         fdb   $3D22,$0200
-         fdb   $3D60,$0240
-         fdb   $3D39,$0100
-         fdb   $3D4B,$0240
-         fdb   $05D7,$0100
-         fdb   $05E3,$0100
-         fdb   $05EF,$0100
-         fdb   $3741,$0100
-         fdb   $3753,$0100
-         fdb   $373B,$0100
-         fdb   $3705,$0100
-         fdb   $3717,$0100
-         fdb   $3729,$0100
-         fdb   $08DD,$0100
-         fdb   $08EF,$0100
-         fdb   $0901,$0320
-         fdb   $0A0D,$0100
-         fdb   $0A1F,$0100
-         fdb   $0985,$0100
-         fdb   $099C,$0200
-         fdb   $09BD,$0100
-         fdb   $09D4,$0200
-         fdb   $09F5,$0240
-         fdb   $2D1B,$0100
-         fdb   $2D39,$0100
-         fdb   $2D55,$0240
-         fdb   $2D6A,$0240
-         fdb   $2C25,$0500
-         fdb   $2C66,$0570
-         fdb   $2CB9,$0300
-         fdb   $2CED,$0100
-         fdb   $2D0C,$0100
-         fdb   $2D80,$0240
-         fdb   $2D95,$0240
-         fdb   $0842,$0100
-         fdb   $0854,$0100
-         fdb   $0824,$0400
-         fdb   $083E,$0000
-         fdb   $3070,$0100
-         fdb   $3077,$0180
-         fdb   $307E,$0100
-         fdb   $30B7,$0200
-         fdb   $30C4,$0240
-         fdb   $30D1,$02C0
-         fdb   $5087,$0100
-         fdb   $50E3,$0200
-         fdb   $570C,$0000
-         fdb   $37A5,$0100
-         fdb   $37AD,$0180
-         fdb   $3B80,$0300
-         fdb   $3BB0,$03E0
-         fdb   $4585,$0300
-         fdb   $456C,$0000
-         fdb   $457E,$0000
-         fdb   $5BA2,$0100
-         fdb   $45B5,$0200
-         fdb   $570A,$0100
-         fdb   $45EE,$0300
-         fdb   $5559,$0000
-         fdb   $5561,$0000
-         fdb   $55E2,$0200
-         fdb   $5575,$0500
-         fdb   $55FA,$0200
-         fdb   $328C,$0100
-         fdb   $0B8D,$0240
-         fdb   $5B8D,$0000
-         fdb   $5B9A,$0000
-         fdb   $095D,$0300
-         fdb   $33D7,$0700
-         fdb   $33F7,$07FE
-         fdb   $530F,$0000
-         fdb   $42B2,$0000
-         fdb   $3F1B,$0000
-         fdb   $570C,$0000
-         fdb   $3E06,$0000
-         fdb   $4E4C,$0100
-         fdb   $125B,$0320
-         fdb   $2DAA,$0000
-         fdb   $2DAE,$0000
-         fdb   $0BD7,$0180
-         fdb   $0197,$0100
-         fdb   $0CB7,$0000
-         fdb   $0184,$0000
-         fdb   $5B34,$0000
-         fdb   $5B26,$0000
-         fdb   $2311,$0000
-         fdb   $460D,$0000
-         fdb   $0CAF,$0000
-         fdb   $470D,$0100
-         fdb   $569E,$0100
-         fdb   $570A,$0100
-         fdb   $2684,$0000
-         fdb   $268A,$0000
-         fdb   $36C5,$0300
-         fdb   $36DE,$0360
-         fdb   $5750,$0000
-         fdb   $57CF,$0300
-         fdb   $37BB,$0400
-         fdb   $37C0,$0480
-         fdb   $5F96,$0180
-         fdb   $4599,$0500
-         fdb   $5708,$0200
-         fdb   $27D8,$0100
-         fdb   $2856,$0200
-         fdb   $28D8,$0000
-         fdb   $28FB,$0100
-         fdb   $2922,$0100
-         fdb   $2951,$0000
-         fdb   $4E41,$0100
-         fdb   $570C,$0000
-         fdb   $570C,$0000
-         fdb   $5CA9,$0280
-         fdb   $5CB7,$02C0
-         fdb   $5CCB,$0280
-         fdb   $5CDA,$02C0
-         fdb   $3997,$0000
-         fdb   $429D,$0100
-         fdb   $471C,$0000
-         fdb   $4723,$0000
-         fdb   $570C,$0000
-         fdb   $570C,$0000
-         fdb   $570C,$0000
-         fdb   $5704,$0400
-         fdb   $5708,$02C0
+* the first word is the pointer to the function
+* the second word holds two items
+*   MSB = number of parameters
+*   LSB = parameter flag
+
+cmd_table
+L01B0    fdb   $570C,$0000  cmd_do_nothing
+         fdb   $5BF1,$0180  cmd_increment
+         fdb   $5BFF,$0180  cmd_decrement
+         fdb   $5C0D,$0280  cmd_assignn
+         fdb   $5C18,$02C0  cmd_assignv
+         fdb   $5C29,$0280  cmd_addn
+         fdb   $5C36,$02C0  cmd_addv
+         fdb   $5C49,$0280  cmd_subn
+         fdb   $5C56,$02C0  cmd_subv
+         fdb   $5C6A,$02C0  cmd_lindirectv
+         fdb   $5C92,$02C0  cmd_rindirect
+         fdb   $5C81,$0280  cmd_lindirectn
+                  
+         fdb   $16AB,$0100  cmd_set
+         fdb   $16AF,$0100  cmd_reset
+         fdb   $16B3,$0100  cmd_toggle
+         fdb   $16B7,$0180  cmd_set_v
+         fdb   $16C1,$0180  cmd_reset_v
+         fdb   $16CB,$0180  cmd_toggle_v
+         
+         fdb   $2FA1,$0100  cmd_new_room
+         fdb   $2FA6,$0180  cmd_new_room_v
+         
+         fdb   $2551,$0100  cmd_load_logics
+         fdb   $2556,$0180  cmd_load_logics_v 
+         fdb   $25E6,$0100  cmd_call
+         fdb   $25F9,$0180  cmd_call_v
+         
+         fdb   $34E5,$0180  cmd_load_pic
+         fdb   $3545,$0180  cmd_draw_pic
+         fdb   $35D6,$0000  cmd_show_pic
+         fdb   $35EA,$0180  cmd_discard_pic
+         fdb   $358C,$0180  cmd_overlay_pic
+         fdb   $0C9F,$0000  cmd_show_pri
+         
+         fdb   $5D28,$0100  cmd_load_view
+         fdb   $5D2F,$0180  cmd_load_view_v
+         fdb   $5F91,$0100  cmd_discard_view
+         fdb   $063E,$0100  cmd_animate_obj
+         fdb   $0674,$0000  cmd_unanimate_all
+         fdb   $0F50,$0100  cmd_draw
+         fdb   $0FD5,$0100  cmd_erase
+         
+         fdb   $3634,$0300  cmd_position
+         fdb   $3645,$0360  cmd_position_v
+         fdb   $3664,$0360  cmd_get_position
+         fdb   $3682,$0360  cmd_reposition
+         
+         fdb   $5D9C,$0200  cmd_set_view
+         fdb   $5DB7,$0240  cmd_set_view_v
+         fdb   $5E01,$0200  cmd_set_loop
+         fdb   $5E1C,$0240  cmd_set_loop_v
+         fdb   $0529,$0100  cmd_fix_loop
+         fdb   $053B,$0100  cmd_release_loop
+         fdb   $5E7F,$0200  cmd_set_cel
+         fdb   $5E9A,$0240  cmd_set_cel_v
+         fdb   $5F2C,$0240  cmd_last_cel
+         fdb   $5F41,$0240  cmd_current_cel
+         fdb   $5F55,$0240  cmd_current_loop
+         fdb   $5F69,$0240  cmd_current_view
+         fdb   $5F7D,$0240  cmd_number_of_loops
+         
+         fdb   $3D22,$0200  cmd_set_priority
+         fdb   $3D60,$0240  cmd_set_priority_v
+         fdb   $3D39,$0100  cmd_release_priority
+         fdb   $3D4B,$0240  cmd_get_priority
+         
+         fdb   $05D7,$0100  cmd_stop_update
+         fdb   $05E3,$0100  cmd_start_update
+         fdb   $05EF,$0100  cmd_force_update
+         
+         fdb   $3741,$0100  cmd_ignore_horizon
+         fdb   $3753,$0100  cmd_observe_horizon
+         fdb   $373B,$0100  cmd_set_horizon
+         fdb   $3705,$0100  cmd_obj_on_water
+         fdb   $3717,$0100  cmd_obj_on_land
+         fdb   $3729,$0100  cmd_obj_on_anything
+         
+         fdb   $08DD,$0100  cmd_ignore_objects
+         fdb   $08EF,$0100  cmd_observe_objects
+         fdb   $0901,$0320  cmd_distance
+         
+         fdb   $0A0D,$0100  cmd_stop_cycling
+         fdb   $0A1F,$0100  cmd_start_cycling
+         fdb   $0985,$0100  cmd_normal_cycle
+         fdb   $099C,$0200  cmd_end_of_loop
+         fdb   $09BD,$0100  cmd_reverse_cycle
+         fdb   $09D4,$0200  cmd_reverse_loop
+         fdb   $09F5,$0240  cmd_cycle_time
+         
+         fdb   $2D1B,$0100  cmd_stop_motion
+         fdb   $2D39,$0100  cmd_start_motion
+         fdb   $2D55,$0240  cmd_step_size
+         fdb   $2D6A,$0240  cmd_step_time
+         fdb   $2C25,$0500  cmd_move_obj
+         fdb   $2C66,$0570  cmd_move_obj_v
+         fdb   $2CB9,$0300  cmd_follow_ego
+         fdb   $2CED,$0100  cmd_wander
+         fdb   $2D0C,$0100  cmd_normal_motion
+         fdb   $2D80,$0240  cmd_set_dir
+         fdb   $2D95,$0240  cmd_get_dir
+         
+         fdb   $0842,$0100  cmd_ignore_blocks
+         fdb   $0854,$0100  cmd_observe_blocks
+         fdb   $0824,$0400  cmd_block
+         fdb   $083E,$0000  cmd_unblock
+         
+         fdb   $3070,$0100  cmd_get
+         fdb   $3077,$0180  cmd_get_v
+         fdb   $307E,$0100  cmd_drop
+         fdb   $30B7,$0200  cmd_put
+         fdb   $30C4,$0240  cmd_put_v
+         fdb   $30D1,$02C0  cmd_get_room_v
+
+*              are these really sound commands in ours ?         
+         fdb   $5087,$0100  cmd_load_sound
+         fdb   $50E3,$0200  cmd_sound
+         fdb   $570C,$0000  cmd_stop_sound  (cmd_do_nothing)
+         
+         fdb   $37A5,$0100  cmd_print
+         fdb   $37AD,$0180  cmd_print_v
+         fdb   $3B80,$0300  cmd_display
+         fdb   $3BB0,$03E0  cmd_display_v
+         fdb   $4585,$0300  cmd_clear_lines
+         fdb   $456C,$0000  cmd_text_screen
+         fdb   $457E,$0000  cmd_graphics
+         
+         fdb   $5BA2,$0100  cmd_set_cursor_char
+         fdb   $45B5,$0200  cmd_set_text_attribute
+         fdb   $570A,$0100  cmd_shake_screen ( bump a byte and cmd_do_nothing)
+         fdb   $45EE,$0300  cmd_config_screen
+         fdb   $5559,$0000  cmd_status_line_on
+         fdb   $5561,$0000  cmd_status_line_off
+         fdb   $55E2,$0200  cmd_set_string
+         fdb   $5575,$0500  cmd_get_string
+         fdb   $55FA,$0200  cmd_word_to_string
+         fdb   $328C,$0100  cmd_parse
+         
+         fdb   $0B8D,$0240  cmd_get_num
+         fdb   $5B8D,$0000  cmd_prevent_input
+         fdb   $5B9A,$0000  cmd_accept_input
+         fdb   $095D,$0300  cmd_set_key
+         fdb   $33D7,$0700  cmd_add_to_pic
+         fdb   $33F7,$07FE  cmd_add_to_pic_v
+         fdb   $530F,$0000  cmd_status
+         fdb   $42B2,$0000  cmd_save_game
+         fdb   $3F1B,$0000  cmd_restore_game
+         fdb   $570C,$0000  cmd_init_disk  (cmd_do_nothing)
+         
+         fdb   $3E06,$0000  cmd_restart_game
+         fdb   $4E4C,$0100  cmd_show_obj
+         fdb   $125B,$0320  cmd_random
+         fdb   $2DAA,$0000  cmd_program_control
+         fdb   $2DAE,$0000  cmd_player_control
+         fdb   $0BD7,$0180  cmd_obj_status_v ( nagi has as donothing)
+         fdb   $0197,$0100  cmd_quit
+         fdb   $0CB7,$0000  cmd_show_mem     ( nagi has as do nothing)
+         fdb   $0184,$0000  cmd_pause
+         fdb   $5B34,$0000  cmd_echo_line
+         
+         fdb   $5B26,$0000  cmd_cancel_line
+         fdb   $2311,$0000  cmd_init_joy     ( nagi has as do nothing)
+         fdb   $460D,$0000  cmd_toggle_monitor
+         fdb   $0CAF,$0000  cmd_version
+         fdb   $470D,$0100  cmd_script_size
+         fdb   $569E,$0100  cmd_set_game_id
+         fdb   $570A,$0100  cmd_log          ( an almost do nothing, we may want to implement)
+         fdb   $2684,$0000  cmd_set_scan_start
+         fdb   $268A,$0000  cmd_reset_scan_start
+         
+         fdb   $36C5,$0300  cmd_reposition_to
+         fdb   $36DE,$0360  cmd_reposition_to_v
+
+         fdb   $5750,$0000  cmd_trace_on
+         fdb   $57CF,$0300  cmd_trace_info
+         fdb   $37BB,$0400  cmd_print_at
+         fdb   $37C0,$0480  cmd_print_at_v
+         fdb   $5F96,$0180  cmd_discard_view_v
+         fdb   $4599,$0500  cmd_clear_text_rect
+         fdb   $5708,$0200  cmd_set_upper_left  almost a do nothing
+         
+         fdb   $27D8,$0100  cmd_set_menu
+         fdb   $2856,$0200  cmd_set_menu_item
+         fdb   $28D8,$0000  cmd_submit_menu
+         fdb   $28FB,$0100  cmd_enable_item
+         fdb   $2922,$0100  cmd_disable_item
+         fdb   $2951,$0000  cmd_menu_input
+         
+         fdb   $4E41,$0100  cmd_show_obj_v
+         fdb   $570C,$0000  cmd_open_dialogue       (cmd_do_nothing)
+         fdb   $570C,$0000  cmd_close_dialogue      (cmd_do_nothing)
+         
+         fdb   $5CA9,$0280  cmd_multn
+         fdb   $5CB7,$02C0  cmd_multv
+         fdb   $5CCB,$0280  cmd_divn
+         fdb   $5CDA,$02C0  cmd_divv
+         
+         fdb   $3997,$0000  cmd_close_window
+         fdb   $429D,$0100  cmd_set_simple    (unknown_170)
+         fdb   $471C,$0000  cmd_push_script   (unknown_171)
+         fdb   $4723,$0000  cmd_pop_script    (unknown_172)
+         fdb   $570C,$0000  cmd_hold_key      (unknown_173)  (cmd_do_nothing)
+         fdb   $570C,$0000  cmd_set_pri_base  (unknown_174)  (cmd_do_nothing)
+         fdb   $570C,$0000  cmd_discard_sound                (cmd_do_nothing)
+         fdb   $5704,$0400  cmd_hide_mouse    might be fence  almost do nothing
+         fdb   $5708,$02C0  cmd_allow_menu    might be mouse posn  almost do nothing
 
 
 
@@ -576,7 +753,8 @@ L0528    rts
 * data handled
 * These could be consolidated to reduce program size
 
-* called from jump table 1
+
+cmd_fix_loop
 L0529    lda   ,y+
          ldb   #$2B
          mul
@@ -587,7 +765,7 @@ L0529    lda   ,y+
          sta   <$25,x
          rts
 
-* called from jump table 1
+cmd_release_loop
 L053B    lda   ,y+
          ldb   #$2B
          mul
@@ -631,35 +809,38 @@ L057D    ldx   #$0548
          rts
 
 L058A    bsr   L0572
+
          pshs  x
-         lda   #$1E
-         sta   <u0021
-         ldx   <u0028
+         lda   #$1E        blitlist_erase()
+         sta   <u0021      save the offset
+         ldx   <u0028      set up remap to shdw
          jsr   >$0659      mmu twiddler
-         leas  $02,s
+         leas  $02,s       clean up the stack
+         
          bsr   L0567
          pshs  x
-         lda   #$1E
-         sta   <u0021
-         ldx   <u0028
+         lda   #$1E        blitlist_erase()
+         sta   <u0021      save the offset
+         ldx   <u0028      setup remap to shdw
          jsr   >$0659      mmu twiddler
-         leas  $02,s
+         leas  $02,s       clean up stack
          rts
 
 L05A9    ldx   #$054C
          pshs  x
          lda   #$18
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $02,s
+         sta   <u0019      save the offset 
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up stack
+         
          ldx   #$0548
          pshs  x
          lda   #$18
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $02,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up stack
          rts
 
 L05CA    ldx   #$0548
@@ -668,7 +849,7 @@ L05CA    ldx   #$0548
          lbsr  L30F6
          rts
 
-* called from jump table 1
+cmd_stop_update
 L05D7    lda   ,y+
          ldb   #$2B
          mul
@@ -677,7 +858,7 @@ L05D7    lda   ,y+
          bsr   L05F8
          rts
 
-* called from jump table 1
+cmd_start_update
 L05E3    lda   ,y+
          ldb   #$2B
          mul
@@ -686,7 +867,7 @@ L05E3    lda   ,y+
          bsr   L0612
          rts
 
-* called from jump table 1
+cmd_force_update
 L05EF    lda   ,y+
          bsr   L057D
          bsr   L058A
@@ -732,8 +913,7 @@ L0635     fcb   IGNORE,UP
           fcb   DOWN
           fcb   LEFT,LEFT,LEFT
 
-
-* called from jump table 1
+cmd_animate_obj
 L063E    lda   ,y+
          bsr   L0643
          rts
@@ -761,7 +941,8 @@ L065A    lda   <$26,u
 L0671    leas  $01,s
          rts
 
-         lbsr  L057D
+cmd_unanimate_all
+L0674    lbsr  L057D
          ldu   <u0030
 L0679    cmpu  <u0032
          bcc   L068B
@@ -824,19 +1005,22 @@ L06F9    lda   ,s
          lbsr  L30DE        twiddle mmu
          lbsr  L2DCD
          lbsr  L0567
+         
          pshs  x
-         lda   #$1E
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
+         lda   #$1E        blitlist_erase()
+         sta   <u0021      save the offset
+         ldx   <u0028      set up remap to shdw
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up the stack
+         
          ldx   #$0548
          pshs  x
          lda   #$18
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659    mmu twiddler
-         leas  $02,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up stack
+         
          ldu   <u0030
          lda   <$25,u
          anda  #$F6
@@ -868,7 +1052,7 @@ L0760    cmpa  #$03
          bhi   L0767
          lbsr  L2F0A
 L0767    lda   <$26,u
-         ldb   >$01AD
+         ldb   >X01AD      state.block_state
          bne   L0776
          anda  #$7F
          sta   <$26,u
@@ -951,54 +1135,54 @@ L080E    lda   <$26,u
 L0821    leas  $03,s
          rts
 
-* called from jump table 1
+cmd_block
 L0824    lda   #$01
-         sta   >$01AD
+         sta   >X01AD        state.block_state = 1
          lda   ,y+
-         sta   >$024F
+         sta   >X024F        state.block_x1
          lda   ,y+
-         sta   >$0250
+         sta   >X0250        state.block_y1
          lda   ,y+
-         sta   >$023D
+         sta   >X023D        state.block_x2
          lda   ,y+
-         sta   >$023E
+         sta   >X023E        state.block_y2
          rts
 
-* called from jump table 1
-L083E    clr   >$01AD
+cmd_unblock
+L083E    clr   >X01AD        state.block_state = 0
          rts
 
-* called from jump table 1
+cmd_ignore_blocks
 L0842    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
          tfr   d,u
-         lda   <$26,u
-         ora   #$02
-         sta   <$26,u
+         lda   <$26,u          load objtable[*(c++)]flags
+         ora   #O_BLKIGNORE  set the ignore flag $02
+         sta   <$26,u          stow it back
          rts
 
-* called from jump table 1
+cmd_observe_blocks
 L0854    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
          tfr   d,u
          lda   <$26,u
-         anda  #$FD
+         anda  #^O_BLKIGNORE  $FD
          sta   <$26,u
          rts
 
 L0866    leas  -$01,s
          clr   ,s
-         cmpa  >$024F
+         cmpa  >X024F      state.block_x1
          bls   L0880
-         cmpa  >$023D
+         cmpa  >X023D      state.block_x2
          bcc   L0880
-         cmpb  >$0250
+         cmpb  >X0250      state.block_y1
          bls   L0880
-         cmpb  >$023E
+         cmpb  >X023E      state.block_y2
          bcc   L0880
          inc   ,s
 L0880    lda   ,s
@@ -1046,7 +1230,7 @@ L08D5    leax  <$2B,x
 L08DA    lda   #$01
 L08DC    rts
 
-* called from jump table 1
+cmd_ignore_objects
 L08DD    lda   ,y+
          ldb   #$2B
          mul
@@ -1057,7 +1241,7 @@ L08DD    lda   ,y+
          sta   <$25,u
          rts
 
-* called from jump table 1
+cmd_observe_objects
 L08EF    lda   ,y+
          ldb   #$2B
          mul
@@ -1068,7 +1252,7 @@ L08EF    lda   ,y+
          sta   <$25,u
          rts
 
-* called from jump table 1
+cmd_distance
 L0901    lda   ,y+
          ldb   #$2B
          mul
@@ -1119,7 +1303,7 @@ L0952    ldu   #$05BA    set address of bytes to be cleared
          lbsr  L2BF6     go clear them
          rts
 
-* called from jump table 1
+cmd_set_key
 L095D    ldx   #$01D9
          lda   #$32
 L0962    tst   ,x
@@ -1141,7 +1325,7 @@ L097C    ldb   ,y+
          std   ,x
 L0984    rts
 
-* called from jump table 1
+cmd_normal_cycle
 L0985    lda   ,y+
          ldb   #$2B
          mul
@@ -1154,7 +1338,7 @@ L0985    lda   ,y+
          sta   <$26,u
          rts
 
-* called from jump table 1
+cmd_end_of_loop
 L099C    lda   ,y+
          ldb   #$2B
          mul
@@ -1171,7 +1355,7 @@ L099C    lda   ,y+
          lbsr  L16DC
          rts
 
-* called from jump table 1
+cmd_reverse_cycle
 L09BD    lda   ,y+
          ldb   #$2B
          mul
@@ -1184,7 +1368,7 @@ L09BD    lda   ,y+
          sta   <$26,u
          rts
 
-* called from jump table 1
+cmd_reverse_loop
 L09D4    lda   ,y+
          ldb   #$2B
          mul
@@ -1201,7 +1385,7 @@ L09D4    lda   ,y+
          lbsr  L16DC
          rts
 
-* called from jump table 1
+cmd_cycle_time
 L09F5    lda   ,y+
          ldb   #$2B
          mul
@@ -1215,7 +1399,7 @@ L09F5    lda   ,y+
          sta   <$20,u
          rts
 
-* called from jump table 1
+cmd_stop_cycling
 L0A0D    lda   ,y+
          ldb   #$2B
          mul
@@ -1226,7 +1410,7 @@ L0A0D    lda   ,y+
          sta   <$26,u
          rts
 
-* called from jump table 1
+cmd_start_cycling
 L0A1F    lda   ,y+
          ldb   #$2B
          mul
@@ -1300,8 +1484,9 @@ L0B15    fcc   'room: %u'
          fcc   'max script: %u'
          fcb   C$NULL
 
+cmd_get_num
 L0B8D    leas  -$54,s
-         lbsr  L5B7A
+         lbsr  L5B7A        input_edit_on
          lda   >$01D8
          clrb
          std   <u0040
@@ -1333,7 +1518,7 @@ L0BD0    abx
          leas  <$54,s
          rts
 
-* called from jump table 1
+cmd_obj_status_v
 L0BD7    leas  >-$0194,s
          ldx   #$0432
          ldb   ,y+
@@ -1414,20 +1599,22 @@ L0C54    pshs  u
          leas  >$0194,s
          rts
 
-* called from jump table 1
-L0C9F    inc   >$0550
-         lbsr  L2C01  sets up call to sub659
-         lbsr  L1361
-         lbsr  L2C01  sets up call to sub659
-         clr   >$0550
+* gfx_picbuff_update() is in the shdw module
+* L2C01 sets up MMU swaps to get it mapped in
+cmd_show_pri
+L0C9F    inc   >X0550     sets gfx_picbuffrotate = 1 (>0)
+         lbsr  L2C01      calls gfx_picbuff_update()
+         lbsr  L1361      calls user_bolean_poll()
+         lbsr  L2C01      calls gfx_picbuff_update()
+         clr   >X0550     sets gfx_picbuffrotate = 0     
          rts
 
-* called from jump table 1
+cmd_version
 L0CAF    leau  >L0AE6,pcr      version banner
          lbsr  L37F2
          rts
 
-* called from jump table 1
+cmd_show_mem
 L0CB7    leas  >-$00C8,s
          ldd   <u0057
          pshs  d
@@ -1790,7 +1977,7 @@ L0F4B    lda   #$01
 L0F4E    clra
 L0F4F    rts               called from eval_table cmd_return_false
 
-* called from jump table 1
+cmd_draw
 L0F50    lda   ,y+
          pshs  y
          bsr   L0F59
@@ -1832,25 +2019,29 @@ L0F7A    lda   <$26,u
          ora   #$01
          sta   <$26,u
          lbsr  L0567
+         
          pshs  x
-         lda   #$1E
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
+         lda   #$1E       blitlist_erase()
+         sta   <u0021     save the offset
+         ldx   <u0028     setup remap to shdw
+         jsr   >$0659     mmu twiddler
+         leas  $02,s      cleanup the stack
+         
          ldu   $01,s
          lda   <$25,u
          anda  #$EF
          sta   <$25,u
          pshs  u
          lda   #$1B
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $02,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up stack
+         
 L0FD2    leas  $03,s
          rts
 
+cmd_erase
 L0FD5    lda   ,y+
          pshs  y
          bsr   L0FDE
@@ -1888,26 +2079,31 @@ L1017    lda   <$26,u
          lda   $03,s
          bne   L1033
          lbsr  L0572
+         
          pshs  x
-         lda   #$1E
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
-L1033    lbsr  L0567
+         lda   #$1E       blitlist_erase()
+         sta   <u0021     save the offset
+         ldx   <u0028     setup remap to shdw
+         jsr   >$0659     mmu twiddler
+         leas  $02,s      clean up the stack
+         
+L1033    lbsr  L0567   
+         
          pshs  x
-         lda   #$1E
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
+         lda   #$1E       blitlist_erase()
+         sta   <u0021     save the offset 
+         ldx   <u0028     set up remap to shdw
+         jsr   >$0659     mmu twiddler
+         leas  $02,s      clean up the stack
+         
          ldu   $01,s
          pshs  u
          lda   #$1B
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $02,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up stack
+         
 L1052    leas  $04,s
          rts
 
@@ -1955,7 +2151,7 @@ L10D1    stb   >$0444
          lbsr  L4E2F
 
 L10E4    leas  >-$00B1,s
-         lbsr  L5B7A
+         lbsr  L5B7A         input_edit_on
          bsr   L1118         ring the bell
          bsr   L1118         ring the bell
 L10EF    leau  >L1082,pcr    quit msg
@@ -2222,7 +2418,7 @@ L1250    cmpa  #'A        $41  compare to Cap A
          ora   #$20       was between A-Z make lowercase
 L125A    rts
 
-* called from jump table
+cmd_random
 L125B    lbsr  L3D7D
          lda   $01,y
          suba  ,y++
@@ -2849,12 +3045,14 @@ L1612    lbsr  L167C
          lbsr  L0885
          tsta
          bne   L1631
+         
          pshs  u
-         lda   #$03
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
+         lda   #$03         obj_chk_control()
+         sta   <u0021       save the offset
+         ldx   <u0028       set up the remap to shdw
+         jsr   >$0659       mmu twiddler
+         leas  $02,s        clean up the stack
+         
          ldu   ,s
          lda   <u005C
          bne   L1679
@@ -2920,23 +3118,33 @@ L16A2    rts
 
 L16A3    fcb   $80,$40,$20,$10,$08,$04,$02,$01
 
+
+cmd_set
 L16AB    lda   ,y+
          bra   L16D5
-         lda   ,y+
+
+cmd_reset
+L16AF    lda   ,y+
          bra   L16DC
          lda   ,y+
          bra   L16E4
-         ldb   ,y+
+
+cmd_set_v
+L16B7    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
          bra   L16D5
-         ldb   ,y+
+
+cmd_reset_v
+L16C1    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
          bra   L16DC
-         ldb   ,y+
+         
+cmd_toggle_v         
+L16CB    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
@@ -3356,7 +3564,7 @@ L1D83    leas  -$03,s
          lbsr  L5613
          sta   $02,s
          lbsr  L4663
-         lbsr  L3997
+         lbsr  L3997       cmd_close_window
          lda   #$01
          ldb   $02,s
          cmpb  #$0D
@@ -3368,13 +3576,13 @@ L1DDB    ldx   ,s
 
 L1DE0    leas  >-$0256,s
          lda   #$01
-         sta   >$0154       flag for extended table lookup
+         sta   >X0154       flag for extended table lookup
          lda   #$06
          sta   >$0547
          ldd   #$0000
          sta   >$024C,s
          std   >$024E,s
-         std   >$0250,s
+         std   >$0250,s     state.block_y1
          lda   >$0259,s
          suba  #$72
          beq   L1E07
@@ -3382,7 +3590,7 @@ L1DE0    leas  >-$0256,s
 L1E07    std   >$024A,s
 L1E0B    cmpb  #$0C
          lbcc  L1EB3
-         leau  >$0252,s
+         leau  >$0252,s     state.string
          pshs  u
          incb
          pshs  b,a
@@ -3390,7 +3598,7 @@ L1E0B    cmpb  #$0C
          lda   >$024E,s
          cmpb  #$73
          bne   L1E2A
-         lda   >$024F,s
+         lda   >$024F,s     state.block_x1??
 L1E2A    ldb   #$20
          mul
          leau  $06,s
@@ -3402,30 +3610,30 @@ L1E2A    ldb   #$20
          ldb   >$0259,s
          cmpb  #$73
          bne   L1E74
-         ldd   >$0252,s
+         ldd   >$0252,s      state.string
          cmpd  >$024E,s
          bhi   L1E5A
          bcs   L1EA8
          ldd   >$0254,s
-         cmpd  >$0250,s
+         cmpd  >$0250,s     state.block_y1
          bls   L1EA8
 L1E5A    ldd   >$0254,s
-         std   >$0250,s
-         ldd   >$0252,s
+         std   >$0250,s     state.block_y1
+         ldd   >$0252,s     state.string
          std   >$024E,s
          lda   >$024B,s
          sta   >$024C,s
          bra   L1EA8
-L1E74    ldd   >$0252,s
+L1E74    ldd   >$0252,s      state.string
          cmpd  >$024E,s
          bhi   L1E8C
          bcs   L1EA4
          ldd   >$0254,s
-         cmpd  >$0250,s
+         cmpd  >$0250,s     state.block_y1
          bls   L1EA4
 L1E8C    ldd   >$0254,s
-         std   >$0250,s
-         ldd   >$0252,s
+         std   >$0250,s     state.block_y1
+         ldd   >$0252,s     state.string
          std   >$024E,s
          lda   >$024A,s
          sta   >$024C,s
@@ -3556,7 +3764,7 @@ L1FFF    lbsr  L12F0
          lda   $01,x
          cmpa  #$0D
          bne   L2037
-         lbsr  L3997
+         lbsr  L3997          cmd_close_window
          leau  >L17CA,pcr     31 byte data block
          lda   >L41E5,pcr     FILE struct data block ???
          beq   L2021
@@ -3573,7 +3781,7 @@ L2021    lda   >$024B,s
          bra   L208F
 L2037    cmpa  #$1B
          bne   L1FFF
-         lbsr  L3997
+         lbsr  L3997           cmd_close_window
          clra
          bra   L2091
 L2041    cmpa  #$02
@@ -3605,7 +3813,7 @@ L2081    sta   >$024B,s
          lbsr  L2107
          lbra  L1FFF
 L208F    lda   ,x
-L2091    clr   >$0154       flag for extended table lookup
+L2091    clr   >X0154       flag for extended table lookup
          clr   >$0547
          leas  >$0256,s
          rts
@@ -3676,13 +3884,14 @@ Object   fcc   'object'
 
 L2132    ldd   #$E000   looks like our block 8 address boundary?
          std   <$002E   this is u002E slot ?
-         ldd   #$4040   passed to sun659 in s
-         pshs  b,a      stuff it on the stack
-         lda   #$18
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659  subroutine from sierra copied to data area
-         leas  $02,s   clean up stack
+         
+         ldd   #$4040   load the color for sbuff_fill()
+         pshs  d        stuff it on the stack
+         lda   #$18     sbuff_fill()
+         sta   <u0021   save the offset
+         ldx   <u0028   setup remap to shdw
+         jsr   >$0659   mmu twiddler
+         leas  $02,s    clean up stack
 
          lbsr  L129A
          lbsr  L4CD8
@@ -3787,7 +3996,7 @@ L2222    inc   ,s
          mul
          std   <u0034
          lbsr  L2730
-         stu   <u0030
+         stu   <u0030      this is where u0030 is set
          ldd   <u0034
          leau  d,u
          stu   <u0032
@@ -3824,8 +4033,8 @@ L2254    ldu   #$0432      load address of the values to clear
          ora   #$04
          sta   >$01AF
          clra
-         sta   >$0241
-         sta   >$01AD
+         sta   >X0241      state.pic_num
+         sta   >X01AD      state.block_state
          inca
          sta   >$0251
          tst   >$0173
@@ -3857,6 +4066,7 @@ L22AD    fcc   'If you have a joystick, and'
          fcc   'continue.'
          fcb   C$NULL
 
+cmd_init_joy
 L2311    lda   <u0098
          eora  #$01
          sta   <u0098
@@ -3882,9 +4092,9 @@ L2341    ldb   <u0097
          cmpa  #$1B
          bne   L2337
          clr   <u0098
-         lbsr  L3997
+         lbsr  L3997          cmd_close_window
          bra   L235B
-L2350    lbsr  L3997
+L2350    lbsr  L3997          cmd_close_window
 L2353    lbsr  L23F3
          lda   >$0541         joystick button status
          bne   L2353
@@ -3929,7 +4139,7 @@ L23A7    ldd   #$0000       clear d
          std   <u009C       clear mem location
          bsr   L23DA        get joystick x,y status
          lbsr  L2481        check values and mostly waste time see note there
-         ldb   >$0154       flag for extended table lookup
+         ldb   >X0154       flag for extended table lookup
          bne   L23BD
          ldb   >$0180
          beq   L23C2
@@ -3938,7 +4148,7 @@ L23BD    tsta
          bra   L23D2
 L23C2    cmpa  <u0099
          beq   L23D7
-         ldb   >$0102
+         ldb   >X0102
          bne   L23D7
          sta   <u0099
          cmpa  >$0438
@@ -4022,7 +4232,7 @@ L2443    cmpa  #$01
          bne   L2471
          lda   >$0541
          bne   L2480
-         lda   >$01B0    is this the data table ?
+         lda   >$01B0       state.flag
          anda  #$80
          beq   L2424
          clra
@@ -4128,7 +4338,7 @@ L24FC    cmpa  ,x+          compare val in a with table and bump x
          beq   L2519        is it a match ? go load 2nd byte of x in a
          ldb   ,x+          load second byte in b 
          bne   L24FC        if not a zero more to test
-         ldb   >$0154       it was zero get flag for table 2 use
+         ldb   >X0154       it was zero get flag for table 2 use
          beq   L2515        that val zero go load b with FF and leave
          leax  >L24CE,pcr   otherwise load info from 2nd data table above
 L250D    cmpa  ,x+          check and bump
@@ -4170,10 +4380,12 @@ L2546    stu   <u0064         save value
          bne   L2546          not zero leave
 L2550    rts
 
+cmd_load_logics
 L2551    ldb   ,y+
          bsr   L2561
          rts
 
+cmd_load_logics_v
 L2556    ldb   ,y+
          ldx   #$0432
          abx
@@ -4245,6 +4457,7 @@ L25D9    lbsr  L058A
 L25E3    leas  $07,s     clean up stack and leave
          rts
 
+cmd_call
 L25E6    leas  -$02,s
          ldb   ,y+
          sty   ,s
@@ -4255,6 +4468,7 @@ L25E6    leas  -$02,s
 L25F6    leas  $02,s
          rts
 
+cmd_call_v
 L25F9    leas  -$02,s
          ldb   ,y+
          ldx   #$0432
@@ -4322,11 +4536,12 @@ L2676    ldu   $01,s
 L2681    leas  $0A,s
          rts
          
-         
+cmd_set_scan_start         
 L2684    ldx   <u0062
          sty   $08,x
          rts
 
+cmd_reset_scan_start
 L268A    ldx   <u0062
          ldd   $06,x
          std   $08,x
@@ -4492,6 +4707,7 @@ L27D6    fcb  $00
 L27D7    fcb  $00
 
 
+cmd_set_menu
 L27D8    leas  -$04,s
          ldb   ,y+
          lbsr  L3B58
@@ -4542,7 +4758,7 @@ L2813    ldx   >L27D0,pcr       data word
 L2853    leas  $04,s
          rts
 
-*  no one seems to call here ?
+cmd_set_menu_item
 L2856    leas  -$05,s
          ldb   ,y+
          lbsr  L3B58
@@ -4597,7 +4813,7 @@ L28C1    ldd   >L27CE,pcr       data byte
 L28D5    leas  $05,s
          rts
 
-*  no one seems to call here ?
+cmd_submit_menu
 L28D8    ldu   >L27CC,pcr       data word
          ldd   $0B,u
          bne   L28E2
@@ -4612,7 +4828,7 @@ L28E2    ldd   <u0055
          sta   >L27D7,pcr       data byte
          rts
 
-
+cmd_enable_item
 L28FB    lda   ,y+
          ldb   #$01
          bsr   L2929
@@ -4633,6 +4849,7 @@ L2918    ldu   ,u
          bne   L2908
 L2921    rts
 
+cmd_disable_item
 L2922    lda   ,y+
          ldb   #$00
          bsr   L2929
@@ -4657,7 +4874,8 @@ L2945    ldu   ,u
          leas  $02,s
          rts
 
-L2951    lda   >$01B0 
+cmd_menu_input
+L2951    lda   >$01B0         state.flag 
          anda  #$02
          beq   L295D
          lda   #$01
@@ -4683,7 +4901,7 @@ L2970    stu   ,s
          stu   ,s
          lbsr  L2ACD
          lda   #$01
-         sta   >$0154       flag for extended table lookup
+         sta   >X0154       flag for extended table lookup
          lda   #$03
          sta   >$0547
 L299B    lbsr  L12F0
@@ -4708,7 +4926,7 @@ L29BF    ldu   ,s
          clr   >$0547
          lbsr  L4663
          lbsr  L47BE
-         lda   >$0247
+         lda   >X0247      state.status_state
          beq   L29DA
          lbsr  L54F7
          lbra  L2ABF
@@ -4811,7 +5029,7 @@ L2AB0    ldd   ,s
          std   >L27CA,pcr    data word
          lbra  L299B
 L2ABF    lda   #$00
-         sta   >$0154       flag for extended table lookup
+         sta   >X0154       flag for extended table lookup
          sta   >$05AE
          sta   >$0547
          leas  $04,s
@@ -4823,6 +5041,7 @@ L2ACD    leas  -$04,s
          bsr   L2B31
          ldu   ,s
          lbsr  L2B7F
+         
          ldd   #$000F
          pshs  b,a
          ldd   >L27D3,pcr       data byte
@@ -4830,10 +5049,11 @@ L2ACD    leas  -$04,s
          ldd   >L27D5,pcr       data byte
          pshs  b,a
          lda   #$0C
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $06,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $06,s       clean up stack
+         
          ldu   ,s
          ldx   $0B,u
 L2AFA    stx   $02,s
@@ -4853,15 +5073,16 @@ L2B06    ldx   $02,s
 L2B13    stx   $0D,u
          tfr   u,x
          bsr   L2B58
+         
          ldd   >L27D3,pcr       data byte
          pshs  b,a
          ldd   >L27D5,pcr       data byte
          pshs  b,a
          lda   #$03
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $04,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn          
+         jsr   >$0659      mmu twiddler
+         leas  $04,s       clean up stack
          rts
 
 L2B31    ldd   $08,x
@@ -5038,23 +5259,30 @@ L2BF8    stb   ,u+        store value in b and bump pointer
          puls  u          restore the destination address
          rts              return
 
-L2C01    tst   >$0550
-         beq   L2C0F
+* maps shdw into working space 
+* and calls code that flips the screen byte nibbles
+
+gfx_picbuff_update
+L2C01    tst   >X0550      test gfx_picbuffrotate
+         beq   L2C0F       it's zero ? go
+*                          not zero the do the byte flip flop         
+         lda   #$00        gfx_picbuff_update remap
+         sta   <u0021      save the offset
+         ldx   <u0028      set up the remap to shdw
+         jsr   >$0659      mmu twiddler
+
+L2C0F    ldd   #$A8A0      160,168
+         pshs  d           push on the stack
+         ldd   #$00A7      0,167
+         pshs  d           push on stack
          lda   #$00
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-L2C0F    ldd   #$A8A0
-         pshs  b,a
-         ldd   #$00A7
-         pshs  b,a
-         lda   #$00
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $04,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $04,s       clean up stack
          rts
 
+cmd_move_obj
 L2C25    lda   ,y+
          ldb   #$2B
          mul
@@ -5083,6 +5311,7 @@ L2C4A    lda   ,y+
 L2C62    lbsr  L2F0A
          rts
 
+cmd_move_obj_v
 L2C66    lda   ,y+
          ldb   #$2B
          mul
@@ -5120,6 +5349,7 @@ L2C9D    lda   ,y+
 L2CB5    lbsr  L2F0A
          rts
 
+cmd_follow_ego
 L2CB9    lda   ,y+
          ldb   #$2B
          mul
@@ -5143,6 +5373,7 @@ L2CD7    lda   ,y+
          sta   <$26,u
          rts
 
+cmd_wander
 L2CED    lda   ,y+
          ldb   #$2B
          mul
@@ -5158,6 +5389,7 @@ L2CED    lda   ,y+
          clr   >$0251
 L2D0B    rts
 
+cmd_normal_motion
 L20DC    lda   ,y+
          ldb   #$2B
          mul
@@ -5166,7 +5398,8 @@ L20DC    lda   ,y+
          lda   #$00
          sta   <$22,u
          rts
-
+         
+cmd_stop_motion
 L2D1B    lda   ,y+
          ldb   #$2B
          mul
@@ -5182,6 +5415,7 @@ L2D1B    lda   ,y+
          sta   >$0251
 L2D38    rts
 
+cmd_start_motion
 L2D39    lda   ,y+
          ldb   #$2B
          mul
@@ -5196,6 +5430,7 @@ L2D39    lda   ,y+
          sta   >$0251
 L2D54    rts
 
+cmd_step_size
 L2D55    lda   ,y+
          ldb   #$2B
          mul
@@ -5208,6 +5443,7 @@ L2D55    lda   ,y+
          sta   <$1E,u
          rts
 
+cmd_step_time
 L2D6A    lda   ,y+
          ldb   #$2B
          mul
@@ -5221,6 +5457,7 @@ L2D6A    lda   ,y+
          sta   $01,u
          rts
 
+cmd_set_dir
 L2D80    lda   ,y+
          ldb   #$2B
          mul
@@ -5233,6 +5470,7 @@ L2D80    lda   ,y+
          sta   <$21,u
          rts
 
+cmd_get_dir
 L2D95    lda   ,y+
          ldb   #$2B
          mul
@@ -5245,11 +5483,13 @@ L2D95    lda   ,y+
          sta   ,x
          rts
 
-L2DAA    clr   >$0251
+cmd_program_control
+L2DAA    clr   >$0251    state.ego_control_state = 0
          rts
 
+cmd_player_control
 L2DAE    lda   #$01
-         sta   >$0251
+         sta   >$0251    state.ego_control_state = 1
          ldu   <u0030
          lda   #$00
          sta   <$22,u
@@ -5377,11 +5617,12 @@ L2EA9    lda   $04,s
          bne   L2ECA
          stu   ,s
          pshs  u
-         lda   #$03
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
+         lda   #$03        obj_chk_control
+         sta   <u0021      save the offset
+         ldx   <u0028      setup remap to shdw
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up the stack
+         
          ldu   ,s
          lda   <u005C
          bne   L2ED3
@@ -5438,7 +5679,7 @@ L2F2D    lda   <$29,u
          cmpu  <u0030
          bne   L2F4B
          lda   #$01
-         sta   >$0251
+         sta   >$0251       state.ego_control_state = 1
          clr   >$0438
 L2F4B    rts
 
@@ -5486,10 +5727,14 @@ L2F93    ldd   $02,s
 L2F9E    lda   #$01
 L2FA0    rts
 
+
+cmd_new_room
 L2FA1    lda   ,y
          bsr   L2FB1
          rts
-         ldb   ,y
+
+cmd_new_room_v         
+L2FA6    ldb   ,y
          ldx   #$0432
          abx
          lda   ,x
@@ -5525,11 +5770,11 @@ L2FC5    cmpu  <u0032
          bra   L2FC5
 L2FF5    lbsr  L229D
          clra
-         sta   >$01AD
+         sta   >X01AD      state.block_state=0
          sta   >$0436
          sta   >$0437
          inca
-         sta   >$0251
+         sta   >$0251      state.ego_control_state = 1
          lda   #$24
          sta   >$01D7
          lda   >$0432
@@ -5576,16 +5821,19 @@ L3058    lda   >$01AF
          leas  $01,s
          rts
 
+cmd_get
 L3070    bsr   L3085
          lda   #$FF
          sta   $02,u
          rts
 
+cmd_get_v
 L3077    bsr   L309B
          lda   #$FF
          sta   $02,u
          rts
 
+cmd_drop
 L307E    bsr   L3085
          lda   #$00
          sta   $02,u
@@ -5620,6 +5868,7 @@ L309B    ldb   ,y+
          lbsr  L10CE
 L30B6    rts
 
+cmd_put
 L30B7    bsr   L3085
          ldb   ,y+
          ldx   #$0432
@@ -5627,14 +5876,18 @@ L30B7    bsr   L3085
          lda   ,x
          sta   $02,u
          rts
-         bsr   L309B
+         
+cmd_put_v         
+L30C4    bsr   L309B
          ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
          sta   $02,u
          rts
-         bsr   L309B
+         
+cmd_get_room_v         
+L30D1    bsr   L309B
          ldb   ,y+
          ldx   #$0432
          abx
@@ -5645,9 +5898,9 @@ L30B7    bsr   L3085
 L30DE    leas  -$02,s
          stx   ,s
          pshs  x
-         lda   #$1B
-         sta   <u0021
-         ldx   <u0028
+         lda   #$1B      blitlist_draw()
+         sta   <u0021    save the offset
+         ldx   <u0028    setup remap to shdw
          jsr   >$0659    twiddle mmu
          leas  $02,s
          ldx   ,s
@@ -5849,18 +6102,22 @@ L3284    ldd   $05,s
          leas  $07,s
          rts
 
-L328C    lda   >$01AF
+cmd_parse
+L328C    lda   >X01AF  flag_reset(F02_PLAYERCMD)
          anda  #$DF
-         sta   >$01AF
-         lda   >$01AF
+         sta   >X01AF
+         
+         lda   >X01AF   flag_reset(F04_SAIDACCEPT)
          anda  #$F7
-         sta   >$01AF
-         lda   ,y+
-         cmpa  #$0C
-         bcc   L32AD
+         sta   >X01AF
+         
+         lda   ,y+      get the byte 
+         cmpa  #$0C     compare it to 12
+         bcc   L32AD    greater than 12 were out of here
+*                       less than 12
          ldb   #$28
          mul
-         ldx   #$0252
+         ldx   #X0252     state.string
          leax  d,x
          lbsr  L31F8
 L32AD    rts
@@ -6005,6 +6262,7 @@ L33CC    lda   ,x+
          clr   -$01,x
 L33D6    rts
 
+cmd_add_to_pic
 L33D7    ldu   #$05B2
          lda   ,y+
          sta   ,u
@@ -6024,6 +6282,7 @@ L33D7    ldu   #$05B2
          bsr   L3431
          rts
 
+cmd_add_to_pic_v
 L33F7    ldu   #$05B2
          ldx   #$0432
          clra
@@ -6100,21 +6359,25 @@ L3431    leas  -$02,s
 L3490    lda   $05,x
          sta   <$24,u
          lbsr  L057D
+         
          ldd   <u0036
-         pshs  b,a
-         lda   #$0F
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
+         pshs  d
+         lda   #$0F      obj_add_pic_pri
+         sta   <u0021    save the offset
+         ldx   <u0028    setup remap to shdw
+         jsr   >$0659    mmu twiddler
+         leas  $02,s     clean up the stack
+         
          lbsr  L058A
+         
          ldd   <u0036
-         pshs  b,a
+         pshs  d
          lda   #$1B
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $02,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up stack
+         
          ldd   ,s
          lbsr  L27AF
          leas  $02,s
@@ -6130,6 +6393,7 @@ L34CA    leau  >L34C1,pcr     7 byte table
          std  ,u
          rts
 
+pic_find
 L34D4    leau  >L34C1,pcr     7 byte table 
 L34D8    stu   >L34C8,pcr     data word
          ldu   ,u
@@ -6138,6 +6402,8 @@ L34D8    stu   >L34C8,pcr     data word
          bne   L34D8
 L34E4    rts
 
+
+cmd_load_pic
 L34E5    ldx   #$0432
          ldb   ,y+
          abx
@@ -6181,6 +6447,7 @@ L3538    lbsr  L058A
 L3542    leas  $05,s
          rts
 
+cmd_draw_pic
 L3545    ldx   #$0432
          ldb   ,y+
          abx
@@ -6190,7 +6457,7 @@ L3545    ldx   #$0432
 
 L3550    leas  -$01,s
          stb   ,s
-         stb   >$0241
+         stb   >X0241      state.pic_num
          lbsr  L34D4
          cmpu  #$0000
          bne   L3567
@@ -6198,22 +6465,25 @@ L3550    leas  -$01,s
          ldb   ,s
          lbsr  L10CE
 L3567    ldd   $03,u
-         std   >$0551
+         std   >X0551      given_pic_data
          pshs  u
          lda   #$04
          ldb   $02,s
          lbsr  L4699
          lbsr  L057D
-         lda   #$06
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
+         
+         lda   #$06        render_pic()
+         sta   <u0021      save the offset
+         ldx   <u0028      set up remap to shdw
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up the stack
+         
          lbsr  L058A
-         clr   >$0100
+         clr   >X0100      pic_visible = 0
          leas  $01,s
          rts
 
+cmd_overlay_pic
 L358C    ldx   #$0432
          ldb   ,y+
          abx
@@ -6221,42 +6491,52 @@ L358C    ldx   #$0432
          bsr   L3597
          rts
 
-L3597    leas  -$01,s
-         stb   ,s
-         stb   >$0241
-         lbsr  L34D4
-         cmpu  #$0000
-         bne   L35AE
-         lda   #$12
-         ldb   ,s
-         lbsr  L10CE
-L35AE    ldd   $03,u
-         std   >$0551
+* args passed in d ?
+
+pic_overlay
+L3597    leas  -$01,s     make room on the stack
+         stb   ,s         save pic_num on stack
+         stb   >X0241     store at state.pic_num
+         lbsr  L34D4      pic_find() returns a pointer in u
+         cmpu  #$0000     did we find one?
+         bne   L35AE      yes we found one move on
+*                         did find one         
+         lda   #$12       load the error code
+         ldb   ,s         and the pic_num
+         lbsr  L10CE      call set_agi_error
+         
+L35AE    ldd   $03,u      get the data      
+         std   >X0551     stow at given_pic_data
          pshs  u
          lda   #$08
-         ldb   $02,s
-         lbsr  L4699
+         ldb   $02,s      load pic_num
+         lbsr  L4699      script_write 
+         
          lbsr  L057D
-         lda   #$09
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
+         lda   #$09       render_pic()
+         sta   <u0021     save the offset
+         ldx   <u0028     set up the remap to shdw
+         jsr   >$0659     mmu twiddler
+         leas  $02,s      clean up stack
+         
          lbsr  L058A
          lbsr  L05A9
-         clr   >$0100
+         clr   >X0100     pic_visible = 0
          leas  $01,s
          rts
 
-L35D6    lda   >$01B0    
+cmd_show_pic
+L35D6    lda   >X01B0    flag_reset(F15_PRINTMODE)     
          anda  #$FE
-         sta   >$01B0   
-         lbsr  L3997
-         lbsr  L2C01     sets up call to sun659
-         lda   #$01
-         sta   >$0100
+         sta   >X01B0   
+         
+         lbsr  L3997     cmd_close_window(0)
+         lbsr  L2C01     gfx_picbuff_update()
+         lda   #$01      
+         sta   >X0100    set pic_visible to 1
          rts
 
+cmd_discard_pic
 L35EA    ldx   #$0432
          ldb   ,y+
          abx
@@ -6291,6 +6571,7 @@ L3609    stu   $01,s
          leas  $03,s
          rts
 
+cmd_position
 L3634    lda   ,y+
          ldb   #$2B
          mul
@@ -6301,7 +6582,7 @@ L3634    lda   ,y+
          std   <$1A,u
          rts
 
-
+cmd_position_v
 L3645    lda   ,y+
          ldb   #$2B
          mul
@@ -6319,7 +6600,7 @@ L3645    lda   ,y+
          std   <$1A,u
          rts
 
-
+cmd_get_position
 L3664    lda   ,y+
          ldb   #$2B
          mul
@@ -6337,7 +6618,7 @@ L3664    lda   ,y+
          sta   ,x
          rts
 
-
+cmd_reposition
 L3682    leas  -$02,s
          lda   ,y+
          ldb   #$2B
@@ -6375,7 +6656,7 @@ L36BD    stb   $04,u
          leas  $02,s
          rts
 
-
+cmd_reposition_to
 L36C5    lda   ,y+
          ldb   #$2B
          mul
@@ -6389,7 +6670,7 @@ L36C5    lda   ,y+
          lbsr  L15F5
          rts
 
-
+cmd_reposition_to_v
 L36DE    lda   ,y+
          ldb   #$2B
          mul
@@ -6410,7 +6691,7 @@ L36DE    lda   ,y+
          lbsr  L15F5
          rts
 
-
+cmd_obj_on_water
 L3705    lda   ,y+
          ldb   #$2B
          mul
@@ -6421,6 +6702,7 @@ L3705    lda   ,y+
          sta   <$25,u
          rts
 
+cmd_obj_on_land
 L3717    lda   ,y+
          ldb   #$2B
          mul
@@ -6431,7 +6713,7 @@ L3717    lda   ,y+
          sta   <$25,u
          rts
 
-
+cmd_obj_on_anything
 L3729    lda   ,y+
          ldb   #$2B
          mul
@@ -6442,11 +6724,12 @@ L3729    lda   ,y+
          sta   <$25,u
          rts
 
+cmd_set_horizon
 L373B    lda   ,y+
          sta   >$01D7
          rts
 
-
+cmd_ignore_horizon
 L3741    lda   ,y+
          ldb   #$2B
          mul
@@ -6457,13 +6740,14 @@ L3741    lda   ,y+
          sta   <$26,u
          rts
 
-
+cmd_observe_horizon
 L3753    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
          tfr   d,u
          lda   <$26,u
+         
          anda  #$F7
          sta   <$26,u
          rts
@@ -6481,6 +6765,7 @@ L37A2    fcb   $FF
 L37A3    fcb   $FF
 L37A4    fcb   $FF
 
+cmd_print
 L37A5    ldb   ,y+
          lbsr  L3B58
          bsr   L37F2
@@ -6494,10 +6779,12 @@ L37AD    ldx   #$0432
          bsr   L37F2
          rts
 
+cmd_print_at
 L37BB    ldb   ,y+
          bsr   L37CB
          rts
 
+cmd_print_at_v
 L37C0    ldx   #$0432
          ldb   ,y+
          abx
@@ -6571,13 +6858,13 @@ L3848    ldd   $01,s
 L385A    lbsr  L134E
          tsta
          bmi   L3848
-L3860    lbsr  L3997
+L3860    lbsr  L3997        cmd_close_window
          lda   ,s
 L3865    leas  $05,s
          rts
 
 L3868    leas  >-$02BC,s
-         lbsr  L3997
+         lbsr  L3997         cmd_close_window
          lbsr  L464E
          lbsr  L47AA
          clra
@@ -6671,17 +6958,19 @@ L3936    sta   >$0177
          mul
          addb  #$04
          stb   >$017F
+         
          ldd   #$040F
-         pshs  b,a
+         pshs  d
          ldd   >$017C
-         pshs  b,a
+         pshs  d
          ldd   >$017E
-         pshs  b,a
+         pshs  d
          lda   #$0C
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $06,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $06,s       clean up stack
+         
          lda   #$01
          sta   >$0180
          leax  ,s
@@ -6694,25 +6983,28 @@ L3936    sta   >$0177
          leas  >$02BC,s
          rts
 
+cmd_close_window
 L3997    tst   >$0180
          beq   L39B4
+         
          ldd   >$017C
-         pshs  b,a
+         pshs  d
          ldd   >$017E
-         pshs  b,a
+         pshs  d
          lda   #$03
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $04,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn 
+         jsr   >$0659      mmu twiddler
+         leas  $04,s       clean up the stack
+         
          clr   >$0180
 L39B4    rts
 
 L39B5    ldd   #$0000
          sta   >$015C
-         sta   >$0157
+         sta   >X0157
          sta   >$0159
-         std   >$0155
+         std   >X0155
          lda   $07,s
          sta   >$0158
          ldu   $04,s
@@ -6736,12 +7028,12 @@ L39E0    leas  -$02,s
          lda   >$015C
          cmpa  #$13
          lbhi  L3B53
-L39F7    lda   >$0157
+L39F7    lda   >X0157
          cmpa  >$0158
          lbcc  L3B00
          lda   ,x
          lbeq  L3B53
-         cmpa  >$0101
+         cmpa  >X0101
          bne   L3A10
          tst   ,x+
          bra   L3A24
@@ -6753,8 +7045,8 @@ L3A10    cmpa  #$25
          bra   L3A27
 L3A1D    cmpa  #$20
          bne   L3A24
-         stu   >$0155
-L3A24    inc   >$0157
+         stu   >X0155
+L3A24    inc   >X0157
 L3A27    lda   ,x+
          sta   ,u+
          bra   L39F7
@@ -6796,7 +7088,7 @@ L3A77    stu   $08,s
          lbsr  L3BF4
          lda   #$28
          mul
-         addd  #$0252
+         addd  #X0252     state.string
          tfr   d,u
          bra   L3AF0
 L3A86    stu   $08,s
@@ -6850,7 +7142,7 @@ L3AF0    ldd   $08,s
          leas  $04,s
          stu   $08,s
          lbra  L39F7
-L3B00    ldd   >$0155
+L3B00    ldd   >X0155
          bne   L3B11
          lda   #$0A
          sta   ,u+
@@ -6859,27 +7151,27 @@ L3B00    ldd   >$0155
          lbra  L39F7
 L3B11    clr   ,u
          tfr   u,d
-         subd  >$0155
+         subd  >X0155
          negb
-         addb  >$0157
-         stb   >$0157
+         addb  >X0157
+         stb   >X0157
          lbsr  L3C09
          pshs  x
-         ldx   >$0155
+         ldx   >X0155
          lda   #$0A
          sta   ,x+
 L3B2B    lda   ,x+
          cmpa  #$20
          beq   L3B2B
          leax  -$01,x
-         ldu   >$0155
+         ldu   >X0155
          leau  $01,u
          lbsr  L1152
          ldd   #$0000
-         std   >$0155
+         std   >X0155
 L3B41    lda   ,x+
          beq   L3B4A
-         inc   >$0157
+         inc   >X0157
          bra   L3B41
 L3B4A    leau  -$01,x
          stu   $0A,s
@@ -6911,27 +7203,31 @@ L3B79    exg   a,b
          leas  $01,s
          rts
 
-L3B80    leas  >-$03E8,s
-         lbsr  L47AA
-         ldd   ,y++
-         std   <u0040
+cmd_display
+L3B80    leas  >-$03E8,s   make room for a thousand bytes the message
+         lbsr  L47AA       push_row_col
+         ldd   ,y++        get the row and col from the input
+         std   <u0040      stow it as row,col
          ldb   ,y+
-         bsr   L3B58
+         bsr   L3B58       goto_row_col
          leax  ,s
-         ldd   #$0028
-         pshs  b,a
+         ldd   #$0028      load a 40 
+         pshs  d
          pshs  u
          pshs  x
-         lbsr  L39B5
-         leas  $06,s
+         lbsr  L39B5       agi_printf ?? or str_wordwrap
+         leas  $06,s       clean up the stack
+         
          leax  ,s
          pshs  x
          lbsr  L3C34
          leas  $02,s
-         lbsr  L47BE
-         leas  >$03E8,s
+         
+         lbsr  L47BE       pop_row_col
+         leas  >$03E8,s    cleanup the stack
          rts
 
+cmd_display_v
 L3BB0    leas  >-$03E8,s
          lbsr  L47AA
          ldx   #$0432
@@ -6977,8 +7273,8 @@ L3BF5    lda   ,x
 L3C08    rts
 
 L3C09    inc   >$015C
-         lda   >$0157
-         clr   >$0157
+         lda   >X0157
+         clr   >X0157
          cmpa  >$0159
          bls   L3C1A
          sta   >$0159
@@ -7084,13 +7380,15 @@ L3CEF    tst   >L3C1E,pcr   data byre
          beq   L3D11
          clr   ,-u
          pshs  a
+         
          ldd   >L3C1F,pcr   data word
-         pshs  b,a
+         pshs  d
          lda   #$0F
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $02,s
+         sta   <u0019      save the offset 
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up stack
+         
          clra
          sta   >L3C1E,pcr   data byre
          puls  a
@@ -7102,18 +7400,20 @@ L3D17    ldu   >L3C1F,pcr   data word
 L3D1F    puls  u,x
          rts
 
-L3D22    lda   ,y+
+cmd_set_priority
+L3D22    lda   ,y+          get the byet passed in and bump y
          ldb   #$2B
          mul
          addd  <u0030
-         tfr   d,u
-         lda   <$26,u
-         ora   #$04
-         sta   <$26,u
-         lda   ,y+
-         sta   <$24,u
+         tfr   d,u          u now is a pointer to a VIEW struct
+         lda   <$26,u       load flag
+         ora   #O_PRIFIXED  or that with the prifixed flag so agi can't change it
+         sta   <$26,u       stow it back
+         lda   ,y+          get the next byte bump y
+         sta   <$24,u       stow that as the priority
          rts
 
+cmd_release_priority
 L3D39    lda   ,y+
          ldb   #$2B
          mul
@@ -7124,6 +7424,7 @@ L3D39    lda   ,y+
          sta   <$26,u
          rts
 
+cmd_get_priority
 L394B    lda   ,y+
          ldb   #$2B
          mul
@@ -7136,6 +7437,7 @@ L394B    lda   ,y+
          sta   ,x
          rts
 
+cmd_set_priority_v
 L3D60    lda   ,y+
          ldb   #$2B
          mul
@@ -7192,9 +7494,9 @@ L3DB7    fcc   'Press ENTER to start a new'
          fcc   'with this game.'
          fcb   C$NULL
 
-
+cmd_restart_game
 L3E06    leas  -$01,s
-         lbsr  L5B7A
+         lbsr  L5B7A        input_edit_on 
          lda   >$01B1
          anda  #$80
          bne   L3E1B
@@ -7265,10 +7567,12 @@ L3F1A    fcb   $00
 
 
 * cmd_restore_game (state_io.c)
+
+cmd_restore_game
 L3F1B    leas  >-$00FD,s
          sty   ,s        code_ret (arg passed in)
          lda   #$01
-         sta   >$0102    clock_state? 
+         sta   >X0102    clock_state? 
          lda   >$0101    msgstate.newline_char
          sta   $02,s     save original 
          lda   #'@       $40 load value for msgstate.newline_char
@@ -7326,7 +7630,7 @@ L3FB2    sta   >L3F1A,pcr   data byte
          ldx   #$0000
          ldu   #$001F
          lbsr  L13E2
-         ldd   #$01AD
+         ldd   #$01AD          state.block_state
          pshs  b,a
          lbsr  L4053
          leas  $02,s
@@ -7376,11 +7680,12 @@ L401A    lda   >L3F1A,pcr  data byte
          ldd   #$0000
          std   ,s
          lbsr  L2902
+         
 rest_end         
 L4040    lbsr  L3997        cmd_close_window
          lda   $02,s        pull newline_org          
          sta   >$0101       save it in msgstate.newline_char
-         clr   >$0102       clock_state = 0
+         clr   >X0102       clock_state = 0
          ldy   ,s           code_ret
          leas  >$00FD,s
          rts
@@ -7426,7 +7731,7 @@ L40AD    leau  <$2B,u
          bra   L4094
 L40B2    lbsr  L057D
          lbsr  L2778
-         clr   >$0100
+         clr   >X0100        pic_visible = 0 
          lbsr  L46E0
 L40BE    lbsr  L46F5
          cmpu  #$0000
@@ -7518,11 +7823,11 @@ L417B    ldd   ,s
          ldd   ,s
 L4188    std   <$25,u
          bra   L413E
-L418D    lbsr  L5B7A
+L418D    lbsr  L5B7A        input_edit_on
          lbsr  L5B26
-         lbsr  L2C01  sets up call to sun659
+         lbsr  L2C01  
          lda   #$01
-         sta   >$0100
+         sta   >X0100      pic_visible = 1
          lbsr  L54F7
          lbsr  L5BAD
          leas  >$0206,s
@@ -7559,10 +7864,8 @@ L41D5    mul
          tfr   x,u
          rts
 
-
-* FILE struct data block ??
-* rest_stream 
-*        block of 31 data bytes
+*  nagi has 50 bytes
+state_name_auto
 L41E5    fcb   $00,$00,$00,$00
          fcb   $00,$00,$00,$00
          fcb   $00,$00,$00,$00
@@ -7602,22 +7905,23 @@ L4271    fcc  'The disk is full.'
 L429C    fcb   $00
 
 
+cmd_set_simple
 L429D    lda   ,y+
          ldb   #$28
          mul
-         ldx   #$0252
+         ldx   #X0252       state.string
          leax  d,x          from address
-         leau  >L41E5,pcr   to address block of 31 data bytes
-*                           FILE struct data block ???
+         leau  >L41E5,pcr   state_name_auto
          ldd   #$001F       load d with 31
          lbsr  L115D        copy routine
          rts                return 
 
+cmd_save_game
 L42B2    leas  >-$00FE,s
          sty   ,s
          clr   $02,s
          lda   #$01
-         sta   >$0102
+         sta   >X0102
          lda   >$0101
          sta   $03,s
          lda   #$40
@@ -7677,7 +7981,7 @@ L4347    sta   >L429C,pcr     data byte
          bne   L43BB
          ldd   #$0385
          pshs  b,a
-         ldd   #$01AD
+         ldd   #$01AD          state.block_state
          pshs  b,a
          lbsr  L43F9
          leas  $04,s
@@ -7732,10 +8036,10 @@ L43D9    lda   $02,s
          ldd   <u003A
          leau  d,x
          lbsr  L1061
-L43E6    lbsr  L3997
+L43E6    lbsr  L3997            cmd_close_window
          lda   $03,s
          sta   >$0101
-         clr   >$0102
+         clr   >X0102
          ldy   ,s
          leas  >$00FE,s
          rts
@@ -7921,20 +8225,22 @@ L454C    fcb   $00,$0C
          fcb   $37,$3F
 
 
-
-L456C    lbsr  L5B7A
-         lda   #$01
-         sta   $05EC
+cmd_text_screen
+L456C    lbsr  L5B7A        input_edit_on
+         lda   #$01         make a 1
+         sta   X05EC        stow it at chgen_textmode
          lda   #$15
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
+         sta   <u0019       save the offset
+         ldx   <u0026       set up remap to scrn
+         jsr   >$0659       mmu twiddler
          rts
 
-L457E    lbsr  L5B7A
+cmd_graphics
+L457E    lbsr  L5B7A        input_edit_on
          lbsr  L45D9
          rts
 
+cmd_clear_lines
 L4585    ldb   $02,y
          pshs  b,a
          ldb   $01,y
@@ -7946,6 +8252,7 @@ L4585    ldb   $02,y
          leay  $03,y
          rts
 
+cmd_clear_text_rect
 L4599    ldb   $04,y
          pshs  b,a
          ldb   $03,y
@@ -7961,7 +8268,8 @@ L4599    ldb   $04,y
          leay  $05,y
          rts
 
-L45B7    ldd   ,y++
+cmd_set_text_attribute
+L45B5    ldd   ,y++
          bsr   L45BA
          rts
 
@@ -7974,25 +8282,27 @@ L45BA    anda  #$0F
          ora   >$024D
          sta   >$024D
          andb  #$0F
-         stb   >$024E
+         stb   >X024E
          lslb
          lslb
          lslb
          lslb
-         orb   >$024E
-         stb   >$024E
+         orb   >X024E
+         stb   >X024E
          rts
 
 L45D9    lda   #$00
          sta   >$05EC
+         
          lda   #$09
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
          lbsr  L54F7
          lbsr  L5BAD
          rts
 
+cmd_config_screen
 L45EE    lda   ,y
          sta   >$0242
          adda  #$15
@@ -8009,6 +8319,7 @@ L45EE    lda   ,y
          sta   >$0248
          rts
 
+cmd_toggle_monitor
 L460D    leas  -$04,s
          pshs  y
          leax  >L454C,pcr  data table
@@ -8076,7 +8387,7 @@ L467A    ldu   >$05AF
          ldd   <u0055
          std   <u0053
 L4691    stu   >L4676,pcr   data word
-         clr   >$0245
+         clr   >X0245       state.script_count
          rts
 
 L4699    leas  -$02,s
@@ -8100,7 +8411,7 @@ L46C0    ldu   >L4676,pcr   data word
          ldd   ,s
          std   ,u++
          stu   >L4676,pcr   data word
-         inc   >$0245
+         inc   >X0245       state.script_count
 L46CF    ldd   >L4676,pcr   data word
          subd  >$05AF
          cmpd  <u0057
@@ -8111,7 +8422,7 @@ L46DD    leas  $02,s
 
 L46E0    ldd   >$05AF
          std   >L4678,pcr   data word
-         lda   >$0245
+         lda   >X0245       state.script_count
          ldb   #$02
          mul
          addd  >$05AF
@@ -8127,20 +8438,23 @@ L46F5    ldu   #$0000
          std   >L4678,pcr   data word
 L470C    rts
 
+cmd_script_size
 L470D    lda   ,y+
          sta   >$0246
          lbsr  L057D
          lbsr  L467A
          lbsr  L058A
          rts
-
-L471C    lda   >$0245
-         sta   >$0244
+         
+cmd_push_script
+L471C    lda   >X0245     state.script_count
+         sta   >X0244     state.script_saved
          rts
-
+         
+cmd_pop_script
 L4723    clra
-         ldb   >$0244
-         stb   >$0245
+         ldb   >X0244     state.script_saved
+         stb   >X0245     state.script_count
          lslb
          rola
          addd  >$05AF
@@ -8166,14 +8480,16 @@ L4734    leas  -$02,s
          sta   <u0040
          lda   #$27
          sta   <u0041
+         
 L4756    ldd   #$2000
          std   ,u
          pshs  u
          lda   #$0F
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659   mmu twiddle
-         leas  $02,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up stack
+         
          dec   <u0041
          bra   L47A5
 L476C    cmpa  #C$CR     $0D
@@ -8191,14 +8507,16 @@ L477D    lda   >$017B
 L4784    clrb
          cmpa  #$7F
          bls   L478C
+
          ldd   #$2000
 L478C    std   ,u
          pshs  u
          lda   #$0F
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659    mmu twiddle
-         leas  $02,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up stack
+         
          lda   <u0041
          cmpa  #$27
          bls   L47A5
@@ -8271,17 +8589,18 @@ L4814    ldb   <$37,s
          clr   <$37,s
          bra   L4845
 L4828    lda   <$37,s
-         pshs  b,a
+         pshs  d
          lda   <$37,s
          ldb   <$35,s
-         pshs  b,a
+         pshs  d
          ldb   <$31,s
-         pshs  b,a
+         pshs  d
          lda   #$12
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $06,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $06,s       clean up sthe stack
+         
 L4845    lda   <$35,s
          inca
          suba  <$33,s
@@ -8310,13 +8629,15 @@ L4876    nega
          sta   <u0040
 L487D    lda   <$35,s
          sta   <u0041
+         
          leau  $02,s
          pshs  u
          lda   #$0F
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $02,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up the stack
+         
          inc   <u0040
          dec   <$39,s
          bne   L487D
@@ -8640,7 +8961,7 @@ L4BBA    leas  -$01,s
          ldx   #$0532      vol_handle_table
 L4BC0    cmpb  #$0F        There are 15 vols in kq3 (0-14)
          bhs   L4BD8       >= 15 were finished so leave
-         stb   ,s          save the index
+         stb   ,s          save the offset
          lda   ,x          get the val of the vol_handle
          cmpa  #$FF        is it flagged closed ??
          beq   L4BD1       if so no need to close it but 
@@ -8915,6 +9236,7 @@ L4E2F    leau  >L4E22,pcr      2 data words
 L4E38    fcc   'Not now.'
 L4E40    fcb   C$NULL
 
+cmd_show_obj_v
 L4E41    ldx   #$0432
          ldb   ,y+
          abx
@@ -8922,7 +9244,8 @@ L4E41    ldx   #$0432
          bsr   L4E51
          rts
 
-         ldb   ,y+
+cmd_show_obj
+L4E4C    ldb   ,y+
          bsr   L4E51
          rts
 
@@ -8987,25 +9310,28 @@ L4E87    ldd   <u000A
          lbsr  L41A6
          stu   ,s
          pshs  u
-         lda   #$15
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
+         lda   #$15        blit_save
+         sta   <u0021      save offset
+         ldx   <u0028      set up remap to shdw
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up stack
+         
          leau  $07,s
          pshs  u
-         lda   #$0C
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
+         lda   #$0C        obj_blit()
+         sta   <u0021      save offset
+         ldx   <u0028      set up remap to shdw
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up stack
+         
          leau  $07,s
          pshs  u
-         lda   #$1B
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $02,s
+         lda   #$1B     
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up the stack    
+         
 L4F09    ldu   $05,s
          ldu   $03,u
          ldb   $03,u
@@ -9014,20 +9340,23 @@ L4F09    ldu   $05,s
          lbsr  L37F2
          lda   $03,s
          beq   L4F45
+         
          ldu   ,s
          pshs  u
-         lda   #$12
-         sta   <u0021
-         ldx   <u0028
-         jsr   >$0659
-         leas  $02,s
+         lda   #$12        blit_restore()
+         sta   <u0021      save the offset
+         ldx   <u0028      setup remap to shdw
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up the stack
+         
          leau  $07,s
          pshs  u
          lda   #$1B
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $02,s
+         sta   <u0019      save  the index
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $02,s       clean up the stack
+         
          ldx   ,s
          lda   $0C,x
          ldu   $0A,x
@@ -9199,6 +9528,7 @@ L507A    stu   >L4F66,pcr     data word
          bne   L507A
 L5086    rts
 
+cmd_load_sound
 L5087    ldb   ,y+
          bsr   L508C
          rts
@@ -9240,6 +9570,7 @@ L50D6    lbsr  L058A
 L50E0    leas  $05,s
          rts
 
+cmd_sound
 L50E3    leas  -$0B,s
          ldb   ,y+
          stb   ,s
@@ -9468,8 +9799,8 @@ L5307    fcc   'on '
 L530B    fcc   'off'
          fcb   C$NULL
 
-
-L530F    lbsr  L5B7A
+cmd_status
+L530F    lbsr  L5B7A        input_edit_on
          lbsr  L464E
          clra
          ldb   #$0F
@@ -9579,7 +9910,7 @@ L53E6    cmpa  #$02
          stx   $02,s
          bra   L53BE
 L5403    clra
-         sta   >$0154       flag for extended table lookup
+         sta   >X0154       flag for extended table lookup
          sta   >$0547
          leas  >$0105,s
          rts
@@ -9627,7 +9958,7 @@ L5459    clra
          anda  #$04
          beq   L547C
          lda   #$01
-         sta   >$0154       flag for extended table lookup
+         sta   >X0154       flag for extended table lookup
          lda   #$03
          sta   >$0547
          lda   #$17
@@ -9698,7 +10029,7 @@ L54CA    lda   #$0F
          ldx   $04,s
          rts
 
-L54F7    lda   >$0247
+L54F7    lda   >X0247       state.status_state
          beq   L5558
          lbsr  L47AA
          lbsr  L464E
@@ -9738,12 +10069,15 @@ L5545    leax  >L52FA,pcr   Sound
          lbsr  L47BE
 L5558    rts
 
+cmd_status_line_on
 L5559    lda   #$01
-         sta   >$0247
-         bsr   L54F7
+         sta   >X0247        state.status_state = 1
+         bsr   L54F7         status_line_write()
          rts
-         clr   >$0247
-         lda   >$0248
+         
+cmd_status_line_off         
+L5561    clr   >X0247        state.status_state = 0
+         lda   >$0248        state.status_line_row ??
          clrb
          lbsr  L47D0
          rts
@@ -9753,15 +10087,16 @@ L556C     fcc   / .,;:'!-/
           fcb  C$NULL
 
 
+cmd_get_string
 L5575    leas  >-$0197,s
          lda   >$05B9
          sta   ,s
          lbsr  L47AA
-         lbsr  L5B7A
+         lbsr  L5B7A        input_edit_on
          lda   ,y+
          ldb   #$28
          mul
-         ldx   #$0252
+         ldx   #X0252       state.string
          leax  d,x
          stx   $01,s
          lda   ,y+
@@ -9801,10 +10136,11 @@ L55AF    ldb   $05,s
 L55DD    leas  >$0197,s
          rts
 
-L55E2         lda   ,y+
+cmd_set_string
+L55E2    lda   ,y+
          ldb   #$28
          mul
-         ldx   #$0252
+         ldx   #X0252    state.string
          leax  d,x
          ldb   ,y+
          lbsr  L3B58
@@ -9813,10 +10149,11 @@ L55E2         lda   ,y+
          lbsr  L115D     copy routine
          rts
 
+cmd_word_to_string
 L55FA    lda   ,y+
          ldb   #$28
          mul
-         ldu   #$0252
+         ldu   #X0252    state.string
          leau  d,u       u is to address
          ldb   ,y+
          lslb
@@ -9850,7 +10187,7 @@ L563C    abx
          lbsr  L5B69
 L5642    lbsr  L1345
          sta   $06,s
-         lbsr  L5B7A
+         lbsr  L5B7A        input_edit_on
          lda   $06,s
          cmpa  #$08
          bne   L5668
@@ -9890,11 +10227,13 @@ L5693    lbsr  L5B69
 L5698    lda   $06,s
          leas  <$2F,s
          rts
-         ldb   ,y+
+         
+cmd_set_game_id
+L569E    ldb   ,y+
          lbsr  L3B58
          tfr   u,x         x is from address
          ldu   #$01CF      destination address
-         ldd   #$0007      number of bytes to copy
+         ldd   #$0007      number of bytes to copy  ID_SIZE ??? is 20
          lbsr  L115D       copy routine
          rts
 
@@ -9923,7 +10262,7 @@ L56D9    leas  -$02,s
          stu   ,s
          ldb   #$28
          mul
-         ldu   #$0252
+         ldu   #X0252      state.string
          leau  d,u
 L56E5    lda   ,u+
          beq   L56FD
@@ -9940,11 +10279,28 @@ L56FD    ldx   ,s
          leas  $02,s
          rts
 
+cmd_hide_mouse
 L5704    lda  ,y+
          lda  ,y+
-         lda  ,y+
-         lda  ,y+
-L570c    rts          several places from jump tables call here
+
+cmd_set_upper_left
+cmd_allow_menu
+L5708    lda  ,y+
+
+cmd_shake_screen
+cmd_log
+L570A    lda  ,y+
+
+
+cmd_do_nothing
+cmd_stop_sound
+cmd_init_disk
+cmd_open_dialogue
+cmd_close_dialogue
+cmd_hold_key
+cmd_set_pri_base
+cmd_discard_sound
+L570c    rts          
 
 L570D    fcc   '=========================='
          fcb  C$NULL
@@ -9976,7 +10332,7 @@ L574D    fcb   $00
 L574E    fcb   $00
 L574F    fcb   $00
 
-
+cmd_trace_on
 L5750    lda   <u0068
          beq   L5756
          bsr   L5757
@@ -10016,19 +10372,22 @@ L5759    bne   L57CE
          stb   >L5748,pcr     data byte
          ldb   #$9A
          stb   >L5749,pcr     data byte
+         
          ldd   #$040F
-         pshs  b,a
+         pshs  d
          ldd   >L5748,pcr     data byte
-         pshs  b,a
+         pshs  d
          ldd   >L574B,pcr     data byte
-         pshs  b,a
+         pshs  d
          lda   #$0C
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $06,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $06,s       clean up the stack
+         
 L57CE    rts
 
+cmd_trace_info
 L57CF    lda   ,y+
          lda   ,y+
          sta   >L5746,pcr     data byte
@@ -10042,15 +10401,17 @@ L57DF    sta   >L5747,pcr     data byte
 L57E4    lda   <u0068
          beq   L5801
          clr   <u0068
+         
          ldd   >L5748,pcr     data byte
          pshs  d
          ldd   >L574B,pcr     data byte
          pshs  d
          lda   #$03
-         sta   <u0019
-         ldx   <u0026
-         jsr   >$0659
-         leas  $04,s
+         sta   <u0019      save the offset
+         ldx   <u0026      set up remap to scrn
+         jsr   >$0659      mmu twiddler
+         leas  $04,s       clean up the stack
+         
 L5801    rts
 
 L5802    leas  -$02,s
@@ -10351,7 +10712,7 @@ L5A77    cmpa  #$02
          bne   L5A83
          clrb
 L5A83    stb   >$0438
-         lda   >$0251
+         lda   >$0251      state.ego_control_state
          beq   L5A5B
          lda   #$00
          sta   <$22,u
@@ -10364,18 +10725,18 @@ L5A9B    rts
 
 L5A9C    leas  -$02,s
          stb   ,s
-         ldx   #$0252
+         ldx   #X0252      state.string
          lbsr  L113E
          negb
          addb  #$28
-         lda   >$01AE
+         lda   >X01AE      state.cursor
          beq   L5AAF
          decb
 L5AAF    cmpb  >$044A
          bls   L5AB7
          ldb   >$044A
 L5AB7    stb   $01,s
-         lbsr  L5B7A
+         lbsr  L5B7A        input_edit_on
          lda   ,s
          cmpa  #$0A
          beq   L5B21
@@ -10420,6 +10781,7 @@ L5B21    bsr   L5B69
          leas  $02,s
          rts
 
+cmd_cancel_line
 L5B26    lda   >L5A22,pcr   data byte
          beq   L5B33
          ldb   #$08
@@ -10427,16 +10789,18 @@ L5B26    lda   >L5A22,pcr   data byte
          bra   L5B26
 L5B33    rts
 
-L5B34    lda   >$01D6
-         beq   L5B3B
-         bsr   L5B3C
+cmd_echo_line
+L5B34    lda   >$01D6     state.input_state
+         beq   L5B3B      equal zero were done
+         bsr   L5B3C      otherwise input_echo()
 L5B3B    rts
 
+input_echo
 L5B3C    leax  >L5A23,pcr   41 byte block
          lbsr  L113E
          cmpb  >L5A22,pcr   data byte
          bls   L5B68
-         bsr   L5B7A
+         bsr   L5B7A        input_edit_on
 L5B4B    ldb   >L5A22,pcr   data byte
          ldu   #$012B
          leax  >L5A23,pcr   41 byte block
@@ -10453,21 +10817,22 @@ L5B68    rts
 L5B69    lda   >$05B9
          bne   L5B79
          com   >$05B9
-         lda   >$01AE
+         lda   >X01AE       state.cursor
          beq   L5B79
          lbsr  L4734
 L5B79    rts
 
 * input_edit_on 
-L5B7A    lda   >$05B9    load input_edit_disabled flag
+L5B7A    lda   >X05B9    load input_edit_disabled flag
          beq   L5B8C     is it zero ?? good edit is on were done
-         com   >$05B9    not zero make it so
-         lda   >$01AE    state.cursor ???
+         com   >X05B9    not zero make it so
+         lda   >X01AE    state.cursor
          beq   L5B8C     if it's clear were out a here
          lda   #$08      otherwise load arg to window_put_char
          lbsr  L4734     and go for it
 L5B8C    rts
 
+cmd_prevent_input
 L5B8D    bsr   L5B7A    input_edit_on
          lda   >$01D8
          clrb
@@ -10475,31 +10840,33 @@ L5B8D    bsr   L5B7A    input_edit_on
          lbsr  L47D0
          rts
 
+cmd_accept_input
 L5B9A    lda   #$01
          sta   >$01D6
          bsr   L5BAD
          rts
 
+cmd_set_cursor_char
 L5BA2    ldb   ,y+
          lbsr  L3B58
          lda   ,u
-         sta   >$01AE
+         sta   >X01AE       state.cursor
          rts
 
 L5BAD    leas  <-$50,s
          lda   >$01D6
          beq   L5BED
-         bsr   L5B7A
+         bsr   L5B7A        input_edit_on
          lda   >$01D8
-         ldb   >$024E
+         ldb   >X024E
          lbsr  L47D0
          lda   >$01D8
          clrb
          std   <u0040
-         ldx   #$0252
+         ldx   #X0252       state.string
          leau  ,s
-         ldd   #$0028
-         pshs  b,a
+         ldd   #$0028       set to 40
+         pshs  d
          pshs  x
          pshs  u
          lbsr  L39B5
@@ -10515,51 +10882,61 @@ L5BAD    leas  <-$50,s
 L5BED    leas  <$50,s
          rts
 
-*                       1B0 jump table 2nd entry calls here
-L5BF1    ldb   ,y+     
-         ldx   #$0432
-         abx
-         lda   ,x
-         inca
-         beq   L5BFE
-         sta   ,x
-L5BFE    rts
+* these commands are found in arithmetic.c in nagi
+* they all have the form of 
+* u8 cmd_xyz(u8 *code)
+*
+* increments state.var[] pointed to by offset held in y
+cmd_increment
+L5BF1    ldb   ,y+         get the offset of the first byte in y and bump y     
+         ldx   #$0432      address of the state.var[] 
+         abx               add the offset value to x
+         lda   ,x          get the byte pointed to by that address
+         inca              increment it by one
+         beq   L5BFE       if it rolls over FF to 00 don't save it
+         sta   ,x          otherwise stow it back
+L5BFE    rts               return
 
+cmd_decrement
 L5BFF    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
-         beq   L5C0C
-         deca
-         sta   ,x
+         beq   L5C0C       if it's zero don't do anything
+         deca              otherwsie decrement it
+         sta   ,x          stow it back
 L5C0C    rts
 
+cmd_assignn
 L5C0D    ldb   ,y+
          ldx   #$0432
-         lda   ,y+
+         lda   ,y+        get the value of the second byte
          abx
-         sta   ,x
+         sta   ,x         stow it as the value of the first
          rts
 
-L5C18    ldb   $01,y
-         ldx   #$0432
-         abx
-         lda   ,x
-         ldb   ,y++
-         ldx   #$0432
-         abx
-         sta   ,x
+cmd_assignv
+L5C18    ldb   $01,y      get offset of the second byte
+         ldx   #$0432     load the address of state.var[]
+         abx              add em
+         lda   ,x         grab the value out
+         ldb   ,y++       get the offset of first byte bump past second byte
+         ldx   #$0432     load the address of state.var[]
+         abx              add em
+         sta   ,x         store byte2 value at byte1
          rts
 
-L5C29    ldb   ,y+
-         ldx   #$0432
+cmd_addn
+L5C29    ldb   ,y+        
+         ldx   #$0432 
          abx
-         lda   ,x
-         adda  ,y+
-         sta   ,x
+         lda   ,x         get the value of the first byte
+         adda  ,y+        add in the value of the second and bump the pointer
+         sta   ,x         store the sum in the first byte
          rts
 
-L5C36    ldb   $01,y
+cmd_addv
+L5C36    ldb   $01,y      
          ldx   #$0432
          abx
          lda   ,x
@@ -10570,6 +10947,7 @@ L5C36    ldb   $01,y
          sta   ,x
          rts
 
+cmd_subn
 L5C49    ldb   ,y+
          ldx   #$0432
          abx
@@ -10578,6 +10956,7 @@ L5C49    ldb   ,y+
          sta   ,x
          rts
 
+cmd_subv
 L5C56    ldb   $01,y
          ldx   #$0432
          abx
@@ -10590,6 +10969,7 @@ L5C56    ldb   $01,y
          sta   ,x
          rts
 
+cmd_lindirectv
 L5C6A    ldb   $01,y
          ldx   #$0432
          abx
@@ -10603,6 +10983,7 @@ L5C6A    ldb   $01,y
          sta   ,x
          rts
 
+cmd_lindirectn
 L5C81    lda   $01,y
          ldb   ,y++
          ldx   #$0432
@@ -10613,6 +10994,7 @@ L5C81    lda   $01,y
          sta   ,x
          rts
 
+cmd_rindirect
 L5C92    ldb   $01,y
          ldx   #$0432
          abx
@@ -10626,6 +11008,7 @@ L5C92    ldb   $01,y
          sta   ,x
          rts
 
+cmd_multn
 L5CA9    ldx   #$0432
          ldb   ,y+
          abx
@@ -10635,6 +11018,7 @@ L5CA9    ldx   #$0432
          stb   ,x
          rts
 
+cmd_multv
 L5CB7    ldb   $01,y
          ldx   #$0432
          abx
@@ -10647,6 +11031,7 @@ L5CB7    ldb   $01,y
          stb   ,x
          rts
 
+cmd_divn
 L5CCB    ldx   #$0432
          ldb   ,y+
          abx
@@ -10656,6 +11041,7 @@ L5CCB    ldx   #$0432
          stb   ,x
          rts
 
+cmd_divv
 L5CDC    ldb   $01,y
          ldx   #$0432
          abx
@@ -10701,11 +11087,14 @@ L5D1B    stx   >L5D0B,pcr     data word
          bne   L5D1B
 L5D27    rts
 
+
+cmd_load_view
 L5D28    lda   #$00
          ldb   ,y+
          bsr   L5D3C
          rts
 
+cmd_load_view_v
 L5D2F    lda   #$00
          ldb   ,y+
          ldx   #$0432
@@ -10758,6 +11147,7 @@ L5D8F    lbsr  L058A
 L5D99    leas  $06,s
          rts
 
+cmd_set_view
 L5D9C    leas  -$02,s
          ldd   <u000A
          std   ,s
@@ -10772,7 +11162,8 @@ L5D9C    leas  -$02,s
          lbsr  L27AF
          leas  $02,s
          rts
-         
+
+cmd_set_view_v         
 L5DB7    leas  -$02,s
          ldd   <u000A
          std   ,s
@@ -10812,6 +11203,7 @@ L5DE4    stb   $05,u
 L5DFE    bsr   L5E3D
          rts
 
+cmd_set_loop
 L5E01    leas  -$02,s
          ldd   <u000A
          std   ,s
@@ -10827,6 +11219,7 @@ L5E01    leas  -$02,s
          leas  $02,s
          rts
 
+cmd_set_loop_v
 L5E1C    leas  -$02,s
          ldd   <u000A
          std   ,s
@@ -10880,6 +11273,7 @@ L5E7A    bsr   L5EBB
          leas  $01,s
          rts
 
+cmd_set_cel
 L5E7F    leas  -$02,s
          ldd   <u000A
          std   ,s
@@ -10895,6 +11289,7 @@ L5E7F    leas  -$02,s
          leas  $02,s
          rts
 
+cmd_set_cel_v
 L5E9A    leas  -$02,s
          ldd   <u000A
          std   ,s
@@ -10967,6 +11362,7 @@ L5F08    decb
 L5F29    leas  $01,s
          rts
 
+cmd_last_cel
 L5F2C    lda   ,y+
          ldb   #$2B
          mul
@@ -10980,6 +11376,7 @@ L5F2C    lda   ,y+
          sta   ,x
          rts
 
+cmd_current_cel
 L5F41    lda   ,y+
          ldb   #$2B
          mul
@@ -10992,6 +11389,7 @@ L5F41    lda   ,y+
          sta   ,x
          rts
 
+cmd_current_loop
 L5F55    lda   ,y+
          ldb   #$2B
          mul
@@ -11004,6 +11402,7 @@ L5F55    lda   ,y+
          sta   ,x
          rts
 
+cmd_current_view
 L5F69    lda   ,y+
          ldb   #$2B
          mul
@@ -11015,8 +11414,9 @@ L5F69    lda   ,y+
          abx
          sta   ,x
          rts
-
-L5F7C    lda   ,y+
+         
+cmd_number_of_loops
+L5F7D    lda   ,y+
          ldb   #$2B
          mul
          addd  <u0030
@@ -11028,10 +11428,13 @@ L5F7C    lda   ,y+
          sta   ,x
          rts
 
+cmd_discard_view
 L5F91    ldb   ,y+
          bsr   L5FA1
          rts
-         ldb   ,y+
+
+cmd_discard_view_v
+L5F96    ldb   ,y+
          ldx   #$0432
          abx
          ldb   ,x
