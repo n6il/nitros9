@@ -1,4 +1,5 @@
 NitrOS-9/6809 Level 1 V03.02.01:
+- The dmode utility has been updated.
 - Shell+ has been backported and is now the default shell for Level 1.
 - vrn has been backported and the nil descriptor now requires vrn.
 - nildrv has been removed.

@@ -1,6 +1,6 @@
 include ../rules.mak
 
-RELEASE		= nos96809l1v030200
+RELEASE		= nos96809l1v030201
 BOOTFILE	= bootfiles/bootfile_stock
 BOOTFILE_DS80	= bootfiles/bootfile_stock_ds80
 KERNELFILE	= bootfiles/kernel_stock

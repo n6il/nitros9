@@ -1,522 +1,355 @@
-********************************************************************
-* DMode - Disk mode utility
-*
-* $Id$
-*
-* RBF descriptor utility similar to xmode.
-* Use: dmode </devicename> [options]
-*      dmode -<filename>   [options]
-*       (allows dmode use on a saved desc)
-*       (-filename will use data dir for default)
-*      dmode -?  will give bit definitions
-* If no options given, just returns desc info.
-* All numbers must be in HEX.
-* dmode
-* dmode /h0 cyl=0200 sas=8 ilv=4
-* dmode /d0
-* dmode -?
-* dmode -/d1/modules/d2.dd cyl=0028
-*
-* Apologies for lack of comments.
-*
-* Edt/Rev  YYYY/MM/DD  Modified by
-* Comment
-* ------------------------------------------------------------------
-*          1986/09/23  Kevin Darling
-*
-*          1986/10/01  Kevin Darling
-*
-*          1986/10/02  Kevin Darling
-*
-*          1989/08/24  Roger A. Krupski (HARDWAREHACK)
-* Fixed "lower case bug", allowed "$" prefix for hex
-* Oversized and kludgy, but works.
 
-         nam   DMode
-         ttl   Disk mode utility
-     
-         ifp1            
-         use   defsfile use defsfile
-         use   rbfdefs
-         endc            
-
-         mod   size,name,$11,$81,entry,msiz
-
-         org   0         
-desc     rmb   $40        dev desc copy
-dsize    rmb   2          desc size
-path     rmb   1          file path
-parmptr  rmb   2          next name dataptr
-module   rmb   2          desc address
-dataptr  rmb   2          current option ptr
-buffptr  rmb   2          buffer address
-txtptr   rmb   2          option name ptr
-hexin    rmb   2          2 byte hex number
-hexcnt   rmb   1          number of option bytes
-buffer   rmb   10         output buffer
-stack    rmb   200       
-params   rmb   150       
-msiz     equ   .         
-
-************************************************
-name     fcs   "Dmode"   
-         fcb   8          version
-
-helpmsg                  
-         fcb   C$CR,C$LF
-         fcc   "drv  Drive Number 0...n"
-         fcb   C$CR,C$LF
-         fcc   "stp  Step Rate    0=30, 1=20, 2=12, 3=6ms"
-         fcb   C$CR,C$LF
-         fcb   C$CR,C$LF
-         fcc   'typ  Device Type  bit0- 0=5"   1=8"'
-         fcb   C$CR,C$LF
-         fcc   "            $20   bit5- 0=non  1=coco"
-         fcb   C$CR,C$LF
-         fcc   "            $40   bit6- 0=std  1=non"
-         fcb   C$CR,C$LF
-         fcc   "            $80   bit7- 0=flop 1=hard"
-         fcb   C$CR,C$LF
-         fcb   C$CR,C$LF
-         fcc   "dns  Density      bit0- 0=SD   1=DD"
-         fcb   C$CR,C$LF
-         fcc   "                  bit1- 0=48   1=96 tpi"
-         fcb   C$CR,C$LF
-         fcb   C$CR,C$LF
-         fcc   "cyl  Cylinders (tracks) (in hex)"
-         fcb   C$CR,C$LF
-         fcc   "sid  Sides (heads) (in hex)"
-         fcb   C$CR,C$LF
-         fcc   "vfy  Verify (0=yes)"
-         fcb   C$CR,C$LF
-         fcc   "sct  Sectors/Track (in hex)"
-         fcb   C$CR,C$LF
-         fcc   "tos  Sectors/Track on track 0 (in hex)"
-         fcb   C$CR,C$LF
-         fcc   "ilv  Interleave (in hex)"
-         fcb   C$CR,C$LF
-         fcc   "sas  Minimum segment allocation (in hex)"
-         fcb   C$CR,C$LF
-helplen  equ   *-helpmsg 
-
-errmsg                   
-         fcb   C$CR,C$LF
-         fcc   "Use Dmode /<dev_name> [options...]"
-         fcb   C$CR,C$LF
-         fcc   " or Dmode -<filename> [options...]"
-         fcb   C$CR,C$LF
-         fcc   " or Dmode -?  for options help"
-         fcb   C$CR,C$LF
-         fcb   C$CR,C$LF
-         fcc   " NOTE: specify options in hex."
-cr       fcb   C$CR,C$LF
-msglen   equ   *-errmsg  
-
-synmsg                   
-         fcb   C$CR,C$LF
-         fcc   "Syntax Error: "
-synlen   equ   *-synmsg  
-
-
-muchhelp                 
-         leax  helpmsg,pc
-         ldy   #helplen  
-         bra   helpprnt  
-
-rbfmsg                   
-         fcb   C$CR,C$LF
-         fcc   "NOT an RBF descriptor!"
-         fcb   C$CR,C$LF
-rbflen   equ   *-rbfmsg  
-
-notrbf                   
-         leax  rbfmsg,pc 
-         ldy   #rbflen   
-         lda   #2        
-         os9   I$Write   
-
-help                     
-         leax  errmsg,pc 
-         ldy   #msglen   
-
-helpprnt                 
-         lda   #2        
-         os9   I$Write   
-         lbra  okayend2  
-
-************************************************
-entry                    
-         ldd   #0        
-         std   module     zero mod flag
-         sta   path       zero file flag
-         ldd   ,x+        check for device name
-         cmpa  #'-        file option?
-         bne   link      
-         cmpb  #'?        help option?
-         beq   muchhelp  
-
-* Use Filename to Get Desc:
-         lda   #UPDAT.    open path to desc file
-         os9   I$Open    
-         bcs   error     
-         stx   parmptr   
-         sta   path       save path number
-
-         ldy   #$40       max size
-         leax  desc,u     desc buff
-         os9   I$Read     get it
-         bcc   use10     
-         cmpb  #E$EOF    
-         bne   error     
-
-use10                    
-         sty   dsize      save desc size
-         bra   gotit     
-
-link                     
-         cmpa  #PDELIM    else must be /<devicename> 
-         bne   help      
-         pshs  u         
-         lda   #Devic    
-         os9   F$Link     link to descriptor
-         bcs   error     
-         stx   parmptr    update after name
-         tfr   u,x       
-         puls  u         
-         stx   module    
-         ldd   M$Size,x   get desc size
-         std   dsize     
-         leay  desc,u    
-
-mloop                    
-         lda   ,x+       
-         sta   ,y+       
-         decb            
-         bne   mloop     
-
-gotit                    
-         leax  desc,u    
-         lda   $12,x      test device type
-         cmpa  #1         RBF?
-         bne   notrbf    
-
-         leax  $13,x      point to drive #
-         stx   dataptr    save mod option ptr
-
-         ldx   parmptr    point to input parms
-
-skip                     
-         lda   ,x+       
-         cmpa  #$20       skip blanks
-         beq   skip      
-
-         leax  -1,x      
-         cmpa  #$0D       no options?
-         lbeq  info       ..yes, give info
-         lbra  findtxt    else find options
-
-okayend                  
-         lbsr  outcr     
-okayend2                 
-         clrb             okay
-error                    
-         pshs  b,cc      
-         ldu   module    
-         beq   bye       
-         os9   F$UnLink  
-bye                      
-         puls  b,cc      
-         os9   F$Exit     end dmode.
-
-table                    
-         fcc   " drv"     option name 
-         fcb   IT.DRV,1      option offset & byte count
-         fcc   " stp"    
-         fcb   IT.STP,1     
-         fcc   " typ"    
-         fcb   IT.TYP,1     
-         fcc   " dns"    
-         fcb   IT.DNS,1     
-         fcc   " cyl"    
-         fcb   IT.CYL,2     
-         fcc   " sid"    
-         fcb   IT.SID,1     
-         fcc   " vfy"    
-         fcb   IT.VFY,1     
-         fcc   " sct"    
-         fcb   IT.SCT,2     
-         fcc   " tos"    
-         fcb   IT.T0S,2     
-         fcc   " ilv"    
-         fcb   IT.ILV,1     
-         fcc   " sas"    
-         fcb   IT.SAS,1     
-         fcc   " t0s"     extra so it parses, but doesn't print!
-         fcb   IT.T0S,2     
-         fcb   $80        end of table
-
-info     equ   *          Output Current Desc Info:
-         ldb   #11        eleven entries (we won't print #12)
-         pshs  b         
-         leax  table,pc   point to text table
-         stx   txtptr    
-ilup                     
-         bsr   outtext    print label and =
-         lbsr  outnum     print value
-         ldx   txtptr    
-         leax  6,x       
-         stx   txtptr    
-         dec   ,s        
-         lbeq  okayend    ..end of info
-         ldb   ,s        
-         cmpb  #5         <cr> after 6th option
-         bne   ilup      
-         bsr   outcr      <cr>
-         bra   ilup       ..loop
-
-outcr    equ   *          Print a <CR/LF>:
-         leax  cr,pc     
-         ldy   #2         byte count
-
-output   equ   *          Print generic
-         lda   #1         std out
-         os9   I$Write   
-         bcc   okay      
-         leas  2,s        purge return
-         lbra  error      error
-okay     rts             
-
-
-* -----------------------
-equal    fcc   "=$"      
-outtext  equ   *          Print Option Name:
-         ldx   txtptr    
-         ldy   #4        
-         bsr   output     print option name
-         leax  equal,pc  
-         ldy   #2        
-         bsr   output     sorry, must be a bsr
-         rts              return
-
-* -----------------------
-outnum   equ   *          Print Hex Option Values:
-         ldx   txtptr    
-         ldb   5,x        get # of digits
-         stb   hexcnt    
-numlup                   
-         bsr   outhex    
-         dec   hexcnt    
-         bne   numlup    
-         rts             
-
-outhex   equ   *          Print One Byte:
-         ldx   dataptr   
-         lda   ,x+       
-         stx   dataptr   
-         pshs  a         
-         lsra            
-         lsra            
-         lsra            
-         lsra            
-         bsr   outone    
-         puls  a         
-         anda  #$0F      
-
-outone   equ   *          Print 1/2 Byte Hex Char:
-         cmpa  #10       
-         bcs   number    
-         adda  #$11-10    make alpha
-number                   
-         adda  #$30       make ASCII
-         sta   buffer    
-         leax  buffer,u  
-         ldy   #1        
-         lbra  output    
-
-skipspc  equ   *          Skip Spaces:
-         lda   ,x+       
-         cmpa  #C$SPAC
-         beq   skipspc   
-         rts             
-
-************************************************
-* X=parmptr
-
-findtxt  equ   *          Find and Set Options:
-
-flup10                   
-         bsr   skipspc    get next input param
-         stx   parmptr    save for syntax error use
-         cmpa  #C$CR      end?
-         lbeq  verify     ..yes, update desc CRC
-
-         ora   #$20       force lower case first char
-         leay  table-6,pc ready option table ptr
-         pshs  d,u       
-         ldd   ,x++       get next two chars
-         ora   #$20       force lower case
-         orb   #$20       -ditto-
-         tfr   d,u        place two chars in U
-         puls  d          restore A&B (u is still pushed)
-
-flup20                   
-         leay  6,y        next option entry
-         tst   ,y         last entry?
-         lbmi  syntax     ..yes, bad option
-         cmpa  1,y       
-         bne   flup20     same name?
-         cmpu  2,y       
-         bne   flup20     ..no, loop
-
-* Found Option
-         puls  u         
-         sty   txtptr    
-         lda   ,x+        must be followed by "="
-         cmpa  #'=       
-         lbne  syntax    
-
-         bsr   setnum     set that option
-         bra   flup10    
-
-* -------------
-setnum   equ   *          Get Hex Input and Set Option:
-         ldb   5,y        get # of bytes
-         stb   hexcnt    
-         clr   hexin      zero hex input bytes
-         clr   hexin+1   
-
-setloop                  
-         lda   ,x+        get next #
-         cmpa  #'$        optional hex $?
-         beq   setloop    yes, ignore
-         cmpa  #C$SPAC    end of number?
-         beq   setnum2    ..yes, set option, rts
-         cmpa  #C$CR      end of line?
-         beq   setnum1   
-         bsr   hexcnvt    else, get next num
-         bra   setloop    ..loop
-
-setnum1                  
-         leax  -1,x       reset so can find <cr>
-setnum2                  
-         ldb   4,y        get option offset
-         leay  desc,u     point to desc
-         leay  b,y        point to option
-         ldd   hexin      pick up hex input
-         dec   hexcnt    
-         beq   setone    
-         std   ,y         set two byte option
-         rts             
-setone                   
-         tsta            
-         lbne  syntax    
-         stb   ,y         set one byte option
-         rts             
-
-hexcnvt  equ   *          Convert ASCII Hex-->Byte:
-         suba  #$30       make number from ASCII
-         lbmi  syntax    
-         cmpa  #10        is it number?
-         bcs   num       
-         anda  #$5F       make uppercase 
-         suba  #$11-$0a   make hex $A-$F
-         cmpa  #$0A      
-         lbcs  syntax    
-         cmpa  #$10       not hex char?
-         lbcc  syntax    
-num                      
-         ldb   #16        fancy asl *4
-         mul             
-         pshs  b          save top 4 bits
-         ldd   hexin     
-         rol   ,s        
-         rolb            
-         rola            
-         rol   ,s        
-         rolb            
-         rola            
-         rol   ,s        
-         rolb            
-         rola            
-         rol   ,s        
-         rolb            
-         rola            
-         std   hexin     
-         puls  b,pc       drop temp, rts.
-
-verify   equ   *          Update Descriptor CRC:
-         pshs  u          save data ptr
-         leau  desc,u    
-         tfr   u,x        X is mod address
-
-         ldy   M$Size,x   Y is mod size
-         leay  -3,y       beginning of chksum
-         tfr   y,d        Y is byte count
-         leau  d,u        set U to chksum
-
-         lda   #$FF       init chksum
-         sta   ,u        
-         sta   1,u       
-         sta   2,u       
-         pshs  u         
-         os9   F$CRC      calc new crc
-         puls  u         
-         com   ,u+        fix it up right
-         com   ,u+       
-         com   ,u        
-
-         lda   path       was it file?
-         beq   memmod     ..no, in memory
-         ldx   #0        
-         tfr   x,u       
-         os9   I$Seek     go back to file begin
-         lbcs  error     
-         puls  u         
-         leax  desc,u    
-         ldy   dsize     
-         os9   I$Write    update desc file
-         lbra  okayend   
-
-memmod                   
-         puls  u         
-         leax  desc,u    
-         ldb   dsize+1   
-         ldy   module    
-
-move                     
-         lda   ,x+       
-         sta   ,y+       
-         decb            
-         bne   move      
-
-         lbra  okayend2  
-
-
-syntax   equ   *         
-         leax  synmsg,pc 
-         ldy   #synlen   
-         lda   #2        
-         os9   I$Write   
-
-         ldx   parmptr   
-         leax  -1,x      
-         pshs  x         
-         ldy   #0        
-
-slup                     
-         leay  1,y       
-         lda   ,x+       
-         cmpa  #C$CR
-         beq   synsay    
-         cmpa  #C$SPAC
-         bne   slup      
-
-synsay                   
-         puls  x         
-         lda   #2        
-         os9   I$Write    output err
-         lbra  okayend   
-
-         emod            
-size     equ   *         
-         end             
+L0000    fcb   $87,$CD,$0B,$0C,$00,$0D,$11,$84   .M......
+L0008    fcb   $2A,$08,$23,$02,$6A,$44,$4D,$6F   *.#.jDMo
+L0010    fcb   $64,$E5,$01,$20,$6E,$61,$6D,$84   de. nam.
+L0018    fcb   $03,$20,$6D,$67,$72,$89,$00,$20   . mgr.. 
+L0020    fcb   $64,$64,$72,$8B,$00,$20,$68,$70   ddr.. hp
+L0028    fcb   $6E,$0E,$01,$20,$68,$70,$61,$0F   n.. hpa.
+L0030    fcb   $02,$20,$64,$72,$76,$13,$01,$20   . drv.. 
+L0038    fcb   $73,$74,$70,$14,$01,$20,$74,$79   stp.. ty
+L0040    fcb   $70,$15,$01,$20,$64,$6E,$73,$16   p.. dns.
+L0048    fcb   $01,$20,$63,$79,$6C,$17,$02,$20   . cyl.. 
+L0050    fcb   $73,$69,$64,$19,$01,$20,$76,$66   sid.. vf
+L0058    fcb   $79,$1A,$01,$20,$73,$63,$74,$1B   y.. sct.
+L0060    fcb   $02,$20,$74,$30,$73,$1D,$02,$20   . t0s.. 
+L0068    fcb   $69,$6C,$76,$1F,$01,$20,$73,$61   ilv.. sa
+L0070    fcb   $73,$20,$01,$20,$77,$70,$63,$25   s . wpc%
+L0078    fcb   $01,$20,$6F,$66,$73,$26,$02,$20   . ofs&. 
+L0080    fcb   $72,$77,$63,$28,$02,$80,$0A,$55   rwc(...U
+L0088    fcb   $73,$61,$67,$65,$3A,$20,$20,$44   sage:  D
+L0090    fcb   $4D,$6F,$64,$65,$20,$5B,$2F,$3C   Mode [/<
+L0098    fcb   $64,$65,$76,$69,$63,$65,$3E,$20   device> 
+L00A0    fcb   $7C,$7C,$20,$2D,$3C,$70,$61,$74   || -<pat
+L00A8    fcb   $68,$6C,$69,$73,$74,$3E,$20,$7C   hlist> |
+L00B0    fcb   $7C,$20,$2D,$3F,$5D,$20,$5B,$6F   | -?] [o
+L00B8    fcb   $70,$74,$69,$6F,$6E,$5D,$20,$5B   ption] [
+L00C0    fcb   $6F,$70,$74,$69,$6F,$6E,$5D,$20   option] 
+L00C8    fcb   $5B,$2E,$2E,$2E,$5D,$0A,$0A,$50   [...]..P
+L00D0    fcb   $75,$72,$70,$6F,$73,$65,$3A,$20   urpose: 
+L00D8    fcb   $20,$54,$6F,$20,$72,$65,$70,$6F    To repo
+L00E0    fcb   $72,$74,$20,$6F,$72,$20,$61,$6C   rt or al
+L00E8    fcb   $74,$65,$72,$20,$63,$75,$72,$72   ter curr
+L00F0    fcb   $65,$6E,$74,$20,$6F,$70,$74,$69   ent opti
+L00F8    fcb   $6F,$6E,$20,$73,$65,$74,$74,$69   on setti
+L0100    fcb   $6E,$67,$73,$20,$6F,$66,$20,$52   ngs of R
+L0108    fcb   $42,$46,$20,$64,$65,$76,$69,$63   BF devic
+L0110    fcb   $65,$0A,$20,$20,$20,$20,$20,$20   e.      
+L0118    fcb   $20,$20,$20,$20,$64,$65,$73,$63       desc
+L0120    fcb   $72,$69,$70,$74,$6F,$72,$73,$20   riptors 
+L0128    fcb   $69,$6E,$20,$6D,$65,$6D,$6F,$72   in memor
+L0130    fcb   $79,$20,$6F,$72,$20,$6F,$6E,$20   y or on 
+L0138    fcb   $64,$69,$73,$6B,$20,$69,$6E,$20   disk in 
+L0140    fcb   $73,$69,$6E,$67,$6C,$65,$20,$6D   single m
+L0148    fcb   $6F,$64,$75,$6C,$65,$20,$66,$69   odule fi
+L0150    fcb   $6C,$65,$73,$2E,$0A,$0A,$4F,$70   les...Op
+L0158    fcb   $74,$69,$6F,$6E,$73,$3A,$20,$20   tions:  
+L0160    fcb   $6E,$61,$6D,$2C,$20,$6D,$67,$72   nam, mgr
+L0168    fcb   $2C,$20,$64,$64,$72,$2C,$20,$68   , ddr, h
+L0170    fcb   $70,$6E,$2C,$20,$68,$70,$61,$2C   pn, hpa,
+L0178    fcb   $20,$64,$72,$76,$2C,$20,$73,$74    drv, st
+L0180    fcb   $70,$2C,$20,$74,$79,$70,$2C,$20   p, typ, 
+L0188    fcb   $64,$6E,$73,$2C,$20,$63,$79,$6C   dns, cyl
+L0190    fcb   $2C,$20,$73,$69,$64,$2C,$20,$76   , sid, v
+L0198    fcb   $66,$79,$2C,$0A,$20,$20,$20,$20   fy,.    
+L01A0    fcb   $20,$20,$20,$20,$20,$20,$73,$63         sc
+L01A8    fcb   $74,$2C,$20,$74,$30,$73,$2C,$20   t, t0s, 
+L01B0    fcb   $69,$6C,$76,$2C,$20,$73,$61,$73   ilv, sas
+L01B8    fcb   $2C,$20,$77,$70,$63,$2C,$20,$6F   , wpc, o
+L01C0    fcb   $66,$73,$2C,$20,$72,$77,$63,$2E   fs, rwc.
+L01C8    fcb   $0A,$0A,$45,$78,$61,$6D,$70,$6C   ..Exampl
+L01D0    fcb   $65,$73,$3A,$20,$20,$64,$6D,$6F   es:  dmo
+L01D8    fcb   $64,$65,$20,$2F,$64,$64,$0A,$20   de /dd. 
+L01E0    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L01E8    fcb   $20,$20,$20,$20,$20,$20,$50,$72         Pr
+L01F0    fcb   $69,$6E,$74,$73,$20,$74,$68,$65   ints the
+L01F8    fcb   $20,$63,$75,$72,$72,$65,$6E,$74    current
+L0200    fcb   $20,$6F,$70,$74,$69,$6F,$6E,$20    option 
+L0208    fcb   $73,$65,$74,$74,$69,$6E,$67,$73   settings
+L0210    fcb   $20,$6F,$66,$20,$74,$68,$65,$20    of the 
+L0218    fcb   $2F,$44,$44,$20,$64,$65,$73,$63   /DD desc
+L0220    fcb   $72,$69,$70,$74,$6F,$72,$0A,$20   riptor. 
+L0228    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L0230    fcb   $20,$20,$20,$20,$20,$20,$69,$6E         in
+L0238    fcb   $20,$6D,$65,$6D,$6F,$72,$79,$2E    memory.
+L0240    fcb   $0A,$20,$20,$20,$20,$20,$20,$20   .       
+L0248    fcb   $20,$20,$20,$20,$64,$6D,$6F,$64       dmod
+L0250    fcb   $65,$20,$2D,$6D,$6F,$64,$75,$6C   e -modul
+L0258    fcb   $65,$73,$2F,$68,$30,$2E,$64,$64   es/h0.dd
+L0260    fcb   $20,$6E,$61,$6D,$3D,$48,$31,$20    nam=H1 
+L0268    fcb   $64,$72,$76,$3D,$31,$20,$63,$79   drv=1 cy
+L0270    fcb   $6C,$3D,$30,$33,$46,$46,$20,$72   l=03FF r
+L0278    fcb   $77,$63,$3D,$66,$66,$66,$66,$0A   wc=ffff.
+L0280    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L0288    fcb   $20,$20,$20,$20,$20,$20,$20,$43          C
+L0290    fcb   $68,$61,$6E,$67,$65,$73,$20,$74   hanges t
+L0298    fcb   $68,$65,$20,$6D,$6F,$64,$75,$6C   he modul
+L02A0    fcb   $65,$20,$6E,$61,$6D,$65,$20,$69   e name i
+L02A8    fcb   $6E,$20,$74,$68,$65,$20,$4D,$4F   n the MO
+L02B0    fcb   $44,$55,$4C,$45,$53,$2F,$48,$30   DULES/H0
+L02B8    fcb   $2E,$64,$64,$20,$66,$69,$6C,$65   .dd file
+L02C0    fcb   $20,$74,$6F,$20,$48,$31,$2C,$0A    to H1,.
+L02C8    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L02D0    fcb   $20,$20,$20,$20,$20,$20,$20,$73          s
+L02D8    fcb   $65,$74,$73,$20,$74,$68,$65,$20   ets the 
+L02E0    fcb   $70,$68,$79,$73,$69,$63,$61,$6C   physical
+L02E8    fcb   $20,$64,$72,$69,$76,$65,$20,$6E    drive n
+L02F0    fcb   $75,$6D,$62,$65,$72,$20,$74,$6F   umber to
+L02F8    fcb   $20,$31,$2C,$20,$63,$79,$6C,$69    1, cyli
+L0300    fcb   $6E,$64,$65,$72,$73,$20,$74,$6F   nders to
+L0308    fcb   $20,$24,$30,$33,$46,$46,$2C,$0A    $03FF,.
+L0310    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L0318    fcb   $20,$20,$20,$20,$20,$20,$20,$61          a
+L0320    fcb   $6E,$64,$20,$74,$68,$65,$20,$52   nd the R
+L0328    fcb   $65,$64,$75,$63,$65,$64,$20,$57   educed W
+L0330    fcb   $72,$69,$74,$65,$20,$43,$75,$72   rite Cur
+L0338    fcb   $72,$65,$6E,$74,$20,$63,$79,$6C   rent cyl
+L0340    fcb   $69,$6E,$64,$65,$72,$20,$74,$6F   inder to
+L0348    fcb   $20,$24,$46,$46,$46,$46,$2E,$0A    $FFFF..
+L0350    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L0358    fcb   $20,$20,$20,$64,$6D,$6F,$64,$65      dmode
+L0360    fcb   $20,$2D,$3F,$0A,$20,$20,$20,$20    -?.    
+L0368    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L0370    fcb   $20,$20,$20,$50,$72,$69,$6E,$74      Print
+L0378    fcb   $73,$20,$6D,$6F,$72,$65,$20,$63   s more c
+L0380    fcb   $6F,$6D,$70,$6C,$65,$74,$65,$20   omplete 
+L0388    fcb   $69,$6E,$66,$6F,$72,$6D,$61,$74   informat
+L0390    fcb   $69,$6F,$6E,$20,$6F,$6E,$20,$61   ion on a
+L0398    fcb   $6C,$6C,$20,$6F,$66,$20,$74,$68   ll of th
+L03A0    fcb   $65,$20,$6F,$70,$74,$69,$6F,$6E   e option
+L03A8    fcb   $73,$2E,$0D,$0A,$54,$68,$65,$20   s...The 
+L03B0    fcb   $4E,$41,$4D,$20,$6F,$70,$74,$69   NAM opti
+L03B8    fcb   $6F,$6E,$20,$61,$63,$63,$65,$70   on accep
+L03C0    fcb   $74,$73,$20,$6F,$6E,$6C,$79,$20   ts only 
+L03C8    fcb   $61,$20,$6C,$65,$67,$61,$6C,$20   a legal 
+L03D0    fcb   $4F,$53,$2D,$39,$20,$6D,$6F,$64   OS-9 mod
+L03D8    fcb   $75,$6C,$65,$20,$6E,$61,$6D,$65   ule name
+L03E0    fcb   $20,$77,$69,$74,$68,$20,$61,$20    with a 
+L03E8    fcb   $6D,$61,$78,$69,$6D,$75,$6D,$20   maximum 
+L03F0    fcb   $6F,$66,$0A,$33,$20,$63,$68,$61   of.3 cha
+L03F8    fcb   $72,$61,$63,$74,$65,$72,$73,$2E   racters.
+L0400    fcb   $20,$20,$49,$74,$20,$69,$73,$20     It is 
+L0408    fcb   $75,$70,$20,$74,$6F,$20,$74,$68   up to th
+L0410    fcb   $65,$20,$75,$73,$65,$72,$20,$74   e user t
+L0418    fcb   $6F,$20,$65,$6E,$73,$75,$72,$65   o ensure
+L0420    fcb   $20,$74,$68,$61,$74,$20,$74,$68    that th
+L0428    fcb   $65,$72,$65,$20,$69,$73,$20,$61   ere is a
+L0430    fcb   $64,$65,$71,$75,$61,$74,$65,$0A   dequate.
+L0438    fcb   $72,$6F,$6F,$6D,$20,$66,$6F,$72   room for
+L0440    fcb   $20,$74,$68,$65,$20,$6D,$6F,$64    the mod
+L0448    fcb   $75,$6C,$65,$20,$6E,$61,$6D,$65   ule name
+L0450    fcb   $2C,$20,$61,$6E,$64,$20,$69,$66   , and if
+L0458    fcb   $20,$72,$65,$71,$75,$69,$72,$65    require
+L0460    fcb   $64,$20,$74,$6F,$20,$72,$65,$6E   d to ren
+L0468    fcb   $61,$6D,$65,$20,$74,$68,$65,$20   ame the 
+L0470    fcb   $64,$69,$73,$6B,$20,$66,$69,$6C   disk fil
+L0478    fcb   $65,$20,$74,$6F,$0A,$73,$75,$69   e to.sui
+L0480    fcb   $74,$20,$74,$68,$65,$20,$6E,$65   t the ne
+L0488    fcb   $77,$20,$6D,$6F,$64,$75,$6C,$65   w module
+L0490    fcb   $20,$6E,$61,$6D,$65,$2E,$20,$20    name.  
+L0498    fcb   $54,$68,$65,$20,$4D,$47,$52,$20   The MGR 
+L04A0    fcb   $61,$6E,$64,$20,$44,$44,$52,$20   and DDR 
+L04A8    fcb   $6F,$70,$74,$69,$6F,$6E,$73,$20   options 
+L04B0    fcb   $63,$61,$6E,$27,$74,$20,$62,$65   can't be
+L04B8    fcb   $20,$63,$68,$61,$6E,$67,$65,$64    changed
+L04C0    fcb   $2E,$0A,$41,$6C,$6C,$20,$6F,$74   ..All ot
+L04C8    fcb   $68,$65,$72,$20,$6F,$70,$74,$69   her opti
+L04D0    fcb   $6F,$6E,$73,$20,$72,$65,$71,$75   ons requ
+L04D8    fcb   $69,$72,$65,$20,$68,$65,$78,$61   ire hexa
+L04E0    fcb   $64,$65,$63,$69,$6D,$61,$6C,$20   decimal 
+L04E8    fcb   $6E,$75,$6D,$62,$65,$72,$73,$20   numbers 
+L04F0    fcb   $28,$30,$20,$74,$68,$72,$6F,$75   (0 throu
+L04F8    fcb   $67,$68,$20,$46,$46,$46,$46,$29   gh FFFF)
+L0500    fcb   $2E,$20,$20,$54,$68,$65,$0A,$57   .  The.W
+L0508    fcb   $50,$43,$2C,$20,$4F,$46,$53,$2C   PC, OFS,
+L0510    fcb   $20,$61,$6E,$64,$20,$52,$57,$43    and RWC
+L0518    fcb   $20,$6F,$70,$74,$69,$6F,$6E,$73    options
+L0520    fcb   $20,$61,$72,$65,$20,$66,$6F,$72    are for
+L0528    fcb   $20,$57,$44,$44,$69,$73,$6B,$20    WDDisk 
+L0530    fcb   $64,$65,$73,$63,$72,$69,$70,$74   descript
+L0538    fcb   $6F,$72,$73,$20,$6F,$6E,$6C,$79   ors only
+L0540    fcb   $2E,$0A,$0A,$6E,$61,$6D,$20,$20   ...nam  
+L0548    fcb   $44,$65,$76,$69,$63,$65,$20,$44   Device D
+L0550    fcb   $65,$73,$63,$72,$69,$70,$74,$6F   escripto
+L0558    fcb   $72,$20,$4E,$61,$6D,$65,$20,$20   r Name  
+L0560    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L0568    fcb   $20,$20,$20,$6D,$67,$72,$20,$20      mgr  
+L0570    fcb   $46,$69,$6C,$65,$20,$4D,$61,$6E   File Man
+L0578    fcb   $61,$67,$65,$72,$20,$4E,$61,$6D   ager Nam
+L0580    fcb   $65,$0A,$64,$64,$72,$20,$20,$44   e.ddr  D
+L0588    fcb   $65,$76,$69,$63,$65,$20,$44,$72   evice Dr
+L0590    fcb   $69,$76,$65,$72,$20,$4E,$61,$6D   iver Nam
+L0598    fcb   $65,$20,$20,$20,$20,$20,$20,$20   e       
+L05A0    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L05A8    fcb   $20,$20,$68,$70,$6E,$20,$20,$48     hpn  H
+L05B0    fcb   $61,$72,$64,$77,$61,$72,$65,$20   ardware 
+L05B8    fcb   $50,$61,$67,$65,$20,$4E,$75,$6D   Page Num
+L05C0    fcb   $62,$65,$72,$0A,$68,$70,$61,$20   ber.hpa 
+L05C8    fcb   $20,$48,$61,$72,$64,$77,$61,$72    Hardwar
+L05D0    fcb   $65,$20,$50,$6F,$72,$74,$20,$41   e Port A
+L05D8    fcb   $64,$64,$72,$65,$73,$73,$20,$20   ddress  
+L05E0    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L05E8    fcb   $20,$20,$20,$20,$64,$72,$76,$20       drv 
+L05F0    fcb   $20,$50,$68,$79,$73,$69,$63,$61    Physica
+L05F8    fcb   $6C,$20,$44,$72,$69,$76,$65,$20   l Drive 
+L0600    fcb   $4E,$75,$6D,$62,$65,$72,$0A,$73   Number.s
+L0608    fcb   $74,$70,$20,$20,$53,$74,$65,$70   tp  Step
+L0610    fcb   $20,$52,$61,$74,$65,$20,$43,$6F    Rate Co
+L0618    fcb   $64,$65,$20,$20,$20,$20,$20,$20   de      
+L0620    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L0628    fcb   $20,$20,$20,$20,$20,$20,$20,$74          t
+L0630    fcb   $79,$70,$20,$20,$44,$72,$69,$76   yp  Driv
+L0638    fcb   $65,$20,$54,$79,$70,$65,$0A,$64   e Type.d
+L0640    fcb   $6E,$73,$20,$20,$44,$72,$69,$76   ns  Driv
+L0648    fcb   $65,$2F,$44,$69,$73,$6B,$20,$44   e/Disk D
+L0650    fcb   $65,$6E,$73,$69,$74,$79,$20,$20   ensity  
+L0658    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L0660    fcb   $20,$20,$20,$20,$20,$20,$20,$63          c
+L0668    fcb   $79,$6C,$20,$20,$44,$72,$69,$76   yl  Driv
+L0670    fcb   $65,$20,$43,$79,$6C,$69,$6E,$64   e Cylind
+L0678    fcb   $65,$72,$73,$0A,$73,$69,$64,$20   ers.sid 
+L0680    fcb   $20,$44,$72,$69,$76,$65,$20,$53    Drive S
+L0688    fcb   $69,$64,$65,$73,$20,$28,$48,$65   ides (He
+L0690    fcb   $61,$64,$73,$29,$20,$20,$20,$20   ads)    
+L0698    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L06A0    fcb   $20,$20,$20,$20,$76,$66,$79,$20       vfy 
+L06A8    fcb   $20,$57,$72,$69,$74,$65,$20,$56    Write V
+L06B0    fcb   $65,$72,$69,$66,$79,$20,$46,$6C   erify Fl
+L06B8    fcb   $61,$67,$0A,$73,$63,$74,$20,$20   ag.sct  
+L06C0    fcb   $53,$65,$63,$74,$6F,$72,$73,$20   Sectors 
+L06C8    fcb   $50,$65,$72,$20,$54,$72,$61,$63   Per Trac
+L06D0    fcb   $6B,$20,$20,$20,$20,$20,$20,$20   k       
+L06D8    fcb   $20,$20,$20,$20,$20,$20,$20,$20           
+L06E0    fcb   $20,$20,$20,$74,$30,$73,$20,$20      t0s  
+L06E8    fcb   $53,$65,$63,$74,$6F,$72,$73,$20   Sectors 
+L06F0    fcb   $4F,$6E,$20,$54,$72,$61,$63,$6B   On Track
+L06F8    fcb   $20,$5A,$65,$72,$6F,$0A,$69,$6C    Zero.il
+L0700    fcb   $76,$20,$20,$53,$65,$63,$74,$6F   v  Secto
+L0708    fcb   $72,$20,$49,$6E,$74,$65,$72,$6C   r Interl
+L0710    fcb   $65,$61,$76,$65,$20,$46,$61,$63   eave Fac
+L0718    fcb   $74,$6F,$72,$20,$20,$20,$20,$20   tor     
+L0720    fcb   $20,$20,$20,$20,$20,$20,$73,$61         sa
+L0728    fcb   $73,$20,$20,$53,$65,$67,$6D,$65   s  Segme
+L0730    fcb   $6E,$74,$20,$41,$6C,$6C,$6F,$63   nt Alloc
+L0738    fcb   $61,$74,$69,$6F,$6E,$20,$53,$69   ation Si
+L0740    fcb   $7A,$65,$0A,$77,$70,$63,$20,$20   ze.wpc  
+L0748    fcb   $57,$72,$69,$74,$65,$20,$50,$72   Write Pr
+L0750    fcb   $65,$63,$6F,$6D,$70,$65,$6E,$73   ecompens
+L0758    fcb   $61,$74,$69,$6F,$6E,$20,$43,$6F   ation Co
+L0760    fcb   $64,$65,$20,$20,$20,$20,$20,$20   de      
+L0768    fcb   $20,$20,$20,$6F,$66,$73,$20,$20      ofs  
+L0770    fcb   $50,$61,$72,$74,$69,$74,$69,$6F   Partitio
+L0778    fcb   $6E,$20,$4F,$66,$66,$73,$65,$74   n Offset
+L0780    fcb   $20,$43,$79,$6C,$69,$6E,$64,$65    Cylinde
+L0788    fcb   $72,$0A,$72,$77,$63,$20,$20,$52   r.rwc  R
+L0790    fcb   $65,$64,$75,$63,$65,$64,$20,$57   educed W
+L0798    fcb   $72,$69,$74,$65,$20,$43,$75,$72   rite Cur
+L07A0    fcb   $72,$65,$6E,$74,$20,$43,$79,$6C   rent Cyl
+L07A8    fcb   $69,$6E,$64,$65,$72,$0D,$3D,$0A   inder.=.
+L07B0    fcb   $4E,$6F,$74,$20,$61,$6E,$20,$52   Not an R
+L07B8    fcb   $42,$46,$20,$64,$65,$73,$63,$72   BF descr
+L07C0    fcb   $69,$70,$74,$6F,$72,$21,$0D,$0A   iptor!..
+L07C8    fcb   $4D,$6F,$64,$75,$6C,$65,$20,$73   Module s
+L07D0    fcb   $69,$7A,$65,$20,$6F,$75,$74,$20   ize out 
+L07D8    fcb   $6F,$66,$20,$72,$61,$6E,$67,$65   of range
+L07E0    fcb   $21,$0D,$0A,$53,$79,$6E,$74,$61   !..Synta
+L07E8    fcb   $78,$20,$65,$72,$72,$6F,$72,$3A   x error:
+L07F0    fcb   $20,$20,$30,$8D,$FB,$B5,$10,$8E     0..5..
+L07F8    fcb   $04,$03,$20,$1F,$30,$8D,$FF,$C7   .. .0..G
+L0800    fcb   $10,$8E,$00,$1B,$20,$08,$30,$8D   .... .0.
+L0808    fcb   $FF,$A5,$10,$8E,$00,$18,$86,$02   .%......
+L0810    fcb   $10,$3F,$8C,$30,$8D,$F8,$6F,$10   .?.0.xo.
+L0818    fcb   $8E,$03,$25,$86,$02,$10,$3F,$8C   ..%...?.
+L0820    fcb   $16,$02,$0D,$CC,$00,$00,$DD,$05   ...L..].
+L0828    fcb   $97,$0D,$EC,$80,$81,$2D,$26,$32   ..l..-&2
+L0830    fcb   $C1,$3F,$27,$BE,$86,$03,$10,$3F   A?'>...?
+L0838    fcb   $84,$25,$D8,$9F,$0B,$97,$0D,$10   .%X.....
+L0840    fcb   $8E,$00,$50,$30,$C8,$1A,$10,$3F   ..P0H..?
+L0848    fcb   $89,$10,$25,$01,$E4,$E6,$88,$11   ..%.df..
+L0850    fcb   $4F,$C3,$00,$12,$DD,$09,$EC,$02   OC..].l.
+L0858    fcb   $10,$83,$00,$50,$22,$9E,$DD,$07   ...P".].
+L0860    fcb   $20,$3B,$81,$2F,$26,$AD,$34,$40    ;./&-4@
+L0868    fcb   $86,$F0,$10,$3F,$00,$25,$A4,$9F   .p.?.%$.
+L0870    fcb   $0B,$1F,$31,$35,$40,$9F,$05,$E6   ..15@..f
+L0878    fcb   $88,$11,$4F,$C3,$00,$12,$DD,$09   ..OC..].
+L0880    fcb   $EC,$02,$10,$83,$00,$50,$10,$22   l....P."
+L0888    fcb   $FF,$72,$DD,$07,$1F,$02,$34,$40   .r]...4@
+L0890    fcb   $33,$C8,$1A,$A6,$80,$A7,$C0,$31   3H.&.'@1
+L0898    fcb   $3F,$26,$F8,$35,$40,$DC,$09,$10   ?&x5@\..
+L08A0    fcb   $93,$07,$10,$24,$FF,$56,$30,$C8   ...$.V0H
+L08A8    fcb   $1A,$A6,$88,$12,$81,$01,$10,$26   .&.....&
+L08B0    fcb   $FF,$54,$9E,$0B,$17,$01,$1A,$81   .T......
+L08B8    fcb   $0D,$10,$27,$01,$90,$30,$1F,$17   ..'..0..
+L08C0    fcb   $01,$0F,$9F,$0B,$81,$0D,$10,$27   .......'
+L08C8    fcb   $01,$0E,$31,$8D,$F7,$3F,$34,$40   ..1.w?4@
+L08D0    fcb   $EE,$81,$8A,$20,$1E,$03,$8A,$20   n.. ... 
+L08D8    fcb   $CA,$20,$1E,$03,$31,$26,$6D,$A4   J ..1&m$
+L08E0    fcb   $2B,$5F,$A1,$21,$26,$F6,$11,$A3   +_!!&v.#
+L08E8    fcb   $22,$26,$F1,$35,$40,$10,$9F,$0E   "&q5@...
+L08F0    fcb   $EC,$80,$81,$3D,$26,$4B,$C1,$0D   l..=&KA.
+L08F8    fcb   $27,$47,$C1,$20,$27,$43,$E6,$25   'GA 'Cf%
+L0900    fcb   $27,$3F,$D7,$00,$E6,$24,$2A,$66   '?W.f$*f
+L0908    fcb   $C4,$7F,$4F,$10,$93,$07,$24,$31   DO...$1
+L0910    fcb   $31,$C8,$1A,$EC,$A5,$10,$93,$07   1H.l%...
+L0918    fcb   $24,$27,$31,$AB,$34,$20,$10,$3F   $'1+4 .?
+L0920    fcb   $10,$35,$20,$25,$1C,$81,$20,$27   .5 %.. '
+L0928    fcb   $04,$81,$0D,$26,$14,$D1,$00,$22   ...&.Q."
+L0930    fcb   $10,$A6,$80,$A7,$A0,$5A,$26,$F9   .&.' Z&y
+L0938    fcb   $A6,$3F,$8A,$80,$A7,$3F,$16,$FF   &?..'?..
+L0940    fcb   $7E,$30,$8D,$FE,$9D,$10,$8E,$00   ~0......
+L0948    fcb   $10,$86,$02,$10,$3F,$8A,$9E,$0B   ....?...
+L0950    fcb   $30,$1F,$34,$10,$10,$8E,$00,$00   0.4.....
+L0958    fcb   $31,$21,$A6,$80,$81,$0D,$27,$04   1!&...'.
+L0960    fcb   $81,$20,$26,$F4,$35,$10,$86,$02   . &t5...
+L0968    fcb   $10,$3F,$8A,$16,$00,$C0,$4F,$10   .?...@O.
+L0970    fcb   $93,$09,$24,$CD,$0F,$03,$0F,$04   ..$M....
+L0978    fcb   $A6,$80,$81,$20,$27,$37,$81,$0D   &.. '7..
+L0980    fcb   $27,$31,$80,$30,$2B,$BB,$81,$0A   '1.0+;..
+L0988    fcb   $25,$0C,$84,$5F,$80,$07,$81,$0A   %.._....
+L0990    fcb   $25,$AF,$81,$10,$24,$AB,$C6,$10   %/..$+F.
+L0998    fcb   $3D,$34,$04,$DC,$03,$69,$E4,$59   =4.\.idY
+L09A0    fcb   $49,$69,$E4,$59,$49,$69,$E4,$59   IidYIidY
+L09A8    fcb   $49,$69,$E4,$59,$49,$DD,$03,$35   IidYI].5
+L09B0    fcb   $04,$20,$C5,$30,$1F,$E6,$24,$31   . E0.f$1
+L09B8    fcb   $C8,$1A,$31,$A5,$DC,$03,$0A,$00   H.1%\...
+L09C0    fcb   $27,$05,$ED,$A4,$16,$FE,$F8,$4D   '.m$..xM
+L09C8    fcb   $10,$26,$FF,$75,$E7,$A4,$16,$FE   .&.ug$..
+L09D0    fcb   $EE,$A6,$80,$81,$20,$27,$FA,$39   n&.. 'z9
+L09D8    fcb   $34,$40,$33,$C8,$1A,$1F,$31,$10   4@3H..1.
+L09E0    fcb   $AE,$02,$31,$3D,$1F,$20,$33,$CB   ..1=. 3K
+L09E8    fcb   $86,$FF,$A7,$C4,$A7,$41,$A7,$42   ..'D'A'B
+L09F0    fcb   $34,$40,$10,$3F,$17,$35,$40,$63   4@.?.5@c
+L09F8    fcb   $C0,$63,$C0,$63,$C4,$96,$0D,$27   @c@cD..'
+L0A00    fcb   $17,$8E,$00,$00,$1F,$13,$10,$3F   .......?
+L0A08    fcb   $88,$25,$26,$35,$40,$30,$C8,$1A   .%&5@0H.
+L0A10    fcb   $10,$9E,$07,$10,$3F,$8A,$20,$16   ....?. .
+L0A18    fcb   $EE,$E4,$30,$C8,$1A,$10,$9E,$07   nd0H....
+L0A20    fcb   $DE,$05,$A6,$80,$A7,$C0,$31,$3F   ^.&.'@1?
+L0A28    fcb   $26,$F8,$35,$40,$20,$02,$8D,$0F   &x5@ ...
+L0A30    fcb   $5F,$34,$05,$DE,$05,$27,$03,$10   _4.^.'..
+L0A38    fcb   $3F,$02,$35,$05,$10,$3F,$06,$30   ?.5..?.0
+L0A40    fcb   $8D,$FD,$83,$10,$8E,$00,$01,$86   ........
+L0A48    fcb   $01,$10,$3F,$8C,$39,$8D,$F0,$C6   ..?.9.pF
+L0A50    fcb   $13,$34,$04,$30,$8D,$F5,$BC,$9F   .4.0.u<.
+L0A58    fcb   $0E,$9E,$0E,$10,$8E,$00,$04,$17   ........
+L0A60    fcb   $00,$9D,$30,$8D,$FD,$48,$10,$8E   ..0..H..
+L0A68    fcb   $00,$01,$17,$00,$92,$9E,$0E,$E6   .......f
+L0A70    fcb   $04,$2A,$35,$C4,$7F,$4F,$10,$93   .*5DO..
+L0A78    fcb   $07,$24,$59,$31,$C8,$1A,$EC,$A5   .$Y1H.l%
+L0A80    fcb   $10,$93,$07,$24,$4F,$31,$AB,$86   ...$O1+.
+L0A88    fcb   $0A,$30,$C8,$10,$0F,$00,$E6,$A0   .0H...f 
+L0A90    fcb   $2A,$04,$C4,$7F,$86,$01,$E7,$80   *.D..g.
+L0A98    fcb   $0C,$00,$4A,$26,$F1,$D6,$00,$1F   ..J&qV..
+L0AA0    fcb   $02,$30,$C8,$10,$8D,$59,$20,$2C   .0H..Y ,
+L0AA8    fcb   $9E,$0E,$E6,$05,$D7,$00,$E6,$04   ..f.W.f.
+L0AB0    fcb   $4F,$10,$93,$09,$24,$1E,$30,$C8   O...$.0H
+L0AB8    fcb   $1A,$3A,$9F,$01,$9E,$01,$A6,$80   .:....&.
+L0AC0    fcb   $9F,$01,$34,$02,$44,$44,$44,$44   ..4.DDDD
+L0AC8    fcb   $8D,$24,$35,$02,$84,$0F,$8D,$1E   .$5.....
+L0AD0    fcb   $0A,$00,$26,$E8,$9E,$0E,$30,$06   ..&h..0.
+L0AD8    fcb   $9F,$0E,$6A,$E4,$10,$27,$FF,$4E   ..jd.'.N
+L0AE0    fcb   $E6,$E4,$C5,$07,$10,$26,$FF,$71   fdE..&.q
+L0AE8    fcb   $17,$FF,$54,$16,$FF,$6B,$81,$0A   ..T..k..
+L0AF0    fcb   $25,$02,$8B,$07,$8B,$30,$97,$10   %....0..
+L0AF8    fcb   $30,$C8,$10,$10,$8E,$00,$01,$86   0H......
+L0B00    fcb   $01,$10,$3F,$8A,$10,$25,$FF,$29   ..?..%.)
+L0B08    fcb   $39,$B3,$B2,$FE                   932.
