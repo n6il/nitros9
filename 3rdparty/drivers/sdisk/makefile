@@ -4,7 +4,8 @@ DEPENDS		= ./Makefile
 
 DRIVERS		= sdisk.dr
 DESCS		= d0_40d.dd
-ALLOBJS		= $(DRIVERS) $(DESCS)
+PROGRAMS	= bootfix
+ALLOBJS		= $(DRIVERS) $(DESCS) $(PROGRAMS)
 
 all:	$(ALLOBJS) $(DEPENDS)
 
