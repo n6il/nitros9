@@ -1,0 +1,32 @@
+<refentry id="error">
+<refnamediv>
+<refname>ERROR</refname>
+<refpurpose>Outputs text error messages for given error numbers</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>ERROR</command>
+<arg choice="plain">
+  &replstart;errno&replend;
+</arg>
+<arg choice="plain">
+  &repeatst;&replstart;errno&replend;&repeaten;
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+This command is used to look up the description of an error code.
+/dd/sys/errmsg must be available.
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+OS9: error 216
+PATH NAME NOT FOUND - can't find pathlist specified.
+</screen>
+</refsect1>
+</refentry>
+
