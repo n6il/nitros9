@@ -32,14 +32,23 @@ size     equ   .
 name     fcs   /CC3Go/
          fcb  edition
 
-Banner   fcc   / OS-9 LEVEL TWO VR. 0/
+Banner
+         ifne  NitrOS9
+         fcc   / NitrOS-9 Level Two Vr. 0/
+         else
+         fcc   / OS-9 LEVEL TWO VR. 0/
+         endc
          fcb   48+OS9Vrsn
          fcc   /.0/
          fcb   48+OS9Major
          fcc   /.0/
          fcb   48+OS9Minor
          fcb   C$CR,C$LF
+         ifne  NitrOS9
+         fcc   !SAURON BETA1 RELEASE 09/01/02!
+         else
          fcc   !ARIES BETA1 RELEASE 08/22/02!
+         endc
          fcb   C$CR,C$LF
          fcc   /     COPYRIGHT 1988 BY/
          fcb   C$CR,C$LF
@@ -51,21 +60,25 @@ Banner   fcc   / OS-9 LEVEL TWO VR. 0/
          fcb   C$CR,C$LF
          fcb   C$LF
 BannLen  equ   *-Banner
+         ifeq  ROM
 DefDev   fcc   "/H0"
          fcb   C$CR
 HDDev    fcc   "/H0/"
 ExecDir  fcc   "Cmds"
          fcb   C$CR
          fcc   ",,,,,"
+         endc
 Shell    fcc   "Shell"
          fcb   C$CR
          fcc   ",,,,,"
 AutoEx   fcc   "AutoEx"
          fcb   C$CR
          fcc   ",,,,,"
+         ifeq  ROM
 Startup  fcc   "STARTUP -P"
          fcb   C$CR
          fcc   ",,,,,"
+         endc
 ShellPrm fcc   "i=/1"
 CRtn     fcb   C$CR
          fcc   ",,,,,"
@@ -84,6 +97,7 @@ start    leax  >IcptRtn,pcr
          os9   I$Write                 write out banner
          leax  >DefTime,pcr
          os9   F$STime                 set time to default
+         ifeq  ROM
          leax  >ExecDir,pcr
          lda   #EXEC.
          os9   I$ChgDir                change exec. dir
@@ -94,6 +108,7 @@ start    leax  >IcptRtn,pcr
          leax  >HDDev,pcr
          lda   #EXEC.
          os9   I$ChgDir                change exec. dir to HD
+         endc
 L0125    pshs  u,y
          os9   F$ID
          bcs   L01A9
@@ -118,6 +133,7 @@ L0151    lda   b,y
          sta   b,u
          decb
          bpl   L0151
+         ifeq  ROM
 * Fork shell startup here
          leax  >Shell,pcr
          leau  >Startup,pcr
@@ -126,6 +142,7 @@ L0151    lda   b,y
          os9   F$Fork
          bcs   L01A5
          os9   F$Wait
+         endc
 * Fork AutoEx here
          leax  >AutoEx,pcr
          leau  >CRtn,pcr

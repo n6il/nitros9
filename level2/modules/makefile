@@ -51,16 +51,14 @@ all:	$(ALLOBJS)
 
 
 # Special cases here
+cc3go_rom: cc3go.asm
+	$(AS) -aROM=1 $(AFLAGS) $< $(ASOUT)$@
+	
 sacia.dr: xacia.asm
 	$(AS) -aA6551=1 -aA6552=0 -aMPI.Slot=00 $(AFLAGS) $< $(ASOUT)$@
 	
 dacia.dr: xacia.asm
 	$(AS) -aA6551=0 -aA6552=1 -aMPI.Slot=00 $(AFLAGS) $< $(ASOUT)$@
-
-
-
-boot_1773: boot_1773.asm
-	$(AS) -aNitrOS9=0 $(AFLAGS) $< $(ASOUT)$@
 
 kernel_1773: $(KERNEL_1773) $(DEPENDS)
 	$(MERGE) $(KERNEL_1773)>$@
