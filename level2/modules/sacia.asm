@@ -402,7 +402,7 @@ NotTxBrk   equ   *
            tim   #Stat.TxE,StatReg,x
            ELSE
            pshs  a
-           lda   StatRegx
+           lda   StatReg,x
            bita  #Stat.TxE
            puls  a
            ENDC

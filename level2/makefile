@@ -2,6 +2,7 @@ include ../rules.mak
 
 RELEASE		= nos96809l2v030200
 BOOTFILE	= bootfiles/bootfile_vdg
+BOOTFILE_DS80	= bootfiles/bootfile_vdg_ds80
 KERNELFILE	= bootfiles/kernel_stock
 DIRS		= cmds modules defs sys bootfiles
 
@@ -49,7 +50,7 @@ dsk: all $(PACKAGENAME)
 dskcopy: dsk
 	$(CP) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(PACKAGENAME) $(DSKDIR)
 
-$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) ReadMe ChangeLog
+$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) ReadMe ChangeLog
 	$(ARCHIVE) $@ $^
 
 $(DSK360K_1):
@@ -110,7 +111,7 @@ $(DSK360K_2):
 $(DSK720K):
 	-$(RM) $@
 	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/6809 Level 2"
-	$(OS9GEN) $@ -b=$(BOOTFILE) -t=$(KERNELFILE)
+	$(OS9GEN) $@ -b=$(BOOTFILE_DS80) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS

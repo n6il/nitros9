@@ -49,7 +49,8 @@ BOOTFILE_WIN80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILES	= bootfile_vdg bootfile_win40 bootfile_win80
+BOOTFILES	= bootfile_vdg bootfile_win40 bootfile_win80 \
+		bootfile_vdg_ds80 bootfile_win40_ds80 bootfile_win80_ds80
 KERNELS		= kernel_stock
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
@@ -66,6 +67,15 @@ bootfile_win40: $(BOOTFILE_WIN40) $(DEPENDS)
 bootfile_win80: $(BOOTFILE_WIN80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_WIN80)>$@
 
+bootfile_vdg_ds80: $(BOOTFILE_VDG_DS80) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_VDG_DS80)>$@
+
+bootfile_win40_ds80: $(BOOTFILE_WIN40_DS80) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_WIN40_DS80)>$@
+
+bootfile_win80_ds80: $(BOOTFILE_WIN80_DS80) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_WIN80_DS80)>$@
+
 # Kernels
 kernel_stock: $(KERNEL_STOCK) $(DEPENDS)
 	$(MERGE) $(KERNEL_STOCK)>$@
@@ -73,3 +83,42 @@ kernel_stock: $(KERNEL_STOCK) $(DEPENDS)
 clean:
 	$(RM) $(ALLOBJS)
 
+# OS-9 disk bootfile to allow booting from WD1773 disk controller
+BOOTFILE_VDG_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/cc3disk.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+		$(MD)/ddd0_80d.dd \
+		$(MD)/scf.mn $(MD)/cc3io.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/windint.io $(MD)/vdgint.io \
+		$(MD)/term_vdg.dt \
+		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_soft
+
+BOOTFILE_WIN40_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/cc3disk.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+		$(MD)/ddd0_80d.dd \
+		$(MD)/scf.mn $(MD)/cc3io.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/windint.io $(MD)/vdgint.io \
+		$(MD)/term_win40.dt \
+		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_soft
+
+BOOTFILE_WIN80_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/cc3disk.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+		$(MD)/ddd0_80d.dd \
+		$(MD)/scf.mn $(MD)/cc3io.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/windint.io $(MD)/vdgint.io \
+		$(MD)/term_win80.dt \
+		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_soft
