@@ -21,6 +21,7 @@ Start    fcc   /OS/
 BootMsg  fcc   /OSy/
          fcb   $60
          fcc   /BOOT/
+BootMLen equ   *-BootMsg
 
 L2620    clr   PIA.U4+3
          sta   $FFDF                   turn off ROM
@@ -43,7 +44,7 @@ L263B    sta   ,x+
 * Copy "OS9 BOOT" to screen area
          ldx   #$810C
          leay  <BootMsg,pcr
-         ldb   #$08
+         ldb   #BootMLen
 L2649    lda   ,y+
          sta   ,x+
          decb
