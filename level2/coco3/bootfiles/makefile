@@ -34,7 +34,7 @@ BOOTFILE_ROM	= $(MD)/rominfo $(MD)/os9p2 $(MD)/init $(MD)/ioman \
 BOOTFILE_KENTON	= $(MD)/os9p2 $(MD)/ioman $(MD)/rbf.mn $(MD)/clock $(MD)/clock2_soft $(3PD)/disto/rampak.dr \
 		$(3PD)/disto/r0_256_l2.dd $(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_80d.dd \
 		$(3PD)/scsisys/scsisys_68_ktlr.dr \
-		$(3PD)/scsisys/h0_ktlr.dd $(MD)/scf.mn $(MD)/cc3io.dr $(MD)/keydrv \
+		$(3PD)/scsisys/h5_zip100_ktlr_l2.dd $(MD)/scf.mn $(MD)/cc3io.dr $(MD)/keydrv \
 		$(MD)/joydrv_6551L $(3PD)/s16550/s16550_large.dr $(3PD)/s16550/t2_s16550.dd \
 		$(MD)/snddrv $(MD)/windint.io $(MD)/term_win80.dt $(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd $(MD)/init
