@@ -21,7 +21,19 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Sbrk requests an allocation from free memory and returns a
+pointer to its base.
+</para>
+<para>
+"Sbrk()" requests the system to allocate "new" memory from
+outside the initial allocation.
+</para>
+<para>
+Users should read the Memory Management section of this manual
+for a fuller explanation of the arrangement.
+</para>
+<para>
+Ibrk requests memory from inside the initial memory allocation.
 </para>
 </refsect1>
 
