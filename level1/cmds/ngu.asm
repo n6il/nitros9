@@ -98,6 +98,8 @@ HlpMsg   fcb   C$LF
          fcb   C$LF
          fcc   /   -b    option 2/
          fcb   C$LF
+         fcc   /   -c=f  option 3/
+         fcb   C$LF
          fcb   C$CR
 HlpMsgL  equ   *-HlpMsg
          ENDC
@@ -170,16 +172,16 @@ ChkDash  lbsr  SkipSpcs         and any following spaces
 GetDash  lda   #C$SPAC		get a space char
          sta   -1,x		and wipe out the dash from the cmd line
 GetDash2 ldd   ,x+		load option char and char following
-         anda  #$5F		make uppercase
-IsItA    cmpa  #'A		is it this option?
+         ora   #$20		make lowercase
+IsItA    cmpa  #'a		is it this option?
          bne   IsItB		branch if not
          inc   <gota
          lbra  FixCmdLn
-IsItB    cmpa  #'B		is it this option?
+IsItB    cmpa  #'b		is it this option?
          bne   IsItC		branch if not
          inc   <gotb
          bra   FixCmdLn
-IsItC    cmpa  #'C		is it this option?
+IsItC    cmpa  #'c		is it this option?
          bne   BadOpt		branch if not
          tst   <coptflg		was this option already specified?
          bne   BadOpt		show help if so
