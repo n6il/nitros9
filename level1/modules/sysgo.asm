@@ -3,14 +3,19 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   5    Taken from OS-9 L2 Tandy distribution and      BGP 98/10/12
-*        modified banner for V3
-*   5r2  Fixed fork behavior so that if 'shell startup' BGP 03/01/08
-*        fails, system doesn't jmp to Crash, but tries
-*        AutoEx instead.  Also changed /DD back to /H0
-*        for certain boot floppy cases.
+*   5      1998/10/12  Boisy G. Pitre
+* Taken from OS-9 L2 Tandy distribution and modified banner for V3.
+*
+*   5r2    2003/01/08  Boisy G. Pitre
+* Fixed fork behavior so that if 'shell startup' fails, system doesn't
+* jmp to Crash, but tries AutoEx instead.  Also changed /DD back to /H0
+* for certain boot floppy cases.
+*
+*          2003/09/04  Boisy G. Pitre
+* Back-ported to OS-9 Level One.
 
 
          nam   SysGo
@@ -64,7 +69,7 @@ Banner   equ   *
          fcb   C$CR,C$LF
 * For ROM version, cut down on verbage
          IFEQ  ROM
-         fcc   "Release Date: 00/01/2003"
+         fcc   "Release Date: 09/01/2003"
          fcb   C$CR,C$LF
          fcc   /"A CoCo Community Project"/
          fcb   C$CR,C$LF
@@ -92,20 +97,17 @@ HDDev    equ   *
          ENDC
 ExecDir  fcc   "CMDS"
          fcb   C$CR
-         fcc   ",,,,,"
          ENDC
 
 Shell    fcc   "Shell"
          fcb   C$CR
-         fcc   ",,,,,"
 AutoEx   fcc   "AutoEx"
          fcb   C$CR
-         fcc   ",,,,,"
 
          IFEQ  ROM
-Startup  fcc   "STARTUP -P"
+Startup  fcc   "startup -p"
          fcb   C$CR
-         fcc   ",,,,,"
+StartupL equ  *-Startup
          ENDC
 
 ShellPrm equ   *
@@ -164,6 +166,7 @@ start    leax  >IcptRtn,pcr
 
 * Setup BASIC code
 L0125    equ   *
+         pshs  u,y
          IFEQ  Level-1
          leax  >BasicRst,pcr
          ldu   #D.CBStrt
@@ -173,7 +176,6 @@ CopyLoop lda   ,x+
          decb
          bne   CopyLoop
          ELSE
-         pshs  u,y
          os9   F$ID
          bcs   L01A9
          leax  ,u
@@ -204,7 +206,7 @@ L0151    lda   b,y
          leax  >Shell,pcr
          leau  >Startup,pcr
          ldd   #256
-         ldy   #16
+         ldy   #StartupL
          os9   F$Fork
          bcs   DoAuto
          os9   F$Wait
@@ -217,8 +219,9 @@ DoAuto   leax  >AutoEx,pcr
          os9   F$Fork
          bcs   L0186
          os9   F$Wait
-L0186    puls  u,y
-         leax  >ShellPrm,pcr
+L0186    equ   *
+         puls  u,y
+FrkShell leax  >ShellPrm,pcr
          leay  ,u
          ldb   #ShellPL
 L0190    lda   ,x+
@@ -227,17 +230,21 @@ L0190    lda   ,x+
          bne   L0190
 * Fork final shell here
          leax  >Shell,pcr
-         ldd   #$0100
+         lda   #$01		D = 256 (B already 0 from above)
          ldy   #ShellPL
+         IFGT  Level-1
          os9   F$Chain
-         IFEQ  Level-1
-DeadEnd  bra   DeadEnd		dead loop
-         ELSE
          ldb   #$06
          bra   Crash
 L01A9    ldb   #$04
 Crash    clr   >DPort+$08	turn off disk motor
          jmp   <D.Crash
+         ELSE
+         os9   F$Fork
+         bcs   DeadEnd
+         os9   F$Wait
+         bcc   FrkShell
+DeadEnd  bra   DeadEnd
          ENDC
 
 IcptRtn  rti
