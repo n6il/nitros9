@@ -17,12 +17,12 @@
          use   defsfile
          endc
 
+linebsiz equ   80
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   4
-
-linebsiz equ   80
 
          mod   eom,name,tylg,atrv,start,size
 

@@ -23,6 +23,7 @@ edition  set   3
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 fpath    rmb   451
 size     equ   .
 

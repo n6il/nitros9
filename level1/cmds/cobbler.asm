@@ -14,10 +14,10 @@
 
 * Disassembled 02/07/06 13:08:41 by Disasm v1.6 (C) 1988 by RML
 
-         ifp1
+         IFP1
          use   defsfile
          use   rbfdefs
-         endc
+         ENDC
 
 DOHELP   set   0
 
@@ -31,28 +31,29 @@ os9l1size  equ $0F80
 
          mod   eom,name,tylg,atrv,start,size
 
-LSN0Buff rmb   26
-NewBPath rmb   1
-DevPath  rmb   3
+         org   0
+lsn0buff rmb   26
+newbpath rmb   1
+devpath  rmb   3
 u001E    rmb   2
-FullBName rmb   20	this buffer hodls the entire name (i.e. /D0/OS9Boot)
+fullbnam rmb   20	this buffer hodls the entire name (i.e. /D0/OS9Boot)
 u0034    rmb   16
 u0044    rmb   7
 u004B    rmb   2
 u004D    rmb   1
 u004E    rmb   16
-PathOpts rmb   20
+pathopts rmb   20
 u0072    rmb   2
 u0074    rmb   10
-BFFDBuf  rmb   16
+bffdbuf  rmb   16
 u008E    rmb   1
 u008F    rmb   7
 u0096    rmb   232
-BitMBuf  rmb   1024
-         ifgt  Level-1
+bitmbuf  rmb   1024
+         IFGT  Level-1
 u057E    rmb   76
 u05CA    rmb   8316
-         endc
+         ENDC
 size     equ   .
 
 name     fcs   /Cobbler/
@@ -84,11 +85,11 @@ FileWarn fcb   C$LF
 BootFrag fcb   C$LF
          fcc   "Error - OS9boot file fragmented"
          fcb   C$CR
-         ifgt  Level-1
+         IFGT  Level-1
 RelMsg   fcb   C$LF
          fcc   "Error - can't link to Rel module"
          fcb   C$CR
-         endc
+         ENDC
 BootName fcc   "OS9Boot "
          fcb   $FF 
 RelNam   fcc   "Rel"
@@ -103,7 +104,7 @@ start    clrb
          lda   #PDELIM
          cmpa  ,y
          lbeq  ShowHelp
-         leay  <FullBName,u
+         leay  <fullbnam,u
 L013C    sta   ,y+
          lda   ,x+
          decb  
@@ -112,10 +113,10 @@ L013C    sta   ,y+
          lda   #PENTIR
          ldb   #C$SPAC
          std   ,y++
-         leax  <FullBName,u
+         leax  <fullbnam,u
          lda   #UPDAT.
          os9   I$Open   
-         sta   <DevPath
+         sta   <devpath
          lbcs  ShowHelp
          ldx   <u001E
          leay  >BootName,pcr
@@ -128,18 +129,18 @@ L0162    sta   ,x+
          clrb  
          tfr   d,x
          tfr   d,u
-         lda   <DevPath
+         lda   <devpath
          os9   I$Seek   	seek to 0
          lbcs  Bye
          puls  u
-         leax  LSN0Buff,u
+         leax  lsn0buff,u
          ldy   #DD.DAT		$1A
-         lda   <DevPath
+         lda   <devpath
          os9   I$Read   	read LSN0
          lbcs  Bye
          ldd   <DD.BSZ		get size of bootfile currently
          beq   L019F		branch if none
-         leax  <FullBName,u
+         leax  <fullbnam,u
          os9   I$Delete 	delete existing bootfile
          clra  
          clrb  
@@ -149,12 +150,12 @@ L0162    sta   ,x+
          lbsr  WriteLSN0
 L019F    lda   #WRITE.
          ldb   #READ.+WRITE.
-         leax  <FullBName,u
+         leax  <fullbnam,u
          os9   I$Create 	create new bootfile
-         sta   <NewBPath
+         sta   <newbpath
          lbcs  Bye		branch if error
 
-         ifgt  Level-1
+         IFGT  Level-1
 * OS-9 Level Two: Copy first 90 bytes of system direct page into our space
 * so we can figure out boot location and size, then copy to our space
          leax  >L0015,pcr
@@ -196,7 +197,7 @@ L0203    pshs  y
          puls  u
          ldy   ,s
          leax  >u057E,u
-         lda   <NewBPath
+         lda   <newbpath
          os9   I$Write  
          lbcs  Bye
          puls  b,a
@@ -212,7 +213,7 @@ L0203    pshs  y
          bne   L01F7
          leas  $04,s
 
-         else
+         ELSE
 
 * OS-9 Level One: Write out bootfile
          ldd   >D.BTHI          get bootfile size
@@ -220,48 +221,48 @@ L0203    pshs  y
          tfr   d,y              in D, tfr to Y
          std   <DD.BSZ          save it
          ldx   >D.BTLO          get pointer to boot in mem
-         lda   <NewBPath
+         lda   <newbpath
          os9   I$Write          write out boot to file
          lbcs  Bye
 
-         endc
+         ENDC
 
-         leax  <PathOpts,u
+         leax  <pathopts,u
          ldb   #SS.Opt
-         lda   <NewBPath
+         lda   <newbpath
          os9   I$GetStt 
          lbcs  Bye
-         lda   <NewBPath
+         lda   <newbpath
          os9   I$Close  
          lbcs  ShowHelp
          pshs  u
-         ldx   <PathOpts+(PD.FD-PD.OPT),u
-         lda   <PathOpts+(PD.FD+2-PD.OPT),u
+         ldx   <pathopts+(PD.FD-PD.OPT),u
+         lda   <pathopts+(PD.FD+2-PD.OPT),u
 * Now X and A hold file descriptor sector LSN of newly created OS9Boot
          clrb  
          tfr   d,u
-         lda   <DevPath
+         lda   <devpath
          os9   I$Seek   	seek to os9boot file descriptor
          puls  u
          lbcs  Bye
-         leax  <BFFDBuf,u
+         leax  <bffdbuf,u
          ldy   #256
          os9   I$Read   	read in filedes sector
          lbcs  Bye
-         ldd   >BFFDBuf+(FD.SEG+FDSL.S+FDSL.B),u
+         ldd   >bffdbuf+(FD.SEG+FDSL.S+FDSL.B),u
          lbne  IsFragd		branch if fragmented
 * Get and save bootfile's LSN
-         ldb   >BFFDBuf+(FD.SEG),u
+         ldb   >bffdbuf+(FD.SEG),u
          stb   <DD.BT
-         ldd   >BFFDBuf+(FD.SEG+1),u
+         ldd   >bffdbuf+(FD.SEG+1),u
          std   <DD.BT+1
          lbsr  WriteLSN0
          lda   #$00
          ldb   #$01
          lbsr  Seek2LSN
-         leax  >BitMBuf,u
+         leax  >bitmbuf,u
          ldy   <DD.MAP
-         lda   <DevPath
+         lda   <devpath
          os9   I$Read   	read bitmap sector(s)
          lbcs  Bye
          lda   #$22
@@ -274,7 +275,7 @@ L0203    pshs  y
          lbsr  Seek2LSN
          leax  <u0044,u
          ldy   #$0007
-         lda   <DevPath
+         lda   <devpath
          os9   I$Read   
          lbcs  Bye
          leax  <u0044,u
@@ -308,13 +309,13 @@ L0304    lda   #$22
 L0315    clra  
          ldb   #$01
          lbsr  Seek2LSN		Seek to bitmap sector on disk
-         leax  >BitMBuf,u
+         leax  >bitmbuf,u
          ldy   <DD.MAP
-         lda   <DevPath
+         lda   <devpath
          os9   I$Write  	write updated bitmap
          lbcs  Bye
 
-         ifgt  Level-1
+         IFGT  Level-1
 * OS-9 Level Two: Link to Rel, which brings in boot code
          pshs  u
          lda   #Systm+Objct
@@ -335,20 +336,20 @@ L0315    clra
          lda   #$22
          ldb   #$00
          lbsr  Seek2LSN
-         lda   <DevPath
+         lda   <devpath
          ldx   <u004B,u
 
-         else
+         ELSE
 
 * OS-9 Level One: Write out data at $EF00
          lda   #$22
          ldb   #$00
          lbsr  Seek2LSN 
-         lda   <DevPath
+         lda   <devpath
          ldx   #os9l1start
          ldy   #os9l1size
 
-         endc
+         ENDC
 
          os9   I$Write  
          lbcs  WriteBad
@@ -394,7 +395,7 @@ L03A1    fcb   $80,$40,$20,$10,$08,$04,$02,$01
 
 L03A7    pshs  y,x,b,a
          bsr   AbsLSN		go get absolute LSN
-         leax  >BitMBuf,u	point X to our bitmap buffer
+         leax  >bitmbuf,u	point X to our bitmap buffer
          bsr   L038C
          sta   ,-s		save off
          bmi   L03CB
@@ -435,7 +436,7 @@ L03F9    leas  $01,s
          puls  pc,y,x,b,a
 L03FD    pshs  y,x,b,a
          lbsr  AbsLSN		get absolute LSN
-         leax  >BitMBuf,u
+         leax  >bitmbuf,u
          bsr   L038C
          sta   ,-s
          bmi   L041C
@@ -475,7 +476,7 @@ Seek2LSN pshs  u,y,x,b,a
          puls  b
          clra  
          tfr   d,x
-         lda   <DevPath
+         lda   <devpath
          os9   I$Seek   
          bcs   WriteBad
          puls  pc,u,y,x,b,a
@@ -486,12 +487,12 @@ WriteLSN0
          clrb  
          tfr   d,x
          tfr   d,u
-         lda   <DevPath
+         lda   <devpath
          os9   I$Seek   	Seek to LSN0
          puls  u		added for OS-9 Level One +BGP+
-         leax  LSN0Buff,u	Point to our LSN buffer
+         leax  lsn0buff,u	Point to our LSN buffer
          ldy   #DD.DAT
-         lda   <DevPath
+         lda   <devpath
          os9   I$Write  	Write to disk
          bcs   Bye		branch if error
          rts
@@ -523,10 +524,10 @@ TrkAlloc leax  >FileWarn,pcr
          clrb  
          bra   L0477
 
-         ifgt  Level-1
+         IFGT  Level-1
 NoRel    leax  >RelMsg,pcr
          bra   L0477
-         endc
+         ENDC
 
          emod
 eom      equ   *

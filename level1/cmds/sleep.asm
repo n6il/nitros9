@@ -23,6 +23,7 @@ edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 u0000    rmb   450
 size     equ   .
 

@@ -24,6 +24,7 @@ edition  set   6
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 crc1     rmb   1
 crc2     rmb   1
 crc3     rmb   1

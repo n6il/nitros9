@@ -24,6 +24,7 @@ edition  set   10
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 narrow   rmb   1
 eflag    rmb   1
 aproc    rmb   2

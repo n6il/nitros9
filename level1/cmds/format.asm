@@ -24,33 +24,34 @@ edition  set   $16
 
          mod   eom,name,tylg,atrv,start,size
 
-SavedU   rmb   2
-DiskPath rmb   1
-CurrTrak rmb   2
+         org   0
+savedu   rmb   2
+diskpath rmb   1
+currtrak rmb   2
 u0005    rmb   2
-CurrSct  rmb   1
+currsect rmb   1
 u0008    rmb   1
 u0009    rmb   1
 u000A    rmb   2
 u000C    rmb   2
 u000E    rmb   2
-MFM      rmb   1
+mfm      rmb   1
 u0011    rmb   1
 T4896    rmb   1
 u0013    rmb   1
 u0014    rmb   1
-NCyls    rmb   2
+ncyls    rmb   2
 u0017    rmb   1
 u0018    rmb   1
-Sectors  rmb   1
+sectors  rmb   1
 u001A    rmb   1
-Sectors0 rmb   1
+sectors0 rmb   1
 u001C    rmb   1
-DType    rmb   1
+dtype    rmb   1
 u001E    rmb   1
 u001F    rmb   1
 u0020    rmb   1
-Interlv  rmb   1
+interlv  rmb   1
 u0022    rmb   2
 u0024    rmb   1
 u0025    rmb   1
@@ -80,9 +81,9 @@ u0041    rmb   2
 u0043    rmb   1
 u0044    rmb   1
 u0045    rmb   1
-DTEntry  rmb   2
+dtentry  rmb   2
 u0048    rmb   1
-STOff    rmb   2
+stoff    rmb   2
 u004B    rmb   1
 u004C    rmb   1
 u004D    rmb   1
@@ -96,14 +97,14 @@ u006F    rmb   32
 u008F    rmb   40
 u00B7    rmb   14
 u00C5    rmb   12
-TimePkt  rmb   5
+timepkt  rmb   5
 u00D6    rmb   18
 u00E8    rmb   14
 u00F6    rmb   177
 u01A7    rmb   2
 u01A9    rmb   2
 u01AB    rmb   12
-OptBuf   rmb   256
+optbuf   rmb   256
 u02B7    rmb   3
 u02BA    rmb   9924
 u297E    rmb   451
@@ -202,7 +203,7 @@ L0076    fcb   $20
          fcb   $01 
          fcb   $54 T
 
-start    stu   <SavedU
+start    stu   <savedu
          bsr   ClrWork		cleark work area
          bsr   OpenDev		get device name and open it
          bsr   Default
@@ -212,11 +213,11 @@ start    stu   <SavedU
          lbsr  Access
          lbsr  Stamps
          lbsr  L0843
-         ldu   <DTEntry
+         ldu   <dtentry
          os9   I$Detach 
          clrb  
 L00BB    os9   F$Exit   
-ClrWork  leay  DiskPath,u
+ClrWork  leay  diskpath,u
          pshs  y
          leay  >u00B7,u
 ClrOne   clr   ,-y
@@ -246,8 +247,8 @@ L00ED    sta   ,y+
          clra  
          os9   I$Attach 
          lbcs  L0961
-         stu   <DTEntry
-         ldu   <SavedU
+         stu   <dtentry
+         ldu   <savedu
          lda   #PENTIR
          ldb   #C$SPAC
          std   ,y
@@ -255,7 +256,7 @@ L00ED    sta   ,y+
          leax  <u004F,u
          os9   I$Open   
          bcs   L00BB
-         sta   <DiskPath
+         sta   <diskpath
          rts   
 
 Default  bsr   GetOpts
@@ -263,7 +264,7 @@ Default  bsr   GetOpts
          lbsr  L025E
          rts   
 
-GetOpts  leax  >OptBuf,u
+GetOpts  leax  >optbuf,u
          clrb  
          os9   I$GetStt 
          bcs   L00BB
@@ -274,7 +275,7 @@ GetOpts  leax  >OptBuf,u
          beq   L0143
          tfr   b,a
          anda  #$0F
-         sta   <STOff
+         sta   <stoff
          lsrb  
          lsrb  
          lsrb  
@@ -283,7 +284,7 @@ GetOpts  leax  >OptBuf,u
 L0143    ldb   PD.DNS-PD.OPT,x
          pshs  b
          andb  #DNS.MFM
-         stb   <MFM
+         stb   <mfm
          stb   <u0011
          ldb   ,s
          lsrb  
@@ -299,17 +300,17 @@ L0143    ldb   PD.DNS-PD.OPT,x
          stb   <u004D
          beq   L0169
          stb   <u004B
-         clr   <STOff
+         clr   <stoff
 L0169    ldd   PD.CYL-PD.OPT,x
-         std   <NCyls
+         std   <ncyls
          ldb   PD.TYP-PD.OPT,x
-         stb   <DType
+         stb   <dtype
          ldd   PD.SCT-PD.OPT,x
-         std   <Sectors
+         std   <sectors
          ldd   PD.T0S-PD.OPT,x
-         std   <Sectors0
+         std   <sectors0
          ldb   PD.ILV-PD.OPT,x
-         stb   <Interlv
+         stb   <interlv
          ldb   #$01
          stb   <u0027
          clrb  
@@ -384,7 +385,7 @@ opt.13   fcb   C$SPAC
          bgt   L01FE
          cmpb  <u004C
          blt   L01FE
-         stb   <MFM
+         stb   <mfm
          clrb
 
 DoComa
@@ -436,7 +437,7 @@ L022B    adda  #$80
 
 DoSQuote lbsr  L092C
          ldd   <u001F
-         std   <NCyls
+         std   <ncyls
          rts   
 
 DoColon  lbsr  L092C
@@ -444,7 +445,7 @@ DoColon  lbsr  L092C
          tsta  
          beq   L0243
          ldb   #$01
-L0243    stb   <Interlv
+L0243    stb   <interlv
          rts   
          lbsr  L092C
          ldd   <u001F
@@ -462,12 +463,12 @@ L025C    clrb
 L025D    rts   
 L025E    leax  >Title,pcr
          lbsr  L02E2
-         leay  >OptBuf,u
+         leay  >optbuf,u
          ldx   PD.T0S-PD.OPT,y
-         tst   <MFM
+         tst   <mfm
          beq   L0271
          ldx   PD.SCT-PD.OPT,y
-L0271    stx   <Sectors
+L0271    stx   <sectors
          leax  >FmtMsg,pcr
          ldy   #FmtMLen
          lbsr  L02E6
@@ -485,7 +486,7 @@ L0283    lda   ,y+
          sta   -$01,y
          lda   <u001E
          bne   L02BC
-         tst   <DType
+         tst   <dtype
          bpl   L02AB
          leax  >HDFmt,pcr
          ldy   #$002A
@@ -496,7 +497,7 @@ L02AB    leax  >Query,pcr
          anda  #$DF
          cmpa  #'Y
          bne   L02D5
-L02BC    tst   <DType
+L02BC    tst   <dtype
          bpl   L025D
          leax  >HDFmt,pcr
          ldy   #$0038
@@ -529,7 +530,7 @@ L02EC    pshs  u,y,x,b,a
 
 GetDTyp  leax  >L001A,pcr
          stx   <u000A
-         ldb   <DType
+         ldb   <dtype
          bitb  #TYP.HARD+TYP.NSF
          bne   L0323
          tst   <u004D
@@ -537,7 +538,7 @@ GetDTyp  leax  >L001A,pcr
          leax  >L0076,pcr
          bra   L032D
 L031B    leax  >L0020,pcr
-         tst   <MFM
+         tst   <mfm
          beq   L032D
 L0323    stx   <u000A
          leax  >L0049,pcr
@@ -549,17 +550,17 @@ L032F    stx   <u000C
          ldb   <u0013
          tfr   d,y
          clrb  
-         ldx   <NCyls
+         ldx   <ncyls
          bsr   L0379
          exg   d,x
          subd  #$0001
          bcc   L0344
          leax  -$01,x
 L0344    exg   d,x
-         ldy   <Sectors
+         ldy   <sectors
          bsr   L0379
          exg   d,x
-         addd  <Sectors0
+         addd  <sectors0
          std   <u0025
          exg   d,x
          adcb  #$00
@@ -625,7 +626,7 @@ L03C2    lsr   $02,s
 
 Format   tst   <u004E
          bne   L03E4
-         tst   <DType
+         tst   <dtype
          bpl   L03E5
          leax  >Both,pcr
          ldy   #BothLen
@@ -636,28 +637,28 @@ Format   tst   <u004E
          cmpa  #'N
          bne   Format
 L03E4    rts   
-L03E5    lda   <DiskPath
+L03E5    lda   <diskpath
          ldb   #SS.Reset
          os9   I$SetStt 
          lbcs  L00BB
          ldd   #$0000
-         std   <CurrTrak
+         std   <currtrak
          inca  
-         sta   <CurrSct
+         sta   <currsect
 L03F8    clr   <u0005
 L03FA    bsr   L045C
          leax  >u00B7,u
-         ldd   <CurrTrak
+         ldd   <currtrak
          addd  <u0048
          tfr   d,u
          clrb  
          tst   <u004D
          bne   L041B
-         tst   <MFM
+         tst   <mfm
          beq   L041D
          tst   <u004C
          bne   L041B
-         tst   <CurrTrak+1
+         tst   <currtrak+1
          bne   L041B
          tst   <u0005
          beq   L041D
@@ -669,20 +670,20 @@ L0423    lda   <u0005
          beq   L0429
          orb   #$01
 L0429    tfr   d,y
-         lda   <DiskPath
+         lda   <diskpath
          ldb   #SS.WTrk
          os9   I$SetStt 
          lbcs  L00BB
-         ldu   <SavedU
+         ldu   <savedu
          ldb   <u0005
          incb  
          stb   <u0005
          cmpb  <u0013
          bcs   L03FA
-         ldd   <CurrTrak
+         ldd   <currtrak
          addd  #$0001
-         std   <CurrTrak
-         cmpd  <NCyls
+         std   <currtrak
+         cmpd  <ncyls
          bcs   L03F8
          rts   
 L044E    ldy   <u000E
@@ -692,7 +693,7 @@ L0455    stb   ,x+
          deca  
          bne   L0455
          bra   L0451
-L045C    lda   <DType
+L045C    lda   <dtype
          bita  #$C0
          beq   L046C
          ldy   <u000C
@@ -701,7 +702,7 @@ L045C    lda   <DType
 L046B    rts   
 L046C    ldy   <u000C
          ldb   <u001A
-         tst   <CurrTrak+1
+         tst   <currtrak+1
          bne   L047E
          tst   <u0005
          bne   L047E
@@ -736,14 +737,14 @@ L04A6    std   ,x++
          ldd   <u003F
          leay  >u008F,u
 L04C3    leax  d,x
-         ldd   <CurrTrak+1
-         adda  <STOff
+         ldd   <currtrak+1
+         adda  <stoff
          std   ,x
          ldb   <u0009
          lda   b,y
          incb  
          stb   <u0009
-         ldb   <CurrSct
+         ldb   <currsect
          adda  <u004B
          bcs   L04E5
          std   $02,x
@@ -757,12 +758,12 @@ L04E5    leax  >AbortSct,pcr
          lbra  L06F9
 L04EC    pshs  y,b
          tfr   b,a
-         ldb   <CurrTrak+1
+         ldb   <currtrak+1
          cmpb  #$01
          bhi   L0518
          leax  >u008F,u
          leay  a,x
-         ldb   <Interlv
+         ldb   <interlv
          bne   L0507
 L0500    leax  >AbortIlv,pcr
          lbra  L06F9
@@ -777,7 +778,7 @@ L050F    sta   ,x
          bne   L051A
          leas  $06,s
 L0518    puls  pc,y,b
-L051A    ldb   <Interlv
+L051A    ldb   <interlv
          abx   
          cmpx  $04,s
          bcs   L0525
@@ -793,7 +794,7 @@ InitDisk    lbsr  L0898
          std   $01,x
          ldb   <u0024
          stb   ,x
-         ldd   <Sectors
+         ldd   <sectors
          std   <$11,x
          stb   $03,x
          lda   <u0027
@@ -806,7 +807,7 @@ InitDisk    lbsr  L0898
 L054F    addd  #$0001
          std   $09,x
          clra  
-         tst   <MFM
+         tst   <mfm
          beq   L0561
          ora   #$02
          tst   <u004C
@@ -824,7 +825,7 @@ L056F    sta   <$10,x
          std   $04,x
          lda   #$FF
          sta   $0D,x
-         leax  >TimePkt,u
+         leax  >timepkt,u
          os9   F$Time   
          leax  >u00D6,u
          leay  <u006F,u
@@ -854,7 +855,7 @@ L05B8    tfr   y,d
          lda   ,-x
          ora   #$80
          sta   ,x
-L05C7    leax  >TimePkt,u
+L05C7    leax  >timepkt,u
          leay  <$40,x
          pshs  y
          ldd   #$0000
@@ -869,7 +870,7 @@ L05D3    addd  ,x++
          std   >u01A9,u
          ldd   >L0018,pcr
          std   >u01AB,u
-         lda   <DiskPath
+         lda   <diskpath
          ldb   #SS.Opt
          leax  >u00F6,u
          os9   I$GetStt 
@@ -878,26 +879,28 @@ L05D3    addd  ,x++
          lbcs  L00BB
          leax  >u00B7,u
          lbra  L08A4
-Access    lda   <DiskPath
+
+Access   lda   <diskpath
          os9   I$Close  
          leax  <u004F,u
          lda   #READ.
          os9   I$Open   
          lbcs  L06F5
-         sta   <DiskPath
+         sta   <diskpath
          leax  >u00B7,u
          ldy   #256
          os9   I$Read   
          lbcs  L06F5
-         lda   <DiskPath
+         lda   <diskpath
          os9   I$Close  
          leax  <u004F,u
          lda   #UPDAT.
          os9   I$Open   
          lbcs  L06F5
-         sta   <DiskPath
+         sta   <diskpath
          rts   
-Stamps    lda   <DType
+
+Stamps   lda   <dtype
          clr   <u0045
          bita  #$80
          beq   L0667
@@ -910,17 +913,17 @@ L0650    leax  >Verify,pcr
          cmpa  #$4E
          bne   L0650
          sta   <u0045
-L0667    ldd   <Sectors0
+L0667    ldd   <sectors0
          std   <u0017
          clra  
          clrb  
          std   <u0036
-         std   <CurrTrak
+         std   <currtrak
          std   <u0008
          std   <u0032
          stb   <u0031
          sta   <u003C
-         leax  >OptBuf,u
+         leax  >optbuf,u
          stx   <u0038
          lbsr  L089C
          leax  >$0100,x
@@ -962,7 +965,7 @@ L06B5    ldb   <u002E
 L06CC    stb   <u002C
 L06CE    tst   <u0045
          bne   L0700
-         lda   <DiskPath
+         lda   <diskpath
          leax  >u00B7,u
          ldy   #256
          os9   I$Read   
@@ -991,10 +994,10 @@ L0700    ldd   <u0008
          bne   L073A
          lda   #$20
          pshs  a
-         lda   <CurrTrak+1
+         lda   <currtrak+1
          lbsr  L07A7
          pshs  b,a
-         lda   <CurrTrak
+         lda   <currtrak
          lbsr  L07A7
          pshs  b
          tfr   s,x
@@ -1005,10 +1008,10 @@ L0700    ldd   <u0008
          bne   L0738
          lbsr  L02DE
 L0738    leas  $04,s
-L073A    ldd   <CurrTrak
+L073A    ldd   <currtrak
          addd  #$0001
-         std   <CurrTrak
-         ldd   <Sectors
+         std   <currtrak
+         ldd   <sectors
          std   <u0017
 L0745    dec   <u002B
          bne   L075B
@@ -1035,7 +1038,7 @@ L076C    stb   <u0031
          lbra  L06CE
 L0773    lda   #$FF
          sta   <u002A
-         leay  >OptBuf,u
+         leay  >optbuf,u
 L077B    cmpy  <u0038
          beq   L07BF
          bsr   L0784
@@ -1053,7 +1056,7 @@ L0784    ldx   <u0038
          cmpx  <u003A
          bne   L07A6
          bsr   L0803
-         leax  >OptBuf,u
+         leax  >optbuf,u
          stx   <u0038
          lbsr  L089C
 L07A6    rts   
@@ -1108,7 +1111,7 @@ L0803    pshs  y
          ldb   #$01
          cmpd  <u0034
          bne   L081E
-         leax  >OptBuf,u
+         leax  >optbuf,u
          clra  
          ldb   <u002F
          tfr   d,y
@@ -1116,7 +1119,7 @@ L0803    pshs  y
          os9   F$AllBit 
          lbcs  L06F5
 L081E    lbsr  L08B2
-         leax  >OptBuf,u
+         leax  >optbuf,u
          lbsr  L08A4
          ldd   <u0024
          cmpd  <u0031
@@ -1175,7 +1178,7 @@ L089E    sta   d,x
          decb  
          bne   L089E
          rts   
-L08A4    lda   <DiskPath
+L08A4    lda   <diskpath
          ldy   #256
          os9   I$Write  
          lbcs  L00BB
@@ -1186,9 +1189,9 @@ L08B2    clra
          lda   <u0035
          clrb  
          tfr   d,u
-L08BC    lda   <DiskPath
+L08BC    lda   <diskpath
          os9   I$Seek   
-         ldu   <SavedU
+         ldu   <savedu
          lbcs  L00BB
          rts   
 L08C8    ldx   <u0031
@@ -1222,7 +1225,7 @@ L0908    sta   ,u+
 L090E    sta   ,u+
          lda   #C$CR
          sta   ,u
-         ldu   <SavedU
+         ldu   <savedu
          leas  $02,s
          leax  >u00B7,u
          lbsr  L02E2

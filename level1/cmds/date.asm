@@ -45,12 +45,12 @@ edition  set   7
          mod   eom,name,tylg,atrv,start,size
 
          org   0
-SysYear  rmb   1
-SysMonth rmb   1
-SysDay   rmb   1
-SysHour  rmb   1
-SysMin   rmb   1
-SysSec   rmb   1
+sysyear  rmb   1
+sysmonth rmb   1
+sysday   rmb   1
+syshour  rmb   1
+sysmin   rmb   1
+syssec   rmb   1
 u0006    rmb   2
 u0008    rmb   440
 size     equ   .
@@ -73,7 +73,7 @@ MonTable fcs   '???'
          fcs   'December'
 
 start    pshs  x
-         leax  SysYear,u
+         leax  sysyear,u
          leau  u0008,u
          stu   <u0006
          os9   F$Time
@@ -95,17 +95,17 @@ PrBuff   lda   #C$CR		terminate the line to print
          clrb  
 Exit     os9   F$Exit
 
-DoTime   ldb   <SysHour
+DoTime   ldb   <syshour
          bsr   Byte2ASC
-         ldb   <SysMin
+         ldb   <sysmin
          bsr   L00AB
-         ldb   <SysSec
+         ldb   <syssec
 L00AB    lda   #':
          sta   ,u+
          bra   Byte2ASC
 
 Add2Buff leay  >MonTable,pcr		point to month table
-         ldb   <SysMonth		get month byte
+         ldb   <sysmonth		get month byte
          beq   L00C4			branch if zero (illegal)
          cmpb  #12			compare against last month of year
          bhi   L00C4			if too high, branch
@@ -114,12 +114,12 @@ L00BD    lda   ,y+			get byte
          decb  				else decrement month
          bne   L00BD			if not 0, keep going
 L00C4    bsr   PrtStrng
-         ldb   <SysDay
+         ldb   <sysday
          bsr   Byte2ASC
          ldd   #C$COMA*256+C$SPAC	get comma and space in D
          std   ,u++			store in buffer and increment twice
          lda   #19
-         ldb   <SysYear		get year
+         ldb   <sysyear		get year
 CntyLp   subb  #100
          bcs   pr		we have century we need
          inca

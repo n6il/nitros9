@@ -24,8 +24,9 @@ edition  set   5
 
          mod   eom,name,tylg,atrv,start,size
 
-Param    rmb   2          parameter area
-MFlag    rmb   1          made a directory yet from this pathlist?
+         org   0
+param    rmb   2          parameter area
+mflag    rmb   1          made a directory yet from this pathlist?
          rmb   200        stack space
 size     equ   .
 
@@ -50,8 +51,8 @@ Start    bsr   Skip       skip the first bit, if applicable
 * skip leading spaces or '/' and setup pointers
 start1   bsr   Skip       skip any non-zero characters, if applicable
 start2   ldb   #$FF       a non-zero value
-         stb   <MFlag     we haven't made a directory from this pathname yet
-         stx   <Param     save in the parameter area
+         stb   <mflag     we haven't made a directory from this pathname yet
+         stx   <param     save in the parameter area
          cmpa  #PDELIM    leading slash?
          bne   S.020      if not, go get the name
 
@@ -71,7 +72,7 @@ S.030    pshs  a,x        save byte found, where we found it
          sta   ,x
 
 *try to open it for reading, i.e. does it already exists?
-         ldx   <Param     get the start address of this pathname
+         ldx   <param     get the start address of this pathname
          lda   #DIR.+READ. open the directory for reading
          os9   I$Open     check if the directory already exists
          bcs   S.040      if there was an error opening it, go make it
@@ -79,11 +80,11 @@ S.030    pshs  a,x        save byte found, where we found it
          bra   S.050      skip making this directory
 
 * The partial pathname doesn't exist, so create it
-S.040    ldx   <Param     get the start address of this pathname
+S.040    ldx   <param     get the start address of this pathname
          ldb   #^SHARE.  everything but SHARE.
          os9   I$MakDir 
          bcs   Error
-         clr   <MFlag     clear the flag: we've successfully made a directory
+         clr   <mflag     clear the flag: we've successfully made a directory
 
 * make pathname full again, and continue
 S.050    puls  a,x        restore byte, address
@@ -92,7 +93,7 @@ S.050    puls  a,x        restore byte, address
          beq   S.010      yes, make pathname full again, and find next one
 
 * searched this pathname, have we made a directory from it?
-         tst   <MFlag     have we made a directory?
+         tst   <mflag     have we made a directory?
          bne   CEF        if not, error out with fake E$CEF
 
 * check for end/continue flag

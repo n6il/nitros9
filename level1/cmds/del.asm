@@ -27,6 +27,7 @@ edition  set   6
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 amode    rmb   1
          rmb   250
 stack    rmb   200

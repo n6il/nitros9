@@ -27,6 +27,7 @@ edition  set   18
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 u0000    rmb   1
 PassPath rmb   1
 u0002    rmb   1
