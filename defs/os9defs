@@ -21,7 +21,7 @@ OS9DEFS  set   1
 * 68000 compatability.
 *
 *          1986/04/15  Mark G. Hawkins
-* F$AlHRam System call added for COCO.
+* F$AlHRAM System call added for COCO.
 *
 *          1986/09/08  Mark G. Hawkins
 * F$Alarm for COCO Clock Module.
@@ -167,7 +167,7 @@ F$MapBlk rmb   1          Map Specific Block
 F$ClrBlk rmb   1          Clear Specific Block
 F$DelRAM rmb   1          Deallocate RAM blocks
 F$GCMDir rmb   1          Pack module directory
-F$AlHRam rmb   1          Allocate HIGH RAM Blocks
+F$AlHRAM rmb   1          Allocate HIGH RAM Blocks
 
 * Alan DeKok additions
 * F$ReBoot is unimplemented at this time
@@ -1168,7 +1168,7 @@ E$USigP  rmb   1          Unprocessed Signal Pending
 E$NEMod  rmb   1          Non Existing Module
 E$BNam   rmb   1          Bad Name
 E$BMHP   rmb   1          (bad module header parity)
-E$NoRam  rmb   1          No (System) Ram Available
+E$NoRAM  rmb   1          No (System) RAM Available
 E$DNE    rmb   1          Directory not empty
 E$NoTask rmb   1          No available Task number
          rmb   $F0-.      reserved
