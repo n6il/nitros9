@@ -1,28 +1,39 @@
-Package: OS-9 Level Two VR 03.00.02 Beta2
-Release Date: January 5, 2003
+*********************
+OS-9 Level Two ReadMe
+*********************
 
-This release of OS-9 Level Two for the Tandy Color Computer 3
-represents the first community-based release since the discontinuation
-of both OS-9 Level Two.  This release actually takes up where the
-infamous "Level 2 Upgrade" left off, and incorporates most all of the
-known features of that never-officially-released version of OS-9.
+Welcome to OS-9 Level Two for the Tandy Color Computer 3.  This is a
+community-based release of OS-9.
 
 DISTRIBUTION
 ============
 There are two double-sided 40 track DSK images ending in '_ds40_1.dsk',
-and '_ds40_2.dsk' for disks 1 and 2, respectively.  There is also a
-single-sided 40 track DSK image included for emulator use.  It is an
-abridged version doesn't include all of the files found on the double
-sided disks.  It ends in '_ss40.dsk'.
+and '_ds40_2.dsk' for disks 1 and 2, respectively.
 
 USING THE DISK IMAGES
 =====================
-The included 40 track single-sided DSK file has been tested to work with
-Jeff Vavasour's CoCo 3 emulator as well as MESS.
+If you wish to transfer the disk images to a 5.25" floppy disk for use
+with a real CoCo, follow the steps below:
 
-If you wish to transfer the disk images to a 5.25" floppy disk
-for use with a real CoCo, and have a Linux system equipped with such a
-disk drive unit, follow the steps below (root login is assumed):
+WINDOWS/DOS:
+
+1. Download and install the latest version of DSKINI/RETRIEVE as modified
+   by John Collyer at http://www.angelfire.com/oh5/johncollyer/coco/m6309.htm
+
+2. Insert a blank 5.25" DS floppy in to your drive (we assume B:)
+
+3. Type the following command, replacing the name of the image:
+
+             DSKINI /T40 /D B: <diskimagefile>
+
+   Where <diskimagefile> is the image file you want to transfer to the
+   floppy disk.  The image file transfer should start.  When it is done,
+   take out the disk and try booting your CoCo with it.
+
+Repeat steps 2-3 for each additional disk.
+
+
+LINUX:
 
 1. Download and install the latest version of fdutils from
    http://fdutils.linux.lu/
