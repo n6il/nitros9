@@ -1,8 +1,16 @@
 OS-9 Level One V2.01.00 Beta2:
 - Defs files now have properly terminated lines and 'pag' is now emitted
   as a comment.
-- SCF is now made from the NitrOS-9 version source base, bringing in
-  new improvements and features from that platform.
+- SCF, Rammer and PipeMan are now made from the NitrOS-9 version source base,
+  bringing in new improvements and features from that platform.
+- Clock and Clock2 are now unifed once again and are built from the same source
+  base as the clocks from NitrOS-9.
+- The printer driver is now for the CoCo 3 serial port.  In the previous release,
+  it was mistakenly made for the Disto parallel port.
 - ASM now assembles 6309 op-codes.
 - Window descriptors now have proper initialization count.
-
+- The following modules have been back-ported from NitrOS-9 in order to
+  unify the code base and bring non-6309 specific features to OS-9 Level Two:
+- The debug program is now part of the CMDS package.
+- With the inclusion of NitrOS-9's SCF, a bug which crashed the system when
+  typing CTRL-E or CTRL-C while using shellplus has been fixed.
