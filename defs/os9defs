@@ -326,13 +326,19 @@ SS.UMBar rmb   1          update menu bar (SetStat)
 SS.FBRgs rmb   1          return color registers (GetStat)
 SS.DfPal rmb   1          set/return default palette registers (Getstat/Setstat)
 SS.Tone  rmb   1          Generate a tone using 6 bit sound
-SS.GIP2  rmb   1          Global Input Params #2 (L2V3)
-SS.AnPal rmb   1          Animate palettes (L2V3)
-SS.FndBf rmb   1          Find named buffer (L2V3)
+*SS.GIP2  rmb   1          Global Input Params #2 (L2V3)
+*SS.AnPal rmb   1          Animate palettes (L2V3)
+*SS.FndBf rmb   1          Find named buffer (L2V3)
+         ELSE
+* These are wide open in Level 1
+         rmb    19
+         ENDC
 
-SS.CDSta equ   SS.GIP2    XACIA
-SS.CDSig equ   SS.AnPal   XACIA
-SS.CDRel equ   SS.FndBf   XACIA
+* sc6551 defined
+SS.CDSta rmb   1
+SS.CDSig rmb   1
+SS.CDRel rmb   1
+
 
          org   $A0
 *
@@ -347,6 +353,8 @@ SS.Hist  rmb   1          Enable command-line history easily
 SS.ECC   rmb   1          ECC corrected data error enable/disable (GetStat/SetStat)
 
 *
+         IFGT  Level-1
+
 * VRN get/set status calls.  Named by Alan DeKok.
 SS.VCtr  equ  $80         Return FS2 total VIRQ counter
 SS.VSig  equ  $81         Return FS2 number of signals sent
