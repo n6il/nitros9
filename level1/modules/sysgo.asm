@@ -156,7 +156,7 @@ FrkAuto  leax  >AutoEx,pcr
          ldd   #256
          ldy   #1
          os9   F$Fork
-         bcs   DeadEnd
+         bcs   FrkShell
          os9   F$Wait
 
 * Third, do Shell
