@@ -3,6 +3,35 @@
 *
 * $Id$
 *
+* This is how the memory map looks after the kernel has initialized:
+*
+*     $0000----> ================================== 
+*               |                                  |
+*               |                                  |
+*  $0020-$0111  |  System Globals (D.FMBM-D.XNMI)  |
+*               |                                  |
+*               |                                  |
+*     $0200---->|==================================|
+*               |        Free Memory Bitmap        |
+*  $0200-$0221  |     (1 bit = 256 byte page)      |
+*               |----------------------------------|
+*               |      System Dispatch Table       |
+*  $0222-$0291  |     (Room for 56 addresses)      |
+*               |----------------------------------|
+*  $0292-$02FF  |       User Dispatch Table        |
+*               |     (Room for 56 addresses)      |
+*     $0300---->|==================================|
+*               |                                  |
+*               |                                  |
+*  $0300-$03FF  |     Module Directory Entries     |
+*               |      (Room for 64 entries)       |
+*               |                                  |
+*     $0400---->|==================================|
+*               |                                  |
+*  $0400-$04FF  |           System Stack           |
+*               |                                  |
+*     $0500---->|==================================|
+*
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  14    From Tandy OS-9 Level One VR 02.00.00
@@ -42,17 +71,17 @@ InitNam  fcs   /INIT/
 
 P2Nam    fcs   /OS9P2/
 
-VectCode bra   SWI3Jmp
+VectCode bra   SWI3Jmp		$0100
          nop
-         bra   SWI2Jmp
+         bra   SWI2Jmp		$0103
          nop
-         bra   SWIJmp
+         bra   SWIJmp		$0106
          nop
-         bra   NMIJmp
+         bra   NMIJmp		$0109
          nop
-         bra   IRQJmp
+         bra   IRQJmp		$010C
          nop
-         bra   FIRQJmp
+         bra   FIRQJmp		$010F
 
 SWI3Jmp  jmp   [>D.SWI3]
 SWI2Jmp  jmp   [>D.SWI2]
