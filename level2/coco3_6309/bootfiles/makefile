@@ -14,7 +14,6 @@ BOOTFILE_VDG	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
-		$(MD)/rammer.dr $(MD)/r0_128k.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io $(MD)/vdgint.io \
