@@ -16,6 +16,16 @@ SHELLMODS	= shell_21 build copy date deiniz del dir display echo iniz \
 UTILPAK1        = attr deldir dirm dmem free ident mmap proc rename setime tmode
 UTILPAK2        = ddir idir pmap xmode
 
+LEVEL1FILES	= binex.asm del.asm deldir.asm \
+		echo.asm exbin.asm ident.asm link.asm \
+		list.asm load.asm pwd.asm pxd.asm \
+		save.asm sleep.asm tee.asm verify.asm
+
+LEVEL2FILES	= attr.asm build.asm deiniz.asm gfx.asm iniz.asm mdir.asm \
+		mfree.asm montype.asm procs.asm shell_21.asm tmode.asm \
+		unlink.asm wcreate.asm
+
+# Files not compilable by os9asm: Config attr cmp dcheck dir dsave
 all:	$(ALLOBJS) shell utilpak1 utilpak2 $(DEPENDS)
 	$(CHMOD) a+rx $(ALLOBJS) shell utilpak1 utilpak2
 
@@ -37,8 +47,11 @@ utilpak2:  $(UTILPAK2) $(DEPENDS)
 	@ls -l $@
 	@$(ECHO)
 
+$(LEVEL1FILES): ../../level1/CMDS/$@
+	cp ../../level1/CMDS/$@ .
+
 clean:
-	$(RM) $(ALLOBJS) shell utilpak1 utilpak2
+	$(RM) $(ALLOBJS) $(LEVEL1FILES) shell utilpak1 utilpak2
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
