@@ -1,3 +1,6 @@
- use systype.l2
- use os9defs.l2v3
+H6309 equ 0
+Level equ 2
+ use os9defs
+ use systype
  use rbfdefs
+ use msfdefs

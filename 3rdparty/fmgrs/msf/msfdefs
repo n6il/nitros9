@@ -1,0 +1,181 @@
+*********************************************************************
+* Defs for the MSDos file manager
+
+* system direct page for MSF file manager
+
+D.MSF equ $7c pointer to linked list of MSF paths
+
+* path table (static storage) offsets
+
+*** rev 2.2
+V.DNS equ $1F disk density 8=Hi-density, 4=96tpi, 0=48tpi
+V.BPB equ $20 pointer to disk information (64 bytes)
+***
+
+V.FLG equ $22 FAT must be read if NE
+V.CNT equ $23 number of paths open to this device
+V.FAT equ $24 point to FAT (in reserved section of device table)
+
+*** rev 2.1
+V.FS equ V.FLG FAT size/256 (V.FLG no longer used)
+***
+
+DRVBEG2 set $0e offset from beg. of device static storage to 1st drive table
+
+modmem equ 0
+
+type set FlMgr+Objct
+revs set Reent+1
+
+SS.DREAD set $80 direct sector read/write
+SS.SREAD equ $84 direct sector read/write in system space
+*SS.ATTR  equ $85 get/set file attribute
+SS.RENAM equ $86 rename file
+SS.ALLOW equ $87 allow writing to disk or directory
+
+E$BadFAT equ 255
+
+EOL equ 13
+CR equ EOL
+SPC equ 32
+SP equ SPC
+MSDEOF equ $1A end of line character for MSDOS text files
+
+********************************************************
+* MSDOS directory entry offsets
+*
+msd.name equ 0 offset to file name
+msd.ext equ 8 offset to file extension
+msd.attr equ 11 offset to file attribute
+msd.res equ 12 offset to reserved bytes
+msd.time equ 22 offset to time
+msd.date equ 24 offset to date
+msd.strt equ 26 offset to starting cluster number
+msd.size equ 28 offset to file size
+
+MSDSIZE  equ 32 size of directory entry
+SECSIZE  equ 512 size of an MSDOS sector
+DIRSIZE  equ 64 size of directory entry in memory
+
+* name is 8 bytes
+* extention is 3 bytes
+* attribute:
+attr.RO equ 1 - read only
+attr.HD equ 2 - hidden file (excluded from search)
+attr.SY equ 4 - system file (excluded from search)
+attr.VL equ 8 - volume label
+attr.DR equ $10 - subdirectory
+attr.AR equ $20 - archive bit (set if file has been written and closed)
+*
+* time:
+*  H  H  H  H  H  M  M  M  M  M  M  S  S  S  S  S
+*  7  6  5  4  3  2  1  0  15 14 13 12 11 10 9  8
+*
+* date:
+*  Y  Y  Y  Y  Y  Y  Y  M  M  M  M  D  D  D  D  D
+*  7  6  5  4  3  2  1  0  15 14 13 12 11 10 9  8
+*
+* starting cluster:
+*  two bytes, LSB first
+*
+* file size:
+*  4 bytes (byte 0, 1, 2, 3)
+******************************************************
+
+******************************************************
+* FAT ID byte:
+*  bit 3-7 set
+*  bit 2 - clear if 80 tracks
+*  bit 1 - set if media has 8 sectors/track (1 sector/FAT)
+*  bit 0 - set if media has two heads (112 directory entries)
+
+******************************************************
+
+******************************************************
+* File manager path descriptor offsets
+*
+ org 0
+
+msp.path  rmb 1 equ  PD.PD  path number
+msp.mod   rmb 1 equ  PD.MOD file access mode
+msp.cnt   rmb 1 equ  PD.CNT dupe path count
+msp.dev   rmb 2 equ  PD.DEV address of device table
+msp.proc  rmb 1 equ  PD.CPR process ID to which this path belongs
+msp.rgs   rmb 2 equ  PD.RGS passed registers
+msp.buf   rmb 2 equ  PD.BUF address of buffer
+msp.sest  rmb 1 equ  PD.SMF current sector status
+msp.pos   rmb 3  current logical file position
+msp.lolk  rmb 3  start of lock (logical sector)
+msp.lksz  rmb 3  size of lock
+msp.dtb   rmb 2  address of drive table
+msp.wrt   rmb 1 NE-don't allow writing to path
+msp.ncpr  rmb 1 value to store in V.BUSY after using driver
+msp.end   rmb 2 number of last logical sector+1 of root or entire disk
+
+ rmb 6 space left til option table
+
+ org $30
+
+msp.next  rmb 2  address of next MSDOS path descriptor
+msp.prev  rmb 2  address of prev MSDOS path descriptor for SAME file
+msp.dir   rmb 2  address of directory entry in memory
+msp.dnxt  rmb 2  next path to same file
+msp.dprv  rmb 2  previous path to same file
+
+msp.cls   rmb 2  current cluster number
+msp.sec   rmb 2  current logical sector number
+msp.clss  rmb 1  current cluster sector number (0 or 1)
+
+*******************************************************
+* sector status (msp.sest) codes
+
+SECGOOD equ 1 sector contains next data to be read
+SECREAD equ 2 sector has been completely read
+*             (next sector needs to be read before next READ)
+SECUPD  equ 4 sector has been written to
+SECBUF  equ 8 sector msp.sec is in the buffer (PD.BUF)
+SECEXP  equ $10 sector does not need to be read
+
+*******************************************************
+* memory record for the directory entry
+
+* 1 byte reserved for memory management use
+dir.stat  equ  1   status (0=needs update)
+dir.chg   equ  2   NE - directory entry needs update
+dir.last  equ  3   address of last MSDOS path descriptor for this file
+dir.loc   equ  5   logical location of directory entry on disk
+dir.pos   equ  7   offset from beginning of sector to directory entry
+dir.drv   equ  9   drive number
+dir.esec  equ  10  first directory sector with unused entry
+dir.eoff  equ  12  offset to first unused entry in above sector
+dir.prnt  equ  14  first cluster of parent directory
+dir.msd   equ  16  directory entry
+
+********************************************************
+* type byte bit for MSDOS disk type
+
+MSDOS. set %00001000 bit in PD.TYP to indicate MSDOS format
+
+********************************************************
+* revision 2.2 offsets in the boot sector of an MSDOS disk
+
+ID.ver    equ   0  E9xxxx DOS 2, EBxx90 DOS 3
+ID.OEM    equ   3  8 byte OEM name
+* these are the important ones
+ID.skip   equ   11   number of bytes to skip
+
+ID.BPS    equ   1  11  word, bytes/sector
+ID.SPA    equ   3  13  byte, sectors/cluster
+ID.res    equ   4  14  word, reserved sectors
+ID.FATs   equ   6  16  byte, number of FATs
+ID.RDE    equ   7  17  word, root directory entries
+ID.secs   equ   9  19  word, total number of sectors
+ID.ID     equ  11  21  byte, media ID byte
+ID.spf    equ  12  22  word, sectors/FAT
+ID.spt    equ  14  24  word, sectors/track
+ID.hds    equ  16  26  word, number of heads/sides
+ID.hidn   equ  18  28  word, number of hidden sectors
+
+IDsize    equ  19  number of bytes of disk info
+
+ID.clus   equ  20   number of usable clusters

@@ -1,7 +1,8 @@
 
  ifp1
 
-  use os9defs.l2
+Level set 2
+  use os9defs
 *  useos9sysdefs
 *  useos9iodefs
   use rbfdefs
