@@ -39,7 +39,10 @@
          ifp1  
          use   defsfile
          endc  
- 
+
+DOHELP   equ   0
+SETIME   equ   0
+
 * Next three lines for testing purposes. Remove as makefile will
 * handle this choice.
 *Level    equ   1
@@ -86,13 +89,16 @@ size     equ   .
  
 message1 fcc   /no clock found/
          fcb   C$CR
+         IFNE  SETIME
 setime   fcc   /setime/   forced chain to setime routine
          fcb   C$CR
+         ENDC
  
+         IFNE  DOHELP
 errmes   fcb   C$LF
-         fcc   /Swread syntax:/
+         fcc   /SWRead syntax:/
          fcb   C$LF,C$LF
-         fcc   /swread [n&]/
+         fcc   /SWRead [n&]/
          fcb   C$LF
          fcc   /           The parameter string is optional; n = 1 to 60 min/
          fcb   C$LF
@@ -100,6 +106,7 @@ errmes   fcb   C$LF
          fcb   C$LF
          fcc   /           n minutes. Use decimal time values./
          fcb   C$CR
+         ENDC
 errmes2  fcb   C$LF
          fcc   /Don't have relocation memory./
          fcb   C$LF,C$CR
@@ -128,10 +135,13 @@ start    clr   sleepflg
          addb  ,s+
          bra   storeit
  
-syntax   lda   #2
+syntax   
+         IFNE  DOHELP
+         lda   #2
          leax  errmes,pcr
          ldy   #300
          os9   I$Writln
+         ENDC
          clrb  
          os9   F$Exit
 
@@ -205,25 +215,27 @@ snooze   ldx   #3540      = one minute of ticks minus one second for overhead
          bra   doit       go and read the clock
  
 exit2    puls u
-         os9   F$Exit
+         bra  ex
 
 error    ldb   #E$IllArg
-         os9   F$Exit
+         bra   ex
  
 error2   lda   #2         error path
          leax  message1,pcr
          ldy   #40
          os9   I$WritLn
+         IFNE  SETIME
 * force a normal Setime as SmartWatch was not detected
          lda   #Prgrm+Objct  modul type
          ldb   #2         size of data area
          leax  setime,pcr
          ldy   #0         parameter size
-         leas  stack,u
-         os9   F$Fork
+*         leas  stack,u
+         os9   F$Chain
+         ENDC
 exit     equ   *
          clrb  
-         os9   F$Exit
+ex       os9   F$Exit
  
 * this is the heart of the clock reading routine
          
