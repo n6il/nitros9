@@ -25,7 +25,6 @@ StdErr   equ   2
 
          ifp1
          use   defsfile
-         use   scfdefs
          endc
 
 tylg     set   Prgrm+Objct   
@@ -89,7 +88,7 @@ u043D    rmb   245
 u0532    rmb   16   vol_handle_table (pointer to file structures)
 u0542    rmb   15  
 u0551    rmb   2    given_pic_data (pointer)
-u0553    rmb   1    monitor type V26_MONITORTYPE
+u0553    rmb   1    display_type
 u0554    rmb   154
 int5EE   rmb   107  Signal Intercept routine from 452 - 4BD
 sub659   rmb   116  Slot to hold subroutine for others uses at 4DA - 54F
@@ -101,7 +100,7 @@ name     fcs   /sierra/
 
 start    equ   *
 L0014   lbra L007D  branch to entry process params
-L0017   lbra L00DB  branch to clean up routines
+L0017   lbra L00DB  agi_exit() branch to clean up routines
 
 
 *                   Multi-tasking flag (0=No multitask, 1=multitask) 
@@ -184,20 +183,50 @@ L00DA    rts               return
 
 
 *  This is just a relay call to L0336
+agi_exit
 L00DB    lbsr  L0133
 
-L00DE    clrb              NOBODY USES ME ? 
+L00DE    clrb               
 L00DF    os9   F$Exit      time to check out
 
 * disassembler had a little problem here
 L00E2    fdb   $000C  another prog internal var  
 
-* Are these all data bytes of some kind ???
-* quirky assemblage of bytes
-L00E4    fcb   $02,$2E,$06,$09,$04,$20,$10,$1B
-         fcb   $11,$3D,$17,$29,$33,$3F,$00,$08
-         fcb   $14,$18,$20,$28,$22,$38,$07,$0B
-         fcb   $16,$1F,$27,$2D,$37,$3F
+* same sequence of bytes at L454C in mnln
+ 
+L00E2    fcb   $00    composite
+         fcb   $0C
+         fcb   $02
+         fcb   $2E
+         fcb   $06
+         fcb   $09
+         fcb   $04
+         fcb   $20
+         fcb   $10
+         fcb   $1B
+         fcb   $11
+         fcb   $3D
+         fcb   $17
+         fcb   $29
+         fcb   $33
+         fcb   $3F
+         
+         fcb   $00   rgb
+         fcb   $08
+         fcb   $14
+         fcb   $18
+         fcb   $20
+         fcb   $28
+         fcb   $22
+         fcb   $38
+         fcb   $07
+         fcb   $0B
+         fcb   $16
+         fcb   $1F
+         fcb   $27
+         fcb   $2D
+         fcb   $37
+         fcb   $3F
 
 * The disassembly gets confused here with text and the nulls
 *  according to the partial disassembly I recieved these hold
@@ -244,6 +273,7 @@ L0120    lbsr  L01FA  copies two subs to data area so others can use them
          rts   
 
 * clean up and shut down
+agi_shutdown
 L0133    lbsr  L0336  go deallocate hi res screens 
 L0136    lbsr  L0370  unloads the three other modules
 L0139    lbsr  L04BD  Close VIRQ device
@@ -301,7 +331,7 @@ L0146    std   ,x++
          tfr   x,d         save in d appears he expects montype returned
          stb   >L0119,pcr  trim it to a byte and save it 
          andb  #$01        mask out mono type only RGB or COMP
-         stb   >$0553      save that value off 
+         stb   >$0553      save that value off as display_type
 
 *  set current montype
 *  SetStat Function Code $92 
@@ -602,11 +632,11 @@ L0299    std   ,--u         writes 0000 to screen address and decrements
          os9   I$SetStt     make the call
          bcs   L02E6
 
-         leax  >L00E2,pc   values initialized to is $000C
-         ldb   >$0553      monitor type
+         leax  >L00E2,pc   get color table values
+         ldb   >$0553      display_type 0 = comp / 1 = rgb
          lda   #$10
-         mul
-         abx               add b to x and stow at x
+         mul               first sixteen comp, second rgb
+         abx               add b to x reset the pointer as required
 
 
 * This loads up the control sequence to set the pallete 1B 31 PRN CTN
@@ -629,7 +659,7 @@ L02C8    ldb   ,x+       get value computed above for color table and bump it
          inc   $02,s     this is our palette register value
          lda   $02,s     we bumped it by one 
          cmpa  #$10      we loop 15 times to set them all
-         bcs   L02C8     loop
+         blox   L02C8     loop
 
          clr   <u0045    clear a flag in memory
          lbsr  L02E9     go disable keyboard interrupts
