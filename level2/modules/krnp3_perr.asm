@@ -310,7 +310,7 @@ OpenFil  equ   *
 ClosFil  equ   *
          os9   I$Close    ;Close file
          rts              ;Return
-P4Name   fcc   "OS9p4"
+P4Name   fcc   "KernelP4"
          fcb   $D
 ErrMsg   fcc   "Error #000"
 ErrLen   equ   *-ErrMsg
