@@ -13,7 +13,7 @@ del /DD/GAMES/KYUMGAI/CMDS/ninja
 del /DD/GAMES/KYUMGAI/CMDS/ninja.snd1
 del /DD/GAMES/KYUMGAI/CMDS/ninja.snd2
 * Copying commands to /DD/GAMES/KYUMGAI/CMDS
-copy CMDS/ninja /DD/GAMES/KYUMGAI/CMDS/ninja
+copy CMDS/AutoEx /DD/GAMES/KYUMGAI/CMDS/ninja
 copy CMDS/ninja.snd1 /DD/GAMES/KYUMGAI/CMDS/ninja.snd1
 copy CMDS/ninja.snd2 /DD/GAMES/KYUMGAI/CMDS/ninja.snd2
 * Copying support files to /DD/GAMES/KYUMGAI
