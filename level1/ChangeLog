@@ -3,10 +3,10 @@ NitrOS-9/6809 Level 1 V03.02.00:
 - A new utility, padrom, has been added to the standard commands.
 - Merge now supports -z to get a list of files from standard input.
 - The serial printer driver and Speech-Sound Pak driver have been back-ported
-  from OS-9 Level Two.
-- OS-9 Level One now has a REL module similar to OS-9 Level Two.
-- The clock and clock2 architecture has been back-ported from OS-9 Level Two.
-- The faster PipeMan, Piper and Pipe have been back-ported from OS-9 Level Two.
+  from Level 2.
+- Level 1 now has a REL module similar to Level 2.
+- The clock and clock2 architecture has been back-ported from Level 2.
+- The faster PipeMan, Piper and Pipe have been back-ported from Level 2.
 - The MDir utility now shows proper module revision of 0 and other minor
   improvements in extended output.
 OS-9 Level One V03.01.04:
