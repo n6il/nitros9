@@ -80,7 +80,7 @@ HlpMsg   fcb   C$LF
          fcb   C$LF
          fcc   /   -a        abort on error/
          fcb   C$LF
-         fcc   /   -p        don't print file nammes copied (with -w option only)/
+         fcc   /   -p        don't print file names copied (with -w option only)/
          fcb   C$LF
          fcc   /   -r        rewrite destination/
          fcb   C$LF
