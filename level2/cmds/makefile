@@ -3,7 +3,7 @@ include ../../Makefile.rules
 DEPENDS		= ./Makefile
 
 CMDS		= attr binex build cmp cobbler copy date \
-		deiniz del deldir dir display dump echo error exbin \
+		deiniz del deldir dir display dump echo error exbin format \
 		free grfdrv help ident iniz link list load login makdir mdir \
 		merge mfree montype procs pwd pxd rename save \
 		setime shell_21 sleep tee tmode tsmon unlink \
@@ -17,7 +17,7 @@ UTILPAK1        = attr deldir dump free ident pwd pxd rename setime \
 		sleep verify wcreate xmode
 
 LEVEL1FILES	= attr.asm binex.asm build.asm cmp.asm cobbler.asm copy.asm date.asm deiniz.asm del.asm deldir.asm \
-		dir.asm display.asm dump.asm echo.asm error.asm exbin.asm free.asm gfx.asm help.asm ident.asm iniz.asm inkey.asm link.asm \
+		dir.asm display.asm dump.asm echo.asm error.asm exbin.asm format.asm free.asm gfx.asm help.asm ident.asm iniz.asm inkey.asm link.asm \
 		list.asm load.asm login.asm makdir.asm merge.asm os9gen.asm pwd.asm pxd.asm rename.asm \
 		save.asm setime.asm sleep.asm tee.asm tmode.asm tuneport.asm tsmon.asm verify.asm xmode.asm
 
