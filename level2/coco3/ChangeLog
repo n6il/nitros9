@@ -9,6 +9,8 @@ OS-9 Level Two V03.01.05:
   and all relevant bootlist files have been changed.
 - SCF now utilizes the V$DRIVEX field in the device table, resulting in
   faster calls to the driver and a reduction in code size.
+- The MDir utility now shows proper module revision of 0 and other minor
+  improvements in extended output.
 OS-9 Level Two V03.01.04:
 - rel has been back-ported from NitrOS-9 Level Two, adding 40 and 80
   column boot screen options.
