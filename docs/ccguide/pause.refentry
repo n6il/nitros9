@@ -8,7 +8,7 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>pause</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <void>
 </funcprototype>
 </funcsynopsis>
 

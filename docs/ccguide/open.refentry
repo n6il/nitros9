@@ -8,7 +8,8 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>open</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>char *<parameter>fname</parameter></paramdef>
+  <paramdef>int <parameter>mode</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
