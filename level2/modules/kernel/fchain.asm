@@ -93,7 +93,7 @@ L040C    stu   ,y++         do all of them
 * Hmmm.. the code above FORCES the new process to have the same DAT image ptr
 * as the old process, not that it matters...
 
-         fcb   $24,$00
+         fcb   $24,$00		TODO: Identify this!
          ldu   <D.Proc      get nre process
          lda   P$Task,u     new task number
          ldb   P$Task,x     old task number
@@ -220,12 +220,14 @@ L04D7    stu    2,s         save pointer to module
          beq    L04FB       yes, go
          cmpa   #Systm+Objct system module?
          beq    L04FB
+         IFNE   NitrOS9
 *--- these lines added to allow 6309 native mode modules to be executed
          cmpa   #Prgrm+Obj6309 regular module?
          beq    L04FB       yes, go
          cmpa   #Systm+Obj6309 system module?
          beq    L04FB
 *---
+         ENDC
          ldb    #E$NEMod    return unknown module
 L04F4    leas   2,s         purge stack
          stb    3,s         save error
