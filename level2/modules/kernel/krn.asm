@@ -8,6 +8,7 @@
 * 19r6   Assembles to the os9p1 module that works on    BGP 02/08/21
 *        my NitrOS-9 system
 * 19r7   Added check for CRC feature bit in init module BGP 02/09/26
+* 19r8   Back-ported to OS-9 Level Two                  BGP 02/09/26
 
          nam   OS9p1
          ttl   OS-9 Level Two Kernel Part 1
@@ -17,7 +18,7 @@
          ENDC
 
 * defines for customizations
-Revision set   7          module revision
+Revision set   8          module revision
 Edition  set   19         module Edition
 Where    equ   $F000      absolute address of where OS9p1 starts in memory
 
@@ -31,10 +32,10 @@ MName    fcs   /OS9p1/
          fcc   /0123456789ABCDEF/
          fcc   /0123456789ABCDEF/
          fcc   /0123456789ABCDEF/
-         fcc   /01234567/
+         fcc   /01234/ 567/
          ELSE
          fcc   /123456789ABCDEF/
-         fcc   /1234/ 5678/
+         fcc   /12345678/
          ENDC
 
 * Might as well have this here as just past the end of OS9p1...
@@ -278,11 +279,11 @@ L0111    aslb
          std    <D.BlkMap+2 save block map end pointer
 
 * [D] at this point will contain 1 of the following:
-* $0010 - 128k
-* $0020 - 256k
-* $0040 - 512k
-* $0080 - 1024k
-* $0100 - 2048k
+* $0210 - 128k
+* $0220 - 256k
+* $0240 - 512k
+* $0280 - 1024k
+* $0300 - 2048k
          bitb  #%00110000   block above 128K-256K?
          beq   L0170        yes, no need to mark block map
          tstb               2 meg?
@@ -468,14 +469,13 @@ L028E    ldu    <D.SysSvc   set system call processor to system side
          tfm   y-,u-
          leau  ,s         needed because the TFM is u-, not -u (post, not pre)
          ELSE
-         pshs  b
+* Note!  R$Size MUST BE an EVEN number of bytes for this to work!
          leau  R$Size,s  point to last byte of destination register stack
-         ldb   #R$Size
-Loop3    lda   ,-y
-         sta   ,-u
-         decb
+         lda   #R$Size/2
+Loop3    ldx   ,--y
+         stx   ,--u
+         deca
          bne   Loop3
-         puls  b
          ENDC
          andcc #^IntMasks
 * B=function code already from calling process: DON'T USE IT!
