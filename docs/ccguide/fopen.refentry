@@ -107,8 +107,8 @@ the moment the program runs:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in"/>
-<colspec colwidth="3in"/>
+<colspec colwidth="0.6in"/>
+<colspec colwidth="3.4in"/>
 <tbody>
 <row>
 <entry>stdin</entry>
