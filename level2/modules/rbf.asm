@@ -271,7 +271,7 @@ CreatD9  clra  			move length to Y
          ldb   #$01		get link count
          stb   FD.LNK,u
          ldd   3,s		get segment size in sectors
-         IFNE  H630
+         IFNE  H6309
          decd  			is it 1?
          ELSE
          subd  #$0001
