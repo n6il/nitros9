@@ -18,6 +18,8 @@
          use   defsfile
          endc
 
+DOHELP   set   1
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
@@ -33,9 +35,11 @@ size     equ   .
 name     fcs   /Del/
          fcb   edition
 
+         IFNE  DOHELP
 HelpMsg  fcb   C$LF
          fcc   "Use: Del [-x] <path> {<path>} [-x]"
          fcb   C$CR
+         ENDC
 
 start    lda   ,x		get first char on command line
          cmpa  #C$CR		carriage return?
@@ -79,10 +83,13 @@ CheckCR  cmpa  #C$CR
          bne   SkipName
 Return   rts   
 
-ShowHelp leax  >HelpMsg,pcr
+ShowHelp equ   *
+         IFNE  DOHELP
+         leax  >HelpMsg,pcr
          ldy   #80
          lda   #2		stderr
          os9   I$WritLn 	write help
+         ENDC
          bra   ExitOk
 
          emod
