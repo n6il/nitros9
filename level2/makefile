@@ -1,6 +1,6 @@
 include ../Makefile.rules
 
-RELEASE		= os9l2v030002beta3
+RELEASE		= os9l2v030100
 BOOTFILE	= bootfile_vdg
 KERNEL		= kernel_stock
 
@@ -13,8 +13,8 @@ ROOTFILES	= startup upgrade_song
 SYSGO		= MODULES/cc3go
 
 PACKAGENAME	= $(RELEASE).zip
-DSK_DS40_1	= $(RELEASE)_ds40_1.dsk
-DSK_DS40_2	= $(RELEASE)_ds40_2.dsk
+DSK1		= $(RELEASE)_ds40_1.dsk
+DSK2		= $(RELEASE)_ds40_2.dsk
 TESTDSK		= test.dsk
 
 
@@ -42,29 +42,29 @@ clean: dskclean
 	-$(CD) BOOTFILES; make clean
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK_DS40_1) $(DSK_DS40_2)
+	-$(RM) $(PACKAGENAME) $(DSK1) $(DSK2)
 
 dsk: all $(PACKAGENAME)
 
-$(PACKAGENAME): $(DSK_DS40_1) $(DSK_DS40_2)
-	$(ZIP) $(PACKAGENAME) $(DSK_DS40_1) $(DSK_DS40_2) ReadMe ChangeLog
+$(PACKAGENAME): $(DSK1) $(DSK2)
+	$(ZIP) $(PACKAGENAME) $(DSK1) $(DSK2) ReadMe ChangeLog
 
-$(DSK_DS40_1):
-	-$(RM) $(DSK_DS40_1)
-	$(OS9FORMAT_DS40) $(DSK_DS40_1) -n"OS-9 Level Two System Disk"
-	$(OS9GEN) $(DSK_DS40_1) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
-	$(MAKDIR) $(DSK_DS40_1),CMDS
-	$(MAKDIR) $(DSK_DS40_1),SYS
-	$(MAKDIR) $(DSK_DS40_1),MODULES
-	$(CP) $(SYSGO) $(DSK_DS40_1),
-	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_DS40_1),CMDS
-	$(CD) SYS; $(CP) $(SYSBIN) ../$(DSK_DS40_1),SYS
-	$(CD) SYS; $(CPL) $(SYSTEXT) ../$(DSK_DS40_1),SYS
-	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK_DS40_1),MODULES
-	$(CPL) $(ROOTFILES) $(DSK_DS40_1),.
+$(DSK1):
+	-$(RM) $(DSK1)
+	$(OS9FORMAT_DS40) $(DSK1) -n"OS-9 Level Two System Disk"
+	$(OS9GEN) $(DSK1) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
+	$(MAKDIR) $(DSK1),CMDS
+	$(MAKDIR) $(DSK1),SYS
+	$(MAKDIR) $(DSK1),DEFS
+	$(CP) $(SYSGO) $(DSK1),
+	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK1),CMDS
+	$(CD) SYS; $(CP) $(SYSBIN) ../$(DSK1),SYS
+	$(CD) SYS; $(CPL) $(SYSTEXT) ../$(DSK1),SYS
+	$(CD) DEFS; $(CPL) $(DEFS) ../$(DSK1),DEFS
+	$(CPL) $(ROOTFILES) $(DSK1),.
 
-$(DSK_DS40_2):
-	-$(RM) $(DSK_DS40_2)
-	$(OS9FORMAT_DS40) $(DSK_DS40_2) -n"OS-9 Level Two Development Disk"
-	$(MAKDIR) $(DSK_DS40_2),DEFS
-	$(CD) DEFS; $(CPL) $(DEFS) ../$(DSK_DS40_2),DEFS
+$(DSK2):
+	-$(RM) $(DSK2)
+	$(OS9FORMAT_DS40) $(DSK2) -n"OS-9 Level Two Modules Disk"
+	$(MAKDIR) $(DSK2),MODULES
+	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK2),MODULES
