@@ -1,7 +1,8 @@
 <refentry id="puts">
 <refnamediv>
-<refname>puts</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Puts</refname>
+<refname>Fputs</refname>
+<refpurpose>put a string on a file</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

@@ -8,7 +8,8 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>prerr</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>int <parameter>filnum</parameter></paramdef>
+  <paramdef>int <parameter>errcode</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
