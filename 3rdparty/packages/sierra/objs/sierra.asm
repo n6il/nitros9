@@ -189,8 +189,6 @@ L00DB    lbsr  L0133
 L00DE    clrb               
 L00DF    os9   F$Exit      time to check out
 
-* disassembler had a little problem here
-L00E2    fdb   $000C  another prog internal var  
 
 * same sequence of bytes at L454C in mnln
  
@@ -659,7 +657,7 @@ L02C8    ldb   ,x+       get value computed above for color table and bump it
          inc   $02,s     this is our palette register value
          lda   $02,s     we bumped it by one 
          cmpa  #$10      we loop 15 times to set them all
-         blox   L02C8     loop
+         blo   L02C8     loop
 
          clr   <u0045    clear a flag in memory
          lbsr  L02E9     go disable keyboard interrupts
