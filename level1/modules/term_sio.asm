@@ -58,7 +58,7 @@ rev      set   $00
          fcb   24         (szy) number of rows for display
 initsize equ   *
 
-name     fcs   /TERM/
+name     fcs   /term/
 mgrnam   fcs   /SCF/
 drvnam   fcs   /SIO/
 
