@@ -367,7 +367,7 @@ L019D    std   ,--u
          lda   #$03		close paths 4-16
 L01D0    os9   I$Close
          inca  
-         cmpa  #$10
+         cmpa  #16
          bcs   L01D0
          lda   #$02
          os9   I$Dup    
@@ -564,7 +564,7 @@ BYE      bsr   L0381
          clr   <u0035
          rts   
 L037D    comb  
-         ldb   #$2B
+         ldb   #E$UnkPrc
          rts   
 L0381    ldy   <u0082
          lda   #$2A
@@ -638,6 +638,8 @@ L040C    puls  pc,u,y,x
 
 L040E    os9   F$PErr   
          rts   
+
+UNID1
          pshs  b,a
          bra   L0426
 L0416    pshs  y,x
@@ -988,6 +990,8 @@ L06D6    puls  pc,u,y,x,a
          puls  pc,x,b,a
 L06E8    neg   <u0002
          rts   
+
+UNID2
          pshs  x,b,a
          ldb   [<$04,s]
          leax  <L06FB,pcr
@@ -1543,7 +1547,7 @@ L0ADE    ldy   <u0031
          ldu   <$14,y
          cmpu  <u004A
          bhi   L0AEE
-         ldb   #$35			error 53
+         ldb   #E$SubOvf
          lbra  L0EDC
 L0AEE    stx   ,--u
          stu   <$14,y
@@ -1610,7 +1614,7 @@ L0B63    clr   <u0013,u
          rts   
 
 CREATE   bsr   L0B87
-         ldb   #$0B
+         ldb   #PREAD.+UPDAT.
          os9   I$Create 
          bra   L0B77
 
@@ -1643,7 +1647,7 @@ SEEK     lbsr  SetPath
          lbcs  L0EDE
          rts   
 
-L0BAF    fcc   /? /
+InputPrompt fcc   /? /
 L0BB0    fcb   $ff
 
 L0BB2    fcc   "** Input error - reenter **"
@@ -1664,7 +1668,7 @@ L0BDA    ldx   ,s
          ldx   $01,y
          bra   L0BEF
 L0BEA    pshs  x
-         leax  <L0BAF,pcr
+         leax  <InputPrompt,pcr
 L0BEF    bsr   Sprint
          puls  x
          lda   <u007F
@@ -1703,6 +1707,7 @@ L0C3C    leas  $03,s
          coma  
          rts   
 
+* Entry: X = address of string to print
 Sprint   pshs  y
          leas  -$06,s
          leay  ,s
@@ -2311,6 +2316,7 @@ UNK5     lbsr  L0730
          stx   <table1
          rts   
 
+UNID3
          pshs  x,b,a
          ldb   [<$04,s]
          leax  <L10EF,pcr
@@ -2319,9 +2325,14 @@ UNK5     lbsr  L0730
          stx   $04,s
          puls  pc,x,b,a
 
-L10EF    fcb   $14 
-         fdb   $3401,$6403,$9504,$b706,$1808,$2d09,$1f08
-         fcb   $e7
+L10EF    fdb   UNK12-L10EF
+         fdb   L1253-L10EF
+         fdb   RLADD-L10EF
+         fdb   L15A6-L10EF
+         fdb   L1707-L10EF
+         fdb   RLCMP-L10EF
+         fdb   FIX-L10EF
+         fdb   FLOAT-L10EF
 
 L10FF    jsr   <u001B
          fcb   $08
@@ -2737,7 +2748,7 @@ INTDIV   bsr   L13D0
 
 L1401    ldd   $01,y
          bne   L140A
-         ldb   #$2D			error 45
+         ldb   #E$DivZer
          lbra  L1102
 L140A    ldd   $07,y
          bne   L1413
@@ -3456,7 +3467,7 @@ Rgt      bsr   RLCMP
          bra   L18DC
 
 RLCMP    pshs  y
-         andcc #$F0
+         andcc #Entire+FIRQMask+HalfCrry+IRQMask
          lda   $08,y
          bne   L1934
          lda   $02,y
@@ -3464,8 +3475,8 @@ RLCMP    pshs  y
 L1928    lda   $05,y
 L192A    anda  #$01
          bne   L1932
-L192E    andcc #$F0
-         orcc  #$08
+L192E    andcc #Entire+FIRQMask+HalfCrry+IRQMask
+         orcc  #Negative
 L1932    puls  pc,y
 L1934    lda   $02,y
          bne   L193E
@@ -3491,7 +3502,7 @@ L1950    ldd   u0001,u
          cmpa  $05,y
          beq   L1932
 L1964    bcs   L192E
-         andcc #$F0
+         andcc #Entire+FIRQMask+HalfCrry+IRQMask
          puls  pc,y
 
 SCPCNST   clrb  
@@ -3976,9 +3987,9 @@ LOG      pshs  x
 
 L1CD8    fcb   $00,$b1,$72,$17,$f8
 
-L1CDD    fcb   $1d
-         fdb   $2a01
-         fcb   $50
+L1CDD    sex
+         bpl   L1CE1
+         negb
 L1CE1    anda  #$01
          pshs  b,a
          leau  >L1CD8,pcr
@@ -4110,7 +4121,7 @@ L1DDC    lda   #$01
          lbra  L206A
 L1DEF    leay  -$06,y
          lbpl  L15B0
-         ldb   #$32			error 50
+         ldb   #E$FltOvf
          lbra  L1102
 
 L2125    pshs  x
@@ -4590,21 +4601,21 @@ L21D8    lda   ,u
 L21FB    rts   
 
 L21FC    fdb   $0c90,$fdaa
-L2200    fdb   $2207,$6b19,$c158,$03eb,$6ebf,$2601,$fd5b,$a9ab
-L2210    fdb   $00ff,$aadd,$b900,$7ff5,$56ef,$003f,$feaa,$b700
-L2220    fdb   $1fff,$d556,$000f,$fffa,$ab00,$07ff,$ff55,$0003
-L2230    fdb   $ffff,$eb00,$01ff,$fffd,$0001,$0000
+         fdb   $2207,$6b19,$c158,$03eb,$6ebf,$2601,$fd5b,$a9ab
+         fdb   $00ff,$aadd,$b900,$7ff5,$56ef,$003f,$feaa,$b700
+         fdb   $1fff,$d556,$000f,$fffa,$ab00,$07ff,$ff55,$0003
+         fdb   $ffff,$eb00,$01ff,$fffd,$0001,$0000
          fcb   $00
 L223D    fcb   $00
          fdb   $9b74
-L2240    fdb   $eda8
+         fdb   $eda8
 L2242    fdb   $0b17,$217f,$7e06,$7cc8,$fb30,$0391,$fef8
-L2250    fdb   $f301,$e270,$76e3,$00f8,$5186,$0100,$7e0a,$6c3a
-L2260    fdb   $003f,$8151,$6200,$1fe0,$2a6b,$000f,$f805,$5100
-L2270    fdb   $07fe,$00aa,$0003,$ff80,$1500,$01ff,$e003,$0000
-L2280    fdb   $fff8,$0000,$007f,$fe00,$0000,$3fff,$8000,$001f
-L2290    fdb   $ffe0,$0000,$0fff,$f800,$0007,$fffe,$0000,$0400
-L22a0    fcb   $00
+         fdb   $f301,$e270,$76e3,$00f8,$5186,$0100,$7e0a,$6c3a
+         fdb   $003f,$8151,$6200,$1fe0,$2a6b,$000f,$f805,$5100
+         fdb   $07fe,$00aa,$0003,$ff80,$1500,$01ff,$e003,$0000
+         fdb   $fff8,$0000,$007f,$fe00,$0000,$3fff,$8000,$001f
+         fdb   $ffe0,$0000,$0fff,$f800,$0007,$fffe,$0000,$0400
+         fcb   $00
 L22A1    fcb   $0e
          fdb   $1214,$a2bb,$40e6,$2d36,$1962
          fcb   $e9
@@ -4945,7 +4956,8 @@ L251B    clra
          lda   #$03
          sta   ,y
          rts   
-         ldb   #$06
+
+UNK12    ldb   #$06
          pshs  y,x,b
          tfr   dp,a
          ldb   #$50
@@ -4964,6 +4976,7 @@ L2531    ldd   ,x++
          leax  >L1214,pcr
          stx   <u0017
          puls  pc,y,x,b
+
          pshs  x,b,a
          ldb   [<$04,s]
          leax  <L2561,pcr
@@ -5102,7 +5115,7 @@ L26A3    leas  $02,s
 L26A5    leas  $01,s
 L26A7    ldb   #$3C
          bra   L26AD
-err59    ldb   #$3B
+err59    ldb   #E$IONum
 L26AD    stb   <u0036
          coma  
          puls  pc,u
@@ -5241,7 +5254,7 @@ L27BF    cmpa  #$02
          lbsr  Flote
 L27C6    lbsr  L2851
          bcs   L27D2
-         ldb   #$3D			error 61
+         ldb   #E$Illinp
          stb   <u0036
          coma  
          puls  pc,x
@@ -5265,7 +5278,7 @@ L2007    pshs  x
          bcs   L27BD
          cmpa  #$01
          beq   L27C6
-err58    ldb   #$3A
+err58    ldb   #E$IOMism
          stb   <u0036
          coma  
          puls  pc,x
@@ -5306,7 +5319,7 @@ L20X9    pshs  x
          eora  #$46
          anda  #$DF
          beq   L2848
-         ldb   #$3A
+         ldb   #E$IOMism
          stb   <u0036
          coma  
          puls  pc,x
@@ -5892,10 +5905,11 @@ L2C63    pshs  a
          bne   L2C63
 L2C74    ldb   #$3F
          bra   L2C7A
-L2C78    ldb   #$3E
+L2C78    ldb   #E$IOFRpt
 L2C7A    stb   <u0036
          coma  
          puls  pc,y,x
+
 L2C7F    stb   <u0085
          ldd   $01,y
          leay  d,y
@@ -5904,6 +5918,7 @@ L2C7F    stb   <u0085
          ldb   #$01
 L2C8B    stb   <u0086
          jmp   ,y
+
 L2C8F    bsr   L2CA9
          bcs   L2CB8
          tfr   a,b
@@ -5918,18 +5933,19 @@ L2C8F    bsr   L2CA9
          clrb  
 L2CA5    lda   ,x+
          bra   L2CB5
+
 L2CA9    lda   ,x+
-L2CAB    cmpa  #$30
+L2CAB    cmpa  #'0
          bcs   L2CB8
-         cmpa  #$39
+         cmpa  #'9
          bhi   L2CB8
-         suba  #$30
+         suba  #'0
 L2CB5    andcc #^Carry
          rts   
 L2CB8    orcc  #Carry
          rts   
 L2CBB    pshs  a
-         lda   #$0A
+         lda   #10
          mul   
          addb  ,s+
          adca  #$00
@@ -6298,7 +6314,7 @@ L2F87    cmpa  <u0089
 L2F8D    sta   <u008B
          rts   
 
-err48    ldb   #$30
+err48    ldb   #E$NoRout
          stb   <u0036
          coma  
          rts   

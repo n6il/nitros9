@@ -19,6 +19,7 @@
 tylg     set   Sbrtn+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   $02
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -26,7 +27,7 @@ u0000    rmb   0
 size     equ   .
 
 name     fcs   /gfx2/
-         fcb   $02 
+         fcb   edition
 
 FuncTbl  fdb   DWSet-FuncTbl
          fcc   "DWSet"
