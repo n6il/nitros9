@@ -91,7 +91,7 @@ $(DSK2):
 	$(CD) MODULES; $(CP) $(PIPE) ../$@,MODULES/PIPE
 	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,MODULES/PIPE/$(file);)
 	$(MAKDIR) $@,BOOTLISTS
-	$(CD) BOOTLISTS; $(CPL) * ../$@,BOOTLISTS
+	$(CD) BOOTLISTS; $(CPL) bootlist* ../$@,BOOTLISTS
 #       $(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,MODULES/PIPE/$(file);)
 
 
