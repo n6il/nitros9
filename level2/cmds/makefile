@@ -4,7 +4,7 @@ DEPENDS		= ./Makefile
 
 CMDS		= attr binex build cmp cobbler copy date \
 		deiniz del deldir dir display dump echo error exbin \
-		free help ident iniz link list load login makdir mdir \
+		free grfdrv help ident iniz link list load login makdir mdir \
 		merge mfree montype procs pwd pxd rename save \
 		setime shell_21 sleep tee tmode tsmon unlink \
 		verify wcreate xmode
