@@ -1,5 +1,5 @@
 ***************************************
-* OS-9 Level Two Bootlist
+* NitrOS-9 Level Two Bootlist
 *
 * $Id$
 *
@@ -11,7 +11,7 @@
 * Kernel/System Section
 *
 * These modules are mandatory.
-../MODULES/KERNEL/os9p2
+../MODULES/KERNEL/kernelp2
 ../MODULES/SYSMODS/ioman
 ../MODULES/SYSMODS/init
 *

@@ -1,6 +1,6 @@
 -t
 -x
-echo * OS-9 Level Two Boot Creation Script
+echo * NitrOS-9 Level 2 Boot Creation Script
 echo *
 echo * This script creates a bootable floppy disk in /d0.
 echo * It assumes two floppy drives.
@@ -11,11 +11,11 @@ echo *
 prompt Insert a blank disk in /d0 and press a key:
 echo *
 echo * Step 1: Format disk in /d0 as 35TSS
-format /d0 1 '35' "OS-9 Floppy Boot Disk" r
+format /d0 1 '35' "NitrOS-9 Level 2 Boot Disk" r
 echo *
 echo * Step 2: Create a custom boot track
 del bttemp
-merge ../MODULES/BOOTTRACK/rel_32 ../MODULES/BOOTTRACK/boot_1773_6ms ../MODULES/BOOTTRACK/os9p1>bttemp
+merge ../MODULES/BOOTTRACK/rel_32 ../MODULES/BOOTTRACK/boot_1773_6ms ../MODULES/BOOTTRACK/kernel>bttemp
 echo *
 echo * Step 3: Create the bootfile and boot track
 os9gen #32k /d0 -t=bttemp<../BOOTLISTS/standard.bl

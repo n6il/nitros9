@@ -1,5 +1,5 @@
 ********************************************************************
-* OS9p4 - User Register Dump System Call for OS9 Level Two
+* KernelP4 - User Register Dump System Call for NitrOS9 Level 2
 *
 * $Id$
 *
@@ -8,13 +8,13 @@
 * This system call can be used in an application program to dump the
 * current contents of all user registers in Hex,Decimal,Binary and Ascii 
 * (Registers "A" and "B" Only). This module MUST be present in the
-* bootfile. If no OS9P3 module is found,change the "mname" and "nextname"
+* bootfile. If no KernelP3 module is found,change the "mname" and "nextname"
 * as appropriate.
 *
 * If there is a conflict with the code used for this system called, it can
 * be changed by resetting the equate at "F$RegDmp"
 *
-* NOTE: All registers EXCEPT 'CC' are preserved....OS9 internally resets
+* NOTE: All registers EXCEPT 'CC' are preserved....NitrOS9 internally resets
 *       the condition code register upon service call exit.
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
@@ -23,8 +23,8 @@
 *   1      1989/02/??  Ron Lammardo
 * Started.
 
-         nam   os9p4 
-         ttl   User Register Dump System Call for OS9 Level Two
+         nam   KernelP4 
+         ttl   User Register Dump System Call for NitrOS9 Level 2
 
          ifp1  
          use   defsfile
@@ -37,7 +37,7 @@ edition  set   1
 
          mod   eom,name,tylg,atrv,start,0
 
-name     fcs   /OS9p4/    name of this module
+name     fcs   /KernelP4/    name of this module
          fcb   edition
 
 svctabl  fcb   F$RegDmp   F$RegDmp code
@@ -53,7 +53,7 @@ start    leay  <svctabl,pcr point to service table
          jsr   ,y         else go execute it
 endsetup rts              return back to previous module
 
-nextname fcc   /OS9P5/    next module name to link to
+nextname fcc   /KernelP5/    next module name to link to
          fcb   $0d
 
 regdmp   equ   *
