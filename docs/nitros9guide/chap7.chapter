@@ -90,6 +90,7 @@ command line before it is passed to the program being called.
 &copyref;
 &dateref;
 &dcheckref;
+&debugref;
 &delref;
 &deldirref;
 &dirref;
