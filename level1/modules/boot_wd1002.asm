@@ -32,7 +32,6 @@ HDStep   equ   $0F        see step rate table
 
          IFP1  
          use   defsfile
-         use   rbfdefs
          ENDC  
 
 * These equates should not have to be changed:

@@ -31,7 +31,6 @@ vars     equ   13-buffptr  Size of stack variables buffer
 
          IFP1
          use   defsfile
-         use   rbfdefs
          ENDC
 
 tylg     set   Systm+Objct
