@@ -14,10 +14,9 @@
 
 <refsect1><title>Description</title>
 <para>
-This command is used to display or change the initialization
-parameters of any SCF-type device such as the video display,
-printer, RS232 port, etc. A common use is to change baud rates,
-control key definitions, etc.
+EXMODE is an enhanced verison of the XMODE utility, and is useful for
+changing initialization parameters specific to CoCo 3 window descriptors
+and enhanced ACIA device descriptors.
 </para>
 <para>
 EXMODE is very similar to the TMODE command. TMODE only operates on

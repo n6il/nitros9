@@ -53,9 +53,9 @@ exchanges required for single drive copies.
 <screen>
 copy file1 file2 #15k           (copies file1 to file2)
 
-copy /D1/joe/news /D0/peter/messages
+copy /d1/joe/news /D0/peter/messages
 
-copy /TERM /P                   (copies console to printer)
+copy /term /p                   (copies console to printer)
 
 copy /d0/cat /d0/animals/cat -s #32k
 Ready DESTINATION, hit C to continue: c
