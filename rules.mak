@@ -20,12 +20,12 @@ ASOUT		= -o=
 AFLAGS		= -q
 
 # Commands
-MAKDIR		= os9makdir
+MAKDIR		= $(OS9TOOLSDIR)/os9makdir
 RM		= rm -f
 MERGE		= cat
 ECHO		= echo
 CD		= cd
-CP		= os9copy
+CP		= $(OS9TOOLSDIR)/os9copy
 TAR		= tar
 CHMOD		= chmod
 IDENT		= $(OS9TOOLSDIR)/os9ident
@@ -41,6 +41,7 @@ LOREMOVE	= sudo /sbin/losetup -d
 LOSETUP		= sudo /sbin/losetup
 LINK		= ln
 SOFTLINK	= $(LINK) -s
+ZIP		= zip -D
 
 # Directories
 3RDPARTY	= $(BASEDIR)/3rdparty
