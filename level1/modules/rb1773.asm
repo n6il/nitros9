@@ -8,7 +8,24 @@
 * NOTE: 512 bytes is reserved as a physical sector buffer. Any reads/
 *  writes are done from this buffer to the controller. Copies of the 256
 *  byte chunk needed are done by a block memory move
-
+*
+* Disto Super Controller II Registers:
+*
+* $FF74   RW.Dat  --- R/W Buffer data #1
+* $FF75       mirror of $FF74
+* $FF76   RW.Ctrl --- Write  D0 = 0  FDC Write Op #2
+*                               = 1  FDC Read Op  #2
+*                            D1 = 0  Normal Mode
+*                               = 1  Buffered I/O Mode
+*                            D2 = 0  Normal NMI
+*                               = 1  Masked NMI
+*                            D3 = 0  No FIRQ (Masked)
+*                               = 1  Enabled FIRQ
+*                     Read   D7 = FDC INT Status (Inverted)
+* $FF77       mirror of $FF76
+*        #1: any write to $FF76-$FF77 clears Buffer counter
+*        #2: in buffered mode only
+*
 * $Id$
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
@@ -23,6 +40,9 @@
 *
 *  11r1    2003/09/03  Boisy G. Pitre
 * Added code to sense if HW is present or not and return error if not.
+*
+*   1r0    2004/05/20  Boisy G. Pitre
+* Restarted edition due to name change; backported to Level 1
 
          nam   rb1773
          ttl   Western Digital 1773 Disk Controller Driver
@@ -33,8 +53,8 @@
 
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
-edition  set   11
+rev      set   $00
+edition  set   1
 
 * Configuration Settings
 N.Drives equ   4              number of drives to support
@@ -48,6 +68,9 @@ WD_Stat  equ   WD_Cmd
 WD_Trak  equ   $09
 WD_Sect  equ   $0A
 WD_Data  equ   $0B
+
+* WD-17X3 Commands
+S$FrcInt equ   $D0
 
 * Control Register Definitions
 C_HALT   equ   %10000000	Halt line to CPU is active when set
@@ -72,11 +95,11 @@ FBlock   rmb   2              block number for format
          IFGT  Level-1
 FTask    rmb   1              task number for format
          ENDC
-u00B1    rmb   2              Vi.Cnt word for VIRQ
+VIRQPak  rmb   2              Vi.Cnt word for VIRQ
 u00B3    rmb   2              Vi.Rst word for VIRQ
 u00B5    rmb   1              Vi.Stat byte for VIRQ (drive motor timeout)
-u00B6    rmb   2              OS9's logical sector #
-u00B8    rmb   1              PCDOS (512 byte sector) sector #
+loglsn   rmb   2              OS9's logical sector #
+physlsn  rmb   1              PCDOS (512 byte sector) sector #
 size     equ   .
 
          fcb   DIR.+SHARE.+PEXEC.+PWRIT.+PREAD.+EXEC.+UPDAT.
@@ -84,7 +107,7 @@ size     equ   .
 name     fcs   /rb1773/
          fcb   edition
 
-VIRQCnt  fdb   $00F0          Initial count for VIRQ (240)
+VIRQCnt  fdb   TkPerSec*4     Initial count for VIRQ (4 seconds)
 
 IRQPkt   fcb   $00            Normal bits (flip byte)
          fcb   $01            Bit 1 is interrupt request flag (Mask byte)
@@ -119,19 +142,19 @@ Init2    decb                 delay a bit...
          clr   <D.MotOn       flag drive motor as not running
          ENDC
          leax  WD_Stat,x      point to Status/Command register
-         lda   #$D0           force Interrupt command
+         lda   #S$FrcInt      "Force Interrupt" command
          sta   ,x             send to FDC
          lbsr  FDCDelay       time delay for ~ 108 cycles
          lda   ,x             eat status register
          ldd   #$FF*256+N.Drives  'invalid' value & # of drives
-         sta   >u00B8,u       set 512 byte sector # to bogus value
-         sta   >u00B8+1,u
+         sta   >physlsn,u     set 512 byte sector # to bogus value
+         sta   >physlsn+1,u
          leax  DRVBEG,u       point to start of drive tables
-L004B    sta   ,x             DD.TOT MSB to bogus value
+l@       sta   ,x             DD.TOT MSB to bogus value
          sta   <V.TRAK,x      init current track # to bogus value
          leax  <DRVMEM,x      point to next drive table
-         decb                 done all 4 drives yet?
-         bne   L004B          no, init them all
+         decb                 done all drives yet?
+         bne   l@             no, init them all
          leax  >NMISvc,pc     point to NMI service routine
          IFGT  Level-1
          stx   <D.NMI         install as system NMI
@@ -148,6 +171,26 @@ L004B    sta   ,x             DD.TOT MSB to bogus value
          os9   F$IRQ          install IRQ
          puls  y              Get back device dsc. ptr
          bcs   Return         If we can't install IRQ, exit
+ IFNE SCII
+ lda MPI.Slct
+ sta mpislot,u
+ ldd #RW.Ctrl
+ leay SC2vec,pcr
+ os9  F$IRQ
+ bcs Return
+ pshs cc
+ orcc #IntMasks
+ lda $FF23
+* disable FIRQ from cart. set flag on falling edge of CART
+ anda #$FC
+ sta $FF23
+ lda $FF22
+ lda D.IRQER
+ ora #1 enable CART IRQ
+ sta D.IRQER .. save in IRQENR shadow
+ sta IRQENR .. and actual register
+ puls cc
+ ENDC
          ldd   #512           Request 512 byte sector buffer
          pshs  u              Preserve device mem ptr
          os9   F$SRqMem       Request sector buffer
@@ -179,7 +222,7 @@ Return   rts
 *    CC = carry set on error
 *    B  = error code
 *
-Term     leay  >u00B1,u       Point to VIRQ packet
+Term     leay  >VIRQPak,u       Point to VIRQ packet
          IFNE  H6309
          tfr   0,x            "remove"
          ELSE
@@ -191,7 +234,17 @@ Term     leay  >u00B1,u       Point to VIRQ packet
          ELSE
          ldx   #$0000
          ENDC
+         leay  >IRQSvc,pc     point to IRQ service routine
          os9   F$IRQ          Remove IRQ
+ IFNE  SCII
+ IFNE  H6309
+ tfr   0,x            "remove"
+ ELSE
+ ldx   #$0000
+ ENDC
+ leay  SC2vec,pcr
+ os9   F$IRQ          Remove IRQ
+ ENDC
          pshs  u              Save device mem ptr
          ldu   >sectbuf,u     Get pointer to sector buffer
          ldd   #512           Return sector buffer memory
@@ -203,7 +256,7 @@ Term     leay  >u00B1,u       Point to VIRQ packet
          ELSE
          clr   <D.MotOn       Clear out drive motor timeout flag
          ENDC
-L00AB    rts                  return
+ex       rts                  return
 
 * Check if 512 byte sector conversion needed
 * Entry: B:X=LSN
@@ -211,15 +264,14 @@ L00AB    rts                  return
 *          Y=Path dsc. ptr
 * Exit:    X=New LSN (same as original for 256 byte sectors, 1/2 of original
 *            for 512 byte sectors
-L00AC    pshs  x,b            Save LSN
-         stx   >u00B6,u       Save OS9 LSN
-         lda   <PD.TYP,y      Get device type from path dsc.
-         anda  #%00000100     Mask out all but 512 byte sector flag
-         bne   L00BB          512 byte sectors, go process
-L00CA    puls  pc,x,b         Restore LSN & return
-
+Chk512   pshs  x,b            save LSN
+         stx   >loglsn,u      save OS9 LSN
+         lda   <PD.TYP,y      get device type from path dsc.
+         anda  #%00000100     mask out all but 512 byte sector flag
+         bne   Log2Phys       512 byte sectors, go process
+L00CA    puls  pc,x,b         restore LSN & return
 * 512 byte sector processing goes here
-L00BB    puls  x,b            Get back LSN
+Log2Phys puls  x,b            Get back LSN
          clrb                 Clear carry for rotate (also high byte of LSN)
          tfr   x,d            Move to mathable register
          IFNE  H6309
@@ -229,7 +281,7 @@ L00BB    puls  x,b            Get back LSN
          rorb
          ENDC
          tfr   d,x            Move new LSN back to X
-         stx   >u00B8,u       Save 'physical' LSN (for controller)
+         stx   >physlsn,u     Save 'physical' LSN (for controller)
          clrb                 No error & return
          rts   
 
@@ -255,19 +307,19 @@ start    lbra  Init
 *    CC = carry set on error
 *    B  = error code
 *
-Read     bsr   L00AC          Go check for 512 byte sector/adjust if needed
-         lda   #%10010001     Error flags (see Disto SCII source)
-         pshs  x              Preserve sector #
-         lbsr  L0162          Go read the sector
-         puls  x              Restore sector #
-         bcs   L00AB          If error, exit
-         pshs  y,x            Save path dsc ptr & LSN
+Read     bsr   Chk512         go check for 512 byte sector/adjust if needed
+         lda   #%10010001     error flags (see Disto SCII source)
+         pshs  x              preserve sector #
+         lbsr  L0162          go read the sector
+         puls  x              restore sector #
+         bcs   ex             if error, exit
+         pshs  y,x            save path dsc ptr & LSN
          leax  ,x             LSN0?
-         bne   L012D          No, go calculate normally
-         puls  y,x            Yes, restore path dsc ptr & LSN
-         lda   <PD.TYP,y      Get type from path dsc.
-         bita  #TYP.NSF       Standard OS-9 format?
-         beq   L00F0          Yes, skip ahead
+         bne   L012D          no, go calculate normally
+         puls  y,x            yes, restore path dsc ptr & LSN
+         lda   <PD.TYP,y      get type from path dsc.
+         bita  #TYP.NSF       standard OS-9 format?
+         beq   L00F0          yes, skip ahead
          lbsr  L051A
          pshs  y,x            save path dsc ptr
          bra   L012D
@@ -316,7 +368,7 @@ L012D    ldy   2,s            Get path dsc. ptr back??
          ENDC
          anda  #%00000100     Mask out all but 512 byte sector flag
          beq   L014B          If normal sector, just copy it
-         ldd   >u00B6,u       Get OS9's LSN (twice of the 'real' 512 sector)
+         ldd   >loglsn,u       Get OS9's LSN (twice of the 'real' 512 sector)
          andb  #$01           Mask out all but odd/even sector indicator
          beq   L014B          Even, use 1st half of 512 byte sector
          IFNE  H6309
@@ -411,17 +463,17 @@ L01A1    orcc  #IntMasks      Shut off IRQ & FIRQ
 *    CC = carry set on error
 *    B  = error code
 *
-Write    lbsr  L00AC          Go adjust LSN for 512 byte sector if needed
-         lda   #%1001001      Retry flags for I/O errors (see Disto SCII source)
-L01C4    pshs  x,d            Preserve LSN, retries
-         bsr   L01E8          Go write the sector
-         puls  x,d            Restore LSN, retries
-         bcs   L01D8          Error writing, go to write retry handler
-         tst   <PD.VFY,y      No error, do we want physical verify?
-         bne   L01D6          No, exit without error
-         lbsr  verify         Go re-read & verify 32 out of 256 bytes
-         bcs   L01D8          Error on verify, go to write retry handler
-L01D6    clrb                 No error & return
+Write    lbsr  Chk512         go adjust LSN for 512 byte sector if needed
+         lda   #%1001001      retry flags for I/O errors (see Disto SCII source)
+L01C4    pshs  x,d            preserve LSN, retries
+         bsr   L01E8          go write the sector
+         puls  x,d            restore LSN, retries
+         bcs   L01D8          error writing, go to write retry handler
+         tst   <PD.VFY,y      no error, do we want physical verify?
+         bne   L01D6          no, exit without error
+         lbsr  verify         go re-read & verify 32 out of 256 bytes
+         bcs   L01D8          error on verify, go to write retry handler
+L01D6    clrb                 no error & return
 L01D7    rts   
 
 * Write error retry handler
@@ -442,7 +494,7 @@ L01E8    lbsr  L02AC          Go do double-step/write precomp if needed
          beq   L020D          No, skip ahead
          lda   #$91           ??? appears to be useless
          lbsr  L0176          Go read the sector in
-         ldd   >u00B6,u       Get OS9 LSN
+         ldd   >loglsn,u       Get OS9 LSN
          andb  #$01           Even or odd?
          beq   L020D          Even, skip ahead
          ldx   >sectbuf,u     Get physical sector buffer ptr
@@ -533,7 +585,7 @@ verify   pshs  x,d
          ldy   >sectbuf,u     Get sector buffer ptr
          andb  #%00000100     512 byte sector?
          beq   L028D          No, skip ahead
-         ldd   >u00B6,u       Get OS9's sector #
+         ldd   >loglsn,u       Get OS9's sector #
          andb  #$01           Odd/even sector?
          beq   L028D          Even; compare first half
          leay  >$0100,y       Odd, compare second half
@@ -733,7 +785,7 @@ L03E6    ldb   >DPort+WD_Stat Check FDC status register
          bitb  #$01           Is controller still busy?
          beq   L0403          No, exit
          ldd   >VIRQCnt,pc    Get initial count value for drive motor speed
-         std   >u00B1,u       Save it
+         std   >VIRQPak,u       Save it
          bra   L03E6          Wait for controller to finish previous command
 
 * Send command to FDC
@@ -888,7 +940,7 @@ L0497    ldb   <PD.STP,y
 
 L04B3    pshs  y,x,d          Preserve regs
          ldd   >VIRQCnt,pc    Get VIRQ initial count value
-         std   >u00B1,u       Save it
+         std   >VIRQPak,u       Save it
          lda   >CtlImg,u       ?Get drive?
          ora   #C_MOTOR       Turn drive motor on for that drive
 *         ora   #%00001000     Turn drive motor on for that drive
@@ -916,7 +968,7 @@ InsVIRQ  lda   #$01           Flag drive motor is up to speed
          sta   <D.MotOn
          ENDC
          ldx   #$0001         Install VIRQ entry
-         leay  >u00B1,u       Point to packet
+         leay  >VIRQPak,u       Point to packet
          clr   Vi.Stat,y      Reset Status byte
          ldd   >VIRQCnt,pc    Get initial VIRQ count value
          os9   F$VIRQ         Install VIRQ
