@@ -2,7 +2,7 @@ include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
-SYSTXTFILES	= LogBook motd
+SYSTXTFILES	= motd
 SYSBINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs
 L1TXTFILES	= errmsg password
 L1HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
