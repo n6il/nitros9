@@ -87,7 +87,53 @@ in which it was defined. PSECT will be described later.
 <section>
 <title>PSECT Directive</title>
 <para>
+The main difference between PSECT and MOD is that MOD sets up
+information for OS-9 and PSECT sets up information for the
+linker (c.link in the C compiler).
 </para>
+<informalexample>
+<para>
+PSECT {name,typelang,attrrev,edition,stacksize,entrypoint}
+</para>
+<informaltable frame="none">
+<tgroup cols="2">
+<colspec colwidth="1in">
+<tbody>
+<row>
+<entry>name</entry>
+<entry>Up to 20 bytes (any printable character except space
+or comma) for a name to be used by the linker to
+identify this PSECT. This name need not be distinct
+from all other PSECTs linked together, but it helps
+to identify PSECTs the linker has a problem with if
+the names are different.</entry>
+</row> 
+<row>
+<entry>typelang</entry>
+<entry></entry>
+</row> 
+<row>
+<entry>attrrev</entry>
+<entry></entry>
+</row> 
+<row>
+<entry>edition</entry>
+<entry></entry>
+</row> 
+<row>
+<entry>stacksize</entry>
+<entry></entry>
+</row> 
+<row>
+<entry>entrypoint</entry>
+<entry>word expression entrypoint offset for this PSECT.
+If the PSECT is not a mainline odule, this should
+be set to zero.</entry>
+</row> 
+</tbody>
+</tgroup>
+</informaltable>
+</informalexample>
 </section>
 
 <section>
@@ -175,8 +221,42 @@ More...
 
 <section>
 <title>Additional Pseudo-Instructions</title>
+<variablelist>
+<varlistentry><term>\n</term>
+<listitem>
 <para>
+will return the number of arguments passed to the macro.
 </para>
+</listitem>
+</varlistentry>
+
+<varlistentry><term>\L&lt;num&gt;</term>
+<listitem>
+<para>
+will return the length of the ith argument
+that is specified by &lt;num&gt;.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry><term>FAIL</term>
+<listitem>
+<para>
+Causes an error to be generated.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry><term>REPT &lt;num&gt;</term>
+<listitem>
+<para>
+will repeat an instruction or group of instructions &lt;num&gt; times.
+ENDR terminates REPT.
+</para>
+</listitem>
+</varlistentry>
+
+</variablelist>
 </section>
 </section>
 </appendix>
