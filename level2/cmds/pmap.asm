@@ -5,10 +5,14 @@
 *
 * From "Inside Level II" by Kevin Darling
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* ?      Original version                               KKD 87/02/08
-* 2      Revised to handle 4K or 8K blocks              KD  89/09/12
+*   ?      1987/02/08  Kevin Darling
+* Original version.
+*
+*   2      1989/09/12  Ken Drexler
+* Revised to handle 4K or 8K blocks
 
          nam   PMap
          ttl   Show process map information
@@ -18,7 +22,7 @@
          endc  
 
 Type     set   Prgrm+Objct
-Revs     set   ReEnt+1
+Revs     set   ReEnt+0
 Bufsiz   set   512
 edition  set   2
 

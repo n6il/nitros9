@@ -3,11 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 7      Original Tandy/Microware version
-* 8      Changed option to -e, optimized slightly       BGP 03/01/14
-*        Could use greater optimization
+*   7      ????/??/??
+* Original Tandy/Microware version
+*
+*  8       2003/01/14  Boisy Pitre
+* Changed option to -e, optimized slightly. Could use greater optimization.
 
          nam   MDir
          ttl   Show module information
@@ -20,7 +23,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   8
 
          mod   eom,name,tylg,atrv,start,size

@@ -11,14 +11,16 @@
 * Added SS.ScSiz check, and goes to 32-column output if display is 40 columns
 * or less.
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* ?      Disassembled at 8:18:38                        AD  94/11/10
-* 5      Added internal print buffer, so an I$Write     AD  ??/??/??
-*        call is not performed for every byte printed
-*        out.  Halves printout time.  Added SS.ScSiz
-*        check, and goes to 32-column output if display
-*        is 40 columns or less.
+*   ?      1994/11/10  Alan DeKok
+* Disassembled at 8:18:38
+*
+*   5      ????/??/??  Alan DeKok
+* Added internal print buffer, so an I$Write call is not performed for
+* every byte printed out.  Halves printout time.  Added SS.ScSiz check
+* and goes to 32-column output if display is 40 columns or less.
 
          nam   DirM
          ttl   Show module directory
@@ -29,7 +31,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   5
 
 Bound    equ   40         width at which change is made to 32-col printing

@@ -3,15 +3,22 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 1      Original Tandy/Microware version
-* 2      Modified to require dash before option         BGP 03/01/20
-* 3      Fixed a bug where a non dash option would      BGP 03/03/10
-*        crash the system.  Also shows the monitor
-*        type when no parameters are passed.
-* 4      Made dash optional to accept parameters as     RVH 03/05/27
-*        args or options, streamlined code flow.
+*   1      ????/??/??  
+* Original Tandy/Microware version.  
+*
+*   2      2003/01/20  Boisy Pitre
+* Modified to require dash before option.
+*
+*   3      2003/03/10  Boisy Pitre
+* Fixed a bug where a non dash option would crash the system.  Also shows
+* the monitor type when no parameters are passed.
+*
+*   4      2003/05/27  Rodney Hamilton
+* Made dash optional to accept parameters as args or options, streamlined
+* code flow.
 
          nam   MonType
          ttl   Change monitor type
