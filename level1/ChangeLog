@@ -2,6 +2,9 @@ NitrOS-9/6809 Level 1 V03.02.01:
 - The F$PrsNam call has been fixed to allow 0-9 and _ as the first character
   in a filename.
 - Several bugs in dsave's -b option have been fixed.
+- The cchdisk driver and descriptors are no longer in the distribution.
+- sacia has been backported from Level 2 and modpak.dr and aciapak.dr are removed.
+- rs232.dr has been renamed to sio.dr to match the Level 2 driver name.
 NitrOS-9/6809 Level 1 V03.02.00:
 - os9 and os9p2 have been renamed to kernel and kernelp2.
 - A new utility, padrom, has been added to the standard commands.
