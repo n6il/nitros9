@@ -36,7 +36,9 @@ RBF		= rbf.mn \
 SCF		= scf.mn \
 		cc3io.dr modpak.dr vrn.dr printer.dr sio.dr sspak.dr sacia.dr dacia.dr \
 		windint.io vdgint.io vdgint_small.io \
-		keydrv joydrv_joy joydrv_6551L joydrv_6552L joydrv_6551M joydrv_6552M snddrv \
+		keydrv_cc3.sb snddrv_cc3.sb \
+		joydrv_joy.sb joydrv_6551L.sb joydrv_6552L.sb \
+		joydrv_6551M.sb joydrv_6552M.sb \
 		m1.dd m2.dd nil.dd p.dd t1.dd t2_sacia.dd \
 		t3_sacia.dd t2_dacia.dd t3_dacia.dd \
 		ftdd.dd vi.dd ssp.dd term_t1.dd \
