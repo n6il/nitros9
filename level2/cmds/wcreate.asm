@@ -30,10 +30,10 @@ edition  set   3
 u0000    rmb   2
 u0002    rmb   1
 u0003    rmb   7
-u000A    rmb   1
-u000B    rmb   1
+newtype  rmb   1
+winpath  rmb   1
 u000C    rmb   1
-u000D    rmb   1
+zflag    rmb   1
 u000E    rmb   480
 size     equ   .
 
@@ -65,47 +65,49 @@ HelpMsg  fcb   C$CR
 
 CurOn    fdb   $1B21
 
-start    clr   <u000D
+start    clr   <zflag
          clra  
          coma  
          sta   <u000C
-         lbsr  L0260
-         lda   ,x
-         cmpa  #PDELIM
-         bne   L015D
+         lbsr  skipspc		skip spaces
+         lda   ,x		get next character
+         cmpa  #PDELIM		path delimiter?
+         bne   L015D		branch if not
          bsr   L01B2
          bra   Exit
 L015D    cmpa  #'-
          lbne  ShowHelp
          leax  1,x
          lda   ,x+
-         cmpa  #$3F
+         IFNE  DOHELP
+         cmpa  #'?
          lbeq  ShowHelp
-         cmpa  #$7A
+         ENDC
+         cmpa  #'z
          beq   L0177
-         cmpa  #$5A
+         cmpa  #'Z
          lbne  ShowHelp
 L0177    lda   #$01
-         sta   <u000D
+         sta   <zflag
 L017B    clra  
          leax  u000E,u
-         ldy   #$0050
+         ldy   #80
          os9   I$ReadLn 
          bcs   L019C
          lda   ,x
          cmpa  #$2A
          beq   L0177
-         lbsr  L0260
+         lbsr  skipspc		skip spaces
          lda   ,x
          cmpa  #C$CR
          beq   L01A0
          bsr   L01B5
          bcs   Exit
          bra   L017B
-L019C    cmpb  #$D3
+L019C    cmpb  #E$EOF
          bne   Exit
 L01A0    lda   #$01
-         lbsr  L0254
+         lbsr  cursoron		turn on text cursor
          lda   <u000C
          bmi   ExitOk
          os9   I$Close  
@@ -113,44 +115,44 @@ L01A0    lda   #$01
 ExitOk   clrb  
 Exit     os9   F$Exit   
 
-L01B2    lbsr  L0260
-L01B5    clr   <u000A
+L01B2    lbsr  skipspc		skip spaces
+L01B5    clr   <newtype
          clr   <u0002
-         lda   ,x
-         cmpa  #PDELIM
-         lbne  L0269
-         lda   #$03
+         lda   ,x		get character at X
+         cmpa  #PDELIM		pathlist delimiter?
+         lbne  Exiting		branch if not
+         lda   #UPDAT.
          pshs  u,x,a
-         leax  $01,x
-         os9   I$Attach 
+         leax  1,x		point past pathlist delimiter
+         os9   I$Attach 	attach device
          puls  u,x,a
-         lbcs  L0253
-         os9   I$Open   
-         bcs   L0253
-         sta   <u000B
-         lbsr  L0260
+         lbcs  L0253		branch if error
+         os9   I$Open   	open device
+         bcs   L0253		branch if error
+         sta   <winpath		save path
+         lbsr  skipspc		skip spaces
          lda   ,x+
          cmpa  #'-
-         bne   L01FD
+         bne   Get6
          lda   ,x+
-         cmpa  #$73
+         cmpa  #'s
          beq   L01EA
-         cmpa  #$53
-         bne   L0269
+         cmpa  #'S
+         bne   Exiting
 L01EA    lda   ,x+
-         cmpa  #$3D
-         bne   L0269
+         cmpa  #'=
+         bne   Exiting
          leay  u0002,u
-         lbsr  L027B
-         bcs   L0269
-         inc   <u000A
-         ldb   #$07
+         lbsr  asc2num
+         bcs   Exiting
+         inc   <newtype
+         ldb   #$07		get 7 numbers (last one is border)
          bra   L0203
-L01FD    leay  u0003,u
-         ldb   #$06
+Get6     leay  u0003,u
+         ldb   #$06		get 6 numbers
          leax  -1,x
-L0203    bsr   L027B
-         bcs   L0269
+L0203    bsr   asc2num
+         bcs   Exiting
          decb  
          bne   L0203
          leax  ,u
@@ -158,45 +160,48 @@ L0203    bsr   L027B
          sta   ,x
          lda   #$20
          sta   1,x
-         tst   <u000A
+         tst   <newtype
          beq   L021E
          ldy   #$000A
          bra   L0222
 L021E    ldy   #$0009
-L0222    lda   <u000B
+L0222    lda   <winpath
          os9   I$Write  
          bcs   L0253
-         tst   <u000D
+         tst   <zflag
          beq   L024E
-         tst   <u000A
+         tst   <newtype
          beq   L024E
          tst   <u000C
          bpl   L0239
          lda   #$01
-         bsr   L0254
-L0239    lda   <u000B
-         bsr   L0254
+         bsr   cursoron		turn on text cursor
+L0239    lda   <winpath
+         bsr   cursoron		turn on text cursor
          bcs   L0253
          tst   <u000C
          bmi   L0248
          lda   <u000C
          os9   I$Close  
-L0248    lda   <u000B
+L0248    lda   <winpath
          sta   <u000C
          bra   L0253
-L024E    lda   <u000B
+L024E    lda   <winpath
          os9   I$Close  
 L0253    rts   
-L0254    leax  >CurOn,pcr
+
+cursoron leax  >CurOn,pcr
          ldy   #$0002
          os9   I$Write  
          rts   
-L0260    lda   ,x+
-         cmpa  #$20
-         beq   L0260
+
+skipspc  lda   ,x+
+         cmpa  #C$SPAC
+         beq   skipspc
          leax  -1,x
          rts   
-L0269    leas  $02,s
+
+Exiting  leas  $02,s
 ShowHelp equ   *
          IFNE  DOHELP
          lda   #$01
@@ -205,17 +210,21 @@ ShowHelp equ   *
          os9   I$Write  
          ENDC
          lbra  ExitOk
-L027B    pshs  b
+
+* Entry: X = address of ASCII string to convert
+*        Y = location to store byte
+* Exit:  B = converted value
+asc2num  pshs  b
          clrb  
          stb   ,y
-L0280    lda   ,x+
-         cmpa  #$30
+L0280    lda   ,x+		
+         cmpa  #'0
          blt   L029B
-         cmpa  #$39
+         cmpa  #'9
          bhi   L029B
-         suba  #$30
+         suba  #'0
          pshs  a
-         lda   #$0A
+         lda   #10
          ldb   ,y
          mul   
          addb  ,s+
@@ -225,7 +234,7 @@ L0280    lda   ,x+
 L029B    cmpa  #C$CR
          beq   L02AA
          cmpa  #C$SPAC
-         bsr   L0260
+         bsr   skipspc		skip spaces
          bra   L02AA
          bne   L02A7
 L02A7    comb  
