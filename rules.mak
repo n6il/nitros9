@@ -21,22 +21,22 @@ ASOUT		= -o=
 AFLAGS		= -q
 
 # Commands
-MAKDIR		= $(OS9TOOLSDIR)/os9makdir
+MAKDIR		= $(OS9TOOLSDIR)/os9 makdir
 RM		= rm -f
 MERGE		= cat
 ECHO		= echo
 CD		= cd
-CP		= $(OS9TOOLSDIR)/os9copy
+CP		= $(OS9TOOLSDIR)/os9 copy
 TAR		= tar
 CHMOD		= chmod
-IDENT		= $(OS9TOOLSDIR)/os9ident
+IDENT		= $(OS9TOOLSDIR)/os9 ident
 IDENT_SHORT	= $(IDENT) -s
 UNIX2OS9	= $(OS9TOOLSDIR)/u2o
 OS92UNIX	= $(OS9TOOLSDIR)/o2u
-OS9FORMAT	= $(OS9TOOLSDIR)/os9format
-OS9GEN		= $(OS9TOOLSDIR)/os9gen
-OS9RENAME	= $(OS9TOOLSDIR)/os9rename
-PADROM		= $(OS9TOOLSDIR)/os9padrom
+OS9FORMAT	= $(OS9TOOLSDIR)/os9 format
+OS9GEN		= $(OS9TOOLSDIR)/os9 gen
+OS9RENAME	= $(OS9TOOLSDIR)/os9 rename
+PADROM		= $(OS9TOOLSDIR)/os9 padrom
 MOUNT		= sudo mount
 UMOUNT		= sudo umount
 LOREMOVE	= sudo /sbin/losetup -d
