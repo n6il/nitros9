@@ -61,7 +61,11 @@ CC3Regs  fcb   $EC        CC2, MMU, IRQ, Vector page, SCS
          fdb   $0900      timer
          fcb   $00        unused
          fcb   $00        unused
-         fcb   $00
+         IFEQ  TkPerSec-50
+         fcb   $08	50Hz refresh
+         ELSE
+         fcb   $00	60Hz refresh
+         ENDC
          fcb   $00
          fcb   $00
          fcb   $00
