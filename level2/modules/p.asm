@@ -1,3 +1,11 @@
+********************************************************************
+* P - CoCo serial priner device descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+
          nam   P
          ttl   CoCo serial priner device descriptor
 

@@ -1,5 +1,13 @@
+********************************************************************
+* DD - RAM device descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+
          nam   DD
-         ttl   CC3Disk device descriptor
+         ttl   RAM device descriptor
 
 * Disassembled 98/08/23 17:09:41 by Disasm v1.6 (C) 1988 by RML
 

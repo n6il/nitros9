@@ -1,5 +1,13 @@
+********************************************************************
+* SSP - Speech-Sound Pak device descriptor
+*
 * by Bruce Isted (CIS 76625,2273)
 * released to the Public Domain 87/05/02
+
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
 
          nam   SSP
          ttl   Speech-Sound Pak device descriptor

@@ -1,3 +1,11 @@
+********************************************************************
+* Term - OS-9 Level 2 Window descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+
          nam   Term
          ttl   OS-9 Level 2 Window descriptor
 

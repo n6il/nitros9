@@ -1,3 +1,11 @@
+********************************************************************
+* DX - CC3Disk device descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+
          nam   DX
          ttl   CC3Disk device descriptor
 

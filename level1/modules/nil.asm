@@ -1,3 +1,11 @@
+********************************************************************
+* Nil - VRN (VIRQ/RAM/Nil driver) device descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+
          nam   Nil
          ttl   VRN (VIRQ/RAM/Nil driver) device descriptor
 

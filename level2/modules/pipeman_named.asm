@@ -105,7 +105,7 @@
 *
          ifp1  
          use   defsfile
-         use   pipedefs.l2v3
+         use   pipedefs
          use   rbfdefs
          endc  
 

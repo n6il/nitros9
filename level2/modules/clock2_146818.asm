@@ -125,5 +125,3 @@ CGExit   puls  cc,d,x,y,u,pc            recover regs, return to caller
          emod
 CSize    equ   *                       
          end                           
-
-

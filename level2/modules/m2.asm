@@ -1,3 +1,11 @@
+********************************************************************
+* M2 - Tandy DC Modem Pak device descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+
          nam   M2
          ttl   Tandy DC Modem Pak device descriptor
 
