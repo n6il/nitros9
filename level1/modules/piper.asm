@@ -3,14 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   2    From Tandy OS-9 Level One VR 02.00.00
+*   2      ????/??/??  ???
+* Original OS-9/Tandy distribution
 
          nam   Piper
          ttl   Pipe device driver
-
-* Disassembled 98/08/23 17:31:20 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
@@ -18,39 +18,35 @@
 
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   2
 
-         mod   eom,name,tylg,atrv,Init,size
+         mod   eom,name,tylg,atrv,start,size
 
 u0000    rmb   6
 size     equ   .
 
-         fcb   UPDAT.
+         fcb   READ.+WRITE.
 
 name     fcs   /Piper/
          fcb   edition
 
+start    equ   *
 Init     clrb  
          rts   
          nop   
-
 Read     clrb  
          rts   
          nop   
-
 Write    clrb  
          rts   
          nop   
-
 GetStat  clrb  
          rts   
          nop   
-
 SetStat  clrb  
          rts   
          nop   
-
 Term     clrb  
          rts   
 

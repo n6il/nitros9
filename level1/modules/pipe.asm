@@ -1,14 +1,14 @@
 ********************************************************************
-* Pipe - PipeMan device descriptor
+* Pipe - Pipe device descriptor
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*        From Tandy OS-9 Level One VR 02.00.00
 
          nam   Pipe
-         ttl   PipeMan device descriptor
+         ttl   Pipe device descriptor
 
 * Disassembled 98/08/23 21:15:32 by Disasm v1.6 (C) 1988 by RML
 
