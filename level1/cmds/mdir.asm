@@ -1,24 +1,27 @@
 ********************************************************************
-* Mdir - Display Module Directory
+* Mdir - Show module directory
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  2     Original Microware distribution version
+*  5     Original Tandy version
 
          nam   Mdir
-         ttl   Display Module Directory
+         ttl   Show module directory
 
-* Disassembled 02/04/03 23:16:41 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 02/04/05 12:49:18 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   2
 u0002    rmb   2
 u0004    rmb   2
@@ -27,245 +30,215 @@ u0007    rmb   1
 u0008    rmb   1
 u0009    rmb   3
 u000C    rmb   3
-u000F    rmb   280
+u000F    rmb   1
+u0010    rmb   1
+u0011    rmb   1
+u0012    rmb   530
 size     equ   .
-name     equ   *
-         fcs   /Mdir/
-         fcb   $03 
-L0012    fcb   $0A 
-         fcb   $20 
-         fcb   $4D M
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $44 D
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $20 
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $20 
-L0028    fcb   $0A 
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $44 D
-         fcb   $52 R
-         fcb   $20 
-         fcb   $53 S
-         fcb   $49 I
-         fcb   $5A Z
-         fcb   $45 E
-         fcb   $20 
-         fcb   $54 T
-         fcb   $59 Y
-         fcb   $20 
-         fcb   $52 R
-         fcb   $56 V
-         fcb   $20 
-         fcb   $41 A
-         fcb   $54 T
-         fcb   $20 
-         fcb   $55 U
-         fcb   $43 C
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $4E N
-         fcb   $41 A
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $0A 
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20 
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20 
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20 
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20 
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20 
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $20 
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $0D 
-start    equ   *
-         stx   <u0004
-         leax  <L0012,pcr
-         ldy   #$0016
+
+name     fcs   /Mdir/
+         fcb   $05 
+
+L0012    fcb   C$LF
+         fcc   "  Module directory at "
+L0029    fcb   C$LF
+         fcc   "Addr Size Typ Rev Attr Use Module name"
+         fcb   C$LF
+         fcc   "---- ---- --- --- ---- --- ------------"
+         fcb   C$CR
+L0079    fcb   C$LF
+         fcc   "Addr Size Ty Rv At Uc   Name"
+         fcb   C$LF
+         fcc   "---- ---- -- -- -- -- ---------"
+         fcb   C$CR
+
+start    stx   <u0004
+         lda   #$0C
+         ldb   #$30
+         std   <u000F
+         clr   <u0011
+         lda   #$01
+         ldb   #SS.ScSiz
+         os9   I$GetStt 
+         bcc   L00D2
+         cmpb  #E$UnkSvc
+         lbne  L01BE
+         bra   L00DF
+L00D2    cmpx  #80
+         beq   L00DF
+         inc   <u0011
+         lda   #$0A
+         ldb   #$15
+         std   <u000F
+L00DF    leax  >L0012,pcr
+         ldy   #$0017
          lda   #$01
          os9   I$WritLn 
          leax  u0009,u
          os9   F$Time   
-         leax  u000F,u
+         leax  <u0012,u
          stx   <u0007
          leax  u000C,u
-         lbsr  L017D
-         lbsr  L016A
-         ldx   >$0026
+         lbsr  L0224
+         lbsr  L0210
+         ldx   >D.ModDir
          stx   <u0000
-         ldd   >$0028
+         ldd   >D.ModDir+2
          std   <u0002
          leax  -$04,x
          ldy   <u0004
          lda   ,y+
-         eora  #$45
+         eora  #'E
          anda  #$DF
-         bne   L00CF
-         leax  >L0028,pcr
+         bne   L0157
+         tst   <u0011
+         bne   L0123
+         leax  >L0029,pcr
+         ldy   #80
+         bra   L012B
+L0123    leax  >L0079,pcr
          ldy   #$003E
-         lda   #$01
+L012B    lda   #$01
          os9   I$WritLn 
          ldx   <u0000
-         bra   L0113
-L00AD    ldy   ,x
-         beq   L00D4
+         lbra  L01B9
+L0135    ldy   ,x
+         beq   L015D
          ldd   $04,y
          leay  d,y
-         lbsr  L015F
-L00B9    lbsr  L014C
+         lbsr  L0205
+L0141    lbsr  L01F2
          ldb   <u0008
-         subb  #$0F
-         cmpb  #$15
-         bhi   L00CC
-L00C4    subb  #$0A
-         bhi   L00C4
-         bne   L00B9
-         bra   L00D4
-L00CC    lbsr  L016A
-L00CF    leay  u000F,u
+         subb  #$12
+         cmpb  <u0010
+         bhi   L0154
+L014C    subb  <u000F
+         bhi   L014C
+         bne   L0141
+         bra   L015D
+L0154    lbsr  L0210
+L0157    leay  <u0012,u
          sty   <u0007
-L00D4    leax  $04,x
+L015D    leax  $04,x
          cmpx  <u0002
-         bcs   L00AD
-         lbsr  L016A
-         bra   L0117
-L00DF    leay  u000F,u
+         bcs   L0135
+         lbsr  L0210
+         bra   L01BD
+L0168    leay  <u0012,u
          sty   <u0007
          ldy   ,x
-         beq   L0111
+         beq   L01B7
          ldd   ,x
-         bsr   L011B
+         bsr   L01C1
          ldd   $02,y
-         bsr   L011B
-         lda   $06,y
-         bsr   L0123
-         lda   $07,y
+         bsr   L01C1
+         tst   <u0011
+         bne   L0181
+         bsr   L01F2
+L0181    lda   $06,y
+         bsr   L01C9
+         tst   <u0011
+         bne   L018B
+         bsr   L01F2
+L018B    lda   $07,y
          anda  #$0F
-         bsr   L0123
+         bsr   L01C9
          ldb   $07,y
          lda   #$72
-         bsr   L0158
-         bsr   L014C
-         bsr   L014C
+         bsr   L01FE
+         tst   <u0011
+         bne   L01A7
+         lda   #$3F
+         bsr   L01FE
+         lda   #$3F
+         bsr   L01FE
+         lda   #$3F
+         bsr   L01FE
+L01A7    bsr   L01F2
+         bsr   L01F2
          lda   $02,x
-         bsr   L0123
+         bsr   L01C9
          ldd   $04,y
          leay  d,y
-         bsr   L015F
-         bsr   L016A
-L0111    leax  $04,x
-L0113    cmpx  <u0002
-         bcs   L00DF
-L0117    clrb  
-         os9   F$Exit   
-L011B    bsr   L0127
+         bsr   L0205
+         bsr   L0210
+L01B7    leax  $04,x
+L01B9    cmpx  <u0002
+         bcs   L0168
+L01BD    clrb  
+L01BE    os9   F$Exit   
+L01C1    bsr   L01CD
          tfr   b,a
-         bsr   L0129
-         bra   L014C
-L0123    bsr   L0127
-         bra   L014C
-L0127    clr   <u0006
-L0129    pshs  a
+         bsr   L01CF
+         bra   L01F2
+L01C9    bsr   L01CD
+         bra   L01F2
+L01CD    clr   <u0006
+L01CF    pshs  a
          lsra  
          lsra  
          lsra  
          lsra  
-         bsr   L0135
+         bsr   L01DB
          lda   ,s+
          anda  #$0F
-L0135    tsta  
-         beq   L013A
+L01DB    tsta  
+         beq   L01E0
          sta   <u0006
-L013A    tst   <u0006
-         bne   L0142
+L01E0    tst   <u0006
+         bne   L01E8
          lda   #$20
-         bra   L014E
-L0142    adda  #$30
+         bra   L01F4
+L01E8    adda  #$30
          cmpa  #$39
-         bls   L014E
+         bls   L01F4
          adda  #$07
-         bra   L014E
-L014C    lda   #$20
-L014E    pshs  x
+         bra   L01F4
+L01F2    lda   #$20
+L01F4    pshs  x
          ldx   <u0007
          sta   ,x+
          stx   <u0007
          puls  pc,x
-L0158    rolb  
-         bcs   L014E
+L01FE    rolb  
+         bcs   L01F4
          lda   #$2E
-         bra   L014E
-L015F    lda   ,y
+         bra   L01F4
+L0205    lda   ,y
          anda  #$7F
-         bsr   L014E
+         bsr   L01F4
          lda   ,y+
-         bpl   L015F
+         bpl   L0205
          rts   
-L016A    pshs  y,x,a
+L0210    pshs  y,x,a
          lda   #$0D
-         bsr   L014E
-         leax  u000F,u
-         ldy   #$0050
+         bsr   L01F4
+         leax  <u0012,u
+         ldy   #80
          lda   #$01
          os9   I$WritLn 
          puls  pc,y,x,a
-L017D    bsr   L0185
-         bsr   L0181
-L0181    lda   #$3A
-         bsr   L014E
-L0185    ldb   ,x+
+L0224    bsr   L022C
+         bsr   L0228
+L0228    lda   #$3A
+         bsr   L01F4
+L022C    ldb   ,x+
          lda   #$2F
-L0189    inca  
+L0230    inca  
          subb  #$64
-         bcc   L0189
+         bcc   L0230
          cmpa  #$30
-         beq   L0194
-         bsr   L014E
-L0194    lda   #$3A
-L0196    deca  
+         beq   L023B
+         bsr   L01F4
+L023B    lda   #$3A
+L023D    deca  
          addb  #$0A
-         bcc   L0196
-         bsr   L014E
+         bcc   L023D
+         bsr   L01F4
          tfr   b,a
          adda  #$30
-         bra   L014E
+         bra   L01F4
+
          emod
 eom      equ   *
+         end

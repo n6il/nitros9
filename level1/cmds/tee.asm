@@ -33,20 +33,23 @@ name     fcs   /Tee/
          fcb   edition
 
 start    clrb  
-         clr   u000E,u
+         clr   u000E,u        clear path counter
          cmpy  #$0000
          lbeq  L0076
          leay  u0001,u
+
+* Walk the command line parameters
 L001E    lda   ,x+
-         cmpa  #$20
+         cmpa  #C$SPAC
          beq   L001E
-         cmpa  #$2C
+         cmpa  #C$COMA
          beq   L001E
-         cmpa  #$0D
+         cmpa  #C$CR
          lbeq  L0042
-         leax  -$01,x
-         lda   #$02
-         ldb   #$0B
+* We've found a file or device name
+         leax  -1,x
+         lda   #WRITE.
+         ldb   #PREAD.+UPDAT.
          os9   I$Create 
          bcs   L0077
          ldb   u000E,u
@@ -55,12 +58,14 @@ L001E    lda   ,x+
          stb   u000E,u
          bra   L001E
 L0042    stb   u000E,u
+
+* Devices on command line are open, start pumping data
 L0044    clra  
          leax  u000F,u
-         ldy   #$0100
+         ldy   #256
          os9   I$ReadLn 
          bcc   L0057
-         cmpb  #$D3
+         cmpb  #E$EOF
          beq   L0076
          coma  
          bra   L0077
@@ -72,7 +77,7 @@ L0057    inca
 L0060    leay  u0001,u
          lda   b,y
          leax  u000F,u
-         ldy   #$0100
+         ldy   #256
          os9   I$WritLn 
          bcs   L0077
          incb  
