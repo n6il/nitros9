@@ -1,8 +1,8 @@
-COCO OS-9 SOURCE PROJECT
+THE NITROS-9 PROJECT
 
 This project was started some years ago by Boisy Pitre, and Alan DeKok.
-The idea was to create a well documented repository of OS-9 Level One and
-Level Two source code for the Color Computer.
+The idea was to create a well documented repository of NitrOS-9 source
+code for the Color Computer.
 
 That goal has largely been reached, though there are still modules that have
 yet to be disassembled and properly commented.  Also, other source files
@@ -12,24 +12,24 @@ FILE ORGANIZATION
 All source files contain the file extension '.asm'  The source files are
 organized into their respective directories, with the topmost being:
 
-	docs/         ..... OS-9 Documentation
-	level1/       ..... OS-9 Level One source
-	level2/       ..... OS-9 Level Two source
-	nlevel2/      ..... NitrOS-9 Level Two source
-	nlevel3/      ..... NitrOS-9 Level Three source
-	defs/         ..... OS-9 definition files
+	docs/         ..... NitrOS-9 Documentation
+	6809l1/       ..... NitrOS-9/6809 Level 1 source
+	6809l2/       ..... NitrOS-9/6809 Level 2 source
+	6309l2/       ..... NitrOS-9/6309 Level 2 source
+	6309l3/       ..... NitrOS-9/6309 Level 3 source
+	defs/         ..... NitrOS-9 definition files
 	3rdparty/     ..... Third party drivers, applications, etc.
 
-The level1/, level2/, nlevel2/ and nlevel3/ directories contain makefiles and
-subdirectories for commands, modules and bootfiles.
+The 6x09l?/ directories contain makefiles and subdirectories for commands,
+modules and bootfiles.
 
 DEFINITION FILES
-The defs/ directory has definition files for the OS-9 packages.  Note that
-these defs/ files are not intended for distribution disks, only for building
-on the host.
+The defs/ directory has definition files for the NitrOS-9 packages. These 
+these defs/ files are also the basis for the definition files that are
+migrated to the distribution disks.
 
-	os9defs       ..... Defs files for all OS-9 packages
-	systype       ..... System definitions for all OS-9 packages
+	os9defs       ..... Defs files for all NitrOS-9 distributions
+	systype       ..... System definitions for all NitrOS-9 distributions
 	scfdefs       ..... SCF file manager defs
 	rbfdefs       ..... RBF file manager defs
 	vdgdefs       ..... VDGInt driver defs
