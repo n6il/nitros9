@@ -264,11 +264,12 @@ L092D    ldd   M$ID,x       get module ID
          pshs  x
          leax  d,x
 
-name.prt lda   ,x+        get first character of the name
-         jsr   <D.BtBug   print it out
-         bpl   name.prt
-         lda   #C$SPAC    a space
-         jsr   <D.BtBug
+         bsr   name.prt
+*name.prt lda   ,x+        get first character of the name
+*         jsr   <D.BtBug   print it out
+*         bpl   name.prt
+*         lda   #C$SPAC    a space
+*         jsr   <D.BtBug
 
          puls  x
          IFNE  H6309
@@ -303,3 +304,12 @@ L0956    cmpx  2,s          gone thru whole bootfile?
          leas  4,s          purge stack
          clrb
          rts
+
+
+name.prt lda   ,x+        get first character of the name
+         jsr   <D.BtBug   print it out
+         bpl   name.prt
+         lda   #C$SPAC    a space
+         jsr   <D.BtBug
+         rts
+

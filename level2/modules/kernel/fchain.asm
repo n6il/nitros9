@@ -93,7 +93,9 @@ L040C    stu   ,y++         do all of them
 * Hmmm.. the code above FORCES the new process to have the same DAT image ptr
 * as the old process, not that it matters...
 
+         IFNE  H6309
          fcb   $24,$00		TODO: Identify this!
+         ENDC
          ldu   <D.Proc      get nre process
          lda   P$Task,u     new task number
          ldb   P$Task,x     old task number
