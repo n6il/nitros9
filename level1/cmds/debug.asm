@@ -47,12 +47,20 @@ isnarrow rmb   1
 size     equ   .
 
 * Debugger Errors
-E$Syntax equ   0		bad expression syntax
-E$TooBig equ   8		value to large in context
-E$BadCmd equ   9		illegal command
+E$BadCnt equ   0		illegal constant
+E$ZerDiv equ   1		divide by zero
+E$MulOvf equ   2		product > 65535
+E$OpMsng equ   3		operator not follwed by legal operand
+E$RParen equ   4		right paren missing
+E$RBrckt equ   5		right bracket missing
+E$RABrkt equ   6		right angle bracket > missing
+E$IllReg equ   7		illegal register
+E$BytOvf equ   8		value > 255 for byte
+E$CmdErr equ   9		illegal command
 E$NotRAM equ   10		memory is ROM
 E$BPTFull equ  11		breakpoint table full
-E$BrkPt  equ   13		breakpoint encountered
+E$NoBkPt equ   12		breakpoint not found
+E$BadSWI equ   13		Illegal SWI
 
 name     fcs   /debug/
          fcb   edition
@@ -292,6 +300,8 @@ L018E    sta   ,x+
 CopyXY   lda   ,y+
          bne   L018E
          rts   
+
+
 L0195    pshs  u,y
          tfr   s,u
          bsr   L01A7
@@ -329,7 +339,7 @@ L01CD    bsr   L021D
          ldx   $02,s
          lbsr  L0130
          bcc   L01F5
-         ldb   #$02
+         ldb   #E$MulOvf
          bra   L019F
 L01E2    cmpa  #'/		divide?
          bne   L01C5
@@ -338,7 +348,7 @@ L01E2    cmpa  #'/		divide?
          ldx   $02,s
          lbsr  L0161
          bcc   L01F5
-         ldb   #$01
+         ldb   #E$ZerDiv
          bra   L019F
 L01F5    puls  x
          std   ,s
@@ -363,11 +373,11 @@ L0219    std   ,s
 L021D    lbra  EatSpace
 L0220    leax  $01,x
 L0222    bsr   L021D
-         cmpa  #'^		logical xor?
+         cmpa  #'^		logical not?
          bne   L022E
          bsr   ParsExp
-         comb  
-         coma  
+         comb  			not B
+         coma  			not A
          bra   L0238
 L022E    cmpa  #'-		minus?
          bne   L023B
@@ -401,7 +411,7 @@ L0250    cmpa  #'[
          bsr   L021D
          cmpa  #']
          beq   L0282
-         ldb   #$05
+         ldb   #E$RBrckt
 L0265    leas  $02,s
 L0267    lbra  L019F
 L026A    cmpa  #'<
@@ -414,7 +424,7 @@ L026A    cmpa  #'<
          bsr   L021D
          cmpa  #'>
          beq   L0282
-         ldb   #$06
+         ldb   #E$RABrkt
          bra   L0265
 L0282    leax  $01,x
          puls  pc,b,a
@@ -424,34 +434,38 @@ L0286    cmpa  #C$PERD
          ldd   <curraddr
          leax  $01,x
          rts   
+
 L028F    cmpa  #''		ASCII byte?
          bne   L0297
          ldd   ,x++
          clra  
          rts   
+
 L0297    cmpa  #'"		ASCII word?
          bne   L02A0
          leax  $01,x		point past quote char
          ldd   ,x++
          rts   
+
 L02A0    cmpa  #':
          bne   L02B4
          leax  $01,x
-         bsr   GetReg
-         bcs   L0267
-         tsta  
-         bmi   L02B1
-         clra  
-         ldb   ,y
+         bsr   GetReg		get register that follows :
+         bcs   L0267		branch if error
+         tsta  			is this byte or word register?
+         bmi   L02B1		branch if word
+         clra  			else clear hi byte
+         ldb   ,y		and get byte at offset
          rts   
-L02B1    ldd   ,y
-L02B3    rts   
+L02B1    ldd   ,y		get word at offset
+L02B3    rts   			return
+
 L02B4    lbsr  L006F
          bcc   L02B3
          beq   L02BF
          ldb   #$03
          bra   L0267
-L02BF    ldb   #E$Syntax
+L02BF    ldb   #E$BadCnt
          bra   L0267
 
 * Parse individual register
@@ -547,14 +561,14 @@ start    leas  >size,u		point S to end of memory
          leax  <-UnknSiz,x	back off more
          stx   <u0008
          leax  <-NumBrkPt*3,x
-         stx   <bptable
+         stx   <bptable		save pointer to breakpoint table
          clr   <curraddr
          clr   <curraddr+1
          clr   <isnarrow
          pshs  y,x,b,a
          lda   #$01		stdout
          ldb   #SS.ScSiz	get screen size
-         os9   I$GetStt
+         os9   I$GetStt		do it!
          bcc   L0380
          cmpb  #E$UnkSvc
          beq   L0387
@@ -564,6 +578,7 @@ L0380    cmpx  #80		80 columns?
          beq   L0387		branch if so
          inc   <isnarrow
 L0387    puls  x,y,b,a
+* Clear breakpoint table
 L036A    clr   ,x+
          cmpx  <buffptr
          bcs   L036A
@@ -600,7 +615,7 @@ L03A2    leay  $03,y		walk through table
          bra   GetInput
 
 * Command wasn't recognized
-SyntxErr ldb   #E$BadCmd
+SyntxErr ldb   #E$CmdErr
          bsr   ShowErr
          bra   GetInput
 
@@ -667,8 +682,8 @@ L0415    ldx   <buffptr		load X with buffer pointer
          bsr   L03C2
          puls  pc,b,a
 
-* Evaluate expression
-Eval     lbsr  L0195
+* Calc expression
+Calc     lbsr  L0195
          bcs   ShowErr
          bsr   L0415
          pshs  b,a
@@ -685,7 +700,7 @@ L043F    lbsr  L0195
          bcs   L044B
          tsta  
          beq   L044B
-         ldb   #E$TooBig
+         ldb   #E$BytOvf
          orcc  #Carry
 L044B    rts   
 
@@ -882,7 +897,7 @@ L055F    cmpu  ,y		match?
          decb  			dec couner
          bne   L055F		if not 0, continue search
 *         IFGT  Level-1
-         ldb   #NumBrkPt
+         ldb   #E$NoBkPt
 *         ELSE
 *         ldb   <bptable
 *         ENDC
@@ -961,9 +976,9 @@ L05DB    ldx   <buffptr
          lbsr  L0013
          tst   <isnarrow
          bne   L0647
-         ldb   #$08
+         ldb   #8
          bra   L0649
-L0647    ldb   #$04
+L0647    ldb   #4
 L0649    pshs  b
 L05E6    tst   <isnarrow
          bne   L0654
@@ -974,10 +989,10 @@ L0657    dec   ,s
          bne   L05E6
          tst   <isnarrow
          bne   L0663
-         ldb   #$10
+         ldb   #16
          bra   L0668
 L0663    lbsr  L0019
-         ldb   #$08
+         ldb   #8
 L0668    stb   ,s
          ldy   $01,s
 L05F7    lda   ,y+
@@ -999,9 +1014,9 @@ L0613    lbsr  L0195
          lbsr  L0195
 L061D    rts   
 
-L061E    bsr   L0613
+ClearMem bsr   L0613
          lbcs  ShowErr
-         pshs  b,a
+         pshs  b,a	save fill word
 L0626    cmpu  ,s
          bls   L062D
          puls  pc,b,a
@@ -1042,7 +1057,7 @@ IcptRtn  clra
          lds   <u0004
          lbsr  SrchBkpt
          beq   L0672
-         ldb   #E$BrkPt
+         ldb   #E$BadSWI
          lbsr  ShowErr
 * Clear breakpoints in memory
 L0672    ldy   <bptable		point to break point table
@@ -1147,29 +1162,32 @@ ShellNam fcc   "shell"
 ExitOk   clrb
 L0735    os9   F$Exit   
 
-L0738    lbsr  L0613
+* Search for byte or word from . to end address
+* Syntax: S endaddr byte
+*         S endaddr word
+SrchMem  lbsr  L0613
          lbcs  ShowErr
          pshs  u
          ldx   <curraddr
-         tsta  
-         bne   L0750
-L0746    cmpb  ,x+
-         beq   L075C
+         tsta  			byte or word?
+         bne   L0750		branch if word
+L0746    cmpb  ,x+		byte in B match byte at ,X?
+         beq   L075C		branch if so
+         cmpx  ,s		is X equal to end?
+         bne   L0746		branch if not
+         puls  pc,u		else we're done
+L0750    cmpd  ,x+		byte in B match byte at ,X?
+         beq   L075C		branch if so
+*         IFGT  Level-1
          cmpx  ,s
-         bne   L0746
+*         ELSE
+*         cmps  ,s		this appears to be a bug
+*         ENDC
+         bne   L0750		branch if not
          puls  pc,u
-L0750    cmpd  ,x+
-         beq   L075C
-         IFGT  Level-1
-         cmpx  ,s
-         ELSE
-         cmps  ,s
-         ENDC
-         bne   L0750
-         puls  pc,u
-L075C    leax  -$01,x
-         tfr   x,d
-         leas  $02,s
+L075C    leax  -$01,x		back up to mem location found
+         tfr   x,d		put memory location in D
+         leas  $02,s		wipe out stack
          lbra  L03DC
 
 DefBrk   swi
@@ -1199,7 +1217,7 @@ CmdTbl   fcc   ": "
          fcb   C$CR
          fdb   NextByte
          fcb   C$SPAC
-         fdb   Eval
+         fdb   Calc
          fcc   /-/
          fdb   PrevByte
          fcc   /:/
@@ -1209,7 +1227,7 @@ CmdTbl   fcc   ": "
          fcc   /M/
          fdb   MemDump
          fcc   /C/
-         fdb   L061E
+         fdb   ClearMem
          fcc   /B/
          fdb   SetBkpt
          fcc   /G/
@@ -1223,7 +1241,7 @@ CmdTbl   fcc   ": "
          fcc   /Q/
          fdb   ExitOk
          fcc   /S/
-         fdb   L0738
+         fdb   SrchMem
          fcb   $00
 
 * Append CR and write to std out
