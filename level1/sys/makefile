@@ -2,7 +2,7 @@ include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
-DEFS		= errmsg motd password
+DEFS		= errmsg motd password logbook
 HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
 		chx.hp cmp.hp cobbler.hp config.hp copy.hp date.hp \
 		dcheck.hp debug.hp deiniz.hp del.hp deldir.hp dir.hp \
