@@ -68,8 +68,8 @@ PRINT "<1> $FF40"
 PRINT "<2> $FF50"
 PRINT "<3> $FF60"
 PRINT "<4> $FF70"
-5 INPUT "Select <1-2>:";counter
-IF counter>1 OR counter<4 THEN 5
+5 INPUT "Select <1-4>:";counter
+IF counter<1 OR counter>4 THEN 5
 IF counter=1 THEN
   baseaddress=65344.
 ELSE
