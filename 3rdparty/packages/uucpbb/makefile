@@ -44,6 +44,7 @@ dsk:	all
 	$(MAKDIR) $(DISK68),SYS
 	$(MAKDIR) $(DISK68),SYS/UUCP
 	$(CD) sample_config; $(CPL) $(CONFIG) ../$(DISK68),SYS/UUCP
+	$(CPL) profile $(DISK68),SYS
 	$(CD) cmds_6809; $(CP) $(CMDS68) ../$(DISK68),UUCP/CMDS_TCAP
 	$(CD) cmds_6809; $(CP) $(CMDS68TCAP) ../$(DISK68),UUCP/CMDS_TCAP
 	$(foreach file, $(CMDS68TCAP), $(OS9ATTR_EXEC) $(DISK68),UUCP/CMDS_TCAP/$(notdir $(file));)
@@ -70,6 +71,7 @@ dsk:	all
 	$(MAKDIR) $(DISK63),SYS
 	$(MAKDIR) $(DISK63),SYS/UUCP
 	$(CD) sample_config; $(CPL) $(CONFIG) ../$(DISK63),SYS/UUCP
+	$(CPL) profile $(DISK63),SYS
 	$(CD) cmds_6309; $(CP) $(CMDS63) ../$(DISK63),UUCP/CMDS_TCAP
 	$(CD) cmds_6309; $(CP) $(CMDS63TCAP) ../$(DISK63),UUCP/CMDS_TCAP
 	$(foreach file, $(CMDS63TCAP), $(OS9ATTR_EXEC) $(DISK63),UUCP/CMDS_TCAP/$(notdir $(file));)
