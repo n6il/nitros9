@@ -7,7 +7,7 @@ TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		boot_burke boot_idelba boot_rampak boot_wd1002
-BOOTTRACK	= oscode $(BOOTERS)
+BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= os9 os9p2
 SYSMODS		= ioman init sysgo_dd sysgo_h0
 CLOCKS          = clock_elim clock_disto2 clock_disto4 clock_bnb \
@@ -98,7 +98,7 @@ d1_80d.dd: ccdiskdesc.asm
 d2_80d.dd: ccdiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
 
-oscode: oscode.asm
+rel: rel.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0
 
 sysgo_dd: sysgo.asm

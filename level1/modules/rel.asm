@@ -6,19 +6,23 @@
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*   5/5    2003/07/31  Boisy G. Pitre
+*   5r5    2003/07/31  Boisy G. Pitre
 * Back ported NitrOS-9 REL to OS-9 Level Two.
 
          nam   REL
          ttl   Relocation routine
 
-         ifp1
+         IFP1
          use   defsfile
-         endc
+         ENDC
 
-ScStart  equ   $8008      screen start in memory
 XX.Size  equ   6          number of bytes before REL actually starts
+         IFEQ  Level-1
+ScStart  equ   $8000      screen start in memory
+         ELSE
+ScStart  equ   $8008      screen start in memory
 Offset   equ   Bt.Start+XX.Size
+         ENDC
 
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
@@ -27,7 +31,7 @@ edition  set   5
 
 ********************************************************************
 * Any changes to the next 3 lines requires changes in XX.Size, above
-         fcc   /OS/       sync bytes
+Begin    fcc   /OS/       sync bytes
          bra   Start+XX.Size  execution start
          fdb   $1205      filler bytes
 
@@ -38,6 +42,8 @@ size     equ   .          REL doesn't require any memory
 
 name     fcs   /REL/
          fcb   edition
+
+         IFGT  Level-1
 
 L001F    fcb   $6C MMU, IRQ, Vector page, SCS
          fcb   $00 map type 0
@@ -73,8 +79,7 @@ L001F    fcb   $6C MMU, IRQ, Vector page, SCS
          fcb   $01 offset 8 bytes
          fcb   $00 no horizontal scroll
 
-crash
-         lda   #'*        signal a crash error
+crash    lda   #'*        signal a crash error
          jsr   <D.BtBug
          tfr   b,a        save error code
          jsr   <D.BtBug   and dump this out, too
@@ -86,7 +91,7 @@ start    ldb   #$FF       negative - do complete boot
          clr   >$FFDF     added for OS-9 ROM Kit boots +BGP+
 
 start1   orcc  #IntMasks  turn off IRQ's
-         clr   >$FF03     turn off SAM IRQ's
+         clr   >PIA0Base+3 turn off SAM IRQ's
          clra             make A=0 for later
          IFNE  H6309
          tfr   0,dp       set direct page to $0000
@@ -264,6 +269,67 @@ L003F    clr   >$FF91     go to map type 0 - called by CC3Go from map 1
          jmp   >Offset+reset and re-start the boot
 
 Pad      fill  $39,$127-*
+
+         ELSE
+
+start    clr   PIA0Base+3
+
+         IFNE  Dragon64
+         clr   PIA0Base+1		added for Dragon, works on CoCo
+         ENDC
+
+         sta   $FFDF                   turn off ROM
+* locate Boot Text Screen at $8000
+         ldb   #$06
+         ldx   #$FFC6
+L262B    sta   ,x++
+         decb
+         bne   L262B
+         sta   1,x
+
+* Clear VDG screen
+         ldx   #ScStart
+         ldy   #512
+         lda   #$60
+L263B    sta   ,x+
+         leay  -1,y
+         bne   L263B
+
+* Copy "OS9 BOOT" to screen area
+         ldx   #ScStart+$10C
+         leay  <BootMsg,pcr
+         ldb   #BootMLen
+L2649    lda   ,y+
+         sta   ,x+
+         decb
+         bne   L2649
+
+         IFNE  Dragon64
+         tst   <$72
+         ELSE
+         ldd   #$1212
+         cmpd  <$0078
+         ENDC
+
+         beq   L266E
+         leau  >Begin,pcr
+         ldx   #$FE80-Bt.Start
+         ldy   #Bt.Start
+L2663    lda   ,u+
+         sta   ,y+
+         leax  -1,x
+         bne   L2663
+         jmp   >Bt.Start+L266E
+L266E    leax  <eom,pcr
+         ldd   $09,x
+         jmp   d,x
+
+BootMsg  fcc   /OSy/
+         fcb   $60
+         fcc   /BOOT/
+BootMLen equ   *-BootMsg
+
+         ENDC
 
          emod
 eom      equ   *
