@@ -5,12 +5,12 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 2      Original Tandy/Microware version               BGP 02/07/05
+* 3      Original Tandy/Microware version
 
          nam   Iniz
          ttl   Initialize a device
 
-* Disassembled 02/07/05 21:52:55 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 98/09/10 22:56:37 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
@@ -19,6 +19,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   3
 
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   2
@@ -26,7 +27,7 @@ u0002    rmb   330
 size     equ   .
 
 name     fcs   /Iniz/
-         fcb   $02 
+         fcb   edition
 
 start    lda   ,x
          cmpa  #C$CR
@@ -50,18 +51,26 @@ L0032    clra
          os9   I$ReadLn 
          bcc   L003E
 L003E    rts   
-L003F    stx   <u0000
-         clra  
+L003F    lda   #C$SPAC
+L0041    cmpa  ,x+
+         beq   L0041
+         leax  -$01,x
+         stx   <u0000
+         lda   #PDELIM
+         cmpa  ,x
+         bne   L0051
+         leax  1,x
+L0051    clra  
          os9   I$Attach 
-         bcs   L0054
+         bcs   L0064
          lda   ,x+
-         cmpa  #',
+         cmpa  #C$COMA
          beq   L003F
          lda   ,-x
          cmpa  #C$CR
          bne   L003F
          rts   
-L0054    pshs  b
+L0064    pshs  b
          lda   #$02
          ldx   <u0000
          ldy   #80
@@ -73,4 +82,3 @@ L0054    pshs  b
          emod
 eom      equ   *
          end
-
