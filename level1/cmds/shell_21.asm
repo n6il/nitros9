@@ -123,7 +123,7 @@ L0074    clra
          ldy   #$00C8
          os9   I$ReadLn 
          bcc   L008E
-         cmpb  #$D3
+         cmpb  #E$EOF
          beq   L00B2
 L0085    tst   <u0011
          bne   L00BC
@@ -150,7 +150,7 @@ L00B2    tst   <u000F
          bsr   L00BF
 L00BB    clrb  
 L00BC    os9   F$Exit   
-L00BF    ldy   #$0050
+L00BF    ldy   #80
 L00C3    lda   #$02
          os9   I$WritLn 
          rts   
@@ -216,10 +216,10 @@ L0135    clr   <u0003
          leay  <L00CF,pcr
          lbsr  L01C3
          bcs   L0192
-         cmpa  #$0D
+         cmpa  #C$CR
          beq   L0192
          sta   <u000C
-         cmpa  #$28
+         cmpa  #'(
          bne   L016F
          leay  >name,pcr
          sty   <u0004
@@ -228,9 +228,9 @@ L0135    clr   <u0003
 L0156    inc   <u000D
 L0158    leay  <L0125,pcr
          bsr   L01DB
-         cmpa  #$28
+         cmpa  #'(
          beq   L0156
-         cmpa  #$29
+         cmpa  #')
          bne   L018A
          dec   <u000D
          bne   L0158
@@ -250,7 +250,7 @@ L0173    leay  <L0129,pcr
          bcs   L0192
          ldy   <u0004
 L018A    lbne  L02BE
-         cmpa  #$0D
+         cmpa  #C$CR
          bne   L0135
 L0192    lbra  L028F
 L0195    stx   <u0004
@@ -265,7 +265,7 @@ L01A7    rts
 L01A8    os9   F$PrsNam 
          bcc   L01B9
          lda   ,x+
-         cmpa  #$2E
+         cmpa  #C$PERD
          bne   L01BD
          cmpa  ,x+
          beq   L01BB
@@ -275,7 +275,7 @@ L01BB    clra
          rts   
 L01BD    comb  
          leax  -$01,x
-         ldb   #$D7
+         ldb   #E$BPNAM
          rts   
 L01C3    bsr   L01E9
          pshs  y
@@ -299,20 +299,20 @@ L01DF    tst   ,y
          puls  pc,y
 L01E9    pshs  x
          lda   ,x+
-         cmpa  #$20
+         cmpa  #C$SPAC
          beq   L01FF
-         cmpa  #$2C
+         cmpa  #C$COMA
          beq   L01FF
          leax  >L0129,pcr
 L01F9    cmpa  ,x+
          bhi   L01F9
          puls  pc,x
 L01FF    leas  $02,s
-         lda   #$20
+         lda   #C$SPAC
 L0203    cmpa  ,x+
          beq   L0203
          leax  -$01,x
-L0209    andcc #$FE
+L0209    andcc #^Carry
          rts   
 L020C    pshs  y,x
          leay  $02,y
@@ -357,9 +357,9 @@ L023E    lbsr  L0195
 L025F    inca  
 L0260    pshs  a
          bra   L02AB
-L0264    lda   #$84
+L0264    lda   #DIR.+EXEC.
          bra   L026A
-L0268    lda   #$83
+L0268    lda   #DIR.+UPDAT.
 L026A    os9   I$ChgDir 
          rts   
 L026E    clra  
@@ -377,7 +377,7 @@ L027E    lda   #$01
 L0282    clra  
 L0283    sta   <u0011
          rts   
-L0286    lda   #$0D
+L0286    lda   #C$CR
 L0288    cmpa  ,x+
          bne   L0288
          cmpa  ,-x
@@ -402,12 +402,8 @@ L02AB    ldb   ,s
          clr   b,u
          os9   I$Close  
 L02B6    puls  pc,a
-L02B8    asrb  
-         lsla  
-         fcb   $41 A
-         lsrb  
-         swi   
-         fcb   $0D 
+L02B8    fcc   "WHAT?"
+         fcb   C$CR
 L02BE    bsr   L028F
          leax  <L02B8,pcr
          lbsr  L00BF
@@ -422,7 +418,7 @@ L02CE    ldd   #$020D
 L02D5    lda   #$01
 L02D7    ldb   #$02
          bra   L02E3
-         tst   a,u
+L02DB    tst   a,u
          bne   L02BE
          pshs  b,a
          bra   L02ED
@@ -442,7 +438,7 @@ L02ED    os9   I$Dup
          bne   L0306
          os9   I$Open   
          bra   L030B
-L0306    ldb   #$0B
+L0306    ldb   #PREAD.+READ.+WRITE.
          os9   I$Create 
 L030B    stb   $01,s
 L030D    puls  pc,b,a
@@ -451,7 +447,7 @@ L030F    ldb   #$0D
          ldb   <u0003
          bne   L02BE
          lbsr  L04CA
-         eora  #$4B
+         eora  #'K
          anda  #$DF
          bne   L0328
          leax  $01,x
@@ -487,7 +483,7 @@ L035E    os9   F$Wait
          tst   <u000E
          beq   L0376
          ldb   <u000E
-         cmpb  #$02
+         cmpb  #S$Abort
          bne   L038E
          lda   ,s
          beq   L038E
@@ -510,13 +506,13 @@ L038E    tstb
          beq   L0392
          coma  
 L0392    puls  pc,a
-L0394    lda   #$11
+L0394    lda   #Prgrm+Objct
          ldb   <u0003
          ldx   <u0004
          ldy   <u0006
          ldu   <u0008
          rts   
-L03A0    lda   #$04
+L03A0    lda   #EXEC.
          os9   I$Open   
          bcs   L03FE
          leax  <u0013,u
@@ -538,7 +534,7 @@ L03C7    pshs  u,y,x
          bcs   L03A0
          ldy   u000B,u
          os9   F$UnLink 
-L03D7    cmpa  #$11
+L03D7    cmpa  #Prgrm+Objct
          beq   L0425
          sty   <u000A
          leax  >L0013,pcr
@@ -574,7 +570,7 @@ L03FE    ldx   <u0006
          leax  >name,pcr
 L0423    stx   <u0004
 L0425    ldx   <u0004
-         lda   #$11
+         lda   #Prgrm+Objct
          os9   F$Link   
          bcc   L0433
          os9   F$Load   
@@ -597,15 +593,23 @@ L0454    clr   <u0004
          clr   <u0005
          os9   F$UnLink 
          puls  pc,u,y,x,b,cc
-L045D    ldb   #$EA
 
+L045D    ldb   #E$NEMod
 L045F    coma  
          puls  pc,u,y,x
 
 L0462    fcc   "/pipe"
          fcb   C$CR
-L0468    fcb   $34,$10,$30,$8c,$f5,$cc,$01,$03
-         fdb   $17FE,$6835,$1025,$5217,$FF49,$254D,$A6C4,$2607
+L0468    pshs  x
+         leax  <L0462,pcr
+         ldd   #$0103
+         lbsr  L02DB
+         puls  x
+         bcs   L04C9
+         lbsr  L03C3
+         bcs   L04C9
+         lda   ,u
+         bne   L0487
          os9   I$Dup    
          bcs   L04C9
          sta   ,u
@@ -615,6 +619,7 @@ L0487    clra
          os9   I$Dup    
          lda   #$01
          lbra  L029D
+
 L0495    pshs  y,x,b,a
          pshs  y,x,b
          leax  $01,s
@@ -639,10 +644,11 @@ L04BC    bsr   L04CA
          cmpb  #$02
          bcs   L04E5
          tfr   b,a
-         ldb   #$00
+         ldb   #S$Kill
          os9   F$Send   
 L04C9    rts   
 L04CA    clrb  
+
 L04CB    lda   ,x+
          suba  #$30
          cmpa  #$09
@@ -665,5 +671,7 @@ L04E8    bsr   L04CA
          lda   <u0012
          os9   F$SPrior 
          rts   
+
          emod
 eom      equ   *
+         end
