@@ -7,7 +7,7 @@ BOOTERS		= oscode oscode_d64 boot_1773 boot_d64 $(TPB)/boot_rom_l1 rom_vectors
 KERNELS		= os9 os9p2
 ROMMODS		= rominfo sysgo_rom
 SYSMODS		= ioman init sysgo sysgo_d64
-CLOCKS		= clock.60hz clock.50hz clock_d64
+CLOCKS		= clock.60hz clock.50hz clock_d64 clock_tc3 clock_bb
 FMGRS		= scf.mn rbf.mn pipeman.mn
 DRIVERS		= aciapak.dr cchdisk.dr ccdisk.dr modpak.dr nildrv.dr \
 		piper.dr printer.dr rs232.dr sscpak.dr ccio.dr \
@@ -29,16 +29,10 @@ HELP		= co32.hp co80.hp \
 		h0_35.hp h1_15.hp h1_35.hp m1.hp m2.hp nil.hp p.hp pipe.hp \
 		ssc.hp t1.hp t2.hp t3.hp term32.hp term80.hp config.hp
 
-KERNEL_1773	= oscode os9 os9p2 init boot_1773
-KERNEL_D64	= oscode_d64 os9 os9p2 init boot_d64
-KERNEL_ROM	= oscode os9 os9p2 init $(TPB)/boot_rom_l1
-KERNEL_IDE	= oscode os9 os9p2 init $(TPB)/boot_ide_l1
-
-BOOT_TRACKS	= kernel_1773 kernel_rom kernel_ide
 COPYOBJS	= $(SYSMODS) $(CLOCKS) $(FMGRS) $(DRIVERS) $(IOSUBS) \
 		$(DESCS) $(HELP)
 ALLOBJS		= $(BOOTERS) $(KERNELS) $(ROMMODS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
-		$(DRIVERS) $(IOSUBS) $(DESCS) $(BOOT_TRACKS)
+		$(DRIVERS) $(IOSUBS) $(DESCS)
 
 all:	$(ALLOBJS) $(HELP)
 	$(CHMOD) 755 $(ALLOBJS)
@@ -93,25 +87,6 @@ d1_80d.dd: dx.asm
 d2_80d.dd: dx.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
 
-# Kernel track for OS-9 in ROM on a CoCo
-kernel_rom: $(KERNEL_ROM) $(DEPENDS)
-	$(MERGE) $(KERNEL_ROM)>$@
-	$(PADROM) \$$1200 $@ -c=\$$E5
-
-# Kernel track for Tandy/RS controller (WD1773)
-kernel_1773: $(KERNEL_1773) $(DEPENDS)
-	$(MERGE) $(KERNEL_1773)>$@
-	$(PADROM) \$$1200 $@ -c=\$$E5
-
-# Kernel track for Tandy/RS controller (WD1773)
-kernel_ide: $(KERNEL_IDE) $(DEPENDS)
-	$(MERGE) $(KERNEL_IDE)>$@
-	$(PADROM) \$$1200 $@ -c=\$$E5
-
-kernel_d64: $(KERNEL_D64) $(DEPENDS)
-	$(MERGE) $(KERNEL_D64)>$@
-	$(PADROM) \$$1000 $@ -c=\$$E5
-
 oscode: oscode.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0
 
@@ -123,6 +98,12 @@ sysgo: sysgo.asm
 
 sysgo_rom: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDiskGo=0
+
+clock_tc3: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCTC3=1 -aTPS=60
+
+clock_bb: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCBB=1 -aTPS=60
 
 clean:
 	$(RM) $(ALLOBJS)

@@ -7,35 +7,68 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*   5    From Tandy OS-9 Level One VR 02.00.00
-*   6    Modified to handle leap years properly for     BGP 99/05/03
+* 5      Tandy/Microware original version
+* 6      Modified to handle leap years properly for     BGP 99/05/03
 *        1900 and 2100 A.D.
+*        Added TC^3 SCSI/B&B RTC Clock Support          BGP 02/05/14
 
          nam   Clock
          ttl   OS-9 Level One V2 Clock module
 
-         ifp1
+         IFP1
          use   defsfile
-         endc
+         ENDC
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $1
 edition  set   6
 
-         mod   eom,name,tylg,atrv,ClkEnt,size
+         mod   eom,name,tylg,atrv,ClkEnt,RTC.Base
 
 size     equ   .
 
 name     fcs   /Clock/
          fcb   edition
 
+* If no RTC defines are set, then this is a software clock
+         IFEQ RTCBB+RTCTC3
+SOFT     set  1
+         ENDC
+
+         IFNE RTCBB
+MPIFlag  set  1
+SlotSlct set  $22
+RTC.Base equ $FF5C
+         ENDC
+         IFNE RTCTC3
+RTC.Base equ $FF7C
+         ENDC
+         IFNE SOFT
+RTC.Base equ size
+         ENDC
+
+         IFNE RTCBB+RTCTC3
+RTC.Zero equ -4     Send zero bit by writing this offset
+RTC.One  equ -3     Send one bit by writing this offset
+RTC.Read equ 0      Read data from this offset
+         ENDC
+
 SysTbl   fcb   F$Time
          fdb   FTime-*-2
          fcb   F$VIRQ
          fdb   FVIRQ-*-2
+
+         IFEQ  SOFT
+
+         fcb   F$STime
+         fdb   FSTime-*-2
+
+         ENDC
+
          fcb   $80
 
+         IFNE  SOFT
 * table of days of the month
 MonthChk fcb   00
          fcb   31                      January
@@ -51,12 +84,117 @@ MonthChk fcb   00
          fcb   30                      November
          fcb   31                      December
 
+         ELSE
+
+FSTime   ldx   R$X,u
+         ldd   ,x
+         std   <D.Year
+	 ldd   2,x
+	 std   <D.Day
+	 ldd   4,x
+	 std   <D.Min
+         andcc #^Carry
+         pshs  u,y,cc
+
+         ENDC
+
+         IFNE  RTCBB+RTCTC3
+
+         leay  SendBCD,pcr   Send bytes of clock
+	 lbra  TfrTime
+*
+* Update time from B&B/TC3 RTC
+*
+UpdTime  pshs  u,y,cc
+         leay  ReadBCD,pcr   Read bytes of clock
+
+TfrTime  orcc  #IntMasks  turn off interrupts
+         ldu   M$Mem,pcr  Get base address
+
+         IFNE  MPIFlag
+         ldb   >MPI.Slct  Select slot
+         pshs  b
+         andb  #$F0
+         orb   SlotSlct,pcr
+         stb   >MPI.Slct
+         ENDC
+
+         lbsr  SendMsg   Initialize clock
+         ldx   #D.Sec
+         ldb   #8        Tfr 8 bytes
+
+tfrloop  jsr   ,y        Tfr 1 byte
+         bitb  #$03
+         beq   skipstuf  Skip over day-of-week, etc.
+         leax  -1,x
+skipstuf decb
+         bne   tfrloop
+
+         IFNE  MPIFlag
+         puls  b
+         stb   >MPI.Slct     restore MPAK slot
+         ENDC
+
+         puls  u,y,cc,pc
+
+ClkMsg   fcb   $C5,$3A,$A3,$5C,$C5,$3A,$A3,$5C
+* Enable clock with message $C53AA35CC53AA35C
+SendMsg  lda   RTC.Read,u     Send Initialization message to clock
+         leax  <ClkMsg,pcr
+         ldb   #8
+msgloop  lda   ,x+
+         bsr   SendByte
+         decb
+         bne   msgloop
+         rts
+
+SendBCD  pshs  b          Send byte to clock, first converting to BCD
+         bitb  #$03
+         bne   BCDskip    Send zero for day-of-week, etc.
+         lda   #0
+         bra   SndBCDGo
+BCDskip  lda   ,x
+SndBCDGo tfr   a,b
+         bra   binenter
+binloop  adda  #6
+binenter subb  #10
+         bhs   binloop
+         puls  b
+SendByte coma             Send one byte to clock
+         rora
+         bcc   sendone
+sendzero tst   RTC.Zero,u
+         lsra
+         bcc   sendone
+         bne   sendzero
+         rts
+sendone  tst   RTC.One,u
+         lsra
+         bcc   sendone
+         bne   sendzero
+         rts
+
+ReadBCD  pshs  b
+         ldb   #$80    High bit will rotate out after we read 8 bits
+readbit  lda   RTC.Read,u  Read a bit
+         lsra
+         rorb          Shift it into B
+         bcc   readbit Stop when marker bit appears
+         tfr   b,a
+         bra   BCDEnter  Convert BCD number to Binary
+BCDLoop  subb  #6       by subtracting 6 for each $10
+BCDEnter suba  #$10
+         bhs   BCDLoop
+         stb   ,x
+         puls  b,pc
+         ENDC
+
 ClockIRQ clra
          tfr   a,dp                    set direct page to zero
-         lda   PIA.U4+3               get hw byte
+         lda   PIA.U4+3                get hw byte
          bmi   L0032                   branch if sync flag on
          jmp   [>D.SvcIRQ]
-L0032    lda   PIA.U4+2               clear interrupt?
+L0032    lda   PIA.U4+2                clear interrupt?
          dec   <D.Tick                 decrement tick counter
          bne   L007F                   go around if not zero
          ldd   <D.Min                  get minutes/seconds
@@ -64,11 +202,19 @@ L0032    lda   PIA.U4+2               clear interrupt?
          incb                          increment seconds
          cmpb  #60                     full minute?
          bcs   L0079                   nope...
+
+         IFNE  RTCBB+RTCTC3
+
+         lbsr   UpdTime
+	 bra    L007B
+
+         ELSE
+
 * Minutes increment
          inca                          else increment minute
          cmpa  #60                     full hour?
          bcs   L0078                   nope...
-         ldd   <D.Day                  else increment day
+	 ldd   <D.Day                  else increment day
 * Hour increment
          incb                          increment hour
          cmpb  #24                     past 23rd hour?
@@ -111,8 +257,11 @@ L0074    clrb                          hour 0
 L0075    std   <D.Day                  update day/hour
          clra                          0 minutes
 L0078    clrb                          0 seconds
+
+         ENDC
+
 L0079    std   <D.Min                  update min/sec
-         lda   <D.TSec
+L007B    lda   <D.TSec
          sta   <D.Tick
 L007F    clra
          pshs  a
@@ -231,6 +380,13 @@ ClkEnt   equ   *
          lda   #$3F
          sta   3,x                     PIA.U4 side B to I/O reg
          lda   2,x
+
+         IFEQ  SOFT
+
+	 lbsr  UpdTime                 Update time from RTC if one
+
+         ENDC
+
          puls  pc,dp,cc
 
 * F$Time system call code
