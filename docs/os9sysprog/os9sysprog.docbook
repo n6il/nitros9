@@ -2172,22 +2172,43 @@ used on the corresponding drive.</para>
 <sect2>
 <title>NAME: READ</title>
 
-<para>INPUT: (U) s. ADDRESS OF THE DEVICE STATIC STORAGE 
+<para>INPUT: (U) s. ADDRESS OF THE DEVICE STATIC STORAGE
 (Y. -
-ADDRESS OF THE PATH DESCRIPTOR 
+ADDRESS OF THE PATH DESCRIPTOR
 (B) - NSB OF DISK LOGICAL SECTOR
 NUMBER
-(X) - LSB's OF DISK LOGICAL SECTOR NUMBER 
+(X) - LSB's OF DISK LOGICAL SECTOR NUMBER
 </para>
 
 <para>OUTPUT: SECTOR IS RETURNED IN THE SECTOR BUFFER</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
-
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 <para>
 FUNCTION: READ A 256 BYTE SECTOR</para>
 
@@ -2246,11 +2267,6 @@ SECTOR NUMBER
 
 <para>OUTPUT: THE SECTOR BUFFER IS WRITTEN OUT TO DISK</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
 
 <para>
 FUNCTION. WRITE A SECTOR</para>
@@ -2293,13 +2309,13 @@ corresponding drive table as shown for the READ routine.</para>
 <sect2>
 <title>NAME: GETSTA PUTSTA</title>
 
-<para>INPUT: (U) - ADDRESS OF TEE DEVICE STATIC STORAGE AREA 
+<para>INPUT: (U) - ADDRESS OF TEE DEVICE STATIC STORAGE AREA
 (Y) -
-ADDRESS OF THE PATH DESCRIPTOR 
-(A) - STATUS CODE 
+ADDRESS OF THE PATH DESCRIPTOR
+(A) - STATUS CODE
 </para>
 
-<para>OUTPUT: (DEPENDS UPON TEE FUNCTION CODE) 
+<para>OUTPUT: (DEPENDS UPON TEE FUNCTION CODE)
 </para>
 
 <para>ERROR OUTPUT:</para>
@@ -3756,7 +3772,7 @@ cbaracter.</para>
 <sect2>
 <title>ABIT Set bits in an allocation bit map F$ABIT</title>
 
-<para>ASSEMBLER CALL: OS9 F$ABIT 
+<para>ASSEMBLER CALL: OS9 F$ABIT
 </para>
 
 <para>MACHINE CODE: 103F 13</para>
@@ -3765,16 +3781,38 @@ cbaracter.</para>
 (D) m Bit
 number of first bit to set.
 (Y) m Bit count (number of bits to
-set) 
+set)
 </para>
 
 <para>OUTPUT: None.</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This system mode service request sets bits in the allocation bit
 map specified by the X register~.</para>
@@ -3801,12 +3839,33 @@ the allocation bit map.</para>
 
 <para>(B) = Optional data area size (256 byte pages)</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
-
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 <para>This system call is similar to FORR, but it does not create a new
 process. It effectively uresets~ the calling process' program and
 data memory areas and begins execution of a new primary module. Open
@@ -3887,8 +3946,7 @@ description.</para>
 </para>
 
 <para>INPUT: (X) - Address of first name,
-(B) =Length of first
-name,
+(B) =Length of first name,
 (Y) = Address of secorrd name.</para>
 
 <para>OUTPUT: (CC) = C bit clear if the strings match.</para>
@@ -3907,10 +3965,10 @@ character set.</para>
 <sect2>
 <title>CRC ~. Compute CRC</title>
 
-<para>ASSEMBLER CALL: OS9 F$CRC 
+<para>ASSEMBLER CALL: OS9 F$CRC
 </para>
 
-<para>MACHINE CODE: 103F 17 
+<para>MACHINE CODE: 103F 17
 </para>
 
 <para>INPUT: (X) m Starting byte address,
@@ -3953,11 +4011,33 @@ clear).
 <para>OUTPUT: None.
 </para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This system mode service request is used to clear bits in the
 allocation bit map pointed to by X.</para>
@@ -4015,11 +4095,33 @@ area.
 (A) - New process
 ID number.</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This system call creates a new process which becomes a ~~childa of
 the caller, and sets up the new process' memory and MPU registers</para>
@@ -4105,11 +4207,33 @@ continue until the process table becomes full.</para>
 the intercept routine local storage.
 OUTPUT: None.</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This system call tells OS-9 to set a signal intercept trap, where
 X contains the address of the signal handler routine, and U contains
@@ -4159,14 +4283,36 @@ instruction</para>
 
 <para>OUTPUT:(A) - Process ID.</para>
 
-<para>(Y) &quot; User ID. 
+<para>(Y) &quot; User ID.
 </para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Returns the caller's process ID number, which is a byte value in
 the range of 1 to 255, and the user ID which is a integer in the
@@ -4196,11 +4342,33 @@ point absolute address.
 (B) - Module attributes / revision
 level.</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This system call causes 08-9 to search the module directory for a
 module having a name, language and type as given in the parameters.
@@ -4213,7 +4381,7 @@ of how many processes are using the module. If the module requested
 has an attribute byte indicating it is not sharable (meaning it is
 not reentrant) only one process may link to it at a time</para>
 
-<para>Possible errors: 
+<para>Possible errors:
 </para>
 
 <para>(A) Module not found</para>
@@ -4244,11 +4412,33 @@ type
 (B) - Attributes / revision level 
 </para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Opens a file specified by the pathlist, reads one or more memory
 modules from the file into memory, then closes the file. All modules
@@ -4280,11 +4470,33 @@ that occur on OPEN, READ, CLOSE and LINK system calls.</para>
 
 <para>(D) - Actual new memory .area size in bytes</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Used to expand or contract the process' data memory area. The new
 size requested is rounded up to the next 256-byte page boundary.
@@ -4321,11 +4533,33 @@ own &quot;address space&quot;</para>
 
 <para>OUTPUT: None.</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This is the system's error reporting utility. It writes an error
 message to the output path specified. Most OS-9 systems will display:</para>
@@ -4363,11 +4597,7 @@ routine use the F$SSVC service request</para>
 
 <para>(B) = Appropriate error code.</para>
 
-<para>(X) - Updated past space characters.
-
-
-
-</para>
+<para>(X) - Updated past space characters.</para>
 
 <para>Parses the input text string for a legal OS-9 name. The name is
 terminated by any character that is not a legal component character,
@@ -4379,10 +4609,10 @@ so that the next pathlist in a command line may be parsed</para>
 <para>Note that this system call processes only one name, so several
 calls may be needed to process a pathlist that has more than one name</para>
 
-<para>BEFORE F$PNAM CALL; 
+<para>BEFORE F$PNAM CALL;
 </para>
 
-<para>AFTER THE F$PNAM GALL: 
+<para>AFTER THE F$PNAM GALL:
 </para>
 
 <para>
@@ -4433,11 +4663,33 @@ carry set, beginning bit number and size of the largest block.</para>
 
 <para>OUTPUT: None</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This system call sends a &quot;signal&quot; to the process
 specified. The sianajL code is a single byte value of 1 - 255</para>
@@ -4456,17 +4708,13 @@ but does not cause the signal intercept routine to be executed</para>
 <para>0 a System Abort (cannot be intercepted) 
 </para>
 
-<para>I - Wake Up Process 
-</para>
+<para>1 - Wake Up Process</para>
 
-<para>2 - Keyboard Abort 
-</para>
+<para>2 - Keyboard Abort</para>
 
-<para>3 = Keyboard Interrupt 
-</para>
+<para>3 = Keyboard Interrupt</para>
 
-<para>4-255 = user defined 
-</para>
+<para>4-255 = user defined</para>
 
 <para>If an attempt is made to send a signal to a process that has an
 unprocessed, previous signal pending, the current &quot;send&quot;
@@ -4492,11 +4740,33 @@ request descriptions</para>
 <para>OUTPUT: (X) = Decremented by the number of ticks that the process
 was asleep</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Ibis call deactivates the calling process for a specified time, or
 indefinitely if K - 0, If X = 1, the effect is to have the caller
@@ -4528,17 +4798,38 @@ queue</para>
 
 <para>INPUT: (A) = Process ID number,
 (B) = Priority:
-0 =
-lowest
+0 = lowest
 255 - highest</para>
 
 <para>OUTPUT: None.</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Changes the process' priority to the new value given. $FF is the
 highest possible priority, $00 is the lowest. A process can change
@@ -4586,11 +4877,11 @@ entry
 $04 I ofrset From Byte E 
 4.-..</para>
 
-<para>I To Function Handler I 
+<para>I To Function Handler I
 </para>
 
-<para>I (--- Third entry etc. 
-I MORE ENTRIES 
+<para>I (--- Third entry etc.
+I MORE ENTRIES
 I I
 I
 I
@@ -4662,11 +4953,33 @@ are free for user definition.</para>
 
 <para>OUTPUT: None</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Sets up the interrupt vectors for SWI, ~I2 and SWI3 instructions.
 Each process has its own local vectors. Each SETSWI call sets up one
@@ -4697,30 +5010,52 @@ three vectors, you will not be able to call OS-9 at all.</para>
 
 <para>OUTPUT:  Time/date is set.</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This service request is used to set the current system date/time
 and start the system real-time clock. The date and time are passed in
 a time packet as follows:
 OFFSET VALUE</para>
 
-<para>0 year 
+<para>0 year
 1 I month
-2 Iday 
-3 1 hours 
+2 Iday
+3 1 hours
 4 minutes
-5 1 seconds 
+5 1 seconds
 </para>
 </sect2>
 
 <sect2>
 <title>TIME Get system date and time. F$TIRE</title>
 
-<para>ASSEMBLER CALL: OS9 F$TIME 
+<para>ASSEMBLER CALL: OS9 F$TIME
 </para>
 
 <para>MACHINE CODE: 103F 15</para>
@@ -4730,11 +5065,33 @@ OFFSET VALUE</para>
 <para>OUTPUT: Time packet (see below).
 </para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Thx~ returns the current system date and time in the form of a six
 byte packet (in binary). The packet is copied to the address passed
@@ -4761,14 +5118,36 @@ month
 
 <para>INPUT: (U) = Address of the module header</para>
 
-<para>OUTPUT: None 
+<para>OUTPUT: None
 </para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Tells OS-9 that the module is no longer needed by the calling
 process. The module's link count is decremented, and the module is
@@ -4798,11 +5177,33 @@ the module directory</para>
 
 <para>(B) = Child process' exit status code</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>The calling process is deactivated until a child process
 terminates by executing an EXIT system call, or by receiving a
@@ -4831,7 +5232,7 @@ children</para>
 <para>ASSEMBLER CALL: OS9 F$A64 
 </para>
 
-<para>MACHINE CODE: 103F 30 
+<para>MACHINE CODE: 103F 30
 </para>
 
 <para>INPUT: (X) = Base address of page table (zero if the page table
@@ -4843,11 +5244,33 @@ has not yet been allocated)</para>
 
 <para>(Y) = Address of block</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This system mode service request is used to dynamically allocate
 64 byte blocks of memory by splitting whole pages (256 byte) into
@@ -4905,11 +5328,33 @@ BLOCK? I
 
 <para>OUTPUT: None</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Tbie system mode service request inserts a process into the active
 process queue so that it may be scheduled for execution</para>
@@ -4928,7 +5373,7 @@ process is in user state, it is inserted according to its age</para>
 
 <para>ASSEMBLER CALL: OS9 F$F64</para>
 
-<para>MACHINE CODE: 103F 2F 
+<para>MACHINE CODE: 103F 2F
 </para>
 
 <para>INPUT: (K) = Add ess o base page, (A) - Block number.
@@ -4936,11 +5381,33 @@ process is in user state, it is inserted according to its age</para>
 
 <para>OUTPUT: (Y) = Address of block</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Thi~ system mode service request will return the address of a 64
 byte memory block as described in the F$A64 service request. 08-9
@@ -4965,11 +5432,33 @@ descriptors when given their number.</para>
 
 <para>OUTPUT: None</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This system mode service request is used to determine whether or
 not an I/O module is being used. The N register passes the address of
@@ -4996,11 +5485,33 @@ limited or no use for other applications</para>
 
 <para>OUTPUT: None.</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>~IIi~ system mode service request links the calling process into
 the I/O queue of the specified process and performs an untimed sleep.
@@ -5029,10 +5540,10 @@ packet as defined below to add a device to
 <para>(xl = flip byte 
 </para>
 
-<para>(X+1l = mask byte 
+<para>(X+1l = mask byte
 </para>
 
-<para>(X+21 - priority 
+<para>(X+21 - priority
 </para>
 
 <para>(U) - Address of service routine's static Storage area</para>
@@ -5043,11 +5554,33 @@ packet as defined below to add a device to
 
 <para>OUTPUT: None</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This service request is used to add a device to or remove a device
 from the IRQ polling table. To remove a device from the table the
@@ -5072,8 +5605,7 @@ identifies an active bit(s)</para>
 
 <para>Priority The device priority number:
 0 = lowest
-255 -
-highest</para>
+255 = highest</para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect2>
@@ -5112,11 +5644,33 @@ active process queue again.</para>
 
 <para>OUTPUT: None</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This system mode service request deallocates a 64 byte block of
 memory as described in the F$A64 service request</para>
@@ -5135,17 +5689,39 @@ memory as described in the F$A64 service request</para>
 
 <para>OUTPUT: (U) = Beginning address ,of memory area</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Th~s system mode service request allocates a block of memory from
 the top of available RAM of the specified size. The size requested is
 rounded to the next 256 byte page boundary.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST 
+<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST
 </para>
 </sect2>
 
@@ -5156,11 +5732,34 @@ rounded to the next 256 byte page boundary.</para>
 
 <para>MACHINE CODE: 103F 29</para>
 
-<para>INPUT: 
-</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>OUTPUT: 
-</para>
 </sect2>
 
 <sect2>
@@ -5168,13 +5767,34 @@ rounded to the next 256 byte page boundary.</para>
 
 <para>ASSEMBLER CALL: OS9</para>
 
-<para>MACHINE CODE: 103F</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>INPUT: 
-</para>
-
-<para>OUTPUT: 
-</para>
 </sect2>
 </sect1>
 
@@ -5184,23 +5804,42 @@ rounded to the next 256 byte page boundary.</para>
 <sect2>
 <title>ATTACH Attach a new device to the system. I$ATCH</title>
 
-<para>ASSEMBLER CALL: OS9 I$ATCH 
+<para>MACHINE CODE: 103F 80
 </para>
 
-<para>MACHINE CODE: 103F 80 
-</para>
-
-<para>INPUT: (K) - Address of device name string</para>
+<para>INPUT: (X) - Address of device name string</para>
 
 <para>(A) - Access mode</para>
 
 <para>OUTPUT: (U) = Address of device table entry</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$ATCH</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This service request is used to attach a new device to the system,
 or verify that it is already attached. The device's name string is
@@ -5240,10 +5879,7 @@ write operations will be permitted as follows:
 <sect2>
 <title>CHDIR Change working directory. I$CDIR</title>
 
-<para>ASSEMBLER CALL: OS9 I$CDIR 
-</para>
-
-<para>MACHINE CODE: 103F 86 
+<para>MACHINE CODE: 103F 86
 </para>
 
 <para>INPUT: (X) - Address of the pathlist</para>
@@ -5252,11 +5888,33 @@ write operations will be permitted as follows:
 
 <para>OUTPUT: None</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$CDIR</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Changes a process working directory to another directory file
 specified by the pathlist. Dependinq on the access mode given, the
@@ -5268,41 +5926,56 @@ directory file, and the caller must have read permission for it
 <para>ACCESS MODES 
 </para>
 
-<para>1 a = Read 
-</para>
+<para>1  = Read</para>
 
-<para>2 = Write 
-</para>
+<para>2 = Write</para>
 
-<para>3 = Update (read or write) 
-</para>
+<para>3 = Update (read or write)</para>
 
-<para>4 = Executr 
-</para>
+<para>4 = Execute</para>
 
 <para>If the access mode is read, write, or update the current data
 directory is changed. If the access mode is execute, the current
-ex~cution directory is changed</para>
+execution directory is changed</para>
 </sect2>
 
 <sect2>
 <title>CLOSE Close a path to a file/device. I$CLOS</title>
 
-<para>ASSEMBLER CALL: OS9 I$OLOS 
-</para>
-
-<para>MACHINE CODE: 103F 8F 
+<para>MACHINE CODE: 103F 8F
 </para>
 
 <para>INPUT: (A) = Path number</para>
 
 <para>OUTPUT: None</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$CLOS</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Terminates the I/O path specified by the path number. I/O can no
 longer be performed to the file/device, unless another OPEN or CREATE
@@ -5322,9 +5995,6 @@ desired to change the files/devices they correspond to</para>
 <sect2>
 <title>CREATE Create a path to a new file. I$CREA</title>
 
-<para>ASSEMBLER CALL: OS9 I$CREA 
-</para>
-
 <para>MACHINE CODE: 103F 83 
 </para>
 
@@ -5337,11 +6007,33 @@ desired to change the files/devices they correspond to</para>
 <para>OUTPUT: (X) = Updated past the pathlist (trailing blanks skipped)
 (A) = Path number</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$CREA</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Used to create a new file on a mnu~1tifiIe mass storage device,
 The pathlist is parsed, and the new file name is entered in the
@@ -5349,12 +6041,12 @@ specified (or default working) directory. The file is given the
 attributes passed in the B register, which has individual bits
 defined as follows</para>
 
-<para>bit 0 = read permit 
+<para>bit 0 = read permit
 </para>
 
 <para>bit 3. = write permit bit 2 = execute permit bit 3 = public read
 permit bit 4 = public write permit bit $ - public execute permit bit
-6 = sbarable file 
+6 = sbarable file
 </para>
 
 <para>The access mode parameter passed in register A must be either
@@ -5391,19 +6083,39 @@ MAKDIR)</para>
 <sect2>
 <title>DELETE Delete a file. I$DLET</title>
 
-<para>ASSEMBLER CALL: OS9 I$DLET</para>
-
 <para>MACHINE CODE: 103F 87</para>
 
 <para>INPUT: (K) = Address of pathlist.</para>
 
 <para>OUTPUT: (X) = Updated past pathlist (trailing spaces skipped).</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$DLET</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>This service request deletes the file specified by the pathlist,
 The file must have write permission attributes (public write if ~ot
@@ -5414,20 +6126,39 @@ to delete devices will result in an error.</para>
 <sect2>
 <title>DETACH Remove a device from the system. I$DTCH</title>
 
-<para>ASSEMBLER CALL: OS9 I$DTCB 
-</para>
-
 <para>MACHINE CODE: 103F 81</para>
 
 <para>INPUT: (U) = Address of the device table entry.</para>
 
 <para>OUTPUT: None.</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9   I$DTCH</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Removes a device from the system device table if not in use by any
 other process. The device driver's termination routine is called,
@@ -5445,25 +6176,40 @@ SCFMAN also uses ATTACH/DETACH to setup its second (echo) devile
 <sect2>
 <title>DUP Duplicate a path. I$DUP</title>
 
-<para>ASSEMBLER CALL: OS9 I$DUP
-
-
-
-</para>
-
-<para>MACHINE CODE: 103F 82 
-</para>
+<para>MACHINE CODE: 103F 82 </para>
 
 <para>INPUT: (A) = Path number of path to duplicate.</para>
 
 <para>OUTPUT: (B) = New path number.
 </para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$DUP</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>Given the number of an existing path, returns another synonymous
 path number for the same file or device. SHELL uses this service
@@ -5478,40 +6224,270 @@ descriptor is not copied.</para>
 
 <sect2>
 <title>GETSTAT Get file device status. I$GSTT</title>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$GSTT</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 8D</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Path number.
+(B) Status code
+(Other registers depend upon status code)</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(depends upon status code)</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>ASSEMBLER CALL: OS9 ISC$TI</para>
-
-<para>MACHINE CODE: 103F 80</para>
-
-<para>(A) = Path numter.
-(B) Status code 
-(Other registers depend
-upon status code) 
-</para>
 </sect2>
 
 <sect2>
-<title>Write Write Data to File or Device I$WRITE</title>
+<title>MAKDIR Make a new directory</title>
 
-<para>ASSEMBLER CALL: OS9 I$Write</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9 I$MDIR</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 85</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>MACHINE CODE: 103F</para>
+</sect2>
 
-<para>/3- Path number 
+<sect2>
+<title>OPEN Open a path to a file or device</title>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$OPEN</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 84</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</sect2>
+
+<sect2>
+<title>READ Read data from a file or device</title>
+
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$READ</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 89</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</sect2>
+
+<sect2>
+<title>READLN Read a text line with editing</title>
+
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$RDLN</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</sect2>
+
+<sect2>
+<title>SEEK Reposition the logical file pointer</title>
+
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$SEEK</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 88</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</sect2>
+
+<sect2>
+<title>SETSTAT Set file/device status</title>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$SSTT</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
+</sect2>
+
+<sect2>
+<title>WRITE Write Data to File or Device I$WRITE</title>
+
+<para>/3- Path number
 </para>
 
 <para>INPUT: ~&quot; dl .1 Number of bytes to write (aO) Address of
-buffer 
+buffer
 </para>
 
-<para>OUTPUT: I did Number of bytes actually written 
+<para>OUTPUT: I did Number of bytes actually written
 </para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$WRITE</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 8A</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>DESCRIPTION:</para>
 
@@ -5523,41 +6499,55 @@ write or update access modes.</para>
 editing. If data is written past the present end~of~file, the file is
 automatically expanded.</para>
 
-<para>NOTE: The IOMan module implements I$Write. 
+<para>NOTE: The IOMan module implements I$Write.
 </para>
 
-<para>NOTE: On RBF devices, any record that was locked is released. 
+<para>NOTE: On RBF devices, any record that was locked is released.
 </para>
 
-<para>SEE ALSO: I$Open, I$Create, and I$WritLn</para>
 
-<para>POSSIBLE ERRORS: E$BPNum, E$BMode, and E$Write</para>
 </sect2>
 
 <sect2>
 <title>WritLn Write Line of Text with Editing</title>
 
-<para>ASSEMBLER CALL: OS9 I$WritLn</para>
-
-<para>MACHINE CODE: 103F 8C</para>
-
-<para>INPUT: (A) Path number 
+<para>INPUT: (A) Path number
 </para>
 
 <para>(Y) = Maximum number of bytes to write</para>
 
-<para>(X ) = Address of buffer 
+<para>(X ) = Address of buffer
 </para>
 
 <para>OUTPUT: (Y) Actual number of bytes written</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
-
-<para>DESCRIPTION:</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$WRLN</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 8C</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>I$WritLn is similar to I$Write except it writes data until a
 carriage return character or (di) bytes are encountered. Line editing
@@ -5577,12 +6567,6 @@ extrt bytes are not counted,
 
 <para>NOTE: The IOMan module implements I$WritLn</para>
 
-<para>
-SEE ALSO: I$Open, I$Create, and I$Write; OS-9 Technical I/O
-Manual chapter on SCF Drivers</para>
-
-<para>(line editing).
-POSSIBLE ERRORS: E$BPNum, E$BMode, and E$Write</para>
 </sect2>
 </sect1>
 </chapter>
@@ -6026,11 +7010,33 @@ POSSIBLE ERRORS: E$BPNum, E$BMode, and E$Write</para>
 <para>Process Z~esc:iptor pointer 
 </para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>ItkM blocks for process OAT ~ The b~~s do ~ ree~ t be cc~tigt~ocs~
 </para>
@@ -6048,13 +7054,35 @@ POSSIBLE ERRORS: E$BPNum, E$BMode, and E$Write</para>
 <para>INPUT: 
 </para>
 
-<para>ERROR OUTPUT:</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
-
-<para>&amp;n~ italizes a ~l2~-bv~te process desc~ptor~ 
+<para>&amp;n~ italizes a ~l2~-bv~te process desc~ptor~
 </para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
@@ -6070,17 +7098,39 @@ POSSIBLE ERRORS: E$BPNum, E$BMode, and E$Write</para>
 <para>U) a Desr~re~ block crocnt a t~eVto~ng PAM block numier 
 </para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>z ~ t~e Menor~ Block map for t1~s desired n~ber of ~oo:icuo~ RAM
-blocks 
+blocks
 </para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST 
+<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST
 </para>
 </sect1>
 
@@ -6094,14 +7144,35 @@ blocks
 <para>X a Process Descrrptor pointer 
 </para>
 
-<para>
-ERROR OUTPUT:</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
-
-<para>a Task. ~be: ~or tbe given process 
+<para>a Task. ~be: ~or tbe given process
 </para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST 
@@ -6115,11 +7186,33 @@ ERROR OUTPUT:</para>
 
 <para>MACHINE CODE: 103F</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>~2~e modble i~aned ~Boet~ or as specified in t,~rt IIIT modblt.
 ~ked m~Wle~ and expects tbe return of a po&plusmn;~nter and s~ze of
@@ -6140,14 +7233,36 @@ a ea ~ ~ tbtn se&amp;rclred for fl~ modules</para>
 </para>
 
 <para>U - Byte count cran~ed~ 
-- p~ ~ter to memory sIlo ~ated~ 
+- p~ ~ter to memory sIlo ~ated~
 </para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>-~ e3 r~uested me~nory (rounded up to nearest block a~ c~r~s menr
 i~n tbe systesOs address space~</para>
@@ -6170,9 +7285,32 @@ i~n tbe systesOs address space~</para>
 
 <para>aAl~ess of first block
 </para>
-
-<para>~0T~ Ncne~
-</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>~n process DAT ~ge as unallocated~</para>
 
@@ -6193,14 +7331,33 @@ i~n tbe systesOs address space~</para>
 <para>~X aCftset ~n block to begin copy QU -Byte count
 </para>
 
-<para>7h-(a~Aer s dest~ at~ron buffer
-</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>external memory tutu tbe user s buffer tur inspec~cn. Any n,esrc ~
 the system ~iy be vrewed in t.his wav~</para>
@@ -6219,11 +7376,33 @@ the system ~iy be vrewed in t.his wav~</para>
 
 <para>I - ~oqic&amp;~. address~</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>a DAT inaqe block n~ber and block offset V.
 a oo Al addreza~</para>
@@ -6241,12 +7420,34 @@ a oo Al addreza~</para>
 </para>
 
 <para>U V. a Block number
-7 - ~AT ~na~e porrter
-ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+7 - ~AT ~na~e porrter</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>~pora~; DAD r~age to access ins given memory bloc</para>
 
@@ -6257,67 +7458,164 @@ ERROR OUTPUT:</para>
 <sect1>
 <title>$3B* F$DelImg Deallocate tmaqe RAM blocks F$DelImg</title>
 
-<para>ASSEMBLER CALL: OS9</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>MACHINE CODE: 103F</para>
-
-<para>INPUT:
-</para>
-
-<para>OUTPUT:
-</para>
 </sect1>
 
 <sect1>
 <title>$4C* Deallocate Process descriptor F$DelPrc</title>
 
-<para>ASSEMBLER CALL: OS9</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>MACHINE CODE: 103F</para>
-
-<para>INPUT:
-</para>
-
-<para>OUTPUT:
-</para>
 </sect1>
 
 <sect1>
 <title>Deallocate RAM blocks</title>
 
-<para>ASSEMBLER CALL: OS9</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>MACHINE CODE: 103F</para>
-
-<para>OUTPUT:
-</para>
-
-<para>Ma V. boins n system taemcry block map as unallocated.</para>
+<para>Marks blocks in system memory block map as unallocated.</para>
+<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
 
 <sect1>
 <title>$40* F$DelTsk Deallocate process Task number F$DelTsk</title>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>ASSEMBLER CALL: OS9</para>
-
-<para>MACHINE CODE: 103F</para>
-
-<para>OUTPUT:
-</para>
 </sect1>
 
 <sect1>
 <title>$4D* F$ELink Link using module directory Entry F$ELink</title>
-
-<para>ASSEMBLER CALL: OS9</para>
-
-<para>MACHINE CODE: 103F</para>
-
-<para>INPUT:
-</para>
-
-<para>OUTPUT:
-</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>a a Ltrt3V given a pointer to a. module directory entry~ Note oail
 differs from F$Link in that a pointer to the inodc~e
@@ -6327,106 +7625,165 @@ ent~y is supplied rather than a pointer to a module name</para>
 
 <sect1>
 <title>$4E* F$FModul Find Module directory entry F$FModul</title>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>ASSEMBLER CALL: OS9</para>
-
-<para>MACHINE CODE: 103F</para>
-
-<para>OUTPUT:
-</para>
-
-<para>(B) - Appropriate error code.
-</para>
 </sect1>
 
 <sect1>
 <title>$3E* F$FreeHB get Free High block  F$FreeHB</title>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>ASSEMBLER CALL: OS9</para>
-
-<para>MACHINE CODE: 103F</para>
-
-<para>INPUT:
-</para>
-
-<para>OUTPUT:
-</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
 </sect1>
 
 <sect1>
 <title>$3D* F$FreeLB get Free Low block  F$FreeLB</title>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$FreeLB</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 3D</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>ASSEMBLER CALL: OS9 F$Free~La</para>
-
-<para>MACHINE CODE: 103F 3D</para>
-
-<para>OUTPUT:
-</para>
-
-<para>N V B a Block count
-a DAT image pointer
-</para>
-
-<para>A, - Low block number</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
-
-<para>as tt DAT nags for the lowest free block of g van sire.
-
-
-
-</para>
+<para>as tt DAT nags for the lowest free block of g van sire.</para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
 
 <sect1>
 <title>$19 F$GBlkMp Get system Block Map copy F$GBlkMp</title>
-
-<para>ASSEMBLER CALL: OS9 F$OIlllkMp</para>
-
-<para>MACHINE CODE: 103F 13
-&gt;1 1 a 1014 byte buffer pointer.</para>
-
-<para>73 - Number of bytes per block (M~MO block size depender t S =
-Size of 5ystem~s memory block map&gt;</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 19</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>as c a s sttmtu memory block rasp into the useVs hLtter V.</para>
 </sect1>
 
 <sect1>
 <title>$1A F$GModDr Get Module Directory copy F$GModDr</title>
-
-<para>ASSEMBLER CALL: OS9</para>
-
-<para>MACHINE CODE: 103F 14</para>
-
-<para>OUTPUT:
-</para>
-
-<para>(1 a 3048 byte buffer pointer</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>4 as toe svste~ s module directory into the cseVs ~ui= o
 ~0
@@ -6439,17 +7796,38 @@ Size of 5ystem~s memory block map&gt;</para>
 <para>ASSEMBLER CALL: OS9 F$GPrDsc</para>
 
 <para>MACHINE CODE: 103F 18
-&quot;&quot; (A) a Requested process
-ED&gt;
-1 - 512 byte buffer pointer&gt;
+(A) a Requested process
+ID.
+- 512 byte buffer pointer&gt;
 </para>
 
-<para>771 More
-ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>a. process descriptor into the caLling process~ tufter fo
 s~~~e&lt;'x&gt;en. There is no way to change dmts in a process
@@ -6463,17 +7841,33 @@ descrIptor&gt;</para>
 
 <para>MACHINE CODE: 103F 37</para>
 
-<para>OUTPUT:
-</para>
-
-<para>pp~'~ (A~ - Process ID
-&gt;7' - Pointer to Process Descriptor</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>a process ID number to the address at its ~&quot;o ~ pt ~t the
 system address space
@@ -6485,24 +7879,33 @@ system address space
 <sect1>
 <title>$49* F$LDABX Load A from 0,1 in task B  F$LDABX</title>
 
-<para>ASSEMBLER CALL: OS9 F$LDK3X</para>
-
-<para>MACHINE CODE: 103F 49</para>
-
-<para>OUTPUT:
-</para>
-
-<para>P (7' (II) a Ta.sk number
-= Data pointer
-</para>
-
-<para>X - 0a~a byte at 0,1 in task~s address space</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>7e Cyta is returned from the logical address in I) in the
 ~
@@ -6519,22 +7922,33 @@ address space&gt; This is typically used to get one
 <sect1>
 <title>$46* F$LDAXY Load A [X, [Y] ]  F$LDAXY</title>
 
-<para>ASSEMBLER CALL: OS9</para>
-
-<para>MACHINE CODE: 103F 46</para>
-
-<para>I - Block offset
-A = DAT i~ge pointer
-</para>
-
-<para>A' = cata tyte at (1) offset or ( 6)
-</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>5-c s one data byte in tte memory block specified by the DA~ in a
 ( S offset by (I)</para>
@@ -6550,26 +7964,38 @@ A = DAT i~ge pointer
 
 <para>MACHINE CODE: 103F 47</para>
 
-<para>V I a Block offset
-- DAT image pointer
-</para>
-
-<para>&quot;&gt;~ &gt;7. A ~ Data byte at (I) offset of ( SI
-I -
-incremented by one
-ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>~a to the assembly instruction ~I~DA ,xe~', except that (I refers
 &quot;~c an offset in the memory block described by the DA'~'
 at
 7&gt;
-
-
-
 </para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
@@ -6578,22 +8004,35 @@ at
 <sect1>
 <title>$48* F$LDDDXY Load D [D+X, [Y] ]  F$LDDDXY</title>
 
-<para>ASSEMBLER CALL: OS9</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>MACHINE CODE: 103F 48
-N = Off~et to cffse&gt;.
-I) - Offset
-S
-- DAT nags</para>
-
-<para>= bytes addressed by ~
-ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
-
-<para>two tytes from the memory block described by the 73A&gt;~' Lma;e
+<para>Loads two tytes from the memory block described by the 73A&gt;~' Lma;e
 
 &quot;so cc b~ (Y). The bytes loaded are at the offset (D'~'X) rz
 &quot;, a rratr~~'r' bloak.</para>
@@ -6603,26 +8042,35 @@ ERROR OUTPUT:</para>
 
 <sect1>
 <title>$4F* F$MapBlk Map specific Block F$MapBlk</title>
-
-<para>ASSEMBLER CALL: OS9 F$MapBlk</para>
-
-<para>MACHINE CODE: 103F 46</para>
-
-<para>U -t'mter of blocks
-&lt;I -1.e~aon nq block number</para>
-
-<para>~ ~ (1=Acdress of first block 3</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>~peo ~ ed block(s) into unallocated blocks of ~ro sea a
-
-
-
 </para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
@@ -6642,14 +8090,33 @@ Source poInter
 7') - Byte count
 = Deatinatior pointer
 </para>
-
-<para>N</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>cats bytes from one address space to anotber~ csuully fu~ 75 &quot;ctu
 to Cse&gt;7s, or vice-versa,
@@ -6669,17 +8136,7 @@ to Cse&gt;7s, or vice-versa,
 
 <para>MACHINE CODE: 103F 43
 &quot;&quot;1 U) Task number</para>
-
-<para>in</para>
-
-<para>5 137 . (077 a C bit set.
-(B) = Appropriate error code.
-</para>
-
 <para>a t,~e spec'&gt;fred DAT Task number&gt;
-
-
-
 </para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
@@ -6692,19 +8149,7 @@ to Cse&gt;7s, or vice-versa,
 
 <para>MACHINE CODE: 103F 42</para>
 
-<para>&quot;
-in 7' - ~&gt;~~k' rcmber</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
-
 <para> DAT task number.
-
-
-
 </para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
@@ -6724,19 +8169,35 @@ count
 7) New image pointer
 </para>
 
-<para>&gt;5 'DT' None&gt;</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None.</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
-
-<para> lee a DAT image tote the process descriptor
-
-
-
-</para>
+<para> lee a DAT image tote the process descriptor</para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST
 </para>
@@ -6751,12 +8212,33 @@ count
 
 <para>I) = Process Descriptor pointer
 </para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) - C bit set.</para>
-
-<para>(B) Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>a in roinss Task DAT registers.</para>
 
@@ -6770,23 +8252,42 @@ count
 
 <para>MACHINE CODE: 103F 34
 N' (A) = Mccc. e Type&gt;
-(I = Module
-Name string pointer&gt;
-7 ) - Nazis string DAT image pointer&gt;</para>
+(I = Module Name string pointer.
+7 ) - Name string DAT image pointer&gt;</para>
 
-<para>&gt;7 &quot; &quot;4 = Moduts Type&gt;
-73' = Moc~u3Le
-Revision,
+<para>(A) = Moduts Type&gt;
+73' = Moc~u3Le Revision,
 Vt - tlpdated Name string pointer
-7&gt; - Module
-Entry point
+7&gt; - Module Entry point
 (73 - Module pointer&gt;</para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>lc.k~ a moou~le whose name is outside the current (system) pro&gt;
 ess scAres space into the address space that contains its name.</para>
@@ -6804,12 +8305,34 @@ ess scAres space into the address space that contains its name.</para>
 memory
 a byte co~ ot of memory granted</para>
 
-<para>37 = pointer to memory block allocated
-ERROR OUTPUT:</para>
-
-<para>(CC) - C bit set.</para>
-
-<para>(B) Appropriate error code.</para>
+<para>37 = pointer to memory block allocated</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F </entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) = C bit set.
+(B) = Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>21. ~i e&gt;3 ine reccssted memory (rounded up to the nearest
 peoe) &quot; a = t'en a add,res~ space&gt; Useful for allocating 1 0
@@ -6822,81 +8345,119 @@ bc/tars s '~ ~ in &gt;iao'&gt;'&gt;pervanent system memory&gt;</para>
 <sect1>
 <title>$29* F$SRtMem System Memory Return  F$SRtMem</title>
 
-<para>ASSEMBLER CALL: OS9 F$SRtMem
-
-
-
-</para>
-
-<para>MACHINE CODE: 103F 29</para>
+<para>ASSEMBLER CALL: OS9 F$SRtMem</para>
 
 <para>- B~rte count of memory betng returned (17 - address of memory
 block being returned
 </para>
 
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) = C bit set.</para>
-
-<para>(B) = Appropriate error code.</para>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 29</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry></entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 
 <para>
 &quot;o sve em memory (e.g, memory in tIre system a~cr a apt
 ro onger needed
-
-
-
 </para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
 
 <sect1>
-<title>$4A* F$STABX Store A at 0,X in task B F$STABX
-</title>
+<title>$4A* F$STABX Store A at 0,X in task B F$STABX</title>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$STABX</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 4A</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) = Data byte to store in Task's address space
+(B) = Task number
+(X) - Logical address in task's address space to store</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
 
-<para>ASSEMBLER CALL: OS9</para>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>MACHINE CODE: 103F 4A
-F' &quot; - Data byte to store in Task~s
-address space
-~&quot; Task numbs
-tX) - Locical address an task
-a address space to</para>
-
-<para>&quot;'&quot; &gt;7 N ne.
-ERROR OUTPUT:</para>
-
-<para>(CC) - C bit set.</para>
-
-<para>(B) Appropriate error code.</para>
-
-<para>~i sima~ar to the assembly anstruc aon ~$TA 04&gt;7,
-at X
-refer~ to an a dre the n task a ace ass spain
-r t ar inst the
-current address space&gt;</para>
+<para>This is similar to the assembly instruction "STA 0,X", except
+that (X) refers to an address in the given task's address space
+rather than the current address space.</para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
 
 <sect1>
-<title>$1C F$SUser Set User ID number F$SUser
-</title>
+<title>$1C F$SUser Set User ID number F$SUser</title>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$SUser</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 1C</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry>(Y) = desired User ID number</entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
 
-<para>ASSEMBLER CALL: OS9 F$SUser</para>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>MACHINE CODE: 103F 1C</para>
-
-<para>- desired User ID number
-</para>
-
-<para>&quot;F'~ '
-ERROR OUTPUT:</para>
-
-<para>(CC) - C bit set.</para>
-
-<para>(B) Appropriate error code.</para>
 
 <para>t~ic current user 2730 to that specaf&gt;ed, w&plusmn;t&gt;tout
 erro a It' It.</para>
@@ -6904,75 +8465,93 @@ erro a It' It.</para>
 
 <sect1>
 <title>$1D F$UnLoad Unlink module by name F$UnLoad</title>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  F$UnLoad</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 1D</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(A) - Module Type
+(X) = Module Name pointer</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>None</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
 
-<para>ASSEMBLER CALL: OS9 F$UnLoad</para>
-
-<para>MACHINE CODE: 103F
-I &quot;&quot;' 73) - Module Type</para>
-
-<para>Vt = Module Name pointer
-&quot; ~ &gt;&quot;
-ERROR OUTPUT:</para>
-
-<para>(CC) - C bit set.</para>
-
-<para>(B) Appropriate error code.</para>
-
-<para>a tbe module to the module directory decrements ate lrrik
-&quot;
-cc t arid removes it from the directory i&gt;f the count re~ciaea ze
-c 47 e inst tn~s call differs from F$DnLi&gt;tik in that the a
-pointer 37
-a no &gt;u&gt;' a rr&amp;me is supplied rather than the
-adcress of the trioc5) t.</para>
+</tbody>
+</tgroup>
+</informaltable>
+<para>Locates the module to the module directory, decrements its link
+count and removes it from the directory if the count reaches zero.
+Note that this call differs from F$UnLink in that the a pointer to module
+name is supplied rather than the address of the module header.</para>
 </sect1>
 
 <sect1>
 <title>DELETE Delete a file I$DeletX</title>
+<informaltable>
+<tgroup cols="2">
+<tbody>
+<row>
+	<entry>ASSEMBLER CALL:</entry>
+	<entry>OS9  I$Deletx</entry>
+</row>
+<row>
+	<entry>MACHINE CODE:</entry>
+	<entry>103F 90</entry>
+</row>
+<row>
+	<entry>INPUT:</entry>
+	<entry><literallayout>(X) - Address of pathlist
+(A) = Access mode.</literallayout></entry>
+</row>
+<row>
+	<entry>OUTPUT:</entry>
+	<entry>(X) = Updated past pathlist (trailing spaces skipped).</entry>
+</row>
+<row>
+	<entry>ERROR OUTPUT:</entry>
+	<entry><literallayout>(CC) - C bit set.
+(B) Appropriate error code.</literallayout></entry>
+</row>
 
-<para>ASSEMBLER CALL: OS9  I$Deletx</para>
+</tbody>
+</tgroup>
+</informaltable>
 
-<para>MACHINE CODE: 103F 90</para>
-
-<para>INPUT:  (X) - Address of pathlist
-(A) = Access mode.</para>
-
-<para>OUTPUT: (X) = Updated past pathlist (trailing spaces skipped)</para>
-
-<para>ERROR OUTPUT:</para>
-
-<para>(CC) - C bit set.</para>
-
-<para>(B) Appropriate error code.</para>
-
-<para>Tts service request deletes the file specified by the path&gt;Last
-</para>
-
-<para>The file must have write permission attributes (public write if
-not the owner) and reside on a multi-file mass storage device,
-Attempts to delete devices will result in error&gt; 
-</para>
+<para>This service request deletes the file specified by the pathlist.
+The file must have write permission attributes (public write if
+not the owner), and reside on a multi-file mass storage device.
+Attempts to delete devices will result in error.</para>
 
 <para>The access mode is used to specify the current working directory
-or me cur erit execution directory (but not both) ~Ln the absence of
-a full patttiist If the access mode is read, write, or update, ins
-current crtata directory as assumed, 23~f the access mode as
-execute~&gt; the current execution directory is assumed&gt; Mote that
-if a full pathlist (a pathtJ.rtat beginning witt a ~ appears, the
-access mode is ignored</para>
+or me cur erit execution directory (but not both) in the absence of
+a full pathlist. If the access mode is read, write, or update, the
+current data directory is assumed. If the access mode is
+execute, the current execution directory is assumed. Note that
+if a full pathlist (a pathlist beginning witt a "/") appears, the
+access mode is ignored.</para>
 
-<para>ACCESS MODES' 
-</para>
-
-<para>1 a Read
-2 - Write
+<para>ACCESS MODES:</para>
+<literallayout>
+1 = Read
+2 = Write
 3 = Update (read or write)
-4 -
-Execute
-
-
-
-</para>
+4 = Execute
+</literallayout>
 </sect1>
 </appendix>
 </book>
