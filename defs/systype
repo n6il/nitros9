@@ -116,6 +116,7 @@ A.V7     set   $FFC7
 *************************************************
 
 HW.Page  set   $FF        Device descriptor hardware page
+BTStart  set   $EF00		boot track memory start
 
          else
 
