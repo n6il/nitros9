@@ -2,42 +2,73 @@
 
 RBFDEFS  set   1
 
-         nam   RBFDefs
-         ttl   Random Block File Manager Definitions
-
-**********************
-* Modification History
+********************************************************************
+* RBFDefs - Random Block File Manager Definitions
 *
-* Date     Changes Made                                                 by
-* -------- ------------------------------------------------------------ ---
-* 82/07/13 PD.Exten added to path descriptor                            rfd
-* 82/07/13 PE entries defined                                           rfd
-* 82/07/15 V.FileHd inserted in drive static                            rfd
-* 82/09/10 Level One/ Level two cond added                              WGP
-* 82/09/17 Record Lock cond added                                       WGP
-* 82/09/17 PD.SLE renamed to PD.Creat                                   rfd
-* 82/09/17 V.DiskID, V.BMapSz, V.MapSct added for
-*          smart multi-sector bitmap searching                          rfd
-* 82/09/20 reserved areas added in static storage.
-* 83/06/07 Added InDriver flag in PD.SMF.                               rfd
-* 83/06/13 Added PE.Req tmp save for PE.Lock                            rfd
-* 83/08/08 reserved PD.SToff for Japanese                               rfd
-* 83/11/19 Added V.ResBit in drive tables.                              rfd
-* 83/12/12 Added PE.Prior to save process priority.                     rfd
-* 83/12/13 Added BufBusy bit in state flag (PD.SMF)                     rfd
-* 84/07/06 Added Bit Definitions for DD.FMT                             MGH
-* 87/06/23 Updated with Dev Desc Info                                   KKD
-* 03/06/02 Updated comments for clarity.                                BGP
-
-
+* $Id$
+*
 * RBF stands for 'Random Block Filemanager' and is a package of subroutines
 * that define the logical structure of a disk and allows access to the files
 * in that structure.
 *
 * The data structures in this file give RBF its 'personality' and are used
 * by RBF itself, as well as applications that will require disk I/O.
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*          1982/07/13  Robert F. Doggett
+* PD.Exten added to path descriptor and PE Entries defined.
+*
+*          1982/07/15  Robert F. Doggett
+* V.FileHd inserted in driver static storage.
+*
+*          1982/09/10  WGP
+* Level One/Level Two condionals added.
+*
+*          1982/09/17  WGP
+*
+*          1982/09/17  Robert F. Doggett
+* PD.SLE renamed to PD.Creat.
+*
+*          1982/09/17  Robert F. Doggett
+* V.DiskID, V.BMapSz, V.MapSct added for smart multi-sector bitmap searching.
+*
+*          1982/09/20  Robert F. Doggett
+* Reserved areas added in static storage.
+
+*          1983/06/07  Robert F. Doggett
+* Added InDriver flag in PD.SMF.
+*
+*          1983/06/13  Robert F. Doggett
+* Added PE.Req tmp save for PE.Lock.
+*
+*          1983/08/08  Robert F. Doggett
+* Reserved PD.SToff for Japanese.
+*
+*          1983/11/19  Robert F. Doggett
+* Added V.ResBit in drive tables.
+*
+*          1983/12/12  Robert F. Doggett
+* Added PE.Prior to save process priority.
+*
+*          1983/12/13  Robert F. Doggett
+* Added BufBusy bit in state flag (PD.SMF).
+*
+*          1984/07/06  Mark G. Hawkins
+* Added Bit Definitions for DD.FMT.
+*
+*          1987/06/23  Kevin K. Darling
+* Updated with Dev Desc Info
+*
+*          2003/06/02  Boisy G. Pitre
+* Updated comments for clarity.
+
+         nam   RBFDefs
+         ttl   Random Block File Manager Definitions
 
 
+         pag
 *******************************
 * RBF Device Descriptor Offsets
 *
@@ -90,7 +121,7 @@ STP.12ms equ   2                12ms step rate
 STP.6ms  equ   3                6ms step rate
          ENDC
 
-
+         pag
 *************************************
 * Random Block Path Descriptor Format
 *
@@ -171,6 +202,7 @@ EofLock  equ   4          End of file is locked
          ENDC  
 
 
+         pag
 ***********************
 * LSN0 Disk Data Format
 *
@@ -203,6 +235,7 @@ FMT.TDNS equ   %00000100  48tpi=0, 96tpi=1
 FMT.T0DN equ   %00100000  Track 0 DNS, see FMT.DNS
 
 
+         pag
 ************************
 * File Descriptor Format
 *
@@ -228,6 +261,7 @@ FD.LS2   equ   (256/FDSL.S-1)*FDSL.S
 MINSEC   set   16
 
 
+         pag
 ************************
 * Directory Entry Format
 *
@@ -240,8 +274,9 @@ DIR.FD   rmb   3          File descriptor physical sector number
 DIR.SZ   equ   .          Directory record size
 
 
-****************
-* Static Storage
+         pag
+********************
+* RBF Static Storage
 *
 * Overall Disk Static Storage
 *
@@ -255,6 +290,7 @@ V.NDRV   rmb   1          Number of drives           ($07)
 DRVBEG   equ   .          Beginning of drive tables  ($10)
 
 
+         pag
 ****************
 * Global Storage For Disk Drive Tables
 *

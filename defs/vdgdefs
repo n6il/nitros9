@@ -1,26 +1,33 @@
-         ifeq   VDGINT
+         IFEQ   VDGDEFS
 
-VDGINT   set    1
+VDGDEFS  set    1
 
-         ttl    DEFs from VDGint
-
-**********************
-* Defs from VDGint
-* all offsets from 'U' (address of device memory area)
-* (see p. 6-9, technical reference: U=start of driver data memory
+********************************************************************
+* VDGDefs - VDG Interface Definititions
 *
-* EDITION HISTORY:
+* $Id$
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*          1991/05/07  Alan DeKok
+* Wrote original from VDGint source.
 
-*   Date    Changes Made
-* -------- ------------------------------
-* 91/05/07 Wrote original from VDGint source
+
+         nam    VDGDefs
+         ttl    VDG Interface Definitions
 
 
+         pag
+* Notes:
+*
+* All offsets from 'U' (address of device memory area)
+* (see p. 6-9, technical reference: U=start of driver data memory
 * NOTE: There is LOTS of stuff which is only used once, and some which
 * is not needed.  Here's a list of the un-needed, and un-used (other than
 * once)
 *
-*  It would probably be benificial to patch VDGint to fix these problems,
+* It would probably be benificial to patch VDGint to fix these problems,
 * unless anyone else has ideas as to why VDGint is doing things this way.
 *
 * Un-needed
@@ -37,9 +44,8 @@ VDGINT   set    1
 * $33-$34   - (2)
 * $7E-$FF   - (130)
 *
-* total of 22 (150 in whole page) bytes unneeded or unused.
+* Total of 22 (150 in whole page) bytes unneeded or unused.
 
- page
 VD.Start equ   $1E start of VD.XXXX data: number of VDG screens in use
 VD.Strt1 equ   $1F (2) and another start
 VD.Caps  equ   $21 caps lock info: $00=lower $FF=upper
@@ -99,5 +105,5 @@ VD.NChr2 equ   $7D and the next one
 
 * and RMB until we get 256 bytes reserved
 
-         endc
+         ENDC
 
