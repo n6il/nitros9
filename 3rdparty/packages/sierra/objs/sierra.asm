@@ -37,15 +37,15 @@
 Level equ 2
 
 *Monitor defs
-COMP equ 0
-RGB  equ 1
-MONO equ 2
+COMP    equ   0
+RGB     equ   1
+MONO    equ   2
 
 
 * I/O path definitions
-StdIn equ 0
-StdOut equ 1
-StdErr equ 2
+StdIn    equ   0
+StdOut   equ   1
+StdErr   equ   2
 
          nam   sierra
          ttl   program module       
@@ -56,11 +56,14 @@ StdErr equ 2
          use   os9defs
          use   scfdefs
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 u0000    rmb   2   holds size of data area
 u0002    rmb   1   MMU block # mapped into block #2 -org
 u0003    rmb   1   MMU block # mapped into block #3 -org
@@ -226,15 +229,15 @@ L00E4    fcb   $02,$2E,$06,$09,$04,$20,$10,$1B
          fcb   $14,$18,$20,$28,$22,$38,$07,$0B
          fcb   $16,$1F,$27,$2D,$37,$3F
 
-* The disaasembly gets confused here with text and the nulls
+* The disassembly gets confused here with text and the nulls
 *  according to the partial disassembly I recieved these hold
-*  Original MMU block image of second and thrid blocks of SIERRA  
+*  Original MMU block image of second and third blocks of SIERRA  
 *  MORE SELF MODIFYING CODE
 
-L0102    fdb   $0000 Orig MMU block inage of 2nd blk of sierra
-L0104    fdb   $0000 Orig MMU block inage of 3nd blk of sierra
+L0102    fdb   $0000 Orig MMU block image of 2nd blk of sierra
+L0104    fdb   $0000 Orig MMU block image of 3nd blk of sierra
 
-* Name strinsg of other modules to load.
+* Name strings of other modules to load.
 
 L0106    fcc   'Shdw'
          fcb   C$CR
@@ -1175,7 +1178,6 @@ L04D9    rts
 L04DA    ldd   ,s++       load d with current stack pointer and bump it
 *                         from mnln we come in with $4040
          std   <u002A     save the calling stack pointer in u002A
-*         orcc  #$50
          orcc  #IntMasks  mask the interrupts
          lda   <u0042
          sta   ,x                                     x is loaded with value from u0028 in mnln
@@ -1196,7 +1198,6 @@ L04DA    ldd   ,s++       load d with current stack pointer and bump it
          lda   $02,x
          sta   u0004,u
          sta   >$FFAB  task 1 block 4 x6000 - x7FFF
-*         andcc #$AF
          andcc #^IntMasks   unmask interrupts  
 
          lda   $07,x
