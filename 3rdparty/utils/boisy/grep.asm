@@ -31,7 +31,7 @@
          use   defsfile
          endc
 
-         mod   Size,Name,Prgrm+Objct,Reent+1,Start,Fin
+         mod   Size,Name,Prgrm+Objct,ReEnt+1,Start,Fin
 Name     fcs   /Grep/
 Ed       fcb   $01
 
@@ -118,7 +118,7 @@ ChckFile lda   ,x                      get char
          leax  1,x                     else increment X
          bra   ChckFile                and get the next char
 
-GetFile  lda   #read.                  Open for read
+GetFile  lda   #READ.                  Open for read
          os9   I$Open
          bcs   Error
          sta   Path                    and save the path

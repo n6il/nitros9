@@ -762,7 +762,7 @@ HngUpSlp ldx   #SlpHngUp  SS.HngUp duration
          bra   TimedSlp
 Sleep1   ldx   #1         give up balance of tick
 TimedSlp pshs  cc         save IRQ enable status
-         andcc  #Intmasks  enable IRQs
+         andcc  #IntMasks  enable IRQs
          os9   F$Sleep
          puls  cc,pc      restore IRQ enable status, return
 
@@ -830,7 +830,7 @@ SetBreak cmpa  #SS.Break  Tx line break?
          ifeq  A6552-true
          ldy   <V.PORT
          ldd   #FCTxBrk*256+TB.Brk [A]=flow control flag, [B]=Tx break enable
-         orcc  #Intmasks  disable IRQs while messing with flow control flags
+         orcc  #IntMasks  disable IRQs while messing with flow control flags
          ora   <FloCtlTx  set Tx break flag bit
          sta   <FloCtlTx  save Tx flow control flags
          stb   TBReg,y    start Tx line break
@@ -844,7 +844,7 @@ SetBreak cmpa  #SS.Break  Tx line break?
          ifeq  A6551-true
          ldy   <V.PORT
          ldd   #FCTxBrk*256+TIRB.Brk [A]=flow control flag, [B]=Tx break enable
-         orcc  #Intmasks  disable IRQs while messing with flow control flags
+         orcc  #IntMasks  disable IRQs while messing with flow control flags
          ora   <FloCtlTx  set Tx break flag bit
          sta   <FloCtlTx  save Tx flow control flags
          orb   CmdReg,y   set Tx line break bits

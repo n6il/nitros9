@@ -215,6 +215,12 @@ IODsptch equ   *
          lsrb            
          jmp   w,x       
          ELSE            
+*         pshs  d
+*         ldd   b,x
+*         leax  d,x
+*         puls  d
+*         lsrb
+*         jmp   ,x
          pshs  b         
          lslb            
          ldd   b,x       
@@ -859,7 +865,7 @@ L0484    puls  u,x
          stx   <D.Proc   
          rts             
 
-L0489    ldb   #E$BPNam  
+L0489    ldb   #E$BPNam
 L048B    pshs  b         
          lda   ,y        
          ldx   <D.PthDBT 

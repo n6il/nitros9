@@ -662,7 +662,7 @@ L056B    lda   #$09
          lbra  L0CED
 
 SetStat  ldb   R$B,u
-         cmpb  #SS.OPT
+         cmpb  #SS.Opt
          bne   L0584
          ldx   R$X,u
          leax  $02,x
