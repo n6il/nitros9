@@ -13,19 +13,16 @@ HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
 		park.hp procs.hp pwd.hp pxd.hp rename.hp save.hp setime.hp \
 		setpr.hp shell.hp sleep.hp tee.hp tmode.hp touch.hp tsmon.hp \
 		tuneport.hp unlink.hp verify.hp xmode.hp
-ALLOBJS		= $(SYSFILES)
 HELPMSG		= helpmsg
+ALLOBJS		= $(SYSFILES) $(HELPMSG)
 
-all:	$(ALLOBJS) $(HELPMSG)
-	$(UNIX2OS9) $(ALLOBJS)
-	$(CHMOD) 644 $(ALLOBJS) $(HELPMSG)
+all:	$(ALLOBJS)
+	$(CHMOD) 644 $(ALLOBJS)
 
 helpmsg: $(HELPFILES)
 	$(MERGE) $(HELPFILES) > $@
-	$(UNIX2OS9) $@
 
 clean:
-	$(OS92UNIX) $(ALLOBJS)
 	$(RM) $(HELPMSG)
 
 showobjs:

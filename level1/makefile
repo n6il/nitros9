@@ -11,8 +11,6 @@ DEFS		= $(shell $(CD) DEFS; make showobjs)
 ROOTFILES	= startup
 
 PACKAGENAME	= $(RELEASE).zip
-DSK_SS35_1	= $(RELEASE)_ss35_1.dsk
-DSK_SS35_2	= $(RELEASE)_ss35_2.dsk
 DSK_DS40	= $(RELEASE)_ds40.dsk
 
 # Make all components
@@ -27,7 +25,6 @@ all:
 	$(CD) DEFS; make
 	$(CD) SYS; make
 	$(CD) BOOTFILES; make
-	$(UNIX2OS9) $(ROOTFILES)
 	$(CHMOD) 644 $(ROOTFILES)
 
 # Clean all components
@@ -37,33 +34,14 @@ clean:	dskclean
 	-$(CD) DEFS; make clean
 	-$(CD) SYS; make clean
 	-$(CD) BOOTFILES; make clean
-	-$(OS92UNIX) $(ROOTFILES)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK_SS35_1) $(DSK_SS35_2) $(DSK_DS40)
+	-$(RM) $(PACKAGENAME) $(DSK_DS40)
 
 dsk: all $(PACKAGENAME)
 
-$(PACKAGENAME): $(DSK_SS35_1) $(DSK_SS35_2) $(DSK_DS40)
-	$(ZIP) $(PACKAGENAME) $(DSK_SS35_1) $(DSK_SS35_2) $(DSK_DS40) ReleaseNotes ChangeLog
-
-$(DSK_SS35_1):
-	$(RM) $(DSK_SS35_1)
-	$(OS9FORMAT) $(DSK_SS35_1) -t35 -h1 -n"OS-9 Level One System Disk"
-	$(OS9GEN) $(DSK_SS35_1) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
-	$(MAKDIR) $(DSK_SS35_1),CMDS
-	$(MAKDIR) $(DSK_SS35_1),SYS
-	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_SS35_1),CMDS
-	$(CD) SYS; $(CP) $(SYS) ../$(DSK_SS35_1),SYS
-	$(CP) $(ROOTFILES) $(DSK_SS35_1),.
-
-$(DSK_SS35_2):
-	$(RM) $(DSK_SS35_2)
-	$(OS9FORMAT) $(DSK_SS35_2) -t35 -h1 -n"OS-9 Level One Modules Disk"
-	$(MAKDIR) $(DSK_SS35_2),MODULES
-	$(MAKDIR) $(DSK_SS35_2),DEFS
-	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK_SS35_2),MODULES
-	$(CD) DEFS; $(CP) $(DEFS) ../$(DSK_SS35_2),DEFS
+$(PACKAGENAME): $(DSK_DS40)
+	$(ZIP) $(PACKAGENAME) $(DSK_DS40) ReadMe ChangeLog
 
 $(DSK_DS40):
 	$(RM) $(DSK_DS40)
@@ -73,9 +51,9 @@ $(DSK_DS40):
 	$(MAKDIR) $(DSK_DS40),SYS
 	$(MAKDIR) $(DSK_DS40),MODULES
 	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_DS40),CMDS
-	$(CD) SYS; $(CP) $(SYS) ../$(DSK_DS40),SYS
+	$(CD) SYS; $(CPL) $(SYS) ../$(DSK_DS40),SYS
 	$(MAKDIR) $(DSK_DS40),DEFS
 	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK_DS40),MODULES
-	$(CD) DEFS; $(CP) $(DEFS) ../$(DSK_DS40),DEFS
-	$(CP) $(ROOTFILES) $(DSK_DS40),.
+	$(CD) DEFS; $(CPL) $(DEFS) ../$(DSK_DS40),DEFS
+	$(CPL) $(ROOTFILES) $(DSK_DS40),.
 
