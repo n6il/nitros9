@@ -31,11 +31,11 @@ StdErr equ 2
 *  equates for direct page vars
 *  shared with sierra module
 u0000 equ $00    holds size of data block
-u0009 equ $09 
+u0009 equ $09    sierra - offset from entry to the routine for the remap call
 u000A equ $0A 
 u0019 equ $19    scrn - offset from entry to the routine for the remap call 
 u0021 equ $21    shdw - offset from entry to the routine for the remap call
-u0022 equ $22 
+u0022 equ $22    sierra remap value holder
 u0026 equ $26    scrn remap value holder 
 u0028 equ $28    shdw remap value holder 
 u002C equ $2C 
@@ -160,9 +160,9 @@ X0247 equ $0247    state.status_state
 X0248 equ $0248
 X0249 equ $0249
 X024B equ $024B
-X024D equ $024D
 
-X024E equ $024E    used in scrn
+X024D equ $024D    state.text_fg
+X024E equ $024E    state.text_bg
 
 X024F equ $024F    state.block_x1
 X0250 equ $0250    state.block_y1
@@ -170,11 +170,11 @@ X0251 equ $0251    state.ego_control_state
 
 X0252 equ $0252    state.string
 
-X0432 equ $0432    state.var[]
+X0432 equ $0432    state.var[] 
 X0433 equ $0433    
-X0434 equ $0434
-X0435 equ $0435
-X0436 equ $0436
+X0434 equ $0434    
+X0435 equ $0435    
+X0436 equ $0436    
 X0437 equ $0437
 X0438 equ $0438
 X0439 equ $0439
@@ -196,18 +196,21 @@ X0448 equ $0448
 X044A equ $044A
 X044B equ $044B
 X044C equ $044C
+
 X0532 equ $0532
 X0541 equ $0541
 X0542 equ $0542
 X0543 equ $0543
 X0545 equ $0545
 X0547 equ $0547
+
 X0550 equ $0550   gfx_picbuffrotate
 X0551 equ $0551   given_pic_data
-X0553 equ $0553
+X0553 equ $0553   display_type
+
 X05AE equ $05AE
 X05AF equ $05AF
-X05B1 equ $05B1
+X05B1 equ $05B1   obj_displayed in obj_show()
 X05B8 equ $05B8
 X05B9 equ $05B9   input_edit_disabled
 X05EC equ $05EC   chgen_textmode
@@ -402,24 +405,25 @@ L0156    clra
 
 cmd_pause
 L0184    lda   #$01
-         sta   >X0102
-         lbsr  L129A
-         leau  >L0056,pcr  game paused msg
-         lbsr  L37F2
-         clr   >X0102
+         sta   >X0102      set clock_state = 1
+         lbsr  L129A       events_clear
+         leau  >L0056,pcr  get addr of game paused msg
+         lbsr  L37F2       pass it to message_box()
+         clr   >X0102      set clock_state = 0
          rts
 
 cmd_quit
-L0197    lda   ,y+
-         cmpa  #$01
-         beq   L01A6
-         leau  >L0082,pcr  quit / continue msg
-         lbsr  L37F2
-         beq   L01AF
-L01A6    lda   #$03
-         sta   <u0009
-         ldx   <u0022
-         jsr   >$0659
+L0197    lda   ,y+          get the arg passed and bump y
+         cmpa  #$01         was it a 1?
+         beq   L01A6        if so time to exit
+         leau  >L0082,pcr   get addr of quit / continue msg
+         lbsr  L37F2        pass it to message_box()
+         beq   L01AF        if we didn't get a one back play on
+*                           otherwise time to close down the game         
+L01A6    lda   #$03         load the offset to exit_agi()
+         sta   <u0009       save the offset
+         ldx   <u0022       set up to jump to sierra
+         jsr   >$0659       mmu twiddle
 L01AF    rts
 
 
@@ -1611,7 +1615,7 @@ L0C9F    inc   >X0550     sets gfx_picbuffrotate = 1 (>0)
 
 cmd_version
 L0CAF    leau  >L0AE6,pcr      version banner
-         lbsr  L37F2
+         lbsr  L37F2           message_box()
          rts
 
 cmd_show_mem
@@ -1647,7 +1651,7 @@ L0CB7    leas  >-$00C8,s
          pshs  u
          lbsr  L3C21
          leas  <$18,s
-         lbsr  L37F2
+         lbsr  L37F2           message_box()
          leas  >$00C8,s
          rts
 
@@ -2145,7 +2149,7 @@ L10EF    leau  >L1082,pcr    quit msg
 L1109    pshs  x
          lbsr  L3C21
          leas  $0A,s
-         lbsr  L37F2
+         lbsr  L37F2           message_box()
 L1113    leas  >$00B1,s
          rts
 
@@ -2437,8 +2441,9 @@ L1294    lbsr  L2311      prompt for joysticks and get results
          bsr   L129A      branch below discard stdin & read joysticks
          rts
 
-L129A    lbsr  L24D8      go read stdin and discard values ??
-         lbsr  L235F      set up call to joysticks
+events_clear
+L129A    lbsr  L24D8      go read stdin and discard values ?? clear_key_queue
+         lbsr  L235F      set up call to joysticks            reset_joy
 
          ldx   #$0103     load and store the value $0103
          stx   <u0092     in these memory locations
@@ -2547,7 +2552,7 @@ L134E    bsr   L132C
 L1360    rts
 
 
-L1361    lbsr  L129A
+L1361    lbsr  L129A       events_clear
 L1364    bsr   L134E
          bmi   L1364
          rts
@@ -3463,7 +3468,7 @@ L1CED    pshs  u             push state_type string on stack
          pshs  x
          lbsr  L3C21         ???         
          leas  $08,s
-         lbsr  L37F2         assume this puts message to screen ???
+         lbsr  L37F2           message_box()
          sta   ,s
 L1D09    lda   ,s
          leas  >$00A5,s
@@ -3507,7 +3512,7 @@ L1D3F    leax  $02,s
          pshs  x
          lbsr  L3C21
          leas  $06,s
-         lbsr  L37F2
+         lbsr  L37F2           message_box()
          bne   L1D29
 L1D7E    leas  >$00C8,s
          rts
@@ -3521,7 +3526,7 @@ L1D83    leas  -$03,s
          ldd   #$0000
          pshs  d
          pshs  u
-         lbsr  L3868
+         lbsr  L3868         message_box_draw
          leas  $08,s
          ldd   #$0000
          pshs  d
@@ -3633,7 +3638,7 @@ L1EB3    lda   >$024A,s
          pshs  x
          lbsr  L3C21
          leas  $06,s
-         lbsr  L37F2
+         lbsr  L37F2           message_box()
          clra
          lbra  L2091
 L1EDD    lda   >L41E5,pcr    FILE struct datablock ???
@@ -3705,7 +3710,7 @@ L1F91    lda   >$025F,s
          beq   L1FA1
          leau  >L1B2F,pcr    game select msg
 L1FA1    pshs  u
-         lbsr  L3868
+         lbsr  L3868         message_box_draw
          leas  $08,s
          lda   >$024D,s
          adda  >$0176
@@ -3867,13 +3872,13 @@ L2132    ldd   #$E000   looks like our block 8 address boundary?
          
          ldd   #$4040   load the color for sbuff_fill()
          pshs  d        stuff it on the stack
-         lda   #$18     sbuff_fill()
+         lda   #$18     offset for sbuff_fill()
          sta   <u0021   save the offset
          ldx   <u0028   setup remap to shdw
          jsr   >$0659   mmu twiddler
          leas  $02,s    clean up stack
 
-         lbsr  L129A
+         lbsr  L129A    events_clear
          lbsr  L4CD8
          lda   #$0F
          clrb
@@ -4053,14 +4058,14 @@ L2311    lda   <u0098
          beq   L235B
          clr   <u0099
 L231B    leau  >L22AD,pcr     joystick message
-         ldd   #$0000
+         ldd   #$0000        load the 4 arguments for message_box_draw
          pshs  d
          ldd   #$0020
          pshs  d
          ldd   #$0000
          pshs  d
-         pshs  u
-         lbsr  L3868
+         pshs  u             pointer to the string
+         lbsr  L3868         message_box_draw
          leas  $08,s
          ldb   #$00
 L2337    stb   <u0097
@@ -4078,10 +4083,11 @@ L2350    lbsr  L3997          cmd_close_window
 L2353    lbsr  L23F3
          lda   >$0541         joystick button status
          bne   L2353
-L235B    lbsr  L129A
+L235B    lbsr  L129A          events_clear
          rts
 
 *  set up calls to joysticks
+reset_joy
 L235F    clr   >$0541      clear joystick button status
          clr   >$0542      clear memory location
 L2365    lda   <u0098      get value here
@@ -4293,6 +4299,7 @@ L24CE    fcb   $0C,$01
          fcb   $00,$00
 
 *  reads input from stdin and discards it ???
+clear_key_queue
 L24D8    lbsr  L2BC0        go do getstat and read of stdin
          tsta               check a for value 
          bne   L24D8        if it has a value loop to read again
@@ -4610,11 +4617,13 @@ L2748    pshs  x
          pshs  u
          lbsr  L3C21
          leas  $0A,s
-         lbsr  L37F2
-         lda   #$03
-         sta   <u0009
-         ldx   <u0022
-         jsr   >$0659  our old friend 659
+         lbsr  L37F2           message_box()
+         
+         lda   #$03          load the offset to exit_agi()
+         sta   <u0009        save the value
+         ldx   <u0022        set up call to sierra
+         jsr   >$0659        mmu twiddle
+         
 L2765    ldd   <u0055
          tfr   d,u
          addd  ,s
@@ -5724,7 +5733,7 @@ L2FA6    ldb   ,y
 L2FB1    leas  -$01,s
          sta   ,s
          lbsr  L2778
-         lbsr  L129A
+         lbsr  L129A         events_clear
          lbsr  L467A
          lda   #$01
          sta   >$05B1
@@ -6748,7 +6757,7 @@ L37A4    fcb   $FF
 cmd_print
 L37A5    ldb   ,y+
          lbsr  L3B58
-         bsr   L37F2
+         bsr   L37F2           message_box()
          rts
 
 cmd_print_v
@@ -6757,7 +6766,7 @@ L37AD    ldx   #$0432
          abx
          ldb   ,x
          lbsr  L3B58
-         bsr   L37F2
+         bsr   L37F2           message_box()
          rts
 
 cmd_print_at
@@ -6783,31 +6792,33 @@ L37CB    lda   ,y+
          lda   #$1E
 L37DD    sta   >L37A4,pcr     data byte iniz to FF
          lbsr  L3B58
-         bsr   L37F2
+         bsr   L37F2           message_box()
          ldd   #$FFFF
          sta   >L37A4,pcr     data byte iniz to FF
          std   >L37A2,pcr     data byte iniz to FF
 L37F1    rts
 
-
+message_box
 L37F2    leas  -$05,s         make room on stack
          ldd   #$0000         clear d and push on stack
-         pshs  d              blank words
-         ldd   #$0000
+         pshs  d              0
+         ldd   #$0000         clear d and push on stack
+         pshs  d   
+         ldd   #$0000         clear d and push on stack
          pshs  d
-         ldd   #$0000
-         pshs  d
-         pshs  u              save our current u pntr
-         lbsr  L3868
+         pshs  u              push ourcurrent u pntr
+         lbsr  L3868          now the 4 argumnets are loaded call message_box_draw
          leas  $08,s          reset stack pntr
-L380A    lda   >$01B0
-         anda  #$01
-         beq   L381D
-         lda   >$01B0
+         
+L380A    lda   >X01B0         load state.flag
+         anda  #$01           flag_test(F15_PRINTMODE)
+         beq   L381D          if not set move on
+         lda   >X01B0         flag_reset(F15_PRINTMODE)      
          anda  #$FE
-         sta   >$01B0 
-         lda   #$01
-         bra   L3865
+         sta   >X01B0 
+         lda   #$01           set up a with a 1
+         bra   L3865          go clean up stack and leave
+
 L381D    lda   >$0447
          bne   L3832
          lda   #$01
@@ -6841,9 +6852,11 @@ L385A    lbsr  L134E
          bmi   L3848
 L3860    lbsr  L3997        cmd_close_window
          lda   ,s
-L3865    leas  $05,s
+         
+L3865    leas  $05,s        clean up stack
          rts
 
+message_box_draw
 L3868    leas  >-$02BC,s
          lbsr  L3997         cmd_close_window
          lbsr  L464E
@@ -7585,7 +7598,7 @@ L3F50    pshs  u
          ldd   #$0000
          pshs  b,a
          pshs  u
-         lbsr  L3868
+         lbsr  L3868         message_box_draw
          leas  $08,s
          lbsr  L1361
          cmpa  #$00
@@ -7644,10 +7657,12 @@ L4003    lda   >L3F1A,pcr   data byte
          lbsr  L13D6        Close path routine
          leau  >L3EB6,pcr   Error in restoring game message
          lbsr  L37F2
-         lda   #$03
-         sta   <u0009
-         ldx   <u0022
-         jsr   >$0659
+         
+         lda   #$03         load offset to exit_agi()
+         sta   <u0009       save offset
+         ldx   <u0022       set up remap to sierra
+         jsr   >$0659       mmu twiddle
+         
 L401A    lda   >L3F1A,pcr  data byte
          lbsr  L13D6       Close path routine
          lda   >$0553
@@ -7934,7 +7949,7 @@ L42DF    leau  >L3EE5,pcr     continue / cancel message
          ldd   #$0000
          pshs  b,a
          pshs  u
-         lbsr  L3868
+         lbsr  L3868         message_box_draw
          leas  $08,s
          lbsr  L1361
          cmpa  #$00
@@ -8188,22 +8203,41 @@ L453C    lsla
 L4549    leas  $02,s
          rts
 
-L454C    fcb   $00,$0C
-         fcb   $02,$2E
-         fcb   $06,$09
-         fcb   $04,$20
-         fcb   $10,$1B
-         fcb   $11,$3D
-         fcb   $17,$29
-         fcb   $33,$3F
-         fcb   $00,$08
-         fcb   $14,$18
-         fcb   $20,$28
-         fcb   $22,$38
-         fcb   $07,$0B
-         fcb   $16,$1F
-         fcb   $27,$2D
-         fcb   $37,$3F
+* same sequence of bytes at L00E2 in sierra
+
+L454C    fcb   $00   composite
+         fcb   $0C
+         fcb   $02
+         fcb   $2E
+         fcb   $06
+         fcb   $09
+         fcb   $04
+         fcb   $20
+         fcb   $10
+         fcb   $1B
+         fcb   $11
+         fcb   $3D
+         fcb   $17
+         fcb   $29
+         fcb   $33
+         fcb   $3F
+         
+         fcb   $00   rgb
+         fcb   $08
+         fcb   $14
+         fcb   $18
+         fcb   $20
+         fcb   $28
+         fcb   $22
+         fcb   $38
+         fcb   $07
+         fcb   $0B
+         fcb   $16
+         fcb   $1F
+         fcb   $27
+         fcb   $2D
+         fcb   $37
+         fcb   $3F
 
 
 cmd_text_screen
@@ -8250,26 +8284,29 @@ L4599    ldb   $04,y
          rts
 
 cmd_set_text_attribute
-L45B5    ldd   ,y++
-         bsr   L45BA
+L45B5    ldd   ,y++    load foreground and background in d
+         bsr   L45BA   
          rts
 
-L45BA    anda  #$0F
-         sta   >$024D
+* this routine takes the LSB value and copies it to the MSB also
+text_color
+L45BA    anda  #$0F     mask the MSB off of forground
+         sta   >X024D   stow at state.text_fg
+         lsla           shift left 4
          lsla
          lsla
          lsla
-         lsla
-         ora   >$024D
-         sta   >$024D
-         andb  #$0F
-         stb   >X024E
+         ora   >X024D   or that with state.text_fg
+         sta   >X024D   and save it back 
+         
+         andb  #$0F     mask the MSB off of background
+         stb   >X024E   stow it at state.text.bg
+         lslb           shift left 4
          lslb
          lslb
          lslb
-         lslb
-         orb   >X024E
-         stb   >X024E
+         orb   >X024E   or it with state.text_bg
+         stb   >X024E   save it back
          rts
 
 L45D9    lda   #$00
@@ -8304,31 +8341,35 @@ cmd_toggle_monitor
 L460D    leas  -$04,s
          pshs  y
          leax  >L454C,pcr  data table
-         ldb   >$0553
-         eorb  #$01
-         stb   >$0553
-         lda   #$10
+         ldb   >$0553      display type
+         eorb  #$01        change display type to the other
+*                          will change the type from comp<->rbg         
+         stb   >$0553      save that as display_type
+         lda   #$10        16 times the type
          mul
-         abx
-         lda   #$1B     loading escape codes for writing to screen
-         sta   $02,s
-         lda   #$31
-         sta   $03,s
-         clra
-         sta   $04,s
-         ldy   #$0004
-L4630    ldb   ,x+
-         stb   $05,s
-         pshs  x
-         lda   #$01
-         leax  $04,s
-         os9   I$Write
-         bcs   L4649
-         puls  x
-         inc   $04,s
-         lda   $04,s
-         cmpa  #$10
-         bcs   L4630
+         abx               add that back to x so we use the other palette set
+
+* This loads up the control sequence to set the pallete 1B 31 PRN CTN
+*  PRN palette register 0 - 15, CTN color table 0 - 63
+         lda   #$1B        loading escape codes for writing to screen
+         sta   $02,s       put on the stack
+         lda   #$31        Palette code
+         sta   $03,s       put on the stack
+         clra              make a zero PRN value
+         sta   $04,s       put it on the stack
+         ldy   #$0004      number of bytes to write
+L4630    ldb   ,x+         get color table value
+         stb   $05,s       put it on stack
+         pshs  x           push our x value
+         lda   #StdOut     set path to stdout
+         leax  $04,s       start of data to write
+         os9   I$Write     send it
+         bcs   L4649       error during write clean up stack and leave
+         puls  x           retrieve or x
+         inc   $04,s       bump the PRN value
+         lda   $04,s       grab the PRN value
+         cmpa  #$10        have we done all 16 ?
+         blo   L4630       nope go again
 L4649    puls  y
          leas  $04,s
          rts
@@ -8339,7 +8380,7 @@ L464E    ldb   >$0172
          ldx   #$015D
          lslb
          abx
-         ldd   >$024D
+         ldd   >X024D     state.text_fg/bg
          std   ,x
          inc   >$0172
 L4662    rts
@@ -8351,7 +8392,7 @@ L4663    ldb   >$0172
          ldx   #$015D
          lslb
          ldd   b,x
-         std   >$024D
+         std   >X024D     state.text_fg/bg
 L4675    rts
 
 L4676    fdb   $0000
@@ -8591,7 +8632,7 @@ L4850    stb   ,u+
          deca
          bne   L4850
          sta   ,u
-         ldd   >$024D
+         ldd   >X024D     state.text_fg/bg
          pshs  b,a
          ldb   <$33,s
          lbsr  L45BA
@@ -8623,7 +8664,7 @@ L487D    lda   <$35,s
          dec   <$39,s
          bne   L487D
          puls  b,a
-         std   >$024D
+         std   >X024D     state.text_fg/bg
 L489D    leas  <$2A,s
          rts
 
@@ -8771,10 +8812,12 @@ L4A0A    stb   >L4965,pcr    data byte
          beq   L4A46
 L4A36    lbsr  L10E4
          lbne  L4AB9
-         lda   #$03
-         sta   <u0009
-         ldx   <u0022
-         jsr   >$0659
+         
+         lda   #$03         load offset to exit_agi()
+         sta   <u0009       save offset
+         ldx   <u0022       set up remap to sierra
+         jsr   >$0659       mmu twiddle
+         
 L4A46    ldd   $09,s
          cmpd  #$1234
          bne   L4A54
@@ -8788,10 +8831,12 @@ L4A54    lbsr  L4BBA         volumes_close
          lbsr  L4B1E
          tsta
          bne   L4A6E
-         lda   #$03
-         sta   <u0009
-         ldx   <u0022
-         jsr   >$0659
+         
+         lda   #$03         load offset to exit_agi()
+         sta   <u0009       save offset
+         ldx   <u0022       set up remap to sierra
+         jsr   >$0659       mmu twiddle
+         
 L4A6E    lbsr  L4B58
          bra   L4AB9
 L4A73    ldb   $0C,s
@@ -8918,10 +8963,12 @@ L4B7A    lda   #$01
 L4B8C    lbsr  L10E4
          cmpa  #$00
          bne   L4B7A
-         lda   #$03
-         sta   <u0009
-         ldx   <u0022
-         jsr   >$0659
+         
+         lda   #$03         load offset to exit_agi()
+         sta   <u0009       save offset
+         ldx   <u0022       set up remap to sierra
+         jsr   >$0659       mmu twiddle
+
 L4B9C    ldu   #$0532       vol_handle_table
          ldb   $02,s
          sta   b,u
@@ -8979,10 +9026,12 @@ L4BE0    lda   #$01
          leas  $0A,s
          lbsr  L37F2
          bne   L4BE0
-         lda   #$03
-         sta   <u0009
-         ldx   <u0022
-         jsr   >$0659
+         
+         lda   #$03         load offset to exit_agi()
+         sta   <u0009       save offset
+         ldx   <u0022       set up remap to sierra
+         jsr   >$0659       mmu twiddle
+
 L4C1D    sta   $02,s
          ldu   #$0000
          tfr   u,x
@@ -9014,10 +9063,12 @@ L4C57    lda   $02,s
          lbsr  L10E4
          cmpb  #$00
          bne   L4C74
-         lda   #$03
-         sta   <u0009
-         ldx   <u0022
-         jsr   >$0659
+         
+         lda   #$03         load offset to exit_agi()
+         sta   <u0009       save offset
+         ldx   <u0022       set up remap to sierra
+         jsr   >$0659       mmu twiddle
+         
 L4C74    lda   $02,s
          lbsr  L13D6       Close path routine
          puls  y
@@ -9183,7 +9234,7 @@ L4DF4    ldd   >L4CD6,pcr    data word
          leas  $01,s
          rts
 
-L4DFB    leas  <-$64,s
+L4DFB    leas  <-$64,s     make room on the stack
          clra
          pshs  b,a
          pshs  x
@@ -9194,11 +9245,13 @@ L4DFB    leas  <-$64,s
          lbsr  L3C21
          leas  $08,s
          lbsr  L37F2
-         lda   #$03
-         sta   <u0009
-         ldx   <u0022
-         jsr   >$0659
-         leas  <$64,s
+
+         lda   #$03         load offset to exit_agi()
+         sta   <u0009       save offset
+         ldx   <u0022       set up remap to sierra
+         jsr   >$0659       mmu twiddle
+
+         leas  <$64,s       clean up stack and leave
          rts
 
 L4E22    fdb  $0000
@@ -9216,27 +9269,32 @@ L4E2F    leau  >L4E22,pcr      2 data words
 
 L4E38    fcc   'Not now.'
 L4E40    fcb   C$NULL
-
+F
 cmd_show_obj_v
-L4E41    ldx   #$0432
+L4E41    ldx   #$0432     resolve state.var[] addr
          ldb   ,y+
          abx
-         ldb   ,x
+         ldb   ,x         load b with data to be passed
          bsr   L4E51
          rts
+
 
 cmd_show_obj
-L4E4C    ldb   ,y+
-         bsr   L4E51
+L4E4C    ldb   ,y+        load b with the data to be passed
+         bsr   L4E51      go do it to it at obj_show
          rts
 
-L4E51    leas  <-$36,s
-         stb   $02,s
-         clra
-         sta   >$05B1
-         sta   $04,s
-         sta   $03,s
-         lbsr  L5D17
+
+* obj_show(u16 view_num) passed a view_num to show
+obj_show
+L4E51    leas  <-$36,s   make room on the stack
+         stb   $02,s     save our arg passed in
+         clra            make a zero
+         sta   >X05B1    stow at obj_displayed
+         sta   $04,s     store on the stack too
+         sta   $03,s     store on the stack too
+         lbsr  L5D17     view_find()
+         
          leax  ,x
          beq   L4E6B
          stx   $05,s
@@ -11049,18 +11107,29 @@ L5CFF    dec   <u008D
          bne   L5CF6
          rts
 
-L5D04    fcb   $00,$00
-         fcb   $00,$00
+* list struct
+*
+*	NODE *head;
+*	NODE *tail;
+*	
+*	// private
+*	int contents_size;
+list_struct
+L5D04    fdb   $0000
+         fdb   $0000
          fcb   $00,$00,$00
 
 L5D0B    fdb   $0000
 
-L5D0D    leau  >L5D04,pcr     7 byte data block
-         ldd   #$0000
-         std   ,u
+list_clear
+L5D0D    leau  >L5D04,pcr     LIST structure
+         ldd   #$0000         set up clear head & tail
+         std   ,u             zero them
          rts
 
-L5D17    leax  >L5D04,pcr     7 byte data block
+*???
+view_find
+L5D17    leax  >L5D04,pcr     
 L5D1B    stx   >L5D0B,pcr     data word
          ldx   ,x
          beq   L5D27
@@ -11070,20 +11139,21 @@ L5D27    rts
 
 
 cmd_load_view
-L5D28    lda   #$00
-         ldb   ,y+
-         bsr   L5D3C
+L5D28    lda   #$00         clear MSB
+         ldb   ,y+          get the arg passed in (passed in d)
+         bsr   L5D3C        call view_load
          rts
 
 cmd_load_view_v
-L5D2F    lda   #$00
-         ldb   ,y+
+L5D2F    lda   #$00         clear MSB
+         ldb   ,y+          resolve state.var[] addr
          ldx   #$0432
          abx
-         ldb   ,x
-         bsr   L5D3C
+         ldb   ,x           get the arg passed in (passed in d)
+         bsr   L5D3C        call view_load
          rts
 
+view_load
 L5D3C    leas  -$06,s
          std   ,s
          bsr   L5D17
