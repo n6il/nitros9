@@ -35,11 +35,21 @@
 *          2003/08/14  Rodney V. Hamilton
 * Added code to output "end" line
 *
-*          2004/03/11  Rodney V. hamilton
+*          2004/03/11  Rodney V. Hamilton
 * Updated TFM register selection
 *
 *          2004/07/15  Robert Gault
 * Added code to indicate manual start and end for disassembly.
+*
+*          2004/08/08  Robert Gault
+* Changed getbyte routine to make "in memory" and disk i/o synchronize.
+* This also required a slight change to gotmod. Added testing so that manual
+* end/stop can't exceed module length. Almost have L lables working in Label
+* field. If there should be lables and you don't see them, use the s option
+* with s$0004$length_of_module. Then you should be able to use any values
+* for start/stop and the L labels will still be present.
+* Change in z option required by change in getbyte.
+* S option uses fake data size. Added minor changes suggested by R.V.H.
 
          nam   Disasm
          ttl   6809/6309 disassembler
@@ -71,6 +81,8 @@ xsave    rmb   2
 dsave    rmb   2
 startadr rmb   2
 modadr   rmb   2
+s_start  rmb   2             for manual start & stop
+s_end    rmb   2
 address  rmb   2
 addrsave rmb   2
 lineadr  rmb   2
@@ -94,8 +106,8 @@ register rmb   1
 labladr  rmb   2
 highadr  rmb   2
 utabend  rmb   2
-pass     rmb   1
 path     rmb   1
+pass     rmb   1
 diskio   rmb   1
 objcnt   rmb   1
 tylghold rmb   1
@@ -132,7 +144,7 @@ hldrev   rmb   40
 hldttl   rmb   40
 pathlist rmb   80
 readbuff rmb   20
-labeltab rmb   6742
+labeltab rmb   $3D0C                was  6742  This makes even $4000 RG
 lbtblend rmb   1
          rmb   255
 datend   equ   .
@@ -1463,7 +1475,7 @@ line011  fcb   $0d
 ln010sz  equ   *-line010
 line020  fcc   %         use   /%
 ln020sz  equ   *-line020
-line025  fcc   %/defs/os9defs%
+line025  fcc   %/defs/defsfile%
          fcb   $0d
 ln025sz  equ   *-line025
 line030  fcc   /         endc/
@@ -1733,27 +1745,38 @@ pathok   equ   *
          leax  labeltab,u
          stx   <labladr
          clra
-         sta   ,x+
-         sta   ,x+
-         leax  -500,s
+         clrb
+         std   ,x++               clear two bytes of a buffer
+*         sta   ,x+
+*         sta   ,x+
+         leax  -500,s            this takes 500 bytes away from the label buffer
 *        leax  labeltab+40,u
-         stx   <utabend
+         stx   <utabend          and makes that the end of the buffer
          ldd   #$ffff
          std   ,x
-         leax  -2,x
-         stx   <highadr
+* new
          ldd   #0
-         std   ,x
-         clr   <pass
-         clr   <diskio
-         clr   <m.opt
-         clr   <o.opt
-         clr   <s.opt           manual start & stop RG
-         clr   <x.opt
-         clr   <z.opt
-         clr   <u.opt
-         clr   <op.cnt
-         clr   <descript
+         std   ,--x
+         stx   <highadr
+*         leax  -2,x
+*         stx   <highadr
+*         ldd   #0
+*         std   ,x
+         std   <pass        reordered data to accommodate this RG
+         std   <m.opt
+         std   <s.opt
+         std   <z.opt
+         std   <op.cnt
+*         clr   <pass
+*         clr   <diskio
+*         clr   <m.opt
+*         clr   <o.opt
+*         clr   <s.opt           manual start & stop RG
+*         clr   <x.opt
+*         clr   <z.opt
+*         clr   <u.opt
+*         clr   <op.cnt
+*         clr   <descript
          lbsr  clrline
 
 restart  equ   *
@@ -1763,16 +1786,24 @@ restart  equ   *
          stx   <readpos
          ldd   #0
          std   <numline
+         tst   <pass
+         beq   rest2
          tst   <s.opt       for manual start & stop RG
-         bne   sopt8
-         ldx   #$ffff
-         stx   <modend
-sopt8    ldx   <xreghold
+         beq   rest2
+         ldx   <s_start
+         stx   <startadr
+         ldx   <s_end       prevent overflow past end of module
+         cmpx  <modend
+         bhi   sopt1
+         bra   rest3
+rest2    ldx   #$ffff
+rest3    stx   <modend
+sopt1    ldx   <xreghold
          tst   <pass
          lbeq  getprm
          lbsr  clrline
-         tst   <s.opt       for manual start & stop RG 
-         bne   sopt7
+         tst   <s.opt       for manual start & stop to prevent print of 
+         bne   sopt2        meaningless text RG
          leay  line280,pcr
          ldb   #ln280sz
          lbsr  mergline
@@ -1785,7 +1816,7 @@ sopt8    ldx   <xreghold
          lbsr  mergline
          lbsr  writline
          lbsr  writline
-sopt7    leax  holdobj,u
+sopt2    leax  holdobj,u
          tst   <o.opt
          bne   time010 
          leax  holdline,u
@@ -1849,8 +1880,8 @@ time025
          ldb   #ln030sz
          lbsr  mergline
          lbsr  writline
-         tst   <s.opt
-         bne   sopt5
+         tst   <s.opt      for manual start & stop, don't print junk RG
+         bne   sopt3
          ldb   <tylghold
          bsr   movehdr
          leay  hldtylg,u
@@ -1869,7 +1900,7 @@ time025
          ldb   #$50
          lbsr  mergline
          lbsr  writline
-sopt5    ldx   <xreghold
+sopt3    ldx   <xreghold
          tst   <diskio
          lbne  diskmod
          lbra  mem020
@@ -1925,30 +1956,33 @@ gtopt040 equ   *
          inc   <u.opt
          inc   <op.cnt
          bra   getopt
-gtoptS   lda   ,x+         for manual start & stop RG 
+
+gtopt050 equ   *
+         cmpa  #'S               add start & stop option RG
+         bne   gtopt060
+         bsr   gtoptS
+         bcs   badopt
+         std   <s_start
+         bsr   gtoptS
+         bcs   badopt
+         addd  #3
+         std   <s_end
+         inc   <s.opt
+         inc   <op.cnt
+         lbra  getopt
+gtoptS   lda   ,x+         for manual start & stop RG
+         cmpa  #$20
+         beq   gtoptS 
          cmpa  #'$
          bne   gtoptS2
          lbsr  u$hexin
-         clrb              clear carry
+         clrb
          ldd   ,x
          leax  4,x
          rts
 gtoptS2  equ   *
          comb
          rts
-gtopt050 equ   *
-         cmpa  #'S               add start & stop option RG
-         bne   gtopt060
-         bsr   gtoptS
-         bcs   badopt
-         std   <startadr
-         bsr   gtoptS
-         bcs   badopt
-         addd  #3
-         std   <modend
-         inc   <s.opt
-         inc   <op.cnt
-         bra   getopt
 
 gtopt060 equ   *
          lda   <byte
@@ -1963,7 +1997,7 @@ chkopt   equ   *
          lbsr  u$hexin convert hex chars to binary
          leay  3,y
          sty   <modend
-         leax  -1,x
+*         leax  -1,x             because of changes to getbyte
          stx   <crntadr
          ldd   #$FFFF
          std   <address
@@ -1991,7 +2025,7 @@ diskmod  equ   *
 open     os9   I$Open
          lbcs  exit
          sta   <path
-         lbsr  getbyte
+*         lbsr  getbyte       no longer needed, RG
          bra   gotmod
 memmod   equ   *
 mem010   lda   ,x+
@@ -2014,14 +2048,19 @@ gotmod   equ   *
          stu   <modadr
          stu   <crntadr
          ldu   <ureghold
-         ldx   #0
+         ldx   #-1               was $0, RG
          stx   <address
+         tst   <pass             new     RG
+         beq   gotmod2
          tst   <s.opt            for manual start & stop RG
-         lbne  getstart 
-         lbsr  getbyte
+         bne   gotmod3 
+gotmod2  lbsr  getbyte2          make memory and disk in sync, RG
+*        lbsr  getbyte           no longer needed
          lbsr  getbyte2
          std   <modend
-         lbsr  clrline
+gotmod3  lbsr  clrline
+         tst   <s.opt      prevent printing junk with s option
+         lbne  gotmod4
          lda   #$87
          lbsr  moveobj
          lda   #$cd
@@ -2168,7 +2207,10 @@ chkrevs  leay  line320,pcr
          lbsr  getbyte2
          std   <startadr
          lbsr  getbyte2
-         std   <size
+gotmod4  tst   <s.opt
+         beq   gotmod5
+         ldd   #$3D0C-510                fake data size
+gotmod5  std   <size
          ldx   <utabend
          std   ,x
          lbsr  clrline
@@ -2182,10 +2224,10 @@ chkrevs  leay  line320,pcr
          tst   <u.opt
          beq   movedp
          ldx   <utabend
-         leax  -2,x
+*         leax  -2,x
          clra
          clrb
-         std   ,x
+         std   ,--x
 
 movedp   equ   *
          ldd   ,x++
@@ -2230,6 +2272,8 @@ movedp   equ   *
          lbsr  writline
          ldx   <addrsave
          stx   <address
+         tst   <s.opt
+         lbne  getstart
 
 findname equ   *
          lbsr  getbyte
@@ -2248,24 +2292,32 @@ getname  equ   *
          lbsr  writline
          leay  holdname,u
          lbsr  movename
-getstart lbsr  getbyte
+getstart equ   *
+         ldx   <address        new test to permit start at $0000 RG
+         cmpx  <startadr
+         beq   readbyte      can only be true if s.opt<>0
+*         bne   gets3
+*         tst   <s.opt
+*         bne   readbyte
+gets3    equ   *         
+         lbsr  getbyte
          ldx   <address 
          cmpx  <startadr
          beq   gotstart
-         tst   <s.opt        for manual start & stop RG
-         bne   getstart
+gets2    tst   <s.opt        for manual start & stop RG
+         bne   gets3         don't print fcb as this is disassembled
          lbsr  fcbline
-         bra   getstart
+         bra   gets3
 gotstart equ   *
          lbsr  clrline
          tst   <s.opt        for manual start & stop RG
-         bne   sopt6
-         lbsr  adrmove
+         bne   sopt4         skip printing Start
+         lbsr  adrmove 
          leay  line130,pcr
          ldb   #ln130sz
          lbsr  mergline
          lbsr  writline
-sopt6    lda   <byte
+sopt4    lda   <byte
          lbsr  moveobj
          bra   testop
 readbyte lbsr  getbyte
@@ -2957,7 +3009,7 @@ endit022 ldb   ,x+
 endit024 tst   <z.opt
          lbne  clrexit
          tst   <s.opt
-         lbne  clrexit
+         lbne  endit032     don't print eom etc.
          clr   <readclr
          lbsr  clrline
          lbsr  adrmove
@@ -2989,7 +3041,7 @@ endit030 lbsr  clrline
          ldb   #ln181sz
          lbsr  mergline
          lbsr  writline
-         bsr   close
+endit032 bsr   close
 
          ifeq  testing-1
          lbsr  clrline
@@ -3172,8 +3224,8 @@ desc050  lda   ,x+
          incb
          bra   desc050
 desc060  stx   <printadr
-         leax  -2,x
-         lda   ,x
+*         leax  -2,x
+         lda   ,--x
          cmpa  #'?
          bne   desc070
          leax  -1,x
@@ -3215,10 +3267,12 @@ hexin020 tfr   x,d get current byte position
 
 hexin030 ldb   ,y+ get char
          cmpb  #', was it a comma??
-         bne   hexin050 no..don't skip it
-hexin040 ldb   ,y+ get next char
+*         bne   hexin050 no..don't skip it
+         beq   hexin030  skip it
+*hexin040 ldb   ,y+ get next char
 hexin050 cmpb  #$20 was it a space
-         beq   hexin040 yes...skip it & get next char
+*        beq   hexin040 yes...skip it & get next char
+         beq   hexin030 yes...skip it & get next char
          leay  -$01,y else back up to point to the char
          bsr   hexin080 convert it
          bcs   hexin070 done....exit
@@ -3375,9 +3429,10 @@ getbyte  pshs  x,y,a
          tst   <diskio
          bne   getdisk
          ldx   <crntadr
-         leax  1,x
+         ldb   ,x+           puts "in memory" in sync with disk i/o, RG
+*         leax  1,x
          stx   <crntadr
-         ldb   ,x
+*        ldb   ,x           here it throws disk and memory out of sync
          stb   <byte
          bra   gotbyte
 *
@@ -3454,7 +3509,7 @@ mergline ldx   <lineadr
          rts
 
 *
-* merge the sring pointed to by 'y' with the string pointed to by 'x'
+* merge the string pointed to by 'y' with the string pointed to by 'x'
 *
 merge    pshs  a
 merge010 lda   ,y+
@@ -3773,5 +3828,3 @@ exit     os9   F$Exit
          emod
 eom      equ   *
          end
-
-

@@ -349,7 +349,7 @@ L0AD0    fcb   $C1,$04,$27,$0E,$A7,$80,$C1,$03   A.'.'.A.
 L0AD8    fcb   $27,$08,$A7,$80,$C1,$02,$27,$02   '.'.A.'.
 L0AE0    fcb   $A7,$80,$35,$02,$A7,$80,$5A,$26   '.5.'.Z&
 L0AE8    fcb   $F9,$5F,$39,$17,$0A,$47,$32,$62   y_9..G2b
-L0AF0    fcb   $16,$FC,$18,$81,$30,$25,$10,$81   ....0%..
+L0AF0    fcb   $16,$FC,$02,$81,$30,$25,$10,$81   ....0%..
 L0AF8    fcb   $39,$23,$0A,$84,$5F,$81,$46,$22   9#.._.F"
 L0B00    fcb   $06,$81,$41,$25,$02,$4F,$39,$43   ..A%.O9C
 L0B08    fcb   $39,$8D,$0D,$34,$04,$1F,$89,$8D   9..4....
@@ -754,8 +754,8 @@ L1778    fcb   $17,$EF,$DE,$10,$AE,$E4,$DC,$9A   .o^..d\.
 L1780    fcb   $17,$F1,$DA,$1F,$98,$17,$F1,$D5   .qZ...qU
 L1788    fcb   $96,$9C,$17,$F1,$D0,$A6,$A2,$8A   ...qP&".
 L1790    fcb   $80,$A7,$A4,$CC,$3D,$34,$17,$EF   .'$L=4.o
-L1798    fcb   $F9,$35,$10,$17,$EF,$BB,$39,$29   y5..o;9)
-L17A0    fcb   $9A,$3F                           .?
+L1798    fcb   $F9,$35,$10,$17,$EF,$BB,$39,$55   y5..o;9)
+L17A0    fcb   $6F,$BE                           .?
 
                ELSE
 
@@ -1675,7 +1675,7 @@ coma     set   carry      bit
 rts                      
 
 ExitHex  leas  2,s        strip off return address
-         lbra  getcmd     exit
+         lbra  readloop   exit
 
 hexdigit cmpa  #'0        char <0?
          blo   nothex     yes, bra
