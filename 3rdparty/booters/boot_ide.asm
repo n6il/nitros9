@@ -1,16 +1,7 @@
 ********************************************************************
-* Boot - SCSI Boot module
+* Boot - IDE Boot Module (LBA Mode)
 *
 * $Id$
-*
-* This module allows booting from a hard drive that uses RGB-DOS
-* and is controlled by a TC^3 or Ken-Ton SCSI controller.
-*
-* It was later modified to handle hard drives with sector sizes
-* larger than 256 bytes, and works on both 256 byte and larger drives,
-* so it should totally replace the old SCSI boot module.
-*
-* Instructions followed by +++ in the comment field were added for this fix.
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
@@ -18,9 +9,8 @@
 * 6      Redone for IDE                                 PTB 99/08/17
 * 7      Added use of LSN bits 23-16                    BGP 02/06/27
 
-
          nam   Boot
-         ttl   IDE booter for LBA mode
+         ttl   IDE Boot Module (LBA Mode)
 
          ifp1
          use   defsfile
@@ -30,7 +20,6 @@ tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   2
 edition  set   7
-
 
 * Disassembled 94/06/25 11:37:47 by Alan DeKok 
 * ReDone by Paul T. Barton 99/08/17, for IDE 
@@ -239,7 +228,4 @@ Init
 
          emod  
 eom      equ   *
-
-
-
-
+         end
