@@ -326,8 +326,7 @@ TfUpdat  stb   PB,y       set WD register address
          rts   
 
 * pad Boot module out to $01D0 exactly
-         fcb   $39,$39,$39,$39,$39,$39,$39,$39
-         fcb   $39,$39,$39,$39,$39,$39,$39,$39
+Pad      fill  $39,$1D0-3-*
 
          emod  
 BEnd     equ   *

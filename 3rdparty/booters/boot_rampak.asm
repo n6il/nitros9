@@ -122,25 +122,7 @@ ReadLp   stb   ,y         save byte number
          puls  d,x,y,pc   restore registers and return
 
          ifgt  Level-1
-         fcc   /    JABBERWOCKY.          /
-         fcb   C$CR
-         fcc   /'Twas brillig, and the slithy toves/
-         fcb   C$CR
-         fcc   /  Did gyre and gimble in the wabe:/
-         fcb   C$CR
-         fcc   /All mimsy were the borogroves,/
-         fcb   C$CR
-         fcc   /  And the mome raths outgrabe./
-         fcb   C$CR
-         fcb   C$CR
-         fcc   /"Beware the Jabberwock, my son!/
-         fcb   C$CR
-         fcc   /  The jaws that bite, the claws that catch!/
-         fcb   C$CR
-         fcc   /Beware the Jubjub bird, and shun/
-         fcb   C$CR
-         fcc   /  The frumious Bandersnatch"/
-         fcb   C$CR
+Pad      fill  $39,$1D0-6-*
          endc
 
 Address  fdb   $FF40      address of the device to boot from

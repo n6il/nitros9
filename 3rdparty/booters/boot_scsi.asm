@@ -307,15 +307,7 @@ restore  lda   #c$rstr
 
          ifgt  Level-1
 * Fillers to get to $1D0
-         fcc   /9999999999/
-         fcc   /9999999999/
-         fcc   /9999999999/
-         fcc   /9999999999/
-         fcc   /9999999999/
-         fcc   /9999999999/
-         fcc   /9999999999/
-         fcc   /9999999999/
-         fcc   /99999999/
+Pad      fill  $39,$1D0-3-*
          endc
 
          emod

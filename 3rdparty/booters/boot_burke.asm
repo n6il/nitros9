@@ -323,8 +323,7 @@ nxtready bsr   stable       Make sure status register is stable and get it
          lda   >$FF50       Yes, get byte and return
          rts                Padding to get $1D0 Size
 * Pad to $1d0 bytes exactly
-         rts
-*         fcc   /0/
+Pad      fill  $39,$1D0-3-*
 
          emod
 eom      equ   *
