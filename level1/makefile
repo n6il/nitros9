@@ -1,9 +1,9 @@
 include ../rules.mak
 
 RELEASE		= nos96809l1v030201
-BOOTFILE	= bootfiles/bootfile_stock
-BOOTFILE_DS80	= bootfiles/bootfile_stock_ds80
-KERNELFILE	= bootfiles/kernel_stock
+BOOTFILE	= bootfiles/bootfile
+BOOTFILE_DS80	= bootfiles/bootfile_ds80
+KERNELFILE	= bootfiles/kernel_1773
 DIRS		= cmds modules defs sys bootfiles
 
 # Specify which shell should be used
@@ -18,7 +18,7 @@ CLOCKS		= $(shell $(CD) modules; make showclocks)
 RBF		= $(shell $(CD) modules; make showrbf)
 SCF		= $(shell $(CD) modules; make showscf)
 PIPE		= $(shell $(CD) modules; make showpipe)
-MODULECMDS	= shell del echo format makdir merge os9gen prompt
+MODULECMDS	= $(WHICHSHELL) del echo format makdir merge os9gen prompt
 
 SYS		= $(shell $(CD) sys; make showobjs)
 DEFS		= $(shell $(CD) defs; make showobjs)
@@ -79,6 +79,7 @@ $(DSK360K_2):
 	$(MAKDIR) $@,NITROS9/6809L1/CMDS
 	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/6809L1/CMDS
 	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/CMDS/$(file);)
+	$(OS9RENAME) $@,NITROS9/6809L1/CMDS//$(WHICHSHELL) shell
 	$(MAKDIR) $@,NITROS9/6809L1/MODULES
 	$(MAKDIR) $@,NITROS9/6809L1/MODULES/BOOTTRACK
 	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/6809L1/MODULES/BOOTTRACK
