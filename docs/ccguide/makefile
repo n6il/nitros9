@@ -14,7 +14,8 @@ STDLIB		= atof.refentry fclose.refentry feof.refentry \
 		strcat.refentry system.refentry toupper.refentry \
 		ungetc.refentry
 
-APPS		= asm.appendix basic09.appendix errors.appendix phases.appendix
+APPS		= asm.appendix basic09.appendix errors.appendix phases.appendix \
+                creference.appendix
 
 SYSCALL		= abort.refentry abs.refentry access.refentry chain.refentry \
 		chdir.refentry chmod.refentry chown.refentry close.refentry \

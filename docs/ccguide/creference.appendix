@@ -1,6 +1,6 @@
 <appendix>
 <title>C Reference Manual</title>
-<sect1><title>Introduction</title>
+<sect1 id="cref1"><title>Introduction</title>
 <para>
 This manual describes the C language on the DEC PDP-11<footnote><para>
 DEC PDP-11, and DEC VAX-11 are trademarks of Digital Equipment Corporation.
@@ -13,7 +13,7 @@ out implementation-dependent details.  With few execptions, these dependencies
 follow directly from the underlying properties of the hardware; the various
 compilers are generally quite compatible.
 </para></sect1>
-<sect1><title>Lexical Conventions</title>
+<sect1 id="cref2"><title>Lexical Conventions</title>
 <para>
 There are six classes of tokens -
 identifiers, keywords, constants, strings, operators, and other separators.
@@ -30,18 +30,16 @@ up to a given character, the next token is taken
 to include the longest string of characters
 which could possibly constitute a token.
 </para>
-<sect2><title>Comments</title>
+<sect2 id="cref2.1"><title>Comments</title>
 <para>
 The characters
-<literal>
-/*
-</literal>
+<literal>/*</literal>
 introduce a comment which terminates
 with the characters
 <literal>*/</literal>.
 Comments do not nest.
 </para></sect2>
-<sect2><title>Identifiers (Names)</title>
+<sect2 id="cref2.2"><title>Identifiers (Names)</title>
 <para>
 An identifier is a sequence of letters and digits.
 The first character must be a letter.
@@ -76,53 +74,61 @@ The external name sizes include:
 </tgroup>
 </informaltable>
 </para></sect2>
-<sect2><title>Keywords</title>
+<sect2 id="cref2.3"><title>Keywords</title>
 <para>
 The following identifiers are reserved for use
 as keywords and may not be used otherwise:
 <informaltable frame="none"> 
-<tgroup cols="5">
+<tgroup cols="3">
 <tbody>
 <row>
-  <entry>auto</entry>
-  <entry>do</entry>
-  <entry>for</entry>
-  <entry>return</entry>
-  <entry>typedef</entry>
-</row>
-<row>
-  <entry>break</entry>
-  <entry>double</entry>
-  <entry>goto</entry>
-  <entry>short</entry>
-  <entry>union</entry>
-</row>
-<row>
-  <entry>case</entry>
+  <entry>int</entry>
+  <entry>extern</entry>
   <entry>else</entry>
-  <entry>if</entry>
-  <entry>sizeof</entry>
-  <entry>unsigned</entry>
 </row>
 <row>
   <entry>char</entry>
-  <entry>enum</entry>
-  <entry>int</entry>
-  <entry>static</entry>
-  <entry>direct</entry>
+  <entry>register</entry>
+  <entry>for</entry>
 </row>
 <row>
-  <entry>continue</entry>
-  <entry>external</entry>
-  <entry>long</entry>
-  <entry>struct</entry>
+  <entry>float</entry>
+  <entry>typedef</entry>
+  <entry>do</entry>
+</row>
+<row>
+  <entry>double</entry>
+  <entry>static</entry>
   <entry>while</entry>
 </row>
 <row>
-  <entry>default</entry>
-  <entry>float</entry>
-  <entry>register</entry>
+  <entry>struct</entry>
+  <entry>goto</entry>
   <entry>switch</entry>
+</row>
+<row>
+  <entry>union</entry>
+  <entry>return</entry>
+  <entry>case</entry>
+</row>
+<row>
+  <entry>long</entry>
+  <entry>sizeof</entry>
+  <entry>default</entry>
+</row>
+<row>
+  <entry>short</entry>
+  <entry>break</entry>
+  <entry>entry</entry>
+</row>
+<row>
+  <entry>unsigned</entry>
+  <entry>continue</entry>
+  <entry>register</entry>
+</row>
+<row>
+  <entry>auto</entry>
+  <entry>if</entry>
   <entry></entry>
 </row>
 </tbody>
@@ -130,26 +136,25 @@ as keywords and may not be used otherwise:
 </informaltable>
 </para><para> 
 Some implementations also reserve the words
+<literal>direct</literal>
 <literal>fortran</literal>
 and
 <literal>asm</literal>
 </para></sect2>
-<sect2><title>Constants</title>
+<sect2 id="cref2.4"><title>Constants</title>
 <para>
 There are several kinds
 of constants.
-Each has a type; an introduction to types is given in <quote>NAMES.</quote>
+Each has a type; an introduction to types is given in <xref linkend="cref4"/>.
 Hardware characteristics that affect sizes are summarized in
-<quote>Hardware Characteristics</quote> under <quote>LEXICAL CONVENTIONS.</quote>
+<quote>Hardware Characteristics</quote> under <xref linkend="cref2"/>.
 </para>
-<sect3><title>Integer Constants</title>
+<sect3 id="cref2.4.1"><title>Integer Constants</title>
 <para>
 An integer constant consisting of a sequence of digits
 is taken
 to be octal if it begins with
-<literal>
-0
-</literal>
+<literal>0</literal>
 (digit zero).
 An octal constant consists of the digits <literal>0</literal> through <literal>7</literal> only.
 A sequence of digits preceded by
@@ -158,9 +163,7 @@ or
 <literal>0X</literal>
 (digit zero) is taken to be a hexadecimal integer.
 The hexadecimal digits include
-<literal>
-a
-</literal>
+<literal>a</literal>
 or
 <literal>A</literal>
 through
@@ -176,24 +179,19 @@ an octal or hex constant which exceeds the largest unsigned machine integer
 is likewise taken to be
 <literal>long</literal>.
 </para></sect3>
-<sect3><title>Explicit Long Constants</title>
+<sect3 id="cref2.4.2"><title>Explicit Long Constants</title>
 <para>
 A decimal, octal, or hexadecimal integer constant immediately followed
 by
-<literal>
-l
-</literal>
-(letter ell)
-or
-<literal>
-L
-</literal>
+<literal>l</literal>
+(letter ell) or
+<literal>L</literal>
 is a long constant.
 As discussed below,
 on some machines
 integer and long values may be considered identical.
 </para></sect3>
-<sect3><title>Character Constants</title>
+<sect3 id="cref2.4.3"><title>Character Constants</title>
 <para>
 A character constant is a character enclosed in single quotes,
 as in '<literal>x</literal>'.
@@ -262,33 +260,27 @@ of escape sequences:
 </tgroup>
 </informaltable>
 </para><para> 
-The escape
-\<emphasis>ddd</emphasis>
+The escape \<emphasis>ddd</emphasis>
 consists of the backslash followed by 1, 2, or 3 octal digits
 which are taken to specify the value of the
 desired character.
 A special case of this construction is
-<literal>
-\0
-</literal>
+<literal>\0</literal>
 (not followed
 by a digit), which indicates the character
-<literal>
-NUL</literal>.
+<literal>NUL</literal>.
 If the character following a backslash is not one
 of those specified, the
 behavior is undefined.
 A new-line character is illegal in a character constant.
 The type of a character constant is <literal>int</literal>.
 </para></sect3>
-<sect3><title>Floating Constants</title>
+<sect3 id="cref2.4.4"><title>Floating Constants</title>
 <para>
 A floating constant consists of
 an integer part, a decimal point, a fraction part,
 an
-<literal>
-e
-</literal>
+<literal>e</literal>
 or
 <literal>E</literal>,
 and an optionally signed integer exponent.
@@ -298,20 +290,11 @@ Either the integer part or the fraction
 part (not both) may be missing.
 Either the decimal point or
 the
-<literal>
-e
-</literal>
+<literal>e</literal>
 and the exponent (not both) may be missing.
-Every floating constant has type <literal>double</literal>.
-</para></sect3>
-<sect3><title>Enumeration Constants</title>
-<para>
-Names declared as enumerators
-(see <quote>Structure, Union, and Enumeration Declarations</quote> under
-<quote>DECLARATIONS</quote>)
-have type <literal>int</literal>.
+Every floating constant is taken to be double-precision.
 </para></sect3></sect2>
-<sect2><title>Strings</title>
+<sect2 id="cref2.5"><title>Strings</title>
 <para>
 A string is a sequence of characters surrounded by
 double quotes,
@@ -320,11 +303,9 @@ as in
 A string has type
 <quote>array of <literal>char</literal></quote> and storage class
 <literal>static</literal>
-(see <quote>NAMES</quote>)
-and is initialized with
-the given characters.
-The compiler places
-a null byte
+(see <xref linkend="cref4"/>)
+and is initialized with the given characters.
+The compiler places a null byte
 (<literal>\0</literal>)
 at the end of each string so that programs
 which scan the string can
@@ -338,24 +319,22 @@ in addition, the same escapes as described for character
 constants may be used.
 </para><para>
 A
-<literal>
-\
-</literal>
+<literal>\</literal>
 and
 the immediately following newline are ignored.
 All strings, even when written identically, are distinct.
 </para></sect2>
-<sect2><title>Hardware Characteristics</title>
+<sect2 id="cref2.6"><title>Hardware Characteristics</title>
 <para>
 The following figure summarize
 certain hardware properties that vary from machine to machine.
 <table frame="none">
-<title>DEC PDP-11 HARDWARE CHARACTERISTICS</title>
+<title>DEC PDP-11 Hardware Characteristics</title>
 <tgroup cols="4">
 <thead>
 <row>
   <entry></entry>
-  <entry>DEC PDP\-11</entry>
+  <entry>DEC PDP-11</entry>
   <entry>DEC VAX-11</entry>
   <entry>6809</entry>
 </row>
@@ -420,9 +399,9 @@ certain hardware properties that vary from machine to machine.
 </table>
 </para><para>
 </para></sect2></sect1>
-<sect1><title>
-Syntax Notation
-</title><para>
+<sect1 id="cref3">
+<title>Syntax Notation</title>
+<para>
 Syntactic categories are indicated by
 <emphasis>
 italic
@@ -440,11 +419,11 @@ indicated by the subscript <quote>opt,</quote> so that
 </literallayout>
 
 indicates an optional expression enclosed in braces.
-The syntax is summarized in <quote>SYNTAX SUMMARY</quote>.
+The syntax is summarized in <xref linkend="cref18"/>.
 </para></sect1>
-<sect1><title>
-What's in a name?
-</title><para>
+<sect1 id="cref4">
+<title>What's in a name?</title>
+<para>
 C bases the interpretation of an
 identifier upon two attributes of the identifier: its
 <emphasis>storage class</emphasis>
@@ -460,8 +439,8 @@ found in the identifier's storage.
 There are four declarable storage classes:
 automatic, static, external, and register.
 Automatic variables are local to each invocation of
-a block (see <quote>Compound Statement or Block</quote> in 
-<quote>STATEMENTS</quote>) and are discarded upon exit from the block.
+a block (see <xref linkend="cref9.2"/>)
+and are discarded upon exit from the block.
 Static variables are local to a block but retain
 their values upon reentry to a block even after control
 has left the block.
@@ -500,15 +479,12 @@ or both, equivalent to plain integers.
 by the host machine architecture.
 The other sizes are provided to meet special needs.
 </para><para>
-Unsigned
-integers, declared
+Unsigned integers, declared
 <literal>unsigned</literal>,
 obey the laws of arithmetic modulo
 2<superscript><emphasis>n</emphasis></superscript>
 where <emphasis>n</emphasis> is the number of bits in the representation.
-(On the
-PDP-11,
-unsigned long quantities are not supported.)
+(On the PDP-11, unsigned long quantities are not supported.)
 </para><para>
 Single-precision floating point
 (<literal>float</literal>)
@@ -518,23 +494,16 @@ may be synonymous in some implementations.
 </para><para>
 Because objects of the foregoing types can usefully be interpreted
 as numbers, they will be referred to as
-<emphasis>
-arithmetic
-</emphasis>
+<emphasis>arithmetic</emphasis>
 types.
 Types
-<literal>char</literal>,
+<literal>char</literal> and
 <literal>int</literal>
-of all sizes whether <literal>unsigned</literal> or not, and
-<literal>
-enum
-</literal>
-will collectively be called
+of all sizes will collectively be called
 <emphasis>
 integral
 </emphasis>
 types.
-The
 <literal>float</literal>
 and
 <literal>double</literal>
@@ -547,78 +516,58 @@ conceptually infinite class of derived types constructed
 from the fundamental types in the following ways:
 <itemizedlist>
 <listitem><para>
-<emphasis>Arrays</emphasis>
+<emphasis>arrays</emphasis>
 of objects of most types
 </para></listitem>
 <listitem><para>
-<emphasis>Functions</emphasis>
+<emphasis>functions</emphasis>
 which return objects of a given type
 </para></listitem>
 <listitem><para>
-<emphasis>Pointers</emphasis>
+<emphasis>pointers</emphasis>
 to objects of a given type
 </para></listitem>
 <listitem><para>
-<emphasis>Structures</emphasis>
+<emphasis>structures</emphasis>
 containing a sequence of objects of various types
 </para></listitem>
 <listitem><para>
-<emphasis>Unions</emphasis>
+<emphasis>unions</emphasis>
 capable of containing any one of several objects of various types.
 </para></listitem>
 </itemizedlist>
 </para><para>
-In general these methods
-of constructing objects can
-be applied recursively.
+In general these methods of constructing objects can be applied recursively.
 </para></sect1>
-<sect1><title>Objects and lvalues</title>
+<sect1 id="cref5"><title>Objects and lvalues</title>
 <para>
 An
-<emphasis>
-object
-</emphasis>
+<emphasis>object</emphasis>
 is a manipulatable region of storage.
-An
-<emphasis>
-lvalue
-</emphasis>
+An <emphasis>lvalue</emphasis>
 is an expression referring to an object.
 An obvious example of an lvalue
 expression is an identifier.
 There are operators which yield lvalues:
 for example,
 if
-<literal>
-E
-</literal>
+<literal>E</literal>
 is an expression of pointer type, then
-<literal>
-*E
-</literal>
+<literal>*E</literal>
 is an lvalue
 expression referring to the object to which
-<literal>
-E
-</literal>
-points.
+<literal>E</literal> points.
 The name <quote>lvalue</quote> comes from the assignment expression
-<literal>
-E1\ =\ E2
-</literal>
+<literal>E1 = E2</literal>
 in which the left operand
-<literal>
-E1
-</literal>
+<literal>E1</literal>
 must be
 an lvalue expression.
 The discussion of each operator
 below indicates whether it expects lvalue operands and whether it
 yields an lvalue.
 </para></sect1>
-<sect1><title>
-Conversions
-</title><para>
+<sect1 id="cref6"><title>Conversions</title><para>
 A number of operators may, depending on their operands,
 cause conversion of the value of an operand from one type to another.
 This part explains the result to be expected from such
@@ -629,7 +578,7 @@ The summary will be supplemented
 as required by the discussion
 of each operator.
 </para>
-<sect2><title>Characters and Integers</title>
+<sect2 id="cref6.1"><title>Characters and Integers</title>
 <para>
 A character or a short integer may be used wherever an
 integer may be used.
@@ -665,8 +614,7 @@ and may appear negative;
 for example,
 <literal>'\377'</literal>
 has the value
-<literal>
--1</literal>.
+<literal>-1</literal>.
 </para><para>
 When a longer integer is converted to a shorter
 integer
@@ -675,7 +623,7 @@ or to a
 it is truncated on the left.
 Excess bits are simply discarded.
 </para></sect2>
-<sect2><title>Float and Double</title>
+<sect2 id="cref6.2"><title>Float and Double</title>
 <para>
 All floating arithmetic in C is carried out in double precision.
 Whenever a
@@ -699,7 +647,7 @@ This result is undefined if it cannot be represented as a float.
 On the VAX, the compiler can be directed to use single percision for expressions
 containing only float and interger operands.
 </para></sect2>
-<sect2><title>Floating and Integral</title>
+<sect2 id="cref6.3"><title>Floating and Integral</title>
 <para>
 Conversions of floating values to integral type
 are rather machine dependent.
@@ -713,7 +661,7 @@ are well behaved.
 Some loss of accuracy occurs
 if the destination lacks sufficient bits.
 </para></sect2>
-<sect2><title>Pointers and Integers</title>
+<sect2 id="cref6.4"><title>Pointers and Integers</title>
 <para>
 An expression of integral type may be added to or subtracted from
 a pointer; in such a case,
@@ -798,19 +746,16 @@ and that is the type of the result.
 </para></listitem>
 </orderedlist>
 </para></sect2></sect1>
-<sect1><title>
-Expressions
-</title><para>
+<sect1 id="cref7">
+<title>Expressions</title><para>
 The precedence of expression operators is the same
 as the order of the major
 subsections of this section, highest precedence first.
 Thus, for example, the expressions referred to as the operands of
-<literal>
-+
-</literal>
-(see <quote>Additive Operators</quote>)
-are those expressions defined under <quote>Primary Expressions</quote>,
-<quote>Unary Operators</quote>, and <quote>Multiplicative Operators</quote>.
+<literal>+</literal>
+(see <xref linkend="cref7.4"/>)
+are those expressions defined under <xref linkend="cref7.1"/>,
+<xref linkend="cref7.2"/>, and <xref linkend="cref7.3"/>.
 Within each subpart, the operators have the same
 precedence.
 Left- or right-associativity is specified
@@ -818,7 +763,7 @@ in each subsection for the operators
 discussed therein.
 The precedence and associativity of all the expression
 operators are summarized in the
-grammar of <quote>SYNTAX SUMMARY</quote>.
+grammar of <xref linkend="cref18"/>.
 </para><para>
 Otherwise, the order of evaluation of expressions
 is undefined.  In particular, the compiler
@@ -849,7 +794,7 @@ division by 0 and all floating-point exceptions
 varies between machines and is usually
 adjustable by a library function.
 </para>
-<sect2><title>Primary Expressions</title>
+<sect2 id="cref7.1"><title>Primary Expressions</title>
 <para>
 Primary expressions
 involving <literal>.</literal>,
@@ -913,7 +858,7 @@ the
 result is a pointer to the first character
 in the string.
 (There is an exception in certain initializers;
-see <quote>Initialization</quote> under <quote>DECLARATIONS.</quote>)
+see <xref linkend="cref8.6"/>.)
 </para><para>
 A parenthesized expression is a primary expression
 whose type and value are identical
@@ -930,28 +875,21 @@ the subscript expression is
 <literal>int</literal>,
 and the type of the result is <quote>...</quote>.
 The expression
-<literal>
-E1[E2]
-</literal>
+<literal>E1[E2]</literal>
 is
 identical (by definition) to
-<literal>
-*((E1)+E2))</literal>.
+<literal>*((E1)+E2))</literal>.
 All the clues
 needed to understand
 this notation are contained in this subpart together
 with the discussions
-in <quote>Unary Operators</quote> and <quote>Additive Operators</quote> on identifiers,
-<literal>
-* 
-</literal>
+in <xref linkend="cref7.2"/> and <xref linkend="cref7.4"/> on identifiers,
+<literal>*</literal>
 and
-<literal>
-+
-</literal>
+<literal>+</literal>
 respectively.
 The implications are summarized under <quote>Arrays, Pointers, and Subscripting</quote>
-under <quote>TYPES REVISITED.</quote>
+under <xref linkend="cref14"/>.
 </para><para>
 A function call is a primary expression followed by parentheses
 containing a possibly
@@ -987,8 +925,7 @@ in particular, the compiler does not compare
 the types of actual arguments with those of formal
 arguments.
 If conversion is needed, use a cast;
-see <quote>Unary Operators</quote> and <quote>Type Names</quote> under
-<quote>DECLARATIONS.</quote>
+see <xref linkend="cref7.2"/> and <xref linkend="cref8.7"/>.
 </para><para>
 In preparing for the call to a function,
 a copy is made of each actual parameter.
@@ -1015,14 +952,9 @@ The value is the named member of the structure or union, and it is
 an lvalue if the first expression is an lvalue.
 </para><para>
 A primary expression followed by an arrow (built from
-<literal>
--
-</literal>
+<literal>-</literal>
 and
-<literal>
->
-</literal>
-)
+<literal>&gt;</literal>)
 followed by an identifier
 is an expression.
 The first expression must be a pointer to a structure or a union
@@ -1031,17 +963,14 @@ The result is an lvalue referring to the named member
 of the structure or union
 to which the pointer expression points.
 Thus the expression
-<literal>
-E1->MOS
-</literal>
+<literal>E1->MOS</literal>
 is the same as
-<literal>
-(*E1).MOS</literal>.
+<literal>(*E1).MOS</literal>.
 Structures and unions are discussed in
-<quote>Structure, Union, and Enumeration Declarations</quote> under
-<quote>DECLARATIONS.</quote>
+<xref linkend="cref8.5"/> under
+<xref linkend="cref8"/>.
 </para></sect2>
-<sect2><title>Unary Operators</title>
+<sect2 id="cref7.2"><title>Unary Operators</title>
 <para>
 Expressions with unary operators
 group right to left.
@@ -1062,9 +991,7 @@ group right to left.
 </literallayout>
 </para><para>
 The unary
-<literal>
-*
-</literal>
+<literal>*</literal>
 operator
 means
 <emphasis>
@@ -1078,9 +1005,7 @@ If the type of the expression is <quote>pointer to ...,</quote>
 the type of the result is <quote>...</quote>.
 </para><para>
 The result of the unary
-<literal>
-&amp;
-</literal>
+<literal>&amp;</literal>
 operator is a pointer
 to the object referred to by the
 lvalue.
@@ -1089,9 +1014,7 @@ the type of the result is <quote>pointer to ...</quote>.
 </para><para>
 The result
 of the unary
-<literal>
--
-</literal>
+<literal>-</literal>
 operator
 is the negative of its operand.
 The usual arithmetic conversions are performed.
@@ -1101,15 +1024,11 @@ subtracting its value from
 the corresponding signed type.
 
 There is no unary
-<literal>
-+
-</literal>
+<literal>+</literal>
 operator.
 </para><para>
 The result of the logical negation operator
-<literal>
-!
-</literal>
+<literal>!</literal>
 is one if the value of its operand is zero, zero if the value of its
 operand is nonzero.
 The type of the result is
@@ -1118,67 +1037,49 @@ It is applicable to any arithmetic type
 or to pointers.
 </para><para>
 The
-<literal>
-~
-</literal>
+<literal>~</literal>
 operator yields the one's complement of its operand.
 The usual arithmetic conversions are performed.
 The type of the operand must be integral.
 </para><para>
 The object referred to by the lvalue operand of prefix
-<literal>
-++
-</literal>
+<literal>++</literal>
 is incremented.
 The value is the new value of the operand
 but is not an lvalue.
 The expression
-<literal>
-++x
-</literal>
+<literal>++x</literal>
 is equivalent to
 <literal>x=x+1</literal>.
-See the discussions <quote>Additive Operators</quote> and <quote>Assignment
-Operators</quote> for information on conversions.
+See the discussions <xref linkend="cref7.4"/> and <xref linkend="cref7.14"/>
+for information on conversions.
 </para><para>
 The lvalue operand of prefix
-<literal>
---
-</literal>
+<literal>--</literal>
 is decremented
 analogously to the
 prefix
-<literal>
-++
-</literal>
+<literal>++</literal>
 operator.
 </para><para>
 When postfix
-<literal>
-++
-</literal>
+<literal>++</literal>
 is applied to an lvalue,
 the result is the value of the object referred to by the lvalue.
 After the result is noted, the object
 is incremented in the same
 manner as for the prefix
-<literal>
-++
-</literal>
+<literal>++</literal>
 operator.
 The type of the result is the same as the type of the lvalue expression.
 </para><para>
 When postfix
-<literal>
---
-</literal>
+<literal>--</literal>
 is applied to an lvalue,
 the result is the value of the object referred to by the lvalue.
 After the result is noted, the object
 is decremented in the manner as for the prefix
-<literal>
---
-</literal>
+<literal>--</literal>
 operator.
 The type of the result is the same as the type of the lvalue
 expression.
@@ -1188,22 +1089,16 @@ causes conversion of the value of the expression to the named type.
 This construction is called a
 <emphasis>
 cast</emphasis>.
-Type names are described in <quote>Type Names</quote> under <quote>Declarations.</quote>
+Type names are described in <xref linkend="cref8.7"/>.
 </para><para>
 The
-<literal>
-sizeof
-</literal>
+<literal>sizeof</literal>
 operator yields the size
 in bytes of its operand.
-(A
-<emphasis>
-byte
-</emphasis>
+(A <emphasis>byte</emphasis>
 is undefined by the language
 except in terms of the value of
-<literal>
-sizeof</literal>.
+<literal>sizeof</literal>.
 However, in all existing implementations,
 a byte is the space required to hold a
 <literal>char</literal>.)
@@ -1220,9 +1115,7 @@ Its major use is in communication with routines
 like storage allocators and I/O systems.
 </para><para>
 The
-<literal>
-sizeof
-</literal>
+<literal>sizeof</literal>
 operator
 may also be applied to a parenthesized type name.
 In that case it yields the size in bytes of an object
@@ -1236,15 +1129,13 @@ so the expression
 is the same as
 <literal>(sizeof(</literal><emphasis>type</emphasis><literal>))-2</literal>.
 </para></sect2>
-<sect2><title>Multiplicative Operators</title>
+<sect2 id="cref7.3"><title>Multiplicative Operators</title>
 <para>
 The multiplicative operators
 <literal>*</literal>,
 <literal>/</literal>,
 and
-<literal>
-%
-</literal>
+<literal>%</literal>
 group left to right.
 The usual arithmetic conversions are performed.
 <literallayout> 
@@ -1255,27 +1146,19 @@ The usual arithmetic conversions are performed.
 </literallayout>
 </para><para>
 The binary
-<literal>
-*
-</literal>
+<literal>*</literal>
 operator indicates multiplication.
 The
-<literal>
-*
-</literal>
+<literal>*</literal>
 operator is associative,
 and expressions with several multiplications at the same
 level may be rearranged by the compiler.
 The binary
-<literal>
-/
-</literal>
+<literal>/</literal>
 operator indicates division.
 </para><para>
 The binary
-<literal>
-%
-</literal>
+<literal>%</literal>
 operator yields the remainder
 from the division of the first expression by the second.
 The operands must be integral.
@@ -1286,29 +1169,19 @@ if either operand is negative.
 On all machines covered by this manual,
 the remainder has the same sign as the dividend.
 It is always true that
-<literal>
-(a/b)*b\ + a%b
-</literal>
+<literal>(a/b)*b + a%b</literal>
 is equal to
-<literal>
-a
-</literal>
+<literal>a</literal>
 (if
-<literal>
-b
-</literal>
+<literal>b</literal>
 is not 0).
 </para></sect2>
-<sect2><title>Additive Operators</title>
+<sect2 id="cref7.4"><title>Additive Operators</title>
 <para>
 The additive operators
-<literal>
-+
-</literal>
+<literal>+</literal>
 and
-<literal>
--
-</literal>
+<literal>-</literal>
 group left to right.
 The usual arithmetic conversions are performed.
 There are some additional type possibilities for each operator.
@@ -1319,9 +1192,7 @@ There are some additional type possibilities for each operator.
 </literallayout>
 </para><para>
 The result of the
-<literal>
-+
-</literal>
+<literal>+</literal>
 operator is the sum of the operands.
 A pointer to an object in an array and
 a value of any integral type
@@ -1336,30 +1207,22 @@ of the same type as the original pointer
 which points to another object in the same array,
 appropriately offset from the original object.
 Thus if
-<literal>
-P
-</literal>
+<literal>P</literal>
 is a pointer
 to an object in an array, the expression
-<literal>
-P+1
-</literal>
+<literal>P+1</literal>
 is a pointer
 to the next object in the array.
 No further type combinations are allowed for pointers.
 </para><para>
 The
-<literal>
-+
-</literal>
+<literal>+</literal>
 operator is associative,
 and expressions with several additions at the same level may
 be rearranged by the compiler.
 </para><para>
 The result of the
-<literal>
--
-</literal>
+<literal>-</literal>
 operator is the difference of the operands.
 The usual arithmetic conversions are performed.
 Additionally,
@@ -1381,16 +1244,12 @@ to objects in the same array, since pointers, even
 to objects of the same type, do not necessarily differ
 by a multiple of the object length.
 </para></sect2>
-<sect2><title>Shift Operators</title>
+<sect2 id="cref7.5"><title>Shift Operators</title>
 <para>
 The shift operators
-<literal>
-&lt;&lt;
-</literal>
+<literal>&lt;&lt;</literal>
 and
-<literal>
->>
-</literal>
+<literal>&gt;&gt;</literal>
 group left to right.
 Both perform the usual arithmetic conversions on their operands,
 each of which must be integral.
@@ -1408,45 +1267,31 @@ the direction of the shift.
 </literallayout>
 </para><para>
 The value of
-<literal>
-E1&lt;&lt;E2
-</literal>
+<literal>E1&lt;&lt;E2</literal>
 is
-<literal>
-E1
-</literal>
+<literal>E1</literal>
 (interpreted as a bit
 pattern) left-shifted
-<literal>
-E2
-</literal>
+<literal>E2</literal>
 bits.
 Vacated bits are 0 filled.
 The value of
-<literal>
-E1>>E2
-</literal>
+<literal>E1&gt;&gt;E2</literal>
 is
-<literal>
-E1
-</literal>
+<literal>E1</literal>
 right-shifted
-<literal>
-E2
-</literal>
+<literal>E2</literal>
 bit positions.
 The right shift is guaranteed to be logical
 (0 fill)
 if
-<literal>
-E1
-</literal>
+<literal>E1</literal>
 is
 <literal>unsigned</literal>;
 otherwise, it may be
 arithmetic.
 </para></sect2>
-<sect2><title>Relational Operators</title>
+<sect2 id="cref7.6"><title>Relational Operators</title>
 <para>
 The relational operators group left to right. 
 <literallayout> 
@@ -1458,19 +1303,12 @@ The relational operators group left to right.
 </literallayout>
 </para><para>
 The operators
-<literal>
-&lt;
-</literal>
+<literal>&lt;</literal>
 (less than),
-<literal>
->
-</literal>
+<literal>&gt;</literal>
 (greater than), <literal>&lt;=</literal>
-(less than
-or equal to), and
-<literal>
->=
-</literal>
+(less than or equal to), and
+<literal>&gt;=</literal>
 (greater than or equal to)
 all yield 0 if the specified relation is false
 and 1 if it is true.
@@ -1483,7 +1321,7 @@ of the pointed-to objects.
 Pointer comparison is portable only when the pointers point to objects
 in the same array.
 </para></sect2>
-<sect2><title>Equality Operators</title>
+<sect2 id="cref7.7"><title>Equality Operators</title>
 <para>
 <literallayout> 
 <emphasis>equality-expression:
@@ -1492,29 +1330,19 @@ in the same array.
 </literallayout>
 </para><para>
 The
-<literal>
-==
-</literal>
+<literal>==</literal>
 (equal to) and the
-<literal>
-!=
-</literal>
+<literal>!=</literal>
 (not equal to) operators
 are exactly analogous to the relational
 operators except for their lower
 precedence.
 (Thus
-<literal>
-a&lt;b\ ==\ c&lt;d
-</literal>
+<literal>a&lt;b == c&lt;d</literal>
 is 1 whenever
-<literal>
-a&lt;b
-</literal>
+<literal>a&lt;b</literal>
 and
-<literal>
-c&lt;d
-</literal>
+<literal>c&lt;d</literal>
 have the same truth value).
 </para><para>
 A pointer may be compared to an integer
@@ -1525,7 +1353,7 @@ not to point to any object
 and will appear to be equal to 0.
 In conventional usage, such a pointer is considered to be null.
 </para></sect2>
-<sect2><title>Bitwise AND Operator</title>
+<sect2 id="cref7.8"><title>Bitwise AND Operator</title>
 <para>
 <literallayout> 
 <emphasis>and-expression:
@@ -1533,14 +1361,10 @@ In conventional usage, such a pointer is considered to be null.
 </literallayout>
 </para><para>
 The
-<literal>
-&amp;
-</literal>
+<literal>&amp;</literal>
 operator is associative,
 and expressions involving
-<literal>
-&amp;
-</literal>
+<literal>&amp;</literal>
 may be rearranged.
 The usual arithmetic conversions are performed.
 The result is the bitwise
@@ -1549,21 +1373,17 @@ function of the operands.
 The operator applies only to integral
 operands.
 </para></sect2>
-<sect2><title>Bitwise Exclusive OR Operator</title>
+<sect2 id="cref7.9"><title>Bitwise Exclusive OR Operator</title>
 <literallayout> 
 <emphasis>exclusive-or-expression:
         expression ^ expression</emphasis>
 </literallayout>
 <para>
 The
-<literal>
-^
-</literal>
+<literal>^</literal>
 operator is associative,
 and expressions involving
-<literal>
-^
-</literal>
+<literal>^</literal>
 may be rearranged.
 The usual arithmetic conversions are performed;
 the result is
@@ -1574,21 +1394,17 @@ the operands.
 The operator applies only to integral
 operands.
 </para></sect2>
-<sect2><title>Bitwise Inclusive OR Operator</title>
+<sect2 id="cref7.10"><title>Bitwise Inclusive OR Operator</title>
 <literallayout> 
 <emphasis>inclusive-or-expression:
         expression | expression</emphasis>
 </literallayout>
 <para>
 The
-<literal>
-|
-</literal>
+<literal>|</literal>
 operator is associative,
 and expressions involving
-<literal>
-|
-</literal>
+<literal>|</literal>
 may be rearranged.
 The usual arithmetic conversions are performed;
 the result is the bitwise inclusive
@@ -1597,24 +1413,20 @@ function of its operands.
 The operator applies only to integral
 operands.
 </para></sect2>
-<sect2><title>Logical AND Operator</title>
+<sect2 id="cref7.11"><title>Logical AND Operator</title>
 <literallayout> 
 <emphasis>logical-and-expression:
         expression &amp;&amp; expression</emphasis>
 </literallayout>
 <para>
 The
-<literal>
-&amp;&amp;
-</literal>
+<literal>&amp;&amp;</literal>
 operator groups left to right.
 It returns 1 if both its operands
 evaluate to nonzero, 0 otherwise.
 Unlike
 <literal>&amp;</literal>,
-<literal>
-&amp;&amp;
-</literal>
+<literal>&amp;&amp;</literal>
 guarantees left to right
 evaluation; moreover, the second operand is not evaluated
 if the first operand is 0.
@@ -1625,24 +1437,20 @@ types or be a pointer.
 The result is always
 <literal>int</literal>.
 </para></sect2>
-<sect2><title>Logical OR Operator</title>
+<sect2 id="cref7.12"><title>Logical OR Operator</title>
 <literallayout> 
 <emphasis>logical-or-expression:
         expression || expression</emphasis>
 </literallayout>
 <para>
 The
-<literal>
-||
-</literal>
+<literal>||</literal>
 operator groups left to right.
 It returns 1 if either of its operands
 evaluates to nonzero, 0 otherwise.
 Unlike
 <literal>|</literal>,
-<literal>
-||
-</literal>
+<literal>||</literal>
 guarantees left to right evaluation; moreover,
 the second operand is not evaluated
 if the value of the first operand is nonzero.
@@ -1654,7 +1462,7 @@ or be a pointer.
 The result is always
 <literal>int</literal>.
 </para></sect2>
-<sect2><title>Conditional Operator</title>
+<sect2 id="cref7.13"><title>Conditional Operator</title>
 <literallayout> 
 <emphasis>conditional-expression:
         expression ? expression : expression</emphasis>
@@ -1675,7 +1483,7 @@ and the result has the type of the pointer.
 Only one of the second and third
 expressions is evaluated.
 </para></sect2>
-<sect2><title>Assignment Operators</title>
+<sect2 id="cref7.14"><title>Assignment Operators</title>
 <para>
 There are a number of assignment operators,
 all of which group right to left.
@@ -1718,28 +1526,24 @@ pointer distinguishable from a pointer to any object.
 </para><para>
 The behavior of an expression
 of the form
-<literal>E1</literal> <emphasis>op</emphasis> = <literal>E2</literal>
+<literal>E1</literal> <replaceable>op</replaceable> = <literal>E2</literal>
 may be inferred by
 taking it as equivalent to
-<literal>E1 = E1</literal> <emphasis>op</emphasis> (<literal>E2</literal>);
+<literal>E1 = E1</literal> <replaceable>op</replaceable> (<literal>E2</literal>);
 however,
-<literal>
-E1
-</literal>
+<literal>E1</literal>
 is evaluated only once.
 In
-<literal>
-+=
-</literal>
+<literal>+=</literal>
 and
 <literal>-=</literal>,
 the left operand may be a pointer; in which case, the (integral) right
 operand is converted as explained
-in <quote>Additive Operators.</quote>
+in <xref linkend="cref7.4"/>.
 All right operands and all nonpointer left operands must
 have arithmetic type.
 </para></sect2>
-<sect2><title>Comma Operator</title>
+<sect2 id="cref7.15"><title>Comma Operator</title>
 <literallayout> 
 <emphasis>comma-expression:
         expression , expression</emphasis>
@@ -1753,8 +1557,8 @@ type and value of the right operand.
 This operator groups left to right.
 In contexts where comma is given a special meaning,
 e.g., in lists of actual arguments
-to functions (see <quote>Primary Expressions</quote>) and lists
-of initializers (see <quote>Initialization</quote> under <quote>DECLARATIONS</quote>),
+to functions (see <xref linkend="cref7.1"/>) and lists
+of initializers (see <xref linkend="cref8.6"/>),
 the comma operator as described in this subpart
 can only appear in parentheses. For example,
 <literallayout> 
@@ -1762,9 +1566,8 @@ can only appear in parentheses. For example,
 </literallayout>
 has three arguments, the second of which has the value 5.
 </para></sect2></sect1>
-<sect1><title>
-Declarations
-</title><para>
+<sect1 id="cref8"><title>Declarations</title>
+<para>
 Declarations are used to specify the interpretation
 which C gives to each identifier; they do not necessarily
 reserve storage associated with the identifier.
@@ -1786,7 +1589,7 @@ consist of a sequence of type and storage class specifiers.
 </para><para> 
 The list must be self-consistent in a way described below.
 </para>
-<sect2><title>Storage Class Specifiers</title>
+<sect2 id="cref8.1"><title>Storage Class Specifiers</title>
 <para>
 The sc-specifiers are:
 <literallayout> 
@@ -1802,8 +1605,8 @@ The
 <literal>typedef</literal>
 specifier does not reserve storage
 and is called a <quote>storage class specifier</quote> only for syntactic convenience.
-See <quote>Typedef</quote> for more information.
-The meanings of the various storage classes were discussed in <quote>Names.</quote>
+See <xref linkend="cref8.8"/> for more information.
+The meanings of the various storage classes were discussed in <xref linkend="cref4"/>.
 </para><para>
 The
 <literal>auto</literal>,
@@ -1815,7 +1618,7 @@ in that they cause an appropriate amount of storage to be reserved.
 In the
 <literal>extern</literal>
 case,
-there must be an external definition (see <quote>External Definitions</quote>)
+there must be an external definition (see <xref linkend="cref10"/>)
 for the given identifiers
 somewhere outside the function in which they are declared.
 </para><para>
@@ -1828,16 +1631,12 @@ that the variables declared will be heavily used.
 Only the first few
 such declarations in each function are effective.
 Moreover, only variables of certain types will be stored in registers;
-on the
-PDP-11,
-they are
+on the PDP-11, they are
 <literal>int</literal>
 or pointer.
 One other restriction applies to register variables:
 the address-of operator
-<literal>
-&amp;
-</literal>
+<literal>&amp;</literal>
 cannot be applied to them.
 Smaller, faster programs can be expected if register declarations
 are used appropriately,
@@ -1854,7 +1653,7 @@ outside.
 Exception:
 functions are never automatic.
 </para></sect2>
-<sect2><title>Type Specifiers</title>
+<sect2 id="cref8.2"><title>Type Specifiers</title>
 <para>
 The type-specifiers are
 <literallayout> 
@@ -1888,15 +1687,13 @@ with <literal>typedef</literal> names.
 If the type-specifier is missing from a declaration,
 it is taken to be <literal>int</literal>.
 </para><para>
-Specifiers for structures, unions, and enumerations are discussed in
-<quote>Structure, Union, and Enumeration Declarations.</quote>
+Specifiers for structures and unions are discussed in
+<xref linkend="cref8.5"/>.
 Declarations with
-<literal>
-typedef
-</literal>
-names are discussed in <quote>Typedef.</quote>
+<literal>typedef</literal>
+names are discussed in <xref linkend="cref8.8"/>.
 </para></sect2>
-<sect2><title>Declarators</title>
+<sect2 id="cref8.3"><title>Declarators</title>
 <para>
 The declarator-list appearing in a declaration
 is a comma-separated sequence of declarators,
@@ -1911,7 +1708,7 @@ each of which may have an initializer.
         declarator initializer<subscript>opt</subscript></emphasis>
 </literallayout>
 </para><para> 
-Initializers are discussed in <quote>Initialization</quote>.
+Initializers are discussed in <xref linkend="cref8.6"/>.
 The specifiers in the declaration
 indicate the type and storage class of the objects to which the
 declarators refer.
@@ -1928,7 +1725,7 @@ Declarators have the syntax:
 The grouping is
 the same as in expressions.
 </para></sect2>
-<sect2><title>Meaning of Declarators</title>
+<sect2 id="cref8.4"><title>Meaning of Declarators</title>
 <para>
 Each declarator is taken to be
 an assertion that when a construction of
@@ -1951,55 +1748,39 @@ Now imagine a declaration
 <literal>T D1</literal>
 </literallayout>
 where
-<literal>
-T
-</literal>
+<literal>T</literal>
 is a type-specifier (like
 <literal>int</literal>,
 etc.)
 and
-<literal>
-D1
-</literal>
+<literal>D1</literal>
 is a declarator.
 Suppose this declaration makes the identifier have type
 <quote>...
-<literal>
-T
-</literal>
+<literal>T</literal>
 ,</quote>
 where the <quote>...</quote> is empty if
-<literal>
-D1
-</literal>
+<literal>D1</literal>
 is just a plain identifier
 (so that the type of
-<literal>
-x
-</literal>
+<literal>x</literal>
 in
 <quote><literal>int x</literal></quote>
 is just
 <literal>int</literal>).
 Then if
-<literal>
-D1
-</literal>
+<literal>D1</literal>
 has the form
 <literallayout> 
 <literal>*D</literal>
 </literallayout>
 the type of the contained identifier is
 <quote>... pointer to
-<literal>
-T
-</literal>
-\&amp;.</quote>
+<literal>T</literal>
+&amp;.</quote>
 </para><para>
 If
-<literal>
-D1
-</literal>
+<literal>D1</literal>
 has the form
 <literallayout> 
 <literal>D()</literal>
@@ -2008,9 +1789,7 @@ then the contained identifier has the type
 <quote>... function returning
 <literal>T</literal>.</quote>
 If
-<literal>
-D1
-</literal>
+<literal>D1</literal>
 has the form
 <literallayout> 
 <literal>D[</literal><emphasis>constant-expression</emphasis><literal>]</literal>
@@ -2029,7 +1808,7 @@ whose value is determinable at compile time
 , whose type is
 <literal>int</literal>,
 and whose value is positive.
-(Constant expressions are defined precisely in <quote>Constant Expressions.</quote>)
+(Constant expressions are defined precisely in <xref linkend="cref15"/>)
 When several <quote>array of</quote> specifications are adjacent, a multidimensional
 array is created;
 the constant expressions which specify the bounds
@@ -2065,39 +1844,27 @@ As an example, the declaration
 declares an integer
 <literal>i</literal>,
 a pointer
-<literal>
-ip
-</literal>
+<literal>ip</literal>
 to an integer,
 a function
-<literal>
-f
-</literal>
+<literal>f</literal>
 returning an integer,
 a function
-<literal>
-fip
-</literal>
+<literal>fip</literal>
 returning a pointer to an integer,
 and a pointer
-<literal>
-pfi
-</literal>
+<literal>pfi</literal>
 to a function which
 returns an integer.
 It is especially useful to compare the last two.
 The binding of
-<literal>
-*fip()
-</literal>
+<literal>*fip()</literal>
 is
-<literal>
-*(fip())</literal>.
+<literal>*(fip())</literal>.
 The declaration suggests,
 and the same construction in an expression
 requires, the calling of a function
-<literal>
-fip</literal>.
+<literal>fip</literal>.
 Using indirection through the (pointer) result
 to yield an integer.
 In the declarator
@@ -2124,9 +1891,7 @@ Finally,
 declares a static 3-dimensional array of integers,
 with rank 3&times;5&times;7.
 In complete detail,
-<literal>
-x3d
-</literal>
+<literal>x3d</literal>
 is an array of three items;
 each item is an array of five arrays;
 each of the latter arrays is an array of seven
@@ -2135,15 +1900,13 @@ Any of the expressions
 <literal>x3d</literal>,
 <literal>x3d[i]</literal>,
 <literal>x3d[i][j]</literal>,
-<literal>
-x3d[i][j][k]
-</literal>
+<literal>x3d[i][j][k]</literal>
 may reasonably appear in an expression.
 The first three have type <quote>array</quote>
 and the last has type
 <literal>int</literal>.
 </para></sect2>
-<sect2><title>Structure and Union Declarations</title>
+<sect2 id="cref8.5"><title>Structure and Union Declarations</title>
 <para>
 A structure
 is an object consisting of a sequence of named members.
@@ -2248,9 +2011,7 @@ it is strongly recommended that fields be declared as
 In all implementations,
 there are no arrays of fields,
 and the address-of operator
-<literal>
-&amp;
-</literal>
+<literal>&amp;</literal>
 may not be applied to them, so that there are no pointers to
 fields.
 </para><para>
@@ -2322,14 +2083,10 @@ declaration
 <literal>struct tnode s, *sp;</literal>
 </literallayout>
 declares
-<literal>
-s
-</literal>
+<literal>s</literal>
 to be a structure of the given sort
 and
-<literal>
-sp
-</literal>
+<literal>sp</literal>
 to be a pointer to a structure
 of the given sort.
 With these declarations, the expression
@@ -2337,13 +2094,9 @@ With these declarations, the expression
 <literal>sp->count</literal>
 </literallayout>
 refers to the
-<literal>
-count
-</literal>
+<literal>count</literal>
 field of the structure to which
-<literal>
-sp
-</literal>
+<literal>sp</literal>
 points;
 <literallayout> 
 <literal>s.left</literal>
@@ -2356,24 +2109,17 @@ and
 <literal>s.right->tword[0]</literal>
 </literallayout>
 refers to the first character of the
-<literal>
-tword
-</literal>
+<literal>tword</literal>
 member of the right subtree of
-<literal>
-s</literal>.
-</para><para>
+<literal>s</literal>.
 </para></sect2>
-<sect2><title>Initialization</title>
+<sect2 id="cref8.6"><title>Initialization</title>
 <para>
 A declarator may specify an initial value for the
 identifier being declared.
 The initializer is preceded by
-<literal>
-= 
-</literal>
-and
-consists of an expression or a list of values nested in braces.
+<literal>=</literal>
+and consists of an expression or a list of values nested in braces.
 <literallayout> 
 <emphasis>initializer:
         = expression
@@ -2390,7 +2136,7 @@ consists of an expression or a list of values nested in braces.
 </para><para>
 All the expressions in an initializer
 for a static or external variable must be constant
-expressions, which are described in <quote>CONSTANT EXPRESSIONS</quote>,
+expressions, which are described in <xref linkend="cref15"/>,
 or expressions which reduce to the address of a previously
 declared variable, possibly offset by a constant expression.
 Automatic or register variables may be initialized by arbitrary
@@ -2446,9 +2192,7 @@ For example,
 <literal>int x[] = { 1, 3, 5 };</literal>
 </literallayout>
 declares and initializes
-<literal>
-x
-</literal>
+<literal>x</literal>
 as a one-dimensional array which has three members, since no size was specified
 and there are three initializers.
 <programlisting> 
@@ -2467,19 +2211,13 @@ namely
 <literal>y[0][0]</literal>,
 <literal>y[0][1]</literal>,
 and
-<literal>
-y[0][2]</literal>.
+<literal>y[0][2]</literal>.
 Likewise, the next two lines initialize
-<literal>
-y[1]
-</literal>
+<literal>y[1]</literal>
 and
-<literal>
-y[2]</literal>.
+<literal>y[2]</literal>.
 The initializer ends early and therefore
-<literal>
-y[3]
-</literal>
+<literal>y[3]</literal>
 is initialized with 0.
 Precisely, the same effect could have been achieved by
 <literallayout> 
@@ -2490,22 +2228,15 @@ Precisely, the same effect could have been achieved by
 </literallayout>
 </para><para> 
 The initializer for
-<literal>
-y
-</literal>
+<literal>y</literal>
 begins with a left brace but that for
-<literal>
-y[0]
-</literal>
+<literal>y[0]</literal>
 does not;
 therefore, three elements from the list are used.
 Likewise, the next three are taken successively for
-<literal>
-y[1]
-</literal>
+<literal>y[1]</literal>
 and
-<literal>
-y[2]</literal>.
+<literal>y[2]</literal>.
 Also,
 <literallayout> 
 <literal>float y[4][3] = 
@@ -2514,9 +2245,7 @@ Also,
 };</literal>
 </literallayout>
 initializes the first column of
-<literal>
-y
-</literal>
+<literal>y</literal>
 (regarded as a two-dimensional array)
 and leaves the rest 0.
 </para><para>
@@ -2527,7 +2256,7 @@ Finally,
 shows a character array whose members are initialized
 with a string.
 </para></sect2>
-<sect2><title>Type Names</title>
+<sect2 id="cref8.7"><title>Type Names</title>
 <para>
 In two contexts (to specify type conversions explicitly
 by means of a cast
@@ -2581,7 +2310,7 @@ name respectively the types <quote>integer,</quote> <quote>pointer to integer,</
 <quote>pointer to function returning an integer,</quote>
 and <quote>array of three pointers to functions returning an integer.</quote>
 </para></sect2>
-<sect2><title>Typedef</title>
+<sect2 id="cref8.8"><title>Typedef</title>
 <para>
 Declarations whose <quote>storage class</quote> is
 <literal>typedef</literal>
@@ -2601,7 +2330,7 @@ any declarator therein becomes syntactically
 equivalent to the type keyword
 naming the type
 associated with the identifier
-in the way described in <quote>Meaning of Declarators.</quote>
+in the way described in <xref linkend="cref8.4"/>.
 For example,
 after
 <programlisting> 
@@ -2615,25 +2344,17 @@ extern KLICKSP metricp;
 complex z, *zp;</literal>
 </literallayout>
 are all legal declarations; the type of
-<literal>
-distance
-</literal>
+<literal>distance</literal>
 is
 <literal>int</literal>,
 that of
-<literal>
-metricp
-</literal>
+<literal>metricp</literal>
 is <quote>pointer to <literal>int</literal>, </quote>
 and that of
-<literal>
-z
-</literal>
+<literal>z</literal>
 is the specified structure.
 The
-<literal>
-zp
-</literal>
+<literal>zp</literal>
 is a pointer to such a structure.
 </para><para>
 The
@@ -2642,20 +2363,17 @@ does not introduce brand-new types, only synonyms for
 types which could be specified in another way.
 Thus
 in the example above
-<literal>
-distance
-</literal>
+<literal>distance</literal>
 is considered to have exactly the same type as
 any other
 <literal>int</literal>
 object.
 </para></sect2></sect1>
-<sect1><title>
-Statements
-</title><para>
+<sect1 id="cref9">
+<title>Statements</title><para>
 Except as indicated, statements are executed in sequence.
 </para>
-<sect2><title>Expression Statement</title>
+<sect2 id="cref9.1"><title>Expression Statement</title>
 <para>
 Most statements are expression statements, which have
 the form
@@ -2666,7 +2384,7 @@ the form
 Usually expression statements are assignments or function
 calls.
 </para></sect2>
-<sect2><title>Compound Statement or Block</title>
+<sect2 id="cref9.2"><title>Compound Statement or Block</title>
 <para>
 So that several statements can be used where one is expected,
 the compound statement (also, and equivalently, called <quote>block</quote>) is provided:
@@ -2708,7 +2426,7 @@ Inside a block,
 declarations do not reserve storage
 so initialization is not permitted.
 </para></sect2>
-<sect2><title>Conditional Statement</title>
+<sect2 id="cref9.3"><title>Conditional Statement</title>
 <para>
 The two forms of the conditional statement are
 <literallayout> 
@@ -2723,20 +2441,15 @@ In the second case, the second substatement is executed
 if the expression is 0.
 The <quote>else</quote> ambiguity is resolved by connecting
 an
-<literal>
-else
-</literal>
+<literal>else</literal>
 with the last encountered
 <literal>else</literal>-less
-<literal>
-if</literal>.
+<literal>if</literal>.
 </para></sect2>
-<sect2><title>While Statement</title>
+<sect2 id="cref9.4"><title>While Statement</title>
 <para>
 The
-<literal>
-while
-</literal>
+<literal>while</literal>
 statement has the form
 <literallayout> 
 <literal>while</literal> ( <emphasis>expression</emphasis> ) <emphasis>statement</emphasis>
@@ -2748,12 +2461,10 @@ expression remains nonzero.
 The test takes place before each execution of the
 statement.
 </para></sect2>
-<sect2><title>Do Statement</title>
+<sect2 id="cref9.5"><title>Do Statement</title>
 <para>
 The
-<literal>
-do
-</literal>
+<literal>do</literal>
 statement has the form
 <literallayout> 
 <literal>do</literal> <emphasis>statement</emphasis>  <literal>while</literal> ( <emphasis>expression </emphasis>) ;
@@ -2764,12 +2475,10 @@ the value of the expression becomes 0.
 The test takes place after each execution of the
 statement.
 </para></sect2>
-<sect2><title>For Statement</title>
+<sect2 id="cref9.6"><title>For Statement</title>
 <para>
 The
-<literal>
-for
-</literal>
+<literal>for</literal>
 statement has the form:
 <literallayout>  
 <literal>for</literal><emphasis> ( exp-1<subscript>opt</subscript> ; exp-2<subscript>opt</subscript> ; exp-3<subscript>opt</subscript> ) statement</emphasis>
@@ -2779,7 +2488,7 @@ Except for the behavior of <literal>continue</literal>,
 this statement is equivalent to
 <literallayout> 
 <emphasis>exp-1 </emphasis>;
-<literal>while</literal> ( <emphasis>exp-2\ ) </emphasis>
+<literal>while</literal> ( <emphasis>exp-2 ) </emphasis>
 {
         <emphasis>statement
         exp-3 ;</emphasis>
@@ -2801,20 +2510,16 @@ exp-2
 </emphasis>
 makes the
 implied
-<literal>
-while
-</literal>
+<literal>while</literal>
 clause equivalent to
 <literal>while(1)</literal>;
 other missing expressions are simply
 dropped from the expansion above.
 </para></sect2>
-<sect2><title>Switch Statement</title>
+<sect2 id="cref9.7"><title>Switch Statement</title>
 <para>
 The
-<literal>
-switch
-</literal>
+<literal>switch</literal>
 statement causes control to be transferred
 to one of several statements depending on
 the value of an expression.
@@ -2839,7 +2544,7 @@ must be
 <literal>int</literal>.
 No two of the case constants in the same switch
 may have the same value.
-Constant expressions are precisely defined in <quote>CONSTANT EXPRESSIONS.</quote>
+Constant expressions are precisely defined in <xref linkend="cref15"/>.
 </para><para>
 There may also be at most one statement prefix of the
 form
@@ -2848,9 +2553,7 @@ form
 </literallayout>
 </para><para>
 When the
-<literal>
-switch
-</literal>
+<literal>switch</literal>
 statement is executed, its expression
 is evaluated and compared with each case constant.
 If one of the case constants is
@@ -2870,17 +2573,13 @@ none of the statements in the
 switch is executed.
 </para><para>
 The prefixes
-<literal>
-case
-</literal>
+<literal>case</literal>
 and
-<literal>
-default
-</literal>
+<literal>default</literal>
 do not alter the flow of control,
 which continues unimpeded across such prefixes.
 To exit from a switch, see
-<quote>Break Statement.</quote>
+<xref linkend="cref9.8"/>.
 </para><para>
 Usually, the statement that is the subject of a switch is compound.
 Declarations may appear at the head of this
@@ -2889,7 +2588,7 @@ but
 initializations of automatic or register variables
 are ineffective.
 </para></sect2>
-<sect2><title>Break Statement</title>
+<sect2 id="cref9.8"><title>Break Statement</title>
 <para>
 The statement
 <literallayout> 
@@ -2905,7 +2604,7 @@ statement;
 control passes to the
 statement following the terminated statement.
 </para></sect2>
-<sect2><title>Continue Statement</title>
+<sect2 id="cref9.9"><title>Continue Statement</title>
 <para>
 The statement
 <literallayout> 
@@ -2949,25 +2648,18 @@ More precisely, in each of the statements
 </tgroup>
 </informaltable>
 a
-<literal>
-continue
-</literal>
+<literal>continue</literal>
 is equivalent to
-<literal>
-goto\ contin</literal>.
+<literal>goto contin</literal>.
 (Following the
-<literal>
-contin:
-</literal>
-is a null statement, see <quote>Null Statement</quote>.)
+<literal>contin:</literal>
+is a null statement, see <xref linkend="cref9.13"/>.)
 </para></sect2>
-<sect2><title>Return Statement</title>
+<sect2 id="cref9.10"><title>Return Statement</title>
 <para>
 A function returns to its caller by means of
 the
-<literal>
-return
-</literal>
+<literal>return</literal>
 statement which has one of the
 forms
 <literallayout> 
@@ -2986,7 +2678,7 @@ Flowing off the end of a function is
 equivalent to a return with no returned value.
 The expression may be parenthesized.
 </para></sect2>
-<sect2><title>Goto Statement</title>
+<sect2 id="cref9.11"><title>Goto Statement</title>
 <para>
 Control may be transferred unconditionally by means of
 the statement
@@ -2995,10 +2687,10 @@ the statement
 </literallayout>
 </para><para>
 The identifier must be a label
-(see <quote>Labeled Statement</quote>)
+(see <xref linkend="cref9.12"/>)
 located in the current function.
 </para></sect2>
-<sect2><title>Labeled Statement</title>
+<sect2 id="cref9.12"><title>Labeled Statement</title>
 <para>
 Any statement may be preceded by
 label prefixes of the form
@@ -3008,13 +2700,12 @@ label prefixes of the form
 which serve to declare the identifier
 as a label.
 The only use of a label is as a target of a
-<literal>
-goto</literal>.
+<literal>goto</literal>.
 The scope of a label is the current function,
 excluding any subblocks in which the same identifier has been redeclared.
-See <quote>SCOPE RULES.</quote>
+See <xref linkend="cref11"/>
 </para></sect2>
-<sect2><title>Null Statement</title>
+<sect2 id="cref9.13"><title>Null Statement</title>
 <para>
 The null statement has the form
 <literallayout>
@@ -3022,17 +2713,14 @@ The null statement has the form
 </literallayout>
 </para><para>
 A null statement is useful to carry a label just before the
-<literal>
-}
-</literal>
+<literal>}</literal>
 of a compound statement or to supply a null
 body to a looping statement such as
-<literal>
-while</literal>.
+<literal>while</literal>.
 </para></sect2></sect1>
-<sect1><title>
-External Definitions
-</title><para>
+<sect1 id="cref10">
+<title>External Definitions</title>
+<para>
 A C program consists of a sequence of external definitions.
 An external definition declares an identifier to
 have storage class
@@ -3042,9 +2730,8 @@ or perhaps
 <literal>static</literal>,
 and
 a specified type.
-The type-specifier (see <quote>Type Specifiers</quote> in
-<quote>DECLARATIONS</quote>) may also be empty, in which
-case the type is taken to be
+The type-specifier (see <xref linkend="cref8.2"/>)
+may also be empty, in which case the type is taken to be
 <literal>int</literal>.
 The scope of external definitions persists to the end
 of the file in which they are declared just as the effect
@@ -3053,7 +2740,8 @@ The syntax of external definitions is the same
 as that of all declarations except that
 only at this level may the code for functions be given.
 </para>
-<sect2><title>External Function Definitions</title>
+<sect2 id="cref10.1">
+<title>External Function Definitions</title>
 <para>
 Function definitions have the form
 <literallayout>
@@ -3068,8 +2756,7 @@ are
 <literal>extern</literal>
 or
 <literal>static</literal>;
-see <quote>Scope of Externals</quote> in 
-<quote>SCOPE RULES</quote> for the distinction between them.
+see <xref linkend="cref11.2"/> for the distinction between them.
 A function declarator is similar to a declarator
 for a <quote>function returning ...</quote> except that
 it lists the formal parameters of
@@ -3116,13 +2803,9 @@ A simple example of a complete function definition is
 Here
 <literal>int</literal>
 is the type-specifier;
-<literal>
-max(a, b, c)
-</literal>
+<literal>max(a, b, c)</literal>
 is the function-declarator;
-<literal>
-int a, b, c;
-</literal>
+<literal>int a, b, c;</literal>
 is the declaration-list for
 the formal
 parameters;
@@ -3149,7 +2832,8 @@ a pointer to the first element of the array,
 declarations of formal parameters declared <quote>array of ...</quote>
 are adjusted to read <quote>pointer to ....</quote>
 </para></sect2>
-<sect2><title>External Data Definitions</title>
+<sect2>
+<title>External Data Definitions</title>
 <para>
 An external data definition has the form
 <literallayout> 
@@ -3167,9 +2851,8 @@ but not
 or
 <literal>register</literal>.
 </para></sect2></sect1>
-<sect1><title>
-Scope Rules
-</title><para>
+<sect1 id="cref11">
+<title>Scope Rules</title><para>
 A C program need not all
 be compiled at the same time. The source text of the
 program
@@ -3193,7 +2876,7 @@ which is characterized by the rule
 that references to the same external
 identifier are references to the same object.
 </para>
-<sect2><title>Lexical Scope</title>
+<sect2  id="cref11.1"><title>Lexical Scope</title>
 <para>
 The lexical scope of identifiers declared in external definitions
 persists from the definition through
@@ -3213,17 +2896,12 @@ including the block constituting a function,
 any declaration of that identifier outside the block
 is suspended until the end of the block.
 </para><para>
-Remember also (see <quote>Structure, Union, and Enumeration Declarations</quote> in
-<quote>DECLARATIONS</quote>) that tags, identifiers associated with
+Remember also (see <xref linkend="cref8.5"/>) that identifiers associated with
 ordinary variables,
-and identities associated with structure and union members
-form three disjoint classes
-which do not conflict.
+and those associated with structure and union members
+form two disjoint classes which do not conflict.
 Members and tags follow the same scope rules
 as other identifiers.
-The <literal>enum</literal> constants are in the same
-class as ordinary variables and follow the same scope rules.
-The
 <literal>typedef</literal>
 names are in the same class as ordinary identifiers.
 They may be redeclared in inner blocks, but an explicit
@@ -3242,10 +2920,10 @@ The
 must be present in the second declaration,
 or it would be taken to be
 a declaration with no declarators and type
-<literal>
-distance</literal>.
+<literal>distance</literal>.
 </para></sect2>
-<sect2><title>Scope of Externals</title>
+<sect2 id="cref11.2">
+<title>Scope of Externals</title>
 <para>
 If a function refers to an identifier declared to be
 <literal>extern</literal>,
@@ -3287,16 +2965,14 @@ are not visible in other files.
 Functions may be declared
 <literal>static</literal>.
 </para></sect2></sect1>
-<sect1><title>
+<sect1 id="cref12"><title>
 Compiler Control Lines
 </title><para>
 The C compiler contains a preprocessor capable
 of macro substitution, conditional compilation,
 and inclusion of named files.
 Lines beginning with
-<literal>
-#
-</literal>
+<literal>#</literal>
 communicate
 with this preprocessor.
 There may be any number of blanks and horizontal tabs
@@ -3347,9 +3023,7 @@ defined identifiers.
 In both forms
 a long definition may be continued on another line
 by writing
-<literal>
-\
-</literal>
+<literal>\</literal>
 at the end of the line to be continued.
 </para><para>
 This facility is most valuable for definition of <quote>manifest constants,</quote>
@@ -3406,7 +3080,7 @@ A compiler control line of the form
 <literal>#if</literal> <emphasis>constant-expression</emphasis>
 </literallayout>
 checks whether the constant expression evaluates to nonzero.
-(Constant expressions are discussed in <quote>CONSTANT EXPRESSIONS</quote>.
+(Constant expressions are discussed in <xref linkend="cref15"/>.
 A control line of the form
 <literallayout> 
 <literal>#ifdef </literal><emphasis>identifier</emphasis>
@@ -3414,9 +3088,7 @@ A control line of the form
 checks whether the identifier is currently defined
 in the preprocessor; i.e., whether it has been the
 subject of a
-<literal>
-#define
-</literal>
+<literal>#define</literal>
 control line.
 It is equivalent to <literal>#ifdef(</literal><emphasis>identifier</emphasis><literal>)</literal>.
 A control line of the form
@@ -3443,25 +3115,17 @@ and then by a control line
 If the checked condition is true,
 then any lines
 between
-<literal>
-#else
-</literal>
+<literal>#else</literal>
 and
-<literal>
-#endif
-</literal>
+<literal>#endif</literal>
 are ignored.
 If the checked condition is false, then any lines between
 the test and a
-<literal>
-#else
-</literal>
+<literal>#else</literal>
 or, lacking a
 <literal>#else</literal>,
 the
-<literal>
-#endif 
-</literal>
+<literal>#endif</literal>
 are ignored.
 </para><para>
 These constructions may be nested.
@@ -3479,7 +3143,7 @@ that the line number of the next source line is given by the constant and the cu
 file is named by the identifier.
 If the identifier is absent, the remembered file name does not change.
 </para></sect2></sect1>
-<sect1><title>
+<sect1 id="cref13"><title>
 Implicit Declarations
 </title><para>
 It is not always necessary to specify
@@ -3508,21 +3172,18 @@ it is implicitly declared to be
 </para><para>
 In an expression, an identifier
 followed by
-<literal>
-(
-</literal>
+<literal>(</literal>
 and not already declared
 is contextually
 declared to be <quote>function returning
 <literal>int</literal>.</quote>
 </para></sect1>
-<sect1><title>
-Types Revisited
-</title><para>
+<sect1 id="cref14">
+<title>Types Revisited</title><para>
 This part summarizes the operations
 which can be performed on objects of certain types.
 </para>
-<sect2><title>Structures and Unions</title>
+<sect2 id="cref14.1"><title>Structures and Unions</title>
 <para>
 Structures and unions may be assigned, passed as arguments to functions,
 and returned by functions.
@@ -3546,7 +3207,7 @@ and if the union currently contains one of these structures,
 it is permitted to inspect the common initial part of any of
 the contained structures.
 </para></sect2>
-<sect2><title>Functions</title>
+<sect2 id="cref14.2"><title>Functions</title>
 <para>
 There are only two things that
 can be done with a function <literal>m</literal>,
@@ -3563,9 +3224,7 @@ g(f);
 </programlisting>
 </para><para>
 Then the definition of
-<literal>
-g
-</literal>
+<literal>g</literal>
 might read
 <programlisting> 
 g(funcp)
@@ -3578,21 +3237,15 @@ g(funcp)
 </programlisting>
 </para><para>
 Notice that
-<literal>
-f
-</literal>
+<literal>f</literal>
 must be declared
 explicitly in the calling routine since its appearance
 in
-<literal>
-g(f)
-</literal>
+<literal>g(f)</literal>
 was not followed by
-<literal>
-(.
-</literal>
+<literal>(.</literal>
 </para></sect2>
-<sect2><title>Arrays, Pointers, and Subscripting</title>
+<sect2 id="cref14.3"><title>Arrays, Pointers, and Subscripting</title>
 <para>
 Every time an identifier of array type appears
 in an expression, it is converted into a pointer
@@ -3633,17 +3286,13 @@ array
 of rank
 i&times;j&times;...&times;k,
 then
-<literal>
-E
-</literal>
+<literal>E</literal>
 appearing in an expression is converted to
 a pointer to an (n-1)-dimensional
 array with rank
 j&times;...&times;k.
 If the
-<literal>
-*
-</literal>
+<literal>*</literal>
 operator, either explicitly
 or implicitly as a result of subscripting,
 is applied to this pointer,
@@ -3656,34 +3305,24 @@ For example, consider
 </literallayout>
 </para><para>
 Here
-<literal>
-x
-</literal>
+<literal>x</literal>
 is a 3&times;5 array of integers.
 When
-<literal>
-x
-</literal>
+<literal>x</literal>
 appears in an expression, it is converted
 to a pointer to (the first of three) 5-membered arrays of integers.
 In the expression
 <literal>x[i]</literal>,
 which is equivalent to
 <literal>*(x+i)</literal>,
-<literal>
-x
-</literal>
+<literal>x</literal>
 is first converted to a pointer as described;
 then
-<literal>
-i
-</literal>
+<literal>i</literal>
 is converted to the type of
 <literal>x</literal>,
 which involves multiplying
-<literal>
-i
-</literal>
+<literal>i</literal>
 by the
 length the object to which the pointer points,
 namely 5-integer objects.
@@ -3704,8 +3343,8 @@ Arrays play no other part in subscript calculations.
 Certain conversions involving pointers are permitted
 but have implementation-dependent aspects.
 They are all specified by means of an explicit type-conversion
-operator, see <quote>Unary Operators</quote> under<quote>EXPRESSIONS</quote> and
-<quote>Type Names</quote>under <quote>DECLARATIONS.</quote>
+operator, see <xref linkend="cref7.2"/> and
+<xref linkend="cref8.7"/>.
 </para><para>
 A pointer may be converted to any of the integral types large
 enough to hold it.
@@ -3783,35 +3422,30 @@ aligned on 4-byte boundaries. <literal>short</literal>s are aligned in all cases
 2-byte boundaries. Arrays of characters, all structures,
 <literal>int</literal>s, <literal>long</literal>s, <literal>float</literal>s, and <literal>double</literal>s are aligned on 4-byte
 boundries; but structure members may be packed tighter.
-</para></sect2>
-<sect2><title>CONSTANT EXPRESSIONS</title>
+</para></sect2></sect1>
+<sect1 id="cref15"><title>Constant Expressions</title>
 <para>
-In several places C requires expressions that evaluate to
+In several places C requires expressions which evaluate to
 a constant:
-after
-<literal>case</literal>,
+after <literal>case</literal>,
 as array bounds, and in initializers.
 In the first two cases, the expression can
 involve only integer constants, character constants,
-casts to integral types,
-enumeration constants,
 and
-<literal>
-sizeof
-</literal>
+<literal>sizeof</literal>
 expressions, possibly
 connected by the binary operators
-<literallayout> 
+<screen> 
 + - * / % &amp; | ^ &lt;&lt; >> == != &lt; > &lt;= >= &amp;&amp; ||
-</literallayout>
+</screen>
 or by the unary operators
-<literallayout> 
+<screen> 
 -  ~
-</literallayout>
+</screen>
 or by the ternary operator
-<literallayout> 
+<screen> 
 ?:
-</literallayout>
+</screen>
 </para><para>
 Parentheses can be used for grouping
 but not for function calls.
@@ -3821,24 +3455,20 @@ besides constant expressions as discussed above,
 one can also use floating constants
 and arbitrary casts and
 can also apply the unary
-<literal>
-&amp;
-</literal>
+<literal>&amp;</literal>
 operator to external or static objects
 and to external or static arrays subscripted
 with a constant expression.
 The unary
-<literal>
-&amp;
-</literal>
+<literal>&amp;</literal>
 can also
 be applied implicitly
 by appearance of unsubscripted arrays and functions.
 The basic rule is that initializers must
 evaluate either to a constant or to the address
 of a previously declared external or static object plus or minus a constant.
-</para></sect2></sect1>
-<sect1><title>
+</para></sect1>
+<sect1 id="cref16"><title>
 Portability Considerations
 </title><para>
 Certain parts of C are inherently machine dependent.
@@ -3906,7 +3536,7 @@ notably, the current PDP-11 compiler will not initialize structures containing
 bitfields, and does not accept a few assignment operators in certain contexts where the
 value of the assignment is used.
 </para></sect1>
-<sect1><title>Anachronisms</title>
+<sect1 id="cref17"><title>Anachronisms</title>
 <para>
 Since C is an evolving language, certain obsolete constructions may be
 found in older programs. Although most versions of the compiler support
@@ -3914,7 +3544,8 @@ such anachronisms, ultimately they will disappear, leaving only a portability
 problem behind.
 </para>
 <para>
-Earlier versions of C used the form =op instead of op= for assignment
+Earlier versions of C used the form =<replaceable>op</replaceable> instead
+of <replaceable>op</replaceable>= for assignment
 operators. This leads to ambiguities, typified by:
 <screen>
      x=-1
@@ -3938,7 +3569,7 @@ The change was made because the initialization
 </screen>
 resembles a function declaration closely enough to confuse the compilers.
 </para></sect1>
-<sect1><title>Syntax Summary</title>
+<sect1 id="cref18"><title>Syntax Summary</title>
 <para>
 This summary of C syntax is intended more for aiding comprehension
 than as an exact statement of the language.
@@ -4171,7 +3802,8 @@ The comma operator has the lowest priority and groups left to right.
              ;</emphasis>
 </literallayout>
 </para></sect2>
-<sect2><title>External definitions</title>
+<sect2>
+<title>External definitions</title>
 <para>
 <literallayout>
      <emphasis>program:

@@ -10,7 +10,7 @@ number (in parenthesis) to see for more specific information.
 <listitem>
 <para>
 Variable has already been declared at the current block level.
-(8.1, 9.2)
+(<xref linkend="cref8.1"/>, <xref linkend="cref9.2"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -28,7 +28,7 @@ of this error is not being able to find an include file.
 <listitem>
 <para>
 Function argument declared as type struct, union or function.
-Pointers to such types, however are allowed. (10.1)
+Pointers to such types, however are allowed. (<xref linkend="cref10.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -37,7 +37,7 @@ Pointers to such types, however are allowed. (10.1)
 <listitem>
 <para>
 Function arguments may only be declared as storage class
-register. (10.1)
+register. (<xref linkend="cref10.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -54,7 +54,7 @@ char) was encountered in the source file. (2)
 <varlistentry><term>both must be integral</term>
 <listitem>
 <para>
-&gt;&gt; and &lt;&lt; operands cannot be FLOAT or DOUBLE. (7.5)
+&gt;&gt; and &lt;&lt; operands cannot be FLOAT or DOUBLE. (<xref linkend="cref7.5"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -63,7 +63,7 @@ char) was encountered in the source file. (2)
 <listitem>
 <para>
 The break statement is allowed only inside a while, do, for or
-switch block. (9.8)
+switch block. (<xref linkend="cref9.8"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -72,7 +72,7 @@ switch block. (9.8)
 <listitem>
 <para>
 &amp; operator not allowed in a register variable. Operand must
-otherwise be an lvalue. (7.2)
+otherwise be an lvalue. (<xref linkend="cref7.2"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -80,7 +80,7 @@ otherwise be an lvalue. (7.2)
 <varlistentry><term>cannot cast</term>
 <listitem>
 <para>
-Type result of cast cannot be FUNCTION or ARRAY. (7.2, 8.7)
+Type result of cast cannot be FUNCTION or ARRAY. (<xref linkend="cref7.2"/>, <xref linkend="cref8.7"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -89,7 +89,7 @@ Type result of cast cannot be FUNCTION or ARRAY. (7.2, 8.7)
 <listitem>
 <para>
 Could not determine size from declaration or initializer.
-(8.6, 14.3)
+(<xref linkend="cref8.6"/>, <xref linkend="cref14.3"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -98,7 +98,7 @@ Could not determine size from declaration or initializer.
 <listitem>
 <para>
 Storage class or type does not allow variable to be
-initialized. (8.6)
+initialized. (<xref linkend="cref8.6"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -117,7 +117,7 @@ Microware.
 <listitem>
 <para>
 While, do, for, switch and if statements require a condition
-expression. (9.3)
+expression. (<xref linkend="cref9.3"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -129,7 +129,7 @@ Initializer expressions for statis or external variables cannot
 reference variables. They may, however, refer to the address
 of a previously declared variable. This installation allows no
 initializer expressions unless all operands are of type INT or
-CHAR (8.6)
+CHAR (<xref linkend="cref8.6"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -138,7 +138,7 @@ CHAR (8.6)
 <listitem>
 <para>
 Input numeric constant was too large for the implied or
-explicit type. (2.6, [PDP-11])
+explicit type. (<xref linkend="cref2.6"/>, [PDP-11])
 </para>
 </listitem>
 </varlistentry>
@@ -146,8 +146,8 @@ explicit type. (2.6, [PDP-11])
 <varlistentry><term>constant required</term>
 <listitem>
 <para>
-Variables are not allowed for array dimensions or cases. (8.3,
-8.7, 9.7)
+Variables are not allowed for array dimensions or cases. (<xref linkend="cref8.3"/>,
+<xref linkend="cref8.7"/>, <xref linkend="cref9.7"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -156,7 +156,7 @@ Variables are not allowed for array dimensions or cases. (8.3,
 <listitem>
 <para>
 The continue statement is allowed only inside a while, do, or
-for block. (9.9)
+for block. (<xref linkend="cref9.9"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -169,7 +169,7 @@ typically caused by declaring a function to return a non-integer
 type after a reference has been made to the function.
 Depending on the line structure of the declaration block, this
 error may be reported on the line following the erroneous
-declaration. (11, 11.1, 11.2)
+declaration. (<xref linkend="cref11"/>, <xref linkend="cref11.1"/>, <xref linkend="cref11.2"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -203,7 +203,7 @@ An expression is required here.
 <listitem>
 <para>
 Statement or expression encountered outside a function.
-Typically causes by mismatched braces. (10.1)
+Typically causes by mismatched braces. (<xref linkend="cref10.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -212,7 +212,7 @@ Typically causes by mismatched braces. (10.1)
 <listitem>
 <para>
 A function cannot be declared as returning an array, function,
-struct, or union. (8.4, 10.1)
+struct, or union. (<xref linkend="cref8.4"/>, <xref linkend="cref10.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -221,7 +221,7 @@ struct, or union. (8.4, 10.1)
 <listitem>
 <para>
 End-of-file encountered before the end of function definition.
-(10.1)
+(<xref linkend="cref10.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -238,7 +238,7 @@ Identifier name required here but none was found.
 <listitem>
 <para>
 Declarations are allowed only at the beginning of a block.
-(9.2)
+(<xref linkend="cref9.2"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -246,7 +246,7 @@ Declarations are allowed only at the beginning of a block.
 <varlistentry><term>label required</term>
 <listitem>
 <para>
-Label name required on goto statement. (9.11)
+Label name required on goto statement. (<xref linkend="cref9.1"/>1)
 </para>
 </listitem>
 </varlistentry>
@@ -254,7 +254,7 @@ Label name required on goto statement. (9.11)
 <varlistentry><term>label undefined</term>
 <listitem>
 <para>
-Goto to label not defined in the current function. (9.12)
+Goto to label not defined in the current function. (<xref linkend="cref9.12"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -263,7 +263,7 @@ Goto to label not defined in the current function. (9.12)
 <listitem>
 <para>
 Left side of assigment must be able to be "stored into".
-Array names, functions, structs, etc. are no lvalues. (7.1)
+Array names, functions, structs, etc. are no lvalues. (<xref linkend="cref7.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -271,7 +271,7 @@ Array names, functions, structs, etc. are no lvalues. (7.1)
 <varlistentry><term>multiple defaults</term>
 <listitem>
 <para>
-Only one default statement is allowed in a switch block. (9.7)
+Only one default statement is allowed in a switch block. (<xref linkend="cref9.7"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -280,7 +280,7 @@ Only one default statement is allowed in a switch block. (9.7)
 <listitem>
 <para>
 Identifier name was declared more than once in the same block
-level (9.2, 11.1)
+level (<xref linkend="cref9.2"/>, <xref linkend="cref11.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -296,7 +296,7 @@ Type of object required here must be type int, char or pointer.
 <varlistentry><term>name clash</term>
 <listitem>
 <para>
-Struct-union member and tag names must be mutually distinct.  (8.5)
+Struct-union member and tag names must be mutually distinct.  (<xref linkend="cref8.5"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -304,7 +304,7 @@ Struct-union member and tag names must be mutually distinct.  (8.5)
 <varlistentry><term>name in cast</term>
 <listitem>
 <para>
-Identifier name found in a cast. Only types are allowed. (7.2, 8.7)
+Identifier name found in a cast. Only types are allowed. (<xref linkend="cref7.2"/>, <xref linkend="cref8.7"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -312,7 +312,7 @@ Identifier name found in a cast. Only types are allowed. (7.2, 8.7)
 <varlistentry><term>named twice</term>
 <listitem>
 <para>
-Names in a function parameter list may appear only once. (10.1)
+Names in a function parameter list may appear only once. (<xref linkend="cref10.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -321,7 +321,7 @@ Names in a function parameter list may appear only once. (10.1)
 <listitem>
 <para>
 Else statement found with no matching if. This is typically
-caused by extra or missing braces and/or semicolons. (9.3)
+caused by extra or missing braces and/or semicolons. (<xref linkend="cref9.3"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -329,7 +329,7 @@ caused by extra or missing braces and/or semicolons. (9.3)
 <varlistentry><term>no switch statement</term>
 <listitem>
 <para>
-Case statements can only appear within a switch block. (9.7)
+Case statements can only appear within a switch block. (<xref linkend="cref9.7"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -339,7 +339,7 @@ Case statements can only appear within a switch block. (9.7)
 <para>
 Primary in expression is not type "function returning...". If
 this is really a function call, the function name was declared
-differently elsewhere. (7.1)
+differently elsewhere. (<xref linkend="cref7.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -347,7 +347,7 @@ differently elsewhere. (7.1)
 <varlistentry><term>not an argument</term>
 <listitem>
 <para>
-Name does not appear in the function parameter list. (10.1)
+Name does not appear in the function parameter list. (<xref linkend="cref10.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -357,7 +357,7 @@ Name does not appear in the function parameter list. (10.1)
 <para>
 Unary operators require one operand, binary operators two.
 This is typically caused by misplaced parenthesis, casts or
-operators. (7.1)
+operators. (<xref linkend="cref7.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -387,7 +387,7 @@ the code body.
 <varlistentry><term>pointer mismatch</term>
 <listitem>
 <para>
-Pointers refer to different types. Use a case if required. (7.1)
+Pointers refer to different types. Use a case if required. (<xref linkend="cref7.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -396,7 +396,7 @@ Pointers refer to different types. Use a case if required. (7.1)
 <listitem>
 <para>
 A pointer (of any type) or integer is required to the left of
-the '-&gt;' operator. (7.1)
+the '-&gt;' operator. (<xref linkend="cref7.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -404,7 +404,7 @@ the '-&gt;' operator. (7.1)
 <varlistentry><term>pointer required</term>
 <listitem>
 <para>
-Pointer operand required with unary * operator. (7.1)
+Pointer operand required with unary * operator. (<xref linkend="cref7.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -412,7 +412,7 @@ Pointer operand required with unary * operator. (7.1)
 <varlistentry><term>primary expected</term>
 <listitem>
 <para>
-Primary expression required here. (7.1)
+Primary expression required here. (<xref linkend="cref7.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -422,7 +422,7 @@ Primary expression required here. (7.1)
 <para>
 Second and third expression of ?: conditional operator cannot
 be pointers to different types. If both are pointers, they
-must be of the same type or one of the two must be null. (7.13)
+must be of the same type or one of the two must be null. (<xref linkend="cref7.13"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -440,7 +440,7 @@ lock-level nesting or hundreds of switch cases.
 <listitem>
 <para>
 Reg and auto storage classes mey only be used within functions.
-(8.1)
+(<xref linkend="cref8.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -449,7 +449,7 @@ Reg and auto storage classes mey only be used within functions.
 <listitem>
 <para>
 Identical member names in two different structures must have
-the same type and offset in both. (8.5)
+the same type and offset in both. (<xref linkend="cref8.5"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -458,7 +458,7 @@ the same type and offset in both. (8.5)
 <listitem>
 <para>
 Identifier used with . and -&gt; operators must be a structure
-member name. (7.1)
+member name. (<xref linkend="cref7.1"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -466,7 +466,7 @@ member name. (7.1)
 <varlistentry><term>struct syntax</term>
 <listitem>
 <para>
-Brace, comma, etc. is missing in a struct declaration. (8.5)
+Brace, comma, etc. is missing in a struct declaration. (<xref linkend="cref8.5"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -492,7 +492,7 @@ Expression, declaration or statement is incorrectly formed.
 <para>
 ? must be followed by a : with expression. This error may be
 causes by unmatched parenthesis or other errors in the
-expression. (7.13)
+expression. (<xref linkend="cref7.13"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -501,7 +501,7 @@ expression. (7.13)
 <listitem>
 <para>
 Too many characters provided in a string initializing a
-character array. (8.6)
+character array. (<xref linkend="cref8.6"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -510,7 +510,7 @@ character array. (8.6)
 <listitem>
 <para>
 Unmatched or unexpected brackets encountered processiong an
-initializer. (8.6)
+initializer. (<xref linkend="cref8.6"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -519,7 +519,7 @@ initializer. (8.6)
 <listitem>
 <para>
 More data items supplied for aggregate level in initializer
-than members of the aggregate. (8.6)
+than members of the aggregate. (<xref linkend="cref8.6"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -543,7 +543,7 @@ Types and/or operators in expression do not correspond. (6)
 <varlistentry><term>typedef - not a variable</term>
 <listitem>
 <para>
-Typedef type name cannot be used in this manner. (8.8)
+Typedef type name cannot be used in this manner. (<xref linkend="cref8.8"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -560,7 +560,7 @@ no declaration exists at any block level for this identifier.
 <listitem>
 <para>
 Union or struct declaration refers to an undefined structure
-name. (8.5)
+name. (<xref linkend="cref8.5"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -568,7 +568,7 @@ name. (8.5)
 <varlistentry><term>unions not allowed</term>
 <listitem>
 <para>
-Cannot initialize union members. (8.6)
+Cannot initialize union members. (<xref linkend="cref8.6"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -576,7 +576,7 @@ Cannot initialize union members. (8.6)
 <varlistentry><term>unterminated character constant</term>
 <listitem>
 <para>
-Unmatched ' character delimiters. (2.4.3)
+Unmatched ' character delimiters. (<xref linkend="cref2.4.3"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -584,7 +584,7 @@ Unmatched ' character delimiters. (2.4.3)
 <varlistentry><term>unterminated string</term>
 <listitem>
 <para>
-Unmatched " string delimiters. (2.5)
+Unmatched " string delimiters. (<xref linkend="cref2.5"/>)
 </para>
 </listitem>
 </varlistentry>
@@ -592,7 +592,7 @@ Unmatched " string delimiters. (2.5)
 <varlistentry><term>while expected</term>
 <listitem>
 <para>
-No while found for do statement. (9.5)
+No while found for do statement. (<xref linkend="cref9.5"/>)
 </para>
 </listitem>
 </varlistentry>
