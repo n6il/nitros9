@@ -92,8 +92,8 @@ L0086    stb   <V.COLoad,u
 *        Y = path desc ptr
 Write    tsta  
          bmi   L00D0
-         cmpa  #$1F			byte $1F?
-         bls   Dispatch			branch if lower or same
+         cmpa  #$1F		byte $1F?
+         bls   Dispatch		branch if lower or same
          ldb   <V.CFlag,u
          beq   L00B0
          cmpa  #$5E
@@ -124,32 +124,32 @@ L00C8    cmpa  #$40
          bcs   L00CE
          suba  #$40
 L00CE    eora  #$40
-L00D0    ldx   <V.CrsrA,u		get cursor address in X
-         sta   ,x+			store character at address
-         stx   <V.CrsrA,u 		update cursor address
-         cmpx  <V.ScrnE,u 		end of screen?
-         bcs   L00DF			branch if not
-         bsr   SScrl			else if at end of screen, scroll it
-L00DF    bsr   ShowCrsr			ends with a CLRB/RTS anyhow
+L00D0    ldx   <V.CrsrA,u	get cursor address in X
+         sta   ,x+		store character at address
+         stx   <V.CrsrA,u 	update cursor address
+         cmpx  <V.ScrnE,u 	end of screen?
+         bcs   L00DF		branch if not
+         bsr   SScrl		else if at end of screen, scroll it
+L00DF    bsr   ShowCrsr		ends with a CLRB/RTS anyhow
 
 * no operation entry point
 NoOp     clrb  
          rts   
 
 * Screen Scroll Routine
-SScrl    ldx   <V.ScrnA,u		get address of screen
-         leax  <32,x			move to 2nd line
-L00E9    ldd   ,x++			copy from this line
-         std   <-34,x			to prevous
-         cmpx  <V.ScrnE,u		at end of screen yet?
-         bcs   L00E9			branch if not
-         leax  <-32,x			else back up one line
-         stx   <V.CrsrA,u		save address of cursor (first col of last row)
-         lda   #32			clear out row...
-         ldb   #$60			...width spaces
-L00FD    stb   ,x+			do it...
-         deca  				end of rope?
-         bne   L00FD			branch if not
+SScrl    ldx   <V.ScrnA,u	get address of screen
+         leax  <32,x		move to 2nd line
+L00E9    ldd   ,x++		copy from this line
+         std   <-34,x		to prevous
+         cmpx  <V.ScrnE,u	at end of screen yet?
+         bcs   L00E9		branch if not
+         leax  <-32,x		else back up one line
+         stx   <V.CrsrA,u	save address of cursor (first col of last row)
+         lda   #32		clear out row...
+         ldb   #$60		...width spaces
+L00FD    stb   ,x+		do it...
+         deca  			end of rope?
+         bne   L00FD		branch if not
 L0102    rts   
 
 Dispatch cmpa  #$1B		escape code?
@@ -165,21 +165,21 @@ bad@     comb
          rts   
 
 * display functions dispatch table
-DCodeTbl fdb   NoOp-DCodeTbl   $ffca  $00:no-op (null)
-         fdb   CurHome-DCodeTbl  $007d  $01:HOME cursor
-         fdb   CurXY-DCodeTbl  $00c9  $02:CURSOR XY
-         fdb   DelLine-DCodeTbl  $0107  $03:ERASE LINE
-         fdb   ErEOLine-DCodeTbl  $00f9  $04:CLEAR TO EOL
-         fdb   Do05-DCodeTbl  $0091  $05:CURSOR ON/OFF
-         fdb   CurRght-DCodeTbl  $005e  $06:CURSOR RIGHT
-         fdb   NoOp-DCodeTbl  $ffca  $07:no-op (bel:handled in CCIO)
-         fdb   CurLeft-DCodeTbl  $0050  $08:CURSOR LEFT
-         fdb   CurUp-DCodeTbl  $0119  $09:CURSOR UP
-         fdb   CurDown-DCodeTbl  $0038  $0A:CURSOR DOWN
-         fdb   ErEOScrn-DCodeTbl  $006c  $0B:ERASE TO EOS
-         fdb   ClrScrn-DCodeTbl  $0070  $0C:CLEAR SCREEN
-         fdb   Retrn-DCodeTbl  $001e  $0D:RETURN
-         fdb   DoAlpha-DCodeTbl  $012a  $0E:DISPLAY ALPHA
+DCodeTbl fdb   NoOp-DCodeTbl		$00:no-op (null)
+         fdb   CurHome-DCodeTbl		$01:HOME cursor
+         fdb   CurXY-DCodeTbl		$02:CURSOR XY
+         fdb   DelLine-DCodeTbl		$03:ERASE LINE
+         fdb   ErEOLine-DCodeTbl	$04:CLEAR TO EOL
+         fdb   Do05-DCodeTbl		$05:CURSOR ON/OFF
+         fdb   CurRght-DCodeTbl		$005e  $06:CURSOR RIGHT
+         fdb   NoOp-DCodeTbl		$07:no-op (bel:handled in CCIO)
+         fdb   CurLeft-DCodeTbl		$0050  $08:CURSOR LEFT
+         fdb   CurUp-DCodeTbl		$0119  $09:CURSOR UP
+         fdb   CurDown-DCodeTbl		$0038  $0A:CURSOR DOWN
+         fdb   ErEOScrn-DCodeTbl	$006c  $0B:ERASE TO EOS
+         fdb   ClrScrn-DCodeTbl		$0070  $0C:CLEAR SCREEN
+         fdb   Retrn-DCodeTbl		$001e  $0D:RETURN
+         fdb   DoAlpha-DCodeTbl		$012a  $0E:DISPLAY ALPHA
 
 * $0D - move cursor to start of line (carriage return)
 Retrn    bsr   HideCrsr		hide cursor

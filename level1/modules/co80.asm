@@ -239,7 +239,7 @@ L017B    lda   <V.C80X,u
 L0184    bsr   L0152		do home cursor, then erase to EOS
 
 * $0B - erase to end of screen
-L0186    ldd   #$0780
+L0186    ldd   #80*24
 L0189    addd  <V.54,u
          bsr   L0161
 L018E    bsr   L016B
