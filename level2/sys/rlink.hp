@@ -1,5 +1,5 @@
 @RLINK
-Syntax: RLink [opts] <mainline> [<sub1>{<subn>}] [opts]
+Syntax: RLink [<opts>] <mainline> [<sub1> [...]] [<opts>]
 Usage : Linker
 Opts  :
   -o=<path> write linker object output to file specified

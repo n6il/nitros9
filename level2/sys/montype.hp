@@ -1,5 +1,5 @@
 @MONTYPE
-Syntax: Montype [opt]
+Syntax: Montype [<opts>]
 Usage : Set monitor type 
 Opts  :
   r = rgb monitor

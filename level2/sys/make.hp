@@ -1,12 +1,13 @@
 @MAKE
-Syntax: Make {[<-opts>] [<target file>] [<macros>]}
+Syntax: Make [<opts>] [<target file>] [<macros>]
 Usage : Maintain, Update and Regenerate Groups of Programs
-Opts  : -b  = don't use built in rules
-        -d  = debug mode, print out the file dates in makefile
-        -f=<xxx> use <xxx> as makefile (default: makefile)
-        -i  = ignore errors on commands, keep going
-        -n  = don't execute commands, just print them out
-        -s  = silent mode, execute commands without echoing them
-        -t  = update the dates without executing the commands
-        -u  = do the make whether it needs it or not
-        -z[=<path>] get list of files to make from stdin or path
+Opts  :
+  -b  = don't use built in rules
+  -d  = debug mode, print out the file dates in makefile
+  -f=<xxx> use <xxx> as makefile (default: makefile)
+  -i  = ignore errors on commands, keep going
+  -n  = don't execute commands, just print them out
+  -s  = silent mode, execute commands without echoing them
+  -t  = update the dates without executing the commands
+  -u  = do the make whether it needs it or not
+  -z[=<path>] get list of files to make from stdin or path
