@@ -1,0 +1,4 @@
+@CPUTYPE
+Syntax: CPUType
+Usage : Displays type of CPU being used
+Opts  :
