@@ -33,31 +33,34 @@ SUPPORT		= $(PREFACE) $(CHAPTERS) $(APPS) $(STDLIB) $(SYSCALL)
 
 all:	$(BOOK).pdf
 
-xml:
-	openjade -t tex -o $(BOOK).tex  -d  $(DOCBOOKDSL) $(XMLDCL)  $(BOOK).docbook
-	pdfjadetex $(BOOK).tex
-
+# Check for syntax errors in XML
 lint:
 	xmllint --valid --noout $(BOOK).docbook
 
 $(BOOK).pdf: $(BOOK).docbook $(SUPPORT)
-	docbook2pdf -d docbook-utils-a4.dsl#print $(BOOK).docbook
+	docbook2pdf -d "docbook-utils-a4.dsl#print" $(BOOK).docbook
 
 xmlto: $(BOOK).docbook
 	xmlto pdf $(BOOK).docbook
 
 $(BOOK).ps: $(BOOK).docbook
-	docbook2ps -d docbook-utils-a4.dsl#print $(BOOK).docbook
-#	docbook2ps -d $(STYLESHEET) $(BOOK).docbook
+	docbook2ps -d "docbook-utils-a4.dsl#print" $(BOOK).docbook
+#	docbook2ps -d $(STYLESHEET)#print $(BOOK).docbook
+
+# This rule is an alternative way to produce a PDF document
+xml-pdf:
+	openjade -t tex -o $(BOOK).tex -d $(DOCBOOKDSL) $(XMLDCL) $(BOOK).docbook
+	pdfjadetex $(BOOK).tex
+
 
 $(BOOK).html: $(BOOK).docbook
 	$(RM) *.htm *.html
 #	jade -t sgml -V html-index -d /usr/share/sgml/docbook/dsssl-stylesheets-1.64/html/docbook.dsl $(BOOK).docbook
 #	collateindex.pl -p -o index.docbook HTML.index
-	docbook2html -d docbook-utils-a4.dsl#html $(BOOK).docbook
+	docbook2html -d "docbook-utils-a4.dsl#html" $(BOOK).docbook
 
 print: $(BOOK).ps
 	psnup -2 $(BOOK).ps | lpr
 
 clean:
-	$(RM) *.htm *.html $(BOOK).pdf $(BOOK).ps
+	$(RM) *.htm *.html *.tex *.out $(BOOK).pdf $(BOOK).ps
