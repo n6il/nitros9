@@ -1,4 +1,14 @@
-* Shellplus 2.2a - modified by L. Curtis Boyle from original 2.2 disassembly
+********************************************************************
+* Shellplus - Enhanced shell for OS-9 Level Two
+*
+* Modified by L. Curtis Boyle from original 2.2 disassembly
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 21     Original Tandy/Microware version
+* 22a    History and numerous features added
 
          nam   Shell
          ttl   program module       
@@ -7,6 +17,7 @@
 * Signals: Signals 2 & 3 are assigned new keys to handle forward/backward
 * command history. Signal $B (11) is the signal sent out on a key being ready
 * for normal command processing
+
          ifp1
          use   defsfile
          endc
@@ -178,9 +189,9 @@ L002E    fcb   C$LF
 L003C    fcb   $00 
 L003D    fcc   '{@|#}$:                 '
 L0055    fcc   '+++START+++'
-         fcb   $0D 
+         fcb   C$CR
 L0061    fcc   '+++END+++'
-         fcb   $0D 
+         fcb   C$CR
 * Intercept routine
 L006B    stb   <u000E         Save signal code & return
          rti
@@ -809,7 +820,7 @@ L055E    lda   #DIR.+READ.    Open directory in READ mode
          lbsr  L0746          Check for special shell char or wildcard
          lbcc  L06E3          Special shell char found, ??????
 L0572    lda   ,x+            Get next char from filename
-         cmpa  #$0D           End of user specified filename (CR)?
+         cmpa  #C$CR          End of user specified filename (CR)?
          lbeq  L0789          Yes, close DIR and proceed
          cmpa  #',            Comma?
          beq   L0572          Yes, skip it
@@ -1351,7 +1362,7 @@ L0921    cmpa  ,x+            Keep searching until non-space char is found
          beq   L0921
          leax  -1,x           Point to 1st non-space char
 * ; (1st pass) comes here
-L0927    andcc #$FE           No carry & return
+L0927    andcc #^Carry        No carry & return
          rts   
 * Command line parser
 L092A    pshs  y,x            Preserve command table ptr & input line ptr
@@ -1750,7 +1761,7 @@ L0C0E    tst   a,u            Test duped path?
 L0C1A    tst   a,u
          bne   L0BCF
          pshs  d
-         ldb   #$0D
+         ldb   #C$CR
          stb   -$01,x
 
 L0C24    os9   I$Dup          Create duplicate of the standard path
@@ -1817,7 +1828,7 @@ L0CA8    ldb   #SS.Size       Init size of file to 0 bytes
          bra   L0CBE
 L0CB1    cmpb  #E$PNNF        Error 216 (path name not found)?
          beq   L0CB9          Yes, create the file
-         orcc  #$01           Otherwise, set error flag
+         orcc  #Carry         Otherwise, set error flag
          bra   L0CBE
 L0CB9    ldb   <u004E         Get file attributes
          os9   I$Create 
@@ -2052,7 +2063,7 @@ L0E84    leay  >u0175,u
 L0E8A    lda   ,x+
          bsr   L0F0C          Convert char to uppercase if lower
          sta   ,y+
-         cmpa  #$0D
+         cmpa  #C$CR
          beq   L0E99
          decb  
          bne   L0E8A
@@ -2385,7 +2396,7 @@ L1131    bsr   L1144
          lbcs  L0191
          subd  #$0001
 L113A    bsr   L11A7
-         lda   #$0D
+         lda   #C$CR
          sta   $05,y
          ldx   <u0048
          clrb  
@@ -2650,7 +2661,7 @@ eatchar  pshs  b,x,y          Preserve signal code & regs used
          lda   <u0018         Is the shell immortal?
          beq   NotSCF         No, don't try to eat the char
 eat      clra                 Standard in path
-         leas  -$20,s         Make 32 byte buffer for OPT's
+         leas  -PD.OPT,s      Make 32 byte buffer for OPT's
          leax  ,s             Point X to it
          clrb                 SS.Opt call
          os9   I$GetStt       Get current path options
@@ -2705,7 +2716,7 @@ L130A    lda   #Prgrm+Objct   Module type/language
          bhs   L1316          Yes, skip ahead
          ldb   #$1F           Otherwise, force to 7.5K minimum
          stb   <u0003         Save it
-L1316    andcc #$FE           Clear carry
+L1316    andcc #^Carry        Clear carry
          ldx   <u0004         Get mem module ptr
          ldy   <u0006         Get size of current command group
          ldu   <u0008         Get ptr to start of current command group
@@ -3162,7 +3173,7 @@ L16C8    decb                 Bump ASCII # down
          bhs   L16C8          Still more, keep going
          stb   ,x+            Save 10's digit
          adda  #$30           Bump 1's digit up to ASCII equivalent
-         ldb   #$0D           Add carriage return
+         ldb   #C$CR          Add carriage return
          std   ,x             Save overtop Y on the stack
          leax  ,s             Point X to B on stack
          jsr   ,y             
@@ -3568,18 +3579,18 @@ L1A97    cmpy  >u1806,u       Are we at end of buffer for history entries?
 L1AA2    rts   
 
 L1AA3    bsr   L1AB1          Reset std paths to normal <CTRL>-<E>/<C> settings
-         andcc #$FE           No error
+         andcc #^Carry        No error
          lbra  L018B          Normal command processing
 
 L1AAA    bsr   L1AB1          Reset std paths to normal <CTRL>-<E>/<C> settings
-         orcc  #$01           Error
+         orcc  #Carry         Error
          lbra  L018B          Normal command processing
 
 * Reset all 3 standard paths' NUL counts/Keyboard Interrupt/Terminate settings
 L1AB1    pshs  x,d            Preserve regs
          tst   >u1812,u       Check flag
          beq   L1AD6          If 0 skip ahead
-         leas  <-$20,s        Make 32 byte buffer on stack
+         leas  <-PD.OPT,s     Make 32 byte buffer on stack
          leax  ,s             Point X to buffer
          clrb                 CHANGE TO CLRB
          clra                 Standard input path
@@ -3598,9 +3609,9 @@ L1AD6    puls  pc,x,d         Restore regs & return
 L1AD8    pshs  a              Preserve path #
          os9   I$GetStt       Get current PD.OPT settings
          lda   >u180E,u       Get copy of Keyboard terminate char
-         sta   <PD.QUT-$20,x  Save into buffered copy
+         sta   <PD.QUT-PD.OPT,x  Save into buffered copy
          lda   >u180F,u       Get copy of Keyboard interrupt char
-         sta   <PD.INT-$20,x  Save into buffered copy
+         sta   <PD.INT-PD.OPT,x  Save into buffered copy
          lda   >u1811,u       Get copy of end of line NUL count
          sta   $6,x           Save into buffered copy
          puls  a              Get path # back

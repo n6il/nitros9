@@ -328,7 +328,7 @@ L0257    leas  $02,s
 L025B    cmpa  ,x+
          beq   L025B
          leax  -$01,x
-         andcc #$FE
+         andcc #^Carry
          rts   
 L0264    pshs  y,x
          leay  $02,y
