@@ -8,7 +8,7 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>sleep</function></funcdef>
-  <paramdef>seconds <parameter>seconds</parameter></paramdef>
+  <paramdef>int <parameter>seconds</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 </refsynopsisdiv>
