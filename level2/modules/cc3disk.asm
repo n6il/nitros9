@@ -1,648 +1,867 @@
 ********************************************************************
-* CC3Disk - CoCo 3 WD1773 disk driver
+* CC3Disk - WD1773 Disk Controller Driver
 *
+* A lot of references to **.CYL or <u00B6 using 16 bit registers can be
+* changed to 8 bit registers with a +1 offset, since track #'s >255 are
+* ignored
+*
+* NOTE: 512 bytes is reserved as a physical sector buffer. Any reads/
+*  writes are done from this buffer to the controller. Copies of the 256
+*  byte chunk needed are done by a block memory move
+
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 9      Original Tandy distribution version
-* 12     Obtained from L2 Upgrade archive               BGP 98/10/12
+*  11    Special opts for TC9 to slow controller reads      93/05/12
+*        and writes
+*        TFM's between sector buffers & in drive table
+*        init/copies
+*        Changed software timing loop (drive spin-up) to
+*        F$Sleep for 32 ticks
+*        Shrunk (slowed slightly) error returns
+*        Added blobstop code
 
          nam   CC3Disk
-         ttl   CoCo 3 WD1773 disk driver
+         ttl   WD1773 Disk Controller Driver
 
-* Disassembled 98/08/24 22:57:22 by Disasm v1.6 (C) 1988 by RML
+TC9      equ   0              Set to 1 for TC9 special slowdowns
+PRECOMP  equ   0              Set to 1 to turn on write precompensation
 
-         ifp1
+         IFP1
          use   defsfile
-         endc
+         use   rbfdefs
+         ENDC
 
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   12
+edition  set   11
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   1
-u0001    rmb   3
-u0004    rmb   4
-u0008    rmb   7
-u000F    rmb   35
-u0032    rmb   29
-u004F    rmb   1
-u0050    rmb   58
-u008A    rmb   29
-u00A7    rmb   2
-u00A9    rmb   1
+u0000    rmb   DRVBEG+(DRVMEM*4)
+u00A7    rmb   2              Last drive table accessed (ptr)
+u00A9    rmb   1              Bit mask for control reg (drive #, side,etc)
 u00AA    rmb   1
-u00AB    rmb   2
+sectbuf  rmb   2              Ptr to 512 byte sector buffer
 u00AD    rmb   1
 u00AE    rmb   1
-u00AF    rmb   2
-u00B1    rmb   4
-u00B5    rmb   1
-u00B6    rmb   2
-u00B8    rmb   1
-u00B9    rmb   1
+FBlock   rmb   2          block number for format
+FTask    rmb   1          task number for format
+u00B1    rmb   2              Vi.Cnt word for VIRQ
+u00B3    rmb   2              Vi.Rst word for VIRQ
+u00B5    rmb   1              Vi.Stat byte for VIRQ (drive motor timeout)
+u00B6    rmb   2              OS9's logical sector #
+u00B8    rmb   1              PCDOS (512 byte sector) sector #
+
 size     equ   .
-         fcb   $FF 
+
+         fcb   DIR.+SHARE.+PEXEC.+PWRIT.+PREAD.+EXEC.+UPDAT.
 
 name     fcs   /CC3Disk/
          fcb   edition
 
-start    lbra  Init
-         lbra  Read
-         lbra  Write
-         lbra  GetStat
-         lbra  SetStat
-         lbra  Term
 
-L0028    fcb   $00,$f0
-L002A    fcb   $00,$01,$0a
+L0028    fdb   $00f0          Initial count for VIRQ (240)
 
-Init     clra
-         sta   <D.MotOn clear out floppy disk timeout counter
-         ldx   u0001,u
-         leax  $08,x
-         lda   #$D0
-         sta   ,x
-         lbsr  L0412
-         lda   ,x
-         lda   #$FF
-         sta   >u00B8,u
-         sta   >u00B9,u
-         ldb   #$04
-         leax  u000F,u
-L004B    sta   ,x
-         sta   <$15,x
-         leax  <$26,x
-         decb  
-         bne   L004B
-         leax  >L0256,pcr
-         stx   <$00FC
-         pshs  y
-         leay  >u00B5,u
-         tfr   y,d
-         leay  >L050B,pcr
-         leax  >L002A,pcr
-         os9   F$IRQ    
-         puls  y
-         bcs   L0086
-         ldd   #$0200
-         pshs  u
-         os9   F$SRqMem 
-         tfr   u,x
-         puls  u
-         bcs   L0086
-         stx   >u00AB,u
-GetStat  clrb  
+irqpkt   fcb   $00            Normal bits (flip byte)
+         fcb   $01            Bit 1 is interrupt request flag (Mask byte)
+         fcb   10             Priority byte
+
+* Entry: Y=Ptr to device descriptor
+*        U=Ptr to device mem
+INIT     clr   <D.MotOn   flag drive motor as not running
+         ldx   V.PORT,u       Get Base port address
+         leax  8,x            Point to Status/Command register
+         lda   #$D0           Force Interrupt command
+         sta   ,x             Send to FDC
+         lbsr  L0406          Time delay for ~ 108 cycles
+         lda   ,x             Eat status register
+         ldd   #$FF04         'Invalid' value & # of drives
+         sta   >u00B8,u       Set 512 byte sector # to bogus value
+         sta   >u00B8+1,u
+         leax  DRVBEG,u       Point to start of drive tables
+L004B    sta   ,x             DD.TOT MSB to bogus value
+         sta   <V.TRAK,x      Init current track # to bogus value
+         leax  <DRVMEM,x      Point to next drive table
+         decb                 Done all 4 drives yet?
+         bne   L004B          No, init them all
+         leax  >L024A,pc      Point to NMI service routine
+         stx   <D.NMI         Install as system NMI
+         pshs  y              Save device dsc. ptr
+         leay  >u00B5,u       Point to Vi.Stat in VIRQ packet
+         tfr   y,d            Make it the status register ptr for IRQ
+         leay  >irqsvc,pc     Point to IRQ service routine
+         leax  >irqpkt,pc     Point to IRQ packet
+         os9   F$IRQ          Install IRQ
+         puls  y              Get back device dsc. ptr
+         bcs   L0086          If we can't install IRQ, exit
+         ldd   #512           Request 512 byte sector buffer
+         pshs  u              Preserve device mem ptr
+         os9   F$SRqMem       Request sector buffer
+         tfr   u,x            Move ptr to sector buffer to x
+         puls  u              Restore device mem ptr
+         bcs   L0086          If error, exit with it
+         stx   >sectbuf,u     Save ptr to sector buffer
+
+GETSTA   clrb                 no GetStt calls - return, no error, ignore
 L0086    rts   
 
-Term     leay  >u00B1,u
+TERM     leay  >u00B1,u       Point to VIRQ packet
+         IFNE  H6309
+         tfr   0,x        "remove"
+         ELSE
          ldx   #$0000
-         os9   F$VIRQ   
+         ENDC
+         os9   F$VIRQ         Remove VIRQ
+         IFNE  H6309
+         tfr   0,x        "remove"
+         ELSE
          ldx   #$0000
-         os9   F$IRQ    
-         pshs  u
-         ldu   >u00AB,u
-         ldd   #$0200
+         ENDC
+         os9   F$IRQ          Remove IRQ
+         pshs  u              Save device mem ptr
+         ldu   >sectbuf,u     Get pointer to sector buffer
+         ldd   #512           Return sector buffer memory
          os9   F$SRtMem 
-         puls  u
-         clra  
-         sta   >$FF40
-         sta   <u0032
-L00AB    rts   
-L00AC    pshs  x,b
-         stx   >u00B6,u
-         lda   <$23,y
-         anda  #$04
-         bne   L00BB
-         bra   L00CA
-L00BB    puls  x,b
-         clrb  
-         tfr   x,d
-         rora  
-         rorb  
-         tfr   d,x
-         stx   >u00B8,u
-         clrb  
-         rts   
-L00CA    puls  pc,x,b
-Read     bsr   L00AC
-         lda   #$91
-         pshs  x
-         lbsr  L0162
-         puls  x
-         bcs   L00AB
-         pshs  y,x
-         cmpx  #$0000
-         bne   L012D
-         puls  y,x
-         lda   <$23,y
-         bita  #$40
-         beq   L00F0
-         lbsr  L0526
-         pshs  y,x
-         bra   L012D
-L00F0    ldx   >u00AB,u
-         pshs  y,x
-         ldy   >u00A7,u
-         ldb   #$14
-L00FD    lda   b,x
-         sta   b,y
-         decb  
-         bpl   L00FD
-         lda   <$10,y
-         ldy   $02,s
-         ldb   <$24,y
-         bita  #$02
-         beq   L0115
-         bitb  #$01
-         beq   L0154
-L0115    bita  #$04
-         beq   L011D
-         bitb  #$02
-         beq   L0154
-L011D    bita  #$01
-         beq   L0128
-         lda   <$27,y
-         suba  #$02
-         bcs   L0154
-L0128    clrb  
-         puls  y,x
-         pshs  y,x
-L012D    ldy   $02,s
-         ldx   $08,y
-         lda   <$23,y
-         ldy   >u00AB,u
-         anda  #$04
-         beq   L014A
-         ldd   >u00B6,u
-         andb  #$01
-         beq   L014B
-         leay  >$0100,y
-L014A    clrb  
-L014B    lda   ,y+
-         sta   ,x+
-         decb  
-         bne   L014B
-         puls  pc,y,x
-L0154    comb  
-         ldb   #$F9
-         puls  pc,y,x
-L0159    bcc   L0162
-         pshs  x,b,a
-         lbsr  SSRESET
-         puls  x,b,a
-L0162    pshs  x,b,a
-         bsr   L016F
-         puls  x,b,a
-         lbcc  L00AB
-         lsra  
-         bne   L0159
-L016F    lbsr  L02B8
-         lbcs  L00AB
-L0176    ldx   >u00AB,u
-         pshs  y,cc
-         ldb   #$80
-         bsr   L01A8
-L0180    bita  >$FF48
-         bne   L019E
-         nop   
-         nop   
-         leay  -$01,y
-         bne   L0180
-         lda   >u00A9,u
-         ora   #$08
-         sta   >$FF40
-         lda   #$D0
-         sta   >$FF48
-         puls  y,cc
-         lbra  L03D8
-L019E    lda   >$FF4B
-         sta   ,x+
-         stb   >$FF40
-         bra   L019E
-L01A8    orcc  #IntMasks
-         stb   >$FF48
-         ldy   #$FFFF
-         ldb   #$28
-         orb   >u00A9,u
-         stb   >$FF40
-         ldb   #$A8
-         orb   >u00A9,u
-         lbsr  L0412
-         lda   #$02
-         rts   
-Write    lbsr  L00AC
-         lda   #$91
-L01CB    pshs  x,b,a
-         bsr   L01EF
-         puls  x,b,a
-         bcs   L01DF
-         tst   <$28,y
-         bne   L01DD
-         lbsr  L0266
-         bcs   L01DF
-L01DD    clrb  
-L01DE    rts   
-L01DF    lsra  
-         lbeq  L03BB
-         bcc   L01CB
-         pshs  x,b,a
-         lbsr  SSRESET
-         puls  x,b,a
-         bra   L01CB
-L01EF    lbsr  L02B8
-         bcs   L01DE
-         pshs  y,b,a
-         lda   <$23,y
-         anda  #$04
-         beq   L0214
-         lda   #$91
-         lbsr  L0176
-         ldd   >u00B6,u
-         andb  #$01
-         beq   L0214
-         ldx   >u00AB,u
-         leax  >$0100,x
-         bra   L0218
-L0214    ldx   >u00AB,u
-L0218    ldy   $08,y
-         clrb  
-L021C    lda   ,y+
-         sta   ,x+
-         decb  
-         bne   L021C
-         puls  y,b,a
-         ldx   >u00AB,u
-         ldb   #$A0
-L022B    pshs  y,cc
-         lbsr  L01A8
-L0230    bita  >$FF48
-         bne   L024C
-         leay  -$01,y
-         bne   L0230
-         lda   >u00A9,u
-         ora   #$08
-         sta   >$FF40
-         lda   #$D0
-         sta   >$FF48
-         puls  y,cc
-         lbra  L03BB
-L024C    lda   ,x+
-         sta   >$FF4B
-         stb   >$FF40
-         bra   L024C
-L0256    leas  $0C,s
-         puls  y,cc
-         ldb   >$FF48
-         bitb  #$04
-         lbne  L03EC
-         lbra  L03BE
-L0266    pshs  x,b,a
-         ldx   $08,y
-         pshs  x
-         ldx   >u00AB,u
-         stx   $08,y
-         ldx   $04,s
-         lbsr  L016F
-         puls  x
-         stx   $08,y
-         bcs   L02AF
-         lda   #$20
-         pshs  u,y,a
-         ldb   <$23,y
-         ldy   >u00AB,u
-         andb  #$04
-         beq   L0299
-         ldd   >u00B6,u
-         andb  #$01
-         beq   L0299
-         leay  >$0100,y
-L0299    tfr   x,u
-L029B    ldx   ,u
-         cmpx  ,y
-         bne   L02AB
-         leau  u0008,u
-         leay  $08,y
-         dec   ,s
-         bne   L029B
-         bra   L02AD
-L02AB    orcc  #Carry
-L02AD    puls  u,y,a
-L02AF    puls  pc,x,b,a
-L02B1    pshs  a
-         ldb   <$15,x
-         bra   L02F5
-L02B8    lbsr  L0382
-         lbsr  L0337
-         pshs  a
-         lda   >u00AD,u
-         beq   L02D0
-         lda   >u00A9,u
-         ora   #$40
-         sta   >u00A9,u
-L02D0    lda   <$23,y
-         bita  #$02
-         bne   L02D8
-         incb  
-L02D8    stb   >$FF4A
-         ldx   >u00A7,u
-         ldb   <$15,x
-         lda   <$10,x
-         lsra  
-         eora  <$24,y
-         anda  #$02
-         pshs  a
-         lda   $01,s
-         tst   ,s+
-         beq   L02F5
-         lsla  
-         lslb  
-L02F5    stb   >$FF49
-         ldb   #$15
-         pshs  b
-         ldb   <$24,y
-         andb  #$02
-         beq   L0305
-         lsl   ,s
-L0305    cmpa  ,s+
-         bra   L0313
-         ldb   >u00A9,u
-         orb   #$10
-         stb   >u00A9,u
-L0313    ldb   >u00AA,u
-         bne   L0320
-         ldb   ,s
-         cmpb  <$15,x
-         beq   L032D
-L0320    sta   >$FF4B
-         ldb   <$22,y
-         andb  #$03
-         eorb  #$1B
-         lbsr  L03F0
-L032D    puls  a
-         sta   <$15,x
-         sta   >$FF49
-         clrb  
-         rts   
-L0337    tstb  
-         bne   L034B
-         tfr   x,d
-         cmpd  #$0000
-         beq   L037D
-         ldx   >u00A7,u
-         cmpd  $01,x
-         bcs   L034F
-L034B    comb  
-         ldb   #$F1
-         rts   
-L034F    stb   >u00AE,u
-         clr   ,-s
-         ldb   <$10,x
-         lsrb  
-         ldb   >u00AE,u
-         bcc   L0373
-         bra   L0369
-L0361    com   >u00AD,u
-         bne   L0369
-         inc   ,s
-L0369    subb  $03,x
-         sbca  #$00
-         bcc   L0361
-         bra   L0379
-L0371    inc   ,s
-L0373    subb  $03,x
-         sbca  #$00
-         bcc   L0371
-L0379    addb  $03,x
-         puls  a
-L037D    rts   
-L037E    fcb   $01,$02,$04,$40
-L0382    clr   >u00AA,u
-L0386    lda   <$21,y
-         cmpa  #$04
-         bcs   L0391
-         comb  
-         ldb   #$F0
-         rts   
-L0391    pshs  x,b,a
-         leax  >L037E,pcr
-         ldb   a,x
-         stb   >u00A9,u
-         leax  u000F,u
-         ldb   #$26
-         mul   
-         leax  d,x
-         cmpx  >u00A7,u
-         beq   L03B2
-         stx   >u00A7,u
-         com   >u00AA,u
-L03B2    clr   >u00AD,u
-         lbsr  L04BF
-         puls  pc,x,b,a
-L03BB    ldb   >$FF48
-L03BE    bitb  #$F8
-         beq   L03D6
-         bitb  #$80
-         bne   L03D8
-         bitb  #$40
-         bne   L03DC
-         bitb  #$20
-         bne   L03E0
-         bitb  #$10
-         bne   L03E4
-         bitb  #$08
-         bne   L03E8
-L03D6    clrb  
-         rts   
-L03D8    comb  
-         ldb   #$F6
-         rts   
-L03DC    comb  
-         ldb   #$F2
-         rts   
-L03E0    comb  
-         ldb   #$F5
-         rts   
-L03E4    comb  
-         ldb   #$F7
-         rts   
-L03E8    comb  
-         ldb   #$F3
-         rts   
-L03EC    comb  
-         ldb   #$F4
-         rts   
-L03F0    bsr   L0410
-L03F2    ldb   >$FF48
-         bitb  #$01
-         beq   L041B
-         ldd   >L0028,pcr
-         std   >u00B1,u
-         bra   L03F2
-L0403    lda   #$08
-         ora   >u00A9,u
-         sta   >$FF40
-         stb   >$FF48
-         rts   
-L0410    bsr   L0403
-L0412    lbsr  L0415
-L0415    lbsr  L0418
-L0418    lbsr  L041B
-L041B    rts   
+         puls  u              Restore device mem ptr
+         clr   >$FF40     shut off drive motors
+         clr   <D.MotOn   Clear out drive motor timeout flag
+L00AB    rts                  return
 
-SetStat  ldx   PD.RGS,y get caller register ptr
-         ldb   R$B,x	get func code
-         cmpb  #SS.WTRK
-         beq   SSWTRK
-         cmpb  #SS.RESET
-         lbeq  SSRESET
-         comb  
-         ldb   #E$UnkSvc
+* Check if 512 byte sector conversion needed
+* Entry: B:X=LSN
+*          U=Static mem ptr
+*          Y=Path dsc. ptr
+* Exit:    X=New LSN (same as original for 256 byte sectors, 1/2 of original
+*            for 512 byte sectors
+L00AC    pshs  x,b            Save LSN
+         stx   >u00B6,u       Save OS9 LSN
+         lda   <PD.TYP,y      Get device type from path dsc.
+         anda  #%00000100     Mask out all but 512 byte sector flag
+         bne   L00BB          512 byte sectors, go process
+L00CA    puls  pc,x,b         Restore LSN & return
+
+* 512 byte sector processing goes here
+L00BB    puls  x,b            Get back LSN
+         clrb                 Clear carry for rotate (also high byte of LSN)
+         tfr   x,d            Move to mathable register
+         IFNE  H6309
+         rord             Divide LSN by 2
+         ELSE
+         rora
+         rorb
+         ENDC
+         tfr   d,x            Move new LSN back to X
+         stx   >u00B8,u       Save 'physical' LSN (for controller)
+         clrb                 No error & return
          rts   
-SSWTRK   pshs  u,y
-         ldd   #$1A00
-         os9   F$SRqMem 
-         bcs   L0495
-         ldx   $02,s
-         stu   >$00AF,x
-         ldx   <u0050
-         lda   $06,x
-         ldb   <$00D0
+
+start    lbra  INIT
+         bra   READ
+         nop
+         lbra  WRITE
+         bra   GETSTA
+         nop
+         lbra  SETSTA
+         bra   TERM
+         nop
+* Entry: B:X = LSN
+*        Y   = path dsc. ptr
+*        U   = Device mem ptr
+READ     bsr   L00AC          Go check for 512 byte sector/adjust if needed
+         lda   #%10010001     Error flags (see Disto SCII source)
+         pshs  x              Preserve sector #
+         lbsr  L0162          Go read the sector
+         puls  x              Restore sector #
+         bcs   L00AB          If error, exit
+         pshs  y,x            Save path dsc ptr & LSN
+         leax  ,x         LSN0?
+         bne   L012D          No, go calculate normally
+         puls  y,x            Yes, restore path dsc ptr & LSN
+         lda   <PD.TYP,y      Get type from path dsc.
+         bita  #%01000000     Standard OS-9 format?
+         beq   L00F0          Yes, skip ahead
+         lbsr  L051A
+         pshs  y,x            save path dsc ptr
+         bra   L012D
+
+* LSN0, standard OS-9 format
+L00F0    ldx   >sectbuf,u     Get ptr to sector buffer
+         pshs  y,x            Preserve path dsc. ptr & sector buffer ptr
+         ldy   >u00A7,u       Get last drive table accessed ptr
+         IFNE  H6309
+         ldw   #DD.SIZ        # bytes to copy from new LSN0 to drive table
+         tfm   x+,y+          Copy them
+         ELSE
+         ldb   #DD.SIZ
+L00F0Lp  lda   ,x+
+         sta   ,y+
+         decb
+         bne   L00F0Lp
+         ENDC
+         ldy   >u00A7,u       Get drive table ptr back
+         lda   <DD.FMT,y      Get format for disk in drive
+         ldy   2,s            restore path descriptor pointer
+         ldb   <PD.DNS,y      Get path's density settings
+         bita  #%00000010     Disk in drive double density?
+         beq   L0115          No, all drives can read single, skip ahead
+         bitb  #%00000001     Can our path dsc. handle double density?
+         beq   erbtyp         No, illegal
+L0115    bita  #%00000100     Is new disk 96 tpi?
+         beq   L011D          No, all drives handle 48 tpi, so skip ahead
+         bitb  #%00000010     Can path dsc. handle 96 tpi?
+         beq   erbtyp         No, illegal
+L011D    bita  #%00000001     Is new disk double sided?
+         beq   L0128          No, all drives handle single sided, we're done
+         lda   <PD.SID,y      Get # sides path dsc. can handle
+         suba  #2             sides higher or equal to 2?
+         blo   erbtyp         Yes, exit with illegal type error
+L0128    clrb                 No error
+*        puls  y,x            ??? 2 USELESS LINES?
+*        pshs  y,x
+* LSN's other than 0 come straight here
+L012D    ldy   2,s            Get path dsc. ptr back??
+         ldx   PD.BUF,y       Get path dsc. buffer ptr
+         lda   <PD.TYP,y      Get path dsc. disk type
+         ldy   >sectbuf,u     Get ptr to sector buffer
+         IFNE  H6309
+         ldw   #256           OS9 sector size (even if physical was 512)
+         ENDC
+         anda  #%00000100     Mask out all but 512 byte sector flag
+         beq   L014B          If normal sector, just copy it
+         ldd   >u00B6,u       Get OS9's LSN (twice of the 'real' 512 sector)
+         andb  #$01           Mask out all but odd/even sector indicator
+         beq   L014B          Even, use 1st half of 512 byte sector
+         IFNE  H6309
+         addr  w,y            Odd, bump sector buffer ptr to 2nd half
+         ELSE
+         leay  256,y
+         ENDC
+L014B    equ   *
+         IFNE  H6309
+         tfm   y+,x+          Copy from physical sector buffer to PD buffer
+         puls  pc,y,x         restore path dsc & sector buffer ptrs & return
+         ELSE
+         pshs  d
+         clrb
+L014BLp  lda   ,y+
+         sta   ,x+
+         decb
+         bne   L014BLp
+         puls  pc,y,x,d       restore path dsc & sector buffer ptrs & return
+         ENDC
+
+erbtyp   comb  
+         ldb   #E$BTyp        Error - wrong type error
+         puls  pc,y,x
+
+* Read error - retry handler
+L0159    bcc   L0162          Normal retry, try reading again
+         pshs  x,d            Preserve regs
+         lbsr  sktrk0         Seek to track 0 (attempt to recalibrate)
+         puls  x,d            Restore regs & try reading again
+
+L0162    pshs  x,d            Preserve regs
+         bsr   L016F          Go read sector
+         puls  x,d            Restore regs (A=retry flags)
+         bcc   L01D7           No error, return
+         lsra                 Shift retry flags
+         bne   L0159          Still more retries allowed, go do them
+* otherwise, final try before we give up
+L016F    lbsr  L02AC          Do double-step/precomp etc. if needed, seek
+         bcs   L01D7          Error somewhere, exit with it
+L0176    ldx   >sectbuf,u     Get physical sector buffer ptr
+*         pshs  y,cc           Preserve timeout timer & CC
+         ldb   #$80           Read sector command
+         bsr   L01A1          Send to controller & time delay to let it settle
+*** Next few lines are commented out for blobstop patches
+*L0180    bita  >$FF48         Check status register
+*         bne   L0197          Eat it & start reading sector
+*         leay  -1,y           Bump timeout timer down
+*         bne   L0180          Keep trying until it reaches 0 or sector read
+*         lda   >u00A9,u       Get current drive settings
+*         ora   #%00001000     Turn drive motor on
+*         sta   >$FF40         Send to controller
+*         puls  y,cc           Restore regs
+*         lbra  L03E0          Exit with Read Error
+*** Blobstop fixes
+         stb   >$FF40     send command to FDC
+         nop              allow HALT to take effect
+         nop
+         bra   L0197      and a bit more time
+* Read loop - exited with NMI
+* Entry: X=ptr to sector buffer
+*        B=Control register settings
+L0197    lda   >$FF4B         Get byte from controller
+         sta   ,x+            Store into sector buffer
+*         stb   >$FF40         Drive info
+         nop              -- blobstop fix
+         bra   L0197          Keep reading until sector done
+
+L01A1    orcc  #IntMasks      Shut off IRQ & FIRQ
+         stb   >$FF48         Send command
+*         ldy   #$FFFF
+         ldb   #%00101000     Double density & motor on
+         orb   >u00A9,u       Merge with current drive settings
+         stb   >$FF40         Send to control register
+         ldb   #%10101000     Enable halt, double density & motor on
+         orb   >u00A9,u       Merge that with current drive settings
+         lbra  L0406          Time delay to wait for command to settle
+*         lda   #$02
+*L01BE    rts   
+
+WRITE    lbsr  L00AC          Go adjust LSN for 512 byte sector if needed
+         lda   #%1001001      Retry flags for I/O errors (see Disto SCII source)
+L01C4    pshs  x,d            Preserve LSN, retries
+         bsr   L01E8          Go write the sector
+         puls  x,d            Restore LSN, retries
+         bcs   L01D8          Error writing, go to write retry handler
+         tst   <PD.VFY,y      No error, do we want physical verify?
+         bne   L01D6          No, exit without error
+         lbsr  verify         Go re-read & verify 32 out of 256 bytes
+         bcs   L01D8          Error on verify, go to write retry handler
+L01D6    clrb                 No error & return
+L01D7    rts   
+
+* Write error retry handler
+L01D8    lsra                 Shift retry flags
+         lbeq  L03AF          Too many retries, exit with error
+         bcc   L01C4          Normal retry, attemp to re-write sector
+         pshs  x,d            Preserve flags & sector #
+         lbsr  sktrk0         Seek to track 0 (attempt to recalibrate)
+         puls  x,d            Restore flags & sector #
+         bra   L01C4          Try re-writing now
+
+* 512 byte sector write here
+L01E8    lbsr  L02AC          Go do double-step/write precomp if needed
+         bcs   L01D7          Error, exit with it
+         pshs  y,d            Preserve path dsc. ptr & LSN
+         lda   <PD.TYP,y      Get device type
+         anda  #%00000100     512 byte sector?
+         beq   L020D          No, skip ahead
+         lda   #$91           ??? appears to be useless
+         lbsr  L0176          Go read the sector in
+         ldd   >u00B6,u       Get OS9 LSN
+         andb  #$01           Even or odd?
+         beq   L020D          Even, skip ahead
+         ldx   >sectbuf,u     Get physical sector buffer ptr
+         leax  >$0100,x       Point to 2nd half
+         bra   L0211          Copy caller's buffer to 2nd half of sector
+
+L020D    ldx   >sectbuf,u     Get physical sector buffer ptr
+
+L0211    ldy   PD.BUF,y       Get path dsc. buffer ptr
+         IFNE  H6309
+         ldw   #256           Copy write buffer to sector buffer
+         tfm   y+,x+
+         ELSE
+         clrb
+L0211Lp  lda   ,y+
+         sta   ,x+
+         decb
+         bne   L0211Lp
+         ENDC
+         puls  y,d            Get path dsc. ptr & LSN back
+         ldx   >sectbuf,u     Get physical sector buffer ptr again
+         ldb   #$A0           Write sector command
+
+* Format track comes here with B=$F0 (write track)
+*L0224    pshs  y,cc           Preserve path dsc. ptr & CC
+L0224     lbsr  L01A1          Send command to controller (including delay)
+*** Commented out for blobstop fixes
+*L0229    bita  >$FF48         Controller done yet?
+*         bne   L0240          Yes, go write sector out
+*         leay  -$01,y         No, bump wait counter
+*         bne   L0229          Still more tries, continue
+*         lda   >u00A9,u       Get current drive control register settings
+*         ora   #%00001000     Drive motor on (but drive select off)
+*         sta   >$FF40         Send to controller
+*         puls  y,cc           Restore regs
+*         lbra  L03AF          Check for errors from status register
+
+*** added blobstop
+         lda   FBlock+1,u get the block number for format
+         beq   L0230      if not format, don't do anything
+         sta   >$FFA1     otherwise map the block in
+
+L0230    stb   >$FF40     send command to FDC
+         bra   L0240      wait a bit for HALT to enable
+* Write sector routine (Entry: B= drive/side select) (NMI will break out)
+L0240    nop              --- wait a bit more
+         lda   ,x+            Get byte from write buffer
+         sta   >$FF4B         Save to FDC's data register
+* EAT 2 CYCLES: TC9 ONLY (TRY 1 CYCLE AND SEE HOW IT WORKS)
+         IFEQ TC9-1
+         nop
+         nop
+         ENDC
+*         stb   >$FF40         Set up to read next byte
+         bra   L0240          Go read it
+
+* NMI routine
+L024A    leas  R$Size,s       Eat register stack
+*         puls  y,cc           Get path dsc. ptr & CC
+         ldx   <D.SysDAT  get pointer to system DAT image
+         lda   3,x        get block number 1
+         sta   >$FFA1     map it back into memory
+         andcc #^IntMasks turn IRQ's on again
+         ldb   >$FF48         Get status register
+         bitb  #%00000100     Did we lose data in the transfer?
+*         lbne  L03E0          Yes, exit with Read Error
+         lbeq  L03B2          Otherwise, check for drive errors
+         comb             -- blobstop error code
+         ldb   #E$DevBsy  -- device busy
+         rts              -- and exit
+
+verify   pshs  x,d
+         ldx   PD.BUF,y       Get write buffer ptr
+         pshs  x              Preserve it
+         ldx   >sectbuf,u     Get sector buffer ptr
+         stx   PD.BUF,y       Save as write buffer ptr
+         ldx   4,s
+         lbsr  L016F          Go read sector we just wrote
+         puls  x              Get original write buffer ptr
+         stx   PD.BUF,y       Restore path dsc. version
+         bcs   L02A3          If error reading, exit with it
+         pshs  u,y            Preserve device mem, path dsc. ptrs
+         ldb   <PD.TYP,y      Get type from path dsc.
+         ldy   >sectbuf,u     Get sector buffer ptr
+         andb  #%00000100     512 byte sector?
+         beq   L028D          No, skip ahead
+         ldd   >u00B6,u       Get OS9's sector #
+         andb  #$01           Odd/even sector?
+         beq   L028D          Even; compare first half
+         leay  >$0100,y       Odd, compare second half
+L028D    tfr   x,u            Move PD.BUF ptr to U (since cmpx is faster)
+         lda   #32            # of 'spotty' checks to do
+L028F    ldx   ,u             Get 2 bytes from original write buffer
+         cmpx  ,y             Same as corresponding bytes in re-read sector?
+         bne   L029F          No, error & return
+         leau  8,u            Skip next 6 bytes
+         leay  8,y
+         deca                 Done our 'spotty' check?
+         bne   L028F          No, continue
+         fcb   $8C            skip the next 2 bytes
+
+L029F    orcc  #Carry
+L02A1    puls  u,y
+L02A3    puls  pc,x,d
+
+L02A5    pshs  a              Save Caller's track #
+         ldb   <V.TRAK,x      Get track # drive is currently on
+         bra   L02E9          Go save it to controller & continue
+
+L02AC    lbsr  L0376          Go set up controller for drive, spin motor up
+         bsr   L032B          Get track/sector # (A=Trk, B=Sector)
+         pshs  a              Save track #
+         lda   >u00AD,u       Get side 1/2 flag
+         beq   L02C4          Side 1, skip ahead
+         lda   >u00A9,u       Get control register settings
+         ora   #%01000000     Set side 2 (drive 3) select
+         sta   >u00A9,u       Save it back
+L02C4    lda   <PD.TYP,y      Get drive type settings
+         bita  #%00000010     ??? (Base 0/1 for sector #?)
+         bne   L02CC          Skip ahead
+         incb                 Bump sector # up by 1
+L02CC    stb   >$FF4A         Save into Sector register
+         ldx   >u00A7,u       Get last drive table accessed
+         ldb   <V.TRAK,x      Get current track # on device
+         lda   <DD.FMT,x      Get drive format specs
+         lsra                 Shift track & bit densities to match PD
+         eora  <PD.DNS,y      Check for differences with path densities
+         anda  #%00000010     Keep only 48/96 tpi differences
+         pshs  a              Save differences
+         lda   1,s            Get track # back
+         tst   ,s+            Are tpi's different?
+         beq   L02E9          No, continue normally
+         lsla                 Yes, multiply track # by 2 ('double-step')
+         lslb                 Multiply current track # by 2 ('double-step')
+L02E9    stb   >$FF49         Save current track # onto controller
+
+* From here to the line before L0307 is for write precomp, but is not used.
+* Unless write precomp is needed, all of this is useless
+* I think most (if not all) drives do NOT need precomp
+         IFEQ  PRECOMP-1
+         ldb   #21            Pre-comp track #
+         pshs  b              Save it
+         ldb   <PD.DNS,y      Get current density settings
+         andb  #%00000010     Just want to check track density
+         beq   L02F9          48 tpi, skip ahead
+         lsl   ,s             Multiply pre-comp value by 2 ('double-step')
+L02F9    cmpa  ,s+            Is track # high enough to warrant precomp?
+         bls   L0307          No, continue normally
+         ldb   >u00A9,u
+         orb   #%00010000     Turn on Write precomp
+         stb   >u00A9,u
+         ENDC
+
+L0307    ldb   >u00AA,u       ??? Get flag (same drive flag?)
+         bne   L0314          No, skip ahead
+         ldb   ,s             Get track #
+         cmpb  <V.TRAK,x      Same as current track on this drive?
+         beq   L0321          Yes, skip ahead
+L0314    sta   >$FF4B         Save track # to data register
+         ldb   <PD.STP,y      Get stepping rate
+         andb  #%00000011     Just keep usable settings (6-30 ms)
+         eorb  #%00011011     Set proper bits for controller
+         lbsr  L03E4          Send command to controller & time delay
+L0321    puls  a              Get track # back
+         sta   <V.TRAK,x      Save as current track #
+         sta   >$FF49         Save to controller
+         clrb                 No error & return
+         rts   
+
+* Entry: B:X LSN
+* Exit:  A=Track #
+*        B=Sector #
+*   <u00AD=00 = Head 1 , $FF = Head 2
+L032B    tstb                 Sector # > 65535?
+         bne   L033F          Yes, illegal for floppy
+         tfr   x,d            Move sector # to D
+         leax  ,x         LSN 0?
+         beq   L0371          Yes, exit this routine
+         ldx   >u00A7,u       Get previous drive table ptr
+         cmpd  DD.TOT+1,x     Within range of drive spec?
+         blo   L0343          Yes, go calculate track/sector #'s
+L033F    comb                 Exit with Bad sector # error
+         ldb   #E$Sect
+         rts   
+
+* Calculate track/sector #'s?
+L0343    stb   >u00AE,u       Save LSB of LSN
+         clr   ,-s            Clear track # on stack
+         ldb   <DD.FMT,x      Get drive format
+         lsrb                 Shift out # sides into carry
+         ldb   >u00AE,u       Get LSB of LSN again
+         bcc   L0367          Single sided drive, skip ahead
+         bra   L035D          Double sided drive, skip ahead
+* Double sided drive handling here
+L0355    com   >u00AD,u       ???? Odd/even sector track flag?
+         bne   L035D          Odd, so don't bump track # up
+         inc   ,s             Bump up track #
+
+L035D    subb  DD.TKS,x       Subtract # sectors/track
+         sbca  #$00
+         bcc   L0355          Still more sectors left, continue
+         bra   L036D          Wrapped, skip ahead
+* Single sided drive handling here
+L0365    inc   ,s             Bump track # up
+
+L0367    subb  DD.TKS,x       Subtract # sectors/track
+         sbca  #$00
+         bcc   L0365          Still more, go bump the track up
+L036D    addb  $03,x          Bump sector # back up from negative value
+         puls  a              Get the track #
+L0371    rts                  A=track #, B=Sector #, <u00AD=Odd
+
+* Drive control register bit mask table
+L0372    fcb   $01            Drive 0
+         fcb   $02            Drive 1
+         fcb   $04            Drive 2
+         fcb   $40            Drive 3 / Side select
+
+L0376    clr   >u00AA,u       ???
+
+chkdrv   lda   <PD.DRV,y      Get drive # requested
+         cmpa  #4             Drive 0-3?
+         blo   L0385          Yes, continue normally
+         comb                 Illegal drive # error
+         ldb   #E$Unit
+         rts   
+
+* Entry: A=drive #, X=LSN (Physical, not OS9 logical if PCDOS disk)
+L0385    pshs  x,d            Save sector #, drive # & B???
+         leax  >L0372,pc      Point to drive bit mask table
+         ldb   a,x            Get bit mask for drive # we want
+         stb   >u00A9,u       Save mask
+         leax  DRVBEG,u       Point to beginning of drive tables
+         ldb   #DRVMEM        Get size of each drive table
+         mul                  Calculate offset to drive table we want
+         leax  d,x            Point to it
+         cmpx  >u00A7,u       Same as Last drive table accessed?
+         beq   L03A6          Yes, skip ahead
+         stx   >u00A7,u       Save new drive table ptr
+         com   >u00AA,u       ??? Set flag
+L03A6    clr   >u00AD,u       Set side (head) flag to side 1
+         lbsr  L04B3          Go set up VIRQ to wait for drive motor
+         puls  pc,x,d         Restore sector #,drive #,B & return
+
+L03AF    ldb   >$FF48         Get status register from FDC
+L03B2    bitb  #%11111000     Any of the error bits set?
+         beq   L03CA          No, exit without error
+         aslb             Drive not ready?
+         bcs   L03CC          Yes, use that error code
+         aslb             Write protect error?
+         bcs   L03D0          Yes, use that error code
+         aslb             Write fault error?
+         bcs   L03D4          Yes, use that error code
+         aslb             Sector not found?
+         bcs   L03D8          Yes, use Seek error code
+         aslb             CRC error?
+         bcs   L03DC          Yes, use that error code
+L03CA    clrb                 No error & return
+         rts   
+
+L03CC    ldb   #E$NotRdy      not ready
+         fcb   $8C        skip 2 bytes
+
+L03D0    ldb   #E$WP          write protect
+         fcb   $8C        skip 2 bytes
+
+L03D4    ldb   #E$Write       write error
+         fcb   $8C
+
+L03D8    ldb   #E$Seek        seek error
+         fcb   $8C
+
+L03DC    ldb   #E$CRC         CRC error
+*         fcb   $8C
+
+*L03E0    ldb   #E$Read        Read error
+         orcc  #Carry         set carry
+         rts   
+
+L03E4    bsr   L0404          Send command to controller & waste some time
+L03E6    ldb   >$FF48         Check FDC status register
+         bitb  #$01           Is controller still busy?
+         beq   L0403          No, exit
+         ldd   >L0028,pc      Get initial count value for drive motor speed
+         std   >u00B1,u       Save it
+         bra   L03E6          Wait for controller to finish previous command
+
+* Send command to FDC
+L03F7    lda   #%00001000     Mask in Drive motor on bit
+         ora   >u00A9,u       Merge in drive/side selects
+         sta   >$FF40         Turn the drive motor on & select drive
+         stb   >$FF48         Save command & return
+L0403    rts   
+
+L0404    bsr   L03F7          Go send command to controller
+
+* This loop has been changed from nested LBSRs to timing loop.
+* People with crystal upgrades should modify the loop counter
+* to get a 58+ us delay time.  MINIMUM 58us.
+L0406    pshs  a          14 cycles, plus 3*loop counter
+         lda   #29        (only do about a 100 cycle delay for now)
+L0409    deca             for total ~63 us delay (123 cycles max.)
+         bne   L0409
+         puls  a,pc       restore register and exit
+
+SETSTA   ldx   PD.RGS,y       Get caller's register stack ptr
+         ldb   R$B,x          Get function code
+         cmpb  #SS.WTrk       Write track?
+         beq   format         Yes, go do it
+         cmpb  #SS.Reset      Restore head to track 0?
+         lbeq  sktrk0         Yes, go do it --- beq
+         comb                 set carry for error
+         ldb   #E$UnkSvc      return illegal service request error
+         rts   
+
+format   pshs  u,y            preserve register stack & descriptor
+*         ldd   #$1A00         Size of buffer to hold entire track image
+*         os9   F$SRqMem       Request memory from system
+*         bcs   L0489          Error requesting, exit with it
+
+*--- new code
+         ldb   #1         1 block to allocate
+         os9   F$AllRAM   allocate some RAM
+         bcs   L0489      error out if at all
+         leax  >FBlock,u   point to 'my' DAT image
+         std   ,x         save a copy of the block
+         os9   F$ResTsk   reserve a task number for the copy
+         bcs   FError     error out
+         stb   2,x        save temporary task number in FTask,u
+         lslb             2 bytes per entry
+         ldu   <D.TskIPt  get task image table pointer
+         stx   b,u        save pointer to the task's DAT image
+         lsrb             get the right number again
+         IFNE  H6309
+         tfr   0,u        destination is address 0
+         ELSE
+         ldu   #$0000
+         ENDC
+*--- end new code
+
+         ldx   2,s            get pointer to descriptor
+*         stu   >FBlock,x
+         ldx   <D.Proc        Get current process ptr
+         lda   P$Task,x       Get task # for current process
+*         ldb   <D.SysTsk      Get system task #
          ldy   ,s
-         ldx   $06,y
-         ldx   $04,x
-         ldy   #$1A00
-         os9   F$Move   
-         bcs   L0485
+         ldx   PD.RGS,y       Get register stack ptr
+         ldx   R$X,x          Get ptr to caller's track buffer
+         ldy   #$1A00         Size of track buffer
+         os9   F$Move         Copy from caller to temporary task
+         bcs   L0479          Error copying, exit
          puls  u,y
          pshs  u,y
-         lbsr  L0382
-         ldx   $06,y
-         ldb   $07,x
-         bitb  #$01
-         beq   L0471
+         lbsr  L0376          Go check drive #/wait for it to spin up
+         ldx   PD.RGS,y       Get caller's register stack ptr
+         ldb   R$Y+1,x        Get caller's side/density
+         bitb  #$01           Check side
+         beq   L0465          Side 1, skip ahead
          com   >u00AD,u
-         ldb   >u00A9,u
-         orb   #$40
-         stb   >u00A9,u
-L0471    lda   $09,x
-         ldx   >u00A7,u
-         lbsr  L02B1
-         bcs   L0495
-         ldb   #$F0
-         ldx   >u00AF,u
-         lbsr  L022B
-L0485    ldu   $02,s
-         pshs  b,cc
-         ldu   >u00AF,u
-         ldd   #$1A00
-         os9   F$SRtMem 
-         puls  b,cc
-L0495    puls  pc,u,y
+         ldb   >u00A9,u       Get current control register settings
+         orb   #%01000000     Mask in side 2
+         stb   >u00A9,u       Save updated control register
+L0465    lda   R$U+1,x        Get caller's track #
+         ldx   >u00A7,u       Get current drive table ptr
+         lbsr  L02A5          
+         bcs   L0489
+         ldb   #$F0           Write track command?
+*---
+*         ldx   >FBlock,u
+         ldx   #$2000     start writing from block 1
+         lbsr  L0224          Go write the track
+L0479    ldu   2,s
+         pshs  b,cc           Preserve error
 
-SSRESET  lbsr  L0386
+*         ldu   >FBlock,u       Get ptr to track buffer
+*         ldd   #$1A00         Return track buffer
+*         os9   F$SRtMem 
+
+         ldb   >FTask,u   point to task
+         os9   F$RelTsk   release the task
+         fcb   $8C        skip 2 bytes
+
+* format comes here when block allocation passes, but task allocation
+* gives error.  So er de-allocate the block.
+FError   pshs  b,cc       save error code, cc
+         ldx   >FBlock,u   point to block
+         ldb   #1         1 block to return
+         os9   F$DelRAM   de-allocate image RAM blocks
+         clr   FBlock+1,u ensure that the block # in FBlock is zero.
+         puls  b,cc           Restore error
+L0489    puls  pc,u,y         Restore regs & return
+
+* seek the head to track 0
+sktrk0   lbsr  chkdrv
          ldx   >u00A7,u
          clr   <$15,x
          lda   #$05
-L04A3    ldb   <$22,y
+L0497    ldb   <PD.STP,y
          andb  #$03
          eorb  #$4B
          pshs  a
-         lbsr  L03F0
+         lbsr  L03E4
          puls  a
          deca  
-         bne   L04A3
-         ldb   <$22,y
+         bne   L0497
+         ldb   <PD.STP,y
          andb  #$03
          eorb  #$0B
-         lbsr  L03F0
+         lbra  L03E4
+
+L04B3    pshs  y,x,d          Preserve regs
+         ldd   >L0028,pc      Get VIRQ initial count value
+         std   >u00B1,u       Save it
+         lda   >u00A9,u       ?Get drive?
+         ora   #%00001000     Turn drive motor on for that drive
+         sta   >$FF40         Send drive motor on command to FDC
+         lda   <D.MotOn       Get VIRQ flag
+         bmi   L04DE          Not installed yet, try installing it
+         bne   L04E0          Drive already up to speed, exit without error
+
+* Drive motor speed timing loop (could be F$Sleep call now) (was over .5 sec)
+         ldx   #32        wait for 32 ticks
+         os9   F$Sleep
+
+L04DE    bsr   insvirq        Install VIRQ to wait for drive motors
+L04E0    clrb                 No error & return
+         puls  pc,y,x,d
+
+insvirq  lda   #$01           Flag drive motor is up to speed
+         sta   <D.MotOn
+         ldx   #$0001         Install VIRQ entry
+         leay  >u00B1,u       Point to packet
+         clr   Vi.Stat,y      Reset Status byte
+         ldd   >L0028,pc      Get initial VIRQ count value
+         os9   F$VIRQ         Install VIRQ
+         bcc   virqout        No error, exit
+         lda   #$80           Flag that VIRQ wasn't installed
+         sta   <D.MotOn
+virqout  clra  
          rts   
-L04BF    pshs  y,x,b,a
-         ldd   >L0028,pcr
-         std   >u00B1,u
-         lda   >u00A9,u
-         ora   #$08
-         sta   >$FF40
-         lda   <u0032
-         bmi   L04EA
-         bne   L04EC
-         ldx   #$A000
-L04DB    nop   
-         nop   
-         lbrn  L04EA
-         lbrn  L04EA
-         nop   
-         leax  -$01,x
-         bne   L04DB
-L04EA    bsr   L04EF
-L04EC    clrb  
-         puls  pc,y,x,b,a
-L04EF    lda   #$01
-         sta   <u0032
-         ldx   #$0001
-         leay  >u00B1,u
-         clr   $04,y
-         ldd   >L0028,pcr
-         os9   F$VIRQ   
-         bcc   L0509
-         lda   #$80
-         sta   <u0032
-L0509    clra  
-         rts   
-L050B    pshs  a
-         lda   <u008A
-         beq   L0515
-         bsr   L04EF
-         bra   L0524
-L0515    sta   >$FF40
-         lda   >u00B5,u
+
+* IRQ service routine for VIRQ (drive motor time)
+* Entry: U=Ptr to VIRQ memory area
+irqsvc   pshs  a
+         lda   <D.DMAReq
+         beq   L0509
+         bsr   insvirq
+         bra   irqout
+L0509    sta   >$FF40
+         IFNE  H6309
+         aim   #$FE,>u00B5,u
+*         fcb   $62,$FE,%11001001
+         ELSE
+         lda   u00B5,u
          anda  #$FE
-         sta   >u00B5,u
-         clr   <u0032
-L0524    puls  pc,a
-L0526    pshs  x
-         ldx   >u00A7,u
+         sta   u00B5,u
+         ENDC
+*         fdb   u00B5      --- so changes in data size won't affect anything
+         clr   <D.MotOn
+irqout   puls  pc,a
+
+* Non-OS9 format goes here
+* Entry: X=LSN
+*        Y=Path dsc. ptr
+*        U=Device mem ptr
+L051A    pshs  x              Preserve Logical sector #
+         ldx   >u00A7,u       Get last drive table accessed ptr
+         clra
+         pshs  x,a            Save ptr & NUL byte
+         IFNE  H6309
+         ldw   #$14           Clear 20 bytes
+         tfm   s,x+
+         ELSE
          ldb   #$14
-L052E    clr   b,x
-         decb  
-         bpl   L052E
-         ldd   <$25,y
-         lda   <$27,y
-         mul   
+L051ALp  clr   ,x+
+         decb
+         bne   L051ALp
+         ENDC
+         puls  x,a            Eat NUL & get back drive table ptr
+         ldb   <PD.CYL+1,y    Get # cylinders on drive (ignores high byte)
+         lda   <PD.SID,y      Get # sides
+         mul                  Calculate # tracks on drive (1 per head)
+         IFNE  H6309
+         decd                 Adjust to ignore track 0
+         ELSE
          subd  #$0001
-         lda   <$2A,y
-         sta   $03,x
-         sta   <$12,x
-         mul   
-         pshs  x
-         tfr   d,x
-         lda   <$2C,y
-         leax  a,x
-         lda   <$23,y
-         anda  #$04
-         beq   L055C
+         ENDC
+         lda   <PD.SCT+1,y    Get # sectors/track
+         sta   DD.TKS,x       Save in drive table
+         sta   <DD.SPT+1,x    Save in other copy in drive table
+         mul                  Calculate # sectors on drive (minus track 0)
+         pshs  x              Preserve drive table ptr
+         tfr   d,x            Move # sectors on drive to X
+         lda   <PD.T0S+1,y    Get # sectors on track 0
+         leax  a,x            Add that many sectors to total
+         lda   <PD.TYP,y      Get device type settings
+         anda  #%00000100     Mask out all but 512 byte sector flag
+         beq   L0550          Not 512 byte sector, skip ahead
+         IFNE  H6309
+         addr  x,x        Multiply by 2 (convert to 256 byte OS9 sectors)
+         ELSE
          tfr   x,d
-         rolb  
-         rola  
-         tfr   d,x
-L055C    tfr   x,d
-         puls  x
-         std   $01,x
-         lda   #$07
-         sta   $0D,x
-         lda   <$24,y
-         lsla  
-         pshs  a
-         lda   <$27,y
-         deca  
-         ora   ,s+
-         sta   <$10,x
-         clrb  
-         puls  pc,x
+         leax  d,x
+         ENDC
+L0550    tfr   x,d            Move # sectors to D
+         puls  x              Get back drive table ptr
+         std   DD.TOT+1,x     Save # sectors allowed on drive
+         lda   #UPDAT.+EXEC.  Owner's read/write/exec attributes
+         sta   DD.ATT,x       Set attributes for disk
+         lda   <PD.DNS,y      Get density settings
+         lsla                 Shift for DD.FMT
+         pshs  a              Preserve it a sec
+         lda   <PD.SID,y      Get # sides
+         deca                 Adjust to base 0
+         ora   ,s+            Merge with density settings
+         sta   <DD.FMT,x      Save in device table
+         clrb                 No error?
+         puls  pc,x           Restore original LSN & return
 
          emod
 eom      equ   *
