@@ -1,5 +1,5 @@
          ifp1
-         use   os9defs.l2v3
+         use   defsfile
          endc
 
 Type     set   Systm+Objct

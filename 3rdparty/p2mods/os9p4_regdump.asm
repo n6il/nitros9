@@ -19,7 +19,7 @@
          ttl   User Register Dump System Call for OS9 Level-II
 
          ifp1  
-         use   os9defs.l2v3
+         use   defsfile
          endc  
 
 typelang set   systm+objct
