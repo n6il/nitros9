@@ -4,11 +4,11 @@ DEPENDS		= ./makefile
 
 DISK		= subsim.dsk
 CMDS		= presub sub sub1 sub2 sub3 sub4 sub5 sub6
-MD		= $(LEVEL2)/MODULES
+MD		= $(6809L2)/modules
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/os9p1
-OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/kernel
+OS9BOOT		= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
@@ -29,7 +29,7 @@ clean:	dskclean
 
 dsk:	all
 	$(RM) $(DISK)
-	$(CD) $(LEVEL2); make
+	$(CD) $(6809L2); make
 	$(OS9FORMAT_DS40) $(DISK) -n"Sub Battle Simulator"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
@@ -38,7 +38,7 @@ dsk:	all
 	$(MAKDIR) $(DISK),CMDS $(DISK),SUB
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
-	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK),CMDS/shell
+	$(CP) $(6809L2)/cmds/shell_21 $(DISK),CMDS/shell
 	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
 	$(OS9RENAME) $(DISK),CMDS/presub AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),SUB

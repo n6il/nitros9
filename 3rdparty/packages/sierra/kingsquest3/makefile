@@ -6,11 +6,11 @@ DISK_1		= kq3_d1.dsk
 DISK_2		= kq3_d2.dsk
 DISK_3		= kq3_d3.dsk
 CMDS		= sierra mnln scrn shdw tocgen
-MD		= $(LEVEL2)/MODULES
+MD		= $(6809L2)/modules
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/os9p1
-OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/kernel
+OS9BOOT		= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
@@ -19,9 +19,9 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-BOOTCMDS	= $(LEVEL2)/CMDS/shell_21 $(LEVEL2)/CMDS/date \
-		$(LEVEL2)/CMDS/echo $(LEVEL2)/CMDS/link \
-		$(LEVEL2)/CMDS/setime
+BOOTCMDS	= $(6809L2)/cmds/shell_21 $(6809L2)/cmds/date \
+		$(6809L2)/cmds/echo $(6809L2)/cmds/link \
+		$(6809L2)/cmds/setime
 
 TEXTFILES_D1	= Startup tOC.txt
 
@@ -44,7 +44,7 @@ clean:	dskclean
 
 dsk:	all
 	$(RM) $(DISK_1) $(DISK_2) $(DISK_3)
-	$(CD) $(LEVEL2); make
+	$(CD) $(6809L2); make
 	$(OS9FORMAT_DS40) $(DISK_1) -n"King's Quest III Disk 1"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773

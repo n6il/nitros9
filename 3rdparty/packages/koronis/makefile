@@ -4,11 +4,11 @@ DEPENDS		= ./makefile
 
 DISK		= koronis.dsk
 CMDS		= koronis
-MD		= $(LEVEL2)/MODULES
+MD		= $(6809L2)/modules
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/os9p1
-OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/kernel
+OS9BOOT		= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
@@ -31,14 +31,14 @@ clean:	dskclean
 
 dsk:	all
 	$(RM) $(DISK)
-	$(CD) $(LEVEL2); make
+	$(CD) $(6809L2); make
 	$(OS9FORMAT_SS35) $(DISK) -n"Koronis Rift"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK) -b=os9boot -t=kernel_1773
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $(DISK),CMDS
-	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK),CMDS/shell
+	$(CP) $(6809L2)/cmds/shell_21 $(DISK),CMDS/shell
 	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
