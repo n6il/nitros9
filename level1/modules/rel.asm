@@ -31,11 +31,11 @@ edition  set   5
 
 ********************************************************************
 * Any changes to the next 3 lines requires changes in XX.Size, above
-Begin    fcc   /OS/       sync bytes
+         fcc   /OS/       sync bytes
          bra   Start+XX.Size  execution start
          fdb   $1205      filler bytes
 
-         mod   eom,name,tylg,atrv,start,size
+Begin    mod   eom,name,tylg,atrv,start,size
 
          org   0
 size     equ   .          REL doesn't require any memory
@@ -312,8 +312,8 @@ L2649    lda   ,y+
          ENDC
 
          beq   L266E
-         leau  >Begin,pcr
-         ldx   #$FE80-Bt.Start
+         leau  >Begin-XX.Size,pcr
+         ldx   #Bt.Size
          ldy   #Bt.Start
 L2663    lda   ,u+
          sta   ,y+
@@ -321,7 +321,7 @@ L2663    lda   ,u+
          bne   L2663
          jmp   >Bt.Start+L266E
 L266E    leax  <eom,pcr
-         ldd   $09,x
+         ldd   M$Exec,x
          jmp   d,x
 
 BootMsg  fcc   /OSy/
