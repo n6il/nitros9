@@ -74,7 +74,7 @@ Revision equ    6
 
          mod    eom,MName,Systm,ReEnt+Revision,krnp2,$0100
 
-MName    fcs    /krnp2/
+MName    fcs    /KrnP2/
          fcb    Edition
 
          ifeq   TC9-1

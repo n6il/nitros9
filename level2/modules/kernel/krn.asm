@@ -36,7 +36,7 @@ Where    equ   $F000      absolute address of where Kernel starts in memory
 
          mod   eom,MName,Systm,ReEnt+Revision,entry,0
 
-MName    fcs   /krn/
+MName    fcs   /Krn/
          fcb   Edition 
 
 * FILL - all unused bytes are now here
