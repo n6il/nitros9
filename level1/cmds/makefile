@@ -2,9 +2,9 @@ include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
-# Files not compilable by os9asm: dcheck dsave format tmode
+# Files not compilable by os9asm: format
 CMDS		= asm attr backup binex build cobbler copy date \
-		debug del deldir dir display dump \
+		dcheck debug del deldir dir display dsave dump \
 		echo exbin free grfo ident iniz link list \
 		load login makdir mdir merge mfree os9gen \
 		printerr procs pwd pxd \
