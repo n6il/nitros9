@@ -63,11 +63,11 @@ currtrak rmb   2                current track on
 currside rmb   2
 currsect rmb   1                current sector on
 sectcount rmb  2                counted sectors
-sectdata rmb   2		sector data pointer
-u000C    rmb   2
+trk0data rmb   2		track 0 data pointer
+trkdata  rmb   2		track !0 data pointer
 u000E    rmb   2
 mfm      rmb   1                denisity (double/single)
-maxdns   rmb   1
+maxmfm   rmb   1
 tpi      rmb   1
 numsides rmb   1
 ncyls    rmb   2                total number of cylinders
@@ -113,7 +113,7 @@ dtentry  rmb   2
 u0048    rmb   1
 stoff    rmb   2
 u004B    rmb   1
-u004C    rmb   1
+t0sngdns rmb   1		track 0 single density flag
 u004D    rmb   1
 dolog    rmb   1                logical format
 prmbuf   rmb   2
@@ -137,8 +137,11 @@ name     fcs   /Format/
 *val1     fdb   $0000
 *val2     fdb   $0000
 *val3     fdb   $0000
+
+* Hard drive sector data: 128 bytes of $E5, and another 128 bytes of $E5
 hdsdat   fdb   $80E5,$80E5,$0000
-* Single Density Track Data
+
+* Single Density Floppy Track Data
 sgtdat   fdb   $0100,$28FF,$0600,$01FC,$0CFF,$0000
 * Single Density Sector Data
 sgsdat   fdb   $0600,$01FE,$0400,$01F7,$0AFF,$0600
@@ -147,7 +150,7 @@ sgsdat   fdb   $0600,$01FE,$0400,$01F7,$0AFF,$0600
 sgfidp   fdb   $0043
 sgsize   fdb   $0128
 
-* Double Density Track Data
+* Double Density Floppy Track Data
 dbtdat   fdb   $504E,$0C00,$03F6,$01FC,$204E,$0000
 * Double Density Sector Data
 dbsdat   fdb   $0C00,$03F5,$01FE,$0400,$01F7,$164E
@@ -271,17 +274,18 @@ L0143    ldb   PD.DNS-PD.OPT,x  density capability
          pshs  b                save it
          andb  #DNS.MFM         check double-density
          stb   <mfm             save double-density (Yes/No)
-         stb   <maxdns          save it again
+         stb   <maxmfm          save it again as maximum mfm
          ldb   ,s               get saved PD.DNS byte
          lsrb                   now 96/135 TPI bit is in bit pos 0
          pshs  b                save it
          andb  #$01             tpi (0=48, 1=96/135)
          stb   <tpi             save it
-         puls  b                get checking
-         lsrb                   
-         andb  <maxdns
-         stb   <u004C
+         puls  b                get bytes with bit shifted right once
+         lsrb                   shift original bit #2 into bit #0
+         andb  <maxmfm		AND with mfm bit (1 = MFM, 0 = FM)
+         stb   <t0sngdns	save as track 0 single density flag
          puls  b		get original PD.DNS byte
+         andb  #DNS.MFM	
          stb   <u004D		store it
          beq   L0169
          stb   <u004B
@@ -429,9 +433,9 @@ opt.18   fcb   C$SPAC
 * S/D - density; single or double
 ********************************************************************
 
-DoDsity  cmpb  <maxdns		compare against maximum
+DoDsity  cmpb  <maxmfm		compare against maximum
          bgt   OptAbort		if greater than, abort
-         cmpb  <u004C
+         cmpb  <t0sngdns
          blt   OptAbort
          stb   <mfm
          clrb
@@ -645,23 +649,23 @@ Input    pshs  u,y,x,b,a        save registers
 ********************************************************************
 
 GetDTyp  leax  >hdsdat,pcr      assume hard drive data for now
-         stx   <sectdata        sector data pointer
+         stx   <trk0data        sector data pointer
          ldb   <dtype           get disk drive type
          bitb  #TYP.HARD+TYP.NSF hard disk or non-standard type?
          bne   L0323            yes, branch
          tst   <u004D           
          beq   L031B
-         leax  >dctdat,pcr
+         leax  >dctdat,pcr	point to Disk BASIC data
          bra   L032D
-L031B    leax  >sgtdat,pcr
+L031B    leax  >sgtdat,pcr	point to single density track data
          tst   <mfm             double-density?
-         beq   L032D            no,
-L0323    stx   <sectdata
+         beq   L032D            no, save off X
+L0323    stx   <trk0data
          leax  >dbtdat,pcr
-         tst   <u004C
-         beq   L032F
-L032D    stx   <sectdata
-L032F    stx   <u000C
+         tst   <t0sngdns	track 0 is single density?
+         beq   L032F		branch if so
+L032D    stx   <trk0data	save as track 0 data
+L032F    stx   <trkdata		and !0 track data
          tst   <sectmode	LBA values already in place?
          beq   ack@
 * Compute total sectors from C/H/S
@@ -815,11 +819,11 @@ L03FA    bsr   L045C
          bne   L041B
          tst   <mfm		single density?
          beq   L041D		branch if so
-         tst   <u004C
-         bne   L041B
-         tst   <currtrak+1
-         bne   L041B
-         tst   <currside	side?
+         tst   <t0sngdns	track 0 single density?
+         bne   L041B		branch if not
+         tst   <currtrak+1	is current track 0?
+         bne   L041B		branch if not
+         tst   <currside	side is zero?
          beq   L041D		branch if 0
 L041B    orb   #$02		else set side 1
 L041D    tst   <tpi   		48 tpi?
@@ -860,24 +864,24 @@ L0455    stb   ,x+			store B at X and post increment
 L045C    lda   <dtype			get drive's PD.TYP
          bita  #TYP.HARD+TYP.NSF	hard disk or non-standard format?
          beq   L046C			branch if neither
-         ldy   <u000C
+         ldy   <trkdata			point Y to track data
          leax  >LSN0,u			point to the LSN0 buffer
-         bsr   L0451
+         bsr   L0451			build LSN0 sector
 L046B    rts   
 
 ********************************************************************
 *
 ********************************************************************
 
-L046C    ldy   <u000C
-         ldb   <sectors+1
-         tst   <currtrak+1
-         bne   L047E
-         tst   <currside
-         bne   L047E
-         ldy   <sectdata
+L046C    ldy   <trkdata			grab normal track data
+         ldb   <sectors+1		get sector
+         tst   <currtrak+1		track 0?
+         bne   L047E			branch if not
+         tst   <currside		side 0?
+         bne   L047E			branch if not
+         ldy   <trk0data
 *         ldb   <u001C
-         ldb   <sectors0+1
+         ldb   <sectors0+1		get sectors in track 0
 L047E    sty   <u000E
          stb   <sectcount+1
          stb   <u0018
@@ -995,8 +999,9 @@ L054F    addd  #$0001
          tst   <mfm		single density?
          beq   L0561		branch if so
          ora   #FMT.DNS		else set double density bit
-         tst   <u004C
-         beq   L0561
+         tst   <t0sngdns	track 0 is single density?
+         beq   L0561		branch if so
+*         ora   #FMT.T0DN
          ora   #$08
 L0561    ldb   <numsides	get number of sides
          cmpb  #$01		just 1?
