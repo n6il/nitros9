@@ -130,7 +130,7 @@ Size:       fcb $ff     $ff -> Use "default" size.
 *   To disable extra rotation, set extranum = 0
 *
 cycle:      rmb 1       T = All animation effects enabled.
-cyclestart: fcb 8       First palette for palette cycling.
+cyclestart:: fcb 8       First palette for palette cycling.
 cycleend:   fcb 15      Last palette for palette cycling.
 cyclerate:  fdb 5       Time in ticks between palette cycles.
 extraslot:  rmb 1       Palette slot for color rotation
