@@ -2,22 +2,14 @@
 * SHDW - Kings Quest III screen rendering module??
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
-* ------------------------------------------------------------------
-* 0      Disassembly of original distribution           PWZ 03/03/14
-*        using a combination of disasm v1.6 and
-*        the os9tools disassembler Os9disasm
+* Note the header shows a data size of 0 called from the sierra
+* module and accesses data set up in that module.
 *
-*        Note the header shows a data size of 0
-*        called from the sierra module and accesses
-*        data set up in that module
-*
-*        Much credit and thanks is give to Nick Sonneveld and 
-*        the other NAGI folks. Following his sources made it
-*        so much easier to document what was happening in here.
-  
-*        This source will assemble byte for byte 
-*        to the original kq3 shdw module.
+* Much credit and thanks is give to Nick Sonneveld and the other NAGI
+* folks. Following his sources made it so much easier to document what
+* was happening in here.
+*  
+* This source will assemble byte for byte to the original kq3 shdw module.
 *
 *        Header for : shdw
 *        Module size: $A56  #2646
@@ -28,15 +20,16 @@
 *        Edition    : $00  #0
 *        Ty/La At/Rv: $11 $81
 *        Prog mod, 6809 Obj, re-ent, R/O
-
-
-
-* Disassembly by Os9disasm of shdw
-
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*   0      2003/03/14  Paul W. Zibaila
+* Disassembly of original distribution using a combination of disasm
+* v1.6 and the os9tools disassembler Os9disasm.
 
          nam   shdw
          ttl   program module       
-
 
          ifp1
          use   defsfile
@@ -44,7 +37,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
          mod   eom,name,tylg,atrv,start,size
 
 size           equ   .
@@ -2109,8 +2102,6 @@ L0a34 ldd   ,u++          grab em from the buffer
       fcb $00
 
       emod 
-
 eom   equ *
-
       end
  

@@ -13,10 +13,11 @@
 *        Ty/La At/Rv: $11 $81
 *        Prog mod, 6809 Obj, re-ent, R/O
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 0      Disassembly of original distribution           PWZ 03/03/06
-*        assembles to original mnln crc 
+*   0      2003/03/06  Paul W. Zibaila
+* Disassembly of original distribution; assembles to original mnln.
 
 *  >$0154  flag for using extended lookups
 *  >$0541  joystick button status

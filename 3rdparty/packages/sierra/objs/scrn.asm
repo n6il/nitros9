@@ -1,7 +1,10 @@
 ********************************************************************
-* SCRN - Kings Quest III screen module
+* scrn - Kings Quest III screen module
 *
 * $Id$
+*
+* Note the header shows a data size of 0 called from the sierra module
+* and accesses data set up in that module.
 *
 *       Header for : scrn
 *       Module size: $7C5  #1989
@@ -13,15 +16,14 @@
 *       Ty/La At/Rv: $11 $81
 *       Prog mod, 6809 Obj, re-ent, R/O
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 0      Disassembly of original distribution           PWZ 03/03/06
-*        Note the header shows a data size of 0
-*        called from the sierra module and accesses
-*        data set up in that module
+*   0      2003/03/06  Paul W. Zibaila
+* Disassembly of original distribution.
 
          nam   scrn
-         ttl   program module       
+         ttl   Kings Quest III screen module
 
 * Disassembled 00/00/00 00:15:39 by Disasm v1.6 (C) 1988 by RML
 
@@ -857,4 +859,5 @@ L07C1    fcb   $00
 
          emod
 eom      equ   *
+         end
 
