@@ -23,10 +23,10 @@ edition  set   3
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   2
-u0002    rmb   1
-u0003    rmb   1
-u0004    rmb   24
+parmptr  rmb   2
+fpath    rmb   1
+what2do  rmb   1
+stats    rmb   24
 u001C    rmb   4
 u0020    rmb   4
 u0024    rmb   10
@@ -37,27 +37,26 @@ u0044    rmb   1
 u0045    rmb   1
 u0046    rmb   2
 u0048    rmb   2
-u004A    rmb   2
-u004C    rmb   334
+buffer   rmb   336
 size     equ   .
 
 name     fcs   /Deldir/
          fcb   edition
 
-start    bsr   L0050
-         bcs   L0042
-         bsr   L0091
+start    bsr   OpenPath
+         bcs   OpenErr
+         bsr   GetOpts
          bcc   L002B
-         lbsr  L010C
-         bcs   L0042
+         lbsr  PromptUser
+         bcs   OpenErr
          lbsr  L01C3
-         bcs   L0042
+         bcs   OpenErr
          lbsr  L0242
-         bcs   L0042
-L002B    lda   <u0002
+         bcs   OpenErr
+L002B    lda   <fpath
          os9   I$Close  
          bcs   L004D
-         ldx   <u0000
+         ldx   <parmptr
          os9   I$Delete 
          bcs   L004D
          lda   ,x
@@ -65,24 +64,26 @@ L002B    lda   <u0002
          bne   start
          clrb  
          bra   L004D
-L0042    pshs  b
-         lda   <u0002
+OpenErr  pshs  b
+         lda   <fpath
          os9   I$Close  
          puls  b
          orcc  #Carry
 L004D    os9   F$Exit   
-L0050    stx   <u0000
+
+
+OpenPath stx   <parmptr			save parameter pointer
          lda   #READ.+WRITE.
          os9   I$Open   
          bcs   L005D
-         sta   <u0002
+         sta   <fpath
          bra   L0089
-L005D    ldx   <u0000
+L005D    ldx   <parmptr
          lda   #DIR.+READ.
          os9   I$Open   
          bcs   L0090
-         sta   <u0002
-L0068    ldx   <u0000
+         sta   <fpath
+L0068    ldx   <parmptr
          os9   F$PrsNam 
          clra  
          incb  
@@ -93,18 +94,19 @@ L0068    ldx   <u0000
          lda   #C$CR
          sta   ,y+
          lda   #READ.+WRITE.
-         ldx   <u0000
+         ldx   <parmptr
          os9   I$ChgDir 
          bcs   L0090
-         sty   <u0000
+         sty   <parmptr
          bra   L0068
 L0089    leax  <-u001C,u
          stx   <u0044
-         clr   <u0003
+         clr   <what2do
 L0090    rts   
-L0091    lda   <u0002
+
+GetOpts  lda   <fpath
          ldb   #SS.OPT
-         leax  u0004,u
+         leax  stats,u
          os9   I$GetStt 
          bcs   L00AB
          ldx   <u0044
@@ -116,45 +118,48 @@ L0091    lda   <u0002
          bra   L00AB
 L00AA    clrb  
 L00AB    rts   
-L00AC    fcb   C$LF
+
+Prompt   fcb   C$LF
          fcc   "Deleting directory file. "
          fcb   C$LF
          fcc   "List directory, delete directory, or quit ? (l/d/q) "
-L00FB    fcb   C$LF
+Cont     fcb   C$LF
          fcc   "Continue? (y/n) "
-L010C    tstb  
+
+PromptUser
+         tstb  
          bne   L013E
          lda   #$01
-         leax  <L00AC,pcr
-         ldy   #$004F
+         leax  <Prompt,pcr
+         ldy   #79
          os9   I$WritLn 
 L011B    bcs   L013E
-         bsr   L0179
+         bsr   ReadKey
          bcs   L013E
-         ldb   <u0003
+         ldb   <what2do
          cmpb  #$01
          bne   L012A
          clrb  
          bra   L013E
 L012A    bsr   L0145
 L012C    bcs   L013E
-         leax  <L00FB,pcr
+         leax  <Cont,pcr
          ldy   #$0011
          lda   #$01
          os9   I$WritLn 
          bcs   L013E
-         bsr   L0179
+         bsr   ReadKey
 L013E    rts   
-L013F    fcc   "DIR"
+DIR      fcc   "DIR"
          fcb   C$CR
-L0143    fcc   "E "
+DIROPTS  fcc   "E "
 L0145    pshs  u
-         leau  <u004A,u
+         leau  <buffer,u
          pshs  u
          ldb   #$02
-         leax  <L0143,pcr
+         leax  <DIROPTS,pcr
          lbsr  L0270
-         ldx   <u0000
+         ldx   <parmptr
          ldd   <u0046
          decb  
          lbsr  L0270
@@ -164,31 +169,32 @@ L015E    sta   ,u+
          subd  ,s
          tfr   d,y
          puls  u
-         leax  <L013F,pcr
-         lda   #$11
+         leax  <DIR,pcr
+         lda   #Prgrm+Objct
          clrb  
          os9   F$Fork   
          puls  u
          bcs   L013E
          os9   F$Wait   
 L0178    rts   
-L0179    leax  <u004A,u
+
+ReadKey  leax  <buffer,u
          ldy   #80
          lda   #$00
          os9   I$ReadLn 
          bcs   L01B8
 L0187    lda   ,x+
-         cmpa  #C$SPAC
+         cmpa  #C$SPAC			eat spaces
          beq   L0187
-         eora  #$59
+         eora  #'Y
          anda  #$DF
-         beq   L01AD
+         beq   L01AD			branch if Y
          lda   ,-x
-         eora  #$4C
+         eora  #'L			branch if L
          anda  #$DF
          beq   L01A9
          lda   ,x
-         eora  #$44
+         eora  #'D			branch if D
          anda  #$DF
          beq   L01A5
          bra   L01B4
@@ -197,43 +203,43 @@ L01A5    ldb   #$01
 L01A9    ldb   #$02
          bra   L01AF
 L01AD    ldb   #$04
-L01AF    stb   <u0003
+L01AF    stb   <what2do
          clrb  
          bra   L01B8
 L01B4    ldb   #$01
          orcc  #Carry
 L01B8    rts   
-L01B9    fcc   "DELDIR"
+DelDir   fcc   "DELDIR"
          fcb   C$CR
-L01C0    fcc   ".."
+DotDot   fcc   ".."
          fcb   C$CR
-L01C3    ldb   <u0003
+L01C3    ldb   <what2do
          bitb  #$05
          beq   L0210
-         lda   <u0002
+         lda   <fpath
          pshs  u
-         ldu   #$0040
+         ldu   #64
 L01D0    ldx   #$0000
          os9   I$Seek   
          puls  u
 L01D8    bsr   L0215
          bcs   L0209
-         ldx   <u0000
+         ldx   <parmptr
          lda   #READ.+WRITE.
          os9   I$ChgDir 
          bcs   L0214
          ldy   <u0048
          clrb  
-         lda   #$11
+         lda   #Prgrm+Objct
          pshs  u
          leau  <u0024,u
-         leax  <L01B9,pcr
+         leax  <DelDir,pcr
          os9   F$Fork   
          puls  u
          bcs   L0214
          os9   F$Wait   
          bcs   L0214
-         leax  <L01C0,pcr
+         leax  <DotDot,pcr
          lda   #READ.+WRITE.
          os9   I$ChgDir 
          bcc   L01D8
@@ -244,7 +250,7 @@ L0209    cmpb  #E$EOF
 L0210    ldb   #$01
          orcc  #Carry
 L0214    rts   
-L0215    lda   <u0002
+L0215    lda   <fpath
          leax  <u0024,u
          ldy   #$0020
          os9   I$Read   
@@ -261,27 +267,27 @@ L0215    lda   <u0002
          incb  
          std   <u0048
 L0238    rts   
-L0239    fcc   "ATTR"
+ATTR     fcc   "ATTR"
          fcb   C$CR
-L023E    fcc   " -d"
+ATTROPTS fcc   " -d"
          fcb   C$CR
 L0242    pshs  u
-         leau  <u004A,u
+         leau  <buffer,u
          pshs  u
          ldd   <u0046
          decb
-         ldx   <u0000
+         ldx   <parmptr
          bsr   L0270
-         leax  <L023E,pcr
+         leax  <ATTROPTS,pcr
          ldb   #$04
          bsr   L0270
          tfr   u,d
          subd  ,s
          tfr   d,y
          puls  u
-         leax  <L0239,pcr
+         leax  <ATTR,pcr
          clrb  
-         lda   #$11
+         lda   #Prgrm+Objct
          os9   F$Fork   
          bcs   L026D
          os9   F$Wait   
