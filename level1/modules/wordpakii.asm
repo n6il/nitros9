@@ -57,22 +57,22 @@ L0034    fcb   $60 `		R10
          fcb   $00 		R19
          fcb   $10 		R20
 
-start    bra   INIT
+start    bra   Init
          nop   
          IFEQ  CO80
-         lbra  READ
+         lbra  Read
          ENDC
-         lbra  WRITE
-         bra   GETSTAT
+         lbra  Write
+         bra   GetStat
          nop   
-         lbra  SETSTAT
+         lbra  SetStat
          IFEQ  CO80
-         lbra  TERM
+         lbra  Term
          ELSE
          rts
          ENDC
 
-INIT
+Init
          IFEQ  CO80
          pshs  dp,cc		save DP and CC
          orcc  #IntMasks	mask interrupts
@@ -130,7 +130,7 @@ L0097    ldb   ,x+
          ENDC
 
 
-GETSTAT
+GetStat
          IFEQ  CO80
          cmpa  #SS.Ready
          bne   L00C9
@@ -143,7 +143,7 @@ L00C9    cmpa  #SS.EOF
          lbeq  L0181
          ldx   R$Y,y
          cmpa  #SS.Joy
-         lbeq  L03C4
+         lbeq  SSJOY
          cmpa  #SS.Cursr
          beq   CURSR
          cmpa  #SS.ScSiz
@@ -159,7 +159,7 @@ L00C9    cmpa  #SS.EOF
          cmpa  #$88
          beq   L00FC
          ENDC
-SETSTAT  ldb   #E$UnkSvc
+SetStat  ldb   #E$UnkSvc
 L00F5    orcc  #Carry
          rts   
 L00F8    lda   #$7F
@@ -225,8 +225,7 @@ L0151    puls  b
          lbra  L056A
 
          IFEQ  CO80
-TERM
-         pshs  cc
+Term     pshs  cc
          orcc  #IRQMask
          ldd   >D.Clock			get original clock pointer
          std   >D.AltIRQ		save as alternate IRQ
@@ -458,7 +457,7 @@ L0344    fdb   $4060,$000c,$1c13,$0a1a,$1208,$1810
          fcb   $1b
 
          IFEQ  CO80
-READ     leax  <$3B,u
+Read     leax  <$3B,u
          ldb   <$2E,u
          orcc  #IntMasks
          cmpb  <$2D,u
@@ -477,16 +476,16 @@ L03A8    lda   V.BUSY,u
          clr   V.WAKE,u
          ldx   >D.Proc
          ldb   <$36,x
-         beq   READ
+         beq   Read
          cmpb  #$03
-L03C0    bhi   READ
+L03C0    bhi   Read
          coma  
          rts   
          ENDC
 
-L03C4    pshs  u,y,cc
+SSJOY    pshs  u,y,cc
          orcc  #IntMasks
-         ldu   <V.PIA,u
+         ldu   <V.PIA,u		get PIA address
          lda   #$FF
          sta   $02,u
          ldb   ,u
@@ -518,6 +517,7 @@ L03EE    sta   >$FF03
          std   $06,x
          clrb  
          puls  pc,u,y,cc
+
 L040B    sta   $01,u
          clrb  
          bsr   L041A
@@ -528,6 +528,7 @@ L040B    sta   $01,u
          lsrb  
          clra  
          rts   
+
 L041A    pshs  b
          lda   #$7F
          tfr   a,b
@@ -539,6 +540,7 @@ L0420    lsrb
          tfr   a,b
          addb  ,s+
          rts   
+
 L042C    addb  #$02
          andb  #$FC
          pshs  b
@@ -618,7 +620,7 @@ L047F    fcb   $41
          fdb   Do76-*	$037d
          fcb   $80
 
-WRITE
+Write
          IFEQ  CO80
          fcb   $6D,$C8,$2C
          lbne  L079C
@@ -648,8 +650,7 @@ L04D6    cmpa  ,y+
 L04E2    ldd   ,y
          jmp   d,y
 
-Do57
-         lda   #$57
+Do57     lda   #$57
          bra   L04F4
 
 Do53     lda   #$53
@@ -762,7 +763,7 @@ L05C2    bsr   L05B7
 L05CC    rts   
 L05CD    ldd   <$34,u
          subd  <$32,u
-         cmpd  #$0780
+         cmpd  #SIZEX*SIZEY
          bmi   L05CC
          lbsr  L06AE
          ldx   <$32,u
@@ -819,14 +820,12 @@ L063A    bitb  [<V.PORT,u]
 
 
 DoH01
-Do0F
-         ldx   <$32,u
+Do0F     ldx   <$32,u
          stx   <$34,u
          bra   L0693
 
 DoH09
-Do0B
-         ldx   <$34,u
+Do0B     ldx   <$34,u
          cmpx  <$32,u
          bls   L0696
          leax  <-$50,x
@@ -836,8 +835,7 @@ Do0B
          bra   L0693
 
 DoH06
-Do09
-         ldd   <$34,u
+Do09     ldd   <$34,u
          addd  #SIZEX-1
          cmpd  <$36,u
          bhi   L068E
@@ -861,8 +859,7 @@ Do19
 
 Do41
 DoH04
-Do05
-         bsr   L06A1
+Do05     bsr   L06A1
          clrb  
          rts   
 L06A1    ldd   <$34,u
@@ -903,8 +900,7 @@ L06EB    lbsr  L05A1
          bne   L06EB
          rts   
 
-Do48
-         ldx   <$34,u
+Do48     ldx   <$34,u
          tfr   x,y
          leax  <$4F,x
          pshs  x
@@ -919,8 +915,7 @@ L0709    leas  $02,s
          bsr   L06E9
          bra   L0696
 
-Do47
-         ldy   <$34,u
+Do47     ldy   <$34,u
          leay  <$4F,y
 L071A    leax  -$08,y
          bsr   L0733
@@ -1008,7 +1003,7 @@ L07CC    sta   <$39,u
          rts   
 L07D3    bsr   L07C6
 L07D5    lda   <$38,u
-         ldb   #$50
+         ldb   #SIZEX
          mul   
          ldx   <$32,u
          leax  d,x
