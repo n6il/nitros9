@@ -1,5 +1,5 @@
 ********************************************************************
-* SUB - Sub Battle
+* sub - Sub Battle Simulator
 *
 * $Id$
 *
@@ -197,13 +197,15 @@ X4D30 equ $4D30
 X4D3A equ $4D3A
 X71C9 equ $71C9
 X71CB equ $71CB
+
+* subroutine address from code loaded out of sub6
 X7228 equ $7228
 X723C equ $723C
 X72C3 equ $72C3
 X72F3 equ $72F3
-X7304 equ $7304
-X735B equ $735B
-X7477 equ $7477
+X7304 equ $7304    calcs a integer based on input passed in d
+X735B equ $735B    change palette routine
+X7477 equ $7477    some sort of copy routine accepts ascii between $20-$5F
 X74CC equ $74CC
 X74D9 equ $74D9
 X7556 equ $7556
@@ -228,11 +230,13 @@ X7D56 equ $7D56
 X7D75 equ $7D75
 X7DB4 equ $7DB4
 
+Sub6Load equ $7217
+Sub6sz   equ $0BED
      
-tylg  set   Prgrm+Objct   
-atrv  set   ReEnt+rev
-rev   set   $01
-
+tylg    set   Prgrm+Objct   
+atrv    set   ReEnt+rev
+rev     set   $01
+edition set   $10
   
       mod   eom,name,tylg,atrv,start,size
 
@@ -261,12 +265,10 @@ D0015 rmb 32239
 D7e04 equ . 
 size  equ .
 
-name
-L000D fcs "sub"
+name  fcs "sub"
 
 
-start                        
-L0010 fcb 16                 they put the "start" at the wrong byte :-)
+start fcb   edition          they put the "start" at the wrong byte :-)
       ldu   #$0100           set u end of direct page
       ldx   #$0102           set x to the word past it start of data area
       ldd   #$7E04           set d to the end of the data area
@@ -279,18 +281,45 @@ clr_mem
 L001F clr   ,x+              clear x and bump one byte
       leay  -1,y             dec the counter 
       bne   clr_mem          loop till we're done  L001F
+
+
+* Intercept - Sets a signal intercept trap
+*            
+* entry:
+*       x -> address of the intercept routine 
+*       u -> strating address of the routine's memory area
+* exit:
+*       Signals sent to the process cause the intercept routine
+*       to be called instead of the process being killed. 
+*
             
-      ldu   #0
-      leax  L06C1,pcr
+      ldu   #$0000
+      leax  intercept,pcr
       os9   F$Icpt
+
+
+* Open Path - Opens a path to the an existing file or device
+*             as specified by the path list
+* entry:
+*       a -> access mode (D S PE PW PR E W R) 
+*       x -> address of the path list 
+*
+* exit:
+*       a -> path number 
+*       x -> address of the last btye of the path list + 1 
+*
+* error:
+*       CC -> Carry set on error
+*       b  -> error code (if any)
       
-      lda   #1
-      leax  L1F76,pcr
+      
+      lda   #READ.
+      leax  Sub6,pcr         reads this "subroutine" in as a data file
       os9   I$Open
       
       pshs  a
-      ldx   #$7217
-      ldy   #$0BED
+      ldx   #Sub6Load 
+      ldy   #Sub6sz           
       os9   I$Read
       puls  a
       
@@ -317,17 +346,19 @@ L001F clr   ,x+              clear x and bump one byte
       puls  a
       
       os9   I$Close
-      ldd   #0
-      jsr   X735B
       
-      ldd   #$010F
-      jsr   X735B
       
-      ldd   #$0207
-      jsr   X735B
+      ldd   #$0000           PRN,CTN
+      jsr   X735B            call palette change
       
-      ldd   #$033F
-      jsr   X735B
+      ldd   #$010F           PRN,CTN
+      jsr   X735B            call palette change
+      
+      ldd   #$0207           PRN,CTN
+      jsr   X735B            call palette change
+      
+      ldd   #$033F           PRN,CTN
+      jsr   X735B            call palette change
       
       ldy   #1
       ldd   #$018C
@@ -786,7 +817,7 @@ L0501 ldx   X1DDC
       
       pshs  a,b,x,y,u
       lda   #1
-      leax  L1F7F,pcr
+      leax  Radar,pcr
       os9   I$Open
       pshs  a
       ldb   #$74
@@ -803,12 +834,13 @@ L0536 lda   ,s
       os9   I$Close
       puls  a,b,x,y,u,pc
       
+* they snuck a jump in here instead of a jsr      
+      ldd   #$0212           PRN,CTN
+      jmp   X735B            call Change Pallete
       
-      ldd   #$0212
-      jmp   X735B
       pshs  a,b,x,y,u
       lda   #1
-      leax  L1F8D,pcr
+      leax  Status,pcr
       os9   I$Open
       pshs  a
       ldb   #$74
@@ -904,10 +936,13 @@ L0648 deca
       leax  L0000,pcr
       leax  d,x
       stx   X010E
-      ldd   #$0236
-      jsr   X735B
-      ldd   #$0109
-      jsr   X735B
+      
+      ldd   #$0236           PRN,CTN
+      jsr   X735B            call Change Palette
+      
+      ldd   #$0109           PRN,CTN
+      jsr   X735B            call Change Palette
+      
       inc   X0297
 L0685 rts   
 
@@ -934,7 +969,7 @@ L06BB ldd   X010C
 
 intercept
 L06C1 sta   X010B
-      lda   #$1B
+      lda   #C$EOF
       sta   X029C
       lda   X010B
       rti
@@ -1409,7 +1444,7 @@ L0C06 clr   X4C81
       jsr   X723C
       pshs  a,b
       clra  
-      jsr   X7304
+      jsr   X7304          calcs a integer based on input passed in d
       jsr   X72F3
       fcc   " day"
       fcb   C$NULL
@@ -1417,7 +1452,7 @@ L0C06 clr   X4C81
       beq   L0C34
       jsr   X72F3
       
-      fcb  $73
+      fcc   "s"          fcb  $73
       fcb  $00
       
 L0C34 jsr   X72F3
@@ -1571,7 +1606,7 @@ L0D9E jsr   X72F3
       fcb   C$NULL
       tfr   a,b
       clra  
-      jsr   X7304
+      jsr   X7304          calcs a integer based on input passed in d
       jsr   X72F3
       fcc   " hours"
       fcb   C$NULL
@@ -1589,22 +1624,29 @@ L0DEC pshs  a,b,x,y,u
 L0DF2 mul   
       leay  -1,y
       bne   L0DF2
-      ldd   #$0027
-      jsr   X735B
-      ldd   #$0300
-      jsr   X735B
-      ldd   #$0F26
-      jsr   X735B
+      
+      ldd   #$0027           PRN,CTN
+      jsr   X735B            call Change Palette
+      
+      ldd   #$0300           PRN,CTN
+      jsr   X735B            call Change Palette
+      
+      ldd   #$0F26           PRN,CTN
+      jsr   X735B            call Change Palette
+      
       ldy   #$0FA0
 L0E0D mul   
       leay  -1,y
       bne   L0E0D
-      ldd   #$033F
-      jsr   X735B
-      ldd   #0
-      jsr   X735B
-      ldd   #$0F00
-      jsr   X735B
+      
+      ldd   #$033F           PRN,CTN
+      jsr   X735B            call Change Palette
+      
+      ldd   #$0000           PRN,CTN
+      jsr   X735B            call Change Palette
+      
+      ldd   #$0F00           PRN,CTN
+      jsr   X735B            call Change Palette
       puls  a,b,x,y,u,pc
       
       
@@ -2781,7 +2823,7 @@ L1905 fdb   Ztst_x             tst 0,x
       fcb   C$NULL
       ldb   16,x
       clra  
-      jsr   X7304
+      jsr   X7304          calcs a integer based on input passed in d
       jsr   X72F3
       fcc   " hit, Sir"
       fcb   C$NULL
@@ -2804,7 +2846,7 @@ L1953 ldd   17,x
       fcb   C$NULL
       ldb   16,x
       clra  
-      jsr   X7304
+      jsr   X7304          calcs a integer based on input passed in d
       jsr   X72F3
       fcc   " has stopped, Sir"
       fcb   C$NULL
@@ -3008,7 +3050,7 @@ L1B7D clr   19717,x
       fcb   C$NULL
       tfr   x,d
       addd  #1
-      jsr   X7304
+      jsr   X7304          calcs a integer based on input passed in d
       jsr   X72F3
       fcc   " has been reloaded, Sir"
       fcb   C$NULL
@@ -3356,6 +3398,7 @@ L1F07 jsr   X72F3
 L1F27 inc   X04F8
 L1F2A lbsr  L0869
       ldb   #$21
+*                            argument passed in b to this routine
       jsr   X7477
 L1F32 jsr   X7228
 L1F35 ldu   9,x
@@ -3370,7 +3413,7 @@ L1F35 ldu   9,x
       jsr   X7556
       std   11,x
 L1F4F leax  21,x
-      dec   X1E13
+      dec   X1E13      
       lbpl  L1EAA
       rts
       
@@ -3387,24 +3430,44 @@ L1F5A std   X4CFB
       jmp   X7889
 L1F6B fcb   $01,$02,$01,$01,$03,$04
       fcb   $02,$02,$01,$01,$01
+
+Sub6      
 L1F76 fcc   "sub/sub6"
       fcb   C$NULL
+
+Radar
 L1F7F fcc   "sub/radar.dat"
       fcb   C$NULL
+
+Status
 L1F8D fcc   "sub/status.dat"
       fcb   C$NULL
+
+STitle
 L1F9C fcc   "sub/stitle.pic"
       fcb   C$NULL
+
+Sub1
 L1FAB fcc   "sub1"
       fcb   C$NULL
+
+Sub2
 L1FB0 fcc   "sub2"
       fcb   C$NULL
+
+Sub3
 L1FB5 fcc   "sub3"
       fcb   C$NULL
+
+Sub4
 L1FBA fcc   "sub4"
       fcb   C$NULL
+
+Sub5
 L1FBF fcc   "sub5"
       fcb   C$NULL
+
+Shell
 L1FC4 fcc   "shell"
       fcb   C$NULL
 
