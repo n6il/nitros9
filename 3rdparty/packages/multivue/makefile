@@ -28,7 +28,7 @@ OS9BOOT68	= $(MD68)/krnp2 $(MD68)/ioman $(MD68)/init \
 		$(MD68)/clock_60hz $(MD68)/clock2_soft \
 		$(MD68)/sysgo_dd
 
-OS9BOOT63	= $(MD63)/krpn2 $(MD63)/ioman $(MD63)/init \
+OS9BOOT63	= $(MD63)/krnp2 $(MD63)/ioman $(MD63)/init \
 		$(MD63)/rbf.mn \
 		$(MD63)/rb1773.dr $(MD63)/ddd0_40d.dd \
 		$(MD63)/d0_40d.dd $(MD63)/d1_40d.dd \
