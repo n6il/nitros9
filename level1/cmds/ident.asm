@@ -82,79 +82,81 @@ HelpMsg  fcb   C$LF
          fcc   "  -x = file in exec dir"
          fcb   C$CR
          ENDC
-L00CD    fcs   "Module header is incorrect!"
-L00E8    fcs   "Header for: "
-L00F4    fcs   "Module size:"
-L0100    fcs   "Module CRC: "
-L010C    fcs   "Hdr parity: "
-L0118    fcs   "Exec. off:  "
-L0124    fcs   "Data Size:  "
-L0130    fcs   "Ty/La At/Rv:"
-L013C    fcs   "Edition:    "
-L0148    fcs   "mod,"
-L014C    fcs   "re-en,"
-L0152    fcs   "non-shr,"
-L015A    fcs   "R/O"
-L015D    fcs   "R/W"
-L0160    fcs   "(Good)"
-L0166    fcc   "(Bad)"
+M_MInc   fcs   "Module header is incorrect!"
+M_Hdr    fcs   "Header for: "
+M_MSiz   fcs   "Module size:"
+M_MCRC   fcs   "Module CRC: "
+M_HdrP   fcs   "Hdr parity: "
+M_ExOff  fcs   "Exec. off:  "
+M_DatSz  fcs   "Data Size:  "
+M_TLAR   fcs   "Ty/La At/Rv:"
+M_Edtn   fcs   "Edition:    "
+M_Mod    fcs   "mod,"
+M_ReEn   fcs   "re-en,"
+M_NonShr fcs   "non-shr,"
+M_RO     fcs   "R/O"
+M_RW     fcs   "R/W"
+M_Good   fcs   "(Good)"
+M_Bad    fcc   "(Bad)"
          fcb   $80+C$BELL 
-L016C    fcb   $10 
-         fcb   $1C 
-         fcb   $20 
-         fcb   $24 $
-         fcb   $29 )
-         fcb   $2D -
-         fcb   $32 2
-         fcb   $37 7
-         fcb   $3C <
-         fcb   $41 A
-         fcb   $46 F
-         fcb   $4B K
-         fcb   $50 P
-         fcb   $56 V
-         fcb   $5E ^
-         fcb   $65 e
-         fcs   "bad type for"
-         fcs   "Prog"
-         fcs   "Subr"
-         fcs   "Multi"
-         fcs   "Data"
-         fcs   "Usr 5"
-         fcs   "Usr 6"
-         fcs   "Usr 7"
-         fcs   "Usr 8"
-         fcs   "Usr 9"
-         fcs   "Usr A"
-         fcs   "Usr B"
-         fcs   "System"
-         fcs   "File Man"
-         fcs   "Dev Dvr"
-         fcs   "Dev Dsc"
-L01D8    fcb   $10 
-         fcb   $15 
-         fcb   $1E 
-         fcb   $2D -
-         fcb   $3B ;
-         fcb   $44 D
-         fcb   $51 Q
-         fcb   $60 `
-         fcb   $60 `
-         fcb   $60 `
-         fcb   $60 `
-         fcb   $60 `
-         fcb   $60 `
-         fcb   $60 `
-         fcb   $60 `
-         fcb   $60 `
-         fcs   "Data,"
-         fcs   "6809 obj,"
-         fcs   "BASIC09 I-code,"
-         fcs   "PASCAL P-code,"
-         fcs   "C I-code,"
-         fcs   "COBOL I-code,"
-         fcs   "FORTRAN I-code,"
-         fcs   "6309 obj,"
+L016C    fcb   T_BAD-L016C
+         fcb   T_PR-L016C
+         fcb   T_SU-L016C
+         fcb   T_MU-L016C
+         fcb   T_DA-L016C
+         fcb   T_U5-L016C
+         fcb   T_U6-L016C
+         fcb   T_U7-L016C
+         fcb   T_U8-L016C
+         fcb   T_U9-L016C
+         fcb   T_UA-L016C
+         fcb   T_UB-L016C
+         fcb   T_SY-L016C
+         fcb   T_FM-L016C
+         fcb   T_DRV-L016C
+         fcb   T_DSC-L016C
+T_BAD    fcs   "bad type for"
+T_PR     fcs   "Prog"
+T_SU     fcs   "Subr"
+T_MU     fcs   "Multi"
+T_DA     fcs   "Data"
+T_U5     fcs   "Usr 5"
+T_U6     fcs   "Usr 6"
+T_U7     fcs   "Usr 7"
+T_U8     fcs   "Usr 8"
+T_U9     fcs   "Usr 9"
+T_UA     fcs   "Usr A"
+T_UB     fcs   "Usr B"
+T_SY     fcs   "System"
+T_FM     fcs   "File Man"
+T_DRV    fcs   "Dev Dvr"
+T_DSC    fcs   "Dev Dsc"
+
+L01D8    fcb   L_DA-L01D8
+         fcb   L_68-L01D8
+         fcb   L_B09-L01D8
+         fcb   L_PSC-L01D8
+         fcb   L_C-L01D8
+         fcb   L_COB-L01D8
+         fcb   L_FOR-L01D8
+         fcb   L_63-L01D8
+         fcb   L_BAD-L01D8
+         fcb   L_BAD-L01D8
+         fcb   L_BAD-L01D8
+         fcb   L_BAD-L01D8
+         fcb   L_BAD-L01D8
+         fcb   L_BAD-L01D8
+         fcb   L_BAD-L01D8
+         fcb   L_BAD-L01D8
+L_DA     fcs   "Data,"
+L_68     fcs   "6809 obj,"
+L_B09    fcs   "BASIC09 I-code,"
+L_PSC    fcs   "PASCAL P-code,"
+L_C      fcs   "C I-code,"
+L_COB    fcs   "COBOL I-code,"
+L_FOR    fcs   "FORTRAN I-code,"
+L_63     fcs   "6309 obj,"
+L_BAD    fcs   "???"
 
 start    leas  >u019C,u
          sts   <u0006
@@ -229,7 +231,7 @@ L02BB    ldx   <u0002
          cmpd  #M$ID12
          beq   L02EB
          puls  u
-L02DD    leay  >L00CD,pcr
+L02DD    leay  >M_MInc,pcr
          lbsr  L05FC
          lbsr  L0612
          clrb  
@@ -338,16 +340,16 @@ L03D2    os9   F$Exit
 L03D5    tst   <u000B
          lbne  L0502
          lbsr  L0612
-         leay  >L00E8,pcr
+         leay  >M_Hdr,pcr
          lbsr  L05FC
          lbsr  L04E9
          lbsr  L0612
-         leay  >L00F4,pcr
+         leay  >M_MSiz,pcr
          lbsr  L05FC
          ldy   <u000E
          ldd   $02,y
          lbsr  L05D2
-         leay  >L0100,pcr
+         leay  >M_MCRC,pcr
          lbsr  L05FC
          lbsr  L0543
          tst   <u000C
@@ -355,13 +357,13 @@ L03D5    tst   <u000B
          lbsr  L0553
          tsta  
          beq   L0417
-         leay  >L0166,pcr
+         leay  >M_Bad,pcr
          lbsr  L05FC
          bra   L041E
-L0417    leay  >L0160,pcr
+L0417    leay  >M_Good,pcr
          lbsr  L05FC
 L041E    lbsr  L0612
-         leay  >L010C,pcr
+         leay  >M_HdrP,pcr
          lbsr  L05FC
          ldy   <u000E
          ldb   $08,y
@@ -375,17 +377,17 @@ L041E    lbsr  L0612
          beq   L0444
          cmpb  #$10
          bne   L0462
-L0444    leay  >L0118,pcr
+L0444    leay  >M_ExOff,pcr
          lbsr  L05FC
          ldy   <u000E
          ldd   $09,y
          lbsr  L05D2
-         leay  >L0124,pcr
+         leay  >M_DatSz,pcr
          lbsr  L05FC
          ldy   <u000E
          ldd   $0B,y
          lbsr  L05D2
-L0462    leay  >L013C,pcr
+L0462    leay  >M_Edtn,pcr
          lbsr  L05FC
          ldb   <u0016
          pshs  b
@@ -396,7 +398,7 @@ L0462    leay  >L013C,pcr
          clra  
          lbsr  L0649
          lbsr  L0612
-         leay  >L0130,pcr
+         leay  >M_TLAR,pcr
          lbsr  L05FC
          ldb   <u001A
          lbsr  L0633
@@ -414,7 +416,7 @@ L0462    leay  >L013C,pcr
          lda   b,x
          leay  a,x
          lbsr  L05FC
-         leay  >L0148,pcr
+         leay  >M_Mod,pcr
          lbsr  L05FC
          ldb   <u001A
          andb  #$0F
@@ -425,16 +427,16 @@ L0462    leay  >L013C,pcr
          ldb   <u001B
          bitb  #$80
          beq   L04CD
-         leay  >L014C,pcr
+         leay  >M_ReEn,pcr
          lbsr  L05FC
          bra   L04D4
-L04CD    leay  >L0152,pcr
+L04CD    leay  >M_NonShr,pcr
          lbsr  L05FC
 L04D4    bitb  #$40
          beq   L04DE
-         leay  >L015D,pcr
+         leay  >M_RW,pcr
          bra   L04E2
-L04DE    leay  >L015A,pcr
+L04DE    leay  >M_RO,pcr
 L04E2    lbsr  L05FC
          lbsr  L0612
          rts   
@@ -643,6 +645,7 @@ L0688    addb  #$30
          lbsr  L0608
          exg   a,b
          rts   
+
 L0692    pshs  u,y,b
          leau  <L06C3,pcr
          clr   <u0017
@@ -665,7 +668,7 @@ L06A7    addd  ,u++
 L06BD    leay  -$01,y
          bne   L069D
          puls  pc,u,y,b
-L06C3    fdb   $2710,$03e8,$0064,$000a,$0001
+L06C3    fdb   10000,1000,100,10,1
 L06CD    tsta  
          beq   L06D2
          sta   <u0017
