@@ -920,10 +920,10 @@ V$STAT   rmb   2          Device Driver Static storage
 V$DESC   rmb   2          Device Descriptor module
 V$FMGR   rmb   2          File Manager module
 V$USRS   rmb   1          use count
-         ifne  NitrOS9
+         IFGT  Level-1
 V$DRIVEX rmb   2          Device Driver execution address
 V$FMGREX rmb   2          File Manager execution address
-         endc
+         ENDC
 DEVSIZ   equ   .
 
 *******************************
@@ -947,9 +947,9 @@ Q$MASK   rmb   1          Polling Mask (after Flip)
 Q$SERV   rmb   2          Absolute Service routine Address
 Q$STAT   rmb   2          Static Storage Address
 Q$PRTY   rmb   1          Priority (Low Numbers=Top Priority)
-         ifne  NitrOS9
+         IFGT  Level-1
 Q$MAP    rmb   2          Added by NitrOS-9
-         endc
+         ENDC
 POLSIZ   equ   .
 
 ********************
