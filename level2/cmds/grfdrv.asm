@@ -1,3821 +1,508 @@
-********************************************************************
-* GrfDrv - OS-9 Level Two graphics driver
-*
-* $Id$
-*
-* Ed.    Comments                                       Who YY/MM/DD
-* ------------------------------------------------------------------
-*   6    From OS-9 Level Two Version 3
-*
-*
 
-         nam   GrfDrv
-         ttl   OS-9 Level Two graphics driver
-
-* Disassembled 02/07/06 13:10:20 by Disasm v1.6 (C) 1988 by RML
-
-         ifp1
-         use   defsfile
-         endc
-
-tylg     set   Systm+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-edition  set   6
-
-         mod   eom,name,tylg,atrv,start,size
-u0000    rmb   0
-size     equ   .
-
-         fcb   $07 
-
-name     fcs   /GrfDrv/
-         fcb   edition
-
-start    pshs  b,a
-         tfr   u,d
-         tfr   a,dp
-         leax  >L0029,pcr
-         ldb   $01,s
-         ldd   b,x
-         leax  d,x
-         puls  b,a
-         jmp   ,x
-
-L0029    fcb   $6E
-         fdb   $8400,$6000,$b901
-         fdb   $4303,$3103,$3503,$cf04,$8504,$b206,$ce05,$4e06
-         fdb   $2906,$0405,$7505,$bd06,$1305,$d406,$3106,$5305
-         fdb   $f706,$c106,$c606,$ca07,$d609,$1f0a,$150a,$4d0a
-         fdb   $7f0b,$9b0d,$fa0e,$3b10,$2a10,$3113,$6110,$3d13
-         fdb   $df13,$c615,$4415,$5016,$7417,$7917,$c118,$3117
-         fdb   $d01b,$f116,$7a17,$bc18,$2c15,$0b0d,$382b,$5386
-         fdb   $ff97,$3830,$c901,$80c6,$ff10
-
-L0099    std   -$10,x
-         leax  <$40,x
-         leay  -$01,y
-         bne   L0099
-         leax  >$0980,u
-         clrb  
-         ldy   #$0010
-L00AB    stb   $01,x
-         leax  <$20,x
-         leay  -$01,y
-         bne   L00AB
-         leax  >$0087,u
-         clra  
-         clrb  
-         std   ,x
-         ldd   #$333E
-         std   $02,x
-         std   $06,x
-         std   $08,x
-         std   $0A,x
-         std   $0C,x
-         std   $0E,x
-         tfr   pc,d
-         lsra  
-         lsra  
-         lsra  
-         lsra  
-         anda  #$0E
-         ldy   <$004A
-         leay  <$40,y
-         ldd   a,y
-         std   $04,x
-         ldy   <$00A1
-         stx   $02,y
-         tfr   u,d
-         addd  #$0B80
-         addd  #$0018
-         std   <$3B,u
-         clra  
-         clrb  
-         std   <$30,u
-         std   <$2E,u
-         stb   <$32,u
-         stb   <$35,u
-         stb   <$39,u
-         stb   <$3A,u
-         std   <$3D,u
-         std   <$3F,u
-L0107    clra  
-         rts   
-L0109    clr   <$0038
-         clr   <$007D
-         ldb   <$0032
-         beq   L011A
-         ldx   <$0033
-         lbsr  L0AB9
-         bcc   L0109
-         bra   L011B
-L011A    clrb  
-L011B    bra   L011D
-L011D    pshs  cc
-         orcc  #$50
-         ldx   >$1007
-         clr   >$1002
-         clra  
-         tfr   a,dp
-         puls  a
-         jmp   [>$00A9]
-L0130    pshs  y,x,b,a
-         ldx   -$10,y
-         stx   $02,s
-L0136    ldd   <$16,y
-         std   <$0064
-         ldd   $0F,y
-         std   <$0066
-         ldd   <$14,y
-         std   <$0068
-         ldd   $06,y
-         std   <$0061
-         ldd   <$1B,y
-         std   <$006A
-         ldd   <$1D,y
-         std   <$006C
-         ldb   ,x
-         stb   <$0060
-         ldb   $04,x
-         stb   <$0063
-         ldb   $01,x
-L015C    leax  >$0087,u
-         ldy   #$FFA8
-         clra  
-         std   $08,x
-         stb   $04,y
-         incb  
-         std   $0A,x
-         stb   $05,y
-         incb  
-         std   $0C,x
-         stb   $06,y
-         incb  
-         std   $0E,x
-         stb   $07,y
-         puls  pc,y,x,b,a
-L017A    pshs  y,x,b,a
-         bra   L015C
-L017E    pshs  y,x,b,a
-         ldx   -$10,y
-         bra   L0136
-L0184    bsr   L0130
-         lbra  L1525
-L0189    pshs  x
-         leax  >$0087,u
-         clr   $02,x
-         stb   $03,x
-         ldx   #$FFA8
-         stb   $01,x
-         puls  pc,x
-L019A    pshs  a
-         os9   F$AllRAM 
-         puls  pc,a
-L01A1    pshs  a
-         os9   F$AlHRAM 
-         puls  pc,a
-L01A8    os9   F$DelRAM 
-         rts   
-         bsr   L01D7
-         bcs   L01D4
-         lda   <$0060
-         cmpa  #$FF
-         bne   L01BF
-         bsr   L0210
-         bcs   L01D4
-         lbsr  L1525
-         bra   L01C4
-L01BF    lbsr  L027D
-         bcs   L01D4
-L01C4    lbsr  L0130
-         lbsr  L0387
-         lda   #$FF
-         sta   -$0E,y
-         ldb   $08,y
-         lbsr  L13E8
-         clrb  
-L01D4    lbra  L011D
-L01D7    lda   <$0060
-         cmpa  #$FF
-         bne   L01E1
-         ldx   -$10,y
-         lda   ,x
-L01E1    leax  >L0209,pcr
-         anda  #$0F
-         ldb   -$0B,y
-         bmi   L0205
-         cmpb  a,x
-         bgt   L0205
-         addb  -$09,y
-         cmpb  a,x
-         bgt   L0205
-         ldb   -$0A,y
-         bmi   L0205
-         cmpb  #$18
-         bgt   L0205
-         addb  -$08,y
-         cmpb  #$18
-         bgt   L0205
-         clrb  
-         rts   
-L0205    comb  
-         ldb   #$BD
-         rts   
-L0209    neg   <$0050
-         bvc   L025D
-         bvc   L025F
-         bvc   L0221
-         stx   <$0099
-         leax  >$0190,u
-         ldb   #$20
-         stb   <$009B
-L021B    ldd   -$10,x
-         bmi   L0230
-         cmpd  -$10,y
-         bne   L0230
-         lda   -$0E,x
-         bpl   L0230
-         cmpx  <$0099
-         beq   L0230
-         bsr   L0239
-         bcs   L0238
-L0230    leax  <$40,x
-         dec   <$009B
-         bne   L021B
-         clrb  
-L0238    rts   
-L0239    lda   $09,x
-         bita  #$01
-         beq   L0277
-         lda   -$0B,y
-         cmpa  <$26,x
-         bge   L024F
-         adda  -$09,y
-         cmpa  <$26,x
-         bgt   L025B
-         bra   L0277
-L024F    ldb   <$26,x
-         addb  <$28,x
-         stb   <$0097
-         cmpa  <$0097
-         bge   L0277
-L025B    lda   -$0A,y
-L025D    cmpa  <$27,x
-         bge   L026B
-         adda  -$08,y
-         cmpa  <$27,x
-         bgt   L0279
-         bra   L0277
-L026B    ldb   <$27,x
-         addb  <$29,x
-         stb   <$0097
-         cmpa  <$0097
-         blt   L0279
-L0277    clrb  
-         rts   
-L0279    comb  
-         ldb   #$C3
-         rts   
-L027D    bsr   L029C
-         bcs   L029B
-         stx   -$10,y
-         ldb   <$0060
-         stb   ,x
-         bsr   L02B0
-         bcs   L029B
-         ldb   <$005A
-         stb   $05,x
-         lbsr  L07D4
-         stb   $06,x
-         lbsr  L0353
-         lbsr  L072B
-L029A    clrb  
-L029B    rts   
-L029C    leax  >$0980,u
-         ldb   #$10
-L02A2    tst   $01,x
-         beq   L029A
-         leax  <$20,x
-         decb  
-         bne   L02A2
-         comb  
-         ldb   #$C1
-         rts   
-L02B0    pshs  y
-         ldb   <$0060
-         bpl   L02D0
-         leay  >$0980,u
-         lda   #$10
-L02BC    tst   ,y
-         bpl   L02C8
-         ldb   $01,y
-         beq   L02C8
-         bsr   L031C
-         bcc   L02FA
-L02C8    leay  <$20,y
-         deca  
-         bne   L02BC
-         ldb   <$0060
-L02D0    leay  >L030E,pcr
-         andb  #$0F
-         ldb   b,y
-         lbsr  L01A1
-         bcs   L030C
-         ldy   #$8000
-         pshs  y,b
-         lbsr  L017A
-         ldy   #$8000
-         ldb   #$FF
-L02EC    stb   ,y
-         leay  >$0800,y
-         cmpy  #$A000
-         bcs   L02EC
-         puls  y,b
-L02FA    stb   $01,x
-         sty   $02,x
-         lda   <$0060
-         anda  #$0F
-         leay  >L0315,pcr
-         lda   a,y
-         sta   $04,x
-         clrb  
-L030C    puls  pc,y
-L030E    neg   <$0002
-         aim   #$04,<$0004
-         oim   #$01,<$0000
-         negb  
-         negb  
-         suba  ,y+
-         suba  -$10,u
-L031C    pshs  y,x,b,a
-         lbsr  L017A
-         ldy   #$8000
-         ldb   #$FF
-L0327    cmpb  ,y
-         beq   L0337
-L032B    leay  >$0800,y
-         cmpy  #$A000
-         bcs   L0327
-         bra   L0350
-L0337    lda   <$0060
-         cmpa  #$84
-         beq   L034A
-         leax  >$0800,y
-         cmpx  #$A000
-         bcc   L0350
-         cmpb  ,x
-         bne   L032B
-L034A    clrb  
-         puls  x,b,a
-         leas  $02,s
-         rts   
-L0350    comb  
-         puls  pc,y,x,b,a
-L0353    pshs  y,x
-         stb   <$0097
-         stb   <$0098
-         tst   ,x
-         bpl   L0361
-         lda   #$20
-         sta   <$0097
-L0361    ldy   $02,x
-         lda   ,x
-         anda  #$0F
-         lsla  
-         leax  >L0379,pcr
-         ldx   a,x
-         ldd   <$0097
-L0371    std   ,y++
-         leax  -$01,x
-         bne   L0371
-         puls  pc,y,x
-L0379    neg   <$0000
-         tfr   s,d
-         tfr   s,d
-         fcb   $3E >
-         suba  #$3E
-         suba  #$07
-         subb  <$0003
-         eorb  -$0C,y
-         clrd  
-         clrb  
-         sta   <$18,y
-         sta   $0A,y
-         sta   $0E,y
-         leax  >L1FE9,pcr
-         stx   <$14,y
-         leax  >L1FDE,pcr
-         stx   <$16,y
-         lda   #$89
-         sta   $09,y
-         ldb   $06,y
-         lbsr  L078D
-         stb   $06,y
-         stb   <$0061
-         ldb   $07,y
-         lbsr  L078D
-         stb   $07,y
-         stb   <$0062
-         lbsr  L07DE
-         puls  x
-         ldd   $02,x
-         bsr   L03CD
-         clr   $0B,y
-         ldd   #$C801
-         std   <$0057
-         lbsr  L067D
-         bcs   L03CB
-L03CB    clrb  
-         rts   
-L03CD    lbsr  L05BA
-         ldd   -$0D,y
-         std   <$24,y
-         ldd   -$0B,y
-         std   <$26,y
-         ldd   -$09,y
-         std   <$28,y
-         rts   
-         ldb   $09,y
-         tsta  
-         beq   L03E9
-         orb   #$01
-         bra   L03EB
-L03E9    andb  #$FE
-L03EB    stb   $09,y
-         bra   L0421
-         lbsr  L0184
-         ldd   #$FFFF
-         std   -$10,y
-         bsr   L0424
-         bcs   L0419
-         bsr   L043C
-         cmpy  <$002E
-         bne   L0419
-         ldd   #$0000
-         std   <$002E
-         std   <$0030
-         ldx   #$FFB0
-         ldd   #$163F
-         stb   >$FF9A
-L0412    stb   ,x+
-         deca  
-         bhi   L0412
-         bra   L0421
-L0419    ldb   $06,x
-         stb   <$0062
-         lbsr  L13E8
-         clrb  
-L0421    lbra  L011D
-L0424    pshs  y
-         leay  >$0190,u
-         ldb   #$20
-L042C    cmpx  -$10,y
-         beq   L0439
-         leay  <$40,y
-         decb  
-         bne   L042C
-         clrb  
-         bra   L043A
-L0439    comb  
-L043A    puls  pc,y
-L043C    pshs  y
-         lda   ,x
-         bpl   L0469
-         ldy   $02,x
-         ldb   #$FF
-         stb   ,y
-         cmpa  #$85
-         bne   L0453
-         leay  >$0800,y
-         stb   ,y
-L0453    ldy   #$8000
-L0457    cmpb  ,y
-         bne   L047F
-         leay  >$0800,y
-         cmpy  #$A000
-         bcs   L0457
-         ldb   #$01
-         bra   L046F
-L0469    leay  >L030E,pcr
-         ldb   a,y
-L046F    pshs  x,b
-         clra  
-         ldb   $01,x
-         tfr   d,x
-         puls  b
-         lbsr  L01A8
-         bcs   L0482
-         puls  x
-L047F    clrb  
-         stb   $01,x
-L0482    puls  pc,y
-         pshs  y
-         ldb   -$0E,y
-         lda   #$40
-         mul   
-         leay  >$0190,u
-         leay  d,y
-         lbsr  L0184
-         tfr   y,d
-         ldy   ,s
-         std   ,s
-         bsr   L04C5
-         bcs   L04C2
-         ldd   -$10,x
-         std   -$10,y
-         lbsr  L017E
-         bsr   L04F4
-         tst   <$0059
-         beq   L04B8
-         lbsr  L0544
-         bcs   L04C2
-         ldb   $07,y
-         stb   <$0062
-         lbsr  L13E8
-L04B8    puls  x
-         cmpx  <$002E
-         bne   L04C1
-         sty   <$002E
-L04C1    clrb  
-L04C2    lbra  L011D
-L04C5    bsr   L04E2
-L04C7    ldb   -$0B,y
-         bmi   L04DF
-         addb  -$09,y
-         cmpb  <$28,x
-         bhi   L04DF
-         ldb   -$0A,y
-         bmi   L04DF
-         addb  -$08,y
-         cmpb  <$29,x
-         bhi   L04DF
-         clrb  
-         rts   
-L04DF    lbra  L0205
-L04E2    tfr   y,x
-L04E4    ldb   -$0E,x
-         bmi   L04F3
-         leax  >$0190,u
-         lda   #$40
-         mul   
-         leax  d,x
-         bra   L04E4
-L04F3    rts   
-L04F4    clra  
-         clrb  
-         sta   <$11,y
-         lda   $09,x
-         sta   $09,y
-         lbsr  L07DE
-         lda   $08,x
-         anda  #$C0
-         ora   $08,y
-         sta   $08,y
-         lda   $0A,x
-         sta   $0A,y
-         ldd   <$14,x
-         std   <$14,y
-         lda   $0E,x
-         sta   $0E,y
-         ldd   <$16,x
-         std   <$16,y
-         lda   $0B,x
-         sta   $0B,y
-         ldd   $0C,x
-         std   $0C,y
-         ldb   <$18,x
-         stb   <$18,y
-         ldd   <$19,x
-         std   <$19,y
-         ldb   $06,y
-         lbsr  L078D
-         stb   $06,y
-         ldb   $07,y
-         lbsr  L078D
-         stb   $07,y
-         ldd   -$0D,x
-         lbsr  L03CD
-         rts   
-L0544    pshs  x
-         clra  
-         ldb   -$09,y
-         tst   <$0060
-         bmi   L0552
-         lslb  
-         lslb  
-         rola  
-         lslb  
-         rola  
-L0552    std   <$004F
-         clra  
-         ldb   -$08,y
-         tst   <$0060
-         bmi   L055E
-         lslb  
-         lslb  
-         lslb  
-L055E    std   <$0051
-         clra  
-         clrb  
-         std   <$0047
-         lbsr  L0C4D
-         puls  pc,x
-         lbsr  L0184
-         cmpy  <$002E
-         bne   L0583
-         pshs  y
-         ldb   -$0E,y
-         lda   #$40
-         mul   
-         leay  >$0190,u
-         leay  d,y
-         sty   <$002E
-         puls  y
-L0583    ldb   <$11,y
-         beq   L059B
-         lbsr  L0189
-         stb   <$007D
-         ldd   <$12,y
-         std   <$007E
-         lbsr  L0D49
-         lbsr  L0988
-         lbsr  L0AB9
-L059B    ldd   #$FFFF
-         std   -$10,y
-         bra   L05B6
-L05A2    comb  
-         ldb   #$C0
-         bra   L05B7
-         lbsr  L0184
-         tfr   y,x
-         lbsr  L04C7
-         bcs   L05B7
-         ldd   <$24,y
-         bsr   L05BA
-L05B6    clrb  
-L05B7    lbra  L011D
-L05BA    pshs  x,b,a
-         ldb   <$0060
-         andb  #$0F
-         leax  >L061A,pcr
-         ldb   b,x
-         stb   $03,y
-         lda   -$09,y
-         mul   
-         stb   $02,y
-         clra  
-         ldb   <$0063
-         tst   <$0060
-         bmi   L05DA
-         lslb  
-         rola  
-         lslb  
-         rola  
-         lslb  
-         rola  
-L05DA    std   $04,y
-         ldb   -$0A,y
-         ldx   $04,y
-         lbsr  L1EA9
-         std   <$0097
-         lda   -$0B,y
-         ldb   $03,y
-         mul   
-         addd  ,s++
-         addd  <$0097
-         std   -$0D,y
-         lbsr  L124B
-         ldb   <$0060
-         bmi   L05F9
-         bsr   L0621
-L05F9    clra  
-         ldb   -$09,y
-         tst   <$0060
-         bmi   L0603
-         lda   #$08
-         mul   
-L0603    subd  #$0001
-         std   <$1B,y
-         clra  
-         ldb   -$08,y
-         tst   <$0060
-         bmi   L0613
-         lda   #$08
-         mul   
-L0613    subb  #$01
-         std   <$1D,y
-         puls  pc,x
-L061A    neg   <$0001
-         aim   #$02,<$0004
-         aim   #$02,<$0034
-         clrd  
-         ldb   -$09,y
-         tfr   d,x
-         lda   #$03
-         mul   
-         pshs  b
-         ldb   #$33
-         lbsr  L1E87
-         addb  ,s+
-         stb   -$07,y
-         clra  
-         ldb   -$08,y
-         tfr   d,x
-         lda   #$0A
-         mul   
-         pshs  b
-         ldb   #$AB
-         lbsr  L1E87
-         addb  ,s+
-         stb   -$06,y
-         puls  pc,x
-         ldb   <$0057
-         bne   L0657
-         stb   $0E,y
-         leax  >L1FDE,pcr
-         bra   L066F
-L0657    lbsr  L098E
-         bcs   L0673
-         stb   $0E,y
-         leax  <$20,x
-         stx   $0F,y
-         ldx   -$10,y
-         ldb   ,x
-         leax  >L1FF4,pcr
-         ldb   b,x
-         leax  b,x
-L066F    stx   <$16,y
-L0672    clrb  
-L0673    lbra  L011D
-         lbsr  L0184
-         bsr   L067D
-         bra   L0673
-L067D    ldb   <$0057
-         bne   L0685
-         stb   $0B,y
-         bra   L06BF
-L0685    lbsr  L1031
-         lbsr  L098E
-         bcs   L06BF
-         pshs  x,b
-         ldd   $07,x
-         cmpd  #$0006
-         beq   L069D
-         cmpd  #$0008
-         bne   L06C0
-L069D    ldd   $09,x
-         cmpd  #$0008
-         bne   L06C0
-         stb   $0B,x
-         ldd   $07,x
-         cmpd  <$006E
-         beq   L06B8
-         tst   $0B,y
-         beq   L06B8
-         lbsr  L12B9
-         lbsr  L12A4
-L06B8    puls  x,b
-         stb   $0B,y
-         stx   $0C,y
-         clrb  
-L06BF    rts   
-L06C0    puls  x,b
-         ldb   #$C2
-         coma  
-         rts   
-         lbsr  L0184
-         ldb   <$0057
-         bne   L06D2
-         stb   <$18,y
-         bra   L0673
-L06D2    lbsr  L098E
-         bcs   L0673
-         stb   <$18,y
-         stx   <$19,y
-         bra   L0672
-         leax  >L06FC,pcr
-         ldb   $0A,y
-         cmpb  #$03
-         bhi   L06F7
-         lslb  
-         ldd   b,x
-         leax  >L06FC,pcr
-         leax  d,x
-         stx   <$14,y
-         bra   L0711
-L06F7    comb  
-         ldb   #$BB
-         bra   L0712
-L06FC    fcb   $18 
-         std   -$08,x
-         addb  -$08,x
-         sbcb  >$18E7
-         ldb   $09,y
-         tsta  
-         bne   L070D
-         orb   #$80
-         bra   L070F
-L070D    andb  #$7F
-L070F    stb   $09,y
-L0711    clrb  
-L0712    lbra  L011D
-         ldb   <$0086
-         ldx   -$10,y
-         leax  <$10,x
-         lda   <$005A
-         anda  #$0F
-         stb   a,x
-         bra   L0711
-         ldx   -$10,y
-         bsr   L072B
-         lbra  L011D
-L072B    pshs  y,x
-         leax  <$10,x
-         ldy   >$1019
-         clra  
-L0735    ldb   ,y+
-         stb   a,x
-         inca  
-         cmpa  #$0F
-         ble   L0735
-         puls  pc,y,x
-         ldb   <$005A
-         ldx   -$10,y
-         stb   $05,x
-         bra   L0789
-         ldx   -$10,y
-         ldb   ,x
-         stb   <$0060
-         ldb   <$005A
-         bsr   L078D
-         stb   $06,y
-         ldb   $09,y
-         bitb  #$04
-         bne   L0779
-L075A    ldb   <$005A
-         lslb  
-         lslb  
-         lslb  
-         andb  #$38
-         lda   $08,y
-         anda  #$C7
-         bra   L0783
-         ldx   -$10,y
-         ldb   ,x
-         stb   <$0060
-         ldb   <$005A
-         bsr   L078D
-         stb   $07,y
-         ldb   $09,y
-         bitb  #$04
-         bne   L075A
-L0779    ldb   <$005A
-         ldb   <$005A
-         andb  #$07
-         lda   $08,y
-         anda  #$F8
-L0783    stb   <$0097
-         ora   <$0097
-         sta   $08,y
-L0789    clrb  
-         lbra  L011D
-L078D    pshs  x,a
-         lda   <$0060
-         bmi   L079F
-         leax  >L07A1,pcr
-         lda   a,x
-         leax  a,x
-         andb  ,x+
-         ldb   b,x
-L079F    puls  pc,x,a
-L07A1    neg   <$0005
-         lsl   <$0008
-         tst   <$0001
-         neg   <$00FF
-         com   <$0000
-         fcb   $55 U
-         ora   [>$0F00]
-         fcb   $11 
-         bhi   L07E6
-         lsra  
-         fcb   $55 U
-         ror   -$09,s
-         eora  #$99
-         ora   [d,y]
-         ldd   #$DDEE
-         stu   >$3412
-         leax  >L07CD,pcr
-         lda   <$0060
-         anda  #$0F
-         andb  a,x
-         puls  pc,x,a
-L07CD    neg   <$0007
-         asr   <$0001
-         com   <$0003
-         asr   <$006D
-         anda  #$2A
-         com   <$00C4
-         asr   <$0039
-         bsr   L078D
-         rts   
-L07DE    ldb   $06,y
-         andb  #$07
-         lslb  
-         lslb  
-         lslb  
-         lda   $07,y
-         anda  #$07
-         sta   <$0097
-         orb   <$0097
-         stb   $08,y
-         rts   
-         ldb   $09,y
-         tsta  
-         bne   L07F9
-         andb  #$EF
-         bra   L07FB
-L07F9    orb   #$10
-L07FB    bra   L0815
-         ldb   $09,y
-         tsta  
-         bne   L0806
-         andb  #$F7
-         bra   L0808
-L0806    orb   #$08
-L0808    bra   L0815
-         ldb   $09,y
-         tsta  
-         bne   L0813
-         andb  #$DF
-         bra   L0815
-L0813    orb   #$20
-L0815    stb   $09,y
-         lbra  L1521
-         pshs  y
-         ldy   <$002E
-         beq   L0824
-         lbsr  L0184
-L0824    ldb   >$1000
-         stb   >$1001
-         ldy   ,s
-         lbsr  L0130
-         sty   <$002E
-         stx   <$0030
-         tfr   x,y
-         lda   $01,y
-         ldx   $02,y
-         lbsr  L091B
-         ldx   #$FF90
-         ldb   >$0090
-         andb  #$7F
-         stb   >$0090
-         stb   ,x
-         leax  >L08BE,pcr
-         ldb   ,y
-         andb  #$0F
-         lslb  
-         abx   
-         lda   >$0098
-         anda  #$78
-         ora   ,x+
-         ldb   ,x
-         ldx   #$FF90
-         sta   >$0098
-         sta   $08,x
-         stb   >$0099
-         stb   $09,x
-         ldd   <$0082
-         lsra  
-         rorb  
-         ror   <$0084
-         lsra  
-         rorb  
-         ror   <$0084
-         lsra  
-         rorb  
-         ror   <$0084
-         clra  
-         sta   >$009C
-         sta   $0C,x
-         stb   >$009D
-         stb   $0D,x
-         ldb   <$0084
-         stb   >$009E
-         stb   $0E,x
-         ldb   #$00
-         stb   >$009F
-         stb   $0F,x
-         ldb   $05,y
-         leay  <$10,y
-         ldb   b,y
-         stb   >$009A
-         bsr   L08CC
-         stb   $0A,x
-         ldx   #$FFB0
-         lda   #$10
-L08A5    ldb   ,y+
-         bsr   L08CC
-         stb   ,x+
-         deca  
-         bhi   L08A5
-         puls  y
-         ldd   <$003D
-         std   <$005B
-         ldd   <$003F
-         std   <$005D
-         lbsr  L1554
-         lbra  L1521
-L08BE    neg   <$0000
-         suba  #$14
-         suba  #$15
-         suba  #$1D
-         suba  #$1E
-         com   <$0015
-         com   <$0005
-L08CC    pshs  x
-         tst   >$1009
-         bne   L08D9
-         leax  >L08DB,pcr
-         ldb   b,x
-L08D9    puls  pc,x
-
-L08DB    fdb   $3404,$d699,$c101,$2221
-         fdb   $dcb7,$9397,$841f,$dd9b,$2717,$dcb7,$939b,$d3b7
-         fdb   $1f01,$e6e4,$db99,$5a9d,$bc8d,$22dc,$9b93,$b5ed
-         fdb   $059e,$b735,$049d,$bc96,$99a7,$0f4f,$3934
-
-L090E    leau  $05,y
-         puls  y,b
-         pshs  y
-         rti   
-         leay  -$02,y
-         pulu  y,x,dp,cc
-         swi   
-         fcb   $30 0
-L091B    clrb  
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-L0920    lsra  
-         rorb  
-         std   <$0082
-         clr   <$0084
-         tfr   x,d
-         suba  #$80
-         addd  <$0083
-         std   <$0083
-         bcc   L0932
-         inc   <$0082
-L0932    rts   
-         bsr   L0938
-         lbra  L011D
-L0938    ldd   <$0080
-         addd  #$001F
-         andb  #$E0
-         std   <$0080
-         ldb   <$0057
-         cmpb  #$FF
-         beq   L094F
-         tst   <$0032
-         beq   L094F
-         bsr   L098E
-         bcc   L0986
-L094F    ldd   <$0080
-         cmpd  #$2000
-         bhi   L0961
-         bsr   L09D6
-         bcs   L0961
-         lda   #$01
-         sta   $0F,x
-         bra   L0966
-L0961    lbsr  L0A09
-         bcs   L0985
-L0966    stb   <$007D
-         stx   <$007E
-         lbsr  L0A60
-         ldb   <$0057
-         stb   $03,x
-         ldb   <$0058
-         stb   $04,x
-         ldd   <$0080
-         std   $05,x
-         clra  
-         clrb  
-         std   $07,x
-         std   $09,x
-         stb   $0C,x
-         stb   $0D,x
-         stb   $0E,x
-L0985    rts   
-L0986    bra   L09CB
-L0988    leax  >L09A2,pcr
-         bra   L0992
-L098E    leax  >L09AC,pcr
-L0992    stx   <$00A1
-         bsr   L09CF
-         ldb   <$0032
-         beq   L09CB
-         ldx   <$0033
-         bra   L09C4
-L099E    jmp   [>$00A1,u]
-L09A2    cmpb  <$11,y
-         bne   L09BA
-         cmpx  <$12,y
-         bra   L09B8
-L09AC    lda   <$0057
-         cmpa  $03,x
-         bne   L09BA
-         lda   <$0058
-         beq   L09C9
-         cmpa  $04,x
-L09B8    beq   L09C9
-L09BA    stb   <$007D
-         stx   <$007E
-         ldb   ,x
-         beq   L09CB
-         ldx   $01,x
-L09C4    lbsr  L0189
-         bra   L099E
-L09C9    clra  
-         rts   
-L09CB    comb  
-         ldb   #$C2
-         rts   
-L09CF    clra  
-         clrb  
-         stb   <$007D
-         std   <$007E
-         rts   
-L09D6    pshs  y,b
-         ldy   <$0080
-         leax  >L0B45,pcr
-         stx   <$00A1
-         lbsr  L0B32
-         bcs   L0A07
-         stb   ,s
-         ldd   $05,x
-         subd  <$0080
-         bne   L09FC
-         pshs  x
-         lbsr  L0A80
-         puls  x
-         ldb   ,s
-         lbsr  L0189
-         bra   L0A06
-L09FC    subd  #$0020
-         std   $05,x
-         leax  <$20,x
-         leax  d,x
-L0A06    clra  
-L0A07    puls  pc,y,b
-L0A09    ldd   <$0080
-         addd  #$0020
-         std   <$0097
-         addd  #$1FFF
-         lsra  
-         lsra  
-         lsra  
-         lsra  
-         lsra  
-         tfr   a,b
-         stb   <$0099
-         lbsr  L019A
-         bcs   L0A5F
-         pshs  b
-         ldb   <$0099
-         cmpb  #$01
-         bhi   L0A52
-         ldd   #$2000
-         subd  <$0097
-         anda  #$1F
-         std   <$009B
-         beq   L0A52
-         subd  #$0020
-         ldd   #$2000
-         subd  <$009B
-         addd  #$2000
-         tfr   d,x
-         ldb   ,s
-         addb  <$0099
-         decb  
-         lbsr  L0189
-         bsr   L0A70
-         ldd   <$009B
-         subd  #$0020
-         std   $05,x
-L0A52    ldx   #$2000
-         puls  b
-         lbsr  L0189
-         lda   <$0099
-         sta   $0F,x
-         clra  
-L0A5F    rts   
-L0A60    pshs  b,a
-         lda   <$0032
-         sta   ,x
-         stb   <$0032
-         ldd   <$0033
-         std   $01,x
-         stx   <$0033
-         puls  pc,b,a
-L0A70    pshs  b,a
-         lda   <$0035
-         sta   ,x
-         stb   <$0035
-         ldd   <$0036
-         std   $01,x
-         stx   <$0036
-         puls  pc,b,a
-L0A80    pshs  y,a
-         lda   ,x
-         ldy   $01,x
-         ldx   <$007E
-         ldb   <$007D
-         bne   L0A94
-         sta   <$0035
-         sty   <$0036
-         bra   L0A9C
-L0A94    lbsr  L0189
-         sta   ,x
-         sty   $01,x
-L0A9C    puls  pc,y,a
-         ldb   #$01
-         stb   <$0097
-L0AA2    lbsr  L098E
-         bcs   L0AB1
-         clr   <$0097
-         bsr   L0AB9
-         bcs   L0AB6
-         ldb   <$0058
-         beq   L0AA2
-L0AB1    lda   <$0097
-         bne   L0AB6
-         clrb  
-L0AB6    lbra  L011D
-L0AB9    pshs  y,x,b
-         lda   $0F,x
-         sta   <$009F
-         lda   ,x
-         ldy   $01,x
-         ldb   <$007D
-         bne   L0ACF
-         sta   <$0032
-         sty   <$0033
-         bra   L0AD9
-L0ACF    lbsr  L0189
-         ldx   <$007E
-         sta   ,x
-         sty   $01,x
-L0AD9    ldb   ,s
-         lda   <$009F
-         cmpa  #$01
-         bgt   L0B03
-         tfr   b,a
-         bsr   L0B0D
-         bcc   L0AF9
-         leax  >L0B59,pcr
-         stx   <$00A1
-         ldx   $01,s
-         bsr   L0B32
-         lbsr  L0189
-         lbsr  L0A70
-         bra   L0B0B
-L0AF9    leax  >L0B83,pcr
-         stx   <$00A1
-         ldx   $01,s
-         bsr   L0B32
-L0B03    clra  
-         tfr   d,x
-         ldb   <$009F
-         lbsr  L01A8
-L0B0B    puls  pc,y,x,b
-L0B0D    pshs  x,b
-         ldb   <$0032
-         beq   L0B2C
-         cmpa  <$0032
-         beq   L0B2F
-         ldx   <$0033
-         bra   L0B27
-L0B1B    cmpa  ,x
-         beq   L0B2F
-         tst   ,x
-         beq   L0B2C
-         ldb   ,x
-         ldx   $01,x
-L0B27    lbsr  L0189
-         bra   L0B1B
-L0B2C    clrb  
-         puls  pc,x,b
-L0B2F    comb  
-         puls  pc,x,b
-L0B32    pshs  u,x,b,a
-L0B34    lbsr  L09CF
-         ldb   <$0035
-         beq   L0B98
-         ldx   <$0036
-         bra   L0B91
-L0B3F    ldu   $04,s
-         jmp   [>$00A1,u]
-L0B45    cmpy  $05,x
-         bhi   L0B87
-         bra   L0B9B
-L0B4C    tfr   u,d
-         addd  $05,u
-         addd  #$0020
-         stx   ,--s
-         cmpd  ,s++
-         rts   
-L0B59    cmpb  $01,s
-         bne   L0B87
-         ldu   $02,s
-         ldb   ,x
-         stb   ,u
-         ldd   $01,x
-         std   $01,u
-         exg   x,u
-         bsr   L0B4C
-         beq   L0B73
-         exg   x,u
-         bsr   L0B4C
-         bne   L0B87
-L0B73    stu   $02,s
-         ldd   $05,u
-         addd  $05,x
-         addd  #$0020
-         std   $05,u
-L0B7E    lbsr  L0A80
-         bra   L0B34
-L0B83    cmpb  ,s
-         beq   L0B7E
-L0B87    stb   <$007D
-         stx   <$007E
-         ldb   ,x
-         beq   L0B98
-         ldx   $01,x
-L0B91    ldu   $04,s
-         lbsr  L0189
-         bra   L0B3F
-L0B98    comb  
-         puls  pc,u,x,b,a
-L0B9B    stb   $01,s
-         stx   $02,s
-         clrb  
-         puls  pc,u,x,b,a
-         lbsr  L098E
-         bcs   L0BB5
-         pshs  b
-         ldd   <$1F,y
-         cmpd  $05,x
-         bhi   L0BDA
-         puls  b
-         bra   L0BC3
-L0BB5    ldd   <$1F,y
-         std   <$0080
-         lbsr  L0938
-         lbcs  L0C4A
-         ldb   <$007D
-L0BC3    stb   <$21,y
-         clra  
-         clrb  
-         std   <$0047
-         ldb   <$0060
-         lbsr  L0C8E
-         lbsr  L0CD1
-         leax  <$20,x
-         stx   <$22,y
-         bra   L0C44
-L0BDA    bra   L0C47
-         pshs  y
-         ldb   <$21,y
-         stb   <$0097
-         lbsr  L0189
-         ldx   <$22,y
-         leay  >$0100,u
-L0BED    ldb   ,y+
-         stb   ,x+
-         deca  
-         beq   L0C05
-         cmpx  #$4000
-         bcs   L0BED
-         inc   <$0097
-         ldb   <$0097
-         lbsr  L0189
-         ldx   #$2000
-         bra   L0BED
-L0C05    puls  y
-         ldb   <$0097
-         stb   <$21,y
-         stx   <$22,y
-         bra   L0C44
-         lbsr  L1E29
-         bcs   L0C4A
-         lbsr  L1E34
-         bcs   L0C4A
-         lbsr  L0184
-         bsr   L0C6E
-         lbsr  L098E
-         bcc   L0C2C
-         lbsr  L0938
-         bcc   L0C37
-         bra   L0C4A
-L0C2C    stb   <$007D
-         stx   <$007E
-         ldd   <$0080
-         cmpd  $05,x
-         bhi   L0C47
-L0C37    lbsr  L0CD1
-         lbsr  L1ED4
-         stx   <$0072
-         ldx   <$007E
-         lbsr  L0CED
-L0C44    clrb  
-         bra   L0C4A
-L0C47    comb  
-         ldb   #$BF
-L0C4A    lbra  L011D
-L0C4D    ldd   -$0D,y
-         std   <$0072
-         bsr   L0C6E
-         ldd   #$FFFF
-         std   <$0057
-         lbsr  L0938
-         bcs   L0C6D
-         ldb   <$007D
-         stb   <$11,y
-         ldd   <$007E
-         std   <$12,y
-         bsr   L0CD1
-         lbsr  L0CED
-         clrb  
-L0C6D    rts   
-L0C6E    pshs  x
-         ldb   <$0060
-         bpl   L0C7B
-         ldd   <$004F
-         lslb  
-         stb   <$0009
-         bra   L0C7D
-L0C7B    bsr   L0C8E
-L0C7D    ldb   <$0009
-         ldx   <$0051
-         lbsr  L1EA9
-         std   <$0080
-         ldb   <$0063
-         subb  <$0009
-         stb   <$000A
-         puls  pc,x
-L0C8E    cmpb  #$04
-         bne   L0C96
-         ldb   #$01
-         bra   L0CA0
-L0C96    cmpb  #$01
-         beq   L0C9E
-         ldb   #$03
-         bra   L0CA0
-L0C9E    ldb   #$07
-L0CA0    stb   <$0097
-         ldb   <$0048
-         comb  
-         andb  <$0097
-         incb  
-         stb   <$0006
-         clra  
-         cmpd  <$004F
-         bge   L0CBB
-         ldb   <$0050
-         subb  <$0006
-         andb  <$0097
-         bne   L0CBB
-         ldb   <$0097
-         incb  
-L0CBB    stb   <$0007
-         clra  
-         ldb   <$0048
-         andb  <$0097
-         addd  <$004F
-         addb  <$0097
-         adca  #$00
-L0CC8    lsra  
-         rorb  
-         lsr   <$0097
-         bne   L0CC8
-         stb   <$0009
-         rts   
-L0CD1    ldd   <$004F
-         std   $07,x
-         ldd   <$0051
-         std   $09,x
-         ldb   <$0060
-         stb   $0E,x
-         ldb   <$0006
-         stb   $0C,x
-         ldb   <$0007
-         stb   $0D,x
-         ldb   <$0009
-         stb   $0B,x
-         clra  
-         std   <$004F
-         rts   
-L0CED    pshs  y
-         leay  <$20,x
-         ldx   <$0072
-L0CF4    lda   <$0050
-L0CF6    ldb   ,x+
-         stb   ,y+
-         cmpy  #$4000
-         bcs   L0D0B
-         inc   <$007D
-         ldb   <$007D
-         lbsr  L0189
-         ldy   #$2000
-L0D0B    deca  
-         bne   L0CF6
-         ldb   <$000A
-         abx   
-         dec   <$0052
-         bne   L0CF4
-         puls  pc,y
-         lbsr  L0184
-         lbsr  L098E
-         bcs   L0D46
-         stb   <$007D
-         stx   <$007E
-         ldd   $07,x
-         std   <$004F
-         ldd   $09,x
-         std   <$0051
-         lbsr  L1E29
-         bcs   L0D46
-         lbsr  L1E34
-         bcs   L0D46
-         lbsr  L1ED4
-         stx   <$0072
-         stb   <$0074
-         ldy   <$007E
-         lbsr  L0E2B
-         lbsr  L0EC4
-         clrb  
-L0D46    lbra  L011D
-L0D49    pshs  y
-         leax  >L1FDE,pcr
-         stx   <$0064
-         leax  >L1FE9,pcr
-         stx   <$0068
-         ldd   -$0D,y
-         std   <$0072
-         clra  
-         clrb  
-         std   <$0047
-         ldy   <$007E
-         bsr   L0D71
-         bcs   L0D6C
-         lbsr  L0DF0
-         clrb  
-         puls  pc,y
-L0D6C    comb  
-         ldb   #$BE
-         puls  pc,y
-L0D71    pshs  x
-         ldb   <$0060
-         cmpb  $0E,y
-         bne   L0DA9
-         tstb  
-         bpl   L0D84
-         ldb   #$FF
-         stb   <$0000
-         stb   <$0001
-         bra   L0D9E
-L0D84    leax  >L0DB6,pcr
-         lda   <$0048
-         coma  
-         anda  b,x
-         inca  
-         cmpa  $0C,y
-         bne   L0DA9
-         bsr   L0DAC
-         sta   <$0000
-         ldb   $0E,y
-         lda   $0D,y
-         bsr   L0DAC
-         sta   <$0001
-L0D9E    bsr   L0DE7
-         ldb   <$0063
-         subb  <$0050
-         stb   <$0097
-         clrb  
-         puls  pc,x
-L0DA9    comb  
-         puls  pc,x
-L0DAC    leax  >L0DBB,pcr
-         ldb   b,x
-         abx   
-         lda   a,x
-         rts   
-L0DB6    neg   <$0007
-         com   <$0003
-         oim   #$00,<$0005
-         jmp   <$000E
-         sync  
-         neg   <$0001
-         com   <$0007
-         clr   <$001F
-         swi   
-         fcb   $7F ÿ
-         stu   >$0003
-         clr   <$003F
-         stu   >$000F
-         stu   >$0005
-         jmp   <$000E
-         sync  
-         neg   <$0080
-         subb  #$E0
-         subb  >$F8FC
-         ldu   >$FF00
-         subb  #$F0
-         ldd   >$FF00
-         subb  >$FFE6
-         bmi   L0DC1
-         negb  
-         ldb   $0A,y
-         stb   <$0052
-         rts   
-L0DF0    pshs  y
-         leay  <$20,y
-         ldx   <$0072
-L0DF7    ldb   <$0050
-         stb   <$0099
-L0DFB    ldb   <$0099
-         cmpb  <$0050
-         bne   L0E05
-         ldb   <$0000
-         bra   L0E0F
-L0E05    cmpb  #$01
-         bne   L0E0D
-         ldb   <$0001
-         bra   L0E0F
-L0E0D    ldb   #$FF
-L0E0F    lda   ,y+
-         lbsr  L1F9B
-         leax  $01,x
-         cmpy  #$4000
-         bcs   L0E1E
-         bsr   L0E9C
-L0E1E    dec   <$0099
-         bne   L0DFB
-         ldb   <$0097
-         abx   
-         dec   <$0052
-         bne   L0DF7
-         puls  pc,y
-L0E2B    pshs  y
-         ldd   <$006A
-         subd  <$0047
-         addd  #$0001
-         std   <$009B
-         ldb   <$006D
-         subb  <$004A
-         bra   L0E57
-L0E3C    pshs  y
-         lda   <$0060
-         anda  #$01
-         beq   L0E49
-         ldd   #$027F
-         bra   L0E4C
-L0E49    ldd   #$013F
-L0E4C    subd  <$003D
-         addd  #$0001
-         std   <$009B
-         ldb   #$BF
-         subb  <$0040
-L0E57    incb  
-         stb   <$00A0
-         lbsr  L1F2B
-         bsr   L0DE7
-         ldb   $0C,y
-         stb   <$0006
-         ldb   $0D,y
-         stb   <$0007
-         leax  >L07A1,pcr
-         ldb   <$0060
-         ldb   b,x
-         abx   
-         lda   ,x+
-         stx   <$0002
-         leax  >L0EA8,pcr
-         ldb   $0E,y
-         ldb   b,x
-         abx   
-         ldb   ,x
-         leay  b,x
-         sty   <$00A3
-         anda  $01,x
-         sta   <$0008
-         ldb   $02,x
-         stb   <$0005
-         ldb   <$0006
-         addb  #$02
-         ldb   b,x
-         leay  b,x
-         sty   <$00A1
-         sty   <$00A5
-         puls  pc,y
-L0E9C    inc   <$007D
-         ldb   <$007D
-         lbsr  L0189
-         ldy   #$2000
-         rts   
-L0EA8    neg   <$0005
-         fcb   $10 
-         fcb   $10 
-         lbsr  L6FB0
-         lsl   <$0062
-         fcb   $5B [
-         incb  
-         tstb  
-         fcb   $5E ^
-         clrb  
-         neg   $01,s
-         fcb   $55 U
-         com   <$0004
-         asrb  
-         fcb   $51 Q
-         comb  
-         fcb   $55 U
-         inca  
-         clr   <$0002
-         negb  
-         inca  
-L0EC4    leay  <$20,y
-         pshs  y
-         ldx   <$0072
-L0ECB    stx   <$0072
-         ldd   <$009B
-         std   <$009D
-         lda   <$0050
-         sta   <$0004
-         ldb   <$0006
-         stb   <$0097
-         ldd   <$00A5
-         std   <$00A1
-         ldb   <$0074
-L0EDF    ldy   ,s
-         cmpy  #$4000
-         bcs   L0EEE
-         stb   <$0099
-         bsr   L0E9C
-         ldb   <$0099
-L0EEE    lda   ,y+
-         sty   ,s
-         ldy   <$0002
-         pshs  y
-         leay  >L0F0F,pcr
-         cmpy  <$00A1
-         puls  y
-         beq   L0F04
-         lsla  
-L0F04    jmp   [>$00A1,u]
-         rola  
-         rola  
-         rola  
-         rola  
-         rola  
-         rola  
-         rola  
-L0F0F    pshs  b,a,cc
-         ldd   <$009D
-         beq   L0F28
-         subd  #$0001
-         std   <$009D
-         ldd   $01,s
-         anda  <$0008
-         lda   a,y
-         lbsr  L1F9B
-         lbsr  L1F4B
-         stb   $02,s
-L0F28    dec   <$0097
-         beq   L0F32
-         puls  b,a,cc
-         jmp   [>$00A3,u]
-L0F32    leas  $03,s
-         dec   <$0004
-         beq   L0F4E
-         lda   <$0004
-         cmpa  #$01
-         beq   L0F42
-         lda   <$0005
-         bra   L0F44
-L0F42    lda   <$0007
-L0F44    sta   <$0097
-         ldy   <$00A3
-         sty   <$00A1
-         bra   L0EDF
-L0F4E    ldx   <$0072
-         ldb   <$0063
-         abx   
-         dec   <$00A0
-         beq   L0F5D
-         dec   <$0052
-         lbne  L0ECB
-L0F5D    puls  pc,y
-         lbsr  L098E
-         bcs   L0FA7
-         stb   <$0097
-         ldb   $0F,x
-         stb   <$0099
-         ldd   $05,x
-         std   <$009B
-         leax  <$20,x
-         tfr   x,d
-         anda  #$1F
-         std   <$009D
-         bra   L0FA6
-         lbsr  L0184
-         tsta  
-         bpl   L0F99
-         cmpa  #$BF
-         bhi   L0F8F
-         anda  #$EF
-         suba  #$90
-         cmpa  #$1A
-         bcc   L0F99
-L0F8B    lda   #$2E
-         bra   L0F99
-L0F8F    anda  #$DF
-         suba  #$C1
-         bmi   L0F8B
-         cmpa  #$19
-         bhi   L0F8B
-L0F99    ldb   <$0060
-         bpl   L0FA1
-         bsr   L0FAA
-         bra   L0FA3
-L0FA1    bsr   L0FDC
-L0FA3    lbsr  L1284
-L0FA6    clrb  
-L0FA7    lbra  L011D
-L0FAA    cmpa  #$60
-         bne   L0FB0
-         lda   #$27
-L0FB0    cmpa  #$5F
-         bne   L0FB6
-         lda   #$7F
-L0FB6    cmpa  #$5E
-         bne   L0FBC
-         lda   #$60
-L0FBC    ldx   -$05,y
-         tst   $09,y
-         bmi   L0FD0
-         ldb   $01,x
-         andb  #$07
-         stb   $01,x
-         ldb   $08,y
-         andb  #$F8
-         orb   $01,x
-         bra   L0FD2
-L0FD0    ldb   $08,y
-L0FD2    std   ,x
-         ldd   #$0001
-         std   <$006E
-         std   <$0070
-         rts   
-L0FDC    pshs  y,a
-         ldb   $09,y
-         stb   <$000E
-         bitb  #$04
-         beq   L0FEC
-         ldd   <$0061
-         exg   a,b
-         std   <$0061
-L0FEC    bsr   L1031
-         bcs   L0FFA
-         lda   ,s
-         ldb   $0B,x
-         mul   
-         cmpd  $05,x
-         bcs   L1000
-L0FFA    leax  >L1029,pcr
-         bra   L1005
-L1000    addd  #$0020
-         leax  d,x
-L1005    ldb   <$0060
-         cmpb  #$01
-         bne   L101B
-         ldb   <$006F
-         cmpb  #$08
-         bne   L101B
-         ldb   <$000E
-         bitb  #$10
-         bne   L101B
-         bsr   L105E
-         bra   L1027
-L101B    leay  >L110F,pcr
-         sty   <$00A9
-         ldy   $01,s
-         bsr   L109C
-L1027    puls  pc,y,a
-L1029    neg   <$0000
-         neg   <$0000
-         neg   <$0000
-         fcb   $10 
-         neg   <$0034
-         aim   #$D6,<$0060
-         bpl   L1040
-         ldd   #$0001
-         std   <$006E
-         std   <$0070
-         bra   L105C
-L1040    ldb   $0B,y
-         bne   L104E
-         ldd   #$0008
-         std   <$006E
-         std   <$0070
-         comb  
-         bra   L105C
-L104E    lbsr  L0189
-         ldx   $0C,y
-         ldd   $07,x
-         std   <$006E
-         ldd   $09,x
-         std   <$0070
-         clrb  
-L105C    puls  pc,a
-L105E    ldy   -$05,y
-         exg   x,y
-         lda   <$0071
-         deca  
-         sta   <$0097
-L1068    lda   ,y+
-         ldb   <$000E
-         bitb  #$20
-         beq   L1073
-         lsra  
-         ora   -$01,y
-L1073    tfr   a,b
-         coma  
-         tst   <$000E
-         bmi   L107E
-         anda  ,x
-         bra   L1080
-L107E    anda  <$0062
-L1080    sta   ,x
-         andb  <$0061
-         orb   ,x
-         stb   ,x
-         ldb   <$0063
-         abx   
-         dec   <$0097
-         bmi   L109B
-         bne   L1068
-         ldb   <$000E
-         bitb  #$40
-         beq   L1068
-         lda   #$FF
-         bra   L1073
-L109B    rts   
-L109C    pshs  x
-         leax  >L10FF,pcr
-         stx   <$0010
-         ldx   ,s
-         ldb   <$000E
-         bitb  #$10
-         beq   L10D4
-         ldb   <$0071
-         decb  
-         clra  
-L10B0    ora   b,x
-         decb  
-         bpl   L10B0
-         tsta  
-         bne   L10BC
-         lsr   <$006F
-         bra   L10D4
-L10BC    ldb   #$FF
-L10BE    incb  
-         lsla  
-         bcc   L10BE
-         leax  >L1151,pcr
-         ldb   b,x
-         leax  b,x
-         stx   <$0010
-         ldb   #$01
-L10CE    incb  
-         lsla  
-         bcs   L10CE
-         stb   <$006F
-L10D4    puls  x
-         ldb   -$03,y
-         stb   <$000F
-         ldy   -$05,y
-         exg   x,y
-         lda   <$0071
-         deca  
-         sta   <$0099
-         stx   <$000C
-         lbsr  L1F2B
-         ldx   <$000C
-L10EB    lda   ,y+
-         ldb   <$000E
-         bitb  #$20
-         beq   L10F6
-         lsra  
-         ora   -$01,y
-L10F6    jmp   [<$10,u]
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-         lsla  
-L10FF    sta   <$000B
-L1101    lda   <$006F
-         sta   <$0097
-         ldb   <$000F
-         stx   <$000C
-L1109    pshs  b
-         jmp   [>$00A9,u]
-L110F    lsl   <$000B
-         bcs   L111B
-L1113    lda   <$000E
-         bpl   L112E
-         lda   <$0062
-         bra   L111D
-L111B    lda   <$0061
-L111D    comb  
-         andb  ,x
-         stb   ,x
-         anda  ,s
-         ora   ,x
-         sta   ,x
-         bra   L112E
-L112A    eorb  ,x
-         stb   ,x
-L112E    dec   <$0097
-         beq   L1139
-         puls  b
-         lbsr  L1F4B
-         bra   L1109
-L1139    puls  b
-         ldx   <$000C
-         ldb   <$0063
-         abx   
-         dec   <$0099
-         bmi   L1150
-         bne   L10EB
-         lda   <$000E
-         bita  #$40
-         beq   L10EB
-         lda   #$FF
-         bra   L10FF
-L1150    rts   
-L1151    ldx   w,y
-         jsr   <L1101,pcr
-         ora   >-$5756,y
-         lbsr  L0184
-         lbsr  L1031
-         bsr   L1164
-         bra   L11C0
-L1164    cmpa  #$01
-         lbeq  L124B
-         cmpa  #$08
-         lbeq  L1263
-         cmpa  #$06
-         lbeq  L1284
-         cmpa  #$09
-         lbeq  L1299
-         cmpa  #$0A
-         lbeq  L12A4
-         cmpa  #$0D
-         lbeq  L12B9
-         cmpa  #$03
-         lbeq  L13C3
-         cmpa  #$04
-         lbeq  L13D0
-         cmpa  #$0B
-         lbeq  L13FE
-         cmpa  #$0C
-         lbeq  L13E8
-         rts   
-         lbsr  L0184
-         lbsr  L1031
-         bsr   L11AB
-         bra   L11C0
-L11AB    cmpa  #$20
-         lbeq  L1511
-         cmpa  #$21
-         lbeq  L1509
-         rts   
-         lbsr  L0184
-         lbsr  L1031
-         bsr   L11C3
-L11C0    lbra  L1521
-L11C3    cmpa  #$20
-         lbeq  L14B9
-         cmpa  #$21
-         lbeq  L14D5
-         cmpa  #$22
-         lbeq  L14E1
-         cmpa  #$23
-         lbeq  L14EE
-         cmpa  #$24
-         lbeq  L14FB
-         cmpa  #$25
-         lbeq  L1502
-         cmpa  #$30
-         lbeq  L1302
-         cmpa  #$31
-         lbeq  L1336
-         rts   
-         lbsr  L0184
-         lbsr  L1031
-         clra  
-         ldb   <$0047
-         subd  #$0020
-         tfr   d,x
-         ldb   <$006F
-         lbsr  L1EA9
-         std   <$0047
-         addd  <$006E
-         subd  #$0001
-         cmpd  <$1B,y
-         bhi   L1238
-         clra  
-         ldb   <$0049
-         subd  #$0020
-         tfr   d,x
-         ldb   <$0071
-         lbsr  L1EA9
-         std   <$0049
-         addd  <$0070
-         subd  #$0001
-         cmpd  <$1D,y
-         bhi   L1238
-         ldd   <$0047
-         std   -$02,y
-         ldd   <$0049
-         std   ,y
-         bsr   L123B
-L1238    lbra  L1521
-L123B    ldd   -$02,y
-         std   <$0047
-         ldd   ,y
-         std   <$0049
-         lbsr  L1ED4
-         stx   -$05,y
-         stb   -$03,y
-         rts   
-L124B    clra  
-         clrb  
-         std   -$02,y
-         std   ,y
-         ldd   -$0D,y
-         std   -$05,y
-         leax  >L1F3B,pcr
-         ldb   <$0060
-         bmi   L1262
-         lslb  
-         ldb   b,x
-         stb   -$03,y
-L1262    rts   
-L1263    ldd   -$02,y
-         subd  <$006E
-         std   -$02,y
-         bpl   L123B
-         ldd   <$1B,y
-         subd  <$006E
-         addd  #$0001
-         std   -$02,y
-         ldd   ,y
-         subd  <$0070
-         std   ,y
-         bpl   L123B
-         clra  
-         clrb  
-         std   -$02,y
-         std   ,y
-         rts   
-L1284    ldd   -$02,y
-         addd  <$006E
-         std   -$02,y
-         addd  <$006E
-         subd  #$0001
-         cmpd  <$1B,y
-         bls   L123B
-         bsr   L12B9
-         bra   L12A4
-L1299    ldd   ,y
-         subd  <$0070
-         bmi   L12A3
-         std   ,y
-         bsr   L123B
-L12A3    rts   
-L12A4    ldd   ,y
-         addd  <$0070
-         tfr   d,x
-         addd  <$0070
-         subd  #$0001
-         cmpd  <$1D,y
-         bhi   L12C0
-         stx   ,y
-         bra   L123B
-L12B9    clra  
-         clrb  
-         std   -$02,y
-         lbra  L123B
-L12C0    pshs  y
-         ldb   $02,y
-         lbsr  L13AE
-         std   <$0097
-         clra  
-         ldb   <$0063
-         std   <$0099
-         ldd   ,y
-         std   <$009D
-         lda   -$08,y
-         deca  
-         sta   <$009B
-         beq   L12FB
-         ldx   -$0D,y
-         ldd   $04,y
-         tfr   x,y
-         leax  d,x
-         tst   <$0060
-         bmi   L12EC
-         lda   <$009B
-         lsla  
-         lsla  
-         lsla  
-         sta   <$009B
-L12EC    ldd   <$0097
-         lbsr  L137B
-         ldd   <$0099
-         leax  d,x
-         leay  d,y
-         dec   <$009B
-         bne   L12EC
-L12FB    puls  y
-         ldd   <$009D
-L12FF    lbra  L13C5
-L1302    pshs  y
-         ldd   ,y
-         std   <$009D
-         ldb   $02,y
-         lbsr  L13AE
-         std   <$0097
-         clra  
-         ldb   <$0063
-         nega  
-         negb  
-         sbca  #$00
-         std   <$0099
-         ldb   -$08,y
-         decb  
-         lda   <$0071
-         mul   
-         tfr   b,a
-         deca  
-         subb  $01,y
-         cmpb  <$0071
-         bcs   L12FB
-         stb   <$009B
-         ldb   <$0063
-         mul   
-         addd  -$0D,y
-         tfr   d,x
-         addd  $04,y
-         tfr   d,y
-         bra   L12EC
-L1336    pshs  y
-         ldb   $02,y
-         bsr   L13AE
-         std   <$0097
-         clra  
-         ldb   <$0063
-         std   <$0099
-         lda   -$08,y
-         deca  
-         tst   <$0060
-         bmi   L134D
-         lsla  
-         lsla  
-         lsla  
-L134D    suba  $01,y
-         bhi   L1357
-         puls  y
-         ldd   ,y
-         bra   L12FF
-L1357    sta   <$009B
-         ldd   <$1D,y
-         subd  <$0070
-         addd  #$0001
-         std   <$009D
-         lda   <$0063
-         ldb   $01,y
-         mul   
-         addd  -$0D,y
-         tfr   d,x
-         ldd   $04,y
-         tfr   x,y
-         leax  d,x
-         lbra  L12EC
-         pshs  u,y,x,dp,cc
-         bsr   L13AE
-         bra   L137D
-L137B    pshs  u,y,x,dp,cc
-L137D    pshs  a
-         tstb  
-         beq   L1389
-L1382    lda   ,x+
-         sta   ,y+
-         decb  
-         bne   L1382
-L1389    puls  b
-         tstb  
-         beq   L13AC
-         orcc  #$50
-         stb   >$1006
-         sts   >$1003
-         tfr   x,u
-         tfr   y,s
-         leas  $07,s
-L139D    pulu  y,x,dp,b,a
-         pshs  y,x,dp,b,a
-         leas  $0E,s
-         dec   >$1006
-         bne   L139D
-         lds   >$1003
-L13AC    puls  pc,u,y,x,dp,cc
-L13AE    tfr   b,a
-         lsra  
-         lsra  
-         lsra  
-         andb  #$07
-         pshs  a
-         addb  ,s+
-L13B9    cmpb  #$07
-         blt   L13C2
-         subb  #$07
-         inca  
-         bra   L13B9
-L13C2    rts   
-L13C3    ldd   ,y
-L13C5    std   <$0049
-         clra  
-         clrb  
-         std   <$0047
-         ldd   <$1B,y
-         bra   L13DD
-L13D0    ldd   -$02,y
-         std   <$0047
-         ldd   ,y
-         std   <$0049
-         ldd   <$1B,y
-         subd  -$02,y
-L13DD    addd  #$0001
-         std   <$004F
-         ldd   <$0070
-         std   <$0051
-         bra   L1420
-L13E8    lbsr  L124B
-         clra  
-         clrb  
-         std   <$0047
-         std   <$0049
-         ldd   <$1B,y
-         addd  #$0001
-         std   <$004F
-         ldd   <$1D,y
-         bra   L1419
-L13FE    bsr   L13D0
-         clra  
-         clrb  
-         std   <$0047
-         ldd   ,y
-         addd  <$0070
-         std   <$0049
-         ldd   <$1B,y
-         addd  #$0001
-         std   <$004F
-         ldd   <$1D,y
-         subd  <$0049
-         ble   L142A
-L1419    addd  #$0001
-         std   <$0051
-         bra   L1420
-L1420    ldb   <$0060
-         bpl   L1428
-         bsr   L142B
-         bra   L142A
-L1428    bsr   L1456
-L142A    rts   
-L142B    pshs  y
-         lbsr  L1ED4
-         lda   #$20
-         ldb   $08,y
-         andb  #$38
-         orb   <$0062
-         std   <$0097
-         ldb   <$0063
-         subb  <$0050
-         subb  <$0050
-         stb   <$0099
-L1442    ldy   <$004F
-         ldd   <$0097
-L1447    std   ,x++
-         leay  -$01,y
-         bne   L1447
-         ldb   <$0099
-         abx   
-         dec   <$0052
-         bne   L1442
-         puls  pc,y
-L1456    ldb   <$0060
-         leax  >L0DB6,pcr
-         lda   <$0048
-         coma  
-         anda  b,x
-         inca  
-         sta   <$0097
-         leax  >L0DBB,pcr
-         ldb   b,x
-         abx   
-         lda   a,x
-         sta   <$0012
-         clra  
-         ldb   <$0060
-         tfr   d,x
-         ldd   <$004F
-         subb  <$0097
-         sbca  #$00
-         lsra  
-         rorb  
-         cmpx  #$0004
-         beq   L148A
-         lsra  
-         rorb  
-         cmpx  #$0001
-         bne   L148A
-         lsra  
-         rorb  
-L148A    stb   <$0097
-         ldb   <$0063
-         subb  <$0097
-         subb  #$01
-         stb   <$0099
-         lbsr  L1ED4
-L1497    lda   <$0012
-         tfr   a,b
-         coma  
-         anda  ,x
-         sta   ,x
-         andb  <$0062
-         orb   ,x
-         stb   ,x+
-         lda   <$0097
-         beq   L14B1
-         ldb   <$0062
-L14AC    stb   ,x+
-         deca  
-         bne   L14AC
-L14B1    ldb   <$0099
-         abx   
-         dec   <$0052
-         bne   L1497
-         rts   
-L14B9    ldb   $09,y
-         bitb  #$04
-         bne   L14D4
-         orb   #$04
-         stb   $09,y
-L14C3    lda   $08,y
-         lbsr  L15CC
-         pshs  b,a
-         ldb   $08,y
-         andb  #$C0
-         orb   ,s+
-         orb   ,s+
-         stb   $08,y
-L14D4    rts   
-L14D5    ldb   $09,y
-         bitb  #$04
-         beq   L14D4
-         andb  #$FB
-         stb   $09,y
-         bra   L14C3
-L14E1    ldb   $08,y
-         orb   #$40
-         stb   $08,y
-         ldb   $09,y
-         orb   #$40
-         stb   $09,y
-         rts   
-L14EE    ldb   $08,y
-         andb  #$BF
-         stb   $08,y
-         ldb   $09,y
-         andb  #$BF
-         stb   $09,y
-         rts   
-L14FB    ldb   $08,y
-         orb   #$80
-         stb   $08,y
-         rts   
-L1502    ldb   $08,y
-         andb  #$7F
-         stb   $08,y
-         rts   
-L1509    ldb   $09,y
-         andb  #$FD
-         stb   $09,y
-         bra   L157C
-L1511    ldb   $09,y
-         orb   #$02
-         stb   $09,y
-         bra   L1593
-         lbsr  L0130
-         bsr   L157C
-         lbsr  L15D9
-L1521    clrb  
-         lbra  L011D
-L1525    pshs  y,x,b,a
-         bsr   L1593
-         lbsr  L15FC
-         ldb   >$1000
-         stb   >$1001
-         puls  pc,y,x,b,a
-         lbsr  L0130
-         cmpy  <$002E
-         bne   L1552
-         ldd   <$005B
-         cmpd  <$003D
-         bne   L154A
-         ldd   <$005D
-         cmpd  <$003F
-         beq   L1552
-L154A    lbsr  L15FC
-         bsr   L1554
-         lbsr  L15D9
-L1552    bra   L1521
-L1554    ldd   <$0047
-         pshs  b,a
-         ldd   <$0049
-         pshs  b,a
-         ldd   <$005B
-         std   <$0047
-         std   <$003D
-         ldd   <$005D
-         std   <$0049
-         std   <$003F
-         ldx   -$10,y
-         ldd   $02,x
-         lbsr  L1ED6
-         stx   <$0041
-         stb   <$0043
-         puls  b,a
-         std   <$0049
-         puls  b,a
-         std   <$0047
-         rts   
-L157C    lbsr  L1031
-         cmpy  <$002E
-         bne   L1592
-         ldb   $09,y
-         bitb  #$02
-         bne   L1592
-         ldb   <$0039
-         bne   L1592
-         bsr   L15A4
-         inc   <$0039
-L1592    rts   
-L1593    lbsr  L1031
-         cmpy  <$002E
-         bne   L15A3
-         ldb   <$0039
-         beq   L15A3
-         bsr   L15A4
-         clr   <$0039
-L15A3    rts   
-L15A4    pshs  y
-         ldx   -$05,y
-         ldb   <$0060
-         bpl   L15BE
-         lda   $01,x
-         bsr   L15CC
-         pshs  b,a
-         ldb   $01,x
-         andb  #$C0
-         orb   ,s+
-         orb   ,s+
-         stb   $01,x
-         bra   L15CA
-L15BE    leax  >L112A,pcr
-         stx   <$00A9
-         clrb  
-         stb   <$000E
-         lbsr  L109C
-L15CA    puls  pc,y
-L15CC    tfr   a,b
-         anda  #$38
-         lsra  
-         lsra  
-         lsra  
-         andb  #$07
-         lslb  
-         lslb  
-         lslb  
-         rts   
-L15D9    pshs  y,x
-         ldx   -$10,y
-         cmpx  <$0030
-         bne   L15FA
-         ldb   <$003A
-         bne   L15FA
-         ldb   <$18,y
-         stb   <$0044
-         beq   L15FA
-         lbsr  L0189
-         ldy   <$19,y
-         sty   <$0045
-         bsr   L1618
-         inc   <$003A
-L15FA    puls  pc,y,x
-L15FC    pshs  y,x
-         ldx   -$10,y
-         cmpx  <$0030
-         bne   L1616
-         ldb   <$003A
-         beq   L1616
-         ldb   <$0044
-         beq   L15FA
-         lbsr  L0189
-         ldy   <$0045
-         bsr   L1618
-         clr   <$003A
-L1616    puls  pc,y,x
-L1618    ldb   <$0060
-         bmi   L164E
-         ldd   <$004F
-         ldx   <$0051
-         pshs  x,b,a
-         ldd   <$0064
-         ldx   <$0068
-         pshs  x,b,a
-         ldd   <$0041
-         std   <$0072
-         ldb   <$0043
-         stb   <$0074
-         leax  >L1FDE,pcr
-         stx   <$0064
-         leax  >L1FE3,pcr
-         stx   <$0068
-         lbsr  L0E3C
-         lbsr  L0EC4
-         puls  x,b,a
-         std   <$0064
-         stx   <$0068
-         puls  x,b,a
-         std   <$004F
-         stx   <$0051
-L164E    rts   
-         lbsr  L1E29
-         bcs   L16A1
-         ldb   $0E,y
-         beq   L165B
-         lbsr  L0189
-L165B    lbsr  L0184
-         ldb   <$0060
-         lbmi  L05A2
-         lbsr  L1ED4
-         lda   <$0061
-         lbsr  L1F9B
-         bra   L16A0
-         lbsr  L0184
-         ldb   <$0060
-         lbmi  L05A2
-         ldb   $0E,y
-         beq   L167E
-         lbsr  L0189
-L167E    lbsr  L1E29
-         bcs   L16A1
-         lbsr  L1E30
-         bcs   L16A1
-         ldd   <$0049
-         cmpd  <$004D
-         bne   L1693
-         bsr   L16A4
-         bra   L16A0
-L1693    ldd   <$0047
-         cmpd  <$004B
-         bne   L169E
-         bsr   L16EC
-         bra   L16A0
-L169E    bsr   L171C
-L16A0    clrb  
-L16A1    lbra  L011D
-L16A4    bsr   L16BC
-L16A6    ldd   <$004B
-         subd  <$0047
-         addd  #$0001
-         std   <$0099
-         lbsr  L1F2B
-         lbsr  L1ED4
-         lda   <$0061
-         ldy   <$0099
-         bra   L16CA
-L16BC    ldd   <$004B
-         cmpd  <$0047
-         bge   L16C9
-L16C3    ldx   <$0047
-         std   <$0047
-         stx   <$004B
-L16C9    rts   
-L16CA    leas  -$02,s
-         pshs  x,b,a
-         leax  >L16E7,pcr
-         ldb   <$0060
-         clra  
-         ldb   b,x
-         std   $04,s
-         puls  x,b,a
-L16DB    lbsr  L1F9B
-         lbsr  L1F45
-         leay  -$01,y
-         bne   L16DB
-         puls  pc,b,a
-L16E7    neg   <$0008
-         lsr   <$0004
-         aim   #$8D,<$0020
-L16EE    ldd   <$004D
-         subb  <$004A
-         incb  
-         std   <$0099
-         lbsr  L1ED4
-         stb   <$0097
-         lda   <$0061
-         ldy   <$0099
-L16FF    ldb   <$0097
-         lbsr  L1F9B
-         ldb   <$0063
-         abx   
-         inc   <$004A
-         leay  -$01,y
-         bne   L16FF
-         rts   
-L170E    ldd   <$004D
-         cmpd  <$0049
-         bge   L171B
-L1715    ldx   <$0049
-         std   <$0049
-         stx   <$004D
-L171B    rts   
-L171C    ldd   <$004B
-         cmpd  <$0047
-         bge   L172B
-         bsr   L16C3
-         ldd   <$004D
-         bsr   L1715
-         ldd   <$004B
-L172B    subd  <$0047
-         std   <$0013
-         ldb   <$0063
-         clra  
-         std   <$0017
-         ldd   <$004D
-         subd  <$0049
-         std   <$0015
-         bpl   L174A
-         nega  
-         negb  
-         sbca  #$00
-         std   <$0015
-         ldd   <$0017
-         nega  
-         negb  
-         sbca  #$00
-         std   <$0017
-L174A    ldd   #$0000
-         std   <$0075
-         lbsr  L1F2B
-         lbsr  L1ED4
-         stb   <$0074
-L1757    ldb   <$0074
-         lda   <$0061
-         lbsr  L1F9B
-         ldd   <$0075
-         bpl   L1774
-         addd  <$0013
-         std   <$0075
-         ldd   <$0017
-         leax  d,x
-         bmi   L1770
-         inc   <$004A
-         bra   L177F
-L1770    dec   <$004A
-         bra   L177F
-L1774    subd  <$0015
-         std   <$0075
-         ldb   <$0074
-         lbsr  L1F45
-         stb   <$0074
-L177F    ldd   <$0047
-         cmpd  <$004B
-         ble   L1757
-         rts   
-         lbsr  L0184
-         ldb   <$0060
-         lbmi  L05A2
-         ldb   $0E,y
-         beq   L1797
-         lbsr  L0189
-L1797    lbsr  L1E29
-         bcs   L17F0
-         lbsr  L1E30
-         bcs   L17F0
-         lbsr  L16BC
-         lbsr  L170E
-         leas  -$0A,s
-         sty   ,s
-         ldd   <$0047
-         std   $02,s
-         ldd   <$0049
-         std   $04,s
-         ldd   <$004B
-         std   $06,s
-         ldd   <$004D
-         std   $08,s
-         lbsr  L16A6
-         ldd   $02,s
-         std   <$0047
-         ldd   $08,s
-         std   <$004D
-         ldy   ,s
-         lbsr  L16EE
-         ldd   $06,s
-         std   <$0047
-         ldd   $04,s
-         std   <$0049
-         ldy   ,s
-         lbsr  L16EE
-         ldd   $02,s
-         std   <$0047
-         ldd   $06,s
-         std   <$004B
-         ldd   $08,s
-         std   <$0049
-         ldy   ,s
-         lbsr  L16A6
-         leas  $0A,s
-         clrb  
-L17F0    bra   L184A
-         lbsr  L0184
-         ldb   <$0060
-         lbmi  L05A2
-         ldb   $0E,y
-         beq   L1802
-         lbsr  L0189
-L1802    lbsr  L1E29
-         bcs   L184A
-         lbsr  L1E30
-         bcs   L184A
-         lbsr  L16BC
-         lbsr  L170E
-         ldd   <$004B
-         std   <$0099
-         ldd   <$004B
-         subd  <$0047
-         addd  #$0001
-         std   <$009B
-         lbsr  L1F2B
-         lbsr  L1ED4
-         lda   <$0061
-         std   <$009D
-         ldd   <$004D
-         subb  <$004A
-         incb  
-         tfr   d,y
-L1830    pshs  y,x
-         ldy   <$009B
-         ldd   <$009D
-         lbsr  L16CA
-         puls  y,x
-         ldb   <$0063
-         abx   
-         inc   <$004A
-         ldd   <$0099
-         std   <$0047
-         leay  -$01,y
-         bne   L1830
-         clrb  
-L184A    lbra  L011D
-         lbsr  L0184
-         ldb   <$0060
-         lbmi  L05A2
-         ldd   <$0053
-         lsra  
-         rorb  
-         std   <$0055
-         bra   L18BB
-         lbsr  L0184
-         ldb   <$0060
-         lbmi  L05A2
-         lbsr  L1E38
-         bcs   L184A
-         lbsr  L1E57
-         bcs   L184A
-         ldd   <$0020
-         cmpd  <$0024
-         bne   L1889
-         leax  >L1ABF,pcr
-         ldd   <$0022
-         cmpd  <$0026
-         blt   L18AE
-         leax  >L1AC6,pcr
-         bra   L18AE
-L1889    ldx   <$0022
-         cmpx  <$0026
-         bne   L189E
-         leax  >L1ACD,pcr
-         cmpd  <$0024
-         blt   L18AE
-         leax  >L1AD3,pcr
-         bra   L18AE
-L189E    leax  >L1AD9,pcr
-         ldd   <$0020
-         subd  <$0024
-         std   <$0097
-         ldd   <$0022
-         subd  <$0026
-         std   <$0099
-L18AE    stx   <$00A1
-         bra   L18C1
-         lbsr  L0184
-         ldb   <$0060
-         lbmi  L05A2
-L18BB    leax  >L1ADD,pcr
-         stx   <$00A1
-L18C1    ldb   $0E,y
-         beq   L18C8
-         lbsr  L0189
-L18C8    lbsr  L1E29
-         lbcs  L1A97
-         lbsr  L1E5B
-         lbcs  L1A97
-         ldd   <$0047
-         std   <$0018
-         ldd   <$0049
-         std   <$001A
-         clra  
-         clrb  
-         std   <$001C
-         ldd   <$0055
-         std   <$001E
-         leas  <-$3E,s
-         sty   <$3C,s
-         leax  $05,s
-         ldd   <$0053
-         lbsr  L1B54
-         lbsr  L1BC4
-         tfr   x,y
-         leax  <$14,s
-         ldd   <$0055
-         lbsr  L1BD4
-         leax  $0A,s
-         lbsr  L1B5D
-         lbsr  L1C03
-         tfr   x,y
-         leax  $0F,s
-         lbsr  L1B5D
-         lbsr  L1C03
-         leax  <$19,s
-         ldd   <$0055
-         lbsr  L1B54
-         lbsr  L1BC4
-         tfr   x,y
-         leax  <$1E,s
-         lbsr  L1B5D
-         lbsr  L1C03
-         tfr   x,y
-         leax  <$23,s
-         lbsr  L1B5D
-         lbsr  L1C03
-         leax  <$28,s
-         clra  
-         clrb  
-         lbsr  L1B54
-         leax  <$2D,s
-         ldd   <$001E
-         lbsr  L1B54
-         subd  #$0001
-         lbsr  L1BC4
-         leay  $0A,s
-         lbsr  L1BD9
-         leay  $05,s
-         lbsr  L1B9D
-         leax  ,s
-         lbsr  L1B5D
-         lbsr  L1C37
-         ldd   #$0001
-         lbsr  L1B86
-         leay  <$1E,s
-         lbsr  L1BD9
-         tfr   x,y
-         leax  <$2D,s
-         lbsr  L1B9D
-         leax  <$32,s
-         leay  $0F,s
-         lbsr  L1B5D
-         lbsr  L1C37
-         ldd   <$001E
-         lbsr  L1BC4
-         leax  <$37,s
-         leay  <$1E,s
-         lbsr  L1B5D
-L1989    leax  <$14,s
-         leay  <$28,s
-         lbsr  L1C54
-         ble   L19DE
-         lbsr  L1A9A
-         tst   <$2D,s
-         bmi   L19BB
-         leax  <$32,s
-         leay  $0F,s
-         lbsr  L1B9D
-         tfr   x,y
-         leax  <$2D,s
-         lbsr  L1B9D
-         leax  <$14,s
-         leay  $05,s
-         lbsr  L1BB5
-         ldd   <$001E
-         subd  #$0001
-         std   <$001E
-L19BB    leax  <$37,s
-         leay  <$23,s
-         lbsr  L1B9D
-         tfr   x,y
-         leax  <$2D,s
-         lbsr  L1B9D
-         leax  <$28,s
-         leay  <$19,s
-         lbsr  L1B9D
-         ldd   <$001C
-         addd  #$0001
-         std   <$001C
-         bra   L1989
-L19DE    leax  <$2D,s
-         ldd   <$001C
-         lbsr  L1B54
-         addd  #$0001
-         lbsr  L1BC4
-         leay  <$1E,s
-         lbsr  L1BD9
-         leax  ,s
-         ldd   <$001E
-         lbsr  L1B54
-         subd  #$0002
-         lbsr  L1BC4
-         ldd   #$0001
-         lbsr  L1B86
-         leay  $0A,s
-         lbsr  L1BD9
-         tfr   x,y
-         leax  <$2D,s
-         lbsr  L1B9D
-         leax  ,s
-         leay  $0A,s
-         lbsr  L1B5D
-         lbsr  L1C37
-         ldd   #$0001
-         lbsr  L1B86
-         leay  <$19,s
-         lbsr  L1BD9
-         tfr   x,y
-         leax  <$2D,s
-         lbsr  L1B9D
-         leax  <$32,s
-         leay  <$23,s
-         lbsr  L1B5D
-         ldd   <$001C
-         lbsr  L1BC4
-         leax  <$37,s
-         leay  $0F,s
-         lbsr  L1B5D
-         lbsr  L1C37
-         ldd   <$001E
-         lbsr  L1BC4
-         leay  $0A,s
-         lbsr  L1B9D
-L1A53    ldd   <$001E
-         cmpd  #$FFFF
-         beq   L1A93
-         bsr   L1A9A
-         tst   <$2D,s
-         bpl   L1A7A
-         leax  <$32,s
-         leay  <$23,s
-         lbsr  L1B9D
-         tfr   x,y
-         leax  <$2D,s
-         lbsr  L1B9D
-         ldd   <$001C
-         addd  #$0001
-         std   <$001C
-L1A7A    leax  <$37,s
-         leay  $0F,s
-         lbsr  L1B9D
-         tfr   x,y
-         leax  <$2D,s
-         lbsr  L1B9D
-         ldd   <$001E
-         subd  #$0001
-         std   <$001E
-         bra   L1A53
-L1A93    leas  <$3E,s
-         clrb  
-L1A97    lbra  L011D
-L1A9A    ldy   <$3E,s
-         ldd   <$001C
-         ldx   <$001E
-         bsr   L1AB9
-         nega  
-         negb  
-         sbca  #$00
-         bsr   L1AB9
-         exg   d,x
-         nega  
-         negb  
-         sbca  #$00
-         exg   d,x
-         bsr   L1AB9
-         ldd   <$001C
-         bsr   L1AB9
-         rts   
-L1AB9    pshs  x,b,a
-         jmp   [>$00A1,u]
-L1ABF    cmpd  <$0020
-         bge   L1ADD
-         bra   L1AFF
-L1AC6    cmpd  <$0020
-         ble   L1ADD
-         bra   L1AFF
-L1ACD    cmpx  <$0022
-         ble   L1ADD
-         bra   L1AFF
-L1AD3    cmpx  <$0022
-         bge   L1ADD
-         bra   L1AFF
-L1AD9    bsr   L1B01
-         bgt   L1AFF
-L1ADD    addd  <$0018
-         bmi   L1AFF
-         cmpd  <$1B,y
-         bhi   L1AFF
-         std   <$0047
-         tfr   x,d
-         addd  <$001A
-         bmi   L1AFF
-         cmpd  <$1D,y
-         bhi   L1AFF
-         std   <$0049
-         lbsr  L1ED4
-         lda   <$0061
-         lbsr  L1F9B
-L1AFF    puls  pc,x,b,a
-L1B01    pshs  x,b,a
-         tfr   x,d
-         subd  <$0026
-         ldx   <$0097
-         bsr   L1B1F
-         pshs  x,b
-         ldd   $03,s
-         subd  <$0024
-         ldx   <$0099
-         bsr   L1B1F
-         cmpb  ,s
-         bne   L1B1B
-         cmpx  $01,s
-L1B1B    leas  $03,s
-         puls  pc,x,b,a
-L1B1F    pshs  x,b,a
-         lda   $03,s
-         mul   
-         pshs  b,a
-         lda   $05,s
-         ldb   $02,s
-         mul   
-         addb  ,s+
-         adca  #$00
-         pshs  b,a
-         ldd   $04,s
-         mul   
-         addd  ,s
-         std   ,s
-         lda   $05,s
-         ldb   $03,s
-         mul   
-         addb  ,s
-         ldx   $01,s
-         tst   $03,s
-         bpl   L1B49
-         neg   $06,s
-         addb  $06,s
-L1B49    tst   $05,s
-         bpl   L1B51
-         neg   $04,s
-         addb  $04,s
-L1B51    leas  $07,s
-         rts   
-L1B54    clr   ,x
-         clr   $01,x
-         clr   $02,x
-         std   $03,x
-         rts   
-L1B5D    pshs  b,a
-         ldd   ,y
-         std   ,x
-         ldd   $02,y
-         std   $02,x
-         ldb   $04,y
-         stb   $04,x
-         puls  pc,b,a
-         exg   x,y
-         bsr   L1B5D
-         exg   x,y
-         rts   
-L1B74    exg   y,u
-         exg   x,y
-         bsr   L1B5D
-         exg   x,y
-         exg   y,u
-         rts   
-L1B7F    exg   x,u
-         bsr   L1B5D
-         exg   x,u
-         rts   
-L1B86    pshs  b,a
-         addd  $03,x
-         std   $03,x
-         ldd   #$0000
-         adcb  $02,x
-         adca  $01,x
-         std   $01,x
-         ldb   #$00
-         adcb  ,x
-         stb   ,x
-         puls  pc,b,a
-L1B9D    pshs  b,a
-         ldd   $03,x
-         addd  $03,y
-         std   $03,x
-         ldd   $01,x
-         adcb  $02,y
-         adca  $01,y
-         std   $01,x
-         ldb   ,x
-         adcb  ,y
-         stb   ,x
-         puls  pc,b,a
-L1BB5    exg   x,y
-         bsr   L1C37
-         exg   x,y
-         bsr   L1B9D
-         exg   x,y
-         bsr   L1C37
-         exg   x,y
-         rts   
-L1BC4    pshs  y,b,a
-         clra  
-         clrb  
-         pshs  b,a
-         pshs  b
-         tfr   s,y
-         bsr   L1BD9
-         leas  $03,s
-         puls  pc,y,b,a
-L1BD4    lbsr  L1B54
-         bra   L1BD9
-L1BD9    pshs  u,y,b,a
-         leas  -$0A,s
-         tfr   s,u
-         bsr   L1B7F
-         tfr   u,y
-         leau  $05,u
-         bsr   L1B74
-         ldd   #$0000
-         lbsr  L1B54
-         bra   L1BF1
-L1BEF    bsr   L1C0E
-L1BF1    bsr   L1C19
-         beq   L1BFB
-         bcc   L1BEF
-         bsr   L1B9D
-         bra   L1BEF
-L1BFB    bcc   L1BFF
-         bsr   L1B9D
-L1BFF    leas  $0A,s
-         puls  pc,u,y,b,a
-L1C03    lsl   $04,x
-         rol   $03,x
-         rol   $02,x
-         rol   $01,x
-         rol   ,x
-         rts   
-L1C0E    lsl   $04,y
-         rol   $03,y
-         rol   $02,y
-         rol   $01,y
-         rol   ,y
-         rts   
-L1C19    lsr   ,u
-         bne   L1C2C
-         ror   $01,u
-         bne   L1C2E
-         ror   $02,u
-         bne   L1C30
-         ror   $03,u
-         bne   L1C32
-         ror   $04,u
-         rts   
-L1C2C    ror   $01,u
-L1C2E    ror   $02,u
-L1C30    ror   $03,u
-L1C32    ror   $04,u
-         andcc #$FB
-         rts   
-L1C37    com   ,x
-         com   $01,x
-         com   $02,x
-         com   $03,x
-         com   $04,x
-         inc   $04,x
-         bne   L1C53
-         inc   $03,x
-         bne   L1C53
-         inc   $02,x
-         bne   L1C53
-         inc   $01,x
-         bne   L1C53
-         inc   ,x
-L1C53    rts   
-L1C54    pshs  b,a
-         ldd   ,x
-         cmpd  ,y
-         bne   L1C73
-         ldd   $02,x
-         cmpd  $02,y
-         bne   L1C6A
-         ldb   $04,x
-         cmpb  $04,y
-         beq   L1C73
-L1C6A    bhi   L1C70
-         lda   #$08
-         bra   L1C71
-L1C70    clra  
-L1C71    tfr   a,cc
-L1C73    puls  pc,b,a
-         lbsr  L0184
-         ldb   <$0060
-         lbmi  L05A2
-         ldb   $0E,y
-         beq   L1C85
-         lbsr  L0189
-L1C85    ldb   #$01
-         stb   <$002A
-         lbsr  L1E29
-         bcs   L1CE7
-         lbsr  L1ED4
-         stx   <$0072
-         stb   <$0074
-         lbsr  L1F8B
-         sta   <$0028
-         leax  >L07A1,pcr
-         ldb   <$0060
-         ldb   b,x
-         leax  b,x
-         anda  ,x+
-         ldb   a,x
-         stb   <$0029
-         cmpb  $06,y
-         beq   L1CDF
-         clrb  
-         pshs  b
-         lbsr  L1F2B
-         lbsr  L1F5A
-         ldx   <$0072
-         bra   L1CEE
-L1CBB    tst   >$101B
-         beq   L1CE4
-         ldb   ,s+
-         beq   L1CDF
-         stb   <$002B
-         addb  ,s+
-         cmpb  <$1E,y
-         bhi   L1CEA
-         stb   <$004A
-         puls  b,a
-         std   <$0047
-         puls  b,a
-         std   <$004B
-         lbsr  L1ED4
-         stb   <$0074
-         lbra  L1D6A
-L1CDF    clrb  
-         ldb   <$002A
-         bne   L1CE7
-L1CE4    ldb   #$BA
-         coma  
-L1CE7    lbra  L011D
-L1CEA    leas  $04,s
-         bra   L1CBB
-L1CEE    ldb   <$0074
-L1CF0    lbsr  L1F74
-         bsr   L1D3E
-         beq   L1CFC
-         lbsr  L1F8B
-         beq   L1CF0
-L1CFC    lbsr  L1F45
-         pshs  b
-         ldd   <$0047
-         std   <$009B
-         puls  b
-L1D07    bsr   L1D52
-         bsr   L1D48
-         bhi   L1D12
-         lbsr  L1F8B
-         beq   L1D07
-L1D12    lbsr  L1F74
-         lbsr  L1E21
-         beq   L1D28
-         ldd   <$0047
-         pshs  b,a
-         ldd   <$009B
-         pshs  b,a
-         ldb   <$004A
-         lda   #$FF
-         pshs  b,a
-L1D28    lbsr  L1E21
-         beq   L1CBB
-         ldd   <$0047
-         pshs  b,a
-         ldd   <$009B
-         pshs  b,a
-         ldb   <$004A
-         lda   #$01
-         pshs  b,a
-         lbra  L1CBB
-L1D3E    pshs  b,a
-         ldd   <$0047
-         cmpd  #$FFFF
-         puls  pc,b,a
-L1D48    pshs  b,a
-         ldd   <$0047
-         cmpd  <$1B,y
-         puls  pc,b,a
-L1D52    lda   ,x
-         sta   ,-s
-         lda   <$0061
-         lbsr  L1F9B
-         lda   ,x
-         cmpa  ,s+
-         beq   L1D66
-         lda   #$FF
-         sta   >$101B
-L1D66    lbsr  L1F45
-         rts   
-L1D6A    ldd   <$0047
-         subd  #$0002
-         std   <$009B
-         ldb   <$0074
-L1D73    lbsr  L1F8B
-         bne   L1D7F
-         lbsr  L1F74
-         bsr   L1D3E
-         bne   L1D73
-L1D7F    lbsr  L1F45
-         stb   <$0074
-         ldd   <$0047
-         cmpd  <$004B
-         lbgt  L1CBB
-         ldb   <$0074
-         lbsr  L1F8B
-         bne   L1D7F
-         ldd   <$0047
-         cmpd  <$009B
-         bgt   L1DB3
-         lbsr  L1E21
-         beq   L1DB3
-         ldd   <$009B
-         pshs  b,a
-         ldd   <$0047
-         bpl   L1DAA
-         clra  
-         clrb  
-L1DAA    pshs  b,a
-         ldb   <$004A
-         lda   <$002B
-         nega  
-         pshs  b,a
-L1DB3    ldd   <$0047
-         std   <$009B
-         ldb   <$0074
-L1DB9    lbsr  L1F8B
-         bne   L1DC4
-         bsr   L1D52
-         bsr   L1D48
-         bls   L1DB9
-L1DC4    lbsr  L1F74
-         stb   <$0074
-         bsr   L1E21
-         beq   L1DDD
-         ldd   <$0047
-         pshs  b,a
-         ldd   <$009B
-         pshs  b,a
-         ldb   <$004A
-         lda   <$002B
-         pshs  b,a
-         ldb   <$0074
-L1DDD    lbsr  L1F45
-         stb   <$0074
-         lbsr  L1D48
-         bgt   L1DF7
-         ldd   <$0047
-         cmpd  <$004B
-         bgt   L1DF7
-         ldb   <$0074
-         lbsr  L1F8B
-         bne   L1DDD
-         bra   L1DB3
-L1DF7    cmps  <$003B
-         bhi   L1DFE
-         clr   <$002A
-L1DFE    ldd   <$0047
-         subd  #$0001
-         std   <$0047
-         ldd   <$004B
-         addd  #$0002
-         cmpd  <$0047
-         bhi   L1E1E
-         leas  -$02,s
-         pshs  b,a
-         ldd   <$0047
-         std   $02,s
-         ldb   <$004A
-         lda   <$002B
-         nega  
-         pshs  b,a
-L1E1E    lbra  L1CBB
-L1E21    cmps  <$003B
-         bhi   L1E28
-         clr   <$002A
-L1E28    rts   
-L1E29    ldb   #$47
-L1E2B    bsr   L1E5F
-         lbra  L1EB9
-L1E30    ldb   #$4B
-         bra   L1E2B
-L1E34    ldb   #$4F
-         bra   L1E2B
-L1E38    ldb   #$20
-L1E3A    bsr   L1E5F
-         ldd   #$027F
-         bsr   L1E46
-         bcs   L1E56
-         ldd   #$00BF
-L1E46    pshs  b,a
-         ldd   ,x++
-         bpl   L1E50
-         nega  
-         negb  
-         sbca  #$00
-L1E50    cmpd  ,s++
-         bgt   L1ED0
-         clrb  
-L1E56    rts   
-L1E57    ldb   #$24
-         bra   L1E3A
-L1E5B    ldb   #$53
-         bra   L1E3A
-L1E5F    tfr   u,x
-         abx   
-         lda   $09,y
-         bita  #$08
-         beq   L1E6C
-         ldd   -$07,y
-         bne   L1E6D
-L1E6C    rts   
-L1E6D    pshs  y,x,b,a
-         tfr   x,y
-         ldx   ,y
-         ldb   ,s
-         beq   L1E7B
-         bsr   L1E87
-         std   ,y
-L1E7B    ldx   $02,y
-         ldb   $01,s
-         beq   L1E85
-         bsr   L1E87
-         std   $02,y
-L1E85    puls  y,x,b,a
-L1E87    pshs  x,b
-         leas  -$02,s
-         lda   $04,s
-         mul   
-         cmpb  #$CD
-         pshs  cc
-         exg   a,b
-         clra  
-         puls  cc
-         bcs   L1E9C
-         addd  #$0001
-L1E9C    std   ,s
-         lda   $03,s
-         ldb   $02,s
-         mul   
-         addd  ,s
-         leas  $03,s
-         puls  pc,x
-L1EA9    pshs  x
-         lda   ,s
-         stb   ,s
-         mul   
-         stb   ,-s
-         ldd   $01,s
-         mul   
-         adda  ,s+
-         puls  pc,x
-L1EB9    ldd   ,x
-         bmi   L1ED0
-         cmpd  <$1B,y
-         bgt   L1ED0
-         ldd   $02,x
-         bmi   L1ED0
-         cmpd  <$1D,y
-         bgt   L1ED0
-         andcc #$FE
-         rts   
-L1ED0    comb  
-         ldb   #$BD
-         rts   
-L1ED4    ldd   -$0D,y
-L1ED6    pshs  y,b,a
-         lda   <$004A
-         ldb   <$0063
-         mul   
-         addd  ,s++
-         tfr   d,x
-         ldb   <$0060
-         bpl   L1EEC
-         ldd   <$0047
-         lslb  
-         leax  d,x
-         puls  pc,y
-L1EEC    cmpb  #$04
-         bne   L1EF8
-         ldd   <$0047
-         leay  >L1F28,pcr
-         bra   L1F0E
-L1EF8    cmpb  #$01
-         beq   L1F04
-         ldd   <$0047
-         leay  >L1F23,pcr
-         bra   L1F0C
-L1F04    ldd   <$0047
-         leay  >L1F1A,pcr
-         lsra  
-         rorb  
-L1F0C    lsra  
-         rorb  
-L1F0E    lsra  
-         rorb  
-         leax  d,x
-         ldb   <$0048
-         andb  ,y+
-         ldb   b,y
-         puls  pc,y
-L1F1A    asr   <$0080
-         nega  
-         bra   L1F2F
-         lsl   <$0004
-         aim   #$01,<$0003
-         subb  #$30
-         inc   <$0003
-L1F28    oim   #$F0,<$000F
-L1F2B    lda   <$0060
-         leax  >L1F3B,pcr
-         lsla  
-         ldd   a,x
-         sta   <$0079
-         leax  b,x
-         stx   <$0077
-         rts   
-L1F3B    neg   <$0000
-         suba  #$19
-         subb  #$18
-         subb  #$18
-         subb  >$160C
-         lsla  
-         bne   L1F4B
-         inc   <$0047
-L1F4B    lsrb  
-         bcs   L1F55
-         jmp   [<$77,u]
-         lsrb  
-         lsrb  
-         lsrb  
-         rts   
-L1F55    ldb   <$0079
-         leax  $01,x
-         rts   
-L1F5A    lda   <$0060
-         leax  >L1F6A,pcr
-         lsla  
-         ldd   a,x
-         sta   <$007C
-         leax  b,x
-         stx   <$007A
-         rts   
-L1F6A    neg   <$0000
-         oim   #$1B,<$0003
-         orcc  #$03
-         orcc  #$0F
-         fcb   $18 
-L1F74    tst   <$0048
-         bne   L1F7A
-         dec   <$0047
-L1F7A    dec   <$0048
-         lslb  
-         bcs   L1F86
-         jmp   [<$7A,u]
-         lslb  
-         lslb  
-         lslb  
-         rts   
-L1F86    ldb   <$007C
-         leax  -$01,x
-         rts   
-L1F8B    pshs  b
-         tfr   b,a
-         anda  ,x
-L1F91    lsrb  
-         bcs   L1F97
-         lsra  
-         bra   L1F91
-L1F97    cmpa  <$0028
-         puls  pc,b
-L1F9B    pshs  b,a
-         jmp   [<$64,u]
-         pshs  x,b
-         bsr   L1FD5
-         abx   
-         ldb   <$0048
-         lsrb  
-         lsrb  
-         lsrb  
-         andb  #$03
-         bra   L1FC8
-         pshs  x,b
-         bsr   L1FD5
-         lslb  
-         abx   
-         ldb   <$0048
-         lsrb  
-         lsrb  
-         andb  #$07
-         bra   L1FC8
-         pshs  x,b
-         bsr   L1FD5
-         lslb  
-         lslb  
-         abx   
-         ldb   <$0048
-         lsrb  
-         andb  #$0F
-L1FC8    ldb   b,x
-         andb  ,s+
-         ldx   ,s++
-         pshs  b
-         anda  ,s+
-         jmp   [<$68,u]
-L1FD5    ldx   <$0066
-         ldb   <$004A
-         andb  #$07
-         lslb  
-         lslb  
-         rts   
-L1FDE    anda  $01,s
-         jmp   [<$68,u]
-L1FE3    eora  ,x
-         bra   L1FF0
-         anda  ,x
-L1FE9    comb  
-         andb  ,x
-         stb   ,x
-         ora   ,x
-L1FF0    sta   ,x
-         puls  pc,b,a
-L1FF4    neg   <$00AC
-         ora   >$BAC8
-         emod
-eom      equ   *
+L0000     fcb   $87,$cd,$1f,$b0,$00,$0e,$c1,$81,$54,$00,$15,$00,$00,$07,$47,$72
+L0010     fcb   $66,$44,$72,$f6,$12,$8e,$40,$f4,$34,$16,$1f,$30,$1f,$8b,$30,$8c
+L0020     fcb   $0a,$e6,$61,$ec,$85,$30,$8b,$35,$06,$6e,$84,$00,$60,$00,$b9,$01
+L0030     fcb   $43,$03,$31,$03,$35,$03,$cf,$04,$85,$04,$b2,$06,$ce,$05,$4e,$06
+L0040     fcb   $29,$06,$04,$05,$75,$05,$bd,$06,$13,$05,$d4,$06,$31,$06,$53,$05
+L0050     fcb   $f7,$06,$c1,$06,$c6,$06,$ca,$07,$d6,$09,$1f,$0a,$15,$0a,$4d,$0a
+L0060     fcb   $7f,$0b,$9b,$0d,$fa,$0e,$3b,$10,$2a,$10,$31,$13,$61,$10,$3d,$13
+L0070     fcb   $df,$13,$c6,$15,$44,$15,$50,$16,$74,$17,$79,$17,$c1,$18,$31,$17
+L0080     fcb   $d0,$1b,$f1,$16,$7a,$17,$bc,$18,$2c,$15,$0b,$0d,$38,$2b,$53,$86
+L0090     fcb   $ff,$97,$38,$30,$c9,$01,$80,$c6,$ff,$10,$8e,$00,$20,$ed,$84,$30
+L00a0     fcb   $88,$40,$31,$3f,$26,$f7,$31,$a8,$10,$6f,$01,$30,$88,$20,$31,$3f
+L00b0     fcb   $26,$f7,$30,$88,$18,$9f,$3b,$4f,$5f,$dd,$30,$dd,$2e,$d7,$32,$d7
+L00c0     fcb   $35,$dd,$39,$dd,$3d,$dd,$3f,$5c,$dd,$b3,$c6,$20,$dd,$b5,$1e,$89
+L00d0     fcb   $dd,$b7,$86,$7e,$8e,$41,$4f,$97,$b9,$9f,$ba,$8e,$41,$54,$97,$bc
+L00e0     fcb   $9f,$bd,$5f,$39,$0f,$38,$0f,$7d,$d6,$32,$27,$07,$9e,$33,$17,$08
+L00f0     fcb   $72,$24,$f1,$39,$34,$01,$1a,$50,$be,$10,$07,$7f,$10,$02,$4f,$1f
+L0100     fcb   $8b,$35,$02,$6e,$9f,$00,$a9,$34,$36,$ae,$30,$af,$62,$31,$2f,$ec
+L0110     fcb   $27,$dd,$64,$ec,$25,$dd,$68,$ec,$37,$dd,$61,$ec,$2c,$dd,$6a,$ec
+L0120     fcb   $2e,$dd,$6c,$e6,$84,$c4,$8f,$d7,$60,$e6,$04,$d7,$63,$e6,$01,$30
+L0130     fcb   $c9,$00,$8f,$10,$8e,$ff,$ac,$4f,$ed,$81,$e7,$a0,$5c,$10,$8c,$ff
+L0140     fcb   $af,$23,$f5,$35,$b6,$34,$36,$20,$e6,$34,$36,$ae,$30,$20,$be,$8d
+L0150     fcb   $b6,$16,$12,$a7,$0f,$89,$d7,$8a,$f7,$ff,$a9,$39,$34,$02,$10,$3f
+L0160     fcb   $39,$35,$82,$34,$02,$10,$3f,$53,$35,$82,$10,$3f,$51,$39,$8d,$28
+L0170     fcb   $25,$25,$96,$60,$81,$ff,$26,$0a,$a6,$b8,$f0,$97,$60,$17,$12,$7b
+L0180     fcb   $20,$05,$17,$00,$50,$25,$10,$17,$ff,$7d,$17,$01,$61,$86,$ff,$a7
+L0190     fcb   $32,$e6,$28,$17,$11,$06,$5f,$39,$96,$60,$81,$ff,$26,$03,$a6,$b8
+L01a0     fcb   $f0,$30,$8c,$2b,$84,$01,$e6,$35,$e1,$86,$22,$1f,$eb,$37,$e1,$86
+L01b0     fcb   $22,$19,$a6,$b8,$f0,$84,$30,$c6,$10,$3d,$e6,$36,$30,$8c,$12,$e1
+L01c0     fcb   $86,$22,$08,$eb,$38,$e1,$86,$22,$02,$5f,$39,$53,$c6,$bd,$39,$28
+L01d0     fcb   $50,$18,$19,$46,$46,$8d,$1d,$25,$1a,$af,$30,$d6,$60,$e7,$84,$8d
+L01e0     fcb   $27,$25,$10,$d6,$5a,$e7,$05,$17,$04,$e8,$e7,$06,$17,$00,$b1,$17
+L01f0     fcb   $04,$4e,$5f,$39,$30,$c9,$09,$80,$c6,$10,$6d,$01,$27,$f4,$30,$88
+L0200     fcb   $20,$5a,$26,$f6,$53,$c6,$c1,$39,$34,$20,$d6,$60,$2a,$1a,$31,$c9
+L0210     fcb   $09,$80,$86,$10,$6d,$a4,$2a,$08,$e6,$21,$27,$04,$8d,$51,$24,$27
+L0220     fcb   $31,$a8,$20,$4a,$26,$ee,$d6,$60,$31,$8c,$37,$c4,$0f,$e6,$a5,$17
+L0230     fcb   $ff,$31,$25,$24,$10,$8e,$80,$00,$34,$24,$17,$ff,$08,$c6,$ff,$e7
+L0240     fcb   $a4,$8d,$17,$25,$fa,$35,$24,$e7,$01,$10,$af,$02,$96,$60,$84,$0f
+L0250     fcb   $31,$8c,$15,$a6,$a6,$a7,$04,$5f,$35,$a0,$31,$a9,$08,$00,$10,$8c
+L0260     fcb   $a0,$00,$39,$02,$02,$04,$04,$01,$01,$50,$50,$a0,$a0,$a0,$50,$34
+L0270     fcb   $36,$17,$fe,$d1,$10,$8e,$80,$00,$c6,$ff,$e1,$a4,$27,$07,$8d,$da
+L0280     fcb   $25,$f8,$53,$35,$b6,$96,$60,$84,$8f,$81,$86,$27,$0d,$30,$a9,$08
+L0290     fcb   $00,$8c,$a0,$00,$24,$ec,$e1,$84,$26,$e4,$5f,$35,$16,$32,$62,$39
+L02a0     fcb   $34,$30,$d7,$97,$d7,$98,$a6,$84,$2a,$04,$c6,$20,$d7,$97,$34,$10
+L02b0     fcb   $ec,$35,$26,$15,$e6,$84,$30,$8d,$ff,$15,$c4,$01,$3a,$ec,$37,$a1
+L02c0     fcb   $84,$26,$06,$c1,$18,$26,$02,$35,$b6,$35,$10,$10,$ae,$02,$a6,$84
+L02d0     fcb   $84,$0f,$48,$30,$8c,$0a,$ae,$86,$dc,$97,$ed,$a1,$30,$1f,$26,$fa
+L02e0     fcb   $35,$b0,$1f,$40,$1f,$40,$3e,$80,$3e,$80,$07,$d0,$03,$e8,$34,$10
+L02f0     fcb   $4f,$a7,$a8,$18,$a7,$2a,$a7,$2e,$8e,$5f,$9a,$af,$a8,$14,$8e,$5f
+L0300     fcb   $83,$af,$a8,$16,$86,$89,$a7,$29,$8d,$1b,$d7,$61,$8d,$21,$d7,$62
+L0310     fcb   $17,$03,$c9,$35,$10,$ec,$02,$8d,$1e,$6f,$2b,$cc,$c8,$01,$dd,$57
+L0320     fcb   $17,$02,$7f,$5f,$39,$e6,$26,$17,$03,$6e,$e7,$26,$39,$8d,$f6,$e6
+L0330     fcb   $27,$17,$03,$64,$e7,$27,$39,$17,$01,$b3,$ec,$33,$ed,$a8,$24,$ec
+L0340     fcb   $35,$ed,$a8,$26,$6f,$35,$6f,$36,$ec,$37,$ed,$a8,$28,$39,$4d,$27
+L0350     fcb   $04,$ea,$29,$20,$03,$53,$e4,$29,$e7,$29,$20,$32,$c6,$01,$20,$ee
+L0360     fcb   $9d,$b9,$cc,$ff,$fe,$ed,$30,$8d,$27,$25,$1c,$8d,$3b,$10,$9c,$2e
+L0370     fcb   $26,$1c,$4f,$5f,$dd,$2e,$dd,$30,$8e,$ff,$b0,$cc,$10,$08,$f7,$ff
+L0380     fcb   $9a,$e7,$80,$4a,$22,$fb,$39,$e6,$06,$d7,$62,$17,$0f,$0e,$5f,$39
+L0390     fcb   $34,$20,$31,$c9,$01,$90,$c6,$20,$ac,$30,$27,$09,$31,$a8,$40,$5a
+L03a0     fcb   $26,$f6,$5f,$20,$01,$53,$35,$a0,$34,$20,$a6,$84,$2a,$22,$10,$ae
+L03b0     fcb   $02,$c6,$ff,$e7,$a4,$84,$cf,$81,$85,$26,$04,$e7,$a9,$08,$00,$10
+L03c0     fcb   $8e,$80,$00,$e1,$a4,$26,$1f,$17,$fe,$90,$25,$f7,$c6,$01,$20,$08
+L03d0     fcb   $84,$0f,$31,$8d,$fe,$8c,$e6,$a6,$34,$14,$4f,$e6,$01,$1f,$01,$35
+L03e0     fcb   $04,$17,$fd,$86,$35,$10,$6f,$01,$35,$a0,$35,$06,$34,$26,$e6,$32
+L03f0     fcb   $86,$40,$3d,$31,$c9,$01,$90,$31,$ab,$39,$8d,$ee,$9d,$b9,$1f,$20
+L0400     fcb   $10,$ae,$e4,$ed,$e4,$8d,$26,$25,$22,$ec,$10,$ed,$30,$17,$fd,$39
+L0410     fcb   $8d,$4a,$0d,$59,$27,$0b,$8d,$76,$25,$11,$e6,$27,$d7,$62,$17,$0e
+L0420     fcb   $7b,$ae,$e4,$9c,$2e,$26,$03,$10,$9f,$2e,$5f,$35,$90,$8d,$1b,$e6
+L0430     fcb   $35,$2b,$14,$eb,$37,$e1,$88,$28,$22,$0d,$e6,$36,$2b,$09,$eb,$38
+L0440     fcb   $e1,$88,$29,$22,$02,$5f,$39,$16,$fd,$81,$1f,$21,$e6,$12,$2b,$0b
+L0450     fcb   $30,$c9,$01,$90,$86,$40,$3d,$30,$8b,$20,$f1,$39,$6f,$a8,$11,$a6
+L0460     fcb   $09,$a7,$29,$17,$02,$76,$a6,$08,$84,$c0,$aa,$28,$a7,$28,$cc,$05
+L0470     fcb   $0a,$8d,$0e,$cc,$07,$14,$8d,$09,$17,$fe,$b2,$ec,$13,$17,$fe,$b7
+L0480     fcb   $39,$34,$02,$a6,$85,$a7,$a5,$5c,$6a,$e4,$26,$f7,$35,$82,$34,$10
+L0490     fcb   $4f,$e6,$37,$0d,$60,$2b,$03,$86,$08,$3d,$dd,$4f,$4f,$e6,$38,$0d
+L04a0     fcb   $60,$2b,$03,$58,$58,$58,$dd,$51,$5f,$dd,$47,$17,$06,$47,$35,$90
+L04b0     fcb   $9d,$b9,$10,$9c,$2e,$26,$08,$17,$ff,$30,$10,$9f,$2e,$35,$20,$e6
+L04c0     fcb   $a8,$11,$27,$12,$9d,$bc,$d7,$7d,$ec,$a8,$12,$dd,$7e,$17,$07,$31
+L04d0     fcb   $17,$03,$79,$17,$04,$8d,$cc,$ff,$ff,$ed,$30,$20,$0e,$9d,$b9,$1f
+L04e0     fcb   $21,$17,$ff,$4b,$25,$06,$ec,$a8,$24,$8d,$02,$5f,$39,$34,$16,$d6
+L04f0     fcb   $60,$c4,$0f,$30,$8d,$00,$51,$e6,$85,$e7,$23,$a6,$37,$3d,$e7,$22
+L0500     fcb   $4f,$d6,$63,$0d,$60,$2b,$03,$86,$08,$3d,$ed,$24,$e6,$36,$ae,$24
+L0510     fcb   $17,$19,$0e,$dd,$97,$a6,$35,$e6,$23,$3d,$e3,$e1,$d3,$97,$ed,$33
+L0520     fcb   $17,$0b,$84,$d6,$60,$2b,$02,$8d,$26,$4f,$e6,$37,$0d,$60,$2b,$03
+L0530     fcb   $86,$08,$3d,$93,$b3,$ed,$a8,$1b,$4f,$e6,$38,$0d,$60,$2b,$03,$86
+L0540     fcb   $08,$3d,$c0,$01,$ed,$a8,$1d,$35,$90,$01,$02,$02,$04,$02,$02,$34
+L0550     fcb   $10,$4f,$e6,$37,$1f,$01,$86,$03,$3d,$34,$04,$c6,$33,$17,$18,$a0
+L0560     fcb   $eb,$e0,$e7,$39,$4f,$e6,$38,$1f,$01,$86,$0a,$3d,$34,$04,$c6,$ab
+L0570     fcb   $17,$18,$8d,$eb,$e0,$e7,$3a,$35,$90,$d6,$57,$26,$07,$e7,$2e,$8e
+L0580     fcb   $5f,$83,$20,$17,$17,$02,$ca,$25,$16,$e7,$2e,$30,$88,$20,$af,$2f
+L0590     fcb   $ae,$30,$e6,$84,$8e,$5f,$0a,$e6,$85,$30,$85,$af,$a8,$16,$5f,$39
+L05a0     fcb   $9d,$b9,$d6,$57,$26,$03,$e7,$2b,$39,$17,$09,$85,$17,$02,$a2,$25
+L05b0     fcb   $31,$34,$14,$ec,$07,$4d,$26,$2b,$c1,$06,$27,$04,$c1,$08,$26,$23
+L05c0     fcb   $ec,$09,$10,$83,$00,$08,$26,$1b,$e7,$0b,$ec,$07,$10,$93,$6e,$27
+L05d0     fcb   $0a,$6d,$2b,$27,$06,$17,$0b,$55,$17,$0b,$3e,$35,$14,$e7,$2b,$af
+L05e0     fcb   $2c,$5f,$39,$c6,$c2,$43,$35,$92,$9d,$b9,$d6,$57,$26,$04,$e7,$a8
+L05f0     fcb   $18,$39,$17,$02,$5c,$25,$a8,$e7,$a8,$18,$af,$a8,$19,$20,$9f,$30
+L0600     fcb   $8c,$14,$e6,$2a,$c1,$05,$22,$0a,$58,$ec,$85,$30,$8b,$af,$a8,$14
+L0610     fcb   $20,$1b,$53,$c6,$bb,$39,$19,$84,$19,$82,$19,$89,$19,$7e,$19,$72
+L0620     fcb   $19,$76,$e6,$29,$ca,$80,$4d,$27,$02,$c4,$7f,$e7,$29,$5f,$39,$d6
+L0630     fcb   $86,$ae,$30,$30,$88,$10,$96,$5a,$84,$0f,$e7,$86,$20,$ef,$ae,$30
+L0640     fcb   $34,$30,$31,$88,$10,$be,$10,$19,$4f,$e6,$80,$e7,$a6,$4c,$81,$0f
+L0650     fcb   $2f,$f7,$35,$b0,$d6,$5a,$ae,$30,$e7,$05,$20,$3a,$8d,$15,$e7,$26
+L0660     fcb   $e6,$29,$c5,$04,$26,$22,$d6,$5a,$58,$58,$58,$c4,$38,$a6,$28,$84
+L0670     fcb   $c7,$20,$1d,$ae,$30,$e6,$84,$d7,$60,$d6,$5a,$8d,$1b,$39,$8d,$f3
+L0680     fcb   $e7,$27,$e6,$29,$c5,$04,$26,$de,$d6,$5a,$c4,$07,$a6,$28,$84,$f8
+L0690     fcb   $d7,$97,$9a,$97,$a7,$28,$5f,$39,$34,$12,$96,$60,$2b,$04,$1f,$98
+L06a0     fcb   $8d,$0a,$35,$92,$30,$8c,$0d,$d6,$60,$e6,$85,$39,$8d,$f6,$30,$85
+L06b0     fcb   $a4,$80,$e6,$86,$39,$05,$08,$08,$0d,$01,$00,$ff,$03,$00,$55,$aa
+L06c0     fcb   $ff,$0f,$00,$11,$22,$33,$44,$55,$66,$77,$88,$99,$aa,$bb,$cc,$dd
+L06d0     fcb   $ee,$ff,$6d,$84,$2a,$03,$c4,$07,$39,$8d,$bd,$39,$ec,$26,$84,$07
+L06e0     fcb   $48,$48,$48,$c4,$07,$d7,$97,$9a,$97,$a7,$28,$39,$c6,$10,$16,$fc
+L06f0     fcb   $5d,$c6,$08,$20,$f9,$c6,$20,$20,$f5,$9e,$2e,$34,$30,$10,$ae,$30
+L0700     fcb   $a6,$21,$ae,$22,$17,$00,$e2,$8e,$ff,$90,$f6,$00,$90,$c4,$7f,$f7
+L0710     fcb   $00,$90,$e7,$84,$30,$8c,$76,$e6,$a4,$c4,$0f,$58,$3a,$b6,$00,$98
+L0720     fcb   $84,$78,$aa,$80,$e6,$a4,$c4,$10,$58,$ea,$84,$8e,$ff,$90,$fd,$00
+L0730     fcb   $98,$ed,$08,$dc,$82,$44,$56,$06,$84,$44,$56,$06,$84,$44,$56,$06
+L0740     fcb   $84,$4f,$fd,$00,$9c,$ed,$0c,$96,$84,$5f,$fd,$00,$9e,$ed,$0e,$e6
+L0750     fcb   $25,$31,$a8,$10,$e6,$a5,$f7,$00,$9a,$8d,$40,$e7,$0a,$8e,$ff,$b0
+L0760     fcb   $86,$10,$e6,$a0,$8d,$35,$e7,$80,$4a,$22,$f7,$10,$ae,$e1,$27,$02
+L0770     fcb   $9d,$b9,$35,$20,$17,$f9,$90,$10,$9f,$2e,$9f,$30,$f6,$10,$00,$f7
+L0780     fcb   $10,$01,$dc,$3d,$dd,$5b,$dc,$3f,$dd,$5d,$17,$0c,$9d,$5f,$39,$80
+L0790     fcb   $14,$80,$15,$80,$1d,$80,$1e,$03,$15,$03,$05,$34,$10,$7d,$10,$09
+L07a0     fcb   $26,$05,$30,$8c,$04,$e6,$85,$35,$90,$00,$0c,$02,$0e,$07,$09,$05
+L07b0     fcb   $10,$1c,$2c,$0d,$1d,$0b,$1b,$0a,$2b,$22,$11,$12,$21,$03,$01,$13
+L07c0     fcb   $32,$1e,$2d,$1f,$2e,$0f,$3c,$2f,$3d,$17,$08,$15,$06,$27,$16,$26
+L07d0     fcb   $36,$19,$2a,$1a,$3a,$18,$29,$28,$38,$14,$04,$23,$33,$25,$35,$24
+L07e0     fcb   $34,$20,$3b,$31,$3e,$37,$39,$3f,$30,$5f,$44,$56,$44,$56,$44,$56
+L07f0     fcb   $dd,$82,$0f,$84,$1f,$10,$80,$80,$d3,$83,$dd,$83,$24,$02,$0c,$82
+L0800     fcb   $39,$dc,$80,$c3,$00,$1f,$c4,$e0,$dd,$80,$d6,$57,$c1,$ff,$27,$08
+L0810     fcb   $0d,$32,$27,$04,$8d,$3b,$24,$30,$dc,$80,$10,$93,$b7,$22,$0a,$8d
+L0820     fcb   $70,$25,$06,$86,$01,$a7,$0f,$20,$05,$17,$00,$95,$25,$19,$d7,$7d
+L0830     fcb   $9f,$7e,$17,$00,$d8,$dc,$57,$ed,$03,$dc,$80,$ed,$05,$4f,$5f,$ed
+L0840     fcb   $07,$ed,$09,$ed,$0c,$e7,$0e,$39,$53,$c6,$c2,$39,$30,$8c,$11,$20
+L0850     fcb   $03,$30,$8c,$16,$9f,$a1,$8d,$32,$d6,$32,$27,$ec,$9e,$33,$20,$22
+L0860     fcb   $e1,$a8,$11,$26,$13,$ac,$a8,$12,$20,$0c,$96,$57,$a1,$03,$26,$08
+L0870     fcb   $96,$58,$27,$14,$a1,$04,$27,$10,$d7,$7d,$9f,$7e,$e6,$84,$27,$c8
+L0880     fcb   $ae,$01,$9d,$bc,$6e,$d9,$00,$a1,$4f,$39,$4f,$5f,$d7,$7d,$dd,$7e
+L0890     fcb   $39,$34,$24,$10,$9e,$80,$8e,$49,$e2,$9f,$a1,$17,$01,$37,$25,$1f
+L08a0     fcb   $e7,$e4,$ec,$05,$93,$80,$26,$0d,$34,$10,$17,$00,$80,$35,$10,$e6
+L08b0     fcb   $e4,$9d,$bc,$20,$09,$93,$b5,$ed,$05,$30,$88,$20,$30,$8b,$4f,$35
+L08c0     fcb   $a4,$dc,$80,$d3,$b5,$dd,$97,$c3,$1f,$ff,$44,$44,$44,$44,$44,$1f
+L08d0     fcb   $89,$d7,$99,$17,$f8,$86,$25,$34,$34,$04,$d6,$99,$c1,$01,$22,$21
+L08e0     fcb   $dc,$b7,$93,$97,$84,$1f,$dd,$9b,$27,$17,$dc,$b7,$93,$9b,$d3,$b7
+L08f0     fcb   $1f,$01,$e6,$e4,$db,$99,$5a,$9d,$bc,$8d,$22,$dc,$9b,$93,$b5,$ed
+L0900     fcb   $05,$9e,$b7,$35,$04,$9d,$bc,$96,$99,$a7,$0f,$4f,$39,$34,$06,$96
+L0910     fcb   $32,$a7,$84,$d7,$32,$dc,$33,$ed,$01,$9f,$33,$35,$86,$34,$06,$96
+L0920     fcb   $35,$a7,$84,$d7,$35,$dc,$36,$ed,$01,$9f,$36,$35,$86,$34,$22,$a6
+L0930     fcb   $84,$10,$ae,$01,$9e,$7e,$d6,$7d,$26,$07,$97,$35,$10,$9f,$36,$20
+L0940     fcb   $07,$9d,$bc,$a7,$84,$10,$af,$01,$35,$a2,$c6,$01,$d7,$97,$17,$ff
+L0950     fcb   $00,$25,$0a,$0f,$97,$8d,$0c,$25,$09,$d6,$58,$27,$f1,$96,$97,$26
+L0960     fcb   $01,$5f,$39,$34,$34,$a6,$0f,$97,$9f,$a6,$84,$10,$ae,$01,$d6,$7d
+L0970     fcb   $26,$07,$97,$32,$10,$9f,$33,$20,$09,$9d,$bc,$9e,$7e,$a7,$84,$10
+L0980     fcb   $af,$01,$e6,$e4,$96,$9f,$81,$01,$2e,$1f,$1f,$98,$8d,$25,$24,$10
+L0990     fcb   $30,$8c,$67,$9f,$a1,$ae,$61,$8d,$3c,$9d,$bc,$17,$ff,$7f,$20,$11
+L09a0     fcb   $8e,$4a,$23,$9f,$a1,$ae,$61,$8d,$2c,$4f,$1f,$01,$d6,$9f,$17,$f7
+L09b0     fcb   $b9,$35,$b4,$34,$14,$d6,$32,$27,$16,$91,$32,$27,$15,$9e,$33,$9d
+L09c0     fcb   $bc,$a1,$84,$27,$0d,$6d,$84,$27,$06,$e6,$84,$ae,$01,$20,$f0,$5f
+L09d0     fcb   $35,$94,$53,$35,$94,$34,$56,$17,$fe,$b0,$d6,$35,$27,$5f,$9e,$36
+L09e0     fcb   $20,$51,$10,$ac,$05,$22,$40,$e7,$61,$af,$62,$5f,$35,$d6,$1f,$30
+L09f0     fcb   $e3,$45,$d3,$b5,$af,$e3,$10,$a3,$e1,$39,$e1,$61,$26,$29,$ee,$62
+L0a00     fcb   $e6,$84,$e7,$c4,$ec,$01,$ed,$41,$1e,$13,$8d,$e2,$27,$06,$1e,$13
+L0a10     fcb   $8d,$dc,$26,$13,$ef,$62,$ec,$45,$e3,$05,$d3,$b5,$ed,$45,$17,$ff
+L0a20     fcb   $0c,$20,$b4,$e1,$e4,$27,$f7,$d6,$8a,$d7,$7d,$9f,$7e,$e6,$84,$27
+L0a30     fcb   $0c,$ae,$01,$ee,$64,$9d,$bc,$ee,$64,$6e,$d9,$00,$a1,$53,$35,$d6
+L0a40     fcb   $17,$fe,$0e,$25,$0f,$34,$04,$ec,$a8,$1f,$10,$a3,$05,$35,$04,$23
+L0a50     fcb   $10,$16,$00,$9d,$ec,$a8,$1f,$dd,$80,$17,$fd,$a5,$24,$01,$39,$d6
+L0a60     fcb   $7d,$e7,$a8,$21,$4f,$5f,$dd,$47,$d6,$60,$17,$00,$c9,$17,$01,$04
+L0a70     fcb   $30,$88,$20,$af,$a8,$22,$20,$77,$34,$20,$e6,$a8,$21,$d7,$97,$9d
+L0a80     fcb   $bc,$ae,$a8,$22,$31,$c9,$01,$00,$e6,$a0,$e7,$80,$4a,$27,$0f,$8c
+L0a90     fcb   $40,$00,$25,$f4,$0c,$97,$d6,$97,$9d,$bc,$9e,$b7,$20,$ea,$35,$20
+L0aa0     fcb   $d6,$97,$e7,$a8,$21,$af,$a8,$22,$20,$45,$17,$12,$f5,$25,$45,$17
+L0ab0     fcb   $12,$fb,$ec,$84,$93,$b3,$10,$a3,$a8,$1b,$10,$22,$13,$86,$ec,$02
+L0ac0     fcb   $93,$b3,$10,$a3,$a8,$1d,$22,$f2,$9d,$b9,$8d,$4a,$17,$fd,$82,$24
+L0ad0     fcb   $06,$17,$fd,$2d,$24,$0c,$39,$d7,$7d,$9f,$7e,$dc,$80,$10,$a3,$05
+L0ae0     fcb   $22,$0f,$17,$00,$8f,$17,$13,$60,$9f,$72,$9e,$7e,$17,$00,$a9,$5f
+L0af0     fcb   $39,$53,$c6,$bf,$39,$ec,$33,$dd,$72,$8d,$1b,$cc,$ff,$ff,$dd,$57
+L0b00     fcb   $17,$fc,$fe,$25,$10,$d6,$7d,$e7,$a8,$11,$dc,$7e,$ed,$a8,$12,$8d
+L0b10     fcb   $63,$17,$00,$84,$5f,$39,$34,$10,$d6,$60,$2a,$07,$dc,$4f,$58,$d7
+L0b20     fcb   $09,$20,$02,$8d,$11,$d6,$09,$9e,$51,$17,$12,$f5,$dd,$80,$d6,$63
+L0b30     fcb   $d0,$09,$d7,$0a,$35,$90,$86,$07,$5a,$27,$08,$86,$01,$c1,$03,$27
+L0b40     fcb   $02,$86,$03,$97,$97,$d6,$48,$53,$d4,$97,$5c,$d7,$06,$4f,$10,$93
+L0b50     fcb   $4f,$2c,$0b,$d6,$50,$d0,$06,$d4,$97,$26,$03,$d6,$97,$5c,$d7,$07
+L0b60     fcb   $4f,$d6,$48,$d4,$97,$d3,$4f,$db,$97,$89,$00,$44,$56,$04,$97,$26
+L0b70     fcb   $fa,$d7,$09,$39,$dc,$4f,$ed,$07,$dc,$51,$ed,$09,$d6,$60,$e7,$0e
+L0b80     fcb   $dc,$06,$ed,$0c,$d6,$09,$e7,$0b,$4f,$dd,$4f,$39,$1f,$21,$96,$97
+L0b90     fcb   $97,$0a,$86,$01,$97,$99,$20,$02,$0f,$99,$34,$20,$31,$88,$20,$9e
+L0ba0     fcb   $72,$96,$50,$0d,$99,$26,$06,$e6,$80,$e7,$a0,$20,$04,$e6,$a0,$e7
+L0bb0     fcb   $80,$10,$8c,$40,$00,$25,$03,$17,$01,$a9,$4a,$26,$e6,$d6,$0a,$3a
+L0bc0     fcb   $0a,$52,$26,$dd,$35,$a0,$9d,$b9,$17,$13,$9a,$17,$fc,$83,$25,$30
+L0bd0     fcb   $d7,$7d,$9f,$7e,$ec,$07,$dd,$4f,$ec,$09,$dd,$51,$17,$11,$c3,$25
+L0be0     fcb   $1f,$17,$11,$c9,$17,$12,$61,$9f,$72,$d7,$74,$10,$9e,$7e,$86,$01
+L0bf0     fcb   $8d,$2b,$25,$05,$17,$00,$b7,$20,$06,$17,$01,$04,$17,$01,$89,$5f
+L0c00     fcb   $39,$34,$20,$ec,$33,$dd,$72,$4f,$5f,$dd,$47,$10,$9e,$7e,$8d,$0d
+L0c10     fcb   $25,$06,$17,$ff,$77,$5f,$35,$a0,$53,$c6,$be,$35,$a0,$34,$10,$d6
+L0c20     fcb   $60,$e1,$2e,$26,$47,$5d,$2a,$08,$c6,$ff,$d7,$00,$d7,$01,$20,$31
+L0c30     fcb   $4d,$27,$17,$dc,$47,$e3,$27,$83,$00,$01,$10,$93,$6a,$22,$2d,$e6
+L0c40     fcb   $2a,$db,$4a,$5a,$d1,$6d,$22,$24,$d6,$60,$30,$8c,$2b,$96,$48,$43
+L0c50     fcb   $a4,$85,$4c,$a1,$2c,$26,$15,$8d,$16,$97,$00,$ec,$2d,$8d,$10,$d7
+L0c60     fcb   $01,$8d,$3a,$d6,$63,$d0,$50,$d7,$97,$5f,$35,$90,$53,$35,$90,$30
+L0c70     fcb   $8c,$0a,$e6,$85,$3a,$48,$ec,$86,$39,$07,$03,$03,$01,$03,$13,$13
+L0c80     fcb   $1b,$01,$80,$03,$c0,$07,$e0,$0f,$f0,$1f,$f8,$3f,$fc,$7f,$fe,$ff
+L0c90     fcb   $ff,$03,$c0,$0f,$f0,$3f,$fc,$ff,$ff,$0f,$f0,$ff,$ff,$ec,$2a,$d7
+L0ca0     fcb   $50,$97,$52,$39,$dc,$47,$dd,$ab,$9e,$72,$31,$a8,$20,$39,$17,$01
+L0cb0     fcb   $8e,$34,$20,$8d,$ef,$0c,$97,$0a,$50,$dc,$ab,$dd,$47,$d6,$00,$96
+L0cc0     fcb   $50,$27,$25,$97,$99,$20,$02,$c6,$ff,$a6,$a0,$17,$12,$38,$dc,$47
+L0cd0     fcb   $db,$05,$24,$01,$4c,$dd,$47,$30,$01,$10,$8c,$40,$00,$25,$03,$17
+L0ce0     fcb   $00,$81,$0a,$99,$26,$e1,$d6,$01,$a6,$a0,$17,$12,$19,$10,$8c,$40
+L0cf0     fcb   $00,$25,$02,$8d,$6e,$d6,$97,$3a,$0c,$4a,$0a,$52,$26,$bb,$35,$a0
+L0d00     fcb   $34,$20,$dc,$6a,$93,$47,$d3,$b3,$dd,$9b,$d6,$6d,$d0,$4a,$20,$17
+L0d10     fcb   $34,$20,$96,$60,$44,$cc,$02,$7f,$25,$03,$cc,$01,$3f,$93,$3d,$d3
+L0d20     fcb   $b3,$dd,$9b,$c6,$bf,$d0,$40,$5c,$d7,$a0,$17,$11,$6f,$17,$ff,$6d
+L0d30     fcb   $ec,$2c,$dd,$06,$17,$f9,$6d,$3a,$a6,$80,$9f,$02,$30,$8c,$2d,$e6
+L0d40     fcb   $2e,$e6,$85,$3a,$e6,$84,$31,$85,$10,$9f,$a3,$a4,$01,$97,$08,$e6
+L0d50     fcb   $02,$d7,$05,$d6,$06,$cb,$02,$e6,$85,$31,$85,$10,$9f,$a1,$10,$9f
+L0d60     fcb   $a5,$35,$a0,$0c,$7d,$d6,$7d,$9d,$bc,$10,$9e,$b7,$39,$05,$10,$10
+L0d70     fcb   $17,$62,$01,$08,$63,$5c,$5d,$5e,$5f,$60,$61,$62,$56,$03,$04,$58
+L0d80     fcb   $52,$54,$56,$4d,$0f,$02,$51,$4d,$17,$ff,$19,$34,$20,$9f,$72,$dc
+L0d90     fcb   $ab,$dd,$47,$dc,$9b,$dd,$9d,$96,$50,$97,$04,$d6,$06,$d7,$97,$dc
+L0da0     fcb   $a5,$dd,$a1,$d6,$74,$10,$ae,$e4,$10,$8c,$40,$00,$25,$06,$d7,$99
+L0db0     fcb   $8d,$b1,$d6,$99,$a6,$a0,$10,$af,$e4,$10,$9e,$02,$34,$20,$31,$8c
+L0dc0     fcb   $13,$10,$9c,$a1,$35,$20,$27,$0c,$48,$6e,$d9,$00,$a1,$49,$49,$49
+L0dd0     fcb   $49,$49,$49,$49,$34,$07,$dc,$9d,$27,$12,$93,$b3,$dd,$9d,$ec,$61
+L0de0     fcb   $94,$08,$a6,$a6,$17,$11,$1f,$17,$10,$c9,$e7,$62,$0a,$97,$27,$06
+L0df0     fcb   $35,$07,$6e,$d9,$00,$a3,$32,$63,$0a,$04,$27,$16,$96,$04,$81,$01
+L0e00     fcb   $27,$04,$96,$05,$20,$02,$96,$07,$97,$97,$10,$9e,$a3,$10,$9f,$a1
+L0e10     fcb   $20,$93,$9e,$72,$d6,$63,$3a,$0a,$a0,$27,$08,$0c,$4a,$0a,$52,$10
+L0e20     fcb   $26,$ff,$6a,$35,$a0,$17,$fa,$29,$25,$75,$d7,$97,$e6,$0f,$d7,$99
+L0e30     fcb   $ec,$05,$dd,$9b,$30,$88,$20,$1f,$10,$84,$1f,$dd,$9d,$20,$5f,$d6
+L0e40     fcb   $60,$30,$8d,$07,$7e,$a6,$85,$1f,$89,$10,$a3,$2c,$26,$15,$30,$8d
+L0e50     fcb   $11,$31,$9c,$64,$26,$0d,$30,$8d,$11,$40,$9c,$68,$26,$05,$32,$62
+L0e60     fcb   $16,$fd,$29,$97,$05,$39,$e6,$a8,$2a,$56,$24,$02,$5f,$39,$17,$f2
+L0e70     fcb   $96,$4d,$2a,$1a,$81,$bf,$22,$0c,$84,$ef,$80,$90,$81,$1a,$24,$0e
+L0e80     fcb   $86,$2e,$20,$0a,$84,$df,$80,$c1,$2b,$f6,$81,$19,$22,$f2,$d6,$60
+L0e90     fcb   $2a,$04,$8d,$0c,$20,$05,$17,$05,$62,$8d,$43,$17,$02,$32,$5f,$39
+L0ea0     fcb   $81,$60,$26,$02,$86,$27,$81,$5f,$26,$02,$86,$7f,$81,$5e,$26,$02
+L0eb0     fcb   $86,$60,$ae,$3b,$6d,$29,$2b,$0e,$e6,$01,$c4,$07,$e7,$01,$e6,$28
+L0ec0     fcb   $c4,$f8,$ea,$01,$20,$02,$e6,$28,$ed,$84,$dc,$b3,$dd,$6e,$dd,$70
+L0ed0     fcb   $10,$9c,$2e,$26,$08,$97,$39,$f6,$10,$00,$f7,$10,$01,$39,$34,$22
+L0ee0     fcb   $e6,$29,$d7,$0e,$c5,$04,$27,$06,$dc,$61,$1e,$89,$dd,$61,$8d,$41
+L0ef0     fcb   $25,$0a,$a6,$e4,$e6,$0b,$3d,$10,$a3,$05,$25,$05,$30,$8c,$2a,$20
+L0f00     fcb   $04,$d3,$b5,$30,$8b,$d6,$60,$c1,$01,$26,$10,$d6,$6f,$c1,$08,$26
+L0f10     fcb   $0a,$d6,$0e,$c5,$10,$26,$04,$8d,$43,$20,$0c,$31,$8d,$00,$ec,$10
+L0f20     fcb   $9f,$a9,$10,$ae,$61,$8d,$73,$35,$a2,$00,$00,$00,$00,$00,$00,$10
+L0f30     fcb   $00,$34,$02,$d6,$60,$2a,$08,$dc,$b3,$dd,$6e,$dd,$70,$20,$1b,$e6
+L0f40     fcb   $2b,$26,$0a,$cc,$00,$08,$dd,$6e,$dd,$70,$53,$20,$0d,$9d,$bc,$ae
+L0f50     fcb   $2c,$ec,$07,$dd,$6e,$ec,$09,$dd,$70,$5f,$35,$82,$10,$ae,$3b,$1e
+L0f60     fcb   $12,$96,$71,$4a,$97,$97,$a6,$a0,$d6,$0e,$c5,$20,$27,$03,$44,$aa
+L0f70     fcb   $3f,$1f,$89,$43,$0d,$0e,$2b,$04,$a4,$84,$20,$02,$94,$62,$a7,$84
+L0f80     fcb   $d4,$61,$ea,$84,$e7,$84,$d6,$63,$3a,$0a,$97,$2b,$0c,$26,$d7,$d6
+L0f90     fcb   $0e,$c5,$40,$27,$d1,$86,$ff,$20,$d8,$39,$34,$10,$30,$8c,$5c,$9f
+L0fa0     fcb   $10,$ae,$e4,$d6,$0e,$c5,$10,$27,$27,$d6,$71,$5a,$4f,$aa,$85,$5a
+L0fb0     fcb   $2a,$fb,$4d,$26,$04,$04,$6f,$20,$17,$c6,$ff,$5c,$48,$24,$fc,$8e
+L0fc0     fcb   $50,$4c,$e6,$85,$30,$85,$9f,$10,$c6,$01,$5c,$48,$25,$fc,$d7,$6f
+L0fd0     fcb   $35,$10,$e6,$3d,$d7,$0f,$10,$ae,$3b,$1e,$12,$96,$71,$4a,$97,$99
+L0fe0     fcb   $9f,$0c,$17,$0e,$b7,$9e,$0c,$a6,$a0,$d6,$0e,$c5,$20,$27,$03,$44
+L0ff0     fcb   $aa,$3f,$6e,$d8,$10,$48,$48,$48,$48,$48,$48,$97,$0b,$96,$6f,$97
+L1000     fcb   $97,$d6,$0f,$9f,$0c,$34,$04,$6e,$d9,$00,$a9,$08,$0b,$25,$08,$96
+L1010     fcb   $0e,$2a,$17,$96,$62,$20,$02,$96,$61,$53,$e4,$84,$e7,$84,$a4,$e4
+L1020     fcb   $aa,$84,$a7,$84,$20,$04,$e8,$84,$e7,$84,$0a,$97,$27,$07,$35,$04
+L1030     fcb   $17,$0e,$86,$20,$d0,$35,$04,$9e,$0c,$d6,$63,$3a,$0a,$99,$2b,$0c
+L1040     fcb   $26,$a5,$96,$0e,$85,$40,$27,$9f,$86,$ff,$20,$af,$39,$af,$ae,$ad
+L1050     fcb   $ac,$ab,$aa,$a9,$ab,$8d,$0c,$17,$00,$a5,$20,$49,$8d,$05,$17,$04
+L1060     fcb   $24,$20,$42,$9d,$b9,$16,$fe,$c9,$8d,$f9,$4f,$d6,$47,$93,$b5,$1f
+L1070     fcb   $01,$d6,$6f,$17,$0d,$ab,$dd,$47,$d3,$6e,$93,$b3,$10,$a3,$a8,$1b
+L1080     fcb   $22,$23,$4f,$d6,$49,$93,$b5,$1f,$01,$d6,$71,$17,$0d,$93,$dd,$49
+L1090     fcb   $d3,$70,$93,$b3,$10,$a3,$a8,$1d,$22,$0b,$dc,$47,$ed,$3e,$dc,$49
+L10a0     fcb   $ed,$a4,$17,$00,$8c,$5f,$39,$4f,$5f,$ed,$a4,$16,$00,$7f,$ec,$3e
+L10b0     fcb   $93,$6e,$ed,$3e,$10,$2a,$00,$81,$ec,$a8,$1b,$93,$6e,$d3,$b3,$ed
+L10c0     fcb   $3e,$ec,$a4,$93,$70,$ed,$a4,$2a,$70,$4f,$5f,$ed,$3e,$ed,$a4,$39
+L10d0     fcb   $ec,$3e,$1f,$01,$d3,$6e,$ed,$3e,$d3,$6e,$93,$b3,$10,$a3,$a8,$1b
+L10e0     fcb   $23,$57,$a6,$a8,$2a,$2a,$09,$af,$3e,$8a,$01,$a7,$a8,$2a,$20,$49
+L10f0     fcb   $8d,$3b,$20,$25,$ec,$a4,$93,$70,$2b,$04,$ed,$a4,$8d,$3b,$39,$81
+L1100     fcb   $0d,$27,$2a,$81,$01,$27,$a0,$81,$08,$27,$a3,$81,$06,$27,$c1,$81
+L1110     fcb   $09,$27,$e1,$81,$0a,$10,$26,$01,$4e,$ec,$a4,$d3,$70,$1f,$01,$d3
+L1120     fcb   $70,$93,$b3,$10,$a3,$a8,$1d,$22,$20,$af,$a4,$20,$0c,$4f,$5f,$ed
+L1130     fcb   $3e,$a6,$a8,$2a,$84,$fe,$a7,$a8,$2a,$ec,$3e,$dd,$47,$ec,$a4,$dd
+L1140     fcb   $49,$17,$0d,$04,$af,$3b,$e7,$3d,$39,$34,$20,$e6,$22,$17,$01,$02
+L1150     fcb   $dd,$97,$4f,$d6,$63,$dd,$99,$ec,$a4,$dd,$9d,$a6,$38,$4a,$97,$9b
+L1160     fcb   $27,$22,$ae,$33,$ec,$24,$1f,$12,$30,$8b,$0d,$60,$2b,$07,$96,$9b
+L1170     fcb   $48,$48,$48,$97,$9b,$dc,$97,$17,$00,$a5,$dc,$99,$30,$8b,$31,$ab
+L1180     fcb   $0a,$9b,$26,$f1,$35,$20,$dc,$9d,$16,$00,$ef,$86,$80,$aa,$a8,$2a
+L1190     fcb   $20,$05,$86,$7e,$a4,$a8,$2a,$a7,$a8,$2a,$5f,$39,$81,$26,$27,$eb
+L11a0     fcb   $81,$27,$27,$ee,$81,$30,$27,$05,$81,$31,$27,$35,$39,$34,$20,$ec
+L11b0     fcb   $a4,$dd,$9d,$e6,$22,$17,$00,$9a,$dd,$97,$4f,$d6,$63,$40,$50,$82
+L11c0     fcb   $00,$dd,$99,$e6,$38,$5a,$96,$71,$3d,$1f,$98,$4a,$e0,$21,$d1,$71
+L11d0     fcb   $25,$b2,$d7,$9b,$d6,$63,$3d,$e3,$33,$1f,$01,$e3,$24,$1f,$02,$20
+L11e0     fcb   $94,$34,$20,$e6,$22,$8d,$6b,$dd,$97,$4f,$d6,$63,$dd,$99,$a6,$38
+L11f0     fcb   $4a,$0d,$60,$2b,$03,$48,$48,$48,$a0,$21,$22,$06,$35,$20,$ec,$a4
+L1200     fcb   $20,$86,$97,$9b,$ec,$a8,$1d,$93,$70,$d3,$b3,$dd,$9d,$96,$63,$e6
+L1210     fcb   $21,$3d,$e3,$33,$1f,$01,$ec,$24,$1f,$12,$30,$8b,$16,$ff,$56,$34
+L1220     fcb   $79,$34,$02,$5d,$27,$07,$a6,$80,$a7,$a0,$5a,$26,$f9,$35,$04,$5d
+L1230     fcb   $27,$1e,$1a,$50,$f7,$10,$06,$10,$ff,$10,$03,$1f,$13,$1f,$24,$32
+L1240     fcb   $67,$37,$3e,$34,$3e,$32,$6e,$7a,$10,$06,$26,$f5,$10,$fe,$10,$03
+L1250     fcb   $35,$f9,$1f,$98,$44,$44,$44,$c4,$07,$34,$02,$eb,$e0,$c1,$07,$2d
+L1260     fcb   $05,$c0,$07,$4c,$20,$f7,$39,$81,$03,$27,$0d,$81,$04,$27,$16,$81
+L1270     fcb   $0b,$27,$41,$81,$0c,$27,$25,$39,$ec,$a4,$dd,$49,$4f,$5f,$dd,$47
+L1280     fcb   $ec,$a8,$1b,$20,$0d,$ec,$3e,$dd,$47,$ec,$a4,$dd,$49,$ec,$a8,$1b
+L1290     fcb   $a3,$3e,$d3,$b3,$dd,$4f,$dc,$70,$dd,$51,$20,$2c,$17,$fe,$08,$4f
+L12a0     fcb   $5f,$dd,$47,$8d,$02,$20,$1d,$dd,$49,$ec,$a8,$1b,$d3,$b3,$dd,$4f
+L12b0     fcb   $ec,$a8,$1d,$39,$8d,$cf,$4f,$5f,$dd,$47,$ec,$a4,$d3,$70,$8d,$e7
+L12c0     fcb   $93,$49,$2b,$0a,$d3,$b3,$dd,$51,$d6,$60,$2b,$03,$8d,$2c,$39,$34
+L12d0     fcb   $20,$17,$0b,$74,$86,$20,$e6,$28,$c4,$38,$da,$62,$dd,$97,$d6,$63
+L12e0     fcb   $d0,$50,$d0,$50,$d7,$99,$10,$9e,$4f,$dc,$97,$ed,$81,$31,$3f,$26
+L12f0     fcb   $fa,$d6,$99,$3a,$0a,$52,$26,$ee,$35,$a0,$d6,$60,$8e,$4c,$78,$96
+L1300     fcb   $48,$43,$a4,$85,$4c,$97,$97,$8e,$4c,$7c,$e6,$85,$3a,$48,$a6,$86
+L1310     fcb   $97,$12,$4f,$d6,$60,$1f,$01,$dc,$4f,$d0,$97,$82,$00,$44,$56,$8c
+L1320     fcb   $00,$04,$27,$08,$44,$56,$9c,$b3,$26,$02,$44,$56,$d7,$97,$d6,$63
+L1330     fcb   $d0,$97,$c0,$01,$d7,$99,$17,$0b,$0f,$96,$12,$4c,$27,$22,$96,$12
+L1340     fcb   $1f,$89,$43,$a4,$84,$a7,$84,$d4,$62,$ea,$84,$e7,$80,$96,$97,$27
+L1350     fcb   $07,$d6,$62,$e7,$80,$4a,$26,$fb,$d6,$99,$3a,$0a,$52,$26,$df,$39
+L1360     fcb   $34,$40,$96,$62,$1f,$89,$1f,$03,$d6,$97,$5c,$0f,$97,$54,$d7,$12
+L1370     fcb   $24,$02,$0c,$97,$d6,$97,$27,$02,$a7,$80,$d6,$12,$27,$05,$ef,$81
+L1380     fcb   $5a,$26,$fb,$d6,$99,$3a,$0a,$52,$26,$ea,$35,$c0,$17,$fc,$d4,$8d
+L1390     fcb   $02,$5f,$39,$81,$21,$27,$32,$81,$22,$27,$38,$81,$23,$27,$3c,$81
+L13a0     fcb   $24,$27,$41,$81,$25,$27,$43,$81,$20,$10,$26,$fd,$ef,$e6,$29,$c5
+L13b0     fcb   $04,$26,$15,$ca,$04,$e7,$29,$a6,$28,$17,$00,$f8,$34,$06,$e6,$28
+L13c0     fcb   $c4,$c0,$ea,$e0,$ea,$e0,$e7,$28,$39,$e6,$29,$c5,$04,$27,$f9,$c4
+L13d0     fcb   $fb,$20,$e2,$ec,$28,$8a,$40,$ca,$40,$20,$06,$ec,$28,$84,$bf,$c4
+L13e0     fcb   $bf,$ed,$28,$39,$e6,$28,$ca,$80,$20,$04,$e6,$28,$c4,$7f,$e7,$28
+L13f0     fcb   $39,$17,$ed,$13,$8d,$5e,$17,$00,$c8,$5f,$39,$34,$36,$8d,$6e,$17
+L1400     fcb   $00,$e1,$f6,$10,$00,$f7,$10,$01,$35,$b6,$17,$ec,$fa,$10,$9c,$2e
+L1410     fcb   $26,$16,$dc,$5b,$10,$93,$3d,$26,$07,$dc,$5d,$10,$93,$3f,$27,$08
+L1420     fcb   $17,$00,$c0,$8d,$05,$17,$00,$99,$20,$cf,$dc,$47,$34,$06,$dc,$49
+L1430     fcb   $34,$06,$dc,$5b,$dd,$47,$dd,$3d,$dc,$5d,$dd,$49,$dd,$3f,$ae,$30
+L1440     fcb   $ec,$02,$17,$0a,$05,$9f,$41,$d7,$43,$35,$06,$dd,$49,$35,$06,$dd
+L1450     fcb   $47,$39,$8d,$2a,$17,$fa,$da,$10,$9c,$2e,$26,$0e,$e6,$29,$c5,$02
+L1460     fcb   $26,$08,$d6,$39,$26,$04,$8d,$26,$0c,$39,$39,$8d,$11,$17,$fa,$c1
+L1470     fcb   $10,$9c,$2e,$26,$08,$d6,$39,$27,$04,$8d,$13,$0f,$39,$39,$88,$21
+L1480     fcb   $c6,$02,$16,$ee,$c9,$81,$20,$27,$e2,$81,$21,$27,$c5,$39,$34,$20
+L1490     fcb   $ae,$3b,$d6,$60,$2a,$12,$a6,$01,$8d,$1a,$34,$06,$e6,$01,$c4,$c0
+L14a0     fcb   $ea,$e0,$ea,$e0,$e7,$01,$20,$0a,$8e,$50,$26,$9f,$a9,$0f,$0e,$17
+L14b0     fcb   $fa,$e8,$35,$a0,$1f,$89,$84,$38,$44,$44,$44,$c4,$07,$58,$58,$58
+L14c0     fcb   $39,$34,$30,$ae,$30,$9c,$30,$26,$18,$d6,$3a,$26,$14,$e6,$a8,$18
+L14d0     fcb   $d7,$44,$27,$0d,$9d,$bc,$10,$ae,$a8,$19,$10,$9f,$45,$8d,$1f,$0c
+L14e0     fcb   $3a,$35,$b0,$34,$30,$ae,$30,$9c,$30,$26,$11,$d6,$3a,$27,$0d,$d6
+L14f0     fcb   $44,$27,$ee,$9d,$bc,$10,$9e,$45,$8d,$04,$0f,$3a,$35,$b0,$d6,$60
+L1500     fcb   $2b,$33,$96,$4a,$9e,$47,$34,$12,$dc,$4f,$9e,$51,$34,$16,$dc,$64
+L1510     fcb   $34,$06,$dc,$41,$dd,$72,$d6,$43,$d7,$74,$8e,$5f,$a5,$9f,$64,$17
+L1520     fcb   $f7,$ee,$17,$f8,$63,$35,$06,$dd,$64,$35,$16,$dd,$4f,$9f,$51,$35
+L1530     fcb   $12,$97,$4a,$9f,$47,$39,$0f,$47,$0f,$49,$ec,$3b,$a3,$33,$10,$a3
+L1540     fcb   $24,$25,$06,$a3,$24,$0c,$49,$20,$f5,$a6,$b8,$f0,$81,$01,$27,$06
+L1550     fcb   $54,$81,$04,$26,$01,$54,$d7,$48,$39,$6d,$a4,$2a,$05,$53,$c6,$c0
+L1560     fcb   $35,$90,$17,$08,$3d,$24,$02,$35,$90,$9d,$b9,$16,$09,$f7,$39,$8d
+L1570     fcb   $e8,$17,$08,$d4,$96,$61,$17,$09,$8d,$20,$20,$8d,$dc,$17,$08,$29
+L1580     fcb   $25,$1a,$dc,$49,$10,$93,$4d,$26,$04,$8d,$12,$20,$0e,$dc,$47,$10
+L1590     fcb   $93,$4b,$26,$04,$8d,$71,$20,$03,$17,$00,$9c,$5f,$39,$8d,$17,$dc
+L15a0     fcb   $4b,$93,$47,$d3,$b3,$dd,$99,$8d,$07,$96,$61,$10,$9e,$99,$20,$18
+L15b0     fcb   $17,$08,$e9,$16,$08,$92,$dc,$4b,$10,$93,$47,$2c,$06,$9e,$47,$dd
+L15c0     fcb   $47,$9f,$4b,$39,$08,$04,$04,$02,$34,$76,$a7,$66,$30,$8c,$f4,$d6
+L15d0     fcb   $60,$4f,$e6,$85,$ed,$64,$35,$16,$20,$02,$d6,$79,$17,$09,$27,$31
+L15e0     fcb   $3f,$27,$22,$17,$08,$cd,$2a,$f4,$10,$ac,$e4,$25,$ed,$c6,$ff,$17
+L15f0     fcb   $09,$14,$e6,$61,$50,$31,$a5,$27,$0c,$30,$01,$ec,$e4,$d3,$47,$dd
+L1600     fcb   $47,$a6,$62,$20,$e3,$35,$96,$8d,$20,$dc,$4d,$d0,$4a,$5c,$dd,$99
+L1610     fcb   $17,$08,$35,$d7,$97,$96,$61,$10,$9e,$99,$d6,$97,$17,$08,$e7,$d6
+L1620     fcb   $63,$3a,$0c,$4a,$31,$3f,$26,$f2,$39,$dc,$4d,$10,$93,$49,$2c,$06
+L1630     fcb   $9e,$49,$dd,$49,$9f,$4d,$39,$dc,$4b,$10,$93,$47,$2c,$09,$17,$ff
+L1640     fcb   $7c,$dc,$4d,$8d,$eb,$dc,$4b,$93,$47,$dd,$13,$d6,$63,$4f,$dd,$17
+L1650     fcb   $dc,$4d,$93,$49,$dd,$15,$2a,$0e,$40,$50,$82,$00,$dd,$15,$dc,$17
+L1660     fcb   $40,$50,$82,$00,$dd,$17,$4f,$5f,$dd,$75,$17,$ff,$43,$d7,$74,$d6
+L1670     fcb   $74,$96,$61,$17,$08,$90,$dc,$75,$2a,$12,$d3,$13,$dd,$75,$dc,$17
+L1680     fcb   $30,$8b,$2b,$04,$0c,$4a,$20,$0f,$0a,$4a,$20,$0b,$93,$15,$dd,$75
+L1690     fcb   $d6,$74,$17,$08,$1e,$d7,$74,$dc,$47,$10,$93,$4b,$2f,$d1,$39,$4f
+L16a0     fcb   $5f,$dd,$53,$dd,$55,$17,$fe,$b1,$17,$06,$fe,$24,$01,$39,$17,$ff
+L16b0     fcb   $05,$17,$ff,$75,$17,$07,$1d,$32,$e8,$e6,$10,$af,$e4,$dc,$53,$ed
+L16c0     fcb   $6a,$dc,$55,$ed,$6c,$dc,$47,$ed,$62,$d3,$53,$ed,$6e,$dd,$47,$dc
+L16d0     fcb   $49,$ed,$64,$d3,$55,$ed,$e8,$12,$dc,$4b,$ed,$66,$93,$53,$ed,$e8
+L16e0     fcb   $10,$dd,$4b,$dc,$4d,$ed,$68,$93,$55,$ed,$e8,$14,$17,$fe,$b0,$ec
+L16f0     fcb   $6e,$dd,$47,$ec,$68,$dd,$49,$10,$ae,$e4,$17,$fe,$a2,$ec,$62,$dd
+L1700     fcb   $47,$ec,$e8,$12,$dd,$49,$ec,$e8,$14,$dd,$4d,$10,$ae,$e4,$17,$fe
+L1710     fcb   $f8,$ec,$e8,$12,$dd,$49,$ec,$66,$dd,$47,$10,$ae,$e4,$17,$fe,$e9
+L1720     fcb   $d6,$54,$27,$62,$86,$ff,$97,$ad,$50,$ed,$e8,$16,$d6,$56,$50,$ed
+L1730     fcb   $e8,$18,$8d,$5d,$ec,$6e,$dd,$47,$ec,$e8,$12,$dd,$49,$ec,$e8,$16
+L1740     fcb   $dd,$20,$ec,$e8,$18,$dd,$26,$8d,$43,$ec,$e8,$10,$dd,$47,$ec,$e8
+L1750     fcb   $12,$dd,$49,$ec,$e8,$18,$dd,$22,$dc,$53,$dd,$24,$8d,$2e,$ec,$6e
+L1760     fcb   $dd,$47,$ec,$e8,$14,$dd,$49,$dc,$55,$dd,$22,$ec,$e8,$16,$dd,$24
+L1770     fcb   $8d,$1a,$ec,$e8,$10,$dd,$47,$ec,$e8,$14,$dd,$49,$dc,$53,$dd,$20
+L1780     fcb   $dc,$55,$dd,$26,$8d,$06,$32,$e8,$1a,$0f,$ad,$39,$10,$ae,$62,$8d
+L1790     fcb   $76,$4f,$5f,$dd,$20,$dd,$22,$dd,$24,$dd,$26,$ec,$6c,$dd,$53,$ec
+L17a0     fcb   $6e,$dd,$55,$39,$17,$fd,$b2,$17,$05,$ff,$25,$3a,$17,$fe,$07,$17
+L17b0     fcb   $fe,$77,$dc,$47,$dd,$99,$dc,$4b,$93,$47,$d3,$b3,$dd,$9b,$17,$fd
+L17c0     fcb   $ef,$96,$61,$dd,$9d,$dc,$4d,$d0,$4a,$5c,$1f,$02,$34,$30,$10,$9e
+L17d0     fcb   $9b,$dc,$9d,$17,$fd,$f2,$35,$30,$d6,$63,$3a,$0c,$4a,$dc,$99,$dd
+L17e0     fcb   $47,$31,$3f,$26,$e7,$5f,$39,$8e,$5b,$db,$20,$03,$8e,$5a,$13,$9f
+L17f0     fcb   $2c,$8d,$2f,$dc,$53,$44,$56,$dd,$55,$20,$68,$8d,$25,$17,$05,$b1
+L1800     fcb   $25,$e4,$17,$05,$cb,$25,$df,$8e,$5a,$13,$9f,$2c,$dc,$20,$10,$93
+L1810     fcb   $24,$26,$18,$8e,$5a,$34,$dc,$22,$10,$93,$26,$2d,$30,$8e,$5a,$39
+L1820     fcb   $20,$2b,$9d,$b9,$d6,$60,$10,$2b,$fd,$33,$39,$9e,$22,$9c,$26,$26
+L1830     fcb   $0d,$8e,$5a,$3e,$10,$93,$24,$2d,$14,$8e,$5a,$44,$20,$0f,$8e,$5a
+L1840     fcb   $4a,$dc,$20,$93,$24,$dd,$97,$dc,$22,$93,$26,$dd,$99,$9f,$a1,$20
+L1850     fcb   $17,$17,$02,$7a,$16,$03,$12,$8e,$5b,$db,$20,$03,$8e,$5a,$13,$9f
+L1860     fcb   $2c,$8d,$bf,$8e,$5a,$4e,$9f,$a1,$17,$06,$fa,$0d,$ad,$26,$0a,$17
+L1870     fcb   $05,$30,$25,$b6,$17,$05,$5d,$25,$b1,$dc,$47,$dd,$18,$dc,$49,$dd
+L1880     fcb   $1a,$4f,$5f,$dd,$1c,$dc,$55,$dd,$1e,$32,$e8,$c2,$10,$af,$e8,$3c
+L1890     fcb   $30,$65,$dc,$53,$17,$02,$2e,$17,$02,$94,$1f,$12,$30,$e8,$14,$dc
+L18a0     fcb   $55,$17,$02,$9a,$30,$6a,$8d,$a9,$1f,$12,$30,$6f,$8d,$a3,$30,$e8
+L18b0     fcb   $19,$dc,$55,$17,$02,$0f,$17,$02,$75,$1f,$12,$30,$e8,$1e,$8d,$91
+L18c0     fcb   $1f,$12,$30,$e8,$23,$8d,$8a,$30,$e8,$28,$4f,$5f,$17,$01,$f6,$30
+L18d0     fcb   $e8,$2d,$dc,$1e,$17,$01,$ee,$93,$b3,$17,$02,$52,$31,$6a,$17,$02
+L18e0     fcb   $5f,$31,$65,$8d,$7b,$30,$e4,$8d,$7a,$dc,$b3,$17,$02,$02,$31,$e8
+L18f0     fcb   $1e,$17,$02,$4c,$1f,$12,$30,$e8,$2d,$8d,$65,$30,$e8,$32,$31,$6f
+L1900     fcb   $8d,$61,$dc,$1e,$8d,$57,$30,$e8,$37,$31,$e8,$1e,$17,$01,$bf,$30
+L1910     fcb   $e8,$14,$31,$e8,$28,$17,$02,$a2,$2f,$4f,$17,$00,$ef,$6d,$e8,$2d
+L1920     fcb   $2b,$1c,$30,$e8,$32,$31,$6f,$8d,$37,$1f,$12,$30,$e8,$2d,$8d,$30
+L1930     fcb   $30,$e8,$14,$31,$65,$17,$01,$e7,$dc,$1e,$93,$b3,$dd,$1e,$30,$e8
+L1940     fcb   $37,$31,$e8,$23,$8d,$1a,$1f,$12,$30,$e8,$2d,$8d,$13,$30,$e8,$28
+L1950     fcb   $31,$e8,$19,$8d,$0b,$dc,$1c,$d3,$b3,$dd,$1c,$20,$b2,$16,$01,$ce
+L1960     fcb   $16,$01,$a4,$17,$01,$68,$16,$02,$34,$30,$e8,$2d,$dc,$1c,$17,$01
+L1970     fcb   $54,$d3,$b3,$8d,$e8,$31,$e8,$1e,$17,$01,$c5,$30,$e4,$dc,$1e,$17
+L1980     fcb   $01,$43,$83,$00,$02,$8d,$d6,$dc,$b3,$17,$01,$64,$31,$6a,$17,$01
+L1990     fcb   $af,$1f,$12,$30,$e8,$2d,$8d,$c8,$30,$e4,$31,$6a,$8d,$c5,$dc,$b3
+L19a0     fcb   $17,$01,$4d,$31,$e8,$19,$17,$01,$97,$1f,$12,$30,$e8,$2d,$8d,$b0
+L19b0     fcb   $30,$e8,$32,$31,$e8,$23,$17,$01,$15,$dc,$1c,$8d,$a0,$30,$e8,$37
+L19c0     fcb   $31,$6f,$8d,$9f,$dc,$1e,$8d,$95,$31,$6a,$8d,$94,$dc,$1e,$d3,$b3
+L19d0     fcb   $27,$35,$8d,$38,$6d,$e8,$2d,$2a,$15,$30,$e8,$32,$31,$e8,$23,$8d
+L19e0     fcb   $23,$1f,$12,$30,$e8,$2d,$8d,$1c,$dc,$1c,$d3,$b3,$dd,$1c,$30,$e8
+L19f0     fcb   $37,$31,$6f,$8d,$0f,$1f,$12,$30,$e8,$2d,$8d,$08,$dc,$1e,$93,$b3
+L1a00     fcb   $dd,$1e,$20,$c8,$16,$01,$00,$32,$e8,$3e,$5f,$39,$10,$ae,$e8,$3e
+L1a10     fcb   $6e,$d8,$2c,$dc,$1c,$9e,$1e,$8d,$15,$40,$50,$82,$00,$8d,$0f,$1e
+L1a20     fcb   $01,$40,$50,$82,$00,$1e,$01,$8d,$05,$dc,$1c,$8d,$01,$39,$34,$16
+L1a30     fcb   $6e,$d9,$00,$a1,$10,$93,$20,$20,$0d,$10,$93,$20,$20,$02,$9c,$22
+L1a40     fcb   $2f,$0c,$20,$2c,$9c,$22,$2c,$06,$20,$26,$8d,$26,$2e,$22,$d3,$18
+L1a50     fcb   $2b,$1e,$10,$a3,$a8,$1b,$22,$18,$dd,$47,$1f,$10,$d3,$1a,$2b,$10
+L1a60     fcb   $10,$a3,$a8,$1d,$22,$0a,$dd,$49,$17,$03,$dd,$96,$61,$17,$04,$96
+L1a70     fcb   $35,$96,$34,$16,$1f,$10,$93,$26,$9e,$97,$8d,$14,$34,$14,$ec,$63
+L1a80     fcb   $93,$24,$9e,$99,$8d,$0a,$e1,$e4,$26,$02,$ac,$61,$32,$63,$35,$96
+L1a90     fcb   $34,$16,$a6,$63,$3d,$34,$06,$a6,$65,$e6,$62,$3d,$eb,$e0,$89,$00
+L1aa0     fcb   $34,$06,$ec,$64,$3d,$e3,$e4,$ed,$e4,$a6,$65,$e6,$63,$3d,$eb,$e4
+L1ab0     fcb   $ae,$61,$6d,$63,$2a,$04,$60,$66,$eb,$66,$6d,$65,$2a,$04,$60,$64
+L1ac0     fcb   $eb,$64,$32,$67,$39,$6f,$84,$6f,$01,$6f,$02,$ed,$03,$39,$34,$06
+L1ad0     fcb   $ec,$a4,$ed,$84,$ec,$22,$ed,$02,$e6,$24,$e7,$04,$35,$86,$1e,$23
+L1ae0     fcb   $1e,$12,$8d,$ea,$1e,$12,$1e,$23,$39,$1e,$13,$8d,$e1,$1e,$13,$39
+L1af0     fcb   $34,$06,$e3,$03,$ed,$03,$cc,$00,$00,$e9,$02,$a9,$01,$ed,$01,$c6
+L1b00     fcb   $00,$e9,$84,$e7,$84,$35,$86,$34,$06,$ec,$03,$e3,$23,$ed,$03,$ec
+L1b10     fcb   $01,$e9,$22,$a9,$21,$ed,$01,$e6,$84,$e9,$a4,$e7,$84,$35,$86,$1e
+L1b20     fcb   $12,$8d,$7a,$1e,$12,$8d,$e0,$1e,$12,$8d,$72,$1e,$12,$39,$34,$26
+L1b30     fcb   $4f,$5f,$34,$06,$34,$04,$1f,$42,$8d,$06,$32,$63,$35,$a6,$8d,$85
+L1b40     fcb   $34,$66,$32,$76,$1f,$43,$8d,$a1,$1f,$32,$33,$45,$8d,$90,$4f,$5f
+L1b50     fcb   $17,$ff,$72,$20,$02,$8d,$1d,$8d,$26,$27,$06,$24,$f8,$8d,$a8,$20
+L1b60     fcb   $f4,$24,$02,$8d,$a2,$32,$6a,$35,$e6,$68,$04,$69,$03,$69,$02,$69
+L1b70     fcb   $01,$69,$84,$39,$68,$24,$69,$23,$69,$22,$69,$21,$69,$a4,$39,$64
+L1b80     fcb   $c4,$26,$0f,$66,$41,$26,$0d,$66,$42,$26,$0b,$66,$43,$26,$09,$66
+L1b90     fcb   $44,$39,$66,$41,$66,$42,$66,$43,$66,$44,$1c,$fb,$39,$63,$84,$63
+L1ba0     fcb   $01,$63,$02,$63,$03,$63,$04,$6c,$04,$26,$0e,$6c,$03,$26,$0a,$6c
+L1bb0     fcb   $02,$26,$06,$6c,$01,$26,$02,$6c,$84,$39,$34,$06,$ec,$84,$10,$a3
+L1bc0     fcb   $a4,$26,$16,$ec,$02,$10,$a3,$22,$26,$06,$e6,$04,$e1,$24,$27,$09
+L1bd0     fcb   $22,$04,$86,$08,$20,$01,$4f,$1f,$8a,$35,$86,$dc,$18,$d3,$1c,$10
+L1be0     fcb   $a3,$a8,$1b,$23,$03,$ec,$a8,$1b,$34,$26,$dd,$4b,$dc,$18,$93,$1c
+L1bf0     fcb   $2a,$02,$4f,$5f,$34,$06,$dd,$47,$dc,$1a,$93,$1e,$2a,$02,$4f,$5f
+L1c00     fcb   $8d,$13,$35,$36,$dd,$47,$9f,$4b,$dc,$1a,$d3,$1e,$10,$a3,$a8,$1d
+L1c10     fcb   $23,$03,$ec,$a8,$1d,$dd,$49,$dd,$4d,$16,$f9,$83,$17,$f9,$3a,$c6
+L1c20     fcb   $01,$d7,$2a,$17,$02,$22,$9f,$72,$d7,$74,$17,$02,$c9,$97,$28,$17
+L1c30     fcb   $ea,$7a,$e1,$26,$27,$31,$5f,$34,$04,$17,$02,$60,$17,$02,$89,$9e
+L1c40     fcb   $72,$20,$33,$7d,$10,$1b,$27,$24,$e6,$e0,$27,$1b,$d7,$2b,$eb,$e0
+L1c50     fcb   $e1,$a8,$1e,$22,$1d,$d7,$4a,$35,$06,$dd,$47,$35,$06,$dd,$4b,$17
+L1c60     fcb   $01,$e6,$d7,$74,$16,$00,$87,$5f,$d6,$2a,$26,$03,$c6,$ba,$43,$16
+L1c70     fcb   $e4,$82,$32,$64,$20,$cd,$d6,$74,$17,$02,$64,$8d,$47,$27,$05,$17
+L1c80     fcb   $02,$74,$27,$f4,$17,$02,$2c,$34,$04,$dc,$47,$dd,$9b,$35,$04,$8d
+L1c90     fcb   $45,$8d,$39,$22,$05,$17,$02,$5e,$27,$f5,$17,$02,$42,$17,$00,$fa
+L1ca0     fcb   $27,$06,$8d,$11,$86,$ff,$34,$06,$17,$00,$ef,$27,$96,$8d,$06,$86
+L1cb0     fcb   $01,$34,$06,$20,$8e,$35,$06,$34,$36,$dc,$47,$ed,$64,$dc,$9b,$ed
+L1cc0     fcb   $62,$d6,$4a,$39,$34,$06,$dc,$47,$d3,$b3,$35,$86,$34,$06,$dc,$47
+L1cd0     fcb   $10,$a3,$a8,$1b,$35,$86,$a6,$84,$a7,$e2,$96,$61,$17,$02,$27,$a6
+L1ce0     fcb   $84,$a1,$e0,$27,$05,$86,$ff,$b7,$10,$1b,$17,$01,$c6,$39,$dc,$47
+L1cf0     fcb   $83,$00,$02,$dd,$9b,$d6,$74,$17,$01,$fc,$26,$07,$17,$01,$e0,$8d
+L1d00     fcb   $c3,$26,$f4,$17,$01,$ad,$d7,$74,$dc,$47,$10,$93,$4b,$22,$a4,$d6
+L1d10     fcb   $74,$17,$01,$e2,$26,$ed,$dc,$47,$10,$93,$9b,$2e,$17,$8d,$7b,$27
+L1d20     fcb   $13,$dc,$9b,$34,$06,$dc,$47,$2a,$02,$4f,$5f,$34,$06,$d6,$4a,$96
+L1d30     fcb   $2b,$40,$34,$06,$dc,$47,$dd,$9b,$d6,$74,$17,$01,$b9,$26,$06,$8d
+L1d40     fcb   $95,$8d,$89,$23,$f5,$17,$01,$97,$d7,$74,$8d,$4e,$27,$09,$17,$ff
+L1d50     fcb   $64,$96,$2b,$34,$06,$d6,$74,$17,$01,$59,$d7,$74,$17,$ff,$6d,$2e
+L1d60     fcb   $10,$dc,$47,$10,$93,$4b,$2e,$09,$d6,$74,$17,$01,$89,$26,$e8,$20
+L1d70     fcb   $c3,$11,$9c,$3b,$22,$02,$0f,$2a,$dc,$47,$93,$b3,$dd,$47,$dc,$4b
+L1d80     fcb   $c3,$00,$02,$10,$93,$47,$22,$0f,$32,$7e,$34,$06,$dc,$47,$ed,$62
+L1d90     fcb   $d6,$4a,$96,$2b,$40,$34,$06,$16,$fe,$a9,$11,$9c,$3b,$22,$02,$0f
+L1da0     fcb   $2a,$39,$c6,$47,$8d,$32,$16,$00,$88,$c6,$4b,$20,$f7,$c6,$4f,$20
+L1db0     fcb   $f3,$c6,$20,$8d,$23,$cc,$02,$7f,$8d,$05,$25,$13,$cc,$00,$bf,$34
+L1dc0     fcb   $06,$ec,$81,$2a,$04,$40,$50,$82,$00,$10,$a3,$e1,$2e,$76,$5f,$39
+L1dd0     fcb   $c6,$24,$20,$df,$c6,$53,$20,$db,$1f,$31,$3a,$a6,$29,$85,$08,$27
+L1de0     fcb   $04,$ec,$39,$26,$01,$39,$34,$36,$1f,$12,$ae,$a4,$e6,$e4,$27,$04
+L1df0     fcb   $8d,$0e,$ed,$a4,$ae,$22,$e6,$61,$27,$04,$8d,$04,$ed,$22,$35,$b6
+L1e00     fcb   $34,$14,$32,$7e,$a6,$64,$3d,$c1,$cd,$34,$01,$1e,$89,$4f,$35,$01
+L1e10     fcb   $25,$02,$d3,$b3,$ed,$e4,$a6,$63,$e6,$62,$3d,$e3,$e4,$32,$63,$35
+L1e20     fcb   $90,$34,$10,$a6,$e4,$e7,$e4,$3d,$e7,$e2,$ec,$61,$3d,$ab,$e0,$35
+L1e30     fcb   $90,$ec,$84,$10,$a3,$a8,$1b,$22,$0b,$ec,$02,$10,$a3,$a8,$1d,$22
+L1e40     fcb   $03,$1c,$fe,$39,$53,$c6,$bd,$39,$ec,$33,$34,$26,$96,$4a,$d6,$63
+L1e50     fcb   $3d,$e3,$e1,$1f,$01,$d6,$60,$2a,$07,$dc,$47,$58,$30,$8b,$35,$a0
+L1e60     fcb   $c1,$04,$26,$07,$dc,$47,$31,$8c,$30,$20,$14,$c1,$01,$27,$07,$dc
+L1e70     fcb   $47,$31,$8c,$20,$20,$07,$dc,$47,$31,$8c,$10,$44,$56,$44,$56,$44
+L1e80     fcb   $56,$30,$8b,$d6,$48,$e4,$a0,$e6,$a5,$35,$a0,$07,$80,$40,$20,$10
+L1e90     fcb   $08,$04,$02,$01,$03,$c0,$30,$0c,$03,$01,$f0,$0f,$96,$60,$30,$8c
+L1ea0     fcb   $08,$48,$ec,$86,$97,$79,$30,$85,$9f,$77,$39,$80,$19,$c0,$18,$c0
+L1eb0     fcb   $18,$f0,$16,$0c,$48,$26,$02,$0c,$47,$54,$25,$07,$6e,$d8,$77,$54
+L1ec0     fcb   $54,$54,$39,$d6,$79,$30,$01,$39,$96,$60,$30,$8c,$08,$48,$ec,$86
+L1ed0     fcb   $97,$7c,$30,$85,$9f,$7a,$39,$01,$1b,$03,$1a,$03,$1a,$0f,$18,$0d
+L1ee0     fcb   $48,$26,$02,$0a,$47,$0a,$48,$58,$25,$07,$6e,$d8,$7a,$58,$58,$58
+L1ef0     fcb   $39,$d6,$7c,$30,$1f,$39,$34,$04,$1f,$98,$a4,$84,$54,$25,$03,$44
+L1f00     fcb   $20,$fa,$91,$28,$35,$84,$34,$06,$6e,$d8,$64,$05,$0f,$0f,$17,$34
+L1f10     fcb   $14,$8d,$42,$44,$56,$44,$56,$20,$0c,$34,$14,$8d,$38,$44,$56,$20
+L1f20     fcb   $04,$34,$14,$8d,$30,$d4,$b0,$3a,$96,$8a,$34,$02,$96,$b1,$8c,$40
+L1f30     fcb   $00,$25,$07,$4c,$30,$89,$e0,$00,$20,$f4,$97,$8a,$b7,$ff,$a9,$e6
+L1f40     fcb   $84,$35,$02,$97,$8a,$b7,$ff,$a9,$e4,$e0,$ae,$e1,$a6,$e4,$34,$04
+L1f50     fcb   $a4,$e0,$6e,$d8,$68,$9e,$66,$96,$af,$d6,$b2,$94,$4a,$3d,$30,$8b
+L1f60     fcb   $dc,$47,$44,$56,$39,$e6,$2e,$27,$19,$d7,$b1,$9d,$bc,$ae,$2f,$9f
+L1f70     fcb   $66,$ec,$88,$ea,$4a,$2a,$02,$86,$ff,$d7,$b2,$5a,$2a,$02,$c6,$ff
+L1f80     fcb   $dd,$af,$39,$a4,$61,$6e,$d8,$68,$e6,$61,$20,$0e,$94,$61,$e6,$e4
+L1f90     fcb   $e4,$61,$20,$06,$a8,$84,$20,$09,$a4,$84,$53,$e4,$84,$e7,$84,$aa
+L1fa0     fcb   $84,$a7,$84,$35,$86,$a4,$61,$a8,$84,$a7,$84,$35,$86,$a6,$a5,$f5
