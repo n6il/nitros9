@@ -10,7 +10,7 @@ ALLOBJS		= $(DEFS)
 all:	$(ALLOBJS)
 	$(CHMOD) 644 $(ALLOBJS)
 
-Defsfile: defsfile.defs
+Defsfile: defsfile.asm
 	$(AS) $(DEFOPTS) -p $< > $@
 
 OS9Defs: $(DEFSDIR)/os9defs
