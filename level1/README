@@ -16,6 +16,8 @@ Sources and bootfiles are separated into the following directories:
 	MODULES/      ..... Source for all modules on disk 2
 	BOOTFILES/    ..... Bootfiles generated from the MODULES and CMDS
                             directories
+	DEFS/         ..... Definition files from OS-9 Level One disk
+	SYS/          ..... System files from OS-9 Level One disk
 
 BUILDING
 Typing 'make' will build modules and command binaries from the sources
