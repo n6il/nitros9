@@ -1,5 +1,5 @@
 ********************************************************************
-* debug - 6809 debugger
+* debug - 6809/6309 debugger
 *
 * $Id$
 *
@@ -11,7 +11,7 @@
 *  10    Start of optimizations, works under NitrOS-9   BGP 03/01/05
 
          nam   debug
-         ttl   6809 debugger
+         ttl   6809/6309 debugger
 
 * Disassembled 02/07/06 13:05:58 by Disasm v1.6 (C) 1988 by RML
 

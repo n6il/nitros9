@@ -38,122 +38,143 @@ size     equ   .
 name     fcs   /Tmode/
          fcb   edition
 
-         fcb   $00 
-         fcb   $17 
-L0015    fcb   $FF 
-         fcb   $01 
-         fcb   $01 
+         fdb   $0017 		Number of options in table
+OptTable fcb   $FF 		$FF = boolean, $00 = value
+         fcb   $01 		default value
+         fcb   PD.UPC-PD.OPT	offset into path descriptor
          fcb   $01 
          fcs   "upc"
+
          fcb   $FF 
          fcb   $01 
-         fcb   $02 
+         fcb   PD.BSO-PD.OPT
          fcb   $01 
          fcs   "bsb"
+
          fcb   $FF 
          fcb   $00 
-         fcb   $03 
+         fcb   PD.DLO-PD.OPT
          fcb   $00 
          fcs   "bsl"
+
          fcb   $FF 
          fcb   $01 
-         fcb   $04 
+         fcb   PD.EKO-PD.OPT
          fcb   $01 
          fcs   "echo"
+
          fcb   $FF 
          fcb   $01 
-         fcb   $05 
+         fcb   PD.ALF-PD.OPT
          fcb   $01 
          fcs   "lf"
+
          fcb   $00 
          fcb   $00 
-         fcb   $06 
+         fcb   PD.NUL-PD.OPT
          fcb   $00 
          fcs   "null"
+
          fcb   $FF 
          fcb   $01 
-         fcb   $07 
+         fcb   PD.PAU-PD.OPT
          fcb   $01 
          fcs   "pause"
+
          fcb   $00 
          fcb   $18 
-         fcb   $08 
+         fcb   PD.PAG-PD.OPT
          fcb   $00 
          fcs   "pag"
+
          fcb   $01 
          fcb   $08 
-         fcb   $09 
+         fcb   PD.BSP-PD.OPT
          fcb   $00 
          fcs   "bsp"
+
          fcb   $01 
          fcb   $18 
-         fcb   $0A 
+         fcb   PD.DEL-PD.OPT
          fcb   $00 
          fcs   "del"
+
          fcb   $01 
          fcb   $0D 
-         fcb   $0B 
+         fcb   PD.EOR-PD.OPT
          fcb   $00 
          fcs   "eor"
+
          fcb   $01 
          fcb   $1B 
-         fcb   $0C 
+         fcb   PD.EOF-PD.OPT
          fcb   $00 
          fcs   "eof"
+
          fcb   $01 
          fcb   $04 
-         fcb   $0D 
+         fcb   PD.RPR-PD.OPT
          fcb   $00 
          fcs   "reprint"
+
          fcb   $01 
          fcb   $01 
-         fcb   $0E 
+         fcb   PD.DUP-PD.OPT
          fcb   $00 
          fcs   "dup"
+
          fcb   $01 
          fcb   $17 
-         fcb   $0F 
+         fcb   PD.PSC-PD.OPT
          fcb   $00 
          fcs   "psc"
+
          fcb   $01 
          fcb   $03 
-         fcb   $10 
+         fcb   PD.INT-PD.OPT
          fcb   $00 
          fcs   "abort"
+
          fcb   $01 
          fcb   $05 
-         fcb   $11 
+         fcb   PD.QUT-PD.OPT
          fcb   $00 
          fcs   "quit"
+
          fcb   $01 
          fcb   $08 
-         fcb   $12 
+         fcb   PD.BSE-PD.OPT
          fcb   $00 
          fcs   "bse"
+
          fcb   $01 
          fcb   $07 
-         fcb   $13 
+         fcb   PD.OVF-PD.OPT
          fcb   $00 
          fcs   "bell"
+
          fcb   $01 
          fcb   $15 
-         fcb   $14 
+         fcb   PD.PAR-PD.OPT
          fcb   $00 
          fcs   "type"
+
          fcb   $01 
          fcb   $02 
-         fcb   $15 
+         fcb   PD.BAU-PD.OPT
          fcb   $00 
          fcs   "baud"
+
          fcb   $01 
          fcb   $11 
-         fcb   $18 
+         fcb   PD.XON-PD.OPT
          fcb   $00 
          fcs   "xon"
+
          fcb   $01 
          fcb   $13 
-         fcb   $19 
-         fcb   $00 
+         fcb   PD.XOFF-PD.OPT
+         fcb   $00
          fcs   "xoff"
 
 start    lda   #$32
@@ -216,7 +237,7 @@ L0134    clr   <u0001
          inc   <u0001
          leay  $01,y
 L0140    sty   <u0003
-         leax  >L0015,pcr
+         leax  >OptTable,pcr
          lbsr  L02D1
          bcs   L0181
          lda   ,x
@@ -310,7 +331,7 @@ L01F0    clr   <u0005
          bsr   L024A
          lda   #C$CR
          lbsr  L02AF
-         leax  >L0015,pcr
+         leax  >OptTable,pcr
          leay  u0007,u
          clrb  
 L020F    lda   b,y

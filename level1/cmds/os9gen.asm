@@ -7,7 +7,7 @@
 * ------------------------------------------------------------------
 *   9    From OS-9 Level Two Vr. 2.00.01
 
-         nam   OS9gen
+         nam   OS9Gen
          ttl   OS-9 bootfile generator
 
 * Disassembled 02/07/06 13:11:11 by Disasm v1.6 (C) 1988 by RML
