@@ -25,7 +25,7 @@ prn3     set   Red.       border color
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
          fcb   READ.+WRITE. mode byte
-         fcb   $07        extended controller address
+         fcb   HW.Page    extended controller address
          fdb   A.W6       physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   $00        device type:0=scf,1=rbf,2=pipe,3=scf
