@@ -1,4 +1,5 @@
 OS-9 Level One V03.01.05:
+- REL is now back-ported to OS-9 Level One.
 - The faster PipeMan, Piper and Pipe have been back-ported from OS-9 Level Two.
 - The MDir utility now shows proper module revision of 0 and other minor
   improvements in extended output.
