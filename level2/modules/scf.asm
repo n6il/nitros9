@@ -155,6 +155,9 @@
 *
 *  16r3    2002/08/16  Boisy G. Pitre
 * Now uses V$DRIVEX.
+*
+*  16r4    2004/07/12  Boisy G. Pitre
+* 6809 version now calls the FAST TEXT entry point of GrfDrv.
 
          nam   SCF
          ttl   NitrOS-9 Level 2 Sequential Character File Manager
@@ -166,7 +169,7 @@
 
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
-rev      set   3
+rev      set   4
 edition  equ   16
 
          mod   eom,SCFName,tylg,atrv,SCFEnt,0
@@ -947,12 +950,12 @@ g.done   leas  1,s          kill max. count of characters to use
          cmpb  #1           one or fewer characters?
          bls   no.wptr      yes, go use old method
 
-         IFEQ  H6309
+*         IFEQ  H6309
 * Note: this was present in the TuneUp version of SCF, and seems to
 * never allow grfdrv to be called directly, so did fast text screens
 * ever work in TuneUp??? - BGP
-         bra   no.wptr      
-         ENDC
+*         bra   no.wptr      
+*         ENDC
 
 * now we call grfdrv...
          ldu   5,s          get start pointer again
@@ -1356,7 +1359,7 @@ get.wptr pshs  x,u
 *         cmpd  #"CC         is it CC3IO?
          cmpd  #$4343         is it CC3IO?
          bne   no.fast      no, don't do the fast stuff
-         ldd   >$106E       does GrfDrv have an entry address?
+         ldd   >WGlobal+G.GrfEnt     does GrfDrv have an entry address?
          beq   no.fast      nope, don't bother calling it.
 
          ldu   V$STAT,u     and device static storage
@@ -1379,21 +1382,38 @@ no.fast  comb               set carry: no error code, it's an internal routine
 VerExit  clra               No error
          puls  x,u,pc
 
-         IFNE   H6309
 call.grf pshs  d,x,y,u      save registers
-         pshs  cc           save old CC
+         ldx   #$0180       where to put the text
+*         pshs  cc           save old CC
+         IFNE  H6309
+         tfr   cc,e
+         ELSE
+         tfr   cc,a
+         sta   -2,x
+         ENDC
          orcc  #IntMasks+Entire  shut everything else off
 
-         ldx   #$0180       where to put the text
+         IFNE  H6309
          clra               make sure high byte=0
          tfr   d,w
          tfm   u+,x+        move the data into low memory
+         ELSE
+l@       lda   ,u+
+         sta   ,x+
+         decb
+         bne   l@
+         ENDC
 
          ldb   #6           alpha put
-         stb   >$1002       flag grfdrv busy
-         lde   ,s+          grab old CC off of the stack
+         stb   >WGlobal+G.GfBusy  flag grfdrv busy
+         IFNE  H6309
+*         lde   ,s+          grab old CC off of the stack
          lda   1,s          get the number of characters to write
-* A = number of bytes at $0580 to write out...
+         ELSE
+*         ldb   ,s+          grab old CC off of the stack
+         lda   1,s          get the number of characters to write
+         ENDC
+* A = number of bytes at $0180 to write out...
          bsr   do.grf       do the call
 * ignore errors : none possible from this particular call
 call.out puls  d,x,y,u,pc   and return
@@ -1401,50 +1421,61 @@ call.out puls  d,x,y,u,pc   and return
 * this routine should always be called by a BSR, and grfdrv will use the
 * PC saved on-stack to return to the calling routine.
 * ALL REGISTERS WILL BE TRASHED
-do.grf   sts   >$1007       stack pointer for GrfDrv
+do.grf   sts   >WGlobal+G.GrfStk    stack pointer for GrfDrv
          lds   <D.CCStk     get new stack pointer
+         IFNE  H6309
          pshs  dp,x,y,u,pc
          pshsw
          pshs  cc,d         save all registers
+         ELSE
+         pshs  dp,cc,d,x,y,u,pc
+         ENDC
 
-         ldx   >$106E       get GrfDrv entry address
+         ldx   >WGlobal+G.GrfEnt     get GrfDrv entry address
 
          stx   R$PC,s       save grfdrv entry address as PC on the stack
+         IFNE  H6309
          ste   R$CC,s       save CC onto CC on the stack
+         ELSE
+         stb   R$B,s
+         ldb   $017E
+         stb   R$CC,s
+         ENDC
          jmp   [>D.FLip1]   flip to grfdrv and execute it
+
 * GrfDrv will execute function, and then call [D.Flip0] to return here. It 
 * will use an RTS to return to the code that called here in the first place
 * Only SP, PC & CC are set up - ALL OTHER REGISTERS MAY BE MODIFIED
 
-         ELSE
-
-call.grf pshs  u,y,x,d
-         tfr   cc,a
-         orcc  #IntMasks+Entire
-         ldx   #$0180
-         sta   -2,x
-call.lp  lda   ,u+
-         sta   ,x+
-         decb
-         bne   call.lp
-         stb   ,x
-         lda   1,s
-         bsr   do.grf
-         puls  u,y,x,d,pc
-
-do.grf   sts   >$1007
-         lds   <D.CCStk
-         ldu   #$1100
-         ldb   #$3A
-         stb   >$1002
-         stb   >$017F
-         pshs  pc,u,y,x,dp,b,a,cc
-         ldx   >$106E
-         stx   R$PC,s
-         ldb   >$107E
-         stb   ,s
-         jmp   [>D.Flip1]
-         ENDC
+*         ELSE
+*
+*call.grf pshs  u,y,x,d
+*         tfr   cc,a
+*         orcc  #IntMasks+Entire
+*         ldx   #$0180
+*         sta   -2,x
+*call.lp  lda   ,u+
+*         sta   ,x+
+*         decb
+*         bne   call.lp
+*         stb   ,x
+*         lda   1,s
+*         bsr   do.grf
+*         puls  u,y,x,d,pc
+*
+*do.grf   sts   >$1007
+*         lds   <D.CCStk
+*         ldu   #$1100
+*         ldb   #$3A
+*         stb   >$1002
+*         stb   >$017F
+*         pshs  pc,u,y,x,dp,b,a,cc
+*         ldx   >$106E
+*         stx   R$PC,s
+*         ldb   >$107E
+*         stb   ,s
+*         jmp   [>D.Flip1]
+*         ENDC
 
          emod
 eom      equ   *
