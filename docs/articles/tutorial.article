@@ -89,8 +89,9 @@ the most in OS-9. So you could type:
 <screen>
 OS9:load dir list del attr copy
 </screen>
-You will now have the commands dir,
-list, del, attr, copy all in memory and
+You will now have the commands <command>dir</command>,
+<command>list</command>, <command>del</command>,
+<command>attr</command>, <command>copy</command> all in memory and
 they are ready for quick access. The
 drawback is that they are taking up
 memory that you might need later. The
@@ -114,7 +115,7 @@ disk drive.
 </para>
 <para>
 OS-9 always has 2 directories that it
-keeps track of... One is the DATA and the
+keeps track of. One is the DATA and the
 other is the EXECUTION directory.  When
 you type a command OS-9 will check the
 current EXECUTION directory which is
@@ -124,9 +125,9 @@ list, dir, del, rename, etc... OS-9 is
 going to do to the current DATA
 directory and look for your file there.
 The current DATA directory at startup
-is /D0...
+is /D0.
 So if you just type <userinput>DIR</userinput>, OS-9 will go
-and assume you meant DIR /D0... If you
+and assume you meant DIR /D0. If you
 wish to get a directory of say the
 DEFS directory you must give OS-9 the
 whole pathlist (NAME) to the directory.
@@ -156,7 +157,7 @@ like this:
      --------
 </screen>
 That is 8 slots that can have a letter
-in it.  If the DIR E command shows this
+in it.  If the <command>dir e</command> command shows this
 on a line
 <screen>
      D--RW-RW
@@ -177,19 +178,19 @@ delete that file.  The timesharing user
 would only be able to execute the file.
 </para>
 <para>
-If you don't want to do a DIR E on a
+If you don't want to do a <command>dir e</command> on a
 whole disk than you can get the information
 you need on a single entry by typing:
 <screen>
 ATTR /D0/startup
 </screen>
 this will printout the attributes in
-the same manner as the DIR E command
+the same manner as the <command>dir e</command> command
 did, but you now have the option of
 changing the attributes of a file on
 the disk.
 We'll use the /D0/startup file for an
-example... say the ATTR /D0/startup
+example. say the <userinput>ATTR /D0/startup</userinput>
 prints this
 <screen>
     ------rw
@@ -204,7 +205,7 @@ ATTR /D0/startup -w
 and the write ability to that file will
 be taken away.  If you tried to delete
 that file now you would get an error
-message.  You can use this ATTR command
+message.  You can use this <command>attr</command> command
 to change the attributes on all your
 important files so that they will not
 be deleted by accident in the future.
@@ -227,7 +228,7 @@ what you typed in at the OS-9 prompt.
 You can check this out yourself. LIST
 the file startup like this:
 <screen>
-LIST /D0/startup
+list /D0/startup
 </screen>
 You will see this:
 <screen>
@@ -246,13 +247,13 @@ the name you typed in.  If there is it
 will read one line at a time from that
 file and treat it like you were typing
 in the lines from the keyboard.  If
-you want to try this... Just type startup
+you want to try this, just type startup
 at any OS-9 prompt and the system will
 ask you again for the DATE and TIME to
 use on the system.
 You can build a procedure file of your
 own that does a little more than the
-startup file does... DO THIS at the OS-9
+startup file does. <emphasis>Do this</emphasis> at the OS-9
 prompt:
 <screen>
 OS9:build /d0/myfile
@@ -276,15 +277,15 @@ a free (free disk space) all listed to
 your screen one at a time.  OS-9 did
 all the commands in the data file as if
 you just typed them in at the keyboard.
-Not bad huh???
+Not bad huh?
 </para>
 <para>
 Now the next important thing to worry
 about with OS-9 is how does it keep
 tabs on free space in memory and on the
-disks???  Memroy in the computer is
+disks?  Memory in the computer is
 split up in blocks of 256 bytes.  If 
-you do a mfree you will get back about
+you do a <command>mfree</command> you will get back about
 159 to 162 blocks of memory.  If you
 know that 4 blocks of 256 bytes makes
 one K (kilobyte) then you know you have
@@ -299,15 +300,15 @@ are taken away for use as directory
 pointers.  As OS-9 only writes out to 
 the disk in blocks of 256 bytes you will
 be able to get more information on an OS-9
-disk than a Radio Shack Dos disk which
+disk than a Radio Shack DOS disk which
 stores data to the disk in blocks of
 9 sectors (9*256=2304 bytes).  Write 1
 character to an OS-9 disk and you lose 1
-sector.  Write 1 character to a RS Dos disk
+sector.  Write 1 character to a RS DOS disk
 and you lose 9 sectors!!!
 </para>
 <para>
-Now do a DIR /D0/CMDS and you will see
+Now do a <userinput>dir /D0/CMDS</userinput> and you will see
 quite a long list of commands that are
 available to you.  Don't worry about all
 those titles because as you learn OS-9
@@ -323,32 +324,31 @@ commands that you will find useful and
 might want to sell or trade with other
 OS-9 users.  If you aren't all that
 familiar with machine language then you
-can buy some new commands fo OS-9 from
+can buy some new commands for OS-9 from
 companies like Frank Hogg or from
 Computerware or D.P. Johnson.  These
 are commands that are so easy to
-install on your OS-9 disk!!!  All you
+install on your OS-9 disk!  All you
 need to do is copy them to your
 EXECUTION directory which is usually
 the /D0/CMDS directory.  They are then
 available for your use.  No worry on
 your part as to will they work with
-your OS-9!!!  Some of these programs
+your OS-9!  Some of these programs
 are actual commands that you call from
 OS-9 and other programs are what are
-called FILTERS that you pipe data thru
-under OS-9 (more on this in future
-tutorial)...
+called <emphasis>filters</emphasis> that you pipe data through
+under OS-9.
 </para>
 <para>
 And now one final thing to cover on
 OS-9 before I end this lesson.  Is
-there a difference btw. upper and lower
-case when you type in commands???  The
+there a difference between upper and lower
+case when you type in commands?  The
 answer is no... no... no...
-If you type in DIR /D0 or dir /d0 they
+If you type in <userinput>DIR /D0</userinput> or <userinput>dir /d0</userinput> they
 will both act correctly... if you type
-LIST /D0/STARTUP or list /d0/startup
+<userinput>LIST /D0/STARTUP</userinput> or <userinput>list /d0/startup</userinput>
 they will both work correctly.  OS-9
 doesn't care about the case of the
 commands you type in.  But here is a
@@ -356,7 +356,7 @@ standard that you might wish to keep to
 so that what is on your disk are a bit
 easier to understand.  It is felt that
 if you keep all directory names in
-capital letters and all data/comand
+capital letters and all data/command
 files in lower case you will have a
 better idea of what is on your disk
 when you use the <command>dir</command> command.  I find
@@ -403,12 +403,12 @@ the sectors are good and if not OS-9
 will lock out the bad sectors from the
 directory.  This means that you could
 use a scratched disk that you were not
-able to format under RS Dos... But you
+able to format under RS DOS... But you
 should beware of doing this if you
-intend to put anything realllllly
+intend to put anything <emphasis>really</emphasis>
 important on this disk.
 Now that the format is done at
-the OS-9 prompt... type:
+the OS-9 prompt. Type:
 <screen>
 OS9:free /d0.
 </screen>
@@ -419,7 +419,7 @@ total sectors there are on the disk and
 how many of those sectors are available
 for you to store data in.  OS-9 is set
 up for a 35 track system with 18 sectors
-per track... This gives you 630 sectors
+per track. This gives you 630 sectors
 total on the disk and OS-9 will take 10
 of those sectors for its Directory
 information.  If you do not see 620
@@ -441,7 +441,7 @@ OS9:makdir /d0/BILLS/FOOD
 OS9:chd /d0
 OS9:dir /d0
 </screen>
-....You will see that the dir returns
+....You will see that the <command>dir</command> returns
 LETTERS    BILLS
 as what is on the disk in drive 0
 But you made 6 directories... so where
@@ -453,7 +453,7 @@ PHONE     GAS     FOOD
 is what you will get.  See how you can
 cluster important stuff in directories
 so that it has a logical flow and you
-can work your way down thru the levels
+can work your way down through the levels
 of the directories to get the information you
 want????
 Try this:
@@ -484,7 +484,7 @@ wanted to del or copy or rename...
 </para>
 <para>
 If you have a two drive OS-9 system
-then you can go thru this exercize too
+then you can go through this exercize too
 by just putting the disk you wish to
 format in drive /d1 and changing all
 the makedir and dir statements I gave
@@ -603,7 +603,7 @@ that will be covered in a future lesson.
 </para>
 <para>
 OS-9 has the ability to take information
-and pass it thru a pipe into a filter to
+and pass it through a pipe into a filter to
 change the information in some manner before
 showing it on your screen or your
 printer.  The command for a pipe is the
@@ -618,7 +618,7 @@ to do this:
 OS9:list startup ! tee /d0/f1 /d0/f2
 </screen>
 it would list the data in the file
-called startup thru the pipe (!) into
+called startup through the pipe (!) into
 the filter TEE... this program would then
 send the data out to two files that
 are called /d0/f1 /d0/f2 and you would
@@ -648,7 +648,7 @@ can buy that will do the following:
 OS9:list startup ! upper
 </screen>
 this will take any data in a file
-called startup and send it thru the
+called startup and send it through the
 filter called upper... upper will take
 ALL lower case letters and change them
 to upper case before passing that information
@@ -657,7 +657,7 @@ on...
 OS9:list startup ! wc
 </screen>
 This command will list the file startup
-thru the pipe into the filter wc which
+through the pipe into the filter wc which
 will count the # of lines, characters, and
 words in the file which <command>wc</command> will then
 print out to your screen. Imagine
@@ -1266,9 +1266,9 @@ code to add your own hardware onto your
 OS-9 system.  I understand that OS-9
 2.00.00 has a device called /ssp and it
 is for the Radio Shack Speech Sound Pak
-and will let you send a text file thru
-it and it will speak the file out...
-So you could do this...
+and will let you send a text file through
+it and it will speak the file out.
+So you could do this:
 <screen>
 OS9:dir /d0 &gt;/ssp
 </screen>
@@ -1297,8 +1297,8 @@ disk.
 <title>Lesson 4</title>
 <para>
 Today we are going to make a new OS-9
-boot disk... we can do this several
-different ways... First type this:
+boot disk. we can do this several
+different ways. First type this:
 <screen>
 OS9:mdir
 </screen>
@@ -1323,14 +1323,14 @@ modules at boot time.  For now we will
 just make a new boot disk that will load
 in all of the above modules exactly the
 same way.  We can do this one of two
-ways... First lets format a new disk
+ways... First let's format a new disk
 and we'll put our new OS9boot on it. At
 the OS-9 prompt type:
 <screen>
 OS9:load format free
 </screen>
 take your OS-9 master disk out of drive
-/d0... and install a blank disk in /d0
+/d0, and install a blank disk in /d0
 now at the OS-9 prompt type:
 <screen>
 OS9:format /d0
@@ -1354,9 +1354,10 @@ back in.  Now type:
 <screen>
 OS9:load cobbler makdir save os9gen build echo
 </screen>
-You should now have the commands format,
-free, cobbler, makdir, build, os9gen,
-save and echo in your memory...
+You should now have the commands <command>format</command>,
+<command>free</command>, <command>cobbler</command>,
+<command>makdir</command>, <command>build</command>, <command>os9gen</command>,
+<command>save</command> and <command>echo</command> in your memory...
 Take your master disk out of drive /d0
 and put the new disk in.  Now at the
 OS-9 prompt type:
@@ -1373,7 +1374,7 @@ to be very patient because you will
 have to go through a lot of typing,
 copying and swapping.
 Essentially what you have to do is:
-Use the makdir command to make all the
+Use the <command>makdir</command> command to make all the
 directories on this new disk that were
 on the old Master disk. So you will
 have to do this:
@@ -1382,7 +1383,7 @@ OS9:makdir /d0/sys
 OS9:makdir /d0/cmds
 OS9:makdir /d0/defs
 </screen>
-Then you will need to use the copy
+Then you will need to use the <command>copy</command>
 command to move all the files/commands
 over from the old Master disk to this
 NEW Master disk.  We are talking about
@@ -1390,17 +1391,17 @@ a <emphasis>lot</emphasis> of disk swapping here and you
 just might not be up to going through
 all this work.  Read on... there are 2
 easier ways to do this and I will let
-you decide which you like better?
+you decide which you like better.
 </para>
 <para>
-While cobbler will help us to make a new
+While <command>cobbler</command> will help us to make a new
 boot disk there is no flexibility to it
 and you are stuck with a mirror image
 of the modules from the last boot you
 did.  To give us total control of what
-goes in the OS9boot file we will need
-to use the OS9gen command.
-Leave the new boot disk in drive /do and
+goes in the <filename>OS9boot</filename> file we will need
+to use the <command>OS9gen</command> command.
+Leave the new boot disk in drive /d0 and
 format it again... then do the free on
 it to be sure the total sectors and free
 sectors works out to 630 and 620. We
@@ -1470,12 +1471,12 @@ that is going to tell OS9gen what
 modules it is to put into the OS9boot
 file that we are going to put on this
 disk.  It is very important that the
-spellings you used in the save command
+spellings you used in the <command>save</command> command
 are the same as the modules are spelled
 in memory... The new OS9boot we are
 going to make might not work if you
 spell any of the saved modules names
-wrong!!!
+wrong!
 OK, now at the OS-9 prompt you type:
 <screen>
 OS9:build /d0/bootlist
@@ -1488,7 +1489,7 @@ lines... <emphasis>without the (?) marks!!!</emphasis>
 ? d0
 ? d1
 </screen>
-<note><para>if you did not save d2 and d3 in the
+<note><para>if you did not save <emphasis>d2</emphasis> and <emphasis>d3</emphasis> in the
 save operation leave the next two lines
 out!!!</para></note>
 <screen>
@@ -1503,7 +1504,7 @@ out!!!</para></note>
 ? clock
 ? shell
 </screen>
-<note><para>if you did not save rs232 and t1 in
+<note><para>if you did not save <emphasis>rs232</emphasis> and <emphasis>t1</emphasis> in
 the save operation leave the next two
 lines out!!!</para></note>
 <screen>
@@ -1511,7 +1512,7 @@ lines out!!!</para></note>
 ? t1
 </screen>
 <note><para>if you don't have a printer and left
-printer and p out of the save operation
+<emphasis>printer</emphasis> and <emphasis>p</emphasis> out of the save operation
 then leave the next two lines out!!!</para></note>
 <screen>
 ? printer
@@ -1520,7 +1521,7 @@ then leave the next two lines out!!!</para></note>
 ? piper
 ? pipe
 </screen>
-<note><para>if you did not save acia and t2
+<note><para>if you did not save <emphasis>acia</emphasis> and <emphasis>t2</emphasis>
 in the save operation leave the next
 two lines out!!!</para></note>
 <screen>
@@ -1529,36 +1530,36 @@ two lines out!!!</para></note>
 ? (enter)
 </screen>
 We now have everything we need on the
-disk in drive /d0 to make os9gen put an
-os9boot file on that disk...
+disk in drive /d0 to make <command>os9gen</command> put an
+<filename>os9boot</filename> file on that disk...
 At the OS-9 prompt type:
 <screen>
 OS9:chd /d0/modules
 OS9:os9gen /d0 &lt;/d0/bootlist
 </screen>
-You will then have a working os9boot
+You will then have a working <filename>os9boot</filename>
 file on the disk in drive /d0.  Now if
-you left out the d2, d3, printer, p,
-rs232, t1, acia and t2 modules when you 
-did your save and when you built your 
+you left out the <emphasis>d2</emphasis>, <emphasis>d3</emphasis>, <emphasis>printer</emphasis>, <emphasis>p</emphasis>,
+<emphasis>rs232</emphasis>, <emphasis>t1</emphasis>, <emphasis>acia</emphasis> and <emphasis>t2</emphasis> modules when you 
+did your <command>save</command> and when you built your 
 bootlist... those modules will not be in 
 memory when you use this disk to do 
-your next boot... BUT DON'T
-BOOT WITH THIS DISK YET... IT HAS NO
-COMMAND DIRECTORY ON IT... You will need
+your next boot... <emphasis>But don't
+boot with this disk yet. It has no
+command directory on it.</emphasis> You will need
 to copy all the data files and commands
 off your master disk to this disk by
 the same method explained in the start
 of this tutorial where I talk about the
-cobbler command.
+<command>cobbler</command> command.
 </para>
 <para>
 Now I also said earlier that there was
 2 other ways to make this boot disk and
 you have to decide if they suit your
-taste... The first way is to make the
-new OS9boot file with either cobbler
-or os9gen in the same way that I have
+taste. The first way is to make the
+new <filename>OS9boot</filename> file with either <command>cobbler</command>
+or <command>os9gen</command> in the same way that I have
 already explained.  Now that the boot
 file is on that disk... Don't copy the
 whole Master disk over to this new disk!
@@ -1566,10 +1567,12 @@ Instead only do this:
 <screen>
 OS9:makdir /d0/cmds
 </screen>
-Copy the commands setime, dir, free and echo
+Copy the commands <command>setime</command>,
+<command>dir</command>,
+<command>free</command> and <command>echo</command>
 over to the /d0/cmds directory on this
 new disk from /d0/cmds on the old disk.
-Use the build command to build a new
+Use the <command>build</command> command to build a new
 startup file on this disk...
 <screen>
 OS9:build /d0/startup
@@ -1593,31 +1596,30 @@ in your Master disk.  Then type:
 OS9:chd /d0
 OS9:chx /d0/cmds
 </screen>
-and you will be up and running... This
+and you will be up and running. This
 will be your working disk and the other
 disk will be used each time you wish to
-BOOT OS-9...
+BOOT OS-9.
 </para>
 <para>
 Another way to make a new BOOT disk is
-to do this... backup the old master disk
+to do this: Backup the old master disk
 to a newly formatted disk.  Leave this
 new disk in /d0.  Now type:
 <screen>
 OS9:chd /d0
 OS9:chx /d0/cmds
 </screen>
-This will let OS-9 know that you have
-changed disks.
-Use the makdir command to make a new
+This will let OS-9 know that you have changed disks.
+Use the <command>makdir</command> command to make a new
 directory called /d0/modules...
-Follow all the save commands listed
+Follow all the <command>save</command> commands listed
 earlier in this tutorial.  Use the
-build command to build a file called
-/d0/bootlist... type in all the lines as
+<command>build</command> command to build a file called
+<filename>/d0/bootlist</filename>. Type in all the lines as
 listed earlier in this tutorial.
 When this is all done, you will use
-the del command to:
+the <command>del</command> command to:
 
 <screen>
 OS9:del /d0/os9boot
@@ -1631,7 +1633,7 @@ OS9:os9gen /d0 &lt;/d0/bootlist
 and your new BOOT file will go on this
 disk with more/less modules as you told
 it to put in the BOOT file.
-BOTH of these methods will give you a
+<emphasis>Both</emphasis> of these methods will give you a
 new BOOT disk but they both have their
 drawbacks.  The first method gives you
 a boot disk but with little else on it
@@ -1640,15 +1642,15 @@ will give you a boot disk that has all
 your commands on it and all your
 working files.  But the 2nd way to make
 a new BOOT disk will not work 100% of
-the time.  When you go to cobbler or
-os9gen a new os9boot file on a new disk
+the time.  When you go to <command>cobbler</command> or
+<command>os9gen</command> a new os9boot file on a new disk
 it will write that file out to track 34
-of that disk.  It <emphasis>MUST</emphasis> have an
+of that disk.  It <emphasis>must</emphasis> have an
 unbroken number of sectors on track 34
 to put this bootfile.  If you go to
-cobbler or os9gen on a disk that is
-pretty full the cobbler or os9gen might
-fail.  <emphasis>if</emphasis> you use os9gen to make a new
+<command>cobbler</command> or <command>os9gen</command> on a disk that is
+pretty full the <command>cobbler</command> or <command>os9gen</command> might
+fail.  <emphasis>if</emphasis> you use <command>os9gen</command> to make a new
 os9boot file and it has <emphasis>less</emphasis> modules in
 it then before the 2nd method will work just
 fine.  <emphasis>But</emphasis> if the new os9boot file will
@@ -1657,14 +1659,14 @@ method will not work 100% of the time.
 </para>
 <para>
 It is for this reason that I
-suggest you os9gen on a disk that only
+suggest you <command>os9gen</command> on a disk that only
 had the /d0/bootlist file on it and
 the /d0/modules directory on it.  You
 can then copy over to this new disk
 the few commands you think you will
 need and after you boot with this disk
 take it out of /d0 and put in the disk
-you intend to work with... A disk that
+you intend to work with. A disk that
 has <emphasis>all</emphasis> the commands you know you
 will need!!!
 </para>
@@ -1673,36 +1675,40 @@ You might also want to add some commands
 to the os9boot file so that they will
 be in memory at bootup time.  Some very
 useful commands to have in memory all the
-time are dir, build, del, mfree and free.
+time are <command>dir</command>, <command>build</command>,
+<command>del</command>, <command>mfree</command> and
+<command>free</command>.
 The only disadvantage of having these
 modules in the os9boot file is that once
 you boot and these modules are in memory
-all the unlink-ing in the world will <emphasis>NOT</emphasis>
+all the unlink-ing in the world will <emphasis>not</emphasis>
 get them out of memory.  So you have to
 decide if you want them in memory that
 bad.  It should not cause too much of a
 memory problem if you have left out the
-d2, d3, rs232, t1, acia, t2, printer, and
-p modules.
+<emphasis>d2</emphasis>, <emphasis>d3</emphasis>, <emphasis>rs232</emphasis>,
+<emphasis>t1</emphasis>, <emphasis>acia</emphasis>,
+<emphasis>t2</emphasis>, <emphasis>printer</emphasis>, and
+<emphasis>p</emphasis> modules.
 </para>
 <para>
 One of the advantages to making a
 tailored os9boot file is that it gets
 rid of modules that you were never going
-to use and cleans up some ram for you to
-use also.  Not a lot of ram but enough
+to use and cleans up some RAM for you to
+use also.  Not a lot of RAM but enough
 to make all this worthwile.  The most
 important thing to remember though when
-using the os9gen command is that you
+using the <command>os9gen</command> command is that you
 must move the modules from memory out
 to a directory where you will
 put all the modules you wish in the new
-os9boot file... Then you must build a
+os9boot file. Then you must build a
 data file with the names of all the
-modules you saved... change your data
+modules you saved; change your data
 directory to the directory that has all
-the modules in it... then invoke the
-os9gen command telling it where to put
+the modules in it; then invoke the
+<command>os9gen</command> command telling it where to put
 the os9boot file and where it is to
 get the list of the modules  it is to
 put in the os9boot file.
@@ -1716,8 +1722,8 @@ os9    os9p2   init   boot
 </literallayout>
 and we did not save them out to the
 /d0/modules directory and we did not put
-them in our bootlist???  You don't need
-to... OS-9 knows to put those 4 modules
+them in our bootlist.  You don't need
+to. OS-9 knows to put those 4 modules
 in each new os9boot file it makes. It is
 something you <emphasis>should not try to do.</emphasis>
 </para>
@@ -1729,15 +1735,15 @@ on a single disk drive system it <emphasis>is</emphasis>.
 There is no getting around this.  If you
 had two disk drives you could have
 formatted the disk in drive /d1.  Then
-used the cobbler or os9gen command to
+used the <command>cobbler</command> or <command>os9gen</command> command to
 put os9boot on that disk.  You could
-have then used the dsave command to
+have then used the <command>dsave</command> command to
 move all the directories/files from
 /d0 over to /d1 and you would have
 saved a lot of time and typing.  So I
 now repeat that OS-9 will run on a 1
 drive system but it sure runs a lot
-better on a 2 drive system!!!
+better on a 2 drive system!
 </para>
 <para>
 You probably read this whole tutorial
@@ -1755,7 +1761,7 @@ disk drives run at 6ms. under OS-9 and
 how to make OS-9 use the full 40 tracks
 that my drives were capable of.  It was
 then I decided how great a command
-os9gen was and learned how to use it.
+<command>os9gen</command> was and learned how to use it.
 </para>
 </section>
 </article>

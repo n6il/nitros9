@@ -24,6 +24,12 @@
 ;;#                   and rename it cygnus-both.dsl                     #
 ;;#                                                                     #
 ;;#                       This is Version 1.0-4                         #
+;;#                  patched to fix RTF output (#49677)                 #
+;;#                patched to work with docbook-dsssl-1.72              #
+;;#                 patched for ADDRESS output (#50605)                 #
+;;#                      removed comment and remark                     #
+;;#                      disabled use-id-as-filename                    #
+;;#               don't define %graphic-default-extension%              #
 ;;#######################################################################
 -->
 
@@ -47,11 +53,7 @@
 
 ;;Do you want enumerated sections? (E.g, 1.1, 1.1.1, 1.2, etc.)
 (define %section-autolabel% 
- #f)
-
-;;What is the default extension for graphics?
-(define %graphic-default-extension% 
-  "eps")
+ #t)
 
 ;;Show URL links? If the text of the link and the URL are identical,
 ;;the parenthetical URL is suppressed.
@@ -94,7 +96,7 @@
 
 ;;Do you want a separate page for the title?
 (define %generate-book-titlepage-on-separate-page%
- #f)
+ #t)
 
 ;;Generate Book TOC?
 (define %generate-book-toc% 
@@ -104,7 +106,7 @@
 ;;!Only top level of appendixes!
 (define (toc-depth nd)
   (if (string=? (gi nd) (normalize "book"))
-      2
+      3
       (if (string=? (gi nd) (normalize "appendix"))
         0
         1)))
@@ -153,7 +155,7 @@
 
 ;;Do you want a separate page for the title?
 (define %generate-article-titlepage-on-separate-page%
- #t)
+ #f)
 
 ;;Do you want the article toc on the titlepage or separate?
 (define %generate-article-toc-on-titlepage%
@@ -250,13 +252,13 @@
 (define %top-margin%
 (if (equal? %visual-acuity% "large-type")
       7.5pi
-      4pi))
+      6pi))
 
 ;;How big do you want the margin at the bottom?
 (define %bottom-margin% 
  (if (equal? %visual-acuity% "large-type")
       7.5pi 
-      2pi))
+      5pi))
 
 ;;Define the text width. (Change the elements in the formula rather
 ;;than the formula itself)
@@ -338,7 +340,7 @@
 
 ;;What size paper do you need? A4, USletter, USlandscape, or RedHat?
 (define %paper-type%
- "A4")
+ "USletter")
 
 ;;Now define those paper types' width
 (define %page-width%
@@ -453,45 +455,11 @@
 (element SERIESINFO (empty-sosofo))
 (element DOCINFO (empty-sosofo))
 (element ARTHEADER (empty-sosofo))
-(element ADDRESS (empty-sosofo))
+;;(element ADDRESS (empty-sosofo))
 
 ;;Show comment element?
 (define %show-comments%
   #t)
-
-;;Redefine comment for LSB
-(element comment
-  (if %show-comments%
-      (make paragraph
-	start-indent: 0pt
-	first-line-start-indent: -10pt
-	font-posture: 'italic
-	font-size: (* (inherited-font-size) 0.9)
-	(make sequence
-	  (make line-field 
-	    field-width: 10pt
-	    quadding: 'center
-	    (literal "BEGIN RATIONALE:   "))
-	  (process-children))
-	(literal "END RATIONALE:   "))
-      (empty-sosofo)))
-
-;; In DocBook V4.0 comment became remark
-(element remark
-  (if %show-comments%
-      (make paragraph
-	start-indent: 0pt
-	first-line-start-indent: -10pt
-	font-posture: 'italic
-	font-size: (* (inherited-font-size) 0.9)
-	(make sequence
-	  (make line-field 
-	    field-width: 10pt
-	    quadding: 'center
-	    (literal "BEGIN RATIONALE:   "))
-	  (process-children))
-	(literal "END RATIONALE:   "))
-      (empty-sosofo)))
 
 ;;======================================
 ;;Formalpara titles
@@ -504,7 +472,7 @@
   ;(make sequence
   ;font-weight: 'bold
   ;($runinhead$))
-  ($lowtitle$ 5))
+  ($lowtitle$ 5 7))
 
 ;;======================================
 ;;Inlines
@@ -761,11 +729,11 @@
 
 ;;Enumerate Chapters?
 (define %chapter-autolabel% 
- #f)
+ #t)
 
 ;;Enumerate Sections?
 (define %section-autolabel%
- #f)
+ #t)
 
 ;;=========================
 ;;    HTML Attributes
@@ -904,30 +872,6 @@
 ;;Show comment element?
 (define %show-comments%
   #t)
-
-;;Redefine comment element for LSB
-(element comment
-  (if %show-comments%
-      (make element gi: "TABLE"
-	    attributes: ($shade-verbatim-attr$)
-	    (make element gi: "TR"
-		  (make element gi: "TD"
-			(literal "RATIONALE:")
-			(make element gi: "P"
-			      (process-children)))))
-      (empty-sosofo)))
-
-;;In DocBook V4.0 comment became remark
-(element remark
-  (if %show-comments%
-      (make element gi: "TABLE"
-	    attributes: ($shade-verbatim-attr$)
-	    (make element gi: "TR"
-		  (make element gi: "TD"
-			(literal "RATIONALE:")
-			(make element gi: "P"
-			      (process-children)))))
-      (empty-sosofo)))
 
 ;;====================
 ;; General Formatting

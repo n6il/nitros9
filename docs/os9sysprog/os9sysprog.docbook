@@ -1009,7 +1009,7 @@ integrity of the module.</para>
 
 <para>The 24-bit CRC is performed over the entire module from the first
 byte of the module header to the byte just before the CRC itself. The
-CRC polynomial used is $800FE3.</para>
+CRC polynomial used is $800063. (See <xref linkend="f.crc"/>)</para>
 
 <para>Because most OS-9 family software (such as the assembler)
 automatically generate the module header and CRC values, the
@@ -4826,7 +4826,7 @@ Typically used in conjunction with <quote>parsename</quote>.</para>
 character set.</para>
 </sect1>
 
-<sect1>
+<sect1 id="f.crc" xreflabel="F$CRC">
 <title>F$CRC - Compute CRC</title>
 <informaltable frame="none">
 <tgroup cols="2">
@@ -4869,6 +4869,34 @@ before the first F$CRC call.</para>
 
 <para>The last three bytes in the module (where the three CRC bytes will
 be stored) are not included in the CRC generation.</para>
+
+<para>The polynomial is $800063. If you perform the CRC over the module
+minus the stored CRC
+then you must exclusive-or the result with $FFFFFF to compare directly
+with the stored CRC. If you perform CRC over the module including the
+last three bytes then the result must be $800FE3.</para>
+<para>
+Example C code of CRC algorithm (with 32-bit longs):
+<programlisting>
+unsigned long compute_crc()
+    unsigned long crc;
+    unsigned char *octets;
+    int len;
+{
+    int i;
+
+    while (len--) {
+        crc ^= (*octets++) &lt;&lt; 16;
+        for (i = 0; i &lt; 8; i++) {
+            crc &lt;&lt;= 1;
+            if (crc & 0x1000000L)
+                crc ^= 0x800063L;
+        }
+    }
+    return crc & 0xffffffL;
+}
+</programlisting>
+</para>
 </sect1>
 
 <sect1>

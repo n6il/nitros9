@@ -5,7 +5,6 @@
 <article>
 <articleinfo>
 <title>The OS-9 Boot Process</title>
-<subtitle>COCO Computer</subtitle>
 <author><firstname>Alan</firstname><surname>DeKok</surname>
 <affiliation>
 <address>
@@ -17,10 +16,16 @@
 <revision>
     <revnumber>1</revnumber>
     <date>Tue Apr 29 21:53:46 EDT 1997</date>
-    <revremark>Last update</revremark>
+</revision>
+<revision>
+    <revnumber>2</revnumber>
+    <date>13-Apr-2003</date>
+    <revremark>DragonDOS boot added</revremark>
 </revision>
 </revhistory>
 </articleinfo>
+<section>
+<title>COCO Computer</title>
 <orderedlist>
 <listitem><para>Typing 'DOS' at the DECB 'OK' prompt loads in track 34 off of the disk.</para></listitem>
 
@@ -55,4 +60,16 @@ returns to OS9p2.</para></listitem>
 <listitem><para>  OS9p2 then does F$Chain of 'CC3Go'.  This prints a start up banner,
 and runs your 'startup' file through a shell.</para></listitem>
 </orderedlist>
+</section>
+<section>
+<title>Dragon 64</title>
+<para>
+DragonDOS BOOT (when you type BOOT)
+loads sectors (numbered from 0) 2-17 (4096 bytes) into
+RAM at location $2600. The first two bytes of sector 2 must be ASCII 'OS'
+for this to work. It then jumps to $2602 and begins execution.
+The boot code switches into RAM mode, and copies the entire section to
+$F000 and jumps to $F04F. 
+</para>
+</section>
 </article>

@@ -82,7 +82,7 @@
   <!ENTITY toupperref    SYSTEM "toupper.refentry">
   <!ENTITY ungetcref     SYSTEM "ungetc.refentry">
  ]>
-<book id="cc-guide" lang="en">
+<book id="ccguide" lang="en">
 <bookinfo>
  <title>Microware C Compiler User's Guide</title>
  <subtitle>for OS-9</subtitle>
