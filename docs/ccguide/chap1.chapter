@@ -118,9 +118,9 @@ compiler. In the manner of K &amp; R page 192, the sc-specifier list
 is extended as follows:
 <informaltable frame="none">
 <tgroup cols="3">
-<colspec colwidth="1.0in">
-<colspec colwidth="1.0in">
-<colspec colwidth="1.0in">
+<colspec colwidth="1.0in"/>
+<colspec colwidth="1.0in"/>
+<colspec colwidth="1.0in"/>
 <tbody>
     <row>
         <entry>Sc-specifier:</entry>
@@ -249,9 +249,9 @@ storage. The sizes of the basic types in bytes are as follows:
 </para>
 <informaltable frame="none">
 <tgroup cols="3">
-<colspec colwidth="0.8in">
-<colspec colwidth="0.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.4in"/>
+<colspec colwidth="3.0in"/>
 <thead>
 <row>
 <entry>Data Type</entry>
@@ -492,8 +492,8 @@ files be present in the current execution directory (CMDS).
 <table frame="none">
 <title>OS-9 Level I Systems</title>
 <tgroup cols="2">
-<colspec colwidth="1.0in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.0in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
     <row>
         <entry>cc1</entry>
@@ -531,8 +531,8 @@ files be present in the current execution directory (CMDS).
 <table frame="none">
 <title>OS-9 Level II Systems</title>
 <tgroup cols="2">
-<colspec colwidth="1.0in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.0in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
     <row>
         <entry>cc2</entry>
@@ -627,8 +627,8 @@ Any of the above file types may be mixed on the command line.
 <table frame="none">
 <title>File Name Suffix Conventions</title>
 <tgroup cols="2">
-<colspec colwidth="0.5in">
-<colspec colwidth="3.0in">
+<colspec colwidth="0.5in"/>
+<colspec colwidth="3.0in"/>
 <thead>
 <row>
     <entry>Suffix</entry>
@@ -769,9 +769,9 @@ used in which case the expansion will be &lt;string&gt;.
 <table frame="none">
 <title>Command Line and Option Flag Examples</title>
 <tgroup cols="3">
-<colspec colwidth="1.5in" colname="c1">
-<colspec colwidth="1.5in" colname="c2">
-<colspec colwidth="1.5in" colname="c3">
+<colspec colwidth="1.5in" colname="c1"/>
+<colspec colwidth="1.5in" colname="c2"/>
+<colspec colwidth="1.5in" colname="c3"/>
 <thead>
     <row>
 	<entry>command line</entry>
