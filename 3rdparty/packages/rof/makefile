@@ -40,5 +40,8 @@ dsk:	all
 	$(OS9RENAME) $(DISK),CMDS/rescue AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
 
+dskcopy: dsk
+	$(CP) $(DISK) $(DSKDIR)
+
 dskclean:
 	$(RM) $(DISK)

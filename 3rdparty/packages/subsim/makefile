@@ -42,5 +42,8 @@ dsk:	all
 	$(OS9RENAME) $(DISK),CMDS/presub AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
 
+dskcopy:
+	$(CP) $(DISK) $(DSKDIR)
+
 dskclean:
 	$(RM) $(DISK)

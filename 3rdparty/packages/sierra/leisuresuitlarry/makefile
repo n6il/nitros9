@@ -41,5 +41,8 @@ dsk:	all
 	$(OS9RENAME) $(DISK),CMDS/sierra AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
 
+dskcopy: dsk
+	$(CP) $(DISK) $(DSKDIR)
+
 dskclean:
 	$(RM) $(DISK)
