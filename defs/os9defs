@@ -32,6 +32,7 @@ OS9DEFS  set   1
 * 98/10/03 Consoldated Level 1/Level 2 os9defs                          BGP
 * 02/04/04 Consoldated Level 2/Level 2 V3 os9defs                       BGP
 * 02/04/30 Added NitrOS-9 definitions                                   BGP
+* 03/05/30 Added WD1002 sys vars to Level One section                   BGP
 
 true     equ   1          useful name
 false    equ   0          useful name
@@ -346,6 +347,12 @@ SS.DrvCh equ SS.WnSet     SDisk3 (DMC ONLY) Set drive number to cache, or return
          IFEQ  Level-1
 
 * Level 1 DP vars
+         org   $00
+D.WDAddr rmb   2          FHL/Isted WD1002-05 interface base address
+D.WDBtDr rmb   1          FHL/Isted WD1002-05 boot physical device drive num.
+         rmb   5
+D.COCOXT rmb   1          Busy flag for CoCo-XT driver (one drive at a time)
+
 	 org   $20
 D.FMBM   rmb   4          Free memory bit map pointers
 D.MLIM   rmb   2          Memory limit $24
