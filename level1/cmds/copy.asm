@@ -254,7 +254,7 @@ L038B    cmpx  <parmptr         are we at start of command line?
          bra   L038B		else get next char 
 PlugIt   leax  1,x		go forward 1
 PlugIt2  ldy   <wfileptr	get address past xxxx/ (specified by -w=)
-         lbsr  StrCpy		copy filenamme
+         lbsr  StrCpy		copy filename
          std   <wfilelen	save file length
          lda   #C$CR		get CR
          sta   ,y		and terminate
