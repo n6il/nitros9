@@ -164,10 +164,10 @@ r0_192k.dd: r0.asm
 ddr0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=192 -aDD=1
 
-sacia.dr: xacia.asm
+sacia.dr: sacia.asm
 	$(AS) -aA6551=1 -aA6552=0 -aMPI.Slot=03 $(AFLAGS) $< $(ASOUT)$@
 	
-dacia.dr: xacia.asm
+dacia.dr: sacia.asm
 	$(AS) -aA6551=0 -aA6552=1 -aMPI.Slot=03 $(AFLAGS) $< $(ASOUT)$@
 
 # VDGInt Modules
