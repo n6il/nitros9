@@ -72,10 +72,11 @@ L0035    deca  			set x,y size of window?
          rts   
 
 L003B    ldx   <D.CCMem		pointer to start of CC memory
-         leax  <$54,x		to X,Y coor, X,Y window
+         leax  <G.Mouse+Pt.AcX,x		to X,Y coor, X,Y window
+*         leax  <$54,x		to X,Y coor, X,Y window
          IFNE  H6309
-         ldq   ,x
-         stq   $04,x		get X,Y coordinate
+         ldq   ,x		get X,Y coordinate
+         stq   $04,x		copy to window relative X,Y
          ELSE
          ldd   ,x
          std   $04,x
@@ -142,11 +143,11 @@ IsOdd    ldd   #256		1 page return
          stx   <VD.EPlt2,u
          ldu   <D.CCMem
          IFNE  H6309
-         oim  #$02,<$24,u	set to VDGINT found
+         oim  #$02,<G.BCFFlg,u	set to VDGINT found
          ELSE
-         ldb   <$24,u
+         ldb   <G.BCFFlg,u
          orb   #$02		set to VDGINT found
-         stb   <$24,u
+         stb   <G.BCFFlg,u
          ENDC
 L00D5    clrb  
 L00D6    puls  pc,u,y,x
@@ -343,13 +344,13 @@ L0209    cmpa  #$31		change palette?
          bsr   L024A		get device table entry for path
          ldy   V$STAT,y		get driver statics
          ldx   <D.CCMem		get CoCo memory
-         cmpy  <$20,x
+         cmpy  <G.CurDev,x
          puls  y		restore our path desc ptr
          bne   L0248
          inc   <VD.DFlag,u
-         ldy   <$20,x
-         sty   <$22,x
-         stu   <$20,x
+         ldy   <G.CurDev,x	get current static mem
+         sty   <G.PrWMPt,x	copy to previous
+         stu   <G.CurDev,x	and save new static mem ptr
 L0248    clrb  
 L0249    rts   
 
