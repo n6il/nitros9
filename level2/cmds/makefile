@@ -10,7 +10,7 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirm disasm \
 		display dmem dmode dsave dump echo edit error exbin exmode \
 		format free grfdrv help ident iniz irqs link list load login \
-		makdir mdir merge mfree mmap modpatch montype os9gen park \
+		makdir mdir merge mfree mmap modpatch montype os9gen padrom park \
 		prompt pmap proc procs pwd pxd reboot rename runb save setime \
 		shell_21 shellplus sleep smap tee tmode touch \
 		tsmon tuneport unlink verify wcreate xmode
