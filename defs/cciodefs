@@ -69,13 +69,13 @@ V.ClkCnt rmb   1  clock count ??
 V.WrChr  rmb   1  character to write
 V.CurCo  rmb   1  current CO-module in use
 * start of CO80-specific static memory
-V.54     rmb   1
-V.55     rmb   1
-V.56     rmb   1
-V.57     rmb   1
+V.Co80X  rmb   1	V.54
+V.Co80Y  rmb   1	V.55
+V.ColPtr rmb   1	V.56
+V.RowPtr rmb   1	V.57
 V.C80X   rmb   1	CO80 X position
 V.C80Y   rmb   1	CO80 Y position
-V.5A     rmb   1
+V.Invers rmb   1
 * end of CO80-specific static memory
 V.DspVct rmb   2	vector to display screen
 V.CnvVct rmb   2	vector to X/Y to address conversion
