@@ -86,7 +86,7 @@ HlpMsg   fcb   C$LF
          fcb   C$LF
          fcc   /  -s = single drive copy/
          fcb   C$LF
-         fcc   /  -w=<dir> = copy files to <dir>/
+         fcc   /  -w=<dir> = copy to <dir>/
          fcb   C$LF
          fcc   /  -x = copy from exec dir/
          fcb   C$CR

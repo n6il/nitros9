@@ -22,6 +22,8 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   11
 
+DOHELP   set   1
+
          mod   eom,name,tylg,atrv,start,size
 
 fpath    rmb   1
@@ -44,11 +46,13 @@ size     equ   .
 name     fcs   /Attr/
          fcb   edition
 
-L0012    fcb   C$LF
+         IFNE  DOHELP
+HelpMsg  fcb   C$LF
          fcc   "Use: Attr <pathname> {[-]<opts>}"
          fcb   C$LF
          fcc   " opts: -d s r w e pr pw pe -a"
          fcb   C$CR
+         ENDC
 L0052    fcb   C$LF
          fcc   "You do not own that file."
          fcb   C$CR
@@ -164,13 +168,18 @@ L019C    sta   ,y+
          leax  <u0078,u
          clrb  
          bra   L01B0
-L01AC    leax  >L0012,pcr
+         IFNE  DOHELP
+L01AC    leax  >HelpMsg,pcr
+         ENDC
 L01B0    pshs  b
          lda   #2
          ldy   #256
          os9   I$WritLn
          comb  
          puls  b
+         IFEQ  DOHELP
+L01AC    equ   *
+         ENDC
 L01BE    os9   F$Exit
 L01C1    clrb  
          leax  >L0052,pcr

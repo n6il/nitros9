@@ -7,6 +7,8 @@
 * ------------------------------------------------------------------
 *  67    From Tandy OS-9 Level One VR 02.00.00
 *  68    Set proper edition
+*   1    Restarted edition, removed Motorola copyright  BGP 03/01/14
+
 
          nam   Binex
          ttl   Motorola S-Record utility
@@ -20,7 +22,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   68
+edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -47,18 +49,18 @@ size     equ   .
 name     fcs   /Binex/
          fcb   edition
 
-         fcc   "Copyright 1982 Motorola, Inc."
-         fcb   $01 
+*         fcc   "Copyright 1982 Motorola, Inc."
+*         fcb   $01 
 
 start    stx   <u0002
-         lda   #$01
+         lda   #READ.
          os9   I$Open   
          bcc   L003C
 L0039    os9   F$Exit   
 L003C    sta   <u0000
          stx   <u0002
-         lda   #$02
-         ldb   #$7F
+         lda   #WRITE.
+         ldb   #SHARE.+PEXEC.+PWRIT.+PREAD.+EXEC.+UPDAT.
          os9   I$Create 
          bcs   L0039
          sta   <u0001
@@ -72,9 +74,9 @@ L003C    sta   <u0000
          ldx   #$3030
          stx   <u0031
          stx   <u0033
-L0062    leax  >L0217,pcr
+L0062    leax  >AskStart,pcr
          lda   #$01
-         ldy   #$0022
+         ldy   #AskStrtL
          os9   I$Write  
          leax  <u0031,u
          lda   #$00
@@ -102,9 +104,9 @@ L00A2    sta   ,-y
          decb  
          bgt   L00A2
 L00A7    lbsr  L0178
-         leax  >L01F9,pcr
+         leax  >AskName,pcr
          lda   #$01
-         ldy   #$001E
+         ldy   #AskNameL
          os9   I$Write  
          leax  u000C,u
          lda   #$00
@@ -130,9 +132,9 @@ L00CA    lda   <u0000
          ldx   u000C,u
          cmpx  #$87CD
          beq   L0120
-         leax  >L0239,pcr
+         leax  >Alert,pcr
          pshs  y
-         ldy   #$003C
+         ldy   #AlertL
          lda   #$01
          os9   I$Write  
          leax  <u0035,u
@@ -237,11 +239,14 @@ L01CC    anda  #$0F
          adda  #$07
 L01D6    rts   
 L01D7    fcc   "** NON-HEX CHARACTER ENCOUNTERED"
-         fcb   $07,C$CR
-L01F9    fcc   "Enter name for header record: "
-L0217    fcc   "Enter starting address for file: $"
-L0239    fcb   $07,C$CR,C$LF
+         fcb   C$BELL,C$CR
+AskName  fcc   "Enter name for header record: "
+AskNameL equ   *-AskName
+AskStart fcc   "Enter starting address for file: $"
+AskStrtL equ   *-AskStart
+Alert    fcb   C$BELL,C$CR,C$LF
          fcc   "** Not a binary load module file.  Proceed anyway (Y/N)? "
+AlertL   equ   *-Alert
 
          emod
 eom      equ   *
