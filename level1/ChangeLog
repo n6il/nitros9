@@ -1,3 +1,5 @@
+NitrOS-9/6809 Level 1 V03.02.02:
+- A bug in the mpi utility has been fixed.
 NitrOS-9/6809 Level 1 V03.02.01:
 - A minor bug in the unlink command has been fixed.
 - The mpi and megaread utilities have been added to the CMDS directory.
@@ -10,7 +12,7 @@ NitrOS-9/6809 Level 1 V03.02.01:
 - Several bugs in dsave's -b option have been fixed.
 - The cchdisk driver and descriptors are no longer in the distribution.
 - sacia has been backported from Level 2 as sc6551.
-- modpak.dr and aciapak.dr have been removed.
+- modpak.dr and aciapak.dr have been replaced by sc6551.
 - rs232.dr has been renamed to sio.dr to match the Level 2 driver name.
 NitrOS-9/6809 Level 1 V03.02.00:
 - os9 and os9p2 have been renamed to kernel and kernelp2.
