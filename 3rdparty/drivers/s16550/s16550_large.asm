@@ -62,7 +62,7 @@ u0032    rmb   2
 u0034    rmb   1
 u0035    rmb   1
 u0036    rmb   2
-u0038    rmb   2
+OutNxt   rmb   2
 u003A    rmb   1
 u003B    rmb   1
 u003C    rmb   2
@@ -90,57 +90,70 @@ start    lbra  Init
          lbra  SetStat
          lbra  Term
 
+* Init
+*
+* Entry:
+*    Y  = address of device descriptor
+*    U  = address of device memory area
+*
+* Exit:
+*    CC = carry set on error
+*    B  = error code
+*
 Init     clrb  
          pshs  dp,b,cc
-         lbsr  L05C3
+         lbsr  GetDP
          ldd   <u0001
          addd  #$0002
-         pshs  y
-         leax  >L07E0,pcr
-         leay  >L05D7,pcr
-         os9   F$IRQ    
-         puls  y
-         bcc   L004A
+         pshs  y		save Y
+         leax  >IRQPkt,pcr
+         leay  >IRQRtn,pcr
+         os9   F$IRQ    	install interrupt service routine
+         puls  y		restore Y
+         bcc   L004A		branch if ok
          puls  a,cc
-         orcc  #Carry
-         puls  pc,dp
-L004A    lda   <$11,y
-         cmpa  #$1C
-         bls   L005F
-         lda   <$2E,y
+         orcc  #Carry		set error flag
+         puls  pc,dp		exit with error
+L004A    lda   <M$Opt,y		get option count byte
+         cmpa  #$1C		size of standard SCF?
+         bls   L005F		branch if lower/same
+         lda   <$2E,y		else grab driver specific byte
          anda  #$10
          sta   <u001F
          lda   <$2E,y
-         anda  #$0F
-         bne   L0061
-L005F    lda   #$01
+         anda  #$0F		mask out %00001111
+         bne   L0061		if not zero, A holds number of 256 byte pages to allocate
+L005F    lda   #$01		else allocate 1 256 byte page
 L0061    clrb  
          pshs  u
-         os9   F$SRqMem 
-         tfr   u,x
+         os9   F$SRqMem 	allocate memory
+         tfr   u,x		transfer buffer start to X
          puls  u
          bcc   L0087
+* Code here is in case of alloc error -- cleanup and return with error
          stb   $01,s
          ldx   #$0000
          ldd   <u0001
          addd  #$0002
          pshs  y
-         leay  >L05D7,pcr
+         leay  >IRQRtn,pcr
          os9   F$IRQ    
          puls  y
          puls  dp,b,cc
          orcc  #Carry
          rts   
-L0087    stx   <u0032
+
+* D = size of allocated buffer in bytes
+L0087    stx   <u0032		store buffer start in several pointers
          stx   <u002C
          stx   <u002E
          std   <u0036
-         leax  d,x
-         stx   <u0030
-         tfr   a,b
-         clra  
-         orb   #$02
-         andb  #$0E
+         leax  d,x		point at end of buffer
+         stx   <u0030		store
+         tfr   a,b		transfer size hi byte to B
+         clra  			clear hi byte
+         orb   #$02		OR original hi byte with 2
+         andb  #$0E		clear bit 0 (b = %0000XXX0)
          lslb  
          lslb  
          lslb  
@@ -154,7 +167,7 @@ L00A3    pshs  b,a
          std   <u002A
          leax  <u0044,u
          stx   <u003E
-         stx   <u0038
+         stx   <OutNxt
          stx   <u003A
          leax  >u0100,u
          stx   <u003C
@@ -194,40 +207,41 @@ L00F5    lda   >$FF23
          sta   >$0092
          sta   >$FF92
          puls  pc,dp,b,cc
+
 Write    clrb  
          pshs  dp,b,cc
-         lbsr  L05C3
-         ldx   <u0038
-         sta   ,x+
-         cmpx  <u003C
+         lbsr  GetDP
+         ldx   <OutNxt		get address of next pos to save write char
+         sta   ,x+		store char (A) at ,X and increment
+         cmpx  <u003C		less than end of buffer?
          bcs   L011D
          ldx   <u003E
-L011D    orcc  #IntMasks
-         cmpx  <u003A
-         bne   L0138
+L011D    orcc  #IntMasks	mask interrupts
+         cmpx  <u003A		reached end of buffer?
+         bne   L0138		nope, still more room
          pshs  x
          lbsr  L05AD
          puls  x
-         ldu   >$0050
-         ldb   <u0019,u
-         beq   L0136
-         cmpb  #$03
-         bls   L013E
+         ldu   >D.Proc
+         ldb   <P$Signal,u	get pending signal, if any
+         beq   L0136		branch if none
+         cmpb  #S$Intrpt	interrupt?
+         bls   L013E		branch if lower or same
 L0136    bra   L011D
-L0138    stx   <u0038
-         inc   <u0040
+L0138    stx   <OutNxt		update next output position
+         inc   <u0040		increment output buffer size
          bsr   L0140
 L013E    puls  pc,dp,b,cc
 L0140    lda   #$0F
          bra   L0146
          lda   #$0D
-L0146    ldx   <u0001
+L0146    ldx   <V.Port
          sta   $01,x
          rts   
 
 Read     clrb  
          pshs  dp,b,cc
-         lbsr  L05C3
+         lbsr  GetDP
          orcc  #IntMasks
          ldd   <u0034
          beq   L0169
@@ -317,7 +331,7 @@ L01EF    bitb  #$40
 
 GetStat  clrb  
          pshs  dp,b,cc
-         lbsr  L05C3
+         lbsr  GetDP
          cmpa  #$01
          bne   L0226
          ldd   <u0034
@@ -482,7 +496,7 @@ L0318    pshs  u
 
 SetStat  clrb  
          pshs  dp,b,cc
-         lbsr  L05C3
+         lbsr  GetDP
          cmpa  #$D1
          lbne  L03F5
          ldu   $06,y
@@ -497,10 +511,10 @@ L036F    ldd   <u003A
          subd  #$0001
          bra   L0387
 L037D    subd  #$0001
-         cmpd  <u0038
+         cmpd  <OutNxt
          bcc   L0387
          ldd   <u003C
-L0387    subd  <u0038
+L0387    subd  <OutNxt
          beq   L03D8
          cmpd  ,s
          bls   L0392
@@ -509,18 +523,18 @@ L0392    pshs  b,a
          ldx   >$0050
          lda   $06,x
          ldb   >$00D0
-         ldu   <u0038
+         ldu   <OutNxt
          ldx   $04,s
          ldy   ,s
          orcc  #IntMasks
          os9   F$Move   
          ldd   ,s
-         ldu   <u0038
+         ldu   <OutNxt
          leau  d,u
          cmpu  <u003C
          bcs   L03B5
          ldu   <u003E
-L03B5    stu   <u0038
+L03B5    stu   <OutNxt
          clra  
          ldb   <u0040
          addd  ,s
@@ -596,7 +610,7 @@ L0441    cmpa  #$1D
          clr   <u0040
          ldd   <u003E
          std   <u003A
-         std   <u0038
+         std   <OutNxt
          lda   <u0021
          ora   #$04
          sta   $02,x
@@ -688,7 +702,7 @@ L0511    cmpa  #$C3
          ldb   #$0D
          stb   $01,x
          ldd   <u003E
-         std   <u0038
+         std   <OutNxt
          std   <u003A
          clr   <u0040
          ldb   <u0021
@@ -711,7 +725,7 @@ L0543    puls  pc,dp,b,cc
 
 Term     clrb  
          pshs  dp,b,cc
-         lbsr  L05C3
+         lbsr  GetDP
          orcc  #IntMasks
          clra  
          clrb  
@@ -754,7 +768,7 @@ L0585    leas  $04,s
          ldd   <u0001
          addd  #$0002
          pshs  y
-         leay  >L05D7,pcr
+         leay  >IRQRtn,pcr
          os9   F$IRQ    
          puls  y
          puls  pc,dp,b,cc
@@ -768,7 +782,9 @@ L05AD    ldd   >$0050
          ldx   #$0001
          os9   F$Sleep  
          rts   
-L05C3    pshs  u
+
+* Transfer hi-byte of U to Direct Page
+GetDP    pshs  u
          puls  dp
          leas  $01,s
          rts   
@@ -776,9 +792,9 @@ L05C3    pshs  u
 L05CA    fdb   $0160,$0115,$001b,$01bb,$0004,$0004,$002a
 
 * IRQ Service Routine
-L05D7    fcb   $5f
+IRQRtn   fcb   $5f
 L05D8    pshs  dp,b,cc
-         bsr   L05C3
+         bsr   GetDP
          clr   <u0027
          ldy   <u0001
          ldb   $02,y
@@ -1036,7 +1052,8 @@ L07D4    bita  #$10
 L07DE    puls  pc,b
 
 * IRQ Flip/Mask/Priority Bytes
-L07E0    fcb   $01,$01,$80
+IRQPkt   fcb   $01,$01,$80
+
 L07E3    fcb   $28
          fdb   $e901,$010f,$0001,$0107,$8041,$0403
          fdb   $c081,$0801,$e0c1,$0e00,$f0c1,$0e00,$78c1,$0e00
