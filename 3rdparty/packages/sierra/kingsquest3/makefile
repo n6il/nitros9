@@ -52,6 +52,7 @@ dsk:	all
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $(DISK_1),CMDS
 	$(CP) $(CMDS) $(DISK_1),CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_1),CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
 	$(CP) shell $(DISK_1),CMDS
 	$(RM) shell
