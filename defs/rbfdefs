@@ -128,17 +128,10 @@ DNS.STD  equ   %00000000        Single track density (48 tpi)
 DNS.DTD  equ   %00000010        Single track density (96 tpi)
 
 * Floppy disk step rate definitions
-         IFEQ  Level-1
-STP.30ms equ   3                30ms step rate
-STP.20ms equ   2                20ms step rate
-STP.12ms equ   1                12ms step rate
-STP.6ms  equ   0                6ms step rate
-         ELSE
 STP.30ms equ   0                30ms step rate
 STP.20ms equ   1                20ms step rate
 STP.12ms equ   2                12ms step rate
 STP.6ms  equ   3                6ms step rate
-         ENDC
 
          pag
 *************************************

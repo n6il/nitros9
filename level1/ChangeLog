@@ -1,4 +1,8 @@
-NitrOS-9/6809 Level 1 V03.02.02:
+NitrOS-9/6809 Level 1 V03.02.01 (May 14, 2004):
+- CCDisk has been replaced by a more reliable version from Dave Lewis. Also,
+  step rate codes now match that of NitrOS-9 Level 2.
+- An assembler bug which generated incorrect code for Level 1
+  has been corrected, and new modules have been generated.
 - A bug in the mpi utility has been fixed.
 NitrOS-9/6809 Level 1 V03.02.01:
 - A minor bug in the unlink command has been fixed.

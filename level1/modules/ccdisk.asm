@@ -1,526 +1,500 @@
-********************************************************************
-* CCDisk - WD1773 disk driver for Tandy/Radio Shack controller
+*****************************************************************
+*    NewDisk -- copyright 1985 by Dave Lewis.
+*    Released to public domain January, 1986
+*    Permission granted to copy and redistribute provided this
+*      header is included with all copies.
 *
-* $Id$
+* This program is intended to replace the CCDisk module in the
+*   OS9Boot file on the OS-9 system disk. It is far more
+*   versatile than the disk driver provided with Color Computer
+*   OS-9, and is also slightly smaller (20 bytes or so).
+*   Some of its features are:
 *
-* Edt/Rev  YYYY/MM/DD  Modified by
-* Comment
-* ------------------------------------------------------------------
-*   4      1985/??/??
-* From Tandy OS-9 Level One VR 02.00.00.
+*  -Uses the device descriptor to set head step rate. Original
+*     had 30mS hard-coded in.
+*  -Handles double-sided disks.
+*  -Gets its track and side information from the disk so you
+*     can read and write disks in any format the drive can
+*     physically handle. You can use 40-track double sided disks
+*     and still read/write 35-track single side disks.
+*  -Performs some tests before attempting to use the disk.
+*     The original CCDisk would hang the system if you tried to
+*     access a drive without a disk in it (I know, I know - you
+*     don't have to say `DUMMY!' - but it happens). You can
+*     hang this one too but not as easily.
+*  -An 80-track double sided disk holds 720Kbytes of data.
+*     That's four and a half 35-track single siders.
+*  -All of this stuff is completely transparent once NewDisk is
+*     installed. NewDisk automatically senses the disk format
+*     and conforms to it. (within limits -- don't use non-OS9
+*     formats)
 *
-*   5      2002/07/14  Boisy G. Pitre
-* Patched to handle 6ms step rate and ds drives from the "Kissable OS-9"
-* column, Rainbow Magazine, October 1988.
-
-         nam   CCDisk
-         ttl   WD1773 disk driver for Tandy/Radio Shack controller
-
-* Disassembled 98/08/23 17:21:46 by Disasm v1.6 (C) 1988 by RML
-
-         ifp1
-         use   defsfile
-         endc
-
-tylg     set   Drivr+Objct   
-atrv     set   ReEnt+rev
-rev      set   $00
-edition  set   5
-
-MaxDrv   set   4
-
-L0000    mod   eom,name,tylg,atrv,start,size
-
-         rmb   DRVBEG
-u000F    rmb   38
-u0035    rmb   8
-u003D    rmb   18
-u004F    rmb   27
-u006A    rmb   5
-u006F    rmb   56
-CurDMem  rmb   2
-DrivSel  rmb   1
-u00AA    rmb   1
-VfyBuf   rmb   2
-u00AD    rmb   4
-DevStRg  rmb   1
-size     equ   .
-
-         fcb   DIR.+SHARE.+PREAD.+PWRIT.+PEXEC.+READ.+WRITE.+EXEC.
-
-name     fcs   /CCDisk/
-         fcb   edition
-
-start    lbra  Init
-         lbra  Read
-         lbra  Write
-         lbra  GetStat
-         lbra  SetStat
-         lbra  Term
-
-IRQPkt   fcb   $00,$01,$0a
-
-* Init
+* One problem -- this program is not complete in itself. If you
+*   want to boot from a double-sided disk you will need my
+*   version of OS9Gen which will generate a double-sided system
+*   disk. Don't try it with the stock version; you'll have to
+*   reformat the disk to clean it up afterwards.
+*****************************************************************
+*           Copyright 1985 by Dave Lewis.
 *
-* Entry:
-*    Y  = address of device descriptor
-*    U  = address of device memory area
+* UUCP address is loral!dml; in S. Cal. use ihnp4!sdcc3!loral
 *
-* Exit:
-*    CC = carry set on error
-*    B  = error code
+* I'm releasing this program to public domain. Copy it, share
+*   it, but don't you DARE sell it! I worked hard on it. Include
+*   this header with all copies.
 *
-Init     clra
-         sta   <D.DskTmr
-         ldx   #DPort
-         leax  $08,x
-         lda   #$D0
-         sta   ,x
-         lbsr  L0294
-         lda   ,x
-         lda   #$FF
-L003D    ldb   #MaxDrv
-         leax  DRVBEG,u
-L0041    sta   ,x
-         sta   <V.TRAK,x
-         leax  <DRVMEM,x
-         decb  
-         bne   L0041
-         leax  >NMIRtn,pcr
-         stx   >D.XNMI+1
-         lda   #$7E
-         sta   >D.XNMI
-         pshs  y
-         leay  >DevStRg,u
-         tfr   y,d
-         leay  >IRQRtn,pcr
-         leax  >IRQPkt,pcr
-         os9   F$IRQ    
-         puls  y
-         bcs   L0082
-         ldd   #256
-         pshs  u
-         os9   F$SRqMem 
-         tfr   u,x
-         puls  u
-         bcs   L0082
-         stx   >VfyBuf,u
-
-* GetStat
+* If you like this program, send me 5 bucks to encourage me to
+*   write more stuff - or at least to release it. If you send
+*   me 10 bucks I'll send you a good (Dysan) double side disk
+*   formatted 35 track single side with both sourcecode and
+*   executable binary files of the following:
 *
-* Entry:
-*    A  = function code
-*    Y  = address of path descriptor
-*    U  = address of device memory area
+*   - NewDisk -- single or double sided disks, any number of
+*       tracks within reason, step rate set in device descriptor
+*   - OS9Gen -- rewritten version that automatically senses for
+*       single/double sided disk and puts all the boot data in
+*       the right places. Also enters the kernel file in the
+*       root directory, which makes Dcheck happy.
+*   - Separate -- breaks up your bootfile into its component
+*       modules for modification. Replace or remove any module
+*       individually.
+*   - Diskdescr -- sourcecode for an OS-9 disk device descriptor
+*       with EQUates at the beginning for step rate, #tracks,
+*       and single or double sided.
+*   - Documentation and procedure files for installing all of
+*       the above in most common system configurations.
+*   - Other stuff I've written that you may find useful.
 *
-* Exit:
-*    CC = carry set on error
-*    B  = error code
+*   Send to:
+*             Dave Lewis
+*             4417 Idaho  Apt. 4
+*             San Diego CA 92116
+*****************************************************************
 *
-GetStat
-
-* Term
+         NAM NewDisk
+         TTL Improved OS-9 disk device driver module
 *
-* Entry:
-*    U  = address of device memory area
+*  Copyright 1985 by Dave Lewis
+*                4417 Idaho apt. 4
+*                San Diego, CA 92116
+*  Released to public domain January, 1986
 *
-* Exit:
-*    CC = carry set on error
-*    B  = error code
+         USE defsfile
 *
-Term     clrb
-L0082    rts   
-
-* Read
+REV      EQU 1
+TYPE     EQU DRIVR+OBJCT
+ATTR     EQU REENT+REV
 *
-* Entry:
-*    B  = MSB of the disk's LSN
-*    X  = LSB of the disk's LSN
-*    Y  = address of path descriptor
-*    U  = address of device memory area
+N.DRIVES EQU 3 Number of drives supported
+DISKRUN  EQU $70 Disk run time after access
+NMIVECT  EQU $109 NMI jump vector in RAM
+COMDREG  EQU $FF48 1793 Command register (write)
+STATREG  EQU $FF48 1793 Status register (read)
+TRAKREG  EQU $FF49 1793 Track register
+SECTREG  EQU $FF4A 1793 Sector register
+DATAREG  EQU $FF4B 1793 Data register
 *
-* Exit:
-*    CC = carry set on error
-*    B  = error code
+         MOD SIZE,NAME,TYPE,ATTR,EXEC,STORG
+         FCB $FF Mode byte -- all modes
+NAME     FCS 'CCDisk' Still the same module name
+         FCB 4 Version number
 *
-Read     lda   #$91
-         cmpx  #$0000		LSN0?
-         bne   L00AD		branch if not
-         bsr   L00AD		else branch subroutine
-         bcs   L00A3
-         ldx   PD.BUF,y		get pointer to buffer
-         pshs  y,x
-         ldy   >CurDMem,u
-         ldb   #DD.SIZ-1	copy bytes from buffer to LSN0 buffer
-L0099    lda   b,x
-         sta   b,y
-         decb  
-         bpl   L0099
-         clrb  
-         puls  pc,y,x
-L00A3    rts   
-L00A4    bcc   L00AD
-         pshs  x,b,a
-         lbsr  L02D0
-         puls  x,b,a
-
-L00AD    pshs  x,b,a
-         bsr   L00B8
-         puls  x,b,a
-         bcc   L00A3
-         lsra  
-         bne   L00A4
-L00B8    lbsr  L019E
-         bcs   L00A3
-         ldx   PD.BUF,y
-         pshs  y,cc
-         ldb   #$80
-         bsr   L00E6
-L00C5    bita  >DPort+8
-         bne   L00DC
-         leay  -$01,y
-         bne   L00C5
-         lda   >DrivSel,u
-         ora   #$08
-         sta   >DPort
-         puls  y,cc
-         lbra  L026F
-L00DC    lda   >DPort+$0B
-         sta   ,x+
-         stb   >DPort
-         bra   L00DC
-L00E6    orcc  #IntMasks
-         stb   >DPort+8
-         ldy   #$FFFF
-         ldb   #$28
-         orb   >DrivSel,u
-         stb   >DPort
-         ldb   #$A8
-         orb   >DrivSel,u
-         lbsr  L0294
-         lda   #$02
-         rts   
-
-* Write
+         RMB DRVBEG Storage common to all drives
+TABL.ORG RMB DRVMEM Drive 0 parameter table
+         RMB DRVMEM Drive 1 parameter table
+         RMB DRVMEM Drive 2 parameter table
+DRV.ACT  RMB 2 Active drive's table origin
+DPRT.IMG RMB 1 Drive control port image byte
+DRVS.RDY RMB 1 Drive ready flags
+Q.SEEK   RMB 1 Same drive/track flag
+STORG    EQU . Total storage required
 *
-* Entry:
-*    B  = MSB of the disk's LSN
-*    X  = LSB of the disk's LSN
-*    Y  = address of path descriptor
-*    U  = address of device memory area
+*  Function dispatch vectors
 *
-* Exit:
-*    CC = carry set on error
-*    B  = error code
+EXEC     LBRA INIT Initialize variables
+         LBRA READ Read one sector
+         LBRA WRITE Write one sector
+         LBRA RETNOERR GETSTA call is not used
+         LBRA SETSTA Two oddball calls
+         LBRA RETNOERR TERM call is not used
 *
-Write    lda   #$91
-L0106    pshs  x,b,a
-         bsr   L0129
-         puls  x,b,a
-         bcs   L0119
-         tst   <PD.VFY,y
-         bne   L0117
-         bsr   Verify
-         bcs   L0119
-L0117    clrb  
-L0118    rts   
-L0119    lsra  
-         lbeq  L023E
-         bcc   L0106
-         pshs  x,b,a
-         lbsr  L02D0
-         puls  x,b,a
-         bra   L0106
-L0129    bsr   L019E
-         bcs   L0118
-         ldx   PD.BUF,y
-         ldb   #$A0
-L0131    pshs  y,cc
-         bsr   L00E6
-L0135    bita  >DPort+8
-         bne   L014C
-         leay  -$01,y
-         bne   L0135
-         lda   >DrivSel,u
-         ora   #$08
-         sta   >DPort
-         puls  y,cc
-         lbra  L023E
-L014C    lda   ,x+
-         sta   >DPort+$0B
-         stb   >DPort
-         bra   L014C
-
-NMIRtn   leas  $0C,s
-         puls  y,cc
-         ldb   >DPort+8
-         bitb  #$04
-         lbne  L026F
-         lbra  L0241
-
-Verify   pshs  x,b,a
-         ldx   PD.BUF,y
-         pshs  x
-         ldx   >VfyBuf,u
-         stx   PD.BUF,y
-         ldx   $04,s
-         lbsr  L00B8
-         puls  x
-         stx   PD.BUF,y
-         bcs   L019C
-         lda   #$20
-         pshs  u,y,a
-         ldy   >VfyBuf,u
-         tfr   x,u
-L0188    ldx   ,u
-         cmpx  ,y
-         bne   L0198
-         leau  $08,u
-         leay  $08,y
-         dec   ,s
-         bne   L0188
-         bra   L019A
-L0198    orcc  #Carry
-L019A    puls  u,y,a
-L019C    puls  pc,x,b,a
-L019E    clr   >u00AA,u
-         bsr   L020D
-         tstb  
-         bne   L01B8
-         tfr   x,d
-         ldx   >CurDMem,u
-         cmpd  #$0000
-         beq   L01DD
-         cmpd  $01,x
-         bcs   L01BC
-L01B8    comb  
-         ldb   #E$Sect
-         rts   
-L01BC    clr   ,-s
-         bra   L01C2
-L01C0    inc   ,s
-L01C2    subd  #18
-         bcc   L01C0
-         addb  #18
-         lbra  L0350
-         fcb   $15
-L01CD    bls   L01DD
-         pshs  a
-         lda   >DrivSel,u
-         ora   #$10
-         sta   >DrivSel,u
-         puls  a
-L01DD    incb  
-         stb   >DPort+$0A
-L01E1    ldb   <$15,x
-         stb   >DPort+9
-         tst   >u00AA,u
-         bne   L01F2
-         cmpa  <$15,x
-         beq   L0207
-L01F2    sta   <$15,x
-         sta   >DPort+$0B
-         clrb
-         lbsr  L0372
-         pshs  x
-*         ldx   #$222E
-         ldx   #$082E
-L0201    leax  -$01,x
-         bne   L0201
-         puls  x
-L0207    clrb  
-         rts   
-
-DrvSel   fcb   $01,$02,$04,$40
-
-L020D    lbsr  L02EB
-         lda   <PD.DRV,y	$21,y
-         cmpa  #MaxDrv
-         bcs   L021B
-         comb  
-         ldb   #E$Unit
-         rts   
-
-L021B    pshs  x,b,a
-         leax  >DrvSel,pcr
-         ldb   a,x
-         stb   >DrivSel,u
-         leax  DRVBEG,u
-         ldb   #DRVMEM
-         mul   
-         leax  d,x
-         cmpx  >CurDMem,u
-         beq   L023C
-         stx   >CurDMem,u
-         com   >u00AA,u
-L023C    puls  pc,x,b,a
-L023E    ldb   >DPort+8
-L0241    bitb  #$F8
-         beq   L0259
-         bitb  #$80
-         bne   L025B
-         bitb  #$40
-         bne   L025F
-         bitb  #$20
-         bne   L0263
-         bitb  #$10
-         bne   L0267
-         bitb  #$08
-         bne   L026B
-L0259    clrb  
-         rts   
-L025B    comb  
-         ldb   #E$NotRdy
-         rts   
-L025F    comb  
-         ldb   #E$WP
-         rts   
-L0263    comb  
-         ldb   #E$Write
-         rts   
-L0267    comb  
-         ldb   #E$Seek
-         rts   
-L026B    comb  
-         ldb   #E$CRC
-         rts   
-L026F    comb  
-         ldb   #E$Read
-         rts   
-L0273    bsr   L0292
-L0275    ldb   >DPort+8
-         bitb  #$01
-         beq   L029A
-         ldd   #$00F0
-         std   >u00AD,u
-         bra   L0275
-L0285    lda   #$08
-         ora   >DrivSel,u
-         sta   >DPort
-         stb   >DPort+8
-         rts   
-L0292    bsr   L0285
-L0294    lbsr  L0297
-L0297    lbsr  L029A
-L029A    rts   
-
-* SetStat
+INIT     CLR >D.DSKTMR Zero disk rundown timer
+         LDA #$D0 `Force interrupt' command
+         STA >COMDREG
+         LDA #$FF
+         LDB #N.DRIVES Number of drives
+         STB V.NDRV,U
+         LEAX TABL.ORG,U Origin of first drive table
+INI.TBL  STA DD.TOT+1,X Make total sectors nonzero
+         STA V.TRAK,X Force first seek to track 0
+         CLR DD.FMT,X Make it see a 1-sided disk
+         LEAX DRVMEM,X Go to next drive table
+         DECB Test for last table done
+         BNE INI.TBL Loop if not finished
+         LEAX NMI.SVC,PCR Get address of NMI routine
+         STX >NMIVECT+1 NMI Jump vector operand
+         LDA #$7E Jump opcode
+         STA >NMIVECT NMI Jump vector opcode
+         LDA >STATREG Clear interrupt condition
+RETNOERR CLRB
+         RTS
 *
-* Entry:
-*    A  = function code
-*    Y  = address of path descriptor
-*    U  = address of device memory area
+ERR.WPRT COMB Set carry flag
+         LDB #E$WP Set error code
+         RTS
+ERR.SEEK COMB Set carry flag
+         LDB #E$SEEK Set error code
+         RTS
+ERR.CRC  COMB Set carry flag
+         LDB #E$CRC Set error code
+         RTS
+ERR.READ COMB Set carry flag
+         LDB #E$READ Set error code
+         RTS
 *
-* Exit:
-*    CC = carry set on error
-*    B  = error code
+* All disk controller commands exit via NMI. The service routine
+*   returns control to the address on top of stack after registers
+*   have been dumped off.
 *
-SetStat  ldx   PD.RGS,y
-         ldb   R$B,x
-         cmpb  #SS.Reset
-         beq   L02D0
-         cmpb  #SS.WTrk
-         beq   L02AB
-         comb  
-         ldb   #E$UnkSvc
-L02AA    rts   
-L02AB    lbsr  L020D
-         ldb  >DrivSel,u
-         lbra  L0341
-         nop
-L02B6    bls   L02BA
-         orb   #$10
-L02BA    stb   >DrivSel,u
-         ldx   >CurDMem,u
-         lbsr  L01E1
-         bcs   L02AA
-         ldx   PD.RGS,y
-         ldx   R$X,x
-         ldb   #$F0
-         lbra  L0131
-L02D0    lbsr  L020D
-         ldx   >CurDMem,u
-         clr   <$15,x
-         lda   #$05
-L02DC    ldb   #$40
-         nop
-         nop
-         nop
-         lbsr  L0374
-         deca  
-         bne   L02DC
-         clrb
-         lbra  L036C
-L02EB    pshs  y,x,b,a
-         lda   <D.DskTmr
-         bmi   L0301
-         bne   L0309
-         lda   #$08
-         sta   >DPort
-         ldx   #$A000
-L02FB    nop   
-         nop   
-         leax  -$01,x
-         bne   L02FB
-L0301    bsr   L0312
-         bcc   L0309
-         ldb   #$80
-         stb   <D.DskTmr
-L0309    ldd   #$00F0
-         std   >u00AD,u
-         puls  pc,y,x,b,a
-
-L0312    lda   #$01
-         sta   <D.DskTmr
-         ldx   #$0001
-         leay  >u00AD,u
-         clr   $04,y
-         ldd   #$00F0
-         os9   F$VIRQ   
-         rts   
-
-IRQRtn   pshs  a
-         tst   <D.DMAReq
-         beq   L0330
-         bsr   L0312
-         bra   L033F
-L0330    clr   >DPort
-         lda   >DevStRg,u
-         anda  #$FE
-         sta   >DevStRg,u
-         clr   <D.DskTmr
-L033F    puls  pc,a
-
-L0341    lda   R$Y+1,x		get density byte
-         bita  #DNS.MFM
-         bne   L0349
-         orb   #$40
-L0349    lda   R$U+1,x		get track lo-byte
-         cmpa  #$15
-         lbra  L02B6
-
-L0350    lda   <DD.FMT,x
-         bita  #DNS.MFM
-         beq   L0365
-         lsr   ,s
-         bcc   L0365
-         lda   >DrivSel,u
-         ora   #$40
-         sta   >DrivSel,u
-L0365    puls  a
-         cmpa  #$15
-         lbra  L01CD
-
-L036C    orb   <PD.STP,y
-         lbra  L0273
-L0372    addb  #$10
-L0374    orb   <PD.STP,y
-         pshs  a
-         lbsr  L0273
-         puls  a
-         rts
-
-         emod
-eom      equ   *
-         end
-
+NMI.SVC  LEAS R$SIZE,S Dump registers off stack
+         LDA >STATREG Get status condition
+STAT.TST LSLA Test status register bit 7
+         LBCS ERR.NRDY Status = Not Ready if set
+         LSLA Test bit 6
+         BCS ERR.WPRT Status = Write Protect if set
+         LSLA Test bit 5
+         LBCS ERR.WRT Status = Write Fault if set
+         LSLA Test bit 4
+         BCS ERR.SEEK Status = Record Not Found
+         LSLA Test bit 3
+         BCS ERR.CRC Status = CRC Error if set
+         LSLA Test bit 2
+         BCS ERR.READ Status = Lost Data if set
+         CLRB No error if all 0
+RETURN1  RTS
+*
+READ     TSTB If LSN is greater than 65,536
+         BNE ERR.SECT   return a sector error
+         LDA #$A4 Set retry control byte
+         CMPX #0 Is it sector 0?
+         BNE READ2 If not, just read the data
+         BSR READ2 If sector 0, read it and
+         BCS RETURN1   update drive table
+         PSHS Y,X Save X and Y
+         LDX PD.BUF,Y Point to data buffer
+         LDY DRV.ACT,U Point to active drive's table
+         LDB #DD.RES+1 Counter and offset pointer
+SEC0LOOP LDA B,X Get byte from buffer
+         STA B,Y Store in drive table
+         DECB Decrement loop index
+         BPL SEC0LOOP Loop until B < 0
+         CLRB No error
+         PULS X,Y,PC Pull and return
+*
+WRITE    TSTB If LSN is greater than 65,536
+         BNE ERR.SECT   return a sector error
+         LDA #$A4 Set retry control byte
+         PSHS X,A,CC Save registers
+         LBSR DSKSTART Start and select drive
+         BCS EXIT.ERR Exit if error
+REWRITE  LDX 2,S Get LSN off stack
+         LBSR SEEK Position head at sector
+         BCS RETRY.WR Try again if seek error
+         BSR WRITE2 Write the sector
+         BCS RETRY.WR Try again if write error
+         TST PD.VFY,Y Check verify flag
+         BNE EXIT.NER Exit without verify if off
+         BSR VERIFY Verify sector just written
+         BCC EXIT.NER Exit if no error
+RETRY.WR LDA 1,S Get retry control byte
+         LSRA Indicate another try
+         STA 1,S Put updated byte back
+         BEQ EXIT.ERR If zero, no more chances
+         BCC REWRITE If bit 0 was 0, don't home
+         BSR HOME Home and start all over
+         BCC REWRITE If it homed OK, try again
+EXIT.ERR PULS CC Restore interrupt masks
+         COMA Set carry for error
+         BRA CCDEXIT Finish exit
+*
+EXIT.NER PULS CC Restore interrupt masks
+         CLRB Clear carry -- no error
+CCDEXIT  LDA #8 Spindle motor control bit
+         STA >DPORT Deselect disk drive
+         PULS A,X,PC Pull and return
+*
+ERR.SECT COMB Set carry flag for error
+         LDB #E$SECT Set error code
+         RTS
+*
+READ2    PSHS X,A,CC CC is on top of stack
+         LBSR DSKSTART Start drives and test
+         BCS EXIT.ERR Abort if not ready
+REREAD   LDX 2,S Recover LSN from stack
+         LBSR SEEK Position head at sector
+         BCS RETRY.RD Try again if seek error
+         BSR READ3 Read the sector
+         BCC EXIT.NER Read OK, return data
+RETRY.RD LDA 1,S Get retry control byte
+         LSRA Indicate another try
+         STA 1,S Put updated byte back
+         BEQ EXIT.ERR If it was all 0, quit
+         BCC REREAD If bit 0 was 0, don't home
+         BSR HOME Home and start all over
+         BCC REREAD If it won't home, quit now
+         BRA EXIT.ERR Exit with an error
+*
+WRITE2   LDA #$A2 `Write sector' command
+         BSR RWCMDX Execute command
+WAITWDRQ BITA >STATREG Wait until controller is
+         BEQ WAITWDRQ   ready to transfer data
+*
+WRTLOOP  LDA ,X+ Get byte from data buffer
+         STA >DATAREG Put it in data register
+         STB >DPORT Activate DRQ halt function
+         BRA WRTLOOP Loop until interrupted
+*
+VERIFY   LDA #$82 `Read sector' command
+         BSR RWCMDX Execute command
+WAITVDRQ BITA >STATREG Wait until controller is
+         BEQ WAITVDRQ   ready to transfer data
+*
+VFYLOOP  LDA >DATAREG Get read data byte
+         STB >DPORT Activate DRQ halt function
+         CMPA ,X+ Compare to source data
+         BEQ VFYLOOP Loop until interrupt if equal
+*
+         ANDB #$7F Mask off DRQ halt bit
+         STB >DPORT Disable DRQ halt function
+         LBSR KILLCOMD Abort read command
+ERR.WRT  COMB Set carry flag
+         LDB #E$WRITE Set error code
+         RTS
+*
+SS.HOME  PSHS X,A,CC Set up stack for exit
+         BSR HOME Home drive
+         BRA SS.EXIT Skip to empty-stack exit
+SS.EXIT4 LEAS 2,S Exit w/4 bytes on stack
+SS.EXIT2 LEAS 2,S Exit w/2 bytes on stack
+SS.EXIT  BCS EXIT.ERR Exit with error
+         BRA EXIT.NER Exit with no error
+*
+HOME     LBSR DSKSTART Start and select drive
+         BCS RETURN2 Return if error
+         LDX DRV.ACT,U Point to active drive's table
+         CLR V.TRAK,X Set track number to zero
+         LDD #$43C Home, verify, allow 3 seconds
+         LBSR STEPEX Execute stepping command
+RETURN2  RTS
+*
+SETSTA   LDX PD.RGS,Y Point to caller's stack
+         LDB R$B,X Get stacked B register
+         CMPB #SS.RESET `Home' call
+         BEQ SS.HOME Execute Home sequence
+         CMPB #SS.WTRK `Write track' call, used by
+         BEQ WRT.TRAK   the Format utility
+         COMB If not one of those, it's an
+         LDB #E$UNKSVC   illegal setsta call
+         RTS
+*
+READ3    LDA #$82 Read sector command
+         BSR RWCMDX Set up for sector read
+WAITRDRQ BITA >STATREG Wait for controller to find
+         BEQ WAITRDRQ   sector and start reading
+*
+READLOOP LDA >DATAREG Get data from controller
+         STA ,X+ Store in sector buffer
+         STB >DPORT Activate DRQ halt function
+         BRA READLOOP Loop until interrupted
+*
+RWCMDX   LDX PD.BUF,Y Point to sector buffer
+         LDB DPRT.IMG,U Do a side verify using the
+         BITB #$40   DPORT image byte as a side
+         BEQ WTKCMDX   select indicator
+         ORA #8 Compare for side 1
+WTKCMDX  STA >COMDREG Issue command to controller
+         LDB #$A8 Set up DRQ halt function
+         ORB DPRT.IMG,U OR in select bits
+         LDA #2 DRQ bit in status register
+         RTS
+*
+* Write an entire track -- used by Format
+*
+WRT.TRAK PSHS X,A,CC Set up stack for exit
+         LDA R$U+1,X Get track number
+         LDB R$Y+1,X Get side select bit
+         LDX R$X,X Get track buffer address
+         PSHS X,D Save 'em
+         LBSR DSKSTART Start and select drive
+         BCS SS.EXIT4 Exit if error
+         PULS D Get track number and side
+         LDX DRV.ACT,U Get drive table address
+         BSR SID.PCMP Get drive ready to go
+         TST Q.SEEK,U Different drive/track?
+         BNE WRT.TRK2 If not, no need to seek
+         LDD #$103C Seek, allow 3 seconds
+         LBSR STEPEX Execute stepping command
+         BCS SS.EXIT2 Exit if error
+WRT.TRK2 PULS X Retrieve track buffer address
+         LDA #$F0 `Write track' command
+         BSR WTKCMDX Execute write track command
+         LBSR WAITWDRQ Just like a Write Sector
+         LBRA SS.EXIT Return to caller
+*
+SID.PCMP LSRB Bit 0 of B is set for
+         BCC SIDE.ONE   side 2 of disk
+         LDB DPRT.IMG,U Get drive control image byte
+         ORB #$40 Side 2 select bit
+         STB DPRT.IMG,U Activate side 2 select
+SIDE.ONE CMPA PD.CYL+1,Y If track number exceeds #
+         LBHI ERR.SECT   of tracks, return error
+SD.PCMP2 LDB PD.DNS,Y Check track density of drive
+         LSRB Shift bit 1 (TPI bit) into
+         LSRB   carry flag (1 = 96 TPI)
+         LDB #20 Precomp starts at track 21
+         BCC FORTYTKS   on 48 TPI drives, track 41
+         LSLB   on 96 TPI drives
+FORTYTKS PSHS B Put B where it can be used
+         CMPA ,S+ Does it need precomp?
+         BLS NOPRECMP No, skip next step
+         LDB DPRT.IMG,U Get drive control image byte
+         ORB #$10 Write precompensation bit
+         STB DPRT.IMG,U Activate precompensation
+NOPRECMP LDB V.TRAK,X Get current track number
+         STB >TRAKREG Update disk controller
+         CMPA V.TRAK,X Same track as last access?
+         BEQ SAMETRAK If so, leave flag set
+         CLR Q.SEEK,U Clear same drive/track flag
+SAMETRAK STA V.TRAK,X Update track number
+         STA >DATAREG Set destination track
+         LDB DPRT.IMG,U Get disk control byte
+         STB >DPORT Update control port
+         RTS
+*
+* Translate logical sector number (LSN) to physical side, track
+*   and sector, activate write precompensation if necessary,
+*   and execute seek command. If any error occurs, return error
+*   number to calling routine.
+*
+SEEK     LDD PD.SCT,Y Get #sectors per track
+         PSHS X,D Put LSN and sec/trk on stack
+         LDD 2,S Get LSN off stack
+         CLR 2,S Set up track counter
+FINDTRAK INC 2,S Increment track counter
+         SUBD ,S Subtract sectors in one track
+         BPL FINDTRAK Loop if LSN still positive
+         ADDD ,S++ Restore sector number
+         INCB Sector numbers start at 1
+         STB 1,S Save sector number
+         PULS A Get track number
+         DECA Compensate for extra count
+         LDX DRV.ACT,U Get active table address
+         LDB DD.FMT,X See if disk is double sided
+         BITB #1 Test #sides bit
+         BEQ SEEK2 If one-sided, skip next step
+         LSRA Divide track number by 2
+         ROLB Put remainder in B bit 0
+SEEK2    BSR SID.PCMP Set up precomp and side sel
+         PULS B Get sector number
+         STB >SECTREG Set destination sector
+         TST Q.SEEK,U Same drive/track?
+         BNE COMDEXIT If so, no need to seek
+         LDD #$143C Seek with verify, allow 3 sec
+         BRA STEPEX Execute stepping command
+*
+* Execute command in A and wait for it to finish. If it runs
+*   normally or aborts with an error it will exit through NMI;
+*   if it takes an unreasonable amount of time this routine
+*   will abort it and set the carry flag. If the command
+*   involves head movement, use STEPEX to set step rate.
+* On entry, A contains command code and B contains time limit
+*   in 50-millisecond increments.
+*
+STEPEX   PSHS A Put raw command on stack
+         LDA PD.STP,Y Get step rate code
+         EORA #3 Convert to 1793's format
+         ORA ,S+ Combine with raw command
+COMDEX   STA >COMDREG Execute command in A
+         CLRA Clear carry flag
+         BSR WAIT50MS Wait while command runs
+         BCC COMDEXIT Exit if no error
+         CMPB #E$NOTRDY Test for the three valid
+         BEQ KCEXIT   error codes for a Type 1
+         CMPB #E$SEEK   disk controller command --
+         BEQ KCEXIT   home, seek or force int-
+         CMPB #E$CRC   errupt -- and return the
+         BEQ KCEXIT   errors
+COMDEXIT CLRB No error, clear carry
+         RTS
+*
+WAIT50MS LDX #$15D8 Almost exactly 50 mSec delay
+WAITIMER LEAX -1,X Wait specified time for disk
+         BNE WAITIMER   controller to issue NMI
+         DECB   signaling command completed
+         BNE WAIT50MS   or aborted with error
+KILLCOMD LDA #$D0 Force interrupt, NMI disabled
+         STA >COMDREG Abort command in progress
+ERR.NRDY LDB #E$NOTRDY Set error code
+KCEXIT   COMA Set carry to flag error
+         RTS
+*
+*
+* Get selected drive ready to read or write. If spindle motors are
+*   stopped, start them and wait until they're up to operating
+*   speed. Check drive number and select drive if number is valid.
+*   Monitor index pulses to ensure door is closed, disk inserted
+*   and turning, etc. Return appropriate error code if any of
+*   these conditions can't be met.
+*
+DSKSTART TST >D.DSKTMR Are drives already running?
+         BNE SPINRDY If so, no need to wait
+         CLR DRVS.RDY,U No drives are ready
+         LDD #$80B Motor on, wait 550 mSec
+         STA >DPORT Start spindle motors
+         BSR WAIT50MS Wait for motors to start
+SPINRDY  LDA PD.DRV,Y Get drive number
+         CMPA V.NDRV,U Test for valid drive #
+         BHS ERR.UNIT Return error if not
+         LEAX TABL.ORG,U Compute address of active
+         LDB #DRVMEM   drive's parameter table
+         MUL   TABL.ORG + (D# * tablesize)
+         LEAX D,X Add computed offset to origin
+         LDA PD.DRV,Y Get drive number again
+         LSLA Set corresponding drv select
+         BNE NOTDRV0   bit -- 1 for D1, 2 for D2
+         INCA Set bit 0 for drive 0
+NOTDRV0  TFR A,B Copy select bit
+         ORB #$28 Enable double density
+         ORCC #INTMASKS Disable IRQ and FIRQ
+         STB >DPORT Enable drive
+         STB DPRT.IMG,U Set image byte
+         CLR Q.SEEK,U Clear same drive/track flag
+         CMPX DRV.ACT,U Is this the same drive?
+         BNE NEWDRIVE If not, leave flag zeroed
+         LDB #$FF Indicate successive accesses
+         STB Q.SEEK,U   to the same drive.
+NEWDRIVE STX DRV.ACT,U Store table address
+         BITA DRVS.RDY,U Has this drive been ready
+         BNE DRVRDY   since the motors started?
+         PSHS A Save drive select bit
+         LDD #$D405 Force int, allow 250 mSec
+         BSR COMDEX Look for index pulse
+         PSHS CC Save carry flag condition
+         BSR KILLCOMD Clear index-pulse NMI state
+         PULS CC,A Restore carry flag and A
+         BCS RETURN3 Error if no index pulse
+DRVRDY   ORA DRVS.RDY,U Set corresponding drive
+         STA DRVS.RDY,U   ready flag
+         LDA #DISKRUN Restart disk rundown timer
+         STA >D.DSKTMR
+         LDA >STATREG Clear interrupt condition
+         CLRB Return no error
+RETURN3  RTS
+*
+ERR.UNIT COMB Set carry flag
+         LDB E$UNIT Set error code
+         RTS
+*
+         EMOD CRC bytes
+SIZE     EQU *
+         END
