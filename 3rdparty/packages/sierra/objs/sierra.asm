@@ -3,33 +3,11 @@
 *
 * $Id$
 *
-*   Header for : sierra
-*   Module size: $561  #1377
-*   Module CRC : $E178D8 (Good)
-*   Hdr parity : $4C
-*   Exec. off  : $0014  #20
-*   Data size  : $1FFF  #8191
-*   Edition    : $00  #0
-*   Ty/La At/Rv: $11 $81
-*   Prog mod, 6809 Obj, re-ent, R/O
-*
-***** The following patch is NOT included in this disassembly *****
-*****   Will be included in the next revision                 *****
-* Patch to correct use of wrong register when determining monitor
-* type.  Game will now start up in the same mode (RGB or composite)
-* that was active when the game was started.  
-* The -R option also works now.
-*
-* l sierra
-* c 177 a7 e7
-* c 17b 84 c4
-* c 17d b7 f7
-* v
-*
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 0      Disassembly of original distribution and       PWZ 03/01/31
+*   0    Disassembly of original distribution and       PWZ 03/01/31
 *        merged in comments from disasm dated 1992
+*   1    Monitor type bug now fixed                     BGP 03/03/10
 
 *Monitor defs
 COMP    equ   0
@@ -122,7 +100,7 @@ u0xxx    rmb   6450
 size     equ   .
 name     equ   *
          fcs   /sierra/
-         fcb   $00 
+         fcb   $01 
 
 start    equ   *
 L0014   lbra L007D  branch to entry process params
@@ -324,9 +302,9 @@ L0146    std   ,x++
          ldb   #SS.Montr   monitor type code (not listed for getstat $92  
          os9   I$GetStt    make the call
          tfr   x,d         save in d appears he expects montype returned
-         sta   >L0119,pcr  trim it to a byte and save it 
-         anda  #$01        mask out mono type only RGB or COMP
-         sta   >$0553      save that value off 
+         stb   >L0119,pcr  trim it to a byte and save it 
+         andb  #$01        mask out mono type only RGB or COMP
+         stb   >$0553      save that value off 
 
 *  set current montype
 *  SetStat Function Code $92 
