@@ -10,6 +10,8 @@
 *        fixes
 *  14    Updated to reflect new release, changed /H0    BGP 02/07/19
 *        to /DD
+*  15    Merged ROM and non-ROM sysgos, removed 'tsmon' BGP 02/07/19
+*        and added 'AutoEx' feature ala Level Two
 
          nam   SysGo
          ttl   OS-9 Level One 2 SysGo
@@ -22,7 +24,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   14
+edition  set   15
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -42,6 +44,9 @@ BootMsg  fcc   "OS-9 LEVEL ONE VR. 0"
          fcc   ".0"
          fcb   48+OS9Minor
          fdb   C$CR,C$LF
+
+* For ROM version, cut down on verbage
+         ifne  DiskGo
          fcc   !'PHOENIX' RELEASE 08/01/2002!
          fdb   C$CR,C$LF
          fcc   "HTTP://COCOOS9.SOURCEFORGE.NET"
@@ -54,28 +59,35 @@ BootMsg  fcc   "OS-9 LEVEL ONE VR. 0"
          fdb   C$CR,C$LF
          fcc   "ALL RIGHTS RESERVED."
          fdb   C$CR,C$LF
+         endc
+
          fcb   C$LF
 MsgEnd   equ   *
 
+         ifne  DiskGo
 ChdDev   fcc   "/DD"
          fcb   C$CR
 ChxDev   fcc   "/DD/"
 ChxPath  fcc   "CMDS"
          fcb   C$CR
          fcc   ",,,,,,,,,,"
+         endc
 
 Shell    fcc   "Shell"
+CrRtn    fcb   C$CR
+
+AutoEx   fcc   "AutoEx"
          fcb   C$CR
 
-         fcc   "tsmon"
-         fcb   C$CR
+         ifne  DiskGo
 Startup  fcc   "startup -p"
          fcb   C$CR
          fcc   ",,,,,,,,,,"
 StartupL equ   *-Startup
+         endc
 
 * Default time packet
-*              YY MM DD HH MM SS
+*               YY MM DD HH MM SS
 TimePckt fcb   102,08,01,00,00,00
 
 * BASIC reset code
@@ -107,6 +119,8 @@ CopyLoop lda   ,x+
          os9   I$Write
          leax  >TimePckt,pcr
          os9   F$STime
+
+         ifne  DiskGo
          leax  >ChxPath,pcr
          lda   #EXEC.
          os9   I$ChgDir
@@ -118,11 +132,15 @@ CopyLoop lda   ,x+
          lda   #EXEC.
          os9   I$ChgDir
          bcc   DoStrtup
+         endc
 
 * Set priority and do startup file
 DoStrtup os9   F$ID
          ldb   #DefPrior
          os9   F$SPrior
+
+         ifne  DiskGo
+* First, do startup
          leax  >Shell,pcr
          leau  >Startup,pcr
          ldd   #256
@@ -130,7 +148,18 @@ DoStrtup os9   F$ID
          os9   F$Fork
          bcs   DeadEnd
          os9   F$Wait
+         endc
 
+* Second, attempt to find AutoEx
+FrkAuto  leax  >AutoEx,pcr
+         leau  >CrRtn,pcr
+         ldd   #256
+         ldy   #1
+         os9   F$Fork
+         bcs   DeadEnd
+         os9   F$Wait
+
+* Third, do Shell
 FrkShell leax  >Shell,pcr
          ldd   #256
          ldy   #$0000
@@ -138,6 +167,7 @@ FrkShell leax  >Shell,pcr
          bcs   DeadEnd
          os9   F$Wait
          bcc   FrkShell
+
 DeadEnd  bra   DeadEnd
 
 * Intercept routine
