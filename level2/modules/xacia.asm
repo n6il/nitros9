@@ -18,7 +18,7 @@
 DCDStBit equ   %00100000  DCD status bit for SS.CDSta call
 DSRStBit equ   %01000000  DSR status bit for SS.CDSta call
 Edtn     equ   10
-Vrsn     equ   1
+rev      equ   0
 
 * conditional assembly flags
 *A6551    set   true       6551 SACIA version
@@ -274,7 +274,7 @@ RxBufDSz equ   256-.      default Rx buffer gets remainder of page...
 RxBuff   rmb   RxBufDSz   default Rx buffer
 MemSize  equ   .
 
-         mod   ModSize,ModName,Drivr+Objct,ReEnt+Vrsn,ModEntry,MemSize
+         mod   ModSize,ModName,Drivr+Objct,ReEnt+rev,ModEntry,MemSize
 
          fcb   UPDAT.     access mode(s)
 

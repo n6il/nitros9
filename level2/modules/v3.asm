@@ -17,7 +17,7 @@
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 
 * Window descriptor definitions
 szx      set   32         number of columns for display

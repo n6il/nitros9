@@ -33,7 +33,7 @@ GI.Toggl equ   %00000001  GIME CART* IRQ enable bit, for CC3
 
          ifp1            
          use   defsfile  
-         endc            
+         ENDC            
 
 Edtn     equ   9         
 Vrsn     equ   5         
@@ -103,14 +103,14 @@ SvcVIRQ  clra             Flag if we find any VIRQs to service
          bra   virqent   
 
 virqloop equ   *         
-         ifgt  Level-2   
+         IFGT  Level-2   
          ldd   2,y        Get Level 3 extended map type
          orcc  #IntMasks 
          sta   >$0643    
          stb   >$0645    
          std   >$FFA1    
          andcc  #^IntMasks
-         endc            
+         ENDC            
 
          ldd   Vi.Cnt,x   Decrement tick count
          IFNE  H6309     
@@ -131,7 +131,7 @@ notzero  std   Vi.Cnt,x
 virqent  ldx   ,y++      
          bne   virqloop  
 
-         ifgt  Level-2   
+         IFGT  Level-2   
          puls  d         
          orcc  #Carry    
          stb   >$0643    
@@ -140,28 +140,28 @@ virqent  ldx   ,y++
          stb   >$0645    
          stb   >$FFA1    
          andcc  #^IntMasks
-         else            
+         ELSE            
          puls  a          Get VIRQ status flag: high bit set if VIRQ
-         endc            
+         ENDC            
 
          ora   <D.IRQS    Check to see if other hardware IRQ pending.
          bita  #%10110111 Any V/IRQ interrupts pending?
          beq   toggle    
-         ifgt  Level-2   
+         IFGT  Level-2   
          lbsr  DoPoll     Yes, go service them.
-         else            
+         ELSE            
          bsr   DoPoll     Yes, go service them.
-         endc            
+         ENDC            
          bra   KbdCheck  
 toggle   equ   *         
-         ifgt  Level-2   
+         IFGT  Level-2   
          lbsr  DoToggle   No, toggle GIME anyway
-         else            
+         ELSE            
          bsr   DoToggle   No, toggle GIME anyway
-         endc            
+         ENDC            
 
 KbdCheck equ   *         
-         ifgt  Level-2   
+         IFGT  Level-2   
          lda   >$0643     grab current map type
          ldb   >$0645    
          pshs  d          save it
@@ -172,18 +172,18 @@ KbdCheck equ   *
          inca            
          sta   >$0645    
          sta   >$FFA2     map in SCF, CC3IO, WindInt, etc.
-         endc            
+         ENDC            
 
          jsr   [>D.AltIRQ] go update mouse, gfx cursor, keyboard, etc.
 
-         ifgt  Level-2   
+         IFGT  Level-2   
          puls  d          restore original map type ---x
          orcc  #IntMasks 
          sta   >$0643     into system DAT image ---x
          stb   >$0645    
          std   >$FFA1     and into RAM ---x
          andcc  #$AF      
-         endc            
+         ENDC            
 
          dec   <D.Tick    End of second?
          bne   VIRQend    No, skip time update and alarm check
@@ -238,23 +238,23 @@ VIRQend  jmp   [>D.Clock] Jump to kernel's timeslice routine
 * Call [D.Poll] until all interrupts have been handled
 *
 Dopoll                   
-         ifgt  Level-2   
+         IFGT  Level-2   
          lda   >$0643     Level 3: get map type
          ldb   >$0645    
          pshs  d          save for later
-         endc            
+         ENDC            
 Dopoll.i                 
          jsr   [>D.Poll]  Call poll routine
          bcc   DoPoll.i   Until error (error -> no interrupt found)
 
-         ifgt  Level-2   
+         IFGT  Level-2   
          puls  d         
          orcc  #IntMasks 
          sta   >$0643    
          stb   >$0645    
          std   >$FFA1    
          andcc  #^IntMasks
-         endc            
+         ENDC            
 
 *
 * Reset GIME to avoid missed IRQs
@@ -283,11 +283,11 @@ F.VIRQ   pshs  cc
          ldb   PollCnt,x  Number of polling table entries from INIT
          ldx   R$X,u      Zero means delete entry
          beq   RemVIRQ   
-         ifgt  Level-2   
+         IFGT  Level-2   
          bra   FindVIRQ   ---x
 
 v.loop   leay  4,y        ---x
-         endc            
+         ENDC            
 FindVIRQ ldx   ,y++       Is VIRQ entry null?
          beq   AddVIRQ    If yes, add entry here
          decb            
@@ -298,27 +298,27 @@ FindVIRQ ldx   ,y++       Is VIRQ entry null?
          rts             
 
 AddVIRQ                  
-         ifgt  Level-2   
+         IFGT  Level-2   
          ldx   R$Y,u     
          stx   ,y        
          lda   >$0643    
          ldb   >$0645    
          std   2,y       
-         else            
+         ELSE            
          leay  -2,y       point to first null VIRQ entry
          ldx   R$Y,u     
          stx   ,y        
-         endc            
+         ENDC            
          ldy   R$D,u     
          sty   ,x        
          bra   virqexit  
 
-         ifgt  Level-2   
+         IFGT  Level-2   
 v.chk    leay  4,y       
 RemVIRQ  ldx   ,y        
-         else            
+         ELSE            
 RemVIRQ  ldx   ,y++      
-         endc            
+         ENDC            
          beq   virqexit  
          cmpx  R$Y,u     
          bne   RemVIRQ   
@@ -329,21 +329,22 @@ virqexit puls  cc
 
 DelVIRQ  pshs  x,y       
 DelVLup                  
-         ifgt  Level-2   
+         IFGT  Level-2   
          ldq              ,y++		move entries up in table
          leay  2,y       
          stq              -8,y
          bne   DelVLup   
          puls  x,y,pc    
-         else            
+         ELSE            
          ldx   ,y++       move entries up in table
          stx   -4,y      
          bne   DelVLup   
          puls  x,y       
          leay  -2,y      
          rts             
-         endc            
+         ENDC            
 
+         IFGT  Level-1
 *------------------------------------------------------------
 *
 * Handle F$Alarm call
@@ -375,18 +376,31 @@ GetAlarm cmpd  #2
 AlarmErr comb            
          ldb   #E$IllArg 
          rts             
+         ENDC
 
 *------------------------------------------------------------
 *
 * Handle F$Time System call
 *
-F.Time   ldx   #D.Time    Address of system time packet
+F.Time   equ   *
+         IFGT  Level-1
+         ldx   #D.Time    Address of system time packet
 RetTime  ldy   <D.Proc    Get pointer to current proc descriptor
          ldb   P$Task,y   Process Task number
          lda   <D.SysTsk  From System Task
          ldu   R$X,u     
 STime.Mv ldy   #6         Move 6 bytes
 FMove    os9   F$Move    
+         ELSE
+         ldx   R$X,u	get pointer to caller's space
+         ldd   <D.Year	get year and month
+         std   ,x
+         ldd   <D.Day	get day and hour
+         std   2,x
+         ldd   <D.Min	get minute and second
+         std   4,x
+         clrb
+         ENDC
          rts             
 
 *------------------------------------------------------------
@@ -396,12 +410,23 @@ FMove    os9   F$Move
 * First, copy time packet from user address space to system time
 * variables, then fall through to code to update RTC.
 *
-F.STime  ldx   <D.Proc    Caller's process descriptor
+F.STime  equ  *
+         IFGT  Level-1
+         ldx   <D.Proc    Caller's process descriptor
          lda   P$Task,x   Source is in user map
          ldx   R$X,u      Address of caller's time packet
          ldu   #D.Time    Destination address
          ldb   <D.SysTsk  Destination is in system map
          bsr   STime.Mv   Get time packet (ignore errors)
+         ELSE
+         ldx   R$X,u
+         ldd   ,x
+         std   <D.Year
+         ldd   2,x
+         std   <D.Day
+         ldd   4,x
+         std   <D.Min
+         ENDC
          lda   #TkPerSec  Reset to start of second
          sta   <D.Tick   
 
@@ -446,12 +471,15 @@ InitCont ldx   #PIA0Base  point to PIA0
          pshs  cc         save IRQ enable status (and Carry clear)
          orcc  #IntMasks  stop interrupts
 
+         IFGT  Level-1
+* Note: this code can go away once we have a rel_50hz
          IFEQ  TkPerSec-50
          ldb   <D.VIDMD   get video mode register copy
          orb   #$08       set 50 Hz VSYNC bit
          stb   <D.VIDMD   save video mode register copy
          stb   >$FF98     set 50 Hz VSYNC
          ENDC            
+         ENDC
 
          sta   1,x        enable DDRA
          sta   ,x         set port A all inputs
@@ -476,10 +504,13 @@ InitCont ldx   #PIA0Base  point to PIA0
          stx   <D.VIRQ   
          leay  NewSvc,pcr insert syscalls
          os9   F$SSvc    
+         IFGT  Level-1
+* H6309 optimization opportunity here using oim
          lda   <D.IRQER   get shadow GIME IRQ enable register
          ora   #$08       set VBORD bit
          sta   <D.IRQER   save shadow register
          sta   >IRQEnR    enable GIME VBORD IRQs
+         ENDC
 
 * Call Clock2 init routine
          ldy   <D.Clock2  get entry point to Clock2

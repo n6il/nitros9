@@ -14,9 +14,9 @@
          endc  
 
 Edtn     equ   1
-Vrsn     equ   1
+rev      equ   0
 
-         mod   ModSize,DvcNam,Devic+Objct,ReEnt+Vrsn,MgrNam,DrvNam
+         mod   ModSize,DvcNam,Devic+Objct,ReEnt+rev,MgrNam,DrvNam
 
          fcb   UPDAT.     access mode(s)
          fcb   HW.Page    hardware page

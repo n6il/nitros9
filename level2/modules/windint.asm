@@ -14,7 +14,7 @@
          use   defsfile
          endc  
 
-rev      set   $01
+rev      set   $00
 edition  set   29
 
          mod   eom,name,Systm+Objct,ReEnt+rev,WindInt,$60

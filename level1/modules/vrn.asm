@@ -56,7 +56,7 @@ RTCount  equ   ($0100-.)/RTSize number of tables that fit in balance of page
 RAMTbls  rmb   RTCount*RTSize space for RAM tables
 VMem     equ   .
 
-rev      set   $01
+rev      set   $00
 edition  set   1
 
          mod   VEnd,VName,Drivr+Objct,ReEnt+rev,VEntry,VMem

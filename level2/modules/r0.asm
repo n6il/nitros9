@@ -16,7 +16,7 @@
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 
 RAMSize  set   128
 SAS      set   4
