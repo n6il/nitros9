@@ -33,6 +33,7 @@ OS9DEFS  set   1
 * 02/04/04 Consoldated Level 2/Level 2 V3 os9defs                       BGP
 * 02/04/30 Added NitrOS-9 definitions                                   BGP
 * 03/05/30 Added WD1002 sys vars to Level One section                   BGP
+* 03/06/02 Fixed incorrectly ordered D.X*** system globals for L-I      BGP
 
 true     equ   1          useful name
 false    equ   0          useful name
@@ -407,19 +408,18 @@ D.CLTB   rmb   2          Pointer to clock interrupt table (VIRQ) $86
 D.MDREG  rmb   1          6309 MD (mode) shadow register $88 (added in V2.01.00)
 D.CRC    rmb   1          CRC checking mode flag $89 (added in V2.01.00)
 
-         org   $FE
-D.XClock rmb   2
-D.XSWI3  rmb   2
-D.XSWI2  rmb   2
-D.XFIRQ  rmb   2
-D.XIRQ   rmb   2
-D.XSWI   rmb   2
-D.XNMI   rmb   2
+         org   $100
+D.XSWI3  rmb   3
+D.XSWI2  rmb   3
+D.XSWI   rmb   3
+D.XNMI   rmb   3
+D.XIRQ   rmb   3
+D.XFIRQ  rmb   3
 
-* TABLE SIZES
-BMAPSZ   equ   32         BIT MAP SIZE
-SVCTNM   equ   2          NUMBER OF SERVICE REQUEST TABLES
-SVCTSZ   equ   (256-BMAPSZ)/SVCTNM-2 SERVICE REQUEST TABLE SIZE
+* Table Sizes
+BMAPSZ   equ   32         Bitmap table size
+SVCTNM   equ   2          Number of service request tables
+SVCTSZ   equ   (256-BMAPSZ)/SVCTNM-2 Service request table size
 
          ELSE
 

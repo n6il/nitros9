@@ -84,9 +84,9 @@ L0041    sta   ,x
          decb  
          bne   L0041
          leax  >NMIRtn,pcr
-         stx   >D.XNMI
+         stx   >D.XNMI+1
          lda   #$7E
-         sta   >D.XSWI+1
+         sta   >D.XNMI
          pshs  y
          leay  >DevStRg,u
          tfr   y,d
