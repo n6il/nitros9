@@ -14,6 +14,7 @@
 
          ifp1
          use   defsfile
+         use   scfdefs
          endc
 
 tylg     set   Systm+Objct
@@ -884,7 +885,7 @@ L0632    rts
 
 ErrHead  fcc   /ERROR #/
 ErrNum   equ   *-ErrHead
-         fcb   $2F,$3A,$30,$0D
+         fcb   $2F,$3A,$30,C$CR
 ErrLen   equ   *-ErrHead
 
 FPErr    ldx   <D.Proc
@@ -896,7 +897,7 @@ FPErr    ldx   <D.Proc
          leay  ,s
 L064C    lda   ,x+
          sta   ,y+
-         cmpa  #$0D
+         cmpa  #C$CR
          bne   L064C
          ldb   R$B,u                   get error #
 L0656    inc   ErrNum+0,s
