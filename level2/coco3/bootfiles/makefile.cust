@@ -12,8 +12,9 @@ DEPENDS		= ./Makefile
 
 KERNEL_1773	= $(MD)/rel $(MD)/boot_1773 $(MD)/os9p1
 KERNEL_ROM	= $(MD)/rel $(3PB)/boot_rom $(MD)/os9p1
-KERNEL_KENTON	= $(MD)/rel $(3PD)/superscsi/boot_ktlr_id5_l2 $(MD)/os9p1
-KERNEL_TC3	= $(MD)/rel $(3PD)/superscsi/boot_tc3_id0_l2 $(MD)/os9p1
+KERNEL_KENTON	= $(MD)/rel $(C9)/superscsi/boot_id0_ktlr_l2 $(MD)/os9p1
+KERNEL_TC3	= $(MD)/rel $(C9)/superscsi/boot_id0_tc3_l2 $(MD)/os9p1
+KERNEL_GHOST	= $(MD)/rel $(C9)/ghost/boot_ghost_l2 $(MD)/os9p1
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_1773	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
@@ -38,12 +39,28 @@ BOOTFILE_ROM	= $(MD)/rominfo $(MD)/os9p2 $(MD)/init $(MD)/ioman \
 		$(MD)/clock_soft $(MD)/cc3go_rom \
 		$(CD)/shell $(CD)/mdir $(CD)/mfree $(CD)/procs
 
+BOOTFILE_GHOST	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+		$(C9)/ghost/ghostdrv_l2.dr \
+		$(C9)/ghost/ddg0_l2.dd \
+		$(MD)/rbf.mn \
+		$(MD)/cc3disk.dr \
+		$(MD)/ddd0_40d.dd $(MD)/d1_80d.dd \
+		$(MD)/scf.mn $(MD)/cc3io.dr \
+		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/windint.io \
+		$(MD)/term_win80.dt \
+		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_tc3
+		
 # OS-9 disk bootfile to allow booting from Ken-Ton SCSI controller
 # This is a custom boot for Boisy's system
 BOOTFILE_TC3	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
-		$(3PD)/superscsi/superscsi_tc3_l2.dr \
-		$(3PD)/superscsi/h0_ez135_tc3ktlr_l2.dd \
-		$(3PD)/superscsi/dd_ez135_tc3ktlr_l2.dd \
+		$(C9)/superscsi/superscsi_tc3_l2.dr \
+		dd_ez135_l2.dd \
+		$(C9)/superscsi/c3_cdrom_l2.dd \
+		$(C9)/superscsi/h5_zip100_l2.dd \
 		$(MD)/rbf.mn \
 		$(3PD)/disto/rampak.dr $(3PD)/disto/r0_512_l2.dd \
 		$(MD)/cc3disk.dr \
@@ -58,10 +75,11 @@ BOOTFILE_TC3	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/clock_tc3
 		
 # OS-9 disk bootfile to allow booting from Ken-Ton SCSI controller
-BOOTFILE_KENTON	= $(3PD)/superscsi/superscsi_ktlr_l2.dr \
+BOOTFILE_KENTON	= $(C9)/superscsi/superscsi_ktlr_l2.dr \
 		$(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(3PD)/superscsi/h0_ez135_tc3ktlr_l2.dd \
+		$(C9)/superscsi/h0_ez135_l2.dd \
+		$(C9)/superscsi/c3_cdrom_l2.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv $(MD)/joydrv_6551L $(MD)/snddrv \
 		$(3PD)/disto/rampak.dr $(3PD)/disto/r0_256_l2.dd \
@@ -73,8 +91,8 @@ BOOTFILE_KENTON	= $(3PD)/superscsi/superscsi_ktlr_l2.dr \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_soft
 		
-BOOTFILES	= bootfile_1773 bootfile_tc3 bootfile_kenton bootfile_rom
-KERNELS		= kernel_1773 kernel_tc3 kernel_kenton kernel_rom
+BOOTFILES	= bootfile_1773 bootfile_ghost bootfile_tc3 bootfile_kenton bootfile_rom
+KERNELS		= kernel_1773 kernel_tc3 kernel_ghost kernel_kenton kernel_rom
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -87,6 +105,9 @@ bootfile_1773: $(BOOTFILE_1773) $(DEPENDS)
 bootfile_tc3: $(BOOTFILE_TC3) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_TC3)>$@
 
+bootfile_ghost: $(BOOTFILE_GHOST) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_GHOST)>$@
+
 bootfile_kenton: $(BOOTFILE_KENTON) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_KENTON)>$@
 
@@ -96,11 +117,17 @@ kernel_1773: $(KERNEL_1773) $(DEPENDS)
 kernel_tc3: $(KERNEL_TC3) $(DEPENDS)
 	$(MERGE) $(KERNEL_TC3)>$@
 
+kernel_ghost: $(KERNEL_GHOST) $(DEPENDS)
+	$(MERGE) $(KERNEL_GHOST)>$@
+
 kernel_rom: $(KERNEL_ROM) $(DEPENDS)
 	$(MERGE) $(KERNEL_ROM)>$@
 
 kernel_kenton: $(KERNEL_KENTON) $(DEPENDS)
 	$(MERGE) $(KERNEL_KENTON)>$@
+
+dd_ez135_l2.dd: $(C9)/superscsi/h0.asm
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aLevel=2 -aDD=1
 
 # ROM image (32,768 bytes long) to burn into ROM on CoCo 3
 bootfile_1773_rom: $(BOOTFILE_1773_ROM) $(DEPENDS) kernel_1773
