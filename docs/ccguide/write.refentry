@@ -34,7 +34,25 @@ os9 I$WRITLN
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+"Pn" must be a value returned by "open", "creat" or "dup" or
+should be a 0(stdin), 1(stdout), or 2(stderr).
+</para>
+<para>
+"Buffer should point to an area of memory from which "count"
+bytes are to be written. Write returns the actual number of
+bytes written, and if this is different from "count", an
+error has occurred.
+</para>
+<para>
+Writes in multiples of 256 bytes to file offset boundaries of
+256 bytes are the most efficient.
+</para>
+<para>
+Write causes no "line-editing" to occur on output. Writeln
+causes line-editing and only writes up to the first "\n" in the
+buffer if this is found before "count" is exhausted. For a
+full description of the actions of these calls the reader is
+referred to the OS-9 documentation.
 </para>
 </refsect1>
 
