@@ -8,9 +8,9 @@
 *        From Tandy OS-9 Level One VR 02.00.00
 *        Also put in conditionals for the Dragon 64
 
-         ifp1
+         IFP1
          use   defsfile
-         endc
+         ENDC
 
 ScrnLoc  equ   $8000
 
@@ -27,9 +27,9 @@ BootMLen equ   *-BootMsg
 
 L2620    clr   PIA0Base+3
 
-         ifne  Dragon64
+         IFNE  Dragon64
          clr   PIA0Base+1		added for Dragon, works on CoCo
-         endc
+         ENDC
 
          sta   $FFDF                   turn off ROM
 * locate Boot Text Screen at $8000
@@ -57,12 +57,12 @@ L2649    lda   ,y+
          decb
          bne   L2649
 
-         ifne  Dragon64
+         IFNE  Dragon64
          tst   <$72
-         else
+         ELSE
          ldd   #$1212
          cmpd  <$0078
-         endc
+         ENDC
 
          beq   L266E
          leau  >Start,pcr
