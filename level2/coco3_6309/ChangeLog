@@ -1,4 +1,6 @@
 OS-9 Level Two V03.01.03:
+- M1 and M2 device descriptors now reference the SACIA driver, and
+  modpak.dr is no longer in the distribution.
 - The help utility has been enhanced to show help subjects if
   forked without any command line parameters.
 

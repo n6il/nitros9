@@ -1,4 +1,4 @@
-* OS-9 Level Two Bootfile (80x24 term, 40 track DS)
+* OS-9 Level Two Bootlist (80x24 term, 40 track DS)
 MODULES/KERNEL/os9p2
 MODULES/SYSMODS/ioman
 MODULES/SYSMODS/init
