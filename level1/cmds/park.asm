@@ -5,7 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 1      Original Tandy/Microware version
+*   1    From Tandy OS-9 Level One VR 02.00.00
+*   2    Changed name to a mixture of upper/lowercase   BGP 02/07/13
 
          nam   Park
          ttl   Park a hard drive
@@ -19,6 +20,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -29,7 +31,7 @@ u0017    rmb   502
 size     equ   .
 
 name     fcs   /Park/
-         fcb   $01 
+         fcb   edition
 
 HelpMsg  fcb   C$LF
          fcc   "Use:  Park </devname> .... "

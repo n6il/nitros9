@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 3      Original Tandy distribution version            BGP
+*   5    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Del
          ttl   File deletion utility

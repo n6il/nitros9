@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 5      Original Tandy distribution version
+*   5    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Cobbler
          ttl   Make a bootstrap file
@@ -15,10 +15,14 @@
          ifp1
          use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   5
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 DevFd    rmb   3
 BTLSN    rmb   1
@@ -36,9 +40,10 @@ u0062    rmb   1
 u0063    rmb   7
 u006A    rmb   432
 size     equ   .
-name     equ   *
-         fcs   /Cobbler/
-         fcb   $05 
+
+name     fcs   /Cobbler/
+         fcb   edition
+
 L0015    fcb   C$LF
          fcc   "Use: COBBLER </devname>"
          fcb   C$LF

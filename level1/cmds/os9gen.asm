@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  7     Original Tandy distribution version
+*   7    From Tandy OS-9 Level One VR 02.00.00
 *
 * OS9gen is hardware dependent. On COCO the track to write is 34
 
@@ -17,10 +17,14 @@
          ifp1
          use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   7
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   2
 u0002    rmb   1
 DevFd    rmb   1
@@ -46,9 +50,10 @@ u0210    rmb   1
 u0211    rmb   7
 u0218    rmb   1000
 size     equ   .
-name     equ   *
-         fcs   /OS9gen/
-         fcb   $07 
+
+name     fcs   /OS9gen/
+         fcb   edition
+
 L0014    fcb   C$LF
          fcc   "Use (CAUTION): OS9GEN </devname> [-s]"
          fcb   C$LF

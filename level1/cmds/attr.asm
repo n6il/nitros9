@@ -5,11 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 8      Original Tandy distribution version
-* 11     Only edition number was changed to match up    BGP 02/07/13
-*        to OS-9 Level Two command; that was the
-*        only difference between the Level One and the
-*        Level Two Command
+*  11    From Tandy OS-9 Level Two VR 02.00.01
 
          nam   Attr
          ttl   Modify file attributes

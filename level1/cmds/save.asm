@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 3      Original Tandy distribution version
+*   3    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Save
          ttl   Save module from memory to disk

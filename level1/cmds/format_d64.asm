@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 18     Original Dragon Data distribution version
+*  18    From Dragon OS-9 Level One VR 01.02.00
 
 * The Dragon edition is slightly different from the Color Computer's
 * Even though the strings  "Change from 96tpi to 48tpi? "
@@ -19,10 +19,14 @@
          ifp1
          use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   18
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 u0001    rmb   1
 PathNm   rmb   1
@@ -100,8 +104,10 @@ u02AF    rmb   3
 u02B2    rmb   9924
 u2976    rmb   451
 size     equ   .
+
 name     fcs   /Format/
-         fcb   $12 
+         fcb   edition
+
 L0014    fcb   $00 
          fcb   $00 
 L0016    fcb   $00 

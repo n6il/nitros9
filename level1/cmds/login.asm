@@ -5,8 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 16     Original Tandy version
-* 17     Fixed for years 1900-2155                      BGP 99/05/11
+*  16    From Tandy OS-9 Level One VR 02.00.00
+*  17    Fixed for years 1900-2155                      BGP 99/05/11
 
          nam   Login
          ttl   Timeshare login utility
@@ -20,6 +20,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   17
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -41,7 +42,7 @@ u022D    rmb   32
 size     equ   .
 
 name     fcs   /Login/
-         fcb   $11
+         fcb   edition
 
 
 L0013    fcc   "SYS/PASSWORD"

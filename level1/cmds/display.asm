@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  2     Original Tandy version                         BGP 02/04/05
+*   2    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Display
          ttl   display control codes
@@ -79,7 +79,7 @@ L0070    subb  #$07
          bhi   L007F
          cmpb  #$0A
          bcs   L007F
-L007A    andcc #$FE
+L007A    andcc #^Carry
          leay  $01,y
          rts   
 L007F    comb  

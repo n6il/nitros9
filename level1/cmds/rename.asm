@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 6      Original Tandy/Microware version
+*   6    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Rename
          ttl   Rename a file

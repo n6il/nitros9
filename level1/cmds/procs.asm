@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  5     Original Tandy version                         BGP 02/04/05
+*   9    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Procs
          ttl   program module       
@@ -19,6 +19,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   9
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -37,7 +38,7 @@ u0954    rmb   450
 size     equ   .
 
 name     fcs   /Procs/
-         fcb   $09 
+         fcb   edition
 
 L0013    fcb   C$LF
          fcc   "Usr #  id pty sta mem pri mod"

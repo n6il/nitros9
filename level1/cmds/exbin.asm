@@ -5,7 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 67     Original Tandy distribution version
+*  67    From Tandy OS-9 Level One VR 02.00.00
+*  68    Made proper edition number                     BGP 02/07/14
 
          nam   Exbin
          ttl   Motorola S-Record utility
@@ -19,6 +20,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   68
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -42,6 +44,8 @@ u0016    rmb   656
 size     equ   .
 
 name     fcs   /Exbin/
+         fcb   edition
+
          fcc   "Copyright 1982 Motorola, Inc."
          fcb   $01 
 

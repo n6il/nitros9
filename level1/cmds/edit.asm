@@ -1,5 +1,14 @@
+********************************************************************
+* Edit - Line editor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+*   3    From Tandy OS-9 Level One VR 02.00.00
+
          nam   Edit
-         ttl   program module       
+         ttl   Line editor
 
 * Disassembled 02/07/05 22:33:05 by Disasm v1.6 (C) 1988 by RML
 
@@ -10,8 +19,9 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   3
 
-L0000         mod   eom,name,tylg,atrv,start,size
+L0000    mod   eom,name,tylg,atrv,start,size
 
 u0000    rmb   1
 u0001    rmb   1
@@ -111,10 +121,12 @@ u0276    rmb   40
 u029E    rmb   384
 u041E    rmb   2049
 size     equ   .
-name     equ   *
-         fcs   /Edit/
-         fcb   $03 
+
+name     fcs   /Edit/
+         fcb   edition
+
          fcc   "(C)1981Microware"
+
 L0022    fcb   $01 
          lbra  L0292
          lbra  L0C38

@@ -5,8 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 20     Original Tandy distribution version            BGP 02/04/05
-* 21     CHD no longer requires WRITE permission        BGP 02/04/05
+*  20    From Tandy OS-9 Level One VR 02.00.00
+*  21    CHD no longer requires WRITE permission        BGP 02/04/05
 
          nam   Shell
          ttl   OS-9 Command Interpreter
@@ -20,6 +20,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   21
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -59,7 +60,8 @@ u00FF    rmb   438
 size     equ   .
 
 name     fcs   /Shell/
-         fcb   $14 
+         fcb   edition
+
 L0013    fcb   $13 
          fcb   $50 P
          fcb   $61 a

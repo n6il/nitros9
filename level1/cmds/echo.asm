@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 5      Original Tandy distribution version
+*   5    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Echo
          ttl   Echo text

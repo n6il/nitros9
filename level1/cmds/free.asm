@@ -5,8 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 6      Original Tandy/Microware version
-* 7      Incorporated Glenside Y2K fixes                BGP 99/05/11
+*   6    From Tandy OS-9 Level One VR 02.00.00
+*   7    Y2K fixed
 
          nam   Free
          ttl   Print disk free space

@@ -5,7 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 7      Made compliant with 1900-2155                  BGP 99/05/11
+*   5    From Tandy OS-9 Level One VR 02.00.00
+*   7    Made compliant with 1900-2155                  BGP 99/05/11
 
          nam   Dir
          ttl   Show directory

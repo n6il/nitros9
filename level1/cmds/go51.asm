@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 1      Original Dragon distribution version
+*   1    From Dragon OS-9 Level One VR 01.02.00
 
          nam   go51
          ttl   The 51 column by 24 line video display
@@ -15,18 +15,23 @@
          ifp1
          use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   1
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   2
 u0002    rmb   2
 u0004    rmb   2
 u0006    rmb   32
 size     equ   .
-name     equ   *
-         fcs   /go51/
-         fcb   $01 
+
+name     fcs   /go51/
+         fcb   edition
+
 L0012    fcs   /KBVDIO/
 L0018    fcs   /drvr51/
 L001E    fcs   /term/

@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 5      Original Tandy/Microware version
+*   5    From Tandy OS-9 Level One VR 02.00.00
 
          nam   List
          ttl   List a text file

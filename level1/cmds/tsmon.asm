@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  8     Original Tandy/Microware version
+*   8    From Tandy OS-9 Level Two VR 02.00.01
 
          nam   Tsmon
          ttl   Timesharing monitor
@@ -19,6 +19,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   8
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -29,7 +30,7 @@ u0005    rmb   451
 size     equ   .
 
 name     fcs   /Tsmon/
-         fcb   $08 
+         fcb   edition
 
 L0013    fcc   "LOGIN"
 L0018    fcb   C$CR

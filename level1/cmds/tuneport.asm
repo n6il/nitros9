@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 7      Original Tandy/Microware version               BGP 02/04/06
+*   3    From Tandy OS-9 Level One VR 02.00.00
 
          nam   TunePort
          ttl   Tune Printer Port
@@ -20,6 +20,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   3
 
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   1
@@ -39,7 +40,7 @@ u0013    rmb   3
 size     equ   .
 
 name     fcs   /TunePort/
-         fcb   $03 
+         fcb   edition
 
 AdjPmpt  fcb   C$CR
          fcb   C$LF

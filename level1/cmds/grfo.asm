@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 7      Original Tandy/Microware version               BGP 02/04/06
+*   1    From Tandy OS-9 Level One VR 02.00.00
 
          nam   GRFO
          ttl   Graphics module
@@ -19,6 +19,7 @@
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -27,7 +28,7 @@ size     equ   .
 
          fcb   $07 
 name     fcs   /GRFO/
-         fcb   $01 
+         fcb   edition
 
 start    lbra  Entry7
          lbra  L002C
