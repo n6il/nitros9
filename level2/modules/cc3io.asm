@@ -95,7 +95,8 @@ Term     equ   *
          ENDC
          std  G.CurDev,x
 *         std   >WGlobal+G.CurDev
-         ldx   <D.Clock		change altirq routine to go to clock
+*         ldx   <D.Clock		change altirq routine to go to clock
+         ldx   G.OrgAlt,x	get original D.AltIRQ address
          stx   <D.AltIRQ
          puls  cc		restore IRQs
 
@@ -191,6 +192,8 @@ Init     ldx   <D.CCMem		get ptr to CC mem
          puls  u,y,x,b,a	restore saved regs
          std   <D.Proc		and restore current process
 
+         ldx   <D.AltIRQ	get original D.AltIRQ address
+         stx   >WGlobal+G.OrgAlt	save in window globals for later
          leax  >CC3Irq,pcr	set up AltIRQ vector in DP
          stx   <D.AltIRQ
 
