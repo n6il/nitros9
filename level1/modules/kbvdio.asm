@@ -3,12 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  -     Original Dragon Data distribution version
+*          ????/??/??
+* Original Dragon Data distribution version
 
          nam   KBVDIO
-         ttl   os9 device driver    
+         ttl   keyboard/video driver
 
 * Disassembled 02/04/21 22:37:57 by Disasm v1.6 (C) 1988 by RML
 

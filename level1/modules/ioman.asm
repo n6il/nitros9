@@ -3,11 +3,15 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  11    From Tandy OS-9 Level One VR 02.00.00
-*  12    I/O Queue sort bug and I$Attach static storage BGP 02/05/11
-*        premature deallocation bug fixed
+*  11      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00
+*
+*  12      2002/05/11  Boisy G. Pitre
+* I/O Queue sort bug and I$Attach static storage premature deallocation
+* bug fixed.
 
          nam   IOMan
          ttl   OS-9 Level One V2 I/O Manager module

@@ -3,8 +3,10 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
+*          ????/??/??
 
          nam   P
          ttl   CoCo serial printer device descriptor

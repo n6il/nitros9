@@ -1,11 +1,13 @@
 ********************************************************************
-* TERM -  80 column device descriptor
+* TERM - 80 column device descriptor
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*        From Tandy OS-9 Level One VR 02.00.00
+*          ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00
 
          nam   TERM
          ttl   80 column device descriptor
