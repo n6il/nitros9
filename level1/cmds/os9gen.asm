@@ -14,10 +14,10 @@
 
 BTrack   set   34
 
-         ifp1
+         IFP1
          use   defsfile
          use   rbfdefs
-         endc
+         ENDC
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
@@ -29,10 +29,11 @@ os9l1size  equ $0F80
 
          mod   eom,name,tylg,atrv,start,size
 
-StatPtr  rmb   2
-BFPath   rmb   1
-DevPath  rmb   1
-ParmPath rmb   1
+         org   0
+statptr  rmb   2
+bfpath   rmb   1
+devpath  rmb   1
+parmpath rmb   1
 u0005    rmb   1
 u0006    rmb   2
 u0008    rmb   1
@@ -44,17 +45,17 @@ u0011    rmb   2
 u0013    rmb   2
 u0015    rmb   2
 u0017    rmb   7
-DevOpts  rmb   20
+devopts  rmb   20
 u0032    rmb   2
 u0034    rmb   10
 u003E    rmb   2
-SnglDrv  rmb   1
+sngldrv  rmb   1
 u0041    rmb   32
-LSN0     rmb   16
+lsn0     rmb   16
 u0071    rmb   10
 u007B    rmb   2
 u007D    rmb   1
-SectBuff rmb   1024
+sectbuff rmb   1024
 u047E    rmb   16
 u048E    rmb   1
 u048F    rmb   7
@@ -80,22 +81,22 @@ ErrWrit  fcb   C$LF
 HDGen    fcb   C$LF
          fcc   "Error - cannot gen to hard disk"
          fcb   C$CR
-         ifgt  Level-1
+         IFGT  Level-1
 CantRel  fcb   C$LF
          fcc   "Error - can't link to Rel module"
          fcb   C$CR
-         endc
+         ENDC
 CarRet   fcb   C$CR
 TheBell  fcb   C$BELL
 TWarn    fcb   C$LF
          fcc   "Warning - file(s) present"
          fcb   C$LF
          fcc   "on track "
-         ifeq  BTrack-34
+         IFEQ  BTrack-34
          fcc   "34"
-         else
+         ELSE
          fcc   "??"
-         endc
+         ENDC
          fcc   " - this track"
          fcb   C$LF
          fcc   "not rewritten."
@@ -113,13 +114,15 @@ TempBoot fcc   "TempBoot "
 OS9Boot  fcc   "OS9Boot"
          fcb   C$CR
          fcb   $FF 
+         IFGT  Level-1
 TheRel   fcc   "Rel"
          fcb   $FF 
+         ENDC
 
 start    clrb  
          stb   <u0005
-         stb   <SnglDrv		assume multi-drive
-         stu   <StatPtr
+         stb   <sngldrv		assume multi-drive
+         stu   <statptr
          leas  >u047E,u
          pshs  u
          tfr   y,d
@@ -148,7 +151,7 @@ L0222    ldd   ,y+
          lbne  SoftExit
          cmpb  #$30
          lbcc  SoftExit
-         inc   <SnglDrv		set single drive flag
+         inc   <sngldrv		set single drive flag
 L0234    puls  b,a
          leay  <u0041,u
 L0239    sta   ,y+
@@ -163,14 +166,14 @@ L0239    sta   ,y+
          leax  <u0041,u
          lda   #UPDAT.
          os9   I$Open   
-         sta   <DevPath
+         sta   <devpath
          lbcs  ShowHelp
-         leax  <DevOpts,u
+         leax  <devopts,u
          ldb   #SS.Opt
          os9   I$GetStt 
          lbcs  Bye
-         leax  <DevOpts,u
-         lda   <(PD.TYP-PD.OPT)+DevOpts,u	get type byte
+         leax  <devopts,u
+         lda   <(PD.TYP-PD.OPT)+devopts,u	get type byte
          bpl   L0276			branch if not hard drive
          clrb  
          leax  >HDGen,pcr		else tell user can't do hard drive
@@ -194,7 +197,7 @@ L0288    lda   ,y+
          lda   #WRITE.
          ldb   #READ.+WRITE.
          os9   I$Create 
-         sta   <BFPath
+         sta   <bfpath
          lbcs  Bye
          ldx   #$0000
          stx   <u0006
@@ -202,34 +205,34 @@ L0288    lda   ,y+
          ldb   #SS.Size
          os9   I$SetStt 
          lbcs  Bye
-         ldu   <StatPtr
+         ldu   <statptr
          bsr   L032F
-L02BB    leax  <SectBuff,u
+L02BB    leax  <sectbuff,u
          ldy   #256
-         clra  
-         os9   I$ReadLn 
-         bcs   L0312
-         lda   ,x
-         ldb   #E$EOF
-         cmpa  #C$CR
-         beq   L0312
-         cmpa  #'*
-         beq   L02BB
-         lda   #READ.
-         os9   I$Open   
-         bcs   L031A
-         sta   <ParmPath
+         clra  				standard input
+         os9   I$ReadLn 		read line
+         bcs   L0312			branch if error
+         lda   ,x			else get byte in A
+         ldb   #E$EOF			and EOF error in B
+         cmpa  #C$CR			CR?
+         beq   L0312			branch if so
+         cmpa  #'*			comment?
+         beq   L02BB			continue reading if so
+         lda   #READ.			else use read perms
+         os9   I$Open   		open file at X (line we read)
+         bcs   L031A			branch if error
+         sta   <parmpath		save path
 L02DD    ldx   <u0015
          ldd   <u0011
          subd  <u0013
          tfr   d,y
-         lda   <ParmPath
+         lda   <parmpath
          os9   I$Read   
          bcc   L02F9
          cmpb  #E$EOF
          lbne  Bye
          os9   I$Close  
-         clr   <ParmPath
+         clr   <parmpath
          bra   L02BB
 L02F9    tfr   y,d
          leax  d,x
@@ -240,18 +243,18 @@ L02F9    tfr   y,d
          bcs   L030C
          bsr   L032B
          bcs   L0328
-L030C    tst   <ParmPath
+L030C    tst   <parmpath
          bne   L02DD
          bra   L02BB
-L0312    cmpb  #E$EOF
-         bne   L0328
+L0312    cmpb  #E$EOF			end of file?
+         bne   L0328			branch if not
          bsr   L033D
          bra   L0377
 L031A    pshs  b
-         leax  <SectBuff,u
+         leax  <sectbuff,u
          ldy   #256
-         lda   #$02
-         os9   I$WritLn 
+         lda   #$02			standard error
+         os9   I$WritLn 		write
 L0328    lbra  Bye
 L032B    bsr   L033D
          bcs   L033C
@@ -265,19 +268,19 @@ L033C    rts
 L033D    lbsr  GetDest
          ldd   <u0013
          beq   L033C
-         tst   <SnglDrv		single drive?
+         tst   <sngldrv		single drive?
          beq   L0361		branch if not
-         lda   <DevPath
+         lda   <devpath
          ldx   #$0000
          ldu   #$0000
          os9   I$Seek   	seek to LSN0
-         ldu   <StatPtr		+BGP+ added
+         ldu   <statptr		+BGP+ added
          bcs   L033C
-         leax  <SectBuff,u
+         leax  <sectbuff,u
          ldy   #256
          os9   I$Read   	read LSN0
          bcs   L033C
-L0361    lda   <BFPath
+L0361    lda   <bfpath
          leax  >u047E,u
          ldy   <u0013
          os9   I$Write  
@@ -287,27 +290,27 @@ L0361    lda   <BFPath
          std   <u0006
          clrb  
          rts   
-L0377    leax  <DevOpts,u
+L0377    leax  <devopts,u
          ldb   #SS.Opt
-         lda   <BFPath
+         lda   <bfpath
          os9   I$GetStt 
          lbcs  Bye
-         lda   <BFPath
+         lda   <bfpath
          ldx   #$0000
          ldu   <u0006
          ldb   #SS.Size
          os9   I$SetStt 
          lbcs  Bye
-         ldu   <StatPtr
+         ldu   <statptr
          os9   I$Close  
          lbcs  ShowHelp
          ldx   <u0032,u
          lda   <u0034,u
          clrb  
          tfr   d,u
-         lda   <DevPath
+         lda   <devpath
          os9   I$Seek   
-         ldu   <StatPtr
+         ldu   <statptr
          lbcs  Bye
          leax  >u047E,u
          ldy   #256
@@ -315,11 +318,11 @@ L0377    leax  <DevOpts,u
          lbcs  Bye
          ldd   >u047E+(FD.SEG+FDSL.S+FDSL.B),u
          lbne  ItsFragd		if not zero, file is fragmented
-         lda   <DevPath
+         lda   <devpath
          ldx   #$0000
          ldu   #DD.BT
          os9   I$Seek   	seek to DD.BT
-         ldu   <StatPtr
+         ldu   <statptr
          lbcs  Bye
          leax  u0008,u
          ldy   #DD.DAT-DD.BT
@@ -341,7 +344,7 @@ L03F3    sta   ,x+
 L0407    sta   ,x+
          lda   ,y+
          bpl   L0407
-L040D    tst   <SnglDrv
+L040D    tst   <sngldrv
          beq   L042E
          clra  
          leax  >Rename,pcr
@@ -352,7 +355,7 @@ L040D    tst   <SnglDrv
          lbcs  Bye
          lbsr  GetDest
 L0428    tfr   u,d
-         ldu   <StatPtr
+         ldu   <statptr
          std   u000F,u
 L042E    lda   #$01
          clrb  
@@ -365,14 +368,14 @@ L042E    lda   #$01
          lbcs  Bye
          tstb  
          lbne  Bye
-         tst   <SnglDrv
+         tst   <sngldrv
          beq   L045F
-         ldu   <StatPtr
+         ldu   <statptr
          ldd   u000F,u
          tfr   d,u
          os9   F$UnLink 
          lbcs  Bye
-L045F    ldu   <StatPtr
+L045F    ldu   <statptr
          ldb   >u048E,u
          stb   <u0008
          ldd   >u048F,u
@@ -381,9 +384,9 @@ L045F    ldu   <StatPtr
          std   <u000B
          ldx   #$0000
          ldu   #DD.BT
-         lda   <DevPath
+         lda   <devpath
          os9   I$Seek   
-         ldu   <StatPtr
+         ldu   <statptr
          lbcs  Bye
          leax  u0008,u
          ldy   #DD.DAT-DD.BT
@@ -394,21 +397,21 @@ L045F    ldu   <StatPtr
          clrb  
          tfr   d,x
          tfr   d,u
-         lda   <DevPath
+         lda   <devpath
          os9   I$Seek   	seek to LSN0
          lbcs  Bye
          puls  u
-         leax  <LSN0,u
+         leax  <lsn0,u
          ldy   #DD.DAT
-         lda   <DevPath
+         lda   <devpath
          os9   I$Read   	read first part of LSN0
          lbcs  Bye
          lda   #$00
          ldb   #$01
          lbsr  Seek2LSN
-         leax  <SectBuff,u
-         ldy   <LSN0+DD.MAP,u	get number of bytes in device's bitmap
-         lda   <DevPath
+         leax  <sectbuff,u
+         ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
+         lda   <devpath
          os9   I$Read   
          lbcs  Bye
          lda   #BTrack		boot track
@@ -421,7 +424,7 @@ L045F    ldu   <StatPtr
          lbsr  Seek2LSN		seek to it
          leax  <u0017,u
          ldy   #$0007
-         lda   <DevPath
+         lda   <devpath
          os9   I$Read   	read first seven bytes of boot track
          lbcs  Bye
          leax  <u0017,u
@@ -439,7 +442,7 @@ L045F    ldu   <StatPtr
          lbsr  ABMClear
          lbcs  WarnUser
 L0512    clra  
-         ldb   <LSN0+DD.TKS,u	get number of tracks in D
+         ldb   <lsn0+DD.TKS,u	get number of tracks in D
          tfr   d,y
          lda   #BTrack		boot track
          clrb  			sector 1
@@ -455,13 +458,13 @@ L0520    lda   #BTrack		boot track
 L0531    clra  
          ldb   #$01
          lbsr  Seek2LSN
-         leax  <SectBuff,u
-         ldy   <LSN0+DD.MAP,u	get number of bytes in device's bitmap
-         lda   <DevPath
+         leax  <sectbuff,u
+         ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
+         lda   <devpath
          os9   I$Write  	write out the bitmap
          lbcs  Bye
 
-         ifgt  Level-1
+         IFGT  Level-1
 * OS-9 Level Two: Link to Rel, which brings in boot code
          pshs  u
          lda   #Systm+Objct
@@ -482,20 +485,20 @@ L0531    clra
          lda   #BTrack		boot track
          ldb   #$00		sector 1
          lbsr  Seek2LSN
-         lda   <DevPath
+         lda   <devpath
          ldx   <u007B,u
 
-         else
+         ELSE
 
 * OS-9 Level One: Write out boot track data
          lda   #BTrack		boot track
          ldb   #$00		sector 1
          lbsr  Seek2LSN
-         lda   <DevPath
+         lda   <devpath
          ldx   #os9l1start
          ldy   #os9l1size
 
-         endc
+         ENDC
 
          os9   I$Write  
          lbcs  WriteErr
@@ -508,14 +511,14 @@ L0531    clra
 * Entry: A = track, B = sector
 * Returns in D
 AbsLSN   pshs  b
-         ldb   <LSN0+DD.FMT,u	get format byte
+         ldb   <lsn0+DD.FMT,u	get format byte
          andb  #FMT.SIDE	test sides bit
          beq   L059C		branch if 1
          ldb   #$02		else 2 sides
          bra   L059E
 L059C    ldb   #$01		1 side
 L059E    mul   			multiply sides times track
-         lda   <LSN0+DD.TKS,u	get device tracks
+         lda   <lsn0+DD.TKS,u	get device tracks
          mul   			multiply by (sides * track)
          addb  ,s		add in sector
          adca  #$00
@@ -547,7 +550,7 @@ BitMask  fcb   $80,$40,$20,$10,$08,$04,$02,$01
 * Entry: A = Track, B = Sector, Y = number of bits to clear
 ABMClear pshs  x,y,b,a
          bsr   AbsLSN		convert A:B to LSN
-         leax  <SectBuff,u
+         leax  <sectbuff,u
          bsr   L05AA
          sta   ,-s
          bmi   L05EA
@@ -591,7 +594,7 @@ L0618    leas  $01,s
 * Entry: A = Track, B = Sector, Y = number of bits to set
 ABMSet   pshs  y,x,b,a
          lbsr  AbsLSN
-         leax  <SectBuff,u
+         leax  <sectbuff,u
          bsr   L05AA
          sta   ,-s
          bmi   L063A
@@ -631,7 +634,7 @@ Seek2LSN pshs  u,y,x,b,a
          puls  b
          clra  
          tfr   d,x
-         lda   <DevPath
+         lda   <devpath
          os9   I$Seek   
          lbcs  WriteErr
          puls  pc,u,y,x,b,a
@@ -640,11 +643,11 @@ Seek2LSN pshs  u,y,x,b,a
          clrb  
          tfr   d,x
          tfr   d,u
-         lda   <DevPath
+         lda   <devpath
          os9   I$Seek   
-         leax  <LSN0,u
+         leax  <lsn0,u
          ldy   #DD.DAT
-         lda   <DevPath
+         lda   <devpath
          os9   I$Write  
          bcs   Bye
          rts   
@@ -667,7 +670,7 @@ GetSrc   pshs  u,y,x,b,a
          bra   TstSingl
 GetDest  pshs  u,y,x,b,a
          lda   #$01
-TstSingl tst   <SnglDrv
+TstSingl tst   <sngldrv
          beq   L06FD
 AskUser  pshs  a
          tsta  
@@ -713,10 +716,10 @@ SoftExit ldb   #$01
 WarnUser leax  >TWarn,pcr
          bra   SoftExit
 
-         ifgt  Level-1
+         IFGT  Level-1
 L0724    leax  >CantRel,pcr
          lbra  WritExit
-         endc
+         ENDC
 
          emod
 eom      equ   *
