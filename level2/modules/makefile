@@ -4,9 +4,11 @@ DEPENDS		= ./Makefile
 TPB		= ../../3rdparty/booters
 
 BOOTERS		= boot_1773
-KERNELS		= os9p1 os9p2
+OS9P1		= os9p1
+OS9P2		= os9p2
+REL		= rel
 ROMMODS         = rominfo rom_vectors cc3go_rom pakrom
-SYSMODS		= rel ioman init cc3go
+SYSMODS		= ioman init cc3go
 CLOCKS		= clock clock2_soft clock2_disto clock2_146818
 FMGRS		= scf.mn rbf.mn pipeman.mn pipeman_named.mn
 DRIVERS		= cc3disk.dr cc3hdisk.dr cc3io.dr modpak.dr \
@@ -39,7 +41,7 @@ KERNEL_IDE	= rel $(TPB)/boot_ide os9p1
 # These kernels are intended to be ROMmed in a disk controller or program pak
 KERNEL_PAK_KENTON	= pakrom $(KERNEL_KENTON)
 
-ALLOBJS		=  $(BOOTERS) $(KERNELS) $(ROMMODS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
+ALLOBJS		=  $(BOOTERS) $(OS9P1) $(OS9P2) $(REL) $(ROMMODS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
 		$(DRIVERS) $(IOSUBS) $(DESCS) $(WINDESCS) \
 		kernel_1773 kernel_rom kernel_kenton kernel_pak_kenton \
 		kernel_rampak kernel_ide
@@ -86,7 +88,7 @@ showobjs:
 	@$(ECHO) $(ALLOBJS)
 
 showcopyobjs:
-	@$(ECHO) $(BOOTERS) $(KERNELS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
+	@$(ECHO) $(OS9P2) $(SYSMODS) $(CLOCKS) $(FMGRS) \
 		$(DRIVERS) $(IOSUBS) $(DESCS) $(WINDESCS) \
 
 identify:
