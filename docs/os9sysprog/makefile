@@ -1,6 +1,8 @@
 SRC=os9sysprog
 STYLESHEET=docbook-utils.dsl
 
+all: book1.htm
+
 $(SRC).pdf: $(SRC).docbook $(STYLESHEET)
 	 docbook2pdf -d $(STYLESHEET) $(SRC).docbook
 
