@@ -1,7 +1,8 @@
 ********************************************************************
 * PipeMan - OS-9 Level Two Pipe File Manager
 *
-* Enhanced and re-written by Alan DeKok
+* $Id$
+*
 *
 * 'show grf.3.a | eat'  (eat is cat, but just does a I$ReadLn, and not I$WritLn)
 * April 10, 1996  14:05:15
@@ -28,10 +29,9 @@
 *
 * 32 byte read and write buffers
 *
-* $Id$
-*
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
+*   4    Enhanced and re-written                        ADK ??/??/??
 
          nam   PipeMan
          ttl   OS-9 Level Two Pipe File Manager
