@@ -41,8 +41,8 @@ prn3     set   0          border color
          fcb   C$DEL      delete line character
          fcb   C$CR       end of record character
          fcb   C$EOF      end of file character
-         fcb   C$RPRT     reprint line character
-         fcb   C$RPET     duplicate last line character
+         fcb   C$RARR     reprint line character
+         fcb   C$SHRARR   duplicate last line character
          fcb   C$PAUS     pause character
          fcb   C$INTR     interrupt character
          fcb   C$QUIT     quit character

@@ -42,9 +42,7 @@ KERNEL_IDE	= rel $(TPB)/boot_ide os9p1
 KERNEL_PAK_KENTON	= pakrom $(KERNEL_KENTON)
 
 ALLOBJS		=  $(BOOTERS) $(OS9P1) $(OS9P2) $(REL) $(ROMMODS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
-		$(DRIVERS) $(IOSUBS) $(DESCS) $(WINDESCS) \
-		kernel_1773 kernel_rom kernel_kenton kernel_pak_kenton \
-		kernel_rampak kernel_ide
+		$(DRIVERS) $(IOSUBS) $(DESCS) $(WINDESCS)
 
 all:	$(ALLOBJS)
 	$(CHMOD) 755 $(ALLOBJS)
@@ -131,25 +129,6 @@ sacia.dr: xacia.asm
 	
 dacia.dr: xacia.asm
 	$(AS) -aA6551=0 -aA6552=1 -aMPI.Slot=00 $(AFLAGS) $< $(ASOUT)$@
-
-kernel_1773: $(KERNEL_1773) $(DEPENDS)
-	$(MERGE) $(KERNEL_1773)>$@
-
-kernel_rampak: $(KERNEL_RAMPAK) $(DEPENDS)
-	$(MERGE) $(KERNEL_RAMPAK)>$@
-
-kernel_rom: $(KERNEL_ROM) $(DEPENDS)
-	$(MERGE) $(KERNEL_ROM)>$@
-
-kernel_kenton: $(KERNEL_KENTON) $(DEPENDS)
-	$(MERGE) $(KERNEL_KENTON)>$@
-
-kernel_ide: $(KERNEL_IDE) $(DEPENDS)
-	$(MERGE) $(KERNEL_IDE)>$@
-
-kernel_pak_kenton: $(KERNEL_PAK_KENTON) $(DEPENDS)
-	$(MERGE) $(KERNEL_PAK_KENTON)>$@
-	$(PADROM) \$$2000 $@ -c=\$$FF
 
 rominfo: rominfo.asm
 	$(AS) -aROMPak=0 $(AFLAGS) $< $(ASOUT)$@
