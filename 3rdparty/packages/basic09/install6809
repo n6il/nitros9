@@ -3,8 +3,8 @@ t
 * Installs 6809 modules to /DD/CMDS
 *
 * Deleting old objects from /DD/CMDS, if any
-del /DD/CMDS/runb
 del /DD/CMDS/basic09
+del /DD/CMDS/runb
 del /DD/CMDS/gfx
 del /DD/CMDS/inkey
 del /DD/CMDS/syscall
