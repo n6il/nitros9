@@ -41,7 +41,18 @@ os9 F$SETSTT
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+For a detailed explanation of this call, see the OS-9 System
+Programmer's Manual.
+</para>
+<para>
+"Filenum" must be the path number of a currently open file.
+The only values for code at this time are 0 and 2. When "code"
+is 0, "buffer" should be the address of a 32 byte structure
+which is written to the option section of the path descriptor
+of the file. The header file contains definitions of various
+structures maintained by OS-9 for use by the programmer. When
+code is 2, "size" should be a long integer specifying the new
+file size.
 </para>
 </refsect1>
 </refentry>
