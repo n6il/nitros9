@@ -1,4 +1,4 @@
-include ../../Makefile.rules
+include ../../rules.mak
 
 dirs	= basic09 cc fsim2 koronis kq3 kyumgai lsl mm multivue rof subsim
 

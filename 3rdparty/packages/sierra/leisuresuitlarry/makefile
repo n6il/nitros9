@@ -1,6 +1,6 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 DISK		= lsl.dsk
 CMDS		= sierra mnln scrn shdw

@@ -45,8 +45,8 @@ name     fcs   /SIO/
 
 * Baud Rate Delay Table
 DelayTbl
-         IFEQ  NitrOS9
-* OS-9 Level Two delay values (1.89MHz)
+         IFEQ  H6309
+* 6809 delay values (1.89MHz)
          fdb   $090C	110 baud
          fdb   $034C	300 baud
          fdb   $01A2	600 baud
@@ -56,7 +56,7 @@ DelayTbl
          fdb   $0012	9600 baud
          fdb   $0003	32000 baud
          ELSE
-* NitrOS-9 Level Two delay values (1.89MHz)
+* 6309 native mode delay values (1.89MHz)
          fdb   $090C	110 baud (Unchanged, unknown)
          fdb   $03D0	300 baud
          fdb   $01A2	600 baud (Unchanged, unknown)

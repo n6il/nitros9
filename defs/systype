@@ -25,13 +25,13 @@ SYSTYPE  set   1
 
          nam   SysType
          IFEQ  Level-1
-         ttl   CoCo OS-9 Level One System Type Definitions
+         ttl   NitrOS-9 Level 1 System Type Definitions
          ENDC
          IFEQ  Level-2
          ifne  NitrOS9
-         ttl   CoCo NitrOS-9 Level Two System Type Definitions
+         ttl   NitrOS-9 Level 2 System Type Definitions
          ELSE
-         ttl   CoCo OS-9 Level Two System Type Definitions
+         ttl   NitrOS-9 Level 3 System Type Definitions
          ENDC
          ENDC
 

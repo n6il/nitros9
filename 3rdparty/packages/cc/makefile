@@ -1,4 +1,4 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
 DISK		= cc.dsk
 CMDS		= cc1 c.prep c.pass1 c.pass2 c.opt c.asm c.link
@@ -27,10 +27,10 @@ dsk:	all
 	$(MAKDIR) $(DISK),SOURCES/SYS
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
-	$(CPL) DEFS/*.h $(DISK),DEFS
-	$(CP) LIB/*.l LIB/*.r $(DISK),LIB
-	$(CPL) SOURCES/*.c $(DISK),SOURCES
-	$(CPL) SOURCES/*.a $(DISK),SOURCES/SYS
+	$(CPL) defs/*.h $(DISK),DEFS
+	$(CP) lib/*.l LIB/*.r $(DISK),LIB
+	$(CPL) sources/*.c $(DISK),SOURCES
+	$(CPL) sources/*.a $(DISK),SOURCES/SYS
 
 dskcopy: dsk
 	$(CP) $(DISK) $(DSKDIR)

@@ -63,7 +63,7 @@ BaudDly  equ   *
          fdb   $0013    4800 baud
          fdb   $0005    9600 baud
          ELSE
-         IFEQ  NitrOS9
+         IFEQ  H6309
 * OS-9 Level Two delay values (1.78MHz)
          fdb   $090C    110 baud
          fdb   $034C    300 baud

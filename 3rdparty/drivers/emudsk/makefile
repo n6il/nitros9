@@ -1,6 +1,6 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 DRIVERS		= emudsk.dr
 DESCS		= h0.dd ddh0.dd

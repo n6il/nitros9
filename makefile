@@ -1,14 +1,14 @@
-include Makefile.rules
+include rules.mak
 
-dirs	= $(LEVEL1) $(LEVEL2) $(NLEVEL2) $(3RDPARTY)
+dirs	= $(6809L1) $(6809L2) $(6309L2) $(3RDPARTY)
  
 # Make all components
 all:
-	@$(ECHO) "*********************************************"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*          COCOOS9 SOURCE PROJECT           *"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*********************************************"
+	@$(ECHO) "**************************************************"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "*              THE NITROS-9 PROJECT              *"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "**************************************************"
 	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
 
 # Clean all components

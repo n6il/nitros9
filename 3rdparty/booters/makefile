@@ -1,6 +1,6 @@
-include ../../Makefile.rules
+include ../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 BOOTERS_L2	= boot_vhd boot_mmc_l2
 BOOTERS_L1	= boot_mmc_l1
 ALLOBJS		= $(BOOTERS_L2) $(BOOTERS_L1)

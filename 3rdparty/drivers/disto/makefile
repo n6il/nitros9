@@ -1,4 +1,4 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
 vpath %.asm $(LEVEL2)/MODULES
 
@@ -9,7 +9,7 @@ L2_512 = $(AFLAGS) -aLevel=2 -aRAMSize=2
 
 L2_DNHFC = $(AFLAGS) -aLevel=2
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 DRVRS		= rampak.dr parallel.dr
 NHDRVRS		= cc3disk_sc2_irq.dr cc3disk_sc2_slp.dr
 FLOPPYDESCS	= ddd0_35s.dd d0_35s.dd d1_35s.dd	\

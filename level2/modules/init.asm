@@ -45,9 +45,9 @@ start    equ   *
          fdb   DefBoot    offset to boot module name
          fcb   $01        write protect flag (?)
          fcb   Level      OS level
-         fcb   OS9Vrsn    OS version
-         fcb   OS9Major   OS major revision
-         fcb   OS9Minor   OS minor revision
+         fcb   NOS9Vrsn   OS version
+         fcb   NOS9Major  OS major revision
+         fcb   NOS9Minor  OS minor revision
          fcb   $00        feature byte #1
          fcb   $00        feature byte #2
          fcb   0,0,0,0,0,0,0,0  reserved

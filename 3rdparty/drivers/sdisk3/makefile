@@ -1,6 +1,6 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 L2DRIVERS	= sdisk3_dpj.dr sdisk3_dmc.dr
 NITROSDRIVERS	= sdisk3_dpj_63.dr sdisk3_dmc_63.dr

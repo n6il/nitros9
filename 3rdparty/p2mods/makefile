@@ -1,6 +1,6 @@
-include ../../Makefile.rules
+include ../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 CMDS		= os9p3_sayhi sayhi tsayhi datmod tdatmod
 ALLOBJS		= $(CMDS)
 

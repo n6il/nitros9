@@ -1,8 +1,8 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-vpath %.asm $(LEVEL2)/MODULES/KERNEL
+vpath %.asm $(6809L2)/modules/kernel
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 ADDOPTS		= -e
 
 OS9P1		= os9p1

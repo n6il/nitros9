@@ -87,12 +87,12 @@ MakeStak pshs  a		save 0 on stack
          ELSE
          ldd   #$61A8
          ENDC
-         IFNE  NitrOS9
+         IFNE  H6309
          nop
          ENDC
 L003A    nop
          nop
-         IFNE  NitrOS9
+         IFNE  H6309
          nop
          nop
          nop
@@ -308,24 +308,24 @@ L019F    lda   ,u
          stb   >DPort+$08
          rts
 L01A8 
-         IFNE  NitrOS9
+         IFNE  H6309
          nop
          ENDC
          bsr   L019F
 L01AA  
-         IFNE  NitrOS9
+         IFNE  H6309
          nop
          nop
          ENDC
          lbsr  L01AD
 L01AD 
-         IFNE  NitrOS9
+         IFNE  H6309
          nop
          nop
          ENDC
          lbsr  L01B0
 L01B0 
-         IFNE  NitrOS9
+         IFNE  H6309
          nop
          ENDC
          rts

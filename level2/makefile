@@ -1,25 +1,23 @@
-# Makefile for OS-9 Level Two
+include ../rules.mak
 
-include ../Makefile.rules
+RELEASE		= nos96809l2v030200
+BOOTFILE	= bootfiles/bootfile_vdg
+KERNELFILE	= bootfiles/kernel_stock
+DIRS		= cmds modules defs sys bootfiles
 
-RELEASE		= os9l2v030105
-BOOTFILE	= BOOTFILES/bootfile_vdg
-KERNELFILE	= BOOTFILES/kernel_stock
-DIRS		= CMDS MODULES DEFS SYS BOOTFILES
-
-CMDS		= $(shell $(CD) CMDS; make showobjs)
-BOOTTRACK	= $(shell $(CD) MODULES; make showboottrack)
-KERNEL		= $(shell $(CD) MODULES; make showkernel)
-SYSMODS		= $(shell $(CD) MODULES; make showsysmods)
-CLOCKS		= $(shell $(CD) MODULES; make showclocks)
-RBF		= $(shell $(CD) MODULES; make showrbf)
-SCF		= $(shell $(CD) MODULES; make showscf)
-PIPE		= $(shell $(CD) MODULES; make showpipe)
+CMDS		= $(shell $(CD) cmds; make showobjs)
+BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
+KERNEL		= $(shell $(CD) modules; make showkernel)
+SYSMODS		= $(shell $(CD) modules; make showsysmods)
+CLOCKS		= $(shell $(CD) modules; make showclocks)
+RBF		= $(shell $(CD) modules; make showrbf)
+SCF		= $(shell $(CD) modules; make showscf)
+PIPE		= $(shell $(CD) modules; make showpipe)
 MODULECMDS	= shell grfdrv del echo format makdir merge os9gen prompt
 
-DEFS		= $(shell $(CD) DEFS; make showobjs)
-SYSBIN		= $(shell $(CD) SYS; make showbinobjs)
-SYSTEXT		= $(shell $(CD) SYS; make showtextobjs)
+DEFS		= $(shell $(CD) defs; make showobjs)
+SYSBIN		= $(shell $(CD) sys; make showbinobjs)
+SYSTEXT		= $(shell $(CD) sys; make showtextobjs)
 ROOTFILES	= startup
 SYSGO		= sysgo_dd
 
@@ -31,11 +29,11 @@ TESTDSK		= test.dsk
 
 # Make all components
 all:
-	@$(ECHO) "*********************************************"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*        OS-9 Level Two Distribution        *"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*********************************************"
+	@$(ECHO) "**************************************************"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "*        NitrOS-9/6809 Level 2 Distribution      *"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "**************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
 
 # Clean all components
@@ -55,55 +53,55 @@ $(PACKAGENAME): $(DSK1) $(DSK2) ReadMe ChangeLog
 
 $(DSK1):
 	-$(RM) $@
-	$(OS9FORMAT_DS40) $@ -n"OS-9 Level Two System Disk"
+	$(OS9FORMAT_DS40) $@ -n"NitrOS-9/6809 Level 2 System Disk"
 	$(OS9GEN) $@ -b=$(BOOTFILE) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(CP) MODULES/$(SYSGO) $@,sysgo
+	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
-	$(CD) CMDS; $(CP) $(CMDS) ../$@,CMDS
+	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
-	$(CD) SYS; $(CP) $(SYSBIN) ../$@,SYS
+	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
-	$(CD) SYS; $(CPL) $(SYSTEXT) ../$@,SYS
+	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
-	$(CD) DEFS; $(CPL) $(DEFS) ../$@,DEFS
+	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(ROOTFILES) $@,.
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
 $(DSK2):
 	-$(RM) $@
-	$(OS9FORMAT_DS40) $@ -n"OS-9 Level Two Modules Disk"
-	$(MAKDIR) $@,LEVEL2
-	$(MAKDIR) $@,LEVEL2/CMDS
-	$(CD) CMDS; $(CP) $(MODULECMDS) ../$@,LEVEL2/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,LEVEL2/CMDS/$(file);)
-	$(MAKDIR) $@,LEVEL2/MODULES
-	$(MAKDIR) $@,LEVEL2/MODULES/BOOTTRACK
-	$(CD) MODULES; $(CP) $(BOOTTRACK) ../$@,LEVEL2/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,LEVEL2/MODULES/BOOTTRACK/$(file);)
-	$(MAKDIR) $@,LEVEL2/MODULES/KERNEL
-	$(CD) MODULES; $(CP) $(KERNEL) ../$@,LEVEL2/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,LEVEL2/MODULES/KERNEL/$(file);)
-	$(MAKDIR) $@,LEVEL2/MODULES/SYSMODS
-	$(CD) MODULES; $(CP) $(SYSMODS) ../$@,LEVEL2/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,LEVEL2/MODULES/SYSMODS/$(file);)
-	$(MAKDIR) $@,LEVEL2/MODULES/CLOCKS
-	$(CD) MODULES; $(CP) $(CLOCKS) ../$@,LEVEL2/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,LEVEL2/MODULES/CLOCKS/$(file);)
-	$(MAKDIR) $@,LEVEL2/MODULES/RBF
-	$(CD) MODULES; $(CP) $(RBF) ../$@,LEVEL2/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,LEVEL2/MODULES/RBF/$(file);)
-	$(MAKDIR) $@,LEVEL2/MODULES/SCF
-	$(CD) MODULES; $(CP) $(SCF) ../$@,LEVEL2/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,LEVEL2/MODULES/SCF/$(file);)
-	$(MAKDIR) $@,LEVEL2/MODULES/PIPE
-	$(CD) MODULES; $(CP) $(PIPE) ../$@,LEVEL2/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,LEVEL2/MODULES/PIPE/$(file);)
-	$(MAKDIR) $@,LEVEL2/BOOTLISTS
-	$(CD) BOOTLISTS; $(CPL) *.bl ../$@,LEVEL2/BOOTLISTS
-	$(MAKDIR) $@,LEVEL2/BOOTSCRIPTS
-	$(CD) BOOTSCRIPTS; $(CPL) mb* ../$@,LEVEL2/BOOTSCRIPTS
+	$(OS9FORMAT_DS40) $@ -n"NitrOS-9/6809 Level 2 Modules Disk"
+	$(MAKDIR) $@,6809L2
+	$(MAKDIR) $@,6809L2/CMDS
+	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,6809L2/CMDS
+	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,6809L2/CMDS/$(file);)
+	$(MAKDIR) $@,6809L2/MODULES
+	$(MAKDIR) $@,6809L2/MODULES/BOOTTRACK
+	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,6809L2/MODULES/BOOTTRACK
+	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,6809L2/MODULES/BOOTTRACK/$(file);)
+	$(MAKDIR) $@,6809L2/MODULES/KERNEL
+	$(CD) modules; $(CP) $(KERNEL) ../$@,6809L2/MODULES/KERNEL
+	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,6809L2/MODULES/KERNEL/$(file);)
+	$(MAKDIR) $@,6809L2/MODULES/SYSMODS
+	$(CD) modules; $(CP) $(SYSMODS) ../$@,6809L2/MODULES/SYSMODS
+	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,6809L2/MODULES/SYSMODS/$(file);)
+	$(MAKDIR) $@,6809L2/MODULES/CLOCKS
+	$(CD) modules; $(CP) $(CLOCKS) ../$@,6809L2/MODULES/CLOCKS
+	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,6809L2/MODULES/CLOCKS/$(file);)
+	$(MAKDIR) $@,6809L2/MODULES/RBF
+	$(CD) modules; $(CP) $(RBF) ../$@,6809L2/MODULES/RBF
+	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,6809L2/MODULES/RBF/$(file);)
+	$(MAKDIR) $@,6809L2/MODULES/SCF
+	$(CD) modules; $(CP) $(SCF) ../$@,6809L2/MODULES/SCF
+	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,6809L2/MODULES/SCF/$(file);)
+	$(MAKDIR) $@,6809L2/MODULES/PIPE
+	$(CD) modules; $(CP) $(PIPE) ../$@,6809L2/MODULES/PIPE
+	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,6809L2/MODULES/PIPE/$(file);)
+	$(MAKDIR) $@,6809L2/BOOTLISTS
+	$(CD) bootlists; $(CPL) *.bl ../$@,6809L2/BOOTLISTS
+	$(MAKDIR) $@,6809L2/BOOTSCRIPTS
+	$(CD) bootscripts; $(CPL) mb* ../$@,6809L2/BOOTSCRIPTS
 

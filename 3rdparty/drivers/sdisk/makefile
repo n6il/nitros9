@@ -1,6 +1,6 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 DRIVERS		= sdisk.dr
 DESCS		= ddd0_35s.dd d0_35s.dd ddd0_40d.dd d0_40d.dd ddd0_80d.dd d0_80d.dd \

@@ -1,8 +1,6 @@
-# Makefile for OS-9 Level One SYS/
+include ../../rules.mak
 
-include ../../Makefile.rules
-
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 SYSFILES	= errmsg motd password
 HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \

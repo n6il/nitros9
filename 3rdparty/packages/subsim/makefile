@@ -1,6 +1,6 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 DISK		= subsim.dsk
 CMDS		= presub sub sub1 sub2 sub3 sub4 sub5 sub6

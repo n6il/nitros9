@@ -57,49 +57,55 @@ name     fcs   /Login/
 PassFile fcc   "SYS/PASSWORD"
          fcb   C$CR
 WideMsg  fcb   C$LF,C$LF
-         IFNE  NitrOS9
-         fcc   "Nitr"
+         fcc   "NitrOS-9/"
+         IFNE  H6309
+         fcc   "6309"
+         ELSE
+         fcc   "6809"
          ENDC
-         fcc   "OS-9 Timesharing system"
+         fcc   " Timesharing System"
          fcb   C$LF
          fcc   "Level "
          IFEQ  Level-1
-         fcc   "One"
+         fcc   "1"
          ELSE
          IFEQ  Level-2
-         fcc   "Two"
+         fcc   "2"
          ELSE
-         fcc   "Three"
+         fcc   "3"
          ENDC
          ENDC
-         fcc   " Vr. 0"
-         fcb   48+OS9Vrsn
+         fcc   " V0"
+         fcb   48+NOS9Vrsn
          fcc   ".0"
-         fcb   48+OS9Major
+         fcb   48+NOS9Major
          fcc   ".0"
-         fcb   48+OS9Minor
+         fcb   48+NOS9Minor
          fcb   C$LF
 WideMsgL equ   *-WideMsg
 NrrwMsg  fcb   C$LF,C$LF
-         IFNE  NitrOS9
-         fcc   "Nitr"
+         fcc   "NitrOS-9/"
+         IFNE  H6309
+         fcc   "6309"
+         ELSE
+         fcc   "6809"
          ENDC
-         fcc   "OS-9 Level "
+         fcc   " Level "
          IFEQ  Level-1
-         fcc   "One"
+         fcc   "1"
          ELSE
          IFEQ  Level-2
-         fcc   "Two"
+         fcc   "2"
          ELSE
-         fcc   "Three"
+         fcc   "3"
          ENDC
          ENDC
-         fcc   " Vr. 0"
-         fcb   48+OS9Vrsn
+         fcc   " V0"
+         fcb   48+NOS9Vrsn
          fcc   ".0"
-         fcb   48+OS9Major
+         fcb   48+NOS9Major
          fcc   ".0"
-         fcb   48+OS9Minor
+         fcb   48+NOS9Minor
          fcb   C$LF
 NrrwMsgL equ   *-NrrwMsg
 UName    fcb   C$LF

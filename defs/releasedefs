@@ -1,7 +1,7 @@
-* Release defsfile for all versions of OS-9
+* Release defsfile for all versions of NitrOS-9
 *
 *
-* OS-9 Version equates
-OS9Vrsn  equ   3
-OS9Major equ   1
-OS9Minor equ   5
+* NitrOS-9 Version equates
+NOS9Vrsn  equ   3
+NOS9Major equ   2
+NOS9Minor equ   0
