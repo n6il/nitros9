@@ -542,7 +542,15 @@ ChkMHCRC ldd   ,x
 L03B1    comb
          ldb   #E$BMID
          rts
-L03B5    pshs  x
+
+L03B5
+* Following 4 lines added to support no CRC checks - 2002/07/21
+         lda   <D.CRC			is CRC checking on?
+         bne   DoCRCCk			branch if so
+         clrb
+         rts
+
+DoCRCCk  pshs  x
          ldy   M$Size,x
          bsr   ChkMCRC                 checkm module CRC
          puls  pc,x
