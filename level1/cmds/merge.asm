@@ -44,6 +44,22 @@ size     equ   .
 name     fcs   /Merge/
          fcb   edition    change to 6, as merge 5 has problems?
 
+* Here's how registers are set when this process is forked:
+*
+*   +-----------------+  <--  Y          (highest address)
+*   !   Parameter     !
+*   !     Area        !
+*   +-----------------+  <-- X, SP
+*   !   Data Area     !
+*   +-----------------+
+*   !   Direct Page   !
+*   +-----------------+  <-- U, DP       (lowest address)
+*
+*   D = parameter area size
+*  PC = module entry point abs. address 
+*  CC = F=0, I=0, others undefined 
+
+* The start of the program is here. 
 start    subd  #$0001     if this becomes zero,
          beq   Exit       we have no parameters
 
@@ -54,7 +70,8 @@ start    subd  #$0001     if this becomes zero,
          subd  ,s++       get size of space between buff and X
          subd  #STACKSZ+PARMSZ subtract out our stack/param size
          std   <d.size    save size of data buffer
-         leau  d.buffer,u point to some data
+         leay  d.buffer,u point to some data
+         sty   <d.ptr
 
 do.opts  ldx   <param     get first option
 do.opts2 lbsr  space
