@@ -53,7 +53,11 @@ size     equ   .
 
          fcb   DIR.+SHARE.+PREAD.+PWRIT.+PEXEC.+READ.+WRITE.+EXEC.
 
+         IFGT  Level-1
+name     fcs   /CC3HDisk/
+         ELSE
 name     fcs   /CCHDisk/
+         ENDC
          fcb   edition
 
 start    lbra  Init
