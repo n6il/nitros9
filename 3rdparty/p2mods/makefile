@@ -1,7 +1,7 @@
 include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
-CMDS		= os9p3_sayhi sayhi tsayhi
+CMDS		= os9p3_sayhi sayhi tsayhi datmod tdatmod
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
@@ -10,6 +10,7 @@ all:	$(ALLOBJS)
 	@$(ECHO) "*         3rd Party System Modules          *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
+	$(CHMOD) 755 $(CMDS)
 
 clean:
 	$(RM) $(ALLOBJS)
