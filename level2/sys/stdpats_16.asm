@@ -15,7 +15,7 @@
 
          org   0
 
-pat1     fcb   $1B,$2B
+dots     fcb   $1B,$2B
          fcb   $CD		group #
          fcb   $01              buffer #
          fcb   $05              style 640x192x2
@@ -40,7 +40,7 @@ pat1     fcb   $1B,$2B
          fcb   $0F,$0F,$0F,$0F,$0F,$0F,$0F,$0F
          fcb   $0F,$0F,$0F,$0F,$0F,$0F,$0F,$0F
 
-pat2     fcb   $1B,$2B
+vrtline  fcb   $1B,$2B
          fcb   $CD		group #
          fcb   $02              buffer #
          fcb   $05              style 640x192x2
@@ -65,7 +65,7 @@ pat2     fcb   $1B,$2B
          fcb   $F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0
          fcb   $F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0
 
-pat3     fcb   $1B,$2B
+hrzline  fcb   $1B,$2B
          fcb   $CD		group #
          fcb   $03              buffer #
          fcb   $05              style 640x192x2
@@ -90,7 +90,7 @@ pat3     fcb   $1B,$2B
          fcb   $00,$00,$00,$00,$00,$00,$00,$00
          fcb   $00,$00,$00,$00,$00,$00,$00,$00
 
-pat4     fcb   $1B,$2B
+xhatch   fcb   $1B,$2B
          fcb   $CD		group #
          fcb   $04              buffer #
          fcb   $05              style 640x192x2
@@ -115,7 +115,7 @@ pat4     fcb   $1B,$2B
          fcb   $F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0
          fcb   $F0,$F0,$F0,$F0,$F0,$F0,$F0,$F0
 
-pat5     fcb   $1B,$2B
+leftslnt fcb   $1B,$2B
          fcb   $CD		group #
          fcb   $05              buffer #
          fcb   $05              style 640x192x2
@@ -140,7 +140,7 @@ pat5     fcb   $1B,$2B
          fcb   $00,$F0,$00,$F0,$00,$F0,$00,$F0
          fcb   $00,$F0,$00,$F0,$00,$F0,$00,$F0
 
-pat6     fcb   $1B,$2B
+rghtslnt fcb   $1B,$2B
          fcb   $CD		group #
          fcb   $06              buffer #
          fcb   $05              style 640x192x2
@@ -165,7 +165,7 @@ pat6     fcb   $1B,$2B
          fcb   $0F,$00,$0F,$00,$0F,$00,$0F,$00
          fcb   $0F,$00,$0F,$00,$0F,$00,$0F,$00
 
-pat7     fcb   $1B,$2B
+smalldot fcb   $1B,$2B
          fcb   $CD		group #
          fcb   $07              buffer #
          fcb   $05              style 640x192x2
@@ -190,7 +190,7 @@ pat7     fcb   $1B,$2B
          fcb   $00,$00,$00,$00,$00,$00,$00,$00
          fcb   $00,$00,$00,$00,$00,$00,$00,$00
 
-pat8     fcb   $1B,$2B
+largedot fcb   $1B,$2B
          fcb   $CD		group #
          fcb   $08              buffer #
          fcb   $05              style 640x192x2

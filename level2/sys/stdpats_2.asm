@@ -15,7 +15,7 @@
 
          org   0
 
-pat1     fcb   $1B,$2B
+dots     fcb   $1B,$2B
          fcb   $CB		group #
          fcb   $01              buffer #
          fcb   $05              style 640x192x2
@@ -32,7 +32,7 @@ pat1     fcb   $1B,$2B
          fcb   $AA,$AA,$AA,$AA
          fcb   $55,$55,$55,$55
 
-pat2     fcb   $1B,$2B
+vrtline  fcb   $1B,$2B
          fcb   $CB		group #
          fcb   $02		buffer #
          fcb   $05		style
@@ -49,7 +49,7 @@ pat2     fcb   $1B,$2B
          fcb   $88,$88,$88,$88
          fcb   $88,$88,$88,$88
 
-pat3     fcb   $1B,$2B
+hrzline  fcb   $1B,$2B
          fcb   $CB		group #
          fcb   $03		buffer #
          fcb   $05		style
@@ -66,7 +66,7 @@ pat3     fcb   $1B,$2B
          fcb   $FF,$FF,$FF,$FF
          fcb   $00,$00,$00,$00
 
-pat4     fcb   $1B,$2B
+xhatch   fcb   $1B,$2B
          fcb   $CB		group #
          fcb   $04		buffer #
          fcb   $05		style
@@ -83,7 +83,7 @@ pat4     fcb   $1B,$2B
          fcb   $FF,$FF,$FF,$FF
          fcb   $88,$88,$88,$88
 
-pat5     fcb   $1B,$2B
+leftslnt fcb   $1B,$2B
          fcb   $CB		group #
          fcb   $05		buffer #
          fcb   $05		style
@@ -100,7 +100,7 @@ pat5     fcb   $1B,$2B
          fcb   $11,$11,$11,$11
          fcb   $22,$22,$22,$22
 
-pat6     fcb   $1B,$2B
+rghtslnt fcb   $1B,$2B
          fcb   $CB		group #
          fcb   $06		buffer #
          fcb   $05		style
@@ -117,7 +117,7 @@ pat6     fcb   $1B,$2B
          fcb   $88,$88,$88,$88
          fcb   $44,$44,$44,$44
 
-pat7     fcb   $1B,$2B
+smalldot fcb   $1B,$2B
          fcb   $CB		group #
          fcb   $07		buffer #
          fcb   $05		style
@@ -134,7 +134,7 @@ pat7     fcb   $1B,$2B
          fcb   $22,$22,$22,$22
          fcb   $00,$00,$00,$00
 
-pat8     fcb   $1B,$2B
+largedot fcb   $1B,$2B
          fcb   $CB		group #
          fcb   $08		buffer #
          fcb   $05		style

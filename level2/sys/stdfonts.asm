@@ -2337,6 +2337,7 @@ schr7F   fcb   %01010100
          fcb   %01010100
          fcb   %00000000
 
+* Standard graphics
 set3     fcb   $1B,$2B
          fcb   $C8              group #
          fcb   $03              buffer #
