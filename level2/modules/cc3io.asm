@@ -174,10 +174,9 @@ Init     ldx   <D.CCMem
          ldd   MouseInf,y get mouse information
          sta   <G.Mouse+Pt.Res,x	save off hi-res/lo-res flag
          stb   <G.Mouse+Pt.Actv,x	save off left/right
-
-* Set key repeat rate/delay
          ldd   KeyRptS,y  get key repeat start/delay constant
-         std   <G.KyDly,x
+         sta   <G.KyRept,x  set first delay
+         std   <G.KyDly,x   set initial and 2ndary constants
 
          ldd   <D.SysPrc
          std   <D.Proc
