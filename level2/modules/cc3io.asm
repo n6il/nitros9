@@ -18,12 +18,16 @@
 *  26r5    2002/07/24
 * Added support for obtaining mouse info from the init module.
 *
-*  27      2003/08/18
+*  27      2003/08/18  Boisy G. Pitre
 * Forward ported to NitrOS-9.
 *
-*          2003/11/16
-* Corrected several lines for keyboard mouse. RG
-* Corrected several lines in SSMOUSE where MS.Side used incorrectly. RG
+*          2003/11/16  Robert Gault
+* Corrected several lines for keyboard mouse.
+* Corrected several lines in SSMOUSE where MS.Side used incorrectly.
+*
+*          2003/12/02  Boisy G. Pitre
+* Keyboard mouse is now either global or local to window, depending
+* on whether GLOBALKEYMOUSE is defined.
 
          nam   CC3IO
          ttl   CoCo 3 I/O driver
@@ -38,6 +42,10 @@ tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
 rev      set   0
 edition  set   27
+
+* Comment out next line for global keyboard mouse; otherwise, it's on/off
+* on a per-window basis.
+GLOBALKEYMOUSE equ	1
 
          mod   eom,name,tylg,atrv,start,CC3DSiz
 
@@ -387,14 +395,21 @@ L0211    cmpa  #$84		keyboard mouse toggle key?
          bne   L0225		no, return
          ldb   <G.KySame,u	same key pressed?
          bne   L0223		yes, return
+         IFNE  GLOBALKEYMOUSE
          com   <G.KyMse,u
+         ELSE
          ldx   <G.CurDev,u
+         clra			assume no keyboard mouse
          IFNE  H6309
          eim   #KeyMse,<V.ULCase,x
          ELSE
          ldb   <V.ULCase,x
          eorb  #KeyMse		reverse current Keyboard Mouse status
          stb   <V.ULCase,x
+         ENDC
+         beq   KeyMOff		branch if off
+         deca			else A = $FF
+KeyMOff  sta   <G.KyMse,u	save window's keyboard mouse flag in global
          ENDC
 L0223    clr   $01,s
 L0225    ldb   $01,s
@@ -587,11 +602,15 @@ L034A    lda   #$02		update cursors sub-function code
 * Check for mouse update
 L034F    equ   *
 * Major error here. Used regU which points to D.CCMem not G.CurDev. RG
+         IFNE  GLOBALKEYMOUSE
+         tst   <G.KyMse,u	keyboard mouse?
+         ELSE
          IFNE  H6309
          tim   #KeyMse,<V.ULCase,y   keyboard mouse?
          ELSE
          lda   <V.ULCase,y     keyboard mouse?
          bita  #KeyMse
+         ENDC
          ENDC
          bne   L0369		branch if so
          lda   <G.MSmpRt,u	get # ticks until next mouse read
@@ -613,6 +632,9 @@ L0369    equ   *
          ENDC
          std   <G.KySns,u	initialize keysense & same key flag
 * Major error here. Was regU; see above. RG
+         IFNE  GLOBALKEYMOUSE
+         tst   <G.KyMse,u
+         ELSE
          IFNE  H6309
          tim   #KeyMse,>V.ULCase,y
          ELSE
@@ -620,6 +642,7 @@ L0369    equ   *
          lda   >V.ULCase,y      is the keyboard mouse enabled?
          bita  #KeyMse
          puls  a
+         ENDC
          ENDC
          beq   L0381			no, try joystick
          ldx   >WGlobal+G.KeyEnt	else get ptr to keydrv
@@ -882,6 +905,20 @@ setmouse pshs  x		save register used
          stb   <G.AutoMs,x	and set auto follow flag in global mem
          lda   V.TYPE,u		get device type
          sta   <G.WinType,x	set it
+         IFEQ  GLOBALKEYMOUSE
+* Added: get window's keyboard mouse flag and update global keyboard mouse
+         IFNE  H6309
+         tim   #KeyMse,<V.ULCase,u   keyboard mouse?
+         ELSE
+         lda   <V.ULCase,u     keyboard mouse?
+         bita  #KeyMse
+         ENDC
+         beq   setmous2
+         lda   #$FF
+         sta   <G.KyMse,x
+         fcb   $8c
+setmous2 clr   <G.KyMse,x 
+         ENDC
          clra  
          puls  pc,x		restore and return
 
