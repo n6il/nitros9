@@ -1,12 +1,8 @@
 include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
-BOOTERS_L2	= boot_ktlr_id0 boot_ktlr_id5  \
-		boot_tc3_id0 boot_tc3_id5 \
-		boot_vhd boot_mmc_l2
-BOOTERS_L1	= boot_ktlr_id0_l1 boot_ktlr_id5_l1 \
-		boot_tc3_id0_l1 boot_tc3_id5_l1 \
-		boot_mmc_l1
+BOOTERS_L2	= boot_vhd boot_mmc_l2
+BOOTERS_L1	= boot_mmc_l1
 ALLOBJS		= $(BOOTERS_L2) $(BOOTERS_L1)
 
 all:	$(ALLOBJS) $(DEPENDS)
