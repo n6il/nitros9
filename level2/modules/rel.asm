@@ -18,7 +18,6 @@
          use   defsfile
          endc  
 
-Bt.Start equ   $ED00
 ScStart  equ   $8000      screen start in memory
 XX.Size  equ   6          number of bytes before REL actually starts
 Offset   equ   Bt.Start+XX.Size
