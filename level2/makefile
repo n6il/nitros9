@@ -3,7 +3,7 @@ include ../rules.mak
 RELEASE		= nos96809l2v030201
 BOOTFILE	= bootfiles/bootfile_win80
 BOOTFILE_DS80	= bootfiles/bootfile_win80_ds80
-KERNELFILE	= bootfiles/kernel_stock
+KERNELFILE	= bootfiles/kernel_1773
 DIRS		= cmds modules defs sys bootfiles
 
 CMDS		= $(shell $(CD) cmds; make showobjs)

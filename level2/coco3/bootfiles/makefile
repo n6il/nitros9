@@ -7,7 +7,7 @@ CD		= ../cmds
 
 DEPENDS		= ./makefile
 
-KERNEL_STOCK	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/kernel
+KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/kernel
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_VDG	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
@@ -51,7 +51,7 @@ BOOTFILE_WIN80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 
 BOOTFILES	= bootfile_vdg bootfile_win40 bootfile_win80 \
 		bootfile_vdg_ds80 bootfile_win40_ds80 bootfile_win80_ds80
-KERNELS		= kernel_stock
+KERNELS		= kernel_1773
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -77,8 +77,8 @@ bootfile_win80_ds80: $(BOOTFILE_WIN80_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_WIN80_DS80)>$@
 
 # Kernels
-kernel_stock: $(KERNEL_STOCK) $(DEPENDS)
-	$(MERGE) $(KERNEL_STOCK)>$@
+kernel_1773: $(KERNEL_1773) $(DEPENDS)
+	$(MERGE) $(KERNEL_1773)>$@
 
 clean:
 	$(RM) $(ALLOBJS)
