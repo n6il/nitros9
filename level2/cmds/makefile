@@ -17,9 +17,9 @@ UTILPAK1        = attr deldir dirm dmem free ident mmap proc rename setime tmode
 UTILPAK2        = ddir idir pmap xmode
 
 LEVEL1FILES	= binex.asm attr.asm build.asm date.asm deiniz.asm del.asm deldir.asm \
-		echo.asm exbin.asm ident.asm iniz.asm link.asm \
-		list.asm load.asm pwd.asm pxd.asm \
-		save.asm sleep.asm tee.asm tmode.asm verify.asm
+		dump.asm echo.asm exbin.asm free.asm ident.asm iniz.asm inkey.asm link.asm \
+		list.asm load.asm pwd.asm pxd.asm rename.asm \
+		save.asm setime.asm sleep.asm tee.asm tmode.asm tsmon.asm verify.asm
 
 LEVEL2FILES	= gfx.asm mdir.asm mfree.asm montype.asm procs.asm \
 		unlink.asm wcreate.asm
