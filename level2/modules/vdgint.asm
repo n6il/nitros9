@@ -1884,9 +1884,19 @@ ShowS    cmpb  #$03		no more than 3 graphics buffers
          anda  #$F8		1 line/character row
          sta   >D.VIDMD
          sta   >$FF98
-         lda   ,x		get block #
-         lsla
-         lsla
+*         lda   ,x		get block #
+*         lsla
+*         lsla
+*** start of 2MB patch by RG
+         ldb   ,x		get block # (2Meg patch)
+         clra
+         lslb
+         rola
+         lslb
+         rola
+         sta   >$FF9B
+         tfr   b,a
+*** end of 2MB patch by RG
          clrb
          std   <D.VOFF1		display it
          std   >$FF9D
