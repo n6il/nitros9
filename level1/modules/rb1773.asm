@@ -73,6 +73,11 @@
 * Corrected the error handling code for read & write to separate SCII errors
 * from OS-9 errors. Changed drive test from compare #4 to compare #N.Drives to
 * permit up to 6 drives using alternate table.
+*
+*         2005/01/27   Robert Gault
+* Separated the sector write and format write loops so that the CPU clock
+* can be slowed down during formats. This "corrects" problems some hardware
+* have with the current NitrOS-9 during formats.  
 
          nam   rb1773
          ttl   Western Digital 1773 Disk Controller Driver
@@ -742,11 +747,16 @@ WrTrk     lbsr  L01A1          Send command to controller (including delay)
          lda   FBlock+1,u      get the block number for format
          beq   L0230           if not format, don't do anything
          sta   >$FFA1          otherwise map the block in
+* added delay for for MMU line settling. RG 2005/1/23
+         nop
+         nop
          ENDC
 L0230    stb   >DPort+CtrlReg  send data to control register
-* These lines added to match read routine. Should be better timing. RG
-         nop
-         nop
+* These lines converted to separate sector writes from format. RG
+*         nop
+*         nop
+         cmpb   #$F0           if format, then
+         beq   L0240b          go to special loop
          bra   L0240           wait a bit for HALT to enable
 
 * Write sector routine (Entry: B= drive/side select) (NMI will break out)
@@ -764,9 +774,15 @@ L0240    lda   ,x+             Get byte from write buffer
          ENDC
 *         stb   >DPort+CtrlReg Set up to read next byte
          bra   L0240          Go read it
-
+* Special loop for format slows CPU clock. RG
+L0240b   sta   >$FFD8
+L0240c   lda   ,x+
+         sta   >DPort+WD_Data
+         bra   L0240b
 * NMI routine
 NMISvc   leas  R$Size,s       Eat register stack
+* Added to compensate above change in format loop. RG
+         sta   >$FFD9
          IFGT  Level-1
          ldx   <D.SysDAT  get pointer to system DAT image
          lda   3,x        get block number 1
