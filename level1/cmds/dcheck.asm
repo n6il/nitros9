@@ -7,10187 +7,4134 @@
 * ------------------------------------------------------------------
 *   4    From Tandy OS-9 Level One VR 02.00.00
 *   5    Changed /D0 references to /DD                  BGP 02/07/21
+*        Completly disasemble to be more readable       JB  03/03/31
 
          nam   dcheck
          ttl   Check Disk File Structure
 
-* Disassembled 02/04/03 23:13:05 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 03/03/27 00:00:24 by Disasm v1.5 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
-
-start    set   $1A96
+         
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   5
+edition  set   $05
 
          mod   eom,name,tylg,atrv,start,size
-
-         org   0
-u0000    rmb   2946
+u0000    rmb   1
+u0001    rmb   1
+u0002    rmb   6
+u0008    rmb   2
+u000A    rmb   1
+u000B    rmb   1
+u000C    rmb   2
+u000E    rmb   2
+u0010    rmb   6
+u0016    rmb   1
+u0017    rmb   1
+u0018    rmb   3
+u001B    rmb   5
+u0020    rmb   1
+u0021    rmb   1
+u0022    rmb   1
+u0023    rmb   1
+u0024    rmb   1
+u0025    rmb   1
+u0026    rmb   4
+u002A    rmb   2
+u002C    rmb   1
+u002D    rmb   1
+u002E    rmb   1
+u002F    rmb   2
+u0031    rmb   18
+u0043    rmb   18
+u0055    rmb   15
+u0064    rmb   15
+u0073    rmb   138
+u00FD    rmb   2693
 size     equ   .
 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $E8 h
-         fcb   $DE ^
-         fcb   $6F o
-         fcb   $E8 h
-         fcb   $1F 
-         fcb   $5F _
-         fcb   $E7 g
-         fcb   $E8 h
-         fcb   $1E 
-         fcb   $E7 g
-         fcb   $E8 h
-         fcb   $1D 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $30 0
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $2C ,
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $2A *
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $28 (
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $26 &
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $12 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $13 
-         fcb   $A4 $
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $70 p
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $1A 
-         fcb   $07 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $13 
-         fcb   $98 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $00 
-         fcb   $AC ,
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $19 
-         fcb   $F6 v
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $10 
-         fcb   $2F /
-         fcb   $00 
-         fcb   $F3 s
-         fcb   $AE .
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $30 0
-         fcb   $02 
-         fcb   $AF /
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $AE .
-         fcb   $84 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $C1 A
-         fcb   $2D -
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $E1 a
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $26 &
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $E6 f
-         fcb   $F4 t
-         fcb   $27 '
-         fcb   $D1 Q
-         fcb   $E6 f
-         fcb   $F4 t
-         fcb   $4F O
-         fcb   $17 
-         fcb   $19 
-         fcb   $C2 B
-         fcb   $E7 g
-         fcb   $62 b
-         fcb   $C1 A
-         fcb   $62 b
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $77 w
-         fcb   $C1 A
-         fcb   $64 d
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $91 
-         fcb   $C1 A
-         fcb   $6D m
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $62 b
-         fcb   $C1 A
-         fcb   $6F o
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $7D ý
-         fcb   $C1 A
-         fcb   $70 p
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $6F o
-         fcb   $C1 A
-         fcb   $73 s
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $61 a
-         fcb   $C1 A
-         fcb   $77 w
-         fcb   $27 '
-         fcb   $03 
-         fcb   $16 
-         fcb   $00 
-         fcb   $79 y
-         fcb   $AE .
-         fcb   $E4 d
-         fcb   $E6 f
-         fcb   $01 
-         fcb   $C1 A
-         fcb   $3D =
-         fcb   $26 &
-         fcb   $2C ,
-         fcb   $AE .
-         fcb   $E4 d
-         fcb   $E6 f
-         fcb   $02 
-         fcb   $27 '
-         fcb   $26 &
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $70 p
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $19 
-         fcb   $75 u
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $00 
-         fcb   $AC ,
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $19 
-         fcb   $63 c
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $16 
-         fcb   $00 
-         fcb   $5C \
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $12 
-         fcb   $F5 u
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $19 
-         fcb   $59 Y
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $17 
-         fcb   $19 
-         fcb   $55 U
-         fcb   $16 
-         fcb   $00 
-         fcb   $47 G
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $14 
-         fcb   $16 
-         fcb   $00 
-         fcb   $3E >
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $12 
-         fcb   $16 
-         fcb   $00 
-         fcb   $36 6
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $20 
-         fcb   $2E .
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $10 
-         fcb   $20 
-         fcb   $26 &
-         fcb   $17 
-         fcb   $05 
-         fcb   $DB [
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $17 
-         fcb   $19 
-         fcb   $29 )
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $2E .
-         fcb   $20 
-         fcb   $17 
-         fcb   $E6 f
-         fcb   $F4 t
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $12 
-         fcb   $D3 S
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $19 
-         fcb   $0F 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $E6 f
-         fcb   $62 b
-         fcb   $C1 A
-         fcb   $77 w
-         fcb   $10 
-         fcb   $27 '
-         fcb   $FF 
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $16 
-         fcb   $FF 
-         fcb   $27 '
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $27 '
-         fcb   $08 
-         fcb   $17 
-         fcb   $05 
-         fcb   $9A 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $17 
-         fcb   $18 
-         fcb   $E8 h
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $27 '
-         fcb   $0A 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $2E .
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $14 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $10 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $0B 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $26 &
-         fcb   $09 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $10 
-         fcb   $27 '
-         fcb   $09 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $26 &
-         fcb   $17 
-         fcb   $18 
-         fcb   $B4 4
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $26 &
-         fcb   $12 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $12 
-         fcb   $7E þ
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $18 
-         fcb   $9D 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $17 
-         fcb   $18 
-         fcb   $99 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $17 
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $26 &
-         fcb   $AE .
-         fcb   $E8 h
-         fcb   $17 
-         fcb   $E6 f
-         fcb   $8B 
-         fcb   $C1 A
-         fcb   $2F /
-         fcb   $27 '
-         fcb   $14 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $30 0
-         fcb   $63 c
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $C6 F
-         fcb   $2F /
-         fcb   $E7 g
-         fcb   $84 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $17 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $17 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $AE .
-         fcb   $F8 x
-         fcb   $26 &
-         fcb   $E6 f
-         fcb   $8B 
-         fcb   $E7 g
-         fcb   $62 b
-         fcb   $5D ]
-         fcb   $27 '
-         fcb   $16 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $30 0
-         fcb   $63 c
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $E6 f
-         fcb   $62 b
-         fcb   $E7 g
-         fcb   $84 
-         fcb   $20 
-         fcb   $D4 T
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $30 0
-         fcb   $62 b
-         fcb   $E6 f
-         fcb   $8B 
-         fcb   $C1 A
-         fcb   $40 @
-         fcb   $27 '
-         fcb   $1A 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $20 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $30 0
-         fcb   $63 c
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $C6 F
-         fcb   $40 @
-         fcb   $E7 g
-         fcb   $84 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $30 0
-         fcb   $63 c
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $6F o
-         fcb   $84 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $65 e
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $18 
-         fcb   $08 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $ED m
-         fcb   $A4 $
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $16 
-         fcb   $30 0
-         fcb   $63 c
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $11 
-         fcb   $E4 d
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $17 
-         fcb   $E6 f
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $17 
-         fcb   $E2 b
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A4 $
-         fcb   $17 
-         fcb   $17 
-         fcb   $DA Z
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $04 
-         fcb   $B7 7
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $05 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $04 
-         fcb   $4F O
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $E3 c
-         fcb   $E1 a
-         fcb   $ED m
-         fcb   $2A *
-         fcb   $EC l
-         fcb   $2A *
-         fcb   $1F 
-         fcb   $89 
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $32 2
-         fcb   $EC l
-         fcb   $2A *
-         fcb   $84 
-         fcb   $00 
-         fcb   $C4 D
-         fcb   $FF 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $34 4
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $07 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $06 
-         fcb   $4F O
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $E3 c
-         fcb   $E1 a
-         fcb   $ED m
-         fcb   $26 &
-         fcb   $EC l
-         fcb   $26 &
-         fcb   $C3 C
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $ED m
-         fcb   $28 (
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $02 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $01 
-         fcb   $4F O
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $E3 c
-         fcb   $E1 a
-         fcb   $ED m
-         fcb   $2C ,
-         fcb   $EC l
-         fcb   $2C ,
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $26 &
-         fcb   $17 
-         fcb   $17 
-         fcb   $9C 
-         fcb   $ED m
-         fcb   $2C ,
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $1F 
-         fcb   $10 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $1F 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $4F O
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $08 
-         fcb   $80 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $17 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $17 
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $02 
-         fcb   $2E .
-         fcb   $20 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $17 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $4C L
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $8B 
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $17 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $17 
-         fcb   $20 
-         fcb   $D7 W
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $20 
-         fcb   $30 0
-         fcb   $63 c
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $6F o
-         fcb   $84 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $87 
-         fcb   $30 0
-         fcb   $63 c
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $11 
-         fcb   $0A 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $17 
-         fcb   $05 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $2A *
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $11 
-         fcb   $17 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $16 
-         fcb   $F6 v
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $26 &
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $26 &
-         fcb   $0B 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $11 
-         fcb   $23 #
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $16 
-         fcb   $E3 c
-         fcb   $20 
-         fcb   $0F 
-         fcb   $EC l
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $11 
-         fcb   $2A *
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $16 
-         fcb   $D4 T
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $38 8
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $4C L
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $03 
-         fcb   $81 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $38 8
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $11 
-         fcb   $23 #
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $16 
-         fcb   $B5 5
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $38 8
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $1F 
-         fcb   $10 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $08 
-         fcb   $17 
-         fcb   $03 
-         fcb   $5E ^
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $38 8
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $11 
-         fcb   $1B 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $16 
-         fcb   $92 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $30 0
-         fcb   $63 c
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $16 
-         fcb   $8C 
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $12 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $11 
-         fcb   $2C ,
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $16 
-         fcb   $69 i
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $16 
-         fcb   $65 e
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $6F o
-         fcb   $CC L
-         fcb   $10 
-         fcb   $00 
-         fcb   $17 
-         fcb   $16 
-         fcb   $6A j
-         fcb   $ED m
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $78 x
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $27 '
-         fcb   $15 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $10 
-         fcb   $27 '
-         fcb   $27 '
-         fcb   $CC L
-         fcb   $10 
-         fcb   $00 
-         fcb   $17 
-         fcb   $16 
-         fcb   $55 U
-         fcb   $ED m
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $7A z
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $26 &
-         fcb   $17 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $04 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $11 
-         fcb   $0E 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $16 
-         fcb   $26 &
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $17 
-         fcb   $16 
-         fcb   $22 "
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $22 "
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $70 p
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $78 x
-         fcb   $17 
-         fcb   $0C 
-         fcb   $A1 !
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $10 
-         fcb   $27 '
-         fcb   $18 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $24 $
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $00 
-         fcb   $AC ,
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $7A z
-         fcb   $17 
-         fcb   $0C 
-         fcb   $84 
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $04 
-         fcb   $4F O
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $05 
-         fcb   $27 '
-         fcb   $09 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $13 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $1F 
-         fcb   $10 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $08 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A4 $
-         fcb   $17 
-         fcb   $15 
-         fcb   $CD M
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $CC L
-         fcb   $00 
-         fcb   $02 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $E8 h
-         fcb   $19 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $A4 $
-         fcb   $17 
-         fcb   $15 
-         fcb   $BF ?
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $05 
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $15 
-         fcb   $9A 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $E3 c
-         fcb   $E8 h
-         fcb   $17 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $26 &
-         fcb   $10 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $93 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $15 
-         fcb   $8A 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $30 0
-         fcb   $63 c
-         fcb   $AF /
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $08 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $26 &
-         fcb   $24 $
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $E8 h
-         fcb   $1F 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $22 "
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $78 x
-         fcb   $17 
-         fcb   $06 
-         fcb   $AC ,
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $9B 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $15 
-         fcb   $54 T
-         fcb   $30 0
-         fcb   $63 c
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $02 
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $CA J
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $AA *
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $15 
-         fcb   $3D =
-         fcb   $17 
-         fcb   $0A 
-         fcb   $79 y
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $10 
-         fcb   $27 '
-         fcb   $20 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2A *
-         fcb   $26 &
-         fcb   $05 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $26 &
-         fcb   $27 '
-         fcb   $16 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $AA *
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $15 
-         fcb   $1C 
-         fcb   $30 0
-         fcb   $63 c
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $02 
-         fcb   $2A *
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $C1 A
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $15 
-         fcb   $0C 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2A *
-         fcb   $27 '
-         fcb   $2B +
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2A *
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $B0 0
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $F9 y
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2A *
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $27 '
-         fcb   $09 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $C3 C
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $E5 e
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $BC <
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $DC \
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $26 &
-         fcb   $27 '
-         fcb   $2B +
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $AB +
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $C9 I
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $26 &
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $27 '
-         fcb   $09 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $A2 "
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $B5 5
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $9B 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $AC ,
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $28 (
-         fcb   $27 '
-         fcb   $2B +
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $28 (
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $B6 6
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $99 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $28 (
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $27 '
-         fcb   $09 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $AD -
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $85 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $A6 &
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $7C ü
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2C ,
-         fcb   $27 '
-         fcb   $2B +
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2C ,
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $C1 A
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $69 i
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2C ,
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $27 '
-         fcb   $09 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $CB K
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $55 U
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $C4 D
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $4C L
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $26 &
-         fcb   $31 1
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $B3 3
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $39 9
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2C ,
-         fcb   $26 &
-         fcb   $0A 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2A *
-         fcb   $26 &
-         fcb   $05 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $26 &
-         fcb   $27 '
-         fcb   $09 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $B2 2
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $1F 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $AE .
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $16 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $24 $
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $26 &
-         fcb   $0B 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $A4 $
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $14 
-         fcb   $04 
-         fcb   $20 
-         fcb   $10 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $24 $
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $A1 !
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $13 
-         fcb   $F4 t
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $22 "
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $26 &
-         fcb   $0B 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $9D 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $13 
-         fcb   $E0 `
-         fcb   $20 
-         fcb   $10 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $22 "
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $95 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $13 
-         fcb   $D0 P
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $5F _
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $22 "
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $78 x
-         fcb   $17 
-         fcb   $0B 
-         fcb   $7D ý
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $EC l
-         fcb   $22 "
-         fcb   $17 
-         fcb   $13 
-         fcb   $B7 7
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $14 
-         fcb   $26 &
-         fcb   $08 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $70 p
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $13 
-         fcb   $AD -
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $10 
-         fcb   $27 '
-         fcb   $2E .
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $24 $
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $7A z
-         fcb   $17 
-         fcb   $0B 
-         fcb   $4B K
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $EC l
-         fcb   $24 $
-         fcb   $17 
-         fcb   $13 
-         fcb   $85 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $14 
-         fcb   $26 &
-         fcb   $09 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $00 
-         fcb   $AC ,
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $13 
-         fcb   $7A z
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $17 
-         fcb   $13 
-         fcb   $57 W
-         fcb   $32 2
-         fcb   $E8 h
-         fcb   $24 $
-         fcb   $39 9
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $25 %
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $13 
-         fcb   $45 E
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $EA j
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $13 
-         fcb   $38 8
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $AE .
-         fcb   $E4 d
-         fcb   $E6 f
-         fcb   $02 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $AE .
-         fcb   $62 b
-         fcb   $E6 f
-         fcb   $01 
-         fcb   $4F O
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $E3 c
-         fcb   $E1 a
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $F5 u
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $6A j
-         fcb   $17 
-         fcb   $13 
-         fcb   $33 3
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $01 
-         fcb   $00 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A4 $
-         fcb   $17 
-         fcb   $13 
-         fcb   $17 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $01 
-         fcb   $00 
-         fcb   $27 '
-         fcb   $12 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $D9 Y
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $12 
-         fcb   $E9 i
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $12 
-         fcb   $E5 e
-         fcb   $CC L
-         fcb   $01 
-         fcb   $00 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $E8 h
-         fcb   $D6 V
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $18 
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $27 '
-         fcb   $2D -
-         fcb   $17 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $27 '
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $C8 H
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $12 
-         fcb   $BE >
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $17 
-         fcb   $12 
-         fcb   $BA :
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $18 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $18 
-         fcb   $EC l
-         fcb   $2E .
-         fcb   $27 '
-         fcb   $32 2
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $18 
-         fcb   $C3 C
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $E4 d
-         fcb   $2F /
-         fcb   $12 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $C3 C
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $12 
-         fcb   $A0 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $20 
-         fcb   $E3 c
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $2A *
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $AF /
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $12 
-         fcb   $89 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $26 &
-         fcb   $09 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $24 $
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $24 $
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $2A *
-         fcb   $17 
-         fcb   $12 
-         fcb   $76 v
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $1A 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $2A *
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $10 
-         fcb   $88 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $12 
-         fcb   $4E N
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $17 
-         fcb   $0B 
-         fcb   $2C ,
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $12 
-         fcb   $47 G
-         fcb   $17 
-         fcb   $0B 
-         fcb   $8D 
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $40 @
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6A j
-         fcb   $17 
-         fcb   $12 
-         fcb   $2F /
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $CC L
-         fcb   $00 
-         fcb   $20 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $00 
-         fcb   $E8 h
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $17 
-         fcb   $12 
-         fcb   $2C ,
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $10 
-         fcb   $27 '
-         fcb   $01 
-         fcb   $24 $
-         fcb   $E6 f
-         fcb   $A9 )
-         fcb   $00 
-         fcb   $E8 h
-         fcb   $27 '
-         fcb   $DE ^
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $22 "
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $22 "
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $00 
-         fcb   $E8 h
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $58 X
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $03 
-         fcb   $1F 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $2E .
-         fcb   $27 '
-         fcb   $03 
-         fcb   $17 
-         fcb   $0A 
-         fcb   $C1 A
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $52 R
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $26 &
-         fcb   $23 #
-         fcb   $EC l
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $00 
-         fcb   $E8 h
-         fcb   $1F 
-         fcb   $10 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $1D 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $24 $
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $7A z
-         fcb   $17 
-         fcb   $03 
-         fcb   $0B 
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $20 
-         fcb   $26 &
-         fcb   $EC l
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $00 
-         fcb   $E8 h
-         fcb   $1F 
-         fcb   $10 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $1D 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $22 "
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $78 x
-         fcb   $17 
-         fcb   $02 
-         fcb   $E9 i
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $ED m
-         fcb   $7E þ
-         fcb   $10 
-         fcb   $26 &
-         fcb   $FF 
-         fcb   $64 d
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $00 
-         fcb   $E8 h
-         fcb   $1F 
-         fcb   $10 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $1D 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A4 $
-         fcb   $17 
-         fcb   $11 
-         fcb   $85 
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $FE 
-         fcb   $56 V
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $00 
-         fcb   $B2 2
-         fcb   $ED m
-         fcb   $7E þ
-         fcb   $10 
-         fcb   $27 '
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $00 
-         fcb   $E8 h
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $68 h
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $02 
-         fcb   $7E þ
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $18 
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $08 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $33 3
-         fcb   $66 f
-         fcb   $EF o
-         fcb   $84 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $43 C
-         fcb   $30 0
-         fcb   $E8 h
-         fcb   $28 (
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $E8 h
-         fcb   $28 (
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $17 
-         fcb   $11 
-         fcb   $46 F
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $17 
-         fcb   $11 
-         fcb   $36 6
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $30 0
-         fcb   $66 f
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $FE 
-         fcb   $2C ,
-         fcb   $17 
-         fcb   $0A 
-         fcb   $51 Q
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $2A *
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $2A *
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6A j
-         fcb   $17 
-         fcb   $10 
-         fcb   $FC 
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $16 
-         fcb   $FE 
-         fcb   $CA J
-         fcb   $30 0
-         fcb   $66 f
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $FE 
-         fcb   $08 
-         fcb   $16 
-         fcb   $FE 
-         fcb   $C0 @
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $17 
-         fcb   $10 
-         fcb   $FA z
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $05 
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $10 
-         fcb   $D4 T
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $36 6
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $0F 
-         fcb   $16 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $10 
-         fcb   $D1 Q
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $05 
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $10 
-         fcb   $B7 7
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $18 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $18 
-         fcb   $32 2
-         fcb   $E8 h
-         fcb   $2C ,
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $79 y
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $CC L
-         fcb   $00 
-         fcb   $10 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $E3 c
-         fcb   $E4 d
-         fcb   $8E 
-         fcb   $00 
-         fcb   $02 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $5D ]
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $1A 
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $E3 c
-         fcb   $E4 d
-         fcb   $8E 
-         fcb   $00 
-         fcb   $01 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $5D ]
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $0A 
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $AE .
-         fcb   $E4 d
-         fcb   $E6 f
-         fcb   $8B 
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $AE .
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $01 
-         fcb   $00 
-         fcb   $10 
-         fcb   $2C ,
-         fcb   $00 
-         fcb   $A4 $
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $E3 c
-         fcb   $E4 d
-         fcb   $8E 
-         fcb   $00 
-         fcb   $04 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $E3 c
-         fcb   $62 b
-         fcb   $8E 
-         fcb   $00 
-         fcb   $03 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $4F O
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $E3 c
-         fcb   $E1 a
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $66 f
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $6B k
-         fcb   $E3 c
-         fcb   $64 d
-         fcb   $17 
-         fcb   $10 
-         fcb   $64 d
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $4C L
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $E3 c
-         fcb   $62 b
-         fcb   $17 
-         fcb   $10 
-         fcb   $59 Y
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $10 
-         fcb   $2E .
-         fcb   $00 
-         fcb   $16 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $4C L
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $66 f
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $10 
-         fcb   $43 C
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $10 
-         fcb   $2F /
-         fcb   $00 
-         fcb   $40 @
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $38 8
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $E3 c
-         fcb   $62 b
-         fcb   $17 
-         fcb   $FC 
-         fcb   $C6 F
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $42 B
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $66 f
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $FC 
-         fcb   $B8 8
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $42 B
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $38 8
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $0E 
-         fcb   $32 2
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $0F 
-         fcb   $E7 g
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $17 
-         fcb   $08 
-         fcb   $B6 6
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $20 
-         fcb   $0A 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $05 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $16 
-         fcb   $FF 
-         fcb   $28 (
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $27 '
-         fcb   $13 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $26 &
-         fcb   $09 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2C ,
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $2C ,
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $32 2
-         fcb   $69 i
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $16 
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $C4 D
-         fcb   $CC L
-         fcb   $00 
-         fcb   $10 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $E3 c
-         fcb   $E4 d
-         fcb   $8E 
-         fcb   $00 
-         fcb   $02 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $5D ]
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $1A 
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $E3 c
-         fcb   $E4 d
-         fcb   $8E 
-         fcb   $00 
-         fcb   $01 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $5D ]
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $0A 
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $AE .
-         fcb   $E4 d
-         fcb   $E6 f
-         fcb   $8B 
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $95 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $01 
-         fcb   $00 
-         fcb   $10 
-         fcb   $2C ,
-         fcb   $00 
-         fcb   $8B 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $26 &
-         fcb   $43 C
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $E3 c
-         fcb   $E4 d
-         fcb   $8E 
-         fcb   $00 
-         fcb   $04 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $E3 c
-         fcb   $62 b
-         fcb   $8E 
-         fcb   $00 
-         fcb   $03 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $4F O
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $E3 c
-         fcb   $E1 a
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $E3 c
-         fcb   $62 b
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $22 "
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $78 x
-         fcb   $17 
-         fcb   $00 
-         fcb   $8C 
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $ED m
-         fcb   $7E þ
-         fcb   $27 '
-         fcb   $40 @
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $20 
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $E3 c
-         fcb   $E4 d
-         fcb   $8E 
-         fcb   $00 
-         fcb   $04 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $E3 c
-         fcb   $62 b
-         fcb   $8E 
-         fcb   $00 
-         fcb   $03 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $4F O
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $E3 c
-         fcb   $E1 a
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $E3 c
-         fcb   $62 b
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $24 $
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $7A z
-         fcb   $17 
-         fcb   $00 
-         fcb   $48 H
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $05 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $16 
-         fcb   $FF 
-         fcb   $41 A
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $27 '
-         fcb   $05 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $32 2
-         fcb   $69 i
-         fcb   $39 9
-         fcb   $E6 f
-         fcb   $F8 x
-         fcb   $07 
-         fcb   $C4 D
-         fcb   $80 
-         fcb   $C0 @
-         fcb   $00 
-         fcb   $27 '
-         fcb   $02 
-         fcb   $C6 F
-         fcb   $01 
-         fcb   $4F O
-         fcb   $32 2
-         fcb   $69 i
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $AE .
-         fcb   $64 d
-         fcb   $E6 f
-         fcb   $80 
-         fcb   $AF /
-         fcb   $64 d
-         fcb   $AE .
-         fcb   $E4 d
-         fcb   $E7 g
-         fcb   $80 
-         fcb   $AF /
-         fcb   $E4 d
-         fcb   $C1 A
-         fcb   $80 
-         fcb   $25 %
-         fcb   $F0 p
-         fcb   $6F o
-         fcb   $F4 t
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $E6 f
-         fcb   $F4 t
-         fcb   $C4 D
-         fcb   $7F ÿ
-         fcb   $E7 g
-         fcb   $F4 t
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $E8 h
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $A4 $
-         fcb   $28 (
-         fcb   $E4 d
-         fcb   $29 )
-         fcb   $ED m
-         fcb   $7E þ
-         fcb   $27 '
-         fcb   $1A 
-         fcb   $EC l
-         fcb   $28 (
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $6C l
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $28 (
-         fcb   $17 
-         fcb   $0E 
-         fcb   $B0 0
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $A3 #
-         fcb   $28 (
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $20 
-         fcb   $10 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $6C l
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $28 (
-         fcb   $17 
-         fcb   $0E 
-         fcb   $96 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $30 0
-         fcb   $E4 d
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $6C l
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $FB 
-         fcb   $2A *
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $30 0
-         fcb   $E8 h
-         fcb   $11 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $E8 h
-         fcb   $11 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $E8 h
-         fcb   $11 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $E8 h
-         fcb   $2E .
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $E8 h
-         fcb   $14 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $0E 
-         fcb   $6D m
-         fcb   $32 2
-         fcb   $6A j
-         fcb   $EC l
-         fcb   $2E .
-         fcb   $27 '
-         fcb   $3B ;
-         fcb   $30 0
-         fcb   $E4 d
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $6C l
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $FA z
-         fcb   $F7 w
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $62 b
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $0C 
-         fcb   $98 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $0E 
-         fcb   $27 '
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $11 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $11 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $11 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $0C 
-         fcb   $A0 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $0E 
-         fcb   $0D 
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $EC l
-         fcb   $6F o
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6F o
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $24 $
-         fcb   $17 
-         fcb   $05 
-         fcb   $C1 A
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $ED m
-         fcb   $7E þ
-         fcb   $27 '
-         fcb   $07 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $E8 h
-         fcb   $1E 
-         fcb   $39 9
-         fcb   $CC L
-         fcb   $00 
-         fcb   $80 
-         fcb   $AE .
-         fcb   $E8 h
-         fcb   $11 
-         fcb   $27 '
-         fcb   $06 
-         fcb   $47 G
-         fcb   $56 V
-         fcb   $30 0
-         fcb   $1F 
-         fcb   $26 &
-         fcb   $FA z
-         fcb   $E7 g
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $E6 f
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $C1 A
-         fcb   $80 
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $99 
-         fcb   $E6 f
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $78 x
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $71 q
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $E6 f
-         fcb   $9B 
-         fcb   $E4 d
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $5D ]
-         fcb   $27 '
-         fcb   $22 "
-         fcb   $CC L
-         fcb   $00 
-         fcb   $31 1
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $24 $
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $E6 f
-         fcb   $9B 
-         fcb   $E4 d
-         fcb   $E8 h
-         fcb   $1D 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $13 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $13 
-         fcb   $17 
-         fcb   $01 
-         fcb   $B0 0
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $26 &
-         fcb   $1D 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $24 $
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $E6 f
-         fcb   $9B 
-         fcb   $EA j
-         fcb   $E8 h
-         fcb   $1D 
-         fcb   $AE .
-         fcb   $F1 q
-         fcb   $E7 g
-         fcb   $84 
-         fcb   $E6 f
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $86 
-         fcb   $01 
-         fcb   $27 '
-         fcb   $04 
-         fcb   $54 T
-         fcb   $4A J
-         fcb   $26 &
-         fcb   $FC 
-         fcb   $E7 g
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $16 
-         fcb   $FF 
-         fcb   $81 
-         fcb   $EC l
-         fcb   $6F o
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $6F o
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $1F 
-         fcb   $13 
-         fcb   $EC l
-         fcb   $C4 D
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $C4 D
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $08 
-         fcb   $10 
-         fcb   $25 %
-         fcb   $00 
-         fcb   $9B 
-         fcb   $EC l
-         fcb   $6F o
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $FF 
-         fcb   $2F /
-         fcb   $2E .
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $6F o
-         fcb   $EC l
-         fcb   $6F o
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6F o
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $6F o
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $24 $
-         fcb   $17 
-         fcb   $04 
-         fcb   $CD M
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $ED m
-         fcb   $7E þ
-         fcb   $27 '
-         fcb   $07 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $E8 h
-         fcb   $1E 
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $E6 f
-         fcb   $9B 
-         fcb   $5D ]
-         fcb   $27 '
-         fcb   $1F 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $31 1
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $24 $
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $E6 f
-         fcb   $9B 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $13 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $13 
-         fcb   $17 
-         fcb   $00 
-         fcb   $EA j
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $26 &
-         fcb   $0E 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $C6 F
-         fcb   $FF 
-         fcb   $E7 g
-         fcb   $94 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $1F 
-         fcb   $13 
-         fcb   $EC l
-         fcb   $C4 D
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $C4 D
-         fcb   $EC l
-         fcb   $6F o
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $6F o
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $83 
-         fcb   $00 
-         fcb   $08 
-         fcb   $ED m
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $16 
-         fcb   $FF 
-         fcb   $5A Z
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $A2 "
-         fcb   $CC L
-         fcb   $00 
-         fcb   $08 
-         fcb   $A3 #
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $FF 
-         fcb   $AE .
-         fcb   $E1 a
-         fcb   $27 '
-         fcb   $06 
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $1F 
-         fcb   $26 &
-         fcb   $FA z
-         fcb   $E7 g
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $EC l
-         fcb   $6F o
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $FF 
-         fcb   $2F /
-         fcb   $2E .
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $6F o
-         fcb   $EC l
-         fcb   $6F o
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6F o
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $6F o
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $24 $
-         fcb   $17 
-         fcb   $04 
-         fcb   $13 
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $ED m
-         fcb   $7E þ
-         fcb   $27 '
-         fcb   $07 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $E8 h
-         fcb   $1E 
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $E6 f
-         fcb   $9B 
-         fcb   $E4 d
-         fcb   $E8 h
-         fcb   $1B 
-         fcb   $5D ]
-         fcb   $27 '
-         fcb   $22 "
-         fcb   $CC L
-         fcb   $00 
-         fcb   $31 1
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $24 $
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $E6 f
-         fcb   $9B 
-         fcb   $E4 d
-         fcb   $E8 h
-         fcb   $1D 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $13 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $13 
-         fcb   $17 
-         fcb   $00 
-         fcb   $2A *
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $26 &
-         fcb   $1D 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $22 "
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $24 $
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $E6 f
-         fcb   $9B 
-         fcb   $EA j
-         fcb   $E8 h
-         fcb   $1D 
-         fcb   $AE .
-         fcb   $F1 q
-         fcb   $E7 g
-         fcb   $84 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $32 2
-         fcb   $E8 h
-         fcb   $1E 
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $6F o
-         fcb   $E7 g
-         fcb   $64 d
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $10 
-         fcb   $27 '
-         fcb   $01 
-         fcb   $08 
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $C4 D
-         fcb   $80 
-         fcb   $5D ]
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $E9 i
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6E n
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6C l
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $6D m
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $0B 
-         fcb   $D0 P
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $38 8
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $67 g
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $F8 x
-         fcb   $5A Z
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $72 r
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $10 
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $31 1
-         fcb   $26 &
-         fcb   $1C 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $38 8
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $0A 
-         fcb   $35 5
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $0B 
-         fcb   $7E þ
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2A *
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $2A *
-         fcb   $16 
-         fcb   $00 
-         fcb   $5D ]
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $10 
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $32 2
-         fcb   $26 &
-         fcb   $1B 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $38 8
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $0A 
-         fcb   $35 5
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $0B 
-         fcb   $59 Y
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $26 &
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $26 &
-         fcb   $20 
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $10 
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $33 3
-         fcb   $26 &
-         fcb   $30 0
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $12 
-         fcb   $27 '
-         fcb   $10 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $38 8
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $0A 
-         fcb   $44 D
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $0B 
-         fcb   $30 0
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $28 (
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $28 (
-         fcb   $20 
-         fcb   $10 
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $38 8
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $0A 
-         fcb   $61 a
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $0B 
-         fcb   $15 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $10 
-         fcb   $27 '
-         fcb   $34 4
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $26 &
-         fcb   $2C ,
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $30 0
-         fcb   $26 &
-         fcb   $2A *
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $30 0
-         fcb   $EC l
-         fcb   $26 &
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $67 g
-         fcb   $34 4
-         fcb   $10 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $24 $
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $7A z
-         fcb   $17 
-         fcb   $FC 
-         fcb   $33 3
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $30 0
-         fcb   $20 
-         fcb   $03 
-         fcb   $17 
-         fcb   $03 
-         fcb   $AE .
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $86 
-         fcb   $01 
-         fcb   $27 '
-         fcb   $04 
-         fcb   $58 X
-         fcb   $4A J
-         fcb   $26 &
-         fcb   $FC 
-         fcb   $E7 g
-         fcb   $64 d
-         fcb   $16 
-         fcb   $FE 
-         fcb   $F2 r
-         fcb   $32 2
-         fcb   $6A j
-         fcb   $39 9
-         fcb   $32 2
-         fcb   $76 v
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $01 
-         fcb   $00 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A4 $
-         fcb   $17 
-         fcb   $0A 
-         fcb   $AA *
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $22 "
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $78 x
-         fcb   $17 
-         fcb   $02 
-         fcb   $62 b
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $F7 w
-         fcb   $6E n
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $ED m
-         fcb   $66 f
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $2A *
-         fcb   $10 
-         fcb   $24 $
-         fcb   $00 
-         fcb   $FA z
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $8B 
-         fcb   $E8 h
-         fcb   $B8 8
-         fcb   $1E 
-         fcb   $E7 g
-         fcb   $68 h
-         fcb   $5D ]
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $8D 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $2A *
-         fcb   $26 &
-         fcb   $24 $
-         fcb   $EC l
-         fcb   $2C ,
-         fcb   $84 
-         fcb   $00 
-         fcb   $C4 D
-         fcb   $07 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $08 
-         fcb   $A3 #
-         fcb   $E1 a
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $FF 
-         fcb   $AE .
-         fcb   $E1 a
-         fcb   $27 '
-         fcb   $06 
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $1F 
-         fcb   $26 &
-         fcb   $FA z
-         fcb   $34 4
-         fcb   $04 
-         fcb   $E6 f
-         fcb   $69 i
-         fcb   $E4 d
-         fcb   $E0 `
-         fcb   $E7 g
-         fcb   $68 h
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $E6 f
-         fcb   $8B 
-         fcb   $E4 d
-         fcb   $68 h
-         fcb   $E7 g
-         fcb   $69 i
-         fcb   $5D ]
-         fcb   $27 '
-         fcb   $23 #
-         fcb   $CC L
-         fcb   $00 
-         fcb   $33 3
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $6B k
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $01 
-         fcb   $00 
-         fcb   $17 
-         fcb   $0A 
-         fcb   $46 F
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6A j
-         fcb   $1F 
-         fcb   $89 
-         fcb   $1D 
-         fcb   $E3 c
-         fcb   $A8 (
-         fcb   $1A 
-         fcb   $17 
-         fcb   $FE 
-         fcb   $28 (
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $E6 f
-         fcb   $68 h
-         fcb   $E4 d
-         fcb   $B8 8
-         fcb   $1E 
-         fcb   $E7 g
-         fcb   $69 i
-         fcb   $5D ]
-         fcb   $27 '
-         fcb   $23 #
-         fcb   $CC L
-         fcb   $00 
-         fcb   $32 2
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $6B k
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $01 
-         fcb   $00 
-         fcb   $17 
-         fcb   $0A 
-         fcb   $19 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6A j
-         fcb   $1F 
-         fcb   $89 
-         fcb   $1D 
-         fcb   $E3 c
-         fcb   $A8 (
-         fcb   $1A 
-         fcb   $17 
-         fcb   $FD 
-         fcb   $FB 
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $10 
-         fcb   $00 
-         fcb   $2D -
-         fcb   $21 !
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $1A 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $10 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $22 "
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $78 x
-         fcb   $17 
-         fcb   $01 
-         fcb   $70 p
-         fcb   $32 2
-         fcb   $68 h
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $66 f
-         fcb   $10 
-         fcb   $83 
-         fcb   $01 
-         fcb   $00 
-         fcb   $2D -
-         fcb   $0D 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $66 f
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $78 x
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $F6 v
-         fcb   $6B k
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $16 
-         fcb   $FE 
-         fcb   $FD 
-         fcb   $32 2
-         fcb   $6A j
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $E8 h
-         fcb   $E8 h
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $20 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $17 
-         fcb   $09 
-         fcb   $93 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $08 
-         fcb   $C2 B
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $6A j
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $09 
-         fcb   $72 r
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $30 0
-         fcb   $64 d
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $1E 
-         fcb   $17 
-         fcb   $02 
-         fcb   $65 e
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $E6 f
-         fcb   $F8 x
-         fcb   $1C 
-         fcb   $C1 A
-         fcb   $2F /
-         fcb   $26 &
-         fcb   $16 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $03 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $1E 
-         fcb   $17 
-         fcb   $09 
-         fcb   $67 g
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $ED m
-         fcb   $F8 x
-         fcb   $1E 
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $17 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $1C 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $08 
-         fcb   $93 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $09 
-         fcb   $13 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $09 
-         fcb   $0F 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $10 
-         fcb   $00 
-         fcb   $2C ,
-         fcb   $13 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $AE .
-         fcb   $E8 h
-         fcb   $18 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $6F o
-         fcb   $84 
-         fcb   $20 
-         fcb   $E5 e
-         fcb   $EC l
-         fcb   $2A *
-         fcb   $1F 
-         fcb   $89 
-         fcb   $4F O
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $2A *
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $10 
-         fcb   $00 
-         fcb   $17 
-         fcb   $09 
-         fcb   $19 
-         fcb   $ED m
-         fcb   $7E þ
-         fcb   $27 '
-         fcb   $07 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $C3 C
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $24 $
-         fcb   $17 
-         fcb   $08 
-         fcb   $B5 5
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $1A 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $22 "
-         fcb   $17 
-         fcb   $08 
-         fcb   $D3 S
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $05 
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $08 
-         fcb   $8D 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $24 $
-         fcb   $17 
-         fcb   $08 
-         fcb   $84 
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $62 b
-         fcb   $2E .
-         fcb   $26 &
-         fcb   $CC L
-         fcb   $10 
-         fcb   $00 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $1A 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $22 "
-         fcb   $17 
-         fcb   $08 
-         fcb   $96 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $05 
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $08 
-         fcb   $50 P
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $20 
-         fcb   $D3 S
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $20 
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1A 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $84 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $20 
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $EC l
-         fcb   $E8 h
-         fcb   $18 
-         fcb   $ED m
-         fcb   $84 
-         fcb   $32 2
-         fcb   $E8 h
-         fcb   $1A 
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $A8 (
-         fcb   $32 2
-         fcb   $2D -
-         fcb   $1F 
-         fcb   $EC l
-         fcb   $6A j
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $A8 (
-         fcb   $34 4
-         fcb   $2D -
-         fcb   $17 
-         fcb   $EC l
-         fcb   $A8 (
-         fcb   $2E .
-         fcb   $26 &
-         fcb   $0C 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $07 
-         fcb   $A4 $
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $08 
-         fcb   $12 
-         fcb   $17 
-         fcb   $00 
-         fcb   $E3 c
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1A 
-         fcb   $EC l
-         fcb   $8B 
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $68 h
-         fcb   $10 
-         fcb   $2E .
-         fcb   $00 
-         fcb   $13 
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1A 
-         fcb   $EC l
-         fcb   $8B 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $0F 
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $68 h
-         fcb   $10 
-         fcb   $2C ,
-         fcb   $00 
-         fcb   $97 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1A 
-         fcb   $EC l
-         fcb   $8B 
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6A j
-         fcb   $17 
-         fcb   $07 
-         fcb   $C8 H
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $CC L
-         fcb   $10 
-         fcb   $00 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $17 
-         fcb   $07 
-         fcb   $E8 h
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $05 
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $07 
-         fcb   $A2 "
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1A 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $6A j
-         fcb   $47 G
-         fcb   $56 V
-         fcb   $47 G
-         fcb   $56 V
-         fcb   $47 G
-         fcb   $56 V
-         fcb   $47 G
-         fcb   $56 V
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $ED m
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $27 '
-         fcb   $38 8
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1A 
-         fcb   $EC l
-         fcb   $8B 
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6A j
-         fcb   $17 
-         fcb   $07 
-         fcb   $69 i
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $CC L
-         fcb   $10 
-         fcb   $00 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $17 
-         fcb   $07 
-         fcb   $68 h
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $05 
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $07 
-         fcb   $43 C
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A8 (
-         fcb   $1E 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $6A j
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $10 
-         fcb   $17 
-         fcb   $07 
-         fcb   $6D m
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $E3 c
-         fcb   $62 b
-         fcb   $E3 c
-         fcb   $6C l
-         fcb   $ED m
-         fcb   $F1 q
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $32 2
-         fcb   $7E þ
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $A8 (
-         fcb   $18 
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $08 
-         fcb   $EC l
-         fcb   $8B 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $06 
-         fcb   $BE >
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $07 
-         fcb   $09 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $20 
-         fcb   $D8 X
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $01 
-         fcb   $58 X
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $06 
-         fcb   $A8 (
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $06 
-         fcb   $EF o
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $7C ü
-         fcb   $AE .
-         fcb   $64 d
-         fcb   $E6 f
-         fcb   $80 
-         fcb   $AF /
-         fcb   $64 d
-         fcb   $5D ]
-         fcb   $26 &
-         fcb   $F7 w
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $E6 f
-         fcb   $F8 x
-         fcb   $08 
-         fcb   $AE .
-         fcb   $64 d
-         fcb   $E7 g
-         fcb   $80 
-         fcb   $AF /
-         fcb   $64 d
-         fcb   $AE .
-         fcb   $68 h
-         fcb   $E6 f
-         fcb   $80 
-         fcb   $AF /
-         fcb   $68 h
-         fcb   $5D ]
-         fcb   $26 &
-         fcb   $EE n
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $39 9
-         fcb   $32 2
-         fcb   $7E þ
-         fcb   $CC L
-         fcb   $00 
-         fcb   $81 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $06 
-         fcb   $70 p
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $06 
-         fcb   $AD -
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $22 "
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $06 
-         fcb   $5F _
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $06 
-         fcb   $8F 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $06 
-         fcb   $75 u
-         fcb   $34 4
-         fcb   $10 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $17 
-         fcb   $06 
-         fcb   $82 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $17 
-         fcb   $FF 
-         fcb   $60 `
-         fcb   $DC \
-         fcb   $02 
-         fcb   $17 
-         fcb   $06 
-         fcb   $7B û
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $2F /
-         fcb   $44 D
-         fcb   $44 D
-         fcb   $00 
-         fcb   $2F /
-         fcb   $44 D
-         fcb   $44 D
-         fcb   $00 
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $3A :
-         fcb   $20 
-         fcb   $2D -
-         fcb   $77 w
-         fcb   $3D =
-         fcb   $20 
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $71 q
-         fcb   $75 u
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $6C l
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $20 
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $67 g
-         fcb   $75 u
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $0A 
-         fcb   $00 
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $3A :
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $67 g
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $20 
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $27 '
-         fcb   $25 %
-         fcb   $63 c
-         fcb   $27 '
-         fcb   $0A 
-         fcb   $00 
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $3A :
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $20 
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $20 
-         fcb   $73 s
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $69 i
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $0A 
-         fcb   $00 
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $3A :
-         fcb   $20 
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $20 
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $00 
-         fcb   $56 V
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $20 
-         fcb   $2D -
-         fcb   $20 
-         fcb   $27 '
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $27 '
-         fcb   $20 
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $20 
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $00 
-         fcb   $24 $
-         fcb   $25 %
-         fcb   $30 0
-         fcb   $34 4
-         fcb   $78 x
-         fcb   $20 
-         fcb   $62 b
-         fcb   $79 y
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $0A 
-         fcb   $00 
-         fcb   $31 1
-         fcb   $20 
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $0A 
-         fcb   $00 
-         fcb   $25 %
-         fcb   $64 d
-         fcb   $20 
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $20 
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $0A 
-         fcb   $00 
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $20 
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $20 
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $61 a
-         fcb   $0A 
-         fcb   $00 
-         fcb   $53 S
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $20 
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $20 
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $20 
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $20 
-         fcb   $46 F
-         fcb   $44 D
-         fcb   $0A 
-         fcb   $00 
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $3A :
-         fcb   $20 
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $64 d
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $00 
-         fcb   $4E N
-         fcb   $6F o
-         fcb   $20 
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $20 
-         fcb   $61 a
-         fcb   $76 v
-         fcb   $61 a
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $62 b
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $20 
-         fcb   $62 b
-         fcb   $75 u
-         fcb   $66 f
-         fcb   $66 f
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $28 (
-         fcb   $25 %
-         fcb   $64 d
-         fcb   $4B K
-         fcb   $20 
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $71 q
-         fcb   $2E .
-         fcb   $29 )
-         fcb   $0A 
-         fcb   $00 
-         fcb   $24 $
-         fcb   $25 %
-         fcb   $30 0
-         fcb   $34 4
-         fcb   $78 x
-         fcb   $20 
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $20 
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $69 i
-         fcb   $64 d
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $20 
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $0A 
-         fcb   $00 
-         fcb   $42 B
-         fcb   $75 u
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $20 
-         fcb   $77 w
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $6B k
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $0A 
-         fcb   $00 
-         fcb   $43 C
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $0A 
-         fcb   $00 
-         fcb   $0A 
-         fcb   $50 P
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $6C l
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $71 q
-         fcb   $75 u
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $3A :
-         fcb   $0A 
-         fcb   $00 
-         fcb   $0A 
-         fcb   $00 
-         fcb   $25 %
-         fcb   $64 d
-         fcb   $20 
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $6C l
-         fcb   $79 y
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $00 
-         fcb   $73 s
-         fcb   $00 
-         fcb   $0A 
-         fcb   $00 
-         fcb   $25 %
-         fcb   $64 d
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $00 
-         fcb   $73 s
-         fcb   $00 
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $75 u
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20 
-         fcb   $62 b
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $0A 
-         fcb   $00 
-         fcb   $25 %
-         fcb   $64 d
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $00 
-         fcb   $73 s
-         fcb   $00 
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $20 
-         fcb   $62 b
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $75 u
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $0A 
-         fcb   $00 
-         fcb   $25 %
-         fcb   $64 d
-         fcb   $20 
-         fcb   $62 b
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $63 c
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $70 p
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $00 
-         fcb   $73 s
-         fcb   $00 
-         fcb   $0A 
-         fcb   $00 
-         fcb   $0A 
-         fcb   $27 '
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $27 '
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $75 u
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20 
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $20 
-         fcb   $00 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $00 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $0A 
-         fcb   $00 
-         fcb   $31 1
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $0A 
-         fcb   $00 
-         fcb   $25 %
-         fcb   $64 d
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $00 
-         fcb   $31 1
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $0A 
-         fcb   $00 
-         fcb   $25 %
-         fcb   $64 d
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $00 
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $3A :
-         fcb   $20 
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $20 
-         fcb   $5B [
-         fcb   $2D -
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $5D ]
-         fcb   $20 
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $5F _
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $20 
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $2D -
-         fcb   $77 w
-         fcb   $20 
-         fcb   $3D =
-         fcb   $20 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $6C l
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $77 w
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $6B k
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $2D -
-         fcb   $70 p
-         fcb   $20 
-         fcb   $3D =
-         fcb   $20 
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $6C l
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $71 q
-         fcb   $75 u
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $2D -
-         fcb   $6D m
-         fcb   $20 
-         fcb   $3D =
-         fcb   $20 
-         fcb   $73 s
-         fcb   $61 a
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $20 
-         fcb   $77 w
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $6B k
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $2D -
-         fcb   $62 b
-         fcb   $20 
-         fcb   $3D =
-         fcb   $20 
-         fcb   $73 s
-         fcb   $75 u
-         fcb   $70 p
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $73 s
-         fcb   $20 
-         fcb   $6C l
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20 
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $20 
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $00 
-         fcb   $20 
-         fcb   $20 
-         fcb   $2D -
-         fcb   $73 s
-         fcb   $20 
-         fcb   $3D =
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $70 p
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $79 y
-         fcb   $20 
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20 
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $6C l
-         fcb   $79 y
-         fcb   $0A 
-         fcb   $00 
-         fcb   $24 $
-         fcb   $25 %
-         fcb   $30 0
-         fcb   $32 2
-         fcb   $78 x
-         fcb   $25 %
-         fcb   $30 0
-         fcb   $34 4
-         fcb   $78 x
-         fcb   $00 
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $3A :
-         fcb   $20 
-         fcb   $66 f
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $20 
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $20 
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $0A 
-         fcb   $00 
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $3A :
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20 
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $20 
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $65 e
-         fcb   $70 p
-         fcb   $20 
-         fcb   $28 (
-         fcb   $25 %
-         fcb   $64 d
-         fcb   $29 )
-         fcb   $0A 
-         fcb   $00 
-         fcb   $20 
-         fcb   $20 
-         fcb   $00 
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $00 
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $3A :
-         fcb   $20 
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $67 g
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $27 '
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $27 '
-         fcb   $0A 
-         fcb   $00 
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $00 
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $20 
-         fcb   $42 B
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $20 
-         fcb   $46 F
-         fcb   $44 D
-         fcb   $20 
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $67 g
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20 
-         fcb   $28 (
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $2D -
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $29 )
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $3A :
-         fcb   $20 
-         fcb   $00 
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $3E >
-         fcb   $20 
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $62 b
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $3A :
-         fcb   $20 
-         fcb   $53 S
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $3D =
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $20 
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $3D =
-         fcb   $24 $
-         fcb   $25 %
-         fcb   $30 0
-         fcb   $34 4
-         fcb   $78 x
-         fcb   $00 
-         fcb   $20 
-         fcb   $53 S
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $3D =
-         fcb   $25 %
-         fcb   $30 0
-         fcb   $32 2
-         fcb   $78 x
-         fcb   $20 
-         fcb   $42 B
-         fcb   $79 y
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $3D =
-         fcb   $25 %
-         fcb   $30 0
-         fcb   $32 2
-         fcb   $78 x
-         fcb   $20 
-         fcb   $42 B
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $3D =
-         fcb   $25 %
-         fcb   $31 1
-         fcb   $78 x
-         fcb   $20 
-         fcb   $3C <
-         fcb   $2D -
-         fcb   $2D -
-         fcb   $0A 
-         fcb   $00 
-         fcb   $43 C
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $20 
-         fcb   $77 w
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $20 
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $6C l
-         fcb   $79 y
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $0A 
-         fcb   $00 
-         fcb   $43 C
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $75 u
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20 
-         fcb   $62 b
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $0A 
-         fcb   $00 
-         fcb   $43 C
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6D m
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $20 
-         fcb   $62 b
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $75 u
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $0A 
-         fcb   $00 
-         fcb   $43 C
-         fcb   $6C l
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $3A :
-         fcb   $20 
-         fcb   $00 
-         fcb   $2F /
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $25 %
-         fcb   $30 0
-         fcb   $32 2
-         fcb   $78 x
-         fcb   $25 %
-         fcb   $64 d
-         fcb   $00 
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $3A :
-         fcb   $20 
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $20 
-         fcb   $77 w
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $6B k
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $27 '
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $27 '
-         fcb   $0A 
-         fcb   $00 
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $2A *
-         fcb   $20 
-         fcb   $53 S
-         fcb   $65 e
-         fcb   $67 g
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $20 
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $3A :
-         fcb   $20 
-         fcb   $00 
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $2F /
-         fcb   $00 
-         fcb   $25 %
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $00 
-         fcb   $2E .
-         fcb   $00 
-         fcb   $64 d
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $3A :
-         fcb   $20 
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $20 
-         fcb   $27 '
-         fcb   $2E .
-         fcb   $27 '
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $0A 
-         fcb   $00 
-         fcb   $50 P
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $6C l
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $20 
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $3A :
-         fcb   $20 
-         fcb   $00 
-         fcb   $16 
-         fcb   $0A 
-         fcb   $3C <
-         fcb   $16 
-         fcb   $0A 
-         fcb   $06 
-         fcb   $16 
-         fcb   $01 
-         fcb   $07 
-         fcb   $16 
-         fcb   $00 
-         fcb   $D2 R
-         fcb   $16 
-         fcb   $0A 
-         fcb   $4C L
-         fcb   $16 
-         fcb   $0C 
-         fcb   $5C \
-         fcb   $16 
-         fcb   $0D 
-         fcb   $09 
-         fcb   $16 
-         fcb   $01 
-         fcb   $2D -
-         fcb   $16 
-         fcb   $0B 
-         fcb   $67 g
-         fcb   $16 
-         fcb   $08 
-         fcb   $4E N
-         fcb   $16 
-         fcb   $0C 
-         fcb   $EC l
-         fcb   $16 
-         fcb   $0C 
-         fcb   $61 a
-         fcb   $16 
-         fcb   $0C 
-         fcb   $54 T
-         fcb   $16 
-         fcb   $0D 
-         fcb   $28 (
-         fcb   $16 
-         fcb   $00 
-         fcb   $CC L
-         fcb   $16 
-         fcb   $0C 
-         fcb   $23 #
-         fcb   $16 
-         fcb   $0B 
-         fcb   $EB k
-         fcb   $16 
-         fcb   $0B 
-         fcb   $FD 
-         fcb   $16 
-         fcb   $0B 
-         fcb   $5B [
-         fcb   $16 
-         fcb   $0B 
-         fcb   $A9 )
-         fcb   $16 
-         fcb   $0D 
-         fcb   $20 
-         fcb   $16 
-         fcb   $0C 
-         fcb   $9E 
-         fcb   $16 
-         fcb   $0C 
-         fcb   $55 U
-         fcb   $16 
-         fcb   $0A 
-         fcb   $9A 
-         fcb   $16 
-         fcb   $0A 
-         fcb   $6F o
-         fcb   $16 
-         fcb   $0A 
-         fcb   $78 x
-         fcb   $5F _
-         fcb   $E7 g
-         fcb   $C1 A
-         fcb   $A6 &
-         fcb   $80 
-         fcb   $81 
-         fcb   $0D 
-         fcb   $27 '
-         fcb   $18 
-         fcb   $8D 
-         fcb   $7E þ
-         fcb   $27 '
-         fcb   $F6 v
-         fcb   $30 0
-         fcb   $1F 
-         fcb   $AF /
-         fcb   $C1 A
-         fcb   $0C 
-         fcb   $00 
-         fcb   $A6 &
-         fcb   $80 
-         fcb   $81 
-         fcb   $0D 
-         fcb   $27 '
-         fcb   $08 
-         fcb   $8D 
-         fcb   $6E n
-         fcb   $26 &
-         fcb   $F6 v
-         fcb   $6F o
-         fcb   $1F 
-         fcb   $20 
-         fcb   $E2 b
-         fcb   $6F o
-         fcb   $82 
-         fcb   $96 
-         fcb   $00 
-         fcb   $97 
-         fcb   $01 
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $34 4
-         fcb   $06 
-         fcb   $0D 
-         fcb   $00 
-         fcb   $27 '
-         fcb   $08 
-         fcb   $0A 
-         fcb   $00 
-         fcb   $EC l
-         fcb   $C3 C
-         fcb   $34 4
-         fcb   $06 
-         fcb   $20 
-         fcb   $F4 t
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $E4 d
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $7E þ
-         fcb   $34 4
-         fcb   $10 
-         fcb   $30 0
-         fcb   $C4 D
-         fcb   $6F o
-         fcb   $80 
-         fcb   $AC ,
-         fcb   $E4 d
-         fcb   $25 %
-         fcb   $FA z
-         fcb   $35 5
-         fcb   $10 
-         fcb   $33 3
-         fcb   $5E ^
-         fcb   $30 0
-         fcb   $C8 H
-         fcb   $10 
-         fcb   $9F 
-         fcb   $0A 
-         fcb   $9F 
-         fcb   $08 
-         fcb   $30 0
-         fcb   $C8 H
-         fcb   $1B 
-         fcb   $9F 
-         fcb   $0C 
-         fcb   $9F 
-         fcb   $18 
-         fcb   $30 0
-         fcb   $C8 H
-         fcb   $26 &
-         fcb   $9F 
-         fcb   $0E 
-         fcb   $9F 
-         fcb   $23 #
-         fcb   $86 
-         fcb   $05 
-         fcb   $97 
-         fcb   $16 
-         fcb   $86 
-         fcb   $06 
-         fcb   $97 
-         fcb   $21 !
-         fcb   $86 
-         fcb   $06 
-         fcb   $97 
-         fcb   $2C ,
-         fcb   $4F O
-         fcb   $97 
-         fcb   $17 
-         fcb   $4C L
-         fcb   $97 
-         fcb   $22 "
-         fcb   $4C L
-         fcb   $97 
-         fcb   $2D -
-         fcb   $EC l
-         fcb   $C4 D
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $10 
-         fcb   $9F 
-         fcb   $00 
-         fcb   $31 1
-         fcb   $C9 I
-         fcb   $00 
-         fcb   $FD 
-         fcb   $17 
-         fcb   $E4 d
-         fcb   $F1 q
-         fcb   $16 
-         fcb   $00 
-         fcb   $07 
-         fcb   $81 
-         fcb   $20 
-         fcb   $27 '
-         fcb   $02 
-         fcb   $81 
-         fcb   $09 
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $DC \
-         fcb   $08 
-         fcb   $27 '
-         fcb   $07 
-         fcb   $DC \
-         fcb   $08 
-         fcb   $17 
-         fcb   $00 
-         fcb   $0A 
-         fcb   $20 
-         fcb   $F5 u
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $17 
-         fcb   $00 
-         fcb   $06 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $16 
-         fcb   $03 
-         fcb   $4E N
-         fcb   $16 
-         fcb   $0C 
-         fcb   $63 c
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $66 f
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $17 
-         fcb   $00 
-         fcb   $05 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $16 
-         fcb   $00 
-         fcb   $62 b
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $E9 i
-         fcb   $FF 
-         fcb   $00 
-         fcb   $30 0
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $06 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $06 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $64 d
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $00 
-         fcb   $16 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $00 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $62 b
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $00 
-         fcb   $0A 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $32 2
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $02 
-         fcb   $39 9
-         fcb   $16 
-         fcb   $00 
-         fcb   $30 0
-         fcb   $16 
-         fcb   $04 
-         fcb   $58 X
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $E9 i
-         fcb   $FF 
-         fcb   $00 
-         fcb   $30 0
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $04 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $02 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $64 d
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $00 
-         fcb   $0E 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $30 0
-         fcb   $E4 d
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $00 
-         fcb   $08 
-         fcb   $32 2
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $02 
-         fcb   $39 9
-         fcb   $16 
-         fcb   $00 
-         fcb   $03 
-         fcb   $16 
-         fcb   $03 
-         fcb   $C6 F
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $E9 i
-         fcb   $FE 
-         fcb   $F3 s
-         fcb   $AE .
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $11 
-         fcb   $E6 f
-         fcb   $80 
-         fcb   $AF /
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $11 
-         fcb   $E7 g
-         fcb   $E4 d
-         fcb   $5D ]
-         fcb   $10 
-         fcb   $27 '
-         fcb   $02 
-         fcb   $1C 
-         fcb   $E6 f
-         fcb   $E4 d
-         fcb   $C1 A
-         fcb   $25 %
-         fcb   $27 '
-         fcb   $16 
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0D 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0D 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $62 b
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $20 
-         fcb   $D3 S
-         fcb   $30 0
-         fcb   $6D m
-         fcb   $AF /
-         fcb   $69 i
-         fcb   $CC L
-         fcb   $00 
-         fcb   $06 
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $6F o
-         fcb   $67 g
-         fcb   $C6 F
-         fcb   $20 
-         fcb   $E7 g
-         fcb   $68 h
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $E6 f
-         fcb   $F9 y
-         fcb   $01 
-         fcb   $11 
-         fcb   $C1 A
-         fcb   $2D -
-         fcb   $26 &
-         fcb   $0F 
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $11 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $11 
-         fcb   $C6 F
-         fcb   $01 
-         fcb   $E7 g
-         fcb   $67 g
-         fcb   $E6 f
-         fcb   $F9 y
-         fcb   $01 
-         fcb   $11 
-         fcb   $4F O
-         fcb   $17 
-         fcb   $02 
-         fcb   $5D ]
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $00 
-         fcb   $27 '
-         fcb   $19 
-         fcb   $E6 f
-         fcb   $F9 y
-         fcb   $01 
-         fcb   $11 
-         fcb   $C1 A
-         fcb   $30 0
-         fcb   $26 &
-         fcb   $04 
-         fcb   $C6 F
-         fcb   $30 0
-         fcb   $E7 g
-         fcb   $68 h
-         fcb   $30 0
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $11 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $02 
-         fcb   $46 F
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $20 
-         fcb   $04 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $E6 f
-         fcb   $F9 y
-         fcb   $01 
-         fcb   $11 
-         fcb   $C1 A
-         fcb   $2E .
-         fcb   $26 &
-         fcb   $1A 
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $11 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $11 
-         fcb   $30 0
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $11 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $02 
-         fcb   $22 "
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $C6 F
-         fcb   $01 
-         fcb   $E7 g
-         fcb   $66 f
-         fcb   $AE .
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $11 
-         fcb   $E6 f
-         fcb   $80 
-         fcb   $AF /
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $11 
-         fcb   $E7 g
-         fcb   $E4 d
-         fcb   $E6 f
-         fcb   $E4 d
-         fcb   $4F O
-         fcb   $17 
-         fcb   $02 
-         fcb   $0D 
-         fcb   $C1 A
-         fcb   $64 d
-         fcb   $27 '
-         fcb   $1F 
-         fcb   $C1 A
-         fcb   $75 u
-         fcb   $27 '
-         fcb   $48 H
-         fcb   $C1 A
-         fcb   $78 x
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $48 H
-         fcb   $C1 A
-         fcb   $6F o
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $48 H
-         fcb   $C1 A
-         fcb   $63 c
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $6C l
-         fcb   $C1 A
-         fcb   $73 s
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $88 
-         fcb   $16 
-         fcb   $01 
-         fcb   $40 @
-         fcb   $EC l
-         fcb   $F9 y
-         fcb   $01 
-         fcb   $13 
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $2C ,
-         fcb   $23 #
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $69 i
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $C6 F
-         fcb   $2D -
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $F9 y
-         fcb   $01 
-         fcb   $13 
-         fcb   $40 @
-         fcb   $50 P
-         fcb   $82 
-         fcb   $00 
-         fcb   $ED m
-         fcb   $F9 y
-         fcb   $01 
-         fcb   $13 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $C6 F
-         fcb   $0A 
-         fcb   $E7 g
-         fcb   $61 a
-         fcb   $20 
-         fcb   $0A 
-         fcb   $C6 F
-         fcb   $10 
-         fcb   $E7 g
-         fcb   $61 a
-         fcb   $20 
-         fcb   $04 
-         fcb   $C6 F
-         fcb   $08 
-         fcb   $E7 g
-         fcb   $61 a
-         fcb   $E6 f
-         fcb   $61 a
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $AE .
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $15 
-         fcb   $EC l
-         fcb   $81 
-         fcb   $AF /
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $15 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $6D m
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $01 
-         fcb   $0B 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $A3 #
-         fcb   $E1 a
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $16 
-         fcb   $00 
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $69 i
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $AE .
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $15 
-         fcb   $EC l
-         fcb   $81 
-         fcb   $AF /
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $15 
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $16 
-         fcb   $00 
-         fcb   $42 B
-         fcb   $E6 f
-         fcb   $66 f
-         fcb   $26 &
-         fcb   $05 
-         fcb   $CC L
-         fcb   $01 
-         fcb   $00 
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $AE .
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $13 
-         fcb   $EC l
-         fcb   $81 
-         fcb   $AF /
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $13 
-         fcb   $ED m
-         fcb   $6B k
-         fcb   $E6 f
-         fcb   $F8 x
-         fcb   $0B 
-         fcb   $27 '
-         fcb   $28 (
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $27 '
-         fcb   $24 $
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $69 i
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $AE .
-         fcb   $6D m
-         fcb   $E6 f
-         fcb   $80 
-         fcb   $AF /
-         fcb   $6D m
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $20 
-         fcb   $D3 S
-         fcb   $6F o
-         fcb   $F8 x
-         fcb   $09 
-         fcb   $30 0
-         fcb   $6D m
-         fcb   $AF /
-         fcb   $69 i
-         fcb   $E6 f
-         fcb   $67 g
-         fcb   $26 &
-         fcb   $26 &
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $2F /
-         fcb   $16 
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0D 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0D 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $6A j
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $20 
-         fcb   $DA Z
-         fcb   $AE .
-         fcb   $69 i
-         fcb   $E6 f
-         fcb   $80 
-         fcb   $AF /
-         fcb   $69 i
-         fcb   $E7 g
-         fcb   $F9 y
-         fcb   $01 
-         fcb   $0D 
-         fcb   $5D ]
-         fcb   $27 '
-         fcb   $0D 
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0D 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0D 
-         fcb   $20 
-         fcb   $E6 f
-         fcb   $E6 f
-         fcb   $67 g
-         fcb   $10 
-         fcb   $27 '
-         fcb   $FE 
-         fcb   $12 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $10 
-         fcb   $2F /
-         fcb   $FE 
-         fcb   $00 
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0D 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0D 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $6A j
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $20 
-         fcb   $D8 X
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0D 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0D 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $62 b
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $16 
-         fcb   $FD 
-         fcb   $D3 S
-         fcb   $6F o
-         fcb   $F9 y
-         fcb   $01 
-         fcb   $0D 
-         fcb   $32 2
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0F 
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $7D ý
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $03 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6B k
-         fcb   $17 
-         fcb   $00 
-         fcb   $7E þ
-         fcb   $E7 g
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $03 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $F8 x
-         fcb   $03 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $C1 A
-         fcb   $0A 
-         fcb   $24 $
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $CB K
-         fcb   $30 0
-         fcb   $20 
-         fcb   $04 
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $CB K
-         fcb   $37 7
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6B k
-         fcb   $17 
-         fcb   $00 
-         fcb   $56 V
-         fcb   $ED m
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $00 
-         fcb   $27 '
-         fcb   $2D -
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $6B k
-         fcb   $17 
-         fcb   $00 
-         fcb   $43 C
-         fcb   $E7 g
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $03 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $F8 x
-         fcb   $03 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $C1 A
-         fcb   $0A 
-         fcb   $24 $
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $CB K
-         fcb   $30 0
-         fcb   $20 
-         fcb   $04 
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $CB K
-         fcb   $37 7
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $20 
-         fcb   $C3 C
-         fcb   $AE .
-         fcb   $F8 x
-         fcb   $03 
-         fcb   $6F o
-         fcb   $84 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $17 
-         fcb   $00 
-         fcb   $12 
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $03 
-         fcb   $A3 #
-         fcb   $E4 d
-         fcb   $4F O
-         fcb   $32 2
-         fcb   $65 e
-         fcb   $39 9
-         fcb   $16 
-         fcb   $05 
-         fcb   $C0 @
-         fcb   $16 
-         fcb   $00 
-         fcb   $C1 A
-         fcb   $16 
-         fcb   $05 
-         fcb   $D1 Q
-         fcb   $16 
-         fcb   $01 
-         fcb   $0D 
-         fcb   $16 
-         fcb   $06 
-         fcb   $85 
-         fcb   $16 
-         fcb   $06 
-         fcb   $9E 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $7B û
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $DC \
-         fcb   $08 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $5D ]
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $65 e
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $47 G
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $27 '
-         fcb   $0F 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $08 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $AE .
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $08 
-         fcb   $ED m
-         fcb   $F1 q
-         fcb   $20 
-         fcb   $06 
-         fcb   $AE .
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $08 
-         fcb   $DD ]
-         fcb   $08 
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $65 e
-         fcb   $17 
-         fcb   $00 
-         fcb   $71 q
-         fcb   $AE .
-         fcb   $65 e
-         fcb   $E6 f
-         fcb   $07 
-         fcb   $4F O
-         fcb   $17 
-         fcb   $00 
-         fcb   $6C l
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $04 
-         fcb   $C6 F
-         fcb   $01 
-         fcb   $E7 g
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $65 e
-         fcb   $17 
-         fcb   $00 
-         fcb   $23 #
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $27 '
-         fcb   $06 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $67 g
-         fcb   $39 9
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $32 2
-         fcb   $67 g
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $AE .
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $08 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $16 
-         fcb   $FF 
-         fcb   $9D 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $67 g
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $06 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $C4 D
-         fcb   $08 
-         fcb   $5D ]
-         fcb   $27 '
-         fcb   $07 
-         fcb   $AE .
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $04 
-         fcb   $17 
-         fcb   $00 
-         fcb   $26 &
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $93 
-         fcb   $0A 
-         fcb   $27 '
-         fcb   $0E 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $93 
-         fcb   $0C 
-         fcb   $27 '
-         fcb   $07 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $93 
-         fcb   $0E 
-         fcb   $26 &
-         fcb   $03 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $17 
-         fcb   $00 
-         fcb   $09 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $16 
-         fcb   $03 
-         fcb   $5F _
-         fcb   $16 
-         fcb   $07 
-         fcb   $85 
-         fcb   $16 
-         fcb   $04 
-         fcb   $45 E
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $7E þ
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $AE .
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $4F O
-         fcb   $17 
-         fcb   $00 
-         fcb   $28 (
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $00 
-         fcb   $27 '
-         fcb   $1E 
-         fcb   $AE .
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $E6 f
-         fcb   $80 
-         fcb   $AF /
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $0A 
-         fcb   $17 
-         fcb   $00 
-         fcb   $11 
-         fcb   $E3 c
-         fcb   $E1 a
-         fcb   $83 
-         fcb   $00 
-         fcb   $30 0
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $20 
-         fcb   $D4 T
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $39 9
-         fcb   $16 
-         fcb   $04 
-         fcb   $C0 @
-         fcb   $16 
-         fcb   $05 
-         fcb   $3F ?
-         fcb   $34 4
-         fcb   $06 
-         fcb   $DC \
-         fcb   $0C 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $17 
-         fcb   $00 
-         fcb   $05 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $16 
-         fcb   $00 
-         fcb   $52 R
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $7B û
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $65 e
-         fcb   $17 
-         fcb   $00 
-         fcb   $42 B
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $62 b
-         fcb   $10 
-         fcb   $2C ,
-         fcb   $00 
-         fcb   $31 1
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $AE .
-         fcb   $65 e
-         fcb   $E6 f
-         fcb   $8B 
-         fcb   $E7 g
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $65 e
-         fcb   $E3 c
-         fcb   $E4 d
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $AE .
-         fcb   $67 g
-         fcb   $E6 f
-         fcb   $8B 
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $65 e
-         fcb   $E3 c
-         fcb   $62 b
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $66 f
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $16 
-         fcb   $FF 
-         fcb   $C6 F
-         fcb   $32 2
-         fcb   $67 g
-         fcb   $39 9
-         fcb   $16 
-         fcb   $04 
-         fcb   $BE >
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $E9 i
-         fcb   $FE 
-         fcb   $F9 y
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0B 
-         fcb   $17 
-         fcb   $00 
-         fcb   $E1 a
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $07 
-         fcb   $ED m
-         fcb   $61 a
-         fcb   $30 0
-         fcb   $67 g
-         fcb   $AF /
-         fcb   $63 c
-         fcb   $E6 f
-         fcb   $F8 x
-         fcb   $01 
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $90 
-         fcb   $E6 f
-         fcb   $F8 x
-         fcb   $01 
-         fcb   $C1 A
-         fcb   $0A 
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $2F /
-         fcb   $C6 F
-         fcb   $0D 
-         fcb   $E7 g
-         fcb   $F8 x
-         fcb   $03 
-         fcb   $CC L
-         fcb   $01 
-         fcb   $00 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $69 i
-         fcb   $34 4
-         fcb   $10 
-         fcb   $AE .
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0F 
-         fcb   $E6 f
-         fcb   $07 
-         fcb   $4F O
-         fcb   $17 
-         fcb   $00 
-         fcb   $B2 2
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $08 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $09 
-         fcb   $39 9
-         fcb   $30 0
-         fcb   $67 g
-         fcb   $AF /
-         fcb   $63 c
-         fcb   $16 
-         fcb   $00 
-         fcb   $4E N
-         fcb   $E6 f
-         fcb   $F8 x
-         fcb   $01 
-         fcb   $C1 A
-         fcb   $09 
-         fcb   $26 &
-         fcb   $36 6
-         fcb   $EC l
-         fcb   $63 c
-         fcb   $30 0
-         fcb   $67 g
-         fcb   $34 4
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $E1 a
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $08 
-         fcb   $17 
-         fcb   $00 
-         fcb   $8D 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $08 
-         fcb   $A3 #
-         fcb   $E1 a
-         fcb   $ED m
-         fcb   $65 e
-         fcb   $EC l
-         fcb   $65 e
-         fcb   $27 '
-         fcb   $2A *
-         fcb   $EC l
-         fcb   $63 c
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $63 c
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $C6 F
-         fcb   $20 
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $65 e
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $65 e
-         fcb   $20 
-         fcb   $E3 c
-         fcb   $EC l
-         fcb   $63 c
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $63 c
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $F8 x
-         fcb   $03 
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $61 a
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $61 a
-         fcb   $16 
-         fcb   $FF 
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $F8 x
-         fcb   $03 
-         fcb   $EC l
-         fcb   $63 c
-         fcb   $30 0
-         fcb   $67 g
-         fcb   $34 4
-         fcb   $10 
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $E1 a
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $27 '
-         fcb   $30 0
-         fcb   $67 g
-         fcb   $1F 
-         fcb   $10 
-         fcb   $17 
-         fcb   $00 
-         fcb   $32 2
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $69 i
-         fcb   $34 4
-         fcb   $10 
-         fcb   $AE .
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $0F 
-         fcb   $E6 f
-         fcb   $07 
-         fcb   $4F O
-         fcb   $17 
-         fcb   $00 
-         fcb   $1F 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $08 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $09 
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $07 
-         fcb   $32 2
-         fcb   $E9 i
-         fcb   $01 
-         fcb   $09 
-         fcb   $39 9
-         fcb   $16 
-         fcb   $01 
-         fcb   $C4 D
-         fcb   $16 
-         fcb   $06 
-         fcb   $33 3
-         fcb   $16 
-         fcb   $06 
-         fcb   $06 
-         fcb   $16 
-         fcb   $03 
-         fcb   $C4 D
-         fcb   $16 
-         fcb   $04 
-         fcb   $20 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $DC \
-         fcb   $0C 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $17 
-         fcb   $00 
-         fcb   $05 
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $EC l
-         fcb   $84 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $84 
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $2D -
-         fcb   $15 
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $04 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $F8 x
-         fcb   $04 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $63 c
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $4F O
-         fcb   $20 
-         fcb   $11 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $65 e
-         fcb   $4F O
-         fcb   $17 
-         fcb   $00 
-         fcb   $15 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $DC \
-         fcb   $0E 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $17 
-         fcb   $FF 
-         fcb   $B6 6
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $7D ý
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $E7 g
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $06 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $C4 D
-         fcb   $02 
-         fcb   $C1 A
-         fcb   $00 
-         fcb   $27 '
-         fcb   $0F 
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $06 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $C4 D
-         fcb   $30 0
-         fcb   $C1 A
-         fcb   $00 
-         fcb   $27 '
-         fcb   $06 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $65 e
-         fcb   $39 9
-         fcb   $E6 f
-         fcb   $6A j
-         fcb   $27 '
-         fcb   $05 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $20 
-         fcb   $02 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $01 
-         fcb   $00 
-         fcb   $A3 #
-         fcb   $F1 q
-         fcb   $A3 #
-         fcb   $E1 a
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $06 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $C4 D
-         fcb   $04 
-         fcb   $C1 A
-         fcb   $00 
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $2E .
-         fcb   $AE .
-         fcb   $67 g
-         fcb   $EC l
-         fcb   $04 
-         fcb   $26 &
-         fcb   $28 (
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $04 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $01 
-         fcb   $00 
-         fcb   $17 
-         fcb   $01 
-         fcb   $00 
-         fcb   $ED m
-         fcb   $F1 q
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $26 &
-         fcb   $0F 
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $06 
-         fcb   $1F 
-         fcb   $03 
-         fcb   $E6 f
-         fcb   $C4 D
-         fcb   $CA J
-         fcb   $04 
-         fcb   $E7 g
-         fcb   $C4 D
-         fcb   $20 
-         fcb   $04 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $06 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $C4 D
-         fcb   $04 
-         fcb   $5D ]
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $34 4
-         fcb   $E6 f
-         fcb   $6A j
-         fcb   $10 
-         fcb   $27 '
-         fcb   $00 
-         fcb   $5F _
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $64 d
-         fcb   $34 4
-         fcb   $10 
-         fcb   $AE .
-         fcb   $6B k
-         fcb   $E6 f
-         fcb   $07 
-         fcb   $4F O
-         fcb   $17 
-         fcb   $00 
-         fcb   $C1 A
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $44 D
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $06 
-         fcb   $1F 
-         fcb   $03 
-         fcb   $E6 f
-         fcb   $C4 D
-         fcb   $CA J
-         fcb   $20 
-         fcb   $E7 g
-         fcb   $C4 D
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $65 e
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $27 '
-         fcb   $2D -
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $34 4
-         fcb   $06 
-         fcb   $AE .
-         fcb   $69 i
-         fcb   $EC l
-         fcb   $04 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $AE .
-         fcb   $6B k
-         fcb   $E6 f
-         fcb   $07 
-         fcb   $4F O
-         fcb   $17 
-         fcb   $00 
-         fcb   $8E 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $13 
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $06 
-         fcb   $1F 
-         fcb   $03 
-         fcb   $E6 f
-         fcb   $C4 D
-         fcb   $CA J
-         fcb   $20 
-         fcb   $E7 g
-         fcb   $C4 D
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $32 2
-         fcb   $65 e
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $69 i
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $06 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $C4 D
-         fcb   $04 
-         fcb   $5D ]
-         fcb   $27 '
-         fcb   $04 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $20 
-         fcb   $03 
-         fcb   $CC L
-         fcb   $01 
-         fcb   $00 
-         fcb   $ED m
-         fcb   $F1 q
-         fcb   $AE .
-         fcb   $67 g
-         fcb   $EC l
-         fcb   $04 
-         fcb   $ED m
-         fcb   $F8 x
-         fcb   $07 
-         fcb   $E6 f
-         fcb   $6A j
-         fcb   $27 '
-         fcb   $2D -
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $06 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $C4 D
-         fcb   $04 
-         fcb   $C1 A
-         fcb   $00 
-         fcb   $26 &
-         fcb   $1E 
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $07 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $F8 x
-         fcb   $07 
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $66 f
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $CC L
-         fcb   $00 
-         fcb   $FF 
-         fcb   $ED m
-         fcb   $F1 q
-         fcb   $E6 f
-         fcb   $64 d
-         fcb   $4F O
-         fcb   $32 2
-         fcb   $65 e
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $34 4
-         fcb   $06 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $17 
-         fcb   $FE 
-         fcb   $98 
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $16 
-         fcb   $00 
-         fcb   $03 
-         fcb   $16 
-         fcb   $04 
-         fcb   $2E .
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $78 x
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $03 
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $66 f
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $80 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $10 
-         fcb   $83 
-         fcb   $00 
-         fcb   $00 
-         fcb   $26 &
-         fcb   $14 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $7C ü
-         fcb   $AF /
-         fcb   $62 b
-         fcb   $AF /
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $80 
-         fcb   $AF /
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $7C ü
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $ED m
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $7E þ
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $AE .
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $02 
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $66 f
-         fcb   $10 
-         fcb   $25 %
-         fcb   $00 
-         fcb   $4B K
-         fcb   $AE .
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $02 
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $66 f
-         fcb   $26 &
-         fcb   $07 
-         fcb   $EC l
-         fcb   $F4 t
-         fcb   $ED m
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $20 
-         fcb   $2D -
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $1F 
-         fcb   $03 
-         fcb   $EC l
-         fcb   $C4 D
-         fcb   $A3 #
-         fcb   $66 f
-         fcb   $ED m
-         fcb   $C4 D
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $EC l
-         fcb   $84 
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $E3 c
-         fcb   $E1 a
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $ED m
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $ED m
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $80 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $04 
-         fcb   $32 2
-         fcb   $6A j
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $80 
-         fcb   $10 
-         fcb   $26 &
-         fcb   $00 
-         fcb   $2F /
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $17 
-         fcb   $00 
-         fcb   $E5 e
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $10 
-         fcb   $83 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $26 &
-         fcb   $05 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $32 2
-         fcb   $6A j
-         fcb   $39 9
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $ED m
-         fcb   $F1 q
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $04 
-         fcb   $17 
-         fcb   $00 
-         fcb   $11 
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $80 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $F4 t
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $16 
-         fcb   $FF 
-         fcb   $65 e
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $7C ü
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $83 
-         fcb   $00 
-         fcb   $04 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $EC l
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $80 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $62 b
-         fcb   $23 #
-         fcb   $08 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $25 %
-         fcb   $1F 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $25 %
-         fcb   $0F 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $62 b
-         fcb   $22 "
-         fcb   $10 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $25 %
-         fcb   $08 
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $16 
-         fcb   $FF 
-         fcb   $D2 R
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $EC l
-         fcb   $84 
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $E3 c
-         fcb   $E4 d
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $26 &
-         fcb   $1E 
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $1F 
-         fcb   $03 
-         fcb   $EC l
-         fcb   $C4 D
-         fcb   $E3 c
-         fcb   $F1 q
-         fcb   $ED m
-         fcb   $C4 D
-         fcb   $AE .
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $EC l
-         fcb   $84 
-         fcb   $ED m
-         fcb   $F4 t
-         fcb   $20 
-         fcb   $05 
-         fcb   $EC l
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $ED m
-         fcb   $F4 t
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $EC l
-         fcb   $84 
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $E3 c
-         fcb   $62 b
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $E4 d
-         fcb   $26 &
-         fcb   $1B 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $02 
-         fcb   $1F 
-         fcb   $03 
-         fcb   $EC l
-         fcb   $C4 D
-         fcb   $E3 c
-         fcb   $F1 q
-         fcb   $ED m
-         fcb   $C4 D
-         fcb   $EC l
-         fcb   $F4 t
-         fcb   $ED m
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $20 
-         fcb   $05 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $ED m
-         fcb   $F8 x
-         fcb   $02 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $ED m
-         fcb   $A9 )
-         fcb   $02 
-         fcb   $80 
-         fcb   $32 2
-         fcb   $66 f
-         fcb   $39 9
-         fcb   $16 
-         fcb   $01 
-         fcb   $64 d
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $61 a
-         fcb   $C1 A
-         fcb   $30 0
-         fcb   $25 %
-         fcb   $0A 
-         fcb   $E6 f
-         fcb   $61 a
-         fcb   $C1 A
-         fcb   $39 9
-         fcb   $22 "
-         fcb   $04 
-         fcb   $C6 F
-         fcb   $01 
-         fcb   $20 
-         fcb   $01 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $61 a
-         fcb   $4F O
-         fcb   $17 
-         fcb   $00 
-         fcb   $11 
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $00 
-         fcb   $27 '
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $61 a
-         fcb   $CB K
-         fcb   $20 
-         fcb   $20 
-         fcb   $02 
-         fcb   $E6 f
-         fcb   $61 a
-         fcb   $4F O
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $16 
-         fcb   $00 
-         fcb   $00 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $E6 f
-         fcb   $61 a
-         fcb   $C1 A
-         fcb   $41 A
-         fcb   $25 %
-         fcb   $0A 
-         fcb   $E6 f
-         fcb   $61 a
-         fcb   $C1 A
-         fcb   $5A Z
-         fcb   $22 "
-         fcb   $04 
-         fcb   $C6 F
-         fcb   $01 
-         fcb   $20 
-         fcb   $01 
-         fcb   $5F _
-         fcb   $4F O
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $83 
-         fcb   $00 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $06 
-         fcb   $AE .
-         fcb   $66 f
-         fcb   $E6 f
-         fcb   $80 
-         fcb   $AF /
-         fcb   $66 f
-         fcb   $E7 g
-         fcb   $F1 q
-         fcb   $5D ]
-         fcb   $26 &
-         fcb   $E9 i
-         fcb   $32 2
-         fcb   $62 b
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $32 2
-         fcb   $7E þ
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $E6 f
-         fcb   $F4 t
-         fcb   $27 '
-         fcb   $09 
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $C3 C
-         fcb   $00 
-         fcb   $01 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $20 
-         fcb   $F3 s
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $A3 #
-         fcb   $62 b
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $39 9
-         fcb   $32 2
-         fcb   $7B û
-         fcb   $6F o
-         fcb   $E4 d
-         fcb   $8D 
-         fcb   $33 3
-         fcb   $ED m
-         fcb   $61 a
-         fcb   $EC l
-         fcb   $67 g
-         fcb   $8D 
-         fcb   $2D -
-         fcb   $ED m
-         fcb   $67 g
-         fcb   $A6 &
-         fcb   $62 b
-         fcb   $E6 f
-         fcb   $68 h
-         fcb   $3D =
-         fcb   $ED m
-         fcb   $63 c
-         fcb   $A6 &
-         fcb   $61 a
-         fcb   $E6 f
-         fcb   $68 h
-         fcb   $3D =
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $E3 c
-         fcb   $63 c
-         fcb   $ED m
-         fcb   $63 c
-         fcb   $A6 &
-         fcb   $62 b
-         fcb   $E6 f
-         fcb   $67 g
-         fcb   $3D =
-         fcb   $1F 
-         fcb   $98 
-         fcb   $5F _
-         fcb   $E3 c
-         fcb   $63 c
-         fcb   $6D m
-         fcb   $E4 d
-         fcb   $2A *
-         fcb   $04 
-         fcb   $40 @
-         fcb   $50 P
-         fcb   $82 
-         fcb   $00 
-         fcb   $AE .
-         fcb   $65 e
-         fcb   $32 2
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $84 
-         fcb   $4D M
-         fcb   $2A *
-         fcb   $06 
-         fcb   $63 c
-         fcb   $62 b
-         fcb   $40 @
-         fcb   $50 P
-         fcb   $82 
-         fcb   $00 
-         fcb   $39 9
-         fcb   $AE .
-         fcb   $62 b
-         fcb   $8D 
-         fcb   $7B û
-         fcb   $34 4
-         fcb   $01 
-         fcb   $AF /
-         fcb   $63 c
-         fcb   $35 5
-         fcb   $01 
-         fcb   $20 
-         fcb   $02 
-         fcb   $1C 
-         fcb   $F7 w
-         fcb   $1A 
-         fcb   $01 
-         fcb   $34 4
-         fcb   $01 
-         fcb   $8E 
-         fcb   $00 
-         fcb   $00 
-         fcb   $35 5
-         fcb   $01 
-         fcb   $20 
-         fcb   $14 
-         fcb   $AE .
-         fcb   $62 b
-         fcb   $8D 
-         fcb   $62 b
-         fcb   $34 4
-         fcb   $01 
-         fcb   $AF /
-         fcb   $63 c
-         fcb   $8E 
-         fcb   $7F ÿ
-         fcb   $FF 
-         fcb   $35 5
-         fcb   $01 
-         fcb   $20 
-         fcb   $05 
-         fcb   $8E 
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $1C 
-         fcb   $F6 v
-         fcb   $32 2
-         fcb   $7D ý
-         fcb   $34 4
-         fcb   $01 
-         fcb   $ED m
-         fcb   $62 b
-         fcb   $26 &
-         fcb   $06 
-         fcb   $35 5
-         fcb   $01 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $20 
-         fcb   $3E >
-         fcb   $86 
-         fcb   $01 
-         fcb   $A7 '
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $62 b
-         fcb   $2B +
-         fcb   $08 
-         fcb   $68 h
-         fcb   $63 c
-         fcb   $69 i
-         fcb   $62 b
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $20 
-         fcb   $F4 t
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $67 g
-         fcb   $A3 #
-         fcb   $62 b
-         fcb   $24 $
-         fcb   $06 
-         fcb   $E3 c
-         fcb   $62 b
-         fcb   $1C 
-         fcb   $FE 
-         fcb   $20 
-         fcb   $02 
-         fcb   $1A 
-         fcb   $01 
-         fcb   $69 i
-         fcb   $67 g
-         fcb   $69 i
-         fcb   $66 f
-         fcb   $64 d
-         fcb   $62 b
-         fcb   $66 f
-         fcb   $63 c
-         fcb   $6A j
-         fcb   $61 a
-         fcb   $26 &
-         fcb   $E8 h
-         fcb   $35 5
-         fcb   $01 
-         fcb   $25 %
-         fcb   $06 
-         fcb   $34 4
-         fcb   $01 
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $35 5
-         fcb   $01 
-         fcb   $2A *
-         fcb   $04 
-         fcb   $40 @
-         fcb   $50 P
-         fcb   $82 
-         fcb   $00 
-         fcb   $AE .
-         fcb   $63 c
-         fcb   $32 2
-         fcb   $67 g
-         fcb   $6E n
-         fcb   $84 
-         fcb   $34 4
-         fcb   $40 @
-         fcb   $1F 
-         fcb   $03 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $A8 (
-         fcb   $E1 a
-         fcb   $1C 
-         fcb   $FE 
-         fcb   $34 4
-         fcb   $01 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $8D 
-         fcb   $08 
-         fcb   $1F 
-         fcb   $01 
-         fcb   $1F 
-         fcb   $30 0
-         fcb   $8D 
-         fcb   $02 
-         fcb   $35 5
-         fcb   $C1 A
-         fcb   $4D M
-         fcb   $2A *
-         fcb   $04 
-         fcb   $40 @
-         fcb   $50 P
-         fcb   $82 
-         fcb   $00 
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $30 0
-         fcb   $A9 )
-         fcb   $FF 
-         fcb   $03 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $40 @
-         fcb   $50 P
-         fcb   $82 
-         fcb   $00 
-         fcb   $D3 S
-         fcb   $00 
-         fcb   $E3 c
-         fcb   $E4 d
-         fcb   $34 4
-         fcb   $20 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $07 
-         fcb   $35 5
-         fcb   $20 
-         fcb   $35 5
-         fcb   $10 
-         fcb   $25 %
-         fcb   $07 
-         fcb   $DC \
-         fcb   $00 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $9F 
-         fcb   $00 
-         fcb   $39 9
-         fcb   $4F O
-         fcb   $DD ]
-         fcb   $02 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $39 9
-         fcb   $1F 
-         fcb   $01 
-         fcb   $86 
-         fcb   $01 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $86 
-         fcb   $24 $
-         fcb   $06 
-         fcb   $DD ]
-         fcb   $02 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $39 9
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $39 9
-         fcb   $32 2
-         fcb   $7C ü
-         fcb   $EE n
-         fcb   $66 f
-         fcb   $1F 
-         fcb   $01 
-         fcb   $EC l
-         fcb   $84 
-         fcb   $ED m
-         fcb   $E4 d
-         fcb   $A6 &
-         fcb   $02 
-         fcb   $A7 '
-         fcb   $62 b
-         fcb   $EC l
-         fcb   $68 h
-         fcb   $20 
-         fcb   $16 
-         fcb   $64 d
-         fcb   $E4 d
-         fcb   $66 f
-         fcb   $61 a
-         fcb   $66 f
-         fcb   $62 b
-         fcb   $24 $
-         fcb   $0A 
-         fcb   $6C l
-         fcb   $62 b
-         fcb   $26 &
-         fcb   $06 
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $26 &
-         fcb   $02 
-         fcb   $6C l
-         fcb   $E4 d
-         fcb   $64 d
-         fcb   $C4 D
-         fcb   $66 f
-         fcb   $41 A
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $24 $
-         fcb   $E6 f
-         fcb   $4F O
-         fcb   $E6 f
-         fcb   $62 b
-         fcb   $C4 D
-         fcb   $07 
-         fcb   $EE n
-         fcb   $6E n
-         fcb   $ED m
-         fcb   $C4 D
-         fcb   $EC l
-         fcb   $61 a
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $4F O
-         fcb   $EE n
-         fcb   $6C l
-         fcb   $ED m
-         fcb   $C4 D
-         fcb   $EC l
-         fcb   $E4 d
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $44 D
-         fcb   $56 V
-         fcb   $EE n
-         fcb   $6A j
-         fcb   $ED m
-         fcb   $C4 D
-         fcb   $32 2
-         fcb   $64 d
-         fcb   $39 9
-         fcb   $1F 
-         fcb   $01 
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $ED m
-         fcb   $84 
-         fcb   $E7 g
-         fcb   $02 
-         fcb   $EC l
-         fcb   $64 d
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $ED m
-         fcb   $84 
-         fcb   $EC l
-         fcb   $66 f
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $58 X
-         fcb   $49 I
-         fcb   $E3 c
-         fcb   $01 
-         fcb   $ED m
-         fcb   $01 
-         fcb   $24 $
-         fcb   $02 
-         fcb   $6C l
-         fcb   $84 
-         fcb   $E3 c
-         fcb   $68 h
-         fcb   $ED m
-         fcb   $01 
-         fcb   $24 $
-         fcb   $02 
-         fcb   $6C l
-         fcb   $84 
-         fcb   $EC l
-         fcb   $62 b
-         fcb   $20 
-         fcb   $06 
-         fcb   $68 h
-         fcb   $02 
-         fcb   $69 i
-         fcb   $01 
-         fcb   $69 i
-         fcb   $84 
-         fcb   $47 G
-         fcb   $56 V
-         fcb   $26 &
-         fcb   $F6 v
-         fcb   $39 9
-         fcb   $1F 
-         fcb   $01 
-         fcb   $EE n
-         fcb   $62 b
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $E7 g
-         fcb   $C4 D
-         fcb   $EC l
-         fcb   $01 
-         fcb   $E3 c
-         fcb   $64 d
-         fcb   $ED m
-         fcb   $41 A
-         fcb   $24 $
-         fcb   $02 
-         fcb   $6C l
-         fcb   $C4 D
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $39 9
-         fcb   $1F 
-         fcb   $01 
-         fcb   $EE n
-         fcb   $62 b
-         fcb   $E6 f
-         fcb   $84 
-         fcb   $E1 a
-         fcb   $C4 D
-         fcb   $22 "
-         fcb   $12 
-         fcb   $25 %
-         fcb   $0C 
-         fcb   $EC l
-         fcb   $01 
-         fcb   $10 
-         fcb   $A3 #
-         fcb   $41 A
-         fcb   $22 "
-         fcb   $09 
-         fcb   $25 %
-         fcb   $03 
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $39 9
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $39 9
-         fcb   $CC L
-         fcb   $00 
-         fcb   $01 
-         fcb   $39 9
-         fcb   $1F 
-         fcb   $98 
-         fcb   $C6 F
-         fcb   $05 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $8D 
-         fcb   $25 %
-         fcb   $0E 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $AE .
-         fcb   $64 d
-         fcb   $EF o
-         fcb   $84 
-         fcb   $AE .
-         fcb   $62 b
-         fcb   $ED m
-         fcb   $84 
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $20 
-         fcb   $03 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $39 9
-         fcb   $1F 
-         fcb   $01 
-         fcb   $A6 &
-         fcb   $63 c
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $84 
-         fcb   $25 %
-         fcb   $62 b
-         fcb   $1F 
-         fcb   $89 
-         fcb   $4F O
-         fcb   $39 9
-         fcb   $1F 
-         fcb   $98 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $8F 
-         fcb   $25 %
-         fcb   $57 W
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $20 
-         fcb   $1F 
-         fcb   $98 
-         fcb   $AE .
-         fcb   $64 d
-         fcb   $10 
-         fcb   $AE .
-         fcb   $66 f
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $89 
-         fcb   $35 5
-         fcb   $10 
-         fcb   $1E 
-         fcb   $12 
-         fcb   $25 %
-         fcb   $42 B
-         fcb   $1F 
-         fcb   $10 
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $20 
-         fcb   $1F 
-         fcb   $98 
-         fcb   $AE .
-         fcb   $64 d
-         fcb   $10 
-         fcb   $AE .
-         fcb   $66 f
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $8A 
-         fcb   $35 5
-         fcb   $10 
-         fcb   $1E 
-         fcb   $12 
-         fcb   $25 %
-         fcb   $2D -
-         fcb   $1F 
-         fcb   $10 
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $20 
-         fcb   $1F 
-         fcb   $98 
-         fcb   $AE .
-         fcb   $64 d
-         fcb   $10 
-         fcb   $AE .
-         fcb   $66 f
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $8B 
-         fcb   $35 5
-         fcb   $10 
-         fcb   $1E 
-         fcb   $12 
-         fcb   $25 %
-         fcb   $18 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $20 
-         fcb   $1F 
-         fcb   $98 
-         fcb   $AE .
-         fcb   $64 d
-         fcb   $10 
-         fcb   $AE .
-         fcb   $66 f
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $8C 
-         fcb   $35 5
-         fcb   $10 
-         fcb   $1E 
-         fcb   $12 
-         fcb   $25 %
-         fcb   $03 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $39 9
-         fcb   $4F O
-         fcb   $DD ]
-         fcb   $02 
-         fcb   $CC L
-         fcb   $FF 
-         fcb   $FF 
-         fcb   $39 9
-         fcb   $1F 
-         fcb   $01 
-         fcb   $86 
-         fcb   $02 
-         fcb   $E6 f
-         fcb   $63 c
-         fcb   $2B +
-         fcb   $04 
-         fcb   $1F 
-         fcb   $98 
-         fcb   $84 
-         fcb   $03 
-         fcb   $CA J
-         fcb   $01 
-         fcb   $34 4
-         fcb   $16 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $83 
-         fcb   $35 5
-         fcb   $50 P
-         fcb   $1E 
-         fcb   $13 
-         fcb   $24 $
-         fcb   $10 
-         fcb   $34 4
-         fcb   $10 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $87 
-         fcb   $35 5
-         fcb   $10 
-         fcb   $25 %
-         fcb   $D7 W
-         fcb   $1F 
-         fcb   $30 0
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $83 
-         fcb   $25 %
-         fcb   $D0 P
-         fcb   $1F 
-         fcb   $89 
-         fcb   $4F O
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $06 
-         fcb   $AE .
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $84 
-         fcb   $ED m
-         fcb   $64 d
-         fcb   $5F _
-         fcb   $A6 &
-         fcb   $02 
-         fcb   $E3 c
-         fcb   $66 f
-         fcb   $ED m
-         fcb   $66 f
-         fcb   $35 5
-         fcb   $06 
-         fcb   $1F 
-         fcb   $98 
-         fcb   $E6 f
-         fcb   $67 g
-         fcb   $AE .
-         fcb   $62 b
-         fcb   $EE n
-         fcb   $64 d
-         fcb   $5A Z
-         fcb   $26 &
-         fcb   $09 
-         fcb   $C6 F
-         fcb   $05 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $8D 
-         fcb   $25 %
-         fcb   $A9 )
-         fcb   $20 
-         fcb   $0A 
-         fcb   $5A Z
-         fcb   $26 &
-         fcb   $15 
-         fcb   $C6 F
-         fcb   $02 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $8D 
-         fcb   $25 %
-         fcb   $9D 
-         fcb   $1E 
-         fcb   $03 
-         fcb   $E3 c
-         fcb   $64 d
-         fcb   $1E 
-         fcb   $03 
-         fcb   $1E 
-         fcb   $01 
-         fcb   $E9 i
-         fcb   $63 c
-         fcb   $A9 )
-         fcb   $62 b
-         fcb   $1E 
-         fcb   $01 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $88 
-         fcb   $25 %
-         fcb   $8A 
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $39 9
-         fcb   $1F 
-         fcb   $01 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $87 
-         fcb   $25 %
-         fcb   $80 
-         fcb   $4F O
-         fcb   $5F _
-         fcb   $39 9
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $06 
-         fcb   $8D 
-         fcb   $09 
-         fcb   $1F 
-         fcb   $89 
-         fcb   $4F O
-         fcb   $39 9
-         fcb   $8D 
-         fcb   $03 
-         fcb   $1F 
-         fcb   $10 
-         fcb   $39 9
-         fcb   $34 4
-         fcb   $20 
-         fcb   $10 
-         fcb   $3F ?
-         fcb   $0C 
-         fcb   $1F 
-         fcb   $21 !
-         fcb   $35 5
-         fcb   $20 
-         fcb   $39 9
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0014    pshs  b,a
+         leas  <-$22,s
+         clr   <$1F,s
+         clrb  
+         stb   <$1E,s
+         stb   <$1D,s
+         clrb  
+         clra  
+         std   <$30,y
+         std   <$2C,y
+         std   <$2A,y
+         std   <$28,y
+         std   <$26,y
+         ldd   #$0001
+         std   <$12,y
+         leax  >L13E2,pcr
+         pshs  x
+         leax  <$70,y
+         tfr   x,d
+         lbsr  L1A4F
+         leas  $02,s
+         leax  >L13E6,pcr
+         pshs  x
+         leax  >$00AC,y
+         tfr   x,d
+         lbsr  L1A4F
+         leas  $02,s
+L005B    ldd   <$22,s
+         subd  #$0001
+         std   <$22,s
+         cmpd  #$0000
+         lble  L015F
+         ldx   <$26,s
+         leax  $02,x
+         stx   <$26,s
+         ldx   ,x
+         ldb   ,x
+         cmpb  #$2D
+         lbne  L015F
+         ldd   [<$26,s]
+         addd  #$0001
+         std   ,s
+L0086    ldb   [,s]
+         beq   L005B
+         ldb   [,s]
+         clra  
+         lbsr  L1A52
+         stb   $02,s
+         cmpb  #$62
+         lbeq  L010F
+         cmpb  #$64
+         lbeq  L012F
+         cmpb  #$6D
+         lbeq  L0106
+         cmpb  #$6F
+         lbeq  L0127
+         cmpb  #$70
+         lbeq  L011F
+         cmpb  #$73
+         lbeq  L0117
+         cmpb  #$77
+         beq   L00BD
+         lbra  L0136
+L00BD    ldx   ,s
+         ldb   $01,x
+         cmpb  #$3D
+         bne   L00F1
+         ldx   ,s
+         ldb   $02,x
+         beq   L00F1
+         ldd   ,s
+         addd  #$0002
+         pshs  b,a
+         leax  <$70,y
+         tfr   x,d
+         lbsr  L1A4F
+         leas  $02,s
+         ldd   ,s
+         addd  #$0002
+         pshs  b,a
+         leax  >$00AC,y
+         tfr   x,d
+         lbsr  L1A4F
+         leas  $02,s
+         lbra  L014D
+L00F1    leax  >L13EA,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $02,s
+         clrb  
+         clra  
+         lbsr  L1A58
+         lbra  L014D
+L0106    ldd   #$0001
+         std   <$14,y
+         lbra  L014D
+L010F    clrb  
+         clra  
+         std   <$12,y
+         lbra  L014D
+L0117    ldd   #$0001
+         std   <$16,y
+         bra   L014D
+L011F    ldd   #$0001
+         std   <$10,y
+         bra   L014D
+L0127    lbsr  L0705
+         clrb  
+         clra  
+         lbsr  L1A58
+L012F    ldd   #$0001
+         std   $0E,y
+         bra   L014D
+L0136    ldb   [,s]
+         clra  
+         pshs  b,a
+         leax  >L1412,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $04,s
+         clrb  
+         clra  
+         std   <$22,s
+L014D    ldb   $02,s
+         cmpb  #$77
+         lbeq  L005B
+         ldd   ,s
+         addd  #$0001
+         std   ,s
+         lbra  L0086
+L015F    ldd   <$22,s
+         cmpd  #$0001
+         beq   L0170
+         lbsr  L0705
+         clrb  
+         clra  
+         lbsr  L1A58
+L0170    ldd   <$16,y
+         beq   L017F
+         clrb  
+         clra  
+         std   $0E,y
+         std   <$14,y
+         std   <$10,y
+L017F    ldd   #$000B
+         std   <$36,y
+         ldd   <$16,y
+         bne   L0193
+         ldd   <$36,y
+         subd  #$0001
+         std   <$36,y
+L0193    ldd   <$10,y
+         beq   L01A1
+         ldd   <$36,y
+         subd  #$0001
+         std   <$36,y
+L01A1    ldd   [<$26,s]
+         lbsr  L1A5B
+         cmpd  #$0000
+         bne   L01BF
+         leax  >L142F,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $02,s
+         clrb  
+         clra  
+         lbsr  L1A58
+L01BF    clrb  
+         clra  
+         std   <$19,s
+         std   <$17,s
+         ldd   [<$26,s]
+         ldx   <$17,s
+         ldb   d,x
+         cmpb  #$2F
+         beq   L01E7
+         ldd   <$19,s
+         addd  #$0001
+         std   <$19,s
+         subd  #$0001
+         leax  $03,s
+         leax  d,x
+         ldb   #$2F
+         stb   ,x
+L01E7    ldd   <$17,s
+         addd  #$0001
+         std   <$17,s
+         subd  #$0001
+         ldx   [<$26,s]
+         ldb   d,x
+         stb   $02,s
+         tstb  
+         beq   L0213
+         ldd   <$19,s
+         addd  #$0001
+         std   <$19,s
+         subd  #$0001
+         leax  $03,s
+         leax  d,x
+         ldb   $02,s
+         stb   ,x
+         bra   L01E7
+L0213    ldd   <$19,s
+         leax  $02,s
+         ldb   d,x
+         cmpb  #$40
+         beq   L0238
+         ldd   <$19,s
+         std   <$20,s
+         ldd   <$19,s
+         addd  #$0001
+         std   <$19,s
+         subd  #$0001
+         leax  $03,s
+         leax  d,x
+         ldb   #$40
+         stb   ,x
+L0238    ldd   <$19,s
+         addd  #$0001
+         std   <$19,s
+         subd  #$0001
+         leax  $03,s
+         leax  d,x
+         clr   ,x
+         ldd   #$0001
+         pshs  b,a
+         leax  $05,s
+         tfr   x,d
+         lbsr  L1A5E
+         leas  $02,s
+         std   ,y
+         cmpd  #$FFFF
+         bne   L0276
+         leax  $03,s
+         pshs  x
+         leax  >L144C,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $04,s
+         ldd   <u0002
+         lbsr  L1A58
+L0276    clrb  
+         clra  
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   ,y
+         lbsr  L1A61
+         leas  $06,s
+         leax  >$0178,y
+         tfr   x,d
+         lbsr  L0749
+         leax  >$0178,y
+         ldb   $05,x
+         clra  
+         pshs  b,a
+         leax  >$0178,y
+         ldb   $04,x
+         clra  
+         tfr   b,a
+         clrb  
+         addd  ,s++
+         std   $0A,y
+         ldd   $0A,y
+         tfr   a,b
+         clra  
+         std   <$32,y
+         ldd   $0A,y
+         anda  #$00
+         andb  #$FF
+         std   <$34,y
+         leax  >$0178,y
+         ldb   $07,x
+         clra  
+         pshs  b,a
+         leax  >$0178,y
+         ldb   $06,x
+         clra  
+         tfr   b,a
+         clrb  
+         addd  ,s++
+         std   $06,y
+         ldd   $06,y
+         addd  #$FFFF
+         std   $08,y
+         leax  >$0178,y
+         ldb   $02,x
+         clra  
+         pshs  b,a
+         leax  >$0178,y
+         ldb   $01,x
+         clra  
+         tfr   b,a
+         clrb  
+         addd  ,s++
+         std   $0C,y
+         ldd   $0C,y
+         pshs  b,a
+         ldd   $06,y
+         lbsr  L1A94
+         std   $0C,y
+         leax  >$0178,y
+         tfr   x,d
+         addd  #$001F
+         pshs  b,a
+         leax  <$4F,y
+         tfr   x,d
+         lbsr  L0B8D
+         leas  $02,s
+         clrb  
+         clra  
+         std   <$17,s
+L0314    ldd   <$17,s
+         cmpd  #$0002
+         bgt   L033D
+         ldd   <$17,s
+         leax  <$4C,y
+         leax  d,x
+         pshs  x
+         ldd   <$19,s
+         leax  >$0178,y
+         ldb   d,x
+         stb   [,s++]
+         ldd   <$17,s
+         addd  #$0001
+         std   <$17,s
+         bra   L0314
+L033D    ldd   <$20,s
+         leax  $03,s
+         leax  d,x
+         clr   ,x
+         ldd   <$16,y
+         lbne  L03D4
+         leax  $03,s
+         pshs  x
+         leax  <$4F,y
+         pshs  x
+         leax  >L1464,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $04,s
+         ldd   $0A,y
+         pshs  b,a
+         leax  >L1480,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+         ldd   $06,y
+         cmpd  #$0001
+         bne   L0383
+         leax  >L149F,pcr
+         tfr   x,d
+         lbsr  L1A64
+         bra   L0392
+L0383    ldd   $06,y
+         pshs  b,a
+         leax  >L14B5,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+L0392    leax  <$38,y
+         pshs  x
+         leax  <$4C,y
+         tfr   x,d
+         lbsr  L0720
+         leas  $02,s
+         leax  <$38,y
+         pshs  x
+         leax  >L14CD,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+         leax  <$38,y
+         pshs  x
+         leax  >$0178,y
+         tfr   x,d
+         addd  #$0008
+         lbsr  L0720
+         leas  $02,s
+         leax  <$38,y
+         pshs  x
+         leax  >L14E8,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+L03D4    leax  $03,s
+         tfr   x,d
+         lbsr  L1A67
+         cmpd  #$FFFF
+         bne   L03F3
+         leax  >L1511,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $02,s
+         ldd   <u0002
+         lbsr  L1A58
+L03F3    ldd   <$16,y
+         lbne  L0469
+         ldd   #$1000
+         lbsr  L1A6A
+         std   >$0278,y
+         cmpd  #$0000
+         beq   L041F
+         ldd   <$10,y
+         beq   L0436
+         ldd   #$1000
+         lbsr  L1A6A
+         std   >$027A,y
+         cmpd  #$0000
+         bne   L0436
+L041F    ldd   #$0004
+         pshs  b,a
+         leax  >L1536,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $04,s
+         clrb  
+         clra  
+         lbsr  L1A58
+L0436    clrb  
+         clra  
+         pshs  b,a
+         leax  $02,y
+         pshs  x
+         leax  <$70,y
+         pshs  x
+         ldd   >$0278,y
+         lbsr  L10EB
+         leas  $06,s
+         ldd   <$10,y
+         beq   L0469
+         ldd   #$0001
+         pshs  b,a
+         leax  $04,y
+         pshs  x
+         leax  >$00AC,y
+         pshs  x
+         ldd   >$027A,y
+         lbsr  L10EB
+         leas  $06,s
+L0469    leax  >$0178,y
+         ldb   $04,x
+         clra  
+         addd  #$0002
+         std   <$1B,s
+         leax  >$0178,y
+         ldb   $05,x
+         beq   L0487
+         ldd   <$1B,s
+         addd  #$0001
+         std   <$1B,s
+L0487    clrb  
+         clra  
+         pshs  b,a
+         ldd   #$0013
+         pshs  b,a
+         leax  >$0178,y
+         tfr   x,d
+         addd  #$0008
+         pshs  b,a
+         ldd   ,y
+         lbsr  L1A6D
+         leas  $06,s
+         ldd   #$0002
+         pshs  b,a
+         leax  <$19,s
+         pshs  x
+         ldd   ,y
+         lbsr  L1A70
+         leas  $04,s
+         cmpd  #$FFFF
+         bne   L04BE
+         ldd   <u0002
+         lbsr  L1A58
+L04BE    ldd   <$1B,s
+         addd  <$17,s
+         std   <$1B,s
+         ldd   <$16,y
+         bne   L04DC
+         ldd   <$1B,s
+         pshs  b,a
+         leax  >L1568,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+L04DC    clrb  
+         clra  
+         std   <$2E,y
+         leax  $03,s
+         stx   >$0108,y
+         ldd   <$16,y
+         bne   L0510
+         ldd   <$1B,s
+         pshs  b,a
+         leax  <$1F,s
+         pshs  x
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   $02,y
+         pshs  b,a
+         ldd   >$0278,y
+         lbsr  L0BB1
+         leas  $08,s
+         leax  >L15A6,pcr
+         tfr   x,d
+         lbsr  L1A64
+L0510    leax  $03,s
+         tfr   x,d
+         lbsr  L0779
+         ldd   <$16,y
+         lbne  L05E8
+         leax  >L15CC,pcr
+         tfr   x,d
+         lbsr  L1A64
+         lbsr  L0FA3
+         ldd   <$10,y
+         beq   L054F
+         ldd   <$2A,y
+         bne   L0539
+         ldd   <$26,y
+         beq   L054F
+L0539    ldd   #$0001
+         std   <$2E,y
+         leax  >L15ED,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leax  $03,s
+         tfr   x,d
+         lbsr  L0779
+L054F    leax  >L1614,pcr
+         tfr   x,d
+         lbsr  L1A64
+         ldd   <$2A,y
+         beq   L0588
+         ldd   <$2A,y
+         pshs  b,a
+         leax  >L1616,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+         ldd   <$2A,y
+         cmpd  #$0001
+         beq   L057F
+         leax  >L163D,pcr
+         tfr   x,d
+         lbsr  L1A64
+L057F    leax  >L163F,pcr
+         tfr   x,d
+         lbsr  L1A64
+L0588    ldd   <$26,y
+         beq   L05B8
+         ldd   <$26,y
+         pshs  b,a
+         leax  >L1641,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+         ldd   <$26,y
+         cmpd  #$0001
+         beq   L05AF
+         leax  >L164C,pcr
+         tfr   x,d
+         lbsr  L1A64
+L05AF    leax  >L164E,pcr
+         tfr   x,d
+         lbsr  L1A64
+L05B8    ldd   <$28,y
+         beq   L05E8
+         ldd   <$28,y
+         pshs  b,a
+         leax  >L167C,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+         ldd   <$28,y
+         cmpd  #$0001
+         beq   L05DF
+         leax  >L1687,pcr
+         tfr   x,d
+         lbsr  L1A64
+L05DF    leax  >L1689,pcr
+         tfr   x,d
+         lbsr  L1A64
+L05E8    ldd   <$2C,y
+         beq   L0618
+         ldd   <$2C,y
+         pshs  b,a
+         leax  >L16B7,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+         ldd   <$2C,y
+         cmpd  #$0001
+         beq   L060F
+         leax  >L16D5,pcr
+         tfr   x,d
+         lbsr  L1A64
+L060F    leax  >L16D7,pcr
+         tfr   x,d
+         lbsr  L1A64
+L0618    ldd   <$16,y
+         bne   L064E
+         leax  <$4F,y
+         pshs  x
+         leax  >L16D9,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+         ldd   <$2C,y
+         bne   L063C
+         ldd   <$2A,y
+         bne   L063C
+         ldd   <$26,y
+         beq   L0645
+L063C    leax  >L16F2,pcr
+         tfr   x,d
+         lbsr  L1A64
+L0645    leax  >L16F7,pcr
+         tfr   x,d
+         lbsr  L1A64
+L064E    ldd   <$24,y
+         cmpd  #$0001
+         bne   L0662
+         leax  >L16FF,pcr
+         tfr   x,d
+         lbsr  L1A64
+         bra   L0672
+L0662    ldd   <$24,y
+         pshs  b,a
+         leax  >L170C,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+L0672    ldd   <$22,y
+         cmpd  #$0001
+         bne   L0686
+         leax  >L171C,pcr
+         tfr   x,d
+         lbsr  L1A64
+         bra   L0696
+L0686    ldd   <$22,y
+         pshs  b,a
+         leax  >L1724,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+L0696    ldd   <$16,y
+         lbne  L06FC
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   #$FFFF
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   $02,y
+         pshs  b,a
+         ldd   >$0278,y
+         lbsr  L1232
+         leas  $08,s
+         ldd   $02,y
+         lbsr  L1A73
+         ldd   <$14,y
+         bne   L06C9
+         leax  <$70,y
+         tfr   x,d
+         lbsr  L1A76
+L06C9    ldd   <$10,y
+         beq   L06FC
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   #$FFFF
+         pshs  b,a
+         ldd   #$0001
+         pshs  b,a
+         ldd   $04,y
+         pshs  b,a
+         ldd   >$027A,y
+         lbsr  L1232
+         leas  $08,s
+         ldd   $04,y
+         lbsr  L1A73
+         ldd   <$14,y
+         bne   L06FC
+         leax  >$00AC,y
+         tfr   x,d
+         lbsr  L1A76
+L06FC    clrb  
+         clra  
+         lbsr  L1A58
+         leas  <$24,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0705    leax  >L172E,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $02,s
+         leax  >L1800,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $02,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0720    pshs  b,a
+         ldx   ,s
+         ldb   $02,x
+         clra  
+         pshs  b,a
+         ldx   $02,s
+         ldb   $01,x
+         clra  
+         tfr   b,a
+         clrb  
+         addd  ,s++
+         pshs  b,a
+         ldb   [<$02,s]
+         clra  
+         pshs  b,a
+         leax  >L1834,pcr
+         pshs  x
+         ldd   $0A,s
+         lbsr  L1A79
+         leas  $08,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0749    pshs  b,a
+         ldd   #$0100
+         pshs  b,a
+         ldd   $02,s
+         pshs  b,a
+         ldd   ,y
+         lbsr  L1A70
+         leas  $04,s
+         cmpd  #$0100
+         beq   L0773
+         leax  >L183E,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $02,s
+         ldd   <u0002
+         lbsr  L1A58
+L0773    ldd   #$0100
+         leas  $02,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0779    pshs  b,a
+         leas  <-$2A,s
+         ldd   <$18,y
+         cmpd  #$0027
+         blt   L079E
+         ldd   #$0027
+         pshs  b,a
+         leax  >L1858,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $04,s
+         clrb  
+         clra  
+         lbsr  L1A58
+L079E    ldd   <$18,y
+         addd  #$0001
+         std   <$18,y
+         ldd   $0E,y
+         beq   L07DD
+         ldd   #$0001
+         std   ,s
+L07B0    ldd   <$18,y
+         addd  #$FFFF
+         cmpd  ,s
+         ble   L07CD
+         leax  >L1882,pcr
+         tfr   x,d
+         lbsr  L1A64
+         ldd   ,s
+         addd  #$0001
+         std   ,s
+         bra   L07B0
+L07CD    ldd   <$2A,s
+         pshs  b,a
+         leax  >L1885,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+L07DD    ldd   <$2E,y
+         bne   L07EB
+         ldd   <$24,y
+         addd  #$0001
+         std   <$24,y
+L07EB    ldd   <$2A,s
+         lbsr  L1A67
+         cmpd  #$FFFF
+         bne   L0811
+         ldd   <$2A,s
+         pshs  b,a
+         leax  >L1888,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $04,s
+         lbsr  L1338
+         ldd   <u0002
+         lbsr  L1A58
+L0811    lbsr  L13A1
+         std   $04,s
+         ldd   <$36,y
+         subd  #$0001
+         std   <$36,y
+         ldd   #$0001
+         pshs  b,a
+         ldd   #$0040
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   $0A,s
+         lbsr  L1A61
+         leas  $06,s
+L0834    ldd   #$0020
+         pshs  b,a
+         leax  >$00E8,y
+         pshs  x
+         ldd   $08,s
+         lbsr  L1A70
+         leas  $04,s
+         std   ,s
+         cmpd  #$FFFF
+         lbeq  L0974
+         ldb   >$00E8,y
+         beq   L0834
+         ldd   <$22,y
+         addd  #$0001
+         std   <$22,y
+         leax  >$00E8,y
+         pshs  x
+         leax  >$0158,y
+         tfr   x,d
+         lbsr  L0B8D
+         leas  $02,s
+         ldd   $0E,y
+         beq   L0877
+         lbsr  L1338
+L0877    ldd   <$16,y
+         lbne  L08D0
+         ldd   <$2E,y
+         cmpd  #$0001
+         bne   L08AA
+         ldd   $06,y
+         pshs  b,a
+         leax  >$00E8,y
+         tfr   x,d
+         addd  #$001D
+         pshs  b,a
+         ldd   #$0001
+         pshs  b,a
+         ldd   $04,y
+         pshs  b,a
+         ldd   >$027A,y
+         lbsr  L0BB1
+         leas  $08,s
+         bra   L08D0
+L08AA    ldd   $06,y
+         pshs  b,a
+         leax  >$00E8,y
+         tfr   x,d
+         addd  #$001D
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   $02,y
+         pshs  b,a
+         ldd   >$0278,y
+         lbsr  L0BB1
+         leas  $08,s
+         std   -$02,s
+         lbne  L0834
+L08D0    clrb  
+         clra  
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         leax  >$00E8,y
+         tfr   x,d
+         addd  #$001D
+         pshs  b,a
+         ldd   ,y
+         lbsr  L1A6D
+         leas  $06,s
+         leax  >$0178,y
+         tfr   x,d
+         lbsr  L0749
+         leax  >$0178,y
+         tfr   x,d
+         lbsr  L09AE
+         std   -$02,s
+         lbeq  L0834
+         leax  >$00E8,y
+         pshs  x
+         leax  $08,s
+         tfr   x,d
+         lbsr  L0B8D
+         leas  $02,s
+         ldd   <$18,y
+         lslb  
+         rola  
+         leax  >$0108,y
+         leax  d,x
+         leau  $06,s
+         stu   ,x
+         ldd   <$36,y
+         lbne  L096A
+         leax  <$28,s
+         pshs  x
+         leax  <$28,s
+         pshs  x
+         ldd   $08,s
+         lbsr  L1A7C
+         leas  $04,s
+         ldd   $04,s
+         lbsr  L1A73
+         ldd   <$36,y
+         addd  #$0001
+         std   <$36,y
+         leax  $06,s
+         tfr   x,d
+         lbsr  L0779
+         lbsr  L13A1
+         std   $04,s
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   <$2A,s
+         pshs  b,a
+         ldd   <$2A,s
+         pshs  b,a
+         ldd   $0A,s
+         lbsr  L1A61
+         leas  $06,s
+         lbra  L0834
+L096A    leax  $06,s
+         tfr   x,d
+         lbsr  L0779
+         lbra  L0834
+L0974    ldd   $04,s
+         lbsr  L1A73
+         cmpd  #$FFFF
+         bne   L0984
+         ldd   <u0002
+         lbsr  L1A58
+L0984    ldd   <$36,y
+         addd  #$0001
+         std   <$36,y
+         leax  >L18A7,pcr
+         tfr   x,d
+         lbsr  L1A67
+         cmpd  #$FFFF
+         bne   L09A1
+         ldd   <u0002
+         lbsr  L1A58
+L09A1    ldd   <$18,y
+         subd  #$0001
+         std   <$18,y
+         leas  <$2C,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L09AE    pshs  b,a
+         leas  -$07,s
+         clrb  
+         clra  
+         std   $02,s
+         ldd   #$0010
+         std   ,s
+L09BB    ldd   $07,s
+         addd  ,s
+         ldx   #$0002
+         leax  d,x
+         ldb   ,x
+         tstb  
+         lbne  L09E5
+         ldd   $07,s
+         addd  ,s
+         ldx   #$0001
+         leax  d,x
+         ldb   ,x
+         tstb  
+         lbne  L09E5
+         ldd   $07,s
+         ldx   ,s
+         ldb   d,x
+         lbeq  L0A93
+L09E5    ldd   ,s
+         cmpd  #$0100
+         lbge  L0A93
+         ldd   $07,s
+         addd  ,s
+         ldx   #$0004
+         leax  d,x
+         ldb   ,x
+         clra  
+         pshs  b,a
+         ldd   $09,s
+         addd  $02,s
+         ldx   #$0003
+         leax  d,x
+         ldb   ,x
+         clra  
+         tfr   b,a
+         clrb  
+         addd  ,s++
+         pshs  b,a
+         leax  $06,s
+         pshs  x
+         ldd   $0B,s
+         addd  $04,s
+         lbsr  L1A7F
+         leas  $04,s
+         leax  <$4C,y
+         pshs  x
+         ldd   $09,s
+         addd  $02,s
+         lbsr  L1A82
+         leas  $02,s
+         cmpd  #$0000
+         lbgt  L0A49
+         leax  <$4C,y
+         pshs  x
+         leax  $06,s
+         tfr   x,d
+         lbsr  L1A82
+         leas  $02,s
+         cmpd  #$0000
+         lble  L0A89
+L0A49    ldd   <$2E,y
+         bne   L0A82
+         leax  <$38,y
+         pshs  x
+         ldd   $09,s
+         addd  $02,s
+         lbsr  L0720
+         leas  $02,s
+         leax  <$42,y
+         pshs  x
+         leax  $06,s
+         tfr   x,d
+         lbsr  L0720
+         leas  $02,s
+         leax  <$42,y
+         pshs  x
+         leax  <$38,y
+         pshs  x
+         leax  >L18AA,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $04,s
+         lbsr  L1338
+L0A82    ldd   #$FFFF
+         std   $02,s
+         bra   L0A93
+L0A89    ldd   ,s
+         addd  #$0005
+         std   ,s
+         lbra  L09BB
+L0A93    ldd   $02,s
+         beq   L0AAA
+         ldd   <$2E,y
+         bne   L0AA5
+         ldd   <$2C,y
+         addd  #$0001
+         std   <$2C,y
+L0AA5    clrb  
+         clra  
+         leas  $09,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0AAA    ldd   <$16,y
+         lbne  L0B75
+         ldd   #$0010
+         std   ,s
+L0AB6    ldd   $07,s
+         addd  ,s
+         ldx   #$0002
+         leax  d,x
+         ldb   ,x
+         tstb  
+         lbne  L0AE0
+         ldd   $07,s
+         addd  ,s
+         ldx   #$0001
+         leax  d,x
+         ldb   ,x
+         tstb  
+         lbne  L0AE0
+         ldd   $07,s
+         ldx   ,s
+         ldb   d,x
+         lbeq  L0B75
+L0AE0    ldd   ,s
+         cmpd  #$0100
+         lbge  L0B75
+         ldd   <$2E,y
+         bne   L0B32
+         ldd   $07,s
+         addd  ,s
+         ldx   #$0004
+         leax  d,x
+         ldb   ,x
+         clra  
+         pshs  b,a
+         ldd   $09,s
+         addd  $02,s
+         ldx   #$0003
+         leax  d,x
+         ldb   ,x
+         clra  
+         tfr   b,a
+         clrb  
+         addd  ,s++
+         pshs  b,a
+         ldd   $09,s
+         addd  $02,s
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   $02,y
+         pshs  b,a
+         ldd   >$0278,y
+         lbsr  L0BB1
+         leas  $08,s
+         std   -$02,s
+         beq   L0B6B
+         ldd   #$FFFF
+         std   $02,s
+         bra   L0B6B
+L0B32    ldd   $07,s
+         addd  ,s
+         ldx   #$0004
+         leax  d,x
+         ldb   ,x
+         clra  
+         pshs  b,a
+         ldd   $09,s
+         addd  $02,s
+         ldx   #$0003
+         leax  d,x
+         ldb   ,x
+         clra  
+         tfr   b,a
+         clrb  
+         addd  ,s++
+         pshs  b,a
+         ldd   $09,s
+         addd  $02,s
+         pshs  b,a
+         ldd   #$0001
+         pshs  b,a
+         ldd   $04,y
+         pshs  b,a
+         ldd   >$027A,y
+         lbsr  L0BB1
+         leas  $08,s
+L0B6B    ldd   ,s
+         addd  #$0005
+         std   ,s
+         lbra  L0AB6
+L0B75    ldd   $02,s
+         beq   L0B7E
+         clrb  
+         clra  
+         leas  $09,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0B7E    ldb   [<$07,s]
+         andb  #$80
+         subb  #$00
+         beq   L0B89
+         ldb   #$01
+L0B89    clra  
+         leas  $09,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0B8D    pshs  b,a
+L0B8F    ldx   $04,s
+         ldb   ,x+
+         stx   $04,s
+         ldx   ,s
+         stb   ,x+
+         stx   ,s
+         cmpb  #$80
+         bcs   L0B8F
+         clr   [,s]
+         ldd   ,s
+         subd  #$0001
+         std   ,s
+         ldb   [,s]
+         andb  #$7F
+         stb   [,s]
+         leas  $02,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0BB1    pshs  b,a
+         leas  <-$1C,s
+         ldd   <$26,s
+         anda  $08,y
+         andb  $09,y
+         std   -$02,s
+         beq   L0BDB
+         ldd   $08,y
+         pshs  b,a
+         leax  $0C,s
+         pshs  x
+         ldd   <$28,s
+         lbsr  L1A7F
+         leas  $04,s
+         ldd   <$26,s
+         subd  $08,y
+         std   <$26,s
+         bra   L0BEB
+L0BDB    clrb  
+         clra  
+         pshs  b,a
+         leax  $0C,s
+         pshs  x
+         ldd   <$28,s
+         lbsr  L1A7F
+         leas  $04,s
+L0BEB    leax  ,s
+         pshs  x
+         leax  $0C,s
+         tfr   x,d
+         lbsr  L0720
+         leas  $02,s
+         leax  <$11,s
+         pshs  x
+         leax  <$11,s
+         pshs  x
+         leax  <$11,s
+         pshs  x
+         ldd   $06,y
+         pshs  b,a
+         leax  <$2E,s
+         pshs  x
+         leax  <$14,s
+         tfr   x,d
+         lbsr  L1A85
+         leas  $0A,s
+         ldd   $0E,y
+         beq   L0C59
+         leax  ,s
+         pshs  x
+         leax  $0C,s
+         tfr   x,d
+         lbsr  L0720
+         leas  $02,s
+         ldd   <$26,s
+         pshs  b,a
+         leax  $02,s
+         pshs  x
+         leax  >L18D0,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $04,s
+         ldd   <$11,s
+         pshs  b,a
+         ldd   <$11,s
+         pshs  b,a
+         ldd   <$11,s
+         pshs  b,a
+         leax  >L18F2,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $06,s
+L0C59    ldd   $0F,s
+         pshs  b,a
+         ldd   $0F,s
+         pshs  b,a
+         ldd   <$26,s
+         pshs  b,a
+         ldd   <$26,s
+         pshs  b,a
+         ldd   <$24,s
+         lbsr  L1232
+         leas  $08,s
+         std   -$02,s
+         beq   L0C7E
+         ldd   #$FFFF
+         leas  <$1E,s
+         rts   
+
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0C7E    ldd   #$0080
+         ldx   <$11,s
+         beq   L0C8C
+L0C86    asra  
+         rorb  
+         leax  -$01,x
+         bne   L0C86
+L0C8C    stb   <$1B,s
+         ldb   <$1B,s
+         cmpb  #$80
+         lbeq  L0D31
+L0C98    ldb   <$1B,s
+         lbeq  L0D17
+         ldd   <$26,s
+         lbeq  L0D17
+         ldd   <$22,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         ldb   [d,x]
+         andb  <$1B,s
+         tstb  
+         beq   L0CD8
+         ldd   #$0031
+         pshs  b,a
+         ldd   <$24,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         ldb   [d,x]
+         andb  <$1D,s
+         clra  
+         pshs  b,a
+         ldd   <$13,s
+         pshs  b,a
+         ldd   <$13,s
+         lbsr  L0E86
+         leas  $06,s
+L0CD8    ldd   <$2E,y
+         bne   L0CFA
+         ldd   <$22,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         leax  d,x
+         pshs  x
+         ldd   <$24,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         ldb   [d,x]
+         orb   <$1D,s
+         ldx   [,s++]
+         stb   ,x
+L0CFA    ldb   <$1B,s
+         lda   #$01
+         beq   L0D05
+L0D01    lsrb  
+         deca  
+         bne   L0D01
+L0D05    stb   <$1B,s
+         ldd   <$26,s
+         subd  #$0001
+         std   <$26,s
+         addd  #$0001
+         lbra  L0C98
+L0D17    ldd   $0F,s
+         addd  #$0001
+         std   $0F,s
+         ldd   <$22,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         leax  d,x
+         tfr   x,u
+         ldd   ,u
+         addd  #$0001
+         std   ,u
+L0D31    ldd   <$26,s
+         cmpd  #$0008
+         lbcs  L0DD7
+         ldd   $0F,s
+         cmpd  #$00FF
+         ble   L0D72
+         clrb  
+         clra  
+         std   $0F,s
+         ldd   $0F,s
+         pshs  b,a
+         ldd   $0F,s
+         addd  #$0001
+         std   $0F,s
+         pshs  b,a
+         ldd   <$26,s
+         pshs  b,a
+         ldd   <$26,s
+         pshs  b,a
+         ldd   <$24,s
+         lbsr  L1232
+         leas  $08,s
+         std   -$02,s
+         beq   L0D72
+         ldd   #$FFFF
+         leas  <$1E,s
+         rts   
+
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0D72    ldd   <$22,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         ldb   [d,x]
+         tstb  
+         beq   L0D9E
+         ldd   #$0031
+         pshs  b,a
+         ldd   <$24,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         ldb   [d,x]
+         clra  
+         pshs  b,a
+         ldd   <$13,s
+         pshs  b,a
+         ldd   <$13,s
+         lbsr  L0E86
+         leas  $06,s
+L0D9E    ldd   <$2E,y
+         bne   L0DB1
+         ldd   <$22,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         leax  d,x
+         ldb   #$FF
+         stb   [,x]
+L0DB1    ldd   <$22,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         leax  d,x
+         tfr   x,u
+         ldd   ,u
+         addd  #$0001
+         std   ,u
+         ldd   $0F,s
+         addd  #$0001
+         std   $0F,s
+         ldd   <$26,s
+         subd  #$0008
+         std   <$26,s
+         lbra  L0D31
+L0DD7    ldd   <$26,s
+         lbeq  L0E80
+         ldd   #$0008
+         subd  <$26,s
+         pshs  b,a
+         ldd   #$00FF
+         ldx   ,s++
+         beq   L0DF3
+L0DED    lslb  
+         rola  
+         leax  -$01,x
+         bne   L0DED
+L0DF3    stb   <$1B,s
+         ldd   $0F,s
+         cmpd  #$00FF
+         ble   L0E2C
+         clrb  
+         clra  
+         std   $0F,s
+         ldd   $0F,s
+         pshs  b,a
+         ldd   $0F,s
+         addd  #$0001
+         std   $0F,s
+         pshs  b,a
+         ldd   <$26,s
+         pshs  b,a
+         ldd   <$26,s
+         pshs  b,a
+         ldd   <$24,s
+         lbsr  L1232
+         leas  $08,s
+         std   -$02,s
+         beq   L0E2C
+         ldd   #$FFFF
+         leas  <$1E,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0E2C    ldd   <$22,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         ldb   [d,x]
+         andb  <$1B,s
+         tstb  
+         beq   L0E5E
+         ldd   #$0031
+         pshs  b,a
+         ldd   <$24,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         ldb   [d,x]
+         andb  <$1D,s
+         clra  
+         pshs  b,a
+         ldd   <$13,s
+         pshs  b,a
+         ldd   <$13,s
+         lbsr  L0E86
+         leas  $06,s
+L0E5E    ldd   <$2E,y
+         bne   L0E80
+         ldd   <$22,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         leax  d,x
+         pshs  x
+         ldd   <$24,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         ldb   [d,x]
+         orb   <$1D,s
+         ldx   [,s++]
+         stb   ,x
+L0E80    clrb  
+         clra  
+         leas  <$1E,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0E86    pshs  b,a
+         leas  -$08,s
+         ldb   $0F,s
+         stb   $04,s
+         clrb  
+         clra  
+         std   ,s
+L0E92    ldb   $04,s
+         lbeq  L0FA0
+         ldb   $04,s
+         andb  #$80
+         tstb  
+         lbeq  L0F8A
+         ldd   ,s
+         pshs  b,a
+         ldd   $0E,s
+         pshs  b,a
+         ldd   $0C,s
+         pshs  b,a
+         ldd   $06,y
+         pshs  b,a
+         leax  $0D,s
+         tfr   x,d
+         lbsr  L1A88
+         leas  $08,s
+         leax  <$38,y
+         pshs  x
+         leax  $07,s
+         tfr   x,d
+         lbsr  L0720
+         leas  $02,s
+         ldd   <$2E,y
+         lbne  L0F41
+         ldd   <$10,s
+         cmpd  #$0031
+         bne   L0EF4
+         leax  <$38,y
+         pshs  x
+         leax  >L1916,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+         ldd   <$2A,y
+         addd  #$0001
+         std   <$2A,y
+         lbra  L0F51
+L0EF4    ldd   <$10,s
+         cmpd  #$0032
+         bne   L0F18
+         leax  <$38,y
+         pshs  x
+         leax  >L193B,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+         ldd   <$26,y
+         addd  #$0001
+         std   <$26,y
+         bra   L0F51
+L0F18    ldd   <$10,s
+         cmpd  #$0033
+         bne   L0F51
+         ldd   <$12,y
+         beq   L0F36
+         leax  <$38,y
+         pshs  x
+         leax  >L1973,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+L0F36    ldd   <$28,y
+         addd  #$0001
+         std   <$28,y
+         bra   L0F51
+L0F41    leax  <$38,y
+         pshs  x
+         leax  >L19AB,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+L0F51    ldd   <$10,y
+         beq   L0F8A
+         ldd   <$2E,y
+         bne   L0F87
+         ldd   <$30,y
+         bne   L0F8A
+         ldd   #$0001
+         std   <$30,y
+         ldd   $06,y
+         pshs  b,a
+         leax  $07,s
+         pshs  x
+         ldd   #$0001
+         pshs  b,a
+         ldd   $04,y
+         pshs  b,a
+         ldd   >$027A,y
+         lbsr  L0BB1
+         leas  $08,s
+         clrb  
+         clra  
+         std   <$30,y
+         bra   L0F8A
+L0F87    lbsr  L1338
+L0F8A    ldd   ,s
+         addd  #$0001
+         std   ,s
+         ldb   $04,s
+         lda   #$01
+         beq   L0F9B
+L0F97    lslb  
+         deca  
+         bne   L0F97
+L0F9B    stb   $04,s
+         lbra  L0E92
+L0FA0    leas  $0A,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L0FA3    leas  -$0A,s
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   #$0100
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   ,y
+         lbsr  L1A61
+         leas  $06,s
+         clrb  
+         clra  
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   $02,y
+         pshs  b,a
+         ldd   >$0278,y
+         lbsr  L1232
+         leas  $08,s
+         leax  >$0178,y
+         tfr   x,d
+         lbsr  L0749
+         clrb  
+         clra  
+         std   $04,s
+         std   $06,s
+         clrb  
+         clra  
+         std   ,s
+L0FE5    ldd   ,s
+         cmpd  $0A,y
+         lbcc  L10E8
+         ldd   $06,s
+         leax  >$0178,y
+         ldb   d,x
+         eorb  [<$1E,y]
+         stb   $08,s
+         tstb  
+         lbeq  L108D
+         ldd   ,s
+         addd  #$0001
+         cmpd  $0A,y
+         bne   L102E
+         ldd   $0C,y
+         anda  #$00
+         andb  #$07
+         pshs  b,a
+         ldd   #$0008
+         subd  ,s++
+         pshs  b,a
+         ldd   #$00FF
+         ldx   ,s++
+         beq   L1026
+L1020    lslb  
+         rola  
+         leax  -$01,x
+         bne   L1020
+L1026    pshs  b
+         ldb   $09,s
+         andb  ,s+
+         stb   $08,s
+L102E    ldd   $06,s
+         leax  >$0178,y
+         ldb   d,x
+         andb  $08,s
+         stb   $09,s
+         tstb  
+         beq   L1060
+         ldd   #$0033
+         pshs  b,a
+         ldb   $0B,s
+         clra  
+         pshs  b,a
+         ldd   $08,s
+         pshs  b,a
+         ldd   #$0100
+         lbsr  L1A97
+         pshs  b,a
+         ldd   $0A,s
+         tfr   a,b
+         sex   
+         addd  <$1A,y
+         lbsr  L0E86
+         leas  $06,s
+L1060    ldb   $08,s
+         andb  [<$1E,y]
+         stb   $09,s
+         tstb  
+         beq   L108D
+         ldd   #$0032
+         pshs  b,a
+         ldb   $0B,s
+         clra  
+         pshs  b,a
+         ldd   $08,s
+         pshs  b,a
+         ldd   #$0100
+         lbsr  L1A97
+         pshs  b,a
+         ldd   $0A,s
+         tfr   a,b
+         sex   
+         addd  <$1A,y
+         lbsr  L0E86
+         leas  $06,s
+L108D    ldd   <$1E,y
+         addd  #$0001
+         std   <$1E,y
+         ldd   $04,s
+         addd  #$0001
+         std   $04,s
+         cmpd  #$1000
+         blt   L10C4
+         clrb  
+         clra  
+         std   $04,s
+         ldd   $04,s
+         pshs  b,a
+         ldd   <$1A,y
+         addd  #$0010
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   $02,y
+         pshs  b,a
+         ldd   >$0278,y
+         lbsr  L1232
+         leas  $08,s
+L10C4    ldd   $06,s
+         addd  #$0001
+         std   $06,s
+         cmpd  #$0100
+         blt   L10DE
+         clrb  
+         clra  
+         std   $06,s
+         leax  >$0178,y
+         tfr   x,d
+         lbsr  L0749
+L10DE    ldd   ,s
+         addd  #$0001
+         std   ,s
+         lbra  L0FE5
+L10E8    leas  $0A,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L10EB    pshs  b,a
+         leas  <-$18,s
+         ldd   <$20,s
+         pshs  b,a
+         lbsr  L1A8B
+         pshs  b,a
+         leax  >L19C0,pcr
+         pshs  x
+         leax  $0A,s
+         tfr   x,d
+         lbsr  L1A79
+         leas  $06,s
+         leax  $04,s
+         pshs  x
+         ldd   <$1E,s
+         lbsr  L1378
+         leas  $02,s
+         ldb   [<$1C,s]
+         cmpb  #$2F
+         bne   L1132
+         ldd   #$0003
+         pshs  b,a
+         ldd   <$1E,s
+         lbsr  L1A8E
+         leas  $02,s
+         std   [<$1E,s]
+         cmpd  #$FFFF
+         bne   L1149
+L1132    ldd   <$1C,s
+         pshs  b,a
+         leax  >L19CE,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $04,s
+         ldd   <u0002
+         lbsr  L1A58
+L1149    clrb  
+         clra  
+         std   ,s
+L114D    ldd   ,s
+         cmpd  #$1000
+         bge   L1168
+         ldd   ,s
+         addd  #$0001
+         std   ,s
+         subd  #$0001
+         ldx   <$18,s
+         leax  d,x
+         clr   ,x
+         bra   L114D
+L1168    ldd   $0A,y
+         tfr   a,b
+         clra  
+         lsra  
+         rorb  
+         lsra  
+         rorb  
+         lsra  
+         rorb  
+         lsra  
+         rorb  
+         std   $02,s
+         ldd   $0A,y
+         pshs  b,a
+         ldd   #$1000
+         lbsr  L1A9A
+         std   -$02,s
+         beq   L118C
+         ldd   $02,s
+         addd  #$0001
+         std   $02,s
+L118C    clrb  
+         clra  
+         pshs  b,a
+         ldd   $04,s
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         tfr   b,a
+         clrb  
+         addd  #$FFFF
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   [<$24,s]
+         lbsr  L1A61
+         leas  $06,s
+         ldd   #$0001
+         pshs  b,a
+         ldd   <$1A,s
+         pshs  b,a
+         ldd   [<$22,s]
+         lbsr  L1A91
+         leas  $04,s
+         cmpd  #$FFFF
+         bne   L11CB
+         ldd   <u0002
+         lbsr  L1A58
+L11CB    clrb  
+         clra  
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   [<$24,s]
+         lbsr  L1A61
+         leas  $06,s
+         ldd   #$0001
+         std   ,s
+L11E4    ldd   ,s
+         cmpd  $02,s
+         bgt   L1211
+         ldd   #$1000
+         pshs  b,a
+         ldd   <$1A,s
+         pshs  b,a
+         ldd   [<$22,s]
+         lbsr  L1A91
+         leas  $04,s
+         cmpd  #$FFFF
+         bne   L1208
+         ldd   <u0002
+         lbsr  L1A58
+L1208    ldd   ,s
+         addd  #$0001
+         std   ,s
+         bra   L11E4
+L1211    ldd   <$20,s
+         lslb  
+         rola  
+         leax  <$1A,y
+         leax  d,x
+         clrb  
+         clra  
+         std   ,x
+         ldd   <$20,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         leax  d,x
+         ldd   <$18,s
+         std   ,x
+         leas  <$1A,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L1232    pshs  b,a
+         ldd   $08,s
+         cmpd  <$32,y
+         blt   L125B
+         ldd   $0A,s
+         cmpd  <$34,y
+         blt   L125B
+         ldd   <$2E,y
+         bne   L1255
+         leax  >L19F1,pcr
+         tfr   x,d
+         lbsr  L1A64
+         lbsr  L1338
+L1255    ldd   #$FFFF
+         leas  $02,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L125B    ldd   $06,s
+         lslb  
+         rola  
+         leax  <$1A,y
+         ldd   d,x
+         cmpd  $08,s
+         lbgt  L127E
+         ldd   $06,s
+         lslb  
+         rola  
+         leax  <$1A,y
+         ldd   d,x
+         addd  #$000F
+         cmpd  $08,s
+         lbge  L1315
+L127E    clrb  
+         clra  
+         pshs  b,a
+         ldd   $08,s
+         lslb  
+         rola  
+         leax  <$1A,y
+         ldd   d,x
+         tfr   b,a
+         clrb  
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   $0A,s
+         lbsr  L1A61
+         leas  $06,s
+         ldd   #$1000
+         pshs  b,a
+         ldd   $02,s
+         pshs  b,a
+         ldd   $08,s
+         lbsr  L1A91
+         leas  $04,s
+         cmpd  #$FFFF
+         bne   L12B6
+         ldd   <u0002
+         lbsr  L1A58
+L12B6    ldd   $06,s
+         lslb  
+         rola  
+         leax  <$1A,y
+         leax  d,x
+         pshs  x
+         ldd   $0A,s
+         asra  
+         rorb  
+         asra  
+         rorb  
+         asra  
+         rorb  
+         asra  
+         rorb  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         std   [,s++]
+         ldd   $08,s
+         cmpd  #$FFFF
+         beq   L1315
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   $08,s
+         lslb  
+         rola  
+         leax  <$1A,y
+         ldd   d,x
+         tfr   b,a
+         clrb  
+         pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   $0A,s
+         lbsr  L1A61
+         leas  $06,s
+         ldd   #$1000
+         pshs  b,a
+         ldd   $02,s
+         pshs  b,a
+         ldd   $08,s
+         lbsr  L1A70
+         leas  $04,s
+         cmpd  #$FFFF
+         bne   L1315
+         ldd   <u0002
+         lbsr  L1A58
+L1315    ldd   $06,s
+         lslb  
+         rola  
+         leax  <$1E,y
+         leax  d,x
+         pshs  x
+         ldd   $0A,s
+         pshs  b,a
+         ldd   #$0010
+         lbsr  L1A97
+         tfr   b,a
+         clrb  
+         addd  $02,s
+         addd  $0C,s
+         std   [,s++]
+         clrb  
+         clra  
+         leas  $02,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L1338    leas  -$02,s
+         clrb  
+         clra  
+         std   ,s
+L133E    ldd   ,s
+         cmpd  <$18,y
+         bge   L1366
+         ldd   ,s
+         lslb  
+         rola  
+         leax  >$0108,y
+         ldd   d,x
+         pshs  b,a
+         leax  >L1A14,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $02,s
+         ldd   ,s
+         addd  #$0001
+         std   ,s
+         bra   L133E
+L1366    leax  >$0158,y
+         pshs  x
+         leax  >L1A18,pcr
+         tfr   x,d
+         lbsr  L1A64
+         leas  $04,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L1378    pshs  b,a
+         leas  -$04,s
+L137C    ldx   $04,s
+         ldb   ,x+
+         stx   $04,s
+         tstb  
+         bne   L137C
+         ldd   $04,s
+         subd  #$0001
+         std   $04,s
+L138C    ldb   [<$08,s]
+         ldx   $04,s
+         stb   ,x+
+         stx   $04,s
+         ldx   $08,s
+         ldb   ,x+
+         stx   $08,s
+         tstb  
+         bne   L138C
+         leas  $06,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L13A1    leas  -$02,s
+         ldd   #$0081
+         pshs  b,a
+         leax  >L1A1C,pcr
+         tfr   x,d
+         lbsr  L1A5E
+         leas  $02,s
+         std   ,s
+         cmpd  #$FFFF
+         bne   L13DD
+         leax  >L1A1E,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $02,s
+         leax  >L1A41,pcr
+         pshs  x
+         ldd   <u000E
+         lbsr  L1A55
+         leas  $02,s
+         lbsr  L1338
+         ldd   <u0002
+         lbsr  L1A58
+L13DD    ldd   ,s
+         leas  $02,s
+         rts   
+     
+;--------------------------------------------------------------
+;                    STRINGS DEFINITION
+;--------------------------------------------------------------
+
+L13E2    fcc   "/DD"
+         fcb   0
+L13E6    fcc   "/DD"
+         fcb   0
+L13EA    fcc   "dcheck: -w= requires pathlist argument"
+         fcb   $0a,$00
+L1412    fcc   "dcheck: illegal option '%c'"
+         fcb   $0a,$00
+L142F    fcc   "dcheck: no device specified"
+         fcb   $0a,$00
+L144C    fcc   "dcheck: cannot open %s"
+         fcb   $0a,$00
+L1464    fcc   "Volume - '%s' on device %s"
+         fcb   $0a,$00
+L1480    fcc   "$%04x bytes in allocation map"
+         fcb   $0a,$00
+L149F    fcc   "1 sector per cluster"
+         fcb   $0a,$00
+L14B5    fcc   "%d sectors per cluster"
+         fcb   $0a,$00
+L14CD    fcc   "%s total sectors on media"
+         fcb   $0a,$00
+L14E8    fcc   "Sector %s is start of root directory FD"
+         fcb   $0a,$00
+L1511    fcc   "dcheck: cannot chd to root directory"
+         fcb   $00
+L1536    fcc   "No memory available for bitmap buffer (%dK req.)"
+         fcb   $0a,$00
+L1568    fcc   "$%04x sectors used for id, allocation map and root directory"
+         fcb   $0a,$00
+L15A6    fcc   "Building allocation map work file..."
+         fcb   $0a,$00
+L15CC    fcc   "Checking allocation map file..."
+         fcb   $0a,$00
+L15ED    fcb   $0a
+L15EE    fcc   "Pathlists for questionable clusters:"
+         fcb   $0a,$00
+L1614    fcb   $0a,$00
+L1616    fcc   "%d previously allocated clusters found"
+         fcb   $00
+L163D    fcc   's'
+         fcb   $00
+L163F    fcb   $0a,$00
+L1641    fcc   "%d cluster"
+         fcb   $00
+L164C    fcb   $73,$00
+L164E    fcc   " in file structure but not in allocation map"
+         fcb   $0a,$00
+L167C    fcc   "%d cluster"
+         fcb   $00
+L1687    fcb   $73,$00
+L1689    fcc   " in allocation map but not in file structure"
+L16B5    fcb   $0A,00
+L16B7    fcc   "%d bad file descriptor sector"
+         fcb   $00
+L16D5    fcb   $73,$00
+L16D7    fcb   $0a,$00
+L16D9    fcb   $0a
+L16DA    fcc   "'%s' file structure is "
+         fcb   0
+L16F2    fcc   "not "
+         fcb   0
+L16F7    fcc   "intact"
+         fcb   $0a,$00
+L16FF    fcc   "1 directory"
+         fcb   $0a,$00
+L170C    fcc   "%d directories"
+         fcb   $0a,$00
+L171C    fcc   "1 file"
+         fcb   $0a,$00
+L1724    fcc   "%d files"
+         fcb   $0a,$00
+L172E    fcc   "Usage: dcheck [-opts] device_name "
+         fcb   $0a
+         fcc   "  -w = pathlist to directory for work files"
+         fcb   $0a
+         fcc   "  -p = print pathlists for questionable clusters"
+         fcb   $0a
+         fcc   "  -m = save allocation map work files"
+         fcb   $0a
+         fcc   "  -b = suppress listing of unused clusters"
+         fcb   $0a,$00
+L1800    fcc   "  -s = display count of files and directories only"
+         fcb   $0a,$00
+L1834    fcc   "$%02x%04x"
+         fcb   $00
+L183E    fcc   "dcheck: fatal read error"
+         fcb   $0a,$00
+L1858    fcc   "dcheck: directories nested too deep (%d)"
+         fcb   $0a,$00
+L1882    fcb   $20,$20,$00
+L1885    fcc   "%s"
+         fcb   $00
+L1888    fcc   "dcheck: cannot chgdir to '%s'"
+         fcb   $0a,$00
+L18A7    fcc   ".."
+         fcb   $00
+L18AA    fcc   "*** Bad FD segment (%s-%s) for file: "
+         fcb   $00
+L18D0    fcc   "--> setbits: Start=%s Count=$%04x"
+         fcb   $00
+L18F2    fcc   " Sector=%02x Byte=%02x Bit=%1x <--"
+         fcb   $0a,$00
+L1916    fcc   "Cluster %s was previously allocated"
+         fcb   $0a,$00
+L193B    fcc   "Cluster %s in file structure but not in allocation map"
+         fcb   $0a,$00
+L1973    fcc   "Cluster %s in allocation map but not in file structure"
+         fcb   $0a,$00
+L19Ab    fcc   "Cluster %s in path: "
+         fcb   $00
+L19C0    fcc   "/dcheck%02x%d"
+         fcb   $00
+L19CE    fcc   "dcheck: cannot open workfile '%s'"
+         fcb   $0a,$00
+L19F1    fcc   "*** Segment out of range in file: "
+         fcb   $00
+L1A14    fcc   "%s/"
+         fcb   $00
+L1A18    fcc   "%s"
+         fcb   $0a,$00
+L1A1C    fcb   $2E,$00
+L1A1E    fcc   "dcheck: cannot open '.' directory"
+         fcb   $0a,$00
+L1A41    fcc   "Pathlist is: "
+         fcb   $00
+
+;--------------------------------------------------------------
+;
+;--------------------------------------------------------------
+L1A4F    lbra  L248E
+L1A52    lbra  L245B
+L1A55    lbra  L1B5F
+L1A58    lbra  L1B2D
+L1A5B    lbra  L24AA
+L1A5E    lbra  L26BD
+L1A61    lbra  L276D
+L1A64    lbra  L1B94
+L1A67    lbra  L25D1
+L1A6A    lbra  L22BB
+L1A6D    lbra  L275C
+L1A70    lbra  L26D4
+L1A73    lbra  L26CA
+L1A76    lbra  L27A1
+L1A79    lbra  L1B48
+L1A7C    lbra  L26A2
+L1A7F    lbra  L266D
+L1A82    lbra  L2682
+L1A85    lbra  L25E3
+L1A88    lbra  L2634
+L1A8B    lbra  L27AE
+L1A8E    lbra  L272F
+L1A91    lbra  L26E9
+L1A94    lbra  L2531
+L1A97    lbra  L2509
+L1A9A    lbra  L2515
+
+;--------------------------------------------------------------
+;
+;--------------------------------------------------------------
+start    equ   *
+         clrb  
+         stb   ,u++
+L1AA0    lda   ,x+
+         cmpa  #$0D
+         beq   L1ABE
+         bsr   L1B26
+         beq   L1AA0
+         leax  -$01,x
+         stx   ,u++
+         inc   <u0000
+L1AB0    lda   ,x+
+         cmpa  #$0D
+         beq   L1ABE
+         bsr   L1B26
+         bne   L1AB0
+         clr   -$01,x
+         bra   L1AA0
+L1ABE    clr   ,-x
+         lda   <u0000
+         sta   <u0001
+         clra  
+         clrb  
+         pshs  b,a
+L1AC8    tst   <u0000
+         beq   L1AD4
+         dec   <u0000
+         ldd   ,--u
+         pshs  b,a
+         bra   L1AC8
+L1AD4    pshs  x
+         leax  ,s
+         pshs  x
+         leax  -$02,s
+         pshs  x
+         leax  ,u
+L1AE0    clr   ,x+
+         cmpx  ,s
+         bcs   L1AE0
+         puls  x
+         leau  -u0002,u
+         leax  <u0010,u
+         stx   <u000A
+         stx   <u0008
+         leax  <u001B,u
+         stx   <u000C
+         stx   <u0018
+         leax  <u0026,u
+         stx   <u000E
+         stx   <u0023
+         lda   #$05
+         sta   <u0016
+         lda   #$06
+         sta   <u0021
+         lda   #$06
+         sta   <u002C
+         clra  
+         sta   <u0017
+         inca  
+         sta   <u0022
+         inca  
+         sta   <u002D
+         ldd   ,u
+         addd  #$0001
+         sty   <u0000
+         leay  >u00FD,u
+         lbsr  L0014
+         lbra  L1B2D
+L1B26    cmpa  #$20
+         beq   L1B2C
+         cmpa  #$09
+L1B2C    rts   
+L1B2D    pshs  b,a
+L1B2F    ldd   <u0008
+         beq   L1B3A
+         ldd   <u0008
+         lbsr  L1B42
+         bra   L1B2F
+L1B3A    ldd   ,s
+         lbsr  L1B45
+         leas  $02,s
+         rts   
+L1B42    lbra  L1E93
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L1B45    lbra  L27AB
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L1B48    pshs  b,a
+         leax  $06,s
+         pshs  x
+         ldd   $06,s
+         pshs  b,a
+         ldd   $04,s
+         lbsr  L1B5C
+         leas  $04,s
+         leas  $02,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L1B5C    lbra  L1BC1
+L1B5F    pshs  b,a
+         leas  >-$0100,s
+         leax  >$0106,s
+         pshs  x
+         ldd   >$0106,s
+         pshs  b,a
+         leax  $04,s
+         tfr   x,d
+         lbsr  L1B8E
+         leas  $04,s
+         ldd   >$0100,s
+         pshs  b,a
+         leax  $02,s
+         tfr   x,d
+         lbsr  L1B91
+         leas  $02,s
+         leas  >$0102,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L1B8E    lbra  L1BC1
+L1B91    lbra  L1FEC
+L1B94    pshs  b,a
+         leas  >-$0100,s
+         leax  >$0104,s
+         pshs  x
+         ldd   >$0102,s
+         pshs  b,a
+         leax  $04,s
+         tfr   x,d
+         lbsr  L1BBB
+         leas  $04,s
+         leax  ,s
+         tfr   x,d
+         lbsr  L1BBE
+         leas  >$0102,s
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L1BBB    lbra  L1BC1
+L1BBE    lbra  L1F87
+L1BC1    pshs  b,a
+         leas  >-$010D,s
+L1BC7    ldx   >$0111,s
+         ldb   ,x+
+         stx   >$0111,s
+         stb   ,s
+         tstb  
+         lbeq  L1DF4
+         ldb   ,s
+         cmpb  #'%'             ; $25
+         beq   L1BF4
+         ldd   >$010D,s
+         addd  #$0001
+         std   >$010D,s
+         subd  #$0001
+         pshs  b,a
+         ldb   $02,s
+         stb   [,s++]
+         bra   L1BC7
+
+L1BF4    leax  $0D,s
+         stx   $09,s
+         ldd   #$0006
+         std   $04,s
+         clr   $07,s
+         ldb   #$20
+         stb   $08,s
+         clr   $06,s
+         ldb   [>$0111,s]
+         cmpb  #'-'             ; $2D
+         bne   L1C1C
+         ldd   >$0111,s
+         addd  #$0001
+         std   >$0111,s
+         ldb   #$01
+         stb   $07,s
+L1C1C    ldb   [>$0111,s]
+         clra  
+         lbsr  L1E81
+         addd  #$0000
+         beq   L1C42
+         ldb   [>$0111,s]
+         cmpb  #$30
+         bne   L1C35
+         ldb   #$30
+         stb   $08,s
+L1C35    leax  >$0111,s
+         tfr   x,d
+         lbsr  L1E84
+         std   $02,s
+         bra   L1C46
+L1C42    clrb  
+         clra  
+         std   $02,s
+L1C46    ldb   [>$0111,s]
+         cmpb  #'.'            ; $2E
+         bne   L1C68
+         ldd   >$0111,s
+         addd  #$0001
+         std   >$0111,s
+         leax  >$0111,s
+         tfr   x,d
+         lbsr  L1E84
+         std   $04,s
+         ldb   #$01
+         stb   $06,s
+L1C68    ldx   >$0111,s
+         ldb   ,x+
+         stx   >$0111,s
+         stb   ,s
+         ldb   ,s
+         clra  
+         lbsr  L1E87
+         cmpb  #'d'          ; $64
+         beq   L1C9D
+         cmpb  #'u'          ; $75
+         beq   L1CCA
+         cmpb  #'x'          ; $78
+         lbeq  L1CD0
+         cmpb  #'o'          ; $6F
+         lbeq  L1CD6
+         cmpb  #'c'          ; $63
+         lbeq  L1D00
+         cmpb  #'s'          ; $73
+         lbeq  L1D22
+         lbra  L1DDD
+
+; Treat printf %d
+;---------------------------------------------
+L1C9D    ldd   [>$0113,s]
+         cmpd  #$0000
+         bge   L1CCA
+         ldd   $09,s
+         addd  #$0001
+         std   $09,s
+         subd  #$0001
+         pshs  b,a
+         ldb   #$2D
+         stb   [,s++]
+         ldd   [>$0113,s]
+         nega  
+         negb  
+         sbca  #$00
+         std   [>$0113,s]
+         ldd   $02,s
+         subd  #$0001
+         std   $02,s
+
+; Treat printf %u
+;---------------------------------------------
+L1CCA    ldb   #$0A
+         stb   $01,s
+         bra   L1CDA
+
+; Treat printf %x
+;---------------------------------------------
+L1CD0    ldb   #$10
+         stb   $01,s
+         bra   L1CDA
+
+; Treat printf %o
+;---------------------------------------------
+L1CD6    ldb   #$08
+         stb   $01,s
+L1CDA    ldb   $01,s
+         clra  
+         pshs  b,a
+         ldx   >$0115,s
+         ldd   ,x++
+         stx   >$0115,s
+         pshs  b,a
+         leax  $0D,s
+         tfr   x,d
+         lbsr  L1DFD
+         leas  $04,s
+         clra  
+         pshs  b,a
+         ldd   $04,s
+         subd  ,s++
+         std   $02,s
+         lbra  L1D64
+
+; Treat printf %c
+;---------------------------------------------
+L1D00    ldd   $09,s
+         addd  #$0001
+         std   $09,s
+         subd  #$0001
+         pshs  b,a
+         ldx   >$0115,s
+         ldd   ,x++
+         stx   >$0115,s
+         stb   [,s++]
+         ldd   $02,s
+         subd  #$0001
+         std   $02,s
+         lbra  L1D64
+
+; Treat printf %s
+;---------------------------------------------
+L1D22    ldb   $06,s
+         bne   L1D2B
+         ldd   #$0100
+         std   $04,s
+L1D2B    ldx   >$0113,s
+         ldd   ,x++
+         stx   >$0113,s
+         std   $0B,s
+L1D37    ldb   [<$0B,s]
+         beq   L1D64
+         ldd   $04,s
+         beq   L1D64
+         ldd   $09,s
+         addd  #$0001
+         std   $09,s
+         subd  #$0001
+         pshs  b,a
+         ldx   $0D,s
+         ldb   ,x+
+         stx   $0D,s
+         stb   [,s++]
+         ldd   $04,s
+         subd  #$0001
+         std   $04,s
+         ldd   $02,s
+         subd  #$0001
+         std   $02,s
+         bra   L1D37
+L1D64    clr   [<$09,s]
+         leax  $0D,s
+         stx   $09,s
+         ldb   $07,s
+         bne   L1D95
+L1D6F    ldd   $02,s
+         subd  #$0001
+         std   $02,s
+         addd  #$0001
+         cmpd  #$0000
+         ble   L1D95
+         ldd   >$010D,s
+         addd  #$0001
+         std   >$010D,s
+         subd  #$0001
+         pshs  b,a
+         ldb   $0A,s
+         stb   [,s++]
+         bra   L1D6F
+L1D95    ldx   $09,s
+         ldb   ,x+
+         stx   $09,s
+         stb   [>$010D,s]
+         tstb  
+         beq   L1DAF
+         ldd   >$010D,s
+         addd  #$0001
+         std   >$010D,s
+         bra   L1D95
+L1DAF    ldb   $07,s
+         lbeq  L1BC7
+L1DB5    ldd   $02,s
+         subd  #$0001
+         std   $02,s
+         addd  #$0001
+         cmpd  #$0000
+         lble  L1BC7
+         ldd   >$010D,s
+         addd  #$0001
+         std   >$010D,s
+         subd  #$0001
+         pshs  b,a
+         ldb   $0A,s
+         stb   [,s++]
+         bra   L1DB5
+L1DDD    ldd   >$010D,s
+         addd  #$0001
+         std   >$010D,s
+         subd  #$0001
+         pshs  b,a
+         ldb   $02,s
+         stb   [,s++]
+         lbra  L1BC7
+L1DF4    clr   [>$010D,s]
+         leas  >$010F,s
+         rts   
+L1DFD    pshs  b,a
+         leas  -$03,s
+         ldd   [<$03,s]
+         std   ,s
+         ldd   $07,s
+         pshs  b,a
+         ldd   $0B,s
+         lbsr  L1E8D
+         stb   $02,s
+         ldd   [<$03,s]
+         addd  #$0001
+         std   [<$03,s]
+         subd  #$0001
+         pshs  b,a
+         ldb   $04,s
+         cmpb  #$0A
+         bcc   L1E2B
+         ldb   $04,s
+         addb  #$30
+         bra   L1E2F
+L1E2B    ldb   $04,s
+         addb  #$37
+L1E2F    stb   [,s++]
+L1E31    ldd   $07,s
+         pshs  b,a
+         ldd   $0B,s
+         lbsr  L1E90
+         std   $07,s
+         addd  #$0000
+         beq   L1E6E
+         ldd   $07,s
+         pshs  b,a
+         ldd   $0B,s
+         lbsr  L1E8D
+         stb   $02,s
+         ldd   [<$03,s]
+         addd  #$0001
+         std   [<$03,s]
+         subd  #$0001
+         pshs  b,a
+         ldb   $04,s
+         cmpb  #$0A
+         bcc   L1E66
+         ldb   $04,s
+         addb  #$30
+         bra   L1E6A
+L1E66    ldb   $04,s
+         addb  #$37
+L1E6A    stb   [,s++]
+         bra   L1E31
+L1E6E    ldx   [<$03,s]
+         clr   ,x
+         ldd   ,s
+         lbsr  L1E8A
+         ldd   [<$03,s]
+         subd  ,s
+         clra  
+         leas  $05,s
+         rts   
+L1E81    lbra  L2444
+L1E84    lbra  L1F48
+L1E87    lbra  L245B
+L1E8A    lbra  L1F9A
+L1E8D    lbra  L2515
+L1E90    lbra  L2531
+L1E93    pshs  b,a
+         leas  -$05,s
+         clrb  
+         clra  
+         std   $02,s
+         ldd   <u0008
+         std   ,s
+L1E9F    ldd   ,s
+         lbeq  L1F02
+         ldd   ,s
+         cmpd  $05,s
+         lbne  L1EF5
+         ldd   $02,s
+         beq   L1EC1
+         ldd   $02,s
+         addd  #$0008
+         pshs  b,a
+         ldx   $02,s
+         ldd   $08,x
+         std   [,s++]
+         bra   L1EC7
+L1EC1    ldx   ,s
+         ldd   $08,x
+         std   <u0008
+L1EC7    clr   $04,s
+         ldd   $05,s
+         lbsr  L1F3F
+         ldx   $05,s
+         ldb   $07,x
+         clra  
+         lbsr  L1F42
+         cmpd  #$FFFF
+         bne   L1EE0
+         ldb   #$01
+         stb   $04,s
+L1EE0    ldd   $05,s
+         lbsr  L1F08
+         ldb   $04,s
+         beq   L1EEF
+         ldd   #$FFFF
+         leas  $07,s
+         rts   
+L1EEF    ldd   #$0001
+         leas  $07,s
+         rts   
+L1EF5    ldd   ,s
+         std   $02,s
+         ldx   ,s
+         ldd   $08,x
+         std   ,s
+         lbra  L1E9F
+L1F02    ldd   #$FFFF
+         leas  $07,s
+         rts   
+L1F08    pshs  b,a
+         ldd   ,s
+         addd  #$0006
+         tfr   d,x
+         ldb   ,x
+         andb  #$08
+         tstb  
+         beq   L1F1F
+         ldx   ,s
+         ldd   $04,x
+         lbsr  L1F45
+L1F1F    ldd   ,s
+         cmpd  <u000A
+         beq   L1F34
+         ldd   ,s
+         cmpd  <u000C
+         beq   L1F34
+         ldd   ,s
+         cmpd  <u000E
+         bne   L1F37
+L1F34    leas  $02,s
+         rts   
+L1F37    ldd   ,s
+         lbsr  L1F45
+         leas  $02,s
+         rts   
+L1F3F    lbra  L22A1
+L1F42    lbra  L26CA
+L1F45    lbra  L238D
+L1F48    pshs  b,a
+         leas  -$02,s
+         clrb  
+         clra  
+         std   ,s
+L1F50    ldx   [<$02,s]
+         ldb   ,x
+         clra  
+         lbsr  L1F81
+         addd  #$0000
+         beq   L1F7C
+         ldx   [<$02,s]
+         ldb   ,x+
+         stx   [<$02,s]
+         clra  
+         pshs  b,a
+         ldd   $02,s
+         pshs  b,a
+         ldd   #$000A
+         lbsr  L1F84
+         addd  ,s++
+         subd  #$0030
+         std   ,s
+         bra   L1F50
+L1F7C    ldd   ,s
+         leas  $04,s
+         rts   
+L1F81    lbra  L2444
+L1F84    lbra  L24C6
+L1F87    pshs  b,a
+         ldd   <u000C
+         pshs  b,a
+         ldd   $02,s
+         lbsr  L1F97
+         leas  $02,s
+         leas  $02,s
+         rts   
+L1F97    lbra  L1FEC
+L1F9A    pshs  b,a
+         leas  -$05,s
+         clrb  
+         clra  
+         std   ,s
+         ldd   $05,s
+         lbsr  L1FE9
+         subd  #$0001
+         std   $02,s
+L1FAC    ldd   ,s
+         cmpd  $02,s
+         lbge  L1FE6
+         ldd   ,s
+         ldx   $05,s
+         ldb   d,x
+         stb   $04,s
+         ldd   $05,s
+         addd  ,s
+         pshs  b,a
+         ldd   $04,s
+         ldx   $07,s
+         ldb   d,x
+         stb   [,s++]
+         ldd   $05,s
+         addd  $02,s
+         pshs  b,a
+         ldb   $06,s
+         stb   [,s++]
+         ldd   ,s
+         addd  #$0001
+         std   ,s
+         ldd   $02,s
+         subd  #$0001
+         std   $02,s
+         lbra  L1FAC
+L1FE6    leas  $07,s
+         rts   
+L1FE9    lbra  L24AA
+L1FEC    pshs  b,a
+         leas  >-$0107,s
+         ldd   >$010B,s
+         lbsr  L20DA
+         ldd   >$0107,s
+         std   $01,s
+         leax  $07,s
+         stx   $03,s
+L2003    ldb   [<$01,s]
+         lbeq  L209A
+         ldb   [<$01,s]
+         cmpb  #$0A
+         lbne  L2042
+         ldb   #$0D
+         stb   [<$03,s]
+         ldd   #$0100
+         pshs  b,a
+         leax  $09,s
+         pshs  x
+         ldx   >$010F,s
+         ldb   $07,x
+         clra  
+         lbsr  L20DD
+         leas  $04,s
+         cmpd  #$FFFF
+         bne   L203B
+         ldd   #$FFFF
+         leas  >$0109,s
+         rts   
+L203B    leax  $07,s
+         stx   $03,s
+         lbra  L2090
+L2042    ldb   [<$01,s]
+         cmpb  #$09
+         bne   L207F
+         ldd   $03,s
+         leax  $07,s
+         pshs  x
+         subd  ,s++
+         pshs  b,a
+         ldd   #$0008
+         lbsr  L20E6
+         pshs  b,a
+         ldd   #$0008
+         subd  ,s++
+         std   $05,s
+L2062    ldd   $05,s
+         beq   L2090
+         ldd   $03,s
+         addd  #$0001
+         std   $03,s
+         subd  #$0001
+         pshs  b,a
+         ldb   #$20
+         stb   [,s++]
+         ldd   $05,s
+         subd  #$0001
+         std   $05,s
+         bra   L2062
+L207F    ldd   $03,s
+         addd  #$0001
+         std   $03,s
+         subd  #$0001
+         pshs  b,a
+         ldb   [<$03,s]
+         stb   [,s++]
+L2090    ldd   $01,s
+         addd  #$0001
+         std   $01,s
+         lbra  L2003
+L209A    clr   [<$03,s]
+         ldd   $03,s
+         leax  $07,s
+         pshs  x
+         cmpd  ,s++
+         lbeq  L20D1
+         leax  $07,s
+         tfr   x,d
+         lbsr  L20E3
+         pshs  b,a
+         leax  $09,s
+         pshs  x
+         ldx   >$010F,s
+         ldb   $07,x
+         clra  
+         lbsr  L20E0
+         leas  $04,s
+         cmpd  #$FFFF
+         bne   L20D1
+         ldd   #$FFFF
+         leas  >$0109,s
+         rts   
+L20D1    ldd   >$0107,s
+         leas  >$0109,s
+         rts   
+L20DA    lbra  L22A1
+L20DD    lbra  L2713
+L20E0    lbra  L26E9
+L20E3    lbra  L24AA
+L20E6    lbra  L2509
+         pshs  b,a
+         ldd   <u000C
+         pshs  b,a
+         ldd   $02,s
+         lbsr  L20F9
+         leas  $02,s
+         leas  $02,s
+         rts   
+L20F9    pshs  b,a
+         ldd   $04,s
+         addd  #$0002
+         tfr   d,x
+         ldd   ,x
+         subd  #$0001
+         std   ,x
+         cmpd  #$0000
+         blt   L2124
+         ldd   [<$04,s]
+         addd  #$0001
+         std   [<$04,s]
+         subd  #$0001
+         pshs  b,a
+         ldb   $03,s
+         stb   [,s++]
+         clra  
+         bra   L2135
+L2124    ldd   #$0001
+         pshs  b,a
+         ldd   $06,s
+         pshs  b,a
+         ldb   $05,s
+         clra  
+         lbsr  L2148
+         leas  $04,s
+L2135    leas  $02,s
+         rts   
+         pshs  b,a
+         ldd   <u000E
+         pshs  b,a
+         ldd   $02,s
+         lbsr  L20F9
+         leas  $02,s
+         leas  $02,s
+         rts   
+L2148    pshs  b,a
+         leas  -$03,s
+         ldb   $04,s
+         stb   $02,s
+         ldd   $07,s
+         addd  #$0006
+         tfr   d,x
+         ldb   ,x
+         andb  #$02
+         cmpb  #$00
+         beq   L216E
+         ldd   $07,s
+         addd  #$0006
+         tfr   d,x
+         ldb   ,x
+         andb  #$30
+         cmpb  #$00
+         beq   L2174
+L216E    ldd   #$FFFF
+         leas  $05,s
+         rts   
+L2174    ldb   $0A,s
+         beq   L217D
+         ldd   #$0001
+         bra   L217F
+L217D    clrb  
+         clra  
+L217F    pshs  b,a
+         ldd   $09,s
+         addd  #$0002
+         pshs  b,a
+         ldd   #$0100
+         subd  [,s++]
+         subd  ,s++
+         std   ,s
+         ldd   $07,s
+         addd  #$0006
+         tfr   d,x
+         ldb   ,x
+         andb  #$04
+         cmpb  #$00
+         lbne  L21D0
+         ldx   $07,s
+         ldd   $04,x
+         bne   L21D0
+         ldd   $07,s
+         addd  #$0004
+         pshs  b,a
+         ldd   #$0100
+         lbsr  L22B5
+         std   [,s++]
+         cmpd  #$0000
+         bne   L21CC
+         ldd   $07,s
+         addd  #$0006
+         tfr   d,u
+         ldb   ,u
+         orb   #$04
+         stb   ,u
+         bra   L21D0
+L21CC    clrb  
+         clra  
+         std   ,s
+L21D0    ldd   $07,s
+         addd  #$0006
+         tfr   d,x
+         ldb   ,x
+         andb  #$04
+         tstb  
+         lbeq  L2214
+         ldb   $0A,s
+         lbeq  L2245
+         ldd   #$0001
+         pshs  b,a
+         leax  $04,s
+         pshs  x
+         ldx   $0B,s
+         ldb   $07,x
+         clra  
+         lbsr  L22B8
+         leas  $04,s
+         cmpd  #$FFFF
+         lbne  L2245
+         ldd   $07,s
+         addd  #$0006
+         tfr   d,u
+         ldb   ,u
+         orb   #$20
+         stb   ,u
+         ldd   #$FFFF
+         leas  $05,s
+         rts   
+L2214    ldd   ,s
+         beq   L2245
+         ldd   ,s
+         pshs  b,a
+         ldx   $09,s
+         ldd   $04,x
+         pshs  b,a
+         ldx   $0B,s
+         ldb   $07,x
+         clra  
+         lbsr  L22B8
+         leas  $04,s
+         cmpd  #$FFFF
+         bne   L2245
+         ldd   $07,s
+         addd  #$0006
+         tfr   d,u
+         ldb   ,u
+         orb   #$20
+         stb   ,u
+         ldd   #$FFFF
+         leas  $05,s
+         rts   
+L2245    ldd   $07,s
+         addd  #$0002
+         pshs  b,a
+         ldd   $09,s
+         addd  #$0006
+         tfr   d,x
+         ldb   ,x
+         andb  #$04
+         tstb  
+         beq   L225E
+         clrb  
+         clra  
+         bra   L2261
+L225E    ldd   #$0100
+L2261    std   [,s++]
+         ldx   $07,s
+         ldd   $04,x
+         std   [<$07,s]
+         ldb   $0A,s
+         beq   L229B
+         ldd   $07,s
+         addd  #$0006
+         tfr   d,x
+         ldb   ,x
+         andb  #$04
+         cmpb  #$00
+         bne   L229B
+         ldd   [<$07,s]
+         addd  #$0001
+         std   [<$07,s]
+         subd  #$0001
+         pshs  b,a
+         ldb   $06,s
+         stb   [,s++]
+         ldd   $07,s
+         addd  #$0002
+         pshs  b,a
+         ldd   #$00FF
+         std   [,s++]
+L229B    ldb   $04,s
+         clra  
+         leas  $05,s
+         rts   
+L22A1    pshs  b,a
+         clrb  
+         clra  
+         pshs  b,a
+         ldd   $02,s
+         pshs  b,a
+         clrb  
+         clra  
+         lbsr  L2148
+         leas  $04,s
+         leas  $02,s
+         rts   
+L22B5    lbra  L22BB
+L22B8    lbra  L26E9
+L22BB    pshs  b,a
+         leas  -$08,s
+         ldd   $08,s
+         addd  #$0003
+         lsra  
+         rorb  
+         lsra  
+         rorb  
+         addd  #$0001
+         std   $06,s
+         ldd   >$0280,y
+         std   $02,s
+         cmpd  #$0000
+         bne   L22ED
+         leax  >$027C,y
+         stx   $02,s
+         stx   >$0280,y
+         stx   >$027C,y
+         clrb  
+         clra  
+         std   >$027E,y
+L22ED    ldd   [<$02,s]
+         std   ,s
+L22F2    ldx   ,s
+         ldd   $02,x
+         cmpd  $06,s
+         lbcs  L2348
+         ldx   ,s
+         ldd   $02,x
+         cmpd  $06,s
+         bne   L230D
+         ldd   [,s]
+         std   [<$02,s]
+         bra   L233A
+L230D    ldd   ,s
+         addd  #$0002
+         tfr   d,u
+         ldd   ,u
+         subd  $06,s
+         std   ,u
+         ldd   ,s
+         addd  #$0002
+         tfr   d,x
+         ldd   ,x
+         lslb  
+         rola  
+         lslb  
+         rola  
+         pshs  b,a
+         ldd   $02,s
+         addd  ,s++
+         std   ,s
+         ldd   ,s
+         addd  #$0002
+         pshs  b,a
+         ldd   $08,s
+         std   [,s++]
+L233A    ldd   $02,s
+         std   >$0280,y
+         ldd   ,s
+         addd  #$0004
+         leas  $0A,s
+         rts   
+L2348    ldd   ,s
+         cmpd  >$0280,y
+         lbne  L2382
+         ldd   $06,s
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lbsr  L2441
+         std   $04,s
+         cmpd  #$FFFF
+         bne   L2369
+         clrb  
+         clra  
+         leas  $0A,s
+         rts   
+L2369    ldd   $04,s
+         addd  #$0002
+         pshs  b,a
+         ldd   $08,s
+         std   [,s++]
+         ldd   $04,s
+         addd  #$0004
+         lbsr  L238D
+         ldd   >$0280,y
+         std   ,s
+L2382    ldd   ,s
+         std   $02,s
+         ldd   [,s]
+         std   ,s
+         lbra  L22F2
+L238D    pshs  b,a
+         leas  -$04,s
+         ldd   $04,s
+         subd  #$0004
+         std   ,s
+         ldd   >$0280,y
+         std   $02,s
+L239E    ldd   ,s
+         cmpd  $02,s
+         bls   L23AD
+         ldd   ,s
+         cmpd  [<$02,s]
+         bcs   L23CC
+L23AD    ldd   $02,s
+         cmpd  [<$02,s]
+         bcs   L23C4
+         ldd   ,s
+         cmpd  $02,s
+         bhi   L23CC
+         ldd   ,s
+         cmpd  [<$02,s]
+         bcs   L23CC
+L23C4    ldd   [<$02,s]
+         std   $02,s
+         lbra  L239E
+L23CC    ldd   ,s
+         addd  #$0002
+         tfr   d,x
+         ldd   ,x
+         lslb  
+         rola  
+         lslb  
+         rola  
+         addd  ,s
+         cmpd  [<$02,s]
+         bne   L23FF
+         ldd   [<$02,s]
+         addd  #$0002
+         pshs  b,a
+         ldd   $02,s
+         addd  #$0002
+         tfr   d,u
+         ldd   ,u
+         addd  [,s++]
+         std   ,u
+         ldx   [<$02,s]
+         ldd   ,x
+         std   [,s]
+         bra   L2404
+L23FF    ldd   [<$02,s]
+         std   [,s]
+L2404    ldd   $02,s
+         addd  #$0002
+         tfr   d,x
+         ldd   ,x
+         lslb  
+         rola  
+         lslb  
+         rola  
+         addd  $02,s
+         cmpd  ,s
+         bne   L2433
+         ldd   ,s
+         addd  #$0002
+         pshs  b,a
+         ldd   $04,s
+         addd  #$0002
+         tfr   d,u
+         ldd   ,u
+         addd  [,s++]
+         std   ,u
+         ldd   [,s]
+         std   [<$02,s]
+         bra   L2438
+L2433    ldd   ,s
+         std   [<$02,s]
+L2438    ldd   $02,s
+         std   >$0280,y
+         leas  $06,s
+         rts   
+L2441    lbra  L25A8
+L2444    pshs  b,a
+         ldb   $01,s
+         cmpb  #$30
+         bcs   L2456
+         ldb   $01,s
+         cmpb  #$39
+         bhi   L2456
+         ldb   #$01
+         bra   L2457
+L2456    clrb  
+L2457    clra  
+         leas  $02,s
+         rts   
+L245B    pshs  b,a
+         ldb   $01,s
+         clra  
+         lbsr  L2474
+         addd  #$0000
+         beq   L246E
+         ldb   $01,s
+         addb  #$20
+         bra   L2470
+L246E    ldb   $01,s
+L2470    clra  
+         leas  $02,s
+         rts   
+L2474    lbra  L2477
+L2477    pshs  b,a
+         ldb   $01,s
+         cmpb  #$41
+         bcs   L2489
+         ldb   $01,s
+         cmpb  #$5A
+         bhi   L2489
+         ldb   #$01
+         bra   L248A
+L2489    clrb  
+L248A    clra  
+         leas  $02,s
+         rts   
+L248E    pshs  b,a
+L2490    ldd   ,s
+         addd  #$0001
+         std   ,s
+         subd  #$0001
+         pshs  b,a
+         ldx   $06,s
+         ldb   ,x+
+         stx   $06,s
+         stb   [,s++]
+         tstb  
+         bne   L2490
+         leas  $02,s
+         rts   
+L24AA    pshs  b,a
+         leas  -$02,s
+         ldd   $02,s
+         std   ,s
+L24B2    ldb   [,s]
+         beq   L24BF
+         ldd   ,s
+         addd  #$0001
+         std   ,s
+         bra   L24B2
+L24BF    ldd   ,s
+         subd  $02,s
+         leas  $04,s
+         rts   
+L24C6    leas  -$05,s
+         clr   ,s
+         bsr   L24FF
+         std   $01,s
+         ldd   $07,s
+         bsr   L24FF
+         std   $07,s
+         lda   $02,s
+         ldb   $08,s
+         mul   
+         std   $03,s
+         lda   $01,s
+         ldb   $08,s
+         mul   
+         tfr   b,a
+         clrb  
+         addd  $03,s
+         std   $03,s
+         lda   $02,s
+         ldb   $07,s
+         mul   
+         tfr   b,a
+         clrb  
+         addd  $03,s
+         tst   ,s
+         bpl   L24F9
+         nega  
+         negb  
+         sbca  #$00
+L24F9    ldx   $05,s
+         leas  $09,s
+         jmp   ,x
+L24FF    tsta  
+         bpl   L2508
+         com   $02,s
+         nega  
+         negb  
+         sbca  #$00
+L2508    rts   
+L2509    ldx   $02,s
+         bsr   L2588
+         pshs  cc
+         stx   $03,s
+         puls  cc
+         bra   L2517
+L2515    andcc #$F7
+L2517    orcc  #$01
+         pshs  cc
+         ldx   #$0000
+         puls  cc
+         bra   L2536
+         ldx   $02,s
+         bsr   L2588
+         pshs  cc
+         stx   $03,s
+         ldx   #$7FFF
+         puls  cc
+         bra   L2536
+L2531    ldx   #$FFFF
+         andcc #$F6
+L2536    leas  -$03,s
+         pshs  cc
+         std   $02,s
+         bne   L2544
+         puls  cc
+         tfr   x,d
+         bra   L2582
+L2544    lda   #$01
+         sta   $01,s
+L2548    tst   $02,s
+         bmi   L2554
+         lsl   $03,s
+         rol   $02,s
+         inc   $01,s
+         bra   L2548
+L2554    ldd   $06,s
+         clr   $06,s
+         clr   $07,s
+L255A    subd  $02,s
+         bcc   L2564
+         addd  $02,s
+         andcc #$FE
+         bra   L2566
+L2564    orcc  #$01
+L2566    rol   $07,s
+         rol   $06,s
+         lsr   $02,s
+         ror   $03,s
+         dec   $01,s
+         bne   L255A
+         puls  cc
+         bcs   L257C
+         pshs  cc
+         ldd   $06,s
+         puls  cc
+L257C    bpl   L2582
+         nega  
+         negb  
+         sbca  #$00
+L2582    ldx   $03,s
+         leas  $07,s
+         jmp   ,x
+L2588    pshs  u
+         tfr   d,u
+         pshs  x
+         eora  ,s++
+         andcc #$FE
+         pshs  cc
+         tfr   x,d
+         bsr   L25A0
+         tfr   d,x
+         tfr   u,d
+         bsr   L25A0
+         puls  pc,u,cc
+L25A0    tsta  
+         bpl   L25A7
+         nega  
+         negb  
+         sbca  #$00
+L25A7    rts   
+L25A8    pshs  b,a
+         leax  >-$00FD,y
+         tfr   x,d
+         nega  
+         negb  
+         sbca  #$00
+         addd  <u0000
+         addd  ,s
+         pshs  y
+         os9   F$Mem    
+         puls  y
+         puls  x
+         bcs   L25CA
+         ldd   <u0000
+         leax  d,x
+         stx   <u0000
+         rts   
+L25CA    clra  
+         std   <u0002
+         ldd   #$FFFF
+         rts   
+
+L25D1    tfr   d,x
+         lda   #$01
+         os9   I$ChgDir 
+         bcc   L25E0
+         std   <u0002
+         ldd   #$FFFF
+         rts   
+L25E0    clra  
+         clrb  
+         rts   
+
+L25E3    leas  -$04,s
+         ldu   $06,s
+         tfr   d,x
+         ldd   ,x
+         std   ,s
+         lda   $02,x
+         sta   $02,s
+         ldd   $08,s
+         bra   L260B
+L25F5    lsr   ,s
+         ror   $01,s
+         ror   $02,s
+         bcc   L2607
+         inc   $02,s
+         bne   L2607
+         inc   $01,s
+         bne   L2607
+         inc   ,s
+L2607    lsr   ,u
+         ror   u0001,u
+L260B    lsra  
+         rorb  
+         bcc   L25F5
+         clra  
+         ldb   $02,s
+         andb  #$07
+         ldu   $0E,s
+         std   ,u
+         ldd   $01,s
+         lsra  
+         rorb  
+         lsra  
+         rorb  
+         lsra  
+         rorb  
+         clra  
+         ldu   $0C,s
+         std   ,u
+         ldd   ,s
+         lsra  
+         rorb  
+         lsra  
+         rorb  
+         lsra  
+         rorb  
+         ldu   $0A,s
+         std   ,u
+         leas  $04,s
+         rts   
+
+L2634    tfr   d,x
+         clra  
+         clrb  
+         std   ,x
+         stb   $02,x
+         ldd   $04,s
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         std   ,x
+         ldd   $06,s
+         lslb  
+         rola  
+         lslb  
+         rola  
+         lslb  
+         rola  
+         addd  $01,x
+         std   $01,x
+         bcc   L2656
+         inc   ,x
+L2656    addd  $08,s
+         std   $01,x
+         bcc   L265E
+         inc   ,x
+L265E    ldd   $02,s
+         bra   L2668
+L2662    lsl   $02,x
+         rol   $01,x
+         rol   ,x
+L2668    asra  
+         rorb  
+         bne   L2662
+         rts   
+
+L266D    tfr   d,x
+         ldu   $02,s
+         ldb   ,x
+         stb   ,u
+         ldd   $01,x
+         addd  $04,s
+         std   u0001,u
+         bcc   L267F
+         inc   ,u
+L267F    clra  
+         clrb  
+         rts   
+
+;---------------------------------------------
+; 24 bits compartison
+; IN : *(d)   firts 24 bits value to compare
+;      *(2+s) Seconds value to compare
+; OUT: D = -1 : 1st < 2nd
+;           0 : 1st = 2nd
+;           1 : 1st > 2nd
+;---------------------------------------------
+L2682    tfr   d,x
+         ldu   $02,s
+         ldb   ,x
+         cmpb  ,u
+         bhi   L269E
+         bcs   L269A
+         ldd   $01,x
+         cmpd  1,u
+         bhi   L269E
+         bcs   L269A
+         clra  
+         clrb  
+         rts   
+         
+L269A    ldd   #$FFFF
+         rts   
+         
+L269E    ldd   #$0001
+         rts   
+
+;---------------------------------------------
+;
+; OUT: D = -1 : error
+;           0 : No error occured
+;---------------------------------------------
+L26A2    tfr   b,a
+         ldb   #$05
+         os9   I$GetStt 
+         bcs   L26B9
+         tfr   x,d
+         ldx   $04,s
+         stu   ,x
+         ldx   $02,s
+         std   ,x
+         clra  
+         clrb  
+         bra   L26BC
+L26B9    ldd   #$FFFF
+L26BC    rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L26BD    tfr   d,x
+         lda   $03,s
+         os9   I$Open   
+         bcs   L2728
+         tfr   a,b
+         clra  
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L26CA    tfr   b,a
+         os9   I$Close  
+         bcs   L2728
+         clra  
+         clrb  
+         rts   
+         
+;---------------------------------------------
+;
+;---------------------------------------------
+L26D4    pshs  y
+         tfr   b,a
+         ldx   $04,s
+         ldy   $06,s
+         os9   I$Read   
+         puls  x
+         exg   x,y
+         bcs   L2728
+         tfr   x,d
+         rts   
+         
+;---------------------------------------------
+;
+;---------------------------------------------
+L26E9    pshs  y
+         tfr   b,a
+         ldx   $04,s
+         ldy   $06,s
+         os9   I$Write  
+         puls  x
+         exg   x,y
+         bcs   L2728
+         tfr   x,d
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+         pshs  y
+         tfr   b,a
+         ldx   $04,s
+         ldy   $06,s
+         os9   I$ReadLn 
+         puls  x
+         exg   x,y
+         bcs   L2728
+         tfr   x,d
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L2713    pshs  y
+         tfr   b,a
+         ldx   $04,s
+         ldy   $06,s
+         os9   I$WritLn 
+         puls  x
+         exg   x,y
+         bcs   L2728
+         tfr   x,d
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L2728    clra  
+         std   <u0002
+         ldd   #$FFFF
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L272F    tfr   d,x
+         lda   #$02
+         ldb   $03,s
+         bmi   L273B
+         tfr   b,a
+         anda  #$03
+L273B    orb   #$01
+         pshs  x,b,a
+         os9   I$Create 
+         puls  u,x
+         exg   x,u
+         bcc   L2758
+         pshs  x
+         os9   I$Delete 
+         puls  x
+         bcs   L2728
+         tfr   u,d
+         os9   I$Create 
+         bcs   L2728
+L2758    tfr   a,b
+         clra  
+         rts   
+	 
+;---------------------------------------------
+;
+;---------------------------------------------
+L275C    pshs  b,a
+         ldx   $04,s
+         ldd   ,x
+         std   $04,s
+         clrb  
+         lda   $02,x
+         addd  $06,s
+         std   $06,s
+         puls  b,a
+L276D    tfr   b,a
+         ldb   $07,s
+         ldx   $02,s
+         ldu   $04,s
+         decb  
+         bne   L2781
+         ldb   #$05
+         os9   I$GetStt 
+         bcs   L2728
+         bra   L278B
+L2781    decb  
+         bne   L2799
+         ldb   #$02
+         os9   I$GetStt 
+         bcs   L2728
+L278B    exg   d,u
+         addd  $04,s
+         exg   d,u
+         exg   d,x
+         adcb  $03,s
+         adca  $02,s
+         exg   d,x
+L2799    os9   I$Seek   
+         bcs   L2728
+         clra  
+         clrb  
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L27A1    tfr   d,x
+         os9   I$Delete 
+         bcs   L2728
+         clra  
+         clrb  
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L27AB    os9   F$Exit   
+L27AE    bsr   L27B9
+         tfr   a,b
+         clra  
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+         bsr   L27B9
+         tfr   x,d
+         rts   
+
+;---------------------------------------------
+;
+;---------------------------------------------
+L27B9    pshs  y
+         os9   F$ID     
+         tfr   y,x
+         puls  y
+         rts   
+
 name     equ   *
          fcs   /dcheck/
          fcb   edition
