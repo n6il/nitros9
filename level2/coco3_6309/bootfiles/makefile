@@ -19,7 +19,7 @@ BOOTFILE_1773	= $(MD)/os9p2 $(MD)/ioman $(MD)/init $(MD)/rbf.mn $(MD)/cc3disk.dr
 		$(MD)/d1_80d.dd $(MD)/ddd0_40d.dd $(MD)/scf.mn $(MD)/cc3io.dr $(MD)/keydrv $(MD)/joydrv_joy \
 		$(MD)/snddrv $(MD)/windint.io $(MD)/term_win80.dt $(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd $(MD)/clock \
-		$(MD)/clock2_soft $(MD)/cc3go
+		$(MD)/clock2_soft
 
 BOOTFILE_1773_ROM = $(MD)/rominfo
 
