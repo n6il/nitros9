@@ -28,6 +28,7 @@ AFLAGS		= -q
 MAKDIR		= $(OS9TOOLSDIR)/os9 makdir
 RM		= rm -f
 MERGE		= cat
+MOVE		= mv
 ECHO		= /bin/echo
 CD		= cd
 CP		= $(OS9TOOLSDIR)/os9 copy -o=0

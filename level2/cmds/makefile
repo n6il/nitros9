@@ -5,12 +5,12 @@ vpath %.asm $(6809L1)/cmds:$(3RDPARTY)/packages/basic09
 DEPENDS		= ./makefile
 
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
-		date dcheck debug ded deiniz del deldir devs dir dirm disasm \
+		date dcheck debug ded deiniz del deldir devs dir disasm \
 		display dmem dmode dsave dump echo edit error exbin exmode \
 		format free grfdrv help ident iniz irqs link list load login \
 		makdir mdir megaread merge mfree mmap modpatch montype mpi os9gen padrom park \
 		prompt pmap proc procs pwd pxd reboot rename runb save setime \
-		shell_21 shellplus sleep smap tee tmode touch \
+		shell_21 sleep smap tee tmode touch \
 		tsmon tuneport unlink verify wcreate xmode
 SUBS            = gfx2 gfx inkey syscall
 
@@ -18,10 +18,14 @@ SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
 UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
 		merge mfree procs rename tmode
 
-ALLOBJS		= $(CMDS) $(SUBS)
-
 # Files not compilable by os9asm: config
-all:	$(ALLOBJS) shell utilpak1 $(DEPENDS)
+all:	$(SUBS) $(CMDS) shell utilpak1 $(DEPENDS)
+
+runb:	runb.asm
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
+	$(MERGE) $@ $(SUBS)>$@.tmp
+	$(RM) $@
+	$(MOVE) $@.tmp $@
 
 pwd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
@@ -42,10 +46,11 @@ utilpak1:  $(UTILPAK1) $(DEPENDS)
 	@$(ECHO) ""
 
 clean:
-	$(RM) shell utilpak1 $(ALLOBJS)
+	$(RM) shell utilpak1 $(SUBS) $(SHELLMODS) $(CMDS)
 
+# Only $(CMDS) are shown here
 showobjs:
-	@$(ECHO) shell utilpak1 $(ALLOBJS)
+	@$(ECHO) shell utilpak1 $(CMDS)
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
