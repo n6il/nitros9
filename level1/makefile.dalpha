@@ -5,24 +5,26 @@ BOOTFILE	= bootfiles/bootfile_dalpha
 BOOTFILE_DS80	= bootfiles/bootfile_dalpha
 KERNELFILE	= bootfiles/kernel_dalpha
 DIRS		= cmds modules defs sys bootfiles
+DDIRS		= modules bootfiles
 
 # Specify which shell should be used
 #WHICHSHELL	= shellplus
 WHICHSHELL	= shell_21
 
 CMDS		= $(shell $(CD) cmds; make showcocoobjs)
-BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
-KERNEL		= $(shell $(CD) modules; make showkernel)
-SYSMODS		= $(shell $(CD) modules; make showsysmods)
-CLOCKS		= $(shell $(CD) modules; make showclocks)
-RBF		= $(shell $(CD) modules; make showrbf)
-SCF		= $(shell $(CD) modules; make showscf)
-PIPE		= $(shell $(CD) modules; make showpipe)
+BOOTTRACK	= $(shell $(CD) modules; make -f makefile.dragon showboottrack)
+KERNEL		= $(shell $(CD) modules; make -f makefile.dragon showkernel)
+SYSMODS		= $(shell $(CD) modules; make -f makefile.dragon showsysmods)
+CLOCKS		= $(shell $(CD) modules; make -f makefile.dragon showclocks)
+RBF			= $(shell $(CD) modules; make -f makefile.dragon showrbf)
+SCF			= $(shell $(CD) modules; make -f makefile.dragon showscf)
+PIPE		= $(shell $(CD) modules; make -f makefile.dragon showpipe)
 MODULECMDS	= $(WHICHSHELL) del echo format makdir merge os9gen prompt tmode
 
 SYS		= $(shell $(CD) sys; make showobjs)
 DEFS		= $(shell $(CD) defs; make showobjs)
-ROOTFILES	= startup
+ROOTFILES	= 
+STARTUP		= startup.dalpha
 
 PACKAGENAME	= $(RELEASE).zip
 DSK360K_1	= $(RELEASE)_ss80_1.dsk
@@ -38,10 +40,12 @@ all:
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
-
+	$(foreach dir, $(DDIRS), ($(CD) $(dir); make -f makefile.dragon);)
+	
 # Clean all components
 clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
+	$(foreach dir, $(DDIRS), ($(CD) $(dir); make -f makefile.dragon clean);)
 
 dskclean:
 	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(DSK360K_2) $(DSK720K)
@@ -75,6 +79,8 @@ $(DSK360K_1):
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(ROOTFILES) $@,.
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 
 $(DSK360K_2):
 	$(RM) $@
@@ -128,6 +134,8 @@ $(DSK720K):
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(ROOTFILES) $@,.
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/6809L1
 	$(MAKDIR) $@,NITROS9/6809L1/CMDS
