@@ -5,20 +5,23 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 18     Original Microware distribution version
+* 17     Original Microware distribution version
 
          nam   Format
          ttl   Initialize disk media
 
-* Disassembled 02/04/03 22:47:09 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 02/07/06 14:23:44 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 u0001    rmb   1
 u0002    rmb   1
@@ -96,9 +99,10 @@ u02AF    rmb   3
 u02B2    rmb   9924
 u2976    rmb   451
 size     equ   .
-name     equ   *
-         fcs   /Format/
-         fcb   $12 
+
+name     fcs   /Format/
+         fcb   $11 
+
 L0014    fcb   $00 
          fcb   $00 
 L0016    fcb   $00 
@@ -242,9 +246,9 @@ start    equ   *
          lbsr  L0295
          lbsr  L0351
          lbsr  L04A9
-         lbsr  L0589
-         lbsr  L05BF
-         lbsr  L07C0
+         lbsr  L0586
+         lbsr  L05BC
+         lbsr  L07B6
          ldu   <u0044
          os9   I$Detach 
          clrb  
@@ -260,9 +264,9 @@ L00CF    lda   ,x+
          cmpa  #$2F
          beq   L00DA
 L00D5    ldb   #$D7
-         lbra  L08E4
+         lbra  L08D3
 L00DA    os9   F$PrsNam 
-         lbcs  L08E4
+         lbcs  L08D3
          lda   #$2F
          cmpa  ,y
          beq   L00D5
@@ -277,7 +281,7 @@ L00ED    sta   ,y+
          sta   ,y
          clra  
          os9   I$Attach 
-         lbcs  L08E4
+         lbcs  L08D3
          stu   <u0044
          ldu   <u0000
          lda   #$40
@@ -345,37 +349,13 @@ L0180    leay  $04,y
          bne   L0178
          coma  
          rts   
-L0188    fcb   $52 R
-         rolb  
-         neg   <u002C
-         aim   #$59,>$0028
-         bhi   L0192
-L0192    neg   <u002D
-         abx   
-         neg   <u0000
-         tstb  
-         coma  
-         neg   <u0000
-         bhi   L0200
-         neg   <u0000
-         exg   y,a
-         neg   <u0000
-         sync  
-         bvs   L01A6
-L01A6    neg   <u000F
-         bge   L01AA
-L01AA    neg   <u000B
-         bra   L01AE
-L01AE    neg   <u0007
-         neg   <u00D7
-         pulsw 
-         stb   <u001C
-         rts   
-         stb   <u0012
-         rts   
-         inc   <u0046
-         rts   
-         leay  <u0067,u
+L0188    
+
+         fdb   $5259,$002c,$7259,$0028
+         fdb   $2200,$002d,$3a00,$005d,$4300,$0022,$6300,$001e
+         fdb   $2800,$0013,$2900,$000f,$2c00,$000b,$2000,$0007
+         fdb   $00d7,$1039,$d71c,$39d7,$1239,$0c46,$3931,$c867
+
          ldb   #$20
 L01C2    lda   ,x+
          cmpa  #$22
@@ -398,18 +378,18 @@ L01E3    adda  #$80
          sta   ,y
          clrb  
          rts   
-         lbsr  L08AF
+         lbsr  L089E
          ldd   <u001D
          std   <u0013
          rts   
-         lbsr  L08AF
+         lbsr  L089E
          ldd   <u001D
          tsta  
          beq   L01FB
          ldb   #$01
 L01FB    stb   <u001F
 L01FD    rts   
-         lbsr  L08AF
+         lbsr  L089E
          ldd   <u001D
          tsta  
          beq   L0208
@@ -423,7 +403,7 @@ L0208    stb   <u0025
          stb   <u0025
 L0214    clrb  
          rts   
-L0216    leax  >L08F9,pcr
+L0216    leax  >Title,pcr
          lbsr  L0272
          leay  >u01AF,u
          ldx   $0B,y
@@ -431,8 +411,8 @@ L0216    leax  >L08F9,pcr
          beq   L0229
          ldx   $09,y
 L0229    stx   <u0017
-         leax  >L0954,pcr
-         ldy   #$0011
+         leax  >FmtMsg,pcr
+         ldy   #FmtMLen
          lbsr  L0276
          leax  <u0047,u
          tfr   x,y
@@ -448,8 +428,8 @@ L023B    lda   ,y+
          sta   -$01,y
          lda   <u001C
          bne   L01FD
-L0254    leax  >L0965,pcr
-         ldy   #$001A
+L0254    leax  >Query,pcr
+         ldy   #QueryLen
          lbsr  L027C
          anda  #$DF
          cmpa  #$59
@@ -458,7 +438,7 @@ L0254    leax  >L0965,pcr
          cmpa  #$4E
          lbeq  L00BB
          bra   L0254
-L026E    leax  >L090F,pcr
+L026E    leax  >HelpCR,pcr
 L0272    ldy   #$0050
 L0276    lda   #$01
          os9   I$WritLn 
@@ -518,9 +498,9 @@ L02CE    exg   d,x
          bsr   L034C
          tstb  
          beq   L02FE
-         leax  >L09EF,pcr
+         leax  >ClustMsg,pcr
          lbsr  L0272
-         lbra  L0528
+         lbra  L0525
 L02FE    leas  $02,s
          stx   <u0026
          rts   
@@ -568,8 +548,8 @@ L034C    lsr   $02,s
          rts   
 L0351    tst   <u001B
          bpl   L036B
-         leax  >L0A58,pcr
-         ldy   #$0022
+         leax  >Both,pcr
+         ldy   #BothLen
          lbsr  L027C
          anda  #$DF
          cmpa  #$59
@@ -578,7 +558,7 @@ L0351    tst   <u001B
          bne   L0351
          rts   
 L036B    lda   <u0002
-         ldb   #$03
+         ldb   #SS.Reset
          os9   I$SetStt 
          lbcs  L00BB
          ldd   #$0000
@@ -607,7 +587,7 @@ L03A1    lda   <u0005
          orb   #$01
 L03A7    tfr   d,y
          lda   <u0002
-         ldb   #$04
+         ldb   #SS.WTrk
          os9   I$SetStt 
          lbcs  L00BB
          ldu   <u0000
@@ -701,8 +681,8 @@ L0466    pshs  y,b
          leay  a,x
          ldb   <u001F
          bne   L0481
-L047A    leax  >L097F,pcr
-         lbra  L0676
+L047A    leax  >Abort,pcr
+         lbra  L066D
 L0481    cmpb  <u0016
          bhi   L047A
          nega  
@@ -725,7 +705,7 @@ L049F    cmpx  $02,s
          leax  $01,x
          stx   $02,s
          bra   L0489
-L04A9    lbsr  L081B
+L04A9    lbsr  L080A
          ldd   <u0023
          std   $01,x
          ldb   <u0022
@@ -741,20 +721,19 @@ L04A9    lbsr  L081B
          beq   L04C9
          addd  #$0001
 L04C9    addd  #$0001
-         addd  #$0010
          std   $09,x
          clra  
          tst   <u0010
-         beq   L04D8
+         beq   L04D5
          ora   #$02
-L04D8    ldb   <u0012
+L04D5    ldb   <u0012
          cmpb  #$01
-         beq   L04E0
+         beq   L04DD
          ora   #$01
-L04E0    tst   <u0011
-         beq   L04E6
+L04DD    tst   <u0011
+         beq   L04E3
          ora   #$04
-L04E6    sta   <$10,x
+L04E3    sta   <$10,x
          ldd   <u0026
          std   $04,x
          lda   #$FF
@@ -764,38 +743,38 @@ L04E6    sta   <$10,x
          leax  >u00CE,u
          leay  <u0067,u
          tst   ,y
-         beq   L050B
-L0503    lda   ,y+
+         beq   L0508
+L0500    lda   ,y+
          sta   ,x+
-         bpl   L0503
-         bra   L053E
-L050B    leax  >L09A3,pcr
-         ldy   #$000B
+         bpl   L0500
+         bra   L053B
+L0508    leax  >DName,pcr
+         ldy   #DNameLen
          lbsr  L0276
          leax  >u00CE,u
          ldy   #$0021
          clra  
          os9   I$ReadLn 
-         bcc   L052F
+         bcc   L052C
          cmpa  #$D3
-         bne   L050B
-L0528    leax  >L09E0,pcr
-         lbra  L0676
-L052F    tfr   y,d
+         bne   L0508
+L0525    leax  >Aborted,pcr
+         lbra  L066D
+L052C    tfr   y,d
          leax  d,x
          clr   ,-x
          decb  
-         beq   L050B
+         beq   L0508
          lda   ,-x
          ora   #$80
          sta   ,x
-L053E    leax  >u00C9,u
+L053B    leax  >u00C9,u
          leay  <$40,x
          pshs  y
          ldd   #$0000
-L054A    addd  ,x++
+L0547    addd  ,x++
          cmpx  ,s
-         bcs   L054A
+         bcs   L0547
          leas  $02,s
          std   >u00BD,u
          ldd   >L0014,pcr
@@ -805,47 +784,47 @@ L054A    addd  ,x++
          ldd   >L0018,pcr
          std   >u01A3,u
          lda   <u0002
-         ldb   #$00
+         ldb   #SS.Opt
          leax  >u00EE,u
          os9   I$GetStt 
-         ldb   #$03
+         ldb   #SS.Reset
          os9   I$SetStt 
          lbcs  L00BB
          leax  >u00AF,u
-         lbra  L0827
-L0589    lda   <u0002
+         lbra  L0816
+L0586    lda   <u0002
          os9   I$Close  
          leax  <u0047,u
          lda   #$01
          os9   I$Open   
-         lbcs  L0672
+         lbcs  L0669
          sta   <u0002
          leax  >u00AF,u
          ldy   #$0100
          os9   I$Read   
-         lbcs  L0672
+         lbcs  L0669
          lda   <u0002
          os9   I$Close  
          leax  <u0047,u
          lda   #$03
          os9   I$Open   
-         lbcs  L0672
+         lbcs  L0669
          sta   <u0002
          rts   
-L05BF    lda   <u001B
+L05BC    lda   <u001B
          clr   <u0043
          bita  #$80
-         beq   L05DE
-L05C7    leax  >L0A7A,pcr
-         ldy   #$0019
+         beq   L05DB
+L05C4    leax  >Verify,pcr
+         ldy   #VerifyLen
          lbsr  L027C
          anda  #$DF
          cmpa  #$59
-         beq   L05DE
+         beq   L05DB
          cmpa  #$4E
-         bne   L05C7
+         bne   L05C4
          sta   <u0043
-L05DE    ldd   <u0019
+L05DB    ldd   <u0019
          std   <u0015
          clra  
          clrb  
@@ -857,7 +836,7 @@ L05DE    ldd   <u0019
          sta   <u003A
          leax  >u01AF,u
          stx   <u0036
-         lbsr  L081F
+         lbsr  L080E
          leax  >$0100,x
          stx   <u0038
          clra  
@@ -869,22 +848,21 @@ L05DE    ldd   <u0019
          clra  
          ldb   <u0026
          tst   <u0027
-         beq   L0614
+         beq   L0611
          addd  #$0001
-L0614    addd  #$0009
-         addd  #$0010
+L0611    addd  #$0009
          std   <u002B
          lda   <u0025
-L061E    lsra  
-         bcs   L062F
+L0618    lsra  
+         bcs   L0629
          lsr   <u002B
          ror   <u002C
-         bcc   L061E
+         bcc   L0618
          inc   <u002C
-         bne   L061E
+         bne   L0618
          inc   <u002B
-         bra   L061E
-L062F    ldb   <u002C
+         bra   L0618
+L0629    ldb   <u002C
          stb   <u002D
          lda   <u0025
          mul   
@@ -892,109 +870,108 @@ L062F    ldb   <u002C
          subd  #$0001
          subb  <u0026
          sbca  #$00
-         subd  #$0010
          tst   <u0027
-         beq   L0649
+         beq   L0640
          subd  #$0001
-L0649    stb   <u002A
-L064B    tst   <u0043
-         bne   L067D
+L0640    stb   <u002A
+L0642    tst   <u0043
+         bne   L0674
          lda   <u0002
          leax  >u00AF,u
          ldy   #$0100
          os9   I$Read   
-         bcc   L067D
+         bcc   L0674
          os9   F$PErr   
-         lbsr  L084B
+         lbsr  L083A
          lda   #$FF
          sta   <u0028
          tst   <u002F
-         bne   L067D
+         bne   L0674
          ldx   <u0030
          cmpx  <u002B
-         bhi   L067D
-L0672    leax  >L09CD,pcr
-L0676    lbsr  L0272
+         bhi   L0674
+L0669    leax  >BadSect,pcr
+L066D    lbsr  L0272
          clrb  
          lbra  L00BB
-L067D    ldd   <u0008
+L0674    ldd   <u0008
          addd  #$0001
          std   <u0008
          cmpd  <u0015
-         bcs   L06C2
+         bcs   L06B9
          clr   <u0008
          clr   <u0009
          tst   <u0043
-         bne   L06B7
+         bne   L06AE
          lda   #$20
          pshs  a
          lda   <u0004
-         lbsr  L0724
+         lbsr  L071B
          pshs  b,a
          lda   <u0003
-         lbsr  L0724
+         lbsr  L071B
          pshs  b
          tfr   s,x
          ldy   #$0004
          lbsr  L0276
          lda   $02,s
          cmpa  #$46
-         bne   L06B5
+         bne   L06AC
          lbsr  L026E
-L06B5    leas  $04,s
-L06B7    ldd   <u0003
+L06AC    leas  $04,s
+L06AE    ldd   <u0003
          addd  #$0001
          std   <u0003
          ldd   <u0017
          std   <u0015
-L06C2    dec   <u0029
-         bne   L06D8
-         bsr   L0701
+L06B9    dec   <u0029
+         bne   L06CF
+         bsr   L06F8
          tst   <u0028
-         bne   L06D2
+         bne   L06C9
          ldx   <u0034
          leax  $01,x
          stx   <u0034
-L06D2    clr   <u0028
+L06C9    clr   <u0028
          lda   <u0025
          sta   <u0029
-L06D8    ldb   <u002F
+L06CF    ldb   <u002F
          ldx   <u0030
          leax  $01,x
-         bne   L06E1
+         bne   L06D8
          incb  
-L06E1    cmpb  <u0022
-         bcs   L06E9
+L06D8    cmpb  <u0022
+         bcs   L06E0
          cmpx  <u0023
-         bcc   L06F0
-L06E9    stb   <u002F
+         bcc   L06E7
+L06E0    stb   <u002F
          stx   <u0030
-         lbra  L064B
-L06F0    lda   #$FF
+         lbra  L0642
+L06E7    lda   #$FF
          sta   <u0028
          leay  >u01AF,u
-L06F8    cmpy  <u0036
-         beq   L073C
-         bsr   L0701
-         bra   L06F8
-L0701    ldx   <u0036
+L06EF    cmpy  <u0036
+         beq   L0733
+         bsr   L06F8
+         bra   L06EF
+L06F8    ldx   <u0036
          lda   <u0028
          rora  
          rol   ,x+
          inc   <u003A
          lda   <u003A
          cmpa  #$08
-         bcs   L0723
+         bcs   L071A
          clr   <u003A
          stx   <u0036
          cmpx  <u0038
-         bne   L0723
-         bsr   L0780
+         bne   L071A
+         bsr   L0777
          leax  >u01AF,u
          stx   <u0036
-         lbsr  L081F
-L0723    rts   
-L0724    tfr   a,b
+         lbsr  L080E
+L071A    rts   
+L071B    tfr   a,b
          lsra  
          lsra  
          lsra  
@@ -1002,77 +979,74 @@ L0724    tfr   a,b
          andb  #$0F
          addd  #$3030
          cmpa  #$39
-         bls   L0735
+         bls   L072C
          adda  #$07
-L0735    cmpb  #$39
-         bls   L073B
+L072C    cmpb  #$39
+         bls   L0732
          addb  #$07
-L073B    rts   
-L073C    lbsr  L026E
-         leax  >L0A3F,pcr
-         ldy   #$0019
+L0732    rts   
+L0733    lbsr  L026E
+         leax  >NumGood,pcr
+         ldy   #NumGoodLen
          lbsr  L0276
          ldb   <u0025
          clra  
          ldx   <u0034
          pshs  x,a
-L0751    lsrb  
-         bcs   L075C
+L0748    lsrb  
+         bcs   L0753
          lsl   $02,s
          rol   $01,s
          rol   ,s
-         bra   L0751
-L075C    puls  x,a
+         bra   L0748
+L0753    puls  x,a
          ldb   #$0D
          pshs  b
          tfr   d,y
          tfr   x,d
          tfr   b,a
-         bsr   L0724
+         bsr   L071B
          pshs  b,a
          tfr   x,d
-         bsr   L0724
+         bsr   L071B
          pshs  b,a
          tfr   y,d
-         bsr   L0724
+         bsr   L071B
          pshs  b,a
          tfr   s,x
          lbsr  L0272
          leas  $07,s
          rts   
-L0780    pshs  y
+L0777    pshs  y
          clra  
          ldb   #$01
          cmpd  <u0032
-         bne   L079B
+         bne   L0792
          leax  >u01AF,u
          clra  
          ldb   <u002D
          tfr   d,y
          clrb  
          os9   F$AllBit 
-         lbcs  L0672
-L079B    lbsr  L0835
+         lbcs  L0669
+L0792    lbsr  L0824
          leax  >u01AF,u
-         lbsr  L0827
+         bsr   L0816
          ldd   <u0022
          cmpd  <u002F
-         bcs   L07B7
-         bhi   L07B4
+         bcs   L07AD
+         bhi   L07AA
          ldb   <u0024
          cmpb  <u0031
-         bcc   L07B7
-L07B4    lbsr  L084B
-L07B7    ldd   <u0032
+         bcc   L07AD
+L07AA    lbsr  L083A
+L07AD    ldd   <u0032
          addd  #$0001
          std   <u0032
          puls  pc,y
-L07C0    ldd   #$0010
-         addd  <u0032
-         std   <u0032
-         bsr   L0835
+L07B6    bsr   L0824
          leax  >u02AF,u
-         bsr   L081F
+         bsr   L080E
          leax  >u02B2,u
          os9   F$Time   
          leax  >u02AF,u
@@ -1089,76 +1063,76 @@ L07C0    ldd   #$0010
          ldd   <u0032
          addd  #$0001
          std   <$11,x
-         bsr   L0827
-         bsr   L081B
+         bsr   L0816
+         bsr   L080A
          ldd   #$2EAE
          std   ,x
          stb   <$20,x
          ldd   <u0032
          std   <$1E,x
          std   <$3E,x
-         bsr   L0827
-         bsr   L081B
+         bsr   L0816
+         bsr   L080A
          ldb   <u002A
-L080F    decb  
-         bne   L0813
+L07FE    decb  
+         bne   L0802
          rts   
-L0813    pshs  b
-         bsr   L0827
+L0802    pshs  b
+         bsr   L0816
          puls  b
-         bra   L080F
-L081B    leax  >u00AF,u
-L081F    clra  
+         bra   L07FE
+L080A    leax  >u00AF,u
+L080E    clra  
          clrb  
-L0821    sta   d,x
+L0810    sta   d,x
          decb  
-         bne   L0821
+         bne   L0810
          rts   
-L0827    lda   <u0002
+L0816    lda   <u0002
          ldy   #$0100
          os9   I$Write  
          lbcs  L00BB
          rts   
-L0835    clra  
+L0824    clra  
          ldb   <u0032
          tfr   d,x
          lda   <u0033
          clrb  
          tfr   d,u
-L083F    lda   <u0002
+L082E    lda   <u0002
          os9   I$Seek   
          ldu   <u0000
          lbcs  L00BB
          rts   
-L084B    ldx   <u002F
+L083A    ldx   <u002F
          lda   <u0031
          clrb  
          addd  #$0100
          tfr   d,u
-         bcc   L083F
+         bcc   L082E
          leax  $01,x
-         bra   L083F
+         bra   L082E
          ldd   ,y
          leau  >u00AF,u
-         leax  >L08A3,pcr
+         leax  >L0892,pcr
          ldy   #$2F20
-L0869    leay  >$0100,y
+L0858    leay  >$0100,y
          subd  ,x
-         bcc   L0869
+         bcc   L0858
          addd  ,x++
          pshs  b,a
          ldd   ,x
          tfr   y,d
-         beq   L0891
+         beq   L0880
          ldy   #$2F30
          cmpd  #$3020
-         bne   L088B
+         bne   L087A
          ldy   #$2F20
          tfr   b,a
-L088B    sta   ,u+
+L087A    sta   ,u+
          puls  b,a
-         bra   L0869
-L0891    sta   ,u+
+         bra   L0858
+L0880    sta   ,u+
          lda   #$0D
          sta   ,u
          ldu   <u0000
@@ -1166,248 +1140,83 @@ L0891    sta   ,u+
          leax  >u00AF,u
          lbsr  L0272
          rts   
-L08A3    beq   L08B5
-         com   <u00E8
-         neg   <u0064
-         neg   <u000A
-         neg   <u0001
-         neg   <u0000
-L08AF    ldd   #$0000
-L08B2    bsr   L08C2
-         bcs   L08BC
-         bne   L08B2
+L0892    
+
+         fdb   $2710,$03e8,$0064,$000a,$0001,$0000
+         
+
+L089E    ldd   #$0000
+L08A1    bsr   L08B1
+         bcs   L08AB
+         bne   L08A1
          std   <u001D
-         bne   L08C1
-L08BC    ldd   #$0001
+         bne   L08B0
+L08AB    ldd   #$0001
          std   <u001D
-L08C1    rts   
-L08C2    pshs  y,b,a
+L08B0    rts   
+L08B1    pshs  y,b,a
          ldb   ,x+
          subb  #$30
          cmpb  #$0A
-         bcc   L08E0
+         bcc   L08CF
          lda   #$00
          ldy   #$000A
-L08D2    addd  ,s
-         bcs   L08DE
+L08C1    addd  ,s
+         bcs   L08CD
          leay  -$01,y
-         bne   L08D2
+         bne   L08C1
          std   ,s
          andcc #$FB
-L08DE    puls  pc,y,b,a
-L08E0    orcc  #$04
+L08CD    puls  pc,y,b,a
+L08CF    orcc  #$04
          puls  pc,y,b,a
-L08E4    lda   #$02
+L08D3    lda   #$02
          os9   F$PErr   
-         leax  <L0910,pcr
+         leax  <HelpMsg,pcr
          ldy   #$0154
          lda   #$02
          os9   I$WritLn 
          clrb  
          os9   F$Exit   
-L08F9    dec   <u0044
-         fcb   $52 R
-         fcb   $41 A
-         asra  
-         clra  
-         fcb   $4E N
-         bra   L0948
-         clra  
-         fcb   $52 R
-         tsta  
-         fcb   $41 A
-         lsrb  
-         bra   L095E
-         lsrb  
-         rola  
-         inca  
-         rola  
-         lsrb  
-         rolb  
-L090F    tst   <u0055
-         com   >$653A
-         bra   L095C
-         clra  
-         fcb   $52 R
-         tsta  
-         fcb   $41 A
-         lsrb  
-         bra   L094C
-         lsr   $05,s
-         ror   >$6E61
-         tst   $05,s
-         bra   L0962
-         clr   -$10,s
-         lsr   >$733E
-         dec   <u0020
-         bra   L099E
-         neg   >$7473
-         abx   
-         bra   L0987
-         bra   L0957
-         blt   L0959
-         fcb   $52 R
-         eim   #$61,$04,s
-         rol   >$0A20
-         bra   L0962
-         bra   L0964
-         bra   L0966
-         bra   L096A
-L0948    lsr   $09,s
-         com   >$6B20
-         jmp   $01,s
-         tst   $05,s
-         bhi   L095D
-         tst   <u0046
-         clr   -$0E,s
-L0957    tst   $01,s
-L0959    lsr   >$7469
-L095C    jmp   $07,s
-L095E    bra   L09C4
-         aim   #$69,>$7665
-L0964    bra   L09DF
-L0966    bra   L0990
-         rol   >$6573
-         bvs   L098D
-         clr   -$0E,s
-         bra   L09DF
-         bra   L099B
-         jmp   $0F,s
-         bvs   L0981
-         fcb   $52 R
-         eim   #$61,$04,s
-         rol   >$3F20
-         bra   L09C1
-         fcb   $42 B
-L0981    clra  
-         fcb   $52 R
-         lsrb  
-         bra   L09CF
-         jmp   -$0C,s
-         eim   #$72,$0C,s
-         eim   #$61,-$0A,s
-         eim   #$20,-$0A,s
-         oim   #$6C,-$0B,s
-         eim   #$20,$0F,s
-         eim   #$74,>$206F
-L099B    ror   $00,y
-         aim   #$61,>$6E67
-         eim   #u000D,$04,u
-         rol   -$0D,s
-         tim   #$20,$0E,s
-         oim   #$6D,$05,s
-         abx   
-         bra   L09F7
-         clr   -$09,s
-         bra   L0A20
-         oim   #$6E,-$07,s
-         bra   L09FB
-         rol   >$6C69
-         jmp   $04,s
-         eim   #$72,-$0D,s
-         bra   L09EA
-         lsrb  
-         aim   #$61,>$636B
-         com   >$3F29
-         bra   L0A06
-         bra   L0A10
-         oim   #$64,$00,y
-         com   >$7973
-         lsr   >$656D
-         bra   L0A4C
-         eim   #$63,-$0C,s
-         clr   -$0E,s
-         bge   L0A00
-L09E0    rora  
-         clra  
-         fcb   $52 R
-         tsta  
-         fcb   $41 A
-         lsrb  
-         bra   L0A29
-         fcb   $42 B
-         clra  
-L09EA    fcb   $52 R
-         lsrb  
-         fcb   $45 E
-         lsra  
-         tst   <u0043
-         inc   -$0B,s
-         com   >$7465
-         aim   #$20,>$7369
-         dec   >$6520
-         tst   $09,s
-         com   >$6D61
-         lsr   >$6368
-         tst   <u0044
-L0A06    clr   -$0B,s
-         aim   #$6C,$05,s
-         bra   L0A71
-         eim   #$6E,-$0D,s
-L0A10    rol   -$0C,s
-         rol   >$3F20
-         coma  
-         lsl   $01,s
-         jmp   $07,s
-         eim   #$20,$06,s
-         aim   #$6F,>$6D20
-         rts   
-         pshu  u,y,x,b
-         neg   >$6920
-         lsr   >$6F20
-         pshs  y,x,dp
-         lsr   >$7069
-         swi   
-         fcb   $20 
-         lsra  
-         clr   -$0B,s
-         aim   #$6C,$05,s
-         bra   L0AAC
-         rol   $04,s
-         eim   #$64,-$01,y
-         bra   L0A8E
-         eim   #$6D,>$6265
-         aim   #$20,>$6F66
-         bra   L0AB1
-         clr   $0F,s
-L0A4C    lsr   $00,y
-         com   >$6563
-         lsr   >$6F72
-         com   >$3A20
-         bcc   L0A9B
-         clr   -$0C,s
-         lsl   $00,y
-         negb  
-         lsla  
-         rolb  
-         comb  
-         rola  
-         coma  
-         fcb   $41 A
-         inca  
-         bra   L0AC8
-         jmp   $04,s
-         bra   L0AB7
-         clra  
-         asra  
-         rola  
-         coma  
-         fcb   $41 A
-         inca  
-L0A71    bra   L0AD9
-         clr   -$0E,s
-         tst   $01,s
-         lsr   >$3F20
-L0A7A    negb  
-         lsl   -$07,s
-         com   >$6963
-         oim   #$6C,$00,y
-         rorb  
-         eim   #$72,$09,s
-         ror   -$07,s
-         bra   L0AEF
-         eim   #$73,$09,s
-L0A8E    aim   #$65,>$643F
-         fcb   $20 
+Title    fcb   C$LF
+         fcc   "COLOR COMPUTER FORMATTER"
+HelpCR   fcb   C$CR
+
+HelpMsg  fcc   "Use: FORMAT /devname <opts>"
+         fcb   C$LF
+         fcc   "  opts: R  - Ready"
+         fcb   C$LF
+         fcc   /        "disk name"/
+         fcb   C$LF,C$CR
+
+FmtMsg   fcc   "Formatting drive "
+FmtMLen  equ   *-FmtMsg
+
+Query    fcc   "y (yes) or n (no)"
+         fcb   C$LF
+         fcc   "Ready?  "
+QueryLen equ   *-Query
+Abort    fcc   "ABORT Interleave value out of range"
+         fcb   C$CR
+DName    fcc   "Disk name: "
+DNameLen equ   *-DName
+         fcc   "How many Cylinders (Tracks?) : "
+BadSect  fcc   "Bad system sector, "
+Aborted   fcc   "FORMAT ABORTED"
+         fcb   C$CR
+ClustMsg fcc   "Cluster size mismatch"
+         fcb   C$CR
+         fcc   "Double density? "
+TPIChg   fcc   "Change from 96tpi to 48tpi? "
+DSided   fcc   "Double sided? "
+NumGood  fcc   "Number of good sectors: $"
+NumGoodLen equ *-NumGood
+Both     fcc   "Both PHYSICAL and LOGICAL format? "
+BothLen  equ   *-Both
+Verify   fcc   "Physical Verify desired? "
+VerifyLen equ  *-Verify
+
          emod
 eom      equ   *
+         end
+
