@@ -1,6 +1,6 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 DISK		= mm.dsk
 CMDS		= mm mod1.dat mod2.dat mod3.dat mod4.dat mod5.dat \

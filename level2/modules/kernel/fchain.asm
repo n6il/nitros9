@@ -222,7 +222,7 @@ L04D7    stu    2,s         save pointer to module
          beq    L04FB       yes, go
          cmpa   #Systm+Objct system module?
          beq    L04FB
-         IFNE   NitrOS9
+         IFNE   H6309
 *--- these lines added to allow 6309 native mode modules to be executed
          cmpa   #Prgrm+Obj6309 regular module?
          beq    L04FB       yes, go

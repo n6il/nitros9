@@ -1,6 +1,6 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 DISK		= kyumgai.dsk
 CMDS		= ninja ninja.snd1 ninja.snd2

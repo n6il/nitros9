@@ -1,13 +1,11 @@
-# Makefile for OS-9 Level Two BOOTLISTS/
-
-include ../../Makefile.rules
+include ../../rules.mak
 
 # Module directory
 MD		= ../MODULES
 # Commands directory
 CD		= ../CMDS
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 KERNEL_STOCK	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/os9p1
 

@@ -47,35 +47,38 @@ name     fcs   /SysGo/
 DefPrior set   128         
 
 Banner   equ   *
-         IFNE  NitrOS9
-         fcc   /Nitr/
+         fcc   "NitrOS-9/"
+         IFNE  H6309
+         fcc   /6309 /
+         ELSE
+         fcc   /6809 /
          ENDC
-         fcc   /OS-9 Level /
+         fcc   /Level /
          IFEQ  Level-3
-         fcc   /Three/
+         fcc   /3/
          ENDC
          IFEQ  Level-2
-         fcc   /Two/
+         fcc   /2/
          ENDC
          IFEQ  Level-1
-         fcc   /One/
+         fcc   /1/
          ENDC
-         fcc   / Vr. 0/
-         fcb   48+OS9Vrsn
+         fcc   / V0/
+         fcb   48+NOS9Vrsn
          fcc   /.0/
-         fcb   48+OS9Major
+         fcb   48+NOS9Major
          fcc   /.0/
-         fcb   48+OS9Minor
+         fcb   48+NOS9Minor
          fcb   C$CR,C$LF
 * For ROM version, cut down on verbage
          IFEQ  ROM
-         fcc   "Release Date: 09/01/2003"
+         fcc   "Release Date: 10/01/2003"
          fcb   C$CR,C$LF
          fcc   /"A CoCo Community Project"/
          fcb   C$CR,C$LF
          fcc   /Visit us on the web:/
          fcb   C$CR,C$LF
-         fcc   !http://cocoos9.sourceforge.net/!
+         fcc   !http://www.nitros9.org/!
          fcb   C$CR,C$LF
          ENDC
          fcb   C$LF

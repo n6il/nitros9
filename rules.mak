@@ -56,9 +56,9 @@ ARCHIVE		= zip -D
 
 # Directories
 3RDPARTY	= $(BASEDIR)/3rdparty
-LEVEL1		= $(BASEDIR)/level1
-LEVEL2		= $(BASEDIR)/level2
-NLEVEL2		= $(BASEDIR)/nlevel2
+6809L1		= $(BASEDIR)/6809l1
+6809L2		= $(BASEDIR)/6809l2
+6309L2		= $(BASEDIR)/6309l2
 C9		= $(BASEDIR)/cloud9
 
 # File managers

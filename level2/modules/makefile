@@ -1,8 +1,6 @@
-# Makefile for OS-9 Level Two MODULES/
+include ../../rules.mak
 
-include ../../Makefile.rules
-
-vpath %.asm KERNEL:$(LEVEL1)/MODULES
+vpath %.asm kernel:$(6809L1)/modules
 
 CLOCKELIM       = -aRTCElim=1 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
 CLOCKDISTO2     = -aRTCElim=0 -aRTCDsto2=1 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
@@ -13,7 +11,7 @@ CLOCKHARRIS     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -
 CLOCKTC3        = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=1 -aRTCSoft=0 -aMPIFlag=0
 CLOCKSOFT       = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=1 -aMPIFlag=0
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 TPB		= ../../3rdparty/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
@@ -66,8 +64,8 @@ all:	$(ALLOBJS)
 
 # Kernel
 os9p1 os9p2:
-	$(CD) KERNEL; make $@
-	$(CP) KERNEL/$@ .
+	$(CD) kernel; make $@
+	$(CP) kernel/$@ .
 
 # Special cases
 rel_32: rel.asm
@@ -85,7 +83,7 @@ boot_1773_6ms: boot_1773.asm
 boot_1773_30ms: boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSTEP=3
 
-cc3hdisk.dr: $(LEVEL1)/MODULES/cchdisk.asm
+cc3hdisk.dr: $(6809L1)/modules/cchdisk.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 
 sysgo_dd: sysgo.asm
@@ -211,7 +209,7 @@ clock2_soft: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
 
 clean:
-	$(CD) KERNEL; make $@
+	$(CD) kernel; make $@
 	$(RM) $(ALLOBJS)
 
 showobjs:

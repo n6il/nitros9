@@ -1,8 +1,8 @@
 # Curtis Boyle's IDE Driver
 
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 DRVRS		= ccide_l1.dr ccide_l2.dr
 DESCS		= h0_ide_l1.dd h0_ide_l2.dd h1_ide_l1.dd h1_ide_l2.dd dd_ide_l1.dd dd_ide_l2.dd
 ALLOBJS		= $(DRVRS) $(DESCS)

@@ -1,4 +1,4 @@
-include ../../Makefile.rules
+include ../../rules.mak
 
 dirs	= msf
 

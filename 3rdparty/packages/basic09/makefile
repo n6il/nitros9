@@ -1,4 +1,4 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
 DISK	= basic09v010100.dsk
 
@@ -7,7 +7,7 @@ H6309		= $(AFLAGS) -aH6309=1 -e
 # Non-NitrOS-9
 M6809		= $(AFLAGS)
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 TXTFILES	= ReadMe install6809 install6309
 OBJS		= gfx gfx2 inkey syscall

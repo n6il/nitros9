@@ -1,4 +1,4 @@
-include ../../Makefile.rules
+include ../../rules.mak
 
 dirs	= burke disto emudsk flash flashpak ide s16550 sdisk sdisk3 tccc
 

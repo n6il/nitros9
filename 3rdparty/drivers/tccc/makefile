@@ -1,6 +1,6 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 DRVRS		= tccchd.dr
 DESCS           = h4.dd
 ALLOBJS		= $(DRVRS) $(DESCS)

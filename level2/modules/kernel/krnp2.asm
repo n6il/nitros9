@@ -373,7 +373,7 @@ IOMan    fcs    /IOMan/
 
          use    fid.asm
 
-         IFEQ   NitrOS9
+         IFEQ   H6309
          use    fcpymem.asm
 
          use    fdelram.asm

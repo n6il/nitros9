@@ -1,10 +1,8 @@
-# Makefile for OS-9 Level Two CMDS/
+include ../../rules.mak
 
-include ../../Makefile.rules
+vpath %.asm $(6809L1)/cmds:$(3RDPARTY)/packages/basic09
 
-vpath %.asm $(LEVEL1)/CMDS:$(3RDPARTY)/packages/basic09
-
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirm disasm \

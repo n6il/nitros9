@@ -1,6 +1,6 @@
-include ../../../../Makefile.rules
+include ../../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 SYSFILES	= env.file
 HELPFILES	= cocopr.hp control.hp gcal.hp gcalc.hp gclock.hp gport.hp \

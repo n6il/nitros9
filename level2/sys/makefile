@@ -1,10 +1,8 @@
-# Makefile for OS-9 Level Two SYS/
+include ../../rules.mak
 
-include ../../Makefile.rules
+vpath %.hp $(6809L1)/sys
 
-vpath %.hp $(LEVEL1)/SYS
-
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 L1TXTFILES	= errmsg password
 L2TXTFILES	= motd
@@ -45,8 +43,8 @@ all:	$(ALLOBJS) $(DEPENDS)
 $(HELPMSG): $(HELPFILES)
 	$(MERGE) $^ > $@
 
-$(L1TXTFILES): $(LEVEL1)/SYS/$@
-	-$(SOFTLINK) $(LEVEL1)/SYS/$@
+$(L1TXTFILES): $(6809L1)/sys/$@
+	-$(SOFTLINK) $(6809L1)/sys/$@
 
 clean:
 	$(RM) $(HELPMSG) $(L1TXTFILES)

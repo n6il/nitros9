@@ -1,9 +1,9 @@
 # MSF file manager
 #
 
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 FMGRS		= msf_6309.mn msf_6809.mn
 DESCS		= m0_40d.dd

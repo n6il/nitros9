@@ -58,24 +58,17 @@ OS9DEFS  set   1
 
          nam   OS9Defs
          IFEQ  Level-1
-         ttl   OS-9 Level One System Symbol Definitions
+         ttl   NitrOS-9 Level 1 System Symbol Definitions
          ENDC
          IFEQ  Level-2
-         IFNE  NitrOS9
-         ttl   NitrOS-9 Level Two System Symbol Definitions
+         ttl   NitrOS-9 Level 2 System Symbol Definitions
          ELSE
-         ttl   OS-9 Level Two System Symbol Definitions
-         ENDC
+         ttl   NitrOS-9 Level 3 System Symbol Definitions
          ENDC
 
 * Common definitions
 true     equ   1          useful name
 false    equ   0          useful name
-
-         IFNE  NitrOS9
-H6309    set   true
-         ENDC
-
 
          pag
 *****************************************
@@ -319,7 +312,7 @@ SS.AScrn rmb   1          Allocate a screen for application poking
 SS.DScrn rmb   1          Display a screen allocated by SS.AScrn
 SS.FScrn rmb   1          Free a screen allocated by SS.AScrn
 SS.PScrn rmb   1          Polymorph Screen into different screen type
-SS.ScInf rmb   1          Get Current screen info for direct writes (new call - NitrOS9)
+SS.ScInf rmb   1          Get Current screen info for direct writes
          rmb   1          Reserved
 SS.Palet rmb   1          Return palette information
 SS.Montr rmb   1          Get and Set Monitor Type
@@ -339,7 +332,7 @@ SS.CDRel equ   SS.FndBf   XACIA
 
          org   $A0
 *
-* New Default SCF input buffer Set status call (NitrOS9)
+* New Default SCF input buffer Set status call
 SS.Fill  rmb   1          Pre-load SCF device input buffer
 SS.Hist  rmb   1          Enable command-line history easily
 
@@ -489,9 +482,7 @@ D.TkCnt  rmb   1          Tick Counter
 D.BtPtr  rmb   2          Address of Boot in System Address space
 D.BtSz   rmb   2          Size of Boot
 
-         IFNE  NitrOS9
-* NitrOS9 additions
-* 58d begins here
+         IFNE  H6309
 D.MDREG  rmb   1          6309 MD (mode) shadow register
          ELSE
          rmb   1          Currently unused in OS-9 Level Two
@@ -499,14 +490,10 @@ D.MDREG  rmb   1          6309 MD (mode) shadow register
 
 D.CRC    rmb   1          CRC checking mode flag
 
-* Commented out -- to be part of OS-9 Level Two as well
-*         IFNE  NitrOS9
-* NitrOS9 additions
 D.Tenths rmb   1          Tenths and hundredths of second for F$Xtime
 D.Task1N rmb   1          Map type 1 task number*2 - offset into [D.TskIPt]
 D.Quick  rmb   1          Quick system call return flag - 0 =stack is at $FEE1
 D.QIRQ   rmb   1          Quick IRQ flag - 0 =IRQ wasn't clock, so quick return
-*         ENDC
 
          org   $40
 D.BlkMap rmb   4          Memory Block Map ptr
@@ -1019,7 +1006,7 @@ R$Size   equ   12         Total register package size
          ENDC
 
 * MD register masks
-* 6309 definitions - NitrOS9
+* 6309 definitions
 DIV0     equ   %10000000  division by 0 trap flag       : 1 = trap occured
 badinstr equ   %01000000  illegal instruction trap flag : 1 = trap occured
 
@@ -1134,11 +1121,9 @@ E$BadBuf rmb   1          Bad/Undefined buffer number
 E$IWDef  rmb   1          Illegal window definition
 E$WUndef rmb   1          Window undefined
 
-         IFNE  NitrOS9
 E$Up     rmb   1          Up arrow pressed on SCF I$ReadLn with PD.UP enabled
 E$Dn     rmb   1          Down arrow pressed on SCF I$ReadLn with PD.DOWN enabled
 E$Alias  rmb   1
-         ENDC
 
 
 *

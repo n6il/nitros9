@@ -1,10 +1,8 @@
-# Makefile for OS-9 Level One CMDS/
-
-include ../../Makefile.rules
+include ../../rules.mak
 
 vpath %.asm $(3RDPARTY)/packages/basic09
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 BASIC09FILES	= runb.asm gfx.asm inkey.asm syscall.asm
 COCOCMDS	= asm attr backup binex build cmp cobbler config copy cputype \

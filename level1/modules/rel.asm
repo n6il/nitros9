@@ -198,10 +198,7 @@ L00FD    lda   ,u+
 L0011    fdb   ScStart+(11*Width)+((Width-L1)/2)
          fcb   L1         length of the text below
 T1       equ   *
-         IFNE  NitrOS9
-         fcc   /NITR/
-         ENDC
-         fcc   /OS9 BOOT/
+         fcc   /NITROS9 BOOT/
 L1       equ   *-T1
 
          fdb   ScStart+(13*Width)+((Width-LFail)/2)

@@ -1,10 +1,10 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 DISK		= fsim2.dsk
 CMDS		= fs f2 f3 f4
-MD		= $(LEVEL2)/MODULES
+MD		= $(6809L2)/MODULES
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/os9p1
@@ -29,14 +29,14 @@ clean:	dskclean
 
 dsk:	all
 	$(RM) $(DISK)
-	$(CD) $(LEVEL2); make
+	$(CD) $(6809L2); make
 	$(OS9FORMAT_SS35) $(DISK) -n"Flight Simulator 2"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK) -b=os9boot -t=kernel_1773
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $(DISK),CMDS
-	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK),CMDS/shell
+	$(CP) $(6809L2)/CMDS/shell_21 $(DISK),CMDS/shell
 	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)

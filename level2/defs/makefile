@@ -1,8 +1,6 @@
-# Makefile for OS-9 Level Two DEFS/
+include ../../rules.mak
 
-include ../../Makefile.rules
-
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 
 DEFOPTS		= -ls -x -z -aLevel=2
 DEFSDIR		= $(BASEDIR)/defs

@@ -1,9 +1,9 @@
-include ../../../Makefile.rules
+include ../../../rules.mak
 
 L1 = $(AFLAGS) -aLevel=1
 L2 = $(AFLAGS) -aLevel=2
 
-DEPENDS		= ./Makefile
+DEPENDS		= ./makefile
 DRVRS		= flashpak.dr
 DESCS           = f0_l1.dd f0_l2.dd
 ALLOBJS		= $(DRVRS) $(DESCS)

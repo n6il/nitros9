@@ -1,24 +1,22 @@
-# Makefile for OS-9 Level One
+include ../rules.mak
 
-include ../Makefile.rules
-
-RELEASE		= os9l1v030105
+RELEASE		= nos96809l1v030200
 BOOTFILE	= BOOTFILES/bootfile_stock
 KERNELFILE	= BOOTFILES/kernel_stock
-DIRS		= CMDS MODULES DEFS SYS BOOTFILES
+DIRS		= cmds modules defs sys bootfiles
 
-CMDS		= $(shell $(CD) CMDS; make showcocoobjs)
-BOOTTRACK	= $(shell $(CD) MODULES; make showboottrack)
-KERNEL		= $(shell $(CD) MODULES; make showkernel)
-SYSMODS		= $(shell $(CD) MODULES; make showsysmods)
-CLOCKS		= $(shell $(CD) MODULES; make showclocks)
-RBF		= $(shell $(CD) MODULES; make showrbf)
-SCF		= $(shell $(CD) MODULES; make showscf)
-PIPE		= $(shell $(CD) MODULES; make showpipe)
+CMDS		= $(shell $(CD) cmds; make showcocoobjs)
+BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
+KERNEL		= $(shell $(CD) modules; make showkernel)
+SYSMODS		= $(shell $(CD) modules; make showsysmods)
+CLOCKS		= $(shell $(CD) modules; make showclocks)
+RBF		= $(shell $(CD) modules; make showrbf)
+SCF		= $(shell $(CD) modules; make showscf)
+PIPE		= $(shell $(CD) modules; make showpipe)
 MODULECMDS	= shell del echo format makdir merge os9gen prompt
 
-SYS		= $(shell $(CD) SYS; make showobjs)
-DEFS		= $(shell $(CD) DEFS; make showobjs)
+SYS		= $(shell $(CD) sys; make showobjs)
+DEFS		= $(shell $(CD) defs; make showobjs)
 ROOTFILES	= startup
 
 PACKAGENAME	= $(RELEASE).zip
@@ -28,11 +26,11 @@ DSK2		= $(RELEASE)_ds40_2.dsk
 
 # Make all components
 all:
-	@$(ECHO) "*********************************************"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*        OS-9 Level One Distribution        *"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*********************************************"
+	@$(ECHO) "**************************************************"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "*        NitrOS-9/6809 Level 1 Distribution      *"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "**************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
 
 # Clean all components
@@ -52,51 +50,51 @@ $(PACKAGENAME): $(DSK1) $(DSK2) ReadMe ChangeLog
 
 $(DSK1):
 	$(RM) $@
-	$(OS9FORMAT_DS40) $@ -n"OS-9 Level One System Disk"
+	$(OS9FORMAT_DS40) $@ -n"NitrOS-9/6809 Level 1 System Disk"
 	$(OS9GEN) $@ -b=$(BOOTFILE) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
-	$(CD) CMDS; $(CP) $(CMDS) ../$@,CMDS
+	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
-	$(CD) SYS; $(CPL) $(SYS) ../$@,SYS
+	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(MAKDIR) $@,DEFS
-	$(CD) DEFS; $(CPL) $(DEFS) ../$@,DEFS
+	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(ROOTFILES) $@,.
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
 $(DSK2):
 	$(RM) $@
-	$(OS9FORMAT_DS40) $@ -n"OS-9 Level One Modules Disk"
-	$(MAKDIR) $@,LEVEL1
-	$(MAKDIR) $@,LEVEL1/CMDS
-	$(CD) CMDS; $(CP) $(MODULECMDS) ../$@,LEVEL1/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,LEVEL1/CMDS/$(file);)
-	$(MAKDIR) $@,LEVEL1/MODULES
-	$(MAKDIR) $@,LEVEL1/MODULES/BOOTTRACK
-	$(CD) MODULES; $(CP) $(BOOTTRACK) ../$@,LEVEL1/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,LEVEL1/MODULES/BOOTTRACK/$(file);)
-	$(MAKDIR) $@,LEVEL1/MODULES/KERNEL
-	$(CD) MODULES; $(CP) $(KERNEL) ../$@,LEVEL1/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,LEVEL1/MODULES/KERNEL/$(file);)
-	$(MAKDIR) $@,LEVEL1/MODULES/SYSMODS
-	$(CD) MODULES; $(CP) $(SYSMODS) ../$@,LEVEL1/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,LEVEL1/MODULES/SYSMODS/$(file);)
-	$(MAKDIR) $@,LEVEL1/MODULES/CLOCKS
-	$(CD) MODULES; $(CP) $(CLOCKS) ../$@,LEVEL1/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,LEVEL1/MODULES/CLOCKS/$(file);)
-	$(MAKDIR) $@,LEVEL1/MODULES/RBF
-	$(CD) MODULES; $(CP) $(RBF) ../$@,LEVEL1/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,LEVEL1/MODULES/RBF/$(file);)
-	$(MAKDIR) $@,LEVEL1/MODULES/SCF
-	$(CD) MODULES; $(CP) $(SCF) ../$@,LEVEL1/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,LEVEL1/MODULES/SCF/$(file);)
-	$(MAKDIR) $@,LEVEL1/MODULES/PIPE
-	$(CD) MODULES; $(CP) $(PIPE) ../$@,LEVEL1/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,LEVEL1/MODULES/PIPE/$(file);)
-	$(MAKDIR) $@,LEVEL1/BOOTLISTS
-	$(CD) BOOTLISTS; $(CPL) *.bl ../$@,LEVEL1/BOOTLISTS
-	$(MAKDIR) $@,LEVEL1/BOOTSCRIPTS
-	$(CD) BOOTSCRIPTS; $(CPL) mb* ../$@,LEVEL1/BOOTSCRIPTS
+	$(OS9FORMAT_DS40) $@ -n"NitrOS-9/6809 Level 1 Modules Disk"
+	$(MAKDIR) $@,6809L1
+	$(MAKDIR) $@,6809L1/CMDS
+	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,6809L1/CMDS
+	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,6809L1/CMDS/$(file);)
+	$(MAKDIR) $@,6809L1/MODULES
+	$(MAKDIR) $@,6809L1/MODULES/BOOTTRACK
+	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,6809L1/MODULES/BOOTTRACK
+	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,6809L1/MODULES/BOOTTRACK/$(file);)
+	$(MAKDIR) $@,6809L1/MODULES/KERNEL
+	$(CD) modules; $(CP) $(KERNEL) ../$@,6809L1/MODULES/KERNEL
+	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,6809L1/MODULES/KERNEL/$(file);)
+	$(MAKDIR) $@,6809L1/MODULES/SYSMODS
+	$(CD) modules; $(CP) $(SYSMODS) ../$@,6809L1/MODULES/SYSMODS
+	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,6809L1/MODULES/SYSMODS/$(file);)
+	$(MAKDIR) $@,6809L1/MODULES/CLOCKS
+	$(CD) modules; $(CP) $(CLOCKS) ../$@,6809L1/MODULES/CLOCKS
+	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,6809L1/MODULES/CLOCKS/$(file);)
+	$(MAKDIR) $@,6809L1/MODULES/RBF
+	$(CD) modules; $(CP) $(RBF) ../$@,6809L1/MODULES/RBF
+	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,6809L1/MODULES/RBF/$(file);)
+	$(MAKDIR) $@,6809L1/MODULES/SCF
+	$(CD) modules; $(CP) $(SCF) ../$@,6809L1/MODULES/SCF
+	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,6809L1/MODULES/SCF/$(file);)
+	$(MAKDIR) $@,6809L1/MODULES/PIPE
+	$(CD) modules; $(CP) $(PIPE) ../$@,6809L1/MODULES/PIPE
+	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,6809L1/MODULES/PIPE/$(file);)
+	$(MAKDIR) $@,6809L1/BOOTLISTS
+	$(CD) bootlists; $(CPL) *.bl ../$@,6809L1/BOOTLISTS
+	$(MAKDIR) $@,6809L1/BOOTSCRIPTS
+	$(CD) bootscripts; $(CPL) mb* ../$@,6809L1/BOOTSCRIPTS
 
