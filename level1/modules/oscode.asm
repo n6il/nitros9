@@ -7,7 +7,9 @@
 * ------------------------------------------------------------------
 *        Tandy/Microware original version
 
+         ifp1
          use   defsfile
+         endc
 
 * Initial code executed upon booting up to OS-9
          org   $2600
