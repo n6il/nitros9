@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 1      Acquired from Robert Gault                     BGP 02/10/19
+*   1      2002/10/10  Boisy G. Pitre
+* Acquired from Robert Gault.
 
          nam   Boot     
          ttl   CoCo Emulator Virtual Hard Disk Booter
