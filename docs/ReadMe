@@ -1,0 +1,33 @@
+Welcome to the OS-9 documentation effort. The motivation behind scanning
+and reissuing the documentation is that without documentation no new
+users will discover OS-9. This little operating system is more than 20
+years old, and we want it to be here for at least another 20 years.
+
+We have therefore tried to find the most durable and rich format
+for documents possible. DocBook is more than 10 years old. Older than
+MS-Word. It began in 1991 as a joint project of HaL Computer Systems and
+O'Reilly. It will very likely be around in 2020 also.  If it isn't it is
+a text-based format, so it is possible to reverse-engineer and convert
+the format.
+
+To create HTML, PDF or PostScript you must have these RPMs installed on
+your RedHat system:
+
+docbook-dtd41-sgml
+sgml-common
+docbook-utils
+docbook-utils-pdf
+tetex-dvips
+tetex
+jadetex
+
+DOCBOOK REFERENCES:
+
+  The Duck book
+    http://www.docbook.org/
+
+  The KDE DocBook Authors guide
+    http://i18n.kde.org/doc/markup/
+
+  The Crash Course to Docbook
+    http://www.caldera.de/~eric/crash-course/HTML/index.html
