@@ -1,0 +1,51 @@
+<refentry id="iniz">
+<refnamediv>
+<refname>INIZ</refname>
+<refpurpose>Initialize a device.</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>INIZ</command>
+<arg choice="opt">
+  <option>devicename [...]</option>
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+
+<para>
+Links the specified device to OS-9, places the device addres in a new device
+table entry, allocates the memory needed by the device driver, and calls
+the device driver initialization routine.  If the device is already
+installed, INIZ does not reinitialize it.
+</para>
+<para>
+Options:
+</para>
+<para>
+	devicename	is the name of the device drivere you want to
+			initialize.  Specify as many device drivers as you
+			wish with one INIZ command.
+</para>
+<para>
+Notes:
+</para>
+<para>
+You can use Iniz in the startup file or at the system startup to initialize
+devices and allocate their static storage at the top of memory (to reduce
+memory fragmentation).
+</para>
+<para>
+Example:
+</para>
+<screen>
+	INIZ P T2 [ENTER]
+</screen>
+<para>
+initializes the P (printer) and T2 (terminal 2) devices.
+</para>
+</refsect1>
+</refentry>
+
