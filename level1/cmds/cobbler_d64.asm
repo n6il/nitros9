@@ -6,6 +6,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   5    From Dragon OS-9 Level One VR 01.02.00
+*   6    New cobbler saves from address $EF00 instead of $F000
 
          nam   Cobbler
          ttl   Make a bootstrap file
@@ -19,7 +20,9 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   5
+edition  set   6
+os9start equ  $EF00
+os9size  equ  $0F80
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -172,8 +175,8 @@ L017B    lda   #WRITE.
          anda  #$90
          eora  #$90
          bne   NotAllo
-         ldx   #$F000    Address of kernel in RAM
-         ldy   #$0F00    Amount to write
+         ldx   #os9start    Address of kernel in RAM
+         ldy   #os9size     Amount to write
          lda   <DevFd
          os9   I$Write  
          bcs   ETrack

@@ -20,6 +20,8 @@ tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   5
+os9start equ  $EF00
+os9size  equ  $0F80
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -231,8 +233,8 @@ L028C    bsr   SkLSN1
          ldu   #$6400
          os9   I$Seek   Jump to LSN 612
          puls  u
-         ldx   #$EF00    Address of kernel in RAM
-         ldy   #$0F80    Amount to write
+         ldx   #os9start    Address of kernel in RAM
+         ldy   #os9size    Amount to write
          os9   I$Write  
          bcs   ETrack
          os9   I$Close  
