@@ -16,7 +16,10 @@
 *
 *          2003/09/04  Boisy G. Pitre
 * Back-ported to OS-9 Level One.
-
+*
+*   5r3    2003/12/14  Boisy G. Pitre
+* Added SHIFT key check to prevent startup/autoex from starting if
+* held down.  Gene Heskett, this Bud's for you.
 
          nam   SysGo
          ttl   Kickstart program module
@@ -28,7 +31,7 @@
 
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
-rev      set   $02
+rev      set   $03
 edition  set   $05
 
          mod   eom,name,tylg,atrv,start,size
@@ -202,7 +205,14 @@ L0151    lda   b,y
 
          IFEQ  ROM
 * Fork shell startup here
-         leax  >Shell,pcr
+* Added 12/14/03: If SHIFT is held down, startup is not run
+         clra
+         ldb   #SS.KySns
+         os9   I$GetStt
+         bcs   DoStartup
+         bita  #SHIFTBIT		SHIFT key down?
+         bne   L0186			Yes, don't to startup or autoex
+DoStartup leax  >Shell,pcr
          leau  >Startup,pcr
          ldd   #256
          ldy   #StartupL
