@@ -12,7 +12,6 @@
          nam   ibmedcfont
          ttl   IBM EDC Font Set
 
-
          org   0
 
 start    fcb   $1B,$2B
