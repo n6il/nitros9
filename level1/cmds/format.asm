@@ -15,7 +15,7 @@
 * at the summary if the number of sectors was a large number.
 * This was most notable when formatting large disks, such as hard drives.
 *
-*  24      2004/07/20  Boisy G. pitre
+*  24      2004/07/20  Boisy G. Pitre
 * Revamped to display summary similar to OS-9/68K. Also, format now
 * checks the TYPH.DSQ bit in order to query the drive for its size.
 * Also, if a cluster size is not specified on the command line,

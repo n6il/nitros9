@@ -1,5 +1,8 @@
 NitrOS-9/6309 Level 2 V03.02.03:
-- format has been revamped to work similar to OS-9/68K's format.
+- swread and swset have been added as command line utilities for SmartWatch
+  support, as the clock2 SmartWatch module does not work.
+- format has been enhanced to show more information about the disk being
+  formatted.
 - dirm has been removed from the commands list.
 - exmode has been renamed to xmode and replaces the original xmode command.
 - disasm has a new -s option which is used to specify the start and end
