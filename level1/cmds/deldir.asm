@@ -6,6 +6,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   3    From Tandy OS-9 Level Two VR 02.00.01
+*   4    Updated to add -e instead of e to dir          BGP 03/01/14
 
          nam   Deldir
          ttl   Delete a directory
@@ -19,7 +20,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   3
+edition  set   4
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -123,15 +124,17 @@ Prompt   fcb   C$LF
          fcc   "Deleting directory file. "
          fcb   C$LF
          fcc   "List directory, delete directory, or quit ? (l/d/q) "
+PromptL  equ   *-Prompt
 Cont     fcb   C$LF
          fcc   "Continue? (y/n) "
+ContL    equ   *-Cont
 
 PromptUser
          tstb  
          bne   L013E
          lda   #$01
          leax  <Prompt,pcr
-         ldy   #79
+         ldy   #PromptL
          os9   I$WritLn 
 L011B    bcs   L013E
          bsr   ReadKey
@@ -144,7 +147,7 @@ L011B    bcs   L013E
 L012A    bsr   L0145
 L012C    bcs   L013E
          leax  <Cont,pcr
-         ldy   #$0011
+         ldy   #ContL
          lda   #$01
          os9   I$WritLn 
          bcs   L013E
@@ -152,7 +155,7 @@ L012C    bcs   L013E
 L013E    rts   
 DIR      fcc   "DIR"
          fcb   C$CR
-DIROPTS  fcc   "E "
+DIROPTS  fcc   "-E "
 L0145    pshs  u
          leau  <buffer,u
          pshs  u
@@ -180,7 +183,7 @@ L0178    rts
 
 ReadKey  leax  <buffer,u
          ldy   #80
-         lda   #$00
+         clra
          os9   I$ReadLn 
          bcs   L01B8
 L0187    lda   ,x+
