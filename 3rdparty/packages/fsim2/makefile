@@ -7,10 +7,10 @@ CMDS		= fs f2 f3 f4
 MD		= $(6809L2)/modules
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/kernel
-OS9BOOT		= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
+OS9BOOT		= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/cc3disk.dr $(MD)/ddd0_40d.dd \
+		$(MD)/rb1773.dr $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/vdgint_small.io $(MD)/term_vdg.dt \
