@@ -1,4 +1,5 @@
 OS-9 Level One V03.01.02:
+- A bug in the help utility has been fixed.
 - The MODULES directory structure has been enhanced to include
   multiple subdirectories for better module organization.
 - Booter modules for Burke & Burke, Disto RAMPak, Eliminator and
