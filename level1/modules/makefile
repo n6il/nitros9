@@ -15,7 +15,7 @@ TPB		= $(3RDPARTY)/booters
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		boot_burke boot_idelba boot_rampak boot_wd1002
 BOOTTRACK	= rel $(BOOTERS)
-KERNEL		= os9 os9p2
+KERNEL		= kernel kernelp2
 SYSMODS		= ioman init sysgo_dd sysgo_h0
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \

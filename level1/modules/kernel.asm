@@ -1,5 +1,5 @@
 ********************************************************************
-* OS9p1 - OS-9 Level One V2 P1 module
+* Kernel - NitrOS-9 Level 1 Kernel
 *
 * $Id$
 *
@@ -45,8 +45,8 @@
 * CRC checking.  Speeds up module loads quite a bit. The Init module
 * has a bit in a compatibility byte that can turn on/off CRC checking
 
-         nam   OS9
-         ttl   OS-9 Level One V2 P1 module
+         nam   Kernel
+         ttl   NitrOS-9 Level 1 Kernel
 
          ifp1
          use   defsfile
@@ -62,14 +62,14 @@ L0000    mod   eom,name,tylg,atrv,OS9Cold,size
 
 size     equ   .
 
-name     fcs   /OS9/
+name     fcs   /Kernel/
          fcb   edition
 
          fcc   /CC/
 
-InitNam  fcs   /INIT/
+InitNam  fcs   /init/
 
-P2Nam    fcs   /OS9P2/
+P2Nam    fcs   /Kernelp2/
 
 VectCode bra   SWI3Jmp		$0100
          nop

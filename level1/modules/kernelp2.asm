@@ -1,16 +1,14 @@
 ********************************************************************
-* OS9p2 - OS-9 Level One V2 P2 module
+* KernelP2 - NitrOS-9 Level 1 Kernel Part 2
 *
 * $Id$
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*  10      1985/??/??
-* From Tandy OS-9 Level One VR 02.00.00
 
-         nam   OS9p2
-         ttl   OS-9 Level One V2 P2 module
+         nam   KernelP2
+         ttl   NitrOS-9 Level 1 Kernel Part 2
 
          ifp1
          use   defsfile
@@ -25,7 +23,7 @@ edition  set   10
 
 size     equ   .
 
-name     fcs   /OS9p2/
+name     fcs   /KernelP2/
          fcb   edition
 
 SvcTbl   fcb   $7F
