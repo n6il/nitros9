@@ -37,7 +37,28 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Feof returns non-zero if the file associated with "fp" has
+reached its end. Zero is returned on error.
+</para>
+<para>
+Ferror returns non-zero if an error condition occurs on access
+to the file "fp"; zero is returned otherwise. The error
+condition persists, preventing further access to the file by
+other Standard Library functions, until the file is closed,
+or it is cleared by clearerr.
+</para>
+<para>
+Clearerr resets the error condition on the file "fp". This
+does NOT "fix" the file or prevent the error from occurring
+again; it merely allows Standard Library functions at least to
+try.
+</para>
+</refsect1>
+
+<refsect1><title>Caveats</title>
+<para>
+These functions are actually macros that are defined in
+"&lt;stdio.h&gt;" so their names cannot be redeclared.
 </para>
 </refsect1>
 
