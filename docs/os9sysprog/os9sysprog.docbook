@@ -696,7 +696,7 @@ follows:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
- <colspec colwidth="1.1in" colname="c1">
+<colspec colwidth="1.1in" colname="c1">
 <colspec colwidth="1.1in" colname="c2">
    <thead>
 	    <row>
@@ -2640,7 +2640,7 @@ parameters.</para>
 <title>NAME: INIT</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -2697,7 +2697,7 @@ used on the corresponding drive.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -2772,7 +2772,7 @@ LEAX D,X           Compute address of table N
 <title>NAME: WRITE</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -2839,7 +2839,7 @@ corresponding drive table as shown for the READ routine.</para>
 <title>NAME: GETSTA PUTSTA</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -2966,7 +2966,7 @@ register stack:</para>
 <title>NAME:TERM</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -3012,7 +3012,7 @@ disk writes, return the memory with the F$MEM service request.</para>
 <title>NAME: IRQ SERVICE ROUTINE</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -3048,7 +3048,7 @@ it must clear the array and exit with an RTS instruction.</para>
 <title>NAME: BOOT (Bootstrap Module)</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -3626,7 +3626,7 @@ parameters.</para>
 <title>NAME: INIT</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -3673,7 +3673,7 @@ of static storage used by IOMAN and SCFMAN.</para>
 <title>NAME: READ</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -3720,7 +3720,7 @@ used, they should be defined in the device's static storage area.</para>
 <title>NAME: WRITE</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -3775,7 +3775,7 @@ used, they should be defined in the device's static storage.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -3900,7 +3900,7 @@ packet:</para>
 <title>NAME. TERM</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -3950,7 +3950,7 @@ the BOOT tile will NEVER be terminated.</para>
 <title>NAME: IRQ SERVICE ROUTINE</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.4in">
 <colspec colwidth="3.0in">
 <tbody>
 <row>
@@ -4538,7 +4538,8 @@ with them: in fact attempts to do so are memory violations.</para>
 
 <para>All system calls have a mnemonic name that starts with &quot;F$&quot;
 for system functions, or &quot;I$&quot; for I/O related requests.
-These are defined in the assembler-input equate file called &quot;OS9DEFS&quot;</para>
+These are defined in the assembler-input equate file
+called &quot;OS9DEFS&quot;.</para>
 
 <para>In the service request descriptions which follow, registers not
 explicitly specified as input or output parameters are not altered.
@@ -4552,6 +4553,8 @@ character.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4583,7 +4586,7 @@ character.</para>
 <para>This system mode service request sets bits in the allocation bit
 map specified by the X register.</para>
 
-<para>Bit numbers range from 0.,N-1, where N is the number of bits in
+<para>Bit numbers range from 0..N-1, where N is the number of bits in
 the allocation bit map.</para>
 </sect1>
 
@@ -4592,6 +4595,8 @@ the allocation bit map.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4604,14 +4609,10 @@ the allocation bit map.</para>
 <row>
 	<entry>INPUT:</entry>
 	<entry><literallayout>(X) = Address of module name or file name
-(Y) = Parameter area sime (256 byte pages)
+(Y) = Parameter area size (256 byte pages)
 (U) = Beginning address of parameter area
 (A) = Lanquage / type code
 (B) = Optional data area size (256 byte pages)</literallayout></entry>
-</row>
-<row>
-	<entry>OUTPUT:</entry>
-	<entry></entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -4644,7 +4645,7 @@ which is to be loaded into memory. Then the first module in this file
 is linked to (several modules may have been loaded from a single
 file).</para>
 
-<para>2. The process' old primary module is UNLINKED</para>
+<para>2. The process' old primary module is UNLINKED.</para>
 
 <para>3. The data memory area is reconfigured to the size specified in
 the new primary module's header.</para>
@@ -4676,7 +4677,7 @@ registers for the new module.</para>
 
 <para>Y (top of memory pointer) and U (bottom of memory pointer) will
 always have a values at 256-byte page boundaries. If the parent does
-not specify a parameter area. Y, X, and SP will be the same, and D
+not specify a parameter area, Y, X, and SP will be the same, and D
 will equal zero. The minimum overall data area size is one page (256
 bytes).</para>
 
@@ -4700,6 +4701,8 @@ description.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4713,7 +4716,7 @@ description.</para>
 	<entry>INPUT:</entry>
 	<entry><literallayout>(X) = Address of first name.
 (B) = Length of first name.
-(Y) = Address of secorrd name.</literallayout></entry>
+(Y) = Address of second name.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
@@ -4736,6 +4739,8 @@ character set.</para>
 <title>CRC Compute CRC F$CRC</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4780,6 +4785,8 @@ be stored) are not included in the CRC generation.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4820,6 +4827,8 @@ the allocation bit map.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4841,7 +4850,7 @@ the allocation bit map.</para>
 </tgroup>
 </informaltable>
 
-<para>This call kills the calling process and is the only means oy whicn
+<para>This call kills the calling process and is the only means by which
 a process can terminate itself. Its data memory area is deallocated,
 and its primary module is UNLINKed. All open paths are automatically
 closed.</para>
@@ -4850,7 +4859,7 @@ closed.</para>
 WAIT call, which returns to the parent the status byte passed by the
 child in its EXIT call. The status byte can be an OS-9 error code the
 terminating process wishes to pass back to its parent process (the
-shell assumes this), or can be used to pass a user- defined status
+shell assumes this), or can be used to pass a user-defined status
 value. Processes to be called directly by the shell should only
 return an OS-9 error code or zero if no error occurred.</para>
 </sect1>
@@ -4860,6 +4869,8 @@ return an OS-9 error code or zero if no error occurred.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4898,7 +4909,7 @@ the caller, and sets up the new process' memory and MPU registers.</para>
 module&quot; - the program that will initially be executed. Then the
 system module directory is searched to see if the program is already
 in memory. If so, the module is linked to and executed. If not, the
-name string is used as the pathlist of the file which is to b oaded
+name string is used as the pathlist of the file which is to loaded
 into memory. Then the first module in this file is linked to and
 executed (several modules may have been loaded from a single file).</para>
 
@@ -4970,6 +4981,8 @@ continue until the process table becomes full.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5003,9 +5016,9 @@ the base address of the routine's storage area. After a signal trap
 has been set, whenever the process receives a signal, its intercept
 routine will be executed. A signal will abort any process which has
 not used the F$ICPT service request to set a signal trap, and its
-termination status (B register) will be the signal &oacute;ode. Many
+termination status (B register) will be the signal code. Many
 interactive programs will set up an intercept routine to handle
-keyboard abort (control 0), and keyboard interrupt (control C)</para>
+keyboard abort (control Q), and keyboard interrupt (control C).</para>
 
 <para>The intercept routine is entered asynchronously because a signal
 may be sent at any time (it is like an interrupt) and is passed the
@@ -5037,6 +5050,8 @@ instruction.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5066,7 +5081,7 @@ instruction.</para>
 
 <para>Returns the caller's process ID number, which is a byte value in
 the range of 1 to 255, and the user ID which is a integer in the
-range 0 to 6553$. The process ID is assigned by OS-9 and is unique to
+range 0 to 65535. The process ID is assigned by OS-9 and is unique to
 the process. The user ID is defined in the system password file, and
 is used by the file security system and a few other functions.
 Several processes can have the same user ID.</para>
@@ -5077,6 +5092,8 @@ Several processes can have the same user ID.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5123,7 +5140,7 @@ not reentrant) only one process may link to it at a time.</para>
 
 <para>(A) Module not found.</para>
 
-<para>(B) Module busy (not sharable and in uae).</para>
+<para>(B) Module busy (not sharable and in use).</para>
 
 <para>(C) Incorrect or defective module header.</para>
 </sect1>
@@ -5133,6 +5150,8 @@ not reentrant) only one process may link to it at a time.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5184,6 +5203,8 @@ that occur on OPEN, READ, CLOSE and LINK system calls.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5215,7 +5236,7 @@ that occur on OPEN, READ, CLOSE and LINK system calls.</para>
 size requested is rounded up to the next 256-byte page boundary.
 Additional memory is allocated contiguously upward (towards higher
 addresses), or deallocated downward from the old highest address. If
-0 &quot; 0, then the current upper bound and size will be returned.</para>
+D = 0, then the current upper bound and size will be returned.</para>
 
 <para>This request can never return all of a process' memory, or the
 page in which its SP register points to.</para>
@@ -5235,6 +5256,8 @@ own &quot;address space&quot;.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5278,6 +5301,8 @@ routine use the F$SSVC service request.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5341,6 +5366,8 @@ calls may be needed to process a pathlist that has more than one name.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5379,6 +5406,8 @@ carry set, beginning bit number and size of the largest block.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5444,6 +5473,8 @@ request descriptions.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5455,7 +5486,7 @@ request descriptions.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry>(X) = Sleep time in ticks (0 a indefinitely)</entry>
+	<entry>(X) = Sleep time in ticks (0 = indefinitely)</entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
@@ -5471,13 +5502,13 @@ request descriptions.</para>
 </informaltable>
 
 <para>This call deactivates the calling process for a specified time, or
-indefinitely if X = ., If X = 1, the effect is to have the caller
+indefinitely if X = 0. If X = 1, the effect is to have the caller
 give up its current time slice. The process will be activated before
 the full time interval if a signal is received, therefore sleeping
 indefinitely is a good way to wait for a signal or interrupt without
 wasting CPU time.</para>
 
-<para>The duration of a tick is system dependent but is most commonly
+<para>The duration of a "tick" is system dependent but is most commonly
 100 milliseconds.</para>
 
 <para>Due to the fact that it is not known when the F$SLEP request was
@@ -5486,7 +5517,7 @@ timing. A sleep of one tick is effectively a &quot;give up remaining
 time slice&quot; request; the process is immediately inserted into
 the active process queue and will resume execution when it reaches
 the front of the queue. A sleep of two or more ticks causes the
-process to be inserted into the active process queue after N-l ticks
+process to be inserted into the active process queue after N-1 ticks
 occur and will resume execution when it reaches the front of the
 queue.</para>
 </sect1>
@@ -5496,6 +5527,8 @@ queue.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5535,6 +5568,8 @@ another process' priority only if it has the same user ID.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5593,7 +5628,7 @@ OFFSET
           +----------------------+
 </screen>
 
-<para>NOTE: If the sign bit of the function code is set, on y the system
+<para>NOTE: If the sign bit of the function code is set, only the system
 table will be updated. Otherwise both the system and user tables will
 be updated. Privileged system service requests may be called only
 while executing a system routine.</para>
@@ -5628,11 +5663,13 @@ U ---&gt;  !  CC  !            $0      R$CC
 </screen>
 </informalfigure>
 
-<para>Function request codes are broken into the two cateqor&plusmn;es
+<para>Function request codes are broken into the two categories
 as shown below:</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 <entry>$00 - $27</entry>
@@ -5663,6 +5700,8 @@ are free for user definition.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5713,6 +5752,8 @@ three vectors, you will not be able to call OS-9 at all.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5783,6 +5824,8 @@ a time packet as follows:</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5853,6 +5896,8 @@ in X. The packet looks like:</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5886,7 +5931,7 @@ The module will not be destroyed if in use by any other process(es)
 because its link count will be non-zero. In Level Two systems, the
 module is usually switched out of the process' address space.</para>
 
-<para>oevice driver modules in use or certain system modules cannot he
+<para>Device driver modules in use or certain system modules cannot he
 unlinked. ROMed modules can be unlinked but cannot be deleted from
 the module directory.</para>
 </sect1>
@@ -5896,6 +5941,8 @@ the module directory.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5946,6 +5993,8 @@ children.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5962,7 +6011,7 @@ has not yet been allocated).</entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry><literallayout>(X) Block number
+	<entry><literallayout>(A) = Block number
 (X) = Base address of page table
 (Y) = Address of block.</literallayout></entry>
 </row>
@@ -6018,6 +6067,8 @@ BASE PAGE  ---&gt;   +-------------+         +-------------+
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6061,6 +6112,8 @@ process is in user state, it is inserted according to its age.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6103,6 +6156,8 @@ descriptors when given their number.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6147,6 +6202,8 @@ limited or no use for other applications.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6186,6 +6243,8 @@ will send a wakeup signal to the calling process.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6231,6 +6290,8 @@ polling system.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 <entry>Flip Byte</entry>
@@ -6264,6 +6325,8 @@ identifies an active bit(s)</entry>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6298,6 +6361,8 @@ active process queue again.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6336,6 +6401,8 @@ memory as described in the F$A64 service request.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6374,6 +6441,8 @@ rounded to the next 256 byte page boundary.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6408,6 +6477,8 @@ rounded to the next 256 byte page boundary.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6443,6 +6514,8 @@ rounded to the next 256 byte page boundary.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6487,7 +6560,7 @@ hardware).</para>
 reinitialized.</para>
 
 <para>An ATTACH system call is not required to perform routine I/O. It
-does NOT reserve' the device in question - it just prepares it for
+does NOT "reserve" the device in question - it just prepares it for
 subsequent use by any process. Most devices are automatically
 installed, so it is used mostly when devices are dynamically
 installed or to verify the existence of a device.</para>
@@ -6510,6 +6583,8 @@ write operations will be permitted as follows:
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6537,8 +6612,8 @@ write operations will be permitted as follows:
 </tgroup>
 </informaltable>
 
-<para>Changes a process working directory to another directory file
-specified by the pathlist. Dependinq on the access mode given, the
+<para>Changes a process' working directory to another directory file
+specified by the pathlist. Depending on the access mode given, the
 current execution or the current data directory may be changed (but
 only one may be changed per call). The file specified must be a
 directory file, and the caller must have read permission for it
@@ -6547,7 +6622,7 @@ directory file, and the caller must have read permission for it
 <para>ACCESS MODES
 </para>
 
-<para>1  = Read</para>
+<para>1 = Read</para>
 
 <para>2 = Write</para>
 
@@ -6565,6 +6640,8 @@ execution directory is changed.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6610,6 +6687,8 @@ desired to change the files/devices they correspond to.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6639,7 +6718,7 @@ desired to change the files/devices they correspond to.</para>
 </tgroup>
 </informaltable>
 
-<para>Used to create a new file on a multifiIe mass storage device.
+<para>Used to create a new file on a multifile mass storage device.
 The pathlist is parsed, and the new file name is entered in the
 specified (or default working) directory. The file is given the
 attributes passed in the B register, which has individual bits
@@ -6690,6 +6769,8 @@ MAKDIR).</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6727,6 +6808,8 @@ to delete devices will result in an error.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6770,6 +6853,8 @@ SCFMAN also uses ATTACH/DETACH to setup its second (echo) device.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6802,7 +6887,7 @@ request when it redirects I/O. Service requests using either the old
 or new path numbers operate on the same file or device.</para>
 
 <para>
-NOTE. This only increments the &quot;use count&quot; of a path
+NOTE: This only increments the &quot;use count&quot; of a path
 descriptor and returns the synonymous path number. The path
 descriptor is not copied.</para>
 </sect1>
@@ -6811,6 +6896,8 @@ descriptor is not copied.</para>
 <title>GETSTAT Get file device status. I$GSTT</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6911,6 +6998,8 @@ are given below:</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 	<entry>SS.OPT (code 0):</entry>
@@ -6944,6 +7033,8 @@ descriptors.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 	<entry>SS.RDY (code 1):</entry>
@@ -6980,6 +7071,8 @@ descriptors.</para>
 </informaltable>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 	<entry>SS.SIZ (code 2):</entry>
@@ -7005,6 +7098,8 @@ descriptors.</para>
 </informaltable>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 	<entry>SS.POS (code 5):</entry>
@@ -7031,6 +7126,8 @@ descriptors.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 	<entry>SS.EOF (code 6):</entry>
@@ -7072,6 +7169,8 @@ descriptors.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7127,6 +7226,8 @@ bit 7 = (don't care)
 <title>OPEN Open a path to a file or device I$OPEN</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7198,6 +7299,8 @@ in the access mode.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7257,6 +7360,8 @@ C. An error condition occurs.
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7308,6 +7413,8 @@ request will return an end of file error.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7354,6 +7461,8 @@ without error.</para>
 <title>SETSTAT Set file/device status I$SSTT</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7386,7 +7495,7 @@ device parameters that:</para>
 <orderedlist numeration="Loweralpha">
 <listitem><para>are not uniform on all devices</para></listitem>
 <listitem><para>are highly hardware dependent</para></listitem>
-<listitem><para>need to be user-changable</para></listitem>
+<listitem><para>need to be user-changeable</para></listitem>
 </orderedlist>
 
 <para>The exact operation of this call depends on the device driver and
@@ -7400,7 +7509,7 @@ defined function codes:</para>
 <informaltable frame="none">
 <tgroup cols="3">
 <colspec colwidth="1.2in">
-<colspec colwidth="1in">
+<colspec colwidth="0.8in">
 <colspec colwidth="3.5in">
 <thead>
 <row rowsep="1">
@@ -7466,6 +7575,8 @@ passed to the device driver.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 	<entry>SS.OPT (code 0):</entry>
@@ -7492,10 +7603,12 @@ parameters, such as echo, auto line feed, etc.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 	<entry>SS.SIZ (code 2):</entry>
-	<entry>Set the file size (RBF)</entry>
+	<entry>Set the file size (RBFMAN-type devices)</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7515,10 +7628,12 @@ parameters, such as echo, auto line feed, etc.</para>
 <para>This setstat function is used to change the file's size.</para>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 	<entry>SS.RST (code 3):</entry>
-	<entry>Set the file size (RBF)</entry>
+	<entry>Restore head to track zero.</entry>
 </row>
 <row>
 	<entry>INPUT:</entry>
@@ -7538,6 +7653,8 @@ for error recovery.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 	<entry>SS.WTK (code 4):</entry>
@@ -7568,6 +7685,8 @@ only when the track number equals zero.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 	<entry>SS.FRZ (code $A):</entry>
@@ -7590,6 +7709,8 @@ DD.xxx variables (that define disk formats) so non-standard disks
 may be read.</para>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.5in">
+<colspec colwidth="3.5in">
 <tbody>
 <row>
 	<entry>SS.SPT (code $B):</entry>
@@ -7609,6 +7730,8 @@ may be read.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7619,6 +7742,7 @@ may be read.</para>
 	<entry>103F 8A</entry>
 </row>
 <row>
+	<entry>INPUT:</entry>
 	<entry><literallayout>(A) = Path number.
 (X ) = Address of buffer.
 (Y) = Maximum number of bytes to write</literallayout></entry>
@@ -7652,6 +7776,8 @@ automatically expanded.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7690,7 +7816,7 @@ padding at end of line, etc.</para>
 reflect any additional bytes that may have been added by file
 managers or device drivers for device control. For example, if SCF
 appends a line feed and nulls after carriage return characters, these
-extrt bytes are not counted.</para>
+extra bytes are not counted.</para>
 
 </sect1>
 </chapter>
@@ -8892,6 +9018,8 @@ OFFSET
 <table frame="none">
 <title>Module Types</title>
 <tgroup cols="2">
+<colspec colwidth="0.3in">
+<colspec colwidth="1.5in">
 	<tbody>
 		<row>
 				<entry>$1</entry>
@@ -8931,8 +9059,10 @@ OFFSET
 
 
 <table frame="none">
-<title>Module Types</title>
+<title>File Access Codes</title>
 <tgroup cols="2">
+<colspec colwidth="1.0in">
+<colspec colwidth="1.4in">
     <tbody>
 	<row>
 	    <entry>READ</entry>
@@ -8978,6 +9108,8 @@ OFFSET
 <table frame="none">
 <title>Module Languages</title>
 <tgroup cols="2">
+<colspec colwidth="0.3in">
+<colspec colwidth="1.5in">
 	<tbody>
 		<row>
 				<entry>$0</entry>
@@ -9006,6 +9138,8 @@ OFFSET
 <table frame="none">
 <title>Module Attributes</title>
 <tgroup cols="2">
+<colspec colwidth="0.3in">
+<colspec colwidth="1.5in">
 	<tbody>
 		<row>
 				<entry>$8</entry>
@@ -9033,7 +9167,7 @@ generated by programming languages or user programs.</para>
 <tgroup cols="3">
 <colspec colwidth="0.6in">
 <colspec colwidth="0.6in">
-<colspec colwidth="5.0in">
+<colspec colwidth="3.8in">
 <thead>
 <row>
 <entry rowsep="1">HEX</entry>
@@ -9220,7 +9354,7 @@ manual for more details.</para>
 <tgroup cols="3">
 <colspec colwidth="0.6in">
 <colspec colwidth="0.6in">
-<colspec colwidth="5.0in">
+<colspec colwidth="3.8in">
 <thead>
 <row>
 <entry rowsep="1">HEX</entry>
@@ -9305,6 +9439,8 @@ manual for more details.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9344,6 +9480,8 @@ need to be contiguous.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9380,6 +9518,8 @@ need to be contiguous.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9418,6 +9558,8 @@ free RAM blocks.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9455,6 +9597,8 @@ free RAM blocks.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9493,6 +9637,8 @@ an area which is then searched for new modules.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9532,6 +9678,8 @@ contigous memory in the system's address space.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9569,6 +9717,8 @@ contigous memory in the system's address space.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9607,6 +9757,8 @@ memory in the system may be viewed in this way.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9645,6 +9797,8 @@ equivalent logical address.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9682,6 +9836,8 @@ equivalent logical address.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9720,6 +9876,8 @@ equivalent logical address.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9756,6 +9914,8 @@ equivalent logical address.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9791,6 +9951,8 @@ equivalent logical address.</para>
 <title>$40* F$DelTsk Deallocate process Task number F$DelTsk</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9828,6 +9990,8 @@ equivalent logical address.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9867,6 +10031,8 @@ directory entry is supplied rather than a pointer to a module name.</para>
 <title>$4E* F$FModul Find Module directory entry F$FModul</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9908,6 +10074,8 @@ module name.</para>
 <title>$3E* F$FreeHB get Free High block  F$FreeHB</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9945,6 +10113,8 @@ module name.</para>
 <title>$3D* F$FreeLB get Free Low block  F$FreeLB</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9981,6 +10151,8 @@ module name.</para>
 <title>$19 F$GBlkMp Get system Block Map copy F$GBlkMp</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10015,6 +10187,8 @@ module name.</para>
 <title>$1A F$GModDr Get Module Directory copy F$GModDr</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10045,6 +10219,8 @@ module name.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10082,6 +10258,8 @@ descriptor.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10119,6 +10297,8 @@ descriptor in the system address space.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10159,6 +10339,8 @@ routine.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10197,6 +10379,8 @@ routine.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10237,6 +10421,8 @@ image at (Y).</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10277,6 +10463,8 @@ the memory block.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10314,6 +10502,8 @@ the memory block.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10355,6 +10545,8 @@ System's to User's, or vice-versa.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
         <entry>ASSEMBLER CALL:</entry>
@@ -10393,6 +10585,8 @@ System's to User's, or vice-versa.</para>
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
         <entry>ASSEMBLER CALL:</entry>
@@ -10429,6 +10623,8 @@ System's to User's, or vice-versa.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10469,6 +10665,8 @@ System's to User's, or vice-versa.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10505,6 +10703,8 @@ System's to User's, or vice-versa.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10548,6 +10748,8 @@ adress space into the Address space that contains its name.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10587,6 +10789,8 @@ other semi-permanent system memory.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10621,6 +10825,8 @@ after it is no longer needed.</para>
 <title>$4A* F$STABX Store A at 0,X in task B F$STABX</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10661,6 +10867,8 @@ rather than the current address space.</para>
 <title>$1C F$SUser Set User ID number F$SUser</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10695,6 +10903,8 @@ rather than the current address space.</para>
 <title>$1D F$UnLoad Unlink module by name F$UnLoad</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10732,6 +10942,8 @@ name is supplied rather than the address of the module header.</para>
 <title>DELETE Delete a file I$DeletX</title>
 <informaltable frame="none">
 <tgroup cols="2">
+<colspec colwidth="1.4in">
+<colspec colwidth="3.6in">
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
