@@ -2,7 +2,7 @@ include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
-DEFS		= errmsg motd password logbook
+SYSFILES	= errmsg motd password logbook
 HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
 		chx.hp cmp.hp cobbler.hp config.hp copy.hp date.hp \
 		dcheck.hp debug.hp deiniz.hp del.hp deldir.hp dir.hp \
@@ -13,11 +13,12 @@ HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
 		park.hp procs.hp pwd.hp pxd.hp rename.hp save.hp setime.hp \
 		setpr.hp shell.hp sleep.hp tee.hp tmode.hp tsmon.hp \
 		tuneport.hp unlink.hp verify.hp xmode.hp
-ALLOBJS		= $(DEFS)
+ALLOBJS		= $(SYSFILES)
 HELPMSG		= helpmsg
 
 all:	$(ALLOBJS) $(HELPMSG)
 	$(UNIX2OS9) $(ALLOBJS)
+	$(CHMOD) 644 $(ALLOBJS) $(HELPMSG)
 
 helpmsg: $(HELPFILES)
 	$(MERGE) $(HELPFILES) > $@
@@ -28,4 +29,4 @@ clean:
 	$(RM) $(HELPMSG)
 
 showobjs:
-	@echo $(ALLOBJS)
+	@$(ECHO) $(ALLOBJS)
