@@ -22,7 +22,8 @@ os9 F$ID
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Getuid returns the real user id of the current task (as
+maintained in the password file).
 </para>
 </refsect1>
 </refentry>

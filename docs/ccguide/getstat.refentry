@@ -60,7 +60,61 @@ os9 I$GETSTT
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+A full description of getstat can be found in the OS-9 System
+Programmer's Manual.
+</para>
+<para>
+"Code" must be the value of one of the standard codes for the
+getstat service request. "Filenum" must be the path number of
+an open file.
+</para>
+<para>
+The form of the call depends on the value of "code".
+</para>
+<informaltable frame="none">
+<tgroup cols="2">
+<colspec colwidth="1in">
+<colspec colwidth="3in">
+<tbody>
+<row>
+<entry>Code 0:</entry>
+<entry>"Buffer" must be the address of a 32 byte
+buffer into which the relevant status packet
+is copied. The header file has the
+definitions of the various file and device
+structures for use by the program.</entry>
+</row>
+<row>
+<entry>Code 1:</entry>
+<entry>Code 1 only applies to SCF devices and to
+test for data available. The return value is
+zero if there is data available. -1 is
+returned if there is no data.</entry>
+</row>
+<row>
+<entry>Code 2:</entry>
+<entry>"Size" should be the address of a long
+integer into which the current file size is
+placed. The return value of the function is
+-1 on error and 0 on success.</entry>
+</row>
+<row>
+<entry>Code 5:</entry>
+<entry>"Pos" should be the address of a long integer
+into which the current file position is
+placed. The return value of the function is -1 on
+error and 0 on success.</entry>
+</row>
+<row>
+<entry>Code 6:</entry>
+<entry>Returns -1 on EOF and error and 0 on success.</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<para>
+NOTE that when one of the previous calls returns -1, then
+actual error is returned in errno.
 </para>
 </refsect1>
 </refentry>
