@@ -17,6 +17,9 @@
 * processed.
 *
 * Features:
+*    - Written for 6809 and 6309 processors in fast, compact
+*      assembly language.
+*
 *    - Both options and files can be specified anywhere
 *      on the command line
 *          (i.e ngu -a test1 -b test2 -c=foo)
@@ -28,8 +31,8 @@
 *      copying strings and determining string length.
 *
 * Limitations:
-*    - Only single character options can be processed.
-*      Multi-character options (i.e. -delete) are not allowed.
+*    - Only single character option names can be processed.
+*      Multi-character option names (i.e. -delete) are not allowed.
 *
 *    - The current file counter is one byte, allowing a maximum
 *      of 255 files.
@@ -59,7 +62,6 @@ edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
-
 * Your utility's static storage vars go here
          org   0
 parmptr  rmb   2	pointer to our command line params
@@ -70,7 +72,7 @@ gota     rmb   1
 gotb     rmb   1
 filecnt  rmb   1
 coptflg  rmb   1	1 = this option has been processed once already
-clrmark  equ   .	everything before here gets cleared at start
+cleartop equ   .	everything up to here gets cleared at start
 copt     rmb   COPTSIZ	buffer for what follows after -c=
 * Next is a user adjustable buffer with # modifier on command line.
 * Some utilities won't need this, some will.
@@ -100,7 +102,7 @@ HlpMsg   fcb   C$LF
          fcb   C$LF
          fcc   /   -c=f  option 3/
          fcb   C$LF
-         fcb   C$CR
+CR       fcb   C$CR
 HlpMsgL  equ   *-HlpMsg
          ENDC
 UnkOpt   fcc   /unknown option: /
@@ -121,12 +123,12 @@ UnkOptL  equ   *-UnkOpt
 *  PC = module entry point abs. address
 *  CC = F=0, I=0, others undefined
 
-* The start of the program is here
+* The start of the program is here.
 * Before any command line processing is done, we clear out
-* our static memory from U to clrmark, then determine the
-* size of our data area (minus stack)
+* our static memory from U to cleartop, then determine the
+* size of our data area (minus the stack).
 start    pshs  u,x		save registers for later
-         leax  <clrmark,u	point to end of area to zero out
+         leax  <cleartop,u	point to end of area to zero out
          IFNE  H6309
          subr  u,x		subtract U from X
          tfr   x,w		and put X in W
@@ -186,7 +188,7 @@ IsItC    cmpa  #'c		is it this option?
          tst   <coptflg		was this option already specified?
          bne   BadOpt		show help if so
          cmpb  #'=		2nd char =?
-         bne   BadOpt		show help if not
+         lbne  ShowHelp		show help if not
          inc   <coptflg		else tag this option as parsed
          ldb   #C$SPAC		get space
          stb   -$01,x		write over c
@@ -247,11 +249,37 @@ BadOpt   leax  UnkOpt,pcr
 * We load X with our parameter pointer and go down the command line
 * looking at each file to process (options have been wiped out with
 * spaces)
+*
+* Note, the following two instructions may not be needed, depending on
+* if your utility requires a non-option on the command line.
 DoNGU    tst   <filecnt		we should have at least one file on cmdline
          lbeq  ShowHelp		if not, exit with error
          ldx   <parmptr		get our parameter pointer off stack
-         lbsr  SkipSpcs		skip any leading spaces
-         bra   ExitOk
+DoLoop   lbsr  SkipSpcs		skip any leading spaces
+         cmpa  #C$CR		end of parameters?
+         beq   ExitOk		if so, end the utility
+         pshs  x		save pointer to arg
+         bsr   ProcFile		process file at X
+         puls  x		get arg pointer
+         lbsr  SkipNSpc         skip the argument we just processed
+         bra   DoLoop
+
+* This routine processes one file at a time.
+* Entry: X = ptr to argument on the command line.
+* On exit, X can point to the argument or past it.
+* Note that there are NO leading spaces.
+* They have been skipped by the caller.
+* The following code just echos the command line argument, followed
+* by a carriage return.
+ProcFile 
+         pshs  x		save ptr
+         lda   #$01		standard output
+         bsr   StrLen		get length of argument in Y
+         puls  x		recover ptr
+         os9   I$Write		write name out
+         leax  CR,pcr		point to carriage return
+         os9   I$WritLn		write it out
+         rts
 
 ShowHelp equ   *
          IFNE  DOHELP
@@ -269,10 +297,10 @@ Exit     os9   F$Exit   	and exit
 * Entry:
 *   X = ptr to string (space, comma or CR terminated)
 * Exit:
-*   D = length of string
+*   Y = length of string
 *   X = ptr to byte after string
-StrLen   pshs  u
-         ldu   #$0000
+StrLen   pshs  a
+         ldy   #$0000
 StrLenLp lda   ,x+
          cmpa  #C$SPAC
          beq   StrLenEx
@@ -280,10 +308,9 @@ StrLenLp lda   ,x+
          beq   StrLenEx
          cmpa  #C$CR
          beq   StrLenEx
-         leau  1,u
+         leay  1,y
          bra   StrLenLp
-StrLenEx tfr   u,d
-         puls  u,pc
+StrLenEx puls  a,pc
 
 * This routine copies a string of text from X to Y until
 * a whitespace character or CR is encountered
