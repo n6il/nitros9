@@ -9,7 +9,7 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		makdir mdir merge mfree mmap modpatch montype os9gen pmap \
 		proc procs pwd pxd reboot rename runb save setime shell_21 \
 		shellplus sleep smap tee tmode touch \
-		tsmon unlink verify wcreate xmode
+		tsmon tuneport unlink verify wcreate xmode
 SUBS            = gfx2 gfx inkey syscall
 
 SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
