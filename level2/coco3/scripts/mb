@@ -15,7 +15,7 @@ echo * Step 1: Format disk in %1
 format %1 "NitrOS-9 Level 2 Boot Disk" r
 echo *
 echo * Step 2: Create a custom boot track
-merge ../MODULES/BOOTTRACK/rel_32 ../MODULES/BOOTTRACK/boot_1773_6ms ../MODULES/BOOTTRACK/kernel>-bttemp
+merge ../MODULES/BOOTTRACK/rel_80 ../MODULES/BOOTTRACK/boot_1773_6ms ../MODULES/BOOTTRACK/kernel>-bttemp
 echo *
 echo * Step 3: Create the bootfile and boot track
 os9gen #32k %1 -t=bttemp<../BOOTLISTS/standard.bl
