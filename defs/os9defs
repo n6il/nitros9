@@ -280,7 +280,7 @@ SS.DWrit equ SS.DRead     SDisk3 Direct sector Write ($80)
 SS.UnFrz equ SS.SLGBf     SDisk3 UNFreeze DD info ($81)
 SS.MOFF  equ SS.Mount     SDisk3 fast motor off call ($82)
 SS.MoTim equ SS.RdNet     SDisk3 Set motor shut off time ($83)
-SS.SDRD  equ SS.MgGPD     SDisk3 System direct read ($84)
+SS.SDRD  equ SS.MpGPB     SDisk3 System direct read ($84)
 SS.SDWRT equ SS.SDRD      SDisk3 System direct writes ($84)
 SS.Sleep equ SS.Slots     SDisk3 (DMC ONLY) Enable/disable F$Sleep calls in read/write 1773 I/O ($85)
 SS.DrvCh equ SS.WnSet     SDisk3 (DMC ONLY) Set drive number to cache, or return drive number being cached ($86)
@@ -454,7 +454,14 @@ D.BtSz   rmb   2          Size of Boot
 * NitrOS9 additions
 * 58d begins here
 D.MDREG  rmb   1          6309 MD (mode) shadow register
+         else
+         rmb   1          Currently unused in OS-9 Level Two
+         endc
+
 D.CRC    rmb   1          CRC checking mode flag
+
+         ifne  NitrOS9
+* NitrOS9 additions
 D.Tenths rmb   1          Tenths and hundredths of second for F$Xtime
 D.Task1N rmb   1          Map type 1 task number*2 - offset into [D.TskIPt]
 D.Quick  rmb   1          Quick system call return flag - 0 =stack is at $FEE1
