@@ -78,7 +78,7 @@ exbin		68		Put proper edition in place in code
 format		17		Unchanged from last Tandy release
 free		17		Y2K issues resolved
 grfo		1		Unchanged from last Tandy release
-help		2		Unchanged from last Tandy release
+help		5		From OS-9 Level Two V2.00.01
 ident		7		Unchanged from last Tandy release
 iniz		3		From OS-9 Level Two V2.00.01
 link		5		Unchanged from last Tandy release
@@ -90,7 +90,9 @@ makdir		4		Unchanged from last Tandy release
 mdir		5		Unchanged from last Tandy release
 merge		4		Unchanged from last Tandy release
 mfree		5		Unchanged from last Tandy release
-os9gen		8		Incorporated bitmap allocation fix
+os9gen		9		From OS-9 Level Two V2.00.01
+                                modified for OS-9 Level One,
+                                supports double-sided drives
 park		2		Changed name from PARK to Park
 printerr	7		Changed /D0 to /DD
 procs		9		Unchanged from last Tandy release
