@@ -2,9 +2,9 @@ include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
-SYSFILES	= errmsg LogBook password motd
-SYSWINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs
-L1SYSFILES	= errmsg
+SYSTXTFILES	= LogBook motd
+SYSBINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs
+L1TXTFILES	= errmsg password
 L1HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
 		chx.hp cmp.hp cobbler.hp config.hp copy.hp date.hp \
 		dcheck.hp debug.hp deiniz.hp del.hp deldir.hp dir.hp \
@@ -21,8 +21,8 @@ L2HELPFILES	= basic09.hp gfx2.hp grfdrv.hp make.hp maketerm.hp \
 
 HELPMSG		= helpmsg
 
-TEXTFILES	= $(HELPMSG) $(SYSFILES)
-BINFILES	= $(SYSWINFILES)
+TEXTFILES	= $(SYSTXTFILES) $(HELPMSG) $(L1TXTFILES)
+BINFILES	= $(SYSBINFILES)
 ALLOBJS		= $(TEXTFILES) $(BINFILES)
 
 all:	$(ALLOBJS) $(DEPENDS)
@@ -34,11 +34,11 @@ $(HELPMSG): $(L1HELPFILES)
 $(L1HELPFILES): $(LEVEL1)/SYS/$@
 	-$(SOFTLINK) $(LEVEL1)/SYS/$@
 
-$(L1SYSFILES): $(LEVEL1)/SYS/$@
+$(L1TXTFILES): $(LEVEL1)/SYS/$@
 	-$(SOFTLINK) $(LEVEL1)/SYS/$@
 
 clean:
-	$(RM) $(HELPMSG) $(L1HELPFILES)
+	$(RM) $(HELPMSG) $(L1HELPFILES) $(L1TXTFILES)
 
 showbinobjs:
 	@$(ECHO) $(BINFILES)
