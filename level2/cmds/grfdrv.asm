@@ -4315,10 +4315,15 @@ L1267    ldb   <$97          Get width of window in bytes
          pshs  d,x,u
          tfr   x,u
          tfr   d,x
-L1267b   lda   ,u+
-         sta   ,y+
-         leax  -1,x
+L1267b   pulu  d
+*L1267b   ldd   ,u++
+         std   ,y++
+         leax  -2,x
          bne   L1267b
+*L1267b   lda   ,u+
+*         sta   ,y+
+*         leax  -1,x
+*         bne   L1267b
          stx   <$B5
          stu   2,s
          puls  d,x,u

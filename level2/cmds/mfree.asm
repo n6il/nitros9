@@ -36,7 +36,7 @@ u0008    rmb   1
 u0009    rmb   1
 u000A    rmb   1
 u000B    rmb   2
-u000D    rmb   80
+linebuf  rmb   80
 u005D    rmb   7
 u0064    rmb   132
 u00E8    rmb   1135
@@ -45,17 +45,16 @@ size     equ   .
 name     fcs   /Mfree/
          fcb   edition
 
-L0013    fcs   " Blk Begin   End   Blks  Size"
+Hdr      fcs   " Blk Begin   End   Blks  Size"
          fcs   " --- ------ ------ ---- ------"
-L004E    fcs   "                   ==== ======"
-         fcc   "            Total:"
-         fcb   $A0 
+Ftr      fcs   "                   ==== ======"
+         fcs   "            Total: "
 
-start    leax  u000D,u
+start    leax  linebuf,u		get line buffer address
          stx   <u0009
          stx   <u000B
          lbsr  L016E
-         leay  <L0013,pcr
+         leay  <Hdr,pcr
          lbsr  L0183
          lbsr  L016E
          lbsr  L0183
@@ -114,7 +113,7 @@ L00E5    addd  $01,s
          std   <u0000
          bsr   L016E
          bra   L00AA
-L0109    leay  >L004E,pcr
+L0109    leay  >Ftr,pcr
          bsr   L0183
          bsr   L016E
          bsr   L0183
@@ -166,12 +165,13 @@ L0164    pshs  x
          sta   ,x+
          stx   <u000B
          puls  pc,x
+
 L016E    pshs  y,x,a
-         lda   #$0D
+         lda   #C$CR
          bsr   L0164
          ldx   <u0009
          stx   <u000B
-         ldy   #$0050
+         ldy   #80
          lda   #$01
          os9   I$WritLn 
          puls  pc,y,x,a
@@ -181,8 +181,10 @@ L0183    lda   ,y
          tst   ,y+
          bpl   L0183
          rts   
-L018E    fdb   $2710,$03e8,$0064,$000a,$0001
-         fcb   $ff
+
+DecTbl   fdb   10000,1000,100,10,1
+         fcb   $FF
+
 L0199    pshs  y,x,b,a
          lda   <u0004
          pshs  a
@@ -195,9 +197,9 @@ L01A7    lslb
 L01A9    lsr   ,s
          bne   L01A7
          leas  1,s
-         leax  <L018E,pcr
+         leax  <DecTbl,pcr
          ldy   #$2F20
-L01B6    leay  >$0100,y
+L01B6    leay  >256,y
          subd  ,x
          bcc   L01B6
          addd  ,x++
@@ -206,15 +208,15 @@ L01B6    leay  >$0100,y
          tst   ,x
          bmi   L01DE
          ldy   #$2F30
-         cmpd  #$3020
+         cmpd  #'0*256+C$SPAC
          bne   L01D8
          ldy   #$2F20
-         lda   #$20
+         lda   #C$SPAC
 L01D8    bsr   L0164
          puls  b,a
          bra   L01B6
 L01DE    bsr   L0164
-         lda   #$6B
+         lda   #'k
          bsr   L0164
          leas  $02,s
          puls  pc,y,x,b,a

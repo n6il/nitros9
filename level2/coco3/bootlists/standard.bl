@@ -31,6 +31,29 @@
 *../MODULES/RBF/x2.dd
 *../MODULES/RBF/x3.dd  
 *
+* SuperDriver Package (Cloud-9 product)
+*../MODULES/RBF/rbsuper.dr
+* Select Low level SCSI and/or IDE driver
+*../MODULES/RBF/lltc3.dr
+*../MODULES/RBF/llide.dr
+* SuperDriver descriptors - select as needed
+* SCSI descriptors (IDs 0-7)
+*../MODULES/RBF/s0_tc3.dd
+*../MODULES/RBF/s1_tc3.dd
+*../MODULES/RBF/s2_tc3.dd
+*../MODULES/RBF/s3_tc3.dd
+*../MODULES/RBF/s4_tc3.dd
+*../MODULES/RBF/s5_tc3.dd
+*../MODULES/RBF/s6_tc3.dd
+*../MODULES/RBF/s7_tc3.dd
+* SCSI HDB-DOS descriptor for drive 255
+*../MODULES/RBF/sh_ide_255.dd
+* IDE descriptors (master/slave)
+*../MODULES/RBF/i0_ide.dd
+*../MODULES/RBF/i1_ide.dd
+* IDE HDB-DOS descriptor for drive 255
+*../MODULES/RBF/ih_ide_255.dd
+*
 * SuperSCSI drivers (Cloud-9 product)
 * Select SCSI driver for TC^3, Ken-Ton or Disto Controller
 *../MODULES/RBF/superscsi_tc3.dr
