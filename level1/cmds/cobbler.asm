@@ -323,7 +323,7 @@ L0315    ldd   #$0001
          subd  <u004B,u
          addd  #$0001
          tfr   d,y
-         lda   #Bt.Track*256+$00
+         ldd   #Bt.Track*256+$00
          lbsr  Seek2LSN
          lda   <devpath
          ldx   <u004B,u
