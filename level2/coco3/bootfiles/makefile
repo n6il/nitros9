@@ -1,9 +1,9 @@
 include ../../rules.mak
 
 # Module directory
-MD		= ../MODULES
+MD		= ../modules
 # Commands directory
-CD		= ../CMDS
+CD		= ../cmds
 
 DEPENDS		= ./makefile
 
