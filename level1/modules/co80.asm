@@ -36,14 +36,14 @@ name     fcs   /CO80/
          fcb   edition
 
 start    equ   *
-Init     lbra  L0022
-Write    lbra  L0083
-GetStat  lbra  L0054
-SetStat  lbra  L007F
-Term     lbra  L004A
+         lbra  Init
+         lbra  Write
+         lbra  GetStat
+         lbra  SetStat
+         lbra  Term
 
 * Init
-L0022    ldx   #$FF78
+Init     ldx   #$FF78
          lda   #$06
          sta   $01,x
          sta   ,x
@@ -61,14 +61,14 @@ L0022    ldx   #$FF78
          orb   #$04
          bra   L004F
 * Term
-L004A    ldb   <$70,u
+Term     ldb   <$70,u
          andb  #$FB
 L004F    stb   <$70,u
          clrb  
          rts   
 * GetStat
-L0054    cmpa  #$25
-         bne   L007F
+GetStat  cmpa  #$25
+         bne   SetStat
          ldy   $06,y
          clra  
          ldb   <$58,u
@@ -89,11 +89,11 @@ L0054    cmpa  #$25
 L007D    clrb  
          rts   
 * SetStat
-L007F    ldb   #E$UnkSvc
+SetStat  ldb   #E$UnkSvc
          coma  
          rts   
 * Write
-L0083    ldx   #$FF78
+Write    ldx   #$FF78
          cmpa  #$0E
          bcs   L00B6
          cmpa  #$1E
