@@ -17,137 +17,144 @@
 *
 * This also includes Kevin Darlings SCF Editor patches.
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* V1.09  Speeded up L05CC (write char to device)        ??? 93/04/20
-*        routine by a few cycles
-*        - Slightly optomized Insert char
-*        - Move branch table so Read & ReadLn are 1
-*          cycle faster each
-*          Fixed SS.Fill so size is truncated @ 256 bytes
-*        - Added NO CR option to SS.Fill (for use with
-*          modified Shellplus V2.2 command history)
-*        Slight speedup to some of ReadLn parsing,      ??? 93/04/21
-*        TFM's in Open/Close
-*        - More optomization to read/write driver calls
-*        - Got rid of branch table @ L05E3 for speed
-* V1.10  Added Boisy Pitre's patch for non-sharable     ??? 93/05/25
-*        devices.
-*        - Saved 4 cycles in routine @ L042B            ??? 93/05/27
-*        - Modified Boisy's routine to not pshs/puls B
-*          (saves 2 cycles)
-*        - Changed buffer prefill of CR's to save 1 byte
-* V1.11  Changed a BRA to a LBRA to a straight 93/07/27
-*        LBRA in L0322
-*        - Optimized path option character routine @ L032C
-*        Modified vector table @ L033F to save 1 cycle  ??? 93/08/03
-*        on PD.PSC
-*        - Sped up uppercase conversion checks for ReadLn & WritLn
-*        - Changed 2 BRA's to L02F9 to do an LBRA straight to L05F8
-*          (ReadLn loop)
-*        - Moved L0565 routine so Reprint line, Insert & Delete char
-*          (on ReadLn) are 1 cycle faster / char printed
-*        - Changed 2 references to L0420 to go straight to L0565
-*        - Sped up ReadLn loop by 2 or 3 cycles per char read
-* V1.12  Sped up L0435 by 1 or 2 cycles (depending on   ??? 93/09/21
-*        branch)
-*        - Changed LDD ,S to TFR X,D (saves 1 cycle) @ L04F1 (Write & WritLn)
-*        - Modified L04F1 to use W without TFR (+1 byte, -3 cycles) (Write)
-*        Took LDX #0/LDU PD.BUF,y from L03B5 & merged   ??? 93/11/09
-*        in @ L028A, L02EF & L0381. Also changed BEQ
-*        @ L03A5 to skip re-loading X with 0.
-*        Moved L04B2 routine to allow a couple of BSR's ??? 93/11/10
-*        instead of LBSR's In READ.
-*        - Moved driver call right into READ loop
-*          (should save 25 cycles/char read)
-*        - Moved driver call right into L0565 (should
-*          save 12 cycles/char written on echo,
-*          line editing, etc.)
-*        Moved L02FE (ReadLn parsing) to end where      ??? 93/11/26
-*        ReadLn routine is Moved L03E2 so Read loop
-*        would be optomized for it (read char
-*        from driver) instead of L042B (write filled
-*        buffer to caller)
-*        - Changed LDA #C$NULL to CLRA
-*12/01/93Modified device write call (L056F) to preserve
-*        Y as well, to cut down on PSHS/PULS
-*        - Changed L03E2 & L03DA to exit immediately if ??? 93/12/01
-*          PD.DEV or PD.DV2 (depending on which routine)
-*          is empty (eliminated redundant LEAX ,X)
-*        Attempted mode to L03F1 to eliminate           ??? 94/05/31
-*        LDW #D$READ, changed LDX V$DRIV,x
-*                             ADDW M$Exec,x
-*                             JSR w,x
-*        to
-*                             LDW V$DRIV,x
-*                             ADDW M$Exec,w
-*                             JSR D$READ,w
-*        Did same to L05C9 & L056F
-*        (should speed up each by 1 cycle)
-*        Attempted to modify all M$Exec calls to use    ??? 94/06/07
-*        new V$DRIVEX (REQUIRES NEW IOMAN)
-*        - L01FA (Get/SetStat), L03F1 (Read), L05C9
-*          (Write), L056F (Write)
-*        - Changed L046A to use
-*          LDB V.BUSY,x...CMPB ,s...TFR B,A
-*        Changed TST <PD.EKO,y in read loop (L02BC)     ??? 94/06/08
-*        to LDB PD.EKO,y
-*        - Changed LEAX 1,X to LDB #1/ABX @ L02C4
-*        - Changed LEAX >L033F,pc @ L032C to use
-*          < (8 bit) version
-*        - Modified L02E5 to use D instead of X,
-*          allowing TSTA, and faster exit on 0 byte
-*          just BRAnching to L0453
-*        Changed LEAX 1,X to LDB #1/ABX @ L053D,        ??? 94/06/09
-*        L05F8, L0312, L0351, L03B8
-*        - Changed to L0573: All TST's changed to LDB's
-*        - Changed Open/Create init to use LEAX ,pc
-*          instead of BSR/PULS X
-*        - Changed TST PD.CNT,y to LDA PD.CNT,y @ close
-*        - Eliminated L010D, changed references to it
-*          to go to L0129
-*        - Eliminated useless LEAX ,X @ L0182, and changed
-*          BEQ @ L0182 to go to L012A instead of L0129
-*          (speeds CLOSE by 5 or 10 cycles)
-*        - Moved L06B9 into L012B, eliminate BSR/RTS, plus
-*        - Changed TST V.TYPE,x to LDB V.TYPE,x
-*        - Moved L0624 to just before L05F8 to eliminate
-*          BRA L05F8 (ReadLn)
-*        - Changed TST PD.EKO,y @ L0413 to LDB PD.EKO,y
-*        - Moved L0413-L0423 routines to later in code to
-*          allow short branches
-*        - As result of above, changed 6 LBxx to Bxx
-*        - Changed TST PD.MIN,y @ L04BB to LDA PD.MIN,y
-*        - Changed TST PD.RAW,y/TST PD.UPC,y @ L0523 to LDB's
-*        - Changed TST PD.ALF,y @ L052A to LDB
-*        - L053D: Moved TST PD.RAW,y to before LDA -1,u
-*          to speed up WRITE, changed it to LDB
-*        Changed TST PD.ALF,y to LDB @ L052A            ??? 94/06/10
-*        - Changed CLR V.WAKE,u to CLRA/STA V.WAKE,u @ L03F1 (Read)
-*        - Changed CLR V.BUSY,u to CLRA/STA V.BUSY,u @ L045D
-*        - Changed CLR PD.MIN,y to CLRA/STA PD.MIN,y,
-*          moved before LDA P$ID,x @ L04A7
-*        - Changed CLR PD.RAW,y @ L04BB to STA PD.RAW,
-*          since A already 0 to get there
-*        - Changed CLR V.PAUS,u to CLRA/STA V.PAUS,u @ L05A2
-*        - Changed TST PD.RAW,y to LDA PD.RAW,y @ L05A2
-*        - Changed TST PD.ALF,y to LDA PD.ALF,y @ L05A2
-*        - Changed CLR V.WAKE,u to CLRB/STB V.WAKE,u @ L05C9
-*        - Changed CLR V.WAKE,u to CLRB/STB V.WAKE,u @ L056F
-*        - Changed TST PD.UPC,y to LDB PD.UPC,y @ L0322
-*        - Changed TST PD.DLO,y/TST PD.EKO,y to LDB's @ L03A5
-*        Changed TST PD.UPC,y to LDB PD.UPC,y @ L0322   ??? 94/06/16
-*        - Changed TST PD.BSO,y to LDB PD.BSO,y @ L03BF
-*        - Changed TST PD.EKO,y to LDB PD.EKO,y @ L03BF
-*        Merged NitrOS-9 and TuneUp versions for        BGP 02/10/11
-*        single-source maintenance.  Note that
-*        the 6809 version of TuneUp never seemed
-*        to call GrfDrv directly to do fast screen
-*        writes (see note around g.done label)
-* 16r2   Removed pshs/puls of b from sharable code      BGP 02/05/16
-*        segment for non-NitrOS-9 because it was
-*        not needed.
-* 16r3   OS-9 Level Two now uses V$DRIVEX               BGP 02/08/16
+*          1993/04/20  ???
+* V1.09:
+* - Speeded up L05CC (write char to device) routine by a few cycles
+* - Slightly optimized Insert char.
+* - Move branch table so Read & ReadLn are 1 cycle faster each; fixed
+*   SS.Fill so size is truncated @ 256 bytes.
+* - Added NO CR option to SS.Fill (for use with modified Shellplus V2.2
+*   command history).
+*
+*          1993/04/21  ???
+* Slight speedup to some of ReadLn parsing, TFM's in Open/Close.
+* - More optimization to read/write driver calls
+* - Got rid of branch table @ L05E3 for speed
+*
+*          1993/05/21  ???
+* V1.10:
+* Added Boisy Pitre's patch for non-sharable devices.
+* - Saved 4 cycles in routine @ L042B
+* - Modified Boisy's routine to not pshs/puls B (saves 2 cycles).
+* - Changed buffer prefill of CR's to save 1 byte.
+*
+*          1993/07/27  ???
+* V1.11:
+* Changed a BRA to a LBRA to a straight LBRA in L0322.
+* - Optimized path option character routine @ L032C
+*
+*          1993/08/03  ???
+* Modified vector table @ L033F to save 1 cycle on PD.PSC
+* - Sped up uppercase conversion checks for ReadLn & WritLn
+* - Changed 2 BRA's to L02F9 to do an LBRA straight to L05F8 (ReadLn loop)
+* - Moved L0565 routine so Reprint line, Insert & Delete char (on ReadLn)
+*   are 1 cycle faster / char printed
+* - Changed 2 references to L0420 to go straight to L0565
+* - Sped up ReadLn loop by 2 or 3 cycles per char read
+*
+*          1993/09/21  ???
+* V1.12:
+* Sped up L0435 by 1 or 2 cycles (depending on branch)
+* - Changed LDD ,S to TFR X,D (saves 1 cycle) @ L04F1 (Write & WritLn)
+* - Modified L04F1 to use W without TFR (+1 byte, -3 cycles) (Write)
+*
+*          1993/11/09  ???
+* Took LDX #0/LDU PD.BUF,y from L03B5 & merged in @ L028A, L02EF & L0381.
+* Also changed BEQ @ L03A5 to skip re-loading X with 0.
+*
+*          1993/11/10  ???
+* Moved L04B2 routine to allow a couple of BSR's instead of LBSR's In READ.
+* - Moved driver call right into READ loop (should save 25 cycles/char read)
+* - Moved driver call right into L0565 (should save 12 cycles/char written on echo,
+*   line editing, etc.)
+*
+*          1993/11/26  ???
+* Moved L02FE (ReadLn parsing) to end where ReadLn routine is moved L03E2
+* so Read loop would be optimized for it (read char from driver) instead of
+* L042B (write filled buffer to caller).
+* Changed LDA #C$NULL to CLRA.
+*
+*          1993/12/01  ???
+* Modified device write call (L056F) to preserve Y as well, to cut down on
+* PSHS/PULS.
+* - Changed L03E2 & L03DA to exit immediately if PD.DEV or PD.DV2 (depending
+* on which routine) is empty (eliminated redundant LEAX ,X).
+*
+*          1994/05/31  ???
+* Attempted mode to L03F1 to eliminate LDW #D$READ, changed:
+*      LDX V$DRIV,x
+*      ADDW M$Exec,x
+*      JSR w,x
+* to:
+*      LDW V$DRIV,x
+*      ADDW M$Exec,w
+*      JSR D$READ,w
+* Did same to L05C9 & L056F (should speed up each by 1 cycle)
+*
+*          1994/06/07  ???
+* Attempted to modify all M$Exec calls to use new V$DRIVEX (REQUIRES NEW IOMAN)
+* - L01FA (Get/SetStat), L03F1 (Read), L05C9 (Write), L056F (Write)
+* - Changed L046A to use LDB V.BUSY,x...CMPB ,s...TFR B,A
+*
+*          1994/06/08  ???
+* Changed TST <PD.EKO,y in read loop (L02BC) to LDB PD.EKO,y
+* - Changed LEAX 1,X to LDB #1/ABX @ L02C4
+* - Changed LEAX >L033F,pc @ L032C to use < (8 bit) version
+* - Modified L02E5 to use D instead of X, allowing TSTA, and faster exit on 0 byte
+*   just BRAnching to L0453
+*
+*          1994/06/09  ???
+* Changed LEAX 1,X to LDB #1/ABX @ L053D, L05F8, L0312, L0351, L03B8
+* - Changed to L0573: All TST's changed to LDB's
+* - Changed Open/Create init to use LEAX,PC instead of BSR/PULS X
+* - Changed TST PD.CNT,y to LDA PD.CNT,y @ close
+* - Eliminated L010D, changed references to it to go to L0129
+* - Eliminated useless LEAX ,X @ L0182, and changed BEQ @ L0182 to go to L012A
+*   instead of L0129 (speeds CLOSE by 5 or 10 cycles)
+* - Moved L06B9 into L012B, eliminate BSR/RTS, plus
+* - Changed TST V.TYPE,x to LDB V.TYPE,x
+* - Moved L0624 to just before L05F8 to eliminate BRA L05F8 (ReadLn)
+* - Changed TST PD.EKO,y @ L0413 to LDB PD.EKO,y
+* - Moved L0413-L0423 routines to later in code to allow short branches
+* - As result of above, changed 6 LBxx to Bxx
+* - Changed TST PD.MIN,y @ L04BB to LDA PD.MIN,y
+* - Changed TST PD.RAW,y/TST PD.UPC,y @ L0523 to LDB's
+* - Changed TST PD.ALF,y @ L052A to LDB
+* - L053D: Moved TST PD.RAW,y to before LDA -1,u to speed up WRITE, changed it to LDB
+*
+*          1994/06/10  ???
+* Changed TST PD.ALF,y to LDB @ L052A
+* - Changed CLR V.WAKE,u to CLRA/STA V.WAKE,u @ L03F1 (Read)
+* - Changed CLR V.BUSY,u to CLRA/STA V.BUSY,u @ L045D
+* - Changed CLR PD.MIN,y to CLRA/STA PD.MIN,y, moved before LDA P$ID,x @ L04A7
+* - Changed CLR PD.RAW,y @ L04BB to STA PD.RAW, since A already 0 to get there
+* - Changed CLR V.PAUS,u to CLRA/STA V.PAUS,u @ L05A2
+* - Changed TST PD.RAW,y to LDA PD.RAW,y @ L05A2
+* - Changed TST PD.ALF,y to LDA PD.ALF,y @ L05A2
+* - Changed CLR V.WAKE,u to CLRB/STB V.WAKE,u @ L05C9
+* - Changed CLR V.WAKE,u to CLRB/STB V.WAKE,u @ L056F
+* - Changed TST PD.UPC,y to LDB PD.UPC,y @ L0322
+* - Changed TST PD.DLO,y/TST PD.EKO,y to LDB's @ L03A5
+*
+*          1994/06/16  ???
+* Changed TST PD.UPC,y to LDB PD.UPC,y @ L0322
+* - Changed TST PD.BSO,y to LDB PD.BSO,y @ L03BF
+* - Changed TST PD.EKO,y to LDB PD.EKO,y @ L03BF
+*
+*          2002/10/11  Boisy G. Pitre
+* Merged NitrOS-9 and TuneUp versions for single-source maintenance.  Note that
+* the 6809 version of TuneUp never seemed to call GrfDrv directly to do fast screen
+* writes (see note around g.done label).
+*
+*  16r2    2002/05/16  Boisy G. Pitre
+* Removed pshs/puls of b from sharable code segment for non-NitrOS-9 because it was
+* not needed.
+*
+*  16r3    2002/08/16  Boisy G. Pitre
+* OS-9 Level Two now uses V$DRIVEX.
 
          nam   SCF
          ttl   OS-9 Level Two Sequential Character File Manager

@@ -53,22 +53,29 @@
 *                                 R$B=SS.RsBit ($1E)
 *                                 R$X= LSB - Sector # of bitmap
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* ???    Started putting in comments from buggy 1.09    ??? 93/09/19
-*        code
-* ???    Fixed WP error bug on file delete              ??? 93/09/19
-*        Fixed FD read error bug in delete
-* ???    Fixed long overdue LHA bug                     ??? 94/07/15
-*        Modified M$Exec driver calls @ L11EB to use
-*        V$DRIVEX
-* ???    Changed L11EB to just PSHS/PULS A,X,PC         ??? 94/07/27
-*        instead of D,X,PC (saves 2 cycles per
-*        driver call)
-*        Changed BRA L12C6 @ L128E to PULS PC,U,X
-* ???    NitrOS-9 2.00 distribution                     ??? ??/??/??
-*  35    Fixed FD.SEG bug                               GH  ??/??/??
-*        Folded RBF 30 comments into this version       BGP 03/04/21
+*          1993/09/19  ???
+* Started putting in comments from buggy 1.09 code, fixed WP error
+* bug on file delete, fixed FD read error bug in delete.
+*
+*          1994/07/15  ???
+* Fixed long overdue LHA bug; modified M$Exec driver calls @ L11EB
+* to use V$DRIVEX.
+*
+*          1994/07/27  ???
+* Changed L11EB to just PSHS/PULS A,X,PC instead of D,X,PC (saves
+* 2 cycles per driver call); changed BRA L12C6 @ L128E to PULS PC,U,X
+*
+*          ????/??/??  ???
+* NitrOS-9 2.00 distribution.
+*
+*  35      ????/??/??  Gene Heskett
+* Fixed FD.SEG bug.
+*
+*          2003/04/21  Boisy G. Pitre
+* Folded RBF 30 comments into this version.
 
          nam   RBF
          ttl   Random Block File Manager

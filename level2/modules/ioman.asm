@@ -3,25 +3,31 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*        NitrOS-9 2.00 distribution                         ??/??/??
-*  13    Fixed a long-standing bug in IOMan where       BGP 02/04/30
-*        the I$Detach routine would deallocate the
-*        V$STAT area.  This is because the V$USRS
-*        offset on the stack, where the temporary
-*        device table entry was being built, contained
-*        zero.  I$Detach wouldn't bother to do a lookup
-*        to see if it should release the memory if this
-*        value was zero, so we now force I$Detach to do
-*        the lookup no matter the V$USRS value.
-*  13r2  Made more source changes, found discrepancy    BGP 02/12/31
-*        in value of POLSIZ in certain areas, fixed.
-*        Also added 6809 conditional code for future
-*        integration into OS-9 Level Two.
-*  13r3  Conditionalized out Level 3 code               BGP 02/03/04
-*  13r4  Fixed bug where wrong address was being put    BGP 03/04/09
-*        in V$STAT when driver INIT was called.
+*          ????/??/??  ???
+* NitrOS-9 2.00 distribution.
+*
+*  13      2002/04/30  Boisy G. Pitre
+* Fixed a long-standing bug in IOMan where the I$Detach routine would
+* deallocate the V$STAT area.  This is because the V$USRS offset on the
+* stack, where the temporary device table entry was being built, contained
+* zero.  I$Detach wouldn't bother to do a lookup to see if it should
+* release the memory if this value was zero, so we now force I$Detach to
+* do the lookup no matter the V$USRS value.
+*
+*  13r2    2002/12/31  Boisy G. Pitre
+* Made more source changes, found discrepancy in value of POLSIZ in
+* certain areas, fixed. Also added 6809 conditional code for future
+* integration into OS-9 Level Two.
+*
+*  13r3    2003/03/04  Boisy G. Pitre
+* Conditionalized out Level 3 code.
+*
+*  13r4    2003/04/09  Boisy G. Pitre
+* Fixed bug where wrong address was being put in V$STAT when driver's
+* INIT routine was called.
 
          nam   IOMan     
          ttl   OS-9 Level Two I/O Manager module

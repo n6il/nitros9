@@ -3,9 +3,9 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*        NitrOS-9 2.00 distribution
 
          nam   R0
          ttl   RAMMER Device Descriptor

@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 29     Obtained from L2 Upgrade archive               BGP 98/10/21
+*  29      1998/10/21  Boisy G. Pitre
+* Obtained from L2 Upgrade archive.
 
          nam   WindInt
          ttl   CoCo 3 Graphics interface module

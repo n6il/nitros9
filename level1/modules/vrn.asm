@@ -12,9 +12,11 @@
 * This program may not be sold for profit, individually or as part of a
 * package without the prior written permission of the copyright holder.
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 1      Created                                        BRI ??/??/??
+*   ?      2003/02/08  Bruce Isted
+* Created.
 
          nam   VRN
          ttl   VIRQ/RAM/Nil device driver

@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 10     Bruce Isted distribution version               BRI
+*  10      ????/??/??  Bruce Isted
+* Distribution version.
 
          nam   XACIA
          ttl   Enhanced 6551 driver
