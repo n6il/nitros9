@@ -1,5 +1,5 @@
 ********************************************************************
-* Init - OS-9 Level Two V3 Configuration module
+* Init - OS-9 Level Two Configuration module
 *
 * $Id$
 *
@@ -8,9 +8,15 @@
 * 204    Original OS-9 L2 Tandy distribution
 * 205    Added CC3IO and Clock sections                 BGP 98/10/12
 * 205b   Removed clock information from here            BGP 98/10/20
+*   1    Restarted edition number back to 1,            BGP 03/01/08
+*        removed CMDS/cc3go reference and just
+*        have cc3go so that in certain cases, cc3go
+*        can be in the bootfile, and so that ROMmed
+*        systems don't have to have a special init
+*        module.
 
          nam   Init
-         ttl   OS-9 Level Two V3 Configuration module
+         ttl   OS-9 Level Two Configuration module
 
          ifp1  
          use   defsfile
@@ -50,7 +56,7 @@ start    equ   *
 name     fcs   "Init"
          fcb   edition
 
-DefProg  fcs   "CMDS/CC3Go"
+DefProg  fcs   "CC3Go"
 DefDev   fcs   "/DD"
 DefCons  fcs   "/Term"
 DefBoot  fcs   "Boot"
