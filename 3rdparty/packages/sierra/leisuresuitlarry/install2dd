@@ -8,26 +8,21 @@ t
 makdir /DD/GAMES
 makdir /DD/GAMES/LSL
 makdir /DD/GAMES/LSL/CMDS
-* Deleting old objects from /DD/GAMES/LSL/CMDS, if any
-del /DD/GAMES/LSL/CMDS/sierra
-del /DD/GAMES/LSL/CMDS/mnln
-del /DD/GAMES/LSL/CMDS/scrn
-del /DD/GAMES/LSL/CMDS/shdw
 * Copying commands to /DD/GAMES/LSL/CMDS
-copy CMDS/AutoEx /DD/GAMES/LSL/CMDS/sierra
-copy CMDS/mnln /DD/GAMES/LSL/CMDS/mnln
-copy CMDS/scrn /DD/GAMES/LSL/CMDS/scrn
-copy CMDS/shdw /DD/GAMES/LSL/CMDS/shdw
+copy -r CMDS/AutoEx /DD/GAMES/LSL/CMDS/sierra
+copy -r CMDS/mnln -w=/DD/GAMES/LSL/CMDS
+copy -r CMDS/scrn -w=/DD/GAMES/LSL/CMDS
+copy -r CMDS/shdw -w=/DD/GAMES/LSL/CMDS
 * Copying support files to /DD/GAMES/LSL
-copy vol.0 /DD/GAMES/LSL/vol.0
-copy vol.1 /DD/GAMES/LSL/vol.1
-copy vol.2 /DD/GAMES/LSL/vol.2
-copy vol.3 /DD/GAMES/LSL/vol.3
-copy vol.4 /DD/GAMES/LSL/vol.4
-copy tOC /DD/GAMES/LSL/tOC
-copy object /DD/GAMES/LSL/object
-copy logDir /DD/GAMES/LSL/logDir
-copy picDir /DD/GAMES/LSL/picDir
-copy sndDir /DD/GAMES/LSL/sndDir
-copy viewDir /DD/GAMES/LSL/viewDir
+copy -r vol.0 -w=/DD/GAMES/LSL
+copy -r vol.1 -w=/DD/GAMES/LSL
+copy -r vol.2 -w=/DD/GAMES/LSL
+copy -r vol.3 -w=/DD/GAMES/LSL
+copy -r vol.4 -w=/DD/GAMES/LSL
+copy -r tOC -w=/DD/GAMES/LSL
+copy -r object -w=/DD/GAMES/LSL
+copy -r logDir -w=/DD/GAMES/LSL
+copy -r picDir -w=/DD/GAMES/LSL
+copy -r sndDir -w=/DD/GAMES/LSL
+copy -r viewDir -w=/DD/GAMES/LSL
 * All Done!

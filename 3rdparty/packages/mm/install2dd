@@ -8,30 +8,20 @@ t
 makdir /DD/GAMES
 makdir /DD/GAMES/MM
 makdir /DD/GAMES/MM/CMDS
-* Deleting old objects from /DD/GAMES/MM/CMDS, if any
-del /DD/GAMES/MM/CMDS/mm
-del /DD/GAMES/MM/CMDS/mod1.dat
-del /DD/GAMES/MM/CMDS/mod2.dat
-del /DD/GAMES/MM/CMDS/mod3.dat
-del /DD/GAMES/MM/CMDS/mod4.dat
-del /DD/GAMES/MM/CMDS/mod5.dat
-del /DD/GAMES/MM/CMDS/mod6.sbr
-del /DD/GAMES/MM/CMDS/mod7.sbr
-del /DD/GAMES/MM/CMDS/mod8.sbr
 * Copying commands to /DD/GAMES/MM/CMDS
-copy CMDS/AutoEx /DD/GAMES/MM/CMDS/mm
-copy CMDS/mod1.dat /DD/GAMES/MM/CMDS/mod1.dat
-copy CMDS/mod2.dat /DD/GAMES/MM/CMDS/mod2.dat
-copy CMDS/mod3.dat /DD/GAMES/MM/CMDS/mod3.dat
-copy CMDS/mod4.dat /DD/GAMES/MM/CMDS/mod4.dat
-copy CMDS/mod5.dat /DD/GAMES/MM/CMDS/mod5.dat
-copy CMDS/mod6.sbr /DD/GAMES/MM/CMDS/mod6.sbr
-copy CMDS/mod7.sbr /DD/GAMES/MM/CMDS/mod7.sbr
-copy CMDS/mod8.sbr /DD/GAMES/MM/CMDS/mod8.sbr
+copy -r CMDS/AutoEx /DD/GAMES/MM/CMDS/mm
+copy -r CMDS/mod1.dat -w=/DD/GAMES/MM/CMDS
+copy -r CMDS/mod2.dat -w=/DD/GAMES/MM/CMDS
+copy -r CMDS/mod3.dat -w=/DD/GAMES/MM/CMDS
+copy -r CMDS/mod4.dat -w=/DD/GAMES/MM/CMDS
+copy -r CMDS/mod5.dat -w=/DD/GAMES/MM/CMDS
+copy -r CMDS/mod6.sbr -w=/DD/GAMES/MM/CMDS
+copy -r CMDS/mod7.sbr -w=/DD/GAMES/MM/CMDS
+copy -r CMDS/mod8.sbr -w=/DD/GAMES/MM/CMDS
 * Copying support files to /DD/GAMES/MM
-copy mm.ttl /DD/GAMES/MM/mm.ttl
-copy mm.lib /DD/GAMES/MM/mm.lib
-copy mm.pnl /DD/GAMES/MM/mm.pnl
-copy global.dat /DD/GAMES/MM/global.dat
-copy mod7.lib /DD/GAMES/MM/mod7.lib
+copy -r mm.ttl -w=/DD/GAMES/MM
+copy -r mm.lib -w=/DD/GAMES/MM
+copy -r mm.pnl -w=/DD/GAMES/MM
+copy -r global.dat -w=/DD/GAMES/MM
+copy -r mod7.lib -w=/DD/GAMES/MM
 * All Done!
