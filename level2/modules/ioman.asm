@@ -424,7 +424,7 @@ Loop2    clr   ,u+       	clear newly alloc'ed mem
          ENDC            
          ldd   HWPG,s     get hwpage and upper addr
 * Code here appears to be for Level III?
-         IFEQ  Level-3
+         IFGT  Level-2
          bsr   L01D1     
          std   <DATBYT2,s     save off
          ldu   #$0000    
@@ -554,7 +554,7 @@ L02D1    ldx   $01,s     	get ptr to dev table
          ldx   $01,s      	get old U on stack
          ldx   V$DESC,x  
 * Code here appears to be for Level III?
-         IFEQ  Level-3
+         IFGT  Level-2
          ldd   M$Port,x  
          beq   L032B     
          lbsr  L01D1     
