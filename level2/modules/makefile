@@ -5,7 +5,8 @@ TPB		= ../../3rdparty/booters
 
 BOOTERS		= boot_1773
 KERNELS		= os9p1 os9p2
-SYSMODS		= rel rominfo rom_vectors ioman init pakrom
+ROMMODS         = rominfo rom_vectors cc3go_rom pakrom
+SYSMODS		= rel ioman init cc3go
 CLOCKS		= clock clock2_soft clock2_disto clock2_146818
 FMGRS		= scf.mn rbf.mn pipeman.mn pipeman_named.mn
 DRIVERS		= cc3disk.dr cc3hdisk.dr cc3io.dr modpak.dr \
@@ -25,7 +26,6 @@ DESCS		= d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 WINDESCS	= term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
 		w3.dw w4.dw w5.dw w6.dw w7.dw v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw
-SYSGOS		= cc3go cc3go_rom
 
 #
 # The following macros represent a collection of modules for various
@@ -39,12 +39,14 @@ KERNEL_IDE	= rel $(TPB)/boot_ide os9p1
 # These kernels are intended to be ROMmed in a disk controller or program pak
 KERNEL_PAK_KENTON	= pakrom $(KERNEL_KENTON)
 
-ALLOBJS		= $(BOOTERS) $(KERNELS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
-		$(DRIVERS) $(IOSUBS) $(DESCS) $(WINDESCS) $(SYSGOS) \
+ALLOBJS		=  $(BOOTERS) $(KERNELS) $(ROMMODS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
+		$(DRIVERS) $(IOSUBS) $(DESCS) $(WINDESCS) \
 		kernel_1773 kernel_rom kernel_kenton kernel_pak_kenton \
 		kernel_rampak kernel_ide
 
 all:	$(ALLOBJS)
+	$(CHMOD) 755 $(ALLOBJS)
+
 
 # Special cases here
 sacia.dr: xacia.asm
@@ -79,6 +81,13 @@ rominfo: rominfo.asm
 
 clean:
 	$(RM) $(ALLOBJS)
+
+showobjs:
+	@$(ECHO) $(ALLOBJS)
+
+showcopyobjs:
+	@$(ECHO) $(BOOTERS) $(KERNELS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
+		$(DRIVERS) $(IOSUBS) $(DESCS) $(WINDESCS) \
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)

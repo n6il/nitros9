@@ -42,6 +42,7 @@ BOOTFILE_KENTON	= $(MD)/os9p2 $(MD)/ioman $(MD)/rbf.mn $(MD)/clock $(MD)/clock2_
 BOOTFILES	= bootfile_1773 bootfile_kenton bootfile_rom
 
 all:	$(BOOTFILES)
+	$(CHMOD) 600 $(BOOTFILES)
 
 bootfile_1773: $(BOOTFILE_1773) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_1773)>$@

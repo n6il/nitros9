@@ -9,7 +9,6 @@ CMDS		= attr binex build cmp cobbler copy date \
 		setime shell_21 sleep tee tmode tsmon unlink \
 		verify wcreate xmode
 SUBS            = gfx2 gfx inkey
-ALLOBJS		= $(CMDS) $(SUBS)
 
 SHELLMODS	= shell_21 build copy date deiniz del dir display echo iniz \
 		link list load mdir merge mfree procs tmode unlink
@@ -20,9 +19,11 @@ LEVEL1FILES	= binex.asm attr.asm build.asm cmp.asm cobbler.asm copy.asm date.asm
 		list.asm load.asm login.asm makdir.asm merge.asm os9gen.asm pwd.asm pxd.asm rename.asm \
 		save.asm setime.asm sleep.asm tee.asm tmode.asm tuneport.asm tsmon.asm verify.asm xmode.asm
 
+ALLOBJS		= $(CMDS) $(SUBS)
+
 # Files not compilable by os9asm: config
 all:	$(ALLOBJS) shell utilpak1 $(DEPENDS)
-	$(CHMOD) a+rx $(ALLOBJS) shell utilpak1
+	$(CHMOD) 755 $(ALLOBJS) shell utilpak1
 
 shell:  $(SHELLMODS) $(DEPENDS)
 	$(MERGE) $(SHELLMODS)>$@
@@ -41,6 +42,9 @@ $(LEVEL1FILES): ../../level1/CMDS/$@
 
 clean:
 	$(RM) $(ALLOBJS) $(LEVEL1FILES) shell utilpak1
+
+showobjs:
+	@$(ECHO) $(ALLOBJS) shell utilpak1
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
