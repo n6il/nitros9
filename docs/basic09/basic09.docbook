@@ -1,6 +1,8 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
+<?xml version="1.0" ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY b09 "BASIC09">
-  <!ENTITY minus "&#045;">
+  <!ENTITY mdash   "&#8212;">
 ]>
 <book id="basic09" lang="en">
  <bookinfo>
@@ -847,7 +849,7 @@ the mode of &b09; by exiting the command mode and entering another mode.
 These commands are:
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
+<colspec colwidth="1in"/>
 <tbody>
 <row>
 <entry>RUN</entry>
@@ -872,7 +874,7 @@ is used.
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.3in">
+<colspec colwidth="1.3in"/>
 <tbody>
 <row>
 <entry>[ ]</entry>
@@ -984,7 +986,7 @@ They have completely different functions.
 
 <cmdsynopsis>
 <command>EDIT [&lt;procname>]</command>
-<sbr>
+<sbr/>
 <command>E [&lt;procname>]</command>
 </cmdsynopsis>
 <para>
@@ -1005,7 +1007,7 @@ EDIT printreport
 </para>
 <cmdsynopsis>
 <command>KILL [&lt;procname> {,&lt;procname>}]</command>
-<sbr>
+<sbr/>
 <command>KILL*</command>
 </cmdsynopsis>
 <para>
@@ -1026,7 +1028,7 @@ kill prog1, prog2, prog7
 
 <cmdsynopsis>
 <command>LIST [&lt;procname> {,&lt;procname>}] [> &lt;pathlist>]</command>
-<sbr>
+<sbr/>
 <command>LIST* [&lt;pathlist>]</command>
 </cmdsynopsis>
 <para>
@@ -1093,7 +1095,7 @@ load quadratics
 </para>
 <cmdsynopsis>
 <command>MEM</command>
-<sbr>
+<sbr/>
 <command>MEM [&lt;number>]</command>
 </cmdsynopsis>
 <para>
@@ -1117,7 +1119,7 @@ MEM 18000
 </para>
 <cmdsynopsis>
 <command>PACK [&lt;procname> {,&lt;procname>}] [> &lt;pathlist>]</command>
-<sbr>
+<sbr/>
 <command>PACK* [&lt;pathlist>]</command>
 </cmdsynopsis>
 <para>
@@ -1141,7 +1143,7 @@ procedure:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="2in">
+<colspec colwidth="2in"/>
 <tbody>
 <row>
 <entry>pack sort</entry>
@@ -1236,7 +1238,7 @@ run power($32, sin(pi/2))
 
 <cmdsynopsis>
 <command>SAVE [&lt;procname> { &lt;procname>} [> &lt;pathlist>]]</command>
-<sbr>
+<sbr/>
 <command>SAVE* [&lt;pathlist>]</command>
 </cmdsynopsis>
 <para>
@@ -1307,7 +1309,7 @@ in detail later in this chapter.
 <table frame="none">
 <title>Edit Mode Commands</title>
 <tgroup cols="2">
-<colspec colwidth="2in">
+<colspec colwidth="2in"/>
 <tbody>
 <row>
 <entry>&lt;cr></entry>
@@ -1322,11 +1324,11 @@ in detail later in this chapter.
 <entry>move edit pointer to end of text</entry>
 </row>
 <row>
-<entry>&minus;</entry>
+<entry>-</entry>
 <entry>move edit pointer backward</entry>
 </row>
 <row>
-<entry>&minus;*</entry>
+<entry>-*</entry>
 <entry>move edit pointer to beginning of text</entry>
 </row>
 <row>
@@ -1467,7 +1469,7 @@ The line-number oriented commands are:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="2in">
+<colspec colwidth="2in"/>
 <tbody>
 <row>
 <entry>&lt;line#> &lt;text></entry>
@@ -1542,22 +1544,22 @@ presently located.
 </para>
 <sect2><title>Moving the Edit Pointer</title>
 <para>
-The "+" and "&minus;" are used to reposition the edit pointer:
+The "+" and "-" are used to reposition the edit pointer:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="2in">
+<colspec colwidth="2in"/>
 <tbody>
 <row>
-<entry>&minus;</entry>
+<entry>-</entry>
 <entry>moves backward one line</entry>
 </row>
 <row>
-<entry>&minus; &lt;number></entry>
+<entry>- &lt;number></entry>
 <entry>moves backward n lines</entry>
 </row>
 <row>
-<entry>&minus;*</entry>
+<entry>-*</entry>
 <entry>moves to the beginning of the procedure</entry>
 </row>
 <row>
@@ -1612,7 +1614,7 @@ The first form deletes the &lt;number> of lines starting at the current edit
 pointer location.
 The second form deletes ALL lines in the procedure (caution!).
 The editor accepts
-"+*" and "&minus;*" to mean to the end, or to the beginning of the procedure
+"+*" and "-*" to mean to the end, or to the beginning of the procedure
 respectively. If the number is negative, that many lines BEFORE the
 current line is deleted.
 If a line number is omitted, only the current line is deleted.
@@ -1815,7 +1817,7 @@ example, the following OS-9 command lines use this feature:
 
 <programlisting>
 OS9: &b09; printreport("Past Due Accounts")
-OS9: &b09; evaluate(COS(7.8814)/12.075,&minus;22.5,129.055)
+OS9: &b09; evaluate(COS(7.8814)/12.075,-22.5,129.055)
 </programlisting>
 
 </para>
@@ -1938,7 +1940,7 @@ breakpoints, or after non-fatal run-time errors.
 
 <cmdsynopsis>
 <command>DEG</command>
-<sbr>
+<sbr/>
 <command>RAD</command>
 </cmdsynopsis>
 These commands select either degrees or radians as the angle unit
@@ -2030,7 +2032,7 @@ the one following the "FOR" statement.
 
 <cmdsynopsis>
 <command>TRON</command>
-<sbr>
+<sbr/>
 <command>TROFF</command>
 </cmdsynopsis>
 These commands turn the suspended procedure's trace mode on and off. In
@@ -2212,8 +2214,8 @@ overview of the characteristics of each type:
 <table frame="none">
 <title>&b09; Atomic Data Type Summary</title>
 <tgroup cols="3">
-<colspec colwidth="1.2in">
-<colspec colwidth="2.1in">
+<colspec colwidth="1.2in"/>
+<colspec colwidth="2.1in"/>
 <thead>
 <row>
 <entry>Type:</entry>
@@ -2229,12 +2231,12 @@ overview of the characteristics of each type:
 </row>
 <row>
 <entry>INTEGER</entry>
-<entry>Whole Numbers ­32768 to 32767</entry>
+<entry>Whole Numbers -32768 to 32767</entry>
 <entry>Two bytes</entry>
 </row>
 <row>
 <entry>REAL</entry>
-<entry>Floating Point +/­ 1*10^38</entry>
+<entry>Floating Point +/- 1*10^38</entry>
 <entry>Five bytes</entry>
 </row>
 <row>
@@ -2278,7 +2280,7 @@ modulo 256) without error.
 <sect2><title>Type INTEGER</title>
 <para>
 INTEGER variables consist of two bytes of storage, and hold a
-numeric value in the range ­32768 through 32767 as
+numeric value in the range -32768 through 32767 as
 signed 16-bit data. Decimal points are not allowed. INTEGER constants
 may also be represented as hexadecimal values in the range $0000
 through $FFFF to facilitate address calculations. INTEGER values
@@ -2288,7 +2290,7 @@ requires less storage than REAL values.
 <para>
 Arithmetic which results in values outside the INTEGER range does not
 cause run-time errors but instead "wraps around" modulo 65536; i.e.,
-32767 + 1 yields &minus;32768. Division of an integer by another integer
+32767 + 1 yields -32768. Division of an integer by another integer
 yields an integer result, and any remainder is discarded. The programmer
 should be aware that numeric comparisons made on values in the range
 32767 through 65535 will actually be dealing with negative numbers,
@@ -2324,7 +2326,7 @@ byte:     +0       +1       +2       +3       +4
 
 </para>
 <para>
-The exponent covers the range 2.938735877 * 10^&minus;39 (2^&minus;128)
+The exponent covers the range 2.938735877 * 10^-39 (2^-128)
 through 1.701411835 * 10^38 (2^127) as powers of 2. Operations which
 result in values out of the representation range cause overflow or
 underflow errors (which may be handled automatically by the ON ERROR
@@ -2455,8 +2457,8 @@ examples of REAL values:
 <entry>9.8433218</entry>
 </row>
 <row>
-<entry>&minus;.01</entry>
-<entry>&minus;999.000099</entry>
+<entry>-.01</entry>
+<entry>-999.000099</entry>
 </row>
 <row>
 <entry>100000000</entry>
@@ -2464,7 +2466,7 @@ examples of REAL values:
 </row>
 <row>
 <entry>1.95E+12</entry>
-<entry>&minus;99999.9E-33</entry>
+<entry>-99999.9E-33</entry>
 </row>
 </tbody>
 </tgroup>
@@ -2475,7 +2477,7 @@ examples of REAL values:
 <para>
 
 Numbers that do not have a decimal point and are in the range of
-­32768 to +32767 are treated as INTEGER numbers.
+-32768 to +32767 are treated as INTEGER numbers.
 &b09; will also accept integer constants in hexadecimal in the range 0 to
 $FFFF. Hex numbers must have a leading dollar sign. Here are some
 examples of INTEGER constants:
@@ -2485,7 +2487,7 @@ examples of INTEGER constants:
 <tbody>
 <row>
 <entry>12</entry>
-<entry>&minus;3000</entry>
+<entry>-3000</entry>
 <entry>64000</entry>
 </row>
 <row>
@@ -2495,8 +2497,8 @@ examples of INTEGER constants:
 </row>
 <row>
 <entry>0</entry>
-<entry>&minus;12</entry>
-<entry>&minus;32768</entry>
+<entry>-12</entry>
+<entry>-32768</entry>
 </row>
 </tbody>
 </tgroup>
@@ -2744,7 +2746,7 @@ available and the types they accept and produce.
 <table frame="none">
 <title>&b09; Expression Operators</title>
 <tgroup cols="4">
-<colspec colwidth="0.8in">
+<colspec colwidth="0.8in"/>
 <thead>
 <row rowsep="1">
 <entry>Operator</entry>
@@ -2755,7 +2757,7 @@ available and the types they accept and produce.
 </thead>
 <tbody>
 <row>
-<entry>&minus;</entry>
+<entry>-</entry>
 <entry>Negation</entry>
 <entry>NUMERIC</entry>
 <entry>NUMERIC</entry>
@@ -2785,7 +2787,7 @@ available and the types they accept and produce.
 <entry>NUMERIC</entry>
 </row>
 <row>
-<entry>­</entry>
+<entry>-</entry>
 <entry>Subtraction</entry>
 <entry>NUMERIC</entry>
 <entry>NUMERIC</entry>
@@ -2874,21 +2876,21 @@ in precedence order from highest to lowest.
 
 <informaltable frame="none">
 <tgroup cols="7">
-<colspec colname="c1">
-<colspec colname="c2">
-<colspec colname="c3">
-<colspec colnum="7" colname="c7">
-<spanspec spanname="firstop" namest="c2" nameend="c2">
-<spanspec spanname="secondop" namest="c3" nameend="c7">
-<spanspec spanname="onlyop" namest="c2" nameend="c7">
-<spanspec spanname="all" namest="c1" nameend="c7">
+<colspec colname="c1"/>
+<colspec colname="c2"/>
+<colspec colname="c3"/>
+<colspec colnum="7" colname="c7"/>
+<spanspec spanname="firstop" namest="c2" nameend="c2"/>
+<spanspec spanname="secondop" namest="c3" nameend="c7"/>
+<spanspec spanname="onlyop" namest="c2" nameend="c7"/>
+<spanspec spanname="all" namest="c1" nameend="c7"/>
 <tbody>
 <row>
 <entry spanname="all">Highest Precedence</entry>
 </row>
 <row>
 <entry spanname="firstop">NOT</entry>
-<entry spanname="secondop">­(negate)</entry>
+<entry spanname="secondop">-(negate)</entry>
 </row>
 <row>
 <entry spanname="firstop">^</entry>
@@ -2900,7 +2902,7 @@ in precedence order from highest to lowest.
 </row>
 <row>
 <entry spanname="firstop">+</entry>
-<entry spanname="secondop">­</entry>
+<entry spanname="secondop">-</entry>
 </row>
 <row>
 <entry spanname="firstop">></entry>
@@ -2958,8 +2960,8 @@ but the simpler form on the left will always be generated by the decompiler.
 <entry>a:= (b**(c**d))/e</entry>
 </row>
 <row>
-<entry>a:= ­(b)**2</entry>
-<entry>a:= (­b)**2</entry>
+<entry>a:= -(b)**2</entry>
+<entry>a:= (-b)**2</entry>
 </row>
 <row>
 <entry>a:=b=c</entry>
@@ -3009,7 +3011,7 @@ DEG/RAD statement descriptions).
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
+<colspec colwidth="1.5in"/>
 <tbody>
 <row>
 <entry>SIN(&lt;num>)</entry>
@@ -3088,7 +3090,7 @@ type of the input parameter(s).
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
+<colspec colwidth="1.5in"/>
 <tbody>
 <row>
 <entry>ABS(&lt;num>)</entry>
@@ -3096,7 +3098,7 @@ type of the input parameter(s).
 </row>
 <row>
 <entry>SGN(&lt;num>)</entry>
-<entry>signum of &lt;num>: ­1 if &lt;num> &lt; 0; 0 if &lt;num> = 0; or 1 if &lt;num> > 0</entry>
+<entry>signum of &lt;num>: -1 if &lt;num> &lt; 0; 0 if &lt;num> = 0; or 1 if &lt;num> > 0</entry>
 </row>
 <row>
 <entry>SQ(&lt;num>)</entry>
@@ -3115,7 +3117,7 @@ The following functions can return results of type INTEGER or BYTE:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
+<colspec colwidth="1.5in"/>
 <tbody>
 <row>
 <entry>FIX(&lt;num>)</entry>
@@ -3168,7 +3170,7 @@ with the BOOLEAN-type operators.
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
+<colspec colwidth="1.5in"/>
 <tbody>
 <row>
 <entry>LAND(&lt;num>,&lt;num>)</entry>
@@ -3194,7 +3196,7 @@ These functions return a result of type STRING:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.7in">
+<colspec colwidth="1.7in"/>
 <tbody>
 <row>
 <entry>CHR$(&lt;int>)</entry>
@@ -3235,7 +3237,7 @@ The following functions return BOOLEAN values:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
+<colspec colwidth="1.5in"/>
 <tbody>
 <row>
 <entry>TRUE</entry>
@@ -3319,11 +3321,11 @@ Assignment statements are used for computing or initializing of variables.
 Syntax:
 <cmdsynopsis>
 <command>[LET] &lt;var> := &lt;expr></command>
-<sbr>
+<sbr/>
 <command>[LET] &lt;var> = &lt;expr></command>
-<sbr>
+<sbr/>
 <command>[LET] &lt;struct> := &lt;struct></command>
-<sbr>
+<sbr/>
 <command>[LET] &lt;struct> = &lt;struct></command>
 </cmdsynopsis>
 
@@ -3436,9 +3438,9 @@ IF payment &lt; balance then 400
 Syntax:
 <cmdsynopsis>
 <command>IF &lt;bool expr> THEN &lt;statements></command>
-<sbr>
+<sbr/>
 <command>[ ELSE &lt;statements> ]</command>
-<sbr>
+<sbr/>
 <command>ENDIF</command>
 </cmdsynopsis>
 This kind of IF structure evaluates the expression to a BOOLEAN
@@ -3476,7 +3478,7 @@ ENDIF
 Syntax:
 <cmdsynopsis>
 <command>FOR &lt;var> = &lt;expr> TO &lt;expr> [ STEP &lt;expr> ]</command>
-<sbr>
+<sbr/>
 <command>NEXT &lt;var></command>
 </cmdsynopsis>
 Creates a loop that usually executes a specified number of times
@@ -3506,12 +3508,12 @@ FOR counter = 1 to 100 step .5
 NEXT counter
 
 
-FOR var = min­1 TO min+max STEP increment-adjustment
+FOR var = min-1 TO min+max STEP increment-adjustment
   PRINT var
 NEXT var
 
 
-FOR x = 1000 TO 1 STEP ­1
+FOR x = 1000 TO 1 STEP -1
   PRINT x
 NEXT x
 </programlisting>
@@ -3522,7 +3524,7 @@ NEXT x
 Syntax:
 <cmdsynopsis>
 <command>WHILE &lt;bool expr> DO</command>
-<sbr>
+<sbr/>
 <command>ENDWHILE</command>
 </cmdsynopsis>
 This is a loop construct with the test at the "top" of the
@@ -3553,7 +3555,7 @@ backward$ := ""
 INPUT word$
 WHILE LEN(word$) > 0 DO
   backward$ := backward$ + RIGHT$(word$,1)
-  word$ := LEFT$(word$,LEN(word$)­1)
+  word$ := LEFT$(word$,LEN(word$)-1)
 ENDWHILE
 word$ := backward$
 PRINT word$
@@ -3566,7 +3568,7 @@ PRINT word$
 Syntax:
 <cmdsynopsis>
 <command>REPEAT</command>
-<sbr>
+<sbr/>
 <command>UNTIL &lt;bool expr></command>
 </cmdsynopsis>
 This is a loop that has its test at the bottom of the loop. The
@@ -3588,7 +3590,7 @@ temp := 1.
 INPUT "Factorial of what number? ",n
 REPEAT
   temp := temp * n
-  n := n­1
+  n := n-1
 UNTIL n &lt;= 1.0
 PRINT "The factorial is "; temp
 </programlisting>
@@ -3599,13 +3601,13 @@ PRINT "The factorial is "; temp
 Syntax:
 <cmdsynopsis>
 <command>LOOP</command>
-<sbr>
+<sbr/>
 <command>ENDLOOP</command>
 </cmdsynopsis>
 
 <cmdsynopsis>
 <command>EXITIF &lt;bool expr> THEN &lt;statements></command>
-<sbr>
+<sbr/>
 <command>ENDEXIT</command>
 </cmdsynopsis>
 These related types of statements can be used to construct
@@ -3647,10 +3649,10 @@ LOOP
 EXITIF x &lt; 0 THEN
   PRINT "x became zero first"
 ENDEXIT
-  x := x­1
+  x := x-1
 EXITIF y &lt; 0 THEN PRINT "y became zero first"
 ENDEXIT
-  y := y­1
+  y := y-1
 ENDLOOP
 </programlisting>
 </informalexample>
@@ -3680,7 +3682,7 @@ GOTO 1000
 Syntax:
 <cmdsynopsis>
 <command>GOSUB &lt;line #></command>
-<sbr>
+<sbr/>
 <command>RETURN</command>
 </cmdsynopsis>
 The GOSUB statement
@@ -3714,7 +3716,7 @@ Example:
 Syntax:
 <cmdsynopsis>
 <command>ON &lt;int expr> GOTO &lt;line #> {,&lt;line #>}</command>
-<sbr>
+<sbr/>
 <command>ON &lt;int expr> GOSUB &lt;line #> {,&lt;line #>}</command>
 </cmdsynopsis>
 These statements evaluate an integer expression and use the result to select
@@ -3823,7 +3825,7 @@ shells, or affect the current execution of the procedure.
 Syntax:
 <cmdsynopsis>
 <command>RUN &lt;proc name> [ ( &lt;param> {,&lt;param>} ) ]</command>
-<sbr>
+<sbr/>
 <command>RUN &lt;string var> [ ( &lt;param> {,&lt;param>} ) ]</command>
 </cmdsynopsis>
 This statement
@@ -4168,7 +4170,7 @@ PAUSE "now outside main loop"
 Syntax:
 <cmdsynopsis>
 <command>CHD &lt;str expr></command>
-<sbr>
+<sbr/>
 <command>CHX &lt;str expr></command>
 </cmdsynopsis>
 These statements
@@ -4183,7 +4185,7 @@ the OS-9 User's Guide.
 Syntax:
 <cmdsynopsis>
 <command>DEG</command>
-<sbr>
+<sbr/>
 <command>RAD</command>
 </cmdsynopsis>
 These statements
@@ -4197,7 +4199,7 @@ is radians.
 Syntax:
 <cmdsynopsis>
 <command>BASE 0</command>
-<sbr>
+<sbr/>
 <command>BASE 1</command>
 </cmdsynopsis>
 
@@ -4212,7 +4214,7 @@ is always index one.
 Syntax:
 <cmdsynopsis>
 <command>TRON</command>
-<sbr>
+<sbr/>
 <command>TROFF</command>
 </cmdsynopsis>
 These statements turn the trace mode on or off, and are useful for debugging.
@@ -4225,7 +4227,7 @@ it occurs.
 Syntax:
 <cmdsynopsis>
 <command>REM &lt;chars></command>
-<sbr>
+<sbr/>
 <command>(* &lt;chars> [ *) ]</command>
 </cmdsynopsis>
 These statements are used to put comments in programs. The second form
@@ -4293,16 +4295,16 @@ Therefore, TYPE is only used in programs that use complex data structures.
 Syntax:
 <cmdsynopsis>
 <command>DIM &lt;decl seq> {; &lt;decl seq>}</command>
-<sbr>
+<sbr/>
 <command>&lt;decl seq> := &lt;decl> {, &lt;decl>} : &lt;type>}</command>
-<sbr>
+<sbr/>
 <command>&lt;decl> := &lt;name> [, &lt;subscript> ]</command>
-<sbr>
+<sbr/>
 <command>&lt;subscr> := ( &lt;const> [,&lt;const> [,&lt;const>]] )</command>
-<sbr>
+<sbr/>
 <command>&lt;type> := BYTE | INTEGER | REAL | BOOLEAN |
  STRING | STRING &lt;max len> | &lt;user defined type></command>
-<sbr>
+<sbr/>
 <command>&lt;user def> := user defined by TYPE statement</command>
 </cmdsynopsis>
 The DIM statement is used to declare simple variables,
@@ -4395,7 +4397,7 @@ BASE0
 FOR index := 0 TO 99
   list(index).data := "secret message " + STR$(index)
   list(index).ptr.fwd := index+1
-  list(index).ptr.back := index­1
+  list(index).ptr.back := index-1
 NEXT index
 (* fix the ends *)
 list(0).ptr.back := 99
@@ -4448,16 +4450,16 @@ Syntax:
 
 <cmdsynopsis>
 <command>TYPE &lt;type decl> {; &lt;type decl>}</command>
-<sbr>
+<sbr/>
 <command>&lt;type decl> := &lt;field name> . &lt;decl> : &lt;type>}</command>
-<sbr>
+<sbr/>
 <command>&lt;decl> := &lt;name> [, &lt;subscript> ]</command>
-<sbr>
+<sbr/>
 <command>&lt;subscript> := ( &lt;const> [,&lt;const> [,&lt;const>]] )</command>
-<sbr>
+<sbr/>
 <command>&lt;type> := BYTE | INTEGER | REAL | BOOLEAN |
  STRING | STRING [&lt;max len>] | &lt;user defined></command>
-<sbr>
+<sbr/>
 <command>&lt;user defined> := user defined by TYPE statement</command>
 </cmdsynopsis>
 
@@ -4588,7 +4590,7 @@ These are automatically "opened" for you and should not be closed except
 in very special circumstances. The standard I/O path numbers are:
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.3in">
+<colspec colwidth="0.3in"/>
 <tbody>
 <row>
 <entry>0</entry>
@@ -4613,7 +4615,7 @@ with any I/O device or file. Sometimes certain statements are used in
 unusual ways by advanced programmers to achieve certain special effects.
 <informaltable frame="none">
 <tgroup cols="3">
-<colspec colwidth="0.8in">
+<colspec colwidth="0.8in"/>
 <thead>
 <row>
 <entry>Statement</entry>
@@ -4712,7 +4714,7 @@ cannot exceed 256 characters.
 If any error occurs (type mismatch, insufficient amount of data, etc.), 
 the message:
 <screen>
-**INPUT ERROR ­ RETYPE**
+**INPUT ERROR - RETYPE**
 </screen>
 is displayed, followed by a new prompt. The entire input line must
 then be reentered.
@@ -4752,11 +4754,11 @@ in Appendix A.
 Syntax:
 <cmdsynopsis>
 <command>PRINT &lt;output list></command>
-<sbr>
+<sbr/>
 <command>PRINT #&lt;int expr>, &lt;output list></command>
-<sbr>
+<sbr/>
 <command>PRINT USING &lt;str expr>, &lt;output list></command>
-<sbr>
+<sbr/>
 <command>PRINT #&lt;int expr>, USING &lt;str expr>, &lt;output list></command>
 </cmdsynopsis>
 This statement outputs the values of the items given in the output list
@@ -4807,9 +4809,9 @@ PRINT USING "R10.2,X2,R5.3",x,y
 
 PRINT #outpath USING fmt$,count,value
 
-(* print an 80­character line of all dashes *)
+(* print an 80-character line of all dashes *)
 REPEAT
-  PRINT "­";
+  PRINT "-";
 UNTIL POS >= 80
 PRINT
 </programlisting>
@@ -4821,9 +4823,9 @@ PRINT
 Syntax:
 <cmdsynopsis>
 <command>OPEN #&lt;int var>,"&lt;str expr>" [ : &lt;access mode> ]</command>
-<sbr>
+<sbr/>
 <command>&lt;access mode> := &lt;mode> ! &lt;mode> + &lt;access mode></command>
-<sbr>
+<sbr/>
 <command>&lt;mode> := READ ! WRITE ! UPDATE ! EXEC ! DIR</command>
 </cmdsynopsis>
 This statement issues a request to OS-9 to open an I/O path to an existing
@@ -4871,9 +4873,9 @@ OPEN #path,name$:WRITE+EXEC
 Syntax:
 <cmdsynopsis>
 <command>CREATE #&lt;int var>,"&lt;str expr>" [ : &lt;access mode> ]</command>
-<sbr>
+<sbr/>
 <command>&lt;access mode> := &lt;mode> ! &lt;mode> + &lt;access mode></command>
-<sbr>
+<sbr/>
 <command>&lt;mode> := WRITE ! UPDATE ! EXEC</command>
 </cmdsynopsis>
 The CREATE statement is used to create a new file on a multifile mass storage
@@ -5012,7 +5014,7 @@ SEEK #fileone,filptr*2
 
 SEEK #outfile,208894
 
-SEEK #inventory,(part_num ­ 1) * SIZE(inv_rcd)
+SEEK #inventory,(part_num - 1) * SIZE(inv_rcd)
 </programlisting>
 </informalexample>
 
@@ -5101,7 +5103,7 @@ See the DATA statement section for details.
 Syntax:
 <cmdsynopsis>
 <command>GET #&lt;expr>,&lt;struct name></command>
-<sbr>
+<sbr/>
 <command>PUT #&lt;expr>,&lt;struct name></command>
 </cmdsynopsis>
 The GET and PUT statements read and write fixed-size binary data records
@@ -5208,7 +5210,7 @@ INPUT "Item name? ",work_rec.name
 INPUT "List price? ",work_rec.list
 INPUT "Cost price? ",work_rec.cost
 INPUT "Quantity? ",work_rec.qty
-SEEK #path, (recnum ­ 1) * SIZE(work_rec)
+SEEK #path, (recnum - 1) * SIZE(work_rec)
 PUT #path,work_rec
 </programlisting>
 This routine below uses a loop to read the entire file into the array
@@ -5272,9 +5274,9 @@ move any amount of data, organized any way you want.
 Syntax:
 <cmdsynopsis>
 <command>READ &lt;input list></command>
-<sbr>
+<sbr/>
 <command>DATA &lt;expr> , { &lt;expr> }</command>
-<sbr>
+<sbr/>
 <command>RESTORE [ &lt;line number> ]</command>
 </cmdsynopsis>
 These statements provide an efficient way to build constant tables
@@ -5358,7 +5360,7 @@ identifier:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.6in">
+<colspec colwidth="0.6in"/>
 <tbody>
 <row>
 <entry>R</entry>
@@ -5403,7 +5405,7 @@ The abbreviations and symbols used in the syntax specifications are:
 
 <informaltable frame="none">
 <tgroup cols="3">
-<colspec colwidth="0.4in">
+<colspec colwidth="0.4in"/>
 <tbody>
 <row>
 <entry>w</entry>
@@ -5447,7 +5449,7 @@ The justification modes are:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.3in">
+<colspec colwidth="0.3in"/>
 <tbody>
 <row>
 <entry>&lt;</entry>
@@ -5474,8 +5476,8 @@ Examples:
 <programlisting>
 PRINT USING "R8.2&lt;",5678.123          5678.12
 PRINT USING "R8.2>",12.3                   12.30
-PRINT USING "R8.2&lt;",­555.9            ­555.90
-PRINT USING "10.2^",­6722.4599            6722.46­
+PRINT USING "R8.2&lt;",-555.9            -555.90
+PRINT USING "10.2^",-6722.4599            6722.46-
 PRINT USING "R5.1","9999999"            *****
 </programlisting>
 </informalexample>
@@ -5500,7 +5502,7 @@ Example:
 <programlisting>
 PRINT USING "E12.3",1234.567               1.235E+03
 
-PRINT USING "E12.6>",­0.001234            ­1.234000E-3
+PRINT USING "E12.6>",-0.001234            -1.234000E-3
 </programlisting>
 </informalexample>
 
@@ -5518,7 +5520,7 @@ The justification modes are:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.3in">
+<colspec colwidth="0.3in"/>
 <tbody>
 <row>
 <entry>&lt;</entry>
@@ -5561,7 +5563,7 @@ output. Justification modes are:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.3in">
+<colspec colwidth="0.3in"/>
 <tbody>
 <row>
 <entry>&lt;</entry>
@@ -5585,7 +5587,7 @@ each data type:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.5in">
+<colspec colwidth="0.5in"/>
 <tbody>
 <row>
 <entry>H2</entry>
@@ -5636,7 +5638,7 @@ The format specifications are:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.3in">
+<colspec colwidth="0.3in"/>
 <tbody>
 <row>
 <entry>&lt;</entry>
@@ -5686,7 +5688,7 @@ freely. The control formats are
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.5in">
+<colspec colwidth="0.5in"/>
 <tbody>
 <row>
 <entry>Tn</entry>
@@ -5782,7 +5784,7 @@ Because &b09; includes several different numeric representations
 (i.e., REAL, INTEGER, and BYTE) and does "automatic type conversions"
 between them, it is easy to write expressions or loops that take at
 least ten times longer to execute than is necessary. Some particular
-&b09; numeric operators (+, ­, *, /) and control structures (FOR..NEXT)
+&b09; numeric operators (+, -, *, /) and control structures (FOR..NEXT)
 include versions for both REAL and INTEGER values. The INTEGER versions,
 off course, are much faster and may have slightly different properties
 (e.g., INTEGER divides discard any remainder). Type conversions takes
@@ -5821,8 +5823,8 @@ point will slow this particular operation down by about ten times!
 <table frame="none">
 <title>Arithmetic Functions Ranked by Speed</title>
 <tgroup cols="2">
-<colspec colwidth="3in">
-<colspec colwidth="2in">
+<colspec colwidth="3in"/>
+<colspec colwidth="2in"/>
 <thead>
 <row>
 <entry>Operation</entry>
@@ -6004,7 +6006,7 @@ PROCEDURE fibonacci
 <programlisting>
 PROCEDURE fractions
   REM by T.F. Ritter
-  REM finds increasingly­close rational approximations
+  REM finds increasingly-close rational approximations
   REM to the desired real value
   DIM m:INTEGER
 
@@ -6014,9 +6016,9 @@ PROCEDURE fractions
   FOR m=1 TO 30000
     n:=INT(.5+m*desired)
     trial:=n/m
-    IF ABS(trial­desired)&lt;ABS(last­desired) THEN
+    IF ABS(trial-desired)&lt;ABS(last-desired) THEN
       PRINT n; "/"; m; " = "; trial,
-      PRINT "difference = "; trial­desired;
+      PRINT "difference = "; trial-desired;
       PRINT
       last:=trial
     ENDIF
@@ -6030,7 +6032,7 @@ PROCEDURE prinbi
    PARAM n:INTEGER
    DIM i:INTEGER
 
-   FOR i=15 TO 0 STEP ­1
+   FOR i=15 TO 0 STEP -1
      IF n&lt;0 THEN
        PRINT "1";
      ELSE PRINT "0";
@@ -6053,9 +6055,9 @@ PROCEDURE hanoi
   IF n=1 THEN
      PRINT "move #"; n; " from "; from; " to "; to_
   ELSE
-    RUN hanoi(n­1,from,other,to_)
+    RUN hanoi(n-1,from,other,to_)
     PRINT "move #"; n; " from "; from; " to "; to_
-    RUN hanoi(n­1,other,to_,from)
+    RUN hanoi(n-1,other,to_,from)
   ENDIF
 
   END
@@ -6078,12 +6080,12 @@ PROCEDURE roman
 
     WHILE x>=value DO
       PRINT MID$(char,i,1);
-      x:=x­value
+      x:=x-value
     ENDWHILE
 
-    IF x>=value­svalu THEN
+    IF x>=value-svalu THEN
       PRINT MID$(subs,i,1); MID$(char,i,1);
-      x:=x­value+svalu
+      x:=x-value+svalu
     ENDIF
 
   NEXT i
@@ -6092,7 +6094,7 @@ PROCEDURE roman
 
 <programlisting>
 PROCEDURE eightqueens
-  REM originally by N. Wirth; here re­coded from Pascal
+  REM originally by N. Wirth; here re-coded from Pascal
   REM finds the arrangements by which eight queens
   REM can be placed on a chess board without conflict
   DIM n,k,x(8):INTEGER
@@ -6113,10 +6115,10 @@ PROCEDURE generate
   BASE 0
 
   REPEAT
-    IF col(h) AND up(n­h+7) AND down(n+h) THEN
+    IF col(h) AND up(n-h+7) AND down(n+h) THEN
       (* set queen on square [n,h] *)
       x(n):=h
-      col(h):=FALSE \up(n­h+7):=FALSE \down(n+h) := FALSE
+      col(h):=FALSE \up(n-h+7):=FALSE \down(n+h) := FALSE
       n:=n+1
       IF n=8 THEN
         (* board full; print configuration *)
@@ -6128,8 +6130,8 @@ PROCEDURE generate
       ENDIF
 
       (* remove queen from square [n,h] *)
-      n:=n­1
-      col(h):=TRUE \up(n­h+7):=TRUE \down(n+h):=TRUE
+      n:=n-1
+      col(h):=TRUE \up(n-h+7):=TRUE \down(n+h):=TRUE
     ENDIF
     h:=h+1
   UNTIL h=8
@@ -6138,9 +6140,9 @@ PROCEDURE generate
 
 <programlisting>
 PROCEDURE electric
-     REM re­programmed from "ELECTRIC"
+     REM re-programmed from "ELECTRIC"
      REM by Dwyer and Critchfield
-     REM Basic and the Personal Computer (Addison­Wesley, 1978)
+     REM Basic and the Personal Computer (Addison-Wesley, 1978)
      REM provides a pictorial representation of the
      REM resultant electrical field around charged points
      DIM a(10),b(10),c(10)
@@ -6149,7 +6151,7 @@ PROCEDURE electric
      yscale:=50./32.
 
      INPUT "How many charges do you have? ",n
-     PRINT "The field of view is 0­50,0­50 (x,y)"
+     PRINT "The field of view is 0-50,0-50 (x,y)"
      FOR i=1 TO n
        PRINT "type in the x and y positions of charge ";
        PRINT i;
@@ -6162,7 +6164,7 @@ PROCEDURE electric
      NEXT i
 
      REM visit each screen position
-     FOR y=32 TO 0 STEP ­1
+     FOR y=32 TO 0 STEP -1
        FOR x=0 TO 78
          REM compute field strength into v
          GOSUB 10
@@ -6178,7 +6180,7 @@ PROCEDURE electric
 
 10   v=1.
      FOR i=1 TO n
-       r:=SQRT(SQ(xscale*x­a(i))+SQ(yscale*y­b(i)))
+       r:=SQRT(SQ(xscale*x-a(i))+SQ(yscale*y-b(i)))
        EXITIF r=.0 THEN
          v:=99999.
        ENDEXIT
@@ -6210,22 +6212,22 @@ PROCEDURE qsort1
   m:=top
 
   LOOP  \REM each element gets the once over
-    REPEAT  \REM this is a post­inc instruction
+    REPEAT  \REM this is a post-inc instruction
       btemp:=d(n)&lt;d(top)
       n:=n+1
     UNTIL NOT (btemp)
-    n:=n­1 \REM point at the tested element
+    n:=n-1 \REM point at the tested element
     EXITIF n=m THEN
     ENDEXIT
 
-    REPEAT  \REM this is a post­dec instruction
-      m:=m­1
+    REPEAT  \REM this is a post-dec instruction
+      m:=m-1
     UNTIL d(m)&lt;=d(top) OR m=n
     EXITIF n=m THEN
     ENDEXIT
 
     RUN exchange(d(m),d(n))
-    n:=n+1 \REM prepare for post­inc
+    n:=n+1 \REM prepare for post-inc
     EXITIF n=m THEN
     ENDEXIT
 
@@ -6237,8 +6239,8 @@ PROCEDURE qsort1
     ENDIF
   ENDIF
 
-  IF bot&lt;n­1 THEN
-    RUN qsort1(bot,n­1,d)
+  IF bot&lt;n-1 THEN
+    RUN qsort1(bot,n-1,d)
   ENDIF
   IF n+1&lt;top THEN
     RUN qsort1(n+1,top,d)
@@ -6354,7 +6356,7 @@ PROCEDURE prinbyte
   DIM i: INTEGER
 
   n:= n*256
-  FOR i = 7 TO 0 STEP ­1
+  FOR i = 7 TO 0 STEP -1
     IF n &lt; 0 THEN PRINT "1";
     ELSE PRINT "0";
     ENDIF
@@ -6381,10 +6383,10 @@ PROCEDURE mpadd
   DIM i,carry:INTEGER
 
   carry:=0
-  FOR i=5 TO 1 STEP ­1
+  FOR i=5 TO 1 STEP -1
     c(i):=a(i)+b(i)+carry
     IF c(i)>=10000 THEN
-      c(i):=c(i)­10000
+      c(i):=c(i)-10000
       carry:=1
     ELSE carry:=0
     ENDIF
@@ -6398,8 +6400,8 @@ PROCEDURE mpsub
   DIM i,borrow:INTEGER
 
   borrow:=0
-  FOR i=5 TO 1 STEP ­1
-    c(i):=a(i)­b(i)­borrow
+  FOR i=5 TO 1 STEP -1
+    c(i):=a(i)-b(i)-borrow
     IF c(i)&lt;0 THEN
       c(i):=c(i)+10000
       borrow:=1
@@ -6427,19 +6429,19 @@ PROCEDURE mpinput
   PARAM a(5):INTEGER
   DIM n,i:INTEGER
 
-  INPUT "input ultra­precision number: ",b$
+  INPUT "input ultra-precision number: ",b$
   n:=SUBSTR(".",b$)
 
   IF n&lt;>0 THEN
     a(5):=VAL(MID$(b$+"0000",n+1,4))
-    b$:=LEFT$(b$,n­1)
+    b$:=LEFT$(b$,n-1)
   ELSE a(5):=0
   ENDIF
 
   b$:="00000000000000000000"+b$
   n:=1+LEN(b$)
-  FOR i=4 TO 1 STEP ­1
-    n:=n­4
+  FOR i=4 TO 1 STEP -1
+    n:=n-4
     a(i):=VAL(MID$(b$,n,4))
   NEXT i
 </programlisting>
@@ -6483,8 +6485,8 @@ PROCEDURE Patch
       offset=VAL(rewrite)+1
       LOOP
       EXITIF offset>256 THEN ENDEXIT
-        modloc=loc+offset­1
-        PRINT USING "h4,' ­ ',h2",modloc,buffer(offset);
+        modloc=loc+offset-1
+        PRINT USING "h4,' - ',h2",modloc,buffer(offset);
         INPUT ":",rewrite
       EXITIF rewrite="" THEN ENDEXIT
         IF rewrite&lt;>" " THEN
@@ -6508,10 +6510,10 @@ PROCEDURE DumpBuffer
   PARAM loc:REAL; line(16):buffer
   DIM i,j:INTEGER
   WHILE loc>65535. DO
-    loc=loc­65536.
+    loc=loc-65536.
   ENDWHILE
   FOR j=1 TO 16
-    PRINT USING "h4",FIX(INT(loc))+(j­1)*16;
+    PRINT USING "h4",FIX(INT(loc))+(j-1)*16;
     PRINT ":";
     FOR i=1 TO 8
       PRINT USING "X1,H4",line(j).char(i);
@@ -6528,7 +6530,7 @@ PROCEDURE PrintASCII
   FOR i=1 TO 16
     nextchar=line.char(i)
     IF nextchar>127 THEN
-      nextchar=nextchar­128
+      nextchar=nextchar-128
     ENDIF
     IF nextchar&lt;32 OR nextchar>125 THEN
       ascii=ascii+" "
@@ -6541,7 +6543,7 @@ PROCEDURE PrintASCII
 
 <programlisting>
      PROCEDURE MakeProc
-     (* Generates an OS­9 command file to apply a command *)
+     (* Generates an OS-9 command file to apply a command *)
      (* Such as copy, del, etc., to all files in a directory *)
      (* or directory system.  Author: L. Crane *)
 
@@ -6594,7 +6596,7 @@ PROCEDURE PrintASCII
        INPUT "Destination Directory? ",DestDir
        DestDir=TRIM$(DestDir)
        WRITE #ProcPath,"t"
-       WRITE #ProcPath,"TMode .1 ­pause"
+       WRITE #ProcPath,"TMode .1 -pause"
        READ #DirPath,DirLine
        INPUT "Use all files? ",response
        CopyAll=response="y" OR response="Y"
@@ -6608,7 +6610,7 @@ PROCEDURE PrintASCII
 	     WHILE j&lt;=i AND MID$(DirLine,j,1)&lt;>" " DO
 	       j=j+1
 	     ENDWHILE
-	     FileName=MID$(DirLine,k,j­k)
+	     FileName=MID$(DirLine,k,j-k)
 	     IF NOT(CopyAll) THEN
 	       PRINT "Use "; FileName;
 	       INPUT response
@@ -7180,19 +7182,19 @@ D 000A             Length2  rmb   2          size
 <table frame="none">
 <title>Operator Precedence</title>
 <tgroup cols="7">
-<colspec colname="c1">
-<colspec colname="c2">
-<colspec colname="c3">
-<colspec colnum="7" colname="c7">
-<spanspec spanname="firstop" namest="c2" nameend="c2">
-<spanspec spanname="secondop" namest="c3" nameend="c7">
-<spanspec spanname="onlyop" namest="c2" nameend="c7">
-<spanspec spanname="all" namest="c1" nameend="c7">
+<colspec colname="c1"/>
+<colspec colname="c2"/>
+<colspec colname="c3"/>
+<colspec colnum="7" colname="c7"/>
+<spanspec spanname="firstop" namest="c2" nameend="c2"/>
+<spanspec spanname="secondop" namest="c3" nameend="c7"/>
+<spanspec spanname="onlyop" namest="c2" nameend="c7"/>
+<spanspec spanname="all" namest="c1" nameend="c7"/>
 <tbody>
 <row>
 <entry>highest -></entry>
 <entry spanname="firstop">NOT</entry>
-<entry spanname="secondop">­(negate)</entry>
+<entry spanname="secondop">-(negate)</entry>
 </row>
 <row>
 <entry spanname="firstop">^</entry>
@@ -7204,7 +7206,7 @@ D 000A             Length2  rmb   2          size
 </row>
 <row>
 <entry spanname="firstop">+</entry>
-<entry spanname="secondop">­</entry>
+<entry spanname="secondop">-</entry>
 </row>
 <row>
 <entry spanname="firstop">></entry>
@@ -7233,83 +7235,83 @@ D 000A             Length2  rmb   2          size
 <title>&b09; Error Codes</title>
 <para>
 <literallayout>
-10 ­ Unrecognized Symbol
-11 ­ Excessive Verbage (too many keywords or symbols)
-12 ­ Illegal Statement Construction
-13 ­ I-code Overflow (need more workspace memory)
-14 ­ Illegal Channel Reference (bad path number given)
-15 ­ Illegal Mode (Read/Write/Update/Dir only)
-16 ­ Illegal Number
-17 ­ Illegal Prefix
-18 ­ Illegal Operand
-19 ­ Illegal Operator
+10 - Unrecognized Symbol
+11 - Excessive Verbage (too many keywords or symbols)
+12 - Illegal Statement Construction
+13 - I-code Overflow (need more workspace memory)
+14 - Illegal Channel Reference (bad path number given)
+15 - Illegal Mode (Read/Write/Update/Dir only)
+16 - Illegal Number
+17 - Illegal Prefix
+18 - Illegal Operand
+19 - Illegal Operator
 
-20 ­ Illegal Record Field Name
-21 ­ Illegal Dimension
-22 ­ Illegal Literal
-23 ­ Illegal Relational
-24 ­ Illegal Type Suffix
-25 ­ Too-Large Dimension
-26 ­ Too-Large Line Number
-27 ­ Missing Assignment Statement
-28 ­ Missing Path Number
-29 ­ Missing Comma
+20 - Illegal Record Field Name
+21 - Illegal Dimension
+22 - Illegal Literal
+23 - Illegal Relational
+24 - Illegal Type Suffix
+25 - Too-Large Dimension
+26 - Too-Large Line Number
+27 - Missing Assignment Statement
+28 - Missing Path Number
+29 - Missing Comma
 
-30 ­ Missing Dimension
-31 ­ Missing DO Statement
-32 ­ Memory Full (need more workspace memory)
-33 ­ Missing GOTO
-34 ­ Missing Left Parenthesis
-35 ­ Missing Line Reference
-36 ­ Missing Operand
-37 ­ Missing Right Parenthesis
-38 ­ Missing THEN statement
-39 ­ Missing TO
+30 - Missing Dimension
+31 - Missing DO Statement
+32 - Memory Full (need more workspace memory)
+33 - Missing GOTO
+34 - Missing Left Parenthesis
+35 - Missing Line Reference
+36 - Missing Operand
+37 - Missing Right Parenthesis
+38 - Missing THEN statement
+39 - Missing TO
 
-40 ­ Missing Variable Reference
-41 ­ No Ending Quote
-42 ­ Too Many Subscripts
-43 ­ Unknown Procedure
-44 ­ Multiply-Defined Procedure
-45 ­ Divide by Zero
-46 ­ Operand Type Mismatch
-47 ­ String Stack Overflow
-48 ­ Unimplemented Routine
-49 ­ Undefined Variable
+40 - Missing Variable Reference
+41 - No Ending Quote
+42 - Too Many Subscripts
+43 - Unknown Procedure
+44 - Multiply-Defined Procedure
+45 - Divide by Zero
+46 - Operand Type Mismatch
+47 - String Stack Overflow
+48 - Unimplemented Routine
+49 - Undefined Variable
 
-50 ­ Floating Overflow
-51 ­ Line with Compiler Error
-52 ­ Value out of Range for Destination
-53 ­ Subroutine Stack Overflow
-54 ­ Subroutine Stack Underflow
-55 ­ Subscript out of Range
-56 ­ Parameter Error
-57 ­ System Stack Overflow
-58 ­ I/O Type Mismatch
-59 ­ I/O Numeric Input Format Bad
+50 - Floating Overflow
+51 - Line with Compiler Error
+52 - Value out of Range for Destination
+53 - Subroutine Stack Overflow
+54 - Subroutine Stack Underflow
+55 - Subscript out of Range
+56 - Parameter Error
+57 - System Stack Overflow
+58 - I/O Type Mismatch
+59 - I/O Numeric Input Format Bad
 
-60 ­ I/O Conversion: Number out of Range
-61 ­ Illegal Input Format
-62 ­ I/O Format Repeat Error
-63 ­ I/O Format Syntax Error
-64 ­ Illegal Path Number
-65 ­ Wrong Number of Subscripts
-66 ­ Non-Record-Type Operand
-67 ­ Illegal Argument
-68 ­ Illegal Control Structure
-69 ­ Unmatched Control Structure
+60 - I/O Conversion: Number out of Range
+61 - Illegal Input Format
+62 - I/O Format Repeat Error
+63 - I/O Format Syntax Error
+64 - Illegal Path Number
+65 - Wrong Number of Subscripts
+66 - Non-Record-Type Operand
+67 - Illegal Argument
+68 - Illegal Control Structure
+69 - Unmatched Control Structure
 
-70 ­ Illegal FOR Variable
-71 ­ Illegal Expression Type
-72 ­ Illegal Declarative Statement
-73 ­ Array Size Overflow
-74 ­ Undefined Line Number
-75 ­ Multiply-Defined Line Number
-76 ­ Multiply-Defined Variable
-77 ­ Illegal Input Variable
-78 ­ Seek Out of Range
-79 ­ Missing Data Statement
-80 ­ Print Buffer Overflow
+70 - Illegal FOR Variable
+71 - Illegal Expression Type
+72 - Illegal Declarative Statement
+73 - Array Size Overflow
+74 - Undefined Line Number
+75 - Multiply-Defined Line Number
+76 - Multiply-Defined Variable
+77 - Illegal Input Variable
+78 - Seek Out of Range
+79 - Missing Data Statement
+80 - Print Buffer Overflow
 </literallayout>
 
 Error codes above 80 are those used by OS-9 or other external programs.
@@ -7348,16 +7350,16 @@ or optionally accept a colour mode which controls the foreground
 colour and colour set. The mode and colour codes are given in the
 table on the next page.
 </para>
-<beginpage>
+<beginpage/>
 <table frame="none">
  <title>Colour Graphics Modes and Colour Codes</title>
 <tgroup cols="6">
-<colspec colname="c1" colwidth="0.6in">
-<colspec colname="c2" colwidth="0.4in">
-<colspec colname="c3" colwidth="1in">
-<colspec colname="c4" colwidth="1in">
-<colspec colname="c5" colwidth="1in">
-<colspec colname="c6" colwidth="1in">
+<colspec colname="c1" colwidth="0.6in"/>
+<colspec colname="c2" colwidth="0.4in"/>
+<colspec colname="c3" colwidth="1in"/>
+<colspec colname="c4" colwidth="1in"/>
+<colspec colname="c5" colwidth="1in"/>
+<colspec colname="c6" colwidth="1in"/>
 <thead>
 <row>
 <entry morerows="1" namest="c2">Colour Code</entry>
@@ -7530,7 +7532,7 @@ black in two-colour format).
 </para>
 <bridgehead renderas="sect2">POINT</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Point",X,Y) or</command><sbr>
+<command>Calling Syntax: RUN GFX("Point",X,Y) or</command><sbr/>
 <command>RUN GFX("Point",X,Y,Colour)</command>
 </cmdsynopsis>
 <para>
@@ -7547,7 +7549,7 @@ the colour to yellow in the four-colour format.
 </para>
 <bridgehead renderas="sect2">CLEAR</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Clear") or</command><sbr>
+<command>Calling Syntax: RUN GFX("Clear") or</command><sbr/>
 <command>RUN GFX("Clear",Colour)</command>
 </cmdsynopsis>
 <para>
@@ -7557,9 +7559,9 @@ The current graphics cursor is reset to (0,0).
 </para>
 <bridgehead renderas="sect2">LINE</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Line",x2,y2)</command><sbr>
-<command>RUN GFX("Line",x2,y2,Colour)</command><sbr>
-<command>RUN GFX("Line",x1,y1,x2,y2)</command><sbr>
+<command>Calling Syntax: RUN GFX("Line",x2,y2)</command><sbr/>
+<command>RUN GFX("Line",x2,y2,Colour)</command><sbr/>
+<command>RUN GFX("Line",x1,y1,x2,y2)</command><sbr/>
 <command>RUN GFX("Line",x1,y1,x2,y2,Colour)</command>
 </cmdsynopsis>
 <para>
@@ -7581,9 +7583,9 @@ draws a blue line (4-colour mode) to point 24,65.
 </para>
 <bridgehead renderas="sect2">CIRCLE</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Circle",Radius)</command><sbr>
-<command>RUN GFX("Circle",Radius,Colour)</command><sbr>
-<command>RUN GFX("Circle",X,Y,Radius)</command><sbr>
+<command>Calling Syntax: RUN GFX("Circle",Radius)</command><sbr/>
+<command>RUN GFX("Circle",Radius,Colour)</command><sbr/>
+<command>RUN GFX("Circle",X,Y,Radius)</command><sbr/>
 <command>RUN GFX("Circle",X,Y,Radius,Colour)</command>
 </cmdsynopsis>
 <para>
@@ -7622,7 +7624,7 @@ Module.
 </para>
 <bridgehead renderas="sect2">GCOLR</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Gcolr",Colour)</command><sbr>
+<command>Calling Syntax: RUN GFX("Gcolr",Colour)</command><sbr/>
 <command>RUN GFX("Gcolr",X,Y,Colour)</command>
 </cmdsynopsis>
 <para>
