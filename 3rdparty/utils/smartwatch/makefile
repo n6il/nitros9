@@ -2,7 +2,7 @@ include ../../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
-CMDS		= getclk
+CMDS		= getclk swread swset
 
 ALLOBJS		= $(CMDS)
 
