@@ -24,7 +24,40 @@ os9 I$SEEK
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+The read or write pointer for the open file with the path
+number, "pn", is positioned by lseek to the specified place in
+the file. The "type" indicates from where "position" is to be
+measured: if 0, from the beginning of the file, if 1, from the
+current location, or if 2, from the end of the file.
+</para>
+<para>
+Seeking to a location beyond the end of a file open for
+writing and then writing to it, creates a "hole" in the file
+which appears to be filled with zeros from the previous end to
+the position sought.
+</para>
+<para>
+The returned value is the resulting position in the file unless
+there is an error, so to find out the current position use
+<informalexample>
+<para>
+lseek(pn,0l,1);
+</para>
+</informalexample>
+</para>
+</refsect1>
+
+<refsect1><title>Caveats</title>
+<para>
+The argument "position" <emphasis>must</emphasis> be a long integer. Constants
+should be explicitly made long by appending an "l", as above,
+and other types should be converted using a cast:
+<informalexample>
+<para>
+e.g. lseek(pn,(long)pos,1);
+</para>
+</informalexample>
+Notice also, that the return value from lseek is itself a long integer.
 </para>
 </refsect1>
 
