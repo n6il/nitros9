@@ -321,7 +321,7 @@ L266E    leax  <eom,pcr
          ldd   M$Exec,x
          jmp   d,x
 
-BootMsg  fcc   /OSy/
+BootMsg  fcc   /NITROSy/
          fcb   $60
          fcc   /BOOT/
 BootMLen equ   *-BootMsg
