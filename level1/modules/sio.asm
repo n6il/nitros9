@@ -311,10 +311,6 @@ L017E    comb
          ldb   #E$UnkSvc
          rts
 
-         emod
-eom      equ   *
-         end
-
          ELSE
 
          rmb   V.SCF
