@@ -1,5 +1,5 @@
 ********************************************************************
-* PARK - Park a hard drive
+* Park - Park a hard drive
 *
 * $Id$
 *
@@ -7,7 +7,7 @@
 * ------------------------------------------------------------------
 * 1      Original Tandy/Microware version
 
-         nam   PARK
+         nam   Park
          ttl   Park a hard drive
 
 * Disassembled 02/07/06 21:41:10 by Disasm v1.6 (C) 1988 by RML
@@ -28,11 +28,11 @@ u0003    rmb   20
 u0017    rmb   502
 size     equ   .
 
-name     fcs   /PARK/
+name     fcs   /Park/
          fcb   $01 
 
 HelpMsg  fcb   C$LF
-         fcc   "Use:  PARK </devname> .... "
+         fcc   "Use:  Park </devname> .... "
          fcb   C$LF
          fcc   "      To park hard disk heads"
          fcb   C$LF
@@ -55,7 +55,7 @@ NoParkL  equ   *-NoPark
 start    bsr   L0117
          cmpa  #C$CR
          beq   L00E0
-L00AE    cmpa  #'/
+L00AE    cmpa  #PDELIM
          bne   L00E0
          bsr   L0122
          lda   #READ.
@@ -76,13 +76,13 @@ L00D1    os9   I$WritLn
          bne   L00AE
 L00DC    clrb  
          os9   F$Exit   
-L00E0    lda   #$02
+L00E0    lda   #2
          leax  >HelpMsg,pcr
          ldy   #HelpMsgL
          os9   I$WritLn 
          bra   L00DC
 L00EF    leax  u0003,u
-         lda   #$02
+         lda   #2
          ldy   <u0017
          os9   I$Write  
          rts   
@@ -96,6 +96,8 @@ L0106    lda   <u0000
          leax  >NoPark,pcr
          ldy   #NoParkL
          bra   L00D1
+
+* Skip spaces
 L0117    lda   ,x
          cmpa  #C$SPAC
          bne   L0121
@@ -112,7 +114,7 @@ L0127    lda   ,x+
          sta   ,y+
          incb  
          bra   L0127
-L0132    lda   #'@
+L0132    lda   #PENTIR
          sta   ,y+
          leax  -1,x
          bsr   L0117
