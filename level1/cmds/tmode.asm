@@ -1,483 +1,441 @@
 ********************************************************************
-* Tmode - Change terminal operating mode
+* Tmode - Show terminal parameters
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  9     Original Microware distribution version
+* 11     Original Tandy version
 
          nam   Tmode
-         ttl   Change terminal operating mode
+         ttl   Show terminal parameters
 
-* Disassembled 02/04/03 22:38:23 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 02/07/06 10:59:42 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 u0001    rmb   1
-u0002    rmb   2
-u0004    rmb   1
+u0002    rmb   1
+u0003    rmb   2
 u0005    rmb   1
-u0006    rmb   27
-u0021    rmb   5
-u0026    rmb   536
+u0006    rmb   1
+u0007    rmb   27
+u0022    rmb   5
+u0027    rmb   536
 size     equ   .
-name     equ   *
-         fcs   /Tmode/
-         fcb   $09 
+
+name     fcs   /Tmode/
+         fcb   $0B 
+
          fcb   $00 
          fcb   $17 
 L0015    fcb   $FF 
          fcb   $01 
          fcb   $01 
          fcb   $01 
-         fcb   $75 u
-         fcb   $70 p
-         fcb   $E3 c
+         fcs   "upc"
          fcb   $FF 
          fcb   $01 
          fcb   $02 
          fcb   $01 
-         fcb   $62 b
-         fcb   $73 s
-         fcb   $E2 b
+         fcs   "bsb"
          fcb   $FF 
          fcb   $00 
          fcb   $03 
          fcb   $00 
-         fcb   $62 b
-         fcb   $73 s
-         fcb   $EC l
+         fcs   "bsl"
          fcb   $FF 
          fcb   $01 
          fcb   $04 
          fcb   $01 
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $EF o
+         fcs   "echo"
          fcb   $FF 
          fcb   $01 
          fcb   $05 
          fcb   $01 
-         fcb   $6C l
-         fcb   $E6 f
+         fcs   "lf"
          fcb   $00 
          fcb   $00 
          fcb   $06 
          fcb   $00 
-         fcb   $6E n
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $EC l
+         fcs   "null"
          fcb   $FF 
          fcb   $01 
          fcb   $07 
          fcb   $01 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $E5 e
+         fcs   "pause"
          fcb   $00 
          fcb   $18 
          fcb   $08 
          fcb   $00 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $E7 g
+         fcs   "pag"
          fcb   $01 
          fcb   $08 
          fcb   $09 
          fcb   $00 
-         fcb   $62 b
-         fcb   $73 s
-         fcb   $F0 p
+         fcs   "bsp"
          fcb   $01 
          fcb   $18 
          fcb   $0A 
          fcb   $00 
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $EC l
+         fcs   "del"
          fcb   $01 
          fcb   $0D 
          fcb   $0B 
          fcb   $00 
-         fcb   $65 e
-         fcb   $6F o
-         fcb   $F2 r
+         fcs   "eor"
          fcb   $01 
          fcb   $1B 
          fcb   $0C 
          fcb   $00 
-         fcb   $65 e
-         fcb   $6F o
-         fcb   $E6 f
+         fcs   "eof"
          fcb   $01 
          fcb   $04 
          fcb   $0D 
          fcb   $00 
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $F4 t
+         fcs   "reprint"
          fcb   $01 
          fcb   $01 
          fcb   $0E 
          fcb   $00 
-         fcb   $64 d
-         fcb   $75 u
-         fcb   $F0 p
+         fcs   "dup"
          fcb   $01 
          fcb   $17 
          fcb   $0F 
          fcb   $00 
-         fcb   $70 p
-         fcb   $73 s
-         fcb   $E3 c
+         fcs   "psc"
          fcb   $01 
          fcb   $03 
          fcb   $10 
          fcb   $00 
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $F4 t
+         fcs   "abort"
          fcb   $01 
          fcb   $05 
          fcb   $11 
          fcb   $00 
-         fcb   $71 q
-         fcb   $75 u
-         fcb   $69 i
-         fcb   $F4 t
+         fcs   "quit"
          fcb   $01 
          fcb   $08 
          fcb   $12 
          fcb   $00 
-         fcb   $62 b
-         fcb   $73 s
-         fcb   $E5 e
+         fcs   "bse"
          fcb   $01 
          fcb   $07 
          fcb   $13 
          fcb   $00 
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $EC l
+         fcs   "bell"
          fcb   $01 
          fcb   $15 
          fcb   $14 
          fcb   $00 
-         fcb   $74 t
-         fcb   $79 y
-         fcb   $70 p
-         fcb   $E5 e
-         fcb   $00 
+         fcs   "type"
+         fcb   $01 
          fcb   $02 
          fcb   $15 
          fcb   $00 
-         fcb   $62 b
-         fcb   $61 a
-         fcb   $75 u
-         fcb   $E4 d
+         fcs   "baud"
          fcb   $01 
          fcb   $11 
          fcb   $18 
          fcb   $00 
-         fcb   $78 x
-         fcb   $6F o
-         fcb   $EE n
+         fcs   "xon"
          fcb   $01 
          fcb   $13 
          fcb   $19 
          fcb   $00 
-         fcb   $78 x
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $E6 f
-start    equ   *
+         fcs   "xoff"
+
+start    lda   #$32
+         sta   <u0002
+         pshs  y,x,b,a
+         lda   #$01
+         ldb   #$26
+         os9   I$GetStt 
+         bcc   L00DB
+         cmpb  #E$UnkSvc
+         beq   L00E4
+         puls  y,x,b,a
+         bra   L0120
+L00DB    cmpx  #$0050
+         beq   L00E4
+         lda   #$16
+         sta   <u0002
+L00E4    puls  y,x,b,a
          leay  ,x
-         bsr   L0101
+         bsr   L0123
          clra  
-         cmpb  #$2E
-         bne   L00D9
+         cmpb  #C$PERD
+         bne   L00FB
          leay  $01,y
          lda   ,y+
          suba  #$30
          cmpa  #$10
-         lbcc  L015F
-L00D9    sta   <u0000
+         lbcc  L0181
+L00FB    sta   <u0000
          ldb   #$00
-         leax  u0006,u
+         leax  u0007,u
          os9   I$GetStt 
-         bcs   L00FE
-         bsr   L0101
-         cmpb  #$0D
-         lbeq  L01CE
-L00EC    bsr   L0112
-         bcs   L015F
-         cmpb  #$0D
-         bne   L00EC
+         bcs   L0120
+         bsr   L0123
+         cmpb  #C$CR
+         lbeq  L01F0
+L010E    bsr   L0134
+         bcs   L0181
+         cmpb  #C$CR
+         bne   L010E
          lda   <u0000
-         ldb   #$00
+         ldb   #SS.Opt
          os9   I$SetStt 
-         bcs   L00FE
+         bcs   L0120
          clrb  
-L00FE    os9   F$Exit   
-L0101    ldb   ,y+
-         cmpb  #$2C
-         bne   L0109
-L0107    ldb   ,y+
-L0109    cmpb  #$20
-         beq   L0107
+L0120    os9   F$Exit   
+L0123    ldb   ,y+
+         cmpb  #C$COMA
+         bne   L012B
+L0129    ldb   ,y+
+L012B    cmpb  #C$SPAC
+         beq   L0129
          leay  -$01,y
          andcc #$FE
          rts   
-L0112    clr   <u0001
+L0134    clr   <u0001
          lda   ,y
-         cmpa  #$2D
-         bne   L011E
+         cmpa  #'-
+         bne   L0140
          inc   <u0001
          leay  $01,y
-L011E    sty   <u0002
+L0140    sty   <u0003
          leax  >L0015,pcr
-         lbsr  L02AE
-         bcs   L015F
+         lbsr  L02D0
+         bcs   L0181
          lda   ,x
-         bpl   L013A
-L012E    ldb   $01,x
-L0130    lda   $02,x
+         bpl   L015C
+L0150    ldb   $01,x
+L0152    lda   $02,x
          eorb  <u0001
-         leax  u0006,u
+         leax  u0007,u
          stb   a,x
-         bra   L0101
-L013A    tst   <u0001
-         bne   L015F
+         bra   L0123
+L015C    tst   <u0001
+         bne   L0181
          ldb   ,y
          cmpb  #$3D
-         bne   L012E
+         bne   L0150
          leay  $01,y
          tsta  
-         bne   L0188
+         bne   L01AA
          clrb  
-L014A    lda   ,y
+L016C    lda   ,y
          suba  #$30
          cmpa  #$09
-         bhi   L019F
+         bhi   L01C1
          pshs  a
          leay  $01,y
          lda   #$0A
          mul   
          addb  ,s+
          adca  #$00
-         beq   L014A
-L015F    leax  <L0170,pcr
+         beq   L016C
+L0181    leax  <L0192,pcr
          ldy   #$000E
-         bsr   L0182
-lab1     ldx   <u0002
-         bsr   lab1+2               NOTE the offset
+         bsr   L01A4
+         ldx   <u0003
+         bsr   L01A0
          clrb  
          os9   F$Exit   
-L0170    comb  
-         rolb  
-         fcb   $4E N
-         lsrb  
-         fcb   $41 A
-         lslb  
-         bra   L01BD
-         aim   #$72,>$6F72
-lab2     abx   
-         bra   lab2+1               NOTE the offset
+
+L0192    fcc   "SYNTAX Error: "
+
+L01A0    fcb   $10
          ldx   #$0050
-L0182    lda   #$01
+L01A4    lda   #$01
          os9   I$WritLn 
          rts   
-L0188    bsr   L01AF
-         bcs   L015F
+L01AA    bsr   L01D1
+         bcs   L0181
          pshs  b
-         bsr   L01AF
+         bsr   L01D1
          puls  a
-         bcc   L0197
+         bcc   L01B9
          clrb  
          exg   a,b
-L0197    lsla  
+L01B9    lsla  
          lsla  
          lsla  
          lsla  
          pshs  a
          addb  ,s+
-L019F    lda   ,y
-         cmpa  #$20
-         beq   L0130
-         cmpa  #$0D
-         beq   L0130
-         cmpa  #$2C
-         beq   L0130
-         bra   L015F
-L01AF    ldb   ,y
+L01C1    lda   ,y
+         cmpa  #C$SPAC
+         beq   L0152
+         cmpa  #C$CR
+         beq   L0152
+         cmpa  #C$COMA
+         beq   L0152
+         bra   L0181
+L01D1    ldb   ,y
          subb  #$30
          cmpb  #$09
-         bls   L01C7
+         bls   L01E9
          cmpb  #$31
-         bcs   L01BD
+         bcs   L01DF
          subb  #$20
-L01BD    subb  #$07
+L01DF    subb  #$07
          cmpb  #$0F
-         bhi   L01CC
+         bhi   L01EE
          cmpb  #$0A
-         bcs   L01CC
-L01C7    andcc #$FE
+         bcs   L01EE
+L01E9    andcc #$FE
          leay  $01,y
          rts   
-L01CC    comb  
+L01EE    comb  
          rts   
-L01CE    clr   <u0004
+L01F0    clr   <u0005
          lda   #$2F
-         lbsr  L028C
-         ldx   <u0021,u
+         lbsr  L02AE
+         ldx   <u0022,u
          ldx   $04,x
          ldd   $04,x
          leax  d,x
-         bsr   L0227
-         lda   #$0D
-         lbsr  L028C
+         bsr   L0249
+         lda   #C$CR
+         lbsr  L02AE
          leax  >L0015,pcr
-         leay  u0006,u
+         leay  u0007,u
          clrb  
-L01EC    lda   b,y
-         bsr   L01FE
+L020E    lda   b,y
+         bsr   L0220
          incb  
-         cmpb  #$20
-         bcs   L01EC
-         lda   #$0D
-         lbsr  L028C
+         cmpb  #C$SPAC
+         bcs   L020E
+         lda   #C$CR
+         lbsr  L02AE
          clrb  
          os9   F$Exit   
-L01FE    pshs  u,y,x,b,a
+L0220    pshs  u,y,x,b,a
          ldy   -$02,x
-L0203    cmpb  $02,x
-         beq   L0213
+L0225    cmpb  $02,x
+         beq   L0235
          leax  $04,x
-L0209    lda   ,x+
-         bpl   L0209
+L022B    lda   ,x+
+         bpl   L022B
          leay  -$01,y
-         bne   L0203
+         bne   L0225
          puls  pc,u,y,x,b,a
-L0213    bsr   L028A
+L0235    bsr   L02AC
          tst   ,x
-         bpl   L023B
+         bpl   L025D
          lda   ,s
          cmpa  $03,x
-         beq   L0223
+         beq   L0245
          lda   #$2D
-         bsr   L028C
-L0223    bsr   L022B
+         bsr   L02AE
+L0245    bsr   L024D
          puls  pc,u,y,x,b,a
-L0227    pshs  x
-         bra   L022F
-L022B    pshs  x
+L0249    pshs  x
+         bra   L0251
+L024D    pshs  x
          leax  $04,x
-L022F    lda   ,x
+L0251    lda   ,x
          anda  #$7F
-         bsr   L028C
+         bsr   L02AE
          lda   ,x+
-         bpl   L022F
+         bpl   L0251
          puls  pc,x
-L023B    bsr   L022B
+L025D    bsr   L024D
          lda   #$3D
-         bsr   L028C
+         bsr   L02AE
          tst   ,x
-         bne   L026E
+         bne   L0290
          ldb   ,s
          lda   #$2F
-         clr   <u0005
-L024B    inca  
+         clr   <u0006
+L026D    inca  
          subb  #$64
-         bcc   L024B
-         bsr   L0263
+         bcc   L026D
+         bsr   L0285
          lda   #$3A
-L0254    deca  
+L0276    deca  
          addb  #$0A
-         bcc   L0254
-         bsr   L0263
+         bcc   L0276
+         bsr   L0285
          tfr   b,a
          adda  #$30
-         bsr   L028C
+         bsr   L02AE
          puls  pc,u,y,x,b,a
-L0263    inc   <u0005
+L0285    inc   <u0006
          cmpa  #$30
-         bne   L028C
-         dec   <u0005
-         bne   L028C
+         bne   L02AE
+         dec   <u0006
+         bne   L02AE
          rts   
-L026E    lda   ,s
+L0290    lda   ,s
          anda  #$F0
          lsra  
          lsra  
          lsra  
          lsra  
-         bsr   L0280
+         bsr   L02A2
          lda   ,s
          anda  #$0F
-         bsr   L0280
+         bsr   L02A2
          puls  pc,u,y,x,b,a
-L0280    adda  #$30
+L02A2    adda  #$30
          cmpa  #$39
-         bls   L028C
+         bls   L02AE
          adda  #$07
-         bra   L028C
-L028A    lda   #$20
-L028C    pshs  y,x,b,a
-         leax  <u0026,u
-         ldb   <u0004
+         bra   L02AE
+L02AC    lda   #$20
+L02AE    pshs  y,x,b,a
+         leax  <u0027,u
+         ldb   <u0005
          sta   b,x
-         cmpa  #$0D
-         beq   L02A6
+         cmpa  #C$CR
+         beq   L02C8
          incb  
-         cmpb  #$16
-         bcs   L02AA
-         cmpa  #$20
-         bne   L02AA
-         lda   #$0D
+         cmpb  <u0002
+         bcs   L02CC
+         cmpa  #C$SPAC
+         bne   L02CC
+         lda   #C$CR
          sta   b,x
-L02A6    lbsr  u0000       NOTE: Calling data area!!
+L02C8    lbsr  L01A0
          clrb  
-L02AA    stb   <u0004
+L02CC    stb   <u0005
          puls  pc,y,x,b,a
-L02AE    pshs  u,y,x
+L02D0    pshs  u,y,x
          ldu   -$02,x
-L02B2    ldy   $02,s
+L02D4    ldy   $02,s
          stx   ,s
          leax  $04,x
-L02B9    lda   ,x+
+L02DB    lda   ,x+
          eora  ,y+
          anda  #$DF
          lsla  
-         bne   L02CA
-         bcc   L02B9
+         bne   L02EC
+         bcc   L02DB
          sty   $02,s
          clra  
          puls  pc,u,y,x
-L02CA    leax  -$01,x
-L02CC    lda   ,x+
-         bpl   L02CC
+L02EC    leax  -$01,x
+L02EE    lda   ,x+
+         bpl   L02EE
          leau  -u0001,u
          cmpu  #$0000
-         bne   L02B2
+         bne   L02D4
          coma  
          puls  pc,u,y,x
+
          emod
 eom      equ   *
+         end
+
