@@ -1,17 +1,7 @@
 ********************************************************************
-********************************************************************
 * TOCGEN - Kings Quest III Table of Contents module
 *
 * $Id$
-*
-* Ed.    Comments                                       Who YY/MM/DD
-* ------------------------------------------------------------------
-* 1      Disassembly of original distribution           PWZ 03/01/31
-*        added comments from the C-modules from
-*        dev system disk. This code recompiles to
-*        duplicate of the original module.
-*
-*
 *
 *        Module header for original tocgen
 *
@@ -26,6 +16,12 @@
 *        Ty/La At/Rv: $11 $81
 *        Prog mod, 6809 Obj, re-ent, R/O
 *
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 1      Disassembly of original distribution           PWZ 03/01/31
+*        added comments from the C-modules from
+*        dev system disk. This code recompiles to
+*        duplicate of the original module.
 ********************************************************************
 ***
 ***
@@ -46,9 +42,6 @@
 *   end    - uninitialized data
 *
 *   where is btext defined ???
- 
-
-
 
          nam   tocgen
          ttl   program module       

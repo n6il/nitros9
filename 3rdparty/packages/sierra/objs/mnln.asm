@@ -1,15 +1,8 @@
-
 ********************************************************************
 * MNLN - Kings Quest III main line module
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
-* ------------------------------------------------------------------
-* 0      Disassembly of original distribution           PWZ 03/03/06
-*        assembles to original mnln crc 
-
-
 *        Header for : mnln
 *        Module size: $602E  #24622
 *        Module CRC : $4A3F24 (Good)
@@ -19,10 +12,11 @@
 *        Edition    : $00  #0
 *        Ty/La At/Rv: $11 $81
 *        Prog mod, 6809 Obj, re-ent, R/O
-
-
-
-
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 0      Disassembly of original distribution           PWZ 03/03/06
+*        assembles to original mnln crc 
 
 *  >$0154  flag for using extended lookups
 *  >$0541  joystick button status

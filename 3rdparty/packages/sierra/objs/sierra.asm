@@ -3,11 +3,6 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
-* ------------------------------------------------------------------
-* 0      Disassembly of original distribution and       PWZ 03/01/31
-*        merged in comments from disasm dated 1992
-
 *   Header for : sierra
 *   Module size: $561  #1377
 *   Module CRC : $E178D8 (Good)
@@ -17,8 +12,7 @@
 *   Edition    : $00  #0
 *   Ty/La At/Rv: $11 $81
 *   Prog mod, 6809 Obj, re-ent, R/O
-
-
+*
 ***** The following patch is NOT included in this disassembly *****
 *****   Will be included in the next revision                 *****
 * Patch to correct use of wrong register when determining monitor
@@ -31,10 +25,11 @@
 * c 17b 84 c4
 * c 17d b7 f7
 * v
-
-
-* Required Level 2 definitions
-Level equ 2
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 0      Disassembly of original distribution and       PWZ 03/01/31
+*        merged in comments from disasm dated 1992
 
 *Monitor defs
 COMP    equ   0
