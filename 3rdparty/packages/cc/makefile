@@ -1,10 +1,12 @@
 include ../../../Makefile.rules
 
-DISK	= cc.dsk
-CMDS	= cc1 c.prep c.pass1 c.pass2 c.opt c.asm c.link
+DISK		= cc.dsk
+CMDS		= cc1 c.prep c.pass1 c.pass2 c.opt c.asm c.link
+
+ALLOBJS		= $(CMDS)
 
 # Make all components
-all:	$(CMDS)
+all:	$(ALLOBJS)
 	@$(ECHO) "*********************************************"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*                 C Compiler                *"
@@ -12,9 +14,11 @@ all:	$(CMDS)
 	@$(ECHO) "*********************************************"
 	-$(CD) SOURCES; $(UNIX2OS9) *.a *.c
 	-$(CD) DEFS; $(UNIX2OS9) *.h
+	$(CHMOD) 755 $(CMDS)
 
 # Clean all components
 clean:	dskclean
+	$(RM) $(ALLOBJS)
 	-$(CD) SOURCES; $(OS92UNIX) *.a *.c
 	-$(CD) DEFS; $(OS92UNIX) *.h
 
