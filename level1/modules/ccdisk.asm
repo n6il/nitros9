@@ -24,6 +24,8 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   5
 
+MaxDrv   set   4
+
 L0000    mod   eom,name,tylg,atrv,start,size
 
 u0000    rmb   1
@@ -36,12 +38,12 @@ u003D    rmb   18
 u004F    rmb   27
 u006A    rmb   5
 u006F    rmb   56
-u00A7    rmb   2
-u00A9    rmb   1
+CurDMem  rmb   2
+DrivSel  rmb   1
 u00AA    rmb   1
 VfyBuf   rmb   2
 u00AD    rmb   4
-u00B1    rmb   1
+DevStRg  rmb   1
 size     equ   .
 
          fcb   $FF
@@ -77,10 +79,10 @@ Init     clra
          lbsr  L0294
          lda   ,x
          lda   #$FF
-L003D    ldb   #$04
+L003D    ldb   #MaxDrv
          leax  DRVBEG,u
 L0041    sta   ,x
-         sta   <$15,x
+         sta   <V.TRAK,x
          leax  <DRVMEM,x
          decb  
          bne   L0041
@@ -89,7 +91,7 @@ L0041    sta   ,x
          lda   #$7E
          sta   >$0109
          pshs  y
-         leay  >u00B1,u
+         leay  >DevStRg,u
          tfr   y,d
          leay  >IRQRtn,pcr
          leax  >IRQPkt,pcr
@@ -148,7 +150,7 @@ Read     lda   #$91
          bcs   L00A3
          ldx   $08,y
          pshs  y,x
-         ldy   >u00A7,u
+         ldy   >CurDMem,u
          ldb   #$14
 L0099    lda   b,x
          sta   b,y
@@ -177,7 +179,7 @@ L00C5    bita  >DPort+8
          bne   L00DC
          leay  -$01,y
          bne   L00C5
-         lda   >u00A9,u
+         lda   >DrivSel,u
          ora   #$08
          sta   >DPort
          puls  y,cc
@@ -190,10 +192,10 @@ L00E6    orcc  #IntMasks
          stb   >DPort+8
          ldy   #$FFFF
          ldb   #$28
-         orb   >u00A9,u
+         orb   >DrivSel,u
          stb   >DPort
          ldb   #$A8
-         orb   >u00A9,u
+         orb   >DrivSel,u
          lbsr  L0294
          lda   #$02
          rts   
@@ -238,7 +240,7 @@ L0135    bita  >DPort+8
          bne   L014C
          leay  -$01,y
          bne   L0135
-         lda   >u00A9,u
+         lda   >DrivSel,u
          ora   #$08
          sta   >DPort
          puls  y,cc
@@ -285,7 +287,7 @@ L019E    clr   >u00AA,u
          tstb  
          bne   L01B8
          tfr   x,d
-         ldx   >u00A7,u
+         ldx   >CurDMem,u
          cmpd  #$0000
          beq   L01DD
          cmpd  $01,x
@@ -296,16 +298,16 @@ L01B8    comb
 L01BC    clr   ,-s
          bra   L01C2
 L01C0    inc   ,s
-L01C2    subd  #$0012
+L01C2    subd  #18
          bcc   L01C0
-         addb  #$12
-         lbra   L0350
+         addb  #18
+         lbra  L0350
          fcb   $15
 L01CD    bls   L01DD
          pshs  a
-         lda   >u00A9,u
+         lda   >DrivSel,u
          ora   #$10
-         sta   >u00A9,u
+         sta   >DrivSel,u
          puls  a
 L01DD    incb  
          stb   >DPort+$0A
@@ -331,7 +333,7 @@ DrvSel   fcb   $01,$02,$04,$40
 
 L020D    lbsr  L02EB
          lda   <PD.DRV,y	$21,y
-         cmpa  #$04
+         cmpa  #MaxDrv
          bcs   L021B
          comb  
          ldb   #E$Unit
@@ -340,14 +342,14 @@ L020D    lbsr  L02EB
 L021B    pshs  x,b,a
          leax  >DrvSel,pcr
          ldb   a,x
-         stb   >u00A9,u
-         leax  u000F,u
+         stb   >DrivSel,u
+         leax  DRVBEG,u
          ldb   #DRVMEM
          mul   
          leax  d,x
-         cmpx  >u00A7,u
+         cmpx  >CurDMem,u
          beq   L023C
-         stx   >u00A7,u
+         stx   >CurDMem,u
          com   >u00AA,u
 L023C    puls  pc,x,b,a
 L023E    ldb   >DPort+8
@@ -391,7 +393,7 @@ L0275    ldb   >DPort+8
          std   >u00AD,u
          bra   L0275
 L0285    lda   #$08
-         ora   >u00A9,u
+         ora   >DrivSel,u
          sta   >DPort
          stb   >DPort+8
          rts   
@@ -421,13 +423,13 @@ SetStat  ldx   PD.RGS,y
          ldb   #E$UnkSvc
 L02AA    rts   
 L02AB    lbsr  L020D
-         ldb  >u00A9,u
+         ldb  >DrivSel,u
          lbra  L0341
          nop
 L02B6    bls   L02BA
          orb   #$10
-L02BA    stb   >u00A9,u
-         ldx   >u00A7,u
+L02BA    stb   >DrivSel,u
+         ldx   >CurDMem,u
          lbsr  L01E1
          bcs   L02AA
          ldx   PD.RGS,y
@@ -435,7 +437,7 @@ L02BA    stb   >u00A9,u
          ldb   #$F0
          lbra  L0131
 L02D0    lbsr  L020D
-         ldx   >u00A7,u
+         ldx   >CurDMem,u
          clr   <$15,x
          lda   #$05
 L02DC    ldb   #$40
@@ -481,35 +483,36 @@ IRQRtn   pshs  a
          bsr   L0312
          bra   L033F
 L0330    clr   >DPort
-         lda   >u00B1,u
+         lda   >DevStRg,u
          anda  #$FE
-         sta   >u00B1,u
+         sta   >DevStRg,u
          clr   <D.DskTmr
 L033F    puls  pc,a
 
-L0341    lda   $07,x
-         bita  #$01
+L0341    lda   R$Y+1,x		get density byte
+         bita  #DNS.MFM
          bne   L0349
          orb   #$40
-L0349    lda   $09,x
+L0349    lda   R$U+1,x		get track lo-byte
          cmpa  #$15
          lbra  L02B6
 
-L0350    lda   <$10,x
-         bita  #$01
+L0350    lda   <DD.FMT,x
+         bita  #DNS.MFM
          beq   L0365
          lsr   ,s
          bcc   L0365
-         lda   >u00A9,u
+         lda   >DrivSel,u
          ora   #$40
-         sta   >u00A9,u
+         sta   >DrivSel,u
 L0365    puls  a
          cmpa  #$15
          lbra  L01CD
-L036C    orb   <$22,y
+
+L036C    orb   <PD.STP,y
          lbra  L0273
 L0372    addb  #$10
-L0374    orb   <$22,y
+L0374    orb   <PD.STP,y
          pshs  a
          lbsr  L0273
          puls  a
