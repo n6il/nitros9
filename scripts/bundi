@@ -1,0 +1,57 @@
+#!/bin/tcsh
+#
+# BUNDI - Build the Ultimate NitrOS-9 Disk Image
+#
+alias calc 'awk "BEGIN{print \!* }" '
+#
+# This script builds the ULTIMATE NitrOS-9/6309 Level 2 disk image
+# complete with HDB-DOS drives!
+#
+# The resulting image has a NitrOS-9 partition and an HDB-DOS partition.
+# The first drive of the HDB-DOS partition is the HDB-DOS distribution
+# diskette.  The last drive is the NitrOS-9 boot disk.
+#
+# Size of image is 90,624 256-byte sectors, which fits in
+# $00B100 OS-9 Offset in HDB-DOS
+#
+set diskname=ultimate.dsk
+
+########## PART  I ##########
+#                           #
+#   Assemble The Packages   #
+#                           #
+#############################
+# Step 1 - Make the ENTIRE NitrOS-9 Project
+pushd $NITROS9DIR; make dsk; popd
+# Step 2 - Make a custom NitrOS-9/6309 Level 2 boot file
+pushd $NITROS9DIR/6309l2/bootfiles
+make -f makefile.cust clean
+make -f makefile.cust
+popd
+
+# Step 2 - Make the HDB-DOS product
+pushd $CLOUD9DIR/Products/HDB-DOS/Software
+make dsk
+popd
+cp $NITROS9DIR/6309l2/bootfiles/bootfile_cust .
+cp $NITROS9DIR/6309l2/bootfiles/kernel_ide .
+
+########## PART II ##########
+#                           #
+#   Prepare the Disk Image  #
+#                           #
+#############################
+# Step 1 - Prepare the disk image
+os9 format -qe -l90624 uucp.dsk
+os9 gen -b=bootfile_cust -t=kernel_ide uucp.dsk
+os9 dsave -e $NITROS9DIR/6309l2/nos96309l2_80d.dsk, uucp.dsk,
+os9 dsave -e $NITROS9DIR/3rdparty/packages/uucpbb21/uucpbb21_6309.dsk, uucp.dsk,
+os9 format -qe -ss -dd boot.dsk
+os9 gen -b=bootfile_cust -t=kernel_ide boot.dsk
+decb dskini -h126 hdbdrives.dsk
+cat $CLOUD9DIR/Products/HDB-DOS/Software/hdbdos.dsk hdbdrives.dsk boot.dsk>hdbdrives2.dsk
+rm hdbdrives.dsk boot.dsk
+decb hdbconv hdbdrives2.dsk hdbdrives.dsk
+rm hdbdrives2.dsk
+cat uucp.dsk hdbdrives.dsk>$diskname
+rm uucp.dsk hdbdrives.dsk
