@@ -49,9 +49,8 @@ BOOTFILE_WIN80	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_soft
 
-BOOTFILES	= bootfile_vdg bootfile_win40 bootfile_win80 \
-		bootfile_drivewire
-KERNELS		= kernel_stock kernel_drivewire
+BOOTFILES	= bootfile_vdg bootfile_win40 bootfile_win80
+KERNELS		= kernel_stock
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
