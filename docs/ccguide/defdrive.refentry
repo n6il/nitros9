@@ -7,8 +7,8 @@
 <refsynopsisdiv>
 <funcsynopsis>
 <funcprototype>
-  <funcdef><function>defdrive</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <funcdef>char *<function>defdrive</function></funcdef>
+  <void>
 </funcprototype>
 </funcsynopsis>
 
@@ -16,7 +16,18 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+A call to defdrive returns a pointer to a string containing the
+name of the default system drive. The method used is to
+consult the "Init" module for the default directory name. The
+name is copied to a static data area and a pointer to it is
+returned.
 </para>
 </refsect1>
+
+<refsect1><title>Diagnostics</title>
+<para>
+-1 is returned if the "Init" module cannot be linked to.
+</para>
+</refsect1>
+
 </refentry>

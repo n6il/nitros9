@@ -19,4 +19,12 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>Diagnostics</title>
+<para>
+Sbrk and ibrk return -1 if the requested amount of contiguous
+memory is unavailable.
+</para>
+</refsect1>
+
 </refentry>

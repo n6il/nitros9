@@ -28,4 +28,11 @@ os9 I$MAKDIR
 Placeholder
 </para>
 </refsect1>
+<refsect1><title>Diagnostics</title>
+<para>
+Zero is returned if the directory has been successfully made;
+-1 if the file already exists.
+</para>
+</refsect1>
+
 </refentry>

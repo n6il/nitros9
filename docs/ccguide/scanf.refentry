@@ -23,6 +23,14 @@ Placeholder
 </para>
 </refsect1>
 
+<refsect1><title>Diagnostics</title>
+<para>
+These functions return EOF on end of input or error and a count
+which is shorter than expected for unexpected or unmatched
+items.
+</para>
+</refsect1>
+
 <refsect1><title>See Also</title>
 <para>
 <link linkend="atof">atoi(), atof()</link>,

@@ -26,6 +26,14 @@ Placeholder
 </para>
 </refsect1>
 
+<refsect1><title>Diagnostics</title>
+<para>
+-1 is returned if the file does not exist, if the pathname
+cannot be searched, if too many files are already open, or if
+the file permissions deny the requested mode.
+</para>
+</refsect1>
+
 <refsect1><title>See Also</title>
 <para>
 <link linkend="creat">creat()</link>,

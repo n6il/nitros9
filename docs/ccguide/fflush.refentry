@@ -22,4 +22,11 @@
 Placeholder
 </para>
 </refsect1>
+<refsect1><title>Diagnostics</title>
+<para>
+EOF is returned if "fp" does not refer to an output file or
+there is an error writing to the file.
+</para>
+</refsect1>
+
 </refentry>
