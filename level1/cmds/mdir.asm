@@ -203,7 +203,7 @@ L01E8    clr   <zflag	nonzero, print all the rest
          bra   ApndA
 
 outZSP   dec   <zflag	countdown to last digit
-outSP    lda   #$20	append a space
+outSP    lda   #C$SPAC	append a space
 *
 * append a char (in reg a) to buffer
 *
