@@ -19,4 +19,12 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+System call
+<link linkend="getpid">getpid()</link>
+</para>
+</refsect1>
+
 </refentry>

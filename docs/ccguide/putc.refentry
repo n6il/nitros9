@@ -22,4 +22,16 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="fopen">fopen()</link>,
+<link linkend="fflush">fclose(), fflush()</link>,
+<link linkend="getc">getc()</link>,
+<link linkend="puts">puts()</link>,
+<link linkend="printf">printf()</link>,
+<link linkend="fread">fread()</link>
+</para>
+</refsect1>
+
 </refentry>

@@ -17,9 +17,25 @@
 
 </refsynopsisdiv>
 
+<refsect1><title>Assembler Equivalent</title>
+<para>
+os9 F$LINK
+</para>
+<para>
+os9 F$LOAD
+</para>
+</refsect1>
+
 <refsect1><title>Description</title>
 <para>
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="munlink">munlink()</link>
+</para>
+</refsect1>
+
 </refentry>

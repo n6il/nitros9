@@ -22,4 +22,14 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="atof">atoi(), atof()</link>,
+<link linkend="getc">getc()</link>,
+<link linkend="printf">printf()</link>
+Kernighan and Ritchie pp 147-150
+</para>
+</refsect1>
+
 </refentry>

@@ -14,9 +14,24 @@
 
 </refsynopsisdiv>
 
+<refsect1><title>Assembler Equivalent</title>
+<para>
+os9 I$SLEEP (with a value of 0)
+</para>
+</refsect1>
+
 <refsect1><title>Description</title>
 <para>
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="kill">kill()</link>,
+<link linkend="signal">signal()</link>,
+OS-9 shell command "kill"
+</para>
+</refsect1>
+
 </refentry>

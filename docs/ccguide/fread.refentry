@@ -22,4 +22,17 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+System calls
+<link linkend="read">read()</link>,
+<link linkend="write">write()</link>.
+<link linkend="fopen">Fopen()</link>,
+<link linkend="getc">getc()</link>,
+<link linkend="putc">putc()</link>,
+<link linkend="printf">printf()</link>
+</para>
+</refsect1>
+
 </refentry>

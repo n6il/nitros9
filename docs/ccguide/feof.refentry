@@ -22,4 +22,13 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+System call
+<link linkend="open">open()</link>,
+<link linkend="fopen">fopen()</link>.
+</para>
+</refsect1>
+
 </refentry>

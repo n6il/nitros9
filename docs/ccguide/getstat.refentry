@@ -17,6 +17,12 @@
 
 </refsynopsisdiv>
 
+<refsect1><title>Assembler Equivalent</title>
+<para>
+os9 I$GETSTT
+</para>
+</refsect1>
+
 <refsect1><title>Description</title>
 <para>
 Placeholder
