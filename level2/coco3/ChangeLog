@@ -1,4 +1,5 @@
 OS-9 Level Two V03.01.05:
+- VDGInt now works properly with 1MB and 2MB CoCo 3s.
 - A new utility, padrom, has been added to the standard commands.
 - Merge now supports -z to get a list of files from standard input.
 - CC3Go has been renamed to SysGo.
