@@ -79,6 +79,10 @@
 *
 *  36      2003/05/01  Rodney V. Hamilton
 * Fix for LSN0 DD.TOT=0 lockout problem
+*
+*  37      2004/06/18  Boisy G. Pitre
+* Added call to driver's SS.VarSect GetStat in order to obtain the
+* sector size of the media.
 
          nam   RBF
          ttl   Random Block File Manager
@@ -96,7 +100,7 @@ lg       set   Objct
          ENDC
 tylg     set   ty+lg
 atrv     set   ReEnt+rev
-edition  set   36
+edition  set   37
 
          org   $00
 size     equ   .
@@ -145,7 +149,8 @@ start    bra   Create
 * Error: CC Carry set
 *        B = errcode
 *
-Create   pshs  y		Preserve path desc ptr
+Create   
+         pshs  y		Preserve path desc ptr
          leas  -$05,s		Make 5 byte buffer on stack
          IFNE  H6309
          aim   #^DIR.,R$B,u
@@ -360,7 +365,8 @@ l1       clr   ,u+
 * Error: CC Carry set
 *        B = errcode
 *
-Open     pshs  y		preserve path descriptor pointer
+Open     
+         pshs  y		preserve path descriptor pointer
          lbsr  FindFile		try & find the file in current directory
          bcs   RtnMemry		couldn't find it, return error
          ldu   PD.RGS,y		get register stack pointer
@@ -442,7 +448,7 @@ Open1CE
 Open209  std   PD.SIZ,y		set file size in path descriptor of caller
          stx   PD.SIZ+2,y
          clr   PD.SMF,y		clear the state flags
-         rts   			return
+ex       rts   			return
 
 
 *
@@ -636,7 +642,8 @@ CD31C    clrb  			clear errors
 *
 * NOTE: Bug for write protected disk has been fixed - 93/09/19
 *
-Delete   pshs  y		preserve path descriptor pointer
+Delete   
+         pshs  y		preserve path descriptor pointer
          lbsr  FindFile		does the file exist?
          bcs   Clos2A0		no, return error
          ldd   PD.FD+1,y	do we have a file descriptor?
@@ -1151,11 +1158,6 @@ Writ5CB  pshs  x
 *
 GetStat  ldb   R$B,u		get function code
          beq   Gst5FF		it's SS.Opt, go process
-
-* SS.Opt
-* Entry A=path number
-*       B=$00
-*       X=address to put 32 byte packet
          cmpb  #SS.EOF		EOF check?
          bne   Gst5EB		no, skip ahead
          clr   R$B,u		default to no EOF
@@ -1476,7 +1478,25 @@ Sst7AB   rts
 *
 * Entry: U=caller's stack reg. ptr
 *        Y=Path dsc. ptr
-FindFile ldd   #$0100		get size of sector
+FindFile 
+**** ADDED 06/19/2004 ****
+* Call to SS.VarSect in Driver:
+*
+* This code calls the driver's SS.VarSect GetStat, which will
+* update the PD.TYP byte in the path descriptor to the sector
+* size of the media to which this path references.
+* If the driver doesn't support the GetStat, it will return
+* an error, and won't touch the PD.TYP anyway, so we ignore it.
+         ldx   PD.RGS,y		get caller's regs
+         lda   R$B,x		get caller's B
+         pshs  x,a		save PD.RGS ptr and caller's original B
+         ldd   #D$GSTA*256+SS.VarSect	getstat function/SS.VarSect GetStat
+         stb   R$B,x		put SS.VarSect into caller's B
+         lbsr  L113C		send it to driver
+         puls  a,x		get caller's original B and saved PD.RGS
+         sta   R$B,x		restore caller's original B
+****
+         ldd   #$0100		get size of sector
 * Note, following line is stb PD.SMF,y in v30!
          stb   PD.FST,y		clear state flags??
          os9   F$SRqMem		request a 256 byte sector buffer
