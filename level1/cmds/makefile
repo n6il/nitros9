@@ -27,7 +27,7 @@ showallobjs:
 	@$(ECHO) $(ALLOBJS)
 
 showcocoobjs:
-	@$(ECHO) $(CMDS) $(COCOCMDS)
+	@$(ECHO) $(CMDS) $(COCOCMDS_D1) $(COCOCMDS_D2) $(COCOCMDS)
 
 showcocoobjs_d1:
 	@$(ECHO) $(CMDS) $(COCOCMDS_D1)
