@@ -4,37 +4,44 @@ vpath %.hp $(LEVEL1)/SYS
 
 DEPENDS		= ./Makefile
 
-SYSTXTFILES	= motd
-SYSBINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs
 L1TXTFILES	= errmsg password
-L1HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
-		chx.hp cmp.hp cobbler.hp config.hp copy.hp cputype.hp date.hp \
-		dcheck.hp debug.hp ded.hp deiniz.hp del.hp deldir.hp devs.hp dir.hp \
-		disasm.hp display.hp dmode.hp dsave.hp dump.hp echo.hp edit.hp error.hp ex.hp \
-		exbin.hp exmode.hp format.hp free.hp gfx.hp help.hp ident.hp iniz.hp \
-		inkey.hp irqs.hp kill.hp link.hp list.hp load.hp login.hp makdir.hp \
-		mdir.hp merge.hp mfree.hp os9gen.hp \
-		park.hp procs.hp pwd.hp pxd.hp rename.hp save.hp setime.hp \
-		setpr.hp shell.hp sleep.hp tee.hp tmode.hp touch.hp tsmon.hp \
-		tuneport.hp unlink.hp verify.hp xmode.hp
-L2HELPFILES	= basic09.hp dirm.hp dmem.hp gfx2.hp grfdrv.hp make.hp maketerm.hp \
-		mmap.hp modpatch.hp montype.hp pmap.hp proc.hp rdump.hp reboot.hp rlink.hp rma.hp runb.hp \
-		scred.hp smap.hp wcreate.hp
+L2TXTFILES	= motd
+L2BINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs
+HELPFILES	= asm.hp attr.hp \
+		backup.hp basic09.hp binex.hp build.hp \
+		chd.hp chx.hp cmp.hp cobbler.hp config.hp copy.hp cputype.hp \
+		date.hp dcheck.hp debug.hp ded.hp deiniz.hp del.hp deldir.hp devs.hp \
+		dir.hp dirm.hp disasm.hp display.hp dmem.hp dmode.hp dsave.hp dump.hp \
+		echo.hp edit.hp error.hp ex.hp exbin.hp exmode.hp \
+		format.hp free.hp \
+		gfx.hp gfx2.hp grfdrv.hp \
+		help.hp \
+		ident.hp iniz.hp inkey.hp irqs.hp \
+		kill.hp \
+		link.hp list.hp load.hp login.hp \
+		makdir.hp mdir.hp merge.hp mfree.hp mmap.hp modpatch.hp montype.hp \
+		os9gen.hp \
+		park.hp pmap.hp proc.hp procs.hp pwd.hp pxd.hp \
+		reboot.hp rename.hp runb.hp \
+		save.hp setime.hp setpr.hp shell.hp sleep.hp smap.hp \
+		tee.hp tmode.hp touch.hp tsmon.hp tuneport.hp \
+		unlink.hp \
+		verify.hp \
+		wcreate.hp \
+		xmode.hp
 
+#HELPFILES	= make.hp maketerm.hp rdump.hp rlink.hp rma.hp scred.hp
 
 HELPMSG		= helpmsg
 
-TEXTFILES	= $(SYSTXTFILES) $(HELPMSG) $(L1TXTFILES)
-BINFILES	= $(SYSBINFILES)
+TEXTFILES	= $(L2TXTFILES) $(HELPMSG) $(L1TXTFILES)
+BINFILES	= $(L2BINFILES)
 ALLOBJS		= $(TEXTFILES) $(BINFILES)
 
 all:	$(ALLOBJS) $(DEPENDS)
 
-$(HELPMSG): $(L1HELPFILES) $(L2HELPFILES)
+$(HELPMSG): $(HELPFILES)
 	$(MERGE) $^ > $@
-
-#$(L1HELPFILES): $(LEVEL1)/SYS/$@
-#	-$(SOFTLINK) $(LEVEL1)/SYS/$@
 
 $(L1TXTFILES): $(LEVEL1)/SYS/$@
 	-$(SOFTLINK) $(LEVEL1)/SYS/$@
