@@ -11,7 +11,37 @@ is not surprising. C is an incredibly versatile and efficient
 language that can handle tasks that previously would have required
 complex assembly language programming.
 </para>
-
+<para>
+C was originally developed at Bell Telephone Laboratories as an
+implementation language for the UNIX operating system by Brian
+Kernighan and Dennis Ritchie. They also wrote a book titled <quote>The
+C Programming Language</quote> which is universally accepted as the standard
+for the language. It is an interesting reflection on the language
+that although no formal industry-wide <quote>standard</quote> was ever developed
+for C, programs written in C tend to be far more portable between
+radically different computer systems as compared to so-called
+<quote>standardized</quote> languages such as BASIC, COBOL, and PASCAL. The
+reason C is so portable is that the language is so inherently
+expandable that is some special function is required, the user can
+create a portable extension to the language, as opposed to the
+common practice of adding additional statements to the language.
+For example, the number of special-purpose BASIC dialects defies all
+reason. A lesser factor is the underlying UNIX operating system,
+which is also sufficiently versatile to discourage bastardization of
+the language. Indeed, standard C compilers and Unix are intimately
+related.
+</para>
+<para>
+Fortunately, the 6809 microprocessor, the OS-9 operating
+system, and the C language form an outstanding combination. The
+6809 was specifically designed to efficiently run high-level
+languages, and its stack-oriented instruction set and versatile
+repertoire of addressing modes handle the C language very well. As
+mentioned previously, UNIX and C are closely related, and because
+OS-9 is derived from UNIX, it also supports C to the degree that
+almost any application written in C can be transported from a UNIX
+system to an OS-9 system, recompiled, and correctly executed.
+</para>
 </section>
 <section>
 <title>The Language Implementation</title>
@@ -26,8 +56,124 @@ there are some differences. The differences mostly reflect
 parts of C that are obsolete or the constraints imposed by memory
 size limitations.
 </para>
-
 </section>
+
+<section>
+<title>Differences from the K &amp; R Specification</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Enhancements and Extensions</title>
+
+<section>
+<title>The <quote>Direct</quote> Storage Class</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Embedded Assembly Language</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Control Character Escape Sequences</title>
+<para>
+</para>
+</section>
+</section>
+
+<section>
+<title>Implementation-dependent Characteristics</title>
+<para>
+</para>
+
+<section>
+<title>Data Representation and Storage Requirements</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Register Variables</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Access To Command Line Parameters</title>
+<para>
+</para>
+</section>
+</section>
+
+<section>
+<title>System Calls and the Standard Library</title>
+
+<section>
+<title>Operating System Calls</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>The Standard Library</title>
+<para>
+</para>
+</section>
+</section>
+
+<section>
+<title>Run-time Arithmetic Error Handling</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Achieving Maximum Program Performance</title>
+<para>
+</para>
+
+<section>
+<title>Programming Considerations</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>The Optimizer Pass</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>The Profiler</title>
+<para>
+</para>
+</section>
+</section>
+
+<section>
+<title>C Compiler Component Files and File Usage</title>
+<para>
+</para>
+
+<section>
+<title>Temporary Files</title>
+<para>
+</para>
+</section>
+</section>
+
+<section>
+<title>Running the Compiler</title>
+<para>
+</para>
+</section>
+
 <section>
 <title>Compiler Option Flags</title>
 <para>

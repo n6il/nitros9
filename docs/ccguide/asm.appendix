@@ -41,12 +41,134 @@ DP) allocation is handled by the linker.
 </para>
 </blockquote>
 <section>
-    <title>Symbolic Names</title>
+<title>Symbolic Names</title>
 <para>
 A symbolic name is valid if it consists of from one to nine
 uppercase or lowercase characters, decimal digits or the characters
 "$", "_", "." or "@". RMA does not fold lowercase letters to
 uppercase. The names "Hi.you" and "HI.YOU" are distinct names.
 </para>
+</section>
+
+<section>
+<title>Label field</title>
+<para>
+If a symbolic name in the label field of a source statement is
+followed by a <quote>:</quote> (colon), the name will be known
+<emphasis>globally</emphasis> (by all modules linked together).
+If no colon appears, the name will be known only in the PSECT
+in which it was defined. PSECT will be described later.
+</para>
+</section>
+
+<section>
+<title>Undefined names</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Listing format</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Section Location Counters</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Section Directives</title>
+<para>
+</para>
+
+<section>
+<title>PSECT Directive</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>VSECT Directive</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>CSECT Directive</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>RZB statement</title>
+<para>
+</para>
+</section>
+</section>
+
+<section>
+<title>Comparison Between Assembly Programs for the Microware Interactive Assember
+and the Relocating Macro Assembler</title>
+<para>
+The following two program examples simply fork a BASIC09. The
+purpose of the examples are to show some of the differences in the
+new relocating assembler. The differences are apparent.
+</para>
+<programlisting>
+* this program forks a basic09
+          ifp1
+          use ..../defs/os9defs.a
+          endc
+
+
+</programlisting>
+<section>
+<title>Macro Interactive Assembler Source</title>
+<programlisting>
+          ifp1
+          use defsfile
+
+prmsize   equ *-prm
+
+siz       equ
+</programlisting>
+</section>
+</section>
+
+<section>
+<title>Introduction to Macros</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Operations</title>
+
+<section>
+<title>Macro Definition</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Nested Macro Calls</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Labels</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Additional Pseudo-Instructions</title>
+<para>
+</para>
+</section>
 </section>
 </appendix>
