@@ -34,7 +34,7 @@ RBF		= rbf.mn \
 
 SCF		= scf.mn \
 		cc3io.dr vrn.dr printer.dr sio.dr sspak.dr sc6551.dr \
-		windint.io vdgint.io vdgint_small.io \
+		windint.io grfint.io vdgint.io vdgint_small.io \
 		keydrv_cc3.sb snddrv_cc3.sb \
 		joydrv_joy.sb joydrv_6551L.sb joydrv_6552L.sb \
 		joydrv_6551M.sb joydrv_6552M.sb \
