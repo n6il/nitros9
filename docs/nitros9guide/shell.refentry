@@ -1,0 +1,83 @@
+<refentry id="shell">
+<refnamediv>
+<refname>SHELL</refname>
+<refpurpose>OS-9 Command Interpreter</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>SHELL</command>
+<arg choice="plain">&replstart;arglist&replend;</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+The Shell is OS-9's command interpreter program. It reads data from
+its standard input path (the keyboard or a file), and interprets the
+data as a sequence of commands. - The basic function of the shell is
+to initiate and control execution of other OS-9 programs.
+</para>
+<para>
+The shell reads and interprets one text line at a time from the
+standard input path. After interpretation of each line it reads
+another until an end-of-file condition occurs, at which time it
+terminates itself. A special case is when the shell is called from
+another program, in which case it will take the parameter area (rest
+of the command line) as its first line of input. If this command
+line consists of &quot;built in&quot; commands only, more lines will be read
+and processed; otherwise control will return to the calling program
+after the single command line is processed.
+</para>
+<para>
+The rest of this description is a technical specification of the
+shell syntax. Use of the Shell is described fully in Chapters 2
+and 4 of this manual.
+</para>
+</refsect1>
+<refsect1><title>Shell Input Line Formal Syntax</title>
+<synopsis>
+&replstart;pgm line&replend; := &replstart;pgm&replend; {&replstart;pgm&replend;}
+&replstart;pgm&replend; := [&replstart;params&replend;] [ &replstart;name&replend; [&replstart;modif&replend;] [&replstart;pgm params&replend;] [&replstart;modif&replend;] ] [&replstart;sep&replend;]
+
+Program Specifications
+
+&replstart;name&replend; := &replstart;module name&replend;
+           := &replstart;pathlist&replend;
+           := ( &replstart;pgm list&replend; )
+
+Parameters
+
+&replstart;params&replend;:= &replstart;param&replend; { &replstart;delim&replend; &replstart;param&replend; }
+&replstart;delim&replend; := space or comma characters
+&replstart;param&replend; := ex &replstart;name&replend; [&replstart;modif&replend;] chain to program specified
+         := chd &replstart;pathlist&replend;    change working directory
+         := kill &replstart;procID&replend;     send abort signal to process
+         := setpr&replstart;procID&replend; &replstart;pty&replend; change process priority
+         := chx &replstart;pathlist&replend;    change execution directory
+         := w                                   wait for any process to die
+         := p                                   turn &quot;OS9:&quot; prompting on
+         := -p                                  turn prompting off
+         := t                                   echo input lines to std output
+         := -t                                  don't echo input lines
+         := -x                                  dont abort on error
+         := x                                   abort on error
+         := * &replstart;text&replend;          comment line: not processed
+&replstart;sep&replend;   := ;     sequential execution separator
+         := &amp;     concurrent execution separator
+         := !     pipeline separator
+         := &replstart;cr&replend; end-of-line (sequential execution separator)
+
+
+Modifiers
+
+&replstart;modif&replend; := &replstart;mod&replend; { &replstart;delim&replend; &replstart;mod&replend; }
+&replstart;mod&replend;   := &lt; &replstart;pathlist&replend; redirect standard input
+        := &gt; &replstart;pathlist&replend; redirect standard output
+        := &gt;&gt; &replstart;pathlist&replend; redirect standard error output
+        := # &replstart;integer&replend; set process memory size in pages
+        := # &replstart;integer&replend; K   set program memory size in 1K increments
+</synopsis>
+</refsect1>
+</refentry>
+

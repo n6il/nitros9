@@ -1,0 +1,37 @@
+<refentry id="link">
+<refnamediv>
+<refname>LINK</refname>
+<refpurpose>Link module into memory</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>LINK</command>
+<arg choice="plain">
+  &replstart;memory module name&replend;
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+This command is used to &quot;lock&quot; a previously loaded module into
+memory. The link count of the module specified is incremented by one
+each time it is &quot;linked&quot;. The &quot;unlink&quot; command is
+used to &quot;unlock&quot;
+the module when it is no longer needed.
+</para>
+<para>
+For more information see: 5.4, 5.4.1, 5.4.2, 5.4.3
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+
+OS9: LINK edit
+
+OS9: LINK myprogram
+</screen>
+</refsect1>
+</refentry>
+

@@ -1,0 +1,65 @@
+<refentry id="format">
+<refnamediv>
+<refname>FORMAT</refname>
+<refpurpose>Initialize disk media</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>FORMAT</command>
+<arg choice="plain">
+  &replstart;devname&replend;
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+This command is used to physically initialize, verify, and establish
+an initial file structure on a disk. All disks must be formatted
+before they can be used on an OS-9 system.
+</para>
+<para>
+NOTE: If the diskette is to be used as a system disk, &quot;OS9gen&quot; or
+&quot;cobbler&quot; must be run to create the bootstrap after the disk has
+been formatted.
+</para>
+<para>
+
+The formatting process works as follows:
+</para>
+
+<orderedlist  numeration="arabic">
+<listitem>
+<para>
+The disk surface is physically initialized and sectored.
+</para>
+</listitem>
+<listitem>
+<para>
+Each sector is read back and verified. If the sector fails to
+verify after several attempts, the offending sector is excluded from
+the initial free space on the disk. As the verification is
+performed, track numbers are displayed on the standard output
+device.
+</para>
+</listitem>
+<listitem>
+<para>
+The disk allocation map, root directory, and identification sector are written
+to the first few sectors of track zero. These
+sectors <emphasis>cannot</emphasis> be defective.
+</para>
+</listitem>
+</orderedlist>
+<para>
+FORMAT will prompt for a disk volume name, which can be up to 32
+characters long and may include spaces or punctuation. This name
+can later be displayed using the FREE command.
+</para>
+<para>
+For more information see: 3.10
+</para>
+</refsect1>
+</refentry>
+

@@ -1,0 +1,39 @@
+<refentry id="echo">
+<refnamediv>
+<refname>ECHO</refname>
+<refpurpose>Echo text to output path</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>ECHO</command>
+<arg choice="plain">
+  &replstart;text&replend;
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+This command echoes its argument to the standard output path. It is
+typically used to generate messages in shell procedure files or to
+send an initialization character sequence to a terminal. The text
+should not include any of the punctuation characters used by the
+shell.
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+echo &gt;/T2 Hello John how's it going &amp;    (echo to T2)
+
+echo &gt;/term ** warning ** disk about to be scratched 1
+
+echo &gt;/p Listing of Transaction File; list trans &gt;/p
+
+
+OS9: echo Here is an important message!
+Here is an important message!
+</screen>
+</refsect1>
+</refentry>
+
