@@ -20,7 +20,7 @@ clean:	dskclean
 
 dsk:	all
 	$(RM) $(DISK)
-	$(OS9FORMAT) $(DISK) -t40 -h2 -n"C Compiler"
+	$(OS9FORMAT_DS40) $(DISK) -n"C Compiler"
 	$(MAKDIR) $(DISK),CMDS
 	$(MAKDIR) $(DISK),LIB
 	$(MAKDIR) $(DISK),DEFS

@@ -30,7 +30,7 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DISK)
 	$(CD) $(LEVEL2); make
-	$(OS9FORMAT) $(DISK) -n"Flight Simulator 2"
+	$(OS9FORMAT_SS35) $(DISK) -n"Flight Simulator 2"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK) os9boot kernel_1773

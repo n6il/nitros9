@@ -31,7 +31,7 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DISK)
 	$(CD) $(LEVEL2); make
-	$(OS9FORMAT) $(DISK) -t40 -h2 -n"Sub Battle Simulator"
+	$(OS9FORMAT_DS40) $(DISK) -n"Sub Battle Simulator"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK) os9boot kernel_1773

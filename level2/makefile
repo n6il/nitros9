@@ -51,7 +51,7 @@ $(PACKAGENAME): $(DSK_DS40_1) $(DSK_DS40_2)
 
 $(DSK_DS40_1):
 	-$(RM) $(DSK_DS40_1)
-	$(OS9FORMAT) $(DSK_DS40_1) -t40 -h2 -n"OS-9 Level Two System Disk"
+	$(OS9FORMAT_DS40) $(DSK_DS40_1) -n"OS-9 Level Two System Disk"
 	$(OS9GEN) $(DSK_DS40_1) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
 	$(MAKDIR) $(DSK_DS40_1),CMDS
 	$(MAKDIR) $(DSK_DS40_1),SYS
@@ -65,6 +65,6 @@ $(DSK_DS40_1):
 
 $(DSK_DS40_2):
 	-$(RM) $(DSK_DS40_2)
-	$(OS9FORMAT) $(DSK_DS40_2) -t40 -h2 -n"OS-9 Level Two Development Disk"
+	$(OS9FORMAT_DS40) $(DSK_DS40_2) -n"OS-9 Level Two Development Disk"
 	$(MAKDIR) $(DSK_DS40_2),DEFS
 	$(CD) DEFS; $(CPL) $(DEFS) ../$(DSK_DS40_2),DEFS
