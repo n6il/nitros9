@@ -139,7 +139,13 @@ m2.dd				Removed two extranous bytes after name
 modpak.dr	10		Unchanged from last Tandy release
 nil.dd				Unchanged from last Tandy release
 nildrv.dr	3		Unchanged from last Tandy release
-os9		14		Unchanged from last Tandy release
+os9		15		Module validation now consists of a
+                                header parity check, and, if the
+                                system global D.CRC is non-zero,
+                                a CRC check.  Otherwise, CRC checking
+                                over the whole module is disabled.
+                                This is the default, so modules should
+                                load much faster.
 os9p2		10		Unchanged from last Tandy release
 p.dd				Unchanged from last Tandy release
 pipe.dd				Unchanged from last Tandy release
