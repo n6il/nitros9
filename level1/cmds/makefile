@@ -16,6 +16,12 @@ ALLOBJS		= $(COCOCMDS) $(DRAGONCMDS)
 all:	$(ALLOBJS)
 	$(CHMOD) 755 $(ALLOBJS)
 
+pwd:	pd.asm
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
+
+pxd:	pd.asm
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPXD=1
+
 clean:
 	$(RM) $(ALLOBJS) $(BASIC09FILES)
 

@@ -205,12 +205,12 @@ L0076    fcb   $20
 start    stu   <SavedU
          bsr   ClrWork		cleark work area
          bsr   OpenDev		get device name and open it
-         bsr   L011A
+         bsr   Default
          lbsr  GetDTyp
-         lbsr  L03C7
-         lbsr  L052F
-         lbsr  L0612
-         lbsr  L0648
+         lbsr  Format
+         lbsr  InitDisk
+         lbsr  Access
+         lbsr  Stamps
          lbsr  L0843
          ldu   <DTEntry
          os9   I$Detach 
@@ -219,18 +219,18 @@ L00BB    os9   F$Exit
 ClrWork  leay  DiskPath,u
          pshs  y
          leay  >u00B7,u
-L00C6    clr   ,-y
+ClrOne   clr   ,-y
          cmpy  ,s
-         bhi   L00C6
+         bhi   ClrOne
          puls  pc,y
 
-OpenDev  lda   ,x+
-         cmpa  #PDELIM
-         beq   L00DA
-L00D5    ldb   #E$BPNam
-         lbra  L0961
-L00DA    os9   F$PrsNam 
-         lbcs  L0961
+OpenDev  lda   ,x+		get char at X
+         cmpa  #PDELIM		pathlist delimiter?
+         beq   L00DA		branch if so
+L00D5    ldb   #E$BPNam		else set bad pathname
+         lbra  L0961		and print error
+L00DA    os9   F$PrsNam 	parse pathname
+         lbcs  L0961		branch if illegal (has additional pathlist element)
          lda   #PDELIM
          cmpa  ,y
          beq   L00D5
@@ -258,7 +258,7 @@ L00ED    sta   ,y+
          sta   <DiskPath
          rts   
 
-L011A    bsr   GetOpts
+Default  bsr   GetOpts
          bsr   L0183
          lbsr  L025E
          rts   
@@ -622,7 +622,8 @@ L03AE    pshs  x,b
 L03C2    lsr   $02,s
          bne   L03AE
          rts   
-L03C7    tst   <u004E
+
+Format   tst   <u004E
          bne   L03E4
          tst   <DType
          bpl   L03E5
@@ -633,7 +634,7 @@ L03C7    tst   <u004E
          cmpa  #'Y
          beq   L03E5
          cmpa  #'N
-         bne   L03C7
+         bne   Format
 L03E4    rts   
 L03E5    lda   <DiskPath
          ldb   #SS.Reset
@@ -787,7 +788,7 @@ L0525    cmpx  $02,s
          leax  $01,x
          stx   $02,s
          bra   L050F
-L052F    lbsr  L0898
+InitDisk    lbsr  L0898
          ldd   <u0025
          std   $01,x
          ldb   <u0024
@@ -877,7 +878,7 @@ L05D3    addd  ,x++
          lbcs  L00BB
          leax  >u00B7,u
          lbra  L08A4
-L0612    lda   <DiskPath
+Access    lda   <DiskPath
          os9   I$Close  
          leax  <u004F,u
          lda   #READ.
@@ -896,7 +897,7 @@ L0612    lda   <DiskPath
          lbcs  L06F5
          sta   <DiskPath
          rts   
-L0648    lda   <DType
+Stamps    lda   <DType
          clr   <u0045
          bita  #$80
          beq   L0667
