@@ -1,0 +1,13 @@
+@RMA
+Syntax: RMA filename [opts] [>listing]
+Usage : Relocatable Macro Assembler
+Opts  : -o=path write relocatable output to file specified
+        -l = write formatted listing to standard output
+        -c = suppress listing of conditional assembly lines in listing
+        -f = use form feed for top of form
+        -g = list all code bytes generated
+        -x = suppress macro expansion in listing
+        -e = suppress printing of errors
+        -s = print symbol table
+        -dn = set listing lines per page to n
+        -wn = set line width to n

@@ -1,0 +1,9 @@
+@TOUCH
+Syntax: Touch [<opts>] {<path> [<opts>]}
+Function: update the date of a file
+Options:
+     -c = don't create files
+     -q = don't quit on error
+     -x = search execution directory
+     -z = get file names from standard input
+     -z=<file> get list of file names from <file>
