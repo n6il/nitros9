@@ -6,21 +6,25 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * 8      Original Tandy distribution version
+* 11     Only edition number was changed to match up    BGP 02/07/13
+*        to OS-9 Level Two command; that was the
+*        only difference between the Level One and the
+*        Level Two Command
 
          nam   Attr
          ttl   Modify file attributes
 
 * Disassembled 98/09/11 11:44:51 by Disasm v1.6 (C) 1988 by RML
 
-         ifp1
+         ifp1  
          use   defsfile
          use   rbfdefs
-         endc
+         endc  
 
-tylg     set   Prgrm+Objct   
+tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   8
+edition  set   11
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -59,70 +63,70 @@ L008F    fcb   C$LF
          fcc   "ERROR; the directory is not empty"
          fcb   C$CR
 L00B2    fcc   "dsewrewr"
-         fcb   $FF 
+         fcb   $FF
 
-start    stx   <parmptr save param ptr
+start    stx   <parmptr   save param ptr
          clr   <u0007
          com   <u0007
          clra  
-         os9   I$Open    open file on commandline
-         bcc   L00D9 branch if ok
-         ldx   <parmptr  get saved param ptr
+         os9   I$Open     open file on commandline
+         bcc   L00D9      branch if ok
+         ldx   <parmptr   get saved param ptr
          lda   #DIR.!READ. load perms
-         os9   I$Open   open as directory
-         bcc   L00D9 branch if ok
-         ldx   <parmptr get param ptr
-         lda   #DIR. load different perms
-         os9   I$Open  try one more time
-         bcs   L0114 branch if error
-L00D9    sta   <fpath save off path
-         stx   <cmdperms save updated parm ptr
+         os9   I$Open     open as directory
+         bcc   L00D9      branch if ok
+         ldx   <parmptr   get param ptr
+         lda   #DIR.      load different perms
+         os9   I$Open     try one more time
+         bcs   L0114      branch if error
+L00D9    sta   <fpath     save off path
+         stx   <cmdperms  save updated parm ptr
          leax  pathopts,u point X to buffer
-         ldb   #SS.Opt load with status code
-         os9   I$GetStt  get status
-         bcs   L0114 branch if error
-         clrb
-         lda   ,x get path type
-         cmpa  #DT.RBF check if rbf path
-         lbne  L01AC branch if not
-         ldx   <parmptr else get parm ptr
+         ldb   #SS.Opt    load with status code
+         os9   I$GetStt   get status
+         bcs   L0114      branch if error
+         clrb  
+         lda   ,x         get path type
+         cmpa  #DT.RBF    check if rbf path
+         lbne  L01AC      branch if not
+         ldx   <parmptr   else get parm ptr
          leay  <filename,u point to buffer
-         lda   ,x+ get file name character
-         cmpa  #PDELIM path delimiter?
-         bne   L0106 no
-L00FA    sta   ,y+ else save char in Y
-         lda   ,x+ get next file name char
-         cmpa  #C$PERD period?
-         bcs   L0106 branch if not
-         cmpa  #PDELIM path delimiter?
-         bne   L00FA branch if not
+         lda   ,x+        get file name character
+         cmpa  #PDELIM    path delimiter?
+         bne   L0106      no
+L00FA    sta   ,y+        else save char in Y
+         lda   ,x+        get next file name char
+         cmpa  #C$PERD    period?
+         bcs   L0106      branch if not
+         cmpa  #PDELIM    path delimiter?
+         bne   L00FA      branch if not
 L0106    lda   #'@
          ldb   #C$SPAC
          std   ,y++
          leax  <filename,u point X to filename
          lda   #READ.!WRITE. load perms
-         os9   I$Open    open in raw mode
-L0114    lbcs  L01AC branch if error
+         os9   I$Open     open in raw mode
+L0114    lbcs  L01AC      branch if error
          sta   <rawpath
          lda   <fpath
          clr   <u001F,u
          pshs  u
-         ldx   <u001C,u get MS 16 bits
-         ldu   <u001E,u get LS 16 bits
-         lda   <rawpath get path
-         os9   I$Seek   seek
+         ldx   <u001C,u   get MS 16 bits
+         ldu   <u001E,u   get LS 16 bits
+         lda   <rawpath   get path
+         os9   I$Seek     seek
          puls  u
-         bcs   L01AC branch if error
-         leax  <fdesc,u point to buffer
+         bcs   L01AC      branch if error
+         leax  <fdesc,u   point to buffer
          ldy   #FD.SEG
-         os9   I$Read   
+         os9   I$Read
          bcs   L01AC
-         os9   F$ID      get ID
-         cmpy  #$0000 super user?
-         beq   L014B branch if so
+         os9   F$ID       get ID
+         cmpy  #$0000     super user?
+         beq   L014B      branch if so
          cmpy  <fdesc+FD.OWN,u is user same as file's owner?
-         bne   L01C1 branch if not
-L014B    ldx   <cmdperms point to perms on cmd line
+         bne   L01C1      branch if not
+L014B    ldx   <cmdperms  point to perms on cmd line
          lbsr  L021D
          bcs   L018B
 L0152    lbsr  L021D
@@ -135,21 +139,21 @@ L0152    lbsr  L021D
          ldx   <u001C,u
          ldu   <u001E,u
          lda   <rawpath
-         os9   I$Seek   seek
+         os9   I$Seek     seek
          puls  u
-         bcs   L01AC branch if error
-         leax  <fdesc,u point to file desc
-         ldy   #1 only 1 byte
-         os9   I$Write  write out new attributes
-         bcs   L01AC branch if error
-         os9   I$Close  close file
-         bcs   L01AC branch if error
-         lda   <fpath get file path
-         os9   I$Close  close file
-         bcs   L01AC branch if error
+         bcs   L01AC      branch if error
+         leax  <fdesc,u   point to file desc
+         ldy   #1         only 1 byte
+         os9   I$Write    write out new attributes
+         bcs   L01AC      branch if error
+         os9   I$Close    close file
+         bcs   L01AC      branch if error
+         lda   <fpath     get file path
+         os9   I$Close    close file
+         bcs   L01AC      branch if error
          ldb   <u0007
          beq   L01BE
-L018B    ldb   <fdesc,u get attribute
+L018B    ldb   <fdesc,u   get attribute
          leax  >L00B2,pcr
          leay  <u0078,u
          lda   ,x+
@@ -168,10 +172,10 @@ L01AC    leax  >L0012,pcr
 L01B0    pshs  b
          lda   #2
          ldy   #256
-         os9   I$WritLn 
+         os9   I$WritLn
          comb  
          puls  b
-L01BE    os9   F$Exit   
+L01BE    os9   F$Exit
 L01C1    clrb  
          leax  >L0052,pcr
          bra   L01B0
@@ -182,12 +186,12 @@ L01CF    pshs  u,y,x
          lda   <fpath
          ldx   #$0000
          ldu   #$0040
-         os9   I$Seek   
+         os9   I$Seek
          ldu   $04,s
          bcs   L01BE
 L01E0    leax  <u0028,u
          ldy   #$0020
-         os9   I$Read   
+         os9   I$Read
          bcs   L01F7
          tst   ,x
          beq   L01E0
@@ -252,6 +256,6 @@ L0278    eorb  <u0006
 L027F    coma  
          puls  pc,y,x
 
-         emod
+         emod  
 eom      equ   *
-         end
+         end   
