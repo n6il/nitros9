@@ -1,5 +1,5 @@
 ********************************************************************
-* Format - Disk format program
+* Format - RBF Disk format program
 *
 * $Id$
 *
@@ -25,11 +25,14 @@
 *  24      2004/07/20  Boisy G. Pitre
 * Revamped to display summary similar to OS-9/68K. Also, format now
 * checks the TYPH.DSQ bit in order to query the drive for its size.
+* A rolling track counter that stays on the same line is now used
+* instead of the scrolling track counter, and 4 byte track numbers
+* are now shown instead of 3 byte track numbers.
 * Also, if a cluster size is not specified on the command line,
 * the best one is automatically calculated.
 
          nam   Format
-         ttl   Disk format program
+         ttl   RBF Disk format program
 
 * Disassembled 02/07/17 11:00:13 by Disasm v1.6 (C) 1988 by RML
 
@@ -1198,15 +1201,19 @@ OutScrn  ldd   <sectcount       get counted sectors
 L0724    pshs  b,a              save two ascii digits
          lda   <currtrak        track low byte
          lbsr  HexDigit         make it ascii
-         pshs  b                save two ascii digits
+         pshs  b,a              save two ascii digits
+         lda   #C$CR            get CR
+         pshs  a
          tfr   s,x              get output from stack
-         ldy   #$0004           length of output
-         lbsr  Print            print it
-         lda   $02,s
-         cmpa  #$46             end of line?
-         bne   L0738            skip line feed
-         lbsr  LineFD           print linefeed
-L0738    leas  $04,s            pop output off stack
+         ldy   #$0006           length of output
+*         lbsr  Print            print it
+         lda   #$01
+         os9   I$Write
+*         lda   $02,s
+*         cmpa  #$46             end of line?
+*         bne   L0738            skip line feed
+*         lbsr  LineFD           print linefeed
+L0738    leas  $06,s            pop output off stack
 L073A    ldd   <currtrak        get current track
          addd  #$0001           increment it
          std   <currtrak        save it back
