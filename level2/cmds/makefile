@@ -27,11 +27,11 @@ runb:	runb.asm
 	$(RM) $@
 	$(MOVE) $@.tmp $@
 
-xmode:	xmode.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aXMODE=1
-
 tmode:	xmode.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aTMODE=1
+
+xmode:	xmode.asm
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aXMODE=1
 
 pwd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
