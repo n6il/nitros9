@@ -1,6 +1,6 @@
 
-About See Also references:
-    In the reference entries there's a lot of references to other
+About "See Also" references:
+    In the reference entries there are a lot of references to other
     function calls. They should according to DocBook be implemented with
     the <function>-element, but this doesn't produce the desired result
     in my formatter. Instead the <link>-element has been used. In the
