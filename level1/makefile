@@ -2,7 +2,7 @@
 
 include ../Makefile.rules
 
-RELEASE		= os9l1v030104
+RELEASE		= os9l1v030105
 BOOTFILE	= BOOTFILES/bootfile_stock
 KERNELFILE	= BOOTFILES/kernel_stock
 DIRS		= CMDS MODULES DEFS SYS BOOTFILES
