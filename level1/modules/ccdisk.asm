@@ -6,8 +6,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   4    From Tandy OS-9 Level One VR 02.00.00
-*   5    Patched to handle 6ms step rate, patch came    BGP 02/07/14
-*        from Kissable OS-9, Rainbow, September 1986
+*   5    Patched to handle 6ms step rate and ds drives  BGP 02/07/14
+*        from Kissable OS-9, Rainbow, October 1988
 
          nam   CCDisk
          ttl   WD1773 disk driver for Tandy/Radio Shack controller
@@ -24,13 +24,15 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   5
 
-         mod   eom,name,tylg,atrv,start,size
+L0000    mod   eom,name,tylg,atrv,start,size
 
 u0000    rmb   1
 u0001    rmb   3
 u0004    rmb   4
 u0008    rmb   7
-u000F    rmb   64
+u000F    rmb   38
+u0035    rmb   8
+u003D    rmb   18
 u004F    rmb   27
 u006A    rmb   5
 u006F    rmb   56
@@ -74,7 +76,7 @@ Init     clra
          lbsr  L0294
          lda   ,x
          lda   #$FF
-         ldb   #$04
+L003D    ldb   #$04
          leax  u000F,u
 L0041    sta   ,x
          sta   <$15,x
@@ -281,7 +283,7 @@ L019E    clr   >u00AA,u
          bne   L01B8
          tfr   x,d
          ldx   >u00A7,u
-         cmpd  #$0000
+         cmpw  #$0000
          beq   L01DD
          cmpd  $01,x
          bcs   L01BC
@@ -294,9 +296,9 @@ L01C0    inc   ,s
 L01C2    subd  #$0012
          bcc   L01C0
          addb  #$12
-         puls  a
-         cmpa  #$15
-         bls   L01DD
+         lbra   L0350
+         fcb   $15
+L01CD    bls   L01DD
          pshs  a
          lda   >u00A9,u
          ora   #$10
@@ -312,10 +314,10 @@ L01E1    ldb   <$15,x
          beq   L0207
 L01F2    sta   <$15,x
          sta   >DPort+$0B
-         ldb   #$10		was $13 for 30ms step rate
-         bsr   L0273
+         clrb
+         lbsr  L0372
          pshs  x
-         ldx   #$088B		was $222E for 30ms step rate
+         ldx   #$222E
 L0201    leax  -$01,x
          bne   L0201
          puls  x
@@ -413,13 +415,13 @@ SetStat  ldx   $06,y
          ldb   #E$UnkSvc
 L02AA    rts   
 L02AB    lbsr  L020D
-         lda   $09,x
-         cmpa  #$15
-         bls   L02BE
-         ldb   >u00A9,u
+         andb  >u00A9,u
+         lbra  L0341
+         nop
+L02B6    bls   L02BA
          orb   #$10
-         stb   >u00A9,u
-L02BE    ldx   >u00A7,u
+L02BA    stb   >u00A9,u
+         ldx   >u00A7,u
          lbsr  L01E1
          bcs   L02AA
          ldx   $06,y
@@ -430,14 +432,15 @@ L02D0    lbsr  L020D
          ldx   >u00A7,u
          clr   <$15,x
          lda   #$05
-L02DC    ldb   #$40		was $43 for 30ms step rate
-         pshs  a
-         bsr   L0273
-         puls  a
+L02DC    ldb   #$40
+         nop
+         nop
+         nop
+         lbsr  L0374
          deca  
          bne   L02DC
-         ldb   #$00		was $03 for 30ms step rate
-         bra   L0273
+         clrb
+         lbra  L036C
 L02EB    pshs  y,x,b,a
          lda   <D.DskTmr
          bmi   L0301
@@ -475,6 +478,33 @@ L0330    clr   >DPort
          sta   >u00B1,u
          clr   <D.DskTmr
 L033F    puls  pc,a
+
+L0341    lda   $07,x
+         bita  #$01
+         bne   L0349
+         orb   #$40
+L0349    lda   $09,x
+         cmpa  #$15
+         lbra  L02B6
+L0350    lda   <$10,x
+         bita  #$01
+         beq   L0365
+         lsr   ,s
+         bcc   L0365
+         lda   >u00A9,u
+         ora   #$40
+         sta   >u00A9,u
+L0365    puls  a
+         cmpa  #$15
+         lbra  L01CD
+L036C    orb   <$22,y
+         lbra  L0273
+L0372    addb  #$10
+L0374    orb   <$22,y
+         pshs  a
+         lbsr  L0273
+         puls  a
+         rts
 
          emod
 eom      equ   *
