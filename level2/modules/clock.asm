@@ -31,7 +31,7 @@ GI.Toggl equ   %00000001  GIME CART* IRQ enable bit, for CC3
 * TC9 needs to reset more interrupt sources
 *GI.Toggl equ %00000111 GIME SERINT*, KEYINT*, CART* IRQ enable bits
 
-         ifp1            
+         IFP1            
          use   defsfile  
          ENDC            
 
