@@ -27,68 +27,69 @@ edition  set   2
 
          org   0
 u0000    rmb   1
-u0001    rmb   13
-u000E    rmb   1
-u000F    rmb   706
+parray   rmb   13
+pcount   rmb   1
+buff     rmb   256
+         rmb   450
 size     equ   .
 
 name     fcs   /Tee/
          fcb   edition
 
 start    clrb  
-         clr   u000E,u        clear path counter
-         cmpy  #$0000
-         lbeq  L0076
-         leay  u0001,u
+         clr   pcount,u		clear path counter
+         cmpy  #$0000		any parameters?
+         lbeq  exitok		exit if none
+         leay  parray,u		else point Y to path array
 
 * Walk the command line parameters
-L001E    lda   ,x+
+parse    lda   ,x+
          cmpa  #C$SPAC
-         beq   L001E
+         beq   parse
          cmpa  #C$COMA
-         beq   L001E
+         beq   parse
          cmpa  #C$CR
-         lbeq  L0042
+         lbeq  parsex
 * We've found a file or device name
          leax  -1,x
          lda   #WRITE.
          ldb   #PREAD.+UPDAT.
-         os9   I$Create 
-         bcs   L0077
-         ldb   u000E,u
-         sta   b,y
-         incb  
-         stb   u000E,u
-         bra   L001E
-L0042    stb   u000E,u
+         os9   I$Create 	open a path to the device or file
+         bcs   exit		branch if error
+         ldb   pcount,u		else get path counter
+         sta   b,y		save new path in the array offset
+         incb  			increment counter
+         stb   pcount,u		and save
+         bra   parse		continue parsing command line
+parsex   stb   pcount,u
 
 * Devices on command line are open, start pumping data
 L0044    clra  
-         leax  u000F,u
+         leax  buff,u
          ldy   #256
          os9   I$ReadLn 
          bcc   L0057
          cmpb  #E$EOF
-         beq   L0076
+         beq   exitok
          coma  
-         bra   L0077
+         bra   exit
 L0057    inca  
          os9   I$WritLn 
-         tst   u000E,u
+         tst   pcount,u
          beq   L0044
          clrb  
-L0060    leay  u0001,u
+L0060    leay  parray,u
          lda   b,y
-         leax  u000F,u
+         leax  buff,u
          ldy   #256
          os9   I$WritLn 
-         bcs   L0077
+         bcs   exit
          incb  
-         cmpb  u000E,u
+         cmpb  pcount,u
          bne   L0060
          bra   L0044
-L0076    clrb  
-L0077    os9   F$Exit   
+exitok   clrb  
+exit     os9   F$Exit   
 
          emod
 eom      equ   *
