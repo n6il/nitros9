@@ -1,331 +1,1787 @@
-L0000    fcb   $87,$CD,$0A,$56,$00,$0D,$11,$81   .M.V....
-L0008    fcb   $74,$00,$12,$00,$00,$73,$68,$64   t....shd
-L0010    fcb   $F7,$00,$16,$05,$E6,$16,$06,$FB   w...f...
-L0018    fcb   $16,$01,$5A,$16,$01,$6B,$16,$07   ..Z..k..
-L0020    fcb   $9D,$16,$09,$03,$16,$09,$E8,$16   ......h.
-L0028    fcb   $09,$AE,$16,$03,$E1,$16,$06,$0A   ....a...
-L0030    fcb   $16,$05,$E2,$41,$47,$49,$20,$28   ..bAGI (
-L0038    fcb   $63,$29,$20,$63,$6F,$70,$79,$72   c) copyr
-L0040    fcb   $69,$67,$68,$74,$20,$31,$39,$38   ight 198
-L0048    fcb   $38,$20,$53,$49,$45,$52,$52,$41   8 SIERRA
-L0050    fcb   $20,$4F,$6E,$2D,$4C,$69,$6E,$65    On-Line
-L0058    fcb   $43,$6F,$43,$6F,$33,$20,$76,$65   CoCo3 ve
-L0060    fcb   $72,$73,$69,$6F,$6E,$20,$62,$79   rsion by
-L0068    fcb   $20,$43,$68,$72,$69,$73,$20,$49    Chris I
-L0070    fcb   $64,$65,$6E,$00,$91,$1A,$27,$16   den...'.
-L0078    fcb   $1A,$50,$97,$1A,$96,$42,$B7,$FF   .P...B7.
-L0080    fcb   $A9,$DE,$43,$96,$1A,$A7,$C4,$E7   )^C..'Dg
-L0088    fcb   $42,$FD,$FF,$A9,$1C,$AF,$39,$00   B..)./9.
-L0090    fcb   $80,$00,$40,$00,$20,$00,$10,$00   ..@. ...
-L0098    fcb   $08,$00,$04,$00,$02,$00,$01,$00   ........
-L00A0    fcb   $00,$80,$00,$40,$00,$20,$00,$10   ...@. ..
-L00A8    fcb   $00,$08,$00,$04,$00,$02,$00,$01   ........
-L00B0    fcb   $80,$00,$E0,$00,$E0,$00,$E0,$00   ..`.`.`.
-L00B8    fcb   $70,$00,$F8,$00,$F8,$00,$F8,$00   p.x.x.x.
-L00C0    fcb   $70,$00,$38,$00,$7C,$00,$FE,$00   p.8.|...
-L00C8    fcb   $FE,$00,$FE,$00,$7C,$00,$38,$00   ....|.8.
-L00D0    fcb   $1C,$00,$7F,$00,$FF,$80,$FF,$80   .......
-L00D8    fcb   $FF,$80,$FF,$80,$FF,$80,$7F,$00   .......
-L00E0    fcb   $1C,$00,$0E,$00,$3F,$80,$7F,$C0   ....?.@
-L00E8    fcb   $7F,$C0,$FF,$E0,$FF,$E0,$FF,$E0   @.`.`.`
-L00F0    fcb   $7F,$C0,$7F,$C0,$3F,$80,$1F,$00   @@?...
-L00F8    fcb   $0E,$00,$0F,$80,$3F,$E0,$7F,$F0   ....?`p
-L0100    fcb   $7F,$F0,$FF,$F8,$FF,$F8,$FF,$F8   p.x.x.x
-L0108    fcb   $FF,$F8,$FF,$F8,$7F,$F0,$7F,$F0   .x.xpp
-L0110    fcb   $3F,$E0,$0F,$80,$07,$C0,$1F,$F0   ?`...@.p
-L0118    fcb   $3F,$F8,$7F,$FC,$7F,$FC,$FF,$FE   ?x....
-L0120    fcb   $FF,$FE,$FF,$FE,$FF,$FE,$FF,$FE   ........
-L0128    fcb   $7F,$FC,$7F,$FC,$3F,$F8,$1F,$F0   ..?x.p
-L0130    fcb   $07,$C0,$00,$00,$00,$02,$00,$08   .@......
-L0138    fcb   $00,$12,$00,$20,$00,$32,$00,$4A   ... .2.J
-L0140    fcb   $00,$64,$01,$BC,$01,$C9,$01,$D4   .d.<.I.T
-L0148    fcb   $01,$E9,$02,$DE,$02,$D1,$03,$09   .i.^.Q..
-L0150    fcb   $03,$1D,$03,$59,$02,$11,$01,$F4   ...Y...t
-L0158    fcb   $6D,$8D,$FF,$33,$26,$16,$6C,$8D   m..3&.l.
-L0160    fcb   $FF,$2D,$86,$0B,$97,$AB,$33,$8D   .-...+3.
-L0168    fcb   $FF,$D8,$DC,$2E,$E3,$C4,$ED,$C1   .X\.cDmA
-L0170    fcb   $0A,$AB,$26,$F6,$39,$CC,$4F,$4F   .+&v9LOO
-L0178    fcb   $34,$06,$17,$02,$91,$32,$62,$EC   4....2bl
-L0180    fcb   $62,$34,$06,$17,$00,$03,$32,$62   b4....2b
-L0188    fcb   $39,$34,$20,$8D,$CB,$17,$05,$6C   94 .K..l
-L0190    fcb   $4F,$97,$5B,$97,$6B,$43,$97,$5A   O.[.kC.Z
-L0198    fcb   $EE,$64,$EC,$45,$17,$FE,$D5,$BE   ndlE..U>
-L01A0    fcb   $05,$51,$A6,$80,$81,$FF,$27,$11   .Q&...'.
-L01A8    fcb   $80,$F0,$25,$F6,$81,$0A,$22,$F2   .p%v.."r
-L01B0    fcb   $33,$8D,$FF,$8E,$48,$AD,$D6,$20   3...H-V 
-L01B8    fcb   $EB,$35,$20,$39,$DC,$5A,$84,$F0   k5 9\Z.p
-L01C0    fcb   $AA,$80,$CA,$0F,$DD,$5A,$A6,$80   *.J.]Z&.
-L01C8    fcb   $39,$DC,$5A,$8A,$0F,$C4,$F0,$DD   9\Z..Dp]
-L01D0    fcb   $5A,$A6,$80,$39,$DC,$5A,$84,$0F   Z&.9\Z..
-L01D8    fcb   $97,$5A,$A6,$80,$48,$48,$48,$48   .Z&.HHHH
-L01E0    fcb   $9A,$5A,$CA,$F0,$DD,$5A,$A6,$80   .ZJp]Z&.
-L01E8    fcb   $39,$DC,$5A,$8A,$F0,$C4,$0F,$DD   9\Z.pD.]
-L01F0    fcb   $5A,$A6,$80,$39,$96,$6B,$85,$20   Z&.9.k. 
-L01F8    fcb   $27,$0A,$A6,$80,$81,$F0,$10,$25   '.&..p.%
-L0200    fcb   $00,$E8,$97,$A6,$17,$01,$5D,$10   .h.&..].
-L0208    fcb   $25,$00,$DF,$DD,$A2,$8D,$09,$20   %._]".. 
-L0210    fcb   $E3,$A6,$80,$97,$6B,$A6,$80,$39   c&..k&.9
-L0218    fcb   $D6,$6B,$C4,$07,$D7,$A7,$4F,$58   VkD.W'OX
-L0220    fcb   $DD,$A9,$33,$8D,$FF,$0C,$EC,$C5   ])3...lE
-L0228    fcb   $33,$8D,$FE,$84,$33,$CB,$4F,$D6   3...3KOV
-L0230    fcb   $A2,$58,$49,$D0,$A7,$24,$08,$4A   "XIP'$.J
-L0238    fcb   $2A,$05,$CC,$00,$00,$20,$0E,$DD   *.L.. .]
-L0240    fcb   $AB,$CC,$01,$40,$93,$A9,$10,$93   +L.@.)..
-L0248    fcb   $AB,$23,$02,$DC,$AB,$44,$56,$D7   +#.\+DVW
-L0250    fcb   $A2,$D7,$A4,$96,$A3,$90,$A7,$24   "W$.#.'$
-L0258    fcb   $03,$4F,$20,$0C,$97,$AB,$86,$A7   .O ..+.'
-L0260    fcb   $90,$AA,$91,$AB,$23,$02,$96,$AB   .*.+#..+
-L0268    fcb   $97,$A3,$97,$A5,$96,$A6,$8A,$01   .#.%.&..
-L0270    fcb   $97,$A8,$D6,$AA,$5C,$1F,$98,$9B   .(V*\...
-L0278    fcb   $A5,$97,$A5,$58,$30,$8D,$FE,$10   %.%X0...
-L0280    fcb   $EC,$85,$DD,$AD,$30,$8D,$FE,$08   l.]-0...
-L0288    fcb   $96,$6B,$85,$10,$26,$0A,$EC,$C4   .k..&.lD
-L0290    fcb   $A4,$84,$26,$04,$E4,$01,$27,$22   $.&.d.'"
-L0298    fcb   $96,$6B,$85,$20,$27,$11,$96,$A8   .k. '..(
-L02A0    fcb   $44,$24,$02,$88,$B8,$97,$A8,$85   D$..8.(.
-L02A8    fcb   $01,$26,$0F,$85,$02,$27,$0B,$34   .&...'.4
-L02B0    fcb   $40,$DC,$A2,$DD,$9E,$17,$01,$B7   @\"]...7
-L02B8    fcb   $35,$40,$0C,$A2,$30,$04,$9C,$AD   5@."0..-
-L02C0    fcb   $23,$C6,$33,$42,$96,$A4,$97,$A2   #F3B.$."
-L02C8    fcb   $0C,$A3,$96,$A3,$91,$A5,$26,$B4   .#.#.%&4
-L02D0    fcb   $39,$17,$00,$90,$25,$14,$DD,$9E   9...%.].
-L02D8    fcb   $17,$01,$94,$8D,$0E,$39,$17,$00   .....9..
-L02E0    fcb   $83,$25,$07,$DD,$9E,$17,$01,$87   .%.]....
-L02E8    fcb   $8D,$0F,$39,$17,$00,$81,$25,$FA   ..9...%z
-L02F0    fcb   $97,$A0,$D6,$9F,$D7,$A1,$17,$01   . V.W!..
-L02F8    fcb   $28,$17,$00,$85,$25,$EC,$D7,$A1   (...%lW!
-L0300    fcb   $96,$9E,$97,$A0,$17,$01,$40,$20   ... ..@ 
-L0308    fcb   $E2,$8D,$59,$25,$DD,$DD,$9E,$17   b.Y%]]..
-L0310    fcb   $01,$5D,$8D,$50,$25,$D4,$DD,$A0   .].P%T] 
-L0318    fcb   $17,$00,$79,$20,$F5,$8D,$45,$25   ..y u.E%
-L0320    fcb   $C9,$DD,$9E,$17,$01,$49,$A6,$80   I]...I&.
-L0328    fcb   $81,$F0,$24,$BE,$84,$70,$44,$44   .p$>.pDD
-L0330    fcb   $44,$44,$E6,$1F,$2A,$01,$40,$9B   DDf.*.@.
-L0338    fcb   $9E,$81,$9F,$23,$02,$86,$9F,$97   ...#....
-L0340    fcb   $A0,$C4,$0F,$C5,$08,$27,$03,$C4    D.E.'.D
-L0348    fcb   $07,$50,$DB,$9F,$C1,$A7,$23,$02   .P[.A'#.
-L0350    fcb   $C6,$A7,$D7,$A1,$17,$00,$3D,$20   F'W!..= 
-L0358    fcb   $CD,$8D,$09,$25,$8D,$DD,$9E,$17   M..%.]..
-L0360    fcb   $01,$24,$20,$F5,$17,$00,$08,$10   .$ u....
-L0368    fcb   $25,$FF,$7F,$17,$00,$13,$39,$A6   %....9&
-L0370    fcb   $80,$81,$F0,$24,$09,$81,$9F,$23   ..p$...#
-L0378    fcb   $02,$86,$9F,$1C,$FE,$39,$1A,$01   .....9..
-L0380    fcb   $39,$E6,$80,$C1,$F0,$25,$04,$A6   9f.Ap%.&
-L0388    fcb   $1F,$20,$F3,$C1,$A7,$23,$02,$C6   . sA'#.F
-L0390    fcb   $A7,$1C,$FE,$39,$D1,$9F,$10,$27   '..9Q..'
-L0398    fcb   $00,$87,$91,$9E,$10,$27,$00,$A7   .....'.'
-L03A0    fcb   $DC,$9E,$DD,$A4,$86,$01,$D6,$A1   \.]$..V!
-L03A8    fcb   $D0,$9F,$24,$02,$40,$50,$97,$A7   P.$.@P.'
-L03B0    fcb   $D7,$A9,$86,$01,$D6,$A0,$D0,$9E   W)..V P.
-L03B8    fcb   $24,$02,$40,$50,$97,$A6,$D7,$A8   $.@P.&W(
-L03C0    fcb   $D1,$A9,$25,$0C,$D7,$AB,$D7,$AA   Q)%.W+W*
-L03C8    fcb   $54,$D7,$A3,$4F,$97,$A2,$20,$0C   TW#O." .
-L03D0    fcb   $96,$A9,$97,$AB,$97,$AA,$44,$97   .).+.*D.
-L03D8    fcb   $A2,$5F,$D7,$A3,$DB,$A9,$D7,$A3   "_W#[)W#
-L03E0    fcb   $D1,$AA,$25,$0A,$D0,$AA,$D7,$A3   Q*%.P*W#
-L03E8    fcb   $D6,$A5,$DB,$A7,$D7,$A5,$9B,$A8   V%['W%.(
-L03F0    fcb   $97,$A2,$91,$AA,$25,$0A,$90,$AA   .".*%..*
-L03F8    fcb   $97,$A2,$96,$A4,$9B,$A6,$97,$A4   .".$.&.$
-L0400    fcb   $DC,$A4,$DD,$9E,$17,$00,$68,$DC   \$]...h\
-L0408    fcb   $A2,$0A,$AB,$26,$CF,$39,$34,$10   ".+&O94.
-L0410    fcb   $CE,$C9,$40,$8E,$69,$00,$EC,$64   NI@.i.ld
-L0418    fcb   $ED,$C3,$30,$1E,$26,$FA,$35,$10   mC0.&z5.
-L0420    fcb   $39,$97,$AC,$91,$9E,$24,$06,$D6   9.,..$.V
-L0428    fcb   $9E,$D7,$A0,$97,$9E,$8D,$40,$D6   .W ...@V
-L0430    fcb   $A0,$D0,$9E,$27,$0D,$33,$41,$A6    P.'.3A&
-L0438    fcb   $C4,$9A,$5B,$94,$5A,$A7,$C0,$5A   D.[.Z'@Z
-L0440    fcb   $26,$F5,$96,$AC,$97,$9E,$39,$D7   &u.,..9W
-L0448    fcb   $AC,$D1,$9F,$24,$06,$96,$9F,$97   ,Q.$....
-L0450    fcb   $A1,$D7,$9F,$8D,$1A,$D6,$A1,$D0   !W...V!P
-L0458    fcb   $9F,$27,$0F,$33,$C9,$00,$A0,$A6   .'.3I. &
-L0460    fcb   $C4,$9A,$5B,$94,$5A,$A7,$C4,$5A   D.[.Z'DZ
-L0468    fcb   $26,$F1,$D6,$AC,$D7,$9F,$39,$D6   &qV,W.9V
-L0470    fcb   $9F,$86,$A0,$3D,$DB,$9E,$89,$00   .. =[...
-L0478    fcb   $C3,$60,$40,$1F,$03,$A6,$C4,$9A   C`@..&D.
-L0480    fcb   $5B,$94,$5A,$A7,$C4,$39,$34,$10   [.Z'D94.
-L0488    fcb   $8E,$E0,$00,$10,$EF,$83,$1F,$14   .`..o...
-L0490    fcb   $D6,$9F,$86,$A0,$3D,$DB,$9E,$89   V.. =[..
-L0498    fcb   $00,$C3,$60,$40,$1F,$03,$D6,$5A   .C`@..VZ
-L04A0    fcb   $96,$5B,$10,$27,$01,$4F,$2A,$10   .[.'.O*.
-L04A8    fcb   $81,$F0,$26,$0C,$C4,$F0,$C1,$40   .p&.DpA@
-L04B0    fcb   $10,$27,$01,$41,$86,$F0,$20,$0A   .'.A.p .
-L04B8    fcb   $C4,$0F,$C1,$0F,$10,$27,$01,$35   D.A..'.5
-L04C0    fcb   $86,$0F,$97,$AF,$84,$4F,$97,$AE   .../.O..
-L04C8    fcb   $A6,$C4,$94,$AF,$91,$AE,$10,$26   &D./...&
-L04D0    fcb   $01,$23,$CC,$FF,$FF,$34,$06,$34   .#L..4.4
-L04D8    fcb   $06,$34,$06,$34,$02,$86,$A1,$97   .4.4..!.
-L04E0    fcb   $A0,$4F,$97,$A1,$97,$AA,$4C,$97    O.!.*L.
-L04E8    fcb   $A3,$DC,$A0,$DD,$A6,$96,$AA,$97   #\ ]&.*.
-L04F0    fcb   $AB,$D6,$9E,$D7,$A4,$5C,$DF,$B0   +V.W$\_0
-L04F8    fcb   $A6,$C4,$9A,$5B,$94,$5A,$A7,$C4   &D.[.Z'D
-L0500    fcb   $A6,$C2,$94,$AF,$91,$AE,$26,$03   &B./..&.
-L0508    fcb   $5A,$26,$ED,$33,$41,$1F,$30,$93   Z&m3A.0.
-L0510    fcb   $B0,$DB,$9E,$D7,$A0,$96,$9E,$D7   0[.W ..W
-L0518    fcb   $9E,$DF,$B2,$DE,$B0,$33,$41,$40   ._2^03A@
-L0520    fcb   $8B,$9F,$27,$13,$E6,$C4,$D4,$AF   ..'.fDT/
-L0528    fcb   $D1,$AE,$26,$0B,$E6,$C4,$DA,$5B   Q.&.fDZ[
-L0530    fcb   $D4,$5A,$E7,$C0,$4A,$26,$ED,$1F   TZg@J&m.
-L0538    fcb   $30,$93,$B2,$5A,$DB,$A0,$D7,$A1   0.2Z[ W!
-L0540    fcb   $96,$A6,$81,$A1,$27,$31,$D1,$A7   .&.!'1Q'
-L0548    fcb   $27,$08,$22,$1A,$D7,$A4,$0F,$AA   '.".W$.*
-L0550    fcb   $20,$1A,$96,$A0,$91,$A6,$26,$0E    .. .&&.
-L0558    fcb   $86,$01,$91,$AA,$27,$19,$97,$AA   ...*'..*
-L0560    fcb   $96,$A1,$97,$A4,$20,$06,$0F,$AA   .!.$ ..*
-L0568    fcb   $96,$A7,$97,$A4,$10,$9E,$A2,$9E   .'.$..".
-L0570    fcb   $A4,$DE,$A6,$96,$AB,$34,$72,$96   $^&.+4r.
-L0578    fcb   $A3,$97,$A2,$D6,$9F,$D7,$A5,$DB   #."V.W%[
-L0580    fcb   $A3,$D7,$9F,$C1,$A7,$22,$3E,$D6   #W.A'">V
-L0588    fcb   $9F,$86,$A0,$3D,$DB,$9E,$89,$00   .. =[...
-L0590    fcb   $C3,$60,$40,$1F,$03,$A6,$C4,$94   C`@..&D.
-L0598    fcb   $AF,$91,$AE,$10,$27,$FF,$4A,$96   /...'.J.
-L05A0    fcb   $9E,$D6,$A3,$D1,$A2,$27,$15,$0D   .V#Q"'..
-L05A8    fcb   $AA,$26,$11,$91,$A8,$25,$0D,$91   *&..(%..
-L05B0    fcb   $A9,$22,$09,$96,$A9,$91,$A1,$24   )"..).!$
-L05B8    fcb   $0C,$4C,$97,$9E,$91,$A1,$24,$05   .L...!$.
-L05C0    fcb   $4C,$97,$9E,$20,$C2,$96,$A3,$91   L.. B.#.
-L05C8    fcb   $A2,$26,$11,$0D,$AA,$26,$0D,$40   "&..*&.@
-L05D0    fcb   $97,$A3,$96,$A0,$97,$9E,$D6,$A5   .#. ..V%
-L05D8    fcb   $D7,$9F,$20,$13,$35,$72,$81,$FF   W. .5r..
-L05E0    fcb   $27,$13,$10,$9F,$A2,$9F,$9E,$DF   '...".._
-L05E8    fcb   $A0,$97,$AA,$D6,$9F,$D7,$A5,$AE    .*V.W%.
-L05F0    fcb   $65,$9F,$A8,$20,$8A,$10,$EE,$E4   e.( ..nd
-L05F8    fcb   $35,$10,$39,$8E,$60,$40,$A6,$84   5.9.`@&.
-L0600    fcb   $5F,$44,$56,$44,$56,$44,$56,$44   _DVDVDVD
-L0608    fcb   $56,$E7,$84,$AA,$84,$A7,$80,$8C   Vg.*.'..
-L0610    fcb   $C9,$40,$25,$EA,$39,$32,$7E,$AE   I@%j92~.
-L0618    fcb   $64,$EE,$02,$EF,$E4,$27,$18,$34   dn.od'.4
-L0620    fcb   $40,$17,$03,$B4,$32,$62,$EE,$E4   @..42bnd
-L0628    fcb   $EE,$44,$34,$40,$17,$01,$8F,$32   nD4@...2
-L0630    fcb   $62,$EE,$E4,$EE,$42,$20,$E4,$32   bndnB d2
-L0638    fcb   $62,$39,$32,$7E,$AE,$64,$EE,$84   b92~.dn.
-L0640    fcb   $27,$0F,$EF,$E4,$34,$40,$17,$03   '.od4@..
-L0648    fcb   $C6,$32,$62,$AE,$E4,$EE,$84,$26   F2b.dn.&
-L0650    fcb   $F1,$32,$62,$39,$00,$00,$00,$00   q2b9....
-L0658    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L0660    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L0668    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L0670    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L0678    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L0680    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L0688    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L0690    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L0698    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06A0    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06A8    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06B0    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06B8    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06C0    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06C8    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06D0    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06D8    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06E0    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06E8    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06F0    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L06F8    fcb   $00,$00,$00,$00,$30,$8D,$FF,$54   ....0..T
-L0700    fcb   $C6,$30,$86,$04,$A7,$80,$5A,$26   F0..'.Z&
-L0708    fcb   $FB,$81,$0E,$24,$05,$4C,$C6,$0C   ...$.LF.
-L0710    fcb   $20,$F2,$39,$34,$20,$AE,$64,$EC    r94 .dl
-L0718    fcb   $08,$17,$F9,$58,$E6,$04,$A6,$88   ..yXf.&.
-L0720    fcb   $26,$85,$04,$26,$0A,$33,$8D,$FF   &..&.3..
-L0728    fcb   $2B,$4F,$A6,$CB,$A7,$88,$24,$86   +O&K'.$.
-L0730    fcb   $A0,$3D,$EB,$03,$89,$00,$C3,$60    =k...C`
-L0738    fcb   $40,$1F,$03,$10,$AE,$88,$10,$4F   @......O
-L0740    fcb   $97,$A6,$97,$A5,$4C,$97,$5C,$E6   .&.%L.\f
-L0748    fcb   $88,$24,$C1,$0F,$27,$3D,$97,$A6   .$A.'=.&
-L0750    fcb   $E6,$A4,$A6,$C0,$84,$F0,$27,$22   f$&@.p'"
-L0758    fcb   $81,$30,$27,$0A,$0F,$A6,$81,$10   .0'..&..
-L0760    fcb   $27,$1C,$81,$20,$27,$21,$5A,$26   '.. '!Z&
-L0768    fcb   $E9,$A6,$88,$25,$0D,$A6,$26,$06   i&.%.&&.
-L0770    fcb   $85,$01,$27,$17,$20,$04,$85,$08   ..'. ...
-L0778    fcb   $27,$11,$0F,$5C,$20,$0D,$A6,$88   '..\ .&.
-L0780    fcb   $26,$85,$02,$27,$F5,$20,$DF,$97   &..'u _.
-L0788    fcb   $A5,$20,$DB,$A6,$02,$26,$2C,$96   % [&.&,.
-L0790    fcb   $A5,$27,$0A,$B6,$01,$AF,$8A,$10   %'.6./..
-L0798    fcb   $B7,$01,$AF,$20,$08,$B6,$01,$AF   7./ .6./
-L07A0    fcb   $84,$EF,$B7,$01,$AF,$96,$A6,$27   .o7./.&'
-L07A8    fcb   $0A,$B6,$01,$AF,$8A,$80,$B7,$01   .6./..7.
-L07B0    fcb   $AF,$20,$08,$B6,$01,$AF,$84,$7F   / .6./.
-L07B8    fcb   $B7,$01,$AF,$35,$20,$39,$AE,$62   7./5 9.b
-L07C0    fcb   $EC,$08,$17,$F8,$AF,$EE,$88,$10   l..x/n..
-L07C8    fcb   $A6,$42,$85,$80,$27,$03,$17,$00   &B..'...
-L07D0    fcb   $AE,$EC,$C1,$D7,$A2,$A6,$C0,$48   .lAW"&@H
-L07D8    fcb   $48,$48,$48,$97,$A7,$A6,$88,$24   HHH.'&.$
-L07E0    fcb   $48,$48,$48,$48,$97,$9E,$E6,$04   HHHH..f.
-L07E8    fcb   $D0,$A2,$5C,$86,$A0,$3D,$EB,$03   P"\. =k.
-L07F0    fcb   $89,$00,$C3,$60,$40,$DD,$A8,$9E   ..C`@](.
-L07F8    fcb   $A8,$86,$01,$97,$AC,$20,$01,$3A   (..., .:
-L0800    fcb   $A6,$C0,$27,$29,$E6,$5F,$84,$F0   &@')f_.p
-L0808    fcb   $C4,$0F,$91,$A7,$27,$F1,$44,$44   D..''qDD
-L0810    fcb   $44,$44,$97,$9F,$A6,$84,$84,$F0   DD..&..p
-L0818    fcb   $81,$20,$23,$1F,$91,$9E,$22,$3B   . #...";
-L0820    fcb   $96,$9E,$9A,$9F,$A7,$80,$0F,$AC   ....'..,
-L0828    fcb   $5A,$26,$E9,$20,$D3,$0A,$A2,$27   Z&i S."'
-L0830    fcb   $31,$9E,$A8,$30,$89,$00,$A0,$9F   1.(0.. .
-L0838    fcb   $A8,$20,$C5,$9F,$AD,$4F,$8C,$C8   ( E.-O.H
-L0840    fcb   $A0,$24,$0C,$30,$89,$00,$A0,$A6    $.0.. &
-L0848    fcb   $84,$84,$F0,$81,$20,$23,$EF,$9E   ..p. #o.
-L0850    fcb   $AD,$91,$9E,$22,$06,$A6,$84,$84   -..".&..
-L0858    fcb   $F0,$20,$C7,$30,$01,$5A,$26,$B4   p G0.Z&4
-L0860    fcb   $20,$9E,$AE,$62,$A6,$02,$26,$16    ..b&.&.
-L0868    fcb   $96,$AC,$27,$0A,$B6,$01,$AF,$8A   .,'.6./.
-L0870    fcb   $40,$B7,$01,$AF,$20,$08,$B6,$01   @7./ .6.
-L0878    fcb   $AF,$84,$BF,$B7,$01,$AF,$39,$84   /.?7./9.
-L0880    fcb   $30,$44,$44,$44,$44,$A1,$0A,$10   0DDDD!..
-L0888    fcb   $27,$00,$9B,$34,$70,$A6,$0A,$48   '..4p&.H
-L0890    fcb   $48,$48,$48,$97,$AF,$86,$CF,$A4   HHH./.O$
-L0898    fcb   $42,$9A,$AF,$A7,$42,$10,$8E,$C9   B./'B..I
-L08A0    fcb   $40,$EC,$C1,$DD,$A1,$A6,$C0,$48   @lA]!&@H
-L08A8    fcb   $48,$48,$48,$97,$A7,$DF,$B0,$5F   HHH.'_0_
-L08B0    fcb   $D7,$AB,$D7,$AA,$A6,$C0,$27,$44   W+W*&@'D
-L08B8    fcb   $E6,$5F,$84,$F0,$C4,$0F,$91,$A7   f_.pD..'
-L08C0    fcb   $26,$0A,$DB,$AA,$20,$EC,$E6,$C0   &.[* lf@
-L08C8    fcb   $27,$0A,$C4,$0F,$DB,$AA,$D7,$AA   '.D.[*W*
-L08D0    fcb   $0C,$AB,$20,$F2,$96,$AA,$40,$9B   .+ r.*@.
-L08D8    fcb   $A1,$27,$16,$80,$0F,$23,$0C,$97   !'...#..
-L08E0    fcb   $AA,$96,$A7,$8A,$0F,$A7,$A0,$96   *.'..' .
-L08E8    fcb   $AA,$20,$F0,$8B,$0F,$9A,$A7,$A7   * p...''
-L08F0    fcb   $A0,$30,$5F,$D6,$AB,$A6,$82,$A7    0_V+&.'
-L08F8    fcb   $A0,$5A,$26,$F9,$E7,$A0,$0A,$A2    Z&yg ."
-L0900    fcb   $26,$AD,$1F,$20,$83,$C9,$40,$D7   &-. .I@W
-L0908    fcb   $B2,$C4,$FE,$1F,$01,$DE,$B0,$10   2D...^0.
-L0910    fcb   $8E,$C9,$40,$EC,$A1,$ED,$C1,$30   .I@l!mA0
-L0918    fcb   $1E,$26,$F8,$96,$B2,$44,$24,$04   .&x.2D$.
-L0920    fcb   $A6,$A4,$A7,$C4,$35,$70,$39,$34   &$'D5p94
-L0928    fcb   $20,$AE,$64,$EC,$08,$17,$F7,$44    .dl..wD
-L0930    fcb   $4F,$E6,$04,$33,$8D,$FD,$1D,$A6   Of.3...&
-L0938    fcb   $CB,$DD,$A3,$E6,$88,$24,$C4,$0F   K]#f.$D.
-L0940    fcb   $26,$06,$AA,$88,$24,$A7,$88,$24   &.*.$'.$
-L0948    fcb   $34,$10,$17,$FE,$71,$32,$62,$AE   4...q2b.
-L0950    fcb   $64,$A6,$88,$24,$81,$3F,$10,$22   d&.$.?."
-L0958    fcb   $00,$7B,$33,$8D,$FC,$F6,$D6,$A4   .{3..vV$
-L0960    fcb   $0F,$B3,$4F,$0C,$B3,$5D,$27,$07   .3O.3]'.
-L0968    fcb   $5A,$A6,$CB,$91,$A3,$27,$F3,$E6   Z&K.#'sf
-L0970    fcb   $04,$86,$A0,$3D,$EB,$03,$89,$00   .. =k...
-L0978    fcb   $C3,$60,$40,$1F,$03,$DF,$A8,$10   C`@.._(.
-L0980    fcb   $AE,$88,$10,$E6,$21,$D1,$B3,$22   ...f!Q3"
-L0988    fcb   $02,$D7,$B3,$A6,$88,$24,$84,$F0   .W3&.$.p
-L0990    fcb   $97,$9E,$E6,$A4,$A6,$C4,$84,$0F   ..f$&D..
-L0998    fcb   $9A,$9E,$A7,$C0,$5A,$26,$F5,$0A   ..'@Z&u.
-L09A0    fcb   $B3,$27,$32,$DE,$A8,$E6,$A4,$5A   3'2^(f$Z
-L09A8    fcb   $33,$C9,$FF,$60,$1F,$31,$A6,$C4   3I.`.1&D
-L09B0    fcb   $84,$0F,$9A,$9E,$A7,$C4,$4F,$A6   ....'DO&
-L09B8    fcb   $CB,$84,$0F,$9A,$9E,$3A,$A7,$84   K....:'.
-L09C0    fcb   $0A,$B3,$26,$E4,$E6,$A4,$C0,$02   .3&df$@.
-L09C8    fcb   $33,$41,$A6,$C4,$84,$0F,$9A,$9E   3A&D....
-L09D0    fcb   $A7,$C0,$5A,$26,$F5,$35,$20,$39   '@Z&u5 9
-L09D8    fcb   $EE,$62,$EC,$4C,$17,$F6,$95,$EE   nblL.v.n
-L09E0    fcb   $62,$EC,$48,$DD,$A1,$0F,$A0,$E6   blH]!. f
-L09E8    fcb   $47,$86,$A0,$3D,$EB,$46,$89,$00   G. =kF..
-L09F0    fcb   $C3,$60,$40,$EE,$4A,$DD,$A8,$D3   C`@nJ](S
-L09F8    fcb   $A0,$DD,$AD,$9E,$A8,$EC,$81,$ED    ]-.(l.m
-L0A00    fcb   $C1,$9C,$AD,$25,$F8,$DC,$A8,$C3   A.-%x\(C
-L0A08    fcb   $00,$A0,$0A,$A2,$26,$E7,$39,$EE   . ."&g9n
-L0A10    fcb   $62,$EC,$4C,$17,$F6,$5E,$EE,$62   blL.v^nb
-L0A18    fcb   $EC,$48,$DD,$A1,$0F,$A0,$E6,$47   lH]!. fG
-L0A20    fcb   $86,$A0,$3D,$EB,$46,$89,$00,$C3   . =kF..C
-L0A28    fcb   $60,$40,$EE,$4A,$DD,$A8,$D3,$A0   `@nJ](S 
-L0A30    fcb   $DD,$AD,$9E,$A8,$EC,$C1,$ED,$81   ]-.(lAm.
-L0A38    fcb   $9C,$AD,$25,$F8,$DC,$A8,$C3,$00   .-%x\(C.
-L0A40    fcb   $A0,$0A,$A2,$26,$E7,$39,$00,$00    ."&g9..
-L0A48    fcb   $00,$00,$00,$00,$00,$00,$73,$68   ......sh
-L0A50    fcb   $64,$77,$00,$E9,$E0,$19           dw.i`.
+********************************************************************
+* SHDW - Kings Quest III screen rendering module??
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 0      Disassembly of original distribution           PWZ 03/03/14
+*        using a combination of disasm v1.6 and
+*        the os9tools disassembler Os9disasm
+*
+*        Note the header shows a data size of 0
+*        called from the sierra module and accesses
+*        data set up in that module
+*
+*        Much credit and thanks is give to Nick Sonneveld and 
+*        the other NAGI folks. Following his sources made it
+*        so much easier to document what was happening in here.
+  
+*        This source will assemble byte for byte 
+*        to the original kq3 shdw module.
+*
+*        Header for : shdw
+*        Module size: $A56  #2646
+*        Module CRC : $E9E019 (Good)
+*        Hdr parity : $74
+*        Exec. off  : $0012  #18
+*        Data size  : $0000  #0
+*        Edition    : $00  #0
+*        Ty/La At/Rv: $11 $81
+*        Prog mod, 6809 Obj, re-ent, R/O
+
+
+
+* Disassembly by Os9disasm of shdw
+
+
+         nam   shdw
+         ttl   program module       
+
+
+         ifp1
+         use   defsfile
+         endc
+
+tylg     set   Prgrm+Objct   
+atrv     set   ReEnt+rev
+rev      set   $01
+         mod   eom,name,tylg,atrv,start,size
+
+size           equ   .
+
+Xffa9          equ $FFA9
+X01af          equ $01AF   pointer to state.flag
+X0551          equ $0551   pointer to a linked list of picture data
+
+
+* OS9 data area definitions
+
+u001a          equ $001A    shdw MMU block data
+u002e          equ $002E    Load offset 
+u0042          equ $0042    Sierra process descriptor block
+u0043          equ $0043    Sierra 2nd 8K data block    
+u005a          equ $005A    color
+u005b          equ $005B    sbuff_drawmask
+u005c          equ $005C    flag_control 
+u006b          equ $006B    pen_status
+u009e          equ $009E    pos_init_x
+u009f          equ $009F    pos_init_y
+u00a0          equ $00A0    pos_final_x
+u00a1          equ $00A1    pos_final_y 
+u00a2          equ $00A2    pen_x position
+u00a3          equ $00A3    pen_y position
+
+* these look like gen purpose scratch vars
+
+u00a4          equ $00A4    
+u00a5          equ $00A5    
+u00a6          equ $00A6    
+u00a7          equ $00A7    
+u00a8          equ $00A8    
+u00a9          equ $00A9    
+u00aa          equ $00AA
+u00ab          equ $00AB    
+u00ac          equ $00AC    
+u00ad          equ $00AD    
+u00ae          equ $00AE
+u00af          equ $00AF
+u00b0          equ $00B0
+u00b2          equ $00B2
+u00b3          equ $00B3
+u00e9          equ $00E9
+
+
+* Local Program Defines
+
+PICBUFF_WIDTH  equ 160
+PICBUFF_HEIGHT equ 168
+
+
+* VIEW OBJECTS FLAGS
+
+O_DRAWN        equ $01   * 0  - object has been drawn
+O_BLKIGNORE    equ $02   * 1  - ignore blocks and condition lines
+O_PRIFIXED     equ $04   * 2  - fixes priority agi cannot change it based on position
+O_HRZNIGNORE   equ $08   * 3  - ignore horizon
+O_UPDATE       equ $10   * 4  - update every cycle
+O_CYCLE        equ $20   * 5  - the object cycles
+O_ANIMATE      equ $40   * 6  - animated
+O_BLOCK        equ $80   * 7  - resting on a block
+O_WATER        equ $100  * 8  - only allowed on water
+O_OBJIGNORE    equ $200  * 9  - ignore other objects when determining contacts
+O_REPOS        equ $400  * 10 - set whenever a obj is repositioned
+*                                that way the interpeter doesn't check it's next movement for one cycle
+O_LAND         equ $800  * 11 - only allowed on land
+O_SKIPUPDATE   equ $1000 * 12 - does not update obj for one cycle
+O_LOOPFIXED    equ $2000 * 13 - agi cannot set the loop depending on direction
+O_MOTIONLESS   equ $4000 * 14 - no movement.  
+*                                if position is same as position in last cycle then this flag is set.
+*                                follow/wander code can then create a new direction
+*                                (ie, if it hits a wall or something)
+O_UNUSED       equ $8000
+
+
+picb_size      equ PICBUFF_WIDTH*PICBUFF_HEIGHT
+x_max          equ PICBUFF_WIDTH-1  
+y_max          equ PICBUFF_HEIGHT-1 
+
+gfx_picbuff    equ $6040   screen buff low address
+gbuffend       equ $C940   screen buff high address
+
+cmd_start      equ $F0     first command value
+
+
+name  equ   *
+L000d fcs 'shdw'
+      fcb $00
+
+* This module is linked to in sierra
+
+start equ   *
+L0012 lbra  L05fb      screen init ?
+      lbra  L0713      obj_chk_control
+      lbra  L0175      render_pic  (which calls pic_cmd_loop)  
+      lbra  L0189      pic_cmd_loop
+      lbra  L07be      obj_blit
+      lbra  L0927
+      lbra  L0a0f
+      lbra  L09d8
+      lbra  L040e      sbuff_fill
+      lbra  L063a
+      lbra  L0615
+
+      fcc  'AGI (c) copyright 1988 SIERRA On-Line'
+      fcc  'CoCo3 version by Chris Iden'
+      fcb   C$NULL
+
+* Twiddles with MMU
+* accd is loaded by calling program
+L0074 cmpa  u001a      compare to shdw mem block
+      beq   L008e      equal ?? no work to be done move on
+      orcc  #IntMasks  turn off interupts
+      sta   u001a      store the value passed in by a
+      lda   u0042      get sierra process descriptor map block
+      sta   Xffa9      map it in to $2000-$3FFF
+      ldu   u0043      2nd 8K data block in Sierra
+      lda   u001a      load my mem block value
+      sta   ,u         save my values at address held in u0043
+      stb   2,u        
+      std   Xffa9      map it to task 1 block 2
+      andcc #^IntMasks restore the interupts
+L008e rts              we done
+   
+L008f fcb $00          load offsets updated flag
+
+* binary_list[] (pic_render.c)
+L0090 fdb $8000
+      fdb $4000
+      fdb $2000
+      fdb $1000
+      fdb $0800
+      fdb $0400
+      fdb $0200
+      fdb $0100
+      fdb $0080
+      fdb $0040
+      fdb $0020
+      fdb $0010
+      fdb $0008
+      fdb $0004
+      fdb $0002
+      fdb $0001
+
+* circle_data[] (pic_render.c)
+L00b0 fdb $8000
+      fdb $e000
+      fdb $e000
+      fdb $e000
+      fdb $7000
+      fdb $f800
+      fdb $f800
+      fdb $f800
+      fdb $7000
+      fdb $3800
+      fdb $7c00
+      fdb $fe00
+      fdb $fe00
+      fdb $fe00
+      fdb $7c00
+      fdb $3800
+      fdb $1c00
+      fdb $7f00
+      fdb $ff80
+      fdb $ff80
+      fdb $ff80
+      fdb $ff80
+      fdb $ff80
+      fdb $7f00
+      fdb $1c00
+      fdb $0e00
+      fdb $3f80
+      fdb $7fc0
+      fdb $7fc0
+      fdb $ffe0
+      fdb $ffe0
+      fdb $ffe0
+      fdb $7fc0
+      fdb $7fc0
+      fdb $3f80
+      fdb $1f00
+      fdb $0e00
+      fdb $0f80
+      fdb $3fe0
+      fdb $7ff0
+      fdb $7ff0
+      fdb $fff8
+      fdb $fff8
+      fdb $fff8
+      fdb $fff8
+      fdb $fff8
+      fdb $7ff0
+      fdb $7ff0
+      fdb $3fe0
+      fdb $0f80
+      fdb $07c0
+      fdb $1ff0
+      fdb $3ff8
+      fdb $7ffc
+      fdb $7ffc
+      fdb $fffe
+      fdb $fffe
+      fdb $fffe
+      fdb $fffe
+      fdb $fffe
+      fdb $7ffc
+      fdb $7ffc
+      fdb $3ff8
+      fdb $1ff0
+      fdb $07c0
+
+* circle_list[] (pic_render.c) 
+* I "assume" this data is different in the file
+* { 0, 1, 4, 9, 16, 25, 37, 50 }
+* These run like a set of numbers**2 {0,1,2,3,4,5,~6,~7} 
+* ah ha these are multiples 2*(0,1,2,3,4,5,~6,~7)**2)
+
+L0132 fcb $00,$00        0
+      fcb $00,$02        2
+      fcb $00,$08        8
+      fcb $00,$12       18
+      fcb $00,$20       32
+      fcb $00,$32       50
+      fcb $00,$4a       74
+      fcb $00,$64      100
+      
+
+* select case dispatch table for pic_cmd_loop()
+
+L0142 fdb $01bc        enable_pic_draw()
+      fdb $01c9        disable_pic_draw()
+      fdb $01d4        enable_pri_draw()
+      fdb $01e9        disable_pri_draw()
+      fdb $02de        draw_y_corner()
+      fdb $02d1        draw_x_corner()
+      fdb $0309        absolute_line()
+      fdb $031d        relative_line()
+      fdb $0359        pic_fill()
+      fdb $0211        read_pen_status()
+      fdb $01f4        plot_with_pen()
+
+
+* This code adds the load offsets to the program offsets above
+L0158 tst   L008f,pcr  test if we've loaded the offsets already
+      bne   L0174      done once leave
+      inc   L008f,pcr  not done set the flag 
+      lda   #$0b       set our index to 11
+      sta   u00ab      stow it in mem since we are going to clobber b
+      leau  >L0142,pcr load table head address
+L016a ldd   u002e      get load offset set in sierra
+      addd  ,u         add the load offset 
+      std   ,u++       and stow it back, bump pointer
+      dec   u00ab      decrement the index
+      bne   L016a      ain't done go again
+L0174 rts              we're out of here
+
+
+* The interaction between render_pic and pic_cmd_loop is divided 
+* differently in the NAGI source pic_render.c
+
+* render_pic()
+* color = F, 4 = proirity so the note says
+
+L0175 ldd   #$4f4f     load the color
+      pshs  d          push it on the stack for the pass
+      lbsr  L040e      call sbuff_fill routine
+      leas  2,s        reset stack to value at entry
+      ldd   2,s        pull the next word 
+      pshs  d          push it on top of the stack        
+      lbsr  L0189      call pic_cmd_loop()
+      leas  2,s        once we return clean up stack again
+      rts              return
+      
+* pic_cmd_loop() (pic_render.c)        
+L0189 pshs  y
+      bsr   L0158      ensure load offset has been added to table address
+      lbsr  L06fc      sbuff_fill()
+      clra             make a zero
+      sta   u005b      sbuff_drawmask
+      sta   u006b      pen_status
+      coma             make the complement FF
+      sta   u005a      store color
+      
+      ldu   4,s
+      ldd   5,u
+      lbsr  L0074      twiddle mmu 
+      
+* pic_cmd_loop()  (pic_render.c) starts here      
+      ldx   X0551      given_pic_data  set in pic_res.c
+L01a2 lda   ,x+        pic_byte
+L01a4 cmpa  #$ff       if it's FF were done 
+      beq   L01b9      so head out
+      suba  #cmd_start first valid cmd = F0 so subtract to get index
+      blo   L01a2      less than F0 ignore it
+      cmpa  #$0a       check for top end
+      bhi   L01a2      greater than FA ignore it
+      leau  >L0142,pcr load the addr of the dispatch table
+      asla             sign extend multiply by two for double byte offset
+      jsr   [a,u]      make the call
+      bra   L01a4      loop again
+L01b9 puls  y          done then fetch the y back 
+      rts              and return
+      
+* Command $F0 change picture color and enable picture draw
+*  enable_pic_draw() pic_render.c
+*  differs slightly with pic_render.c 
+*  don't have colour_render()
+*  and setting of colour_picpart
+*  
+*  x contains pic_byte         
+*  after ldd
+*  a contains color
+*  b contains draw mask
+*  returns the next pic_byte in a
+
+L01bc ldd   u005a      pulls in color and sbuff_drawmask
+      anda  #$f0       and color with $F0
+      ora   ,x+        or that result with the pic_byte and bump to next
+      orb   #$0f       or the sbuff_drawmask with $0F
+      std   u005a      store the updated values
+      lda   ,x+        return value ignored so this just bumps to next pic_byte
+      rts
+      
+
+* Command $F1 Disable picture draw
+*  disable_pic_draw()         
+L01c9 ldd   u005a      pulls in color and sbuff_drawmask
+      ora   #$0f       ors color with $0F (white ??)
+      andb  #$f0       ands draw mask with $F0
+      std   u005a      store the updated values
+      lda   ,x+        return value ignored so this just bumps to next pic_byte
+      rts
+      
+* Command $F2 Changes priority color and enables priority draw
+*  enable_pri_draw
+L01d4 ldd   u005a      pulls in color and sbuff_drawmask      
+      anda  #$0f       ands color with $0F
+      sta   u005a      save color 
+      lda   ,x+        loads pic_byte and bumps to next
+      asla             times 2 with sign extend
+      asla             again times 2
+      asla             and again times 2
+      asla             end result is multiply pic_byte by 16 ($10)  
+      ora   u005a      or that value with the modified color
+      orb   #$f0       or the sbuff_drawmask with $F0
+      std   u005a      store the updated values
+      lda   ,x+        return value ignored so this just bumps to next pic_byte
+      rts
+      
+* Command $F3 Disable priority draw
+*  diasable_pri_draw() pic_render.c
+L1e9  ldd   u005a      pulls in color and sbuff_drawmask
+      ora   #$f0       or the color with $F0
+      andb  #$0f       and the sbuff_drawmask with $0F
+      std   u005a      store the updated values
+      lda   ,x+        return value ignored so this just bumps to next pic_byte
+      rts
+      
+* Command $FA plot with pen 
+* Logic is pic_byte >= 0xF0 in c source.
+* Emailed Nick Sonneveld 3/14/ 03
+
+* plot_with_pen()  (pic_render.c)        
+L01f4 lda   u006b      pen_status
+      bita  #$20       and but don't change check for pen type solid or splater ($20)
+      beq   L0204      is splater 
+      lda   ,x+        load pic_byte (acca) from pic_code and bump pointer
+      cmpa  #cmd_start       test against $F0 if a is less than
+*                      based on discussions with Nick this must have been a bug 
+*                      in the earlier versions of software...
+*                      if it is less than $F0 it's just a picture byte 
+*                      fix next rev. 
+      lblo  L02ea      branch to a return statement miles away (could be fixed)
+      sta   u00a6      save our pic_byte in texture_num
+L0204 lbsr  L0364      call read_xy_postion
+      lblo  L02ea      far off rts
+      std   u00a2      pen x/y position 
+      bsr   L0218      call plot_with_pen2
+      bra   L01f4      go again ...
+*                      yes there is no rts here in the c source either
+
+
+* Command $F9 Change pen size and style
+*  read_pen_status() pic_render.c
+L0211 lda   ,x+        get pic_byte
+      sta   u006b      save as pen_status
+      lda   ,x+        return value ignored so this just bumps to next pic_byte  
+      rts
+      
+
+* plot_with_pen2
+*  Set up circle_ptr         
+*  u00a7 = pen.size
+*  u00a9 = pensize x 2
+*  u00ab = scratch var
+*  u00ad = penwidth
+
+L0218 ldb   u006b      pen_status
+      andb  #$07        
+      stb   u00a7      pen.size ?? save for pen_status & $07 
+      
+      clra             clear a and condition codes
+      lslb             multiply by 2 
+      std   u00a9      pen size x 2
+      leau  L0132,pcr  circle_list[]
+      ldd   b,u        d now holds one of the circle_list values 
+      leau  L00b0,pcr  circle_data[]
+      leau  d,u        use that to index to a circle_data item
+*                      u now is circle_ptr      
+
+*  Set up x position       
+      clra  
+      ldb   u00a2      load pen_x position
+      lslb             multiply by two
+      rola  
+      subb  u00a7      subtract the pen.size
+      bcc   L023f      outcome not less than zero move on
+      deca               
+      bpl   L023f      if we still have pos must be 0 or >
+      ldd   #0000        
+      bra   L024d
+L023f std   u00ab      store pen_x at scratch 
+
+      ldd   #$0140     start with 320
+      subd  u00a9      subtract 2 x pen.size
+      cmpd  u00ab      pen_x to calc
+      bls   L024d      if pen_x is greater keep temp calc
+      ldd   u00ab      otherwise use pen_x
+      
+L024d lsra             divide by 2
+      rorb  
+      stb   u00a2      stow at pen_x
+      stb   u00a4      stow at pen_final_x
+      
+*  Set up y position      
+      lda   u00a3      pen_y
+      suba  u00a7      pen.size
+      bcc   L025c      >= 0 Ok go stow it
+      clra             otherwise less than zero so set it to 0
+      bra   L0268      go stow it
+L025c sta   u00ab      store pen_y at scratch
+
+      lda   #y_max     start with 167
+      suba  u00aa      subtract 2 x pen.size
+      cmpa  u00ab      compare to pen_y calced so far
+      bls   L0268      if pen_y > calc use calc and save it
+      lda   u00ab      otherwise use pen_y
+L0268 sta   u00a3      pen_y
+      sta   u00a5      pen_final_y
+      
+      lda   u00a6      texture_num
+      ora   #$01
+      sta   u00a8      t ??
+      
+      ldb   u00aa      2 x pen.size
+      incb             bump it by one
+      tfr   b,a        copy b into a
+      adda  u00a5      add value to pen_final_y
+      sta   u00a5      save new pen_final_y
+      lslb             shift b left (multiply by 2)
+      
+      leax  L0090,pcr  binary list[]
+      ldd   b,x        use 2x pensize + 1 to index into list 
+      std   u00ad      pen width ???
+
+*   this looks like it should have been nested for loops
+*   but not coded that way in pic_render.c
+
+*  new y
+L0284 leax  L0090,pcr  binary_list[]
+
+*  new x
+L0288 lda   u006b      pen_status
+      bita  #O_UPDATE  and it with $10 but don't change 
+      bne   L0298      not equal zero go on to next pen status test
+      ldd   ,u         otherwise  load data at circle_ptr
+      anda  ,x         and that with first element in binary_list
+      bne   L0298      if thats not zero go on to next pen status check
+
+      andb  1,x        and the second bytes of data at circle_ptr
+*                      and binary_list       
+      beq   L02ba      that outcome is equ zero head for next calcs 
+
+L0298 lda   u006b      pen_status
+      bita  #$20       anded with $20 but don't change  
+      beq   L02af      equals zero set up and plot buffer
+      lda   u00a8      otherwise load t (texture_num | $01)
+      lsra             divide by 2
+      bcc   L02a5      no remainder save that number as t
+      eora  #$b8       exclusive or t with$B8
+L02a5 sta   u00a8      save new t
+      bita  #O_DRAWN     anded with 1 but don't change 
+      bne   L02ba        not equal zero don't plot
+      bita  #O_BLKIGNORE anded with 2 but don't change 
+      beq   L02ba        does equal zero don't plot
+
+L02af pshs  u          save current u sbuff_plot uses it
+      ldd   u00a2      load pen_x/pen_y values
+      std   u009e      save at pos_init_x/y positions
+      lbsr  L046f      head for sbuff_plot()
+      puls  u          retrieve u from before call
+
+L02ba inc   u00a2      increment pen_x value
+
+      leax  4,x        move four bytes in the binary_list
+      cmpx  u00ad      comapre that value to pen_width
+      bls   L0288      less or same go again
+      
+      leau  2,u        bump circle_ptr to next location in circle_data[]
+      
+      lda   u00a4      load pen_final_x
+      sta   u00a2      store at pen_x       
+      inc   u00a3      bump pen_y
+      lda   u00a3      pen_y
+      cmpa  u00a5      compare to pen_final_y
+      bne   L0284      not equal go do the next row
+      rts
+      
+
+* Command $F5 Draw an X corner 
+* draw_x_corner()  pic_render.c        
+L02d1 lbsr  L0364      call read_xy_pos
+      bcs   L02ea      next subs rts
+      std   u009e      save pos_init_x/y positions
+      lbsr  L046f      head for sbuff_plot()
+      bsr   L02eb      draw_corner(0)
+      rts
+      
+
+* Command $F4 Draw a Y corner         
+L02de lbsr  L0364      call read_xy_pos
+      bcs   L02ea      return
+      std   u009e      save at pos_init_x/y positions
+      lbsr  L046f      head for sbuff_plot()
+      bsr   L02f9      draw_corner(1)
+L02ea rts
+
+
+
+* draw_corner()
+draw_x:   
+L02eb lbsr  L036f      get_x_pos()
+      bcs   L02ea      prior subs return
+      sta   u00a0      store as pos_final_x
+      ldb   u009f      load pos_init_y
+      stb   u00a1      store as pos_final_y
+      lbsr  L0421      call sbuff_xline()
+
+draw_y:
+L02f9 lbsr  L0381      get_y_pos
+      bcs   L02ea      prior subs return
+      stb   u00a1      save pos_final_y
+      lda   u009e      load pos_init_x
+      sta   u00a0      save pos_final_x
+      lbsr  L0447      sbuff_yline()     
+      bra   L02eb      head for draw_x
+
+
+
+* Command $F6 Absolute line
+* absolute_line()
+* NAGI has these out of order
+* This command is before Draw X corner in their source
+L0309 bsr   L0364      call read_xy_pos
+      bcs   L02ea      prior subs return
+      std   u009e      save at pos_init_x/y positions
+      lbsr  L046f      head for sbuff_plot()
+L0312 bsr   L0364      call read_xy_pos
+      bcs   L02ea      prior subs return
+      std   u00a0      save at pos_final_x/y and passed draw_line in d
+      lbsr  L0394      call draw_line()
+      bra   L0312      go again
+      
+      
+      
+* relative_line()      
+L031D bsr   L0364      call read_xy_pos
+      bcs   L02ea      prior subs return
+      std   u009e      save at pos_init_x/y positions
+      lbsr  L046f      head for sbuff_plot()
+
+* calc x
+L0326 lda   ,x+        get next pic_byte 
+*                      and load it in pos_data in c source
+      cmpa  #cmd_start is that equal $F0 or greater
+      bcc   L02ea      yep were done so return (we use prior subs return ??)
+*                      that rascal in acca changes names again to x_step
+*                      but it's still the same old data
+      anda  #$70       and that with $70 
+*                      (where these values are derived from I haven't a clue, as of yet :-))
+      lsra             divide by 2
+      lsra             and again
+      lsra             once more
+      lsra             and finally another for a /16
+      ldb   -1,x       get the original value
+      bpl   L0337      if original value not negative move on
+      nega             else it was so flip the sign of the computed value
+L0337 adda  u009e      add pos_init_x position
+      cmpa  #x_max     compare to 159
+      bls   L033f      if it's less or same move on
+      lda   #x_max     else cap it at 159
+L033f sta   u00a0      store as pos_final_x
+
+* calc y
+*                      not quite the same as pic_render.c almost
+*                      we've go the pic_byte ... er pos_data ... now called y_step
+*                      in b so lets calc the y_step
+      andb  #$0f       and with $0F (not in pic_render.c)
+      bitb  #$08       and that with $08 but don't change  
+      beq   L034a      if result = 0 move on
+      andb  #$07       else and it with $07
+      negb             and negate it
+L034a addb  u009f      add calced value to pos_init_y
+      cmpb  #y_max     compare to 167 
+      bls   L0352      less or same move on
+      ldb   #y_max     greater ? cap it
+L0352 stb   u00a1      pos_final_y
+
+*                      passes pos_final_x/y in d
+      lbsr  L0394      call draw_line()
+      
+      bra   L0326      go again exit is conditinals inside loop
+
+* Command $F8 Fill
+* pic_fill()
+L0359 bsr   L0364      call read_xy_pos
+      bcs   L02ea      returned a 1 head for prior subs return
+      std   u009e      save at pos_init_x/y position
+      lbsr  L0486      call sbuff_picfill()
+      bra   L0359      loop till we get a 1 back from read_xy_pos
+
+* read_xy_pos() 
+L0364 lbsr  L036f      go get x position
+      lblo  L02ea      prior subs return
+      lbsr  L0381      go get the y position
+      rts
+      
+
+* get_x_pos()         
+L036f lda   ,x+        load pic_byte
+      cmpa  #cmd_start is it a command?
+      bhs   L037e      if so set CC 
+      cmpa  #x_max     compare to 159
+      bls   L037b      is it less or same clear CC and return
+      lda   #x_max     greater than load acca with 159 
+L037b andcc #$fe       clear CC ad return
+      rts
+      
+         
+L037e orcc  #1         returns a "1"
+      rts
+      
+* get_y_pos()         
+L0381 ldb   ,x+        load pic_byte
+      cmpb  #cmd_start is it a command
+      blo   L038b      nope less than command
+      lda   -1,x       was a command load x back in acca
+      bra   L037e      go set CC
+L038b cmpb  #y_max     compare to 167
+      bls   L0391      is it less or same clear CC and return
+      ldb   #y_max     greater than load accb with 167 
+L0391 andcc #$fe       clear CC and return
+      rts
+      
+
+* draw_line()  pic_render.c
+* while this is a void function() seems pos_final_x/y are passed in d
+* 
+*  u00a2 = x_count
+*  u00a3 = y_count
+*  u00a4 = pos_x
+*  u00a5 = pos_y
+*  u00a6 = line_x_inc
+*  u00a7 = line_y_inc
+*  u00a8 = x_component
+*  u00a9 = y_component
+*  u00aa = largest_line
+*  u00ab = counter
+
+*  process straight lines
+L0394 cmpb  u009f      compare pos_final_y with pos_init_y
+      lbeq  L0421      if equal call sbuff_xline() and don't return here
+      cmpa  u009e      else compare with pos_init_x position
+      lbeq  L0447      if equal call sbuff_yline() and don't return here
+
+      ldd   u009e      load pos_init_x/y positions
+      std   u00a4      store at pen_final ??? not in pic_render.c version
+
+*  process y      
+      lda   #$01       line_y_inc
+      
+      ldb   u00a1      load pos_final_y
+      subb  u009f      subtract pos_init_y
+      bcc   L03ae      greater or equal zero don't negate
+*                      less than zero         
+      nega             flip the sign of line_y_inc
+      negb             flip the sign of y_component
+      
+L03ae sta   u00a7      store line_y_inc
+      stb   u00a9      store y_component
+      
+* process x      
+      lda   #$01       line_x_inc
+      
+      ldb   u00a0      load pos_final_x
+      subb  u009e      subtract pos_init_x
+      bcc   L03bc      greater or equal zero don't negate
+*                      less than zero      
+      nega             flip the sign of line_x_inc
+      negb             flip the sign of x_component
+L03bc sta   u00a6      store line_x_inc
+      stb   u00a8      store x_component 
+
+* compare x/y components
+      cmpb  u00a9      compare y_component to x_component
+      blo   L03d0      if x_component is smaller move on
+
+
+*  x >= y 
+*                      x_component is in b
+      stb   u00ab      counter
+      stb   u00aa      largest_line 
+      lsrb             divide by 2
+      stb   u00a3      store y_count
+      clra             make a zero
+      sta   u00a2      store x_count
+      bra   L03dc      move on
+
+*  x < y      
+L03d0 lda   u00a9      load y_component
+      sta   u00ab      stow as counter
+      sta   u00aa      stow as largest line
+      lsra             divide by 2
+      sta   u00a2      store x_count
+      clrb             make a zero
+      stb   u00a3      store as y_count
+      
+
+* loops through the line and uses sbuff_plot to do the screen write
+*                      y_count is in b      
+L03dc addb  u00a9      add in the y_component
+      stb   u00a3      and stow back as y_count
+      cmpb  u00aa      compare that with line_largest
+      blo   L03ee      if y_count >= line_largest is not the case branch
+      subb  u00aa      subtract line_largest
+      stb   u00a3      store as y_count
+      ldb   u00a5      load pos_y
+      addb  u00a7      add line_y_inc
+      stb   u00a5      stow as pos_y
+
+*                      x_count is in a
+L03ee adda  u00a8      add in x_component
+      sta   u00a2      store as x_count
+      cmpa  u00aa      compare that with line_largest
+      blo   L0400      if x_count >= line_largest is not the case branch
+      suba  u00aa      subtract line_longest
+      sta   u00a2      store at x_count
+      lda   u00a4      load pos_x
+      adda  u00a6      add line_x_inc
+      sta   u00a4      stow as pos_x
+
+L0400 ldd   u00a4      load computed pos_x/y
+      std   u009e      store at pos_init_x/y positions
+      lbsr  L046f      head for sbuff_plot()
+      ldd   u00a2      reload x/y_count
+      dec   u00ab      decrement counter
+      bne   L03dc      if counter not zero go again
+      rts
+      
+***********************************************************************
+* end of pic_render.c
+
+
+* sbuff_fill() sbuf_util.c        
+* fill color is passed in s register
+
+L040e pshs  x          save x as we use it for an index
+      ldu   #gbuffend  address to write to 
+      ldx   #picb_size $6900 bytes to write (26.25K)
+*                      this would be picture buffer width x height
+      ldd   4,s        since we pushed x pull our color input out of the stack
+L0418 std   ,--u       store them and dec dest address
+      leax  -2,x       dec counter
+      bne   L0418      loop till done
+      puls  x          fetch the x
+      rts              return
+      
+* no sbuff_testpattern
+
+* sbuff_xline()  sbuff_util.c
+* gets called here with pos_final_x/y in accd
+*
+*  u00ac = x_orig
+ 
+L0421 sta   u00ac      stow as x_orig
+      cmpa  u009e      compare with pos_init_x position
+      bhs   L042d      if pos_final_x same or greater branch
+      
+*                      otherwise init >  final so swap init and final     
+      ldb   u009e      load pos_init_x position
+      stb   u00a0      save pos_final_x position
+      sta   u009e      save pos_init_x position
+      
+L042d bsr   L046f      head for sbuff_plot() returns pointer in u
+
+      ldb   u00a0      load pos_final_x
+      subb  u009e      subtract pos_init_x position
+      beq   L0442      if they are the same move on
+*                      b now holds the loop counter len
+*                      u is the pointer returned from sbuff_plot
+      leau  1,u        bump the pointer one byte right 
+L0437 lda   ,u         get the the byte
+      ora   u005b      or it with sbuff_drawmmask
+      anda  u005a      and it with the color
+      sta   ,u+        save it back and bump u to next byte
+      decb             decrememnt the loop counter
+      bne   L0437      done them all? Nope loop
+      
+L0442 lda   u00ac      x_orig (pos_final_x)
+      sta   u009e      save at pos_init_x position
+      rts
+      
+
+* sbuff_yline() sbuf_util.c
+* gets called here with pos_final_x/y in accd
+*
+*  u00ac = y_orig
+
+L0447 stb   u00ac           stow as y_orig
+      cmpb  u009f           compare with pos_init_y
+      bhs   L0453           if pos_final same or greater branch
+
+*                           otherwise init > final so swap 'em   
+      lda   u009f           load pos_init_y
+      sta   u00a1           stow as pos_final_y
+      stb   u009f           stow as pos_init_y
+      
+L0453 bsr   L046f           head for sbuff_plot() returns pointer in u
+      ldb   u00a1           load pos_final_y
+      subb  u009f           subtract pos_init_y
+      beq   L046a           if they are the same move on
+*                           b now holds the loop counter len
+*                           u is the pointer returned from sbuff_plot
+L045b leau  PICBUFF_WIDTH,u bump ptr one line up
+      lda   ,u              get the byte  
+      ora   u005b           or it with sbuff_drawmmask
+      anda  u005a           and it with the color
+      sta   ,u              save it back out
+      decb                  decrement the loop counter
+      bne   L045b           done them all ? Nope loop
+      
+L046a ldb   u00ac           load y_orig
+      stb   u009f           save it as pos_init_y
+      rts
+      
+      
+* sbuff_plot()  from sbuf_util.c         
+* according to agi.h PBUF_MULT(width) ((( (width)<<2) + (width))<<5)
+* which next 3 lines equate to so the $A0 is from 2 x 5  
+* pointer is returned in index reg u
+L046f ldb   u009f           load pos_init_y
+      lda   #$A0            according to PBUF_MULT() 
+      mul                   do the math
+      addb  u009e           add pos_init_x position 
+      adca  #0000           this adds the carry bit in to a
+      addd  #gfx_picbuff    add that to the start of the screen buf $6040
+      tfr   d,u             move this into u
+      lda   ,u              get the byte u points to 
+      ora   u005b           or it with sbuff_drawmask
+      anda  u005a           and it with the color
+      sta   ,u              and stow it back at the same place
+      rts                   return
+      
+
+
+
+* sbuff_picfill(u8 ypos, u8 xpos) sbuf_util.c         
+* u005a = color
+* u005b = sbuff_drawmask
+* u009e = pos_init_x
+* u009f = pos_init_y
+* u00a0 = left
+* u00a1 = right 
+* u00a2 = old_direction
+* u00a3 = direction
+* u00a4 = old_initx
+* u00a5 = old_inity
+* u00a6 = old_left
+* u00a7 = old_right
+* u00a8 = stack_left
+* u00a9 = stack_right
+* u00aa = toggle
+* u00ab = old_toggle
+* u00ac =  
+* u00ad =  
+* u00ae = color_bl
+* u00af = mask_dl
+* u00b0 = old_buff (word)
+* u00b2 = temp (buff)
+* u00b3 =
+* u00e9 =
+
+
+colorbl set $4F
+
+
+L0486 pshs  x               save x
+      ldx   #$e000          load addr to create a new stack
+      sts   ,--x            store current stack pointer there and decrement x 
+      tfr   x,s             make that the stack
+*                           s is now stack_ptr pointing to fill_stack      
+      
+      ldb   u009f           pos_init_y
+      lda   #$a0            set up PBUF_MULT
+      mul                   do the math
+      addb  u009e           add pos_init_x
+      adca  #0000           add in that carry bit
+      addd  #gfx_picbuff    add the start of screen buffer $6040
+      tfr   d,u             move this to u
+*                           u now is pointer to screen buffer b
+
+      
+      ldb   u005a           load color  
+      lda   u005b           load sbuff_drawmask
+      
+*                          next 2 lines must have been a if (sbuff_drawmask > 0)
+*                          not in the nagi source
+      
+      lbeq  L05f5           if sbuff_drawmask = 0 we're done
+      bpl   L04b8           if not negative branch to test color 
+      
+      cmpa  #cmd_start      comp $F0 with sbuff_drawmask
+      bne   L04b8           not = go test color for $0F
+      andb  #$f0            and color with $F0
+      cmpb  #$40            compare that to $40 (input was $4x)
+      lbeq  L05f5           if so were done
+      lda   #$f0            set up value for mask_dl           
+      bra   L04c2           go save it
+
+L04b8 andb  #$0f            and color with $0F
+      cmpb  #$0f            was it already $0F
+      lbeq  L05f5           if so we're done   
+      lda   #$0f            set up value for mask_dl
+      
+L04c2 sta   u00af           stow as mask_dl
+      anda  #colorbl        and that with $4F 
+      sta   u00ae           stow that as color_bl
+      lda   ,u              get byte at screen buffer
+      anda  u00af           and with mask_dl
+      cmpa  u00ae           compare to color_bl
+      lbne  L05f5           not equal were done
+      
+      ldd   #$FFFF          push 7 $FF bytes on temp stack
+      pshs  a,b             and set stack_ptr accordingly
+      pshs  a,b
+      pshs  a,b
+      pshs  a
+
+      lda   #$a1            load a with 161
+      sta   u00a0           stow it at left
+      clra                  make a zero
+      sta   u00a1           stow it at right
+      sta   u00aa           stow it at toggle 
+      inca                  now we want a 1
+      sta   u00a3           stow it at direction
+
+* fill a new line
+L04e9 ldd   u00a0           load left/right
+      std   u00a6           stow at old_left/right
+      lda   u00aa           load toggle
+      sta   u00ab           stow at old_toggle
+      ldb   u009e           load pos_init_x
+      stb   u00a4           store as old_initx
+      incb                  accb now becomes counter
+      stu   u00b0           stow current screen byte as old_buff
+
+L04f8 lda   ,u              get the screen byte pointed to by u
+      ora   u005b           or it with sbuff_drawmmask
+      anda  u005a           and that with the color
+      sta   ,u              stow that back
+      lda   ,-u             get the screen byte befor that one
+      anda  u00af           and that with mask_dl
+      cmpa  u00ae           compare result with color_bl
+      bne   L050b           not equal move on
+      decb                  otherwise decrement the counter
+      bne   L04f8           if were not at zero go again
+      
+L050b leau  1,u             since cranked to zero bump the screen pointer by one
+      tfr   u,d             move that into d
+      subd  u00b0           subtract old_buff
+      addb  u009e           add pos_init_x
+      stb   u00a0           stow at left
+      lda   u009e           load pos_init_x 
+      stb   u009e           store left at pos_init_x
+      stu   u00b2           temp buff
+      ldu   u00b0           load  old_buff
+      leau  1,u             bump to the next byte
+      nega                  negate pos_init_x value
+      adda  #x_max          add that to 159 (subtract pos_init_x)
+      beq   L0537           that's the new counter and if zero move on
+
+L0524 ldb   ,u              get that screen byte (color_old)
+      andb  u00af           and it with mask_dl
+      cmpb  u00ae           check against color_bl
+      bne   L0537           not equal move on
+      ldb   ,u              load that byte again to do something with
+      orb   u005b           or it with sbuff_drawmmask
+      andb  u005a           and it with color
+      stb   ,u+             stow it back and bump the pointer
+      deca                  decrement the counter 
+      bne   L0524           if we haven't hit zero go again
+      
+L0537 tfr   u,d             move the screen buff ptr to d
+      subd  u00b2           subtract that saved old pointer
+      decb                  sunbtract a 1
+      addb  u00a0           add in the left
+      stb   u00a1           store as the right
+      lda   u00a6           load old_left
+      cmpa  #$a1            compare to 161
+      beq   L0577           if it is move on
+      
+      cmpb  u00a7           if the new right == old right
+      beq   L0552           then move on
+      bhi   L0566           not equal and right > old_right
+*                           otherwise    
+      stb   u00a4           stow right as old_initx
+      clr   u00aa           clear toggle
+      bra   L056c           head for next calc
+*                           they were equal      
+L0552 lda   u00a0           load a with left
+      cmpa  u00a6           compare that to old_left
+      bne   L0566           move on          
+      lda   #$01            set up a one
+      cmpa  u00aa           compare toggle
+      beq   L0577           is a one ? go to locnext
+      sta   u00aa           not one ? set it to 1
+      lda   u00a1           load right
+      sta   u00a4           stow it as old_initx
+      bra   L056c           head for the next calc
+*                           right > old_right or left > old left      
+L0566 clr   u00aa           clear toggle
+      lda   u00a7           load old right
+      sta   u00a4           save as old_initx
+
+*         push a bunch on our temp stack
+L056c ldy   u00a2           old_direction/direction         
+      ldx   u00a4           old_initx/y
+      ldu   u00a6           old_left/right
+      lda   u00ab           old_toggle
+      pshs  a,x,y,u         push them on the stack
+
+locnext:
+L0577 lda   u00a3           load direction
+      sta   u00a2           stow as old_direction
+      ldb   u009f           load pos_init_y
+      stb   u00a5           stow as old_inity
+
+L057f addb  u00a3           add direction to pos_init_y 
+      stb   u009f           stow the updated pos_init_y
+      cmpb  #y_max          compare that to 167 
+      bhi   L05c5           greater than 167 go test direction
+
+L0587 ldb   u009f           load pos_init_y
+      lda   #$A0            according to PBUF_MULT
+      mul                   do the math
+      addb  u009e           add pos_init_x position
+      adca  #0000           this adds the carry bit into the answer
+      addd  #gfx_picbuff    add that to the screen buff start addr $6040
+      tfr   d,u             move it into u
+      lda   ,u              get the byte pointed to
+      anda  u00af           and with mask_dl
+      cmpa  u00ae           compare with color_bl
+      lbeq  L04e9           if equal go fill a new line
+      
+      lda   u009e           load pos_init_x
+      ldb   u00a3           load direction
+      cmpb  u00a2           compare to old_direction
+      beq   L05bc           go comapre pos_init_x and right
+      tst   u00aa           test toggle
+      bne   L05bc           not zero go comapre pos_init_x and right
+      cmpa  u00a8           compare pos_init_x and stack_left
+      blo   L05bc           less than stack_left go comapre pos_init_x and right
+      cmpa  u00a9           compare it to stack_right
+      bhi   L05bc           greater than go comapre pos_init_x and right
+      lda   u00a9           load stack_right 
+      cmpa  u00a1           compare to right
+      bhs   L05c5           greater or equal go check direction
+      inca                  add one to stack_right
+      sta   u009e           stow as pos_init_x
+      
+L05bc cmpa  u00a1           compare updated value to right
+      bhs   L05c5           go check directions
+      inca                  less than then increment by 1
+      sta   u009e           stow updated value pos_init_x
+      bra   L0587           loop for next byte
+      
+* test direction and toggle      
+L05c5 lda   u00a3           load direction
+      cmpa  u00a2           compare old_direction
+      bne   L05dc           not equal go pull stacked values
+      tst   u00aa           test toggle
+      bne   L05dc           not zero go pull stack values
+      nega                  negate direction
+      sta   u00a3           store back at direction
+      lda   u00a0           load left
+      sta   u009e           stow as pos_init_x
+      ldb   u00a5           load old_inity
+      stb   u009f           stow at pos_init_y
+      bra   L05ef           go grab off stack and move on
+
+* directions not equal      
+L05dc puls  a,x,y,u         grab the stuff off the stack
+      cmpa  #$FF            test toggle for $FF source has test of pos_init_y
+      beq   L05f5           equal ? clean up stack and return
+      sty   u00a2           stow old_direction/direction
+      stx   u009e           stow pos_init_x/y
+      stu   u00a0           stow left/right
+      sta   u00aa           stow toggle
+      
+      ldb   u009f           load pos_init_y
+      stb   u00a5           stow old_inity
+L05ef ldx   5,s             gets left right  off stack
+      stx   u00a8           stow stack_left/right
+      bra   L057f           always loop
+
+L05f5 lds   ,s              reset stack
+      puls  x               retrieve our x
+      rts                   return
+
+* screen initialization ??
+* this routine effective swaps postion of
+* the two nibbles of the byte loaded 
+* and returns it to the screen 
+
+L05fb ldx   #gfx_picbuff starting low address of srceen mem
+L05fe lda   ,x           get the first byte  bit order 0,1,2,3,4,5,6,7
+      clrb               empty b
+      lsra               shift one bit from a
+      rorb               into b
+      lsra               again
+      rorb  
+      lsra               and again
+      rorb  
+      lsra               and finally once more
+      rorb  
+      stb   ,x           were changing x anyway so use it for temp storage
+      ora   ,x           or that with acca so now bit order from orig
+*                        is 4,5,6,7,0,1,2,3
+      sta   ,x+          put it back at x and go for the next one
+      cmpx  #gbuffend    ending high address of screen mem
+      bcs   L05fe
+      rts   
+
+
+L0615 leas  -2,s
+      ldx   4,s
+      ldu   2,x
+L061b stu   ,s
+      beq   L0637
+      pshs  u
+      lbsr  L09d8
+      leas  2,s
+      ldu   ,s
+      ldu   4,u
+      pshs  u
+      lbsr  L07be     obj_blit()
+      leas  2,s
+      ldu   ,s
+      ldu   2,u
+      bra   L061b
+L0637 leas  2,s
+      rts   
+
+
+L063a leas  -2,s
+      ldx   4,s
+      ldu   ,x
+      beq   L0651
+L0642 stu   ,s
+      pshs  u
+      lbsr  L0a0f
+      leas  2,s
+      ldx   ,s
+      ldu   ,x
+      bne   L0642
+L0651 leas  2,s
+      rts   
+
+* From obj_picbuff.c the pri_table[172]
+* ours is only 168
+pri_table
+L0654 fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+      
+      fcb $00,$00,$00,$00,$00,$00
+      fcb $00,$00,$00,$00,$00,$00
+
+* loops thru 48 bytes with a = 4
+* bumps a by one load b with 12 this  
+* iterates thru ten sets of twelve bytes
+* bumping a by one as it goes.
+
+* table_init()   obj_pic_buff.c
+L06fc leax  L0654,pcr   point to data block
+      ldb   #$30        load index 48
+      lda   #4          load acca = 4
+L0704 sta   ,x+         save a in buffer
+      decb              dec the inner loop counter
+      bne   L0704       go again if loop not finished
+      cmpa  #$0e        get here when inner loop is done
+      bcc   L0712       did we do 10 loops (e-4)
+      inca              nope bump data byte
+      ldb   #$0c        set new counter on loops 2-10
+*                       to do 12 bytes and       
+      bra   L0704       have at it again
+L0712 rts   
+
+
+
+* obj_chk_control(VIEW *x)  obj_picbuff.c
+* our index reg x points to the view structure
+* are 3 = x, 4 = y instead of 3-4 = x & 5-6 = y ???
+*  u00a5 = flag_signal
+*  u00a6 = flag_water
+*  u005c = flag_control
+*
+*  X01af is loaction of state.flag
+*  see agi.h for definition of state structure
+L0713 pshs  y             save y
+
+      ldx   4,s           sets up mmu info
+      ldd   8,x         
+      lbsr  L0074         twiddle mmu
+      
+      ldb   $04,x         load y ??? (obj_picbuff.c has a y ??)
+      lda   $26,x         load flags
+      bita  #O_PRIFIXED   and with $04 but don't change 
+      bne   L072f         not zero move on
+*                         it is zero then      
+      leau  L0654,pcr     load buffer address
+      clra                clear a since we will use d as an index
+      lda   d,u           fetch the data from pri_table
+      sta   $24,x         save as priority
+      
+L072f lda   #$A0          according to PBUF_MULT()
+      mul                 do the math
+      addb  $03,x         add in x ??
+      adca  #0000         add in the carry bit
+      addd  #gfx_picbuff  add it to the start of the screen buff addr 6040
+      tfr   d,u           move the pointer pb to u
+       
+      ldy   $10,x         load y with cel_data ptr
+      clra                make a zero
+      sta   u00a6         stow it at flag_water
+      sta   u00a5         stow it at flag_signal
+      inca                make a 1
+      sta   u005c         stow it at flag_contro1
+      ldb   $24,x         load priority
+      cmpb  #$0F          compare it with 15
+      beq   L078b         If it equals 15 move on
+*                         otherwise if not equal 15      
+      sta   u00a6         stow that 1 at flag_water
+      ldb   ,y            cx  first byte of cel_data  (cel_width)
+
+*  do while cx != 0
+
+L0752 lda   ,u+           (pri) put byte at pb in acca and bump pointer
+      anda  #$F0          and that with $F0  (obstacle ??)
+      beq   L077a         if it equals 0 set flag_control =0 and check_finish
+      
+      cmpa  #$30          compare pri to 48 (water ??)
+      beq   L0766         not equal  move to end of loop
+      clr   u00a6         clear the water flag
+      cmpa  #$10          compare it with 16 (conditional ??)
+      beq   L077e         if equal go test for observe blocks
+      cmpa  #$20          compare with 32
+      beq   L0787
+
+L0766 decb                decrement cx
+      bne   L0752         not zero yet loop again
+
+      lda   $25,x         load flags in  acca
+      tst   u00a6         test flag_water
+      bne   L0776         not zero next test
+      bita  #O_DRAWN      should be O_WATER Looks like a BUG in ours
+      beq   L078b         if it equals one head for check_finish
+      bra   L077a         clear that flag control first and leave
+L0776 bita  #O_HRZNIGNORE should be O_LAND  Looks like a BUG in ours 
+      beq   L078b
+      
+L077a clr   u005c         clear flag_control
+      bra   L078b         head for check_finish
+      
+L077e lda   $26,x         load flags in acca
+      bita  #O_BLKIGNORE  and with $02 but don't change 
+      beq   L077a         equals zero clear flag_control and go check_finish 
+      bra   L0766         then  head back in the loop
+
+L0787 sta   u00a5         store acca at flag signal (obj_picbuff.c has =1) 
+      bra   L0766        continue with loop
+
+
+      
+L078b lda   $02,x         load num
+      bne   L07bb         if not zero were done head out
+
+* flag signal test
+      lda   u00a5         load flag_signal  
+*                         operates on F03_EGOSIGNAL      
+      beq   L079d         if its zero go reset the signal
+*                         otherwise set the flag      
+      lda   X01af         load the state.flag element
+      ora   #$10          set the bits
+      sta   X01af         save it back
+      bra   L07a5         go test the water flag
+L079d lda   X01af         load the state.flag element
+      anda  #$ef          reset the bits 
+      sta   X01af         save it back
+      
+* flag_water test      
+L07a5 lda   u00a6         load flag_water     
+      beq   L07b3         if zero go reset the flag
+*                         otherwise set it      
+      lda   X01af         load the state.flag element
+      ora   #$80          set the bits
+      sta   X01af         save it back
+      bra   L07bb         baby we're out of here
+L07b3 lda   X01af         load the state.flag element
+      anda  #$7f          reset the bits
+      sta   X01af         save it back
+
+L07bb puls  y             retrieve our y and leave
+      rts   
+
+
+*  obj_blit(VIEW *x)   obj_blit.c
+* our index reg x points to the view structure
+* are 3 = x, 4 = y instead of 3-4 = x & 5-6 = y ???
+*  u00a2 = cel_height
+*  u00a7 = cel_trans
+*  u00a8 = pb
+*  u00a9
+*  u00ac
+*  u00ad
+*  u009e = view_pri
+
+L07be ldx   $02,s
+      ldd   $08,x
+      lbsr  L0074        twiddle mmu
+      
+      ldu   $10,x        u now is a pointer to cel_data
+      lda   $02,u        cel_data[$02] loaded
+      bita  #O_Block     are we testing against a block or does $80 mean something else here? 
+      beq   L07d1        if zero skip next instruction
+      
+      lbsr  L087f        otherwise call obj_cell_mirror
+      
+L07d1 ldd   ,u++         load the first 2 bytes of cel_data and bump to next word
+*                        cel_width is in acca we ignore 
+      stb   u00a2        save as cel_height
+*                        obj_blit.c has and $0F which is a divide by 16
+*                        we do a multiply x 16 ???      
+      lda   ,u+          cel_trans 
+      asla  
+      asla  
+      asla  
+      asla  
+      sta   u00a7        save as cel_tran
+      
+      lda   $24,x        priority
+      asla  
+      asla  
+      asla  
+      asla  
+      sta   u009e        view_pri
+      
+      ldb   $04,x        load the y value
+      subb  u00a2        subtract the cel_height
+      incb               add 1
+      lda   #$a0         according to PBUF_MULT()
+      mul                do the math
+      addb  $03,x        add in the x value
+      adca  #0000        add in the carry from multiply
+      addd  #gfx_picbuff add this to the start of the screen buff addr $6040
+      std   u00a8        pb pointer to the pic buffer
+      ldx   u00a8        load it in an index reg
+      
+      lda   #$01
+      sta   u00ac        set cel_invis to 1 and save
+      
+      bra   L0800
+L07ff abx   
+
+L0800 lda   ,u+
+      beq   L082d
+      ldb   -$01,u
+      anda  #$f0
+      andb  #$0f
+      cmpa  u00a7      
+      beq   L07ff
+      lsra  
+      lsra  
+      lsra  
+      lsra  
+      sta   u009f      
+L0814 lda   ,x
+      anda  #$f0
+      cmpa  #$20
+      bls   L083b
+      cmpa  u009e
+      bhi   L085b
+      lda   u009e
+L0822 ora   u009f      
+      sta   ,x+
+      clr   u00ac
+      decb  
+      bne   L0814
+      bra   L0800
+L082d dec   u00a2
+      beq   L0862
+      ldx   u00a8
+      leax  160,x
+      stx   u00a8
+      bra   L0800
+L083b stx   u00ad      
+      clra  
+L083e cmpx  #$c8a0
+      bcc   L084f
+      leax  >$00A0,x
+      lda   ,x
+      anda  #$f0
+      cmpa  #$20
+      bls   L083e
+L084f ldx   u00ad      
+      cmpa  u009e
+      bhi   L085b
+      lda   ,x
+      anda  #$f0
+      bra   L0822
+L085b leax  $01,x
+      decb  
+      bne   L0814
+      bra   L0800
+L0862 ldx   $02,s
+      lda   $02,x
+      bne   L087e
+      lda   u00ac
+      beq   L0876
+      lda   X01af
+      ora   #$40
+      sta   X01af
+      bra   L087e
+L0876 lda   X01af
+      anda  #$bf
+      sta   X01af
+L087e rts   
+
+
+* obj_cel_mirror in obj_picbuff.c 
+* we use different values 
+L087f anda  #$30
+      lsra  
+      lsra  
+      lsra  
+      lsra  
+      cmpa  $0A,x
+      lbeq  L0926
+      pshs  x,y,u
+      lda   $0A,x
+      asla  
+      asla  
+      asla  
+      asla  
+      sta   u00af
+      lda   #$cf
+      anda  2,u
+      ora   u00af
+      sta   2,u
+      ldy   #gbuffend
+      ldd   ,u++
+      std   u00a1
+      lda   ,u+
+      asla  
+      asla  
+      asla  
+      asla  
+      sta   u00a7     
+      stu   u00b0
+L08af clrb  
+      stb   u00ab
+L08b2 stb   u00aa
+      lda   ,u+
+      beq   L08fc
+      ldb   -1,u
+      anda  #$f0
+      andb  #$0f
+      cmpa  u00a7    
+      bne   L08cc
+      addb  u00aa
+      bra   L08b2
+L08c6 ldb   ,u+
+      beq   L08d4
+      andb  #$0f
+L08cc addb  u00aa
+      stb   u00aa
+      inc   u00ab
+      bra   L08c6
+L08d4 lda   u00aa
+      nega  
+      adda  u00a1
+      beq   L08f1
+L08db suba  #$0f
+      bls   L08eb
+      sta   u00aa
+      lda   u00a7   
+      ora   #$0f
+      sta   ,y+
+      lda   u00aa
+      bra   L08db
+L08eb adda  #$0f
+      ora   u00a7  
+      sta   ,y+
+L08f1 leax  -1,u
+      ldb   u00ab
+L08f5 lda   ,-x
+      sta   ,y+
+      decb  
+      bne   L08f5
+L08fc stb   ,y+
+      dec   u00a2
+      bne   L08af
+      tfr   y,d
+      subd  #gbuffend
+      stb   u00b2
+      andb  #$fe
+      tfr   d,x
+      ldu   u00b0
+      ldy   #gbuffend
+L0913 ldd   ,y++
+      std   ,u++
+      leax  -2,x
+      bne   L0913
+      lda   u00b2
+      lsra  
+      bcc   L0924
+      lda   ,y
+      sta   ,u
+L0924 puls  x,y,u
+L0926 rts   
+
+
+L0927 pshs  y
+      ldx   4,s
+      ldd   8,x
+      lbsr  L0074        twiddle mmu
+      clra  
+      ldb   4,x
+      leau  L0654,pcr
+      lda   d,u
+      std   u00a3   
+      ldb   36,x
+      andb  #$0f
+      bne   L0948
+      ora   36,x
+      sta   36,x
+L0948 pshs  x
+      lbsr  L07be       obj_blit
+      leas  2,s
+      ldx   4,s
+      lda   36,x
+      cmpa  #$3f
+      lbhi  L09d5
+      leau  L0654,pcr
+      ldb   u00a4
+      clr   u00b3
+L0962 clra  
+      inc   u00b3
+      tstb  
+      beq   L096f
+      decb  
+      lda   d,u
+      cmpa  u00a3   
+      beq   L0962
+L096f ldb   4,x
+      lda   #$a0
+      mul   
+      addb  3,x
+      adca  #0
+      addd  #gfx_picbuff     $6040
+      tfr   d,u
+      stu   u00a8
+      ldy   16,x
+      ldb   1,y
+      cmpb  u00b3
+      bhi   L098b
+      stb   u00b3
+L098b lda   36,x
+      anda  #$f0
+      sta   u009e
+      ldb   ,y
+L0994 lda   ,u
+      anda  #$0f
+      ora   u009e
+      sta   ,u+
+      decb  
+      bne   L0994
+      dec   u00b3
+      beq   L09d5
+      ldu   u00a8
+      ldb   ,y
+      decb  
+L09a8 leau  -160,u
+      tfr   u,x
+      lda   ,u
+      anda  #$0f
+      ora   u009e
+      sta   ,u
+      clra  
+      lda   d,u
+      anda  #$0f
+      ora   u009e
+      abx   
+      sta   ,x
+      dec   u00b3
+      bne   L09a8
+      ldb   ,y
+      subb  #2
+      leau  1,u
+L09ca lda   ,u
+      anda  #$0f
+      ora   u009e
+      sta   ,u+
+      decb  
+      bne   L09ca
+L09d5 puls  y
+      rts   
+
+
+L09d8 ldu   2,s
+      ldd   12,u
+      lbsr  L0074      twiddle mmu
+      ldu   2,s
+      ldd   8,u
+      std   u00a1
+      clr   u00a0
+      ldb   7,u
+      lda   #$a0
+      mul   
+      addb  6,u
+      adca  #0
+      addd  #gfx_picbuff     $6040
+      ldu   10,u
+L09f5 std   u00a8
+      addd  u00a0
+      std   u00ad   
+      ldx   u00a8
+L09fd ldd   ,x++
+      std   ,u++
+      cmpx  u00ad   
+      bcs   L09fd
+      ldd   u00a8
+      addd  #$00a0
+      dec   u00a2
+      bne   L09f5
+      rts   
+
+
+L0a0f ldu   2,s
+      ldd   12,u
+      lbsr  L0074     twiddle mmu
+      ldu   2,s
+      ldd   8,u
+      std   u00a1
+      clr   u00a0
+      ldb   7,u
+      lda   #$a0
+      mul   
+      addb  6,u
+      adca  #0
+      addd  #gfx_picbuff     $6040
+      ldu   10,u
+L0a2c std   u00a8
+      addd  u00a0
+      std   u00ad   
+      ldx   u00a8
+L0a34 ldd   ,u++
+      std   ,x++
+      cmpx  u00ad   
+      bcs   L0a34
+      ldd   u00a8
+      addd  #$00a0
+      dec   u00a2
+      bne   L0a2c
+      rts   
+      
+      fcb $00,$00,$00,$00
+      fcb $00,$00,$00,$00
+      fcc "shdw"
+      fcb $00
+
+      emod 
+
+eom   equ *
+
+      end
+ 
