@@ -123,6 +123,8 @@ PE.TmOut rmb   2          Max ticks to wait for locked segment
 PE.Owner rmb   1          Process ID of owner of locked segment
 PE.Req   rmb   1          temp for PE.Lock in GAIN when LockSeg fails
 PE.Prior rmb   1          tmp for process priority while in driver
+PE.SigSg rmb   1          signal code to send
+PE.SigID rmb   1          process ID to send the signal to
          rmb   32-.       reserved
 PE.FilNm rmb   32         temp for filename during directory search
 
