@@ -385,6 +385,15 @@ D.Boot   rmb   1          Bootstrap attempted flag
 D.URtoSs rmb   2          address of user to system routine (VIRQ) $84
 D.CLTB   rmb   2          Pointer to clock interrupt table (VIRQ) $86
 
+         org   $FE
+D.XClock rmb   2
+D.XSWI3  rmb   2
+D.XSWI2  rmb   2
+D.XFIRQ  rmb   2
+D.XIRQ   rmb   2
+D.XSWI   rmb   2
+D.XNMI   rmb   2
+
 * TABLE SIZES
 BMAPSZ   equ   32         BIT MAP SIZE
 SVCTNM   equ   2          NUMBER OF SERVICE REQUEST TABLES
