@@ -33,7 +33,7 @@
 *    including examples such as this one in their manuals.
 *
 *  NOTE
-*    There is something funny about OS9p3 modules... some versions
+*    There is something funny about KrnP3 modules... some versions
 *    are not liked, others are.  When developing this module, often
 *    a version would fail... but if I added a "leas 0,s" right before
 *    the "rts" in PrinBuf, it would work!  Probably the location and
@@ -42,10 +42,10 @@
 *    it), try putting such things in.
 *
 *  NOTE
-*    For those people who just can't have enough... OS9p3 will look for
-*    a module called OS9p4, and link to it, and execute it.  Thanks to
+*    For those people who just can't have enough... KrnP3 will look for
+*    a module called KrnP4, and link to it, and execute it.  Thanks to
 *    Kev for this idea.  Now we can keep additions to the kernel in nice
-*    separate chunks.  (How long 'til OS9p11 comes around...?)
+*    separate chunks.  (How long 'til KrnP11 comes around...?)
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
@@ -75,12 +75,12 @@ name     fcs   "KrnP3"
 Entry    equ   *
          leay  SvcTbl,pcr ;Get address of table
          os9   F$SSvc     ;Install services in table
-         lda   #Type      ;Get system module type for OS9p4
-         leax  P4Name,pcr ;Get name for OS9p4
+         lda   #Type      ;Get system module type for KrnP4
+         leax  P4Name,pcr ;Get name for KrnP4
          os9   F$Link     ;Try to link to it
          bcs   Exit       ;If not found, exit
          jsr   ,y         ;Go execute it!
-Exit     rts              ;Return to os9p2
+Exit     rts              ;Return to KrnP2
 
 SvcTbl   equ   *
          fcb   F$PErr     ;System call number
@@ -258,7 +258,7 @@ PrinMsg  equ   *
 DoCR     equ   *
          pshs  x,d        ;Save registers
          ldb   P$Task,y   ;Get user task number
-         lda   #$0D       ;Load A with a CR
+         lda   #C$CR      ;Load A with a CR
          leax  Buf,u      ;Get pointer to buffer
          os9   F$StABX    ;Move the CR to the buffer
          bsr   PrinBuf    ;Go print it
@@ -311,11 +311,11 @@ ClosFil  equ   *
          os9   I$Close    ;Close file
          rts              ;Return
 P4Name   fcc   "krnp4"
-         fcb   $D
+         fcb   C$CR
 ErrMsg   fcc   "Error #000"
 ErrLen   equ   *-ErrMsg
 FilNam   fcc   "/dd/sys/errmsg"
-         fcb   $D
+         fcb   C$CR
 FilLen   equ   *-FilNam
 
          emod  
