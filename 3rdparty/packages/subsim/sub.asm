@@ -3,16 +3,15 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 0      Disassembly of original distribution           PWZ 03/03/28
-*        as assembly continues the various varibles will
-*        be identified (hopefully)
-
-* Disassembly by Os9disasm of sub
+*   0      2003/03/28  Paul W. Zibaila
+* Disassembly of original distribution; as assembly continues the
+* various varibles will be identified (hopefully).
 
       nam sub
-      ttl program module
+      ttl Sub Battle Simulator
 
       ifp1
       use defsfile
@@ -3888,5 +3887,4 @@ L1FC4 fcc   "shell"
       emod 
 eom
 L1FCD equ *
-
       end

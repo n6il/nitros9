@@ -3,10 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 0      Disassembly of original distribution           ??? 03/01/12
-*        
+*   0      2003/01/12  Boisy G. Pitre
+* Disassembly of original distribution.
 
          nam   sub
          ttl   startup program

@@ -1,21 +1,20 @@
-
 ********************************************************************
-* sub6 - Sub Battle Simulator  utility routines
+* sub6 - Sub6 Sub Battle Simulator Utility Routines
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 0      Disassembly of original distribution           PWZ 03/04/10
+*   0      2003/04/10  Paul W. Zibaila
+* Disassembly of original distribution.
 *
-* Disassembly by Os9disasm of sub6
-
 
           nam sub6
-          ttl Sub6 Sub Battle Simulator subroutine
+          ttl Sub6 Sub Battle Simulator Utility Routines
 
           ifp1
-            use defsfile
+          use defsfile
           endc
 
 * I/O path definitions
@@ -1650,7 +1649,5 @@ L0BDA     fcb $00,$03,$0C,$0F,$30,$33
           fcb $F0,$F3,$FC,$FF
 
           emod
-
 eom       equ *
-
           end

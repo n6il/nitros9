@@ -16,9 +16,11 @@
 *        Ty/La At/Rv: $11 $81
 *        Prog mod, 6809 Obj, re-ent, R/O
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* ???    Disassembled at 10:11:57                       BGP 95/07/23
+*          1995/07/23  Boisy G. Pitre
+* Disassembled at 10:11:57.
 
          nam   Rescue
          ttl   Rescue On Fractalus Program
@@ -10458,5 +10460,7 @@ L5AED
 L5B01          
          fdb   $0000,$0000,$2204,$0000,$2622,$0400,$3426,$2400
          fdb   $3f3f,$3f3f
+
          emod  
 eom      equ   *
+         end
