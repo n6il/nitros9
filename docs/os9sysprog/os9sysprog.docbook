@@ -1052,8 +1052,8 @@ of ASCII characters having the sign bit set on the last character.
 
 <row>
 	<entry>$8 =</entry>
-	<entry>Header Check. The one's compliment of the vertical parity
-	(exclusive OR) of the previous eight bytes</entry>
+	<entry>Header Check. The one's compliment of (the vertical parity
+	(exclusive OR) of) the previous eight bytes</entry>
 </row>
 
 </tbody>
@@ -1752,6 +1752,12 @@ description of each value stored in this sector.
     <entry>$1F</entry>
     <entry>32</entry>
     <entry>Volume name: last char has sign bit set</entry>
+</row>
+<row>
+    <entry>DD.OPT</entry>
+    <entry>$3F</entry>
+    <entry>32</entry>
+    <entry>Option area</entry>
 </row>
 </tbody>
 </tgroup>
@@ -6437,7 +6443,7 @@ rounded to the next 256 byte page boundary.</para>
 </sect1>
 
 <sect1>
-<title>SRTMEM System memory request F$SRTMEM</title>
+<title>SRTMEM System memory request F$SRTM</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6446,7 +6452,7 @@ rounded to the next 256 byte page boundary.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$SRTMEM</entry>
+	<entry>OS9  F$SRTM</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6454,11 +6460,12 @@ rounded to the next 256 byte page boundary.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry><literallayout>(U) = Beginning address of memory to return.
+(D) = Number of bytes to return.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>None.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6468,12 +6475,15 @@ rounded to the next 256 byte page boundary.</para>
 </tbody>
 </tgroup>
 </informaltable>
-
+<para>
+This system mode service request is used to deallocate a block of contigous 256 byte pages.
+The U register must point to an even page boundary.
+</para>
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
 
 <sect1>
-<title>VMODULE Validate module F$VMODUL</title>
+<title>VMOD Verify module F$VMOD</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -6482,7 +6492,7 @@ rounded to the next 256 byte page boundary.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$VMODUL</entry>
+	<entry>OS9  F$VMOD</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6490,11 +6500,11 @@ rounded to the next 256 byte page boundary.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry></entry>
+	<entry>(X) = Address of module to verify</entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry></entry>
+	<entry>(U) = Address of module directory entry</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -6504,6 +6514,12 @@ rounded to the next 256 byte page boundary.</para>
 </tbody>
 </tgroup>
 </informaltable>
+<para>This system mode service request checks the module header parity
+and CRC bytes of an OS-9 module. If these values are valid, then
+the module directory is searched for a module with the same name.
+If a module with the same name exists, the one with the highest
+revision level is retained in the module directory. Ties are
+broken in favor of the established module.</para>
 
 <para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
 </sect1>
@@ -6870,7 +6886,7 @@ SCFMAN also uses ATTACH/DETACH to setup its second (echo) device.</para>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry>(B) = New path number.</entry>
+	<entry>(A) = New path number.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -7726,7 +7742,7 @@ may be read.</para>
 </sect1>
 
 <sect1>
-<title>WRITE Write Data to File or Device I$WRITE</title>
+<title>WRITE Write data to file or device I$WRITE</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -7743,13 +7759,13 @@ may be read.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry><literallayout>(A) = Path number.
-(X ) = Address of buffer.
-(Y) = Maximum number of bytes to write</literallayout></entry>
+	<entry><literallayout>(X) = Address of data to write.
+(Y) = Number of bytes to write.
+(A) = Path number.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry>(Y)  = Actual number of bytes written.</entry>
+	<entry>(Y) = Number of bytes actually written.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -7760,19 +7776,18 @@ may be read.</para>
 </tgroup>
 </informaltable>
 
-<para>DESCRIPTION:</para>
+<para>WRITE outputs one or more bytes to a file or device associated
+with the path
+number specified. The path must have been OPENed or CREATEd in the
+WRITE or UPDATE access modes.</para>
 
-<para>I$WRITE outputs bytes to a file or device associated with the path
-number specified. The path must have been opened or created in the
-write or update access modes.</para>
-
-<para>Data is written to the tile or device without processing or
+<para>Data is written to the file or device without processing or
 editing. If data is written past the present end-of-file, the file is
 automatically expanded.</para>
 </sect1>
 
 <sect1>
-<title>WRITELINE Write Line of Text with Editing I$WRLN</title>
+<title>WRITELN Write line of text with editing I$WRLN</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
@@ -7781,7 +7796,7 @@ automatically expanded.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$WRLN</entry>
+	<entry>OS9 I$WRLN</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -7789,13 +7804,13 @@ automatically expanded.</para>
 </row>
 <row>
 	<entry>INPUT:</entry>
-	<entry><literallayout>(A) = Path number.
-(X ) = Address of buffer.
-(Y) = Maximum number of bytes to write</literallayout></entry>
+	<entry><literallayout>(X) = Address of data to write.
+(Y) = Maximum number of bytes to write.
+(A) = Path number.</literallayout></entry>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry>(Y)  = Actual number of bytes written</entry>
+	<entry>(Y) = Actual number of bytes written.</entry>
 </row>
 <row>
 	<entry>ERROR OUTPUT:</entry>
@@ -7806,17 +7821,13 @@ automatically expanded.</para>
 </tgroup>
 </informaltable>
 
-<para>I$WRLN is similar to I$Write except it writes data until a
-carriage return character or (Y) bytes are encountered. Line editing
+<para>This system call is similar to WRITE except it writes data until a
+carriage return character is encountered. Line editing
 is also activated for character-oriented devices such as terminals,
 printers, etc. The line editing refers to auto line feed, null
 padding at end of line, etc.</para>
 
-<para>The number of bytes actually written (returned in Y) does not
-reflect any additional bytes that may have been added by file
-managers or device drivers for device control. For example, if SCF
-appends a line feed and nulls after carriage return characters, these
-extra bytes are not counted.</para>
+<para>For more information about line editing, see section 7.1.</para>
 
 </sect1>
 </chapter>
