@@ -22,4 +22,55 @@
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>Diagnostics</title>
+<para>
+-1 is returned is the OS-9 call failed. 0 is returned on success.
+</para>
+</refsect1>
+
+<refsect1><title>Program Example</title>
+<programlisting>
+#include &lt;os9.h&gt;
+#include &lt;modes.h&gt;
+
+/* this program does an I$GETSTT call to get file size */
+main(argc,argv)
+int argc;
+char **argv;
+{
+     struct registers reg;
+     int path;
+
+/* tell linker we need longs */
+     pflinit();
+
+/* low level open(file name is first command line param */
+     path=open(*++argv,S_IREAD);
+
+/* set up regs for call to OS-9 */
+     reg.rg_a=path;
+     reg.rg_b=SS_SIZE;
+
+     if(_os9(I_GETSTT,&amp;reg) == 0)
+          printf("filesize = %lx\n", /* success */
+          (long) (reg.rg_x &lt;&lt; 16)+reg.rg_u);
+     else printf("OS9 error #%d\n",reg.rg_b &amp; 0xff); /*failed*/
+     
+     dumpregs(&amp;reg);  /* take a look at the registers */
+}
+
+dumpregs(r)
+register struct registers *r;
+{
+     printf("cc=%02x\n",r->rg_cc &amp; 0xff);
+     printf(" a=%02x\n",r->rg_a &amp; 0xff);
+     printf(" b=%02x\n",r->rg_b &amp; 0xff);
+     printf("dp=%02x\n",r->rg_dp &amp; 0xff);
+     printf(" x=%02x\n",r->rg_x);
+     printf(" y=%02x\n",r->rg_u);
+     printf(" u=%02x\n",r->rg_y);
+}
+</programlisting>
+</refsect1>
 </refentry>
