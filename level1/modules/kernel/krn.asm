@@ -1,5 +1,5 @@
 ********************************************************************
-* Kernel - NitrOS-9 Level 1 Kernel
+* Krn - NitrOS-9 Level 1 Kernel
 *
 * $Id$
 *
@@ -48,8 +48,11 @@
 *  15r1    2003/12/09  Boisy G. Pitre
 * Kernel no longer scans for modules in I/O space.  Also, F$PrsNam now
 * allows _ and 0-9 as first chars of a filename.
+*
+*  15r1    2004/05/23  Boisy G. Pitre
+* Renamed to 'krn'
 
-         nam   Kernel
+         nam   krn
          ttl   NitrOS-9 Level 1 Kernel
 
          ifp1
@@ -66,7 +69,7 @@ L0000    mod   eom,name,tylg,atrv,OS9Cold,size
 
 size     equ   .
 
-name     fcs   /Kernel/
+name     fcs   /krn/
          fcb   edition
 
 InitNam  fcs   /Init/

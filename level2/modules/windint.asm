@@ -2453,8 +2453,8 @@ L0C86    clr   ,-s        clear activate/deactivate flag
          ldu   >WGlobal+G.PrWMPt     get previous device static mem pointer
          beq   L0CB3      nothing there, skip ahead
          pshs  y          preserve new window table pointer
-         IFNE  GrfInt-1
          bsr   L0CF2      any overlay windows or frames?
+         IFNE  GrfInt-1
          bcs   L0CA3      no, skip ahead
          lbsr  L1034      set menu bar to in-active state
          ENDC
@@ -2471,8 +2471,8 @@ L0CB3    ldb   #$10       Get select callcode
          tst   ,s         did we de-activate last used window?
          beq   L0CE1      no, skip activate
          pshs  y,u        Preserve regs
-         IFNE  GrfInt-1
          bsr   L0CF2      any overlay or framed windows?
+         IFNE  GrfInt-1
          bcs   L0CCA      no, skip ahead
          lbsr  L13E9      set menu bar to active state
          ENDC

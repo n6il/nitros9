@@ -1,5 +1,5 @@
 ********************************************************************
-* KernelP2 - NitrOS-9 Level 2 Kernel Part 2
+* krnp2 - NitrOS-9 Level 2 Kernel Part 2
 *
 * $Id$
 *
@@ -57,7 +57,7 @@
 *
 * 18r6  Back-ported to OS-9 Level Two from NitrOS-9 Level Two
 
-         nam    KernelP2
+         nam    krnp2
          ttl    NitrOS-9 Level 2 Kernel Part 2
 
 ** If Network I/O ptrs are disabled, F$Fork runs 72 cycles faster
@@ -72,9 +72,9 @@ Edition  equ    18
 Revision equ    6
 *DAT.Free equ   $333E      --- remove this def later
 
-         mod    eom,MName,Systm,ReEnt+Revision,KernelP2,$0100
+         mod    eom,MName,Systm,ReEnt+Revision,krnp2,$0100
 
-MName    fcs    /KernelP2/
+MName    fcs    /krnp2/
          fcb    Edition
 
          ifeq   TC9-1
@@ -168,7 +168,7 @@ Uday     lda    ,x+
          puls   cc,u,pc     restore IRQ's, register stack pointer & return
      endc
 
-KernelP2 lda   #'2        into KernelP2
+krnp2    lda   #'2        into krnp2
          jsr   <D.BtBug
 
          leay   SvcTab,pc   install system calls
@@ -237,7 +237,7 @@ L0083    ldu    <D.Init     get init module pointer
          bra    L009B       crash machine
 L0093    os9    F$NProc     let it take over
 
-L0096    fcs    /KernelP3/
+L0096    fcs    /krnp3/
 
 L009B    jmp    <D.Crash
 

@@ -1,5 +1,5 @@
 ********************************************************************
-* KernelP2 - NitrOS-9 Level 1 Kernel Part 2
+* krnp2 - NitrOS-9 Level 1 Kernel Part 2
 *
 * $Id$
 *
@@ -7,7 +7,7 @@
 * Comment
 * ------------------------------------------------------------------
 
-         nam   KernelP2
+         nam   krnp2
          ttl   NitrOS-9 Level 1 Kernel Part 2
 
          ifp1
@@ -23,7 +23,7 @@ edition  set   10
 
 size     equ   .
 
-name     fcs   /KernelP2/
+name     fcs   /krnp2/
          fcb   edition
 
 SvcTbl   fcb   $7F

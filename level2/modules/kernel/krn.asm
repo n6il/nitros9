@@ -1,5 +1,5 @@
 ********************************************************************
-* Kernel - NitrOS-9 Level 2 Kernel
+* krn - NitrOS-9 Level 2 Kernel
 *
 * $Id$
 *
@@ -14,8 +14,11 @@
 *
 *  19r8    2003/09/22  Boisy G. Pitre
 * Back-ported to OS-9 Level Two.
+*
+*  19r8    2004/05/22  Boisy G. Pitre
+* Renamed to 'krn'
 
-         nam   Kernel
+         nam   krn
          ttl   NitrOS-9 Level 2 Kernel
 
          IFP1
@@ -29,7 +32,7 @@ Where    equ   $F000      absolute address of where Kernel starts in memory
 
          mod   eom,MName,Systm,ReEnt+Revision,entry,0
 
-MName    fcs   /Kernel/
+MName    fcs   /krn/
          fcb   Edition 
 
 * FILL - all unused bytes are now here
@@ -37,9 +40,9 @@ MName    fcs   /Kernel/
          IFNE  H6309
          fcc   /0123456789ABCDEF/
          fcc   /0123456789ABCDEF/
-         fcc   /0/
+         fcc   /0123456/
          ELSE
-         fcc   /123/
+         fcc   /012345678/
          ENDC
 
 * Might as well have this here as just past the end of Kernel...
@@ -377,7 +380,7 @@ L01B0    leax  <init,pc    point to 'Init' module name
 L01B8    os9   F$Boot      error linking init, try & load boot file
          bcc   L01B0       got it, try init again
          bra   L01CE       error, re-booting do D.Crash
-* Save pointer to init module and execute kernelp2
+* Save pointer to init module and execute krnp2
 L01BF    stu   <D.Init     Save init module pointer
          lda   Feature1,u  Get feature byte #1 from init module
          bita  #CRCOn      CRC feature on?
@@ -386,13 +389,13 @@ L01BF    stu   <D.Init     Save init module pointer
 ShowI    lda   #'i         found init module
          jsr   <D.BtBug
 
-L01C1    leax  <kernelp2,pc   Point to it's name
+L01C1    leax  <krnp2,pc   Point to it's name
          bsr   link        Try to link it
          bcc   L01D0       It worked, execute it
          os9   F$Boot      It doesn't exist try re-booting
          bcc   L01C1       No error's, let's try to link it again
 L01CE    jmp   <D.Crash    obviously can't do it, crash machine
-L01D0    jmp   ,y          execute kernelp2
+L01D0    jmp   ,y          execute krnp2
 
 * Mark kernel in system memory map as used memory (256 byte blocks)
 L01D2    ldx   <D.SysMem   Get system mem ptr
@@ -414,7 +417,7 @@ link     lda   #Systm      Attempt to link system module
          rts
 
 init     fcs   'Init'
-kernelp2 fcs   'KernelP2'
+krnp2    fcs   'krnp2'
 
 * Service vector call pointers
 SysCalls fcb   F$Link

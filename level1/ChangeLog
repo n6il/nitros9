@@ -1,4 +1,5 @@
 NitrOS-9/6809 Level 1 V03.02.02:
+- kernel and kernelp2 have been renamed to krn and krnp2 respectively.
 - cc3disk has been renamed to rb1773 and has been back-ported to NitrOS-9 Level 1.
 - term_t1.dd has been renamed to term_sio.dd and term_sc6551.dd has been added.
 NitrOS-9/6809 Level 1 V03.02.01 (May 14, 2004):

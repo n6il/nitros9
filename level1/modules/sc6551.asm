@@ -500,7 +500,7 @@ SetPckUp   stx   <RxBufGet      set new Rx data pickup pointer
 ModEntry   lbra  Init
            bra   Read
            nop
-           bra   Writ
+           bra   Write
            nop
            IFNE  H6309
            bra   GStt
@@ -539,7 +539,7 @@ NRdyErr    ldb   #E$NotRdy
 UnSvcErr   ldb   #E$UnkSvc
            bra   ErrExit
 
-Writ       clrb                 default to no error...
+Write      clrb                 default to no error...
            pshs  cc,dp          save IRQ/Carry status, Tx character, system DP
            IFNE  H6309
            tfr   u,w            setup our DP

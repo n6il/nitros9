@@ -7,10 +7,10 @@ CD		= ../cmds
 
 DEPENDS		= ./makefile
 
-KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/kernel
+KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/krn
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
-BOOTFILE_VDG	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_VDG	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
@@ -23,7 +23,7 @@ BOOTFILE_VDG	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILE_WIN40	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_WIN40	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
@@ -36,7 +36,7 @@ BOOTFILE_WIN40	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILE_WIN80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_WIN80	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
@@ -84,7 +84,7 @@ clean:
 	$(RM) $(ALLOBJS)
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
-BOOTFILE_VDG_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_VDG_DS80	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_80d.dd \
@@ -97,7 +97,7 @@ BOOTFILE_VDG_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILE_WIN40_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_WIN40_DS80	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_80d.dd \
@@ -110,7 +110,7 @@ BOOTFILE_WIN40_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILE_WIN80_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_WIN80_DS80	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_80d.dd \

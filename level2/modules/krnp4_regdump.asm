@@ -1,5 +1,5 @@
 ********************************************************************
-* KernelP4 - User Register Dump System Call for NitrOS9 Level 2
+* krnp4 - User Register Dump System Call for NitrOS9 Level 2
 *
 * $Id$
 *
@@ -23,7 +23,7 @@
 *   1      1989/02/??  Ron Lammardo
 * Started.
 
-         nam   KernelP4 
+         nam   krnp4 
          ttl   User Register Dump System Call for NitrOS9 Level 2
 
          ifp1  
@@ -37,7 +37,7 @@ edition  set   1
 
          mod   eom,name,tylg,atrv,start,0
 
-name     fcs   /KernelP4/    name of this module
+name     fcs   /krnp4/    name of this module
          fcb   edition
 
 svctabl  fcb   F$RegDmp   F$RegDmp code
@@ -53,7 +53,7 @@ start    leay  <svctabl,pcr point to service table
          jsr   ,y         else go execute it
 endsetup rts              return back to previous module
 
-nextname fcc   /KernelP5/    next module name to link to
+nextname fcc   /krnp5/    next module name to link to
          fcb   $0d
 
 regdmp   equ   *
