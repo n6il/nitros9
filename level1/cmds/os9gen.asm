@@ -13,7 +13,7 @@
 * Disassembled 02/04/03 23:17:45 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
@@ -42,328 +42,35 @@ size     equ   .
 name     equ   *
          fcs   /OS9gen/
          fcb   $07 
-L0014    fcb   $0A 
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $20 
-         fcb   $28 (
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $29 )
-         fcb   $3A :
-         fcb   $20 
-         fcb   $6F o
-         fcb   $73 s
-         fcb   $39 9
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $20 
-         fcb   $3C <
-         fcb   $2F /
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $3E >
-         fcb   $0A 
-         fcb   $20 
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $73 s
-         fcb   $20 
-         fcb   $28 (
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $64 d
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $70 p
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $29 )
-         fcb   $20 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20 
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $20 
-         fcb   $65 e
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $2C ,
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $67 g
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $73 s
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $77 w
-         fcb   $20 
-         fcb   $4F O
-         fcb   $53 S
-         fcb   $39 9
-         fcb   $42 B
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $2E .
-         fcb   $0D 
-         fcb   $43 C
-         fcb   $61 a
-         fcb   $6E n
-         fcb   $27 '
-         fcb   $74 t
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $3A :
-         fcb   $20 
-L0094    fcb   $0A 
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $77 w
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20 
-         fcb   $6B k
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $20 
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $0D 
-L00B0    fcb   $0A 
-         fcb   $57 W
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $6E n
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20 
-         fcb   $2D -
-         fcb   $20 
-         fcb   $4B K
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $20 
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $20 
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20 
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $6C l
-         fcb   $79 y
-         fcb   $2E .
-         fcb   $0A 
-         fcb   $54 T
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $77 w
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $2E .
-         fcb   $0D 
-L00FC    fcb   $0A 
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $2D -
-         fcb   $20 
-         fcb   $4F O
-         fcb   $53 S
-         fcb   $39 9
-         fcb   $62 b
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $66 f
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $0A 
-         fcb   $20 
-         fcb   $54 T
-         fcb   $68 h
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $6B k
-         fcb   $20 
-         fcb   $77 w
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $62 b
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $2E .
-         fcb   $0D 
-L013C    fcb   $52 R
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $41 A
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $20 
-L0143    fcb   $54 T
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $70 p
-         fcb   $42 B
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $FF 
-L014D    fcb   $4F O
-         fcb   $53 S
-         fcb   $39 9
-         fcb   $42 B
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $0D 
-         fcb   $FF 
+L0014    fcb   C$LF 
+         fcc   "Use (caution): os9gen </devname>"
+         fcb   C$LF 
+         fcc   " ..reads (std input) pathnames until eof,"
+         fcb   C$LF 
+         fcc   "   merging paths into new OS9Boot file."
+         fcb   C$CR 
+         fcc   "Can't find: "
+L0094    fcb   C$LF
+         fcc   "Error writing kernel track"
+         fcb   C$CR 
+L00B0    fcb   C$LF 
+         fcc   "Warning - Kernel track has"
+         fcb   C$LF 
+         fcc   "not been allocated properly."
+         fcb   C$LF 
+         fcc   "Track not written."
+         fcb   C$CR 
+L00FC    fcb   C$LF
+         fcc   "Error - OS9boot file fragmented"
+         fcb   C$LF 
+         fcc   " This disk will not bootstrap."
+         fcb   C$CR 
+L013C    fcc   "RENAME "
+L0143    fcc   "TempBoot "
+         fcb   $FF
+L014D    fcc   "OS9Boot"
+         fcb   C$CR
+         fcb   $FF
 start    equ   *
          clrb  
          stb   <u0005
@@ -424,7 +131,7 @@ L01D6    clra
          bcs   L022E
          lda   ,x
          ldb   #$D3
-         cmpa  #$0D
+         cmpa  #C$CR
          beq   L022E
          lda   #$01
          os9   I$Open   
