@@ -11,7 +11,6 @@
 
          ifp1  
          use   defsfile
-         use   rbfdefs
          endc  
 
 dnum     equ   0
@@ -39,6 +38,16 @@ rev      set   $01
          fcb   26         sector interleave factor
          fcb   8          minimum size of sector allocation
 initsize equ   *
+* Additional space for Curtis' new driver
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
+         fcb   0
 
 name     fcc   /H/
          fcb   176+dnum
