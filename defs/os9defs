@@ -56,23 +56,20 @@ F$DelBit rmb   1          Deallocate in Bit Map
 F$Time   rmb   1          Get Current Time
 F$STime  rmb   1          Set Current Time
 F$CRC    rmb   1          Generate CRC
-F$GPrDsc rmb   1          get Process Descriptor copy
-F$GBlkMp rmb   1          get System Block Map copy
-F$GModDr rmb   1          get Module Directory copy
+
+         ifgt  Level-1
+
+* OS-9 Level 2 system calls
+F$GPrDsc rmb   1          Get Process Descriptor copy
+F$GBlkMp rmb   1          Get System Block Map copy
+F$GModDr rmb   1          Get Module Directory copy
 F$CpyMem rmb   1          Copy External Memory
 F$SUser  rmb   1          Set User ID number
 F$UnLoad rmb   1          Unlink Module by name
-
-         ifeq  Level-1
-         rmb   3
-         else
-
-* Level 2 system calls
-F$Alarm  rmb   1          Color Computer Alarm Call
-         rmb   2          reserved - For overlap of other systems
-F$NMLink rmb   1          Color Computer NonMapping Link
-F$NMLoad rmb   1          Color Computer NonMapping Load
-
+F$Alarm  rmb   1          Color Computer 3 Alarm Call
+         rmb   2          Reserved - For overlap of other systems
+F$NMLink rmb   1          Color Computer 3 Non-Mapping Link
+F$NMLoad rmb   1          Color Computer 3 Non-Mapping Load
          org   $25
 F$TPS    rmb   1          Return System's Ticks Per Second
 F$TimAlm rmb   1          CoCo individual process alarm call
@@ -628,7 +625,7 @@ StdStr   rmb   2          Standard I/O Pathlist
 BootStr  rmb   2          Bootstrap Module name
 ProtFlag rmb   1          Write protect enable flag
 
-         ifgt  Level-1
+*         ifgt  Level-1
 
 OSLevel  rmb   1          OS level
 OSVer    rmb   1          OS version
@@ -636,15 +633,15 @@ OSMajor  rmb   1          OS major
 OSMinor  rmb   1          OS minor
 Compat1  rmb   1          compatibility byte
 
-* -- CC3IO area -- *
-MonType  rmb   1          Monitor type (0=CMP,1=RGB,2=MONO)
+* -- CCIO/CC3IO area -- *
+MonType  rmb   1          Monitor type (0=CMP,1=RGB,2=MONO) (unused in OS-9 Level One)
 KeyRptS  rmb   1          Key repeat start constant
 KeyRptD  rmb   1          Key repeat delay constant
 
 * Compatiblity byte definitions
 CRCOn    equ   %00000001  CRC checking on if set, off if clear
 
-         endc
+*         endc
 
          pag
 **************************
