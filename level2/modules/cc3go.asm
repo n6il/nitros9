@@ -45,9 +45,9 @@ Banner
          fcb   48+OS9Minor
          fcb   C$CR,C$LF
          ifne  NitrOS9
-         fcc   " ORION BETA1 Release 09/22/2002"
+         fcc   " ORION BETA2 Release 01/05/2003"
          else
-         fcc   " ARIES BETA2 Release ??/??/2002"
+         fcc   " ARIES BETA2 Release 01/05/2003"
          endc
          fcb   C$CR,C$LF
          fcc   /   "A CoCo Community Project"/
