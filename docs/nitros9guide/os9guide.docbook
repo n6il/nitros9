@@ -79,13 +79,6 @@
  <title>OS-9 Operating System User's Guide</title>
  <subtitle>for OS-9 Level I</subtitle>
 
- <publisher>
-  <publishername>Cleglen Publishing Limited</publishername>
-  <address>
-   <city>Cardiff</city>
-  </address>
- </publisher>
-
 <copyright>
   <year>1983</year>
   <holder>Dragon Data Ltd., and Microware Systems Corporation.</holder>
@@ -96,6 +89,13 @@
 Microware Systems Corporation.</para>
  </legalnotice>
 
+<revhistory>
+<revision>
+<revnumber>B</revnumber>
+<date>January 2003</date>
+<revremark>Updated with the changes made by Boisy Pitre</revremark>
+</revision>
+</revhistory>
 
 </bookinfo>
 
