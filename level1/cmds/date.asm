@@ -28,6 +28,7 @@
 * ------------------------------------------------------------------
 * 5      Made Y2K compliant                             GH  96/09/25
 * 6      Made compliant with 1900-2155                  BGP 99/05/07
+* 7      New option is now -t, code compacted a bit     BGP 03/01/14
 
          nam   Date
          ttl   Print Date/Time
@@ -39,10 +40,11 @@
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   6
+edition  set   7
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 SysYear  rmb   1
 SysMonth rmb   1
 SysDay   rmb   1
@@ -56,97 +58,92 @@ size     equ   .
 name     fcs   /Date/
          fcb   edition
 
-DtComa   fcs   ', '
-MonTable fcs   '??? '
-         fcs   'January '
-         fcs   'February '
-         fcs   'March '
-         fcs   'April '
-         fcs   'May '
-         fcs   'June '
-         fcs   'July '
-         fcs   'August '
-         fcs   'September '
-         fcs   'October '
-         fcs   'November '
-         fcs   'December '
+MonTable fcs   '???'
+         fcs   'January'
+         fcs   'February'
+         fcs   'March'
+         fcs   'April'
+         fcs   'May'
+         fcs   'June'
+         fcs   'July'
+         fcs   'August'
+         fcs   'September'
+         fcs   'October'
+         fcs   'November'
+         fcs   'December'
 
 start    pshs  x
-         leax  ,u
+         leax  SysYear,u
          leau  u0008,u
          stu   <u0006
          os9   F$Time
-         bsr   PrntDate   go print the date in buffer
-         lda   [,s++]     now, did we have a -t
-         eora  #$54       option on the commandline?
-         anda  #$DF
-         bne   L008C      wasn't a t
+         bsr   Add2Buff		go print the date in buffer
+         ldd   [,s++]		now, did we have a -t
+         andb  #$DF
+         cmpd  #$2D54		-T?
+         bne   PrBuff		wasn't
          ldd   #C$SPAC*256+C$SPAC  else space it out
          std   ,u++
-         bsr   L00A1      and go add the time to the buffer
-L008C    lda   #C$CR      terminate the line to print
+         bsr   DoTime		and go add the time to the buffer
+PrBuff   lda   #C$CR		terminate the line to print
          sta   ,u+
-         lda   #1 standard out
+         lda   #1		standard out
          ldx   <u0006
-         ldy   #$0028
-         os9   I$WritLn   and go print it
-         bcs   L009E
+         ldy   #40
+         os9   I$WritLn		and go print it
+         bcs   Exit
          clrb  
-L009E    os9   F$Exit
-L00A1    ldb   <SysHour
-         bsr   L00D2
+Exit     os9   F$Exit
+
+DoTime   ldb   <SysHour
+         bsr   Byte2ASC
          ldb   <SysMin
          bsr   L00AB
          ldb   <SysSec
-L00AB    lda   #$3A
+L00AB    lda   #':
          sta   ,u+
-         bra   L00D2
-PrntDate leay  >MonTable,pcr
-         ldb   <SysMonth
-         beq   L00C4
-         cmpb  #$0C
-         bhi   L00C4
-L00BD    lda   ,y+
-         bpl   L00BD
-         decb  
-         bne   L00BD
+         bra   Byte2ASC
+
+Add2Buff leay  >MonTable,pcr		point to month table
+         ldb   <SysMonth		get month byte
+         beq   L00C4			branch if zero (illegal)
+         cmpb  #12			compare against last month of year
+         bhi   L00C4			if too high, branch
+L00BD    lda   ,y+			get byte
+         bpl   L00BD			keep going if hi bit not set
+         decb  				else decrement month
+         bne   L00BD			if not 0, keep going
 L00C4    bsr   PrtStrng
          ldb   <SysDay
-         bsr   L00D2
-         leay  >DtComa,pcr
-         bsr   PrtStrng
-         ldb   <SysYear          get year
-         cmpb  #100              compare against 100 (2000)
-         blo   is19              if less than, it's 19XX, so branch
-         subb  #100              else subtract 100
-         cmpb  #100              compare against 100 
-         blo   is20              if less than, it's 20XX, so branch
-         subb  #100
-         pshs   b
-         ldb   #21
-         bra   pr
-is20     pshs  b
-         ldb   #20
-         bra   pr
-is19     pshs  b 
-         ldb   #19
-pr       bsr   L00D2 
+         bsr   Byte2ASC
+         ldd   #C$COMA*256+C$SPAC	get comma and space in D
+         std   ,u++			store in buffer and increment twice
+         lda   #19
+         ldb   <SysYear		get year
+CntyLp   subb  #100
+         bcs   pr		we have century we need
+         inca
+         bra   CntyLp
+pr       addb  #100
+         pshs  b
+         tfr   a,b
+         bsr   Byte2ASC 
          puls  b
-L00D2    lda   #$2F
-L00D4    inca  
-         subb  #$64
-         bcc   L00D4
-         sta   ,u+
-         cmpa  #$30
-         bne   L00E1
-         leau  -1,u
-L00E1    lda   #$3A
-L00E3    deca  
-         addb  #$0A
-         bcc   L00E3
-         sta   ,u+
-         addb  #$30
-         stb   ,u+
+
+Byte2ASC lda   #$2F		start A out just below $30 (0)
+Hundreds inca  			inc it
+         subb  #100		subtract 100
+         bcc   Hundreds		if result >= 0, continue
+         cmpa  #'0		zero?
+         beq   Tens		if so, don't add to buffer
+         sta   ,u+		else save at U and inc.
+Tens     lda   #$3A		start A out just above $39 (9)
+TensLoop deca  			dec it
+         addb  #10		add 10
+         bcc   TensLoop		if carry clear, continue
+         sta   ,u+		save 10's digit
+         addb  #'0	
+         stb   ,u+		and 1's digit
          rts   
 
 *  *  *  *  *  *  *  *  *  *  *
@@ -156,6 +153,8 @@ PrtStrng lda   ,y
          sta   ,u+
          lda   ,y+
          bpl   PrtStrng
+         lda   #C$SPAC
+         sta   ,u+
          rts   
 
 *  *  *  *  *  *  *  *  *  *  *
