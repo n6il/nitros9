@@ -765,6 +765,8 @@ L04C4    stb   <VD.PixBt,u
          pshs  b
          ora   ,s+
          ldb   #$01
+* Indicate screen is current; next line is critical for >512K - Robert Gault
+         stb   >WGlobal+G.CrDvFl	is this screen currently showing?
          lbra  DispAlfa
 
 L04D9    pshs  x,b,a
