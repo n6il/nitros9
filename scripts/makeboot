@@ -1,0 +1,38 @@
+# Makes 'bootlist' and 'bootfile' in the current directory
+set md=$NITROS9DIR/6309l2/modules
+set sd=$CLOUD9DIR/Products/SuperDrivers/software/6309l2
+set dd=$CLOUD9DIR/Products/DriveWire/software/6309l2
+
+set tracklist_1773="$md/rel_80 $md/boot_1773_6ms $md/krn"
+set tracklist_tc3="$md/rel_80 $sd/boot_tc3 $md/krn"
+set tracklist_ide="$md/rel_80 $sd/boot_ide $md/krn"
+set tracklist_dw="$md/rel_80 $dd/boot_dw $md/krn"
+
+set bootlist_ide="$md/krnp2 $md/ioman $md/init $md/rbf.mn $sd/rbsuper.dr $sd/llide.dr $sd/lltc3.dr $sd/dd_ide.dd $sd/i0_ide.dd $sd/i1_ide.dd $sd/ih_ide.dd $sd/s0_tc3.dd $sd/s1_tc3.dd $sd/s2_tc3.dd $sd/s3_tc3.dd $sd/s4_tc3.dd $sd/s5_tc3.dd $sd/s6_tc3.dd $sd/s7_tc3.dd $sd/sh_tc3.dd $dd/drivewire.dr $dd/x0.dd $dd/x1.dd $dd/x2.dd $dd/x3.dd $md/rb1773.dr $md/d0_80d.dd $md/d1_40d.dd $md/scf.mn $md/cc3io.dr $md/term_win80.dt $md/keydrv_cc3.sb $md/joydrv_joy.sb $md/snddrv_cc3.sb $md/grfint.io $md/w.dw $md/w1.dw $md/w2.dw $md/w3.dw $md/w4.dw $md/w5.dw $md/w6.dw $md/w7.dw $md/sc6551.dr $md/t2_sc6551.dd $md/t3_sc6551.dd $md/pipeman.mn $md/piper.dr $md/pipe.dd $md/clock_60hz $md/clock2_cloud9"
+
+#                $(C9)/Products/SuperDrivers/software/6309l2/lldw.dr \
+#                $(C9)/Products/SuperDrivers/software/6309l2/ddx0.dd \
+#                $(C9)/Products/SuperDrivers/software/6309l2/x1.dd \
+#                $(C9)/Products/SuperDrivers/software/6309l2/x2.dd \
+#                $(C9)/Products/SuperDrivers/software/6309l2/x3.dd \
+
+
+
+# Select our bootlist and tracklist
+set bootlist="$bootlist_ide"
+set tracklist="$tracklist_ide"
+
+# Create the files
+if (-e bootfile) then
+	rm bootfile
+endif
+foreach file ($bootlist)
+	cat $file>>bootfile
+end
+if (-e boottrack) then
+	rm boottrack
+endif
+foreach file ($tracklist)
+	cat $file>>boottrack
+end
+
