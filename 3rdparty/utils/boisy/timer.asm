@@ -19,7 +19,7 @@
          use   defsfile
          endc
 
-         mod   Size,Name,Prgrm+Objct,Reent+1,Start,Fin
+         mod   Size,Name,Prgrm+Objct,ReEnt+1,Start,Fin
 
 Name     fcs   /Timer/
 Ed       fcb   $02
@@ -37,13 +37,13 @@ Parms    rmb   200
 Fin      equ   .
 
 HelpMsg  fcc   /Usage:  Timer <progname> [params]/
-SpCR     fcb   $20,$0a,$0d
+SpCR     fcb   C$SPAC,C$LF,C$CR
 HelpLen  equ   *-HelpMsg
 
 
-Header   fdb   $0a0d
+Header   fdb   C$LF,C$CR
          fcc   /Timer Statistics:/
-         fdb   $0a0d,$0a0d
+         fdb   C$LF,C$CR,C$LF,C$CR
          fcc   /Command line:  /
 Header1  fcc   /Date:  /
 Header2  fcc   /Start Time:  /
@@ -53,31 +53,31 @@ Slash    fcc   "/"
 
 Start    decb                          Check for params
          lbeq  Help                    if none, show help
-         lda   #$0d
+         lda   #C$CR
          leay  ParmBuff,u              Else put a CR in param buffer
          sta   ,y
 
          leay  ProgName,u              and put progname in progname buffer
 GetName  lda   ,x+
          sta   ,y+
-         cmpa  #$20                    any space after name?
+         cmpa  #C$SPAC                 any space after name?
          beq   PlaceCR                 Yep, assume params are on line
-         cmpa  #$0d                    Is next char a CR?
+         cmpa  #C$CR                   Is next char a CR?
          bne   GetName                 nope, not finished getting name
          bra   GetTime                 else assume no params...
 
-PlaceCR  lda   #$0D                    Put CR behind progname,
+PlaceCR  lda   #C$CR                   Put CR behind progname,
          sta   -1,y
 
 SkipSpac lda   ,x+                     skip leading spaces
-         cmpa  #$20
+         cmpa  #C$SPAC
          beq   SkipSpac
          leax  -1,x
 
 SaveParm leay  ParmBuff,u              and store params in param buffer
 Loop     lda   ,x+
          sta   ,y+
-         cmpa  #$0d                    Is char a CR?
+         cmpa  #C$CR                   Is char a CR?
          beq   GetTime                 Yep, we're finished parsing
          bra   Loop                    else get next char
 
@@ -122,7 +122,7 @@ GetTime  lda   #Prgrm+Objct            We'll take care of some F$FORK
          leax  ParmBuff,u
          ldy   #200
          lda   #2
-         os9   I$Writln
+         os9   I$WritLn
          bcs   Error
          bra   DateShow
 
@@ -252,7 +252,7 @@ p1       subb  #$64
          bcc   p1
          sta   ,u+
          cmpa  #$30
-         bne   P2
+         bne   p2
          leau  -1,u
 p2       lda   #$3a
 p3       deca
@@ -263,6 +263,7 @@ p3       deca
          stb   ,u+
          puls  a,b,u
          rts
+
          emod
 Size     equ   *
          end

@@ -22,7 +22,7 @@
          use     defsfile
          endc
 
-         mod     Size,Name,Prgrm+Objct,Reent+1,Start,Fin
+         mod     Size,Name,Prgrm+Objct,ReEnt+1,Start,Fin
 Name     fcs     /BigBro/
 ed       fcb     1
 
@@ -72,3 +72,4 @@ Error    os9     F$Exit                Leave the program
          emod
 Size     equ     *
          end
+

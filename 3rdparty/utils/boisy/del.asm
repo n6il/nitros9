@@ -16,7 +16,7 @@
          use     defsfile
          endc
 
-         mod     Size,Name,Prgrm+Objct,Reent+1,Start,Fin
+         mod     Size,Name,Prgrm+Objct,ReEnt+1,Start,Fin
 
 Mode     rmb     1                     access mode byte
 Stack    rmb     200
@@ -26,7 +26,7 @@ Fin      equ     .
 Name     fcs     /Del/
          fcb     $06                   Edition number
 
-Start    lda     #write.               default to current directory
+Start    lda     #WRITE.               default to current directory
          sta     Mode
 
 Parse    lda     ,x+                   get next char
@@ -45,7 +45,7 @@ GetOpt   lda     ,x+                   get char
          beq     ChMode                 yep, set mode to execute
          bra     Parse                 else resume parsing
 
-ChMode   lda     #write.+exec.         delete in current exec dir.
+ChMode   lda     #WRITE.+EXEC.         delete in current exec dir.
          sta     Mode                  and save mode
 
 DelFile  lda     Mode                  get current access mode
@@ -68,3 +68,4 @@ Error    os9     F$Exit
          emod
 Size     equ   *
          end
+

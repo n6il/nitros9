@@ -26,54 +26,54 @@
          mod   Size,Name,Prgrm+Objct,ReEnt+1,Start,Fin
 
 Name     fcs   /Mode/
-Vrsn     fcb   $06
+         fcb   $06
 
-Helpmess fdb   $0a0d
+Helpmess fdb   C$LF,C$CR
          fcc   /Mode - (C) 1992 Boisy G. Pitre/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
          fcc   /  Usage:  MODE <opts>/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
          fcc   /       D - Display settings/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
          fcc   /       R - RGB/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
          fcc   /       C - Composite/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
          fcc   /       M - Monochrome/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
          fcc   /       F - Fast CPU/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
          fcc   /       S - Slow CPU/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
          fcc   /       # - Window type/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
 Type1    fcc   /Type 1 - 40 x 24 text/
-CR       fdb   $0a0d
+CR       fdb   C$LF,C$CR
 Type2    fcc   /Type 2 - 80 x 24 text/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
 Type5    fcc   /Type 5 - 640 x 192, 2  color graphics/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
 Type6    fcc   /Type 6 - 320 x 192, 4  color graphics/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
 Type7    fcc   /Type 7 - 640 x 192, 4  color graphics/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
 Type8    fcc   /Type 8 - 320 x 192, 16 color graphics/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
 Helplen  equ   *-Helpmess
 
-Fastmess fdb   $0a0d
+Fastmess fdb   C$LF,C$CR
          fcc   /CPU is set to FAST (1.78Mhz)/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
 
-Slowmess fdb   $0a0d
+Slowmess fdb   C$LF,C$CR
          fcc   /CPU is set to SLOW (0.89Mhz)/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
 
 BadParm  fcc   /: Bad parameter/
-         fcb   $0d
+         fcb   C$CR
 
 VDG      fcc   /32 x 16 VDG text screen/
-         fdb   $0a0d
+         fdb   C$LF,C$CR
 
 W1       fcb   $1b,$24,$1b,$20,$01,$00,$00,$28,$18
 W2       fcb   $1b,$24,$1b,$20,$02,$00,$00,$50,$18
@@ -94,9 +94,9 @@ Start    decb                          Decrement B
 * Parsing routine
 
 Parse2   lda   ,x+                     load A with next char.
-Parse3   cmpa  #$0d                    is it a CR?
+Parse3   cmpa  #C$CR                   is it a CR?
          lbeq  Done                    Yep, done
-         cmpa  #$20                    is it a space?
+         cmpa  #C$SPAC                 is it a space?
          beq   Parse2                  yep, get next char
          cmpa  #'1                     Check for window types...
          lbeq  Win1
@@ -110,7 +110,7 @@ Parse3   cmpa  #$0d                    is it a CR?
          lbeq  Win7
          cmpa  #'8
          lbeq  Win8
-         anda  #$df                    Mask to uppercase
+         anda  #$DF                    Mask to uppercase
          cmpa  #'D                     Check other opts...
          lbeq  Query
          cmpa  #'R
@@ -226,12 +226,12 @@ GetColor ldb   #$96
          rts
 
 Fast     pshs  x
-         clr   $ffd9
+         clr   $FFD9
          leax  Fastmess,pcr
          bra   SpeedM
 
 Slow     pshs  x
-         clr   $ffd8
+         clr   $FFD8
          leax  Slowmess,pcr
 
 SpeedM   ldy   #32
@@ -290,3 +290,4 @@ WriteIt  lda   #1
          emod
 Size     equ   *
          end
+

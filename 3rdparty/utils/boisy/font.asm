@@ -1,23 +1,26 @@
          nam     Font
          ttl     Sets Fonts
+
          ifp1
          use     defsfile
          endc
-         mod     psize,pname,prgrm+objct,reent+1,dsize,start
+
+         mod     psize,pname,Prgrm+Objct,ReEnt+1,dsize,start
+
 pname    fcs     /Font/
 
 temp     rmb     2
 mpf      rmb     2
 fontset  rmb     3
-fontinfo rmb    2
+fontinfo rmb     2
 stack    rmb     200
 params   rmb     200
 BadBuff  fcc     /You've selected an undefined buffer./
-         fcb     $0a,$0a,$0d
+         fcb     C$LF,C$LF,C$CR
 dsize    equ     *
 
 start    decb
-         beq     Error
+         beq     error
          leay    fontset,u
          ldd     #$1b3a
          std     ,y++
@@ -32,14 +35,14 @@ loop1    bsr     numcvt
          leax    fontset,u
          ldy     #4
          lda     #1
-         os9     i$write
+         os9     I$Write
          bcc     Exit
          cmpb    #194
-         bne     Error
+         bne     error
          leax    BadBuff,pcr
          lda     #2
          ldy     #50
-         os9     i$writln
+         os9     I$WritLn
          bra     Exit
 numcvt   pshs    b,y
 nloop2   lda     ,x+
@@ -72,7 +75,8 @@ nout3    lda     temp,u
          puls    x
          puls    b,y,pc
 exit     clrb
-error    os9     f$exit
+error    os9     F$Exit
+
          emod
 psize    equ     *
          end
