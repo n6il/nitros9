@@ -12,7 +12,7 @@ CLOCKS_D64	= clock_d64
 FMGRS		= scf.mn rbf.mn pipeman.mn
 DRIVERS		= aciapak.dr cchdisk.dr ccdisk.dr modpak.dr nildrv.dr \
 		piper.dr printer.dr rs232.dr sscpak.dr ccio.dr
-DRIVERS_D64	= ddisk.dr kbvdio.dr
+DRIVERS_D64	= ddisk.dr kbvdio.dr drvr51.dr
 IOSUBS		= co32.io co80.io grfo.io
 DESCS		= ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
