@@ -95,13 +95,17 @@ BellTone lsla             set A for PIA D/A bits
          ldb   3,x
          pshs  a,b
 
+         IFNE  H6309
+         andd  #$F7F7     set for sound
+         ELSE
          anda  #$F7       set for sound
          andb  #$F7
+         ENDC
          sta   1,x
          stb   3,x
          leax  $20,x      save PIA2 setting
          lda   3,x
-         pshs  A
+         pshs  a
          ora   #8         and set it too
          sta   3,x
          bra   ToneLoop   ..enter main play loop
@@ -128,7 +132,7 @@ Loop2    bsr   SendByte   send it (Y=tone delay)
 * Note: G.TnCnt is counted down by cc3io at 60hz.
 
 ToneExit clr   >WGlobal+G.BelTnF clear bell flag
-         puls  A          reset PIA's as before:
+         puls  a          reset PIA's as before:
          sta   3,x
          leax  -$20,x
          puls  a,b
@@ -145,4 +149,5 @@ SendDely leay  -1,y       delay
 
          emod  
 sndlen   equ   *
-         end   
+         end
+

@@ -28,6 +28,11 @@ size     equ   .
 name     fcs   /KeyDrv/
          fcb   edition
 
+* The KeyDrv subroutine module has four entry points:
+* - Init
+* - Term
+* - FuncKeys
+* - ReadKys
 start    lbra  Init       init/term; CLRB RTS
          lbra  Term
          lbra  FuncKeys   test for keys F1, F2
@@ -108,8 +113,8 @@ L0095    sta   <G.LKeyCd  setup for last key pressed
          adda  #$40       convert to ASCII value; all caps
          ldb   <G.ShftDn  shift key flag
          ldy   <G.CurDev  get current device static memory pointer
-         eorb  <$21,y     caps lock and keyboard mouse flags
-         andb  #$01       test caps flag
+         eorb  <ULCase,y  caps lock and keyboard mouse flags
+         andb  #CapsLck   test caps flag
          bne   L00E0      not shifted so go
          adda  #$20       convert to ASCII lower case
          bra   L00E0

@@ -934,13 +934,13 @@ DrawLine bsr   FixXY		fix up coords
          subb  <VD.NChar,u
          sbca  #$00
          bpl   L0608
-         IFNE  H6309X
+         IFNE  H6309
          negd
          ELSE
          nega  
          negb  
-         ENDC
          sbca  #$00
+         ENDC
          neg   $06,s
 L0608    std   $08,s
          bne   L0611
@@ -953,13 +953,13 @@ L0611    lda   #$E0
          subb  <VD.NChr2,u
          sbca  #$00
          bpl   L0626
-         IFNE  H6309X
+         IFNE  H6309
          negd
          ELSE
          nega  
          negb  
-         ENDC
          sbca  #$00
+         ENDC
          neg   $07,s
 L0626    std   $0A,s
          bra   L0632
@@ -1021,13 +1021,13 @@ Circle   leas  -$04,s
          sta   ,s
          addb  $01,s
          adca  #$00
-         IFNE  H6309X
+         IFNE  H6309
          negd
          ELSE
          nega  
          negb  
-         ENDC
          sbca  #$00
+         ENDC
          addd  #$0003
          std   $02,s
 L06AB    lda   ,s
@@ -1080,24 +1080,24 @@ L06EB    leas  -$08,s
          sta   ,s
          clra  
          std   $02,s
-         IFNE  H6309X
+         IFNE  H6309
          negd
          ELSE
          nega  
          negb  
-         ENDC
          sbca  #$00
+         ENDC
          std   $06,s
          ldb   ,s
          clra  
          std   ,s
-         IFNE  H6309X
+         IFNE  H6309
          negd
          ELSE
          nega  
          negb  
-         ENDC
          sbca  #$00
+         ENDC
          std   $04,s
          ldx   $06,s
          bsr   L0734
