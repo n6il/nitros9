@@ -1,3 +1,5 @@
+# Makefile for OS-9 Level Two CMDS/
+
 include ../../Makefile.rules
 
 vpath %.asm $(LEVEL1)/CMDS:$(3RDPARTY)/packages/basic09
@@ -15,8 +17,8 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 SUBS            = gfx2 gfx inkey syscall
 
 SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
-UTILPAK1	= attr copy del deldir dir display list makdir mdir \
-		mfree procs rename tmode
+UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
+		merge mfree procs rename sleep tee tmode
 
 ALLOBJS		= $(CMDS) $(SUBS)
 

@@ -1,3 +1,5 @@
+# Makefile for OS-9 Level Two SYS/
+
 include ../../Makefile.rules
 
 vpath %.hp $(LEVEL1)/SYS
