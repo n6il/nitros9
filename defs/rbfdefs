@@ -115,7 +115,8 @@ TYPH.512  equ  %00000001	512 byte sector media
 TYPH.1024 equ  %00000010	1024 byte sector media
 TYPH.2048 equ  %00000011	2048 byte sector media
 TYPH.SSM  equ  %00000011	Sector size mask
-TYPH.DSQ  equ  %00010000       Drive size query flag
+TYPH.DRSV equ  %00001100	Driver-reserved bits
+TYPH.DSQ  equ  %00010000        Drive size query flag
 
 * IT.TYP bit definitions if bit 7 of IT.TYP is clear (floppy disk)
 TYP.5    equ   %00000000	5" media
