@@ -47,18 +47,14 @@ BootMsg  fcc   "OS-9 LEVEL ONE VR. 0"
 
 * For ROM version, cut down on verbage
          IFNE  DiskGo
-         fcc   !PHOENIX RELEASE 11/04/2002!
-         fdb   C$CR,C$LF
-         fcc   "HTTP://COCOOS9.SOURCEFORGE.NET"
-         fdb   C$CR,C$LF
-         fcc   "COPR. 1980 BY MOTOROLA INC. AND"
-         fdb   C$CR,C$LF
-         fcc   "MICROWARE SYSTEMS CORP."
-         fdb   C$CR,C$LF
-         fcc   "LICENSED TO TANDY CORP."
-         fdb   C$CR,C$LF
-         fcc   "ALL RIGHTS RESERVED."
-         fdb   C$CR,C$LF
+         fcc   !PHOENIX Release 11/04/2002!
+         fcb   C$CR,C$LF
+         fcc   !"A CoCo Community Project"!
+         fcb   C$CR,C$LF
+         fcc   "Visit us on the web:"
+         fcb   C$CR,C$LF
+         fcc   "http://cocoos9.sourceforge.net"
+         fcb   C$CR,C$LF
          ENDC
 
          fcb   C$LF
