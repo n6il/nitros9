@@ -2,7 +2,7 @@ include ../../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
-DISK		= sub.dsk
+DISK		= subsim.dsk
 CMDS		= presub sub sub1 sub2 sub3 sub4 sub5 sub6
 MD		= $(LEVEL2)/MODULES
 
