@@ -1,6 +1,10 @@
 *
 * Deinitions for ports on Dragon 32/64/Alpha.
 *
+* 2004/11/16. P.Harvey-Smith.
+* 	Fixed the stupid error I made in the defines below
+*	that made all the non DPxxxxx defines equal to FF00 !!!
+*
 
 IO		equ		$ff00		; IO page on Dragon
 
@@ -19,20 +23,20 @@ DPPIA0CRA	EQU		$01		; Side A Control.
 DPPIA0DB	EQU		$02		; Side B Data/DDR
 DPPIA0CRB	EQU		$03		; Side B Control.
 
-PIA0DA		EQU		DPPIADA+IO	; Side A Data/DDR
-PIA0CRA		EQU		DPPIACRA+IO	; Side A Control.
-PIA0DB		EQU		DPPIADB+IO	; Side A Data/DDR
-PIA0CRB		EQU		DPPIACRB+IO	; Side A Control.
+PIA0DA		EQU		DPPIA0DA+IO	; Side A Data/DDR
+PIA0CRA		EQU		DPPIA0CRA+IO	; Side A Control.
+PIA0DB		EQU		DPPIA0DB+IO	; Side A Data/DDR
+PIA0CRB		EQU		DPPIA0CRB+IO	; Side A Control.
 
 DPPIA1DA	EQU		$20		; Side A Data/DDR
 DPPIA1CRA	EQU		$21		; Side A Control.
 DPPIA1DB	EQU		$22		; Side B Data/DDR
 DPPIA1CRB	EQU		$23		; Side B Control.
 
-PIA1DA		EQU		DPPIADA+IO	; Side A Data/DDR
-PIA1CRA		EQU		DPPIACRA+IO	; Side A Control.
-PIA1DB		EQU		DPPIADB+IO	; Side A Data/DDR
-PIA1CRB		EQU		DPPIACRB+IO	; Side A Control.
+PIA1DA		EQU		DPPIA1DA+IO	; Side A Data/DDR
+PIA1CRA		EQU		DPPIA1CRA+IO	; Side A Control.
+PIA1DB		EQU		DPPIA1DB+IO	; Side A Data/DDR
+PIA1CRB		EQU		DPPIA1CRB+IO	; Side A Control.
 
 * Dragon Alpha has a third PIA at FF24.
 
@@ -41,10 +45,10 @@ DPPIA2CRA	EQU		$25		; Side A Control.
 DPPIA2DB	EQU		$26		; Side B Data/DDR
 DPPIA2CRB	EQU		$27		; Side B Control.
 
-PIA2DA		EQU		DPPIADA+IO	; Side A Data/DDR
-PIA2CRA		EQU		DPPIACRA+IO	; Side A Control.
-PIA2DB		EQU		DPPIADB+IO	; Side A Data/DDR
-PIA2CRB		EQU		DPPIACRB+IO	; Side A Control.
+PIA2DA		EQU		DPPIA2DA+IO	; Side A Data/DDR
+PIA2CRA		EQU		DPPIA2CRA+IO	; Side A Control.
+PIA2DB		EQU		DPPIA2DB+IO	; Side A Data/DDR
+PIA2CRB		EQU		DPPIA2CRB+IO	; Side A Control.
 
 ;WD2797 Floppy disk controler, used in Alpha Note registers in reverse order !
 DPCmdRegA	EQU		$2F		; command/status			
@@ -93,3 +97,26 @@ DataRegD	EQU		DPDATAREG+IO	; Data register
 
 DPDSKCTL	EQU		$48			; Disk DS/motor control reg
 DSKCTL		EQU		DPDSKCTL+IO		
+
+; Disk IO bitmasks (DragonDos).
+
+NMIEnD    	EQU		%00100000 
+WPCEnD    	EQU   	%00010000 
+SDensEnD  	EQU   	%00001000 
+MotorOnD  	EQU   	%00000100 
+Drive0D		EQU		%00000000
+Drive1D		EQU		%00000001
+Drive2D		EQU		%00000010
+Drive3D		EQU		%00000011
+
+
+; Disk IO bitmasks (Dragon Alpha).
+
+NMIEnA    	EQU		%10000000	; This is just a guess, but in current code just used as a flag 
+WPCEnA    	EQU   	%01000000 	; Acording to circuit trace by R.Harding.
+SDensEnA  	EQU   	%00000000 	; DDen is pulled low on the alpha, so always enabled.
+MotorOnA  	EQU   	%00010000 	
+Drive0A		EQU		%00000001
+Drive1A		EQU		%00000010
+Drive2A		EQU		%00000100
+Drive3A		EQU		%00001000
