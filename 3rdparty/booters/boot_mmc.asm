@@ -10,11 +10,15 @@
 * at the 12th Annual "Last" Chicago CoCoFEST! in Elgin, Illinois at the
 * Cloud-9 booth.
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 1      Created                                        JH  03/05/17
-* 2      Fixed bug that was also in MMCDRV when		JMH 03/08/01  
-*        reading a byte from the status register 
+*   1      2003/05/17  Jim M. Hathaway
+* Created.
+*
+*   2      2003/08/01  Jim M. Hathaway
+* Fixed bug that was also in MMCDRV when reading a byte from the
+* status register.
 
          nam   Boot
          ttl   MMC Boot Module
