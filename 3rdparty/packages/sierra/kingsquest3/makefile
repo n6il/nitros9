@@ -17,7 +17,7 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/vdgint_small.io $(MD)/term_vdg.dt \
 		$(MD)/vrn.dr $(MD)/vi.dd \
-		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/cc3go_dd
+		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
 BOOTCMDS	= $(LEVEL2)/CMDS/shell_21 $(LEVEL2)/CMDS/date \
 		$(LEVEL2)/CMDS/echo $(LEVEL2)/CMDS/link \
