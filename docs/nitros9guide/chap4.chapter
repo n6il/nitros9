@@ -82,8 +82,8 @@ In this example:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="2in">
-<colspec colwidth="3in">
+<colspec colwidth="2in"/>
+<colspec colwidth="3in"/>
 <tbody>
 <row>
 <entry>asm</entry>
@@ -189,8 +189,8 @@ modifiers as given below:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.4in">
-<colspec colwidth="3in">
+<colspec colwidth="0.4in"/>
+<colspec colwidth="3in"/>
 <tbody>
 <row>
 <entry>&lt;</entry>
@@ -461,8 +461,8 @@ The built-in commands and their functions are:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 <entry>chd &replstart;pathlist&replend;</entry>
