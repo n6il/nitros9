@@ -11,7 +11,14 @@
          ttl   os9 device driver    
 
 * Disassembled 02/08/27 11:42:59 by Disasm v1.6 (C) 1988 by RML
-level    equ   2
+
+* Disto's Super Controller II supports two locations for its
+* registers: $FF74 and $FF58
+
+nh_base  equ   $FF74
+nh_stat  equ   nh_base
+nh_data  equ   nh_base+2
+
          ifp1
          use   defsfile
          endc
@@ -63,7 +70,7 @@ start    equ   *
 L0039    fcb   $00
          fcb   $01
          fcb   $09
-L003C    clr   >$FF76
+L003C    clr   >nh_data
          clr   <u0032
          ldx   #$FF48
          lda   #$D0
@@ -80,8 +87,7 @@ L0057    sta   ,x
          decb  
          bne   L0057
          leax  >L01C0,pcr
-         fcb   $9F           Was: stx <u00FC
-         fcb   $FC
+         stx   <D.NMI
          pshs  u
          leau  >u00A7,u
          leay  u000E,u
@@ -139,7 +145,7 @@ L00D8    lbsr  L0257
          lbsr  L016C
          bcc   L00F6
          ldb   >$FF48
-         clr   >$FF76
+         clr   >nh_data
          lda   u0001,u
          ora   #$08
          sta   >$FF40
@@ -149,7 +155,7 @@ L00F6    ldx   $08,y
          tst   u0003,u
          bne   L010B
          pshs  b
-L0100    ldd   >$FF74
+L0100    ldd   >nh_stat
          std   ,x++
          dec   ,s
          bne   L0100
@@ -169,11 +175,11 @@ L0120    lbsr  L0257
          bcs   L011F
          ldx   $08,y
          lda   #$04
-         sta   >$FF76
+         sta   >nh_data
          ldb   #$80
          pshs  b
 L0130    ldd   ,x++
-         std   >$FF74
+         std   >nh_stat
          dec   ,s
          bne   L0130
          puls  b
@@ -189,7 +195,7 @@ L0144    lda   u0004,u
          lbsr  L00D8
          bcs   L0167
          pshs  b
-L0155    ldd   >$FF74
+L0155    ldd   >nh_stat
          cmpd  ,x++
          bne   L0163
          dec   ,s
@@ -217,7 +223,7 @@ L0179    lda   >$FF48
 L018B    coma  
 L018C    rts   
 L018D    stb   >$FF48
-         sta   >$FF76
+         sta   >nh_data
          ldb   #$28
          orb   u0001,u
          stb   >$FF40
@@ -228,12 +234,12 @@ L01A0    ldx   #$0001
          lbsr  L03C3
          dec   ,s
          beq   L01B5
-         tst   >$FF76
+         tst   >nh_data
          bmi   L01A0
-         stb   >$FF76
+         stb   >nh_data
          clrb  
          puls  pc,x,a
-L01B5    stb   >$FF76
+L01B5    stb   >nh_data
          lda   #$D0
          sta   >$FF48
          comb  
@@ -241,7 +247,7 @@ L01B5    stb   >$FF76
 L01C0    leas  $0C,s
          puls  y,cc
 L01C4    ldb   >$FF48
-         clr   >$FF76
+         clr   >nh_data
          andb  #$F8
          beq   L01DC
          pshs  x
@@ -258,10 +264,9 @@ L01DD    rts
          fcb   $F5
          fcb   $F7
          fcb   $F3
-L01E3    fcb   $53
-         fcb   $C6
-         fcb   $F4
-         fcb   $39
+L01E3    comb  
+         ldb   #$F4
+         rts   
 L01E7    leau  >u00A7,u
          clr   u0007,u
          lda   #$91
