@@ -1,33 +1,47 @@
 ********************************************************************
-* Init - OS-9 Level One V2 Configuration module
+* Init - NitrOS-9 Configuration module
 *
 * $Id$
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*          ????/??/??
-* From Tandy OS-9 Level One VR 02.00.00
+* 204      1998/10/12  Boisy G. Pitre
+* Original OS-9 L2 Tandy distribution.
+*
+* 205      1998/10/20  Boisy G. Pitre
+* Added CC3IO and Clock sections.
+*
+* 205r2    1998/10/20  Boisy G. Pitre
+* Removed clock information from here.
+*
+*   1      2003/01/08  Boisy G. Pitre
+* Restarted edition number back to 1, removed CMDS/cc3go reference and
+* just have cc3go so that in certain cases, cc3go can be in the bootfile,
+* and so that ROMmed systems don't have to have a special init module.
+*          2003/11/05  Robert Gault
+* Corrected CC3IO info regards mouse. Changed from fcb to fdb low res/ right
+* Corrected OS9Defs to match.
 
          nam   Init
-         ttl   OS-9 Level One V2 Configuration module
+         ttl   NitrOS-9 Configuration module
 
-         ifp1
+         ifp1  
          use   defsfile
-         endc
+         endc  
 
 tylg     set   Systm+$00
 atrv     set   ReEnt+rev
 rev      set   $00
+edition  set   1
 
-         mod   eom,name,tylg,atrv,$00f8,size
+         mod   eom,name,tylg,atrv,$0FE0,$0015
 
-         rmb   12
-size     equ   .
+***** USER MODIFIABLE DEFINITIONS HERE *****
 
 * Init table
 start    equ   *
-         fcb   12         number of IRQ polling entires
+         fcb   $27        number of IRQ polling entires
          fdb   DefProg    offset to program to fork
          fdb   DefDev     offset to default disk device
          fdb   DefCons    offset to default console device
@@ -37,16 +51,26 @@ start    equ   *
          fcb   NOS9Vrsn   OS version
          fcb   NOS9Major  OS major revision
          fcb   NOS9Minor  OS minor revision
-         fcb   CRCOn      feature byte #1
+         fcb   CRCOff     feature byte #1
          fcb   $00        feature byte #2
+         fcb   0,0,0,0,0,0,0,0  reserved
+
+         IFGT  Level-1
+* CC3IO section
+         fcb   Monitor    monitor type
+         fcb   0,1        mouse info, low res right mouse
+         fcb   $1E        key repeat start constant
+         fcb   $03        key repeat delay constant
+         ENDC
 
 name     fcs   "Init"
+         fcb   edition
 
 DefProg  fcs   "SysGo"
 DefDev   fcs   "/DD"
 DefCons  fcs   "/Term"
 DefBoot  fcs   "Boot"
 
-         emod
+         emod  
 eom      equ   *
-         end
+         end   
