@@ -42,7 +42,7 @@ SSPData  equ   $01        SSPak data register offset
 SSPReset equ   $00        SSPak reset register offset
 SSPStat  equ   $01        SSPak status register offset
 
-rev      equ   $01
+rev      equ   $00
 edition  set   1
 
          mod   SEnd,SNam,Drivr+Objct,ReEnt+rev,SEntry,SMem

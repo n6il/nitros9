@@ -27,7 +27,7 @@
 
 * SYSTEM MAP GLOBALS:
 
-rev      set   1
+rev      set   0
 edition  set   3
 
          mod   sndlen,sndnam,systm+objct,reent+rev,entry,0

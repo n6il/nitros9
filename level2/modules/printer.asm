@@ -23,7 +23,7 @@
 
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+Rev
-rev      set   $01
+rev      set   $00
 edition  set   13
 
          mod   eom,name,tylg,atrv,Start,Size

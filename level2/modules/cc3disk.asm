@@ -35,7 +35,7 @@ PRECOMP  equ   0              Set to 1 to turn on write precompensation
 
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   11
 
          mod   eom,name,tylg,atrv,start,size

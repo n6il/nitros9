@@ -30,7 +30,7 @@
 
 tylg     set   systm+objct
 atrv     set   reent+revision
-revision set   1
+revision set   0
 edition  set   1
 
          mod   eom,name,tylg,atrv,start,0

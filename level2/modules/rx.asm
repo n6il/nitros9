@@ -15,7 +15,7 @@
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev 
-rev      set   $01       
+rev      set   $00       
 
 Sectors  set   512       
 SAS      set   4         

@@ -29,7 +29,7 @@ FFStSz   equ   512		flood fill stack size in bytes
 
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   4
 
 skip2    equ   $8C		cmpx instruction

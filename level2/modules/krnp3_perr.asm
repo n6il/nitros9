@@ -58,10 +58,10 @@
          endc  
 
 type     set   Systm      ;System module, 6809 object code
-revs     set   ReEnt+1    ;Sharable, first revision
+revs     set   0          ;
 edition  set   1
 
-         mod   eom,name,type,revs,entry,256
+         mod   eom,name,type,ReEnt+revs,entry,256
 
 name     fcs   "OS9p3"
          fcb   edition

@@ -18,7 +18,7 @@
 
 PageAddr equ   $07        extended page address (set to $FF for level 1)
 PortAddr equ   $FF7D      Speech-Sound Pak base address
-SVrsn    equ   $01
+SVrsn    equ   $00
 
          mod   SEnd,SNam,Devic+Objct,ReEnt+SVrsn,MgrNam,DrivrNam
          fcb   SHARE.+PWRIT.+WRITE. device capabilities
