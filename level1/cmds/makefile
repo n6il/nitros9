@@ -30,7 +30,7 @@ showcocoobjs:
 	@$(ECHO) $(CMDS) $(COCOCMDS_D1) $(COCOCMDS_D2) $(COCOCMDS)
 
 showcocoobjs_d1:
-	@$(ECHO) $(CMDS) $(COCOCMDS_D1)
+	@$(ECHO) $(CMDS) $(COCOCMDS_D1) $(COCOCMDS)
 
 showcocoobjs_d2:
 	@$(ECHO) $(CMDS) $(COCOCMDS_D2)
