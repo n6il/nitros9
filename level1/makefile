@@ -6,6 +6,10 @@ BOOTFILE_DS80	= bootfiles/bootfile_stock_ds80
 KERNELFILE	= bootfiles/kernel_stock
 DIRS		= cmds modules defs sys bootfiles
 
+# Specify which shell should be used
+WHICHSHELL	= shellplus
+#WHICHSHELL	= shell_21
+
 CMDS		= $(shell $(CD) cmds; make showcocoobjs)
 BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
 KERNEL		= $(shell $(CD) modules; make showkernel)
@@ -58,6 +62,7 @@ $(DSK360K_1):
 	$(MAKDIR) $@,SYS
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(MAKDIR) $@,DEFS
@@ -109,6 +114,7 @@ $(DSK720K):
 	$(MAKDIR) $@,SYS
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(MAKDIR) $@,DEFS
