@@ -14,6 +14,8 @@ all:
 	$(CD) koronis; make
 	$(CD) kq3; make
 	$(CD) kyumgai; make
+	$(CD) l1powertools; make
+	$(CD) l2powertools; make
 	$(CD) lsl; make
 	$(CD) mm; make
 	$(CD) multivue; make
@@ -27,6 +29,8 @@ clean:
 	-$(CD) koronis; make clean
 	-$(CD) kq3; make clean
 	-$(CD) kyumgai; make clean
+	-$(CD) l1powertools; make clean
+	-$(CD) l2powertools; make clean
 	-$(CD) lsl; make clean
 	-$(CD) mm; make clean
 	-$(CD) multivue; make clean
