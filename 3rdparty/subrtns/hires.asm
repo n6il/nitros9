@@ -1,15 +1,27 @@
-Level    equ   2
+********************************************************************
+* HiRes - HiRes Joystick Subroutine Module
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+*   1    Created for Coyota project                     BGP 98/??/??
+
+         nam   HiRes
+         ttl   HiRes Joystick Subroutine Module
 
          ifp1  
          use   os9defs
          endc  
+
+edition  set   1
 
          mod   eom,name,Sbrtn+Objct,Reent+0,HiRes,size
 
 size     equ   .
 
 name     fcs   /HiRes/
-         fcb   $01
+         fcb   edition
 
 * Hi-Res Read Routine
 *
@@ -87,15 +99,15 @@ error    coma
 *   D  = value
 
 * Delays for CoCo 3 OS-9 Level Two vs. CoCo 2 OS-9 Level One
-         ifgt  Level-1
-SETTLDLY equ   $5E
-POLLDLY  equ   $0329
+         IFGT  Level-1
+SETTLDLY equ   94
+POLLDLY  equ   809
 HIVAL    equ   640
-         else  
-SETTLDLY equ   $5E*2
-POLLDLY  equ   $0194
+         ELSE  
+SETTLDLY equ   94*2
+POLLDLY  equ   404
 HIVAL    equ   320
-         endc  
+         ENDC  
 
 HiResHW  pshs  a
          lda   $FF01

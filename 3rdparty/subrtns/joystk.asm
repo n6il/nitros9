@@ -1,15 +1,27 @@
-Level    equ   2
+********************************************************************
+* JoyStk - Joystick Subroutine Module
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+*   1    Created for Coyota project                     BGP 98/??/??
+
+         nam   JoyStk
+         ttl   Joystick Subroutine Module
 
          ifp1  
          use   os9defs
          endc  
+
+edition  set   1
 
          mod   eom,name,Sbrtn+Objct,Reent+0,Joy,size
 
 size     equ   .
 
 name     fcs   /JoyStk/
-         fcb   $01
+         fcb   edition
 
 * Joystick Read Routine
 *
@@ -26,7 +38,6 @@ name     fcs   /JoyStk/
 *  14,s = size of 3rd param
 *  16,s = addr of 4th param            (joystick button)
 *  18,s = size of 4th param
-
 
 Joy      ldd   2,s        get param count
          cmpd  #4         4 params?
