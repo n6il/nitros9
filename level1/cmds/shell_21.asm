@@ -63,23 +63,11 @@ name     fcs   /Shell/
          fcb   edition
 
 L0013    fcb   $13 
-         fcb   $50 P
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $D3 S
+         fcs   "PascalS"
          fcb   $25 %
-         fcb   $52 R
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $C3 C
+         fcs   "RunC"
          fcb   $22 "
-         fcb   $52 R
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $C2 B
+         fcs   "RunB"
          fcb   $00 
          fcb   $00 
          fcb   $00 
