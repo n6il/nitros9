@@ -250,13 +250,15 @@ size     equ   .
 
 name     fcs   /KORONIS/
 
-start    leax  >L0150,pcr
+start    leax  >IcptRtn,pcr
          ldu   #$0000
          os9   F$Icpt   
-         orcc  #$50
+         orcc  #IntMasks
          lds   #$5EE4
-         andcc #$AF
-         leax  >L01A8,pcr
+         andcc #^Intmasks
+         leax  >ScrnDev,pcr
+* This code was patched to disallow opening /TERM.  This is so that the game
+* can use the window/screen that it was forked from.
 *         lda   #$03
           nop
           nop
@@ -276,36 +278,36 @@ L0036    lda   #$04
          lda   >$0371
          pshs  a
          lda   >$0100
-         ldb   #$92
+         ldb   #SS.Montr
          ldx   >$0370
-         os9   I$SetStt 
+         os9   I$SetStt 	set monitor type
          lda   >$0100
-         ldb   #$8B
+         ldb   #SS.AScrn
          ldx   #$0002
-         os9   I$SetStt 
+         os9   I$SetStt 	allocate screen
          lbcs  L0156
          stx   >$0103
          sty   >$0101
          pshs  y,x
          lda   >$0100
-         clrb  
+         clrb  			SS.Opt
          ldx   #$034F
-         os9   I$GetStt 
+         os9   I$GetStt 	get options
          clr   >$0353
          clr   >$0356
          lda   >$0100
-         clrb  
+         clrb  			SS.Opt
          ldx   #$034F
-         os9   I$SetStt 
+         os9   I$SetStt 	set options
          ldu   #$0500
-         leax  >L01B5,pcr
+         leax  >CTitle,pcr
          lda   #$01
          lbsr  L4A6C
          lbsr  L0147
          ldy   >$0101
          lda   >$0100
-         ldb   #$8C
-         os9   I$SetStt 
+         ldb   #SS.DScrn
+         os9   I$SetStt 	display screen
          lbcs  L0154
          ldy   #$0382
          ldd   #$FF0F
@@ -315,7 +317,7 @@ L00A8    sta   b,y
          leay  >L0244,pcr
          lbsr  L013D
          ldu   #$0500
-         leax  >L01BE,pcr
+         leax  >CRobot,pcr
          lda   #$01
          lbsr  L4A6C
          pshs  y
@@ -334,7 +336,7 @@ L00A8    sta   b,y
          clra  
          ldu   #$0000
          ldy   #$2869
-         leax  >L01AE,pcr
+         leax  >KorVar,pcr
          lbsr  L4A6C
          puls  y,x
          stx   >$0103
@@ -342,9 +344,9 @@ L00A8    sta   b,y
          puls  a
          sta   >$0371
          lbra  L0264
-L00FD    ldd   #$0013
+L00FD    ldd   #SS.Joy
          ldx   #$0001
-         os9   I$GetStt 
+         os9   I$GetStt 	get joystick values
          tsta  
          beq   L00FD
          rts   
@@ -353,14 +355,14 @@ L010C    ldx   #$0382
          cmpa  b,x
          beq   L012F
          sta   b,x
-         ldy   #$1B31
+         ldy   #$1B31		palette escape code
          sty   >$034B
          stb   >$034D
          sta   >$034E
          ldx   #$034B
          ldy   #$0004
          lda   #$01
-         os9   I$Write  
+         os9   I$Write  	write palette escape sequence
 L012F    puls  pc,u,y,x,b,a
 L0131    pshs  u,y,x,b,a
          pshs  a
@@ -377,20 +379,23 @@ L013F    lda   b,y
 L0147    ldu   >$0103
          ldx   #$0500
          lbra  L3243
-L0150    rti   
+
+* Intercept routine - merely return
+IcptRtn  rti   
+
          ldd   #$0000
 L0154    puls  y,x,a
 L0156    lda   #$03
          lbra  L4A6C
 L015B    clr   >$0370
 L015E    lbsr  L4B4C
-         leax  >L0201,pcr
+         leax  >Welcome,pcr
          ldy   #$0023
          lbsr  L01A1
-         leax  >L01E2,pcr
+         leax  >MonTypes,pcr
          ldy   #$001F
          lbsr  L01A1
-         leax  >L01C8,pcr
+         leax  >MonTypeQ,pcr
          ldy   #$001A
          lbsr  L01A1
          clr   >$0371
@@ -410,35 +415,32 @@ L019D    lbsr  L4B4C
 L01A1    lda   >$0100
          os9   I$Write  
          rts   
-L01A8    fcc   "/TERM"
+
+ScrnDev  fcc   "/TERM"
          fcb   C$CR
-L01AE    fcc   "KORVAR"
+KorVar   fcc   "KORVAR"
          fcb   C$CR
-L01B5    fcc   "CTITLE.C"
+CTitle   fcc   "CTITLE.C"
          fcb   C$CR
-L01BE    fcc   "CROBOT2.C"
+CRobot   fcc   "CROBOT2.C"
          fcb   C$CR
-L01C8    fcc   "     MONITOR TYPE (C/R) ? "
-L01E2    fcc   "  C = COMPOSITE (TV),"
-         fcc   " R = RGB"
+MonTypeQ fcc   "     MONITOR TYPE (C/R) ? "
+MonTypes fcc   "  C = COMPOSITE (TV), R = RGB"
          fcb   C$CR,C$LF
-L0201    fcb   C$CR,C$LF
+Welcome  fcb   C$CR,C$LF
          fcb   C$LF,C$LF,C$LF
          fcc   "    WELCOME TO KORONIS RIFT"
          fcb   C$CR,C$LF,C$LF
 
-L0224    fcb   $0B,$29,$04,$34   T....).4
-L0228    fcb   $26,$10,$12,$36,$01,$02,$07,$2D   &..6...-
-L0230    fcb   $20,$38,$00,$3F
-L0234    fcb   $0A,$29,$20,$34    8.?.) 4
-L0238    fcb   $26,$12,$10,$36,$09,$02,$07,$2D   &..6...-
-L0240    fcb   $24,$38,$00,$3F
-L0244    fcb   $00,$3F,$20,$13   $8.?.? .  
-L0248    fcb   $10,$02,$19,$1B,$36,$34,$26,$2D   ....64&-
-L0250    fcb   $29,$0C,$38,$07
-L0254    fcb   $12,$36,$09,$24   ).8..6.$
-L0258    fcb   $3F,$1B,$2D,$34,$00,$12,$00,$3F   ?.-4...?
-L0260    fcb   $00,$12,$00,$34
+* Palette Values
+L0224    fcb   $0B,$29,$04,$34,$26,$10,$12,$36
+         fcb   $01,$02,$07,$2D,$20,$38,$00,$3F
+L0234    fcb   $0A,$29,$20,$34,$26,$12,$10,$36
+         fcb   $09,$02,$07,$2D,$24,$38,$00,$3F
+L0244    fcb   $00,$3F,$20,$13,$10,$02,$19,$1B
+         fcb   $36,$34,$26,$2D,$29,$0C,$38,$07
+L0254    fcb   $12,$36,$09,$24,$3F,$1B,$2D,$34
+         fcb   $00,$12,$00,$3F,$00,$12,$00,$34
 
 L0264    clr   >$0409
 L0267    lda   #$FF
@@ -558,11 +560,11 @@ L0395    tst   >$336B
          beq   L03A4
          lda   #$80
          sta   >$343A
-         orcc  #$01
+         orcc  #Carry
          lbsr  L20EA
 L03A4    lda   #$60
          sta   >$3CE0
-         orcc  #$50
+         orcc  #IntMasks
          stx   <u0095
          stu   <u0099
          sts   <u007F
@@ -611,8 +613,8 @@ L03C0    puls  y,x,dp,b,a
          tfr   a,dp
          sts   >$0347
          lds   <u007F
-         andcc #$AF
-         orcc  #$50
+         andcc #^IntMasks
+         orcc  #IntMasks
          lds   >$0347
          dec   >$3CE0
          bne   L03C0
@@ -622,7 +624,7 @@ L03C0    puls  y,x,dp,b,a
          ldy   <u0081
          ldu   <u0099
          lds   <u007F
-         andcc #$AF
+         andcc #^IntMasks
          rts   
 L042F    rts   
 L0430    ldu   >$0103
@@ -1492,7 +1494,7 @@ L0BBC    adda  ,x
          cmpa  <u0068
          bhi   L0C05
          sta   <u0058
-         orcc  #$01
+         orcc  #Carry
          lda   <u005B
          adda  ,u
          sta   <u005B
@@ -1529,7 +1531,7 @@ L0C01    sta   <u005A
          bra   L0BA0
 L0C05    leax  $01,x
          sta   ,x
-         orcc  #$01
+         orcc  #Carry
          lda   <u005B
          adda  ,u+
          sta   ,u
@@ -1825,7 +1827,7 @@ L0E5F    lda   <u0096
          incb  
          sta   b,x
          decb  
-         orcc  #$01
+         orcc  #Carry
          lda   <u005B
          adda  b,u
          incb  
@@ -2390,12 +2392,12 @@ L12E2    lslb
 L12EA    subd  <u0024
          bcc   L12F9
          addd  <u0024
-         andcc #$FE
+         andcc #^Carry
          bra   L12FB
 L12F4    rora  
-         andcc #$FE
+         andcc #^Carry
          bra   L12FB
-L12F9    orcc  #$01
+L12F9    orcc  #Carry
 L12FB    rol   <u0029
          leax  -$01,x
          bne   L12E2
@@ -3130,7 +3132,7 @@ L19AA    lda   #$EE
          cmpb  >$334A
          bcc   L19B3
          lda   #$CC
-L19B3    andcc #$FE
+L19B3    andcc #^Carry
          bsr   L19D7
          incb  
          cmpb  #$0F
@@ -3142,7 +3144,7 @@ L19BD    lda   #$EE
          lda   >$334F
          ldy   #$08F3
          lda   a,y
-L19CD    orcc  #$01
+L19CD    orcc  #Carry
          bsr   L19D7
          incb  
          cmpb  #$0F
@@ -4263,9 +4265,9 @@ L247B    lda   >$33BA
          sta   <u00EA
          lda   #$0B
          sta   <u00E9
-         orcc  #$01
+         orcc  #Carry
          rts   
-L248B    andcc #$FE
+L248B    andcc #^Carry
          rts   
 
 L248E    fcb   $FF,$3A   ..9..9.:
@@ -4526,7 +4528,7 @@ L26FC    lda   <u009C
          suba  #$02
          ldb   #$0C
          ldy   #$12CF
-         andcc #$FE
+         andcc #^Carry
 L2708    sbca  b,y
          decb  
          bpl   L2708
@@ -5056,7 +5058,7 @@ L2BEA    sta   <u0090
          adda  >$3CE0
          inca  
          sta   >$3CE0
-         orcc  #$50
+         orcc  #IntMasks
          sts   <u0099
          stb   <u0092
          ldb   <u0090
@@ -5085,7 +5087,7 @@ L2C17    pshs  u,y,x,b,a
          dec   >$3CE0
          bne   L2C17
          lds   <u0099
-         andcc #$AF
+         andcc #^IntMasks
 L2C35    rts   
 L2C36    ldx   #$3CD0
          ldy   #$3C88
@@ -5117,7 +5119,7 @@ L2C75    stb   <u0092
          stb   <u0093
          suba  >$3CE0
          sta   <u0090
-         orcc  #$50
+         orcc  #IntMasks
          sts   <u0099
          ldb   >$3CE0
          lds   #$0285
@@ -5141,7 +5143,7 @@ L2CA4    pshs  u,y,x,dp,a
          clra  
          tfr   a,dp
          lds   <u0099
-         andcc #$AF
+         andcc #^IntMasks
          rts   
 L2CB5    ldu   #$3C92
          ldy   #$3A4E
@@ -5304,7 +5306,7 @@ L2E17    clr   <u00F2
          sta   <u00F1
          lda   <u00E2
          sta   <u00F3
-         orcc  #$01
+         orcc  #Carry
          lbsr  L1486
          lbsr  L1377
          lda   <u0015
@@ -5419,9 +5421,9 @@ L2EF2    lda   <u0011
          adda  #$40
          cmpa  #$80
          bcc   L2F14
-         orcc  #$01
+         orcc  #Carry
          rts   
-L2F14    andcc #$FE
+L2F14    andcc #^Carry
          rts   
 L2F17    ldd   >$39E1
          std   >$33FE
@@ -5452,7 +5454,7 @@ L2F47    lbsr  L3DF2
          ldy   #$00DE
          ldd   b,y
          std   <u00F3
-         andcc #$FE
+         andcc #^Carry
          lbsr  L1486
          lbsr  L1377
          ldb   <u00A4
@@ -5695,7 +5697,7 @@ L317B    lbsr  L25EB
          cmpb  #$02
          bne   L319A
          lda   <u009D
-         andcc #$FE
+         andcc #^Carry
          ldx   #$12B9
          pshs  b
          ldb   #$29
@@ -5816,9 +5818,9 @@ L3262    tfr   x,d
          adda  #$50
          cmpa  >$39B1,x
          bcc   L32AC
-         orcc  #$01
+         orcc  #Carry
          rts   
-L32AC    andcc #$FE
+L32AC    andcc #^Carry
          rts   
 L32AF    tfr   x,d
          lslb  
@@ -5831,9 +5833,9 @@ L32AF    tfr   x,d
          bcs   L32CA
          cmpa  #$C0
          bcc   L32CA
-         orcc  #$01
+         orcc  #Carry
          rts   
-L32CA    andcc #$FE
+L32CA    andcc #^Carry
          rts   
 L32CD    sta   >$3464
          clr   >$3463
@@ -7051,9 +7053,9 @@ L3D9D    lda   <u0012
          adda  #$14
          cmpa  #$28
          bcc   L3DBE
-         orcc  #$01
+         orcc  #Carry
          rts   
-L3DBE    andcc #$FE
+L3DBE    andcc #^Carry
          rts   
 L3DC1    ldy   #$0006
 L3DC5    lda   >$3457
@@ -7373,7 +7375,7 @@ L4085    ldu   #$1FA4
          puls  b
          anda  b,x
          beq   L40D0
-         orcc  #$01
+         orcc  #Carry
          rts   
 L40D0    dec   <u0091
          bpl   L4085
@@ -7400,11 +7402,11 @@ L40F3    lda   b,u
          suba  <u0090
          cmpa  #$0E
          bcc   L410A
-         orcc  #$01
+         orcc  #Carry
          rts   
 L410A    decb  
          bpl   L40F3
-L410D    andcc #$FE
+L410D    andcc #^Carry
          rts   
 L4110    fcb   $80,$40,$20,$10,$08,$04,$02,$01
 L4118    clra  
@@ -8412,7 +8414,7 @@ L4A80    neg   <u000A
          neg   <u00EA
          sty   <u0095
          stu   <u0099
-         lda   #$01
+         lda   #READ.
          os9   I$Open   
          bcs   L4AF5
          ldy   <u0095
@@ -8423,7 +8425,7 @@ L4A99    ldx   <u0099
          os9   I$Close  
          rts   
          stu   <u0099
-         lda   #$01
+         lda   #READ.
          os9   I$Open   
          bcs   L4AF5
          pshs  a
@@ -8438,8 +8440,8 @@ L4A99    ldx   <u0099
          pshs  x
          os9   I$Delete 
          puls  x
-         lda   #$02
-         ldb   #$5B
+         lda   #WRITE.
+         ldb   #SHARE.+PWRIT.+PREAD.+UPDAT.
          os9   I$Create 
          bcs   L4AEC
          sta   >$336E
@@ -8458,15 +8460,15 @@ L4AEC    lda   #$12
 L4AF5    pshs  b
          ldy   #$0000
          lda   >$0100
-         ldb   #$8C
-         os9   I$SetStt 
+         ldb   #SS.DScrn
+         os9   I$SetStt 	display screen
          leay  >L0254,pcr
          lbsr  L013D
          bsr   L4B4C
          lda   >$0100
-         ldb   #$8D
+         ldb   #SS.FScrn
          ldy   >$0101
-         os9   I$SetStt 
+         os9   I$SetStt 	free screen
          puls  b
          tstb  
          beq   L4B33
@@ -8481,12 +8483,12 @@ L4AF5    pshs  b
 L4B33    clra  
          tfr   a,dp
          lds   #$00FF
-         leax  >L4BB3,pcr
+         leax  >Shell,pcr
          ldy   #$0000
          ldu   #$0000
          lda   #$11
          ldb   #$03
-         os9   F$Chain  
+         os9   F$Chain  	chain to shell
 L4B4C    leax  >L4BB9,pcr
          ldy   #$0001
          lda   >$0100
@@ -8497,15 +8499,15 @@ L4B5B    leax  >L4BBA,pcr
          lda   >$0100
          os9   I$Write  
          rts   
-L4B6A    ldd   #$0001
-         os9   I$GetStt 
+L4B6A    ldd   #SS.Ready
+         os9   I$GetStt 	check for ready from stdin
          bcs   L4B83
          ldx   #$0095
          ldy   #$0001
          lda   >$0100
          os9   I$Read   
          lda   <u0095
-         andcc #$FE
+         andcc #^Carry
 L4B83    rts   
 L4B84    pshs  a
          lsra  
@@ -8527,19 +8529,19 @@ L4B9A    sta   >$0347
          os9   I$Write  
          rts   
 L4BAB    fcc   /ERROR # /
-L4BB3    fcc   /SHELL/
+Shell    fcc   /SHELL/
          fcb   C$CR
 L4BB9    fcb   $0C
 L4BBA    fcb   C$CR,C$LF
 L4BBC    lda   #$02
          ldu   #$0000
          ldy   #$037A
-         leax  >L4C4A,pcr
+         leax  >Save1,pcr
          lbsr  L4A6C
          lda   #$02
          ldu   #$2869
          ldy   #$1196
-L4BD5    leax  >L4C50,pcr
+L4BD5    leax  >Save2,pcr
          lbsr  L4A6C
          clr   >$34AB
          rts   
@@ -8550,12 +8552,12 @@ L4BE0    lda   >$0371
          clra  
          ldu   #$0000
          ldy   #$037A
-         leax  >L4C4A,pcr
+         leax  >Save1,pcr
          lbsr  L4A6C
          clra  
          ldu   #$2869
          ldy   #$1196
-         leax  >L4C50,pcr
+         leax  >Save2,pcr
          lbsr  L4A6C
          ldx   #$0005
 L4C0C    tfr   x,d
@@ -8584,9 +8586,9 @@ L4C22    ldb   ,s+
          sta   >$0371
          lbsr  L068B
          lbra  L20A3
-L4C4A    fcc   /SAVE1/
+Save1    fcc   /SAVE1/
          fcb   C$CR
-L4C50    fcc   /SAVE2/
+Save2    fcc   /SAVE2/
          fcb   C$CR
 L4C56    fcb   $00,$00   SAVE2...
 L4C58    fcb   $00,$00,$00,$00,$00,$00,$FF,$BF   .......?
@@ -8956,18 +8958,23 @@ L4FE4    lda   ,y+
          bne   L4FE2
          rts   
 L4FF3    fcb   $02,$BD,$02,$BE,$03   &p9.=.>.  
-L4FF8    fcb   $35,$03,$0C,$03,$26,$03,$74,$FC   5...&.t. 
-L5000    fcb   $D3,$02,$F1,$03,$7A,$03,$8A,$FF   S.q.z... 
-L5008    fcb   $BC,$FE,$54,$03,$9E,$03,$AC
+         fcb   $35,$03,$0C,$03,$26,$03,$74,$FC   5...&.t. 
+         fcb   $D3,$02,$F1,$03,$7A,$03,$8A,$FF   S.q.z... 
+         fcb   $BC,$FE,$54,$03,$9E,$03,$AC
 L500F    fcb   $02   <.T...,.
-L5010    fcb   $A1,$02,$CC,$03,$41,$03,$01,$03   !.L.A...  
-L5018    fcb   $13,$03,$58,$FC,$CE,$02,$E4,$03   ..X.N.d.
-L5020    fcb   $67,$03,$7C,$FF,$AF,$FE,$8F,$03   g.|./...  
-L5028    fcb   $8F,$03,$96,$02,$85,$02,$83
-L502F    fcb   $CE   .......N 
-L5030    fcb   $32,$A5,$A6,$C5,$10,$26,$00,$9B
-L5038    fcb   $34,$46,$CE,$31,$E5,$A6,$C5,$81   4FN1e&E. 
-L5040    fcb   $FF,$26,$02,$35,$C6
+         fcb   $A1,$02,$CC,$03,$41,$03,$01,$03   !.L.A...  
+         fcb   $13,$03,$58,$FC,$CE,$02,$E4,$03   ..X.N.d.
+         fcb   $67,$03,$7C,$FF,$AF,$FE,$8F,$03   g.|./...  
+         fcb   $8F,$03,$96,$02,$85,$02,$83
+L502F    ldu   #$32A5
+         lda   b,u
+         lbne  L50D3
+L5038     pshs  u,b,a
+         ldu   #$31E5
+         lda   b,u
+         cmpa  #$FF
+         bne   L5045
+         puls  pc,u,b,a
 L5045    clra  
          tfr   d,x
          ldu   #$32A5
@@ -9441,7 +9448,7 @@ L5471    stb   >$343A
          lbsr  L214A
          lda   #$01
          sta   >$336B
-         andcc #$FE
+         andcc #^Carry
          lbra  L20EA
 L5481    lda   <u00E8
          anda  #$01
@@ -9488,10 +9495,16 @@ L54DE    lbsr  L2088
          stb   <u00EC
          lbra  L208C
 L54E9    fcb   $00,$04,$40,$7D
-L54ED    fcb   $B6,$33,$8D   #..@}63.  
-L54F0    fcb   $27,$01,$39,$96,$E8,$84,$01,$26   '.9.h..&
-L54F8    fcb   $0A,$96,$F5,$2A,$06,$17,$01,$AA   ..u*...*
-L5500    fcb   $16,$FF,$89
+L54ED    lda   >$338D
+         beq   L54F3
+         rts
+L54F3    lda   <u00E8
+         anda  #$01
+         bne   L5503
+         lda   <u00F5
+         bpl   L5503
+         lbsr  L56AA
+         lbra  L548C
 L5503    lda   <u00F5
          bmi   L5510
          lda   >$337D
@@ -9575,9 +9588,9 @@ L55B6    lda   >$33BA
          lda   #$FF
          sta   >$33B6
 L55C5    rts   
-L55C6    ldd   #$0013
+L55C6    ldd   #SS.Joy
          ldx   #$0001
-         os9   I$GetStt 
+         os9   I$GetStt 	get joystick values
          tfr   y,d
          lslb  
          tfr   d,y
@@ -9612,9 +9625,9 @@ L5605    lda   >$33EE
 L560E    lda   >$33BC
          ora   >$33BD
          bne   L5641
-         ldd   #$0013
+         ldd   #SS.Joy
          ldx   #$0001
-         os9   I$GetStt 
+         os9   I$GetStt 	get joystick values
          tsta  
          beq   L5624
          lda   #$01
@@ -9686,115 +9699,115 @@ L56B8    lda   <u00ED
          rts   
 L56C9    fcb   $00,$04,$20,$40,$5F,$7D
 L56CF    fcb   $7B   9.. @_}{
-L56D0    fcb   $7B,$7B,$7B,$7B,$7B,$72,$6B,$64   {{{{{rkd
-L56D8    fcb   $5E,$59,$54,$50,$4C,$49,$46,$43   ^YTPLIFC
-L56E0    fcb   $40,$3E,$3B,$39,$37,$35,$34,$32   @>;97542
-L56E8    fcb   $30,$2F,$2E,$2C,$2B,$2A,$29,$28   0/.,+*)(
-L56F0    fcb   $27,$26,$25,$24,$24,$23,$22,$21   '&%$$#"!
-L56F8    fcb   $21,$20,$1F,$1F,$1E,$1E,$1D,$1D   ! ......
-L5700    fcb   $1C,$1C,$1B,$1B,$1A,$1A,$19,$19   ........
-L5708    fcb   $19,$18,$18,$18,$17,$17,$17,$16   ........
-L5710    fcb   $16,$16,$15,$15,$15,$15,$14,$14   ........
-L5718    fcb   $14,$14,$13,$13,$13,$13,$12,$12   ........
-L5720    fcb   $12,$12,$12,$11,$11,$11,$11,$11   ........
-L5728    fcb   $10,$10,$10,$10,$10,$10,$10,$0F   ........
-L5730    fcb   $0F,$0F,$0F,$0F,$0F,$0F,$0E,$0E   ........
-L5738    fcb   $0E,$0E,$0E,$0E,$0E,$0E,$0D,$0D   ........
-L5740    fcb   $0D,$0D,$0D,$0D,$0D,$0D,$0D,$0D   ........
-L5748    fcb   $0C,$0C,$0C,$0C,$0C,$0C,$0C,$0C   ........
-L5750    fcb   $0C,$0C,$0C,$0B,$0B,$0B,$0B,$0B   ........
-L5758    fcb   $0B,$0B,$0B,$0B,$0B,$0B,$0B,$0B   ........
-L5760    fcb   $0A,$0A,$0A,$0A,$0A,$0A,$0A,$0A   ........
-L5768    fcb   $0A,$0A,$0A,$0A,$0A,$0A,$0A,$0A   ........
-L5770    fcb   $09,$09,$09,$09,$09,$09,$09,$09   ........
-L5778    fcb   $09,$09,$09,$09,$09,$09,$09,$09   ........
-L5780    fcb   $09,$09,$09,$09,$08,$08,$08,$08   ........
-L5788    fcb   $08,$08,$08,$08,$08,$08,$08,$08   ........
-L5790    fcb   $08,$08,$08,$00,$00,$00,$00,$00   ........
-L5798    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L57A0    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L57A8    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L57B0    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L57B8    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L57C0    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
-L57C8    fcb   $00,$00,$00,$00,$00,$00,$00
+         fcb   $7B,$7B,$7B,$7B,$7B,$72,$6B,$64   {{{{{rkd
+         fcb   $5E,$59,$54,$50,$4C,$49,$46,$43   ^YTPLIFC
+         fcb   $40,$3E,$3B,$39,$37,$35,$34,$32   @>;97542
+         fcb   $30,$2F,$2E,$2C,$2B,$2A,$29,$28   0/.,+*)(
+         fcb   $27,$26,$25,$24,$24,$23,$22,$21   '&%$$#"!
+         fcb   $21,$20,$1F,$1F,$1E,$1E,$1D,$1D   ! ......
+         fcb   $1C,$1C,$1B,$1B,$1A,$1A,$19,$19   ........
+         fcb   $19,$18,$18,$18,$17,$17,$17,$16   ........
+         fcb   $16,$16,$15,$15,$15,$15,$14,$14   ........
+         fcb   $14,$14,$13,$13,$13,$13,$12,$12   ........
+         fcb   $12,$12,$12,$11,$11,$11,$11,$11   ........
+         fcb   $10,$10,$10,$10,$10,$10,$10,$0F   ........
+         fcb   $0F,$0F,$0F,$0F,$0F,$0F,$0E,$0E   ........
+         fcb   $0E,$0E,$0E,$0E,$0E,$0E,$0D,$0D   ........
+         fcb   $0D,$0D,$0D,$0D,$0D,$0D,$0D,$0D   ........
+         fcb   $0C,$0C,$0C,$0C,$0C,$0C,$0C,$0C   ........
+         fcb   $0C,$0C,$0C,$0B,$0B,$0B,$0B,$0B   ........
+         fcb   $0B,$0B,$0B,$0B,$0B,$0B,$0B,$0B   ........
+         fcb   $0A,$0A,$0A,$0A,$0A,$0A,$0A,$0A   ........
+         fcb   $0A,$0A,$0A,$0A,$0A,$0A,$0A,$0A   ........
+         fcb   $09,$09,$09,$09,$09,$09,$09,$09   ........
+         fcb   $09,$09,$09,$09,$09,$09,$09,$09   ........
+         fcb   $09,$09,$09,$09,$08,$08,$08,$08   ........
+         fcb   $08,$08,$08,$08,$08,$08,$08,$08   ........
+         fcb   $08,$08,$08,$00,$00,$00,$00,$00   ........
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
+         fcb   $00,$00,$00,$00,$00,$00,$00
 L57CF    fcb   $00   ........
-L57D0    fcb   $93,$50,$15,$7C,$1C,$25,$7C,$0C   .P.|.%|.
-L57D8    fcb   $35,$7C,$94,$35,$78,$45,$74,$45   5|.5xEtE
-L57E0    fcb   $70,$4D,$6C,$4D,$68,$55,$64,$21   pMlMhUd!
-L57E8    fcb   $0E,$21,$64,$55,$64,$21,$0E,$21   .!dUd!.!
-L57F0    fcb   $64,$55,$64,$21,$0E,$21,$64,$9A   dUd!.!d.
-L57F8    fcb   $41,$8A,$68,$46,$74,$16,$17,$16   A.hFt...
-L5800    fcb   $74,$A5,$96,$1D,$9A,$81,$6C,$A5   t%....l%
-L5808    fcb   $0A,$17,$0E,$85,$70,$A5,$96,$1D   ....p%..
-L5810    fcb   $9A,$81,$6C,$A5,$0A,$17,$0E,$85   ..l%....
-L5818    fcb   $70,$A5,$96,$1D,$9A,$81,$6C,$A5   p%....l%
-L5820    fcb   $96,$1D,$9A,$81,$6C,$A5,$96,$1D   ....l%..
-L5828    fcb   $9A,$81,$6C,$A5,$0A,$17,$0E,$85   ..l%....
-L5830    fcb   $78,$36,$7C,$0C,$25,$7C,$14,$9A   x6|.%|..
-L5838    fcb   $11,$8A,$7C,$10,$26,$7C,$14,$26   ..|.&|.&
-L5840    fcb   $7C,$14,$8A,$10,$8A,$7C,$10,$8A   |....|..
-L5848    fcb   $10,$8A,$7C,$10,$85,$10,$85,$7C   ..|....|
-L5850    fcb   $08,$A5,$96,$90,$A9,$85,$7C,$94   .%..).|.
-L5858    fcb   $9A,$81,$A5,$96,$7C,$A0,$82,$8A   ..%.| ..
-L5860    fcb   $A8,$A0,$82,$38
+         fcb   $93,$50,$15,$7C,$1C,$25,$7C,$0C   .P.|.%|.
+         fcb   $35,$7C,$94,$35,$78,$45,$74,$45   5|.5xEtE
+         fcb   $70,$4D,$6C,$4D,$68,$55,$64,$21   pMlMhUd!
+         fcb   $0E,$21,$64,$55,$64,$21,$0E,$21   .!dUd!.!
+         fcb   $64,$55,$64,$21,$0E,$21,$64,$9A   dUd!.!d.
+         fcb   $41,$8A,$68,$46,$74,$16,$17,$16   A.hFt...
+         fcb   $74,$A5,$96,$1D,$9A,$81,$6C,$A5   t%....l%
+         fcb   $0A,$17,$0E,$85,$70,$A5,$96,$1D   ....p%..
+         fcb   $9A,$81,$6C,$A5,$0A,$17,$0E,$85   ..l%....
+         fcb   $70,$A5,$96,$1D,$9A,$81,$6C,$A5   p%....l%
+         fcb   $96,$1D,$9A,$81,$6C,$A5,$96,$1D   ....l%..
+         fcb   $9A,$81,$6C,$A5,$0A,$17,$0E,$85   ..l%....
+         fcb   $78,$36,$7C,$0C,$25,$7C,$14,$9A   x6|.%|..
+         fcb   $11,$8A,$7C,$10,$26,$7C,$14,$26   ..|.&|.&
+         fcb   $7C,$14,$8A,$10,$8A,$7C,$10,$8A   |....|..
+         fcb   $10,$8A,$7C,$10,$85,$10,$85,$7C   ..|....|
+         fcb   $08,$A5,$96,$90,$A9,$85,$7C,$94   .%..).|.
+         fcb   $9A,$81,$A5,$96,$7C,$A0,$82,$8A   ..%.| ..
+         fcb   $A8,$A0,$82,$38
 L5864    fcb   $00,$B1,$58,$15   ( .8.1X.
-L5868    fcb   $7C,$1C,$25,$7C,$0C,$35,$7C,$94   |.%|.5|.
-L5870    fcb   $09,$16,$11,$78,$0D,$26,$0D,$74   ...x.&.t
-L5878    fcb   $0D,$26,$0D,$70,$19,$16,$19,$6C   .&.p...l
-L5880    fcb   $4D,$68,$55,$64,$25,$9A,$21,$64   MhUd%.!d
-L5888    fcb   $55,$64,$25,$9A,$21,$64,$55,$64   Ud%.!dUd
-L5890    fcb   $25,$9A,$21,$64,$9A,$41,$8A,$68   %.!d.A.h
-L5898    fcb   $46,$74,$16,$15,$16,$74,$A5,$96   Ft...t%.
-L58A0    fcb   $B5,$97,$A5,$96,$74,$A5,$96,$17   5.%.t%..
-L58A8    fcb   $A5,$96,$74,$A5,$96,$17,$A5,$96   %.t%..%.
-L58B0    fcb   $74,$A5,$96,$AF,$BE,$A5,$96,$74   t%./>%.t
-L58B8    fcb   $A5,$96,$AF,$BE,$A5,$96,$74,$A5   %./>%.t%
-L58C0    fcb   $96,$AF,$BE,$A5,$96,$74,$A5,$96   ./>%.t%.
-L58C8    fcb   $AF,$BE,$A5,$96,$74,$A5,$96,$17   />%.t%..
-L58D0    fcb   $A5,$96,$7C,$9A,$BD,$0F,$A5,$82   %.|.=.%.
-L58D8    fcb   $7C,$90,$A9,$AF,$96,$7C,$14,$9A   |.)/.|..
-L58E0    fcb   $A9,$A5,$82,$7C,$0C,$26,$7C,$14   )%.|.&|.
-L58E8    fcb   $26,$7C,$14,$8A,$10,$8A,$7C,$10   &|....|.
-L58F0    fcb   $8A,$10,$8A,$7C,$10,$85,$10,$85   ...|....
-L58F8    fcb   $7C,$08,$A5,$96,$90,$A9,$85,$7C   |.%..).|
-L5900    fcb   $94,$9A,$81,$A5,$96,$7C,$A0,$12   ...%.| .
-L5908    fcb   $A0,$12,$7C,$7C,$7C,$7C,$7C,$7C    .||||||
-L5910    fcb   $7C,$7C,$7C,$7C,$7C,$7C,$38
+         fcb   $7C,$1C,$25,$7C,$0C,$35,$7C,$94   |.%|.5|.
+         fcb   $09,$16,$11,$78,$0D,$26,$0D,$74   ...x.&.t
+         fcb   $0D,$26,$0D,$70,$19,$16,$19,$6C   .&.p...l
+         fcb   $4D,$68,$55,$64,$25,$9A,$21,$64   MhUd%.!d
+         fcb   $55,$64,$25,$9A,$21,$64,$55,$64   Ud%.!dUd
+         fcb   $25,$9A,$21,$64,$9A,$41,$8A,$68   %.!d.A.h
+         fcb   $46,$74,$16,$15,$16,$74,$A5,$96   Ft...t%.
+         fcb   $B5,$97,$A5,$96,$74,$A5,$96,$17   5.%.t%..
+         fcb   $A5,$96,$74,$A5,$96,$17,$A5,$96   %.t%..%.
+         fcb   $74,$A5,$96,$AF,$BE,$A5,$96,$74   t%./>%.t
+         fcb   $A5,$96,$AF,$BE,$A5,$96,$74,$A5   %./>%.t%
+         fcb   $96,$AF,$BE,$A5,$96,$74,$A5,$96   ./>%.t%.
+         fcb   $AF,$BE,$A5,$96,$74,$A5,$96,$17   />%.t%..
+         fcb   $A5,$96,$7C,$9A,$BD,$0F,$A5,$82   %.|.=.%.
+         fcb   $7C,$90,$A9,$AF,$96,$7C,$14,$9A   |.)/.|..
+         fcb   $A9,$A5,$82,$7C,$0C,$26,$7C,$14   )%.|.&|.
+         fcb   $26,$7C,$14,$8A,$10,$8A,$7C,$10   &|....|.
+         fcb   $8A,$10,$8A,$7C,$10,$85,$10,$85   ...|....
+         fcb   $7C,$08,$A5,$96,$90,$A9,$85,$7C   |.%..).|
+         fcb   $94,$9A,$81,$A5,$96,$7C,$A0,$12   ...%.| .
+         fcb   $A0,$12,$7C,$7C,$7C,$7C,$7C,$7C    .||||||
+         fcb   $7C,$7C,$7C,$7C,$7C,$7C,$38
 L5917    fcb   $FF
-L5918    fcb   $C7,$AB,$6D,$01,$6D,$AB,$C7,$FF   G+m.m+G.
-L5920    fcb   $A5,$99,$A5,$A5,$99,$A5,$FF,$FF   %.%%.%..
-L5928    fcb   $EB,$C9,$94,$C9,$EB,$FF,$FF,$FF   kI.Ik...
-L5930    fcb   $AB,$29,$83,$C7,$EF,$EF,$FF,$FF   +).Goo..
-L5938    fcb   $EF,$D7,$AB,$D7,$EF,$EF,$FF,$FF   oW+Woo..
-L5940    fcb   $A5,$81,$BD,$BD,$DB,$E7,$FF,$FF   %.==[g..
-L5948    fcb   $99,$99,$E7,$E7,$99,$99,$FF,$FF   ..gg....
-L5950    fcb   $80,$BE,$D5,$EB,$C1,$80,$FF,$FF   .>UkA...
-L5958    fcb   $CF,$B1,$CF,$F3,$8D,$F3,$FF,$FF   O1Os.s..
-L5960    fcb   $81,$F3,$97,$E9,$CF,$81,$FF,$FF   .s.iO...
-L5968    fcb   $AB,$01,$AB,$C7,$EF,$FF,$FF,$FF   +.+Go...
-L5970    fcb   $E7,$5A,$3C,$5A,$E7,$FF,$FF,$FF   gZ<Zg...
-L5978    fcb   $83,$8D,$8D,$B1,$B1,$C1,$FF,$FF   ...11A..
-L5980    fcb   $80,$BE,$D5,$EB,$C1,$80,$FF,$FF   .>UkA...
-L5988    fcb   $9D,$B9,$F3,$E7,$CD,$99,$FF,$FF   .9sgM...
-L5990    fcb   $FF,$A7,$A3,$81,$B7,$FF,$FF,$FF   .'#.7...
-L5998    fcb   $BD,$C3,$E7,$BD,$C3,$E7,$FF,$FF   =Cg=Cg..
-L59A0    fcb   $A5,$99,$A5,$A5,$99,$A5,$FF,$FF   %.%%.%..
-L59A8    fcb   $E7,$FF,$A5,$81,$A5,$BD,$FF,$FF   g.%.%=..
-L59B0    fcb   $BD,$89,$A5,$A5,$91,$BD,$FF,$FF   =.%%.=..
-L59B8    fcb   $BD,$DB,$E7,$E7,$DB,$BD,$FF,$FF   =[gg[=..
-L59C0    fcb   $C8,$88,$68,$42,$66,$6C,$FF,$FF   H.hBfl..
-L59C8    fcb   $81,$EF,$85,$A1,$F7,$81,$FF,$FF   .o.!w...
-L59D0    fcb   $FF,$E7,$99,$81,$99,$E7,$FF,$FF   .g...g..
-L59D8    fcb   $99,$A5,$BD,$BD,$A5,$99,$FF,$FF   .%==%...
-L59E0    fcb   $DB,$AB,$AB,$D5,$D5,$DB,$FF,$FF   [++UU[..
-L59E8    fcb   $DF,$AF,$A1,$AB,$DB,$F5,$FF,$FF   _/!+[u..
-L59F0    fcb   $93,$6D,$55,$55,$55,$6D,$93,$FF   .mUUUm..
-L59F8    fcb   $99,$C3,$A5,$81,$DB,$E7,$FF,$FF   .C%.[g..
-L5A00    fcb   $E1,$F1,$F9,$BD,$9F,$8F,$FF,$FF   aqy=....
-L5A08    fcb   $EF,$D7,$AB,$AB,$C7,$EF,$FF,$FF   oW++Go..
-L5A10    fcb   $E3,$DD,$EF,$F7,$F7,$FF,$F7,$FF   c]oww.w.
-L5A18    fcb   $C7,$AB,$6D,$01,$6D,$AB,$C7
+         fcb   $C7,$AB,$6D,$01,$6D,$AB,$C7,$FF   G+m.m+G.
+         fcb   $A5,$99,$A5,$A5,$99,$A5,$FF,$FF   %.%%.%..
+         fcb   $EB,$C9,$94,$C9,$EB,$FF,$FF,$FF   kI.Ik...
+         fcb   $AB,$29,$83,$C7,$EF,$EF,$FF,$FF   +).Goo..
+         fcb   $EF,$D7,$AB,$D7,$EF,$EF,$FF,$FF   oW+Woo..
+         fcb   $A5,$81,$BD,$BD,$DB,$E7,$FF,$FF   %.==[g..
+         fcb   $99,$99,$E7,$E7,$99,$99,$FF,$FF   ..gg....
+         fcb   $80,$BE,$D5,$EB,$C1,$80,$FF,$FF   .>UkA...
+         fcb   $CF,$B1,$CF,$F3,$8D,$F3,$FF,$FF   O1Os.s..
+         fcb   $81,$F3,$97,$E9,$CF,$81,$FF,$FF   .s.iO...
+         fcb   $AB,$01,$AB,$C7,$EF,$FF,$FF,$FF   +.+Go...
+         fcb   $E7,$5A,$3C,$5A,$E7,$FF,$FF,$FF   gZ<Zg...
+         fcb   $83,$8D,$8D,$B1,$B1,$C1,$FF,$FF   ...11A..
+         fcb   $80,$BE,$D5,$EB,$C1,$80,$FF,$FF   .>UkA...
+         fcb   $9D,$B9,$F3,$E7,$CD,$99,$FF,$FF   .9sgM...
+         fcb   $FF,$A7,$A3,$81,$B7,$FF,$FF,$FF   .'#.7...
+         fcb   $BD,$C3,$E7,$BD,$C3,$E7,$FF,$FF   =Cg=Cg..
+         fcb   $A5,$99,$A5,$A5,$99,$A5,$FF,$FF   %.%%.%..
+         fcb   $E7,$FF,$A5,$81,$A5,$BD,$FF,$FF   g.%.%=..
+         fcb   $BD,$89,$A5,$A5,$91,$BD,$FF,$FF   =.%%.=..
+         fcb   $BD,$DB,$E7,$E7,$DB,$BD,$FF,$FF   =[gg[=..
+         fcb   $C8,$88,$68,$42,$66,$6C,$FF,$FF   H.hBfl..
+         fcb   $81,$EF,$85,$A1,$F7,$81,$FF,$FF   .o.!w...
+         fcb   $FF,$E7,$99,$81,$99,$E7,$FF,$FF   .g...g..
+         fcb   $99,$A5,$BD,$BD,$A5,$99,$FF,$FF   .%==%...
+         fcb   $DB,$AB,$AB,$D5,$D5,$DB,$FF,$FF   [++UU[..
+         fcb   $DF,$AF,$A1,$AB,$DB,$F5,$FF,$FF   _/!+[u..
+         fcb   $93,$6D,$55,$55,$55,$6D,$93,$FF   .mUUUm..
+         fcb   $99,$C3,$A5,$81,$DB,$E7,$FF,$FF   .C%.[g..
+         fcb   $E1,$F1,$F9,$BD,$9F,$8F,$FF,$FF   aqy=....
+         fcb   $EF,$D7,$AB,$AB,$C7,$EF,$FF,$FF   oW++Go..
+         fcb   $E3,$DD,$EF,$F7,$F7,$FF,$F7,$FF   c]oww.w.
+         fcb   $C7,$AB,$6D,$01,$6D,$AB,$C7
 
 L5A1F    pshs  a
          lda   >$FF20
@@ -9808,11 +9821,12 @@ L5A2C    pshs  a
          sta   >$FF20
          puls  a
          rts   
+* Needs Label
          pshs  u,y,x,b,a,cc
          ldy   #$0E00
          ldx   #$2001
-         ldd   #$0198
-         os9   I$SetStt 
+         ldd   #$01*256+SS.Tone
+         os9   I$SetStt 	play tone
          puls  pc,u,y,x,b,a,cc
 L5A4A    lda   #$04
 L5A4C    pshs  u,y,x,b
@@ -9827,10 +9841,10 @@ L5A5F    clr   >$0346
 L5A62    ldu   >$0349
 L5A65    tst   >$0346
          bne   L5A7A
-         ldd   #$0013
+         ldd   #SS.Joy
          ldx   #$0001
          pshs  u
-         os9   I$GetStt 
+         os9   I$GetStt 	get joystick values
          puls  u
          tsta  
          bne   L5AA0
@@ -9844,8 +9858,8 @@ L5A7A    ldy   ,u
          ldb   u0002,u
          tfr   d,x
          pshs  u
-         ldd   #$0198
-         os9   I$SetStt 
+         ldd   #$01*256+SS.Tone
+         os9   I$SetStt 	play tone
          puls  u
 L5A9C    leau  u0003,u
          bra   L5A65
@@ -9858,61 +9872,62 @@ L5AA9    leax  -$01,x
          decb  
          bne   L5AA6
          bra   L5A9C
+
 L5AB2    fcb   $00,$B5,$01,$92,$00,$77    j.5...w
-L5AB8    fcb   $00,$12,$01,$77,$01,$7C,$01,$81   ...w.|..
-L5AC0    fcb   $01,$A9,$01,$AE,$0E,$52,$02,$0E   .)...R..
-L5AC8    fcb   $E1,$02,$0F,$0E,$02,$0E,$52,$02   a.....R.
-L5AD0    fcb   $00,$00,$02,$0E,$E1,$02,$0E,$F1   ....a..q  
-L5AD8    fcb   $02,$0E,$96,$02,$0E,$52,$02,$0E   .....R..
-L5AE0    fcb   $E1,$02,$0E,$96,$02,$0E,$52,$02   a.....R.
-L5AE8    fcb   $00,$00,$02,$0E,$E1,$02,$0E,$BD   ....a..=
-L5AF0    fcb   $02,$0E,$96,$02,$0E,$52,$02,$0E   .....R..
-L5AF8    fcb   $E1,$02,$0F,$0E,$02,$0E,$52,$02   a.....R.
-L5B00    fcb   $00,$00,$02,$0E,$E1,$02,$0E,$F1   ....a..q
-L5B08    fcb   $02,$0E,$96,$02,$0F,$29,$02,$00   .....)..
-L5B10    fcb   $00,$02,$0F,$0E,$02,$00,$00,$02   ........
-L5B18    fcb   $0E,$96,$05,$0E,$96,$02,$00,$00   ........
-L5B20    fcb   $05,$0F,$29,$02,$00,$00,$02,$00   ..).....
-L5B28    fcb   $01,$0F,$0E,$1E,$0E,$BD,$05,$0F   .....=..
-L5B30    fcb   $0E,$05,$0F,$40,$14,$0F,$0E,$14   ...@....
-L5B38    fcb   $0F,$40,$1E,$0F,$0E,$05,$0F,$40   .@.....@
-L5B40    fcb   $05,$0F,$5F,$23,$00,$00,$05,$0F   .._#....
-L5B48    fcb   $5F,$1E,$0F,$40,$05,$0E,$BD,$05   _..@..=.
-L5B50    fcb   $0F,$80,$14,$0F,$80,$14,$0F,$40   .......@
-L5B58    fcb   $1E,$0F,$00,$05,$0F,$40,$05,$0F   .....@..
-L5B60    fcb   $5F,$23,$00,$00,$05,$00,$01,$0E   _#......
-L5B68    fcb   $96,$0A,$0E,$81,$0A,$0E,$52,$0A   ......R.
-L5B70    fcb   $0E,$96,$0A,$0E,$81,$0A,$0E,$52   .......R
-L5B78    fcb   $0A,$0E,$81,$0A,$0E,$96,$0A,$0E   ........
-L5B80    fcb   $96,$0A,$0E,$81,$0A,$0E,$52,$0A   ......R.
-L5B88    fcb   $0E,$96,$0A,$0E,$81,$0A,$0E,$52   .......R
-L5B90    fcb   $0A,$0E,$81,$0A,$0E,$96,$0A,$0E   ........
-L5B98    fcb   $BD,$0A,$0E,$96,$0A,$0E,$81,$0A   =.......
-L5BA0    fcb   $0E,$BD,$0A,$0E,$96,$0A,$0E,$81   .=......
-L5BA8    fcb   $0A,$0E,$96,$0A,$0E,$BD,$0A,$0E   .....=..
-L5BB0    fcb   $BD,$0A,$0E,$96,$0A,$0E,$81,$0A   =.......
-L5BB8    fcb   $0E,$BD,$0A,$0E,$96,$0A,$0E,$81   .=......
-L5BC0    fcb   $0A,$0E,$96,$0A,$0E,$BD,$0A,$0E   .....=..
-L5BC8    fcb   $96,$0A,$0E,$81,$0A,$0E,$52,$0A   ......R.
-L5BD0    fcb   $0E,$96,$0A,$0E,$81,$0A,$0E,$52   .......R
-L5BD8    fcb   $0A,$0E,$81,$0A,$0E,$96,$0A,$0E   ........
-L5BE0    fcb   $96,$0A,$0E,$81,$0A,$0E,$52,$0A   ......R.
-L5BE8    fcb   $0E,$96,$0A,$0E,$81,$0A,$0E,$52   .......R
-L5BF0    fcb   $0A,$0E,$81,$0A,$0E,$96,$0A,$0E   ........
-L5BF8    fcb   $E1,$0A,$0E,$BD,$0A,$0E,$96,$0A   a..=....
-L5C00    fcb   $0E,$E1,$0A,$0E,$BD,$0A,$0E,$96   .a..=...
-L5C08    fcb   $0A,$0E,$BD,$0A,$0E,$E1,$0A,$0E   ..=..a..
-L5C10    fcb   $E1,$0A,$0E,$E1,$0A,$0E,$F1,$0A   a..a..q.
-L5C18    fcb   $0E,$E1,$0A,$0E,$BD,$0A,$0E,$96   .a..=...
-L5C20    fcb   $0A,$0E,$52,$0A,$0E,$81,$0A,$00   ..R.....
-L5C28    fcb   $02,$0E,$F1,$01,$00,$01,$0D,$2C   ..q....,
-L5C30    fcb   $02,$00,$01,$00,$13,$03,$00,$14   ........
-L5C38    fcb   $03,$00,$15,$03,$00,$14,$03,$00   ........
-L5C40    fcb   $13,$03,$00,$01,$0F,$46,$02,$0F   .....F..
-L5C48    fcb   $40,$02,$0F,$5F,$02,$0F,$29,$02   @.._..).
-L5C50    fcb   $0F,$40,$02,$0F,$70,$02,$0F,$46   .@..p..F
-L5C58    fcb   $02,$00,$01,$0D,$2C,$02,$00,$01   ....,...
-L5C60    fcb   $0D,$55,$02,$00,$01
+         fcb   $00,$12,$01,$77,$01,$7C,$01,$81   ...w.|..
+         fcb   $01,$A9,$01,$AE,$0E,$52,$02,$0E   .)...R..
+         fcb   $E1,$02,$0F,$0E,$02,$0E,$52,$02   a.....R.
+         fcb   $00,$00,$02,$0E,$E1,$02,$0E,$F1   ....a..q  
+         fcb   $02,$0E,$96,$02,$0E,$52,$02,$0E   .....R..
+         fcb   $E1,$02,$0E,$96,$02,$0E,$52,$02   a.....R.
+         fcb   $00,$00,$02,$0E,$E1,$02,$0E,$BD   ....a..=
+         fcb   $02,$0E,$96,$02,$0E,$52,$02,$0E   .....R..
+         fcb   $E1,$02,$0F,$0E,$02,$0E,$52,$02   a.....R.
+         fcb   $00,$00,$02,$0E,$E1,$02,$0E,$F1   ....a..q
+         fcb   $02,$0E,$96,$02,$0F,$29,$02,$00   .....)..
+         fcb   $00,$02,$0F,$0E,$02,$00,$00,$02   ........
+         fcb   $0E,$96,$05,$0E,$96,$02,$00,$00   ........
+         fcb   $05,$0F,$29,$02,$00,$00,$02,$00   ..).....
+         fcb   $01,$0F,$0E,$1E,$0E,$BD,$05,$0F   .....=..
+         fcb   $0E,$05,$0F,$40,$14,$0F,$0E,$14   ...@....
+         fcb   $0F,$40,$1E,$0F,$0E,$05,$0F,$40   .@.....@
+         fcb   $05,$0F,$5F,$23,$00,$00,$05,$0F   .._#....
+         fcb   $5F,$1E,$0F,$40,$05,$0E,$BD,$05   _..@..=.
+         fcb   $0F,$80,$14,$0F,$80,$14,$0F,$40   .......@
+         fcb   $1E,$0F,$00,$05,$0F,$40,$05,$0F   .....@..
+         fcb   $5F,$23,$00,$00,$05,$00,$01,$0E   _#......
+         fcb   $96,$0A,$0E,$81,$0A,$0E,$52,$0A   ......R.
+         fcb   $0E,$96,$0A,$0E,$81,$0A,$0E,$52   .......R
+         fcb   $0A,$0E,$81,$0A,$0E,$96,$0A,$0E   ........
+         fcb   $96,$0A,$0E,$81,$0A,$0E,$52,$0A   ......R.
+         fcb   $0E,$96,$0A,$0E,$81,$0A,$0E,$52   .......R
+         fcb   $0A,$0E,$81,$0A,$0E,$96,$0A,$0E   ........
+         fcb   $BD,$0A,$0E,$96,$0A,$0E,$81,$0A   =.......
+         fcb   $0E,$BD,$0A,$0E,$96,$0A,$0E,$81   .=......
+         fcb   $0A,$0E,$96,$0A,$0E,$BD,$0A,$0E   .....=..
+         fcb   $BD,$0A,$0E,$96,$0A,$0E,$81,$0A   =.......
+         fcb   $0E,$BD,$0A,$0E,$96,$0A,$0E,$81   .=......
+         fcb   $0A,$0E,$96,$0A,$0E,$BD,$0A,$0E   .....=..
+         fcb   $96,$0A,$0E,$81,$0A,$0E,$52,$0A   ......R.
+         fcb   $0E,$96,$0A,$0E,$81,$0A,$0E,$52   .......R
+         fcb   $0A,$0E,$81,$0A,$0E,$96,$0A,$0E   ........
+         fcb   $96,$0A,$0E,$81,$0A,$0E,$52,$0A   ......R.
+         fcb   $0E,$96,$0A,$0E,$81,$0A,$0E,$52   .......R
+         fcb   $0A,$0E,$81,$0A,$0E,$96,$0A,$0E   ........
+         fcb   $E1,$0A,$0E,$BD,$0A,$0E,$96,$0A   a..=....
+         fcb   $0E,$E1,$0A,$0E,$BD,$0A,$0E,$96   .a..=...
+         fcb   $0A,$0E,$BD,$0A,$0E,$E1,$0A,$0E   ..=..a..
+         fcb   $E1,$0A,$0E,$E1,$0A,$0E,$F1,$0A   a..a..q.
+         fcb   $0E,$E1,$0A,$0E,$BD,$0A,$0E,$96   .a..=...
+         fcb   $0A,$0E,$52,$0A,$0E,$81,$0A,$00   ..R.....
+         fcb   $02,$0E,$F1,$01,$00,$01,$0D,$2C   ..q....,
+         fcb   $02,$00,$01,$00,$13,$03,$00,$14   ........
+         fcb   $03,$00,$15,$03,$00,$14,$03,$00   ........
+         fcb   $13,$03,$00,$01,$0F,$46,$02,$0F   .....F..
+         fcb   $40,$02,$0F,$5F,$02,$0F,$29,$02   @.._..).
+         fcb   $0F,$40,$02,$0F,$70,$02,$0F,$46   .@..p..F
+         fcb   $02,$00,$01,$0D,$2C,$02,$00,$01   ....,...
+         fcb   $0D,$55,$02,$00,$01
 
          emod
 eom      equ   *
