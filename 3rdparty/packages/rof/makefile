@@ -18,6 +18,8 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 
 SUPPORTFILES	= body heads larms legs lips panel1 rofvar rship.c rtitle.c scores
 
+ALLOBJS		= $(CMDS)
+
 all:	$(ALLOBJS)
 	$(CHMOD) 755 $(CMDS)
 
