@@ -55,6 +55,7 @@
 *                 - Minor mods to F$STime
 *                 - Changed F$GModDr to BRA to similar code in F$GBlkMp
 *
+* 18r6  Back-ported to OS-9 Level Two from NitrOS-9 Level Two
 
          nam    OS9p2
          ttl    NitrOS-9 Kernel Part II
@@ -68,7 +69,7 @@ Network  equ    0             Set to 1 to enable network I/O ptrs
 
 TC9      set    false       "true" use TC-9 6309 trap vector
 Edition  equ    18
-Revision equ    5
+Revision equ    6
 *DAT.Free equ   $333E      --- remove this def later
 
          mod    eom,MName,Systm,ReEnt+Revision,OS9P2,$0100
