@@ -1,0 +1,22 @@
+<refentry id="dmem">
+<refnamediv>
+<refname>DMEM</refname>
+<refpurpose>Display Memory</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>DMEM</command>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+Displays memory under OS-9 Level Two.
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+</screen>
+</refsect1>
+</refentry>

@@ -1,0 +1,22 @@
+<refentry id="pmap">
+<refnamediv>
+<refname>pMAP</refname>
+<refpurpose>Display Process Map</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>PMAP</command>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+Displays process map under OS-9 Level Two.
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+</screen>
+</refsect1>
+</refentry>
