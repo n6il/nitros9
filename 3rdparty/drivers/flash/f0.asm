@@ -5,7 +5,6 @@ MPISlot  equ   1          (slot 0-3)
 
          ifp1  
          use  defsfile
-         use  rbfdefs
          endc  
 
 tylg     set   Devic+Objct

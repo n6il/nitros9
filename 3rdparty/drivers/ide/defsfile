@@ -1,9 +1,4 @@
     use os9defs
 *    use rbfdefs
-
-    ifeq   Level-1
-    use    systype.l1
-    else
-    use    systype.l2
-    endc
+    use    systype
 
