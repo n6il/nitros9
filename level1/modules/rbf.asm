@@ -8,6 +8,9 @@
 * ------------------------------------------------------------------
 *  24      1985/??/??
 * From Tandy OS-9 Level One VR 02.00.00
+*
+*  25      2003/10/07  Rodney V. Hamilton
+* Fix for LSN0 DD.TOT=0 lockout problem
 
          nam   RBF
          ttl   Disk file manager
@@ -22,7 +25,7 @@
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   24
+edition  set   25
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -32,7 +35,7 @@ size     equ   .
 name     fcs   /RBF/
          fcb   edition
 
-L0011    fcb   DRVMEM
+*L0011    fcb   DRVMEM
 
 * All routines are entered with
 * (Y) = Path descriptor pointer
@@ -206,13 +209,24 @@ Open     pshs  y
          std   <PD.SBL,y
          sta   <PD.SBL+2,y
          ldx   <PD.DTB,y
-         lda   V$STAT,x
+         lda   DD.TOT+2,x
+* resave nonzero DD.TOT here and recopy
+OpenFix  equ   *
          std   <PD.SIZ+2,y
          sta   <PD.SSZ+2,y
-         ldd   V$DRIV,x
+         ldd   DD.TOT,x
          std   PD.SIZ,y
          std   <PD.SSZ,y
-         puls  pc,y
+* BUG FIX: handle special case of DD.TOT=0 in LSN0 which blocks
+* all subsequent accesses.  NOTE: since we can only access LSN0
+* for any non-zero value, set DD.TOT=1 to avoid NOT READY error.
+         bne   OpenRet		MSW nonzero, OK
+         lda   DD.TOT+2,x	MSW=0, check LSB
+         bne   OpenRet		LSB nonzero, OK
+         inca			DD.TOT=0, make it 1
+         sta   DD.TOT+2,x	fix drive table
+         bra   OpenFix		and resave (B=0)
+OpenRet  puls  pc,y		restore & return
 
 L01B3    lda   PD.MOD,y
          lbsr  L07F1
@@ -348,7 +362,7 @@ Delete   pshs  y
          ldd   <$35,y
          bne   L02E9
          tst   <$34,y
-         lbeq  L027D
+         beq   L027D
 L02E9    lda   #$42
          lbsr  L07F1
          bcs   L035F
@@ -435,12 +449,12 @@ L039D    ldx   $06,s
          ldd   $02,s
          leax  d,x
 L03AA    rts
-L03AB    lbsr  L0414
+L03AB    bsr   L0414
          lda   ,-x
          cmpa  #$0D
          beq   L03BA
          ldd   $02,s
-         lbne  L041A
+         bne   L041A
 L03BA    ldu   $06,y
          ldd   $06,u
          subd  $02,s
@@ -621,7 +635,7 @@ L0515    cmpx  ,s
          leas  $02,s
 L051B    puls  pc,u,y,x
 
-GetSTat  ldb   $02,u
+GetStat  ldb   $02,u
          cmpb  #$00
          beq   L0543
          cmpb  #$06
@@ -785,7 +799,7 @@ L066D    ldb   $03,u
 L0677    ldu   $03,y
          stu   <PD.DVT,y
          lda   <PD.DRV,y
-         ldb   >L0011,pcr
+         ldb   #DRVMEM
          mul
          addd  $02,u
          addd  #$000F
@@ -841,7 +855,7 @@ L06D4    lbsr  L082B
          lbsr  L079C
          bra   L070A
 L0705    bsr   L075D
-L0707    lbsr  L0787
+L0707    bsr   L0787
 L070A    bcs   L0752
          tst   ,x
          beq   L0705
@@ -859,7 +873,7 @@ L070A    bcs   L0752
          ldd   <$1E,x
          std   <PD.FD+1,y
          lbsr  L0837
-         lbra  L06BE
+         bra   L06BE
 L0734    ldx   $08,s
          tsta
          bmi   L0741
@@ -1599,7 +1613,7 @@ L0D42    lda   #$06
          ldx   <$1E,y
          cmpd  $0E,x
 L0D51    puls  x,b,a
-         lbeq  L0CED
+         beq   L0CED
          comb
          ldb   #E$DIDC
          rts   
@@ -1634,7 +1648,7 @@ L0D91    pshs  u,x
          bcs   L0DAA
          bsr   L0D72
          bcs   L0DAA
-         lbsr  L0D5B
+         bsr   L0D5B
          lbsr  L0CEB
          bcs   L0DAA
          lda   $0A,y
