@@ -23,8 +23,8 @@
          use   defsfile  
 
 * Tweakable options
-DOSCSIZ  set   0	1 = include SS.ScSiz code, 0 = leave out
-DOHELP   set   0	1 = include help message, 0 = leave out
+DOSCSIZ  set   1	1 = include SS.ScSiz code, 0 = leave out
+DOHELP   set   1	1 = include help message, 0 = leave out
 
 Edition  set   6         
 Revs     set   1         
