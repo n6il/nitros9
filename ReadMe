@@ -17,7 +17,6 @@ organized into their respective directories, with the topmost being:
 	level2/       ..... OS-9 Level Two source
 	nlevel2/      ..... NitrOS-9 Level Two source
 	nlevel3/      ..... NitrOS-9 Level Three source
-	docs/         ..... Documentation
 	defs/         ..... OS-9 definition files
 	3rdparty/     ..... Third party drivers, applications, etc.
 
