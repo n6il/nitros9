@@ -1,5 +1,5 @@
 ********************************************************************
-* EXMode - Extended SCF device descriptor utility
+* XMode - Extended SCF device descriptor utility
 *
 * $Id$
 *
@@ -9,8 +9,10 @@
 *   1      1989/06/21  Bruce Isted
 * Released to public domain.
 
-         nam   EXMode
+         nam   XMode
          ttl   Extended SCF device descriptor utility
+
+DOHELP   set   0
 
          ifp1            
          use   defsfile
@@ -39,7 +41,7 @@ MemSize  equ   .
 
          mod   Size,Name,Prgrm+Objct,ReEnt+rev,Entry,MemSize
 
-Name     fcs   "EXMode"   
+Name     fcs   "XMode"   
          fcb   Edtn       edition number
 
 OptTable                 
@@ -126,6 +128,7 @@ OptTable
 TablOpts equ   (*-OptTable)/6 number of table entries
          fcb   $80        end of option table
 
+         IFNE  DOHELP
 UseMsg                   
          fcb   C$LF      
          fcc   "Usage:  EXMode [/<device> || -<pathlist> || -?] [option] [option] [...]"
@@ -205,6 +208,7 @@ HelpMsg
          fcc   "fgc Foreground Colour   bgc Background Colour   bdc Border Colour"
          fcb   C$CR      
 HelpLen  equ   *-HelpMsg 
+         ENDC
 
 Equal    fcc   "="       
 
@@ -228,10 +232,12 @@ SynLen   equ   *-SynMsg
 ****************
 * miscellaneous error and help routines
 
+         IFNE  DOHELP
 MuchHelp                 
          leax  HelpMsg,pc
          ldy   #HelpLen  
          bra   Helpprnt  
+         ENDC
 
 BadSize                  
          leax  Sizemsg,pc
@@ -241,15 +247,20 @@ BadSize
 BadType                  
          leax  TypeMsg,pc
          ldy   #TypeLen  
+
 AddHelp                  
+         IFNE  DOHelp
          lda   #2        
          os9   I$WritLn  
+         ENDC
 Help                     
+         IFNE  DOHelp
          leax  UseMsg,pc 
          ldy   #UseLen   
 Helpprnt                 
          lda   #2        
          os9   I$WritLn  
+         ENDC
          lbra  OkayEnd2  
 
 ****************
@@ -260,8 +271,10 @@ Entry
          ldd   ,x+        check for device name
          cmpa  #'-        file option?
          bne   Link      
+         IFNE  DOHELP
          cmpb  #'?        help option?
          beq   MuchHelp  
+         ENDC
 * Use Filename to Get Desc:
          lda   #UPDAT.    open path to module file
          os9   I$Open    
