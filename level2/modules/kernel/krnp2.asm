@@ -1,5 +1,5 @@
 ********************************************************************
-* OS9p2 - OS-9 Level Two Kernel Part 2
+* KernelP2 - NitrOS-9 Level 2 Kernel Part 2
 *
 * $Id$
 *
@@ -57,8 +57,8 @@
 *
 * 18r6  Back-ported to OS-9 Level Two from NitrOS-9 Level Two
 
-         nam    OS9p2
-         ttl    OS-9 Level Two Kernel Part 2
+         nam    KernelP2
+         ttl    NitrOS-9 Level 2 Kernel Part 2
 
 ** If Network I/O ptrs are disabled, F$Fork runs 72 cycles faster
 Network  equ    0             Set to 1 to enable network I/O ptrs
@@ -72,9 +72,9 @@ Edition  equ    18
 Revision equ    6
 *DAT.Free equ   $333E      --- remove this def later
 
-         mod    eom,MName,Systm,ReEnt+Revision,OS9P2,$0100
+         mod    eom,MName,Systm,ReEnt+Revision,KernelP2,$0100
 
-MName    fcs    /OS9p2/
+MName    fcs    /KernelP2/
          fcb    Edition
 
          ifeq   TC9-1
@@ -168,7 +168,7 @@ Uday     lda    ,x+
          puls   cc,u,pc     restore IRQ's, register stack pointer & return
      endc
 
-OS9P2    lda   #'2        into OS9p2
+KernelP2 lda   #'2        into KernelP2
          jsr   <D.BtBug
 
          leay   SvcTab,pc   install system calls
