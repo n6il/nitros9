@@ -18,10 +18,10 @@ UTILPAK1        = attr deldir ident rename setime xmode
 LEVEL1FILES	= binex.asm attr.asm build.asm date.asm deiniz.asm del.asm deldir.asm \
 		dump.asm echo.asm exbin.asm free.asm ident.asm iniz.asm inkey.asm link.asm \
 		list.asm load.asm login.asm merge.asm pwd.asm pxd.asm rename.asm \
-		save.asm setime.asm shell_21.asm sleep.asm tee.asm tmode.asm tsmon.asm verify.asm
+		save.asm setime.asm sleep.asm tee.asm tmode.asm tsmon.asm verify.asm
 
 LEVEL2FILES	= gfx.asm mdir.asm mfree.asm montype.asm procs.asm \
-		unlink.asm wcreate.asm
+		shell_21.asm unlink.asm wcreate.asm
 
 # Files not compilable by os9asm: Config attr cmp dcheck dir dsave
 all:	$(ALLOBJS) shell utilpak1 $(DEPENDS)
