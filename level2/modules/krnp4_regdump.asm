@@ -37,7 +37,7 @@ edition  set   1
 
          mod   eom,name,tylg,atrv,start,0
 
-name     fcs   /krnp4/    name of this module
+name     fcs   /KrnP4/    name of this module
          fcb   edition
 
 svctabl  fcb   F$RegDmp   F$RegDmp code

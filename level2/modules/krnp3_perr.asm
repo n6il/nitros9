@@ -66,7 +66,7 @@ edition  set   1
 
          mod   eom,name,type,ReEnt+revs,entry,256
 
-name     fcs   "krnp3"
+name     fcs   "KrnP3"
          fcb   edition
 
 *+
