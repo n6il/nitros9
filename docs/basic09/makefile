@@ -1,13 +1,13 @@
 BOOK		= basic09
-STYLESHEET	= docbook-utils.dsl
+STYLESHEET	= docbook-utils-a4.dsl
 
 all: $(BOOK).pdf
 
 $(BOOK).pdf: $(BOOK).docbook $(STYLESHEET)
-	 docbook2pdf -d $(STYLESHEET) $(BOOK).docbook
+	 docbook2pdf -d $(STYLESHEET)#print $(BOOK).docbook
 
 $(BOOK).ps: $(BOOK).docbook $(STYLESHEET)
-	 docbook2ps -d $(STYLESHEET) $(BOOK).docbook
+	 docbook2ps -d $(STYLESHEET)#print $(BOOK).docbook
 
 $(BOOK).htm: $(BOOK).docbook $(STYLESHEET)
 	$(RM) *.htm *.html
