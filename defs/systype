@@ -21,7 +21,13 @@ SYSTYPE  set   1
 *
 *          2002/06/22  Boisy G. Pitre
 * Removed PIA.U4 and PIA.U8, improved comments
-
+*
+*          2003/11/05  Robert Gault
+* Made changes in window globals and grfdrv memory to handle regW
+* in 6809 systems.
+*
+*          2003/11/30  Boisy G. Pitre
+* Statics now are prefaced with V. to identify them easier in source.
 
          nam   SysType
          IFEQ  Level-1
@@ -129,7 +135,7 @@ A.V7     set   $FFC7
 
 *************************************************
 *
-* CoCo 1/2 Section
+* NitrOS-9 Level 1 Section
 *
 *************************************************
 
@@ -139,7 +145,7 @@ HW.Page  set   $FF        Device descriptor hardware page
 
 *************************************************
 *
-* CoCo 3 Section
+* NitrOS-9 Level 2 Section
 *
 *************************************************
 
@@ -443,34 +449,33 @@ MaxLine  equ   191        maximum Y co-ordinate allowed on mouse
 *
 * STRONG CAUTION:  scfdefs MUST be included first before this file if
 * V.SCF is to be resolved properly in pass 1!!
-         org   V.SCF
-
-WinType  rmb   1          window type (0=Windint/GrfInt,2=VDGInt)      $1D
-InfVld   rmb   1          Rest of info here valid? (0=NO, >0 = YES)    $1E
-DevPar   rmb   2          high bit=window device                       $1F
-ULCase   rmb   1          special key flags (Capslck & keyboard mouse) $21
-KySnsFlg rmb   1          flag for key sense setstat                   $22
-ScrChg   rmb   1          screen change flag                           $23
-SS.SigID rmb   1          data ready process ID                        $24
-SS.SigSg rmb   1          data ready signal code                       $25
-MS.SigID rmb   1          mouse signal process ID                      $26
-MS.SigSg rmb   1          mouse signal signal code                     $27
-MS.Smpl  rmb   1          mouse sample rate                            $28
-MS.Time  rmb   1          mouse timeout value                          $29
-MS.Side  rmb   1          MSB of mouse auto-follow flag                $2A
-PrtSide  rmb   1          auto follow mouse flag                       $2B
-ParmCnt  rmb   1          parameter count                              $2C
-ParmVct  rmb   2          parameter vector                             $2D
-PrmStrt  rmb   2          pointer to params start                      $2F
-NxtPrm   rmb   2          pointer to next param storage                $31
-EndPtr   rmb   1          last character read offset                   $33
-InpPtr   rmb   1          next character read offset                   $34
-WinNum   rmb   1          window table entry #                         $35
-DWNum    rmb   1          dwnum from descriptor                        $36
-CallCde  rmb   1          internal comod call code #                   $37
-CC3Parm  rmb   128-.      global parameter area
-ReadBuf  rmb   256-.      read input buffer (keyboard)
-CC3DSiz  equ   .
+           org   V.SCF
+V.WinType  rmb   1          window type (0=Windint/GrfInt,2=VDGInt)      $1D
+V.InfVld   rmb   1          Rest of info here valid? (0=NO, >0 = YES)    $1E
+V.DevPar   rmb   2          high bit=window device                       $1F
+V.ULCase   rmb   1          special key flags (Capslck & keyboard mouse) $21
+V.KySnsFlg rmb   1          flag for key sense setstat                   $22
+V.ScrChg   rmb   1          screen change flag                           $23
+V.SSigID   rmb   1          data ready process ID                        $24
+V.SSigSg   rmb   1          data ready signal code                       $25
+V.MSigID   rmb   1          mouse signal process ID                      $26
+V.MSigSg   rmb   1          mouse signal signal code                     $27
+V.MSmpl    rmb   1          mouse sample rate                            $28
+V.MTime    rmb   1          mouse timeout value                          $29
+           rmb   1          unused                                       $2A
+V.MAutoF   rmb   1          auto follow mouse flag                       $2B
+V.ParmCnt  rmb   1          parameter count                              $2C
+V.ParmVct  rmb   2          parameter vector                             $2D
+V.PrmStrt  rmb   2          pointer to params start                      $2F
+V.NxtPrm   rmb   2          pointer to next param storage                $31
+V.EndPtr   rmb   1          last character read offset                   $33
+V.InpPtr   rmb   1          next character read offset                   $34
+V.WinNum   rmb   1          window table entry #                         $35
+V.DWNum    rmb   1          dwnum from descriptor                        $36
+V.CallCde  rmb   1          internal comod call code #                   $37
+CC3Parm    rmb   128-.      global parameter area
+ReadBuf    rmb   256-.      read input buffer (keyboard)
+CC3DSiz    equ   .
 
 *****************************************************************************
 * GrfInt/WindInt global memory area
@@ -481,7 +486,7 @@ G.CurTik rmb   1          Constant - # Clock ticks/cursor updates (2)
 G.CntTik rmb   1          Current tick count for cursor updates
 G.GfBusy rmb   1          Grfdrv is busy flag (1=busy)
 g0003    rmb   2          NEW: UNUSED
-g0005    rmb   2          ???
+g0005    rmb   2          Temp save in Windint RG
 G.GrfStk rmb   2          grfdrv stack pointer ($07)
 G.MonTyp rmb   1          monitor type
 g000A    equ   .          Old label for compatibility
@@ -692,7 +697,16 @@ gr00AD   rmb    2           FFill:orig. start X coord|Circ/Ell saved start X
 gr00AF   rmb    2           FFill:orig. start Y coord|Circ/Ell saved end X
 gr00B1   rmb    1           Flag in FFill: 1=1st time through, 0=not 1st time
 gr00B2   rmb    1           Filled (circle,ellipse) flag 0=Not filled
-gr00B3   rmb    256-.       ??? UNUSED
+*gr00B3   rmb    256-.       ??? UNUSED
+gr00B3   rmb   1          temp veriable grfdrv
+gr00B4   rmb   1          temp veriable grfdrv
+gr00B5   rmb   1          regW for grfdrv
+gr00B6   rmb   1          
+gr00B7   rmb   2          
+gr00B9   rmb   2          previously used in grfdrv at $B2 but not for Filled Flag
+gr00BB   rmb   2          previously used in grfdrv at $B4
+gr00BD   rmb   2          previously used in grfdrv at $B6
+gr00BF   rmb    256-.
 * GPLoad buffer - $1200 in system block 0
 GPBuf    rmb   72         common move buffer for gpload/get/put
 gb0000   equ   72         Size of get/put buffer ($48)
