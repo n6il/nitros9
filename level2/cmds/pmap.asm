@@ -12,7 +12,7 @@
 * Original version.
 *
 *   2      1989/09/12  Ken Drexler
-* Revised to handle 4K or 8K blocks
+* Revised to handle 4K or 8K blocks.
 
          nam   PMap
          ttl   Show process map information

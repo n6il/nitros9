@@ -7,13 +7,13 @@
 * Comment
 * ------------------------------------------------------------------
 *  7       ????/??/??
-* Original Tandy/Microware version
+* Original Tandy/Microware version.
 *
 *  8       2003/01/14  Boisy Pitre
 * Changed option to -e, optimized slightly. Could use greater optimization.
 *
 *  9       2003/08/24  Rodney Hamilton
-* Corrected leading zero supression, more optimizations
+* Corrected leading zero supression, more optimizations.
 
          nam   MDir
          ttl   Show module information
