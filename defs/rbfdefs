@@ -1,4 +1,4 @@
-         ifeq  RBFDEFS
+         IFEQ  RBFDEFS
 
 RBFDEFS  set   1
 
@@ -27,41 +27,57 @@ RBFDEFS  set   1
 * 83/12/13 Added BufBusy bit in state flag (PD.SMF)                     rfd
 * 84/07/06 Added Bit Definitions for DD.FMT                             MGH
 * 87/06/23 Updated with Dev Desc Info                                   KKD
+* 03/06/02 Updated comments for clarity.                                BGP
+
+
+* RBF stands for 'Random Block Filemanager' and is a package of subroutines
+* that define the logical structure of a disk and allows access to the files
+* in that structure.
+*
+* The data structures in this file give RBF its 'personality' and are used
+* by RBF itself, as well as applications that will require disk I/O.
+
 
 *******************************
 * RBF Device Descriptor Offsets
 *
+* These definitions are for RBF device descriptors.
+
          org   M$DTyp
-         rmb   1          Device type (IT.DTP) (1=RBF)
+         rmb   1          Device type (DT.RBF)
 IT.DRV   rmb   1          Drive number
 IT.STP   rmb   1          Step rate
-IT.TYP   rmb   1          Disk device type (5" 8" other)
+IT.TYP   rmb   1          Disk device type information
 IT.DNS   rmb   1          Density capability
 IT.CYL   rmb   2          Number of cylinders
 IT.SID   rmb   1          Number of surfaces
-IT.VFY   rmb   1          0=verify disk writes
+IT.VFY   rmb   1          Verify disk writes (0 = verify, 1 = don't)
 IT.SCT   rmb   2          Default sectors/track
-IT.T0S   rmb   2          Default sectors/track tr00,s0
+IT.T0S   rmb   2          Default sectors/track for track 0 sector 0
 IT.ILV   rmb   1          Sector interleave offset
 IT.SAS   rmb   1          Segment allocation size
 
-*************************************
-* IT.TYP/IT.DNS/IT.STP definitions
+* IT.TYP/IT.DNS/IT.STP bit definitions
 *
+TYP.FLP  equ   %00000000	Floppy disk
+TYP.HARD equ   %10000000	Hard disk
+
+* The following TYP and DNS bit definitions are applicable
+* only if the TYP.FLP bit is clear.
 TYP.5    equ   %00000000	5" media
 TYP.8    equ   %00000001	8" media
 TYP.CCF  equ   %00100000	CoCo format
 TYP.NCCF equ   %00000000	Non-CoCo format
 TYP.SOF  equ   %00000000	Standard OS-9 format
 TYP.NSF  equ   %01000000	Non-standard format
-TYP.FLP  equ   %00000000	Floppy disk
-TYP.HARD equ   %10000000	Hard disk
 
+* Density bit definitions
 DNS.FM   equ   %00000000        Single-density (FM)
 DNS.MFM  equ   %00000001        Double-density (MFM)
 DNS.STD  equ   %00000000        Single track density (48 tpi)
 DNS.DTD  equ   %00000010        Single track density (96 tpi)
 
+* Floppy disk step rate definitions
          IFEQ  Level-1
 STP.30ms equ   3                30ms step rate
 STP.20ms equ   2                20ms step rate
@@ -74,8 +90,13 @@ STP.12ms equ   2                12ms step rate
 STP.6ms  equ   3                6ms step rate
          ENDC
 
+
 *************************************
 * Random Block Path Descriptor Format
+*
+* A path descriptor is created for every new path that is open
+* via the I$Open system call (processed by IOMan).  Process
+* descriptors track state information of a path.
 *
          org   PD.FST
 PD.SMF   rmb   1          State flags
@@ -117,37 +138,44 @@ FDBUF    equ   $04        File descriptor in buffer
 InDriver equ   $20        Currently in Disk Driver, or queued
 BufBusy  equ   $40        Buffer is currently busy
 
-         ifne  Level-1
+         IFNE  Level-1
 ************************************
 * Random Block Path Extension Format
 *
+* RBF paths under Level Two have additional information that
+* is referenced by the path extension area.
+*
          org   0
 PE.PE    rmb   1          PE path number
-PE.PDptr rmb   2          back ptr to this PE's Path Descriptor
+PE.PDptr rmb   2          Back ptr to this PE's Path Descriptor
 PE.NxFil rmb   2          Drive Open-File list ptr
-PE.Confl rmb   2          circular File Conflict list
+PE.Confl rmb   2          Circular File Conflict list
 PE.Lock  rmb   1          Path lockout status
 PE.LoLck rmb   4          Low Locked Logical addr
 PE.HiLck rmb   4          High Locked Logical addr
 PE.Wait  rmb   2          PE ptr to (next) locked-out PE
 PE.TmOut rmb   2          Max ticks to wait for locked segment
 PE.Owner rmb   1          Process ID of owner of locked segment
-PE.Req   rmb   1          temp for PE.Lock in GAIN when LockSeg fails
-PE.Prior rmb   1          tmp for process priority while in driver
-PE.SigSg rmb   1          signal code to send
-PE.SigID rmb   1          process ID to send the signal to
-         rmb   32-.       reserved
-PE.FilNm rmb   32         temp for filename during directory search
+PE.Req   rmb   1          Temp for PE.Lock in GAIN when LockSeg fails
+PE.Prior rmb   1          Temp for process priority while in driver
+PE.SigSg rmb   1          Signal code to send
+PE.SigID rmb   1          Process ID to send the signal to
+         rmb   32-.       Reserved
+PE.FilNm rmb   32         Temp for filename during directory search
 
 * PE.Lock status codes
-Unlocked equ   0          no portion of file is locked
-RcdLock  equ   1          record from LoLck to HiLck locked
-FileLock equ   2          entire file locked
+Unlocked equ   0          No portion of file is locked
+RcdLock  equ   1          Record from LoLck to HiLck locked
+FileLock equ   2          Entire file locked
 EofLock  equ   4          End of file is locked
-         endc  
+         ENDC  
+
 
 ***********************
 * LSN0 Disk Data Format
+*
+* Logical Sector Number 0 is the first sector on an RBF formatted device
+* and contains information about the device's size and format.
 *
          org   0
 DD.TOT   rmb   3          Total number of sectors
@@ -157,7 +185,7 @@ DD.BIT   rmb   2          Number of sectors/bit
 DD.DIR   rmb   3          Address of root directory fd
 DD.OWN   rmb   2          Owner
 DD.ATT   rmb   1          Attributes
-DD.DSK   rmb   2          Disk id
+DD.DSK   rmb   2          Disk ID
 DD.FMT   rmb   1          Disk format; density/sides
 DD.SPT   rmb   2          Sectors/track
 DD.RES   rmb   2          Reserved for future use
@@ -166,16 +194,21 @@ DD.BT    rmb   3          System bootstrap sector
 DD.BSZ   rmb   2          Size of system bootstrap
 DD.DAT   rmb   5          Creation date
 DD.NAM   rmb   32         Volume name
-DD.OPT   rmb   32         option area
+DD.OPT   rmb   32         Option area
 
-* DD.FMT Bit Definitions
+* DD.FMT Bit Definitions - valid only if device is a floppy disk
 FMT.SIDE equ   %00000001  Single Side=0, Double Side=1
 FMT.DNS  equ   %00000010  Single DNS=0, Double DNS=1
 FMT.TDNS equ   %00000100  48tpi=0, 96tpi=1
 FMT.T0DN equ   %00100000  Track 0 DNS, see FMT.DNS
 
+
 ************************
 * File Descriptor Format
+*
+* The file descriptor is a sector that is present for every file
+* on an RBF device.  It contains attributes, modification dates,
+* and segment information on a file.
 *
          org   0
 FD.ATT   rmb   1          Attributes
@@ -194,47 +227,55 @@ FD.LS1   equ   FD.SEG+((256-FD.SEG)/FDSL.S-1)*FDSL.S
 FD.LS2   equ   (256/FDSL.S-1)*FDSL.S
 MINSEC   set   16
 
+
 ************************
 * Directory Entry Format
+*
+* Directory entries are part of a directory and define the name
+* of the file, as well as a pointer to its file descriptor.
 *
          org   0
 DIR.NM   rmb   29         File name
 DIR.FD   rmb   3          File descriptor physical sector number
 DIR.SZ   equ   .          Directory record size
 
+
 ****************
 * Static Storage
 *
 * Overall Disk Static Storage
 *
-* Note:  This does not reserve any memory for drive tables.  Each Driver is
-*        responsible for reserving sufficient memory for the appropriate
-*        number of tables.
+* Note:  This does not reserve any memory for drive tables.  Each
+*        driver is responsible for reserving sufficient memory for
+*        the appropriate number of tables.
 *
          org   V.USER     Reserve required           ($06)
 V.NDRV   rmb   1          Number of drives           ($07)
          rmb   8          reserved                   ($08)
 DRVBEG   equ   .          Beginning of drive tables  ($10)
-*
+
+
+****************
 * Global Storage For Disk Drive Tables
-* Each Table Contains The First 'DD.Siz' Bytes
-* From Sector 0, And The Current Track, Stepping Rate,
-* Bit-Map Use Flag, And Disk Type
+*
+* Each table contains the first 'DD.SIZ' bytes from
+* LSN 0, and the current track, stepping rate,
+* bitmap use flag, and disk type.
 *
          org   0
-         rmb   DD.SIZ     Device descriptor, sector 0
+         rmb   DD.SIZ     Device descriptor, LSN 0
 V.TRAK   rmb   2          Current track
 V.BMB    rmb   1          Bit-map use flag
-V.FileHd rmb   2          open file list for this drive
+V.FileHd rmb   2          Open file list for this drive
 V.DiskID rmb   2          Disk ID
 V.BMapSz rmb   1          Bitmap Size
-V.MapSct rmb   1          lowest reasonable bitmap sector
-V.ResBit rmb   1          reserved bitmap sector (for compaction)
+V.MapSct rmb   1          Lowest reasonable bitmap sector
+V.ResBit rmb   1          Reserved bitmap sector (for compaction)
 V.ScTkOf rmb   1          Sector/Track byte (Combined from descriptor)
 V.ScOfst rmb   1          Sector offset split from byte above
 V.TkOfst rmb   1          Track offset split from byte above
-         rmb   4          reserved
+         rmb   4          Reserved
 DRVMEM   equ   .
 
-         endc
+         ENDC
 
