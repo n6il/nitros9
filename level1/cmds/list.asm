@@ -22,40 +22,42 @@ rev      set   $01
 edition  set   5
 
          mod   eom,name,tylg,atrv,start,size
-u0000    rmb   1
-ParmPtr  rmb   2
-u0003    rmb   650
+
+         org   0
+filepath rmb   1
+parmptr  rmb   2
+readbuff rmb   650
 size     equ   .
 
 name     fcs   /List/
          fcb   edition
 
-start    stx   <ParmPtr
-         lda   #1
-         os9   I$Open   
-         bcs   L0049
-         sta   <u0000
-         stx   <ParmPtr
-L001F    lda   <u0000
-         leax  u0003,u
-         ldy   #200
-         os9   I$ReadLn 
-         bcs   L0035
-         lda   #1
-         os9   I$WritLn 
-         bcc   L001F
-         bra   L0049
-L0035    cmpb  #E$EOF
-         bne   L0049
-         lda   <u0000
-         os9   I$Close  
-         bcs   L0049
-         ldx   <ParmPtr
-         lda   ,x
-         cmpa  #C$CR
-         bne   start
-         clrb  
-L0049    os9   F$Exit   
+start    stx   <parmptr		save parameter pointer
+         lda   #READ.		read access mode
+         os9   I$Open   	open file
+         bcs   L0049		branch if error
+         sta   <filepath	else save path to file
+         stx   <parmptr		and updated parm pointer
+L001F    lda   <filepath	get path
+         leax  readbuff,u	point X to read buffer
+         ldy   #200		read up to 200 bytes
+         os9   I$ReadLn 	read it!
+         bcs   L0035		branch if error
+         lda   #1		standard output
+         os9   I$WritLn 	write line to stdout
+         bcc   L001F		branch if ok
+         bra   L0049		else exit
+L0035    cmpb  #E$EOF		did we get an EOF error?
+         bne   L0049		exit if not
+         lda   <filepath	else get path
+         os9   I$Close  	and close it
+         bcs   L0049		branch if error
+         ldx   <parmptr		get param pointer
+         lda   ,x		get char
+         cmpa  #C$CR		end of command line?
+         bne   start		branch if not
+         clrb  			else clear carry
+L0049    os9   F$Exit   	and exit
 
          emod
 eom      equ   *
