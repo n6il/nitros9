@@ -1,0 +1,5 @@
+Level	equ	2
+
+	use	os9defs
+	use	scfdefs
+        use     systype
