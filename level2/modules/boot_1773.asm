@@ -23,7 +23,7 @@
 *      $01  =
 *      $02  =
 *      $03  = 30ms
-STEP     equ   $00
+STEP     set   $00
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
