@@ -8,7 +8,7 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>pause</function></funcdef>
-  <void>
+  <void/>
 </funcprototype>
 </funcsynopsis>
 
