@@ -10,6 +10,8 @@
 *        the init module
 * 26d    Added support for obtaining key repeat info    BGP 98/10/23
 *        from the init module
+* 26e    Added support for obtaining mouse info         BGP 02/07/24
+*        from the init module
 
          nam   CC3IO
          ttl   CoCo 3 I/O driver
@@ -23,7 +25,7 @@
 
 tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
-rev      set   4
+rev      set   5
 edition  set   26
 
          mod   eom,name,tylg,atrv,start,size
@@ -170,6 +172,10 @@ Init     ldx   <D.CCMem
          ldy   <D.Init    get init module ptr
          lda   MonType,y  get monitor type byte
          sta   <G.MonTyp,x save off
+         ldd   MouseInf,y get mouse information
+         sta   <G.Mouse+Pt.Res,x	save off hi-res/lo-res flag
+         stb   <G.Mouse+Pt.Actv,x	save off left/right
+
 * Set key repeat rate/delay
          ldd   KeyRptS,y  get key repeat start/delay constant
          std   <G.KyDly,x
