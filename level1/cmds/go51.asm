@@ -23,9 +23,9 @@ edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   2
-u0002    rmb   2
-u0004    rmb   2
+ioptr    rmb   2
+drvrptr  rmb   2
+drvrsiz  rmb   2
 OptBuf   rmb   32
 size     equ   .
 
@@ -33,27 +33,28 @@ name     fcs   /go51/
          fcb   edition
 
 IOMod    fcs   /KBVDIO/
+IOModL   equ   *-IOMod
 Driver   fcs   /drvr51/
 Desc     fcs   /term/
 
-start    leax  >IOMod,pcr
-         lbsr  DoLink
-         lbcs  Bye
-         stx   ,u
-         lbsr  DoUnlink
-         leax  >Driver,pcr
-         lbsr  DoLink
-         lbcs  Bye
-         stx   u0002,u
-         ldd   $02,x
-         std   u0004,u
+start    leax  >IOMod,pcr		point to I/O module
+         lbsr  DoLink			link to it
+         lbcs  Bye			branch if error
+         stx   ioptr,u			save ptr to module
+         lbsr  DoUnlink			unlink it
+         leax  >Driver,pcr		point to driver
+         lbsr  DoLink			link to it
+         lbcs  Bye			branch if error
+         stx   drvrptr,u		save ptr to driver
+         ldd   M$Size,x			get module size
+         std   drvrsiz,u		save driver size
          pshs  u,cc
-         orcc  #IntMasks
+         orcc  #IntMasks		mask interrupts
          ldx   >D.AltIRQ
-         stx   >$0032
-         ldy   ,u
-         ldx   u0004,u
-         ldu   u0002,u
+         stx   >D.IRQ			swap irq vector
+         ldy   ioptr,u			
+         ldx   drvrsiz,u		get driver size
+         ldu   drvrptr,u		get driver pointer
 L0054    lda   ,u+
          sta   ,y+
          leax  -$01,x
@@ -72,22 +73,22 @@ L0054    lda   ,u+
          ora   #$38
          sta   $03,x
          puls  u,cc
-         ldx   u0002,u
-         lbsr  DoUnlink
-         ldx   ,u
-         ldd   $04,x
-         leax  d,x
+         ldx   drvrptr,u		get pointer to driver module
+         lbsr  DoUnlink			unlink it
+         ldx   ioptr,u			get io mod pointer
+         ldd   M$Name,x			get offset to I/O module name
+         leax  d,x			point X to name
          leay  >IOMod,pcr
-         ldb   #$06
+         ldb   #IOModL
 L008B    lda   ,y+
          sta   ,x+
          decb  
          bne   L008B
-         lda   #$01
-         ldb   #SS.Opt
-         leax  OptBuf,u
-         os9   I$GetStt 
-         bcs   Bye
+         lda   #$01			standard output
+         ldb   #SS.Opt			option getstat
+         leax  OptBuf,u			point to buffer
+         os9   I$GetStt 		get status
+         bcs   Bye			branch if error
          clr   (PD.UPC-PD.OPT),x
          lda   #24
          sta   (PD.PAG-PD.OPT),x
@@ -102,9 +103,9 @@ L008B    lda   ,y+
          tfr   u,x
          puls  u
          bcs   Bye
-         clr   <$13,x
-         lda   #$18
-         sta   <$1A,x
+         clr   <IT.UPC,x		clear uppercase flag
+         lda   #24			new screen has 24 lines
+         sta   <IT.PAG,x		save it
          bsr   DoUnlink
          clrb  
 Bye      os9   F$Exit   
