@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* ?      Original Tandy/Microware version
-* 1      Put a proper edition number after the name     BGP 98/10/26
+*          ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*   1      1998/10/26  Boisy G. Pitre
+* Put a proper edition number after the name.
 
          nam   Inkey
          ttl   Key detect subroutine
@@ -19,7 +23,7 @@
 
 tylg     set   Sbrtn+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   1
 
          mod   eom,name,tylg,atrv,start,size

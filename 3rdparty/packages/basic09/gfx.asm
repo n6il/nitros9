@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 1      Original Tandy/Microware version
+*   1      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
 
          nam   GFX
          ttl   CoCo 2 graphics subroutine module
@@ -18,7 +20,7 @@
 
 tylg     set   Sbrtn+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
