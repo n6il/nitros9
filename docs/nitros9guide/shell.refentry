@@ -78,6 +78,67 @@ Modifiers
         := # <replaceable>integer</replaceable> set process memory size in pages
         := # <replaceable>integer</replaceable> K   set program memory size in 1K increments
 </synopsis>
+<!--
+.. A new way to describe the syntax ..
+<productionset><title>Program Line</title>
+<production id="shell.line">
+  <lhs>pgm line</lhs>
+  <rhs><nonterminal def="shell.pgm">pgm</nonterminal> 
+       {<nonterminal def="shell.pgm">pgm</nonterminal>}
+  </rhs>
+</production>
+<production id="shell.pgm">
+  <lhs>pgm</lhs>
+  <rhs>[<nonterminal def="shell.params">params</nonterminal>]
+[ <nonterminal def="shell.name">name</nonterminal>
+[<nonterminal def="shell.modif">modif</nonterminal>]
+[<nonterminal def="shell.pgmparams">pgm params</nonterminal>]
+[<nonterminal def="shell.modif">modif</nonterminal>] ]
+[<nonterminal def="shell.sep">sep</nonterminal>]
+  </rhs>
+</production>
+</productionset>
+<productionset><title>Program Specifications</title>
+<production id="shell.name">
+  <lhs>name</lhs>
+  <rhs>
+<nonterminal def="shell.name">module name</nonterminal>
+| <nonterminal def="shell.pathlist">pathlist</nonterminal>
+|( <nonterminal def="shell.pgmlist">pgm list</nonterminal> )
+  </rhs>
+</production>
+</productionset>
+<productionset><title>Parameters</title>
+<production id="shell.params">
+  <lhs>params</lhs>
+  <rhs><nonterminal def="shell.param">param</nonterminal>
+{ <nonterminal def="shell.delim">delim</nonterminal>
+<nonterminal def="shell.param">param</nonterminal> }
+</rhs>
+</production>
+<production id="shell.delim">
+  <lhs>delim</lhs>
+  <rhs>space or comma characters</rhs>
+</production>
+<production id="shell.param">
+  <lhs>param</lhs>
+  <rhs>ex <nonterminal def="shell.name">name</nonterminal>
+[<nonterminal def="shell.modif">modif</nonterminal>]
+<lineannotation>chain to program specified</lineannotation>
+<sbr/>
+chd <nonterminal def="shell.name">pathlist</nonterminal>
+<lineannotation>change working directory</lineannotation>
+</rhs>
+</production>
+
+
+
+
+<production id="shell.param">
+  <lhs>param</lhs>
+  <rhs>space or comma characters</rhs>
+</production>
+</productionset>
+-->
 </refsect1>
 </refentry>
-

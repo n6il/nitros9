@@ -49,3 +49,26 @@ DOCBOOK REFERENCES:
 
   Mark Galassi's tutorial/introduction to writing in DocBook.
     http://nis-www.lanl.gov/~rosalia/mydocs/docbook-intro.html
+
+DOCBOOK EXTENSIONS:
+-------------------
+At the time of this writing Docbook is undergoing modularisation work.
+One of the new modules is the Extended Backhus-Naur Form, which can
+be used to describe syntax for shell and the C language. But currently
+the renderers don't understand the new elements, so we can't use them.
+I've started to rewrite the shell syntax in os9guide/shell.refentry
+
+For Extended Backhus-Naur Forms use:
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook EBNF Module V1.1CR1//EN"
+     "http://www.oasis-open.org/docbook/xml/ebnf/1.1CR1/dbebnf.dtd" [
+
+
+DSSSL STYLESHEET:
+----------------
+Docbook2pdf uses DSSSL stylesheet. The main one is located in this directory.
+Since the default DSSSL stylesheet is updated once in a while and you must
+reapply your preferences to the new one, here is what is different from
+the default:
+- Enumerate chapters and sections
+- Use element ids as filenames 
+- Don't generate article titlepage on separate page

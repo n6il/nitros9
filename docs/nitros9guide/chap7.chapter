@@ -10,7 +10,7 @@ run as individual processes.
 </para>
 <warning>
 <para>
-Although many os-9 commands may work on Level One or Level
+Although many OS-9 commands may work on Level One or Level
 Two systems, there are differences. Take care not to mix command
 files from Level One systems on Level Two, or the reverse.
 </para>

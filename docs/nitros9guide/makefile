@@ -1,42 +1,40 @@
 BOOKL1		= os9l1guide
 BOOKL2		= os9l2guide
-STYLESHEET	= docbook-utils.dsl
+STYLESHEET	= ../stylesheets/docbook-utils.dsl
 
 all:	$(BOOKL1).pdf $(BOOKL2).pdf
 
 $(BOOKL1).pdf: $(BOOKL1).docbook $(SRCS)
-	 docbook2pdf -d docbook-utils-a4.dsl#print $(BOOKL1).docbook
+	 docbook2pdf -d $(STYLESHEET)#print $(BOOKL1).docbook
 
 $(BOOKL2).pdf: $(BOOKL2).docbook $(SRCS)
-	 docbook2pdf -d docbook-utils-a4.dsl#print $(BOOKL2).docbook
+	 docbook2pdf -d $(STYLESHEET)#print $(BOOKL2).docbook
 
 $(BOOKL1).ps: $(BOOKL1).docbook $(SRCS)
-	 docbook2ps -d docbook-utils-a4.dsl#print $(BOOKL1).docbook
-#	 docbook2ps -d $(STYLESHEET) $(BOOKL1).docbook
+	 docbook2ps -d $(STYLESHEET)#print $(BOOKL1).docbook
 
 $(BOOKL2).ps: $(BOOKL2).docbook $(SRCS)
-	 docbook2ps -d docbook-utils-a4.dsl#print $(BOOKL2).docbook
-#	 docbook2ps -d $(STYLESHEET) $(BOOKL2).docbook
+	 docbook2ps -d $(STYLESHEET)#print $(BOOKL2).docbook
 
 $(BOOKL1).html: $(BOOKL1).docbook $(SRCS)
-	$(RM) *.htm *.html
+	$(RM) *.html
 #	jade -t sgml -V html-index -d /usr/share/sgml/docbook/dsssl-stylesheets-1.64/html/docbook.dsl $(BOOKL1).docbook
 #	collateindex.pl -p -o index.docbook HTML.index
-	docbook2html -d docbook-utils-a4.dsl#html $(BOOKL1).docbook
+	docbook2html -d $(STYLESHEET)#html $(BOOKL1).docbook
 
 $(BOOKL2).html: $(BOOKL2).docbook $(SRCS)
-	$(RM) *.htm *.html
+	$(RM) *.html
 #	jade -t sgml -V html-index -d /usr/share/sgml/docbook/dsssl-stylesheets-1.64/html/docbook.dsl $(BOOKL2).docbook
 #	collateindex.pl -p -o index.docbook HTML.index
-	docbook2html -d docbook-utils-a4.dsl#html $(BOOKL2).docbook
+	docbook2html -d $(STYLESHEET)#html $(BOOKL2).docbook
 
 print: $(BOOKL1).ps $(BOOKL2).ps
 	psnup -2 $(BOOKL1).ps | lpr
 	psnup -2 $(BOOKL2).ps | lpr
 
 clean:
-	$(RM) *.htm *.html $(BOOKL1).pdf $(BOOKL1).ps $(BOOKL2).pdf \
-	$(BOOKL2).ps *.log *.out *.aux
+	$(RM) *.html $(BOOKL1).pdf $(BOOKL1).ps $(BOOKL2).pdf \
+	      $(BOOKL2).ps *.log *.out *.aux
 
 SRCS          = $(CHAPS) $(APXS) $(REFS)
 CHAPS         = intro.preface \

@@ -1,7 +1,7 @@
 DOCBOOKDSL      = /usr/share/sgml/docbook/dsssl-stylesheets/print/docbook.dsl
 XMLDCL          = /usr/share/doc/openjade-1.3.1/pubtext/xml.dcl
 BOOK		= ccguide
-STYLESHEET	= docbook-utils.dsl
+STYLESHEET	= ../stylesheets/docbook-utils.dsl
 
 PREFACE		= intro.preface
 CHAPTERS	= chap1.chapter chap2.chapter chap3.chapter chap4.chapter
@@ -39,17 +39,13 @@ lint:
 	xmllint --valid --noout $(BOOK).docbook
 
 $(BOOK).pdf: $(BOOK).docbook $(SUPPORT)
-	docbook2pdf -d "docbook-utils-a4.dsl#print" $(BOOK).docbook
+	docbook2pdf -d "$(STYLESHEET)#print" $(BOOK).docbook
 
 xmlto: $(BOOK).docbook
 	xmlto pdf $(BOOK).docbook
 
 $(BOOK).ps: $(BOOK).docbook
-	docbook2ps -d "docbook-utils-a4.dsl#print" $(BOOK).docbook
-#	docbook2ps -d $(STYLESHEET)#print $(BOOK).docbook
-
-$(BOOK).txt: $(BOOK).docbook
-	docbook2txt -d "docbook-utils-a4.dsl#print" $(BOOK).docbook
+	docbook2ps -d "$(STYLESHEET)#print" $(BOOK).docbook
 
 # This rule is an alternative way to produce a PDF document
 xml-pdf:
@@ -58,13 +54,13 @@ xml-pdf:
 
 
 $(BOOK).html: $(BOOK).docbook
-	$(RM) *.htm *.html
+	$(RM) *.html
 #	jade -t sgml -V html-index -d /usr/share/sgml/docbook/dsssl-stylesheets-1.64/html/docbook.dsl $(BOOK).docbook
 #	collateindex.pl -p -o index.docbook HTML.index
-	docbook2html -d "docbook-utils-a4.dsl#html" $(BOOK).docbook
+	docbook2html -d "$(STYLESHEET)#html" $(BOOK).docbook
 
 print: $(BOOK).ps
 	psnup -2 $(BOOK).ps | lpr
 
 clean:
-	$(RM) *.htm *.html *.tex *.out $(BOOK).pdf $(BOOK).ps
+	$(RM) *.html *.tex *.out $(BOOK).pdf $(BOOK).ps
