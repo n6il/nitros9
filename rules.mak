@@ -36,6 +36,7 @@ OS92UNIX	= $(OS9TOOLSDIR)/o2u
 OS9FORMAT	= $(OS9TOOLSDIR)/os9 format
 OS9GEN		= $(OS9TOOLSDIR)/os9 gen
 OS9RENAME	= $(OS9TOOLSDIR)/os9 rename
+OS9ATTR		= $(OS9TOOLSDIR)/os9 attr
 PADROM		= $(OS9TOOLSDIR)/os9 padrom
 MOUNT		= sudo mount
 UMOUNT		= sudo umount
