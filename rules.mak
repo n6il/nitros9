@@ -11,7 +11,7 @@ ASOUT		= -o=
 AFLAGS		= -q
 
 # Commands
-RM		= rm
+RM		= rm -f
 MERGE		= cat
 PADROM		= os9padrom
 ECHO		= echo
