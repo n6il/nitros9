@@ -17,8 +17,7 @@
          use   rbfdefs
          endc
 
-* Tweakable options
-DOHELP   set   1
+DOHELP   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev

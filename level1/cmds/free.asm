@@ -52,11 +52,13 @@ size     equ   .
 
 name     fcs   /Free/
          fcb   edition
+         IFNE  DOHELP
 HelpMsg  fcb   C$LF
          fcc   "Use: free [/diskname]"
          fcb   C$LF
          fcc   "  tells how many disk sectors are unused"
          fcb   C$CR
+         ENDC
 L0052    fcs   /" created on:/
 L005F    fcs   "Capacity:"
 L0068    fcs   " sectors ("
@@ -73,10 +75,13 @@ start    leay  u000D,u
          beq   L00E0
          cmpa  #PDELIM
          beq   L00CC
-L00BC    leax  >HelpMsg,pcr		point to help message
+L00BC    equ   *
+         IFNE  DOHELP
+         leax  >HelpMsg,pcr		point to help message
          ldy   #64			max bytes
          lda   #$02			stderr
          os9   I$WritLn 		write it
+         ENDC
          lbra  ExitOk			and branch
 L00CC    leax  -$01,x
          pshs  x

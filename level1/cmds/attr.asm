@@ -17,12 +17,12 @@
          use   rbfdefs
          endc  
 
+DOHELP   set   0
+
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   11
-
-DOHELP   set   1
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -171,8 +171,12 @@ L019C    sta   ,y+
          leax  <u0078,u
          clrb  
          bra   L01B0
+ShowHelp equ   *
          IFNE  DOHELP
-ShowHelp leax  >HelpMsg,pcr
+         leax  >HelpMsg,pcr
+         ELSE
+         clrb
+         bra  L01BE
          ENDC
 L01B0    pshs  b
          lda   #2

@@ -16,6 +16,8 @@
          use   defsfile
          endc
 
+DOHELP   set   0
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
@@ -52,7 +54,8 @@ name     fcs   /Backup/
 
 L0014    fcc   "/d0 /d1"
          fcb   C$CR
-L001C    fcb   C$LF
+         IFNE  DOHELP
+HelpMsg  fcb   C$LF
          fcc   "Use: Backup [e] [s] [-v]"
          fcb   C$LF
          fcc   "            [/dev1 [/dev2]]"
@@ -62,6 +65,7 @@ L001C    fcb   C$LF
          fcc   "  s - single drive prompts"
          fcb   C$LF
          fcc   " -v - inhibit verify pass"
+         ENDC
 L00A0    fcb   $8D 
 L00A1    fcc   "Ready to backup from"
 L00B5    fcb   $A0 
@@ -138,7 +142,7 @@ L01D7    lda   ,-x
          cmpa  #PDELIM
          beq   L01E7
          cmpa  #C$CR
-         lbne  L040E
+         lbne  ShowHelp
 L01E3    leax  >L0014,pcr
 L01E7    leay  >L00A1,pcr
          lbsr  L044B
@@ -156,7 +160,7 @@ L01F7    lda   ,x+
          ldx   <u0002
          lda   ,x+
 L020B    cmpa  #PDELIM
-         lbne  L040E
+         lbne  ShowHelp
          leax  -$01,x
          leay  >L00B6,pcr
          lbsr  L044B
@@ -355,10 +359,15 @@ L0403    stx   <u0011
          sta   <u0014
          bcc   L03BF
 L040D    rts   
-L040E    leax  <u0057,u
+ShowHelp equ   *
+         IFNE  DOHELP
+         leax  <u0057,u
          stx   <u0055
-         leay  >L001C,pcr
+         leay  >HelpMsg,pcr
          bra   L03B6
+         ELSE
+         bra   L03BA
+         ENDC
 L0419    leay  >L00D9,pcr
 L041D    tst   <u000B
          beq   L0439
@@ -376,7 +385,7 @@ L0439    rts
 L043A    pshs  x
          os9   F$PrsNam 
          puls  x
-         bcs   L040E
+         bcs   ShowHelp
 L0443    lda   ,x+
          bsr   L04A5
          decb  

@@ -29,10 +29,12 @@
 * Tweakable options
 DOSCSIZ  set   1	1 = include SS.ScSiz code, 0 = leave out
 DOHELP   set   0	1 = include help message, 0 = leave out
-
-Edition  set   6         
-Revs     set   1         
 BufSz    set   80        
+
+tylg     set   Prgrm+Objct
+atrv     set   ReEnt+rev
+rev      set   1         
+edition  set   6         
 
          org   0         
 nonopts  rmb   1
@@ -55,13 +57,11 @@ Txtbuf   rmb   BUFSZ
          rmb   128
 datsz    equ   .         
 
-typ      equ   Prgrm+Objct
-att      equ   ReEnt+Revs
 
-         mod   length,name,typ,att,entry,datsz
+         mod   length,name,tylg,atrv,start,datsz
 
 name     fcs   /Dump/    
-         fcb   Edition   
+         fcb   edition   
 
 title    fcc   /Address   0 1  2 3  4 5  6 7  8 9  A B  C D  E F  0 2 4 6 8 A C E/
 caret    fcb   C$CR      
@@ -76,7 +76,7 @@ shund    fcc   /======== +-+-+-+-+-+-+-+- + + + + /
          fcb   C$CR      
          ENDC
 
-entry    stx   <D.Prm    
+start    stx   <D.Prm    
          clra            
          sta   <D.Hdr    
          sta   <D.Mem    

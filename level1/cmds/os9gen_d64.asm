@@ -28,12 +28,13 @@
          use   defsfile
          endc
 
+os9start equ   $EF00
+os9size  equ   $0F80
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   8
-os9start equ  $EF00
-os9size  equ  $0F80
 
          mod   eom,name,tylg,atrv,start,size
 
