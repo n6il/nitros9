@@ -76,6 +76,9 @@
 *
 *          2003/04/21  Boisy G. Pitre
 * Folded RBF 30 comments into this version.
+*
+*  36      2003/05/01  Rodney V. Hamilton
+* Fix for LSN0 DD.TOT=0 lockout problem
 
          nam   RBF
          ttl   Random Block File Manager
@@ -94,7 +97,7 @@ lg       set   Objct
          ENDC
 tylg     set   ty+lg
 atrv     set   ReEnt+rev
-edition  set   35
+edition  set   36
 
          org   $00
 size     equ   .
@@ -104,7 +107,7 @@ size     equ   .
 name     fcs   /RBF/
          fcb   edition
 
-L0012    fcb   DRVMEM
+*L0012    fcb   DRVMEM
 
 
 ****************************
@@ -377,12 +380,23 @@ Open     pshs  y		preserve path descriptor pointer
          sta   PD.SBL+2,y
          ldx   PD.DTB,y		get pointer to drive table
          lda   DD.TOT+2,x	get total # sectors on drive
+* resave nonzero DD.TOT here and recopy
+OpenFix  equ   *
          std   PD.SIZ+2,y	copy it to file size (B=0)
          sta   PD.SSZ+2,y	copy it to segment size as well
          ldd   DD.TOT,x
          std   PD.SIZ,y
          std   PD.SSZ,y
-         puls  pc,y		restore & return
+* BUG FIX: handle special case of DD.TOT=0 in LSN0 which blocks
+* all subsequent accesses.  NOTE: since we can only access LSN0
+* for any non-zero value, set DD.TOT=1 to avoid NOT READY error.
+         bne   OpenRet		MSW nonzero, OK
+         lda   DD.TOT+2,x	MSW=0, check LSB
+         bne   OpenRet		LSB nonzero, OK
+         inca			DD.TOT=0, make it 1
+         sta   DD.TOT+2,x	fix drive table
+         bra   OpenFix		and resave (B=0)
+OpenRet  puls  pc,y		restore & return
 
 Open1BB  lda   PD.MOD,y		get file mode
          lbsr  ChkAttrs		can user access file?
@@ -1520,11 +1534,11 @@ Sst814   ldb   $03,u		get LSB of logical sector # of FD to dir
 Sst81E   ldu   PD.DEV,y		get pointer to device table
          stu   PD.DVT,y		copy it for user
          lda   PD.DRV,y		get drive #
-         ldb   >L0012,pcr	get sizeof drive tables
-* confusion reigns supreme here,
-* one source loaction says its number of drive tables,
-* and the next says its the size of the table! And a 3rd
-* says its D.TYP.
+         ldb   #DRVMEM		get sizeof drive tables
+* confusion reigns supreme here - NO MORE!
+* The data stored at L0012 *IS* the drive table sizeof.
+* MY question is why this RBF constant is stored as a variable.
+* Why would it need to be changed, and by who?
          mul   			calculate offset into drive tables
          addd  V$STAT,u		add start of static memory
          addd  #DRVBEG		add offset to drive tables
@@ -1539,7 +1553,6 @@ Sst81E   ldu   PD.DEV,y		get pointer to device table
 Sst83F   lbsr  L1110		read in LSN0
          lbcs  L0915		error, return
          ldu   PD.BUF,y		get sector buffer pointer from the read-in sector
-
 * otherwise use the pointer from PD.DTB
          ldd   DD.DSK,u		get disk ID
          std   PD.DSK,y		put it in path descriptor
