@@ -32,8 +32,8 @@ name     fcs   /Clock/
 
 SysTbl   fcb   F$Time
          fdb   FTime-*-2
-         fcb   $27
-         fdb   FUnk-*-2
+         fcb   F$VIRQ
+         fdb   FVIRQ-*-2
          fcb   $80
 
 * table of days of the month
@@ -163,7 +163,7 @@ L00DF    ldx   ,y++
          leay  -2,y
          rts
 
-FUnk     pshs  cc
+FVIRQ    pshs  cc
          orcc  #FIRQMask+IRQMask
          ldy   <D.CLTB
          ldx   <D.Init
