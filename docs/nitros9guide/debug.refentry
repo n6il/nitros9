@@ -1,4 +1,4 @@
-<refentry id="date">
+<refentry id="debug">
 <refnamediv>
 <refname>DEBUG</refname>
 <refpurpose>Interactive Debugger</refpurpose>
