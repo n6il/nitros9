@@ -331,25 +331,34 @@ MODNAME  fcs   "gshell"
 * Will change to not bother preserving U, assume data area always @ 0
 CSTART   pshs  Y          Save ptr to end of parm area
          pshs  U          Save ptr to start of data area
+         IFNE  H6309
          clr   ,-s        Init all of direct page to 0's
          ldw   #256
          tfm   s,u+
          leas  1,s        Eat 0 byte
+         ELSE
+         ENDC
          ldx   ,S         Get ptr to start of data area again
          leau  ,X         Point U to it again
          leax  END,X      Point to End of GSHELL data area
          pshs  X          Save it
          leay  ETEXT,PC   Point to a table of initialized data (includes screen height)
+         IFNE  H6309
          ldw   ,y++       Get size of data block
          tfm   y+,u+      Block copy initialized data
+         ELSE
+         ENDC
          ldu   2,S        Get ptr to start of data area again
          leau  <TNDYITMS,U Point to Tandy Menu Items array in data area
+         IFNE  H6309
          ldw   ,y++       Get size of data block
          tfm   y+,u+      Block copy initialized data
          ldw   ,s         Get end address
          clr   ,-s        Zero byte
          subr  u,w        W=Size of area to clear
          tfm   s,u+       Clear until end of data area
+         ELSE
+         ENDC
          ldu   3,s        Get ptr to start of data area again
          leas  5,s        Eat zero byte & End/Start of data markers
          puls  X          Get ptr to end of parm area
@@ -1173,7 +1182,12 @@ KILPDES3 ldd   GD.LINK,U  Get next entry in linked list
          ldx   ,S         Get ptr to one previous to the one we want to kill
          std   GD.LINK,X  Repoint previous entry to link to next entry (bypass us)
 KILPDES4 ldd   #GD.LINK   Offset to link ptr in structure
+         IFNE  H6309
          addr  u,d        Point to next link ptr entry in current table entry
+         ELSE
+         pshs  u
+         addd  ,s++
+         ENDC
          cmpd  PTBLNEXT   Same as next available process descriptor link?
          bne   KILPDES6   No, skip ahead
          ldd   ,S         Get previous entry ptr
@@ -1983,7 +1997,12 @@ ISITICON pshs  U
          ldd   PT.ACX,X   Get X coord
          tst   FLAG640W   640 wide screen?
          bne   ISITICO1   No, skip ahead
+         IFNE  H6309
          asrd             Divide by 2 (scale to 320)
+         ELSE
+         asra
+         rorb
+         ENDC
 ISITICO1 subd  #8
          std   2,S        Save modified X coord
          cmpd  #32        Is X coord within 32 pixels of left side (no border)?
@@ -6126,7 +6145,12 @@ MousChk1 ldb   #PTRSDEND-PTRSIDE Check for Mouse port
          cmpa  #1
          bhi   Mse1Ex     <>0 or 1 is illegal
          ldb   #1
+         IFNE  H6309
          subr  a,b        Invert value
+         ELSE
+         pshs  a
+         subb  ,s+
+         ENDC
          incb             Bump up to 1-2 for SS.GIP
          sta   <GIPMSPRT  Save it
 Mse1Ex   lbra  PROCENV4
@@ -7560,7 +7584,13 @@ ATOI6    subb  #$30       Convert to binary
 ATOI65   ldd   1,S        Get current result
          tst   3,S        Was there a negative sign?
          beq   ATOI8      No, done
+         IFNE  H6309
          negd  
+         ELSE
+         nega  
+         negb  
+         sbca  #$00
+         ENDC
 ATOI8    leas  4,S        Eat temp vars
          puls  U,PC       Restore U & exit
 
@@ -7584,7 +7614,13 @@ CCMOD2   ldx   2,S
          tfr   X,D
          tst   NSIGN,Y
          beq   CCMODX
+         IFNE  H6309
          negd  
+         ELSE
+         nega  
+         negb  
+         sbca  #$00
+         ENDC
 CCMODX   std   ,S++
          rts   
 
@@ -7601,12 +7637,24 @@ CCDIV    subd  #0
          clr   1,S
          tsta  
          bpl   CCDIV1
+         IFNE  H6309
          negd  
+         ELSE
+         nega  
+         negb  
+         sbca  #$00
+         ENDC
          inc   1,S
          std   2,S
 CCDIV1   ldd   6,S
          bpl   CCDIV2
+         IFNE  H6309
          negd  
+         ELSE
+         nega  
+         negb  
+         sbca  #$00
+         ENDC
          com   1,S
          std   6,S
 CCDIV2   lda   #1
@@ -7635,7 +7683,13 @@ CCDIV6   rol   7,S
          tst   1,S
          beq   CCDIV7
          ldd   6,S
+         IFNE  H6309
          negd  
+         ELSE
+         nega  
+         negb  
+         sbca  #$00
+         ENDC
          std   6,S
 CCDIV7   ldx   4,S
          ldd   6,S

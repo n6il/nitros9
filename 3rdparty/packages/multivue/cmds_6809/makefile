@@ -3,8 +3,8 @@ include ../../../../rules.mak
 H6309		= $(AFLAGS) -aH6309=1 -e
 DEPENDS		= ./makefile
 
-CMDS		= gshell_6309 cocopr control demo fstat gcal gcalc gclock \
-		gport gprint
+CMDS		= gshell_6309 gshell_6809 \
+		cocopr control demo fstat gcal gcalc gclock gport gprint
 
 ALLOBJS		= $(CMDS)
 
@@ -13,6 +13,9 @@ all:	$(ALLOBJS)
 
 gshell_6309: gshell.asm
 	$(AS) $(ASOUT)$@ $< $(H6309)
+
+gshell_6809: gshell.asm
+	$(AS) $(ASOUT)$@ $< $(AFLAGS)
 
 clean:
 	$(RM) $(ALLOBJS)
