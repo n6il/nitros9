@@ -8,6 +8,10 @@
 * ------------------------------------------------------------------
 *   1      2003/08/18  Boisy G. Pitre
 * Stripped from clock.asm in order to modularize clocks.
+*
+*          2004/7/13   Robert Gault
+* Added Vavasour/Collyer emulator & MESS (Disto) versions and relocated
+* 'GetTime equ'   statement so it is not within a chip heading.
 
          nam   Clock2    
          ttl   Real-Time Clock Subroutines
@@ -19,6 +23,14 @@
 *
 * Setup for specific RTC chip
 *
+         IFNE  RTCJVEmu
+RTC.Base equ   $FFC0
+         ENDC
+
+         IFNE  RTCMESSEmu
+RTC.Base equ   $FF50
+         ENDC
+
          IFNE  RTCDriveWire
 RTC.Base equ   $0000     
          ENDC            
@@ -34,7 +46,7 @@ RTC.Base equ   $FF72      I don't know base for this chip.
 RTC.Base equ   $FF50      Base address of clock
          ENDC            
 
-         IFNE  RTCBB+RTCTc3
+         IFNE  RTCBB+RTCCloud9
          IFNE  RTCBB     
 RTC.Base equ   $FF5C      In SCS* Decode
          ELSE            
@@ -91,10 +103,99 @@ JmpTable
 * This subroutine is called by the main clock module.
 *
 
+GetTime  equ   *
+
+*
+* Vavasour / Collyer Emulator (ignores MPI slot)
+*
+         IFNE  RTCJVEmu
+         ldx   #RTC.Base
+         clr   ,-s
+         lda   ,x           get century
+         cmpa  #19
+         bls   cnt
+         lda   #100
+         sta   ,s
+cnt      lda   4,x
+         IFNE  Level-1
+         sta   <D.Daywk
+         ENDC
+         lda   1,x         get decade/year
+         adda  ,s+         add in century
+         ldb   2,x         get month
+         std   <D.Year     tell OS-9
+         IFNE  H6309
+         ldq   3,x         get all time values
+         stq   <D.Day
+         ELSE
+         lda   3,x         get day
+         sta   <D.Day
+         ldd   5,x         get hour/minute
+         std   <D.Hour
+         lda   7,x
+         sta   <D.Sec
+         ENDC
+         rts
+         ENDC
+
+*
+* MESS time update in Disto mode (ignores MPI)
+*   Assumes that PC clock is in AM/PM mode!!!
+*
+         IFNE  RTCMESSEmu
+         ldx   #RTC.Base
+         ldy   #D.Time
+         ldb   #12           counter for data
+         stb   1,x
+         lda   ,x
+         anda  #7
+         IFNE  Level-1
+         sta   <D.Daywk
+         ENDC
+         decb
+         bsr   getval
+         lda   -1,y
+         cmpa  #70          if >xx70 then its 19xx
+         bhi   not20
+         adda  #100
+         sta   -1,y
+not20    bsr   getval       month
+         bsr   getval       day
+         lda   #7           AM/PM mask
+         stb   1,x
+         anda  ,x
+         bitb  #4
+         pshs  cc
+         anda  #3
+         bsr   getval1
+         puls  cc
+         beq   AM
+         lda   #12         convert to 24hr time as it is PM
+         adda  -1,y
+         sta   -1,y
+AM       bsr   getval      minute
+* and now fall through into get second
+getval   lda   #$0f
+         stb   1,x
+         anda  ,x
+getval1  decb
+         pshs  b
+         ldb   #10
+         mul
+         stb   ,y
+         puls  b
+         stb   1,x
+         decb
+         lda   ,x
+         anda  #$0f
+         adda  ,y
+         sta   ,y+
+         rts
+         ENDC
+
 *
 * Eliminator time update  (lacks MPI slot select ability)
 *
-GetTime  equ   *         
          IFNE  RTCElim   
          ldx   M$Mem,pcr  get RTC base address from fake memory requirement
          ldb   #$0A       UIP status register address
@@ -292,7 +393,7 @@ UpdLeave puls  cc,x,y,pc
 *
 * Update time from B&B RTC
 *
-         IFNE  RTCBB+RTCTc3
+         IFNE  RTCBB+RTCCloud9
          pshs  u,y,cc    
          leay  ReadBCD,pcr Read bytes of clock
 
@@ -767,7 +868,7 @@ DvDone   adda  #10
 *
 * Set B&B RTC from Time variables
 *
-         IFNE  RTCBB+RTCTc3
+         IFNE  RTCBB+RTCCloud9
          pshs  u,y,cc    
          leay  SendBCD,pcr Send bytes of clock
          lbra  TfrTime   

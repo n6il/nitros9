@@ -1,4 +1,6 @@
 NitrOS-9/6809 Level 1 V03.02.02:
+- Two new clocks have been added for Jeff Vavasour's CoCo emulator and MESS:
+  clock2_jvemu and clock2_messemu, respectively.
 - kernel and kernelp2 have been renamed to krn and krnp2 respectively.
 - cc3disk has been renamed to rb1773 and has been back-ported to
   NitrOS-9 Level 1.  A bug in the verify routine has been fixed.
