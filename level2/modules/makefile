@@ -21,8 +21,9 @@ BOOTERS		= boot_1773_6ms boot_1773_30ms \
 BOOTTRACK	= rel_32 rel_40 rel_80 $(BOOTERS) os9p1
 KERNEL		= os9p2 os9p3_perr os9p4_regdump
 SYSMODS		= ioman init cc3go_h0 cc3go_dd
-CLOCKS          = clock_elim clock_disto2 clock_disto4 clock_bnb \
-		clock_smart clock_harris clock_tc3 clock_soft
+CLOCKS          = clock_60hz clock_50hz \
+		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
+		clock2_smart clock2_harris clock2_tc3 clock2_soft
 
 RBF		= rbf.mn \
 		cc3disk.dr cc3hdisk.dr rammer.dr \
@@ -179,28 +180,58 @@ vdgint_small.io: vdgint.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
 
 # Clocks
+clock_60hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=60
+
+clock_50hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aTkPerSec=50
+
 clock_elim: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKELIM)
+
+clock2_elim: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKELIM)
 
 clock_disto2: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO2)
 
+clock2_disto2: clock2.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO2)
+
 clock_disto4: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO4)
+
+clock2_disto4: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO4)
 
 clock_bnb: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKBNB)
 
+clock2_bnb: clock2.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKBNB)
+
 clock_smart: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSMART)
+
+clock2_smart: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSMART)
 
 clock_harris: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKHARRIS)
 
+clock2_harris: clock2.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKHARRIS)
+
 clock_tc3: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKTC3)
 
+clock2_tc3: clock2.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKTC3)
+
 clock_soft: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
+
+clock2_soft: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
 
 clean:

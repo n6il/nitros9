@@ -94,11 +94,11 @@
 *
 ../MODULES/SCF/scf.mn
 *
-* CoCo 3 I/O driver and subroutine modules
+* CoCo 3 I/O driver
 * Joystick modules: choose Joystick OR
 * (M)icrosoft or (L)ogitech mouse using 6551 or 6552 ACIA
 ../MODULES/SCF/cc3io.dr
-../MODULES/SCF/keydrv_cc3.sb
+../MODULES/SCF/keydrv_cc3.sb  
 ../MODULES/SCF/snddrv_cc3.sb
 ../MODULES/SCF/joydrv_joy.sb
 *../MODULES/SCF/joydrv_6551M.sb
@@ -175,26 +175,30 @@
 ***************************************
 * Clock Section
 *
-* Select only one clock module.
+* Select one clock module depending upon your power line frequency
+* (60Hz = USA/Canada; 50Hz = Europe, Australia)
+../MODULES/CLOCKS/clock_60hz
+*../MODULES/CLOCKS/clock_50hz
+* Select one clock2 module that supports your real-time clock, if any.
 * Besides support for the internal software clock, the following
 * hardware clocks are supported: Burke & Burke, Disto 2-N-1, Disto 4-N-1,
 * Eliminator, Harris, SmartWatch, TC^3, DriveWire
-../MODULES/CLOCKS/clock_soft
-*../MODULES/CLOCKS/clock_bnb
-*../MODULES/CLOCKS/clock_disto2
-*../MODULES/CLOCKS/clock_disto4
-*../MODULES/CLOCKS/clock_elim
-*../MODULES/CLOCKS/clock_harris
-*../MODULES/CLOCKS/clock_smart
-*../MODULES/CLOCKS/clock_tc3
-*../MODULES/CLOCKS/clock_dw
+../MODULES/CLOCKS/clock2_soft
+*../MODULES/CLOCKS/clock2_bnb
+*../MODULES/CLOCKS/clock2_disto2
+*../MODULES/CLOCKS/clock2_disto4
+*../MODULES/CLOCKS/clock2_elim
+*../MODULES/CLOCKS/clock2_harris
+*../MODULES/CLOCKS/clock2_smart
+*../MODULES/CLOCKS/clock2_tc3
+*../MODULES/CLOCKS/clock2_dw
 *
 ***************************************
 * System Kick-Start Module
 *
 * Choose which startup module you wish to use. (cc3go_dd is recommended
 * for most configurations.)
-*
+* 
 * Alternatively, this module can reside in the root directory of the
 * boot device, saving precious system RAM.
 ../MODULES/SYSMODS/cc3go_dd
