@@ -1,3 +1,12 @@
+********************************************************************
+* H0 - CCHdisk device descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+*        Tandy/Microware original version
+
          nam   H0
          ttl   CCHDisk device descriptor
 
@@ -17,7 +26,7 @@ rev      set   $01
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
          fcb   DIR.!ISIZ.!SHARE.!PEXEC.!PWRIT.!PREAD.!EXEC.!UPDAT. mode byte
-         fcb   $FF        extended controller address
+         fcb   HW.Page    extended controller address
          fdb   $FF51      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.RBF     device type:0=scf,1=rbf,2=pipe,3=scf
