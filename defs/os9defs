@@ -630,11 +630,16 @@ OSVer    rmb   1          OS version
 OSMajor  rmb   1          OS major
 OSMinor  rmb   1          OS minor
 Feature1 rmb   1          feature byte 1
+Feature2 rmb   1          feature byte 2
+         rmb   8          reserved for future use
 
-* -- CCIO/CC3IO area -- *
-MonType  rmb   1          Monitor type (0=CMP,1=RGB,2=MONO) (unused in OS-9 Level One)
+         ifgt  Level-1
+* -- CC3IO area -- (OS-9 Level Two only) *
+MonType  rmb   1          Monitor type (0=CMP,1=RGB,2=MONO)
+MouseInf rmb   1          Mouse resolution/Mouse port
 KeyRptS  rmb   1          Key repeat start constant
 KeyRptD  rmb   1          Key repeat delay constant
+         endc
 
 * Feature1 byte definitions
 CRCOn    equ   %00000001  CRC checking on
