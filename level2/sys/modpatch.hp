@@ -1,5 +1,5 @@
 @MODPATCH
-Syntax: Modpatch <filename> [opts]
+Syntax: Modpatch <pathlist> [<opts>]
 Usage : patch a module in memory from command file
 Opts  :
   -s = silent mode

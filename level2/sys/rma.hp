@@ -1,5 +1,5 @@
 @RMA
-Syntax: RMA filename [opts] [>listing]
+Syntax: RMA filename [<opts>] [>listing]
 Usage : Relocatable Macro Assembler
 Opts  :
   -o=path write relocatable output to file specified

@@ -1,5 +1,5 @@
 @SCRED
-Syntax: Scred [-opts][<filename>]
+Syntax: Scred [<opts>] [<pathlist>]
 Usage : Screen Editor
 Opts  :
   -e  = embedded attributes on terminal

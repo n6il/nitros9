@@ -1,5 +1,6 @@
 @WCREATE
-Syntax: Wcreate [opt] or /wX [-s=type] xpos ypos xsiz ysiz fcol bcol [bord]
+Syntax: Wcreate [<opts>]
+        Wcreate /wX [-s=type] xpos ypos xsiz ysiz fcol bcol [<bord>]
 Usage : Initialize and create windows
 Opts  :
   -? = display help

@@ -1,5 +1,5 @@
 @RDUMP
-Syntax: RDump <relocatable file> [-opts]
+Syntax: RDump <pathlist> [<opts>]
 Usage : Dump a relocatable file
 Opts  :
   -a = all information
