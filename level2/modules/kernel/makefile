@@ -1,9 +1,9 @@
 include ../../../rules.mak
 
-vpath %.asm $(6809L2)/modules/kernel
+vpath %.asm $(6809L1)/modules/krnl
 
 DEPENDS		= ./makefile
-ADDOPTS		= -e
+AFLAGS		+= -I$(6809L1)/modules/krnl
 
 KERNEL		= kernel
 KERNELP2	= kernelp2
