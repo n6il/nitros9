@@ -553,8 +553,10 @@ IOEntry  equ   254
 * Module Directory Entry Definitions
 *
          org   0
+         ifgt  Level-1
 MD$MPDAT rmb   2          Module DAT Image ptr
 MD$MBSiz rmb   2          Memory Block size
+         endc
 MD$MPtr  rmb   2          Module ptr
 MD$Link  rmb   2          Module Link count
 MD$ESize equ   .          Module Directory Entry size
