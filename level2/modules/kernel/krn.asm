@@ -27,7 +27,7 @@ Revision set   8          module revision
 Edition  set   19         module Edition
 Where    equ   $F000      absolute address of where Kernel starts in memory
 
-         mod   eom,MName,Systm,ReEnt+Revision,OS9P1,0
+         mod   eom,MName,Systm,ReEnt+Revision,entry,0
 
 MName    fcs   /Kernel/
          fcb   Edition 
@@ -80,10 +80,10 @@ SubSiz   equ   *-SubStrt
 Vectors  jmp    [<-(D.SWI3-D.XSWI3),x]   (-$10) (Jmp to 2ndary vector)
 
 * Let's start by initializing system page
-OS9P1    equ    *
+entry    equ    *
          IFNE   H6309
          ldq    #$01001f00  Start address to clear & # bytes to clear
-         leay   <OS9P1+2,pc Point to a 0
+         leay   <entry+2,pc Point to a 0
          tfm    y,d+
          std    <D.CCStk    Set pointer to top of global memory to $2000
          lda    #$01        set task user table to $0100
@@ -387,8 +387,8 @@ SysCalls fcb   F$Link
          ENDC
          fcb   F$Move+SysState
          fdb   FMove-*-2
-         fcb   F$AllRam
-         fdb   FAllRam-*-2
+         fcb   F$AllRAM
+         fdb   FAllRAM-*-2
          fcb   F$AllImg+SysState
          fdb   FAllImg-*-2
          fcb   F$SetImg+SysState
@@ -421,8 +421,8 @@ SysCalls fcb   F$Link
          fdb   FELink-*-2
          fcb   F$FModul+SysState
          fdb   FFModul-*-2
-         fcb   F$AlHRam+SysState
-         fdb   FAlHRam-*-2
+         fcb   F$AlHRAM+SysState
+         fdb   FAlHRAM-*-2
          fcb   F$VBlock+SysState
          fdb   FVBlock-*-2
          IFNE  H6309

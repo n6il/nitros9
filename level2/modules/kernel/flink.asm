@@ -1,3 +1,5 @@
+         IFGT   Level-1
+
 **************************************************
 * System Call: F$SLink
 *
@@ -36,6 +38,7 @@ FELink   pshs   u           preserve register stack pointer
          ldx    R$X,u       get pointer to module directory entry
          bra    L03AF       skip ahead
 
+         ENDC
 
 **************************************************
 * System Call: F$Link
@@ -53,13 +56,16 @@ FELink   pshs   u           preserve register stack pointer
 *
 * Error:  CC = C bit set; B = error code
 *
-FLink    ldx    <D.Proc     get pointer to DAT image
+FLink    equ    *
+         IFGT   Level-1
+         ldx    <D.Proc     get pointer to DAT image
          leay   P$DATImg,x  point to process DAT image
+         ENDC
 L0398    pshs   u           preserve register stack pointer
          ldx    R$X,u       get pointer to path name
          lda    R$A,u       get module type
          lbsr   L068D       search module directory
-         bcs    L041E       not there, exit with error
+         bcs    LinkErr     not there, exit with error
          leay   ,u          point to module directory entry
          ldu    ,s          get register stack pointer
          stx    R$X,u       save updated module name pointer
@@ -70,7 +76,7 @@ L03AF    bitb   #ReEnt      is it re-entrant?
          ldd    MD$Link,x   is module busy?
          beq    L03BB       no, go link it
          ldb    #E$ModBsy   return module busy error
-         bra    L041E       return
+         bra    LinkErr     return
 L03BB    ldd    MD$MPtr,x   get module pointer
          pshs   d,x         preserve that & directory pointer
          ldy    MD$MPDAT,x  get module DAT image pointer
@@ -97,17 +103,17 @@ L03BB    ldd    MD$MPtr,x   get module pointer
          lbsr   L0A33       find free low block in process DAT image
          bcc    L03E8       found some, skip ahead
          leas   5,s         purge stack
-         bra    L041E       return error
+         bra    LinkErr     return error
 
 L03E8    lbsr   L0A8C       copy memory blocks into process DAT image
-L03EB    ldb    #P$Links   point to memory block link counts
-         abx              smaller and faster than leax P$Links,x
-         sta    ,s          Save block # on stack
+L03EB    ldb    #P$Links    point to memory block link counts
+         abx                smaller and faster than leax P$Links,x
+         sta    ,s          save block # on stack
          lsla               account for 2 bytes/entry
-         leau   a,x         Point to block # we want
-         ldd    ,u          Get link count for that block
+         leau   a,x         point to block # we want
+         ldd    ,u          get link count for that block
          IFNE   H6309
-         incd               Bump up by 1
+         incd               bump up by 1
          ELSE
          addd   #$0001
          ENDC
@@ -134,7 +140,7 @@ L0406    puls   b,x,y,u
          clrb               No error & return
          rts   
 
-L041E    orcc   #Carry      Error & return
+LinkErr  orcc   #Carry      Error & return
          puls   u,pc
 
 L0422    ldx    <D.Proc     get pointer to current process

@@ -1,5 +1,5 @@
 **************************************************
-* System Call: F$DelRam
+* System Call: F$DelRAM
 *
 * Function: Deallocate RAM blocks
 *

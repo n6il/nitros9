@@ -7,10 +7,17 @@
 *
 * Output: Control does not return to the caller
 *
-FNProc   ldx   <D.SysPrc   get system process descriptor
+FNProc   
+         IFGT  Level-1
+         ldx   <D.SysPrc   get system process descriptor
          stx   <D.Proc     save it as current
          lds   <D.SysStk   get system stack pointer
          andcc #^IntMasks  re-enable IRQ's (to allow pending one through)
+         ELSE
+         clra
+         clrb
+         std   <D.Proc
+         ENDC
          fcb   $8C        skip the next 2 bytes
 
 L0D91    cwai  #^IntMasks  re-enable IRQ's and wait for one
