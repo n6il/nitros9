@@ -174,7 +174,7 @@ os9f$tab equ    *
          fcc    /????????/
 * Rodney pointed this out as a bug
 *         fcc    /????????/
-         fcc    /F$TPS/
+         fcc    /F$TPS   /
          fcc    /F$TimAlm/
          fcc    /F$VIRQ  /
          fcc    /F$SRqMem/
