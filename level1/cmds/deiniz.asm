@@ -27,7 +27,7 @@ linebsiz equ   80
          mod   eom,name,tylg,atrv,start,size
 
          org   0
-readbuf  rmb   linebsiz+1
+rbuffer  rmb   linebsiz+1
 stack    rmb   64
 size     equ   .
 
@@ -55,7 +55,7 @@ DetachIt clra
          bra   DenizDev
 
 ReadnDnz clra			from stdin
-         leax  readbuf,u	point to read buffer
+         leax  rbuffer,u	point to read buffer
          ldy   #linebsiz	get linebsiz bytes
          os9   I$ReadLn 	read it!
          bcc   DenizDev		branch if error
