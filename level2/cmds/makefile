@@ -17,7 +17,7 @@ UTILPAK1	= attr build copy display date del deldir dir list makdir mdir \
 BASIC09FILES	= runb.asm gfx.asm inkey.asm syscall.asm
 LEVEL1FILES	= asm.asm attr.asm backup.asm binex.asm build.asm cmp.asm cobbler.asm copy.asm date.asm deiniz.asm del.asm deldir.asm \
 		dir.asm display.asm dsave.asm dump.asm echo.asm edit.asm error.asm exbin.asm format.asm free.asm help.asm ident.asm iniz.asm link.asm \
-		list.asm load.asm login.asm makdir.asm merge.asm os9gen.asm pwd.asm pxd.asm rename.asm \
+		list.asm load.asm login.asm makdir.asm merge.asm os9gen.asm pd.asm rename.asm \
 		save.asm setime.asm sleep.asm tee.asm tmode.asm tuneport.asm tsmon.asm verify.asm xmode.asm
 
 ALLOBJS		= $(CMDS) $(SUBS)
@@ -25,6 +25,12 @@ ALLOBJS		= $(CMDS) $(SUBS)
 # Files not compilable by os9asm: config
 all:	$(ALLOBJS) shell utilpak1 $(DEPENDS)
 	$(CHMOD) 755 $(ALLOBJS) shell utilpak1
+
+pwd:	pd.asm
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
+
+pxd:	pd.asm
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPXD=1
 
 shell:  $(SHELLMODS) $(DEPENDS)
 	$(MERGE) $(SHELLMODS)>$@
