@@ -1,0 +1,95 @@
+*
+* Deinitions for ports on Dragon 32/64/Alpha.
+*
+
+IO		equ		$ff00		; IO page on Dragon
+
+*
+* Most of these symbols will be defined twice, as some 
+* of the Dragon code, sets DP=$FF, and uses direct page
+* addressing to access the io ports, whilst some of it
+* uses absolute addressing.
+* The versions starting DP must be used with DP=$FF.
+*
+
+*Pia 0 and 1 standard on all Dragons.
+
+DPPIA0DA	EQU		$00		; Side A Data/DDR
+DPPIA0CRA	EQU		$01		; Side A Control.
+DPPIA0DB	EQU		$02		; Side B Data/DDR
+DPPIA0CRB	EQU		$03		; Side B Control.
+
+PIA0DA		EQU		DPPIADA+IO	; Side A Data/DDR
+PIA0CRA		EQU		DPPIACRA+IO	; Side A Control.
+PIA0DB		EQU		DPPIADB+IO	; Side A Data/DDR
+PIA0CRB		EQU		DPPIACRB+IO	; Side A Control.
+
+DPPIA1DA	EQU		$20		; Side A Data/DDR
+DPPIA1CRA	EQU		$21		; Side A Control.
+DPPIA1DB	EQU		$22		; Side B Data/DDR
+DPPIA1CRB	EQU		$23		; Side B Control.
+
+PIA1DA		EQU		DPPIADA+IO	; Side A Data/DDR
+PIA1CRA		EQU		DPPIACRA+IO	; Side A Control.
+PIA1DB		EQU		DPPIADB+IO	; Side A Data/DDR
+PIA1CRB		EQU		DPPIACRB+IO	; Side A Control.
+
+* Dragon Alpha has a third PIA at FF24.
+
+DPPIA2DA	EQU		$24		; Side A Data/DDR
+DPPIA2CRA	EQU		$25		; Side A Control.
+DPPIA2DB	EQU		$26		; Side B Data/DDR
+DPPIA2CRB	EQU		$27		; Side B Control.
+
+PIA2DA		EQU		DPPIADA+IO	; Side A Data/DDR
+PIA2CRA		EQU		DPPIACRA+IO	; Side A Control.
+PIA2DB		EQU		DPPIADB+IO	; Side A Data/DDR
+PIA2CRB		EQU		DPPIACRB+IO	; Side A Control.
+
+;WD2797 Floppy disk controler, used in Alpha Note registers in reverse order !
+DPCmdRegA	EQU		$2F		; command/status			
+DPTrkRegA	EQU		$2E		; Track register
+DPSecRegA	EQU		$2D		; Sector register
+DPDataRegA	EQU		$2C		; Data register
+
+CmdRegA		EQU		DPCMDREG+IO	; command/status			
+TrkRegA		EQU		DPTRKREG+IO	; Track register
+SecRegA		EQU		DPSECREG+IO	; Sector register
+DataRegA	EQU		DPDATAREG+IO	; Data register
+
+; Constants for Alpha AY-8912 sound chip, which is used to control
+; Drive select and motor on the Alpha
+
+AYIOREG		EQU		$0E			; AY-8912, IO Register number.
+AYIdle		EQU		$00			; Make AY Idle.
+AYWriteReg	EQU		$01			; Write AY Register
+AYReadReg	EQU		$02			; Read AY Register
+AYREGLatch	EQU		$03			; Latch register into AY
+
+DSMask		EQU		$03			; Drive select mask.
+MotorMask	EQU		$04			; Motor enable mask
+DDENMask	EQU		$08			; DDEN Mask
+ENPMask		EQU		$10			; Enable Precomp mask
+NMIMask		EQU		$20			; NMI enable Mask
+
+; Dragon 64/Alpha Serial port.
+DPAciaData	EQU		$04		; Acia Rx/Tx Register
+DPAciaStat	EQU		$05		; Acia status register
+DPAciaCmd	EQU		$06		; Acia command register
+DPAciaCtrl	EQU		$07		; Acia control register
+
+;DragonDos Cartrage IO for WD2797
+
+;WD2797 Floppy disk controler, used in DragonDos.
+DPCmdRegD	EQU		$40		; command/status			
+DPTrkRegD	EQU		$41		; Track register
+DPSecRegD	EQU		$42		; Sector register
+DPDataRegD	EQU		$43		; Data register
+
+CmdRegD		EQU		DPCMDREG+IO	; command/status			
+TrkRegD		EQU		DPTRKREG+IO	; Track register
+SecRegD		EQU		DPSECREG+IO	; Sector register
+DataRegD	EQU		DPDATAREG+IO	; Data register
+
+DPDSKCTL	EQU		$48			; Disk DS/motor control reg
+DSKCTL		EQU		DPDSKCTL+IO		

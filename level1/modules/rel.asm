@@ -8,6 +8,9 @@
 * ------------------------------------------------------------------
 *   5r5    2003/07/31  Boisy G. Pitre
 * Back ported NitrOS-9 REL to OS-9 Level Two.
+*		   2004/11/09  P.Harvey-Smith
+* Added code to flip Dragon Alpha into text mode on boot.
+* 
 
          nam   REL
          ttl   Relocation routine
@@ -286,6 +289,16 @@ L262B    sta   ,x++
          decb
          bne   L262B
          sta   1,x
+
+	 IFNE	DragonAlpha
+	 clr	$ffc0		* Reset to text mode if Dragon Alpha
+	 clr	$ffc2
+	 clr	$ffc4
+	
+	 lda	$ff22
+	 anda	#$07
+	 sta	$ff22
+	 ENDC
 
 * Clear VDG screen
          ldx   #ScStart
