@@ -9,9 +9,19 @@
 <funcsynopsisinfo>
 #include &lt;module.h&gt;
 </funcsynopsisinfo>
+
 <funcprototype>
-  <funcdef><function>modload</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <funcdef>mod_exec *<function>modlink</function></funcdef>
+  <paramdef>char *<parameter>modname</parameter></paramdef>
+  <paramdef>int <parameter>type</parameter></paramdef>
+  <paramdef>int <parameter>language</parameter></paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef>mod_exec *<function>modload</function></funcdef>
+  <paramdef>char *<parameter>modname</parameter></paramdef>
+  <paramdef>int <parameter>type</parameter></paramdef>
+  <paramdef>int <parameter>language</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 

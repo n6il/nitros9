@@ -11,7 +11,8 @@
 </funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>kill</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>int <parameter>tid</parameter></paramdef>
+  <paramdef>int <parameter>interrupt</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 

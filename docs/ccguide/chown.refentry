@@ -8,7 +8,8 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>chown</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>char *<parameter>fname</parameter></paramdef>
+  <paramdef>int <parameter>ownerid</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 

@@ -58,7 +58,7 @@
   <!ENTITY writeref       SYSTEM "write.refentry">
 
   <!ENTITY atofref       SYSTEM "atof.refentry">
-  <!ENTITY fflushref       SYSTEM "fflush.refentry">
+  <!ENTITY fcloseref       SYSTEM "fclose.refentry">
   <!ENTITY feofref       SYSTEM "feof.refentry">
   <!ENTITY findstrref       SYSTEM "findstr.refentry">
   <!ENTITY fopenref       SYSTEM "fopen.refentry">

@@ -1,7 +1,9 @@
 <refentry id="getc">
 <refnamediv>
-<refname>getc</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Getc</refname>
+<refname>Getchar</refname>
+<refname>Getw</refname>
+<refpurpose>return next character to be read from a file</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -9,9 +11,18 @@
 <funcsynopsisinfo>
 #include &lt;stdio.h&gt;
 </funcsynopsisinfo>
+
 <funcprototype>
-  <funcdef><function>getc</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <funcdef>int <function>getc</function></funcdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
+</funcprototype>
+<funcprototype>
+  <funcdef>int <function>getchar</function></funcdef>
+  <void>
+</funcprototype>
+<funcprototype>
+  <funcdef>int <function>getw</function></funcdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 

@@ -1,7 +1,9 @@
 <refentry id="fseek">
 <refnamediv>
-<refname>fseek</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Fseek</refname>
+<refname>Rewind</refname>
+<refname>Ftell</refname>
+<refpurpose>position in a file or report current position</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -9,9 +11,22 @@
 <funcsynopsisinfo>
 #include &lt;stdio.h&gt;
 </funcsynopsisinfo>
+
 <funcprototype>
   <funcdef><function>fseek</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
+  <paramdef>long <parameter>offset</parameter></paramdef>
+  <paramdef>int <parameter>place</parameter></paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef><function>rewind</function></funcdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef>long <function>ftell</function></funcdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 

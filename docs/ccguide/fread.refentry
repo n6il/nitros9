@@ -1,7 +1,8 @@
 <refentry id="fread">
 <refnamediv>
-<refname>fread</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Fread</refname>
+<refname>Fwrite</refname>
+<refpurpose>read/write binary data</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -11,7 +12,18 @@
 </funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>fread</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>char *<parameter>ptr</parameter></paramdef>
+  <paramdef>int <parameter>size</parameter></paramdef>
+  <paramdef>int <parameter>number</parameter></paramdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef><function>fwrite</function></funcdef>
+  <paramdef>char *<parameter>ptr</parameter></paramdef>
+  <paramdef>int <parameter>size</parameter></paramdef>
+  <paramdef>int <parameter>number</parameter></paramdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
