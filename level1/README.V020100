@@ -1,8 +1,9 @@
-**** OS-9 Level One VR 02.01.00 Release Notes ****
+**** OS-9 Level One VR 02.01.00 'Phoenix' Release Notes ****
 
 This release of OS-9 Level One for the Tandy Color Computer and
 Dragon computers represents the first community-based release
 since the discontinuation of both the CoCo and Dragon in the 1980s.
+Its codename is an obvious parallel: Phoenix.
 
 There were several reasons for releasing a new version of OS-9
 Level One:
@@ -28,6 +29,19 @@ The CoCo version of OS-9, being newer, was the basis for this upgrade,
 and the Dragon distribution disk reflects the newer OS-9 modules from
 the CoCo version.
 
+This goal was accomplished in tandem with another goal: bringing some
+commonality to commands between OS-9 Level One and OS-9 Level Two.  The
+CoCo 3 version of OS-9 Level Two was released in February 1987, about
+one year after CoCo OS-9 Level One Version 2.  While some commands
+are Level Two specific, most commands can interoperate in both environments,
+and we felt it would be of benefit to "upgrade" Level One to some of these
+commands.  We even went as far as to back-port certain commands like
+os9gen and cobbler from Level Two, because they offered increased
+functionality.  Level Two-specific code was conditionalized out and
+Level One code was introduced.  The obvious benefit for us is that
+we can now build a Level One and Level Two command from the same
+source file.
+
 
 Color Computer Modules
 ======================
@@ -43,7 +57,9 @@ backup		8		Unchanged from last Tandy release
 binex		68		Put proper edition in place in code
 build		6		Unchanged from last Tandy release
 cmp		50		Unchanged from last Tandy release
-cobbler		5		Unchanged from last Tandy release
+cobbler		7		From OS-9 Level Two V2.00.01
+                                modified for OS-9 Level One,
+                                supports double-sided drives
 config		4		Unchanged from last Tandy release
 copy		7		From OS-9 Level Two V2.00.01
 date		6		Y2K issues resolved
@@ -67,12 +83,14 @@ ident		7		Unchanged from last Tandy release
 iniz		3		From OS-9 Level Two V2.00.01
 link		5		Unchanged from last Tandy release
 load		4		Unchanged from last Tandy release
-login		17		From OS-9 Level Two V2.00.01
+login		18		From OS-9 Level Two V2.00.01, with
+                                minor code changes for Level One
+                                and an rts to rti code fix
 makdir		4		Unchanged from last Tandy release
 mdir		5		Unchanged from last Tandy release
 merge		4		Unchanged from last Tandy release
 mfree		5		Unchanged from last Tandy release
-os9gen		7		Unchanged from last Tandy release
+os9gen		8		Incorporated bitmap allocation fix
 park		2		Changed name from PARK to Park
 printerr	7		Changed /D0 to /DD
 procs		9		Unchanged from last Tandy release
@@ -80,7 +98,7 @@ pwd		1		Unchanged from last Tandy release
 pxd		1		Unchanged from last Tandy release
 rename		6		Unchanged from last Tandy release
 save		3		Unchanged from last Tandy release
-setime		10		Y2K issues resolved
+setime		12		Y2K issues resolved
 shell		21		CHD no longer uses WRITE. mode
 sleep		2		Unchanged from last Tandy release
 tee		2		Unchanged from last Tandy release
@@ -131,7 +149,8 @@ rs232.dr	7		Unchanged from last Tandy release
 scf.mn		10		Unchanged from last Tandy release
 ssc.dd				Unchanged from last Tandy release
 sscpak.dr	1		Unchanged from last Tandy release
-sysgo		14		Reflects new OS-9 version
+sysgo		15		Reflects new OS-9 version, attempts
+                                to fork AutoEx
 t1.dd				Unchanged from last Tandy release
 t2.dd				Removed two extranous bytes after name
 t3.dd				Unchanged from last Tandy release
