@@ -28,11 +28,10 @@ SYSTYPE  set   1
          ttl   NitrOS-9 Level 1 System Type Definitions
          ENDC
          IFEQ  Level-2
-         ifne  NitrOS9
          ttl   NitrOS-9 Level 2 System Type Definitions
-         ELSE
-         ttl   NitrOS-9 Level 3 System Type Definitions
          ENDC
+         IFEQ  Level-3
+         ttl   NitrOS-9 Level 3 System Type Definitions
          ENDC
 
 
