@@ -1,6 +1,6 @@
 include ../Makefile.rules
 
-ROOTFILES	= startup
+ROOTFILES	= startup upgrade_song
 
 # Make all components
 all:

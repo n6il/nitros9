@@ -42,6 +42,11 @@ LOSETUP		= sudo /sbin/losetup
 LINK		= ln
 SOFTLINK	= $(LINK) -s
 
+# Directories
+3RDPARTY	= $(BASEDIR)/3rdparty
+LEVEL1		= $(BASEDIR)/level1
+LEVEL2		= $(BASEDIR)/level2v3
+
 # File managers
 %.mn: %.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@

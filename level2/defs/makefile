@@ -3,7 +3,7 @@ include ../../Makefile.rules
 DEPENDS		= ./Makefile
 
 DEFOPTS		= -ls -x -z -aLevel=2
-DEFSDIR		= ../../defs
+DEFSDIR		= $(BASEDIR)/defs
 DEFS		= Defsfile OS9Defs RBFDefs SCFDefs SysType
 ALLOBJS		= $(DEFS)
 
