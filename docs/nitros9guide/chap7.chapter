@@ -24,8 +24,8 @@ symbolic descriptions that use the following notation:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="4in">
+<colspec colwidth="1in"/>
+<colspec colwidth="4in"/>
 <tbody>
 <row>
     <entry>[ ]</entry>
