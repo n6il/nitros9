@@ -26,7 +26,7 @@ size     equ   .
 name     fcs   /Printerr/
          fcb   $06
 
-ErrFile  fcc   "/D0/SYS/ERRMSG"
+ErrFile  fcc   "/DD/SYS/ERRMSG"
          fcb   $0D
          fcc   ",,,,,,,,,,,,"
 
