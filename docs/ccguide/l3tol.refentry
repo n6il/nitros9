@@ -2,7 +2,7 @@
 <refnamediv>
 <refname>L3tol</refname>
 <refname>Ltol3</refname>
-<refpurpose>convet between long integers and 3-byte integers</refpurpose>
+<refpurpose>convert between long integers and 3-byte integers</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
