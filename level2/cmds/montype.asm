@@ -6,6 +6,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * 1      Original Tandy/Microware version
+* 2      Modified to require dash before option         BGP 03/01/20
 
          nam   MonType
          ttl   Change monitor type
@@ -19,17 +20,19 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   1
+edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   300
+         org   0
+         rmb   300
 size     equ   .
 
 name     fcs   /MonType/
          fcb   edition
 
 CurOn    fdb   $1B21
+         IFNE  DOHELP
 HelpMsg  fcb   C$CR
          fcb   C$LF
          fcc   "MonType - Set up the monitor type"
@@ -47,43 +50,52 @@ HelpMsg  fcb   C$CR
          fcc   "         m = monochrome monitor"
          fcb   C$CR
          fcb   C$LF
+         ENDC
 HelpMsgL equ   *-HelpMsg
 
-start    bsr   L00F3
+start    bsr   SkipSpcs
          cmpa  #C$CR
-         beq   L00FA
-         anda  #$5F
-         cmpa  #'R
+         IFNE  DOHELP
+         beq   ShowHelp
+         ELSE
+         beq   ExitOk
+         ENDC
+         andb  #$5F			make uppercase
+         cmpd  #$2D52			-R ?
          bne   L00C7
          ldx   #$0001
          bra   L00D7
-L00C7    cmpa  #'C
+L00C7    cmpd  #$2D43			-C ?
          bne   L00D0
          ldx   #$0000
          bra   L00D7
-L00D0    cmpa  #'M
-         bne   L00FA
+L00D0    cmpd  #$2D4D			-M ?
+         bne   ShowHelp
          ldx   #$0002
-L00D7    lda   #1
-         ldb   #SS.Montr
-         os9   I$SetStt 
-         bcs   L00F0
-         leax  >CurOn,pcr
-         lda   #1
-         ldy   #2
-         os9   I$Write  
-         bcs   L00F0
-L00EF    clrb  
-L00F0    os9   F$Exit   
-L00F3    lda   ,x+
+L00D7    lda   #1			standard output
+         ldb   #SS.Montr		monitor setstat
+         os9   I$SetStt 		do it!
+         bcs   Exit			branch if error
+         leax  >CurOn,pcr		point to cursor on
+         lda   #1			to stdout
+         ldy   #2			two bytes
+         os9   I$Write  		write it!
+         bcs   Exit			branch if error
+ExitOk   clrb  
+Exit     os9   F$Exit   
+
+SkipSpcs ldd   ,x+
          cmpa  #C$SPAC
-         beq   L00F3
+         beq   SkipSpcs
          rts   
-L00FA    lda   #1
+
+         IFNE  DOHELP
+ShowHelp lda   #1
          leax  >HelpMsg,pcr
          ldy   #HelpMsgL
          os9   I$Write  
-         bra   L00EF
+         bra   ExitOk
+         ENDC
 
          emod
 eom      equ   *
