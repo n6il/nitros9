@@ -1,0 +1,9 @@
+* Echo welcome message
+echo * Welcome to OS-9 LEVEL 2 *
+echo * on the Color Computer 3 *
+* Lock shell and std utils into memory
+link shell
+* Start system time from keyboard
+setime </1
+date t
+
