@@ -74,11 +74,7 @@ Banner   equ   *
          IFEQ  ROM
          fcc   "Release Date: 10/01/2003"
          fcb   C$CR,C$LF
-         fcc   /"A CoCo Community Project"/
-         fcb   C$CR,C$LF
-         fcc   /Visit us on the web:/
-         fcb   C$CR,C$LF
-         fcc   !http://www.nitros9.org/!
+         fcc   !www.nitros9.org!
          fcb   C$CR,C$LF
          ENDC
          fcb   C$LF
