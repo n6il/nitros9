@@ -343,7 +343,7 @@ L0226    ldx   <$16,s
          rts   
 
 IDetach  ldu   R$U,u      get ptr to dev tbl entry
-         ldx   V$DESC,u
+*         ldx   V$DESC,u
          tst   V$USRS,u
          beq   IDetach2
 L0240    lda   #$FF
