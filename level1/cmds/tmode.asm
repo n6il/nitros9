@@ -158,14 +158,14 @@ start    lda   #$32
          sta   <u0002
          pshs  y,x,b,a
          lda   #$01
-         ldb   #$26
+         ldb   #SS.ScSiz
          os9   I$GetStt 
          bcc   L00DB
          cmpb  #E$UnkSvc
          beq   L00E4
          puls  y,x,b,a
          bra   L0120
-L00DB    cmpx  #$0050
+L00DB    cmpx  #80
          beq   L00E4
          lda   #$16
          sta   <u0002
@@ -175,13 +175,13 @@ L00E4    puls  y,x,b,a
          clra  
          cmpb  #C$PERD
          bne   L00FB
-         leay  $01,y
+         leay  1,y
          lda   ,y+
          suba  #$30
          cmpa  #$10
          lbcc  L0181
 L00FB    sta   <u0000
-         ldb   #$00
+         ldb   #SS.Opt
          leax  u0007,u
          os9   I$GetStt 
          bcs   L0120
@@ -205,7 +205,7 @@ L0129    ldb   ,y+
 L012B    cmpb  #C$SPAC
          beq   L0129
          leay  -$01,y
-         andcc #$FE
+         andcc #^Carry
          rts   
 L0134    clr   <u0001
          lda   ,y
@@ -228,7 +228,7 @@ L0152    lda   $02,x
 L015C    tst   <u0001
          bne   L0181
          ldb   ,y
-         cmpb  #$3D
+         cmpb  #'=
          bne   L0150
          leay  $01,y
          tsta  
@@ -256,7 +256,7 @@ L0181    leax  <L0192,pcr
 L0192    fcc   "SYNTAX Error: "
 
 L01A0    fcb   $10
-         ldx   #$0050
+         ldx   #80
 L01A4    lda   #$01
          os9   I$WritLn 
          rts   
@@ -294,13 +294,13 @@ L01DF    subb  #$07
          bhi   L01EE
          cmpb  #$0A
          bcs   L01EE
-L01E9    andcc #$FE
+L01E9    andcc #^Carry
          leay  $01,y
          rts   
 L01EE    comb  
          rts   
 L01F0    clr   <u0005
-         lda   #$2F
+         lda   #'/
          lbsr  L02AE
          ldx   <u0022,u
          ldx   $04,x
@@ -337,7 +337,7 @@ L0235    bsr   L02AC
          lda   ,s
          cmpa  $03,x
          beq   L0245
-         lda   #$2D
+         lda   #'-
          bsr   L02AE
 L0245    bsr   L024D
          puls  pc,u,y,x,b,a
@@ -352,7 +352,7 @@ L0251    lda   ,x
          bpl   L0251
          puls  pc,x
 L025D    bsr   L024D
-         lda   #$3D
+         lda   #'=
          bsr   L02AE
          tst   ,x
          bne   L0290
@@ -394,7 +394,7 @@ L02A2    adda  #$30
          bls   L02AE
          adda  #$07
          bra   L02AE
-L02AC    lda   #$20
+L02AC    lda   #C$SPAC
 L02AE    pshs  y,x,b,a
          leax  <u0027,u
          ldb   <u0005
