@@ -5,6 +5,11 @@ L0A01    clrb
          rts
          ENDC
 
+* A = source task #
+* B = destination task #
+* Y = bytes to move
+* X = source pointer
+* U = destination pointer
 FMove    ldd   R$D,u        get source & destination task #'s
 L0B25    ldy   R$Y,u        Get # bytes to move
          beq   L0A01        None, exit without error
