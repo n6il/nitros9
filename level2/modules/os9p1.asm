@@ -7,27 +7,26 @@
 * ------------------------------------------------------------------
 * ??     Cleaned up some formatting                     KDM 87/05/15
 * ??     Added comments and added new defines           KDM 87/03/31
-* 18a    Added time of creation to process descriptor   BRI 88/11/18
-* 18b    Added F$AllTsk call error exit to F$Chain      BRI 88/12/05
-* 18c    Changed time tag to use F$Time - No ticks      BRI 88/12/08
-* 18h    Removed bogus assumptions regarding init       BGP 98/10/05
+* 18     Added time of creation to process descriptor   BRI 88/11/18
+* 18r1   Added F$AllTsk call error exit to F$Chain      BRI 88/12/05
+* 18r2   Changed time tag to use F$Time - No ticks      BRI 88/12/08
+* 18r3   Removed bogus assumptions regarding init       BGP 98/10/05
 *        module in order to shrink code size, added
 *        check for CRC bit in compabibility byte of
 *        init module.
-* 18i    Made minor optimizations as per Curtis Boyle's BGP 98/10/10
+* 18r9   Made minor optimizations as per Curtis Boyle's BGP 98/10/10
 *        optimization document
+* 18r10  Removed FastBoot flag, CRC check is done via   BGP 02/09/26
+*        D.CRC now
 
          nam   OS9p1
          ttl   OS9 Level Two V3 P1 module
-
-* FastBoot flag turns off module CRC checking during boot
-FastBoot equ   1
 
          ifp1  
          use   defsfile
          endc  
 
-rev      set   $09
+rev      set   10
 edition  set   18
 
          mod   eom,name,Systm,ReEnt+rev,entry,msiz ++
@@ -81,6 +80,8 @@ L001C    std   ,x++
          std   D.ModDir+2 =$1000 module DAT images
          std   D.ModDAT   =$1000  (grows downward)
          std   D.CCMem    =$1000 CC3IO static memory ++
+* In following line, CRC=ON if it is STA <D.CRC, CRC=OFF if it is a STB <D.CRC
+         stb   <D.CRC     set CRC checking flag to off
 
          asla             d=$2000 GrfDrv stack area ++
 
@@ -295,6 +296,10 @@ L01B0    os9   F$Boot     boot!
          bsr   LinkSys    link to it
          bcs   Crash      crash if error
 L01BF    stu   D.Init     save Init ptr
+         lda   Feature1,u get feature byte #1
+         bita  #CRCOn     CRC checking on?
+         beq   L01C1      branch if not...
+         inc   <D.CRC     else inc. CRC flag
 L01C1    leax  OS9p2Nm,pcr 'OS9p2'
          bsr   LinkSys    link to it
          bcs   Crash      crash if not found...
@@ -978,24 +983,9 @@ L05A2    sta   ,s         save crc
 * Do CRC across module:
 *
 * Added code to check init module for CRC check flag
-L05B5          
-         ldx   D.Init     get Init module addr ++ BGP
-
-* Here the FastBoot definition says that if the INIT module cannot
-* be found (as is the case when OS9p1 brings up the rest of the
-* system with F$Boot), then don't do CRC checking.  Note that
-* module header checking above is still performed in this case.
-         ifeq  FastBoot
-         beq   L05CX      if none, do CRC checking ++ BGP
-         else  
-         beq   NOCRC      if none, DON'T DO CRC checking ++ BGP
-         endc  
-
-         lda   Feature1,x get compat1 byte ++BGP
-         bita  #CRCOn     test CRCOn bit ++BGP
+L05B5    lda   <D.CRC     get D.CRC flag ++BGP
          bne   L05CX      if set, check CRC ++BGP
-NOCRC    clra             else clra ++BGP
-         clrb             and clrb ++BGP
+NOCRC    clrb             else clrb (A already zero) ++BGP
          bra   L05F5      branch to end of routine ++BGP
 L05CX    puls  x,y
          ldd   #$0002
@@ -2356,9 +2346,8 @@ SWI.V    ldb   #D.SWI     get direct page global vector
 NMI.V    ldb   #D.NMI     get direct page global vector
          bra   IRQCntrl
 
-* Filler bytes to get $ED9
-Filler   fcb   $39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-*         fcb   $39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+* Filler to get $ED9
+Filler   fill   $39,$EDC-*
 
          emod  
 eom      equ   *

@@ -220,8 +220,7 @@ JmpOS9P1 leau  >CrashRtn,pcr get pointer to crash routine
 
 * Fill the rest to put Boot at proper address
 
-         fcb   $39,$39,$39,$39,$39,$39,$39
-         fcb   $39,$39,$39,$39,$39
+Filler   fill  $39,$1C7-*
 
          emod  
 eom      equ   *

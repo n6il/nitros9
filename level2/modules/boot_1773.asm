@@ -268,11 +268,7 @@ L01B0
          rts
 
 * Filler to get $1D0
-Filler   fcb   $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-         fcb   $39,$39
-         ifeq  NitrOS9
-         fcb   $39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-         endc
+Filler    fill  $39,$1D0-3-*
 
          emod
 eom      equ   *
