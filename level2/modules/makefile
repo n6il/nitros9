@@ -59,6 +59,9 @@ dacia.dr: xacia.asm
 
 
 
+boot_1773: boot_1773.asm
+	$(AS) -aNitrOS9=0 $(AFLAGS) $< $(ASOUT)$@
+
 kernel_1773: $(KERNEL_1773) $(DEPENDS)
 	$(MERGE) $(KERNEL_1773)>$@
 
