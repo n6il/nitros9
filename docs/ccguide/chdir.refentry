@@ -13,7 +13,7 @@
 </funcprototype>
 
 <funcprototype>
-  <funcdef><function>cxdir</function></funcdef>
+  <funcdef><function>chxdir</function></funcdef>
   <paramdef>char *<parameter>dirname</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
