@@ -8,7 +8,7 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>setuid</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>int <parameter>uid</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
@@ -22,13 +22,14 @@ os9 F$SUSER
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+This call may be used to set the user id for the current task.
+Setuid only works if the caller is the super user (user id 0).
 </para>
 </refsect1>
 
 <refsect1><title>Diagnostics</title>
 <para>
-Zero id returned from a successful call, and -1 is returned on
+Zero is returned from a successful call, and -1 is returned on
 error.
 </para>
 </refsect1>
