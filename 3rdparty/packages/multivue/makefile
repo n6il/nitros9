@@ -37,6 +37,9 @@ dsk:	all
 	$(CD) SYS; $(CPL) $(SYSTEXT) ../$(DISK),SYS
 	$(CD) DEMO; $(CPL) $(DEMO) ../$(DISK),DEMO
 
+dskcopy: dsk
+	$(CP) $(DISK) $(DSKDIR)
+
 dskclean:
-	-$(RM) $(DISK)
+	$(RM) $(DISK)
 

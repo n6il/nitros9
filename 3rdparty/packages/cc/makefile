@@ -32,6 +32,9 @@ dsk:	all
 	$(CPL) SOURCES/*.c $(DISK),SOURCES
 	$(CPL) SOURCES/*.a $(DISK),SOURCES/SYS
 
+dskcopy: dsk
+	$(CP) $(DISK) $(DSKDIR)
+
 dskclean:
-	-$(RM) $(DISK)
+	$(RM) $(DISK)
 

@@ -65,5 +65,8 @@ dsk:	all
 	$(OS9FORMAT_DS40) $(DISK_3) -n"King's Quest III Disk 3"
 	$(CP) $(SUPPORTFILES_D3) $(DISK_3),.
 
+dskcopy: dsk
+	$(CP) $(DISK_1) $(DISK_2) $(DISK_3) $(DSKDIR)
+
 dskclean:
 	$(RM) $(DISK_1) $(DISK_2) $(DISK_3)
