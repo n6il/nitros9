@@ -12,7 +12,7 @@ DEPENDS		= ./Makefile
 
 KERNEL_1773	= $(MD)/rel $(MD)/boot_1773 $(MD)/os9p1
 KERNEL_ROM	= $(MD)/rel $(3PB)/boot_rom $(MD)/os9p1
-KERNEL_KENTON	= $(MD)/rel $(3PB)/boot_kenton_id5 $(MD)/os9p1
+KERNEL_KENTON	= $(MD)/rel $(3PB)/boot_ktlr_id5 $(MD)/os9p1
 KERNEL_TC3	= $(MD)/rel $(3PB)/boot_tc3_id5 $(MD)/os9p1
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
