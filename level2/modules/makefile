@@ -2,7 +2,7 @@
 
 include ../../Makefile.rules
 
-vpath %.asm $(LEVEL1)/MODULES
+vpath %.asm KERNEL:$(LEVEL1)/MODULES
 
 CLOCKELIM       = -aRTCElim=1 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
 CLOCKDISTO2     = -aRTCElim=0 -aRTCDsto2=1 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
@@ -60,6 +60,11 @@ KERNEL_IDE	= rel_32 $(TPB)/boot_ide os9p1
 ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
 
 all:	$(ALLOBJS)
+
+# Kernel
+os9p1 os9p2:
+	$(CD) KERNEL; make $@
+	$(CP) KERNEL/$@ .
 
 # Special cases
 rel_32: rel.asm
@@ -197,6 +202,7 @@ clock_soft: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
 
 clean:
+	$(CD) KERNEL; make $@
 	$(RM) $(ALLOBJS)
 
 showobjs:
