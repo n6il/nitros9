@@ -47,12 +47,12 @@ isnarrow rmb   1
 size     equ   .
 
 * Debugger Errors
-E$Syntax equ  0			bad expression syntax
-E$TooBig equ  8			value to large in context
-E$BadCmd equ  9			illegal command
-E$NotRAM equ  10		memory is ROM
+E$Syntax equ   0		bad expression syntax
+E$TooBig equ   8		value to large in context
+E$BadCmd equ   9		illegal command
+E$NotRAM equ   10		memory is ROM
 E$BPTFull equ  11		breakpoint table full
-E$BrkPt  equ  13		breakpoint encountered
+E$BrkPt  equ   13		breakpoint encountered
 
 name     fcs   /debug/
          fcb   edition
@@ -100,7 +100,7 @@ L0053    addd  ,u++
          bne   L0049
          puls  pc,u,y,b
 
-L0065    fcb   $27,$10,$03,$e8,$00,$64,$00,$0a,$00,$01
+L0065    fdb   $2710,$03e8,$0064,$000a,$0001
 
 L006F    lbsr  EatSpace		skip spaces
          leax  $01,x		point after byte in A
@@ -146,21 +146,21 @@ L00A0    stb   ,s		save value on stack
          bra   L0086
 
 * Make decimal number
-DoDec    leas  -$04,s
-         bsr   Clr4
-L00BE    bsr   AtoInt
+DoDec    leas  -$04,s		make room on stack
+         bsr   Clr4		clear it
+L00BE    bsr   AtoInt		convert ASCII char in A
          bcs   L0110
-         stb   ,s
-         ldd   $02,s
+         stb   ,s		save integer char
+         ldd   $02,s		get word on stack
+         lslb
+         rola  			D * 2
+         std   $02,s		save
          lslb  
-         rola  
-         std   $02,s
+         rola  			D * 4
          lslb  
-         rola  
-         lslb  
-         rola  
+         rola  			D * 8
          bcs   L0123
-         addd  $02,s
+         addd  $02,s		add to word on stack
          bcs   L0123
          addb  ,s
          adca  #$00
@@ -170,24 +170,29 @@ L00BE    bsr   AtoInt
          bra   L00BE
 
 * Make binary number
-DoBin    leas  -$04,s
-         bsr   Clr4
-L00E4    ldb   ,x+
-         subb  #$30
-         bcs   L0110
-         lsrb  
-         bne   L0110
-         rol   $03,s
+DoBin    leas  -$04,s		make room on stack
+         bsr   Clr4		clear it
+L00E4    ldb   ,x+		get char at X
+         subb  #'0		subtract ASCII 0
+         bcs   L0110		branch if lower
+         lsrb  			divide by 2
+         bne   L0110		branch if not zero
+         rol   $03,s		multiply 2,s * 2
          rol   $02,s
-         bcs   L0123
+         bcs   L0123		branch if carry set
          inc   $01,s
-         bra   L00E4
+         bra   L00E4		get next char
 
 * Clear 4 bytes on stack
 * Exit:
 *   A,B = 0
-Clr4     clra  
+Clr4     equ   *
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra  
          clrb  
+         ENDC
          std   $02,s
          std   $04,s
          rts   
@@ -209,7 +214,8 @@ L0108    orcc  #Carry		else set carry
 L010B    subb  #'0		get real value
          andcc #^Carry		clear carry
          rts   			return
-L0110    leax  -$01,x
+
+L0110    leax  -$01,x		back up X by 1
          tst   $01,s
          beq   L011C
          ldd   $02,s
@@ -431,7 +437,7 @@ L0297    cmpa  #'"		ASCII word?
 L02A0    cmpa  #':
          bne   L02B4
          leax  $01,x
-         bsr   L02C3
+         bsr   GetReg
          bcs   L0267
          tsta  
          bmi   L02B1
@@ -447,7 +453,14 @@ L02B4    lbsr  L006F
          bra   L0267
 L02BF    ldb   #E$Syntax
          bra   L0267
-L02C3    ldb   #$09
+
+* Parse individual register
+* Entry:
+*   X = address of register to find
+* Exit:
+*   A = register offset value in table
+*   Y = ptr to register offset in stack
+GetReg   ldb   #RegEnts		get number of register entries
          pshs  b
          ldd   ,x		get first two chars in D
          cmpd  #$7370		sp?
@@ -460,21 +473,21 @@ L02D5    leax  $02,x		move past two chars
          tfr   d,y
          lda   #$80
          bra   L0314
-L02E2    leay  >L0322,pcr
-L02E6    lda   ,y
-         ldb   $01,y
-         bne   L02F8
+L02E2    leay  >RegList,pcr
+L02E6    lda   ,y		get first char of register entry
+         ldb   $01,y		get second char of register entry
+         bne   L02F8		branch if two chars
          cmpa  ,x		same as user input?
          beq   L0307		yes, a match
          adda  #$20		make lowercase
          cmpa  ,x		same as user input?
          beq   L0307		yes, a match
          bra   L0318
-L02F8    cmpd  ,x
-         beq   L0305
-         addd  #$2020
-         cmpd  ,x
-         bne   L0318
+L02F8    cmpd  ,x		same as user input?
+         beq   L0305		yes, a match
+         addd  #$2020		make uppercase
+         cmpd  ,x		same as user input?
+         bne   L0318		branch if not
 L0305    leax  $01,x		point X to next char
 L0307    leax  $01,x		point X to next char
          lda   $02,y		get offset
@@ -491,7 +504,8 @@ L0318    leay  $03,y
          orcc  #Carry
          puls  pc,b
 
-L0322    fcc   "CC"
+* Register list for 6809/6309
+RegList  fcc   "CC"
          fcb   R$CC
          fcc   "DP"
          fcb   R$DP
@@ -517,6 +531,7 @@ L0322    fcc   "CC"
          fcb   $00,$80+R$Y
          fcc   "U"
          fcb   $00,$80+R$U
+RegEnts  equ   (*-RegList)/3
 
 start    leas  >size,u		point S to end of memory
          leas  -R$Size,s	back off size of register stack
@@ -620,7 +635,11 @@ L03DC    ldx   <curraddr	get current memory loc
 
 * Show previous byte
 PrevByte ldd   <curraddr	get current memory address
+         IFNE  H6309
+         decd
+         ELSE
          subd  #$0001		subtract 1
+         ENDC
          bra   L03DC
 
 * Set byte at current location
@@ -636,7 +655,11 @@ SetLoc   bsr   L043F
 
 * Show next byte
 NextByte ldd   <curraddr	get current memory address
+         IFNE  H6309
+         incd
+         ELSE
          addd  #$0001		add one to it
+         ENDC
          bra   L03DC
 L0415    ldx   <buffptr		load X with buffer pointer
          pshs  b,a
@@ -669,19 +692,19 @@ L044B    rts
 * Show all registers
 ShowRegs lbsr  L0512
          beq   L04AF
-         lbsr  L02C3
+         lbsr  GetReg
          lbcs  ShowErr
-         pshs  y,a
+         pshs  y,a		save pointer to register and offset
          lbsr  L0512
          bne   L0475
          bsr   L0415
-         puls  y,a
-         tsta  
-         bpl   L046D
-         ldd   ,y
+         puls  y,a		retreive pointer to register and offset
+         tsta  			test A
+         bpl   L046D		branch if positive, means one byte3
+         ldd   ,y		load D with two bytes
          lbsr  L0021
          bra   L0472
-L046D    ldb   ,y
+L046D    ldb   ,y		load B with one byte
          lbsr  L0027
 L0472    lbra  WritCR2
 L0475    lda   ,s+
@@ -752,6 +775,9 @@ L04AF    tst   <isnarrow	wide screen?
          lbsr  L03C2
          ldb   R$F,u
          bsr   L050F
+         pshs  y
+         lbsr  WritCR2
+         puls  y
          lbsr  L03C2
          ENDC
          ldb   R$CC,u
@@ -759,9 +785,11 @@ L04AF    tst   <isnarrow	wide screen?
          lbsr  L03C2
          ldb   R$DP,u
          bsr   L050F
+         IFEQ  H6309
          pshs  y
          lbsr  WritCR2
          puls  y
+         ENDC
          lbsr  L03C2
          tfr   u,d
          bsr   L0505
@@ -1005,7 +1033,11 @@ IcptRtn  clra
          ENDC
          sts   <u0002
          ldd   R$PC,s
+         IFNE  H6309
+         decd
+         ELSE
          subd  #$0001
+         ENDC
          std   R$PC,s
          lds   <u0004
          lbsr  SrchBkpt
@@ -1040,9 +1072,9 @@ LinkMod  bsr   LinkIt		link to module
          puls  u
          bra   L06CC
 
-LinkIt   lbsr  EatSpace
+LinkIt   lbsr  EatSpace		skip over blank spaces at X
          lda   #$00
-         os9   F$Link   
+         os9   F$Link   	link to module name at X
          rts   
 
 * Prepare module for execution
@@ -1147,7 +1179,7 @@ Title    fcc   "Interactive Debugger"
 
 Prompt   fcc   "DB: "
          fcb   $00
-Spaces    fcc   "    "
+Spaces   fcc   "    "
          fcb   $00
 
          IFNE  H6309
