@@ -3,9 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  12    From Tandy OS-9 Level One VR 02.00.00
+*  12      ????/??/??  ???
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*  12r1    2003/09/11  Rodney V. Hamilton
+* Modified key table to include $7F, $1D, $1E and $1F codes.
 
          nam   CCIO
          ttl   OS-9 Level One V2 CoCo I/O driver
@@ -17,7 +22,7 @@
 
 tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   12
 
          mod   eom,name,tylg,atrv,start,size
@@ -485,12 +490,33 @@ L0314    lda   ,x
          stb   ,x
 L0320    rts
 
-L0321    fcb   $00
-         fdb   $4060,$0c1c,$130a,$1a12,$0818,$1009,$1911
-         fdb   $2020,$2030,$3081,$3121,$7c32,$2200,$3323,$7e34
-         fdb   $2400,$3525,$0036,$2600,$3727,$5e38,$285b,$3929
-         fdb   $5d3a,$2a00,$3b2b,$002c,$3c7b,$2d3d,$5f2e,$3e7d
-         fdb   $2f3f,$5c0d,$0d0d,$0000,$0005,$031b,$3133,$3532,$3436
+L0321    fcb   $00,$40,$60	ALT @ `
+         fcb   $0c,$1c,$13	UP
+         fcb   $0a,$1a,$12	DOWN
+         fcb   $08,$18,$10	LEFT
+         fcb   $09,$19,$11	RIGHT
+         fcb   $20,$20,$20	SPACEBAR
+         fcb   $30,$30,$81	0 0 capslock
+         fcb   $31,$21,$7c	1 ! |
+         fcb   $32,$22,$00	2 " null
+         fcb   $33,$23,$7e	3 # ~
+         fcb   $34,$24,$1d	4 $ RS  (was null)
+         fcb   $35,$25,$1e	5 % GS  (was null)
+         fcb   $36,$26,$1f	6 & US  (was null)
+         fcb   $37,$27,$5e	7 ' ^
+         fcb   $38,$28,$5b	8 ( [
+         fcb   $39,$29,$5d	9 ) ]
+         fcb   $3a,$2a,$00	: * null
+         fcb   $3b,$2b,$7f	; + del (was null)
+         fcb   $2c,$3c,$7b	, < {
+         fcb   $2d,$3d,$5f	- = _
+         fcb   $2e,$3e,$7d	. > }
+         fcb   $2f,$3f,$5c	/ ? \
+         fcb   $0d,$0d,$0d	ENTER key
+         fcb   $00,$00,$00	CLEAR key
+         fcb   $05,$03,$1b	BREAK key
+         fcb   $31,$33,$35	F1 key
+         fcb   $32,$34,$36	F2 key
 
 * Write
 *
