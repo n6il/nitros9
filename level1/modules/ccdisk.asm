@@ -283,7 +283,7 @@ L019E    clr   >u00AA,u
          bne   L01B8
          tfr   x,d
          ldx   >u00A7,u
-         cmpw  #$0000
+         cmpd  #$0000
          beq   L01DD
          cmpd  $01,x
          bcs   L01BC
@@ -415,7 +415,7 @@ SetStat  ldx   $06,y
          ldb   #E$UnkSvc
 L02AA    rts   
 L02AB    lbsr  L020D
-         andb  >u00A9,u
+         ldb  >u00A9,u
          lbra  L0341
          nop
 L02B6    bls   L02BA
