@@ -1,3 +1,12 @@
+********************************************************************
+* CCHDisk - Tandy hard disk driver
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 4      Tandy/Microware original version
+
          nam   CCHDisk
          ttl   Tandy hard disk driver
 

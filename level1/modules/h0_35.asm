@@ -1,5 +1,5 @@
 ********************************************************************
-* H0 - CCHdisk device descriptor
+* H0 - CCHDisk device descriptor
 *
 * $Id$
 *
