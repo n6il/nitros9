@@ -19,22 +19,28 @@ L2HELPFILES	= basic09.hp gfx.hp gfx2.hp grfdrv.hp make.hp maketerm.hp \
 		scred.hp wcreate.hp
 
 HELPMSG		= helpmsg
-ALLOBJS		= $(SYSFILES) $(SYSWINFILES) $(HELPMSG)
+
+TEXTFILES	= $(HELPMSG) $(SYSFILES)
+BINFILES	= $(SYSWINFILES)
+ALLOBJS		= $(TEXTFILES) $(BINFILES)
 
 all:	$(ALLOBJS) $(DEPENDS)
-	$(UNIX2OS9) $(SYSFILES)
 	$(CHMOD) 644 $(ALLOBJS)
 
 $(HELPMSG): $(L1HELPFILES)
 	$(MERGE) $(L1HELPFILES) $(L2HELPFILES) > $@
-	$(UNIX2OS9) $@
 
 $(L1HELPFILES): $(LEVEL1)/SYS/$@
 	-$(SOFTLINK) $(LEVEL1)/SYS/$@
 
 clean:
-	$(OS92UNIX) $(SYSFILES)
 	$(RM) $(HELPMSG) $(L1HELPFILES)
+
+showbinobjs:
+	@$(ECHO) $(BINFILES)
+
+showtextobjs:
+	@$(ECHO) $(TEXTFILES)
 
 showobjs:
 	@$(ECHO) $(ALLOBJS)
