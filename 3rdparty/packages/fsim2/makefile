@@ -16,7 +16,7 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/vdgint_small.io $(MD)/term_vdg.dt \
 		$(MD)/vrn.dr $(MD)/ftdd.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
-		$(MD)/cc3go_dd
+		$(MD)/sysgo_dd
 
 SUPPORTFILES	= fa fd fp sf.standard
 

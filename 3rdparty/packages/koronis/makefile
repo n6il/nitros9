@@ -14,7 +14,7 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/vdgint_small.io $(MD)/term_vdg.dt \
-		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/cc3go_dd
+		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
 SUPPORTFILES	= SAVE1 SAVE2 crobot2.c ctitle.c korvar \
 		level01 level02 level03 level04 level05 level06 level07 \
