@@ -3,18 +3,11 @@
 *
 * $Id$
 *
-* Syntax: Touch [<opts>] {<path> [<opts>]}
-* Usage : update the date of a file
-* Opts  :
-*   -c = don't create files
-*   -q = don't quit on error
-*   -x = search execution directory
-*   -z = get file names from standard input
-*   -z=<file> get list of file names from <file>
-*
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*   1    Put your development info here                 BGP 03/01/11
+*   2    Rewrote touch from scratch, made almost 90%    BGP 03/01/11
+*        smaller than C version found in the OS-9
+*        Development System
 
          nam   Touch
          ttl   Changes last modification date/time
@@ -27,13 +20,13 @@
 * Here are some tweakable options
 DOHELP   set   1	1 = include help info
 STCKSIZE set   64	our stack size in bytes
-COPTSIZ  set   64	max size of C option's parameter
+ZOPTSIZ  set   64	max size of -z option's parameter
 
 * Module header definitions
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   1
+edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -50,7 +43,7 @@ filecnt  rmb   1
 zoptflg  rmb   1	1 = this option has been processed once already
 zpath    rmb   1	path to -z file
 cleartop equ   .	everything up to here gets cleared at start
-zopt     rmb   COPTSIZ	buffer for what follows after -c=
+zopt     rmb   ZOPTSIZ	buffer for what follows after -c=
 * Next is a user adjustable buffer with # modifier on command line.
 * Some utilities won't need this, some will.
 * Currently set up to be larger for Level 2 than Level 1
@@ -79,9 +72,9 @@ HlpMsg   fcb   C$LF
          fcb   C$LF
          fcc   /  -x = search execution directory/
          fcb   C$LF
-         fcc   /  -z = get file names from standard input/
+         fcc   /  -z = get files from standard input/
          fcb   C$LF
-         fcc   /  -z=<file> get list of file names from <file>/
+         fcc   /  -z=<file> get files from <file>/
          fcb   C$LF
 CR       fcb   C$CR
 HlpMsgL  equ   *-HlpMsg
@@ -90,8 +83,8 @@ UnkOpt   fcc   /unknown option: /
 UnkOptL  equ   *-UnkOpt
 CantTch  fcc   /can't touch "/
 CantTchL equ   *-CantTch
-EndCant  fcc   /"/
-         fcb   C$CR
+EndCant  fcc   /" - /
+EndCantL equ   *-EndCant
 
 * Here's how registers are set when this process is forked:
 *
@@ -128,8 +121,6 @@ clrnxt   clr   ,u+		clear out
          leas  2,s		else clear stack
          ENDC
          puls  x,u		and restore our earlier saved registers
-         lda   #WRITE.
-         sta   <filemode	set up default file mode
          leay  bigbuff,u	point Y to copy buffer offset in U
          stx   <parmptr		save parameter pointer
          sty   <bufptr		save pointer to buffer
@@ -146,7 +137,7 @@ clrnxt   clr   ,u+		clear out
 * At this point we have determined our buffer space and saved pointers
 * for later use.  Now we will parse the command line for options that
 * begin with -
-         lbsr  SkipSpcs         move past any spaces on command line
+         lda   ,x
          cmpa  #C$CR		CR?
          lbeq  ShowHelp		if so, no parameters... show help and exit
 GetChar  lda   ,x+		get next character on cmd line
@@ -173,7 +164,6 @@ IsItQ    cmpa  #'q		is it this option?
 IsItX    cmpa  #'x		is it this option?
          bne   IsItZ		branch if not
          lda   #EXEC.
-         ora   <filemode
          sta   <filemode
          bra   FixCmdLn
 IsItZ    cmpa  #'z		is it this option?
@@ -196,7 +186,7 @@ GetZFile ldb   #C$SPAC		get space
          lbeq  ShowHelp         
          leay  <zopt,u		point Y to parameber buffer
          tfr   y,d		transfer Y to D
-         addd  #COPTSIZ
+         addd  #ZOPTSIZ
          pshs  b,a		save updated ptr value
          ldb   #C$SPAC		get space
 L0339    lda   ,x		get byte at X
@@ -253,7 +243,25 @@ BadOpt   leax  UnkOpt,pcr
 *
 * Note, the following two instructions may not be needed, depending on
 * if your utility requires a non-option on the command line.
-DoTouch  tst   <filecnt		we should have at least one file on cmdline
+DoTouch  tst   <zoptflg		-z specified?
+         beq   DoFiles		no, do any files on command line
+ReadZ    lda   <zpath
+         ldy   #80
+         os9   I$ReadLn
+         lbsr  SkipSpcs
+         cmpa  #C$CR
+         beq   ClosEx
+         bcs   TestErr
+         bsr   ProcFile
+         bra   ReadZ
+TestErr  cmpb  #E$EOF
+         lbne  Exit
+         tsta
+         lbeq  ExitOk
+ClosEx   os9   I$Close		close path to -z= file
+         lbra  ExitOk
+
+DoFiles  tst   <filecnt		we should have at least one file on cmdline
          lbeq  ShowHelp		if not, exit with error
          ldx   <parmptr		get our parameter pointer off stack
 DoLoop   lbsr  SkipSpcs		skip any leading spaces
@@ -273,7 +281,13 @@ DoLoop   lbsr  SkipSpcs		skip any leading spaces
 * The following code just echos the command line argument, followed
 * by a carriage return.
 ProcFile 
-         lda   <filemode
+         lda   #WRITE.
+         ora   <filemode
+         pshs  x
+         os9   I$Open
+         puls  x
+         bcc   CloseIt
+         ora   #DIR.
          pshs  x
          os9   I$Open
          puls  x
@@ -283,26 +297,32 @@ ProcFile
          beq   DoCreate
 ChkQuit  bsr   CantTouch
          tst   <quiterr
-         beq   Exit
+         beq   ExitOK
          bra   ProcRTS
 DoCreate ldb   #PREAD.+UPDAT.
+         pshs  x
          os9   I$Create
+         puls  x
          bcs   ChkQuit
 CloseIt  os9   I$Close
 ProcRTS  rts
 
 CantTouch
-         pshs  x
+         pshs  x,b		save pointer to file and error code
          leax  CantTch,pcr
          lda   #$02
          ldy   #CantTchL
          os9   I$Write
-         ldx   ,s
+         ldx   1,s
+         pshs  x
          bsr   StrLen
          puls  x
          os9   I$Write
          leax  EndCant,pcr
-         os9   I$WritLn
+         ldy   #EndCantL
+         os9   I$Write
+         puls  b
+         os9   F$PErr
          puls  x,pc
  
 ShowHelp equ   *
