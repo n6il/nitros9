@@ -25,7 +25,10 @@ os9 F$UNLINK
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+This call informs the system that the module pointed to by
+"mod" is no longer required by the current process. Its link
+count is decremented, and the module is removed from the module
+directory if the link count reaches zero.
 </para>
 </refsect1>
 

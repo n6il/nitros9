@@ -22,7 +22,10 @@ os9 F$PERR
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+PRERR prints an error message on the output path as specified
+by "filnum" which must be the path number of an open file. The
+message depends on "errcode" which will normally be a standard
+OS-9 error code.
 </para>
 </refsect1>
 </refentry>
