@@ -52,8 +52,8 @@ $(PACKAGENAME): $(DSK1) $(DSK2)
 	$(ARCHIVE) $(PACKAGENAME) $(DSK1) $(DSK2) ReadMe ChangeLog
 
 $(DSK1):
-	-$(RM) $(DSK1)
-	$(OS9FORMAT_DS40) -e $@ -n"OS-9 Level Two System Disk"
+	-$(RM) $@
+	$(OS9FORMAT_DS40) $@ -n"OS-9 Level Two System Disk"
 	$(OS9GEN) $@ -b=BOOTFILES/$(BOOTFILE) -t=BOOTFILES/$(KERNEL)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -72,9 +72,9 @@ $(DSK1):
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
 $(DSK2):
-	-$(RM) $(DSK2)
-	$(OS9FORMAT_DS40) -e $(DSK2) -n"OS-9 Level Two Modules Disk"
-	$(MAKDIR) $(DSK2),MODULES
-	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK2),MODULES
+	-$(RM) $@
+	$(OS9FORMAT_DS40) $@ -n"OS-9 Level Two Modules Disk"
+	$(MAKDIR) $@,MODULES
+	$(CD) MODULES; $(CP) $(MODULES) ../$@,MODULES
 	$(foreach file, $(MODULES), $(OS9ATTR_EXEC) $@,MODULES/$(file);)
 
