@@ -19,11 +19,12 @@ HELP		= co32.hp co80.hp dd.hp d0.hp d1.hp d2.hp d3.hp grfo.hp h0_15.hp \
 		h0_35.hp h1_15.hp h1_35.hp m1.hp m2.hp nil.hp p.hp pipe.hp \
 		ssc.hp t1.hp t2.hp t3.hp term32.hp term80.hp config.hp
 
-ALLOBJS		= $(BOOTERS) $(KERNELS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
-		$(DRIVERS) $(IOSUBS) $(DESCS) $(SYSGOS)
-
 KERNEL_1773	= oscode os9 os9p2 init boot_1773
-KERNEL_ROM	= oscode os9 os9p2 init $(TP)/boot_rom_l1
+KERNEL_ROM	= oscode os9 os9p2 init $(TPB)/boot_rom_l1
+
+BOOT_TRACKS	= kernel_1773 kernel_rom
+ALLOBJS		= $(BOOTERS) $(KERNELS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
+		$(DRIVERS) $(IOSUBS) $(DESCS) $(SYSGOS) $(BOOT_TRACKS)
 
 all:	$(ALLOBJS) $(HELP)
 	$(UNIX2OS9) $(HELP)

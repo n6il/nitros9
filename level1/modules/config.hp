@@ -1,29 +1,1 @@
-     BASIC COMMAND SET:
-Includes the most commonly used
-OS-9 commands.  Not included in
-this set are the timesharing
-commands and associated files
-in the SYS directory, all the
-assembly language development
-programs and the DEFS direct-
-ory, and many of the system
-maintenance utilities.
- 
- 
- 
- 
- 
-     FULL COMMAND SET:
-Includes all the commands on
-the standard OS=9 system disk.
-It also includes all assembly
-language development programs
-and files as well as timeshar-
-ing utilities and files.  
- 
-     INDIVIDUAL SELECTION:
-This option allows maximum 
-flexibility in creating a 
-custom disk.  Each command may 
-be selected as descriptors were
-with the Basic set preselected.
+     BASIC COMMAND SET:Includes the most commonly usedOS-9 commands.  Not included inthis set are the timesharingcommands and associated filesin the SYS directory, all theassembly language developmentprograms and the DEFS direct-ory, and many of the systemmaintenance utilities.          FULL COMMAND SET:Includes all the commands onthe standard OS=9 system disk.It also includes all assemblylanguage development programsand files as well as timeshar-ing utilities and files.        INDIVIDUAL SELECTION:This option allows maximum flexibility in creating a custom disk.  Each command may be selected as descriptors werewith the Basic set preselected.
