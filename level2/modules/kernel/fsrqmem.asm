@@ -14,15 +14,17 @@
 *
 FSRqMem  ldd   R$D,u        get size requested
          addd  #$00FF       round it up to nearest 256 byte page
-         clrb               Just keep # of pages (and start 8K block #)
+         clrb               just keep # of pages (and start 8K block #)
          std   R$D,u        save rounded version back to user
-         ldy   <D.SysMem    Get ptr to SMAP table
+         IFGT  Level-1
+         ldy   <D.SysMem    get ptr to SMAP table
          leay  $ED,y      
+         ENDC
 
-*         leay  $20,y        Skip Block 0 (always reserved for system)
+*         leay  $20,y        skip Block 0 (always reserved for system)
 * Change to pshs a,b:use 1,s for block # to check, and ,s for TFM spot
-*         incb               Skip block 0 (always reserved for system)
-         pshs  d            Reserve a byte & put 0 byte on stack
+*         incb               skip block 0 (always reserved for system)
+         pshs  d            reserve a byte & put 0 byte on stack
 
 * This loop updates the SMAP table if anything can be marked as unused
 *L082F    ldx   <D.SysDAT    get pointer to system DAT block list
@@ -65,7 +67,7 @@ L0859    equ   *
          ENDC
          bhi   L0863        Yes, continue
          comb               Exit with No System RAM Error
-         ldb   #E$NoRam
+         ldb   #E$NoRAM
          bra   L0894        Eat stack & exit
 
 L0863    lda   ,-y          Get page marker (starting @ end of SMAP)

@@ -13,8 +13,11 @@
 *
 * Error:  CC = C bit set; B = error code
 *
-FPrsNam  ldx   <D.Proc      proc desc
+FPrsNam  equ   *
+         IFGT  Level-1
+         ldx   <D.Proc      proc desc
          leay  <P$DATImg,x  Y=DAT image ptr
+         ENDC
          ldx   R$X,u        X=name string
          bsr   L0741        get it and length
          std   R$D,u        return length in D
@@ -25,14 +28,20 @@ L073E    stx   R$Y,u        return Y=end of name ptr
          rts                end.
 
 * Parse name
-L0741    pshs  y            save DAT image pointer
+L0741    equ   *
+         IFGT  Level-1
+         pshs  y            save DAT image pointer
          lbsr  AdjBlk0      go find map block...
          pshs  x,y          save X offset within block and Y block pointer
          bsr   GoGetAXY     go get byte at X in block Y...
-
+         ELSE
+         lda   ,x
+         ENDC
          cmpa  #'.        is the first character a period?
          bne   IsSlash    no, do proper first character checking
+         IFGT  Level-1
          lbsr  L0AC8      do a LDAXY, without changing X or Y
+         ENDC
          bsr   ChkFirst   is the next character non-period?
          lda   #'.        restore the period character the LDAXY destroyed
          bcc   Do.Loop    if NON-period character, skip 1st char checks
@@ -63,7 +72,10 @@ NotValid cmpa  #',          comma?
          beq   NextLoop     yes, go get next character...
          comb               error, set Carry
          ldb   #E$BNam      'Bad Name' error
-RtnValid puls  x,y          recover offset & pointer
+RtnValid equ   *
+         IFGT  Level-1
+         puls  x,y          recover offset & pointer
+         ENDC
          bra   L0720      go do a similar exit routine
 
 ChkFirst pshs  a            save character

@@ -37,7 +37,7 @@ L0A58    clra                 # free blocks found so far=0
          ldb   #E$MemFul      Preset error for 207 (Process mem full)
          cmpy  <D.SysDAT      Is it the system process?
          bne   L0A6C          No, exit with error 207
-         ldb   #E$NoRam       System Mem full (237)
+         ldb   #E$NoRAM       System Mem full (237)
 L0A6C    stb   3,s            Save error code
          comb                 set carry
          bra   L0A82          Exit with error

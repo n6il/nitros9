@@ -14,18 +14,20 @@
 FAllBit  ldd   R$D,u        get bit # to start with
          ldx   R$X,u        get address of allocation bit map
          bsr   CalcBit      calculate byte & position & get first bit mask
+         IFGT  Level-1
          ldy   <D.Proc      get current task #
          ldb   P$Task,y     get task number
-         bra   SetBit       go do it
+         bra   DoAllBit     go do it
 
 * F$AllBit (System State)
 FSAllBit ldd   R$D,u        get bit # to start with
          ldx   R$X,u        get address of allocation bit map
          bsr   CalcBit      calculate byte & pos & get first bit mask
          ldb   <D.SysTsk    Get system task #
+         ENDC
 
 * Main bit setting loop
-SetBit   equ   *
+DoAllBit equ   *
          IFNE  H6309
          ldw   R$Y,u        get # bits to set
          ELSE
@@ -34,48 +36,70 @@ SetBit   equ   *
          beq   BitEx        nothing to set, return
          sta   ,-s          preserve current mask
          bmi   SkpBit       If high bit set, skip ahead
-         os9   F$LDABX      Go get original value from bit map 
+         IFGT  Level-1
+         os9   F$LDABX      go get original value from bit map 
+         ELSE
+         lda   ,x
+         ENDC
 NxtBitLp ora   ,s           OR it with the current mask
          IFNE  H6309
-         decw               Dec the bit counter
+         decw               dec the bit counter
          ELSE
          leay  -1,y
          ENDC
-         beq   BitStEx      Done, go put the byte back into the task's map
-         lsr   ,s           Shift out the lowest bit of original
-         bcc   NxtBitLp     If it is a 0, do next bit
-         os9   F$STABX      If it was a 1 (which means whole byte done),
-         leax  1,x          Store finished byte and bump ptr
-SkpBit   lda   #$FF         Preload a finished byte
-         bra   SkpBit2      Skip ahead
+         beq   BitStEx      done, go put the byte back into the task's map
+         lsr   ,s           shift out the lowest bit of original
+         bcc   NxtBitLp     if it is a 0, do next bit
+         IFGT  Level-1
+         os9   F$STABX      if it was a 1 (which means whole byte done),
+         ELSE
+         sta   ,x
+         ENDC
+         leax  1,x          store finished byte and bump ptr
+SkpBit   lda   #$FF         preload a finished byte
+         bra   SkpBit2      skip ahead
 
-StFulByt os9   F$STABX      Store full byte
-         leax  1,x          Bump ptr up 1
+StFulByt equ   *
+         IFGT  Level-1
+         os9   F$STABX      store full byte
+         ELSE
+         sta   ,x
+         ENDC
+         leax  1,x          bump ptr up 1
          IFNE  H6309
-         subw  #8           Bump counter down by 8
-SkpBit2  cmpw  #8           Is there at least 8 more (a full byte) to do?
+         subw  #8           bump counter down by 8
+SkpBit2  cmpw  #8           is there at least 8 more (a full byte) to do?
          ELSE
          leay  -8,y
 SkpBit2  cmpy  #$0008
          ENDC
-         bhi   StFulByt     More than 1, go do current
-         beq   BitStEx      Exactly 1 byte left, do final store & exit
+         bhi   StFulByt     more than 1, go do current
+         beq   BitStEx      exactly 1 byte left, do final store & exit
 
 * Last byte: Not a full byte left loop
-L085A    lsra               Bump out least sig. bit
+L085A    lsra               bump out least sig. bit
          IFNE  H6309
-         decw               Dec the bit counter
+         decw               dec the bit counter
          ELSE
          leay  -1,y
          ENDC
-         bne   L085A        Keep going until last one is shifted out
-         coma               Invert byte to get proper result
-         sta   ,s           Preserve a sec
-         os9   F$LDABX      Get byte for original map
-         ora   ,s           Merge with new mask
-BitStEx  os9   F$STABX      Store finished byte into task
-         leas  1,s          Eat the working copy of the mask
-BitEx    clrb               No error & return
+         bne   L085A        keep going until last one is shifted out
+         coma               invert byte to get proper result
+         sta   ,s           preserve a sec
+         IFGT  Level-1
+         os9   F$LDABX      get byte for original map
+         ELSE
+         lda   ,x
+         ENDC
+         ora   ,s           merge with new mask
+BitStEx  equ   *
+         IFGT  Level-1
+         os9   F$STABX      store finished byte into task
+         ELSE
+         sta   ,x
+         ENDC
+         leas  1,s          eat the working copy of the mask
+BitEx    clrb               no error & return
          rts   
 
 * Calculate address of first byte we want, and which bit in that byte, from
@@ -90,7 +114,7 @@ CalcBit  pshs  b,y          preserve registers
          lsrd               divide bit # by 8 to calculate byte # to start
          lsrd               allocating at
          lsrd
-         addr  d,x          Offset that far into the map
+         addr  d,x          offset that far into the map
          ELSE
          lsra
          rorb
@@ -101,13 +125,13 @@ CalcBit  pshs  b,y          preserve registers
          leax  d,x
          ENDC
          puls  b            restore bit position LSB
-         leay  <L0883,pc    point to mask table
+         leay  <MaskTbl,pc  point to mask table
          andb  #7           round it down to nearest bit
          lda   b,y          get bit mask
          puls  y,pc         restore & return
 
 * Bit position table (NOTE that bit #'s are done by left to right)
-L0883    fcb   $80,$40,$20,$10,$08,$04,$02,$01
+MaskTbl  fcb   $80,$40,$20,$10,$08,$04,$02,$01
 
 
 **************************************************
@@ -123,68 +147,92 @@ L0883    fcb   $80,$40,$20,$10,$08,$04,$02,$01
 *
 * Error:  CC = C bit set; B = error code
 *
-FDelBit  ldd   R$D,u        Get bit # to start with
-         ldx   R$X,u        Get addr. of bit allocation map
-         bsr   CalcBit      Point to starting bit
-         ldy   <D.Proc      Get current Task #
+FDelBit  ldd   R$D,u        get bit # to start with
+         ldx   R$X,u        get addr. of bit allocation map
+         bsr   CalcBit      point to starting bit
+         IFGT  Level-1
+         ldy   <D.Proc      get current Task #
          ldb   P$Task,y     get task #
-         bra   L08A0        Do rest of 0 bits
+         bra   DoDelBit     do rest of 0 bits
 
 * F$DelBit entry point for system state
-FSDelBit ldd   R$D,u        Get bit # to start with
-         ldx   R$X,u        Get addr. of bit allocation map
-         bsr   CalcBit      Point to starting bit
-         ldb   <D.SysTsk    Get system task #
-
-L08A0    equ   *
-         IFNE  H6309
-         ldw   R$Y,u        Get # bits to clear
-         ELSE
-         ldy   R$Y,u        Get # bits to clear
+FSDelBit ldd   R$D,u        get bit # to start with
+         ldx   R$X,u        get addr. of bit allocation map
+         bsr   CalcBit      point to starting bit
+         ldb   <D.SysTsk    get system task #
          ENDC
-         beq   L08E0        None, return
-         coma               Invert current bit mask
-         sta   ,-s          Preserve on stack
-         bpl   L08BC        If high bit clear, skip ahead
-         os9   F$LDABX      Go get byte from user's map
+
+DoDelBit equ   *
+         IFNE  H6309
+         ldw   R$Y,u        get # bits to clear
+         ELSE
+         ldy   R$Y,u        get # bits to clear
+         ENDC
+         beq   L08E0        none, return
+         coma               invert current bit mask
+         sta   ,-s          preserve on stack
+         bpl   L08BC        if high bit clear, skip ahead
+         IFGT  Level-1
+         os9   F$LDABX      go get byte from user's map
+         ELSE
+         lda   ,x
+         ENDC
 L08AD    anda  ,s           AND it with current mask
          IFNE  H6309
-         decw               Dec the bits left counter
+         decw               dec the bits left counter
          ELSE
          leay  -1,y
          ENDC
-         beq   BitDone      Done, store finished byte back in task's map
-         asr   ,s           Shift out lowest bit, leaving highest alone
-         bcs   L08AD        If it is a 1, do next bit
-         os9   F$STABX      If it was a 0 (which means whole byte done),
+         beq   BitDone      done, store finished byte back in task's map
+         asr   ,s           shift out lowest bit, leaving highest alone
+         bcs   L08AD        if it is a 1, do next bit
+         IFGT  Level-1
+         os9   F$STABX      if it was a 0 (which means whole byte done),
+         ELSE
+         sta   ,x
+         ENDC
          leax  1,x          store finished byte & inc. ptr
-L08BC    clra               Preload a cleared byte
+L08BC    clra               preload a cleared byte
          bra   ChkFull      skip ahead
-L08BF    os9   F$STABX      Store full byte
-         leax  1,x          Bump ptr up by 1
+L08BF    equ   *
+         IFGT  Level-1
+         os9   F$STABX      store full byte
+         ELSE
+         sta   ,x
+         ENDC
+         leax  1,x          bump ptr up by 1
          IFNE  H6309
-         subw  #8           Dec bits left counter by 8
-ChkFull  cmpw  #8           At least 1 full byte left?
+         subw  #8           dec bits left counter by 8
+ChkFull  cmpw  #8           at least 1 full byte left?
          ELSE
          leay  -8,y
 ChkFull  cmpy  #8
          ENDC
-         bhi   L08BF        Yes, do a whole byte in 1 shot
-         beq   BitDone      Exactly 1, store byte & exit
+         bhi   L08BF        yes, do a whole byte in 1 shot
+         beq   BitDone      exactly 1, store byte & exit
          coma               < full byte left, invert bits
-L08CF    lsra               Shift out rightmost bit
+L08CF    lsra               shift out rightmost bit
          IFNE  H6309
-         decw               Dec bits left counter
+         decw               dec bits left counter
          ELSE
          leay  -1,y
          ENDC
-         bne   L08CF        Keep doing till done
-         sta   ,s           Save finished mask
-         os9   F$LDABX      Get original byte from task
-         anda  ,s           Merge cleared bits with it
-BitDone  os9   F$STABX      Store finished byte into task
-         leas  1,s          Eat working copy of mask
-L08E0    clrb               Eat error & return
+         bne   L08CF        keep doing till done
+         sta   ,s           save finished mask
+         IFGT  Level-1
+         os9   F$LDABX      get original byte from task
+         ELSE
+         lda   ,x
+         ENDC
+         anda  ,s           merge cleared bits with it
+BitDone  equ   *
+         IFGT  Level-1
+         os9   F$STABX      store finished byte into task
+         ELSE
+         sta   ,x
+         ENDC
+         leas  1,s          eat working copy of mask
+L08E0    clrb               eat error & return
          rts   
 
 
@@ -203,109 +251,116 @@ L08E0    clrb               Eat error & return
 *
 * Error:  CC = C bit set; B = error code
 *
-FSchBit  ldd   R$D,u        Get start bit #
-         ldx   R$X,u        Get addr. of allocation bit map
-         bsr   CalcBit      Point to starting bit
-         ldy   <D.Proc      Get task #
+FSchBit  ldd   R$D,u        get start bit #
+         ldx   R$X,u        get addr. of allocation bit map
+         bsr   CalcBit      point to starting bit
+         IFGT  Level-1
+         ldy   <D.Proc      get task #
          ldb   P$Task,y
-         bra   L08F8        skip ahead
+         bra   DoSchBit     skip ahead
 
 * F$SchBit entry point for system
-FSSchBit ldd   R$D,u        Get start bit #
-         ldx   R$X,u        Get addr. of allocation bit map
-         lbsr  CalcBit      Point to starting bit
-         ldb   <D.SysTsk    Get task #
+FSSchBit ldd   R$D,u        get start bit #
+         ldx   R$X,u        get addr. of allocation bit map
+         lbsr  CalcBit      point to starting bit
+         ldb   <D.SysTsk    get task #
 * Stack: 0,s : byte we are working on (from original map)
 *        1,s : Mask of which bit in current byte to start on
 *        2,s : Task number the allocation bit map is in
 *        3,s : Largest block found so far
 *        5,s : Starting bit # of requested (or closest) size found
 *        7,s : Starting bit # of current block being checked (2 bytes) (NOW IN Y)
+         ENDC
+DoSchBit equ  *
          IFNE  H6309
-L08F8    pshs  cc,d,x,y    Preserve task # & bit mask & reserve stack space
-         clrd              Faster than 2 memory clears
+         pshs  cc,d,x,y     preserve task # & bit mask & reserve stack space
+         clrd               faster than 2 memory clears
          ELSE
-L08F8    pshs  cc,d,x,y,u  Preserve task # & bit mask & reserve stack space
+         pshs  cc,d,x,y,u   preserve task # & bit mask & reserve stack space
          clra
          clrb
          ENDC
-         std   3,s         Preserve it
+         std   3,s          preserve it
          IFNE  H6309
-         ldw   R$D,u       get start bit #
-         tfr   w,y         save as current block starting bit #
+         ldw   R$D,u        get start bit #
+         tfr   w, y         save as current block starting bit #
          ELSE
          ldy   R$D,u
          sty   7,s
          ENDC
-         bra   Skipper     skip ahead
+         bra   Skipper      skip ahead
 
 * New start point for search at current location
 RstSrch  equ   *
          IFNE  H6309
-         tfr   w,y         Preserve current block bit # start
+         tfr   w,y          preserve current block bit # start
          ELSE
          sty   7,s
          ENDC
 * Move to next bit position, and to next byte if current byte is done
-MoveBit  lsr   1,s         Move to next bit position
-         bcc   CheckBit    If not the last one, check it
-         ror   1,s         Move bit position marker to 1st bit again
-         leax  1,x         Move byte ptr (in map) to next byte
+MoveBit  lsr   1,s          move to next bit position
+         bcc   CheckBit     if not the last one, check it
+         ror   1,s          move bit position marker to 1st bit again
+         leax  1,x          move byte ptr (in map) to next byte
 
 * Check if we are finished allocation map
-Skipper  cmpx  R$U,u       done entire map?
-         bhs   BadNews     yes, couldn't fit in 1 block, notify caller
-         ldb   2,s         Get task number
-         os9   F$LDABX     Get byte from bit allocation map
-         sta   ,s          Preserve in scratch area
+Skipper  cmpx  R$U,u        done entire map?
+         bhs   BadNews      yes, couldn't fit in 1 block, notify caller
+         ldb   2,s          get task number
+         IFGT  Level-1
+         os9   F$LDABX      get byte from bit allocation map
+         ELSE
+         lda   ,x
+         ENDC
+         sta   ,s           preserve in scratch area
 
 * Main checking
 CheckBit equ   *
          IFNE  H6309
-         incw              Increment current bit #
+         incw               increment current bit #
          ELSE
          leay  1,y
          ENDC
-         lda   ,s          Get current byte
-         anda  1,s         Mask out all but current bit position
-         bne   RstSrch     If bit not free, restart search from next bit
+         lda   ,s           get current byte
+         anda  1,s          mask out all but current bit position
+         bne   RstSrch      if bit not free, restart search from next bit
          IFNE  H6309
-         tfr   w,d         Dupe current bit # into D
-         subr  y,d         Calculate size we have free so far
+         tfr   w,d          dup current bit # into D
+         subr  y,d          calculate size we have free so far
          ELSE
          tfr   y,d
          subd  7,s
          ENDC
-         cmpd  R$Y,u       As big as user requested?
-         bhs   WereDone    Yes, we are done
-         cmpd  $03,s       As big as the largest one we have found so far?
-         bls   MoveBit     No, move to next bit and keep going
-         std   $03,s       It is the largest, save current size
+         cmpd  R$Y,u        as big as user requested?
+         bhs   WereDone     yes, we are done
+         cmpd  $03,s        as big as the largest one we have found so far?
+         bls   MoveBit      no, move to next bit and keep going
+         std   $03,s        it is the largest, save current size
          IFNE  H6309
-         sty   $05,s       Save as start bit # of largest block found so far
+         sty   $05,s        save as start bit # of largest block found so far
          ELSE
          ldd   7,s
          std   5,s
          ENDC
-         bra   MoveBit     Move to next bit and keep going
+         bra   MoveBit      move to next bit and keep going
 
 * Couldn't find requested size block; tell user where the closest was found
 *   and how big it was
-BadNews  ldd   $03,s       Get size of largest block we found
-         std   R$Y,u       Put into callers Y register
-         comb              Set carry to indicate we couldn't get full size
-         ldd   5,s         Get starting bit # of largest block we found
-         bra   BadSkip     skip ahead
+BadNews  ldd   $03,s        get size of largest block we found
+         std   R$Y,u        put into callers Y register
+         comb               set carry to indicate we couldn't get full size
+         ldd   5,s          get starting bit # of largest block we found
+         bra   BadSkip      skip ahead
 * Found one, tell user where it is
 WereDone equ   *
          IFNE  H6309
-         tfr   y,d         Get start bit # of the block we found
+         tfr   y,d          get start bit # of the block we found
          ELSE
          ldd   7,s
          ENDC
-BadSkip  std   R$D,u       Put starting bit # of block into callers D register
+BadSkip  std   R$D,u        put starting bit # of block into callers D register
          IFNE  H6309
-         leas  $07,s       Eat our temporary stack area & return
+         leas  $07,s        eat our temporary stack area & return
          ELSE
          leas  $09,s
          ENDC

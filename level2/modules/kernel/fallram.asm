@@ -9,7 +9,7 @@
 *
 * Error:  CC = C bit set; B = error code
 *
-FAllRam  ldb   R$B,u        Get # blocks requested
+FAllRAM  ldb   R$B,u        Get # blocks requested
          pshs  b,x,y        Save regs
          ldx   <D.BlkMap    Get ptr to start of block map
 L0974    leay  ,x           Point Y to current block
@@ -35,7 +35,7 @@ L098D    inc   ,y+          Flag blocks as used
          puls  x,y,pc       Restore regs & return
 
 L0995    comb               Exit with No RAM error
-         ldb   #E$NoRam
+         ldb   #E$NoRAM
          stb   ,s
          puls  b,x,y,pc
 
@@ -51,7 +51,7 @@ L0995    comb               Exit with No RAM error
 *
 * Error:  CC = C bit set; B = error code
 *
-FAlHRam  ldb   R$B,u        Get # blocks to allocate
+FAlHRAM  ldb   R$B,u        Get # blocks to allocate
          pshs  b,x,y        Preserve regs
          ldx   <D.BlkMap+2  Get ptr to end of block map
 L09A9    ldb   ,s           Get # blocks requested
