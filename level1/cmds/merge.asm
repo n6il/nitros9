@@ -21,6 +21,7 @@ edition  set   4
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 path     rmb   1
 param    rmb   2
 d.ptr    rmb   2

@@ -24,6 +24,8 @@ rev      set   $01
 edition  set   5
 
          mod   eom,name,tylg,atrv,start,size
+
+         org   0
 u0000    rmb   2946
 size     equ   .
 

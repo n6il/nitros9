@@ -24,6 +24,7 @@ edition  set   21
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 u0000    rmb   1
 u0001    rmb   2
 u0003    rmb   1

@@ -24,11 +24,12 @@ edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 fildes   rmb   1
 bufptr   rmb   2
-DotDotFD rmb   3
-DotFD    rmb   3
-DDCopy   rmb   5
+dotdotfd rmb   3
+dotfd    rmb   3
+ddcopy   rmb   5
 dentry   rmb   160
 buffer   rmb   1
 sttbuf   rmb   282
@@ -65,10 +66,10 @@ start    leax  >buffer,u
          bsr   open
          sta   <fildes
          lbsr  rdtwo
-         ldd   <DotDotFD
-         std   <DDCopy
-         lda   <DotDotFD+2
-         sta   <DDCopy+2
+         ldd   <dotdotfd
+         std   <ddcopy
+         lda   <dotdotfd+2
+         sta   <ddcopy+2
 L0052    bsr   L00C6
          beq   L0079
          leax  >dotdot,pcr
@@ -81,10 +82,10 @@ L0052    bsr   L00C6
          bsr   rdtwo
          bsr   L00A8
          bsr   L00E2
-         ldd   <DotDotFD
-         std   <DDCopy
-         lda   <DotDotFD+2
-         sta   <DDCopy+2
+         ldd   <dotdotfd
+         std   <ddcopy
+         lda   <dotdotfd+2
+         sta   <ddcopy+2
          bra   L0052
 L0079    lbsr  L00FB
          ldx   <bufptr
@@ -125,7 +126,7 @@ L00A8    lda   <fildes
          bcs   L010F
          leax  dentry,u
          leax  <DIR.FD,x
-         leay  DDCopy,u
+         leay  ddcopy,u
          bsr   attop
          bne   L00A8
          rts   
@@ -137,21 +138,21 @@ attop    ldd   ,x++
          cmpa  ,y
 L00C5    rts   
 
-L00C6    leax  DotDotFD,u
-         leay  DotFD,u
+L00C6    leax  dotdotfd,u
+         leay  dotfd,u
          bsr   attop   * check if we're at the top
          rts   
 
 rdtwo    bsr   read32  * read "." from directory
          ldd   <dentry+DIR.FD
-         std   <DotFD
+         std   <dotfd
          lda   <dentry+DIR.FD+2
-         sta   <DotFD+2
+         sta   <dotfd+2
          bsr   read32  * read ".." from directory
          ldd   <dentry+DIR.FD
-         std   <DotDotFD
+         std   <dotdotfd
          lda   <dentry+DIR.FD+2
-         sta   <DotDotFD+2
+         sta   <dotdotfd+2
          rts   
 
 L00E2    leax  dentry,u

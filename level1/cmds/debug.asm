@@ -19,18 +19,19 @@
          use   defsfile
          endc
 
-tylg     set   Prgrm+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-edition  set   10
-
 * Changable settings
 NumBrkPt equ   12		number of breakpoints
 BuffSiz  equ   $145
 UnknSiz  equ   80
 
+tylg     set   Prgrm+Objct   
+atrv     set   ReEnt+rev
+rev      set   $01
+edition  set   10
+
 L0000    mod   eom,name,tylg,atrv,start,size
 
+         org   0
 curraddr rmb   2
 u0002    rmb   2
 u0004    rmb   2

@@ -38,9 +38,10 @@ edition  set   8
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 u0000    rmb   2
 u0002    rmb   1
-DevFd    rmb   1
+devfd    rmb   1
 u0004    rmb   1
 u0005    rmb   1
 u0006    rmb   2
@@ -115,7 +116,7 @@ L0175    sta   ,y+
          leax  <u0031,u
          lda   #$03
          os9   I$Open   
-         sta   <DevFd
+         sta   <devfd
          lbcs  L035B
          ldx   <u002F
          leay  >L0143,pcr
@@ -199,7 +200,7 @@ L022E    cmpb  #$D3
          lda   <u0025,u
          clrb  
          tfr   d,u
-         lda   <DevFd
+         lda   <devfd
          os9   I$Seek   
          ldu   <u0000
          lbcs  L036C
@@ -209,7 +210,7 @@ L022E    cmpb  #$D3
          lbcs  L036C
          ldd   <u0069,u
          lbne  L036F
-         lda   <DevFd
+         lda   <devfd
          ldx   #$0000
          ldu   #$0015
          os9   I$Seek   
@@ -255,7 +256,7 @@ L02C5    lda   #$01
          std   <u000B
          ldx   #$0000
          ldu   #$0015
-         lda   <DevFd
+         lda   <devfd
          os9   I$Seek   
          ldu   <u0000
          lbcs  L036C
@@ -281,7 +282,7 @@ L02C5    lda   #$01
          lbne  L0385
          ldx   #os9start    Address of kernel in RAM
          ldy   #os9size     Amount to write
-         lda   <DevFd
+         lda   <devfd
          os9   I$Write  
          bcs   L0354
          os9   I$Close  
@@ -303,7 +304,7 @@ L036F    leax  >L00FC,pcr
          bra   L035F
 
 SkLSN1   pshs  u
-         lda   <DevFd
+         lda   <devfd
          ldx   #$0000
          ldu   #$0100
          os9   I$Seek   Seek to allocation map at LSN 1

@@ -24,6 +24,7 @@ edition  set   4
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 parmptr  rmb   2
 fpath    rmb   1
 what2do  rmb   1

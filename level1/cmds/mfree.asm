@@ -24,6 +24,7 @@ stdout   set   1
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 fmbegin  rmb   2
 fmend    rmb   2
 u0004    rmb   1

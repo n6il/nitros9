@@ -23,10 +23,11 @@ edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 ioptr    rmb   2
 drvrptr  rmb   2
 drvrsiz  rmb   2
-OptBuf   rmb   32
+optbuf   rmb   32
 size     equ   .
 
 name     fcs   /go51/
@@ -86,7 +87,7 @@ L008B    lda   ,y+
          bne   L008B
          lda   #$01			standard output
          ldb   #SS.Opt			option getstat
-         leax  OptBuf,u			point to buffer
+         leax  optbuf,u			point to buffer
          os9   I$GetStt 		get status
          bcs   Bye			branch if error
          clr   (PD.UPC-PD.OPT),x

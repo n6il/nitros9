@@ -23,6 +23,7 @@ edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
+         org   0
 u0000    rmb   0
 size     equ   .
 
