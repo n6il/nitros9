@@ -5,12 +5,12 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 5      Original Tandy distribution version
+*  5     Original Dragon Data distribution version
 
          nam   Cobbler
          ttl   Make a bootstrap file
 
-* Disassembled 02/07/06 23:26:00 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 02/04/03 23:11:02 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
@@ -24,45 +24,41 @@ DevFd    rmb   3
 BTLSN    rmb   1
 u0005    rmb   2
 BtSiz    rmb   2
-u0009    rmb   7
-sttbuf   rmb   3
-u0013    rmb   17
-u0024    rmb   2
-u0026    rmb   10
-u0030    rmb   2
+sttbuf   rmb   20
+u001D    rmb   2
+u001F    rmb   10
+u0029    rmb   2
 devnam   rmb   32
-u0052    rmb   16
-u0062    rmb   1
-u0063    rmb   7
-u006A    rmb   432
+u004B    rmb   16
+u005B    rmb   1
+u005C    rmb   7
+u0063    rmb   682
 size     equ   .
 name     equ   *
          fcs   /Cobbler/
          fcb   $05 
-L0015    fcb   C$LF
-         fcc   "Use: COBBLER </devname>"
-         fcb   C$LF
-         fcc   "     to create a new system disk"
-         fcb   C$CR
-L004F    fcb   C$LF
+L0015    fcb   C$LF 
+         fcc   "Use: Cobbler </devname>"
+         fcb   C$LF 
+         fcc   "    to create a new system disk"
+         fcb   C$CR 
+L004E    fcb   C$LF 
          fcc   "Error writing kernel track"
-         fcb   C$CR
-L006B    fcb   C$LF
-         fcc   "Error - cannot gen to hard disk"
-         fcb   C$CR
-L008C    fcb   C$LF
-         fcc   "Warning - file(s) present"
-         fcb   C$LF
-         fcc   "on track 34 - this track"
-         fcb   C$LF
-         fcc   "not rewritten."
-         fcb   C$CR
-L00CF    fcb   C$LF
+         fcb   C$CR 
+L006A    fcb   C$LF 
+         fcc   "Warning - Kernel track has"
+         fcb   C$LF 
+         fcc   "not been allocated properly."
+         fcb   C$LF 
+         fcc   "Track not written."
+         fcb   C$CR 
+L00B6    fcb   C$LF 
          fcc   "Error - OS9boot file fragmented"
-         fcb   C$CR
+         fcb   C$LF 
+         fcc   " This disk will not bootstrap."
+         fcb   C$CR 
 BfNam    fcc   "OS9Boot "
          fcb   $FF 
-
 start    equ   *
          clrb  
          lda   #'/
@@ -74,11 +70,11 @@ start    equ   *
          cmpa  ,y
          lbeq  Usage
          leay  <devnam,u
-L0114    sta   ,y+
+L011A    sta   ,y+
          lda   ,x+
          decb  
-         bpl   L0114
-         sty   <u0030
+         bpl   L011A
+         sty   <u0029
          lda   #'@
          ldb   #$20
          std   ,y++
@@ -87,24 +83,13 @@ L0114    sta   ,y+
          os9   I$Open   
          sta   <DevFd
          lbcs  Usage
-         ldx   <u0030
+         ldx   <u0029
          leay  >BfNam,pcr
          lda   #'/
-L013A    sta   ,x+
+L0140    sta   ,x+
          lda   ,y+
-         bpl   L013A
+         bpl   L0140
          lda   <DevFd
-         leax  <sttbuf,u
-         ldb   #$00
-         os9   I$GetStt 
-         lbcs  Exit
-         leax  <sttbuf,u
-         lda   <u0013,u
-         bpl   L015E
-         leax  >L006B,pcr
-         clrb  
-         lbra  wrerr
-L015E    lda   <DevFd
          pshs  u
          ldx   #$0000
          ldu   #$0015   probably DD.BT
@@ -116,7 +101,7 @@ L015E    lda   <DevFd
          os9   I$Read    Read bootstrap sector + size = 5 bytes
          lbcs  Exit
          ldd   <BtSiz
-         beq   L0193
+         beq   L017B
          leax  <devnam,u
          os9   I$Delete 
          clra  
@@ -125,7 +110,7 @@ L015E    lda   <DevFd
          std   <u0005
          std   <BtSiz
          lbsr  UpLSN0
-L0193    lda   #WRITE.
+L017B    lda   #WRITE.
          ldb   #UPDAT.
          leax  <devnam,u
          os9   I$Create 
@@ -139,7 +124,7 @@ L0193    lda   #WRITE.
          lda   <u0000
          os9   I$Write  
          lbcs  Exit
-         leax  <sttbuf,u
+         leax  sttbuf,u
          ldb   #SS.OPT
          os9   I$GetStt 
          lbcs  Exit
@@ -147,91 +132,48 @@ L0193    lda   #WRITE.
          os9   I$Close  
          lbcs  Usage
          pshs  u
-         ldx   <u0024,u
-         lda   <u0026,u
+         ldx   <u001D,u
+         lda   <u001F,u
          clrb  
          tfr   d,u
          lda   <DevFd
          os9   I$Seek   
          puls  u
          lbcs  Exit
-         leax  <u0052,u
+         leax  <u004B,u
          ldy   #$0100
          os9   I$Read   
          lbcs  Exit
-         ldd   <u006A,u
-         lbne  Fragd
-         ldb   <u0062,u
-         stb   <BTLSN
          ldd   <u0063,u
+         lbne  Fragd
+         ldb   <u005B,u
+         stb   <BTLSN
+         ldd   <u005C,u
          std   <u0005
          lbsr  UpLSN0
          lbsr  SkLSN1
-         leax  <u0052,u
+         leax  <u004B,u
          ldy   #$0100
          os9   I$Read   
-         lbcs  wrerr
-         leax  <u0052,u
-         lda   <$4C,x
-         bita  #$0F
-         beq   L0273
-         lda   <DevFd
-         pshs  u
-         ldx   #$0002
-         ldu   #$6400
-         os9   I$Seek      Jump to LSN 612
-         puls  u
-         leax  u0009,u
-         ldy   #$0007
-         os9   I$Read   
-         lbcs  L02ED
-         leax  u0009,u
-         ldd   ,x
-         cmpa  #$4F
-         lbne  L02ED
-         cmpb  #$53
-         lbne  L02ED
-         lda   $04,x
-         cmpa  #$12
-         beq   L025C
-         lda   <$4E,x
-         bita  #$1C
-         lbne  L02ED
-L025C    lda   <$4C,x
-         ora   #$0F
-         sta   <$4C,x
-         lda   #$FF
-         sta   <$4D,x
-         lda   <$4E,x
-         ora   #$FC
-         sta   <$4E,x
-         bra   L028C
-L0273    ora   #$0F
-         sta   <$4C,x
-         tst   <$4D,x
-         bne   L02ED
-         com   <$4D,x
-         lda   <$4E,x
-         bita  #$FC
-         bne   L02ED
-         ora   #$FC
-         sta   <$4E,x
-L028C    bsr   SkLSN1
-         leax  <u0052,u
-         ldy   #$0064
-         os9   I$Write  
          bcs   wrerr
-         pshs  u
-         ldx   #$0002
-         ldu   #$6400
-         os9   I$Seek   Jump to LSN 612
-         puls  u
-         ldx   #$EF00    Address of kernel in RAM
-         ldy   #$0F80    Amount to write
+         lda   ,x
+         anda  #$3F
+         eora  #$3F
+         bne   NotAllo
+         lda   $01,x
+         eora  #$FF
+         bne   NotAllo
+         lda   $02,x
+         anda  #$90
+         eora  #$90
+         bne   NotAllo
+         ldx   #$F000    Address of kernel in RAM
+         ldy   #$0F00    Amount to write
+         lda   <DevFd
          os9   I$Write  
          bcs   ETrack
          os9   I$Close  
-         bcs   Usage
+         bcs   Exit
          clrb  
          bra   Exit
 
@@ -251,18 +193,21 @@ wrerr    pshs  b
          puls  b
 Exit     os9   F$Exit   
 
-Fragd    leax  >L00CF,pcr
+Fragd    leax  >L00B6,pcr
          clrb  
          bra   wrerr
 
-ETrack   leax  >L004F,pcr
+ETrack   leax  >L004E,pcr
          clrb  
          bra   wrerr
-
-L02ED    leax  >L008C,pcr
+*
+* Write warning
+NotAllo    leax  >L006A,pcr
          clrb  
          bra   wrerr
-
+*
+* Update the identification sector on LSN 0
+*
 UpLSN0   pshs  u
          ldx   #$0000
          ldu   #$0015   probably DD.BT

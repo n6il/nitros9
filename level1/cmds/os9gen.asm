@@ -5,23 +5,14 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  7     Original Dragon Data distribution version
-
-* DragonDOS BOOT loads sectors (numbered from 0) 2-17 (3840 bytes) into
-* RAM at location 9728. The first two bytes of sector 2 must be ASCII 'OS'
-* for this to work. It then jumps to 9730 and begins execution.
+*  7     Original Tandy distribution version
 *
-* The boot code switches into RAM mode, and copies the entire section to
-* $F000 and jumps to $F04F.
-* The 3840 bytes contain a few bytes to do the RAM mode switch, then
-* immediately after comes the kernel modules; OS9, OS9p2, Init and Boot
-* The rest of the bootstrap is in the OS9Boot file. The disk head at LSN0
-* contains the LSN of the bootstrap file in field DD.BT.
+* OS9gen is hardware dependent. On COCO the track to write is 34
 
          nam   OS9gen
          ttl   Build and Link a Bootstrap File
 
-* Disassembled 02/04/03 23:17:45 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 02/07/06 22:40:22 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
@@ -40,86 +31,135 @@ u0008    rmb   1
 u0009    rmb   2
 u000B    rmb   2
 u000D    rmb   2
-u000F    rmb   20
-u0023    rmb   2
-u0025    rmb   10
-u002F    rmb   2
-u0031    rmb   32
-u0051    rmb   16
-u0061    rmb   1
-u0062    rmb   7
-u0069    rmb   4522
+u000F    rmb   2
+u0011    rmb   2
+u0013    rmb   7
+u001A    rmb   3
+u001D    rmb   17
+u002E    rmb   2
+u0030    rmb   10
+u003A    rmb   2
+u003C    rmb   1
+u003D    rmb   451
+u0200    rmb   16
+u0210    rmb   1
+u0211    rmb   7
+u0218    rmb   1000
 size     equ   .
 name     equ   *
          fcs   /OS9gen/
          fcb   $07 
-L0014    fcb   C$LF 
-         fcc   "Use (caution): os9gen </devname>"
-         fcb   C$LF 
-         fcc   " ..reads (std input) pathnames until eof,"
-         fcb   C$LF 
-         fcc   "   merging paths into new OS9Boot file."
-         fcb   C$CR 
-         fcc   "Can't find: "
-L0094    fcb   C$LF
-         fcc   "Error writing kernel track"
-         fcb   C$CR 
-L00B0    fcb   C$LF 
-         fcc   "Warning - Kernel track has"
-         fcb   C$LF 
-         fcc   "not been allocated properly."
-         fcb   C$LF 
-         fcc   "Track not written."
-         fcb   C$CR 
-L00FC    fcb   C$LF
-         fcc   "Error - OS9boot file fragmented"
-         fcb   C$LF 
-         fcc   " This disk will not bootstrap."
-         fcb   C$CR 
-L013C    fcc   "RENAME "
-L0143    fcc   "TempBoot "
-         fcb   $FF
-L014D    fcc   "OS9Boot"
+L0014    fcb   C$LF
+         fcc   "Use (CAUTION): OS9GEN </devname> [-s]"
+         fcb   C$LF
+         fcc   " ..reads (std input) pathnames until EOF,"
+         fcb   C$LF
+         fcc   "   merging paths into New OS9Boot file."
+         fcb   C$LF
+         fcc   " -s = single drive operation"
+         fcb   C$LF
          fcb   C$CR
-         fcb   $FF
+         fcc   "Can't find: "
+L00B7    fcb   C$LF
+         fcc   "Error writing kernel track"
+         fcb   C$CR
+L00D3    fcb   C$LF
+         fcc   "Error - cannot gen to hard disk"
+         fcb   C$CR
+L00F4    fcb   C$CR
+L00F5    fcb   $07 
+L00F6    fcb   C$LF
+         fcc   "Warning - file(s) present"
+         fcb   C$LF
+         fcc   "on track 34 - this track"
+         fcb   C$LF
+         fcc   "not rewritten."
+         fcb   C$CR
+L0139    fcb   C$LF
+         fcc   "Error - OS9boot file fragmented"
+         fcb   C$CR
+L015A    fcc   "Ready SOURCE, hit C to continue: "
+L017B    fcc   "Ready DESTINATION, hit C to continue: "
+L01A1    fcc   "RENAME "
+L01A8    fcc   "TempBoot "
+         fcb   $FF 
+L01B2    fcc   "OS9Boot"
+         fcb   C$CR
+         fcb   $FF 
+
 start    equ   *
          clrb  
          stb   <u0005
+         stb   <u003C
          stu   <u0000
+         leas  >u0200,u
+         pshs  u
+         tfr   y,d
+         subd  ,s++
+         subd  #$0200
+         clrb  
+         std   <u0011
          lda   #$2F
          cmpa  ,x
-         lbne  L035B
+         lbne  L0503
          os9   F$PrsNam 
-         lbcs  L035B
+         lbcs  L0503
          lda   #$2F
          cmpa  ,y
-         lbeq  L035B
-         leay  <u0031,u
-L0175    sta   ,y+
+         lbeq  L0503
+         pshs  b,a
+L01EB    lda   ,y+
+         cmpa  #$2D
+         beq   L01F7
+         cmpa  #$0D
+         beq   L0209
+         bra   L01EB
+L01F7    ldd   ,y+
+         eora  #$53
+         anda  #$DF
+         lbne  L0503
+         cmpb  #$30
+         lbcc  L0503
+         inc   <u003C
+L0209    puls  b,a
+         leay  <u003D,u
+L020E    sta   ,y+
          lda   ,x+
          decb  
-         bpl   L0175
-         sty   <u002F
+         bpl   L020E
+         sty   <u003A
          lda   #'@
          ldb   #$20
          std   ,y++
-         leax  <u0031,u
+         lda   #$01
+         lbsr  L0517
+         leax  <u003D,u
          lda   #$03
          os9   I$Open   
          sta   <DevFd
-         lbcs  L035B
-         ldx   <u002F
-         leay  >L0143,pcr
+         lbcs  L0503
+         leax  <u001A,u
+         ldb   #$00
+         os9   I$GetStt 
+         lbcs  L0514
+         leax  <u001A,u
+         lda   <u001D,u
+         bpl   L024D
+         clrb  
+         leax  >L00D3,pcr
+         lbra  L0507
+L024D    ldx   <u003A
+         leay  >L01A8,pcr
          lda   #$2F
-L019B    sta   ,x+
+L0255    sta   ,x+
          lda   ,y+
-         bpl   L019B
-         leay  >L014D,pcr
-L01A5    lda   ,y+
+         bpl   L0255
+         leay  >L01B2,pcr
+L025F    lda   ,y+
          sta   ,x+
-         bpl   L01A5
+         bpl   L025F
          tfr   x,d
-         leax  <u0031,u
+         leax  <u003D,u
          pshs  x
          subd  ,s++
          std   <u000D
@@ -127,120 +167,162 @@ L01A5    lda   ,y+
          ldb   #$03
          os9   I$Create 
          sta   <u0002
-         lbcs  L036C
+         lbcs  L0514
          ldx   #$0000
          stx   <u0006
-         ldu   #$4000
+         ldu   #$3000
          ldb   #SS.Size
          os9   I$SetStt 
-         lbcs  L036C
+         lbcs  L0514
          ldu   <u0000
-L01D6    clra  
-         leax  <u0051,u
-         ldy   #$1000
+         lda   #$00
+         lbsr  L0517
+L0295    clra  
+         leax  >u0200,u
+         ldy   #$0400
          os9   I$ReadLn 
-         bcs   L022E
+         bcs   L0322
          lda   ,x
          ldb   #$D3
-         cmpa  #C$CR
-         beq   L022E
+         cmpa  #$0D
+         beq   L0322
          lda   #$01
          os9   I$Open   
-         bcs   L021D
+         bcs   L0310
          sta   <u0004
-L01F4    lda   <u0004
-         leax  <u0051,u
-         ldy   #$1000
+         tst   <u003C
+         beq   L02E2
+         lda   #$01
+         lbsr  L0517
+         lda   <DevFd
+         ldx   #$0000
+         ldu   #$0000
+         os9   I$Seek   
+         lbcs  L0514
+         ldu   <u0000
+         leax  >u0200,u
+         ldy   #$0100
          os9   I$Read   
-         bcs   L0212
+         lbcs  L0514
+L02DD    lda   #$00
+         lbsr  L0517
+L02E2    lda   <u0004
+         leax  >u0200,u
+         ldy   <u0011
+         os9   I$Read   
+         bcs   L0305
          tfr   y,d
          addd  <u0006
          std   <u0006
+         lda   #$01
+         lbsr  L0517
          lda   <u0002
          os9   I$Write  
-         bcc   L01F4
-         lbra  L036C
-L0212    cmpb  #$D3
-         lbne  L036C
+         bcc   L02DD
+         lbra  L0514
+L0305    cmpb  #$D3
+         lbne  L0514
          os9   I$Close  
-         bra   L01D6
-L021D    pshs  b
-         leax  <u0051,u
+         bra   L0295
+L0310    pshs  b
+         leax  >u0200,u
          ldy   #$0100
          lda   #$02
          os9   I$WritLn 
-L022B    lbra  L036C
-L022E    cmpb  #$D3
-         bne   L022B
-         leax  u000F,u
+L031F    lbra  L0514
+L0322    cmpb  #$D3
+         bne   L031F
+         lda   #$01
+         lbsr  L0517
+         leax  <u001A,u
          ldb   #$00
          lda   <u0002
          os9   I$GetStt 
-         lbcs  L036C
+         lbcs  L0514
          lda   <u0002
          ldx   #$0000
          ldu   <u0006
          ldb   #SS.Size
          os9   I$SetStt 
-         lbcs  L036C
+         lbcs  L0514
          ldu   <u0000
          os9   I$Close  
-         lbcs  L035B
-         ldx   <u0023,u
-         lda   <u0025,u
+         lbcs  L0503
+         ldx   <u002E,u
+         lda   <u0030,u
          clrb  
          tfr   d,u
          lda   <DevFd
          os9   I$Seek   
          ldu   <u0000
-         lbcs  L036C
-         leax  <u0051,u
+         lbcs  L0514
+         leax  >u0200,u
          ldy   #$0100
          os9   I$Read   
-         lbcs  L036C
-         ldd   <u0069,u
-         lbne  L036F
+         lbcs  L0514
+         ldd   >u0218,u
+         lbne  L0577
          lda   <DevFd
          ldx   #$0000
          ldu   #$0015
          os9   I$Seek   
          ldu   <u0000
-         lbcs  L036C
+         lbcs  L0514
          leax  u0008,u
          ldy   #$0005
          os9   I$Read   
-         lbcs  L036C
+         lbcs  L0514
          ldd   <u000B
-         beq   L02C5
-         ldx   <u002F
-         leay  >L014D,pcr
+         beq   L03C1
+         ldx   <u003A
+         leay  >L01B2,pcr
          lda   #$2F
-L02AB    sta   ,x+
+L03A7    sta   ,x+
          lda   ,y+
-         bpl   L02AB
-         leax  <u0031,u
+         bpl   L03A7
+         leax  <u003D,u
          os9   I$Delete 
-         ldx   <u002F
-         leay  >L0143,pcr
+         ldx   <u003A
+         leay  >L01A8,pcr
          lda   #$2F
-L02BF    sta   ,x+
+L03BB    sta   ,x+
          lda   ,y+
-         bpl   L02BF
-L02C5    lda   #$01
-         clrb  
-         leax  >L013C,pcr
-         ldy   <u000D
-         leau  <u0031,u
-         os9   F$Fork   
-         lbcs  L036C
-         os9   F$Wait   
-         lbcs  L036C
-         tstb  
-         lbne  L036C
+         bpl   L03BB
+L03C1    tst   <u003C
+         beq   L03E1
+         lda   #$00
+         lbsr  L0517
+         clra  
+         leax  >L01A1,pcr
+         os9   F$Load   
+         lbcs  L0514
+         tfr   u,d
          ldu   <u0000
-         ldb   <u0061,u
+         std   u000F,u
+         lda   #$01
+         lbsr  L0517
+L03E1    lda   #$01
+         clrb  
+         leax  >L01A1,pcr
+         ldy   <u000D
+         leau  <u003D,u
+         os9   F$Fork   
+         lbcs  L0514
+         os9   F$Wait   
+         lbcs  L0514
+         tstb  
+         lbne  L0514
+         tst   <u003C
+         beq   L0412
+         ldu   <u0000
+         ldd   u000F,u
+         tfr   d,u
+         os9   F$UnLink 
+         lbcs  L0514
+L0412    ldu   <u0000
+         ldb   >u0210,u
          stb   <u0008
-         ldd   <u0062,u
+         ldd   >u0211,u
          std   <u0009
          ldd   <u0006
          std   <u000B
@@ -249,59 +331,138 @@ L02C5    lda   #$01
          lda   <DevFd
          os9   I$Seek   
          ldu   <u0000
-         lbcs  L036C
+         lbcs  L0514
          leax  u0008,u
          ldy   #$0005
          os9   I$Write  
-         lbcs  L036C
-         lbsr  SkLSN1
-         leax  <u0051,u
+         lbcs  L0514
+         lbsr  L057E
+         leax  >u0200,u
          ldy   #$0100
          os9   I$Read   
-         bcs   L035F
-         lda   ,x
-         anda  #$3F
-         eora  #$3F
-         lbne  L0385
-         lda   $01,x
-         eora  #$FF
-         lbne  L0385
-         lda   $02,x
-         anda  #$90
-         eora  #$90
-         lbne  L0385
-         ldx   #$F000    Address of kernel in RAM
-         ldy   #$0F00    Amount to write
+         lbcs  L0507
+         leax  >u0200,u
+         lda   <$4C,x
+         bita  #$0F
+         beq   L04AE
          lda   <DevFd
+         pshs  u
+         ldx   #$0002
+         ldu   #$6400
+         os9   I$Seek   
+         puls  u
+         leax  <u0013,u
+         ldy   #$0007
+         os9   I$Read   
+         lbcs  L058D
+         leax  <u0013,u
+         ldd   ,x
+         cmpa  #$4F
+         lbne  L058D
+         cmpb  #$53
+         lbne  L058D
+         lda   $04,x
+         cmpa  #$12
+         beq   L049C
+         lda   <$4E,x
+         bita  #$1C
+         lbne  L058D
+L049C    lda   <$4C,x
+         ora   #$0F
+         sta   <$4C,x
+         lda   #$FF
+         sta   <$4D,x
+         sta   <$4E,x
+         bra   L04CB
+L04AE    ora   #$0F
+         sta   <$4C,x
+         tst   <$4D,x
+         lbne  L058D
+         com   <$4D,x
+         lda   <$4E,x
+         bita  #$FC
+         lbne  L058D
+         ora   #$FC
+         sta   <$4E,x
+L04CB    lbsr  L057E
+         leax  >u0200,u
+         ldy   #$0064
          os9   I$Write  
-         bcs   L0354
+         bcs   L0507
+         pshs  u
+         ldx   #$0002
+         ldu   #$6400
+         os9   I$Seek   
+         puls  u
+         ldx   #$EF00    Address of kernel in RAM
+         ldy   #$0F80    Amount to write
+         os9   I$Write  
+         bcs   L04FC
          os9   I$Close  
-         bcs   L036C
+         bcs   L0503
          clrb  
-         bra   L036C
-L0354    leax  >L0094,pcr
+         bra   L0514
+L04FC    leax  >L00B7,pcr
          clrb  
-         bra   L035F
-L035B    leax  >L0014,pcr
-L035F    pshs  b
+         bra   L0507
+L0503    leax  >L0014,pcr
+L0507    pshs  b
          lda   #$02
          ldy   #$0100
          os9   I$WritLn 
          puls  b
-L036C    os9   F$Exit   
-L036F    leax  >L00FC,pcr
+L0514    os9   F$Exit   
+L0517    tst   <u003C
+         beq   L055F
+         pshs  y,x
+L051D    pshs  a
+         tsta  
+         bne   L052C
+         leax  >L015A,pcr
+         ldy   #$0021
+         bra   L0534
+L052C    leax  >L017B,pcr
+         ldy   #$0026
+L0534    bsr   L0560
+         leax  ,-s
+         ldy   #$0001
+         lda   #$02
+         os9   I$Read   
+         lda   ,s+
+         eora  #$43
+         anda  #$DF
+         beq   L0559
+         leax  >L00F5,pcr
+         ldy   #$0001
+         bsr   L0560
+         bsr   L0566
+         puls  a
+         bne   L051D
+L0559    bsr   L0566
+         puls  a
+         puls  y,x
+L055F    rts   
+L0560    lda   #$01
+         os9   I$WritLn 
+         rts   
+L0566    pshs  y,x,a
+         lda   #$01
+         leax  >L00F4,pcr
+         ldy   #$0050
+         os9   I$WritLn 
+         puls  pc,y,x,a
+L0577    leax  >L0139,pcr
          clrb  
-         bra   L035F
-
-SkLSN1   pshs  u
+         bra   L0507
+L057E    pshs  u
          lda   <DevFd
          ldx   #$0000
          ldu   #$0100
-         os9   I$Seek   Seek to allocation map at LSN 1
+         os9   I$Seek   
          puls  pc,u
 
-L0385    leax  >L00B0,pcr
+L058D    leax  >L00F6,pcr
          clrb  
-         bra   L035F
+         lbra  L0507
          emod
 eom      equ   *
