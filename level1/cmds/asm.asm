@@ -2234,9 +2234,9 @@ L0E4A    cmpa  ,u++           Same as first 1/2 of table entry?
          bne   L0E63
          lda   #$5F		uppercase-only case mask
          tstb	
-         beq   *+5		"U" flag, force uppercase
+         beq   u.opt		"U" flag, force uppercase
          lda   #$7F		"-U" flag, upper+lower OK
-         sta   <u000D		store new symbol case mask
+u.opt    sta   <u000D		store new symbol case mask
          bra   L0E73
         ENDC
 L0E63    ldb   #22		'opt list' error
