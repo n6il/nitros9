@@ -421,7 +421,8 @@ Loop2    clr   ,u+       	clear newly alloc'ed mem
          bhi   Loop2     
          ENDC            
          ldd   HWPG,s     get hwpage and upper addr
-*         IFNE  H6309
+* Code here appears to be for Level III?
+         IFNE  NitrOS9
          bsr   L01D1     
          std   <DATBYT2,s     save off
          ldu   #$0000    
@@ -460,7 +461,7 @@ L023B    sty   <DATBYT1,s
 L023F    ldd   HWPORT,s  
          anda  #$1F      
          addd  <DATBYT1,s    
-*         ENDC
+         ENDC
          ldu   VSTAT,s    load U with static storage of drvr
          clr   ,u         clear ??
          std   $01,u     
@@ -550,7 +551,8 @@ L02D1    ldx   $01,s     	get ptr to dev table
          os9   F$SRtMem  	return mem
          ldx   $01,s      	get old U on stack
          ldx   V$DESC,x  
-*         IFNE  H6309
+* Code here appears to be for Level III?
+         IFNE  NitrOS9
          ldd   M$Port,x  
          beq   L032B     
          lbsr  L01D1     
@@ -621,7 +623,7 @@ L0323
          ora   #ImgChg   
          sta   P$State,x 
          ENDC            
-*         ENDC
+         ENDC
 L032B    puls  u,b       
          ldx   V$DESC,u     	get descriptor in X
          clr   V$DESC,u     	clear out descriptor
