@@ -12,23 +12,28 @@ FILE ORGANIZATION
 All source files contain the file extension '.asm'  The source files are
 organized into their respective directories, with the topmost being:
 
+	docs/         ..... OS-9 Documentation
 	level1/       ..... OS-9 Level One V2 source
 	level2/       ..... OS-9 Level Two V2 source
 	level2v3/     ..... OS-9 Level Two V3 source
+	nitros/       ..... NitrOS-9 source
 	defs/         ..... OS-9 definition files
 	3rdparty/     ..... Third party drivers, applications, etc.
+	hosttools/    ..... Host (Linux) tools
 
-The level1/, level2/, and level3/ directories contain makefiles and
+The level1/, level2/, level2v3/ and nitros/ directories contain makefiles and
 subdirectories for commands, modules and bootfiles.
 
 DEFINITION FILES
-The defs/ directory has definition files for the OS-9 packages.
+The defs/ directory has definition files for the OS-9 packages.  Note that
+these defs/ files are not intended for distribution disks, only for building
+on the host.
 
 	os9defs       ..... Defs files for all OS-9 packages
-	systype.l1    ..... Defs files for level1/
-	systype.l2    ..... Defs files for level2/ and level2v3/
+	systype       ..... System definitions for all OS-9 packages
 	scfdefs       ..... SCF file manager defs
 	rbfdefs       ..... RBF file manager defs
+	vdgdefs       ..... VDGInt driver defs
 	pipedefs      ..... PipeMan defs for level1/ and level2/
 	pipedefs.l2v3 ..... PipeMan defs for level2v3/
 	l51.defs      ..... Used by level2v3/
