@@ -97,6 +97,7 @@ C$RPRT   set   $04        (ctl D - EOT) Reprint current input line
 C$QUIT   set   $05        (ctl E - ENQ) Keyboard Abort
 C$BELL   set   $07        (ctl G - BEL) Line overflow warning
 C$BSP    set   $08        (ctl H - BS ) Back space
+C$RARR   set   $09        Right Arrow
 C$EL     set   $05        Erase Line
 C$LF     set   $0A        Line feed
 C$HOME   set   $0B        Home position Code
@@ -110,6 +111,7 @@ C$XON    set   $11        (ctl Q - DC1) Transmit Enable
 C$XOFF   set   $13        (ctl S - DC3) Transmit Disable
 C$PAUS   set   $17        (ctl W - ETB) Pause character
 C$DEL    set   $18        (ctl X - CAN) Delete line
+C$SHRARR set   $19        Shift Right-Arrow
 C$EOF    set   $1B        (ctl [ - ESC) END of file
 C$RGT    set   $1C        Cursor right
 C$LFT    set   $1D        Cursor left
