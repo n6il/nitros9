@@ -126,7 +126,7 @@ L001C    std    ,x++
          stb    <D.CRC      set CRC checking flag to off
 
 * Initialize interrupt vector tables
-         leay  <DisTable,pcr point to table of absoulte vector addresses
+         leay  <DisTable,pcr point to table of absolute vector addresses
          ldx   #D.Clock   where to put it in memory
          IFNE  H6309
          ldf   #DisSize   size of the table - E=0 from TFM, above
