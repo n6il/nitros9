@@ -8,6 +8,9 @@
 * ------------------------------------------------------------------
 *          ????/??/??
 * Original Dragon Data distribution version
+*
+*          2004/01/04  Rodney Hamilton
+* Recoded anonymous fcb arrays, added some comments
 
          nam   KBVDIO
          ttl   keyboard/video driver
@@ -64,7 +67,7 @@ u0038    rmb   1
 u0039    rmb   1
 u003A    rmb   1
 vhwaddr  rmb   2		address of keyboard hardware
-u003D    rmb   1
+u003D    rmb   1		SHIFTLOCK toggle
 u003E    rmb   1
 u003F    rmb   1
 u0040    rmb   1
@@ -72,8 +75,8 @@ u0041    rmb   1
 u0042    rmb   1
 u0043    rmb   1
 u0044    rmb   1
-u0045    rmb   1
-u0046    rmb   1
+u0045    rmb   1		SHIFT key flag
+u0046    rmb   1		CONTROL key flag
 u0047    rmb   1
 u0048    rmb   1
 u0049    rmb   1
@@ -94,64 +97,64 @@ start    lbra  Init
          lbra  SetStat
          lbra  Term
 
-Init     lbsr  AllocMem			allocate video memory
-         lbra  L002D			unsure why this is here.. timing?
-L002D    pshs  cc			save CC
-         orcc  #IRQMask			mask IRQs
-         stu   >D.KbdSta		save our static mem
-         ldd   >D.IRQ			get current IRQ vector address
-         std   >D.AltIRQ		store in Alt. IRQ vector
-         leax  >OurIRQ,pcr		point to our IRQ address
-         stx   >D.IRQ			store in D.IRQ
-         ldx   #$FF00			get address of PIA
-         stx   <vhwaddr,u		store in statics for IRQ routine
+Init     lbsr  AllocMem		allocate video memory
+         lbra  L002D		unsure why this is here.. timing?
+L002D    pshs  cc		save CC
+         orcc  #IRQMask		mask IRQs
+         stu   >D.KbdSta	save our static mem
+         ldd   >D.IRQ		get current IRQ vector address
+         std   >D.AltIRQ	store in Alt. IRQ vector
+         leax  >OurIRQ,pcr	point to our IRQ address
+         stx   >D.IRQ		store in D.IRQ
+         ldx   #$FF00		get address of PIA
+         stx   <vhwaddr,u	store in statics for IRQ routine
          clra  
          clrb  
          std   <u0048,u
-         sta   $01,x			clear $FF01
-         sta   ,x			clear $FF00
-         sta   $03,x			clear $FF03
-         comb  				B = $FF now
+         sta   $01,x		clear $FF01
+         sta   ,x		clear $FF00
+         sta   $03,x		clear $FF03
+         comb  			B = $FF now
          stb   <u003D,u
-         stb   $02,x			put $FF in $FF02
+         stb   $02,x		put $FF in $FF02
          stb   <u003F,u
          stb   <u0040,u
          stb   <u0041,u
          lda   #$34
-         sta   $01,x			put $34 in $FF01
+         sta   $01,x		put $34 in $FF01
          lda   #$3F
-         sta   $03,x			put $3F in $FF03
-         lda   $02,x			get byte at $FF02
-         puls  pc,cc			get CC and return
-         ldb   #$F5
-         orcc  #Carry			set carry
-         rts   				and return
+         sta   $03,x		put $3F in $FF03
+         lda   $02,x		get byte at $FF02
+         puls  pc,cc		get CC and return
+         ldb   #E$Write
+         orcc  #Carry		set carry
+         rts   			and return
 
-GetStat  cmpa  #SS.Ready		SS.Ready call?
-         bne   L0082			branch if not
+GetStat  cmpa  #SS.Ready	SS.Ready call?
+         bne   L0082		branch if not
          lda   <u0049,u
          suba  <u0048,u
          bne   GSOk
          ldb   #E$NotRdy
          bra   L009A
-L0082    cmpa  #SS.EOF			End of file?
-         beq   GSOk			branch if so
+L0082    cmpa  #SS.EOF		End of file?
+         beq   GSOk		branch if so
          cmpa  #SS.DStat
-         lbeq  L04E0+4
-         cmpa  #SS.Joy			joystick value acquisition?
+         lbeq  L04E4
+         cmpa  #SS.Joy		joystick value acquisition?
          lbeq  L085F
-         cmpa  #SS.AlfaS		Alfa display status?
-         lbeq  L04CD			branch if so
+         cmpa  #SS.AlfaS	Alfa display status?
+         lbeq  L04CD		branch if so
 
 SetStat  ldb   #E$UnkSvc
 L009A    orcc  #Carry
          rts   
 
-Term     pshs  cc			save CC
-         orcc  #IRQMask			mask IRQs
-         ldx   >D.AltIRQ		get Alt. IRQ address
-         stx   >D.IRQ			and restore it to D.IRQ
-         puls  pc,cc			get CC and return
+Term     pshs  cc		save CC
+         orcc  #IRQMask		mask IRQs
+         ldx   >D.AltIRQ	get Alt. IRQ address
+         stx   >D.IRQ		and restore it to D.IRQ
+         puls  pc,cc		get CC and return
 
 L00A9    incb  
          cmpb  #$7F
@@ -160,11 +163,11 @@ GSOk     clrb
 L00AF    rts   
 
 * Driver's IRQ Routine
-OurIRQ   ldu   >D.KbdSta		get pointer to driver's statics
-         ldx   <vhwaddr,u		get keyboard hardware address
-         lda   $03,x			get byte
-         bmi   L00BE			branch if hi bit set
-         jmp   [>D.SvcIRQ]		else jump on
+OurIRQ   ldu   >D.KbdSta	get pointer to driver's statics
+         ldx   <vhwaddr,u	get keyboard hardware address
+         lda   $03,x		get byte
+         bmi   L00BE		branch if hi bit set
+         jmp   [>D.SvcIRQ]	else jump on
 L00BE    lda   $02,x
          lda   #$FF
          sta   $02,x
@@ -192,9 +195,9 @@ L00ED    jmp   [>D.AltIRQ]
 L00F1    bsr   L013F
          bmi   L00DF
          sta   <u0047,u
-         cmpa  #$1F
+         cmpa  #$1F		control-zero?
          bne   L0101
-         com   <u003D,u
+         com   <u003D,u		yes, toggle SHIFTLOCK
          bra   L00DF
 L0101    ldb   <u0048,u
          leax  <u004A,u
@@ -222,9 +225,10 @@ L012E    lda   u0003,u
 L0132    ldb   #S$Wake
          lda   V.WAKE,u
 L0136    beq   L013B
-         os9   F$Send   		send signal to process
+         os9   F$Send   	send signal to process
 L013B    clr   V.WAKE,u
          bra   L00DF
+
 L013F    clra  
          sta   <u003E,u
          sta   <u0045,u
@@ -234,51 +238,53 @@ L013F    clra
          sta   <u0043,u
          sta   <u0044,u
          deca  
-         sta   $02,x
-L0156    lda   ,x
-         coma  
-         anda  #$7F
-         beq   L0169
+         sta   $02,x		strobe column #0 ($FF02)
+L0156    lda   ,x		read row register ($FF00)
+         coma  			flip bits to active-high
+         anda  #$7F		mask off joystick row
+         beq   L0169		no keypress in this column
          ldb   #$FF
 L015F    incb  
          lsra  
-         bcc   L0165
-         bsr   L01AF
-L0165    cmpb  #$06
+         bcc   L0165		no key in this row, move along
+         bsr   L01AF		keypress detected, process row & col
+L0165    cmpb  #$06		final row checked?
          bcs   L015F
-L0169    inc   <u003E,u
+L0169    inc   <u003E,u		bump column counter
          orcc  #Carry
-         rol   $02,x
+         rol   $02,x		strobe next column
          bcs   L0156
          lbsr  L01F8
          bmi   L01AE
          suba  #$1B
-         bcc   L0191
+         bcc   L0191		not an alpha key
          adda  #$1B
-         ldb   <u0046,u
-         bne   L0190
-         adda  #$40
-         ldb   <u0045,u
+         ldb   <u0046,u		control key pressed?
+         bne   L0190		yes, return CTRL code
+         adda  #$40		no, convert to ASCII
+         ldb   <u0045,u		shift key pressed?
          eorb  <u003D,u
          andb  #$01
          bne   L0190
          adda  #$20
 L0190    rts   
-L0191    ldb   #$03
+L0191    ldb   #3		three values per key
          mul   
-         lda   <u0045,u
+         lda   <u0045,u		shift key pressed?
          beq   L019C
-         incb  
+         incb  			yes, use 2nd value
          bra   L01A3
-L019C    lda   <u0046,u
+L019C    lda   <u0046,u		control key pressed?
          beq   L01A3
-         addb  #$02
+         addb  #$02		yes, use 3rd value
 L01A3    pshs  x
          leax  >L023E,pcr
          clra  
          lda   d,x
          puls  x
 L01AE    rts   
+
+* convert row number in B.reg from DRAGON to COCO order
 L01AF    pshs  b
          cmpb  #$06
          beq   L01BF
@@ -287,17 +293,17 @@ L01AF    pshs  b
          addb  #$04
          bra   L01BF
 L01BD    subb  #$02
-L01BF    lslb  
+L01BF    lslb  			multiply row * 8
          lslb  
          lslb  
-         addb  <u003E,u
-         cmpb  #$31
+         addb  <u003E,u		add column.  B.reg now = keycode ($00-$37)
+         cmpb  #$31		is this the CLEAR key?
          bne   L01CE
-         inc   <u0046,u
+         inc   <u0046,u		yes, set control pressed flag
          puls  pc,b
-L01CE    cmpb  #$37
+L01CE    cmpb  #$37		is this a SHIFT key?
          bne   L01D7
-         com   <u0045,u
+         com   <u0045,u		yes, set shift pressed flag
          puls  pc,b
 L01D7    pshs  x
          leax  <u0042,u
@@ -351,16 +357,32 @@ L0235    leax  <u003F,u
          tfr   b,a
          puls  pc,y,x,b
 
-L023E    fcb   $0C,$1C
-L0240    fcb   $13,$0A,$1A,$12,$08,$18,$10,$09   ........
-L0248    fcb   $19,$11,$20,$20,$20,$30,$30,$1F   ..   00.
-L0250    fcb   $31,$21,$7C,$32,$22,$00,$33,$23   1!|2".3#
-L0258    fcb   $7E,$34,$24,$00,$35,$25,$00,$36   ~4$.5%.6
-L0260    fcb   $26,$00,$37,$27,$5E,$38,$28,$5B   &.7'^8([
-L0268    fcb   $39,$29,$5D,$3A,$2A,$00,$3B,$2B   9)]:*.;+
-L0270    fcb   $00,$2C,$3C,$7B,$2D,$3D,$5F,$2E   .,<{-=_.
-L0278    fcb   $3E,$7D,$2F,$3F,$5C,$0D,$0D,$0D   >}/?\...
-L0280    fcb   $00,$00,$00,$05,$03,$1B ,$30
+*RVH: the following is a non-alpha key lookup table with
+*normal/shift/control codes for each key (1D,1E,7F missing)
+L023E    fcb   $0C,$1C,$13	UP-ARROW (FF| FS|DC3)
+L0241    fcb   $0A,$1A,$12	DN-ARROW (LF|SUB|DC2)
+L0244    fcb   $08,$18,$10	LF-ARROW (BS|CAN|DLE)
+L0247    fcb   $09,$19,$11	RT-ARROW (HT| EM|DC1)
+L024A    fcb   $20,$20,$20	SPACEBAR
+L024D    fcb   $30,$30,$1F	0 0 . (1F=shiftlock toggle)
+L0250    fcb   $31,$21,$7C	1 ! |
+L0253    fcb   $32,$22,$00	2 " null
+L0256    fcb   $33,$23,$7E	3 # ~
+L0259    fcb   $34,$24,$00	4 $ null
+L025C    fcb   $35,$25,$00	5 % null
+L025F    fcb   $36,$26,$00	6 & null
+L0262    fcb   $37,$27,$5E	7 ' ^
+L0265    fcb   $38,$28,$5B	8 ( [
+L0268    fcb   $39,$29,$5D	9 ) ]
+L026B    fcb   $3A,$2A,$00	: * null
+L026E    fcb   $3B,$2B,$00	; + null
+L0271    fcb   $2C,$3C,$7B	, < {
+L0274    fcb   $2D,$3D,$5F	- = _
+L0277    fcb   $2E,$3E,$7D	. > }
+L027A    fcb   $2F,$3F,$5C	/ ? \
+L027D    fcb   $0D,$0D,$0D	ENTER
+L0280    fcb   $00,$00,$00	CLEAR?
+L0283    fcb   $05,$03,$1B	BREAK  (ENQ|ETX|ESC)
 
 Read     leax  <u004A,u
          ldb   <u0049,u
@@ -412,7 +434,7 @@ L02DC    ldd   #256		get page amount
          stx   <u0021,u
          leax  >512,x
          stx   <u001F,u
-         lbsr  L0459
+         lbsr  L0459		clear screen
          lda   #$60
          sta   <u0023,u
          sta   <u002B,u
@@ -489,7 +511,8 @@ L0387    cmpb  #$01
          jmp   [<u0026,u]
 L0394    sta   <u0028,u
          inc   <u0025,u
-         clrb  
+* no operation entry point
+L039A    clrb  
          rts   
 L039C    ldx   <u001D,u
          leax  <$20,x
@@ -505,13 +528,13 @@ L03B6    stb   ,x+
          deca  
          bne   L03B6
 L03BB    rts   
-L03BC    cmpa  #$1B
+L03BC    cmpa  #27
          bcc   L03BB
          cmpa  #$10
          bcs   L03CE
          ldb   <u002C,u
          bne   L03CE
-         ldb   #$F6
+         ldb   #E$NotRdy
          orcc  #Carry
          rts   
 
@@ -520,16 +543,38 @@ L03CE    leax  <L03D6,pcr
          ldd   a,x
          jmp   d,x
 
-L03D6    fcb   $FF,$C4
-L03D8    fcb   $00,$91,$00,$A5,$00,$D0,$FF,$C4   ...%.P.D
-L03E0    fcb   $FF,$C4,$00,$75,$FF,$C4,$00,$67   .D.u.D.g
-L03E8    fcb   $00,$E2,$00,$4E,$FF,$C4,$00,$83   .b.N.D..
-L03F0    fcb   $00,$36,$00,$F2,$01,$4A,$02,$2E   .6.r.J..
-L03F8    fcb   $02,$09,$02,$1D,$02,$4E,$02,$59   .....N.Y
-L0400    fcb   $02,$72,$02,$DF,$02,$DA,$02,$89   .r._.Z..
-L0408    fcb   $02,$84,$03,$A8
+* dispatch table for display function codes
+L03D6    fdb   L039A-L03D6	$FFC4	00: no-op
+         fdb   L0467-L03D6	$0091	01: home cursor
+         fdb   L047B-L03D6	$00A5	02: cursor xy
+         fdb   L04A6-L03D6	$00D0	03: erase line
+         fdb   L039A-L03D6	$FFC4	04: no-op
+         fdb   L039A-L03D6	$FFC4	05: no-op
+         fdb   L044B-L03D6	$0075	06: cursor right
+         fdb   L039A-L03D6	$FFC4	07: no-op
+         fdb   L043D-L03D6	$0067	08: cursor left
+         fdb   L04B8-L03D6	$00E2	09: cursor up
+         fdb   L0424-L03D6	$004E	0A: cursor down
+         fdb   L039A-L03D6	$FFC4	0B: no-op
+         fdb   L0459-L03D6	$0083	0C: clear screen
+         fdb   L040C-L03D6	$0036	0D: return cursor to start of line
+         fdb   L04C8-L03D6	$00F2	0E: display alpha
+         fdb   L0520-L03D6	$014A	0F: display graphics
+         fdb   L0604-L03D6	$022E	10: preset screen to specific color
+         fdb   L05DF-L03D6	$0209	11: set color
+         fdb   L05F3-L03D6	$021D	12: end graphics
+         fdb   L0624-L03D6	$024E	13: erase graphics
+         fdb   L062F-L03D6	$0259	14: home graphics cursor
+         fdb   L0648-L03D6	$0272	15: Set Graphics Cursor 
+         fdb   L06B5-L03D6	$02DF	16: Draw Line 
+         fdb   L06B0-L03D6	$02DA	17: Erase Line 
+         fdb   L065F-L03D6	$0289	18: Set Point 
+         fdb   L065A-L03D6	$0284	19: Erase Point 
+         fdb   L077E-L03D6	$03A8	1A: Draw Circle 
 
-L040C    fcb   $8D,$64,$1F,$10
+* $0D - return cursor to start of line (carriage return)
+L040C    bsr   L0472
+         tfr   x,d
          andb  #$E0
          stb   <u0022,u
 L0415    ldx   <u0021,u
@@ -540,7 +585,8 @@ L0415    ldx   <u0021,u
          andcc #^Carry
          rts   
 
-         bsr   L0472
+* $0A - cursor down
+L0424    bsr   L0472
          leax  <$20,x
          cmpx  <u001F,u
          bcs   L0438
@@ -550,24 +596,32 @@ L0415    ldx   <u0021,u
          puls  x
 L0438    stx   <u0021,u
          bra   L0415
-         bsr   L0472
+
+* $08 - cursor left
+L043D    bsr   L0472
          cmpx  <u001D,u
          bls   L0449
          leax  -$01,x
          stx   <u0021,u
 L0449    bra   L0415
-         bsr   L0472
+
+* $06 - cursor right
+L044B    bsr   L0472
          leax  $01,x
          cmpx  <u001F,u
          bcc   L0457
          stx   <u0021,u
 L0457    bra   L0415
+
+* $0C - clear screen
 L0459    bsr   L0467
          lda   #$60
 L045D    sta   ,x+
          cmpx  <u001F,u
          bcs   L045D
          lbra  L0415
+
+* $01 - home cursor
 L0467    bsr   L0472
          ldx   <u001D,u
          stx   <u0021,u
@@ -576,7 +630,9 @@ L0472    ldx   <u0021,u
          lda   <u0023,u
          sta   ,x
          rts   
-         leax  <L0481,pcr
+
+* $02 XX YY - cursor xy (move cursor to XX-32,YY-32)
+L047B    leax  <L0481,pcr
          lbra  L064B
 L0481    bsr   L0472
          ldb   <u0029,u
@@ -593,21 +649,27 @@ L0481    bsr   L0472
          lbsr  L0415
          clrb  
 L04A3    lbra  L0415
-         lbsr  L040C
-         ldb   #$20
-         lda   #$60
+
+* $03 - erase line
+L04A6    lbsr  L040C		do a CR
+         ldb   #$20		32 chars per line
+         lda   #$60		space char for VDG screen
          ldx   <u0021,u
-L04B0    sta   ,x+
+L04B0    sta   ,x+		fill screen line with 'space'
          decb  
          bne   L04B0
          lbra  L0415
-         bsr   L0472
+
+* $09 - cursor up
+L04B8    bsr   L0472
          leax  <-$20,x
          cmpx  <u001D,u
          bcs   L04C5
          stx   <u0021,u
 L04C5    lbra  L0415
-         clra  
+
+* $0E - display alpha
+L04C8    clra  
          clrb  
          lbra  L0303
 L04CD    ldx   $06,y
@@ -620,10 +682,16 @@ L04CD    ldx   $06,y
          clrb  
          rts   
 
-L04E0    fcb   $00,$55,$AA,$FF,$A6,$C8,$2C,$26   .U*.&H,&
-L04E8    fcb   $05,$C6,$F6,$1A,$01,$39
+* 4-color mode color table
+L04E0    fcb   $00,$55,$AA,$FF
 
-         ldd   <u0034,u
+L04E4    lda   <u002C,u	
+         bne   L04EE	
+L04E9    ldb   #E$NotRdy
+         orcc  #Carry
+         rts   
+
+L04EE    ldd   <u0034,u
          lbsr  L0684
          tfr   a,b
          andb  ,x
@@ -648,7 +716,9 @@ L050E    orb   ,s+
          std   $04,x
          clrb  
          rts   
-         leax  <L0526,pcr
+
+* $0F - display graphics
+L0520    leax  <L0526,pcr
          lbra  L064B
 L0526    ldb   <u002C,u
          bne   L0566
@@ -688,7 +758,7 @@ L0566    lda   <u0029,u
          lda   <u0028,u
          cmpa  #$01
          bls   L0586
-         ldb   #$CB
+         ldb   #E$BMode		illegal mode
          orcc  #Carry
 L0585    rts   
 
@@ -725,23 +795,32 @@ L05BE    stb   <u0033,u
          ldb   #$01
          lbra  L0303
 
+* 4-color mode pixel masks
 L05D3    fcb   $C0,$30,$0C,$03
-L05D7    fcb   $80
-L05D8    fcb   $40,$20,$10,$08,$04,$02,$01,$30   @ .....0
-L05E0    fcb   $8C,$03,$16,$01,$9C,$6F,$C8,$28   .....oH(
-L05E8    fcb   $A6,$C8,$24
 
-L05EB    bmi   L05F0
+* 2-color mode pixel masks
+L05D7    fcb   $80,$40,$20,$10,$08,$04,$02,$01
+
+* $11 - set color
+L05DF    leax  <L05E5,pcr
+         lbra  L0781
+L05E5    clr   <u0028,u
+         lda   <u0024,u
+         bmi   L05F0
          inc   <u0028,u
 L05F0    lbra  L0566
-         pshs  u
+
+* $12 - end graphics
+L05F3    pshs  u
          ldu   <u002D,u
-         ldd   #$1800
+         ldd   #6144		size of graphics screen
          os9   F$SRtMem 
          puls  u
          clr   <u002C,u
          rts   
-         leax  <L060A,pcr
+
+* $10 - preset screen to specified color
+L0604    leax  <L060A,pcr
          lbra  L0781
 L060A    lda   <u0029,u
          tst   <u0024,u
@@ -754,25 +833,31 @@ L061A    anda  #$03
          leax  >L04E0,pcr
          ldb   a,x
          bra   L0625
+
+* $13 - erase graphics
 L0624    clrb  
 L0625    ldx   <u002D,u
 L0628    stb   ,x+
          cmpx  <u002F,u
          bcs   L0628
-         clra  
+
+* $14 - home graphics cursor
+L062F    clra  
          clrb  
          std   <u0034,u
          rts   
 L0635    ldd   <u0028,u
-         cmpb  #$C0
+         cmpb  #192
          bcs   L063E
-         ldb   #$BF
+         ldb   #192-1
 L063E    tst   <u0024,u
          bmi   L0644
          lsra  
 L0644    std   <u0028,u
          rts   
-         leax  <L0653,pcr
+
+* $15 - set graphics cursor
+L0648    leax  <L0653,pcr
 L064B    stx   <u0026,u
          inc   <u0025,u
          clrb  
@@ -781,8 +866,12 @@ L0653    bsr   L0635
          std   <u0034,u
          clrb  
          rts   
-         clr   <u0036,u
+
+* $19 - erase point
+L065A    clr   <u0036,u
          bra   L065F
+
+* $18 - set point
 L065F    leax  <L0664,pcr
          bra   L064B
 L0664    bsr   L0635
@@ -822,8 +911,12 @@ L068C    lsra
          ldx   <u0031,u
          lda   a,x
          puls  pc,y,x
-         clr   <u0036,u
+
+* $17 - erase line
+L06B0    clr   <u0036,u
          bra   L06B5
+
+* $16 - draw line
 L06B5    leax  <L06BA,pcr
          bra   L064B
 L06BA    lbsr  L0635
@@ -922,14 +1015,16 @@ L076F    ldd   $0C,s
          sta   <u0036,u
          clrb  
          rts   
-         leax  <L0789,pcr
+
+* $1A - draw circle
+L077E    leax  <L0789,pcr
 L0781    stx   <u0026,u
          com   <u0025,u
          clrb  
          rts   
 L0789    leas  -$04,s
-         ldb   <u0029,u
-         stb   $01,s
+         ldb   <u0029,u		get radius
+         stb   $01,s		stack it
          clra  
          sta   ,s
          addb  $01,s

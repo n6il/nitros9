@@ -8,6 +8,9 @@
 * ------------------------------------------------------------------
 *   2      ????/??/??
 * From Tandy OS-9 Level One VR 02.00.00
+*
+*          2003/09/22  Rodney Hamilton
+* recoded dispatch table fcbs
 
          nam   CO80
          ttl   WordPak 80-RS co-driver for CCIO
@@ -32,11 +35,14 @@ size     equ   .
 name     fcs   /CO80/
          fcb   edition
 
-start    lbra  L0022
-         lbra  L0083
-         lbra  L0054
-         lbra  L007F
-         lbra  L004A
+start    equ   *
+Init     lbra  L0022
+Write    lbra  L0083
+GetStat  lbra  L0054
+SetStat  lbra  L007F
+Term     lbra  L004A
+
+* Init
 L0022    ldx   #$FF78
          lda   #$06
          sta   $01,x
@@ -54,11 +60,13 @@ L0022    ldx   #$FF78
          ldb   <$70,u
          orb   #$04
          bra   L004F
+* Term
 L004A    ldb   <$70,u
          andb  #$FB
 L004F    stb   <$70,u
          clrb  
          rts   
+* GetStat
 L0054    cmpa  #$25
          bne   L007F
          ldy   $06,y
@@ -77,11 +85,14 @@ L0054    cmpa  #$25
          lbsr  L0174
          lda   ,x
          sta   $01,y
+* no operation entry point
 L007D    clrb  
          rts   
+* SetStat
 L007F    ldb   #E$UnkSvc
          coma  
          rts   
+* Write
 L0083    ldx   #$FF78
          cmpa  #$0E
          bcs   L00B6
@@ -113,23 +124,45 @@ L00B6    leax  >L00C5,pcr
          pshs  x
          ldx   #$FF78
          rts   
-L00C5    fcb   $ff,$b8,$00,$8d,$00,$dd,$00,$b4,$00,$b6,$01
-         fcb   $4c,$00,$50,$ff,$b8,$00,$1c,$00,$2e,$00,$5c
-         fcb   $00,$c1,$00,$bf,$00
-         fcb   $3c,$ec,$c8,$58,$26,$02,$5f,$39
+
+* display functions dispatch table
+L00C5    fdb   L007D-L00C5  $ffb8  $00:no-op (null)
+         fdb   L0152-L00C5  $008d  $01:HOME cursor
+         fdb   L01A2-L00C5  $00dd  $02:CURSOR XY
+         fdb   L0179-L00C5  $00b4  $03:ERASE LINE
+         fdb   L017B-L00C5  $00b6  $04:ERASE TO EOL
+         fdb   L0211-L00C5  $014c  $05:CURSOR ON/OFF
+         fdb   L0115-L00C5  $0050  $06:CURSOR RIGHT
+         fdb   L007D-L00C5  $ffb8  $07:no-op (bel:handled in CCIO)
+         fdb   L00E1-L00C5  $001c  $08:CURSOR LEFT
+         fdb   L00F3-L00C5  $002e  $09:CURSOR UP
+         fdb   L0121-L00C5  $005c  $0A:CURSOR DOWN
+         fdb   L0186-L00C5  $00c1  $0B:ERASE TO EOS
+         fdb   L0184-L00C5  $00bf  $0C:CLEAR SCREEN
+         fdb   L0101-L00C5  $003c  $0D:RETURN
+
+* $08 - cursor left
+L00E1    ldd   <$58,u
+         bne   L00E8
+         clrb  	
+         rts   	
 L00E8    decb  
          bge   L00EE
          ldb   #$4F
          deca  
 L00EE    std   <$58,u
          bra   L014F
-         lda   <$58,u
+
+* $09 - cursor up
+L00F3    lda   <$58,u
          beq   L00FF
          deca  
          sta   <$58,u
          lbra  L01CC
 L00FF    clrb  
          rts   
+
+* $0D - move cursor to start of line (carriage return)
 L0101    clr   <$59,u
          bra   L014C
 L0106    ora   <$5A,u
@@ -139,12 +172,16 @@ L0106    ora   <$5A,u
          ldb   #$0D
          stb   $01,x
          sta   ,x
-         inc   <$59,u
+
+* $06 - cursor right
+L0115    inc   <$59,u
          lda   <$59,u
          cmpa  #$4F
          ble   L014C
          bsr   L0101
-         lda   <$58,u
+
+* $0A - cursor down (line feed)
+L0121    lda   <$58,u
          cmpa  #$17
          bge   L012E
          inca  
@@ -164,6 +201,8 @@ L012E    ldd   <$54,u
          stb   ,x
 L014C    lda   <$58,u
 L014F    lbra  L01CC
+
+* $01 - home cursor
 L0152    clr   <$58,u
          clr   <$59,u
          ldd   <$54,u
@@ -185,14 +224,20 @@ L016B    lsra
 L0174    lda   $01,x
          bpl   L0174
          rts   
-         bsr   L0101
-         lda   <$58,u
+
+* $03 - erase line
+L0179    bsr   L0101		do a CR
+L017B    lda   <$58,u
          inca  
-         ldb   #$50
+         ldb   #80		line length
          mul   
          bra   L0189
-         bsr   L0152
-         ldd   #$0780
+
+* $0C - clear screen
+L0184    bsr   L0152		do home cursor, then erase to EOS
+
+* $0B - erase to end of screen
+L0186    ldd   #$0780
 L0189    addd  <$54,u
          bsr   L0161
 L018E    bsr   L016B
@@ -206,7 +251,9 @@ L018E    bsr   L016B
          sta   ,x
 L01A0    clrb  
          rts   
-         leax  >L01B0,pcr
+
+* $02 XX YY - move cursor to col XX-32, row YY-32
+L01A2    leax  >L01B0,pcr
          ldb   #$02
 L01A8    stx   <$26,u
          stb   <$25,u
@@ -260,19 +307,21 @@ L0205    lda   #$80
 L020C    clr   <$5A,u
 L020F    clrb  
          rts   
-         leax  >L0219,pcr
+
+* $05 XX - set cursor off/on/color per XX-32
+L0211    leax  >L0219,pcr
          ldb   #$01
          bra   L01A8
 L0219    ldx   #$FF78
          lda   <$29,u
-         cmpa  #$20
-         blt   L0201
+         cmpa  #$20		cursor code valid?
+         blt   L0201		 no, error
          beq   L022D
-         cmpa  #$2A
-         bgt   L020F
-L0229    lda   #$05
+         cmpa  #$2A		color code in range?
+         bgt   L020F		 no, ignore
+L0229    lda   #$05		cursor on (all colors=on)
          bra   L022F
-L022D    lda   #$45
+L022D    lda   #$45		cursor off
 L022F    ldb   #$0C
          stb   $01,x
          sta   ,x

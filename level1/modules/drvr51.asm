@@ -8,7 +8,9 @@
 * ------------------------------------------------------------------
 *   1      ????/??/??
 * Original Dragon distribution version
-
+*
+*          2003/09/22  Rodney Hamilton
+* Recoded fcb arrays, added labels & some comments
 
          nam   drvr51
          ttl   Driver for The 51 column by 24 line video display
@@ -48,8 +50,7 @@ u001B    rmb   2
 u001D    rmb   1
 u001E    rmb   1
 u001F    rmb   1
-u0020    rmb   1
-u0021    rmb   1
+u0020    rmb   2
 u0022    rmb   2
 u0024    rmb   1
 u0025    rmb   1
@@ -60,9 +61,9 @@ u0029    rmb   1
 u002A    rmb   1
 u002B    rmb   1
 u002C    rmb   1
-u002D    rmb   1
-u002E    rmb   1
-u002F    rmb   1
+u002D    rmb   1		SHIFT flag
+u002E    rmb   1		CONTROL flag
+u002F    rmb   1		SHIFTLOCK toggle
 u0030    rmb   1
 u0031    rmb   1
 u0032    rmb   1
@@ -73,30 +74,7 @@ u0036    rmb   1
 u0037    rmb   1
 u0038    rmb   1
 u0039    rmb   1
-u003A    rmb   6
-u0040    rmb   2
-u0042    rmb   2
-u0044    rmb   6
-u004A    rmb   1
-u004B    rmb   5
-u0050    rmb   5
-u0055    rmb   9
-u005E    rmb   2
-u0060    rmb   9
-u0069    rmb   6
-u006F    rmb   1
-u0070    rmb   1
-u0071    rmb   7
-u0078    rmb   6
-u007E    rmb   2
-u0080    rmb   8
-u0088    rmb   6
-u008E    rmb   2
-u0090    rmb   6
-u0096    rmb   3
-u0099    rmb   1
-u009A    rmb   3
-u009D    rmb   1
+u003A    rmb   100
 size     equ   .
 
          fcb   UPDAT.
@@ -109,7 +87,7 @@ start    lbra  Init
          lbra  Write
          lbra  GetStat
          lbra  SetStat
-         lbra  Term+1
+         lbra  Term
 
 Init     pshs  u,a
          ldu   <u001D,u
@@ -153,14 +131,14 @@ L0068    stx   <u0022,u
          lda   $03,x
          ora   #$01
          sta   $03,x
-         inc   >Term,pcr
+         inc   >InitFlag,pcr
          puls  cc
          lbsr  L0475
          lbsr  L02C3
          clrb  
 L009C    puls  pc,u,a
-Term     fcb   $00
-         pshs  cc
+InitFlag fcb   $00
+Term     pshs  cc
          orcc  #IntMasks
          ldx   >D.AltIRQ
          stx   >D.IRQ
@@ -186,7 +164,7 @@ L00D2    pshs  x,b
          sta   u0005,u
          ldx   #$0000
          os9   F$Sleep  
-         ldx   <u004B
+         ldx   <D.Proc
          ldb   <$36,x
          beq   L00EC
          cmpb  #$03
@@ -195,7 +173,7 @@ L00D2    pshs  x,b
          puls  pc,x,a
 
 L00EC    puls  x,b
-Read     tst   >Term,pcr
+Read     tst   >InitFlag,pcr
          bne   L00F9
          lbsr  Init
          bcs   L011C
@@ -215,10 +193,10 @@ L010E    stb   <u001D,u
          beq   L011C
          clr   u000E,u
          comb  
-         ldb   #$F4
+         ldb   #E$Read		READ error
 L011C    rts   
 
-Write    tst   >Term,pcr
+Write    tst   >InitFlag,pcr
          bne   L012C
          pshs  a
          lbsr  Init
@@ -226,9 +204,9 @@ Write    tst   >Term,pcr
          bcs   L0139
 L012C    ldb   <u001F,u
          bne   L0165
-         cmpa  #$1B
+         cmpa  #$1B		escape?
          bne   L013A
-         inc   <u001F,u
+         inc   <u001F,u		flag ESC seq
          clrb  
 L0139    rts   
 L013A    cmpa  #$20
@@ -387,7 +365,9 @@ L026D    std   ,y
 L0273    eora  ,y
          eorb  $01,y
          bra   L026D
-         ldx   #$FF20
+
+* $07 - BEL (ding!)
+L0279    ldx   #$FF20
          ldb   #$64
 L027E    lda   ,x
          eora  #$C0
@@ -400,16 +380,22 @@ L0286    deca
          decb  
          bne   L027E
          lbra  L014C
-         dec   <u0024,u
+
+* $08 - BS (left arrow)
+L0291    dec   <u0024,u
          bpl   L02A6
          lda   #$32
          sta   <u0024,u
-         dec   <u0025,u
+
+* $1b44 - (cursor up)
+L029B    dec   <u0025,u
          bpl   L02A6
          clr   <u0025,u
          lbsr  L035E
 L02A6    lbsr  L0484
          lbra  L014C
+
+* $0a, $1b45 - LF, (cursor down)
 L02AC    lda   <u0025,u
          inca  
          cmpa  #$18
@@ -418,8 +404,12 @@ L02AC    lda   <u0025,u
          bra   L02BC
 L02B9    sta   <u0025,u
 L02BC    bra   L02A6
-         clr   <u0024,u
+
+* $0d - CR (return)
+L02BE    clr   <u0024,u
          bra   L02A6
+
+* $0c - FF (clear screen)
 L02C3    ldy   <u0022,u
          leay  >$0080,y
          lda   #$18
@@ -522,7 +512,9 @@ L0382    ldx   ,u
          dec   ,s
          bne   L0380
          puls  pc,b
-         inc   <u0032,u
+
+* $1b42 - clear to end of line
+L03AF    inc   <u0032,u
          bsr   L03BA
          dec   <u0032,u
          lbra  L014C
@@ -568,7 +560,9 @@ L03F3    lsrb
 L040D    puls  a
          sta   <u0024,u
          rts   
-         inc   <u0032,u
+
+* $1b4A - clear to end of screen
+L0413    inc   <u0032,u
          bsr   L03BA
          lda   #$17
          suba  <u0025,u
@@ -580,43 +574,57 @@ L0421    lbsr  L0314
          leas  $01,s
 L042A    dec   <u0032,u
          lbra  L014C
-         clr   <u0024,u
+
+* $0b - (cursor home)
+L0430    clr   <u0024,u
          clr   <u0025,u
          lbra  L02A6
-         ldb   <u001F,u
+
+* $1b41xxyy - move cursor to col xx (0-50) row yy (0-23)
+L0439    ldb   <u001F,u
          subb  #$02
          bne   L0442
          clrb  
          rts   
 L0442    decb  
          bne   L0450
-         cmpa  #$33
+         cmpa  #51
          bcs   L044B
-         lda   #$32
+         lda   #50
 L044B    sta   <u0024,u
-         clrb  
+L044D    clrb  
          rts   
-L0450    cmpa  #$18
+L0450    cmpa  #24
          bcs   L0456
-         lda   #$17
+         lda   #23
 L0456    sta   <u0025,u
 L0459    lbra  L02A6
-         inc   <u0024,u
+
+* $1b43 - (cursor right)
+L045C    inc   <u0024,u
          lda   <u0024,u
          cmpa  #$33
          bcs   L0459
          clr   <u0024,u
          lbra  L02AC
-         lda   #$FF
+
+* $1b46 - reverse on
+L046C    lda   #$FF
          coma  
 L046F    sta   <u0038,u
          lbra  L014C
+
+* $1b47 - reverse off
 L0475    lda   #$FF
          bra   L046F
-         lda   #$FF
+
+* $1b48 - underline on
+L0479    lda   #$FF
 L047B    sta   <u0039,u
          lbra  L014C
-         clra  
+
+* $1b49 - underline off
+L0481    clra  
          bra   L047B
 L0484    ldd   <u0024,u
          inc   <u0032,u
@@ -651,7 +659,7 @@ GetStat  cmpa  #$01
 L04CA    clrb  
          rts   
 L04CC    comb  
-         ldb   #$F6
+         ldb   #E$NotRdy
          rts   
 L04D0    cmpa  #$06
          beq   L04CA
@@ -664,7 +672,7 @@ L04D0    cmpa  #$06
          rts   
 
 SetStat  comb  
-         ldb   #$D0
+         ldb   #E$UnkSvc
          rts   
 
 L04E5    tst   <u0032,u
@@ -691,9 +699,9 @@ L0512    ldx   #$FF00
          anda  #$03
          bne   L0526
          clra  
-         sta   $02,x
-         bsr   L053B
-         bne   L052D
+         sta   $02,x		strobe all keys	
+         bsr   L053B		any keys pressed?
+         bne   L052D		yes, do scan
 L0526    clr   <u0027,u
          clr   <u0028,u
          rts   
@@ -705,9 +713,9 @@ L0535    clrb
 L0537    clrb  
          stb   $02,x
          rts   
-L053B    lda   ,x
+L053B    lda   ,x		read keyboard rows
          coma  
-         anda  #$7F
+         anda  #$7F		mask off joystick row
          rts   
 L0541    cmpa  <u0028,u
          bne   L0526
@@ -716,20 +724,20 @@ L0541    cmpa  <u0028,u
          clr   <u002C,u
          clr   <u002D,u
          clr   <u002E,u
-         ldb   #$01
+         ldb   #$01		start kbd scan with column#0
 L0557    comb  
-         stb   $02,x
-         bsr   L053B
-         beq   L05A1
-         bita  #$40
+         stb   $02,x		strobe keyboard column
+         bsr   L053B		read keyboard rows
+         beq   L05A1		no keys seen, do next column
+         bita  #$40		is this a row 6 key?
          beq   L0583
-         cmpb  #$7F
+         cmpb  #$7F		SHIFT key pressed?
          bne   L056B
-         inc   <u002D,u
+         inc   <u002D,u		yes, flag SHIFT
          bra   L057F
-L056B    cmpb  #$FD
+L056B    cmpb  #$FD		CONTROL pressed? (CLEAR key)
          bne   L0574
-         inc   <u002E,u
+         inc   <u002E,u		yes, flag CONTROL
          bra   L057F
 L0574    tst   <u002C,u
          bne   L0537
@@ -785,28 +793,28 @@ L05D6    stb   <u0027,u
          lbsr  L0667
          orb   ,s+
          stb   <u0029,u
-         leax  >L0820,pcr
+         leax  >L0820,pcr	NORMAL keys
          lda   b,x
-         tst   <u002E,u
+         tst   <u002E,u		CONTROL flag on?
          beq   L05FE
-         leax  >L0886,pcr
+         leax  >L0886,pcr	CONTROL keys
          lda   b,x
          bra   L0609
-L05FE    tst   <u002D,u
+L05FE    tst   <u002D,u		SHIFT flag on?
          beq   L0612
-         leax  >L0853,pcr
+         leax  >L0853,pcr	SHIFTED keys
          lda   b,x
-L0609    cmpa  #$1F
+L0609    cmpa  #$1F		SHIFTLOCK toggle key?
          bne   L0621
          com   <u002F,u
          bra   L0665
-L0612    tst   <u002F,u
+L0612    tst   <u002F,u		SHIFTLOCK flag on?
          beq   L0621
-         cmpa  #$61
+         cmpa  #$61		less than 'a ?
          bcs   L0621
-         cmpa  #$7A
+         cmpa  #$7A		more than 'z ?
          bhi   L0621
-         suba  #$20
+         suba  #$20		only does lower->UPPER
 L0621    leax  <u003A,u
          ldb   <u001E,u
          sta   b,x
@@ -849,593 +857,202 @@ L0668    incb
          decb  
          rts   
 
-L066E  fcb $07
-       fcb $FC
-       fcb $0B
-       fcb $08
-       fcb $FC
-       fcb $23
-       fcb $0A
-       fcb $FC
-       fcb $3E
-       fcb $0D
-       fcb $FC
-       fcb $50
-       fcb $0C
-       fcb $FC
-       fcb $55
-       fcb $0B
-       fcb $FD
-       fcb $C2
-       fcb $00
-L0681  fcb $41
-       fcb $FD
-       fcb $CB
-       fcb $42
-       fcb $FD
-       fcb $41
-       fcb $43
-       fcb $FD
-       fcb $EE
-       fcb $44
-       fcb $FC
-       fcb $2D
-       fcb $45
-       fcb $FC
-       fcb $3E
-       fcb $46
-       fcb $FD
-       fcb $FE
-       fcb $47
-       fcb $FE
-       fcb $07
-       fcb $48
-       fcb $FE
-       fcb $0B
-       fcb $49
-       fcb $FE
-       fcb $13
-       fcb $4A
-       fcb $FD
-       fcb $A5
-       fcb $00
-L06A0  fcb $00
-       fcb $00
-       fcb $00
-       fcb $00
-       fcb $44
-       fcb $40
-       fcb $40
-       fcb $00
-       fcb $55
-       fcb $00
-       fcb $00
-       fcb $00
-       fcb $6F
-       fcb $6F
-       fcb $60
-       fcb $00
-       fcb $27
-       fcb $86
-       fcb $1E
-       fcb $20
-       fcb $91
-       fcb $24
-       fcb $89
-       fcb $00
-       fcb $4A
-       fcb $4A
-       fcb $D0
-       fcb $00
-       fcb $44
-       fcb $00
-       fcb $00
-       fcb $00
-       fcb $24
-       fcb $44
-       fcb $20
-       fcb $00
-       fcb $42
-       fcb $22
-       fcb $40
-       fcb $00
-       fcb $96
-       fcb $F6
-       fcb $90
-       fcb $00
-       fcb $44
-       fcb $E4
-       fcb $40
-       fcb $00
-       fcb $00
-       fcb $02
-       fcb $24
-       fcb $00
-       fcb $00
-       fcb $F0
-       fcb $00
-       fcb $00
-       fcb $00
-       fcb $06
-       fcb $60
-       fcb $00
-       fcb $01
-       fcb $24
-       fcb $80
-       fcb $00
-       fcb $69
-       fcb $BD
-       fcb $60
-       fcb $00
-       fcb $26
-       fcb $22
-       fcb $70
-       fcb $00
-       fcb $69
-       fcb $2C
-       fcb $F0
-       fcb $00
-       fcb $E1
-       fcb $61
-       fcb $E0
-       fcb $00
-       fcb $26
-       fcb $AF
-       fcb $20
-       fcb $00
-       fcb $F8
-       fcb $E1
-       fcb $E0
-       fcb $00
-       fcb $78
-       fcb $E9
-       fcb $60
-       fcb $00
-       fcb $F1
-       fcb $24
-       fcb $40
-       fcb $00
-       fcb $69
-       fcb $69
-       fcb $60
-       fcb $00
-       fcb $69
-       fcb $71
-       fcb $60
-       fcb $00
-       fcb $00
-       fcb $40
-       fcb $40
-       fcb $00
-       fcb $00
-       fcb $20
-       fcb $24
-       fcb $00
-       fcb $24
-       fcb $84
-       fcb $20
-       fcb $00
-       fcb $0F
-       fcb $0F
-       fcb $00
-       fcb $00
-       fcb $42
-       fcb $12
-       fcb $40
-       fcb $00
-       fcb $69
-       fcb $22
-       fcb $02
-       fcb $00
-       fcb $69
-       fcb $BB
-       fcb $87
-       fcb $00
-       fcb $69
-       fcb $F9
-       fcb $90
-       fcb $00
-       fcb $E9
-       fcb $E9
-       fcb $E0
-       fcb $00
-       fcb $78
-       fcb $88
-       fcb $70
-       fcb $00
-       fcb $E9
-       fcb $99
-       fcb $E0
-       fcb $00
-       fcb $F8
-       fcb $E8
-       fcb $F0
-       fcb $00
-       fcb $F8
-       fcb $E8
-       fcb $80
-       fcb $00
-       fcb $78
-       fcb $B9
-       fcb $70
-       fcb $00
-       fcb $99
-       fcb $F9
-       fcb $90
-       fcb $00
-       fcb $E4
-       fcb $44
-       fcb $E0
-       fcb $00
-       fcb $F2
-       fcb $2A
-       fcb $40
-       fcb $00
-       fcb $9A
-       fcb $CA
-       fcb $90
-       fcb $00
-       fcb $88
-       fcb $88
-       fcb $F0
-       fcb $00
-       fcb $FD
-       fcb $D9
-       fcb $90
-       fcb $00
-       fcb $9D
-       fcb $B9
-       fcb $90
-       fcb $00
-       fcb $69
-       fcb $99
-       fcb $60
-       fcb $00
-       fcb $E9
-       fcb $E8
-       fcb $80
-       fcb $00
-       fcb $69
-       fcb $9B
-       fcb $70
-       fcb $00
-       fcb $E9
-       fcb $EA
-       fcb $90
-       fcb $00
-       fcb $78
-       fcb $61
-       fcb $E0
-       fcb $00
-       fcb $E4
-       fcb $44
-       fcb $40
-       fcb $00
-       fcb $99
-       fcb $99
-       fcb $60
-       fcb $00
-       fcb $99
-       fcb $96
-       fcb $60
-       fcb $00
-       fcb $99
-       fcb $DD
-       fcb $F0
-       fcb $00
-       fcb $99
-       fcb $69
-       fcb $90
-       fcb $00
-       fcb $99
-       fcb $71
-       fcb $E0
-       fcb $00
-       fcb $F1
-       fcb $68
-       fcb $F0
-       fcb $00
-       fcb $E8
-       fcb $88
-       fcb $E0
-       fcb $00
-       fcb $08
-       fcb $42
-       fcb $10
-       fcb $00
-       fcb $71
-       fcb $11
-       fcb $70
-       fcb $00
-       fcb $69
-       fcb $00
-       fcb $00
-       fcb $00
-       fcb $00
-       fcb $00
-       fcb $0F
-       fcb $00
-       fcb $22
-       fcb $00
-       fcb $00
-       fcb $00
-       fcb $07
-       fcb $99
-       fcb $70
-       fcb $00
-       fcb $8E
-       fcb $99
-       fcb $E0
-       fcb $00
-       fcb $07
-       fcb $88
-       fcb $70
-       fcb $00
-       fcb $17
-       fcb $99
-       fcb $70
-       fcb $00
-       fcb $07
-       fcb $AC
-       fcb $70
-       fcb $00
-       fcb $34
-       fcb $F4
-       fcb $40
-       fcb $00
-       fcb $06
-       fcb $99
-       fcb $71
-       fcb $E0
-       fcb $8E
-       fcb $99
-       fcb $90
-       fcb $00
-       fcb $40
-       fcb $44
-       fcb $40
-       fcb $00
-       fcb $20
-       fcb $22
-       fcb $22
-       fcb $C0
-       fcb $8A
-       fcb $CA
-       fcb $90
-       fcb $00
-       fcb $44
-       fcb $44
-       fcb $40
-       fcb $00
-       fcb $0E
-       fcb $DD
-       fcb $90
-       fcb $00
-       fcb $0E
-       fcb $99
-       fcb $90
-       fcb $00
-       fcb $06
-       fcb $99
-       fcb $60
-       fcb $00
-       fcb $0E
-       fcb $99
-       fcb $E8
-       fcb $80
-       fcb $07
-       fcb $99
-       fcb $71
-       fcb $10
-       fcb $07
-       fcb $88
-       fcb $80
-       fcb $00
-       fcb $07
-       fcb $C3
-       fcb $E0
-       fcb $00
-       fcb $4F
-       fcb $44
-       fcb $30
-       fcb $00
-       fcb $09
-       fcb $99
-       fcb $70
-       fcb $00
-       fcb $09
-       fcb $96
-       fcb $60
-       fcb $00
-       fcb $09
-       fcb $DD
-       fcb $60
-       fcb $00
-       fcb $09
-       fcb $66
-       fcb $90
-       fcb $00
-       fcb $09
-       fcb $99
-       fcb $71
-       fcb $E0
-       fcb $0F
-       fcb $24
-       fcb $F0
-       fcb $00
-       fcb $34
-       fcb $C4
-       fcb $30
-       fcb $00
-       fcb $44
-       fcb $04
-       fcb $40
-       fcb $00
-       fcb $C2
-       fcb $32
-       fcb $C0
-       fcb $00
-       fcb $05
-       fcb $A0
-       fcb $00
-       fcb $00
-       fcb $FF
-       fcb $FF
-       fcb $FF
-       fcb $F0
-L0820  fcb $30
-       fcb $31
-       fcb $32
-       fcb $33
-       fcb $34
-       fcb $35
-       fcb $36
-       fcb $37
-       fcb $38
-       fcb $39
-       fcb $3A
-       fcb $3B
-       fcb $2C
-       fcb $2D
-       fcb $2E
-       fcb $2F
-       fcb $40
-       fcb $61
-       fcb $62
-       fcb $63
-       fcb $64
-       fcb $65
-       fcb $66
-       fcb $67
-       fcb $68
-       fcb $69
-       fcb $6A
-       fcb $6B
-       fcb $6C
-       fcb $6D
-       fcb $6E
-       fcb $6F
-       fcb $70
-       fcb $71
-       fcb $72
-       fcb $73
-       fcb $74
-       fcb $75
-       fcb $76
-       fcb $77
-       fcb $78
-       fcb $79
-       fcb $7A
-       fcb $0C
-       fcb $0A
-       fcb $08
-       fcb $09
-       fcb $20
-       fcb $0D
-       fcb $00
-       fcb $05
-L0853  fcb $30
-       fcb $21
-       fcb $22
-       fcb $23
-       fcb $24
-       fcb $25
-       fcb $26
-       fcb $27
-       fcb $28
-       fcb $29
-       fcb $2A
-       fcb $2B
-       fcb $3C
-       fcb $3D
-       fcb $3E
-       fcb $3F
-       fcb $7C
-       fcb $41
-       fcb $42
-       fcb $43
-       fcb $44
-       fcb $45
-       fcb $46
-       fcb $47
-       fcb $48
-       fcb $49
-       fcb $4A
-       fcb $4B
-       fcb $4C
-       fcb $4D
-       fcb $4E
-       fcb $4F
-       fcb $50
-       fcb $51
-       fcb $52
-       fcb $53
-       fcb $54
-       fcb $55
-       fcb $56
-       fcb $57
-       fcb $58
-       fcb $59
-       fcb $5A
-       fcb $1C
-       fcb $1A
-       fcb $18
-       fcb $19
-       fcb $20
-       fcb $0D
-       fcb $00
-       fcb $03
-L0886  fcb $1F
-       fcb $7C
-       fcb $00
-       fcb $7E
-       fcb $00
-       fcb $00
-       fcb $00
-       fcb $5E
-       fcb $5B
-       fcb $5D
-       fcb $00
-       fcb $00
-       fcb $7B
-       fcb $5F
-       fcb $7D
-       fcb $5C
-       fcb $00
-       fcb $01
-       fcb $02
-       fcb $03
-       fcb $04
-       fcb $05
-       fcb $06
-       fcb $07
-       fcb $08
-       fcb $09
-       fcb $0A
-       fcb $0B
-       fcb $0C
-       fcb $0D
-       fcb $0E
-       fcb $0F
-       fcb $10
-       fcb $11
-       fcb $12
-       fcb $13
-       fcb $14
-       fcb $15
-       fcb $16
-       fcb $17
-       fcb $18
-       fcb $19
-       fcb $1A
-       fcb $13
-       fcb $12
-       fcb $10
-       fcb $11
-       fcb $20
-       fcb $0D
-       fcb $00
-       fcb $1B
+* control characters dispatch table
+L066E  fcb $07		BEL (beep)
+       fdb L0279-L066E	$FC0B
+       fcb $08		BS (left arrow)
+       fdb L0291-L066E	$FC23
+       fcb $0A		LF (down arrow)
+       fdb L02AC-L066E	$FC3E
+       fcb $0D		CR (return)
+       fdb L02BE-L066E	$FC50
+       fcb $0C		FF (clear screen)
+       fdb L02C3-L066E	$FC55
+       fcb $0B		(cursor home)
+       fdb L0430-L066E	$FDC2
+       fcb $00
+
+* escape sequences dispatch table
+L0681  fcb $41		cursor xy
+       fdb L0439-L066E	$FDCB
+       fcb $42		clear EOL
+       fdb L03AF-L066E	$FD41
+       fcb $43		cursor right
+       fdb L045C-L066E	$FDEE
+       fcb $44		cursor up
+       fdb L029B-L066E	$FC2D
+       fcb $45		cursor down
+       fdb L02AC-L066E	$FC3E
+       fcb $46		reverse on
+       fdb L046C-L066E	$FDFE
+       fcb $47		reverse off
+       fdb L0475-L066E	$FE07
+       fcb $48		underline on
+       fdb L0479-L066E	$FE0B
+       fcb $49		underline off
+       fdb L0481-L066E	$FE13
+       fcb $4A		clear EOS
+       fdb L0413-L066E	$FDA5
+       fcb $00
+
+L06A0
+* 4x8 bitmap table for characters $20-$7f
+* each nibble represents a row of 4 dots
+* chars 20-27
+	fcb $00,$00,$00,$00  ....  .@..  .@.@  .@@.  ..@.  @..@  .@..  .@..
+	fcb $44,$40,$40,$00  ....  .@..  .@.@  @@@@  .@@@  ...@  @.@.  .@..
+	fcb $55,$00,$00,$00  ....  .@..  ....  .@@.  @...  ..@.  .@..  ....
+	fcb $6F,$6F,$60,$00  ....  ....  ....  @@@@  .@@.  .@..  @.@.  ....
+	fcb $27,$86,$1E,$20  ....  .@..  ....  .@@.  ...@  @...  @@.@  ....
+	fcb $91,$24,$89,$00  ....  ....  ....  ....  @@@.  @..@  ....  ....
+	fcb $4A,$4A,$D0,$00  ....  ....  ....  ....  ..@.  ....  ....  ....
+	fcb $44,$00,$00,$00  ....  ....  ....  ....  ....  ....  ....  ....
+* chars 29-2f
+	fcb $24,$44,$20,$00  ..@.  .@..  @..@  .@..  ....  ....  ....  ....
+	fcb $42,$22,$40,$00  .@..  ..@.  .@@.  .@..  ....  ....  ....  ...@
+	fcb $96,$F6,$90,$00  .@..  ..@.  @@@@  @@@.  ....  @@@@  ....  ..@.
+	fcb $44,$E4,$40,$00  .@..  ..@.  .@@.  .@..  ..@.  ....  .@@.  .@..
+	fcb $00,$02,$24,$00  ..@.  .@..  @..@  .@..  ..@.  ....  .@@.  @...
+	fcb $00,$F0,$00,$00  ....  ....  ....  ....  .@..  ....  ....  ....
+	fcb $00,$06,$60,$00  ....  ....  ....  ....  ....  ....  ....  ....
+	fcb $01,$24,$80,$00  ....  ....  ....  ....  ....  ....  ....  ....
+* chars 30-37
+	fcb $69,$BD,$60,$00  .@@.  ..@.  .@@.  @@@.  ..@.  @@@@  .@@@  @@@@
+	fcb $26,$22,$70,$00  @..@  .@@.  @..@  ...@  .@@.  @...  @...  ...@
+	fcb $69,$2C,$F0,$00  @.@@  ..@.  ..@.  .@@.  @.@.  @@@.  @@@.  ..@.
+	fcb $E1,$61,$E0,$00  @@.@  ..@.  @@..  ...@  @@@@  ...@  @..@  .@..
+	fcb $26,$AF,$20,$00  .@@.  .@@@  @@@@  @@@.  ..@.  @@@.  .@@.  .@..
+	fcb $F8,$E1,$E0,$00  ....  ....  ....  ....  ....  ....  ....  ....
+	fcb $78,$E9,$60,$00  ....  ....  ....  ....  ....  ....  ....  ....
+	fcb $F1,$24,$40,$00  ....  ....  ....  ....  ....  ....  ....  ....
+* chars 38-3f
+	fcb $69,$69,$60,$00  .@@.  .@@.  ....  ....  ..@.  ....  .@..  .@@.
+	fcb $69,$71,$60,$00  @..@  @..@  ....  ....  .@..  @@@@  ..@.  @..@
+	fcb $00,$40,$40,$00  .@@.  .@@@  .@..  ..@.  @...  ....  ...@  ..@.
+	fcb $00,$20,$24,$00  @..@  ...@  ....  ....  .@..  @@@@  ..@.  ..@.
+	fcb $24,$84,$20,$00  .@@.  .@@.  .@..  ..@.  ..@.  ....  .@..  ....
+	fcb $0F,$0F,$00,$00  ....  ....  ....  .@..  ....  ....  ....  ..@.
+	fcb $42,$12,$40,$00  ....  ....  ....  ....  ....  ....  ....  ....
+	fcb $69,$22,$02,$00  ....  ....  ....  ....  ....  ....  ....  ....
+* chars 40-47
+	fcb $69,$BB,$87,$00  .@@.  .@@.  @@@.  .@@@  @@@.  @@@@  @@@@  .@@@
+	fcb $69,$F9,$90,$00  @..@  @..@  @..@  @...  @..@  @...  @...  @...
+	fcb $E9,$E9,$E0,$00  @.@@  @@@@  @@@.  @...  @..@  @@@.  @@@.  @.@@
+	fcb $78,$88,$70,$00  @.@@  @..@  @..@  @...  @..@  @...  @...  @..@
+	fcb $E9,$99,$E0,$00  @...  @..@  @@@.  .@@@  @@@.  @@@@  @...  .@@@
+	fcb $F8,$E8,$F0,$00  .@@@  ....  ....  ....  ....  ....  ....  ....
+	fcb $F8,$E8,$80,$00  ....  ....  ....  ....  ....  ....  ....  ....
+	fcb $78,$B9,$70,$00  ....  ....  ....  ....  ....  ....  ....  ....
+* chars 48-4f
+	fcb $99,$F9,$90,$00  @..@  @@@.  @@@@  @..@  @...  @@@@  @..@  .@@.
+	fcb $E4,$44,$E0,$00  @..@  .@..  ..@.  @.@.  @...  @@.@  @@.@  @..@
+	fcb $F2,$2A,$40,$00  @@@@  .@..  ..@.  @@..  @...  @@.@  @.@@  @..@
+	fcb $9A,$CA,$90,$00  @..@  .@..  @.@.  @.@.  @...  @..@  @..@  @..@
+	fcb $88,$88,$F0,$00  @..@  @@@.  .@..  @..@  @@@@  @..@  @..@  .@@.
+	fcb $FD,$D9,$90,$00  ....  ....  ....  ....  ....  ....  ....  ....
+	fcb $9D,$B9,$90,$00  ....  ....  ....  ....  ....  ....  ....  ....
+	fcb $69,$99,$60,$00  ....  ....  ....  ....  ....  ....  ....  ....
+* chars 50-57
+	fcb $E9,$E8,$80,$00  @@@.  .@@.  @@@.  .@@@  @@@.  @..@  @..@  @..@
+	fcb $69,$9B,$70,$00  @..@  @..@  @..@  @...  .@..  @..@  @..@  @..@
+	fcb $E9,$EA,$90,$00  @@@.  @..@  @@@.  .@@.  .@..  @..@  @..@  @@.@
+	fcb $78,$61,$E0,$00  @...  @.@@  @.@.  ...@  .@..  @..@  .@@.  @@.@
+	fcb $E4,$44,$40,$00  @...  .@@@  @..@  @@@.  .@..  .@@.  .@@.  @@@@
+	fcb $99,$99,$60,$00  ....  ....  ....  ....  ....  ....  ....  ....
+	fcb $99,$96,$60,$00  ....  ....  ....  ....  ....  ....  ....  ....
+	fcb $99,$DD,$F0,$00  ....  ....  ....  ....  ....  ....  ....  ....
+* chars 58-5f
+	fcb $99,$69,$90,$00  @..@  @..@  @@@@  @@@.  ....  .@@@  .@@.  ....
+	fcb $99,$71,$E0,$00  @..@  @..@  ...@  @...  @...  ...@  @..@  ....
+	fcb $F1,$68,$F0,$00  .@@.  .@@@  .@@.  @...  .@..  ...@  ....  ....
+	fcb $E8,$88,$E0,$00  @..@  ...@  @...  @...  ..@.  ...@  ....  ....
+	fcb $08,$42,$10,$00  @..@  @@@.  @@@@  @@@.  ...@  .@@@  ....  ....
+	fcb $71,$11,$70,$00  ....  ....  ....  ....  ....  ....  ....  @@@@
+	fcb $69,$00,$00,$00  ....  ....  ....  ....  ....  ....  ....  ....
+	fcb $00,$00,$0F,$00  ....  ....  ....  ....  ....  ....  ....  ....
+* chars 60-67
+	fcb $22,$00,$00,$00  ..@.  ....  @...  ....  ...@  ....  ..@@  ....
+	fcb $07,$99,$70,$00  ..@.  .@@@  @@@.  .@@@  .@@@  .@@@  .@..  .@@.
+	fcb $8E,$99,$E0,$00  ....  @..@  @..@  @...  @..@  @.@.  @@@@  @..@
+	fcb $07,$88,$70,$00  ....  @..@  @..@  @...  @..@  @@..  .@..  @..@
+	fcb $17,$99,$70,$00  ....  .@@@  @@@.  .@@@  .@@@  .@@@  .@..  .@@@
+	fcb $07,$AC,$70,$00  ....  ....  ....  ....  ....  ....  ....  ...@
+	fcb $34,$F4,$40,$00  ....  ....  ....  ....  ....  ....  ....  @@@.
+	fcb $06,$99,$71,$E0  ....  ....  ....  ....  ....  ....  ....  ....
+* chars 68-6f
+	fcb $8E,$99,$90,$00  @...  .@..  ..@.  @...  .@..  ....  ....  ....
+	fcb $40,$44,$40,$00  @@@.  ....  ....  @.@.  .@..  .@@@  .@@@  .@@.
+	fcb $20,$22,$22,$C0  @..@  .@..  ..@.  @@..  .@..  @@.@  @..@  @..@
+	fcb $8A,$CA,$90,$00  @..@  .@..  ..@.  @.@.  .@..  @@.@  @..@  @..@
+	fcb $44,$44,$40,$00  @..@  .@..  ..@.  @..@  .@..  @..@  @..@  .@@.
+	fcb $0E,$DD,$90,$00  ....  ....  ..@.  ....  ....  ....  ....  ....
+	fcb $0E,$99,$90,$00  ....  ....  @@..  ....  ....  ....  ....  ....
+	fcb $06,$99,$60,$00  ....  ....  ....  ....  ....  ....  ....  ....
+* chars 70-77
+	fcb $0E,$99,$E8,$80  ....  ....  ....  ....  .@..  ....  ....  ....
+	fcb $07,$99,$71,$10  @@@.  .@@@  .@@@  .@@@  @@@@  @..@  @..@  @..@
+	fcb $07,$88,$80,$00  @..@  @..@  @...  @@..  .@..  @..@  @..@  @@.@
+	fcb $07,$C3,$E0,$00  @..@  @..@  @...  ..@@  .@..  @..@  .@@.  @@.@
+	fcb $4F,$44,$30,$00  @@@.  .@@@  @...  @@@.  ..@@  .@@@  .@@.  .@@.
+	fcb $09,$99,$70,$00  @...  ...@  ....  ....  ....  ....  ....  ....
+	fcb $09,$96,$60,$00  @...  ...@  ....  ....  ....  ....  ....  ....
+	fcb $09,$DD,$60,$00  ....  ....  ....  ....  ....  ....  ....  ....
+* chars 78-7f
+	fcb $09,$66,$90,$00  ....  ....  ....  ..@@  .@..  @@..  ....  @@@@
+	fcb $09,$99,$71,$E0  @..@  @..@  @@@@  .@..  .@..  ..@.  .@.@  @@@@
+	fcb $0F,$24,$F0,$00  .@@.  @..@  ..@.  @@..  ....  ..@@  @.@.  @@@@
+	fcb $34,$C4,$30,$00  .@@.  @..@  .@..  .@..  .@..  ..@.  ....  @@@@
+	fcb $44,$04,$40,$00  @..@  .@@@  @@@@  ..@@  .@..  @@..  ....  @@@@
+	fcb $C2,$32,$C0,$00  ....  ...@  ....  ....  ....  ....  ....  @@@@
+	fcb $05,$A0,$00,$00  ....  @@@.  ....  ....  ....  ....  ....  @@@@
+	fcb $FF,$FF,$FF,$F0  ....  ....  ....  ....  ....  ....  ....  ....
+
+* NOTE: these tables and the keyboard matrix are in DRAGON column order!
+* UNSHIFTED keytable
+L0820	fcb $30,$31,$32,$33	0 1 2 3
+	fcb $34,$35,$36,$37	4 5 6 7
+	fcb $38,$39,$3A,$3B	8 9 : ;
+	fcb $2C,$2D,$2E,$2F	, - . /
+	fcb $40,$61,$62,$63	@ a b c
+	fcb $64,$65,$66,$67	d e f g
+	fcb $68,$69,$6A,$6B	h i j k
+	fcb $6C,$6D,$6E,$6F	l m n o
+	fcb $70,$71,$72,$73	p q r s
+	fcb $74,$75,$76,$77	t u v w
+	fcb $78,$79,$7A,$0C	x y z up
+	fcb $0A,$08,$09,$20	down left right space
+	fcb $0D,$00,$05		ENTER CLEAR BREAK
+
+* SHIFTED keytable
+L0853	fcb $30,$21,$22,$23	0 ! " #
+	fcb $24,$25,$26,$27	$ % & '
+	fcb $28,$29,$2A,$2B	( ) * +
+	fcb $3C,$3D,$3E,$3F	< = > ?
+	fcb $7C,$41,$42,$43	| A B C
+	fcb $44,$45,$46,$47	D E F G
+	fcb $48,$49,$4A,$4B	H I J K
+	fcb $4C,$4D,$4E,$4F	L M N O
+	fcb $50,$51,$52,$53	P Q R S
+	fcb $54,$55,$56,$57	T U V W
+	fcb $58,$59,$5A,$1C	X Y Z fs
+	fcb $1A,$18,$19,$20	sub can em space
+	fcb $0D,$00,$03		ENTER CLEAR shft-BREAK
+
+* CONTROL keytable
+L0886	fcb $1F,$7C,$00,$7E	shift-toggle | nul ~
+	fcb $00,$00,$00,$5E	nul nul nul ^
+	fcb $5B,$5D,$00,$00	[ ] nul nul
+	fcb $7B,$5F,$7D,$5C	{ _ } \
+	fcb $00,$01,$02,$03	^@ ^A ^B ^C
+	fcb $04,$05,$06,$07	^D ^E ^F ^G
+	fcb $08,$09,$0A,$0B	^H ^I ^J ^K
+	fcb $0C,$0D,$0E,$0F	^L ^M ^N ^O
+	fcb $10,$11,$12,$13	^P ^Q ^R ^S
+	fcb $14,$15,$16,$17	^T ^U ^V ^W
+	fcb $18,$19,$1A,$13	^X ^Y ^Z dc3
+	fcb $12,$10,$11,$20	dc2 dle dc1 space
+	fcb $0D,$00,$1B		ENTER CLEAR esc
 
          emod
 eom      equ   *
+         end

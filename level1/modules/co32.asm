@@ -8,6 +8,9 @@
 * ------------------------------------------------------------------
 *   1      ????/??/??
 * From Tandy OS-9 Level One VR 02.00.00
+*
+*          2003/09/22  Rodney Hamilton
+* recoded dispatch table fcbs, fixed cursor color bug
 
          nam   CO32
          ttl   Hardware VDG co-driver for CCIO
@@ -32,11 +35,12 @@ size     equ   .
 name     fcs   /CO32/
          fcb   edition
 
-start    lbra  L0035
-         lbra  L008C
-         lbra  L0246
-         lbra  L0250
-         pshs  y,x
+start    equ   *
+Init     lbra  L0035
+Write    lbra  L008C
+GetStat  lbra  L0246
+SetStat  lbra  L0250
+Term     pshs  y,x
          pshs  u
          ldd   #$0200
          ldu   <$1D,u
@@ -45,6 +49,7 @@ start    lbra  L0035
          ldb   <$70,u
          andb  #$FD
          bra   L0086
+* Init
 L0035    pshs  y,x
          lda   #$AF
          sta   <$2C,u
@@ -80,6 +85,7 @@ L0056    ldd   #$0100
 L0086    stb   <$70,u
          clrb  
          puls  pc,y,x
+* Write
 L008C    tsta  
          bmi   L00D0
          cmpa  #$1F
@@ -121,7 +127,8 @@ L00D0    ldx   <$21,u
          bcs   L00DF
          bsr   L00E3
 L00DF    bsr   L013E
-         clrb  
+* no operation entry point
+L00E1    clrb  
          rts   
 L00E3    ldx   <$1D,u
          leax  <$20,x
@@ -148,9 +155,25 @@ L0103    cmpa  #$1B
 L0113    comb  
          ldb   #E$Write
          rts   
-L0117    fcb   $ff,$ca,$00,$7d,$00,$c9,$01,$07,$00,$f9,$00,$91,$00
-         fcb   $5e,$ff,$ca,$00,$50,$01,$19,$00,$38,$00,$6c,$00,$70
-         fcb   $00,$1e,$01,$2a
+
+* display functions dispatch table
+L0117    fdb   L00E1-L0117  $ffca  $00:no-op (null)
+         fdb   L0194-L0117  $007d  $01:HOME cursor
+         fdb   L01E0-L0117  $00c9  $02:CURSOR XY
+         fdb   L021E-L0117  $0107  $03:ERASE LINE
+         fdb   L0210-L0117  $00f9  $04:CLEAR TO EOL
+         fdb   L01A8-L0117  $0091  $05:CURSOR ON/OFF
+         fdb   L0175-L0117  $005e  $06:CURSOR RIGHT
+         fdb   L00E1-L0117  $ffca  $07:no-op (bel:handled in CCIO)
+         fdb   L0167-L0117  $0050  $08:CURSOR LEFT
+         fdb   L0230-L0117  $0119  $09:CURSOR UP
+         fdb   L014F-L0117  $0038  $0A:CURSOR DOWN
+         fdb   L0183-L0117  $006c  $0B:ERASE TO EOS
+         fdb   L0187-L0117  $0070  $0C:CLEAR SCREEN
+         fdb   L0135-L0117  $001e  $0D:RETURN
+         fdb   L0241-L0117  $012a  $0E:DISPLAY ALPHA
+
+* $0D - move cursor to start of line (carriage return)
 L0135    bsr   L019E
          tfr   x,d
          andb  #$E0
@@ -163,7 +186,9 @@ L013E    ldx   <$21,u
 L014B    sta   ,x
 L014D    clrb  
          rts   
-         bsr   L019E
+
+* $0A - cursor down (line feed)
+L014F    bsr   L019E
          leax  <$20,x
          cmpx  <$1F,u
          bcs   L0162
@@ -173,26 +198,36 @@ L014D    clrb
          puls  x
 L0162    stx   <$21,u
          bra   L013E
-         bsr   L019E
+
+* $08 - cursor left
+L0167    bsr   L019E
          cmpx  <$1D,u
          bls   L0173
          leax  -$01,x
          stx   <$21,u
 L0173    bra   L013E
-         bsr   L019E
+
+* $06 - cursor right
+L0175    bsr   L019E
          leax  $01,x
          cmpx  <$1F,u
          bcc   L0181
          stx   <$21,u
 L0181    bra   L013E
-         bsr   L019E
+
+* $0B - erase to end of screen
+L0183    bsr   L019E
          bra   L0189
+
+* $0C - clear screen
 L0187    bsr   L0194
 L0189    lda   #$60
 L018B    sta   ,x+
          cmpx  <$1F,u
          bcs   L018B
          bra   L013E
+
+* $01 - home cursor
 L0194    bsr   L019E
          ldx   <$1D,u
          stx   <$21,u
@@ -202,7 +237,9 @@ L019E    ldx   <$21,u
          sta   ,x
          clrb  
          rts   
-         ldb   #$01
+
+* $05 XX - set cursor off/on/color per XX-32
+L01A8    ldb   #$01
          leax  <L01AF,pcr
          bra   L01E5
 L01AF    lda   <$29,u
@@ -220,7 +257,7 @@ L01C7    cmpa  #$02
          bgt   L01CF
          lda   #$A0
          bra   L01D7
-L01CF    subb  #$03
+L01CF    suba  #$03		bugfix (was subb)
          lsla  
          lsla  
          lsla  
@@ -229,7 +266,9 @@ L01CF    subb  #$03
 L01D7    sta   <$2C,u
          ldx   <$21,u
          lbra  L014B
-         ldb   #$02
+
+* $02 XX YY - move cursor to col XX-32, row YY-32
+L01E0    ldb   #$02
          leax  <L01ED,pcr
 L01E5    stx   <$26,u
          stb   <$25,u
@@ -248,44 +287,56 @@ L01ED    bsr   L019E
          lbcc  L014D
          std   <$21,u
          lbra  L013E
-         bsr   L019E
+
+* $04 - erase to end of line
+L0210    bsr   L019E
          tfr   x,d
          andb  #$1F
          pshs  b
          ldb   #$20
          subb  ,s+
          bra   L0223
-         lbsr  L0135
-         ldb   #$20
-L0223    lda   #$60
+
+* $03 - erase line
+L021E    lbsr  L0135		do a CR
+         ldb   #32		line length
+L0223    lda   #$60		space char for VDG screen
          ldx   <$21,u
-L0228    sta   ,x+
+L0228    sta   ,x+		fill screen line with 'space'
          decb  
          bne   L0228
          lbra  L013E
-         lbsr  L019E
+
+* $09 - cursor up
+L0230    lbsr  L019E
          leax  <-$20,x
          cmpx  <$1D,u
          bcs   L023E
          stx   <$21,u
 L023E    lbra  L013E
-         clra  
+
+* $0E - switch screen to alphanumeric mode
+L0241    clra  
          clrb  
          jmp   [<$5B,u]
+* GetStat
 L0246    ldx   $06,y
-         cmpa  #$1C
+         cmpa  #SS.AlfaS	$1C
          beq   L0254
-         cmpa  #$25
+         cmpa  #SS.Cursr	$25
          beq   L0263
+* SetStat
 L0250    comb  
          ldb   #E$UnkSvc
          rts   
+* SS.AlfaS getstat
 L0254    ldd   <$1D,u
          std   $04,x
          ldd   <$21,u
          std   $06,x
          lda   <$50,u
          bra   L02BA
+* SS.Cursr getstat
 L0263    ldd   <$21,u
          subd  <$1D,u
          pshs  b,a
