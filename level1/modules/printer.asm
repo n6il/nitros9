@@ -24,7 +24,7 @@ edition  set   10
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   29
+         rmb   V.SCF
 u001D    rmb   1
 u001E    rmb   1
 u001F    rmb   1

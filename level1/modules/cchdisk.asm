@@ -24,8 +24,7 @@ edition  set   4
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   8
-u0008    rmb   7
+         rmb   DRVBEG
 u000F    rmb   91
 u006A    rmb   61
 u00A7    rmb   2
@@ -237,7 +236,7 @@ L0113    pshs  x,b,a
 L0134    ldx   ,u
          cmpx  ,y
          bne   L0144
-         leau  u0008,u
+         leau  $08,u
          leay  $08,y
          dec   ,s
          bne   L0134

@@ -22,18 +22,7 @@ edition  set   12
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   3
-u0003    rmb   1
-u0004    rmb   1
-u0005    rmb   4
-u0009    rmb   2
-u000B    rmb   1
-u000C    rmb   1
-u000D    rmb   11
-u0018    rmb   1
-u0019    rmb   1
-u001A    rmb   1
-u001B    rmb   2
+         rmb   V.SCF
 u001D    rmb   7
 u0024    rmb   1
 u0025    rmb   1
@@ -111,7 +100,7 @@ start    lbra  Init
 *
 Init     stu   >D.KbdSta               store devmem ptr
          clra
-         leax  <u001D,u
+         leax  <$1D,u
          ldb   #$5D
 L002E    sta   ,x+
          decb
@@ -253,19 +242,19 @@ L011A    stb   <u0051,u
          stb   <u0078,u
 L012F    sta   ,x
          beq   L014F
-         cmpa  u000D,u
+         cmpa  V.PCHR,u
          bne   L013F
-         ldx   u0009,u
+         ldx   V.DEV2,u
          beq   L014F
          sta   $08,x
          bra   L014F
 L013F    ldb   #$03
-         cmpa  u000B,u
+         cmpa  V.INTR,u
          beq   L014B
          ldb   #$02
-         cmpa  u000C,u
+         cmpa  V.QUIT,u
          bne   L014F
-L014B    lda   u0003,u
+L014B    lda   V.LPRC,u
          bra   L0153
 L014F    ldb   #S$Wake
          lda   V.WAKE,u

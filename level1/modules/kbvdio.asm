@@ -1,12 +1,11 @@
 ********************************************************************
-* progname - program module
+* KBVDIO - keyboard/video driver
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  -     Original Dragon Data distribution version
-*
 
          nam   KBVDIO
          ttl   os9 device driver    
@@ -16,10 +15,14 @@
          ifp1
          use   defsfile
          endc
+
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   4
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   2
 u0002    rmb   1
 u0003    rmb   1
@@ -78,26 +81,26 @@ u0055    rmb   26
 u006F    rmb   91
 size     equ   .
          fcb   $07 
-name     equ   *
-         fcs   /KBVDIO/
-         fcb   $04 
-start    equ   *
-         lbra  L0027
-         lbra  L0286
-         lbra  L0345
-         lbra  L0072
-         lbra  L0098
-         lbra  L009D
 
-L0027    lbsr  L02BA
+name     fcs   /KBVDIO/
+         fcb   edition
+
+start    lbra  Init
+         lbra  Read
+         lbra  Write
+         lbra  GetStat
+         lbra  SetStat
+         lbra  Term
+
+Init     lbsr  L02BA
          lbra  L002D
 L002D    pshs  cc
          orcc  #$10
-         stu   >$006D
-         ldd   >$0032
-         std   >$006B
+         stu   >D.KbdSta
+         ldd   >D.IRQ
+         std   >D.AltIRQ
          leax  >L00B0,pcr
-         stx   >$0032
+         stx   >D.IRQ
          ldx   #$FF00
          stx   <u003B,u
          clra  
@@ -121,7 +124,7 @@ L002D    pshs  cc
          ldb   #$F5
          orcc  #$01
          rts   
-L0072    cmpa  #$01
+GetStat    cmpa  #$01
          bne   L0082
          lda   <u0049,u
          suba  <u0048,u
@@ -136,24 +139,27 @@ L0082    cmpa  #$06
          lbeq  L085F
          cmpa  #$1C
          lbeq  L04CD
-L0098    ldb   #$D0
-L009A    orcc  #$01
+
+SetStat  ldb   #E$UnkSvc
+L009A    orcc  #Carry
          rts   
-L009D    pshs  cc
+
+Term     pshs  cc
          orcc  #$10
-         ldx   >$006B
-         stx   >$0032
+         ldx   >D.AltIRQ
+         stx   >D.IRQ
          puls  pc,cc
+
 L00A9    incb  
          cmpb  #$7F
          bls   L00AF
 L00AE    clrb  
 L00AF    rts   
-L00B0    ldu   >$006D
+L00B0    ldu   >D.KbdSta
          ldx   <u003B,u
          lda   $03,x
          bmi   L00BE
-         jmp   [>$0038]
+         jmp   [>D.SvcIRQ]
 L00BE    lda   $02,x
          lda   #$FF
          sta   $02,x
@@ -171,13 +177,13 @@ L00D4    clra
          sta   <u003F,u
          sta   <u0040,u
          sta   <u0041,u
-L00DF    lda   >$006F
+L00DF    lda   >D.DskTmr
          beq   L00ED
          deca  
-         sta   >$006F
+         sta   >D.DskTmr
          bne   L00ED
          sta   >$FF48
-L00ED    jmp   [>$006B]
+L00ED    jmp   [>D.AltIRQ]
 L00F1    bsr   L013F
          bmi   L00DF
          sta   <u0047,u
@@ -376,7 +382,8 @@ L027D    tst   <u000D
          tst   <u0000
          neg   <u0000
          eim   #$03,<u001B
-L0286    leax  <u004A,u
+
+Read     leax  <u004A,u
          ldb   <u0049,u
          orcc  #$10
          cmpb  <u0048,u
@@ -395,9 +402,9 @@ L029F    lda   u0004,u
          clr   u0005,u
          ldx   <u004B
 L02AF    ldb   <$36,x
-         beq   L0286
+         beq   Read
          cmpb  #$04
-L02B6    bcc   L0286
+L02B6    bcc   Read
          coma  
          rts   
 L02BA    pshs  y,x
@@ -459,7 +466,7 @@ L033F    decb
          bne   L0332
          clrb  
          puls  pc,x
-L0345    ldb   <u0025,u
+Write    ldb   <u0025,u
          bne   L0387
          tsta  
          bmi   L0371
@@ -1143,5 +1150,8 @@ L08CC    addb  #$02
          bra   L08C0
 L08E0    suba  ,s+
          bra   L08C0
+
          emod
 eom      equ   *
+         end
+
