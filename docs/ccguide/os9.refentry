@@ -11,7 +11,8 @@
 </funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>_os9</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>char <parameter>code</parameter></paramdef>
+  <paramdef>struct registers *<parameter>reg</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
