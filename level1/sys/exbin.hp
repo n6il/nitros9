@@ -1,0 +1,3 @@
+@EXBIN
+Syntax: Exbin <path1><path2>
+Usage : Convert S-Record Format to Binary
