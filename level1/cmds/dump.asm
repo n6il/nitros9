@@ -60,10 +60,10 @@ L00D1    fcc   "==== +-+-+-+-+-+-+-+- + + + + "
          fcb   C$CR
 
 L00F0    lda   ,x+
-         cmpa  #$20
+         cmpa  #C$SPAC
          beq   L00F0
-         leax  -$01,x
-         cmpa  #$0D
+         leax  -1,x
+         cmpa  #C$CR
          rts
 
 start    lda   #63
@@ -95,7 +95,7 @@ L0120    puls  y,x,b,a
          bsr   L00F0
          beq   L0147
          lda   #WRITE.
-         ldb   #$0B
+         ldb   #PREAD.+UPDAT.
          os9   I$Create 
          lbcs  L01FE
          sta   <u0002
