@@ -9,6 +9,8 @@
 *  l0    Added -t= option, fixed bug in single disk     BGP 03/06/28
 *        swap routine if key besides 'C' was pressed,
 *        minor optimizations.
+*  l0r2  Fixed bug introduced in V03.01.03 where        BGP 03/07/24
+*        os9gen wouldn't write boot track on DS disks.
 
          nam   OS9Gen
          ttl   OS-9 bootfile generator
@@ -26,7 +28,7 @@ BTrack   set   34
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $02
 edition  set   10
 
 os9l1start equ $EF00
@@ -620,7 +622,7 @@ AbsLSN   pshs  b
          andb  #FMT.SIDE	test sides bit
          beq   AbsLSN1		branch if 1
          ldb   #$02		else 2 sides
-         fcb   $86		skip next two bytes
+         fcb   $8C		skip next two bytes
 *         bra   AbsLSN2
 AbsLSN1  ldb   #$01		1 side
 AbsLSN2  mul   			multiply sides times track
