@@ -1,7 +1,9 @@
 <refentry id="scanf">
 <refnamediv>
-<refname>scanf</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Scanf</refname>
+<refname>Fscanf</refname>
+<refname>Sscanf</refname>
+<refpurpose>input string interpretation</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -10,9 +12,25 @@
 #include &lt;stdio.h&gt;
 </funcsynopsisinfo>
 <funcprototype>
-  <funcdef><function>scanf</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <funcdef><function>fscanf</function></funcdef>
+  <paramdef>FILE *<parameter>fp</parameter></paramdef>
+  <paramdef>char *<parameter>control</parameter></paramdef>
+  <paramdef>char *<parameter>pointer...</parameter></paramdef>
 </funcprototype>
+
+<funcprototype>
+  <funcdef><function>scanf</function></funcdef>
+  <paramdef>char *<parameter>control</parameter></paramdef>
+  <paramdef>char *<parameter>pointer...</parameter></paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef><function>sscanf</function></funcdef>
+  <paramdef>char *<parameter>string</parameter></paramdef>
+  <paramdef>char *<parameter>control</parameter></paramdef>
+  <paramdef>char *<parameter>pointer...</parameter></paramdef>
+</funcprototype>
+
 </funcsynopsis>
 
 </refsynopsisdiv>
