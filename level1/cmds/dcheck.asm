@@ -6,6 +6,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   4    From Tandy OS-9 Level One VR 02.00.00
+*   5    Changed /D0 references to /DD                  BGP 02/07/21
 
          nam   dcheck
          ttl   Check Disk File Structure
@@ -20,6 +21,7 @@ start    set   $1A96
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   5
 
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   2946
@@ -5097,11 +5099,11 @@ size     equ   .
          fcb   $39 9
          fcb   $2F /
          fcb   $44 D
-         fcb   $30 0
+         fcb   $44 D
          fcb   $00 
          fcb   $2F /
          fcb   $44 D
-         fcb   $30 0
+         fcb   $44 D
          fcb   $00 
          fcb   $64 d
          fcb   $63 c
@@ -10186,6 +10188,8 @@ size     equ   .
          fcb   $39 9
 name     equ   *
          fcs   /dcheck/
-         fcb   $04 
+         fcb   edition
+
          emod
 eom      equ   *
+         end
