@@ -22,14 +22,9 @@ Start    fcc   /OS/
          bra   L2620
 
          fdb   $1204
-BootMsg  fcc   /OS/
-         fcb   $79
+BootMsg  fcc   /OSy/
          fcb   $60
-	 fcb   $72
-         fcb   $6E
-	 fcb   $70
-	 fcb   $71
-*        fcc   /BOOT/
+         fcc   /BOOT/
 BootMLen equ   *-BootMsg
 
 L2620    clr   PIA.U4+3
