@@ -20,10 +20,7 @@ LEVEL1FILES	= binex.asm attr.asm build.asm cmp.asm cobbler.asm copy.asm date.asm
 		list.asm load.asm login.asm makdir.asm merge.asm os9gen.asm pwd.asm pxd.asm rename.asm \
 		save.asm setime.asm sleep.asm tee.asm tmode.asm tuneport.asm tsmon.asm verify.asm xmode.asm
 
-LEVEL2FILES	= gfx2.asm mdir.asm mfree.asm montype.asm procs.asm \
-		shell_21.asm unlink.asm wcreate.asm
-
-# Files not compilable by os9asm: Config attr cmp dcheck dir dsave
+# Files not compilable by os9asm: config
 all:	$(ALLOBJS) shell utilpak1 $(DEPENDS)
 	$(CHMOD) a+rx $(ALLOBJS) shell utilpak1
 
@@ -40,12 +37,10 @@ utilpak1:  $(UTILPAK1) $(DEPENDS)
 	@$(ECHO)
 
 $(LEVEL1FILES): ../../level1/CMDS/$@
-	-ln -s ../../level1/CMDS/$@
+	-$(SOFTLINK) ../../level1/CMDS/$@
 
-$(LEVEL2FILES): ../../level2/CMDS/$@
-	-ln -s ../../level2/CMDS/$@
 clean:
-	$(RM) $(ALLOBJS) $(LEVEL1FILES) $(LEVEL2FILES) shell utilpak1
+	$(RM) $(ALLOBJS) $(LEVEL1FILES) shell utilpak1
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
