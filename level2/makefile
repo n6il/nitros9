@@ -10,7 +10,7 @@ MODULES		= $(shell $(CD) MODULES; make showcopyobjs)
 DEFS		= $(shell $(CD) DEFS; make showobjs)
 SYSBIN		= $(shell $(CD) SYS; make showbinobjs)
 SYSTEXT		= $(shell $(CD) SYS; make showtextobjs)
-ROOTFILES	= startup upgrade_song
+ROOTFILES	= startup
 SYSGO		= cc3go
 
 PACKAGENAME	= $(RELEASE).zip
