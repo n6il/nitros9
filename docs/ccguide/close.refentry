@@ -8,7 +8,7 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>close</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>int <parameter>pn</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
@@ -22,7 +22,16 @@ os9 I$CLOSE
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Close takes a path number, "pn", as returned from system calls
+"open()", "creat()", or "dup()", and closes the associated
+file.
+</para>
+<para>
+Termination of a task always closes all open files
+automatically, but it is necessary to close files where
+multiple files are opened by the task, and it is desired to
+re-use path numbers to avoid going over the system or process
+path number limit.
 </para>
 </refsect1>
 
