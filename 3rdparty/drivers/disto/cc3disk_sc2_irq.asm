@@ -375,8 +375,7 @@ L02BA    sta   ,u
          stb   u0001,u
          lbsr  L043E
          puls  pc,x,b,a
-L02C8    oim   #$02,<u0004
-         nega  
+L02C8    fcb   $01,$02,$04,$40
 L02CC    pshs  a
          ldb   <$15,x
          bra   L030A
