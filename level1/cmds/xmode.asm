@@ -1,5 +1,5 @@
 ********************************************************************
-* XMode - Extended SCF device descriptor utility
+* XMode/TMode - SCF device/path descriptor utility
 *
 * $Id$
 *
@@ -8,9 +8,12 @@
 * ------------------------------------------------------------------
 *   1      1989/06/21  Bruce Isted
 * Released to public domain.
+*
+*   2      2004/07/29  Boisy G. Pitre
+* Revamped to also assemble as tmode
 
-         nam   XMode
-         ttl   Extended SCF device descriptor utility
+         nam   XMode/TMode
+         ttl   SCF device/path descriptor utility
 
 DOHELP   set   0
 
@@ -18,8 +21,8 @@ DOHELP   set   0
          use   defsfile
          endc            
 
-BuffSize equ   10         max. CHAR string length
-Edtn     equ   1         
+BuffSize equ   34         max. CHAR string length
+Edtn     equ   2         
 MaxSize  equ   $80        maximum module size
 NameSize equ   4          maximum module name length
 rev      equ   0         
@@ -28,11 +31,13 @@ rev      equ   0
 Count    rmb   1          number of option bytes
 DataPtr  rmb   2          current option ptr
 HexIn    rmb   2          2 byte hex number
+         IFNE  XMODE
 ModAddr  rmb   2          module address
 ModSize  rmb   2          module size
 OptEnd   rmb   2          option table end offset
-ParmPtr  rmb   2          next name DataPtr
+         ENDC
 PathNmbr rmb   1          file path
+ParmPtr  rmb   2          next name DataPtr
 TxtPtr   rmb   2          option name ptr
 Buffer   rmb   BuffSize   miscellaneous output buffer
 ModBuff  rmb   MaxSize    module work copy buffer
@@ -41,10 +46,17 @@ MemSize  equ   .
 
          mod   Size,Name,Prgrm+Objct,ReEnt+rev,Entry,MemSize
 
-Name     fcs   "XMode"   
+Name     equ   *
+         IFNE  XMODE
+         fcc   "X"   
+         ELSE
+         fcc   "T"   
+         ENDC
+         fcs   "Mode"   
          fcb   Edtn       edition number
 
 OptTable                 
+         IFNE  XMODE
          fcc   " nam"     option name
          fcb   Sign+M$Name,NameSize offset to string offset & max. byte count to change
          fcc   " mgr"    
@@ -55,52 +67,146 @@ OptTable
          fcb   M$Port,1   option offset & byte count
          fcc   " hpa"    
          fcb   M$Port+1,2
+         ENDC
          fcc   " upc"    
+         IFNE  XMODE
          fcb   IT.UPC,1  
+         ELSE
+         fcb   PD.UPC-PD.OPT,1  
+         ENDC
          fcc   " bso"    
+         IFNE  XMODE
          fcb   IT.BSO,1  
+         ELSE
+         fcb   PD.BSO-PD.OPT,1  
+         ENDC
          fcc   " dlo"    
+         IFNE  XMODE
          fcb   IT.DLO,1  
+         ELSE
+         fcb   PD.DLO-PD.OPT,1  
+         ENDC
          fcc   " eko"    
+         IFNE  XMODE
          fcb   IT.EKO,1  
+         ELSE
+         fcb   PD.EKO-PD.OPT,1  
+         ENDC
          fcc   " alf"    
+         IFNE  XMODE
          fcb   IT.ALF,1  
+         ELSE
+         fcb   PD.ALF-PD.OPT,1  
+         ENDC
          fcc   " nul"    
+         IFNE  XMODE
          fcb   IT.NUL,1  
+         ELSE
+         fcb   PD.NUL-PD.OPT,1  
+         ENDC
          fcc   " pau"    
+         IFNE  XMODE
          fcb   IT.PAU,1  
+         ELSE
+         fcb   PD.PAU-PD.OPT,1  
+         ENDC
          fcc   " pag"    
+         IFNE  XMODE
          fcb   IT.PAG,1  
+         ELSE
+         fcb   PD.PAG-PD.OPT,1  
+         ENDC
          fcc   " bsp"    
+         IFNE  XMODE
          fcb   IT.BSP,1  
+         ELSE
+         fcb   PD.BSP-PD.OPT,1  
+         ENDC
          fcc   " del"    
+         IFNE  XMODE
          fcb   IT.DEL,1  
+         ELSE
+         fcb   PD.DEL-PD.OPT,1  
+         ENDC
          fcc   " eor"    
+         IFNE  XMODE
          fcb   IT.EOR,1  
+         ELSE
+         fcb   PD.EOR-PD.OPT,1  
+         ENDC
          fcc   " eof"    
+         IFNE  XMODE
          fcb   IT.EOF,1  
+         ELSE
+         fcb   PD.EOF-PD.OPT,1  
+         ENDC
          fcc   " rpr"    
+         IFNE  XMODE
          fcb   IT.RPR,1  
+         ELSE
+         fcb   PD.RPR-PD.OPT,1  
+         ENDC
          fcc   " dup"    
+         IFNE  XMODE
          fcb   IT.DUP,1  
+         ELSE
+         fcb   PD.DUP-PD.OPT,1  
+         ENDC
          fcc   " psc"    
+         IFNE  XMODE
          fcb   IT.PSC,1  
+         ELSE
+         fcb   PD.PSC-PD.OPT,1  
+         ENDC
          fcc   " int"    
+         IFNE  XMODE
          fcb   IT.INT,1  
+         ELSE
+         fcb   PD.INT-PD.OPT,1  
+         ENDC
          fcc   " qut"    
+         IFNE  XMODE
          fcb   IT.QUT,1  
+         ELSE
+         fcb   PD.QUT-PD.OPT,1  
+         ENDC
          fcc   " bse"    
+         IFNE  XMODE
          fcb   IT.BSE,1  
+         ELSE
+         fcb   PD.BSE-PD.OPT,1  
+         ENDC
          fcc   " ovf"    
+         IFNE  XMODE
          fcb   IT.OVF,1  
+         ELSE
+         fcb   PD.OVF-PD.OPT,1  
+         ENDC
          fcc   " par"    
+         IFNE  XMODE
          fcb   IT.PAR,1  
+         ELSE
+         fcb   PD.PAR-PD.OPT,1  
+         ENDC
          fcc   " bau"    
+         IFNE  XMODE
          fcb   IT.BAU,1  
+         ELSE
+         fcb   PD.BAU-PD.OPT,1  
+         ENDC
          fcc   " xon"    
+         IFNE  XMODE
          fcb   IT.XON,1  
+         ELSE
+         fcb   PD.XON-PD.OPT,1  
+         ENDC
          fcc   " xof"    
-         fcb   IT.XOFF,1 
+         IFNE  XMODE
+         fcb   IT.XOFF,1  
+         ELSE
+         fcb   PD.XOFF-PD.OPT,1  
+         ENDC
+         IFNE  XMODE
          fcc   " col"    
          fcb   IT.COL,1  
          fcc   " row"    
@@ -125,13 +231,14 @@ OptTable
          fcc   " bdc"    
          fcb   IT.BDC,1  
          ENDC
+         ENDC
 TablOpts equ   (*-OptTable)/6 number of table entries
          fcb   $80        end of option table
 
          IFNE  DOHELP
 UseMsg                   
          fcb   C$LF      
-         fcc   "Usage:  EXMode [/<device> || -<pathlist> || -?] [option] [option] [...]"
+         fcc   "Usage:  XMode [/<device> || -<pathlist> || -?] [option] [option] [...]"
          fcb   C$LF,C$LF 
          fcc   "Purpose:  To report or alter current option settings of SCF device"
          fcb   C$LF      
@@ -145,13 +252,13 @@ UseMsg
          fcb   C$LF      
          fcc   "          fgc, bgc, bdc"
          fcb   C$LF,C$LF 
-         fcc   "Examples:  exmode /t2"
+         fcc   "Examples:  xmode /t2"
          fcb   C$LF      
          fcc   "               Prints the current option settings of the /T2 descriptor"
          fcb   C$LF      
          fcc   "               in memory."
          fcb   C$LF      
-         fcc   "           exmode -modules/t4.dd nam=T2 bau=6 hpa=ff6c eof=1B"
+         fcc   "           xmode -modules/t4.dd nam=T2 bau=6 hpa=ff6c eof=1B"
          fcb   C$LF      
          fcc   "               Changes the module name in the MODULES/T4.dd file to T2,"
          fcb   C$LF      
@@ -159,7 +266,7 @@ UseMsg
          fcb   C$LF      
          fcc   "               to $FF6C, and the end of file character to $1B."
          fcb   C$LF      
-         fcc   "           exmode -?"
+         fcc   "           xmode -?"
          fcb   C$LF      
          fcc   "               Prints more complete information on all of the options."
          fcb   C$CR      
@@ -213,19 +320,23 @@ HelpLen  equ   *-HelpMsg
 Equal    fcc   "="       
 
 TypeMsg                  
-         fcb   C$LF      
-         fcc   "Not an SCF descriptor!"
+         fcc   "Not an SCF "
+         IFNE  XMODE
+         fcc   "descriptor!"
+         ELSE
+         fcc   "path!"
+         ENDC
 CR       fcb   C$CR      
 TypeLen  equ   *-TypeMsg 
 
+         IFNE  XMODE
 Sizemsg                  
-         fcb   C$LF      
          fcc   "Module size out of range!"
          fcb   C$CR      
 Sizelen  equ   *-Sizemsg 
+         ENDC
 
 SynMsg                   
-         fcb   C$LF      
          fcc   "Syntax error:  "
 SynLen   equ   *-SynMsg  
 
@@ -239,20 +350,20 @@ MuchHelp
          bra   Helpprnt  
          ENDC
 
+         IFNE  XMODE
 BadSize                  
          leax  Sizemsg,pc
          ldy   #Sizelen  
          bra   AddHelp   
+         ENDC
 
 BadType                  
          leax  TypeMsg,pc
          ldy   #TypeLen  
 
 AddHelp                  
-         IFNE  DOHelp
          lda   #2        
          os9   I$WritLn  
-         ENDC
 Help                     
          IFNE  DOHelp
          leax  UseMsg,pc 
@@ -265,16 +376,32 @@ Helpprnt
 
 ****************
 Entry                    
+         IFNE  XMODE
          ldd   #0        
          std   <ModAddr   zero mod flag
          sta   <PathNmbr  zero file flag
+         ENDC
          ldd   ,x+        check for device name
+         IFNE  XMODE
          cmpa  #'-        file option?
          bne   Link      
+         ELSE
+         stx   <ParmPtr
+         clr   <PathNmbr
+         cmpa  #'.		dot? (for path specification)
+         bne   Process		if not, process as option
+         subb  #$30
+         lbmi  Syntax
+         cmpb  #$02
+         lbgt  Syntax
+         stb   <PathNmbr
+         leax  2,x 		point passed char after '.'
+         ENDC
          IFNE  DOHELP
          cmpb  #'?        help option?
          beq   MuchHelp  
          ENDC
+         IFNE  XMODE
 * Use Filename to Get Desc:
          lda   #UPDAT.    open path to module file
          os9   I$Open    
@@ -294,7 +421,6 @@ Entry
          bhi   BadSize    no, go return error...
          std   <ModSize  
          bra   GotIt     
-
 Link                     
          cmpa  #'/        else must be /<devicename>
          bne   Help      
@@ -337,6 +463,22 @@ GotIt
          cmpa  #C$CR      no options?
          lbeq  Info       ..yes, give info
          leax  -1,x      
+         ELSE
+Process
+         leax  -1,x
+         stx   <ParmPtr   save for syntax error use
+         leax  ModBuff,u 
+         lda   <PathNmbr
+         clrb
+         os9   I$GetStt
+         tst   ,x
+         lbne  BadType
+         ldx   <ParmPtr
+         lbsr  SkipSpac   go skip leading spaces...
+         cmpa  #C$CR      no options?
+         lbeq  Info       ..yes, give info
+         leax  -1,x      
+         ENDC
 
 ****************
 * X=ParmPtr
@@ -378,6 +520,7 @@ FindLp20
          beq   Syntax     0 bytes, not allowed to change this option
          stb   <Count    
          ldb   4,y        get option offset or offset to option offset
+         IFNE  XMODE
          bpl   NumOpt     option offset, go set hexadecimal option
 * Get CHAR input and set option:
          andb  #^Sign     clear sign bit of offset to string offset
@@ -411,6 +554,9 @@ SetChrLp
          ora   #Sign      set sign bit
          sta   -1,y       save last char
          lbra  FindLp10   go do next...
+         ELSE
+         lbra  NumOpt     option offset, go set hexadecimal option
+         ENDC
 
 * Syntax Error:
 Syntax                   
@@ -439,9 +585,11 @@ SynSay
 
 * Get Hex Input and Set Option:
 NumOpt                   
+         IFNE  XMODE
          clra             [D] = option offset within module
          cmpd  <OptEnd    is it OK?
          bhs   Syntax     no, go report error...
+         ENDC
          clr   <HexIn     zero hex input bytes
          clr   <HexIn+1  
 
@@ -516,6 +664,7 @@ SkipSpac
 * --------------
 * Update Module CRC:
 Verify                   
+         IFNE  XMODE
          pshs  u          save data ptr
          leau  ModBuff,u 
          tfr   u,x        X is mod address
@@ -543,8 +692,15 @@ Verify
          leax  ModBuff,u 
          ldy   <ModSize  
          os9   I$Write    update module file
+         ELSE
+         leax  ModBuff,u
+         lda   <PathNmbr
+         clrb
+         os9   I$SetStt
+         ENDC
          bra   OkayEnd   
 
+         IFNE  XMODE
 MemMod                   
          ldu   ,s         get data area pointer
          leax  ModBuff,u 
@@ -558,14 +714,15 @@ PutModLp
          bne   PutModLp  
          puls  u          recover data area pointer
          bra   OkayEnd2  
+         ENDC
 
 OkayEnd                  
-         bsr   OutCR     
+*         bsr   OutCR     
 
 OkayEnd2                 
          clrb             okay
-
 Error                    
+         IFNE  XMODE
          pshs  b,cc      
          ldu   <ModAddr  
          beq   Bye       
@@ -573,6 +730,7 @@ Error
 
 Bye                      
          puls  b,cc      
+         ENDC
          os9   F$Exit     we're done...
 
 * --------------
@@ -587,12 +745,29 @@ OutCR
 ****************
 * Output Current Desc Info:
 Info                     
-         bsr   OutCR      do a <CR>
-         ldb   #TablOpts  number of table entries
-         pshs  b          save counter
+         IFNE  TMODE
+         lda   <PathNmbr
+         leax  Buffer,u
+         ldb   #PDELIM
+         stb   ,x+
+         ldb   #SS.DevNm
+         os9   I$GetStt
+go@      ldb   ,x+
+         bpl   go@
+         andb  #$7F
+         stb   -1,x
+         ldb   #C$CR
+         stb   ,x
+         leax  Buffer,u
+         ldy   #80
+         lda   #$01
+         os9   I$WritLn
+         ENDC
+
          leax  OptTable,pc point to text table
          stx   <TxtPtr   
 
+         clr   ,-s
 InfoLoop                 
          ldx   <TxtPtr   
          ldy   #4        
@@ -602,6 +777,7 @@ InfoLoop
          lbsr  OutPut     print =
          ldx   <TxtPtr   
          ldb   4,x        get offset to HEX option;  if minus, offset to option offset
+         IFNE  XMODE
          bpl   PrintHex   go do simple offset to HEX option
          andb  #^Sign     clear sign bit
          clra             [D] = offset to string offset within module
@@ -630,6 +806,7 @@ NotLast  stb   ,x+
          leax  Buffer,u   point [X] to CHAR string copy
          bsr   OutPut     print CHAR string
          bra   MovePtr    skip HEX output routine
+         ENDC
 
 * Print Hex Option Values:
 PrintHex                 
@@ -637,9 +814,11 @@ PrintHex
          ldb   5,x        get # of digits
          stb   <Count    
          ldb   4,x        get option offset in module
+         IFNE  XMODE
          clra             [D] = option offset within module
          cmpd  <OptEnd    is option offset OK?
          bhs   MovePtr    no, skip this option...
+         ENDC
          leax  ModBuff,u  point [X] to module work copy
          abx              point [X] to option
          stx   <DataPtr  
@@ -665,9 +844,11 @@ MovePtr
          ldx   <TxtPtr   
          leax  6,x       
          stx   <TxtPtr   
-         dec   ,s        
+         ldb   ,s+
+         incb
+         cmpb  #TablOpts
          lbeq  OkayEnd    done...
-         ldb   ,s        
+         pshs  b
          bitb  #$07       # of options remaining evenly divisible by eight?
          lbne  InfoLoop   no, go print next option on same line
          lbsr  OutCR      <CR> after every 8th option
@@ -687,8 +868,8 @@ Number
          ldy   #1        
 
 OutPut                   
-         lda   #1         std out
-         os9   I$Write   
+         lda   #$01
+         os9   I$Write
          lbcs  Error     
          rts             
 

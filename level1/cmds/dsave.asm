@@ -112,9 +112,9 @@ Cmp      fcc   "cmp"
 
 TMode    fcc   "tmode"
          fcb   C$CR
-TPause   fcc   ".1 pause"
+TPause   fcc   ".1 pau=1"
          fcb   C$CR
-TNoPause fcc   ".1 -pause"
+TNoPause fcc   ".1 pau=0"
          fcb   C$CR
 
 Load     fcc   "load"
