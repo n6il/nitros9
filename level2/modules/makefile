@@ -24,11 +24,12 @@ CLOCKS          = clock_60hz clock_50hz \
 		clock2_smart clock2_harris clock2_cloud9 clock2_soft
 
 RBF		= rbf.mn \
-		rb1773.dr rammer.dr \
+		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
 		d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		d0_40d.dd d1_40d.dd d2_40d.dd d0_80d.dd \
-		d1_80d.dd d2_80d.dd ddd0_35s.dd ddd0_40d.dd \
-		ddd0_80d.dd r0_8k.dd r0_96k.dd r0_128k.dd r0_192k.dd \
+		d1_80d.dd d2_80d.dd \
+		ddd0_35s.dd ddd0_40d.dd ddd0_80d.dd \
+		rammer.dr r0_8k.dd r0_96k.dd r0_128k.dd r0_192k.dd \
 		ddr0_8k.dd ddr0_96k.dd ddr0_128k.dd ddr0_192k.dd md.dd
 		
 
@@ -74,6 +75,12 @@ rel_32: rel.asm
 grfint.io: windint.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aGrfInt=1
 
+rb1773_scii_ff74.dr:    rb1773.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1
+                                                                            
+rb1773_scii_ff58.dr:    rb1773.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1 -aSCIIALT=1
+                                                                            
 rel_40: rel.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=40
 

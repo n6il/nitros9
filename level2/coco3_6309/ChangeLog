@@ -1,7 +1,10 @@
 NitrOS-9/6809 Level 2 V03.02.02:
-- kernel, kernelp2, kernelp3_perr and kernelp4_regdump have been renamed to krn,
-  krnp2, krnp3_perr and krnp4_regdump respectively.
-- cc3disk has been renamed to rb1773 and has been back-ported to NitrOS-9 Level 1.
+- kernel, kernelp2, kernelp3_perr and kernelp4_regdump have been renamed to
+  krn, krnp2, krnp3_perr and krnp4_regdump respectively.
+- cc3disk has been renamed to rb1773 and has been back-ported to
+  NitrOS-9 Level 1.  A bug in the verify routine has been fixed.
+- Drivers for the Disto Super Controller II are now available as
+  rb1773_scii_ff74.dr and rb1773_scii_ff58.dr.
 - grfint.io now exists and can be used to replace windint.io in bootfiles where
   Multi-Vue windowing functionality is not needed, in order to save system RAM.
 - The pmap command has several bug fixes.
