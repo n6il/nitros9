@@ -730,10 +730,18 @@ L04AF    tst   <isnarrow	wide screen?
          ldu   <u0002
          lbsr  L03C2
          ldd   R$PC,u
+         IFNE  H6309
+         lbsr  L0505
+         ELSE
          bsr   L0505
+         ENDC
          lbsr  L03C2
          ldb   R$A,u
+         IFNE  H6309
+         lbsr  L050F
+         ELSE
          bsr   L050F
+         ENDC
          lbsr  L03C2
          ldb   R$B,u
          bsr   L050F
