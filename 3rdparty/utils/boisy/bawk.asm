@@ -144,7 +144,7 @@
          use     defsfile
          endc
 
-         mod     Size,Name,Prgrm+Objct,Reent+1,Start,Finish
+         mod     Size,Name,Prgrm+Objct,ReEnt+1,Start,Finish
 
 Name     fcs     /bawk/
 Ed       fcb     3                     Edition #3
@@ -376,7 +376,7 @@ Help     leax    HelpMess,pcr          Show Help message
 
 EOF      cmpb    #E$EOF
          bne     Error
-         lda     path
+         lda     Path
          os9     I$Close               Close path
          puls    x                     and restore the cmd line pointer
          tst     Path
@@ -401,7 +401,7 @@ FilePrs  lbsr    EatSpace              eat spaces
          beq     Done
 
 OpenFile lbsr    SaveFile
-         lda     #read.                else assume a file name
+         lda     #READ.                else assume a file name
          os9     I$Open                and try to open it
          bcs     Error
          sta     Path
@@ -558,3 +558,4 @@ Fork     pshs    x,u
          emod
 Size     equ     *
          end
+

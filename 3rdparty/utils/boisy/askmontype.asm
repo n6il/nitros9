@@ -2,7 +2,7 @@
          ttl   Prompts for monitor type and sets accordingly
 
          ifp1
-         use   os9defs.l2v3
+         use   defsfile
          endc
 
 tylg     set   Prgrm+Objct
@@ -104,3 +104,5 @@ L0193    fcc   "sub"
 
          emod
 eom      equ   *
+         end
+

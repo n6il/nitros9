@@ -32,6 +32,7 @@
          endc
 
          mod   Size,Name,Prgrm+Objct,ReEnt+1,Start,Fin
+
 Name     fcs   /Grep/
 Ed       fcb   $01
 
@@ -50,8 +51,8 @@ Stack    rmb   200
 Params   rmb   200
 Fin      equ   .
 
-HelpMsg  fcc   /Usage:  Grep <-c> "pattern" [file]/
-         fcb   $0d
+HelpMsg  fcc   /Usage:  Grep <-c> <-n> "pattern" [file]/
+         fcb   C$CR
 HelpLen  equ   *-HelpMsg
 
 Start    clr   Path                    Clear path (assume StdIn)
@@ -63,9 +64,9 @@ Start    clr   Path                    Clear path (assume StdIn)
          sta   MaskByte
 
 Parse    lda   ,x+                     Get char off cmd line
-         cmpa  #$20                    is it a space?
+         cmpa  #C$SPAC                 is it a space?
          beq   Parse                   yep, get next char
-         cmpa  #$0d                    is it a CR?
+         cmpa  #C$CR                   is it a CR?
          beq   Help                    Yep, premature, so show help
          cmpa  #'-                     is it a dash?
          beq   Parse2                  yeah, go to option handler
@@ -74,7 +75,7 @@ Parse    lda   ,x+                     Get char off cmd line
          bra   Help                    else wrong usage, show help
 
 Parse2   lda   ,x+                     get char after dash
-         anda  #$df                    and mask it
+         anda  #$DF                    and mask it
 	 cmpa  #'N		is it an N for line numbers?
 	 bne   Parse3		nope, try C
 	 sta   numflag		set the line numbers flag
@@ -90,14 +91,14 @@ GetStr   leay  SrchStr,u               point to pattern buffer
 Store    lda   ,x+                     get char
          cmpa  #'"                     is it the ending quote?
          beq   ChckFile                yep, see if a file was specified
-         cmpa  #$0d                    is it a CR?
+         cmpa  #C$CR                   is it a CR?
          beq   Help                    Yep, in middle of quote!  show help
          ora   MaskByte                else mask char
          sta   ,y+                     and save it in buffer
          inc   StrSiz                  increment the size by one
          bra   Store                   and get the next char
 
-EOF      cmpb  #211                    Is error an end-of-file?
+EOF      cmpb  #E$EOF                  Is error an end-of-file?
          bne   Error                   nope, other error
          bra   Done                    else we're done
 
@@ -111,9 +112,9 @@ Done     clrb                          clear error register
 Error    os9   F$Exit                  and exit!
 
 ChckFile lda   ,x                      get char
-         cmpa  #$0d                    is it a CR?
+         cmpa  #C$CR                   is it a CR?
          beq   ReadIn                  yep, we'll use StdIn
-         cmpa  #$20                    is it a space?
+         cmpa  #C$SPAC                 is it a space?
          bne   GetFile                 nope, its a filename char
          leax  1,x                     else increment X
          bra   ChckFile                and get the next char
@@ -174,15 +175,16 @@ PrnLine2
 bcdtoasc
 	 leay  linestr,u
 	 ldb   <linecnt
-	 bsr   btod2
+	 bsr   btod			convert all 6 digits
 	 ldb   <linecnt+1
 	 bsr   btod
 	 ldb   <linecnt+2
 	 bsr   btod
-	 ldb   #$20
+	 ldb   #C$SPAC
 	 stb   ,y
-	 leax  linestr,u
-	 ldy   #257
+	 leax  linestr+1,u		but print only last 5
+	 ldy   #256
+* to print 6 digits change previous 2 lines to leax linestr,u/ldy #257
 	 bra   PrnLine2
 
 btod	 pshs  b
@@ -200,3 +202,4 @@ btod2	 andb  #$0F
          emod
 Size     equ   *
          end
+

@@ -5,7 +5,7 @@
          use     defsfile
          endc
 
-         mod     Size,Name,Prgrm+Objct,Reent+1,Start,Fin
+         mod     Size,Name,Prgrm+Objct,ReEnt+1,Start,Fin
 
 Name     fcs     /MakDir/
 Vrsn     fcb     $05
@@ -32,6 +32,8 @@ Execute  os9     I$MakDir
          bcs     Error
          clrb
 Error    os9     F$Exit 
+
          emod
-size     equ     *
+Size     equ     *
          end
+

@@ -41,10 +41,10 @@
          use     defsfile
          endc
 
-         mod     Size,Name,Prgrm+Objct,Reent+1,Start,Finish
+         mod     Size,Name,Prgrm+Objct,ReEnt+1,Start,Finish
 
 Name     fcs     /Send/
-Ed       fcb     $02
+         fcb     $02
 
 XPlace   rmb     1
 Signal   rmb     1                     Holds current signal
@@ -59,9 +59,9 @@ Start    decb                          Check for no params
 Parse    lda     ,x+                   get char
          cmpa    #'-                   dash?
          beq     GetSig                yeah, get signal no
-         cmpa    #$20                  space?
+         cmpa    #C$SPAC               space?
          beq     Parse                 yeah, get next char
-         cmpa    #$0d                  eol?
+         cmpa    #C$CR                 eol?
          beq     Done                  yeah, exit
 
 KillIt   leax    -1,x                  backup on char.. must be a pid
@@ -70,7 +70,7 @@ KillIt   leax    -1,x                  backup on char.. must be a pid
          ldb     Signal                load B with current signal
          os9     F$Send                and send it to the process
          bcc     Parse
-         os9     F$Perr                else print the error
+         os9     F$PErr                else print the error
          bra     Parse                 and continue parsing
 
 Done     clrb                          clear, no error
@@ -111,8 +111,9 @@ Help      leax    HelpMsg,pcr
           bra     Done
 
 HelpMsg  fcc     /Usage:  Send [-signal] procID [...]/
-         fcb     $0d
+         fcb     C$CR
 
          emod
 Size     equ     *
          end
+

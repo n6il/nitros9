@@ -41,8 +41,9 @@ REVON    equ     $1f20
 REVOFF   equ     $1f21
 
          mod     Size,Name,Prgrm+Objct,ReEnt+1,Start,Fin
+
 Name     fcs     /M/
-Ed       fcb     2
+         fcb     2
 
 Path     rmb     1
 Response rmb     1
@@ -68,14 +69,13 @@ Message  fdb     REVON                 Reverse Video on
          fdb     REVOFF                Reverse Video off
 MessLen  equ     *-Message
 
-Header   fdb     $0a0d
+Header   fdb     C$LF
+CR       fcb     C$CR
          fcc     /****** File: /
 HeadLen  equ     *-Header
 
 
 DelLine  fcb     DELNE                 Delete line char
-CR       fcb     $0d                   Carriage Return
-
 ****** SUBROUTINES
 PutHead  pshs    x                     Here, we actually print the header
          leax    Header,pcr            for the file we are working on.
@@ -95,18 +95,18 @@ PutHead  pshs    x                     Here, we actually print the header
 SaveFile pshs    x
          leay    FileBuf,u
 SaveF2   lda     ,x+
-         cmpa    #$20
+         cmpa    #C$SPAC
          bne     SaveF3
-         lda     #$0d
+         lda     #C$CR
 SaveF3   sta     ,y+
-         cmpa    #$0d
+         cmpa    #C$CR
          bne     SaveF2
          puls    x
          rts
 
 GetSize  pshs    x
          lda     #1                    Using stdout...
-         ldb     #$26
+         ldb     #SS.ScSiz
          os9     I$GetStt              Find the X and Y size of window
          bcs     ChekErr
          stx     XH                    Save the X value
@@ -139,20 +139,20 @@ Start    pshs    x                     put away X temporarily,
          bsr     GetSize
 
 Parse    lda     ,x+                   Parsing of the line is done here
-         cmpa    #$20
+         cmpa    #C$SPAC
          beq     Parse
          cmpa    #'-
          beq     GetOpt
-         cmpa    #$0d
+         cmpa    #C$CR
          bne     TestFlag
          tst     Path
          beq     Cycle
          bra     Done
 
 GetOpt   lda     ,x+
-         cmpa    #$20
+         cmpa    #C$SPAC
          beq     Parse
-         anda    #$df
+         anda    #$DF
          cmpa    #'L
          bne     IsItW
          com     LFlag
@@ -207,7 +207,7 @@ ReadLine lda     Path                  Get the path
 Loop     leax    1,x                   end.
          decb                          This is unnecessary if the line
          bne     Loop                  is less than XH, but doesn't slow
-         lda     #$0d                  down the processing considerably
+         lda     #C$CR                 down the processing considerably
          sta     ,x                    and would take longer if we actually
          puls    x                     checked to see if a CR existed.
 
@@ -254,9 +254,9 @@ EOF2     lda     Path                  else close the path
          lbra    Parse                 command line.
 
 TestInp  lda     Response              Here we test the response at prompt
-         cmpa    #$0d                  is it cr?
+         cmpa    #C$CR                 is it cr?
          beq     OneLine               yep, go up one line
-         anda    #$df                  else mask uppercase
+         anda    #$DF                  else mask uppercase
          cmpa    #'Q                   is it Q?
          beq     IntSvc                Yep, kill prompt and exit
          cmpa    #'N                   is it N?
@@ -274,3 +274,4 @@ OneLine  lda     #1                    We go here if <ENTER> was pressed
          emod
 Size     equ     *
          end
+

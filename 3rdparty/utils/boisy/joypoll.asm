@@ -2,11 +2,10 @@
          ttl   Joystick poll utility
 
          ifp1
-         use   os9defs
-         use   scfdefs
+         use   defsfile
          endc
 
-         mod   eom,Name,Prgrm+Objct,Reent+1,Start,Fin
+         mod   eom,Name,Prgrm+Objct,ReEnt+1,Start,Fin
 
 Name     fcs   /AutoEx/
 Ed       fcb   $02
@@ -168,4 +167,5 @@ PreOne   addb  #$30+10
          emod
 eom      equ   *
          end
+
 

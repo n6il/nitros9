@@ -19,9 +19,10 @@
          use     defsfile
          endc
 
-         mod     Size,Name,Prgrm+Objct,Reent+1,Start,Fin
+         mod     Size,Name,Prgrm+Objct,ReEnt+1,Start,Fin
+
 Name     fcs     "Tee"
-Ed       fcb     $03                   Replaces Tandy's Edition #2
+         fcb     $03                   Replaces Tandy's Edition #2
 
 PathCnt  rmb     1
 BuffSize rmb     2
@@ -37,8 +38,8 @@ Start    lda     #1
          sta     StdOut,u              and the StdOut buffer
          leay    PathStk,u             Position Y on the path queue
 
-GetNext  lda     #write.               Set mode to write only
-         ldb     #read.+write.+pread.  owner read/write, other read
+GetNext  lda     #WRITE.               Set mode to write only
+         ldb     #UPDAT.+PREAD.        owner read/write, other read
          os9     I$Create              create the path
          bcs     Error                 exit if error
 
@@ -46,7 +47,7 @@ GetNext  lda     #write.               Set mode to write only
          inc     PathCnt,u             inc path counter
 
 CheckCR  lda     ,x                    See if last param on line
-         cmpa    #$0d                  if cr, must be last parm
+         cmpa    #C$CR                 if cr, must be last parm
          beq     GoTee                 so start teeing out
          leax    1,x                   inc X
          bra     CheckCR               and check again
@@ -79,3 +80,4 @@ Service  lda     ,y+                   load A with path number
          emod
 Size     equ   *
          end
+
