@@ -6,6 +6,9 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * 5      Original Tandy distribution version
+* 6      Brought up to OS-9 Level Two version, only     BGP 02/07/13
+*        difference was use of PREAD. at start line
+*        which is not present in OS-9 Level Two version.
 
          nam   Build
          ttl   Simple text file creation utility
@@ -19,7 +22,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   5
+edition  set   6
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -30,7 +33,8 @@ size     equ   .
 name     fcs   /Build/
          fcb   edition
 
-start    ldd   #(WRITE.*256)+PREAD.+UPDAT.
+*start    ldd   #(WRITE.*256)+PREAD.+UPDAT.  Level One edition 5 line
+start    ldd   #(WRITE.*256)+UPDAT.
          os9   I$Create 
          bcs   Exit
          sta   <FPath
