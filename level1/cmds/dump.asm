@@ -26,7 +26,7 @@
 
 * Tweakable options
 DOSCSIZ  set   1	1 = include SS.ScSiz code, 0 = leave out
-DOHELP   set   1	1 = include help message, 0 = leave out
+DOHELP   set   0	1 = include help message, 0 = leave out
 
 Edition  set   6         
 Revs     set   1         
@@ -370,15 +370,15 @@ onbyt    pshs  a
          puls  a,pc      
 
          IFNE  DOHELP
-HelpMsg  fcc   "Use: Dump [-opts] <file> [-opts]"
+HelpMsg  fcc   "Use: Dump [opts] [<path>] [opts]"
          fcb   C$CR,C$LF
-         fcc   "  -d  dump directory"
+         fcc   "  -d = dump directory"
          fcb   C$CR,C$LF
-         fcc   "  -h  no header"
+         fcc   "  -h = no header"
          fcb   C$CR,C$LF
-         fcc   "  -m  for module in memory"
+         fcc   "  -m = module in memory"
          fcb   C$CR,C$LF
-         fcc   "  -x  for file in execution directory"
+         fcc   "  -x = file in exec dir"
          fcb   C$CR,C$LF
 HelpLen  equ   *-HelpMsg
          ENDC
