@@ -1,4 +1,5 @@
 @VERIFY
 Syntax: Verify [u]
 Usage : Verify or update module header and CRC 
-Opts  : u = update module during check
+Opts  :
+  u = update module during check

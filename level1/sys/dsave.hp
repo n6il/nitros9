@@ -1,9 +1,10 @@
 @DSAVE
 Syntax: Dsave [-opts][dev][pathname]
 Usage : Generates procedure file to copy all files in a directory system
-Opts  : -b = make a system disk by using OS9boot if present
-        -b=<path> = make system disk using path as source
-        -i = indent for directory levels
-        -l = do not process below the current level
-        -m = do not include makdir commands in procedure file
-        -s<num> = set copy size to num K
+Opts  :
+  -b = make a system disk by using OS9boot if present
+  -b=<path> = make system disk using path as source
+  -i = indent for directory levels
+  -l = do not process below the current level
+  -m = do not include makdir commands in procedure file
+  -s<num> = set copy size to num K
