@@ -1,6 +1,29 @@
-         ifeq  PIPEDEFS
+         IFEQ  PIPEDEFS
 
 PIPEDEFS set   1
+
+*
+*   Copyright 1988 by Microware Systems Corporation
+*   All Rights Reserved
+*
+*   Named pipe equates by Burke & Burke.
+*   All rights assigned to Microware Systems Corporation.
+*
+*   This file contains proprietary information of Microware Systems
+*   Corporation.  Persons accessing this file will be held strictly
+*   accountable for their use of the information herein.
+*
+
+*
+*   OS9 Level 2 Pipe Definitions
+*
+*   Modification History
+*   --------------------
+*
+*   Date        Who     Description
+*   --------    ---     -----------------------------------------
+*   12/03/88    cjb     Coded from new PIPEMAN comments
+*
 
          nam   PipeDefs
          ttl   OS-9 Pipe Definitions
@@ -66,6 +89,10 @@ PD.QSiz  rmb   2          ;Max. elements in queue (copied from OPT section)
          org   (PD.OPT+1)
 PD.ESiz  rmb   1          ;Size of each queue element
 PD.ECnt  rmb   2          ;Max. elements in queue (initial position)
+         IFGT  Level-1
+         org   (PD.OPT+3)
+PD.Name  rmb   NameMax
+         ENDC
 
 *
 *   Device Descriptor definitions
@@ -77,5 +104,6 @@ IT.ESiz  rmb   1          ;Size of each queue element
 IT.ECnt  rmb   2          ;Max. elements in queue (initial position)
 
 *   End of pipedefs
-         endc
+
+         ENDC
 
