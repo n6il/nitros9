@@ -1,3 +1,26 @@
+OS-9 Level One V2.01.00 Beta3:
+- Many commands have been updated and optimized:
+   o For size reasons, command help information is no longer embedded in the
+     utilites, but is instead available through the helpmsg file in /DD/SYS
+   o date, dir, mdir, procs and verify now require a dash (-) before options
+   o format now has a cluster option and now shows the correct number of
+     good sectors on large sector devices
+   o Numerous commands have been optimized for size
+   o cmp, error, help and touch have been rewritten in assembly for size
+   o copy has been enhanced to include OS-9/68K-like features
+- VDGInt has been back-ported to OS-9 Level Two from NitrOS-9.  The
+  vdgint.io module contains both CoCo 1/2 AND CoCo 3 graphics code.
+  The vdgint_small.io module only contains CoCo 3 graphics code.
+- CC3Go has been moved back into the root directory from the CMDS directory.
+  This keeps ROM-based users and those who want cc3go in their bootfile from
+  having to change the init module, which referenced CMDS/cc3go.
+- CC3Go once again references /H0 and /H0/CMDS as paths that it tries to
+  chd/chx to upon startup.  This allows for those with floppy boots who
+  want to point /DD at their floppy to continue to do so.  Also, if the
+  forking of 'shell startup' fails due to lack of a shell file, then
+  CC3Go will now try to fork AutoEx instead of jumping to the crash routine.
+- Several bugs that crept into IOMan during the last release have been fixed.
+
 OS-9 Level One V2.01.00 Beta2:
 - Defs files now have properly terminated lines and 'pag' is now emitted
   as a comment.
@@ -5,8 +28,8 @@ OS-9 Level One V2.01.00 Beta2:
   bringing in new improvements and features from that platform.
 - Clock and Clock2 are now unifed once again and are built from the same source
   base as the clocks from NitrOS-9.
-- The printer driver is now for the CoCo 3 serial port.  In the previous release,
-  it was mistakenly made for the Disto parallel port.
+- The printer driver is now for the CoCo 3 serial port.  In the previous
+  release, it was mistakenly made for the Disto parallel port.
 - ASM now assembles 6309 op-codes.
 - Window descriptors now have proper initialization count.
 - The following modules have been back-ported from NitrOS-9 in order to
