@@ -50,7 +50,7 @@ L0C79    equ   *
          stu   b,x          save DAT image pointer in task table
          cmpb  #2           is it either system or GrfDrv?
          bhi   L0C9F        no, return
-         ldx   #$FFA0     update system DAT image
+         ldx   #DAT.Regs    update system DAT image
          lbsr  L0E93      go bash the hardware
 L0C9F    puls  cc,d,x,u,pc
 

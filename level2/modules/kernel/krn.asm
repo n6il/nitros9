@@ -33,7 +33,7 @@ MName    fcs   /OS9p1/
          fcc   /0123456789ABCDEF/
          fcc   /01234567/
          ELSE
-         fcc   /123456789/
+         fcc   /123456789ABCD/
          ENDC
 
 * Might as well have this here as just past the end of OS9p1...

@@ -11,11 +11,15 @@ L0AC8    lda   1,y            Get MMU block # to get data from
          clrb                 Clear carry/setup for STB
          pshs  cc             Preserve interrupt status/settings
          orcc  #IntMasks      shut IRQ's off
-         sta   >$FFA0         Map block into $0000-$1FFF
+         sta   >DAT.Regs      Map block into $0000-$1FFF
+         IFNE  H6309
          brn    L0AC8
+         ENDC
          lda   ,x             Get byte
-         stb   >$FFA0         Map block 0 into $0000-$1FFF
+         stb   >DAT.Regs      Map block 0 into $0000-$1FFF
+         IFNE  H6309
          fdb   $21ED          LBRN ???
+         ENDC
          puls  pc,cc          Get interrupt status/(or turn on) & return
 
 * Get 1st byte of LDDDXY - also used by many other routines
@@ -24,10 +28,10 @@ LDAXY    lda   1,y            Get MMU block #
          pshs  b,cc
          clrb
          orcc  #IntMasks      Shut off interrupts
-         sta   >$FFA0         Map in MMU block into slot 0
+         sta   >DAT.Regs      Map in MMU block into slot 0
          lda   ,x+            Get byte
-          stb   >$FFA0
-*         clr   >$FFA0         Map in MMU block #0 into slot 0
+         stb   >DAT.Regs
+*         clr   >DAT.Regs     Map in MMU block #0 into slot 0
 *         andcc #^IntMasks
          puls  b,cc
          bra   AdjBlk0
@@ -64,8 +68,8 @@ L0B02    pshs  u,y,x          Preserve regs
          ldb   3,y            Get MMU block #1
          pshs  cc             Preserve int. status
          orcc  #IntMasks      shut off int.
-         std   >$FFA0         Map in both blocks
+         std   >DAT.Regs      Map in both blocks
          ldd   ,x             Get 2 bytes
-         stu   >$FFA0         Map original blocks in
+         stu   >DAT.Regs      Map original blocks in
 *         tfr   y,w            Restore W
          puls  pc,u,y,x,cc    Restore regs & return

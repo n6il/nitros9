@@ -231,8 +231,8 @@ L0083    ldu    <D.Init     get init module pointer
          ldy    #$0000
          ENDC
          os9    F$Fork      fork it
-         bcc    L0093      if no error, go execute it
-         jmp   <D.Crash   otherwise crash the system
+         bcc    L0093       if no error, go execute it
+         jmp    <D.Crash    otherwise crash the system
 L0093    os9    F$NProc     let it take over
 
 L0096    fcs    /OS9p3/
