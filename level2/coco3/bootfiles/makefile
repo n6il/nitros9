@@ -17,7 +17,7 @@ BOOTFILE_VDG	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
-		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io $(MD)/vdgint.io \
 		$(MD)/term_vdg.dt \
 		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
@@ -30,7 +30,7 @@ BOOTFILE_WIN40	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
-		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io $(MD)/vdgint.io \
 		$(MD)/term_win40.dt \
 		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
@@ -43,7 +43,7 @@ BOOTFILE_WIN80	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
-		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io $(MD)/vdgint.io \
 		$(MD)/term_win80.dt \
 		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \

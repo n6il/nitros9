@@ -98,13 +98,13 @@
 * Joystick modules: choose Joystick OR
 * (M)icrosoft or (L)ogitech mouse using 6551 or 6552 ACIA
 ../MODULES/SCF/cc3io.dr
-../MODULES/SCF/keydrv
-../MODULES/SCF/snddrv
-../MODULES/SCF/joydrv_joy
-*../MODULES/SCF/joydrv_6551M
-*../MODULES/SCF/joydrv_6552M
-*../MODULES/SCF/joydrv_6551L
-*../MODULES/SCF/joydrv_6552L
+../MODULES/SCF/keydrv_cc3.sb
+../MODULES/SCF/snddrv_cc3.sb
+../MODULES/SCF/joydrv_joy.sb
+*../MODULES/SCF/joydrv_6551M.sb
+*../MODULES/SCF/joydrv_6552M.sb
+*../MODULES/SCF/joydrv_6551L.sb
+*../MODULES/SCF/joydrv_6552L.sb
 *
 * WindInt and VDGInt I/O subroutine modules
 * Select one or both

@@ -22,7 +22,7 @@ BOOTFILE_1773	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_80d.dd \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
-		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io $(MD)/vdgint.io \
 		$(MD)/term_vdg.dt \
 		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
@@ -51,7 +51,7 @@ BOOTFILE_DW	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(C9)/drivewire/x2_l2.dd \
 		$(C9)/drivewire/x3_l2.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
-		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io \
 		$(MD)/vdgint_small.io \
 		$(MD)/term_vdg.dt \
@@ -73,7 +73,7 @@ BOOTFILE_TC3	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/cc3disk.dr \
 		$(MD)/d0_40d.dd $(MD)/d1_80d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
-		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io \
 		$(MD)/term_win80.dt \
 		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
@@ -88,7 +88,7 @@ BOOTFILE_KENTON	= $(C9)/superscsi/superscsi_ktlr_l2.dr \
 		$(C9)/superscsi/h0_ez135_l2.dd \
 		$(C9)/superscsi/c3_cdrom_l2.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
-		$(MD)/keydrv $(MD)/joydrv_6551L $(MD)/snddrv \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_6551L.sb $(MD)/snddrv_cc3.sb \
 		$(3PD)/disto/rampak.dr $(3PD)/disto/r0_256_l2.dd \
 		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_80d.dd \
 		$(MD)/windint.io $(MD)/term_win80.dt \
