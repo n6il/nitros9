@@ -65,4 +65,4 @@ dsk:	all
 	$(CP) $(SUPPORTFILES_D3) $(DISK_3),.
 
 dskclean:
-	$(RM) $(DISK_1)
+	$(RM) $(DISK_1) $(DISK_2) $(DISK_3)
