@@ -302,7 +302,11 @@ L03D4    lda   <filecnt		get total file count
          leax  TooMany,pcr
          lbsr  WrLine
          lbra  ExitOk
-OpenSrc  ldx   <srcfname	get file to open
+OpenSrc  
+         ldd   #$0000
+         std   <writemsb	clear writemsb/lsb
+         std   <writelsb
+         ldx   <srcfname	get file to open
          pshs  x
          lbsr  StrLen		get length
          std   <lstfopln	save length
@@ -430,7 +434,7 @@ CopyLoop ldx   <rdbufptr	get ptr to read buffer
          os9   I$Write  	write it out!
          lbcs  ShutDown		branch if error
          tst   <vopt		verify on?
-         bne   chkeof
+         beq   chkeof
          lbsr  DoVerify
 chkeof   lda   <srcpath		get source path
          ldb   #SS.EOF
