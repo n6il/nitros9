@@ -294,8 +294,8 @@ SS.Open  rmb   1          SetStat to tell driver a path was opened
 SS.Close rmb   1          SetStat to tell driver a path was closed
 SS.HngUp rmb   1          SetStat to tell driver to hangup phone
 SS.FSig  rmb   1          new signal for temp locked files
-SS.DSize equ   SS.ScSiz   Return disk size (RBF)
-SS.VarSect rmb 1          Variable Sector Size (called by RBF)
+SS.DSize equ   SS.ScSiz   Return disk size (RBF GetStat)
+SS.VarSect equ SS.DStat   Variable Sector Size (RBF GetStat)
 
 * System Specific and User defined codes above $80
          org   $80
