@@ -3,13 +3,36 @@
 <para>
 This package contains the OS-9 C Compiler Version 1.1. Many
 improvements and bug fixes have been incorporated since the V1.0
-release. If you are upgrading from V1.0
+release. If you are upgrading from V1.0, be <emphasis>absolutely sure</emphasis>
+to all <emphasis>all</emphasis> the files from the V1.1 disks. None of the
+compiler sections or the library is compatible with V1.0 files. Any ".r" or
+".a" files produced by the V1.0 compiler should not be assembled or
+linked with any ".a" or ".r" files produced by the V1.1 compiler.
+To be safe, recompile/reassemble <emphasis>all</emphasis> ".a" and ".r"
+files with V.1.1.
 </para>
 <para>
-This update...
+This update include appendices for the C Compiler User's Guide
+describing the compiler error messages, compiler phase command
+lines, interfacing C functions to BASIC09, and an overview of the
+relocating macro assembler.
 </para>
-
 <para>
 The remainder of this notice describes the changes made since V1.0.
 </para>
+
+<variablelist>
+<varlistentry><term>General:</term>
+<listitem>
+<para>
+The compiler code generator and c.opt have been improved to
+produce even smaller object code. This, and improved source
+coding, has resulted in a 1 page decrease in the size of c.comp
+and a 4 page decrease in c.pass1.
+</para>
+</listitem>
+</varlistentry>
+
+
+</variablelist>
 </preface>

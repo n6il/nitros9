@@ -1,7 +1,7 @@
 <refentry id="tsleep">
 <refnamediv>
-<refname>tsleep</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Tsleep</refname>
+<refpurpose>put process to sleep</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

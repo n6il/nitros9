@@ -1,7 +1,7 @@
 <refentry id="defdrive">
 <refnamediv>
-<refname>defdrive</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Defdrive</refname>
+<refpurpose>get default system drive</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

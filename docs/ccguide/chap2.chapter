@@ -4,15 +4,38 @@
 <section>
 <title>The Object Code Module</title>
 <para>
-OS-9 has been tailored to run on your standard, unmodified &make;
-Computer. To use it you'll need the following things:
+The compiler produces position-independent, reentrant 6809 code
+in a standard OS-9 memory module format. The format of an executable
+program module is shown below. Detailed descriptions of each
+section of the module are given on following pages.
 </para>
+<informalfigure>
+<screen>
+Module
+Offset
 
-</section>
+                 +-------------------------------+
+                 !                               !
+                 !         Module Header         !
+                 !                               !
+                 !-------------------------------!
+                 !       Execution Offset        !
+                 !-------------------------------!
+                 !    Permanent Storage Size     !
+                 !-------------------------------!
+                 !   Data-text Reference Count   !
+                 v                               v
+                 :  Data-text Reference Offsets  :
+                 ^                               ^
+</screen>
+</informalfigure>
 <section>
-<title>Starting the System</title>
+<title>Module Header</title>
 <para>
-To start up OS-9 follow these steps:
+This is a standard module header with the type/language byte set to
+$11 (Program + 6809 Object Code), and the attribute/revision byte
+set to $81 (Reentrant + 1).
 </para>
+</section>
 </section>
 </chapter>

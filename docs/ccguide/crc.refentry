@@ -1,7 +1,7 @@
 <refentry id="crc">
 <refnamediv>
-<refname>crc</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Crc</refname>
+<refpurpose>compute a cyclic redundancy count</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

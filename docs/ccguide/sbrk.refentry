@@ -1,7 +1,7 @@
 <refentry id="sbrk">
 <refnamediv>
-<refname>sbrk</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Sbrk</refname>
+<refpurpose>request additional working memory</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

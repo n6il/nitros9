@@ -1,7 +1,7 @@
 <refentry id="intercept">
 <refnamediv>
-<refname>intercept</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Intercept</refname>
+<refpurpose>set function for interrupt processing</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

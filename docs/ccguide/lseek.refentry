@@ -1,7 +1,7 @@
 <refentry id="lseek">
 <refnamediv>
-<refname>lseek</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Lseek</refname>
+<refpurpose>position in file</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

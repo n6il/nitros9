@@ -1,7 +1,7 @@
 <refentry id="open">
 <refnamediv>
-<refname>open</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Open</refname>
+<refpurpose>open a file for read/write access</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

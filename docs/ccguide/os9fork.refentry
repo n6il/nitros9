@@ -1,7 +1,7 @@
 <refentry id="os9fork">
 <refnamediv>
-<refname>os9fork</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Os9fork</refname>
+<refpurpose>create a process</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

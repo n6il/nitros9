@@ -1,7 +1,7 @@
 <refentry id="dup">
 <refnamediv>
-<refname>dup</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Dup</refname>
+<refpurpose>duplicate an open path number</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

@@ -1,7 +1,7 @@
 <refentry id="close">
 <refnamediv>
-<refname>close</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Close</refname>
+<refpurpose>close a file</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

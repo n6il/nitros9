@@ -1,11 +1,14 @@
 <refentry id="kill">
 <refnamediv>
-<refname>kill</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Kill</refname>
+<refpurpose>send an interrupt to a task</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
 <funcsynopsis>
+<funcsynopsisinfo>
+#include &lt;signal.h&gt;
+</funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>kill</function></funcdef>
   <paramdef>type <parameter>arg1</parameter></paramdef>

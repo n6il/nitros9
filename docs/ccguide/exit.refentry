@@ -1,7 +1,8 @@
 <refentry id="exit">
 <refnamediv>
-<refname>exit</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Exit</refname>
+<refname>_Exit</refname>
+<refpurpose>task termination</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

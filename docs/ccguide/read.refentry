@@ -1,7 +1,7 @@
 <refentry id="read">
 <refnamediv>
-<refname>read</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Read</refname>
+<refpurpose>read from a file</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

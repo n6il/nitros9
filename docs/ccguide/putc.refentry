@@ -6,6 +6,9 @@
 
 <refsynopsisdiv>
 <funcsynopsis>
+<funcsynopsisinfo>
+#include &lt;stdio.h&gt;
+</funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>putc</function></funcdef>
   <paramdef>type <parameter>arg1</parameter></paramdef>

@@ -1,7 +1,7 @@
 <refentry id="getuid">
 <refnamediv>
-<refname>getuid</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Getuid</refname>
+<refpurpose>return user id</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

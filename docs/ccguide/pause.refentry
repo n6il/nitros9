@@ -1,7 +1,7 @@
 <refentry id="pause">
 <refnamediv>
-<refname>pause</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Pause</refname>
+<refpurpose>halt and wait for interrupt</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
