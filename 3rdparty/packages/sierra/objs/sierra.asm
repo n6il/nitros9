@@ -1,5 +1,5 @@
 ********************************************************************
-* SIERRA - Kings Quest III set up module
+* sierra - King's Quest III setup module
 *
 * $Id$
 *
@@ -21,9 +21,7 @@ StdOut   equ   1
 StdErr   equ   2
 
          nam   sierra
-         ttl   program module       
-
-* Disassembled 03/01/29 23:22:42 by Disasm v1.6 (C) 1988 by RML
+         ttl   King's Quest III setup module
 
          ifp1
          use   defsfile
@@ -33,6 +31,7 @@ StdErr   equ   2
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -69,7 +68,6 @@ u003E    rmb   1
 u003F    rmb   2
 u0041    rmb   1
 u0042    rmb   1   MMU Block # of SIERRA's dsc.
-
 u0043    rmb   2
 u0045    rmb   1   flag after color table sets
 u0046    rmb   2
@@ -79,10 +77,7 @@ u004F    rmb   4
 u0053    rmb   2   
 u0055    rmb   10
 u005F    rmb   163
-
-*u0102   rmb   327  ---disassembly
-
-u0102    rmb  113
+u0102    rmb   113
 mtf173   rmb   1    multitasking flag
 scr174   rmb   1    screen number?
 x01076   rmb   212 
@@ -90,9 +85,6 @@ u0249    rmb   1
 u024A    rmb   1
 u024B    rmb   1
 u024C    rmb   497
-
-*u043D   rmb   7106 ---disassembly
-
 u043D    rmb   245
 u0532    rmb   16   vol_handle_table (pointer to file structures)
 u0542    rmb   15  
@@ -103,9 +95,9 @@ int5EE   rmb   107  Signal Intercept routine from 452 - 4BD
 sub659   rmb   116  Slot to hold subroutine for others uses at 4DA - 54F
 u0xxx    rmb   6450
 size     equ   .
-name     equ   *
-         fcs   /sierra/
-         fcb   $01 
+
+name     fcs   /sierra/
+         fcb   edition
 
 start    equ   *
 L0014   lbra L007D  branch to entry process params
@@ -1211,5 +1203,7 @@ L04DA    ldd   ,s++       load d with current stack pointer and bump it
 
 L054F    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
 L0557    fcb   $73,$69,$65,$72,$72,$61,$00       sierra.
+
          emod
 eom      equ   *
+         end
