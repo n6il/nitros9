@@ -45,7 +45,9 @@ standard output is buffered.
 </refsect1>
 <refsect1><title>See Also</title>
 <para>
-fopen(),getc(),putc()
+<link linkend="fopen">fopen()</link>,
+<link linkend="getc">getc()</link>,
+<link linkend="putc">putc()</link>
 </para>
 </refsect1>
 </refentry>
