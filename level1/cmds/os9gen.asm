@@ -18,6 +18,7 @@
          ENDC
 
 DOHELP   set   0
+DOHD     set   1		allow bootfile creation on HD
 BTrack   set   34
 
 tylg     set   Prgrm+Objct   
@@ -31,6 +32,8 @@ os9l1size  equ $0F80
          mod   eom,name,tylg,atrv,start,size
 
          org   0
+btfname  rmb   2
+btflag   rmb   1
 statptr  rmb   2
 bfpath   rmb   1
 devpath  rmb   1
@@ -51,9 +54,8 @@ u0032    rmb   2
 u0034    rmb   10
 u003E    rmb   2
 sngldrv  rmb   1
-u0041    rmb   32
-lsn0     rmb   16
-u0071    rmb   10
+bootdev  rmb   32
+lsn0     rmb   26
 u007B    rmb   2
 u007D    rmb   1
 sectbuff rmb   1024
@@ -81,9 +83,11 @@ HelpMsg  fcb   C$LF
 ErrWrit  fcb   C$LF
          fcc   "Error writing kernel track"
          fcb   C$CR
+         IFEQ  DOHD
 HDGen    fcb   C$LF
          fcc   "Error - cannot gen to hard disk"
          fcb   C$CR
+         ENDC
          IFGT  Level-1
 CantRel  fcb   C$LF
          fcc   "Error - can't link to Rel module"
@@ -107,6 +111,9 @@ TWarn    fcb   C$LF
 BootFrag fcb   C$LF
          fcc   "Error - OS9boot file fragmented"
          fcb   C$CR
+BadTkMsg fcc   "Error - Boot track file must be 4608 bytes"
+         fcb   C$CR
+BadTkMsgL equ   *-BadTkMsg
 Source   fcc   "Ready SOURCE,      hit C to continue: "
 SourceL  equ   *-Source
 Destin   fcc   "Ready DESTINATION, hit C to continue: "
@@ -123,14 +130,15 @@ TheRel   fcc   "Rel"
          ENDC
 
 start    clrb  
+         stb   <btflag		assume no -t specified
          stb   <u0005
          stb   <sngldrv		assume multi-drive
-         stu   <statptr
+         stu   <statptr		save statics pointer
          leas  >u047E,u
          pshs  u
          tfr   y,d
          subd  ,s++
-         subd  #$047E
+         subd  #u047E
          clrb  
          std   <u0011
          lda   #PDELIM
@@ -149,38 +157,60 @@ L0216    lda   ,y+
          beq   L0234
          bra   L0216
 L0222    ldd   ,y+
-         eora  #'S
+         cmpa  #C$CR
+         beq   L0234
+         cmpa  #C$SPAC
+         beq   L0216
          anda  #$DF
+         cmpa  #'S
+         beq   L0232
+         cmpd  #84*256+61	does D = 'T='
          lbne  SoftExit
-         cmpb  #$30
-         lbcc  SoftExit
-         inc   <sngldrv		set single drive flag
+         leay  1,y		point past =
+         sty   <btfname		save pointer to boottrack filename
+         sta   <btflag
+* Skip over non-spaces and non-CRs
+SkipNon  lda   ,y+
+         cmpa  #C$CR
+         beq   L0234
+         cmpa  #C$SPAC
+         bne   SkipNon
+         bra   L0216
+L0232    inc   <sngldrv		set single drive flag
+         bra   L0222
 L0234    puls  b,a
-         leay  <u0041,u
+         leay  <bootdev,u
 L0239    sta   ,y+
          lda   ,x+
          decb  
          bpl   L0239
          sty   <u003E
-         lda   #PENTIR
-         ldb   #C$SPAC
+         ldd   #PENTIR*256+C$SPAC
          std   ,y++
          lbsr  GetDest
-         leax  <u0041,u
+         leax  <bootdev,u
          lda   #UPDAT.
          os9   I$Open   
          sta   <devpath
          lbcs  ShowHelp
          leax  <devopts,u
-         ldb   #SS.Opt
+         clrb
+*         ldb   #SS.Opt
          os9   I$GetStt 
          lbcs  Bye
-         leax  <devopts,u
+
+         IFEQ  DOHD
+
+* If destination drive is hard disk, don't allow
+         leax  devopts,u
          lda   <(PD.TYP-PD.OPT)+devopts,u	get type byte
          bpl   L0276			branch if not hard drive
          clrb  
          leax  >HDGen,pcr		else tell user can't do hard drive
          lbra  WritExit
+
+         ENDC
+
 L0276    ldx   <u003E
          leay  >TempBoot,pcr
          lda   #PDELIM
@@ -193,24 +223,25 @@ L0288    lda   ,y+
          sta   ,x+
          bpl   L0288
          tfr   x,d
-         leax  <u0041,u
+         leax  <bootdev,u
          pshs  x
          subd  ,s++
          std   <u000D
-         lda   #WRITE.
-         ldb   #READ.+WRITE.
+         ldd   #WRITE.*256+(READ.+WRITE.)
+*         lda   #WRITE.
+*         ldb   #READ.+WRITE.
          os9   I$Create 
          sta   <bfpath
          lbcs  Bye
-         ldx   #$0000
+         ldx   #$0000			upper 16 bits are zero
          stx   <u0006
          ldu   #$3000
          ldb   #SS.Size
-         os9   I$SetStt 
-         lbcs  Bye
-         ldu   <statptr
+         os9   I$SetStt 		set size of newly created file
+         lbcs  Bye			branch if error
+         ldu   <statptr			retrieve static pointer
          bsr   L032F
-L02BB    leax  <sectbuff,u
+L02BB    leax  sectbuff,u
          ldy   #256
          clra  				standard input
          os9   I$ReadLn 		read line
@@ -254,7 +285,7 @@ L0312    cmpb  #E$EOF			end of file?
          bsr   L033D
          bra   L0377
 L031A    pshs  b
-         leax  <sectbuff,u
+         leax  sectbuff,u
          ldy   #256
          lda   #$02			standard error
          os9   I$WritLn 		write
@@ -279,7 +310,7 @@ L033D    lbsr  GetDest
          os9   I$Seek   	seek to LSN0
          ldu   <statptr		+BGP+ added
          bcs   L033C
-         leax  <sectbuff,u
+         leax  sectbuff,u
          ldy   #256
          os9   I$Read   	read LSN0
          bcs   L033C
@@ -294,7 +325,8 @@ L0361    lda   <bfpath
          clrb  
          rts   
 L0377    leax  <devopts,u
-         ldb   #SS.Opt
+         clrb
+*         ldb   #SS.Opt
          lda   <bfpath
          os9   I$GetStt 
          lbcs  Bye
@@ -339,7 +371,7 @@ L0377    leax  <devopts,u
 L03F3    sta   ,x+
          lda   ,y+
          bpl   L03F3
-         leax  <u0041,u
+         leax  <bootdev,u
          os9   I$Delete 
          ldx   <u003E
          leay  >TempBoot,pcr
@@ -364,7 +396,7 @@ L042E    lda   #$01
          clrb  
          leax  >Rename,pcr
          ldy   <u000D
-         leau  <u0041,u
+         leau  <bootdev,u
          os9   F$Fork   
          lbcs  Bye
          os9   F$Wait   
@@ -412,7 +444,7 @@ L045F    ldu   <statptr
          lda   #$00
          ldb   #$01
          lbsr  Seek2LSN
-         leax  <sectbuff,u
+         leax  sectbuff,u
          ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
          lda   <devpath
          os9   I$Read   
@@ -422,8 +454,9 @@ L045F    ldu   <statptr
          ldy   #$0004		four bits
          lbsr  ABMClear
          bcc   L0520
-         lda   #BTrack		boot track
-         ldb   #$00		sector 1
+         ldd   #BTrack*256	boot track
+*         lda   #BTrack		boot track
+*         ldb   #$00		sector 1
          lbsr  Seek2LSN		seek to it
          leax  <u0017,u
          ldy   #$0007
@@ -432,42 +465,96 @@ L045F    ldu   <statptr
          lbcs  Bye
          leax  <u0017,u
          ldd   ,x
-         cmpa  #'O
+         cmpd  #79*256+83	OS ??
          lbne  WarnUser
-         cmpb  #'S
-         lbne  WarnUser
+*         cmpb  #'O
+*         lbne  WarnUser
+*         cmpb  #'S
+*         lbne  WarnUser
          lda   $04,x
          cmpa  #$12
          beq   L0512
-         lda   #BTrack		boot track
-         ldb   #15		sector 16
+         ldd   #BTrack*256+15	boot track, sector 16
+*         lda   #BTrack		boot track
+*         ldb   #15		sector 16
          ldy   #$0003		sectors 16-18
          lbsr  ABMClear
          lbcs  WarnUser
 L0512    clra  
          ldb   <lsn0+DD.TKS,u	get number of tracks in D
          tfr   d,y
-         lda   #BTrack		boot track
-         clrb  			sector 1
+         ldd   #BTrack*256	boot track
+*         lda   #BTrack		boot track
+*         clrb  			sector 1
          lbsr  ABMSet
          bra   L0531
-L0520    lda   #BTrack		boot track
-         ldb   #$04		sector 5
+L0520    ldd   #BTrack*256+4	boot track
+*         lda   #BTrack		boot track
+*         ldb   #$04		sector 5
          ldy   #$000E		sectors 5-18
          lbsr  ABMClear
          lbcs  WarnUser
          bra   L0512
 
-L0531    clra  
-         ldb   #$01
+L0531
+         ldd   #$0001
+*         clra  
+*         ldb   #$01
          lbsr  Seek2LSN
-         leax  <sectbuff,u
+         leax  sectbuff,u
          ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
          lda   <devpath
          os9   I$Write  	write out the bitmap
          lbcs  Bye
 
+* Code added to write alternate boottrack file
+* BGP - 2003/06/26
+         tst   <btflag
+         beq   BTMem		get boot track from memory
+         lbsr  GetSrc
+         ldx   btfname,u
+         lda   #READ.
+         os9   I$Open
+         lbcs  Bye
+
+* Determine if the size of the file is 4608 bytes
+* Note, this assumes 18 sectors per track and 256
+* bytes per sector.
+         ldb   #SS.Size
+         os9   I$GetStt		get size
+         tfr   u,y		put lower 16 bytes of file size in Y
+         ldu   <statptr
+         lbcs  Bye		branch if error
+         cmpx  #$0000		correct size?
+         bne   BadBTrak		branch if not
+         cmpy  #$1200		correct size?
+         beq   ReadBTrk		branch if not
+         
+BadBTrak leax  BadTkMsg,pcr
+         ldy   #BadTkMsgL
+         lda   #$02
+         os9   I$WritLn
+         lbra  Bye
+
+
+* Read in boot track file
+* Y = proper boottrack size
+ReadBTrk leax  u0496,u		point to sector buffer
+         os9   I$Read		read sector buffer
+         lbcs  Bye
+         os9   I$Close		close path to boot track
+         lbsr  GetDest
+         ldd   #BTrack*256	boot track
+*         lda   #BTrack		boot track
+*         ldb   #$00		sector 1
+         lbsr  Seek2LSN
+         bra   WrBTrack
+
+
+
+BTMem
          IFGT  Level-1
+
 * OS-9 Level Two: Link to Rel, which brings in boot code
          pshs  u
          lda   #Systm+Objct
@@ -485,24 +572,26 @@ L0531    clra
          subd  <u007B,u
          addd  #$0001
          tfr   d,y
-         lda   #BTrack		boot track
-         ldb   #$00		sector 1
+         ldd   #BTrack*256	boot track
+*         lda   #BTrack		boot track
+*         ldb   #$00		sector 1
          lbsr  Seek2LSN
-         lda   <devpath
          ldx   <u007B,u
 
          ELSE
 
 * OS-9 Level One: Write out boot track data
-         lda   #BTrack		boot track
-         ldb   #$00		sector 1
+         ldd   #BTrack*256
+*         lda   #BTrack		boot track
+*         ldb   #$00		sector 1
          lbsr  Seek2LSN
-         lda   <devpath
          ldx   #os9l1start
          ldy   #os9l1size
 
          ENDC
 
+WrBTrack 
+         lda   <devpath
          os9   I$Write  
          lbcs  WriteErr
          os9   I$Close  
@@ -516,16 +605,18 @@ L0531    clra
 AbsLSN   pshs  b
          ldb   <lsn0+DD.FMT,u	get format byte
          andb  #FMT.SIDE	test sides bit
-         beq   L059C		branch if 1
+         beq   AbsLSN1		branch if 1
          ldb   #$02		else 2 sides
-         bra   L059E
-L059C    ldb   #$01		1 side
-L059E    mul   			multiply sides times track
+         fcb   $86		skip next two bytes
+*         bra   AbsLSN2
+AbsLSN1  ldb   #$01		1 side
+AbsLSN2  mul   			multiply sides times track
          lda   <lsn0+DD.TKS,u	get device tracks
          mul   			multiply by (sides * track)
-         addb  ,s		add in sector
+         addb  ,s+		add in sector
+*         addb  ,s		add in sector
          adca  #$00
-         leas  $01,s
+*         leas  $01,s
          rts   
 
 * Bitmap conversion from bit to byte
@@ -553,17 +644,17 @@ BitMask  fcb   $80,$40,$20,$10,$08,$04,$02,$01
 * Entry: A = Track, B = Sector, Y = number of bits to clear
 ABMClear pshs  x,y,b,a
          bsr   AbsLSN		convert A:B to LSN
-         leax  <sectbuff,u
+         leax  sectbuff,u
          bsr   L05AA
          sta   ,-s
          bmi   L05EA
 L05D3    lda   ,x		get byte in bitmap
-         sta   <u007D,u
+         sta   u007D,u
 L05D9    anda  ,s		and with byte on stack
          bne   L0616
          leay  -1,y
          beq   L0612
-         lda   <u007D,u
+         lda   u007D,u
          lsr   ,s
          bcc   L05D9
          leax  $01,x
@@ -597,7 +688,7 @@ L0618    leas  $01,s
 * Entry: A = Track, B = Sector, Y = number of bits to set
 ABMSet   pshs  y,x,b,a
          lbsr  AbsLSN
-         leax  <sectbuff,u
+         leax  sectbuff,u
          bsr   L05AA
          sta   ,-s
          bmi   L063A
@@ -682,7 +773,7 @@ GetDest  pshs  u,y,x,b,a
 TstSingl tst   <sngldrv
          beq   L06FD
 AskUser  pshs  a
-         tsta  
+AskUser2 tsta  
          bne   Ask4Dst
 Ask4Src  leax  >Source,pcr
          ldy   #SourceL
@@ -702,8 +793,10 @@ L06D4    bsr   DoWrite
          ldy   #$0001
          bsr   DoWrite		else ring the error bell
          bsr   WriteCR
-         puls  a
-         bne   AskUser
+         lda   ,s
+*         puls  a
+         bra   AskUser2
+*         bne   AskUser
 L06F9    bsr   WriteCR
          puls  a
 L06FD    puls  pc,u,y,x,b,a

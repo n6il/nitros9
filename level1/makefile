@@ -15,6 +15,7 @@ CLOCKS		= $(shell $(CD) MODULES; make showclocks)
 RBF		= $(shell $(CD) MODULES; make showrbf)
 SCF		= $(shell $(CD) MODULES; make showscf)
 PIPE		= $(shell $(CD) MODULES; make showpipe)
+MODULECMDS	= shell del echo format makdir merge os9gen prompt
 
 SYS		= $(shell $(CD) SYS; make showobjs)
 DEFS		= $(shell $(CD) DEFS; make showobjs)
@@ -68,6 +69,9 @@ $(DSK1):
 $(DSK2):
 	$(RM) $@
 	$(OS9FORMAT_DS40) $@ -n"OS-9 Level One Modules Disk"
+	$(MAKDIR) $@,CMDS
+	$(CD) CMDS; $(CP) $(MODULECMDS) ../$@,CMDS     
+	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(MAKDIR) $@,MODULES
 	$(MAKDIR) $@,MODULES/BOOTTRACK
 	$(CD) MODULES; $(CP) $(BOOTTRACK) ../$@,MODULES/BOOTTRACK
@@ -91,7 +95,8 @@ $(DSK2):
 	$(CD) MODULES; $(CP) $(PIPE) ../$@,MODULES/PIPE
 	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,MODULES/PIPE/$(file);)
 	$(MAKDIR) $@,BOOTLISTS
-	$(CD) BOOTLISTS; $(CPL) bootlist* ../$@,BOOTLISTS
+	$(CD) BOOTLISTS; $(CPL) *.bl ../$@,BOOTLISTS
+	$(MAKDIR) $@,BOOTSCRIPTS
+	$(CD) BOOTSCRIPTS; $(CPL) mb* ../$@,BOOTSCRIPTS
 #       $(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,MODULES/PIPE/$(file);)
-
 

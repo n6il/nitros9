@@ -23,7 +23,7 @@
 *      $01  =
 *      $02  =
 *      $03  = 30ms
-STEP     equ   $00
+STEP     set   $00
 
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
@@ -65,9 +65,9 @@ MakeStak pshs  a
          stx   <D.NMI
          lda   #$09
          ELSE
-         stx   >$010A
+         stx   >D.XNMI+1
          lda   #$7E
-         sta   >$0109
+         sta   >D.XNMI
          lda   #$08
          ENDC
          sta   >DPort

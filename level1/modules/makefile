@@ -5,11 +5,14 @@ include ../../Makefile.rules
 DEPENDS		= ./Makefile
 TPB		= $(3RDPARTY)/booters
 
-BOOTERS		= boot_1773 boot_burke boot_idelba boot_rampak boot_wd1002
-BOOTTRACK	= oscode $(BOOTERS) os9 os9p2
-KERNEL		=
+BOOTERS		= boot_1773_6ms boot_1773_30ms \
+		boot_burke boot_idelba boot_rampak boot_wd1002
+BOOTTRACK	= oscode $(BOOTERS)
+KERNEL		= os9 os9p2
 SYSMODS		= ioman init sysgo
-CLOCKS		= clock.60hz clock.50hz clock_tc3 clock_bb
+CLOCKS          = clock_elim clock_disto2 clock_disto4 clock_bnb \
+                clock_smart clock_harris clock_tc3 clock_soft \
+		clock_soft_50hz
 
 RBF		= rbf.mn \
 		ccdisk.dr cchdisk.dr \
@@ -41,6 +44,12 @@ ALLOBJS		= $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
 all:	$(ALLOBJS) $(HELP)
 
 # Special cases
+
+boot_1773_6ms:	boot_1773.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=0
+
+boot_1773_30ms:	boot_1773.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=3
 
 # Floppy descriptors
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
@@ -96,11 +105,32 @@ sysgo: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDiskGo=1
 
 # Clocks
+clock_elim: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCElim=1 -aTPS=60
+
+clock_disto2: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCDsto2=1 -aTPS=60
+
+clock_disto4: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCDsto4=1 -aTPS=60
+
+clock_bnb: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCBB=1 -aTPS=60
+
+clock_smart: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCSmart=1 -aTPS=60
+
+clock_harris: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCHarrs=1 -aTPS=60
+
 clock_tc3: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCTC3=1 -aTPS=60
 
-clock_bb: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCBB=1 -aTPS=60
+clock_soft: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aTPS=60
+
+clock_soft_50hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aTPS=50
 
 clean:
 	$(RM) $(ALLOBJS)

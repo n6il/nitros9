@@ -75,7 +75,7 @@ start    lbra  Init
 *
 Init     pshs  cc
          orcc  #IntMasks
-         ldx   #PIA.U8
+         ldx   #PIA1Base
          clr   $01,x
          ldd   <IT.COL,y		get column size
          std   <u0022,u
@@ -116,7 +116,7 @@ L0076    ldb   #E$BMode
          puls  a
 L007A    orcc  #Carry
          rts
-L007D    stb   >PIA.U8
+L007D    stb   >PIA1Base
 L0080    pshs  b,a
          ldd   <u0024,u
 L0085    subd  #$0001
@@ -194,10 +194,10 @@ L0100    comb
          ldb   #E$NotRdy
          rts
 L0104    pshs  x,b,a
-         ldb   >PIA.U8+2
+         ldb   >PIA1Base+2
          lda   >$FF69
          bpl   L0126
-         lda   >PIA.U8+3
+         lda   >PIA1Base+3
          bita  #$01
          beq   L0126
          bita  #$80

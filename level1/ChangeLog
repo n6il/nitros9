@@ -1,4 +1,17 @@
 OS-9 Level One V03.01.03:
+- A pause command has been added to the standard command set.
+- os9gen now supports the -t= option which allows one to specify an
+  alternate boot track file.
+- Two new directories have been added: BOOTLISTS and BOOTSCRIPTS.
+  The former contains bootlist files for building boot disks, while
+  the latter contains scripts to build boot disks.
+- Clock modules for Eliminator, Disto 2-N-1, Disto 4-N-1, Harris, and
+  SmartWatch have been added (these are all UNTESTED.)  Also, the
+  clock_bb clock module has been renamed to clock_bnb, and clock.60hz
+  and clock.50hz have been renamed to clock_soft and clock_soft_50hz.
+- There are now two booters for booting from a WD1773 based
+  floppy controller: boot_1773_6ms and boot_1773_30ms for
+  6 and 30 millisecond step rates.
 - The help utility has been enhanced to show help subjects if
   forked without any command line parameters.
 
