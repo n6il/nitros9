@@ -174,8 +174,9 @@ F$GCMDir rmb   1          Pack module directory
 F$AlHRAM rmb   1          Allocate HIGH RAM Blocks
 
 * Alan DeKok additions
-* F$ReBoot is unimplemented at this time
-F$ReBoot rmb   1          Reboot machine (reload OS9Boot) or drop to RSDOS
+* F$ReBoot has been renamed to F$Debug
+*F$ReBoot rmb   1          Reboot machine (reload OS9Boot) or drop to RSDOS
+F$Debug   rmb   1          Drop the system into the debugger
 F$CRCMod rmb   1          CRC mode, toggle or report current status
 F$XTime  rmb   1          Get Extended time packet from RTC (fractions of second)
 F$VBlock rmb   1          Verify modules in a block of memory, add to module directory
