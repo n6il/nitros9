@@ -1,0 +1,3 @@
+@TEE
+Syntax: Tee {<path>}        
+Usage : Copy standard input to multiple output paths

@@ -1,0 +1,3 @@
+@SAVE
+Syntax: <path><modname>{<modname>}
+Usage : Save memory module(s) in a file
