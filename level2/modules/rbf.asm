@@ -83,6 +83,12 @@
 *  37      2004/06/18  Boisy G. Pitre
 * Added call to driver's SS.VarSect GetStat in order to obtain the
 * sector size of the media.
+*
+*  37r2    2004/07/18  Boisy G. Pitre
+* RBF checks error code on return from SS.VarSect and only returns
+* error if error code is != E$UnkSvc (fixes problems with drivers
+* which do not support SS.VarSect and return E$UnkSvc in their GetStat
+* routines after evaluating an unknown service code.)
 
          nam   RBF
          ttl   Random Block File Manager
@@ -91,7 +97,7 @@
          use   defsfile
          endc  
 
-rev      set   $01
+rev      set   $02
 ty       set   FlMgr
          IFNE  H6309
 lg       set   Obj6309
@@ -1502,10 +1508,12 @@ FindFile
          stb   R$B,x		put SS.VarSect into caller's B
          lbsr  L113C		send it to driver
          puls  a,x		get caller's original B and saved PD.RGS
-         bcs   Sst7AB
          sta   R$B,x		restore caller's original B
+         bcc   ok@		branch if no error on GetStat
+         cmpb  #E$UnkSvc	Unknown Service call error?
+         bne   Sst7AB		if not, return with error
 ****
-         ldd   #$0100		get size of sector
+ok@      ldd   #$0100		get size of sector
 * Note, following line is stb PD.SMF,y in v30!
          stb   PD.FST,y		clear state flags??
          os9   F$SRqMem		request a 256 byte sector buffer
