@@ -307,7 +307,7 @@ Creat131 ldb   ,s		get p hysical sector # of segment start
          ldx   PD.Exten,y	get path extension pointer
          lda   #EofLock		set the file to EOF lock
          sta   PE.Lock,x
-         bra   Open1CC
+         lbra  Open1CC
 * Error on fD write to disk
 Creat151 puls  u,x,a		restore segment start & size
          sta   PD.SBP,y		put it into path descriptor
