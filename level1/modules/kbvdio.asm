@@ -88,6 +88,7 @@ start    equ   *
          lbra  L0072
          lbra  L0098
          lbra  L009D
+
 L0027    lbsr  L02BA
          lbra  L002D
 L002D    pshs  cc
@@ -130,7 +131,7 @@ L0072    cmpa  #$01
 L0082    cmpa  #$06
          beq   L00AE
          cmpa  #$12
-         lbeq  L04E4
+         lbeq  L04E0+4
          cmpa  #$13
          lbeq  L085F
          cmpa  #$1C
@@ -346,32 +347,32 @@ L023E    inc   <u001C
          rol   <u0019
          fcb   $11 
          bra   L026C
-         bra   L027E
+         bra   L027D+1
          leax  -$01,x
          leay  $01,y
          inc   >$3222
          neg   <u0033
-         bls   L02D7
+         bls   L02D6+1
          pshs  y,b
          neg   <u0035
          bcs   L025F
 L025F    pshu  y,b,a
          neg   <u0037
-         beq   L02C3
+         beq   L02C2+1
          fcb   $38 8
-         bvc   L02C3
+         bvc   L02C2+1
          rts   
-         bvs   L02C8
+         bvs   L02C7+1
          abx   
 L026C    bpl   L026E
 L026E    rti   
          bmi   L0271
 L0271    bge   L02AF
          tim   #$2D,>$3D5F
-         bgt   L02B7
+         bgt   L02B6+1
          tst   >$2F3F
          incb  
-         tst   <u000D
+L027D    tst   <u000D
          tst   <u0000
          neg   <u0000
          eim   #$03,<u001B
@@ -396,21 +397,21 @@ L029F    lda   u0004,u
 L02AF    ldb   <$36,x
          beq   L0286
          cmpb  #$04
-         bcc   L0286
+L02B6    bcc   L0286
          coma  
          rts   
 L02BA    pshs  y,x
          clr   <u0025,u
          clr   <u002C,u
-         pshs  u
+L02C2    pshs  u
          ldd   #$0300
-         os9   F$SRqMem 
+L02C7    os9   F$SRqMem 
          tfr   u,d
          tfr   u,x
          bita  #$01
          beq   L02D8
          leax  >$0100,x
-         bra   L02DC
+L02D6    bra   L02DC
 L02D8    leau  >$0200,u
 L02DC    ldd   #$0100
          os9   F$SRtMem 
@@ -528,17 +529,20 @@ L03CE    leax  <L03D6,pcr
          jmp   d,x
 L03D6    stu   >$C400
          cmpa  <u0000
-         bita  $00,x
-         subb  <u00FF
+         fcb   $A5
+         fcb   $00   bita  $00,x
+         subb  <$FF
          andb  #$FF
          andb  #$00
          eim   #$FF,>$C400
-         asr   $00,x
-         sbcb  $00,x
+         fcb   $67   asr   $00,x
+         fcb   $00
+         fcb   $E2   sbcb  $00,x
+         fcb   $00
          fcb   $4E N
          stu   >$C400
          subd  #$0036
-         neg   <u00F2
+         neg   <$00F2
          oim   #$4A,<u0002
          bgt   L03FB
          rol   <u0002
@@ -550,7 +554,10 @@ L03FB    sex
          orb   <u0002
          adca  #$02
          anda  #$03
-         eora  >L682E,pcr
+         fcb   $A8
+L040C    fcb   $8D
+         fcb   $64
+         fcb   $1F
          fcb   $10 
          andb  #$E0
          stb   <u0022,u
@@ -641,9 +648,12 @@ L04CD    ldx   $06,y
          clrb  
          rts   
 L04E0    neg   <u0055
-         ora   [>$A6C8]
+         fcb   $AA     ora   [>$A6C8]
+         fcb   $FF
+         fcb   $A6
+         fcb   $C8
          bge   L050E
-         eim   #$C6,<u00F6
+         eim   #$C6,<$F6
          orcc  #$01
          rts   
          ldd   <u0034,u
