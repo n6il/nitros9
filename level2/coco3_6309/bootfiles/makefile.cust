@@ -80,7 +80,7 @@ BOOTFILE_EXP	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 #		$(C9)/products/SuperSCSI/softwarev2/6809l2/lltc3.dr \
 #		$(C9)/products/SuperSCSI/softwarev2/6809l2/h5_ez135_tc3.dd \
 
-BOOTFILE_IDE    = $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_LUCKEY  = $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
                 $(MD)/rbf.mn \
                 $(C9)/Products/SuperDrivers/software/6809l2/rbsuper.dr \
                 $(C9)/Products/SuperDrivers/software/6809l2/llide.dr \
@@ -93,7 +93,6 @@ BOOTFILE_IDE    = $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
                 $(MD)/term_win80.dt \
                 $(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
                 $(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
-                $(MD)/sc6551.dr $(MD)/t2_sc6551.dd $(MD)/t3_sc6551.dd \
                 $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
                 $(MD)/clock_60hz \
                 $(MD)/clock2_tc3
@@ -141,8 +140,9 @@ bootfile_1773: $(BOOTFILE_1773) $(DEPENDS)
 bootfile_cust: $(BOOTFILE_CUST) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_CUST)>$@
 
-bootfile_ide: $(BOOTFILE_IDE) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_IDE)>$@
+# Howard Luckey's bootfile for his SuperIDE purchased on May 16, 2004
+bootfile_luckey: $(BOOTFILE_LUCKEY) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_LUCKEY)>$@
 
 kernel_1773: $(KERNEL_1773) $(DEPENDS)
 	$(MERGE) $(KERNEL_1773)>$@
