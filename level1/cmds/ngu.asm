@@ -158,8 +158,14 @@ clrnxt   clr   ,u+		clear out
 
 * At this point we have determined our buffer space and saved pointers
 * for later use.  Now we will parse the command line for options that
-* begin with -
-         lbsr  SkipSpcs         move past any spaces on command line
+* begin with a dash.
+* Note that X will NOT point to a space, but to either a CR (if no
+* parameters were passed) or the first non-space character of the
+* parameter.
+* Here we merely grab the byte at X into A and test for end of line,
+* exiting if so.  Utilities that don't require non-option arguments
+* should comment out the following three lines.
+         lda   ,x         	get first char
          cmpa  #C$CR		CR?
          lbeq  ShowHelp		if so, no parameters... show help and exit
 GetChar  lda   ,x+		get next character on cmd line
