@@ -21,7 +21,7 @@ KERNEL		= krn krnp2
 SYSMODS		= ioman init sysgo_dd sysgo_h0
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
-                clock2_smart clock2_harris clock2_cloud9 clock2_soft \
+                clock2_harris clock2_cloud9 clock2_soft \
 		clock2_messemu clock2_jvemu
 
 RBF		= rbf.mn \
@@ -82,9 +82,6 @@ clock2_disto4: clock2.asm
 
 clock2_bnb: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKBNB)
-
-clock2_smart: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSMART)
 
 clock2_harris: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKHARRIS)
@@ -157,34 +154,6 @@ sysgo_dd: sysgo.asm
 
 sysgo_h0: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
-
-# Clocks
-clock_elim: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCElim=1 -aTPS=60
-
-clock_disto2: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCDsto2=1 -aTPS=60
-
-clock_disto4: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCDsto4=1 -aTPS=60
-
-clock_bnb: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCBB=1 -aTPS=60
-
-clock_smart: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCSmart=1 -aTPS=60
-
-clock_harris: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCHarrs=1 -aTPS=60
-
-clock_cloud9: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aRTCCloud9=1 -aTPS=60
-
-clock_soft: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aTPS=60
-
-clock_soft_50hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aTPS=50
 
 clean:
 	$(CD) kernel; make $@

@@ -23,7 +23,7 @@ KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_h0 sysgo_dd
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
-		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
+		clock2_harris clock2_cloud9 clock2_soft \
 		clock2_jvemu clock2_messemu
 
 RBF		= rbf.mn \
@@ -199,9 +199,6 @@ clock2_disto4: clock2.asm
 
 clock2_bnb: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKBNB)
-
-clock2_smart: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSMART)
 
 clock2_harris: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKHARRIS)
