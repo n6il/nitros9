@@ -1,4 +1,8 @@
 OS-9 Level One V03.01.04:
+- The directory structure of the Modules disk has been modified.  All
+  modules and related files are now under the LEVEL1 directory.
+- There are now two versions of sysgo: sysgo_h0 which performs chd/chx
+  to /H0 on startup, and sysgo_dd which performs chd/chx to /DD on startup.
 - A compatibility issue with os9gen's -t option and OS-9 Level One
   has been resolved.
 
