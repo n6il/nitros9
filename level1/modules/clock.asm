@@ -229,10 +229,10 @@ UpdLeave puls  cc,x,y,pc
 *
 ClockIRQ clra
          tfr   a,dp                    set direct page to zero
-         lda   PIA.U4+3                get hw byte
+         lda   PIA0Base+3              get hw byte
          bmi   L0032                   branch if sync flag on
          jmp   [>D.SvcIRQ]
-L0032    lda   PIA.U4+2                clear interrupt?
+L0032    lda   PIA0Base+2              clear interrupt?
          dec   <D.Tick                 decrement tick counter
          bne   L007F                   go around if not zero
          ldd   <D.Min                  get minutes/seconds
@@ -411,17 +411,17 @@ ClkEnt   equ   *
 * install system calls
          leay  >SysTbl,pcr
          os9   F$SSvc
-         ldx   #PIA.U4
+         ldx   #PIA0Base
          clra
-         sta   1,x                     change PIA.U4 side A to DDR
-         sta   ,x                      clear PIA.U4 side A
-         sta   3,x                     change PIA.U4 side B to DDR
+         sta   1,x                     change PIA0Base side A to DDR
+         sta   ,x                      clear PIA0Base side A
+         sta   3,x                     change PIA0Base side B to DDR
          coma                          complement A side A
-         sta   2,x                     write all 1's to PIA.U4 side B
+         sta   2,x                     write all 1's to PIA0Base side B
          lda   #$34
-         sta   1,x                     PIA.U4 side A to I/O reg
+         sta   1,x                     PIA0Base side A to I/O reg
          lda   #$3F
-         sta   3,x                     PIA.U4 side B to I/O reg
+         sta   3,x                     PIA0Base side B to I/O reg
          lda   2,x
 
          IFEQ  SOFT

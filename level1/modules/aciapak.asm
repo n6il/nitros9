@@ -102,11 +102,11 @@ Init     ldx   V.PORT,u
          std   <orgDFIRQ,u		save it off locally
          leax  >FIRQRtn,pcr		get our D.FIRQ routine
          stx   <D.FIRQ			and put it in system global vector
-         lda   >PIA.U8+3
+         lda   >PIA1Base+3
          anda  #$FC
          ora   #$01
-         sta   >PIA.U8+3
-         lda   >PIA.U8+2
+         sta   >PIA1Base+3
+         lda   >PIA1Base+2
          puls  cc
          lda   #$03
          sta   >MPI.Slct
@@ -118,7 +118,7 @@ L0086    orcc  #IntMasks
          lda   ,x
          lda   $01,x
          ldb   $01,x
-         ldb   >PIA.U8+2
+         ldb   >PIA1Base+2
          ldb   $01,x
          bmi   L00FB
          lda   #$02
@@ -389,7 +389,7 @@ Term     ldx   <D.Proc
          rts
 
 * ISR
-L024E    ldb   >PIA.U8+2
+L024E    ldb   >PIA1Base+2
          ldx   V.PORT,u
          sta   <u0027,u
          tfr   a,b

@@ -186,7 +186,7 @@ AltIRQ   ldu   >D.KbdSta	get keyboard static
          beq   L00B7
          lda   <u0030,u
          lbsr  L03CC
-L00B7    ldx   #PIA.U4
+L00B7    ldx   #PIA0Base
          clra
          clrb
          std   <u006A,u		clear
@@ -545,13 +545,13 @@ L03C7    ldb   #$03
          lbra  L055F
 L03CC    pshs  x,a
          stb   <u002F,u
-         lda   >PIA.U8+2
+         lda   >PIA1Base+2
          anda  #$07
          ora   ,s+
          tstb
          bne   L03DE
          ora   <trulocas,u
-L03DE    sta   >PIA.U8+2
+L03DE    sta   >PIA1Base+2
          sta   <u0030,u
          tstb
          bne   L03F5
@@ -633,8 +633,8 @@ SSSCSIZ  clra
 SSJOY    pshs  y,cc
          orcc  #IRQMask		mask interrupts
          lda   #$FF
-         sta   >PIA.U4+2
-         ldb   >PIA.U4
+         sta   >PIA0Base+2
+         ldb   >PIA0Base
          ldy   R$X,x		get joystick number to poll
          bne   L0481
          andb  #$01
@@ -644,17 +644,17 @@ L0481    andb  #$02
          beq   L0486
 L0485    clra
 L0486    sta   R$A,x
-         lda   >PIA.U4+3
+         lda   >PIA0Base+3
          ora   #$08
          ldy   R$X,x
          bne   L0494
          anda  #$F7
-L0494    sta   >PIA.U4+3
-         lda   >PIA.U4+1
+L0494    sta   >PIA0Base+3
+         lda   >PIA0Base+1
          anda  #$F7
          bsr   L04B3
          std   R$X,x
-         lda   >PIA.U4+1
+         lda   >PIA0Base+1
          ora   #$08
          bsr   L04B3
          pshs  b,a
@@ -664,7 +664,7 @@ L0494    sta   >PIA.U4+3
          clrb
          puls  pc,y,cc
 
-L04B3    sta   >PIA.U4+1
+L04B3    sta   >PIA0Base+1
          lda   #$7F
          ldb   #$40
          bra   L04C7
@@ -677,8 +677,8 @@ L04BC    lsrb
          clra
          rts
 L04C7    pshs  b
-         sta   >PIA.U8
-         tst   >PIA.U4
+         sta   >PIA1Base
+         tst   >PIA0Base
          bpl   L04D5
          adda  ,s+
          bra   L04BC
@@ -1034,17 +1034,17 @@ L07B9    stb   ,-x
 
 * Ding - tickle CoCo's PIA to emit a sound
 Ding     pshs  b,a
-         lda   >PIA.U4+1
-         ldb   >PIA.U4+3
+         lda   >PIA0Base+1
+         ldb   >PIA0Base+3
          pshs  b,a
          anda  #$F7
          andb  #$F7
-         sta   >PIA.U4+1
-         stb   >PIA.U4+3
-         lda   >PIA.U8+3
+         sta   >PIA0Base+1
+         stb   >PIA0Base+3
+         lda   >PIA1Base+3
          pshs  a
          ora   #$08
-         sta   >PIA.U8+3
+         sta   >PIA1Base+3
          ldb   #$0A
 L07E6    lda   #$FE
          bsr   L0800
@@ -1053,13 +1053,13 @@ L07E6    lda   #$FE
          decb
          bne   L07E6
          puls  a
-         sta   >PIA.U8+3
+         sta   >PIA1Base+3
          puls  b,a
-         sta   >PIA.U4+1
-         stb   >PIA.U4+3
+         sta   >PIA0Base+1
+         stb   >PIA0Base+3
          puls  pc,b,a
 
-L0800    sta   >PIA.U8
+L0800    sta   >PIA1Base
 * some type of settle delay
          lda   #128
 L0805    inca

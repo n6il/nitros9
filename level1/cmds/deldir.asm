@@ -7,6 +7,7 @@
 * ------------------------------------------------------------------
 *   3    From Tandy OS-9 Level Two VR 02.00.01
 *   4    Updated to add -e instead of e to dir          BGP 03/01/14
+*        Optimized for size.                            BGP 03/06/21
 
          nam   Deldir
          ttl   Delete a directory
@@ -15,6 +16,7 @@
 
          ifp1
          use   defsfile
+         use   rbfdefs
          endc
 
 tylg     set   Prgrm+Objct   
@@ -57,21 +59,21 @@ start    bsr   OpenPath
          bcs   OpenErr
 L002B    lda   <fpath
          os9   I$Close  
-         bcs   L004D
+         bcs   Exit
          ldx   <parmptr
          os9   I$Delete 
-         bcs   L004D
+         bcs   Exit
          lda   ,x
          cmpa  #C$CR
          bne   start
          clrb  
-         bra   L004D
+         bra   Exit
 OpenErr  pshs  b
          lda   <fpath
          os9   I$Close  
          puls  b
          orcc  #Carry
-L004D    os9   F$Exit   
+Exit     os9   F$Exit   
 
 
 OpenPath stx   <parmptr			save parameter pointer
@@ -112,8 +114,8 @@ GetOpts  lda   <fpath
          os9   I$GetStt 
          bcs   L00AB
          ldx   <u0044
-         lda   <$33,x
-         anda  #$80
+         lda   <PD.ATT,x
+         anda  #DIR.
          beq   L00AA
          clrb  
          orcc  #Carry
@@ -126,6 +128,7 @@ Prompt   fcb   C$LF
          fcb   C$LF
          fcc   "List directory, delete directory, or quit ? (l/d/q) "
 PromptL  equ   *-Prompt
+
 Cont     fcb   C$LF
          fcc   "Continue? (y/n) "
 ContL    equ   *-Cont
@@ -191,16 +194,12 @@ ReadKey  leax  <buffer,u
 L0187    lda   ,x+
          cmpa  #C$SPAC			eat spaces
          beq   L0187
-         eora  #'Y
          anda  #$DF
-         beq   L01AD			branch if Y
-         lda   ,-x
-         eora  #'L			branch if L
-         anda  #$DF
+         cmpa  #'Y			branch if Y
+         beq   L01AD
+         cmpa  #'L			branch if L
          beq   L01A9
-         lda   ,x
-         eora  #'D			branch if D
-         anda  #$DF
+         cmpa  #'D			branch if D
          beq   L01A5
          bra   L01B4
 L01A5    ldb   #$01
@@ -210,20 +209,24 @@ L01A9    ldb   #$02
 L01AD    ldb   #$04
 L01AF    stb   <what2do
          clrb  
-         bra   L01B8
+*         bra   L01B8
+         rts
 L01B4    ldb   #$01
          orcc  #Carry
 L01B8    rts   
+
 DelDir   fcc   "DELDIR"
          fcb   C$CR
+
 DotDot   fcc   ".."
          fcb   C$CR
+
 L01C3    ldb   <what2do
          bitb  #$05
          beq   L0210
          lda   <fpath
          pshs  u
-         ldu   #64
+         ldu   #DIR.SZ*2
 L01D0    ldx   #$0000
          os9   I$Seek   
          puls  u
@@ -234,7 +237,7 @@ L01D8    bsr   L0215
          os9   I$ChgDir 
          bcs   L0214
          ldy   <u0048
-         clrb  
+         clrb
          lda   #Prgrm+Objct
          pshs  u
          leau  <u0024,u
@@ -251,13 +254,14 @@ L01D8    bsr   L0215
 L0209    cmpb  #E$EOF
          bne   L0214
          clrb  
-         bra   L0214
+         rts
+*         bra   L0214
 L0210    ldb   #$01
          orcc  #Carry
 L0214    rts   
 L0215    lda   <fpath
          leax  <u0024,u
-         ldy   #$0020
+         ldy   #DIR.SZ
          os9   I$Read   
          bcs   L0238
          lda   ,x
@@ -268,15 +272,18 @@ L0215    lda   <fpath
          sta   -$01,y
          lda   #C$CR
          sta   ,y
-         clra  
-         incb  
+         clra
+         incb
          std   <u0048
 L0238    rts   
+
 ATTR     fcc   "ATTR"
          fcb   C$CR
+
 ATTROPTS fcc   " -d"
          fcb   C$CR
 ATTROPTL equ   *-ATTROPTS
+
 L0242    pshs  u
          leau  <buffer,u
          pshs  u

@@ -27,8 +27,6 @@ CRA      equ   $01        PIA CRA offset
 CRB      equ   $03        PIA CRB offset
 MUXBit   equ   %00001000  COCO sound MUX control/select bit position
 SpeakBit equ   %01000000  SSPak speech status bit (active low)
-PIA0Addr equ   PIA.U4     base address of COCO sound MUX select PIA
-PIA1Addr equ   PIA.U8     base address of COCO sound MUX enable PIA
 SSPData  equ   $FF7E      SSPak data register offset
 SSPReset equ   $FF7D      SSPak reset register offset
 SSPStat  equ   $FF7E      SSPak status register offset
@@ -66,8 +64,8 @@ ErrEx    orcc  #Carry
 Term     rts   
 
 Write    ldy   #SSPData
-         ldx   #PIA0Addr
-         ldu   #PIA1Addr
+         ldx   #PIA0Base
+         ldu   #PIA1Base
          cmpa  #C$LF		linefeed?
          beq   WritEx		..yep, ignore it
          cmpa  #C$CR		carriage return?

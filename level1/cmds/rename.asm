@@ -24,53 +24,55 @@ edition  set   6
          mod   eom,name,tylg,atrv,start,size
 
          org   0
-u0000    rmb   1
+parmptr  rmb   1
 u0001    rmb   1
 u0002    rmb   2
 u0004    rmb   1
-u0005    rmb   2
+nextparm rmb   2
 u0007    rmb   1
 u0008    rmb   24
-u0020    rmb   26
+pathopts rmb   26
 u003A    rmb   2
-u003C    rmb   405
+u003C    rmb   2
+         rmb   2
+         rmb   401
 size     equ   .
 
 name     fcs   /Rename/
          fcb   edition
 
-start    cmpd  #$0004
-         lbcs  L00A8
-         stx   <u0000
-         lda   #WRITE.
-         os9   I$Open   
-         bcc   L0032
-         cmpb  #E$FNA
-         bne   L00A5
-         ldx   <u0000
-         lda   #DIR.+WRITE.
-         os9   I$Open   
-         bcs   L00A5
-L0032    stx   <u0005
+start    cmpd  #$0004		at least 3 chars + CR on cmd line?
+         lbcs  bpnam		branch if less than
+         stx   <parmptr		save parameter pointer
+         lda   #WRITE.		write mode
+         os9   I$Open   	open file to rename in write mode
+         bcc   L0032		branch if ok
+         cmpb  #E$FNA		file not accessible?
+         bne   Exit		branch if any other error
+         ldx   <parmptr		else get pointer to file
+         lda   #DIR.+WRITE.	and try open as directory
+         os9   I$Open   	try opening again
+         bcs   Exit		branch if error
+L0032    stx   <nextparm	save off updated param pointer
          ldb   #SS.Opt
-         leax  <u0020,u
-         os9   I$GetStt 
-         bcs   L00A5
-         os9   I$Close  
-         bcs   L00A5
-         ldb   <u0020
+         leax  <pathopts,u
+         os9   I$GetStt 	get path options
+         bcs   Exit		branch if error
+         os9   I$Close  	close path to file
+         bcs   Exit		branch if error
+         ldb   <pathopts
          cmpb  #$01
-         bne   L00A8
+         bne   bpnam
          bsr   L00AE
-         bcs   L00A5
+         bcs   Exit
          ldx   <u0002
          lda   #C$CR
          sta   -1,x
-         ldx   <u0000
+         ldx   <parmptr
          lda   #READ.+WRITE.
          os9   I$ChgDir 
-         bcs   L00A5
-         ldx   <u0005
+         bcs   Exit
+         ldx   <nextparm
          ldb   <u0008
          decb  
          lda   b,x
@@ -83,43 +85,45 @@ L0032    stx   <u0005
          ldx   <u0002
          os9   F$CmpNam 
          bcc   L0082
-L0075    ldx   <u0005
+L0075    ldx   <nextparm
          lda   #READ.
          os9   I$Open   
-         bcc   L00A8
+         bcc   bpnam
          cmpb  #E$PNNF
-         bne   L00A8
-L0082    leax  <L00AC,pcr
-         lda   #DIR.!UPDAT.
-         os9   I$Open   
-         bcs   L00A5
-         ldx   <u003A
+         bne   bpnam
+L0082    leax  <Dot,pcr		point to .
+         lda   #DIR.!UPDAT.	open as directory in update mode
+         os9   I$Open   	do it!
+         bcs   Exit		branch if error
+         ldx   <u003A		get file directory entry ptr (PD.DCP)
          ldu   <u003C
-         os9   I$Seek   
-         bcs   L00A5
-         ldx   <u0005
-         ldy   <u0007
+         os9   I$Seek   	seek
+         bcs   Exit		branch if error
+         ldx   <nextparm	get ptr to name to rename
+         ldy   <u0007		
          os9   I$Write  
-         bcs   L00A5
+         bcs   Exit
          os9   I$Close  
-         bcs   L00A5
+         bcs   Exit
          clrb  
-L00A5    os9   F$Exit   
-L00A8    ldb   #E$BPNam
-         bra   L00A5
-L00AC    fcc   "."
+Exit     os9   F$Exit   
+bpnam    ldb   #E$BPNam
+         bra   Exit
+
+Dot      fcc   "."
          fcb   C$CR
-L00AE    ldx   <u0000
+
+L00AE    ldx   <parmptr
          bsr   L00F6
-         ldu   <u0000
+         ldu   <parmptr
          lda   ,u
          cmpa  #PDELIM
          beq   L00C7
          lda   ,y
          cmpa  #PDELIM
          beq   L00C7
-         leau  <L00AC,pcr
-         stu   <u0000
+         leau  <Dot,pcr
+         stu   <parmptr
          bra   L00CD
 L00C7    leax  ,y
          bsr   L00F6
@@ -131,7 +135,7 @@ L00CD    stx   <u0002
          bcc   L00CD
          ldb   <u0004
          beq   L00F2
-         ldx   <u0005
+         ldx   <nextparm
          os9   F$PrsNam 
          bcs   L00F2
          lda   ,y
@@ -139,7 +143,7 @@ L00CD    stx   <u0002
          beq   L00F2
          cmpb  #$1E
          bcc   L00F2
-         stx   <u0005
+         stx   <nextparm
          clra  
          std   <u0007
          rts   
@@ -153,14 +157,14 @@ L00F6    os9   F$PrsNam
 L00FE    lda   ,u+
          bpl   L0107
          incb  
-         cmpa  #$AE
+         cmpa  #C$PERD!$80
          bne   L010C
 L0107    incb  
          cmpa  #C$PERD
          beq   L00FE
 L010C    decb  
          beq   L0118
-         leay  -u0001,u
+         leay  -1,u
          cmpb  #$03
          bcc   L0118
          clrb  

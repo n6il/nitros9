@@ -25,10 +25,10 @@ BootMsg  fcc   /OSy/
          fcc   /BOOT/
 BootMLen equ   *-BootMsg
 
-L2620    clr   PIA.U4+3
+L2620    clr   PIA0Base+3
 
          ifne  Dragon64
-         clr   PIA.U4+1			added for Dragon, works on CoCo
+         clr   PIA0Base+1		added for Dragon, works on CoCo
          endc
 
          sta   $FFDF                   turn off ROM

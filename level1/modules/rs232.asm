@@ -66,7 +66,7 @@ start    lbra  Init
 *
 Init     pshs  cc
          orcc  #IntMasks
-         ldx   #PIA.U8
+         ldx   #PIA1Base
          clr   $01,x
          ldd   <IT.COL,y		get col/row bytes
          std   <u0024,u
@@ -112,12 +112,12 @@ Read     bsr   L00B1
 L0066    bra   L006E
 L0068    ldx   #$0001
          os9   F$Sleep
-L006E    lda   >PIA.U8+2
+L006E    lda   >PIA1Base+2
          lsra
          pshs  x,a
          lda   >$FF69
          bpl   L0091
-         lda   >PIA.U8+3
+         lda   >PIA1Base+3
          bita  #$01
          beq   L0091
          bita  #$80
@@ -133,7 +133,7 @@ L0091    puls  x,a
          clra
          bsr   L00DA
 L009A    bsr   L00D3
-         ldb   >PIA.U8+2
+         ldb   >PIA1Base+2
          lsrb
          rora
          dec   $01,s
@@ -160,7 +160,7 @@ L00C9    ldb   #E$BMode
          puls  a
 L00CD    orcc  #Carry
          rts
-L00D0    stb   >PIA.U8
+L00D0    stb   >PIA1Base
 L00D3    pshs  b,a
          ldd   <BaudCnt,u
          bra   L00E1
