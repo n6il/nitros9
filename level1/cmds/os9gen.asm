@@ -68,12 +68,12 @@ u048F    rmb   7
 u0496    rmb   7018
 size     equ   .
 
-name     fcs   /OS9gen/
+name     fcs   /OS9Gen/
          fcb   edition
 
          IFNE  DOHELP
 HelpMsg  fcb   C$LF
-         fcc   "Use (CAUTION): OS9GEN </devname> [-s]"
+         fcc   "Use (CAUTION): OS9Gen </devname> [-s]"
          fcb   C$LF
          fcc   " ..reads (std input) pathnames until EOF,"
          fcb   C$LF
@@ -81,7 +81,7 @@ HelpMsg  fcb   C$LF
          fcb   C$LF
          fcc   " -s = single drive operation"
          fcb   C$LF
-         fcc   " -t=bootrack  set boot track file"
+         fcc   " -t=boottrack = set boot track file"
          fcb   C$LF,C$CR
          ENDC
          fcc   "Can't find: "
@@ -246,7 +246,9 @@ L0288    lda   ,y+
          lbcs  Bye			branch if error
          ldu   <statptr			retrieve static pointer
          bsr   L032F
-L02BB    leax  sectbuff,u
+
+* Read Bootlist file, line by line
+ReadBLst leax  sectbuff,u
          ldy   #256
          clra  				standard input
          os9   I$ReadLn 		read line
@@ -256,7 +258,7 @@ L02BB    leax  sectbuff,u
          cmpa  #C$CR			CR?
          beq   L0312			branch if so
          cmpa  #'*			comment?
-         beq   L02BB			continue reading if so
+         beq   ReadBLst			continue reading if so
          lda   #READ.			else use read perms
          os9   I$Open   		open file at X (line we read)
          bcs   L031A			branch if error
@@ -272,7 +274,7 @@ L02DD    ldx   <u0015
          lbne  Bye
          os9   I$Close  
          clr   <parmpath
-         bra   L02BB
+         bra   ReadBLst
 L02F9    tfr   y,d
          leax  d,x
          stx   <u0015
@@ -284,7 +286,7 @@ L02F9    tfr   y,d
          bcs   L0328
 L030C    tst   <parmpath
          bne   L02DD
-         bra   L02BB
+         bra   ReadBLst
 L0312    cmpb  #E$EOF			end of file?
          bne   L0328			branch if not
          bsr   L033D

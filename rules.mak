@@ -3,7 +3,7 @@
 # These macros should change according to where the base directory of the
 # OS-9 source tree is located
 BASEDIR		= $(HOME)/os9
-OS9TOOLSDIR	= /usr/local/bin
+OS9TOOLSDIR	= $(HOME)/bin
 DEFDIR		= $(BASEDIR)/defs
 DSKDIR		= $(BASEDIR)/dsks
 
@@ -84,14 +84,6 @@ C9		= $(BASEDIR)/cloud9
 # I/O subroutines
 %.io: %.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@
-
-# 60Hz clocks
-%.60hz: %.asm
-	$(AS) -aTPS=60 $(AFLAGS) $< $(ASOUT)$@
-
-# 50Hz clocks
-%.50hz: %.asm
-	$(AS) -aTPS=50 $(AFLAGS) $< $(ASOUT)$@
 
 # All other modules
 %: %.asm
