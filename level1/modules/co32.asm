@@ -19,6 +19,7 @@
 
          ifp1
          use   defsfile
+         use   co32defs
          endc
 
 tylg     set   Systm+Objct   
@@ -43,7 +44,7 @@ start    equ   *
 Term     pshs  y,x
          pshs  u		save U
          ldd   #$0200		32x16 VDG memory size
-         ldu   <$1D,u		get pointer to memory
+         ldu   <VD.ScrnA,u $1D	get pointer to memory
          os9   F$SRtMem 	return to system
          puls  u		restore U
          ldb   <$70,u
@@ -52,34 +53,34 @@ Term     pshs  y,x
 * Init
 Init     pshs  y,x		save regs
          lda   #$AF
-         sta   <$2C,u		save default color cursor
+         sta   <VD.CColr,u $2C save default color cursor
          pshs  u		save static ptr
-         ldd   #$0300		allocate 768 bytes for now
+         ldd   #768		allocate 768 bytes for now
          os9   F$SRqMem 	get it
          tfr   u,d		put ptr in D
          tfr   u,x		and X
          bita  #$01		odd page?
          beq   L0052		branch if not
-         leax  >$0100,x		else move X up 256 bytes
+         leax  >256,x		else move X up 256 bytes
          bra   L0056		and return first 256 bytes
-L0052    leau  >$0200,u		else move X up 512 bytes
-L0056    ldd   #$0100		and return last 256 bytes
+L0052    leau  >512,u		else move X up 512 bytes
+L0056    ldd   #256		and return last 256 bytes
          os9   F$SRtMem 	free it!
          puls  u		restore static ptr
-         stx   <$1D,u		save VDG screen memory
+         stx   <VD.ScrnA,u $1D	save VDG screen memory
          pshs  y
          leay  -$0E,y
          clra  
          clrb  
          jsr   [<$5B,u]
          puls  y
-         stx   <$21,u
-         leax  >$0200,x
-         stx   <$1F,u
-         lda   #$60
-         sta   <$23,u
-         sta   <$2B,u
-         lbsr  ClrScrn
+         stx   <VD.CrsrA,u $21	save start cursor position
+         leax  >512,x		point to end of screen
+         stx   <VD.ScrnE,u $1F	save it
+         lda   #$60		get default character
+         sta   <VD.CChar,u $23	put character under the cursor
+         sta   <VD.Chr1,u $2B   only referenced here ??
+         lbsr  ClrScrn		clear the screen
          ldb   <$70,u
          orb   #$02		set to CO32 found (?)
 L0086    stb   <$70,u
@@ -93,7 +94,7 @@ Write    tsta
          bmi   L00D0
          cmpa  #$1F			byte $1F?
          bls   Dispatch			branch if lower or same
-         ldb   <$71,u
+         ldb   <VD.CFlag,u $71
          beq   L00B0
          cmpa  #$5E
          bne   L00A0
@@ -123,27 +124,27 @@ L00C8    cmpa  #$40
          bcs   L00CE
          suba  #$40
 L00CE    eora  #$40
-L00D0    ldx   <$21,u
+L00D0    ldx   <VD.CrsrA,u $21
          sta   ,x+
-         stx   <$21,u
-         cmpx  <$1F,u
+         stx   <VD.CrsrA,u $21
+         cmpx  <VD.ScrnE,u $1F
          bcs   L00DF
-         bsr   SScrl
-L00DF    bsr   ShowCrsr
+         bsr   SScrl			if at end of screen, scroll it
+L00DF    bsr   ShowCrsr			ends with a CLRB/RTS anyhow
 
 * no operation entry point
 NoOp     clrb  
          rts   
 
-SScrl    ldx   <$1D,u
-         leax  <$20,x
+SScrl    ldx   <VD.ScrnA,u $1D
+         leax  <32,x
 L00E9    ldd   ,x++
-         std   <-$22,x
-         cmpx  <$1F,u
+         std   <-34,x
+         cmpx  <VD.ScrnE,u $1F
          bcs   L00E9
-         leax  <-$20,x
-         stx   <$21,u
-         lda   #$20
+         leax  <-32,x
+         stx   <VD.CrsrA,u $21
+         lda   #32
          ldb   #$60
 L00FD    stb   ,x+
          deca  
@@ -184,10 +185,10 @@ Retrn    bsr   HideCrsr
          tfr   x,d
          andb  #$E0
          stb   <$22,u
-ShowCrsr ldx   <$21,u		get cursor address
+ShowCrsr ldx   <VD.CrsrA,u $21	get cursor address
          lda   ,x		get char at cursor position
-         sta   <$23,u		save it
-         lda   <$2C,u		get cursor character
+         sta   <VD.CChar,u $23	save it
+         lda   <VD.CColr,u $2C	get cursor character
          beq   L014D		branch if none
 L014B    sta   ,x		else turn on cursor
 L014D    clrb  
@@ -195,30 +196,30 @@ L014D    clrb
 
 * $0A - cursor down (line feed)
 CurDown  bsr   HideCrsr		hide cursor
-         leax  <$20,x		move X down one line
-         cmpx  <$1F,u		at end of screen?
+         leax  <32,x		move X down one line
+         cmpx  <VD.ScrnE,u $1F	at end of screen?
          bcs   L0162		branch if not
-         leax  <-$20,x		else go back up one line
+         leax  <-32,x		else go back up one line
          pshs  x		save X
          bsr   SScrl		and scroll the screen
          puls  x		restore pointer
-L0162    stx   <$21,u		save cursor pointer
+L0162    stx   <VD.CrsrA,u $21	save cursor pointer
          bra   ShowCrsr		show cursor
 
 * $08 - cursor left
 CurLeft  bsr   HideCrsr		hide cursor
-         cmpx  <$1D,u		compare against start of screen
+         cmpx  <VD.ScrnA,u $1D	compare against start of screen
          bls   L0173		ignore it if at the screen start
          leax  -$01,x		else back up one
-         stx   <$21,u		save updated pointer
+         stx   <VD.CrsrA,u $21	save updated pointer
 L0173    bra   ShowCrsr		and show cursor
 
 * $06 - cursor right
 CurRght  bsr   HideCrsr		hide cursor
          leax  $01,x		move to the right
-         cmpx  <$1F,u		compare against end of screen
+         cmpx  <VD.ScrnE,u $1F	compare against end of screen
          bcc   L0181		if past end, ignore it
-         stx   <$21,u		else save updated pointer
+         stx   <VD.CrsrA,u $21	else save updated pointer
 L0181    bra   ShowCrsr		and show cursor
 
 * $0B - erase to end of screen
@@ -229,20 +230,20 @@ ErEOScrn bsr   HideCrsr		kill the cusror
 ClrScrn  bsr   CurHome		home cursor
 L0189    lda   #$60		get default char
 L018B    sta   ,x+		save at location
-         cmpx  <$1F,u		end of screen?
+         cmpx  <VD.ScrnE,u $1F	end of screen?
          bcs   L018B		branch if not
          bra   ShowCrsr		now show cursor
 
 * $01 - home cursor
 CurHome  bsr   HideCrsr		hide cursor
-         ldx   <$1D,u		get pointer to screen
-         stx   <$21,u		save as new cursor position
+         ldx   <VD.ScrnA,u $1D	get pointer to screen
+         stx   <VD.CrsrA,u $21	save as new cursor position
          bra   ShowCrsr		and show it
 
 * Hides the cursor from the screen
 * Exit: X = address of cursor
-HideCrsr ldx   <$21,u		get address of cursor in X
-         lda   <$23,u		get value of char under cursor
+HideCrsr ldx   <VD.CrsrA,u $21	get address of cursor in X
+         lda   <VD.CChar,u $23	get value of char under cursor
          sta   ,x		put char in place of cursor
          clrb  			must be here, in general, for [...] BRA HideCrsr
          rts   
@@ -252,10 +253,10 @@ CrsrSw   ldb   #$01
          leax  <L01AF,pcr	
          bra   L01E5
 
-L01AF    lda   <$29,u		get next char
+L01AF    lda   <VD.NChar,u $29	get next char
          suba  #C$SPAC		take out ASCII space
          bne   L01BB		branch if not zero
-         sta   <$2C,u		else save cursor color zero (no cursor)
+         sta   <VD.CColr,u $2C	else save cursor color zero (no cursor)
          bra   HideCrsr		and hide cursor
 L01BB    cmpa  #$0B		greater than $0B?
          bge   L014D		yep, just ignore byte
@@ -274,8 +275,8 @@ L01CF    suba  #$03		** BUG FIXED! ** !!! Was SUBB
          lsla  
          lsla  
          ora   #$8F
-L01D7    sta   <$2C,u		save new cursor
-         ldx   <$21,u		get cursor address
+L01D7    sta   <VD.CColr,u $2C	save new cursor
+         ldx   <VD.CrsrA,u $21	get cursor address
          lbra  L014B		branch to save cursor in X
 
 * $02 XX YY - move cursor to col XX-32, row YY-32
@@ -287,17 +288,17 @@ L01E5    stx   <$26,u
          rts   
 
 DoCurXY  bsr   HideCrsr		hide cursor
-         ldb   <$29,u		get ASCII Y-pos
+         ldb   <VD.NChar,u $29	get ASCII Y-pos
          subb  #C$SPAC		take out ASCII space
          lda   #32		go down
          mul   			multiply it
-         addb  <$28,u		add in X-pos
+         addb  <VD.NChr2,u $28	add in X-pos
          adca  #$00
          subd  #C$SPAC		take out another ASCII space
-         addd  <$1D,u		add top of screen address
-         cmpd  <$1F,u		at end of the screen?
+         addd  <VD.ScrnA,u $1D	add top of screen address
+         cmpd  <VD.ScrnE,u $1F	at end of the screen?
          lbcc  L014D		exit if off the screen
-         std   <$21,u		otherwise save new cursor address
+         std   <VD.CrsrA,u $21	otherwise save new cursor address
          lbra  ShowCrsr		and show cursor
 
 * $04 - erase to end of line
@@ -313,7 +314,7 @@ ErEOLine bsr   HideCrsr		hide cursor
 DelLine  lbsr  Retrn		do a CR
          ldb   #32		line length
 L0223    lda   #$60		get default character
-         ldx   <$21,u		get cursor address
+         ldx   <VD.CrsrA,u $21	get cursor address
 L0228    sta   ,x+		fill screen line with 'space'
          decb  			decrement
          bne   L0228		and branch if not end
@@ -321,10 +322,10 @@ L0228    sta   ,x+		fill screen line with 'space'
 
 * $09 - cursor up
 CurUp    lbsr  HideCrsr		hide cursor
-         leax  <-$20,x		move X up one line
-         cmpx  <$1D,u		compare against start of screen
+         leax  <-32,x		move X up one line
+         cmpx  <VD.ScrnA,u $1D	compare against start of screen
          bcs   L023E		branch if we went beyond
-         stx   <$21,u		else store updated X
+         stx   <VD.CrsrA,u $21	else store updated X
 L023E    lbra  ShowCrsr		and show cursor
 
 * $0E - switch screen to alphanumeric mode
@@ -345,16 +346,16 @@ SetStat  comb
          rts   
 
 * SS.AlfaS getstat
-Rt.AlfaS ldd   <$1D,u
-         std   $04,x
-         ldd   <$21,u
-         std   $06,x
-         lda   <$50,u
+Rt.AlfaS ldd   <VD.ScrnA,u $1D	memory address of buffer
+         std   R$X,x
+         ldd   <VD.CrsrA,u $21
+         std   R$Y,x
+         lda   <VD.Caps,u $50	save caps lock status in A and exit
          bra   L02BA
 
 * SS.Cursr getstat
-Rt.Cursr ldd   <$21,u
-         subd  <$1D,u
+Rt.Cursr ldd   <VD.CrsrA,u $21
+         subd  <VD.ScrnA,u $1D
          pshs  b,a
          clra  
          andb  #$1F
@@ -370,8 +371,8 @@ Rt.Cursr ldd   <$21,u
          andb  #$0F		only 16 line to a screen
          addb  #$20
          std   $06,x
-         ldb   <$71,u
-         lda   <$23,u
+         ldb   <VD.CFlag,u $71
+         lda   <VD.CChar,u $23
          bmi   L02BA
          cmpa  #$60
          bcc   L02A5

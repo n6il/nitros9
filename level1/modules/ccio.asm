@@ -54,7 +54,7 @@ u004B    rmb   5
 u0050    rmb   1
 u0051    rmb   1
 WrChar   rmb   1
-u0053    rmb   2
+CoInUse  rmb   2
 u0055    rmb   6
 u005B    rmb   2
 u005D    rmb   2
@@ -75,7 +75,8 @@ u006E    rmb   1
 u006F    rmb   1
 u0070    rmb   1
 trulocas rmb   1
-SubEntry rmb   6
+CoEnt    equ   .
+GRFOEnt  rmb   6
 IBufHead rmb   1
 IBufTail rmb   1
 u007A    rmb   128
@@ -103,10 +104,11 @@ start    lbra  Init
 *    CC = carry set on error
 *    B  = error code
 *
-Init     stu   >D.KbdSta               store devmem ptr
-         clra
-         leax  <u001D,u
-         ldb   #$5D
+Init     stu   >D.KbdSta		store devmem ptr
+         clra				clear A
+         leax  V.SCF,u			point to memory after V.SCF
+*         leax  <u001D,u
+         ldb   #$5D			get counter
 L002E    sta   ,x+			clear mem
          decb
          bne   L002E
@@ -159,8 +161,8 @@ Read     leax  <u007A,u
          beq   Put2Bed		if so, buffer is empty, branch to sleep
          abx			X now points to curr char
          lda   ,x		get char
-         bsr   L009D
-         stb   <IBufTail,u
+         bsr   L009D		check for tail wrap
+         stb   <IBufTail,u	store updated tail
          andcc #^(IRQMask+Carry)	unmask IRQ
          rts
 
@@ -177,6 +179,7 @@ Put2Bed  lda   V.BUSY,u		get calling process ID
          bcc   Read		branch if so
          coma
          rts
+* Check if we need to wrap around tail pointer to zero
 L009D    incb
          cmpb  #$7F
          bls   L00A3
@@ -244,7 +247,7 @@ L011A    stb   <u0051,u
          ldb   <IBufHead,u
          leax  <u007A,u
          abx
-         lbsr  L009D
+         lbsr  L009D		check for tail wrap
          cmpb  <IBufTail,u
          beq   L012F
          stb   <IBufHead,u
@@ -529,21 +532,22 @@ L0321    fcb   $00,$40,$60	ALT @ `
 *    CC = carry set on error
 *    B  = error code
 *
-Write    ldb   <u0025,u
-         bne   L03A3
-         sta   <WrChar,u
-         cmpa  #C$SPAC
-         bcc   L038E
-         cmpa  #$1E		escape sequence
-         bcc   L03B8
-         cmpa  #$0F
-         lbcc  L063B
-         cmpa  #C$BELL
-         lbeq  Ding		ring bell
-L038E    lda   <u0053,u
-L0391    ldb   #$03		offset into subroutine
-L0393    leax  <SubEntry,u	get subroutine entry pointer in X
-         ldx   a,x
+Write    ldb   <u0025,u		are we in the process of getting parameters?
+         bne   L03A3		yes, go process
+         sta   <WrChar,u	save character to write
+         cmpa  #C$SPAC		space or higher?
+         bcc   GoCo		yes, normal write
+         cmpa  #$1E		escape sequence $1E or $1F?
+         bcc   L03B8		yes, go process
+         cmpa  #$0F		??
+         lbcc  L063B		branch if higher or same
+         cmpa  #C$BELL		bell?
+         lbeq  Ding		if so, ring bell
+* Here we call the Co-module to write the character
+GoCo     lda   <CoInUse,u	get CO32/CO80 flag
+CoWrite  ldb   #$03		we want to write
+CallCo   leax  <CoEnt,u		get base pointer to CO-entries
+         ldx   a,x		get pointer to CO32/CO80
          beq   NoIOMod		branch if no module
          lda   <WrChar,u	get character to write
 L039D    jmp   b,x		call i/o subroutine
@@ -551,15 +555,17 @@ NoIOMod  comb
          ldb   #E$MNF
          rts 
 
-L03A3    cmpb  #$02
-         beq   L03B0
-         sta   <u0029,u
-         clr   <u0025,u
+* Parameter handler
+L03A3    cmpb  #$02		two parameters left?
+         beq   L03B0		branch if so
+         sta   <u0029,u		else store in VD.NChar
+         clr   <u0025,u		clear parameter counter (?)
          jmp   [<u0026,u]
-L03B0    sta   <u0028,u
-         dec   <u0025,u
+L03B0    sta   <u0028,u		store in VD.NChr2
+         dec   <u0025,u		decrement parameter counter (?)
          clrb
          rts
+
 L03B8    beq   L03C5
          leax  <L03C7,pcr
 L03BD    ldb   #$01
@@ -567,8 +573,10 @@ L03BF    stx   <u0026,u
          stb   <u0025,u
 L03C5    clrb
          rts
+
 L03C7    ldb   #$03
          lbra  L055F
+
 L03CC    pshs  x,a
          stb   <u002F,u
          lda   >PIA1Base+2
@@ -780,24 +788,25 @@ SetStat  sta   <WrChar,u
          cmpa  #SS.SLGBf
          beq   SSSLGBF
          cmpa  #SS.KySns
-         bne   L055D
+         bne   CoGetStt
          ldd   R$X,x
          beq   L0558
          ldb   #$FF
 L0558    stb   <u006C,u
 L055B    clrb
 L055C    rts
-L055D    ldb   #$09
+
+CoGetStt ldb   #$09			co-module setstat
 L055F    pshs  b
-         lda   <u0053,u
-         lbsr  L0393
+         lda   <CoInUse,u		get Co-module in use
+         lbsr  CallCo
          puls  a
          bcc   L055B
-         tst   <SubEntry,u
+         tst   <GRFOEnt,u		GRFO linked?
          beq   L055C
          tfr   a,b
-         clra
-         lbra  L0393
+         clra				GRFO address offset in statics
+         lbra  CallCo			call it
 
 * Reserve an additional graphics buffer (up to 2)
 SSAAGBF  ldb   <u0031,u
@@ -852,25 +861,25 @@ L05CE    bita  #$02		CO80?
          bne   GoCO32		branch if so
          clrb			true lower case FALSE
 GoCO32   stb   <trulocas,u	save flag for later
-         lda   #$02
+         lda   #$02		CO32 is loaded bit
          ldx   #$2010		32x16
          pshs  u,y,x,a
          leax  >CO32,pcr
          bra   L05F4
-GoCO80   lda   #$04
+GoCO80   lda   #$04		'CO80 is loaded' bit
          ldx   #$5018		80x24
          pshs  u,y,x,a
          leax  >CO80,pcr
-L05F4    bsr   L0601
+L05F4    bsr   L0601		load co-module if not already loaded
          puls  u,y,x,a
          bcs   L0600
          stx   <ScreenX,u	save screen size
-         sta   <u0053,u
+         sta   <CoInUse,u	current module in use? ($02=CO32, $04=C080)
 L0600    rts
-L0601    bita  <u0070,u
-         beq   L0608
-L0606    clrb
-         rts
+L0601    bita  <u0070,u		module loaded?
+         beq   L0608		branch if not
+L0606    clrb			else clear carry
+         rts			and return
 L0608    pshs  y,x,a
          lbsr  LinkSub
          bcc   L061F		branch if link was successful
@@ -881,12 +890,12 @@ L0608    pshs  y,x,a
          bcc   L061F
          puls  y,x,a
          lbra  NoIOMod
-L061F    leax  <SubEntry,u
+L061F    leax  <CoEnt,u		get base pointer to CO-entries
          lda   ,s		get A off stack
-         sty   a,x
+         sty   a,x		save off CO32/CO80 entry point
          puls  y,x,a
-         ldb   #$00
-         lbra  L0393
+         ldb   #$00		co-module init offset
+         lbra  CallCo		call it
 
 * Link to subroutine
 LinkSub  pshs  u
@@ -896,10 +905,10 @@ LinkSub  pshs  u
 
 L0637    fdb   $0055,$aaff
 
-L063B    cmpa  #$15
-         bcc   L0664
-         cmpa  #$0F
-         beq   L06B4
+L063B    cmpa  #$15		GRFO-handled code?
+         bcc   GoGrfo		branch if so
+         cmpa  #$0F		display graphics code?
+         beq   Do0F		branch if so
          suba  #$10
          bsr   L065B
          bcs   L0663
@@ -915,20 +924,22 @@ L065B    ldb   <u0031,u
 L0660    comb
          ldb   #E$NotRdy
 L0663    rts
-L0664    bsr   L065B
+
+GoGrfo   bsr   L065B
          bcs   L0663
-         ldx   <SubEntry,u
-         bne   L0681
-         pshs  y,a
+         ldx   <GRFOEnt,u		get GRFO entry point
+         bne   L0681			branch if not zero
+         pshs  y,a			else preserve regs
          bne   L067F
-         leax  >GRFO,pcr
-         bsr   LinkSub
-         bcc   L067B
-         puls  pc,y,a
-L067B    sty   <SubEntry,u
-L067F    puls  y,a
-L0681    clra
-         lbra  L0391
+         leax  >GRFO,pcr		get pointer to name string
+         bsr   LinkSub			link to GRFO
+         bcc   L067B			branch if ok
+         puls  pc,y,a			else exit with error
+L067B    sty   <GRFOEnt,u		save module entry pointer
+L067F    puls  y,a			restore regs
+L0681    clra				A = GRFO address offset in statics
+         lbra  CoWrite
+
 L0685    pshs  u
          ldd   #6144+256
          os9   F$SRqMem
@@ -952,11 +963,12 @@ L06A1    pshs  u,a
          bcs   L06B3
          clrb
 L06B3    rts
-L06B4    leax  <L06BC,pcr
+
+Do0F     leax  <DispGfx,pcr
          ldb   #$02
          lbra  L03BF
 
-L06BC    ldb   <u0031,u
+DispGfx  ldb   <u0031,u
          bne   L06D1
          bsr   L0685
          bcs   L06EF
@@ -977,6 +989,7 @@ L06D1    lda   <u0029,u
          comb
          ldb   #E$BMode
 L06EF    rts
+
 L06F0    tsta
          beq   L0710
          ldd   #$C003
@@ -1014,6 +1027,8 @@ L072D    stb   <u0044,u
 
 L0742    fcb   $c0,$30,$0c,$03
 L0746    fcb   $80,$40,$20,$10,$08,$04,$02,$01
+
+* I Think this is code
          fcb   $30,$8C,$03,$16,$fC,$69,$6f,$C8,$28
          fcb   $A6,$C8,$24,$2B,$03,$6C,$C8,$28,$16
          fcb   $FF,$6F,$30,$C8,$35,$10,$8E,$00,$00
@@ -1058,7 +1073,9 @@ L07B9    stb   ,-x
          std   <u0045,u
          rts
 
+*
 * Ding - tickle CoCo's PIA to emit a sound
+*
 Ding     pshs  b,a
          lda   >PIA0Base+1
          ldb   >PIA0Base+3
@@ -1073,9 +1090,9 @@ Ding     pshs  b,a
          sta   >PIA1Base+3
          ldb   #$0A
 L07E6    lda   #$FE
-         bsr   L0800
+         bsr   DingDuration
          lda   #$02
-         bsr   L0800
+         bsr   DingDuration
          decb
          bne   L07E6
          puls  a
@@ -1085,8 +1102,8 @@ L07E6    lda   #$FE
          stb   >PIA0Base+3
          puls  pc,b,a
 
-L0800    sta   >PIA1Base
-* some type of settle delay
+DingDuration
+         sta   >PIA1Base
          lda   #128
 L0805    inca
          bne   L0805
