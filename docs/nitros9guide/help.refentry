@@ -1,0 +1,99 @@
+<refentry id="help">
+<refnamediv>
+<refname>HELP</refname>
+<refpurpose>Displays the usage and syntax of OS-9 commands.</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>TUNEPORT</command>
+<arg choice="opt">
+  <option>command - the command for which you want syntax help.  Include
+as many command names in one HELP line as you wish.  The proper form and
+syntax appears for each valid command you include.
+</option>
+</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Notes</title>
+
+<para>
+To use HELP, first copy Cmds.hp from the SYS directory of the CONFIG/BOOT
+Diskette to the SYS directory of your system diskette.  Next, copy HELP
+from the CMDS directory of the CONFIG/BOOT Diskette to the CMDS directory
+of your system diskette as follows:
+</para>
+<para>
+Procedure for one disk drive:
+</para>
+<para>
+1. With OS-9 booted and the system diskette in your drive, type:
+</para>
+<screen>
+	LOAD COPY [ENTER]
+</screen>
+<para>
+2. Replace the system diskete with the CONFIG/BOOT Diskette and type:
+</para>
+<screen>
+	COPY /D0/SYS/CMDS.HP /D0/SYS/CMDS.HP -S #30K [ENTER]
+</screen>
+<para>
+3. Exchange the two diskettes as requested by the screen prompts until the
+process is complete.
+</para>
+<para>
+4. Again, place the CONFIG/BOOT DIskette int he drive, and type:
+</para>
+<screen>
+	COPY /D0/CMDS/help /D0/CMDS/help -S #30K [ENTER]
+</screen>
+<para>
+5. Swap diskettes as requested until the process is complete.
+</para>
+<para>
+Procedure for two disk drives
+</para>
+<para>
+1. With OS-9 booted, place the CONFIG/BOOT Diskette in Drive 1.  Be sure
+the system diskette is in Drive 0.
+</para>
+<para>
+2. Type:
+</para>
+<screen>
+	COPY /D1/SYS/CMDS.HP /D0/SYS/CMDS.HP [ENTER]
+</screen>
+<para>
+3. When the first copy is complete, type:
+</para>
+<screen>
+	COPY /D1/CMDS/help /D0/CMDS/help [ENTER]
+</screen>
+<para>
+Cmds.hp is a data file, not a text file, and you cannot successfully display
+it on your screen or edit it with a standard text editor.  It contains help
+for standard OS-9 commands.
+</para>
+<para>
+HELP displays the form and syntax of the specified command.  If you use a
+non-standard command name, a screen display tells you that help is not
+available for that command.
+</para>
+<para>
+Examples:
+</para>
+<screen>
+	HELP BACKUP [ENTER]
+	BACUKP [e][s][-v][dev][dev]
+	Copies all data from one device to another
+
+	HELP ME [ENTER]
+	ME Help not available
+
+	HELP [ENTER]
+	HELP [command name][...]
+</refsect1>
+</refentry>
+
