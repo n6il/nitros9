@@ -9,10 +9,11 @@
 * 14     IOMAN ignores device address high byte now     ??? ??/??/??
 *        (FFXXXX vs 07XXXX etc ignored)
 * 15     Fixed IOQueue sort bug                         BGP 98/10/08
-* 15b    Made minor optimizations as per Curtis Boyle's BGP 98/10/10
+* 15r2   Made minor optimizations as per Curtis Boyle's BGP 98/10/10
 *        optimization document 
 *        Added comments from version provided by        BGP 98/10/21
 *        Curtis Boyle
+* 15r3   Fixed IDetach static storage wipeout bug       BGP 02/05/11
 
          nam   IOMan
          ttl   OS-9 Level Two V3 I/O Manager
@@ -24,7 +25,7 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $02
+rev      set   $03
 edition  set   15
 
          mod   eom,name,tylg,atrv,IOManEnt,size
@@ -343,17 +344,14 @@ L0226    ldx   <$16,s
 
 IDetach  ldu   R$U,u      get ptr to dev tbl entry
          ldx   V$DESC,u
-         ldb   V$USRS,u
-         bne   L0240
-         pshs  u,b
-         ldu   V$STAT,u
-         pshs  u
-         bra   L027C
+         tst   V$USRS,u
+         beq   IDetach2
 L0240    lda   #$FF
          cmpa  $08,u
          lbeq  L02B7
          dec   $08,u
          lbne  L0299
+IDetach2
          ldx   <D.Init
          ldb   DevCnt,x
          pshs  u,b
