@@ -1,5 +1,5 @@
 ********************************************************************
-* Shell - OS-9 command line interpreter
+* Shell - NitrOS-9 command line interpreter
 *
 * $Id$
 *
@@ -13,7 +13,7 @@
 * CHD no longer sets WRITE. permission.
 
          nam   Shell
-         ttl   OS-9 command line interpreter
+         ttl   NitrOS-9 command line interpreter
 
 * Disassembled 99/04/18 22:59:49 by Disasm v1.6 (C) 1988 by RML
 
