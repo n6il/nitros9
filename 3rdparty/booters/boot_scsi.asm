@@ -1,5 +1,5 @@
 ********************************************************************
-* Boot - SCSI Boot module
+* Boot - SCSI Boot Module
 *
 * $Id$
 *
@@ -21,7 +21,7 @@
 
 
          nam   Boot
-         ttl   SCSI Boot module
+         ttl   SCSI Boot Module
 
          ifp1
          use   defsfile

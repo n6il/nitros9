@@ -1,5 +1,5 @@
 ********************************************************************
-* Boot - WD1002-05 boot module
+* Boot - Eliminator WD1002-05 Boot Module
 *
 * $Id$
 *
@@ -12,7 +12,7 @@
 * 2      Created by Bruce Isted                         BRI ??/??/??
 
          nam   Boot
-         ttl   WD1002-05 boot module
+         ttl   Eliminator WD1002-05 Boot Module
 
 * These equates should be set before assembly:
 FDStep   equ   $09        see Step Rate Table

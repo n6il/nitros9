@@ -1,5 +1,5 @@
 ********************************************************************
-* Boot - OS-9 Level One V2 Boot module
+* Boot - OS-9 Level One V2 ROM Boot Module
 *
 * $Id$
 *
@@ -8,7 +8,7 @@
 * 1      Tandy/Microware original version
 
          nam   Boot
-         ttl   OS-9 Level One V2.00 Boot module
+         ttl   OS-9 Level One V2 ROM Boot Module
 
          ifp1
          use   defsfile

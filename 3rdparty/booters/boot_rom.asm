@@ -1,5 +1,5 @@
 ********************************************************************
-* Boot - OS-9 Level Two ROM Boot module
+* Boot - OS-9 Level Two ROM Boot Module
 *
 * $Id$
 *
@@ -8,7 +8,7 @@
 * 1      Created                                        BGP 98/??/??
 
          nam   Boot
-         ttl   OS-9 Level Two ROM Boot module
+         ttl   OS-9 Level Two ROM Boot Module
 
          ifp1
          use   defsfile

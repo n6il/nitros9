@@ -1,5 +1,5 @@
 ********************************************************************
-* Boot - Disto RAMPak boot module
+* Boot - Disto RAMPak Boot Module
 *
 * $Id$
 *
@@ -9,7 +9,7 @@
 * 6      Fixed small bugs, improved speed               BGP 98/10/20
 
          nam   Boot
-         ttl   Disto RAMPak boot module
+         ttl   Disto RAMPak Boot Module
 
 * Disassembled 94/06/25 11:37:47 by Alan DeKok
 
