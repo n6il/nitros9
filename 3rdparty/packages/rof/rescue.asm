@@ -1,12 +1,27 @@
-         nam   RESCUE
-         ttl   Rescue on Fractalus
-
-* Disassembled by Boisy G. Pitre on 95/07/23 10:11:57 via Disasm v1.5
-
+********************************************************************
+* Rescue - Rescue On Fractalus Program
+*
+* $Id$
+*
 * NOTE:  This code assembles to the EXACT same object code found on
 *        the original Rescue on Fractalus disk.
 *
-* Use:   asm rescue.a o=rescue #48K
+*        Header for : RESCUE
+*        Module size: $5B18  #23320
+*        Module CRC : $C4EB06 (Good)
+*        Hdr parity : $6B
+*        Exec. off  : $0013  #19
+*        Data size  : $6000  #24576
+*        Edition    : $30  #48
+*        Ty/La At/Rv: $11 $81
+*        Prog mod, 6809 Obj, re-ent, R/O
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* ???    Disassembled at 10:11:57                       BGP 95/07/23
+
+         nam   Rescue
+         ttl   Rescue On Fractalus Program
 
          ifp1  
          use   defsfile
@@ -16,7 +31,6 @@
 stdin    equ   0
 stdout   equ   1
 stderr   equ   2
-
 
 *** data layout ***
 ccpals   set   $537       palettes
@@ -303,8 +317,7 @@ u35A0    rmb   556
 u37CC    rmb   10292
 size     equ   .
 
-name     equ   *
-         fcs   /RESCUE/
+name     fcs   /RESCUE/
 
 * Genesis!
 start    equ   *
