@@ -4155,7 +4155,7 @@ L2126    leau  <L1E7E,pcr
          puls  pc,u,x
 L1E61    leay  $06,y
          puls  u,x
-         lbra  L1FD6
+         lbra  PI
 L1E68    bsr   L1E9E
          leay  <-$14,y
          leax  <$1B,y
@@ -4173,7 +4173,7 @@ L1E7E    lda   $05,y
          leau  <L1E99,pcr
          lbsr  RCPVAR
          bra   L1E95
-L1E92    lbsr  L1FD6
+L1E92    lbsr  PI
 L1E95    lbra  RLADD
 L1E98    rts   
 L1E99    fcb   $08,$b4,$00,$00,$00
@@ -4208,7 +4208,7 @@ L2127    pshs  x
          cmpb  #$18
          blt   L1EEA
 L1EE1    leay  $06,y
-         lbsr  L1FD6
+         lbsr  PI
          dec   $01,y
          bra   L1F3D
 L1EEA    leay  <-$1A,y
@@ -4257,7 +4257,7 @@ L1F3D    lda   $05,y
          bra   L1F64
 
 L2122    pshs  x
-         lbsr  L1FDD
+         lbsr  PIX
          leax  $0A,y
          bsr   L1F6A
          lda   $05,y
@@ -4277,7 +4277,7 @@ L1F6A    leau  <$1B,y
          lbra  RLMUL
 
 L2123    pshs  x
-         bsr   L1FDD
+         bsr   PIX
          leax  ,y
          bsr   L1F6A
          lda   $05,y
@@ -4285,7 +4285,7 @@ L2123    pshs  x
          bra   L1F62
 
 L2124    pshs  x
-         bsr   L1FDD
+         bsr   PIX
          leax  $0A,y
          leau  <$1B,y
          lbsr  L209F
@@ -4308,30 +4308,34 @@ L1FBE    lbsr  RLDIV
          lda   $05,y
 L1FC3    eora  <u009B
          bra   L1F60
-         fcb   $02
-         fdb   $c90f,$daa2,$fb8e,$fa35
+
+L1FC7    fcb   $02
+         fdb   $c90f,$daa2
+L1FCC    fdb   $fb8e,$fa35
          fcb   $12
-L1FD1    fcb   $06
-         fdb   $e52e,$e0d4
-PI
-L1Fd6    fdb   $338d,$ffed,$16f4
-         fcb   $89
-L1FDD    fcb   $de
-         fdb   $316d
-L1fe0    fdb   $4127,$0a33,$8dff,$e517,$f47c,$17f5
-         fcb   $b2
+
+L1FD1    fcb   $06,$e5,$2e,$e0,$d4
+
+PI       leau  >L1FC7,pcr
+         lbra  RCPVAR
+PIX      ldu   <u0031
+         tst   u0001,u
+         beq   L1FED
+         leau  >L1FCC,pcr
+         lbsr  RCPVAR
+         lbsr  RLMUL
 L1FED    clr   <u009B
          ldb   $05,y
          andb  #$01
          stb   <u009C
          eorb  $05,y
          stb   $05,y
-         bsr   L1FD6
+         bsr   PI
          inc   $01,y
          lbsr  RLCMP
          blt   L2009
          lbsr  L1B7D
-         bsr   L1FD6
+         bsr   PI
          bra   L200B
 L2009    dec   $01,y
 L200B    lbsr  RLCMP
@@ -4341,7 +4345,7 @@ L200B    lbsr  RLCMP
          eora  #$01
          sta   <u009C
          lbsr  L147E
-         bsr   L1FD6
+         bsr   PI
 L201D    dec   $01,y
          lbsr  RLCMP
          ble   L2037
