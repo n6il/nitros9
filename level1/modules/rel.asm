@@ -293,7 +293,7 @@ L263B    sta   ,x+
          bne   L263B
 
 * Copy "OS9 BOOT" to screen area
-         ldx   #ScStart+$10C
+         ldx   #ScStart+$10A
          leay  <BootMsg,pcr
          ldb   #BootMLen
 L2649    lda   ,y+
