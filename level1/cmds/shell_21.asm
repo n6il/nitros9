@@ -158,51 +158,50 @@ L00C9    clr   b,u
 L00CB    decb  
          bpl   L00C9
          rts   
-L00CF    fdb   L0286-*
+L00CF    fdb   Comment-*
          fcs   "*"
-         fdb   L035B-*
+         fdb   Wait-*
          fcs   "W"
-         fdb   L0268-*
+         fdb   Chd-*
          fcs   "CHD"
-         fdb   L0264-*
+         fdb   Chx-*
          fcs   "CHX"
-         fdb   L023E-*
+         fdb   Ex-*
          fcs   "EX"
-         fdb   L04BC-* 
+         fdb   Kill-* 
          fcs   "KILL"
-         fdb   L027E-*
+         fdb   X-*
          fcs   "X"
-         fdb   L0282-*
+         fdb   NOX-*
          fcs   "-X"
-         fdb   L026E-*
+         fdb   Prompt-*
          fcs   "P"
-         fdb   L0271-*
+         fdb   NoPrompt-*
          fcs   "-P"
-         fdb   L0276-*
+         fdb   Echo-*
          fcs   "T"
-         fdb   L027A-*
+         fdb   NoEcho-*
          fcs   "-T"
-         fdb   L04E8-*
+         fdb   SetPr-*
          fcs   "SETPR"
-         fdb   L0209-*
+         fdb   NextCmd-*
          fcs   ";"
          fdb   $0000
-L010A    fcb   $03
-         fcb   $5E       ^ symbol
-         fcb   $A1       ! symbol
-         fdb   L0334-*
+L010A    fdb   Pipe-*
+         fcs   "!"
+         fdb   NextCmd2-*
          fcs   ";"
-         fdb   L034D-*
+         fdb   Backgrnd-*
          fcs   "&"
-         fdb   L032D-*
-         fcb   $8D
-L0116    fdb   L02CE-*
+         fdb   Return-*
+         fcb   $80+C$CR
+L0116    fdb   ErrRedir-*
          fcs   ">>"
-         fdb   L02C9-*
+         fdb   InRedir-*
          fcs   "<"
-         fdb   L02D5-*
+         fdb   OutRedir-*
          fcs   ">"
-         fdb   L030F-*
+         fdb   StkSiz-*
          fcs   "#"
          fdb   $0000
 L0125    fcb   $0d
@@ -312,7 +311,7 @@ L01FF    leas  $02,s
 L0203    cmpa  ,x+
          beq   L0203
          leax  -$01,x
-L0209    andcc #^Carry
+NextCmd  andcc #^Carry
          rts   
 L020C    pshs  y,x
          leay  $02,y
@@ -340,12 +339,13 @@ L0230    lda   ,y+
          bne   L0210
          comb  
          puls  pc,y,x
-L023E    lbsr  L0195
+
+Ex       lbsr  L0195
          clra  
          bsr   L0260
          bsr   L025F
          bsr   L025F
-         bsr   L0286
+         bsr   Comment
          leax  $01,x
          tfr   x,d
          subd  <u0008
@@ -357,27 +357,29 @@ L023E    lbsr  L0195
 L025F    inca  
 L0260    pshs  a
          bra   L02AB
-L0264    lda   #DIR.+EXEC.
+
+Chx      lda   #DIR.+EXEC.
          bra   L026A
-L0268    lda   #DIR.+UPDAT.
+Chd      lda   #DIR.+UPDAT.
 L026A    os9   I$ChgDir 
          rts   
-L026E    clra  
+Prompt   clra  
          bra   L0273
-L0271    lda   #$01
+NoPrompt lda   #$01
 L0273    sta   <u000F
          rts   
-L0276    lda   #$01
+Echo     lda   #$01
          bra   L027B
-L027A    clra  
+NoEcho   clra  
 L027B    sta   <u0010
          rts   
-L027E    lda   #$01
+X        lda   #$01
          bra   L0283
-L0282    clra  
+
+NOX      clra  
 L0283    sta   <u0011
          rts   
-L0286    lda   #C$CR
+Comment  lda   #C$CR
 L0288    cmpa  ,x+
          bne   L0288
          cmpa  ,-x
@@ -410,12 +412,13 @@ L02BE    bsr   L028F
          clrb  
          coma  
          rts   
-L02C9    ldd   #$0001
+InRedir  ldd   #$0001
          bra   L02E3
-L02CE    ldd   #$020D
+ErrRedir ldd   #$020D
          stb   -$02,x
          bra   L02D7
-L02D5    lda   #$01
+
+OutRedir lda   #$01
 L02D7    ldb   #$02
          bra   L02E3
 L02DB    tst   a,u
@@ -442,7 +445,8 @@ L0306    ldb   #PREAD.+READ.+WRITE.
          os9   I$Create 
 L030B    stb   $01,s
 L030D    puls  pc,b,a
-L030F    ldb   #$0D
+
+StkSiz   ldb   #$0D
          stb   -$01,x
          ldb   <u0003
          bne   L02BE
@@ -457,10 +461,10 @@ L030F    ldb   #$0D
          bne   L02BE
 L0328    stb   <u0003
          lbra  L01E9
-L032D    leax  -$01,x
+Return   leax  -$01,x
          lbsr  L03C7
          bra   L0337
-L0334    lbsr  L03C3
+NextCmd2 lbsr  L03C3
 L0337    bcs   L034A
          lbsr  L028F
          bsr   L035C
@@ -471,13 +475,13 @@ L033E    bcs   L034A
          leas  $04,s
 L0349    clrb  
 L034A    lbra  L028F
-L034D    lbsr  L03C3
+Backgrnd lbsr  L03C3
          bcs   L034A
          bsr   L034A
          ldb   #$26
          lbsr  L0495
          bra   L033E
-L035B    clra  
+Wait     clra  
 L035C    pshs  a
 L035E    os9   F$Wait   
          tst   <u000E
@@ -557,7 +561,7 @@ L03FE    ldx   <u0006
          stx   <u0006
          ldx   <u0004
          ldu   $04,s
-         lbsr  L02C9
+         lbsr  InRedir
          bcs   L045F
          ldu   <u0008
          ldd   #$5820
@@ -600,7 +604,7 @@ L045F    coma
 
 L0462    fcc   "/pipe"
          fcb   C$CR
-L0468    pshs  x
+Pipe     pshs  x
          leax  <L0462,pcr
          ldd   #$0103
          lbsr  L02DB
@@ -640,7 +644,8 @@ L04A6    decb
          lbsr  L00BF
          leas  $05,s
          puls  pc,y,x,b,a
-L04BC    bsr   L04CA
+
+Kill     bsr   L04CA
          cmpb  #$02
          bcs   L04E5
          tfr   b,a
@@ -664,7 +669,7 @@ L04DC    lda   ,-x
          bne   L04C9
 L04E3    leas  $02,s
 L04E5    lbra  L02BE
-L04E8    bsr   L04CA
+SetPr    bsr   L04CA
          stb   <u0012
          lbsr  L01E9
          bsr   L04CA
