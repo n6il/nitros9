@@ -19,7 +19,7 @@
 *
 *  11      1994/11/08  L. Curtis Boyle
 * Modified to add current executing/editing module name for Basic09
-* and/or RunB programs
+* and/or RunB programs.
 
          nam   Proc
          ttl   Show process information

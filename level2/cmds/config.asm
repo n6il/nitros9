@@ -1,26 +1,29 @@
 ********************************************************************
-* progname - program module
+* config - Config utility
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  -     Original Tandy distribution version
-*
-*
+*          ????/??/??  ???
+* Original Tandy distribution version.
 
          nam   config
-         ttl   program module       
+         ttl   Config utility
 
 * Disassembled 02/07/06 13:07:34 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 u0001    rmb   1
 u0002    rmb   1
@@ -5990,5 +5993,7 @@ L3163    stu   $01,x
          jmp   $06,s
          rol   $07,s
          fcb   $00 
+
          emod
 eom      equ   *
+         end
