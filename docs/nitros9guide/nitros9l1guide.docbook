@@ -10,7 +10,7 @@
   <!ENTITY make          "TRS-80/Tandy Color Computer">
   <!ENTITY minmem        "64K">
   <!ENTITY DOSCMD        "DOS">
-  <!ENTITY ctrlkey       "CLEAR">
+  <!ENTITY ctrlkey       "<keycap>CLEAR</keycap>">
   <!ENTITY os9guide      SYSTEM "os9guide.book">
   <!ENTITY preface       SYSTEM "intro.preface">
   <!ENTITY chap1         SYSTEM "chap1.chapter">

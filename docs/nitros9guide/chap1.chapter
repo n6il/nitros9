@@ -8,7 +8,7 @@ This version of &os9level; runs on the &make;. To use it you'll need the followi
 </para>
 <itemizedlist mark="bullet">
   <listitem><para>&minmem; &make; </para></listitem>
-  <listitem><para>Disk Drive With Contoller Cartridge</para></listitem>
+  <listitem><para>Disk Drive With Controller Cartridge</para></listitem>
   <listitem><para>&os9level; System Disk</para></listitem>
 </itemizedlist>
 <para>

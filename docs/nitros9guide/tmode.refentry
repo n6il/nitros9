@@ -164,12 +164,14 @@ hexadecimal.</entry>
 </row>
 <row>
 <entry>abort=h</entry>
-<entry>Abort character (normally control C). Numeric value
+<entry>Abort character (normally <keycombo action="simul"><keycap>Control</keycap>
+<keycap>C</keycap></keycombo>). Numeric value
 of character in hexadecimal.</entry>
 </row>
 <row>
 <entry>quit=h</entry>
-<entry>Quit character (normally control E). Numeric value
+<entry>Quit character (normally <keycombo action="simul"><keycap>Control</keycap>
+<keycap>E</keycap></keycombo>). Numeric value
 of character in hexadecimal.</entry>
 </row>
 <row>
