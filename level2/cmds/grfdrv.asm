@@ -22,7 +22,7 @@
 **              MUL's by 8 (longer, but ends up being 12 cycles faster)
 **            - Moved L017C routine to be near Gfx cursor updates (1 cycle
 **              faster their and for Points with Pset buffers as well)
-**            - Moved L0118 routine near Alpha Put area to speed text output
+**            - Moved SysRet routine near Alpha Put area to speed text output
 **              by 4 cycles (whether error or not)
 **            - Modified routine @ L0F04 to save up to 2 cycles per line
 **              of PutBlk
@@ -42,7 +42,7 @@
 **              3 cycles)
 **            - Replaced BRA L0A38 in L0A1C routine with PULS PC,Y,A
 **            - Replaced BRA L0AA6 in L0A75 routine with PULS PC,Y,X,B
-**            - Replaced BRA L0BE1 in L0BA2 routine with CLRB / LBRA L0118
+**            - Replaced BRA L0BE1 in L0BA2 routine with CLRB / LBRA SysRet
 **            - Replaced BRA L1ADD's in L1A9D routines with PULS PC,X,D's
 **              (In Ellipse/Circle/Arc routines)
 **   07/28/93 - Modified L11CA routine to eliminate 1 LBRA (saves 4 cycles)
@@ -514,7 +514,7 @@ L0104    clr   <$0038         Clear group #
          ldx   <$0033         Get offset into last block we used
          lbsr  L0A55          Deallocate that buffer
          bcc   L0104          Keep doing until all are deallocated
-         jmp   >GrfStrt+L0118 Return to system with error if can't
+         jmp   >GrfStrt+SysRet Return to system with error if can't
 L0115    jmp   >GrfStrt+L0F78 Exit system
 
 * Setup GrfDrv memory with data from current window table
@@ -607,7 +607,7 @@ L0179    jmp   >GrfStrt+L150C Update text & gfx cursors if needed
 * screen table
 L019D    ldx   Wt.STbl,y    get screen table
          bpl   L01A0        $FFFF is a flag saying it's unallocated
-         lbsr  L0287        find a screen table
+         lbsr  FScrTbl      find a screen table
          bcs   L01C5        exit on error
          clr   St.ScSiz,x   clear screen size flag: not defined yet
 
@@ -638,7 +638,7 @@ L01B5    equ   *
 * ATD: same next 3 lines as at L03F4
          lbsr  L1377        Call CLS (CHR$(12)) routine
          clrb               No errors
-L01C5    jmp   >GrfStrt+L0118 return to system
+L01C5    jmp   >GrfStrt+SysRet return to system
 
 * Check screen coordinates
 * Entry: X = screen table pointer
@@ -799,7 +799,7 @@ L0264    comb               Window won't fit with existing windows
 L0286    rts   
 
 * Setup a new screen table
-*L0268    bsr   L0287        search for a screen table
+*L0268    bsr   FScrTbl      search for a screen table
 *         bcs   L0286        not available, return
 * X=Screen tbl ptr, Y=Window tbl ptr
 L0268    stx   Wt.STbl,y    save the pointer in window table
@@ -833,7 +833,7 @@ L0287b   ldd   ,y++
          rts                Get back scrn tbl ptr & return
 
 * Search for a empty screen table
-L0287    ldx   #STblBse+1   Point to screen tables+1
+FScrTbl  ldx   #STblBse+1   Point to screen tables+1
          ldd   #$10*256+St.Siz get # table entrys & entry size
 L028D    tst   ,x           already allocated a block?
          bne   Yes          Yes, go to next one
@@ -881,12 +881,12 @@ OVLAP    inc   <$B3         update counter, unused space
          os9   F$AlHRAM     AlHRAM Allocate memory ***********
          bcs   L02EF        no memory, return error
          pshs  b            save starting block #
-         andb  #$3f         modulo 512K
+         andb  #$3F         modulo 512K
          pshs  b            save modulo starting block
          ldb   <$B4         regB now # blocks requested
          decb               set to base 0
          addb  ,s
-         andb  #$3f         final block # modulo 512K
+         andb  #$3F         final block # modulo 512K
          cmpb  ,s+          compare with first block
          blo   OVLAP        overlapped 512K boundary so ask for more RAM
          bsr   DeMost 
@@ -1129,7 +1129,12 @@ L0415    puls  y,x            Restore window table & screen table ptrs
          bcs   L03F4          Not only window, CLS our area before we exit
          bsr   L0417          Only one, deallocate mem for screen if possible
          cmpy  <$002E         Our window table ptr same as current ptr?
-         bne   L03F4          No, Clear our screen & exit
+* Note: The following line was causing our screen to clear which wrote over
+* the $FF value we wrote at the beginning to flag the screen memory as free.
+* This caused a memory leak in certain situations, like:
+* iniz w1 w4;echo>/w1;echo>/w4;deiniz w4 w1
+*         bne   L03F4          No, Clear our screen & exit
+         bne   L03F5          No, just exit
          IFNE  H6309
          clrd                 Yes, clear current window & screen table ptrs
          clrw
@@ -1157,7 +1162,7 @@ L03FCb   sta   ,x+
          bne   L03FCb
          puls  b,x
          ENDC
-L03FC    jmp   >GrfStrt+L0118 Return to system
+L03FC    jmp   >GrfStrt+SysRet Return to system
 
 * CLS our old screen with background color & leave if we weren't only window
 *   on the screen (for Multi-Vue, for example)
@@ -1165,7 +1170,7 @@ L03F4    ldb   St.Back,x      Get background palette reg from screen table
          stb   <$0062         Put into background RGB Data
          lbsr  L1377          CLS the area we were in
 *         clrb                 No errors
-         jmp   >GrfStrt+L0F78 Return to system
+L03F5     jmp   >GrfStrt+L0F78 Return to system
 
 * Called by DWEnd if we were only window on physical screen
 * Entry: Y=window table ptr
@@ -1242,7 +1247,7 @@ L0490    puls  x              Get parent's window table ptr
          bne   L0499          No, exit without error
          sty   <$002E         Make overlay window the current window
 L0499    clrb                 No errors
-L049A    jmp   >GrfStrt+L0118 Return to system
+L049A    jmp   >GrfStrt+SysRet Return to system
 
 * Make sure overlay window coords & size are legit
 L049D    bsr   L04BA          Get pointer to 'root' device window into X
@@ -1369,7 +1374,7 @@ L056E    lbsr  L0177          Map in the window
          ldd   Wt.LStDf,y     get screen logical start
          bsr   L0581          go do it
 L057D    clrb                 No error
-L057E    jmp   >GrfStrt+L0118 return to system
+L057E    jmp   >GrfStrt+SysRet return to system
 
 * This routine is ONLY called from L0516 (CWArea) and L0581 (OWSet)
 * As these routines are not called too often, we can add 10 clock cycles
@@ -1603,7 +1608,7 @@ L0638    jmp   >GrfStrt+L0F78 Return to system, without any errors
 * Font entry point
 L063C    lbsr  L0177        Map in window
          bsr   L0643        Go set font group #
-L0639    jmp   >GrfStrt+L0118 Return to system
+L0639    jmp   >GrfStrt+SysRet Return to system
 
 L0643    ldb   <$0057       get block number for font buffer
          bne   L064A        If there is one, go set it up
@@ -1703,7 +1708,7 @@ L0742    equ   *
          ENDC
          sta   Wt.Attr,y    Store new default attribute
 L0748    clr   <$A9         No error, clear flag & return to system
-         jmp   >GrfStrt+L0118
+         jmp   >GrfStrt+SysRet
 
 * Convert color to allowable ones for screen type
 * NOTE: see if we can swap a/b roles to allow ABX instead of LEAX A,X
@@ -1948,7 +1953,7 @@ L0884    fcb   $00,$0c,$02,$0e,$07,$09,$05,$10
 
 * DefGPB entry point
 L08DC    bsr   L08E1        go do it
-         jmp   >GrfStrt+L0118 return to system
+         jmp   >GrfStrt+SysRet return to system
 
 * Entry point for internal DefGPB (Ex. Overlay window)
 L08E1    ldd   <$80         get buffer length requested
@@ -2192,7 +2197,7 @@ L0A3E    lbsr  L0930         Go search for buffer (returns X=Buffer ptr)
 L0A4D    lda   <$0097        Get flag
          bne   L0A52         Didn't get killed, return to system with error
          clrb                No error
-L0A52    jmp   >GrfStrt+L0118  Return to system
+L0A52    jmp   >GrfStrt+SysRet  Return to system
 
 L0A55    pshs  y,x,b         Preserve regs (Window tbl ptr,gfx bffr ptr,block#)
          lda   Grf.NBlk,x    Get # blocks used
@@ -2440,7 +2445,7 @@ L0BA2    ldb   <$0097       get the block #
 
 L0BE4    comb                 Buffer size too small error
          ldb   #E$BufSiz
-L0BE7    jmp   >GrfStrt+L0118
+L0BE7    jmp   >GrfStrt+SysRet
 
 * GetBlk entry point
 L0BAE    lbsr  L1DF6          Go scale X/Y coords @ <$47-$4A,check if in range
@@ -2759,7 +2764,7 @@ L0CBB    lbsr  L0177        Go map in window & setup some GRFDRV vars
 L0CEE    lbsr  L0E03        ??? Do set up for screen type conversions
          lbsr  L0E97        Do actual PUTting
 L0CF4    clrb               No error & return to system
-L0CF5    jmp   >GrfStrt+L0118
+L0CF5    jmp   >GrfStrt+SysRet
 
 * Place Overlay window's original contents back on screen
 L0CF8    pshs  y            Preserve window table ptr
@@ -3063,7 +3068,7 @@ L0E03    pshs  y              Save GP buffer ptr?
 
 i.iwtyp  comb
          ldb   #E$IWTyp
-         jmp   >GrfStrt+L0118
+         jmp   >GrfStrt+SysRet
 
 * Called from Mouse cursor routine @ L15FE
 L0E14    pshs  y              Preserve GP buffer ptr
@@ -3268,7 +3273,7 @@ L0F20    ldx   <$0072         Get screen addr of current line in GP buffer
 
 * Map GP buffer entry point
 L0F31    lbsr  L0930        find the buffer
-         lbcs  L0118        If error, exit back to system with it
+         lbcs  SysRet       If error, exit back to system with it
          stb   <$0097       save starting block number
          ldb   Grf.NBlk,x   number of blocks in the buffer
          stb   <$0099       save count
@@ -3538,7 +3543,7 @@ L0F4B    bsr   L0F4B.1      do internal alpha-put routine
 L0F78    clrb               No errors
 
 * Return to system (Jumps to [D.Flip0] with X=system stack ptr & A=CC status)
-L0118    tfr   cc,a         save IRQ status for os9p1
+SysRet   tfr   cc,a         save IRQ status for os9p1
          orcc  #IntMasks    Shut off interrupts
          ldx   >WGlobal+G.GrfStk       Get system stack ptr
          clr   >WGlobal+G.GfBusy       Flag that Grfdrv will no longer be task 1
@@ -5109,7 +5114,7 @@ L06A4    ldx   #GrfStrt+L06BC  Point to LSET vector table
 
 L06B7    comb               Return to system with Illegal argument error
          ldb   #E$IllArg
-         jmp   >GrfStrt+L0118
+         jmp   >GrfStrt+SysRet
 
 * Retain "magic" spacing
          IFEQ  H6309
@@ -5244,7 +5249,7 @@ L1679    ldd   <$0047         Get 'working' X coordinate
 
 L1684    lbsr  L1724          Do 'normal' line routine
 L1687    clrb                 No error
-L1688    jmp   >GrfStrt+L0118 Return to system
+L1688    jmp   >GrfStrt+SysRet Return to system
 
 * Swap start & end X coords if backwards ($47=Start, $4B=End)
 L16A3    ldd   <$004B         Get end X coord
@@ -5647,7 +5652,7 @@ L1790    lbsr  I.Line       internal line/bar/box setup
          lbsr  L168D         Do final fast horizontal line: 0,Y -> X,Y
          leas   6,s          Eat stack buffer
          clrb                No error & return
-L17F9    jmp   >GrfStrt+L0118
+L17F9    jmp   >GrfStrt+SysRet
 
 * Bar entry point
 L17FB    lbsr  I.Line       internal line/bar/box routine
@@ -5695,7 +5700,7 @@ L1839    pshs  y,x             Preserve # lines left & screen ptr
          leay  -1,y            Bump line counter
          bne   L1839           Draw until done
          clrb                  No error & return
-L1853    jmp   >GrfStrt+L0118
+L1853    jmp   >GrfStrt+SysRet
 
 * Circle entry point
 L1856    bsr   L1884          Make sure window is graphics
@@ -5983,7 +5988,7 @@ L1A6E    jmp   >GrfStrt+L1B7A
 
 L1A71    leas  <$3E,s
          clrb
-L1A75    jmp   >GrfStrt+L0118
+L1A75    jmp   >GrfStrt+SysRet
 
 * Draw all 4 points that one calculation covers (opposite corners)
 * (Ellipse & Circle)
@@ -6553,7 +6558,7 @@ L1CB7    clrb                 Clear carry as default (no error)
          bne   L1CBF          Done flag, exit without error
 L1CBC    ldb   #E$StkOvf      Stack overflow error
          coma
-L1CBF    jmp   >GrfStrt+L0118
+L1CBF    jmp   >GrfStrt+SysRet
 
 * Move 1 pixel to left (for FFill)
 * <$0028 = full-byte color mask to paint on
@@ -6660,7 +6665,7 @@ DoChecks ldd   <$AF         Get Y value from 1st FFill line
          blo   Not1st       No, draw it
          leas  4,s          We already did this, eat stack & exit w/o error
          clrb
-         jmp   >GrfStrt+L0118
+         jmp   >GrfStrt+SysRet
 
 Not1st   ldd   <$4B         get old coordinate: U=<$0047 already
          pshs  d,x,y,u
