@@ -6,6 +6,7 @@ for OS-9, both Levels One and Two.
 FILE ORGANIZATION
 Sources and bootfiles are separated into the following directories:
 
+	booters/     ..... Source for OS-9 system booters
 	drivers/     ..... Source for various drivers
 	fmgrs/       ..... Source for file managers
 	p2mods/      ..... Source for P2 modules
