@@ -34,12 +34,12 @@ u0003    rmb   1
 DefUID   rmb   1
 u0005    rmb   1
 u0006    rmb   2
-u0008    rmb   2
-u000A    rmb   2
+rdbufptr rmb   2
+buffnext rmb   2
 u000C    rmb   1
-u000D    rmb   256
-u010D    rmb   128
-u018D    rmb   80
+timebuff rmb   256
+linebuff rmb   128
+readbuff rmb   80
 u01DD    rmb   80
 u022D    rmb   32
 size     equ   .
@@ -50,7 +50,6 @@ name     fcs   /Login/
 
 PassFile fcc   "SYS/PASSWORD"
          fcb   C$CR
-         fcc   ",,,,,,,,,,,,,,,"
 WideMsg  fcb   C$LF,C$LF
          IFNE  NitrOS9
          fcc   "Nitr"
@@ -134,7 +133,7 @@ Root     fcc   "...... "
 
 IcptRtn  rti			note, was rts in original code
 
-start    leas  >u010D,u
+start    leas  >linebuff,u
          pshs  y,x
          leax  <IcptRtn,pcr
          os9   F$Icpt   
@@ -144,12 +143,12 @@ start    leas  >u010D,u
          os9   F$SUser  	set user ID to super user
          ENDC
 L0172    puls  y,x
-         lbcs  L02F4
+         lbcs  Exit
          clr   <u0000
          leay  >u01DD,u
-         sty   <u000A
-         leay  >u018D,u
-         sty   <u0008
+         sty   <buffnext
+         leay  >readbuff,u
+         sty   <rdbufptr
          std   ,--s
          beq   L0194
 L018C    lda   ,x+
@@ -172,13 +171,13 @@ L01AB    lda   #READ.
          lda   #READ.
          leax  >PassFile,pcr
          os9   I$Open   
-         lbcs  L02F4
+         lbcs  Exit
          sta   <PassPath
          lda   #$03
          sta   <u0003
          ldd   ,s++
          beq   L01D3
-         ldx   <u0008
+         ldx   <rdbufptr
          lda   ,x
          cmpa  #C$CR
          bne   L0209
@@ -193,8 +192,8 @@ L01E9    lbsr  L032F
 L01EC    dec   <u0003
          leax  >Sorry,pcr
          lbmi  L031F
-         leax  >u018D,u
-         stx   <u0008
+         leax  >readbuff,u
+         stx   <rdbufptr
          leax  >UName,pcr
          ldy   #UNameLen
          lbsr  L0347
@@ -206,13 +205,13 @@ L0212    lbsr  L0325
          bra   L01EC
 L0217    lbsr  L03B9
          bcc   L0253
-         ldx   <u0008
+         ldx   <rdbufptr
          lda   ,x
          cmpa  #C$CR
          bne   L0242
          lda   #C$COMA
          sta   ,x+
-         stx   <u0008
+         stx   <rdbufptr
          lbsr  L0357
          leax  >Pass,pcr
          ldy   #PassLen
@@ -221,8 +220,8 @@ L0217    lbsr  L03B9
          bcs   L020E
          lbsr  L03B9
          bcc   L0253
-L0242    leax  >u018D,u
-         stx   <u0008
+L0242    leax  >readbuff,u
+         stx   <rdbufptr
          lbsr  L03A1
          bcc   L0217
          leax  >nvPass,pcr
@@ -294,7 +293,7 @@ L02DA    lda   ,u+
          ldd   #256
          os9   F$Chain  
          os9   F$PErr   
-L02F4    os9   F$Exit   
+Exit     os9   F$Exit   
 L02F7    ldx   <u0006
          os9   I$ChgDir 
          bcs   L0315
@@ -321,18 +320,18 @@ L0325    ldy   #256
          os9   I$WritLn 
          rts   
 L032F    bsr   L033D
-         lbsr  L0498
-         lbsr  L0498
-         lbsr  L0498
+         lbsr  SpcInBuf
+         lbsr  SpcInBuf
+         lbsr  SpcInBuf
          lbra  L0454
 L033D    lda   ,x+
-         lbsr  L049A
+         lbsr  AinBuf
          leay  -$01,y
          bne   L033D
          rts   
 L0347    bsr   L033D
          lbsr  L04AC
-         ldx   <u0008
+         ldx   <rdbufptr
          ldy   #80
          clra  
          os9   I$ReadLn 
@@ -372,7 +371,7 @@ L0393    pshs  u
          os9   I$Seek   
          puls  u
 L03A1    lda   <PassPath
-         leax  >u010D,u
+         leax  >linebuff,u
          ldy   #128
          os9   I$ReadLn 
          bcs   L03B8
@@ -382,7 +381,7 @@ L03A1    lda   <PassPath
          stx   <u0006
 L03B8    rts   
 L03B9    ldx   <u0006
-         ldy   <u0008
+         ldy   <rdbufptr
 L03BE    lda   ,x+
          cmpa  #C$COMA
          beq   L03D2
@@ -404,14 +403,14 @@ L03DE    lda   ,y+
          cmpa  #C$SPAC
          beq   L03DE
          leay  -$01,y
-         sty   <u0008
+         sty   <rdbufptr
          stx   <u0006
          clrb  
          rts   
 L03ED    lbsr  L0325
 L03F0    lda   <u0002
          beq   L0406
-         leax  >u018D,u
+         leax  >readbuff,u
          ldy   #80
          os9   I$ReadLn 
          bcc   L03ED
@@ -454,10 +453,10 @@ L043C    lda   -$01,x
          lbne  L031B
          sta   ,s
 L0452    puls  pc,y,x,b,a
-L0454    leax  u000D,u
-         os9   F$Time   
+L0454    leax  timebuff,u
+         os9   F$Time   		get current time
          bsr   Y2K
-         bsr   L0498
+         bsr   SpcInBuf
          bsr   L0461
          bra   L04A4
 L0461    bsr   L0471
@@ -474,64 +473,49 @@ CntyLp   subb  #100			subtract
 GotCntry addb  #100
          stb   ,x
          tfr   a,b
-
-*         ldb   ,x
-*         cmpb  #100
-*         blo   L1900
-*         subb  #100
-*         cmpb  #100
-*         blo   L2000
-*L2100    subb  #100
-*         stb   ,x
-*         ldb   #21
-*         bra   PrCnty
-*L1900    stb   ,x
-*         ldb   #19
-*         bra   PrCnty
-*L2000    stb   ,x
-*         ldb   #20
-
-PrCnty   bsr   Slash
+PrCnty   bsr   Byt2ASC
 L0469    bsr   L0471
-         bsr   L046D
-L046D    lda   #'/
-L046F    bsr   L049A
-L0471    ldb   ,x+
+         bsr   Slash
 Slash    lda   #'/
+L046F    bsr   AinBuf			add slash to buffer
+L0471    ldb   ,x+
+Byt2ASC  lda   #$2F
          clr   <u000C
 L0477    inca  
-         subb  #$64
+         subb  #100
          bcc   L0477
          bsr   L048D
          lda   #$3A
 L0480    deca  
-         addb  #$0A
+         addb  #10
          bcc   L0480
-         bsr   L049A
+         bsr   AinBuf
          tfr   b,a
-         adda  #$30
-         bra   L049A
+         adda  #'0
+         bra   AinBuf
 L048D    inc   <u000C
-         cmpa  #$30
-         bne   L049A
+         cmpa  #'0
+         bne   AinBuf
          dec   <u000C
-         bne   L049A
+         bne   AinBuf
          rts   
-L0498    lda   #C$SPAC
-L049A    pshs  x
-         ldx   <u000A
+
+SpcInBuf lda   #C$SPAC
+AinBuf   pshs  x
+         ldx   <buffnext
          sta   ,x+
-         stx   <u000A
+         stx   <buffnext
          puls  pc,x
+
 L04A4    pshs  a
          lda   #C$CR
-         bsr   L049A
+         bsr   AinBuf
          puls  a
 L04AC    pshs  y,x,b,a
          leax  >u01DD,u
-         ldd   <u000A
-         stx   <u000A
-         subd  <u000A
+         ldd   <buffnext
+         stx   <buffnext
+         subd  <buffnext
          tfr   d,y
          lda   #$01
          os9   I$WritLn 
