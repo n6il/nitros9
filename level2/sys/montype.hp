@@ -2,6 +2,6 @@
 Syntax: Montype [<opts>]
 Usage : Set monitor type 
 Opts  :
-  r = rgb monitor
-  c = composite monitor
-  m = monochrome monitor
+  -r = rgb monitor
+  -c = composite monitor
+  -m = monochrome monitor
