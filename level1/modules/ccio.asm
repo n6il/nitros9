@@ -52,28 +52,28 @@ start    lbra  Init
 *    CC = carry set on error
 *    B  = error code
 *
-Init     stu   >D.KbdSta		store devmem ptr
-         clra				clear A
-         leax  <V.SCF,u			point to memory after V.SCF
-         ldb   #$5D			get counter
-L002E    sta   ,x+			clear mem
-         decb				decrement counter
-         bne   L002E			continue if more
-         coma				A = $FF
-         comb				B = $FF
+Init     stu   >D.KbdSta	store devmem ptr
+         clra			clear A
+         leax  <V.SCF,u		point to memory after V.SCF
+         ldb   #$5D		get counter
+L002E    sta   ,x+		clear mem
+         decb			decrement counter
+         bne   L002E		continue if more
+         coma			A = $FF
+         comb			B = $FF
          stb   <V.Caps,u
          std   <V.LKeyCd,u
          std   <V.2Key2,u
          lda   #60
          sta   <V.ClkCnt,u
-         leax  >AltIRQ,pcr		get IRQ routine ptr
-         stx   >D.AltIRQ		store in AltIRQ
-         leax  >SetDsply,pcr		get display vector
-         stx   <V.DspVct,u		store in vector address
-         leax  >XY2Addr,pcr		get address of XY2Addr
+         leax  >AltIRQ,pcr	get IRQ routine ptr
+         stx   >D.AltIRQ	store in AltIRQ
+         leax  >SetDsply,pcr	get display vector
+         stx   <V.DspVct,u	store in vector address
+         leax  >XY2Addr,pcr	get address of XY2Addr
          stx   <V.CnvVct,u
-         ldd   <IT.PAR,y		get parity and baud
-         lbra  L05CE			process them
+         ldd   <IT.PAR,y	get parity and baud
+         lbra  L05CE		process them
 
 * Term
 *
@@ -226,7 +226,7 @@ L0158    clr   V.WAKE,u		clear process to wake flag
 
 L015C    clra
          clrb
-         std   <V.ShftDn,u		SHIFT/CTRL flag; 0=NO $FF=YES
+         std   <V.ShftDn,u	SHIFT/CTRL flag; 0=NO $FF=YES
          std   <V.KeyFlg,u
 * %00000111-Column # (Output, 0-7)
 * %00111000-Row # (Input, 0-6)
@@ -565,14 +565,14 @@ DoVDG
          stb   >$FFC0
          stb   >$FFC2
          stb   >$FFC4
-         lda   <V.ScrnA,u		get pointer to alpha screen
+         lda   <V.ScrnA,u	get pointer to alpha screen
          bra   L0401
 
 * Set up VDG screen for graphics
 DoGfx    stb   >$FFC0
          stb   >$FFC3
          stb   >$FFC5
-         lda   <V.SBAdd,u		get pointer to graphics screen
+         lda   <V.SBAdd,u	get pointer to graphics screen
 
 L0401    ldb   #$07
          ldx   #$FFC6
@@ -627,7 +627,7 @@ L0439    cmpa  #SS.EOF		EOF?
          lbra  JmpCO
 
 * Return key sense information
-SSKYSNS  ldb   <V.KySns,u		get key sense info
+SSKYSNS  ldb   <V.KySns,u	get key sense info
          stb   R$A,x		put in caller's A
          clrb
          rts
@@ -764,8 +764,8 @@ L0517    lsra
 *    CC = carry set on error
 *    B  = error code
 *
-SetStat  sta   <V.WrChr,u		save function code
-         ldx   PD.RGS,y			get caller's regs
+SetStat  sta   <V.WrChr,u	save function code
+         ldx   PD.RGS,y		get caller's regs
          cmpa  #SS.ComSt
          lbeq  SSCOMST
          cmpa  #SS.AAGBf
@@ -1072,12 +1072,12 @@ L07A7    anda  #$03		mask out all but 2 bits (4 colors)
 
 * Erase graphics screen
 Do13
-EraseGfx clrb				value to clear screen with
+EraseGfx clrb			value to clear screen with
 L07B2    ldx   <V.SBAdd,u
-         leax  >6144+1,x		point to end of gfx mem + 1
-L07B9    stb   ,-x			clear
-         cmpx  <V.SBAdd,u		X = to start?
-         bhi   L07B9			if not, continue
+         leax  >6144+1,x	point to end of gfx mem + 1
+L07B9    stb   ,-x		clear
+         cmpx  <V.SBAdd,u	X = to start?
+         bhi   L07B9		if not, continue
 * Home Graphics cursor
 Do14     clra
          clrb
