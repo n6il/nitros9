@@ -18,6 +18,7 @@
          ifp1
          use   defsfile
 	 use   scfdefs
+	 use   cciodefs
          endc
 
 tylg     set   Drivr+Objct
@@ -106,18 +107,17 @@ start    lbra  Init
 *
 Init     stu   >D.KbdSta		store devmem ptr
          clra				clear A
-         leax  V.SCF,u			point to memory after V.SCF
-*         leax  <u001D,u
+         leax  <V.SCF,u			point to memory after V.SCF
          ldb   #$5D			get counter
 L002E    sta   ,x+			clear mem
-         decb
-         bne   L002E
-         coma                          A = $FF
-         comb                          B = $FF
-         stb   <u0050,u
+         decb				decrement counter
+         bne   L002E			continue if more
+         coma				A = $FF
+         comb				B = $FF
+         stb   <VD.Caps,u
          std   <u005F,u
          std   <u0061,u
-         lda   #$3C
+         lda   #60
          sta   <u0051,u
          leax  >AltIRQ,pcr		get IRQ routine ptr
          stx   >D.AltIRQ		store in AltIRQ
@@ -154,15 +154,15 @@ Term     pshs  cc
 *    CC = carry set on error
 *    B  = error code
 *
-Read     leax  <u007A,u
-         ldb   <IBufTail,u	get tail pointer
+Read     leax  <VD.InBuf,u	point X to input buffer
+         ldb   <VD.IBufT,u	get tail pointer
          orcc  #IRQMask		mask IRQ
-         cmpb  <IBufHead,u	same as head pointer
+         cmpb  <VD.IBufH,u	same as head pointer
          beq   Put2Bed		if so, buffer is empty, branch to sleep
          abx			X now points to curr char
          lda   ,x		get char
          bsr   L009D		check for tail wrap
-         stb   <IBufTail,u	store updated tail
+         stb   <VD.IBufT,u	store updated tail
          andcc #^(IRQMask+Carry)	unmask IRQ
          rts
 
@@ -186,7 +186,9 @@ L009D    incb
          clrb
 L00A3    rts
 
+*
 * IRQ routine for keyboard
+*
 AltIRQ   ldu   >D.KbdSta	get keyboard static
          ldb   <u0032,u
          beq   L00B7
@@ -216,7 +218,7 @@ L00DA    stb   <u006D,u
          comb  
          sta   <u0060,u
          std   <u0061,u
-L00E4    jmp   [>D.Clock]
+L00E4    jmp   [>D.Clock]	jump into clock module
 L00E8    comb
          stb   $02,x
          ldb   ,x
@@ -242,15 +244,15 @@ L010E    sta   <u006F,u
          ldb   #$05
          tst   <u006B,u
          bne   L0105
-         ldb   #$3C
+         ldb   #60
 L011A    stb   <u0051,u
-         ldb   <IBufHead,u
-         leax  <u007A,u
+         ldb   <VD.IBufH,u
+         leax  <VD.InBuf,u
          abx
          lbsr  L009D		check for tail wrap
-         cmpb  <IBufTail,u
+         cmpb  <VD.IBufT,u
          beq   L012F
-         stb   <IBufHead,u
+         stb   <VD.IBufH,u
 L012F    sta   ,x
          beq   L014F
          cmpa  V.PCHR,u
@@ -312,7 +314,7 @@ L0199    sta   <u005F,u
          bne   L01E9
          adda  #$40
          ldb   <u0066,u
-         eorb  <u0050,u
+         eorb  <VD.Caps,u
          andb  #$01
          bne   L01E9
          adda  #$20
@@ -353,7 +355,7 @@ L01FA    andcc #^Negative
 L01FD    inc   <u006D,u
          ldb   <u006B,u
          bne   L0208
-         com   <u0050,u
+         com   <VD.Caps,u
 L0208    orcc  #Negative
 L020A    rts
 L020B    pshs  b,a
@@ -532,50 +534,50 @@ L0321    fcb   $00,$40,$60	ALT @ `
 *    CC = carry set on error
 *    B  = error code
 *
-Write    ldb   <u0025,u		are we in the process of getting parameters?
-         bne   L03A3		yes, go process
-         sta   <WrChar,u	save character to write
+Write    ldb   <VD.NGChr,u	are we in the process of getting parameters?
+         bne   PrmHandl		yes, go process
+         sta   <VD.WrChr,u	save character to write
          cmpa  #C$SPAC		space or higher?
          bcc   GoCo		yes, normal write
          cmpa  #$1E		escape sequence $1E or $1F?
-         bcc   L03B8		yes, go process
-         cmpa  #$0F		??
-         lbcc  L063B		branch if higher or same
+         bcc   Escape		yes, go process
+         cmpa  #$0F		GFX codes?
+         lbcc  GfxDispatch	branch if so
          cmpa  #C$BELL		bell?
          lbeq  Ding		if so, ring bell
-* Here we call the Co-module to write the character
-GoCo     lda   <CoInUse,u	get CO32/CO80 flag
+* Here we call the CO-module to write the character
+GoCo     lda   <VD.CurCo,u	get CO32/CO80 flag
 CoWrite  ldb   #$03		we want to write
-CallCo   leax  <CoEnt,u		get base pointer to CO-entries
+CallCO   leax  <CoEnt,u		get base pointer to CO-entries
          ldx   a,x		get pointer to CO32/CO80
          beq   NoIOMod		branch if no module
-         lda   <WrChar,u	get character to write
+         lda   <VD.WrChr,u	get character to write
 L039D    jmp   b,x		call i/o subroutine
 NoIOMod  comb  
          ldb   #E$MNF
          rts 
 
 * Parameter handler
-L03A3    cmpb  #$02		two parameters left?
+PrmHandl cmpb  #$02		two parameters left?
          beq   L03B0		branch if so
-         sta   <u0029,u		else store in VD.NChar
-         clr   <u0025,u		clear parameter counter (?)
-         jmp   [<u0026,u]
-L03B0    sta   <u0028,u		store in VD.NChr2
-         dec   <u0025,u		decrement parameter counter (?)
+         sta   <VD.NChar,u	else store in VD.NChar
+         clr   <VD.NGChr,u	clear parameter counter
+         jmp   [<VD.RTAdd,u]	jump to return address
+L03B0    sta   <VD.NChr2,u	store in VD.NChr2
+         dec   <VD.NGChr,u	decrement parameter counter
          clrb
          rts
 
-L03B8    beq   L03C5
-         leax  <L03C7,pcr
+Escape   beq   L03C5		if $1E, we conveniently ignore it
+         leax  <COEscape,pcr	else it's $1F... set up to get next char
 L03BD    ldb   #$01
-L03BF    stx   <u0026,u
-         stb   <u0025,u
+L03BF    stx   <VD.RTAdd,u
+         stb   <VD.NGChr,u
 L03C5    clrb
          rts
 
-L03C7    ldb   #$03
-         lbra  L055F
+COEscape ldb   #$03		write offset into CO-module
+         lbra  JmpCO
 
 L03CC    pshs  x,a
          stb   <u002F,u
@@ -584,20 +586,23 @@ L03CC    pshs  x,a
          ora   ,s+
          tstb
          bne   L03DE
-         ora   <trulocas,u
+         ora   <VD.CFlag,u
 L03DE    sta   >PIA1Base+2
          sta   <u0030,u
          tstb
          bne   L03F5
+* Bang %00010101 to VDG
          stb   >$FFC0
          stb   >$FFC2
          stb   >$FFC4
          lda   <u001D,u
          bra   L0401
+
+* Bang %00101001 to VDG
 L03F5    stb   >$FFC0
          stb   >$FFC3
          stb   >$FFC5
-         lda   <u0033,u
+         lda   <VD.CurBf,u
 L0401    ldb   #$07
          ldx   #$FFC6
          lsra
@@ -628,12 +633,12 @@ CO80     fcs   /CO80/
 *    CC = carry set on error
 *    B  = error code
 *
-GetStat  sta   <WrChar,u
+GetStat  sta   <VD.WrChr,u
          cmpa  #SS.Ready
          bne   L0439
-         lda   <IBufTail,u		get buff tail ptr
-         suba  <IBufHead,u		Num of chars ready in A
-         lbeq  L0660			branch if empty
+         lda   <VD.IBufT,u		get buff tail ptr
+         suba  <VD.IBufH,u		Num of chars ready in A
+         lbeq  NotReady			branch if empty
 SSEOF    clrb	
          rts
 L0439    cmpa  #SS.EOF
@@ -647,8 +652,8 @@ L0439    cmpa  #SS.EOF
          beq   SSKYSNS
          cmpa  #SS.DStat
          lbeq  SSDSTAT
-         ldb   #$06
-         lbra  L055F
+         ldb   #$06		getstat entry into CO-module
+         lbra  JmpCO
 
 SSKYSNS  ldb   <u006A,u		get key sense info
          stb   R$A,x		put in caller's A
@@ -656,9 +661,9 @@ SSKYSNS  ldb   <u006A,u		get key sense info
          rts
 
 SSSCSIZ  clra
-         ldb   <ScreenX,u
+         ldb   <VD.Col,u
          std   R$X,x
-         ldb   <ScreenY,u
+         ldb   <VD.Row,u
          std   R$Y,x
          clrb
          rts
@@ -742,7 +747,7 @@ L04F6    pshs  b
          stb   $01,x
          ldd   <u0045,u
          std   $06,x
-         ldd   <u0033,u
+         ldd   <VD.CurBf,u
          std   $04,x
          clrb
 L050E    rts
@@ -759,7 +764,7 @@ L0517    lsra
          mul
          addb  ,s+
          adca  #$00
-         ldy   <u0033,u
+         ldy   <VD.CurBf,u
          leay  d,y
          lda   ,s
          sty   ,s
@@ -779,8 +784,8 @@ L0517    lsra
 *    CC = carry set on error
 *    B  = error code
 *
-SetStat  sta   <WrChar,u
-         ldx   PD.RGS,y
+SetStat  sta   <VD.WrChr,u		save function code
+         ldx   PD.RGS,y			get caller's regs
          cmpa  #SS.ComSt
          lbeq  SSCOMST
          cmpa  #SS.AAGBf
@@ -796,36 +801,36 @@ L0558    stb   <u006C,u
 L055B    clrb
 L055C    rts
 
-CoGetStt ldb   #$09			co-module setstat
-L055F    pshs  b
-         lda   <CoInUse,u		get Co-module in use
-         lbsr  CallCo
+CoGetStt ldb   #$09			CO-module setstat
+JmpCO    pshs  b
+         lda   <VD.CurCo,u		get CO-module in use
+         lbsr  CallCO
          puls  a
          bcc   L055B
-         tst   <GRFOEnt,u		GRFO linked?
+         tst   <VD.GRFOE,u		GRFO linked?
          beq   L055C
          tfr   a,b
          clra				GRFO address offset in statics
-         lbra  CallCo			call it
+         lbra  CallCO			call it
 
 * Reserve an additional graphics buffer (up to 2)
-SSAAGBF  ldb   <u0031,u
-         lbeq  L0660
-         pshs  b		get buffer number
-         leay  <u0037,u
-         ldd   ,y
-         beq   L058E
-         leay  $02,y
-         inc   ,s
-         ldd   ,y
-         bne   L059E
-L058E    lbsr  L0685
-         bcs   L05A1
-         std   ,y
-         std   R$X,x
+SSAAGBF  ldb   <VD.Rdy,u	was initial buffer allocated with $0F?
+         lbeq  NotReady		branch if not
+         pshs  b		save buffer number
+         leay  <VD.AGBuf,u	point to additional graphics buffers
+         ldd   ,y		first entry empty?
+         beq   L058E		branch if so
+         leay  $02,y		else move to next entry
+         inc   ,s		increment B on stack
+         ldd   ,y		second entry empty?
+         bne   L059E		if not, no room for more... error out
+L058E    lbsr  GetMem		allocate graphics buffer memory
+         bcs   L05A1		branch if error
+         std   ,y		save new buffer pointer at ,Y
+         std   R$X,x		and in caller's X
          puls  b		get buffer number off stack
          clra			clear hi byte of D
-         std   R$Y,x		and put in caller's Y
+         std   R$Y,x		and put in caller's Y (buffer number)
          clrb			call is ok
          rts			and return
 L059E    ldb   #E$BMode
@@ -833,16 +838,16 @@ L059E    ldb   #E$BMode
 L05A1    puls  pc,a
 
 * Select a graphics buffer
-SSSLGBF  ldb   <u0031,u
-         lbeq  L0660
-         ldd   R$Y,x		get buffer number from caller
+SSSLGBF  ldb   <VD.Rdy,u	was initial buffer allocated with $0F?
+         lbeq  NotReady		branch if not
+         ldd   R$Y,x		else get buffer number from caller
          cmpd  #$0002		compare against high
          bhi   BadMode		branch if error
-         leay  <u0035,u
+         leay  <VD.GBuff,u	point to base graphics buffer address
          lslb			multiply by 2
          ldd   b,y		get pointer
          beq   BadMode		branch if error
-         std   <u0033,u		else save in current
+         std   <VD.CurBf,u	else save in current
          ldd   R$X,x		get select flag
          beq   L05C3		if zero, do nothing
          ldb   #$01		else set display flag
@@ -860,7 +865,7 @@ L05CE    bita  #$02		CO80?
          bita  #$01		true lowercase bit set?
          bne   GoCO32		branch if so
          clrb			true lower case FALSE
-GoCO32   stb   <trulocas,u	save flag for later
+GoCO32   stb   <VD.CFlag,u	save flag for later
          lda   #$02		CO32 is loaded bit
          ldx   #$2010		32x16
          pshs  u,y,x,a
@@ -870,11 +875,11 @@ GoCO80   lda   #$04		'CO80 is loaded' bit
          ldx   #$5018		80x24
          pshs  u,y,x,a
          leax  >CO80,pcr
-L05F4    bsr   L0601		load co-module if not already loaded
+L05F4    bsr   L0601		load CO-module if not already loaded
          puls  u,y,x,a
          bcs   L0600
-         stx   <ScreenX,u	save screen size
-         sta   <CoInUse,u	current module in use? ($02=CO32, $04=C080)
+         stx   <VD.Col,u	save screen size
+         sta   <VD.CurCo,u	current module in use? ($02=CO32, $04=C080)
 L0600    rts
 L0601    bita  <u0070,u		module loaded?
          beq   L0608		branch if not
@@ -894,8 +899,8 @@ L061F    leax  <CoEnt,u		get base pointer to CO-entries
          lda   ,s		get A off stack
          sty   a,x		save off CO32/CO80 entry point
          puls  y,x,a
-         ldb   #$00		co-module init offset
-         lbra  CallCo		call it
+         ldb   #$00		CO-module init offset
+         lbra  CallCO		call it
 
 * Link to subroutine
 LinkSub  pshs  u
@@ -905,29 +910,35 @@ LinkSub  pshs  u
 
 L0637    fdb   $0055,$aaff
 
-L063B    cmpa  #$15		GRFO-handled code?
+GfxDispatch
+         cmpa  #$15		GRFO-handled code?
          bcc   GoGrfo		branch if so
          cmpa  #$0F		display graphics code?
          beq   Do0F		branch if so
          suba  #$10
-         bsr   L065B
-         bcs   L0663
-         leax  <L0651,pcr
-         lsla
-         ldd   a,x
-         jmp   d,x
+         bsr   L065B		check if first gfx screen was alloc'ed
+         bcs   L0663		if not, return with error
+         leax  <gfxtbl,pcr	else point to jump table
+         lsla			multiply by two
+         ldd   a,x		get address of routine
+         jmp   d,x		jump to it
 
-L0651    fdb   $0140,$00fd,$0111,$0160,$016f
+* Jump table for graphics codes $10-$14
+gfxtbl   fdb   Do10-gfxtbl	$10 - Preset Screen
+         fdb   Do11-gfxtbl	$11 - Set Color
+         fdb   Do12-gfxtbl	$12 - End Graphics
+         fdb   Do13-gfxtbl	$13 - Erase Graphics
+         fdb   Do14-gfxtbl	$14 - Home Graphics Cursor
 
-L065B    ldb   <u0031,u
+L065B    ldb   <VD.Rdy,u		ready?
          bne   L0606
-L0660    comb
+NotReady comb
          ldb   #E$NotRdy
 L0663    rts
 
 GoGrfo   bsr   L065B
          bcs   L0663
-         ldx   <GRFOEnt,u		get GRFO entry point
+         ldx   <VD.GRFOE,u		get GRFO entry point
          bne   L0681			branch if not zero
          pshs  y,a			else preserve regs
          bne   L067F
@@ -935,21 +946,22 @@ GoGrfo   bsr   L065B
          bsr   LinkSub			link to GRFO
          bcc   L067B			branch if ok
          puls  pc,y,a			else exit with error
-L067B    sty   <GRFOEnt,u		save module entry pointer
+L067B    sty   <VD.GRFOE,u		save module entry pointer
 L067F    puls  y,a			restore regs
 L0681    clra				A = GRFO address offset in statics
          lbra  CoWrite
 
-L0685    pshs  u
-         ldd   #6144+256
-         os9   F$SRqMem
-         bcc   L0691
-         puls  pc,u
-L0691    tfr   u,d
-         puls  u
-         tfr   a,b
-         bita  #$01
-         beq   L069F
+* Allocate GFX mem -- we must allocate on a 512 byte page boundary
+GetMem   pshs  u			save static pointer
+         ldd   #6144+256		allocate graphics memory + 1 page
+         os9   F$SRqMem			do it
+         bcc   L0691			branch if ok
+         puls  pc,u			else return with error
+L0691    tfr   u,d			move mem ptr to D
+         puls  u			restore statics
+         tfr   a,b			move high 8 bits to lower
+         bita  #$01			odd page?
+         beq   L069F			branch if not
          adda  #$01
          bra   L06A1
 L069F    addb  #$18
@@ -958,32 +970,33 @@ L06A1    pshs  u,a
          clrb
          tfr   d,u
          ldd   #256
-         os9   F$SRtMem
+         os9   F$SRtMem			return page
          puls  u,a
-         bcs   L06B3
+         bcs   L06B3			branch if error
          clrb
 L06B3    rts
 
+* $0F - display graphics
 Do0F     leax  <DispGfx,pcr
          ldb   #$02
          lbra  L03BF
 
-DispGfx  ldb   <u0031,u
-         bne   L06D1
-         bsr   L0685
-         bcs   L06EF
-         std   <u0033,u
-         std   <u0035,u
-         inc   <u0031,u
-         lbsr  L07B1
-L06D1    lda   <u0029,u
+DispGfx  ldb   <VD.Rdy,u		already allocated initial buffer?
+         bne   L06D1			branch if so
+         bsr   GetMem			else get graphics memory
+         bcs   L06EF			branch if error
+         std   <VD.CurBf,u		save memory
+         std   <VD.GBuff,u		and GBuff
+         inc   <VD.Rdy,u		ok, we're ready
+         lbsr  EraseGfx			clear gfx mem
+L06D1    lda   <VD.NChar,u
          sta   <u004B,u
          anda  #$03
          leax  >L0637,pcr
          lda   a,x
          sta   <u0047,u
          sta   <u0048,u
-         lda   <u0028,u
+         lda   <VD.NChr2,u
          cmpa  #$01
          bls   L06F0
          comb
@@ -997,7 +1010,7 @@ L06F0    tsta
          lda   #$01
          sta   <u0024,u
          lda   #$E0
-         ldb   <u0029,u
+         ldb   <VD.NChar,u
          andb  #$08
          beq   L0709
          lda   #$F0
@@ -1017,7 +1030,7 @@ L0723    sta   <u0024,u
          leax  <L0746,pcr
 L072D    stb   <u0044,u
          stx   <u0042,u
-         ldb   <u0029,u
+         ldb   <VD.NChar,u
          andb  #$04
          lslb  
          pshs  b
@@ -1028,47 +1041,63 @@ L072D    stb   <u0044,u
 L0742    fcb   $c0,$30,$0c,$03
 L0746    fcb   $80,$40,$20,$10,$08,$04,$02,$01
 
-* I Think this is code
-         fcb   $30,$8C,$03,$16,$fC,$69,$6f,$C8,$28
-         fcb   $A6,$C8,$24,$2B,$03,$6C,$C8,$28,$16
-         fcb   $FF,$6F,$30,$C8,$35,$10,$8E,$00,$00
-         fcb   $C6,$03,$34,$44
-
-L076D    ldd   #6144		size of graphics screen
-         ldu   ,x++
-         beq   L077A
-         sty   -$02,x
-         os9   F$SRtMem
-L077A    dec   ,s
-         bgt   L076D
-         ldu   ,x
-         beq   L0788
-         ldd   #512
-         os9   F$SRtMem
-L0788    puls  u,b
-         clra
-         sta   <u0031,u
-         lbra  L03CC
-         leax  <L0797,pcr
+* $11 - Set Color
+Do11     leax  <SetColor,pcr	set up return address
          lbra  L03BD
-L0797    lda   <u0029,u
+
+SetColor clr   <VD.NChr2,u
+         lda   <u0024,u
+         bmi   L075F
+         inc   <VD.NChr2,u
+L075F    lbra  L06D1
+
+* End graphics
+Do12     leax  <VD.GBuff,u	point to first buffer
+         ldy   #$0000		Y = 0
+         ldb   #$03		free 3 gfx screens max
+         pshs  u,b
+L076D    ldd   #6144		size of graphics screen
+         ldu   ,x++		get address of graphics screen
+         beq   L077A		branch if zero
+         sty   -$02,x		else clear entry
+         os9   F$SRtMem		and return memory
+L077A    dec   ,s		decrement counter
+         bgt   L076D		keep going if not end
+         ldu   ,x		flood fill buffer?
+         beq   L0788		branch if not allocated
+         ldd   #512		else get size
+         os9   F$SRtMem		and free memory
+L0788    puls  u,b		restore regs
+         clra
+         sta   <VD.Rdy,u	gfx mem no longer alloced
+         lbra  L03CC
+
+Do10     leax  <Preset,pcr	set up return address
+         lbra  L03BD
+
+Preset   lda   <VD.NChar,u
          tst   <u0024,u
          bpl   L07A7
          ldb   #$FF
          anda  #$01
-         beq   L07B1
+         beq   EraseGfx
          bra   L07B2
+
 L07A7    anda  #$03
          leax  >L0637,pcr
          ldb   a,x
          bra   L07B2
-L07B1    clrb
-L07B2    ldx   <u0033,u
-         leax  >6144+1,x
-L07B9    stb   ,-x
-         cmpx  <u0033,u
-         bhi   L07B9
-         clra
+
+* Erase graphics screen
+Do13
+EraseGfx clrb				value to clear screen with
+L07B2    ldx   <VD.CurBf,u
+         leax  >6144+1,x		point to end of gfx mem + 1
+L07B9    stb   ,-x			clear
+         cmpx  <VD.CurBf,u		X = to start?
+         bhi   L07B9			if not, continue
+* Home Graphics cursor
+Do14     clra
          clrb
          std   <u0045,u
          rts
