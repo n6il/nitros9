@@ -10,7 +10,7 @@ DEFS		= $(shell $(CD) DEFS; make showobjs)
 SYSBIN		= $(shell $(CD) SYS; make showbinobjs)
 SYSTEXT		= $(shell $(CD) SYS; make showtextobjs)
 ROOTFILES	= startup upgrade_song
-SYSGO		= MODULES/cc3go
+SYSGO		= cc3go
 
 PACKAGENAME	= $(RELEASE).zip
 DSK1		= $(RELEASE)_ds40_1.dsk
@@ -50,7 +50,7 @@ dskcopy: dsk
 	$(CP) $(DSK1) $(DSK2) $(PACKAGENAME) $(DSKDIR)
 
 $(PACKAGENAME): $(DSK1) $(DSK2)
-	$(ZIP) $(PACKAGENAME) $(DSK1) $(DSK2) ReadMe ChangeLog
+	$(ARCHIVE) $(PACKAGENAME) $(DSK1) $(DSK2) ReadMe ChangeLog
 
 $(DSK1):
 	-$(RM) $(DSK1)
@@ -59,8 +59,10 @@ $(DSK1):
 	$(MAKDIR) $(DSK1),CMDS
 	$(MAKDIR) $(DSK1),SYS
 	$(MAKDIR) $(DSK1),DEFS
-	$(CP) $(SYSGO) $(DSK1),
+	$(CP) MODULES/$(SYSGO) $(DSK1),
+	$(OS9ATTR) $@,$(SYSGO) -ewr -pepr
 	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK1),CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR) $@,CMDS/$(file) -ewr -pepr;)
 	$(CD) SYS; $(CP) $(SYSBIN) ../$(DSK1),SYS
 	$(CD) SYS; $(CPL) $(SYSTEXT) ../$(DSK1),SYS
 	$(CD) DEFS; $(CPL) $(DEFS) ../$(DSK1),DEFS
