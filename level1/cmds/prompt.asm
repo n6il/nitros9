@@ -34,7 +34,7 @@ name     fcs   /Prompt/
 
 cr       fcb   C$CR
 
-start    decb			subtract CR from param length
+start    subd  #$0001		subtract CR from param length
          beq   readkey		if zero, don't print anything
          clra			clear upper 8 bits
          tfr   d,y		transfer length to Y
