@@ -131,7 +131,8 @@ clrloop  clr   ,x+
 
 * Paul Jerkatis suggested non-shareable attribute
 * in case of access conflicts
-open     lda   #updat.+dir.+share. update, non-share mode
+#open     lda   #updat.+dir.+share. update, non-share mode
+open     lda   #updat.+dir. update
          os9   I$Open     open the directory
          lbcs  out        exit with error
          sta   <path      else save the path number
