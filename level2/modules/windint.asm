@@ -45,17 +45,17 @@ name     fcs   /WindInt/
 *         Byte 3-4: Vector offset of routine from Byte 1
 
 L0027    fcb   7,$04      DWSet
-         fdb   L03AE-*+2
+         fdb   DWSet-*+2
          fcb   0,$10      Select
-         fdb   L0549-*+2
+         fdb   Select-*+2
          fcb   7,$0A      OWSet
-         fdb   L049C-*+2
+         fdb   OWSet-*+2
          fcb   0,$0C      OWEnd
-         fdb   L04FC-*+2
+         fdb   OWEnd-*+2
          fcb   0,$08      DWEnd
-         fdb   L0446-*+2
+         fdb   DWEnd-*+2
          fcb   4,$0E      CWArea
-         fdb   L05A0-*+2
+         fdb   CWArea-*+2
          fcb   $ff,$00    Blank
          fdb   $0000
          fcb   $ff,$00    Blank
@@ -63,33 +63,33 @@ L0027    fcb   7,$04      DWSet
          fcb   $ff,$00    Blank
          fdb   $0000
          fcb   4,$2C      DefGPB
-         fdb   L0803-*+2
+         fdb   DefGPB-*+2
          fcb   2,$2E      KillBuf
-         fdb   L0687-*+2
+         fdb   KillBuf-*+2
          fcb   9,$30      GPLoad
-         fdb   L0870-*+2
+         fdb   GPLoad-*+2
          fcb   10,$34     GetBlk
-         fdb   L0825-*+2
+         fdb   GetBlk-*+2
          fcb   6,$36      PutBlk
-         fdb   L0837-*+2
+         fdb   PutBlk-*+2
          fcb   2,$12      PSet
-         fdb   L0674-*+2
+         fdb   PSet-*+2
          fcb   1,$1E      LSet
-         fdb   L062D-*+2
+         fdb   LSet-*+2
          fcb   0,$1C      DefPal
-         fdb   L064E-*+2
+         fdb   DefPal-*+2
          fcb   2,$16      Palette
-         fdb   L0656-*+2
+         fdb   Palette-*+2
          fcb   1,$20      FColor
-         fdb   L0641-*+2
+         fdb   FColor-*+2
          fcb   1,$22      BColor
-         fdb   L0641-*+2
+         fdb   BColor-*+2
          fcb   1,$14      Border
-         fdb   L0637-*+2
-         fcb   1,$28      Scale
-         fdb   L068F-*+2
+         fdb   Border-*+2
+         fcb   1,$28      ScaleSw
+         fdb   ScaleSw-*+2
          fcb   1,$06      DWProtSw
-         fdb   L068F-*+2
+         fdb   DWProtSw-*+2
          fcb   $ff,$00    Blank
          fdb   $0000
          fcb   $ff,$00    Blank
@@ -97,55 +97,55 @@ L0027    fcb   7,$04      DWSet
          fcb   2,$1A      GCSet
          fdb   L060C-*+2
          fcb   2,$18      Font
-         fdb   L0674-*+2
+         fdb   Font-*+2
          fcb   $ff,$00    Blank
          fdb   $0000
          fcb   1,$24      TCharSw
-         fdb   L068F-*+2
+         fdb   TCharSw-*+2
          fcb   1,$2A      Bold
-         fdb   L068F-*+2
+         fdb   BoldSw-*+2
          fcb   $ff,$00    Blank
          fdb   $0000
          fcb   1,$26      PropSw
-         fdb   L068F-*+2
+         fdb   PropSw-*+2
          fcb   4,$00      SetDP
-         fdb   L091E-*+2
+         fdb   SetDPtr-*+2
          fcb   4,$00      RSetDPtr
-         fdb   L093C-*+2
+         fdb   RSetDPtr-*+2
          fcb   4,$48      Point
-         fdb   L0953-*+2
+         fdb   Point-*+2
          fcb   4,$48      RPoint
-         fdb   L0968-*+2
+         fdb   RPoint-*+2
          fcb   4,$4A      Line
-         fdb   L0978-*+2
+         fdb   Line-*+2
          fcb   4,$4A      RLine
-         fdb   L0997-*+2
+         fdb   RLine-*+2
          fcb   4,$4A      LineM
-         fdb   L09AC-*+2
+         fdb   LineM-*+2
          fcb   4,$4A      RLineM
-         fdb   L09CA-*+2
+         fdb   RLineM-*+2
          fcb   4,$4C      Box
-         fdb   L0978-*+2
+         fdb   Box-*+2
          fcb   4,$4C      RBox
-         fdb   L0997-*+2
+         fdb   RBox-*+2
          fcb   4,$4E      Bar
-         fdb   L0978-*+2
+         fdb   Bar-*+2
          fcb   4,$4E      RBar
-         fdb   L0997-*+2
+         fdb   RBar-*+2
          fcb   $ff,$00    Blank
          fdb   $0000
          fcb   $ff,$00    Blank
          fdb   $0000
          fcb   4,$44      PutGC
-         fdb   L0908-*+2
+         fdb   PutGC-*+2
          fcb   0,$56      FFill
-         fdb   L09DC-*+2
+         fdb   FFill-*+2
          fcb   2,$50      Circle
-         fdb   L09DC-*+2
+         fdb   Circle-*+2
          fcb   4,$52      Ellipse
-         fdb   L09DC-*+2
+         fdb   Ellipse-*+2
          fcb   12,$54     Arc
-         fdb   L09DC-*+2
+         fdb   Arc-*+2
          fcb   2,$50      Filled Circle (flag set to differentiate) $53
          fdb   Filled-*+2
          fcb   4,$52      Filled Ellipse (flag set to differentiate) $54
@@ -646,7 +646,7 @@ L0396    lda   [V.PrmStrt,u] get cursor on/off parameter byte
 * Entry: U=Device static mem pointer
 *        Y=Path descriptor
 *        X=Param pointer
-L03AE    pshs  y,u        preserve static mem & path descriptor pointers
+DWSet    pshs  y,u        preserve static mem & path descriptor pointers
          lbsr  L06AE      get window table pointer for current window
 * Window already defined?
          lda   Wt.STbl,y  Get MSB of screen table ptr
@@ -758,7 +758,7 @@ L0436    pshs  y          L06AE resets y
 * DWEnd entry point
 * Entry: U=Static memory pointer
 *        Y=Path descriptor pointer
-L0446    pshs  u
+DWEnd    pshs  u
          bsr   L0452      process it
          puls  u
          bcs   L0451      error, return
@@ -826,7 +826,7 @@ L0499    lbra  L00F7      let grfdrv do the rest
 * Entry: U=Device static mem pointer
 *        Y=Path descriptor pointer
 *        X=Parameter pointer
-L049C    pshs  y,u        preserve path descriptor & static mem pointers
+OWSet    pshs  y,u        preserve path descriptor & static mem pointers
          lbsr  L06A0      verify window table
          puls  u,y        restore pointers
          lbcs  L069D      not a legal window, return undefined window error
@@ -891,7 +891,7 @@ L04EA    equ   *
 * OWEnd entry point
 * Entry: U=Device static mem pointer
 *        Y=Path descriptor pointer
-L04FC    pshs  u,y        preserve path descriptor & static mem pointers
+OWEnd    pshs  u,y        preserve path descriptor & static mem pointers
          lbsr  L06A0      get pointer to window table & verify it
          bcc   L0508      went ok, skip ahead
          puls  u,y        Restore regs
@@ -947,7 +947,7 @@ L052E    puls  y,u        Restore static mem & path dsc. ptrs
 * Select entry point
 * Entry: U=Static memory pointer
 *        Y=Path descriptor pointer
-L0549    ldx   PD.RGS,y   get register stack pointer
+Select   ldx   PD.RGS,y   get register stack pointer
          lda   R$A,x      get path # to new window
          ldx   <D.Proc    get current process pointer
          cmpa  P$SelP,x   same as current selected path?
@@ -993,7 +993,7 @@ L0592    leax  P$Path,x   get pointer to path #'s
 * Entry: U=Static memory pointer
 *        Y=Path descriptor pointer
 *        X=Pointer to parameters
-L05A0    pshs  y,u        Save device mem ptr & path dsc. ptr on stack
+CWArea   pshs  y,u        Save device mem ptr & path dsc. ptr on stack
          lbsr  L06A0      verify window table
          IFNE  H6309
          ldq   Wt.CPX,y   get original start & size
@@ -1097,7 +1097,7 @@ L060C    pshs  u          save static mem pointer
 
 ****************************
 * LSet entry point
-L062D    equ   *
+LSet     equ   *
          IFNE  H6309
          bsr   L06A0      verify window table
          bcs   L069D      no good, return error 
@@ -1111,7 +1111,7 @@ L062D    equ   *
 
 ****************************
 * Border entry point
-L0637    pshs  u          preserve static mem
+Border   pshs  u          preserve static mem
          bsr   L06A0      verify window table
          bcs   L069B      not good, return error
          lda   ,x         Get border color from parm area
@@ -1121,7 +1121,8 @@ L0637    pshs  u          preserve static mem
 
 ****************************
 * FColor/BColor entry point
-L0641    bsr   L06A0      verify window table
+BColor
+FColor   bsr   L06A0      verify window table
          bcs   L069D      not good, return error
          lda   ,x         Get palette # from param area
          sta   >GrfMem+gr005A     Put in GRFDRV's working palette #
@@ -1129,7 +1130,7 @@ L064B    lbra  L00F7      Go into GrfDrv
 
 ****************************
 * DefPal entry point
-L064E    pshs  u          preserve static mem pointer
+DefPal   pshs  u          preserve static mem pointer
          bsr   L06A0      verify window
          bcs   L069B      not good, return error
          ldx   Wt.STbl,y  Get ptr to screen table
@@ -1154,7 +1155,7 @@ L064Eb   lda   ,y+
 
 ****************************
 * Palette entry point
-L0656    pshs  u          preserve static mem pointer
+Palette  pshs  u          preserve static mem pointer
          bsr   L06A0      verify window table
          bcs   L069B      not good, return error
          ldd   ,x         Get palette # & color
@@ -1171,7 +1172,8 @@ L0673    rts              return
 
 ****************************
 * PSet/Font entry point
-L0674    bsr   L06A0      verify window table
+Font
+PSet     bsr   L06A0      verify window table
          bcs   L069D      not good, return error
          ldd   ,x         Get group & buffer #'s from parm area
          beq   L0682      If caller wants to disable pattern set, skip
@@ -1182,7 +1184,7 @@ L0682    std   >GrfMem+gr0057     Save group & buffer #'s
 
 ****************************
 * KillBuf entry point
-L0687    bsr   L06A0      verify window table
+KillBuf  bsr   L06A0      verify window table
          bcs   L069D      not good, return error
          ldd   ,x         Get buffer & group #
          bra   L0682      Save them
@@ -1487,7 +1489,7 @@ BadDef   comb
 * Entry: U=Static memory pointer
 *        Y=Path descriptor pointer
 *        X=Parameter pointer
-L0803    lbsr  L06A0      verify window table
+DefGPB   lbsr  L06A0      verify window table
          lbcs  L069D      not good, return error
          IFNE  H6309
          ldq   ,x         D=Group/Buffer W=Length
@@ -1532,7 +1534,7 @@ L0822    lbra  L00F7      let grfdrv do the rest
 * Entry: U=Static memory pointer
 *        Y=Path descriptor pointer
 *        X=Parameter pointer
-L0825    lbsr  L06A0      verify window table
+GetBlk   lbsr  L06A0      verify window table
          lbcs  L069D      couldn't get it, return error
          bsr   L0849      check group/buffer #'s & move upper left coords
          bcs   L0812      error, return bad buffer
@@ -1543,7 +1545,7 @@ SmlBuf   ldb   #E$BufSiz  get error code
 
 ****************************
 * PutBlk entry point
-L0837    lbsr  L06A0      verify window table
+PutBlk   lbsr  L06A0      verify window table
          lbcs  L069D      exit if error
          bsr   L0849      get parameters
          bcs   L0812      exit if error
@@ -1600,7 +1602,7 @@ L086E    coma             set carry for error
 * Entry: U=Static memory pointer
 *        Y=Path descriptor pointer
 *        X=Parameter pointer
-L0870    pshs  u,y        save regs
+GPLoad   pshs  u,y        save regs
          lbsr  L06AE      get window table pointer for this window
          ldd   ,x++       get group & buffer
          tsta             group a zero?
@@ -1704,7 +1706,7 @@ L08FC    equ   *
 
 ****************************
 * PutGC entry point
-L0908    lbsr  L06A0      verify window
+PutGC    lbsr  L06A0      verify window
          lbcs  L069D
          IFNE  H6309
          ldq   ,x         get position requested
@@ -1720,7 +1722,7 @@ L0908    lbsr  L06A0      verify window
 
 ****************************
 * SetDPtr entry point
-L091E    pshs  x,u        preserve static mem & param pointers
+SetDPtr  pshs  x,u        preserve static mem & param pointers
          lbsr  L06A0      Verify/Create window
          bcc   L092A      Got window, continue
 L0925    puls  x,u        Restore regs & exit with error
@@ -1745,7 +1747,7 @@ L0934    puls  y
 
 ****************************
 * RSetDPtr
-L093C    pshs  u,x
+RSetDPtr pshs  u,x
          lbsr  L06A0      Verify/create window
          bcs   L0925
          pshs  y
@@ -1768,7 +1770,7 @@ L093C    pshs  u,x
 
 ****************************
 * Point entry point
-L0953    pshs  u,x
+Point    pshs  u,x
          lbsr  L06A0
          bcs   L0925
          pshs  y
@@ -1780,7 +1782,7 @@ L0961    puls  y
 
 ****************************
 * RPoint entry point
-L0968    pshs  u,x
+RPoint   pshs  u,x
          lbsr  L06A0
          bcs   L0925
          pshs  y
@@ -1803,7 +1805,9 @@ L0968    pshs  u,x
 
 ****************************
 * Line/Box/Bar entry point
-L0978    pshs  u,x
+Line
+Bar
+Box      pshs  u,x
          lbsr  L06A0
          bcs   L0925
 L0984    pshs  y
@@ -1823,7 +1827,9 @@ L098D    ldu   6,s        get static mem pointer
 * Entry: U=Static memory pointer
 *        Y=Path descriptor pointer
 *        X=Parameter pointer
-L0997    pshs  u,x        save static & parameter pointers
+RLine
+RBox
+RBar     pshs  u,x        save static & parameter pointers
          lbsr  L06A0      get window table pointer
          IFNE  H6309
          bcs   L0925
@@ -1837,7 +1843,7 @@ L09A3    pshs  y          preserve window table pointer
 
 ****************************
 * LineM entry point
-L09AC    pshs  u,x
+LineM    pshs  u,x
          lbsr  L06A0
          lbcs  L0925
          pshs  y
@@ -1863,7 +1869,7 @@ L09BC    equ   *
 
 ****************************
 * RLineM entry point
-L09CA    pshs  u,x
+RLineM   pshs  u,x
          lbsr  L06A0
          lbcs  L0925
          pshs  y
@@ -1881,7 +1887,10 @@ Filled   lda   #1         Filled flag
          bra   FlagSet    skip ahead
 
 * FFill/Circle/Ellipse/Arc entry point
-L09DC    clr   >GrfMem+gr00B2     Clear filled flag
+Circle
+Ellipse
+Arc
+FFill    clr   >GrfMem+gr00B2     Clear filled flag
 FlagSet  pshs  u,x        Preserve regs
          lbsr  L06A0      verify window table
          lbcs  L0925      error, return
@@ -5300,8 +5309,12 @@ L1D47    pshs  d
          rts              return
 
 ****************************
-* Scale/DWProtSW/TCharSW/Boldcheck
-L068F    lbsr  L06A0      verify window table
+* Scale/DWProtSw/TCharSw/BoldSw
+DWProtSw
+TCharSw
+BoldSw
+PropSw
+ScaleSw  lbsr  L06A0      verify window table
          bcs   NoWind     not good, return error
          lda   ,x         Get switch
          ldx   >WGlobal+G.CurDvM     Get current devices' static mem ptr
