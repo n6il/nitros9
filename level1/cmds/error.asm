@@ -7,10 +7,14 @@
 *
 * Released under the GNU public licence
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    Rewrote in assembler for size                  RdV 03/01/20
-*        Ffixed problem with trailing space             RdV 03/01/21
+*   1      2003/01/20  Bob Devries
+* Rewrote in assembler for size.
+*
+*          2003/01/21  Bob Devries
+* Fixed problem with trailing space.
 
          nam   Error
          ttl   Show text error messags
@@ -21,7 +25,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   1
 
          mod   eom,name,tylg,atrv,start,size

@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    Rewritten in assembly for size                 BGP 03/01/20
+*   1      2003/01/20  Boisy G. Pitre
+* Rewritten in assembly for size.
 
          nam   Cmp
          ttl   Binary file comparison utility
@@ -24,7 +26,7 @@ PARMSZ   set   256	estimated parameter size in bytes
 * Module header definitions
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   1
 
          mod   eom,name,tylg,atrv,start,size

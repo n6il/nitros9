@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    Created                                        BGP 03/06/28
+*   1      2003/06/28  Boisy G. Pitre
+* Created.
 
          nam   Prompt
          ttl   Echo text and wait for a key

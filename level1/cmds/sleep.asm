@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   2    From Tandy OS-9 Level One VR 02.00.00
+*   2      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
 
          nam   Sleep
          ttl   Sleep for some ticks
@@ -18,7 +20,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   2
 
          mod   eom,name,tylg,atrv,start,size

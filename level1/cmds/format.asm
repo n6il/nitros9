@@ -3,18 +3,17 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  22    From Tandy OS-9 Level Two Vr. 2.00.01
+*  22      ????/??/??
+* From Tandy OS-9 Level Two VR 02.00.01.
 *
-*  23    Format incorrect/clusters summary:             JC  03/01/06
-*        Now, specifying cluster size works.
-*
-*        Fixed bug where format showed an improper
-*        number of sectors formatted at the summary
-*        if the number of sectors was a large number.
-*        This was most notable when formatting large
-*        disks, such as hard drives.
+*  23      2003/01/06  JC
+* Format incorrect/clusters summary: now, specifying cluster size works.
+* Fixed bug where format showed an improper number of sectors formatted
+* at the summary if the number of sectors was a large number.
+* This was most notable when formatting large disks, such as hard drives.
 
          nam   Format
          ttl   Disk format program
@@ -31,7 +30,7 @@ DOROLL   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   23
 
          mod   eom,name,tylg,atrv,start,size

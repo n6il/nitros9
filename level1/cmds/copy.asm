@@ -3,11 +3,17 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   9    From Tandy OS-9 Level One VR 02.00.00
-*  10    Reworked                                       RML
-*  11    Added useful options, made more robust         BGP 03/01/11
+*   9      ????/??/??
+* From Tandy OS-9 Level Two VR 02.00.01.
+*
+*  10      ????/??/??  Ron Lamardo
+* Reworked.
+*
+*  11      2003/01/11  Boisy G. Pitre
+* Added useful options, made more robust.
 
          nam   Copy
          ttl   File copy utility
@@ -21,7 +27,7 @@ DOHELP   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   11
 
          mod   eom,name,tylg,atrv,start,size

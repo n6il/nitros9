@@ -13,9 +13,11 @@
 *   -s = alter copy mem size
 *   -v = verify copied files
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    Put your development info here                 BGP 03/01/11
+*   1      2003/01/11  Boisy G. Pitre
+* Rewrote in assembly language.
 
          nam   dsave
          ttl   Multi-file copy utility
@@ -34,7 +36,7 @@ PARMSZ   set   256	estimated parameter size in bytes
 * Module header definitions
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   1
 
          mod   eom,name,tylg,atrv,start,size

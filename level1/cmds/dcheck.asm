@@ -3,11 +3,17 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   4    From Tandy OS-9 Level One VR 02.00.00
-*   5    Changed /D0 references to /DD                  BGP 02/07/21
-*        Completly disasemble to be more readable       JB  03/03/31
+*   4      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+* 
+*   5      2002/07/21  Boisy G. Pitre
+* Changed /D0 references to /DD.
+*
+*          2003/03/31  JB
+* Completly disasembly to be more readable.
 
          nam   dcheck
          ttl   Check Disk File Structure
@@ -20,7 +26,7 @@
          
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   $05
 
          mod   eom,name,tylg,atrv,start,size

@@ -3,14 +3,19 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   9    From OS-9 Level Two Vr. 2.00.01
-*  l0    Added -t= option, fixed bug in single disk     BGP 03/06/28
-*        swap routine if key besides 'C' was pressed,
-*        minor optimizations.
-*  l0r2  Fixed bug introduced in V03.01.03 where        BGP 03/07/24
-*        os9gen wouldn't write boot track on DS disks.
+*   9      ????/??/??
+* From OS-9 Level Two Vr. 2.00.01.
+*
+*  10      2003/06/28  Boisy G. Pitre
+* Added -t= option, fixed bug in single disk swap routine if key
+* besides 'C' was pressed, minor optimizations.
+*
+*  l0r2    2003/07/24  Boisy G. Pitre
+* Fixed bug introduced in V03.01.03 where os9gen wouldn't write boot
+* track on DS disks.
 
          nam   OS9Gen
          ttl   OS-9 bootfile generator

@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    Bruce Isted version released to PD             BRI 89/06/21
+*   1      1989/06/21  Bruce Isted
+* Released to public domain.
 
          nam   EXMode
          ttl   Extended SCF device descriptor utility
@@ -18,7 +20,7 @@ BuffSize equ   10         max. CHAR string length
 Edtn     equ   1         
 MaxSize  equ   $80        maximum module size
 NameSize equ   4          maximum module name length
-Vrsn     equ   1         
+rev      equ   0         
 
          org   0         
 Count    rmb   1          number of option bytes
@@ -35,7 +37,7 @@ ModBuff  rmb   MaxSize    module work copy buffer
 stack    rmb   $0200      stack and parameter space
 MemSize  equ   .         
 
-         mod   Size,Name,Prgrm+Objct,ReEnt+Vrsn,Entry,MemSize
+         mod   Size,Name,Prgrm+Objct,ReEnt+rev,Entry,MemSize
 
 Name     fcs   "EXMode"   
          fcb   Edtn       edition number

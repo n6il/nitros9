@@ -3,11 +3,16 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   5    From Tandy OS-9 Level One VR 02.00.00
-*   6    Changed option to -e, optimized slightly       BGP 03/01/14
-*   7    Fixed leading zero supression, more optim      RVH 03/08/25
+*   5      ????/??/??
+*
+*   6      2003/01/14  Boisy G. Pitre
+* Changed option to -e, optimized slightly.
+*
+*   7      2003/08/25  Rodney V. Hamilton
+* Fixed leading zero supression, more optimizations.
 
          nam   Mdir
          ttl   Show module directory
@@ -20,7 +25,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   7
 stdout   set   1
 

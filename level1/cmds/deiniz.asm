@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   3    From Tandy OS-9 Level Two VR 02.00.01
-*   4    Tightened code, changed behavior slightly      BGP 03/01/13
+*   3      ????/??/??
+* From Tandy OS-9 Level Two VR 02.00.01.
+*
+*   4      2003/01/13  Boisy G. Pitre
+* Tightened code, changed behavior slightly.
 
          nam   DeIniz
          ttl   Deinitialize a device
@@ -21,7 +25,7 @@ linebsiz equ   80
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   4
 
          mod   eom,name,tylg,atrv,start,size

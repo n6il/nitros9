@@ -1,30 +1,42 @@
-         nam   Disasm
-         ttl   Os9 disassembler by Ron Lammardo
-
+********************************************************************
+* Disasm - 6809/6309 disassembler
+*
+* $Id$
+*
 * Disasm v1.5 (c) 1988 by Ron Lammardo
 * 6309 additions by L. Curtis Boyle Jan. 1993
-********
 *
-* 03/12/87 (#2) - added code for line,address,obj display
-*                 added options 'o' and 'x'
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*   2      1987/03/12  Ron Lammardo
+* Added code for line,address,obj display added options 'o' and 'x'.
 *
-* 04/02/87 (#3) - added code to provide commented disassembly
-*                 of device descriptors
+*   3      1987/04/02  Ron Lammardo
+* Added code to provide commented disassembly of device descriptors.
 *
-* 11/16/87 (#4) - fixed restart link failure
-*                 added code to display direct page addresses
+*   4      1987/11/16  Ron Lammardo
+* Fixed restart link failure, added code to display direct page addresses.
 *
-* 02/22/88 (#5) - added code to display dp/u offsets
-*                 added code to display fcb bytes preceding eom
-*                 added code for z option (hex input disassembly) 
-*                 added code to display date/time run
+*   5      1988/02/22  Ron Lammardo
+* Added code to display dp/u offsets; added code to display fcb bytes
+* preceding eom; added code for z option (hex input disassembly); 
+* added code to display date/time run
 *
-* 01/23/93      - added code to handle 6309 instruction set additions
+*          1993/01/23  L. Curtis Boyle
+* Added code to handle 6309 instruction set additions
 *
-* 04/22/03      - added 4-digit year output
-* 07/09/03      - changed output format of 6309 Bit commands
-* 08/14/03      - added code to output "end" line
-********
+*          2003/04/22  Rodney V. Hamilton
+* Added 4-digit year output.
+*
+*          2003/07/09  Rodney V. Hamilton
+* Changed output format of 6309 Bit commands.
+*
+*          2003/08/14  Rodney V. Hamilton
+* Added code to output "end" line
+
+         nam   Disasm
+         ttl   6809/6309 disassembler
 
          ifp1
          use   defsfile
@@ -32,7 +44,7 @@
 
 typ      set   Prgrm+Objct
 attrev   set   ReEnt+revision
-revision set   1
+revision set   $00
 edtn     set   5 edition
 edition  equ   $30+edtn ascii edition
 

@@ -3,11 +3,17 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    Created                                        KKD
-*   2    Modified                                       GH
-*   3    Streamlined and fixed problems                 BGP 03/01/07
+*   1      ????/??/??  Kevin Darling
+* Created.
+*
+*   2      ????/??/??  Gene Heskett
+* Modified.
+*
+*   3      2003/01/07  Boisy G. Pitre
+* Streamlined and fixed problems.
 
          nam   irqs
          ttl   Show interrupt polling table
@@ -16,7 +22,7 @@
          use   defsfile
          endc  
 
-rev      set   $01
+rev      set   $00
 edition  set   3
 
 MaxDEnts set   32	max device entries we will display

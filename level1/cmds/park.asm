@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    From Tandy OS-9 Level One VR 02.00.00
-*   2    Changed name to a mixture of upper/lowercase   BGP 02/07/13
+*   1      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*   2      2002/07/13  Boisy G. Pitre
+* Changed name to a mixture of upper/lowercase.
 
          nam   Park
          ttl   Park a hard drive
@@ -21,7 +25,7 @@ DOHELP   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   2
 
          mod   eom,name,tylg,atrv,start,size

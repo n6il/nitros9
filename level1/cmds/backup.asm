@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   8    From Tandy OS-9 Level One VR 02.00.00
+*   8      ????/??/??
+* From Tandy OS-9 Level Two VR 02.00.01.
 
          nam   Backup
          ttl   Make a backup copy of a disk
@@ -20,7 +22,7 @@ DOHELP   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   $08
 
          mod   eom,name,tylg,atrv,start,size

@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  11    From Tandy OS-9 Level Two VR 02.00.01
+*  11      ????/??/??
+* From Tandy OS-9 Level Two VR 02.00.01.
 
          nam   Attr
          ttl   Modify file attributes
@@ -21,7 +23,7 @@ DOHELP   set   0
 
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   11
 
          mod   eom,name,tylg,atrv,start,size

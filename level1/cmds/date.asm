@@ -24,11 +24,17 @@
 * 
 * Gene Heskett, <gene_heskett@wvlink.mpl.com>
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 5      Made Y2K compliant                             GH  96/09/25
-* 6      Made compliant with 1900-2155                  BGP 99/05/07
-* 7      New option is now -t, code compacted a bit     BGP 03/01/14
+*   5      1996/09/25  Gene Heskett
+* Made Y2K compliant.
+*
+*   6      1999/05/07  Boisy G. Pitre
+* Made compliant with 1900-2155.
+*
+*   7      2003/01/14  Boisy G. Pitre
+* New option is now -t, code compacted a bit.
 
          nam   Date
          ttl   Print Date/Time
@@ -39,7 +45,7 @@
 
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   7
 
          mod   eom,name,tylg,atrv,start,size

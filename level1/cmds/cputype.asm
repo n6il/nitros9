@@ -3,12 +3,17 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    Started                                        ADK ??/??/??
-*   2r1  Fixed a crash bug on 6809, now just reports    BGP 03/04/02
-*        6809 message on a 6809
-*   3r1  Rearranged code, used short offsets            RVH 03/04/23
+*   1      ????/??/??  Alan DeKok
+* Started.
+*
+*   2      2003/04/02  Boisy G. Pitre
+* Fixed a crash bug on 6809, now just reports 6809 message on a 6809.
+*
+*   3      2003/04/23  Rodney V. Hamilton
+* Rearranged code, used short offsets.
 
          nam   CPUType
          ttl   Identify 6809 or 6309
@@ -19,7 +24,7 @@
 
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+Rev
-rev      set   1
+rev      set   $00
 edition  set   3
 
          org   0

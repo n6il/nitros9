@@ -3,11 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   7    From Tandy OS-9 Level Two Vr. 2.00.01
-*        Modified source to allow for OS-9 Level One    BGP 02/07/20
-*        and OS-9 Level Two assembly
+*   7      ????/??/??
+* From Tandy OS-9 Level Two VR 02.00.01.
+*
+*          2002/07/20  Boisy G. Pitre
+* Modified source to allow for OS-9 Level One and Level Two assembly.
 
          nam   Cobbler
          ttl   Write OS9Boot to a disk
@@ -23,7 +26,7 @@ DOHELP   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   7
 
          mod   eom,name,tylg,atrv,start,size

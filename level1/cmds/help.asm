@@ -1,13 +1,15 @@
-
 ********************************************************************
 * Help - Show help
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  6     Rewrote in assembler for size                  BGP 03/01/21
-*  7     Fixed showlist partial line bug, do auto list  RVH 03/05/30
+*   6      2003/01/21  Boisy G. Pitre
+*
+*   7      2003/05/30  Rodney V. Hamilton
+* Fixed showlist partial line bug, do auto list.
 
         nam     Help
         ttl     Show help

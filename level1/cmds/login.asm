@@ -3,13 +3,18 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  16    From Tandy OS-9 Level One VR 02.00.00
-*  17    Fixed for years 1900-2155                      BGP 99/05/11
-*  18    Changed icpt routine rts to rti, put in        BGP 02/07/20
-*        conditionals for Level One not to execute
-*        the os9 F$SUser command.
+*  16      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*  17      1999/05/11  Boisy G. Pitre
+* Fixed for years 1900-2155.
+*
+*  18      2002/07/20  Boisy G. Pitre
+* Changed icpt routine rts to rti, put in conditionals for Level One
+* not to execute the os9 F$SUser command.
 
          nam   Login
          ttl   Timeshare login utility
@@ -22,7 +27,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   18
 
          mod   eom,name,tylg,atrv,start,size

@@ -7,11 +7,15 @@
 * the OS-9 Level Two package, then incorporated Glenside's Y2K
 * fix.
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 10     Incorporated Glenside Y2K fixes                BGP 99/05/11
-* 11     Made option handling more flexible, now they   BGP 03/01/14
-*        must be preceeded by a dash
+*  10      1999/05/11  Boisy G. Pitre
+* Incorporated Glenside Y2K fixes.
+*
+*  11      2003/01/14  Boisy G. Pitre
+* Made option handling more flexible, now they must be preceeded
+* by a dash.
 
          nam   Dir
          ttl   Show directory

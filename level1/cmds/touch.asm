@@ -3,11 +3,12 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   2    Rewrote touch from scratch, made almost 90%    BGP 03/01/11
-*        smaller than C version found in the OS-9
-*        Development System
+*   2      2003/01/11  Boisy G. Pitre
+* Rewrote touch from scratch, made almost 90% smaller than C version
+* found in the OS-9 Development System.
 
          nam   Touch
          ttl   Changes last modification date/time
@@ -26,7 +27,7 @@ ZOPTSIZ  set   64	max size of -z option's parameter
 * Module header definitions
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
