@@ -4,8 +4,6 @@ echo *   on the Color Computer 3   *
 * Lock shell and std utils into memory
 link shell
 load utilpak1
-* SmartWatch users uncomment the next line
-*swread 5<>>>/2 &
 * Start system time from keyboard
 setime </1
 date -t
