@@ -33,10 +33,10 @@ h1_ide_l2.dd: idedesc.asm
 	$(AS) $(ASOUT)$@ $< $(IDEL2FLAGS) -aITDRV=1
 
 dd_ide_l1.dd: idedesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEL1FLAGS) -aITDRV=0
+	$(AS) $(ASOUT)$@ $< $(IDEL1FLAGS) -aITDRV=0 -aDD=1
 
 dd_ide_l2.dd: idedesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEL2FLAGS) -aITDRV=0
+	$(AS) $(ASOUT)$@ $< $(IDEL2FLAGS) -aITDRV=0 -aDD=1
 
 clean:
 	$(RM) $(ALLOBJS)
