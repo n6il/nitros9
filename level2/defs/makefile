@@ -8,6 +8,7 @@ DEFS		= Defsfile OS9Defs RBFDefs SCFDefs SysType
 ALLOBJS		= $(DEFS)
 
 all:	$(ALLOBJS)
+	$(UNIX2OS9) $(DEFS)
 	$(CHMOD) 644 $(ALLOBJS)
 
 Defsfile: defsfile.asm
