@@ -94,7 +94,7 @@ at the end of any command line:
 </screen>
 <para>
 The &quot;&gt;&quot; character tells the shell to redirect output (See 4.3.2) to
-the printer using the Dragon's parallel port, which has the device
+the printer using the &make; Computer's parallel port, which has the device
 name &quot;/P&quot; (See 3.2). For example, to redirect the output of the
 &quot;dir&quot; command to the printer, enter:
 </para>
@@ -247,7 +247,7 @@ Changes the name of filename1 to filename2.
 <section>
 <title>Using the Keyboard and Video Display</title>
 <para>
-OS-9 has many features to expand the capability of the Dragon
+OS-9 has many features to expand the capability of the &make;
 keyboard and video display. The video display has screen pause,
 upper/lower case, and graphics functions. The keyboard can generate
 all ASCII characters and has a type-ahead feature that permits you
@@ -261,7 +261,7 @@ as a file known by the name &quot;/TERM&quot;.
 <section>
 <title>Video Display Functions</title>
 <para>
-The Dragon uses reverse video (green letters in a black box) to
+The &make; Computer uses reverse video (green letters in a black box) to
 represent lower-case letters. Normally they are not used, so you
 have to turn them on if you want to use them with the command:
 </para>
