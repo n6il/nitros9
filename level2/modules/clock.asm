@@ -58,12 +58,6 @@ NewSvc   fcb   F$Time
          fdb   F.ALARM-*-2
          fcb   F$STime
          fdb   F.STime-*-2
-
-         IFNE  RTCElim
-         fcb   F$NVRAM    Eliminator adds one new service call
-         fdb   F.NVRAM-*-2
-         ENDC
-
          fcb   $80 end of service call installation table
 
 *---------------------------------------------------------
@@ -417,99 +411,6 @@ F.STime  ldx   <D.Proc   Caller's process descriptor
          jsr   $06,x		else call GetTime entry point
 
 NoSet    rts
-
-*------------------------------------------------------------
-* read/write RTC Non Volatile RAM (NVRAM)
-*
-* INPUT:  [U] = pointer to caller's register stack
-*         R$A = access mode (1 = read, 2 = write, other = error)
-*         R$B = byte count (1 through 50 here, but in other implementations
-*               may be 1 through 256 where 0 implies 256)
-*         R$X = address of buffer in user map
-*         R$Y = start address in NVRAM
-*
-* OUTPUT:  RTC NVRAM read/written
-*
-* ERROR OUTPUT:  [CC] = Carry set
-*                [B] = error code
-         IFNE  RTCElim
-F.NVRAM  tfr   u,y        copy caller's register stack pointer
-         ldd   #$0100     ask for one page
-         os9   F$SRqMem
-         bcs   NVR.Exit   go report error...
-         pshs  y,u       save caller's stack and data buffer pointers
-         ldx   R$Y,y      get NVRAM start address
-         cmpx  #50       too high?
-         bhs   Arg.Err    yes, go return error...
-         ldb   R$B,y      get NVRAM byte count
-         beq   Arg.Err
-         abx            check end address
-         cmpx  #50       too high?
-         bhi   Arg.Err    yes, go return error...
-         lda   R$A,y      get direction flag
-         cmpa  #WRITE.   put caller's data into NVRAM?
-         bne   ChkRead    no, go check if read...
-         clra           [D]=byte count
-         pshs  d         save it...
-         ldx   <D.Proc    get caller's process descriptor address
-         lda   P$Task,x   caller is source task
-         ldb   <D.SysTsk  system is destination task
-         ldx   R$X,y      get caller's source pointer
-         puls  y         recover byte count
-         os9   F$Move     go MOVE data
-         bcs   NVR.Err
-         ldy   ,s         get caller's register stack pointer from stack
-         lda   R$Y+1,y    get NVRAM start address
-         adda  #$0E      add offset to first RTC NVRAM address
-         ldb   R$B,y      get byte count
-         ldx   M$Mem,pcr  get clock base address from fake memory requirement
-         pshs  cc,b      save IRQ enable status and byte counter
-         orcc  #IntMasks disable IRQs
-WrNVR.Lp ldb   ,u+        get caller's data
-         std   ,x         generate RTC address strobe and save data to NVRAM
-         inca             next NVRAM address
-         dec   1,s        done yet?
-         bne   WrNVR.Lp   no, go save another byte
-         puls  cc,b      recover IRQ enable status and clean up stack
-NVR.RtM  puls  y,u       recover register stack & data buffer pointers
-         ldd   #$0100     return one page
-         os9   F$SRtMem
-NVR.Exit rts
-
-Arg.Err  ldb   #E$IllArg Illegal Argument error
-         bra   NVR.Err
-
-ChkRead  cmpa  #READ.    return NVRAM data to caller?
-         bne   Arg.Err    illegal access mode, go return error...
-         lda   R$Y+1,y    get NVRAM start address
-         adda  #$0E      add offset to first RTC NVRAM address
-         ldx   M$Mem,pcr  get clock base address from fake memory requirement
-         pshs  cc,b      save IRQ enable status and byte counter
-         orcc  #IntMasks disable IRQs
-RdNVR.Lp sta   ,x         generate RTC address strobe
-         ldb   1,x        get NVRAM data
-         stb   ,u+        save it to buffer
-         inca             next NVRAM address
-         dec   1,s        done yet?
-         bne   RdNVR.Lp   no, go get another byte
-         puls  cc,a       recover IRQ enable status, clean up stack ([A]=0)
-         ldb   R$B,y      [D]=byte count
-         pshs  d          save it...
-         ldx   <D.Proc    get caller's process descriptor address
-         ldb  P$Task,x    caller is source task
-         lda   <D.SysTsk  system is destination task
-         ldu   R$X,y      get caller's source pointer
-         puls  y          recover byte count
-         ldx   2,s        get data buffer (source) pointer
-         os9   F$Move     go MOVE data
-         bcc   NVR.RtM
-NVR.Err  puls  y,u       recover caller's stack and data pointers
-         pshs  b         save error code
-         ldd   #$0100     return one page
-         os9   F$SRtMem
-         comb   set       Carry for error
-         puls  b,pc      recover error code, return...
-         ENDC
 
 Clock2   fcs   "Clock2"
 
