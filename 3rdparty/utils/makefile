@@ -2,14 +2,16 @@ include ../../Makefile.rules
 
 # Make all components
 all:
-	cd boisy; make
-	cd dasm; make
-	cd kdutils; make
-	cd smartwatch; make
+	$(CD) boisy; make
+	$(CD) dasm; make
+	$(CD) enhanced; make
+	$(CD) kdutils; make
+	$(CD) smartwatch; make
 
 # Clean all components
 clean:
-	-cd boisy; make clean
-	-cd dasm; make clean
-	-cd kdutils; make clean
-	-cd smartwatch; make clean
+	-$(CD) boisy; make clean
+	-$(CD) dasm; make clean
+	-$(CD) enhanced; make clean
+	-$(CD) kdutils; make clean
+	-$(CD) smartwatch; make clean
