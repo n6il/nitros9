@@ -73,12 +73,15 @@ Seek     clrb
          lbra  Write
          lbra  ReadLn
          lbra  WritLn
+
 GetStt   clrb
          rts
          nop
+
 SetStt   clrb
          rts
          nop
+
 Close    lda   PD.CNT,y
          bne   L008E
          ldu   PD.BUF,y   if no one's using it,
@@ -90,7 +93,7 @@ Close    lda   PD.CNT,y
 
 L008E    leax  PD.Read,y
          cmpa  PD.Read+P.CNT,y is the read count zero?
-         Beq   L009C
+         beq   L009C
 
          cmpa  PD.Writ+P.CNT,y is the write count zero?
          bne   L00A9
@@ -118,11 +121,16 @@ Open     equ   *
          pshs  y            save PD pointer
          os9   F$PrsNam   parse /pipe
          bcs   L007B        exit on error
+         IFGT  Level-1
          ldx   <D.Proc      current process ptr
          ldb   P$Task,x     get task number for call, below
          leax  -$01,y       back up one character
          os9   F$LDABX    get last character of the filename
          tsta               check the character
+         ELSE
+         leax  -1,y
+         lda   ,y
+         ENDC
          bmi   L0060      if high bit set, it's OK
          leax  ,y           point to next bit
          os9   F$PrsNam   else parse name
@@ -205,11 +213,14 @@ read.out pshs  a,x,y,u      save registers
          leax  b,x          back up TO pointer
          pshs  x            save it
          leax  ,u           point to the start of the buffer
+         IFGT  Level-1
          ldu   <D.Proc      current process pointer
          ldb   P$Task,u     A=$00 from above, already
          puls  u            restore TO pointer
 
          os9   F$Move       move the data over
+         ELSE
+         ENDC
          clrb               no bytes read to the caller yet
 read.ex  puls  a,x,y,u,pc   restore registers and exit
 
@@ -285,12 +296,15 @@ L01EC    stx   <PD.NxtI,y
 
 write.in pshs  a,x,y        save registers
          leau  -32,u      point to the start of the buffer again
+         IFGT  Level-1
          ldx   <D.Proc      current process pointer
          lda   P$Task,x   get FROM task number for this process
          ldx   1,s        get FROM pointer
          ldy   #32        16 bytes to grab
          clrb             TO the system task
          os9   F$Move
+         ELSE
+         ENDC
          ldb   #32        16 bytes in the buffer
          puls  a,x,y,pc
 
