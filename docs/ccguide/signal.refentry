@@ -8,10 +8,14 @@
 <funcsynopsis>
 <funcsynopsisinfo>
 #include &lt;signal.h&gt;
+
+typedef int (*sighandler_t)(int);
 </funcsynopsisinfo>
 <funcprototype>
-  <funcdef><function>signal</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <funcdef>sighandler_t <function>signal</function></funcdef>
+  <paramdef>int <parameter>interrupt</parameter></paramdef>
+  <paramdef>sighandler_t <parameter>address</parameter></paramdef>
+
 </funcprototype>
 </funcsynopsis>
 
