@@ -9,13 +9,12 @@ known features of that never-officially-released version of OS-9.
 
 DISTRIBUTION
 ============
-There are two single-sided 35 track DSK images ending in '_ss35_1.dsk' and
-'_ss35_2.dsk' for disks 1 and 2, respectively.  This correspondes to
-the older Tandy method of distributing the operating system.
+There are three single-sided 40 track DSK images ending in '_ss40_1.dsk',
+'_ss40_2.dsk' and '_ss40_3.dsk' for disks 1, 2 and 3, respectively.
 
 The other disk image ending in '_ds40.dsk' is a double-sided 40 track
 disk image that contains all of the files found on single-sided disks
-1 and 2.  This is useful for those who have double-sided drives and
+1, 2 and 3.  This is useful for those who have double-sided drives and
 want the entire operating system to reside on one disk.
 
 USING THE DISK IMAGES
