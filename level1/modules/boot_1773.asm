@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 1      Tandy/Microware original version
+*   1    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Boot
          ttl   OS-9 Level One V2 Boot for WD1773
@@ -18,7 +18,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $01
+edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -114,7 +114,8 @@ L00A2    clr   ,u
          clr   u0004,u
          lda   #$05
          lbsr  L013A
-         ldb   #$03
+         ldb   #$00			6ms step rate
+*         ldb   #$03
          lbra  L015F
 
 L00B0    lda   #$91
@@ -191,10 +192,12 @@ L013A    ldb   u0004,u
          beq   L0157
          sta   u0004,u
          sta   >DPort+$0B
-         ldb   #$13
+         ldb   #$10		6ms step rate
+*         ldb   #$13
          bsr   L015F
          pshs  x
-         ldx   #$222E
+         ldx   #$088B		6ms step rate
+*         ldx   #$222E
 L0151    leax  -1,x
          bne   L0151
          puls  x

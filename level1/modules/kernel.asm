@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 14     Tandy/Microware original version
+*  14    From Tandy OS-9 Level One VR 02.00.00
 
 
          nam   OS9
@@ -19,7 +19,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $0E
+edition  set   14
 
 L0000    mod   eom,name,tylg,atrv,OS9Cold,size
 

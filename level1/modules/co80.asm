@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 2      Tandy/Microware original version
+*   2    From Tandy OS-9 Level One VR 02.00.00
 
          nam   CO80
          ttl   WordPak 80-RS co-driver for CCIO
@@ -19,7 +19,7 @@
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $02
+edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 

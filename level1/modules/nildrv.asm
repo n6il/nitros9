@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 3      Tandy/Microware original version
+*   3    From Tandy OS-9 Level One VR 02.00.00
 
          nam   NilDrv
          ttl   Null device driver
@@ -15,10 +15,11 @@
          ifp1
          use   defsfile
          endc
+
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $03
+edition  set   3
 
          mod   eom,name,tylg,atrv,start,size
 

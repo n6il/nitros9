@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 10     Tandy/Microware original version
+*  10    From Tandy OS-9 Level One VR 02.00.00
 
          nam   ACIAPAK
          ttl   RS-232 Pak driver
@@ -20,7 +20,7 @@
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $0A
+edition  set   10
 
          mod   eom,name,tylg,atrv,start,size
 

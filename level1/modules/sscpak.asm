@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 1      Tandy/Microware original version
+*   1    From Tandy OS-9 Level One VR 02.00.00
 
          nam   SSCPAK
          ttl   Tandy Speech/Sound Pak driver
@@ -20,7 +20,7 @@
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $01
+edition  set   1
 
 BusyBit  equ   %10000000  SSPak busy status bit (active low)
 CRA      equ   $01        PIA CRA offset

@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*        Tandy/Microware original version
+*        From Tandy OS-9 Level One VR 02.00.00
 
          nam   D2
          ttl   CCDisk device descriptor

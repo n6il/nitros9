@@ -5,7 +5,9 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 4      Tandy/Microware original version
+*   4    From Tandy OS-9 Level One VR 02.00.00
+*   5    Patched to handle 6ms step rate, patch came    BGP 02/07/14
+*        from Kissable OS-9, Rainbow, September 1986
 
          nam   CCDisk
          ttl   WD1773 disk driver for Tandy/Radio Shack controller
@@ -20,7 +22,7 @@
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $04
+edition  set   5
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -310,10 +312,10 @@ L01E1    ldb   <$15,x
          beq   L0207
 L01F2    sta   <$15,x
          sta   >DPort+$0B
-         ldb   #$13
+         ldb   #$10		was $13 for 30ms step rate
          bsr   L0273
          pshs  x
-         ldx   #$222E
+         ldx   #$088B		was $222E for 30ms step rate
 L0201    leax  -$01,x
          bne   L0201
          puls  x
@@ -428,13 +430,13 @@ L02D0    lbsr  L020D
          ldx   >u00A7,u
          clr   <$15,x
          lda   #$05
-L02DC    ldb   #$43
+L02DC    ldb   #$40		was $43 for 30ms step rate
          pshs  a
          bsr   L0273
          puls  a
          deca  
          bne   L02DC
-         ldb   #$03
+         ldb   #$00		was $03 for 30ms step rate
          bra   L0273
 L02EB    pshs  y,x,b,a
          lda   <D.DskTmr

@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 12     Tandy/Microware original version
+*  12    From Tandy OS-9 Level One VR 02.00.00
 
          nam   CCIO
          ttl   OS-9 Level One V2 CoCo I/O driver
@@ -18,7 +18,7 @@
 tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   $0C
+edition  set   12
 
          mod   eom,name,tylg,atrv,start,size
 
