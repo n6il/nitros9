@@ -7,11 +7,11 @@ CMDS		= supercomm
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS) $(DEPENDS)	
-	@$(ECHO) "*********************************************"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*        Dave Phillipsen's Supercomm        *"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*********************************************"
+	@$(ECHO) "**************************************************"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "*           Dave Phillipsen's Supercomm          *"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "**************************************************"
  
 clean:
 	$(RM) $(ALLOBJS)

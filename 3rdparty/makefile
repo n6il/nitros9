@@ -4,11 +4,11 @@ dirs	= booters drivers fmgrs p2mods subrtns utils packages
 
 # Make all components
 all:
-	@$(ECHO) "*********************************************"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*            3rd Party Software             *"
-	@$(ECHO) "*                                           *"
-	@$(ECHO) "*********************************************"
+	@$(ECHO) "**************************************************"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "*               3rd Party Software               *"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "**************************************************"
 	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
 
 # Clean all components
