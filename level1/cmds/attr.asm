@@ -96,7 +96,7 @@ L00FA    sta   ,y+        else save char in Y
          bcs   L0106      branch if not
          cmpa  #PDELIM    path delimiter?
          bne   L00FA      branch if not
-L0106    lda   #'@
+L0106    lda   #PENTIR
          ldb   #C$SPAC
          std   ,y++
          leax  <filename,u point X to filename
@@ -129,7 +129,7 @@ L0152    lbsr  L021D
          bcc   L0152
          clrb  
          lda   ,x
-         cmpa  #$0D
+         cmpa  #C$CR
          bne   L01AC
          pshs  u
          ldx   <u001C,u
@@ -181,12 +181,12 @@ L01C8    leax  >L006D,pcr
 L01CF    pshs  u,y,x
          lda   <fpath
          ldx   #$0000
-         ldu   #$0040
+         ldu   #DIR.SZ*2
          os9   I$Seek
          ldu   $04,s
          bcs   L01BE
 L01E0    leax  <u0028,u
-         ldy   #$0020
+         ldy   #DIR.SZ
          os9   I$Read
          bcs   L01F7
          tst   ,x
@@ -195,7 +195,7 @@ L01E0    leax  <u0028,u
          clrb  
          bra   L01B0
 L01F7    puls  u,y,x
-         cmpb  #$D3
+         cmpb  #E$EOF
          bne   L01AC
          rts   
 L01FE    fdb   $ff41
