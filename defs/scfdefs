@@ -36,6 +36,9 @@ SCFDEFS  set   1
 *
 *          2003/06/02  Boisy G. Pitre
 * Updated comments for clarity.
+*
+*          2004/05/17  Boisy G. Pitre
+* Added higher baud rates.
 
          nam   SCFDefs
          ttl   Sequential File Manager Definitions
@@ -221,14 +224,17 @@ PARSPACE equ   %11100000
 * PD.BAU definitions
 *
 * Baud rate
-B110     equ   0
-B300     equ   1
-B600     equ   2
-B1200    equ   3
-B2400    equ   4
-B4800    equ   5
-B9600    equ   6
-B19200   equ   7
+B110     equ   %00000000
+B300     equ   %00000001
+B600     equ   %00000010
+B1200    equ   %00000011
+B2400    equ   %00000100
+B4800    equ   %00000101
+B9600    equ   %00000110
+B19200   equ   %00000111
+B38400   equ   %00001000
+B57600   equ   %00001001
+B115200  equ   %00001010
 * Word size
 WORD8    equ   %00000000
 WORD7    equ   %00100000
