@@ -6,6 +6,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * 9      Original Tandy L2 distribution version
+* 10     Added baud delay table for NitrOS-9
 
          nam   SIO
          ttl   CoCo 3 Serial driver
@@ -37,22 +38,29 @@ size     equ   .
 name     fcs   /SIO/
          fcb   edition
 
-L0012    fcb   $09 
-         fcb   $0C 
-         fcb   $03 
-         fcb   $4C L
-         fcb   $01
-         fcb   $A2 "
-         fcb   $00 
-         fcb   $CE N
-         fcb   $00 
-         fcb   $62 b
-         fcb   $00 
-         fcb   $2E .
-         fcb   $00 
-         fcb   $12 
-         fcb   $00 
-         fcb   $03 
+* Baud Rate Delay Table
+DelayTbl
+         IFEQ  NitrOS9
+* OS-9 Level Two delay values (1.89MHz)
+         fdb   $090C	110 baud
+         fdb   $034C	300 baud
+         fdb   $01A2	600 baud
+         fdb   $00CE	1200 baud
+         fdb   $0062	2400 baud
+         fdb   $002E	4800 baud
+         fdb   $0012	9600 baud
+         fdb   $0003	32000 baud
+         ELSE
+* NitrOS-9 Level Two delay values (1.89MHz)
+         fdb   $090C	110 baud (Unchanged, unknown)
+         fdb   $03D0	300 baud
+         fdb   $01A2	600 baud (Unchanged, unknown)
+         fdb   $00F0	1200 baud
+         fdb   $0073	2400 baud
+         fdb   $0036	4800 baud
+         fdb   $0017	9600 baud
+         fdb   $0003	32000 baud (Unchanged, unknown)
+         ENDC
 
 start    lbra  Init
          lbra  Read
@@ -157,7 +165,7 @@ L00AC    pshs  a
          cmpa  #$08
          bcc   L00C4
          lsla
-         leax  >L0012,pcr
+         leax  >DelayTbl,pcr
          ldd   a,x
          std   <u0020,u
          clrb
