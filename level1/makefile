@@ -1,8 +1,8 @@
 include ../rules.mak
 
 RELEASE		= nos96809l1v030200
-BOOTFILE	= BOOTFILES/bootfile_stock
-KERNELFILE	= BOOTFILES/kernel_stock
+BOOTFILE	= bootfiles/bootfile_stock
+KERNELFILE	= bootfiles/kernel_stock
 DIRS		= cmds modules defs sys bootfiles
 
 CMDS		= $(shell $(CD) cmds; make showcocoobjs)
