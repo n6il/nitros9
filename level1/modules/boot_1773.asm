@@ -62,7 +62,7 @@ MakeStak pshs  a		save 0 on stack
          bne   MakeStak		until we've created our stack
 
          tfr   s,u		put 'stack statics' in U
-         ldx   #$FF48
+         ldx   #DPort+8
          lda   #$D0
          sta   ,x
          lbsr  L01AA
@@ -79,7 +79,7 @@ MakeStak pshs  a		save 0 on stack
          sta   >D.XNMI
          lda   #$08
          ENDC
-         sta   >$FF40
+         sta   >DPort
 
 * delay loop
          IFGT  Level-1
@@ -167,7 +167,7 @@ L00A8    leas  $04,s
 L00AA    leas  $02,s
 L00AC    puls  u,y,x
          leas  size,s		clean up stack
-         clr   >$FF40		shut off floppy disk
+         clr   >DPort		shut off floppy disk
          rts
 
 L00B7    lda   #$29
@@ -206,37 +206,45 @@ L00EA    bsr   L013C
          pshs  y
          ldy   #$FFFF
          ldb   #$80
-         stb   >$FF48
+         stb   >DPort+8
          ldb   ,u
+* Notes on the next line:
+* The byte in question comes after telling the controller that it should
+* read a sector. RegB is then loaded (ldb ,u) which means it is set to $29
+* (%00101001) or the default boot drive if sub L00B7 has been run. At this
+* point an orb #$30 or orb #%00110000 means that write precomp and double
+* density flags are or'd in. This does not make any sense at all for a
+* read command. I suppose the command may not even be needed but $28 just
+* ensures that motor on and double density are set.
          orb   #$28		was $30 which RG thinks is an error
          tst   u0009,u
          beq   L0107
          orb   #$40
-L0107    stb   >$FF40
+L0107    stb   >DPort
          lbsr  L01AA
          orb   #$80
 *         lda   #$02
-*L0111    bita  >$FF48
+*L0111    bita  >DPort+8
 *         bne   L0123
 *         leay  -$01,y
 *         bne   L0111
 *         lda   ,u
-*         sta   >$FF40
+*         sta   >DPort
 *         puls  y
 *         bra   L0138
-         stb   $FF40
+         stb   >DPort
          nop
          nop
          bra   L0123
-L0123    lda   >$FF4B
+L0123    lda   >DPort+$0B
          sta   ,x+
-*         stb   >$FF40
+*         stb   >DPort
          nop
          bra   L0123
 
 NMIRtn   leas  R$Size,s
          puls  y
-         ldb   >$FF48
+         ldb   >DPort+8
          bitb  #$04
          beq   L018F
 L0138    comb
@@ -267,13 +275,13 @@ L0162    subb  u0006,u
 L0168    addb  #$12
          puls  a
 L016C    incb
-         stb   >$FF4A
+         stb   >DPort+$0A
 L0170    ldb   u0004,u
-         stb   >$FF49
+         stb   >DPort+$09
          cmpa  u0004,u
          beq   L018D
          sta   u0004,u
-         sta   >$FF4B
+         sta   >DPort+$0B
          ldb   #$10+STEP
          bsr   L0195
          pshs  x
@@ -288,13 +296,13 @@ L018F    bitb  #$98
          clrb
          rts
 L0195    bsr   L01A8
-L0197    ldb   >$FF48
+L0197    ldb   >DPort+8
          bitb  #$01
          bne   L0197
          rts
 L019F    lda   ,u
-         sta   >$FF40
-         stb   >$FF48
+         sta   >DPort
+         stb   >DPort+$08
          rts
 L01A8 
          IFNE  NitrOS9
