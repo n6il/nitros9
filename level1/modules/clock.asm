@@ -26,6 +26,10 @@
 * Fixed bug in init routine that was causing DP and CC to
 * be pulled off the stack and stored in D.Proc under Level 1
 *		
+*   9r7    2005/01/17  Boisy G. Pitre
+* Fixed incorrect value for PIA initialization.  Robert indicated
+* that it should be $3434, not $3435.
+*		
 	nam	Clock     
 	ttl	OS-9 System Clock
 		
@@ -173,7 +177,7 @@ InitCont
 	coma	
 	sta	2,x		set port B all outputs
 ;	ldd	#$343C		[A]=PIA0 CRA contents, [B]=PIA0 CRB contents
-	ldd	#$3435
+	ldd	#$3434		as per Robert Gault's suggestion
 	sta	1,x		CA2 (MUX0) out low, port A, disable HBORD high-to-low IRQs
 	stb	3,x		CB2 (MUX1) out low, port B, disable VBORD low-to-high IRQs
 
