@@ -25,7 +25,7 @@ clean:
 
 dsk:
 	$(RM) $(DISK)
-	$(OS9FORMAT) $(DISK)
+	$(OS9FORMAT) $(DISK) -n"Multi-Vue"
 	$(MAKDIR) $(DISK):CMDS
 	$(MAKDIR) $(DISK):CMDS/ICONS
 	$(MAKDIR) $(DISK):SYS
