@@ -15,6 +15,6 @@ copy CMDS/basic09_6309 /DD/CMDS/basic09
 copy CMDS/runb_6309 /DD/CMDS/runb
 copy CMDS/gfx /DD/CMDS/gfx
 copy CMDS/inkey /DD/CMDS/inkey
-copy CMDS/syscall_6309 /DD/CMDS/syscall
+copy CMDS/syscall /DD/CMDS/syscall
 * All Done!
 

@@ -48,14 +48,14 @@ L0034    ldb   #$39		get rts
          ldd   #$103F		get SWI2 instruction
          pshs  b,a		put on stack
          ldu   $0C,s		get pointer to caller's registers on stack
-         ldd   R$D,u		
-         ldx   R$X,u
-         ldy   R$Y,u
-         ldu   R$U,u
+         ldd   1,u		R$D
+         ldx   4,u		R$X
+         ldy   6,u		R$Y
+         ldu   8,u		R$U
          jsr   ,s               branch to subroutine
          pshs  u,cc
          ldu   $0F,s
-         leau  R$U,u
+         leau  8,u		R$U
          pshu  y,x,dp,b,a
          puls  x,a
          sta   ,-u
