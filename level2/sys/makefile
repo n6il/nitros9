@@ -8,13 +8,13 @@ L1HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
 		chx.hp cmp.hp cobbler.hp config.hp copy.hp date.hp \
 		dcheck.hp debug.hp deiniz.hp del.hp deldir.hp dir.hp \
 		display.hp dsave.hp dump.hp echo.hp edit.hp error.hp ex.hp \
-		exbin.hp format.hp free.hp help.hp ident.hp iniz.hp \
+		exbin.hp format.hp free.hp gfx.hp help.hp ident.hp iniz.hp \
 		inkey.hp kill.hp link.hp list.hp load.hp login.hp makdir.hp \
 		mdir.hp merge.hp mfree.hp os9gen.hp \
 		park.hp procs.hp pwd.hp pxd.hp rename.hp save.hp setime.hp \
 		setpr.hp shell.hp sleep.hp tee.hp tmode.hp touch.hp tsmon.hp \
 		tuneport.hp unlink.hp verify.hp xmode.hp
-L2HELPFILES	= basic09.hp gfx.hp gfx2.hp grfdrv.hp make.hp maketerm.hp \
+L2HELPFILES	= basic09.hp gfx2.hp grfdrv.hp make.hp maketerm.hp \
 		modpatch.hp montype.hp rdump.hp rlink.hp rma.hp runb.hp \
 		scred.hp wcreate.hp
 
