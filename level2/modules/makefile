@@ -66,43 +66,43 @@ cc3hdisk.dr: ../../level1/MODULES/cchdisk.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 
 # Floppy descriptors
-ddd0_35s.dd: dx.asm
+ddd0_35s.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0 -aDD=1
 
-d0_35s.dd: dx.asm
+d0_35s.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0
 
-d1_35s.dd: dx.asm
+d1_35s.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=1
 
-d2_35s.dd: dx.asm
+d2_35s.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=2
 
-d3_35s.dd: dx.asm
+d3_35s.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=3
 
-ddd0_40d.dd: dx.asm
+ddd0_40d.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1
 
-d0_40d.dd: dx.asm
+d0_40d.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0
 
-d1_40d.dd: dx.asm
+d1_40d.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1
 
-d2_40d.dd: dx.asm
+d2_40d.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2
 
-ddd0_80d.dd: dx.asm
+ddd0_80d.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1
 
-d0_80d.dd: dx.asm
+d0_80d.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0
 
-d1_80d.dd: dx.asm
+d1_80d.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1
 
-d2_80d.dd: dx.asm
+d2_80d.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
 
 # RAM Disk descriptors
