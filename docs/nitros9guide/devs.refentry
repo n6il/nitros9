@@ -1,0 +1,19 @@
+<refentry id="devs">
+<refnamediv>
+<refname>DEVS</refname>
+<refpurpose>Show device table entries</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>DEVS</command>
+<arg choice="opt">-?</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+Show device table entries
+</para>
+</refsect1>
+</refentry>

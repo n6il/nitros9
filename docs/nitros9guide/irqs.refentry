@@ -1,0 +1,18 @@
+<refentry id="irqs">
+<refnamediv>
+<refname>IRQS</refname>
+<refpurpose>Show interrupt polling table</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>IRQS</command>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+Show interrupt polling table.
+</para>
+</refsect1>
+</refentry>
