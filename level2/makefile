@@ -8,12 +8,14 @@ all:
 	@$(ECHO) "*        The Rumored Upgrade Version        *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	cd CMDS; make
-	cd MODULES; make
-	cd BOOTFILES; make
+	$(CD) CMDS; make
+	$(CD) MODULES; make
+	$(CD) DEFS; make
+	$(CD) BOOTFILES; make
 
 # Clean all components
 clean:
-	-cd CMDS; make clean
-	-cd MODULES; make clean
-	-cd BOOTFILES; make clean
+	-$(CD) CMDS; make clean
+	-$(CD) MODULES; make clean
+	-$(CD) DEFS; make clean
+	-$(CD) BOOTFILES; make clean
