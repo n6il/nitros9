@@ -30,9 +30,9 @@ size     equ   .
 name     fcs   /Boot/
          fcb   edition
 
-* First, we make a stack... (5 bytes deep)
+* First, we make a stack...
 start    clra
-         ldb   #$05
+         ldb   #size
 MakeStak pshs  a
          decb
          bne   MakeStak
@@ -42,7 +42,7 @@ MakeStak pshs  a
          leax  $08,x
          lda   #$D0
          sta   ,x
-         lbsr  L0174
+         lbsr  Delay
          lda   ,x
          lda   #$FF
          sta   u0004,u
@@ -68,7 +68,7 @@ L0042    nop
          os9   F$SchBit
          bcs   L009B
          exg   a,b
-         ldu   $04,s
+         ldu   $04,s                   get statics pointer
          std   u0002,u
          clrb
 
@@ -147,7 +147,7 @@ L00D3    bsr   L011D
          stb   >DPort+8
          ldb   #$39
          stb   >DPort
-         lbsr  L0174
+         lbsr  Delay
          ldb   #$B9
          lda   #$02
 L00F2    bita  >DPort+8
@@ -219,10 +219,12 @@ L0169    lda   #$09
 
 L0172    bsr   L0169
 
-* Some type of delay??
-L0174    lbsr  L0177
-L0177    lbsr  L017A
-L017A    rts
+* Delay routine
+Delay    lbsr  Delay2
+Delay2   lbsr  Delay3
+Delay3   rts
 
          emod
 eom      equ   *
+         end
+
