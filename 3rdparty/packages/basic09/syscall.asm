@@ -33,7 +33,8 @@ start    ldd   $02,s		get number of parameters
          cmpd  #$0002		two?
          bne   L005C		if not, error
          ldd   $0A,s		get size of second parameter
-         cmpd  #R$PC		appropriate registers?
+*         cmpd  #R$PC		appropriate registers?
+         cmpd  #$0A		appropriate registers?
          bne   L005C		branch if not
          ldd   [<$04,s]		get address of first parameter
          ldx   $06,s		get size of first parameter
