@@ -1,4 +1,4 @@
-         nam   OS9Defs                 
+         nam   OS9Defs
          ttl   OS-9 Level 1 & 2 System Symbol Definitions
 
 *****************
@@ -17,8 +17,9 @@
 * 86/09/30 added Reserved User $70 to $7f in sytem calls                MGH
 * 86/09/30 Created Color Computer 3 Version of OS9Defs                  MGH
 * 98/10/03 Consoldated Level 1/Level 2 os9defs                          BGP
+* 02/04/04 Consoldated Level 2/Level 2 V3 os9defs                       BGP
 
-         pag  
+         pag
 *****************************************
 * System Service Request Code Definitions
 *
@@ -65,6 +66,10 @@ F$Alarm  rmb   1          Color Computer Alarm Call
          rmb   2          reserved - For overlap of other systems
 F$NMLink rmb   1          Color Computer NonMapping Link
 F$NMLoad rmb   1          Color Computer NonMapping Load
+
+         org   $25
+F$TPS    rmb   1          Return System's Ticks Per Second
+F$TimAlm rmb   1          CoCo individual process alarm call
 
          endc
 
@@ -118,7 +123,17 @@ F$AlHRam rmb   1          Allocate HIGH RAM Blocks
 * Numbers $70 through $7F are reserved for user definitions
 *
          org   $70
-         rmb   16         Reserved for user definition
+
+	 ifeq  Level-1
+
+	 rmb   16         Reserved for user definition
+
+         else
+
+F$RegDmp rmb   1          Register dump
+F$NVRAM  rmb   1          Non Volatile RAM
+
+         endc
 
          pag
 **************************************
@@ -166,6 +181,7 @@ S$Wake   rmb   1          Wake-up Sleeping Process
 S$Abort  rmb   1          Keyboard Abort
 S$Intrpt rmb   1          Keyboard Interrupt
 S$Window rmb   1          Window Change
+S$Alarm  rmb   1
 
          pag
 **********************************
@@ -245,20 +261,26 @@ SS.UMBar rmb   1          update menu bar (SetStat)
 SS.FBRgs rmb   1          return color registers (GetStat)
 SS.DfPal rmb   1          set/return default palette registers (Getstat/Setstat)
 SS.Tone  rmb   1          Generate a tone using 6 bit sound
+SS.GIP2  rmb   1          Global Input Params #2 (L2V3)
+SS.AnPal rmb   1          Animate palettes (L2V3)
+SS.FndBf rmb   1          Find named buffer (L2V3)
+
+SS.CDSta equ   SS.GIP2    XACIA
+SS.CDSig equ   SS.AnPal   XACIA
+SS.CDRel equ   SS.FndBf   XACIA
 
          endc
 
-         ttl   Direct Page Definitions 
-         pag  
+	 ttl   Direct Page Definitions
+         pag
 
 **********************************
 * Direct Page Variable Definitions
 *
-         org   $20
-
          ifeq  Level-1
 
 * Level 1 DP vars
+	 org   $20
 D.FMBM   rmb   4          Free memory bit map pointers
 D.MLIM   rmb   2          Memory limit $24
 D.ModDir rmb   4          Module directory $26
@@ -318,6 +340,11 @@ SVCTSZ   equ   (256-BMAPSZ)/SVCTNM-2 SERVICE REQUEST TABLE SIZE
          else
 
 * Level 2 DP vars
+         org   $00
+D.WDAddr rmb   2
+D.WDBtDr rmb   1
+
+	 org   $20
 D.Tasks  rmb   2          Task User Table
 D.TmpDAT rmb   2          Temporary DAT Image stack
 D.Init   rmb   2          Initialization Module ptr
@@ -362,10 +389,6 @@ D.PolTbl rmb   2          I/O Polling Table
          rmb   4          reserved
 D.PthDBT rmb   2          Path Descriptor Block Table ptr
 D.DMAReq rmb   1          DMA Request flag
-
-         endc
-
-         ifgt  Level-1
 
 ********
 * CoCo 3 STUFF COMES NEXT
@@ -442,7 +465,7 @@ IOEntry  equ   254
 
          endc
 
-         ttl   Structure Formats       
+         ttl   Structure Formats
          pag
 ************************************
 * Module Directory Entry Definitions
@@ -504,6 +527,24 @@ SysStr   rmb   2          System Device Name
 StdStr   rmb   2          Standard I/O Pathlist
 BootStr  rmb   2          Bootstrap Module name
 ProtFlag rmb   1          Write protect enable flag
+
+         ifgt  Level-1
+
+OSLevel  rmb   1          OS level
+OSVer    rmb   1          OS version
+OSMajor  rmb   1          OS major
+OSMinor  rmb   1          OS minor
+Compat1  rmb   1          compatibility byte
+
+* -- CC3IO area -- *
+MonType  rmb   1          Monitor type (0=CMP,1=RGB,2=MONO)
+KeyRptS  rmb   1          Key repeat start constant
+KeyRptD  rmb   1          Key repeat delay constant
+
+* Compatiblity byte definitions
+CRCOn    equ   %00000001  CRC checking on if set, off if clear
+
+         endc
 
          pag
 **************************
@@ -578,7 +619,7 @@ DT.NFM   equ   4          Network File Manager
 CRCCon1  equ   $80
 CRCCon23 equ   $0FE3
 
-         ttl   Process Information     
+         ttl   Process Information
          pag
 ********************************
 * Process Descriptor Definitions
@@ -665,6 +706,13 @@ P$DATImg rmb   64         DAT Image
 P$Links  rmb   32         Block Link counts
 P$NIO    rmb   6*2        additional DIO ptrs for net, compatible  with 68k
 P$SelP   rmb   1          Selected Path for COCO Windows (Default 0)
+P$UTicks rmb   4          proc User Tick counter        (L2V3)
+P$STicks rmb   4          proc System Tick counter      (L2V3)
+P$FCalls rmb   4          proc F$ call counter          (L2V3)
+P$ICalls rmb   4          proc I$ call counter          (L2V3)
+P$DatBeg rmb   3          proc Date of creation (Y/M/D) (L2V3)
+P$TimBeg rmb   3          proc Time of creation (H/M/S) (L2V3)
+P$Alarm  rmb   6
          rmb   $200-.     Local stack
 P$Stack  equ   .          Top of Stack
 P$Size   equ   .          Size of Process Descriptor
@@ -789,12 +837,30 @@ R$CC     equ   0          Condition Codes register
 R$A      equ   1          A Accumulator
 R$B      equ   2          B Accumulator
 R$D      equ   R$A        Combined A:B Accumulator
+         ifne  H6309
+R$E      equ   3          Accumulator
+R$F      equ   4          Accumulator
+R$W      equ   R$E        Combined E:F Accumulator
+R$Q      equ   R$A        Combined A:B:E:F Accumulator
+R$DP     equ   5          Direct Page register
+R$X      equ   6          X Index register
+R$Y      equ   8          Y Index register
+R$U      equ   10         User Stack register
+R$PC     equ   12         Program Counter register
+R$Size   equ   14         Total register package size
+         else
 R$DP     equ   3          Direct Page register
 R$X      equ   4          X Index register
 R$Y      equ   6          Y Index register
 R$U      equ   8          User Stack register
 R$PC     equ   10         Program Counter register
 R$Size   equ   12         Total register package size
+         endc
+
+* MD register masks
+* 6309 definitions - NitrOS9
+DIV0     equ   %10000000  division by 0 trap flag       : 1 = trap occured
+badinstr equ   %01000000  illegal instruction trap flag : 1 = trap occured
 
 Entire   equ   %10000000  Full Register Stack flag
 FIRQMask equ   %01000000  Fast-Interrupt Mask bit
@@ -810,11 +876,85 @@ Sign     equ   %10000000  sign bit
 true     equ   1          useful name
 false    equ   0          useful name
 
-         ttl   Error Code Definitions  
-         pag   
+         ttl   Error Code Definitions
+         pag
 ************************
 * Error Code Definitions
 *
+* Basic09 Error Codes
+*
+         org   10
+E$UnkSym rmb   1 Unknown symbol
+E$ExcVrb rmb   1 Excessive verbage
+E$IllStC rmb   1 Illegal statement construction
+E$ICOvf  rmb   1 I-code overflow
+E$IChRef rmb   1 Illegal channel reference
+E$IllMod rmb   1 Illegal mode
+E$IllNum rmb   1 Illegal number
+E$IllPrf rmb   1 Illegal prefix
+E$IllOpd rmb   1 Illegal operand
+E$IllOpr rmb   1 Illegal operator
+E$IllRFN rmb   1 Illegal record field name
+E$IllDim rmb   1 Illegal dimension
+E$IllLit rmb   1 Illegal literal
+E$IllRet rmb   1 Illegal relational
+E$IllSfx rmb   1 Illegal type suffix
+E$DimLrg rmb   1 Dimension too large
+E$LinLrg rmb   1 Line number too large
+E$NoAssg rmb   1 Missing assignment statement
+E$NoPath rmb   1 Missing path number
+E$NoComa rmb   1 Missing coma
+E$NoDim  rmb   1 Missing dimension
+E$NoDO   rmb   1 Missing DO statement
+E$MFull  rmb   1 Memory full
+E$NoGoto rmb   1 Missing GOTO
+E$NoLPar rmb   1 Missing left parenthesis
+E$NoLRef rmb   1 Missing line reference
+E$NoOprd rmb   1 Missing operand
+E$NoRPar rmb   1 Missing right parenthesis
+E$NoTHEN rmb   1 Missing THEN statement
+E$NoTO   rmb   1 Missing TO statement
+E$NoVRef rmb   1 Missing variable reference
+E$EndQou rmb   1 Missing end quote
+E$SubLrg rmb   1 Too many subscripts
+E$UnkPrc rmb   1 Unknown procedure
+E$MulPrc rmb   1 Multiply defined procedure
+E$DivZer rmb   1 Divice by zero
+E$TypMis rmb   1 Operand type mismatch
+E$StrOvf rmb   1 String stack overflow
+E$NoRout rmb   1 Unimplemented routine
+E$UndVar rmb   1 Undefined variable
+E$FltOvf rmb   1 Floating Overflow
+E$LnComp rmb   1 Line with compiler error
+E$ValRng rmb   1 Value out of range for destination
+E$SubOvf rmb   1 Subroutine stack overflow
+E$SubUnd rmb   1 Subroutine stack underflow
+E$SubRng rmb   1 Subscript out of range
+E$ParmEr rmb   1 Paraemter error
+E$SysOvf rmb   1 System stack overflow
+E$IOMism rmb   1 I/O type mismatch
+E$IONum  rmb   1 I/O numeric input format bad
+E$IOConv rmb   1 I/O conversion: number out of range
+E$IllInp rmb   1 Illegal input format
+E$IOFRpt rmb   1 I/O format repeat error
+E$IOFSyn rmb   1 I/O format syntax error
+E$IllPNm rmb   1 Illegal path number
+E$WrSub  rmb   1 Wrong number of subscripts
+E$NonRcO rmb   1 Non-record type operand
+E$IllA   rmb   1 Illegal argument
+E$IllCnt rmb   1 Illegal control structure
+E$UnmCnt rmb   1 Unmatched control structure
+E$IllFOR rmb   1 Illegal FOR variable
+E$IllExp rmb   1 Illegal expression type
+E$IllDec rmb   1 Illegal declarative statement
+E$ArrOvf rmb   1 Array size overflow
+E$UndLin rmb   1 Undefined line number
+E$MltLin rmb   1 Multiply defined line number
+E$MltVar rmb   1 Multiply defined variable
+E$IllIVr rmb   1 Illegal input variable
+E$SeekRg rmb   1 Seek out of range
+E$NoData rmb   1 Missing data statement
+
 *
 * System Dependent Error Codes
 *
