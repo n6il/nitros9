@@ -7,7 +7,7 @@ CD		= ../cmds
 
 DEPENDS		= ./makefile
 
-KERNEL_STOCK	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/kernel
+KERNEL_STOCK	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/kernel
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_VDG	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
