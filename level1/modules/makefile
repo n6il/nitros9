@@ -7,11 +7,12 @@ BOOTERS		= oscode oscode_d64 boot_1773 boot_d64 $(TPB)/boot_rom_l1 rom_vectors
 KERNELS		= os9 os9p2
 ROMMODS		= rominfo sysgo_rom
 SYSMODS		= ioman init sysgo sysgo_d64
-CLOCKS		= clock.60hz clock.50hz clock_d64 clock_tc3 clock_bb
+CLOCKS		= clock.60hz clock.50hz clock_tc3 clock_bb
+CLOCKS_D64	= clock_d64
 FMGRS		= scf.mn rbf.mn pipeman.mn
 DRIVERS		= aciapak.dr cchdisk.dr ccdisk.dr modpak.dr nildrv.dr \
-		piper.dr printer.dr rs232.dr sscpak.dr ccio.dr \
-		ddisk.dr kbvdio.dr
+		piper.dr printer.dr rs232.dr sscpak.dr ccio.dr
+DRIVERS_D64	= ddisk.dr kbvdio.dr
 IOSUBS		= co32.io co80.io grfo.io
 DESCS		= ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
@@ -19,8 +20,8 @@ DESCS		= ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		h0_15.dd h1_15.dd h0_35.dd h1_35.dd \
 		m1.dd m2.dd nil.dd p.dd pipe.dd ssc.dd \
 		term_t1.dd t1.dd t2.dd t3.dd term32.dd term80.dd
-#		p1_d64.dd term_d64.dd t1_d64.dd \
-#		dd_d64.dd d0_d64.dd d1_d64.dd d2_d64.dd d3_d64.dd
+DESCS_D64	= p1_d64.dd term_d64.dd t1_d64.dd \
+		dd_d64.dd d0_d64.dd d1_d64.dd d2_d64.dd d3_d64.dd
 HELP		= co32.hp co80.hp \
 		ddd0_35s.hp d0_35s.hp d1_35s.hp d2_35s.hp d3_35s.hp \
 		ddd0_40d.hp d0_40d.hp d1_40d.hp d2_40d.hp \
