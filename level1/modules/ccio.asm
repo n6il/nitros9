@@ -11,6 +11,10 @@
 *
 *  12r1    2003/09/11  Rodney V. Hamilton
 * Modified key table to include $7F, $1D, $1E and $1F codes.
+*
+* 2004/11/28, P.Harvey-Smith.
+* Added code to remap Dragon keyboard inputs to CoCo format.
+*
 
          nam   CCIO
          ttl   OS-9 Level One V2 CoCo I/O driver
@@ -174,7 +178,8 @@ L00E8    comb
          andb  #$03		mask out all but lower 2 bits
          rts
 
-L00F1    bsr   L015C
+L00F1    	
+	 bsr   L015C
          bmi   L00CC
          clrb
          bsr   L00E8
@@ -237,7 +242,12 @@ L015C    clra
          deca			lda #%11111110
          sta   $02,x		write column strobe
 L016F    lda   ,x		read row from PIA0Base
-         coma			invert so 1=key pressed
+
+	IFEQ	DragonIO-1
+	lbsr	DragonToCoCo	; Translate Dragon keyboard layout to CoCo
+	ENDC
+
+	 coma			invert so 1=key pressed
          anda  #$7F		keep only keys, bit 0=off 1=on
          beq   L0183		no keys pressed, try next column
          ldb   #$FF		preset counter to -1
@@ -290,7 +300,8 @@ L01D4    cmpb  #$4C		ALT key? (SHOULD BE $4C???)
          inc   <V.AltDwn,u	flag special keys (ALT, CTRL)
          subb  #$06		adjust offset to skip them
 L01DD    pshs  x		save X
-         leax  >KeyTbl,pcr	point to keyboard table
+	
+	leax  >KeyTbl,pcr	point to keyboard table
          lda   b,x
          puls  x
          bmi   L01FD		if A = $81 - $84, special key
@@ -458,6 +469,37 @@ L0314    lda   ,x		get current byte
          stb   ,x
 L0320    rts
 
+;
+; Convert Dragon Keyboard mapping to CoCo.
+;
+; Entry	a=Dragon formatted keyboard input from PIA
+; Exit	a=CoCo formatted keyboard input from PIA
+;
+
+	IFEQ	DragonIO-1
+DragonToCoCo
+	pshs	b
+	sta	,-s		; Save on stack
+	tfr	a,b		; Take a copy of keycode
+	anda	#%01000000	; Top row same on both machines
+	andb	#%00000011	; shift bottom 2 rows up 4 places 
+	lslb
+	lslb
+	lslb
+	lslb
+	pshs	b
+	ora	,s+		; recombine rows
+	puls	b
+	andb	#%00111100	; Shift middle 4 rows down 2 places
+	lsrb
+	lsrb
+	pshs	b
+	ora	,s+		; recombine rows	
+	puls	b
+	RTS
+
+	ENDC
+	
 * Key Table
 * 1st column = key (no modifier)
 * 2nd column = SHIFT+key
@@ -490,6 +532,7 @@ KeyTbl   fcb   $00,$40,$60	ALT @ `
          fcb   $31,$33,$35	F1 key
          fcb   $32,$34,$36	F2 key
 
+	
 * Write
 *
 * Entry:

@@ -32,7 +32,7 @@ RBF		= rbf.mn \
 		ddd0_dalpha.dd d0_dalpha.dd d1_dalpha.dd d2_dalpha.dd d3_dalpha.dd
 		
 SCF		= scf.mn \
-		sc6551.dr vrn.dr printer.dr sio.dr sspak.dr ccio.dr \
+		sc6551.dr vrn.dr printer.dr sio.dr sspak.dr dgnio.dr \
 		co32.io co80.io \
 		nil.dd p.dd pipe.dd ssp.dd kbvdio.dr akbvdio.dr \
 		drvr51.dr adrvr51.dr \
@@ -72,6 +72,10 @@ clock2_bnb: clock2_ds1315.asm
 
 clock2_cloud9: clock2_ds1315.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCLOUD9=1
+
+#Terminals, dgnio, is based on ccio, with code to remap keyboad.
+dgnio.dr: ccio.asm
+	$(AS) $(ASFLAGS) $(ASOUT)$@ $<  -aDragonIO=1
 
 # Floppy descriptors
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
