@@ -104,6 +104,27 @@ u009A equ $9A
 u009C equ $9C 
 u009D equ $9D 
 
+* Program equates
+*  Cycle Types
+CY_NORM   equ   0
+CY_END    equ   1
+CY_REVEND equ   2
+CY_REV    equ   3
+
+*  Motion Types
+MT_NORM   equ   0
+MT_WANDER equ   1
+MT_FOLLOW equ   2
+MT_MOVE   equ   3
+MT_EGO    equ   4
+
+*  Loop Directions
+RIGHT     equ   $00
+LEFT      equ   $01
+DOWN      equ   $02
+UP        equ   $03
+IGNORE    equ   $04
+
          nam   mnln
          ttl   program module
 
@@ -694,12 +715,20 @@ L0612    lda   <$26,u
 L062B    rts
 
 
+* from obj_base.c of nagi 2002_11_14 except those have one more right turn at the end.
+  
+loop_small
+L062C     fcb   IGNORE,IGNORE
+          fcb   RIGHT,RIGHT,RIGHT
+          fcb   IGNORE
+          fcb   LEFT,LEFT,LEFT
+          
+loop_large
+L0635     fcb   IGNORE,UP
+          fcb   RIGHT,RIGHT,RIGHT
+          fcb   DOWN
+          fcb   LEFT,LEFT,LEFT
 
-L062C    fcb   $04,$04,$00,$00,$00
-         fcb   $04,$01,$01,$01
-
-L0635    fcb   $04,$03,$00,$00,$00
-         fcb   $02,$01,$01,$01
 
 * called from jump table 1
 L063E    lda   ,y+
@@ -760,11 +789,11 @@ L0692    cmpu  <u0032
          cmpa  #$02
          bcs   L06DA
          lda   <$21,u
-         leay  >L062C,pcr  9 byte data table address above
+         leay  >L062C,pcr  loop_small data address
          ldb   a,y
          bra   L06C9
 L06C0    lda   <$21,u
-         leay  >L0635,pcr  9 byte data table address above
+         leay  >L0635,pcr  loop_large data address
          ldb   a,y
 L06C9    lda   $01,u
          cmpa  #$01
@@ -1313,30 +1342,30 @@ L0BD7    leas  >-$0194,s
          tfr   d,u
          std   >$0192,s
          lda   <$23,u
-         cmpa  #$00
+         cmpa  #CY_NORM       $00
          bne   L0BFB
          leax  >L0A31,pcr     normal cycle
          bra   L0C13
-L0BFB    cmpa  #$01
+L0BFB    cmpa  #CY_END        $01
          bne   L0C05
          leax  >L0A3E,pcr     end of loop
          bra   L0C13
-L0C05    cmpa  #$02
+L0C05    cmpa  #CY_REVEND     $02
          bne   L0C0F
          leax  >L0A4A,pcr     reverse loop
-         bra   L0C13
+         bra   L0C13          ** default must be CY_REV #$03
 L0C0F    leax  >L0A57,pcr     reverse cycle
 L0C13    stx   >$0190,s
          lda   <$22,u
-         cmpa  #$00
+         cmpa  #MT_NORM       $00
          bne   L0C24
          leax  >L0A65,pcr     normal motion
          bra   L0C54
-L0C24    cmpa  #$01
+L0C24    cmpa  #MT_WANDER     $01
          bne   L0C2E
          leax  >L0A73,pcr     wander
          bra   L0C54
-L0C2E    cmpa  #$02
+L0C2E    cmpa  #MT_FOLLOW     $02
          bne   L0C38
          leax  >L0A7A,pcr     follow
          bra   L0C54
@@ -1433,25 +1462,52 @@ L0CB7    leas  >-$00C8,s
          rts
 
 * Jump table #2
-L0D09    fdb   $0F4F,$0000
-         fdb   $0D9B,$0280
-         fdb   $0DAC,$02C0
-         fdb   $0DC3,$0280
-         fdb   $0DD4,$02C0
-         fdb   $0DEB,$0280
-         fdb   $0DFC,$02C0
-         fdb   $0E13,$0100
-         fdb   $0E1F,$0180
-         fdb   $0E32,$0100
-         fdb   $0E44,$0240
-         fdb   $0EEB,$0500
-         fdb   $0E5C,$0100
-         fdb   $0E64,$0000
-         fdb   $0E80,$0000
-         fdb   $0EE3,$0200
-         fdb   $0F0F,$0500
-         fdb   $0EF3,$0500
-         fdb   $0F03,$0500
+* from nagi source 2002-11-14 cmd_table.c file
+* FUNC eval_table[] = {
+*			{"return.false", cmd_ret_false, 0, 0},
+*			{"equal.n", cmd_equal_n, 2, 0x80},
+*			{"equal.v", cmd_equal_v, 2, 0xC0},
+*			{"less.n", cmd_less_n, 2, 0x80},
+*			{"less.v", cmd_less_v, 2, 0xC0},
+*			{"greater.n", cmd_greater_n, 2, 0x80},
+*			{"greater.v", cmd_greater_v, 2, 0xC0},
+*			{"isset", cmd_isset, 1, 0},
+*			{"isset.v", cmd_isset_v, 1, 0x80},
+*			{"has", cmd_has, 1, 0},
+*			{"obj.in.room", cmd_obj_in_room, 2, 0x40},
+*			{"posn", cmd_posn, 5, 0},
+*			{"controller", cmd_controller, 1, 0},
+*			{"have.key", cmd_have_key, 0, 0},
+*			{"said", cmd_said, 0, 0},
+*			{"compare.strings", cmd_compare_strings, 2, 0},
+*			{"obj.in.box", cmd_obj_in_box, 5, 0},
+*			{"center.posn", cmd_center_posn, 5, 0},
+*			{"right.posn", cmd_right_posn, 5, 0},
+*			{"unknown.19", cmd_ret_false, 0, 0}
+*	   	};
+
+eval_table
+L0D09    fdb   $0F4F,$0000     cmd_ret_false
+         fdb   $0D9B,$0280     cmd_equal_n
+         fdb   $0DAC,$02C0     cmd_equal_v
+         fdb   $0DC3,$0280     cmd_less_n
+         fdb   $0DD4,$02C0     cmd_less_v
+         fdb   $0DEB,$0280     cmd_greater_n
+         fdb   $0DFC,$02C0     cmd_greater_v
+         fdb   $0E13,$0100     cmd_isset
+         fdb   $0E1F,$0180     cmd_isset_v
+         fdb   $0E32,$0100     cmd_has
+         fdb   $0E44,$0240     cmd_obj_in_room
+         fdb   $0EEB,$0500     cmd_posn
+         fdb   $0E5C,$0100     cmd_controller
+         fdb   $0E64,$0000     cmd_have_key
+         fdb   $0E80,$0000     cmd_said
+         fdb   $0EE3,$0200     cmd_compare_strings
+         fdb   $0F0F,$0500     cmd_obj_in_box
+         fdb   $0EF3,$0500     cmd_center_posn
+         fdb   $0F03,$0500     cmd_right_posn
+*                                              not in our table "unknown 19" cmd_ret_false
+
 
 * Same function as sub at L0478 just different table
 L0D55    leas  -01,s            make room on stack for counter
@@ -1490,72 +1546,90 @@ L0D93    tfr   a,b
          lbsr  L10CE
 L0D9A    rts
 
-* called from jump table 2
+* cmd_equal_n
 L0D9B    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
          cmpa  ,y+
-         lbne  L0F4E
-         lbra  L0F4B
-         ldb   ,y+
+         lbne  L0F4E          clr a and return
+         lbra  L0F4B          load a with #$01 and return
+
+* cmd_equal_v
+L0DAC    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
+         
+         
          ldb   ,y+
          ldx   #$0432
          abx
          cmpa  ,x
-         lbne  L0F4E
-         lbra  L0F4B
-         ldb   ,y+
+         lbne  L0F4E          clr a and return
+         lbra  L0F4B          load a with #$01 and return
+
+* cmd_less_n
+L0DC3    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
          cmpa  ,y+
-         lbcc  L0F4E
-         lbra  L0F4B
-         ldb   ,y+
+         lbcc  L0F4E          clr a and return
+         lbra  L0F4B          load a with #$01 and return
+
+* cmd_less_v
+L0DD4    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
+
          ldb   ,y+
          ldx   #$0432
          abx
          cmpa  ,x
-         lbcc  L0F4E
-         lbra  L0F4B
-         ldb   ,y+
+         lbcc  L0F4E          clr a and return
+         lbra  L0F4B          load a with #$01 and return
+
+* cmd_greater_n
+L0DEB    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
          cmpa  ,y+
-         lbls  L0F4E
-         lbra  L0F4B
-         ldb   ,y+
+         lbls  L0F4E          clr a and return
+         lbra  L0F4B          load a with #$01 and return
+
+* cmd_greater_v
+L0DFC    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
+
          ldb   ,y+
          ldx   #$0432
          abx
          cmpa  ,x
-         lbls  L0F4E
-         lbra  L0F4B
-         lda   ,y+
+         lbls  L0F4E          clr a and return
+         lbra  L0F4B          load a with #$01 and return
+
+* cmd_isset
+L0E13         lda   ,y+
          lbsr  L16EB
-         lbeq  L0F4E
-         lbra  L0F4B
-         ldb   ,y+
+         lbeq  L0F4E          clr a and return
+         lbra  L0F4B          load a with #$01 and return
+
+* cmd_isset_v
+L0E1F    ldb   ,y+
          ldx   #$0432
          abx
          lda   ,x
          lbsr  L16EB
-         lbeq  L0F4E
-         lbra  L0F4B
+         lbeq  L0F4E          clr a and return
+         lbra  L0F4B          load a with #$01 and return
          rts
 
-* called from jump table 2
+* cmd_has
 L0E32    ldb   ,y+
          ldx   <u0038
          abx
@@ -1563,9 +1637,11 @@ L0E32    ldb   ,y+
          abx
          lda   #$FF
          cmpa  $02,x
-         lbne  L0F4E
-         lbra  L0F4B
-         ldb   $01,y
+         lbne  L0F4E          clr a and return
+         lbra  L0F4B          load a with #$01 and return
+
+* cmd_obj_in_room
+L0E44    ldb   $01,y
          ldx   #$0432
          abx
          lda   ,x
@@ -1575,25 +1651,29 @@ L0E32    ldb   ,y+
          abx
          abx
          cmpa  $02,x
-         lbne  L0F4E
-         lbra  L0F4B
+         lbne  L0F4E          clr a and return
+         lbra  L0F4B          load a with #$01 and return
+
+* cmd_controller
          lda   ,y+
          ldx   #$05BA
          lda   a,x
          rts
 
-* called from jump table 2
+* cmd_have_key
 L0E64    ldx   #$0432
          lda   <$13,x
-         lbne  L0F4B
+         lbne  L0F4B          load a with #$01 and return
 L0E6E    lbsr  L132C
          cmpa  #$FF
          beq   L0E6E
          tsta
-         lbeq  L0F4E
+         lbeq  L0F4E          clr a and return
          sta   <$13,x
-         lbra  L0F4B
-         lda   ,y+
+         lbra  L0F4B          load a with #$01 and return
+
+* cmd_said
+L0E80    lda   ,y+
          sta   <u0072
          lda   >$015A
          beq   L0ECE
@@ -1632,21 +1712,25 @@ L0ECE    ldd   <u0072
 L0ED2    lda   >$01AF
          ora   #$08
          sta   >$01AF
-         lbra  L0F4B
+         lbra  L0F4B          load a with #$01 and return
 L0EDD    lsla
          leay  a,y
-         lbra  L0F4E
-         lda   ,y+
+         lbra  L0F4E          clr a and return
+         
+* cmd_compare_strings
+L0EE3    lda   ,y+
          ldb   ,y+
          lbsr  L56AF
          rts
 
-* called from jump table 2
+* cmd_posn
 L0EEB    bsr   L0F1B
          sta   <u006F
          sta   <u0071
          bra   L0F29
-         bsr   L0F1B
+
+* cmd_center_posn
+L0EF3    bsr   L0F1B
          sta   <u006F
          lda   <$1C,u
          lsra
@@ -1654,13 +1738,17 @@ L0EEB    bsr   L0F1B
          sta   <u006F
          sta   <u0071
          bra   L0F29
-         bsr   L0F1B
+         
+* cmd_right_posn         
+L0F03    bsr   L0F1B
          adda  <$1C,u
          deca
          sta   <u006F
          sta   <u0071
          bra   L0F29
-         bsr   L0F1B
+
+* cmd_obj_in_box
+L0F0F    bsr   L0F1B
          sta   <u006F
          adda  <$1C,u
          deca
@@ -1679,24 +1767,25 @@ L0F29    ldd   <u006F
          cmpa  ,y+
          bcc   L0F33
          leay  $03,y
-         bra   L0F4E
+         bra   L0F4E          clr a and return
 L0F33    cmpb  ,y+
          bcc   L0F3B
          leay  $02,y
-         bra   L0F4E
+         bra   L0F4E          clr a and return
 L0F3B    lda   <u0071
          cmpa  ,y+
          bls   L0F45
          leay  $01,y
-         bra   L0F4E
+         bra   L0F4E          clr a and return
 L0F45    cmpb  ,y+
-         bls   L0F4B
-         bra   L0F4E
+         bls   L0F4B          load a with #$01 and return
+         bra   L0F4E          clr a and return
+
 L0F4B    lda   #$01
          rts
 
 L0F4E    clra
-         rts
+L0F4F    rts               called from eval_table cmd_return_false
 
 * called from jump table 1
 L0F50    lda   ,y+
@@ -5139,11 +5228,17 @@ L2D54    rts
          sta   <$22,u
          rts
 
+* From nagi 2002_11_14 obj_motion.c
+* x_dir_mult[] = {0,0,1,1,1,0,-1,-1,-1};
 
+x_dir_mult
 L2DBB    fcb   $00,$00,$01,$01
          fcb   $01,$00,$FF,$FF
          fcb   $FF
 
+* y_dir_mult[] = {0,-1,-1,0,1,1,1,0,-1};
+
+y_dir_mult
 L2DC4    fcb   $00,$FF,$FF,$00
          fcb   $01,$01,$01,$00
          fcb   $FF
@@ -5181,7 +5276,7 @@ L2DF9    lda   ,u
          lda   <$25,u
          bita  #$04
          bne   L2E4E
-         leax  >L2DBB,pcr  9 byte table
+         leax  >L2DBB,pcr  x_dir_mult
          lda   <$21,u
          lda   a,x
          beq   L2E33
@@ -5193,7 +5288,7 @@ L2DF9    lda   ,u
 L2E2D    ldd   $03,s
          addd  $09,s
          std   $03,s
-L2E33    leax  >L2DC4,pcr  9 byte table
+L2E33    leax  >L2DC4,pcr  y_dir_mult
          lda   <$21,u
          lda   a,x
          beq   L2E4E
@@ -7734,7 +7829,7 @@ L44F6    cmpa  #$FD
          eora  #$01
          sta   $01,s
          bra   L44DE
-L4502    lbsr  L0D6E
+L4502    lbsr  L0D6E   call into eval_table index calc
          eora  $01,s
          clr   $01,s
          tsta
