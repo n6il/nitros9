@@ -179,10 +179,10 @@ CopyLoop lda   ,x+
          bne   CopyLoop
          ELSE
          os9   F$ID
-         bcs   L01A9
+         lbcs  L01A9
          leax  ,u
          os9   F$GPrDsc
-         bcs   L01A9
+         lbcs  L01A9
          leay  ,u
          ldx   #$0000
          ldb   #$01
