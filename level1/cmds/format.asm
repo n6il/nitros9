@@ -39,35 +39,34 @@ edition  set   23
 ********************************************************************
 
 savedu   rmb   2                save the u register
+totsects rmb   3
+sectmode rmb   1
 diskpath rmb   1                disk path number
 currtrak rmb   2                current track on
-u0005    rmb   2
+currside rmb   2
 currsect rmb   1                current sector on
-u0008    rmb   1                counted sectors
+sectcount rmb   1                counted sectors
 u0009    rmb   1
 u000A    rmb   2
 u000C    rmb   2
 u000E    rmb   2
 mfm      rmb   1                denisity (double/single)
 u0011    rmb   1
-T4896    rmb   1
-u0013    rmb   1
+tpi      rmb   1
+numsides rmb   1
 u0014    rmb   1
 ncyls    rmb   2                total number of cylinders
 u0017    rmb   1
 u0018    rmb   1
 sectors  rmb   1                total number of sectors
 u001A    rmb   1                total number of sectors
-sectors0 rmb   1                total number of sectors
-u001C    rmb   1
+sectors0 rmb   2                total number of sectors
+bps      rmb   1                bytes per sector (returned from SS.DSize)
 dtype    rmb   1                disk device type (5", 8", hard disk)
 ready    rmb   1                ready to proceed, skip warning
 dresult  rmb   2                decimal number in binary
 interlv  rmb   1                sector interleave value
 u0022    rmb   2
-u0024    rmb   1
-u0025    rmb   1
-u0026    rmb   1
 clustsiz rmb   1                cluster size
 ClustSz  rmb   1                cluster size
 u0029    rmb   1
@@ -99,23 +98,15 @@ stoff    rmb   2
 u004B    rmb   1
 u004C    rmb   1
 u004D    rmb   1
-u004E    rmb   1                logical format
-u004F    rmb   1
-u0050    rmb   5
+dolog    rmb   1                logical format
+prmbuf   rmb   2
+u0051    rmb   4
 u0055    rmb   15
 u0064    rmb   7
 u006B    rmb   4
 dskname  rmb   32               quoted delimited disk name buffer
 u008F    rmb   40
-u00B7    rmb   14               buffer
-u00C5    rmb   12
-timepkt  rmb   5                DD.DAT creation date
-u00D6    rmb   18
-u00E8    rmb   14
-u00F6    rmb   177
-u01A7    rmb   2
-u01A9    rmb   2
-u01AB    rmb   12
+LSN0     rmb   256              LSN0 build buffer
 optbuf   rmb   256
 fdtbuf1  rmb   3
 fdtbuf2  rmb   9924
@@ -125,9 +116,9 @@ size     equ   .
 name     fcs   /Format/
          fcb   edition
 
-val1     fdb   $0000
-val2     fdb   $0000
-val3     fdb   $0000
+*val1     fdb   $0000
+*val2     fdb   $0000
+*val3     fdb   $0000
 hdsdat   fdb   $80E5,$80E5,$0000
 sgtdat   fdb   $0100,$28FF,$0600,$01FC,$0CFF,$0000
 sgsdat   fdb   $0600,$01FE,$0400,$01F7,$0AFF,$0600
@@ -135,6 +126,8 @@ sgsdat   fdb   $0600,$01FE,$0400,$01F7,$0AFF,$0600
          fcb   $FF
 sgfidp   fdb   $0043
 sgsize   fdb   $0128
+
+* Double Density Data
 dbtdat   fdb   $504E,$0C00,$03F6,$01FC,$204E,$0000
 dbsdat   fdb   $0C00,$03F5,$01FE,$0400,$01F7,$164E
          fdb   $0C00,$03F5,$01FB,$80E5,$80E5,$01F7
@@ -159,10 +152,10 @@ start    stu   <savedu          save our data pointer
          bsr   Default          handle all the options
          lbsr  GetDTyp          initialize the device
          lbsr  Format           physically format device
-         lbsr  InitDisk         initialize the device
-         lbsr  Access
+         lbsr  InitLSN0         initialize LSN0
+         lbsr  ReadLSN0		attempt to read back LSN0
          lbsr  Stamps
-         lbsr  FDScipt          file descriptor
+         lbsr  MkRootFD         file descriptor
          ldu   <dtentry         device table entry
          os9   I$Detach         detach the device
          clrb                   flag no error
@@ -174,7 +167,7 @@ Exit     os9   F$Exit           exit module
 
 ClrWork  leay  diskpath,u       point to work area
          pshs  y                save that
-         leay  >u00B7,u         get size of area
+         leay  >LSN0,u          get size of area
 ClrOne   clr   ,-y              clear it down
          cmpy  ,s               at begin?
          bhi   ClrOne           not yet,
@@ -195,12 +188,12 @@ PrsPrm   os9   F$PrsNam         parse pathname
          cmpa  ,y               another pathlist separator?
          beq   BadPath          yes, set bad pathname
          sty   <u0022           no, save end of pathname
-         leay  <u004F,u         point to pathname buffer
+         leay  <prmbuf,u        point to pathname buffer
 MovNam   sta   ,y+              save pathname character
          lda   ,x+              get next pathname character
          decb                   decrement pathname size
          bpl   MovNam           got full pathname?
-         leax  <u0050,u         get pathname for I$Attach
+         leax  <prmbuf+1,u      get pathname for I$Attach
          lda   #C$SPAC          space character
          sta   ,y               delimit pathname
          clra                   get access mode
@@ -212,7 +205,7 @@ MovNam   sta   ,y+              save pathname character
          ldb   #C$SPAC          for os9 I$Open
          std   ,y               do it now
          lda   #WRITE.          get access mode
-         leax  <u004F,u         get pathname
+         leax  <prmbuf,u        get pathname
          os9   I$Open           open the rbf device
          bcs   Exit             exit if could not open it
          sta   <diskpath        save path number
@@ -223,7 +216,7 @@ MovNam   sta   ,y+              save pathname character
 ********************************************************************
 
 Default  bsr   Geometry
-         bsr   DoOpts
+         lbsr  DoOpts
          lbsr  Proceed
          rts   
 
@@ -236,7 +229,7 @@ Geometry leax  >optbuf,u        status packet address
          os9   I$GetStt         get status packet
          bcs   Exit             exit if error
          ldb   PD.SID-PD.OPT,x  number of surfaces
-         stb   <u0013           save it
+         stb   <numsides        save it
          stb   <u0014           save it
          ldb   PD.SToff-PD.OPT,x foreign disk format?
          beq   L0143            no,
@@ -253,17 +246,18 @@ L0143    ldb   PD.DNS-PD.OPT,x  density capability
          andb  #DNS.MFM         check double-density
          stb   <mfm             save double-density (Yes/No)
          stb   <u0011           save it again
-         ldb   ,s               get density capability
+         ldb   ,s               get saved PD.DNS byte
          lsrb                   checking
          pshs  b                save it
-         andb  #$01             single track density (96 tpi) or (48 tpi)
-         stb   <T4896           save it (PD.DTD)
+         andb  #$01             tpi (0=48, 1=96/135)
+         stb   <tpi             save it
          puls  b                get checking
          lsrb                   
          andb  <u0011
          stb   <u004C
          puls  b
          ldb   #$01
+         stb   <bps		assume 256 byte/sector
          stb   <u004D
          beq   L0169
          stb   <u004B
@@ -280,6 +274,31 @@ L0169    ldd   PD.CYL-PD.OPT,x  number of cylinders
          stb   <interlv         save it
          ldb   #$01             default cluster size
          stb   <clustsiz        save it
+         stb   <sectmode        and sector mode
+
+*** ADDED CODE -- BGP.  CHECK FOR PRESENCE OF SS.DSIZE
+         lda   PD.TYP-PD.OPT,x	get type byte
+         bita  #TYPH.DSQ	drive size query bit set?
+         beq   nogo@		no, don't bother querying the drive for its size
+         lda   <diskpath        get disk path number
+         ldb   #SS.DSize        disk size getstat
+         os9   I$GetStt         attempt
+         bcs   nogo@
+         sta   <bps		save bytes/sector
+         stb   <sectmode
+         tstb			LBA mode?
+         bne   chs@
+         tfr   x,d
+         stb   <totsects	save result...
+         sty   <totsects+1
+         bra   nogo@
+chs@
+         stx   <ncyls           save cylinders
+         stb   <numsides        save sides
+         stb   <u0014           ????
+         sty   <sectors         save sectors/track
+         sty   <sectors0        save sectors/track 0
+nogo@
          clrb                   no error
          rts                    return
 
@@ -403,9 +422,9 @@ DoReady  stb   <ready           set and save ready
 ********************************************************************
 
 Do2
-Do1      cmpb  <u0013
+Do1      cmpb  <numsides
          bgt   OptAbort
-         stb   <u0013
+         stb   <numsides
          clrb
          rts
 
@@ -413,7 +432,7 @@ Do1      cmpb  <u0013
 * only do a logical format on the rbf device
 ********************************************************************
 
-DoL      stb   <u004E           do a logical format
+DoL      stb   <dolog           do a logical format
          clrb                   did option
          rts                    return
 
@@ -496,7 +515,7 @@ L025C    clrb                   did option
 L025D    rts                    return
 
 ********************************************************************
-* print title, format (Y/N), and get responce
+* print title, format (Y/N), and get response
 ********************************************************************
 
 Proceed  leax  >Title,pcr       coco formatter message
@@ -510,7 +529,7 @@ L0271    stx   <sectors         save it
          leax  >FmtMsg,pcr      formatting drive message
          ldy   #FmtMLen         length of message
          lbsr  Print            print it
-         leax  <u004F,u         input buffer
+         leax  <prmbuf,u        input buffer
          tfr   x,y              put it in y
 L0283    lda   ,y+              get input
          cmpa  #PENTIR          proceed (y/n)?
@@ -531,7 +550,7 @@ L0283    lda   ,y+              get input
          lbsr  Print            print message
 L02AB    leax  >Query,pcr       query message
          ldy   #QueryLen        length of message
-         lbsr  Input            show it and get responce (Y/N)
+         lbsr  Input            show it and get response (Y/N)
          anda  #$DF             make it upper case
          cmpa  #'Y              answered yes?
          bne   L02D5            no, check for no?
@@ -539,7 +558,7 @@ L02BC    tst   <dtype           formatting hard drive?
          bpl   L025D            no, return skip hard disk warn message
          leax  >HDFmt,pcr       show hard disk warn message
          ldy   #HDFmtLen        size of the message
-         lbsr  Input            show it and get responce (Y/N)
+         lbsr  Input            show it and get response (Y/N)
          anda  #$DF             make it upper case
          cmpa  #'Y              answered yes?
          beq   L025D            yes, return
@@ -556,14 +575,14 @@ L02D5    clrb                   clear error
 
 LineFD   leax  >HelpCR,pcr      point to line feed
 PrintLn  ldy   #80              size of message
-Print    lda   #$01             standard ouput path
+Print    lda   #$01             standard output path
          os9   I$WritLn         print line
          rts                    return
 
 ********************************************************************
-* print message and get responce
+* print message and get response
 * entry: x holds data address y holds data size
-*  exit: a holds responce (ascii character)
+*  exit: a holds response (ascii character)
 ********************************************************************
 
 Input    pshs  u,y,x,b,a        save registers
@@ -582,10 +601,10 @@ Input    pshs  u,y,x,b,a        save registers
 * get capability of the rbf device
 ********************************************************************
 
-GetDTyp  leax  >hdsdat,pcr      hard drive data
+GetDTyp  leax  >hdsdat,pcr      assume hard drive data for now
          stx   <u000A           sector data pointer
          ldb   <dtype           get disk drive type
-         bitb #TYP.HARD+TYP.NSF hard disk or non-standard type?
+         bitb  #TYP.HARD+TYP.NSF hard disk or non-standard type?
          bne   L0323            no, check track data
          tst   <u004D           
          beq   L031B
@@ -600,35 +619,55 @@ L0323    stx   <u000A
          beq   L032F
 L032D    stx   <u000A
 L032F    stx   <u000C
+         tst   <sectmode	LBA values already in place?
+         beq   ack@
+* Compute total sectors from C/H/S
          clra  
-         ldb   <u0013
+         ldb   <numsides	get number of sides
          tfr   d,y
-         clrb  
+         clrb  			D = 0
          ldx   <ncyls
-         bsr   Mulbxty
+         bsr   Mulbxty		multiply B,X*Y
+* B,X now is numsides * numcyls
+* Subtract one from B,X because t0s will be added later
          exg   d,x
          subd  #$0001
          bcc   L0344
          leax  -$01,x
 L0344    exg   d,x
          ldy   <sectors
-         bsr   Mulbxty
+         bsr   Mulbxty		multiply B,X*Y
+* B,X now is numsides * numcyls * sectors
          exg   d,x
+* Add in sectors/track0
          addd  <sectors0
-         std   <u0025
+         std   <totsects+1
          exg   d,x
          adcb  #$00
-         stb   <u0024
+         stb   <totsects
+ack@
+**** We now multiply totsects * the bytes per sector
+         dec   <bps		decrement bytes per sector (8=7,4=3,2=1,1=0)
+         beq   mlex@		exit out ofloop if zero
+ml@      lsl   <totsects+2	else multiply by 2
+         rol   <totsects+1
+         rol   <totsects
+         lsr   <bps		shift out bits
+         tst   <bps
+         bne   ml@
+mlex@
+************************************************
          lda   #$08
          pshs  a
-         ldx   <u0025
-         ldb   <u0024
-         bsr   L03C2
+         ldx   <totsects+1
+         ldb   <totsects
+         bsr   Div24by8		divide totsects by 8
          lda   <clustsiz        get cluster size
          pshs  a                save it
-         bsr   L03C2
-         tstb  
-         beq   L0374
+         bsr   Div24by8
+         tstb  			B = 0?
+         beq   L0374		branch if so
+* Too small a cluster size comes here
          leax  >ClustMsg,pcr    cluster size mismatch message
          lbsr  PrintLn          print mismatch message
          lbra  L05B1            abort message and exit
@@ -671,20 +710,20 @@ MulZer   leas  $05,s            clean up space
          puls  pc,x,b           pop results, return
 
 ********************************************************************
-*
+* 24 bit divide (2,s = divisor, B/X = dividend)
 ********************************************************************
 
-L03AE    pshs  x,b
-         lsr   ,s
+L03AE    pshs  x,b		save X,B on stack
+         lsr   ,s		divide X,B by 2
          ror   $01,s
          ror   $02,s
-         puls  x,b
-         exg   d,x
+         puls  x,b		retrieve X,B
+         exg   d,x		exchange bits 15-0 in D,X
          adcb  #$00
          adca  #$00
          exg   d,x
          adcb  #$00
-L03C2    lsr   $02,s
+Div24by8 lsr   $02,s
          bne   L03AE
          rts   
 
@@ -692,10 +731,10 @@ L03C2    lsr   $02,s
 * format rbf device
 ********************************************************************
 
-Format   tst   <u004E           doing a logical format?
+Format   tst   <dolog           doing a logical format?
          bne   L03E4            yes, don't do this then
-         tst   <dtype           
-         bpl   L03E5
+         tst   <dtype           test for hard drive from PD.TYP
+         bpl   L03E5		branch if floppy
          leax  >Both,pcr        PHYSICAL and LOGICAL? message
          ldy   #BothLen         length of message
          lbsr  Input            print and get input
@@ -713,29 +752,29 @@ L03E5    lda   <diskpath        device path number
          std   <currtrak        save it
          inca                   get current sector
          sta   <currsect        save it
-L03F8    clr   <u0005
+L03F8    clr   <currside	clear current side
 L03FA    bsr   L045C
-         leax  >u00B7,u
+         leax  >LSN0,u		point to our LSN0 buffer
          ldd   <currtrak
          addd  <u0048
          tfr   d,u
          clrb  
          tst   <u004D
          bne   L041B
-         tst   <mfm
-         beq   L041D
+         tst   <mfm		single density?
+         beq   L041D		branch if so
          tst   <u004C
          bne   L041B
          tst   <currtrak+1
          bne   L041B
-         tst   <u0005
-         beq   L041D
-L041B    orb   #$02
-L041D    tst   <T4896
-         beq   L0423
-         orb   #$04
-L0423    lda   <u0005
-         beq   L0429
+         tst   <currside	side?
+         beq   L041D		branch if 0
+L041B    orb   #$02		else set side 1
+L041D    tst   <tpi   		48 tpi?
+         beq   L0423		branch if so
+         orb   #$04		else set 96/135 tpi bit
+L0423    lda   <currside	get current side
+         beq   L0429		branch if 0
          orb   #$01
 L0429    tfr   d,y              get side/density bits
          lda   <diskpath        rbf device path number
@@ -743,11 +782,11 @@ L0429    tfr   d,y              get side/density bits
          os9   I$SetStt         do format it
          lbcs  Exit             exit if error
          ldu   <savedu          get u pointer
-         ldb   <u0005
-         incb  
-         stb   <u0005
-         cmpb  <u0013
-         bcs   L03FA
+         ldb   <currside	get current side
+         incb  			increment
+         stb   <currside	and store
+         cmpb  <numsides	compare against number of sides
+         bcs   L03FA		branch if greater than
          ldd   <currtrak        get current track
          addd  #$0001           increment it
          std   <currtrak        save it
@@ -766,11 +805,11 @@ L0455    stb   ,x+
          deca  
          bne   L0455
          bra   L0451
-L045C    lda   <dtype
-         bita  #$C0
-         beq   L046C
+L045C    lda   <dtype			get drive's PD.TYP
+         bita  #TYP.HARD+TYP.NSF	hard disk or non-standard format?
+         beq   L046C			branch if neither
          ldy   <u000C
-         leax  >u00B7,u
+         leax  >LSN0,u			point to the LSN0 buffer
          bsr   L0451
 L046B    rts   
 
@@ -782,15 +821,16 @@ L046C    ldy   <u000C
          ldb   <u001A
          tst   <currtrak+1
          bne   L047E
-         tst   <u0005
+         tst   <currside
          bne   L047E
          ldy   <u000A
-         ldb   <u001C
+*         ldb   <u001C
+         ldb   <sectors0+1
 L047E    sty   <u000E
          stb   <u0009
          stb   <u0018
          bsr   L04EC
-         leax  >u00B7,u
+         leax  >LSN0,u
          bsr   L0451
          sty   <u000E
 L0490    bsr   L044E
@@ -811,7 +851,7 @@ L04A6    std   ,x++
          ldd   ,y
          std   <u0041
          clr   <u0009
-         leax  >u00B7,u
+         leax  >LSN0,u
          ldd   <u003F
          leay  >u008F,u
 L04C3    leax  d,x
@@ -879,76 +919,77 @@ L0525    cmpx  $02,s
          bra   L050F
 
 ********************************************************************
-*
+* initialize sector 0
 ********************************************************************
 
-InitDisk lbsr  ClrBuf
-         ldd   <u0025
-         std   $01,x
-         ldb   <u0024
-         stb   ,x
-         ldd   <sectors
-         std   <$11,x
-         stb   $03,x
+InitLSN0 lbsr  ClrBuf		clear the sector buffer
+         ldd   <totsects+1	get total sectors bits 15-0
+         std   DD.TOT+1,x	save
+         ldb   <totsects	get bits 23-16
+         stb   DD.TOT,x		save
+         ldd   <sectors		get sectors/track
+         std   <DD.SPT,x	save
+         stb   DD.TKS,x		save
          lda   <clustsiz        get cluster size
-         sta   $07,x            save it
+         sta   DD.BIT+1,x       save
          clra  
-         ldb   <ClustSz
+         ldb   <ClustSz		get cluster size
          tst   <u0029
          beq   L054F
          addd  #$0001
 L054F    addd  #$0001
-         std   $09,x
+         std   DD.DIR+1,x	save directory sector
          clra  
-         tst   <mfm
-         beq   L0561
-         ora   #$02
+         tst   <mfm		single density?
+         beq   L0561		branch if so
+         ora   #FMT.DNS		else set double density bit
          tst   <u004C
          beq   L0561
          ora   #$08
-L0561    ldb   <u0013
-         cmpb  #$01
-         beq   L0569
-         ora   #$01
-L0569    tst   <T4896
-         beq   L056F
-         ora   #$04
-L056F    sta   <$10,x
-         ldd   <ClustSz
-         std   $04,x
-         lda   #$FF
-         sta   $0D,x
-         leax  >timepkt,u
-         os9   F$Time   
-         leax  >u00D6,u
+L0561    ldb   <numsides	get number of sides
+         cmpb  #$01		just 1?
+         beq   L0569		branch if so
+         ora   #FMT.SIDE	else set double-sided bit
+L0569    tst   <tpi 		48tpi?
+         beq   L056F		branch if so
+         ora   #FMT.TDNS	else set 96/135 tpi
+L056F    sta   <DD.FMT,x	save
+         ldd   <ClustSz		get cluster size
+         std   DD.MAP,x		save number of bytes in allocation bit map
+         lda   #$FF		attributes
+         sta   DD.ATT,x		save
+         leax  >LSN0+DD.DAT,u	point to time buffer
+         os9   F$Time   	get current time
+         leax  >LSN0+DD.NAM,u
          leay  <dskname,u       quote delimited disk name buffer
-         tst   ,y
-         beq   L0594
-L058C    lda   ,y+
-         sta   ,x+
+         tst   ,y		name in buffer?
+         beq   L0594		branch if not
+L058C    lda   ,y+		get character of name
+         sta   ,x+		and save in name area of LSN0
          bpl   L058C
          bra   L05C7
+* Here we prompt for a disk name
 L0594    leax  >DName,pcr
          ldy   #DNameLen
-         lbsr  Print
-         leax  >u00D6,u
-         ldy   #$0021
+         lbsr  Print		print disk name prompt
+         leax  >LSN0+DD.NAM,u	point to new name
+         ldy   #33		read up to 33 characters
          clra  
-         os9   I$ReadLn 
-         bcc   L05B8
-         cmpa  #E$EOF
-         bne   L0594
+         os9   I$ReadLn 	from standard input
+         bcc   L05B8		branch if ok
+         cmpa  #E$EOF		end of file?
+         bne   L0594		branch if not
 L05B1    leax  >Aborted,pcr     format aborted message
          lbra  PExit            print message and exit
-L05B8    tfr   y,d
-         leax  d,x
+L05B8    tfr   y,d		copy number of chars entered into D
+         leax  d,x		point to last char + 1
          clr   ,-x
-         decb  
-         beq   L0594
-         lda   ,-x
-         ora   #$80
-         sta   ,x
-L05C7    leax  >timepkt,u
+         decb  			decrement chars typed
+         beq   L0594		branch if zero (go ask again)
+         lda   ,-x		get last character
+         ora   #$80		set hi bit
+         sta   ,x		and save
+L05C7    leax  >LSN0+DD.DAT,u	point to time
          leay  <$40,x
          pshs  y
          ldd   #$0000
@@ -956,72 +997,74 @@ L05D3    addd  ,x++
          cmpx  ,s
          bcs   L05D3
          leas  $02,s
-         std   >u00C5,u
-         ldd   >val1,pcr
-         std   >u01A7,u
-         ldd   >val2,pcr
-         std   >u01A9,u
-         ldd   >val3,pcr
-         std   >u01AB,u
+         std   >LSN0+DD.DSK,u	save disk ID
+* Not sure what this code is for...
+*         ldd   >val1,pcr
+*         std   >u01A7,u
+*         ldd   >val2,pcr
+*         std   >u01A9,u
+*         ldd   >val3,pcr
+*         std   >u01AB,u
          lda   <diskpath
          ldb   #SS.Opt
-         leax  >u00F6,u
-         os9   I$GetStt 
-         ldb   #SS.Reset
-         os9   I$SetStt 
-         lbcs  Exit
-         leax  >u00B7,u
-         lbra  WritSec
+         leax  >LSN0+DD.OPT,u	point to disk options
+         os9   I$GetStt 	get options
+         ldb   #SS.Reset	reset head to track 0
+         os9   I$SetStt 	do it!
+         lbcs  Exit		branch if error
+         leax  >LSN0,u		point to LSN0
+         lbra  WritSec		and write it!
 
 ********************************************************************
-*
+* read in sector 0 of device
 ********************************************************************
 
-Access   lda   <diskpath
-         os9   I$Close  
-         leax  <u004F,u
+ReadLSN0 lda   <diskpath		get disk path
+         os9   I$Close  		close it
+         leax  <prmbuf,u		point to device name
          lda   #READ.
-         os9   I$Open   
-         lbcs  BadSect
-         sta   <diskpath
-         leax  >u00B7,u
+         os9   I$Open   		open for read
+         lbcs  BadSect			branch if problem
+         sta   <diskpath		save new disk path
+         leax  >LSN0,u
          ldy   #256
-         os9   I$Read   
-         lbcs  BadSect
-         lda   <diskpath
-         os9   I$Close  
-         leax  <u004F,u
+         os9   I$Read   		read first sector
+         lbcs  BadSect			branch if problem
+         lda   <diskpath		get disk path
+         os9   I$Close  		close path to device
+         leax  <prmbuf,u		re-point to device name
          lda   #UPDAT.
-         os9   I$Open   
-         lbcs  BadSect
-         sta   <diskpath
-         rts   
+         os9   I$Open   		open in read/write mode
+         lbcs  BadSect			branch if error
+         sta   <diskpath		else save new disk path
+         rts   				and return
 
 ********************************************************************
 *
 ********************************************************************
 
 Stamps   lda   <dtype            get device type in A
-         clr   <dovfy
+         clr   <dovfy		clear verify flag
          bita  #TYP.HARD         hard drive?
-         beq   L0667             branch if not
-L0650    leax  >Verify,pcr
+         beq   nothd             branch if not
+* Hard drives are asked for physical verification here
+askphys  leax  >Verify,pcr
          ldy   #VerifyL
-         lbsr  Input
+         lbsr  Input		 prompt for physical verify of hard drive
          anda  #$DF
-         cmpa  #'Y
-         beq   L0667
-         cmpa  #'N
-         bne   L0650
-         sta   <dovfy
-L0667    ldd   <sectors0
-         std   <u0017
-         clra  
+         cmpa  #'Y		 yes?
+         beq   nothd  		 branch if so
+         cmpa  #'N		 no?
+         bne   askphys	         not not, ask again
+         sta   <dovfy	        else flag that we don't want physical verify
+nothd    ldd   <sectors0	get sectors/track at track 0
+         std   <u0017		save
+         clra  			D = 0
          clrb  
-         sta   <oksects
+         sta   <oksects		clear OK sectors
          std   <oksects+1
-         std   <currtrak
-         std   <u0008
+         std   <currtrak	clear current rack
+         std   <sectcount	clear counted sectors
          std   <u0032
          stb   <u0031
          sta   <u003C
@@ -1031,7 +1074,7 @@ L0667    ldd   <sectors0
          leax  >$0100,x
          stx   <u003A
          clra  
-         ldb   #$01
+         ldb   #$01		D = 1
          std   <u0034
          lda   <clustsiz        get cluster size
          sta   <u002B           store in cluster counter
@@ -1065,37 +1108,37 @@ L06B5    ldb   <u002E
          beq   L06CC
          subd  #$0001
 L06CC    stb   <u002C
-L06CE    tst   <dovfy           should we verify?
-         bne   OutScrn          no, ouput screen display
+L06CE    tst   <dovfy           do we verify?
+         bne   OutScrn          no, output screen display
          lda   <diskpath        yes, get rbf device path
-         leax  >u00B7,u         get sector buffer
+         leax  >LSN0,u          get sector buffer
          ldy   #256             sector size
-         os9   I$Read           read a sector?
-         bcc   OutScrn          yes, ouput screen display
+         os9   I$Read           read of sector successful?
+         bcc   OutScrn          yes, output screen display
          os9   F$PErr           no, print error message
          lbsr  NextSec          get next sector
          lda   #$FF
          sta   <u002A
          tst   <u0031
-         bne   OutScrn          ouput screen display
+         bne   OutScrn          output screen display
          ldx   <u0032
          cmpx  <u002D
-         bhi   OutScrn          ouput screen display
+         bhi   OutScrn          output screen display
 BadSect  leax  >BadSectM,pcr    bad system sector message
 PExit    lbsr  PrintLn          print message
          clrb                   clear error
          lbra  Exit             exit no error
 
 ********************************************************************
-* ouput screen display scrolling track counter
+* output screen display scrolling track counter
 ********************************************************************
 
-OutScrn  ldd   <u0008           get counted sectors
+OutScrn  ldd   <sectcount       get counted sectors
          addd  #$0001           increment it
-         std   <u0008           save counted sectors
+         std   <sectcount       save counted sectors
          cmpd  <u0017           good sector count?
          bcs   L0745            next segment
-         clr   <u0008           clear counted sectors
+         clr   <sectcount       clear counted sectors
          clr   <u0009           
          tst   <dovfy           are we verifying?
          bne   L073A            no,
@@ -1108,13 +1151,13 @@ L0724    pshs  b,a              save two ascii digits
          lbsr  HexDigit         make it ascii
          pshs  b                save two ascii digits
          tfr   s,x              get output from stack
-         ldy   #$0004           length of ouput
+         ldy   #$0004           length of output
          lbsr  Print            print it
          lda   $02,s
          cmpa  #$46             end of line?
          bne   L0738            skip line feed
          lbsr  LineFD           print linefeed
-L0738    leas  $04,s            pop ouput off stack
+L0738    leas  $04,s            pop output off stack
 L073A    ldd   <currtrak        get current track
          addd  #$0001           increment it
          std   <currtrak        save it back
@@ -1138,9 +1181,9 @@ L075B    ldb   <u0031
          leax  $01,x
          bne   L0764
          incb  
-L0764    cmpb  <u0024
+L0764    cmpb  <totsects
          bcs   L076C
-         cmpx  <u0025
+         cmpx  <totsects+1
          bcc   L0773
 L076C    stb   <u0031
          stx   <u0032
@@ -1245,11 +1288,11 @@ WrtSecs  pshs  y                save register
 L081E    lbsr  GetSec           get sector
          leax  >optbuf,u        allocation bit map
          lbsr  WritSec          write sector
-         ldd   <u0024           get total sectors
+         ldd   <totsects        get total sectors
          cmpd  <u0031           lsn sector count?
          bcs   AdvSec           advance to mapped sectors
          bhi   NxtSec           get next sector
-         ldb   <u0026           get LSB total sectors
+         ldb   <totsects+2      get LSB total sectors
          cmpb  <u0033           good sector count?
          bcc   AdvSec           advance to mapped sectors
 NxtSec   lbsr  NextSec          skip to next sector
@@ -1259,10 +1302,10 @@ AdvSec   ldd   <u0034           get mapped sectors
          puls  pc,y             restore and return
 
 ********************************************************************
-* file descriptor
+* create root directory file descriptor
 ********************************************************************
 
-FDScipt  bsr   GetSec           get sector
+MkRootFD bsr   GetSec           get sector
          leax  >fdtbuf1,u       sector buff
          bsr   ClrSec           clear sector
          leax  >fdtbuf2,u       get date last modified
@@ -1305,7 +1348,7 @@ NextWrt  pshs  b                save sector count
 * clear the 256 byte sector buffer
 ********************************************************************
 
-ClrBuf   leax  >u00B7,u         sector buffer
+ClrBuf   leax  >LSN0,u         sector buffer
 ClrSec   clra                   store mask
          clrb                   sector count
 ClrLop   sta   d,x              clear the buffer
@@ -1362,7 +1405,7 @@ NextSec  ldx   <u0031           lsn count
 ********************************************************************
 
          ldd   ,y
-         leau  >u00B7,u
+         leau  >LSN0,u
          leax  >dcnums,pcr      decimal number conversion table
          ldy   #$2F20
 
@@ -1391,7 +1434,7 @@ L090E    sta   ,u+
          sta   ,u
          ldu   <savedu
          leas  $02,s
-         leax  >u00B7,u
+         leax  >LSN0,u
          lbsr  PrintLn
          rts
 
