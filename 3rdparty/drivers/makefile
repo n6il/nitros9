@@ -12,7 +12,6 @@ all:
 	$(CD) flashpak; make
 	$(CD) disto; make
 	$(CD) s16550; make
-	$(CD) scsisys; make
 	$(CD) sdisk; make
 	$(CD) sdisk3; make
 	$(CD) tccc; make
@@ -25,7 +24,6 @@ clean:
 	-$(CD) flashpak; make clean
 	-$(CD) disto; make clean
 	-$(CD) s16550; make clean
-	-$(CD) scsisys; make clean
 	-$(CD) sdisk; make clean
 	-$(CD) sdisk3; make clean
 	-$(CD) tccc; make clean
