@@ -8,10 +8,10 @@
 <cmdsynopsis>
 <command>DIR</command>
 <arg choice="opt">
-  <option>e</option>
+  <option>-e</option>
 </arg>
 <arg choice="opt">
-  <option>x</option>
+  <option>-x</option>
 </arg>
 <arg choice="opt">
   &replstart;path&replend;
@@ -44,15 +44,15 @@ For more information see: 1.0.3, 3.4, and 3.8.1
 <screen>
 dir                  (display data directory)
 
-dir x                (display execution directory)
+dir -x               (display execution directory)
 
-dir x e              (display entire description of execution dir)
+dir -x -e            (display entire description of execution dir)
 
 dir ..               (display parent of working data directory)
 
 dir newstuff         (display newstuff directory)
 
-dir e test_programs  (display entire description of &quot;test.programs)
+dir -e test_programs (display entire description of &quot;test.programs)
 </screen>
 </refsect1>
 </refentry>

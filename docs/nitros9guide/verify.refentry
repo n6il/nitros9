@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>VERIFY</command>
 <arg choice="opt">
-  <option>u</option>
+  <option>-u</option>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>
@@ -22,7 +22,7 @@ Module(s) are read from standard input, and messages will be sent to
 the standard error path.
 </para>
 <para>
-If the U (update) option is specified, the module(s) will be copied
+If the -u (update) option is specified, the module(s) will be copied
 to the standard output path with the module's header parity and CRC
 values replaced with the computed values. A message will be
 displayed to indicate whether or not the module's values matched
@@ -52,7 +52,7 @@ OS9: verify &lt;myprogram2
 Module's header parity is correct.
 Calculated CRC matches module's.
 
-OS9: verify u &lt;module &gt;temp
+OS9: verify -u &lt;module &gt;temp
 </screen>
 </refsect1>
 </refentry>

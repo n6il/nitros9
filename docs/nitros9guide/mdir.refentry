@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>MDIR</command>
 <arg choice="opt">
-  <option>e</option>
+  <option>-e</option>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>
@@ -35,7 +35,7 @@ size, type, revision level, reentant attribute, user count, and name
 of each module is displayed. All numbers shown are in hexadecimal.
 </para>
 <screen>
-OS9: MDIR E
+OS9: mdir -e
 
 Module Directory at 10:55:04
 
