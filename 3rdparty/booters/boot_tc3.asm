@@ -29,6 +29,7 @@ edition  set   1
 dataport equ   $FF74
 status   equ   dataport+1
 select   equ   dataport+1
+scsiid   equ   %00000001
 
 * Status register equates
 req      equ   1
@@ -195,7 +196,7 @@ wake     lda   status
          bne   wake
          bra   wake4
 wake1    bsr   wake3
-         lda   #1			SCSI ID!
+         lda   #scsiid
          sta   dataport
          bsr   wake3
          sta   select
