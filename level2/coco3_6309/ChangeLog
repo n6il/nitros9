@@ -1,4 +1,6 @@
 OS-9 Level Two V03.01.04:
+- A bug accidentally introduced into os9gen related to boot track on
+  double-sided disks has been fixed.
 - The directory structure of the Modules disk has been modified.  All
   modules and related files are now under the LEVEL2 directory.
 - There are now two versions of cc3go: cc3go_h0 which performs chd/chx
