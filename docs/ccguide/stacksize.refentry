@@ -9,11 +9,11 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>stacksize</function></funcdef>
-  <void>
+  <void/>
 </funcprototype>
 <funcprototype>
   <funcdef><function>freemem</function></funcdef>
-  <void>
+  <void/>
 </funcprototype>
 </funcsynopsis>
 

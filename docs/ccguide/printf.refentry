@@ -110,8 +110,8 @@ conversion characters are:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.5in">
-<colspec colwidth="3in">
+<colspec colwidth="0.5in"/>
+<colspec colwidth="3in"/>
 <tbody>
 <row>
 <entry>d,o,x,X</entry>
@@ -168,8 +168,8 @@ pffinit() somewhere.
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.5in">
-<colspec colwidth="3in">
+<colspec colwidth="0.5in"/>
+<colspec colwidth="3in"/>
 <tbody>
 <row>
 <entry>c</entry>
@@ -200,7 +200,7 @@ missing, the characters are not counted.</entry>
 <refsect1><title>See Also</title>
 <para>
 Kernighan &amp; Ritchie pages 145-147.
-<link linkend="Putc">putc()</link>,
+<link linkend="putc">putc()</link>,
 <link linkend="scanf">scanf()</link>
 </para>
 </refsect1>
