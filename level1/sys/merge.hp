@@ -1,3 +1,6 @@
 @MERGE
 Syntax: Merge <path> [<path> [...]]
 Usage : Copies multiple input files to standard output
+Opts  :
+  -z = get list of files from standard input
+

@@ -1,4 +1,5 @@
 OS-9 Level Two V03.01.05:
+- Merge now supports -z to get a list of files from standard input.
 - CC3Go has been renamed to SysGo.
 - The clock module has been divided into two modules: clock and clock2.
   clock_60hz and clock_50hz support 60Hz and 50Hz power configurations.
