@@ -21,7 +21,11 @@
 *
 *   9r6    2003/09/04  Boisy G. Pitre
 * Combined Level One and Level Two sources
-		
+*
+* 	   2004/11/27  P.Harvey-Smith
+* Fixed bug in init routine that was causing DP and CC to
+* be pulled off the stack and stored in D.Proc under level 1
+*		
 	nam	Clock     
 	ttl	OS-9 System Clock
 		
@@ -112,6 +116,10 @@ FSTime	equ	*
 Clock2	fcs	"Clock2"
 		
 Init
+	pshs	y
+	ldy	#$aa55
+	puls	y
+	
 	ifeq	Level-1
 	pshs	dp,cc		save DP and CC
 	clra	
@@ -122,19 +130,29 @@ Init
 	ldx	<D.SysPrc	make sys for link
 	stx	<D.Proc
 	endc
+	
 	leax	<Clock2,pcr
 	lda	#Sbrtn+Objct
 	os9	F$Link
-	puls	x
-	stx	<D.Proc		restore user proc
+	
 	bcc	LinkOk
+
 	ifeq	Level-1
 	jmp	>$FFFE		level 1: jump to reset vector
 	else
 	lda	#E$MNF
 	jmp	<D.Crash	level 2: jump to CRASH vector
 	endc
-LinkOk	sty	<D.Clock2	save entry point
+	
+LinkOk	
+	ifeq	Level-1
+	puls	cc,dp		; Restore saved dp and cc
+	else
+	puls	x
+	stx	<D.Proc		restore user proc
+	endc
+
+	sty	<D.Clock2	save entry point
 InitCont
 	ldx	#PIA0Base	point to PIA0
 	clra			no error for return...
@@ -156,9 +174,11 @@ InitCont
 	sta	3,x		enable DDRB
 	coma	
 	sta	2,x		set port B all outputs
-	ldd	#$343C		[A]=PIA0 CRA contents, [B]=PIA0 CRB contents
+;	ldd	#$343C		[A]=PIA0 CRA contents, [B]=PIA0 CRB contents
+	ldd	#$3435
 	sta	1,x		CA2 (MUX0) out low, port A, disable HBORD high-to-low IRQs
 	stb	3,x		CB2 (MUX1) out low, port B, disable VBORD low-to-high IRQs
+
 	ifgt	Level-1
 	lda	,x		clear possible pending PIA0 HBORD IRQ
 	endc
@@ -171,12 +191,15 @@ InitCont
 	stb	<D.Slice	set first time slice
 	leax	SvcIRQ,pcr	set IRQ handler
 	stx	<D.IRQ
+
 	ifgt	Level-1
 	leax	SvcVIRQ,pcr	set VIRQ handler
 	stx	<D.VIRQ
 	endc
+	
 	leay	NewSvc,pcr	insert syscalls
 	os9	F$SSvc
+
 	ifgt	Level-1
 	ifne	H6309
 	oim	#$08,<D.IRQER
@@ -187,12 +210,11 @@ InitCont
 	endc	
 	sta	>IRQEnR		enable GIME VBORD IRQs
 	endc	
+	
 * Call Clock2 init routine
 	ldy	<D.Clock2	get entry point to Clock2
 	jsr	,y		call init entry point of Clock2
 InitRts	puls	cc,pc		recover IRQ enable status and return
-
-
 
 	ifeq	Level-1
 *
