@@ -283,7 +283,7 @@ DoSchBit equ  *
          std   3,s          preserve it
          IFNE  H6309
          ldw   R$D,u        get start bit #
-         tfr   w, y         save as current block starting bit #
+         tfr   w,y          save as current block starting bit #
          ELSE
          ldy   R$D,u
          sty   7,s
