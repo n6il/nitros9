@@ -1,16 +1,17 @@
 ********************************************************************
-* DeIniz - Deinitialize a device
+* DeIniz - Denitialize a device
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 3      From OS-9 Level Two Vr. 2.00.01
+*   3    From Tandy OS-9 Level Two VR 02.00.01
+*   4    Tightened code, changed behavior slightly      BGP 03/01/13
 
          nam   DeIniz
          ttl   Deinitialize a device
 
-* Disassembled 98/09/10 22:57:23 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 98/09/10 22:56:37 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
@@ -19,69 +20,49 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   3
+edition  set   4
+
+LINESIZE equ   80
 
          mod   eom,name,tylg,atrv,start,size
-u0000    rmb   2
-u0002    rmb   330
+
+         org   0
+readbuf  rmb   LINESIZE+1
+stack    rmb   64
 size     equ   .
 
 name     fcs   /DeIniz/
          fcb   edition
 
-start    lda   ,x
+start    lda   ,x		get command line char
+         cmpa  #C$CR		CR?
+         beq   ReadnDnz		branch if so
+DenizDev lda   ,x+
          cmpa  #C$CR
-         beq   L0020
-         bsr   L0041
-         bra   L0030
-L001E    bsr   L0041
-L0020    bsr   L0034
-         bcs   L002C
-         lda   ,x
-         cmpa  #C$CR
-         bne   L001E
-         ldb   #E$EOF
-L002C    cmpb  #E$EOF
-         bne   L0030
-L0030    clrb  
-         os9   F$Exit   
-L0034    clra  
-         leax  u0002,u
-         ldy   #80
-         os9   I$ReadLn 
-         bcc   L0040
-L0040    rts   
-L0041    lda   #C$SPAC
-L0043    cmpa  ,x+
-         beq   L0043
-         leax  -1,x
-         stx   <u0000
-         lda   #PDELIM
-         cmpa  ,x
-         bne   L0053
-         leax  1,x
-L0053    clra  
-         os9   I$Attach 
-         bcs   L0070
-         os9   I$Detach 
-         bcs   L0070
-         os9   I$Detach 
-         bcs   L0070
-         lda   ,x+
-         cmpa  #C$COMA
-         beq   L0041
-         lda   ,-x
-         cmpa  #C$CR
-         bne   L0041
-         rts   
-L0070    pshs  b
-         lda   #$02
-         ldx   <u0000
-         ldy   #80
-         os9   I$WritLn 
-         puls  b
-         os9   F$PErr   
-         rts   
+         beq   ExitOk
+         cmpa  #C$SPAC
+         beq   DenizDev
+         cmpa  #PDELIM		pathlist?
+         beq   DetachIt
+         leax  -1,x		else back up X
+DetachIt clra  
+         os9   I$Attach 	attach to the device at X
+         bcs   Exit		branch if error
+         os9   I$Detach 	now detatch from the device at U
+         bcs   Exit		branch if error
+         os9   I$Detach 	and detatch again from the device at U
+         bcs   Exit		branch if error
+         bra   DenizDev
+
+ReadnDnz clra			from stdin
+         leax  readbuf,u	point to read buffer
+         ldy   #LINESIZE	get LINESIZE bytes
+         os9   I$ReadLn 	read it!
+         bcc   DenizDev		branch if error
+         cmpb  #E$EOF		end of file?
+         bne   Exit		branch if not
+ExitOk   clrb
+Exit     os9   F$Exit
 
          emod
 eom      equ   *
