@@ -3,7 +3,8 @@ include ../../../Makefile.rules
 DISK	= multivue.dsk
 CMDS	= $(shell $(CD) CMDS; make showobjs)
 ICONS	= $(shell $(CD) CMDS/ICONS; make showobjs)
-SYS	= $(shell $(CD) SYS; make showobjs)
+SYSBIN	= $(shell $(CD) SYS; make showbinobjs)
+SYSTEXT	= $(shell $(CD) SYS; make showtextobjs)
 DEMO	= $(shell $(CD) DEMO; make showobjs)
 
 # Make all components
@@ -32,8 +33,9 @@ dsk:	all
 	$(MAKDIR) $(DISK),DEMO
 	$(CD) CMDS; $(CP) $(CMDS) ../$(DISK),CMDS
 	$(CD) CMDS/ICONS; $(CP) $(ICONS) ../../$(DISK),CMDS/ICONS
-	$(CD) SYS; $(CP) $(SYS) ../$(DISK),SYS
-	$(CD) DEMO; $(CP) $(DEMO) ../$(DISK),DEMO
+	$(CD) SYS; $(CP) $(SYSBIN) ../$(DISK),SYS
+	$(CD) SYS; $(CPL) $(SYSTEXT) ../$(DISK),SYS
+	$(CD) DEMO; $(CPL) $(DEMO) ../$(DISK),DEMO
 
 dskclean:
 	-$(RM) $(DISK)

@@ -3,26 +3,31 @@ include ../../../../Makefile.rules
 DEPENDS		= ./Makefile
 
 SYSFILES	= LogBook env.file
-SYSWINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs
 HELPFILES	= cocopr.hp control.hp gcal.hp gcalc.hp gclock.hp gport.hp \
 		gprint.hp gshell.hp
 ASSETFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs \
 		ibm_edc.fnt iso_latin1.fnt
 
 HELPMSG		= helpmsg
-ALLOBJS		= $(SYSFILES) $(HELPMSG) $(ASSETFILES)
+
+BINFILES	= $(ASSETFILES)
+TEXTFILES	= $(SYSFILES) $(HELPMSG)
+ALLOBJS		= $(BINFILES) $(TEXTFILES)
 
 all:	$(ALLOBJS) $(DEPENDS)
-	$(UNIX2OS9) $(SYSFILES)
 	$(CHMOD) 644 $(ALLOBJS)
 
 $(HELPMSG): $(HELPFILES)
 	$(MERGE) $(HELPFILES) > $@
-	$(UNIX2OS9) $@
 
 clean:
-	$(OS92UNIX) $(SYSFILES)
-	$(RM) $(HELPMSG) $(LEVEL1FILES)
+	$(RM) $(HELPMSG)
+
+showbinobjs:
+	@$(ECHO) $(BINFILES)
+
+showtextobjs:
+	@$(ECHO) $(TEXTFILES)
 
 showobjs:
 	@$(ECHO) $(ALLOBJS)
