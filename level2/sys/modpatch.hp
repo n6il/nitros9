@@ -1,6 +1,6 @@
 @MODPATCH
 Syntax: Modpatch <pathlist> [<opts>]
-Usage : patch a module in memory from command file
+Usage : Patch a module in memory from command file
 Opts  :
   -s = silent mode
   -w = suppress warnings
