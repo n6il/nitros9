@@ -1257,9 +1257,9 @@ L0831    tst   ,y+
          leay  $01,y
          bra   L0813
 L083B    lda   $01,y
-         andcc #$FE
+         andcc #^Carry
          bra   L0843
-L0841    orcc  #$01
+L0841    orcc  #Carry
 L0843    puls  pc,x
 L0845    pshs  y,b,a
          ldd   [,u++]
