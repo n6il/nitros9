@@ -1,4 +1,6 @@
+        IFEQ    Level
 Level   equ     2
+        ENDC
 
 	use	os9defs
         use     systype
