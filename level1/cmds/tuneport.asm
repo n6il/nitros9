@@ -13,8 +13,7 @@
          ttl   Tune Printer Port
 
          ifp1
-         use   os9defs
-         use   scfdefs
+         use   defsfile
          endc
 
 DOHELP   set   0
