@@ -1,5 +1,7 @@
 OS-9 Level One V3.01.01:
 - The LogBook file in the SYS directory has been removed.
+- A bug in the cputype command that caused crashing on a 6809 system
+  has been fixed.
 
 OS-9 Level One V3.01.00:
 - New common version among all releases of OS-9 for the CoCo
