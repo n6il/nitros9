@@ -8,6 +8,7 @@ CMDS		= gshell cocopr control demo fstat gcal gcalc gclock \
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
+	$(CD) ICONS; make
 	$(CHMOD) 755 $(ALLOBJS)
 
 clean:
