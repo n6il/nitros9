@@ -10,6 +10,7 @@ OS-9 Level Two V03.01.02:
 - The cputype command has been optimized for size.
 - Slight performance modifications were made to RBF and SCF.
 - More commands have been added to the merged utilpak1 file.
+- Minor help file updates have been made.
 
 OS-9 Level Two V03.01.01:
 - SYS/helpmsg expanded to include new commands.
