@@ -1,0 +1,42 @@
+-x
+t
+********************************************
+* Koronis Rift Install Script for the CoCo 3
+* Files are copied to the /DD device
+*
+* Creating directories
+makdir /DD/GAMES
+makdir /DD/GAMES/KORONIS
+makdir /DD/GAMES/KORONIS/CMDS
+* Copying commands to /DD/GAMES/KORONIS/CMDS
+copy -r CMDS/AutoEx /DD/GAMES/KORONIS/CMDS/koronis
+* Copying support files to /DD/GAMES/KORONIS
+copy -r SAVE1 -w=/DD/GAMES/KORONIS
+copy -r SAVE2 -w=/DD/GAMES/KORONIS
+copy -r crobot2.c -w=/DD/GAMES/KORONIS
+copy -r ctitle.c -w=/DD/GAMES/KORONIS
+copy -r korvar -w=/DD/GAMES/KORONIS
+copy -r level01 -w=/DD/GAMES/KORONIS
+copy -r level02 -w=/DD/GAMES/KORONIS
+copy -r level03 -w=/DD/GAMES/KORONIS
+copy -r level04 -w=/DD/GAMES/KORONIS
+copy -r level05 -w=/DD/GAMES/KORONIS
+copy -r level06 -w=/DD/GAMES/KORONIS
+copy -r level07 -w=/DD/GAMES/KORONIS
+copy -r level08 -w=/DD/GAMES/KORONIS
+copy -r level09 -w=/DD/GAMES/KORONIS
+copy -r level10 -w=/DD/GAMES/KORONIS
+copy -r level11 -w=/DD/GAMES/KORONIS
+copy -r level12 -w=/DD/GAMES/KORONIS
+copy -r level13 -w=/DD/GAMES/KORONIS
+copy -r level14 -w=/DD/GAMES/KORONIS
+copy -r level15 -w=/DD/GAMES/KORONIS
+copy -r level16 -w=/DD/GAMES/KORONIS
+copy -r level17 -w=/DD/GAMES/KORONIS
+copy -r level18 -w=/DD/GAMES/KORONIS
+copy -r level19 -w=/DD/GAMES/KORONIS
+copy -r level20 -w=/DD/GAMES/KORONIS
+copy -r robotbuff -w=/DD/GAMES/KORONIS
+copy -r sinwave -w=/DD/GAMES/KORONIS
+copy -r ultek -w=/DD/GAMES/KORONIS
+* All Done!
