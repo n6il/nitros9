@@ -1,0 +1,84 @@
+<preface>
+<title>Welcome to OS-9!</title>
+<titleabbrev>Introduction</titleabbrev>
+<para>
+The heart of your Dragon Computer is an amazing device: the
+6809 microprocessor chip. This advanced microcomputer can run the
+kind of sophisticated software normally found only on much larger
+and costly computers. Because the OS-9 operating system was designed
+by the same people who designed the 6809 microcomputer, together
+they provide an extremely efficient and powerful combination.
+</para>
+<para>
+The foundation of a computer's software system is its
+<emphasis>Operating System</emphasis> or "OS". It is the master control
+program that interfaces all other software to the system's hardware. Some
+of the things it must do are performing input and output operations,
+coordinating memory use, and many other "housekeeping" functions. All
+other software - programming languages, applications programs, etc. -
+live in your computer's memory along with the OS and depend on it to
+communicate with you using the keyboard and display and to store and
+retrieve data on disks, etc. Because virtually all other software relies
+on the OS, your computer's performance depends on the capabilities and
+efficiency of its OS.
+</para>
+
+<para>
+OS-9's overall structure was based on the famous UNIX<footnote id="unixdesc">
+<para>
+Unix is an operating system designed by Bell Telephone
+Laboratories, which is becoming widely recognized as a standard for
+mini and micro operating systems because of its versatility and
+elegant structure.
+</para>
+</footnote>
+operating system, which has been widely acclaimed as the operating
+system of the future because of its versatility, logical structure,
+and friendly user commands. The OS-9 family of advanced software is
+not only more powerful than most other microcomputer scftware - it
+is also much easier to learn and use.
+</para>
+<para>
+Some of the advanced OS-9 features you'll learn about in this
+book are:
+</para>
+<orderedlist numeration="arabic">
+
+<listitem><para>Friendly Unix<footnoteref linkend="unixdesc">-type
+user interface and environment</para></listitem>
+
+<listitem><para>Multiuser/Multitasking Real-Time Operating System</para></listitem>
+
+<listitem><para>Extensive support for structured, modular programming</para></listitem>
+
+<listitem><para>Device-independent interrupt-driven input/output system</para></listitem>
+
+<listitem><para>Multi-level directory file system</para></listitem>
+
+<listitem><para>Fast Random-Access File System</para></listitem>
+
+<listitem><para>Readily Expandable and Adaptable Design</para></listitem>
+
+</orderedlist>
+<para>
+If you don't know what some of these thing mean yet - don't
+worry. As you explore OS-9 you'll soon learn how they enhance the
+capability of your Dragon Computer and make it so much easier to use
+in almost any application.
+</para>
+<para>
+OS-9 has many commands and functions - definitely more than
+you can learn in an evening! The best way to become an OS-9 expert
+is to study this manual carefully, section-by-section, taking tire
+to try out each command or function. Because many functions affect
+others, you'll find this manual extensively cross-referenced so you
+can skip ahead to help you understand a new topic. Taking the time
+to study this book will certainly increase your knowledge and
+enjoyment of OS-9.
+</para>
+<para>
+But if you can't wait, at least read the rest of this chapter,
+scan the command descriptions in Chapter 7, and have fun
+experimenting!
+</para>
+</preface>
