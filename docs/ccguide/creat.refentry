@@ -17,9 +17,23 @@
 
 </refsynopsisdiv>
 
+<refsect1><title>Assembler Equivalent</title>
+<para>
+os9 I$CREATE
+</para>
+</refsect1>
+
 <refsect1><title>Description</title>
 <para>
 Placeholder
+</para>
+</refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+<link linkend="write">write()</link>,
+<link linkend="close">close()</link>,
+<link linkend="chmod">chmod()</link>
 </para>
 </refsect1>
 </refentry>
