@@ -1,20 +1,18 @@
 ********************************************************************
-* P - CoCo serial printer device descriptor
+* P - CoCo serial priner device descriptor
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*        From Tandy OS-9 Level One VR 02.00.00
 
          nam   P
-         ttl   CoCo serial printer device descriptor
+         ttl   CoCo serial priner device descriptor
 
 * Disassembled 98/08/23 21:15:24 by Disasm v1.6 (C) 1988 by RML
 
          ifp1  
          use   defsfile
-         use   scfdefs
          endc  
 
 tylg     set   Devic+Objct
@@ -24,8 +22,8 @@ rev      set   $00
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
          fcb   READ.+WRITE. mode byte
-         fcb   HW.Page    extended controller address
-         fdb   $0000      physical controller address
+         fcb   $07        extended controller address
+         fdb   $FF22      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   $00        case:0=up&lower,1=upper only
@@ -56,9 +54,9 @@ rev      set   $00
          fcb   66         (szy) number of rows for display
 initsize equ   *
 
-name     fcs   /P/
+name     fcs   /p/
 mgrnam   fcs   /SCF/
-drvnam   fcs   /PRINTER/
+drvnam   fcs   /Printer/
 
          emod  
 eom      equ   *
