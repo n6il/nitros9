@@ -6,6 +6,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   7    From Tandy OS-9 Level One VR 02.00.00
+*   8    Incorporated fix from Rainbow Magazine in the  BGP 02/07/20
+*        January 1987 issue, page 203
 *
 * OS9gen is hardware dependent. On COCO the track to write is 34
 
@@ -21,7 +23,8 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   7
+edition  set   8
+
 os9start equ  $EF00
 os9size  equ  $0F80
 
@@ -363,12 +366,11 @@ L0412    ldu   <u0000
          os9   I$Read   
          lbcs  L058D
          leax  <u0013,u
-         ldd   ,x
-         cmpa  #$4F
-         lbne  L058D
-         cmpb  #$53
+         ldd   #$4F53		"OS"
+         cmpd  ,x
          lbne  L058D
          lda   $04,x
+         leax  >u0200,u
          cmpa  #$12
          beq   L049C
          lda   <$4E,x
@@ -379,8 +381,8 @@ L049C    lda   <$4C,x
          sta   <$4C,x
          lda   #$FF
          sta   <$4D,x
-         sta   <$4E,x
-         bra   L04CB
+         lda   <$4E,x
+         bra   L04C6
 L04AE    ora   #$0F
          sta   <$4C,x
          tst   <$4D,x
@@ -389,7 +391,7 @@ L04AE    ora   #$0F
          lda   <$4E,x
          bita  #$FC
          lbne  L058D
-         ora   #$FC
+L04C6    ora   #$FC
          sta   <$4E,x
 L04CB    lbsr  L057E
          leax  >u0200,u
