@@ -42,16 +42,16 @@ entry    equ   *
 
 * Read - read keys if pressed
 ReadKys  ldu   <D.CCMem   Get CC3IO global memory into U
-         ldx   #PIA0Base  base address of PIA0
+         ldx   #PIA0Base  base address of PIA #0
          clrb            
          comb            
          stb   $02,x      clear all strobe lines
-         ldb   ,x         read PIA#1
+         ldb   ,x         read PIA #0
          comb             bit values 0=off 1=on
          andb  #%00001111 keep only buttons
          bne   L0059      branch if button pushed; error routine
          clr   $02,x      enable all strobe lines
-         lda   ,x         read PIA#1
+         lda   ,x         read PIA #0
          coma            
          anda  #%01111111 mask only the joystick comparator
          beq   L0042      branch if no keys pressed
@@ -74,7 +74,7 @@ L0056    clr   <G.CapLok,u see above
 L0059    ldb   #$FF      
 L005B    rts             
 
-L005C    ldx   #PIA0Base  base value of PIA#1
+L005C    ldx   #PIA0Base  base value of PIA #0
          ifne  H6309     
          clrd            
          else            
@@ -95,7 +95,7 @@ L005C    ldx   #PIA0Base  base value of PIA#1
          sta   <G.Key3    key 3      ²
          deca             ie. lda #%11111110
          sta   $02,x      strobe one column
-L006E    lda   ,x         read PIA#1
+L006E    lda   ,x         read PIA #0
          coma            
          anda  #$7F       keep only keys, bit 0=off 1=on
          beq   L0082     
@@ -141,7 +141,7 @@ L00B5    ldb   #$03
 L00BF    lda   <G.CntlDn  CTRL flag
          beq   L00C5     
          addb  #$02      
-L00C5    ldx   <G.CurDev  point regX to device’s static memory
+L00C5    ldx   <G.CurDev  point X to device's static memory
          lda   <$22,x     key sense flag
          beq   L00D0      not set so go
          cmpb  #$11       spacebar
@@ -292,29 +292,29 @@ L01DB    rts
 *	fcb	left, shifted, CTRLed
 *	fcb	right, shifted, CTRLed
 *	fcb	spacebar, spacebar, spacebar
-*	fcb	’0,’0,$81 signal shiftlock change
-*	fcb	’1,’!,’|
-*	fcb	’2,’”,null
-*	fcb	’3,’#,’~
-*	fcb	’4,’$,null
-*	fcb	’5,’%,null
-*	fcb	’6,’&,null
-*	fcb	’7,’’,’^
-*	fcb	’8,’(,’[
-*	fcb	’9,’),’]
-*	fcb	’:,’*,null
-*	fcb	’;,’+,DEL
-*	fcb	’,,’<,’{
-*	fcb	’-,’=,’_
-*	fcb	’.,’>,’}
-*	fcb	’/,’?,’\
+*	fcb	~0,~0,$81 signal shiftlock change
+*	fcb	~1,~!,~|
+*	fcb	~2,~”,null
+*	fcb	~3,~#,~~
+*	fcb	~4,~$,null
+*	fcb	~5,~%,null
+*	fcb	~6,~&,null
+*	fcb	~7,~~,~^
+*	fcb	~8,~(,~[
+*	fcb	~9,~),~]
+*	fcb	~:,~*,null
+*	fcb	~;,~+,DEL
+*	fcb	~,,~<,~{
+*	fcb	~-,~=,~_
+*	fcb	~.,~>,~}
+*	fcb	~/,~?,~\
 *	fcb	ENTER,ENTER,ENTER
 * I think these are for ALT
 *	fcb	$82,$83,$84
 *	fcb	ENQ,BREAK,ESC
 * the next I think are for the F1 and F2 keys
-*	fcb	’1,’3,’5
-*	fcb	’2,’4,’6
+*	fcb	~1,~3,~5
+*	fcb	~2,~4,~6
 L01DC    fdb   $4060,$000c,$1c13,$0a1a,$1208,$1810,$0919,$1120
          fdb   $2020,$3030,$8131,$217c,$3222,$0033,$237e,$3424
          fdb   $0035,$2500,$3626,$0037,$275e,$3828,$5b39,$295d
