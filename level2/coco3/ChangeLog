@@ -1,9 +1,10 @@
 OS-9 Level Two V03.01.01:
+- SYS/helpmsg expanded to include new commands.
 - ident now correctly reports modules with a language byte of Obj6309.
-- rbf.mn and cc3disk.dr have been back-ported from NitrOS-9 in order to
-  unify the code base and bring non-6309 specific features to OS-9 Level Two.
+- rbf.mn has been back-ported from NitrOS-9 in order to unify the code base
+  and bring non-6309 specific features to OS-9 Level Two.
 - A bug in IOMan which affected any driver wanting to access the port
-  address of its hardware while in its INIT routine has been fixed.
+  address of its hardware via its path descriptor has been fixed.
 - The montype command had a bug-fix and now shows the current monitor type if
   no parameters are given.  Also, the montype.hp file has been updated.
 - The LogBook file in the SYS directory has been removed.
