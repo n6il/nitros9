@@ -139,16 +139,12 @@ F$DelRAM rmb   1          Deallocate RAM blocks
 F$GCMDir rmb   1          Pack module directory
 F$AlHRam rmb   1          Allocate HIGH RAM Blocks
 
-         IFNE  NitrOS9
-* NitrOS9 additions
+* Alan DeKok additions
 * F$ReBoot is unimplemented at this time
 F$ReBoot rmb   1          Reboot machine (reload OS9Boot) or drop to RSDOS
 F$CRCMod rmb   1          CRC mode, toggle or report current status
 F$XTime  rmb   1          Get Extended time packet from RTC (fractions of second)
-
-* Alan DeKok's NitrOS-9 additions here
 F$VBlock rmb   1          Verify modules in a block of memory, add to module directory
-         ENDC
 
          ENDC
 
@@ -483,18 +479,13 @@ D.SProcQ rmb   2          Sleeping Process Queue
 D.ModEnd rmb   2          Module Directory end ptr
 D.ModDAT rmb   2          Module Dir DAT image end ptr
 D.CldRes rmb   2          Cold Restart vector
-         IFNE  NitrOS9
 D.BtBug  rmb   3          Boot debug information
 D.Pipe   rmb   2
-         ENDC
 
          org   $6B
 D.Crash  rmb   6          Pointer to CC Crash Routine
 D.CBStrt rmb   $B         Reserved for CC warmstart ($71)
-
-         IFNE  NitrOS9
 D.QCnt   rmb   1          Count of number of quick system calls performed
-         ENDC
 
          org   $80
 D.DevTbl rmb   2          I/O Device Table
@@ -557,11 +548,7 @@ D.XIRQ   rmb   2
 D.XSWI   rmb   2
 D.XNMI   rmb   2
 D.ErrRst rmb   2
-         IFNE  NitrOS9
 D.SysVec rmb   2          OS-9 F$xxx system call vector for NitrOS-9 Level 3
-         ELSE
-         rmb   2
-         ENDC
 D.SWI3   rmb   2
 D.SWI2   rmb   2
 D.FIRQ   rmb   2
