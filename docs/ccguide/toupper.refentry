@@ -1,7 +1,8 @@
 <refentry id="toupper">
 <refnamediv>
-<refname>toupper</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Toupper</refname>
+<refname>Tolower</refname>
+<refpurpose>character translation</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
