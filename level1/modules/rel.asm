@@ -17,11 +17,11 @@
          ENDC
 
 XX.Size  equ   6          number of bytes before REL actually starts
+Offset   equ   Bt.Start+XX.Size
          IFEQ  Level-1
 ScStart  equ   $8000      screen start in memory
          ELSE
 ScStart  equ   $8008      screen start in memory
-Offset   equ   Bt.Start+XX.Size
          ENDC
 
 tylg     set   Systm+Objct   
@@ -319,7 +319,7 @@ L2663    lda   ,u+
          sta   ,y+
          leax  -1,x
          bne   L2663
-         jmp   >Bt.Start+L266E
+         jmp   >Offset+L266E
 L266E    leax  <eom,pcr
          ldd   M$Exec,x
          jmp   d,x

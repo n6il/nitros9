@@ -1211,8 +1211,8 @@ E$DeadLk rmb   1          I/O Deadlock error
 * These defs are not strictly for 'Boot', but are for booting the
 * system.
 *
-Bt.Start equ   $EF00      Start address of the boot track in memory
-Bt.Size  equ   $0F80      Maximum size of bootfile
+Bt.Start equ   $EE00      Start address of the boot track in memory
+Bt.Size  equ   $1080      Maximum size of bootfile
 
          ELSE
 
