@@ -16,6 +16,8 @@
          use   defsfile
          endc
 
+DOHELP   set   1
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
@@ -61,19 +63,19 @@ size     equ   .
 name     fcs   /Ident/
          fcb   edition
 
-L0013    fcb   C$LF
-         fcc   "Use: Ident [-opts] <module> [-opts]"
+         IFNE  DOHELP
+HelpMsg  fcb   C$LF
+         fcc   "Use: Ident [-opts] <path> [-opts]"
          fcb   C$LF
-         fcc   "  to display module header."
+         fcc   "  -m = module in memory"
          fcb   C$LF
-         fcc   "  -m to display module in memory."
+         fcc   "  -s = short form"
          fcb   C$LF
-         fcc   "  -s for short form."
+         fcc   "  -v = don't verify CRC"
          fcb   C$LF
-         fcc   "  -v for no CRC verification"
-         fcb   C$LF
-         fcc   "  -x for file in execution directory"
+         fcc   "  -x = file in exec dir"
          fcb   C$CR
+         ENDC
 L00CD    fcs   "Module header is incorrect!"
 L00E8    fcs   "Header for: "
 L00F4    fcs   "Module size:"
@@ -206,9 +208,9 @@ L02AA    lda   -$01,x
          lda   #EXEC.+READ.
          sta   <u000D
          bra   L027E
-L02B8    lbra  L03C4
+L02B8    lbra  ShowHelp
 L02BB    ldx   <u0002
-         lbeq  L03C4
+         lbeq  ShowHelp
          leax  -$01,x
          tst   <u000A
          beq   L0314
@@ -318,10 +320,13 @@ L03A4    lda   <path
          lbra  L032C
 L03C1    clrb  
          bra   L03D2
-L03C4    lda   #$01
-         leax  >L0013,pcr
+ShowHelp equ   *
+         IFNE  DOHELP
+         lda   #$01
+         leax  >HelpMsg,pcr
          ldy   #$00BA
          os9   I$WritLn 
+         ENDC
          clrb  
 L03D2    os9   F$Exit   
 L03D5    tst   <u000B
