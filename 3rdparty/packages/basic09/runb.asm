@@ -686,7 +686,10 @@ L0460    tst   ,y+
          stx   $04,s
          puls  pc,x,b,a
 
-L0478    fdb   $0095,$01AA,$0230,$020E
+L0478    fdb   LAX1-L0478
+         fdb   LAX2-L0478
+         fdb   L06A8-L0478
+         fdb   L0686-L0478
 
 L0480    jsr   <u001B
          fcb   $02
@@ -751,7 +754,8 @@ L04FF    sty   <u00A7
          clr   <u00BB
          clr   <u00BC
          rts   
-         bsr   L04FF
+
+LAX1     bsr   L04FF
          inc   <u00A0
          lbsr  L0542
          bsr   L0523
@@ -878,7 +882,8 @@ L0607    pshs  x,b,a
 L061A    lda   #$0D
          lbsr  L0480
          lbra  L0486
-         bsr   SkipSpac
+
+LAX2     bsr   SkipSpac
          pshs  y
          ldb   #$02
          stb   <u00A5
@@ -935,7 +940,7 @@ L0680    orcc  #Carry		no
 L0683    andcc #^Carry		yes
 L0685    rts   
 
-         pshs  x,b,a
+L0686    pshs  x,b,a
          leax  d,u
          pshs  x
 L068C    bitb  #$03
@@ -2385,7 +2390,6 @@ L1105    jsr   <u002A
          fdb   PARAM-L1188
          fdb   $0000,$0000,$0000,$0000,$0000,$00$00
 
-* BOISY
 L1188    fdb   BCPVAR-L1188
          fdb   ICPVAR-L1188
          fdb   L2102-L1188
@@ -3970,8 +3974,8 @@ LOG      pshs  x
          puls  x
          lbra  RLADD
 
-L1CD8    fdb   $00b1,$7217
-         fcb   $f8
+L1CD8    fcb   $00,$b1,$72,$17,$f8
+
 L1CDD    fcb   $1d
          fdb   $2a01
          fcb   $50
@@ -5808,21 +5812,44 @@ L2BEB    stx   <u008C
          andcc #^Carry
          rts   
 
-L2BF0    fdb   $4900,$df48,$00dc,$5200,$cf45,$00cc,$5300,$d342
-         fdb   $00d0,$5400,$0a58,$0012,$2700
+* chars recognized by print using
+L2BF0    fcb   'I			Integer
+         fdb   ARGUS1-L2BF0
+L2BF3    fcb   'H			Hexadecimal
+         fdb   ARGUS1-L2BF3
+L2BF6    fcb   'R			Real
+         fdb   ARGUS2-L2BF6
+L2BF9    fcb   'E			Exponential
+         fdb   ARGUS2-L2BF9
+L2BFD    fcb   'S			String
+         fdb   ARGUS1-L2BFD
+L2C00    fcb   'B			Boolean
+         fdb   ARGUS1-L2C00
+L2C03    fcb   'T			Tab
+         fdb   ARGUS3-L2C03
+L2C06    fcb   'X			Space
+         fdb   ARGUS4-L2C06
+L2C09    fcb   ''			Literal string
+         fdb   ARGUS5-L2C09
+         fcb   $00
 
-L2C0A    orcc  #$00
-         bsr   L2BAF
+* Tab function
+ARGUS3   bsr   L2BAF
          bcs   L2C74
          ldb   <u0086
          lbsr  L2B5B
          bra   L2C3F
-         bsr   L2BAF
+
+* print spaces (X)
+ARGUS4   bsr   L2BAF
          bcs   L2C74
          ldb   <u0086
          lbsr  Spacing
          bra   L2C3F
-L2C22    cmpa  #$FF
+
+* print literal string
+ARGUS5
+L2C22    cmpa  #$FF			end of string?
          beq   L2C74
          cmpa  #$27
          bne   L2C32
@@ -5907,12 +5934,14 @@ L2CBB    pshs  a
          addb  ,s+
          adca  #$00
          rts   
-         cmpa  #$2E
+
+ARGUS2   cmpa  #$2E
          bne   L2C74
          bsr   L2C8F
          bcs   L2C74
          stb   <u0089
-         lbsr  L2B98
+
+ARGUS1   lbsr  L2B98			Int, Hex, String, Boolean
          bcs   L2C74
          puls  y,x
          inc   <u00DC
