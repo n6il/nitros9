@@ -451,7 +451,6 @@ L028E    ldu    <D.SysSvc   set system call processor to system side
          IFNE   H6309
          oim    #SysState,P$State,x   mark process as in system state
          ELSE
-*****         pshs   d
          lda    P$State,x
          ora    #SysState
          sta    P$State,x
@@ -460,21 +459,23 @@ L028E    ldu    <D.SysSvc   set system call processor to system side
          sts    P$SP,x      save stack pointer
          leas   (P$Stack-R$Size),x point S to register stack destination
 
+         IFNE  H6309
          leau   R$Size-1,s  point to last byte of destination register stack
          leay  -1,y       point to caller's register stack in $FEE1
-         IFNE  H6309
          ldw   #R$Size    size of the register stack
          tfm   y-,u-
+         leau  ,s         needed because the TFM is u-, not -u (post, not pre)
          ELSE
+         pshs  b
+         leau  R$Size,s  point to last byte of destination register stack
          ldb   #R$Size
-Loop3    lda   ,y-
-         sta   ,u-
+Loop3    lda   ,-y
+         sta   ,-u
          decb
          bne   Loop3
-*****         puls  d
+         puls  b
          ENDC
          andcc #^IntMasks
-         leau  ,s         needed because the TFM is u-, not -u (post, not pre)
 * B=function code already from calling process: DON'T USE IT!
          ldx    R$PC,u      get where PC was from process
          leax   1,x         move PC past option
@@ -485,9 +486,9 @@ Loop3    lda   ,y-
          IFNE   H6309
          aim    #^IntMasks,R$CC,u   Clear interrupt flags in caller's CC
          ELSE
-         ldb    R$CC,u
-         andb   #^IntMasks
-         stb    R$CC,u
+         lda    R$CC,u
+         anda   #^IntMasks
+         sta    R$CC,u
          ENDC
          ldx    <D.Proc     get current process ptr
          IFNE   H6309
