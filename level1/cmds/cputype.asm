@@ -6,7 +6,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   1    Started                                        ADK ??/??/??
-*   2    Fixed a crash bug on 6809, now just reports    BGP 03/04/02
+*   2r1  Fixed a crash bug on 6809, now just reports    BGP 03/04/02
 *        6809 message on a 6809
 
          nam   CPUType
@@ -18,7 +18,7 @@
 
 tylg     set   Prgrm+Objct
 atrv     set   Reent+Rev
-rev      set   0
+rev      set   1
 edition  set   2
 
          org   0
@@ -36,10 +36,17 @@ c.6809   fcc   /CPU: 6809/
          fcb   C$CR
 L6809    equ   *-c.6809
 
+m.6809   fcc   /running in 6809 mode./
+         fcb   C$CR
+
+m.6309   fcc   /running in 6309 native mode./
+         fcb   C$CR
+
 is.6809  leax  c.6809,pc
          ldy   #L6809
          lda   #1
          os9   I$WritLn
+         clrb
          os9   F$Exit
 
 * Entry of program
@@ -82,12 +89,6 @@ print    ldy   #$0100     a lot
          OS9   I$WritLn
          clrb             no errors
          OS9   F$Exit
-
-m.6809   fcc   /running in 6809 mode./
-         fcb   C$CR
-
-m.6309   fcc   /running in 6309 native mode./
-         fcb   C$CR
 
          emod
 eom      equ   *
