@@ -284,6 +284,9 @@ NoDTR      ldx   <V.PORT        get port address
            IFNE  H6309
            aim   #$FC,>PIA1Base+3
            ELSE
+           lda   >PIA1Base+3
+           anda  #$FC
+           sta   >PIA1Base+3
            ENDC
            lda   >PIA1Base+2    clear possible pending PIA CART* FIRQ
            ENDC
@@ -365,6 +368,8 @@ ChkState   equ   *
            IFNE  H6309
            tim   #Condem,P$State,x
            ELSE
+           ldb   P$State,x
+           bitb  #Condem
            ENDC
            bne   PrAbtErr       yes, go do it...
            ldb   <V.WAKE        true interrupt?
@@ -396,6 +401,10 @@ NotTxBrk   equ   *
            IFNE  H6309
            tim   #Stat.TxE,StatReg,x
            ELSE
+           pshs  a
+           lda   StatRegx
+           bita  #Stat.TxE
+           puls  a
            ENDC
            beq   ReadLp2        no, go skip XON this time...
            ldb   <V.XON
@@ -508,6 +517,10 @@ ChkTxE     equ   *
            IFNE  H6309
            tim   #Stat.TxE,StatReg,x
            ELSE
+           pshs  a
+           lda   StatReg,x
+           bita  #Stat.TxE
+           puls  a 
            ENDC
            beq   WritLoop       no, go sleep a while...
            IFNE  H6309
