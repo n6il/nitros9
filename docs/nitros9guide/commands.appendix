@@ -2,9 +2,9 @@
 <title>Command Summary</title>
 <informaltable frame="none">
 <tgroup cols="3">
-<colspec colwidth="1in">
-<colspec colwidth="3in">
-<colspec colwidth="0.6in">
+<colspec colwidth="1in"/>
+<colspec colwidth="3in"/>
+<colspec colwidth="0.6in"/>
 <tbody>
 <row>
 <entry>ATTR</entry><entry>Change File Attributes</entry><entry>7-2</entry>
