@@ -156,10 +156,11 @@ L013E    rts
 DIR      fcc   "DIR"
          fcb   C$CR
 DIROPTS  fcc   "-E "
+DIROPTL  equ   *-DIROPTS
 L0145    pshs  u
          leau  <buffer,u
          pshs  u
-         ldb   #$02
+         ldb   #DIROPTL
          leax  <DIROPTS,pcr
          lbsr  L0270
          ldx   <parmptr
@@ -274,6 +275,7 @@ ATTR     fcc   "ATTR"
          fcb   C$CR
 ATTROPTS fcc   " -d"
          fcb   C$CR
+ATTROPTL equ   *-ATTROPTS
 L0242    pshs  u
          leau  <buffer,u
          pshs  u
@@ -282,7 +284,7 @@ L0242    pshs  u
          ldx   <parmptr
          bsr   L0270
          leax  <ATTROPTS,pcr
-         ldb   #$04
+         ldb   #ATTROPTL
          bsr   L0270
          tfr   u,d
          subd  ,s
