@@ -18,7 +18,7 @@ OS9BOOT		= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 
 SUPPORTFILES	= control1.cmp convoys.dat diesel.dat fonts.dat germap.cmp \
 		hiscore.dat mission.txt missions.dat radar.dat shipmap2.dat \
-		sintbl.dat stitle.pic sub.dat sub.dump usamap.cmp 
+		sintbl.dat stitle.pic sub.dat usamap.cmp 
 
 SCRIPTS		= install2dd
 
