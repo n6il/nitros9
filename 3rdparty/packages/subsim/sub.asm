@@ -6,7 +6,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * 0      Disassembly of original distribution           PWZ 03/03/28
-*        
+*        as assembly continues the various varibles will
+*        be identified (hopefully)
 
 * Disassembly by Os9disasm of sub
 
@@ -22,7 +23,13 @@ StdIn    equ   0
 StdOut   equ   1
 StdErr   equ   2
 
-
+* Enum of subroutines
+sub_0    equ   0
+sub_1    equ   1
+sub_2    equ   2
+sub_3    equ   3
+sub_4    equ   4
+sub_5    equ   5
 
 *  defines for 5 bit zero offset instructions
 Zldb_u   equ  $E640
@@ -36,10 +43,11 @@ Ztst_x   equ  $6D00
 
 * class X external label equates
 
-X0102 equ $0102
-X0103 equ $0103
-X0105 equ $0105
-X0107 equ $0107
+X0102 equ $0102     holds the index of the subroutine loaded
+X0103 equ $0103     address of subroutine module header
+X0105 equ $0105     address of subroutine name string
+X0107 equ $0107     address of subroutine module entry point
+
 X0109 equ $0109
 X010B equ $010B
 X010C equ $010C
@@ -96,9 +104,9 @@ X1DA5 equ $1DA5
 X1DA7 equ $1DA7
 X1DB9 equ $1DB9
 X1DBF equ $1DBF
-X1DC9 equ $1DC9
-X1DDA equ $1DDA
-X1DDB equ $1DDB
+X1DC9 equ $1DC9         
+X1DDA equ $1DDA         temp store for sub index smap call and input reads
+X1DDB equ $1DDB         temp store for jmptbl offset smap call
 X1DDC equ $1DDC
 X1DEF equ $1DEF
 X1DF0 equ $1DF0
@@ -119,7 +127,7 @@ X1E0E equ $1E0E
 X1E10 equ $1E10
 X1E11 equ $1E11
 X1E13 equ $1E13
-X1E16 equ $1E16
+X1E16 equ $1E16      year value
 X1E17 equ $1E17
 X1E19 equ $1E19
 X1E1A equ $1E1A
@@ -132,9 +140,9 @@ X1E20 equ $1E20
 X1E22 equ $1E22
 X1E23 equ $1E23
 X4265 equ $4265
-X4C75 equ $4C75
-X4C76 equ $4C76
-X4C77 equ $4C77
+X4C75 equ $4C75      side      0=German 1=US
+X4C76 equ $4C76      game type
+X4C77 equ $4C77      game level
 X4C80 equ $4C80
 X4C81 equ $4C81
 X4C82 equ $4C82
@@ -195,6 +203,8 @@ X4D2B equ $4D2B
 X4D2C equ $4D2C
 X4D30 equ $4D30
 X4D3A equ $4D3A
+
+
 X71C9 equ $71C9
 X71CB equ $71CB
 
@@ -231,7 +241,8 @@ X7D75 equ $7D75
 X7DB4 equ $7DB4
 
 Sub6Load equ $7217
-Sub6sz   equ $0BED
+Sub6sz   equ $0BED     ( sub6 file size)
+STitlesz equ  $3C00    ( file is larger, padded with 00)
      
 tylg    set   Prgrm+Objct   
 atrv    set   ReEnt+rev
@@ -246,23 +257,9 @@ edition set   $10
 
       org 0
 
-L0000 rmb 1
-D0001 rmb 2
-D0003 rmb 1
-D0004 rmb 1
-D0005 rmb 1
-D0006 rmb 1
-D0007 rmb 2
-D0009 rmb 4
-D000D rmb 1
-D000E rmb 2
-D0010 rmb 1
-D0011 rmb 1
-D0012 rmb 1
-D0013 rmb 1
-D0014 rmb 1
-D0015 rmb 32239
+D0000 rmb 32260
 D7e04 equ . 
+
 size  equ .
 
 name  fcs "sub"
@@ -287,7 +284,7 @@ L001F clr   ,x+              clear x and bump one byte
 *            
 * entry:
 *       x -> address of the intercept routine 
-*       u -> strating address of the routine's memory area
+*       u -> starting address of the routine's memory area
 * exit:
 *       Signals sent to the process cause the intercept routine
 *       to be called instead of the process being killed. 
@@ -317,36 +314,76 @@ L001F clr   ,x+              clear x and bump one byte
       leax  Sub6,pcr         reads this "subroutine" in as a data file
       os9   I$Open
       
-      pshs  a
-      ldx   #Sub6Load 
-      ldy   #Sub6sz           
-      os9   I$Read
-      puls  a
+* Read  - Reads n bytes from the specified path
+* entry:
+*       a -> path number
+*       x -> address in which to store the data
+*       y -> is the number of bytes to read
+*
+* exit:
+*       y -> number of bytes read 
+*
+* error:
+*       CC -> Carry set on error
+*       b  -> error code (if any)
       
-      os9   I$Close
+      pshs  a                push the path num on the stack (not needed)
+      ldx   #Sub6Load        base address to load file  
+      ldy   #Sub6sz          size of the file 
+      os9   I$Read           read it in
+      puls  a                pull the path num off the stack (not needed)
       
-      ldx   #1
-      ldd   #$018B
-      os9   I$SetStt
+      os9   I$Close          close the sub6 file
       
-      lblo  L044C
-      stx   X1D8B
-      stx   X1D8D
-      stx   X1D89
+*  Set up screens 
+*  SetStat Function Code $8B 
+*          Allocates and maps high res screen 
+*          into application address space
+* entry:
+*       a -> path number 
+*       b -> function code $8B (SS.AScrn)
+*       x -> screen type 
+*            0 = 640 x 192 x 2 colors (16K)
+*            1 = 320 x 192 x 4 colors (16K)
+*            2 = 160 x 192 x 16 colors (16K)
+*            3 = 640 x 192 x 4 colors (32K)
+*            4 = 320 x 192 x 16 colors (32K)
+*
+* exit:
+*       x -> application address space of screen
+*       y -> screen number (1-3)
+*
+* error:
+*       CC -> Carry set on error
+*       b  -> error code (if any)
+* 
+*  Call use VDGINT allocates high res graphics for use with screens 
+*  updated by the process, does not clear the screens only allocates
+*  See OS-9 Technical Reference 8-142 for more details
       
-      lda   #1
-      leax  L1F9C,pcr
-      os9   I$Open
+      ldx   #$0001                   320x192x4 colors (16K)
+      ldd   #(StdOut*$100)+SS.Ascrn  path/set stat code
+      os9   I$SetStt                 make the call
+      lbcs  BailOut
       
-      pshs  a
-      ldx   X1D89
-      ldy   #$3C00
-      lda   ,s
-      os9   I$Read
-      puls  a
+      stx   X1D8B                    store the screen address here 
+      stx   X1D8D                    and here and
+      stx   X1D89                    here  (could have at least put them in order)
       
-      os9   I$Close
+      lda   #READ.           read only mode
+      leax  STitle,pcr       addr of the title picture        
+      os9   I$Open           open that rascal
       
+      pshs  a                "always" push the path number
+      ldx   X1D89            addr to store it at 
+      ldy   #STitlesz        load 15K of screen space
+      lda   ,s               get that path number for no good reason
+      os9   I$Read           read  it in
+      puls  a                and again get the path number in a
+      
+      os9   I$Close          close the file STitle.pic
+      
+* the following code changes the 0-3 palettes via a subroutine in sub6      
       
       ldd   #$0000           PRN,CTN
       jsr   X735B            call palette change
@@ -360,29 +397,79 @@ L001F clr   ,x+              clear x and bump one byte
       ldd   #$033F           PRN,CTN
       jsr   X735B            call palette change
       
-      ldy   #1
-      ldd   #$018C
-      os9   I$SetStt
+*  SS.Dscrn causes VDGINT to display a screen allocated by SS.AScrn
+*  SetStat Function Code $8C
+*
+* entry:
+*       a -> path number 
+*       b -> function code $8C (SS.DScrn)
+*       y -> screen number
+*            0 = text screen (32 x 16)
+*            1-3 = high resolution screen
+*
+* error:
+*       CC -> Carry set on error
+*       b  -> error code (if any)
       
-      leax  L1FB0,pcr
-      lda   #$21
+      
+      ldy   #$01                     screen number ( the screen allocated by ss.ascrn)
+      ldd   #(StdOut*$100)+SS.Dscrn  $018C
+      os9   I$SetStt                 call it in
+      
+      
+* F$NMLoad - Loads one or more modules from a file but does not map the module
+* into user's address space
+* entry:
+*      a -> type/language byte
+*      x -> address of the path list
+*           with out path list default path is current execution dir
+*
+* exit:
+*      a -> type/language
+*      b -> module revision
+*      x -> address of the last byte in the pathlist + 1
+*      y -> storageb requirements of the module
+*
+* error:
+*      b  -> error code if any
+*      cc -> carry set on error
+      
+      leax  Sub2,pcr
+      lda   #SbRtn+Objct
       os9   F$NMLoad
-      lblo  L044C
+      lbcs  BailOut
       
-      lda   #$21
-      leax  L1FB0,pcr
+      
+* F$Link - Links to a memory module that has the specified name, language and type
+* entry:
+*      a -> type/language byte
+*      x -> address of the module name
+*
+* exit:
+*      a -> type/language
+*      b -> attributes/module revision
+*      x -> address of the last byte in the modulename + 1
+*      y -> module entry point absolute address
+*      u -> module header absolute address
+      
+      lda   #SbRtn+Objct  
+      leax  Sub2,pcr
       os9   F$Link
       
-      leax  L1FB0,pcr
-      stx   X0105
-      sty   X0107
-      stu   X0103
+      leax  Sub2,pcr   
+      stx   X0105            subroutine name string address
+      sty   X0107            subroutine module entry point abs addr
+      stu   X0103            subroutine module header abs addr 
       
-      lda   #2
-      sta   X0102
+      lda   #sub_2
+      sta   X0102            index of the subroutine currently loaded
       
-      ldd   #$0100
-      lbsr  L049E
+      
+*                              why do we load sub2 and immediantly load and execute something in sub1?      
+*                              prior to smap call load acca with index of subroutine
+*                              and load accb with and index into the jump tables at entry of each subroutine
+      ldd   #(sub_1*$100)+$00  turns echo and pause off  
+      lbsr  SMap 
       
       lda   #$33
       lbsr  L0598
@@ -394,7 +481,7 @@ L00D1 lda   X0500
       ldx   X0292
       bne   L0114
 
-      ldx   #5
+      ldx   #$0005
       stx   X0292
 
       lbsr  L1C34
@@ -422,7 +509,7 @@ L0114 ldx   X0292
 L011F lbsr  L06A7
       jsr   X7D56
 
-      lbsr  L0811
+      lbsr  InpReady
       tsta  
       beq   L00D1
       lbsr  L084A
@@ -548,128 +635,180 @@ L0145 cmpa  #$62
       rts   
       
       
-L028A ldd   #$024A
-      lbra  L049E
-L0290 ldd   #$020E
-      lbra  L049E
-L0296 ldd   #$020C
-      lbra  L049E
-L029C ldd   #$020A
-      lbra  L049E
-L02A2 ldd   #$0242
-      lbra  L049E
-L02A8 ldd   #$023C
-      lbra  L049E
-L02AE ldd   #$023A
-      lbra  L049E
-L02B4 ldd   #$0216
-      lbra  L049E
-L02BA ldd   #$0226
-      lbra  L049E
-L02C0 ldd   #$0228
-      lbra  L049E
-L02C6 ldd   #$0212
-      lbra  L049E
-L02CC ldd   #$0210
-      lbra  L049E
-L02D2 ldd   #$0206
-      lbra  L049E
-L02D8 ldd   #$021A
-      lbra  L049E
-L02DE ldd   #$0240
-      lbra  L049E
-L02E4 ldd   #$0248
-      lbra  L049E
-L02EA ldd   #$0246
-      lbra  L049E
-L02F0 ldd   #$0208
-      lbra  L049E
-L02F6 ldd   #$0244
-      lbra  L049E
-L02FC ldd   #$0106
-      lbra  L049E
-L0302 ldd   #$0108
-      lbra  L049E
-L0308 ldd   #$050C
-      lbra  L049E
-L030E ldd   #$0104
-      lbra  L049E
-L0314 ldd   #$0110
-      lbra  L049E
-L031A ldd   #$022A
-      lbra  L049E
-L0320 ldd   #$0220
-      lbra  L049E
-L0326 ldd   #$021E
-      lbra  L049E
-L032C ldd   #$0224
-      lbra  L049E
-L0332 ldd   #$0506
-      lbra  L049E
-L0338 ldd   #$0508
-      lbra  L049E
-L033E ldd   #$0232
-      lbra  L049E
-L0344 ldd   #$0234
-      lbra  L049E
-L034A ldd   #$0236
-      lbra  L049E
-L0350 ldd   #$0238
-      lbra  L049E
-L0356 ldd   #$023E
-      lbra  L049E
-L035C ldd   #$0116
-      lbra  L049E
-L0362 ldd   #$024C
-      lbra  L049E
-L0368 ldd   #$021C
-      lbsr  L049E
+L028A ldd   #(sub_2*$100)+$4A
+      lbra  SMap
+       
+L0290 ldd   #(sub_2*$100)+$0E
+      lbra  SMap
+       
+L0296 ldd   #(sub_2*$100)+$0C
+      lbra  SMap
+       
+L029C ldd   #(sub_2*$100)+$0A
+      lbra  SMap
+       
+L02A2 ldd   #(sub_2*$100)+$42
+      lbra  SMap
+       
+L02A8 ldd   #(sub_2*$100)+$3C
+      lbra  SMap
+       
+L02AE ldd   #(sub_2*$100)+$3A
+      lbra  SMap
+       
+L02B4 ldd   #(sub_2*$100)+$16
+      lbra  SMap 
+      
+L02BA ldd   #(sub_2*$100)+$26
+      lbra  SMap 
+
+L02C0 ldd   #(sub_2*$100)+$28
+      lbra  SMap 
+
+L02C6 ldd   #(sub_2*$100)+$12
+      lbra  SMap 
+
+L02CC ldd   #(sub_2*$100)+$10
+      lbra  SMap 
+
+L02D2 ldd   #(sub_2*$100)+$06
+      lbra  SMap 
+
+L02D8 ldd   #(sub_2*$100)+$1A
+      lbra  SMap 
+
+L02DE ldd   #(sub_2*$100)+$40
+      lbra  SMap 
+
+L02E4 ldd   #(sub_2*$100)+$48
+      lbra  SMap 
+
+L02EA ldd   #(sub_2*$100)+$46
+      lbra  SMap 
+
+L02F0 ldd   #(sub_2*$100)+$08
+      lbra  SMap 
+
+L02F6 ldd   #(sub_2*$100)+$44
+      lbra  SMap 
+
+L02FC ldd   #(sub_1*$100)+$06    MakeFile
+      lbra  SMap 
+
+L0302 ldd   #(sub_1*$100)+$08    ReadFile
+      lbra  SMap 
+
+L0308 ldd   #(sub_5*$100)+$0C
+      lbra  SMap 
+
+L030E ldd   #(sub_1*$100)+$04    Read_mission
+      lbra  SMap 
+
+L0314 ldd   #(sub_1*$100)+$10    XmtSOS
+      lbra  SMap 
+
+L031A ldd   #(sub_2*$100)+$2A
+      lbra  SMap 
+
+L0320 ldd   #(sub_2*$100)+$20
+      lbra  SMap 
+
+L0326 ldd   #(sub_2*$100)+$1E
+      lbra  SMap 
+
+L032C ldd   #(sub_2*$100)+$24
+      lbra  SMap 
+
+L0332 ldd   #(sub_5*$100)+$06
+      lbra  SMap 
+
+L0338 ldd   #(sub_5*$100)+$08
+      lbra  SMap 
+
+L033E ldd   #(sub_2*$100)+$32
+      lbra  SMap 
+
+L0344 ldd   #(sub_2*$100)+$34
+      lbra  SMap 
+
+L034A ldd   #(sub_2*$100)+$36
+      lbra  SMap 
+
+L0350 ldd   #(sub_2*$100)+$38
+      lbra  SMap 
+
+L0356 ldd   #(sub_2*$100)+$3E
+      lbra  SMap 
+
+L035C ldd   #(sub_1*$100)+$16    XmtPOS
+      lbra  SMap 
+
+L0362 ldd   #(sub_2*$100)+$4C
+      lbra  SMap 
+
+L0368 ldd   #(sub_2*$100)+$1C
+      lbsr  SMap 
+
       lda   X0294
       lbne  L0582
       rts
       
          
-L0376 ldd   #$0222
-      lbsr  L049E
+L0376 ldd   #(sub_2*$100)+$22
+      lbsr  SMap 
+
       lda   X0294
       lbne  L0582
       rts
       
          
-L0384 ldd   #$0114
-      lbsr  L049E
+L0384 ldd   #(sub_1*$100)+$14    TransferTorp
+      lbsr  SMap 
+
       ldb   X0291
       bmi   L0395
-      ldd   #$0214
-      lbsr  L049E
+
+      ldd   #(sub_2*$100)+$14
+      lbsr  SMap 
+
 L0395 clr   X0291
       rts
       
          
 L0399 inc   X0297
-      ldd   #$0102
-      lbra  L049E
+
+      ldd   #(sub_1*$100)+$02    GameSetup
+      lbra  SMap 
+
 L03A2 inc   X0297
-      ldd   #$0500
-      lbra  L049E
+
+      ldd   #(sub_5*$100)+$00
+      lbra  SMap 
+
 L03AB ldb   X4CD4
       subb  #$0A
       clra  
       std   X4CF7
       lbra  L0376
+
 L03B7 ldd   X4CEF
       jmp   X7AA7
-L03BD ldd   #$0230
-      lbsr  L049E
+
+L03BD ldd   #(sub_2*$100)+$30
+      lbsr  SMap 
+
       tstb  
       bmi   L040E
       pshs  b
       ldx   X1DC9
       beq   L03D3
-      ldd   #$0402
-      lbsr  L049E
+
+      ldd   #(sub_4*$100)+$02
+      lbsr  SMap 
+
 L03D3 tst   ,s+
-      beq   L03FC
+      beq   WeMissed
+
       lda   #$14
       suba  X4C77
       adda  X1E16
@@ -677,21 +816,24 @@ L03D3 tst   ,s+
       ldu   X1DBF
       bne   L03E9
       ldu   X1DB9
+      
 L03E9 lbsr  L0E26
+
       jsr   X72C3
       fcc   "We hit, Sir"
       fcb   C$NULL
       rts
       
-         
+WeMissed         
 L03FC jsr   X72C3
       fcc   "We missed, Sir"
       fcb   C$NULL
 L040E rts
 
    
-L040F ldd   #$0218
-      lbsr  L049E
+L040F ldd   #(sub_2*$100)+$18
+      lbsr  SMap 
+
       lda   X1E1D
       cmpa  #4
       bne   L0434
@@ -708,152 +850,190 @@ L042C sta   X05CE
 L0434 rts   
 
 
-L0435 ldd   #$050A
-      lbsr  L049E
+L0435 ldd   #(sub_5*$100)+$0A
+      lbsr  SMap 
+
       tst   X0299
       bne   L0441
       rts   
 
 
-L0441 ldu   X0103
+L0441 ldu   X0103               Expects sub2 loaded module header abs addr              
       os9   F$UnLink
-      lbsr  L0476       call to unload
+      lbsr  UnLoadtheRest       call to unload
       clra  
       clrb  
-L044C pshs  cc,b
-      lda   #$21
-      leax  L1FB0,pcr
+
+
+BailOut
+L044C pshs  cc,b        save condition code and b (error code)
+
+      lda   #SbRtn+Objct     module type
+      leax  Sub2,pcr         sub2 subroutine
+      os9   F$UnLoad         unload it
+      
+      lda   #SbRtn+Objct     try one more time
+      leax  Sub2,pcr
       os9   F$UnLoad
       
-      lda   #$21
-      leax  L1FB0,pcr
-      os9   F$UnLoad
-      puls  cc,b
+      puls  cc,b             pull that condition code and os9 error code
       
-      ldd   #$1100
-      leax  L1FC4,pcr
-      ldy   #0
-      ldu   #0
-      os9   F$Chain
-      os9   F$Exit
-      
+      ldd   #((Prgrm+Objct)*$100)+00 lang/type =a opt data size =b   1100
+      leax  Shell,pcr        points to name string
+      ldy   #0               parameter size
+      ldu   #0               beginning addr of parameter area
+      os9   F$Chain          chain to it 
+      os9   F$Exit           kill ourself
+
+
+UnLoadtheRest      
 L0476 pshs  a,b,x,y,u
-      lda   #$21
-      leax  L1FAB,pcr
+      lda   #SbRtn+Objct
+      leax  Sub1,pcr
       os9   F$UnLoad
-      lda   #$21
-      leax  L1FB5,pcr
+      
+      lda   #SbRtn+Objct
+      leax  Sub3,pcr
       os9   F$UnLoad
-      lda   #$21
-      leax  L1FBA,pcr
+      
+      lda   #SbRtn+Objct
+      leax  Sub4,pcr
       os9   F$UnLoad
-      lda   #$21
-      leax  L1FBF,pcr
+      
+      lda   #SbRtn+Objct
+      leax  Sub5,pcr
       os9   F$UnLoad
       puls  a,b,x,y,u,pc
       
-      
-L049E cmpa  X0102
-      bne   L04A8
-      jsr   [X0107]
+
+* acca = index of suroutine to call; accb = offset into jumptable of routine to execute      
+SMap  cmpa  X0102            compare acca to the index of the currently "loaded" subroutine
+      bne   SMap2            not the same? map in a new one
+      jsr   [X0107]          otherwise calling the one currently mapped so have at it
       rts   
       
       
-L04A8 std   X1DDA
-      leax  L1FAB,pcr
-      deca  
-      ldb   #5
-      mul   
-      leax  d,x
-      stx   X1DDC
-      lda   X0102
-      beq   L04C3
-      ldu   X0103
-      os9   F$UnLink
-L04C3 ldx   X1DDC
-      lda   #$21
-      os9   F$Link
-      bcc   L0501
-      lda   X1DDA
-      cmpa  #2
-      beq   L04F7
-L04D4 lda   X0102
-      cmpa  #2
-      bne   L04ED
-      ldu   X0103
-      os9   F$UnLink
-      bra   L04ED
-L04E3 ldx   X0105
-      beq   L04ED
-      lda   #$21
-      lbsr  L0476
-L04ED lda   #$21
-      ldx   X1DDC
-      os9   F$NMLoad
-      bcs   L04E3
-L04F7 lda   #$21
-      ldx   X1DDC
-      os9   F$Link
-      bcs   L04D4
-L0501 ldx   X1DDC
-      stx   X0105
-      sty   X0107
-      stu   X0103
-      ldd   X1DDA
-      sta   X0102
-      jsr   ,y
+*                            as with many other places this logic can be streamlined      
+SMap2      
+L04A8 std   X1DDA            save the callers arguments
+      leax  Sub1,pcr         get the address of "sub1C$null"
+      deca                   make us zero based
+      ldb   #Subsz           size of the text string "sub?0"
+      mul                    multipy them now we have an offset to the name string to use from sub1
+      leax  d,x              index to that rascal
+      
+      stx   X1DDC            store the address of the new name string
+      lda   X0102            get subroutine index 
+      beq   NoneMapped       if its zero nothing loaded (not sure if this will ever be true)
+      ldu   X0103            otherwise get loaded subroutine module header abs addr 
+      os9   F$UnLink         and unlink it
+
+NoneMapped      
+L04C3 ldx   X1DDC            (not needed) unlink doen't fiddle with x
+      lda   #SbRtn+Objct     type language     
+      os9   F$Link           link to it
+      bcc   GoodLink         all went well save pointers and call it
+      
+      lda   X1DDA            load the new sub index
+      cmpa  #sub_2           is it looking for sub2 ?
+      beq   LinkMe           Link to me then I've been loaded once
+      
+BadLink
+L04D4 lda   X0102            get the currently loaded sub index
+      cmpa  #sub_2           is it sub2?
+      bne   LoadMe           if it's not sub2 then NMload it
+      
+      ldu   X0103            load pointer to currently loaded sub2 module header
+      os9   F$UnLink         unlink that one and go load and link new one 
+      bra   LoadMe
+
+BadLoad
+L04E3 ldx   X0105            pointer to current sub name string
+      beq   LoadMe           I'm zero? then go load module to be mapped
+      lda   #SbRtn+Objct     otherwise attempt to unload 1,3,4,5 subs
+      lbsr  UnLoadtheRest
+
+LoadMe      
+L04ED lda   #SbRtn+Objct     type/language
+      ldx   X1DDC            name string of new module to load
+      os9   F$NMLoad         load it
+      bcs   BadLoad          bad load?
+
+LinkMe
+L04F7 lda   #SbRtn+Objct     type/language
+      ldx   X1DDC            address of the name string
+      os9   F$Link           link to it
+      bcs   BadLink
+
+GoodLink
+L0501 ldx   X1DDC            pointer to module name string
+      stx   X0105            stow that 
+      sty   X0107            pointer to module entry point
+      stu   X0103            pointer to module header addr
+      ldd   X1DDA            fetch back the arguments passed
+      sta   X0102            stow the acca value in subroutine index
+      jsr   ,y               make the call
+      rts                    return to the one that called us
+      
+* The following few not labeled by disasm
+* hope they really don't call a sub to clear a mem location
+         
+N0517 clr   X1D87
       rts
       
          
-      clr   X1D87
-      rts
-      
-         
-      pshs  a
+N051B pshs  a
       lda   #$FF
       sta   X1D87
       puls  a,pc
       
       
-      pshs  a,b,x,y,u
-      lda   #1
-      leax  Radar,pcr
-      os9   I$Open
-      pshs  a
-      ldb   #$74
-      ldx   #$1E25
-L0536 lda   ,s
-      pshs  b,x
-      ldy   #$003D
-      os9   I$Read
-      puls  b,x
-      leax  80,x
-      decb  
-      bne   L0536
-      puls  a
-      os9   I$Close
+N0524 pshs  a,b,x,y,u
+      lda   #READ.           open read only
+      leax  Radar,pcr        the radar.dat file
+      os9   I$Open           open it
+      pshs  a                push the stupid path number
+
+      ldb   #$74             load the loop counter  $74 x $3D = $1BA4
+*                            file is only 1BA1 long      
+      ldx   #$1E25           base address to accept the data
+RadLp lda   ,s               pull the path num
+      pshs  b,x              push the loop counter and base address
+      ldy   #$003D           read 61 bytes at a time
+      os9   I$Read           read them
+      puls  b,x              pull our counter and addr
+      leax  $50,x             bump the address by 80
+      decb                   dec the loop counter
+      bne   Radlp
+      
+      puls  a                pull that path that's still the same
+      os9   I$Close          close the file
       puls  a,b,x,y,u,pc
       
+      
 * they snuck a jump in here instead of a jsr      
-      ldd   #$0212           PRN,CTN
+N0550 ldd   #$0212           PRN,CTN
       jmp   X735B            call Change Pallete
       
-      pshs  a,b,x,y,u
-      lda   #1
-      leax  Status,pcr
-      os9   I$Open
-      pshs  a
-      ldb   #$74
-      ldx   #$1E25
-L0568 lda   ,s
-      pshs  b,x
-      ldy   #$003D
-      os9   I$Read
+      
+N0556 pshs  a,b,x,y,u       THERE IS NO STATUS.DAT file
+      lda   #READ.          open read only
+      leax  Status,pcr      status.dat
+      os9   I$Open          open it
+      pshs  a               push that path num
+      
+      ldb   #$74            load the loop counter
+      ldx   #$1E25          base address to store status
+StaLp lda   ,s              get the path number
+      pshs  b,x             save loop counter and destination
+      ldy   #$003D          read 61 bytes at a time 
+      os9   I$Read          make the call
       puls  b,x
-      leax  80,x
-      decb  
-      bne   L0568
-      puls  a
+      leax  $50,x           Move 80 bytes ahead
+      decb                  dec the loopcounter
+      bne   StaLp           not zero go again
+      puls  a               pull that path num
+      
       os9   I$Close
       puls  a,b,x,y,u,pc
       
@@ -909,6 +1089,7 @@ L060E jsr   X72C3
       fcb   C$CLSALL
       fcb   C$NULL
       fcb   $5C
+
 L0629 cmpa  #3
       beq   L060E
       cmpa  #5
@@ -919,21 +1100,22 @@ L0629 cmpa  #3
       fcb   C$CLSALL
       fcb   C$NULL
       fcb   $3D
+
 L0648 deca  
       cmpa  X1D43
       lbeq  L0685
       sta   X1D43
-      ldu   #0
+      ldu   #$0000
       stu   X1DB9
-      leax  >L0686,pcr
+      leax  >WordTbl1,pcr
       asla  
       ldd   a,x
       std   X010C
-      leax  >L0696,pcr
+      leax  >WordTbl2,pcr
       lda   X1D43
       asla  
       ldd   a,x
-      leax  L0000,pcr
+      leax  D0000,pcr
       leax  d,x
       stx   X010E
       
@@ -947,13 +1129,26 @@ L0648 deca
 L0685 rts   
 
 
-L0686 fcb   $04,$00,$04,$00,$04,$00
-      fcb   $02,$02,$02,$00,$03,$00
-      fcb   $05,$02,$02,$04
+WordTbl1
+L0686 fdb   $0400
+      fdb   $0400
+      fdb   $0400
+      fdb   $0202
+      fdb   $0200
+      fdb   $0300
+      fdb   $0502
+      fdb   $0204
 
-L0696 fcb   $06,$A6,$05,$1B,$05,$17
-      fcb   $05,$24,$05,$24,$05,$50
-      fcb   $06,$A6,$05,$56,$39
+WordTbl2
+L0696 fdb   $06A6
+      fdb   $051B
+      fdb   $0517
+      fdb   $0524
+      fdb   $0524
+      fdb   $0550
+      fdb   $06A6
+      fdb   $0556
+      fcb   $39
 
 L06A7 lda   X0297
       beq   L06BB
@@ -965,7 +1160,7 @@ L06A7 lda   X0297
       rts   
 
 L06BB ldd   X010C
-      lbra  L049E
+      lbra  SMap 
 
 intercept
 L06C1 sta   X010B
@@ -975,8 +1170,8 @@ L06C1 sta   X010B
       rti
          
 
-L06CD ldd   #$0302
-      lbsr  L049E
+L06CD ldd   #(sub_3*$100)+$02
+      lbsr  SMap 
       lda   X035F
       beq   L06D9
       rts   
@@ -984,14 +1179,16 @@ L06CD ldd   #$0302
 
 L06D9 tst   X4D28
       bne   L06E4
-      ldd   #$020C
-      lbsr  L049E
+      ldd   #(sub_2*$100)+$0C
+      lbsr  SMap 
 L06E4 lda   #5
       sta   X1E1D
-      ldd   #$021A
-      lbsr  L049E
+      ldd   #(sub_2*$100)+$1A
+      lbsr  SMap 
+      
       ldd   #$0015
       jsr   X7A68
+      
       lda   #$38
       lbsr  L0598
       lbsr  L188E
@@ -1000,8 +1197,10 @@ L06E4 lda   #5
       lbsr  L1A9E
       lbsr  L1B26
       lbsr  L1BBF
+      
       ldb   #$FF
       stb   X0290
+      
 L0711 ldy   #$0356
       ldu   #$4C84
       jsr   X74D9
@@ -1064,98 +1263,119 @@ L07A1 ldd   #$BF68
 L07AA puls  a,b
       clr   X4D2C
       clr   X0125
+      
       jsr   X72C3
       fcc   "Navigator disengaging, Sir!"
       fcb   C$NULL
+      
       lda   #1
       sta   X1E1D
-      ldd   #$021A
-      lbsr  L049E
+      ldd   #(sub_2*$100)+$1A
+      lbsr  SMap
+       
       ldd   X4CF3
       jsr   X7A23
-      ldd   X4CF3
-      std   X4CFB
-      lbsr  L1F5A
-      ldd   #0
+      
+      ldd   X4CF3    load d with some value 
+      std   X4CFB    store it a this mem location    
+      lbsr  L1F5A    call a subroutine that stores it there again
+      
+      ldd   #$0000
       sta   X0290
       jsr   X7A68
+      
       rts   
 
+ReadKey
+N07F5 pshs  b,x,y
+      clra                   set path to stdin
+      ldx   #$4265           base address to store data
+      ldy   #$01             read one byte
+      os9   I$Read           read it
+      lda   X4265            get the byte just read
+      cmpa  #C$INTR          is it a key board interrupt (ctrl-C)
+      beq   Ex1rk
+      cmpa  #C$QUIT          is it a keyboard abort (ctrl-E)
+      bne   Ex_rk
+Ex1rk lda   #C$EOF
+Ex_rk puls  b,x,y,pc
 
-      pshs  b,x,y
-      clra  
-      ldx   #$4265
-      ldy   #1
-      os9   I$Read
-      lda   X4265
-      cmpa  #3
-      beq   L080D
-      cmpa  #5
-      bne   L080F
-L080D lda   #$1B
-L080F puls  b,x,y,pc
 
-
+InpReady
 L0811 pshs  b,x,y
-      inc   X1D3F
-      clra  
-      ldb   #1
-      os9   I$GetStt
-      bcc   L0821
-      clra  
-      puls  b,x,y,pc
+      inc   X1D3F            bump some mem location
+      clra                   set path to stdin
+      ldb   #SS.Ready        test if data available 
+      os9   I$GetStt         make the call
+      bcc   ReadKey2         data ready go read it
+      clra                   not ready clear a that is still 0
+      puls  b,x,y,pc         pull b back over any error code and return
 
 
-L0821 clra  
-      ldx   #$1DDA
-      ldy   #1
-      os9   I$Read
-      lda   X1DDA
-      adda  X1D3F
-      sta   X1D3F
-      lda   X1DDA
-      cmpa  #3
-      beq   L0843
+ReadKey2
+L0821 clra                   data ready to read set path to stdin still
+      ldx   #$1DDA           set address to hold data
+      ldy   #$01             read one byte
+      os9   I$Read           make the call
+      lda   X1DDA            load the byte just read
+      adda  X1D3F            add it to some mem location
+      sta   X1D3F            stow the result back
+      lda   X1DDA            get the byte read again
+      cmpa  #C$INTR          is it a key board interrupt (ctrl-C)
+      beq   EndKey
       tst   X029C
-      bne   L0843
+      bne   EndKey
       puls  b,x,y,pc
-      
-L0843 clr   X029C
-      lda   #$1B
-      puls  b,x,y,pc
-      
-L084A pshs  a,b,x,y,u
-L084C lbsr  L0811
-      tsta  
-      bne   L084C
-      puls  a,b,x,y,u,pc
-      
-      
-L0854 pshs  a,b,x,y,u
-      leax  >L0883,pcr
-L085A tsta  
-      beq   L0864
-L085D ldb   ,x+
-      bne   L085D
-      deca  
-      bra   L085A
-L0864 jsr   X74CC
-      puls  a,b,x,y,u,pc
-      
-      
-L0869 pshs  a,b,x,y,u
-      ldb   X4C75
-      bne   L0872
-      adda  #2
-L0872 leax  >L08CD,pcr
-      lda   a,x
-      leax  >L08D1,pcr
-      leax  a,x
-      jsr   X74CC
-      puls  a,b,x,y,u,pc
 
+EndKey      
+L0843 clr   X029C
+      lda   #C$EOF
+      puls  b,x,y,pc
       
-L0883 fcc "P.T. Boat"
+      
+L084A   pshs  a,b,x,y,u
+ChkInp  lbsr  InpReady
+        tsta  
+        bne   ChkInp
+        puls  a,b,x,y,u,pc
+      
+
+*  acca = index to ship type from caller
+*  this routine is actually pretty slick
+TypeShip      
+L0854   pshs  a,b,x,y,u        save'm all
+        leax  >ShipType,pcr    point x at shiptype array
+
+TSLopI  tsta                   test index passed in 
+        beq   Ex_TS            When 0 call screen write and leave 
+
+TSLopN  ldb   ,x+              accb is a throw away moved x to one past null 
+        bne   TSLopN            
+      
+        deca                   decrement the index loop
+        bra   TSLopI           test that value
+
+Ex_TS   jsr   X74CC            puts one char at a time to screen
+        puls  a,b,x,y,u,pc     we're done return
+      
+      
+* acca = index to type of plane from caller
+* assume input is 0 or 1      
+TypePlane
+L0869 pshs  a,b,x,y,u          save'm all
+      ldb   X4C75              side 0=German 1=US
+      bne   L0872              not German
+      adda  #$02               Is German
+L0872 leax  >WhatPlane,pcr     load base of offset table
+      lda   a,x                based on index load the offset value
+      leax  >PlaneType,pcr     load base of plane name strings
+      leax  a,x                based on offset index to chosen one
+      jsr   X74CC              puts one char at a time to screen
+      puls  a,b,x,y,u,pc       were done return
+
+
+ShipType                       
+L0883 fcc "P.T. Boat"           name strings
       fcb C$NULL
       fcc "Troop Ship"
       fcb C$NULL
@@ -1171,18 +1391,27 @@ L0883 fcc "P.T. Boat"
       fcb C$NULL
       fcc "Escort"
       fcb C$NULL
-L08CD fcb C$NULL
-      fcb C$LF
-      fcb $15,$1D
-      
-L08D1 fcc "Zero, Sir"
+
+WhatPlane                      
+L08CD fcb Zerox-PlaneType  $00 name string offsets
+      fcb Aichi-PlaneType $0D
+      fcb AVngr-PlaneType $15
+      fcb Ctlna-PlaneType $1D
+
+
+PlaneType                      
+Zerox      
+L08D1 fcc "Zero, Sir"         name strings
       fcb C$NULL
-      fcc "Aichi, Sir"
+Aichi fcc "Aichi, Sir"
       fcb C$NULL
-      fcc "Avenger"
+AVngr fcc "Avenger"
       fcb C$NULL
-      fcc "Catalina"
+Ctlna fcc "Catalina"
       fcb C$NULL
+
+
+
 L08F7 pshs  a,b,x,y,u
       leax  >L090C,pcr
 L08FD tstb  
@@ -1223,6 +1452,8 @@ L090C fcc "sonar"
       fcb C$NULL
       fcc "radar"
       fcb C$NULL
+
+
 L0979 pshs  a,b,x,y,u
       leax  >L098E,pcr
 L097F tstb  
@@ -1283,8 +1514,8 @@ L0A3A std   X011E
       lbhs  L0B69
       cmpb  #5
       lbls  L0B69
-      tst   X4C75
-      bne   L0A6D
+      tst   X4C75            side      0=German 1=US
+      bne   L0A6D            Not German (US)
       cmpb  #$9A
       lbhs  L0B69
       bra   L0A73
@@ -1298,7 +1529,7 @@ L0A73 ldd   ,s
       tst   X0500
       bne   L0A8B
       ldd   #$0518
-      lbsr  L049E
+      lbsr  SMap 
       inc   X0500
 L0A8B puls  a,b,x,y,u,pc
 
@@ -1465,8 +1696,10 @@ L0C34 jsr   X72F3
       jsr   X72C3
       fcc   "We can leave now, Sir"
       fcb   C$NULL
+      
       ldd   #$010E
-      lbsr  L049E
+      lbsr  SMap 
+
 L0C71 tst   X4C81
       beq   L0C79
       dec   X4C81
@@ -1486,7 +1719,8 @@ L0C8B leax  1,x
       bra   L0C9D
 L0C94 inc   X0298
       ldd   #$010C
-      lbsr  L049E
+      lbsr  SMap 
+      
 L0C9D ldx   #$4C90
       clrb  
 L0CA1 tst   ,x
@@ -1509,7 +1743,8 @@ L0CB8 stb   X0296
       lbsr  L11C8
       std   X1D6D
       ldd   #$010A
-      lbsr  L049E
+      lbsr  SMap
+       
 L0CCF ldb   X4CA0
       bmi   L0CE7
       ldb   X4CA2
@@ -1517,8 +1752,9 @@ L0CCF ldb   X4CA0
       dec   X4CA2
       bne   L0CE7
       clr   X028F
-      ldd   #$024E
-      lbsr  L049E
+      ldd   #(sub_2*$100)+$4E
+      lbsr  SMap
+       
 L0CE7 ldb   X4CA1
       bmi   L0D01
       ldb   X4CA3
@@ -1527,8 +1763,9 @@ L0CE7 ldb   X4CA1
       bne   L0D01
       ldb   #1
       stb   X028F
-      ldd   #$024E
-      lbsr  L049E
+      ldd   #(sub_2*$100)+$4E
+      lbsr  SMap 
+      
 L0D01 ldx   #$4A80
       ldb   X4CB4
       lda   #$15
@@ -1542,7 +1779,8 @@ L0D01 ldx   #$4A80
       tst   X4C81
       bne   L0D38
       ldd   #$050E
-      lbsr  L049E
+      lbsr  SMap
+       
       inc   X4C82
       lda   X4C76
       cmpa  #2
@@ -1550,7 +1788,8 @@ L0D01 ldx   #$4A80
       lda   X0500
       bne   L0D38
       ldd   #$0112
-      lbsr  L049E
+      lbsr  SMap
+       
 L0D38 puls  a,b,x,y,u,pc
 
 
@@ -1615,7 +1854,8 @@ L0DD9 jsr   X7228
       bpl   L0DEA
       clr   X0355
       ldd   #$0504
-      lbsr  L049E
+      lbsr  SMap
+       
 L0DEA puls  a,b,x,y,u,pc
 
 
@@ -1654,8 +1894,8 @@ L0E26 pshs  a,b,x,y,u
       fdb   Zldb_u           ldb 0,u
       cmpb  #$64
       bcc   L0E51
-      leax  L1F6B,pcr
-      ldb   D0012,u
+      leax  ByteTbl1,pcr
+      ldb   $12,u
       ldb   b,x
       jsr   X76F7
       inca  
@@ -1664,18 +1904,20 @@ L0E26 pshs  a,b,x,y,u
       bcs   L0E43
       lda   #$64
 L0E43 fdb   $A740            sta 0,u
-      lda   D0010,u
+      lda   $10,u
       cmpa  #1
       bcc   L0E51
       lda   #1
-      sta   D0010,u
+      sta   $10,u
 L0E51 lda   X1D43
       cmpa  #2
       bhi   L0E74
       stu   X71C9
       clr   X71CB
-L0E5E ldd   #$0400
-      lbsr  L049E
+
+L0E5E ldd   #(sub_4*$100)+$00
+      lbsr  SMap
+       
       inc   X71CB
       lda   X71CB
       cmpa  #8
@@ -1686,7 +1928,7 @@ L0E74 puls  a,b,x,y,u,pc
 
 
 L0E76 ldx   #$0115
-      os9 F$Time
+      os9   F$Time
       ldb   X011A
       tst   X0290
       bne   L0E8B
@@ -1746,7 +1988,8 @@ L0F1D lda   X4D21
       cmpa  #254
       bne   L0F2A
       ldd   #$0510
-      lbra  L049E
+      lbra  SMap
+       
 L0F2A dec   X4D21
 L0F2D rts   
 
@@ -1894,7 +2137,8 @@ L1072 lda   ,s
       cmpd  #0
       bge   L1099
       ldd   #$0512
-      lbsr  L049E
+      lbsr  SMap
+       
       ldd   #0
 L1099 std   X4D1F
 L109C puls  b
@@ -1932,8 +2176,9 @@ L10E8 cmpd  #$2000
 L10EE inc   X4D25
       lda   X1DDA
       bne   L112A
-      ldd   #$022C
-      lbra  L049E
+      ldd   #(sub_2*$100)+$2C
+      lbra  SMap
+       
 L10FC cmpx  #$480A
       bcc   L1109
       inc   X1DDB
@@ -1952,8 +2197,8 @@ L1109 leax  21,x
       rts   
 
 
-L1124 ldd   #$022E
-      lbra  L049E
+L1124 ldd   #(sub_2*$100)+$2E
+      lbra  SMap 
 L112A rts   
 
 
@@ -2049,72 +2294,94 @@ L11C8 pshs  x,y,u
       puls  x,y,u,pc
 
 
-L11FC lda   #2
-      sta   X1E13
-      ldx   #$4A56
-L1204 fdb   Zlda_x          lda 0,x     
-      lbmi  L12E6
-      ldu   19,x
-      lda   D0007,u
+L11FC lda   #$02             loop counter
+      sta   X1E13            store in scratch
+      
+      ldx   #$4A56           base address
+      
+L1204 fdb   Zlda_x           lda 0,x     
+      lbmi  L12E6            on minus skip loop
+      
+      ldu   $13,x
+      lda   $07,u
       beq   L1282
+      
       ldd   X4CEF
       bne   L1276
-      lda   13,x
+      
+      lda   $0D,x
       bne   L1276
-      ldd   14,x
-      lsra                 left shift d (/2)
+      
+      ldd   $0E,x
+      lsra                   right shift d (/2)
       rorb  
-      lsra                 left shift d (/2)
-      rorb  
-      lsra                 left shift d (/2)
+      lsra                   right shift d (/2)
+      rorb        
+      lsra                   right shift d (/2) (effectively /8)
       rorb  
       cmpd  X1E1E
       bhi   L1276
+
       fdb   Zlda_u         lda 0,u
       bne   L124D
+
       jsr   X72C3
       fcc   "We picked up the flier, Sir"
       fcb   C$NULL
       bra   L1270
+
 L124D jsr   X72C3
       fcc   "We picked up the shore party"
       fcb   C$NULL
+
       clr   X4D27
+
 L1270 lda   #$FF
       fdb   Zsta_x         sta 0,x
       bra   L12E6
-L1276 ldd   11,x
-      addd  #$02D0
-      jsr   X7648
-      std   9,x
+
+L1276 ldd   $0B,x          load a value indexed from x
+      addd  #$02D0         add 720 to it 
+      jsr   X7648          call a sub that forces value to be 0-1440
+
+      std   $09,x          save the result and go to bump counter
       bra   L12E6
-L1282 leay  D0001,u
-      leau  3,x
+
+L1282 leay  $01,u
+      leau  $03,x
       jsr   X74D9
+      
       pshs  a,u
       jsr   X7556
-      std   9,x
+
+      std   $09,x
       puls  a,u
       tsta  
       bne   L12E6
+      
       tfr   u,d
       lsra                 left shift d (/2)
       rorb  
-      lsra                 left shift d (/2)
+      lsra                 left shift d (/2) 
       rorb  
-      lsra                 left shift d (/2)
+      lsra                 left shift d (/2) (effectively /8)
       rorb  
       cmpd  X1E1E
       bhi   L12E6
+
       jsr   X72C3
       fcc   "Shore party has reached land"
       fcb   C$NULL
+
       jsr   X72C3
       fcc   "Shore party returning, Sir"
       fcb   C$NULL
-      ldu   19,x
-      inc   D0007,u
-L12E6 leax  21,x
+
+      ldu   $13,x
+      inc   $07,u
+
+
+L12E6 leax  $15,x
       dec   X1E13
       lbne  L1204
       rts   
@@ -2189,8 +2456,8 @@ L139F ldu   19,x
       beq   L13DC
       cmpx  #$480A
       bcc   L13AC
-      inc   D0014,u
-L13AC lda   D0010,u
+      inc   $14,u
+L13AC lda   $10,u
       cmpa  16,x
       bcs   L13BC
       sta   16,x
@@ -2208,9 +2475,9 @@ L13BC ldb   17,x
       
       
 L13D1 clr   17,x
-      sta   D0010,u
+      sta   $10,u
       lda   #5
-      sta   D0011,u
+      sta   $11,u
 L13DC lda   13,x
       bne   L1454
       tst   X1D7B
@@ -2238,7 +2505,7 @@ L1416 ldd   #$2000
       tst   X1D7B
       beq   L1421
       ldd   #$6000
-L1421 pshs  a,b
+L1421 pshs  d
       ldd   14,x
       cmpd  ,s++
       bhi   L1444
@@ -2273,7 +2540,7 @@ L1454 clr   16,x
 L145B ldu   19,x
       lbeq  L14E1
       pshs  y
-      leay  D0003,u
+      leay  $03,u
       leau  3,x
       jsr   X74D9
       puls  y
@@ -2282,18 +2549,18 @@ L145B ldu   19,x
       cmpu  #$1F40
       bcs   L1485
 L1476 ldu   19,x
-      ldd   D0001,u
+      ldd   $01,u
       addd  #4
-      pshs  a,b
+      pshs  d
       jsr   X7556
       bra   L1497
 L1485 ldu   19,x
-      ldd   D0001,u
+      ldd   $01,u
       cmpd  #$000C
       bls   L1493
       ldd   #$000C
 L1493 pshs  a,b
-      ldd   D0009,u
+      ldd   $09,u
 L1497 subd  9,x
       lbeq  L14B0
       jsr   X765F
@@ -2448,8 +2715,10 @@ L15B8 pshs  a,b,x,y,u
       clra  
       std   X02A0
       clr   X029D
-L15E4 ldd   #$0400
-      lbsr  L049E
+      
+L15E4 ldd   #(sub_4*$100)+$00
+      lbsr  SMap
+       
       inc   X029D
       lda   X029D
       cmpa  #8
@@ -2470,7 +2739,7 @@ L15F9 ldd   11,x
       std   9,x
 L1614 ldy   X0109
       ldb   1,y
-      fdb  $A600
+      fdb   Zlda_x      $A600
       beq   L1642
       cmpa  #$64
       bcs   L1625
@@ -2531,20 +2800,20 @@ L1682 fdb   Zlda_u           lda 0,u
       lbpl  L16C4
       fdb   Zclr_u           clr 0,u
       ldd   3,x
-      std   D0003,u
+      std   $03,u
       ldd   5,x
-      std   D0005,u
+      std   $05,u
       ldd   7,x
-      std   D0007,u
+      std   $07,u
       ldd   9,x
-      std   D0009,u
-      stx   D0013,u
+      std   $09,u
+      stx   $13,u
       lda   16,x
-      sta   D0010,u
-      clr   D0011,u
+      sta   $10,u
+      clr   $11,u
       ldb   #2
       jsr   X7691
-      stb   D0012,u
+      stb   $12,u
       pshs  a,b,y
       addb  #7
       lda   #$0C
@@ -2553,10 +2822,10 @@ L1682 fdb   Zlda_u           lda 0,u
       tfr   d,y
       ldb   ,y
       clra  
-      std   D0001,u
+      std   $01,u
       puls  a,b,y
       inc   X04FB
-L16C4 leau  D0015,u
+L16C4 leau  $15,u
       dec   X0111
       lbne  L1682
       puls  a,b,x,y,u,pc
@@ -2592,10 +2861,10 @@ L1707 ldu   19,x
       lbeq  L1757
       fdb   Zlda_u           lda 0,u
       lbmi  L1757
-      ldu   D0013,u
+      ldu   $13,u
       fdb   Zlda_u           lda 0,u
       lbmi  L1757
-      leay  D0003,u
+      leay  $03,u
       leau  3,x
       jsr   X74D9
       pshs  a
@@ -2700,7 +2969,7 @@ L17F5 fdb   Zlda_u          lda 0,u
       inc   X04FB
       ldb   #2
       jsr   X7691
-      stb   D0012,u
+      stb   $12,u
       pshs  a,b,y
       addb  #7
       lda   #$0C
@@ -2709,10 +2978,10 @@ L17F5 fdb   Zlda_u          lda 0,u
       tfr   d,y
       ldb   ,y
       clra  
-      std   D0001,u
+      std   $01,u
       puls  a,b,y
       lbra  L1855
-L181C leau  D0015,u
+L181C leau  $15,u
       dec   X0111
       lbne  L17F5
       rts   
@@ -2727,11 +2996,11 @@ L182F fdb   Zlda_u        lda 0,u
       ldb   #4
       jsr   X7691
       addb  #4
-      stb   D0012,u
+      stb   $12,u
       ldd   #8
-      std   D0001,u
+      std   $01,u
       lbra  L1855
-L184A leau  D0015,u
+L184A leau  $15,u
       dec   X0111
       lbne  L182F
       rts   
@@ -2742,22 +3011,22 @@ L1855 fdb   Zclr_u       clr 0,u
       jsr   X76A4
       addd  #$8000
       addd  X4C85
-      std   D0004,u
+      std   $04,u
       ldd   #$8000
       jsr   X76A4
       addd  #$8000
       addd  X4C88
-      std   D0007,u
+      std   $07,u
       lda   X4C84
-      sta   D0003,u
+      sta   $03,u
       lda   X4C87
-      sta   D0006,u
+      sta   $06,u
       ldd   #0
-      std   D0009,u
-      std   D0013,u
+      std   $09,u
+      std   $13,u
       lda   #2
-      sta   D0010,u
-      clr   D0011,u
+      sta   $10,u
+      clr   $11,u
       rts   
 
 
@@ -2814,21 +3083,27 @@ L1905 fdb   Ztst_x             tst 0,x
       lda   X4CC2
       lbsr  L0E26
       jsr   X723C
+
       ldd   #$0048
       std   X1DA5
+
       ldd   #$0082
       std   X1DA7
+
       jsr   X72F3
       fcc   "Torpedo "
       fcb   C$NULL
+
       ldb   16,x
       clra  
       jsr   X7304          calcs a integer based on input passed in d
       jsr   X72F3
       fcc   " hit, Sir"
       fcb   C$NULL
+
       jsr   X7228
       lbra  L19A0
+
 L1953 ldd   17,x
       addd  X1E1E
       std   17,x
@@ -2837,20 +3112,27 @@ L1953 ldd   17,x
       lda   #$FF
       fdb   Zsta_x           sta 0,x
       jsr   X723C
+
+
       ldd   #$0048
       std   X1DA5
+
       ldd   #$0082
       std   X1DA7
+
       jsr   X72F3
       fcc   "Torpedo "
       fcb   C$NULL
+
       ldb   16,x
       clra  
       jsr   X7304          calcs a integer based on input passed in d
       jsr   X72F3
       fcc   " has stopped, Sir"
       fcb   C$NULL
+
       jsr   X7228
+
 L19A0 leax  21,x
       dec   X1E13
       lbne  L1905
@@ -2859,49 +3141,63 @@ L19A0 leax  21,x
       
 L19AB lda   #$10
       sta   X1E13
+      
       ldx   #$4AFE
 L19B3 tst   16,x
       beq   L19D2
+      
       tst   X1E1E
       bne   L19CC
+      
       ldb   16,x
       subb  X1E1F
       bpl   L19C6
       clrb  
 L19C6 stb   16,x
       lbra  L1A53
+
 L19CC clr   16,x
       lbra  L1A53
 L19D2 fdb   Ztst_x               tst 0,x
       lbmi  L1A53
+
       ldd   #5
       std   1,x
+
       lda   13,x
       bne   L1A1D
+
       ldd   14,x
       cmpd  #$000A
       bhi   L1A1D
+
       ldb   #$32
       jsr   X7691
+
       lda   X4C77
       inca  
       mul   
       lbsr  L0D3A
+
       andb  #$1F
       addb  X4CEE
       stb   X4CEE
+
       jsr   X72C3
       fcc   "A mine hit the sub, Sir"
       fcb   C$NULL
+
       lda   #$FF
       fdb   Zsta_x           sta 0,x
 L1A1D lbsr  L1A63
       tsta  
       beq   L1A53
+
       lda   #$FF
       fdb   Zsta_x           sta 0,x
       lda   #$28
       lbsr  L0E26
+
       jsr   X72C3
       fcc   "I think a mine exploded, "
       fcc   "Sir!"
@@ -2910,7 +3206,7 @@ L1A1D lbsr  L1A63
       jsr   X7228
      
       lbra  L1A53
-L1A53 ldd   #0
+L1A53 ldd   #$0000
       std   1,x
       leax  21,x
       dec   X1E13
@@ -2962,53 +3258,62 @@ L1A9E lda   X4D14
       
          
 L1AB7 clr   X4D14
+      
       ldu   X4D19
       beq   L1AFF
       stu   X4D17
+      
       lbsr  L1B0C
       stb   X4D16
       sta   X4D15
+      
       lda   X1E23
       sta   X4D14
-      ldd   #0
+      
+      ldd   #$0000
       std   X4D19
+
       jsr   X72C3
       fcc   "Firing deck gun, Sir"
       fcb   C$NULL
-      ldd   #$3C02
-      ldy   #$0E10
-L1AF6 lbsr  L1B00
+
+      ldd   #$3C02            duration and amplitude of tone
+      ldy   #$0E10            relative freq counter
+L1AF6 lbsr  ToneOut
+
       leay  -2,y
       suba  #$0A
       bne   L1AF6
 L1AFF rts
 
-   
+
+ToneOut   
 L1B00 pshs  a,b,x,y,u
       tfr   d,x
-      ldd   #$0198
+      ldd   #(StdOut*$100)+SS.Tone
       os9   I$SetStt
       puls  a,b,x,y,u,pc
       
       
-L1B0C lda   D000D,u
-      bne   L1B21
-      ldd   D000E,u
-      cmpd  #$3A98
-      bhi   L1B21
+L1B0C lda   $0D,u
+      bne   SetD             not zero 
+      ldd   $0E,u            otherwise load the next two bytes
+      cmpd  #$3A98           compare 
+      bhi   SetD
       ldu   #$03E8
       jsr   X76B9
       incb  
       clra  
       rts 
       
-        
-L1B21 lda   #1
+
+SetD        
+L1B21 lda   #$01
       ldb   #$10
       rts  
       
        
-L1B26 ldy   #0
+L1B26 ldy   #$0000
       clrb  
 L1B2B lbsr  L1B47
       incb  
@@ -3027,7 +3332,7 @@ L1B38 lbsr  L1B47
 L1B47 pshs  a,b,x,y,u
       clra  
       tfr   d,x
-      lda   19717,x
+      lda   $4D05,x
       lble  L1BBD
       ldu   X1E1E
       cmpu  #$001E
@@ -3035,15 +3340,15 @@ L1B47 pshs  a,b,x,y,u
       suba  X1E1F
       cmpa  #1
       blt   L1B6B
-      sta   19717,x
+      sta   $4D05,x
       lbra  L1BBD
-L1B6B lda   19713,y
-      cmpa  19711,y
+L1B6B lda   $4D01,y
+      cmpa  $4CFF,y
       blt   L1B7D
       lda   #$FF
-      sta   19717,x
+      sta   $4D05,x
       bra   L1BBD
-L1B7D clr   19717,x
+L1B7D clr   $4D05,x
       jsr   X723C
       jsr   X72F3
       fcc   "Tube "
@@ -3055,7 +3360,7 @@ L1B7D clr   19717,x
       fcc   " has been reloaded, Sir"
       fcb   C$NULL
       jsr   X7228
-      inc   19713,y
+      inc   $4D01,y
       jsr   X7843
       jsr   X7866
 L1BBD puls  a,b,x,y,u,pc
@@ -3067,7 +3372,7 @@ L1BBF lda   X4D0F
       cmpu  #$0258
       bcc   L1BDA
       suba  X1E1F
-      cmpa  #1
+      cmpa  #$01
       blt   L1BDA
       sta   X4D14
       rts
@@ -3111,144 +3416,192 @@ L1C33 rts
 
    
 L1C34 pshs  a,b,x,y,u
-      lda   X0125
-      beq   L1C4C
-      ldd   #$0730
-      subd  X0120
-      lsra  
+      lda   X0125            load byte from $0125
+      beq   L1C4C            if zero branch to next block
+     
+      ldd   #$0730           load d with 1840
+      subd  X0120            subtract value held at $0120
+      
+      lsra                   divide d /2
+      rorb         
+      
+      lsra                   and again divide by /2
       rorb  
-      lsra  
+      
+      lsra                   and again divide by /2
       rorb  
-      lsra  
+      
+      lsra                   and again divide by /2 (effective /16)
       rorb  
-      lsra  
-      rorb  
-      stb   X0124
+      stb   X0124            store LSB at $0124
+      
 L1C4C lda   X4D2C
-      beq   L1C84
+      beq   Notaground
+      
       ldd   X0120
       cmpd  X0122
-      bls   L1C84
+      bls   Notaground
+      
       jsr   X72C3
       fcc   "We are still aground, Sir!"
       fcb   C$NULL
-      ldd   #0
+      
+      ldd   #$0000
       jsr   X7A3A
-      ldd   #0
+      
+      ldd   #$0000
       jsr   X7A68
+      
+Notaground      
 L1C84 ldu   X4CF3
       ldd   X4CF1
       ldy   #$4C84
       lbsr  L1E1D
+      
       ldd   X4CF1
       beq   L1CBB
+      
       ldd   X4CFB
       subd  X4CF3
       beq   L1CBB
       jsr   X765F
-      ldu   #2
+      
+      ldu   #$0002
       tst   X4D30
       beq   L1CAC
-      ldu   #1
+      
+      ldu   #$0001
 L1CAC lbsr  L1DD0
-      cmpd  #0
+
+      cmpd  #$0000
       beq   L1CBB
       addd  X4CF3
       jsr   X7A23
+
 L1CBB lda   X4D28
       bne   L1CD5
+
       lda   X4CD2
       tst   X4D2A
       beq   L1CC9
-      lsra  
+      lsra                   divide by 2
+        
 L1CC9 ldb   X4CD3
-      ldy   #$4D38
+      ldy   #$4D38           load a base address
       tst   X4D1D
       bra   L1CE2
+
 L1CD5 lda   X4CD0
       ldb   X4CD1
-      ldy   #$4D2F
+      ldy   #$4D2F            load a base address
       tst   X4D1B
 L1CE2 bne   L1CE6
+
       clra  
       clrb  
 L1CE6 tst   ,y
       beq   L1CFE
+
       tst   X4C77
       beq   L1CF3
       clra  
       clrb  
       bra   L1CFE
+
 L1CF3 tst   ,y
       bmi   L1CFA
       lsra  
       bra   L1CFE
-L1CFA lda   #1
-      ldb   #1
+
+L1CFA lda   #$01
+      ldb   #$01
 L1CFE sta   X1DDA
       negb  
       stb   X1DDB
+      
       ldb   X4CFA
       cmpb  X1DDA
       ble   L1D10
+      
       ldb   X1DDA
 L1D10 cmpb  X1DDB
       bge   L1D18
+      
       ldb   X1DDB
 L1D18 sex   
       subd  X4CF1
       lbeq  L1D2C
-      ldu   #2
+      
+      ldu   #$0002
       lbsr  L1DD0
       addd  X4CF1
       jsr   X7A3A
+      
 L1D2C lda   X4CCA
       beq   L1D55
+      
       ldu   X1E1E
       cmpu  #$001E
       bcc   L1D47
+      
       suba  X1E1F
-      cmpa  #1
+      cmpa  #$01
       blt   L1D47
+      
       sta   X4CCA
       lbra  L1DCE
+      
 L1D47 clr   X4CCA
       lda   X4D28
       beq   L1D55
-      ldd   #$020C
-      lbsr  L049E
+      
+      ldd   #(sub_2*$100)+$0C
+      lbsr  SMap
+       
 L1D55 ldd   X4CF7
       subd  X4CEF
       lbeq  L1DCE
-      ldu   #2
+      
+      ldu   #$0002
       lbsr  L1DD0
+      
       addd  X4CEF
-      pshs  a,b
+      pshs  d                save this value on the stack
       jsr   X7A89
-      ldd   ,s
-      cmpd  #$001E
-      blt   L1D8C
-      lda   X1D43
-      cmpa  #1
-      bne   L1D82
-      ldd   #$0516
-      lbsr  L049E
-L1D82 cmpa  #2
-      bne   L1D8C
-      ldd   #$0516
-      lbsr  L049E
+      
+      ldd   ,s               copy it back off the stack
+      cmpd  #$001E           compare it to 30
+      blt   L1D8C            less than that branch over smap calls
+      
+      lda   X1D43            otherwise load a from this mem location
+      cmpa  #$01             compare that to 1
+      bne   L1D82            not equal 1 skip one smap call
+      
+      ldd   #(sub_5*$100)+$16
+      lbsr  SMap
+       
+L1D82 cmpa  #$02             compare value from x1d43 to 2
+      bne   L1D8C            not equal 2 skip next smap call
+      
+      ldd   #(sub_5*$100)+$16
+      lbsr  SMap
+       
 L1D8C ldb   X4CD9
-      lda   #6
+      lda   #$06
       mul   
       cmpd  ,s
       bcs   L1DA1
+
       subd  #$0064
       cmpd  ,s
       bls   L1DAB
       bra   L1DCC
-L1DA1 puls  a,b
-      ldd   #$0514
-      lbsr  L049E
+
+L1DA1 puls  d                clean up stack
+     
+      ldd   #(sub_5*$100)+$14
+      lbsr  SMap
+       
       puls  a,b,x,y,u,pc
       
       
@@ -3263,118 +3616,156 @@ L1DCC puls  a,b
 L1DCE puls  a,b,x,y,u,pc
 
 
-L1DD0 pshs  u
-      clr   X1DF5
-      cmpd  #0
-      bpl   L1DE3
-      inc   X1DF5
-      coma  
-      comb  
-      addd  #1
-L1DE3 std   X1DDA
-      tfr   u,d
-      stb   X1DDC
-      lda   X1E1F
-      mul   
-      std   X1DF0
-      clr   X1DEF
-      ldb   X1DDC
-      lda   X1E1E
-      mul   
-      addd  X1DEF
-      std   X1DEF
-      tsta  
-      bne   L1E0E
-      ldd   X1DF0
-      cmpd  X1DDA
-      bcs   L1E11
-L1E0E ldd   X1DDA
-L1E11 tst   X1DF5
-      beq   L1E1B
-      coma  
-      comb  
-      addd  #1
+* caller passes arguments in d and u
+* subroutine passes back a value in d and restores u
+L1DD0 pshs  u                save the u value on the stack
+      clr   X1DF5            clear this flag 
+      
+      cmpd  #$0000         
+      bpl   L1DE3            branch on plus         
+      inc   X1DF5            otherwise increment our flag
+      coma                   complement a
+      comb                   complement b
+      addd  #$01             and add one to d
+      
+L1DE3 std   X1DDA            stow that 
+      tfr   u,d              transfer the value in u to d
+      stb   X1DDC            stow the LSB 
+      lda   X1E1F            load value into a
+      mul                    multiply them
+      std   X1DF0            stow that off
+      
+      clr   X1DEF            clear here
+      ldb   X1DDC            get the LSB passed in u that was saved
+      lda   X1E1E            load a value in a
+      mul                    multiply them
+      addd  X1DEF            add in the 0 from the byte we just cleared
+      std   X1DEF            and save it back there
+
+      tsta                   test MSB of calcualted value
+      bne   L1E0E            not zero branch and load first computed value
+      
+      ldd   X1DF0            load the second computed value
+      cmpd  X1DDA            compare that to the first computed value
+      blo   L1E11            less than branch
+
+L1E0E ldd   X1DDA            otherwise load the first computed value
+
+L1E11 tst   X1DF5            test the flag
+      beq   L1E1B            if zero branch to exit
+       
+      coma                   otherwise compliment a        
+      comb                   and compliment b
+      addd  #1               then add 1
 L1E1B puls  u,pc
 
-
+* d,u,y set by calling routine
 L1E1D pshs  a,b,x,y,u
-      cmpd  #0
-      ble   L1E2A
-      lsra  
+      cmpd  #$0000
+      ble   L1E2A            less or equal move on
+      lsra                   divide d/2
       rorb  
-      lsra  
+      lsra                   divide d/2 again for a total of /4
       rorb  
-      incb  
-L1E2A stu   X1E02
-      clr   X1DF5
-      cmpd  #0
-      bpl   L1E3E
-      inc   X1DF5
-      coma  
+      incb                   bump b by one
+      
+L1E2A stu   X1E02            save the u
+      clr   X1DF5            clear some mem location
+      cmpd  #$0000           check d again 
+      bpl   L1E3E            positive move on
+      
+      inc   X1DF5            otherwise bump that mem location
+      
+      coma                   compliment both a and b   
       comb  
-      addd  #1
-L1E3E std   X1DDA
-      lda   X1E1F
+      addd  #1               bump by one
+      
+L1E3E std   X1DDA            save that value
+      
+      lda   X1E1F            
       mul   
       std   X1DF0
-      clr   X1DEF
+      
+      clr   X1DEF             so this is zero
+      
       lda   X1DDA
       ldb   X1E1F
       mul   
-      addd  X1DEF
-      std   X1DEF
+      addd  X1DEF             and we add a zero here ?
+      
+      std   X1DEF             now stow it here
+      
       lda   X1DDB
       ldb   X1E1E
       mul   
       addd  X1DEF
       std   X1DEF
+      
       lda   X1DDA
       ldb   X1E1E
       mul   
       addb  X1DEF
       stb   X1DEF
+      
       ldd   X1E02
       jsr   X7718
       jsr   X7604
+      
       ldd   1,y
       addd  X1DF3
       std   1,y
+      
       lda   ,y
       adca  X1DF2
       sta   ,y
+      
       ldd   X1E02
       jsr   X7720
       jsr   X7604
+      
       ldd   4,y
       addd  X1DF3
       std   4,y
+      
       lda   3,y
       adca  X1DF2
       sta   3,y
+      
       puls  a,b,x,y,u,pc
       
-      
-L1EA2 lda   #$74
-      sta   X1E13
-      ldx   #$42B5
-L1EAA fdb   Zlda_x       lda 0,x
-      lbmi  L1F4F
-      cmpa  #$64
+
+KillDisplay      
+L1EA2 lda   #$74             set up the loop counter
+      sta   X1E13            stow it in a temp
+      ldx   #$42B5           load base addr of data to work with
+
+KillLoop
+L1EAA fdb   Zlda_x           lda 0,x
+      lbmi  KDNext           value negative ? skip processing and go again
+ 
+      cmpa  #$64         
       lblo  L1F35
+ 
       adda  X1E22
-      fdb    Zsta_x      sta 0,x
+      fdb   Zsta_x            sta 0,x
       lbpl  L1F35
+ 
       jsr   X723C
+ 
       cmpx  #$480A
-      bcc   L1F07
+      bcc   Shotdown
+
       jsr   X72F3
       fcc   "We sunk that "
       fcb   C$NULL
-      lda   18,x
-      lbsr  L0854
+      
+      lda   $12,x              get ship index
+      lbsr  TypeShip           call ship type display
+      
       jsr   X72F3
       fcc   ", Sir!"
       fcb   C$NULL
+      
       ldu   #$0360
       lda   X04F7
       ldb   #4
@@ -3382,54 +3773,76 @@ L1EAA fdb   Zlda_x       lda 0,x
       leau  d,u
       lda   X1E16
       sta   ,u
+      
       ldd   X1E17
-      std   D0001,u
-      lda   18,x
-      sta   D0003,u
+      std   $01,u
+      
+      lda   $12,x
+      sta   $03,u
+      
       inc   X04F7
       bra   L1F32
+
+Shotdown      
 L1F07 jsr   X72F3
       fcc   "We shot down that "
       fcb   C$NULL
-      lda   18,x
+    
+      lda   $12,x
       bne   L1F27
       inc   X04F9
-      bra   L1F2A
+      bra   DisplayPlane
 L1F27 inc   X04F8
-L1F2A lbsr  L0869
-      ldb   #$21
-*                            argument passed in b to this routine
+
+DisplayPlane
+L1F2A lbsr  TypePlane
+
+      ldb   #'!              $21 argument passed in b to this routine
       jsr   X7477
+
 L1F32 jsr   X7228
-L1F35 ldu   9,x
-      ldd   1,x
-      leay  3,x
+
+L1F35 ldu   $09,x
+      ldd   $01,x
+      leay  $03,x
       lbsr  L1E1D
-      leay  3,x
+      
+      leay  $03,x
       ldu   #$4C84
       jsr   X74D9
-      sta   13,x
-      stu   14,x
+     
+      sta   $0D,x
+      stu   $0E,x
       jsr   X7556
-      std   11,x
-L1F4F leax  21,x
-      dec   X1E13      
-      lbpl  L1EAA
+      std   $0B,x
+
+KDNext
+L1F4F leax  $15,x            move our window 21 bytes
+      dec   X1E13            dec the loop counter      
+      lbpl  KillLoop         not done go again
       rts
       
          
-L1F5A std   X4CFB
-      lsra  
+L1F5A std   X4CFB           store that sucker there again
+      lsra                  divide d /2
       rorb  
-      lsra  
+      
+      lsra                  again divide d /2 (/4)
       rorb  
-      lsra  
-      rorb  
-      lda   #1
-      sta   X02A4
-      jmp   X7889
-L1F6B fcb   $01,$02,$01,$01,$03,$04
-      fcb   $02,$02,$01,$01,$01
+      
+      lsra                  and again d /2 (effective /8)
+      rorb                  
+      
+      lda   #$01            load a one and stow it
+      sta   X02A4           used in subroutine we call
+      
+      jmp   X7889           uses b (jump instead of jsr)
+
+
+ByteTbl1      
+L1F6B fcb   $01,$02,$01,$01
+      fcb   $03,$04,$02,$02
+      fcb   $01,$01,$01
 
 Sub6      
 L1F76 fcc   "sub/sub6"
@@ -3450,6 +3863,7 @@ L1F9C fcc   "sub/stitle.pic"
 Sub1
 L1FAB fcc   "sub1"
       fcb   C$NULL
+Subsz equ   *-Sub1
 
 Sub2
 L1FB0 fcc   "sub2"

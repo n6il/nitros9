@@ -666,30 +666,39 @@ L0430     rts
 
 
 *X7648
-L0431     cmpd  #$059F
-          bgt   L043E
-          cmpd  #0
-          blt   L0443
+Set_0_1440
+L0431     cmpd  #$059F       compare to 1439
+          bgt   L043E        > 1439 go subtract 1440
+          cmpd  #$0000       compare to zero
+          blt   L0443        < 0 go add 1440
           rts
 
 
 *X7655
-L043E     subd  #$05A0
-          bra   L0431
+L043E     subd  #$05A0      subtract 1440 
+          bra   L0431       always go test again 1439
+          
 L0443     addd  #$05A0
           bra   L0431
-L0448     cmpd  #$02CF
-          bgt   L0455
-          cmpd  #$FD30
-          blt   L045A
+          
+
+L0448     cmpd  #$02CF      compare to 719
+          bgt   L0455       greater than that subtract 1440
+          cmpd  #$FD30      compare to -720
+          blt   L045A       less than that go add 1440
           rts
 
 
 *X766C
 L0455     subd  #$05A0
           bra   L0448
+          
 L045A     addd  #$05A0
           bra   L0448
+  
+  
+  
+          
 L045F     rol   X1D3F
           rol   X1D40
           ror   X1D41
@@ -727,37 +736,43 @@ N048D     pshs  u
 L04A0     puls  u,pc
 
 
-
+* passed values in d and u by calling routine
 *X76B9
-L04A2     pshs  x
-          tfr   u,x
-          cmpx  #0
-          beq   L04D8
-          std   X1DDA
-          stu   X1DDC
-          lda   #$10
-          sta   X1DEA
-          clra
+L04A2     pshs  x          save x as we will modify it
+          tfr   u,x        move current u value into x
+          cmpx  #$0000     is the value zero ?
+          beq   ClrD_U     if so branch to clear d and u and return
+*                            otherwise
+          std   X1DDA      save the value in d
+          stu   X1DDC      save the value in u
+          
+          lda   #$10       set up loop counter of 16
+          sta   X1DEA      stow that in a scratch var
+          clra             clear a,b and cc
           clrb
-L04B8     asl   X1DDB
-          rol   X1DDA
-          rolb
-          rola
-          cmpd  X1DDC
-          bcs   L04CC
-          subd  X1DDC
-          inc   X1DDB
-L04CC     dec   X1DEA
-          bne   L04B8
-          tfr   d,u
-          ldd   X1DDA
-          puls  x,pc
+*                          multiply the value x 2
+L04B8     asl   X1DDB      shift lsb left b7 to cc     
+          rol   X1DDA      pick up cc and shift msb left
+*                          b7 of msb is now in cc
+          rolb             pull cc into b0 and push b7 of lsb into cc
+          rola             pull cc into b0 of msb and push b7 in cc
+          cmpd  X1DDC      compare the value now in d to the original u value
+          blo   L04CC      less then bump counter and go again
+          subd  X1DDC      otherwise subtract original u value from d 
+          inc   X1DDB      and add one to the multiplied value
+L04CC     dec   X1DEA      dec the loop counter
+          bne   L04B8      not done go again
+          
+          tfr   d,u        move d to u 
+          ldd   X1DDA      load d 
+          puls  x,pc       and return
 
 
 *X76EF
-L04D8     ldd   #0
-          ldu   #0
-          puls  x,pc
+ClrD_U
+L04D8     ldd   #$0000  zero both d and u
+          ldu   #$0000
+          puls  x,pc    then return
 
 
 *X76F7
@@ -975,23 +990,29 @@ N064F     pshs  a,b,x,y,u
 
 
 *X7889
-L0672     pshs  a,b,x
-          pshs  b
+L0672     pshs  a,b,x        save the ones we will modify
+          pshs  b            save b as we will use it later
+          
           ldx   X1D8B
           stx   X1D89
-          lda   #3
+          
+          lda   #$03
           sta   X1D88
+          
           clr   X1D8F
           clr   X1D91
-          ldx   #$02AF
-          lda   X02A4
-          asla
+          
+          ldx   #$02AF       load a base address
+          lda   X02A4        we set this to 1 prior to calling in sub
+          asla               multiply by 2
           leax  a,x
           ldd   ,x
           sta   X1D90
           stb   X1D92
+          
           puls  b
           lbsr  L015D
+          
           inc   X1D90
           lbsr  L015D
           inc   X1D92
@@ -1167,7 +1188,9 @@ N080C     lbsr  L0431
           lda   #1
           sta   X02A4
           lbra  L06FE
-          std   X4CF1
+
+*X7A3A
+N0823     std   X4CF1
           bpl   L082D
           coma
           comb
@@ -1187,7 +1210,9 @@ L0837     stb   X1DDA
           lda   #2
           sta   X02A4
           lbra  L06FE
-          std   X4CF9
+
+*X7A68          
+N0851     std   X4CF9
           bpl   L0858
           addb  #$1C
 L0858     stb   X1DDA
@@ -1201,7 +1226,9 @@ L0858     stb   X1DDA
           lda   #2
           sta   X02A4
           lbra  L0672
-          std   X4CEF
+
+*X7A89          
+N0872     std   X4CEF
           std   X02A5
           lda   #3
           sta   X02A4
