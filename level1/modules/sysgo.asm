@@ -66,27 +66,29 @@ Shell    fcc   "Shell"
 Startup  fcc   "STARTUP -P"
          fcb   C$CR
          fcc   ",,,,,,,,,,"
+StartupL equ   *-Startup
 
 * Default time packet
 *              YY MM DD HH MM SS
 TimePckt fcb   85,06,01,00,00,00
 
+* BASIC reset code
 BasicRst fcb   $55
-         fcb   $00
-         fcb   $74
+         neg   <$0074
          nop
          clr   >$FF03
          nop
          nop
-         sta   >$FFDF
-         jmp   >$EF0E
+         sta   >$FFDF		turn off ROM mode
+         jmp   >$EF0E		jump to boot
+BasicRL  equ   *-BasicRst
 
 * SysGo entry point
 start    leax  >IcptRtn,pcr
          os9   F$Icpt
          leax  >BasicRst,pcr
-         ldu   #$0071
-         ldb   #$0F
+         ldu   #D.CBStrt
+         ldb   #BasicRL
 CopyLoop lda   ,x+
          sta   ,u+
          decb
@@ -100,14 +102,14 @@ CopyLoop lda   ,x+
          leax  >TimePckt,pcr
          os9   F$STime
          leax  >ChxPath,pcr
-         lda   #$04
+         lda   #EXEC.
          os9   I$ChgDir
          leax  >ChdDev,pcr
-         lda   #$03
+         lda   #UPDAT.
          os9   I$ChgDir
          bcs   DoStrtup
          leax  >ChxDev,pcr
-         lda   #$04
+         lda   #EXEC.
          os9   I$ChgDir
          bcc   DoStrtup
 
@@ -117,14 +119,14 @@ DoStrtup os9   F$ID
          os9   F$SPrior
          leax  >Shell,pcr
          leau  >Startup,pcr
-         ldd   #$0100
-         ldy   #$0015
+         ldd   #256
+         ldy   #StartupL
          os9   F$Fork
          bcs   DeadEnd
          os9   F$Wait
 
 FrkShell leax  >Shell,pcr
-         ldd   #$0100
+         ldd   #256
          ldy   #$0000
          os9   F$Fork
          bcs   DeadEnd
