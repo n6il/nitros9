@@ -64,6 +64,10 @@ RBFDEFS  set   1
 *          2003/06/02  Boisy G. Pitre
 * Updated comments for clarity.
 * Added TYP.256-TYP.2048 definitions for future expansion.
+*
+*          2004/04/14  Boisy G. Pitre
+* Added new entries to device descriptor as per OS-9 Level One V2.00.00
+* addendum.  Pointed out by Rodney Hamilton.
 
          nam   RBFDefs
          ttl   Random Block File Manager Definitions
@@ -88,6 +92,15 @@ IT.SCT   rmb   2          Default sectors/track
 IT.T0S   rmb   2          Default sectors/track for track 0 sector 0
 IT.ILV   rmb   1          Sector interleave offset
 IT.SAS   rmb   1          Segment allocation size
+* The following fields are from the OS-9 Level One V2.00.00 Addendum
+IT.TFM   rmb   1          DMA Transfer Mode
+IT.Exten rmb   2          Path Extension (PE) for record locking
+IT.SToff rmb   1          Sector/Track offsets (for "foreign" disk formats)
+* The following fields are not copied to the path descriptor
+IT.WPC   rmb   1          Write precomp cyl/4 (HD)
+IT.OFS   rmb   2          Starting cylinder offset (HD)
+IT.RWC   rmb   2          Reduced write current cylinder (HD)
+
 
 * IT.TYP/IT.DNS/IT.STP bit definitions
 *
