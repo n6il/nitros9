@@ -117,7 +117,7 @@ SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
 DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 		-aInterlv=3 -aSAS=8 -aDensity=1
 DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=3 -aD35
+		-aInterlv=3 -aSAS=8 -aDensity=1 -aD35
 
 ddd0_35s.dd: rb1773desc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0 -aDD=1
