@@ -61,7 +61,7 @@ u0037    rmb   1
 u0038    rmb   1
 u0039    rmb   1
 u003A    rmb   1
-u003B    rmb   2
+vhwaddr  rmb   2		address of keyboard hardware
 u003D    rmb   1
 u003E    rmb   1
 u003F    rmb   1
@@ -92,74 +92,77 @@ start    lbra  Init
          lbra  SetStat
          lbra  Term
 
-Init     lbsr  L02BA
-         lbra  L002D
-L002D    pshs  cc
-         orcc  #$10
-         stu   >D.KbdSta
-         ldd   >D.IRQ
-         std   >D.AltIRQ
-         leax  >L00B0,pcr
-         stx   >D.IRQ
-         ldx   #$FF00
-         stx   <u003B,u
+Init     lbsr  AllocMem			allocate video memory
+         lbra  L002D			unsure why this is here.. timing?
+L002D    pshs  cc			save CC
+         orcc  #IRQMask			mask IRQs
+         stu   >D.KbdSta		save our static mem
+         ldd   >D.IRQ			get current IRQ vector address
+         std   >D.AltIRQ		store in Alt. IRQ vector
+         leax  >OurIRQ,pcr		point to our IRQ address
+         stx   >D.IRQ			store in D.IRQ
+         ldx   #$FF00			get address of PIA
+         stx   <vhwaddr,u		store in statics for IRQ routine
          clra  
          clrb  
          std   <u0048,u
-         sta   $01,x
-         sta   ,x
-         sta   $03,x
-         comb  
+         sta   $01,x			clear $FF01
+         sta   ,x			clear $FF00
+         sta   $03,x			clear $FF03
+         comb  				B = $FF now
          stb   <u003D,u
-         stb   $02,x
+         stb   $02,x			put $FF in $FF02
          stb   <u003F,u
          stb   <u0040,u
          stb   <u0041,u
          lda   #$34
-         sta   $01,x
+         sta   $01,x			put $34 in $FF01
          lda   #$3F
-         sta   $03,x
-         lda   $02,x
-         puls  pc,cc
+         sta   $03,x			put $3F in $FF03
+         lda   $02,x			get byte at $FF02
+         puls  pc,cc			get CC and return
          ldb   #$F5
-         orcc  #$01
-         rts   
-GetStat    cmpa  #$01
-         bne   L0082
+         orcc  #Carry			set carry
+         rts   				and return
+
+GetStat  cmpa  #SS.Ready		SS.Ready call?
+         bne   L0082			branch if not
          lda   <u0049,u
          suba  <u0048,u
-         bne   L00AE
-         ldb   #$F6
+         bne   GSOk
+         ldb   #E$NotRdy
          bra   L009A
-L0082    cmpa  #$06
-         beq   L00AE
-         cmpa  #$12
+L0082    cmpa  #SS.EOF			End of file?
+         beq   GSOk			branch if so
+         cmpa  #SS.DStat
          lbeq  L04E0+4
-         cmpa  #$13
+         cmpa  #SS.Joy			joystick value acquisition?
          lbeq  L085F
-         cmpa  #$1C
-         lbeq  L04CD
+         cmpa  #SS.AlfaS		Alfa display status?
+         lbeq  L04CD			branch if so
 
 SetStat  ldb   #E$UnkSvc
 L009A    orcc  #Carry
          rts   
 
-Term     pshs  cc
-         orcc  #$10
-         ldx   >D.AltIRQ
-         stx   >D.IRQ
-         puls  pc,cc
+Term     pshs  cc			save CC
+         orcc  #IRQMask			mask IRQs
+         ldx   >D.AltIRQ		get Alt. IRQ address
+         stx   >D.IRQ			and restore it to D.IRQ
+         puls  pc,cc			get CC and return
 
 L00A9    incb  
          cmpb  #$7F
          bls   L00AF
-L00AE    clrb  
+GSOk     clrb  
 L00AF    rts   
-L00B0    ldu   >D.KbdSta
-         ldx   <u003B,u
-         lda   $03,x
-         bmi   L00BE
-         jmp   [>D.SvcIRQ]
+
+* Driver's IRQ Routine
+OurIRQ   ldu   >D.KbdSta		get pointer to driver's statics
+         ldx   <vhwaddr,u		get keyboard hardware address
+         lda   $03,x			get byte
+         bmi   L00BE			branch if hi bit set
+         jmp   [>D.SvcIRQ]		else jump on
 L00BE    lda   $02,x
          lda   #$FF
          sta   $02,x
@@ -214,11 +217,11 @@ L0122    ldb   #$03
          bne   L0132
 L012E    lda   u0003,u
          bra   L0136
-L0132    ldb   #$01
-         lda   u0005,u
+L0132    ldb   #S$Wake
+         lda   V.WAKE,u
 L0136    beq   L013B
-         os9   F$Send   
-L013B    clr   u0005,u
+         os9   F$Send   		send signal to process
+L013B    clr   V.WAKE,u
          bra   L00DF
 L013F    clra  
          sta   <u003E,u
@@ -242,7 +245,7 @@ L015F    incb
 L0165    cmpb  #$06
          bcs   L015F
 L0169    inc   <u003E,u
-         orcc  #$01
+         orcc  #Carry
          rol   $02,x
          bcs   L0156
          lbsr  L01F8
@@ -338,68 +341,43 @@ L022A    ldb   ,x+
          bpl   L0235
          deca  
          bne   L022A
-         orcc  #$08
+         orcc  #Negative
          puls  pc,y,x,b
+
 L0235    leax  <u003F,u
          bsr   L01E2
          tfr   b,a
          puls  pc,y,x,b
-L023E    inc   <u001C
-         sync  
-         dec   <u001A
-         nop   
-         lsl   <u0018
-         fcb   $10 
-         rol   <u0019
-         fcb   $11 
-         bra   L026C
-         bra   L027D+1
-         leax  -$01,x
-         leay  $01,y
-         inc   >$3222
-         neg   <u0033
-         bls   L02D6+1
-         pshs  y,b
-         neg   <u0035
-         bcs   L025F
-L025F    pshu  y,b,a
-         neg   <u0037
-         beq   L02C2+1
-         fcb   $38 8
-         bvc   L02C2+1
-         rts   
-         bvs   L02C7+1
-         abx   
-L026C    bpl   L026E
-L026E    rti   
-         bmi   L0271
-L0271    bge   L02AF
-         tim   #$2D,>$3D5F
-         bgt   L02B6+1
-         tst   >$2F3F
-         incb  
-L027D    tst   <u000D
-         tst   <u0000
-         neg   <u0000
-         eim   #$03,<u001B
+
+L023E    fcb   $0C,$1C
+L0240    fcb   $13,$0A,$1A,$12,$08,$18,$10,$09   ........
+L0248    fcb   $19,$11,$20,$20,$20,$30,$30,$1F   ..   00.
+L0250    fcb   $31,$21,$7C,$32,$22,$00,$33,$23   1!|2".3#
+L0258    fcb   $7E,$34,$24,$00,$35,$25,$00,$36   ~4$.5%.6
+L0260    fcb   $26,$00,$37,$27,$5E,$38,$28,$5B   &.7'^8([
+L0268    fcb   $39,$29,$5D,$3A,$2A,$00,$3B,$2B   9)]:*.;+
+L0270    fcb   $00,$2C,$3C,$7B,$2D,$3D,$5F,$2E   .,<{-=_.
+L0278    fcb   $3E,$7D,$2F,$3F,$5C,$0D,$0D,$0D   >}/?\...
+L0280    fcb   $00,$00,$00,$05,$03,$1B ,$30
 
 Read     leax  <u004A,u
          ldb   <u0049,u
-         orcc  #$10
+         orcc  #IRQMask
          cmpb  <u0048,u
          beq   L029F
          abx   
          lda   ,x
          lbsr  L00A9
          stb   <u0049,u
-         andcc #$EE
+         andcc #^(IRQMask+Carry)
          rts   
-L029F    lda   u0004,u
-         sta   u0005,u
-         andcc #$EF
+
+L029F    lda   V.BUSY,u
+         sta   V.WAKE,u
+         andcc #^IRQMask
          ldx   #$0000
          os9   F$Sleep  
-         clr   u0005,u
+         clr   V.WAKE,u
          ldx   <u004B
 L02AF    ldb   <$36,x
          beq   Read
@@ -407,28 +385,30 @@ L02AF    ldb   <$36,x
 L02B6    bcc   Read
          coma  
          rts   
-L02BA    pshs  y,x
+
+* Allocate video memory on a 512 byte boundary
+AllocMem pshs  y,x
          clr   <u0025,u
          clr   <u002C,u
-L02C2    pshs  u
-         ldd   #$0300
-L02C7    os9   F$SRqMem 
-         tfr   u,d
-         tfr   u,x
-         bita  #$01
-         beq   L02D8
-         leax  >$0100,x
+L02C2    pshs  u		save static mem pointer
+         ldd   #768
+L02C7    os9   F$SRqMem		get 768 bytes
+         tfr   u,d		put pointer into D
+         tfr   u,x		and X
+         bita  #$01		odd or even page?
+         beq   L02D8		branch if even
+         leax  >256,x		else memory not on 512 byte boundary
 L02D6    bra   L02DC
-L02D8    leau  >$0200,u
-L02DC    ldd   #$0100
-         os9   F$SRtMem 
-         puls  u
-         stx   <u001D,u
+L02D8    leau  >512,u		free last page
+L02DC    ldd   #256		get page amount
+         os9   F$SRtMem 	and return page to system
+         puls  u		get static mem pointer
+         stx   <u001D,u		save pointer to page
          clra  
          clrb  
          bsr   L0303
          stx   <u0021,u
-         leax  >$0200,x
+         leax  >512,x
          stx   <u001F,u
          lbsr  L0459
          lda   #$60
@@ -436,6 +416,7 @@ L02DC    ldd   #$0100
          sta   <u002B,u
          clrb  
          puls  pc,y,x
+
 L0303    pshs  x,a
          lda   >$FF22
          anda  #$07
@@ -466,6 +447,7 @@ L033F    decb
          bne   L0332
          clrb  
          puls  pc,x
+
 Write    ldb   <u0025,u
          bne   L0387
          tsta  
@@ -528,44 +510,24 @@ L03BC    cmpa  #$1B
          ldb   <u002C,u
          bne   L03CE
          ldb   #$F6
-         orcc  #$01
+         orcc  #Carry
          rts   
+
 L03CE    leax  <L03D6,pcr
          lsla  
          ldd   a,x
          jmp   d,x
-L03D6    stu   >$C400
-         cmpa  <u0000
-         fcb   $A5
-         fcb   $00   bita  $00,x
-         subb  <$FF
-         andb  #$FF
-         andb  #$00
-         eim   #$FF,>$C400
-         fcb   $67   asr   $00,x
-         fcb   $00
-         fcb   $E2   sbcb  $00,x
-         fcb   $00
-         fcb   $4E N
-         stu   >$C400
-         subd  #$0036
-         neg   <$00F2
-         oim   #$4A,<u0002
-         bgt   L03FB
-         rol   <u0002
-L03FB    sex   
-         aim   #$4E,<u0002
-         rolb  
-         aim   #$72,<u0002
-         stu   <u0002
-         orb   <u0002
-         adca  #$02
-         anda  #$03
-         fcb   $A8
-L040C    fcb   $8D
-         fcb   $64
-         fcb   $1F
-         fcb   $10 
+
+L03D6    fcb   $FF,$C4
+L03D8    fcb   $00,$91,$00,$A5,$00,$D0,$FF,$C4   ...%.P.D
+L03E0    fcb   $FF,$C4,$00,$75,$FF,$C4,$00,$67   .D.u.D.g
+L03E8    fcb   $00,$E2,$00,$4E,$FF,$C4,$00,$83   .b.N.D..
+L03F0    fcb   $00,$36,$00,$F2,$01,$4A,$02,$2E   .6.r.J..
+L03F8    fcb   $02,$09,$02,$1D,$02,$4E,$02,$59   .....N.Y
+L0400    fcb   $02,$72,$02,$DF,$02,$DA,$02,$89   .r._.Z..
+L0408    fcb   $02,$84,$03,$A8
+
+L040C    fcb   $8D,$64,$1F,$10
          andb  #$E0
          stb   <u0022,u
 L0415    ldx   <u0021,u
@@ -573,8 +535,9 @@ L0415    ldx   <u0021,u
          sta   <u0023,u
          lda   #$20
          sta   ,x
-         andcc #$FE
+         andcc #^Carry
          rts   
+
          bsr   L0472
          leax  <$20,x
          cmpx  <u001F,u
@@ -654,15 +617,10 @@ L04CD    ldx   $06,y
          stb   $01,x
          clrb  
          rts   
-L04E0    neg   <u0055
-         fcb   $AA     ora   [>$A6C8]
-         fcb   $FF
-         fcb   $A6
-         fcb   $C8
-         bge   L050E
-         eim   #$C6,<$F6
-         orcc  #$01
-         rts   
+
+L04E0    fcb   $00,$55,$AA,$FF,$A6,$C8,$2C,$26   .U*.&H,&
+L04E8    fcb   $05,$C6,$F6,$1A,$01,$39
+
          ldd   <u0034,u
          lbsr  L0684
          tfr   a,b
@@ -729,8 +687,9 @@ L0566    lda   <u0029,u
          cmpa  #$01
          bls   L0586
          ldb   #$CB
-         orcc  #$01
+         orcc  #Carry
 L0585    rts   
+
 L0586    tsta  
          beq   L05A6
          ldd   #$C003
@@ -763,16 +722,13 @@ L05BE    stb   <u0033,u
          ora   ,s+
          ldb   #$01
          lbra  L0303
-L05D3    subb  #$30
-         inc   <u0003
-L05D7    suba  #$40
-         bra   L05EB
-         lsl   <u0004
-         aim   #$01,<u0030
-         cmpx  #$0316
-         oim   #$9C,<u006F
-         eorb  #$28
-         lda   <u0024,u
+
+L05D3    fcb   $C0,$30,$0C,$03
+L05D7    fcb   $80
+L05D8    fcb   $40,$20,$10,$08,$04,$02,$01,$30   @ .....0
+L05E0    fcb   $8C,$03,$16,$01,$9C,$6F,$C8,$28   .....oH(
+L05E8    fcb   $A6,$C8,$24
+
 L05EB    bmi   L05F0
          inc   <u0028,u
 L05F0    lbra  L0566
@@ -1086,7 +1042,7 @@ L084E    pshs  b
          lbra  L0673
 L085F    ldx   $06,y
          pshs  y,cc
-         orcc  #$10
+         orcc  #IRQMask
          lda   #$FF
          clr   >$FF02
          ldb   >$FF00
