@@ -44,6 +44,9 @@
 * default case.  By default, D.CRC is set to 0, thus there is no
 * CRC checking.  Speeds up module loads quite a bit. The Init module
 * has a bit in a compatibility byte that can turn on/off CRC checking
+*
+*  15r1    2003/12/09  Boisy G. Pitre
+* Kernel no longer scans for modules in I/O space.
 
          nam   Kernel
          ttl   NitrOS-9 Level 1 Kernel
@@ -55,7 +58,7 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   15
 
 L0000    mod   eom,name,tylg,atrv,OS9Cold,size
@@ -206,7 +209,9 @@ L00DB    lbsr  ValMod
 L00E6    cmpb  #E$KwnMod
          beq   L00EE
          leax  1,x
-L00EC    bne   L00DB
+* Modification to stop scan into I/O space
+L00EC    cmpx  #Bt.Start+Bt.Size
+         bcs   L00DB
 
 * copy vectors to system globals
 L00EE    leay  >Vectors,pcr
