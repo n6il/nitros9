@@ -11,8 +11,10 @@ CMDS		= attr binex build cmp cobbler copy date \
 SUBS            = gfx2 gfx inkey
 
 SHELLMODS	= shell_21 build copy date deiniz del dir display echo iniz \
-		link list load mdir merge mfree procs tmode unlink
-UTILPAK1        = attr deldir ident rename setime xmode
+		link list load makdir mdir merge mfree procs save tee tmode \
+		unlink
+UTILPAK1        = attr deldir dump free ident pwd pxd rename setime \
+		sleep verify wcreate xmode
 
 LEVEL1FILES	= binex.asm attr.asm build.asm cmp.asm cobbler.asm copy.asm date.asm deiniz.asm del.asm deldir.asm \
 		dir.asm display.asm dump.asm echo.asm error.asm exbin.asm free.asm gfx.asm help.asm ident.asm iniz.asm inkey.asm link.asm \
