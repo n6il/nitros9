@@ -1,3 +1,11 @@
+********************************************************************
+* T1 - CoCo serial device descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+
          nam   T1
          ttl   CoCo serial device descriptor
 

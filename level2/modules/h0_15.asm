@@ -1,3 +1,11 @@
+********************************************************************
+* H0 - CCHDisk device descriptor
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+
          nam   H0
          ttl   CCHDisk device descriptor
 

@@ -9,7 +9,8 @@ OS9P2		= os9p2
 REL		= rel
 ROMMODS         = rominfo rom_vectors cc3go_rom pakrom
 SYSMODS		= ioman init cc3go
-CLOCKS		= clock clock2_soft clock2_disto clock2_146818
+CLOCKS		= clock clock2_soft clock2_disto clock2_146818 clock2_bb \
+		clock2_tc3
 FMGRS		= scf.mn rbf.mn pipeman.mn pipeman_named.mn
 DRIVERS		= cc3disk.dr cc3hdisk.dr cc3io.dr modpak.dr \
 		vrn.dr piper.dr printer.dr sio.dr ram.dr sspak.dr \
@@ -132,6 +133,9 @@ dacia.dr: xacia.asm
 
 rominfo: rominfo.asm
 	$(AS) -aROMPak=0 $(AFLAGS) $< $(ASOUT)$@
+
+clock2_tc3: clock2_bb.asm
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aTC3=1
 
 clean:
 	$(RM) $(ALLOBJS)
