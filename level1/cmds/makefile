@@ -12,3 +12,5 @@ all:	$(ALLOBJS)
 clean:
 	$(RM) $(ALLOBJS)
 
+identify:
+	$(IDENT_SHORT) $(ALLOBJS)

@@ -36,3 +36,5 @@ kernel_1773: $(KERNEL_1773) $(DEPENDS)
 clean:
 	$(RM) $(ALLOBJS)
 
+identify:
+	$(IDENT_SHORT) $(ALLOBJS)
