@@ -68,8 +68,8 @@ blklen   equ   *-Blockmsg
 Freemsg  fcc   / Free Blocks: /
 freelen  equ   *-Freemsg
 
-Rammsg   fcc   / KBytes Free: /
-ramlen   equ   *-Rammsg
+RAMmsg   fcc   / KBytes Free: /
+ramlen   equ   *-RAMmsg
 
 **********************************************
 *
@@ -164,7 +164,7 @@ Exit     equ   *
          clr   numflag    suppress zeros
          bsr   outdec     print in decimal
          bsr   prline
-         leax  rammsg,pcr print "Ram Free"
+         leax  rammsg,pcr print "RAM Free"
          ldy   #ramlen
          lbsr  Prstr
          ldb   free       get number of blocks
