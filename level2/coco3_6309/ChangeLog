@@ -1,6 +1,8 @@
 OS-9 Level Two V3.01.01:
 - The cc3disk module has been folded with the NitrOS-9 Level 2 version and
   as a result has changed in size.
+- A bug in IOMan which affected any driver wanting to access the port
+  address of its hardware while in its INIT routine has been fixed.
 - The montype command had a bug-fix and now shows the current monitor type if
   no parameters are given.  Also, the montype.hp file has been updated.
 - The LogBook file in the SYS directory has been removed.
