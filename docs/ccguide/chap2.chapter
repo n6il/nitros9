@@ -108,6 +108,47 @@ detail how a C program's data area is allocated and used.
 <title>Compile Time Memory Allocation</title>
 <para>
 </para>
+<para>
+The following rules can serve as a rough guide to estimate how
+much memory to specify:
+</para>
+<orderedlist>
+<listitem><para>
+The parameter area should be large enough for any anticipated
+command line string.
+</para></listitem>
+<listitem><para>
+The stack should not be less than 128 bytes and should take
+into account the depth of function calling chains and any
+recursion.
+</para></listitem>
+<listitem><para>
+All function arguments and local variables occupy stack space
+and each function entered needs 4 bytes more for the return
+address and temporary storage of the calling function's register
+variable.
+</para></listitem>
+<listitem><para>
+Free memory is requested by the Standard Library I/O
+functions for buffers at the rate of 256 bytes per accessed
+file. The does not apply to the lower level service request I/O
+functions such as "open()", "read()" or "write()" not to
+"stderr" which is always un-buffered, but it does apply to both
+"stdin" and "stdout" (see the Standard Library documentation).
+</para></listitem>
+</orderedlist>
+<para>
+A good method for getting a feel for how much memory is
+needed by your program is to allow the linker to set the memory size
+to its usually conservative value. Then, if the program runs
+with a variety of input satisfactorily but memory is limited on the
+system, try reducing the allocation at the next compilation. If a
+stack overflow occurs or an "ibrk()" call returns -1, then try
+increasing the memory next time. You cannot damage the system by
+getting it wrong, but data may be lost if the program runs out of
+space at a crucial time. It pays to be in error on the generous
+side.
+</para>
 </section>
 </section>
 </chapter>

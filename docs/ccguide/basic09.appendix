@@ -110,4 +110,95 @@ When this procedure is RUN, it should print:
 indicating that our C function worked!
 </para>
 </section>
+
+<section>
+<title>Example 2 - More Complex Integer Aritmetic Case</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Example 3 - Simple String Manipulation</title>
+<para>
+</para>
+</section>
+
+<section>
+<title>Example 4 - Quicksort</title>
+<para>
+The next example programs demonstrate how one might implement a
+quicksort written in C to sort some BASIC09 data.
+</para>
+<para>
+C integer quicksort program:
+</para>
+<programlisting>
+#define swap(a,b) { int t; t=a; a=b; b=t; }
+
+/* qsort to be called by BASIC09:
+     dim d(100):INTEGER  any size INTEGER array
+     run cqsort(d,100)   calling qsort.
+*/
+
+qsort(argcnt,iarray,iasize,icount,icsiz)
+int  argcnt,     /* BASIC09 argument count */
+     iarrary[],  /* Pointer to BASIC09 integer array */
+     iasize,     /* and it's size */
+     *icount,    /* Pointer to BASIC09 (sort count) */
+     icsiz;      /* Size of integer */
+{
+     sort(iarray,0,*icount);  /* initial qsort partition */
+}
+
+/* standard quicksort algorithm from Horowitz-Sahni */
+static sort(a,m,n)
+register int *a,m,n;
+{
+     register i,j,x;
+     
+     if(m &lt; n) {
+          i = m;
+	  j = n + 1;
+	  x = a[m];
+	  for(;;) {
+	       do i += 1; while(a[i] &lt; x);  /* left partition */
+	       do j -= 1; while(a[j] &gt; x);  /* right partition */
+	       if(i &lt; j)
+	            swap(a[i],a[j])          /* swap */
+		    else break;
+	  }
+	  swap(a[m],a[j]);
+	  sort(a,m,j-1);                     /* sort left */
+	  sort(a,j+1,n);                     /* sort right */
+     }
+}
+</programlisting>
+<para>
+The BASIC09 program is:
+</para>
+<programlisting>
+PROCEDURE sorter
+DIM i,n,d(1000):INTEGER
+n=1000
+i=RND(-(PI))
+FOR i=1 to n
+d(i):=INT(RND(1000))
+NEXT i
+PRINT "Before:"
+RUN prin(1,n,d)
+RUN qsortb(d,n)
+PRINT "After:"
+RUN prin(1,n,d)
+END
+
+PROCEDURE prin
+PARAM n,m,d(1000):INTEGER
+DIM i:INTEGER
+FOR i=n TO m
+PRINT d(i); " ";
+NEXT i
+PRINT
+END
+</programlisting>
+</section>
 </appendix>
