@@ -1,6 +1,7 @@
 <refentry id="read">
 <refnamediv>
 <refname>Read</refname>
+<refname>Readln</refname>
 <refpurpose>read from a file</refpurpose>
 </refnamediv>
 
@@ -8,7 +9,15 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>read</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>int <parameter>pn</parameter></paramdef>
+  <paramdef>char *<parameter>buffer</parameter></paramdef>
+  <paramdef>int <parameter>count</parameter></paramdef>
+</funcprototype>
+<funcprototype>
+  <funcdef><function>readln</function></funcdef>
+  <paramdef>int <parameter>pn</parameter></paramdef>
+  <paramdef>char *<parameter>buffer</parameter></paramdef>
+  <paramdef>int <parameter>count</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
