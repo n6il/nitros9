@@ -479,8 +479,9 @@ L0176    ldx   >sectbuf,u     Get physical sector buffer ptr
          lbsr  L03AF          get the errors
          bcc   good
 ngood    rts
-         IFNE  H6309
+
 good     pshs  y
+         IFNE  H6309
          ldw   #128           set counter
          ldy   #RW.DAT        source of data
          IFNE  SCIIHACK
@@ -498,7 +499,7 @@ sc2rlp   ldd   ,y             read two bytes from SCII
          decw                 update counter
          bne   sc2rlp
          ELSE
-good     ldy   #128
+         ldy   #128
          IFNE  SCIIHACK
          tst   flag512,u
          beq   sc2rlp
