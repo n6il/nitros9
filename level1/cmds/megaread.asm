@@ -51,8 +51,8 @@ loop     pshs  x          save counter
          puls  x          recover counter
          leax  -1,x       done yet?
          bne   loop       no, go get another 1K
-         clrb            
-ex       os9   F$Exit    
+ex       clrb            
+         os9   F$Exit    
                          
          emod            
 eom      equ   *         
