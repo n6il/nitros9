@@ -13,7 +13,7 @@ P2D		= $(3RDPARTY)/p2mods
 DEPENDS		= ./makefile.cust
 
 KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/krn
-KERNEL_TC3	= $(MD)/rel_80 $(C9)/Products/SuperDrivers/software/6809l2/boot_id0_tc3 $(MD)/krn
+KERNEL_TC3	= $(MD)/rel_80 $(C9)/Products/SuperDrivers/software/6809l2/boot_tc3 $(MD)/krn
 KERNEL_IDE	= $(MD)/rel_80 $(MD)/boot_idelba $(MD)/krn
 KERNEL_DW	= $(MD)/rel_80 $(C9)/Products/DriveWire/software/6809l2/boot_dw $(MD)/krn
 
@@ -87,7 +87,7 @@ BOOTFILE_LUCKEY  = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(C9)/Products/SuperDrivers/software/6809l2/lltc3.dr \
                 $(C9)/Products/SuperDrivers/software/6809l2/dd_ide.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/i0_ide.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/ih_255_ide.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/ih_ide.dd \
                 $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
                 $(MD)/scf.mn $(MD)/cc3io.dr \
                 $(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -106,7 +106,7 @@ BOOTFILE_CUST   = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(C9)/Products/SuperDrivers/software/6809l2/lltc3.dr \
                 $(C9)/Products/SuperDrivers/software/6809l2/i0_ide.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/i1_ide.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/ih_255_ide.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/ih_ide.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/s0_tc3.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/s1_tc3.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/s2_tc3.dd \
@@ -115,7 +115,7 @@ BOOTFILE_CUST   = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(C9)/Products/SuperDrivers/software/6809l2/s5_tc3.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/s6_tc3.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/s7_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/sh_255_tc3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/sh_tc3.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/lldw.dr \
                 $(C9)/Products/SuperDrivers/software/6809l2/ddx0.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/x1.dd \
