@@ -6,6 +6,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   9    From Tandy OS-9 Level One VR 02.00.00
+*  10    Now uses -e instead of e                       BGP 03/01/14
 
          nam   Procs
          ttl   program module       
@@ -19,19 +20,19 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   9
+edition  set   10
 
          mod   eom,name,tylg,atrv,start,size
 
-Wid80    rmb   1
-EFlag    rmb   1
-AProc    rmb   2
-WProc    rmb   2
-SProc    rmb   2
-MyUID    rmb   2
+narrow   rmb   1
+eflag    rmb   1
+aproc    rmb   2
+wproc    rmb   2
+sproc    rmb   2
+myuid    rmb   2
 u000A    rmb   1
-BufPtr   rmb   2
-Buffer   rmb   87
+bufptr   rmb   2
+buffer   rmb   87
 u0064    rmb   132
 u00E8    rmb   2156
 PsBuf    rmb   450
@@ -44,25 +45,19 @@ L0013    fcb   C$LF
          fcc   "Usr #  id pty sta mem pri mod"
          fcb   C$CR
 DshSh    fcs   "----- --- --- --- --- -------"
-ActSh    fcc   " act"
-         fcb   $A0 
-WaiSh    fcc   " wai"
-         fcb   $A0 
-SleSh    fcc   " sle"
-         fcb   $A0 
+ActSh    fcs   " act "
+WaiSh    fcs   " wai "
+SleSh    fcs   " sle "
 L005E    fcb   C$LF
          fcc   "Usr #  id pty  state   mem primary module"
          fcb   C$CR
 DshLo    fcs   "----- --- --- -------- --- --------------"
-ActLo    fcc   "  active "
-         fcb   $A0 
-WaiLo    fcc   "  waiting"
-         fcb   $A0 
-SleLo    fcc   " sleeping"
-         fcb   $A0 
+ActLo    fcs   "  active  "
+WaiLo    fcs   "  waiting "
+SleLo    fcs   " sleeping "
 
-start    clr   <EFlag
-         clr   <Wid80
+start    clr   <eflag
+         clr   <narrow
          pshs  y,x,b,a
          lda   #$01
          ldb   #SS.ScSiz
@@ -72,40 +67,40 @@ start    clr   <EFlag
          beq   L00EF
          puls  y,x,b,a
          lbra  L01F1
-L00E8    cmpx  #80
-         beq   L00EF
-         inc   <Wid80
+L00E8    cmpx  #50
+         bge   L00EF
+         inc   <narrow
 L00EF    puls  y,x,b,a
 *
-* Check for an 'E' as argument
+* Check for a '-E' as argument
 *
-         lda   ,x+
-         eora  #'E
-         anda  #$DF
+         ldd   ,x+
+         andb  #$DF
+         cmpd  #$2D45
          bne   L00FB
-         inc   <EFlag
-L00FB    leax  Buffer,u
-         stx   <BufPtr
+         inc   <eflag
+L00FB    leax  buffer,u
+         stx   <bufptr
          orcc  #IntMasks
          ldx   >D.AProcQ
-         stx   <AProc
+         stx   <aproc
          ldx   >D.WProcQ
-         stx   <WProc
+         stx   <wproc
          ldx   >D.SProcQ
-         stx   <SProc
+         stx   <sproc
          ldx   >D.Proc
          ldd   P$User,x
-         std   <MyUID
+         std   <myuid
          pshs  u
          leau  >PsBuf,u   Assign buffer to reg u
          lda   #$01
-         ldx   <AProc
+         ldx   <aproc
          lbsr  LoopP
          lda   #$02
-         ldx   <WProc
+         ldx   <wproc
          lbsr  LoopP
          lda   #$03
-         ldx   <SProc
+         ldx   <sproc
          lbsr  LoopP
          andcc #^IntMasks
          clra  
@@ -113,7 +108,7 @@ L00FB    leax  Buffer,u
          pshu  b,a
          pshu  b,a
          puls  u
-         tst   <Wid80
+         tst   <narrow
          beq   L0156
          leay  >L0013,pcr
          lbsr  WritY
@@ -144,21 +139,21 @@ NextW    leax  -$09,x
          ldb   $03,x
          lbsr  L0214
          lda   $04,x
-         tst   <Wid80
+         tst   <narrow
          beq   L0195
          leay  >ActSh,pcr
          bra   L0199
 L0195    leay  >ActLo,pcr
 L0199    cmpa  #$01
          beq   L01BD    branch if status is active
-         tst   <Wid80
+         tst   <narrow
          beq   L01A7
          leay  >WaiSh,pcr
          bra   L01AB
 L01A7    leay  >WaiLo,pcr
 L01AB    cmpa  #$02
          beq   L01BD    branch if status is waiting
-         tst   <Wid80
+         tst   <narrow
          beq   L01B9
          leay  >SleSh,pcr
          bra   L01BD
@@ -172,7 +167,7 @@ L01BD    bsr   WritY
          leay  d,y
          bsr   WritY
          bsr   WrSpc    Write Space
-         tst   <Wid80
+         tst   <narrow
          bne   L01EB
          lda   #'<
          bsr   WriCh
@@ -204,8 +199,8 @@ WritY    lda   ,y
 WrBuf    pshs  y,x,a
          lda   #C$CR
          bsr   WriCh
-         leax  Buffer,u
-         stx   <BufPtr
+         leax  buffer,u
+         stx   <bufptr
          ldy   #80
          lda   #$01
          os9   I$WritLn 
@@ -214,16 +209,16 @@ WrBuf    pshs  y,x,a
 L0214    clr   <u000A
          lda   #$FF
 L0218    inca  
-         subb  #$64
+         subb  #100
          bcc   L0218
          bsr   L022E
-         lda   #$0A
+         lda   #10
 L0221    deca  
-         addb  #$0A
+         addb  #10
          bcc   L0221
          bsr   L022E
          tfr   b,a
-         adda  #$30
+         adda  #'0
          bra   WriCh
 L022E    tsta  
          beq   L0233
@@ -231,17 +226,18 @@ L022E    tsta
 L0233    tst   <u000A
          bne   L0239
 WrSpc    lda   #$F0
-L0239    adda  #$30
+L0239    adda  #'0
 *
-* Add char to buffer pointed to by BufPtr
+* Add char to buffer pointed to by bufptr
 *
 WriCh    pshs  x
-         ldx   <BufPtr
+         ldx   <bufptr
          sta   ,x+
-         stx   <BufPtr
+         stx   <bufptr
          puls  pc,x
 
 L0245    fcb   $27,$10,$03,$e8,$00,$64,$00,$0a,$00,$01,$ff
+
 L0250    pshs  x,y,a,b
          leax  <L0245,pcr
          ldy   #$2F20
@@ -272,9 +268,9 @@ LoopP    pshs  y,b,a
          leax  ,x		point to first entry in queue
          beq   EndP
 NextP    ldd   P$User,x
-         tst   <EFlag
+         tst   <eflag
          bne   L0298
-         cmpd  <MyUID
+         cmpd  <myuid
          bne   ContP
 L0298    pshu  b,a              put userid on stack
          lda   P$Prior,x

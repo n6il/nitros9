@@ -1,5 +1,5 @@
 @PROCS
-Syntax: Procs [e]
+Syntax: Procs [-e]
 Usage : Displays a list of processes running in the system
 Opts  :
-  e = display all processes in the system
+  -e = display all processes in the system
