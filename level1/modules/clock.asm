@@ -108,6 +108,9 @@ FSTime	equ	*
 * service code above to handle future F$STime calls.
 *
 *
+
+Clock2	fcs	"Clock2"
+		
 Init
 	ifeq	Level-1
 	pshs	dp,cc		save DP and CC
@@ -689,8 +692,6 @@ FMove	os9	F$Move
 		
 	endc	
 		
-		
-Clock2	fcs	"Clock2"
 		
 	emod	
 len	equ	*
