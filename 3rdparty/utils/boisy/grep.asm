@@ -42,6 +42,9 @@ Counter  rmb   1                       Counter for pattern size
 ByteCmp  rmb   1                       Buffer to store masked byte
 LineSiz  rmb   2                       Size of input line
 SrchStr  rmb   80                      Line buffer
+numflag  rmb   1		print line numbers if set
+linecnt  rmb   3		up to 999999 lines
+linestr  rmb   7		buffer for 6-digit number+space
 Line     rmb   250                     Line max is 250 chars
 Stack    rmb   200
 Params   rmb   200
@@ -52,6 +55,10 @@ HelpMsg  fcc   /Usage:  Grep <-c> "pattern" [file]/
 HelpLen  equ   *-HelpMsg
 
 Start    clr   Path                    Clear path (assume StdIn)
+	 clr   numflag
+	 clr   linecnt
+	 clr   linecnt+1
+	 clr   linecnt+2
          lda   #%00100000              Assume masking
          sta   MaskByte
 
@@ -68,7 +75,11 @@ Parse    lda   ,x+                     Get char off cmd line
 
 Parse2   lda   ,x+                     get char after dash
          anda  #$df                    and mask it
-         cmpa  #'C                     is it a C for case sensitivity?
+	 cmpa  #'N		is it an N for line numbers?
+	 bne   Parse3		nope, try C
+	 sta   numflag		set the line numbers flag
+	 bra   Parse		and resume parsing
+Parse3   cmpa  #'C                     is it a C for case sensitivity?
          bne   Help                    nope, bad option, show help
          clr   MaskByte                else clear the mask byte
          bra   Parse                   and go back to parsing routine
@@ -88,16 +99,16 @@ Store    lda   ,x+                     get char
 
 EOF      cmpb  #211                    Is error an end-of-file?
          bne   Error                   nope, other error
+         bra   Done                    else we're done
 
-Done     clrb                          clear error register
-Error    os9   F$Exit                  and exit!
-
-Help     leax  HelpMsg,pcr             Point to help message
+Help     leax  <HelpMsg,pcr             Point to help message
          ldy   #HelpLen                load length
          lda   #2                      to StdErr
          os9   I$WritLn                and write
          bcs   Error                   exit if error
-         bra   Done                    else we're done
+
+Done     clrb                          clear error register
+Error    os9   F$Exit                  and exit!
 
 ChckFile lda   ,x                      get char
          cmpa  #$0d                    is it a CR?
@@ -118,6 +129,19 @@ ReadIn   ldy   #250                    max. read = 250 chars
          os9   I$ReadLn                and get a line of chars
          bcs   EOF                     if error, check for EOF
          sty   LineSiz                 save bytes read
+* count lines in BCD, 6-digit version (3 bytes)
+	 lda   linecnt+2
+	 adda  #1
+	 daa
+	 sta   linecnt+2
+	 bcc   Match
+	 adca  linecnt+1
+	 daa
+	 sta   linecnt+1
+	 bcc   Match
+	 adca  linecnt
+	 daa
+	 sta   linecnt
 
 Match    ldb   StrSiz                  load B with pattern size
          stb   Counter                 store it in counter
@@ -133,15 +157,45 @@ Loop     dec   LineSiz+1               decrement line size counter
          beq   GetNext
          bra   Match                   else start from beginning of pattern
 GetNext  dec   Counter                 decrement counter
-         beq   PrnLine                 if at end, print the line (match!)
+         beq   doline                  if at end, print the line (match!)
          bra   Loop                    else check next char
+
+doline   tst   <numflag
+         bne   bcdtoasc
 
 PrnLine  leax  Line,u                  point to line buffer
          ldy   #250                    max. chars = 250
+PrnLine2
          lda   #1                      to StdOut
          os9   I$WritLn                and write the line
          bcs   Error                   exit if error
          bra   ReadIn                  else get next line
+
+bcdtoasc
+	 leay  linestr,u
+	 ldb   <linecnt
+	 bsr   btod2
+	 ldb   <linecnt+1
+	 bsr   btod
+	 ldb   <linecnt+2
+	 bsr   btod
+	 ldb   #$20
+	 stb   ,y
+	 leax  linestr,u
+	 ldy   #257
+	 bra   PrnLine2
+
+btod	 pshs  b
+	 lsrb
+	 lsrb
+	 lsrb
+	 lsrb
+	 bsr   btod2
+	 puls  b
+btod2	 andb  #$0F
+	 addb  #'0
+	 stb   ,y+
+	 rts
 
          emod
 Size     equ   *
