@@ -33,31 +33,31 @@ name     fcs   /IOMan/
 * IOMan is called from OS9p2
 IOManEnt equ   *
 * allocate device and polling tables
-         ldx   <D.Init
-         lda   PollCnt,x
-         ldb   #POLSIZ
-         mul
-         pshs  b,a
-         lda   DevCnt,x
-         ldb   #DEVSIZ
-         mul
-         pshs  b,a
-         addd  2,s                     add devsize to polsiz
-         addd  #$0018
-         addd  #$00FF                  bring up to next page
+         ldx   <D.Init			get pointer to init module
+         lda   PollCnt,x		grab number of polling entries
+         ldb   #POLSIZ			and size per entry
+         mul				D = size of all entries in bytes
+         pshs  b,a			save off
+         lda   DevCnt,x			get device table count in init mod
+         ldb   #DEVSIZ			get size per dev table entry
+         mul				D = size of all entires in bytes
+         pshs  b,a			save off
+         addd  2,s			add devsize to polsiz
+         addd  #$0018			add in ???
+         addd  #$00FF			bring up to next page
          clrb
-         os9   F$SRqMem
-         bcs   Crash
+         os9   F$SRqMem			ask for the memory
+         bcs   Crash			crash if we can't get it
 * clear allocated mem
-         leax  ,u
+         leax  ,u			point to dev table
 L0033    clr   ,x+
          subd  #$0001
          bhi   L0033
-         stu   <D.PolTbl
-         ldd   ,s++                    get dev size
-         leax  d,u
-         stx   <D.DevTbl
-         addd  ,s++                    get poll size
+         stu   <D.PolTbl		U = pointer to polling table
+         ldd   ,s++			get dev table size
+         leax  d,u			point X past polling table to dev table
+         stx   <D.DevTbl		save off X to system vars
+         addd  ,s++			grab poll table size
          leax  d,u
          stx   <D.CLTB
          ldx   <D.PthDBT
@@ -65,12 +65,12 @@ L0033    clr   ,x+
          bcs   Crash
          stx   <D.PthDBT
          os9   F$Ret64
-         leax  >DPoll,pcr
-         stx   <D.Poll
+         leax  >DPoll,pcr		get address of IRQ poll routine
+         stx   <D.Poll			save in statics
 * install I/O system calls
-         leay  <IOCalls,pcr
-         os9   F$SSvc
-         rts                           return to OS9p2
+         leay  <IOCalls,pcr		point to I/O calls
+         os9   F$SSvc			install them
+         rts				return to OS9p2
 
 Crash    jmp   [>$FFFE]
 
@@ -154,18 +154,21 @@ SysIODis fdb   IAttach-SysIODis
          fdb   SIClose-SysIODis
          fdb   IDeletX-SysIODis
 
+
+* Entry to User and System I/O dispatch table
+* B = I/O system call code
 UsrIO    leax  <UsrIODis,pcr
          bra   IODsptch
 SysIO    leax  <SysIODis,pcr
-IODsptch cmpb  #I$DeletX
-         bhi   L00FA
+IODsptch cmpb  #I$DeletX		compare with last I/O call
+         bhi   L00FA			branch if greater
          pshs  b
-         lslb                          multiply by 2
-         ldd   b,x                     offset
-         leax  d,x                     get addr
+         lslb				multiply by 2
+         ldd   b,x			offset
+         leax  d,x			get address of routine
          puls  b
-         jmp   ,x                      jump to it!
-L00FA    comb
+         jmp   ,x			jump to it!
+L00FA    comb				we get here if illegal I/O code
          ldb   #E$UnkSvc
          rts
 
@@ -364,37 +367,40 @@ L0283    lbsr  L04D9
          rts
 
 * user state I$Dup
-IDup     bsr   FindPath
-         bcs   IDupRTS
-         pshs  x,a
-         lda   R$A,u
-         lda   a,x
+IDup     bsr   FindPath			look for a free path
+         bcs   IDupRTS			branch if error
+         pshs  x,a			else save of
+         lda   R$A,u			get path to dup
+         lda   a,x			point to path to dup
          bsr   L02A1
          bcs   L029D
          puls  x,b
-         stb   R$A,u
+         stb   R$A,u			save off new path to caller's A
          sta   b,x
          rts
 L029D    puls  pc,x,a
 
 * system state I$Dup
 SIDup    lda   R$A,u
-L02A1    lbsr  FindPDsc
-         bcs   IDupRTS
-         inc   PD.CNT,y
+L02A1    lbsr  FindPDsc			find path descriptor
+         bcs   IDupRTS			exit if error
+         inc   PD.CNT,y			else increment path count
 IDupRTS  rts
 
 
-* find next free path position in current proc
-FindPath ldx   <D.Proc
-         leax  <P$PATH,x
-         clra
-L02AF    tst   a,x
-         beq   L02BC
-         inca
-         cmpa  #NumPaths
-         bcs   L02AF
-         comb
+* Find next free path position in current proc
+* Exit:	X = Ptr to proc's path table
+*	A = Free path number (valid if carry clear)
+*
+FindPath ldx   <D.Proc			get ptr to current proc desc
+         leax  <P$PATH,x		point X to proc's path table
+         clra				start from 0
+L02AF    tst   a,x			this path free?
+         beq   L02BC			branch if so...
+         inca				else try next path...
+         cmpa  #NumPaths		are we at the end?
+         bcs   L02AF			branch if not
+         comb				else path table is full
          ldb   #E$PthFul
          rts
 L02BC    andcc #^Carry
@@ -590,9 +596,11 @@ L0415    pshs  b
          bra   L03E8
 
 
-* find path descriptor of path passed in A
+* Find path descriptor of path passed in A
+* Entry:
+*	A = path to find
 * Exit:
-*   Y  = addr of path desc (if no error)
+*	Y  = addr of path desc (if no error)
 FindPDsc pshs  x
          ldx   <D.PthDBT
          os9   F$Find64
