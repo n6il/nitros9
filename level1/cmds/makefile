@@ -19,7 +19,7 @@ all:	$(ALLOBJS)
 	$(CHMOD) 755 $(ALLOBJS)
 
 clean:
-	$(RM) $(ALLOBJS)
+	$(RM) $(ALLOBJS) $(BASIC09FILES)
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
