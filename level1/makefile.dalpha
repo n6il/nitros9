@@ -1,6 +1,6 @@
 include ../rules.mak
 
-RELEASE		= nos96809l1v030204
+RELEASE		= nos96809l1v030204_dalpha
 BOOTFILE	= bootfiles/bootfile_dalpha
 BOOTFILE_DS80	= bootfiles/bootfile_dalpha
 KERNELFILE	= bootfiles/kernel_dalpha

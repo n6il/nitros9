@@ -35,6 +35,13 @@
 * 	inturrupt happens in the middle of the enable routine it 
 *	causes the machine to crash !
 *
+* 2004-11-24, P.Harvey-Smith.
+*	Fixed up so that double sided disks now work, origional 
+* 	double sided code taken from Jon Bird's pages at :
+*	http://www.onastick.clara.net/dragon.html and modified 
+* 	for NitrOS9.
+*
+
          nam   DDisk
          ttl   Dragon Floppy driver
 
@@ -110,29 +117,6 @@ MotorOn  	EQU   	MotorOnD
 
 		ENDC
 
-* Disk Commands
-FrcInt   	EQU   	%11010000 
-ReadCmnd 	EQU   	%10001000 
-RestCmnd 	EQU   	%00000000 
-SeekCmnd 	EQU   	%00010000 
-StpICmnd 	EQU   	%01000000 
-WritCmnd 	EQU   	%10101000 
-WtTkCmnd 	EQU   	%11110000 
-Sid2Sel  	EQU   	%00000010 
-
-* Disk Status Bits
-BusyMask 	EQU   	%00000001 
-LostMask 	EQU   	%00000100 
-ErrMask  	EQU   	%11111000 
-CRCMask  	EQU   	%00001000 
-RNFMask  	EQU   	%00010000 
-RTypMask 	EQU   	%00100000 
-WPMask   	EQU   	%01000000 
-NotRMask 	EQU   	%10000000 
-
-DensMask 	EQU   	%00000001 
-T80Mask  	EQU   	%00000010 
-
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $00
@@ -142,17 +126,17 @@ MaxDrv   set   4
 
          mod   eom,name,tylg,atrv,start,size
 		
-		org		DrvBeg
-		RMB   	MaxDrv*DrvMem
-CDrvTab	  	rmb   2
-DrivSel   	rmb   1	; Saved drive mask
-Settle	 	rmb	1	; Head settle time
-SavePIA0CRB	rmb 1	; Saved copy of PIA0 control reg b
-SaveACIACmd	rmb	1	; Saved copy of ACIA command reg
-BuffPtr	 	rmb	2	; Buffer pointer
-SideSel	 	rmb	1	; Side select.
-NMIFlag	 	rmb	1	; Flag for Alpha, should this NMI do an RTI ?
-size     	equ   .
+			org		DrvBeg
+			RMB   	MaxDrv*DrvMem
+CDrvTab	  	rmb   	2
+DrivSel   	rmb   	1	; Saved drive mask
+Settle	 	rmb		1	; Head settle time
+SavePIA0CRB	rmb 	1	; Saved copy of PIA0 control reg b
+SaveACIACmd	rmb		1	; Saved copy of ACIA command reg
+BuffPtr	 	rmb		2	; Buffer pointer
+SideSel	 	rmb		1	; Side select.
+NMIFlag	 	rmb		1	; Flag for Alpha, should this NMI do an RTI ?
+size     	equ  	.
 
 		 fcb   $FF 
 name     equ   *
@@ -167,11 +151,11 @@ start    lbra  Init		; Initialise Driver
          lbra  Term		; Terminate device
 		 
 
-IRQPkt   fcb   $00            Normal bits (flip byte)
-         fcb   $01            Bit 1 is interrupt request flag (Mask byte)
-         fcb   10             Priority byte
+;IRQPkt   fcb   $00            Normal bits (flip byte)
+;         fcb   $01            Bit 1 is interrupt request flag (Mask byte)
+;         fcb   10             Priority byte
 
-IRQFlag	 FCB   0
+;IRQFlag	 FCB   0
 
 * Init
 *
@@ -183,10 +167,13 @@ IRQFlag	 FCB   0
 *    CC = carry set on error
 *    B  = error code
 *
-Init     
-		pshs	x
-		ldx		#$55AA
+DragonDebug	EQU	1
+Init    
+		IFNE	DragonDebug
+		pshs	x				; This is here so I can find disk driver in mess
+		ldx		#$AA55			; by setting register breakpoint to X=$AA55 !
 		puls	x
+		ENDC
 		
  		 clra  
 		 sta	>D.DskTmr		; Zero motor timer
@@ -216,15 +203,15 @@ InitDriveData
 		 leax  >NMIService,pcr	; Setup NMI handler
          stx   >D.XNMI+1
          lda   #$7E				; $7E = JMP
-         sta   >D.XSWI
+         sta   >D.XNMI
 		 
-		 pshs	y
-		 leax	IRQPkt,PC		; point at IRQ definition packet
-		 leay	IRQFlag,pcr
-		 tfr	y,d
-		 leay	IRQHandler,pcr
-		 os9	F$IRQ
-		 puls	y
+;		 pshs	y
+;		 leax	IRQPkt,PC		; point at IRQ definition packet
+;		 leay	IRQFlag,pcr
+;		 tfr	y,d
+;		 leay	IRQHandler,pcr
+;		 os9	F$IRQ
+;		 puls	y
 		 
 		 
          ldd   #$0100			; Request a page of system ram
@@ -237,9 +224,9 @@ InitDriveData
          clrb  
 Return   rts   
 
-IRQHandler
-		inc		$8000
-		rts
+;IRQHandler
+;		inc		$8000
+;		rts
 
 * GetStat
 *
@@ -279,20 +266,11 @@ Term     clrb
 *    B  = error code
 *
 Read     
-		pshs	a,x
-		lda   	<PD.Drv,y
-		cmpa	#1
-		bne		readxxx
-	    ldx		#$55aa
-		
-readxxx
-		 puls	a,x
-
 		 lda   #$91			; Retry count
          cmpx  #$0000		; LSN ?
-         bne   L0096		; No : Just do read,
-         bsr   L0096		; Yes : do read and copy disk params
-         bcs   L008C
+         bne   ReadDataWithRetry		; No : Just do read,
+         bsr   ReadDataWithRetry		; Yes : do read and copy disk params
+         bcs   ReadDataExit
          ldx   PD.Buf,y
          pshs  y,x
          ldy   >CDrvTab,u
@@ -303,26 +281,28 @@ L0082    lda   b,x
          bpl   L0082
          clrb  
          puls  pc,y,x
-L008C    rts   
+ReadDataExit    
+		rts   
 
 ; Read Retry
 
 ReadDataRetry    
-		 bcc   L0096		; Retry entry point
+		 bcc   ReadDataWithRetry		; Retry entry point
          pshs  x,b,a
          lbsr  ResetTrack0	; Reset track 0
          puls  x,b,a
 
-L0096    pshs  x,b,a		; Normal entry point
+ReadDataWithRetry    
+		pshs  x,b,a		; Normal entry point
          bsr   DoReadData
          puls  x,b,a
-         bcc   L008C
+         bcc   ReadDataExit
          lsra  				; Check for retry
          bne   ReadDataRetry
 
 DoReadData    
 		 lbsr  SeekTrack
-         bcs   L008C
+         bcs   ReadDataExit
          ldx   PD.Buf,y			; Target address for data
          pshs  y,dp,cc
          ldb   #ReadCmnd		; Read command
@@ -337,14 +317,14 @@ DoReadDataLoop
          lbra  RetReadError		; Return read error to caller
 
 ReadDataWait 
-		 sync				; Sync to inturrupts, wait for data
+		 sync					; Sync to inturrupts, wait for data
 		   
 
 ReadDataReady
-		 lda   <DPDataReg	; Read data from FDC
-         ldb   <DPPIADB		; Clear PIA inturrupt status
-         sta   ,x+			; save data in memory
-         bra   ReadDataWait	; do next
+		 lda   <DPDataReg		; Read data from FDC
+         ldb   <DPPIADB			; Clear PIA inturrupt status
+         sta   ,x+				; save data in memory
+         bra   ReadDataWait		; do next
 		 
 PrepDiskRW    
 		 lda   #$FF				; Make DP=$FF, to make io easier
@@ -386,8 +366,10 @@ L00DE    orcc  #$50				; Mask inturrupts
 		 
 		 rts  
 		 
+;
+; Restore saved iO states of peripherals.
+;
 
-* Restore saved iO states of peripherals.
 RestoreSavedIO
 		 lda   >DrivSel,u		; Deselect drives, but leave motor on
          ora   #MotorOn
@@ -442,10 +424,11 @@ WriteDataRetry
          bra   L0124
 		 
 DoWrite  lbsr  SeekTrack		; Seek to correct track & sector
-         lbcs  L008C
+         lbcs  ReadDataExit
          ldx   PD.Buf,y			; Get data buffer in X
          pshs  y,dp,cc
          ldb   #WritCmnd		; Write command
+		 
 WriteTrackCmd    
 		 lbsr  PrepDiskRW		; Prepare for disk r/w
          lda   ,x+				; get byte to write
@@ -507,7 +490,7 @@ WriteVerify    pshs  x,b,a
          ldy   >BuffPtr,u
          tfr   x,u
 VerifyLoop    
-		ldx   ,u				; Compare every 4th word
+		 ldx   ,u				; Compare every 4th word
          cmpx  ,y
          bne   VerifyErrorEnd
          leau  8,u
@@ -521,15 +504,14 @@ VerifyEndOk
 		puls  u,y,a
 VerifyEnd    
 		 puls  pc,x,b,a
-
+;
 ; Seek to a track
+;
 SeekTrack
 		 CLR   >Settle,U   			; default no settle
          LBSR  SelectDrive  		; select and start correct d
          TSTB
          BNE   E.Sect 
-
-		 clr   >SideSel,u			; Make sure old sidesel cleared.
 
 		 TFR   X,D 
          LDX   >CDrvTab,U 
@@ -544,22 +526,22 @@ E.Sect   COMB
 SeekT2   CLR   ,-S               	; Calculate track number 
          SUBD  PD.T0S,Y     		; subtract no. of sectors in track 0
          BHS   SeekT4 
-         ADDB  PD.T0S+1,Y 			; if -ve we are on track 0, so add back on again
+         ADDD  PD.T0S,Y 			; if -ve we are on track 0, so add back on again
 		 BRA   SeekT3 
 SeekT4   INC   ,S 
          SUBD  DD.Spt,X     		; sectors per track for rest of disk
          BHS   SeekT4 				; repeat, until -ve, incrementing track count
-         ADDB  DD.Spt+1,X 			; re add sectors/track to get sector number on track
+         ADDD  DD.Spt,X 			; re add sectors/track to get sector number on track
 
 ; At this point the byte on the top of the stack contains the track
-; number, and D contains the sector number on that track.
+; number, and B contains the sector number on that track.
 
 SeekT3   PULS  A 					; retrieve track count
          LBSR  SetWPC         		; set write precompensation
          PSHS  B 
          LDB   DD.Fmt,X     		; Is the media double sided ?
          LSRB
-         BCC   SeekT9         		; skip if not
+         BCC   SingleSidedDisk		; skip if not
          LDB   PD.Sid,Y     		; Is the drive double sided ?
          DECB
          BNE   SetupSideMask 		; yes : deal with it.
@@ -568,17 +550,16 @@ SeekT3   PULS  A 					; retrieve track count
          LDB   #E$BTyp 
          RTS
 		 
-;SeekT10  LSRA                       ; Media & drive are double sided
-;         BCC   SeekT9 
-;         BSR   SetSide 
-SetupSideMask
-		 BSR   SetSide				; we must always do this to ensure 
+SetupSideMask	
+		 BSR   SetSide				; Media & drive are double sided
 		 BRA   SeekT9 
 
 SingleSidedDisk
 		 clr   >SideSel,U			; Single sided, make sure sidesel set correctly
-
-SeekT1   PSHS  B 
+		 BRA   SeekT9
+		 
+SeekT1   clr   >SideSel,U			; make sure sidesel is always 0 if lsn0
+		 PSHS  B 
 SeekT9   LDB   PD.Typ,Y     		; Dragon and Coco disks
          BITB  #TYP.SBO            	; count sectors from 1 no
          BNE   SeekT8 
@@ -615,14 +596,19 @@ SeekT6   CLRB						; return no error to caller
 
 ; Set Side2 Mask
 ; A contains the track number on entry
-SetSide  PSHS  A 
-		 LSRA						; Get bit 0 into carry
-		 BCC   Side1           		; Side 1 if even track no.
-         LDA   #Sid2Sel     		; Odd track no. so side 2
-         BRA   Side 
-Side1    CLRA
-Side     STA   >SideSel,U 
-         PULS  A,PC 
+SetSide  LSRA						; Get bit 0 into carry & devide track no by 2
+		 PSHS  	A  
+		 BCC   	Side0           	; Side 0 if even track no.
+         LDA    #Sid2Sel     		; Odd track no. so side 2
+		 BRA	Side
+Side0    CLRA
+Side     STA   	>SideSel,U 
+         PULS  	A,PC 
+
+;
+; Select drive and start drive motors.
+; On entry A=drive number.
+;
 
 SelectDrive    
 		 lbsr  StartMotor			; Start motor
@@ -649,7 +635,10 @@ SelectDriveValid
 SelectDriveEnd    
 		 puls  pc,x,b,a
 
+;
 ; Analise device status return.
+;
+
 TestForError    
 		 bitb  #ErrMask
          beq   TestErrorEnd
@@ -666,8 +655,10 @@ TestForError
 TestErrorEnd   
 		 clrb  
          rts   
-		 
+;		 
 ; Return error code
+;
+
 RetErrorNotReady    
 		 comb  
          ldb   #E$NotRdy
@@ -692,8 +683,10 @@ RetReadError
 		 comb  
          ldb   #E$Read
          rts   
-		 
+;		 
 ; Issue a command to FDC and wait till it's ready
+;
+
 FDCCommand    
 		 bsr   FDCCmd
 FDCCmdWait    
@@ -702,8 +695,8 @@ FDCCmdWait
          beq   Delay3
          lda   #$F0
          sta   >D.DskTmr	;>$006F
-         lda   #$1
-		 sta   IRQFlag	
+;         lda   #$1
+;		 sta   IRQFlag,pcr	
 		 bra   FDCCmdWait
 
 FDCCmdMotorOn    
@@ -738,26 +731,31 @@ Delay3   rts
 *    CC = carry set on error
 *    B  = error code
 *
-SetStat  ldx   PD.Rgs,y		; Retrieve request
+SetStat  ldx   PD.Rgs,y				; Retrieve request
          ldb   R$B,x
-         cmpb  #SS.Reset	; dispatch valid ones
+		 
+         cmpb  #SS.Reset			; Restore to track 0.
          beq   ResetTrack0
-         cmpb  #SS.Wtrk
-         beq   L02C2
+         cmpb  #SS.Wtrk				; Write (format) a track
+         beq   DoWriteTrack
          comb  
          ldb   #E$UnkSvc
 SetStatEnd    
 		 rts   
 
-; Write track
-L02C2    lbsr  SelectDrive	; Select drive
+;
+; Write (format) a track
+;
+
+DoWriteTrack    
+		 lbsr  SelectDrive			; Select drive
          lda   R$Y+1,x
-         LSRA
          LBSR  SetSide       		; Set Side 2 if appropriate
          LDA   R$U+1,X 
          BSR   SetWPC         		; Set WPC by disk type
 
-L02D5    ldx   >CDrvTab,u
+;L02D5
+		 ldx   >CDrvTab,u
          lbsr  SeekTS				; Move to correct track
          bcs   SetStatEnd
          ldx   PD.Rgs,y
@@ -781,8 +779,10 @@ ResetTrack0Loop
          bne   ResetTrack0Loop
          ldb   #RestCmnd			; Now issue a restore
          bra   FDCCommand
-
+;
 ;Start drive motors
+;
+
 StartMotor    
 		 pshs  x,b,a
          lda   >D.DskTmr			; if timer <> 0 then skip as motor already on
@@ -805,8 +805,10 @@ StartMotorLoop
 SpinUp   lda   #$F0					; Start external motor timer
          sta   >D.DskTmr			; external to driver
          puls  pc,x,b,a
-
+;
 ; Set Write Precompensation according to media type
+;
+
 SetWPC   PSHS  A,B 
          LDB   PD.DNS,Y 
          BITB  #T80Mask      		; Is it 96 tpi drive
