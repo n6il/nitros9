@@ -18,6 +18,8 @@ ECHO		= echo
 CHMOD		= chmod
 IDENT		= os9ident
 IDENT_SHORT	= os9ident -s
+UNIX2OS9	= u2o
+OS92UNIX	= o2u
 
 # File managers
 %.mn: %.asm
