@@ -38,10 +38,12 @@ PD.DEV::   .rmb   2          ; Device Table Entry Address
 PD.CPR::   .rmb   1          ; Current Process
 PD.RGS::   .rmb   2          ; Caller's Register Stack
 PD.BUF::   .rmb   2          ; Buffer Address
-PD.FST::   .rmb   32-.       ; File Manager's Storage
+PD.FST     ==     .          ; File Manager's Storage
+           .org   32
 PD.OPT     ==     .          ; PD GetSts(0) Options
 PD.DTP::   .rmb   1          ; Device Type
-           .rmb   64-.       ; Path options
+                             ; Path options
+           .org   64
 PDSIZE     ==     .
 
 ;

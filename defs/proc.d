@@ -13,7 +13,7 @@
 
            .area  PROC (ABS)
 
-           .if    Level=1
+           .iflt  Level-2
 
 ; Level 1 process descriptor defs
 DefIOSiz   ==     12
@@ -45,7 +45,8 @@ P$Signal:: .rmb   1          ; Signal Code $36
 P$SigVec:: .rmb   2          ; Signal Intercept Vector
 P$SigDat:: .rmb   2          ; Signal Intercept Data Address
 P$NIO::    .rmb   4          ; additional dio pointers for net
-           .rmb   0h40-.     ; unused
+                             ; unused
+           .org   0h40
 P$Size     ==     .          ; Size of Process Descriptor
 
 ;
@@ -88,7 +89,7 @@ P$Signal:: .rmb   1          ; Signal Code
 P$SigVec:: .rmb   2          ; Signal Intercept Vector
 P$SigDat:: .rmb   2          ; Signal Intercept Data Address
 P$DeadLk:: .rmb   1          ; Dominant proc ID if I/O locked
-           .rmb   0h20-.     ; unused
+           .org   0h20
 P$DIO::    .rmb   DefIOSiz   ; Default I/O ptrs
 P$Path::   .rmb   NumPaths   ; I/O Path Table
 P$DATImg:: .rmb   64         ; DAT Image
@@ -102,7 +103,8 @@ P$ICalls:: .rmb   4          ; proc I$ call counter          (L2V3)
 P$DatBeg:: .rmb   3          ; proc Date of creation (Y/M/D) (L2V3)
 P$TimBeg:: .rmb   3          ; proc Time of creation (H/M/S) (L2V3)
 P$Alarm::  .rmb   6
-           .rmb   0h200-.    ; Local stack
+                             ; Local stack
+           .org   0h200
 P$Stack    ==     .          ; Top of Stack
 P$Size     ==     .          ; Size of Process Descriptor
 

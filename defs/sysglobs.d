@@ -14,7 +14,7 @@
            .area  SYSGLOBS (ABS)
 
 
-           .if    Level=1
+           .iflt  Level-2
 ; Level 1 DP vars
            .org   0
 D.WDAddr:: .rmb   2          ; FHL/Isted WD1002-05 interface base address
@@ -24,57 +24,57 @@ D.COCOXT:: .rmb   1          ; Busy flag for CoCo-XT driver (one drive at a time
 
 	   .org   0h20
 D.FMBM::   .rmb   4          ; Free memory bit map pointers
-D.MLIM::   .rmb   2          ; Memory limit $24
-D.ModDir:: .rmb   4          ; Module directory $26
-D.Init::   .rmb   2          ; Rom base address $2A
-D.SWI3::   .rmb   2          ; Swi3 vector $2C
-D.SWI2::   .rmb   2          ; Swi2 vector $2E
-D.FIRQ::   .rmb   2          ; Firq vector $30
-D.IRQ::    .rmb   2          ; Irq vector $32
-D.SWI::    .rmb   2          ; Swi vector $34
-D.NMI::    .rmb   2          ; Nmi vector $36
-D.SvcIRQ:: .rmb   2          ; Interrupt service entry $38
-D.Poll::   .rmb   2          ; Interrupt polling routine $3A
-D.UsrIRQ:: .rmb   2          ; User irq routine $3C
-D.SysIRQ:: .rmb   2          ; System irq routine $3E
-D.UsrSvc:: .rmb   2          ; User service request routine $40
-D.SysSvc:: .rmb   2          ; System service request routine $42
+D.MLIM::   .rmb   2          ; Memory limit
+D.ModDir:: .rmb   4          ; Module directory
+D.Init::   .rmb   2          ; ROM base address
+D.SWI3::   .rmb   2          ; SWI3 vector
+D.SWI2::   .rmb   2          ; SWI2 vector
+D.FIRQ::   .rmb   2          ; FIRQ vector
+D.IRQ::    .rmb   2          ; IRQ vector
+D.SWI::    .rmb   2          ; SWI vector
+D.NMI::    .rmb   2          ; NMI vector
+D.SvcIRQ:: .rmb   2          ; Interrupt service entry
+D.Poll::   .rmb   2          ; Interrupt polling routine
+D.UsrIRQ:: .rmb   2          ; User IRQ routine
+D.SysIRQ:: .rmb   2          ; System IRQ routine
+D.UsrSvc:: .rmb   2          ; User service request routine
+D.SysSvc:: .rmb   2          ; System service request routine
 D.UsrDis:: .rmb   2          ; User service request dispatch table
 D.SysDis:: .rmb   2          ; System service reuest dispatch table
-D.Slice::  .rmb   1          ; Process time slice count $48
-D.PrcDBT:: .rmb   2          ; Process descriptor block address  $49
-D.Proc::   .rmb   2          ; Process descriptor address $4B
-D.AProcQ:: .rmb   2          ; Active process queue $4D
-D.WProcQ:: .rmb   2          ; Waiting process queue $4F
-D.SProcQ:: .rmb   2          ; Sleeping process queue $51
-D.Time::   .equ   .          ; Time
-D.Year::   .rmb   1          ; $53
-D.Month::  .rmb   1          ; $54
-D.Day::    .rmb   1          ; $55
-D.Hour::   .rmb   1          ; $56
-D.Min::    .rmb   1          ; $57
-D.Sec::    .rmb   1          ; $58
-D.Tick::   .rmb   1          ; $59
-D.TSec::   .rmb   1          ; Ticks / second $5A
-D.TSlice:: .rmb   1          ; Ticks / time-slice $5B
-D.IOML::   .rmb   2          ; I/O mgr free memory low bound $5C
-D.IOMH::   .rmb   2          ; I/O mgr free memory hi  bound $5E
-D.DevTbl:: .rmb   2          ; Device driver table addr $60
-D.PolTbl:: .rmb   2          ; Irq polling table addr $62
-D.PthDBT:: .rmb   2          ; Path descriptor block table addr $64
-D.BTLO::   .rmb   2          ; Bootstrap low address $66
-D.BTHI::   .rmb   2          ; Bootstrap hi address $68
-D.DMAReq:: .rmb   1          ; DMA in use flag $6A
-D.AltIRQ:: .rmb   2          ; Alternate IRQ vector (CC) $6B
-D.KbdSta:: .rmb   2          ; Keyboard scanner static storage (CC) $6D
-D.DskTmr:: .rmb   2          ; Disk Motor Timer (CC) $6F
+D.Slice::  .rmb   1          ; Process time slice count
+D.PrcDBT:: .rmb   2          ; Process descriptor block address
+D.Proc::   .rmb   2          ; Process descriptor address
+D.AProcQ:: .rmb   2          ; Active process queue
+D.WProcQ:: .rmb   2          ; Waiting process queue
+D.SProcQ:: .rmb   2          ; Sleeping process queue
+D.Time     ==     .          ; Time
+D.Year::   .rmb   1          ; Year (0=1900)
+D.Month::  .rmb   1          ; Month (1-12)
+D.Day::    .rmb   1          ; Day (1-31)
+D.Hour::   .rmb   1          ; Hour (0-23)
+D.Min::    .rmb   1          ; Minute (0-59)
+D.Sec::    .rmb   1          ; Second (0-59)
+D.Tick::   .rmb   1          ; Current tick
+D.TSec::   .rmb   1          ; Ticks per second
+D.TSlice:: .rmb   1          ; Ticks per time-slice
+D.IOML::   .rmb   2          ; I/O mgr free memory low bound
+D.IOMH::   .rmb   2          ; I/O mgr free memory hi  bound
+D.DevTbl:: .rmb   2          ; Device driver table addr
+D.PolTbl:: .rmb   2          ; Irq polling table addr
+D.PthDBT:: .rmb   2          ; Path descriptor block table addr
+D.BTLO::   .rmb   2          ; Bootstrap low address
+D.BTHI::   .rmb   2          ; Bootstrap hi address
+D.DMAReq:: .rmb   1          ; DMA in use flag
+D.AltIRQ:: .rmb   2          ; Alternate IRQ vector (CC)
+D.KbdSta:: .rmb   2          ; Keyboard scanner static storage (CC)
+D.DskTmr:: .rmb   2          ; Disk Motor Timer (CC)
 D.CBStrt:: .rmb   16         ; reserved for CC warmstart ($71)
-D.Clock::  .rmb   2          ; Address of Clock Tick Routine (CC) $81
+D.Clock::  .rmb   2          ; Address of Clock Tick Routine (CC)
 D.Boot::   .rmb   1          ; Bootstrap attempted flag
-D.URtoSs:: .rmb   2          ; address of user to system routine (VIRQ) $84
-D.CLTb::   .rmb   2          ; Pointer to clock interrupt table (VIRQ) $86
-D.MDREG::  .rmb   1          ; 6309 MD (mode) shadow register $88 (added in V2.01.00)
-D.CRC::    .rmb   1          ; CRC checking mode flag $89 (added in V2.01.00)
+D.URtoSs:: .rmb   2          ; address of user to system routine (VIRQ)
+D.CLTb::   .rmb   2          ; Pointer to clock interrupt table (VIRQ)
+D.MDREG::  .rmb   1          ; 6309 MD (mode) shadow register (added in V2.01.00)
+D.CRC::    .rmb   1          ; CRC checking mode flag (added in V2.01.00)
 D.Clock2:: .rmb   2          ; CC Clock2 entry address
 
            .org   0h100

@@ -134,7 +134,7 @@ F$VBlock:: .rmb   1          ; Verify modules in a block of memory, add to modul
 ;
            .org   0h70
 
-	   .if    Level=1
+	   .iflt  Level-2
 
 	   .rmb   16         ; Reserved for user definition
 
@@ -142,8 +142,7 @@ F$VBlock:: .rmb   1          ; Verify modules in a block of memory, add to modul
 
 F$RegDmp:: .rmb   1          ; Ron Lammardo's debugging register dump
 F$NVRAM::  .rmb   1          ; Non Volatile RAM (RTC battery backed static) read/write
-
-           .rmb   0h80-.      ; Reserved for user definitions
+                             ; Reserved for user definitions
 
            .endif
 
