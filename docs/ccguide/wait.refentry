@@ -55,7 +55,9 @@ compatible with codes on other systems.
 </refsect1>
 <refsect1><title>See Also</title>
 <para>
-fork(),signal(),exit(),_exit()
+<link linkend="os9fork">os9fork()</link>,
+<link linkend="signal">signal()</link>,
+<link linkend="exit">exit(),_exit()</link>
 </para>
 </refsect1>
 </refentry>
