@@ -27,7 +27,7 @@ dsk:	all
 	$(MAKDIR) $(DISK),SOURCES
 	$(MAKDIR) $(DISK),SOURCES/SYS
 	$(CP) $(CMDS) $(DISK),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR) $(DISK),CMDS/$(file) -epe -pr;)
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
 	$(CPL) DEFS/*.h $(DISK),DEFS
 	$(CP) LIB/*.l LIB/*.r $(DISK),LIB
 	$(CPL) SOURCES/*.c $(DISK),SOURCES

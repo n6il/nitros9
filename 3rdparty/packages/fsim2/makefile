@@ -37,10 +37,12 @@ dsk:	all
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $(DISK),CMDS
 	$(CP) $(LEVEL2)/CMDS/shell_21 $(DISK),CMDS/shell
+	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
 	$(CP) $(CMDS) $(DISK),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR) $(DISK),CMDS/$(file) -epe -pr;)
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
 	$(OS9RENAME) $(DISK),CMDS/fs AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
+	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)
 
 dskcopy: dsk
 	$(CP) $(DISK) $(DSKDIR)

@@ -38,8 +38,10 @@ dsk:	all
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $(DISK),CMDS
 	$(CP) $(CMDS) $(DISK),CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
 	$(OS9RENAME) $(DISK),CMDS/sierra AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
+	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)
 
 dskcopy: dsk
 	$(CP) $(DISK) $(DSKDIR)
