@@ -1,4 +1,3 @@
 @IRQS
 Syntax: Irqs
 Usage : Display interrupt table entries
-Opts  :

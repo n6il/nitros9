@@ -1,6 +1,6 @@
 @COPY
 Syntax: Copy [<opts>] <srcpath> [<dstpath>] [<opts>]
-Usage : copies files
+Usage : Copies files
 Opts  :
   -a = abort on error
   -p = don't print files copied (use with -w)
