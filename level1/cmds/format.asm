@@ -6,6 +6,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  17    From Tandy OS-9 Level One VR 02.00.00
+*  18    Incorproated new (track) feature from the      BGP 02/07/20
+*        Rainbow Magazine, October 1988, pg 157
 
          nam   Format
          ttl   Initialize disk media
@@ -19,7 +21,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   17
+edition  set   18
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -360,7 +362,7 @@ L0188
 
          fdb   $5259,$002c,$7259,$0028
          fdb   $2200,$002d,$3a00,$005d,$4300,$0022,$6300,$001e
-         fdb   $2800,$0013,$2900,$000f,$2c00,$000b,$2000,$0007
+         fdb   $2800,$0049,$2900,$000f,$2a01,$000f,$2000,$0007
          fdb   $00d7,$1039,$d71c,$39d7,$1239,$0c46,$3931,$c867
 
          ldb   #$20
