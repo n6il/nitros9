@@ -15,7 +15,6 @@
   <!ENTITY chap5         SYSTEM "chap5.chapter">
   <!ENTITY chap6         SYSTEM "chap6.chapter">
   <!ENTITY chap7         SYSTEM "chap7.chapter">
-  <!ENTITY commandsapp   SYSTEM "commands.appendix">
   <!ENTITY errorcodesapp SYSTEM "errorcodes.appendix">
   <!ENTITY displayapp    SYSTEM "display.appendix">
   <!ENTITY keysapp       SYSTEM "keys.appendix">
@@ -33,6 +32,7 @@
   <!ENTITY copyref       SYSTEM "copy.refentry">
   <!ENTITY dateref       SYSTEM "date.refentry">
   <!ENTITY dcheckref     SYSTEM "dcheck.refentry">
+  <!ENTITY debugref      SYSTEM "debug.refentry">
   <!ENTITY delref        SYSTEM "del.refentry">
   <!ENTITY deldirref     SYSTEM "deldir.refentry">
   <!ENTITY dirref        SYSTEM "dir.refentry">
@@ -77,7 +77,7 @@
 <book id="os9guide" lang="en">
 <bookinfo>
  <title>OS-9 Operating System User's Guide</title>
- <subtitle>Updated for the new millenium</subtitle>
+ <subtitle>for OS-9 Level I</subtitle>
 
  <publisher>
   <publishername>Cleglen Publishing Limited</publishername>
