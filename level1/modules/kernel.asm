@@ -13,7 +13,7 @@
 *               |                                  |
 *     $0200---->|==================================|
 *               |        Free Memory Bitmap        |
-*  $0200-$0221  |     (1 bit = 256 byte page)      |
+*  $0200-$021F  |     (1 bit = 256 byte page)      |
 *               |----------------------------------|
 *               |      System Dispatch Table       |
 *  $0222-$0291  |     (Room for 56 addresses)      |
@@ -65,11 +65,9 @@ size     equ   .
 name     fcs   /Kernel/
          fcb   edition
 
-         fcc   /CC/
+InitNam  fcs   /Init/
 
-InitNam  fcs   /init/
-
-P2Nam    fcs   /Kernelp2/
+P2Nam    fcs   /KernelP2/
 
 VectCode bra   SWI3Jmp		$0100
          nop
