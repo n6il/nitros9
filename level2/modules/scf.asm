@@ -1,6 +1,8 @@
 ********************************************************************
 * SCF - OS-9 Level Two Sequential Character File Manager
 *
+* $Id$
+*
 * This contains an added SetStat call to allow placing prearranged data
 * into the keyboard buffer of ANY SCF related device.
 *
@@ -14,8 +16,6 @@
 *       the read buffer (used in Shellplus V2.2 history)
 *
 * This also includes Kevin Darlings SCF Editor patches.
-*
-* $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
@@ -125,27 +125,20 @@
          nam   SCF
          ttl   OS-9 Level Two Sequential Character File Manager
 
-         ifp1
+         IFP1
          use   defsfile
          use   scfdefs
-         endc
+         ENDC
 
-* Line editor control characters
+tylg     set   FlMgr+Objct
+atrv     set   ReEnt+rev
+rev      set   1
+edition  equ   16
 
-PLine    equ   $13          Print remainder of line
-Insert   equ   $11          Insert character
-Delete   equ   $10          Delete character
-
-* Revision
-
-Rev      equ   1            Revision
-
-* Module start
-
-         mod   eom,SCFName,FlMgr+Objct,ReEnt+Rev,SCFEnt,0
+         mod   eom,SCFName,tylg,atrv,SCFEnt,0
 
 SCFName  fcs   /SCF/
-         fcb   $10
+         fcb   edition
 
 
 * Default input buffer setting for SCF devices when Opened/Created
@@ -1159,7 +1152,7 @@ L0620    leax  -1,x         bump character count back 1
          bra   L05F8        go read next character
 
 * Process print rest of line
-L0629    cmpa  #PLine         Print rest of line code?
+L0629    cmpa  #C$PLINE       Print rest of line code?
          bne   L0647          No, check insert
 L062D    pshs  u              Save buffer pointer
          lbsr  L038B          Go print rest of line
@@ -1178,7 +1171,7 @@ L0642    leas  2,s            Purge buffer pointer
          bra   L05F8          Return
 
 * Process Insert character (NOTE:Currently destroys W)
-L0647    cmpa  #Insert        Insert character code?
+L0647    cmpa  #C$INSERT      Insert character code?
          bne   L0664          No, check delete
          IFNE  H6309
          pshs  x,y            Preserve x&y a moment
@@ -1208,7 +1201,7 @@ L06DE    lda   ,-u
          bra   L062D          Go print rest of line
 
 * Process delete line
-L0664    cmpa  #Delete        Delete character code?
+L0664    cmpa  #C$DELETE      Delete character code?
          bne   L068B          No, check end of line
          pshs  u              Save buffer pointer
          lda   ,u             Get character there

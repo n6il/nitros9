@@ -27,7 +27,7 @@
 
          IFP1            
          use   defsfile  
-         endc            
+         ENDC            
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev 
@@ -764,12 +764,7 @@ IDelete  pshs  b
          ldb   #WRITE.   
          bra   L03BA     
 
-IDeletX  equ   *
-         IFNE  H6309
-         ldb   #I$Delete-$80	want to call this routine in FM
-         ELSE
-         ldb   #I$Delete	want to call this routine in FM
-         ENDC
+IDeletX  ldb   #EXEC.+UPDAT.
          pshs  b         
          ldb   R$A,u     
          bra   L03BA     
