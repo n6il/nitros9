@@ -1,9 +1,9 @@
 include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
-THIRDPARTY	= ../../3rdparty
+TPB		= ../../3rdparty/booters
 
-BOOTERS		= boot_1773 boot_rom boot_kenton boot_tc3 boot_rampak boot_wd1002 boot_ide
+BOOTERS		= boot_1773
 KERNELS		= os9p1 os9p2
 SYSMODS		= rel rominfo rom_vectors ioman init pakrom
 CLOCKS		= clock clock2_soft clock2_disto clock2_146818
@@ -32,10 +32,10 @@ SYSGOS		= cc3go cc3go_rom
 # kernel tracks and bootfile configurations.
 #
 KERNEL_1773	= rel boot_1773 os9p1
-KERNEL_RAMPAK	= rel boot_rampak os9p1
-KERNEL_KENTON	= rel boot_kenton os9p1
-KERNEL_ROM	= rel boot_rom os9p1
-KERNEL_IDE	= rel boot_ide os9p1
+KERNEL_RAMPAK	= rel $(TPB)/boot_rampak os9p1
+KERNEL_KENTON	= rel $(TPB)/boot_kenton os9p1
+KERNEL_ROM	= rel $(TPB)/boot_rom os9p1
+KERNEL_IDE	= rel $(TPB)/boot_ide os9p1
 # These kernels are intended to be ROMmed in a disk controller or program pak
 KERNEL_PAK_KENTON	= pakrom $(KERNEL_KENTON)
 
