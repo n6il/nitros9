@@ -55,7 +55,6 @@ KERNELS		= kernel_stock
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 600 $(ALLOBJS)
 
 # Bootfiles
 bootfile_vdg: $(BOOTFILE_VDG) $(DEPENDS)

@@ -23,7 +23,6 @@ SUPPORTFILES	= control1.cmp convoys.dat diesel.dat fonts.dat germap.cmp \
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 755 $(CMDS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)

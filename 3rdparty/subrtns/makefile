@@ -13,7 +13,6 @@ all:	$(ALLOBJS) $(DEPENDS)
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
  
-
 clean:
 	$(RM) $(ALLOBJS)
 

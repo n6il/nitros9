@@ -21,7 +21,6 @@ SUPPORTFILES	= body heads larms legs lips panel1 rofvar rship.c rtitle.c scores
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 755 $(CMDS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)

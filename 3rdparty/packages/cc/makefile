@@ -12,7 +12,6 @@ all:	$(ALLOBJS)
 	@$(ECHO) "*                 C Compiler                *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	$(CHMOD) 755 $(CMDS)
 
 # Clean all components
 clean:	dskclean

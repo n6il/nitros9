@@ -22,7 +22,6 @@ SUPPORTFILES	= fa fd fp sf.standard
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 755 $(CMDS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)

@@ -25,7 +25,6 @@ SUPPORTFILES	= SAVE1 SAVE2 crobot2.c ctitle.c korvar \
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 755 $(CMDS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)

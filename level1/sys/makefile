@@ -17,7 +17,6 @@ HELPMSG		= helpmsg
 ALLOBJS		= $(SYSFILES) $(HELPMSG)
 
 all:	$(ALLOBJS)
-	$(CHMOD) 644 $(ALLOBJS)
 
 helpmsg: $(HELPFILES)
 	$(MERGE) $(HELPFILES) > $@
