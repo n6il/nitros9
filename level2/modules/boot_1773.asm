@@ -44,7 +44,7 @@ name     fcs   /Boot/
          fcb   edition
 
 start    clra
-         ldb   #$0A
+         ldb   #size
 L0015    pshs  a
          decb
          bne   L0015
@@ -61,8 +61,16 @@ L0015    pshs  a
          lda   #$09
          sta   >$FF40
          ldd   #$C350
+         ifne  NitrOS9
+         nop
+         endc
 L003A    nop
          nop
+         ifne  NitrOS9
+         nop
+         nop
+         nop
+         endc
          subd  #$0001
          bne   L003A
          pshs  u,y,x,b,a
@@ -236,14 +244,35 @@ L019F    lda   ,u
          sta   >$FF40
          stb   >$FF48
          rts
-L01A8    bsr   L019F
-L01AA    lbsr  L01AD
-L01AD    lbsr  L01B0
-L01B0    rts
+L01A8 
+         ifne  NitrOS9
+         nop
+         endc
+         bsr   L019F
+L01AA  
+         ifne  NitrOS9
+         nop
+         nop
+         endc
+         lbsr  L01AD
+L01AD 
+         ifne  NitrOS9
+         nop
+         nop
+         endc
+         lbsr  L01B0
+L01B0 
+         ifne  NitrOS9
+         nop
+         endc
+         rts
 
 * Filler to get $1D0
 Filler   fcb   $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-         fcb   $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+         fcb   $39,$39
+         ifeq  NitrOS9
+         fcb   $39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+         endc
 
          emod
 eom      equ   *
