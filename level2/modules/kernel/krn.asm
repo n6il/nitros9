@@ -34,7 +34,7 @@ MName    fcs   /OS9p1/
          fcc   /01234567/
          ELSE
          fcc   /123456789ABCDEF/
-         fcc   /123/
+         fcc   /1234/ 5678/
          ENDC
 
 * Might as well have this here as just past the end of OS9p1...
@@ -57,15 +57,16 @@ R.Flip0  equ   *
          aim   #$FE,<D.TINIT  map type 0
          lde   <D.TINIT   'nother 2 bytes saved if GRFDRV does a 'tfr cc,e'
          ste   >DAT.Task   and we can use A here, instead of E
+         clr   <D.SSTskN
          ELSE
          pshs  a
          lda   <D.TINIT
          anda  #$FE
          sta   <D.TINIT
          sta   >DAT.Task
+         clr   <D.SSTskN
          puls  a
          ENDC
-         clr   <D.SSTskN
          tfr   x,s
          tfr   a,cc
          rts   
