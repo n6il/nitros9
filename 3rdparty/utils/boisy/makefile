@@ -6,7 +6,7 @@ include ../../../Makefile.rules
 DEPENDS		= ./Makefile
 
 CMDS		= bawk del grep mode send timer bigbro font makdir \
-		more tee
+		more tee joypoll
 
 ALLOBJS		= $(CMDS)
 
