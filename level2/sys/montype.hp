@@ -1,6 +1,7 @@
 @MONTYPE
 Syntax: Montype [opt]
 Usage : Set monitor type 
-Opts  : r = rgb monitor
-        c = composite monitor
-        m = monochrome monitor
+Opts  :
+  r = rgb monitor
+  c = composite monitor
+  m = monochrome monitor
