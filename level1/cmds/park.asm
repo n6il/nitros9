@@ -17,6 +17,8 @@
          use   defsfile
          endc
 
+DOHELP   set   0
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
@@ -24,23 +26,25 @@ edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   1
-u0001    rmb   2
-u0003    rmb   20
-u0017    rmb   502
+         org   0 
+parmptr  rmb   2
+devname  rmb   20
+devbuff  rmb   502
 size     equ   .
 
 name     fcs   /Park/
          fcb   edition
 
+         IFNE  DOHELP
 HelpMsg  fcb   C$LF
-         fcc   "Use:  Park </devname> .... "
+         fcc   "Use:  Park <devname> [...]"
          fcb   C$LF
          fcc   "      To park hard disk heads"
          fcb   C$LF
          fcc   "      on inner track of drive"
          fcb   C$LF,C$CR
 HelpMsgL equ   *-HelpMsg
+         ENDC
 
 Parked   fcc   " has been parked. "
          fcb   C$CR
@@ -54,75 +58,79 @@ NoPark   fcc   " has not been parked."
          fcb   C$CR
 NoParkL  equ   *-NoPark
 
-start    bsr   L0117
-         cmpa  #C$CR
-         beq   L00E0
-L00AE    cmpa  #PDELIM
-         bne   L00E0
-         bsr   L0122
-         lda   #READ.
-         os9   I$Open   
-         bcs   L00FA
-         ldb   #SS.SQD
-         os9   I$SetStt 
-         bcs   L0106
-         lda   <u0000
-         os9   I$Close  
-         bsr   L00EF
+start    bsr   SkipSpcs			skip over spaces
+         cmpa  #C$CR			CR?
+         beq   ShowHelp			if so, show help
+NextDev  cmpa  #PDELIM			else is char delim?
+         bne   ShowHelp			branch if not
+         bsr   CopyDev			copy device name
+         lda   #READ.			read permission
+         os9   I$Open   		open path to device
+         bcs   OpenErr			branch if error
+         ldb   #SS.SQD			do park setstat
+         os9   I$SetStt 		do it!
+         bcs   NotPark			branch if error
+         os9   I$Close  		close path
+         bsr   ShowDev			show device name
          leax  >Parked,pcr
          ldy   #ParkedLen
-L00D1    os9   I$WritLn 
-         ldx   <u0001
-         lda   ,x
-         cmpa  #C$CR
-         bne   L00AE
-L00DC    clrb  
+WriteMsg os9   I$WritLn 
+         ldx   <parmptr			get pointer to command line
+         lda   ,x			get char
+         cmpa  #C$CR			CR?
+         bne   NextDev			if not, park next device
+ExitOk   clrb  
          os9   F$Exit   
-L00E0    lda   #2
-         leax  >HelpMsg,pcr
-         ldy   #HelpMsgL
-         os9   I$WritLn 
-         bra   L00DC
-L00EF    leax  u0003,u
-         lda   #2
-         ldy   <u0017
-         os9   I$Write  
-         rts   
-L00FA    bsr   L00EF
+ShowHelp equ   *
+         IFNE  DOHELP
+         lda   #2			to stderr...
+         leax  >HelpMsg,pcr		point to help message
+         ldy   #HelpMsgL		get length
+         os9   I$WritLn 		then write
+         ENDC
+         bra   ExitOk			and exit
+
+ShowDev  leax  devname,u		point to device name
+         lda   #2			to stderr
+         ldy   <devbuff			get length of device
+         os9   I$Write  		write it
+         rts
+
+OpenErr  bsr   ShowDev			show device name
          leax  >NoOpen,pcr
          ldy   #NoOpenL
-         bra   L00D1
-L0106    lda   <u0000
-         os9   I$Close  
-         bsr   L00EF
+         bra   WriteMsg			write open error
+
+NotPark  os9   I$Close  		close path
+         bsr   ShowDev			show device name
          leax  >NoPark,pcr
          ldy   #NoParkL
-         bra   L00D1
+         bra   WriteMsg			write not parked message
 
 * Skip spaces
-L0117    lda   ,x
-         cmpa  #C$SPAC
-         bne   L0121
-         leax  1,x
-         bra   L0117
+SkipSpcs lda   ,x			get char at X
+         cmpa  #C$SPAC			space?
+         bne   L0121			branch if not
+         leax  1,x			else advance
+         bra   SkipSpcs			and get next char
 L0121    rts   
 
-L0122    clrb  
-         leay  u0003,u
-         pshs  y
-L0127    lda   ,x+
-         cmpa  #C$SPAC
-         bls   L0132
-         sta   ,y+
-         incb  
-         bra   L0127
-L0132    lda   #PENTIR
-         sta   ,y+
-         leax  -1,x
-         bsr   L0117
-         stx   <u0001
+CopyDev  clrb
+         leay  devname,u		point to device name
+         pshs  y			and save ptr on stack
+CopyX2Y  lda   ,x+			get byte at X
+         cmpa  #C$SPAC			space?
+         bls   L0132			if same or lower, exit loop
+         sta   ,y+			else save at Y
+         incb  				inc b
+         bra   CopyX2Y			and continue copy
+L0132    lda   #PENTIR			get ENTIRE char
+         sta   ,y+			save after copied device
+         leax  -1,x			back up one at X
+         bsr   SkipSpcs			skip any spaces
+         stx   <parmptr			save updated pointer
          clra  
-         std   <u0017,u
+         std   <devbuff,u		save pathlist length
          puls  pc,x
 
          emod
