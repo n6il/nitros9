@@ -3,19 +3,19 @@
 *
 * $Id$
 *
-* This dir initially started from the dir command that came with
-* the OS-9 Level Two package, then incorporated Glenside's Y2K
-* fix.
+* Modified from an original program by Caveh Jalali
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*  10      1999/05/11  Boisy G. Pitre
-* Incorporated Glenside Y2K fixes.
+*  01/01   1987/05/30  Bruce Isted (CIS PPN 76625,2273)
+* Released to the public domain
 *
-*  11      2003/01/14  Boisy G. Pitre
-* Made option handling more flexible, now they must be preceeded
-* by a dash.
+*  01/00   2004/04/22  Boisy G. Pitre
+* Ported to NitrOS-9 style, no error on exit
+*
+*  01/01   2004/04/22  Rodney V. Hamilton
+* Added EOF check for floppy
 
          nam   MegaRead
          ttl   Disk Performance Utilty
@@ -26,7 +26,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   1
 
 ReadK    equ   1024       1024K is 1 megabyte (modify as desired)
@@ -47,13 +47,16 @@ loop     pshs  x          save counter
          ldy   #$0400     read 1K
          clra             std input
          os9   I$Read    
-         bcs   ex     
+         bcs   eofchk    
          puls  x          recover counter
          leax  -1,x       done yet?
          bne   loop       no, go get another 1K
-ex       clrb            
-         os9   F$Exit    
-                         
+         bra   exitok     yes, exit
+eofchk   cmpb  E$EOF      end of media?
+         bne   exit       no, a real error
+exitok   clrb            
+exit     os9   F$Exit    
+
          emod            
 eom      equ   *         
          end             
