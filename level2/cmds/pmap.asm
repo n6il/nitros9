@@ -18,6 +18,9 @@
 * Revised for NitrOS-9/OS9Tools compatibility.
 * Revised to build for either 8K or 4K blocksize
 * based on DAT parameters in SysType file.
+*
+*   4      2004/06/03  Rodney Hamilton
+* Added test for DEAD processes.
 
          nam   PMap
          ttl   Show process map information
@@ -29,10 +32,11 @@
 Type     set   Prgrm+Objct
 Revs     set   ReEnt+0
 Bufsiz   set   512
-edition  set   3
+Edition  set   4
 
-stdout   set   1
-maxnam   set   30
+Stdout   set   1
+Maxnam   set   30
+Buflen   set   80
 
          pag   
 ***************************************************
@@ -40,21 +44,20 @@ maxnam   set   30
          mod   PrgSiz,Name,Type,Revs,Entry,DatSiz
 
 Name     fcs   /PMap/
-         fcb   edition
+         fcb   Edition
 
 * Data Equates
 umem     rmb   2
-sysImg   rmb   2          pointer to sysprc datimg
 datimg   rmb   2          datimg for copymem
 lineptr  rmb   2
 number   rmb   3
 leadflag rmb   1
 pid      rmb   1
 hdr      rmb   12
-outbuf   rmb   80
-buffer   rmb   bufsiz*2   working proc. desc.
+outbuf   rmb   Buflen
+buffer   rmb   Bufsiz     working proc. desc.
 stack    rmb   200
-datsiz   equ   .
+DatSiz   equ   .
 
 *************************************************
 *
@@ -74,14 +77,16 @@ Head2    fcc   /____  __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __  _______/
 Hdrcr    fcb   C$CR
 
 SysNam   fcs   "SYSTEM"
-syslen   equ   *-Sysnam
+Syslen   equ   *-SysNam
+DeadNam  fcs   "DEAD"
+Deadlen  equ   *-DeadNam
 
          spc   3
 ***************************************************
 *
-Entry    stu   Umem
+Entry    stu   <umem
          lda   #1         start with process 1
-         clr   Pid
+         clr   <pid
 
 * Print header
          leax  buffer,u   point at storage
@@ -94,22 +99,22 @@ Entry    stu   Umem
         ENDC
          bne   Error      we only do 4k/8k
 
-         leax  Hdrcr,pcr  print line
+         leax  <Hdrcr,pcr print line
          lbsr  PrintL1    print it
-         leax  Head1,pcr
+         leax  <Head1,pcr
          lbsr  PrintL1    print it
-         leax  Head2,pcr
+         leax  <Head2,pcr
 
          lbsr  PrintL1
 
 * Main Program Loop
-Main     ldu   umem
-         leax  OutBuf,u   set line pointer
-         stx   Lineptr
-         inc   Pid        next process
+Main     ldu   <umem
+         leax  outbuf,u   set line pointer
+         stx   <lineptr
+         inc   <pid       next process
          beq   Bye        >= 255 --> exit
-         lda   Pid        get proc id
-         leax  Buffer,u   set destination
+         lda   <pid       get proc id
+         leax  buffer,u   set destination
          os9   F$GPrDsc
          bcs   Main       loop if no descriptor
          bsr   Output     print data for descriptor
@@ -139,19 +144,19 @@ Output   lda   P$ID,x     process id
 
 PrntImg  ldd   ,x++       get DAT block
          cmpd  #DAT.Free  empty?
-         bne   prntimg2
-         ldy   lineptr
+         bne   PrntImg2
+         ldy   <lineptr
          ldd   #$2E2E     was #".. (os9asm beta bug)
          std   ,y++
-         sty   lineptr
-         lbsr  space
-         bra   prntimg3
+         sty   <lineptr
+         lbsr  Space
+         bra   PrntImg3
 
 PrntImg2 tfr   b,a        print block no.
          lbsr  Out2HS
 
 PrntImg3 dec   ,s         count -= 1
-         bne   Prntimg
+         bne   PrntImg
          puls  b,x
 
 * Print primary module name
@@ -159,35 +164,41 @@ PrntImg3 dec   ,s         count -= 1
 *
          lbsr  Space
          leay  P$DATImg,x
-         tfr   y,d        d=dat image
-         std   datimg     save pointer
-         ldx   P$PModul,x x=offset in map
-         bne   doname
-         leax  >sysnam,pcr point at name
-         ldy   lineptr
-         ldb   #syslen
+         sty   <datimg    save pointer
+         ldb   P$State,x  check process state
+         andb  #Dead      was it DEAD?
+         beq   Undead     no, print name
+         leax  >DeadNam,pcr
+         ldb   #Deadlen
+         bra   Copy0      yes, print "DEAD"
+
+Undead   ldx   P$PModul,x x=offset in map
+         bne   Doname
+         leax  >SysNam,pcr point at name
+         ldb   #Syslen
+Copy0    ldy   <lineptr
 
 Copy     lda   ,x+
          sta   ,y+
          decb  
-         bne   copy
+         bne   Copy
          bsr   Name2
          bra   Printlin
 
 Doname   bsr   Printnam
 
 * Print Line
-Printlin ldx   lineptr    terminate line
+Printlin ldx   <lineptr   terminate line
          lda   #C$CR
          sta   ,x
-         ldu   umem
+         ldu   <umem
          leax  outbuf,u
 
 * Print line
-PrintL1  ldy   #80
-         lda   #stdout
-         os9   I$Writln
-         bcs   Error
+PrintL1  ldy   #Buflen
+         lda   #Stdout
+         os9   I$WritLn
+         lbcs  Error
          rts   
 
 ** Find and print a module name
@@ -198,42 +209,42 @@ PrintL1  ldy   #80
 Printnam equ   *
 
 * Read module header
-         pshs  U          save u
-         leau  hdr,U      destination
-         ldd   datimg     proc datimg pointer
+         pshs  u          save u
+         leau  hdr,u      destination
+         ldd   <datimg    proc datimg pointer
          ldy   #10        set length
          os9   F$CpyMem
          lbcs  Error
 
 * Read name from Module to buffer
-         ldd   M$Name,U   get name offset from header
-         ldu   lineptr    move name to outbuf
-         leax  D,X        X - offset to name
-         ldd   datimg
-         ldy   #maxnam    set maximum length
+         ldd   M$Name,u   get name offset from header
+         ldu   <lineptr   move name to outbuf
+         leax  d,x        X - offset to name
+         ldd   <datimg
+         ldy   #Maxnam    set maximum length
          os9   F$CpyMem
-         puls  U
+         puls  u
          lbcs  Error
 
-Name2    pshs  X
-         ldx   lineptr
+Name2    pshs  x
+         ldx   <lineptr
          clrb             set length = 0
 Name3    incb  
-         lda   ,X+
+         lda   ,x+
          bpl   Name3
          cmpb  #40
          bcc   Name5
          anda  #$7F       clear d7
-         sta   -1,X
+         sta   -1,x
          cmpb  #9
          bcc   Name5
          lda   #C$SPAC
-Name4    sta   ,X+
+Name4    sta   ,x+
          incb  
          cmpb  #9
          bcs   Name4
-Name5    stx   lineptr
-         puls  X,PC
+Name5    stx   <lineptr
+         puls  x,pc
 
 * Print hex digit in A
 Out2HS   bsr   Hexl
@@ -243,13 +254,13 @@ Space    lda   #C$SPAC
 
 
 * Print Hexidecimal Digit in A
-Hexl     tfr   A,B
+Hexl     tfr   a,b
          lsra  
          lsra  
          lsra  
          lsra  
          bsr   Outhex
-         tfr   B,A
+         tfr   b,a
 Outhex   anda  #$0F
          cmpa  #$0A       0 - 9
          bcs   Outdig
@@ -257,56 +268,56 @@ Outhex   anda  #$0F
 Outdig   adda  #'0        make ASCII
 
 * Put character in A in buf
-Print    pshs  X
-         ldx   lineptr
-         sta   ,X+
-         stx   lineptr
-         puls  X,PC
+Print    pshs  x
+         ldx   <lineptr
+         sta   ,x+
+         stx   <lineptr
+         puls  x,pc
 
 * Print 1 Decimal Digit in A
 *
-Outdecl  tfr   A,B        number to B
+Outdecl  tfr   a,b        number to B
          clra  
 
 * Print 2 Decimal Digits in D
-Outdec   clr   leadflag
-         pshs  X
-         ldx   umem
-         leax  number,X
-         clr   ,X
-         clr   1,X
-         clr   2,X
-Hundred  inc   ,X
+Outdec   clr   <leadflag
+         pshs  x
+         ldx   <umem
+         leax  number,x
+         clr   ,x
+         clr   1,x
+         clr   2,x
+Hundred  inc   ,x
          subd  #100
          bcc   Hundred
          addd  #100
-Ten      inc   1,X
+Ten      inc   1,x
          subd  #10
          bcc   Ten
          addd  #10
          incb  
-         stb   2,X
+         stb   2,x
          bsr   Printled
          bsr   Printled
          bsr   Printnum
          bsr   Space
-         puls  X,PC
+         puls  x,pc
 
-Printnum lda   ,X+        get char
+Printnum lda   ,x+        get char
          adda  #'0-1      make ASCII
          bra   Print
 
-Printled tst   leadflag   print leading zero?
+Printled tst   <leadflag  print leading zero?
          bne   Printnum   yes
-         ldb   ,X         is it zero?
-         inc   leadflag
+         ldb   ,x         is it zero?
+         inc   <leadflag
          decb  
          bne   Printnum   no, print zeros
-         clr   leadflag
+         clr   <leadflag
          lda   #C$SPAC
-         leax  1,X
+         leax  1,x
          bra   Print
 
          emod  
-Prgsiz   equ   *
+PrgSiz   equ   *
          end
