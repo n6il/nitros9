@@ -8,7 +8,7 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef>char *<function>defdrive</function></funcdef>
-  <void>
+  <void/>
 </funcprototype>
 </funcsynopsis>
 
