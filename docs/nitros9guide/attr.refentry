@@ -1,0 +1,68 @@
+<refentry id="attr">
+<refnamediv>
+<refname id="attrname">ATTR</refname>
+<refpurpose>Change file security attributes</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<cmdsynopsis>
+<command>ATTR</command>
+<arg choice="plain">
+  &replstart;path&replend;
+</arg>
+<arg choice="opt">&repeatst; &replstart;permission abbreviations&replend; &repeaten;</arg>
+</cmdsynopsis>
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+
+This command is used to examine or change the security permissions
+of a file. To enter the command, type &quot;ATTR&quot; followed by the
+pathlist for the file who's security permissions are to be changed,
+followed by a list of permissions which are to be turned on or off.
+A permission is turned on by giving its abbreviation, or turned off
+by preceding its abbreviation with a minus sign. Permissions not
+explicitly named are not affected. If no permissions are given the
+current file attributes will be printed. You can not change the
+attributes of a file which you do not own (except for user zero, who
+can change the attributes of any file in the system).
+</para>
+<para>
+The file permission abbreviations are:
+</para>
+<literallayout>
+ d = Directory file
+ s = Sharable file
+ r = Read permit to owner
+ w = Write permit to owner
+ e = Execute permit to owner
+pr = Read permit to public
+pw = Write permit to public
+pe = Execute permit to public
+</literallayout>
+
+<para>
+The ATTR command may be used to change a directory file to a
+non-directory file if all entries have been deleted from it. Since the
+DEL command will only delete non-directory files, this is the only
+way a directory may be deleted. You cannot change a non-directory
+file to a directory file with this command (see MAKDIR).
+</para>
+<para>
+For more information see: 3.8, 3.8.1
+</para>
+</refsect1>
+<refsect1><title>Examples</title>
+<screen>
+attr myfile -pr -pw
+
+attr myfile r w e pr rw pe
+
+
+attr datalog
+-s-wr-wr
+</screen>
+</refsect1>
+</refentry>
+
