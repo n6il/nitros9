@@ -143,9 +143,9 @@
 *../MODULES/SCF/sio.dr
 *../MODULES/SCF/t1.dd
 * 6551 ACIA
-*../MODULES/SCF/sacia.dr
-*../MODULES/SCF/t2_sacia.dd
-*../MODULES/SCF/t3_sacia.dd
+*../MODULES/SCF/sc6551.dr
+*../MODULES/SCF/t2_sc6551.dd
+*../MODULES/SCF/t3_sc6551.dd
 * 6552 ACIA
 *../MODULES/SCF/dacia.dr
 *../MODULES/SCF/t2_dacia.dd
