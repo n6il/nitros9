@@ -482,31 +482,31 @@ ngood    rts
 
 good     pshs  y
          IFNE  H6309
-         ldw   #128           set counter
+         ldw   #256           set counter
          ldy   #RW.DAT        source of data
          IFNE  SCIIHACK
          tst   flag512,u
          beq   sc2rlp
-         ldw   #256          bump up counter to 512 byte sector
+         ldw   #512          bump up counter to 512 byte sector
          ENDC
 * Don't use tfm if no halt important else need orcc #$50 for tfm
 * If an interrupt occurs during a tfm transfer, the SCII counter
 * will update but the tfm will repeat a byte and lose track.
 * If orcc #$50 used, then key presses may be lost even with no-halt
 * mode.
-sc2rlp   ldd   ,y             read two bytes from SCII
-         std   ,x++           transfer two bytes to system buffer
+sc2rlp   lda   ,y             read byte from SCII
+         sta   ,x+            transfer byte to system buffer
          decw                 update counter
          bne   sc2rlp
          ELSE
-         ldy   #128
+         ldy   #256
          IFNE  SCIIHACK
          tst   flag512,u
          beq   sc2rlp
-         ldy   #256
+         ldy   #512
          ENDC
-sc2rlp   ldd   >RW.DAT
-         std   ,x++
+sc2rlp   lda   >RW.DAT
+         sta   ,x+
          leay  -1,y
          bne   sc2rlp
          ENDC
@@ -692,21 +692,21 @@ L0211Lp  lda   ,y+
          pshs  y
          ldy   #RW.Dat         Send data to SCII RAM buffer
          IFNE  H6309
-         ldw   #128
+         ldw   #256
          tst   flag512,u
          beq   wrbuf
-         ldw   #256
-wrbuf    ldd   ,x++
-         std   ,y
+         ldw   #512
+wrbuf    lda   ,x+
+         sta   ,y
          decw
          bne   wrbuf
          ELSE
-         ldy   #128
+         ldy   #256
          tst   flag512,u
          beq   wrbuf
-         ldy   #256
-wrbuf    ldd   ,x++
-         std   >RW.DAT
+         ldy   #512
+wrbuf    lda   ,x+
+         sta   >RW.DAT
          leay  -1,y
          bne   wrbuf
          ENDC
