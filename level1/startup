@@ -1,1 +1,7 @@
-SETIME </TERM
+* Echo welcome message
+echo * Welcome to NitrOS-9 Level 1 *
+echo *    on the Color Computer    *
+* Start system time from keyboard
+setime </term
+date -t
+
