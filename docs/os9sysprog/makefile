@@ -1,20 +1,23 @@
-SRC=os9sysprog
-STYLESHEET=docbook-utils.dsl
+BOOK		= os9sysprog
+STYLESHEET	= docbook-utils.dsl
 
-all: $(SRC).html
+all:	$(BOOK).pdf
 
-$(SRC).pdf: $(SRC).docbook $(STYLESHEET)
-	 docbook2pdf $(SRC).docbook
+$(BOOK).pdf: $(BOOK).docbook $(STYLESHEET)
+	 docbook2pdf $(BOOK).docbook
 
-$(SRC).ps: $(SRC).docbook $(STYLESHEET)
-	 docbook2ps $(SRC).docbook
-#	 docbook2ps -d $(STYLESHEET) $(SRC).docbook
+$(BOOK).ps: $(BOOK).docbook $(STYLESHEET)
+	 docbook2ps $(BOOK).docbook
+#	 docbook2ps -d $(STYLESHEET) $(BOOK).docbook
 
-$(SRC).html: $(SRC).docbook $(STYLESHEET)
+$(BOOK).html: $(BOOK).docbook $(STYLESHEET)
 	rm -f *.htm *.html
-#	jade -t sgml -V html-index -d /usr/share/sgml/docbook/dsssl-stylesheets-1.64/html/docbook.dsl $(SRC).docbook
+#	jade -t sgml -V html-index -d /usr/share/sgml/docbook/dsssl-stylesheets-1.64/html/docbook.dsl $(BOOK).docbook
 #	collateindex.pl -p -o index.docbook HTML.index
-	docbook2html $(SRC).docbook
+	docbook2html $(BOOK).docbook
 
 print:
-	psnup -2 $(SRC).ps | lpr
+	psnup -2 $(BOOK).ps | lpr
+
+clean:
+	$(RM) *.htm *.html $(BOOK).pdf $(BOOK).ps
