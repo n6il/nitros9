@@ -6,7 +6,7 @@
 
 <refsynopsisdiv>
 <cmdsynopsis>
-<command>TUNEPORT</command>
+<command>HELP</command>
 <arg choice="opt">
   <option>command - the command for which you want syntax help.  Include
 as many command names in one HELP line as you wish.  The proper form and
@@ -86,7 +86,7 @@ Examples:
 </para>
 <screen>
 	HELP BACKUP [ENTER]
-	BACUKP [e][s][-v][dev][dev]
+	BACKUP [e][s][-v][dev][dev]
 	Copies all data from one device to another
 
 	HELP ME [ENTER]
@@ -94,6 +94,6 @@ Examples:
 
 	HELP [ENTER]
 	HELP [command name][...]
+</screen>
 </refsect1>
 </refentry>
-
