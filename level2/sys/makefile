@@ -1,5 +1,7 @@
 include ../../Makefile.rules
 
+vpath %.hp $(LEVEL1)/SYS
+
 DEPENDS		= ./Makefile
 
 SYSTXTFILES	= motd
@@ -27,17 +29,17 @@ ALLOBJS		= $(TEXTFILES) $(BINFILES)
 
 all:	$(ALLOBJS) $(DEPENDS)
 
-$(HELPMSG): $(L1HELPFILES)
-	$(MERGE) $(L1HELPFILES) $(L2HELPFILES) > $@
+$(HELPMSG): $(L1HELPFILES) $(L2HELPFILES)
+	$(MERGE) $^ > $@
 
-$(L1HELPFILES): $(LEVEL1)/SYS/$@
-	-$(SOFTLINK) $(LEVEL1)/SYS/$@
+#$(L1HELPFILES): $(LEVEL1)/SYS/$@
+#	-$(SOFTLINK) $(LEVEL1)/SYS/$@
 
 $(L1TXTFILES): $(LEVEL1)/SYS/$@
 	-$(SOFTLINK) $(LEVEL1)/SYS/$@
 
 clean:
-	$(RM) $(HELPMSG) $(L1HELPFILES) $(L1TXTFILES)
+	$(RM) $(HELPMSG) $(L1TXTFILES)
 
 showbinobjs:
 	@$(ECHO) $(BINFILES)
