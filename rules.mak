@@ -1,4 +1,5 @@
-# Rules for making OS-9/6X09 modules
+# The NitrOS-9 Project
+# Project-Wide Rules
 
 # These macros should change according to where the base directory of the
 # OS-9 source tree is located
