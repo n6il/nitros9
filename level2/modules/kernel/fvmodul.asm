@@ -34,12 +34,11 @@ L0463    pshs   x,y         save block offset & DAT Image ptr
          lbsr   L068D
          puls   a
          bcs    L0497
-         IFNE   H6309
          andb   #$0F
+         IFNE   H6309
          subr   a,b
          ELSE
          pshs   a
-         andb   #$0F
          subb   ,s+
          ENDC
          blo    L0497         If wrapped, skip ahead
