@@ -2877,7 +2877,7 @@ in precedence order from highest to lowest.
 <colspec colname="c1">
 <colspec colname="c2">
 <colspec colname="c3">
-<colspec colnum=7 colname="c7">
+<colspec colnum="7" colname="c7">
 <spanspec spanname="firstop" namest="c2" nameend="c2">
 <spanspec spanname="secondop" namest="c3" nameend="c7">
 <spanspec spanname="onlyop" namest="c2" nameend="c7">
@@ -6813,7 +6813,7 @@ D 000A             Length2  rmb   2          size
 
 <table frame="none">
 <title>Program Reserved Words</title>
-<tgroup cols=5>
+<tgroup cols="5">
 <tbody>
 <row>
 <entry>ABS</entry>
@@ -7183,7 +7183,7 @@ D 000A             Length2  rmb   2          size
 <colspec colname="c1">
 <colspec colname="c2">
 <colspec colname="c3">
-<colspec colnum=7 colname="c7">
+<colspec colnum="7" colname="c7">
 <spanspec spanname="firstop" namest="c2" nameend="c2">
 <spanspec spanname="secondop" namest="c3" nameend="c7">
 <spanspec spanname="onlyop" namest="c2" nameend="c7">
@@ -7360,7 +7360,7 @@ table on the next page.
 <colspec colname="c6" colwidth="1in">
 <thead>
 <row>
-<entry morerows=1 namest="c2">Colour Code</entry>
+<entry morerows="1" namest="c2">Colour Code</entry>
 <entry align="center" namest="c3" nameend="c4">Two Colour Format</entry>
 <entry align="center" namest="c5" nameend="c6">Four Colour Format</entry>
 </row>
@@ -7373,7 +7373,7 @@ table on the next page.
 </thead>
 <tbody>
 <row>
-<entry morerows=3 valign=middle>Colour Set 1</entry>
+<entry morerows="3" valign="middle">Colour Set 1</entry>
 <entry align="center">00</entry>
 <entry align="left">Black</entry>
 <entry align="left">Black</entry>
@@ -7392,13 +7392,13 @@ table on the next page.
 <entry namest="c5" align="left">Green</entry>
 <entry align="left">Blue</entry>
 </row>
-<row rowsep=1>
+<row rowsep="1">
 <entry align="center">03</entry>
 <entry namest="c5" align="left">Green</entry>
 <entry align="left">Red</entry>
 </row>
 <row>
-<entry morerows=3 valign=middle>Colour Set 2</entry>
+<entry morerows="3" valign="middle">Colour Set 2</entry>
 <entry align="center">04</entry>
 <entry align="left">Black</entry>
 <entry align="left">Black</entry>
@@ -7417,13 +7417,13 @@ table on the next page.
 <entry namest="c5" align="left">Buff</entry>
 <entry align="left">Magenta</entry>
 </row>
-<row rowsep=1>
+<row rowsep="1">
 <entry align="center" namest="c2">07</entry>
 <entry namest="c5" align="left">Buff</entry>
 <entry align="left">Orange</entry>
 </row>
 <row>
-<entry morerows=3 valign=middle>Colour Set 3*</entry>
+<entry morerows="3" valign="middle">Colour Set 3*</entry>
 <entry align="center">08</entry>
 <entry namest="c5" align="left">Black</entry>
 <entry align="left">Black</entry>
@@ -7438,13 +7438,13 @@ table on the next page.
 <entry namest="c5" align="left">Black</entry>
 <entry align="left">Med. Green</entry>
 </row>
-<row rowsep=1>
+<row rowsep="1">
 <entry align="center" namest="c2">11</entry>
 <entry namest="c5" align="left">Black</entry>
 <entry align="left">Light Green</entry>
 </row>
 <row>
-<entry morerows=3 valign=middle>Colour Set 4*</entry>
+<entry morerows="3" valign="middle">Colour Set 4*</entry>
 <entry align="center">12</entry>
 <entry namest="c5" align="left">Black</entry>
 <entry align="left">Black</entry>
