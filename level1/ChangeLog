@@ -1,4 +1,5 @@
 OS-9 Level One V3.01.01:
+- ident now correctly reports modules with a language byte of Obj6309.
 - The LogBook file in the SYS directory has been removed.
 - A bug in the cputype command that caused crashing on a 6809 system
   has been fixed.
