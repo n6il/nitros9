@@ -326,7 +326,7 @@ Term       clrb                 default to no error...
 * missing lines
            stu   <regWbuf
            lda   <regWbuf
-           tfr   a,pd
+           tfr   a,dp
            ENDC
            ldx   <V.PORT
            lda   CmdReg,x       get current Command register contents
@@ -414,7 +414,7 @@ NotTxBrk   equ   *
            tim   #Stat.TxE,StatReg,x
            ELSE
            pshs  a
-           lda   StatRegx
+           lda   StatReg,x
            bita  #Stat.TxE
            puls  a
            ENDC
@@ -453,8 +453,12 @@ ModEntry   lbra  Init
            nop
            bra   Writ
            nop
+           IFNE  H6309
            bra   GStt
            nop
+           ELSE
+           lbra  GStt
+           ENDC
            lbra  SStt
            lbra  Term
 
@@ -960,7 +964,7 @@ DisRxRTS   equ   *
            tim   #DSRFlow,<Wrk.Type line break?
            ELSE
 *missing lines
-           lda   #DRSFlow
+           lda   #DSRFlow
            bita  <Wrk.Type
            ENDC
            bne   NewRxFlo       yes, go set new Rx flow control...
