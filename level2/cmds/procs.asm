@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  14    Original Tandy/Microware version
-*  15    Changed e to -e                                BGP 03/01/14
+*  14      ????/??/??  
+* Original Tandy/Microware version.  
+*
+*  15      2003/01/14  Boisy Pitre
+* Changed e to -e.
 
          nam   Procs
          ttl   program module       
@@ -19,7 +23,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   15
 
          mod   eom,name,tylg,atrv,start,size

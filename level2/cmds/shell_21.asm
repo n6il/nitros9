@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  21    Original Tandy/Microware version
-*  21r2  CHD no longer sets WRITE. permission           BGP 03/01/22
+*  21      ????/??/??  
+* Original Tandy/Microware version.  
+*
+*  21/2    2003/01/22  Boisy Pitre
+* CHD no longer sets WRITE. permission.
 
          nam   Shell
          ttl   OS-9 command line interpreter

@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 3      Original Tandy/Microware version
+*   3      ????/??/??  
+* Original Tandy/Microware version.  
 
          nam   WCreate
          ttl   Create a window
@@ -20,7 +22,7 @@ DOHELP   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   3
 
          mod   eom,name,tylg,atrv,start,size

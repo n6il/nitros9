@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 1      Original version
+*   1      ????/??/??  
+* Original version.
 
          nam   SMap
          ttl   Show System Memory Map
@@ -18,7 +20,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   1
 
          mod   eom,name,tylg,atrv,start,size

@@ -5,10 +5,14 @@
 *
 * From Kevin Darling, "Inside OS9 Level II"
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* ?      Original verison                               KKD 88/??/??
-* 4      Modified by Ken Drexler for other block sizes  KD  89/07/30
+*   ?      1988/??/??  Kevin Darling
+* Original version.
+*
+*   4      1989/07/30  Ken Drexler
+* Modified for other block sizes.
 
          nam   MMap
          ttl   Memory Block Utility
@@ -17,7 +21,7 @@
          use   defsfile
          endc  
 
-Revs     set   ReEnt+1
+Revs     set   ReEnt+0
 Type     set   Prgrm+Objct
 edition  set   4
 

@@ -5,10 +5,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 21     Original Tandy/Microware version
-* 22a    History and numerous features added
+*  21      ????/??/??
+* Original Tandy/Microware version.  
+*
+*  22/2    ????/??/??
+* History and numerous features added.
 
          nam   Shell
          ttl   program module       

@@ -8,13 +8,18 @@
 *
 * From "Inside Level II" by Kevin Darling
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 1      Original version                               KKD 88/10/28
-* ?      Modified to show status in English, stderr     ??? 89/07/30
-*        and the system process
-* 11     Modified to add current executing/editing      LCB 94/11/08
-*        module name for Basic09 and/or RunB programs
+*   1      1988/10/28  Kevin Darling
+* Original version.  
+*
+*   ?      1989/07/30
+* Modified to show status in English, stderr and the system process.
+*
+*  11      1994/11/08  L. Curtis Boyle
+* Modified to add current executing/editing module name for Basic09
+* and/or RunB programs
 
          nam   Proc
          ttl   Show process information
@@ -24,7 +29,7 @@
          endc  
 
 Type     set   Prgrm+Objct
-Revs     set   ReEnt+1
+Revs     set   ReEnt+0
 edition  set   11
 
 bufsiz   set   512

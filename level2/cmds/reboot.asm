@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    Started                                        ADK ??/??/??
+*   1      ????/??/??  Alan DeKok
+* Started.
 
          nam   ReBoot
          ttl   Reboot into OS-9 or DECB
@@ -16,7 +18,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+Rev
-rev      set   $01
+rev      set   $00
 
          mod   eom,name,tylg,atrv,start,size
 
