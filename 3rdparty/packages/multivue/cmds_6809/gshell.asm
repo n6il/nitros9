@@ -21,64 +21,24 @@
 * NOTE (6309 ONLY): ALL STD -2,S TO CHECK THE D FLAG CAN BE CHANGED TO TSTD
 *(SAME SIZE, FASTER)
 
+         IFP1
+         USE   defsfile
+         ENDC
+
 BTEXT    mod   MODSIZE,MODNAME,$11,$81,CSTART,DATASIZE
 
 * COMPLETE DEFS FOR THIS ASSEMBLY.
 
 ICNONSCR equ   16         # icons on screen in 40 column mode
 
-* System call defs
-F$FORK   equ   $03
-F$WAIT   equ   $04
-F$CHAIN  equ   $05
-F$EXIT   equ   $06
-F$MEM    equ   $07
-F$SEND   equ   $08
-F$ICPT   equ   $09
-F$SLEEP  equ   $0A
-F$ID     equ   $0C
-F$GPRDSC equ   $18
-F$UNLOAD equ   $1D
-F$NMLINK equ   $21
-F$NMLOAD equ   $22
-I$DUP    equ   $82
-I$OPEN   equ   $84
-I$MAKDIR equ   $85
-I$CHGDIR equ   $86
-I$DELETE equ   $87
-I$READ   equ   $89
-I$WRITE  equ   $8A
-I$READLN equ   $8B
-I$WRITLN equ   $8C
-I$GETSTT equ   $8D
-I$SETSTT equ   $8E
-I$CLOSE  equ   $8F
-
 * Standard character defs
-NUL      equ   $00
-BEL      equ   $07
+NUL      equ   C$NULL
+BEL      equ   C$BELL
 HT       equ   $09
-LF       equ   $0A
+LF       equ   C$LF
 FF       equ   $0C
-CR       equ   $0D
-SPACE    equ   $20
-
-* Standard RBF access mode defs
-READ.    equ   $0001
-UPDAT.   equ   $0003
-EXEC.    equ   $0004
-PREAD.   equ   $0008
-PEXEC.   equ   $0020
-DIR.     equ   $0080
-
-* Standard condition code register defs
-CARRY    equ   $0001
-NCARRY   equ   $00FE
-
-* Error message defs
-E$MEMFUL equ   $00CF
-E$EOF    equ   $00D3
-E$PNNF   equ   $00D8
+CR       equ   C$CR
+SPACE    equ   C$SPAC
 
 * GShell specific Data Structures.
 
@@ -186,28 +146,8 @@ PT.ACY   equ   $001A
 PT.WRX   equ   $001C
 PT.WRY   equ   $001E
 
-*Get/Setstat calls
-SS.READY equ   $0001
-SS.SSIG  equ   $001A
-SS.RELEA equ   $001B
-SS.FDINF equ   $0020
-SS.SCSIZ equ   $0026
-SS.FSIG  equ   $002C      Signal on dir change Setstat
-SS.WNSET equ   $0086
-SS.MNSEL equ   $0087
-SS.SBAR  equ   $0088
-SS.MOUSE equ   $0089
-SS.MSSIG equ   $008A
-SS.SCTYP equ   $0093
-SS.UMBAR equ   $0095
-
 STDOUT   equ   $0001
 STDERR   equ   $0002
-
-OBJCT    equ   $0001
-ICODE    equ   $0002
-PCODE    equ   $0003
-CBLCODE  equ   $0005
 
 WT.FSWIN equ   $0002
 WT.DBOX  equ   $0004
@@ -216,9 +156,6 @@ WN.SYNC  equ   $0017
 WN.BAR   equ   $0020
 WINSYNC  equ   $C0C0
 
-S$WAKE   equ   $0001
-S$ABORT  equ   $0002
-S$INTRPT equ   $0003
 DIR.FD   equ   $001D
 DIR.SZ   equ   $0020
 
@@ -388,7 +325,7 @@ GSHBUF   rmb   16         GSHPAL0 to 3 display code buffer.
 DIRPATH  rmb   1          Path # to current dir. (added for dir monitoring)
 Dirup    rmb   1          Copy of signal code (if it was new DIR signal)
 RenFlag  rmb   1          Flag used by rename - whether to reset DIRSIG or not
-SIGN     rmb   1          "C" Variable.
+NSIGN    rmb   1          "C" Variable.
 HANDLER  rmb   2          "C" Variable.
 END      rmb   896        "C" Variable.
 DATASIZE equ   .
@@ -5957,7 +5894,7 @@ GSHPalEx lbra  PROCENV4   Done processing line
 DEFTYPE  fcc   "DEFTYPE="
 DEFTPEND fcb   NUL
 
-MONTYPE  fcc   "MONTYPE="
+MONITOR  fcc   "MONTYPE="
 MONTEND  fcb   NUL
 
 * Added by LCB 12/24/1998 - Check for Default screen type=6,7,8
@@ -5976,11 +5913,11 @@ DefCheck ldb   #DEFTPEND-DEFTYPE Check for Default screen type
 DefEx    lbra  PROCENV4   Done processing current line
 
 * Added by LCB 04/15/1999 - set monitor type
-MonCheck ldb   #MONTEND-MONTYPE Check for monitor type
-         leax  <MONTYPE,pc
+MonCheck ldb   #MONTEND-MONITOR Check for monitor type
+         leax  <MONITOR,pc
          lbsr  PROCLINE
          bne   MousChk1   No, try next
-         leau  MONTEND-MONTYPE,u Point to after MONTYPE=
+         leau  MONTEND-MONITOR,u Point to after MONTYPE=
          ldb   ,u         Get monitor type
          subb  #$30       Adjust to binary
          cmpb  #2         Above 2, ignore
@@ -7365,10 +7302,10 @@ ATOI8    leas  4,S        Eat temp vars
 
 CCMOD    leax  <CCDIV,PC
          stx   HANDLER,Y
-         clr   SIGN,Y
+         clr   NSIGN,Y
          tst   2,S
          bpl   CCMOD1
-         inc   SIGN,Y
+         inc   NSIGN,Y
 CCMOD1   subd  #0
          bne   CCMOD2
          puls  X
@@ -7381,7 +7318,7 @@ CCMOD2   ldx   2,S
          ldd   ,S
          std   2,S
          tfr   X,D
-         tst   SIGN,Y
+         tst   NSIGN,Y
          beq   CCMODX
          negd  
 CCMODX   std   ,S++
@@ -7420,10 +7357,10 @@ CCDIV3   inca
 CCDIV4   subd  2,S
          bcc   CCDIV5
          addd  2,S
-         andcc  #NCARRY
+         andcc  #^Carry
          bra   CCDIV6
 
-CCDIV5   orcc  #CARRY
+CCDIV5   orcc  #Carry
 CCDIV6   rol   7,S
          rol   6,S
          lsr   2,S
@@ -8055,11 +7992,8 @@ INITDATA fcc   "Calc"
 
 DTXCOUNT       
 
-
          emod  
-
 MODSIZE  equ   *
-
          end   
 
          ELSE
