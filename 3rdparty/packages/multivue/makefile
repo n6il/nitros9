@@ -26,14 +26,14 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DISK)
 	$(OS9FORMAT) $(DISK) -n"Multi-Vue"
-	$(MAKDIR) $(DISK):CMDS
-	$(MAKDIR) $(DISK):CMDS/ICONS
-	$(MAKDIR) $(DISK):SYS
-	$(MAKDIR) $(DISK):DEMO
-	$(CD) CMDS; $(CP) $(CMDS) ../$(DISK):CMDS
-	$(CD) CMDS/ICONS; $(CP) $(ICONS) ../../$(DISK):CMDS/ICONS
-	$(CD) SYS; $(CP) $(SYS) ../$(DISK):SYS
-	$(CD) DEMO; $(CP) $(DEMO) ../$(DISK):DEMO
+	$(MAKDIR) $(DISK),CMDS
+	$(MAKDIR) $(DISK),CMDS/ICONS
+	$(MAKDIR) $(DISK),SYS
+	$(MAKDIR) $(DISK),DEMO
+	$(CD) CMDS; $(CP) $(CMDS) ../$(DISK),CMDS
+	$(CD) CMDS/ICONS; $(CP) $(ICONS) ../../$(DISK),CMDS/ICONS
+	$(CD) SYS; $(CP) $(SYS) ../$(DISK),SYS
+	$(CD) DEMO; $(CP) $(DEMO) ../$(DISK),DEMO
 
 dskclean:
 	-$(RM) $(DISK)
