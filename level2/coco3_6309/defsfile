@@ -1,9 +1,7 @@
-* OS-9 Level and Version equates
+* OS-9 Level equates
 Level    equ   2
-OS9Vrsn  equ   3
-OS9Major equ   0
-OS9Minor equ   2
 
          use   os9defs
          use   scfdefs
          use   systype
+         use   releasedefs

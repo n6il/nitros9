@@ -1,0 +1,7 @@
+* Release defsfile for all versions of OS-9
+*
+*
+* OS-9 Version equates
+OS9Vrsn  equ   3
+OS9Major equ   1
+OS9Minor equ   0
