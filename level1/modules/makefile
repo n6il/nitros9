@@ -3,7 +3,7 @@ include ../../Makefile.rules
 DEPENDS		= ./Makefile
 TPB		= ../../3rdparty/booters
 
-BOOTERS		= oscode boot_1773 $(TPB)/boot_rom_l1 rom_vectors
+BOOTERS		= oscode oscode_d64 boot_1773 $(TPB)/boot_rom_l1 rom_vectors
 KERNELS		= os9 os9p2
 SYSMODS		= rominfo ioman init
 CLOCKS		= clock.60hz clock.50hz
