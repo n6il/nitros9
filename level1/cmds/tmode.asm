@@ -287,8 +287,8 @@ L014A    lda   ,y
 L015F    leax  <L0170,pcr
          ldy   #$000E
          bsr   L0182
-         ldx   <u0002
-         bsr   L017E
+lab1     ldx   <u0002
+         bsr   lab1+2               NOTE the offset
          clrb  
          os9   F$Exit   
 L0170    comb  
@@ -299,8 +299,8 @@ L0170    comb
          lslb  
          bra   L01BD
          aim   #$72,>$6F72
-         abx   
-         bra   L018F
+lab2     abx   
+         bra   lab2+1               NOTE the offset
          ldx   #$0050
 L0182    lda   #$01
          os9   I$WritLn 
@@ -453,7 +453,7 @@ L028C    pshs  y,x,b,a
          bne   L02AA
          lda   #$0D
          sta   b,x
-L02A6    lbsr  L017E
+L02A6    lbsr  u0000       NOTE: Calling data area!!
          clrb  
 L02AA    stb   <u0004
          puls  pc,y,x,b,a
