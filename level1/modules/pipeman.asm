@@ -29,25 +29,33 @@ size     equ   .
 name     fcs   /PipeMan/
          fcb   edition
 
-start    lbra  L0042
-         lbra  L0042
-         lbra  L003C
-         lbra  L003C
-         lbra  L003C
-         lbra  L0040
-         lbra  L00A9
-         lbra  L00F7
-         lbra  L00A3
-         lbra  L00F0
-         lbra  L0040
-         lbra  L0040
-         lbra  L0078
-L003C    comb  
-         ldb   #$D0
+start    lbra  Create
+         lbra  Open
+         lbra  MakDir
+         lbra  ChgDir
+         lbra  Delete
+         lbra  Seek
+         lbra  Read
+         lbra  Write
+         lbra  ReadLn
+         lbra  WritLn
+         lbra  GetStt
+         lbra  SetStt
+         lbra  Close
+MakDir
+ChgDir
+Delete
+         comb  
+         ldb   #E$UnkSvc
          rts   
-L0040    clrb  
+Seek 
+GetStt
+SetStt
+         clrb  
          rts   
-L0042    ldu   $06,y
+Create
+Open
+         ldu   $06,y
          ldx   $04,u
          pshs  y
          os9   F$PrsNam 
@@ -71,7 +79,7 @@ L0072    rts
 L0073    comb  
          ldb   #$D7
          puls  pc,y
-L0078    lda   $02,y
+Close    lda   $02,y
          bne   L0086
          ldu   $08,y
          ldd   #$0100
@@ -92,10 +100,10 @@ L0094    lda   ,x
          os9   F$Send   
 L00A1    clrb  
          rts   
-L00A3    ldb   #$0D
+ReadLn   ldb   #$0D
          stb   $0D,y
          bra   L00AB
-L00A9    clr   $0D,y
+Read     clr   $0D,y
 L00AB    leax  $0A,y
          lbsr  L0140
          bcs   L00EB
@@ -129,10 +137,10 @@ L00DC    tfr   x,d
 L00EA    clrb  
 L00EB    leax  $0A,y
          lbra  L019D
-L00F0    ldb   #$0D
+WritLn   ldb   #$0D
          stb   <$11,y
          bra   L00FA
-L00F7    clr   <$11,y
+Write    clr   <$11,y
 L00FA    leax  $0E,y
          lbsr  L0140
          bcs   L013C
