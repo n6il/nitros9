@@ -218,11 +218,11 @@ L013A    fdb   Pipe-*
          fcb   $8D
 L0146    fdb   AllRedir-*
          fcs   "<>>>"
-         fdb   InErrRedir-*
+         fdb   IERedir-*
          fcs   "<>>"
-         fdb   InOutRedir-*
+         fdb   IORedir-*
          fcs   "<>"
-         fdb   OutErrRedir-*
+         fdb   OERedir-*
          fcs   ">>>"
          fdb   ErrRedir-*
          fcs   ">>"
@@ -311,7 +311,7 @@ L0207    clra
          rts   
 L0209    comb  
          leax  -$01,x
-         ldb   #E$BPNAM
+         ldb   #E$BPNam
          rts   
 L020F    bsr   L0241
          pshs  y
@@ -538,22 +538,19 @@ L03B1    sta   -$04,x
 L03B3    bsr   L03BC
          bcc   L03DC
 L03B7    rts   
-InOutRedir
-         lda   #$0D
+IORedir  lda   #$0D
          sta   -$02,x
 L03BC    bsr   L03AA
          bcs   L03B7
          ldd   #$0180
          bra   L0362
-InErrRedir
-         lda   #$0D
+IERedir  lda   #$0D
          sta   -$03,x
          bsr   L03AA
          bcs   L03B7
          ldd   #$0280
          bra   L0362
-OutErrRedir
-         lda   #$0D
+OERedir  lda   #$0D
          sta   -$03,x
          lda   #$01
          bsr   L03AB

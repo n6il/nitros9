@@ -547,18 +547,18 @@ G.Mouse  rmb   Pt.Siz     mouse packet ($3C)
 g005C    rmb   2          Temp for relative mouse X coord calculation
 g005E    rmb   2          Temp for relative mouse Y coord calculation
 G.MSmpRV rmb   1          Mouse sample reset value (# ticks till next read)
-G.KyDly  rmb   1          initial key repeat delay constant
+G.KyDly  rmb   1          initial key repeat delay constant ($61)
 G.KySpd  rmb   1          secondary key repeat delay constant
 *         IFEQ  TC9-true
 *KeyParm  rmb   1          keyboard command parameter byte
 *         ELSE  
-G.KyMse  rmb   1          keyboard mouse flag
+G.KyMse  rmb   1          keyboard mouse flag ($63)
 *         ENDC  
-G.Clear  rmb   1          "one-shot" CapsLock/SysRq key flag
-G.KyButt rmb   1          keyboard F1 and F2 "fire" button info
+G.Clear  rmb   1          "one-shot" CapsLock/SysRq key flag ($64)
+G.KyButt rmb   1          keyboard F1 and F2 "fire" button info ($65)
 G.AutoMs rmb   1          Auto-follow mouse flag for current device (0=NO)
-G.MseMv  rmb   1          mouse moved flag
-G.CoTble rmb   6          co-module table
+G.MseMv  rmb   1          mouse moved flag ($67)
+G.CoTble rmb   6          co-module table ($68)
 G.GrfEnt rmb   2          GRFDRV Entry address ($6E)
 g0070    rmb   1          # bytes to move in 1 block (1-72)
 G.WUseTb rmb   4          windows in use bit table (0=unused, 32 windows) ($71)
@@ -575,7 +575,13 @@ G.WindBk rmb   2          shift-clear routine vector
 G.MsInit rmb   2          set mouse routine vector
 G.MsSig  rmb   1          mouse signal flag
 G.DefPls rmb   16         Default palettes (2 repeats of 8 is default) ($C7)
-g00D7    rmb   41
+g00D7    rmb   9
+G.KeyEnt rmb   2	entry to keydrv subroutine module ($E0)
+G.KeyMem rmb   8	static memory for keydrv subroutine module
+G.JoyEnt rmb   2	entry to joydrv subroutine module ($EA)
+G.JoyMem rmb   8	static memory for joydrv subroutine module
+G.SndEnt rmb   2	entry to snddrv subroutine module ($F4)
+G.SndMem rmb   8	static memory for snddrv subroutine module
 
 *****************************************************************************
 * GrfDrv global memory data definitions
