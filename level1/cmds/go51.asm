@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    From Dragon OS-9 Level One VR 01.02.00
+*   1      ????/??/??  ???
+* From Dragon OS-9 Level One VR 01.02.00.
 
          nam   go51
          ttl   The 51 column by 24 line video display

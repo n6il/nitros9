@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   4    From Tandy OS-9 Level One VR 02.00.00
-*   5    Changed /D0 references to /DD
+*   4      ????/??/??  ???
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*   5      ????/??/?/  ???
+* Changed /D0 references to /DD
 
          nam   Config
          ttl   Boot configurator
@@ -4371,5 +4375,3 @@ L2921    fcc   "bootlist"
          emod
 eom      equ   *
          end
-
-
