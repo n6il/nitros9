@@ -6,5 +6,5 @@ Opts  :
   -p = don't print files copied (use with -w)
   -r = rewrite destination
   -s = single drive copy 
-  -w=<dir> = copy files to <dir>
+  -w=<dir> = copy to <dir>
   -x = copy from exec dir

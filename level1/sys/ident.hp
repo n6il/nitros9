@@ -1,8 +1,8 @@
 @IDENT
-Syntax: Ident <pathlist> [-opts]
+Syntax: Ident [-opts] <path> [-opts]
 Usage : Displays header information from OS-9 memory modules
 Opts  :
-  -m = look at module in memory
-  -s = use single line output
-  -v = do not verify module CRC
-  -x = pathlist begins at execution directory
+  -m = module in memory
+  -s = short form
+  -v = don't verify CRC
+  -x = file in exec dir
