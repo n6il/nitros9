@@ -16,7 +16,7 @@ SHELLMODS	= shell_21 build copy date deiniz del dir display echo iniz \
 UTILPAK1        = attr deldir dump free ident pwd pxd rename setime \
 		sleep verify wcreate xmode
 
-LEVEL1FILES	= binex.asm attr.asm build.asm cmp.asm cobbler.asm copy.asm date.asm deiniz.asm del.asm deldir.asm \
+LEVEL1FILES	= attr.asm binex.asm build.asm cmp.asm cobbler.asm copy.asm date.asm deiniz.asm del.asm deldir.asm \
 		dir.asm display.asm dump.asm echo.asm error.asm exbin.asm free.asm gfx.asm help.asm ident.asm iniz.asm inkey.asm link.asm \
 		list.asm load.asm login.asm makdir.asm merge.asm os9gen.asm pwd.asm pxd.asm rename.asm \
 		save.asm setime.asm sleep.asm tee.asm tmode.asm tuneport.asm tsmon.asm verify.asm xmode.asm
@@ -39,8 +39,8 @@ utilpak1:  $(UTILPAK1) $(DEPENDS)
 	@ls -l $@
 	@$(ECHO)
 
-$(LEVEL1FILES): ../../level1/CMDS/$@
-	-$(SOFTLINK) ../../level1/CMDS/$@
+$(LEVEL1FILES): $(LEVEL1)/CMDS/$@
+	-$(SOFTLINK) $(LEVEL1)/CMDS/$@
 
 clean:
 	$(RM) $(ALLOBJS) $(LEVEL1FILES) shell utilpak1
