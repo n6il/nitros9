@@ -50,8 +50,8 @@ HelpMsg  fcb   C$CR
          fcc   "         m = monochrome monitor"
          fcb   C$CR
          fcb   C$LF
-         ENDC
 HelpMsgL equ   *-HelpMsg
+         ENDC
 
 start    bsr   SkipSpcs
          cmpa  #C$CR
@@ -89,8 +89,9 @@ SkipSpcs ldd   ,x+
          beq   SkipSpcs
          rts   
 
+ShowHelp equ   *
          IFNE  DOHELP
-ShowHelp lda   #1
+         lda   #1
          leax  >HelpMsg,pcr
          ldy   #HelpMsgL
          os9   I$Write  
