@@ -105,7 +105,7 @@ TYP.5    equ   %00000000	5" media
 TYP.8    equ   %00000001	8" media
 TYP.CCF  equ   %00100000	CoCo format
 TYP.NCCF equ   %00000000	Non-CoCo format
-TYP.SOF  equ   %00000000	Standard OS-9 format
+TYP.SOF  equ   %00000000	Standard NitrOS-9 format
 TYP.NSF  equ   %01000000	Non-standard format
 
 * Density bit definitions
