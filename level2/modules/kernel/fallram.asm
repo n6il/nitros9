@@ -14,12 +14,12 @@ FAllRAM  ldb   R$B,u        Get # blocks requested
          ldx   <D.BlkMap    Get ptr to start of block map
 L0974    leay  ,x           Point Y to current block
          ldb   ,s           Get # blocks requested
-L0978    cmpx  <D.BlkMap+2  Hit end of map yet?
+srchblk  cmpx  <D.BlkMap+2  Hit end of map yet?
          bhs   L0995        Yes, exit with No RAM error
          lda   ,x+          Get block marker
          bne   L0974        Already used, start over with next block up
          decb               Dec # blocks still needed
-         bne   L0978        Still more, keep checking
+         bne   srchblk      Still more, keep checking
 * Entry: Y=ptr to start of memory found
 * Note: Due to fact that block map always starts @ $200 (up to $2FF), we
 *       don't need to calc A
@@ -63,4 +63,3 @@ L09AB    cmpx  <D.BlkMap    Are we at beginning of RAM yet?
          bne   L09AB        Still more needed, keep checking
          tfr   x,y          Found enough contigous blocks, move ptr to Y
          bra   L0983        Go mark blocks as used, & return info to caller
-

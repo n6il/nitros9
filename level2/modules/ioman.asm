@@ -28,6 +28,10 @@
 *  13r4    2003/04/09  Boisy G. Pitre
 * Fixed bug where wrong address was being put in V$STAT when driver's
 * INIT routine was called.
+*
+*  13r5    2004/07/12  Boisy G. Pitre
+* Fixed bug where device descriptor wasn't being unlinked when V$USRS > 0
+* due to the value in X not being loaded.
 
          nam   IOMan     
          ttl   NitrOS-9 Level 2 I/O Manager module
@@ -40,7 +44,7 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev 
-rev      set   $04       
+rev      set   $05       
 edition  set   13        
 
          mod   eom,name,tylg,atrv,start,size
@@ -527,7 +531,7 @@ L027F    ldx   <CALLREGS,s
          rts             
 
 IDetach  ldu   R$U,u     
-*         ldx   V$DESC,u
+         ldx   V$DESC,u		this was incorrectly commented out in 13r4!!
 *** BUG FIX
 * The following two lines fix a long-standing bug in IOMan where
 * the I$Detach routine would deallocate the V$STAT area.  This is
@@ -573,10 +577,11 @@ L02D1    ldx   $01,s     	get ptr to dev table
          addd  #$00FF    	round up one page
          clrb            	clear lo byte
          os9   F$SRtMem  	return mem
-         ldx   $01,s      	get old U on stack
-         ldx   V$DESC,x  
+
 * Code here appears to be for Level III?
          IFGT  Level-2
+         ldx   $01,s      	get old U on stack
+         ldx   V$DESC,x  
          ldd   M$Port,x  
          beq   L032B     
          lbsr  L01D1     
@@ -648,6 +653,7 @@ L0323
          sta   P$State,x 
          ENDC            
          ENDC
+
 L032B    puls  u,b       
          ldx   V$DESC,u     	get descriptor in X
          clr   V$DESC,u     	clear out descriptor

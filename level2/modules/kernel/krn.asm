@@ -17,6 +17,10 @@
 *
 *  19r8    2004/05/22  Boisy G. Pitre
 * Renamed to 'krn'
+*
+*  19r9    2004/07/12  Boisy G. Pitre
+* F$SRqMem now properly scans the DAT images of the system to update
+* the D.SysMem map.
 
          nam   krn
          ttl   NitrOS-9 Level 2 Kernel
@@ -26,7 +30,7 @@
          ENDC
 
 * defines for customizations
-Revision set   8          module revision
+Revision set   9          module revision
 Edition  set   19         module Edition
 Where    equ   $F000      absolute address of where Kernel starts in memory
 
@@ -37,12 +41,15 @@ MName    fcs   /krn/
 
 * FILL - all unused bytes are now here
          fcc   /www.katvixen.com/
+         fcc   /www.katvixen.com/
+         fcc   /www.katvixen.com/
          IFNE  H6309
-         fcc   /0123456789ABCDEF/
-         fcc   /0123456789ABCDEF/
-         fcc   /0123456/
+         fcc   /www.katvixen.com/
+         fcc   /www.katvixen.com/
+         fcc   /www.katvixen.c/
          ELSE
-         fcc   /012345678/
+         fcc   /www.katvixen.com/
+         fcc   /01/
          ENDC
 
 * Might as well have this here as just past the end of Kernel...
@@ -368,7 +375,7 @@ L0127    sta   ,x+          Mark them all
          bne   L0127
 
 L0170    ldx   #Bt.Start  start address of the boot track in memory
-         lda   #$12       size of the boot track: B=$00 from L0127 loop, above
+         lda   #18        size of the boot track: B=$00 from L0127 loop, above
          lbsr  I.VBlock   go verify it
 
          bsr   L01D2       go mark system map
@@ -399,7 +406,7 @@ L01D0    jmp   ,y          execute krnp2
 
 * Mark kernel in system memory map as used memory (256 byte blocks)
 L01D2    ldx   <D.SysMem   Get system mem ptr
-         ldd   #NotRAM*256+$ED  $ED00 is the start of the boot
+         ldd   #NotRAM*256+(Bt.Start/256) B = MSB of start of the boot
          abx                point to Bt.Start - start of boot track
          comb             we have $FF-$ED pages to mark as used
          sta   b,x         Mark I/O as not RAM
@@ -454,8 +461,6 @@ SysCalls fcb   F$Link
          ENDC
          fcb   F$Move+SysState
          fdb   FMove-*-2
-         fcb   F$AllRAM
-         fdb   FAllRAM-*-2
          fcb   F$AllImg+SysState
          fdb   FAllImg-*-2
          fcb   F$SetImg+SysState
@@ -488,8 +493,6 @@ SysCalls fcb   F$Link
          fdb   FELink-*-2
          fcb   F$FModul+SysState
          fdb   FFModul-*-2
-         fcb   F$AlHRAM+SysState
-         fdb   FAlHRAM-*-2
          fcb   F$VBlock+SysState
          fdb   FVBlock-*-2
          IFNE  H6309
@@ -723,7 +726,7 @@ L0345
 
          use   fsrqmem.asm
 
-         use   fallram.asm
+*         use   fallram.asm
 
 
          IFNE  H6309
@@ -947,7 +950,7 @@ L0EB8    clra               (faster than CLR >$xxxx)
          ENDC
 MapGrf   equ    *
          IFNE   H6309
-         aim    #$fe,<D.TINIT switch GIME shadow to system state
+         aim    #$FE,<D.TINIT switch GIME shadow to system state
          lda    <D.TINIT    set GIME again just in case timer is used
          ELSE
          lda    <D.TINIT
