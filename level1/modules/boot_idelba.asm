@@ -84,7 +84,7 @@ start
          bsr   GetSect    load in LSN0, U = buffer start 
          bcs   L00B0
 
-         IFNE  NitrOS9
+         IFGT  Level-1
          lda   #'0        --- loaded in LSN0 
          jsr   <D.BtBug   --- 
          ENDC  
@@ -117,7 +117,7 @@ SectLp
          bsr   GetSect    read one sector 
          bcs   L00AE      if there's an error, exit 
 
-         IFNE  NitrOS9
+         IFGT  Level-1
          lda   #'.        dump out a period for boot debugging 
          jsr   <D.BtBug   do the debug stuff 
          ENDC  

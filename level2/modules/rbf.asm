@@ -1132,7 +1132,7 @@ Writ5CB  pshs  x
 GetStat  ldb   R$B,u		get function code
          beq   Gst5FF		it's SS.Opt, go process
 
-* SS.OPT
+* SS.Opt
 * Entry A=path number
 *       B=$00
 *       X=address to put 32 byte packet
@@ -1172,12 +1172,12 @@ Gst5F8   std   R$X,u		save to the user
          ENDC
 Gst5FF   rts   			return
 
-* SS.POS
+* SS.Pos
 * Entry A=path num
 *       B=$05
 * Exit  X=msw of pos
 *       U=lsw of pos
-Gst600   cmpb  #SS.POS		is it SS.Pos?
+Gst600   cmpb  #SS.Pos		is it SS.Pos?
          bne   Gst60D		no, keep checking
          IFNE  H6309
 * use 2 LDD, STD, same size as ldq/std/stw, PD.CP+2 <$0F, we can use short n,R
@@ -1245,9 +1245,9 @@ Gst640   lda   #D$GSTA		get getstat function offset
 *        B = errcode
 *
 SetStat  ldb   R$B,u		get function code
-* TODO: remove next line since SS.OPT is 0
-         cmpb  #SS.OPT		
-         bne   Sst659		not SS.OPT, skip ahead
+* TODO: remove next line since SS.Opt is 0
+         cmpb  #SS.Opt
+         bne   Sst659		not SS.Opt, skip ahead
          ldx   R$X,u		get pointer to option packet
          leax  $02,x		skip device type and drive #
          leau  PD.STP,y		get pointer to start of data
@@ -1486,7 +1486,7 @@ FindFile ldd   #$0100		get size of sector
          std   PD.DSK,y		init disk ID
          lbsr  L097F		get a byte from caller's X
          sta   ,s		save it
-         cmpa  #PDELIm		is it a device?
+         cmpa  #PDELIM		is it a device?
          bne   Sst7FB		no, skip ahead
          lbsr  GtDvcNam		go parse it
          sta   ,s		save last character
@@ -1497,7 +1497,7 @@ FindFile ldd   #$0100		get size of sector
 Sst7FB   anda  #$7F		strip high bit
          cmpa  #PENTIR		entire device flag?
          beq   Sst81E		yes, go process
-         lda   #PDELIm		place delimiter as last char
+         lda   #PDELIM		place delimiter as last char
          sta   ,s
          leax  -$01,x		bump path pointer back 1
          lda   PD.MOD,y		get file mode

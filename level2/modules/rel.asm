@@ -151,11 +151,16 @@ StoreQ
          leau  <L00E0,pcr point to $20, a space
          tfm   u,x+       clear out the screen
          ELSE
-         ldd   #$2000-8
-         ldu   #$2020
-ClrLoop  stu   ,x++
-         subd  #$0002
+         ldy   #$2000-8
+         ldb   #$20
+ClrLoop  stb   ,x+
+         leay  -1,y
          bne   ClrLoop
+*         ldd   #$2000-8
+*         ldu   #$2020
+*ClrLoop  stu   ,x++
+*         subd  #$0002
+*         bne   ClrLoop
          ENDC
 
 MoveTxt  leau  <L0011,pcr point to OS-9 Welcome Message
@@ -187,11 +192,11 @@ L00FD    lda   ,u+
 
 L0011    fdb   ScStart+(11*Width)+((Width-L1)/2)
          fcb   L1         length of the text below
+T1       equ   *
          IFNE  NitrOS9
-T1       fcc   /Welcome to NitrOS-9!/
-         ELSE
-T1       fcc   /Welcome to OS-9!/
+         fcc   /NITR/
          ENDC
+         fcc   /OS9 BOOT/
 L1       equ   *-T1
 
          fdb   ScStart+(13*Width)+((Width-LFail)/2)
@@ -232,7 +237,7 @@ L0101
          leau  <R.Crash,pcr point to D.Crash, D.CBStart
          ldy   #D.Crash   move it over
          bsr   Move       E=$00 from call to L00FD above.
-         IFNE  NitrOS9
+         IFNE  H6309
          ldmd  #$03       go to native mode, FIRQ saves all registers
          inc   <D.MDREG   0+1=1; set MD shadow register (clr'd from above)
          ENDC
@@ -255,7 +260,7 @@ L003F    clr   >$FF91     go to map type 0 - called by CC3Go from map 1
 * reset vector: map ROMs out and go to REL in the default DECB block map,
 * which is still block $3F at the top fo memory
          nop              required for the ROMs to believe it's a reset vector
-*         clr   >$FFDF     go to all RAM mode
+         clr   >$FFDF     go to all RAM mode
          jmp   >Offset+reset and re-start the boot
 
 Pad      fill  $39,$127-*

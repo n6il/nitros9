@@ -18,7 +18,7 @@
          endc
 
 tylg     set   Prgrm+Objct
-atrv     set   Reent+Rev
+atrv     set   ReEnt+Rev
 rev      set   1
 edition  set   3
 

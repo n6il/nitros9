@@ -10,6 +10,8 @@
 *        rate and disk timeout changes
 *   6r2  Added '.' output for each sector under NitrOS9 BGP 03/05/18
 *        for Mark Marlette (a special request :)
+*   6r3  Added BLOB-Stop code as per Robert Gault's     BGP 03/08/04
+*        suggestion.
 
          nam   Boot
          ttl   WD1773 Boot module
@@ -27,7 +29,7 @@ STEP     set   $00
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $02
+rev      set   $03
 edition  set   6
 
          mod   eom,name,tylg,atrv,start,size
@@ -116,10 +118,8 @@ L0091    pshs  x,b,a
          bsr   ReadSect
          bcs   L00A8
 
-         IFNE  NitrOS9
          lda   #'.		dump out a period for boot debugging
          jsr   <D.BtBug		do the debug stuff     
-         ENDC
 
          puls  x,b,a
          inc   u0002,u
@@ -182,17 +182,18 @@ L0107    stb   >$FF40
          lbsr  L01AA
          orb   #$80
          lda   #$02
-L0111    bita  >$FF48
-         bne   L0123
-         leay  -$01,y
-         bne   L0111
-         lda   ,u
-         sta   >$FF40
-         puls  y
-         bra   L0138
+*L0111    bita  >$FF48
+*         bne   L0123
+*         leay  -$01,y
+*         bne   L0111
+*         lda   ,u
+*         sta   >$FF40
+*         puls  y
+*         bra   L0138
 L0123    lda   >$FF4B
          sta   ,x+
-         stb   >$FF40
+*         stb   >$FF40
+         nop
          bra   L0123
 
 NMIRtn   leas  R$Size,s

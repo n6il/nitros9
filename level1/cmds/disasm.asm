@@ -29,8 +29,8 @@
          use   defsfile
          endc
 
-typ      set   prgrm+objct
-attrev   set   reent+revision
+typ      set   Prgrm+Objct
+attrev   set   ReEnt+revision
 revision set   1
 edtn     set   5 edition
 edition  equ   $30+edtn ascii edition
@@ -1434,7 +1434,7 @@ language equ   *
          fcc   /CblCode /
          fcc   /FrtnCode/
          fcc   /???????? /
-reent.   fcc   /ReEnt /
+ReEnt.   fcc   /ReEnt /
 modprot. fcc   /Modprot /
 line010  fcc   /         ifp1/
 line011  fcb   $0d
@@ -1924,11 +1924,11 @@ badopt   equ   *
          lbra  prterror
 diskmod  equ   *
          inc   <diskio
-         lda   #read.
+         lda   #READ.
          tst   <x.opt
          beq   open
-         ora   #exec.
-open     os9   i$open
+         ora   #EXEC.
+open     os9   I$Open
          lbcs  exit
          sta   <path
          lbsr  getbyte
@@ -1944,11 +1944,11 @@ mem010   lda   ,x+
 
 mem020   equ   *
          clra  
-         os9   f$link
+         os9   F$Link
          bcc   gotmod
          clra
          ldx   <xreghold
-         os9   f$load
+         os9   F$Load
          lbcs  nolink
 gotmod   equ   *
          stu   <modadr
@@ -1993,7 +1993,7 @@ prtmod   equ   *
          lbsr  mergline
          lbsr  getbyte
          stb   <tylghold
-         andb  #typemask
+         andb  #TypeMask
          tstb
          beq   badtype
          cmpb  #$40
@@ -2026,7 +2026,7 @@ type010  subb  #1
 chklang  equ   *
          lbsr  mvchr008
          ldb   <byte
-         andb  #langmask
+         andb  #LangMask
          tstb
          beq   badlang
          cmpb  #6
@@ -2068,16 +2068,16 @@ chkattr  equ   *
          lbsr  mergline
          lbsr  getbyte
          stb   <atrvhold
-         andb  #attrmask
-         cmpb  #reent
+         andb  #AttrMask
+         cmpb  #ReEnt
          beq   attr.r
-         cmpb  #modprot
+         cmpb  #ModProt
          beq   attr.m
          lbsr  mvchr005
          lbsr  merghex
          bra   chkrevs
 attr.r   equ   *
-         leay  reent.,pcr
+         leay  ReEnt.,pcr
          ldb   #5
          bra   moveattr
 attr.m   equ   *
@@ -2095,7 +2095,7 @@ chkrevs  leay  line320,pcr
          ldb   #ln310sz
          lbsr  mergline
          ldb   <byte
-         andb  #revsmask
+         andb  #RevsMask
          stb   revshold
          lbsr  merghex
          lda   #$0d
@@ -2858,7 +2858,7 @@ rladr2.2 cmpd  ,y
 rladr2.3 leax  line240,pcr    Error:symbol table full
          ldy   #ln240sz
          lda   #2
-         os9   i$writln
+         os9   I$WritLn
          lbra  unlink
 rladr2.4 lbsr  merghex2       Add 4 hex digits & return
          rts
@@ -2871,7 +2871,7 @@ endit010 tst   <pass
 *        subd  <highadr
 *        tfr   d,y
 *        lda   #2
-*        os9   i$write
+*        os9   I$Write
 *        lbcs  exit
 *        lbra  clrexit
 endit015 inc   <pass
@@ -2962,7 +2962,7 @@ endit040 ldd   ,y++
          sta   <byte
 
 unlink   ldu   <modadr
-         os9   f$unlink
+         os9   F$Unlink
          lbcs  exit
          dec   <byte
          bne   unlink
@@ -2971,7 +2971,7 @@ unlink   ldu   <modadr
 close    tst   <diskio
          beq   close010
          lda   <path
-         os9   i$close
+         os9   I$Close
          lbcs  exit
 close010 rts
 
@@ -3321,7 +3321,7 @@ getbyte  pshs  x,y,a
 getdisk  leax  byte,u
          ldy   #1
          lda   <path
-         os9   i$read
+         os9   I$Read
          lbcs  endit
          ldb   <byte
 gotbyte  lda   <byte
@@ -3612,7 +3612,7 @@ getup010 rts
 send     tst   <pass
          beq   send010
          lda   #1
-         os9   i$writln
+         os9   I$Writln
          lbcs  exit
 send010  lbsr  clrline
          rts
@@ -3701,9 +3701,9 @@ nolink   lbsr  clrline
 * error encountered - print error to standard error path
 *
 prterror lda   #2
-         os9   i$writln
+         os9   I$Writln
 clrexit  clrb
-exit     os9   f$exit
+exit     os9   F$Exit
 
          emod
 eom      equ   *

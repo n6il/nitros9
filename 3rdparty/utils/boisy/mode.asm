@@ -23,7 +23,7 @@
          use   defsfile
          endc
 
-         mod   Size,Name,Prgrm+Objct,Reent+1,Start,Fin
+         mod   Size,Name,Prgrm+Objct,ReEnt+1,Start,Fin
 
 Name     fcs   /Mode/
 Vrsn     fcb   $06
@@ -139,7 +139,7 @@ Parse3   cmpa  #$0d                    is it a CR?
          puls  x
          bra   Parse2
 
-HELP     leax  Helpmess,pcr
+Help     leax  Helpmess,pcr
          ldy   #Helplen
          lda   #1
          os9   I$Write

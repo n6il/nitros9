@@ -180,7 +180,7 @@ LastRAM  equ   IOBlock    maximum RAM block number
 ***************************
 * Color Computer 3 Specific
 *
-MappedIO equ   True       (Actually False but it works better this way)
+MappedIO equ   true       (Actually False but it works better this way)
 
 ********************
 * Hardware addresses

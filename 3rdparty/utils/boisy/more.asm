@@ -40,7 +40,7 @@ DELNE    equ     $3
 REVON    equ     $1f20
 REVOFF   equ     $1f21
 
-         mod     Size,Name,Prgrm+Objct,Reent+1,Start,Fin
+         mod     Size,Name,Prgrm+Objct,ReEnt+1,Start,Fin
 Name     fcs     /M/
 Ed       fcb     2
 
@@ -50,7 +50,7 @@ XH       rmb     1
 XL       rmb     1
 YH       rmb     1
 YL       rmb     1
-Lflag    rmb     1
+LFlag    rmb     1
 FilePtr  rmb     2
 Buffer   rmb     250
 FileBuf  rmb     60
@@ -154,7 +154,7 @@ GetOpt   lda     ,x+
          beq     Parse
          anda    #$df
          cmpa    #'L
-         bne     IsitW
+         bne     IsItW
          com     LFlag
          bra     Parse
 IsItW    cmpa    #'W
