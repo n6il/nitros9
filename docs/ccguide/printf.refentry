@@ -16,7 +16,7 @@
 <funcprototype>
   <funcdef><function>printf</function></funcdef>
   <paramdef>char *<parameter>control</parameter></paramdef>
-  <paramdef>..</paramdef>
+  <paramdef>...</paramdef>
 </funcprototype>
 
 <funcprototype>

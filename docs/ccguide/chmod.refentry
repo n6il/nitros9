@@ -11,7 +11,8 @@
 </funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>chmod</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>char *<parameter>fname</parameter></paramdef>
+  <paramdef>int <parameter>perm</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 

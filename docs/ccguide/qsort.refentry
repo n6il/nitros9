@@ -8,7 +8,11 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>qsort</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>char *<parameter>base</parameter></paramdef>
+  <paramdef>int <parameter>n</parameter></paramdef>
+  <paramdef>int <parameter>size</parameter></paramdef>
+    <paramdef>int <parameter>(* compfunc)</parameter>
+      <funcparams>void *, void *</funcparams></paramdef>
 </funcprototype>
 </funcsynopsis>
 
@@ -16,7 +20,17 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Qsort implements the quick-sort algoritm for sortig an
+arbitrary array of items.
+</para>
+<para>
+"Base" is the address of the array of "n" items of size "size".
+"Compfunc" is a pointer to a comparison routine supplied by
+the user. It will be called by qsort with two pointers to
+items in the array for comparison and should return an integer
+which is less than, equal to, or greater than 0 where,
+respectively, the first item is less than, equal to, or greater
+than the second.
 </para>
 </refsect1>
 </refentry>
