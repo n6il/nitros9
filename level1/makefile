@@ -45,23 +45,24 @@ dskcopy: dsk
 	$(CP) $(DSK1) $(DSK2) $(PACKAGENAME) $(DSKDIR)
 
 $(PACKAGENAME): $(DSK1) $(DSK2)
-	$(ZIP) $(PACKAGENAME) $(DSK1) $(DSK2) ReadMe ChangeLog
+	$(ARCHIVE) $(PACKAGENAME) $(DSK1) $(DSK2) ReadMe ChangeLog
 
 $(DSK1):
-	$(RM) $(DSK1)
-	$(OS9FORMAT_DS40) $(DSK1) -n"OS-9 Level One System Disk"
-	$(OS9GEN) $(DSK1) -b=BOOTFILES/$(BOOTFILE) -t=BOOTFILES/$(KERNEL)
-	$(MAKDIR) $(DSK1),CMDS
-	$(MAKDIR) $(DSK1),SYS
-	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK1),CMDS
-	$(CD) SYS; $(CPL) $(SYS) ../$(DSK1),SYS
-	$(MAKDIR) $(DSK1),DEFS
-	$(CD) DEFS; $(CPL) $(DEFS) ../$(DSK1),DEFS
-	$(CPL) $(ROOTFILES) $(DSK1),.
+	$(RM) $@
+	$(OS9FORMAT_DS40) $@ -n"OS-9 Level One System Disk"
+	$(OS9GEN) $@ -b=BOOTFILES/$(BOOTFILE) -t=BOOTFILES/$(KERNEL)
+	$(MAKDIR) $@,CMDS
+	$(MAKDIR) $@,SYS
+	$(CD) CMDS; $(CP) $(CMDS) ../$@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR) $@,CMDS/$(file) -ewr -pepr;)
+	$(CD) SYS; $(CPL) $(SYS) ../$@,SYS
+	$(MAKDIR) $@,DEFS
+	$(CD) DEFS; $(CPL) $(DEFS) ../$@,DEFS
+	$(CPL) $(ROOTFILES) $@,.
 
 $(DSK2):
-	$(RM) $(DSK2)
-	$(OS9FORMAT_DS40) $(DSK2) -n"OS-9 Level One Modules Disk"
-	$(MAKDIR) $(DSK2),MODULES
-	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK2),MODULES
+	$(RM) $@
+	$(OS9FORMAT_DS40) $@ -n"OS-9 Level One Modules Disk"
+	$(MAKDIR) $@,MODULES
+	$(CD) MODULES; $(CP) $(MODULES) ../$@,MODULES
 
