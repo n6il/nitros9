@@ -1661,43 +1661,48 @@ L0B2B    stb   <VD.DFlag,u
          rts
          ENDC
 
+* Display Table
+* 1st entry = display code
+* 2nd entry = # of 8K blocks
 DTabl    fcb   $14	0: 640x192, 2 color
-         fcb   $02
+         fcb   $02	16K
          fcb   $15	1: 320x192, 4 color
-         fcb   $02
+         fcb   $02	16K
          fcb   $16	2: 160x192, 16 color
-         fcb   $02
+         fcb   $02	16K
          fcb   $1D	3: 640x192, 4 color
-         fcb   $04
+         fcb   $04	32K
          fcb   $1E	4: 320x192, 16 color
-         fcb   $04
+         fcb   $04	32K
 
 * Allocates and maps a hires screen into process address
-Rt.AScrn ldd   R$X,x
+Rt.AScrn ldd   R$X,x		get screen type from caller's X
          cmpd  #$0004		screen type 0-4
-         lbhi  IllArg
-         pshs  y,x,b,a
+         lbhi  IllArg		if higher than legal limit, return error
+         pshs  y,x,b,a		else save off regs
          ldd   #$0303
          leay  <VD.HiRes,u	pointer to screen descriptor
-         lbsr  L06C7		gets next free S.D.
-         bcs   L05AF
-         sta   ,s
-         ldb   $01,s		screen type
-         stb   $02,y		VD.SType
-         leax  >DTabl,pcr
-         lslb  
+         lbsr  L06C7		gets next free screen descriptor
+         bcs   L05AF		branch if none found
+         sta   ,s		save screen descriptor on stack
+         ldb   $01,s		get screen type
+*         stb   $02,y		and store in VD.SType
+         stb   (VD.SType-VD.HiRes),y	and store in VD.SType
+         leax  >DTabl,pcr	point to display table
+         lslb  			multiply index by 2 (word entries)
          abx     		point to display code, #blocks
          ldb   $01,x		get number of blocks
-         stb   $01,y		VD.NBlk
+*         stb   $01,y		VD.NBlk
+         stb   (VD.NBlk-VD.HiRes),y	VD.NBlk
          lda   #$FF		start off with zero screens allocated
 BA010    inca			count up by one
-         ldb   1,y		get number of blocks
+         ldb   (VD.NBlk-VD.HiRes),y	get number of blocks
          os9   F$AlHRam		allocate a screen
          bcs   DeAll		de-allocate ALL allocated blocks on error
          pshs  b		save starting block number of the screen
          andb  #$3F		keep block BL= block MOD 63
          pshs  b
-         addb  1,y		add in the block size of the screen
+         addb   (VD.NBlk-VD.HiRes),y	add in the blcok size of the screen
          andb  #$3F		(BL+S) mod 63 < BL? (overlap 512k bank)
          cmpb  ,s+		is all of it in this bank? 
          blo   BA010		if not, allocate another screen
@@ -1729,7 +1734,7 @@ DeAll    bsr   DeMost		de-allocate all of the screens
 DeMost   tsta
          beq   DA020		quick exit if zero additional screens
 
-         ldb   1,y		get size of the screen to de-allocate
+         ldb   (VD.NBlk-VD.HiRes),y	get # blocks of screen to de-allocate
          pshs  a		save count of blocks for later
          pshs  d,y,x		save rest of regs
          leay  9,s		account for d,y,x,a,calling PC
@@ -1883,13 +1888,14 @@ ShowS    cmpb  #$03		no more than 3 graphics buffers
          clr   >$FF9C
          lbra  SetPals
 
-L06C7    clr   ,-s
-         inc   ,s
+* Get next free screen descriptor
+L06C7    clr   ,-s		clear an area on the stack
+         inc   ,s		set to 1
 L06CB    tst   ,y		check block #
          beq   L06D9		if not used yet
          leay  b,y		go to next screen descriptor
-         inc   ,s
-         deca  
+         inc   ,s		increment count on stack
+         deca  			decrement A
          bne   L06CB
          comb  
          ldb   #E$BMode

@@ -1,4 +1,6 @@
 * F$DelRAM entry point --- moved over from OS9p2
+* Entry: B = # of blocks to de-allocate
+*        X = starting block #
 FDelRAM  ldb   R$B,u      # of blocks to de-allocate
          beq   DelRAM.2   if none, exit
          ldd   <D.BlkMap+2 get end of the block map
