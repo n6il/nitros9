@@ -68,6 +68,11 @@
 * and Alt SCII I/O registers are supported.
 *
 * Cleaned up some errors in the last version of rb1773.
+*
+*         2004/07/11   Robert Gault
+* Corrected the error handling code for read & write to separate SCII errors
+* from OS-9 errors. Changed drive test from compare #4 to compare #N.Drives to
+* permit up to 6 drives using alternate table.
 
          nam   rb1773
          ttl   Western Digital 1773 Disk Controller Driver
@@ -467,9 +472,15 @@ L0176    ldx   >sectbuf,u     Get physical sector buffer ptr
          ENDC
          lda   #7             SCII read, buffered mode, masked NMI
          bsr   L01A1B         send commands and wait
-         lbcs  L03AF          get the errors
+* New lines needed because the SCII has error other than OS-9 errors. RG
+         bcs   ngood
+* This now becomes a subroutine call. RG
+*        lbcs  L03AF          get the errors
+         lbsr  L03AF          get the errors
+         bcc   good
+ngood    rts
          IFNE  H6309
-         pshs  y
+good     pshs  y
          ldw   #128           set counter
          ldy   #RW.DAT        source of data
          IFNE  SCIIHACK
@@ -487,7 +498,7 @@ sc2rlp   ldd   ,y             read two bytes from SCII
          decw                 update counter
          bne   sc2rlp
          ELSE
-         ldy   #128
+good     ldy   #128
          IFNE  SCIIHACK
          tst   flag512,u
          beq   sc2rlp
@@ -701,7 +712,12 @@ wrbuf    ldd   ,x++
          puls  y
          ldb   #$A0            Write sector command
          lda   #6              SCII masked NMI, buffered mode, write
-         lbra  L01A1B          send command to controller
+* See Read section for explanation of error changes below. RG
+*        lbra  L01A1B          send command to controller
+         lbsr  L01A1B          send command to controller
+         bcs   wngood          SCII error, then go
+         lbra  L03AF           check for OS-9 errors
+wngood   rts
          ENDC         
 wr512    ldb  #S$Format
 
@@ -934,7 +950,9 @@ L0372    fcb   $01            Drive 0
 * Changes regD; X,Y,U preserved
 L0376    clr   >u00AA,u       clear drive change flag
 chkdrv   lda   <PD.DRV,y      Get drive # requested
-         cmpa  #4             Drive 0-3?
+* It is possible to have more than 4 drive # so the change below. RG
+*        cmpa  #4             Drive 0-3?
+         cmpa  #N.Drives      Drive 0-6 if alternate table used?
          blo   L0385          Yes, continue normally
 NoHW     comb                 Illegal drive # error
          ldb   #E$Unit
@@ -958,6 +976,11 @@ L03A6    clr   >currside,u    Set side (head) flag to side 1
          puls  pc,x,d         Restore sector #,drive #,B & return
 
 L03AF    ldb   >DPort+WD_Stat Get status register from FDC
+* This line needed when returning to Disk Basic but probably
+* not needed for OS-9. RG
+         IFNE  SCII
+         clr   RW.Ctrl        return SCII to halt mode
+         ENDC
 L03B2    bitb  #%11111000     any of the error bits set?
          beq   L03CA          No, exit without error
          aslb             Drive not ready?
@@ -1299,3 +1322,4 @@ L0550    tfr   x,d            Move # sectors to D
          emod
 eom      equ   *
          end
+
