@@ -344,7 +344,7 @@ GoOpts  lbsr  GetOPts
         lda   #2
         sta   X05CE
         
-        ldd   #4
+        ldd   #$0004
         std   X1D44
         
         ldd   #$1234
@@ -2424,9 +2424,9 @@ L0F81   jsr   X74CC
         addb  #$30
         pshs  b
         
-L0F9D   lbsr  InpReady
+ChkInp  lbsr  InpReady
         tsta                 not ready a = 0
-        beq   L0F9D          loop till we get an input
+        beq   ChkInp         loop till we get an input
         
         tfr   a,b            move the returned value to b
         clra  
@@ -2437,10 +2437,10 @@ L0F9D   lbsr  InpReady
         beq   L0FBD
         
         cmpb  #'1            Looking for input 1 - 7 max depending on menu
-        blt   L0F9D          less than 1 loop again
+        blt   ChkInp          less than 1 loop again
         
         cmpb  ,s
-        bgt   L0F9D
+        bgt   ChkInp
         
         subb  #'1            subtract "one" ($31) from it so we are now zero based 
         bra   L0FBF
