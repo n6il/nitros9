@@ -24,12 +24,12 @@ L0AC8    lda   1,y            Get MMU block # to get data from
          orcc  #IntMasks      shut IRQ's off
          sta   >DAT.Regs      Map block into $0000-$1FFF
          IFNE  H6309
-         brn    L0AC8
+         brn    L0AC8         short delay
          ENDC
          lda   ,x             Get byte
          stb   >DAT.Regs      Map block 0 into $0000-$1FFF
          IFNE  H6309
-         fdb   $21ED          LBRN ???
+         brn    L0AC8         short delay
          ENDC
          puls  pc,cc          Get interrupt status/(or turn on) & return
 
