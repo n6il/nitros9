@@ -343,11 +343,11 @@ name     fcs   /GrfDrv/
 
 entry    equ   *
          IFNE  H6309
-         lde   #$11         Direct page for GrfDrv
+         lde   #GrfMem/256         Direct page for GrfDrv
          tfr   e,dp
          ELSE
          pshs  a
-         lda   #$11
+         lda   #GrfMem/256
          tfr   a,dp
          puls  a
          ENDC
@@ -4306,47 +4306,40 @@ L124F    pshs  y             Preserve window table ptr
 L1267    ldb   <$97          Get width of window in bytes
          cmpb  <$63          Same as screen width?
          bne   L127B         No, do normal scroll
-         mul                 Calculate size of entire window to move
+L1267a   mul                 Calculate size of entire window to move
 * Scroll entire window in one shot since full width of screen
          IFNE  H6309
          tfr   d,w           Move to TFM size reg.
          tfm   x+,y+         Move screen
          ELSE
-         pshs  d,x,u
+* Note, the following code will work as long as D is an even number...
+* Which it should be since all screen widths are even numbers (80, 40, etc)
+         pshs  u
          tfr   x,u
-         tfr   d,x
-L1267b   pulu  d
-*L1267b   ldd   ,u++
-         std   ,y++
-         leax  -2,x
-         bne   L1267b
-*L1267b   lda   ,u+
-*         sta   ,y+
-*         leax  -1,x
-*         bne   L1267b
-         stx   <$B5
-         stu   2,s
-         puls  d,x,u
+L1267b   pulu  x
+         stx   ,y++
+         subd  #$0002
+         bgt   L1267b
+         puls  u
          ENDC
          bra   L128A         Exit scroll routine
 
 * Scroll window that is not full width of screen
-L127B    ldd   <$0099        Get # bytes/row for screen
+L127B    equ   *
          IFNE  H6309
+         ldd   <$0099        Get # bytes/row for screen
          ldf   <$0097        Get # bytes wide window is
          clre
          subr  w,d           Calc # bytes to next line
+L127E    tfm   x+,y+         Block move the line
          ELSE
+         ldd   <$0099        Get # bytes/row for screen
          pshs  d
          clra
          ldb   <$97
          std   <$B5         regW loaded 
          puls  d 
          subd  <$B5         subr w,d
-         ENDC
-         IFNE  H6309
-L127E    tfm   x+,y+         Block move the line
-         ELSE
 L127E    pshs  d,x,u
          ldb   <$B6         get regW
          clra
