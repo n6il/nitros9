@@ -30,7 +30,7 @@ edition  set   1
          mod   Eom,Mname,Typelang,Attrev,Start,0
 
 mname          
-         fcs   /OS9P4/    name of this module
+         fcs   /OS9p4/    name of this module
          fcb   edition
 
 svctabl        
