@@ -1,16 +1,14 @@
 ********************************************************************
-* progname - program module
+* Clock - Dragon clock module
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  -     Original Dragon Data distribution version
-*
-*
 
          nam   Clock
-         ttl   os9 system module    
+         ttl   Dragon clock module
 
 * Disassembled 02/04/21 22:37:44 by Disasm v1.6 (C) 1988 by RML
 

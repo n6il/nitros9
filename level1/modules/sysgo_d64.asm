@@ -1,5 +1,5 @@
 ********************************************************************
-* progname - program module
+* SysGo - Kickstart module
 *
 * $Id$
 *
@@ -8,6 +8,9 @@
 *  -     Original Dragon Data distribution version
 *
 * $Log$
+* Revision 1.2  2002/10/10 14:50:22  boisy
+* Added appropriate header
+*
 * Revision 1.1  2002/07/15 21:34:54  roug
 * SysGo is simpler on Dragon 64.
 *
@@ -15,11 +18,9 @@
 * These are the kernel modules from Dragon 64's OS9Boot.
 * OS9 and OS9p2 are older than what's in ../MODULES so I checked them
 * in as well.
-*
-*
 
          nam   SysGo
-         ttl   os9 system module    
+         ttl   Kickstart module
 
 * Disassembled 02/04/21 22:38:39 by Disasm v1.6 (C) 1988 by RML
 

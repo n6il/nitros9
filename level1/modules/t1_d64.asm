@@ -1,12 +1,11 @@
 ********************************************************************
-* progname - program module
+* T1 - Serial port device descriptor
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  -     Original Dragon Data distribution version
-*
 
          nam   T1
          ttl   Serial port device descriptor
@@ -16,6 +15,7 @@
          ifp1
          use   defsfile
          endc
+
 tylg     set   Devic+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01

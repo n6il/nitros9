@@ -1,5 +1,5 @@
 ********************************************************************
-* progname - program module
+* Boot - Dragon floppy boot module
 *
 * $Id$
 *
@@ -8,6 +8,9 @@
 *  -     Original Dragon Data distribution version
 *
 * $Log$
+* Revision 1.2  2002/10/10 14:50:21  boisy
+* Added appropriate header
+*
 * Revision 1.1  2002/07/18 19:46:07  roug
 * We can now build a Dragon 64 kernel
 *
@@ -15,11 +18,9 @@
 * These are the kernel modules from Dragon 64's OS9Boot.
 * OS9 and OS9p2 are older than what's in ../MODULES so I checked them
 * in as well.
-*
-*
 
          nam   Boot
-         ttl   os9 system module    
+         ttl   Dragon floppy boot module
 
 * Disassembled 02/04/21 22:37:43 by Disasm v1.6 (C) 1988 by RML
 
