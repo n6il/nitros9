@@ -13,6 +13,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * 1      Created                                        JH  03/05/17
+* 2      Fixed bug that was also in MMCDRV when		JMH 03/08/01  
+*        reading a byte from the status register 
 
          nam   Boot
          ttl   MMC Boot Module
@@ -24,7 +26,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   2
-edition  set   1
+edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -198,9 +200,11 @@ CHKRL1   bsr   DLYSTRT        Call our delay routine
          beq   CHKRG          Response is good, exit without error
          decb                 Keep looping?
          bne   CHKRL1         Done yet?
-CHKRB    comb                 Set error state
+CHKRB    bsr   DLYSTRT        Need delay
+         comb                 Set error state
          puls  b,pc           Return
-CHKRG    clrb                 Set no error
+CHKRG    bsr   DLYSTRT        Need delay
+         clrb                 Set no error
          puls  b,pc           Return
 * End CHKR routine
 
