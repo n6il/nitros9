@@ -1,5 +1,5 @@
 ********************************************************************
-* H0 - IDE device descriptor
+* IDEDesc - IDE device descriptor
 *
 * $Id$
 *
@@ -8,7 +8,7 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 
-         nam   H0        
+         nam   IDEDesc        
          ttl   IDE device descriptor
 
 * IT.STP (offset $14)
