@@ -1,8 +1,9 @@
 include ../../../../Makefile.rules
 
+H6309		= $(AFLAGS) -aH6309=1
 DEPENDS		= ./Makefile
 
-CMDS		= gshell cocopr control demo fstat gcal gcalc gclock \
+CMDS		= gshell_6309 cocopr control demo fstat gcal gcalc gclock \
 		gport gprint
 
 ALLOBJS		= $(CMDS)
@@ -10,6 +11,9 @@ ALLOBJS		= $(CMDS)
 all:	$(ALLOBJS)
 	$(CD) ICONS; make
 	$(CHMOD) 755 $(ALLOBJS)
+
+gshell_6309:
+	$(AS) $(ASOUT)$@ $< $(H6309)
 
 clean:
 	$(RM) $(ALLOBJS)
