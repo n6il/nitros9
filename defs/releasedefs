@@ -5,4 +5,4 @@
 NOS9Vrsn  equ   3
 NOS9Major equ   2
 NOS9Minor equ   2
-TEST      equ   1
+TEST      equ   0
