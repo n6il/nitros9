@@ -14,6 +14,76 @@
 <para>
 Interactive Debugger.
 </para>
+<para>
+Command Summary:
+[SPACEBAR]expression
+Evaluate; display in hexadecimal and decimal form
+
+.
+Display dot address and contents
+
+..
+Restore last dot address; display address and contents
+
+.expression
+set dot to result of expression; display address and contents
+
+=expressoin
+Set memory at dot to result of expression
+
+-
+Decrement dot; display address and contents
+
+[ENTER]
+Increment dot; display address and contents
+
+:
+Display all registers' contents
+
+:register
+Display the specified register's contents
+
+:register expression
+Set register to the result of expression
+
+E module-name
+Prepare for execution
+
+G
+Go to the program
+
+G expression
+Goto the program at the address specified by the result of expression
+
+L module-name
+Link to the module named; display address
+
+B
+Display all breakpoints
+
+B expression
+Set a breakpoint at the result of the expression
+
+K
+Kill all breakpoints
+
+K expression
+Kill the breakpoint at address specified by expression
+
+M expression1 expression2
+Display memory dump in tabular form
+
+C expression1 expression2
+Clear and test memory
+
+S expression1 expression2
+Search memory for pattern
+
+$ command
+Call OS-9 shell with optional command
+
+Q
+Quit (exit) Debug
 </refsect1>
 </refentry>
 
