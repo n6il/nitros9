@@ -1,6 +1,6 @@
 include ../../../../Makefile.rules
 
-H6309		= $(AFLAGS) -aH6309=1
+H6309		= $(AFLAGS) -aH6309=1 -e
 DEPENDS		= ./Makefile
 
 CMDS		= gshell_6309 cocopr control demo fstat gcal gcalc gclock \
