@@ -53,7 +53,7 @@ $(PACKAGENAME): $(DSK1) $(DSK2) ReadMe ChangeLog
 
 $(DSK1):
 	-$(RM) $@
-	$(OS9FORMAT_DS40) $@ -n"NitrOS-9/6809 Level 2 System Disk"
+	$(OS9FORMAT_DS40) $@ -n"NitrOS-9/6809 Level 2 Disk 1"
 	$(OS9GEN) $@ -b=$(BOOTFILE) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -73,7 +73,7 @@ $(DSK1):
 
 $(DSK2):
 	-$(RM) $@
-	$(OS9FORMAT_DS40) $@ -n"NitrOS-9/6809 Level 2 Modules Disk"
+	$(OS9FORMAT_DS40) $@ -n"NitrOS-9/6809 Level 2 Disk 2"
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/6809L2
 	$(MAKDIR) $@,NITROS9/6809L2/CMDS
