@@ -19,6 +19,7 @@
 *        in value of POLSIZ in certain areas, fixed.
 *        Also added 6809 conditional code for future
 *        integration into OS-9 Level Two.
+*  13r3  Conditionalized out Level 3 code               BGP 02/03/04
 
          nam   IOMan     
          ttl   OS-9 Level Two I/O Manager module
@@ -31,7 +32,7 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev 
-rev      set   $02       
+rev      set   $03       
 edition  set   13        
 
          mod   eom,name,tylg,atrv,start,size
@@ -423,7 +424,7 @@ Loop2    clr   ,u+       	clear newly alloc'ed mem
          ENDC            
          ldd   HWPG,s     get hwpage and upper addr
 * Code here appears to be for Level III?
-         IFNE  NitrOS9
+         IFEQ  Level-3
          bsr   L01D1     
          std   <DATBYT2,s     save off
          ldu   #$0000    
@@ -553,7 +554,7 @@ L02D1    ldx   $01,s     	get ptr to dev table
          ldx   $01,s      	get old U on stack
          ldx   V$DESC,x  
 * Code here appears to be for Level III?
-         IFNE  NitrOS9
+         IFEQ  Level-3
          ldd   M$Port,x  
          beq   L032B     
          lbsr  L01D1     
