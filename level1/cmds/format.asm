@@ -3,6 +3,13 @@
 *
 * $Id$
 *
+* Notes:
+*   1. If the TYP.DSQ bit in IT.TYP is clear, then the total number
+*      of sectors is NOT multiplied by the bytes per sector.  This
+*      means that descriptors using partition offsets will need to
+*      fill IT.CYL, IT.SID and IT.SCT with values that reflect the
+*      number of 256 byte sectors on the disk.
+*
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
@@ -60,7 +67,6 @@ mfm      rmb   1                denisity (double/single)
 maxdns   rmb   1
 tpi      rmb   1
 numsides rmb   1
-*u0014    rmb   1
 ncyls    rmb   2                total number of cylinders
 u0017    rmb   1
 u0018    rmb   1
@@ -129,21 +135,26 @@ name     fcs   /Format/
 *val2     fdb   $0000
 *val3     fdb   $0000
 hdsdat   fdb   $80E5,$80E5,$0000
+* Single Density Track Data
 sgtdat   fdb   $0100,$28FF,$0600,$01FC,$0CFF,$0000
+* Single Density Sector Data
 sgsdat   fdb   $0600,$01FE,$0400,$01F7,$0AFF,$0600
          fdb   $01FB,$80E5,$80E5,$01F7,$0AFF,$0000
          fcb   $FF
 sgfidp   fdb   $0043
 sgsize   fdb   $0128
 
-* Double Density Data
+* Double Density Track Data
 dbtdat   fdb   $504E,$0C00,$03F6,$01FC,$204E,$0000
+* Double Density Sector Data
 dbsdat   fdb   $0C00,$03F5,$01FE,$0400,$01F7,$164E
          fdb   $0C00,$03F5,$01FB,$80E5,$80E5,$01F7
          fdb   $164E,$0000
          fcb   $4E
 dbfidp   fdb   $0090
 dbsize   fdb   $0152
+
+* Double Density Color Computer Format (Disk BASIC)
 dctdat   fdb   $204E,$0000,$0C00,$03F5,$01FE,$0400
          fdb   $01F7,$164E,$0C00,$03F5,$01FB,$80E5
          fdb   $80E5,$01F7,$184E,$0000
@@ -242,7 +253,6 @@ Geometry leax  >optbuf,u        status packet address
          bcs   Exit             exit if error
          ldb   PD.SID-PD.OPT,x  number of surfaces
          stb   <numsides        save it
-*         stb   <u0014           save it
          ldb   PD.SToff-PD.OPT,x foreign disk format?
          beq   L0143            no,
          tfr   b,a              yes, get copy
@@ -260,7 +270,7 @@ L0143    ldb   PD.DNS-PD.OPT,x  density capability
          stb   <mfm             save double-density (Yes/No)
          stb   <maxdns          save it again
          ldb   ,s               get saved PD.DNS byte
-         lsrb                   checking
+         lsrb                   now 96/135 TPI bit is in bit pos 0
          pshs  b                save it
          andb  #$01             tpi (0=48, 1=96/135)
          stb   <tpi             save it
@@ -268,8 +278,8 @@ L0143    ldb   PD.DNS-PD.OPT,x  density capability
          lsrb                   
          andb  <maxdns
          stb   <u004C
-         puls  b
-         stb   <u004D
+         puls  b		get original PD.DNS byte
+         stb   <u004D		store it
          beq   L0169
          stb   <u004B
          clr   <stoff
@@ -293,7 +303,7 @@ L0169    ldd   PD.CYL-PD.OPT,x  number of cylinders
          stb   <clustsiz        save it
          stb   <sectmode        and sector mode
 *** ADDED CODE -- BGP.  CHECK FOR PRESENCE OF SS.DSIZE
-         lda   PD.TYP-PD.OPT,x	get type byte
+         lda   <dtype		get type byte
          bita  #TYPH.DSQ	drive size query bit set?
          beq   nogo@		no, don't bother querying the drive for its size
          lda   <diskpath        get disk path number
@@ -311,7 +321,6 @@ L0169    ldd   PD.CYL-PD.OPT,x  number of cylinders
 chs@
          stx   <ncyls           save cylinders
          stb   <numsides        save sides
-*         stb   <u0014           ????
          sty   <sectors         save sectors/track
          sty   <sectors0        save sectors/track 0
 nogo@
@@ -636,7 +645,7 @@ GetDTyp  leax  >hdsdat,pcr      assume hard drive data for now
          stx   <sectdata        sector data pointer
          ldb   <dtype           get disk drive type
          bitb  #TYP.HARD+TYP.NSF hard disk or non-standard type?
-         bne   L0323            no, check track data
+         bne   L0323            yes, branch
          tst   <u004D           
          beq   L031B
          leax  >dctdat,pcr
@@ -677,6 +686,9 @@ L0344    exg   d,x
          adcb  #$00
          stb   <totsects
 ack@
+         lda   <dtype		get type byte
+         bita  #TYPH.DSQ	drive size query bit set?
+         beq   mlex@            branch if so (we don't take bps into account here)
 **** We now multiply totsects * the bytes per sector
          dec   <bps		decrement bytes per sector (8=7,4=3,2=1,1=0)
          beq   mlex@		exit out ofloop if zero
@@ -832,16 +844,16 @@ L0429    tfr   d,y              get side/density bits
          rts                    yes, return
 
 ********************************************************************
-*
+* Writes AA bytes of BB to X (byte pairs are in tables above)
 ********************************************************************
 
 L044E    ldy   <u000E
-L0451    ldd   ,y++
-         beq   L046B
-L0455    stb   ,x+
-         deca  
-         bne   L0455
-         bra   L0451
+L0451    ldd   ,y++			get two bytes at Y
+         beq   L046B			branch if zero (end)
+L0455    stb   ,x+			store B at X and post increment
+         deca  				decrement count
+         bne   L0455			continue if not done
+         bra   L0451			else get next byte pair
 L045C    lda   <dtype			get drive's PD.TYP
          bita  #TYP.HARD+TYP.NSF	hard disk or non-standard format?
          beq   L046C			branch if neither
@@ -1585,7 +1597,7 @@ CrRtn    fcb   C$CR
 *DSided   fcc   "Double sided? "
 NumGood  fcc   "Number of good sectors: $"
 NGoodLen equ *-NumGood
-HDFmt    fcc   "this is a HARD disk - are you sure? "
+HDFmt    fcc   "This is a HARD disk - are you sure? "
 *HDFmt    fcc   "WARNING: You are formatting a HARD Disk.."
 *         fcb   C$LF
 *         fcc   "Are you sure? "
