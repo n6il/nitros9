@@ -1,5 +1,5 @@
 ********************************************************************
-* IOMan - NitrOS-9 Level Two I/O Manager module
+* IOMan - OS-9 Level Two I/O Manager module
 *
 * $Id$
 *
@@ -21,7 +21,7 @@
 *        integration into OS-9 Level Two.
 
          nam   IOMan     
-         ttl   NitrOS-9 Level Two I/O Manager module
+         ttl   OS-9 Level Two I/O Manager module
 
 * Disassembled 02/04/29 23:10:07 by Disasm v1.6 (C) 1988 by RML
 
@@ -764,62 +764,69 @@ IDelete  pshs  b
          ldb   #WRITE.   
          bra   L03BA     
 
-IDeletX  ldb   #EXEC.+UPDAT.
+IDeletX  equ   *
+         IFNE  H6309
+         ldb   #I$Delete-$80	want to call this routine in FM
+         ELSE
+         ldb   #I$Delete	want to call this routine in FM
+         ENDC
          pshs  b         
          ldb   R$A,u     
          bra   L03BA     
 
 * Allocate path descriptor
-AllcPDsc ldx   <D.Proc   
-         pshs  u,x       
-         ldx   <D.PthDBT 
-         os9   F$All64   
-         bcs   L0484     
-         inc   PD.CNT,y  
-         stb   PD.MOD,y  
-         ldx   <D.Proc   
-         ldb   P$Task,x  
+* Entry:
+*    B = mode
+AllcPDsc ldx   <D.Proc   	get pointer to curr proc in X
+         pshs  u,x       	save U/X
+         ldx   <D.PthDBT	get ptr to path desc base table
+         os9   F$All64   	allocate 64 byte page
+         bcs   L0484     	branch if error
+         inc   PD.CNT,y  	set path count
+         stb   PD.MOD,y  	save mode byte
+         ldx   <D.Proc   	get curr proc desc
+         ldb   P$Task,x  	get task #
          ldx   R$X,u     	X points to pathlist
-L042C    os9   F$LDABX   
-         leax  1,x       
-         cmpa  #C$SPAC		skip over spaces
-         beq   L042C     
-         leax  -1,x      	back up
-         stx   R$X,u     	save back pointer
+L042C    os9   F$LDABX   	get byte at X
+         leax  1,x       	move to next
+         cmpa  #C$SPAC		space?
+         beq   L042C     	continue if so
+         leax  -1,x      	else back up
+         stx   R$X,u     	save updated pointer
          cmpa  #PDELIM		leading slash?
          beq   L0459     	yep...
-         ldx   <D.Proc   
+         ldx   <D.Proc   	else get curr proc
          IFNE  H6309     
          tim   #EXEC.,PD.MOD,y
          ELSE            
-         ldb   PD.MOD,y  
-         bitb  EXEC.		exec. dir relative?
+         ldb   PD.MOD,y  	get mode byte
+         bitb  #EXEC.		exec. dir relative?
          ENDC            
          beq   L0449     	nope...
-         ldx   <P$DIO+6,x
-         bra   L044C     
-L0449    ldx   <P$DIO,x  
-L044C    beq   L0489     
-         ldd   <D.SysPrc 
-         std   <D.Proc   
-         ldx   $04,x     
-         ldd   $04,x     
-         IFNE  H6309     
+         ldx   <P$DIO+6,x	else get dev entry for exec path
+         bra   L044C     	and branch
+L0449    ldx   <P$DIO,x  	get dev entry for data path
+L044C    beq   L0489     	branch if empty
+         ldd   <D.SysPrc 	get system proc ptr
+         std   <D.Proc   	get curr proc
+         ldx   V$DESC,x     	get descriptor pointer
+         ldd   M$Name,x     	get name offset
+         IFNE  H6309
          addr  d,x       
          ELSE            
-         leax  d,x
+         leax  d,x		point X to name in descriptor
          ENDC            
 L0459    pshs  y         	save off path desc ptr in Y
-         os9   F$PrsNam  
+         os9   F$PrsNam  	parse it
          puls  y         	restore path desc ptr
-         bcs   L0489     
-         lda   PD.MOD,y  
+         bcs   L0489     	branch if error
+         lda   PD.MOD,y  	get mode byte
          os9   I$Attach  	attach to device
          stu   PD.DEV,y  	save dev tbl entry
-         bcs   L048B     
-         ldx   V$DESC,u  
+         bcs   L048B     	branch if error
+         ldx   V$DESC,u  	else get descriptor pointer
 * copy options from dev desc to path desc
-         leax  <M$Opt,x  
+         leax  <M$Opt,x  	point to opts in desc
          IFNE  H6309     
          ldf   ,x+       
          leau  <PD.OPT,y    
