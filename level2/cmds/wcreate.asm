@@ -16,6 +16,8 @@
          use   defsfile
          endc
 
+DOHELP   set   0
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
@@ -35,7 +37,9 @@ size     equ   .
 
 name     fcs   /WCreate/
          fcb   edition
-L0015    fcb   C$CR
+
+         IFNE  DOHELP
+HelpMsg  fcb   C$CR
          fcb   C$LF
          fcc   "WCreate <windpath> [-s=stype] xpos ypos width height fcol bcol [bord]"
          fcb   C$CR
@@ -55,7 +59,9 @@ L0015    fcb   C$CR
          fcc   "         -?        receive help message"
          fcb   C$CR
          fcb   C$LF
-L0148    fdb   $1B21
+         ENDC
+
+CurOn    fdb   $1B21
 
 start    clr   <u000D
          clra  
@@ -66,17 +72,17 @@ start    clr   <u000D
          cmpa  #PDELIM
          bne   L015D
          bsr   L01B2
-         bra   L01AF
+         bra   Exit
 L015D    cmpa  #'-
-         lbne  L026B
+         lbne  ShowHelp
          leax  1,x
          lda   ,x+
          cmpa  #$3F
-         lbeq  L026B
+         lbeq  ShowHelp
          cmpa  #$7A
          beq   L0177
          cmpa  #$5A
-         lbne  L026B
+         lbne  ShowHelp
 L0177    lda   #$01
          sta   <u000D
 L017B    clra  
@@ -92,18 +98,19 @@ L017B    clra
          cmpa  #C$CR
          beq   L01A0
          bsr   L01B5
-         bcs   L01AF
+         bcs   Exit
          bra   L017B
 L019C    cmpb  #$D3
-         bne   L01AF
+         bne   Exit
 L01A0    lda   #$01
          lbsr  L0254
          lda   <u000C
-         bmi   L01AE
+         bmi   ExitOk
          os9   I$Close  
-         bcs   L01AF
-L01AE    clrb  
-L01AF    os9   F$Exit   
+         bcs   Exit
+ExitOk   clrb  
+Exit     os9   F$Exit   
+
 L01B2    lbsr  L0260
 L01B5    clr   <u000A
          clr   <u0002
@@ -178,7 +185,7 @@ L0248    lda   <u000B
 L024E    lda   <u000B
          os9   I$Close  
 L0253    rts   
-L0254    leax  >L0148,pcr
+L0254    leax  >CurOn,pcr
          ldy   #$0002
          os9   I$Write  
          rts   
@@ -188,11 +195,14 @@ L0260    lda   ,x+
          leax  -1,x
          rts   
 L0269    leas  $02,s
-L026B    lda   #$01
-         leax  >L0015,pcr
+ShowHelp equ   *
+         IFNE  DOHELP
+         lda   #$01
+         leax  >HelpMsg,pcr
          ldy   #$0133
          os9   I$Write  
-         lbra  L01AE
+         ENDC
+         lbra  ExitOk
 L027B    pshs  b
          clrb  
          stb   ,y
