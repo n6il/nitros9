@@ -439,7 +439,7 @@ D.CBStrt rmb   16         reserved for CC warmstart ($71)
 D.Clock  rmb   2          Address of Clock Tick Routine (CC) $81
 D.Boot   rmb   1          Bootstrap attempted flag
 D.URtoSs rmb   2          address of user to system routine (VIRQ) $84
-D.CLTB   rmb   2          Pointer to clock interrupt table (VIRQ) $86
+D.CLTb   rmb   2          Pointer to clock interrupt table (VIRQ) $86
 D.MDREG  rmb   1          6309 MD (mode) shadow register $88 (added in V2.01.00)
 D.CRC    rmb   1          CRC checking mode flag $89 (added in V2.01.00)
 
