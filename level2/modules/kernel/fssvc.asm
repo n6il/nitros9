@@ -1,7 +1,7 @@
 **************************************************
 * System Call: F$SSVC
 *
-* Function: Allocate a 64 byte memory block
+* Function: Install system calls
 *
 * Input:  Y = Address of service request init table
 *
