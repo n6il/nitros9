@@ -28,7 +28,7 @@ RBF		= rbf.mn \
 		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd
 
 SCF		= scf.mn \
-		sacia.dr dacia.dr nildrv.dr printer.dr sio.dr sspak.dr ccio.dr \
+		sacia.dr dacia.dr vrn.dr printer.dr sio.dr sspak.dr ccio.dr \
 		co32.io co80.io grfo.io \
 		nil.dd p.dd pipe.dd ssp.dd \
 		term_t1.dd t1.dd t2_sacia.dd t3_sacia.dd t2_dacia.dd t3_dacia.dd \
