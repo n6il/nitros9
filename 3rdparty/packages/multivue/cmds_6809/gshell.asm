@@ -322,6 +322,10 @@ Dirup    rmb   1          Copy of signal code (if it was new DIR signal)
 RenFlag  rmb   1          Flag used by rename - whether to reset DIRSIG or not
 NSIGN    rmb   1          "C" Variable.
 HANDLER  rmb   2          "C" Variable.
+         IFEQ  H6309
+REGE     rmb   1
+REGF     rmb   1
+         ENDC
 END      rmb   896        "C" Variable.
 DATASIZE equ   .
 
@@ -366,6 +370,8 @@ CSTART2  lda   ,y+
          clr   ,-s        Zero byte
          subr  u,w        W=Size of area to clear
          tfm   s,u+       Clear until end of data area
+         ldu   3,s        Get ptr to start of data area again
+         leas  5,s        Eat zero byte & End/Start of data markers
          ELSE
          ldx   ,y++
 CSTART3  lda   ,y+
@@ -378,9 +384,9 @@ CSTART3  lda   ,y+
 CSTART4  clr   ,u+
          subd  #$0001
          bne   CSTART4
+         ldu   2,s        Get ptr to start of data area again
+         leas  4,s        Eat zero byte & End/Start of data markers
          ENDC
-         ldu   3,s        Get ptr to start of data area again
-         leas  5,s        Eat zero byte & End/Start of data markers
          puls  X          Get ptr to end of parm area
          stx   >MEMEND    Save as end of data memory ptr
          leay  ,U         Point Y to start of data area
@@ -1355,11 +1361,11 @@ DRAWSCRN pshs  U
          muld  SCREENOW   Multiply by screen set #
          stw   2,s        Save result
          ELSE
-         pshs  x,y,u
+         pshs  x,y
          ldx   SCREENOW
-         bsr   MUL16
+         lbsr  MUL16
+         puls  x,y
          stu   2,s
-         puls  x,y,u
          ENDC
          ldu   FTBLSPTR   Get ptr to file icon descriptor table
          bra   DRAWSCR2
@@ -1414,7 +1420,19 @@ SCROLBAR ldd   NSCREENS   Get # of screens of icons
          incb             Base 1 for divide
          stb   3,s        Save # of screens
          ldd   #21        Maximum # of screens
+         IFNE  H6309
          divd  3,s        B= # of Y positions per screen
+         ELSE
+         clr   ,-s
+SCROLBRa inc   ,s
+         subb  4,s
+         sbca  #0
+         bcc   SCROLBRa
+*         addb  4,s
+*         tfr   b,a
+         puls  b
+         decb
+         ENDC
          std   1,s        Save remainder & answer
          lda   SCREENOW+1 Get current screen #
          inca             Base 1
@@ -1424,7 +1442,19 @@ SCROLBAR ldd   NSCREENS   Get # of screens of icons
          inca             Base 1
          ldb   1,s        Get original remainder
          mul              Calculate 2ndary offset
-         divd  3,s        Divide by # screens total (Y pos=B)
+         IFNE  H6309
+         divd  3,s        B= # of Y positions per screen
+         ELSE
+         clr   ,-s
+SCROLBRb inc   ,s
+         subb  4,s
+         sbca  #0
+         bcc   SCROLBRb
+*         addb  4,s
+*         tfr   b,a
+         puls  b
+         decb
+         ENDC
          addb  ,s         Add 2ndary to primary Y pos calc
          leas  3,s        Eat stack
          decb             Base 0 for scroll bar SETSTAT call
@@ -1575,7 +1605,11 @@ CLASSIFY ldb   [DIRPTR,Y] Get 1st byte of dir entry
          tfr   D,U
          stu   -2,S
          beq   CLASSIF4
+         IFNE  H6309
          bsr   GTFD.ATT   Get file attributes
+         ELSE
+         lbsr  GTFD.ATT   Get file attributes
+         ENDC
          ldb   #IC.FOLDR  Default to folder (dir)
          bita  #DIR.      If it is dir, done
          bne   CLASSIF3
@@ -1640,10 +1674,19 @@ CNTSCRNS
          beq   CNTSCRN2   zero, save & exit
          IFNE  H6309
          decd  
+         divd  MAXICONS+1 Divide by # icons/"screen"
          ELSE
          subd  #$0001
+         clr   ,-s
+CNTSCRNa inc   ,s
+         subb  #MAXICONS+1
+         sbca  #0
+         bcc   CNTSCRNa
+*         addb  #MAXICONS+1
+*         tfr   b,a
+         puls  b
+         decb
          ENDC
-         divd  MAXICONS+1 Divide by # icons/"screen"
          clra             16 bit result
 CNTSCRN2 std   NSCREENS   Save # of icon "screens" & return
          rts   
@@ -1851,7 +1894,13 @@ SELCICON pshs  U
          beq   SELCICO1
          decb             If anything but AIF itself or found AIF extension, don't
          bne   SELCICO2   draw box around icon
-SELCICO1 lde   #1         Flag we want inverted shadow as well
+SELCICO1
+         IFNE  H6309
+         lde   #1         Flag we want inverted shadow as well
+         ELSE
+         lda   #1
+         sta   REGE
+         ENDC
          bsr   DRAIFBOX   Draw "selected" box around icon
 SELCICO2 std   2,S
          clrb             Reset foreground color to black
@@ -1879,7 +1928,11 @@ UNSLICO1 ldx   #2         If AIF related, set color to 2 and draw box around it 
          ldb   WNDWPATH+1 box around around icon)
          pshs  d,X
          lbsr  FCOLOR
+         IFNE  H6309
          clre             Flag that we are just doing light grey box
+         ELSE
+         clr   REGE
+         ENDC
          bsr   DRAIFBOX   Light grey box (same as background color)
          clrb  
          stb   3,S
@@ -1896,8 +1949,14 @@ DRAIFBOX ldd   FL.YSTRT,U Get Y start coord for icon, subtract 2 for box
          subb  #2         A little above top of icon
          pshs  d
          ldx   FL.XSTRT,U Get X pos of icon
+         IFNE  H6309
          ldf   FL.ICONO,u Get icon type
          subf  #IC.DRIVE  Drive? (special case)
+         ELSE
+         lda   FL.ICONO,u Get icon type
+         suba  #IC.DRIVE  Drive? (special case)
+         sta   REGF
+         ENDC
          bne   NormIcon   No, do normal box
          leax  -3,x       Yes, smaller box
          bra   Minus9     Go save X pos
@@ -1924,11 +1983,19 @@ Minus9   ldd   WNDWPATH   Save X start & window path
          lbsr  SETDPTR    Set draw ptr to upper left corner of box
 * include text below icon as well
          ldd   #36        Box height 36 pixels (2 above & below)
+         IFNE  H6309
          tstf  
+         ELSE
+         tst   REGF
+         ENDC
          bne   NormIco2
          ldd   #24        Unless drive, then 24
 NormIco2 std   4,S
+         IFNE  H6309
          tstf             Drive?
+         ELSE
+         tst   REGF
+         ENDC
          bne   NormIco3   No, determine width
          ldb   #29        Special width for drive
          bra   DRAIFBO1
@@ -1940,7 +2007,11 @@ NormIco3 ldb   #68        80 columns defaults to 68 pixel width
 DRAIFBO1 std   2,S        Save box width
          lbsr  RBOX       Draw box & return
 * use entry flag to flag whether
+         IFNE  H6309
          tste             Do we want shadow too?
+         ELSE
+         tst   REGE
+         ENDC
          beq   DoneAIFB   No, exit
          ldb   #1         Dark Grey color
          std   2,s
@@ -1950,7 +2021,11 @@ DRAIFBO1 std   2,S        Save box width
          lbsr  RLINE      Draw vertical line
          clrb             Set Y offset to 0
          std   4,s
+         IFNE  H6309
          tstf             Drive?
+         ELSE
+         tst   REGF
+         ENDC
          bne   NormIco4   No
          ldb   #28
          bra   Do40Shdw
@@ -4922,7 +4997,7 @@ OLAYGNBK pshs  U
          ELSE
          pshs  x,y,u
          ldx   #6
-         bsr   MUL16
+         lbsr  MUL16
          pshs  u
          ldd   #7
          addd  ,s++
@@ -7611,8 +7686,9 @@ ATOI4    ldd   1,S        Get current result (so far)
          ELSE
          pshs  x,y,u
          ldx   #10
-         bsr   MUL16
-         ldb   ,s
+         lbsr  MUL16
+         tfr   y,d
+         ldb   6,s
          sex
          pshs  u
          addd  ,s++ 
@@ -7676,7 +7752,11 @@ CCMODX   std   ,S++
 DIVIDE.0 puls  D
          std   ,S
          ldd   #45
+         IFNE  H6309
          bra   RPTERR
+         ELSE
+         lbra  RPTERR
+         ENDC
 
 CCDIV    subd  #0
          beq   DIVIDE.0
@@ -7812,6 +7892,34 @@ WritColr ldy   #6
          lda   <WNDWPATH+1 Get window path
          os9   I$Write
          puls  d,x,y,pc
+
+* 16 bit multiply
+         IFEQ  H6309
+MUL16    pshs  d,x,y,u        XmulD returns Y&U
+         clr   4,s
+         lda   3,s
+         mul
+         std   6,s
+         ldd   1,s
+         mul
+         addb  6,s
+         adca  #0
+         std   5,s
+         ldb   ,s
+         lda   3,s
+         mul
+         addd  5,s
+         std   5,s
+         bcc   MUL16b
+         inc   4,s
+MUL16b   lda   ,s
+         ldb   2,s
+         mul
+         addd  4,s
+         clra
+         std   4,s
+         puls  d,x,y,u,pc
+         ENDC
 
 MenuColr fcb   $1b,$32,2,$1b,$33,0
 RegColr  fcb   $1b,$32,0,$1b,$33,2
