@@ -21,7 +21,7 @@ BOOTFILE_STOCK	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock $(MD)/clock2_soft
+		$(MD)/clock_soft
 
 BOOTFILES	= bootfile_stock
 KERNELS		= kernel_stock
