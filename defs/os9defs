@@ -55,6 +55,9 @@ OS9DEFS  set   1
 * changed the sizes from 2 to 3 bytes.
 * DT.NFM is now the same for both Level One and Level Two.
 * Added DT.CDFM type for future CD-ROM file manager
+*
+*          2003/11/05  Robert Gault
+* Fixed MouseInf. Made it rmb 2 as it should be. Also changes to init and cc3io.
 
          nam   OS9Defs
          IFEQ  Level-1
@@ -545,18 +548,18 @@ D.VOFF2  rmb   1          vertical scroll/offset 2 register ($FF9C)
 D.VOFF1  rmb   1          vertical offset 1 register ($FF9D)
 D.VOFF0  rmb   1          vertical offset 0 register ($FF9E)
 D.HOFF0  rmb   1          horizontal offset 0 register ($FF9F)
-D.Speed  rmb   1          Speed of COCO CPU 0=slow,1=fast
-D.TskIPt rmb   2          Task image Pointer table (CC)
-D.MemSz  rmb   1          128/512K memory flag (CC)
-D.SSTskN rmb   1          System State Task Number (COCO)
-D.CCMem  rmb   2          Pointer to beginning of CC Memory
-D.CCStk  rmb   2          Pointer to top of CC Memory
-D.Flip0  rmb   2          Change to Task 0
-D.Flip1  rmb   2          Change to reserved Task 1
-D.VIRQ   rmb   2          VIRQ Polling routine
-D.IRQS   rmb   1          IRQ shadow register (CC Temporary)
-D.CLTb   rmb   2          VIRQ Table address
-D.AltIRQ rmb   2          Alternate IRQ Vector (CC)
+D.Speed  rmb   1          Speed of COCO CPU 0=slow,1=fast ($A0)
+D.TskIPt rmb   2          Task image Pointer table (CC) ($A1)
+D.MemSz  rmb   1          128/512K memory flag (CC) ($A3)
+D.SSTskN rmb   1          System State Task Number (COCO) ($A4)
+D.CCMem  rmb   2          Pointer to beginning of CC Memory ($A5)
+D.CCStk  rmb   2          Pointer to top of CC Memory ($A7)
+D.Flip0  rmb   2          Change to Task 0 ($A9)
+D.Flip1  rmb   2          Change to reserved Task 1 ($AB)
+D.VIRQ   rmb   2          VIRQ Polling routine ($AD)
+D.IRQS   rmb   1          IRQ shadow register (CC Temporary) ($AF)
+D.CLTb   rmb   2          VIRQ Table address ($B0)
+D.AltIRQ rmb   2          Alternate IRQ Vector (CC) ($B2)
 D.GPoll  rmb   2          CC GIME IRQ enable/disable toggle
 D.Clock2 rmb   2          CC Clock2 entry address
          org   $C0
@@ -676,7 +679,7 @@ Feature2 rmb   1          feature byte 2
          IFGT  Level-1
 * -- CC3IO area -- (NitrOS-9 Level 2 and above) *
 MonType  rmb   1          Monitor type (0=CMP,1=RGB,2=MONO)
-MouseInf rmb   1          Mouse resolution/Mouse port
+MouseInf rmb   2          Mouse resolution/Mouse port; was 1, major error RG.
 KeyRptS  rmb   1          Key repeat start constant
 KeyRptD  rmb   1          Key repeat delay constant
          ENDC
