@@ -23,7 +23,7 @@ rev      set   $01
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   2
 u0002    rmb   1
-u0003    rmb   1
+DevFd    rmb   1
 u0004    rmb   1
 u0005    rmb   1
 u0006    rmb   2
@@ -128,7 +128,7 @@ L020E    sta   ,y+
          decb  
          bpl   L020E
          sty   <u003A
-         lda   #$40
+         lda   #'@
          ldb   #$20
          std   ,y++
          lda   #$01
@@ -136,7 +136,7 @@ L020E    sta   ,y+
          leax  <u003D,u
          lda   #$03
          os9   I$Open   
-         sta   <u0003
+         sta   <DevFd
          lbcs  L0503
          leax  <u001A,u
          ldb   #$00
@@ -171,7 +171,7 @@ L025F    lda   ,y+
          ldx   #$0000
          stx   <u0006
          ldu   #$3000
-         ldb   #$02
+         ldb   #SS.SIZ
          os9   I$SetStt 
          lbcs  L0514
          ldu   <u0000
@@ -194,7 +194,7 @@ L0295    clra
          beq   L02E2
          lda   #$01
          lbsr  L0517
-         lda   <u0003
+         lda   <DevFd
          ldx   #$0000
          ldu   #$0000
          os9   I$Seek   
@@ -242,7 +242,7 @@ L0322    cmpb  #$D3
          lda   <u0002
          ldx   #$0000
          ldu   <u0006
-         ldb   #$02
+         ldb   #SS.SIZ
          os9   I$SetStt 
          lbcs  L0514
          ldu   <u0000
@@ -252,7 +252,7 @@ L0322    cmpb  #$D3
          lda   <u0030,u
          clrb  
          tfr   d,u
-         lda   <u0003
+         lda   <DevFd
          os9   I$Seek   
          ldu   <u0000
          lbcs  L0514
@@ -262,7 +262,7 @@ L0322    cmpb  #$D3
          lbcs  L0514
          ldd   >u0218,u
          lbne  L0577
-         lda   <u0003
+         lda   <DevFd
          ldx   #$0000
          ldu   #$0015
          os9   I$Seek   
@@ -328,7 +328,7 @@ L0412    ldu   <u0000
          std   <u000B
          ldx   #$0000
          ldu   #$0015
-         lda   <u0003
+         lda   <DevFd
          os9   I$Seek   
          ldu   <u0000
          lbcs  L0514
@@ -345,7 +345,7 @@ L0412    ldu   <u0000
          lda   <$4C,x
          bita  #$0F
          beq   L04AE
-         lda   <u0003
+         lda   <DevFd
          pshs  u
          ldx   #$0002
          ldu   #$6400
@@ -394,8 +394,8 @@ L04CB    lbsr  L057E
          ldu   #$6400
          os9   I$Seek   
          puls  u
-         ldx   #$EF00
-         ldy   #$0F80
+         ldx   #$EF00    Address of kernel in RAM
+         ldy   #$0F80    Amount to write
          os9   I$Write  
          bcs   L04FC
          os9   I$Close  
@@ -455,11 +455,12 @@ L0577    leax  >L0139,pcr
          clrb  
          bra   L0507
 L057E    pshs  u
-         lda   <u0003
+         lda   <DevFd
          ldx   #$0000
          ldu   #$0100
          os9   I$Seek   
          puls  pc,u
+
 L058D    leax  >L00F6,pcr
          clrb  
          lbra  L0507

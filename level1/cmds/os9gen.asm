@@ -32,7 +32,7 @@ rev      set   $01
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   2
 u0002    rmb   1
-u0003    rmb   1
+DevFd    rmb   1
 u0004    rmb   1
 u0005    rmb   1
 u0006    rmb   2
@@ -100,13 +100,13 @@ L0175    sta   ,y+
          decb  
          bpl   L0175
          sty   <u002F
-         lda   #$40
+         lda   #'@
          ldb   #$20
          std   ,y++
          leax  <u0031,u
          lda   #$03
          os9   I$Open   
-         sta   <u0003
+         sta   <DevFd
          lbcs  L035B
          ldx   <u002F
          leay  >L0143,pcr
@@ -131,7 +131,7 @@ L01A5    lda   ,y+
          ldx   #$0000
          stx   <u0006
          ldu   #$4000
-         ldb   #$02
+         ldb   #SS.SIZ
          os9   I$SetStt 
          lbcs  L036C
          ldu   <u0000
@@ -180,7 +180,7 @@ L022E    cmpb  #$D3
          lda   <u0002
          ldx   #$0000
          ldu   <u0006
-         ldb   #$02
+         ldb   #SS.SIZ
          os9   I$SetStt 
          lbcs  L036C
          ldu   <u0000
@@ -190,7 +190,7 @@ L022E    cmpb  #$D3
          lda   <u0025,u
          clrb  
          tfr   d,u
-         lda   <u0003
+         lda   <DevFd
          os9   I$Seek   
          ldu   <u0000
          lbcs  L036C
@@ -200,7 +200,7 @@ L022E    cmpb  #$D3
          lbcs  L036C
          ldd   <u0069,u
          lbne  L036F
-         lda   <u0003
+         lda   <DevFd
          ldx   #$0000
          ldu   #$0015
          os9   I$Seek   
@@ -246,7 +246,7 @@ L02C5    lda   #$01
          std   <u000B
          ldx   #$0000
          ldu   #$0015
-         lda   <u0003
+         lda   <DevFd
          os9   I$Seek   
          ldu   <u0000
          lbcs  L036C
@@ -254,7 +254,7 @@ L02C5    lda   #$01
          ldy   #$0005
          os9   I$Write  
          lbcs  L036C
-         lbsr  L0376
+         lbsr  SkLSN1
          leax  <u0051,u
          ldy   #$0100
          os9   I$Read   
@@ -270,9 +270,9 @@ L02C5    lda   #$01
          anda  #$90
          eora  #$90
          lbne  L0385
-         ldx   #$F000
-         ldy   #$0F00
-         lda   <u0003
+         ldx   #$F000    Address of kernel in RAM
+         ldy   #$0F00    Amount to write
+         lda   <DevFd
          os9   I$Write  
          bcs   L0354
          os9   I$Close  
@@ -292,12 +292,14 @@ L036C    os9   F$Exit
 L036F    leax  >L00FC,pcr
          clrb  
          bra   L035F
-L0376    pshs  u
-         lda   <u0003
+
+SkLSN1   pshs  u
+         lda   <DevFd
          ldx   #$0000
          ldu   #$0100
-         os9   I$Seek   
+         os9   I$Seek   Seek to allocation map at LSN 1
          puls  pc,u
+
 L0385    leax  >L00B0,pcr
          clrb  
          bra   L035F
