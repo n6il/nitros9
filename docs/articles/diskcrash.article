@@ -412,9 +412,9 @@ end of a segment or file) or the end of the file.
    W  Write the sector back to the disk
    X  eXpert mode toggle on/off
    Z  Zap (fill in) the sector displayed
+-------------------------------------------------------------------------
 </screen>
 <para>
--------------------------------------------------------------------------
 *  C  Close output file
 </para>
 <para>
@@ -423,6 +423,8 @@ doing anything else with it.
 </para>
 <para>
 *  F  Find a byte or text string (BREAK aborts)
+</para>
+<para>
 *  N  Next occurrence of byte(s) or string (Find)
 </para>
 <para>
@@ -440,7 +442,6 @@ of the file.  In this case it will read LSN $00 thru $04 although
 we may not actually be on sectors 0-4.
 </para>
 <para>
-
 At any rate you need to find the last relative sector of the file
 probably using the arrow keys to scroll through it.  When you reach
 the last sector look and the LSN, left column number, and top row
