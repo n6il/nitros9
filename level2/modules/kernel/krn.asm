@@ -33,7 +33,7 @@ MName    fcs   /OS9p1/
          fcc   /0123456789ABCDEF/
          fcc   /01234567/
          ELSE
-         fcc   /12345123/
+         fcc   /123456789/
          ENDC
 
 * Might as well have this here as just past the end of OS9p1...
@@ -258,7 +258,6 @@ L0111    asld               get next block #
          bne   L0111        No, keep going till ghost is found
          stb    <D.MemSz    Save # 8k mem blocks that exist
          addr   x,d         add number of blocks to block map start
-         std    <D.BlkMap+2 save block map end pointer
          ELSE
          ldd    #$0008
 L0111    aslb
@@ -273,8 +272,9 @@ L0111    aslb
          stb    <D.MemSz
          pshs   x
          addd   ,s++
-         std    <D.BlkMap+2
          ENDC
+         std    <D.BlkMap+2 save block map end pointer
+
 * [D] at this point will contain 1 of the following:
 * $0010 - 128k
 * $0020 - 256k
@@ -510,8 +510,9 @@ DoFull   bsr   L02DA      move the stack frame back to user state
          lbra  L0D80      go back to the process
 
 * add ldu P$SP,x, etc...
-AllClr   inc   <D.QCnt
+AllClr   equ   *
          IFNE  H6309
+         inc   <D.QCnt
          aim   #$1F,<D.QCnt
          beq   DoFull     every 32 system calls, do the full check
          ldw   #R$Size    --- size of the register stack
@@ -520,6 +521,7 @@ AllClr   inc   <D.QCnt
          tfm   u+,y+      --- move the stack to the top of memory
          ELSE
          lda   <D.QCnt
+         inca
          anda  #$1F
          sta   <D.QCnt
          beq   DoFull
