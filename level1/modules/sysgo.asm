@@ -74,18 +74,12 @@ TimePckt fcb   85,06,01,00,00,00
 BasicRst fcb   $55
          fcb   $00
          fcb   $74
-         fcb   $12
-         fcb   $7F
-         fcb   $FF
-         fcb   $03
-         fcb   $12
-         fcb   $12
-         fcb   $B7
-         fcb   $FF
-         fcb   $DF
-         fcb   $7E
-         fcb   $EF
-         fcb   $0E
+         nop
+         clr   >$FF03
+         nop
+         nop
+         sta   >$FFDF
+         jmp   >$EF0E
 
 * SysGo entry point
 start    leax  >IcptRtn,pcr
