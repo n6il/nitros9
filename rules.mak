@@ -47,6 +47,7 @@ ZIP		= zip -D
 3RDPARTY	= $(BASEDIR)/3rdparty
 LEVEL1		= $(BASEDIR)/level1
 LEVEL2		= $(BASEDIR)/level2v3
+NLEVEL2		= $(BASEDIR)/nitros
 
 # File managers
 %.mn: %.asm
