@@ -6,6 +6,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   6    From Tandy OS-9 Level One VR 02.00.00
+*   9    From Tandy OS-9 Level Two Development System,  BGP 03/01/03
+*        back ported to OS-9 Level One
 
          nam   debug
          ttl   6809 debugger
@@ -19,54 +21,38 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-         IFGT  Level-1
 edition  set   9
-         ELSE
-edition  set   6
-         ENDC
+
+* Changable settings
+NumBrkPt equ   12		number of breakpoints
+BuffSiz  equ   $145
+UnknSiz  equ   80
 
 L0000    mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   1
-u0001    rmb   1
-u0002    rmb   1
-u0003    rmb   1
+curraddr rmb   2
+u0002    rmb   2
 u0004    rmb   2
-u0006    rmb   2
-u0008    rmb   1
-u0009    rmb   1
-u000A    rmb   1
-u000B    rmb   1
-u000C    rmb   2
-WideFlag rmb   1
-u000F    rmb   1
-u0010    rmb   14
-u001E    rmb   2
-u0020    rmb   1
-u0021    rmb   19
-u0034    rmb   4
-u0038    rmb   9
-u0041    rmb   1
-u0042    rmb   1
-u0043    rmb   1
-u0044    rmb   3
-u0047    rmb   4
-u004B    rmb   1
-u004C    rmb   1
-u004D    rmb   4
-u0051    rmb   2
-u0053    rmb   2
-u0055    rmb   3
-u0058    rmb   1
-u0059    rmb   6
-u005F    rmb   39
-u0086    rmb   20
-u009A    rmb   4
-u009E    rmb   9
-u00A7    rmb   18
-u00B9    rmb   67
-u00FC    rmb   260
+buffptr  rmb   2
+u0008    rmb   2
+prevaddr rmb   2
+bptable  rmb   2
+isnarrow rmb   1
+* extra memory allocated at start
+         rmb   (NumBrkPt*3)
+         rmb   UnknSiz
+         rmb   BuffSiz
+         rmb   R$Size
+         rmb   44
 size     equ   .
+
+* Debugger Errors
+E$Syntax equ  0			bad expression syntax
+E$TooBig equ  8			value to large in context
+E$BadCmd equ  9			illegal command
+E$NotRAM equ  10		memory is ROM
+E$BPTFull equ  11		breakpoint table full
+E$BrkPt  equ  13		breakpoint encountered
 
 name     fcs   /debug/
          fcb   edition
@@ -75,7 +61,7 @@ L0013    bsr   L0021
          bra   L0019
 L0017    bsr   L0027
 L0019    pshs  a
-         lda   #$20
+         lda   #C$SPAC
          sta   ,x+
          puls  pc,a
 L0021    exg   a,b
@@ -116,33 +102,35 @@ L0053    addd  ,u++
 
 L0065    fcb   $27,$10,$03,$e8,$00,$64,$00,$0a,$00,$01
 
-L006F    lbsr  L0127
-         leax  $01,x
-         cmpa  #'#
-         beq   L00BA
-         cmpa  #'%
-         beq   L00E0
-         cmpa  #'$
-         beq   L0082
-         leax  -$01,x
-L0082    leas  -$04,s
-         bsr   L00F7
-L0086    bsr   L00FE
-         bcc   L00A0
-         cmpb  #'A
-         lbcs  L0110
-         cmpb  #'F
-         bls   L009E
-         cmpb  #'a
-         bcs   L0110
-         cmpb  #'f
-         bhi   L0110
-         subb  #$20
-L009E    subb  #$37
-L00A0    stb   ,s
-         ldd   $02,s
-         bita  #$F0
-         bne   L0123
+L006F    lbsr  EatSpace		skip spaces
+         leax  $01,x		point after byte in A
+         cmpa  #'#		decimal specifier?
+         beq   DoDec		branch if so
+         cmpa  #'%		binary specifier?
+         beq   DoBin		branch if so
+         cmpa  #'$		hex specifier?
+         beq   DoHex		branch if so
+         leax  -$01,x		back up
+
+* Make hex number
+DoHex    leas  -$04,s		make room on stack for hex
+         bsr   Clr4		clear bytes on stack
+L0086    bsr   AtoInt		get integer value at ,X
+         bcc   L00A0		branch if ok
+         cmpb  #'A		may be hex digit.. check for 
+         lbcs  L0110		branch if not
+         cmpb  #'F		check upperbound
+         bls   L009E		branch if ok
+         cmpb  #'a		now check lowercase
+         bcs   L0110		branch if not
+         cmpb  #'f		check upperbound
+         bhi   L0110		branch if not ok
+         subb  #$20		else make uppercase
+L009E    subb  #$37		and get value
+L00A0    stb   ,s		save value on stack
+         ldd   $02,s		get two bytes from stack
+         bita  #$F0		upper nibble set?
+         bne   L0123		branch if so
          lslb  
          rola  
          lslb  
@@ -156,9 +144,11 @@ L00A0    stb   ,s
          std   $02,s
          inc   $01,s
          bra   L0086
-L00BA    leas  -$04,s
-         bsr   L00F7
-L00BE    bsr   L00FE
+
+* Make decimal number
+DoDec    leas  -$04,s
+         bsr   Clr4
+L00BE    bsr   AtoInt
          bcs   L0110
          stb   ,s
          ldd   $02,s
@@ -178,8 +168,10 @@ L00BE    bsr   L00FE
          std   $02,s
          inc   $01,s
          bra   L00BE
-L00E0    leas  -$04,s
-         bsr   L00F7
+
+* Make binary number
+DoBin    leas  -$04,s
+         bsr   Clr4
 L00E4    ldb   ,x+
          subb  #$30
          bcs   L0110
@@ -190,21 +182,33 @@ L00E4    ldb   ,x+
          bcs   L0123
          inc   $01,s
          bra   L00E4
-L00F7    clra  
+
+* Clear 4 bytes on stack
+* Exit:
+*   A,B = 0
+Clr4     clra  
          clrb  
          std   $02,s
          std   $04,s
          rts   
-L00FE    ldb   ,x+
-         cmpb  #'0
-         bcs   L0108
-         cmpb  #'9
-         bls   L010B
-L0108    orcc  #Carry
-         rts   
-L010B    subb  #'0
-         andcc #^Carry
-         rts   
+
+* ASCII to Integer
+* Entry:
+*   X = address where byte is
+* Exit:
+*   X = address + 1
+*   Carry = clear: B = integer
+*   Carry = set: B = ASCII char value
+AtoInt   ldb   ,x+		get char at X
+         cmpb  #'0		zero?
+         bcs   L0108		branch if lower
+         cmpb  #'9		9?
+         bls   L010B		branch if lower/same
+L0108    orcc  #Carry		else set carry
+         rts   			and return
+L010B    subb  #'0		get real value
+         andcc #^Carry		clear carry
+         rts   			return
 L0110    leax  -$01,x
          tst   $01,s
          beq   L011C
@@ -217,11 +221,14 @@ L0120    leas  $04,s
          rts   
 L0123    andcc #^Zero
          bra   L011E
-L0127    lda   ,x+
+
+* Eat spaces
+EatSpace lda   ,x+
          cmpa  #C$SPAC
-         beq   L0127
+         beq   EatSpace
          leax  -$01,x
          rts   
+
 L0130    pshs  x,b,a
          lda   $03,s
          mul   
@@ -273,8 +280,10 @@ L0181    dec   $04,s
          andcc #^Carry
 L018B    leas  $06,s
          rts   
+
+* Copy from X to Y until byte zero is encountered
 L018E    sta   ,x+
-L0190    lda   ,y+
+CopyXY   lda   ,y+
          bne   L018E
          rts   
 L0195    pshs  u,y
@@ -289,14 +298,14 @@ L01A5    leax  $01,x
 L01A7    bsr   L01C9
          pshs  b,a
 L01AB    bsr   L021D
-         cmpa  #'-
+         cmpa  #'-		subtract?
          bne   L01B9
          bsr   L01C7
          nega  
          negb  
          sbca  #$00
          bra   L01BF
-L01B9    cmpa  #$2B
+L01B9    cmpa  #'+		add?
          bne   L01C5
          bsr   L01C7
 L01BF    addd  ,s
@@ -307,7 +316,7 @@ L01C7    leax  $01,x
 L01C9    bsr   L01FD
          pshs  b,a
 L01CD    bsr   L021D
-         cmpa  #'*
+         cmpa  #'*		multiply?
          bne   L01E2
          bsr   L01FB
          pshs  x
@@ -316,7 +325,7 @@ L01CD    bsr   L021D
          bcc   L01F5
          ldb   #$02
          bra   L019F
-L01E2    cmpa  #'/
+L01E2    cmpa  #'/		divide?
          bne   L01C5
          bsr   L01FB
          pshs  x
@@ -332,49 +341,50 @@ L01FB    leax  $01,x
 L01FD    bsr   L0222
          pshs  b,a
 L0201    bsr   L021D
-         cmpa  #'&
+         cmpa  #'&		logical and?
          bne   L020F
          bsr   L0220
          andb  $01,s
          anda  ,s
          bra   L0219
-L020F    cmpa  #'!
+L020F    cmpa  #'!		logical or?
          bne   L01C5
          bsr   L0220
          orb   $01,s
          ora   ,s
 L0219    std   ,s
          bra   L0201
-L021D    lbra  L0127
+L021D    lbra  EatSpace
 L0220    leax  $01,x
 L0222    bsr   L021D
-         cmpa  #'^
+         cmpa  #'^		logical xor?
          bne   L022E
-         bsr   L0239
+         bsr   ParsExp
          comb  
          coma  
          bra   L0238
-L022E    cmpa  #'-
+L022E    cmpa  #'-		minus?
          bne   L023B
-         bsr   L0239
+         bsr   ParsExp
          nega  
          negb  
          sbca  #$00
 L0238    rts   
-L0239    leax  $01,x
+
+ParsExp  leax  $01,x
 L023B    bsr   L021D
-         cmpa  #'(
+         cmpa  #'(		open paren?
          bne   L0250
          lbsr  L01A5
          pshs  b,a
          bsr   L021D
-         cmpa  #')
+         cmpa  #')		close paren?
          beq   L0282
-         IFGT  Level-1
+*         IFGT  Level-1
          ldb   #$04
-         ELSE
-         ldb   <u0004
-         ENDC
+*         ELSE
+*         ldb   <u0004
+*         ENDC
          bra   L0265
 L0250    cmpa  #'[
          bne   L026A
@@ -402,19 +412,20 @@ L026A    cmpa  #'<
          bra   L0265
 L0282    leax  $01,x
          puls  pc,b,a
-L0286    cmpa  #'.
+
+L0286    cmpa  #C$PERD
          bne   L028F
-         ldd   <u0000
+         ldd   <curraddr
          leax  $01,x
          rts   
-L028F    cmpa  #''
+L028F    cmpa  #''		ASCII byte?
          bne   L0297
          ldd   ,x++
          clra  
          rts   
-L0297    cmpa  #'"
+L0297    cmpa  #'"		ASCII word?
          bne   L02A0
-         leax  $01,x
+         leax  $01,x		point past quote char
          ldd   ,x++
          rts   
 L02A0    cmpa  #':
@@ -434,16 +445,16 @@ L02B4    lbsr  L006F
          beq   L02BF
          ldb   #$03
          bra   L0267
-L02BF    ldb   #$00
+L02BF    ldb   #E$Syntax
          bra   L0267
 L02C3    ldb   #$09
          pshs  b
-         ldd   ,x
-         cmpd  #$7370
-         beq   L02D5
-         cmpd  #$5350
-         bne   L02E2
-L02D5    leax  $02,x
+         ldd   ,x		get first two chars in D
+         cmpd  #$7370		sp?
+         beq   L02D5		branch if so
+         cmpd  #$5350		SP?
+         bne   L02E2		branch if not
+L02D5    leax  $02,x		move past two chars
          ldd   #$0002
          tfr   dp,a
          tfr   d,y
@@ -453,26 +464,27 @@ L02E2    leay  >L0322,pcr
 L02E6    lda   ,y
          ldb   $01,y
          bne   L02F8
-         cmpa  ,x
-         beq   L0307
-         adda  #$20
-         cmpa  ,x
-         beq   L0307
+         cmpa  ,x		same as user input?
+         beq   L0307		yes, a match
+         adda  #$20		make lowercase
+         cmpa  ,x		same as user input?
+         beq   L0307		yes, a match
          bra   L0318
 L02F8    cmpd  ,x
          beq   L0305
          addd  #$2020
          cmpd  ,x
          bne   L0318
-L0305    leax  $01,x
-L0307    leax  $01,x
-         lda   $02,y
-         tfr   a,b
-         andb  #$0F
-         ldy   <u0002
-         leay  b,y
-L0314    andcc #^Carry
-         puls  pc,b
+L0305    leax  $01,x		point X to next char
+L0307    leax  $01,x		point X to next char
+         lda   $02,y		get offset
+         tfr   a,b		transfer to B
+         andb  #$0F		mask off hi nibble
+         ldy   <u0002		get stack in Y
+         leay  b,y		move Y to offset in stack
+L0314    andcc #^Carry		clear carry
+         puls  pc,b		return
+
 L0318    leay  $03,y
          dec   ,s
          bne   L02E6
@@ -480,43 +492,50 @@ L0318    leay  $03,y
          puls  pc,b
 
 L0322    fcc   "CC"
-         fcb   $00
+         fcb   R$CC
          fcc   "DP"
-         fcb   $03
+         fcb   R$DP
          fcc   "PC"
-         fcb   $8a
+         fcb   $80+R$PC
          fcc   "A"
-         fcb   $00,$01
+         fcb   $00,R$A
          fcc   "B"
-         fcb   $00,$02
+         fcb   $00,R$B
          fcc   "D"
-         fcb   $00,$81
+         fcb   $00,$80+R$A
+         IFNE  H6309
+         fcc   "E"
+         fcb   $00,R$E
+         fcc   "F"
+         fcb   $00,R$F
+         fcc   "W"
+         fcb   $00,$80+R$E
+         ENDC
          fcc   "X"
-         fcb   $00,$84
+         fcb   $00,$80+R$X
          fcc   "Y"
-         fcb   $00,$86
+         fcb   $00,$80+R$Y
          fcc   "U"
-         fcb   $00,$88
+         fcb   $00,$80+R$U
 
-start    leas  >size,u
-         leas  -R$Size,s
-         sts   <u0002
+start    leas  >size,u		point S to end of memory
+         leas  -R$Size,s	back off size of register stack
+         sts   <u0002		save off
          sts   <u0004
-         leay  >L0765,pcr
+         leay  >DefBrk,pcr
          sty   R$PC,s
          lda   #Entire
          sta   R$CC,s
          tfr   s,x		X = size-R$Size
-         leax  >-$0145,x
-         stx   <u0006
-         leax  <-$50,x
+         leax  >-BuffSiz,x	back off appropriate byte count
+         stx   <buffptr		and save off ptr for line buffer
+         leax  <-UnknSiz,x	back off more
          stx   <u0008
-         leax  <-$24,x
-         stx   <u000C
-         clr   <u0000
-         clr   <u0001
-         IFGT  Level-1
-         clr   <WideFlag
+         leax  <-NumBrkPt*3,x
+         stx   <bptable
+         clr   <curraddr
+         clr   <curraddr+1
+         clr   <isnarrow
          pshs  y,x,b,a
          lda   #$01		stdout
          ldb   #SS.ScSiz	get screen size
@@ -528,60 +547,68 @@ start    leas  >size,u
          lbra  L0735
 L0380    cmpx  #80		80 columns?
          beq   L0387		branch if so
-         inc   <WideFlag
+         inc   <isnarrow
 L0387    puls  x,y,b,a
-         ENDC
 L036A    clr   ,x+
-         cmpx  <u0006
+         cmpx  <buffptr
          bcs   L036A
-         leax  >L0652,pcr
-         lda   #$01
-         os9   F$SSWi   
-         os9   F$Icpt   
-         lbsr  L07E1
-         ldx   <u0006
-         leay  >L0766,pcr
-         bsr   L03C2
-         lbsr  L07E3
-L038A    leay  >L077B,pcr
-         lbsr  L07EF
-         lbsr  L0807
-         leay  >L07AD,pcr
-         lda   ,x
-         cmpa  #'a
-         bcs   L03A2
-         suba  #$20
-         sta   ,x
-L03A2    leay  $03,y
-         lda   ,y
-         beq   L03B8
-         cmpa  ,x
-         bne   L03A2
-         leax  $01,x
-         ldd   $01,y
-         leau  >L0000,pcr
-         jsr   d,u
-         bra   L038A
-L03B8    ldb   #$09
-         bsr   L03BE
-         bra   L038A
-L03BE    os9   F$PErr   
+         leax  >IcptRtn,pcr
+         lda   #$01		SSWI Vector 1
+         os9   F$SSWi   	set software interrupt routine
+         os9   F$Icpt   	set intercept routine
+         lbsr  WritCR		write carriage return
+         ldx   <buffptr
+         leay  >Title,pcr	point to title
+         bsr   L03C2		print it
+         lbsr  WritCR2
+
+* Show prompt and get input from standard input to process
+GetInput leay  >Prompt,pcr	point to prompt
+         lbsr  L07EF		print it
+         lbsr  ReadLine		read line from std input
+         leay  >CmdTbl,pcr	point to command table
+         lda   ,x		get character from read buffer
+         cmpa  #'a		compare against lowercase a
+         bcs   L03A2		branch if lower
+         suba  #$20		make uppercase
+         sta   ,x		and save
+L03A2    leay  $03,y		walk through table
+         lda   ,y		get char to compare against in A
+         beq   SyntxErr		branch if done
+         cmpa  ,x		same?
+         bne   L03A2		if not, get next
+* Here we have a command match, dispatch it
+         leax  $01,x		move past char
+         ldd   $01,y		get handle address
+         leau  >L0000,pcr	point to start of module
+         jsr   d,u		and branch to subroutine
+         bra   GetInput
+
+* Command wasn't recognized
+SyntxErr ldb   #E$BadCmd
+         bsr   ShowErr
+         bra   GetInput
+
+ShowErr  os9   F$PErr   
          rts   
-L03C2    lbra  L0190
-L03C5    lda   ,x
-         cmpa  #C$PERD
-         bne   L03CF
-         ldd   <u000A
+
+L03C2    lbra  CopyXY
+
+* Show byte at current memptr
+DotCmd   lda   ,x		get byte after cmd byte
+         cmpa  #C$PERD		is it a period?
+         bne   L03CF		branch if not
+         ldd   <prevaddr	else get previous address
          bra   L03DC
-L03CF    cmpa  #C$CR
-         bne   L03D7
-L03D3    ldd   <u0000
+L03CF    cmpa  #C$CR		cr?
+         bne   L03D7		branch if not
+L03D3    ldd   <curraddr
          bra   L03DC
 L03D7    lbsr  L0195
-         bcs   L03BE
-L03DC    ldx   <u0000
-         stx   <u000A
-         std   <u0000
+         bcs   ShowErr
+L03DC    ldx   <curraddr	get current memory loc
+         stx   <prevaddr	store in previous memory loc
+         std   <curraddr	and save D in new memory loc
          pshs  b,a
          bsr   L0415
          ldd   ,s
@@ -589,51 +616,61 @@ L03DC    ldx   <u0000
          puls  y
          ldb   ,y
          lbsr  L0027
-         lbra  L07E3
-L03F5    ldd   <u0000
-         subd  #$0001
+         lbra  WritCR2
+
+* Show previous byte
+PrevByte ldd   <curraddr	get current memory address
+         subd  #$0001		subtract 1
          bra   L03DC
-L03FC    bsr   L043F
-         bcs   L03BE
-         ldx   <u0000
-         stb   ,x
-         cmpb  ,x
-         beq   L040E
-         ldb   #$0A
-         bsr   L03BE
+
+* Set byte at current location
+SetLoc   bsr   L043F
+         bcs   ShowErr
+         ldx   <curraddr
+         stb   ,x		store byte at curraddr
+         cmpb  ,x		compare (in case it is ROM)
+         beq   NextByte		branch if equal
+         ldb   #E$NotRAM	else load B with error
+         bsr   ShowErr		and show it
          bra   L03D3
-L040E    ldd   <u0000
-         addd  #$0001
+
+* Show next byte
+NextByte ldd   <curraddr	get current memory address
+         addd  #$0001		add one to it
          bra   L03DC
-L0415    ldx   <u0006
+L0415    ldx   <buffptr		load X with buffer pointer
          pshs  b,a
-         leay  >L0780,pcr
+         leay  >Spaces,pcr	point to spaces
          bsr   L03C2
          puls  pc,b,a
-L0421    lbsr  L0195
-         bcs   L03BE
+
+* Evaluate expression
+Eval     lbsr  L0195
+         bcs   ShowErr
          bsr   L0415
          pshs  b,a
-         lda   #'$
+         lda   #'$		hex prefix
          sta   ,x+
          lda   ,s
          lbsr  L0013
-         lda   #'#
+         lda   #'#		decimal prefix
          sta   ,x+
          puls  b,a
          lbsr  L0040
-         lbra  L07E3
+         lbra  WritCR2
 L043F    lbsr  L0195
          bcs   L044B
          tsta  
          beq   L044B
-         ldb   #$08
+         ldb   #E$TooBig
          orcc  #Carry
 L044B    rts   
-L044C    lbsr  L0512
+
+* Show all registers
+ShowRegs lbsr  L0512
          beq   L04AF
          lbsr  L02C3
-         lbcs  L03BE
+         lbcs  ShowErr
          pshs  y,a
          lbsr  L0512
          bne   L0475
@@ -646,7 +683,7 @@ L044C    lbsr  L0512
          bra   L0472
 L046D    ldb   ,y
          lbsr  L0027
-L0472    lbra  L07E3
+L0472    lbra  WritCR2
 L0475    lda   ,s+
          bpl   L0485
          lbsr  L0195
@@ -660,12 +697,18 @@ L0485    bsr   L043F
          stb   ,y
          rts   
 
-L0490    fcc   "PC="
+ShrtHdr  fcc   "PC="
          fcb   $00
          fcc   "A="
          fcb   $00
          fcc   "B="
          fcb   $00
+         IFNE  H6309
+         fcc   "E="
+         fcb   $00
+         fcc   "F="
+         fcb   $00
+         ENDC
          fcc   "CC="
          fcb   $00
          fcc   "DP="
@@ -678,175 +721,195 @@ L0490    fcc   "PC="
          fcb   $00
          fcc   "U="
          fcb   $00
-         IFGT  Level-1
-L04AF
-         fcb   $0d,$0e,$27,$54
-         pshs  u
-         ELSE
-L04AF    pshs  u
-         ENDC
-         ldx   <u0006
-         leay  <L0490,pcr
+
+L04AF    tst   <isnarrow	wide screen?
+         beq   WidRegs		branch if so
+         pshs  u		save U
+         ldx   <buffptr		point to buffer
+         leay  <ShrtHdr,pcr
          ldu   <u0002
          lbsr  L03C2
-         ldd   u000A,u
+         ldd   R$PC,u
          bsr   L0505
          lbsr  L03C2
-         ldb   u0001,u
+         ldb   R$A,u
          bsr   L050F
          lbsr  L03C2
-         ldb   u0002,u
+         ldb   R$B,u
          bsr   L050F
          lbsr  L03C2
-         ldb   ,u
+         IFNE  H6309
+         ldb   R$E,u
          bsr   L050F
          lbsr  L03C2
-         ldb   u0003,u
+         ldb   R$F,u
+         bsr   L050F
+         lbsr  L03C2
+         ENDC
+         ldb   R$CC,u
+         bsr   L050F
+         lbsr  L03C2
+         ldb   R$DP,u
          bsr   L050F
          pshs  y
-         lbsr  L07E3
+         lbsr  WritCR2
          puls  y
          lbsr  L03C2
          tfr   u,d
          bsr   L0505
          lbsr  L03C2
-         ldd   u0004,u
+         ldd   R$X,u
          bsr   L0505
          lbsr  L03C2
-         ldd   u0006,u
+         ldd   R$Y,u
          bsr   L0505
          lbsr  L03C2
-         ldd   u0008,u
+         ldd   R$U,u
          bsr   L0505
-         lbsr  L07E3
+         lbsr  WritCR2
          puls  pc,u
-         IFGT  Level-1
-         lbsr  L0415
-         leay  >L07F1,pcr
+* Show registers in wide form
+WidRegs  lbsr  L0415
+         leay  >RegHdr,pcr
          lbsr  L03C2
-         lbsr  L07E3
+         lbsr  WritCR2
          lbsr  L0415
          ldd   <u0002
-         bsr   L0505
+         bsr   L0505		show SP
          ldy   <u0002
-         bsr   L050D
-         bsr   L050D
-         bsr   L050D
-         bsr   L050D
-         bsr   L0550
-         bsr   L0550
-         bsr   L0550
-         bsr   L0550
-         lbra  L07E3
+         bsr   L050D		show CC
+         bsr   L050D		show A
+         bsr   L050D		show B
+         IFNE  H6309
+         bsr   L050D		show E
+         bsr   L050D		show F
          ENDC
+         bsr   L050D		show DP
+         bsr   L0550		show X
+         bsr   L0550		show Y
+         bsr   L0550		show U
+         bsr   L0550		show PC
+         lbra  WritCR2
+
 L0550    ldd   ,y++
 L0505    lbra  L0013
 L0508    ldd   ,y++
          lbra  L0021
 L050D    ldb   ,y+
 L050F    lbra  L0017
-L0512    lbsr  L0127
-         cmpa  #$0D
+
+* Eat spaces and compare char with CR
+L0512    lbsr  EatSpace
+         cmpa  #C$CR
          rts   
-L0518    bsr   L0512
-         bne   L0538
+
+* Set/show breakpoints
+SetBkpt  bsr   L0512		any parameters?
+         bne   L0538		branch if so
+* Here we show all breakpoints
          lbsr  L0415
-         ldy   <u000C
-         ldb   #$0C
-         pshs  b
-L0526    ldd   ,y
-         beq   L052D
-         lbsr  L0013
+         ldy   <bptable		get breakpoints base
+         ldb   #NumBrkPt	get breakpoint count
+         pshs  b		save on stack
+L0526    ldd   ,y		empty?
+         beq   L052D		branch if so
+         lbsr  L0013		else show breakpoint at Y
 L052D    leay  $03,y
-         dec   ,s
-         bne   L0526
-         leas  $01,s
-         lbra  L07E3
+         dec   ,s		dec breakpoint count
+         bne   L0526		continue searching
+         leas  $01,s		kill byte on stack
+         lbra  WritCR2
+* Set breakpoint here
 L0538    lbsr  L0195
          bcs   L054E
-         pshs  b,a
-         bsr   L0556
-         beq   L0551
-         ldd   #$0000
-         bsr   L0556
-         beq   L0551
-         ldb   #$0B
-         leas  $02,s
-L054E    lbra  L03BE
-L0551    puls  b,a
-         std   ,y
-         rts   
-L0556    pshs  u
-         tfr   d,u
-         ldb   #$0C
-         ldy   <u000C
-L055F    cmpu  ,y
-         beq   L056D
-         leay  $03,y
-         decb  
-         bne   L055F
-         IFGT  Level-1
-         ldb   #$0C
-         ELSE
-         ldb   <u000C
-         ENDC
+         pshs  b,a		save desired breakpoint address
+         bsr   SrchBkpt		search to see if it is already in table
+         beq   L0551		if duplicate, just exit
+         ldd   #$0000		else load D with empty address
+         bsr   SrchBkpt		search for empty
+         beq   L0551		branch if found
+         ldb   #E$BPTFull	else table is full
+         leas  $02,s		clean up stack
+L054E    lbra  ShowErr		and show error
+L0551    puls  b,a		get breakpoint address off stack
+         std   ,y		and save it at breakpoint entry
+         rts   			then return
+
+* Search for existing breakpoint that matches address in D
+SrchBkpt pshs  u		save U
+         tfr   d,u		transfer addr to search in U
+         ldb   #NumBrkPt	get number of breakpoints
+         ldy   <bptable		point Y to base of breakpoints
+L055F    cmpu  ,y		match?
+         beq   L056D		branch if so
+         leay  $03,y		else move to next entry
+         decb  			dec couner
+         bne   L055F		if not 0, continue search
+*         IFGT  Level-1
+         ldb   #NumBrkPt
+*         ELSE
+*         ldb   <bptable
+*         ENDC
          andcc #^Zero
 L056D    puls  pc,u
-L056F    bsr   L0512
-         beq   L0581
-         lbsr  L0195
-         bcs   L054E
-         bsr   L0556
+
+* Kill breakpoint(s)
+KillBkpt bsr   L0512		any parameters?
+         beq   KillAll		branch if none
+         lbsr  L0195		else get parameter
+         bcs   L054E		branch if error
+         bsr   SrchBkpt
          bne   L054E
          clra  
          clrb  
          std   ,y
          rts   
-L0581    ldy   <u000C
-         ldb   #$24
+* Kill all breakpoints
+KillAll  ldy   <bptable
+         ldb   #NumBrkPt*3
 L0586    clr   ,y+
          decb  
          bne   L0586
          rts   
-L058C    bsr   L0512
-         beq   L059A
+
+* Go at address
+GoPC     bsr   L0512		any parameters?
+         beq   L059A		branch if none
          lbsr  L0195
          bcs   L054E
-         ldy   <u0002
-         std   $0A,y
-L059A    ldy   <u000C
-         ldb   #$0C
-         ldx   <u0002
-         ldx   $0A,x
-L05A3    ldu   ,y
-         beq   L05B3
-         lda   ,u
-         sta   $02,y
-         cmpx  ,y
-         beq   L05B3
-         lda   #$3F
-         sta   ,u
-L05B3    leay  $03,y
-         decb  
-         bne   L05A3
-         lds   <u0002
-         rti   
-L05BC    bsr   L0613
+         ldy   <u0002		get execution stack
+         std   R$PC,y		save new PC
+* Now we set up all breakpoints in memory
+L059A    ldy   <bptable
+         ldb   #R$Size		get register size
+         ldx   <u0002		point to registers
+         ldx   R$PC,x		get PC
+L05A3    ldu   ,y		get breakpoint at entry
+         beq   L05B3		branch if empty
+         lda   ,u		get byte at breakpoint address
+         sta   $02,y		save in breakpoint entry
+         cmpx  ,y		is breakpoint same as PC?
+         beq   L05B3		branch if so
+         lda   #$3F		else take SWI instruction
+         sta   ,u		and store it at address of breakpoint
+L05B3    leay  $03,y		move to next breakpoint entry
+         decb  			decrement
+         bne   L05A3		branch if not complete
+         lds   <u0002		get execution stack
+         rti   			run program
+
+MemDump  bsr   L0613
          bcs   L054E
-         IFGT  Level-1
-         tst   <WideFlag
+         tst   <isnarrow
          bne   L0615
          orb   #$0F
          bra   L0617
-         ENDC
 L0615    orb   #$07
 L0617    exg   d,u
-         IFGT  Level-1
-         tst   <WideFlag
+         tst   <isnarrow
          bne   L0621
          andb  #$F0
          bra   L0623
-         ENDC
 L0621    andb  #$F8
 L0623    pshs  u,b,a
          cmpd  $02,s
@@ -857,57 +920,51 @@ L05CD    ldy   ,s
          leay  $01,y
          bcs   L05DB
 L05D9    puls  pc,u,b,a
-L05DB    ldx   <u0006
+L05DB    ldx   <buffptr
          tfr   y,d
          lbsr  L0013
-         IFGT  Level-1
-         tst   <WideFlag
+         tst   <isnarrow
          bne   L0647
          ldb   #$08
          bra   L0649
-         ENDC
 L0647    ldb   #$04
 L0649    pshs  b
-L05E6    equ   *
-         IFGT  Level-1
-         tst   <WideFlag
+L05E6    tst   <isnarrow
          bne   L0654
          lbsr  L0550
          bra   L0657
-         ENDC
 L0654    lbsr  L0508
 L0657    dec   ,s
          bne   L05E6
-         IFGT  Level-1
-         tst   <WideFlag
+         tst   <isnarrow
          bne   L0663
          ldb   #$10
          bra   L0668
-         ENDC
 L0663    lbsr  L0019
          ldb   #$08
 L0668    stb   ,s
          ldy   $01,s
 L05F7    lda   ,y+
-         cmpa  #$7E
+         cmpa  #'~
          bhi   L0601
-         cmpa  #$20
+         cmpa  #C$SPAC
          bcc   L0603
-L0601    lda   #$2E
+L0601    lda   #'.
 L0603    sta   ,x+
          dec   ,s
          bne   L05F7
          leas  $01,s
          sty   ,s
-         lbsr  L07E3
+         lbsr  WritCR2
          bra   L05CD
 L0613    lbsr  L0195
          bcs   L061D
          tfr   d,u
          lbsr  L0195
 L061D    rts   
+
 L061E    bsr   L0613
-         lbcs  L03BE
+         lbcs  ShowErr
          pshs  b,a
 L0626    cmpu  ,s
          bls   L062D
@@ -922,132 +979,138 @@ L0632    cmpa  ,u
          bne   L0632
          bra   L064E
 L063E    lbsr  L0415
-         ldd   #$2D20
+         ldd   #$2D20		dash, space
          std   ,x++
          tfr   u,d
          lbsr  L0021
-         lbsr  L07E3
-L064E    leau  u0001,u
+         lbsr  WritCR2
+L064E    leau  1,u
          bra   L0626
-L0652    clra  
+
+* Intercept routine
+IcptRtn  clra  
          tfr   a,dp
-         IFGT  Level-1
-         sts   <u0002
-         ldd   $0A,s
-         subd  #$0001
-         std   $0A,s
-         lds   <u0004
-         ELSE
-         ldx   <u004B
-         lda   $07,x
-         tfr   a,dp
-         sts   <u0002
-         ldd   $0A,s
-         subd  #$0001
-         std   $0A,s
-         lds   <u0004
+         IFEQ  Level-1
+         ldx   <D.Proc		get curr proc ptr
+         lda   P$ADDR,x		get hi word of user addr
+         tfr   a,dp		transfer it to DP
          ENDC
-         lbsr  L0556
+         sts   <u0002
+         ldd   R$PC,s
+         subd  #$0001
+         std   R$PC,s
+         lds   <u0004
+         lbsr  SrchBkpt
          beq   L0672
-         ldb   #$0D
-         lbsr  L03BE
-L0672    ldy   <u000C
-         ldb   #$0C
-L0677    ldx   ,y
-         beq   L067F
-         lda   $02,y
-         sta   ,x
-L067F    leay  $03,y
-         decb  
-         bne   L0677
-         lbsr  L07E1
+         ldb   #E$BrkPt
+         lbsr  ShowErr
+* Clear breakpoints in memory
+L0672    ldy   <bptable		point to break point table
+         ldb   #NumBrkPt	get number of entries
+L0677    ldx   ,y		get address in entry
+         beq   L067F		branch if empty
+         lda   $02,y		get saved byte
+         sta   ,x		restore it
+L067F    leay  $03,y		move to next entry
+         decb  			dec counter
+         bne   L0677		continue if not zero
+         lbsr  WritCR
          lbsr  L0415
          leay  >L07A9,pcr
          lbsr  L03C2
-         lbsr  L07E3
+         lbsr  WritCR2
          lbsr  L04AF
-         lbra  L038A
-L069A    bsr   L06B0
-         lbcs  L03BE
-         ldx   <u0006
+         lbra  GetInput
+
+LinkMod  bsr   LinkIt		link to module
+         lbcs  ShowErr		branch if error
+         ldx   <buffptr
          tfr   u,d
          pshs  u
          lbsr  L03DC
-         lbsr  L07E3
+         lbsr  WritCR2
          puls  u
          bra   L06CC
-L06B0    lbsr  L0127
+
+LinkIt   lbsr  EatSpace
          lda   #$00
          os9   F$Link   
          rts   
-L06B9    bsr   L06B0
-         lbcs  L03BE
-         ldd   u000B,u
-         addd  #$0200
-         os9   F$Mem    
-         bcc   L06D0
-         lbsr  L03BE
+
+* Prepare module for execution
+PrepMod  bsr   LinkIt
+         lbcs  ShowErr
+         ldd   M$Mem,u		get memory requirements
+         addd  #512		add an extra 512 bytes
+         os9   F$Mem    	allocate, Y = upperbound
+         bcc   UnlinkIt		branch if ok
+         lbsr  ShowErr		show error
 L06CC    equ   *
          IFEQ  Level-1
-         os9   F$UnLink 
+         os9   F$UnLink
          ENDC
-         rts   
-L06D0    os9   F$UnLink 
-         pshs  u,y,x
-L06D5    lda   ,x+
-         cmpa  #$0D
-         bne   L06D5
-         clrb  
-L06DC    lda   ,-x
-         sta   ,-y
-         incb  
-         cmpx  ,s
-         bhi   L06DC
-         sty   -$08,y
-         leay  -$0C,y
+         rts   			and return
+
+UnlinkIt os9   F$UnLink 	unlink module
+         pshs  u,y,x		save u,y,x
+L06D5    lda   ,x+		get next parameter char
+         cmpa  #C$CR		carriage return?
+         bne   L06D5		branch if not
+         clrb  			start at zero
+L06DC    lda   ,-x		get parameter char
+         sta   ,-y		store in buffer
+         incb  			continue
+         cmpx  ,s		reached start of parameter?
+         bhi   L06DC		branch if not
+         sty   -R$U,y
+         leay  -R$Size,y
          sty   <u0002
          clra  
-         std   $01,y
+         std   R$A,y
          puls  u,x,b,a
-         stx   $06,y
-         ldd   u0009,u
-         leax  d,u
-         stx   $0A,y
+         stx   R$Y,y
+         ldd   M$Exec,u		get exec offset in D
+         leax  d,u		point X to execution address
+         stx   R$PC,y		save at PC
          tfr   cc,a
-         ora   #$80
-         sta   ,y
+         ora   #Entire
+         sta   R$CC,y
          tfr   dp,a
          adda  #$02
          clrb  
-         std   $08,y
-         sta   $03,y
+         std   R$U,y
+         sta   R$DP,y
          lbra  L04AF
-L070C    lbsr  L0127
+
+* Fork program (default is shell)
+ForkPrg  lbsr  EatSpace		skip leading spaces
          clra  
          clrb  
-         tfr   x,u
+         tfr   x,u		move param ptr to U
          tfr   d,y
 L0715    leay  $01,y
          lda   ,x+
          cmpa  #C$CR
          bne   L0715
          clra  
-         leax  <L072E,pcr
-         os9   F$Fork   
-         bcs   L0729
-         os9   F$Wait   
-L0729    lbcs  L03BE
-         rts   
+         leax  <ShellNam,pcr
+         os9   F$Fork   	fork shell plus any parameters
+         bcs   L0729		branch if error
+         os9   F$Wait   	wait for shell to finish
+L0729    lbcs  ShowErr		branch if error
+         rts   			and return
 
-L072E    fcc   "shell"
+ShellNam fcc   "shell"
          fcb   $00
 
-L0734    clrb
+* Exit without error
+ExitOk   clrb
 L0735    os9   F$Exit   
+
 L0738    lbsr  L0613
-         lbcs  L03BE
+         lbcs  ShowErr
          pshs  u
-         ldx   <u0000
+         ldx   <curraddr
          tsta  
          bne   L0750
 L0746    cmpb  ,x+
@@ -1068,74 +1131,93 @@ L075C    leax  -$01,x
          tfr   x,d
          leas  $02,s
          lbra  L03DC
-L0765    fcc   "?"
-L0766    fcc   "Interactive Debugger"
+
+DefBrk   swi
+
+Title    fcc   "Interactive Debugger"
          fcb   $00
-L077B    fcc   "DB: "
+
+Prompt   fcc   "DB: "
          fcb   $00
-L0780    fcc   "    "
+Spaces    fcc   "    "
          fcb   $00
-L07F1    fcc   " SP  CC  A  B DP  X    Y    U    PC"
+
+         IFNE  H6309
+RegHdr   fcc   " SP  CC  A  B  E  F DP  X    Y    U    PC"
+         ELSE
+RegHdr   fcc   " SP  CC  A  B DP  X    Y    U    PC"
+         ENDC
          fcb   $00
+
 L07A9    fcc   "BKPT"
-L07AD    fcc   ": "
+CmdTbl   fcc   ": "
          fcb   $00
          fcc   /./
-         fdb   L03C5
+         fdb   DotCmd
          fcc   /=/
-         fdb   L03FC
+         fdb   SetLoc
          fcb   C$CR
-         fdb   L040E
+         fdb   NextByte
          fcb   C$SPAC
-         fdb   L0421
+         fdb   Eval
          fcc   /-/
-         fdb   L03F5
+         fdb   PrevByte
          fcc   /:/
-         fdb   L044C
+         fdb   ShowRegs
          fcc   /K/
-         fdb   L056F
+         fdb   KillBkpt
          fcc   /M/
-         fdb   L05BC
+         fdb   MemDump
          fcc   /C/
          fdb   L061E
          fcc   /B/
-         fdb   L0518
+         fdb   SetBkpt
          fcc   /G/
-         fdb   L058C
+         fdb   GoPC
          fcc   /L/
-         fdb   L069A
+         fdb   LinkMod
          fcc   /E/
-         fdb   L06B9
+         fdb   PrepMod
          fcc   /$/
-         fdb   L070C
+         fdb   ForkPrg
          fcc   /Q/
-         fdb   L0734
+         fdb   ExitOk
          fcc   /S/
          fdb   L0738
          fcb   $00
 
-L07E1    ldx   <u0006
-L07E3    lda   #C$CR
+* Append CR and write to std out
+WritCR   ldx   <buffptr
+WritCR2  lda   #C$CR
          sta   ,x+
-         ldx   <u0006
-         ldy   #$0051
-         bra   L07FF
+         ldx   <buffptr
+         ldy   #81
+         bra   WrStdOut
+
 L07EF    tfr   y,x
          tfr   y,u
          ldy   #$0000
-L07F7    ldb   ,u+
-         beq   L07FF
-         leay  $01,y
-         bra   L07F7
-L07FF    lda   #$01
-         os9   I$WritLn 
-         ldx   <u0006
+L07F7    ldb   ,u+		get next char
+         beq   WrStdOut		write it
+         leay  $01,y		increase Y
+         bra   L07F7		get more
+
+* Write To Standard Output
+* Entry:
+*    X = address of buffer to write
+WrStdOut lda   #$01		stdout
+         os9   I$WritLn 	write it!
+         ldx   <buffptr
          rts   
-L0807    ldx   <u0006
-         ldy   #80
-         clra  
-         os9   I$ReadLn 
-         ldx   <u0006
+
+* Read From To Standard Input
+* Exit:
+*    X = address of buffer to data read
+ReadLine ldx   <buffptr		point to buffer
+         ldy   #80		read up to 80 chars
+         clra  			from stdin
+         os9   I$ReadLn 	do it!
+         ldx   <buffptr		reload X with line
          rts   
 
          emod
