@@ -1,250 +1,855 @@
 
-L0000    fcb   $87,$CD,$07,$C5,$00,$0D,$11,$81   .M.E....
-L0008    fcb   $EA,$00,$12,$00,$00,$73,$63,$72   j....scr
-L0010    fcb   $EE,$00,$16,$01,$45,$16,$01,$34   n...E..4
-L0018    fcb   $16,$00,$81,$16,$00,$95,$16,$00   ........
-L0020    fcb   $B1,$16,$07,$21,$16,$01,$E2,$16   1..!..b.
-L0028    fcb   $00,$9B,$16,$02,$30,$16,$02,$70   ....0..p
-L0030    fcb   $41,$47,$49,$20,$28,$63,$29,$20   AGI (c) 
-L0038    fcb   $63,$6F,$70,$79,$72,$69,$67,$68   copyrigh
-L0040    fcb   $74,$20,$31,$39,$38,$38,$20,$53   t 1988 S
-L0048    fcb   $49,$45,$52,$52,$41,$20,$4F,$6E   IERRA On
-L0050    fcb   $2D,$4C,$69,$6E,$65,$43,$6F,$43   -LineCoC
-L0058    fcb   $6F,$33,$20,$76,$65,$72,$73,$69   o3 versi
-L0060    fcb   $6F,$6E,$20,$62,$79,$20,$43,$68   on by Ch
-L0068    fcb   $72,$69,$73,$20,$49,$64,$65,$6E   ris Iden
-L0070    fcb   $00,$91,$12,$27,$16,$1A,$50,$97   ...'..P.
-L0078    fcb   $12,$96,$42,$B7,$FF,$A9,$9E,$43   ..B7.).C
-L0080    fcb   $96,$12,$A7,$84,$E7,$02,$FD,$FF   ..'.g...
-L0088    fcb   $A9,$1C,$AF,$39,$00,$11,$22,$33   )./9.."3
-L0090    fcb   $44,$55,$66,$77,$88,$99,$AA,$BB   DUfw..*;
-L0098    fcb   $CC,$DD,$EE,$FF,$34,$10,$CE,$D8   L]n.4.NX
-L00A0    fcb   $00,$8E,$78,$00,$ED,$C3,$30,$1E   ..x.mC0.
-L00A8    fcb   $26,$FA,$35,$10,$39,$CC,$00,$00   &z5.9L..
-L00B0    fcb   $8D,$EA,$39,$8D,$F8,$CC,$A8,$A0   .j9.xL( 
-L00B8    fcb   $34,$06,$CC,$00,$A7,$34,$06,$17   4.L.'4..
-L00C0    fcb   $00,$98,$32,$64,$39,$B6,$02,$4E   ..2d96.N
-L00C8    fcb   $1F,$89,$8D,$D0,$CC,$00,$00,$DD   ...PL..]
-L00D0    fcb   $40,$39,$EC,$66,$34,$06,$EC,$66   @9lf4.lf
-L00D8    fcb   $34,$06,$EC,$66,$34,$06,$17,$00   4.lf4...
-L00E0    fcb   $F3,$32,$66,$4F,$E6,$66,$34,$06   s2fOff4.
-L00E8    fcb   $86,$01,$E6,$67,$C0,$02,$34,$06   ..fg@.4.
-L00F0    fcb   $EC,$66,$4C,$5A,$34,$06,$17,$00   lfLZ4...
-L00F8    fcb   $DB,$32,$66,$4F,$E6,$66,$34,$06   [2fOff4.
-L0100    fcb   $A6,$66,$80,$04,$C6,$01,$34,$06   &f..F.4.
-L0108    fcb   $EC,$66,$AB,$69,$80,$02,$C0,$02   lf+i..@.
-L0110    fcb   $34,$06,$17,$00,$BF,$32,$66,$4F   4...?2fO
-L0118    fcb   $E6,$66,$34,$06,$86,$01,$E6,$67   ff4...fg
-L0120    fcb   $C0,$02,$34,$06,$EC,$66,$4C,$E0   @.4.lfL`
-L0128    fcb   $68,$CB,$02,$34,$06,$17,$00,$A4   hK.4...$
-L0130    fcb   $32,$66,$4F,$E6,$66,$34,$06,$A6   2fOff4.&
-L0138    fcb   $66,$80,$04,$C6,$01,$34,$06,$EC   f..F.4.l
-L0140    fcb   $66,$4C,$C0,$02,$34,$06,$17,$00   fL@.4...
-L0148    fcb   $8B,$32,$66,$39,$EC,$64,$34,$06   .2f9ld4.
-L0150    fcb   $EC,$64,$34,$06,$17,$00,$03,$32   ld4....2
-L0158    fcb   $64,$39,$34,$20,$EC,$64,$97,$47   d94 ld.G
-L0160    fcb   $5C,$E0,$66,$86,$A0,$3D,$D3,$46   \`f. =SF
-L0168    fcb   $1F,$01,$D3,$2C,$1F,$02,$30,$88   ..S,..0.
-L0170    fcb   $40,$EC,$66,$DD,$9E,$C6,$A0,$D0   @lf].F P
-L0178    fcb   $9F,$4F,$DD,$A0,$97,$12,$1A,$50   .O] ...P
-L0180    fcb   $96,$42,$B7,$FF,$A9,$8C,$A0,$00   .B7.). .
-L0188    fcb   $25,$08,$DC,$1E,$30,$89,$80,$00   %.\.0...
-L0190    fcb   $20,$06,$DC,$1C,$30,$89,$C0,$00    .\.0.@.
-L0198    fcb   $DE,$43,$A7,$C4,$E7,$42,$FD,$FF   ^C'DgB..
-L01A0    fcb   $A9,$1C,$AF,$33,$8D,$FE,$E5,$D6   )./3..eV
-L01A8    fcb   $9F,$A6,$80,$84,$0F,$A6,$C6,$A7   .&...&F'
-L01B0    fcb   $A0,$5A,$26,$F5,$0A,$9E,$27,$19    Z&u..'.
-L01B8    fcb   $DC,$A0,$31,$AB,$3A,$8C,$60,$00   \ 1+:.`.
-L01C0    fcb   $25,$E5,$1A,$50,$96,$42,$B7,$FF   %e.P.B7.
-L01C8    fcb   $A9,$DC,$1E,$30,$89,$C0,$00,$20   )\.0.@. 
-L01D0    fcb   $C7,$35,$20,$39,$EC,$62,$97,$47   G5 9lb.G
-L01D8    fcb   $5C,$E0,$64,$86,$A0,$3D,$D3,$46   \`d. =SF
-L01E0    fcb   $D3,$2C,$1F,$01,$EC,$64,$DD,$9E   S,..ld].
-L01E8    fcb   $C6,$A0,$D0,$9F,$D7,$A0,$33,$8D   F P.W 3.
-L01F0    fcb   $FE,$9A,$A6,$67,$84,$0F,$A6,$C6   ..&g..&F
-L01F8    fcb   $D6,$9F,$A7,$80,$5A,$26,$FB,$0A   V.'.Z&..
-L0200    fcb   $9E,$27,$05,$D6,$A0,$3A,$20,$F0   .'.V : p
-L0208    fcb   $39,$32,$7C,$EC,$6A,$ED,$62,$EC   92|ljmbl
-L0210    fcb   $68,$ED,$E4,$A6,$67,$48,$48,$48   hmd&gHHH
-L0218    fcb   $C6,$A0,$3D,$DD,$A2,$4F,$E6,$61   F =]"Ofa
-L0220    fcb   $58,$58,$DE,$A2,$33,$C9,$60,$00   XX^"3I`.
-L0228    fcb   $E6,$62,$58,$58,$58,$86,$A0,$3D   fbXXX. =
-L0230    fcb   $30,$CB,$A6,$63,$48,$48,$48,$E6   0K&cHHHf
-L0238    fcb   $61,$E0,$E4,$58,$58,$CB,$03,$34   a`dXXK.4
-L0240    fcb   $06,$A6,$C5,$A7,$85,$5A,$2A,$F9   .&E'.Z*y
-L0248    fcb   $35,$06,$33,$C9,$00,$A0,$30,$89   5.3I. 0.
-L0250    fcb   $00,$A0,$8C,$D8,$00,$24,$03,$4A   . .X.$.J
-L0258    fcb   $26,$E5,$32,$64,$39,$32,$7C,$AE   &e2d92|.
-L0260    fcb   $66,$EE,$84,$EF,$E4,$27,$36,$EE   fn.od'6n
-L0268    fcb   $44,$EF,$62,$34,$40,$17,$00,$30   Dob4@..0
-L0270    fcb   $32,$62,$EE,$62,$A6,$41,$A1,$C4   2bnb&A!D
-L0278    fcb   $26,$1D,$EC,$43,$10,$A3,$C8,$1A   &.lC.#H.
-L0280    fcb   $26,$0A,$A6,$C8,$25,$8A,$40,$A7   &.&H%.@'
-L0288    fcb   $C8,$25,$20,$0B,$ED,$C8,$1A,$A6   H% .mH.&
-L0290    fcb   $C8,$25,$84,$BF,$A7,$C8,$25,$EE   H%.?'H%n
-L0298    fcb   $E4,$EE,$C4,$20,$C6,$32,$64,$39   dnD F2d9
-L02A0    fcb   $B6,$01,$00,$10,$27,$00,$9D,$EE   6...'..n
-L02A8    fcb   $62,$EC,$48,$17,$FD,$C3,$AE,$C8   blH..C.H
-L02B0    fcb   $10,$EC,$84,$DD,$A0,$EC,$C8,$14   .l.] lH.
-L02B8    fcb   $17,$FD,$B6,$AE,$C8,$12,$EC,$84   ..6.H.l.
-L02C0    fcb   $DD,$9E,$EC,$C8,$10,$ED,$C8,$12   ].lH.mH.
-L02C8    fcb   $EC,$48,$ED,$C8,$14,$A6,$44,$D6   lHmH.&DV
-L02D0    fcb   $A1,$A1,$C8,$1B,$25,$0B,$97,$A3   !!H.%..#
-L02D8    fcb   $D7,$A4,$A6,$C8,$1B,$D6,$9F,$20   W$&H.V. 
-L02E0    fcb   $0B,$E6,$C8,$1B,$D7,$A3,$D6,$9F   .fH.W#V.
-L02E8    fcb   $D7,$A4,$D6,$A1,$D7,$A8,$4C,$90   W$V!W(L.
-L02F0    fcb   $A8,$D6,$A3,$5C,$D0,$A4,$D7,$A7   (V#\P$W'
-L02F8    fcb   $91,$A7,$25,$02,$96,$A7,$40,$9B   .'%..'@.
-L0300    fcb   $A3,$4C,$97,$A4,$A6,$43,$D6,$A0   #L.$&CV 
-L0308    fcb   $A1,$C8,$1A,$22,$0B,$97,$A2,$D7   !H.".."W
-L0310    fcb   $A9,$A6,$C8,$1A,$D6,$9E,$20,$0B   )&H.V. .
-L0318    fcb   $E6,$C8,$1A,$D7,$A2,$D6,$9E,$D7   fH.W"V.W
-L0320    fcb   $A9,$D6,$A0,$D7,$AA,$9B,$AA,$97   )V W*.*.
-L0328    fcb   $A6,$96,$A2,$9B,$A9,$91,$A6,$22   &.".).&"
-L0330    fcb   $02,$96,$A6,$90,$A2,$97,$A5,$DC   ..&.".%\
-L0338    fcb   $A4,$34,$06,$DC,$A2,$34,$06,$17   $4.\"4..
-L0340    fcb   $FE,$18,$32,$64,$39,$00,$00,$00   ..2d9...
-L0348    fcb   $00,$00,$00,$00,$00,$7E,$81,$A5   .....~.%
-L0350    fcb   $81,$BD,$99,$81,$7E,$7E,$FF,$DB   .=..~~.[
-L0358    fcb   $FF,$C3,$E7,$FF,$7E,$6C,$FE,$FE   .Cg.~l..
-L0360    fcb   $FE,$7C,$38,$10,$00,$10,$38,$7C   .|8...8|
-L0368    fcb   $FE,$7C,$38,$10,$00,$38,$7C,$38   .|8..8|8
-L0370    fcb   $FE,$FE,$7C,$38,$7C,$10,$10,$38   ..|8|..8
-L0378    fcb   $7C,$FE,$7C,$38,$7C,$00,$00,$18   |.|8|...
-L0380    fcb   $3C,$3C,$18,$00,$00,$FF,$FF,$E7   <<.....g
-L0388    fcb   $C3,$C3,$E7,$FF,$FF,$00,$3C,$66   CCg...<f
-L0390    fcb   $42,$42,$66,$3C,$00,$FF,$C3,$99   BBf<..C.
-L0398    fcb   $BD,$BD,$99,$C3,$FF,$0F,$07,$0F   ==.C....
-L03A0    fcb   $7D,$CC,$CC,$CC,$78,$3C,$66,$66   }LLLx<ff
-L03A8    fcb   $66,$3C,$18,$7E,$18,$3F,$33,$3F   f<.~.?3?
-L03B0    fcb   $30,$30,$70,$F0,$E0,$7F,$63,$7F   00pp`c
-L03B8    fcb   $63,$63,$67,$E6,$C0,$99,$5A,$3C   ccgf@.Z<
-L03C0    fcb   $E7,$E7,$3C,$5A,$99,$80,$E0,$F8   gg<Z..`x
-L03C8    fcb   $FE,$F8,$E0,$80,$00,$02,$0E,$3E   .x`....>
-L03D0    fcb   $FE,$3E,$0E,$02,$00,$18,$3C,$7E   .>....<~
-L03D8    fcb   $18,$18,$7E,$3C,$18,$66,$66,$66   ..~<.fff
-L03E0    fcb   $66,$66,$00,$66,$00,$7F,$DB,$DB   ff.f.[[
-L03E8    fcb   $7B,$1B,$1B,$1B,$00,$3E,$63,$38   {....>c8
-L03F0    fcb   $6C,$6C,$38,$CC,$78,$00,$00,$00   ll8Lx...
-L03F8    fcb   $00,$7E,$7E,$7E,$00,$18,$3C,$7E   .~~~..<~
-L0400    fcb   $18,$7E,$3C,$18,$FF,$18,$3C,$7E   .~<...<~
-L0408    fcb   $18,$18,$18,$18,$00,$18,$18,$18   ........
-L0410    fcb   $18,$7E,$3C,$18,$00,$00,$18,$0C   .~<.....
-L0418    fcb   $FE,$0C,$18,$00,$00,$00,$30,$60   ......0`
-L0420    fcb   $FE,$60,$30,$00,$00,$00,$00,$C0   .`0....@
-L0428    fcb   $C0,$C0,$FE,$00,$00,$00,$24,$66   @@....$f
-L0430    fcb   $FF,$66,$24,$00,$00,$00,$18,$3C   .f$....<
-L0438    fcb   $7E,$FF,$FF,$00,$00,$00,$FF,$FF   ~.......
-L0440    fcb   $7E,$3C,$18,$00,$00,$00,$00,$00   ~<......
-L0448    fcb   $00,$00,$00,$00,$00,$30,$78,$78   .....0xx
-L0450    fcb   $30,$30,$00,$30,$00,$6C,$6C,$6C   00.0.lll
-L0458    fcb   $00,$00,$00,$00,$00,$6C,$6C,$FE   .....ll.
-L0460    fcb   $6C,$FE,$6C,$6C,$00,$30,$7C,$C0   l.ll.0|@
-L0468    fcb   $78,$0C,$F8,$30,$00,$00,$C6,$CC   x.x0..FL
-L0470    fcb   $18,$30,$66,$C6,$00,$38,$6C,$38   .0fF.8l8
-L0478    fcb   $76,$DC,$CC,$76,$00,$60,$60,$C0   v\Lv.``@
-L0480    fcb   $00,$00,$00,$00,$00,$18,$30,$60   ......0`
-L0488    fcb   $60,$60,$30,$18,$00,$60,$30,$18   ``0..`0.
-L0490    fcb   $18,$18,$30,$60,$00,$00,$66,$3C   ..0`..f<
-L0498    fcb   $FF,$3C,$66,$00,$00,$00,$30,$30   .<f...00
-L04A0    fcb   $FC,$30,$30,$00,$00,$00,$00,$00   .00.....
-L04A8    fcb   $00,$00,$30,$30,$60,$00,$00,$00   ..00`...
-L04B0    fcb   $FC,$00,$00,$00,$00,$00,$00,$00   ........
-L04B8    fcb   $00,$00,$30,$30,$00,$06,$0C,$18   ..00....
-L04C0    fcb   $30,$60,$C0,$80,$00,$7C,$C6,$CE   0`@..|FN
-L04C8    fcb   $DE,$F6,$E6,$7C,$00,$30,$70,$30   ^vf|.0p0
-L04D0    fcb   $30,$30,$30,$FC,$00,$78,$CC,$0C   000..xL.
-L04D8    fcb   $38,$60,$CC,$FC,$00,$78,$CC,$0C   8`L..xL.
-L04E0    fcb   $38,$0C,$CC,$78,$00,$1C,$3C,$6C   8.Lx..<l
-L04E8    fcb   $CC,$FE,$0C,$1E,$00,$FC,$C0,$F8   L.....@x
-L04F0    fcb   $0C,$0C,$CC,$78,$00,$38,$60,$C0   ..Lx.8`@
-L04F8    fcb   $F8,$CC,$CC,$78,$00,$FC,$CC,$0C   xLLx..L.
-L0500    fcb   $18,$30,$30,$30,$00,$78,$CC,$CC   .000.xLL
-L0508    fcb   $78,$CC,$CC,$78,$00,$78,$CC,$CC   xLLx.xLL
-L0510    fcb   $7C,$0C,$18,$70,$00,$00,$30,$30   |..p..00
-L0518    fcb   $00,$00,$30,$30,$00,$00,$30,$30   ..00..00
-L0520    fcb   $00,$00,$30,$30,$60,$18,$30,$60   ..00`.0`
-L0528    fcb   $C0,$60,$30,$18,$00,$00,$00,$FC   @`0.....
-L0530    fcb   $00,$00,$FC,$00,$00,$60,$30,$18   .....`0.
-L0538    fcb   $0C,$18,$30,$60,$00,$78,$CC,$0C   ..0`.xL.
-L0540    fcb   $18,$30,$00,$30,$00,$7C,$C6,$DE   .0.0.|F^
-L0548    fcb   $DE,$DE,$C0,$78,$00,$30,$78,$CC   ^^@x.0xL
-L0550    fcb   $CC,$FC,$CC,$CC,$00,$FC,$66,$66   L.LL..ff
-L0558    fcb   $7C,$66,$66,$FC,$00,$3C,$66,$C0   |ff..<f@
-L0560    fcb   $C0,$C0,$66,$3C,$00,$F8,$6C,$66   @@f<.xlf
-L0568    fcb   $66,$66,$6C,$F8,$00,$FE,$62,$68   fflx..bh
-L0570    fcb   $78,$68,$62,$FE,$00,$FE,$62,$68   xhb...bh
-L0578    fcb   $78,$68,$60,$F0,$00,$3C,$66,$C0   xh`p.<f@
-L0580    fcb   $C0,$CE,$66,$3E,$00,$CC,$CC,$CC   @Nf>.LLL
-L0588    fcb   $FC,$CC,$CC,$CC,$00,$78,$30,$30   .LLL.x00
-L0590    fcb   $30,$30,$30,$78,$00,$1E,$0C,$0C   000x....
-L0598    fcb   $0C,$CC,$CC,$78,$00,$E6,$66,$6C   .LLx.ffl
-L05A0    fcb   $78,$6C,$66,$E6,$00,$F0,$60,$60   xlff.p``
-L05A8    fcb   $60,$62,$66,$FE,$00,$C6,$EE,$FE   `bf..Fn.
-L05B0    fcb   $FE,$D6,$C6,$C6,$00,$C6,$E6,$F6   .VFF.Ffv
-L05B8    fcb   $DE,$CE,$C6,$C6,$00,$38,$6C,$C6   ^NFF.8lF
-L05C0    fcb   $C6,$C6,$6C,$38,$00,$FC,$66,$66   FFl8..ff
-L05C8    fcb   $7C,$60,$60,$F0,$00,$78,$CC,$CC   |``p.xLL
-L05D0    fcb   $CC,$DC,$78,$1C,$00,$FC,$66,$66   L\x...ff
-L05D8    fcb   $7C,$6C,$66,$E6,$00,$78,$CC,$E0   |lff.xL`
-L05E0    fcb   $70,$1C,$CC,$78,$00,$FC,$B4,$30   p.Lx..40
-L05E8    fcb   $30,$30,$30,$78,$00,$CC,$CC,$CC   000x.LLL
-L05F0    fcb   $CC,$CC,$CC,$FC,$00,$CC,$CC,$CC   LLL..LLL
-L05F8    fcb   $CC,$CC,$78,$30,$00,$C6,$C6,$C6   LLx0.FFF
-L0600    fcb   $D6,$FE,$EE,$C6,$00,$C6,$C6,$6C   V.nF.FFl
-L0608    fcb   $38,$38,$6C,$C6,$00,$CC,$CC,$CC   88lF.LLL
-L0610    fcb   $78,$30,$30,$78,$00,$FE,$C6,$8C   x00x..F.
-L0618    fcb   $18,$32,$66,$FE,$00,$78,$60,$60   .2f..x``
-L0620    fcb   $60,$60,$60,$78,$00,$C0,$60,$30   ```x.@`0
-L0628    fcb   $18,$0C,$06,$02,$00,$78,$18,$18   .....x..
-L0630    fcb   $18,$18,$18,$78,$00,$10,$38,$6C   ...x..8l
-L0638    fcb   $C6,$00,$00,$00,$00,$00,$00,$00   F.......
-L0640    fcb   $00,$00,$00,$00,$FF,$30,$30,$18   .....00.
-L0648    fcb   $00,$00,$00,$00,$00,$00,$00,$78   .......x
-L0650    fcb   $0C,$7C,$CC,$76,$00,$E0,$60,$60   .|Lv.```
-L0658    fcb   $7C,$66,$66,$DC,$00,$00,$00,$78   |ff\...x
-L0660    fcb   $CC,$C0,$CC,$78,$00,$1C,$0C,$0C   L@Lx....
-L0668    fcb   $7C,$CC,$CC,$76,$00,$00,$00,$78   |LLv...x
-L0670    fcb   $CC,$FC,$C0,$78,$00,$38,$6C,$60   L.@x.8l`
-L0678    fcb   $F0,$60,$60,$F0,$00,$00,$00,$76   p``p...v
-L0680    fcb   $CC,$CC,$7C,$0C,$F8,$E0,$60,$6C   LL|.x``l
-L0688    fcb   $76,$66,$66,$E6,$00,$30,$00,$70   vfff.0.p
-L0690    fcb   $30,$30,$30,$78,$00,$0C,$00,$0C   000x....
-L0698    fcb   $0C,$0C,$CC,$CC,$78,$E0,$60,$66   ..LLx``f
-L06A0    fcb   $6C,$78,$6C,$E6,$00,$70,$30,$30   lxlf.p00
-L06A8    fcb   $30,$30,$30,$78,$00,$00,$00,$CC   000x...L
-L06B0    fcb   $FE,$FE,$D6,$C6,$00,$00,$00,$F8   ..VF...x
-L06B8    fcb   $CC,$CC,$CC,$CC,$00,$00,$00,$78   LLLL...x
-L06C0    fcb   $CC,$CC,$CC,$78,$00,$00,$00,$DC   LLLx...\
-L06C8    fcb   $66,$66,$7C,$60,$F0,$00,$00,$76   ff|`p..v
-L06D0    fcb   $CC,$CC,$7C,$0C,$1E,$00,$00,$DC   LL|....\
-L06D8    fcb   $76,$66,$60,$F0,$00,$00,$00,$7C   vf`p...|
-L06E0    fcb   $C0,$78,$0C,$F8,$00,$10,$30,$7C   @x.x..0|
-L06E8    fcb   $30,$30,$34,$18,$00,$00,$00,$CC   004....L
-L06F0    fcb   $CC,$CC,$CC,$76,$00,$00,$00,$CC   LLLv...L
-L06F8    fcb   $CC,$CC,$78,$30,$00,$00,$00,$C6   LLx0...F
-L0700    fcb   $D6,$FE,$FE,$6C,$00,$00,$00,$C6   V..l...F
-L0708    fcb   $6C,$38,$6C,$C6,$00,$00,$00,$CC   l8lF...L
-L0710    fcb   $CC,$CC,$7C,$0C,$F8,$00,$00,$FC   LL|.x...
-L0718    fcb   $98,$30,$64,$FC,$00,$1C,$30,$30   .0d...00
-L0720    fcb   $E0,$30,$30,$1C,$00,$18,$18,$18   `00.....
-L0728    fcb   $00,$18,$18,$18,$00,$E0,$30,$30   .....`00
-L0730    fcb   $1C,$30,$30,$E0,$00,$76,$DC,$00   .00`.v\.
-L0738    fcb   $00,$00,$00,$00,$00,$00,$10,$38   .......8
-L0740    fcb   $6C,$C6,$C6,$FE,$00,$32,$7E,$34   lFF..2~4
-L0748    fcb   $20,$AE,$66,$CE,$02,$4E,$96,$40    .fN.N.@
-L0750    fcb   $48,$48,$48,$C6,$A0,$3D,$1F,$02   HHHF =..
-L0758    fcb   $4F,$D6,$41,$58,$58,$C3,$60,$00   OVAXXC`.
-L0760    fcb   $31,$AB,$6D,$84,$10,$27,$00,$48   1+m..'.H
-L0768    fcb   $E6,$80,$AF,$66,$30,$8D,$FB,$D5   f./f0..U
-L0770    fcb   $58,$3A,$3A,$3A,$3A,$86,$08,$A7   X::::..'
-L0778    fcb   $62,$E6,$80,$86,$04,$A7,$63,$1D   bf...'c.
-L0780    fcb   $A6,$C6,$84,$F0,$A7,$A4,$58,$1D   &F.p'$X.
-L0788    fcb   $A6,$C6,$84,$0F,$AA,$A4,$9A,$45   &F..*$.E
-L0790    fcb   $A7,$A0,$58,$6A,$63,$26,$E8,$96   ' Xjc&h.
-L0798    fcb   $45,$27,$03,$43,$97,$45,$31,$A9   E'.C.E1)
-L07A0    fcb   $00,$9C,$6A,$62,$26,$D3,$AE,$66   ..jb&S.f
-L07A8    fcb   $0C,$41,$31,$A9,$FB,$04,$20,$B2   .A1).. 2
-L07B0    fcb   $35,$20,$32,$62,$39,$00,$00,$00   5 2b9...
-L07B8    fcb   $00,$00,$00,$00,$00,$73,$63,$72   .....scr
-L07C0    fcb   $6E,$00,$F3,$E3,$70                n.scp
+********************************************************************
+* SCRN - Kings Quest III screen module
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 0      Disassembly of original distribution           PWZ 03/03/06
+*        Note the header shows a data size of 0
+*        called from the sierra module and accesses
+*        data set up in that module
+
+
+*       Header for : scrn
+*       Module size: $7C5  #1989
+*       Module CRC : $F3E370 (Good)
+*       Hdr parity : $EA
+*       Exec. off  : $0012  #18
+*       Data size  : $0000  #0
+*       Edition    : $00  #0
+*       Ty/La At/Rv: $11 $81
+*       Prog mod, 6809 Obj, re-ent, R/O
+
+
+         nam   scrn
+         ttl   program module       
+
+* Disassembled 00/00/00 00:15:39 by Disasm v1.6 (C) 1988 by RML
+
+         ifp1
+         use   os9defs
+         endc
+tylg     set   Prgrm+Objct   
+atrv     set   ReEnt+rev
+rev      set   $01
+         mod   eom,name,tylg,atrv,start,size
+
+*  equates for common data used in this module
+
+u0012 EQU $0012  map block value (word)
+u001C EQU $001C
+u001E EQU $001E
+u0024 EQU $0024
+u002C EQU $002C
+u0030 EQU $0030
+u0038 EQU $0038
+u003E EQU $003E
+u0040 EQU $0040
+u0041 EQU $0041
+u0042 EQU $0042 Sierra process descriptor block
+u0043 EQU $0043 Sierra 2nd 8K data block
+u0045 EQU $0045 flag for palettes in sierra
+u0046 EQU $0046 first byte of hi res screen mem addr
+u0047 EQU $0047 second byte of hi res screen mem addr
+u007E EQU $007E
+u0080 EQU $0080
+u0081 EQU $0081
+u009E EQU $009E  busy address here
+u009F EQU $009F
+u00A0 EQU $00A0
+u00A1 EQU $00A1
+u00A2 EQU $00A2
+u00A3 EQU $00A3
+u00A4 EQU $00A4
+u00A5 EQU $00A5
+u00A6 EQU $00A6
+u00A7 EQU $00A7
+u00A8 EQU $00A8
+u00A9 EQU $00A9
+u00AA EQU $00AA
+u00C0 EQU $00C0
+u00C6 EQU $00C6
+u00CC EQU $00CC
+u00DE EQU $00DE
+u00E0 EQU $00E0
+u00F6 EQU $00F6
+u00F8 EQU $00F8
+u00FC EQU $00FC
+u00FE EQU $00FE
+u00FF EQU $00FF
+
+size     equ   .
+name     equ   *
+         fcs   /scrn/
+         fcb   $00 
+
+* This module is linked to in sierra
+* upon entry 
+*   a -> type language
+*   b -> attributes / revision level
+*   x -> address of the last byte of the module name + 1
+*   y -> module entry point absolute address 
+*   u -> module header absolute address
+
+start    equ   *
+         lbra  L015A twiddles with map blocks ??
+         lbra  L014C sets up another call to L015A
+         lbra  L009C whats in D here ? call screen clear
+         lbra  L00B3 sets D to 0000 and call clear screen
+         lbra  L00D2
+         lbra  L0745
+         lbra  L0209
+         lbra  L00C5
+         lbra  L025D
+         lbra  L02A0
+
+* probably was an info directive for an include file
+L0030    fcc   'AGI (c) copyright 1988 SIERRA On-Line'
+         fcc   'CoCo3 version by Chris Iden'
+         fcb   $00
+Infosz   equ   *-L0030
+
+
+
+* map block check and sets
+* u0012 is set in code in L015A sub
+* entry:
+*      a -> value to be tested
+
+L0071    cmpa  <u0012      check MMU block
+         beq   L008B       if block 0  OK to leave
+         orcc  #IntMasks   Turn off interrupts 
+         sta   <u0012      store the value passed in by a 
+         lda   <u0042      get sierra process descriptor map block
+         sta   >$FFA9      map it in to $2000-$3FFF
+         ldx   <u0043      2nd 8K data block in Sierra
+         lda   <u0012      get mmu block num
+         sta   ,x          store that 
+         stb   $02,x
+         std   >$FFA9      Map it into task 1 block 2
+         andcc #^IntMasks  turn on interrupts $AF
+L008B    rts   
+
+
+* 16 marker bytes for some thing
+L008C    fcb   $00
+         fcb   $11
+         fcb   $22
+         fcb   $33
+         fcb   $44
+         fcb   $55
+         fcb   $66
+         fcb   $77
+         fcb   $88
+         fcb   $99
+         fcb   $AA
+         fcb   $BB   
+         fcb   $CC
+         fcb   $DD
+         fcb   $EE
+         fcb   $FF
+
+
+* Clears the area allocated to the screen in sierra
+* entry:
+*      d -> value to be written to screen
+*      x -> may contain a value so we save it
+* exit:
+*      d -> preserved 
+*      x -> restored to initial value
+*      u -> contains starting address of the screen
+
+L009C    pshs  x         save the x values as this routine uses it
+L009E    ldu   #$D800    end address of high res screen
+         ldx   #$7800    Scrn is from $6000 to $D800
+L00A4    std   ,--u      set it to value passed us in d & dec d
+         leax  -$02,x    decrement x 
+         bne   L00A4     keep going till all of screen is cleared
+         puls  x         restore x`
+         rts             move on
+
+* Loads D to clear screen
+L00AD    ldd   #$0000    zeros screen bytes
+         bsr   L009C     go clear it
+         rts   
+
+L00B3    bsr   L00AD     clear the screen 
+         ldd   #$A8A0
+         pshs  d
+         ldd   #$00A7
+         pshs  d
+         lbsr  L015A
+         leas  $04,s
+         rts   
+
+L00C5    lda   >$024E
+         tfr   a,b
+         bsr   L009C
+         ldd   #$0000    clears value at u0040
+         std   <u0040
+         rts   
+         
+L00D2    ldd   $06,s
+         pshs  d
+         ldd   $06,s
+         pshs  d
+         ldd   $06,s
+         pshs  d
+         lbsr  L01D4
+         leas  $06,s
+         clra  
+         ldb   $06,s
+         pshs  d
+         lda   #$01
+         ldb   $07,s
+         subb  #$02
+         pshs  d
+         ldd   $06,s
+         inca  
+         decb  
+         pshs  d
+         lbsr  L01D4
+         leas  $06,s
+         clra  
+         ldb   $06,s
+         pshs  d
+         lda   $06,s
+         suba  #$04
+         ldb   #$01
+         pshs  d
+         ldd   $06,s
+         adda  $09,s
+         suba  #$02
+         subb  #$02
+         pshs  d
+         lbsr  L01D4
+         leas  $06,s
+         clra  
+         ldb   $06,s
+         pshs  d
+         lda   #$01
+         ldb   $07,s
+         subb  #$02
+         pshs  d
+         ldd   $06,s
+         inca  
+         subb  $08,s
+         addb  #$02
+         pshs  d
+         lbsr  L01D4
+         leas  $06,s
+         clra  
+         ldb   $06,s
+         pshs  d
+         lda   $06,s
+         suba  #$04
+         ldb   #$01
+         pshs  d
+         ldd   $06,s
+         inca  
+         subb  #$02
+         pshs  d
+         lbsr  L01D4
+         leas  $06,s
+         rts   
+
+L014C    ldd   $04,s
+         pshs  d
+         ldd   $04,s
+         pshs  d
+         lbsr  L015A
+         leas  $04,s
+         rts   
+
+* first call in module is here
+* who put what on the stack for us ?
+L015A    pshs  y            save our y  module entry abs addr
+
+         ldd   $04,s     
+         sta   <u0047   
+         incb          
+         subb  $06,s  
+         lda   #$A0 
+         mul            
+         addd  <u0046  
+         tfr   d,x     
+         addd  <u002C  
+         tfr   d,y    
+         leax  <$40,x       
+         ldd   $06,s
+         std   <u009E
+
+         ldb   #$A0
+         subb  <u009F
+         clra  
+         std   <u00A0
+         sta   <u0012       twiddle with the map block value
+
+         orcc  #IntMasks    turn off interrupts $50
+         lda   <u0042
+         sta   >$FFA9       second block in task 1
+         cmpx  #$A000
+         bcs   L0192
+
+         ldd   <u001E
+         leax  >-$8000,x
+         bra   L0198
+L0192    ldd   <u001C
+         leax  >-$4000,x
+L0198    ldu   <u0043
+         sta   ,u
+         stb   $02,u
+         std   >$FFA9        second block in task 1
+         andcc #^IntMasks    turn on ints $AF
+
+         leau  >L008C,pcr    point u to the  sequential data bytes
+L01A7    ldb   <u009F
+L01A9    lda   ,x+
+         anda  #$0F
+         lda   a,u
+         sta   ,y+
+         decb  
+         bne   L01A9
+         dec   <u009E
+         beq   L01D1         pull our y and exit routine
+         ldd   <u00A0
+         leay  d,y
+         abx   
+         cmpx  #$6000
+         bcs   L01A7
+
+         orcc  #IntMasks     turn off interrupts $50
+         lda   <u0042
+         sta   >$FFA9        second block in task 1
+         ldd   <u001E
+         leax  >-$4000,x
+         bra   L0198
+L01D1    puls  y
+         rts   
+
+
+L01D4    ldd   $02,s
+         sta   <u0047
+         incb  
+         subb  $04,s
+         lda   #$A0
+         mul   
+         addd  <u0046        Hi res screen mem address ($6000)
+         addd  <u002C
+         tfr   d,x
+         ldd   $04,s
+         std   <u009E
+         ldb   #$A0
+         subb  <u009F
+         stb   <u00A0
+         leau  >L008C,pcr
+         lda   $07,s
+         anda  #$0F
+         lda   a,u
+
+L01F8    ldb   <u009F
+L01FA    sta   ,x+
+         decb  
+         bne   L01FA
+
+         dec   <u009E
+         beq   L0208
+         ldb   <u00A0
+         abx   
+         bra   L01F8
+L0208    rts   
+
+
+L0209    leas  -$04,s
+         ldd   $0A,s
+         std   $02,s
+         ldd   $08,s
+         std   ,s
+         lda   $07,s
+         lsla  
+         lsla  
+         lsla  
+         ldb   #$A0
+         mul   
+         std   <u00A2
+         clra  
+         ldb   $01,s
+         lslb  
+         lslb  
+         ldu   <u00A2
+         leau  >$6000,u
+         ldb   $02,s
+         lslb  
+         lslb  
+         lslb  
+         lda   #$A0
+         mul   
+         leax  d,u
+         lda   $03,s
+         lsla  
+         lsla  
+         lsla  
+         ldb   $01,s
+         subb  ,s
+         lslb  
+         lslb  
+         addb  #$03
+L023F    pshs  b,a
+L0241    lda   b,u
+         sta   b,x
+         decb  
+         bpl   L0241
+         puls  b,a
+         leau  >$00A0,u
+         leax  >$00A0,x
+         cmpx  #$D800
+         bcc   L025A
+         deca  
+         bne   L023F
+L025A    leas  $04,s
+         rts   
+
+
+
+L025D    leas  -$04,s
+         ldx   $06,s
+         ldu   ,x
+L0263    stu   ,s
+         beq   L029D
+         ldu   $04,u
+         stu   $02,s
+         pshs  u
+         lbsr  L02A0
+         leas  $02,s
+         ldu   $02,s
+         lda   $01,u
+         cmpa  ,u
+         bne   L0297
+         ldd   $03,u
+         cmpd  <$1A,u
+         bne   L028C
+         lda   <$25,u
+         ora   #$40
+         sta   <$25,u
+         bra   L0297
+L028C    std   <$1A,u
+         lda   <$25,u
+         anda  #$BF
+         sta   <$25,u
+L0297    ldu   ,s
+         ldu   ,u
+         bra   L0263
+L029D    leas  $04,s
+         rts   
+
+
+L02A0    lda   >$0100
+         lbeq  L0344
+         ldu   $02,s
+         ldd   $08,u
+         lbsr  L0071
+         ldx   <$10,u
+         ldd   ,x
+         std   <u00A0
+         ldd   <$14,u
+         lbsr  L0071
+         ldx   <$12,u
+         ldd   ,x
+         std   <u009E
+         ldd   <$10,u
+         std   <$12,u
+         ldd   $08,u
+         std   <$14,u
+         lda   $04,u
+         ldb   <u00A1
+         cmpa  <$1B,u
+         bcs   L02E1
+         sta   <u00A3
+         stb   <u00A4
+         lda   <$1B,u
+         ldb   <u009F
+         bra   L02EC
+L02E1    ldb   <$1B,u
+         stb   <u00A3
+         ldb   <u009F
+         stb   <u00A4
+         ldb   <u00A1
+L02EC    stb   <u00A8
+         inca  
+         suba  <u00A8
+         ldb   <u00A3
+         incb  
+         subb  <u00A4
+         stb   <u00A7
+         cmpa  <u00A7
+         bcs   L02FE
+         lda   <u00A7
+L02FE    nega  
+         adda  <u00A3
+         inca  
+         sta   <u00A4
+         lda   $03,u
+         ldb   <u00A0
+         cmpa  <$1A,u
+         bhi   L0318
+         sta   <u00A2
+         stb   <u00A9
+         lda   <$1A,u
+         ldb   <u009E
+         bra   L0323
+L0318    ldb   <$1A,u
+         stb   <u00A2
+         ldb   <u009E
+         stb   <u00A9
+         ldb   <u00A0
+L0323    stb   <u00AA
+         adda  <u00AA
+         sta   <u00A6
+         lda   <u00A2
+         adda  <u00A9
+         cmpa  <u00A6
+         bhi   L0333
+         lda   <u00A6
+L0333    suba  <u00A2
+         sta   <u00A5
+         ldd   <u00A4
+         pshs  b,a
+         ldd   <u00A2
+         pshs  b,a
+         lbsr  L015A
+         leas  $04,s
+L0344    rts   
+
+* This jumbled mass of bytes disassembles 
+* but looks like a data block
+* or probably a bit map ??? 
+* L0345 - L0745 is 1024 bytes of data
+
+L0345    fcb   $00,$00,$00,$00
+         fcb   $00,$00,$00,$00
+         fcb   $7E,$81,$A5,$81
+         fcb   $BD,$99,$81,$7E
+         fcb   $7E,$FF,$DB,$FF
+         fcb   $C3,$E7,$FF,$7E
+         fcb   $6C,$FE,$FE,$FE
+         fcb   $7C,$38,$10,$00
+         fcb   $10,$38,$7C,$FE
+         fcb   $7C,$38,$10,$00
+         fcb   $38,$7C,$38,$FE
+         fcb   $FE,$7C,$38,$7C
+         fcb   $10,$10,$38,$7C
+         fcb   $FE,$7C,$38,$7C
+         fcb   $00,$00,$18,$3C
+         fcb   $3C,$18,$00,$00
+         fcb   $FF,$FF,$E7,$C3
+         fcb   $C3,$E7,$FF,$FF
+         fcb   $00,$3C,$66,$42
+         fcb   $42,$66,$3C,$00
+         fcb   $FF,$C3,$99,$BD
+         fcb   $BD,$99,$C3,$FF
+         fcb   $0F,$07,$0F,$7D
+         fcb   $CC,$CC,$CC,$78
+         fcb   $3C,$66,$66,$66
+         fcb   $3C,$18,$7E,$18
+         fcb   $3F,$33,$3F,$30
+         fcb   $30,$70,$F0,$E0
+         fcb   $7F,$63,$7F,$63
+         fcb   $63,$67,$E6,$C0
+         fcb   $99,$5A,$3C,$E7
+         fcb   $E7,$3C,$5A,$99
+         fcb   $80,$E0,$F8,$FE
+         fcb   $F8,$E0,$80,$00
+         fcb   $02,$0E,$3E,$FE
+         fcb   $3E,$0E,$02,$00
+         fcb   $18,$3C,$7E,$18
+         fcb   $18,$7E,$3C,$18
+         fcb   $66,$66,$66,$66
+         fcb   $66,$00,$66,$00
+         fcb   $7F,$DB,$DB,$7B
+         fcb   $1B,$1B,$1B,$00
+         fcb   $3E,$63,$38,$6C
+         fcb   $6C,$38,$CC,$78
+         fcb   $00,$00,$00,$00
+         fcb   $7E,$7E,$7E,$00
+         fcb   $18,$3C,$7E,$18
+         fcb   $7E,$3C,$18,$FF
+         fcb   $18,$3C,$7E,$18
+         fcb   $18,$18,$18,$00
+         fcb   $18,$18,$18,$18
+         fcb   $7E,$3C,$18,$00
+         fcb   $00,$18,$0C,$FE
+         fcb   $0C,$18,$00,$00
+         fcb   $00,$30,$60,$FE
+         fcb   $60,$30,$00,$00
+         fcb   $00,$00,$C0,$C0
+         fcb   $C0,$FE,$00,$00
+         fcb   $00,$24,$66,$FF
+         fcb   $66,$24,$00,$00
+         fcb   $00,$18,$3C,$7E
+         fcb   $FF,$FF,$00,$00
+         fcb   $00,$FF,$FF,$7E
+         fcb   $3C,$18,$00,$00
+         fcb   $00,$00,$00,$00
+         fcb   $00,$00,$00,$00
+         fcb   $30,$78,$78,$30
+         fcb   $30,$00,$30,$00
+         fcb   $6C,$6C,$6C,$00
+         fcb   $00,$00,$00,$00
+         fcb   $6C,$6C,$FE,$6C
+         fcb   $FE,$6C,$6C,$00
+         fcb   $30,$7C,$C0,$78
+         fcb   $0C,$F8,$30,$00
+         fcb   $00,$C6,$CC,$18
+         fcb   $30,$66,$C6,$00
+         fcb   $38,$6C,$38,$76
+         fcb   $DC,$CC,$76,$00
+         fcb   $60,$60,$C0,$00
+         fcb   $00,$00,$00,$00
+         fcb   $18,$30,$60,$60
+         fcb   $60,$30,$18,$00
+         fcb   $60,$30,$18,$18
+         fcb   $18,$30,$60,$00
+         fcb   $00,$66,$3C,$FF
+         fcb   $3C,$66,$00,$00
+         fcb   $00,$30,$30,$FC
+         fcb   $30,$30,$00,$00 
+         fcb   $00,$00,$00,$00
+         fcb   $00,$30,$30,$60
+         fcb   $00,$00,$00,$FC
+         fcb   $00,$00,$00,$00
+         fcb   $00,$00,$00,$00
+         fcb   $00,$30,$30,$00
+         fcb   $06,$0C,$18,$30
+         fcb   $60,$C0,$80,$00
+         fcb   $7C,$C6,$CE,$DE
+         fcb   $F6,$E6,$7C,$00
+         fcb   $30,$70,$30,$30
+         fcb   $30,$30,$FC,$00
+         fcb   $78,$CC,$0C,$38
+         fcb   $60,$CC,$FC,$00
+         fcb   $78,$CC,$0C,$38
+         fcb   $0C,$CC,$78,$00
+         fcb   $1C,$3C,$6C,$CC
+         fcb   $FE,$0C,$1E,$00
+         fcb   $FC,$C0,$F8,$0C
+         fcb   $0C,$CC,$78,$00
+         fcb   $38,$60,$C0,$F8
+         fcb   $CC,$CC,$78,$00
+         fcb   $FC,$CC,$0C,$18
+         fcb   $30,$30,$30,$00
+         fcb   $78,$CC,$CC,$78
+         fcb   $CC,$CC,$78,$00
+         fcb   $78,$CC,$CC,$7C
+         fcb   $0C,$18,$70,$00
+         fcb   $00,$30,$30,$00
+         fcb   $00,$30,$30,$00
+         fcb   $00,$30,$30,$00
+         fcb   $00,$30,$30,$60
+         fcb   $18,$30,$60,$C0
+         fcb   $60,$30,$18,$00
+         fcb   $00,$00,$FC,$00
+         fcb   $00,$FC,$00,$00
+         fcb   $60,$30,$18,$0C
+         fcb   $18,$30,$60,$00
+         fcb   $78,$CC,$0C,$18
+         fcb   $30,$00,$30,$00
+         fcb   $7C,$C6,$DE,$DE
+         fcb   $DE,$C0,$78,$00
+         fcb   $30,$78,$CC,$CC
+         fcb   $FC,$CC,$CC,$00
+         fcb   $FC,$66,$66,$7C
+         fcb   $66,$66,$FC,$00
+         fcb   $3C,$66,$C0,$C0
+         fcb   $C0,$66,$3C,$00
+         fcb   $F8,$6C,$66,$66
+         fcb   $66,$6C,$F8,$00
+         fcb   $FE,$62,$68,$78
+         fcb   $68,$62,$FE,$00
+         fcb   $FE,$62,$68,$78
+         fcb   $68,$60,$F0,$00
+         fcb   $3C,$66,$C0,$C0
+         fcb   $CE,$66,$3E,$00
+         fcb   $CC,$CC,$CC,$FC
+         fcb   $CC,$CC,$CC,$00
+         fcb   $78,$30,$30,$30
+         fcb   $30,$30,$78,$00
+         fcb   $1E,$0C,$0C,$0C
+         fcb   $CC,$CC,$78,$00
+         fcb   $E6,$66,$6C,$78
+         fcb   $6C,$66,$E6,$00
+         fcb   $F0,$60,$60,$60
+         fcb   $62,$66,$FE,$00
+         fcb   $C6,$EE,$FE,$FE
+         fcb   $D6,$C6,$C6,$00
+         fcb   $C6,$E6,$F6,$DE
+         fcb   $CE,$C6,$C6,$00
+         fcb   $38,$6C,$C6,$C6
+         fcb   $C6,$6C,$38,$00
+         fcb   $FC,$66,$66,$7C
+         fcb   $60,$60,$F0,$00
+         fcb   $78,$CC,$CC,$CC
+         fcb   $DC,$78,$1C,$00
+         fcb   $FC,$66,$66,$7C
+         fcb   $6C,$66,$E6,$00
+         fcb   $78,$CC,$E0,$70
+         fcb   $1C,$CC,$78,$00
+         fcb   $FC,$B4,$30,$30
+         fcb   $30,$30,$78,$00
+         fcb   $CC,$CC,$CC,$CC
+         fcb   $CC,$CC,$FC,$00
+         fcb   $CC,$CC,$CC,$CC
+         fcb   $CC,$78,$30,$00
+         fcb   $C6,$C6,$C6,$D6
+         fcb   $FE,$EE,$C6,$00
+         fcb   $C6,$C6,$6C,$38
+         fcb   $38,$6C,$C6,$00
+         fcb   $CC,$CC,$CC,$78
+         fcb   $30,$30,$78,$00
+         fcb   $FE,$C6,$8C,$18
+         fcb   $32,$66,$FE,$00
+         fcb   $78,$60,$60,$60
+         fcb   $60,$60,$78,$00
+         fcb   $C0,$60,$30,$18
+         fcb   $0C,$06,$02,$00
+         fcb   $78,$18,$18,$18
+         fcb   $18,$18,$78,$00
+         fcb   $10,$38,$6C,$C6
+         fcb   $00,$00,$00,$00
+         fcb   $00,$00,$00,$00
+         fcb   $00,$00,$00,$FF
+         fcb   $30,$30,$18,$00
+         fcb   $00,$00,$00,$00
+         fcb   $00,$00,$78,$0C
+         fcb   $7C,$CC,$76,$00
+         fcb   $E0,$60,$60,$7C
+         fcb   $66,$66,$DC,$00
+         fcb   $00,$00,$78,$CC
+         fcb   $C0,$CC,$78,$00
+         fcb   $1C,$0C,$0C,$7C
+         fcb   $CC,$CC,$76,$00
+         fcb   $00,$00,$78,$CC
+         fcb   $FC,$C0,$78,$00
+         fcb   $38,$6C,$60,$F0
+         fcb   $60,$60,$F0,$00
+         fcb   $00,$00,$76,$CC
+         fcb   $CC,$7C,$0C,$F8
+         fcb   $E0,$60,$6C,$76
+         fcb   $66,$66,$E6,$00
+         fcb   $30,$00,$70,$30
+         fcb   $30,$30,$78,$00
+         fcb   $0C,$00,$0C,$0C
+         fcb   $0C,$CC,$CC,$78
+         fcb   $E0,$60,$66,$6C
+         fcb   $78,$6C,$E6,$00
+         fcb   $70,$30,$30,$30
+         fcb   $30,$30,$78,$00
+         fcb   $00,$00,$CC,$FE
+         fcb   $FE,$D6,$C6,$00
+         fcb   $00,$00,$F8,$CC
+         fcb   $CC,$CC,$CC,$00
+         fcb   $00,$00,$78,$CC
+         fcb   $CC,$CC,$78,$00
+         fcb   $00,$00,$DC,$66
+         fcb   $66,$7C,$60,$F0
+         fcb   $00,$00,$76,$CC
+         fcb   $CC,$7C,$0C,$1E
+         fcb   $00,$00,$DC,$76
+         fcb   $66,$60,$F0,$00
+         fcb   $00,$00,$7C,$C0
+         fcb   $78,$0C,$F8,$00
+         fcb   $10,$30,$7C,$30
+         fcb   $30,$34,$18,$00
+         fcb   $00,$00,$CC,$CC
+         fcb   $CC,$CC,$76,$00
+         fcb   $00,$00,$CC,$CC
+         fcb   $CC,$78,$30,$00
+         fcb   $00,$00,$C6,$D6
+         fcb   $FE,$FE,$6C,$00
+         fcb   $00,$00,$C6,$6C
+         fcb   $38,$6C,$C6,$00
+         fcb   $00,$00,$CC,$CC
+         fcb   $CC,$7C,$0C,$F8
+         fcb   $00,$00,$FC,$98
+         fcb   $30,$64,$FC,$00
+         fcb   $1C,$30,$30,$E0
+         fcb   $30,$30,$1C,$00
+         fcb   $18,$18,$18,$00
+         fcb   $18,$18,$18,$00
+         fcb   $E0,$30,$30,$1C
+         fcb   $30,$30,$E0,$00
+         fcb   $76,$DC,$00,$00
+         fcb   $00,$00,$00,$00
+         fcb   $00,$10,$38,$6C
+         fcb   $C6,$C6,$FE,$00
+
+L0745    leas  -$02,s
+         pshs  y
+         ldx   $06,s
+         ldu   #$024E
+         lda   <u0040
+         lsla  
+         lsla  
+         lsla  
+         ldb   #$A0
+         mul   
+         tfr   d,y
+         clra  
+         ldb   <u0041
+         lslb  
+         lslb  
+         addd  #$6000
+         leay  d,y
+L0762    tst   ,x
+         lbeq  L07B0
+         ldb   ,x+
+         stx   $06,s
+         leax  >L0345,pcr
+         lslb  
+         abx   
+         abx   
+         abx   
+         abx   
+         lda   #$08
+         sta   $02,s
+L0779    ldb   ,x+
+         lda   #$04
+         sta   $03,s
+L077F    sex   
+         lda   a,u
+         anda  #$F0
+         sta   ,y
+         lslb  
+         sex   
+         lda   a,u
+         anda  #$0F
+         ora   ,y
+         ora   <u0045 flag for palettes set in sierra
+         sta   ,y+
+         lslb  
+         dec   $03,s
+         bne   L077F
+         lda   <u0045 flag for palettes set in sierra
+         beq   L079E
+         coma  
+         sta   <u0045 flag for palettes set in sierra
+L079E    leay  >$009C,y
+         dec   $02,s
+         bne   L0779
+         ldx   $06,s
+         inc   <u0041
+         leay  >-$04FC,y
+         bra   L0762
+L07B0    puls  y
+         leas  $02,s
+         rts   
+
+L07B5    fcb   $00,$00,$00,$00
+         fcb   $00,$00,$00,$00
+L07BD    fcc   /scrn/
+L07C1    fcb   $00                
+
+         emod
+eom      equ   *
+
