@@ -19,7 +19,7 @@
 *        size hard drive
 
 
-         nam   HBoot
+         nam   Boot
          ttl   Ken-Ton Boot module
 
          ifp1
@@ -39,10 +39,10 @@ select   equ   dataport+2
 reset    equ   dataport+3
 
 * Status register equates
-req      equ   1
-busy     equ   2
-msg      equ   4
-cmd      equ   8
+req      equ   $01
+busy     equ   $02
+msg      equ   $04
+cmd      equ   $08
 inout    equ   $10
 ack      equ   $20
 sel      equ   $40
@@ -300,5 +300,6 @@ restore  lda   #c$rstr
          fcc   /99999999/
 
          emod
-
 eom      equ   *
+         end
+
