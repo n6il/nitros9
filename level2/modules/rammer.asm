@@ -33,7 +33,6 @@ MAXBLOCK set   201         Maximum # of MMU blocks allowed in RAM drive
 
          ifp1
          use   defsfile
-         use   rbfdefs
          endc
 
 tylg     set   Drivr+Objct   

@@ -14,7 +14,6 @@
 
          ifp1  
          use   defsfile
-         use   rbfdefs
          endc  
 
 dnum     equ   0

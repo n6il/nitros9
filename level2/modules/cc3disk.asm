@@ -32,7 +32,6 @@ PRECOMP  equ   0              Set to 1 to turn on write precompensation
 
          IFP1
          use   defsfile
-         use   rbfdefs
          ENDC
 
 tylg     set   Drivr+Objct   
