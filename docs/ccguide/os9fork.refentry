@@ -1,0 +1,22 @@
+<refentry id="os9fork">
+<refnamediv>
+<refname>os9fork</refname>
+<refpurpose>Placeholder</refpurpose>
+</refnamediv>
+
+<refsynopsisdiv>
+<funcsynopsis>
+<funcprototype>
+  <funcdef><function>os9fork</function></funcdef>
+  <paramdef>type <parameter>arg1</parameter></paramdef>
+</funcprototype>
+</funcsynopsis>
+
+</refsynopsisdiv>
+
+<refsect1><title>Description</title>
+<para>
+Placeholder
+</para>
+</refsect1>
+</refentry>

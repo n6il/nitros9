@@ -1,0 +1,60 @@
+<chapter>
+<title>C System Calls</title>
+<para>
+This section of the C compiler manual is a guide to the system
+calls available from C programs.
+</para>
+<para>
+It is NOT intended as a definitive description of OS-9 service
+requests as these are described in the OS-9 SYSTEM PROGRAMMER'S
+manual. However, for most calls, enough information is available
+here to enable the programmer to write systems calls into programs
+without looking further.
+</para>
+
+<section>
+<title>System Calls</title>
+
+&abortref;
+&absref;
+&accessref;
+&chainref;
+&chdirref;
+&chmodref;
+&chownref;
+&closeref;
+&crcref;
+&creatref;
+&defdriveref;
+&dupref;
+&exitref;
+&getpidref;
+&getstatref;
+&getuidref;
+&interceptref;
+&killref;
+&lseekref;
+&mknodref;
+&modloadref;
+&munlinkref;
+&os9ref;
+&openref;
+&os9forkref;
+&pauseref;
+&prerrref;
+&readref;
+&sbrkref;
+&setprref;
+&setimeref;
+&setuidref;
+&setstatref;
+&signalref;
+&stacksizeref;
+&strassref;
+&tsleepref;
+&unlinkref;
+&waitref;
+&writeref;
+
+</section>
+</chapter>
