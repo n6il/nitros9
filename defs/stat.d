@@ -11,7 +11,11 @@
 
            .title   GetStat/SetStat Code Definitions
 
-           .area   sys (ABS)
+           .area    STAT (ABS)
+
+           .ifndef  Level
+Level      ==       1
+           .endif
 
            .org    0
 

@@ -9,7 +9,7 @@
 ;          2004/05/17  Boisy G. Pitre
 ; Started.
 
-         .title   Constant Character Definitions
+           .title   Constant Character Definitions
 
 C$NULL     ==     0h00        ; Null char
 C$RPET     ==     0h01        ; (CTRL-A - SOH) Repeat last input line

@@ -11,9 +11,11 @@
 
            .title   Boot Definitions
 
-           .area    BOOT (ABS)
+           .ifndef  Level
+Level      ==       1
+           .endif
 
-           .ifgt  Level-1
+           .ifgt    Level-1
 
 ;
 ; Boot defs for NitrOS-9 Level 1

@@ -9,12 +9,15 @@
 ;          2004/05/17  Boisy G. Pitre
 ; Started.
 
-           .title System Globals
+           .title   System Globals
 
-           .area  SYSGLOBS (ABS)
+           .area    SYSGLOBS (ABS)
 
+           .ifndef  Level
+Level      ==       1
+           .endif
 
-           .iflt  Level-2
+           .ifeq  Level-1
 ; Level 1 DP vars
            .org   0
 D.WDAddr:: .rmb   2          ; FHL/Isted WD1002-05 interface base address

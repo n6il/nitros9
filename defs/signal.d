@@ -11,14 +11,12 @@
 
            .title   Signal definitions
 
-           .area   sys (ABS)
+           .area    sys (ABS)
 
-           .org    0
-
-S$Kill::   .byte   1          ; Non-Interceptable Abort
-S$Wake::   .byte   1          ; Wake-up Sleeping Process
-S$Abort::  .byte   1          ; Keyboard Abort
-S$Intrpt:: .byte   1          ; Keyboard Interrupt
-S$Window:: .byte   1          ; Window Change
-S$Alarm::  .byte   1          ; CoCo individual process' alarm signal
+S$Kill     ==      0          ; Non-Interceptable Abort
+S$Wake     ==      1          ; Wake-up Sleeping Process
+S$Abort    ==      2          ; Keyboard Abort
+S$Intrpt   ==      3          ; Keyboard Interrupt
+S$Window   ==      4          ; Window Change
+S$Alarm    ==      5          ; CoCo individual process' alarm signal
 

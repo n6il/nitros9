@@ -9,11 +9,15 @@
 ;          2004/05/17  Boisy G. Pitre
 ; Started.
 
-           .title Process Constants
+           .title   Process Constants
 
-           .area  PROC (ABS)
+           .area    PROC (ABS)
 
-           .iflt  Level-2
+           .ifndef  Level
+Level      ==       1
+           .endif
+
+           .iflt    Level-2
 
 ; Level 1 process descriptor defs
 DefIOSiz   ==     12

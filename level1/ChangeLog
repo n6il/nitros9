@@ -6,12 +6,14 @@ NitrOS-9/6809 Level 1 V03.02.02:
   rb1773_scii_ff74.dr and rb1773_scii_ff58.dr.
 - The copy command now has write verification with -v.
 - term_t1.dd has been renamed to term_sio.dd and term_sc6551.dd has been added.
+
 NitrOS-9/6809 Level 1 V03.02.01 (May 14, 2004):
 - CCDisk has been replaced by a more reliable version from Dave Lewis. Also,
   step rate codes now match that of NitrOS-9 Level 2.
 - An assembler bug which generated incorrect code for Level 1
   has been corrected, and new modules have been generated.
 - Bugs in the mpi and megaread utilities have been fixed.
+
 NitrOS-9/6809 Level 1 V03.02.01:
 - A minor bug in the unlink command has been fixed.
 - The mpi and megaread utilities have been added to the CMDS directory.
@@ -26,6 +28,7 @@ NitrOS-9/6809 Level 1 V03.02.01:
 - sacia has been backported from Level 2 as sc6551.
 - modpak.dr and aciapak.dr have been replaced by sc6551.
 - rs232.dr has been renamed to sio.dr to match the Level 2 driver name.
+
 NitrOS-9/6809 Level 1 V03.02.00:
 - os9 and os9p2 have been renamed to kernel and kernelp2.
 - A new utility, padrom, has been added to the standard commands.
@@ -37,6 +40,7 @@ NitrOS-9/6809 Level 1 V03.02.00:
 - The faster PipeMan, Piper and Pipe have been back-ported from Level 2.
 - The MDir utility now shows proper module revision of 0 and other minor
   improvements in extended output.
+
 OS-9 Level One V03.01.04:
 - asm is now at edition 8 and includes the following fixes/additions:
   o Symbols now allow underscores.
