@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 1      Original Dragon distribution version
+*   1    Original Dragon distribution version
 
 
          nam   drvr51
@@ -16,10 +16,14 @@
          ifp1
          use   defsfile
          endc
+
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   1
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 u0001    rmb   1
 u0002    rmb   1
@@ -91,10 +95,12 @@ u0099    rmb   1
 u009A    rmb   3
 u009D    rmb   1
 size     equ   .
+
          fcb   $03 
-name     equ   *
-         fcs   /drvr51/
-         fcb   $01 
+
+name     fcs   /drvr51/
+         fcb   edition
+
 start    equ   *
          lbra  L0027
          lbra  L00EE

@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 2      Original Tandy distribution version
+*   2    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Sleep
          ttl   Sleep for some ticks

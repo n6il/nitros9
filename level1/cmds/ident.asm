@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 7      Original Tandy/Microware version               BGP 02/04/06
+*   7    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Ident
          ttl   Show module information
@@ -22,6 +22,7 @@ rev      set   $01
 edition  set   7
 
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 u0001    rmb   1
 u0002    rmb   1

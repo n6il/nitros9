@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  4     Original Microware distribution version
+*   4    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Merge
          ttl   Copy and combine files to standard output
@@ -15,19 +15,24 @@
          ifp1
          use   os9defs
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   $04
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 u0001    rmb   2
 u0003    rmb   2
 u0005    rmb   2
 u0007    rmb   2496
 size     equ   .
-name     equ   *
-         fcs   /Merge/
-         fcb   $04 
+
+name     fcs   /Merge/
+         fcb   edition
+
 start    equ   *
          pshs  u
          stx   <u0001

@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  6     Original Tandy version
+*   6    From Tandy OS-9 Level One VR 02.00.00
 
          nam   debug
          ttl   6809 debugger
@@ -19,6 +19,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   6
 
 L0000    mod   eom,name,tylg,atrv,start,size
 
@@ -62,7 +63,7 @@ u00FC    rmb   260
 size     equ   .
 
 name     fcs   /debug/
-         fcb   $06 
+         fcb   edition
 
 L0013    bsr   L0021
          bra   L0019

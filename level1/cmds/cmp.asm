@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 50     Original Microware distribution version
+*  50    From Tandy OS-9 Level One VR 02.00.00
 
          nam   cmp
          ttl   File comparison utility
@@ -15,10 +15,13 @@
          ifp1
          use   os9defs
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   2
 u0002    rmb   2
 u0004    rmb   2
@@ -39,8 +42,8 @@ u0226    rmb   514
 u0428    rmb   2
 u042A    rmb   1135
 size     equ   .
-name     equ   *
-L000D    fcs   /cmp/
+
+name     fcs   /cmp/
 L0010    fcb   $32 2
          fcb   $E9 i
          fcb   $FF 
@@ -2680,7 +2683,7 @@ L0A61    lda   ,x+
 L0A6B    cmpa  #$0D
          bne   L0A61
          clr   -$01,x
-L0A71    leax  >L000D,pcr
+L0A71    leax  >name,pcr
          pshs  x
          clra  
          leax  ,s

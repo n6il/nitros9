@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 3      Original Tandy/Microware version
+*   3    From Tandy OS-9 Level Two VR 02.00.01
 
          nam   Iniz
          ttl   Initialize a device

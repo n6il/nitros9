@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  7     Original Dragon Data distribution version
+*   7    From Dragon OS-9 Level One VR 01.02.00
 
 * DragonDOS BOOT loads sectors (numbered from 0) 2-17 (3840 bytes) into
 * RAM at location 9728. The first two bytes of sector 2 must be ASCII 'OS'
@@ -26,10 +26,14 @@
          ifp1
          use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   7
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   2
 u0002    rmb   1
 DevFd    rmb   1
@@ -50,9 +54,10 @@ u0061    rmb   1
 u0062    rmb   7
 u0069    rmb   4522
 size     equ   .
-name     equ   *
-         fcs   /OS9gen/
-         fcb   $07 
+
+name     fcs   /OS9gen/
+         fcb   edition
+
 L0014    fcb   C$LF 
          fcc   "Use (caution): os9gen </devname>"
          fcb   C$LF 

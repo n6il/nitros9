@@ -1,5 +1,14 @@
+********************************************************************
+* Tmode - Change terminal parameters
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+*  12    From Tandy OS-9 Level Two VR 02.00.01
+
          nam   Tmode
-         ttl   program module       
+         ttl   Change terminal parameters
 
 * Disassembled 98/09/11 18:35:13 by Disasm v1.6 (C) 1988 by RML
 
@@ -27,6 +36,7 @@ size     equ   .
 
 name     fcs   /Tmode/
          fcb   edition
+
          fcb   $00 
          fcb   $17 
 L0015    fcb   $FF 
@@ -196,7 +206,7 @@ L0129    ldb   ,y+
 L012B    cmpb  #C$SPAC
          beq   L0129
          leay  -$01,y
-         andcc #$FE
+         andcc #^Carry
          rts   
 L0134    clr   <u0001
          lda   ,y

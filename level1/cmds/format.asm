@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 17     Original Microware distribution version
+*  17    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Format
          ttl   Initialize disk media
@@ -19,6 +19,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   17
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -101,7 +102,7 @@ u2976    rmb   451
 size     equ   .
 
 name     fcs   /Format/
-         fcb   $11 
+         fcb   edition
 
 L0014    fcb   $00 
          fcb   $00 

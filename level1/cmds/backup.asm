@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  8     Original Microware distribution version
+*   8    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Backup
          ttl   Make a backup copy of a disk
@@ -19,6 +19,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   $08
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -47,7 +48,7 @@ u0350    rmb   3840
 size     equ   .
 
 name     fcs   /Backup/
-         fcb   $08 
+         fcb   edition
 
 L0014    fcc   "/d0 /d1"
          fcb   C$CR

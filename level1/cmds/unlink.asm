@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  2     Original Microware distribution version
+*   2    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Unlink
          ttl   Unlink memory module
@@ -19,6 +19,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -26,7 +27,7 @@ u0000    rmb   512
 size     equ   .
 
 name     fcs   /Unlink/
-         fcb   $02 
+         fcb   edition
 
 start    clra  
          clrb  

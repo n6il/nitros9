@@ -1,16 +1,14 @@
 ********************************************************************
-* progname - program module
+* Copy - Copy files
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  -     Original Tandy distribution version
-*
-*
+*   9    From Tandy OS-9 Level Two VR 02.00.01
 
          nam   Copy
-         ttl   program module       
+         ttl   Copy files
 
 * Disassembled 02/07/06 13:08:43 by Disasm v1.6 (C) 1988 by RML
 
@@ -21,6 +19,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   9
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -40,9 +39,9 @@ u0020    rmb   480
 u0200    rmb   256
 u0300    rmb   4096
 size     equ   .
-name     equ   *
-         fcs   /Copy/
-         fcb   $09 
+
+name     fcs   /Copy/
+         fcb   edition
 
 L0012    fcc   "Ready SOURCE, hit C to continue: "
 L0033    fcc   "Ready DESTINATION, hit C to continue: "

@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  2     Original Microware distribution version
+*   2   From Tandy OS-9 Level One VR 02.00.00
 
          nam   dsave
          ttl   Generate procedure file to copy files
@@ -15,13 +15,17 @@
          ifp1
          use   os9defs
          endc
+
 start    set   $0E0B
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   2897
 size     equ   .
+
          fcb   $34 4
          fcb   $06 
          fcb   $32 2

@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  4     Original Microware distribution version
+*   4    From Tandy OS-9 Level One VR 02.00.00
 
          nam   dcheck
          ttl   Check Disk File Structure
@@ -15,13 +15,16 @@
          ifp1
          use   os9defs
          endc
+
 start    set   $1A96
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   2946
 size     equ   .
+
          fcb   $34 4
          fcb   $06 
          fcb   $32 2

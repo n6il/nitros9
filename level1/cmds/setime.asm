@@ -26,8 +26,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 10     Made Y2K compliant                             GH
-* 11     Made totally compliant for 1900-2155           BGP 99/05/07
+*  10    Made Y2K compliant                             GH
+*  11    Made totally compliant for 1900-2155           BGP 99/05/07
 
          nam   Setime
          ttl   Set Date/Time

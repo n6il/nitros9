@@ -5,10 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 5      Original Tandy distribution version
-* 6      Brought up to OS-9 Level Two version, only     BGP 02/07/13
-*        difference was use of PREAD. at start line
-*        which is not present in OS-9 Level Two version.
+*   6    From Tandy OS-9 Level Two VR 02.00.01
 
          nam   Build
          ttl   Simple text file creation utility

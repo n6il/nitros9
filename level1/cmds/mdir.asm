@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  5     Original Tandy version                         BGP 02/04/05
+*   5    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Mdir
          ttl   Show module directory
@@ -19,6 +19,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   5
 stdout   set   1
 
          mod   eom,name,tylg,atrv,start,size
@@ -38,7 +39,7 @@ buffer   rmb   530
 size     equ   .
 
 name     fcs   /Mdir/
-         fcb   $05 
+         fcb   edition
 
 tophead  fcb   C$LF
          fcc   "  Module directory at "

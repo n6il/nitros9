@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  5     Original Dragon Data distribution version
+*   5    From Dragon OS-9 Level One VR 01.02.00
 
          nam   Cobbler
          ttl   Make a bootstrap file
@@ -15,10 +15,14 @@
          ifp1
          use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   5
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 DevFd    rmb   3
 BTLSN    rmb   1
@@ -34,9 +38,10 @@ u005B    rmb   1
 u005C    rmb   7
 u0063    rmb   682
 size     equ   .
-name     equ   *
-         fcs   /Cobbler/
-         fcb   $05 
+
+name     fcs   /Cobbler/
+         fcb   edition
+
 L0015    fcb   C$LF 
          fcc   "Use: Cobbler </devname>"
          fcb   C$LF 

@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 4      Original Tandy/Microware version
+*   4    From Tandy OS-9 Level One VR 02.00.00
 
          nam   Load
          ttl   Load a module

@@ -5,7 +5,8 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 6      Original Tandy/Microware version               BGP 02/04/06
+*   6    From Tandy OS-9 Level One VR 02.00.00
+*   7    Changed /D0 to /DD                             BGP 02/07/13
 
          nam   Printerr
          ttl   OS-9 Level One printerr routine
@@ -17,6 +18,7 @@
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   7
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -24,10 +26,10 @@ datarea  rmb   86
 size     equ   .
 
 name     fcs   /Printerr/
-         fcb   $06
+         fcb   edition
 
 ErrFile  fcc   "/DD/SYS/ERRMSG"
-         fcb   $0D
+         fcb   C$CR
          fcc   ",,,,,,,,,,,,"
 
 ErrMsg   fcc   "Error #"
@@ -110,7 +112,7 @@ L00C3    deca
          sta   ,y+
          tfr   b,a
          adda  #$30
-         ldb   #$0D
+         ldb   #C$CR
          std   ,y+
          leax  5,u                     point X at buffer
 L00D4    ldy   #80                     max string len

@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 1      Original Tandy/Microware version               BGP 02/04/05
+*   1    From Tandy OS-9 Level One VR 02.00.00
 
          nam   pxd
          ttl   Print working directory
