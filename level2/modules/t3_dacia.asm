@@ -45,8 +45,8 @@ rev      set   $01
          fcb   C$QUIT     quit character
          fcb   C$BSP      backspace echo character
          fcb   C$BELL     line overflow character (bell)
-         fcb   WORD8+PARNONE+STOP1 init value for dev ctl reg
-         fcb   B9600      baud rate
+         fcb   PARNONE    parity
+         fcb   STOP1+WORD8+B9600 stop bits/word size/baud rate
          fdb   name       copy of descriptor name address
          fcb   C$XON      acia xon char
          fcb   C$XOFF     acia xoff char
