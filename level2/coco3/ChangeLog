@@ -10,14 +10,17 @@ NitrOS-9/6809 Level 2 V03.02.02:
 - The pmap command has several bug fixes.
 - The copy command now has write verification with -v.
 - term_t1.dd has been renamed to term_sio.dd and term_sc6551.dd has been added.
+
 NitrOS-9/6809 Level 2 V03.02.01 (May 14, 2004):
 - Bugs in the mpi and megaread utilities have been fixed.
+
 NitrOS-9/6809 Level 2 V03.02.01:
 - A minor bug in the unlink command has been fixed.
 - The mpi and megaread utilities have been added to the CMDS directory.
 - The dmode utility has been updated.
 - sacia has been renamed to sc6551.
 - Several bugs in dsave's -b option have been fixed.
+
 NitrOS-9/6809 Level 2 V03.02.00:
 - os9p1 and os9p2 have been renamed to kernel and kernelp2, and have
   been back-ported from NitrOS-9/6309 Level 2.
@@ -38,6 +41,7 @@ NitrOS-9/6809 Level 2 V03.02.00:
   faster calls to the driver and a reduction in code size.
 - The MDir utility now shows proper module revision of 0 and other minor
   improvements in extended output.
+
 OS-9 Level Two V03.01.04:
 - rel has been back-ported from NitrOS-9 Level Two, adding 40 and 80
   column boot screen options.

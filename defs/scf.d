@@ -15,9 +15,13 @@
 ;          2004/07/02  Boisy G. Pitre
 ; Started
 
-           .title Sequential File Manager Definitions
+           .title   Sequential File Manager Definitions
 
-           .area  SCF (ABS)
+           .area    SCF (ABS)
+
+           .ifndef  Level
+Level      ==       1
+           .endif
 
            .page
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -11,86 +11,85 @@
 
            .title   Module Definitions
 
-           .area    MODULE (ABS)
-
-           .org     0
+           .ifndef  Level
+Level      ==       1
+           .endif
 
            .ifgt    Level-1
-MD$MPDAT:: .rmb     2          ; Module DAT Image ptr
-MD$MBSiz:: .rmb     2          ; Memory Block size
+MD$MPDAT   ==       0          ; Module DAT Image ptr
+MD$MBSiz   ==       2          ; Memory Block size
+MD$MPtr    ==       4          ; Module ptr
+MD$Link    ==       6          ; Module Link count
+MD$ESize   ==       8          ; Module Directory Entry size
+           .else
+MD$MPtr    ==       0          ; Module ptr
+MD$Link    ==       2          ; Module Link count
+MD$ESize   ==       4          ; Module Directory Entry size
            .endif
-MD$MPtr::  .rmb     2          ; Module ptr
-MD$Link::  .rmb     2          ; Module Link count
-MD$ESize   ==       .          ; Module Directory Entry size
 
 ;
 ; Universal Module Offsets
 ;
 
-           .org     0
-M$ID::     .rmb     2          ; ID Code
-M$Size::   .rmb     2          ; Module Size
-M$Name::   .rmb     2          ; Module Name
-M$Type::   .rmb     1          ; Type / Language
-M$Revs::   .rmb     1          ; Attributes / Revision Level
-M$Parity:: .rmb     1          ; Header Parity
-M$IDSize   ==       .          ; Module ID Size
+M$ID       ==       0          ; ID Code
+M$Size     ==       2          ; Module Size
+M$Name     ==       4          ; Module Name
+M$Type     ==       6          ; Type / Language
+M$Revs     ==       7          ; Attributes / Revision Level
+M$Parity   ==       8          ; Header Parity
+M$IDSize   ==       9          ; Module ID Size
 ;
 ; Type-Dependent Module Offsets
 ;
 ; System, File Manager, Device Driver, Program Module
 ;
-M$Exec::   .rmb     2          ; Execution Entry Offset
+M$Exec     ==       10         ; Execution Entry Offset
 ;
 ; Device Driver, Program Module
 ;
-M$Mem::    .rmb     2          ; Stack Requirement
+M$Mem      ==       12         ; Stack Requirement
 ;
 ; Device Driver, Device Descriptor Module
 ;
-M$Mode::   .rmb     1          ; Device Driver Mode Capabilities
+M$Mode     ==       14         ; Device Driver Mode Capabilities
 
 ;
 ; Device Descriptor Module
 ;
 
-           .org     M$IDSize
-
-M$FMgr::   .rmb     2          ; File Manager Name Offset
-M$PDev::   .rmb     2          ; Device Driver Name Offset
-           .rmb     1          ; M$Mode (defined above)
-M$Port::   .rmb     3          ; Port Address
-M$Opt::    .rmb     1          ; Device Default Options
-M$DTyp::   .rmb     1          ; Device Type
+M$FMgr     ==       9          ; File Manager Name Offset
+M$PDev     ==       11         ; Device Driver Name Offset
+;           ==       13         ; M$Mode (defined above)
+M$Port     ==       14         ; Port Address
+M$Opt      ==       17         ; Device Default Options
+M$DTyp     ==       18         ; Device Type
 IT.DTP     ==       M$DTyp     ; Descriptor type offset
 ;
 ; Configuration Module Entry Offsets
 ;
 
-           .org     M$IDSize
+MaxMem     ==       9          ; Maximum Free Memory
+PollCnt    ==       12         ; Entries in Interrupt Polling Table
+DevCnt     ==       13         ; Entries in Device Table
+InitStr    ==       14         ; Initial Module Name
+SysStr     ==       16         ; System Device Name
+StdStr     ==       18         ; Standard I/O Pathlist
+BootStr    ==       20         ; Bootstrap Module name
+ProtFlag   ==       22         ; Write protect enable flag
 
-MaxMem::   .rmb     3          ; Maximum Free Memory
-PollCnt::  .rmb     1          ; Entries in Interrupt Polling Table
-DevCnt::   .rmb     1          ; Entries in Device Table
-InitStr::  .rmb     2          ; Initial Module Name
-SysStr::   .rmb     2          ; System Device Name
-StdStr::   .rmb     2          ; Standard I/O Pathlist
-BootStr::  .rmb     2          ; Bootstrap Module name
-ProtFlag:: .rmb     1          ; Write protect enable flag
-
-OSLevel::  .rmb     1          ; OS level
-OSVer::    .rmb     1          ; OS version
-OSMajor::  .rmb     1          ; OS major
-OSMinor::  .rmb     1          ; OS minor
-Feature1:: .rmb     1          ; feature byte 1
-Feature2:: .rmb     1          ; feature byte 2
-           .rmb     8          ; reserved for future use
+OSLevel    ==       23         ; OS level
+OSVer      ==       24         ; OS version
+OSMajor    ==       25         ; OS major
+OSMinor    ==       26         ; OS minor
+Feature1   ==       27         ; feature byte 1
+Feature2   ==       28         ; feature byte 2
+                               ; reserved for future use
            .ifgt  Level-1
 ; -- CC3IO area -- (NitrOS-9 Level 2 and above)
-MonType::  .rmb     1          ; Monitor type (0=CMP,1=RGB,2=MONO)
-MouseInf:: .rmb     2          ; Mouse resolution/Mouse port; was 1, major error RG.
-KeyRptS::  .rmb     1          ; Key repeat start constant
-KeyRptD::  .rmb     1          ; Key repeat delay constant
+MonType    ==       36         ; Monitor type (0=CMP,1=RGB,2=MONO)
+MouseInf   ==       37         ; Mouse resolution/Mouse port; was 1, major error RG.
+KeyRptS    ==       39         ; Key repeat start constant
+KeyRptD    ==       40         ; Key repeat delay constant
            .endif
 
 ; Feature1 byte definitions

@@ -11,169 +11,165 @@
 
            .title   NitrOS-9 Error Definitions
 
-           .area    ERRNO (ABS)
+           .ifndef  Level
+Level      ==       1
+           .endif
 
 ;
 ; Basic09 Error Codes
 ;
-           .org   10
-E$UnkSym:: .rmb   1          ; Unknown symbol
-E$ExcVrb:: .rmb   1          ; Excessive verbage
-E$IllStC:: .rmb   1          ; Illegal statement construction
-E$ICOvf::  .rmb   1          ; I-code overflow
-E$IChRef:: .rmb   1          ; Illegal channel reference
-E$IllMod:: .rmb   1          ; Illegal mode
-E$IllNum:: .rmb   1          ; Illegal number
-E$IllPrf:: .rmb   1          ; Illegal prefix
-E$IllOpd:: .rmb   1          ; Illegal operand
-E$IllOpr:: .rmb   1          ; Illegal operator
-E$IllRFN:: .rmb   1          ; Illegal record field name
-E$IllDim:: .rmb   1          ; Illegal dimension
-E$IllLit:: .rmb   1          ; Illegal literal
-E$IllRet:: .rmb   1          ; Illegal relational
-E$IllSfx:: .rmb   1          ; Illegal type suffix
-E$DimLrg:: .rmb   1          ; Dimension too large
-E$LinLrg:: .rmb   1          ; Line number too large
-E$NoAssg:: .rmb   1          ; Missing assignment statement
-E$NoPath:: .rmb   1          ; Missing path number
-E$NoComa:: .rmb   1          ; Missing coma
-E$NoDim::  .rmb   1          ; Missing dimension
-E$NoDO::   .rmb   1          ; Missing DO statement
-E$MFull::  .rmb   1          ; Memory full
-E$NoGoto:: .rmb   1          ; Missing GOTO
-E$NoLPar:: .rmb   1          ; Missing left parenthesis
-E$NoLRef:: .rmb   1          ; Missing line reference
-E$NoOprd:: .rmb   1          ; Missing operand
-E$NoRPar:: .rmb   1          ; Missing right parenthesis
-E$NoTHEN:: .rmb   1          ; Missing THEN statement
-E$NoTO::   .rmb   1          ; Missing TO statement
-E$NoVRef:: .rmb   1          ; Missing variable reference
-E$EndQou:: .rmb   1          ; Missing end quote
-E$SubLrg:: .rmb   1          ; Too many subscripts
-E$UnkPrc:: .rmb   1          ; Unknown procedure
-E$MulPrc:: .rmb   1          ; Multiply defined procedure
-E$DivZer:: .rmb   1          ; Divice by zero
-E$TypMis:: .rmb   1          ; Operand type mismatch
-E$StrOvf:: .rmb   1          ; String stack overflow
-E$NoRout:: .rmb   1          ; Unimplemented routine
-E$UndVar:: .rmb   1          ; Undefined variable
-E$FltOvf:: .rmb   1          ; Floating Overflow
-E$LnComp:: .rmb   1          ; Line with compiler error
-E$ValRng:: .rmb   1          ; Value out of range for destination
-E$SubOvf:: .rmb   1          ; Subroutine stack overflow
-E$SubUnd:: .rmb   1          ; Subroutine stack underflow
-E$SubRng:: .rmb   1          ; Subscript out of range
-E$ParmEr:: .rmb   1          ; Parameter error
-E$SysOvf:: .rmb   1          ; System stack overflow
-E$IOMism:: .rmb   1          ; I/O type mismatch
-E$IONum::  .rmb   1          ; I/O numeric input format bad
-E$IOConv:: .rmb   1          ; I/O conversion: number out of range
-E$IllInp:: .rmb   1          ; Illegal input format
-E$IOFRpt:: .rmb   1          ; I/O format repeat error
-E$IOFSyn:: .rmb   1          ; I/O format syntax error
-E$IllPNm:: .rmb   1          ; Illegal path number
-E$WrSub::  .rmb   1          ; Wrong number of subscripts
-E$NonRcO:: .rmb   1          ; Non-record type operand
-E$IllA::   .rmb   1          ; Illegal argument
-E$IllCnt:: .rmb   1          ; Illegal control structure
-E$UnmCnt:: .rmb   1          ; Unmatched control structure
-E$IllFOR:: .rmb   1          ; Illegal FOR variable
-E$IllExp:: .rmb   1          ; Illegal expression type
-E$IllDec:: .rmb   1          ; Illegal declarative statement
-E$ArrOvf:: .rmb   1          ; Array size overflow
-E$UndLin:: .rmb   1          ; Undefined line number
-E$MltLin:: .rmb   1          ; Multiply defined line number
-E$MltVar:: .rmb   1          ; Multiply defined variable
-E$IllIVr:: .rmb   1          ; Illegal input variable
-E$SeekRg:: .rmb   1          ; Seek out of range
-E$NoData:: .rmb   1          ; Missing data statement
+
+E$UnkSym   ==       10         ; Unknown symbol
+E$ExcVrb   ==       11         ; Excessive verbage
+E$IllStC   ==       12         ; Illegal statement construction
+E$ICOvf    ==       13         ; I-code overflow
+E$IChRef   ==       14         ; Illegal channel reference
+E$IllMod   ==       15         ; Illegal mode
+E$IllNum   ==       16         ; Illegal number
+E$IllPrf   ==       17         ; Illegal prefix
+E$IllOpd   ==       18         ; Illegal operand
+E$IllOpr   ==       19         ; Illegal operator
+E$IllRFN   ==       20         ; Illegal record field name
+E$IllDim   ==       21         ; Illegal dimension
+E$IllLit   ==       22         ; Illegal literal
+E$IllRet   ==       23         ; Illegal relational
+E$IllSfx   ==       24         ; Illegal type suffix
+E$DimLrg   ==       25         ; Dimension too large
+E$LinLrg   ==       26         ; Line number too large
+E$NoAssg   ==       27         ; Missing assignment statement
+E$NoPath   ==       28         ; Missing path number
+E$NoComa   ==       29         ; Missing coma
+E$NoDim    ==       30         ; Missing dimension
+E$NoDO     ==       31         ; Missing DO statement
+E$MFull    ==       32         ; Memory full
+E$NoGoto   ==       33         ; Missing GOTO
+E$NoLPar   ==       34         ; Missing left parenthesis
+E$NoLRef   ==       35         ; Missing line reference
+E$NoOprd   ==       36         ; Missing operand
+E$NoRPar   ==       36         ; Missing right parenthesis
+E$NoTHEN   ==       38         ; Missing THEN statement
+E$NoTO     ==       39         ; Missing TO statement
+E$NoVRef   ==       40         ; Missing variable reference
+E$EndQou   ==       41         ; Missing end quote
+E$SubLrg   ==       42         ; Too many subscripts
+E$UnkPrc   ==       43         ; Unknown procedure
+E$MulPrc   ==       44         ; Multiply defined procedure
+E$DivZer   ==       45         ; Divice by zero
+E$TypMis   ==       46         ; Operand type mismatch
+E$StrOvf   ==       46         ; String stack overflow
+E$NoRout   ==       48         ; Unimplemented routine
+E$UndVar   ==       49         ; Undefined variable
+E$FltOvf   ==       50         ; Floating Overflow
+E$LnComp   ==       51         ; Line with compiler error
+E$ValRng   ==       52         ; Value out of range for destination
+E$SubOvf   ==       53         ; Subroutine stack overflow
+E$SubUnd   ==       54         ; Subroutine stack underflow
+E$SubRng   ==       55         ; Subscript out of range
+E$ParmEr   ==       56         ; Parameter error
+E$SysOvf   ==       57         ; System stack overflow
+E$IOMism   ==       58         ; I/O type mismatch
+E$IONum    ==       59         ; I/O numeric input format bad
+E$IOConv   ==       60         ; I/O conversion: number out of range
+E$IllInp   ==       61         ; Illegal input format
+E$IOFRpt   ==       62         ; I/O format repeat error
+E$IOFSyn   ==       63         ; I/O format syntax error
+E$IllPNm   ==       64         ; Illegal path number
+E$WrSub    ==       65         ; Wrong number of subscripts
+E$NonRcO   ==       66         ; Non-record type operand
+E$IllA     ==       67         ; Illegal argument
+E$IllCnt   ==       68         ; Illegal control structure
+E$UnmCnt   ==       69         ; Unmatched control structure
+E$IllFOR   ==       70         ; Illegal FOR variable
+E$IllExp   ==       71         ; Illegal expression type
+E$IllDec   ==       72         ; Illegal declarative statement
+E$ArrOvf   ==       73         ; Array size overflow
+E$UndLin   ==       74         ; Undefined line number
+E$MltLin   ==       75         ; Multiply defined line number
+E$MltVar   ==       76         ; Multiply defined variable
+E$IllIVr   ==       77         ; Illegal input variable
+E$SeekRg   ==       78         ; Seek out of range
+E$NoData   ==       79         ; Missing data statement
 
 ;
 ; System Dependent Error Codes
 ;
 
 ; Level 2 windowing error codes
-           .org   183
-E$IWTyp::  .rmb   1          ; Illegal window type
-E$WADef::  .rmb   1          ; Window already defined
-E$NFont::  .rmb   1          ; Font not found
-E$StkOvf:: .rmb   1          ; Stack overflow
-E$IllArg:: .rmb   1          ; Illegal argument
-           .rmb   1          ; reserved
-E$ICoord:: .rmb   1          ; Illegal coordinates
-E$Bug::    .rmb   1          ; Bug (should never be returned)
-E$BufSiz:: .rmb   1          ; Buffer size is too small
-E$IllCmd:: .rmb   1          ; Illegal command
-E$TblFul:: .rmb   1          ; Screen or window table is full
-E$BadBuf:: .rmb   1          ; Bad/Undefined buffer number
-E$IWDef::  .rmb   1          ; Illegal window definition
-E$WUndef:: .rmb   1          ; Window undefined
 
-E$Up::     .rmb   1          ; Up arrow pressed on SCF I$ReadLn with PD.UP enabled
-E$Dn::     .rmb   1          ; Down arrow pressed on SCF I$ReadLn with PD.DOWN enabled
-E$Alias::  .rmb   1
+E$IWTyp    ==       183        ; Illegal window type
+E$WADef    ==       184        ; Window already defined
+E$NFont    ==       185        ; Font not found
+E$StkOvf   ==       186        ; Stack overflow
+E$IllArg   ==       187        ; Illegal argument
+; 188 is reserved
+E$ICoord   ==       189        ; Illegal coordinates
+E$Bug      ==       190        ; Bug (should never be returned)
+E$BufSiz   ==       191        ; Buffer size is too small
+E$IllCmd   ==       192        ; Illegal command
+E$TblFul   ==       193        ; Screen or window table is full
+E$BadBuf   ==       194        ; Bad/Undefined buffer number
+E$IWDef    ==       195        ; Illegal window definition
+E$WUndef   ==       196        ; Window undefined
+
+E$Up       ==       197        ; Up arrow pressed on SCF I$ReadLn with PD.UP enabled
+E$Dn       ==       198        ; Down arrow pressed on SCF I$ReadLn with PD.DOWN enabled
+E$Alias    ==       199
 
 
 ;
 ; Standard NitrOS-9 Error Codes
 ;
-           .org   200
-E$PthFul:: .rmb   1          ; Path Table full
-E$BPNum::  .rmb   1          ; Bad Path Number
-E$Poll::   .rmb   1          ; Polling Table Full
-E$BMode::  .rmb   1          ; Bad Mode
-E$DevOvf:: .rmb   1          ; Device Table Overflow
-E$BMID::   .rmb   1          ; Bad Module ID
-E$DirFul:: .rmb   1          ; Module Directory Full
-E$MemFul:: .rmb   1          ; Process Memory Full
-E$UnkSvc:: .rmb   1          ; Unknown Service Code
-E$ModBsy:: .rmb   1          ; Module Busy
-E$BPAddr:: .rmb   1          ; Bad Page Address
-E$EOF::    .rmb   1          ; End of File
-           .rmb   1
-E$NES::    .rmb   1          ; Non-Existing Segment
-E$FNA::    .rmb   1          ; File Not Accesible
-E$BPNam::  .rmb   1          ; Bad Path Name
-E$PNNF::   .rmb   1          ; Path Name Not Found
-E$SLF::    .rmb   1          ; Segment List Full
-E$CEF::    .rmb   1          ; Creating Existing File
-E$IBA::    .rmb   1          ; Illegal Block Address
-E$HangUp:: .rmb   1          ; Carrier Detect Lost
-E$MNF::    .rmb   1          ; Module Not Found
-           .rmb   1
-E$DelSP::  .rmb   1          ; Deleting Stack Pointer memory
-E$IPrcID:: .rmb   1          ; Illegal Process ID
-E$BPrcID   ==     E$IPrcID   ; Bad Process ID (formerly #238)
-           .rmb   1
-E$NoChld:: .rmb   1          ; No Children
-E$ISWI::   .rmb   1          ; Illegal SWI code
-E$PrcAbt:: .rmb   1          ; Process Aborted
-E$PrcFul:: .rmb   1          ; Process Table Full
-E$IForkP:: .rmb   1          ; Illegal Fork Parameter
-E$KwnMod:: .rmb   1          ; Known Module
-E$BMCRC::  .rmb   1          ; Bad Module CRC
-E$USigP::  .rmb   1          ; Unprocessed Signal Pending
-E$NEMod::  .rmb   1          ; Non Existing Module
-E$BNam::   .rmb   1          ; Bad Name
-E$BMHP::   .rmb   1          ; (bad module header parity)
-E$NoRAM::  .rmb   1          ; No (System) RAM Available
-E$DNE::    .rmb   1          ; Directory not empty
-E$NoTask:: .rmb   1          ; No available Task number
-;           .rmb   0hF0-.     ; reserved
-           .org   0hF0
-E$Unit::   .rmb   1          ; Illegal Unit (drive)
-E$Sect::   .rmb   1          ; Bad Sector number
-E$WP::     .rmb   1          ; Write Protect
-E$CRC::    .rmb   1          ; Bad Check Sum
-E$Read::   .rmb   1          ; Read Error
-E$Write::  .rmb   1          ; Write Error
-E$NotRdy:: .rmb   1          ; Device Not Ready
-E$Seek::   .rmb   1          ; Seek Error
-E$Full::   .rmb   1          ; Media Full
-E$BTyp::   .rmb   1          ; Bad Type (incompatable) media
-E$DevBsy:: .rmb   1          ; Device Busy
-E$DIDC::   .rmb   1          ; Disk ID Change
-E$Lock::   .rmb   1          ; Record is busy (locked out)
-E$Share::  .rmb   1          ; Non-sharable file busy
-E$DeadLk:: .rmb   1          ; I/O Deadlock error
-
+E$PthFul   ==       200        ; Path Table full
+E$BPNum    ==       201        ; Bad Path Number
+E$Poll     ==       202        ; Polling Table Full
+E$BMode    ==       203        ; Bad Mode
+E$DevOvf   ==       204        ; Device Table Overflow
+E$BMID     ==       205        ; Bad Module ID
+E$DirFul   ==       206        ; Module Directory Full
+E$MemFul   ==       207        ; Process Memory Full
+E$UnkSvc   ==       208        ; Unknown Service Code
+E$ModBsy   ==       209        ; Module Busy
+E$BPAddr   ==       210        ; Bad Page Address
+E$EOF      ==       211        ; End of File
+E$NES      ==       213        ; Non-Existing Segment
+E$FNA      ==       214        ; File Not Accesible
+E$BPNam    ==       215        ; Bad Path Name
+E$PNNF     ==       216        ; Path Name Not Found
+E$SLF      ==       217        ; Segment List Full
+E$CEF      ==       218        ; Creating Existing File
+E$IBA      ==       219        ; Illegal Block Address
+E$HangUp   ==       220        ; Carrier Detect Lost
+E$MNF      ==       221        ; Module Not Found
+E$DelSP    ==       223        ; Deleting Stack Pointer memory
+E$IPrcID   ==       224        ; Illegal Process ID
+E$BPrcID   ==       E$IPrcID   ; Bad Process ID (formerly #238)
+; 225 is reserved
+E$NoChld   ==       226        ; No Children
+E$ISWI     ==       227        ; Illegal SWI code
+E$PrcAbt   ==       228        ; Process Aborted
+E$PrcFul   ==       229        ; Process Table Full
+E$IForkP   ==       230        ; Illegal Fork Parameter
+E$KwnMod   ==       231        ; Known Module
+E$BMCRC    ==       232        ; Bad Module CRC
+E$USigP    ==       233        ; Unprocessed Signal Pending
+E$NEMod    ==       234        ; Non Existing Module
+E$BNam     ==       235        ; Bad Name
+E$BMHP     ==       236        ; (bad module header parity)
+E$NoRAM    ==       237        ; No (System) RAM Available
+E$DNE      ==       238        ; Directory not empty
+E$NoTask   ==       239        ; No available Task number
+E$Unit     ==       240        ; Illegal Unit (drive)
+E$Sect     ==       241        ; Bad Sector number
+E$WP       ==       242        ; Write Protect
+E$CRC      ==       243        ; Bad Check Sum
+E$Read     ==       244        ; Read Error
+E$Write    ==       245        ; Write Error
+E$NotRdy   ==       246        ; Device Not Ready
+E$Seek     ==       247        ; Seek Error
+E$Full     ==       248        ; Media Full
+E$BTyp     ==       249        ; Bad Type (incompatable) media
+E$DevBsy   ==       250        ; Device Busy
+E$DIDC     ==       251        ; Disk ID Change
+E$Lock     ==       252        ; Record is busy (locked out)
+E$Share    ==       253        ; Non-sharable file busy
+E$DeadLk   ==       254        ; I/O Deadlock error
