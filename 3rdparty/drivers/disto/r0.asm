@@ -3,7 +3,7 @@
 
 * Disassembled 98/08/24 11:29:00 by Disasm v1.6 (C) 1988 by RML
 
-MPISlot  equ   2          (slot 0-3)
+MPISlot  equ   1          (slot 0-3)
 
          ifp1  
          use   defsfile
