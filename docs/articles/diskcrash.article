@@ -1,10 +1,13 @@
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
-<!-- The author has not been contacted about adding this article to the
-     documentation set.
+<?xml version="1.0" ?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<!--
+    The author has not been contacted about adding this article to the
+    documentation set.
 -->
 <article>
 <articleinfo>
-<author><firstname>Dave</><surname>Gantz</></author>
+<author><firstname>Dave</firstname><surname>Gantz</surname></author>
 <title>Arrgh!!!!! My disk crashed, now what do I do?</title>
 </articleinfo>
 <para>

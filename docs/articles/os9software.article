@@ -1,10 +1,14 @@
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
-<!-- The author has not been contacted about adding this article to the
-     documentation set.
+<?xml version="1.0" ?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<!--
+    The author has not been contacted about adding this article to the
+    documentation set.
+    Original URL: http://www.onastick.clara.net/os9sw.htm
 -->
 <article>
 <articleinfo>
-<author><firstname>Jon</><surname>Bird</></author>
+<author><firstname>Jon</firstname><surname>Bird</surname></author>
 <title>Software for OS9</title>
 </articleinfo>
 <para>
