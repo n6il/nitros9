@@ -1,18 +1,18 @@
-         ifeq  SYSTYPE
+         IFEQ  SYSTYPE
 
 SYSTYPE  set   1
 
          nam   SysType
-         ifeq  Level-1
+         IFEQ  Level-1
          ttl   CoCo OS-9 Level One System Type Definitions
-         endc
-         ifeq  Level-2
+         ENDC
+         IFEQ  Level-2
          ifne  NitrOS9
          ttl   CoCo NitrOS-9 Level Two System Type Definitions
-         else
+         ELSE
          ttl   CoCo OS-9 Level Two System Type Definitions
-         endc
-         endc
+         ENDC
+         ENDC
 
 *****************
 * Edition History
@@ -28,22 +28,24 @@ SYSTYPE  set   1
 *
 Color    set   1
 Color3   set   2
-         ifeq  Level-1
+         IFEQ  Level-1
 CPUType  set   Color
-         else
+         ELSE
 CPUType  set   Color3
-         endc
+         ENDC
+
 
 ******************************
 * Clock Speed Type Definitions
 *
 OneMHz   equ   1
 TwoMHz   equ   2
-         ifeq  CPUType-Color
+         IFEQ  CPUType-Color
 CPUSpeed set   OneMHz
-         else
+         ELSE
 CPUSpeed set   TwoMHz
-         endc
+         ENDC
+
 
 **********************************
 * Power Line Frequency Definitions
@@ -52,14 +54,16 @@ Hz50     equ   1          Assemble clock for 50 hz power
 Hz60     equ   2          Assemble clock for 60 hz power
 PwrLnFrq set   Hz60       Set to Appropriate freq
 
+
 **********************************
 * Ticks per second
 *
-         ifeq  PwrLnFrq-Hz50
+         IFEQ  PwrLnFrq-Hz50
 TkPerSec equ   50
-         else
+         ELSE
 TkPerSec equ   60
-         endc
+         ENDC
+
 
 ******************
 * ACIA type set up
@@ -69,6 +73,7 @@ ACIA6850 rmb   1          MC6850 acia.
 ACIA6551 rmb   1          SY6551 acia.
 ACIA2661 rmb   1          SC2661 acia.
 ACIATYPE set   ACIA6551
+
 
 ****************************************
 * Special character Bit position equates
@@ -81,6 +86,7 @@ DOWNBIT  equ   %00010000
 LEFTBIT  equ   %00100000
 RIGHTBIT equ   %01000000
 SPACEBIT equ   %10000000
+
 
 ******************
 * Device addresses
@@ -95,7 +101,7 @@ PIA.U4   equ   PIA0Base
 PIA1Base equ   $FF20
 PIA.U8   equ   PIA1Base
 
-*
+******************
 * VDG Devices
 *
 A.TermV  set   $FFC0      VDG Term
@@ -107,7 +113,7 @@ A.V5     set   $FFC5
 A.V6     set   $FFC6
 A.V7     set   $FFC7
 
-         ifeq  Level-1
+         IFEQ  Level-1
 
 *************************************************
 *
@@ -118,7 +124,7 @@ A.V7     set   $FFC7
 HW.Page  set   $FF        Device descriptor hardware page
 BTStart  set   $EF00		boot track memory start
 
-         else
+         ELSE
 
 *************************************************
 *
@@ -412,11 +418,11 @@ KeyMse   equ   %00000001  keyboard mouse enabled
 NumLck   equ   %00000010  Numlock enabled (TC-9 use only)
 CapsLck  equ   %00000100  Capslock enabled
 MaxRows  equ   640        maximum X co-ordinate allowed on mouse
-         ifeq  MaxLines-25
+         IFEQ  MaxLines-25
 MaxLine  equ   198        maximum Y co-ordinate allowed on mouse
-         else  
+         ELSE  
 MaxLine  equ   191        maximum Y co-ordinate allowed on mouse
-         endc  
+         ENDC  
 
 *****************************************************************************
 * Static memory area for each window (CC3IO/TC9IO)
@@ -495,11 +501,11 @@ G.BCFFlg rmb   1          bit coded co-module found flags ($24)
 *                           10000000 : GrfDrv found
 g0025     rmb   1
 G.KTblLC  rmb   1          Key table entry# last checked (1-3)
-*         ifeq  TC9-true
+*         IFEQ  TC9-true
 *CurLght  rmb   1          current keyboard light settings
-*         else  
+*         ELSE  
 G.LastCh  rmb   1          last keyboard character (ASCII value)
-*         endc  
+*         ENDC  
 G.LKeyCd  rmb   1          last keyboard code
 G.KyRept rmb   1          key repeat counter
 * A secondary 3 key table (same format as g002D below)
@@ -532,11 +538,11 @@ g005E    rmb   2          Temp for relative mouse Y coord calculation
 G.MSmpRV rmb   1          Mouse sample reset value (# ticks till next read)
 G.KyDly  rmb   1          initial key repeat delay constant
 G.KySpd  rmb   1          secondary key repeat delay constant
-*         ifeq  TC9-true
+*         IFEQ  TC9-true
 *KeyParm  rmb   1          keyboard command parameter byte
-*         else  
+*         ELSE  
 G.KyMse  rmb   1          keyboard mouse flag
-*         endc  
+*         ENDC  
 G.Clear  rmb   1          "one-shot" CapsLock/SysRq key flag
 G.KyButt rmb   1          keyboard F1 and F2 "fire" button info
 G.AutoMs rmb   1          Auto-follow mouse flag for current device (0=NO)
@@ -851,7 +857,7 @@ Yellow.  rmb   1
 Magenta. rmb   1
 Cyan.    rmb   1
 
-         endc
+         ENDC
 
-         endc
+         ENDC
 
