@@ -10,14 +10,14 @@ CD		= ../CMDS
 
 DEPENDS		= ./Makefile
 
-KERNEL_1773	= $(MD)/rel $(MD)/boot_1773_6ms $(MD)/os9p1
-KERNEL_ROM	= $(MD)/rel $(3PB)/boot_rom $(MD)/os9p1
-KERNEL_KENTON	= $(MD)/rel $(C9)/superscsi/boot_id0_ktlr_l2 $(MD)/os9p1
-KERNEL_TC3	= $(MD)/rel $(C9)/superscsi/boot_id0_tc3_l2 $(MD)/os9p1
-KERNEL_DW	= $(MD)/rel $(C9)/drivewire/boot_drivewire_l2 $(MD)/os9p1
+KERNEL_1773	= $(MD)/rel $(MD)/boot_1773_6ms $(MD)/kernel
+KERNEL_ROM	= $(MD)/rel $(3PB)/boot_rom $(MD)/kernel
+KERNEL_KENTON	= $(MD)/rel $(C9)/superscsi/boot_id0_ktlr_l2 $(MD)/kernel
+KERNEL_TC3	= $(MD)/rel $(C9)/superscsi/boot_id0_tc3_l2 $(MD)/kernel
+KERNEL_DW	= $(MD)/rel $(C9)/drivewire/boot_drivewire_l2 $(MD)/kernel
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
-BOOTFILE_1773	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+BOOTFILE_1773	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_80d.dd \
 		$(MD)/ddd0_40d.dd \
@@ -33,13 +33,13 @@ BOOTFILE_1773	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 BOOTFILE_1773_ROM = $(MD)/rominfo
 
 # OS-9 ROM image to allow booting from ROM
-BOOTFILE_ROM	= $(MD)/rominfo $(MD)/os9p2 $(MD)/init $(MD)/ioman \
+BOOTFILE_ROM	= $(MD)/rominfo $(MD)/kernelp2 $(MD)/init $(MD)/ioman \
 		$(MD)/scf.mn $(MD)/sio.dr $(MD)/term_t1.dd \
 		$(MD)/sspak.dr $(MD)/ssp.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(CD)/shell $(CD)/mdir $(CD)/mfree $(CD)/procs
 
-BOOTFILE_DW	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+BOOTFILE_DW	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr \
 		$(MD)/d0_40d.dd \
@@ -63,7 +63,7 @@ BOOTFILE_DW	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		
 # OS-9 disk bootfile to allow booting from Ken-Ton SCSI controller
 # This is a custom boot for Boisy's system
-BOOTFILE_TC3	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+BOOTFILE_TC3	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(C9)/superscsi/superscsi_tc3_l2.dr \
 		dd_ez135_l2.dd \
 		$(C9)/superscsi/c3_cdrom_l2.dd \
@@ -83,7 +83,7 @@ BOOTFILE_TC3	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		
 # OS-9 disk bootfile to allow booting from Ken-Ton SCSI controller
 BOOTFILE_KENTON	= $(C9)/superscsi/superscsi_ktlr_l2.dr \
-		$(MD)/os9p2 $(MD)/ioman $(MD)/init \
+		$(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(C9)/superscsi/h0_ez135_l2.dd \
 		$(C9)/superscsi/c3_cdrom_l2.dd \

@@ -7,10 +7,10 @@ CD		= ../CMDS
 
 DEPENDS		= ./makefile
 
-KERNEL_STOCK	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/os9p1
+KERNEL_STOCK	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/kernel
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
-BOOTFILE_VDG	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+BOOTFILE_VDG	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
@@ -24,7 +24,7 @@ BOOTFILE_VDG	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILE_WIN40	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+BOOTFILE_WIN40	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
@@ -37,7 +37,7 @@ BOOTFILE_WIN40	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILE_WIN80	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
+BOOTFILE_WIN80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \

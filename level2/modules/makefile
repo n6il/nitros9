@@ -16,8 +16,8 @@ TPB		= ../../3rdparty/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		 boot_burke boot_idelba boot_rampak boot_wd1002
-BOOTTRACK	= rel_32 rel_40 rel_80 $(BOOTERS) os9p1
-KERNEL		= os9p2 os9p3_perr os9p4_regdump
+BOOTTRACK	= rel_32 rel_40 rel_80 $(BOOTERS) kernel
+KERNEL		= kernelp2 kernelp3_perr kernelp4_regdump
 SYSMODS		= ioman init sysgo_h0 sysgo_dd
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
@@ -53,19 +53,19 @@ PIPE		= pipeman.mn pipeman_named.mn \
 # The following macros represent a collection of modules for various
 # kernel tracks and bootfile configurations.
 #
-KERNEL_1773	= rel_32 boot_1773 os9p1
-KERNEL_RAMPAK	= rel_32 $(TPB)/boot_rampak os9p1
-KERNEL_KENTON	= rel_32 $(TPB)/boot_kenton os9p1
-KERNEL_IDE	= rel_32 $(TPB)/boot_ide os9p1
+KERNEL_1773	= rel_32 boot_1773 kernel
+KERNEL_RAMPAK	= rel_32 $(TPB)/boot_rampak kernel
+KERNEL_KENTON	= rel_32 $(TPB)/boot_kenton kernel
+KERNEL_IDE	= rel_32 $(TPB)/boot_ide kernel
 
 ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
 
 all:	$(ALLOBJS)
 
 # Kernel
-os9p1 os9p2:
-	$(CD) kernel; make $@
-	$(CP) kernel/$@ .
+kernel kernelp2:
+	$(CD) krnl; make $@
+	$(CP) krnl/$@ .
 
 # Special cases
 rel_32: rel.asm
@@ -209,7 +209,7 @@ clock2_soft: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
 
 clean:
-	$(CD) kernel; make $@
+	$(CD) krnl; make $@
 	$(RM) $(ALLOBJS)
 
 showobjs:
