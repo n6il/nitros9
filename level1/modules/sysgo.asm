@@ -64,14 +64,23 @@ Banner   equ   *
          fcb   '0+NOS9Major
          fcc   /.0/
          fcb   '0+NOS9Minor
+         IFNE  DEVEL
+         fcc   /+/
+         ENDC
          fcb   C$CR,C$LF
-         IFNE  TEST
-         fcc   "** PRE-RELEASE TEST VERSION **"
+         IFNE  DEVEL
+         fcc   "**   DEVELOPMENT BUILD   **"
+         fcb   C$CR,C$LF
+         fcc   "** NOT FOR DISTRIBUTION! **"
          fcb   C$CR,C$LF
          ENDC
 * For ROM version, cut down on verbage
          IFEQ  ROM
+         IFNE  DEVEL
          dts
+         ELSE
+         fcc   "September 1, 2004"
+         ENDC
          fcb   C$CR,C$LF
          fcc   !http://www.nitros9.org!
          fcb   C$CR,C$LF

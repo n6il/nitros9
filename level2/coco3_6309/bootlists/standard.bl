@@ -217,7 +217,8 @@
 * Select one clock2 module that supports your real-time clock, if any.
 * Besides support for the internal software clock, the following
 * hardware clocks are supported: Burke & Burke, Disto 2-N-1, Disto 4-N-1,
-* Eliminator, Harris, SmartWatch, Cloud-9, DriveWire
+* Eliminator, Harris, SmartWatch, Cloud-9, the MESS emulator, Jeff
+* Vavasour's CoCo emulator, and DriveWire.
 ../MODULES/CLOCKS/clock2_soft
 *../MODULES/CLOCKS/clock2_bnb
 *../MODULES/CLOCKS/clock2_disto2
@@ -225,6 +226,8 @@
 *../MODULES/CLOCKS/clock2_elim
 *../MODULES/CLOCKS/clock2_harris
 *../MODULES/CLOCKS/clock2_smart
+*../MODULES/CLOCKS/clock2_jvemu
+*../MODULES/CLOCKS/clock2_messemu
 *../MODULES/CLOCKS/clock2_cloud9
 *../MODULES/CLOCKS/clock2_dw
 *
