@@ -14,6 +14,12 @@
 
 </refsynopsisdiv>
 
+<refsect1><title>Assembler Equivalent</title>
+<para>
+os9 I$DELETE
+</para>
+</refsect1>
+
 <refsect1><title>Description</title>
 <para>
 Placeholder
