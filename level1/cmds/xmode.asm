@@ -261,7 +261,7 @@ Entry
          cmpb  #'?        help option?
          beq   MuchHelp  
 * Use Filename to Get Desc:
-         lda   #Updat.    open path to module file
+         lda   #UPDAT.    open path to module file
          os9   I$Open    
          bcs   Help      
          stx   <ParmPtr  

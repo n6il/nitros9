@@ -23,6 +23,7 @@
 *
 * 04/22/03      - added 4-digit year output
 * 07/09/03      - changed output format of 6309 Bit commands
+* 08/14/03      - added code to output "end" line
 ********
 
          ifp1
@@ -1434,7 +1435,7 @@ language equ   *
          fcc   /CblCode /
          fcc   /FrtnCode/
          fcc   /???????? /
-ReEnt.   fcc   /ReEnt /
+reent.   fcc   /ReEnt /
 modprot. fcc   /Modprot /
 line010  fcc   /         ifp1/
 line011  fcb   $0d
@@ -1487,6 +1488,9 @@ ln170sz  equ   *-line170
 line180  fcc   /eom      equ   */
          fcb   $0d
 ln180sz  equ   *-line180
+line181  fcc   /         end/
+         fcb   $0d
+ln181sz  equ   *-line181
 line190  fcc   /equ   */
 ln190sz  equ   *-line190
 line200  fcb   $0a
@@ -2077,7 +2081,7 @@ chkattr  equ   *
          lbsr  merghex
          bra   chkrevs
 attr.r   equ   *
-         leay  ReEnt.,pcr
+         leay  reent.,pcr
          ldb   #5
          bra   moveattr
 attr.m   equ   *
@@ -2785,19 +2789,13 @@ is.e     ldd   #'e*256+32     Add 'e '
 iscc     ldd   #'c*256+'c     cc register         
 gotregn  lbsr  movereg        Add register name
          lbsr  mvchr003       Add ','
-         ldb   <byte          Get original byte again
-         andb  #%00000111     Mask out all but register bit #
-         bsr   getbit         Get Bit #
-         lbsr  movechar       Add it to output
-         lbsr  mvchr003       Add ','
-         ldb   <byte          Get original byte again
-         andb  #%00111000     Mask out all but memory bit #
-         lsrb                 Shift for subroutine
-         lsrb
-         lsrb
-         bsr   getbit         Get ASCII value for memory bit #
-         lbsr  movechar       Add it to output
-         lbsr  mvchr003       Add ','
+         lda   <byte          Get original byte again
+         bsr   getbit         Output register Bit #
+         lda   <byte          Get original byte again
+         lsra                 Shift to memory bit #
+         lsra
+         lsra
+         bsr   getbit         Output memory bit #
          inc   <bitcom        Set bit command flag
 * Dupe of direct page stuff
          leay  line080,pc     Point to '<u'
@@ -2814,11 +2812,11 @@ f0.010   ldb   #2             In both cases, 2 chars to merge
          lbsr  indx046        put address in u table & write out line
 nou      lbra  chk.fd         Write it out & continue
 
-* Create ASCII of bit #
-getbit   lda   #'0            Bit # to 0
-         pshs  b              Put bit # onto stack
-         adda  ,s+            Add to ASCII base
-         rts
+* Output ASCII bit # plus comma
+getbit   anda  #%00000111     Mask to bit # 0-7
+         adda  #'0            Convert to ASCII digit
+         lbsr  movechar       Add it to output
+         lbra  mvchr003       Add ',' and return
 
 * 8 bit relative offset (bra)
 reladr.1 lda   #'L            Add 'L'
@@ -2915,6 +2913,10 @@ endit024 tst   <z.opt
          ldb   #ln180sz
          lbsr  mergline
          lbsr  writline
+         leay  line181,pcr
+         ldb   #ln181sz
+         lbsr  mergline
+         lbsr  writline
          lbsr  moveadr
          leax  holdline,u
          lda   ,x
@@ -2962,7 +2964,7 @@ endit040 ldd   ,y++
          sta   <byte
 
 unlink   ldu   <modadr
-         os9   F$Unlink
+         os9   F$UnLink
          lbcs  exit
          dec   <byte
          bne   unlink
@@ -3218,7 +3220,7 @@ gethx030 sta   ,y+
          rts
 
 * 
-* get decimal value of bytes in d ,output in string pointed at by 'y'
+* get decimal value of bytes in d, output in string pointed at by 'y'
 *
 getdec   pshs  x
          ldx   #10000
@@ -3612,7 +3614,7 @@ getup010 rts
 send     tst   <pass
          beq   send010
          lda   #1
-         os9   I$Writln
+         os9   I$WritLn
          lbcs  exit
 send010  lbsr  clrline
          rts
@@ -3701,7 +3703,7 @@ nolink   lbsr  clrline
 * error encountered - print error to standard error path
 *
 prterror lda   #2
-         os9   I$Writln
+         os9   I$WritLn
 clrexit  clrb
 exit     os9   F$Exit
 

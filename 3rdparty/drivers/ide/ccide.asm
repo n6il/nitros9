@@ -714,13 +714,13 @@ FWrite   lbsr  ChekBusy     Wait for driver to be unbusy
          bne   ChkLSN1      No, check if LSN1
          ldx   TempHalf+1,u LSW of 'other half'
          cmpx  HalfSct+1,u  Same as LSW of buffered sector #?
-         bne   ChkLsn1      No, check if LSN1
+         bne   ChkLSN1      No, check if LSN1
          ldd   HalfOfs,u    Same partition as buffered sector's drive?
          cmpd  TempOfs,u
-         bne   ChkLsn1      No, check if LSN1
+         bne   ChkLSN1      No, check if LSN1
          lda   PhysDrv,u    Same physical drive as buffered sector's drive?
          cmpa  HalfDrv,u    Same as buffered sector's drive?
-         bne   ChkLsn1      No, check is LSN1
+         bne   ChkLSN1      No, check is LSN1
 * Buffered sector IS the other half of current write sector...no preread nec-
 *   essary.
          lbsr  InitWrit     Send Write command to IDE, setup mode, etc.
