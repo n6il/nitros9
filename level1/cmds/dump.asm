@@ -10,6 +10,8 @@
 *        added -d option, added defs to conditionally
 *        assemble without help or screen size check
 *
+*        Removed -d option                              BGP 03/01/17
+*
 * Dump follows the function of the original Microware version but now
 * supports large files over 64K, and is free from the problems of garbage
 * in wide listings.
@@ -123,15 +125,6 @@ OptPass  lda   ,x+
 
          anda  #$DF
 
-         cmpa  #'D
-         bne   IsItH
-
-* Process D here
-         lda   <Mode
-         ora   #DIR.
-         sta   <Mode
-         bra   OptPass
- 
 IsItH    cmpa  #'H
          bne  IsItM
 
@@ -216,7 +209,10 @@ DumpFile
          bne   mlink     
          lda   <Mode
 opath    os9   I$Open    
-         bcs   DoExit
+         bcc   DumpIn
+         ora   #DIR.		try directory mode
+         os9   I$Open		open it
+         bcs   DoExit		branch if error
 DumpIn   stx   <D.Prm    
          sta   <D.Opn    
          ldx   <D.Beg    
@@ -371,8 +367,6 @@ onbyt    pshs  a
 
          IFNE  DOHELP
 HelpMsg  fcc   "Use: Dump [opts] [<path>] [opts]"
-         fcb   C$CR,C$LF
-         fcc   "  -d = dump directory"
          fcb   C$CR,C$LF
          fcc   "  -h = no header"
          fcb   C$CR,C$LF
