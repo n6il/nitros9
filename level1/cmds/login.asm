@@ -61,7 +61,11 @@ WideMsg  fcb   C$LF,C$LF
          IFEQ  Level-1
          fcc   "One"
          ELSE
+         IFEQ  Level-2
          fcc   "Two"
+         ELSE
+         fcc   "Three"
+         ENDC
          ENDC
          fcc   " Vr. 0"
          fcb   48+OS9Vrsn
@@ -79,7 +83,11 @@ NrrwMsg  fcb   C$LF,C$LF
          IFEQ  Level-1
          fcc   "One"
          ELSE
+         IFEQ  Level-2
          fcc   "Two"
+         ELSE
+         fcc   "Three"
+         ENDC
          ENDC
          fcc   " Vr. 0"
          fcb   48+OS9Vrsn

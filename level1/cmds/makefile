@@ -1,4 +1,8 @@
+# Makefile for OS-9 Level One CMDS/
+
 include ../../Makefile.rules
+
+vpath %.asm $(3RDPARTY)/packages/basic09
 
 DEPENDS		= ./Makefile
 
@@ -22,7 +26,7 @@ pxd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPXD=1
 
 clean:
-	$(RM) $(ALLOBJS) $(BASIC09FILES)
+	$(RM) $(ALLOBJS)
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
@@ -35,6 +39,3 @@ showcocoobjs:
 
 showdragonobjs:
 	@$(ECHO) $(CMDS) $(DRAGONCMDS)
-
-$(BASIC09FILES): $(BASEDIR)/3rdparty/packages/basic09/$@
-	-$(SOFTLINK) $(BASEDIR)/3rdparty/packages/basic09/$@

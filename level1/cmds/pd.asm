@@ -45,12 +45,13 @@ name     fcs   /pwd/
          fcb   edition
 
          IFNE   PXD
-badnam   fcc   "pxd: bad name in path"
+badnam   fcc   "pxd"
          ELSE
          IFNE  PWD
-badnam   fcc   "pwd: bad name in path"
+badnam   fcc   "pwd"
          ENDC
          ENDC
+         fcc   ": bad name in path"
          fcb   C$CR
 dotdot   fcc   "."
 dot      fcc   "."

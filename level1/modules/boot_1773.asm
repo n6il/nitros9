@@ -61,23 +61,23 @@ MakeStak pshs  a
          lda   #$FF
          sta   u0004,u
          leax  >NMIRtn,pcr
-         ifgt  Level-1
+         IFGT  Level-1
          stx   <D.NMI
          lda   #$09
-         else
+         ELSE
          stx   >$010A
          lda   #$7E
          sta   >$0109
          lda   #$08
-         endc
+         ENDC
          sta   >DPort
 
 * delay loop
-         ifgt  Level-1
+         IFGT  Level-1
          ldd   #$C350
-         else
+         ELSE
          ldd   #$61A8
-         endc
+         ENDC
 L003A    nop   
          nop   
          subd  #$0001
@@ -115,11 +115,11 @@ L003A    nop
          ldu   u0002,u
          os9   F$SRtMem 
          ldd   $02,s
-         ifgt  Level-1
+         IFGT  Level-1
          os9   F$BtMem  
-         else
+         ELSE
          os9   F$SRqMem
-         endc
+         ENDC
          puls  x
          bcs   L00AA
          stu   $02,s
@@ -145,9 +145,9 @@ L00A3    clrb
 L00A8    leas  $04,s
 L00AA    leas  $02,s
 L00AC
-         ifgt  Level-1
+         IFGT  Level-1
          sta   >$FFD9
-         endc
+         ENDC
          puls  u,y,x
          leas  size,s
          rts   
@@ -276,7 +276,7 @@ L01A7    lbsr  L01AA
 L01AA    lbsr  L01AD
 L01AD    rts   
 
-         ifgt  Level-1
+         IFGT  Level-1
 
          rts   
          rts   
@@ -310,7 +310,7 @@ L01AD    rts
          rts   
          rts   
 
-         endc
+         ENDC
 
          emod
 eom      equ   *

@@ -30,16 +30,16 @@ size     equ   .
 name     fcs   /CPUType/
          fcb   edition
 
-c.6309   fcc   /CPU: 6309, /
+c.6309   fcc   /CPU: 6309, running in /
 L6309    equ   *-c.6309
 c.6809   fcc   /CPU: 6809/
          fcb   C$CR
 L6809    equ   *-c.6809
 
-m.6809   fcc   /running in 6809 mode./
+m.6809   fcc   /6809 mode./
          fcb   C$CR
 
-m.6309   fcc   /running in 6309 native mode./
+m.6309   fcc   /6309 native mode./
          fcb   C$CR
 
 is.6809  leax  c.6809,pc

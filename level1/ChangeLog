@@ -1,3 +1,6 @@
+OS-9 Level One V03.01.02:
+- The cputype command has been optimized for size.
+
 OS-9 Level One V03.01.01:
 - SYS/helpmsg expanded to include new commands.
 - ident now correctly reports modules with a language byte of Obj6309.

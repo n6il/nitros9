@@ -67,7 +67,7 @@ L0072    fcs   "-sector clusters)"
 L0083    fcs   " free sectors, largest block"
 L009F    fcs   " sectors"
 
-start    leay  u000D,u
+start    leay  $0D,u
          sty   <u0001
          cmpd  #$0000
          beq   L00E0
@@ -86,22 +86,23 @@ L00BC    equ   *
          lbra  ExitOk			and branch
 L00CC    leax  -$01,x
          pshs  x
-         os9   F$PrsNam 
+         os9   F$PrsNam 		parse the device name on cmd line
          puls  x
-         bcs   L00BC
+         bcs   L00BC			branch if error
 L00D7    lda   ,x+
          lbsr  L0218
+* try decb here
          subb  #$01
          bcc   L00D7
-L00E0    lda   #$40
+L00E0    lda   #PENTIR			we want the entire device
          lbsr  L0218
          lbsr  L0216
          leax  u000D,u
          stx   <u0001
-         lda   #READ.
-         os9   I$Open   
-         sta   <devpath
-         bcs   L00FF
+         lda   #READ.			read mode
+         os9   I$Open   		open the device
+         sta   <devpath			save the path
+         bcs   L00FF			branch if error
          leax  <u005D,u
          ldy   #$003F
          os9   I$Read   
@@ -143,8 +144,8 @@ L00FF    lbcs  Exit
          lda   <devpath
          ldx   #$0000
          pshs  u
-         ldu   #$0100
-         os9   I$Seek   
+         ldu   #256
+         os9   I$Seek   	seek to bitmap sector
          puls  u
 L016A    leax  >u009E,u
          ldd   #$1000
@@ -226,25 +227,31 @@ L020C    lda   ,y
          bsr   L0218
          lda   ,y+
          bpl   L020C
-L0216    lda   #$20
+L0216    lda   #C$SPAC
 L0218    pshs  x
          ldx   <u0001
          sta   ,x+
          stx   <u0001
          puls  pc,x
 L0222    pshs  y,x,a
-         lda   #$0D
+         lda   #C$CR
          bsr   L0218
          leax  u000D,u
          stx   <u0001
-         ldy   #$0050
-         lda   #$01
-         os9   I$WritLn 
+         ldy   #80
+         lda   #$01			standard output
+         os9   I$WritLn 		write the line
          puls  pc,y,x,a
-L0237    fcb   $98
-         fdb   $9680,$0f42,$4001,$86a0,$0027,$1000,$03e8,$0000
-         fdb   $6400,$000a,$0000
-         fcb   $01
+
+L0237    fcb   $98,$96,$80
+         fcb   $0f,$42,$40
+         fcb   $01,$86,$a0
+         fcb   $00,$27,$10
+         fcb   $00,$03,$e8
+         fcb   $00,$00,$64
+         fcb   $00,$00,$0a
+         fcb   $00,$00,$01
+
 L024F    lda   #$0A
          pshs  y,x,b,a
          leay  <L0237,pcr
