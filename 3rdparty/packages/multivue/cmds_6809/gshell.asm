@@ -1,9 +1,11 @@
+         nam   GShell Graphics Shell
+         ttl   Source derived by Kent D. Meyers.
+
+         IFNE   H6309
+
 * Signal handlers will have to handle new RBF call for directory updates
 * DIR has to be open (uses path #), but can be in READ+DIR mode
 *  Renames, etc. will have to close DIR 1st, do function, re-open.
-
-         nam   GShell Graphics Shell
-         ttl   Source derived by Kent D. Meyers.
 
 * Compressed Version. Started February 7, 1988. Completed February 29.
 * Upgraded Version. Started March 2, 1988. Finished by KDM Feb 13, 1994
@@ -8059,4 +8061,7 @@ DTXCOUNT
 MODSIZE  equ   *
 
          end   
-              
+
+         ELSE
+* 6809 version
+         ENDC              
