@@ -35,7 +35,8 @@ edition  set   3
 ORGSlot  rmb   1
 
 size     equ   .
-         fcb   $FF
+
+         fcb   DIR.+SHARE.+PEXEC.+PREAD.+PWRIT.+EXEC.+UPDAT.
 
 name     fcs   /RamPak/
          fcb   edition
