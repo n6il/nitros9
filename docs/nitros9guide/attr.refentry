@@ -16,7 +16,6 @@
 
 <refsect1><title>Description</title>
 <para>
-
 This command is used to examine or change the security permissions
 of a file. To enter the command, type &quot;ATTR&quot; followed by the
 pathlist for the file who's security permissions are to be changed,
