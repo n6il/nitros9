@@ -6,7 +6,7 @@ DEPENDS		= ./makefile
 
 L1TXTFILES	= errmsg password
 L2TXTFILES	= motd
-GFXFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs \
+BINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs \
 		ibmedcfont isolatin1font
 HELPFILES	= asm.hp attr.hp \
 		backup.hp basic09.hp binex.hp build.hp \
@@ -36,7 +36,7 @@ HELPFILES	= asm.hp attr.hp \
 HELPMSG		= helpmsg
 
 TEXTFILES	= $(L2TXTFILES) $(HELPMSG) $(L1TXTFILES)
-ALLOBJS		= $(TEXTFILES) $(GFXFILES)
+ALLOBJS		= $(TEXTFILES) $(BINFILES)
 
 all:	$(ALLOBJS) $(DEPENDS)
 
@@ -47,10 +47,10 @@ $(L1TXTFILES): $(6809L1)/sys/$@
 	-$(SOFTLINK) $(6809L1)/sys/$@
 
 clean:
-	$(RM) $(HELPMSG) $(L1TXTFILES) $(GFXFILES)
+	$(RM) $(HELPMSG) $(L1TXTFILES) $(BINFILES)
 
-showgfxobjs:
-	@$(ECHO) $(GFXFILES)
+showbinobjs:
+	@$(ECHO) $(BINFILES)
 
 showtextobjs:
 	@$(ECHO) $(TEXTFILES)
