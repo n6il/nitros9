@@ -66,13 +66,13 @@ L2649    lda   ,y+
 
          beq   L266E
          leau  >Start,pcr
-         ldx   #$FE80-BTStart
-         ldy   #BTStart
+         ldx   #$FE80-Bt.Start
+         ldy   #Bt.Start
 L2663    lda   ,u+
          sta   ,y+
          leax  -1,x
          bne   L2663
-         jmp   >BTStart+L266E
+         jmp   >Bt.Start+L266E
 L266E    leax  <eoc,pcr
          ldd   $09,x
          jmp   d,x

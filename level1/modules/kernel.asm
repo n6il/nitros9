@@ -182,7 +182,7 @@ ChkRAM   leay  ,x
          bne   L00C2                   nope, not RAM here!
          std   ,y                      else restore org contents
          leax  >$0100,y                check top of next 256 block
-         cmpx  #BTStart                stop short of boot track mem
+         cmpx  #Bt.Start               stop short of boot track mem
          bcs   ChkRAM
          leay  ,x
 * Here, Y = end of RAM
