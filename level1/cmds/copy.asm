@@ -78,17 +78,17 @@ CrRtn    fcb   C$CR
 HlpMsg   fcb   C$LF
          fcc   /Use: Copy [<opts>] <srcpath> [<dstpath>] [<opts>]/
          fcb   C$LF
-         fcc   /   -a        abort on error/
+         fcc   /  -a = abort on error/
          fcb   C$LF
-         fcc   /   -p        don't print file names copied (with -w option only)/
+         fcc   /  -p = don't print files copied (use with -w)/
          fcb   C$LF
-         fcc   /   -r        rewrite destination/
+         fcc   /  -r = rewrite destination/
          fcb   C$LF
-         fcc   /   -s        single drive copy/
+         fcc   /  -s = single drive copy/
          fcb   C$LF
-         fcc   /   -w=<dir>  copy files to <dir>/
+         fcc   /  -w=<dir> = copy files to <dir>/
          fcb   C$LF
-         fcc   /   -x        look in execution directory for source/
+         fcc   /  -x = copy from exec dir/
          fcb   C$CR
 HlpMsgL  equ   *-HlpMsg
          ENDC
