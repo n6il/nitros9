@@ -326,18 +326,24 @@ SS.UMBar rmb   1          update menu bar (SetStat)
 SS.FBRgs rmb   1          return color registers (GetStat)
 SS.DfPal rmb   1          set/return default palette registers (Getstat/Setstat)
 SS.Tone  rmb   1          Generate a tone using 6 bit sound
-*SS.GIP2  rmb   1          Global Input Params #2 (L2V3)
-*SS.AnPal rmb   1          Animate palettes (L2V3)
-*SS.FndBf rmb   1          Find named buffer (L2V3)
+SS.GIP2  rmb   1          Global Input Params #2 (L2V3)
+SS.AnPal rmb   1          Animate palettes (L2V3)
+SS.FndBf rmb   1          Find named buffer (L2V3)
+
+* sc6551 defined
+SS.CDSta equ   SS.GIP2
+SS.CDSig equ   SS.AnPal
+SS.CDRel equ   SS.FndBf
          ELSE
 * These are wide open in Level 1
          rmb    19
-         ENDC
 
 * sc6551 defined
 SS.CDSta rmb   1
 SS.CDSig rmb   1
 SS.CDRel rmb   1
+         ENDC
+
 
 
          org   $A0
