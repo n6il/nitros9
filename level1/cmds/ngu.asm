@@ -178,7 +178,7 @@ GetDash2 ldd   ,x+		load option char and char following
 IsItA    cmpa  #'a		is it this option?
          bne   IsItB		branch if not
          inc   <gota
-         lbra  FixCmdLn
+         bra  FixCmdLn
 IsItB    cmpa  #'b		is it this option?
          bne   IsItC		branch if not
          inc   <gotb
