@@ -1,4 +1,6 @@
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
+<?xml version="1.0" ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+   "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 <!-- $Id$ -->
 <book id="os9sysprog" lang="en">
 <bookinfo>
@@ -696,8 +698,8 @@ follows:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.1in" colname="c1">
-<colspec colwidth="1.1in" colname="c2">
+<colspec colwidth="1.1in" colname="c1"/>
+<colspec colwidth="1.1in" colname="c2"/>
    <thead>
 	    <row>
 			    <entry>INTERRUPT</entry>
@@ -753,10 +755,10 @@ secondary vector table:
 </para>
 <informaltable frame="none">
 <tgroup cols="3">
-<colspec colwidth="1.1in" colname="c1">
-<colspec colwidth="1.1in" colname="c2">
-<colspec colwidth="2.8in" colname="c3">
-<spanspec spanname="two" namest="c1" nameend="c2">
+<colspec colwidth="1.1in" colname="c1"/>
+<colspec colwidth="1.1in" colname="c2"/>
+<colspec colwidth="2.8in" colname="c3"/>
+<spanspec spanname="two" namest="c1" nameend="c2"/>
     <thead>
 	    <row>
 			    <entry>VECTOR</entry>
@@ -977,7 +979,7 @@ integrity of the module.</para>
 <table>
 <title>MODULE FORMAT</title>
 <tgroup cols="1">
-<colspec colwidth="1.5in">
+<colspec colwidth="1.5in"/>
     <tbody>
     <row rowsep="1">
 	<entry align="center">MODULE HEADER</entry>
@@ -1010,8 +1012,8 @@ routines to generate them.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.9in" align="right">
-<colspec colwidth="4in">
+<colspec colwidth="0.9in" align="right"/>
+<colspec colwidth="4in"/>
 <thead>
 <row>
 	<entry>MODULE OFFSET</entry>
@@ -1069,8 +1071,8 @@ convention, some of which are for OS-9's internal use only. The type
 codes are:</para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.9in" align="right">
-<colspec colwidth="3in">
+<colspec colwidth="0.9in" align="right"/>
+<colspec colwidth="3in"/>
 	<tbody>
 		<row>
 				<entry>$1</entry>
@@ -1119,8 +1121,8 @@ have six more bytes in their headers defined as follows:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.9in" align="right">
-<colspec colwidth="4in">
+<colspec colwidth="0.9in" align="right"/>
+<colspec colwidth="4in"/>
 	<thead>
 		<row>
 			<entry>MODULE OFFSET</entry>
@@ -1392,8 +1394,8 @@ consists of:</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.2in" align="right">
-<colspec colwidth="5in">
+<colspec colwidth="1.2in" align="right"/>
+<colspec colwidth="5in"/>
 <tbody>
 <row>
 <entry>$9,$A =</entry>
@@ -1518,10 +1520,10 @@ universally for all file managers and device drivers, as shown below.</para>
 <table frame="none">
 <title>Universal Path Descriptor Definitions</title>
 <tgroup cols="4">
-<colspec colwidth="0.8in">
-<colspec colwidth="0.8in">
-<colspec colwidth="0.8in" align="right">
-<colspec colwidth="4in">
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in" align="right"/>
+<colspec colwidth="4in"/>
 <thead>
 <row rowsep="1">
 <entry>Name</entry>
@@ -1650,10 +1652,10 @@ description of each value stored in this sector.
 </para>
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="1.2in">
-<colspec colwidth="0.6in">
-<colspec colwidth="0.6in" align="right">
-<colspec colwidth="2.6in">
+<colspec colwidth="1.2in"/>
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.6in" align="right"/>
+<colspec colwidth="2.6in"/>
 <thead>
 <row rowsep="1">
 <entry>Name</entry>
@@ -1794,10 +1796,10 @@ which contains the logical and physical description of the file.. The
 table below describes the contents of the descriptor.</para>
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="0.8in">
-<colspec colwidth="0.6in">
-<colspec colwidth="0.6in" align="right">
-<colspec colwidth="3in">
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.6in" align="right"/>
+<colspec colwidth="3in"/>
 <thead>
 <row rowsep="1">
 <entry>Name</entry>
@@ -1900,11 +1902,11 @@ section of path descriptors used by RBFMAN.</para>
 
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="1in" colname="c1">
-<colspec colwidth="0.6in">
-<colspec colwidth="0.6in" align="right">
-<colspec colwidth="2.8in" colname="c4">
-<spanspec spanname="all" namest="c1" nameend="c4">
+<colspec colwidth="1in" colname="c1"/>
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.6in" align="right"/>
+<colspec colwidth="2.8in" colname="c4"/>
+<spanspec spanname="all" namest="c1" nameend="c4"/>
 <thead>
 <row rowsep="1">
     <entry>Name</entry>
@@ -2151,10 +2153,10 @@ RBF-type devices.</para>
 
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="1in">
-<colspec colwidth="0.7in">
-<colspec colwidth="0.7in">
-<colspec colwidth="4in">
+<colspec colwidth="1in"/>
+<colspec colwidth="0.7in"/>
+<colspec colwidth="0.7in"/>
+<colspec colwidth="4in"/>
 <thead>
 <row>
     <entry>Module Offset</entry>
@@ -2251,13 +2253,13 @@ popular Western Digital floppy disk controller IC:</para>
 
 <informaltable frame="all">
 <tgroup cols="5">
-<colspec colwidth="1in" colname="q1" align="center">
-<colspec colwidth="1.2in" colname="q2" align="right">
-<colspec colwidth="1.2in" colname="q3" align="right">
-<colspec colwidth="1.2in" colname="q4" align="right">
-<colspec colwidth="1.2in" colname="q5" align="right">
-<spanspec spanname="x1" namest="q2" nameend="q3">
-<spanspec spanname="x2" namest="q4" nameend="q5">
+<colspec colwidth="1in" colname="q1" align="center"/>
+<colspec colwidth="1.2in" colname="q2" align="right"/>
+<colspec colwidth="1.2in" colname="q3" align="right"/>
+<colspec colwidth="1.2in" colname="q4" align="right"/>
+<colspec colwidth="1.2in" colname="q5" align="right"/>
+<spanspec spanname="x1" namest="q2" nameend="q3"/>
+<spanspec spanname="x2" namest="q4" nameend="q5"/>
 <thead>
 <row>
     <entry>Step Code</entry>
@@ -2343,12 +2345,12 @@ used as follows:
 <table frame="none">
 <title>Static Storage Definitions</title>
 <tgroup cols="4">
-<colspec colwidth="0.6in" colname="c1">
-<colspec colwidth="0.7in" colname="c2">
-<colspec colwidth="1.2in" colname="c3">
-<colspec colwidth="2.5in" colname="c4">
-<spanspec spanname="x1" namest="c1" nameend="c2">
-<spanspec spanname="x2" namest="c3" nameend="c4">
+<colspec colwidth="0.6in" colname="c1"/>
+<colspec colwidth="0.7in" colname="c2"/>
+<colspec colwidth="1.2in" colname="c3"/>
+<colspec colwidth="2.5in" colname="c4"/>
+<spanspec spanname="x1" namest="c1" nameend="c2"/>
+<spanspec spanname="x2" namest="c3" nameend="c4"/>
 <thead>
 <row>
     <entry spanname="x1">Offset</entry>
@@ -2415,12 +2417,12 @@ DD.SIZ) into it, Also see the &quot;Identification Sector&quot; section of
 this manual. The format of each drive table is as given below:</para>
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="0.6in" colname="c1">
-<colspec colwidth="0.7in" colname="c2">
-<colspec colwidth="1.2in" colname="c3">
-<colspec colwidth="2.5in" colname="c4">
-<spanspec spanname="x1" namest="c1" nameend="c2">
-<spanspec spanname="x2" namest="c3" nameend="c4">
+<colspec colwidth="0.6in" colname="c1"/>
+<colspec colwidth="0.7in" colname="c2"/>
+<colspec colwidth="1.2in" colname="c3"/>
+<colspec colwidth="2.5in" colname="c4"/>
+<spanspec spanname="x1" namest="c1" nameend="c2"/>
+<spanspec spanname="x2" namest="c3" nameend="c4"/>
 <thead>
 <row>
     <entry spanname="x1">Offset</entry>
@@ -2596,10 +2598,10 @@ subroutine. The branch table is defined as follows:
 </para>
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="0.8in">
-<colspec colwidth="0.8in">
-<colspec colwidth="0.8in">
-<colspec colwidth="1.6in">
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="1.6in"/>
 <tbody>
 <row>
 	<entry morerows="5">ENTRY</entry>
@@ -2646,8 +2648,8 @@ parameters.</para>
 <title>NAME: INIT</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -2703,8 +2705,8 @@ used on the corresponding drive.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -2778,8 +2780,8 @@ LEAX D,X           Compute address of table N
 <title>NAME: WRITE</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -2845,8 +2847,8 @@ corresponding drive table as shown for the READ routine.</para>
 <title>NAME: GETSTA PUTSTA</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -2887,11 +2889,11 @@ following offsets may be used to access any particular value in the
 register stack:</para>
 <informaltable frame="none">
 <tgroup cols="5">
-<colspec colwidth="0.6in">
-<colspec colwidth="0.8in">
-<colspec colwidth="0.5in">
-<colspec colwidth="0.3in" colname="c4">
-<colspec colwidth="2.5in" colname="c5">
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.5in"/>
+<colspec colwidth="0.3in" colname="c4"/>
+<colspec colwidth="2.5in" colname="c5"/>
 <thead>
     <row>
 	<entry>OFFSET</entry>
@@ -2972,8 +2974,8 @@ register stack:</para>
 <title>NAME:TERM</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -3018,8 +3020,8 @@ disk writes, return the memory with the F$MEM service request.</para>
 <title>NAME: IRQ SERVICE ROUTINE</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -3054,8 +3056,8 @@ it must clear the array and exit with an RTS instruction.</para>
 <title>NAME: BOOT (Bootstrap Module)</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -3250,11 +3252,11 @@ SCFMAN-type device drivers.</para>
 
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="1in" colname="c1">
-<colspec colwidth="0.6in">
-<colspec colwidth="0.6in" align="right">
-<colspec colwidth="4in" colname="c4">
-<spanspec spanname="all" namest="c1" nameend="c4">
+<colspec colwidth="1in" colname="c1"/>
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.6in" align="right"/>
+<colspec colwidth="4in" colname="c4"/>
+<spanspec spanname="all" namest="c1" nameend="c4"/>
 <thead>
 <row rowsep="1">
     <entry>Name</entry>
@@ -3373,10 +3375,10 @@ the I/O editing features, as listed below.</para>
 
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="0.9in">
-<colspec colwidth="1.1in">
-<colspec colwidth="0.7in">
-<colspec colwidth="5in">
+<colspec colwidth="0.9in"/>
+<colspec colwidth="1.1in"/>
+<colspec colwidth="0.7in"/>
+<colspec colwidth="5in"/>
 <thead>
 <row>
 <entry>MODULE OFFSET</entry>
@@ -3467,10 +3469,10 @@ variables and butters). This static storage is defined as:
 </para>
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="0.6in">
-<colspec colwidth="0.9in">
-<colspec colwidth="0.7in">
-<colspec colwidth="2.8in">
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.9in"/>
+<colspec colwidth="0.7in"/>
+<colspec colwidth="2.8in"/>
 <thead>
 <row>
 <entry>OFFSET</entry>
@@ -3581,10 +3583,10 @@ entry is typically a LBRA to the corresponding subroutine. The branch
 table is as follows:</para>
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="0.8in">
-<colspec colwidth="0.8in">
-<colspec colwidth="0.8in">
-<colspec colwidth="1.6in">
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="1.6in"/>
 <tbody>
 <row>
 	<entry morerows="5">ENTRY</entry>
@@ -3632,8 +3634,8 @@ parameters.</para>
 <title>NAME: INIT</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -3679,8 +3681,8 @@ of static storage used by IOMAN and SCFMAN.</para>
 <title>NAME: READ</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -3726,8 +3728,8 @@ used, they should be defined in the device's static storage area.</para>
 <title>NAME: WRITE</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -3781,8 +3783,8 @@ used, they should be defined in the device's static storage.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -3821,11 +3823,11 @@ offsets may be used to access any particular value in the register
 packet:</para>
 <informaltable frame="none">
 <tgroup cols="5">
-<colspec colwidth="0.6in">
-<colspec colwidth="0.6in">
-<colspec colwidth="0.5in">
-<colspec colwidth="0.3in" colname="c4">
-<colspec colwidth="2.5in" colname="c5">
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.5in"/>
+<colspec colwidth="0.3in" colname="c4"/>
+<colspec colwidth="2.5in" colname="c5"/>
 <thead>
     <row>
 	<entry>OFFSET</entry>
@@ -3906,8 +3908,8 @@ packet:</para>
 <title>NAME. TERM</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -3956,8 +3958,8 @@ the BOOT tile will NEVER be terminated.</para>
 <title>NAME: IRQ SERVICE ROUTINE</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.0in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 	<entry>NAME:</entry>
@@ -4322,7 +4324,7 @@ reassemble the two modules used during system startup, INIT and SYSGO.</para>
 <para>The first step in designing a ROM-based system is to select which
 OS-9 modules to include in ROM. The following checklist is designed
 to help you do so:</para>
-<orderedlist  numeration="Loweralpha">
+<orderedlist  numeration="loweralpha">
     <listitem><para>Include OS9P1, OS9P2, SYSGO, and INIT. These modules are
     required in any OS-9 system.</para></listitem>
 
@@ -4367,8 +4369,8 @@ kernel). It is a non-executable module named "INIT" and has type
 begins with the standard header followed by:</para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.1in">
-<colspec colwidth="3.9in">
+<colspec colwidth="1.1in"/>
+<colspec colwidth="3.9in"/>
 <thead>
 <row>
 <entry>MODULE OFFSET</entry>
@@ -4559,8 +4561,8 @@ character.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4601,8 +4603,8 @@ the allocation bit map.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4707,8 +4709,8 @@ description.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4745,8 +4747,8 @@ character set.</para>
 <title>CRC Compute CRC F$CRC</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4791,8 +4793,8 @@ be stored) are not included in the CRC generation.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4833,8 +4835,8 @@ the allocation bit map.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4875,8 +4877,8 @@ return an OS-9 error code or zero if no error occurred.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -4987,8 +4989,8 @@ continue until the process table becomes full.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5056,8 +5058,8 @@ instruction.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5098,8 +5100,8 @@ Several processes can have the same user ID.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5156,8 +5158,8 @@ not reentrant) only one process may link to it at a time.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5209,8 +5211,8 @@ that occur on OPEN, READ, CLOSE and LINK system calls.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5262,8 +5264,8 @@ own &quot;address space&quot;.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5307,8 +5309,8 @@ routine use the F$SSVC service request.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5372,8 +5374,8 @@ calls may be needed to process a pathlist that has more than one name.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5412,8 +5414,8 @@ carry set, beginning bit number and size of the largest block.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5479,8 +5481,8 @@ request descriptions.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5533,8 +5535,8 @@ queue.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5574,8 +5576,8 @@ another process' priority only if it has the same user ID.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5674,8 +5676,8 @@ as shown below:</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 <entry>$00 - $27</entry>
@@ -5706,8 +5708,8 @@ are free for user definition.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5758,8 +5760,8 @@ three vectors, you will not be able to call OS-9 at all.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5792,8 +5794,8 @@ a time packet as follows:</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="1.5in">
+<colspec colwidth="1in"/>
+<colspec colwidth="1.5in"/>
 <thead>
 <row rowsep="1">
   <entry>OFFSET</entry>
@@ -5830,8 +5832,8 @@ a time packet as follows:</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5864,8 +5866,8 @@ in X. The packet looks like:</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="1.5in">
+<colspec colwidth="1in"/>
+<colspec colwidth="1.5in"/>
 <thead>
 <row rowsep="1">
   <entry>OFFSET</entry>
@@ -5902,8 +5904,8 @@ in X. The packet looks like:</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5947,8 +5949,8 @@ the module directory.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -5999,8 +6001,8 @@ children.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6073,8 +6075,8 @@ BASE PAGE  ---&gt;   +-------------+         +-------------+
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6118,8 +6120,8 @@ process is in user state, it is inserted according to its age.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6162,8 +6164,8 @@ descriptors when given their number.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6208,8 +6210,8 @@ limited or no use for other applications.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6249,8 +6251,8 @@ will send a wakeup signal to the calling process.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6296,8 +6298,8 @@ polling system.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 <entry>Flip Byte</entry>
@@ -6331,8 +6333,8 @@ identifies an active bit(s)</entry>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6367,8 +6369,8 @@ active process queue again.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6407,8 +6409,8 @@ memory as described in the F$A64 service request.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6447,8 +6449,8 @@ rounded to the next 256 byte page boundary.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6487,8 +6489,8 @@ The U register must point to an even page boundary.
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6530,8 +6532,8 @@ broken in favor of the established module.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6599,8 +6601,8 @@ write operations will be permitted as follows:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6656,8 +6658,8 @@ execution directory is changed.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6703,8 +6705,8 @@ desired to change the files/devices they correspond to.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6785,8 +6787,8 @@ MAKDIR).</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6824,8 +6826,8 @@ to delete devices will result in an error.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6869,8 +6871,8 @@ SCFMAN also uses ATTACH/DETACH to setup its second (echo) device.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6912,8 +6914,8 @@ descriptor is not copied.</para>
 <title>GETSTAT Get file device status. I$GSTT</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -6944,7 +6946,7 @@ descriptor is not copied.</para>
 
 <para>This system is a &quot;wild card&quot; call used to handle individual
 device parameters that:</para>
-<orderedlist numeration="Loweralpha">
+<orderedlist numeration="loweralpha">
 <listitem><para>are not uniform on all devices</para></listitem>
 <listitem><para>are highly hardware dependent</para></listitem>
 <listitem><para>need to be user-changable</para></listitem>
@@ -6960,9 +6962,9 @@ defined function codes for GETSTAT:</para>
 
 <informaltable frame="none">
 <tgroup cols="3">
-<colspec colwidth="1.2in">
-<colspec colwidth="1in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.2in"/>
+<colspec colwidth="1in"/>
+<colspec colwidth="3.5in"/>
 <thead>
 <row rowsep="1">
 <entry>MNEMONIC</entry>
@@ -7014,8 +7016,8 @@ are given below:</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 	<entry>SS.OPT (code 0):</entry>
@@ -7049,8 +7051,8 @@ descriptors.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 	<entry>SS.RDY (code 1):</entry>
@@ -7063,7 +7065,7 @@ descriptors.</para>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entrytbl cols=4>
+	<entrytbl cols="4">
 	<thead>
 	<row><entry rowsep="1"></entry>
 	<entry rowsep="1">Ready</entry>
@@ -7087,8 +7089,8 @@ descriptors.</para>
 </informaltable>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 	<entry>SS.SIZ (code 2):</entry>
@@ -7114,8 +7116,8 @@ descriptors.</para>
 </informaltable>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 	<entry>SS.POS (code 5):</entry>
@@ -7142,8 +7144,8 @@ descriptors.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 	<entry>SS.EOF (code 6):</entry>
@@ -7156,7 +7158,7 @@ descriptors.</para>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entrytbl cols=4>
+	<entrytbl cols="4">
 	<thead>
 	<row><entry rowsep="1"></entry>
 	<entry rowsep="1">Not EOF</entry>
@@ -7185,8 +7187,8 @@ descriptors.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7242,8 +7244,8 @@ bit 7 = (don't care)
 <title>OPEN Open a path to a file or device I$OPEN</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7315,8 +7317,8 @@ in the access mode.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7376,8 +7378,8 @@ C. An error condition occurs.
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7429,8 +7431,8 @@ request will return an end of file error.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7477,8 +7479,8 @@ without error.</para>
 <title>SETSTAT Set file/device status I$SSTT</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7508,7 +7510,7 @@ without error.</para>
 </informaltable>
 <para>This system is a &quot;wild card&quot; call used to handle individual
 device parameters that:</para>
-<orderedlist numeration="Loweralpha">
+<orderedlist numeration="loweralpha">
 <listitem><para>are not uniform on all devices</para></listitem>
 <listitem><para>are highly hardware dependent</para></listitem>
 <listitem><para>need to be user-changeable</para></listitem>
@@ -7524,9 +7526,9 @@ defined function codes:</para>
 
 <informaltable frame="none">
 <tgroup cols="3">
-<colspec colwidth="1.2in">
-<colspec colwidth="0.8in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.2in"/>
+<colspec colwidth="0.8in"/>
+<colspec colwidth="3.5in"/>
 <thead>
 <row rowsep="1">
 <entry>MNEMONIC</entry>
@@ -7591,8 +7593,8 @@ passed to the device driver.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 	<entry>SS.OPT (code 0):</entry>
@@ -7619,8 +7621,8 @@ parameters, such as echo, auto line feed, etc.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 	<entry>SS.SIZ (code 2):</entry>
@@ -7644,8 +7646,8 @@ parameters, such as echo, auto line feed, etc.</para>
 <para>This setstat function is used to change the file's size.</para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 	<entry>SS.RST (code 3):</entry>
@@ -7669,8 +7671,8 @@ for error recovery.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 	<entry>SS.WTK (code 4):</entry>
@@ -7701,8 +7703,8 @@ only when the track number equals zero.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 	<entry>SS.FRZ (code $A):</entry>
@@ -7725,8 +7727,8 @@ DD.xxx variables (that define disk formats) so non-standard disks
 may be read.</para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3.5in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3.5in"/>
 <tbody>
 <row>
 	<entry>SS.SPT (code $B):</entry>
@@ -7746,8 +7748,8 @@ may be read.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -7791,8 +7793,8 @@ automatically expanded.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -8010,9 +8012,9 @@ OFFSET
 <table frame="none">
 <title>Single Density Floppy Disk Format</title>
 <tgroup cols="3">
-<colspec colwidth="2in" colname="c1">
-<colspec colwidth="1.8in" colname="c2">
-<colspec colwidth="1.8in" colname="c3">
+<colspec colwidth="2in" colname="c1"/>
+<colspec colwidth="1.8in" colname="c2"/>
+<colspec colwidth="1.8in" colname="c3"/>
 <tbody>
     <row>
 	<entry>SIZE</entry>
@@ -8042,11 +8044,11 @@ OFFSET
 </tbody>
 </tgroup>
 <tgroup cols="5">
-<colspec colwidth="2in" colname="c1">
-<colspec colwidth="0.8in" colname="c2">
-<colspec colwidth="1in" colname="c3">
-<colspec colwidth="0.8in" colname="c4">
-<colspec colwidth="1in" colname="c5">
+<colspec colwidth="2in" colname="c1"/>
+<colspec colwidth="0.8in" colname="c2"/>
+<colspec colwidth="1in" colname="c3"/>
+<colspec colwidth="0.8in" colname="c4"/>
+<colspec colwidth="1in" colname="c5"/>
 <thead>
     <row>
 	<entry>FORMAT FIELD</entry>
@@ -8171,9 +8173,9 @@ OFFSET
 </tbody>
 </tgroup>
 <tgroup cols="3">
-<colspec colwidth="2in" colname="c1">
-<colspec colwidth="1.8in" colname="c2">
-<colspec colwidth="1.8in" colname="c3">
+<colspec colwidth="2in" colname="c1"/>
+<colspec colwidth="1.8in" colname="c2"/>
+<colspec colwidth="1.8in" colname="c3"/>
 <tbody>
     <row>
 	<entry>BYTES/SECTOR (FORMATTED)</entry>
@@ -8196,9 +8198,9 @@ OFFSET
 <table frame="none">
 <title>Double Density Floppy Disk Format</title>
 <tgroup cols="3">
-<colspec colwidth="2in" colname="c1">
-<colspec colwidth="1.8in" colname="c2">
-<colspec colwidth="1.8in" colname="c3">
+<colspec colwidth="2in" colname="c1"/>
+<colspec colwidth="1.8in" colname="c2"/>
+<colspec colwidth="1.8in" colname="c3"/>
 <tbody>
     <row>
 	<entry>SIZE</entry>
@@ -8228,11 +8230,11 @@ OFFSET
 </tbody>
 </tgroup>
 <tgroup cols="5">
-<colspec colwidth="2in" colname="c1">
-<colspec colwidth="0.8in" colname="c2">
-<colspec colwidth="1in" colname="c3">
-<colspec colwidth="0.8in" colname="c4">
-<colspec colwidth="1in" colname="c5">
+<colspec colwidth="2in" colname="c1"/>
+<colspec colwidth="0.8in" colname="c2"/>
+<colspec colwidth="1in" colname="c3"/>
+<colspec colwidth="0.8in" colname="c4"/>
+<colspec colwidth="1in" colname="c5"/>
 <thead>
     <row>
 	<entry>FORMAT FIELD</entry>
@@ -8375,9 +8377,9 @@ OFFSET
 </tbody>
 </tgroup>
 <tgroup cols="3">
-<colspec colwidth="2in" colname="c1">
-<colspec colwidth="1.8in" colname="c2">
-<colspec colwidth="1.8in" colname="c3">
+<colspec colwidth="2in" colname="c1"/>
+<colspec colwidth="1.8in" colname="c2"/>
+<colspec colwidth="1.8in" colname="c3"/>
 <tbody>
     <row>
 	<entry>BYTES/SECTOR (FORMATTED)</entry>
@@ -8406,10 +8408,10 @@ OFFSET
 <table frame="none">
 <title>User Mode Service Requests</title>
 <tgroup cols="4">
-<colspec colwidth="1.2in" colname="c1">
-<colspec colwidth="1.0in" colname="c2">
-<colspec colwidth="3.6in" colname="c3">
-<colspec colwidth="0.6in" colname="c4">
+<colspec colwidth="1.2in" colname="c1"/>
+<colspec colwidth="1.0in" colname="c2"/>
+<colspec colwidth="3.6in" colname="c3"/>
+<colspec colwidth="0.6in" colname="c4"/>
 <thead>
 <row>
   <entry>Code</entry>
@@ -8604,10 +8606,10 @@ OFFSET
 <table frame="none">
 <title>System Mode Privileged Service Requests</title>
 <tgroup cols="4">
-<colspec colwidth="1.2in" colname="c1">
-<colspec colwidth="1.0in" colname="c2">
-<colspec colwidth="3.6in" colname="c3">
-<colspec colwidth="0.6in" colname="c4">
+<colspec colwidth="1.2in" colname="c1"/>
+<colspec colwidth="1.0in" colname="c2"/>
+<colspec colwidth="3.6in" colname="c3"/>
+<colspec colwidth="0.6in" colname="c4"/>
 <thead>
 <row>
   <entry>Code</entry>
@@ -8890,10 +8892,10 @@ OFFSET
 <table frame="none">
 <title>Input/Output Service Requests</title>
 <tgroup cols="4">
-<colspec colwidth="1.2in" colname="c1">
-<colspec colwidth="1.0in" colname="c2">
-<colspec colwidth="3.6in" colname="c3">
-<colspec colwidth="0.6in" colname="c4">
+<colspec colwidth="1.2in" colname="c1"/>
+<colspec colwidth="1.0in" colname="c2"/>
+<colspec colwidth="3.6in" colname="c3"/>
+<colspec colwidth="0.6in" colname="c4"/>
 <thead>
 <row>
   <entry>Code</entry>
@@ -9029,8 +9031,8 @@ OFFSET
 <table frame="none">
 <title>Module Types</title>
 <tgroup cols="2">
-<colspec colwidth="0.3in">
-<colspec colwidth="1.5in">
+<colspec colwidth="0.3in"/>
+<colspec colwidth="1.5in"/>
 	<tbody>
 		<row>
 				<entry>$1</entry>
@@ -9072,8 +9074,8 @@ OFFSET
 <table frame="none">
 <title>File Access Codes</title>
 <tgroup cols="2">
-<colspec colwidth="1.0in">
-<colspec colwidth="1.4in">
+<colspec colwidth="1.0in"/>
+<colspec colwidth="1.4in"/>
     <tbody>
 	<row>
 	    <entry>READ</entry>
@@ -9119,8 +9121,8 @@ OFFSET
 <table frame="none">
 <title>Module Languages</title>
 <tgroup cols="2">
-<colspec colwidth="0.3in">
-<colspec colwidth="1.5in">
+<colspec colwidth="0.3in"/>
+<colspec colwidth="1.5in"/>
 	<tbody>
 		<row>
 				<entry>$0</entry>
@@ -9149,8 +9151,8 @@ OFFSET
 <table frame="none">
 <title>Module Attributes</title>
 <tgroup cols="2">
-<colspec colwidth="0.3in">
-<colspec colwidth="1.5in">
+<colspec colwidth="0.3in"/>
+<colspec colwidth="1.5in"/>
 	<tbody>
 		<row>
 				<entry>$8</entry>
@@ -9176,9 +9178,9 @@ generated by programming languages or user programs.</para>
 
 <informaltable frame="none">
 <tgroup cols="3">
-<colspec colwidth="0.6in">
-<colspec colwidth="0.6in">
-<colspec colwidth="3.8in">
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.6in"/>
+<colspec colwidth="3.8in"/>
 <thead>
 <row>
 <entry rowsep="1">HEX</entry>
@@ -9363,9 +9365,9 @@ manual for more details.</para>
 
 <informaltable frame="none">
 <tgroup cols="3">
-<colspec colwidth="0.6in">
-<colspec colwidth="0.6in">
-<colspec colwidth="3.8in">
+<colspec colwidth="0.6in"/>
+<colspec colwidth="0.6in"/>
+<colspec colwidth="3.8in"/>
 <thead>
 <row>
 <entry rowsep="1">HEX</entry>
@@ -9423,7 +9425,7 @@ manual for more details.</para>
 <row>
  <entry>$FB</entry>
  <entry>251</entry>
- <entry>DISK ID CHANGE - Media was changed with files open<</entry></row>
+ <entry>DISK ID CHANGE - Media was changed with files open</entry></row>
 <row>
  <entry>$FC</entry>
  <entry>252</entry>
@@ -9452,8 +9454,8 @@ requested file.</entry></row>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9493,8 +9495,8 @@ need to be contiguous.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9531,8 +9533,8 @@ need to be contiguous.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9571,8 +9573,8 @@ free RAM blocks.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9610,8 +9612,8 @@ free RAM blocks.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9650,8 +9652,8 @@ an area which is then searched for new modules.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9691,8 +9693,8 @@ contigous memory in the system's address space.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9730,8 +9732,8 @@ contigous memory in the system's address space.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9770,8 +9772,8 @@ memory in the system may be viewed in this way.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9810,8 +9812,8 @@ equivalent logical address.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9849,8 +9851,8 @@ equivalent logical address.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9889,8 +9891,8 @@ equivalent logical address.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9927,8 +9929,8 @@ equivalent logical address.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -9964,8 +9966,8 @@ equivalent logical address.</para>
 <title>$40* F$DelTsk Deallocate process Task number F$DelTsk</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10003,8 +10005,8 @@ equivalent logical address.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10044,8 +10046,8 @@ directory entry is supplied rather than a pointer to a module name.</para>
 <title>$4E* F$FModul Find Module directory entry F$FModul</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10087,8 +10089,8 @@ module name.</para>
 <title>$3E* F$FreeHB get Free High block  F$FreeHB</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10126,8 +10128,8 @@ module name.</para>
 <title>$3D* F$FreeLB get Free Low block  F$FreeLB</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10164,8 +10166,8 @@ module name.</para>
 <title>$19 F$GBlkMp Get system Block Map copy F$GBlkMp</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10200,8 +10202,8 @@ module name.</para>
 <title>$1A F$GModDr Get Module Directory copy F$GModDr</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10232,8 +10234,8 @@ module name.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10271,8 +10273,8 @@ descriptor.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10310,8 +10312,8 @@ descriptor in the system address space.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10352,8 +10354,8 @@ routine.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10392,8 +10394,8 @@ routine.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10434,8 +10436,8 @@ image at (Y).</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10476,8 +10478,8 @@ the memory block.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10515,8 +10517,8 @@ the memory block.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10558,8 +10560,8 @@ System's to User's, or vice-versa.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
         <entry>ASSEMBLER CALL:</entry>
@@ -10598,8 +10600,8 @@ System's to User's, or vice-versa.</para>
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
         <entry>ASSEMBLER CALL:</entry>
@@ -10636,8 +10638,8 @@ System's to User's, or vice-versa.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10678,8 +10680,8 @@ System's to User's, or vice-versa.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10716,8 +10718,8 @@ System's to User's, or vice-versa.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10761,8 +10763,8 @@ adress space into the Address space that contains its name.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10802,8 +10804,8 @@ other semi-permanent system memory.</para>
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10838,8 +10840,8 @@ after it is no longer needed.</para>
 <title>$4A* F$STABX Store A at 0,X in task B F$STABX</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10880,8 +10882,8 @@ rather than the current address space.</para>
 <title>$1C F$SUser Set User ID number F$SUser</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10916,8 +10918,8 @@ rather than the current address space.</para>
 <title>$1D F$UnLoad Unlink module by name F$UnLoad</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
@@ -10955,8 +10957,8 @@ name is supplied rather than the address of the module header.</para>
 <title>DELETE Delete a file I$DeletX</title>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.4in">
-<colspec colwidth="3.6in">
+<colspec colwidth="1.4in"/>
+<colspec colwidth="3.6in"/>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
