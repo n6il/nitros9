@@ -1,13 +1,11 @@
 ********************************************************************
-* progname - program module
+* ACIA51 - Serial port device driver
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  -     Original Dragon Data distribution version
-*
-*
 
          nam   ACIA51
          ttl   Serial port device driver    

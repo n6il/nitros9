@@ -1,13 +1,11 @@
 ********************************************************************
-* progname - program module
+* TERM - Console device descriptor (32 cols, uppercase)
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  -     Original Dragon Data distribution version
-*
-*
 
          nam   TERM
          ttl   Console device descriptor (32 cols, uppercase)

@@ -1,5 +1,5 @@
 ********************************************************************
-* progname - program module
+* DD - 40-track floppy disk device descriptor
 *
 * $Id$
 *
@@ -8,6 +8,9 @@
 *  -     Original Dragon Data distribution version
 *
 * $Log$
+* Revision 1.2  2002/10/10 14:50:21  boisy
+* Added appropriate header
+*
 * Revision 1.1  2002/07/18 19:53:53  roug
 * Checking in the floppy disk device descriptors for Dragon 64
 *
@@ -18,8 +21,6 @@
 * These are the kernel modules from Dragon 64's OS9Boot.
 * OS9 and OS9p2 are older than what's in ../MODULES so I checked them
 * in as well.
-*
-*
 
          nam   DD
          ttl   40-track floppy disk device descriptor

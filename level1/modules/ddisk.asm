@@ -1,16 +1,14 @@
 ********************************************************************
-* progname - program module
+* DDisk - Dragon Floppy driver
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  -     Original Dragon Data distribution version
-*
-*
 
          nam   DDisk
-         ttl   os9 device driver    
+         ttl   Dragon Floppy driver
 
 * Disassembled 02/04/21 22:37:46 by Disasm v1.6 (C) 1988 by RML
 

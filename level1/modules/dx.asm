@@ -1,5 +1,13 @@
+********************************************************************
+* DX - CCDisk device descriptor template
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+
          nam   DX
-         ttl   CCDisk device descriptor
+         ttl   CCDisk device descriptor template
 
 * Disassembled 98/08/23 17:09:41 by Disasm v1.6 (C) 1988 by RML
 
