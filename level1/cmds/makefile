@@ -4,7 +4,7 @@ DEPENDS		= ./Makefile
 
 # Files not compilable by os9asm: dcheck dsave format tmode
 CMDS		= asm attr backup binex build cobbler copy date \
-		del deldir dir display dump \
+		debug del deldir dir display dump \
 		echo exbin free grfo ident iniz link list \
 		load login makdir mdir merge mfree os9gen \
 		printerr procs pwd pxd \
