@@ -20,10 +20,10 @@ TstImg   equ   *
          IFNE  H6309
          tim   #ImgChg,P$State,x
          ELSE
-         pshs  a
-         lda   P$State,x
-         bita  #ImgChg
-         puls  a
+*         pshs  b
+         ldb   P$State,x
+         bitb  #ImgChg
+*         puls  b
          ENDC
          beq   L0C65      if not, exit now: don't clear carry, it's not needed
          fcb   $8C        skip LDX, below
@@ -34,11 +34,11 @@ L0C79    equ   *
          IFNE  H6309
          aim   #^ImgChg,P$State,x flag DAT image change in process descriptor
          ELSE
-         pshs  a
-         lda   P$State,x
-         anda  #^ImgChg
-         sta   P$State,x
-         puls  a
+*         pshs  b
+         ldb   P$State,x
+         andb  #^ImgChg
+         stb   P$State,x
+*         puls  b
          ENDC
          clr   <D.Task1N  task 1 DAT image has changed
          andcc #^Carry      clear carry
