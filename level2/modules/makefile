@@ -3,7 +3,7 @@ include ../../Makefile.rules
 DEPENDS		= ./Makefile
 THIRDPARTY	= ../../3rdparty
 
-BOOTERS		= boot_1773 boot_rom boot_kenton boot_tcc boot_rampak boot_wd1002 boot_ide
+BOOTERS		= boot_1773 boot_rom boot_kenton boot_tc3 boot_rampak boot_wd1002 boot_ide
 KERNELS		= os9p1 os9p2
 SYSMODS		= rel rominfo rom_vectors ioman init pakrom
 CLOCKS		= clock clock2_soft clock2_disto clock2_146818
