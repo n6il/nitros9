@@ -98,7 +98,11 @@ Init2    decb                 delay a bit...
          suba  $0B,x          read it back
          lbne  NoHW           if not zero, we didn't read what we wrote
 **
+         IFEQ  Level-1
+         clr   <D.DskTmr      flag drive motor as not running
+         ELSE
          clr   <D.MotOn       flag drive motor as not running
+         ENDC
          leax  8,x            Point to Status/Command register
          lda   #$D0           Force Interrupt command
          sta   ,x             Send to FDC
@@ -173,7 +177,11 @@ Term     leay  >u00B1,u       Point to VIRQ packet
          os9   F$SRtMem 
          puls  u              Restore device mem ptr
          clr   >DPort+$00     shut off drive motors
+         IFEQ  Level-1
+         clr   <D.DskTmr      Clear out drive motor timeout flag
+         ELSE
          clr   <D.MotOn       Clear out drive motor timeout flag
+         ENDC
 L00AB    rts                  return
 
 * Check if 512 byte sector conversion needed
@@ -868,7 +876,11 @@ L04B3    pshs  y,x,d          Preserve regs
          lda   >u00A9,u       ?Get drive?
          ora   #%00001000     Turn drive motor on for that drive
          sta   >DPort+$00     Send drive motor on command to FDC
+         IFEQ  Level-1
+         lda   <D.DskTmr      Get VIRQ flag
+         ELSE
          lda   <D.MotOn       Get VIRQ flag
+         ENDC
          bmi   L04DE          Not installed yet, try installing it
          bne   L04E0          Drive already up to speed, exit without error
 
@@ -881,7 +893,11 @@ L04E0    clrb                 No error & return
          puls  pc,y,x,d
 
 InsVIRQ  lda   #$01           Flag drive motor is up to speed
+         IFEQ  Level-1
+         sta   <D.DskTmr
+         ELSE
          sta   <D.MotOn
+         ENDC
          ldx   #$0001         Install VIRQ entry
          leay  >u00B1,u       Point to packet
          clr   Vi.Stat,y      Reset Status byte
@@ -889,7 +905,11 @@ InsVIRQ  lda   #$01           Flag drive motor is up to speed
          os9   F$VIRQ         Install VIRQ
          bcc   VIRQOut        No error, exit
          lda   #$80           Flag that VIRQ wasn't installed
+         IFEQ  Level-1
+         sta   <D.DskTmr
+         ELSE
          sta   <D.MotOn
+         ENDC
 VIRQOut  clra  
          rts   
 
@@ -909,7 +929,11 @@ L0509    sta   >DPort+$00
          sta   u00B5,u
          ENDC
 *         fdb   u00B5      --- so changes in data size won't affect anything
+         IFEQ  Level-1
+         clr   <D.DskTmr
+         ELSE
          clr   <D.MotOn
+         ENDC
 IRQOut   puls  pc,a
 
 * Non-OS9 format goes here
