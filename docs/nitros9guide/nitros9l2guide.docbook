@@ -53,7 +53,6 @@
   <!ENTITY echoref       SYSTEM "echo.refentry">
   <!ENTITY error         SYSTEM "error.refentry">
   <!ENTITY exref         SYSTEM "ex.refentry">
-  <!ENTITY exbin         SYSTEM "exbin.refentry">
   <!ENTITY exmoderef     SYSTEM "exmode.refentry">
   <!ENTITY formatref     SYSTEM "format.refentry">
   <!ENTITY freeref       SYSTEM "free.refentry">
@@ -77,7 +76,6 @@
   <!ENTITY procref       SYSTEM "proc.refentry">
   <!ENTITY procsref      SYSTEM "procs.refentry">
   <!ENTITY pwdref        SYSTEM "pwd.refentry">
-  <!ENTITY pxdref        SYSTEM "pxd.refentry">
   <!ENTITY rebootref     SYSTEM "reboot.refentry">
   <!ENTITY renameref     SYSTEM "rename.refentry">
   <!ENTITY runbref       SYSTEM "runb.refentry">
