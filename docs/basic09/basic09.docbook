@@ -3,6 +3,7 @@
    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY b09 "BASIC09">
   <!ENTITY mdash   "&#8212;">
+  <!ENTITY gfx2app       SYSTEM "gfx2.appendix">
 ]>
 <book id="basic09" lang="en">
  <bookinfo>
@@ -106,7 +107,7 @@ Extended Control Structures (with Unique Closure Elements):
 
 <listitem>
 <para>
-Graphics Interface Module for Access to Dragon Computer Colour
+Graphics Interface Module for Access to Dragon Computer Color
 Graphics Functions
 </para>
 </listitem>
@@ -7324,7 +7325,7 @@ Consult the "OS-9 User's Guide" for a list of error codes and explanations.
 <title>The &b09; Graphics Interface Module</title>
 <para>
 The Graphics Interface module provides a simple and convenient
-way to access the colour graphics and joystick functions of the
+way to access the color graphics and joystick functions of the
 Dragon Computer from &b09; programs. The module is a program
 written in assembly language and stored in a file called "GFX". It
 can be loaded into memory using the OS-9 "LOAD" command prior to or
@@ -7335,24 +7336,24 @@ located in the execution ("CMDS") directory.
 <para>
 "GFX" is called using the &b09; "RUN" statement. The first
 parameter passed is the name of the graphics function desired.
-Other parameters are used to pass coordinates, colour modes, etc.
+Other parameters are used to pass coordinates, color modes, etc.
 </para>
 <para>
-The are two basic graphics modes: 4-colour having 128 by 192
-pixel resolution, and 2-colour having 256 by 192 pixel resolution.
+The are two basic graphics modes: 4-color having 128 by 192
+pixel resolution, and 2-color having 256 by 192 pixel resolution.
 The display is treated as a 256 by 192 point grid with coordinates
 0,0 in the lower left-hand corner. X (horizontal) coordinates in
 either mode must be in the range of 0 to 255. An X-coordinate
 greater than 255 will cause a run-time error. Y coordinates
 (vertical) must be in the range of 0 to 191. A number greater than
 191 will be replaced by 191. Some of the graphics functions require
-or optionally accept a colour mode which controls the foreground
-colour and colour set. The mode and colour codes are given in the
+or optionally accept a color mode which controls the foreground
+color and color set. The mode and color codes are given in the
 table on the next page.
 </para>
 <beginpage/>
 <table frame="none">
- <title>Colour Graphics Modes and Colour Codes</title>
+ <title>Color Graphics Modes and Color Codes</title>
 <tgroup cols="6">
 <colspec colname="c1" colwidth="0.6in"/>
 <colspec colname="c2" colwidth="0.4in"/>
@@ -7362,9 +7363,9 @@ table on the next page.
 <colspec colname="c6" colwidth="1in"/>
 <thead>
 <row>
-<entry morerows="1" namest="c2">Colour Code</entry>
-<entry align="center" namest="c3" nameend="c4">Two Colour Format</entry>
-<entry align="center" namest="c5" nameend="c6">Four Colour Format</entry>
+<entry morerows="1" namest="c2">Color Code</entry>
+<entry align="center" namest="c3" nameend="c4">Two Color Format</entry>
+<entry align="center" namest="c5" nameend="c6">Four Color Format</entry>
 </row>
 <row>
 <entry namest="c3">Background</entry>
@@ -7375,7 +7376,7 @@ table on the next page.
 </thead>
 <tbody>
 <row>
-<entry morerows="3" valign="middle">Colour Set 1</entry>
+<entry morerows="3" valign="middle">Color Set 1</entry>
 <entry align="center">00</entry>
 <entry align="left">Black</entry>
 <entry align="left">Black</entry>
@@ -7400,7 +7401,7 @@ table on the next page.
 <entry align="left">Red</entry>
 </row>
 <row>
-<entry morerows="3" valign="middle">Colour Set 2</entry>
+<entry morerows="3" valign="middle">Color Set 2</entry>
 <entry align="center">04</entry>
 <entry align="left">Black</entry>
 <entry align="left">Black</entry>
@@ -7425,7 +7426,7 @@ table on the next page.
 <entry align="left">Orange</entry>
 </row>
 <row>
-<entry morerows="3" valign="middle">Colour Set 3*</entry>
+<entry morerows="3" valign="middle">Color Set 3*</entry>
 <entry align="center">08</entry>
 <entry namest="c5" align="left">Black</entry>
 <entry align="left">Black</entry>
@@ -7446,7 +7447,7 @@ table on the next page.
 <entry align="left">Light Green</entry>
 </row>
 <row>
-<entry morerows="3" valign="middle">Colour Set 4*</entry>
+<entry morerows="3" valign="middle">Color Set 4*</entry>
 <entry align="center">12</entry>
 <entry namest="c5" align="left">Black</entry>
 <entry align="left">Black</entry>
@@ -7471,20 +7472,20 @@ table on the next page.
 </table>
 <note>
 <para>
-Colour Sets 3 and 4 are not available on PAL video system
+Color Sets 3 and 4 are not available on PAL video system
 (U.K. and European) models.
 </para>
 </note>
 <bridgehead renderas="sect2">MODE</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Mode",Format,Colour)</command>
+<command>RUN GFX("Mode",<replaceable>format,color</replaceable>)</command>
 </cmdsynopsis>
 <para>
 MODE switches the screen from alphanumeric to graphics display mode,
-and selects the screen mode and colour mode. "Format" determines
-between two-colour (Format = 0), or four-colour (Format = 1)
-graphics modes. "Colour" is the initial colour code that specifies
-the foreground colour and colour set.
+and selects the screen mode and color mode. "Format" determines
+between two-color (Format = 0), or four-color (Format = 1)
+graphics modes. "Color" is the initial color code that specifies
+the foreground color and color set.
 </para>
 <para>
 This command must be given before aby other graphics command is
@@ -7497,12 +7498,12 @@ An example:
 <programlisting>
 RUN GFX("Mode",1,3)
 </programlisting>
-selects four-colour mode graphics is used, and the initial
-foreground colour is red.
+selects four-color mode graphics is used, and the initial
+foreground color is red.
 </para>
 <bridgehead renderas="sect2">MOVE</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Move",X,Y)</command>
+<command>RUN GFX("Move",<replaceable>x,y</replaceable>)</command>
 </cmdsynopsis>
 <para>
 MOVE positions the (invisible) graphics cursor to the specified
@@ -7518,58 +7519,58 @@ This example positions the cursor in the lower left-hand corner.
 </para>
 <bridgehead renderas="sect2">COLOR</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Color",Colour)</command>
+<command>RUN GFX("Color",<replaceable>color</replaceable>)</command>
 </cmdsynopsis>
 <para>
-COLOR changes the current foreground colour (and possibly the colour
+COLOR changes the current foreground color (and possibly the color
 set). The current graphics mode and cursor position are not
 changed. For example:
 <programlisting>
 RUN GFX("Color",0)
 </programlisting>
-changes the foreground colour to green in four-colour format (or
-black in two-colour format).
+changes the foreground color to green in four-color format (or
+black in two-color format).
 </para>
 <bridgehead renderas="sect2">POINT</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Point",X,Y) or</command><sbr/>
-<command>RUN GFX("Point",X,Y,Colour)</command>
+<command>RUN GFX("Point",<replaceable>x,y</replaceable>) or</command><sbr/>
+<command>RUN GFX("Point",<replaceable>x,y,color</replaceable>)</command>
 </cmdsynopsis>
 <para>
 POINT moves the graphics cursor to the specified X.Y coordinate and
-sets the pixel at that coordinate to the current foreground colour.
-If the optional "Colour" is specified, the current foreground colour
-is set to the given "Colour". For example:
+sets the pixel at that coordinate to the current foreground color.
+If the optional "Color" is specified, the current foreground color
+is set to the given "Color". For example:
 <programlisting>
 RUN GFX("Point",0,192,1)
 </programlisting>
 Point moves the cursor to the upper left-hand corner and changes
-the foreground colour to green in two-colour format, or it changes
-the colour to yellow in the four-colour format.
+the foreground color to green in two-color format, or it changes
+the color to yellow in the four-color format.
 </para>
 <bridgehead renderas="sect2">CLEAR</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Clear") or</command><sbr/>
-<command>RUN GFX("Clear",Colour)</command>
+<command>RUN GFX("Clear") or</command><sbr/>
+<command>RUN GFX("Clear",<replaceable>color</replaceable>)</command>
 </cmdsynopsis>
 <para>
-CLEAR resets all points on the screen to the background colour, or
-if the optional colour is given presets the screen to that colour.
+CLEAR resets all points on the screen to the background color, or
+if the optional color is given presets the screen to that color.
 The current graphics cursor is reset to (0,0).
 </para>
 <bridgehead renderas="sect2">LINE</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Line",x2,y2)</command><sbr/>
-<command>RUN GFX("Line",x2,y2,Colour)</command><sbr/>
-<command>RUN GFX("Line",x1,y1,x2,y2)</command><sbr/>
-<command>RUN GFX("Line",x1,y1,x2,y2,Colour)</command>
+<command>RUN GFX("Line",<replaceable>x2,y2</replaceable>)</command><sbr/>
+<command>RUN GFX("Line",<replaceable>x2,y2,color</replaceable>)</command><sbr/>
+<command>RUN GFX("Line",<replaceable>x1,y1,x2,y2</replaceable>)</command><sbr/>
+<command>RUN GFX("Line",<replaceable>x1,y1,x2,y2,color</replaceable>)</command>
 </cmdsynopsis>
 <para>
 LINE draw lines in various ways. If one coordinate is given, the
 line will be drawn from the current graphics cursor position to the
 coordinates specified. If two sets of coordinates are given, they
 are used as the start and end points of the line. The line will be
-drawn in the current foreground colour unless a new colour is given
+drawn in the current foreground color unless a new color is given
 as a parameter. After the line is drawn the graphics cursor will be
 positioned at x2,y2. For example
 <programlisting>
@@ -7579,24 +7580,24 @@ draws a line from (0,0) to (0,192).
 <programlisting>
 RUN GFX("line",24,65,2)
 </programlisting>
-draws a blue line (4-colour mode) to point 24,65.
+draws a blue line (4-color mode) to point 24,65.
 </para>
 <bridgehead renderas="sect2">CIRCLE</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Circle",Radius)</command><sbr/>
-<command>RUN GFX("Circle",Radius,Colour)</command><sbr/>
-<command>RUN GFX("Circle",X,Y,Radius)</command><sbr/>
-<command>RUN GFX("Circle",X,Y,Radius,Colour)</command>
+<command>RUN GFX("Circle",<replaceable>radius</replaceable>)</command><sbr/>
+<command>RUN GFX("Circle",<replaceable>radius,color</replaceable>)</command><sbr/>
+<command>RUN GFX("Circle",<replaceable>x,y,radius</replaceable>)</command><sbr/>
+<command>RUN GFX("Circle",<replaceable>x,y,radius,color</replaceable>)</command>
 </cmdsynopsis>
 <para>
 CIRCLE draws a circle of the given radius. The current graphics
 cursor position is assumed if no X,Y value is given. The current
-foreground colour is assumed if the Colour parameter is not used.
+foreground color is assumed if the Color parameter is not used.
 The center of the circle must be on the screen.
 </para>
 <bridgehead renderas="sect2">ALPHA</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Alpha")</command>
+<command>RUN GFX("Alpha")</command>
 </cmdsynopsis>
 <para>
 Alpha is a quick convenient way of getting the screen back to
@@ -7605,7 +7606,7 @@ will show the previous unchanged graphics display.
 </para>
 <bridgehead renderas="sect2">QUIT</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Quit")</command>
+<command>RUN GFX("Quit")</command>
 </cmdsynopsis>
 <para>
 QUIT switches the screen back to alpha mode and returns the 6K byte
@@ -7613,7 +7614,7 @@ graphics display memory to OS-9.
 </para>
 <bridgehead renderas="sect2">GLOC</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Gloc",Vdisp)</command>
+<command>RUN GFX("Gloc",<replaceable>vdisp</replaceable>)</command>
 </cmdsynopsis>
 <para>
 GLOC returns the address of the video display RAM as an integer number.
@@ -7624,18 +7625,18 @@ Module.
 </para>
 <bridgehead renderas="sect2">GCOLR</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Gcolr",Colour)</command><sbr/>
-<command>RUN GFX("Gcolr",X,Y,Colour)</command>
+<command>RUN GFX("Gcolr",<replaceable>color</replaceable>)</command><sbr/>
+<command>RUN GFX("Gcolr",<replaceable>x,y,color</replaceable>)</command>
 </cmdsynopsis>
 <para>
-GCOLR is used to read the colour of the pixel at the current
+GCOLR is used to read the color of the pixel at the current
 graphics cursor position, or from the coordinates X,Y. The
-parameter "Colour" may be an integer or a byte variable in which the
-colour code is returned.
+parameter "Color" may be an integer or a byte variable in which the
+color code is returned.
 </para>
 <bridgehead renderas="sect2">JOYSTK</bridgehead>
 <cmdsynopsis>
-<command>Calling Syntax: RUN GFX("Joystk",Stick,Fire,X,Y)</command>
+<command>RUN GFX("Joystk",<replaceable>stick,fire,x,y</replaceable>)</command>
 </cmdsynopsis>
 <para>
 JOYSTK returns the status of the specified joystick's Fire button,
@@ -7713,5 +7714,5 @@ PROCEDURE clk
 </para>
 
 </appendix>
-
+&gfx2app;
 </book>
