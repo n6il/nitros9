@@ -87,9 +87,9 @@ L0041    sta   ,x
          decb  
          bne   L0041
          leax  >NMIRtn,pcr
-         stx   >$010A
+         stx   >D.XNMI
          lda   #$7E
-         sta   >$0109
+         sta   >D.XSWI+1
          pshs  y
          leay  >DevStRg,u
          tfr   y,d
@@ -144,14 +144,14 @@ L0082    rts
 *    B  = error code
 *
 Read     lda   #$91
-         cmpx  #$0000
-         bne   L00AD
-         bsr   L00AD
+         cmpx  #$0000		LSN0?
+         bne   L00AD		branch if not
+         bsr   L00AD		else branch subroutine
          bcs   L00A3
-         ldx   $08,y
+         ldx   PD.BUF,y		get pointer to buffer
          pshs  y,x
          ldy   >CurDMem,u
-         ldb   #$14
+         ldb   #DD.SIZ-1	copy bytes from buffer to LSN0 buffer
 L0099    lda   b,x
          sta   b,y
          decb  
@@ -163,6 +163,7 @@ L00A4    bcc   L00AD
          pshs  x,b,a
          lbsr  L02D0
          puls  x,b,a
+
 L00AD    pshs  x,b,a
          bsr   L00B8
          puls  x,b,a
@@ -171,7 +172,7 @@ L00AD    pshs  x,b,a
          bne   L00A4
 L00B8    lbsr  L019E
          bcs   L00A3
-         ldx   $08,y
+         ldx   PD.BUF,y
          pshs  y,cc
          ldb   #$80
          bsr   L00E6
@@ -217,7 +218,7 @@ L0106    pshs  x,b,a
          bsr   L0129
          puls  x,b,a
          bcs   L0119
-         tst   <$28,y
+         tst   <PD.VFY,y
          bne   L0117
          bsr   Verify
          bcs   L0119
@@ -232,7 +233,7 @@ L0119    lsra
          bra   L0106
 L0129    bsr   L019E
          bcs   L0118
-         ldx   $08,y
+         ldx   PD.BUF,y
          ldb   #$A0
 L0131    pshs  y,cc
          bsr   L00E6
@@ -322,7 +323,8 @@ L01F2    sta   <$15,x
          clrb
          lbsr  L0372
          pshs  x
-         ldx   #$222E
+*         ldx   #$222E
+         ldx   #$082E
 L0201    leax  -$01,x
          bne   L0201
          puls  x
