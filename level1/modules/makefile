@@ -5,7 +5,8 @@ TPB		= ../../3rdparty/booters
 
 BOOTERS		= oscode oscode_d64 boot_1773 boot_d64 $(TPB)/boot_rom_l1 rom_vectors
 KERNELS		= os9 os9p2
-SYSMODS		= rominfo ioman init
+ROMMODS		= rominfo sysgo_rom
+SYSMODS		= ioman init sysgo sysgo_d64
 CLOCKS		= clock.60hz clock.50hz clock_d64
 FMGRS		= scf.mn rbf.mn pipeman.mn
 DRIVERS		= aciapak.dr cchdisk.dr ccdisk.dr modpak.dr nildrv.dr \
@@ -20,7 +21,6 @@ DESCS		= ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		t1.dd t2.dd t3.dd term32.dd term80.dd \
 		p1_d64.dd term_d64.dd t1_d64.dd \
 		dd_d64.dd d0_d64.dd d1_d64.dd d2_d64.dd d3_d64.dd
-SYSGOS		= sysgo sysgo_rom sysgo_d64
 HELP		= co32.hp co80.hp \
 		ddd0_35s.hp d0_35s.hp d1_35s.hp d2_35s.hp d3_35s.hp \
 		ddd0_40d.hp d0_40d.hp d1_40d.hp d2_40d.hp \
@@ -35,11 +35,15 @@ KERNEL_ROM	= oscode os9 os9p2 init $(TPB)/boot_rom_l1
 KERNEL_IDE	= oscode os9 os9p2 init $(TPB)/boot_ide_l1
 
 BOOT_TRACKS	= kernel_1773 kernel_rom kernel_ide
-ALLOBJS		= $(BOOTERS) $(KERNELS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
-		$(DRIVERS) $(IOSUBS) $(DESCS) $(SYSGOS) $(BOOT_TRACKS)
+COPYOBJS	= $(SYSMODS) $(CLOCKS) $(FMGRS) $(DRIVERS) $(IOSUBS) \
+		$(DESCS) $(HELP)
+ALLOBJS		= $(BOOTERS) $(KERNELS) $(ROMMODS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
+		$(DRIVERS) $(IOSUBS) $(DESCS) $(BOOT_TRACKS)
 
 all:	$(ALLOBJS) $(HELP)
+	$(CHMOD) 755 $(ALLOBJS)
 	$(UNIX2OS9) $(HELP)
+	$(CHMOD) 644 $(HELP)
 
 # Kernel track for OS-9 in ROM on a CoCo
 kernel_rom: $(KERNEL_ROM) $(DEPENDS)
@@ -79,5 +83,8 @@ clean:
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
 
-showobjs:
-	@echo $(ALLOBJS)
+showallobjs:
+	@$(ECHO) $(ALLOBJS)
+
+showcopyobjs:
+	@$(ECHO) $(COPYOBJS)

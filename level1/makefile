@@ -1,5 +1,7 @@
 include ../Makefile.rules
 
+ROOTOBJS	= startup
+
 # Make all components
 all:
 	@$(ECHO) "*********************************************"
@@ -8,19 +10,20 @@ all:
 	@$(ECHO) "*        (C) 1983  Tandy Corporation        *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	cd CMDS; make
-	cd MODULES; make
-	cd BOOTFILES; make
-	cd DEFS; make
-	cd SYS; make
-	$(UNIX2OS9) startup
+	$(CD) CMDS; make
+	$(CD) MODULES; make
+	$(CD) BOOTFILES; make
+	$(CD) DEFS; make
+	$(CD) SYS; make
+	$(UNIX2OS9) $(ROOTOBJS)
+	$(CHMOD) 644 $(ROOTOBJS)
 
 # Clean all components
 clean:
-	-cd CMDS; make clean
-	-cd MODULES; make clean
-	-cd BOOTFILES; make clean
-	-cd DEFS; make clean
-	-cd SYS; make clean
-	-$(OS92UNIX) startup
+	-$(CD) CMDS; make clean
+	-$(CD) MODULES; make clean
+	-$(CD) BOOTFILES; make clean
+	-$(CD) DEFS; make clean
+	-$(CD) SYS; make clean
+	-$(OS92UNIX) $(ROOTOBJS)
 
