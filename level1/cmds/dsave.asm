@@ -3,21 +3,15 @@
 *
 * $Id$
 *
-* Syntax: dsave [<opts>] <destpath>
-* Opts  :
-*   -b = include bootfile (doesn't work)
-*   -i = indent dir levels
-*   -l = only one dir level
-*   -m = omit makdirs
-*   -r = force rewrite on copy
-*   -s = alter copy mem size
-*   -v = verify copied files
-*
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
 *   1      2003/01/11  Boisy G. Pitre
 * Rewrote in assembly language.
+*
+*   1r1    2003/12/11  Boisy G. Pitre
+* Fixed -b option so that it prepends device name in front of os9boot
+* filename.  Also fixed -b= option to work as well.
 
          nam   dsave
          ttl   Multi-file copy utility
@@ -36,7 +30,7 @@ PARMSZ   set   256	estimated parameter size in bytes
 * Module header definitions
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
@@ -218,18 +212,35 @@ GetDash2 ldd   ,x+		load option char and char following
 IsItB    cmpa  #'b		is it this option?
          bne   IsItE		branch if not
          sta   <doboot
+         pshs  x		save for later
          cmpb  #'=		= follows?
          beq   DoEqual
 * -b alone, copy default bootfile name to bbuff
-         pshs  x
+* first, get device name
+         lda   #DIR.+READ.
+         leax  dot,pcr
+         os9   I$Open
+         lbcs  Exit
+         leax  >bbuff,u
+         ldb   #PDELIM
+         stb   ,x+
+         ldb   #SS.DevNm
+         os9   I$GetStt 
+         lbcs  Exit
+         os9   I$Close
+         os9   F$PrsNam
+         lbcs  Exit
+         lda   -1,y
+         anda  #$7F		wipe out hi bit
+         sta   -1,y
+         lda   #PDELIM
+         sta   ,y+
          leax  OS9Boot,pcr
-         leay  bbuff,u
          lbsr  StrCpy
          lda   #C$CR
          sta   ,y
          bra   IsItBEx
-DoEqual  leax  1,x		move X past dash
-         pshs  x
+DoEqual  leax  1,x		move X past '='
          leay  bbuff,u		point to buffer
          lbsr  ParmCpy		copy parameter from X to Y
          lda   #C$CR
@@ -238,6 +249,7 @@ DoEqual  leax  1,x		move X past dash
 IsItBLp  sta   ,-x
          cmpx  ,s
          bne   IsItBLp
+         clrb			so FixCmdLn will not look for more opts
 IsItBEx  puls  x
          bra   FixCmdLn
 IsItE    equ   *
