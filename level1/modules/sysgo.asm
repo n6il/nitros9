@@ -117,7 +117,7 @@ ShellPL  equ   *-ShellPrm
 
 * Default time packet
 *               YY/MM/DD HH:MM:SS
-DefTime  fcb    70,11,20,00,00,59
+DefTime  fcb    104,06,01,00,00,59
 
          IFEQ  Level-1
 * BASIC reset code      
