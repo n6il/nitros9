@@ -19,7 +19,7 @@
 * Restarted edition number back to 1, removed CMDS/cc3go reference and
 * just have cc3go so that in certain cases, cc3go can be in the bootfile,
 * and so that ROMmed systems don't have to have a special init module.
-*          2003/11/5   Robert Gault
+*          2003/11/05  Robert Gault
 * Corrected CC3IO info regards mouse. Changed from fcb to fdb low res/ right
 * Corrected OS9Defs to match.
 
