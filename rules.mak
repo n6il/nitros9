@@ -42,6 +42,7 @@ IDENT_SHORT	= $(IDENT) -s
 OS9FORMAT	= $(OS9TOOLSDIR)/os9 format
 OS9FORMAT_SS35	= $(OS9TOOLSDIR)/os9 format -t35 -ss -dd -4
 OS9FORMAT_SS40	= $(OS9TOOLSDIR)/os9 format -t40 -ss -dd -4
+OS9FORMAT_SS80	= $(OS9TOOLSDIR)/os9 format -t80 -ss -dd -9
 OS9FORMAT_DS40	= $(OS9TOOLSDIR)/os9 format -t40 -ds -dd -4
 OS9FORMAT_DS80	= $(OS9TOOLSDIR)/os9 format -t80 -ds -dd -9
 OS9GEN		= $(OS9TOOLSDIR)/os9 gen

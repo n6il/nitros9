@@ -26,13 +26,22 @@
 *	to a 3rd PIA mapped at FF24 to FF27, this PIA also has it's
 *	inturrupt lines connected to the CPU's FIRQ.
 *
+* 2004-11-15, P.Harvey-Smith.
+*	Fixed bug in inturrupt handling code that was making the 
+*	Dragon Alpha crash if a disk was accessed with no disk 
+*	in the drive. As the Alpha is using a simulated NMI disable
+* 	we have to ensure that the NMI enabling routine has completed
+*	BEFORE isuing a command to the disk controler, or if the 
+* 	inturrupt happens in the middle of the enable routine it 
+*	causes the machine to crash !
+*
          nam   DDisk
          ttl   Dragon Floppy driver
 
 * Disassembled 02/04/21 22:37:46 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   defsfile
+         use   defsfile.dragon
          endc
 
 		IFNE	DragonAlpha
@@ -62,6 +71,13 @@ TRKREG		EQU		DPTRKREG+IO	; Track register
 SECREG		EQU		DPSECREG+IO	; Sector register
 DATAREG		EQU		DPDATAREG+IO	; Data register
 
+; Disk IO bitmasks
+
+NMIEn    	EQU		NMIEnA
+WPCEn    	EQU   	WPCEnA
+SDensEn  	EQU   	SDensEnA
+MotorOn  	EQU   	MotorOnA 
+
 		ELSE
 		
 DPPIADA		EQU		DPPIA1DA
@@ -85,13 +101,14 @@ TRKREG		EQU		DPTRKREG+IO	; Track register
 SECREG		EQU		DPSECREG+IO	; Sector register
 DATAREG		EQU		DPDATAREG+IO	; Data register
 
-		ENDC
+; Disk IO bitmasks
 
-; DskCmd Masks
-NMIEn    	EQU		%00100000 
-WPCEn    	EQU   	%00010000 
-MotorOn  	EQU   	%00000100 
-SDensEn  	EQU   	%00001000 
+NMIEn    	EQU		NMIEnD
+WPCEn    	EQU   	WPCEnD
+SDensEn  	EQU   	SDensEnD
+MotorOn  	EQU   	MotorOnD
+
+		ENDC
 
 * Disk Commands
 FrcInt   	EQU   	%11010000 
@@ -150,6 +167,12 @@ start    lbra  Init		; Initialise Driver
          lbra  Term		; Terminate device
 		 
 
+IRQPkt   fcb   $00            Normal bits (flip byte)
+         fcb   $01            Bit 1 is interrupt request flag (Mask byte)
+         fcb   10             Priority byte
+
+IRQFlag	 FCB   0
+
 * Init
 *
 * Entry:
@@ -195,6 +218,15 @@ InitDriveData
          lda   #$7E				; $7E = JMP
          sta   >D.XSWI
 		 
+		 pshs	y
+		 leax	IRQPkt,PC		; point at IRQ definition packet
+		 leay	IRQFlag,pcr
+		 tfr	y,d
+		 leay	IRQHandler,pcr
+		 os9	F$IRQ
+		 puls	y
+		 
+		 
          ldd   #$0100			; Request a page of system ram
          pshs  u				; used to verify writes
          os9   F$SRqMem 
@@ -204,6 +236,10 @@ InitDriveData
          stx   >BuffPtr,u		; Save verify page pointer
          clrb  
 Return   rts   
+
+IRQHandler
+		inc		$8000
+		rts
 
 * GetStat
 *
@@ -242,7 +278,17 @@ Term     clrb
 *    CC = carry set on error
 *    B  = error code
 *
-Read     lda   #$91			; Retry count
+Read     
+		pshs	a,x
+		lda   	<PD.Drv,y
+		cmpa	#1
+		bne		readxxx
+	    ldx		#$55aa
+		
+readxxx
+		 puls	a,x
+
+		 lda   #$91			; Retry count
          cmpx  #$0000		; LSN ?
          bne   L0096		; No : Just do read,
          bsr   L0096		; Yes : do read and copy disk params
@@ -328,14 +374,15 @@ L00DE    orcc  #$50				; Mask inturrupts
          ldy   #$FFFF
          lda   #NMIEn+MotorOn	; Enable NMI, and turn motor on
          ora   >DrivSel,u		; mask in drives
-         ORB   >SideSel,U 			* Set up Side		 
-         stb   <DPCmdReg		; issue command to controler 
+         ORB   >SideSel,U 		; Set up Side		 
          
 		 IFNE	DragonAlpha		; Turn on drives & NMI
 		 lbsr	AlphaDskCtl
 		 ELSE
          sta   >DskCtl
 		 ENDC
+		 		 
+         stb   <DPCmdReg		; issue command to controler 
 		 
 		 rts  
 		 
@@ -488,7 +535,7 @@ SeekTrack
          LDX   >CDrvTab,U 
          CMPD  #0                 	; Skip calculation of track 0
          BEQ   SeekT1 
-         CMPD  1,X               	; Has an illegal LSN been
+         CMPD  DD.TOT+1,X          	; Has an illegal LSN been
          BLO   SeekT2 
 E.Sect   COMB
          LDB   #E$Sect 
@@ -543,8 +590,8 @@ SeekT8   PULS  B                   	; Count from 0 for other types
 SeekT11  STB   >SecReg 				; Write sector number to controler
          LBSR  Delay 
          CMPB  >SecReg 
-         BNE   SeekT11 
-		 
+         BNE   SeekT11  			
+
 SeekTS   LDB   <V.Trak,X   			; Entry point for SS.WTrk command
          STB   >TrkReg 
          TST   >Settle,U   			; If settle has been flagged then wait for settle
@@ -655,7 +702,9 @@ FDCCmdWait
          beq   Delay3
          lda   #$F0
          sta   >D.DskTmr	;>$006F
-         bra   FDCCmdWait
+         lda   #$1
+		 sta   IRQFlag	
+		 bra   FDCCmdWait
 
 FDCCmdMotorOn    
  		 lda   #MotorOn		; Turn on motor
@@ -736,9 +785,9 @@ ResetTrack0Loop
 ;Start drive motors
 StartMotor    
 		 pshs  x,b,a
-         lda   >D.DskTmr			; if timer = 0 then wait for motors to
-         bne   SpinUp				; spin up
-         lda   #MotorOn
+         lda   >D.DskTmr			; if timer <> 0 then skip as motor already on
+         bne   SpinUp				
+         lda   #MotorOn				; else spin up
 		 
          IFNE	DragonAlpha
 		 bsr	AlphaDskCtl
@@ -746,12 +795,13 @@ StartMotor
          sta   >DskCtl
 		 ENDC
 		 
-		 ldx   #$A000
+		 ldx   #$A000				; Wait a little while for motors to get up to speed
 StartMotorLoop    
 		 nop   
          nop   
          leax  -1,x
          bne   StartMotorLoop
+		 
 SpinUp   lda   #$F0					; Start external motor timer
          sta   >D.DskTmr			; external to driver
          puls  pc,x,b,a
@@ -776,86 +826,50 @@ SetWP2   PULS  A,B,PC
 ; Takes byte that would be output to $FF48, reformats it and 
 ; outputs to Alpha AY-8912's IO port, which is connected to 
 ; Drive selects, motor on and enable precomp.
+; This code now expects Alpha NMI/DDEN etc codes, as defined
+; at top of this file (and dgndefs). The exception to this is
+; the drive number is still passed in the bottom 2 bits and
+; converted with a lookup table.
+; We do not need to preserve the ROM select bit as this code
+; operates in RAM only mode.
 ; Also sets NMIFlag.
 
-AlphaDskCtlB	
-		pshs	A
-		tfr		b,a
-		bsr		AlphaDskCtl
-		puls	A
-		rts
+
+DrvTab	FCB		Drive0A,Drive1A,Drive2A,Drive3A
 
 AlphaDskCtl	
-		PSHS	A,B,CC
-
-		anda	#~DDenMask	; Dragon Alpha has DDen perminently enabled
+		PSHS	x,A,B,CC
 
 		PSHS	A	
-		ANDA	#NMIMask	; mak out nmi enable bit
+		ANDA	#NMIEn		; mask out nmi enable bit
 		sta		>NMIFlag,u	; Save it for later use
 		
-		lda		,s
-		anda	#EnpMask	; Extract enp mask
-		pshs	a			; save it
+		lda		,s			; Convert drives
+		anda	#%00000011	; mask out drive number
+		leax	DrvTab,pcr	; point at table
+		lda		a,x			; get bitmap
+		ldb		,s
+		andb	#%11111100	; mask out drive number
+		stb		,s
+		ora		,s			; recombine
+		sta		,s
 		
-		lda		1,s
-		ANDA	#DSMask		; Mask Out drive select bits
-		
-; Shift a bit in B left, a times, to convert drive number 
-; to DS bit.
-		
-		ldb		#$01
-ShiftNext
-		cmpa	#$00		; Done all shifts ?
-		beq		ShiftDone
-		lslb
-		deca
-		bra		ShiftNext
-		
-ShiftDone
-		lda		1,s
-		anda	#MotorMask	; Extract motor bit
-		cmpa	#MotorMask	; Motor on ?
-		beq		MotorIsOn	; Yes leave it on.
-
-		clrb				; No zero out DS bits
-
-MotorIsOn
-		ora		,s			; Recombine with ENP bit.
-		leas	1,s			; drop off stack
-		lsla
-		lsla	
-		pshs	b
-		ora		,s
-		leas	1,s
-				
-		pshs	a			; Save motor/drive select state
-		ldb		PIADA		; get BDIR/BC1/Rom select
-		andb	#$FC		; Mask out BCDIR/BC1, so we don't change other bits
-		pshs	b			; save mask
 		
 		lda		#AYIOREG	; AY-8912 IO register
-		sta		PIADB		; Output to PIA
-		orb		#AYREGLatch	; Latch register to modify
-		stb		PIADA
+		sta		PIA2DB		; Output to PIA
+		ldb		#AYREGLatch	; Latch register to modify
+		stb		PIA2DA
 		
-		clrb
-		orb		,s			; Restore saved bits
-		stb		PIADA		; Idle AY
+		clr		PIA2DA		; Idle AY
 		
-		lda		1,s			; Fetch saved Drive Selects
-		sta		PIADB		; output to PIA
+		lda		,s+			; Fetch saved Drive Selects
+		sta		PIA2DB		; output to PIA
 		ldb		#AYWriteReg	; Write value to latched register
-		orb		,s			; Restore saved bits
-		stb		PIADA		; Set register
-		
-		clrb
-		orb		,s			; Restore saved bits
-		stb		PIADA		; Idle AY
-		
-		leas	3,s			; drop saved bytes
-		
-		PULS	A,B,CC
+		stb		PIA2DA		; Set register
+
+		clr		PIA2DA		; Idle AY
+				
+		PULS	x,A,B,CC
 		RTS
 
 		ENDC

@@ -16,7 +16,7 @@
 * Disassembled 1900/00/00 00:05:56 by Disasm v1.5 (C) 1988 by RML
 
          ifp1
-		 use 	defsfile
+		 use 	defsfile.dragon
          endc
 
 		IFNE	DragonAlpha

@@ -11,6 +11,9 @@
 *
 *          2003/09/22  Rodney Hamilton
 * Recoded fcb arrays, added labels & some comments
+*		   2004/11/15  P.Harvey-Smith.
+* Added code to turn off the drives on the Dragon Alpha.
+*
 
          nam   drvr51
          ttl   Driver for The 51 column by 24 line video display
@@ -18,7 +21,7 @@
 * Disassembled 02/07/06 21:17:23 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   defsfile
+         use   defsfile.dragon
          endc
 
 tylg     set   Drivr+Objct   
@@ -156,7 +159,14 @@ L00BB    lda   $02,x
          deca  
          sta   >D.DskTmr
          bne   L00CB
-         sta   >$FF48
+
+		 IFNE	DragonAlpha		; Turn off all drives
+		 lbsr	AlphaDskCtl
+		 ELSE
+         sta   >DskCtl
+		 ENDC
+
+;         sta   >$FF48
 L00CB    lbsr  L04E5
          jmp   [>D.AltIRQ]
 L00D2    pshs  x,b
@@ -1052,6 +1062,36 @@ L0886	fcb $1F,$7C,$00,$7E	shift-toggle | nul ~
 	fcb $18,$19,$1A,$13	^X ^Y ^Z dc3
 	fcb $12,$10,$11,$20	dc2 dle dc1 space
 	fcb $0D,$00,$1B		ENTER CLEAR esc
+
+		IFNE	DragonAlpha
+; Warning this version of AlphaDskCtl, does NOT convert DragonDos
+; $FF48 codes to alpha ones, they must be in Alpha format.
+; This is only used for timed turn off of drive motors.
+; We do not need to preserve the ROM select bit as this code
+; operates in RAM only mode.
+
+AlphaDskCtl	
+		pshs	a,b,cc
+
+		pshs	a
+		lda		#AYIOREG	; AY-8912 IO register
+		sta		PIA2DB		; Output to PIA
+		ldb		#AYREGLatch	; Latch register to modify
+		stb		PIA2DA
+		
+		CLR		PIA2DA		; Idle AY
+		
+		lda		,s+			; Fetch saved Drive Selects
+		sta		PIA2DB		; output to PIA
+		ldb		#AYWriteReg	; Write value to latched register
+		stb		PIA2DA		; Set register
+		
+		clr		PIA2DA		; Idle AY
+				
+		PULS	A,B,CC
+		RTS
+
+		ENDC
 
          emod
 eom      equ   *

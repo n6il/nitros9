@@ -82,7 +82,7 @@ FSTime	equ	*
 	ldx	R$X,u		address of caller's time packet
 	ldu	#D.Time		destination address
 	ldb	<D.SysTsk	destination is in system map
-	bsr	STime.Mv	get time packet (ignore errors)
+	lbsr	STime.Mv	get time packet (ignore errors)
 	else	
 	ldx	R$X,u
 	ldd	,x
