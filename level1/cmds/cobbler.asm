@@ -13,7 +13,7 @@
 * Disassembled 02/04/03 23:11:02 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
@@ -37,239 +37,27 @@ size     equ   .
 name     equ   *
          fcs   /Cobbler/
          fcb   $05 
-L0015    fcb   $0A 
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $3A :
-         fcb   $20 
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $62 b
-         fcb   $62 b
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $3C <
-         fcb   $2F /
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $3E >
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $63 c
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $20 
-         fcb   $61 a
-         fcb   $20 
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $77 w
-         fcb   $20 
-         fcb   $73 s
-         fcb   $79 y
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $6B k
-         fcb   $0D 
-L004E    fcb   $0A 
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $77 w
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20 
-         fcb   $6B k
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $20 
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $0D 
-L006A    fcb   $0A 
-         fcb   $57 W
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $6E n
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20 
-         fcb   $2D -
-         fcb   $20 
-         fcb   $4B K
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $20 
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $20 
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $0A 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $20 
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20 
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $6C l
-         fcb   $79 y
-         fcb   $2E .
-         fcb   $0A 
-         fcb   $54 T
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $6B k
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $77 w
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $2E .
-         fcb   $0D 
-L00B6    fcb   $0A 
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $2D -
-         fcb   $20 
-         fcb   $4F O
-         fcb   $53 S
-         fcb   $39 9
-         fcb   $62 b
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $66 f
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $0A 
-         fcb   $20 
-         fcb   $54 T
-         fcb   $68 h
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $6B k
-         fcb   $20 
-         fcb   $77 w
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $62 b
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $70 p
-         fcb   $2E .
-         fcb   $0D 
-L00F6    fcb   $4F O
-         fcb   $53 S
-         fcb   $39 9
-         fcb   $42 B
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
+L0015    fcb   C$LF 
+         fcc   "Use: Cobbler </devname>"
+         fcb   C$LF 
+         fcc   "    to create a new system disk"
+         fcb   C$CR 
+L004E    fcb   C$LF 
+         fcc   "Error writing kernel track"
+         fcb   C$CR 
+L006A    fcb   C$LF 
+         fcc   "Warning - Kernel track has"
+         fcb   C$LF 
+         fcc   "not been allocated properly."
+         fcb   C$LF 
+         fcc   "Track not written."
+         fcb   C$CR 
+L00B6    fcb   C$LF 
+         fcc   "Error - OS9boot file fragmented"
+         fcb   C$LF 
+         fcc   " This disk will not bootstrap."
+         fcb   C$CR 
+L00F6    fcc   "OS9Boot "
          fcb   $FF 
 start    equ   *
          clrb  
@@ -304,14 +92,14 @@ L0140    sta   ,x+
          lda   <u0001
          pshs  u
          ldx   #$0000
-         ldu   #$0015
+         ldu   #$0015   probably DD.BT
          os9   I$Seek   
          puls  u
-         lbcs  L0249
+         lbcs  Exit
          leax  u0004,u
          ldy   #$0005
-         os9   I$Read   
-         lbcs  L0249
+         os9   I$Read    Read bootstrap sector + size = 5 bytes
+         lbcs  Exit
          ldd   <u0007
          beq   L017B
          leax  <u002B,u
@@ -327,7 +115,7 @@ L017B    lda   #$02
          leax  <u002B,u
          os9   I$Create 
          sta   <u0000
-         lbcs  L0249
+         lbcs  Exit
          ldd   >$0068
          subd  >$0066
          tfr   d,y
@@ -335,11 +123,11 @@ L017B    lda   #$02
          ldx   >$0066
          lda   <u0000
          os9   I$Write  
-         lbcs  L0249
+         lbcs  Exit
          leax  u0009,u
          ldb   #$00
          os9   I$GetStt 
-         lbcs  L0249
+         lbcs  Exit
          lda   <u0000
          os9   I$Close  
          lbcs  L0237
@@ -351,11 +139,11 @@ L017B    lda   #$02
          lda   <u0001
          os9   I$Seek   
          puls  u
-         lbcs  L0249
+         lbcs  Exit
          leax  <u004B,u
          ldy   #$0100
          os9   I$Read   
-         lbcs  L0249
+         lbcs  Exit
          ldd   <u0063,u
          lbne  L024C
          ldb   <u005B,u
@@ -367,7 +155,7 @@ L017B    lda   #$02
          leax  <u004B,u
          ldy   #$0100
          os9   I$Read   
-         bcs   L023B
+         bcs   wrerr
          lda   ,x
          anda  #$3F
          eora  #$3F
@@ -385,9 +173,9 @@ L017B    lda   #$02
          os9   I$Write  
          bcs   L0253
          os9   I$Close  
-         bcs   L0249
+         bcs   Exit
          clrb  
-         bra   L0249
+         bra   Exit
 L0228    pshs  u
          lda   <u0001
          ldx   #$0000
@@ -395,33 +183,33 @@ L0228    pshs  u
          os9   I$Seek   
          puls  pc,u
 L0237    leax  >L0015,pcr
-L023B    pshs  b
+wrerr    pshs  b
          lda   #$02
          ldy   #$0100
          os9   I$WritLn 
          comb  
          puls  b
-L0249    os9   F$Exit   
+Exit     os9   F$Exit   
 L024C    leax  >L00B6,pcr
          clrb  
-         bra   L023B
+         bra   wrerr
 L0253    leax  >L004E,pcr
          clrb  
-         bra   L023B
+         bra   wrerr
 L025A    leax  >L006A,pcr
          clrb  
-         bra   L023B
+         bra   wrerr
 L0261    pshs  u
          ldx   #$0000
          ldu   #$0015
          lda   <u0001
          os9   I$Seek   
          puls  u
-         bcs   L0249
+         bcs   Exit
          leax  u0004,u
          ldy   #$0005
          os9   I$Write  
-         bcs   L0249
+         bcs   Exit
          rts   
          emod
 eom      equ   *
