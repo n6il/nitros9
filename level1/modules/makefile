@@ -172,6 +172,7 @@ clock_soft_50hz: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aTPS=50
 
 clean:
+	$(CD) krnl; make $@
 	$(RM) $(ALLOBJS)
 
 showobjs:
