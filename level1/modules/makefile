@@ -5,7 +5,7 @@ TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= oscode oscode_d64 boot_1773 boot_d64 $(TPB)/boot_rom_l1 rom_vectors
 KERNELS		= os9 os9p2
-ROMMODS		= rominfo sysgo_rom
+ROMMODS		= sysgo_rom
 SYSMODS		= ioman init sysgo sysgo_d64
 CLOCKS		= clock.60hz clock.50hz clock_tc3 clock_bb
 CLOCKS_D64	= clock_d64

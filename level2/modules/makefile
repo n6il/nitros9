@@ -16,7 +16,6 @@ BOOTERS		= boot_1773
 OS9P1		= os9p1
 OS9P2		= os9p2
 REL		= rel
-ROMMODS         = rominfo rom_vectors cc3go_rom pakrom
 SYSMODS		= ioman init cc3go os9p3_perr os9p4_regdump
 CLOCKS          = clock_elim clock_disto2 clock_disto4 clock_bnb \
 		clock_smart clock_harris clock_tc3 clock_soft
@@ -47,12 +46,9 @@ WINDESCS	= term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
 KERNEL_1773	= rel boot_1773 os9p1
 KERNEL_RAMPAK	= rel $(TPB)/boot_rampak os9p1
 KERNEL_KENTON	= rel $(TPB)/boot_kenton os9p1
-KERNEL_ROM	= rel $(TPB)/boot_rom os9p1
 KERNEL_IDE	= rel $(TPB)/boot_ide os9p1
-# These kernels are intended to be ROMmed in a disk controller or program pak
-KERNEL_PAK_KENTON	= pakrom $(KERNEL_KENTON)
 
-ALLOBJS		=  $(BOOTERS) $(OS9P1) $(OS9P2) $(REL) $(ROMMODS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
+ALLOBJS		=  $(BOOTERS) $(OS9P1) $(OS9P2) $(REL) $(SYSMODS) $(CLOCKS) $(FMGRS) \
 		$(DRIVERS) $(IOSUBS) $(DESCS) $(WINDESCS)
 
 all:	$(ALLOBJS)
@@ -136,17 +132,11 @@ r0_192k.dd: r0.asm
 ddr0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=192 -aDD=1
 
-cc3go_rom: cc3go.asm
-	$(AS) -aROM=1 $(AFLAGS) $< $(ASOUT)$@
-	
 sacia.dr: xacia.asm
 	$(AS) -aA6551=1 -aA6552=0 -aMPI.Slot=00 $(AFLAGS) $< $(ASOUT)$@
 	
 dacia.dr: xacia.asm
 	$(AS) -aA6551=0 -aA6552=1 -aMPI.Slot=00 $(AFLAGS) $< $(ASOUT)$@
-
-rominfo: rominfo.asm
-	$(AS) -aROMPak=0 $(AFLAGS) $< $(ASOUT)$@
 
 # VDGInt Modules
 vdgint.io: vdgint.asm
