@@ -64,7 +64,7 @@ COPTSIZ  set   64	max size of C option's parameter
 * Module header definitions
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
@@ -185,8 +185,7 @@ GetChar  lda   ,x+		get next character on cmd line
          lbsr  SkipNSpc         move past the argument
 ChkDash  lbsr  SkipSpcs         and any following spaces
          bra   GetChar          start processing again
-GetDash  lda   #C$SPAC		get a space char
-         sta   -1,x		and wipe out the dash from the cmd line
+GetDash  clr   -1,x		and wipe out the dash from the cmd line
 GetDash2 ldd   ,x+		load option char and char following
          ora   #$20		make lowercase
 IsItA    cmpa  #'a		is it this option?
@@ -204,11 +203,12 @@ IsItC    cmpa  #'c		is it this option?
          cmpb  #'=		2nd char =?
          lbne  ShowHelp		show help if not
          inc   <coptflg		else tag this option as parsed
-         ldb   #C$SPAC		get space
-         stb   -$01,x		write over c
-         stb   ,x+		and = sign, inc X to dest dir
+*         ldb   #C$SPAC		get space
+         clr   -$01,x		write over c
+         clr   ,x+		and = sign, inc X to dest dir
 * check for valid char after -c=
          lda   ,x
+         lbeq  ShowHelp         
          cmpa  #C$SPAC
          lbeq  ShowHelp         
          cmpa  #C$CR
@@ -217,13 +217,14 @@ IsItC    cmpa  #'c		is it this option?
          tfr   y,d		transfer Y to D
          addd  #COPTSIZ
          pshs  b,a		save updated ptr value
-         ldb   #C$SPAC		get space
 L0339    lda   ,x		get byte at X
-         stb   ,x+		store space at X and inc
+         clr   ,x+		store nul byte at X and inc
          sta   ,y+		save loaded byte at Y and inc
          cmpy  ,s		are we at end?
          beq   L035D		branch if so (buffer too small)
-         cmpa  #C$SPAC		else is char in A a space?
+         tsta			else is char in A a nul byte?
+         beq   L0350		branch if so
+         cmpa  #C$SPAC		a space?
          beq   L0350		branch if so
          cmpa  #C$CR		cr?
          bne   L0339		get next byte if not
@@ -235,8 +236,7 @@ L035D    leas  $02,s
          ldb   #$BF		else buffer size too small
          orcc  #Carry
          lbra  Exit
-FixCmdLn lda   #C$SPAC		get space
-         sta   -$01,x		and wipe out option character
+FixCmdLn clr   -$01,x		and wipe out option character
          cmpb  #'0
          lblt  ChkDash		start dash option processing again
          lbra  GetDash		possibly another option following?
@@ -264,7 +264,7 @@ BadOpt   leax  UnkOpt,pcr
 * if your utility requires a non-option on the command line.
 DoNGU    tst   <filecnt		we should have at least one file on cmdline
          lbeq  ShowHelp		if not, exit with error
-         ldx   <parmptr		get our parameter pointer off stack
+         ldx   <parmptr		get our parameter pointer
 DoLoop   lbsr  SkipSpcs		skip any leading spaces
          cmpa  #C$CR		end of parameters?
          beq   ExitOk		if so, end the utility
@@ -305,13 +305,14 @@ Exit     os9   F$Exit   	and exit
 * starting at X
 *
 * Entry:
-*   X = ptr to string (space, comma or CR terminated)
+*   X = ptr to string (space, nul byte or CR terminated)
 * Exit:
 *   Y = length of string
 *   X = ptr to byte after string
 StrLen   pshs  a
          ldy   #$0000
 StrLenLp lda   ,x+
+         beq   StrLenEx
          cmpa  #C$SPAC
          beq   StrLenEx
          cmpa  #C$CR
@@ -333,6 +334,7 @@ StrLenEx puls  a,pc
 StrCpy   pshs  u
          ldu   #$0000
 CopyFnLp lda   ,x+
+         beq   CopyFnEx
          cmpa  #C$SPAC
          beq   CopyFnEx
          cmpa  #C$CR
@@ -343,7 +345,7 @@ CopyFnLp lda   ,x+
 CopyFnEx tfr   u,d
          puls  u,pc
 
-* This routine skip over spaces and commas
+* This routine skip over spaces and nul bytes
 *
 * Entry:
 *   X = ptr to data to parse
@@ -351,12 +353,13 @@ CopyFnEx tfr   u,d
 *   X = ptr to first non-whitespace char
 *   A = non-whitespace char
 SkipSpcs lda   ,x+
+         beq   SkipSpcs
          cmpa  #C$SPAC
          beq   SkipSpcs
          leax  -1,x
          rts
 
-* This routine skips over everything but spaces, commas and CRs
+* This routine skips over everything but spaces, nul bytes and CRs
 *
 * Entry:
 *   X = ptr to data to parse
@@ -364,6 +367,7 @@ SkipSpcs lda   ,x+
 *   X = ptr to first whitespace char
 *   A = whitespace char
 SkipNSpc lda   ,x+
+         beq   EatOut
          cmpa  #C$SPAC
          beq   EatOut
          cmpa  #C$CR
