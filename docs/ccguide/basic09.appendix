@@ -9,4 +9,105 @@ with both C and BASIC09 internal data representation and procedure
 calling protocol.
 </para>
 
+<section>
+<title>Example 1 - Simple Integer Aritmetic Case</title>
+<para>
+This first example illustrates a simple case. Write a C function to
+add an integer value to three integer variables.
+<screen>
+build bt1.c
+? addints(cnt,value,s1,arg1,s2,arg2,s2,arg3,s4)
+? int *value,*arg1,*arg2,*arg3;
+? {
+?     *arg1 += *value;
+?     *arg2 += *value;
+?     *arg3 += *value;
+? }
+?
+</screen>
+</para>
+<para>
+That's the C function. The name of the function is "addints". The
+name is information for C and c.link; BASIC09 will not know anything
+about the name. Page 9-13 of the BASIC09 Reference manual describes
+how BASIC09 passes parameters to machine language modules. Since
+BASIC09 and C pass parameters in a similar fashion, it is easy to
+access BASIC09 values. The first parameter on the BASIC09 stack is
+a two-byte count of the number of following parameter pairs. Each
+pair consists of an address and size of value. For most C
+functions, the parameter count and pair size is not used. The
+address, however, is the useful piece of information. The address
+is declared in the C function to always be a "pointer to..." type.
+BASIC09 always passes addresses to procedures, even for constant
+values. The arguments cnt, s1, s2, s3 and s4 are just place holders
+to indicate the presence of the parameter count and argument sizes
+on the stack. These can be used to check validity of the passed
+arguments if desired.
+</para>
+<para>
+The line "int *value,*arg1,*arg2,*arg3" declares the parameters (in
+this case all "pointers to int"), so the compiler will generate the
+correct code to access the BASIC09 values. The remaining lines
+increment each arg by the passed value. Notice that a simple
+arithmetic operation is performed here (addition), so C will not
+have to call a library function to do the operation.
+</para>
+<para>
+To compile this function, the following C compiler command line is
+used:
+<informalexample>
+<para>
+cc2 bt1.c -rs
+</para>
+</informalexample>
+CC2 uses the Level-Two compiler. Replace cc2 with cc1 if you are
+using the Level-One compiler. The -r option causes the compiler to
+leave bt1.r as output, ready to be linked. The -s option suppresses
+the call to the stack-checking function. Since we will be making a
+module for BASIC09, cstart.r will not be used. Therefore, no
+initialized data, static data, or stack checking is allowed. More
+on this later.
+</para>
+<para>
+The bt1.r file must now be converted to a loadable module that
+BASIC09 can link to by using a special linking technique as follows:
+<informalexample>
+<para>
+c.link bt1.r -b=addints -o=addints
+</para>
+</informalexample>
+This command tells the linker to read bt1.r as input. The option
+"-b=addints" tells the linker to make the output file a module that
+BASIC09 can link to and that the function "addints" is to be the
+entrypoint in the module. You may give many input files to c.link
+in this mode. It resolves references in the normal fashion. The
+name given to the "-b=" option indicates which of the functions is
+to be entered directly by the BASIC09 RUN command. The option
+"-o=addints" says what the name of the output file is to be, in this
+case "addints". This name should be the name used in the BASIC09
+RUN command to call the C procedure. The name given in "-o="
+option is the name of the procedure to RUN. The "-b=" option is
+merely information to the linker so it can fill in the correct
+module entrypoint offset.
+</para>
+
+<para>
+Enter the following BASIC09 program:
+<programlisting>
+PROCEDURE btest
+DIM i,j,k:INTEGER
+i=1
+j=132
+k=-1033
+RUN addints(4,i,j,k)
+PRINT i,j,k
+END
+</programlisting>
+When this procedure is RUN, it should print:
+<screen>
+5       136     -1029
+</screen>
+indicating that our C function worked!
+</para>
+
 </appendix>
