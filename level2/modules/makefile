@@ -51,6 +51,52 @@ all:	$(ALLOBJS)
 
 
 # Special cases here
+SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
+		-aInterlv=3 -aSAS=8
+DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
+		-aInterlv=3 -aSAS=8
+DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
+		-aInterlv=3 -aSAS=8
+
+ddd0_35s.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0 -aDD=1
+
+d0_35s.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0
+
+d1_35s.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=1
+
+d2_35s.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=2
+
+d3_35s.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=3
+
+ddd0_40d.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1
+
+d0_40d.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0
+
+d1_40d.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1
+
+d2_40d.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2
+
+ddd0_80d.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1
+
+d0_80d.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0
+
+d1_80d.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1
+
+d2_80d.dd: dx.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
+
 cc3go_rom: cc3go.asm
 	$(AS) -aROM=1 $(AFLAGS) $< $(ASOUT)$@
 	
