@@ -15,7 +15,14 @@ OBJS6809	= basic09_6809 runb_6809
 OBJS6309	= basic09_6309 runb_6309
 ALLOBJS		= $(OBJS) $(OBJS6809) $(OBJS6309)
 
-all:	$(ALLOBJS) $(DEPENDS)
+all:	banner $(ALLOBJS) $(DEPENDS)
+
+banner:
+	@$(ECHO) "**************************************************"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "*                     Basic09                    *"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "**************************************************"
 
 basic09_6309: basic09.asm
 	$(AS) $(ASOUT)$@ $< $(H6309)
