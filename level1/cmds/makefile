@@ -12,7 +12,7 @@ COCOCMDS_D1	= attr backup binex build cmp copy date \
 COCOCMDS_D2	= asm config help copy del dir os9gen rename park
 COCOCMDS	= cobbler format os9gen grfo
 DRAGONCMDS	= cobbler_d64 format_d64 os9gen_d64 drvr51.dr go51
-ALLOBJS		= $(COCOCMDS_D1) $(COCOCMDS_D2) $(DRAGONCMDS)
+ALLOBJS		= $(COCOCMDS_D1) $(COCOCMDS_D2) $(COCOCMDS) $(DRAGONCMDS)
 
 all:	$(ALLOBJS)
 	$(CHMOD) 755 $(ALLOBJS)
