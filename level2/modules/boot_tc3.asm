@@ -1,10 +1,10 @@
 ********************************************************************
-* Boot - TCC Boot module
+* Boot - Cloud-9 TC3 Boot module
 *
 * $Id$
 *
 * This module allows booting from a hard drive that uses RGB-DOS
-* and is controlled by a TCC SCSI controller.
+* and is controlled by a Cloud-9 TC3 SCSI controller.
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
@@ -14,7 +14,7 @@
 
 
          nam   Boot
-         ttl   TCC Boot module
+         ttl   Cloud-9 TC3 Boot module
 
          ifp1
          use   defsfile
@@ -26,7 +26,7 @@ atrv     set   ReEnt+rev
 rev      set   2
 edition  set   1
 
-* Hard Disk Interface registers for the TCC
+* Hard Disk Interface registers for the TC3
 dataport equ   $FF76
 status   equ   dataport+1
 select   equ   dataport+1
