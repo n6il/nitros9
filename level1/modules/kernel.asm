@@ -688,7 +688,8 @@ L0443    ldu   #$0000
          bsr   EatSpace
          cmpa  #PDELIM                 pathlist char?
          beq   L049C                   branch if so
-         lbsr  L074D                   parse name
+*         lbsr  L074D                   parse name
+         lbsr  ParseNam                parse name
          bcs   L049D                   return if error
          ldu   <D.ModDir
 L045B    pshs  u,y,b
@@ -1079,62 +1080,64 @@ L0739    std   $09,s
 L073B    leas  $05,s
          puls  pc,u,y,x,b,a
 
-FPrsNam  ldx   R$X,u
-         bsr   L074D
-         std   R$D,u
-         bcs   L0749
-         stx   R$X,u
-L0749    sty   R$Y,u
-         rts
-L074D    lda   ,x
-         cmpa  #PDELIM                 pathlist char?
-         bne   L0755                   branch if not
-         leax  1,x                     go past pathlist char
-L0755    leay  ,x
-         clrb
-         lda   ,y+
-         anda  #$7F
-         bsr   L0792
-         bcs   L0772
-L0760    incb
-         lda   -1,y
-         bmi   L076F                   hi bit set on this char, done
-         lda   ,y+
-         anda  #$7F
-         bsr   IllChar
-         bcc   L0760
-         lda   ,-y
-L076F    andcc #^Carry
-         rts
-L0772    cmpa  #C$COMA                 comma?
-         bne   L0778
-L0776    lda   ,y+
-L0778    cmpa  #C$SPAC                 space?
-         beq   L0776
-         lda   ,-y
-         comb
-         ldb   #E$BNam
-         rts
+         
+         use   krnl/fprsnam.asm
+*FPrsNam  ldx   R$X,u
+*         bsr   L074D
+*         std   R$D,u
+*         bcs   L0749
+*         stx   R$X,u
+*L0749    sty   R$Y,u
+*         rts
+*L074D    lda   ,x
+*         cmpa  #PDELIM                 pathlist char?
+*         bne   L0755                   branch if not
+*         leax  1,x                     go past pathlist char
+*L0755    leay  ,x
+*         clrb
+*         lda   ,y+
+*         anda  #$7F
+*         bsr   L0792
+*         bcs   L0772
+*L0760    incb
+*         lda   -1,y
+*         bmi   L076F                   hi bit set on this char, done
+*         lda   ,y+
+*         anda  #$7F
+*         bsr   IllChar
+*         bcc   L0760
+*         lda   ,-y
+*L076F    andcc #^Carry
+*         rts
+*L0772    cmpa  #C$COMA                 comma?
+*         bne   L0778
+*L0776    lda   ,y+
+*L0778    cmpa  #C$SPAC                 space?
+*         beq   L0776
+*         lda   ,-y
+*         comb
+*         ldb   #E$BNam
+*         rts
 
 * check for illegal characters in a pathlist
-IllChar  cmpa  #C$PERD                 period?
-         beq   L07C9                   branch if so
-         cmpa  #'0                     zero?
-         bcs   L07A2                   branch if less than
-         cmpa  #'9                     number?
-         bls   L07C9                   branch if lower/same
-         cmpa  #'_                     underscore?
-         beq   L07C9                   branch if so
-L0792    cmpa  #'A                     A?
-         bcs   L07A2                   branch if less than
-         cmpa  #'Z                     Z?
-         bls   L07C9                   branch if less or equal
-         cmpa  #'a                     a?
-         bcs   L07A2                   branch if lower
-         cmpa  #'z                     z?
-         bls   L07C9                   branch if less or equal
-L07A2    orcc  #Carry
-         rts
+*IllChar  cmpa  #C$PERD                 period?
+*         beq   L07C9                   branch if so
+*         cmpa  #'0                     zero?
+*         bcs   L07A2                   branch if less than
+*         cmpa  #'9                     number?
+*         bls   L07C9                   branch if lower/same
+*         cmpa  #'_                     underscore?
+*         beq   L07C9                   branch if so
+*L0792    cmpa  #'A                     A?
+*         bcs   L07A2                   branch if less than
+*         cmpa  #'Z                     Z?
+*         bls   L07C9                   branch if less or equal
+*         cmpa  #'a                     a?
+*         bcs   L07A2                   branch if lower
+*         cmpa  #'z                     z?
+*         bls   L07C9                   branch if less or equal
+*L07A2    orcc  #Carry
+*         rts
 
 FCmpNam  ldb   R$B,u
          leau  R$X,u
