@@ -124,7 +124,7 @@ L00FF    lbcs  Exit
          leay  >L005F,pcr
          lbsr  L020C
          leax  <u005D,u
-         lbsr  L024F
+         lbsr  Dec24
          leay  >L0068,pcr
          lbsr  L020C
          dec   <u0002
@@ -132,7 +132,7 @@ L00FF    lbcs  Exit
          pshs  b,a
          clr   ,-s
          leax  ,s
-         lbsr  L024F
+         lbsr  Dec24
          leas  $03,s
          leay  >L0072,pcr
          lbsr  L020C
@@ -182,11 +182,11 @@ L019C    leas  $01,s
          bhi   L016A
          bsr   L01ED
          leax  u0004,u
-         lbsr  L024F
+         lbsr  Dec24
          leay  >L0083,pcr
          bsr   L020C
          leax  u0007,u
-         lbsr  L024F
+         lbsr  Dec24
          leay  >L009F,pcr
          bsr   L020C
          bsr   L0222
@@ -247,21 +247,22 @@ L0222    pshs  y,x,a
          os9   I$WritLn 		write the line
          puls  pc,y,x,a
 
-L0237    fcb   $98,$96,$80
-         fcb   $0f,$42,$40
-         fcb   $01,$86,$a0
-         fcb   $00,$27,$10
-         fcb   $00,$03,$e8
-         fcb   $00,$00,$64
-         fcb   $00,$00,$0a
-         fcb   $00,$00,$01
+Base     fcb   $98,$96,$80		10,000,000
+         fcb   $0f,$42,$40		 1,000,000
+         fcb   $01,$86,$a0		   100,000
+         fcb   $00,$27,$10		    10,000
+         fcb   $00,$03,$e8		     1,000
+         fcb   $00,$00,$64		       100
+         fcb   $00,$00,$0a		        10
+         fcb   $00,$00,$01		         1
 
-L024F    lda   #$0A
+* Show a 24 bit number as a decimal value with commas
+Dec24    lda   #10
          pshs  y,x,b,a
-         leay  <L0237,pcr
+         leay  <Base,pcr
          clr   <u0000
-         ldb   ,x
-         ldx   $01,x
+         ldb   ,x		get first byte
+         ldx   $01,x		get 2nd and 3rd bytes
 L025C    lda   #$FF
 L025E    inca  
          exg   d,x
@@ -286,7 +287,7 @@ L0281    bita  #$03
          dec   ,s
          tst   <u0000
          beq   L025C
-         lda   #$2C
+         lda   #',
          bsr   L0218
          bra   L025C
 L0291    puls  pc,y,x,b,a
@@ -303,10 +304,10 @@ L02A5    inca
          subb  #$64
          bcc   L02A5
          bsr   L02B9
-L02AC    lda   #$0A
+L02AC    lda   #10
          sta   <u0000
 L02B0    deca  
-         addb  #$0A
+         addb  #10
          bcc   L02B0
          bsr   L02B9
          tfr   b,a
