@@ -52,7 +52,7 @@ loop     pshs  x          save counter
          leax  -1,x       done yet?
          bne   loop       no, go get another 1K
          bra   exitok     yes, exit
-eofchk   cmpb  E$EOF      end of media?
+eofchk   cmpb  #E$EOF     end of media?
          bne   exit       no, a real error
 exitok   clrb            
 exit     os9   F$Exit    
