@@ -151,7 +151,7 @@ L00BF    lda   <G.CntlDn	CTRL flag
          beq   L00C5		adjust offset for CONTROL entry
          addb  #$02      
 L00C5    ldx   <G.CurDev	point X to device's static memory
-         lda   <$22,x		key sense flag
+         lda   <V.KySnsFlg,x	key sense flag
          beq   L00D0		not set so go
          cmpb  #$11		spacebar
          ble   L00F3		must be an arrow so go

@@ -1552,7 +1552,7 @@ ChkDvRdy ldb   <VD.Rdy,u	is device ready?
 XY2Addr  pshs  y,b,a		save off
          ldb   <VD.Mode,u	get video mode
          bpl   L0A60		branch if 128x192 (divide A by 4)
-         lsra			else divide A by 6
+         lsra			else divide A by 8
 L0A60    lsra
          lsra
          pshs  a		save on stack
