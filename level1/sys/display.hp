@@ -1,3 +1,9 @@
 @DISPLAY
-Syntax: Display <hex>[...]
+Syntax: Display <opts>
 Usage : Displays converted characters to standard output
+Opts  :
+  xx   = hexadecimal
+  .xx  = decimal byte
+  .Wxx = decimal word
+  /xx/ = string
+  "xx" = string
