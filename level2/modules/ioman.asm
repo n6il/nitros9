@@ -198,12 +198,13 @@ SysIODis fdb   IAttach-SysIODis
          fdb   IDeletX-SysIODis
 
 UsrIO    leax  <UsrIODis,pcr
-         bra   L00EF     
+         bra   IODsptch     
 SysIO    leax  <SysIODis,pcr
-         IFNE  H6309
-L00EF    cmpb  #$20      
+IODsptch equ   *
+         IFNE  NitrOS9
+         cmpb  #$20      
          ELSE
-L00EF    cmpb  #I$DeletX
+         cmpb  #I$DeletX
          ENDC
          bhi   L00F9     
          IFNE  H6309     
@@ -766,7 +767,12 @@ IDelete  pshs  b
          ldb   #WRITE.   
          bra   L03BA     
 
-IDeletX  ldb   #EXEC.+UPDAT.
+IDeletX  
+         IFNE  NitrOS9
+         ldb   #7		Delete offset in file manager
+         ELSE
+         ldb   #$87		Delete offset in file manager
+         ENDC
          pshs  b         
          ldb   R$A,u     
          bra   L03BA     
@@ -893,8 +899,7 @@ UIWrite  bsr   S2UPath
          bcc   L04C1     
          rts             
 
-SIWrite                  
-UIDeletX lda   R$A,u     
+SIWrite  lda   R$A,u     
 L04C1    pshs  b         
          ldb   #WRITE.   
          bra   L04E7     
@@ -978,7 +983,7 @@ L051X    dec   ,s
          ENDC            
 L051C    puls  b         
 CallFMgr equ   *
-         IFNE  H6309
+         IFNE  NitrOS9
          subb  #$03      
          ELSE
          subb  #$83      
