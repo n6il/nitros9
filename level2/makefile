@@ -49,7 +49,7 @@ dskclean:
 dsk: all $(PACKAGENAME)
 
 $(PACKAGENAME): $(DSK_SS40_1) $(DSK_DS40_1) $(DSK_DS40_2)
-	$(ZIP) $(PACKAGENAME) $(DSK_SS40_1) $(DSK_DS40_1) $(DSK_DS40_2) ReleaseNotes ChangeLog
+	$(ZIP) $(PACKAGENAME) $(DSK_SS40_1) $(DSK_DS40_1) $(DSK_DS40_2) ReadMe ChangeLog
 
 $(DSK_SS40_1):
 	-$(RM) $(DSK_SS40_1)
