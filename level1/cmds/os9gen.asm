@@ -6,6 +6,9 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   9    From OS-9 Level Two Vr. 2.00.01
+*  l0    Added -t= option, fixed bug in single disk     BGP 03/06/28
+*        swap routine if key besides 'C' was pressed,
+*        minor optimizations.
 
          nam   OS9Gen
          ttl   OS-9 bootfile generator
@@ -24,7 +27,7 @@ BTrack   set   34
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   9
+edition  set   10
 
 os9l1start equ $EF00
 os9l1size  equ $0F80
@@ -77,6 +80,8 @@ HelpMsg  fcb   C$LF
          fcc   "   merging paths into New OS9Boot file."
          fcb   C$LF
          fcc   " -s = single drive operation"
+         fcb   C$LF
+         fcc   " -t=bootrack  set boot track file"
          fcb   C$LF,C$CR
          ENDC
          fcc   "Can't find: "
@@ -109,7 +114,7 @@ TWarn    fcb   C$LF
          fcc   "not rewritten."
          fcb   C$CR
 BootFrag fcb   C$LF
-         fcc   "Error - OS9boot file fragmented"
+         fcc   "Error - OS9Boot file fragmented"
          fcb   C$CR
 BadTkMsg fcc   "Error - Boot track file must be 4608 bytes"
          fcb   C$CR
@@ -793,10 +798,11 @@ L06D4    bsr   DoWrite
          ldy   #$0001
          bsr   DoWrite		else ring the error bell
          bsr   WriteCR
-         lda   ,s
-*         puls  a
-         bra   AskUser2
-*         bne   AskUser
+* BUG FIX:  in certain cases, puls a was being done twice.
+         lda   ,s		++
+*         puls  a		--
+         bra   AskUser2		++
+*         bne   AskUser		--
 L06F9    bsr   WriteCR
          puls  a
 L06FD    puls  pc,u,y,x,b,a
@@ -815,6 +821,7 @@ WriteCR  pshs  y,x,a
 ItsFragd leax  >BootFrag,pcr
 SoftExit ldb   #$01
          bra   WritExit
+
 WarnUser leax  >TWarn,pcr
          bra   SoftExit
 
