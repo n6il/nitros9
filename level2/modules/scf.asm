@@ -1360,11 +1360,11 @@ get.wptr pshs  x,u
          beq   no.fast      nope, don't bother calling it.
 
          ldu   V$STAT,u     and device static storage
-         tst   ParmCnt,u    are we busy getting more parameters?
+         tst   V.ParmCnt,u  are we busy getting more parameters?
          bne   no.fast      yes, don't do buffered writes
 
 * Get window table pointer & verify it: copied from WindInt and modified
-         ldb   WinNum,u     Get window # from device mem
+         ldb   V.WinNum,u   Get window # from device mem
          lda   #Wt.Siz      Size of each entry
          mul                Calculate window table offset
          addd  #WinBase     Point to specific window table entry
