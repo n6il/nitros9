@@ -7,10 +7,10 @@ all:
 	@$(ECHO) "*           3rd Party File Managers         *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-#	cd msf; make
+	cd msf; make
 	cd cdf; make
 
 # Clean all components
 clean:
-#	cd msf; make clean
+	cd msf; make clean
 	cd cdf; make clean
