@@ -54,15 +54,19 @@ $(DSK1):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(CD) CMDS; $(CP) $(CMDS) ../$@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR) $@,CMDS/$(file) -ewr -pepr;)
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) SYS; $(CPL) $(SYS) ../$@,SYS
+	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(MAKDIR) $@,DEFS
 	$(CD) DEFS; $(CPL) $(DEFS) ../$@,DEFS
+	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(ROOTFILES) $@,.
+	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
 $(DSK2):
 	$(RM) $@
 	$(OS9FORMAT_DS40) $@ -n"OS-9 Level One Modules Disk"
 	$(MAKDIR) $@,MODULES
 	$(CD) MODULES; $(CP) $(MODULES) ../$@,MODULES
+	$(foreach file, $(MODULES), $(OS9ATTR_EXEC) $@,MODULES/$(file);)
 

@@ -54,22 +54,28 @@ $(PACKAGENAME): $(DSK1) $(DSK2)
 
 $(DSK1):
 	-$(RM) $(DSK1)
-	$(OS9FORMAT_DS40) -e $(DSK1) -n"OS-9 Level Two System Disk"
-	$(OS9GEN) $(DSK1) -b=BOOTFILES/$(BOOTFILE) -t=BOOTFILES/$(KERNEL)
-	$(MAKDIR) $(DSK1),CMDS
-	$(MAKDIR) $(DSK1),SYS
-	$(MAKDIR) $(DSK1),DEFS
-	$(CP) MODULES/$(SYSGO) $(DSK1),
-	$(OS9ATTR) $@,$(SYSGO) -ewr -pepr
-	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK1),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR) $@,CMDS/$(file) -ewr -pepr;)
-	$(CD) SYS; $(CP) $(SYSBIN) ../$(DSK1),SYS
-	$(CD) SYS; $(CPL) $(SYSTEXT) ../$(DSK1),SYS
-	$(CD) DEFS; $(CPL) $(DEFS) ../$(DSK1),DEFS
-	$(CPL) $(ROOTFILES) $(DSK1),.
+	$(OS9FORMAT_DS40) -e $@ -n"OS-9 Level Two System Disk"
+	$(OS9GEN) $@ -b=BOOTFILES/$(BOOTFILE) -t=BOOTFILES/$(KERNEL)
+	$(MAKDIR) $@,CMDS
+	$(MAKDIR) $@,SYS
+	$(MAKDIR) $@,DEFS
+	$(CP) MODULES/$(SYSGO) $@,
+	$(OS9ATTR_EXEC) $@,$(SYSGO)
+	$(CD) CMDS; $(CP) $(CMDS) ../$@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) SYS; $(CP) $(SYSBIN) ../$@,SYS
+	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) SYS; $(CPL) $(SYSTEXT) ../$@,SYS
+	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) DEFS; $(CPL) $(DEFS) ../$@,DEFS
+	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(CPL) $(ROOTFILES) $@,.
+	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
 $(DSK2):
 	-$(RM) $(DSK2)
 	$(OS9FORMAT_DS40) -e $(DSK2) -n"OS-9 Level Two Modules Disk"
 	$(MAKDIR) $(DSK2),MODULES
 	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK2),MODULES
+	$(foreach file, $(MODULES), $(OS9ATTR_EXEC) $@,MODULES/$(file);)
+
