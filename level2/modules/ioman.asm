@@ -204,29 +204,19 @@ UsrIO    leax  <UsrIODis,pcr
          bra   IODsptch     
 SysIO    leax  <SysIODis,pcr
 IODsptch equ   *
-         IFNE  NitrOS9
          cmpb  #$20      
-         ELSE
-         cmpb  #I$DeletX
-         ENDC
          bhi   L00F9     
          IFNE  H6309     
          ldw   b,x       
          lsrb            
          jmp   w,x       
          ELSE            
-*         pshs  d
-*         ldd   b,x
-*         leax  d,x
-*         puls  d
-*         lsrb
-*         jmp   ,x
-         pshs  b         
-         lslb            
-         ldd   b,x       
-         leax  d,x       
-         puls  b         
-         jmp   ,x        
+         pshs  d
+         ldd   b,x
+         leax  d,x
+         puls  d
+         lsrb
+         jmp   ,x
          ENDC
 
 ****************************** 
@@ -779,11 +769,7 @@ IDelete  pshs  b
          bra   L03BA     
 
 IDeletX  
-         IFNE  NitrOS9
          ldb   #7		Delete offset in file manager
-         ELSE
-         ldb   #$87		Delete offset in file manager
-         ENDC
          pshs  b         
          ldb   R$A,u     
          bra   L03BA     
@@ -994,11 +980,7 @@ L051X    dec   ,s
          ENDC            
 L051C    puls  b         
 CallFMgr equ   *
-         IFNE  NitrOS9
          subb  #$03      
-         ELSE
-         subb  #$83      
-         ENDC
          pshs  u,y,x     
          ldx   <D.Proc   
 L0524                    

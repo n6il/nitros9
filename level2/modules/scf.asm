@@ -144,9 +144,10 @@
 *        the 6809 version of TuneUp never seemed
 *        to call GrfDrv directly to do fast screen
 *        writes (see note around g.done label)
-* 16r2   Removed pshs/puls of b from sharable code      BGP 05/16/11
+* 16r2   Removed pshs/puls of b from sharable code      BGP 02/05/16
 *        segment for non-NitrOS-9 because it was
 *        not needed.
+* 16r3   OS-9 Level Two now uses V$DRIVEX               BGP 02/08/16
 
          nam   SCF
          ttl   OS-9 Level Two Sequential Character File Manager
@@ -158,7 +159,7 @@
 
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
-rev      set   2
+rev      set   3
 edition  equ   16
 
          mod   eom,SCFName,tylg,atrv,SCFEnt,0
@@ -494,16 +495,11 @@ L01FA    ldx   PD.DEV,y     Get device table pointer
          ELSE
 
 L01F8    ldb   #D$GSTA
-L01FA    pshs  a
-         clra
-         ldx   PD.DEV,y
+L01FA    ldx   PD.DEV,y
          ldu   V$STAT,x
-         ldx   V$DRIV,x
-         addd  M$Exec,x
-         leax  d,x
-         puls  a
+         ldx   V$DRIVEX,x
          pshs  u,y
-         jsr   ,x
+         jsr   b,x
          puls  y,u,pc
 
          ENDC
@@ -702,14 +698,7 @@ L03F1    tfr   u,d          Yes, move echo device' static storage to D
          std   V.DEV2,u     Save echo device's static storage into input device
          clra
          sta   V.WAKE,u     Flag input device to be awake
-         IFNE  H6309
          ldx   V$DRIVEX,x   Get driver execution pointer
-         ELSE
-         ldx   PD.DEV,y
-         ldx   V$DRIV,x
-         ldd   M$Exec,x
-         leax  d,x
-         ENDC
          jsr   D$READ,x     Execute READ routine in driver
 L0401    puls  pc,u,y,x     Restore regs & return
 
@@ -1084,15 +1073,7 @@ L05C9    ldu   V$STAT,x       Get device static storage pointer
          pshs  y,x            Preserve registers
          clrb
          stb   V.WAKE,u       Wake it up
-         IFNE  H6309
          ldx   V$DRIVEX,x     Get driver execution pointer
-         ELSE
-         pshs  a
-         ldx   V$DRIV,x
-         ldd   M$Exec,x
-         leax  d,x
-         puls  a
-         ENDC
          jsr   D$WRIT,x       Execute driver
          puls  pc,y,x         Restore & return
 
@@ -1105,15 +1086,7 @@ L0565    pshs  u,y,x,a        Preserve registers
 L056F    ldu   V$STAT,x       Get device static storage pointer
          clrb
          stb   V.WAKE,u       Wake it up
-         IFNE  H6309
          ldx   V$DRIVEX,x     Get driver execution pointer
-         ELSE
-         ldx   V$DRIV,x
-         pshs  a
-         ldd   M$Exec,x
-         leax  d,x
-         puls  a
-         ENDC
          jsr   D$WRIT,x       Execute driver
 L0571    puls  pc,u,y,x,a     Restore & return
 
