@@ -324,7 +324,7 @@ L017E    ldb   #$01		flag
          ldd   #$0803		start at up arrow and up arrow table
          pshs  b,a		entries & save them
          leax  >L0160,pcr	point to keyboard mouse deltas
-         leay  <G.Mouse+Pt.Acy,u	point to mouse coords
+         leay  <G.Mouse+Pt.AcY,u	point to mouse coords
 
 * Update keyboard mouse co-ordinates according to arrow key pressed
 L01A2    bita  <G.KySns,u	desired arrow key down?
