@@ -9,7 +9,7 @@ SYSMODS		= rominfo ioman init
 CLOCKS		= clock.60hz clock.50hz
 FMGRS		= scf.mn rbf.mn pipeman.mn
 DRIVERS		= aciapak.dr cchdisk.dr ccdisk.dr modpak.dr nildrv.dr \
-		piper.dr printer.dr rs232.dr sscpak.dr ccio.dr
+		piper.dr printer.dr rs232.dr sscpak.dr ccio.dr ddisk.dr
 IOSUBS		= co32.io co80.io grfo.io
 DESCS		= dd.dd d0.dd d1.dd d2.dd d3.dd h0_15.dd h1_15.dd h0_35.dd \
 		h1_35.dd m1.dd m2.dd nil.dd p.dd pipe.dd ssc.dd t1.dd \
