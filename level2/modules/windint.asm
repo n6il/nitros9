@@ -807,7 +807,7 @@ Nul2     sta   ,x+
          bne   Nul2
          puls  b
          ENDC
-         lda   >WGlobal+g000B     is this a window?
+         lda   >WGlobal+G.WinType     is this a window?
          bmi   L0499      no, return
          IFNE  H6309
          clrd  

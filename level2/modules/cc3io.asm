@@ -871,18 +871,17 @@ L0546    leas  <$11,s		purge stack buffer
          puls  pc,u,y,x,b,a	restore regs and return
 
 * Initialize mouse
+* Also called when CLEARing to a new window.
 setmouse pshs  x		save register used
-         ldd   <V.MSmpl,u	get sample and timeout
+         ldd   <V.MSmpl,u	get sample and timeout from win devmem
          ldx   <D.CCMem		get ptr to CC mem
-         sta   <G.MSmpRt,x	set sample tick count
-         sta   <G.MSmpRV,x	set sample rate
+         sta   <G.MSmpRt,x	set sample tick count in global mem
+         sta   <G.MSmpRV,x	set sample rate in global mem
          stb   <G.Mouse+Pt.ToTm,x set timeout constant in mouse packet
-*         ldd   <MS.Side,u	get mouse side to use
-         ldb   <V.MAutoF,u	get mouse side to use
-*         sta   <G.KyMse,x	set it
-         stb   <G.AutoMs,x
+         ldb   <V.MAutoF,u	get auto follow flag from win devmem
+         stb   <G.AutoMs,x	and set auto follow flag in global mem
          lda   V.TYPE,u		get device type
-         sta   g000B,x		set it
+         sta   <G.WinType,x	set it
          clra  
          puls  pc,x		restore and return
 
@@ -1313,8 +1312,6 @@ L0819    cmpb  #$FF		timeout 256?
          stb   <V.MTime,u	save new timeout
 L0820    ldb   R$Y+1,x		get auto-follow flag
          stb   <V.MAutoF,u	save it was MS.Side wrong RG
-* New line to compliment above. RG
-*         clr   MS.Side,u      force keymouse inactive
          ldy   <D.CCMem		get ptr to CC mem
          cmpu  <G.CurDev,y	are we current device?
          bne   L083D		no, exit without error

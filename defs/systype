@@ -497,7 +497,7 @@ G.CrDvFl rmb   1          Are we current device flag (only set when all
 *                           (Used by comod (GRF/WIND/VDGInt) to determine
 *                            whether or not to update GIME regs themselves
 *                            If not current device, they don't.)
-g000B    rmb   1          current device's V.TYPE
+G.WinType rmb  1          current device's V.TYPE
 G.CurDvM rmb   2          current device memory pointer for co-module use
 G.WIBusy rmb   1          WindInt is busy flag (1=busy)
 G.AlPckt rmb   6          F$Alarm time packet
