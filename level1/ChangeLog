@@ -1,4 +1,5 @@
 OS-9 Level One V03.01.05:
+- A new utility, padrom, has been added to the standard commands.
 - Merge now supports -z to get a list of files from standard input.
 - The serial printer driver and Speech-Sound Pak driver have been back-ported
   from OS-9 Level Two.
