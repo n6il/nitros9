@@ -13,7 +13,6 @@
 
          ifp1
          use   defsfile
-         use   scfdefs
          endc
 
 tylg     set   Prgrm+Objct
@@ -39,6 +38,8 @@ Banner   fcc   / OS-9 LEVEL TWO VR. 0/
          fcb   48+OS9Major
          fcc   /.0/
          fcb   48+OS9Minor
+         fcb   C$CR,C$LF
+         fcc   !ARIES BETA1 RELEASE 08/22/02!
          fcb   C$CR,C$LF
          fcc   /     COPYRIGHT 1988 BY/
          fcb   C$CR,C$LF

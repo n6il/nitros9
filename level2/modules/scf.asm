@@ -33,7 +33,6 @@
 
          ifp1  
          use   defsfile
-         use   scfdefs
          endc  
 
 tylg     set   FlMgr+Objct
