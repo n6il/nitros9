@@ -59,9 +59,9 @@ u001C    rmb   2
 u001E    rmb   4
 u0022    rmb   1
 u0023    rmb   1
-u0024    rmb   2
-u0026    rmb   2
-u0028    rmb   2
+u0024    rmb   2   mnln remap value holder
+u0026    rmb   2   scrn remap value holder
+u0028    rmb   2   shdw remap value holder
 u002A    rmb   2   saves stack pointer of caller to sub659
 u002C    rmb   2
 u002E    rmb   16
@@ -96,7 +96,7 @@ u024C    rmb   497
 u043D    rmb   245
 u0532    rmb   16   vol_handle_table (pointer to file structures)
 u0542    rmb   15  
-u0551    rmb   2    pointer to a linked list of picture data
+u0551    rmb   2    given_pic_data (pointer)
 u0553    rmb   1    monitor type V26_MONITORTYPE
 u0554    rmb   154
 int5EE   rmb   107  Signal Intercept routine from 452 - 4BD
@@ -142,9 +142,9 @@ L0089    ldd   <u0000     load the data pointer
          beq   L00DF      if it is zero we have a problem
          ldd   >$FFA9     ??? MMU task 1 block 1 ???
          std   <u000A     save the task 1 block one value
-         lda   #$00
-         sta   <u0011
-         ldx   <u0024
+         lda   #$00       clear a to zero 
+         sta   <u0011     save that value
+         ldx   <u0024     set up to jump to mnln and go for it
          jsr   sub659     code at L04DA plays with mmu blocks
          rts   
 
@@ -510,7 +510,7 @@ L0229    tfr   b,a          don't see what's going on here
          std   <u000E
 
          ldu   #$001A
-         stu   <u0028
+         stu   <u0028       
          leax  >L0106,pcr   shdw
          lbsr  L03D0        NMLoads named module
          bcs   L026A        return on error
@@ -1158,7 +1158,7 @@ L04DA    ldd   ,s++       load d with current stack pointer and bump it
          std   <u002A     save the calling stack pointer in u002A
          orcc  #IntMasks  mask the interrupts
          lda   <u0042
-         sta   ,x                                     x is loaded with value from u0028 in mnln
+         sta   ,x         x is loaded with value from u0028 in mnln
          sta   >$FFA9  task 1 block 2 x2000 - x3FFF
          ldu   <u0043
          lda   $06,x

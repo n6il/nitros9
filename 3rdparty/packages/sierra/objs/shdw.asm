@@ -50,8 +50,8 @@ rev      set   $01
 size           equ   .
 
 Xffa9          equ $FFA9   task 1 block 2
-X01af          equ $01AF   pointer to state.flag
-X0551          equ $0551   pointer to a linked list of picture data
+X01af          equ $01AF   a state.flag byte
+X0551          equ $0551   given_pic_data
 
 
 * OS9 data area definitions
@@ -67,10 +67,10 @@ u006b          equ $006B    pen_status
 
 * these look like gen purpose scratch vars
 
-u009e          equ $009E    pos_init_x
-u009f          equ $009F    pos_init_y
-u00a0          equ $00A0    pos_final_x
-u00a1          equ $00A1    pos_final_y 
+u009e          equ $009E    
+u009f          equ $009F    
+u00a0          equ $00A0    
+u00a1          equ $00A1     
 u00a2          equ $00A2    
 u00a3          equ $00A3    
 u00a4          equ $00A4    
@@ -139,7 +139,7 @@ L000d fcs 'shdw'
 * This module is linked to in sierra
 
 start equ   *
-L0012 lbra  L05fb      screen init ?
+L0012 lbra  L05fb      gfx_picbuff_update_remap
       lbra  L0713      obj_chk_control
       lbra  L0175      render_pic  (which calls pic_cmd_loop)  
       lbra  L0189      pic_cmd_loop
@@ -1296,11 +1296,14 @@ L05f5 lds   ,s              reset stack
       puls  x               retrieve our x
       rts                   return
 
-* screen initialization ??
+
 * this routine effective swaps postion of
 * the two nibbles of the byte loaded 
-* and returns it to the screen 
+* and returns it to the screen
+* it is the workhorse loop in gfx_picbuff_update gfx.c ???
+* called via remap call in mnln 
 
+gfx_picbuff_update_remap
 L05fb ldx   #gfx_picbuff starting low address of srceen mem
 L05fe lda   ,x           get the first byte  bit order 0,1,2,3,4,5,6,7
       clrb               empty b
