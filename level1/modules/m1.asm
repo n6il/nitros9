@@ -57,8 +57,6 @@ rev      set   $01
 initsize equ   *
 
 name     fcs   /M1/
-         fcb   $52
-         fcb   $CD
 mgrnam   fcs   /SCF/
 drvnam   fcs   /ACIAPAK/
 
