@@ -6,15 +6,13 @@ CMDS		= attr binex build cmp cobbler copy date \
 		deiniz del deldir dir display dump echo error exbin format \
 		free grfdrv help ident iniz link list load login makdir mdir \
 		merge mfree modpatch montype procs pwd pxd rename save \
-		setime shell_21 sleep tee tmode tsmon unlink \
+		setime shell_21 shell_22a sleep tee tmode tsmon unlink \
 		verify wcreate xmode
 SUBS            = gfx2 gfx inkey
 
-SHELLMODS	= shell_21 build copy date deiniz del dir display echo iniz \
-		link list load makdir mdir merge mfree procs save tee tmode \
-		unlink
-UTILPAK1        = attr deldir dump free ident pwd pxd rename setime \
-		sleep verify wcreate xmode
+SHELLMODS	= shell_22a deiniz display echo iniz link load save unlink
+UTILPAK1	= attr build copy date del deldir dir list makdir mdir \
+		merge mfree procs pwd pxd rename sleep tee tmode
 
 LEVEL1FILES	= attr.asm binex.asm build.asm cmp.asm cobbler.asm copy.asm date.asm deiniz.asm del.asm deldir.asm \
 		dir.asm display.asm dump.asm echo.asm error.asm exbin.asm format.asm free.asm gfx.asm help.asm ident.asm iniz.asm inkey.asm link.asm \
