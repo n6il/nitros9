@@ -1,557 +1,227 @@
 ********************************************************************
-* progname - program module
+* gfx2 - CoCo 3 graphics subroutine module
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  -     Original Tandy distribution version
-*
-*
 
          nam   gfx2
-         ttl   subroutine module    
+         ttl   CoCo 3 graphics subroutine module
 
 * Disassembled 02/07/06 13:10:09 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   os9defs
          endc
+
 tylg     set   Sbrtn+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   0
 size     equ   .
-name     equ   *
-         fcs   /gfx2/
+
+name     fcs   /gfx2/
          fcb   $02 
-L0012    fcb   $02 
-         fcb   $7E þ
-         fcb   $44 D
-         fcb   $57 W
-         fcb   $53 S
-         fcb   $65 e
-         fcb   $74 t
+
+FuncTbl  fdb   DWSet-FuncTbl
+         fcc   "DWSet"
          fcb   $FF 
-         fcb   $02 
-         fcb   $AA *
-         fcb   $53 S
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
+         fdb   Select-FuncTbl
+         fcc   "Select"
          fcb   $FF 
-         fcb   $02 
-         fcb   $BD =
-         fcb   $4F O
-         fcb   $57 W
-         fcb   $53 S
-         fcb   $65 e
-         fcb   $74 t
+         fdb   OWSet-FuncTbl
+         fcc   "OWSet"
          fcb   $FF 
-         fcb   $02 
-         fcb   $E5 e
-         fcb   $4F O
-         fcb   $57 W
-         fcb   $45 E
-         fcb   $6E n
-         fcb   $64 d
+         fdb   OWEnd-FuncTbl
+         fcc   "OWEnd"
          fcb   $FF 
-         fcb   $02 
-         fcb   $E9 i
-         fcb   $44 D
-         fcb   $57 W
-         fcb   $45 E
-         fcb   $6E n
-         fcb   $64 d
+         fdb   DWEnd-FuncTbl
+         fcc   "DWEnd"
          fcb   $FF 
-         fcb   $02 
-         fcb   $ED m
-         fcb   $43 C
-         fcb   $57 W
-         fcb   $41 A
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $61 a
+         fdb   CWArea-FuncTbl
+         fcc   "CWArea"
          fcb   $FF 
-         fcb   $03 
-         fcb   $01 
-         fcb   $44 D
-         fcb   $65 e
-         fcb   $66 f
-         fcb   $42 B
-         fcb   $75 u
-         fcb   $66 f
-         fcb   $66 f
+         fdb   DefBuff-FuncTbl
+         fcc   "DefBuff"
          fcb   $FF 
-         fcb   $03 
-         fcb   $1C 
-         fcb   $4B K
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $42 B
-         fcb   $75 u
-         fcb   $66 f
-         fcb   $66 f
+         fdb   KillBuff-FuncTbl
+         fcc   "KillBuff"
          fcb   $FF 
-         fcb   $03 
-         fcb   $37 7
-         fcb   $47 G
-         fcb   $50 P
-         fcb   $4C L
-         fcb   $6F o
-         fcb   $61 a
-         fcb   $64 d
+         fdb   GPLoad-FuncTbl
+         fcc   "GPLoad"
          fcb   $FF 
-         fcb   $03 
-         fcb   $54 T
-         fcb   $47 G
-         fcb   $65 e
-         fcb   $74 t
+         fdb   Get-FuncTbl
+         fcc   "Get"
          fcb   $FF 
-         fcb   $03 
-         fcb   $7B û
-         fcb   $50 P
-         fcb   $75 u
-         fcb   $74 t
+         fdb   Put-FuncTbl
+         fcc   "Put"
          fcb   $FF 
-         fcb   $03 
-         fcb   $95 
-         fcb   $50 P
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $6E n
+         fdb   Pattern-FuncTbl
+         fcc   "Pattern"
          fcb   $FF 
-         fcb   $03 
-         fcb   $99 
-         fcb   $4C L
-         fcb   $6F o
-         fcb   $67 g
-         fcb   $69 i
-         fcb   $63 c
+         fdb   Logic-FuncTbl
+         fcc   "Logic"
          fcb   $FF 
-         fcb   $03 
-         fcb   $C8 H
-         fcb   $44 D
-         fcb   $65 e
-         fcb   $66 f
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6C l
+         fdb   DefCol-FuncTbl
+         fcc   "DefCol"
          fcb   $FF 
-         fcb   $03 
-         fcb   $CD M
-         fcb   $50 P
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $74 t
-         fcb   $65 e
+         fdb   Palette-FuncTbl
+         fcc   "Palette"
          fcb   $FF 
-         fcb   $03 
-         fcb   $D2 R
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $72 r
+         fdb   Color-FuncTbl
+         fcc   "Color"
          fcb   $FF 
-         fcb   $04 
-         fcb   $14 
-         fcb   $42 B
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $72 r
+         fdb   Border-FuncTbl
+         fcc   "Border"
          fcb   $FF 
-         fcb   $04 
-         fcb   $2F /
-         fcb   $53 S
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $53 S
-         fcb   $77 w
+         fdb   ScaleSw-FuncTbl
+         fcc   "ScaleSw"
          fcb   $FF 
-         fcb   $04 
-         fcb   $4A J
-         fcb   $44 D
-         fcb   $57 W
-         fcb   $50 P
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $53 S
-         fcb   $77 w
+         fdb   DWProtSw-FuncTbl
+         fcc   "DWProtSw"
          fcb   $FF 
-         fcb   $04 
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $43 C
-         fcb   $53 S
-         fcb   $65 e
-         fcb   $74 t
+         fdb   GCSet-FuncTbl
+         fcc   "GCSet"
          fcb   $FF 
-         fcb   $04 
-         fcb   $53 S
-         fcb   $46 F
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $74 t
+         fdb   Font-FuncTbl
+         fcc   "Font"
          fcb   $FF 
-         fcb   $04 
-         fcb   $58 X
-         fcb   $54 T
-         fcb   $43 C
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $53 S
-         fcb   $77 w
+         fdb   TCharSw-FuncTbl
+         fcc   "TCharSw"
          fcb   $FF 
-         fcb   $04 
-         fcb   $5C \
-         fcb   $42 B
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $64 d
-         fcb   $53 S
-         fcb   $77 w
+         fdb   BoldSw-FuncTbl
+         fcc   "BoldSw"
          fcb   $FF 
-         fcb   $04 
-         fcb   $60 `
-         fcb   $50 P
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $53 S
-         fcb   $77 w
+         fdb   PropSw-FuncTbl
+         fcc   "PropSw"
          fcb   $FF 
-         fcb   $04 
-         fcb   $64 d
-         fcb   $53 S
-         fcb   $65 e
-         fcb   $74 t
-         fcb   $44 D
-         fcb   $50 P
-         fcb   $74 t
-         fcb   $72 r
+         fdb   SetDPtr-FuncTbl
+         fcc   "SetDPtr"
          fcb   $FF 
-         fcb   $04 
-         fcb   $85 
-         fcb   $50 P
-         fcb   $6F o
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $74 t
+         fdb   Point-FuncTbl
+         fcc   "Point"
          fcb   $FF 
-         fcb   $04 
-         fcb   $A0 
-         fcb   $4C L
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $65 e
+         fdb   Line-FuncTbl
+         fcc   "Line"
          fcb   $FF 
-         fcb   $04 
-         fcb   $C4 D
-         fcb   $42 B
-         fcb   $6F o
-         fcb   $78 x
+         fdb   Box-FuncTbl
+         fcc   "Box"
          fcb   $FF 
-         fcb   $04 
-         fcb   $C8 H
-         fcb   $42 B
-         fcb   $61 a
-         fcb   $72 r
+         fdb   Bar-FuncTbl
+         fcc   "Bar"
          fcb   $FF 
-         fcb   $04 
-         fcb   $CC L
-         fcb   $50 P
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $47 G
-         fcb   $43 C
+         fdb   PutGC-FuncTbl
+         fcc   "PutGC"
          fcb   $FF 
-         fcb   $04 
-         fcb   $DE ^
-         fcb   $46 F
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $6C l
+         fdb   Fill-FuncTbl
+         fcc   "Fill"
          fcb   $FF 
-         fcb   $04 
-         fcb   $FC 
-         fcb   $43 C
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $63 c
-         fcb   $6C l
-         fcb   $65 e
+         fdb   Circle-FuncTbl
+         fcc   "Circle"
          fcb   $FF 
-         fcb   $05 
-         fcb   $1D 
-         fcb   $44 D
-         fcb   $72 r
-         fcb   $61 a
-         fcb   $77 w
+         fdb   Draw-FuncTbl
+         fcc   "Draw"
          fcb   $FF 
-         fcb   $07 
-         fcb   $0D 
-         fcb   $45 E
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $69 i
-         fcb   $70 p
-         fcb   $73 s
-         fcb   $65 e
+         fdb   Ellipse-FuncTbl
+         fcc   "Ellipse"
          fcb   $FF 
-         fcb   $07 
-         fcb   $12 
-         fcb   $41 A
-         fcb   $72 r
-         fcb   $63 c
+         fdb   Arc-FuncTbl
+         fcc   "Arc"
          fcb   $FF 
-         fcb   $07 
-         fcb   $4C L
-         fcb   $43 C
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $48 H
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $65 e
+         fdb   CurHome-FuncTbl
+         fcc   "CurHome"
          fcb   $FF 
-         fcb   $07 
-         fcb   $50 P
-         fcb   $43 C
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $58 X
-         fcb   $59 Y
+         fdb   CurXY-FuncTbl
+         fcc   "CurXY"
          fcb   $FF 
-         fcb   $07 
-         fcb   $83 
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $4C L
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $65 e
+         fdb   ErLine-FuncTbl
+         fcc   "ErLine"
          fcb   $FF 
-         fcb   $07 
-         fcb   $87 
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $45 E
-         fcb   $4F O
-         fcb   $4C L
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $65 e
+         fdb   ErEOLine-FuncTbl
+         fcc   "ErEOLine"
          fcb   $FF 
-         fcb   $07 
-         fcb   $8B 
-         fcb   $43 C
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $4F O
-         fcb   $66 f
-         fcb   $66 f
+         fdb   CurOff-FuncTbl
+         fcc   "CurOff"
          fcb   $FF 
-         fcb   $07 
-         fcb   $93 
-         fcb   $43 C
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $4F O
-         fcb   $6E n
+         fdb   CurOn-FuncTbl
+         fcc   "CurOn"
          fcb   $FF 
-         fcb   $07 
-         fcb   $9B 
-         fcb   $43 C
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $52 R
-         fcb   $67 g
-         fcb   $74 t
+         fdb   CurRgt-FuncTbl
+         fcc   "CurRgt"
          fcb   $FF 
-         fcb   $07 
-         fcb   $9F 
-         fcb   $42 B
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $6C l
+         fdb   Bell-FuncTbl
+         fcc   "Bell"
          fcb   $FF 
-         fcb   $07 
-         fcb   $A3 #
-         fcb   $43 C
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $4C L
-         fcb   $66 f
-         fcb   $74 t
+         fdb   CurLft-FuncTbl
+         fcc   "CurLft"
          fcb   $FF 
-         fcb   $07 
-         fcb   $A7 '
-         fcb   $43 C
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $55 U
-         fcb   $70 p
+         fdb   CurUp-FuncTbl
+         fcc   "CurUp"
          fcb   $FF 
-         fcb   $07 
-         fcb   $AB +
-         fcb   $43 C
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $44 D
-         fcb   $77 w
-         fcb   $6E n
+         fdb   CurDwn-FuncTbl
+         fcc   "CurDwn"
          fcb   $FF 
-         fcb   $07 
-         fcb   $AF /
-         fcb   $45 E
-         fcb   $72 r
-         fcb   $45 E
-         fcb   $4F O
-         fcb   $57 W
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $77 w
+         fdb   ErEOWndw-FuncTbl
+         fcc   "ErEOWndw"
          fcb   $FF 
-         fcb   $07 
-         fcb   $B6 6
-         fcb   $43 C
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $72 r
+         fdb   Clear-FuncTbl
+         fcc   "Clear"
          fcb   $FF 
-         fcb   $07 
-         fcb   $BA :
-         fcb   $43 C
-         fcb   $72 r
-         fcb   $52 R
-         fcb   $74 t
-         fcb   $6E n
+         fdb   CrRtn-FuncTbl
+         fcc   "CrRtn"
          fcb   $FF 
-         fcb   $07 
-         fcb   $BE >
-         fcb   $52 R
-         fcb   $65 e
-         fcb   $56 V
-         fcb   $4F O
-         fcb   $6E n
+         fdb   ReVOn-FuncTbl
+         fcc   "ReVOn"
          fcb   $FF 
-         fcb   $07 
-         fcb   $C6 F
-         fcb   $52 R
-         fcb   $65 e
-         fcb   $56 V
-         fcb   $4F O
-         fcb   $66 f
-         fcb   $66 f
+         fdb   ReVOff-FuncTbl
+         fcc   "ReVOff"
          fcb   $FF 
-         fcb   $07 
-         fcb   $CE N
-         fcb   $55 U
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $6C l
-         fcb   $6E n
-         fcb   $4F O
-         fcb   $6E n
+         fdb   UndlnOn-FuncTbl
+         fcc   "UndlnOn"
          fcb   $FF 
-         fcb   $07 
-         fcb   $D6 V
-         fcb   $55 U
-         fcb   $6E n
-         fcb   $64 d
-         fcb   $6C l
-         fcb   $6E n
-         fcb   $4F O
-         fcb   $66 f
-         fcb   $66 f
+         fdb   UndlnOff-FuncTbl
+         fcc   "UndlnOff"
          fcb   $FF 
-         fcb   $07 
-         fcb   $DF _
-         fcb   $42 B
-         fcb   $6C l
-         fcb   $6E n
-         fcb   $6B k
-         fcb   $4F O
-         fcb   $6E n
+         fdb   BlnkOn-FuncTbl
+         fcc   "BlnkOn"
          fcb   $FF 
-         fcb   $07 
-         fcb   $E7 g
-         fcb   $42 B
-         fcb   $6C l
-         fcb   $6E n
-         fcb   $6B k
-         fcb   $4F O
-         fcb   $66 f
-         fcb   $66 f
+         fdb   BlnkOff-FuncTbl
+         fcc   "BlnkOff"
          fcb   $FF 
-         fcb   $07 
-         fcb   $EF o
-         fcb   $49 I
-         fcb   $6E n
-         fcb   $73 s
-         fcb   $4C L
-         fcb   $69 i
-         fcb   $6E n
+         fdb   InsLin-FuncTbl
+         fcc   "InsLin"
          fcb   $FF 
-         fcb   $07 
-         fcb   $F7 w
-         fcb   $44 D
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $4C L
-         fcb   $69 i
-         fcb   $6E n
+         fdb   DelLin-FuncTbl
+         fcc   "DelLin"
          fcb   $FF 
          fcb   $00 
-L0200    fcb   $4F O
-         fcb   $46 F
-         fcb   $46 F
+L0200    fcc   "OFF"
          fcb   $FF 
          fcb   $00 
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $44 D
+         fcc   "AND"
          fcb   $FF 
          fcb   $01 
-         fcb   $4F O
-         fcb   $52 R
+         fcc   "OR"
          fcb   $FF 
          fcb   $02 
-         fcb   $58 X
-         fcb   $4F O
-         fcb   $52 R
+         fcc   "XOR"
          fcb   $FF 
          fcb   $03 
          fcb   $00 
-L0214    fcb   $4F O
-         fcb   $46 F
-         fcb   $46 F
+L0214    fcc   "OFF"
          fcb   $FF 
          fcb   $00 
-         fcb   $4F O
-         fcb   $4E N
+         fcc   "ON"
          fcb   $FF 
          fcb   $01 
          fcb   $00 
-start    equ   *
-         leas  <-$21,s
+
+start    leas  <-$21,s
          clr   ,s
          ldd   <$23,s
          beq   L0289
@@ -565,7 +235,7 @@ start    equ   *
          bne   L023D
          tfr   b,a
 L023B    sta   ,s
-L023D    leau  >L0012,pcr
+L023D    leau  >FuncTbl,pcr
 L0241    ldy   ,u++
          beq   L0285
          tst   ,s
@@ -584,7 +254,7 @@ L025C    tst   ,u+
 L0262    tst   -$01,u
          bpl   L0252
          tfr   y,d
-         leay  >L0012,pcr
+         leay  >FuncTbl,pcr
          leay  d,y
          leax  $01,s
          lda   #$1B
@@ -602,7 +272,8 @@ L0289    ldb   #$38
 L028B    coma  
          leas  <$21,s
          rts   
-         lda   #$20
+
+DWSet    lda   #$20
          pshs  x,b,a
          ldx   $02,u
          cmpx  #$0002
@@ -622,7 +293,8 @@ L02B1    lbne  L0289
          sta   ,x+
          lbsr  L088D
          bra   L02DF
-         lda   #$21
+
+Select   lda   #$21
 L02BE    tst   ,s
          beq   L02C6
          cmpb  #$02
@@ -631,7 +303,8 @@ L02C6    cmpb  #$01
 L02C8    bne   L0289
          sta   ,x+
          lbra  L08A1
-         lda   #$22
+
+OWSet    lda   #$22
 L02D1    tst   ,s
          beq   L02D9
          cmpb  #$09
@@ -647,11 +320,14 @@ L02E8    lbsr  L088D
          lbsr  L088D
          lbsr  L088D
          lbra  L08A1
-         lda   #$23
+
+OWEnd    lda   #$23
          bra   L02BE
-         lda   #$24
+
+DWEnd    lda   #$24
          bra   L02BE
-         lda   #$25
+
+CWArea   lda   #$25
          tst   ,s
          beq   L0309
          cmpb  #$06
@@ -660,7 +336,8 @@ L0309    cmpb  #$05
 L030B    lbne  L0289
          sta   ,x+
          bra   L02E8
-         lda   #$29
+
+DefBuff  lda   #$29
          tst   ,s
          beq   L031D
          cmpb  #$05
@@ -671,7 +348,8 @@ L031F    lbne  L0289
          lbsr  L088D
          lbsr  L088D
          lbra  L0387
-         lda   #$2A
+
+KillBuff lda   #$2A
 L0330    tst   ,s
          beq   L0338
          cmpb  #$04
@@ -682,7 +360,8 @@ L033A    lbne  L0289
          lbsr  L088D
          lbsr  L088D
          lbra  L08A1
-         lda   #$2B
+
+GPLoad   lda   #$2B
          tst   ,s
          beq   L0353
          cmpb  #$08
@@ -694,7 +373,8 @@ L0355    lbne  L0289
          lbsr  L088D
          lbsr  L088D
          bra   L0381
-         lda   #$2C
+
+Get      lda   #$2C
          tst   ,s
          beq   L0370
          cmpb  #$08
@@ -709,7 +389,8 @@ L0381    lbsr  L0845
 L0384    lbsr  L0845
 L0387    lbsr  L0845
          lbra  L08A1
-         lda   #$2D
+
+Put      lda   #$2D
          tst   ,s
          beq   L0397
          cmpb  #$06
@@ -720,9 +401,11 @@ L0399    lbne  L0289
          lbsr  L088D
          lbsr  L088D
          bra   L0384
-         lda   #$2E
+
+Pattern  lda   #$2E
          bra   L0330
-         lda   #$2F
+
+Logic    lda   #$2F
          tst   ,s
          beq   L03B5
          cmpb  #$03
@@ -742,11 +425,14 @@ L03C3    ldx   ,u
          lbra  L08A1
 L03D5    puls  y,x,b,a
          lbra  L0289
-         lda   #$30
+
+DefCol   lda   #$30
          lbra  L02BE
-         lda   #$31
+
+Palette  lda   #$31
          lbra  L0330
-         tst   ,s
+
+Color    tst   ,s
          bne   L03E9
          incb  
 L03E9    cmpb  #$03
@@ -777,7 +463,8 @@ L0418    lda   #$32
 L041F    lda   #$33
          sta   ,x+
          lbra  L088D
-         tst   ,s
+
+Border   tst   ,s
          beq   L042E
          cmpb  #$03
          bra   L0430
@@ -789,7 +476,8 @@ L0439    lda   #$34
          sta   ,x+
          lbra  L088D
          rts   
-         lda   #$35
+
+ScaleSw  lda   #$35
 L0443    tst   ,s
          beq   L044B
          cmpb  #$03
@@ -800,19 +488,26 @@ L044D    lbne  L0289
          pshs  y,x,b,a
          leay  >L0214,pcr
          lbra  L03C3
-         lda   #$36
+
+DWProtSw lda   #$36
          bra   L0443
-         lda   #$39
+
+GCSet    lda   #$39
          lbra  L0330
-         lda   #$3A
+
+Font     lda   #$3A
          lbra  L0330
-         lda   #$3C
+
+TCharSw  lda   #$3C
          bra   L0443
-         lda   #$3D
+
+BoldSw   lda   #$3D
          bra   L0443
-         lda   #$3F
+
+PropSw   lda   #$3F
          bra   L0443
-         tst   ,s
+
+SetDPtr  tst   ,s
          beq   L047E
          cmpb  #$04
          bra   L0480
@@ -826,7 +521,8 @@ L0489    pshs  a
          lbsr  L085D
          lbsr  L085D
          puls  pc,a
-         lda   #$42
+
+Point    lda   #$42
          tst   ,s
          beq   L04A1
          cmpb  #$04
@@ -837,7 +533,8 @@ L04A3    lbne  L0289
          lbsr  L0845
          lbsr  L0845
          lbra  L08A1
-         lda   #$46
+
+Line     lda   #$46
 L04B4    tst   ,s
          bne   L04B9
          incb  
@@ -853,11 +550,14 @@ L04CB    sta   ,x+
          lbsr  L0845
          lbsr  L0845
          lbra  L08A1
-         lda   #$48
+
+Box      lda   #$48
          bra   L04B4
-         lda   #$4A
+
+Bar      lda   #$4A
          bra   L04B4
-         lda   #$4E
+
+PutGC    lda   #$4E
          tst   ,s
          beq   L04E8
          cmpb  #$04
@@ -865,7 +565,8 @@ L04CB    sta   ,x+
 L04E8    cmpb  #$03
 L04EA    lbne  L0289
          bra   L04CB
-         lda   #$4F
+
+Fill     lda   #$4F
          tst   ,s
          bne   L04F7
          incb  
@@ -879,7 +580,8 @@ L0502    lbsr  L0489
          stb   ,x+
 L0509    sta   ,x+
          lbra  L08A1
-         lda   #$50
+
+Circle   lda   #$50
          tst   ,s
          bne   L0515
          incb  
@@ -894,7 +596,8 @@ L0520    lbsr  L0489
 L0527    sta   ,x+
          lbsr  L0845
          lbra  L08A1
-         tst   ,s
+
+Draw     tst   ,s
          beq   L053E
          cmpb  #$05
          beq   L0549
@@ -1123,9 +826,11 @@ L0717    os9   I$Write
          puls  y,x
          ldx   $04,s
          rts   
-         lda   #$51
+
+Ellipse  lda   #$51
          lbra  L04B4
-         lda   #$52
+
+Arc      lda   #$52
          tst   ,s
          beq   L0735
          cmpb  #$0A
@@ -1149,9 +854,11 @@ L0747    sta   ,x+
          lbsr  L0845
          lbsr  L0845
          lbra  L08A1
-         lda   #$01
+
+CurHome  lda   #$01
          bra   L07C3
-         lda   #$02
+
+CurXY    lda   #$02
          tst   ,s
          beq   L076C
          cmpb  #$04
@@ -1174,64 +881,84 @@ L077B    pshs  y,b,a
          addb  #$20
          stb   -$01,x
 L0793    puls  pc,y,b,a
-         lda   #$03
+
+ErLine   lda   #$03
          bra   L07C3
-         lda   #$04
+
+ErEOLine lda   #$04
          bra   L07C3
-         lda   #$05
+
+CurOff   lda   #$05
          sta   -$01,x
          lda   #$20
          bra   L07EE
-         lda   #$05
+
+CurOn    lda   #$05
          sta   -$01,x
          lda   #$21
          bra   L07EE
-         lda   #$06
+
+CurRgt   lda   #$06
          bra   L07C3
-         lda   #$07
+
+Bell     lda   #$07
          bra   L07C3
-         lda   #$08
+
+CurLft   lda   #$08
          bra   L07C3
-         lda   #$09
+
+CurUp    lda   #$09
          bra   L07C3
-         lda   #$0A
+
+CurDwn   lda   #$0A
          bra   L07C3
-         lda   #$0B
+
+ErEOWndw lda   #$0B
 L07C3    leax  -$01,x
          lbra  L02BE
-         lda   #$0C
+
+Clear    lda   #$0C
          bra   L07C3
-         lda   #$0D
+
+CrRtn    lda   #$0D
          bra   L07C3
-         lda   #$1F
+
+ReVOn    lda   #$1F
          sta   -$01,x
          lda   #$20
          bra   L07EE
-         lda   #$1F
+
+ReVOff   lda   #$1F
          sta   -$01,x
          lda   #$21
          bra   L07EE
-         lda   #$1F
+
+UndlnOn  lda   #$1F
          sta   -$01,x
          lda   #$22
          bra   L07EE
-         lda   #$1F
+
+UndlnOff lda   #$1F
          sta   -$01,x
          lda   #$23
 L07EE    lbra  L02BE
-         lda   #$1F
+
+BlnkOn   lda   #$1F
          sta   -$01,x
          lda   #$24
          bra   L07EE
-         lda   #$1F
+
+BlnkOff  lda   #$1F
          sta   -$01,x
          lda   #$25
          bra   L07EE
-         lda   #$1F
+
+InsLin   lda   #$1F
          sta   -$01,x
          lda   #$30
          bra   L07EE
-         lda   #$1F
+
+DelLin   lda   #$1F
          sta   -$01,x
          lda   #$31
          bra   L07EE
@@ -1326,5 +1053,8 @@ L08BE    leas  $09,s
          bra   L08C4
 L08C2    leas  $0F,s
 L08C4    lbra  L0289
+
          emod
 eom      equ   *
+         end
+
