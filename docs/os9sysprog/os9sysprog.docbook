@@ -2135,12 +2135,13 @@ will default to zero</para>
 <para>This section describes the definitions and use of the
 initialization table contained in device descriptor modules for
 RSF-type devices.</para>
+
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="1in" colname="c1">
-<colspec colwidth="0.6in">
-<colspec colwidth="0.6in">
-<colspec colwidth="4in" colname="c4">
+<colspec colwidth="1in">
+<colspec colwidth="0.7in">
+<colspec colwidth="0.7in">
+<colspec colwidth="4in">
 <thead>
 <row>
     <entry>Module Offset</entry>
@@ -2156,30 +2157,68 @@ RSF-type devices.</para>
     <entry></entry>
     <entry>Standard Device Descriptor Module Header</entry>
 </row>
-<row><entry>$12</entry><entry>IT.DTP</entry><entry>RMB 1</entry>
+<row>
+    <entry>$12</entry>
+    <entry>IT.DTP</entry>
+    <entry>RMB 1</entry>
     <entry>DEVICE TYPE (0=SCF 1=RBF 2=PIPE 3=SBF)</entry></row>
-<row><entry>$13</entry><entry>IT.DRV</entry><entry>RMB 1</entry>
+<row>
+    <entry>$13</entry>
+    <entry>IT.DRV</entry>
+    <entry>RMB 1</entry>
     <entry>DRIVE NUMBER</entry></row>
-<row><entry>$14</entry><entry>IT.STP</entry><entry>RMB 1</entry>
+<row>
+    <entry>$14</entry>
+    <entry>IT.STP</entry>
+    <entry>RMB 1</entry>
     <entry>STEP RATE</entry></row>
-<row><entry>$15</entry><entry>IT.TYP</entry><entry>RMB 1</entry>
+<row>
+    <entry>$15</entry>
+    <entry>IT.TYP</entry>
+    <entry>RMB 1</entry>
     <entry>DEVICE TYPE (See RBFMAN path descriptor)</entry></row>
-<row><entry>$16</entry><entry>IT.DNS</entry><entry>RMB 1</entry>
+<row>
+    <entry>$16</entry>
+    <entry>IT.DNS</entry>
+    <entry>RMB 1</entry>
     <entry>MEDIA DENSITY (0 - SINGLE, 1-DOUBLE)</entry></row>
-<row><entry>$17</entry><entry>IT.CYL</entry><entry>RMB 2</entry>
+<row>
+    <entry>$17</entry>
+    <entry>IT.CYL</entry>
+    <entry>RMB 2</entry>
     <entry>NUMBER OF CYLINDERS (TRACKS)</entry></row>
-<row><entry>$19</entry><entry>IT.SID</entry><entry>RMB 1</entry>
+<row>
+    <entry>$19</entry>
+    <entry>IT.SID</entry>
+    <entry>RMB 1</entry>
     <entry>NUMBER OF SURFACES (SIDES)</entry></row>
-<row><entry>$1A</entry><entry>IT.VFY</entry><entry>RMB 1</entry>
+<row>
+    <entry>$1A</entry>
+    <entry>IT.VFY</entry>
+    <entry>RMB 1</entry>
     <entry>0 = VERIFY DISK WRITES</entry></row>
-<row><entry>$1B</entry><entry>IT.SCT</entry><entry>RMB 2</entry>
+<row>
+    <entry>$1B</entry>
+    <entry>IT.SCT</entry>
+    <entry>RMB 2</entry>
     <entry>Default Sectors/Track</entry></row>
-<row><entry>$1D</entry><entry>IT.TOS</entry><entry>RMB 2</entry>
+<row>
+    <entry>$1D</entry>
+    <entry>IT.TOS</entry>
+    <entry>RMB 2</entry>
     <entry>Default Sectors/Track (Track 0)</entry></row>
-<row><entry>$1F</entry><entry>IT.ILV</entry><entry>RMB 1</entry>
-    <entry>SECTOR INTERLEAVE FACTOR</entry></row>
-<row><entry>$20</entry><entry>IT.SAS</entry><entry>RMB 1</entry>
-    <entry>SEGMENT ALLOCATION SIZE</entry></row>
+<row>
+    <entry>$1F</entry>
+    <entry>IT.ILV</entry>
+    <entry>RMB 1</entry>
+    <entry>SECTOR INTERLEAVE FACTOR</entry>
+</row>
+<row>
+    <entry>$20</entry>
+    <entry>IT.SAS</entry>
+    <entry>RMB 1</entry>
+    <entry>SEGMENT ALLOCATION SIZE</entry>
+</row>
 </tbody>
 </tgroup>
 </informaltable>
@@ -2199,13 +2238,13 @@ popular Western Digital floppy disk controller IC:</para>
 
 <informaltable frame="all">
 <tgroup cols="5">
-<colspec colwidth="1in" colname="c1">
-<colspec colwidth="1.2in" colname="c2">
-<colspec colwidth="1.2in" colname="c3">
-<colspec colwidth="1.2in" colname="c4">
-<colspec colwidth="1.2in" colname="c5">
-<spanspec spanname="x1" namest="c2" nameend="c3">
-<spanspec spanname="x2" namest="c4" nameend="c5">
+<colspec colwidth="1in" colname="q1">
+<colspec colwidth="1.2in" colname="q2">
+<colspec colwidth="1.2in" colname="q3">
+<colspec colwidth="1.2in" colname="q4">
+<colspec colwidth="1.2in" colname="q5">
+<spanspec spanname="x1" namest="q2" nameend="q3">
+<spanspec spanname="x2" namest="q4" nameend="q5">
 <thead>
 <row>
     <entry morerows="1">Step Code</entry>
@@ -2287,7 +2326,7 @@ this storage area will be used by IOMAN and RBFMAN, the device driver
 is free to use the remainder in any manner. This static storage is
 used as follows: 
 </para>
-<table frame="all">
+<table frame="none">
 <title>Static Storage Definitions</title>
 <tgroup cols="4">
 <colspec colwidth="1in" colname="c1">
@@ -3249,9 +3288,9 @@ the I/O editing features, as listed below.</para>
 
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="0.8in">
+<colspec colwidth="0.9in">
 <colspec colwidth="1.1in">
-<colspec colwidth="0.6in">
+<colspec colwidth="0.7in">
 <colspec colwidth="5in">
 <thead>
 <row>
@@ -3343,9 +3382,9 @@ variables and butters). This static storage is defined as:
 </para>
 <informaltable frame="none">
 <tgroup cols="4">
-<colspec colwidth="0.8in">
+<colspec colwidth="0.9in">
 <colspec colwidth="1.1in">
-<colspec colwidth="0.6in">
+<colspec colwidth="0.7in">
 <colspec colwidth="5in">
 <thead>
 <row>
