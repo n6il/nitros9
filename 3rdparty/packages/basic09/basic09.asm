@@ -1658,11 +1658,14 @@ L082E    lda   #$7E       Opcode for JMP Extended instruction
          IFNE  H6309
          addr  w,d        Add to start of module address
          ELSE
-         addd  ,s++
+         addd  ,s
          ENDC
          std   ,x++       Store as destination of JMP
          ldd   ,y         Keep installing JMP tables until 0000 found
          bne   L082E     
+         IFEQ  H6309
+         leas  2,s        eat X on stack
+         ENDC
          bsr   L0116      Go init <$50 vars, & some table ptrs
          puls  y          Get parameter ptr
          leax  >L0140,pc  Point to main command token list
@@ -1722,7 +1725,7 @@ L08A6    leax  >L0024,pc  Point to intro screen credits
          bsr   L08D0      Copy to temp buffer/print to Std error
 
 L08B2    bsr   L086D     
-         leax  >L073F,pc  Point to 'Ready'
+         leax  >L073F+1,pc  Point to 'Ready'
          bsr   L08D0      Copy to temp buffer/print to Std error
          leax  >L07A8,pc  Point to 'B:' prompt
          leay  >L0668,pc  Point to system mode command table
