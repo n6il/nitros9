@@ -7659,13 +7659,15 @@ L3446    ldy   <u0046
 * NEXT table
 * IF some of these entry points are moved before this table, 8 bit addressing
 * may be used instead of 16
-L33DF    fcb   L3405-L33DF Integer STEP 1
+L33DF    equ   *
+         fcb   L3405-L33DF Integer STEP 1
          fcb   L341E-L33DF Integer STEP <>1
          fcb   L345A-L33DF Real STEP 1
          fcb   L34A5-L33DF Real STEP <>1
 
 * Jump table for FOR (relative to L34E5) (change to 8 bit if possible)
-L34E5    fcb   L33F3-L34E5 $ff0e   INT step 1
+L34E5    equ   *
+         fcb   L33F3-L34E5 $ff0e   INT step 1
          fcb   L33F9-L34E5 $ff14   INT step <>1
          fcb   L343E-L34E5 $ff59   REAL step 1
          fcb   L3446-L34E5 $ff61   REAL step <>1
