@@ -28,7 +28,7 @@ u0000    rmb   29
 u001D    rmb   1
 u001E    rmb   1
 u001F    rmb   1
-u0020    rmb   2
+BaudCnt  rmb   2	baud rate counter
 u0022    rmb   2
 u0024    rmb   1
 u0025    rmb   1
@@ -38,20 +38,13 @@ size     equ   .
 name     fcs   /RS232/
          fcb   edition
 
-L0014    fcb   $04
-         fcb   $82 
-         fcb   $01
-         fcb   $A2 "
-         fcb   $00 
-         fcb   $CD M
-         fcb   $00 
-         fcb   $63 c
-         fcb   $00 
-         fcb   $2D -
-         fcb   $00 
-         fcb   $13 
-         fcb   $00 
-         fcb   $05 
+BaudTbl  fdb   $0482      110 baud
+         fdb   $01A2      300 baud
+         fdb   $00CD      600 baud
+         fdb   $0063     1200 baud
+         fdb   $002D     2400 baud
+         fdb   $0013     4800 baud
+         fdb   $0005     9600 baud
 
 start    lbra  Init
          lbra  Read
@@ -153,25 +146,25 @@ L00AD    puls  b,cc
          rts
 L00B1    pshs  a
          lda   <PD.BAU,y
-         anda  #$0F
-         cmpa  #$07
+         anda  #$0F            mask out baud rate
+         cmpa  #B19200
          bcc   L00C9
          lsla
-         leax  >L0014,pcr
+         leax  >BaudTbl,pcr
          ldd   a,x
-         std   <u0020,u
+         std   <BaudCnt,u
          clrb
          puls  pc,a
-L00C9    ldb   #$CB
+L00C9    ldb   #E$BMode
          puls  a
 L00CD    orcc  #Carry
          rts
 L00D0    stb   >PIA.U8
 L00D3    pshs  b,a
-         ldd   <u0020,u
+         ldd   <BaudCnt,u
          bra   L00E1
 L00DA    pshs  b,a
-         ldd   <u0020,u
+         ldd   <BaudCnt,u
          lsra
          rorb
 L00E1    subd  #$0001
