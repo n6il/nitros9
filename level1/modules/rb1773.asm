@@ -63,7 +63,7 @@ C_DRV0   equ   %00000001	Drive 0 selected when set
 
 u0000    rmb   DRVBEG+(DRVMEM*N.Drives)
 u00A7    rmb   2              Last drive table accessed (ptr)
-u00A9    rmb   1              Bit mask for control reg (drive #, side,etc)
+CtlImg   rmb   1              Bit mask for control reg (drive #, side,etc)
 u00AA    rmb   1
 sectbuf  rmb   2              Ptr to 512 byte sector buffer
 u00AD    rmb   1
@@ -121,7 +121,7 @@ Init2    decb                 delay a bit...
          leax  WD_Stat,x      point to Status/Command register
          lda   #$D0           force Interrupt command
          sta   ,x             send to FDC
-         lbsr  L0406          time delay for ~ 108 cycles
+         lbsr  FDCDelay       time delay for ~ 108 cycles
          lda   ,x             eat status register
          ldd   #$FF*256+N.Drives  'invalid' value & # of drives
          sta   >u00B8,u       set 512 byte sector # to bogus value
@@ -366,7 +366,7 @@ L0176    ldx   >sectbuf,u     Get physical sector buffer ptr
 *         bne   L0197          eat it & start reading sector
 *         leay  -1,y           bump timeout timer down
 *         bne   L0180          keep trying until it reaches 0 or sector read
-*         lda   >u00A9,u       get current drive settings
+*         lda   >CtlImg,u       get current drive settings
 *         ora   #C_MOTOR       turn drive motor on
 *         sta   >DPort+CtrlReg send to controller
 *         puls  y,cc           restore regs
@@ -390,12 +390,12 @@ L01A1    orcc  #IntMasks      Shut off IRQ & FIRQ
 *         ldy   #$FFFF
          ldb   #C_DBLDNS+C_MOTOR  Double density & motor on
 *         ldb   #%00101000     Double density & motor on
-         orb   >u00A9,u       Merge with current drive settings
+         orb   >CtlImg,u       Merge with current drive settings
          stb   >DPort+CtrlReg Send to control register
          ldb   #C_HALT+C_DBLDNS+C_MOTOR Enable halt, double density & motor on
 *         ldb   #%10101000     Enable halt, double density & motor on
-         orb   >u00A9,u       Merge that with current drive settings
-         lbra  L0406          Time delay to wait for command to settle
+         orb   >CtlImg,u       Merge that with current drive settings
+         lbra  FDCDelay        Time delay to wait for command to settle
 *         lda   #$02
 *L01BE    rts   
 
@@ -467,14 +467,14 @@ L0211Lp  lda   ,y+
          ldb   #$A0            Write sector command
 
 * Format track comes here with B=$F0 (write track)
-*L0224    pshs  y,cc           Preserve path dsc. ptr & CC
-L0224     lbsr  L01A1          Send command to controller (including delay)
+*WrTrk    pshs  y,cc           Preserve path dsc. ptr & CC
+WrTrk     lbsr  L01A1          Send command to controller (including delay)
 *** Commented out for blobstop fixes
 *L0229    bita  >DPort+WD_Stat Controller done yet?
 *         bne   L0240          Yes, go write sector out
 *         leay  -$01,y         No, bump wait counter
 *         bne   L0229          Still more tries, continue
-*         lda   >u00A9,u       Get current drive control register settings
+*         lda   >CtlImg,u       Get current drive control register settings
 *         ora   #C_MOTOR       Drive motor on (but drive select off)
 *         sta   >DPort+CtrlReg Send to controller
 *         puls  y,cc           Restore regs
@@ -486,9 +486,9 @@ L0224     lbsr  L01A1          Send command to controller (including delay)
          beq   L0230           if not format, don't do anything
          sta   >$FFA1          otherwise map the block in
          ENDC
-
-L0230    stb   >DPort+CtrlReg  send command to FDC
+L0230    stb   >DPort+CtrlReg  send data to control register
          bra   L0240           wait a bit for HALT to enable
+
 * Write sector routine (Entry: B= drive/side select) (NMI will break out)
 L0240    nop               --- wait a bit more
          lda   ,x+             Get byte from write buffer
@@ -508,10 +508,8 @@ NMISvc   leas  R$Size,s       Eat register stack
          ldx   <D.SysDAT  get pointer to system DAT image
          lda   3,x        get block number 1
          sta   >$FFA1     map it back into memory
-         andcc #^IntMasks turn IRQ's on again
-         ELSE
-*         puls  y,cc           Get path dsc. ptr & CC
          ENDC
+         andcc #^IntMasks turn IRQ's on again
          ldb   >DPort+WD_Stat  Get status register
          bitb  #%00000100     Did we lose data in the transfer?
 *         lbne  L03E0          Yes, exit with Read Error
@@ -563,10 +561,10 @@ L02AC    lbsr  L0376          Go set up controller for drive, spin motor up
          pshs  a              Save track #
          lda   >u00AD,u       Get side 1/2 flag
          beq   L02C4          Side 1, skip ahead
-         lda   >u00A9,u       Get control register settings
+         lda   >CtlImg,u       Get control register settings
          ora   #C_SIDSEL      Set side 2 (drive 3) select
 *         ora   #%01000000     Set side 2 (drive 3) select
-         sta   >u00A9,u       Save it back
+         sta   >CtlImg,u       Save it back
 L02C4    lda   <PD.TYP,y      Get drive type settings
          bita  #%00000010     ??? (Base 0/1 for sector #?)
          bne   L02CC          Skip ahead
@@ -598,10 +596,10 @@ L02E9    stb   >DPort+WD_Trak Save current track # onto controller
          lsl   ,s             Multiply pre-comp value by 2 ('double-step')
 L02F9    cmpa  ,s+            Is track # high enough to warrant precomp?
          bls   L0307          No, continue normally
-         ldb   >u00A9,u
+         ldb   >CtlImg,u
          orb   #C_WRPCMP     Turn on Write precomp
 *         orb   #%00010000     Turn on Write precomp
-         stb   >u00A9,u
+         stb   >CtlImg,u
          ENDC
 
 L0307    ldb   >u00AA,u       ??? Get flag (same drive flag?)
@@ -682,7 +680,7 @@ NoHW     comb                 Illegal drive # error
 L0385    pshs  x,d            Save sector #, drive # & B???
          leax  >L0372,pc      Point to drive bit mask table
          ldb   a,x            Get bit mask for drive # we want
-         stb   >u00A9,u       Save mask
+         stb   >CtlImg,u       Save mask
          leax  DRVBEG,u       Point to beginning of drive tables
          ldb   #DRVMEM        Get size of each drive table
          mul                  Calculate offset to drive table we want
@@ -741,7 +739,7 @@ L03E6    ldb   >DPort+WD_Stat Check FDC status register
 * Send command to FDC
 L03F7    lda   #C_MOTOR
 *        lda   #%00001000     Mask in Drive motor on bit
-         ora   >u00A9,u       Merge in drive/side selects
+         ora   >CtlImg,u       Merge in drive/side selects
          sta   >DPort+CtrlReg Turn the drive motor on & select drive
          stb   >DPort+WD_Cmd  Save command & return
 L0403    rts   
@@ -751,8 +749,13 @@ L0404    bsr   L03F7          Go send command to controller
 * This loop has been changed from nested LBSRs to timing loop.
 * People with crystal upgrades should modify the loop counter
 * to get a 58+ us delay time.  MINIMUM 58us.
-L0406    pshs  a          14 cycles, plus 3*loop counter
+FDCDelay
+         pshs  a          14 cycles, plus 3*loop counter
+         IFEQ  Level-1
+         lda   #18        (only do about a 100 cycle delay for now)
+         ELSE
          lda   #29        (only do about a 100 cycle delay for now)
+         ENDC
 L0409    deca             for total ~63 us delay (123 cycles max.)
          bne   L0409
          puls  a,pc       restore register and exit
@@ -780,14 +783,8 @@ SetStat  ldx   PD.RGS,y       Get caller's register stack ptr
 
 SSWTrk   pshs  u,y            preserve register stack & descriptor
 
-         IFEQ   Level-1
-
-         ldd   #$1A00         Size of buffer to hold entire track image
-         os9   F$SRqMem       Request memory from system
-         bcs   L0489          Error requesting, exit with it
-         stu   >FBlock,x
-
-         ELSE
+* Level 2 Code
+         IFGT   Level-1
 
 *--- new code
          ldb   #1         1 block to allocate
@@ -820,21 +817,22 @@ SSWTrk   pshs  u,y            preserve register stack & descriptor
          ldy   #$1A00         Size of track buffer
          os9   F$Move         Copy from caller to temporary task
          bcs   L0479          Error copying, exit
-
-         ENDC
-
          puls  u,y
          pshs  u,y
+
+         ENDC
+* End of Level 2 Code
+
          lbsr  L0376          Go check drive #/wait for it to spin up
          ldx   PD.RGS,y       Get caller's register stack ptr
          ldb   R$Y+1,x        Get caller's side/density
          bitb  #$01           Check side
          beq   L0465          Side 1, skip ahead
          com   >u00AD,u
-         ldb   >u00A9,u       Get current control register settings
+         ldb   >CtlImg,u       Get current control register settings
 *         orb   #%01000000     Mask in side 2
          orb   #C_SIDSEL      Mask in side 2
-         stb   >u00A9,u       Save updated control register
+         stb   >CtlImg,u       Save updated control register
 L0465    lda   R$U+1,x        Get caller's track #
          ldx   >u00A7,u       Get current drive table ptr
          lbsr  L02A5          
@@ -842,33 +840,24 @@ L0465    lda   R$U+1,x        Get caller's track #
          ldb   #$F0           Write track command?
 *---
          IFEQ  Level-1
-         ldx   >FBlock,u
+         ldx   PD.RGS,y
+         ldx   R$X,x
          ELSE
          ldx   #$2000     start writing from block 1
          ENDC
 
-         lbsr  L0224          Go write the track
+         lbsr  WrTrk          Go write the track
+
+         IFGT  Level-1
 L0479    ldu   2,s
          pshs  b,cc           Preserve error
-
-         IFEQ  Level-1
-
-         ldu   >FBlock,u       Get ptr to track buffer
-         ldd   #$1A00         Return track buffer
-         os9   F$SRtMem 
-
-         ELSE
-
          ldb   >FTask,u   point to task
          os9   F$RelTsk   release the task
          fcb   $8C        skip 2 bytes
 
-         ENDC
-
 * format comes here when block allocation passes, but task allocation
 * gives error.  So er de-allocate the block.
 FError   
-         IFGT  Level-1
          pshs  b,cc       save error code, cc
          ldx   >FBlock,u   point to block
          ldb   #1         1 block to return
@@ -900,7 +889,7 @@ L0497    ldb   <PD.STP,y
 L04B3    pshs  y,x,d          Preserve regs
          ldd   >VIRQCnt,pc    Get VIRQ initial count value
          std   >u00B1,u       Save it
-         lda   >u00A9,u       ?Get drive?
+         lda   >CtlImg,u       ?Get drive?
          ora   #C_MOTOR       Turn drive motor on for that drive
 *         ora   #%00001000     Turn drive motor on for that drive
          sta   >DPort+CtrlReg Send drive motor on command to FDC
