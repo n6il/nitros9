@@ -10,7 +10,9 @@ all:
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
 	$(CD) rof; make
+	$(CD) multivue; make
  
 clean:
 	-$(CD) rof; make clean
+	-$(CD) multivue; make clean
 
