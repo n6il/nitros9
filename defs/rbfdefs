@@ -135,8 +135,8 @@ TYP.NCCF equ   %00000000	Non-CoCo format
 * IT.DNS bit definitions if bit 7 of IT.TYP is clear (floppy disk)
 DNS.FM   equ   %00000000        Single-density (FM)
 DNS.MFM  equ   %00000001        Double-density (MFM)
-DNS.STD  equ   %00000000        Single track density (48 tpi)
-DNS.DTD  equ   %00000010        Double track density (96/135 tpi)
+DNS.STD  equ   %00000000        Single track distance (48/135 tpi)
+DNS.DTD  equ   %00000010        Double track distance (96 tpi)
 
 * Floppy disk step rate definitions
 STP.30ms equ   0                30ms step rate
