@@ -227,7 +227,7 @@ file <filename>/D1/savelisting</filename>:
 OS9: DIR &gt;/D1/savelisting
 </screen>
 <para>
-If the LIST command is used on the file <filename>/D1/savelisting</filename>, output
+If the <command>list</command> command is used on the file <filename>/D1/savelisting</filename>, output
 from the <command>dir</command> command will be displayed as shown below:
 </para>
 <screen>
@@ -331,8 +331,10 @@ OS9: dir &gt;/p&amp; list file1&amp; copy file1 file2 ; del temp
 
 </para>
 <para>
-Because they were followed by &quot;&amp;&quot; separators, the <command>dir</command>, LIST, and
-<command>copy</command> programs will run concurrently, but the <command>del</command> program will not
+Because they were followed by &quot;&amp;&quot; separators, the <command>dir</command>,
+<command>list</command>, and
+<command>copy</command> programs will run concurrently,
+but the <command>del</command> program will not
 run until the <command>copy</command> program has terminated because sequential
 execution (&quot;;&quot;) was specified.
 </para>
@@ -621,7 +623,7 @@ exist.
 <para>
 Many programs (including the shell) use OS-9's standard error
 reporting function, which displays an error number on the error
-output path. The standard error codes are listed in the Appendix of
+output path. The standard error codes are listed in the <xref linkend="errorcodes"/> of
 this manual. If desired, the <command>printerr</command> command can be executed,
 which replaces the smaller, built-in error display routine with a
 larger (and slower) routine that looks up descriptive error messages
@@ -680,15 +682,15 @@ initiates concurrent execution of a number of processes that have
 their I/O redirected to each timesharing terminal.
 </para>
 <para>
-Usually one TSMON command program is started up concurrently for
+Usually one <command>tsmon</command> command program is started up concurrently for
 each terminal in the system. This is a special program which
 monitors a terminal for activity. When a carriage return character
-is typed on any of these terminals, the TSMON command initiates the
-LOGIN command program. If a user does not enter a correct password
-or user number in three tries, the LOGIN command will be aborted.
+is typed on any of these terminals, the <command>tsmon</command> command initiates the
+<command>login</command> command program. If a user does not enter a correct password
+or user number in three tries, the <command>login</command> command will be aborted.
 Here's a sample procedure file for a 4-terminal timesharing system
-having terminals names &quot;TERM&quot;, &quot;T1&quot;,
-&quot;T2&quot;, and &quot;T3&quot;.
+having terminals names <quote>TERM</quote>, <quote>T1</quote>,
+<quote>T2</quote>, and <quote>T3</quote>.
 </para>
 <programlisting>
 * system startup procedure file
@@ -700,9 +702,9 @@ tsmon /t2&amp;
 tsmon /t3&amp;
 </programlisting>
 <para>
-NOTE: This LOGIN procedure will not work until a password file
+NOTE: This <command>login</command> procedure will not work until a password file
 called <filename>/DD/SYS/PASSWORD</filename> has been created. For more information,
-please see the LOGIN command description.
+please see the <command>login</command> command description.
 </para>
 <para>
 The example above deserves special attention. Note that the

@@ -11,7 +11,7 @@
   <replaceable>modname</replaceable>
 </arg>
 <arg choice="plain">
-&repeatst;  <replaceable>modname</replaceable>&repeaten;
+&repeatst;<replaceable>modname</replaceable>&repeaten;
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>
