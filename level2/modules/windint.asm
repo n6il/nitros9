@@ -409,10 +409,10 @@ L02A5    puls  u,y        Restore static mem & path dsc. ptrs
          IFNE  H6309
          leay  <Nul1+2,pc Point to NUL byte
 Nul1     
-         ldw   #$00CB     Size of block to clear
+         ldw   #CC3DSiz-V.WinNum     Size of block to clear
          tfm   y,x+
          ELSE
-         ldd   #$00CB
+         ldd   #CC3DSiz-V.WinNum
 Lp4      sta   ,x+
          decb
          bne   Lp4
@@ -420,7 +420,7 @@ Lp4      sta   ,x+
          clr   V.InfVld,u   Clear 'rest of info valid' flag
 * Scan window tables for a valid window
          ldx   #WinBase   Point to base of window tables
-         ldd   #$2040     # of window tables & Size of each table
+         ldd   #MaxWind*256+Wt.Siz     # of window tables & Size of each table
 L02B9    equ   *
          IFNE  H6309
          ldw   Wt.STbl,x  Get screen table ptr
