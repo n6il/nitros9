@@ -602,28 +602,29 @@ L046B    orcc  #IntMasks
          rts   
 
 L0474    stb   $06,s
-         ldx   <u0024
-         lda   $0D,x
-         ldb   #$09
+         ldx   <D.Init
+         lda   DevCnt,x
+         ldb   #DEVSIZ
          mul   
-         ldy   <u0080
+         ldy   <D.DevTbl
          leax  d,y
          stx   $07,s
          rts   
+
 L0485    pshs  u,y,x,b,a
          leas  <-$11,s
-         ldb   #$09
+         ldb   #DEVSIZ
          bsr   L0474
          stx   $09,s
          sty   $07,s
          bra   L04A7
 L0495    pshs  u,y,x,b,a
          leas  <-$11,s
-         ldb   #$F7
+         ldb   #-DEVSIZ
          bsr   L0474
-         leay  -$09,y
+         leay  -DEVSIZ,y
          sty   $09,s
-         leax  -$09,x
+         leax  -DEVSIZ,x
          stx   $07,s
 L04A7    ldx   <D.CCMem
          ldu   <$20,x
