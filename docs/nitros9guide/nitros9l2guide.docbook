@@ -3,7 +3,7 @@
    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
   <!ENTITY repeatst   "{">
   <!ENTITY repeaten   "}">
-  <!ENTITY CPU           "6809/6309">
+  <!ENTITY CPU           "6809">
   <!ENTITY os9level      "OS-9 Level Two">
   <!ENTITY os9version    "Version 03.00.02 BETA3">
   <!ENTITY vendor        "The CoCo Community">
