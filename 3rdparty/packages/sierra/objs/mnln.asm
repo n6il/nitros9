@@ -435,212 +435,212 @@ L01AF    rts
 *   LSB = parameter flag
 
 cmd_table
-L01B0    fdb   $570C,$0000  cmd_do_nothing
-         fdb   $5BF1,$0180  cmd_increment
-         fdb   $5BFF,$0180  cmd_decrement
-         fdb   $5C0D,$0280  cmd_assignn
-         fdb   $5C18,$02C0  cmd_assignv
-         fdb   $5C29,$0280  cmd_addn
-         fdb   $5C36,$02C0  cmd_addv
-         fdb   $5C49,$0280  cmd_subn
-         fdb   $5C56,$02C0  cmd_subv
-         fdb   $5C6A,$02C0  cmd_lindirectv
-         fdb   $5C92,$02C0  cmd_rindirect
-         fdb   $5C81,$0280  cmd_lindirectn
+L01B0    fdb   cmd_do_nothing,$0000  
+         fdb   cmd_increment,$0180  
+         fdb   cmd_decrement,$0180  
+         fdb   cmd_assignn,$0280  
+         fdb   cmd_assignv,$02C0  
+         fdb   cmd_addn,$0280  
+         fdb   cmd_addv,$02C0  
+         fdb   cmd_subn,$0280  
+         fdb   cmd_subv,$02C0  
+         fdb   cmd_lindirectv,$02C0  
+         fdb   cmd_rindirect,$02C0  
+         fdb   cmd_lindirectn,$0280  
                   
-         fdb   $16AB,$0100  cmd_set
-         fdb   $16AF,$0100  cmd_reset
-         fdb   $16B3,$0100  cmd_toggle
-         fdb   $16B7,$0180  cmd_set_v
-         fdb   $16C1,$0180  cmd_reset_v
-         fdb   $16CB,$0180  cmd_toggle_v
+         fdb   cmd_set,$0100  
+         fdb   cmd_reset,$0100  
+         fdb   cmd_toggle,$0100  
+         fdb   cmd_set_v,$0180  
+         fdb   cmd_reset_v,$0180  
+         fdb   cmd_toggle_v,$0180  
          
-         fdb   $2FA1,$0100  cmd_new_room
-         fdb   $2FA6,$0180  cmd_new_room_v
+         fdb   cmd_new_room,$0100  
+         fdb   cmd_new_room_v,$0180  
          
-         fdb   $2551,$0100  cmd_load_logics
-         fdb   $2556,$0180  cmd_load_logics_v 
-         fdb   $25E6,$0100  cmd_call
-         fdb   $25F9,$0180  cmd_call_v
+         fdb   cmd_load_logics,$0100  
+         fdb   cmd_load_logics_v,$0180   
+         fdb   cmd_call,$0100  
+         fdb   cmd_call_v,$0180  
          
-         fdb   $34E5,$0180  cmd_load_pic
-         fdb   $3545,$0180  cmd_draw_pic
-         fdb   $35D6,$0000  cmd_show_pic
-         fdb   $35EA,$0180  cmd_discard_pic
-         fdb   $358C,$0180  cmd_overlay_pic
-         fdb   $0C9F,$0000  cmd_show_pri
+         fdb   cmd_load_pic,$0180  
+         fdb   cmd_draw_pic,$0180  
+         fdb   cmd_show_pic,$0000  
+         fdb   cmd_discard_pic,$0180  
+         fdb   cmd_overlay_pic,$0180  
+         fdb   cmd_show_pri,$0000  
          
-         fdb   $5D28,$0100  cmd_load_view
-         fdb   $5D2F,$0180  cmd_load_view_v
-         fdb   $5F91,$0100  cmd_discard_view
-         fdb   $063E,$0100  cmd_animate_obj
-         fdb   $0674,$0000  cmd_unanimate_all
-         fdb   $0F50,$0100  cmd_draw
-         fdb   $0FD5,$0100  cmd_erase
+         fdb   cmd_load_view,$0100  
+         fdb   cmd_load_view_v,$0180  
+         fdb   cmd_discard_view,$0100  
+         fdb   cmd_animate_obj,$0100  
+         fdb   cmd_unanimate_all,$0000  
+         fdb   cmd_draw,$0100  
+         fdb   cmd_erase,$0100  
          
-         fdb   $3634,$0300  cmd_position
-         fdb   $3645,$0360  cmd_position_v
-         fdb   $3664,$0360  cmd_get_position
-         fdb   $3682,$0360  cmd_reposition
+         fdb   cmd_position,$0300  
+         fdb   cmd_position_v,$0360  
+         fdb   cmd_get_position,$0360  
+         fdb   cmd_reposition,$0360  
          
-         fdb   $5D9C,$0200  cmd_set_view
-         fdb   $5DB7,$0240  cmd_set_view_v
-         fdb   $5E01,$0200  cmd_set_loop
-         fdb   $5E1C,$0240  cmd_set_loop_v
-         fdb   $0529,$0100  cmd_fix_loop
-         fdb   $053B,$0100  cmd_release_loop
-         fdb   $5E7F,$0200  cmd_set_cel
-         fdb   $5E9A,$0240  cmd_set_cel_v
-         fdb   $5F2C,$0240  cmd_last_cel
-         fdb   $5F41,$0240  cmd_current_cel
-         fdb   $5F55,$0240  cmd_current_loop
-         fdb   $5F69,$0240  cmd_current_view
-         fdb   $5F7D,$0240  cmd_number_of_loops
+         fdb   cmd_set_view,$0200  
+         fdb   cmd_set_view_v,$0240  
+         fdb   cmd_set_loop,$0200  
+         fdb   cmd_set_loop_v,$0240  
+         fdb   cmd_fix_loop,$0100  
+         fdb   cmd_release_loop,$0100  
+         fdb   cmd_set_cel,$0200  
+         fdb   cmd_set_cel_v,$0240  
+         fdb   cmd_last_cel,$0240  
+         fdb   cmd_current_cel,$0240  
+         fdb   cmd_current_loop,$0240  
+         fdb   cmd_current_view,$0240  
+         fdb   cmd_number_of_loops,$0240  
          
-         fdb   $3D22,$0200  cmd_set_priority
-         fdb   $3D60,$0240  cmd_set_priority_v
-         fdb   $3D39,$0100  cmd_release_priority
-         fdb   $3D4B,$0240  cmd_get_priority
+         fdb   cmd_set_priority,$0200  
+         fdb   cmd_set_priority_v,$0240  
+         fdb   cmd_release_priority,$0100  
+         fdb   cmd_get_priority,$0240  
          
-         fdb   $05D7,$0100  cmd_stop_update
-         fdb   $05E3,$0100  cmd_start_update
-         fdb   $05EF,$0100  cmd_force_update
+         fdb   cmd_stop_update,$0100  
+         fdb   cmd_start_update,$0100  
+         fdb   cmd_force_update,$0100  
          
-         fdb   $3741,$0100  cmd_ignore_horizon
-         fdb   $3753,$0100  cmd_observe_horizon
-         fdb   $373B,$0100  cmd_set_horizon
-         fdb   $3705,$0100  cmd_obj_on_water
-         fdb   $3717,$0100  cmd_obj_on_land
-         fdb   $3729,$0100  cmd_obj_on_anything
+         fdb   cmd_ignore_horizon,$0100  
+         fdb   cmd_observe_horizon,$0100  
+         fdb   cmd_set_horizon,$0100  
+         fdb   cmd_obj_on_water,$0100  
+         fdb   cmd_obj_on_land,$0100  
+         fdb   cmd_obj_on_anything,$0100  
          
-         fdb   $08DD,$0100  cmd_ignore_objects
-         fdb   $08EF,$0100  cmd_observe_objects
-         fdb   $0901,$0320  cmd_distance
+         fdb   cmd_ignore_objects,$0100  
+         fdb   cmd_observe_objects,$0100  
+         fdb   cmd_distance,$0320  
          
-         fdb   $0A0D,$0100  cmd_stop_cycling
-         fdb   $0A1F,$0100  cmd_start_cycling
-         fdb   $0985,$0100  cmd_normal_cycle
-         fdb   $099C,$0200  cmd_end_of_loop
-         fdb   $09BD,$0100  cmd_reverse_cycle
-         fdb   $09D4,$0200  cmd_reverse_loop
-         fdb   $09F5,$0240  cmd_cycle_time
+         fdb   cmd_stop_cycling,$0100  
+         fdb   cmd_start_cycling,$0100  
+         fdb   cmd_normal_cycle,$0100  
+         fdb   cmd_end_of_loop,$0200  
+         fdb   cmd_reverse_cycle,$0100  
+         fdb   cmd_reverse_loop,$0200  
+         fdb   cmd_cycle_time,$0240  
          
-         fdb   $2D1B,$0100  cmd_stop_motion
-         fdb   $2D39,$0100  cmd_start_motion
-         fdb   $2D55,$0240  cmd_step_size
-         fdb   $2D6A,$0240  cmd_step_time
-         fdb   $2C25,$0500  cmd_move_obj
-         fdb   $2C66,$0570  cmd_move_obj_v
-         fdb   $2CB9,$0300  cmd_follow_ego
-         fdb   $2CED,$0100  cmd_wander
-         fdb   $2D0C,$0100  cmd_normal_motion
-         fdb   $2D80,$0240  cmd_set_dir
-         fdb   $2D95,$0240  cmd_get_dir
+         fdb   cmd_stop_motion,$0100  
+         fdb   cmd_start_motion,$0100  
+         fdb   cmd_step_size,$0240  
+         fdb   cmd_step_time,$0240  
+         fdb   cmd_move_obj,$0500  
+         fdb   cmd_move_obj_v,$0570  
+         fdb   cmd_follow_ego,$0300  
+         fdb   cmd_wander,$0100  
+         fdb   cmd_normal_motion,$0100  
+         fdb   cmd_set_dir,$0240  
+         fdb   cmd_get_dir,$0240  
          
-         fdb   $0842,$0100  cmd_ignore_blocks
-         fdb   $0854,$0100  cmd_observe_blocks
-         fdb   $0824,$0400  cmd_block
-         fdb   $083E,$0000  cmd_unblock
+         fdb   cmd_ignore_blocks,$0100  
+         fdb   cmd_observe_blocks,$0100  
+         fdb   cmd_block,$0400  
+         fdb   cmd_unblock,$0000  
          
-         fdb   $3070,$0100  cmd_get
-         fdb   $3077,$0180  cmd_get_v
-         fdb   $307E,$0100  cmd_drop
-         fdb   $30B7,$0200  cmd_put
-         fdb   $30C4,$0240  cmd_put_v
-         fdb   $30D1,$02C0  cmd_get_room_v
+         fdb   cmd_get,$0100  
+         fdb   cmd_get_v,$0180  
+         fdb   cmd_drop,$0100  
+         fdb   cmd_put,$0200  
+         fdb   cmd_put_v,$0240  
+         fdb   cmd_get_room_v,$02C0  
 
 *              are these really sound commands in ours ?         
-         fdb   $5087,$0100  cmd_load_sound
-         fdb   $50E3,$0200  cmd_sound
-         fdb   $570C,$0000  cmd_stop_sound  (cmd_do_nothing)
+         fdb   cmd_load_sound,$0100  
+         fdb   cmd_sound,$0200  
+         fdb   cmd_stop_sound,$0000    (cmd_do_nothing)
          
-         fdb   $37A5,$0100  cmd_print
-         fdb   $37AD,$0180  cmd_print_v
-         fdb   $3B80,$0300  cmd_display
-         fdb   $3BB0,$03E0  cmd_display_v
-         fdb   $4585,$0300  cmd_clear_lines
-         fdb   $456C,$0000  cmd_text_screen
-         fdb   $457E,$0000  cmd_graphics
+         fdb   cmd_print,$0100  
+         fdb   cmd_print_v,$0180  
+         fdb   cmd_display,$0300  
+         fdb   cmd_display_v,$03E0  
+         fdb   cmd_clear_lines,$0300  
+         fdb   cmd_text_screen,$0000  
+         fdb   cmd_graphics,$0000  
          
-         fdb   $5BA2,$0100  cmd_set_cursor_char
-         fdb   $45B5,$0200  cmd_set_text_attribute
-         fdb   $570A,$0100  cmd_shake_screen ( bump a byte and cmd_do_nothing)
-         fdb   $45EE,$0300  cmd_config_screen
-         fdb   $5559,$0000  cmd_status_line_on
-         fdb   $5561,$0000  cmd_status_line_off
-         fdb   $55E2,$0200  cmd_set_string
-         fdb   $5575,$0500  cmd_get_string
-         fdb   $55FA,$0200  cmd_word_to_string
-         fdb   $328C,$0100  cmd_parse
+         fdb   cmd_set_cursor_char,$0100  
+         fdb   cmd_set_text_attribute,$0200  
+         fdb   cmd_shake_screen,$0100   ( bump a byte and cmd_do_nothing)
+         fdb   cmd_config_screen,$0300  
+         fdb   cmd_status_line_on,$0000  
+         fdb   cmd_status_line_off,$0000  
+         fdb   cmd_set_string,$0200  
+         fdb   cmd_get_string,$0500  
+         fdb   cmd_word_to_string,$0200  
+         fdb   cmd_parse,$0100  
          
-         fdb   $0B8D,$0240  cmd_get_num
-         fdb   $5B8D,$0000  cmd_prevent_input
-         fdb   $5B9A,$0000  cmd_accept_input
-         fdb   $095D,$0300  cmd_set_key
-         fdb   $33D7,$0700  cmd_add_to_pic
-         fdb   $33F7,$07FE  cmd_add_to_pic_v
-         fdb   $530F,$0000  cmd_status
-         fdb   $42B2,$0000  cmd_save_game
-         fdb   $3F1B,$0000  cmd_restore_game
-         fdb   $570C,$0000  cmd_init_disk  (cmd_do_nothing)
+         fdb   cmd_get_num,$0240  
+         fdb   cmd_prevent_input,$0000  
+         fdb   cmd_accept_input,$0000  
+         fdb   cmd_set_key,$0300  
+         fdb   cmd_add_to_pic,$0700  
+         fdb   cmd_add_to_pic_v,$07FE  
+         fdb   cmd_status,$0000  
+         fdb   cmd_save_game,$0000  
+         fdb   cmd_restore_game,$0000  
+         fdb   cmd_init_disk,$0000    (cmd_do_nothing)
          
-         fdb   $3E06,$0000  cmd_restart_game
-         fdb   $4E4C,$0100  cmd_show_obj
-         fdb   $125B,$0320  cmd_random
-         fdb   $2DAA,$0000  cmd_program_control
-         fdb   $2DAE,$0000  cmd_player_control
-         fdb   $0BD7,$0180  cmd_obj_status_v ( nagi has as donothing)
-         fdb   $0197,$0100  cmd_quit
-         fdb   $0CB7,$0000  cmd_show_mem     ( nagi has as do nothing)
-         fdb   $0184,$0000  cmd_pause
-         fdb   $5B34,$0000  cmd_echo_line
+         fdb   cmd_restart_game,$0000  
+         fdb   cmd_show_obj,$0100  
+         fdb   cmd_random,$0320  
+         fdb   cmd_program_control,$0000  
+         fdb   cmd_player_control,$0000  
+         fdb   cmd_obj_status_v,$0180   ( nagi has as donothing)
+         fdb   cmd_quit,$0100  
+         fdb   cmd_show_mem,$0000       ( nagi has as do nothing)
+         fdb   cmd_pause,$0000  
+         fdb   cmd_echo_line,$0000  
          
-         fdb   $5B26,$0000  cmd_cancel_line
-         fdb   $2311,$0000  cmd_init_joy     ( nagi has as do nothing)
-         fdb   $460D,$0000  cmd_toggle_monitor
-         fdb   $0CAF,$0000  cmd_version
-         fdb   $470D,$0100  cmd_script_size
-         fdb   $569E,$0100  cmd_set_game_id
-         fdb   $570A,$0100  cmd_log          ( an almost do nothing, we may want to implement)
-         fdb   $2684,$0000  cmd_set_scan_start
-         fdb   $268A,$0000  cmd_reset_scan_start
+         fdb   cmd_cancel_line,$0000  
+         fdb   cmd_init_joy,$0000       ( nagi has as do nothing)
+         fdb   cmd_toggle_monitor,$0000  
+         fdb   cmd_version,$0000  
+         fdb   cmd_script_size,$0100  
+         fdb   cmd_set_game_id,$0100  
+         fdb   cmd_log,$0100            ( an almost do nothing, we may want to implement)
+         fdb   cmd_set_scan_start,$0000  
+         fdb   cmd_reset_scan_start,$0000  
          
-         fdb   $36C5,$0300  cmd_reposition_to
-         fdb   $36DE,$0360  cmd_reposition_to_v
+         fdb   cmd_reposition_to,$0300  
+         fdb   cmd_reposition_to_v,$0360  
 
-         fdb   $5750,$0000  cmd_trace_on
-         fdb   $57CF,$0300  cmd_trace_info
-         fdb   $37BB,$0400  cmd_print_at
-         fdb   $37C0,$0480  cmd_print_at_v
-         fdb   $5F96,$0180  cmd_discard_view_v
-         fdb   $4599,$0500  cmd_clear_text_rect
-         fdb   $5708,$0200  cmd_set_upper_left  almost a do nothing
+         fdb   cmd_trace_on,$0000  
+         fdb   cmd_trace_info,$0300  
+         fdb   cmd_print_at,$0400  
+         fdb   cmd_print_at_v,$0480  
+         fdb   cmd_discard_view_v,$0180  
+         fdb   cmd_clear_text_rect,$0500  
+         fdb   cmd_set_upper_left,$0200    almost a do nothing
          
-         fdb   $27D8,$0100  cmd_set_menu
-         fdb   $2856,$0200  cmd_set_menu_item
-         fdb   $28D8,$0000  cmd_submit_menu
-         fdb   $28FB,$0100  cmd_enable_item
-         fdb   $2922,$0100  cmd_disable_item
-         fdb   $2951,$0000  cmd_menu_input
+         fdb   cmd_set_menu,$0100  
+         fdb   cmd_set_menu_item,$0200  
+         fdb   cmd_submit_menu,$0000  
+         fdb   cmd_enable_item,$0100  
+         fdb   cmd_disable_item,$0100  
+         fdb   cmd_menu_input,$0000  
          
-         fdb   $4E41,$0100  cmd_show_obj_v
-         fdb   $570C,$0000  cmd_open_dialogue       (cmd_do_nothing)
-         fdb   $570C,$0000  cmd_close_dialogue      (cmd_do_nothing)
+         fdb   cmd_show_obj_v,$0100  
+         fdb   cmd_open_dialogue,$0000         (cmd_do_nothing)
+         fdb   cmd_close_dialogue,$0000        (cmd_do_nothing)
          
-         fdb   $5CA9,$0280  cmd_multn
-         fdb   $5CB7,$02C0  cmd_multv
-         fdb   $5CCB,$0280  cmd_divn
-         fdb   $5CDA,$02C0  cmd_divv
+         fdb   cmd_multn,$0280  
+         fdb   cmd_multv,$02C0  
+         fdb   cmd_divn,$0280  
+         fdb   cmd_divv,$02C0  
          
-         fdb   $3997,$0000  cmd_close_window
-         fdb   $429D,$0100  cmd_set_simple    (unknown_170)
-         fdb   $471C,$0000  cmd_push_script   (unknown_171)
-         fdb   $4723,$0000  cmd_pop_script    (unknown_172)
-         fdb   $570C,$0000  cmd_hold_key      (unknown_173)  (cmd_do_nothing)
-         fdb   $570C,$0000  cmd_set_pri_base  (unknown_174)  (cmd_do_nothing)
-         fdb   $570C,$0000  cmd_discard_sound                (cmd_do_nothing)
-         fdb   $5704,$0400  cmd_hide_mouse    might be fence  almost do nothing
-         fdb   $5708,$02C0  cmd_allow_menu    might be mouse posn  almost do nothing
+         fdb   cmd_close_window,$0000  
+         fdb   cmd_set_simple,$0100      (unknown_170)
+         fdb   cmd_push_script,$0000     (unknown_171)
+         fdb   cmd_pop_script,$0000      (unknown_172)
+         fdb   cmd_hold_key,$0000        (unknown_173)  (cmd_do_nothing)
+         fdb   cmd_set_pri_base,$0000    (unknown_174)  (cmd_do_nothing)
+         fdb   cmd_discard_sound,$0000                  (cmd_do_nothing)
+         fdb   cmd_hide_mouse,$0400      might be fence  almost do nothing
+         fdb   cmd_allow_menu,$02C0      might be mouse posn  almost do nothing
 
 
 
@@ -1651,52 +1651,28 @@ L0CB7    leas  >-$00C8,s
          leas  >$00C8,s
          rts
 
-* Jump table #2
-* from nagi source 2002-11-14 cmd_table.c file
-* FUNC eval_table[] = {
-*			{"return.false", cmd_ret_false, 0, 0},
-*			{"equal.n", cmd_equal_n, 2, 0x80},
-*			{"equal.v", cmd_equal_v, 2, 0xC0},
-*			{"less.n", cmd_less_n, 2, 0x80},
-*			{"less.v", cmd_less_v, 2, 0xC0},
-*			{"greater.n", cmd_greater_n, 2, 0x80},
-*			{"greater.v", cmd_greater_v, 2, 0xC0},
-*			{"isset", cmd_isset, 1, 0},
-*			{"isset.v", cmd_isset_v, 1, 0x80},
-*			{"has", cmd_has, 1, 0},
-*			{"obj.in.room", cmd_obj_in_room, 2, 0x40},
-*			{"posn", cmd_posn, 5, 0},
-*			{"controller", cmd_controller, 1, 0},
-*			{"have.key", cmd_have_key, 0, 0},
-*			{"said", cmd_said, 0, 0},
-*			{"compare.strings", cmd_compare_strings, 2, 0},
-*			{"obj.in.box", cmd_obj_in_box, 5, 0},
-*			{"center.posn", cmd_center_posn, 5, 0},
-*			{"right.posn", cmd_right_posn, 5, 0},
-*			{"unknown.19", cmd_ret_false, 0, 0}
-*	   	};
 
 eval_table
-L0D09    fdb   $0F4F,$0000     cmd_ret_false
-         fdb   $0D9B,$0280     cmd_equal_n
-         fdb   $0DAC,$02C0     cmd_equal_v
-         fdb   $0DC3,$0280     cmd_less_n
-         fdb   $0DD4,$02C0     cmd_less_v
-         fdb   $0DEB,$0280     cmd_greater_n
-         fdb   $0DFC,$02C0     cmd_greater_v
-         fdb   $0E13,$0100     cmd_isset
-         fdb   $0E1F,$0180     cmd_isset_v
-         fdb   $0E32,$0100     cmd_has
-         fdb   $0E44,$0240     cmd_obj_in_room
-         fdb   $0EEB,$0500     cmd_posn
-         fdb   $0E5C,$0100     cmd_controller
-         fdb   $0E64,$0000     cmd_have_key
-         fdb   $0E80,$0000     cmd_said
-         fdb   $0EE3,$0200     cmd_compare_strings
-         fdb   $0F0F,$0500     cmd_obj_in_box
-         fdb   $0EF3,$0500     cmd_center_posn
-         fdb   $0F03,$0500     cmd_right_posn
-*                                              not in our table "unknown 19" cmd_ret_false
+L0D09    fdb   cmd_ret_false,$0000     
+         fdb   cmd_equal_n,$0280     
+         fdb   cmd_equal_v,$02C0     
+         fdb   cmd_less_n,$0280     
+         fdb   cmd_less_v,$02C0     
+         fdb   cmd_greater_n,$0280     
+         fdb   cmd_greater_v,$02C0     
+         fdb   cmd_isset,$0100     
+         fdb   cmd_isset_v,$0180     
+         fdb   cmd_has,$0100     
+         fdb   cmd_obj_in_room,$0240     
+         fdb   cmd_posn,$0500     
+         fdb   cmd_controller,$0100     
+         fdb   cmd_have_key,$0000     
+         fdb   cmd_said,$0000     
+         fdb   cmd_compare_strings,$0200     
+         fdb   cmd_obj_in_box,$0500     
+         fdb   cmd_center_posn,$0500     
+         fdb   cmd_right_posn,$0500     
+*        not in our table "unknown 19" cmd_ret_false
 
 
 * Same function as sub at L0478 just different table
@@ -1736,7 +1712,7 @@ L0D93    tfr   a,b
          lbsr  L10CE
 L0D9A    rts
 
-* cmd_equal_n
+cmd_equal_n
 L0D9B    ldb   ,y+
          ldx   #$0432
          abx
@@ -1745,7 +1721,7 @@ L0D9B    ldb   ,y+
          lbne  L0F4E          clr a and return
          lbra  L0F4B          load a with #$01 and return
 
-* cmd_equal_v
+cmd_equal_v
 L0DAC    ldb   ,y+
          ldx   #$0432
          abx
@@ -1759,7 +1735,7 @@ L0DAC    ldb   ,y+
          lbne  L0F4E          clr a and return
          lbra  L0F4B          load a with #$01 and return
 
-* cmd_less_n
+cmd_less_n
 L0DC3    ldb   ,y+
          ldx   #$0432
          abx
@@ -1768,7 +1744,7 @@ L0DC3    ldb   ,y+
          lbcc  L0F4E          clr a and return
          lbra  L0F4B          load a with #$01 and return
 
-* cmd_less_v
+cmd_less_v
 L0DD4    ldb   ,y+
          ldx   #$0432
          abx
@@ -1781,7 +1757,7 @@ L0DD4    ldb   ,y+
          lbcc  L0F4E          clr a and return
          lbra  L0F4B          load a with #$01 and return
 
-* cmd_greater_n
+cmd_greater_n
 L0DEB    ldb   ,y+
          ldx   #$0432
          abx
@@ -1790,7 +1766,7 @@ L0DEB    ldb   ,y+
          lbls  L0F4E          clr a and return
          lbra  L0F4B          load a with #$01 and return
 
-* cmd_greater_v
+cmd_greater_v
 L0DFC    ldb   ,y+
          ldx   #$0432
          abx
@@ -1803,13 +1779,13 @@ L0DFC    ldb   ,y+
          lbls  L0F4E          clr a and return
          lbra  L0F4B          load a with #$01 and return
 
-* cmd_isset
+cmd_isset
 L0E13         lda   ,y+
          lbsr  L16EB
          lbeq  L0F4E          clr a and return
          lbra  L0F4B          load a with #$01 and return
 
-* cmd_isset_v
+cmd_isset_v
 L0E1F    ldb   ,y+
          ldx   #$0432
          abx
@@ -1819,7 +1795,7 @@ L0E1F    ldb   ,y+
          lbra  L0F4B          load a with #$01 and return
          rts
 
-* cmd_has
+cmd_has
 L0E32    ldb   ,y+
          ldx   <u0038
          abx
@@ -1830,7 +1806,7 @@ L0E32    ldb   ,y+
          lbne  L0F4E          clr a and return
          lbra  L0F4B          load a with #$01 and return
 
-* cmd_obj_in_room
+cmd_obj_in_room
 L0E44    ldb   $01,y
          ldx   #$0432
          abx
@@ -1844,13 +1820,13 @@ L0E44    ldb   $01,y
          lbne  L0F4E          clr a and return
          lbra  L0F4B          load a with #$01 and return
 
-* cmd_controller
+cmd_controller
 L0E5C    lda   ,y+
          ldx   #$05BA
          lda   a,x
          rts
 
-* cmd_have_key
+cmd_have_key
 L0E64    ldx   #$0432
          lda   <$13,x
          lbne  L0F4B          load a with #$01 and return
@@ -1862,7 +1838,7 @@ L0E6E    lbsr  L132C
          sta   <$13,x
          lbra  L0F4B          load a with #$01 and return
 
-* cmd_said
+cmd_said
 L0E80    lda   ,y+
          sta   <u0072
          lda   >$015A
@@ -1907,19 +1883,19 @@ L0EDD    lsla
          leay  a,y
          lbra  L0F4E          clr a and return
          
-* cmd_compare_strings
+cmd_compare_strings
 L0EE3    lda   ,y+
          ldb   ,y+
          lbsr  L56AF
          rts
 
-* cmd_posn
+cmd_posn
 L0EEB    bsr   L0F1B
          sta   <u006F
          sta   <u0071
          bra   L0F29
 
-* cmd_center_posn
+cmd_center_posn
 L0EF3    bsr   L0F1B
          sta   <u006F
          lda   <$1C,u
@@ -1929,7 +1905,7 @@ L0EF3    bsr   L0F1B
          sta   <u0071
          bra   L0F29
          
-* cmd_right_posn         
+cmd_right_posn         
 L0F03    bsr   L0F1B
          adda  <$1C,u
          deca
@@ -1937,7 +1913,7 @@ L0F03    bsr   L0F1B
          sta   <u0071
          bra   L0F29
 
-* cmd_obj_in_box
+cmd_obj_in_box
 L0F0F    bsr   L0F1B
          sta   <u006F
          adda  <$1C,u
@@ -1975,6 +1951,8 @@ L0F4B    lda   #$01
          rts
 
 L0F4E    clra
+
+cmd_ret_false
 L0F4F    rts               called from eval_table cmd_return_false
 
 cmd_draw
@@ -3126,7 +3104,9 @@ L16AB    lda   ,y+
 cmd_reset
 L16AF    lda   ,y+
          bra   L16DC
-         lda   ,y+
+
+cmd_toggle         
+L16B3    lda   ,y+
          bra   L16E4
 
 cmd_set_v
@@ -6771,6 +6751,7 @@ L37A5    ldb   ,y+
          bsr   L37F2
          rts
 
+cmd_print_v
 L37AD    ldx   #$0432
          ldb   ,y+
          abx
