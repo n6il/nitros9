@@ -7621,7 +7621,11 @@ L33F9    ldd   ,x
 L3405    ldd   ,x         Get offset to current FOR/NEXT INTEGER value
          leay  d,u        Point Y to it
          ldd   ,y         Get current FOR/NEXT counter
+         IFNE  H6309
          incd             Add 1 to it
+         ELSE
+         addd  #$0001
+         ENDC
          std   ,y         Save it back
 L3410    ldd   2,x        Get offset to TO variable
          leax  6,x        Eat temp var
@@ -7636,10 +7640,18 @@ L341E    ldd   ,x         Y=ptr to current FOR/NEXT INTEGER value
          leay  d,u       
          ldd   4,x        Get STEP value
          ldd   d,u        Get current FOR/NEXT counter
+         IFNE  H6309
          tfr   a,e        Preserve Hi byte (for sign)
+         ELSE
+         pshs  a
+         ENDC
          addd  ,y         Add increment value
          std   ,y         Save new current value
+         IFNE  H6309
          tste             Was STEP negative value?
+         ELSE
+         tst   ,s+
+         ENDC
          bpl   L3410      No, go use normal compare routine
 L3430    ldd   2,x        Get offset to TO value
          leax  6,x        Eat temp var

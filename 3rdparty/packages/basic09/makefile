@@ -3,7 +3,7 @@ include ../../../Makefile.rules
 DISK	= basic09v010100.dsk
 
 # NitrOS-9
-H6309		= $(AFLAGS) -aH6309=1
+H6309		= $(AFLAGS) -aH6309=1 -e
 # Non-NitrOS-9
 M6809		= $(AFLAGS)
 
