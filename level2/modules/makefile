@@ -5,7 +5,7 @@ THIRDPARTY	= ../../3rdparty
 
 BOOTERS		= boot_1773 boot_rom boot_kenton boot_tc3 boot_rampak boot_wd1002 boot_ide
 KERNELS		= os9p1 os9p2
-SYSMODS		= rel rominfo rom_vectors ioman init pakrom
+SYSMODS		= rel rominfo rominfo_pak rom_vectors ioman init pakrom
 CLOCKS		= clock clock2_soft clock2_disto clock2_146818
 FMGRS		= scf.mn rbf.mn pipeman.mn pipeman_named.mn
 DRIVERS		= cc3disk.dr cc3hdisk.dr cc3io.dr modpak.dr \
@@ -75,6 +75,12 @@ kernel_ide: $(KERNEL_IDE) $(DEPENDS)
 kernel_pak_kenton: $(KERNEL_PAK_KENTON) $(DEPENDS)
 	$(MERGE) $(KERNEL_PAK_KENTON)>$@
 	$(PADROM) \$$2000 $@ -c=\$$FF
+
+rominfo: rominfo.asm
+	$(AS) -aROMPak=0 $(AFLAGS) $< $(ASOUT)$@
+
+rominfo_pak: rominfo.asm
+	$(AS) -aROMPak=1 $(AFLAGS) $< $(ASOUT)$@
 
 clean:
 	$(RM) $(ALLOBJS)
