@@ -1,0 +1,29 @@
+-t
+-x
+echo * OS-9 Level Two Boot Creation Script
+echo *
+echo * This script creates a bootable floppy disk in /d0.
+echo * It assumes two floppy drives.
+echo *
+echo * The resulting disk will boot to the
+echo * floppy disk in drive 0.
+echo *
+prompt Insert a blank disk in /d0 and press a key:
+echo *
+echo * Step 1: Format disk in /d0 as 35TSS
+format /d0 1 '35' "OS-9 Floppy Boot Disk" r
+echo *
+echo * Step 2: Create a custom boot track
+del bttemp
+merge ../MODULES/BOOTTRACK/rel_32 ../MODULES/BOOTTRACK/boot_1773_6ms ../MODULES/BOOTTRACK/os9p1>bttemp
+echo *
+echo * Step 3: Create the bootfile and boot track
+os9gen #32k /d0 -t=bttemp<../BOOTLISTS/standard.bl
+del bttemp
+echo *
+echo * Step 4: Populate the disk with essential files
+copy ../MODULES/SYSMODS/cc3go_dd /d0/cc3go
+makdir /d0/CMDS
+copy -w=/d0/CMDS ../CMDS/shell ../CMDS/grfdrv
+echo *
+echo * We're done
