@@ -4,8 +4,7 @@ RELEASE		= os9l1v020100cc
 BOOTFILE	= bootfile_stock
 KERNEL		= kernel_stock
 
-CMDS_D1		= $(shell $(CD) CMDS; make showcocoobjs_d1)
-CMDS_D2		= $(shell $(CD) CMDS; make showcocoobjs_d2)
+CMDS		= $(shell $(CD) CMDS; make showcocoobjs)
 MODULES		= $(shell $(CD) MODULES; make showcopyobjs)
 SYS		= $(shell $(CD) SYS; make showobjs)
 DEFS		= $(shell $(CD) DEFS; make showobjs)
@@ -53,7 +52,7 @@ $(DSK_DS40_1):
 	$(OS9GEN) $(DSK_DS40_1) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
 	$(MAKDIR) $(DSK_DS40_1),CMDS
 	$(MAKDIR) $(DSK_DS40_1),SYS
-	$(CD) CMDS; $(CP) $(CMDS_D1) $(CMDS_D2) ../$(DSK_DS40_1),CMDS
+	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_DS40_1),CMDS
 	$(CD) SYS; $(CP) $(SYS) ../$(DSK_DS40_1),SYS
 	$(CP) $(ROOTFILES) $(DSK_DS40_1),.
 
