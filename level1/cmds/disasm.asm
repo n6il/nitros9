@@ -149,7 +149,7 @@ os9f$tab equ    *
          fcc    /F$SSpd  /
          fcc    /F$ID    /
          fcc    /F$SPrior/
-         fcc    /F$SSWi  /
+         fcc    /F$SSWI  /
          fcc    /F$PErr  /
          fcc    /F$PrsNam/
          fcc    /F$CmpNam/
@@ -170,10 +170,11 @@ os9f$tab equ    *
          fcc    /????????/
          fcc    /F$NMLink/
          fcc    /F$NMLoad/
-         fcc    /F$Ctime /
-         fcc    /F$Cstime/
-         fcc    /F$CTswi2/
          fcc    /????????/
+         fcc    /????????/
+         fcc    /????????/
+         fcc    /F$TPS/
+         fcc    /F$TimAlm/
          fcc    /F$VIRQ  /
          fcc    /F$SRqMem/
          fcc    /F$SRtMem/
