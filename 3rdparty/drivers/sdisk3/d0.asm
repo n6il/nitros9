@@ -34,6 +34,7 @@ SecTrk   set   18         number of sectors per track
 SecTr0   set   18         number of sectors per track (track 0, side 0)
 Density  set   1          48 tpi, MFM
 Sides    set   2          number of sides (1 or 2)
+Verify   set   1          verify off
 
 * OPTION TABLE
          fcb   OptEnd-*-1 number of bytes in option section below
@@ -44,7 +45,7 @@ Sides    set   2          number of sides (1 or 2)
          fcb   Density   
          fdb   Cyls       number of cylinders
          fcb   Sides     
-         fcb   0          verify turned on
+         fcb   Verify     verify
          fdb   SecTrk    
          fdb   SecTr0    
          fcb   3          sector interleave offset factor
