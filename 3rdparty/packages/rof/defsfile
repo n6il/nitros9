@@ -1,2 +1,4 @@
-	use os9defs.l2v3
+Level   equ 2
+
+	use os9defs
 	use scfdefs
