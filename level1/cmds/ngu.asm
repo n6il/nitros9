@@ -12,8 +12,12 @@
 * accordingly.  As the options are processed, they are cleared to
 * spaces so that they won't be present on the second pass.
 *
-* For the second pass, NGU parses options that don't begin with -.
-* Presumably these are filenames or other names that are to be
+*  e.g.
+*       1st pass:   ngu -x foo1 -y foo2 -t=bar1 -ab
+*       2nd pass:   ngu    foo1    foo2
+*
+* For the second pass, NGU parses the remaining arguments, which don't
+* begin with -. Presumably these are filenames or other names that are to be
 * processed.
 *
 * Features:
@@ -24,7 +28,7 @@
 *      on the command line
 *          (i.e ngu -a test1 -b test2 -c=foo)
 *
-*    - Options can be combined behind one dash:
+*    - Multiple options can be combined behind one dash:
 *          (i.e ngu -ab test1 -c=foo test2 test3)
 *
 *    - Several useful assembly routines are provided for
@@ -32,9 +36,9 @@
 *
 * Limitations:
 *    - Only single character option names can be processed.
-*      Multi-character option names (i.e. -delete) are not allowed.
+*      Multi-character option names (i.e. -delete) aren't supported.
 *
-*    - The current file counter is one byte, allowing a maximum
+*    - The current file counter is one byte, counting a maximum
 *      of 255 files.
 *
 * Ed.    Comments                                       Who YY/MM/DD
@@ -64,18 +68,19 @@ edition  set   1
 
 * Your utility's static storage vars go here
          org   0
+* These vars are used by the base template and shouldn't be removed
 parmptr  rmb   2	pointer to our command line params
 bufptr   rmb   2	pointer to user expandable buffer
 bufsiz   rmb   2	size of user expandable buffer
-* What follows are utility specific options
+filecnt  rmb   1
+* These vars are used for this example, it will probably change for you
 gota     rmb   1
 gotb     rmb   1
-filecnt  rmb   1
 coptflg  rmb   1	1 = this option has been processed once already
 cleartop equ   .	everything up to here gets cleared at start
 copt     rmb   COPTSIZ	buffer for what follows after -c=
 * Next is a user adjustable buffer with # modifier on command line.
-* Some utilities won't need this, some will.
+* Some utilities won't need this flexibility, some will.
 * Currently set up to be larger for Level 2 than Level 1
 * Note: this buffer must come just before the stack
          IFGT  Level-1
@@ -163,8 +168,8 @@ clrnxt   clr   ,u+		clear out
 * parameters were passed) or the first non-space character of the
 * parameter.
 * Here we merely grab the byte at X into A and test for end of line,
-* exiting if so.  Utilities that don't require non-option arguments
-* should comment out the following three lines.
+* exiting if so.  Utilities that don't require arguments should
+* comment out the following three lines.
          lda   ,x         	get first char
          cmpa  #C$CR		CR?
          lbeq  ShowHelp		if so, no parameters... show help and exit
@@ -203,8 +208,6 @@ IsItC    cmpa  #'c		is it this option?
          lda   ,x
          cmpa  #C$SPAC
          lbeq  ShowHelp         
-         cmpa  #C$COMA
-         lbeq  ShowHelp         
          cmpa  #C$CR
          lbeq  ShowHelp         
          leay  <copt,u		point Y to parameber buffer
@@ -218,8 +221,6 @@ L0339    lda   ,x		get byte at X
          cmpy  ,s		are we at end?
          beq   L035D		branch if so (buffer too small)
          cmpa  #C$SPAC		else is char in A a space?
-         beq   L0350		branch if so
-         cmpa  #C$COMA		coma?
          beq   L0350		branch if so
          cmpa  #C$CR		cr?
          bne   L0339		get next byte if not
@@ -310,8 +311,6 @@ StrLen   pshs  a
 StrLenLp lda   ,x+
          cmpa  #C$SPAC
          beq   StrLenEx
-         cmpa  #C$COMA
-         beq   StrLenEx
          cmpa  #C$CR
          beq   StrLenEx
          leay  1,y
@@ -333,8 +332,6 @@ StrCpy   pshs  u
 CopyFnLp lda   ,x+
          cmpa  #C$SPAC
          beq   CopyFnEx
-         cmpa  #C$COMA
-         beq   CopyFnEx
          cmpa  #C$CR
          beq   CopyFnEx
          sta   ,y+
@@ -353,8 +350,6 @@ CopyFnEx tfr   u,d
 SkipSpcs lda   ,x+
          cmpa  #C$SPAC
          beq   SkipSpcs
-         cmpa  #C$COMA
-         beq   SkipSpcs
          leax  -1,x
          rts
 
@@ -367,8 +362,6 @@ SkipSpcs lda   ,x+
 *   A = whitespace char
 SkipNSpc lda   ,x+
          cmpa  #C$SPAC
-         beq   EatOut
-         cmpa  #C$COMA
          beq   EatOut
          cmpa  #C$CR
          bne   SkipNSpc
