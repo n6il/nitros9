@@ -1,5 +1,5 @@
 ********************************************************************
-* Rammer - OS-9 Level Two RAM Disk
+* Rammer - NitrOS-9 Level 2 RAM Disk
 *
 * $Id$
 *
@@ -29,7 +29,7 @@
 MAXBLOCK set   201         Maximum # of MMU blocks allowed in RAM drive
 
          nam   Rammer
-         ttl   OS-9 Level Two RAM Disk
+         ttl   NitrOS-9 Level 2 RAM Disk
 
          ifp1
          use   defsfile

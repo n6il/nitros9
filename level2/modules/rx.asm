@@ -1,5 +1,5 @@
 ********************************************************************
-* RX - OS-9 Level Two RAM Disk Device Descriptor
+* RX - NitrOS-9 Level 2 RAM Disk Device Descriptor
 *
 * $Id$
 *
@@ -8,7 +8,7 @@
 * ------------------------------------------------------------------
 
          nam   RX        
-         ttl   OS-9 Level Two RAM Disk Device Descriptor
+         ttl   NitrOS-9 Level 2 RAM Disk Device Descriptor
 
          ifp1            
          use   defsfile  

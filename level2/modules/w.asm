@@ -1,5 +1,5 @@
 ********************************************************************
-* W - OS-9 Level 2 Window wildcard descriptor
+* W - Window wildcard descriptor
 *
 * $Id$
 *
@@ -8,7 +8,7 @@
 * ------------------------------------------------------------------
 
          nam   W
-         ttl   OS-9 Level 2 Window wildcard descriptor
+         ttl   Window wildcard descriptor
 
 * Disassembled 98/08/23 22:38:05 by Disasm v1.6 (C) 1988 by RML
 

@@ -1,5 +1,5 @@
 ********************************************************************
-* IOMan - OS-9 Level Two I/O Manager module
+* IOMan - NitrOS-9 Level 2 I/O Manager module
 *
 * $Id$
 *
@@ -30,7 +30,7 @@
 * INIT routine was called.
 
          nam   IOMan     
-         ttl   OS-9 Level Two I/O Manager module
+         ttl   NitrOS-9 Level 2 I/O Manager module
 
 * Disassembled 02/04/29 23:10:07 by Disasm v1.6 (C) 1988 by RML
 

@@ -1,5 +1,5 @@
-********************************************************************
-* W4 - OS-9 Level 2 Window descriptor
+*******************************************************************
+* W4 - Window descriptor
 *
 * $Id$
 *
@@ -8,7 +8,7 @@
 * ------------------------------------------------------------------
 
          nam   W4
-         ttl   OS-9 Level 2 Window descriptor
+         ttl   Window descriptor
 
 * Disassembled 98/08/23 22:38:05 by Disasm v1.6 (C) 1988 by RML
 
