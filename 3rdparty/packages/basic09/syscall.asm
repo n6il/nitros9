@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   2    From OS-9 Level Two Vr. 2.00.01 Basic09 disk
+*   2      ????/??/??
+* From OS-9 Level Two Vr. 2.00.01 Basic09 disk.
 
          nam   SysCall
          ttl   system call subroutine module
@@ -18,7 +20,7 @@
 
 tylg     set   Sbrtn+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
