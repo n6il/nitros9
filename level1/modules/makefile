@@ -31,9 +31,9 @@ RBF		= rbf.mn \
 		h0_15.dd h1_15.dd h0_35.dd h1_35.dd
 
 SCF		= scf.mn \
-		aciapak.dr modpak.dr nildrv.dr printer.dr rs232.dr sscpak.dr ccio.dr \
+		aciapak.dr modpak.dr nildrv.dr printer.dr rs232.dr sspak.dr ccio.dr \
 		co32.io co80.io grfo.io \
-		m1.dd m2.dd nil.dd p.dd pipe.dd ssc.dd \
+		m1.dd m2.dd nil.dd p.dd pipe.dd ssp.dd \
 		term_t1.dd t1.dd t2.dd t3.dd term32.dd term80.dd
 
 PIPE		= pipeman.mn \
