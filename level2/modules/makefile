@@ -2,14 +2,16 @@ include ../../rules.mak
 
 vpath %.asm kernel:$(6809L1)/modules
 
-CLOCKELIM       = -aRTCElim=1 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
-CLOCKDISTO2     = -aRTCElim=0 -aRTCDsto2=1 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
-CLOCKDISTO4     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=1 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
-CLOCKBNB        = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=1 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
-CLOCKSMART      = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=1 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=1
-CLOCKHARRIS     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=1 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
-CLOCKCLOUD9     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=1 -aRTCSoft=0 -aMPIFlag=0
-CLOCKSOFT       = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=1 -aMPIFlag=0
+CLOCKELIM       = -aRTCElim=1 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
+CLOCKDISTO2     = -aRTCElim=0 -aRTCDsto2=1 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
+CLOCKDISTO4     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=1 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
+CLOCKBNB        = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=1 -aRTCSmart=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
+CLOCKSMART      = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=1 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=1
+CLOCKHARRIS     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=1 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
+CLOCKCLOUD9     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCCloud9=1 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
+CLOCKJVEMU      = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=1 -aRTCMESSEmu=0 -aMPIFlag=0
+CLOCKMESSEMU    = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=0 -aRTCJVEmu=0 -aRTCMESSEmu=1 -aMPIFlag=0
+CLOCKSOFT       = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCCloud9=0 -aRTCSoft=1 -aRTCJVEmu=0 -aRTCMESSEmu=0 -aMPIFlag=0
 
 DEPENDS		= ./makefile
 TPB		= ../../3rdparty/booters
@@ -21,7 +23,8 @@ KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_h0 sysgo_dd
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
-		clock2_smart clock2_harris clock2_cloud9 clock2_soft
+		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
+		clock2_jvemu clock2_messemu
 
 RBF		= rbf.mn \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
@@ -205,6 +208,12 @@ clock2_harris: clock2.asm
 
 clock2_cloud9: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKCLOUD9)
+
+clock2_jvemu: clock2.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKJVEMU)
+
+clock2_messemu: clock2.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKMESSEMU)
 
 clock2_soft: clock2.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
