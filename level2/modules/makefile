@@ -80,3 +80,5 @@ rominfo: rominfo.asm
 clean:
 	$(RM) $(ALLOBJS)
 
+identify:
+	$(IDENT_SHORT) $(ALLOBJS)

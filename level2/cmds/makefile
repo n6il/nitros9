@@ -40,3 +40,5 @@ utilpak2:  $(UTILPAK2) $(DEPENDS)
 clean:
 	$(RM) $(ALLOBJS) shell utilpak1 utilpak2
 
+identify:
+	$(IDENT_SHORT) $(ALLOBJS)
