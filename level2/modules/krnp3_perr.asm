@@ -1,5 +1,5 @@
 ********************************************************************
-* OS9p3 - Printerr functionality for Level II
+* KernelP3 - Printerr functionality for Level 2
 *
 * $Id$
 *
@@ -29,7 +29,7 @@
 *
 *  NOTE
 *    The inspiration for this utility was the os9p3 example in
-*    the Tandy Level II manual.  Tandy deserves praise for
+*    the Tandy Level 2 manual.  Tandy deserves praise for
 *    including examples such as this one in their manuals.
 *
 *  NOTE
@@ -53,8 +53,8 @@
 *   1      1987/06/23  Peter E. Durham
 * First release.
 
-         nam   OS9p3
-         ttl   Printerr functionality for Level II
+         nam   KernelP3
+         ttl   Printerr functionality for Level 2
 
          ifp1
          use   defsfile
@@ -66,7 +66,7 @@ edition  set   1
 
          mod   eom,name,type,ReEnt+revs,entry,256
 
-name     fcs   "OS9p3"
+name     fcs   "KernelP3"
          fcb   edition
 
 *+
