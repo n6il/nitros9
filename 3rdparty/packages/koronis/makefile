@@ -33,7 +33,7 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DISK)
 	$(CD) $(LEVEL2); make
-	$(OS9FORMAT) $(DISK)
+	$(OS9FORMAT) $(DISK) -n"Koronis Rift"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK) os9boot kernel_1773
