@@ -60,8 +60,35 @@ size limitations.
 
 <section>
 <title>Differences from the K &amp; R Specification</title>
-<para>
-</para>
+<itemizedlist spacing="compact">
+<listitem><para>
+Bit fields are not supported.
+</para></listitem>
+<listitem><para>
+Constant expressions for initializers may include arithmetic
+operators only if all the operands are of type INT or CHAR.
+</para></listitem>
+<listitem><para>
+The older forms of assignment operators, '=+' or '=*', which
+are recognized by some C compilers, are not supported. You
+must use the newer forms '+=','*=' etc.
+</para></listitem>
+<listitem><para>
+"#ifdef (or #ifndef) ...[#else...] #endif" is supported but
+"#if &lt;constant expression&gt;" is not.
+</para></listitem>
+<listitem><para>
+It is not possible to extend macro definitions or strings
+over more than one line of source code.
+</para></listitem>
+<listitem><para>
+The escape sequence for new-line '\n' refers to the ASCII
+carriage return character (used by OS-9 for end-of-line), not
+linefeed. (hex 0A). Programs which use '\n' for end-of-line
+(which includes all programs in K &amp; R), will still work
+properly.
+</para></listitem>
+</itemizedlist>
 </section>
 
 <section>
@@ -70,18 +97,137 @@ size limitations.
 <section>
 <title>The <quote>Direct</quote> Storage Class</title>
 <para>
+The 6809 microprocessor instructions for accessing memory via
+an index register or the stack pointer can be relatively short and
+fast when they are used in C programs to access "auto" (function
+local) variables or function arguments. The instructions for
+accessing global variables are normally not so nice and must be four
+bytes long and correspondingly slow. However, the 6809 has a nice
+feature which helps considerably. Memory, anywhere in a single page
+(256 byte block), may be accessed with fast, two byte instructions.
+This is called the "direct page", and at any time its location is
+specified by the contents of the "direct page register" within the
+processor. The linkage editor sorts out where this could be, and
+it need not concern the programmer, who only needs to specify for
+the compiler which variables should be in the direct page to give
+the maximum benefit in code size and execution speed.
+</para>
+<para>
+To this end, a new storage class specifier is recognized by the
+compiler. In the manner of K &amp; R page 192, the sc-specifier list
+is extended as follows:
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colwidth="1.0in">
+<colspec colwidth="1.0in">
+<colspec colwidth="1.0in">
+<tbody>
+    <row>
+        <entry>Sc-specifier:</entry>
+        <entry>auto</entry>
+        <entry></entry>
+    </row>
+    <row>
+        <entry></entry>
+        <entry>static</entry>
+        <entry></entry>
+    </row>
+    <row>
+        <entry></entry>
+        <entry>extern</entry>
+        <entry></entry>
+    </row>
+    <row>
+        <entry></entry>
+        <entry>register</entry>
+        <entry></entry>
+    </row>
+    <row>
+        <entry></entry>
+        <entry>typedef</entry>
+        <entry></entry>
+    </row>
+    <row>
+        <entry></entry>
+        <entry>direct</entry>
+        <entry>(extension)</entry>
+    </row>
+    <row>
+        <entry></entry>
+        <entry>extern direct</entry>
+        <entry>(extension)</entry>
+    </row>
+    <row>
+        <entry></entry>
+        <entry>static direct</entry>
+        <entry>(extension)</entry>
+    </row>
+</tbody>
+</tgroup>
+</informaltable>
+The new key word may be used in place of one of the other sc-specifiers,
+and its effect is that the variable will be placed in
+the direct page. "DIRECT" creates a global direct page variable.
+"EXTERN DIRECT" references an EXTERNAL-type direct page variable;
+and "STATIC DIRECT" creates a local direct page variable. These new
+classed may not be used to declare function arguments. "Direct"
+variables can be initialized but will, as with other variables not
+explicitly initialized, have the value zero at the start of program
+execution. 255 bytes are available in the direct page (the linker
+requires one byte). If all the direct variables occupy less than the
+full 255 bytes, the remaining global variables will occupy the
+balance and memory above if necesary. If too many bytes or storage
+are requested in the direct page, the linkage editor will report an
+error, and the programmer will have to reduce the use of DIRECT-type
+variables to fit the 256 bytes addressable by the 6809.
+</para>
+<para>
+It should be kept in mind that "direct" is unique to this
+compiler, and it may not be possible to transport programs written
+using "direct" to other environments without modification.
 </para>
 </section>
 
 <section>
 <title>Embedded Assembly Language</title>
 <para>
+As versatile as C is, occasionally there are some things that
+can only be done (or done at maximum speed) in assembly language.
+The OS-9 C compiler permits user-supplied assebly-language
+statements to be directly embedded in C source programs.
+</para>
+<para>
+A line beginning with "#asm" switches the compiler into a mode
+which passes all subsequent lines directly to the assembly-language
+output, until a line beginning with "#endasm" is encountered.
+"#endasm" switches the mode back to normal. Care should be
+exercised when using this directive so that the correct code section
+is adhered to. Normal code from the compiler is in the PSECT (code)
+section. If your assembly code uses the VSECT (variable) section,
+be sure to put a ENDSECT directive at the end to leave the state
+correct for following compiler generated code.
 </para>
 </section>
 
 <section>
 <title>Control Character Escape Sequences</title>
 <para>
+The escape sequences for non-printing characters in character
+constants and strings (see K &amp; R page 181) are extended as follows:
+<programlisting>
+        linefeed (LF):  \l (lower case 'ell')
+</programlisting>
+This is to distinguish LF (hex 0A) from \n which on OS-9 is the same
+as \r (hex 0D).
+<programlisting>
+        bit patterns:  \NNN    (octal constant)
+                       \dNNN   (decimal constant)
+                       \xNN    (hexadecimal constant)
+</programlisting>
+For example, the following all have a value of 255 (decimal):
+<programlisting>
+             \377          \xff              \d255
+</programlisting>
 </para>
 </section>
 </section>
@@ -98,12 +244,94 @@ information regarding this version of C for the 6809 processor.
 <section>
 <title>Data Representation and Storage Requirements</title>
 <para>
+Each variable type requires a specific amount of memory for
+storage. The sizes of the basic types in bytes are as follows:
+</para>
+<informaltable frame="none">
+<tgroup cols="3">
+<colspec colwidth="0.8in">
+<colspec colwidth="0.4in">
+<colspec colwidth="3.0in">
+<thead>
+<row>
+<entry>Data Type</entry>
+<entry>Size</entry>
+<entry>Internal Representation</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>CHAR</entry>
+<entry>1</entry>
+<entry>two's complement binary</entry>
+</row>
+<row>
+<entry>INT</entry>
+<entry>2</entry>
+<entry>two's complement binary</entry>
+</row>
+<row>
+<entry>UNSIGNED</entry>
+<entry>2</entry>
+<entry>unsigned binary</entry>
+</row>
+<row>
+<entry>LONG</entry>
+<entry>4</entry>
+<entry>two's complement binary</entry>
+</row>
+<row>
+<entry>FLOAT</entry>
+<entry>4</entry>
+<entry>binary floating point (see below)</entry>
+</row>
+<row>
+<entry>DOUBLE</entry>
+<entry>8</entry>
+<entry>binary floating point (see below)</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<para>
+This compiler follows the PDP-1 implementation and format in
+that CHARs are converted to INTs by sign extension, "SHORT" or
+"SHORT INT" means INT, "LONG INT" means LONG and "LONG FLOAT" means
+DOUBLE. The format for DOUBLE values is as follows:
+</para>
+<screen>
+(low byte)                                 (high byte)
++-+---------------------------------------+----------+
+! !     seven byte                        !          !
+! !      mantissa                         !          !
++-+---------------------------------------+----------+
+ ^ sign bit
+</screen>
+<para>
+The for of the mantissa is sign and magnitude with an implied
+"1" bit at the sign bit position. The exponent is biased by 128.
+The format of a FLOAT is identical, except that the mantissa is only
+three bytes long. Conversion from DOUBLE to FLOAT is carried out by
+truncating the least significant (right-most) four bytes of the
+mantissa. The reverse conversion is done by padding the least
+significant four mantissa bytes with zeros.
 </para>
 </section>
 
 <section>
 <title>Register Variables</title>
 <para>
+One register variable may be declared in each function. The
+only types permitted for register variables are int, unsigned and
+pointer. Invalid register variable declarations are ignored; i.e.
+the storage class is made auto. For further details see K &amp; R page 81.
+</para>
+<para>
+A considerable saving in code size and speed can be made by
+judicious use of a register variable. The most efficient use is
+made of it for a pointer or a counter for a loop. However, if a
+register variable is used for a complex arithmetic expression, there
+is no saving. The "U" register is assigned to register variables.
 </para>
 </section>
 
@@ -128,12 +356,39 @@ should be used as a delimiter.
 <section>
 <title>Operating System Calls</title>
 <para>
+The system interface supports almost all the system calls of
+both OS-9 and UNIX. In order to facilitate the portability of
+programs from UNIX, some of the calls use UNIX names rather than
+OS-9 names for the same function. There are a few UNIX calls that
+do not have exactly equivalent OS-9 calls. In these cases, the
+library function simulates the function of the corresponding UNIX
+call. In cases where there are OS-9 calls that do not have UNIX
+equivalents, the OS-9 names are used. Details of the calls and a
+name cross-reference are provided in the "C System Calls" section of
+this manual.
 </para>
 </section>
 
 <section>
 <title>The Standard Library</title>
 <para>
+The C compiler includes a very complete library of standard
+functions. It is essential for any program which uses functions
+from the standard library to have the statement:
+<programlisting>
+       "#include &lt;stdio.h&gt;
+</programlisting>
+See the "C Standard Library" section of this manual for details on
+the standard library functions provided.
+</para>
+<para>
+IMPORTANT NOTE: If output via printf(), fprintf() or sprintf() of
+long integers is required, the program MUST call "pflinit()" at some
+point; this is necessary so that programs not involving LONGS do not
+have the extra LONGs output code appended. Similarly, if FLOATs or
+DOUBLEs are to be printed, "pffinit()" MUST be called. These functions
+do nothing; existence of calls to them in a program informs
+the linker that the relevant routines are also needed.
 </para>
 </section>
 </section>
@@ -141,6 +396,29 @@ should be used as a delimiter.
 <section>
 <title>Run-time Arithmetic Error Handling</title>
 <para>
+K &amp; R leave the treatment of various arithmetic errors open,
+merely saying that it is machine dependent. This implementation
+deal with a limited number of error conditions in a special way; it
+should be assumed that the results of other possible errors are
+undefined.
+</para>
+<para>
+Three new system error numbers are defined in &lt;errno.h&gt;:
+<programlisting>
+   #define  EFPOVR  40   /* floating point overflow of underflow */
+   #define  EDIVERR 41   /* division by zero */
+   #define  EINTERR 42   /* overflow on conversion of floating point
+                            to long integer */
+</programlisting>
+</para>
+<para>
+If one of these conditions occur, the program will send a
+signal to itself with the value of one of these errors. If not
+caught or ignored, the will cause termination of program with
+an error return to the parent process. However, the program can
+catch the interrupt using "signal()" or "intercept()" (see C System
+Calls), and in this case the service routine has the error number as
+its argument.
 </para>
 </section>
 
@@ -171,12 +449,35 @@ value of constant expressions of these types if speed is essential.
 <section>
 <title>The Optimizer Pass</title>
 <para>
+The optimizer pass automatically occurs after the compilation
+passes. It reads the assembler source code text and removes
+redundant code and searches for code sequences that can be replaced
+by shorter and faster equivalents. The optimizer will shorten object
+code by about 11% with a significant increase in program execution
+speed. The optimizer is recommended for production versions of
+debugged programs. Because this pass takes additional time, the "-O"
+compiler option can be used to inhibit it during error-checking-only
+compilations.
 </para>
 </section>
 
 <section>
 <title>The Profiler</title>
 <para>
+The profiler is an optional method used to determine the
+frequency of execution of each function in a C program. It allows
+you to identify the most-frequently used functions where algorithmic
+or C source code programming improvements will yield the greatest
+gains.
+</para>
+<para>
+When the "-P" compiler option is selected, code is generated at
+the beginning of each function to call the profiler module (called
+"_prof"), which counts invocations of each function during program
+execution. When the program has terminated, the profiler
+automatically prints a list of all functions and the number of times
+each was called. The profiler slightly reduces program execution
+speed. See "prof.c" source for more information.
 </para>
 </section>
 </section>
@@ -184,11 +485,112 @@ value of constant expressions of these types if speed is essential.
 <section>
 <title>C Compiler Component Files and File Usage</title>
 <para>
+Compilation of a C program by cc requires that the following
+files be present in the current execution directory (CMDS).
+</para>
+
+<table frame="none">
+<title>OS-9 Level I Systems</title>
+<tgroup cols="2">
+<colspec colwidth="1.0in">
+<colspec colwidth="3.0in">
+<tbody>
+    <row>
+        <entry>cc1</entry>
+        <entry>compiler executive program</entry>
+    </row>
+    <row>
+        <entry>c.prep</entry>
+        <entry>macro pre-processor</entry>
+    </row>
+    <row>
+        <entry>c.pass1</entry>
+        <entry>compiler pass 1</entry>
+    </row>
+    <row>
+        <entry>c.pass2</entry>
+        <entry>compiler pass 2</entry>
+    </row>
+    <row>
+        <entry>c.opt</entry>
+        <entry>assembly code optimizer</entry>
+    </row>
+    <row>
+        <entry>c.asm</entry>
+        <entry>relocating assembler</entry>
+    </row>
+    <row>
+        <entry>c.link</entry>
+        <entry>linkage editor</entry>
+    </row>
+</tbody>
+</tgroup>
+</table>
+
+
+<table frame="none">
+<title>OS-9 Level II Systems</title>
+<tgroup cols="2">
+<colspec colwidth="1.0in">
+<colspec colwidth="3.0in">
+<tbody>
+    <row>
+        <entry>cc2</entry>
+        <entry>compiler executive program</entry>
+    </row>
+    <row>
+        <entry>c.prep</entry>
+        <entry>macro pre-processor</entry>
+    </row>
+    <row>
+        <entry>c.comp</entry>
+        <entry>compiler proper</entry>
+    </row>
+    <row>
+        <entry>c.opt</entry>
+        <entry>assembly code optimizer</entry>
+    </row>
+    <row>
+        <entry>c.asm</entry>
+        <entry>relocating assembler</entry>
+    </row>
+    <row>
+        <entry>c.link</entry>
+        <entry>linkage editor</entry>
+    </row>
+</tbody>
+</tgroup>
+</table>
+<para>
+In addition a file called "clib.l" contains the standard library,
+math functions, and systems library. The file "cstart.r" is
+the setup code for compiled programs. Both of these files must be
+located in a directory named "LIB" on the system's default mass
+storage device, which is specified in the OS-9 "INIT" module and is
+usually the disk drive the system is booted from.
+</para>
+<para>
+If, when specifying "#include" files for the pre-processor to
+read in, the programmer uses angle brackets, "&lt;" and "&gt;", instead of
+parentheses, the file will be sought starting at the "DEFS"
+directory on whichever drive is the default system drive for the
+system running.
 </para>
 
 <section>
 <title>Temporary Files</title>
 <para>
+A number of temporary files are created in the current data
+directory during compilation, and it is important to ensure that
+enough space is available on the disk drive. As a rough guide, at
+least three times the number of blocks in the largest source file
+(and its included files) should be free.
+</para>
+<para>
+The identifiers "etext", "edata", and "end" are predefined in the
+linkage editor and may be used to establish the addresses of the end
+of executable text, initialized data, and uninitialized data
+respectively.
 </para>
 </section>
 </section>
@@ -196,6 +598,94 @@ value of constant expressions of these types if speed is essential.
 <section>
 <title>Running the Compiler</title>
 <para>
+The are two commands which inlvoke distinct versions of the
+compiler. "cc1" is for OS-9 Level I which uses a two pass compiler,
+and, "cc2" is for Level II which causes a single pass version. Both
+versions of the compiler works identically, the main difference is
+that cc1 has been divided into two passes to fit the smaller memory
+size of OS-9 Level I systems. In the following text, "cc" refers to
+either "cc1" or "cc2" as appropiate for your system. The syntax of
+the command line which calls the compiler is:
+</para>
+<cmdsynopsis>
+  <command>cc</command>
+  <arg>option-flags</arg>
+  <arg rep="repeat" choice="plain"><replaceable>file</replaceable></arg>
+</cmdsynopsis>
+<para>
+One file at a time can be compiled, or a number of files may be
+compiled together. The compiler manages the compilation up
+to four stages: pre-processor, compilation to assembler code,
+assembly to relocatable code, and linking to binary executable
+code (in OS-9 memory module format).
+</para>
+<para>
+The compiler accepts three types of source files, provided each
+name on the command line has the relevant postfix as shown below.
+Any of the above file types may be mixed on the command line.
+</para>
+<table frame="none">
+<title>File Name Suffix Conventions</title>
+<tgroup cols="3">
+<colspec colwidth="0.5in">
+<colspec colwidth="3.0in">
+<thead>
+<row>
+    <entry>Suffix</entry>
+    <entry>Usage</entry>
+</row>
+</thead>
+<tbody>
+<row>
+    <entry>.c</entry>
+    <entry>C source file</entry>
+</row>
+<row>
+    <entry>.a</entry>
+    <entry>assembly language source file</entry>
+</row>
+<row>
+    <entry>.r</entry>
+    <entry>relocatable module</entry>
+</row>
+<row>
+    <entry>none</entry>
+    <entry>executable binary (OS-9 memory module)</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+<para>
+There are two modes of operation: multible source file and
+single source file. The compiler selects the mode by inspecting
+the command line. The usual mode is single source and is specified
+by having only one source file name on the command line. Of
+course, more than one source file may be compiled together by using
+the "#include" facility in the source code. In this mode, the
+compiler will use the name obtained by removing the postfix from the
+name supplied on the command line, and the output file (and the
+memory module produced) will have this name. For example:
+<screen>
+        cc prg.c
+</screen>
+will leave an executable file called "prg" in the current execution
+directory.
+</para>
+<para>
+The multiple source mode is specified by having more than one
+source file name on the command line. In this mode, the object code
+output file will have the name "output" in the current execution
+directory, unless a name is given using the "-f=" option (see
+below). Also, in multiple source mode, the relocatable modules
+generated as intermediate files will be left in the same directories
+as their corresponding source files with the postfixes changed to
+".r". For example:
+<screen>
+       cc prg1.c /d0/fred/prg2.c
+</screen>
+will leave an executable file called "output" in the current
+execution directory, one file called "prg1.r" in the current data
+directory, and "prg2.r" in "/d0/fred".
 </para>
 </section>
 
