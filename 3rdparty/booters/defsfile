@@ -1,4 +1,3 @@
-Level	equ	2
 	use	os9defs
 	use	rbfdefs
-	use	systype.l2
+	use	systype

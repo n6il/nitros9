@@ -99,7 +99,9 @@ pause    decb
          bne   pause
          lda   $FF48                   clear controller
          clr   $FF40                   make sure motors are turned off
+         ifgt  Level-1
          sta   $FFD9                   fast clock
+         endc
 
 * Recalibrate hard drive
          lbsr  restore
@@ -124,7 +126,11 @@ pause    decb
          ldu   blockloc,u
          os9   F$SRtMem
          puls  d
+         ifgt  Level-1
          os9   F$BtMem
+         else
+         os9   F$SRqMem
+         endc
          bcs   error
          bsr   getpntr
          std   blockimg,u
@@ -288,6 +294,7 @@ restore  lda   #c$rstr
          clr   v$blks,u
          bra   command
 
+         ifgt  Level-1
 * Fillers to get to $1D0
          fcc   /9999999999/
          fcc   /9999999999/
@@ -298,6 +305,7 @@ restore  lda   #c$rstr
          fcc   /9999999999/
          fcc   /9999999999/
          fcc   /99999999/
+         endc
 
          emod
 eom      equ   *
