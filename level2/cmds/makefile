@@ -8,7 +8,7 @@ CMDS		= attr binex build cmp cobbler copy date \
 		merge mfree modpatch montype procs pwd pxd rename save \
 		setime shell_21 shell_22a sleep tee tmode tsmon unlink \
 		verify wcreate xmode
-SUBS            = gfx2 gfx inkey
+SUBS            = gfx2 gfx inkey syscall
 
 SHELLMODS	= shell_22a deiniz display echo iniz link load save unlink
 UTILPAK1	= attr build copy date del deldir dir list makdir mdir \
@@ -17,7 +17,7 @@ UTILPAK1	= attr build copy date del deldir dir list makdir mdir \
 LEVEL1FILES	= attr.asm binex.asm build.asm cmp.asm cobbler.asm copy.asm date.asm deiniz.asm del.asm deldir.asm \
 		dir.asm display.asm dsave.asm dump.asm echo.asm edit.asm error.asm exbin.asm format.asm free.asm gfx.asm help.asm ident.asm iniz.asm inkey.asm link.asm \
 		list.asm load.asm login.asm makdir.asm merge.asm os9gen.asm pwd.asm pxd.asm rename.asm \
-		save.asm setime.asm sleep.asm tee.asm tmode.asm tuneport.asm tsmon.asm verify.asm xmode.asm
+		save.asm setime.asm sleep.asm syscall.asm tee.asm tmode.asm tuneport.asm tsmon.asm verify.asm xmode.asm
 
 ALLOBJS		= $(CMDS) $(SUBS)
 
