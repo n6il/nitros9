@@ -6,6 +6,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   5    From Tandy OS-9 Level One VR 02.00.00
+*   6    Allocation bitmap bug fixed, as per Rainbow    BGP 02/07/20
+*        Magazine, January 1987, Page 203
 
          nam   Cobbler
          ttl   Make a bootstrap file
@@ -14,30 +16,29 @@
 
          ifp1
          use   defsfile
+         use   rbfdefs
          endc
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   5
+edition  set   6
+
 os9start equ  $EF00
 os9size  equ  $0F80
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   1
+BFPath   rmb   1
 DevFd    rmb   3
 BTLSN    rmb   1
 u0005    rmb   2
 BtSiz    rmb   2
 u0009    rmb   7
-sttbuf   rmb   3
-u0013    rmb   17
-u0024    rmb   2
-u0026    rmb   10
+sttbuf   rmb   32
 u0030    rmb   2
 devnam   rmb   32
-u0052    rmb   16
+bootfd   rmb   16
 u0062    rmb   1
 u0063    rmb   7
 u006A    rmb   432
@@ -54,7 +55,7 @@ L0015    fcb   C$LF
 L004F    fcb   C$LF
          fcc   "Error writing kernel track"
          fcb   C$CR
-L006B    fcb   C$LF
+NoHard   fcb   C$LF
          fcc   "Error - cannot gen to hard disk"
          fcb   C$CR
 L008C    fcb   C$LF
@@ -70,14 +71,13 @@ L00CF    fcb   C$LF
 BfNam    fcc   "OS9Boot "
          fcb   $FF 
 
-start    equ   *
-         clrb  
-         lda   #'/
+start    clrb  
+         lda   #PDELIM
          cmpa  ,x
          lbne  Usage
          os9   F$PrsNam 
          lbcs  Usage
-         lda   #'/
+         lda   #PDELIM
          cmpa  ,y
          lbeq  Usage
          leay  <devnam,u
@@ -86,8 +86,8 @@ L0114    sta   ,y+
          decb  
          bpl   L0114
          sty   <u0030
-         lda   #'@
-         ldb   #$20
+         lda   #PENTIR
+         ldb   #C$SPAC
          std   ,y++
          leax  <devnam,u
          lda   #UPDAT.
@@ -96,36 +96,36 @@ L0114    sta   ,y+
          lbcs  Usage
          ldx   <u0030
          leay  >BfNam,pcr
-         lda   #'/
+         lda   #PDELIM
 L013A    sta   ,x+
          lda   ,y+
          bpl   L013A
          lda   <DevFd
          leax  <sttbuf,u
-         ldb   #$00
+         ldb   #SS.Opt
          os9   I$GetStt 
          lbcs  Exit
          leax  <sttbuf,u
-         lda   <u0013,u
-         bpl   L015E
-         leax  >L006B,pcr
+         lda   <sttbuf+(PD.TYP-PD.OPT),u	get PD.TYP
+         bpl   L015E		if not hard drive, branch
+         leax  >NoHard,pcr
          clrb  
          lbra  wrerr
 L015E    lda   <DevFd
          pshs  u
          ldx   #$0000
-         ldu   #$0015   probably DD.BT
+         ldu   #DD.BT		probably DD.BT
          os9   I$Seek   
          puls  u
          lbcs  Exit
          leax  BTLSN,u
-         ldy   #$0005
-         os9   I$Read    Read bootstrap sector + size = 5 bytes
+         ldy   #DD.DAT-DD.BT
+         os9   I$Read		Read bootstrap sector + size = 5 bytes
          lbcs  Exit
          ldd   <BtSiz
          beq   L0193
          leax  <devnam,u
-         os9   I$Delete 
+         os9   I$Delete 	delete existing OS9Boot file
          clra  
          clrb  
          sta   <BTLSN
@@ -135,53 +135,53 @@ L015E    lda   <DevFd
 L0193    lda   #WRITE.
          ldb   #UPDAT.
          leax  <devnam,u
-         os9   I$Create 
-         sta   <u0000
+         os9   I$Create 	create OS9Boot file
+         sta   <BFPath
          lbcs  Exit
-         ldd   >$0068
-         subd  >$0066
-         tfr   d,y
-         std   <BtSiz
-         ldx   >$0066
-         lda   <u0000
-         os9   I$Write  
+         ldd   >D.BTHI		get bootfile size
+         subd  >D.BTLO
+         tfr   d,y		in D, tfr to Y
+         std   <BtSiz		save it
+         ldx   >D.BTLO		get pointer to boot in mem
+         lda   <BFPath
+         os9   I$Write  	write out boot to file
          lbcs  Exit
          leax  <sttbuf,u
          ldb   #SS.OPT
          os9   I$GetStt 
          lbcs  Exit
-         lda   <u0000
-         os9   I$Close  
+         lda   <BFPath
+         os9   I$Close 
          lbcs  Usage
          pshs  u
-         ldx   <u0024,u
-         lda   <u0026,u
+         ldx   <sttbuf+(PD.FD-PD.OPT),u
+         lda   <sttbuf+(PD.FD+2-PD.OPT),u
          clrb  
          tfr   d,u
          lda   <DevFd
-         os9   I$Seek   
+         os9   I$Seek   	seek to file descriptor of bootfile
          puls  u
          lbcs  Exit
-         leax  <u0052,u
-         ldy   #$0100
+         leax  <bootfd,u
+         ldy   #256		read FD sector
          os9   I$Read   
          lbcs  Exit
-         ldd   <u006A,u
-         lbne  Fragd
-         ldb   <u0062,u
-         stb   <BTLSN
-         ldd   <u0063,u
+         ldd   <bootfd+FD.SEG+FDSL.S+3,u
+         lbne  Fragd		branch if fragmented
+         ldb   <bootfd+FD.SEG,u	get LSN of first (only) segment
+         stb   <BTLSN		save off
+         ldd   <bootfd+FD.SEG+1,u
          std   <u0005
          lbsr  UpLSN0
          lbsr  SkLSN1
-         leax  <u0052,u
-         ldy   #$0100
-         os9   I$Read   
+         leax  <bootfd,u
+         ldy   #256
+         os9   I$Read   	read bitmap sector
          lbcs  wrerr
-         leax  <u0052,u
-         lda   <$4C,x
-         bita  #$0F
-         beq   L0273
+         leax  <bootfd,u
+         lda   <(34*18)/8,x	get byte in bitmap corresponding to kernel track
+         bita  #$0F		bits 3-0 set? 
+         beq   L0273		branch if not
          lda   <DevFd
          pshs  u
          ldx   #$0002
@@ -190,28 +190,28 @@ L0193    lda   #WRITE.
          puls  u
          leax  u0009,u
          ldy   #$0007
-         os9   I$Read   
+         os9   I$Read		read first 7 bytes of boot track
          lbcs  L02ED
          leax  u0009,u
-         ldd   ,x
-         cmpa  #$4F
-         lbne  L02ED
-         cmpb  #$53
-         lbne  L02ED
-         lda   $04,x
-         cmpa  #$12
-         beq   L025C
+         ldd   #$4F53		D = "OS"
+         cmpd  ,x		same as first two bytes of boot track?
+         lbne  L02ED		branch if not
+         lda   4,x
+         leax  <bootfd,u
+         nop
+         cmpa  #$12		is it a nop?
+         beq   L025C		branch if so
          lda   <$4E,x
          bita  #$1C
          lbne  L02ED
-L025C    lda   <$4C,x
+L025C    lda   <(34*18)/8,x
          ora   #$0F
-         sta   <$4C,x
+         sta   <(34*18)/8,x
          lda   #$FF
-         sta   <$4D,x
-         lda   <$4E,x
+         sta   <(34*18)/8+1,x
+         lda   <(34*18)/8+2,x
          ora   #$FC
-         sta   <$4E,x
+         sta   <(34*18)/8+2,x
          bra   L028C
 L0273    ora   #$0F
          sta   <$4C,x
@@ -224,7 +224,7 @@ L0273    ora   #$0F
          ora   #$FC
          sta   <$4E,x
 L028C    bsr   SkLSN1
-         leax  <u0052,u
+         leax  <bootfd,u
          ldy   #$0064
          os9   I$Write  
          bcs   wrerr
@@ -272,7 +272,7 @@ L02ED    leax  >L008C,pcr
 
 UpLSN0   pshs  u
          ldx   #$0000
-         ldu   #$0015   probably DD.BT
+         ldu   #DD.BT
          lda   <DevFd
          os9   I$Seek   
          puls  u
@@ -282,5 +282,7 @@ UpLSN0   pshs  u
          os9   I$Write  
          bcs   Exit
          rts   
+
          emod
 eom      equ   *
+         end
