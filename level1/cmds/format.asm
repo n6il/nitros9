@@ -27,6 +27,7 @@
          endc
 
 DOHELP   set   0
+DOROLL   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
@@ -1511,6 +1512,7 @@ Both     fcc   "Both PHYSICAL and LOGICAL format? "
 BothLen  equ   *-Both
 Verify   fcc   "Physical Verify desired? "
 VerifyL  equ   *-Verify
+         IFNE  DOROLL
 RollMsg  fcc   "        Recording Format:  FM/MFM"
          fcb   C$LF
          fcc   "    Track density in TPI:  48/96"
@@ -1523,12 +1525,13 @@ RollMsg  fcc   "        Recording Format:  FM/MFM"
          fcb   C$LF
          fcc   "               Disk type:  0000"
          fcb   C$LF
-         fcc   "         Clusters/Sector:  0000"
+         fcc   "         Sectors/Cluster:  0000"
          fcb   C$LF
          fcc   "           Sectors/Track:  0000"
          fdb   $0A0A
          fcc   "Sector: 00  Track: 00  Side: 00"
 RollLen  equ   *-RollMsg
+         ENDC
          emod
 eom      equ   *
          end
