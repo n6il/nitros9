@@ -105,7 +105,7 @@ BOOTFILE_CUST   = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(C9)/Products/SuperDrivers/software/6809l2/h0_lexar64mbcf_ide.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/h1_fuji128mbcf_ide.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/h2_ibmdpes31080_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/c3_cdrom_tc3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/c3_cdrom_ide.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/h5_zip100_tc3.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/h6_ibm0661467_tc3.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/hb_255_tc3.dd \
