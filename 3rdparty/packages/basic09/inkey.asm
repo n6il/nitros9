@@ -1,36 +1,36 @@
 ********************************************************************
-* progname - program module
+* Inkey - Key detect subroutine
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  -     Original Basic09 from Dragon Data distribution version
-*
-* $Log$
-* Revision 1.1  2002/04/06 14:47:31  roug
-* Prego; The basic09 interpreter.
-*
-*
+* ?      Original Tandy/Microware version
+* 1      Put a proper edition number after the name     BGP 98/10/26
 
          nam   Inkey
-         ttl   subroutine module    
+         ttl   Key detect subroutine
 
-* Disassembled 02/04/06 16:39:17 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 98/09/11 11:55:29 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   /dd/defs/os9defs
+         use   defsfile
          endc
+
 tylg     set   Sbrtn+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   1
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   0
 size     equ   .
-name     equ   *
-         fcs   /Inkey/
-start    equ   *
-         leax  $04,s
+
+name     fcs   /Inkey/
+         fcb   edition
+
+start    leax  $04,s
          ldd   $02,s
          cmpd  #$0001
          beq   L0033
@@ -51,17 +51,20 @@ L0033    ldu   $02,x
          cmpu  #$0002
          bcs   L0043
          stb   $01,x
-L0043    ldb   #$01
+L0043    ldb   #SS.Ready
          os9   I$GetStt 
          bcs   L0052
-         ldy   #$0001
+         ldy   #0001
          os9   I$Read   
          rts   
-L0052    cmpb  #$F6
+L0052    cmpb  #E$NotRdy
          bne   L0059
          rts   
-L0057    ldb   #$38
+L0057    ldb   #E$ParmEr
 L0059    coma  
          rts   
+
          emod
 eom      equ   *
+         end
+
