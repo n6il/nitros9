@@ -12,7 +12,7 @@ all:	$(ALLOBJS)
 	$(CD) ICONS; make
 	$(CHMOD) 755 $(ALLOBJS)
 
-gshell_6309:
+gshell_6309: gshell.asm
 	$(AS) $(ASOUT)$@ $< $(H6309)
 
 clean:
