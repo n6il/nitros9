@@ -1,11 +1,14 @@
 <refentry id="creat">
 <refnamediv>
-<refname>creat</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Creat</refname>
+<refpurpose>create a file</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
 <funcsynopsis>
+<funcsynopsisinfo>
+#include &lt;modes.h&gt;
+</funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>creat</function></funcdef>
   <paramdef>type <parameter>arg1</parameter></paramdef>

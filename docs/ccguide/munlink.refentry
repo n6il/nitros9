@@ -1,11 +1,14 @@
 <refentry id="munlink">
 <refnamediv>
-<refname>munlink</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Munlink</refname>
+<refpurpose>unlink a module</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
 <funcsynopsis>
+<funcsynopsisinfo>
+#include &lt;module.h&gt;
+</funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>munlink</function></funcdef>
   <paramdef>type <parameter>arg1</parameter></paramdef>

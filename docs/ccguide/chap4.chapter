@@ -4,9 +4,14 @@
 The Standard Library contains functions which fall into two
 classes: high-level I/O and convenience.
 </para>
+<para>
+The high-level I/O functions provide facilities that are
+normally considered part of the definition of other languages; for
+example, the FORMAT "statement" of Fortran. In addition, automatic
+buffering of I/O channels improves the speed of file access because
+fewer system calls are necessary.
+</para>
 
-<section>
-<title>Function Calls</title>
 &atofref;
 &fflushref;
 &feofref;
@@ -31,5 +36,4 @@ classes: high-level I/O and convenience.
 &systemref;
 &toupperref;
 &ungetcref;
-</section>
 </chapter>

@@ -6,8 +6,8 @@ CHAPTERS=chap1.chapter chap2.chapter chap3.chapter chap4.chapter
 STDLIB= atof.refentry fflush.refentry feof.refentry findstr.refentry \
     fopen.refentry fread.refentry fseek.refentry getc.refentry \
     gets.refentry isalpha.refentry l3tol.refentry longjmp.refentry \
-    malloc.refentry mktemp.refentry putc.refentry puts.refentry \
-    qsort.refentry scanf.refentry setbuf.refentry sleep.refentry \
+    malloc.refentry mktemp.refentry printf.refentry putc.refentry \
+    puts.refentry qsort.refentry scanf.refentry setbuf.refentry sleep.refentry \
     strcat.refentry system.refentry toupper.refentry ungetc.refentry
 
 APPS=asm.appendix basic09.appendix errors.appendix phases.appendix
@@ -18,11 +18,10 @@ SYSCALL= abort.refentry abs.refentry access.refentry chain.refentry \
     exit.refentry getpid.refentry getstat.refentry getuid.refentry \
     intercept.refentry kill.refentry lseek.refentry mknod.refentry \
     modload.refentry munlink.refentry open.refentry os9fork.refentry \
-    os9.refentry pause.refentry prerr.refentry printf.refentry \
-    read.refentry sbrk.refentry setime.refentry setpr.refentry \
-    setstat.refentry setuid.refentry signal.refentry stacksize.refentry \
-    strass.refentry tsleep.refentry unlink.refentry wait.refentry \
-    write.refentry
+    os9.refentry pause.refentry prerr.refentry read.refentry \
+    sbrk.refentry setime.refentry setpr.refentry setstat.refentry \
+    setuid.refentry signal.refentry stacksize.refentry strass.refentry \
+    tsleep.refentry unlink.refentry wait.refentry write.refentry
 
 SUPPORT=$(PREFACE) $(CHAPTERS) $(APPS) $(STDLIB) $(SYSCALL)
 

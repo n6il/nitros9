@@ -4,15 +4,27 @@
 <section>
 <title>Introduction</title>
 <para>
-OS-9 has been tailored to run on your standard, unmodified &make;
-Computer. To use it you'll need the following things:
+The "C" programming language is rapidly growing in popularity
+and seems destined to become one of the most popular programming
+languages used for microcomputers. The rapid rise in the use of C
+is not surprising. C is an incredibly versatile and efficient
+language that can handle tasks that previously would have required
+complex assembly language programming.
 </para>
 
 </section>
 <section>
-<title>Starting the System</title>
+<title>The Language Implementation</title>
 <para>
-To start up OS-9 follow these steps:
+OS-9 C is implemented almost exactly as described in 'The C
+Programming Language' by Kernighan and Ritchie (hereafter referred
+to as K&amp;R).
+</para>
+<para>
+Allthough this version of C follows the specification faithfully,
+there are some differences. The differences mostly reflect
+parts of C that are obsolete or the constraints imposed by memory
+size limitations.
 </para>
 </section>
 </chapter>

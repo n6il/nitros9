@@ -1,7 +1,7 @@
 <refentry id="wait">
 <refnamediv>
-<refname>wait</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Wait</refname>
+<refpurpose>wait for task termination</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

@@ -1,7 +1,7 @@
 <refentry id="chain">
 <refnamediv>
-<refname>chain</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Chain</refname>
+<refpurpose>load and execute a new program</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

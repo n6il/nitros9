@@ -1,7 +1,7 @@
 <refentry id="prerr">
 <refnamediv>
-<refname>prerr</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Prerr</refname>
+<refpurpose>print error message</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

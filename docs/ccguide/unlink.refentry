@@ -1,7 +1,7 @@
 <refentry id="unlink">
 <refnamediv>
-<refname>unlink</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Unlink</refname>
+<refpurpose>remove directory entry</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

@@ -1,11 +1,14 @@
 <refentry id="chmod">
 <refnamediv>
-<refname>chmod</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Chmod</refname>
+<refpurpose>change access permissions of a file</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
 <funcsynopsis>
+<funcsynopsisinfo>
+#include &lt;modes.h&gt;
+</funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>chmod</function></funcdef>
   <paramdef>type <parameter>arg1</parameter></paramdef>

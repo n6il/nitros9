@@ -6,6 +6,9 @@
 
 <refsynopsisdiv>
 <funcsynopsis>
+<funcsynopsisinfo>
+#include &lt;setjmp.h&gt;
+</funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>longjmp</function></funcdef>
   <paramdef>type <parameter>arg1</parameter></paramdef>

@@ -1,7 +1,8 @@
 <refentry id="write">
 <refnamediv>
-<refname>write</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Write</refname>
+<refname>Writeln</refname>
+<refpurpose>write to a file or device</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

@@ -1,7 +1,7 @@
 <refentry id="getpid">
 <refnamediv>
-<refname>getpid</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Getpid</refname>
+<refpurpose>get the task id</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

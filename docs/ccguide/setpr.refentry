@@ -1,7 +1,7 @@
 <refentry id="setpr">
 <refnamediv>
-<refname>setpr</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Setpr</refname>
+<refpurpose>set process priority</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

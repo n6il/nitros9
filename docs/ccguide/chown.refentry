@@ -1,7 +1,7 @@
 <refentry id="chown">
 <refnamediv>
-<refname>chown</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Chown</refname>
+<refpurpose>change the ownership of a file</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

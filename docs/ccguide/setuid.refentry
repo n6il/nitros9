@@ -1,7 +1,7 @@
 <refentry id="setuid">
 <refnamediv>
-<refname>setuid</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Setuid</refname>
+<refpurpose>set user id</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>

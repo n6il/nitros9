@@ -1,7 +1,8 @@
 <refentry id="chdir">
 <refnamediv>
-<refname>chdir</refname>
-<refpurpose>Placeholder</refpurpose>
+<refname>Chdir</refname>
+<refname>Chxdir</refname>
+<refpurpose>change directory</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
