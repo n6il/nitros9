@@ -46,7 +46,7 @@ start   cmpd    #1              1 char == CR
         bsr     open
         bcs     exit
         pshs    u
-        ldu     #parbuff       point to buffer
+        leau    parbuff,u       point to buffer
 entry0  lda     ,x+
         cmpa    #C$SPAC        is it a space (between parameters?)
         beq     entry1
@@ -60,7 +60,7 @@ nocr    sta     ,u+            store in buffer
         tfr     u,y
         puls    u
         sty     <endptr        store end of all parameters
-        ldx     #parbuff       load address of parbuff into X
+        leax    parbuff,u       load address of parbuff into X
         stx     <prmptr        save parameter pointer
 entry2  lda     ,x
         bne     entry3
@@ -100,13 +100,13 @@ open0   puls    x,pc
 readlin pshs    x,y
         lda     <path          get file path number
         ldy     #256           read max 256 bytes
-        ldx     #filbuff       into memory pointed to by filbuff
+        leax    filbuff,u       into memory pointed to by filbuff
         os9     I$ReadLn
         puls    x,y,pc
 
 print   pshs    x,y,a
         lda     #1             STDOUT
-        ldx     #filbuff       point to buffer
+        leax    filbuff,u       point to buffer
         ldy     #256           max of 256 chars
         os9     I$WritLn
         puls    x,y,a,pc
@@ -123,7 +123,7 @@ strl1   tfr     y,d            return with length in D
 compare pshs    x,y
         clr     <same          comparison indicator
         ldx     prmptr         get address of next cmd line param
-        ldy     #filbuff       point to file buffer
+        leay    filbuff,u       point to file buffer
 comp0   lda     ,x+            get char from cmd line
         beq     comp1          is it null (end of param)
         cmpa    ,y+            compare to file buffer
