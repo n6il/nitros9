@@ -22,7 +22,7 @@ rev      set   $01
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
          fcb   READ.+WRITE. mode byte
-         fcb   $07        extended controller address
+         fcb   HW.Page    extended controller address
          fdb   $FF6C      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf
@@ -45,8 +45,8 @@ rev      set   $01
          fcb   C$QUIT     quit character
          fcb   C$BSP      backspace echo character
          fcb   C$BELL     line overflow character (bell)
-         fcb   WORD8+PARNONE+STOP1 init value for dev ctl reg
-         fcb   B300       baud rate
+         fcb   PARNONE    parity
+         fcb   STOP1+WORD8+B300 stop bits/word size/baud rate
          fdb   name       copy of descriptor name address
          fcb   C$XON      acia xon char
          fcb   C$XOFF     acia xoff char
@@ -56,7 +56,7 @@ initsize equ   *
 
 name     fcs   /m1/
 mgrnam   fcs   /SCF/
-drvnam   fcs   /AciaPak/
+drvnam   fcs   /SACIA/
 
          emod  
 eom      equ   *
