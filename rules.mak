@@ -1,5 +1,9 @@
 # Rules for making OS-9/6X09 modules
 
+# This macro should change according to where the base directory of the
+# OS-9 source tree is located
+BASEDIR		= /home/boisy/os9
+
 # If we're using the OS-9 emulator and the *real* OS-9 assembler,
 # uncomment the following two lines.
 #AS		= os9 /mnt2/src/ocem/os9/asm
@@ -18,8 +22,8 @@ ECHO		= echo
 CHMOD		= chmod
 IDENT		= os9ident
 IDENT_SHORT	= os9ident -s
-UNIX2OS9	= u2o
-OS92UNIX	= o2u
+UNIX2OS9	= $(BASEDIR)/hosttools/u2o
+OS92UNIX	= $(BASEDIR)/hosttools/o2u
 
 # File managers
 %.mn: %.asm
