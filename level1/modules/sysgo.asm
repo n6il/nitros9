@@ -42,7 +42,9 @@ BootMsg  fcc   "OS-9 LEVEL ONE VR. 0"
          fcc   ".0"
          fcb   48+OS9Minor
          fdb   C$CR,C$LF
-         fcc   "COPR. 2002 ACADIAN EMBEDDED"
+         fcc   !'PHOENIX' RELEASE 08/01/2002!
+         fdb   C$CR,C$LF
+         fcc   "HTTP://COCOOS9.SOURCEFORGE.NET"
          fdb   C$CR,C$LF
          fcc   "COPR. 1980 BY MOTOROLA INC. AND"
          fdb   C$CR,C$LF
