@@ -121,7 +121,7 @@ L002E    sta   ,x+			clear mem
          sta   <u0051,u
          leax  >AltIRQ,pcr		get IRQ routine ptr
          stx   >D.AltIRQ		store in AltIRQ
-         leax  >L03CC,pcr
+         leax  >SetDsply,pcr
          stx   <u005B,u
          leax  >L050F,pcr
          stx   <u005D,u
@@ -180,23 +180,23 @@ Put2Bed  lda   V.BUSY,u		get calling process ID
          coma
          rts
 * Check if we need to wrap around tail pointer to zero
-L009D    incb
-         cmpb  #$7F
-         bls   L00A3
-         clrb
+L009D    incb			increment pointer
+         cmpb  #$7F		at end?
+         bls   L00A3		branch if not
+         clrb			else clear pointer (wrap to head)
 L00A3    rts
 
 *
 * IRQ routine for keyboard
 *
 AltIRQ   ldu   >D.KbdSta	get keyboard static
-         ldb   <u0032,u
-         beq   L00B7
-         ldb   <u002F,u
-         beq   L00B7
+         ldb   <VD.CFlg1,u	graphics screen currently being displayed?
+         beq   L00B7		branch if not
+         ldb   <VD.Alpha,u	alpha mode?
+         beq   L00B7		branch if so
          lda   <u0030,u
-         lbsr  L03CC
-L00B7    ldx   #PIA0Base
+         lbsr  SetDsply		set up display
+L00B7    ldx   #PIA0Base	point to PIA base
          clra
          clrb
          std   <u006A,u		clear
@@ -246,35 +246,36 @@ L010E    sta   <u006F,u
          bne   L0105
          ldb   #60
 L011A    stb   <u0051,u
-         ldb   <VD.IBufH,u
-         leax  <VD.InBuf,u
-         abx
+         ldb   <VD.IBufH,u	get head pointer in B
+         leax  <VD.InBuf,u	point X to input buffer
+         abx			X now holds address of head
          lbsr  L009D		check for tail wrap
-         cmpb  <VD.IBufT,u
-         beq   L012F
+         cmpb  <VD.IBufT,u	B at tail?
+         beq   L012F		branch if so
          stb   <VD.IBufH,u
-L012F    sta   ,x
-         beq   L014F
-         cmpa  V.PCHR,u
-         bne   L013F
-         ldx   V.DEV2,u
-         beq   L014F
-         sta   $08,x
-         bra   L014F
-L013F    ldb   #S$Intrpt
-         cmpa  V.INTR,u
-         beq   L014B
-         ldb   #S$Abort
-         cmpa  V.QUIT,u
-         bne   L014F
-L014B    lda   V.LPRC,u
-         bra   L0153
-L014F    ldb   #S$Wake
-         lda   V.WAKE,u
-L0153    beq   L0158
-         os9   F$Send
-L0158    clr   V.WAKE,u
-         bra   L00E4
+L012F    sta   ,x		store our char at ,X
+         beq   WakeIt		if nul, do wake-up
+         cmpa  V.PCHR,u		pause character?
+         bne   L013F		branch if not
+         ldx   V.DEV2,u		else get dev2 statics
+         beq   WakeIt		branch if none
+         sta   V.PAUS,x		else set pause request
+         bra   WakeIt
+L013F    ldb   #S$Intrpt	get interrupt signal
+         cmpa  V.INTR,u		our char same as intr?
+         beq   L014B		branch if same
+         ldb   #S$Abort		get abort signal
+         cmpa  V.QUIT,u		our char same as QUIT?
+         bne   WakeIt		branch if not
+L014B    lda   V.LPRC,u		get ID of last process to get this device
+         bra   L0153		go for it
+WakeIt   ldb   #S$Wake		get wake signal
+         lda   V.WAKE,u		get process to wake
+L0153    beq   L0158		branch if none
+         os9   F$Send		else send wakeup signal
+L0158    clr   V.WAKE,u		clear process to wake flag
+         bra   L00E4		and move along
+
 L015C    clra
          clrb
          std   <u0066,u
@@ -337,7 +338,7 @@ L01D4    cmpb  #$4C
          inc   <u0069,u
          subb  #$06
 L01DD    pshs  x
-         leax  >L0321,pcr
+         leax  >KeyTbl,pcr		point to keyboard table
          lda   b,x
          puls  x
          bmi   L01FD
@@ -358,6 +359,7 @@ L01FD    inc   <u006D,u
          com   <VD.Caps,u
 L0208    orcc  #Negative
 L020A    rts
+
 L020B    pshs  b,a
          clrb
          orcc  #Carry
@@ -495,7 +497,11 @@ L0314    lda   ,x
          stb   ,x
 L0320    rts
 
-L0321    fcb   $00,$40,$60	ALT @ `
+* Key Table
+* 1st column = key (no modifier)
+* 2nd column = SHIFT+key
+* 3rd column = CTRL+key 
+KeyTbl   fcb   $00,$40,$60	ALT @ `
          fcb   $0c,$1c,$13	UP
          fcb   $0a,$1a,$12	DOWN
          fcb   $08,$18,$10	LEFT
@@ -579,30 +585,34 @@ L03C5    clrb
 COEscape ldb   #$03		write offset into CO-module
          lbra  JmpCO
 
-L03CC    pshs  x,a
-         stb   <u002F,u
+* Show VDG or Graphics screen
+* Entry: B = 0 for VDG, 1 for Graphics
+SetDsply pshs  x,a
+         stb   <VD.Alpha,u	save passed flag in B
          lda   >PIA1Base+2
-         anda  #$07
-         ora   ,s+
-         tstb
-         bne   L03DE
+         anda  #$07		mask out all but lower 3 bits
+         ora   ,s+		OR in passed A
+         tstb			display graphics?
+         bne   L03DE		branch if so
          ora   <VD.CFlag,u
 L03DE    sta   >PIA1Base+2
          sta   <u0030,u
-         tstb
-         bne   L03F5
-* Bang %00010101 to VDG
+         tstb			display graphics?
+         bne   DoGfx		branch if so
+* Set up VDG screen for text
+DoVDG
          stb   >$FFC0
          stb   >$FFC2
          stb   >$FFC4
-         lda   <u001D,u
+         lda   <VD.ScrnA,u		get pointer to alpha screen
          bra   L0401
 
-* Bang %00101001 to VDG
-L03F5    stb   >$FFC0
+* Set up VDG screen for graphics
+DoGfx    stb   >$FFC0
          stb   >$FFC3
          stb   >$FFC5
-         lda   <VD.CurBf,u
+         lda   <VD.CurBf,u		get pointer to graphics screen
+
 L0401    ldb   #$07
          ldx   #$FFC6
          lsra
@@ -851,7 +861,7 @@ SSSLGBF  ldb   <VD.Rdy,u	was initial buffer allocated with $0F?
          ldd   R$X,x		get select flag
          beq   L05C3		if zero, do nothing
          ldb   #$01		else set display flag
-L05C3    stb   <u0032,u		save display flag
+L05C3    stb   <VD.CFlg1,u	save display flag
          clrb
          rts
 BadMode  comb
@@ -1036,7 +1046,7 @@ L072D    stb   <u0044,u
          pshs  b
          ora   ,s+
          ldb   #$01
-         lbra  L03CC
+         lbra  SetDsply
 
 L0742    fcb   $c0,$30,$0c,$03
 L0746    fcb   $80,$40,$20,$10,$08,$04,$02,$01
@@ -1070,7 +1080,7 @@ L077A    dec   ,s		decrement counter
 L0788    puls  u,b		restore regs
          clra
          sta   <VD.Rdy,u	gfx mem no longer alloced
-         lbra  L03CC
+         lbra  SetDsply
 
 Do10     leax  <Preset,pcr	set up return address
          lbra  L03BD
