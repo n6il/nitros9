@@ -8,7 +8,7 @@ $(BOOK).pdf: $(BOOK).docbook $(STYLESHEET)
 
 $(BOOK).ps: $(BOOK).docbook $(STYLESHEET)
 	 docbook2ps $(BOOK).docbook
-#	 docbook2ps -d $(STYLESHEET) $(BOOK).docbook
+#	 docbook2ps -d "$(STYLESHEET)#print" $(BOOK).docbook
 
 $(BOOK).html: $(BOOK).docbook $(STYLESHEET)
 	rm -f *.htm *.html
