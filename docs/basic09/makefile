@@ -1,19 +1,22 @@
-OBJ=basic09
-STYLESHEET=docbook-utils.dsl
+BOOK		= basic09
+STYLESHEET	= docbook-utils.dsl
 
-all: book1.htm
+all: $(BOOK).pdf
 
-$(OBJ).pdf: $(OBJ).docbook $(STYLESHEET)
-	 docbook2pdf -d $(STYLESHEET) $(OBJ).docbook
+$(BOOK).pdf: $(BOOK).docbook $(STYLESHEET)
+	 docbook2pdf -d $(STYLESHEET) $(BOOK).docbook
 
-$(OBJ).ps: $(OBJ).docbook $(STYLESHEET)
-	 docbook2ps -d $(STYLESHEET) $(OBJ).docbook
+$(BOOK).ps: $(BOOK).docbook $(STYLESHEET)
+	 docbook2ps -d $(STYLESHEET) $(BOOK).docbook
 
-book1.htm: $(OBJ).docbook $(STYLESHEET)
-	rm -f *.htm *.html
-#	jade -t sgml -V html-index -d /usr/share/sgml/docbook/dsssl-stylesheets-1.64/html/docbook.dsl $(OBJ).docbook
+$(BOOK).htm: $(BOOK).docbook $(STYLESHEET)
+	$(RM) *.htm *.html
+#	jade -t sgml -V html-index -d /usr/share/sgml/docbook/dsssl-stylesheets-1.64/html/docbook.dsl $(BOOK).docbook
 #	collateindex.pl -p -o index.docbook HTML.index
-	docbook2html -d $(STYLESHEET)#html $(OBJ).docbook
+	docbook2html -d $(STYLESHEET)#html $(BOOK).docbook
 
 print:
-	psnup -2 $(OBJ).ps | lpr
+	psnup -2 $(BOOK).ps | lpr
+
+clean:
+	$(RM) *.html *.htm $(BOOK).pdf $(BOOK).ps
