@@ -50,7 +50,11 @@ L0013    fcc   "SYS/PASSWORD"
 WideMsg  fcb   C$LF,C$LF
          fcc   "OS-9 Timesharing system"
          fcb   C$LF
-         fcc   "Level II  RS VR. 0"
+         fcc   "Level I"
+         ifeq  Level-2
+         fcc   "I"
+         endc
+         fcc   "  RS VR. 0"
          fcb   48+OS9Vrsn
          fcc   ".0"
          fcb   48+OS9Major
@@ -59,7 +63,11 @@ WideMsg  fcb   C$LF,C$LF
          fcb   C$LF
 WideMsgL equ   *-WideMsg
 NrrwMsg  fcb   C$LF,C$LF
-         fcc   "OS-9 Level II  RS Vr0"
+         fcc   "OS-9 Level I"
+         ifeq  Level-2
+         fcc   "I"
+         endc
+         fcc   "  RS VR. 0"
          fcb   48+OS9Vrsn
          fcc   ".0"
          fcb   48+OS9Major
