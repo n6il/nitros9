@@ -24,7 +24,6 @@
 
 DOHELP   set   0
 DOHD     set   1		allow bootfile creation on HD
-BTrack   set   34
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
@@ -103,7 +102,7 @@ TWarn    fcb   C$LF
          fcc   "Warning - file(s) present"
          fcb   C$LF
          fcc   "on track "
-         IFEQ  BTrack-34
+         IFEQ  Bt.Track-34
          fcc   "34"
          ELSE
          fcc   "??"
@@ -450,23 +449,17 @@ L045F    ldu   <statptr
          os9   I$Read   	read first part of LSN0
          lbcs  Bye
          ldd   #$0001
-*         lda   #$00
-*         ldb   #$01
          lbsr  Seek2LSN
          leax  sectbuff,u
          ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
          lda   <devpath
          os9   I$Read   
          lbcs  Bye
-         ldd   #BTrack*256	boot track
-*         lda   #BTrack		boot track
-*         clrb  			sector 1
+         ldd   #Bt.Track*256	boot track
          ldy   #$0004		four bits
          lbsr  ABMClear
          bcc   L0520
-         ldd   #BTrack*256	boot track
-*         lda   #BTrack		boot track
-*         ldb   #$00		sector 1
+         ldd   #Bt.Track*256	boot track
          lbsr  Seek2LSN		seek to it
          leax  <u0017,u
          ldy   #$0007
@@ -484,23 +477,17 @@ L045F    ldu   <statptr
          lda   $04,x
          cmpa  #$12
          beq   L0512
-         ldd   #BTrack*256+15	boot track, sector 16
-*         lda   #BTrack		boot track
-*         ldb   #15		sector 16
+         ldd   #Bt.Track*256+15	boot track, sector 16
          ldy   #$0003		sectors 16-18
          lbsr  ABMClear
          lbcs  WarnUser
 L0512    clra  
          ldb   <lsn0+DD.TKS,u	get number of tracks in D
          tfr   d,y
-         ldd   #BTrack*256	boot track
-*         lda   #BTrack		boot track
-*         clrb  			sector 1
+         ldd   #Bt.Track*256	boot track
          lbsr  ABMSet
          bra   L0531
-L0520    ldd   #BTrack*256+4	boot track
-*         lda   #BTrack		boot track
-*         ldb   #$04		sector 5
+L0520    ldd   #Bt.Track*256+4	boot track
          ldy   #$000E		sectors 5-18
          lbsr  ABMClear
          lbcs  WarnUser
@@ -508,8 +495,6 @@ L0520    ldd   #BTrack*256+4	boot track
 
 L0531
          ldd   #$0001
-*         clra  
-*         ldb   #$01
          lbsr  Seek2LSN
          leax  sectbuff,u
          ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
@@ -558,9 +543,7 @@ ReadBTrk leax  u0496,u		point to sector buffer
          lbcs  Bye
          os9   I$Close		close path to boot track
          lbsr  GetDest
-         ldd   #BTrack*256	boot track
-*         lda   #BTrack		boot track
-*         ldb   #$00		sector 1
+         ldd   #Bt.Track*256	boot track
          lbsr  Seek2LSN
          bra   WrBTrack
 
@@ -586,18 +569,14 @@ BTMem
          subd  <u007B,u
          addd  #$0001
          tfr   d,y
-         ldd   #BTrack*256	boot track
-*         lda   #BTrack		boot track
-*         ldb   #$00		sector 1
+         ldd   #Bt.Track*256	boot track
          lbsr  Seek2LSN
          ldx   <u007B,u
 
          ELSE
 
 * OS-9 Level One: Write out boot track data
-         ldd   #BTrack*256
-*         lda   #BTrack		boot track
-*         ldb   #$00		sector 1
+         ldd   #Bt.Track*256
          lbsr  Seek2LSN
          ldx   #Bt.Start
          ldy   #Bt.Size
