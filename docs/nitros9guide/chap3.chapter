@@ -107,8 +107,8 @@ followed by any combination of the following characters:
 Here are examples of <emphasis>legal</emphasis> names:
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="2.5in">
-<colspec colwidth="2.5in">
+<colspec colwidth="2.5in"/>
+<colspec colwidth="2.5in"/>
 <tbody>
 <row>
 <entry>raw.data.2</entry>
@@ -130,8 +130,8 @@ Here are examples of <emphasis>illegal</emphasis> names:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="3.1in">
-<colspec colwidth="2.0in">
+<colspec colwidth="3.1in"/>
+<colspec colwidth="2.0in"/>
 <tbody>
 <row>
 <entry>22November</entry>
@@ -169,8 +169,8 @@ The device names used for the &make; Computer are:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.7in">
-<colspec colwidth="2in">
+<colspec colwidth="0.7in"/>
+<colspec colwidth="2in"/>
 <tbody>
 <row>
 <entry>TERM</entry>
@@ -260,7 +260,7 @@ and ordinary file names are not. This is a customary (but
 not mandatory) practice which allows you to easily identify directory
 files using the short form of the &quot;dir&quot; command.
 </para>
-<literallayout class="Monospaced">
+<literallayout class="monospaced">
                       System Device Directory
               +---------------------------------+
               !            !          !         !
@@ -678,8 +678,8 @@ pathlist. Here are some examples:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1.5in">
-<colspec colwidth="3in">
+<colspec colwidth="1.5in"/>
+<colspec colwidth="3in"/>
 <tbody>
 <row>
 <entry>OS9: dir .</entry>
