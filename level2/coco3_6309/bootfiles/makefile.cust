@@ -116,11 +116,11 @@ BOOTFILE_CUST   = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(C9)/Products/SuperDrivers/software/6809l2/s6_tc3.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/s7_tc3.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/sh_255_tc3.dd \
-                $(C9)/Products/DriveWire/software/6809l2/drivewire.dr \
-                $(C9)/Products/DriveWire/software/6809l2/ddx0.dd \
-                $(C9)/Products/DriveWire/software/6809l2/x1.dd \
-                $(C9)/Products/DriveWire/software/6809l2/x2.dd \
-                $(C9)/Products/DriveWire/software/6809l2/x3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/lldw.dr \
+                $(C9)/Products/SuperDrivers/software/6809l2/ddx0.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/x1.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/x2.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/x3.dd \
                 $(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
                 $(MD)/scf.mn $(MD)/cc3io.dr \
                 $(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -132,11 +132,11 @@ BOOTFILE_CUST   = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
                 $(MD)/clock_60hz \
                 $(C9)/Products/DriveWire/software/6809l2/clock2_dw
-#                $(C9)/Products/SuperDrivers/software/6809l2/lldw.dr \
-#                $(C9)/Products/SuperDrivers/software/6809l2/ddx0.dd \
-#                $(C9)/Products/SuperDrivers/software/6809l2/x1.dd \
-#                $(C9)/Products/SuperDrivers/software/6809l2/x2.dd \
-#                $(C9)/Products/SuperDrivers/software/6809l2/x3.dd \
+#                $(C9)/Products/DriveWire/software/6809l2/drivewire.dr \
+#                $(C9)/Products/DriveWire/software/6809l2/ddx0.dd \
+#                $(C9)/Products/DriveWire/software/6809l2/x1.dd \
+#                $(C9)/Products/DriveWire/software/6809l2/x2.dd \
+#                $(C9)/Products/DriveWire/software/6809l2/x3.dd \
 
 
 BOOTFILES	= bootfile_1773 bootfile_cust
