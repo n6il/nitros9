@@ -24,7 +24,8 @@ FMGRS		= scf.mn rbf.mn pipeman.mn pipeman_named.mn
 DRIVERS		= cc3disk.dr cc3hdisk.dr cc3io.dr modpak.dr \
 		vrn.dr piper.dr printer.dr sio.dr rammer.dr sspak.dr \
 		sacia.dr dacia.dr
-IOSUBS		= windint.io vdgint.io keydrv joydrv_joy \
+IOSUBS		= windint.io vdgint.io vdgint_small.io \
+		keydrv joydrv_joy \
 		joydrv_6551L joydrv_6552L joydrv_6551M joydrv_6552M snddrv
 DESCS		= d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		d0_40d.dd d1_40d.dd d2_40d.dd d0_80d.dd \
@@ -143,6 +144,14 @@ dacia.dr: xacia.asm
 rominfo: rominfo.asm
 	$(AS) -aROMPak=0 $(AFLAGS) $< $(ASOUT)$@
 
+# VDGInt Modules
+vdgint.io: vdgint.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCOCO2=1
+
+vdgint_small.io: vdgint.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $<
+
+# Clocks
 clock_elim: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKELIM)
 
