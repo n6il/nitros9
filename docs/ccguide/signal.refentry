@@ -39,7 +39,7 @@ designated for different signals.
 The values for "address" have the following meanings:
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="0.5in">
+<colspec colwidth="0.7in">
 <colspec colwidth="3in">
 <tbody>
 <row>
