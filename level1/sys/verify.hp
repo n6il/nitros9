@@ -2,4 +2,4 @@
 Syntax: Verify [<opts>]
 Usage : Verify or update module header and CRC 
 Opts  :
-  u = update module during check
+  -u = update module during check
