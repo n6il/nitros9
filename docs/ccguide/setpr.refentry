@@ -8,7 +8,8 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>setpr</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>int <parameter>pid</parameter></paramdef>
+  <paramdef>int <parameter>priority</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
@@ -22,7 +23,9 @@ os9 F$SPRIOR
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+SETPR sets the process identified by "pid" (process id) to have
+a priority of "priority". The lowest level is 0 and the
+highest is 255.
 </para>
 </refsect1>
 

@@ -12,7 +12,12 @@
 </funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>setime</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>struct sgtbuf *<parameter>buffer</parameter></paramdef>
+</funcprototype>
+
+<funcprototype>
+  <funcdef><function>getime</function></funcdef>
+  <paramdef>struct sgtbuf *<parameter>buffer</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
@@ -29,7 +34,8 @@ os9 F$GTIME
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+GETIME returns system time in buffer.
+SETIME sets system time from buffer.
 </para>
 </refsect1>
 </refentry>
