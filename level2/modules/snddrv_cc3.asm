@@ -15,7 +15,7 @@
 *          1988/11/14  Kevin Darling
 * Bell version for critics <grin>.
 *
-*   6      1998/09/26  Boisy G. Pitre
+*   3      1998/09/26  Boisy G. Pitre
 * Upgrade to edition 3 from Monk-o-Ware.
 
          nam   SndDrv
