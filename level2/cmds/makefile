@@ -10,9 +10,9 @@ CMDS		= asm attr backup binex build cmp cobbler copy date \
 		verify wcreate xmode
 SUBS            = gfx2 gfx inkey syscall
 
-SHELLMODS	= shellplus deiniz display echo iniz link load save unlink
-UTILPAK1	= attr build copy date del deldir dir list makdir mdir \
-		merge mfree procs pwd pxd rename sleep tee tmode
+SHELLMODS	= shellplus deiniz echo iniz link load save unlink
+UTILPAK1	= attr build copy display date del deldir dir list makdir mdir \
+		merge mfree procs rename sleep tee tmode
 
 BASIC09FILES	= runb.asm gfx.asm inkey.asm syscall.asm
 LEVEL1FILES	= asm.asm attr.asm backup.asm binex.asm build.asm cmp.asm cobbler.asm copy.asm date.asm deiniz.asm del.asm deldir.asm \
