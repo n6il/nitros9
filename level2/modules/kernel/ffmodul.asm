@@ -39,7 +39,7 @@ L068D    equ   *
          bsr   L0712        Go find 1st char of module name requested
          cmpa  #PDELIM      Is it a '/'?
          beq   L070B        yes, exit with error
-         lbsr  L0741        parse the name to find the end & length
+         lbsr  ParseNam     parse the name to find the end & length
          bcs   L070E        error (illegal name), exit
          ldu   <D.ModEnd    get module directory end pointer
          bra   L0700        start looking for it
