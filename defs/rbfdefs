@@ -131,11 +131,7 @@ TYP.NSF  equ   %01000000	Non-standard format
 DNS.FM   equ   %00000000        Single-density (FM)
 DNS.MFM  equ   %00000001        Double-density (MFM)
 DNS.STD  equ   %00000000        Single track density (48 tpi)
-DNS.48TPI equ   DNS.STD
-DNS.DTD  equ   %00000010        Double track density (96 tpi)
-DNS.96TPI equ   DNS.DTD
-DNS.QTD  equ   %00000100        High track density (135 tpi)
-DNS.135TPI equ   DNS.QTD
+DNS.DTD  equ   %00000010        Double track density (96/135 tpi)
 
 * Floppy disk step rate definitions
 STP.30ms equ   0                30ms step rate
@@ -251,10 +247,10 @@ DD.NAM   rmb   32         Volume name
 DD.OPT   rmb   32         Option area
 
 * DD.FMT Bit Definitions - valid only if device is a floppy disk
-FMT.SIDE equ   %00000001  Single Side=0, Double Side=1
-FMT.DNS  equ   %00000010  Single DNS=0, Double DNS=1
-FMT.TDNS equ   %00000100  48tpi=0, 96tpi=1
-FMT.T0DN equ   %00100000  Track 0 DNS, see FMT.DNS
+FMT.SIDE equ   %00000001  Single Sided=0, Double Sided=1
+FMT.DNS  equ   %00000010  Single Density=0, Double Density=1
+FMT.TDNS equ   %00000100  Track Density: 48 TPI=0, 96/135 TPI=1
+FMT.T0DN equ   %00100000  Track 0 Density, see FMT.DNS
 
 
          pag
