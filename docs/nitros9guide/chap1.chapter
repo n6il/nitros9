@@ -4,12 +4,12 @@
 <section>
 <title>What You Need to Run OS-9</title>
 <para>
-&os9level; &os9version; has been tailored to run on the &make;. To use it you'll need the following things:
+This version of &os9level; runs on the &make;. To use it you'll need the following:
 </para>
 <itemizedlist mark="bullet">
-  <listitem><para>A &minmem; &make; </para></listitem>
-  <listitem><para>A Disk Drive With Contoller Cartridge</para></listitem>
-  <listitem><para>An OS-9 &make; System Disk</para></listitem>
+  <listitem><para>&minmem; &make; </para></listitem>
+  <listitem><para>Disk Drive With Contoller Cartridge</para></listitem>
+  <listitem><para>&os9level; System Disk</para></listitem>
 </itemizedlist>
 <para>
 OS-9 is also ready to use the following optional equipment that you
@@ -18,8 +18,9 @@ may have now or may obtain in the future:
 <itemizedlist mark="bullet">
   <listitem><para>Additional Floppy Disk Drives</para></listitem>
   <listitem><para>SCSI or IDE Hard Drives</para></listitem>
-  <listitem><para>Printers and Serial Ports</para></listitem>
-  <listitem><para>Game Joysticks</para></listitem>
+  <listitem><para>Printers and Modems</para></listitem>
+  <listitem><para>Additional Serial Ports</para></listitem>
+  <listitem><para>Joysticks and Mice</para></listitem>
   <listitem><para>Other OS-9 Compatible Languages and Software</para></listitem>
 </itemizedlist>
 
@@ -92,8 +93,8 @@ and then ask you to enter the date and time. This allows OS-9 to
 keep track of the date and time of creation of new files and disks.
 Enter the current date and time in the format requested like this:
 <screen>
-            yyyy/mm/dd hh:mm:ss
-     Time?  2003 03 01 14 20
+             yyyy/mm/dd hh:mm:ss
+     Time ?  2003 03 01 14 20
 </screen>
 In the example above, the date entered was March 1, 2003. OS-9
 uses 24-hour time so the date entered was 1420 hours or 2:20 PM.
@@ -205,8 +206,8 @@ and when you see the message
 
 <screen>
 COLOR COMPUTER FORMATTER
-FORMAT DRIVE /D0
-Y (YES) OR N (NO)
+Formatting drive /d0
+y (yes) or n (no)
 Ready?
 </screen>
 
@@ -217,7 +218,7 @@ IF YOU HAVE TWO DISK DRIVES place the blank disk in drive one and
 type:
 </para>
 <screen>
-FORMAT /D1
+format /d1
 </screen>
 <para>
 WHEN THE BLANK DISK IS IN THE RIGHT PLACE, type &quot;Y&quot;, then &quot;ENTER&quot;.
@@ -269,14 +270,14 @@ backup #32K
 The BACKUP program will respond with
 </para>
 <screen>
-Ready to BACKUP from /D0 to /D0 (or /D1) ?
+Ready to backup from /d0 to /d1?
 </screen>
 <para>
 Now enter Y  for yes. It will then ask:
 </para>
 <screen>
 X is being scratched
-OK ?:
+Ok ?:
 </screen>
 <para>
 Answer &quot;Y&quot; for yes again, and the BACKUP process should begin.

@@ -781,14 +781,14 @@ used. An example using the &quot;dir e&quot; command to show the detailed
 attributes of the files in the current working directory is:
 </para>
 <screen>
-   Directory of . 10:20:44
+   Directory of .   2003/03/04 10:20
 
-Owner Last Modified     Attributes Sector Bytecount Name
+Owner  Last Modified    Attributes Sector Bytecount Name
 ----- ----------------- ---------- ------ --------- ----
-   1  2002/05/29 14:02   --e--e-r       47        42 file1
-   0  2002/10/12 02:15   ---wr-wr       48        43 file2
-   3  2002/04/29 23:35   -s----wr       51        22 file3
-   1  2003/01/06 16:19   d--wr-wr       6D       800 NEWDIR
+   1  2002/05/29 14:02   --e--e-r      47        42 file1
+   0  2002/10/12 02:15   ---wr-wr      48        43 file2
+   3  2002/04/29 23:35   -s----wr      51        22 file3
+   1  2003/01/06 16:19   d-ewrewr      6D       800 NEWDIR
 </screen>
 
 <para>
@@ -990,12 +990,7 @@ controlled ASCII format.
 <section>
 <title>Directory Files</title>
 <para>
-Directory files play a key role in the OS-9 file system.
-Sections 3.3 through 3.7 of this chapter describe how they are used by
-various OS-9 features.
-</para>
-<para>
-Directory files can only be created by the &quot;makdir&quot; command, and
+Directory files play a key role in the OS-9 file system.  They can only be created by the &quot;makdir&quot; command, and
 can be identified by the &quot;d&quot; attribute being set (see 3.8.1). The
 file is organized into 32-byte records. Each record can be a
 directory entry. The first 29 bytes of the record is a string of
