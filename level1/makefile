@@ -11,9 +11,16 @@ all:
 	cd CMDS; make
 	cd MODULES; make
 	cd BOOTFILES; make
+	cd DEFS; make
+	cd SYS; make
+	$(UNIX2OS9) startup
 
 # Clean all components
 clean:
 	-cd CMDS; make clean
 	-cd MODULES; make clean
 	-cd BOOTFILES; make clean
+	-cd DEFS; make clean
+	-cd SYS; make clean
+	-$(OS92UNIX) startup
+

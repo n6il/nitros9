@@ -20,3 +20,6 @@ clean:
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
+
+showobjs:
+	@echo $(ALLOBJS)
