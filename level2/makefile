@@ -14,6 +14,8 @@ SYSGO           = MODULES/cc3go
 PACKAGENAME     = $(RELEASE).zip
 DSK_DS40_1      = $(RELEASE)_ds40_1.dsk
 DSK_DS40_2      = $(RELEASE)_ds40_2.dsk
+DSK_DS80	= $(RELEASE)_ds80.dsk
+TESTDSK		= test.dsk
 
 
 # Make all components
@@ -42,30 +44,44 @@ clean: dskclean
 	-$(OS92UNIX) $(ROOTFILES)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK_DS40_1) $(DSK_DS40_2)
+	-$(RM) $(PACKAGENAME) $(DSK_DS40_1) $(DSK_DS40_2) $(DSK_DS80)
 
 dsk: all $(PACKAGENAME)
 
-$(PACKAGENAME): $(DSK_DS40_1) $(DSK_DS40_2)
-	$(ZIP) $(PACKAGENAME) $(DSK_DS40_1) $(DSK_DS40_2) ReleaseNotes ChangeLog
+$(PACKAGENAME): $(DSK_DS40_1) $(DSK_DS40_2) $(DSK_DS80)
+	$(ZIP) $(PACKAGENAME) $(DSK_DS40_1) $(DSK_DS40_2) $(DSK_DS80) ReleaseNotes ChangeLog
 
 $(DSK_DS40_1):
 	-$(RM) $(DSK_DS40_1)
 	$(OS9FORMAT) $(DSK_DS40_1) -t40 -h2 -n"OS-9 Level Two System Disk"
 	$(OS9GEN) $(DSK_DS40_1) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
-	$(MAKDIR) $(DSK_DS40_1):CMDS
-	$(MAKDIR) $(DSK_DS40_1):SYS
-	$(MAKDIR) $(DSK_DS40_1):MODULES
-	$(CP) $(SYSGO) $(DSK_DS40_1):CMDS
-	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_DS40_1):CMDS
-	$(CD) SYS; $(CP) $(SYS) ../$(DSK_DS40_1):SYS
-#	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK_DS40_1):MODULES
-	$(CP) $(ROOTFILES) $(DSK_DS40_1):.
+	$(MAKDIR) $(DSK_DS40_1),CMDS
+	$(MAKDIR) $(DSK_DS40_1),SYS
+	$(MAKDIR) $(DSK_DS40_1),MODULES
+	$(CP) $(SYSGO) $(DSK_DS40_1),CMDS
+	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_DS40_1),CMDS
+	$(CD) SYS; $(CP) $(SYS) ../$(DSK_DS40_1),SYS
+	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK_DS40_1),MODULES
+	$(CP) $(ROOTFILES) $(DSK_DS40_1),.
 
 $(DSK_DS40_2):
 	-$(RM) $(DSK_DS40_2)
 	$(OS9FORMAT) $(DSK_DS40_2) -t40 -h2 -n"OS-9 Level Two Development Disk"
-	$(MAKDIR) $(DSK_DS40_2):DEFS
-	$(CD) DEFS; $(CP) $(DEFS) ../$(DSK_DS40_2):DEFS
+	$(MAKDIR) $(DSK_DS40_2),DEFS
+	$(CD) DEFS; $(CP) $(DEFS) ../$(DSK_DS40_2),DEFS
 
+$(DSK_DS80):
+	-$(RM) $(DSK_DS80)
+	$(OS9FORMAT) $(DSK_DS80) -t80 -h2 -n"OS-9 Level Two System Disk"
+	$(OS9GEN) $(DSK_DS80) BOOTFILES/$(BOOTFILE) BOOTFILES/$(KERNEL)
+	$(MAKDIR) $(DSK_DS80),CMDS
+	$(MAKDIR) $(DSK_DS80),SYS
+	$(MAKDIR) $(DSK_DS80),MODULES
+	$(MAKDIR) $(DSK_DS80),DEFS
+	$(CP) $(SYSGO) $(DSK_DS80),CMDS
+	$(CD) CMDS; $(CP) $(CMDS) ../$(DSK_DS80),CMDS
+	$(CD) SYS; $(CP) $(SYS) ../$(DSK_DS80),SYS
+	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK_DS80),MODULES
+	$(CD) DEFS; $(CP) $(DEFS) ../$(DSK_DS80),DEFS
+	$(CP) $(ROOTFILES) $(DSK_DS80),.
 

@@ -44,9 +44,9 @@ clean: dskclean
 dsk:	all
 	$(RM) $(DISK)
 	$(OS9FORMAT) $(DISK) -n"Basic09"
-	$(MAKDIR) $(DISK):CMDS
-	$(CP) $(ALLOBJS) $(DISK):CMDS
-	$(CP) $(TXTFILES) $(DISK):.
+	$(MAKDIR) $(DISK),CMDS
+	$(CP) $(ALLOBJS) $(DISK),CMDS
+	$(CP) $(TXTFILES) $(DISK),.
 
 dskclean:
 	-$(RM) $(DISK)
