@@ -55,7 +55,11 @@ nextname
          fcb   $0d
 
 regdmp   equ   *
+         IFNE  H6309
+         pshs  cc,a,b,e,f,dp,x,y,u save all registers
+         ELSE
          pshs  cc,a,b,dp,x,y,u save all registers
+         ENDC
          tfr   u,y        transfer addresses
          leas  -60,s      back up for some variable storage
          leau  4,s        buffer starts here
@@ -74,7 +78,13 @@ clrloop
          ldb   R$A,y      get register from stack
          bsr   reg000     dump register A
          ldb   R$B,y      get register from stack
-         bsr   reg000     dump regsietr B
+         bsr   reg000     dump register B
+         IFNE  H6309
+         ldb   R$E,y      get register from stack
+         bsr   reg000     dump register E
+         ldb   R$F,y      get register from stack
+         bsr   reg000     dump register F
+         ENDC
          inc   -1,u       turn off ascii char print flag
          ldd   R$X,y      get register from stack
          bsr   reg000     dump register X
@@ -89,12 +99,20 @@ clrloop
          ldd   R$PC,y     get user Task Number
          bsr   reg000     dump register PC
          ldy   <D.Proc    get address of users process descriptor
-         ldd   P$Sp,y     get users stack address
+         ldd   P$SP,y     get users stack address
+         IFNE  H6309
+         addd  #14        add on for registers which were saved
+         ELSE
          addd  #12        add on for registers which were saved
+         ENDC
          bsr   reg000     dump register S
          lbsr  reg060     send a <CR>
          leas  60,s       restore stack pointer
+         IFNE  H6309
+         puls  cc,a,b,e,f,dp,x,y,u,pc restore all registers and return
+         ELSE
          puls  cc,a,b,dp,x,y,u,pc restore all registers and return
+         ENDC
 
 * Dump a register in "D"
 * X = Control Table Location
@@ -183,7 +201,7 @@ reg070
          ldy   <D.Proc    get process descriptor address
          lda   P$Path+2,y get user error path number
          pshs  a          save it
-         ldu   P$Sp,y     get user stack address
+         ldu   P$SP,y     get user stack address
          leau  -50,u      back off to make room
          lda   <D.SysTsk  get system task number
          ldb   P$Task,y   get users task number
@@ -203,6 +221,12 @@ reg080
          fcc   /a /
          fcb   0
          fcc   /b /
+         IFNE  H6309
+         fcb   0
+         fcc   /e /
+         fcb   0
+         fcc   /f /
+         ENDC
          fcb   1
          fcc   /x /
          fcb   1
@@ -324,5 +348,3 @@ gtd030
          emod  
 eom            
          end   
-
-
