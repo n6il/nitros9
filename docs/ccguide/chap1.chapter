@@ -598,7 +598,7 @@ respectively.
 <section>
 <title>Running the Compiler</title>
 <para>
-The are two commands which inlvoke distinct versions of the
+The are two commands which invoke distinct versions of the
 compiler. "cc1" is for OS-9 Level I which uses a two pass compiler,
 and, "cc2" is for Level II which causes a single pass version. Both
 versions of the compiler works identically, the main difference is

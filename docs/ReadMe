@@ -10,6 +10,16 @@ O'Reilly. It will very likely be around in 2020 also.  If it isn't it is
 a text-based format, so it is possible to reverse-engineer and convert
 the format.
 
+Docbook is in a transition from an SGML-based format to XML. The two formats are
+not compatible. Primary differences are that the DTD is different. For SGML it is
+     <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V4.1//EN">
+and for XML it is
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+Furthermore, some elements are terminated with /, such as <void/>, <colspec/> etc.
+
+DOCBOOK SGML SOFTWARE:
+---------------------
 To create HTML, PDF or PostScript you must have these RPMs installed on
 your RedHat system:
 
@@ -20,9 +30,14 @@ docbook-utils-pdf
 tetex-dvips
 tetex
 jadetex
+..see also http://sources.redhat.com/docbook-tools/
+
+DocBook Install mini-HOWTO: http://www.tldp.org/HOWTO/mini/DocBook-Install/
+
+Another approach is the xmlto application installed on newer RedHat systems.
 
 DOCBOOK REFERENCES:
-
+-------------------
   The Duck book
     http://www.docbook.org/
 
@@ -31,3 +46,6 @@ DOCBOOK REFERENCES:
 
   The Crash Course to Docbook
     http://www.caldera.de/~eric/crash-course/HTML/index.html
+
+  Mark Galassi's tutorial/introduction to writing in DocBook.
+    http://nis-www.lanl.gov/~rosalia/mydocs/docbook-intro.html
