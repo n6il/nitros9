@@ -17,7 +17,7 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DISK)
 	$(OS9FORMAT) $(DISK)
-	$(OS9GEN) $(DISK) $(LEVEL2)/BOOTFILES/bootfile_1773 $(LEVEL2)/BOOTFILES/kernel_1773
+	$(OS9GEN) $(DISK) $(LEVEL2)/BOOTFILES/bootfile_stock $(LEVEL2)/BOOTFILES/kernel_stock
 	$(MAKDIR) $(DISK):CMDS
 	$(CP) $(CMDS) $(DISK):CMDS
 	$(OS9RENAME) $(DISK):CMDS/rescue AutoEx
