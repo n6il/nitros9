@@ -25,7 +25,8 @@ edition  set   2
 
 u0000    rmb   6
 size     equ   .
-         fcb   $03 
+
+         fcb   READ.+WRITE.
 
 name     fcs   /Piper/
          fcb   edition
