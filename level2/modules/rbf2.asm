@@ -3107,7 +3107,7 @@ L1220    ldd   PD.CP+1,y	get current logical sector loaded
 L1237    clrb  			clear carry
          pshs  u,x		preserve regs
          ldb   PD.SMF,y		get state flags
-         andb  #(BufBusy!FDBUF!SINBUF)	aynything in buffer?
+         andb  #(BufBusy!FDBUF!SINBUF)	anything in buffer?
          beq   L1254		no, return
          tfr   b,a		duplicate flags
          eorb  PD.SMF,y		clear them

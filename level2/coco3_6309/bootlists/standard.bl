@@ -1,0 +1,179 @@
+***************************************
+* OS-9 Level Two Bootlist
+*
+* This bootlist is presented as an example for creating custom bootfiles.
+* A module may be excluded from the bootfile if an asterisk (*) is the
+* first character of the line.
+*
+***************************************
+* Kernel/System Section
+*
+* These modules are mandatory.
+../MODULES/KERNEL/os9p2
+../MODULES/SYSMODS/ioman
+../MODULES/SYSMODS/init
+*
+***************************************
+* RBF Section
+*
+../MODULES/RBF/rbf.mn
+*
+* SuperSCSI - SCSI support for TC^3, Ken-Ton and Disto Controllers
+*../MODULES/SUPERSCSI/L2/superscsi_tc3_l2.dr
+*../MODULES/SUPERSCSI/L2/superscsi_ktlr_l2.dr
+*../MODULES/SUPERSCSI/L2/superscsi_disto_l2.dr
+*../MODULES/SUPERSCSI/L2/h0_ez135_tc3ktlr_l2.dd
+*../MODULES/SUPERSCSI/L2/h0_ez135_d4n1_l2.dd
+*../MODULES/SUPERSCSI/L2/h0_ez135_hdii_l2.dd
+*../MODULES/SUPERSCSI/L2/c3_cdrom_tc3ktlr_l2.dd
+*../MODULES/SUPERSCSI/L2/c3_cdrom_d4n1_l2.dd
+*../MODULES/SUPERSCSI/L2/c3_cdrom_hdii_l2.dd
+*../MODULES/SUPERSCSI/L2/h5_zip100_tc3ktlr_l2.dd
+*../MODULES/SUPERSCSI/L2/h5_zip100_d4n1_l2.dd
+*../MODULES/SUPERSCSI/L2/h5_zip100_hdii_l2.dd
+*../MODULES/SUPERSCSI/L2/hb_255_tc3ktlr_l2.dd
+*../MODULES/SUPERSCSI/L2/hb_255_d4n1_l2.dd
+*../MODULES/SUPERSCSI/L2/hb_255_hdii_l2.dd
+*
+* CC3Disk - WD1773 floppy support
+../MODULES/RBF/cc3disk.dr
+* Floppy device descriptors
+*
+* DD - default device - choose one if needed
+*../MODULES/RBF/ddd0_35s.dd
+../MODULES/RBF/ddd0_40d.dd
+*../MODULES/RBF/ddd0_80d.dd
+*
+* D0 - drive 0 - choose one if needed
+*../MODULES/RBF/d0_35s.dd
+../MODULES/RBF/d0_40d.dd
+*../MODULES/RBF/d0_80d.dd
+*
+* D1 - drive 1 - choose one if needed
+*../MODULES/RBF/d1_35s.dd
+../MODULES/RBF/d1_40d.dd
+*../MODULES/RBF/d1_80d.dd
+*
+* D2 - drive 2 - choose one if needed
+*../MODULES/RBF/d2_35s.dd
+*../MODULES/RBF/d2_40d.dd
+*../MODULES/RBF/d2_80d.dd
+*
+* D3 - drive 3 - choose if needed
+*../MODULES/RBF/d3_35s.dd
+*
+* RAMDisk driver
+*../MODULES/RBF/rammer.dr
+*../MODULES/RBF/ddr0_8k.dr
+*../MODULES/RBF/ddr0_96k.dr
+*../MODULES/RBF/ddr0_128k.dr
+*../MODULES/RBF/ddr0_192k.dr
+*../MODULES/RBF/r0_8k.dr
+*../MODULES/RBF/r0_96k.dr
+*../MODULES/RBF/r0_128k.dr
+*../MODULES/RBF/r0_192k.dr
+***************************************
+* SCF Section
+*
+../MODULES/SCF/scf.mn
+*
+* CoCo 3 I/O driver and subroutine modules
+* Joystick modules: choose Joystick OR
+* (M)icrosoft or (L)ogitech mouse using 6551 or 6552 ACIA
+../MODULES/SCF/cc3io.dr
+../MODULES/SCF/keydrv
+../MODULES/SCF/snddrv
+../MODULES/SCF/joydrv_joy
+*../MODULES/SCF/joydrv_6551M
+*../MODULES/SCF/joydrv_6552M
+*../MODULES/SCF/joydrv_6551L
+*../MODULES/SCF/joydrv_6552L
+*
+* WindInt and VDGInt I/O subroutine modules
+* Select one or both
+../MODULES/SCF/windint.io
+*../MODULES/SCF/vdgint.io
+*../MODULES/SCF/vdgint_small.io
+*
+* Select only one term descriptor
+*../MODULES/SCF/term_vdg.dt
+*../MODULES/SCF/term_win40.dt
+../MODULES/SCF/term_win80.dt
+*
+* Select as many window descriptors as needed
+../MODULES/SCF/w.dw
+../MODULES/SCF/w1.dw
+../MODULES/SCF/w2.dw
+../MODULES/SCF/w3.dw
+../MODULES/SCF/w4.dw
+../MODULES/SCF/w5.dw
+../MODULES/SCF/w6.dw
+../MODULES/SCF/w7.dw
+*
+* Select as many VDG window descriptors as needed
+*../MODULES/SCF/v1.dw
+*../MODULES/SCF/v2.dw
+*../MODULES/SCF/v3.dw
+*../MODULES/SCF/v4.dw
+*../MODULES/SCF/v5.dw
+*../MODULES/SCF/v6.dw
+*../MODULES/SCF/v7.dw
+*
+* Serial port drivers
+* Built-In RS-232 port
+*../MODULES/SCF/sio.dr
+*../MODULES/SCF/t1.dd
+* 6551 ACIA
+*../MODULES/SCF/sacia.dr
+*../MODULES/SCF/t2_sacia.dd
+*../MODULES/SCF/t3_sacia.dd
+* 6552 ACIA
+*../MODULES/SCF/dacia.dr
+*../MODULES/SCF/t2_dacia.dd
+*../MODULES/SCF/t3_dacia.dd
+* Tandy Modem Pak
+*../MODULES/SCF/modpak.dr
+*../MODULES/SCF/m1.dd
+*../MODULES/SCF/m2.dd
+*
+* Printer drivers
+* ../MODULES/SCF/printer.dr
+* ../MODULES/SCF/p.dd
+*
+* VRN is a driver module used by certain games, including King's Quest III,
+* Leisure Suit Larry and Flight Simulator II.  A /nil descriptor is also
+* supported.
+../MODULES/SCF/vrn.dr
+../MODULES/SCF/vi.dd
+../MODULES/SCF/ftdd.dd
+*
+***************************************
+* Pipe Section
+*
+* Pipes are a useful but optional part of a system.
+../MODULES/PIPE/pipeman.mn
+../MODULES/PIPE/piper.dr
+../MODULES/PIPE/pipe.dd
+*
+***************************************
+* Clock Section
+*
+* Select only one clock module.
+* Besides support for the internal software clock, the following
+* hardware clocks are supported: Burke & Burke, Disto 2-N-1, Disto 4-N-1,
+* Eliminator, Harris, SmartWatch, TC^3
+../MODULES/CLOCKS/clock_soft
+*../MODULES/CLOCKS/clock_bnb
+*../MODULES/CLOCKS/clock_disto2
+*../MODULES/CLOCKS/clock_disto4
+*../MODULES/CLOCKS/clock_elim
+*../MODULES/CLOCKS/clock_harris
+*../MODULES/CLOCKS/clock_smart
+*../MODULES/CLOCKS/clock_tc3
+*
+***************************************
+* System Kick-Start Module
+*
+* Alternatively, this module can reside in the root directory of the
+* boot device, saving precious system RAM.
+../MODULES/SYSMODS/cc3go

@@ -10,7 +10,7 @@ CD		= ../CMDS
 
 DEPENDS		= ./Makefile
 
-KERNEL_1773	= $(MD)/rel $(MD)/boot_1773 $(MD)/os9p1
+KERNEL_1773	= $(MD)/rel $(MD)/boot_1773_6ms $(MD)/os9p1
 KERNEL_ROM	= $(MD)/rel $(3PB)/boot_rom $(MD)/os9p1
 KERNEL_KENTON	= $(MD)/rel $(C9)/superscsi/boot_id0_ktlr_l2 $(MD)/os9p1
 KERNEL_TC3	= $(MD)/rel $(C9)/superscsi/boot_id0_tc3_l2 $(MD)/os9p1
