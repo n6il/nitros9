@@ -41,6 +41,7 @@ dsk:	all
 	$(OS9FORMAT_SS35) $(DISK) -n"Basic09"
 	$(MAKDIR) $(DISK),CMDS
 	$(CP) $(ALLOBJS) $(DISK),CMDS
+	$(foreach file, $(ALLOBJS), $(OS9ATTR) $(DISK),CMDS/$(file) -epepr;)
 	$(CPL) $(TXTFILES) $(DISK),.
 
 dskclean:
