@@ -43,15 +43,13 @@ BOOTFILE_GHOST	= $(MD)/os9p2 $(MD)/ioman $(MD)/init \
 		$(C9)/ghost/ghostdrv_l2.dr \
 		$(C9)/ghost/ddg0_l2.dd \
 		$(MD)/rbf.mn \
-		$(MD)/cc3disk.dr \
-		$(MD)/ddd0_40d.dd $(MD)/d1_80d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv $(MD)/joydrv_joy $(MD)/snddrv \
+		$(MD)/vdgint_small.io \
 		$(MD)/windint.io \
 		$(MD)/term_win80.dt \
-		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
-		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
-		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/w7.dw \
+		$(MD)/vrn.dr $(MD)/vi.dd $(MD)/ftdd.dd \
 		$(MD)/clock_tc3
 		
 # OS-9 disk bootfile to allow booting from Ken-Ton SCSI controller
@@ -128,6 +126,14 @@ kernel_kenton: $(KERNEL_KENTON) $(DEPENDS)
 
 dd_ez135_l2.dd: $(C9)/superscsi/h0.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aLevel=2 -aDD=1
+
+# ROM image (32,768 bytes long) to burn into ROM on CoCo 3
+bootfile_ghost_rom: $(BOOTFILE_1773_ROM) $(DEPENDS) kernel_ghost
+	$(MERGE) $(BOOTFILE_1773_ROM)>$@
+	$(PADROM) \$$6C00 $@ -c=\$$FF
+	$(MERGE) kernel_ghost>>$@
+	$(PADROM) \$$7FF0 $@ -c=\$$FF
+	$(MERGE) $(MD)/rom_vectors>>$@
 
 # ROM image (32,768 bytes long) to burn into ROM on CoCo 3
 bootfile_1773_rom: $(BOOTFILE_1773_ROM) $(DEPENDS) kernel_1773
