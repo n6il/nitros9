@@ -62,11 +62,12 @@ OS9DEFS  set   1
          nam   OS9Defs
          IFEQ  Level-1
          ttl   NitrOS-9 Level 1 System Symbol Definitions
-         ENDC
+         ELSE
          IFEQ  Level-2
          ttl   NitrOS-9 Level 2 System Symbol Definitions
          ELSE
          ttl   NitrOS-9 Level 3 System Symbol Definitions
+         ENDC
          ENDC
 
 * Common definitions
