@@ -81,6 +81,22 @@ Vectors  jmp    [<-(D.SWI3-D.XSWI3),x]   (-$10) (Jmp to 2ndary vector)
 
 * Let's start by initializing system page
 entry    equ    *
+         IFEQ   Level-1
+         IFNE   H6309
+         ldq    #(D.FMBM*256)+($400-D.FMBM)
+         leay   <entry+2,pc
+         tfm    y,d+
+         tfr    d,x
+         ELSE
+         ldx    #D.FMBM
+         ldy    #$400-D.FMBM
+         clra
+         clrb
+loop1    std    ,x++
+         leay   -2,y
+         bne    loop1
+         ENDC
+         ELSE
          IFNE   H6309
          ldq    #$01001f00  Start address to clear & # bytes to clear
          leay   <entry+2,pc Point to a 0
@@ -98,7 +114,54 @@ L001C    std    ,x++
          stx    <D.CCStk    Set pointer to top of global memory to $2000
          inca			D = $0100
          ENDC
+         ENDC
+
 * Setup system direct page variables
+         IFEQ   Level-1
+* For Level 1 this is how the memory map looks after
+* the kernel has initialized:
+*
+*     $0000----> ==================================
+*               |                                  |
+*               |                                  |
+*  $0020-$0111  |  System Globals (D.FMBM-D.XNMI)  |
+*               |                                  |
+*               |                                  |
+*     $0200---->|==================================|
+*               |        Free Memory Bitmap        |
+*  $0200-$021F  |     (1 bit = 256 byte page)      |
+*               |----------------------------------|
+*               |      System Dispatch Table       |
+*  $0222-$0291  |     (Room for 56 addresses)      |
+*               |----------------------------------|
+*  $0292-$02FF  |       User Dispatch Table        |
+*               |     (Room for 56 addresses)      |
+*     $0300---->|==================================|
+*               |                                  |
+*               |                                  |
+*  $0300-$03FF  |     Module Directory Entries     |
+*               |      (Room for 64 entries)       |
+*               |                                  |
+*     $0400---->|==================================|
+*               |                                  |
+*  $0400-$04FF  |           System Stack           |
+*               |                                  |
+*     $0500---->|==================================|
+
+         ldd    #$200
+         std    <D.FMBM		$200 = start of free memory bitmap
+         addb   #$20
+         std    D.FMBM+2	$220 = end of free memory bitmap
+         addb   #$02	
+         std    <D.SysDis	$222 = addr of sys dispatch table
+         addb   #$70	
+         std    <D.UsrDis	$292 = addr of sys dispatch table
+         clrb
+         inca			D = $300
+         std    <D.ModDir	$300 = module dir start
+         stx    <D.ModDir+2	$400 = module dir start
+         leas   >$0100,x	S = $500 (system stack)
+         ELSE
          std    <D.Tasks
          addb   #$20        set Task image table to $0120
          std    <D.TskIPt
@@ -129,6 +192,7 @@ L001C    std    ,x++
          std    <D.ModDir+2
          std    <D.ModDAT   set module directory DAT pointer to $1000
          std    <D.CCMem    set pointer to beginning of global memory to $1000
+         ENDC
 * In following line, CRC=ON if it is STA <D.CRC, CRC=OFF if it is a STB <D.CRC
          stb    <D.CRC      set CRC checking flag to off
 
