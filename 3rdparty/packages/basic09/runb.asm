@@ -702,8 +702,8 @@ L0489    jsr   <u002A
          fdb   $0007
          fcb   $03
 L048F    fcb   $cb
-L0490    fdb   $4b0c,$accb,$4d0c,$a8cb,$4e0c,$a9d4,$890c,$ae21
-L04A0    fdb   $9006,$a200,$9106,$a4cb,$3f02
+         fdb   $4b0c,$accb,$4d0c,$a8cb,$4e0c,$a9d4,$890c,$ae21
+         fdb   $9006,$a200,$9106,$a4cb,$3f02
          fcb   $8d
 
 L04AB    lda   <u000B
