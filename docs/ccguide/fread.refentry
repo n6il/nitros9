@@ -31,7 +31,16 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Fread reads from the file pointed to by "fp". "Number" is the
+number of items of size "size" that are to be read starting at
+"ptr". The best way to pass the argument "size" to fread is by
+using "sizeof". Fread returns the number of items actually
+read.
+</para>
+<para>
+Fwrite writes to the file pointed to by "fp". "Number" is the
+number of items of size "size" reading the from memory
+starting at "ptr".
 </para>
 </refsect1>
 <refsect1><title>Diagnostics</title>
@@ -48,7 +57,7 @@ System calls
 <link linkend="fopen">Fopen()</link>,
 <link linkend="getc">getc()</link>,
 <link linkend="putc">putc()</link>,
-<link linkend="printf">printf()</link>
+<link linkend="printf">printf()</link>.
 </para>
 </refsect1>
 

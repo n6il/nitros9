@@ -1,6 +1,6 @@
 <refentry id="fopen">
 <refnamediv>
-<refname>fopen</refname>
+<refname>Fopen</refname>
 <refpurpose>open a file and return a file pointer</refpurpose>
 </refnamediv>
 
