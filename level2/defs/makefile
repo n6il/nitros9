@@ -5,7 +5,7 @@ DEPENDS		= ./makefile
 DEFOPTS		= -ls -x -z -aLevel=2
 DEFSDIR		= $(BASEDIR)/defs
 PERMDEFS	= Defsfile
-DEFS		= OS9Defs RBFDefs SCFDefs SysType
+DEFS		= OS9Defs RBFDefs SCFDefs SysType CC3IODefs
 ALLOBJS		= $(DEFS) $(PERMDEFS)
 
 all:	$(ALLOBJS)
@@ -21,6 +21,9 @@ SCFDefs: $(DEFSDIR)/scfdefs
 
 SysType: $(DEFSDIR)/systype
 	$(AS) $(DEFOPTS) -aSYSTYPE=0 $< > $@
+
+CC3IODefs: $(DEFSDIR)/cc3iodefs
+	$(AS) $(DEFOPTS) -aCC3IODEFS=0 $< > $@
 
 clean:
 	$(RM) $(DEFS)

@@ -1,8 +1,9 @@
-         IFNE   CCIODEFS-1
-CCIODEFS set    1
+         IFNE  CCIODEFS-1
+
+CCIODEFS  set   1
 
 ********************************************************************
-* CCIODefs - CCIO Driver Definitions
+* CCIODefs - CoCo 1/2 I/O Definitions
 *
 * $Id$
 *
@@ -10,12 +11,12 @@ CCIODEFS set    1
 * Comment
 * ------------------------------------------------------------------
 
-
          nam    CCIODefs
-         ttl    CCIO Driver Definitions
+         ttl    CoCo 1/2 I/O Definitions
 
-         pag
-
+********************
+* CCIO Static Memory
+*
          org   V.SCF
 V.ScrnA  rmb   2  (2) screen start address in system memory
 V.ScrnE  rmb   2  (2) address of end of screen
@@ -101,6 +102,7 @@ V.InBuf  rmb   1  input buffer tail
 V.Last   equ   .
 
 
+* Unknown for now
 *VD.FFMem rmb   2  (2) bottom of stack for flood fill
 *VD.FFSPt rmb   2  (2) flood fill stack pointer
 *VD.FFSTp rmb   2  (2) flood fill stack top pointer
