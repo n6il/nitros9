@@ -1,8 +1,9 @@
 include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
+TPB		= ../../3rdparty/booters
 
-BOOTERS		= oscode boot_1773 boot_rom rom_vectors
+BOOTERS		= oscode boot_1773 $(TPB)/boot_rom_l1 rom_vectors
 KERNELS		= os9 os9p2
 SYSMODS		= rominfo ioman init
 CLOCKS		= clock.60hz clock.50hz
@@ -18,7 +19,7 @@ ALLOBJS		= $(BOOTERS) $(KERNELS) $(SYSMODS) $(CLOCKS) $(FMGRS) \
 		$(DRIVERS) $(IOSUBS) $(DESCS) $(SYSGOS)
 
 KERNEL_1773	= oscode os9 os9p2 init boot_1773
-KERNEL_ROM	= oscode os9 os9p2 init boot_rom
+KERNEL_ROM	= oscode os9 os9p2 init $(TP)/boot_rom_l1
 
 all:	$(ALLOBJS)
 
