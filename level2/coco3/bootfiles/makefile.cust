@@ -106,10 +106,16 @@ BOOTFILE_CUST   = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(C9)/Products/SuperDrivers/software/6809l2/lltc3.dr \
                 $(C9)/Products/SuperDrivers/software/6809l2/i0_ide.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/i1_ide.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/ic_ide.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/ih_255_ide.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/s0_tc3.dd \
                 $(C9)/Products/SuperDrivers/software/6809l2/s1_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/ih_255_ide.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/s2_tc3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/s3_tc3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/s4_tc3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/s5_tc3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/s6_tc3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/s7_tc3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/sh_255_tc3.dd \
                 $(C9)/Products/DriveWire/software/6809l2/drivewire.dr \
                 $(C9)/Products/DriveWire/software/6809l2/ddx0.dd \
                 $(C9)/Products/DriveWire/software/6809l2/x1.dd \

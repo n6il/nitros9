@@ -1502,6 +1502,7 @@ FindFile
          stb   R$B,x		put SS.VarSect into caller's B
          lbsr  L113C		send it to driver
          puls  a,x		get caller's original B and saved PD.RGS
+         bcs   Sst7AB
          sta   R$B,x		restore caller's original B
 ****
          ldd   #$0100		get size of sector
