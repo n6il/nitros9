@@ -1,4 +1,7 @@
 OS-9 Level Two V3.01.01:
+- ident now correctly reports modules with a language byte of Obj6309.
+- rbf.mn and cc3disk.dr have been back-ported from NitrOS-9 in order to
+  unify the code base and bring non-6309 specific features to OS-9 Level Two.
 - The cc3disk module has been folded with the NitrOS-9 Level 2 version and
   as a result has changed in size.
 - A bug in IOMan which affected any driver wanting to access the port
@@ -44,8 +47,6 @@ OS-9 Level Two V2.01.00 Beta2:
   release, it was mistakenly made for the Disto parallel port.
 - ASM now assembles 6309 op-codes.
 - Window descriptors now have proper initialization count.
-- The following modules have been back-ported from NitrOS-9 in order to
-  unify the code base and bring non-6309 specific features to OS-9 Level Two:
 - The debug program is now part of the CMDS package.
 - With the inclusion of NitrOS-9's SCF, a bug which crashed the system when
   typing CTRL-E or CTRL-C while using shellplus has been fixed.
