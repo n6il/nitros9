@@ -10,7 +10,8 @@ CMDS		= asm attr backup binex build cobbler cobbler_d64 copy date \
 		rename save setime shell sleep tee tmode tsmon \
 		tuneport unlink verify xmode
 SUBRTNS		= inkey syscall gfx
-ALLOBJS		= $(CMDS) $(SUBRTNS)
+SYSMODS		= drvr51.dr go51
+ALLOBJS		= $(CMDS) $(SUBRTNS) $(SYSMODS)
 
 all:	$(ALLOBJS)
 	$(CHMOD) a+rx $(ALLOBJS)

@@ -96,22 +96,22 @@ u009A    rmb   3
 u009D    rmb   1
 size     equ   .
 
-         fcb   $03 
+         fcb   UPDAT.
 
 name     fcs   /drvr51/
          fcb   edition
 
-start    equ   *
-         lbra  L0027
-         lbra  L00EE
-         lbra  L011D
-         lbra  L04BE
-         lbra  L04E1
-         lbra  L009E+1
-L0027    pshs  u,a
+start    lbra  Init
+         lbra  Read
+         lbra  Write
+         lbra  GetStat
+         lbra  SetStat
+         lbra  Term+1
+
+Init     pshs  u,a
          ldu   <u001D,u
          ldd   #$0200
-         os9   F$SRtMem 
+         os9   F$SRtMem
          ldu   $01,s
          tst   <u002C,u
          beq   L0044
@@ -145,38 +145,38 @@ L0068    stx   <u0022,u
          pshs  cc
          orcc  #IntMasks
          leay  >L00AD,pcr
-         sty   >$0032
+         sty   >D.IRQ
          ldx   #$FF00
          lda   $03,x
          ora   #$01
          sta   $03,x
-         inc   >L009E,pcr
+         inc   >Term,pcr
          puls  cc
          lbsr  L0475
          lbsr  L02C3
          clrb  
 L009C    puls  pc,u,a
-L009E    neg   <u0034
+Term    neg   <u0034
          oim   #$1A,<u0050
-         ldx   >$006B
-         stx   >$0032
+         ldx   >D.AltIRQ
+         stx   >D.IRQ
          puls  cc
          clrb  
          rts   
-L00AD    ldu   >$006D
+L00AD    ldu   >D.KbdSta
          ldx   #$FF00
          lda   $03,x
          bmi   L00BB
-         jmp   [>$0038]
+         jmp   [>D.SvcIRQ]
 L00BB    lda   $02,x
-         lda   >$006F
+         lda   >D.DskTmr
          beq   L00CB
          deca  
-         sta   >$006F
+         sta   >D.DskTmr
          bne   L00CB
          sta   >$FF48
 L00CB    lbsr  L04E5
-         jmp   [>$006B]
+         jmp   [>D.AltIRQ]
 L00D2    pshs  x,b
          lda   u0004,u
          sta   u0005,u
@@ -189,10 +189,11 @@ L00D2    pshs  x,b
          bhi   L00EC
          coma  
          puls  pc,x,a
+
 L00EC    puls  x,b
-L00EE    tst   >L009E,pcr
+Read     tst   >Term,pcr
          bne   L00F9
-         lbsr  L0027
+         lbsr  Init
          bcs   L011C
 L00F9    leax  <u003A,u
          orcc  #IRQMask
@@ -212,10 +213,11 @@ L010E    stb   <u001D,u
          comb  
          ldb   #$F4
 L011C    rts   
-L011D    tst   >L009E,pcr
+
+Write    tst   >Term,pcr
          bne   L012C
          pshs  a
-         lbsr  L0027
+         lbsr  Init
          puls  a
          bcs   L0139
 L012C    ldb   <u001F,u
@@ -636,7 +638,8 @@ L04AB    puls  b,a
 L04B9    dec   <u0032,u
          clrb  
          rts   
-L04BE    cmpa  #$01
+
+GetStat  cmpa  #$01
          bne   L04D0
          lda   <u001D,u
          cmpa  <u001E,u
@@ -649,15 +652,17 @@ L04CC    comb
 L04D0    cmpa  #$06
          beq   L04CA
          cmpa  #$02
-         bne   L04E1
+         bne   SetStat
          ldx   $06,y
          ldd   <u0022,u
          std   $04,x
          clrb  
          rts   
-L04E1    comb  
+
+SetStat  comb  
          ldb   #$D0
          rts   
+
 L04E5    tst   <u0032,u
          bne   L0512
          dec   <u0037,u
@@ -826,7 +831,7 @@ L064A    ldb   #$03
          bne   L065A
 L0656    lda   u0003,u
          bra   L065E
-L065A    ldb   #$01
+L065A    ldb   #S$Wake
          lda   u0005,u
 L065E    beq   L0663
          os9   F$Send   
