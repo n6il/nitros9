@@ -28,6 +28,8 @@
 * ------------------------------------------------------------------
 *  10    Made Y2K compliant                             GH
 *  11    Made totally compliant for 1900-2155           BGP 99/05/07
+*  12    Typing a CR at the prompt no longer sets the   BGP 02/07/20
+*        time to a bogus value.
 
          nam   Setime
          ttl   Set Date/Time
@@ -41,7 +43,7 @@
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   11
+edition  set   12
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -83,8 +85,20 @@ start    cmpd  #2
          clra  
          os9   I$ReadLn
 
+L00A3
+* BGP: following lines added in case CR is pressed at prompt.  No need to set time
+*      if there is nothing to process
+GetNext  lda   ,x+		+BGP+
+         cmpa  #C$CR		+BGP+
+         beq   L00DF		+BGP+
+         cmpa  #C$SPAC          +BGP+
+         beq   GetNext		+BGP+
+         cmpa  #C$COMA          +BGP+
+         beq   GetNext		+BGP+
+         leax  -1,x             +BGP+
+
 * Make room for time packet on stack
-L00A3    leas  -7,s
+         leas  -7,s
          bsr   L00E3
          stb   ,s
          bsr   L00E3
