@@ -72,9 +72,9 @@ PwrLnFrq set   Hz60       Set to Appropriate freq
 * Ticks per second
 *
          IFEQ  PwrLnFrq-Hz50
-TkPerSec equ   50
+TkPerSec set   50
          ELSE
-TkPerSec equ   60
+TkPerSec set   60
          ENDC
 
 
