@@ -1203,7 +1203,15 @@ E$Share  rmb   1          Non-sharable file busy
 E$DeadLk rmb   1          I/O Deadlock error
 
 
-         IFGT  Level-1
+         IFEQ  Level-1
+*****************************
+* Boot defs for CoCo 1/2 OS-9
+*
+* These defs are not strictly for 'Boot', but are for booting the
+* system.
+*
+Bt.Start equ   $EF00      Start address of the boot track in memory
+         ELSE
 *****************************
 * Boot defs for CoCo 3 OS-9
 *
