@@ -36,7 +36,8 @@ migrated to the distribution disks.
 	pipedefs      ..... PipeMan defs
 
 BUILDING
-The provided makefiles use the os9tools package, which can be found at
-www.sourceforge.net, in order to assemble source files into binary modules.
-Simply type 'make' at the project's root directory to assemble.
+The provided makefiles use the cocotools package, which can be found at
+<http://www.nitros9.org/snapshots/cocotools.tar.gz>, in order to assemble
+source files into binary modules. Simply type 'make' at the project's root
+directory to assemble.
 
