@@ -58,16 +58,15 @@ R.Flip0  equ   *
          aim   #$FE,<D.TINIT  map type 0
          lde   <D.TINIT   'nother 2 bytes saved if GRFDRV does a 'tfr cc,e'
          ste   >DAT.Task   and we can use A here, instead of E
-         clr   <D.SSTskN
          ELSE
          pshs  a
          lda   <D.TINIT
          anda  #$FE
          sta   <D.TINIT
          sta   >DAT.Task
-         clr   <D.SSTskN
          puls  a
          ENDC
+         clr   <D.SSTskN
          tfr   x,s
          tfr   a,cc
          rts   

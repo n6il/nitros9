@@ -14,7 +14,7 @@ L0A33    suba  #$09           Invert within 8
          ldd   #$FFFF         -1'
 L0A56    pshs  d
 
-* Move to next block - SHOULD OPTOMIZE WITH W
+* Move to next block - SHOULD OPTIMIZE WITH W
 L0A58    clra                 # free blocks found so far=0
          ldb   2,s            Get block #
          addb  ,s             Add block increment (point to next block)
@@ -42,6 +42,7 @@ L0A82    leas  2,s            Eat temporary stack
          puls  d,x,pc         Restore reg, error code & return
 
 * F$FreeLB entry point (WHERE DOES THIS EVER GET CALLED FROM???)
+* Rodney says: "it's called via os9p1 syscall vector in line 393"
 FSFreeLB ldb   R$B,u          Get block count
          ldy   R$Y,u          Get ptr to DAT Image
          bsr   L0A4B          Go find block #'s
@@ -56,7 +57,7 @@ L0A4B    lda   #$FF           Value to start loop at block 0
          negb                 Negate so it is a positive # again
          bra   L0A56          Go into main find loop
 
-* F$FreLB entry point
+* F$FreeLB entry point
 FFreeLB  ldd   R$D,u
          ldx   R$X,u
          ldu   R$U,u
@@ -66,6 +67,7 @@ L0A8C    pshs  d,x,y,u
          leay  a,y
          IFNE  H6309
          clra
+* Rodney claims this is a bug...
          lslb
          tfr   d,w
          tfm   u+,y+

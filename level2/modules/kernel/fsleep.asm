@@ -64,8 +64,8 @@ L0732    std   R$X,u
          ELSE
          nega
          negb
-         ENDC
          sbca  #0
+         ENDC
          std   R$X,y
 L074F    puls  y,x
          IFNE  H6309

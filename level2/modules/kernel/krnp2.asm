@@ -189,8 +189,6 @@ L003A    ldu    <D.Init     get init module pointer
          lda    #(EXEC.+READ.) get file mode
          os9    I$ChgDir    change to it
          bcc    L004F       went ok, go on
- tfr b,a
- jsr <D.BtBug
          os9    F$Boot      try & load boot file
          bcc    L003A       go try again
 L004F    ldu    <D.Init     get pointer to init
@@ -235,7 +233,8 @@ L0083    ldu    <D.Init     get init module pointer
          ENDC
          os9    F$Fork      fork it
          bcc    L0093       if no error, go execute it
-         jmp    <D.Crash    otherwise crash the system
+*         jmp    <D.Crash    otherwise crash the system
+         bra    L009B       crash machine
 L0093    os9    F$NProc     let it take over
 
 L0096    fcs    /OS9p3/
@@ -270,15 +269,15 @@ svctab   fcb    F$UnLink
          fdb    FSTime-*-2
          fcb    F$SchBit
          fdb    FSchBit-*-2
-         fcb    F$SchBit+$80
+         fcb    F$SchBit+SysState
          fdb    FSSchBit-*-2
          fcb    F$AllBit
          fdb    FAllBit-*-2
-         fcb    F$AllBit+$80
+         fcb    F$AllBit+SysState
          fdb    FSAllBit-*-2
          fcb    F$DelBit
          fdb    FDelBit-*-2
-         fcb    F$DelBit+$80
+         fcb    F$DelBit+SysState
          fdb    FSDelBit-*-2
          fcb    F$GPrDsc
          fdb    FGPrDsc-*-2
@@ -286,7 +285,7 @@ svctab   fcb    F$UnLink
          fdb    FGBlkMp-*-2
          fcb    F$GModDr
          fdb    FGModDr-*-2
-         IFEQ   NitrOS9
+         IFEQ   H6309
          fcb    F$CpyMem
          fdb    FCpyMem-*-2
          fcb    F$DelRAM
