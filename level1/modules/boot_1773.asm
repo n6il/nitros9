@@ -28,6 +28,21 @@
          use   rbfdefs
          ENDC
 
+* Drive select bits at $FF40
+SIDESEL  equ   %01000000
+DRVSEL2  equ   %00100000
+MOTON    equ   %00001000
+PRECOMP  equ   %00000100
+DRVSEL1  equ   %00000010
+DRVSEL0  equ   %00000001
+
+* WD17x3 Definitions
+CMDREG   equ   8+0
+STATREG  equ   CMDREG
+TRACKREG equ   8+1
+SECTREG  equ   8+2
+DATAREG  equ   8+3
+
 * Sector Size
 SECTSIZE equ   256
 
@@ -72,11 +87,13 @@ MakeStak pshs  a		save 0 on stack
          bne   MakeStak		until we've created our stack
 
          tfr   s,u		put 'stack statics' in U
-         ldx   #DPort+8
-         lda   #$D0
-         sta   ,x
+*         ldx   #DPort
+         lda   #%11010000	($D0) Force Interrupt (stops any command in progress)
+         sta   DPort+CMDREG	write command to command register
+*         sta   CMDREG,x		write command to command register
          lbsr  Delay2		delay a bit
-         lda   ,x
+         lda   DPort+STATREG	read status register
+*         lda   STATREG,x	read status register
          lda   #$FF
          sta   currtrak,u	set current track to 255
          leax  >NMIRtn,pcr	point to NMI routine
@@ -87,10 +104,10 @@ MakeStak pshs  a		save 0 on stack
          lda   #$7E
          sta   >D.XNMI
          ENDC
-         lda   #$08+BootDr	permit alternate drives
+         lda   #MOTON+BootDr	turn on drive motor
          sta   >DPort
 
-* delay loop
+* delay loop to allow disk to spin up
          IFGT  Level-1
          ldd   #$C350
          ELSE
@@ -182,9 +199,9 @@ L00AC    puls  u,y,x
          clr   >DPort		shut off floppy disk
          rts
 
-L00B7    lda   #$28+BootDr    permit alternate drives
-         sta   drvsel,u
-         clr   currtrak,u
+L00B7    lda   #DRVSEL2+MOTON+BootDr    permit alternate drives
+         sta   drvsel,u			save drive selection byte
+         clr   currtrak,u		clear current track
          lda   #$05
          lbsr  L0170
          ldb   #STEP
@@ -217,8 +234,8 @@ L00EA    bsr   L013C
          orcc  #IntMasks	mask interrupts
          pshs  y		save Y
          ldy   #$FFFF
-         ldb   #$80 
-         stb   >DPort+8 
+         ldb   #%10000000	($80) READ SECTOR command
+         stb   >DPort+CMDREG	write to command register
          ldb   drvsel,u
 * Notes on the next line:
 * The byte in question comes after telling the controller that it should
@@ -231,15 +248,15 @@ L00EA    bsr   L013C
 *         orb   #$28		was $30 which RG thinks is an error
 * 09/02/03: Futher investigation shows that the OS-9 Level One Booter will
 * FAIL if orb #$28 is used.  It does not fail if orb #$30 is used. ????
-         orb   #$30		was $30 which RG thinks is an error
+         orb   #$30		RG thinks is an error
          tst   side,u
          beq   L0107
-         orb   #$40
+         orb   #SIDESEL
 L0107    stb   >DPort
          lbsr  Delay2
          orb   #$80
-*         lda   #$02
-*L0111    bita  >DPort+8
+*         lda   #%00000010	($02) RESTORE
+*L0111    bita  >DPort+STATREG
 *         bne   L0123
 *         leay  -$01,y
 *         bne   L0111
@@ -251,7 +268,9 @@ L0107    stb   >DPort
          nop
          nop
          bra   L0123
-L0123    lda   >DPort+$0B
+
+* Sector READ Loop
+L0123    lda   >DPort+DATAREG	read from WD DATA register
          sta   ,x+
 *         stb   >DPort
          nop
@@ -259,15 +278,17 @@ L0123    lda   >DPort+$0B
 
 NMIRtn   leas  R$Size,s		adjust stack
          puls  y
-         ldb   >DPort+8
-         bitb  #$04
-         beq   L018F
-L0138    comb
+         ldb   >DPort+STATREG	read WD STATUS register
+         bitb  #$9C		any errors?
+*         bitb  #$04		LOST DATA bit set?
+         beq   RetOK		branch if not
+*         beq   ChkErr		branch if not
+L0138    comb			else we will return error
          ldb   #E$Read
-         rts
+RetOK    rts
 
-L013C    lda   #$08+BootDr	permit alternate drives
-         sta   drvsel,u
+L013C    lda   #MOTON+BootDr	permit alternate drives
+         sta   drvsel,u		save byte to static mem
          clr   side,u		assume side 0
          tfr   x,d
          cmpd  #$0000
@@ -291,34 +312,39 @@ L0162    subb  ddtks,u
 L0168    addb  #18		add sectors per track
          puls  a		get current track indicator off of stack
 L016C    incb
-         stb   >DPort+$0A
-L0170    ldb   currtrak,u
-         stb   >DPort+$09
-         cmpa  currtrak,u
-         beq   L018D
+         stb   >DPort+SECTREG	save in sector register
+L0170    ldb   currtrak,u	get current track in B
+         stb   >DPort+TRACKREG	save in track register
+         cmpa  currtrak,u	same as A
+         beq   L018D		branch if so
          sta   currtrak,u
-         sta   >DPort+$0B
-         ldb   #$10+STEP
-         bsr   L0195
+         sta   >DPort+DATAREG
+         ldb   #$10+STEP	SEEK command
+         bsr   L0195		send command to controller
          pshs  x
+* Delay
          ldx   #$222E
 L0187    leax  -$01,x
          bne   L0187
          puls  x
 L018D    clrb
          rts
-L018F    bitb  #$98
-         bne   L0138
-         clrb
-         rts
+
+*ChkErr   bitb  #$98		evaluate WD status (READY, RNF, CRC err)
+*         bne   L0138
+*         clrb
+*         rts
+
 L0195    bsr   Delay1
-L0197    ldb   >DPort+8
+L0197    ldb   >DPort+STATREG
          bitb  #$01
          bne   L0197
          rts
+
+* Entry: B = command byte
 L019F    lda   drvsel,u
          sta   >DPort
-         stb   >DPort+$08
+         stb   >DPort+CMDREG
          rts
 
 * Delay branches
