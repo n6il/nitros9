@@ -1,5 +1,7 @@
 <preface>
 <title>Differences between Versions 1.1 and 1.0</title>
+<caution>
+<title>Important Notice - Please Read Carefully</title>
 <para>
 This package contains the OS-9 C Compiler Version 1.1. Many
 improvements and bug fixes have been incorporated since the V1.0
@@ -20,6 +22,7 @@ relocating macro assembler.
 <para>
 The remainder of this notice describes the changes made since V1.0.
 </para>
+</caution>
 
 <variablelist>
 <varlistentry><term>General:</term>
@@ -36,6 +39,10 @@ and a 4 page decrease in c.pass1.
 <varlistentry><term>Executives (cc1 and cc2):</term>
 <listitem>
 <para>
+-x appearing on the cc1 command line causes the compiler to
+make the c.com command file but not execute it. -q on the cc2
+command line causes the compiler to suppress filename and
+compiler phase messages.
 </para>
 </listitem>
 </varlistentry>
@@ -51,6 +58,21 @@ C.prep now prints a fatal error is a line exceeds 255 bytes.
 <varlistentry><term>Compiler (c.comp, c.pass1, c.pass2):</term>
 <listitem>
 <para>
+C.pass1 float/double conversion is now done properly rather
+than reporting error 7.
+</para>
+<para>
+Direct and static direct storage classes may now be
+initialized.
+</para>
+<para>
+Sizeof operator now reports an error when applied to an
+undefined identifier. Sizeof now allows any expression inside
+of parenthesis. Previously, only primaries were allowed.
+</para>
+<para>
+Various code generation problems involving certain long and
+floating operations have been fixed.
 </para>
 </listitem>
 </varlistentry>
@@ -71,6 +93,17 @@ when they should have been long.
 <varlistentry><term>Assembler (c.asm):</term>
 <listitem>
 <para>
+C.asm can now handle direct-page initialized data.
+</para>
+<para>
+Some out-of-range short branches were not detected.
+</para>
+<para>
+VSECT syntax changed to allow direct-page initializers. This
+make V1.0 assembly file incompatible with V1.1.
+</para>
+<para>
+Macro and repeat block facilities have been added.
 </para>
 </listitem>
 </varlistentry>
@@ -95,6 +128,71 @@ C.link can now output modules that can be entered by the BASIC09 "RUN" command.
 <varlistentry><term>Library (clib.l):</term>
 <listitem>
 <para>
+The standard library FILE structure has been changed to allow
+specification of buffersize for a file. In V1.0, the
+buffersize was fixed at 256 bytes. A new element of the FILE
+struct (_bufsiz) contains the desired buffer size. This may be
+used as follows:
+<programlisting>
+main()
+{
+     FILE *fp;
+
+     fp=fopen("file","r");
+     fp->_bufsiz = 1024;
+
+.....
+}
+</programlisting>
+A few restrictions exist on the use of this parameter.
+Initially the _bufsiz value is 0. The library routines will
+assign a buffer of 256 bytes to the file upon initial read
+or write. If the value is non-zero and the fp has not
+previously been accessed, that value is used as the
+buffersize. Note that due to the way the library routines
+work, once a buffer of a given size is allocated to an fp, a
+larger size cannot be used, even if the file is closed. Note
+that the buffers are allocated from the ibrk() so enough extra
+memory must be allocated by the linker to handle the bigger
+buffers.
+</para>
+<para>
+Since the size of the _iobuf struct (FILE) in stdio.h has
+changed, all .r files must be re-compiled using the new header
+file.
+</para>
+<para>
+Cstart.r can now handle direct page data initialization.
+</para>
+<para>
+Fseek() now does not cause the buffer to be re-filled if the
+seek destination is already in the buffer.
+</para>
+<para>
+Getc() now does "I$READ" on unbuffered SCF devices rather than
+"I$READLN".
+</para>
+<para>
+Getc() performed on "stdin" flushes the "stdout" buffer.
+</para>
+<para>
+Printf() has been changed to not flush the "stdout" buffer
+before returning.
+</para>
+<para>
+Chown() has been fixed to not wipe out disks.
+</para>
+<para>
+Toascii() has been added to stdio.h
+</para>
+<para>
+Calls to scanf() now do not cause the linker to reports
+unresolved references to toupper() and tolower().
+</para>
+<para>
+The floating point routines now report errors 40, 41, and 42
+for floating point over/underflow, divide by zero, and
+float/long conversion instead of error #007.
 </para>
 </listitem>
 </varlistentry>
