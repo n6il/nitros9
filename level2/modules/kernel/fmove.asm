@@ -97,6 +97,18 @@ L0BEF    leas  16,s         purge stack
 L0BF2    clrb               clear errors
          puls  d,x,y,u,pc   return
          ELSE
+* Main move loop
+* Stack:  0,s=distance to end of source block
+*         2,s=distance to end of destination block
+*         4,s=pointer to destination
+*         6,s=pointer to destination DAT image
+*         8,s=pointer to source
+*        10,s=pointer to source DAT image
+*        12,s=task # of source
+*        13,s=task # of destination
+*        14,s=total byte count of move
+* Registers: X=Source pointer
+*            U=Destination pointer
 L0BXA    pshs  cc         
          ldd   [<$07,s]    
          pshs  b  
@@ -189,8 +201,9 @@ L0BF5    ldu   <D.TskIPt  get task image ptr table
          ELSE
          pshs  d
          tfr   x,d
-         subd  ,s++
+         subd  ,s
          tfr   d,x
+         puls  d
          ENDC
          lsra               Calculate offset into DAT image to get proper
          lsra               8K bank (remember that each entry in a DAT image

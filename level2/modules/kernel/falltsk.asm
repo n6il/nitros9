@@ -34,9 +34,11 @@ L0C79    equ   *
          IFNE  H6309
          aim   #^ImgChg,P$State,x flag DAT image change in process descriptor
          ELSE
+         pshs  a
          lda   P$State,x
          anda  #^ImgChg
          sta   P$State,x
+         puls  a
          ENDC
          clr   <D.Task1N  task 1 DAT image has changed
          andcc #^Carry      clear carry

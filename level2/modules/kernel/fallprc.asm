@@ -38,6 +38,7 @@ Null3    equ   *-1
          tfm    y,x+
          ELSE
          clra
+         clrb
          leax   P$PID,u
          ldy    #$80
 LChinese std    ,x++

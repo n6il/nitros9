@@ -48,8 +48,8 @@ L0615    lsrb               divide by 32 to get block count
          IFNE  H6309
          subr  a,b          same count?
          ELSE
-         pshs  b
-         suba  ,s+
+         pshs  a
+         subb  ,s+
          ENDC
          beq   L0634        yes, save it
          bcs   L062C        overflow, delete the ram we just got
@@ -63,8 +63,8 @@ L062C    equ   *
          IFNE  H6309
          addr  b,a
          ELSE
-         pshs  a
-         addb  ,s+
+         pshs  b
+         adda  ,s+
          ENDC
          negb  
          os9   F$DelImg 

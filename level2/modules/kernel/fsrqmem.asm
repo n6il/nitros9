@@ -53,16 +53,15 @@ FSRqMem  ldd   R$D,u        get size requested
          ldx   <D.SysMem    Get start of table ptr
          ldb   #$20         skip block 0: it's always full
          abx                same size, but faster than leax $20,x
-*         leay  -17,y        Skip Kernal, Vector RAM & I/O (Can't be free)
+*         leay  -17,y        Skip Kernel, Vector RAM & I/O (Can't be free)
 L0857    ldb   R$A,u        Get # 256 byte pages requested
 * Loop (from end of system mem map) to look for # continuous pages requested
 L0859    equ   *
          IFNE  H6309
-* TODO: Verify order of comparison
          cmpr  x,y          We still have any system RAM left to try?
          ELSE
-         pshs  y
-         cmpx  ,s++
+         pshs  x
+         cmpy  ,s++
          ENDC
          bhi   L0863        Yes, continue
          comb               Exit with No System RAM Error
@@ -73,7 +72,7 @@ L0863    lda   ,-y          Get page marker (starting @ end of SMAP)
          bne   L0857        Used, try next lower page
          decb               Found 1 page, dec # pages we need to allocate
          bne   L0859        Still more pages needed, check if we can get more
-         sty   ,s           Found free contigous pages, save SMAP entry ptr
+         sty   ,s           Found free contiguous pages, save SMAP entry ptr
          lda   1,s          Get LSB of ptr
          lsra               Divide by 32 (Calculate start 8K block #)
          lsra  
@@ -141,7 +140,7 @@ L08AD    equ   *
 * Scan DAT image to find memory blocks to free up
          ldx   <D.SysDAT    get pointer to system DAT image
          IFNE  H6309
-         lde   #8           get # blocks to check
+         lde   #DAT.BlCt    get # blocks to check
          ELSE
          ldy   #DAT.BlCt
          ENDC

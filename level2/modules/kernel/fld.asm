@@ -15,7 +15,7 @@ L0AC8    lda   1,y            Get MMU block # to get data from
          brn    L0AC8
          lda   ,x             Get byte
          stb   >$FFA0         Map block 0 into $0000-$1FFF
-         fdb   $21ED
+         fdb   $21ED          LBRN ???
          puls  pc,cc          Get interrupt status/(or turn on) & return
 
 * Get 1st byte of LDDDXY - also used by many other routines
