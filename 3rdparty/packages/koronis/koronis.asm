@@ -15,11 +15,12 @@
 *        Ty/La At/Rv: $11 $81
 *        Prog mod, 6809 Obj, re-ent, R/O
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* ???    Disassembled                                   BGP 03/01/12
-* ???    Patched so that standard output is used and    BGP 03/01/12
-*        that /TERM is no longer opened.
+*          2003/01/12  Boisy G. Pitre
+* Disassembled from original binary; patched so that standard output
+* is used and /TERM is no longer assumed.
 
          nam   Koronis
          ttl   Koronis Rift Program

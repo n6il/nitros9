@@ -16,12 +16,14 @@
 *        Ty/La At/Rv: $11 $81
 *        Prog mod, 6809 Obj, re-ent, R/O
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 1      Disassembly of original distribution           PWZ 03/01/31
-*        added comments from the C-modules from
-*        dev system disk. This code recompiles to
-*        duplicate of the original module.
+*   1      2003/01/31  Paul W. Zibaila
+* Disassembly of original distribution; added comments from the
+* C-modules from dev system disk; currently assembles to the
+* duplicate of the original module.
+*
 ********************************************************************
 ***
 ***
@@ -76,11 +78,11 @@ EPEXEC. equ   %00100100    mask for public and owner executes
 
 
 
-* OS9 Header info
+* OS-9 Header info
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
          mod   eom,name,tylg,atrv,start,size
 
 
@@ -3234,6 +3236,7 @@ L1658    fcb   $04,$04,$04,$04,$04,$04,$04,$04   ........
 L1660    fcb   $04,$04,$04,$20,$20,$20,$20,$01   ...    .
 L1668    fcb   $00,$00,$00,$01,$00,$0D,$74,$6F   ......to
 L1670    fcb   $63,$67,$65,$6E,$00               cgen.
+
          emod
 eom      equ   *
          end

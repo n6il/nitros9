@@ -3,11 +3,15 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   0    Disassembly of original distribution and       PWZ 03/01/31
-*        merged in comments from disasm dated 1992
-*   1    Monitor type bug now fixed                     BGP 03/03/10
+*   0      2003/01/31  Paul W. Zibaila
+* Disassembly of original distribution and merged in comments from
+* disasm dated 1992.
+*
+*   1      2003/03/10  Boisy G. Pitre
+* Monitor type bug now fixed.
 
 
 * I/O path definitions
@@ -24,7 +28,7 @@ StdErr   equ   2
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
