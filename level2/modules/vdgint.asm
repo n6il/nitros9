@@ -3,17 +3,21 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   4    Quite a few changes:                           BGP 03/01/09
-*        - Merged in CoCo 2 gfx code from original
-*          OS-9 Level 2 code
-*        - Incorporated code tweaks for 6809 and 6309
-*          code from the vdgint_small and vdgint_tiny
-*          source files
-*        - Fixed long-standing cursor color bug
-*        - Fixed long-standing F$SRtMem bug in CoCo 2
-*          "graphics end" code $12 (see comments)
+*   4      2003/01/09  Boisy G. Pitre
+* Quite a few changes:
+* - Merged in CoCo 2 gfx code from original OS-9 Level 2 code.
+* - Incorporated code tweaks for 6809 and 6309 code from the vdgint_small
+*   and vdgint_tiny source files.
+* - Fixed long-standing cursor color bug.
+* - Fixed long-standing F$SRtMem bug in CoCo 2 "graphics end" code $12
+*   (see comments)
+*
+*   4r1    2003/09/16  Robert Gault
+* Added patch to work 1MB and 2MB CoCo 3s.
 
          nam   VDGInt
          ttl   CoCo 3 VDG I/O module
@@ -29,7 +33,7 @@ FFStSz   equ   512		flood fill stack size in bytes
 
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   4
 
 skip2    equ   $8C		cmpx instruction
@@ -634,12 +638,25 @@ L03D7    lbsr  SetPals
          ldx   <D.SysDAT
 *         leax  a,x
          abx
-         lda   $01,x		get block number to use
-         pshs  a
-         anda  #$F8		keep high bits only
-         lsla
-         lsla
+*         lda   $01,x		get block number to use
+*         pshs  a
+*         anda  #$F8		keep high bits only
+*         lsla
+*         lsla
+*         clrb
+* PATCH START: Mod for >512K systems, Robert Gault
+         ldb   1,x		get block number to use
+         pshs  b
+         andb  #$F8		keep high bits only
+         clra
+         lslb
+         rola
+         lslb
+         rola
+         sta   >$FF9B
+         tfr   b,a
          clrb
+* PATCH END: Mod for >512K systems, Robert Gault
          std   <D.VOFF1		display it
          std   >$FF9D
          ldd   #$0F07
