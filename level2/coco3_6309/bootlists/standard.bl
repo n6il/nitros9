@@ -12,8 +12,8 @@
 *
 * These modules are mandatory.
 ../MODULES/KERNEL/krnp2
-*../MODULES/krnp3_perr
-*../MODULES/krnp4_regdump
+*../MODULES/KERNEL/krnp3_perr
+*../MODULES/KERNEL/krnp4_regdump
 ../MODULES/SYSMODS/ioman
 ../MODULES/SYSMODS/init
 *
