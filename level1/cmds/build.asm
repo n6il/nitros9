@@ -23,8 +23,9 @@ edition  set   6
 
          mod   eom,name,tylg,atrv,start,size
 
-FPath    rmb   1
-LineBuff rmb   578
+fpath    rmb   1
+linebuff rmb   128
+stack    rmb   450
 size     equ   .
 
 name     fcs   /Build/
@@ -32,29 +33,29 @@ name     fcs   /Build/
 
 *start    ldd   #(WRITE.*256)+PREAD.+UPDAT.  Level One edition 5 line
 start    ldd   #(WRITE.*256)+UPDAT.
-         os9   I$Create 
-         bcs   Exit
-         sta   <FPath
-InpLoop  lda   #1
-         leax  <Prompt,pcr
-         ldy   #PromptL
-         os9   I$WritLn 
-         clra  
-         leax  LineBuff,u
-         ldy   #128
-         os9   I$ReadLn 
-         bcs   Close
-         cmpy  #$0001
-         beq   Close
-         lda   <FPath
-         os9   I$WritLn 
-         bcc   InpLoop
-         bra   Exit
-Close    lda   <FPath
-         os9   I$Close  
-         bcs   Exit
-         clrb  
-Exit     os9   F$Exit   
+         os9   I$Create 		create file
+         bcs   Exit			branch if error
+         sta   <fpath			else save path to file
+InpLoop  lda   #1			stdout
+         leax  <Prompt,pcr		point to prompt
+         ldy   #PromptL			and size of prompt
+         os9   I$WritLn 		write line
+         clra  				stdin
+         leax  linebuff,u		point to line buffer
+         ldy   #128			and max read size
+         os9   I$ReadLn 		read line
+         bcs   Close			branch if error
+         cmpy  #$0001			1 byte read?
+         beq   Close			if so, must be CR, exit
+         lda   <fpath			else get file path
+         os9   I$WritLn 		write line to file
+         bcc   InpLoop			branch if ok
+         bra   Exit			else exit
+Close    lda   <fpath			get file path
+         os9   I$Close  		close it
+         bcs   Exit			branch if erro
+         clrb  				else clear carry
+Exit     os9   F$Exit   		and exit normally
 
 Prompt   fcc   "? "
 PromptL  equ   *-Prompt
