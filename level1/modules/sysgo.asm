@@ -37,23 +37,23 @@ name     fcs   /SysGo/
 * default OS-9 priority
 DefPrior set   128
 
-BootMsg  fcc   "OS-9 LEVEL ONE VR. 0"
+BootMsg  fcc   !OS-9 LEVEL ONE VR. 0!
          fcb   48+OS9Vrsn
-         fcc   ".0"
+         fcc   !.0!
          fcb   48+OS9Major
-         fcc   ".0"
+         fcc   !.0!
          fcb   48+OS9Minor
          fdb   C$CR,C$LF
 
 * For ROM version, cut down on verbage
          IFNE  DiskGo
-         fcc   !PHOENIX Release 11/04/2002!
+         fcc   !Beta1 Release 03/07/2003!
          fcb   C$CR,C$LF
          fcc   !"A CoCo Community Project"!
          fcb   C$CR,C$LF
-         fcc   "Visit us on the web:"
+         fcc   !Visit us on the web:!
          fcb   C$CR,C$LF
-         fcc   "http://cocoos9.sourceforge.net"
+         fcc   !http://cocoos9.sourceforge.net!
          fcb   C$CR,C$LF
          ENDC
 
@@ -66,7 +66,7 @@ ChdDev   fcc   "/DD"
 ChxDev   fcc   "/DD/"
 ChxPath  fcc   "CMDS"
          fcb   C$CR
-         fcc   ",,,,,,,,,,"
+*         fcc   ",,,,,,,,,,"
          ENDC
 
 Shell    fcc   "Shell"

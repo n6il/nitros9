@@ -5,7 +5,7 @@
 Level    equ   1
 OS9Vrsn  equ   2
 OS9Major equ   1
-OS9Minor equ   0
+OS9Minor equ   1
 
          use   os9defs
          use   systype
