@@ -258,12 +258,12 @@ B09Vrsn  equ   1
 B09Major equ   1         
 B09Minor equ   0         
 
-         nam   Basic09   
-         ttl   BASIC for OS-9
+         NAM   Basic09   
+         TTL   BASIC for OS-9
 
-         ifp1            
-         use   defsfile  
-         endc            
+         IFP1            
+         USE   defsfile  
+         ENDC            
 
          mod   eom,name,Prgrm+Objct,ReEnt+1,start,size
 
@@ -478,11 +478,11 @@ L0022    fdb   $1607      Edition #22 ($16)
 L0024    fcb   $0C       
          fcc   '            BASIC09'
          fcb   $0A       
-         ifne  H6309     
+         IFNE  H6309     
          fcc   '     6309 VERSION 0'
-         else            
+         ELSE            
          fcc   '     6809 VERSION 0'
-         endc            
+         ENDC            
          fcb   B09Vrsn+$30
          fcc   '.0'      
          fcb   B09Major+$30
@@ -1569,25 +1569,24 @@ L07B5    lda   R$DP,s     Get DP register from stack
          tfr   a,dp       Put into real DP
          stb   <u0035     Save signal code
 
-         ifeq  H6309-true
-*        oim   #$80,<u0034  Set high bit (flag signal was received)
-         fcb   $01,$80,u0034
-         else            
+         IFNE  H6309
+         oim   #$80,<u0034  Set high bit (flag signal was received)
+         ELSE            
          lsl   <u0034     Set high bit (flag signal was received)
          coma            
          ror   <u0034    
-         endc            
+         ENDC            
 
          rti              Return to normal BASIC09
 
 * BASIC09 INIT
 start                    
-         ifeq  H6309-true
+         IFNE  H6309
          tfr   u,d        Save start of data mem into D
          ldw   #$100      Size of DP area to clear
          clr   ,-s        Clear byte on stack
          tfm   s,u+       clear out DP
-         else            
+         ELSE            
          pshs  u          Save start of data mem on stack
          leau  >$100,u    Point to end of DP
          clra             Clear all of DP to $00
@@ -1596,7 +1595,7 @@ L07C9    std   ,--u
          cmpu  ,s        
          bhi   L07C9     
          puls  d          Get start of data mem into D
-         endc            
+         ENDC            
 
          leau  ,x         Point U to Start of parameter area
          std   <u0000     Preserve Start of Data memory ptr
@@ -1612,19 +1611,19 @@ L07C9    std   ,--u
          std   <u0004     Save ptr to ptr list of modules in workspace
          pshs  x          Preserve start of param area
 
-         ifeq  H6309-true
+         IFNE  H6309
          pshs  b          Put 0 byte on stack
          ldw   #$100      Size of area to clear ($400-$4ff)
          tfm   s,d+       Clear out list of module ptrs (D=$500 at end)
          leas  1,s        Eat stack byte
-         else            
+         ELSE            
          tfr   d,x        x=$400
          clra             d=$0000
 ClrLp    sta   ,x+        Clear byte
          incb             Inc counter
          bne   ClrLp      Do until it wraps
          tfr   x,d        Move $500 to D
-         endc            
+         ENDC            
 
          std   <u0008     Save ptr to start of I-Code workspace
          std   <u004A     Save ptr to end of used I-Code workspace
@@ -1743,16 +1742,15 @@ L08E5    lbsr  L0B2D      ReadLn up to 256 bytes from std in
          bcc   L08F8      No error on read, continue
          cmpb  #E$EOF     <ESC> key?
          bne   L0915      No, exit routine with error
-         ifeq  H6309-true
-*        ldq   #$6279650d     'bye' <CR>
-         fcb   $cd,$62,$79,$65,$0d
+         IFNE  H6309
+         ldq   #$6279650d     'bye' <CR>
          stq   ,y         Stick it in the keyboard buffer
-         else            
+         ELSE            
          ldd   #'b*256+'y Stick the word 'bye' <CR> into the keybrd buffer
          std   ,y        
          ldd   #'e*256+C$CR ('e' + CR)
          std   2,y       
-         endc            
+         ENDC            
 * Keyboard line read, no errors from ReadLn
 L08F8    ldx   2,s        Get command tbl ptr back
          lda   #$80       Mask to check for end of entry (high bit set)
@@ -2502,12 +2500,12 @@ L0E73    lbsr  L010D
          bcs   L0E8B     
          ldu   <u0046    
 
-         ifeq  H6309-true
+         IFNE  H6309
          clrd            
-         else            
+         ELSE            
          clra            
          clrb            
-         endc            
+         ENDC            
 
          pshu  x,d       
          inca            
@@ -4365,12 +4363,12 @@ L1BC2    pshs  u,x,d
          leau  <L1BB0,pc  Point to table
          bra   L1B8B     
 
-         ifeq  H6309-true
+         IFNE  H6309
 L1BC9    clrd            
-         else            
+         ELSE            
 L1BC9    clra            
          clrb            
-         endc            
+         ENDC            
 
 L1BCB    bsr   L1BA9     
          bcs   L1BD4     
@@ -4679,12 +4677,12 @@ L1E4C    lbsr  L233E      Go find command (or variable/constant name)
 * Command type 1 goes here
          ldb   <u00A3     Get entry # (token) into JMP offset table
          clra             Make 16 bit for signed jump
-         ifeq  H6309-true
+         IFNE  H6309
          lsld             Multiply by 2 (2 bytes/entry)
-         else            
+         ELSE            
          lslb            
          rola            
-         endc            
+         ENDC            
          leax  >L1D60,pc  Point to Basic09 COMMANDS vector table
          ldd   d,x        Get offset
          jmp   d,x        Execute command's routine
@@ -7490,12 +7488,12 @@ L332C    std   <u0039
          pshs  y         
          ldd   <$11,x    
          leay  d,u       
-         ifeq  H6309-true
+         IFNE  H6309
          clrd            
-         else            
+         ELSE            
          clra            
          clrb            
-         endc            
+         ENDC            
          bra   L333F     
 
 L333D    std   ,y++      
@@ -7684,15 +7682,15 @@ L345A    ldy   <u0046     ??? Get subroutine stack ptr
          std   3,y       
          sta   5,y       
          lbsr  L3FB1      Increment counter (Do REAL add)
-         ifeq  H6309-true
+         IFNE  H6309
          ldq   1,y        Copy REAL # from 1,y to ,u
          stq   ,u        
-         else            
+         ELSE            
          ldd   1,y        Copy REAL # from 1,y to ,u
          std   ,u        
          ldd   3,y       
          std   2,u       
-         endc            
+         ENDC            
          lda   5,y       
          sta   4,u       
 * Incrementing REAL STEP value
@@ -7711,15 +7709,15 @@ L348E    ldd   b,x
          lda   #$02       Force it to REAL type
          ldb   ,u         Copy real # from u to y
          std   ,y        
-         ifeq  H6309-true
+         IFNE  H6309
          ldq   1,u       
          stq   2,y       
-         else            
+         ELSE            
          ldd   1,u       
          std   2,y       
          ldd   3,u       
          std   4,y       
-         endc            
+         ENDC            
          rts             
 
 L34A5    ldy   <u0046    
@@ -7732,15 +7730,15 @@ L34A5    ldy   <u0046
          sta   <u00D1    
          lbsr  L3FB1      Inc current FOR/NEXT value by STEP (Do REAL Add)
          ldu   <u00D2    
-         ifeq  H6309-true
+         IFNE  H6309
          ldq   1,y       
          stq   ,u        
-         else            
+         ELSE            
          ldd   1,y       
          std   ,u        
          ldd   3,y       
          std   2,u       
-         endc            
+         ENDC            
          lda   5,y       
          sta   4,u       
          lsr   <u00D1     Check sign
@@ -7943,15 +7941,15 @@ L3632    ldd   ,x
          beq   L366D     
          jsr   <u0016    
          ldd   ,x        
-         ifeq  H6309-true
+         IFNE  H6309
          lsld            
          lsld            
-         else            
+         ELSE            
          lslb            
          rola            
          lslb            
          rola            
-         endc            
+         ENDC            
          addd  #$0002    
          leau  d,x       
          pshs  u         
@@ -7960,15 +7958,15 @@ L3632    ldd   ,x
          cmpd  ,x++      
          bhi   L366B     
          subd  #$0001    
-         ifeq  H6309-true
+         IFNE  H6309
          lsld            
          lsld            
-         else            
+         ELSE            
          lslb            
          rola            
          lslb            
          rola            
-         endc            
+         ENDC            
          addd  #$0001    
          ldd   d,x       
 * 6809 - Change to PSHS B/PULS X,B
@@ -8632,18 +8630,18 @@ L3AF9    ldd   5,u
          leas  ,y         Point stack to all the ptr/size packets for parms
          ldd   <u0040     Get ptr to end of parm packets @ Y
 * 6309: Change PSHS/SUBD to SUBR Y,D
-         ifeq  H6309-true
+         IFNE  H6309
          subr  y,d        Calc size of all parm packets being sent
          lsrd             /4 to get # of parms being sent
          lsrd            
-         else            
+         ELSE            
          pshs  y          Put start of parms packets ptr on stack
          subd  ,s++       Calculate size of all parm packets being sent
          lsra             Divide by 4 (to get # parms being sent)
          rorb            
          lsra            
          rorb            
-         endc            
+         ENDC            
          pshs  d          Preserve # parms waiting on stack
          ldd   M$Exec,x   Get execution offset
 * USELESS-ROUTINE CHECKS FOR LINE WITH COMPILER ERROR & POSSIBLE STACK OVERFLOW
@@ -9168,12 +9166,12 @@ L3E9D    ldd   ,u         Get Integer
          rts             
 
 * INTEGER NEGATE (- IN FRONT OF NUMBER)
-         ifeq  H6309-true
+         IFNE  H6309
 L3EA8    clrd             Number=0-Number (negate it)
-         else            
+         ELSE            
 L3EA8    clra            
          clrb            
-         endc            
+         ENDC            
          subd  1,y       
          std   1,y        Save & return
          rts             
@@ -9193,13 +9191,13 @@ L3EB8    ldd   7,y        Get integer
          rts             
 
 * INTEGER MULTIPLY
-         ifeq  H6309-true
+         IFNE  H6309
 L3EC1    ldd   1,y        Get temp var integer
          muld  7,y        Multiply by answer integer
          stw   7,y        Save 16 bit wrapped result
          leay  6,y        Eat temp var
          rts             
-         else            
+         ELSE            
 L3EC1    ldd   7,y        Get value that result will go into
          beq   L3EFA      *0, leave result as 0
          cmpd  #2         Special case: times 2?
@@ -9233,14 +9231,14 @@ L3EE1    lda   8,y        Do 16x16 bit signed multiply, MOD 65536
          stb   7,y       
 L3EFA    leay  6,y        Eat temp var & return
          rts             
-         endc            
+         ENDC            
 * Integer MOD routine
 L46A2    bsr   L3F1C      Go do integer divide
          ldd   3,y        Get "hidden" remainder
          std   1,y        Save as answer & return
          rts             
 
-         ifeq  H6309-true
+         IFNE  H6309
 L3F1C    ldd   1,y        Get # to divide by
          bne   GoodDiv    <>0, go do divide
          ldb   #$2D       =0, Divide by 0 error
@@ -9281,7 +9279,7 @@ CheckZ2  cmpf  #1         If 1, then remainder must be negative
 CheckZ3  clrw             Clear out answer to 0 again
          bra   CheckD1    Go deal with sign of remainder
 
-         else            
+         ELSE            
 * Calculate sign of result of Integer Divide (,y - 0=positive, FF=negative)
 L3EFD    clr   ,y         Clear flag (positive result)
          ldd   7,y        Get #
@@ -9367,24 +9365,24 @@ L3F65    std   9,y        Save remainder
          std   7,y        Save signed result
 L3F79    leay  6,y        Eat temp var & return
          rts             
-         endc            
+         ENDC            
 
 * Copy REAL # from X (moving X to after real number) to temp var
 L3F7C    leay  -6,y       Make room for temp var
          ldb   ,x+        Get hi-byte of real value
          lda   #2         Force var type to REAL
          std   ,y         Save in temp var
-         ifeq  H6309-true
+         IFNE  H6309
          ldq   ,x         Copy mantissa to temp var
          stq   2,y       
          ldb   #4         Bump X up to past end of var
          abx             
-         else            
+         ELSE            
          ldd   ,x++       Copy rest of real # to temp var & return
          std   2,y       
          ldd   ,x++      
          std   4,y       
-         endc            
+         ENDC            
          rts             
 
 * Copy REAL # from variable pool (pointed to by X) into temp var
@@ -9396,43 +9394,41 @@ L3F93    leay  -6,y       Make room for temp var
          lda   #2         Set 1st byte to be 2
          ldb   ,u         Get 1st byte of real #
          std   ,y        
-         ifeq  H6309-true
+         IFNE  H6309
          ldq   1,u        Get mantissa for real #
          stq   2,y        Save in temp var
-         else            
+         ELSE            
          ldd   1,u        Get bytes 2&3 of real #
          std   2,y       
          ldd   3,u        Get bytes 4&5 of real #
          std   4,y       
-         endc            
+         ENDC            
          rts              Return
 
 * Negate for REAL #'s
-         ifeq  H6309-true
-*L3FA4    eim #1,5,y        Negate sign bit of REAL #
-L3FA4    fcb   $65,1,$25 
-         else            
+         IFNE  H6309
+L3FA4    eim   #1,5,y     Negate sign bit of REAL #
+         ELSE            
 L3FA4    lda   5,y        Get LSB of mantissa & sign bit
          eora  #$01       Reverse the sign bit
          sta   5,y        Save it back
-         endc            
+         ENDC            
          rts              return
 
 * Subtract for REAL #'s
-         ifeq  H6309-true
-*L3FAB    eim #1,5,y        Negate sign bit of real #
-L3FAB    fcb   $65,1,$25 
-         else            
+         IFNE  H6309
+L3FAB    eim   #1,5,y     Negate sign bit of real #
+         ELSE            
 L3FAB    ldb   5,y        Reverse sign bit on REAL #
          eorb  #1        
          stb   5,y       
-         endc            
+         ENDC            
 
-         ifeq  H6309-true
+         IFNE  H6309
          use   basic09.real.add.63.asm
-         else            
+         ELSE            
          use   basic09.real.add.68.asm
-         endc            
+         ENDC            
 
 * REAL Multiply?
 L40CC    bsr   L40D3      Go do REAL multiply
@@ -9442,11 +9438,11 @@ L40CC    bsr   L40D3      Go do REAL multiply
 L3C2C    jsr   <u0024     Report error
          fcb   $06       
 
-         ifeq  H6309-true
+         IFNE  H6309
          use   basic09.real.mul.63.asm
-         else            
+         ELSE            
          use   basic09.real.mul.68.asm
-         endc            
+         ENDC            
 
 * Real divide entry point?
 L422D    bsr   L4234     
@@ -9456,11 +9452,11 @@ L4233    rts
 LErr     jsr   <u0024    
          fcb   $06       
 
-         ifeq  H6309-true
+         IFNE  H6309
          use   basic09.real.div.63.asm
-         else            
+         ELSE            
          use   basic09.real.div.68.asm
-         endc            
+         ENDC            
 
 * Real exponent
 L4336    pshs  x          Preserve X
@@ -9776,13 +9772,13 @@ L4503    clra             Force least 2 sig bytes to 0 (and sign to positive)
 L4512    ldu   #$0210     ??? (528)
          tsta             Exponent negative?
          bpl   L451F      No, positive (big number), skip ahead
-         ifeq  H6309-true
+         IFNE  H6309
          negd            
-         else            
+         ELSE            
          nega            
          negb            
          sbca  #$00      
-         endc            
+         ENDC            
          inc   5,y       
          tsta             Check exponent again
 L451F    bne   L4526      Exponent <>0, skip ahead
@@ -9852,13 +9848,13 @@ L458C    ldb   #$34       Value out of Range for Destination error
 
 L4591    ror   5,y        Get sign bit of converted real #
          bcc   L4599      Positive, leave integer result alone
-         ifeq  H6309-true
+         IFNE  H6309
          negd             Reverse sign of integer
-         else            
+         ELSE            
          nega            
          negb            
          sbca  #$00      
-         endc            
+         ENDC            
 L4599    std   1,y        Save integer result
          lda   #1         Force type to integer & return
          sta   ,y        
@@ -9875,26 +9871,25 @@ L45A7    leay  $C,y       Eat 2 temp vars
          rts             
 
 * ABS for Real #'s
-         ifeq  H6309-true
-*L45AE   aim   #$fe,5,y     Force sign of real # to positive
-L45AE    fcb   $62,$fe,$25
-         else            
+         IFNE  H6309
+L45AE    aim   #$fe,5,y   Force sign of real # to positive
+         ELSE            
 L45AE    lda   5,y        Get sign bit for Real #
          anda  #$FE       Force to positive
          sta   5,y        Save sign bit back & return
          rts             
-         endc            
+         ENDC            
 
 * ABS for Integer's
 L45B5    ldd   1,y        Get integer
          bpl   L45BF      If positive already, exit
-         ifeq  H6309-true
+         IFNE  H6309
          negd             Force to positive
-         else            
+         ELSE            
          nega             NEGD (force to positive)
          negb            
          sbca  #$00      
-         endc            
+         ENDC            
          std   1,y        Save positive value back
 L45BF    rts             
 
@@ -10830,12 +10825,12 @@ L4CDE    bne   L4CD3
 
 L4CE1    lda   ,u         Get sign of 5 byte #
          bpl   L4CEE      If positive, skip ahead
-         ifeq  H6309-true
+         IFNE  H6309
          clrd             Clr 5 bytes @ u
-         else            
+         ELSE            
          clra            
          clrb            
-         endc            
+         ENDC            
          std   ,u        
          std   2,u       
          sta   4,u       
@@ -10912,12 +10907,12 @@ L4D6F    fcb   $0b,$17,$21,$7f,$7e 0185.04681
 
 L4DCE    fdb   $0E12,$14A2,$BB40,$E62D,$3619,$62E9
 
-         ifeq  H6309-true
+         IFNE  H6309
 L4DDA    clrd            
-         else            
+         ELSE            
 L4DDA    clra            
          clrb            
-         endc            
+         ENDC            
          std   <u004C    
          std   <u004E    
          pshs  a          ??? Save flag (0)
@@ -11027,12 +11022,12 @@ L4E98    ldd   <u0052
          std   ,--y      
          ldd   <u0050    
          std   ,--y      
-         ifeq  H6309-true
+         IFNE  H6309
          clrd            
-         else            
+         ELSE            
          clra            
          clrb            
-         endc            
+         ENDC            
          std   ,--y      
          bsr   L4E78     
          lbra  L40CC     
@@ -11154,12 +11149,12 @@ L4F77    pshs  y,x
          ldy   1,y        Get ptr to string to search in
          bsr   L3C29      Call Substr function (should change to direct LBSR
          bcc   L4F90      If sub-string match found, skip ahead
-         ifeq  H6309-true
+         IFNE  H6309
          clrd            
-         else            
+         ELSE            
          clra            
          clrb            
-         endc            
+         ENDC            
          bra   L4F99     
 
 L3C29    jsr   <u001B     Substr string search
@@ -11563,15 +11558,15 @@ L5295    sta   ,y         Save it in var packet
          puls  pc,u      
 
 L529B    leay  -6,y       Make room for temp var
-         ifeq  H6309-true
+         IFNE  H6309
          ldq   ,u         Copy real # from ,u to 1,y
          stq   1,y       
-         else            
+         ELSE            
          ldd   ,u         Get real # from ,u
          std   1,y        Save into real portion of var packet
          ldd   2,u       
          std   3,y       
-         endc            
+         ENDC            
          ldb   4,u       
          stb   5,y       
          lda   <u0075     Get sign of exponent?
