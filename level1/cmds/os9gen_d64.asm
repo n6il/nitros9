@@ -6,14 +6,15 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *   7    From Dragon OS-9 Level One VR 01.02.00
+*   8    New os9gen saves from address $EF00 instead of $F000
 
-* DragonDOS BOOT loads sectors (numbered from 0) 2-17 (3840 bytes) into
+* DragonDOS BOOT loads sectors (numbered from 0) 2-17 (4096 bytes) into
 * RAM at location 9728. The first two bytes of sector 2 must be ASCII 'OS'
 * for this to work. It then jumps to 9730 and begins execution.
 *
 * The boot code switches into RAM mode, and copies the entire section to
-* $F000 and jumps to $F04F.
-* The 3840 bytes contain a few bytes to do the RAM mode switch, then
+* $EF00 and jumps to $EF4F.
+* The 4096 bytes contain a few bytes to do the RAM mode switch, then
 * immediately after comes the kernel modules; OS9, OS9p2, Init and Boot
 * The rest of the bootstrap is in the OS9Boot file. The disk head at LSN0
 * contains the LSN of the bootstrap file in field DD.BT.
@@ -30,7 +31,9 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   7
+edition  set   8
+os9start equ  $EF00
+os9size  equ  $0F80
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -275,8 +278,8 @@ L02C5    lda   #$01
          anda  #$90
          eora  #$90
          lbne  L0385
-         ldx   #$F000    Address of kernel in RAM
-         ldy   #$0F00    Amount to write
+         ldx   #os9start    Address of kernel in RAM
+         ldy   #os9size     Amount to write
          lda   <DevFd
          os9   I$Write  
          bcs   L0354
