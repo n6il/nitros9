@@ -19,7 +19,11 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+         IFGT  Level-1
+edition  set   9
+         ELSE
 edition  set   6
+         ENDC
 
 L0000    mod   eom,name,tylg,atrv,start,size
 
@@ -33,7 +37,9 @@ u0008    rmb   1
 u0009    rmb   1
 u000A    rmb   1
 u000B    rmb   1
-u000C    rmb   4
+u000C    rmb   2
+WideFlag rmb   1
+u000F    rmb   1
 u0010    rmb   14
 u001E    rmb   2
 u0020    rmb   1
@@ -364,7 +370,11 @@ L023B    bsr   L021D
          bsr   L021D
          cmpa  #')
          beq   L0282
+         IFGT  Level-1
+         ldb   #$04
+         ELSE
          ldb   <u0004
+         ENDC
          bra   L0265
 L0250    cmpa  #'[
          bne   L026A
@@ -505,6 +515,22 @@ start    leas  >size,u
          stx   <u000C
          clr   <u0000
          clr   <u0001
+         IFGT  Level-1
+         clr   <WideFlag
+         pshs  y,x,b,a
+         lda   #$01		stdout
+         ldb   #SS.ScSiz	get screen size
+         os9   I$GetStt
+         bcc   L0380
+         cmpb  #E$UnkSvc
+         beq   L0387
+         puls  x,y,b,a
+         lbra  L0735
+L0380    cmpx  #80		80 columns?
+         beq   L0387		branch if so
+         inc   <WideFlag
+L0387    puls  x,y,b,a
+         ENDC
 L036A    clr   ,x+
          cmpx  <u0006
          bcs   L036A
@@ -652,8 +678,13 @@ L0490    fcc   "PC="
          fcb   $00
          fcc   "U="
          fcb   $00
-
+         IFGT  Level-1
+L04AF
+         fcb   $0d,$0e,$27,$54
+         pshs  u
+         ELSE
 L04AF    pshs  u
+         ENDC
          ldx   <u0006
          leay  <L0490,pcr
          ldu   <u0002
@@ -689,11 +720,30 @@ L04AF    pshs  u
          bsr   L0505
          lbsr  L07E3
          puls  pc,u
-         ldd   ,y++
+         IFGT  Level-1
+         lbsr  L0415
+         leay  >L07F1,pcr
+         lbsr  L03C2
+         lbsr  L07E3
+         lbsr  L0415
+         ldd   <u0002
+         bsr   L0505
+         ldy   <u0002
+         bsr   L050D
+         bsr   L050D
+         bsr   L050D
+         bsr   L050D
+         bsr   L0550
+         bsr   L0550
+         bsr   L0550
+         bsr   L0550
+         lbra  L07E3
+         ENDC
+L0550    ldd   ,y++
 L0505    lbra  L0013
 L0508    ldd   ,y++
          lbra  L0021
-         ldb   ,y+
+L050D    ldb   ,y+
 L050F    lbra  L0017
 L0512    lbsr  L0127
          cmpa  #$0D
@@ -735,7 +785,11 @@ L055F    cmpu  ,y
          leay  $03,y
          decb  
          bne   L055F
+         IFGT  Level-1
+         ldb   #$0C
+         ELSE
          ldb   <u000C
+         ENDC
          andcc #^Zero
 L056D    puls  pc,u
 L056F    bsr   L0512
@@ -779,10 +833,22 @@ L05B3    leay  $03,y
          rti   
 L05BC    bsr   L0613
          bcs   L054E
-         orb   #$07
-         exg   d,u
-         andb  #$F8
-         pshs  u,b,a
+         IFGT  Level-1
+         tst   <WideFlag
+         bne   L0615
+         orb   #$0F
+         bra   L0617
+         ENDC
+L0615    orb   #$07
+L0617    exg   d,u
+         IFGT  Level-1
+         tst   <WideFlag
+         bne   L0621
+         andb  #$F0
+         bra   L0623
+         ENDC
+L0621    andb  #$F8
+L0623    pshs  u,b,a
          cmpd  $02,s
          bcc   L05D9
 L05CD    ldy   ,s
@@ -794,14 +860,33 @@ L05D9    puls  pc,u,b,a
 L05DB    ldx   <u0006
          tfr   y,d
          lbsr  L0013
-         ldb   #$04
-         pshs  b
-L05E6    lbsr  L0508
-         dec   ,s
-         bne   L05E6
-         lbsr  L0019
+         IFGT  Level-1
+         tst   <WideFlag
+         bne   L0647
          ldb   #$08
-         stb   ,s
+         bra   L0649
+         ENDC
+L0647    ldb   #$04
+L0649    pshs  b
+L05E6    equ   *
+         IFGT  Level-1
+         tst   <WideFlag
+         bne   L0654
+         lbsr  L0550
+         bra   L0657
+         ENDC
+L0654    lbsr  L0508
+L0657    dec   ,s
+         bne   L05E6
+         IFGT  Level-1
+         tst   <WideFlag
+         bne   L0663
+         ldb   #$10
+         bra   L0668
+         ENDC
+L0663    lbsr  L0019
+         ldb   #$08
+L0668    stb   ,s
          ldy   $01,s
 L05F7    lda   ,y+
          cmpa  #$7E
@@ -846,6 +931,13 @@ L064E    leau  u0001,u
          bra   L0626
 L0652    clra  
          tfr   a,dp
+         IFGT  Level-1
+         sts   <u0002
+         ldd   $0A,s
+         subd  #$0001
+         std   $0A,s
+         lds   <u0004
+         ELSE
          ldx   <u004B
          lda   $07,x
          tfr   a,dp
@@ -854,6 +946,7 @@ L0652    clra
          subd  #$0001
          std   $0A,s
          lds   <u0004
+         ENDC
          lbsr  L0556
          beq   L0672
          ldb   #$0D
@@ -894,7 +987,10 @@ L06B9    bsr   L06B0
          os9   F$Mem    
          bcc   L06D0
          lbsr  L03BE
-L06CC    os9   F$UnLink 
+L06CC    equ   *
+         IFEQ  Level-1
+         os9   F$UnLink 
+         ENDC
          rts   
 L06D0    os9   F$UnLink 
          pshs  u,y,x
@@ -947,7 +1043,7 @@ L072E    fcc   "shell"
          fcb   $00
 
 L0734    clrb
-         os9   F$Exit   
+L0735    os9   F$Exit   
 L0738    lbsr  L0613
          lbcs  L03BE
          pshs  u
@@ -961,7 +1057,11 @@ L0746    cmpb  ,x+
          puls  pc,u
 L0750    cmpd  ,x+
          beq   L075C
+         IFGT  Level-1
+         cmpx  ,s
+         ELSE
          cmps  ,s
+         ENDC
          bne   L0750
          puls  pc,u
 L075C    leax  -$01,x
@@ -975,7 +1075,7 @@ L077B    fcc   "DB: "
          fcb   $00
 L0780    fcc   "    "
          fcb   $00
-         fcc   " SP  CC  A  B DP  X    Y    U    PC"
+L07F1    fcc   " SP  CC  A  B DP  X    Y    U    PC"
          fcb   $00
 L07A9    fcc   "BKPT"
 L07AD    fcc   ": "
