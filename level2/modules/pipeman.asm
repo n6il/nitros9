@@ -1,5 +1,5 @@
 ********************************************************************
-* PipeMan - NitrOS-9 Pipe File Manager
+* PipeMan - OS-9 Level Two Pipe File Manager
 *
 * Enhanced and re-written by Alan DeKok
 *
@@ -34,7 +34,7 @@
 * ------------------------------------------------------------------
 
          nam   PipeMan
-         ttl   NitrOS-9 Pipe File Manager
+         ttl   OS-9 Level Two Pipe File Manager
 
          ifp1
          use   defsfile
