@@ -14,10 +14,11 @@ SHELLMODS	= shellplus deiniz display echo iniz link load save unlink
 UTILPAK1	= attr build copy date del deldir dir list makdir mdir \
 		merge mfree procs pwd pxd rename sleep tee tmode
 
+BASIC09FILES	= gfx.asm inkey.asm syscall.asm
 LEVEL1FILES	= attr.asm backup.asm binex.asm build.asm cmp.asm cobbler.asm copy.asm date.asm deiniz.asm del.asm deldir.asm \
-		dir.asm display.asm dsave.asm dump.asm echo.asm edit.asm error.asm exbin.asm format.asm free.asm gfx.asm help.asm ident.asm iniz.asm inkey.asm link.asm \
+		dir.asm display.asm dsave.asm dump.asm echo.asm edit.asm error.asm exbin.asm format.asm free.asm help.asm ident.asm iniz.asm link.asm \
 		list.asm load.asm login.asm makdir.asm merge.asm os9gen.asm pwd.asm pxd.asm rename.asm \
-		save.asm setime.asm sleep.asm syscall.asm tee.asm tmode.asm tuneport.asm tsmon.asm verify.asm xmode.asm
+		save.asm setime.asm sleep.asm tee.asm tmode.asm tuneport.asm tsmon.asm verify.asm xmode.asm
 
 ALLOBJS		= $(CMDS) $(SUBS)
 
@@ -37,11 +38,14 @@ utilpak1:  $(UTILPAK1) $(DEPENDS)
 	@ls -l $@
 	@$(ECHO)
 
+$(BASIC09FILES): $(BASEDIR)/3rdparty/packages/basic09/$@
+	-$(SOFTLINK) $(BASEDIR)/3rdparty/packages/basic09/$@
+
 $(LEVEL1FILES): $(LEVEL1)/CMDS/$@
 	-$(SOFTLINK) $(LEVEL1)/CMDS/$@
 
 clean:
-	$(RM) shell utilpak1 $(ALLOBJS) $(LEVEL1FILES)
+	$(RM) shell utilpak1 $(ALLOBJS) $(BASIC09FILES) $(LEVEL1FILES)
 
 showobjs:
 	@$(ECHO) shell utilpak1 $(ALLOBJS)
