@@ -23,4 +23,12 @@
 Placeholder
 </para>
 </refsect1>
+<refsect1><title>Diagnostics</title>
+<para>
+A successful call returns 0. A -1 is returned if the
+caller is not entitled to change permissions of "fname" cannot
+be found.
+</para>
+</refsect1>
+
 </refentry>

@@ -19,4 +19,10 @@
 Placeholder
 </para>
 </refsect1>
+<refsect1><title>Diagnostics</title>
+<para>
+Zero is returned from a successful call. -1 is returned from on error.
+</para>
+</refsect1>
+
 </refentry>

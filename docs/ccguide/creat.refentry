@@ -29,6 +29,14 @@ Placeholder
 </para>
 </refsect1>
 
+<refsect1><title>Diagnostics</title>
+<para>
+This call returns -1 if there are too many files open. If the
+pathname cannot be searched, if permission to write is denied,
+or if the file exists and is a directory.
+</para>
+</refsect1>
+
 <refsect1><title>See Also</title>
 <para>
 <link linkend="write">write()</link>,

@@ -22,6 +22,11 @@
 Placeholder
 </para>
 </refsect1>
+<refsect1><title>Diagnostics</title>
+<para>
+Both functions return 0(NULL) at the end of file or error.
+</para>
+</refsect1>
 
 <refsect1><title>See Also</title>
 <para>

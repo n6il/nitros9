@@ -23,6 +23,13 @@ Placeholder
 </para>
 </refsect1>
 
+<refsect1><title>Diagnostics</title>
+<para>
+Putc and putchar return the character argument from a
+successful call, and EOF on end-of-file or error.
+</para>
+</refsect1>
+
 <refsect1><title>See Also</title>
 <para>
 <link linkend="fopen">fopen()</link>,

@@ -162,6 +162,14 @@ siz       equ
 <section>
 <title>Labels</title>
 <para>
+Sometimes it is necessary to use labels within a macro. Labels are
+specified by <quote>\@</quote>. Each time the macro is called, a unique label
+will be generated to avoid multiple definition errors. Within the
+expanded code <quote>\@</quote> will take on the form <quote>@xxx</quote>, where xxx
+will be a decimal number between 000 to 999.
+</para>
+<para>
+More...
 </para>
 </section>
 

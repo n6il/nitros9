@@ -25,4 +25,20 @@ os9 I$DELETE
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>Diagnostics</title>
+<para>
+Zero is returned from a successful call, -1 if the file does
+not exist, if its directory is write-protected, or cannot be
+searched, if the file is a non-empty directory or a device.
+</para>
+</refsect1>
+
+<refsect1><title>See Also</title>
+<para>
+OS-9 command "kill"
+<!-- The original manual referenced link() here, but no such system call exists.
+     Too much inspiration from UNIX manuals :-) -->
+</para>
+</refsect1>
 </refentry>

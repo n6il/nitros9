@@ -23,6 +23,14 @@ Placeholder
 </para>
 </refsect1>
 
+<refsect1><title>Diagnostics</title>
+<para>
+Kill returns 0 from a successful call and -1 if the task does
+not exist, the effective user ids do not match, or the user is
+not the system manager.
+</para>
+</refsect1>
+
 <refsect1><title>See Also</title>
 <para>
 <link linkend="signal">signal()</link>,

@@ -30,6 +30,13 @@ Placeholder
 </para>
 </refsect1>
 
+<refsect1><title>Diagnostics</title>
+<para>
+-1 is returned if "pn" is a bad path number, of "count" is
+ridiculous or on physical i/o error.
+</para>
+</refsect1>
+
 <refsect1><title>See Also</title>
 <para>
 <link linkend="creat">creat()</link>,

@@ -25,4 +25,12 @@ os9 F$SPRIOR
 Placeholder
 </para>
 </refsect1>
+
+<refsect1><title>Diagnostics</title>
+<para>
+The call will return -1 if the process does not have the same
+user id as the caller.
+</para>
+</refsect1>
+
 </refentry>

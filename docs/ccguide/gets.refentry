@@ -23,6 +23,19 @@ Placeholder
 </para>
 </refsect1>
 
+<refsect1><title>Caveats</title>
+<para>
+The different treatment of the "\n" by these functions is
+retained here for portability reasons.
+</para>
+</refsect1>
+
+<refsect1><title>Diagnostics</title>
+<para>
+Both functions return NULL on end-of-file or error.
+</para>
+</refsect1>
+
 <refsect1><title>See Also</title>
 <para>
 <link linkend="puts">puts()</link>,

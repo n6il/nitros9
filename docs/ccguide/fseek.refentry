@@ -23,6 +23,12 @@ Placeholder
 </para>
 </refsect1>
 
+<refsect1><title>Diagnostics</title>
+<para>
+Fseek returns -1 if the call is invalid.
+</para>
+</refsect1>
+
 <refsect1><title>See Also</title>
 <para>
 System call

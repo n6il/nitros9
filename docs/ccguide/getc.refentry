@@ -23,6 +23,12 @@ Placeholder
 </para>
 </refsect1>
 
+<refsect1><title>Diagnostics</title>
+<para>
+EOF(-1) is returned for end of file or error.
+</para>
+</refsect1>
+
 <refsect1><title>See Also</title>
 <para>
 <link linkend="putc">Putc()</link>,

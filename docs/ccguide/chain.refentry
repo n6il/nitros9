@@ -8,7 +8,12 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>chain</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>char *<parameter>modname</parameter></paramdef>
+  <paramdef>int <parameter>paramsize</parameter></paramdef>
+  <paramdef>char *<parameter>paramptr</parameter></paramdef>
+  <paramdef>int <parameter>type</parameter></paramdef>
+  <paramdef>int <parameter>lang</parameter></paramdef>
+  <paramdef>int <parameter>datasize</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 

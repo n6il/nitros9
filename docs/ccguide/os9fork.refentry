@@ -8,7 +8,12 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>os9fork</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>char *<parameter>modname</parameter></paramdef>
+  <paramdef>int <parameter>paramsize</parameter></paramdef>
+  <paramdef>char *<parameter>paramptr</parameter></paramdef>
+  <paramdef>int <parameter>type</parameter></paramdef>
+  <paramdef>int <parameter>lang</parameter></paramdef>
+  <paramdef>int <parameter>datasize</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
@@ -25,4 +30,11 @@ os9 F$FORK
 Placeholder
 </para>
 </refsect1>
+<refsect1><title>Diagnostics</title>
+<para>
+-1 will be returned on error, or the ID number of the child
+process will be returned on success.
+</para>
+</refsect1>
+
 </refentry>

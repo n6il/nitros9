@@ -20,4 +20,11 @@
 Placeholder
 </para>
 </refsect1>
+<refsect1><title>Diagnostics</title>
+<para>
+The appropiate error indication, if a value of -1 is returned,
+may be found in "errno".
+</para>
+</refsect1>
+
 </refentry>
