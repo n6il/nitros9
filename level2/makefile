@@ -11,6 +11,7 @@ all:
 	$(CD) CMDS; make
 	$(CD) MODULES; make
 	$(CD) DEFS; make
+	$(CD) SYS; make
 	$(CD) BOOTFILES; make
 
 # Clean all components
@@ -18,4 +19,5 @@ clean:
 	-$(CD) CMDS; make clean
 	-$(CD) MODULES; make clean
 	-$(CD) DEFS; make clean
+	-$(CD) SYS; make clean
 	-$(CD) BOOTFILES; make clean
