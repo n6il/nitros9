@@ -1,0 +1,4 @@
+@COPY
+Syntax: Copy pathname pathname [-s]
+Usage : copies data from one file to a second file
+Opts  : -s = single drive copy 

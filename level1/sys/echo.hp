@@ -1,0 +1,3 @@
+@ECHO
+Syntax: Echo <text>
+Usage : Echo entered text to standard output

@@ -1,0 +1,4 @@
+@MDIR
+Syntax: Mdir [e]
+Usage : Displays the present memory module directory
+Opts  : e = print extended module directory

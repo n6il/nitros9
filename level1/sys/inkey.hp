@@ -1,0 +1,3 @@
+@INKEY
+Syntax: RUN INKEY([path],strvar)
+Usage : BASIC09 subroutine to input a single key stroke

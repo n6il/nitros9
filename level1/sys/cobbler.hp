@@ -1,0 +1,3 @@
+@COBBLER
+Syntax: Cobbler devname
+Usage : Creates OS-9 bootstrap file from current boot

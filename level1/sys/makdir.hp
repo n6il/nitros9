@@ -1,0 +1,3 @@
+@MAKDIR
+Syntax: Makdir <pathname>
+Usage : Creates a new directory file 

@@ -1,0 +1,3 @@
+@DISPLAY
+Syntax: Display <hex>[...]
+Usage : Displays converted characters to standard output

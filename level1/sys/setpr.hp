@@ -1,0 +1,3 @@
+@SETPR
+Syntax: Setpr <procId> <num>
+Usage : Sets the priority of the specified process to num

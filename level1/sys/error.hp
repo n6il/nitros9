@@ -1,0 +1,3 @@
+@ERROR
+Syntax: Error errno [...]
+Usage : Outputs text error messages for given error numbers

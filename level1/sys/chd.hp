@@ -1,0 +1,3 @@
+@CHD 
+Syntax: Chd <pathlist>
+Usage : Change working directory to specified path
