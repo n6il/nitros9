@@ -25,6 +25,9 @@
 * 16     Updated to Curtis Boyle's version, contains    BGP 98/10/20
 *        several optimizations and new SetStat to
 *        stuff any string in the input buffer.
+* 16r1   Added check for Y hi bit set for SS.Fill       BGP 02/10/10
+*        SetStat.  BREAK in ShellPlus was crashing
+*        the system.
 
          nam   SCF
          ttl   Sequential Character file manager     
@@ -37,7 +40,7 @@
 
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   16
 
          mod   eom,name,tylg,atrv,start,size
@@ -334,26 +337,26 @@ L0212    bsr   L021B
 
 * Place data in keyboard buffer
 
-putkey   cmpa  #$A0
+putkey   cmpa  #SS.Fill
          bne   L01FA
          pshs  x,y,u
+         ldd   R$Y,u
+         pshs  a
+         clra
+         tfr   d,y
          ldx   <D.Proc
          lda   P$Task,x
          ldb   <D.SysTsk
          ldx   R$X,u
-         pshs  x
-         ldx   R$Y,u
          ldu   PD.BUF,y
-         tfr   x,y
-         puls  x
          os9   F$Move
+         bcs   putkey1
+         lda   ,s
+         bmi   putkey1
          tfr   y,d
-         leau  d,u
          lda   #C$CR
-         sta   ,u
-         puls  x,y,u
-         bcs   L01F7
-         rts   
+         sta   b,u
+putkey1  puls  a,x,y,u,pc
 
 L021B    ldb   #$0C
          lda   $02,u
