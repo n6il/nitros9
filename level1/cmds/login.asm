@@ -5,11 +5,13 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 12     Original Tandy version
-* 13     Fixed for years 1900-2155                      BGP 99/05/11
+* 16     Original Tandy version
+* 17     Fixed for years 1900-2155                      BGP 99/05/11
 
          nam   Login
          ttl   Timeshare login utility
+
+* Disassembled 02/07/13 23:49:05 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
@@ -18,7 +20,6 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   13
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -40,21 +41,25 @@ u022D    rmb   32
 size     equ   .
 
 name     fcs   /Login/
-         fcb   edition
+         fcb   $10 
+
 
 L0013    fcc   "SYS/PASSWORD"
          fcb   C$CR
          fcc   ",,,,,,,,,,,,,,,"
 WideMsg  fcb   C$LF,C$LF
-         fcc   "OS-9 Timesharing system   Level I 0"
+         fcc   "OS-9 Timesharing system"
+         fcb   C$LF
+         fcc   "Level II  RS VR. 0"
          fcb   48+OS9Vrsn
          fcc   ".0"
          fcb   48+OS9Major
          fcc   ".0"
          fcb   48+OS9Minor
+         fcb   C$LF
 WideMsgL equ   *-WideMsg
 NrrwMsg  fcb   C$LF,C$LF
-         fcc   "OS-9 Level I 0"
+         fcc   "OS-9 Level II  RS Vr0"
          fcb   48+OS9Vrsn
          fcc   ".0"
          fcb   48+OS9Major
@@ -71,8 +76,7 @@ Who      fcc   "Who?"
 
 Pass     fcc   "Password: "
 PassLen  equ   *-Pass
-
-InvPass  fcc   "Invalid password."
+nvPass  fcc   "Invalid password."
          fcb   C$CR
 
 ProcNum  fcb   C$LF
@@ -106,325 +110,335 @@ MOTD     fcc   "SYS/MOTD"
 
 Root     fcc   "...... "
 
+L015C    rts
+
 start    leas  >u010D,u
+         pshs  y,x
+         leax  <L015C,pcr
+         os9   F$Icpt   
+         bcs   L0172
+         ldy   #$0000
+         os9   F$SUser  
+L0172    puls  y,x
+         lbcs  L02F4
          clr   <u0000
          leay  >u01DD,u
          sty   <u000A
          leay  >u018D,u
          sty   <u0008
          std   ,--s
-         beq   L016D
-L0165    lda   ,x+
+         beq   L0194
+L018C    lda   ,x+
          sta   ,y+
          cmpa  #C$CR
-         bne   L0165
-L016D    lda   #$01
+         bne   L018C
+L0194    lda   #$01
          ldb   #SS.ScSiz
          os9   I$GetStt 
-         bcc   L017D
+         bcc   L01A4
          cmpb  #E$UnkSvc
-         beq   L0184
-         lbra  L025A
-L017D    cmpx  #80
-         beq   L0184
+         beq   L01AB
+         lbra  L0280
+L01A4    cmpx  #$0046
+         bcc   L01AB
          inc   <u0000
-L0184    lda   #READ.
+L01AB    lda   #READ.
          leax  >Root,pcr
          os9   I$ChgDir 
          lda   #READ.
          leax  >L0013,pcr
          os9   I$Open   
-         lbcs  L02CE
+         lbcs  L02F4
          sta   <u0001
          lda   #$03
          sta   <u0003
          ldd   ,s++
-         beq   L01AC
+         beq   L01D3
          ldx   <u0008
          lda   ,x
          cmpa  #C$CR
-         bne   L01E2
-L01AC    tst   <u0000
-         beq   L01BA
+         bne   L0209
+L01D3    tst   <u0000
+         beq   L01E1
          leax  >NrrwMsg,pcr
          ldy   #NrrwMsgL
-         bra   L01C2
-L01BA    leax  >WideMsg,pcr
+         bra   L01E9
+L01E1    leax  >WideMsg,pcr
          ldy   #WideMsgL
-L01C2    lbsr  L0309
-L01C5    dec   <u0003
+L01E9    lbsr  L032F
+L01EC    dec   <u0003
          leax  >Sorry,pcr
-         lbmi  L02F9
+         lbmi  L031F
          leax  >u018D,u
          stx   <u0008
          leax  >UName,pcr
          ldy   #UNameLen
-         lbsr  L0321
-         bcs   L01E7
-L01E2    lbsr  L036D
-         bcc   L01F0
-L01E7    leax  >Who,pcr
-L01EB    lbsr  L02FF
-         bra   L01C5
-L01F0    lbsr  L0393
-         bcc   L022C
+         lbsr  L0347
+         bcs   L020E
+L0209    lbsr  L0393
+         bcc   L0217
+L020E    leax  >Who,pcr
+L0212    lbsr  L0325
+         bra   L01EC
+L0217    lbsr  L03B9
+         bcc   L0253
          ldx   <u0008
          lda   ,x
          cmpa  #C$CR
-         bne   L021B
+         bne   L0242
          lda   #C$COMA
          sta   ,x+
          stx   <u0008
-         lbsr  L0331
+         lbsr  L0357
          leax  >Pass,pcr
          ldy   #PassLen
-         lbsr  L0321
-         lbsr  L0359
-         bcs   L01E7
-         lbsr  L0393
-         bcc   L022C
-L021B    leax  >u018D,u
+         lbsr  L0347
+         lbsr  L037F
+         bcs   L020E
+         lbsr  L03B9
+         bcc   L0253
+L0242    leax  >u018D,u
          stx   <u0008
-         lbsr  L037B
-         bcc   L01F0
-         leax  >InvPass,pcr
-         bra   L01EB
-L022C    lda   <u0001
+         lbsr  L03A1
+         bcc   L0217
+         leax  >nvPass,pcr
+         bra   L0212
+L0253    lda   <u0001
          os9   I$Close  
-         lbsr  L03E2
-         ldy   >$004B
-         std   $09,y
-         lbsr  L03E2
+         lbsr  L0408
+         tfr   d,y
+         os9   F$SUser  
+         lbsr  L0408
          tsta  
-         lbne  L02F5
+         lbne  L031B
          tstb  
-         lbeq  L02F5
+         lbeq  L031B
          stb   <u0005
          os9   F$ID     
          sta   <u0004
          lda   #READ.
          leax  >MOTD,pcr
          os9   I$Open   
-         bcc   L025A
+         bcc   L0280
          clra  
-L025A    sta   <u0002
+L0280    sta   <u0002
          lda   #$04
-         bsr   L02D1
+         bsr   L02F7
          lda   #$03
-         bsr   L02D1
+         bsr   L02F7
          leax  >ProcNum,pcr
          ldy   #ProcNumL
-         lbsr  L0317
+         lbsr  L033D
          leax  u0004,u
-         lbsr  L044B
+         lbsr  L0471
          tst   <u0000
-         beq   L0282
+         beq   L02A8
          leax  >lo2,pcr
          ldy   #lo2len
-         bra   L028A
-L0282    leax  >lo1,pcr
+         bra   L02B0
+L02A8    leax  >lo1,pcr
          ldy   #lo1len
-L028A    bsr   L0309
+L02B0    bsr   L032F
          leax  >Welcome,pcr
-         bsr   L02FF
-         lbsr  L03CA
+         bsr   L0325
+         lbsr  L03F0
          clrb  
          ldx   <u0006
          leau  ,x
-L029A    lda   ,u+
+L02C0    lda   ,u+
          cmpa  #'0
-         bcc   L029A
+         bcc   L02C0
          cmpa  #C$COMA
-         beq   L02A6
+         beq   L02CC
          leau  -u0001,u
-L02A6    lda   ,u+
+L02CC    lda   ,u+
          cmpa  #C$SPAC
-         beq   L02A6
+         beq   L02CC
          leau  -u0001,u
          pshs  u
          ldy   #$0000
-L02B4    lda   ,u+
+L02DA    lda   ,u+
          leay  $01,y
          cmpa  #C$CR
-         bne   L02B4
+         bne   L02DA
          puls  u
          lda   <u0004
          ldb   <u0005
          os9   F$SPrior 
-         ldd   #$0100
+         ldd   #256
          os9   F$Chain  
          os9   F$PErr   
-L02CE    os9   F$Exit   
-L02D1    ldx   <u0006
+L02F4    os9   F$Exit   
+L02F7    ldx   <u0006
          os9   I$ChgDir 
-         bcs   L02EF
+         bcs   L0315
          ldx   <u0006
-L02DA    lda   ,x+
+L0300    lda   ,x+
          cmpa  #C$CR
-         beq   L02F5
+         beq   L031B
          cmpa  #C$COMA
-         bne   L02DA
+         bne   L0300
          lda   #C$SPAC
-L02E6    cmpa  ,x+
-         beq   L02E6
+L030C    cmpa  ,x+
+         beq   L030C
          leax  ,-x
          stx   <u0006
          rts   
-L02EF    leax  >DirNotFnd,pcr
-         bra   L02F9
-L02F5    leax  >Syntax,pcr
-L02F9    bsr   L02FF
+L0315    leax  >DirNotFnd,pcr
+         bra   L031F
+L031B    leax  >Syntax,pcr
+L031F    bsr   L0325
          clrb  
          os9   F$Exit   
-L02FF    ldy   #$0100
+L0325    ldy   #256
          lda   #$01
          os9   I$WritLn 
          rts   
-L0309    bsr   L0317
-         lbsr  L0472
-         lbsr  L0472
-         lbsr  L0472
-         lbra  L042E
-L0317    lda   ,x+
-         lbsr  L0474
+L032F    bsr   L033D
+         lbsr  L0498
+         lbsr  L0498
+         lbsr  L0498
+         lbra  L0454
+L033D    lda   ,x+
+         lbsr  L049A
          leay  -$01,y
-         bne   L0317
+         bne   L033D
          rts   
-L0321    bsr   L0317
-         lbsr  L0486
+L0347    bsr   L033D
+         lbsr  L04AC
          ldx   <u0008
          ldy   #80
          clra  
          os9   I$ReadLn 
          rts   
-L0331    pshs  x,b,a
+L0357    pshs  x,b,a
          leax  >u022D,u
          ldb   #SS.Opt
          clra  
          os9   I$GetStt 
-         bcs   L0353
+         bcs   L0379
          lda   ,x
          cmpa  #$00
-         bne   L0353
+         bne   L0379
          lda   $04,x
          pshs  a
          clr   $04,x
-         bsr   L0359
+         bsr   L037F
          puls  a
          sta   $04,x
          puls  pc,x,b,a
-L0353    lda   #$FF
+L0379    lda   #$FF
          sta   ,x
          puls  pc,x,b,a
-L0359    pshs  x,b,a,cc
+L037F    pshs  x,b,a,cc
          leax  >u022D,u
          lda   ,x
          cmpa  #$00
-         bne   L036B
+         bne   L0391
          ldb   #SS.Opt
          clra  
          os9   I$SetStt 
-L036B    puls  pc,x,b,a,cc
-L036D    pshs  u
+L0391    puls  pc,x,b,a,cc
+L0393    pshs  u
          lda   <u0001
          ldx   #$0000
          leau  ,x
          os9   I$Seek   
          puls  u
-L037B    lda   <u0001
+L03A1    lda   <u0001
          leax  >u010D,u
-         ldy   #$0080
+         ldy   #128
          os9   I$ReadLn 
-         bcs   L0392
+         bcs   L03B8
          stx   <u0006
-         bsr   L0393
-         bcs   L037B
+         bsr   L03B9
+         bcs   L03A1
          stx   <u0006
-L0392    rts   
-L0393    ldx   <u0006
+L03B8    rts   
+L03B9    ldx   <u0006
          ldy   <u0008
-L0398    lda   ,x+
+L03BE    lda   ,x+
          cmpa  #C$COMA
-         beq   L03AC
+         beq   L03D2
          cmpa  #C$CR
-         beq   L03AA
+         beq   L03D0
          eora  ,y+
          anda  #$DF
-         beq   L0398
-L03A8    comb  
+         beq   L03BE
+L03CE    comb  
          rts   
-L03AA    leax  -$01,x
-L03AC    lda   ,y+
+L03D0    leax  -$01,x
+L03D2    lda   ,y+
          cmpa  #C$COMA
-         beq   L03B8
+         beq   L03DE
          cmpa  #'0
-         bcc   L03A8
+         bcc   L03CE
          leay  -$01,y
-L03B8    lda   ,y+
+L03DE    lda   ,y+
          cmpa  #C$SPAC
-         beq   L03B8
+         beq   L03DE
          leay  -$01,y
          sty   <u0008
          stx   <u0006
          clrb  
          rts   
-L03C7    lbsr  L02FF
-L03CA    lda   <u0002
-         beq   L03E0
+L03ED    lbsr  L0325
+L03F0    lda   <u0002
+         beq   L0406
          leax  >u018D,u
          ldy   #80
          os9   I$ReadLn 
-         bcc   L03C7
+         bcc   L03ED
          lda   <u0002
          os9   I$Close  
-L03E0    clrb  
+L0406    clrb  
          rts   
-L03E2    ldx   <u0006
+L0408    ldx   <u0006
          clra  
          clrb  
          pshs  y,x,b,a
          pshs  b
-L03EA    ldb   ,x+
+L0410    ldb   ,x+
          cmpb  #C$PERD
-         bne   L03FD
+         bne   L0423
          tsta  
-         lbne  L02F5
+         lbne  L031B
          ldb   $02,s
          stb   ,s
          clr   $02,s
-         bra   L03EA
-L03FD    subb  #$30
+         bra   L0410
+L0423    subb  #$30
          cmpb  #$09
-         bhi   L0416
+         bhi   L043C
          clra  
          ldy   #$000A
-L0408    addd  $01,s
-         lbcs  L02F5
+L042E    addd  $01,s
+         lbcs  L031B
          leay  -$01,y
-         bne   L0408
+         bne   L042E
          std   $01,s
-         bra   L03EA
-L0416    lda   -$01,x
+         bra   L0410
+L043C    lda   -$01,x
          cmpa  #C$COMA
-         lbne  L02F5
+         lbne  L031B
          stx   <u0006
          lda   ,s+
-         beq   L042C
+         beq   L0452
          tst   ,s
-         lbne  L02F5
+         lbne  L031B
          sta   ,s
-L042C    puls  pc,y,x,b,a
-L042E    leax  u000D,u
+L0452    puls  pc,y,x,b,a
+L0454    leax  u000D,u
          os9   F$Time   
-         bsr   L0443
-         bsr   L0472
-         bsr   L043B
-         bra   L047E
-L043B    bsr   L044B
-         bsr   L043F
-L043F    lda   #$3A
-         bra   L0449
-L0443    ldb   ,x
+         bsr   Y2K
+         bsr   L0498
+         bsr   L0461
+         bra   L04A4
+L0461    bsr   L0471
+         bsr   L0465
+L0465    lda   #$3A
+         bra   L046F
+Y2K      ldb   ,x
          cmpb  #100
          blo   L1900
          subb  #100
@@ -439,43 +453,43 @@ L1900    stb   ,x
          bra   PrCnty
 L2000    stb   ,x
          ldb   #20
-PrCnty   bsr   L044D
-         bsr   L044B
-         bsr   L0447
-L0447    lda   #$2F
-L0449    bsr   L0474
-L044B    ldb   ,x+
-L044D    lda   #$2F
+PrCnty   bsr   Slash
+L0469    bsr   L0471
+         bsr   L046D
+L046D    lda   #'/
+L046F    bsr   L049A
+L0471    ldb   ,x+
+Slash    lda   #'/
          clr   <u000C
-L0451    inca  
+L0477    inca  
          subb  #$64
-         bcc   L0451
-         bsr   L0467
+         bcc   L0477
+         bsr   L048D
          lda   #$3A
-L045A    deca  
+L0480    deca  
          addb  #$0A
-         bcc   L045A
-         bsr   L0474
+         bcc   L0480
+         bsr   L049A
          tfr   b,a
          adda  #$30
-         bra   L0474
-L0467    inc   <u000C
+         bra   L049A
+L048D    inc   <u000C
          cmpa  #$30
-         bne   L0474
+         bne   L049A
          dec   <u000C
-         bne   L0474
+         bne   L049A
          rts   
-L0472    lda   #C$SPAC
-L0474    pshs  x
+L0498    lda   #C$SPAC
+L049A    pshs  x
          ldx   <u000A
          sta   ,x+
          stx   <u000A
          puls  pc,x
-L047E    pshs  a
+L04A4    pshs  a
          lda   #C$CR
-         bsr   L0474
+         bsr   L049A
          puls  a
-L0486    pshs  y,x,b,a
+L04AC    pshs  y,x,b,a
          leax  >u01DD,u
          ldd   <u000A
          stx   <u000A
