@@ -47,7 +47,7 @@ rev      set   $00
          fcb   C$BSP      backspace echo character
          fcb   C$BELL     line overflow character (bell)
          fcb   WORD8+PARNONE+STOP1 init value for dev ctl reg
-         IFGT  Level-
+         IFGT  Level-1
          fcb   B2400      baud rate
          ELSE
          fcb   B300       baud rate
