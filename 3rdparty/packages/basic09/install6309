@@ -1,1 +1,18 @@
--xt* Installs 6309 modules to /DD/CMDS** Deleting old objects from /DD/CMDS, if anydel /DD/CMDS/runbdel /DD/CMDS/basic09del /DD/CMDS/gfxdel /DD/CMDS/inkeydel /DD/CMDS/syscall* Copying commands to /DD/CMDScopy CMDS/basic09_6309 /DD/CMDS/basic09copy CMDS/runb_6309 /DD/CMDS/runbcopy CMDS/gfx /DD/CMDS/gfxcopy CMDS/inkey /DD/CMDS/inkeycopy CMDS/syscall_6309 /DD/CMDS/syscall* All Done!
+-x
+t
+* Installs 6309 modules to /DD/CMDS
+*
+* Deleting old objects from /DD/CMDS, if any
+del /DD/CMDS/runb
+del /DD/CMDS/basic09
+del /DD/CMDS/gfx
+del /DD/CMDS/inkey
+del /DD/CMDS/syscall
+* Copying commands to /DD/CMDS
+copy CMDS/basic09_6309 /DD/CMDS/basic09
+copy CMDS/runb_6309 /DD/CMDS/runb
+copy CMDS/gfx /DD/CMDS/gfx
+copy CMDS/inkey /DD/CMDS/inkey
+copy CMDS/syscall_6309 /DD/CMDS/syscall
+* All Done!
+
