@@ -167,7 +167,7 @@ depth greater than 39 levels.
 For more information see: <xref linkend="sec3.10"/>,
 <xref linkend="sec3.5"/>,
 <command>format</command>,
-6.1 of OS-9 Systems Programmer's Manual
+6.1 of NitrOS-9 Systems Programmer's Manual
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

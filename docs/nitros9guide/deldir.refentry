@@ -28,7 +28,7 @@ Deleting directory file.
 List directory, delete directory, or quit ? (l/d/q)
 </screen>
 <para>
-An &quot;l&quot; response will cause a <command>dir e</command> command to be run so you can
+An &quot;l&quot; response will cause a <command>dir -e</command> command to be run so you can
 have an opportunity to see the files in the directory before they
 are deleted.
 </para>

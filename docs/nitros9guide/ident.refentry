@@ -1,7 +1,7 @@
 <refentry id="ident">
 <refnamediv>
 <refname>IDENT</refname>
-<refpurpose>Print OS-9 module identification</refpurpose>
+<refpurpose>Print NitrOS-9 module identification</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -21,7 +21,7 @@
 
 <refsect1><title>Description</title>
 <para>
-This command is used to display header information from OS-9 memory
+This command is used to display header information from NitrOS-9 memory
 modules. <command>Ident</command> displays the module size, CRC bytes (with verification), and for
 program and device driver modules, the execution
 offset and the permanent storage requirement bytes. <command>ident</command> will
@@ -80,28 +80,23 @@ Prog mod, 6809 obj, re-en        &lt;Module type, Language, Attribute&gt;
 </screen>
 <screen>
 OS9: ident /d0/os9boot -s
-    1 $C0 $A366DC . OS9p2
+    1 $C0 $A366DC . KernelP2
    83 $C0 $7FC336 . Init
     1 $11 $39BA94 . SysGo
     1 $C1 $402573 . IOMan
-    3 $D1 $EE937A . REF
+    3 $D1 $EE937A . RBF
+   82 $F1 $526268 . DD
    82 $F1 $526268 . D0
    82 $F1 $D65245 . D1
    82 $F1 $E32FFE . D2
     1 $D1 $F944D7 . SCF
-    2 $E1 $F9FE37 . ACIA
-   83 $F1 $765270 . TERM
-   83 $F1 $B4396C . T1
-   83 $F1 $63B73B . T2
-   83 $F1 $0F9B78 . T3
-   83 $F1 $F83EB9 . T4
-   83 $F1 $D6DD9A . T5
-    3 $E1 $3EE015 . PIA
-   83 $F1 $12A43B . P
+    2 $E1 $F9FE37 . VDGInt
+   83 $F1 $765270 . Term
     2 $D1 $BBC1EE . PipeMan
     2 $E1 $5B2B56 . Piper
    80 $F1 $CC06AF . Pipe
     2 $C1 $248B2C . Clock
+    2 $C1 $248B2C . Clock2
     ^  ^     ^    ^ ^
     |  |     |    | |
     |  |     |    | Module name

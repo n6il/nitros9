@@ -1,9 +1,9 @@
 <bookinfo>
- <title>&os9level; Operating System User's Guide</title>
- <subtitle>&os9version;</subtitle>
+ <title>NitrOS-9 Operating System User's Guide</title>
+ <subtitle>&nitros9version;</subtitle>
 
 <copyright>
-  <year>2003</year>
+  <year>2004</year>
   <holder>&vendor;</holder>
 </copyright>
 
@@ -13,13 +13,8 @@
 
 <revhistory>
   <revision>
-    <revnumber>Org.</revnumber>
-    <date>1983</date>
-    <revremark>Original OS-9 Level One Guide</revremark>
-  </revision>
-  <revision>
     <revnumber>A</revnumber>
-    <date>March 2003</date>
+    <date>December 2003</date>
     <revremark>Updated with the changes made by Boisy Pitre</revremark>
   </revision>
 </revhistory>
@@ -37,5 +32,4 @@
 &errorcodesapp;
 &displayapp;
 &keysapp;
-&acia51app;
 

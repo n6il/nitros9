@@ -108,7 +108,7 @@ Interactive Debugger.
 </row>
 <row>
 <entry>$ command</entry>
-<entry>Call OS-9 shell with optional command</entry>
+<entry>Call NitrOS-9 shell with optional command</entry>
 </row>
 <row>
 <entry>Q</entry>

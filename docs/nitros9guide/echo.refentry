@@ -24,7 +24,7 @@ shell.
 </refsect1>
 <refsect1><title>Examples</title>
 <screen>
-echo &gt;/T2 Hello John how's it going &amp;    (echo to T2)
+echo &gt;/t2 Hello John how's it going &amp;    (echo to t2)
 
 echo &gt;/term ** warning ** disk about to be scratched 1
 

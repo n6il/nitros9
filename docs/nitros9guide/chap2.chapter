@@ -4,15 +4,15 @@
 <section id="sec2.0">
 <title>Running Commands and Basic Shell Operation</title>
 <para>
-The <command>shell</command> is a the part of OS-9 that accepts commands from your
+The <command>shell</command> is a the part of NitrOS-9 that accepts commands from your
 keyboard. It was designed to provide a convenient, flexible, and
 easy-to-use interface between you and the powerful functions of the
-operating system. The shell is automatically entered after OS-9 is
+operating system. The shell is automatically entered after NitrOS-9 is
 started up. You can tell when the shell is waiting for input
 because it displays the shell prompt. This prompt indicates that
 the shell is active and awaiting a command from your keyboard. It
 makes no difference whether you use upper-case letters, lower-case
-letters, or a combination of both because OS-9 matches letters of
+letters, or a combination of both because NitrOS-9 matches letters of
 either case.
 </para>
 <para>
@@ -83,7 +83,7 @@ input/output files or memory assignments.
 <section id="sec2.0.1">
 <title>Sending Output to the Printer</title>
 <para>
-Normally, most commands and programs display output on the &make; video display. The output of these programs can
+Normally, most commands and programs display output on the Color Computer video display. The output of these programs can
 alternatively be printed by specifying output redirection on the
 command line. This is done by including the following modifier to
 at the end of any command line:
@@ -93,8 +93,8 @@ at the end of any command line:
 </screen>
 <para>
 The &quot;&gt;&quot; character tells the shell to redirect output (See <xref linkend="sec4.3.2"/>) to
-the printer using the &make;'s printer port, which has the device
-name &quot;/P&quot; (See <xref linkend="sec3.2"/>). For example, to redirect the output of the
+the printer using the Color Computer's printer port, which has the device
+name &quot;/p&quot; (See <xref linkend="sec3.2"/>). For example, to redirect the output of the
 <command>dir</command> command to the printer, enter:
 </para>
 <screen>
@@ -114,7 +114,7 @@ For example, to set the printer port for automatic line feeds at the
 end of every line, enter:
 </para>
 <screen>
-xmode /p lf;
+xmode /p lf
 </screen>
 </section>
 </section>
@@ -127,7 +127,7 @@ to select options to be used by the program specified in the command
 line given to the shell. Parameters are separated from the command
 name and from each other by space characters (hence parameters and
 options cannot themselves include spaces). Each command program
-supplied with OS-9 has an individual description in the last section
+supplied with NitrOS-9 has an individual description in the last section
 of this manual which describe the correct usage of the parameters of
 each command.
 </para>
@@ -178,7 +178,7 @@ dir sys
 </screen>
 <para>
 It is also possible to specify both a directory name parameter and
-the e  option, such as:
+the -e option, such as:
 </para>
 <screen>
 dir sys -e
@@ -192,7 +192,7 @@ giving file names and complete statistics.
 <title>Some Common Command Formats</title>
 <para>
 This section is a summary of some commands commonly used by new
-or casual OS-9 users, and some common formats. Each command is
+or casual NitrOS-9 users, and some common formats. Each command is
 followed by an example. Refer to the individual command
 descriptions later int his book for more detailed information and
 additional examples. Parameters or options shown in brackets are
@@ -246,7 +246,7 @@ Changes the name of filename1 to filename2.
 <section id="sec2.4">
 <title>Using the Keyboard and Video Display</title>
 <para>
-OS-9 has many features to expand the capability of the &make;
+NitrOS-9 has many features to expand the capability of the Color Computer
 keyboard and video display. The video display has screen pause,
 upper/lower case, and graphics functions. The keyboard can generate
 all ASCII characters and has a type-ahead feature that permits you
@@ -261,13 +261,20 @@ as a file known by the name &quot;/TERM&quot;.
 <section>
 <title>Video Display Functions</title>
 <para>
-The &make; uses reverse video (green letters in a black box) to
+Most Color Computers use reverse video (green letters in a black box) to
 represent lower-case letters. Normally they are not used, so you
 have to turn them on if you want to use them with the command:
 </para>
 <screen>
 tmode -upc
 </screen>
+<para>
+However, the Color Computer 3 and certain models of the Color Computer 2 can also do true lowercase on the 32x16 video display.  To see if your Color Computer can do true lowercase, type the following command:
+<screen>
+xmode /term typ=1; display e
+</screen>
+If your Color Computer cannot do true lower case, your screen will show graphics garbage.
+</para>
 <para>
 The screen pause feature stops programs after 16 lines have been
 displayed. Output will continue if you hit any key. Normally this

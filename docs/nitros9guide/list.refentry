@@ -33,11 +33,11 @@ For more information see: <xref linkend="sec2.3"/>, <xref linkend="sec3.9.2"/>
 </refsect1>
 <refsect1><title>Examples</title>
 <literallayout>
-list /d0/startup &gt;/P &amp;        (output is redirected to printer)
+list /d0/startup &gt;/p &amp;        (output is redirected to printer)
 
-list /D1/user5/document /d0/myfile /d0/Bob/text
+list /d1/user5/document /d0/myfile /d0/Bob/text
 
-list /TERM &gt;/p                    (copy keyboard to printer - use
+list /term &gt;/p                    (copy keyboard to printer - use
                                   &quot;escape&quot; key to terminate input)
 </literallayout>
 <screen>

@@ -20,8 +20,8 @@ Motorola-standard format is often directly accepted by commercial PROM
 programmers, emulators, logic analyzers and similar devices that are
 interfaced RS-232 interfaces. It can also be useful for
 transmitting files over data links that can only handle character-type
-data; or to convert OS-9 assembler or compiler-generated
-programs to load on non-OS-9 systems.
+data; or to convert NitrOS-9 assembler or compiler-generated
+programs to load on non-NitrOS-9 systems.
 </para>
 <para>
 &quot;Path1&quot; is assumed to be an
@@ -30,7 +30,7 @@ a new file called &quot;path2&quot;. The load addresses of each data record
 must describe continguous data in ascending order.
 </para>
 <para>
-<command>Exbin</command> does not generate or check for the proper OS-9 module
+<command>Exbin</command> does not generate or check for the proper NitrOS-9 module
 headers or CRC check value required to actually load the binary
 file. The IDENT or VERIFY commands can be used to check the
 validity of the modules if they are to be loaded or run.

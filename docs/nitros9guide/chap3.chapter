@@ -1,9 +1,9 @@
 <chapter>
-<title>The OS-9 File System</title>
+<title>The NitrOS-9 File System</title>
 <section>
 <title>Introduction to the Unified Input/Output System</title>
 <para>
-OS-9 has a unified input/output system in which data transfers to
+NitrOS-9 has a unified input/output system in which data transfers to
 ALL I/O devices are performed in almost exactly the same manner,
 regardless of the particular hardware devices involved. It may seem
 that the different operational characteristics of the I/O devices
@@ -17,14 +17,14 @@ dependencies wherever possible. This produces a much simpler and
 more versatile input/output system.
 </para>
 <para>
-OS-9's unified I/O system is based upon logical entities called
+NitrOS-9's unified I/O system is based upon logical entities called
 &quot;I/O paths&quot;. Paths are analogous to &quot;software I/O channels&quot; which
 can be routed from a program to a mass-storage file, any other I/O
 device, or even another program. Another way to say the same thing
 is that paths are files, and all I/O devices behave as files.
 </para>
 <para>
-Data transferred through paths may be processed by OS-9 to
+Data transferred through paths may be processed by NitrOS-9 to
 conform to the hardware requirements of the specific I/O device
 involved. Data transfers can be either bidirectional (read/write)
 or unidirectional (read only or write only), depending on the device
@@ -34,7 +34,7 @@ and/or how the path was established.
 Data transferred through a path is considered to be a stream of
 8-bit binary bytes that have no specific type or value: what the
 data actually represents depends on how it is used by each program.
-This is important because it means that OS-9 does not require data
+This is important because it means that NitrOS-9 does not require data
 to have any special format or meaning.
 </para>
 <para>
@@ -63,11 +63,11 @@ installed by the user.
 <section id="sec3.1">
 <title>Pathlists: How Paths Are Named</title>
 <para>
-Whenever a path is established (or &quot;opened&quot;), OS-9 must be given
+Whenever a path is established (or &quot;opened&quot;), NitrOS-9 must be given
 a description of the &quot;routing&quot; of the path. This description is
 given in the form of a character string called a &quot;pathlist&quot;. It
 specifies a particular mass-storage file, directory file, or any
-other I/O device. OS-9 &quot;pathlists&quot; are
+other I/O device. NitrOS-9 &quot;pathlists&quot; are
 similar to &quot;filenames&quot; used
 by other operating systems.
 </para>
@@ -91,8 +91,7 @@ Names are used to describe three kinds of things:
 
 
 Names can have one to 29 characters, all of which are used for
-matching. They must becin with an upper- or lower-case letter
-followed by any combination of the following characters:
+matching. They may be composed of any combination of the following characters:
 </para>
 
 <simplelist>
@@ -100,7 +99,7 @@ followed by any combination of the following characters:
 <member>lowercase letters: a - z</member>
 <member>decimal digits: 0 - 9</member>
 <member>underscore: _</member>
-<member>period: .</member>
+<member>period: . (cannot be the first character)</member>
 </simplelist>
 
 <para>
@@ -120,7 +119,7 @@ Here are examples of <emphasis>legal</emphasis> names:
 </row>
 <row>
 <entry>RJJones</entry>
-<entry>search.bin</entry>
+<entry>22search.bin</entry>
 </row>
 </tbody>
 </tgroup>
@@ -133,10 +132,6 @@ Here are examples of <emphasis>illegal</emphasis> names:
 <colspec colwidth="3.1in"/>
 <colspec colwidth="2.0in"/>
 <tbody>
-<row>
-<entry>22November</entry>
-<entry>(does not start with a letter)</entry>
-</row>
 <row>
 <entry>max*min</entry>
 <entry>(* is not a legal character)</entry>
@@ -165,7 +160,7 @@ Here are examples of <emphasis>illegal</emphasis> names:
 Each physical input/output device supported by the system must
 have a unique name. The actual names used are defined when the
 system is set up and cannot be changed while the system is running.
-The device names used for the &make; are:
+The device names used for the Color Computer are:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
@@ -212,10 +207,10 @@ of pathlists that refer to I/O devices are:
 
 <para>
 I/O device names are actually the names of the &quot;device descriptor
-modules&quot; kept by OS-9 in an internal data structure called the
-&quot;module directory&quot; (See the OS-9 System Programmer's manual for more
+modules&quot; kept by NitrOS-9 in an internal data structure called the
+&quot;module directory&quot; (See the NitrOS-9 System Programmer's manual for more
 information about device driver and descriptor modules). This
-directory is automatically set up during OS-9's system start up
+directory is automatically set up during NitrOS-9's system start up
 sequence, and updated as modules are added or deleted while the
 system is running.
 </para>
@@ -244,7 +239,7 @@ pathlist is used:
 
 </para>
 <para>
-When OS-9 is asked to create a path, it uses the names in the
+When NitrOS-9 is asked to create a path, it uses the names in the
 pathlist sequentially from left to right to search various
 directories to obtain the necessary routing information. These
 directories are organized as a tree-structured hierarchy. The
@@ -255,7 +250,7 @@ have a root directory, which is the next-highest level.
 </para>
 <para>
 The diagram below is a simplified file system tree of a typical
-OS-9 system disk. Note that device and directory names are capitalized
+NitrOS-9 system disk. Note that device and directory names are capitalized
 and ordinary file names are not. This is a customary (but
 not mandatory) practice which allows you to easily identify directory
 files using the short form of the <command>dir</command> command.
@@ -380,8 +375,8 @@ file1           file2           file3
 To make a new directory in this directory, the <command>makdir</command> command is
 used. The new directory will be called <filename class="directory">NEWDIR</filename>. Notice that
 throughout this manual directory names are always capitalized. This
-is <emphasis>not</emphasis> a requirement of OS-9 (see <xref linkend="sec3.1"/>) . Rather, it is a
-practice popular with many OS-9 users because it allows easy identification
+is <emphasis>not</emphasis> a requirement of NitrOS-9 (see <xref linkend="sec3.1"/>) . Rather, it is a
+practice popular with many NitrOS-9 users because it allows easy identification
 of directory files at all times (assuming all other file names use
 lower-case letters).
 </para>
@@ -445,7 +440,7 @@ space.
 <para>
 The <command>del</command> command cannot be used to directly delete a directory
 file. If a directory file that still contained file names were to
-be deleted, OS-9 would have no way to access the files or to return
+be deleted, NitrOS-9 would have no way to access the files or to return
 their storage to the unallocated storage pool. Therefore, the
 following sequence must be performed to delete a directory file:
 </para>
@@ -468,7 +463,7 @@ perform all these steps for you.
 <section id="sec3.6">
 <title>Additional Information About Directories</title>
 <para>
-The OS-9 directory system is very useful because it allows each
+The NitrOS-9 directory system is very useful because it allows each
 user to privately organize files as desired (by project, function,
 etc.), without affecting other files or other user's files. Another
 advantage of the hierarchical directory system is that files with
@@ -540,7 +535,7 @@ from the device directory down through all intermediate directories
 On the other hand, use of the current working directory allows
 all names in the file hierarchy tree to be implied instead of
 explicitly given. This not only makes pathlists shorter, but allows
-OS-9 to locate files faster because (typically) fewer directories
+NitrOS-9 to locate files faster because (typically) fewer directories
 need be searched. For example, if the current working directory is
 <filename class="directory">/D1/PETE/GAMES</filename> and a pathlist is given such as:
 </para>
@@ -577,11 +572,11 @@ reason two working directories are maintained is so that files
 containing
 <emphasis>programs</emphasis> can be organized in different directories than
 files containing <emphasis>data</emphasis>.
-OS-9 automatically selects either working
+NitrOS-9 automatically selects either working
 directory, depending on the usage of the pathlist:
 </para>
 <para>
----&gt; OS-9 will search the execution directory when it attempts to
+---&gt; NitrOS-9 will search the execution directory when it attempts to
 load files into memory assumed to be executable programs. This
 means that programs to be run as commands or loaded into
 memory must be in the current execution directory.
@@ -591,7 +586,7 @@ memory must be in the current execution directory.
 as text files, etc.)
 </para>
 <para>
-Immediately after startup, OS-9 will set the data directory to be
+Immediately after startup, NitrOS-9 will set the data directory to be
 (the root directory of) the system disk drive (usually &quot;D0&quot;), and
 the working directory to be a directory called <filename class="directory">cmds</filename> on the same
 drive (<filename class="directory">/D0/cmds</filename>). On timesharing systems, the <command>login</command> command
@@ -640,7 +635,7 @@ OS9: chx /D0/TESTPROGRAMS
 <para>
 When using the <command>chd</command> or <command>chx</command> commands, pathlists work the same as they
 do for regular files, except for the last name in the pathlist must
-be a directory name. If the pathlist begins with a &quot;/&quot; , OS-9 will
+be a directory name. If the pathlist begins with a &quot;/&quot; , NitrOS-9 will
 begin searching in the device directory for the new working
 directory, otherwise searching will begin with the present directory.
  For example, the following sequence of commands set the
@@ -718,7 +713,7 @@ and <emphasis>attributes</emphasis> which determine who may access the file and
 how it many be used.
 </para>
 <para>
-OS-9 automatically stores with each file the user number
+NitrOS-9 automatically stores with each file the user number
 associated with the process that created it. This user is considered
 to be the &quot;owner&quot; of the file.
 </para>
@@ -746,7 +741,7 @@ being used as &quot;text&quot; files
 <para>
 EXECUTE PERMISSION FOR OWNER: If on, the owner can load the file into memory
 and execute it. Note that the file <emphasis>must</emphasis> contain one or
-more valid OS-9 format memory modules in order to actually load
+more valid NitrOS-9 format memory modules in order to actually load
 </para>
 <para>
 The following &quot;public permissions&quot; work the same way as
@@ -754,15 +749,15 @@ the &quot;owner permissions&quot; above but are applied to processes having
 DIFFERENT user numbers than the file's owner.
 </para>
 <para>
-WRITE PERMISSION FOR PUBLIC - If on, any other user may write to or
+WRITE PERMISSION FOR PUBLIC: If on, any other user may write to or
 delete the file.
 </para>
 <para>
-READ PERMISSION FOR PUBLIC - If on, any other user may read (and
+READ PERMISSION FOR PUBLIC: If on, any other user may read (and
 possibly copy) the file.
 </para>
 <para>
-EXECUTE PERMISSION FOR PUBLIC - If on, any other user may execute
+EXECUTE PERMISSION FOR PUBLIC: If on, any other user may execute
 the file.
 </para>
 <para>
@@ -842,7 +837,7 @@ to turn it off <emphasis>only</emphasis> if the directory is empty.
 <title>Reading and Writing From Files</title>
 <para>
 A single file type and format is used for all mass storage files.
-Files store an ordered sequence of 8-bit bytes. OS-9 is not usually
+Files store an ordered sequence of 8-bit bytes. NitrOS-9 is not usually
 sensitive to the contents of files for most functions. A given file
 may store a machine language program, characters of text, or almost
 anything else. Data is written to and read from files exactly as
@@ -854,7 +849,7 @@ desired.
 When a file is created or opened a &quot;file pointer&quot; is established
 for it. Bytes within the file are addressed like memory, and the
 file pointer holds the &quot;address&quot; of the next byte in the file to be
-written to or read from. The OS-9 &quot;read&quot; and &quot;write&quot; service
+written to or read from. The NitrOS-9 &quot;read&quot; and &quot;write&quot; service
 functions always update the pointer as data transfers are performed.
 Therefore, successive read or write operations will perform sequential data transfers.
 </para>
@@ -871,11 +866,11 @@ the file. Reading up to the last byte of a file will cause the next
 </para>
 
 <section id="sec3.9.1">
-<title>File Usage in OS-9</title>
+<title>File Usage in NitrOS-9</title>
 <para>
 Even though there is physically only one type of file, the logical
-usage of files in OS-9 covers a broad spectrum. Because all
-OS-9 files have the same physical type, commands such as <command>copy</command>,
+usage of files in NitrOS-9 covers a broad spectrum. Because all
+NitrOS-9 files have the same physical type, commands such as <command>copy</command>,
 <command>del</command>, etc., can be used with any file regardless of its logical
 usage. Similarly, a particular file can be treated as having a
 different logical usage at different times by different programs. The
@@ -939,7 +934,7 @@ next field may be two bytes long and used to hold 16-bit binary
 numbers, etc.
 </para>
 <para>
-It is important to understand that OS-9 itself does not directly
+It is important to understand that NitrOS-9 itself does not directly
 process or deal with records other than providing the basic file
 functions required by all high-level languages to create and use
 random-access files.
@@ -955,21 +950,21 @@ Each file may
 contain <emphasis>one or more</emphasis> program modules.
 </para>
 <para>
-OS-9 program modules resident in memory have a standard module
+NitrOS-9 program modules resident in memory have a standard module
 format that, besides the object code, includes a &quot;module header&quot; and
 a CRC check value. Program module(s) stored in files contain exact
 binary copies of the programs as they will exist in memory, and not
-one byte more. OS-9 does not require a &quot;load record&quot;
-system commonly used by other operating systems because OS-9
+one byte more. NitrOS-9 does not require a &quot;load record&quot;
+system commonly used by other operating systems because NitrOS-9
 programs are position-independent code and therefore do not have to
 be loaded into specific memory addresses.
 </para>
 <para>
-In order for OS-9 to load the program module(s) from a file, the
+In order for NitrOS-9 to load the program module(s) from a file, the
 file itself must have execute permission and each module
 must have a valid module header and CRC check value. If a program
 module has been altered in any way, either as a file or in memory,
-its CRC check value will be incorrect And OS-9 will refuse to load
+its CRC check value will be incorrect And NitrOS-9 will refuse to load
 the module. The <command>verify</command> command can be used to check the correctness
 of the check values, and update them to corrected values if
 necessary.
@@ -990,7 +985,7 @@ controlled ASCII format.
 <section id="sec3.9.5">
 <title>Directory Files</title>
 <para>
-Directory files play a key role in the OS-9 file system.  They can only be created by the <command>makdir</command> command, and
+Directory files play a key role in the NitrOS-9 file system.  They can only be created by the <command>makdir</command> command, and
 can be identified by the &quot;d&quot; attribute being set (see <xref linkend="sec3.8.1"/>). The
 file is organized into 32-byte records. Each record can be a
 directory entry. The first 29 bytes of the record is a string of
@@ -1016,7 +1011,7 @@ used instead. Directories also cannot be deleted directly (see <xref linkend="se
 <section id="sec3.9.6">
 <title>Miscellaneous File Usage</title>
 <para>
-OS-9's basic file functions are so versatile it is possible to
+NitrOS-9's basic file functions are so versatile it is possible to
 devise an almost unlimited number of special-purpose file formats
 for particular applications, which do not fit into any of the three
 previously discussed categories.
@@ -1025,7 +1020,7 @@ previously discussed categories.
 Examples of this category are COBOL Indexed Sequential (ISAM)
 files and some special word processor file formats which allow
 random access of text lines. As discussed in Sec.
-3.9.1, most OS-9 utility commands work with any file format including
+3.9.1, most NitrOS-9 utility commands work with any file format including
 these special types. In general, the <command>dump</command> command is the preferred
 method for examining the contents of unusually formatted files.
 </para>
@@ -1035,14 +1030,14 @@ method for examining the contents of unusually formatted files.
 <section id="sec3.10">
 <title>Physical File Organization</title>
 <para>
-OS-9's file system implements a universal logical organization
+NitrOS-9's file system implements a universal logical organization
 for all I/O devices that effectively eliminates most hardware-related
 considerations for most applications. This section gives
-basic information about the physical file structure used by OS-9.
-For more information, see the OS-9 System Programmer's Manual.
+basic information about the physical file structure used by NitrOS-9.
+For more information, see the NitrOS-9 System Programmer's Manual.
 </para>
 <para>
-Each OS-9 file is comprised of one or more sectors  which are
+Each NitrOS-9 file is comprised of one or more sectors  which are
 the physical storage units of the disk systems. Each sector holds
 exactly 256 data bytes, and disk is numbered sequentially starting
 with sector zero, track zero. This number is called a &quot;logical
@@ -1053,7 +1048,7 @@ physical track/sector numbers is done by the disk driver module.
 <para>
 Sectors are the smallest allocatable physical unit on a disk
 system, however, to increase efficiency on some larger-capacity disk.
-systems, OS-9 uses uniform-sized groups of sectors, called
+systems, NitrOS-9 uses uniform-sized groups of sectors, called
 <emphasis>clusters</emphasis>,
 as the smallest allocatable unit. Cluster sizes are always an
 integral power of two (2, 4, 8, etc.). One sector of each disk is
@@ -1064,11 +1059,11 @@ indicate which clusters are in use (or defective), and which are
 free for allocation to files.
 </para>
 <para>
-The &make; Computer disk system uses the following format:
+The Color Computer disk system uses the following format:
 </para>
 <itemizedlist mark="square">
 <listitem><para>
-double density recording on one side
+double density recording on two sides
 </para></listitem>
 <listitem><para>
 40 tracks per disk

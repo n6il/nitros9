@@ -39,14 +39,14 @@ build &lt;mytext /T2      (copies file &quot;mytext&quot; to terminal T2)
 
 OS9: build newfile
 
-? The powers of the OS-9
+? The powers of the NitrOS-9
 ? operating system are truly
 ? fantastic.
 ? [RETURN]
 
 OS9: list newfile
 
-The powers of the OS-9
+The powers of the NitrOS-9
 operating system are truly
 fantastic.
 </screen>

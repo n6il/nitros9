@@ -16,7 +16,7 @@ Irqs displays a list of the system's IRQ polling table.  The IRQ polling table c
 list of the service routines for each interrupt handler known by the system.
 </para>
 <para>
-The irqs display header lists the system name, the OS-9 version number, the maximum
+The irqs display header lists the system name, the NitrOS-9 version number, the maximum
 number of devices allowed in the device table, and the maximum number of entries in
 the IRQ table.
 </para>

@@ -14,7 +14,7 @@
 <para>
 An alternative video screen device driver, which provides a 51
 column by 24 line display with upper and lower case character sets,
-can be incorporated into OS-9 with the command:
+can be incorporated into NitrOS-9 with the command:
 <screen>
 GO51
 </screen>

@@ -8,10 +8,7 @@
 <cmdsynopsis>
 <command>dsave</command>
 <arg choice="opt">
-  <option>-opts</option>
-</arg>
-<arg choice="opt">
-  <replaceable>devname</replaceable>
+  <option>opts</option>
 </arg>
 <arg choice="opt">
   <replaceable>path</replaceable>
@@ -22,18 +19,14 @@
 <refsect1><title>Description</title>
 <para>
 Dsave is used to backup or copy all files in one or more
-directories. It is unlike most other commands in that it does NOT
-directly affect the system, rather, it generates a procedure file
-which is executed later to actually do the work.
+directories. It does not execute the commands; instead, it echos commands
+to standard output.  This output can be redirected to a file and executed later as a procedure file.
 </para>
 <para>
 When <command>dsave</command> is executed, it writes copy commands to
 <emphasis>standard output</emphasis>
 to copy files from the current <emphasis>data</emphasis> directory
-on <replaceable>devname</replaceable> (the default is /D0) to the directory
-specified by <replaceable>path</replaceable>. If <replaceable>path</replaceable>
-does not appear, the copy is performed to the current data directory
-<emphasis>at the time the <command>dsave</command> procedure file is executed.</emphasis>
+to the directory specified by <replaceable>path</replaceable>.
 If <command>dsave</command>
 encounters a directory file, it will automatically include <command>makdir</command>
 and <command>chd</command> commands in the output before generating copy commands for
@@ -73,12 +66,16 @@ for the <filename>OS9Boot</filename> file.</entry>
 <entry>indent for directory levels</entry>
 </row>
 <row>
-<entry>-L</entry>
+<entry>-l</entry>
 <entry>do not process directories below the current level</entry>
 </row>
 <row>
 <entry>-m</entry>
 <entry>do not include <command>makdir</command> commands in procedure file</entry>
+</row>
+<row>
+<entry>-r</entry>
+<entry>forces the copy command to rewrite the file at its destination if it already exists</entry>
 </row>
 <row>
 <entry>-s<replaceable>integer</replaceable></entry>
@@ -98,13 +95,12 @@ For more information see: <xref linkend="sec2.3"/>
 Example which copies all files on &quot;d2&quot; to &quot;d1&quot;:
 </para>
 <screen>
-chd /d2                          (select &quot;from&quot; directory)
-dsave /d2 &gt;/d0/makecopy       (make procedure file &quot;makecopy&quot;)
-chd /d1                          (select &quot;to&quot; directory)
+chd /d0                          (select &quot;from&quot; directory)
+dsave /d1 &gt;/d0/makecopy       (make procedure file &quot;makecopy&quot;)
 /d0/makcopy                      (run procedure file)
 
 chd /d0/MYFILES/STUFF
-dsave -is32 /d0 /d1/BACKUP/STUFF &gt;saver
+dsave -is32 /d1/BACKUP/STUFF &gt;saver
 /d0/MYFILES/STUFF/saver
 </screen>
 </refsect1>

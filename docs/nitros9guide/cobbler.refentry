@@ -16,12 +16,12 @@
 <refsect1><title>Description</title>
 <para>
 <command>Cobbler</command> is used to create the <filename>OS9Boot</filename> file required on any disk
-from which OS-9 is to be bootstrapped. The boot file will consist
+from which NitrOS-9 is to be bootstrapped. The boot file will consist
 of the <emphasis>same modules which were loaded into memory during the most
 recent boostrap.</emphasis>
 To add modules to the bootstrap file use the
-<command>OS9Gen</command> command. <command>Cobbler</command> also writes the OS-9 kernel on the first
-fifteen sectors of track 34, and excludes these sectors from the
+<command>OS9Gen</command> command. <command>Cobbler</command> also writes the NitrOS-9 kernel on the eighteen
+sectors of track 34, and excludes these sectors from the
 disk allocation map. If any files are present on these sectors
 <command>cobbler</command> will display an error message.
 </para>
@@ -30,7 +30,7 @@ NOTE: The boot file must fit into one contiguous block on the mass-storage
 device. For this reason <command>cobbler</command> is normally used on a
 freshly formatted disk. If <command>cobbler</command> is used on a disk and there is
 not a contiguous block of storage large enough to hold the boot
-file, the old boot file may have been destroyed and OS-9 will not be
+file, the old boot file may have been destroyed and NitrOS-9 will not be
 able to boot from that disk until it is reformatted.
 </para>
 <para>

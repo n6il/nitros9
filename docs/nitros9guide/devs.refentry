@@ -13,9 +13,9 @@
 <refsect1><title>Description</title>
 <para>
 Devs displays a list of the system's device table.  The device table contains an
-entry for each active device known to OS-9.  devs does not display information
+entry for each active device known to NitrOS-9.  devs does not display information
 for uninitialized devices. The devs display header lists the system name,
-the OS-9 version number, and the maximum number of devices allowed in the device table.
+the NitrOS-9 version number, and the maximum number of devices allowed in the device table.
 </para>
 <para>
 Each line in the devs display contains five fields:

@@ -1,9 +1,9 @@
 <chapter>
 <title>Multiprogramming and Memory Management</title>
 <para>
-One of OS-9's most extraordinary abilities is multiprogramming,
+One of NitrOS-9's most extraordinary abilities is multiprogramming,
 which is sometimes called timesharing or multitasking. Simply
-states, OS-9 lets you computer run more than one program at the same
+states, NitrOS-9 lets you computer run more than one program at the same
 time. This can be a tremendous advantage in many situations. For
 example, you can be editing one program while another is being
 printed. Or you can use your Color Computer to control household
@@ -11,23 +11,23 @@ automation and still be able to use it for routine work and
 entertainment.
 </para>
 <para>
-OS-9 uses this capability all the time for internal functions.
+NitrOS-9 uses this capability all the time for internal functions.
 The simple way for you to do so is by putting a &quot;&amp;&quot; character at the
 end of a command line which causes the shell to run your command as
 a &quot;background task&quot;.
 </para>
 <para>
 The information presented in this chapter is intended to give you
-an insight into how OS-9 performs this amazing feat. You certainly
+an insight into how NitrOS-9 performs this amazing feat. You certainly
 don't have to know every detail of how multiprogramming works in
-order to use OS-9, but a basic working knowledge can help you
+order to use NitrOS-9, but a basic working knowledge can help you
 discover many new ways to use your Color Computer.
 </para>
 <para>
 In order to allow several programs to run simultaneously and
-without interference, OS-9 must perform many coordination and
+without interference, NitrOS-9 must perform many coordination and
 resource allocation functions. The major system resources managed
-by OS-9 are:
+by NitrOS-9 are:
 </para>
 <simplelist>
 <member>CPU Time</member>
@@ -37,7 +37,7 @@ by OS-9 are:
 <para>
 In order for the computer to have reasonable performance, these
 resources must be managed in the most efficient manner possible.
-Therefore, OS-9 uses many techniques and strategies to optimize
+Therefore, NitrOS-9 uses many techniques and strategies to optimize
 system throughput and capacity.
 </para>
 
@@ -53,11 +53,11 @@ which communicates with a person at a terminal on a line-by line
 basis. Every time the program has to wait for a line of characters
 to be typed or displayed, it (typically) cannot do any useful
 processing and would waste CPU time. An efficient multiprogramming
-operating system such as OS-9 automatically assigns CPU time to only
+operating system such as NitrOS-9 automatically assigns CPU time to only
 those programs that can effectively use the, time.
 </para>
 <para>
-OS-9 uses a technique called <emphasis>timeslicing</emphasis> which allows processes
+NitrOS-9 uses a technique called <emphasis>timeslicing</emphasis> which allows processes
 to share CPU time with all other active processes. Timeslicing is
 implemented using both hardware and software functions. The
 system's CPU is interrupted by a real time clock many (60 in the
@@ -69,7 +69,7 @@ rapidly that to a human observer all processes appear to execute
 continuously, unless the computer becomes overloaded with processing. If this
 happens, a noticeable delay in response to terminal
 input may occur, or &quot;batch&quot; programs may take much longer to run
-than they ordinarily do. At any occurrence of a tick, OS-9 can suspend
+than they ordinarily do. At any occurrence of a tick, NitrOS-9 can suspend
 execution of one program and begin execution of another. The
 starting and stopping of programs is done in a manner that does not
 affect the program's execution. How frequently a process is given
@@ -139,7 +139,7 @@ change to the active state.
 <para>
 The sequence of operations required to create a new process and
 initially allocate its resources (especially memory) are
-automatically performed by OS-9's &quot;fork&quot; function. If for any
+automatically performed by NitrOS-9's &quot;fork&quot; function. If for any
 reason any part of the sequence cannot be performed the fork is
 aborted and the prospective parent is passed an appropriate error
 code. The most frequent reason for failure is unavailablity of
@@ -159,17 +159,17 @@ system is examined, a hierarchical lineage becomes evident. In
 fact, this hierarchy is a tree structure that resembles a family
 tree. The &quot;family&quot; concept makes it easy to describe relationships
 between processes, and so it is used extensively in descriptions of
-OS-9's multiprogramming operations.
+NitrOS-9's multiprogramming operations.
 </para>
 <para>
-When the parent issues a fork request to OS-9, it must specify
+When the parent issues a fork request to NitrOS-9, it must specify
 the following required information:
 </para>
 <itemizedlist mark="square">
 <listitem><para>
 A PRIMARY MODULE, which is the name of the program to be
 executed by the new process. The program can already be present
-in memory, or OS-9 may load it from a mass storage file having
+in memory, or NitrOS-9 may load it from a mass storage file having
 the same name.
 </para></listitem>
 <listitem><para>
@@ -206,7 +206,7 @@ time the process receives with respect to others.
 </para></listitem>
 </itemizedlist>
 <para>
-As part of the fork operation, OS-9 automatically assigns:
+As part of the fork operation, NitrOS-9 automatically assigns:
 </para>
 <itemizedlist mark="square">
 <listitem><para>
@@ -258,7 +258,7 @@ Memory
 <section id="sec5.4">
 <title>Basic Memory Management Functions</title>
 <para>
-An important OS-9 function is memory management. OS-9 automatically allocates
+An important NitrOS-9 function is memory management. NitrOS-9 automatically allocates
 all system memory to itself and to processes, and
 also keeps track of the logical <emphasis>contents</emphasis>
 of memory (meaning which
@@ -292,7 +292,7 @@ upward for data areas, as shown below:
 <title>Loading Program Modules Into Memory</title>
 
 <para>
-When performing a fork operation, OS-9's first step is to attempt
+When performing a fork operation, NitrOS-9's first step is to attempt
 to locate the requested program module by searching the &quot;module
 directory&quot;, which has the address of every module present in memory.
 The &CPU; instruction set supports a type of program called
@@ -302,13 +302,13 @@ affecting each other, provided that each &quot;incarnation&quot; of the
 program has am independent memory area for its variables.
 </para>
 <para>
-Almost all OS-9 family software is reentrant and can make most
+Almost all NitrOS-9 family software is reentrant and can make most
 efficient use of memory. For example, Basic09 requires 22K bytes of
 memory to load into. If a request to run Basic09 is made, but
 another user (process) had previously caused it to be loaded into
 memory, both processes will share the same copy, instead of causing
 another copy to be loaded (which would use an additional 22K of
-memory). OS-9 automatically keeps track of how many processes are
+memory). NitrOS-9 automatically keeps track of how many processes are
 using each program module and deletes the module (freeing its memory
 for other uses) when all processes using the module have terminated.
 </para>
@@ -319,25 +319,25 @@ load the program from mass storage.
 </para>
 <para>
 Every program module has a &quot;module header&quot; that describes the
-program and its memory requirements. OS-9 uses this to determine
+program and its memory requirements. NitrOS-9 uses this to determine
 how much memory for variable storage should be allocated to the
 process (it can be given more memory by specifying an optional
 parameter on the shell command line). The module header also
 includes other important descriptive information about the program,
-and is an essential part of OS-9 operation at the machine language
+and is an essential part of NitrOS-9 operation at the machine language
 level. A detailed description of memory modules and module headers
-can be found in the &quot;OS-9 System Programmer's Manual&quot;.
+can be found in the &quot;NitrOS-9 System Programmer's Manual&quot;.
 </para>
 <para>
 Programs can also be explicitly loaded into memory using the
 <command>load</command> command. As with fork, the program will actually be loaded
 only if it is not already in memory. If the module is not in
-memory, OS-9 will copy a candidate memory module from the file into
+memory, NitrOS-9 will copy a candidate memory module from the file into
 memory, verify the CRC, and then, if the module is not already in
 the module directory, add the module to the directory. This process
 is repeated until all the modules in the file are loaded, the 64K
 memory limit is exceeded, or until a module with an invalid format
-is encountered. OS-9 always links to the first module read from the
+is encountered. NitrOS-9 always links to the first module read from the
 file.
 </para>
 <para>
@@ -395,7 +395,7 @@ unlinked module to crash.
 <para>
 Another important aspect of program loading is the ability to
 have two or more programs resident in memory at the same time. This
-is possible because all OS-9 program modules are &quot;position-independent
+is possible because all NitrOS-9 program modules are &quot;position-independent
 code&quot;, or &quot;PIC&quot;. PIC programs do not have to be loaded into
 specific, predetermined memory addresses to work correctly, and can
 therefore be loaded at different memory addresses at different
@@ -439,7 +439,7 @@ than the largest free space.
 </para>
 <para>
 The <command>mfree</command> command shows the location and size of each unused
-memory area and the <command>mdir e</command> command shows the address, size, and
+memory area and the <command>mdir -e</command> command shows the address, size, and
 link (use) count of each module in the address space. These
 commands can be used to detect fragmentation. Memory can usually be
 de-fragmemted by unlinking scattered modules and reloading them.

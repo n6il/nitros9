@@ -1,7 +1,7 @@
 <refentry id="disasm">
 <refnamediv>
 <refname>DISASM</refname>
-<refpurpose>OS9 Module Disassembler</refpurpose>
+<refpurpose>NitrOS-9 Module Disassembler</refpurpose>
 </refnamediv>
 
 <refsynopsisdiv>
@@ -17,7 +17,7 @@
 
 <refsect1><title>Description</title>
 <para>
-Disasm was written to hack apart OS9 system modules,command modules,
+Disasm was written to hack apart NitrOS-9 system modules,command modules,
 file managers and device drivers/descriptors either from memory or disk.
 Unlike most other disassemblers, <command>disasm</command> is a two pass disassembler, creating
 output using only referenced labels. This output can be redirected to a file
@@ -66,16 +66,6 @@ x = look for module in execution directory.
 <para>
 ANY combination of options is allowed (upper or lower case) but they *must*
 immediately follow the '-' and there must be no spaces separating the options.
-</para>
-</refsect1>
-<refsect1><title>OS9 Level I Users</title>
-<para>
-by changing relative address $17 from $64 to $30 will cause the output
-source to reference /d0/defs instead of /dd/defs
-</para><para>
-also,if you are not using a driver which supports level II display codes,
-you *MUST* change relative address $15 from 01 to 00 to avoid problems
-in the event of an error message being printed out.
 </para>
 </refsect1>
 </refentry>
