@@ -1,6 +1,8 @@
 ***************************************
 * OS-9 Level Two Bootlist
 *
+* $Id$
+*
 * This bootlist is presented as an example for creating custom bootfiles.
 * A module may be excluded from the bootfile if an asterisk (*) is the
 * first character of the line.
@@ -18,10 +20,21 @@
 *
 ../MODULES/RBF/rbf.mn
 *
-* SuperSCSI - SCSI support for TC^3, Ken-Ton and Disto Controllers
+* DriveWire driver (Cloud-9 product)
+*../MODULES/RBF/drivewire.dr
+* DriveWire descriptors - select as needed
+*../MODULES/RBF/ddx0.dd
+*../MODULES/RBF/x0.dd
+*../MODULES/RBF/x1.dd
+*../MODULES/RBF/x2.dd
+*../MODULES/RBF/x3.dd  
+*
+* SuperSCSI drivers (Cloud-9 product)
+* Select SCSI driver for TC^3, Ken-Ton or Disto Controller
 *../MODULES/RBF/superscsi_tc3.dr
 *../MODULES/RBF/superscsi_ktlr.dr
 *../MODULES/RBF/superscsi_disto.dr
+* SuperSCSI descriptors - select as needed
 *../MODULES/RBF/dd_ez135_tc3ktlr.dd
 *../MODULES/RBF/h0_ez135_tc3ktlr.dd
 *../MODULES/RBF/h0_ez135_d4n1.dd
@@ -39,32 +52,28 @@
 * CC3Disk - WD1773 floppy support
 ../MODULES/RBF/cc3disk.dr
 * Floppy device descriptors
-*
 * DD - default device - choose one if needed
 *../MODULES/RBF/ddd0_35s.dd
 ../MODULES/RBF/ddd0_40d.dd
 *../MODULES/RBF/ddd0_80d.dd
-*
 * D0 - drive 0 - choose one if needed
 *../MODULES/RBF/d0_35s.dd
 ../MODULES/RBF/d0_40d.dd
 *../MODULES/RBF/d0_80d.dd
-*
 * D1 - drive 1 - choose one if needed
 *../MODULES/RBF/d1_35s.dd
 ../MODULES/RBF/d1_40d.dd
 *../MODULES/RBF/d1_80d.dd
-*
 * D2 - drive 2 - choose one if needed
 *../MODULES/RBF/d2_35s.dd
 *../MODULES/RBF/d2_40d.dd
 *../MODULES/RBF/d2_80d.dd
-*
 * D3 - drive 3 - choose if needed
 *../MODULES/RBF/d3_35s.dd
 *
 * RAMDisk driver
 *../MODULES/RBF/rammer.dr
+* RAMDisk descriptors - select as needed
 *../MODULES/RBF/ddr0_8k.dr
 *../MODULES/RBF/ddr0_96k.dr
 *../MODULES/RBF/ddr0_128k.dr
