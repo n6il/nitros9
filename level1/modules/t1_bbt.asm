@@ -3,9 +3,9 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*        From Tandy OS-9 Level One VR 02.00.00
 
          nam   T1
          ttl   CoCo serial device descriptor
@@ -14,7 +14,6 @@
 
          ifp1  
          use   defsfile
-         use   scfdefs
          endc  
 
 tylg     set   Devic+Objct
@@ -23,9 +22,9 @@ rev      set   $00
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
-         fcb   READ.+WRITE. mode byte
+         fcb   UPDAT.
          fcb   HW.Page    extended controller address
-         fdb   $0000      physical controller address
+         fdb   $FF20      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   $00        case:0=up&lower,1=upper only
@@ -47,8 +46,12 @@ rev      set   $00
          fcb   C$QUIT     quit character
          fcb   C$BSP      backspace echo character
          fcb   C$BELL     line overflow character (bell)
-         fcb   PARNONE    init value for dev ctl reg
-         fcb   B300+WORD8+STOP1       baud rate
+         fcb   WORD8+PARNONE+STOP1 init value for dev ctl reg
+         IFGT  Level-
+         fcb   B2400      baud rate
+         ELSE
+         fcb   B300       baud rate
+         ENDC
          fdb   name       copy of descriptor name address
          fcb   $00        acia xon char
          fcb   $00        acia xoff char
@@ -58,7 +61,7 @@ initsize equ   *
 
 name     fcs   /T1/
 mgrnam   fcs   /SCF/
-drvnam   fcs   /RS232/
+drvnam   fcs   /SIO/
 
          emod  
 eom      equ   *
