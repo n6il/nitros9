@@ -53,31 +53,90 @@ a special help command.  To display the information on the current device
 (the device indicated by the right arrow [->]), press [H].
 </para>
 <para>
-If there are more than ten devices in a CONFIG menu, use [->] to move ahead
-page-by-page and [<-] to move back.
+If there are more than ten devices in a CONFIG menu, use [-&gt;] to move ahead
+page-by-page and [&lt;-] to move back.
 </para>
 <para>
 The devices you can select are:
 </para>
-<literallayout>
-	term32	The computer keyboard and standard TV display
-	term80	The computer keyboard and optional 80 column video display
-	d0	Disk Drive 0
-	d1	Disk Drive 1
-	d2	Disk Drive 2
-	d3	Disk Drive 3
-	h0_15	A 15 meg hard disk drive 0
-	h1_15	A 15 meg hard disk drive 1
-	h0_35	A 35 meg hard disk drive 0
-	h1_35	A 35 meg hard disk drive 1
-	p	A printer using the RS-232 serial port
-	t1	A terminal port using the standard RS-232 port
-	t2	A terminal port using the optional RS-232 communications pak
-	t3	A terminal port using the optional RS-232 communications pak
-	m1	A modem
-	m2	A modem
-	ssc	Speech/Sound Cartridge
-</literallayout>
+
+<informaltable frame="none">
+<tgroup cols="2">
+<colspec colwidth="1in">
+<colspec colwidth="4in">
+<tbody>
+<row>
+<entry>term32</entry>
+<entry>The computer keyboard and standard TV display</entry>
+</row>
+<row>
+<entry>term80</entry>
+<entry>The computer keyboard and optional 80 column video display</entry>
+</row>
+<row>
+<entry>d0</entry>
+<entry>Disk Drive 0</entry>
+</row>
+<row>
+<entry>d1</entry>
+<entry>Disk Drive 1</entry>
+</row>
+<row>
+<entry>d2</entry>
+<entry>Disk Drive 2</entry>
+</row>
+<row>
+<entry>d3</entry>
+<entry>Disk Drive 3</entry>
+</row>
+<row>
+<entry>h0_15</entry>
+<entry>A 15 meg hard disk drive 0</entry>
+</row>
+<row>
+<entry>h1_15</entry>
+<entry>A 15 meg hard disk drive 1</entry>
+</row>
+<row>
+<entry>h0_35</entry>
+<entry>A 35 meg hard disk drive 0</entry>
+</row>
+<row>
+<entry>h1_35</entry>
+<entry>A 35 meg hard disk drive 1</entry>
+</row>
+<row>
+<entry>p</entry>
+<entry>A printer using the RS-232 serial port</entry>
+</row>
+<row>
+<entry>t1</entry>
+<entry>A terminal port using the standard RS-232 port</entry>
+</row>
+<row>
+<entry>t2</entry>
+<entry>A terminal port using the optional RS-232 communications pak</entry>
+</row>
+<row>
+<entry>t3</entry>
+<entry>A terminal port using the optional RS-232 communications pak</entry>
+</row>
+<row>
+<entry>m1</entry>
+<entry>A modem</entry>
+</row>
+<row>
+<entry>m2</entry>
+<entry>A modem</entry>
+</row>
+<row>
+<entry>ssc</entry>
+<entry>Speech/Sound Cartridge</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+
 <para>
 To use your computer keyboard and video display, you must select one term.
 You must select d0 as your first disk drive.  Select d1, d2, and d3 for
@@ -96,11 +155,26 @@ select among the &make; Computer terminal I/O subroutines.  Select these
 subroutines in the same manner that you selected the device drivers.
 You have the following modules from which to make your selections:
 </para>
-<literallayout>
-	CO32	A video output module for a 32 column TV display
-	CO80	A video output module for a 80 column video display
-	GRFO	A graphics module for TV display
-</literallayout>
+<informaltable frame="none">
+<tgroup cols="2">
+<colspec colwidth="1in">
+<colspec colwidth="4in">
+<tbody>
+<row>
+<entry>CO32</entry>
+<entry>A video output module for a 32 column TV display</entry>
+</row>
+<row>
+<entry>CO80</entry>
+<entry>A video output module for a 80 column video display</entry>
+</row>
+<row>
+<entry>GRFO</entry>
+<entry>A graphics module for TV display</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 <para>
 When choosing subroutine modules, you must select the video output module
 that matches the terminal module you previously selected for your console
@@ -112,8 +186,8 @@ drivers and managers.  "Bootlist" is created in the ROOT directory of
 Drive 0.  CONFIG next displays two clock options:
 </para>
 <literallayout>
-	1 - 60Hz (American)
-	2 - 50Hz (European)
+ 1 - 60Hz (American)
+ 2 - 50Hz (European)
 </literallayout>
 <para>
 If you live in the United States, Canada, or other country with 60Hz
@@ -136,11 +210,11 @@ Following the boot file generation, a menu lets you select the commands you
 wish to include on your system diskette.  You have the following choices:
 </para>
 <screen>
-	[N]o Commands, Stop Now - Do not add any commands
-	[B]asic Command Set - Adds the basic OS-9 commands
-	[F]ull COmmand Set - Add all OS-9 commands
-	[I]ndividually Select - Select desired commands one by one
-	[?] Receive Help - Get help on the command set
+    [N]o Commands, Stop Now - Do not add any commands
+    [B]asic Command Set - Adds the basic OS-9 commands
+    [F]ull COmmand Set - Add all OS-9 commands
+    [I]ndividually Select - Select desired commands one by one
+    [?] Receive Help - Get help on the command set
 </screen>
 <para>
 Press [N] if you want to create a boot file, but do not wish to add any
@@ -154,15 +228,19 @@ diskette swaps are required.
 Press [B] if you wish to add a basic command set (the most commonly used
 commands) to your new diskette.  This selection does not copy the following:
 </para>
-<para>
-	1. Assembly language development tools, asm, debug, and edit and the
-	DEFS directory
-
-	2. Timesharing utilities, tsmon, login, and the SYS/motd and
-	SYS/password files
-
-	3. The system maintenance utilites, such as dsave, dcheck, and cobbler
-</para>
+<orderedlist numeration="arabic">
+<listitem><para>
+Assembly language development tools, asm, debug, and edit and the
+DEFS directory
+</para></listitem>
+<listitem><para>
+Timesharing utilities, tsmon, login, and the SYS/motd and
+SYS/password files
+</para></listitem>
+<listitem><para>
+The system maintenance utilites, such as dsave, dcheck, and cobbler
+</para></listitem>
+</orderedlist>
 <para>
 Press [F] to copy all of the commands (an exact copy of the standard OS-9
 system diskette, with a new boot file).
@@ -201,13 +279,35 @@ The MODULES directory of the CONFIG/BOOT diskette contains all the device
 drivers and descriptors supported by OS-9.  The filename extension
 describes the type of file, as noted in the following table:
 </para>
-<screen>
-	Extension 	Module Type
-	.dd		Device Descriptor module
-	.dr		Device Driver module
-	.io		Input/Output subroutine module
-	.hp		Help file
-</screen>
+<informaltable frame="none">
+<tgroup cols="2">
+<colspec colwidth="1in">
+<colspec colwidth="3in">
+<thead>
+<row>
+<entry>Extension</entry>
+<entry>Module Type</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry>.dd</entry>
+<entry>Device Descriptor module</entry>
+</row>
+<row>
+<entry>.dr</entry>
+<entry>Device Driver module</entry>
+</row>
+<row>
+<entry>.io</entry>
+<entry>Input/Output subroutine module</entry>
+</row>
+<row>
+<entry>.hp</entry>
+<entry>Help file</entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
 </refsect1>
 </refentry>
-
