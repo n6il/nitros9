@@ -1,34 +1,38 @@
 ********************************************************************
-* progname - program module
+* GrfDrv - OS-9 Level Two graphics driver
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*  -     Original Tandy distribution version
+*   6    From OS-9 Level Two Version 3
 *
 *
 
          nam   GrfDrv
-         ttl   os9 system module    
+         ttl   OS-9 Level Two graphics driver
 
 * Disassembled 02/07/06 13:10:20 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
+
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   6
+
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   0
 size     equ   .
+
          fcb   $07 
-name     equ   *
-         fcs   /GrfDrv/
-         fcb   $06 
-start    equ   *
-         pshs  b,a
+
+name     fcs   /GrfDrv/
+         fcb   edition
+
+start    pshs  b,a
          tfr   u,d
          tfr   a,dp
          leax  >L0029,pcr
@@ -37,54 +41,17 @@ start    equ   *
          leax  d,x
          puls  b,a
          jmp   ,x
-L0029    neg   <u0058
-         neg   <u00E0
-         oim   #$83,<u0003
-         sta   >$03C6
-         lsr   <u005B
-         eim   #$40,<u0005
-         jmp   >$07F1
-         ror   <u0022
-         asr   <u0017
-         ror   <u00EC
-         ror   <u004D
-         ror   <u009D
-         ror   <u00FB
-         ror   <u00B6
-         asr   <u001F
-         asr   <u003E
-         ror   <u00DB
-         asr   <u00C7
-         asr   <u00D4
-         asr   <u00E1
-         rol   <u000A
-         dec   <u0075
-         tim   #$79,<u000B
-         subd  >$0BE8
-         inc   <u00EE
-         clr   <u0036
-         clr   <u0050
-         biand cc.1,<u0078.2
-         muld  #$11CB
-         fcb   $15 
-         tim   #$14,<u00F0
-         lbra  L268A
-         fcb   $45 E
-         lbsr  L5E8F
-         adcb  #$18
-         bcc   L0094
-         adca  #$18
-         puls  x,dp,b
-         inca  
-         clra  
-         tfr   a,dp
-         tst   <$38,u
-         bmi   L0107
-         ldb   #$FF
-         stb   <$38,u
-         leax  >$0190,u
-         ldd   #$FFFF
-         ldy   #$0020
+
+L0029    fcb   $6E
+         fdb   $8400,$6000,$b901
+         fdb   $4303,$3103,$3503,$cf04,$8504,$b206,$ce05,$4e06
+         fdb   $2906,$0405,$7505,$bd06,$1305,$d406,$3106,$5305
+         fdb   $f706,$c106,$c606,$ca07,$d609,$1f0a,$150a,$4d0a
+         fdb   $7f0b,$9b0d,$fa0e,$3b10,$2a10,$3113,$6110,$3d13
+         fdb   $df13,$c615,$4415,$5016,$7417,$7917,$c118,$3117
+         fdb   $d01b,$f116,$7a17,$bc18,$2c15,$0b0d,$382b,$5386
+         fdb   $ff97,$3830,$c901,$80c6,$ff10
+
 L0099    std   -$10,x
          leax  <$40,x
          leay  -$01,y
@@ -113,11 +80,11 @@ L00AB    stb   $01,x
          lsra  
          lsra  
          anda  #$0E
-         ldy   <u004A
+         ldy   <$004A
          leay  <$40,y
          ldd   a,y
          std   $04,x
-         ldy   <u00A1
+         ldy   <$00A1
          stx   $02,y
          tfr   u,d
          addd  #$0B80
@@ -135,11 +102,11 @@ L00AB    stb   $01,x
          std   <$3F,u
 L0107    clra  
          rts   
-L0109    clr   <u0038
-         clr   <u007D
-         ldb   <u0032
+L0109    clr   <$0038
+         clr   <$007D
+         ldb   <$0032
          beq   L011A
-         ldx   <u0033
+         ldx   <$0033
          lbsr  L0AB9
          bcc   L0109
          bra   L011B
@@ -157,21 +124,21 @@ L0130    pshs  y,x,b,a
          ldx   -$10,y
          stx   $02,s
 L0136    ldd   <$16,y
-         std   <u0064
+         std   <$0064
          ldd   $0F,y
-         std   <u0066
+         std   <$0066
          ldd   <$14,y
-         std   <u0068
+         std   <$0068
          ldd   $06,y
-         std   <u0061
+         std   <$0061
          ldd   <$1B,y
-         std   <u006A
+         std   <$006A
          ldd   <$1D,y
-         std   <u006C
+         std   <$006C
          ldb   ,x
-         stb   <u0060
+         stb   <$0060
          ldb   $04,x
-         stb   <u0063
+         stb   <$0063
          ldb   $01,x
 L015C    leax  >$0087,u
          ldy   #$FFA8
@@ -212,7 +179,7 @@ L01A8    os9   F$DelRAM
          rts   
          bsr   L01D7
          bcs   L01D4
-         lda   <u0060
+         lda   <$0060
          cmpa  #$FF
          bne   L01BF
          bsr   L0210
@@ -229,7 +196,7 @@ L01C4    lbsr  L0130
          lbsr  L13E8
          clrb  
 L01D4    lbra  L011D
-L01D7    lda   <u0060
+L01D7    lda   <$0060
          cmpa  #$FF
          bne   L01E1
          ldx   -$10,y
@@ -255,26 +222,26 @@ L01E1    leax  >L0209,pcr
 L0205    comb  
          ldb   #$BD
          rts   
-L0209    neg   <u0050
+L0209    neg   <$0050
          bvc   L025D
          bvc   L025F
          bvc   L0221
-         stx   <u0099
+         stx   <$0099
          leax  >$0190,u
          ldb   #$20
-         stb   <u009B
+         stb   <$009B
 L021B    ldd   -$10,x
          bmi   L0230
          cmpd  -$10,y
          bne   L0230
          lda   -$0E,x
          bpl   L0230
-         cmpx  <u0099
+         cmpx  <$0099
          beq   L0230
          bsr   L0239
          bcs   L0238
 L0230    leax  <$40,x
-         dec   <u009B
+         dec   <$009B
          bne   L021B
          clrb  
 L0238    rts   
@@ -290,8 +257,8 @@ L0239    lda   $09,x
          bra   L0277
 L024F    ldb   <$26,x
          addb  <$28,x
-         stb   <u0097
-         cmpa  <u0097
+         stb   <$0097
+         cmpa  <$0097
          bge   L0277
 L025B    lda   -$0A,y
 L025D    cmpa  <$27,x
@@ -302,8 +269,8 @@ L025D    cmpa  <$27,x
          bra   L0277
 L026B    ldb   <$27,x
          addb  <$29,x
-         stb   <u0097
-         cmpa  <u0097
+         stb   <$0097
+         cmpa  <$0097
          blt   L0279
 L0277    clrb  
          rts   
@@ -313,11 +280,11 @@ L0279    comb
 L027D    bsr   L029C
          bcs   L029B
          stx   -$10,y
-         ldb   <u0060
+         ldb   <$0060
          stb   ,x
          bsr   L02B0
          bcs   L029B
-         ldb   <u005A
+         ldb   <$005A
          stb   $05,x
          lbsr  L07D4
          stb   $06,x
@@ -336,7 +303,7 @@ L02A2    tst   $01,x
          ldb   #$C1
          rts   
 L02B0    pshs  y
-         ldb   <u0060
+         ldb   <$0060
          bpl   L02D0
          leay  >$0980,u
          lda   #$10
@@ -349,7 +316,7 @@ L02BC    tst   ,y
 L02C8    leay  <$20,y
          deca  
          bne   L02BC
-         ldb   <u0060
+         ldb   <$0060
 L02D0    leay  >L030E,pcr
          andb  #$0F
          ldb   b,y
@@ -367,16 +334,16 @@ L02EC    stb   ,y
          puls  y,b
 L02FA    stb   $01,x
          sty   $02,x
-         lda   <u0060
+         lda   <$0060
          anda  #$0F
          leay  >L0315,pcr
          lda   a,y
          sta   $04,x
          clrb  
 L030C    puls  pc,y
-L030E    neg   <u0002
-         aim   #$04,<u0004
-         oim   #$01,<u0000
+L030E    neg   <$0002
+         aim   #$04,<$0004
+         oim   #$01,<$0000
          negb  
          negb  
          suba  ,y+
@@ -391,7 +358,7 @@ L032B    leay  >$0800,y
          cmpy  #$A000
          bcs   L0327
          bra   L0350
-L0337    lda   <u0060
+L0337    lda   <$0060
          cmpa  #$84
          beq   L034A
          leax  >$0800,y
@@ -406,30 +373,30 @@ L034A    clrb
 L0350    comb  
          puls  pc,y,x,b,a
 L0353    pshs  y,x
-         stb   <u0097
-         stb   <u0098
+         stb   <$0097
+         stb   <$0098
          tst   ,x
          bpl   L0361
          lda   #$20
-         sta   <u0097
+         sta   <$0097
 L0361    ldy   $02,x
          lda   ,x
          anda  #$0F
          lsla  
          leax  >L0379,pcr
          ldx   a,x
-         ldd   <u0097
+         ldd   <$0097
 L0371    std   ,y++
          leax  -$01,x
          bne   L0371
          puls  pc,y,x
-L0379    neg   <u0000
+L0379    neg   <$0000
          tfr   s,d
          tfr   s,d
          fcb   $3E >
          suba  #$3E
          suba  #$07
-         subb  <u0003
+         subb  <$0003
          eorb  -$0C,y
          clrd  
          clrb  
@@ -445,18 +412,18 @@ L0379    neg   <u0000
          ldb   $06,y
          lbsr  L078D
          stb   $06,y
-         stb   <u0061
+         stb   <$0061
          ldb   $07,y
          lbsr  L078D
          stb   $07,y
-         stb   <u0062
+         stb   <$0062
          lbsr  L07DE
          puls  x
          ldd   $02,x
          bsr   L03CD
          clr   $0B,y
          ldd   #$C801
-         std   <u0057
+         std   <$0057
          lbsr  L067D
          bcs   L03CB
 L03CB    clrb  
@@ -483,11 +450,11 @@ L03EB    stb   $09,y
          bsr   L0424
          bcs   L0419
          bsr   L043C
-         cmpy  <u002E
+         cmpy  <$002E
          bne   L0419
          ldd   #$0000
-         std   <u002E
-         std   <u0030
+         std   <$002E
+         std   <$0030
          ldx   #$FFB0
          ldd   #$163F
          stb   >$FF9A
@@ -496,7 +463,7 @@ L0412    stb   ,x+
          bhi   L0412
          bra   L0421
 L0419    ldb   $06,x
-         stb   <u0062
+         stb   <$0062
          lbsr  L13E8
          clrb  
 L0421    lbra  L011D
@@ -559,17 +526,17 @@ L0482    puls  pc,y
          std   -$10,y
          lbsr  L017E
          bsr   L04F4
-         tst   <u0059
+         tst   <$0059
          beq   L04B8
          lbsr  L0544
          bcs   L04C2
          ldb   $07,y
-         stb   <u0062
+         stb   <$0062
          lbsr  L13E8
 L04B8    puls  x
-         cmpx  <u002E
+         cmpx  <$002E
          bne   L04C1
-         sty   <u002E
+         sty   <$002E
 L04C1    clrb  
 L04C2    lbra  L011D
 L04C5    bsr   L04E2
@@ -633,29 +600,29 @@ L04F4    clra
 L0544    pshs  x
          clra  
          ldb   -$09,y
-         tst   <u0060
+         tst   <$0060
          bmi   L0552
          lslb  
          lslb  
          rola  
          lslb  
          rola  
-L0552    std   <u004F
+L0552    std   <$004F
          clra  
          ldb   -$08,y
-         tst   <u0060
+         tst   <$0060
          bmi   L055E
          lslb  
          lslb  
          lslb  
-L055E    std   <u0051
+L055E    std   <$0051
          clra  
          clrb  
-         std   <u0047
+         std   <$0047
          lbsr  L0C4D
          puls  pc,x
          lbsr  L0184
-         cmpy  <u002E
+         cmpy  <$002E
          bne   L0583
          pshs  y
          ldb   -$0E,y
@@ -663,14 +630,14 @@ L055E    std   <u0051
          mul   
          leay  >$0190,u
          leay  d,y
-         sty   <u002E
+         sty   <$002E
          puls  y
 L0583    ldb   <$11,y
          beq   L059B
          lbsr  L0189
-         stb   <u007D
+         stb   <$007D
          ldd   <$12,y
-         std   <u007E
+         std   <$007E
          lbsr  L0D49
          lbsr  L0988
          lbsr  L0AB9
@@ -689,7 +656,7 @@ L05A2    comb
 L05B6    clrb  
 L05B7    lbra  L011D
 L05BA    pshs  x,b,a
-         ldb   <u0060
+         ldb   <$0060
          andb  #$0F
          leax  >L061A,pcr
          ldb   b,x
@@ -698,8 +665,8 @@ L05BA    pshs  x,b,a
          mul   
          stb   $02,y
          clra  
-         ldb   <u0063
-         tst   <u0060
+         ldb   <$0063
+         tst   <$0060
          bmi   L05DA
          lslb  
          rola  
@@ -711,20 +678,20 @@ L05DA    std   $04,y
          ldb   -$0A,y
          ldx   $04,y
          lbsr  L1EA9
-         std   <u0097
+         std   <$0097
          lda   -$0B,y
          ldb   $03,y
          mul   
          addd  ,s++
-         addd  <u0097
+         addd  <$0097
          std   -$0D,y
          lbsr  L124B
-         ldb   <u0060
+         ldb   <$0060
          bmi   L05F9
          bsr   L0621
 L05F9    clra  
          ldb   -$09,y
-         tst   <u0060
+         tst   <$0060
          bmi   L0603
          lda   #$08
          mul   
@@ -732,16 +699,16 @@ L0603    subd  #$0001
          std   <$1B,y
          clra  
          ldb   -$08,y
-         tst   <u0060
+         tst   <$0060
          bmi   L0613
          lda   #$08
          mul   
 L0613    subb  #$01
          std   <$1D,y
          puls  pc,x
-L061A    neg   <u0001
-         aim   #$02,<u0004
-         aim   #$02,<u0034
+L061A    neg   <$0001
+         aim   #$02,<$0004
+         aim   #$02,<$0034
          clrd  
          ldb   -$09,y
          tfr   d,x
@@ -763,7 +730,7 @@ L061A    neg   <u0001
          addb  ,s+
          stb   -$06,y
          puls  pc,x
-         ldb   <u0057
+         ldb   <$0057
          bne   L0657
          stb   $0E,y
          leax  >L1FDE,pcr
@@ -784,7 +751,7 @@ L0673    lbra  L011D
          lbsr  L0184
          bsr   L067D
          bra   L0673
-L067D    ldb   <u0057
+L067D    ldb   <$0057
          bne   L0685
          stb   $0B,y
          bra   L06BF
@@ -802,7 +769,7 @@ L069D    ldd   $09,x
          bne   L06C0
          stb   $0B,x
          ldd   $07,x
-         cmpd  <u006E
+         cmpd  <$006E
          beq   L06B8
          tst   $0B,y
          beq   L06B8
@@ -818,7 +785,7 @@ L06C0    puls  x,b
          coma  
          rts   
          lbsr  L0184
-         ldb   <u0057
+         ldb   <$0057
          bne   L06D2
          stb   <$18,y
          bra   L0673
@@ -853,10 +820,10 @@ L070D    andb  #$7F
 L070F    stb   $09,y
 L0711    clrb  
 L0712    lbra  L011D
-         ldb   <u0086
+         ldb   <$0086
          ldx   -$10,y
          leax  <$10,x
-         lda   <u005A
+         lda   <$005A
          anda  #$0F
          stb   a,x
          bra   L0711
@@ -873,20 +840,20 @@ L0735    ldb   ,y+
          cmpa  #$0F
          ble   L0735
          puls  pc,y,x
-         ldb   <u005A
+         ldb   <$005A
          ldx   -$10,y
          stb   $05,x
          bra   L0789
          ldx   -$10,y
          ldb   ,x
-         stb   <u0060
-         ldb   <u005A
+         stb   <$0060
+         ldb   <$005A
          bsr   L078D
          stb   $06,y
          ldb   $09,y
          bitb  #$04
          bne   L0779
-L075A    ldb   <u005A
+L075A    ldb   <$005A
          lslb  
          lslb  
          lslb  
@@ -896,25 +863,25 @@ L075A    ldb   <u005A
          bra   L0783
          ldx   -$10,y
          ldb   ,x
-         stb   <u0060
-         ldb   <u005A
+         stb   <$0060
+         ldb   <$005A
          bsr   L078D
          stb   $07,y
          ldb   $09,y
          bitb  #$04
          bne   L075A
-L0779    ldb   <u005A
-         ldb   <u005A
+L0779    ldb   <$005A
+         ldb   <$005A
          andb  #$07
          lda   $08,y
          anda  #$F8
-L0783    stb   <u0097
-         ora   <u0097
+L0783    stb   <$0097
+         ora   <$0097
          sta   $08,y
 L0789    clrb  
          lbra  L011D
 L078D    pshs  x,a
-         lda   <u0060
+         lda   <$0060
          bmi   L079F
          leax  >L07A1,pcr
          lda   a,x
@@ -922,11 +889,11 @@ L078D    pshs  x,a
          andb  ,x+
          ldb   b,x
 L079F    puls  pc,x,a
-L07A1    neg   <u0005
-         lsl   <u0008
-         tst   <u0001
-         neg   <u00FF
-         com   <u0000
+L07A1    neg   <$0005
+         lsl   <$0008
+         tst   <$0001
+         neg   <$00FF
+         com   <$0000
          fcb   $55 U
          ora   [>$0F00]
          fcb   $11 
@@ -939,17 +906,17 @@ L07A1    neg   <u0005
          ldd   #$DDEE
          stu   >$3412
          leax  >L07CD,pcr
-         lda   <u0060
+         lda   <$0060
          anda  #$0F
          andb  a,x
          puls  pc,x,a
-L07CD    neg   <u0007
-         asr   <u0001
-         com   <u0003
-         asr   <u006D
+L07CD    neg   <$0007
+         asr   <$0001
+         com   <$0003
+         asr   <$006D
          anda  #$2A
-         com   <u00C4
-         asr   <u0039
+         com   <$00C4
+         asr   <$0039
          bsr   L078D
          rts   
 L07DE    ldb   $06,y
@@ -959,8 +926,8 @@ L07DE    ldb   $06,y
          lslb  
          lda   $07,y
          anda  #$07
-         sta   <u0097
-         orb   <u0097
+         sta   <$0097
+         orb   <$0097
          stb   $08,y
          rts   
          ldb   $09,y
@@ -986,15 +953,15 @@ L0813    orb   #$20
 L0815    stb   $09,y
          lbra  L1521
          pshs  y
-         ldy   <u002E
+         ldy   <$002E
          beq   L0824
          lbsr  L0184
 L0824    ldb   >$1000
          stb   >$1001
          ldy   ,s
          lbsr  L0130
-         sty   <u002E
-         stx   <u0030
+         sty   <$002E
+         stx   <$0030
          tfr   x,y
          lda   $01,y
          ldx   $02,y
@@ -1018,22 +985,22 @@ L0824    ldb   >$1000
          sta   $08,x
          stb   >$0099
          stb   $09,x
-         ldd   <u0082
+         ldd   <$0082
          lsra  
          rorb  
-         ror   <u0084
+         ror   <$0084
          lsra  
          rorb  
-         ror   <u0084
+         ror   <$0084
          lsra  
          rorb  
-         ror   <u0084
+         ror   <$0084
          clra  
          sta   >$009C
          sta   $0C,x
          stb   >$009D
          stb   $0D,x
-         ldb   <u0084
+         ldb   <$0084
          stb   >$009E
          stb   $0E,x
          ldb   #$00
@@ -1053,52 +1020,31 @@ L08A5    ldb   ,y+
          deca  
          bhi   L08A5
          puls  y
-         ldd   <u003D
-         std   <u005B
-         ldd   <u003F
-         std   <u005D
+         ldd   <$003D
+         std   <$005B
+         ldd   <$003F
+         std   <$005D
          lbsr  L1554
          lbra  L1521
-L08BE    neg   <u0000
+L08BE    neg   <$0000
          suba  #$14
          suba  #$15
          suba  #$1D
          suba  #$1E
-         com   <u0015
-         com   <u0005
+         com   <$0015
+         com   <$0005
 L08CC    pshs  x
          tst   >$1009
          bne   L08D9
          leax  >L08DB,pcr
          ldb   b,x
 L08D9    puls  pc,x
-L08DB    neg   <u000C
-         aim   #$0E,<u0007
-         rol   <u0005
-         fcb   $10 
-         andcc #$2C
-         tst   <u001D
-         tim   #$1B,<u000A
-         bmi   L090E
-         fcb   $11 
-         nop   
-         brn   L08F3
-         oim   #$13,<u0032
-L08F3    exg   y,0
-         tfr   y,e
-         clr   <u003C
-         ble   L0938
-         lbsr  L1113
-         ror   <u0027
-         lbra  L2F39
-         daa   
-         bpl   L0920
-         abx   
-         fcb   $18 
-         bvs   L0932
-         fcb   $38 8
-         sexw  
-         lsr   <u0023
+
+L08DB    fdb   $3404,$d699,$c101,$2221
+         fdb   $dcb7,$9397,$841f,$dd9b,$2717,$dcb7,$939b,$d3b7
+         fdb   $1f01,$e6e4,$db99,$5a9d,$bc8d,$22dc,$9b93,$b5ed
+         fdb   $059e,$b735,$049d,$bc96,$99a7,$0f4f,$3934
+
 L090E    leau  $05,y
          puls  y,b
          pshs  y
@@ -1114,29 +1060,29 @@ L091B    clrb
          rorb  
 L0920    lsra  
          rorb  
-         std   <u0082
-         clr   <u0084
+         std   <$0082
+         clr   <$0084
          tfr   x,d
          suba  #$80
-         addd  <u0083
-         std   <u0083
+         addd  <$0083
+         std   <$0083
          bcc   L0932
-         inc   <u0082
+         inc   <$0082
 L0932    rts   
          bsr   L0938
          lbra  L011D
-L0938    ldd   <u0080
+L0938    ldd   <$0080
          addd  #$001F
          andb  #$E0
-         std   <u0080
-         ldb   <u0057
+         std   <$0080
+         ldb   <$0057
          cmpb  #$FF
          beq   L094F
-         tst   <u0032
+         tst   <$0032
          beq   L094F
          bsr   L098E
          bcc   L0986
-L094F    ldd   <u0080
+L094F    ldd   <$0080
          cmpd  #$2000
          bhi   L0961
          bsr   L09D6
@@ -1146,14 +1092,14 @@ L094F    ldd   <u0080
          bra   L0966
 L0961    lbsr  L0A09
          bcs   L0985
-L0966    stb   <u007D
-         stx   <u007E
+L0966    stb   <$007D
+         stx   <$007E
          lbsr  L0A60
-         ldb   <u0057
+         ldb   <$0057
          stb   $03,x
-         ldb   <u0058
+         ldb   <$0058
          stb   $04,x
-         ldd   <u0080
+         ldd   <$0080
          std   $05,x
          clra  
          clrb  
@@ -1167,26 +1113,26 @@ L0986    bra   L09CB
 L0988    leax  >L09A2,pcr
          bra   L0992
 L098E    leax  >L09AC,pcr
-L0992    stx   <u00A1
+L0992    stx   <$00A1
          bsr   L09CF
-         ldb   <u0032
+         ldb   <$0032
          beq   L09CB
-         ldx   <u0033
+         ldx   <$0033
          bra   L09C4
 L099E    jmp   [>$00A1,u]
 L09A2    cmpb  <$11,y
          bne   L09BA
          cmpx  <$12,y
          bra   L09B8
-L09AC    lda   <u0057
+L09AC    lda   <$0057
          cmpa  $03,x
          bne   L09BA
-         lda   <u0058
+         lda   <$0058
          beq   L09C9
          cmpa  $04,x
 L09B8    beq   L09C9
-L09BA    stb   <u007D
-         stx   <u007E
+L09BA    stb   <$007D
+         stx   <$007E
          ldb   ,x
          beq   L09CB
          ldx   $01,x
@@ -1199,18 +1145,18 @@ L09CB    comb
          rts   
 L09CF    clra  
          clrb  
-         stb   <u007D
-         std   <u007E
+         stb   <$007D
+         std   <$007E
          rts   
 L09D6    pshs  y,b
-         ldy   <u0080
+         ldy   <$0080
          leax  >L0B45,pcr
-         stx   <u00A1
+         stx   <$00A1
          lbsr  L0B32
          bcs   L0A07
          stb   ,s
          ldd   $05,x
-         subd  <u0080
+         subd  <$0080
          bne   L09FC
          pshs  x
          lbsr  L0A80
@@ -1224,9 +1170,9 @@ L09FC    subd  #$0020
          leax  d,x
 L0A06    clra  
 L0A07    puls  pc,y,b
-L0A09    ldd   <u0080
+L0A09    ldd   <$0080
          addd  #$0020
-         std   <u0097
+         std   <$0097
          addd  #$1FFF
          lsra  
          lsra  
@@ -1234,123 +1180,123 @@ L0A09    ldd   <u0080
          lsra  
          lsra  
          tfr   a,b
-         stb   <u0099
+         stb   <$0099
          lbsr  L019A
          bcs   L0A5F
          pshs  b
-         ldb   <u0099
+         ldb   <$0099
          cmpb  #$01
          bhi   L0A52
          ldd   #$2000
-         subd  <u0097
+         subd  <$0097
          anda  #$1F
-         std   <u009B
+         std   <$009B
          beq   L0A52
          subd  #$0020
          ldd   #$2000
-         subd  <u009B
+         subd  <$009B
          addd  #$2000
          tfr   d,x
          ldb   ,s
-         addb  <u0099
+         addb  <$0099
          decb  
          lbsr  L0189
          bsr   L0A70
-         ldd   <u009B
+         ldd   <$009B
          subd  #$0020
          std   $05,x
 L0A52    ldx   #$2000
          puls  b
          lbsr  L0189
-         lda   <u0099
+         lda   <$0099
          sta   $0F,x
          clra  
 L0A5F    rts   
 L0A60    pshs  b,a
-         lda   <u0032
+         lda   <$0032
          sta   ,x
-         stb   <u0032
-         ldd   <u0033
+         stb   <$0032
+         ldd   <$0033
          std   $01,x
-         stx   <u0033
+         stx   <$0033
          puls  pc,b,a
 L0A70    pshs  b,a
-         lda   <u0035
+         lda   <$0035
          sta   ,x
-         stb   <u0035
-         ldd   <u0036
+         stb   <$0035
+         ldd   <$0036
          std   $01,x
-         stx   <u0036
+         stx   <$0036
          puls  pc,b,a
 L0A80    pshs  y,a
          lda   ,x
          ldy   $01,x
-         ldx   <u007E
-         ldb   <u007D
+         ldx   <$007E
+         ldb   <$007D
          bne   L0A94
-         sta   <u0035
-         sty   <u0036
+         sta   <$0035
+         sty   <$0036
          bra   L0A9C
 L0A94    lbsr  L0189
          sta   ,x
          sty   $01,x
 L0A9C    puls  pc,y,a
          ldb   #$01
-         stb   <u0097
+         stb   <$0097
 L0AA2    lbsr  L098E
          bcs   L0AB1
-         clr   <u0097
+         clr   <$0097
          bsr   L0AB9
          bcs   L0AB6
-         ldb   <u0058
+         ldb   <$0058
          beq   L0AA2
-L0AB1    lda   <u0097
+L0AB1    lda   <$0097
          bne   L0AB6
          clrb  
 L0AB6    lbra  L011D
 L0AB9    pshs  y,x,b
          lda   $0F,x
-         sta   <u009F
+         sta   <$009F
          lda   ,x
          ldy   $01,x
-         ldb   <u007D
+         ldb   <$007D
          bne   L0ACF
-         sta   <u0032
-         sty   <u0033
+         sta   <$0032
+         sty   <$0033
          bra   L0AD9
 L0ACF    lbsr  L0189
-         ldx   <u007E
+         ldx   <$007E
          sta   ,x
          sty   $01,x
 L0AD9    ldb   ,s
-         lda   <u009F
+         lda   <$009F
          cmpa  #$01
          bgt   L0B03
          tfr   b,a
          bsr   L0B0D
          bcc   L0AF9
          leax  >L0B59,pcr
-         stx   <u00A1
+         stx   <$00A1
          ldx   $01,s
          bsr   L0B32
          lbsr  L0189
          lbsr  L0A70
          bra   L0B0B
 L0AF9    leax  >L0B83,pcr
-         stx   <u00A1
+         stx   <$00A1
          ldx   $01,s
          bsr   L0B32
 L0B03    clra  
          tfr   d,x
-         ldb   <u009F
+         ldb   <$009F
          lbsr  L01A8
 L0B0B    puls  pc,y,x,b
 L0B0D    pshs  x,b
-         ldb   <u0032
+         ldb   <$0032
          beq   L0B2C
-         cmpa  <u0032
+         cmpa  <$0032
          beq   L0B2F
-         ldx   <u0033
+         ldx   <$0033
          bra   L0B27
 L0B1B    cmpa  ,x
          beq   L0B2F
@@ -1366,9 +1312,9 @@ L0B2F    comb
          puls  pc,x,b
 L0B32    pshs  u,x,b,a
 L0B34    lbsr  L09CF
-         ldb   <u0035
+         ldb   <$0035
          beq   L0B98
-         ldx   <u0036
+         ldx   <$0036
          bra   L0B91
 L0B3F    ldu   $04,s
          jmp   [>$00A1,u]
@@ -1403,8 +1349,8 @@ L0B7E    lbsr  L0A80
          bra   L0B34
 L0B83    cmpb  ,s
          beq   L0B7E
-L0B87    stb   <u007D
-         stx   <u007E
+L0B87    stb   <$007D
+         stx   <$007E
          ldb   ,x
          beq   L0B98
          ldx   $01,x
@@ -1426,15 +1372,15 @@ L0B9B    stb   $01,s
          puls  b
          bra   L0BC3
 L0BB5    ldd   <$1F,y
-         std   <u0080
+         std   <$0080
          lbsr  L0938
          lbcs  L0C4A
-         ldb   <u007D
+         ldb   <$007D
 L0BC3    stb   <$21,y
          clra  
          clrb  
-         std   <u0047
-         ldb   <u0060
+         std   <$0047
+         ldb   <$0060
          lbsr  L0C8E
          lbsr  L0CD1
          leax  <$20,x
@@ -1443,7 +1389,7 @@ L0BC3    stb   <$21,y
 L0BDA    bra   L0C47
          pshs  y
          ldb   <$21,y
-         stb   <u0097
+         stb   <$0097
          lbsr  L0189
          ldx   <$22,y
          leay  >$0100,u
@@ -1453,13 +1399,13 @@ L0BED    ldb   ,y+
          beq   L0C05
          cmpx  #$4000
          bcs   L0BED
-         inc   <u0097
-         ldb   <u0097
+         inc   <$0097
+         ldb   <$0097
          lbsr  L0189
          ldx   #$2000
          bra   L0BED
 L0C05    puls  y
-         ldb   <u0097
+         ldb   <$0097
          stb   <$21,y
          stx   <$22,y
          bra   L0C44
@@ -1474,15 +1420,15 @@ L0C05    puls  y
          lbsr  L0938
          bcc   L0C37
          bra   L0C4A
-L0C2C    stb   <u007D
-         stx   <u007E
-         ldd   <u0080
+L0C2C    stb   <$007D
+         stx   <$007E
+         ldd   <$0080
          cmpd  $05,x
          bhi   L0C47
 L0C37    lbsr  L0CD1
          lbsr  L1ED4
-         stx   <u0072
-         ldx   <u007E
+         stx   <$0072
+         ldx   <$007E
          lbsr  L0CED
 L0C44    clrb  
          bra   L0C4A
@@ -1490,35 +1436,35 @@ L0C47    comb
          ldb   #$BF
 L0C4A    lbra  L011D
 L0C4D    ldd   -$0D,y
-         std   <u0072
+         std   <$0072
          bsr   L0C6E
          ldd   #$FFFF
-         std   <u0057
+         std   <$0057
          lbsr  L0938
          bcs   L0C6D
-         ldb   <u007D
+         ldb   <$007D
          stb   <$11,y
-         ldd   <u007E
+         ldd   <$007E
          std   <$12,y
          bsr   L0CD1
          lbsr  L0CED
          clrb  
 L0C6D    rts   
 L0C6E    pshs  x
-         ldb   <u0060
+         ldb   <$0060
          bpl   L0C7B
-         ldd   <u004F
+         ldd   <$004F
          lslb  
-         stb   <u0009
+         stb   <$0009
          bra   L0C7D
 L0C7B    bsr   L0C8E
-L0C7D    ldb   <u0009
-         ldx   <u0051
+L0C7D    ldb   <$0009
+         ldx   <$0051
          lbsr  L1EA9
-         std   <u0080
-         ldb   <u0063
-         subb  <u0009
-         stb   <u000A
+         std   <$0080
+         ldb   <$0063
+         subb  <$0009
+         stb   <$000A
          puls  pc,x
 L0C8E    cmpb  #$04
          bne   L0C96
@@ -1529,100 +1475,100 @@ L0C96    cmpb  #$01
          ldb   #$03
          bra   L0CA0
 L0C9E    ldb   #$07
-L0CA0    stb   <u0097
-         ldb   <u0048
+L0CA0    stb   <$0097
+         ldb   <$0048
          comb  
-         andb  <u0097
+         andb  <$0097
          incb  
-         stb   <u0006
+         stb   <$0006
          clra  
-         cmpd  <u004F
+         cmpd  <$004F
          bge   L0CBB
-         ldb   <u0050
-         subb  <u0006
-         andb  <u0097
+         ldb   <$0050
+         subb  <$0006
+         andb  <$0097
          bne   L0CBB
-         ldb   <u0097
+         ldb   <$0097
          incb  
-L0CBB    stb   <u0007
+L0CBB    stb   <$0007
          clra  
-         ldb   <u0048
-         andb  <u0097
-         addd  <u004F
-         addb  <u0097
+         ldb   <$0048
+         andb  <$0097
+         addd  <$004F
+         addb  <$0097
          adca  #$00
 L0CC8    lsra  
          rorb  
-         lsr   <u0097
+         lsr   <$0097
          bne   L0CC8
-         stb   <u0009
+         stb   <$0009
          rts   
-L0CD1    ldd   <u004F
+L0CD1    ldd   <$004F
          std   $07,x
-         ldd   <u0051
+         ldd   <$0051
          std   $09,x
-         ldb   <u0060
+         ldb   <$0060
          stb   $0E,x
-         ldb   <u0006
+         ldb   <$0006
          stb   $0C,x
-         ldb   <u0007
+         ldb   <$0007
          stb   $0D,x
-         ldb   <u0009
+         ldb   <$0009
          stb   $0B,x
          clra  
-         std   <u004F
+         std   <$004F
          rts   
 L0CED    pshs  y
          leay  <$20,x
-         ldx   <u0072
-L0CF4    lda   <u0050
+         ldx   <$0072
+L0CF4    lda   <$0050
 L0CF6    ldb   ,x+
          stb   ,y+
          cmpy  #$4000
          bcs   L0D0B
-         inc   <u007D
-         ldb   <u007D
+         inc   <$007D
+         ldb   <$007D
          lbsr  L0189
          ldy   #$2000
 L0D0B    deca  
          bne   L0CF6
-         ldb   <u000A
+         ldb   <$000A
          abx   
-         dec   <u0052
+         dec   <$0052
          bne   L0CF4
          puls  pc,y
          lbsr  L0184
          lbsr  L098E
          bcs   L0D46
-         stb   <u007D
-         stx   <u007E
+         stb   <$007D
+         stx   <$007E
          ldd   $07,x
-         std   <u004F
+         std   <$004F
          ldd   $09,x
-         std   <u0051
+         std   <$0051
          lbsr  L1E29
          bcs   L0D46
          lbsr  L1E34
          bcs   L0D46
          lbsr  L1ED4
-         stx   <u0072
-         stb   <u0074
-         ldy   <u007E
+         stx   <$0072
+         stb   <$0074
+         ldy   <$007E
          lbsr  L0E2B
          lbsr  L0EC4
          clrb  
 L0D46    lbra  L011D
 L0D49    pshs  y
          leax  >L1FDE,pcr
-         stx   <u0064
+         stx   <$0064
          leax  >L1FE9,pcr
-         stx   <u0068
+         stx   <$0068
          ldd   -$0D,y
-         std   <u0072
+         std   <$0072
          clra  
          clrb  
-         std   <u0047
-         ldy   <u007E
+         std   <$0047
+         ldy   <$007E
          bsr   L0D71
          bcs   L0D6C
          lbsr  L0DF0
@@ -1632,32 +1578,32 @@ L0D6C    comb
          ldb   #$BE
          puls  pc,y
 L0D71    pshs  x
-         ldb   <u0060
+         ldb   <$0060
          cmpb  $0E,y
          bne   L0DA9
          tstb  
          bpl   L0D84
          ldb   #$FF
-         stb   <u0000
-         stb   <u0001
+         stb   <$0000
+         stb   <$0001
          bra   L0D9E
 L0D84    leax  >L0DB6,pcr
-         lda   <u0048
+         lda   <$0048
          coma  
          anda  b,x
          inca  
          cmpa  $0C,y
          bne   L0DA9
          bsr   L0DAC
-         sta   <u0000
+         sta   <$0000
          ldb   $0E,y
          lda   $0D,y
          bsr   L0DAC
-         sta   <u0001
+         sta   <$0001
 L0D9E    bsr   L0DE7
-         ldb   <u0063
-         subb  <u0050
-         stb   <u0097
+         ldb   <$0063
+         subb  <$0050
+         stb   <$0097
          clrb  
          puls  pc,x
 L0DA9    comb  
@@ -1667,23 +1613,23 @@ L0DAC    leax  >L0DBB,pcr
          abx   
          lda   a,x
          rts   
-L0DB6    neg   <u0007
-         com   <u0003
-         oim   #$00,<u0005
-         jmp   <u000E
+L0DB6    neg   <$0007
+         com   <$0003
+         oim   #$00,<$0005
+         jmp   <$000E
          sync  
-         neg   <u0001
-         com   <u0007
-         clr   <u001F
+         neg   <$0001
+         com   <$0007
+         clr   <$001F
          swi   
          fcb   $7F ÿ
          stu   >$0003
-         clr   <u003F
+         clr   <$003F
          stu   >$000F
          stu   >$0005
-         jmp   <u000E
+         jmp   <$000E
          sync  
-         neg   <u0080
+         neg   <$0080
          subb  #$E0
          subb  >$F8FC
          ldu   >$FF00
@@ -1693,21 +1639,21 @@ L0DB6    neg   <u0007
          bmi   L0DC1
          negb  
          ldb   $0A,y
-         stb   <u0052
+         stb   <$0052
          rts   
 L0DF0    pshs  y
          leay  <$20,y
-         ldx   <u0072
-L0DF7    ldb   <u0050
-         stb   <u0099
-L0DFB    ldb   <u0099
-         cmpb  <u0050
+         ldx   <$0072
+L0DF7    ldb   <$0050
+         stb   <$0099
+L0DFB    ldb   <$0099
+         cmpb  <$0050
          bne   L0E05
-         ldb   <u0000
+         ldb   <$0000
          bra   L0E0F
 L0E05    cmpb  #$01
          bne   L0E0D
-         ldb   <u0001
+         ldb   <$0001
          bra   L0E0F
 L0E0D    ldb   #$FF
 L0E0F    lda   ,y+
@@ -1716,75 +1662,75 @@ L0E0F    lda   ,y+
          cmpy  #$4000
          bcs   L0E1E
          bsr   L0E9C
-L0E1E    dec   <u0099
+L0E1E    dec   <$0099
          bne   L0DFB
-         ldb   <u0097
+         ldb   <$0097
          abx   
-         dec   <u0052
+         dec   <$0052
          bne   L0DF7
          puls  pc,y
 L0E2B    pshs  y
-         ldd   <u006A
-         subd  <u0047
+         ldd   <$006A
+         subd  <$0047
          addd  #$0001
-         std   <u009B
-         ldb   <u006D
-         subb  <u004A
+         std   <$009B
+         ldb   <$006D
+         subb  <$004A
          bra   L0E57
 L0E3C    pshs  y
-         lda   <u0060
+         lda   <$0060
          anda  #$01
          beq   L0E49
          ldd   #$027F
          bra   L0E4C
 L0E49    ldd   #$013F
-L0E4C    subd  <u003D
+L0E4C    subd  <$003D
          addd  #$0001
-         std   <u009B
+         std   <$009B
          ldb   #$BF
-         subb  <u0040
+         subb  <$0040
 L0E57    incb  
-         stb   <u00A0
+         stb   <$00A0
          lbsr  L1F2B
          bsr   L0DE7
          ldb   $0C,y
-         stb   <u0006
+         stb   <$0006
          ldb   $0D,y
-         stb   <u0007
+         stb   <$0007
          leax  >L07A1,pcr
-         ldb   <u0060
+         ldb   <$0060
          ldb   b,x
          abx   
          lda   ,x+
-         stx   <u0002
+         stx   <$0002
          leax  >L0EA8,pcr
          ldb   $0E,y
          ldb   b,x
          abx   
          ldb   ,x
          leay  b,x
-         sty   <u00A3
+         sty   <$00A3
          anda  $01,x
-         sta   <u0008
+         sta   <$0008
          ldb   $02,x
-         stb   <u0005
-         ldb   <u0006
+         stb   <$0005
+         ldb   <$0006
          addb  #$02
          ldb   b,x
          leay  b,x
-         sty   <u00A1
-         sty   <u00A5
+         sty   <$00A1
+         sty   <$00A5
          puls  pc,y
-L0E9C    inc   <u007D
-         ldb   <u007D
+L0E9C    inc   <$007D
+         ldb   <$007D
          lbsr  L0189
          ldy   #$2000
          rts   
-L0EA8    neg   <u0005
+L0EA8    neg   <$0005
          fcb   $10 
          fcb   $10 
          lbsr  L6FB0
-         lsl   <u0062
+         lsl   <$0062
          fcb   $5B [
          incb  
          tstb  
@@ -1792,40 +1738,40 @@ L0EA8    neg   <u0005
          clrb  
          neg   $01,s
          fcb   $55 U
-         com   <u0004
+         com   <$0004
          asrb  
          fcb   $51 Q
          comb  
          fcb   $55 U
          inca  
-         clr   <u0002
+         clr   <$0002
          negb  
          inca  
 L0EC4    leay  <$20,y
          pshs  y
-         ldx   <u0072
-L0ECB    stx   <u0072
-         ldd   <u009B
-         std   <u009D
-         lda   <u0050
-         sta   <u0004
-         ldb   <u0006
-         stb   <u0097
-         ldd   <u00A5
-         std   <u00A1
-         ldb   <u0074
+         ldx   <$0072
+L0ECB    stx   <$0072
+         ldd   <$009B
+         std   <$009D
+         lda   <$0050
+         sta   <$0004
+         ldb   <$0006
+         stb   <$0097
+         ldd   <$00A5
+         std   <$00A1
+         ldb   <$0074
 L0EDF    ldy   ,s
          cmpy  #$4000
          bcs   L0EEE
-         stb   <u0099
+         stb   <$0099
          bsr   L0E9C
-         ldb   <u0099
+         ldb   <$0099
 L0EEE    lda   ,y+
          sty   ,s
-         ldy   <u0002
+         ldy   <$0002
          pshs  y
          leay  >L0F0F,pcr
-         cmpy  <u00A1
+         cmpy  <$00A1
          puls  y
          beq   L0F04
          lsla  
@@ -1838,52 +1784,52 @@ L0F04    jmp   [>$00A1,u]
          rola  
          rola  
 L0F0F    pshs  b,a,cc
-         ldd   <u009D
+         ldd   <$009D
          beq   L0F28
          subd  #$0001
-         std   <u009D
+         std   <$009D
          ldd   $01,s
-         anda  <u0008
+         anda  <$0008
          lda   a,y
          lbsr  L1F9B
          lbsr  L1F4B
          stb   $02,s
-L0F28    dec   <u0097
+L0F28    dec   <$0097
          beq   L0F32
          puls  b,a,cc
          jmp   [>$00A3,u]
 L0F32    leas  $03,s
-         dec   <u0004
+         dec   <$0004
          beq   L0F4E
-         lda   <u0004
+         lda   <$0004
          cmpa  #$01
          beq   L0F42
-         lda   <u0005
+         lda   <$0005
          bra   L0F44
-L0F42    lda   <u0007
-L0F44    sta   <u0097
-         ldy   <u00A3
-         sty   <u00A1
+L0F42    lda   <$0007
+L0F44    sta   <$0097
+         ldy   <$00A3
+         sty   <$00A1
          bra   L0EDF
-L0F4E    ldx   <u0072
-         ldb   <u0063
+L0F4E    ldx   <$0072
+         ldb   <$0063
          abx   
-         dec   <u00A0
+         dec   <$00A0
          beq   L0F5D
-         dec   <u0052
+         dec   <$0052
          lbne  L0ECB
 L0F5D    puls  pc,y
          lbsr  L098E
          bcs   L0FA7
-         stb   <u0097
+         stb   <$0097
          ldb   $0F,x
-         stb   <u0099
+         stb   <$0099
          ldd   $05,x
-         std   <u009B
+         std   <$009B
          leax  <$20,x
          tfr   x,d
          anda  #$1F
-         std   <u009D
+         std   <$009D
          bra   L0FA6
          lbsr  L0184
          tsta  
@@ -1901,7 +1847,7 @@ L0F8F    anda  #$DF
          bmi   L0F8B
          cmpa  #$19
          bhi   L0F8B
-L0F99    ldb   <u0060
+L0F99    ldb   <$0060
          bpl   L0FA1
          bsr   L0FAA
          bra   L0FA3
@@ -1931,17 +1877,17 @@ L0FBC    ldx   -$05,y
 L0FD0    ldb   $08,y
 L0FD2    std   ,x
          ldd   #$0001
-         std   <u006E
-         std   <u0070
+         std   <$006E
+         std   <$0070
          rts   
 L0FDC    pshs  y,a
          ldb   $09,y
-         stb   <u000E
+         stb   <$000E
          bitb  #$04
          beq   L0FEC
-         ldd   <u0061
+         ldd   <$0061
          exg   a,b
-         std   <u0061
+         std   <$0061
 L0FEC    bsr   L1031
          bcs   L0FFA
          lda   ,s
@@ -1953,76 +1899,76 @@ L0FFA    leax  >L1029,pcr
          bra   L1005
 L1000    addd  #$0020
          leax  d,x
-L1005    ldb   <u0060
+L1005    ldb   <$0060
          cmpb  #$01
          bne   L101B
-         ldb   <u006F
+         ldb   <$006F
          cmpb  #$08
          bne   L101B
-         ldb   <u000E
+         ldb   <$000E
          bitb  #$10
          bne   L101B
          bsr   L105E
          bra   L1027
 L101B    leay  >L110F,pcr
-         sty   <u00A9
+         sty   <$00A9
          ldy   $01,s
          bsr   L109C
 L1027    puls  pc,y,a
-L1029    neg   <u0000
-         neg   <u0000
-         neg   <u0000
+L1029    neg   <$0000
+         neg   <$0000
+         neg   <$0000
          fcb   $10 
-         neg   <u0034
-         aim   #$D6,<u0060
+         neg   <$0034
+         aim   #$D6,<$0060
          bpl   L1040
          ldd   #$0001
-         std   <u006E
-         std   <u0070
+         std   <$006E
+         std   <$0070
          bra   L105C
 L1040    ldb   $0B,y
          bne   L104E
          ldd   #$0008
-         std   <u006E
-         std   <u0070
+         std   <$006E
+         std   <$0070
          comb  
          bra   L105C
 L104E    lbsr  L0189
          ldx   $0C,y
          ldd   $07,x
-         std   <u006E
+         std   <$006E
          ldd   $09,x
-         std   <u0070
+         std   <$0070
          clrb  
 L105C    puls  pc,a
 L105E    ldy   -$05,y
          exg   x,y
-         lda   <u0071
+         lda   <$0071
          deca  
-         sta   <u0097
+         sta   <$0097
 L1068    lda   ,y+
-         ldb   <u000E
+         ldb   <$000E
          bitb  #$20
          beq   L1073
          lsra  
          ora   -$01,y
 L1073    tfr   a,b
          coma  
-         tst   <u000E
+         tst   <$000E
          bmi   L107E
          anda  ,x
          bra   L1080
-L107E    anda  <u0062
+L107E    anda  <$0062
 L1080    sta   ,x
-         andb  <u0061
+         andb  <$0061
          orb   ,x
          stb   ,x
-         ldb   <u0063
+         ldb   <$0063
          abx   
-         dec   <u0097
+         dec   <$0097
          bmi   L109B
          bne   L1068
-         ldb   <u000E
+         ldb   <$000E
          bitb  #$40
          beq   L1068
          lda   #$FF
@@ -2030,12 +1976,12 @@ L1080    sta   ,x
 L109B    rts   
 L109C    pshs  x
          leax  >L10FF,pcr
-         stx   <u0010
+         stx   <$0010
          ldx   ,s
-         ldb   <u000E
+         ldb   <$000E
          bitb  #$10
          beq   L10D4
-         ldb   <u0071
+         ldb   <$0071
          decb  
          clra  
 L10B0    ora   b,x
@@ -2043,7 +1989,7 @@ L10B0    ora   b,x
          bpl   L10B0
          tsta  
          bne   L10BC
-         lsr   <u006F
+         lsr   <$006F
          bra   L10D4
 L10BC    ldb   #$FF
 L10BE    incb  
@@ -2052,25 +1998,25 @@ L10BE    incb
          leax  >L1151,pcr
          ldb   b,x
          leax  b,x
-         stx   <u0010
+         stx   <$0010
          ldb   #$01
 L10CE    incb  
          lsla  
          bcs   L10CE
-         stb   <u006F
+         stb   <$006F
 L10D4    puls  x
          ldb   -$03,y
-         stb   <u000F
+         stb   <$000F
          ldy   -$05,y
          exg   x,y
-         lda   <u0071
+         lda   <$0071
          deca  
-         sta   <u0099
-         stx   <u000C
+         sta   <$0099
+         stx   <$000C
          lbsr  L1F2B
-         ldx   <u000C
+         ldx   <$000C
 L10EB    lda   ,y+
-         ldb   <u000E
+         ldb   <$000E
          bitb  #$20
          beq   L10F6
          lsra  
@@ -2082,20 +2028,20 @@ L10F6    jmp   [<$10,u]
          lsla  
          lsla  
          lsla  
-L10FF    sta   <u000B
-L1101    lda   <u006F
-         sta   <u0097
-         ldb   <u000F
-         stx   <u000C
+L10FF    sta   <$000B
+L1101    lda   <$006F
+         sta   <$0097
+         ldb   <$000F
+         stx   <$000C
 L1109    pshs  b
          jmp   [>$00A9,u]
-L110F    lsl   <u000B
+L110F    lsl   <$000B
          bcs   L111B
-L1113    lda   <u000E
+L1113    lda   <$000E
          bpl   L112E
-         lda   <u0062
+         lda   <$0062
          bra   L111D
-L111B    lda   <u0061
+L111B    lda   <$0061
 L111D    comb  
          andb  ,x
          stb   ,x
@@ -2105,19 +2051,19 @@ L111D    comb
          bra   L112E
 L112A    eorb  ,x
          stb   ,x
-L112E    dec   <u0097
+L112E    dec   <$0097
          beq   L1139
          puls  b
          lbsr  L1F4B
          bra   L1109
 L1139    puls  b
-         ldx   <u000C
-         ldb   <u0063
+         ldx   <$000C
+         ldb   <$0063
          abx   
-         dec   <u0099
+         dec   <$0099
          bmi   L1150
          bne   L10EB
-         lda   <u000E
+         lda   <$000E
          bita  #$40
          beq   L10EB
          lda   #$FF
@@ -2184,37 +2130,37 @@ L11C3    cmpa  #$20
          lbsr  L0184
          lbsr  L1031
          clra  
-         ldb   <u0047
+         ldb   <$0047
          subd  #$0020
          tfr   d,x
-         ldb   <u006F
+         ldb   <$006F
          lbsr  L1EA9
-         std   <u0047
-         addd  <u006E
+         std   <$0047
+         addd  <$006E
          subd  #$0001
          cmpd  <$1B,y
          bhi   L1238
          clra  
-         ldb   <u0049
+         ldb   <$0049
          subd  #$0020
          tfr   d,x
-         ldb   <u0071
+         ldb   <$0071
          lbsr  L1EA9
-         std   <u0049
-         addd  <u0070
+         std   <$0049
+         addd  <$0070
          subd  #$0001
          cmpd  <$1D,y
          bhi   L1238
-         ldd   <u0047
+         ldd   <$0047
          std   -$02,y
-         ldd   <u0049
+         ldd   <$0049
          std   ,y
          bsr   L123B
 L1238    lbra  L1521
 L123B    ldd   -$02,y
-         std   <u0047
+         std   <$0047
          ldd   ,y
-         std   <u0049
+         std   <$0049
          lbsr  L1ED4
          stx   -$05,y
          stb   -$03,y
@@ -2226,22 +2172,22 @@ L124B    clra
          ldd   -$0D,y
          std   -$05,y
          leax  >L1F3B,pcr
-         ldb   <u0060
+         ldb   <$0060
          bmi   L1262
          lslb  
          ldb   b,x
          stb   -$03,y
 L1262    rts   
 L1263    ldd   -$02,y
-         subd  <u006E
+         subd  <$006E
          std   -$02,y
          bpl   L123B
          ldd   <$1B,y
-         subd  <u006E
+         subd  <$006E
          addd  #$0001
          std   -$02,y
          ldd   ,y
-         subd  <u0070
+         subd  <$0070
          std   ,y
          bpl   L123B
          clra  
@@ -2250,24 +2196,24 @@ L1263    ldd   -$02,y
          std   ,y
          rts   
 L1284    ldd   -$02,y
-         addd  <u006E
+         addd  <$006E
          std   -$02,y
-         addd  <u006E
+         addd  <$006E
          subd  #$0001
          cmpd  <$1B,y
          bls   L123B
          bsr   L12B9
          bra   L12A4
 L1299    ldd   ,y
-         subd  <u0070
+         subd  <$0070
          bmi   L12A3
          std   ,y
          bsr   L123B
 L12A3    rts   
 L12A4    ldd   ,y
-         addd  <u0070
+         addd  <$0070
          tfr   d,x
-         addd  <u0070
+         addd  <$0070
          subd  #$0001
          cmpd  <$1D,y
          bhi   L12C0
@@ -2280,60 +2226,60 @@ L12B9    clra
 L12C0    pshs  y
          ldb   $02,y
          lbsr  L13AE
-         std   <u0097
+         std   <$0097
          clra  
-         ldb   <u0063
-         std   <u0099
+         ldb   <$0063
+         std   <$0099
          ldd   ,y
-         std   <u009D
+         std   <$009D
          lda   -$08,y
          deca  
-         sta   <u009B
+         sta   <$009B
          beq   L12FB
          ldx   -$0D,y
          ldd   $04,y
          tfr   x,y
          leax  d,x
-         tst   <u0060
+         tst   <$0060
          bmi   L12EC
-         lda   <u009B
+         lda   <$009B
          lsla  
          lsla  
          lsla  
-         sta   <u009B
-L12EC    ldd   <u0097
+         sta   <$009B
+L12EC    ldd   <$0097
          lbsr  L137B
-         ldd   <u0099
+         ldd   <$0099
          leax  d,x
          leay  d,y
-         dec   <u009B
+         dec   <$009B
          bne   L12EC
 L12FB    puls  y
-         ldd   <u009D
+         ldd   <$009D
 L12FF    lbra  L13C5
 L1302    pshs  y
          ldd   ,y
-         std   <u009D
+         std   <$009D
          ldb   $02,y
          lbsr  L13AE
-         std   <u0097
+         std   <$0097
          clra  
-         ldb   <u0063
+         ldb   <$0063
          nega  
          negb  
          sbca  #$00
-         std   <u0099
+         std   <$0099
          ldb   -$08,y
          decb  
-         lda   <u0071
+         lda   <$0071
          mul   
          tfr   b,a
          deca  
          subb  $01,y
-         cmpb  <u0071
+         cmpb  <$0071
          bcs   L12FB
-         stb   <u009B
-         ldb   <u0063
+         stb   <$009B
+         ldb   <$0063
          mul   
          addd  -$0D,y
          tfr   d,x
@@ -2343,13 +2289,13 @@ L1302    pshs  y
 L1336    pshs  y
          ldb   $02,y
          bsr   L13AE
-         std   <u0097
+         std   <$0097
          clra  
-         ldb   <u0063
-         std   <u0099
+         ldb   <$0063
+         std   <$0099
          lda   -$08,y
          deca  
-         tst   <u0060
+         tst   <$0060
          bmi   L134D
          lsla  
          lsla  
@@ -2359,12 +2305,12 @@ L134D    suba  $01,y
          puls  y
          ldd   ,y
          bra   L12FF
-L1357    sta   <u009B
+L1357    sta   <$009B
          ldd   <$1D,y
-         subd  <u0070
+         subd  <$0070
          addd  #$0001
-         std   <u009D
-         lda   <u0063
+         std   <$009D
+         lda   <$0063
          ldb   $01,y
          mul   
          addd  -$0D,y
@@ -2414,50 +2360,50 @@ L13B9    cmpb  #$07
          bra   L13B9
 L13C2    rts   
 L13C3    ldd   ,y
-L13C5    std   <u0049
+L13C5    std   <$0049
          clra  
          clrb  
-         std   <u0047
+         std   <$0047
          ldd   <$1B,y
          bra   L13DD
 L13D0    ldd   -$02,y
-         std   <u0047
+         std   <$0047
          ldd   ,y
-         std   <u0049
+         std   <$0049
          ldd   <$1B,y
          subd  -$02,y
 L13DD    addd  #$0001
-         std   <u004F
-         ldd   <u0070
-         std   <u0051
+         std   <$004F
+         ldd   <$0070
+         std   <$0051
          bra   L1420
 L13E8    lbsr  L124B
          clra  
          clrb  
-         std   <u0047
-         std   <u0049
+         std   <$0047
+         std   <$0049
          ldd   <$1B,y
          addd  #$0001
-         std   <u004F
+         std   <$004F
          ldd   <$1D,y
          bra   L1419
 L13FE    bsr   L13D0
          clra  
          clrb  
-         std   <u0047
+         std   <$0047
          ldd   ,y
-         addd  <u0070
-         std   <u0049
+         addd  <$0070
+         std   <$0049
          ldd   <$1B,y
          addd  #$0001
-         std   <u004F
+         std   <$004F
          ldd   <$1D,y
-         subd  <u0049
+         subd  <$0049
          ble   L142A
 L1419    addd  #$0001
-         std   <u0051
+         std   <$0051
          bra   L1420
-L1420    ldb   <u0060
+L1420    ldb   <$0060
          bpl   L1428
          bsr   L142B
          bra   L142A
@@ -2468,39 +2414,39 @@ L142B    pshs  y
          lda   #$20
          ldb   $08,y
          andb  #$38
-         orb   <u0062
-         std   <u0097
-         ldb   <u0063
-         subb  <u0050
-         subb  <u0050
-         stb   <u0099
-L1442    ldy   <u004F
-         ldd   <u0097
+         orb   <$0062
+         std   <$0097
+         ldb   <$0063
+         subb  <$0050
+         subb  <$0050
+         stb   <$0099
+L1442    ldy   <$004F
+         ldd   <$0097
 L1447    std   ,x++
          leay  -$01,y
          bne   L1447
-         ldb   <u0099
+         ldb   <$0099
          abx   
-         dec   <u0052
+         dec   <$0052
          bne   L1442
          puls  pc,y
-L1456    ldb   <u0060
+L1456    ldb   <$0060
          leax  >L0DB6,pcr
-         lda   <u0048
+         lda   <$0048
          coma  
          anda  b,x
          inca  
-         sta   <u0097
+         sta   <$0097
          leax  >L0DBB,pcr
          ldb   b,x
          abx   
          lda   a,x
-         sta   <u0012
+         sta   <$0012
          clra  
-         ldb   <u0060
+         ldb   <$0060
          tfr   d,x
-         ldd   <u004F
-         subb  <u0097
+         ldd   <$004F
+         subb  <$0097
          sbca  #$00
          lsra  
          rorb  
@@ -2512,29 +2458,29 @@ L1456    ldb   <u0060
          bne   L148A
          lsra  
          rorb  
-L148A    stb   <u0097
-         ldb   <u0063
-         subb  <u0097
+L148A    stb   <$0097
+         ldb   <$0063
+         subb  <$0097
          subb  #$01
-         stb   <u0099
+         stb   <$0099
          lbsr  L1ED4
-L1497    lda   <u0012
+L1497    lda   <$0012
          tfr   a,b
          coma  
          anda  ,x
          sta   ,x
-         andb  <u0062
+         andb  <$0062
          orb   ,x
          stb   ,x+
-         lda   <u0097
+         lda   <$0097
          beq   L14B1
-         ldb   <u0062
+         ldb   <$0062
 L14AC    stb   ,x+
          deca  
          bne   L14AC
-L14B1    ldb   <u0099
+L14B1    ldb   <$0099
          abx   
-         dec   <u0052
+         dec   <$0052
          bne   L1497
          rts   
 L14B9    ldb   $09,y
@@ -2599,60 +2545,60 @@ L1525    pshs  y,x,b,a
          stb   >$1001
          puls  pc,y,x,b,a
          lbsr  L0130
-         cmpy  <u002E
+         cmpy  <$002E
          bne   L1552
-         ldd   <u005B
-         cmpd  <u003D
+         ldd   <$005B
+         cmpd  <$003D
          bne   L154A
-         ldd   <u005D
-         cmpd  <u003F
+         ldd   <$005D
+         cmpd  <$003F
          beq   L1552
 L154A    lbsr  L15FC
          bsr   L1554
          lbsr  L15D9
 L1552    bra   L1521
-L1554    ldd   <u0047
+L1554    ldd   <$0047
          pshs  b,a
-         ldd   <u0049
+         ldd   <$0049
          pshs  b,a
-         ldd   <u005B
-         std   <u0047
-         std   <u003D
-         ldd   <u005D
-         std   <u0049
-         std   <u003F
+         ldd   <$005B
+         std   <$0047
+         std   <$003D
+         ldd   <$005D
+         std   <$0049
+         std   <$003F
          ldx   -$10,y
          ldd   $02,x
          lbsr  L1ED6
-         stx   <u0041
-         stb   <u0043
+         stx   <$0041
+         stb   <$0043
          puls  b,a
-         std   <u0049
+         std   <$0049
          puls  b,a
-         std   <u0047
+         std   <$0047
          rts   
 L157C    lbsr  L1031
-         cmpy  <u002E
+         cmpy  <$002E
          bne   L1592
          ldb   $09,y
          bitb  #$02
          bne   L1592
-         ldb   <u0039
+         ldb   <$0039
          bne   L1592
          bsr   L15A4
-         inc   <u0039
+         inc   <$0039
 L1592    rts   
 L1593    lbsr  L1031
-         cmpy  <u002E
+         cmpy  <$002E
          bne   L15A3
-         ldb   <u0039
+         ldb   <$0039
          beq   L15A3
          bsr   L15A4
-         clr   <u0039
+         clr   <$0039
 L15A3    rts   
 L15A4    pshs  y
          ldx   -$05,y
-         ldb   <u0060
+         ldb   <$0060
          bpl   L15BE
          lda   $01,x
          bsr   L15CC
@@ -2664,9 +2610,9 @@ L15A4    pshs  y
          stb   $01,x
          bra   L15CA
 L15BE    leax  >L112A,pcr
-         stx   <u00A9
+         stx   <$00A9
          clrb  
-         stb   <u000E
+         stb   <$000E
          lbsr  L109C
 L15CA    puls  pc,y
 L15CC    tfr   a,b
@@ -2681,56 +2627,56 @@ L15CC    tfr   a,b
          rts   
 L15D9    pshs  y,x
          ldx   -$10,y
-         cmpx  <u0030
+         cmpx  <$0030
          bne   L15FA
-         ldb   <u003A
+         ldb   <$003A
          bne   L15FA
          ldb   <$18,y
-         stb   <u0044
+         stb   <$0044
          beq   L15FA
          lbsr  L0189
          ldy   <$19,y
-         sty   <u0045
+         sty   <$0045
          bsr   L1618
-         inc   <u003A
+         inc   <$003A
 L15FA    puls  pc,y,x
 L15FC    pshs  y,x
          ldx   -$10,y
-         cmpx  <u0030
+         cmpx  <$0030
          bne   L1616
-         ldb   <u003A
+         ldb   <$003A
          beq   L1616
-         ldb   <u0044
+         ldb   <$0044
          beq   L15FA
          lbsr  L0189
-         ldy   <u0045
+         ldy   <$0045
          bsr   L1618
-         clr   <u003A
+         clr   <$003A
 L1616    puls  pc,y,x
-L1618    ldb   <u0060
+L1618    ldb   <$0060
          bmi   L164E
-         ldd   <u004F
-         ldx   <u0051
+         ldd   <$004F
+         ldx   <$0051
          pshs  x,b,a
-         ldd   <u0064
-         ldx   <u0068
+         ldd   <$0064
+         ldx   <$0068
          pshs  x,b,a
-         ldd   <u0041
-         std   <u0072
-         ldb   <u0043
-         stb   <u0074
+         ldd   <$0041
+         std   <$0072
+         ldb   <$0043
+         stb   <$0074
          leax  >L1FDE,pcr
-         stx   <u0064
+         stx   <$0064
          leax  >L1FE3,pcr
-         stx   <u0068
+         stx   <$0068
          lbsr  L0E3C
          lbsr  L0EC4
          puls  x,b,a
-         std   <u0064
-         stx   <u0068
+         std   <$0064
+         stx   <$0068
          puls  x,b,a
-         std   <u004F
-         stx   <u0051
+         std   <$004F
+         stx   <$0051
 L164E    rts   
          lbsr  L1E29
          bcs   L16A1
@@ -2738,14 +2684,14 @@ L164E    rts
          beq   L165B
          lbsr  L0189
 L165B    lbsr  L0184
-         ldb   <u0060
+         ldb   <$0060
          lbmi  L05A2
          lbsr  L1ED4
-         lda   <u0061
+         lda   <$0061
          lbsr  L1F9B
          bra   L16A0
          lbsr  L0184
-         ldb   <u0060
+         ldb   <$0060
          lbmi  L05A2
          ldb   $0E,y
          beq   L167E
@@ -2754,13 +2700,13 @@ L167E    lbsr  L1E29
          bcs   L16A1
          lbsr  L1E30
          bcs   L16A1
-         ldd   <u0049
-         cmpd  <u004D
+         ldd   <$0049
+         cmpd  <$004D
          bne   L1693
          bsr   L16A4
          bra   L16A0
-L1693    ldd   <u0047
-         cmpd  <u004B
+L1693    ldd   <$0047
+         cmpd  <$004B
          bne   L169E
          bsr   L16EC
          bra   L16A0
@@ -2768,26 +2714,26 @@ L169E    bsr   L171C
 L16A0    clrb  
 L16A1    lbra  L011D
 L16A4    bsr   L16BC
-L16A6    ldd   <u004B
-         subd  <u0047
+L16A6    ldd   <$004B
+         subd  <$0047
          addd  #$0001
-         std   <u0099
+         std   <$0099
          lbsr  L1F2B
          lbsr  L1ED4
-         lda   <u0061
-         ldy   <u0099
+         lda   <$0061
+         ldy   <$0099
          bra   L16CA
-L16BC    ldd   <u004B
-         cmpd  <u0047
+L16BC    ldd   <$004B
+         cmpd  <$0047
          bge   L16C9
-L16C3    ldx   <u0047
-         std   <u0047
-         stx   <u004B
+L16C3    ldx   <$0047
+         std   <$0047
+         stx   <$004B
 L16C9    rts   
 L16CA    leas  -$02,s
          pshs  x,b,a
          leax  >L16E7,pcr
-         ldb   <u0060
+         ldb   <$0060
          clra  
          ldb   b,x
          std   $04,s
@@ -2797,87 +2743,87 @@ L16DB    lbsr  L1F9B
          leay  -$01,y
          bne   L16DB
          puls  pc,b,a
-L16E7    neg   <u0008
-         lsr   <u0004
-         aim   #$8D,<u0020
-L16EE    ldd   <u004D
-         subb  <u004A
+L16E7    neg   <$0008
+         lsr   <$0004
+         aim   #$8D,<$0020
+L16EE    ldd   <$004D
+         subb  <$004A
          incb  
-         std   <u0099
+         std   <$0099
          lbsr  L1ED4
-         stb   <u0097
-         lda   <u0061
-         ldy   <u0099
-L16FF    ldb   <u0097
+         stb   <$0097
+         lda   <$0061
+         ldy   <$0099
+L16FF    ldb   <$0097
          lbsr  L1F9B
-         ldb   <u0063
+         ldb   <$0063
          abx   
-         inc   <u004A
+         inc   <$004A
          leay  -$01,y
          bne   L16FF
          rts   
-L170E    ldd   <u004D
-         cmpd  <u0049
+L170E    ldd   <$004D
+         cmpd  <$0049
          bge   L171B
-L1715    ldx   <u0049
-         std   <u0049
-         stx   <u004D
+L1715    ldx   <$0049
+         std   <$0049
+         stx   <$004D
 L171B    rts   
-L171C    ldd   <u004B
-         cmpd  <u0047
+L171C    ldd   <$004B
+         cmpd  <$0047
          bge   L172B
          bsr   L16C3
-         ldd   <u004D
+         ldd   <$004D
          bsr   L1715
-         ldd   <u004B
-L172B    subd  <u0047
-         std   <u0013
-         ldb   <u0063
+         ldd   <$004B
+L172B    subd  <$0047
+         std   <$0013
+         ldb   <$0063
          clra  
-         std   <u0017
-         ldd   <u004D
-         subd  <u0049
-         std   <u0015
+         std   <$0017
+         ldd   <$004D
+         subd  <$0049
+         std   <$0015
          bpl   L174A
          nega  
          negb  
          sbca  #$00
-         std   <u0015
-         ldd   <u0017
+         std   <$0015
+         ldd   <$0017
          nega  
          negb  
          sbca  #$00
-         std   <u0017
+         std   <$0017
 L174A    ldd   #$0000
-         std   <u0075
+         std   <$0075
          lbsr  L1F2B
          lbsr  L1ED4
-         stb   <u0074
-L1757    ldb   <u0074
-         lda   <u0061
+         stb   <$0074
+L1757    ldb   <$0074
+         lda   <$0061
          lbsr  L1F9B
-         ldd   <u0075
+         ldd   <$0075
          bpl   L1774
-         addd  <u0013
-         std   <u0075
-         ldd   <u0017
+         addd  <$0013
+         std   <$0075
+         ldd   <$0017
          leax  d,x
          bmi   L1770
-         inc   <u004A
+         inc   <$004A
          bra   L177F
-L1770    dec   <u004A
+L1770    dec   <$004A
          bra   L177F
-L1774    subd  <u0015
-         std   <u0075
-         ldb   <u0074
+L1774    subd  <$0015
+         std   <$0075
+         ldb   <$0074
          lbsr  L1F45
-         stb   <u0074
-L177F    ldd   <u0047
-         cmpd  <u004B
+         stb   <$0074
+L177F    ldd   <$0047
+         cmpd  <$004B
          ble   L1757
          rts   
          lbsr  L0184
-         ldb   <u0060
+         ldb   <$0060
          lbmi  L05A2
          ldb   $0E,y
          beq   L1797
@@ -2890,40 +2836,40 @@ L1797    lbsr  L1E29
          lbsr  L170E
          leas  -$0A,s
          sty   ,s
-         ldd   <u0047
+         ldd   <$0047
          std   $02,s
-         ldd   <u0049
+         ldd   <$0049
          std   $04,s
-         ldd   <u004B
+         ldd   <$004B
          std   $06,s
-         ldd   <u004D
+         ldd   <$004D
          std   $08,s
          lbsr  L16A6
          ldd   $02,s
-         std   <u0047
+         std   <$0047
          ldd   $08,s
-         std   <u004D
+         std   <$004D
          ldy   ,s
          lbsr  L16EE
          ldd   $06,s
-         std   <u0047
+         std   <$0047
          ldd   $04,s
-         std   <u0049
+         std   <$0049
          ldy   ,s
          lbsr  L16EE
          ldd   $02,s
-         std   <u0047
+         std   <$0047
          ldd   $06,s
-         std   <u004B
+         std   <$004B
          ldd   $08,s
-         std   <u0049
+         std   <$0049
          ldy   ,s
          lbsr  L16A6
          leas  $0A,s
          clrb  
 L17F0    bra   L184A
          lbsr  L0184
-         ldb   <u0060
+         ldb   <$0060
          lbmi  L05A2
          ldb   $0E,y
          beq   L1802
@@ -2934,80 +2880,80 @@ L1802    lbsr  L1E29
          bcs   L184A
          lbsr  L16BC
          lbsr  L170E
-         ldd   <u004B
-         std   <u0099
-         ldd   <u004B
-         subd  <u0047
+         ldd   <$004B
+         std   <$0099
+         ldd   <$004B
+         subd  <$0047
          addd  #$0001
-         std   <u009B
+         std   <$009B
          lbsr  L1F2B
          lbsr  L1ED4
-         lda   <u0061
-         std   <u009D
-         ldd   <u004D
-         subb  <u004A
+         lda   <$0061
+         std   <$009D
+         ldd   <$004D
+         subb  <$004A
          incb  
          tfr   d,y
 L1830    pshs  y,x
-         ldy   <u009B
-         ldd   <u009D
+         ldy   <$009B
+         ldd   <$009D
          lbsr  L16CA
          puls  y,x
-         ldb   <u0063
+         ldb   <$0063
          abx   
-         inc   <u004A
-         ldd   <u0099
-         std   <u0047
+         inc   <$004A
+         ldd   <$0099
+         std   <$0047
          leay  -$01,y
          bne   L1830
          clrb  
 L184A    lbra  L011D
          lbsr  L0184
-         ldb   <u0060
+         ldb   <$0060
          lbmi  L05A2
-         ldd   <u0053
+         ldd   <$0053
          lsra  
          rorb  
-         std   <u0055
+         std   <$0055
          bra   L18BB
          lbsr  L0184
-         ldb   <u0060
+         ldb   <$0060
          lbmi  L05A2
          lbsr  L1E38
          bcs   L184A
          lbsr  L1E57
          bcs   L184A
-         ldd   <u0020
-         cmpd  <u0024
+         ldd   <$0020
+         cmpd  <$0024
          bne   L1889
          leax  >L1ABF,pcr
-         ldd   <u0022
-         cmpd  <u0026
+         ldd   <$0022
+         cmpd  <$0026
          blt   L18AE
          leax  >L1AC6,pcr
          bra   L18AE
-L1889    ldx   <u0022
-         cmpx  <u0026
+L1889    ldx   <$0022
+         cmpx  <$0026
          bne   L189E
          leax  >L1ACD,pcr
-         cmpd  <u0024
+         cmpd  <$0024
          blt   L18AE
          leax  >L1AD3,pcr
          bra   L18AE
 L189E    leax  >L1AD9,pcr
-         ldd   <u0020
-         subd  <u0024
-         std   <u0097
-         ldd   <u0022
-         subd  <u0026
-         std   <u0099
-L18AE    stx   <u00A1
+         ldd   <$0020
+         subd  <$0024
+         std   <$0097
+         ldd   <$0022
+         subd  <$0026
+         std   <$0099
+L18AE    stx   <$00A1
          bra   L18C1
          lbsr  L0184
-         ldb   <u0060
+         ldb   <$0060
          lbmi  L05A2
 L18BB    leax  >L1ADD,pcr
-         stx   <u00A1
+         stx   <$00A1
 L18C1    ldb   $0E,y
          beq   L18C8
          lbsr  L0189
@@ -3015,24 +2961,24 @@ L18C8    lbsr  L1E29
          lbcs  L1A97
          lbsr  L1E5B
          lbcs  L1A97
-         ldd   <u0047
-         std   <u0018
-         ldd   <u0049
-         std   <u001A
+         ldd   <$0047
+         std   <$0018
+         ldd   <$0049
+         std   <$001A
          clra  
          clrb  
-         std   <u001C
-         ldd   <u0055
-         std   <u001E
+         std   <$001C
+         ldd   <$0055
+         std   <$001E
          leas  <-$3E,s
          sty   <$3C,s
          leax  $05,s
-         ldd   <u0053
+         ldd   <$0053
          lbsr  L1B54
          lbsr  L1BC4
          tfr   x,y
          leax  <$14,s
-         ldd   <u0055
+         ldd   <$0055
          lbsr  L1BD4
          leax  $0A,s
          lbsr  L1B5D
@@ -3042,7 +2988,7 @@ L18C8    lbsr  L1E29
          lbsr  L1B5D
          lbsr  L1C03
          leax  <$19,s
-         ldd   <u0055
+         ldd   <$0055
          lbsr  L1B54
          lbsr  L1BC4
          tfr   x,y
@@ -3058,7 +3004,7 @@ L18C8    lbsr  L1E29
          clrb  
          lbsr  L1B54
          leax  <$2D,s
-         ldd   <u001E
+         ldd   <$001E
          lbsr  L1B54
          subd  #$0001
          lbsr  L1BC4
@@ -3080,7 +3026,7 @@ L18C8    lbsr  L1E29
          leay  $0F,s
          lbsr  L1B5D
          lbsr  L1C37
-         ldd   <u001E
+         ldd   <$001E
          lbsr  L1BC4
          leax  <$37,s
          leay  <$1E,s
@@ -3101,9 +3047,9 @@ L1989    leax  <$14,s
          leax  <$14,s
          leay  $05,s
          lbsr  L1BB5
-         ldd   <u001E
+         ldd   <$001E
          subd  #$0001
-         std   <u001E
+         std   <$001E
 L19BB    leax  <$37,s
          leay  <$23,s
          lbsr  L1B9D
@@ -3113,19 +3059,19 @@ L19BB    leax  <$37,s
          leax  <$28,s
          leay  <$19,s
          lbsr  L1B9D
-         ldd   <u001C
+         ldd   <$001C
          addd  #$0001
-         std   <u001C
+         std   <$001C
          bra   L1989
 L19DE    leax  <$2D,s
-         ldd   <u001C
+         ldd   <$001C
          lbsr  L1B54
          addd  #$0001
          lbsr  L1BC4
          leay  <$1E,s
          lbsr  L1BD9
          leax  ,s
-         ldd   <u001E
+         ldd   <$001E
          lbsr  L1B54
          subd  #$0002
          lbsr  L1BC4
@@ -3150,17 +3096,17 @@ L19DE    leax  <$2D,s
          leax  <$32,s
          leay  <$23,s
          lbsr  L1B5D
-         ldd   <u001C
+         ldd   <$001C
          lbsr  L1BC4
          leax  <$37,s
          leay  $0F,s
          lbsr  L1B5D
          lbsr  L1C37
-         ldd   <u001E
+         ldd   <$001E
          lbsr  L1BC4
          leay  $0A,s
          lbsr  L1B9D
-L1A53    ldd   <u001E
+L1A53    ldd   <$001E
          cmpd  #$FFFF
          beq   L1A93
          bsr   L1A9A
@@ -3172,25 +3118,25 @@ L1A53    ldd   <u001E
          tfr   x,y
          leax  <$2D,s
          lbsr  L1B9D
-         ldd   <u001C
+         ldd   <$001C
          addd  #$0001
-         std   <u001C
+         std   <$001C
 L1A7A    leax  <$37,s
          leay  $0F,s
          lbsr  L1B9D
          tfr   x,y
          leax  <$2D,s
          lbsr  L1B9D
-         ldd   <u001E
+         ldd   <$001E
          subd  #$0001
-         std   <u001E
+         std   <$001E
          bra   L1A53
 L1A93    leas  <$3E,s
          clrb  
 L1A97    lbra  L011D
 L1A9A    ldy   <$3E,s
-         ldd   <u001C
-         ldx   <u001E
+         ldd   <$001C
+         ldx   <$001E
          bsr   L1AB9
          nega  
          negb  
@@ -3202,49 +3148,49 @@ L1A9A    ldy   <$3E,s
          sbca  #$00
          exg   d,x
          bsr   L1AB9
-         ldd   <u001C
+         ldd   <$001C
          bsr   L1AB9
          rts   
 L1AB9    pshs  x,b,a
          jmp   [>$00A1,u]
-L1ABF    cmpd  <u0020
+L1ABF    cmpd  <$0020
          bge   L1ADD
          bra   L1AFF
-L1AC6    cmpd  <u0020
+L1AC6    cmpd  <$0020
          ble   L1ADD
          bra   L1AFF
-L1ACD    cmpx  <u0022
+L1ACD    cmpx  <$0022
          ble   L1ADD
          bra   L1AFF
-L1AD3    cmpx  <u0022
+L1AD3    cmpx  <$0022
          bge   L1ADD
          bra   L1AFF
 L1AD9    bsr   L1B01
          bgt   L1AFF
-L1ADD    addd  <u0018
+L1ADD    addd  <$0018
          bmi   L1AFF
          cmpd  <$1B,y
          bhi   L1AFF
-         std   <u0047
+         std   <$0047
          tfr   x,d
-         addd  <u001A
+         addd  <$001A
          bmi   L1AFF
          cmpd  <$1D,y
          bhi   L1AFF
-         std   <u0049
+         std   <$0049
          lbsr  L1ED4
-         lda   <u0061
+         lda   <$0061
          lbsr  L1F9B
 L1AFF    puls  pc,x,b,a
 L1B01    pshs  x,b,a
          tfr   x,d
-         subd  <u0026
-         ldx   <u0097
+         subd  <$0026
+         ldx   <$0097
          bsr   L1B1F
          pshs  x,b
          ldd   $03,s
-         subd  <u0024
-         ldx   <u0099
+         subd  <$0024
+         ldx   <$0099
          bsr   L1B1F
          cmpb  ,s
          bne   L1B1B
@@ -3429,60 +3375,60 @@ L1C70    clra
 L1C71    tfr   a,cc
 L1C73    puls  pc,b,a
          lbsr  L0184
-         ldb   <u0060
+         ldb   <$0060
          lbmi  L05A2
          ldb   $0E,y
          beq   L1C85
          lbsr  L0189
 L1C85    ldb   #$01
-         stb   <u002A
+         stb   <$002A
          lbsr  L1E29
          bcs   L1CE7
          lbsr  L1ED4
-         stx   <u0072
-         stb   <u0074
+         stx   <$0072
+         stb   <$0074
          lbsr  L1F8B
-         sta   <u0028
+         sta   <$0028
          leax  >L07A1,pcr
-         ldb   <u0060
+         ldb   <$0060
          ldb   b,x
          leax  b,x
          anda  ,x+
          ldb   a,x
-         stb   <u0029
+         stb   <$0029
          cmpb  $06,y
          beq   L1CDF
          clrb  
          pshs  b
          lbsr  L1F2B
          lbsr  L1F5A
-         ldx   <u0072
+         ldx   <$0072
          bra   L1CEE
 L1CBB    tst   >$101B
          beq   L1CE4
          ldb   ,s+
          beq   L1CDF
-         stb   <u002B
+         stb   <$002B
          addb  ,s+
          cmpb  <$1E,y
          bhi   L1CEA
-         stb   <u004A
+         stb   <$004A
          puls  b,a
-         std   <u0047
+         std   <$0047
          puls  b,a
-         std   <u004B
+         std   <$004B
          lbsr  L1ED4
-         stb   <u0074
+         stb   <$0074
          lbra  L1D6A
 L1CDF    clrb  
-         ldb   <u002A
+         ldb   <$002A
          bne   L1CE7
 L1CE4    ldb   #$BA
          coma  
 L1CE7    lbra  L011D
 L1CEA    leas  $04,s
          bra   L1CBB
-L1CEE    ldb   <u0074
+L1CEE    ldb   <$0074
 L1CF0    lbsr  L1F74
          bsr   L1D3E
          beq   L1CFC
@@ -3490,8 +3436,8 @@ L1CF0    lbsr  L1F74
          beq   L1CF0
 L1CFC    lbsr  L1F45
          pshs  b
-         ldd   <u0047
-         std   <u009B
+         ldd   <$0047
+         std   <$009B
          puls  b
 L1D07    bsr   L1D52
          bsr   L1D48
@@ -3501,34 +3447,34 @@ L1D07    bsr   L1D52
 L1D12    lbsr  L1F74
          lbsr  L1E21
          beq   L1D28
-         ldd   <u0047
+         ldd   <$0047
          pshs  b,a
-         ldd   <u009B
+         ldd   <$009B
          pshs  b,a
-         ldb   <u004A
+         ldb   <$004A
          lda   #$FF
          pshs  b,a
 L1D28    lbsr  L1E21
          beq   L1CBB
-         ldd   <u0047
+         ldd   <$0047
          pshs  b,a
-         ldd   <u009B
+         ldd   <$009B
          pshs  b,a
-         ldb   <u004A
+         ldb   <$004A
          lda   #$01
          pshs  b,a
          lbra  L1CBB
 L1D3E    pshs  b,a
-         ldd   <u0047
+         ldd   <$0047
          cmpd  #$FFFF
          puls  pc,b,a
 L1D48    pshs  b,a
-         ldd   <u0047
+         ldd   <$0047
          cmpd  <$1B,y
          puls  pc,b,a
 L1D52    lda   ,x
          sta   ,-s
-         lda   <u0061
+         lda   <$0061
          lbsr  L1F9B
          lda   ,x
          cmpa  ,s+
@@ -3537,92 +3483,92 @@ L1D52    lda   ,x
          sta   >$101B
 L1D66    lbsr  L1F45
          rts   
-L1D6A    ldd   <u0047
+L1D6A    ldd   <$0047
          subd  #$0002
-         std   <u009B
-         ldb   <u0074
+         std   <$009B
+         ldb   <$0074
 L1D73    lbsr  L1F8B
          bne   L1D7F
          lbsr  L1F74
          bsr   L1D3E
          bne   L1D73
 L1D7F    lbsr  L1F45
-         stb   <u0074
-         ldd   <u0047
-         cmpd  <u004B
+         stb   <$0074
+         ldd   <$0047
+         cmpd  <$004B
          lbgt  L1CBB
-         ldb   <u0074
+         ldb   <$0074
          lbsr  L1F8B
          bne   L1D7F
-         ldd   <u0047
-         cmpd  <u009B
+         ldd   <$0047
+         cmpd  <$009B
          bgt   L1DB3
          lbsr  L1E21
          beq   L1DB3
-         ldd   <u009B
+         ldd   <$009B
          pshs  b,a
-         ldd   <u0047
+         ldd   <$0047
          bpl   L1DAA
          clra  
          clrb  
 L1DAA    pshs  b,a
-         ldb   <u004A
-         lda   <u002B
+         ldb   <$004A
+         lda   <$002B
          nega  
          pshs  b,a
-L1DB3    ldd   <u0047
-         std   <u009B
-         ldb   <u0074
+L1DB3    ldd   <$0047
+         std   <$009B
+         ldb   <$0074
 L1DB9    lbsr  L1F8B
          bne   L1DC4
          bsr   L1D52
          bsr   L1D48
          bls   L1DB9
 L1DC4    lbsr  L1F74
-         stb   <u0074
+         stb   <$0074
          bsr   L1E21
          beq   L1DDD
-         ldd   <u0047
+         ldd   <$0047
          pshs  b,a
-         ldd   <u009B
+         ldd   <$009B
          pshs  b,a
-         ldb   <u004A
-         lda   <u002B
+         ldb   <$004A
+         lda   <$002B
          pshs  b,a
-         ldb   <u0074
+         ldb   <$0074
 L1DDD    lbsr  L1F45
-         stb   <u0074
+         stb   <$0074
          lbsr  L1D48
          bgt   L1DF7
-         ldd   <u0047
-         cmpd  <u004B
+         ldd   <$0047
+         cmpd  <$004B
          bgt   L1DF7
-         ldb   <u0074
+         ldb   <$0074
          lbsr  L1F8B
          bne   L1DDD
          bra   L1DB3
-L1DF7    cmps  <u003B
+L1DF7    cmps  <$003B
          bhi   L1DFE
-         clr   <u002A
-L1DFE    ldd   <u0047
+         clr   <$002A
+L1DFE    ldd   <$0047
          subd  #$0001
-         std   <u0047
-         ldd   <u004B
+         std   <$0047
+         ldd   <$004B
          addd  #$0002
-         cmpd  <u0047
+         cmpd  <$0047
          bhi   L1E1E
          leas  -$02,s
          pshs  b,a
-         ldd   <u0047
+         ldd   <$0047
          std   $02,s
-         ldb   <u004A
-         lda   <u002B
+         ldb   <$004A
+         lda   <$002B
          nega  
          pshs  b,a
 L1E1E    lbra  L1CBB
-L1E21    cmps  <u003B
+L1E21    cmps  <$003B
          bhi   L1E28
-         clr   <u002A
+         clr   <$002A
 L1E28    rts   
 L1E29    ldb   #$47
 L1E2B    bsr   L1E5F
@@ -3714,28 +3660,28 @@ L1ED0    comb
          rts   
 L1ED4    ldd   -$0D,y
 L1ED6    pshs  y,b,a
-         lda   <u004A
-         ldb   <u0063
+         lda   <$004A
+         ldb   <$0063
          mul   
          addd  ,s++
          tfr   d,x
-         ldb   <u0060
+         ldb   <$0060
          bpl   L1EEC
-         ldd   <u0047
+         ldd   <$0047
          lslb  
          leax  d,x
          puls  pc,y
 L1EEC    cmpb  #$04
          bne   L1EF8
-         ldd   <u0047
+         ldd   <$0047
          leay  >L1F28,pcr
          bra   L1F0E
 L1EF8    cmpb  #$01
          beq   L1F04
-         ldd   <u0047
+         ldd   <$0047
          leay  >L1F23,pcr
          bra   L1F0C
-L1F04    ldd   <u0047
+L1F04    ldd   <$0047
          leay  >L1F1A,pcr
          lsra  
          rorb  
@@ -3744,34 +3690,34 @@ L1F0C    lsra
 L1F0E    lsra  
          rorb  
          leax  d,x
-         ldb   <u0048
+         ldb   <$0048
          andb  ,y+
          ldb   b,y
          puls  pc,y
-L1F1A    asr   <u0080
+L1F1A    asr   <$0080
          nega  
          bra   L1F2F
-         lsl   <u0004
-         aim   #$01,<u0003
+         lsl   <$0004
+         aim   #$01,<$0003
          subb  #$30
-         inc   <u0003
-L1F28    oim   #$F0,<u000F
-L1F2B    lda   <u0060
+         inc   <$0003
+L1F28    oim   #$F0,<$000F
+L1F2B    lda   <$0060
          leax  >L1F3B,pcr
          lsla  
          ldd   a,x
-         sta   <u0079
+         sta   <$0079
          leax  b,x
-         stx   <u0077
+         stx   <$0077
          rts   
-L1F3B    neg   <u0000
+L1F3B    neg   <$0000
          suba  #$19
          subb  #$18
          subb  #$18
          subb  >$160C
          lsla  
          bne   L1F4B
-         inc   <u0047
+         inc   <$0047
 L1F4B    lsrb  
          bcs   L1F55
          jmp   [<$77,u]
@@ -3779,26 +3725,26 @@ L1F4B    lsrb
          lsrb  
          lsrb  
          rts   
-L1F55    ldb   <u0079
+L1F55    ldb   <$0079
          leax  $01,x
          rts   
-L1F5A    lda   <u0060
+L1F5A    lda   <$0060
          leax  >L1F6A,pcr
          lsla  
          ldd   a,x
-         sta   <u007C
+         sta   <$007C
          leax  b,x
-         stx   <u007A
+         stx   <$007A
          rts   
-L1F6A    neg   <u0000
-         oim   #$1B,<u0003
+L1F6A    neg   <$0000
+         oim   #$1B,<$0003
          orcc  #$03
          orcc  #$0F
          fcb   $18 
-L1F74    tst   <u0048
+L1F74    tst   <$0048
          bne   L1F7A
-         dec   <u0047
-L1F7A    dec   <u0048
+         dec   <$0047
+L1F7A    dec   <$0048
          lslb  
          bcs   L1F86
          jmp   [<$7A,u]
@@ -3806,7 +3752,7 @@ L1F7A    dec   <u0048
          lslb  
          lslb  
          rts   
-L1F86    ldb   <u007C
+L1F86    ldb   <$007C
          leax  -$01,x
          rts   
 L1F8B    pshs  b
@@ -3816,14 +3762,14 @@ L1F91    lsrb
          bcs   L1F97
          lsra  
          bra   L1F91
-L1F97    cmpa  <u0028
+L1F97    cmpa  <$0028
          puls  pc,b
 L1F9B    pshs  b,a
          jmp   [<$64,u]
          pshs  x,b
          bsr   L1FD5
          abx   
-         ldb   <u0048
+         ldb   <$0048
          lsrb  
          lsrb  
          lsrb  
@@ -3833,7 +3779,7 @@ L1F9B    pshs  b,a
          bsr   L1FD5
          lslb  
          abx   
-         ldb   <u0048
+         ldb   <$0048
          lsrb  
          lsrb  
          andb  #$07
@@ -3843,7 +3789,7 @@ L1F9B    pshs  b,a
          lslb  
          lslb  
          abx   
-         ldb   <u0048
+         ldb   <$0048
          lsrb  
          andb  #$0F
 L1FC8    ldb   b,x
@@ -3852,8 +3798,8 @@ L1FC8    ldb   b,x
          pshs  b
          anda  ,s+
          jmp   [<$68,u]
-L1FD5    ldx   <u0066
-         ldb   <u004A
+L1FD5    ldx   <$0066
+         ldb   <$004A
          andb  #$07
          lslb  
          lslb  
@@ -3869,7 +3815,7 @@ L1FE9    comb
          ora   ,x
 L1FF0    sta   ,x
          puls  pc,b,a
-L1FF4    neg   <u00AC
+L1FF4    neg   <$00AC
          ora   >$BAC8
          emod
 eom      equ   *
