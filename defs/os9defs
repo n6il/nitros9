@@ -274,17 +274,6 @@ SS.RdNet rmb   1          Read Raw Sector from Network 4 Omnidrive
 SS.MpGPB rmb   1          Putstat to request a Get/Put Buffer be mapped in workspace
 SS.Slots rmb   1          Network 4 slots? getstat
 
-* SDisk 3 Definition Equates
-SS.DRead equ SS.AAGBf     SDisk3 Direct Sector Read ($80)
-SS.DWrit equ SS.DRead     SDisk3 Direct sector Write ($80)
-SS.UnFrz equ SS.SLGBf     SDisk3 UNFreeze DD info ($81)
-SS.MOFF  equ SS.Mount     SDisk3 fast motor off call ($82)
-SS.MoTim equ SS.RdNet     SDisk3 Set motor shut off time ($83)
-SS.SDRD  equ SS.MpGPB     SDisk3 System direct read ($84)
-SS.SDWRT equ SS.SDRD      SDisk3 System direct writes ($84)
-SS.Sleep equ SS.Slots     SDisk3 (DMC ONLY) Enable/disable F$Sleep calls in read/write 1773 I/O ($85)
-SS.DrvCh equ SS.WnSet     SDisk3 (DMC ONLY) Set drive number to cache, or return drive number being cached ($86)
-
          ifgt  Level-1
 
 * Level 2 Windowing
@@ -338,6 +327,17 @@ SS.KSet  equ  $C8         Set KQ3 VIRQ
 SS.KClr  equ  $C9         Clr KQ3 VIRQ
 SS.ARAM  equ  $CA         Allocate RAM blocks
 SS.DRAM  equ  $CB         De-allocate RAM blocks
+
+* SDisk 3 Definition Equates
+SS.DRead equ SS.AAGBf     SDisk3 Direct Sector Read ($80)
+SS.DWrit equ SS.DRead     SDisk3 Direct sector Write ($80)
+SS.UnFrz equ SS.SLGBf     SDisk3 UNFreeze DD info ($81)
+SS.MOFF  equ SS.Mount     SDisk3 fast motor off call ($82)
+SS.MoTim equ SS.RdNet     SDisk3 Set motor shut off time ($83)
+SS.SDRD  equ SS.MpGPB     SDisk3 System direct read ($84)
+SS.SDWRT equ SS.SDRD      SDisk3 System direct writes ($84)
+SS.Sleep equ SS.Slots     SDisk3 (DMC ONLY) Enable/disable F$Sleep calls in read/write 1773 I/O ($85)
+SS.DrvCh equ SS.WnSet     SDisk3 (DMC ONLY) Set drive number to cache, or return drive number being cached ($86)
 
          endc
 
