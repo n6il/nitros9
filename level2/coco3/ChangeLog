@@ -1,4 +1,6 @@
-OS-9 Level Two V03.01.05:
+NitrOS-9/6809 Level 2 V03.02.00:
+- os9p1 and os9p2 have been renamed to kernel and kernelp2.
+- sacia has been backported from NitrOS-9/6309.
 - VDGInt now works properly with 1MB and 2MB CoCo 3s.
 - A new utility, padrom, has been added to the standard commands.
 - Merge now supports -z to get a list of files from standard input.
