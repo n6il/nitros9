@@ -29,7 +29,7 @@ Revs     set   Reent+1
 Drive    set   0          drive number (0-3)
 DrvTyp   set   TYP.5+TYP.CCF+TYP.FLP    5" floppy (double density on track 0)
 StpRat   set   STP.6ms    drive stepping rate code
-Cyls     set   40         number of cylinders (tracks per side)
+Cyls     set   80         number of cylinders (tracks per side)
 SecTrk   set   18         number of sectors per track
 SecTr0   set   SecTrk     number of sectors per track (track 0, side 0)
 Density  set   DNS.MFM+DNS.STD   48 tpi, MFM

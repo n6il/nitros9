@@ -1,4 +1,5 @@
 Level   equ 1
 	use os9defs
+        use systype
         use scfdefs
         use rbfdefs

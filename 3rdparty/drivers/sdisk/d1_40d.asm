@@ -1,5 +1,5 @@
 ********************************************************************
-* D0 - Disk device descriptor for SDisk
+* D1 - Disk device descriptor for SDisk
 *
 * $Id$
 *
@@ -7,7 +7,7 @@
 * ------------------------------------------------------------------
 *        Created
 
-         nam   D0
+         nam   D1
          ttl   Disk device descriptor for SDisk
 
          ifp1  
@@ -26,7 +26,7 @@ Revs     set   Reent+1
          fdb   DPort      port address
 
 * USER CHANGEABLE SETTINGS
-Drive    set   0          drive number (0-3)
+Drive    set   1          drive number (0-3)
 DrvTyp   set   TYP.5+TYP.CCF+TYP.FLP    5" floppy (double density on track 0)
 StpRat   set   STP.6ms    drive stepping rate code
 Cyls     set   40         number of cylinders (tracks per side)
