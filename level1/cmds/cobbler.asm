@@ -19,7 +19,6 @@
 
          IFP1
          use   defsfile
-         use   rbfdefs
          ENDC
 
 DOHELP   set   0

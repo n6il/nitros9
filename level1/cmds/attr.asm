@@ -16,7 +16,6 @@
 
          ifp1  
          use   defsfile
-         use   rbfdefs
          endc  
 
 DOHELP   set   0
