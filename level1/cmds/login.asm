@@ -41,7 +41,7 @@ u022D    rmb   32
 size     equ   .
 
 name     fcs   /Login/
-         fcb   $10 
+         fcb   $11
 
 
 L0013    fcc   "SYS/PASSWORD"
