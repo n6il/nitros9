@@ -8,10 +8,10 @@
 <cmdsynopsis>
 <command>UNLINK</command>
 <arg choice="plain">
-  &replstart;modname&replend;
+  <replaceable>modname</replaceable>
 </arg>
 <arg choice="plain">
-&repeatst;  &replstart;modname&replend;&repeaten;
+&repeatst;  <replaceable>modname</replaceable>&repeaten;
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

@@ -14,7 +14,7 @@
   <option>-x</option>
 </arg>
 <arg choice="opt">
-  &replstart;path&replend;
+  <replaceable>path</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

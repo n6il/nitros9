@@ -8,10 +8,10 @@
 <cmdsynopsis>
 <command>SETPR</command>
 <arg choice="plain">
-  &replstart;procID&replend;
+  <replaceable>procID</replaceable>
 </arg>
 <arg choice="plain">
-  &replstart;number&replend;
+  <replaceable>number</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

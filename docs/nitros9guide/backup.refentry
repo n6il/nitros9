@@ -16,8 +16,8 @@
 <arg choice="opt">
   <option>-v</option>
 </arg>
-<arg choice="opt">&replstart;devname&replend;
-  <arg choice="opt">&replstart;devname&replend;</arg></arg>
+<arg choice="opt"><replaceable>devname</replaceable>
+  <arg choice="opt"><replaceable>devname</replaceable></arg></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 

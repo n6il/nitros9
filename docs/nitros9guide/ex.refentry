@@ -8,13 +8,13 @@
 <cmdsynopsis>
 <command>EX</command>
 <arg choice="plain">
-  &replstart;module name&replend;
+  <replaceable>module name</replaceable>
 </arg>
 <arg choice="opt">
-  &replstart;modifiers&replend;
+  <replaceable>modifiers</replaceable>
 </arg>
 <arg choice="opt">
-  &replstart;parameters&replend;
+  <replaceable>parameters</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

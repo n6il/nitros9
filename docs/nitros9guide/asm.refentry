@@ -7,7 +7,7 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>ASM</command>
-<arg choice="plain">&replstart;filename&replend;</arg>
+<arg choice="plain"><replaceable>filename</replaceable></arg>
 <arg choice="opt">opt</arg>
 <arg choice="opt">&gt;list</arg>
 </cmdsynopsis>

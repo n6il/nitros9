@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>KILL</command>
 <arg choice="plain">
-  &replstart;procID&replend;
+  <replaceable>procID</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

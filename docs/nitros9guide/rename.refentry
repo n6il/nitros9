@@ -8,10 +8,10 @@
 <cmdsynopsis>
 <command>RENAME</command>
 <arg choice="plain">
-  &replstart;path&replend;
+  <replaceable>path</replaceable>
 </arg>
 <arg choice="plain">
-  &replstart;new name&replend;
+  <replaceable>new name</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

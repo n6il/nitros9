@@ -8,10 +8,10 @@
 <cmdsynopsis>
 <command>DISPLAY</command>
 <arg choice="plain">
-  &replstart;hex&replend;
+  <replaceable>hex</replaceable>
 </arg>
 <arg choice="plain">
-  &repeatst;&replstart;hex&replend;&repeaten;
+  &repeatst;<replaceable>hex</replaceable>&repeaten;
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

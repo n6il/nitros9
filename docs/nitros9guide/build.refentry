@@ -7,7 +7,7 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>BUILD</command>
-<arg choice="plain">&replstart;path&replend;</arg>
+<arg choice="plain"><replaceable>path</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
@@ -15,7 +15,7 @@
 <para>
 This command is used to build short text files by copying the
 standard input path into the file specified by
-&replstart;path&replend;. BUILD creates a file according to the pathlist parameter,
+<replaceable>path</replaceable>. BUILD creates a file according to the pathlist parameter,
 then displays a &quot;?&quot;
 prompt to request an input line. Each line entered is written to
 the output path (file). Entering a line consisting of a carriage

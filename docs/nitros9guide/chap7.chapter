@@ -37,31 +37,31 @@ symbolic descriptions that use the following notation:
     either omitted or repeated multiple times.</entry>
 </row>
 <row>
-    <entry>&replstart;path&replend;</entry>
+    <entry><replaceable>path</replaceable></entry>
     <entry>= Represents any legal pathlist.</entry>
 </row>
 <row>
-    <entry>&replstart;devname&replend;</entry>
+    <entry><replaceable>devname</replaceable></entry>
     <entry>= Represents any legal device name.</entry>
 </row>
 <row>
-    <entry>&replstart;nodname&replend;</entry>
+    <entry><replaceable>nodname</replaceable></entry>
     <entry>= Represents any legal memory module name.</entry>
 </row>
 <row>
-    <entry>&replstart;procID&replend;</entry>
+    <entry><replaceable>procID</replaceable></entry>
     <entry>= Represents a process number.</entry>
 </row>
 <row>
-    <entry>&replstart;opts&replend;</entry>
+    <entry><replaceable>opts</replaceable></entry>
     <entry>= One or more options defined in the command description.</entry>
 </row>
 <row>
-    <entry>&replstart;arglist&replend;</entry>
+    <entry><replaceable>arglist</replaceable></entry>
     <entry>= a list of arguments (parameters).</entry>
 </row>
 <row>
-    <entry>&replstart;text&replend;</entry>
+    <entry><replaceable>text</replaceable></entry>
     <entry>= a character string terminated by end-of-line.</entry>
 </row>
 </tbody>

@@ -7,13 +7,13 @@
 <refsynopsisdiv>
 <cmdsynopsis>
     <command>BINEX</command>
-    <arg choice="plain">&replstart;path1&replend;</arg>
-    <arg choice="plain">&replstart;path2&replend;</arg>
+    <arg choice="plain"><replaceable>path1</replaceable></arg>
+    <arg choice="plain"><replaceable>path2</replaceable></arg>
 </cmdsynopsis>
 <cmdsynopsis>
     <command>EXBIN</command>
-    <arg choice="plain">&replstart;path2&replend;</arg>
-    <arg choice="plain">&replstart;path1&replend;</arg>
+    <arg choice="plain"><replaceable>path2</replaceable></arg>
+    <arg choice="plain"><replaceable>path1</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 

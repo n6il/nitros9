@@ -8,10 +8,10 @@
 <cmdsynopsis>
 <command>ERROR</command>
 <arg choice="plain">
-  &replstart;errno&replend;
+  <replaceable>errno</replaceable>
 </arg>
 <arg choice="plain">
-  &repeatst;&replstart;errno&replend;&repeaten;
+  &repeatst;<replaceable>errno</replaceable>&repeaten;
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>FORMAT</command>
 <arg choice="plain">
-  &replstart;devname&replend;
+  <replaceable>devname</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

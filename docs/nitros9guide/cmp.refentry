@@ -8,10 +8,10 @@
 <cmdsynopsis>
 <command>cmp</command>
 <arg choice="plain">
-  &replstart;file1&replend;
+  <replaceable>file1</replaceable>
 </arg>
 <arg choice="plain">
-  &replstart;file2&replend;
+  <replaceable>file2</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

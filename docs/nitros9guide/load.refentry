@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>LOAD</command>
 <arg choice="plain">
-  &replstart;path&replend;
+  <replaceable>path</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

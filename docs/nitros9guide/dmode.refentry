@@ -8,8 +8,8 @@
 <cmdsynopsis>
 <command>DMODE</command>
 <group>
-<arg choice="plain">&replstart;devicename&replend;</arg>
-<arg choice="plain">-&replstart;filename&replend;</arg>
+<arg choice="plain"><replaceable>devicename</replaceable></arg>
+<arg choice="plain">-<replaceable>filename</replaceable></arg>
 </group>
 <arg choice="opt">options</arg>
 </cmdsynopsis>

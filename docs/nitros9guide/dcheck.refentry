@@ -11,7 +11,7 @@
   <option>-opts</option>
 </arg>
 <arg choice="plain">
-  &replstart;devnam&replend;
+  <replaceable>devnam</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>
@@ -38,7 +38,7 @@ not within the file structure of the disk, a message is reported
 like:
 </para>
 <screen>
-*** Bad FD segment ($xxxxxx-$yyyyyy) for file: &replstart;pathlist&replend;
+*** Bad FD segment ($xxxxxx-$yyyyyy) for file: <replaceable>pathlist</replaceable>
 </screen>
 <para>
 This indicates that a segment starting at sector xxxxxx and ending
@@ -97,7 +97,7 @@ Available DCHECK options are:
 <colspec colwidth="3in"/>
 <tbody>
 <row>
-<entry>-w=&replstart;path&replend;</entry>
+<entry>-w=<replaceable>path</replaceable></entry>
 <entry>pathlist to directory for work files</entry>
 </row>
 <row>
@@ -141,12 +141,12 @@ doubt.
 </para>
 <para>
 DCHECK builds its disk allocation map in a file called
-&replstart;pathlist&replend;/DCHECKppO, where &replstart;pathlist&replend;
+<replaceable>pathlist</replaceable>/DCHECKppO, where <replaceable>pathlist</replaceable>
 is as specified by the
 &quot;-w=&quot; option and pp is the process number in hexadecimal. Each bit
 in this bitmap file corresponds to a cluster of sectors on the disk.
 If the &quot;-p&quot; option appears on the command line, DCHECK creates a
-second bitmap file (&replstart;pathlist&replend;/DCHECKpp1) that has a bit set for
+second bitmap file (<replaceable>pathlist</replaceable>/DCHECKpp1) that has a bit set for
 each cluster DCHECK finds as &quot;previously allocated&quot; or &quot;in file
 structure but not in allocation map&quot; while building the allocation
 map. DCHECK them makes another pass through the directory structure

@@ -8,7 +8,7 @@
 <cmdsynopsis>
 <command>LINK</command>
 <arg choice="plain">
-  &replstart;memory module name&replend;
+  <replaceable>memory module name</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

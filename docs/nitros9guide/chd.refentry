@@ -8,13 +8,13 @@
 <cmdsynopsis>
 <command>chd</command>
 <arg choice="plain">
-  &replstart;pathlist&replend;
+  <replaceable>pathlist</replaceable>
 </arg>
 </cmdsynopsis>
 <cmdsynopsis>
 <command>chx</command>
 <arg choice="plain">
-  &replstart;pathlist&replend;
+  <replaceable>pathlist</replaceable>
 </arg>
 </cmdsynopsis>
 </refsynopsisdiv>

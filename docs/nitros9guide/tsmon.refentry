@@ -7,7 +7,7 @@
 <refsynopsisdiv>
 <cmdsynopsis>
 <command>TSMON</command>
-<arg choice="opt">&replstart;pathlist&replend;</arg>
+<arg choice="opt"><replaceable>pathlist</replaceable></arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 

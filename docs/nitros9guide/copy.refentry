@@ -8,10 +8,10 @@
 <cmdsynopsis>
 <command>COPY</command>
 <arg choice="plain">
-  &replstart;path&replend;
+  <replaceable>path</replaceable>
 </arg>
 <arg choice="plain">
-  &replstart;path&replend;
+  <replaceable>path</replaceable>
 </arg>
 <arg choice="opt">
   <option>-s</option>
