@@ -82,10 +82,10 @@ required to support BASIC09 and similar high-performance 6809
 software.</para>
 
 <para>OS-9's design was modeled after Bell Telephone
-Laboratories' &quot;UNIX&quot; operating system, which is becoming
+Laboratories' <trademark class="registered">UNIX</trademark> operating system, which is becoming
 widely recognized as a standard for mini and micro multiprogramming
 operating systems because of its versatility and relatively simple,
-yet elegant structure. Even though a &quot;clone&quot; of UNIX for
+yet elegant structure. Even though a <quote>clone</quote> of UNIX for
 the 6809 is relatively easy to implement, there are a number of
 problems with this approach. UNIX was designed for fairly large-scale
 minicomputers (such as large PDP-11s) that have high CPU throughput,
@@ -109,15 +109,15 @@ microprocessors, such as support of reentrant, position-independent
 software that can be shared by several users simultaneously to reduce
 overall memory requirements.</para>
 
-<para>Perhaps the most innovative part of OS-9 is its &quot;memory
-module&quot; management system, which provides extensive support for
+<para>Perhaps the most innovative part of OS-9 is its <quote>memory
+module</quote> management system, which provides extensive support for
 modular software, particularly ROMed software. This will play an
 increasingly important role in the future as a method of reducing
-software costs. The &quot;memory module&quot; and LINK capabilities of OS-9
+software costs. The <quote>memory module</quote> and LINK capabilities of OS-9
 permit modules to be automatically identified, linked together,
 shared, updated or repaired. Individual modules in ROM which are
 defective may be repaired (without reprogramming the ROM) by placing
-a &quot;fixed&quot; module, with the same name, but a higher revision number
+a <quote>fixed</quote> module, with the same name, but a higher revision number
 into memory. Memory modules have many other advantages, for example,
 OS-9 can allow several programs to share a common math subroutine
 module. The same module could automatically be replaced with a module
@@ -129,17 +129,17 @@ to OS-9. Here are some of the main differences between the two
 systems: 
 </para>
 <orderedlist  numeration="arabic">
-	<listitem><para>OS-9 is written in 6809 assembly language, not C. This
-	improves program size and speed characteristics.</para></listitem>
-	<listitem><para>OS-9 was designed for a mixed RAM/ROM microcomputer memory
-	environment and more effectively supports reentrant,
-	position-independent code.</para></listitem>
-	<listitem><para>OS-9 introduces the &quot;memory module&quot; concept for
-	organizing object code with built-in dynamic inter-module linkage.</para></listitem>
-	<listitem><para>OS-9 supports multiple file managers, which are modules that
-	interface a class of devices to the file system.</para></listitem>
-	<listitem><para>&quot;Fork&quot; and &quot;Execute&quot; calls are faster and
-	more memory efficient than the UNIX equivalents.</para></listitem>
+<listitem><para>OS-9 is written in 6809 assembly language, not C. This
+improves program size and speed characteristics.</para></listitem>
+<listitem><para>OS-9 was designed for a mixed RAM/ROM microcomputer memory
+environment and more effectively supports reentrant,
+position-independent code.</para></listitem>
+<listitem><para>OS-9 introduces the <quote>memory module</quote> concept for
+organizing object code with built-in dynamic inter-module linkage.</para></listitem>
+<listitem><para>OS-9 supports multiple file managers, which are modules that
+interface a class of devices to the file system.</para></listitem>
+<listitem><para><quote>Fork</quote> and <quote>Execute</quote> calls are faster and
+more memory efficient than the UNIX equivalents.</para></listitem>
 </orderedlist>
 </sect1>
 
@@ -160,25 +160,25 @@ expanded to 56K RAM.</para>
 development system. Actual hardware requirements may vary depending
 upon the particular application.</para>
 <itemizedlist mark="bullet">
-	<listitem><para>6809 MPU 
-	</para></listitem>
-	<listitem><para>24K Bytes RAM Memory for Assembly Language Development. 40K
-	Bytes RAM Memory for High Level Languages such as BASIC09 (RAM Must
-	Be Contiguous From Address Zero Upward) 
-	</para></listitem>
-	<listitem><para>4K Bytes of ROM: 2K must be addressed at $F800 - $FFFF, the
-	other 2K is position-independent and self-locating. Some disk
-	systems may require three 2K ROMs.</para></listitem>
-	<listitem><para>Console terminal and interface using serial, parallel, or
-	memory mapped video.</para></listitem>
-	<listitem><para>Optional printer using serial or parallel interface.</para></listitem>
-	<listitem><para>Optional real-time clock hardware.</para></listitem>
+<listitem><para>6809 MPU 
+</para></listitem>
+<listitem><para>24K Bytes RAM Memory for Assembly Language Development. 40K
+Bytes RAM Memory for High Level Languages such as BASIC09 (RAM Must
+Be Contiguous From Address Zero Upward) 
+</para></listitem>
+<listitem><para>4K Bytes of ROM: 2K must be addressed at $F800 - $FFFF, the
+other 2K is position-independent and self-locating. Some disk
+systems may require three 2K ROMs.</para></listitem>
+<listitem><para>Console terminal and interface using serial, parallel, or
+memory mapped video.</para></listitem>
+<listitem><para>Optional printer using serial or parallel interface.</para></listitem>
+<listitem><para>Optional real-time clock hardware.</para></listitem>
 </itemizedlist>
 
 <para>I/O device controller addresses can be located anywhere in the
 memory space, however it is good practice to place them as high as
 possible to maximize RAM expansion capability. Standard
-Microware-supplied OS-9 packages for computers made by popular
+OS-9 packages for computers made by popular
 manufacturers usually conform to the system's customary memory map.</para>
 </sect1>
 </chapter>
@@ -195,7 +195,7 @@ does not need the disk-related OS-9 modules. Most examples in this
 manual describe a fully-configured OS-9 system.</para>
 
 <figure>
-<title>OS-9 COMPONENT MODULE ORGANIZATION</title>
+<title>OS-9 Component Module Organization</title>
 <screen>
                  +-----------------------+
 +----------+     !                       !     +----------+
@@ -276,7 +276,7 @@ use of device descriptors, only one copy of each driver is required
 for each specific type of I/O controller regardless of how many
 controllers the system uses.</para>
 
-<para>One important component not shown is the <command>shell</command>, which is the
+<para>One important component not shown is the <application>shell</application>, which is the
 command interpreter. It is technically a program and not part of the
 operating system itself, and is described fully in the OS-9 Users
 Manual.</para>
@@ -291,10 +291,10 @@ module (not shown on diagram) which is also resident in ROM.</para>
 <chapter>
 <title>Basic Functions of the Kernel</title>
 
-<para>The nucleus of OS-9 is the &quot;kernel&quot;, which serves as the
+<para>The nucleus of OS-9 is the <quote>kernel</quote>, which serves as the
 system administrator, supervisor, and resource manager. It is about
-3K bytes long and normally resides in two 2K byte ROMs: &quot;P1&quot;
-residing at addresses $F800 - $FFFF, and &quot;P2&quot;, which is
+3K bytes long and normally resides in two 2K byte ROMs: <quote>P1</quote>
+residing at addresses $F800 - $FFFF, and <quote>P2</quote>, which is
 position-independent. P2 only occupies about half (1K) of the ROM,
 the other space in the ROM is reserved for the disk bootstrap module.</para>
 
@@ -315,7 +315,7 @@ Input/Output Manager (IOMAN) module for processing.</para>
 <para>After a hardware reset, the kernel will initialize the system
 which involves: locating ROMs in memory, determining the amount of
 RAM available, loading any required modules not already in ROM from
-the bootstrap device, and running the system startup task (&quot;SYSGO&quot;).
+the bootstrap device, and running the system startup task (<quote>SYSGO</quote>).
 The INIT module is a table used during startup to specify initial
 table sizes and system device names.</para>
 
@@ -354,12 +354,12 @@ FCB  I$Read
 
 <para>I/O REQUESTS perform various input/output functions. Requests of
 this type are passed by the kernel to IOMAN for processing. The
-symbolic names for this category have a &quot;I$&quot; prefix, for example,
-the &quot;read&quot; service request is called <xref linkend="i.read"/>.</para>
+symbolic names for this category have a <quote>I$</quote> prefix, for example,
+the <quote>read</quote> service request is called <xref linkend="i.read"/>.</para>
 
 <para>FUNCTION REQUESTS perform memory management, multiprogramming, and
 miscellaneous functions. Most are processed by the kernel. The
-symbolic names for this category begins with &quot;F$&quot;.
+symbolic names for this category begins with <quote>F$</quote>.
 </para>
 </sect1>
 
@@ -368,13 +368,13 @@ symbolic names for this category begins with &quot;F$&quot;.
 
 <para>Memory management is an important operating system function. OS-9
 manages both the physical assignment of memory to programs <emphasis>and</emphasis>
-the logical contents of memory, by using entities called &quot;memory
-modules&quot;. All programs are loaded in memory module format,
+the logical contents of memory, by using entities called <quote>memory
+modules</quote>. All programs are loaded in memory module format,
 allowing OS-9 to maintain a directory which contains the name,
 address, and other related information about each module in memory.
 These structures are the foundation of OS-9's modular software
-environment. Some of its advantages are: automatic run-time &quot;linking&quot;
-of programs to libraries of utility modules; automatic &quot;sharing&quot;
+environment. Some of its advantages are: automatic run-time <quote>linking</quote>
+of programs to libraries of utility modules; automatic <quote>sharing</quote>
 of reentrant programs; replacement of small sections of large
 programs for update or correction (even when in ROM); etc.</para>
 </sect1>
@@ -389,7 +389,7 @@ reserved by OS-9 for its own data structures at the top and bottom of
 memory. The exact amount depends on the sizes of system tables that
 are specified in the configuration module.</para>
 
-<para>All other RAM memory is pooled into a &quot;free memory&quot;
+<para>All other RAM memory is pooled into a <quote>free memory</quote>
 space. Memory space is dynamically taken from and returned to this
 pool as it is allocated or deallocated for various purposes. The
 basic unit of memory allocation is the 256-byte page . Memory is
@@ -467,7 +467,7 @@ addresses upward.</para>
 </informalfigure>
 
 <para>
-The map above is for a &quot;typical&quot; system. Actual memory
+The map above is for a <quote>typical</quote> system. Actual memory
 sizes and addresses may vary depending on the exact system
 configuration.</para>
 </sect1>
@@ -476,15 +476,15 @@ configuration.</para>
 <title>Overview of Multiprogramming</title>
 
 <para>OS-9 is a multiprogramming operating system, which allows several
-independent programs called &quot;processes&quot; can be executed
+independent programs called <quote>processes</quote> can be executed
 simultaneously. Each process can have access to any system resource
 by issuing appropriate service requests to OS-9. Multiprogramming
 functions use a hardware real-time clock that generates interrupts at
 a regular rate of about 10 times per second. MPU time is therefore
 divided into periods typically 100 milliseconds in duration. This
-basic time unit is called a tick . Processes that are &quot;active
+basic time unit is called a tick . Processes that are <quote>active</quote>
 (meaning not waiting for some event) are run for a specific
-system-assigned period called a &quot;time slice&quot;. The duration of
+system-assigned period called a <quote>time slice</quote>. The duration of
 the time slice depends on a process's priority value relative to the
 priority of all other active processes. Many OS-9 service requests
 are available to create, terminate, and control processes.</para>
@@ -496,15 +496,15 @@ are available to create, terminate, and control processes.</para>
 <para>New processes are created when an existing process executes a
 <xref linkend="f.fork"/>
 service request. Its main argument is the name of the program module
-(called the &quot;primary module&quot;) that the new process is to
+(called the <quote>primary module</quote>) that the new process is to
 initially execute. OS-9 first attempts to find the module in the
-&quot;module directory&quot;, which includes the names of all program
+<quote>module directory</quote>, which includes the names of all program
 modules already present in memory. If the module cannot be found
 there. OS-9 usually attempts to load into memory a mass-storage file
 using the requested module name as a file name.</para>
 
 <para>Once the module has been located, a data structure called a
-&quot;process descriptor&quot; is assigned to the new process. The process
+<quote>process descriptor</quote> is assigned to the new process. The process
 descriptor is a 64-byte package that contains information about the
 process, its state, memory allocations, priority, queue pointers,
 etc. The process descriptor is automatically initialized and
@@ -525,10 +525,10 @@ new process is aborted, and the process that originated the
 is informed of the error. Otherwise, the new process is added to the
 active process queue for execution scheduling.</para>
 
-<para>The new process is also assigned a unique number called a &quot;process
-ID&quot; which is used as its identifier. Other processes can
+<para>The new process is also assigned a unique number called a <quote>process
+ID</quote> which is used as its identifier. Other processes can
 commnunciate with it by referring to its ID in various system
-calls. The process also has associated with it a &quot;user ID&quot; which
+calls. The process also has associated with it a <quote>user ID</quote> which
 is used to identify all processes and files belonging to a
 particular user. The user ID is inherited from the parent process.</para>
 
@@ -555,14 +555,14 @@ or until a signal is received.
 </para>
 
 <para>There is a queue for each process state. The queue is a linked
-list of the &quot;process descriptors&quot; of processes in the
+list of the <quote>process descriptors</quote> of processes in the
 corresponding state. State changes are performed by moving a process
 descriptor to another queue.</para>
 
 <sect2>
 <title>The Active State</title>
 
-<para>This state includes all &quot;runnable&quot; processes, which are given
+<para>This state includes all <quote>runnable</quote> processes, which are given
 time slices for execution according to their relative priority with
 respect to all other active processes. The scheduler uses a
 pseudo-round-robin scheme that gives all active processes some CPU
@@ -596,10 +596,10 @@ of CPU time to active processes. OS-9 uses a scheduling algorithm
 that ensures all processes get some execution time.</para>
 
 <para>All active processes are members of the active process queue,
-which is kept sorted by process &quot;age&quot;. Age is a count of
+which is kept sorted by process <quote>age</quote>. Age is a count of
 how many process switches have occurred since the process' last time
 slice. When a process is moved to the active process queue from
-another queue, its &quot;age&quot; is initialized by setting it to
+another queue, its <quote>age</quote> is initialized by setting it to
 the process' assigned priority, i.e., processes having relatively
 higher priority are placed in the queue with an artificially higher
 age. Also, whenever a new process is activated, the ages of all other
@@ -626,7 +626,7 @@ which decreases interrupt latency time.</para>
 <sect1>
 <title>Signals</title>
 
-<para>&quot;Signals&quot; are an asynchronous control mechanism used for
+<para><quote>Signals</quote> are an asynchronous control mechanism used for
 interprocess communication and control. A signal behaves like a
 software interrupt in that it can cause a process to suspend a
 program, execute a specific routine, and afterward return to the
@@ -635,7 +635,7 @@ process (by means of the SEND service request), or they can be sent
 from OS-9 system routines to a process.</para>
 
 <para>Status information can be conveyed by the signal in the form of a
-one-byte numeric value. Some of the signal &quot;codes&quot; (values)
+one-byte numeric value. Some of the signal <quote>codes</quote> (values)
 have predefined meanings, but all the rest are user-defined. The
 defined signal codes are: 
 </para>
@@ -659,7 +659,7 @@ eligible for execution according to the usual MPU scheduler criteria.
 When it gets its next time slice, the signal is processed.</para>
 
 <para>What happens next depends on whether or not the process had
-previously set up a &quot;signal trap&quot; (signal service routine) by
+previously set up a <quote>signal trap</quote> (signal service routine) by
 executing an <xref linkend="f.icpt"/> service request. If it had not, the process is
 immediately aborted. It is also aborted if the signal code is zero.
 The abort will be deferred if the process is in system mode: the
@@ -670,13 +670,13 @@ execution at the address given in the <xref linkend="f.icpt"/> service request. 
 signal code is passed to this routine, which should terminate with an
 RTI instruction to resume normal execution of the process.</para>
 
-<para>NOTE: &quot;Wakeup&quot; signals activate a sleeping process: they DO
-NOT vector through the intercept routine.</para>
+<para>NOTE: <quote>Wakeup</quote> signals activate a sleeping process: they <emphasis>do
+not</emphasis> vector through the intercept routine.</para>
 
 <para>If a process has a signal pending (usually because it has not been
 assigned a time slice since the signal was received), and some other
 process attempts to send it another signal, the new signal is aborted
-and the &quot;send&quot; service request will return an error status. The
+and the <quote>send</quote> service request will return an error status. The
 sender should then execute a sleep service request for a few ticks
 before attempting to resend the signal, so the destination process
 has an opportunity to process the previously pending signal.</para>
@@ -692,7 +692,7 @@ part of IOMAN) which automatically identifies the source of the
 interrupt and dispatches to the associated user or system defined
 service routine. The real-time clock will generate IRQ interrupts.
 SWI, SWI2, and SWI3 interrupts are vectored to user-definable
-addresses which are &quot;local&quot; to each procedure, except that SWI2
+addresses which are <quote>local</quote> to each procedure, except that SWI2
 is normally used for OS-9 service requests calls. The NMI and FIRQ
 interrupts are not normally used and are vectored through a RAM
 address to an RTI instruction.</para>
@@ -878,8 +878,8 @@ routines to reduce latency time of this frequent interrupt source.</para>
 includes a sophisticated polling system that automatically identifies
 the source of the interrupt and dispatches to its associated
 user-defined service routine. The information required for IRQ
-polling is maintained in a data structure called the &quot;IRQ
-polling table&quot;. The table has a 9-byte entry for each possible
+polling is maintained in a data structure called the <quote>IRQ
+polling table</quote>. The table has a 9-byte entry for each possible
 IRQ-generatinq device. The table size is static and defined by an
 initialization constant in the System Configuration Module.</para>
 
@@ -950,7 +950,7 @@ contents of memory. The basic idea is that all programs are
 individual, named objects.</para>
 
 <para>The operating system keeps track of modules which are in memory at
-all times by use of a &quot;module directory&quot; . It contains the addresses
+all times by use of a <quote>module directory</quote> . It contains the addresses
 and a count of how many processes are using each module. When modules
 are loaded into memory, they are added to the directory. When they
 are no longer needed, their memory is deallocated and their name
@@ -970,11 +970,11 @@ to verify the integrity of a module.</para>
 <para>There are several different kinds of modules, each type having a
 different usage and function. Modules do not have to be complete
 programs, or even 6809 machine language. They may contain BASIC09
-&quot;I-code&quot;, constants, single subroutines, subroutine packages, etc. The
+<quote>I-code</quote>, constants, single subroutines, subroutine packages, etc. The
 main requirements are that modules do not modify themselves arid that
 they be position-independent so OS-9 can load or relocate them
 wherever memory space is available. In this respect, the module
-format is the OS-9 equivalent of &quot;load records&quot; used in
+format is the OS-9 equivalent of <quote>load records</quote> used in
 older-style operating systems.</para>
 
 <sect1>
@@ -990,7 +990,7 @@ somewhere in this area. The last three bytes of the module are a
 three-byte Cyclic Redundancy Check (CRC) value used to verify the
 integrity of the module.</para>
 <table>
-<title>MODULE FORMAT</title>
+<title>Module Format</title>
 <tgroup cols="1">
 <colspec colwidth="1.5in"/>
     <tbody>
@@ -1129,7 +1129,7 @@ codes are:</para>
 
 <para>NOTE: 0 is not a legal type code.</para>
 
-<para> &quot;user-defined types having type codes of 0 through 9. They
+<para><quote>user-defined</quote> types having type codes of 0 through 9. They
 have six more bytes in their headers defined as follows:
 </para>
 <informaltable frame="none">
@@ -1237,7 +1237,7 @@ verify a correct header. If this test succeeds, the module size is
 obtained from the header and a 24-bit CRC is performed over the
 entire module. If the CRC matches correctly, the module is considered
 valid, and it is entered into the module directory. The chances of
-detecting a &quot;false module&quot; are virtually nil.</para>
+detecting a <quote>false module</quote> are virtually nil.</para>
 
 <para>In this manner all ROMed modules present in the system at startup
 are automatically included in the system module directory. Some of
@@ -1361,11 +1361,11 @@ basic, low-level I/O transfers to or from a specific type of I/O
 device hardware controller. These modules are reentrant so one copy
 of the module can simultaneously run several different devices which
 use identical I/O ccntrollers. For example the device driver for 6850
-serial interfaces is called &quot;ACIA&quot; and can communicate to
+serial interfaces is called <quote>ACIA</quote> and can communicate to
 any number of serial terminals.</para>
 
 <para>Device driver modules use a standard module header and are given a
-module type of &quot;device driver&quot; (code $E).The
+module type of <quote>device driver</quote> (code $E).The
 execution offset address in the module header points to a branch
 table that has a minimum of six (three-byte) entries.Each
 entry is typically a LBRA to the corresponding subroutine. The File
@@ -1403,8 +1403,8 @@ in the system.</para>
 
 <para>The name of the module is the name the device is known by to the
 system and user (i.e. it is the device name given in pathlists}. Its
-format consists of a standard module header that has a type &quot;device
-descriptor&quot; (code $F). The rest of the device descriptor header
+format consists of a standard module header that has a type <quote>device
+descriptor</quote> (code $F). The rest of the device descriptor header
 consists of:</para>
 
 <informaltable frame="none">
@@ -1430,7 +1430,7 @@ consists of:</para>
 </row>
 <row>
 <entry>$11 =</entry>
-<entry>Number of bytes ( &quot;n&quot; bytes in intialization
+<entry>Number of bytes ( <quote>n</quote> bytes in intialization
 table)</entry>
 </row>
 <row>
@@ -1441,7 +1441,7 @@ table)</entry>
 </tgroup>
 </informaltable>
 
-<para>The initialization table is copied into the &quot;option section&quot;
+<para>The initialization table is copied into the <quote>option section</quote>
 of the path descriptor when a path to the device is opened. The
 values in this table may be used to define the operating parameters
 that are changeable by the OS9 <xref linkend="i.getstt"/>
@@ -1518,7 +1518,7 @@ $12,$12+N  |                             |              |
 <title>Path Descriptors</title>
 
 <para>Every open path is represented by a data structure called a path
-descriptor (&quot;PD&quot;). It contains the information required by
+descriptor (<quote>PD</quote>). It contains the information required by
 the file managers and device drivers to perform I/O functions. Path
 descriptors are exactly 64 bytes long and are dynamically allocated
 and deallocated by IOMAN as paths are opened and closed.</para>
@@ -1589,12 +1589,12 @@ universally for all file managers and device drivers, as shown below.</para>
 </tgroup>
 </table>
 
-<para>The 22-byte section called &quot;PD.FST&quot; is reserved for and
+<para>The 22-byte section called <quote>PD.FST</quote> is reserved for and
 defined by each type of file manager for file pointers, permanent
 variables, etc.</para>
 
-<para>The 32-byte section called &quot;PD.OPT&quot; is used as an
-&quot;option&quot; area for dynamically-alterable operating
+<para>The 32-byte section called <quote>PD.OPT</quote> is used as an
+<quote>option</quote> area for dynamically-alterable operating
 parameters for the file or device. These variables are initialized at
 the time the path is opened by copying the initialization table
 contained in the device descriptor module, and can be altered later
@@ -1627,8 +1627,8 @@ directly calls the subroutines in the associated device drivers. All
 data transfers are performed using 256-byte data blocks. RBFMAN does
 not directly deal with physical addresses such as tracks, cylinders,
 etc. Instead, it passes to device driver modules address parameters
-using a standard address called a "logical sector number",
-or "LSN". LSNs are integers in the range of 0 to n-1, where n is the
+using a standard address called a <quote>logical sector number</quote>,
+or <quote>LSN</quote>. LSNs are integers in the range of 0 to n-1, where n is the
 maximum number of sectors on the media. The driver is responsible for
 translating the logical sector number to actual cylinder/track/sector
 values.</para>
@@ -1639,7 +1639,7 @@ parameter-driven. The physical parameters it uses are stored on the
 media itself. On disk systems, this information is written on the
 first few sectors of track number zero. The device drivers also use
 this information, particularly the physical parameters stored on
-sector 0. These parameters are written by the "format" program that
+sector 0. These parameters are written by the <quote>format</quote> program that
 initializes and tests the media.</para>
 
 <sect1>
@@ -1659,7 +1659,7 @@ expanded files.</para>
 
 <para>The volume's root directory usually starts at logical sector two.</para>
 
-<sect2>
+<sect2 id="ident-sector">
 <title>Identification Sector</title>
 
 <para>Logical sector number zero contains a description of the physical
@@ -1787,15 +1787,15 @@ description of each value stored in this sector.
 <sect2 id="lsn1">
 <title>Disk Allocation Map Sector</title>
 
-<para>One sector (usually LSN 1) of the disk is used for the &quot;disk
-allocation map&quot; that specifies which clusters on the disk are
+<para>One sector (usually LSN 1) of the disk is used for the <quote>disk
+allocation map</quote> that specifies which clusters on the disk are
 available for allocation of file storage space The address of this
 sector is always assigned logical sector 1 by the format program
 DD.MAP specifies the number of bytes in this sector which are
 actually used in the map.</para>
 
 <para>Each bit in the map corresponds to a cluster of sectors on the
-disk. The number of sectors per cluster is specified by the &quot;DD.BIT&quot;
+disk. The number of sectors per cluster is specified by the <quote>DD.BIT</quote>
 variable in the identification sector, and is always an integral
 power of two, i,e., 1, 2, 4, 8, 16, etc. There are a maximum of 4096
 bits in the map, so media such as double-density double-sided floppy
@@ -1809,7 +1809,7 @@ or physically defective. The bitmap is initially created by the
 <sect2>
 <title>File Descriptor Sectors</title>
 
-<para>The first sector of every file is called a &quot;file descriptor&quot;,
+<para>The first sector of every file is called a <quote>file descriptor</quote>,
 which contains the logical and physical description of the file.. The
 table below describes the contents of the descriptor.</para>
 <informaltable frame="none">
@@ -1860,7 +1860,7 @@ table below describes the contents of the descriptor.</para>
 </informaltable>
 
 <para>The attribute byte contains the file permission bits. Bit 7 is set
-to indicate a directory file, bit 6 indicates a &quot;sharable&quot;
+to indicate a directory file, bit 6 indicates a <quote>sharable</quote>
 file, bit 5 is public execute, bit 4 is public write, etc.</para>
 
 <para>The segment list consists of up to 48 five-byte entries that have
@@ -1894,7 +1894,7 @@ be used on a file before writing any other data.</para>
 <sect2>
 <title>Directory Files</title>
 
-<para>Disk directories are files that have the &quot;D&quot; attribute
+<para>Disk directories are files that have the <quote>D</quote> attribute
 set. Directory files contain an integral number of directory entries
 each of which can bold the name and LSN of a single regular or
 directory file.</para>
@@ -1906,7 +1906,7 @@ field with the sign bit of the last character set. Unused entries
 have a zero byte in the first file name character position.</para>
 
 <para>Every mass-storage media must have a master directory called the
-&quot;root directory&quot;. The beginning logical sector number of
+<quote>root directory</quote>. The beginning logical sector number of
 this directory is stored in the identification sector, as previously
 described.</para>
 </sect2>
@@ -2106,7 +2106,7 @@ section of path descriptors used by RBFMAN.</para>
     <entry>Segment allocation size</entry>
 </row>
 <row>
-    <entry spanname="all">(the following values are NOT copied from the device descriptor)</entry>
+    <entry spanname="all">(the following values are <emphasis>not</emphasis> copied from the device descriptor)</entry>
 </row>
 <row>
     <entry>PD.ATT</entry>
@@ -2377,28 +2377,72 @@ used as follows:
 </row>
 </thead>
 <tbody>
-<row><entry>0</entry><entry>V.PAGE</entry><entry>RMB 1</entry>
-<entry>PORT EXTENDED ADDRESS (A20 - A16)</entry></row>
-<row><entry>1</entry><entry>V.PORT </entry><entry>RMB 2</entry>
-<entry>DEVICE BASE ADDRESS</entry></row>
-<row><entry>3</entry><entry>V.LPRC</entry><entry>RMB 1</entry>
-<entry>LAST ACTIVE PROCESS ID</entry></row>
-<row><entry>4</entry><entry>V.BUSY</entry><entry>RMB 1</entry>
-<entry>ACTIVE PROCESS ID (0 = NOT BUSY)</entry></row>
-<row><entry>5</entry><entry>V.WAKE</entry><entry>RMB 1</entry>
-<entry>PROCESS ID TO REAWAKEN</entry></row>
-<row><entry></entry><entry>V.USER</entry><entry>EQU .</entry>
-<entry>END OF OS9 DEFINITIONS</entry></row>
-<row><entry>6</entry><entry>V.NDRV</entry><entry>RMB 1</entry>
-<entry>NUMBER OF DRIVES</entry></row>
-<row><entry></entry><entry>DRVBEG</entry><entry>EQU .</entry>
-<entry>BEGINNING OF DRIVE TABLES</entry></row>
-<row><entry>7</entry><entry>TABLES</entry><entry>RMB DRVMEM*N</entry>
-<entry>RESERVE N DRIVE TABLES</entry></row>
-<row><entry></entry><entry></entry><entry>RMB 1</entry>
-<entry></entry></row>
-<row><entry></entry><entry>FREE</entry><entry>EQU </entry>
-<entry>FREE FOR DRIVER TO USE</entry></row>
+<row>
+<entry>0</entry>
+<entry>V.PAGE</entry>
+<entry>RMB 1</entry>
+<entry>PORT EXTENDED ADDRESS (A20 - A16)</entry>
+</row>
+<row>
+<entry>1</entry>
+<entry>V.PORT </entry>
+<entry>RMB 2</entry>
+<entry>DEVICE BASE ADDRESS</entry>
+</row>
+<row>
+<entry>3</entry>
+<entry>V.LPRC</entry>
+<entry>RMB 1</entry>
+<entry>LAST ACTIVE PROCESS ID</entry>
+</row>
+<row>
+<entry>4</entry>
+<entry>V.BUSY</entry>
+<entry>RMB 1</entry>
+<entry>ACTIVE PROCESS ID (0 = NOT BUSY)</entry>
+</row>
+<row>
+<entry>5</entry>
+<entry>V.WAKE</entry>
+<entry>RMB 1</entry>
+<entry>PROCESS ID TO REAWAKEN</entry>
+</row>
+<row>
+<entry></entry>
+<entry>V.USER</entry>
+<entry>EQU .</entry>
+<entry>END OF OS9 DEFINITIONS</entry>
+</row>
+<row>
+<entry>6</entry>
+<entry>V.NDRV</entry>
+<entry>RMB 1</entry>
+<entry>NUMBER OF DRIVES</entry>
+</row>
+<row>
+<entry></entry>
+<entry>DRVBEG</entry>
+<entry>EQU .</entry>
+<entry>BEGINNING OF DRIVE TABLES</entry>
+</row>
+<row>
+<entry>7</entry>
+<entry>TABLES</entry>
+<entry>RMB DRVMEM*N</entry>
+<entry>RESERVE N DRIVE TABLES</entry>
+</row>
+<row>
+<entry></entry>
+<entry></entry>
+<entry>RMB 1</entry>
+<entry></entry>
+</row>
+<row>
+<entry></entry>
+<entry>FREE</entry>
+<entry>EQU </entry>
+<entry>FREE FOR DRIVER TO USE</entry>
+</row>
 </tbody>
 </tgroup>
 </table>
@@ -2434,7 +2478,8 @@ routine has been called, RBFMAN will issue a request for the driver
 to read the identification sector (logical sector zero) from a drive.
 At this time the driver will initialize the corresponding drive table
 by copying the first part of the identification sector (up to
-DD.SIZ) into it, Also see the &quot;Identification Sector&quot; section of
+DD.SIZ) into it, Also see the
+<quote><link linkend="ident-sector">Identification Sector</link></quote> section of
 this manual. The format of each drive table is as given below:</para>
 <informaltable frame="none">
 <tgroup cols="4">
@@ -2612,7 +2657,7 @@ disk driver routines must not alter this location.</para>
 
 <para>As with all device drivers, RBFMAN-type device drivers use a
 standard executable memory module format with a module type of
-&quot;device driver&quot; (CODE $E). The execution offset address in
+<quote>device driver</quote> (CODE $E). The execution offset address in
 the module header points to a branch table that has six three byte
 entries. Each entry is typically a LBRA to the corresponding
 subroutine. The branch table is defined as follows:
@@ -2995,7 +3040,7 @@ register stack:</para>
 </sect2>
 
 <sect2>
-<title>NAME:TERM</title>
+<title>NAME: TERM</title>
 <informaltable frame="none">
 <tgroup cols="2">
 <colspec colwidth="1.4in"/>
@@ -3110,13 +3155,13 @@ it must clear the array and exit with an RTS instruction.</para>
 </informaltable>
 
 <para>NOTE: The BOOT module is <emphasis>not</emphasis> part of the disk driver. It is a
-separate module which is normally co-resident with the "OS9P2" module
+separate module which is normally co-resident with the <quote>OS9P2</quote> module
 in the system firmware.</para>
 
 <para>
 The bootstrap module contains one subroutine that loads the
 bootstrap file and some related information into memory, it uses the
-standard executable module format with a module type of &quot;system&quot;
+standard executable module format with a module type of <quote>system</quote>
 (code $C). The execution offset in the module header contains the
 offset to the entry point of this subroutine.</para>
 
@@ -3172,7 +3217,8 @@ PIA, which drives a 6821-type parallel interface for printers.</para>
 <sect1>
 <title>SCFMAN Line Editing Functions</title>
 
-<para><xref linkend="i.read"/> and <xref linkend="i.write"/> service requests (which correspond to Basic09
+<para><xref linkend="i.read"/> and <xref linkend="i.write"/>
+service requests (which correspond to Basic09
 GET and PUT statements) to SCFMAN-type devices pass data to/from the
 device without any modification, except that keyboard interrupt,
 keyboard abort, and pause character are filtered out of the input
@@ -3181,7 +3227,8 @@ descriptor contains a zero). In particular, carriage returns are not
 automatically followed by line feeds or nulls, and the high order
 bits are passed as sent/received.</para>
 
-<para><xref linkend="i.readln"/> and <xref linkend="i.writln"/> service requests (which correspond to Basic09
+<para><xref linkend="i.readln"/> and <xref linkend="i.writln"/>
+service requests (which correspond to Basic09
 INPUT, PRINT, READ and WRITE statements) to SCFMAN-type devices
 perform full line editing of all functions enabled for the particular
 device. These functions are initialized when the device is first used
@@ -3197,23 +3244,23 @@ order bit cleared.</para>
 functions:
 </para>
 
-<para>If PD.UPC &lt;&gt; 0 bytes input or output in the range "a..z" are made
-"A..Z"</para>
+<para>If PD.UPC &lt;&gt; 0 bytes input or output in the range <quote>a..z</quote> are made
+<quote>A..Z</quote></para>
 
 <para>If PD.EKO &lt;&gt; 0, input bytes are echoed, except that
-undefined control characters in the range $0..$1F print as "."
+undefined control characters in the range $0..$1F print as <quote>.</quote>
 </para>
 
 <para>If PD.ALF &lt;&gt; 0, carriage returns are automatically followed
 by line feeds.</para>
 
-<para>If PD.NUL &lt;&gt; 0, After each CR/LF a PD.NUL "nulls" (always
+<para>If PD.NUL &lt;&gt; 0, After each CR/LF a PD.NUL <quote>nulls</quote> (always
 $00) are sent.</para>
 
 <para>If PD.PAU &lt;&gt; 0, Auto page pause will occur after every
 PD.PAU lines since the last input.</para>
 
-<para>If PD.BSP &lt;&gt; 0, SCF will recognize PD.BSP as the "input"
+<para>If PD.BSP &lt;&gt; 0, SCF will recognize PD.BSP as the <quote>input</quote>
 backspace character, and will echo PD.BSE (the backspace echo
 character) if PD.BSO = 0, or PD.BSE, space, PD.BSE if PD.BSO &lt;&gt; 0.</para>
 
@@ -3237,26 +3284,28 @@ character, echo a carriage return [optional line feed], and then
 reprint the current line.</para>
 
 <para>If PD.DUP &lt;&gt; 0, SCF (<xref linkend="i.readln"/>) will duplicate whatever is in
-the input buffer through the first "PD.EOR" character.</para>
+the input buffer through the first <quote>PD.EOR</quote> character.</para>
 
-<para>If PD.PSC &lt;&gt; 0, output is suspended before the next &quot;PD.EOR&quot;
+<para>If PD.PSC &lt;&gt; 0, output is suspended before the next <quote>PD.EOR</quote>
 character when this character is input. This will also delete any
-"type ahead" input for <xref linkend="i.readln"/>.</para>
+<quote>type ahead</quote> input for <xref linkend="i.readln"/>.</para>
 
 <para>If PD.INT &lt;&gt; 0, and is received on input, a keyboard
 interrupt signal is sent to the last user of this path. Also it will
 terminate the current I/O request (it any) with an error identical to
 the keyboard interrupt signal code. This location normally is set to
-a control-C character.</para>
+a <keycombo action="simul">
+  <keycap>control</keycap><keycap>C</keycap></keycombo> character.</para>
 
 <para>If PD.QUT &lt;&gt; 0, and is received on input, a keyboard abort
 signal is sent to the last user of this path. Also it will terminate
 the current I/O request (if any) with an error code identical to the
 keyboard interrrupt signal code. This location is normally set to a
-control-Q character.</para>
+<keycombo action="simul">
+  <keycap>control</keycap><keycap>Q</keycap></keycombo> character.</para>
 
 <para>If PD.OVF &lt;&gt; 0, It is echoed when <xref linkend="i.readln"/> has satisfied its
-input byte count without finding a "PD.EOR" character.</para>
+input byte count without finding a <quote>PD.EOR</quote> character.</para>
 
 <para>NOTE: It is possible to disable most of these special editing
 functions by setting the corresponding control character in the path
@@ -3344,7 +3393,7 @@ SCFMAN-type device drivers.</para>
 <row><entry>PD.DV2</entry><entry>$0A</entry><entry>2</entry><entry>Device table addr of 2nd (echo) device</entry></row>
 <row><entry>PD.RAW</entry><entry>$0C</entry><entry>1</entry><entry>Edit flag: 0=raw mode, 1=edit mode</entry></row>
 <row><entry>PD.MAX</entry><entry>$0D</entry><entry>2</entry><entry>Headline maximum character count</entry></row>
-<row><entry>PD.MIN</entry><entry>$0F</entry><entry>1</entry><entry>Devices are "mine" if cleared</entry></row>
+<row><entry>PD.MIN</entry><entry>$0F</entry><entry>1</entry><entry>Devices are <quote>mine</quote> if cleared</entry></row>
 <row><entry>PD.STS</entry><entry>$10</entry><entry>2</entry><entry>Status routine module address</entry></row>
 <row><entry>PD.STM</entry><entry>$12</entry><entry>2</entry><entry>Reserved for status routine </entry></row>
 
@@ -3470,11 +3519,11 @@ the I/O editing features, as listed below.</para>
 
 <para>NOTES:</para>
 
-<para>SCF editing functions will be "turned off" if the corresponding
+<para>SCF editing functions will be <quote>turned off</quote> if the corresponding
 special character is a zero. For example, it IT.EOF was a zero, there
 would be no end of file character.</para>
 
-<para>IT.PAR is typically used to intitialize the device s control
+<para>IT.PAR is typically used to intitialize the device's control
 register when a path is opened to it.</para>
 </sect1>
 
@@ -3486,7 +3535,7 @@ subroutines that perform raw I/O transfers to or from a specific
 hardware controller. These modules are usually reentrant so that one
 copy of the module can simultaneously run several different devices
 that use identical I/O controllers. For each
-"incarnation" of the driver, IOMAN will allocate a static storage
+<quote>incarnation</quote> of the driver, IOMAN will allocate a static storage
 area for that device. The size of the storage area is given in
 the device driver module header. Some
 of this storage area will be used by IOMAN and SCFMAN, the device
@@ -3547,8 +3596,8 @@ bit device address.</para>
 
 <para>V.LPRC This location contains the process ID of the last process
 to use the device. The IRQ service routine is responsible for sending
-this process the proper signal in case a &quot;QUIT&quot; character
-or an &quot;INTERRUPT&quot; character is recieved. Defined by SCFMAN.</para>
+this process the proper signal in case a <quote>QUIT</quote> character
+or an <quote>INTERRUPT</quote> character is recieved. Defined by SCFMAN.</para>
 
 <para>V. BUSY This location contains the process ID of the process
 currently using the device (zero if it is not being used). This is
@@ -3601,7 +3650,7 @@ be reported later when SCFMAN calls one of the device driver routines.</para>
 
 <para>As with all device drivers. SCFMAN device drivers use a standard
 executable memory module format with a module type of
-"device driver" (CODE $5). The execution offset address in the
+<quote>device driver</quote> (CODE $5). The execution offset address in the
 module
 header points to a branch table that has six three byte entries. Each
 entry is typically a LBRA to the corresponding subroutine. The branch
@@ -3745,7 +3794,7 @@ the data in a buffer, then check V.WAKE to see if any process is
 waiting for the device to complete I/O. If so, the IRQ service
 routine should send a wakeup signal to it.</para>
 
-<para>NOTE: Data buffers are NOT automatically allocated. It any are
+<para>NOTE: Data buffers are <emphasis>not</emphasis> automatically allocated. It any are
 used, they should be defined in the device's static storage area.</para>
 </sect2>
 
@@ -3797,9 +3846,9 @@ is, it will send a wake up signal to that process.</para>
 start up when data is placed into the buffer. After an interrupt is
 generated the IRQ service routine will continue to transmit data
 until the data butter is empty, and then it will disable the device's
-&quot;ready to transmit&quot; interrupts.</para>
+<quote>ready to transmit</quote> interrupts.</para>
 
-<para>NOTE: Data buffers are NOT automatically allocated. If any are
+<para>NOTE: Data buffers are <emphasis>not</emphasis> automatically allocated. If any are
 used, they should be defined in the device's static storage.</para>
 </sect2>
 
@@ -4003,7 +4052,7 @@ the <filename>Boot</filename> file will NEVER be terminated.</para>
 Although this routine is not included in the device drivers
 branch table and not called directly from SCFMAN, it is an important
 routine in device drivers. The main things that it does are:</para>
-<orderedlist  numeration="arabic">
+<orderedlist numeration="arabic">
 <listitem>
 <para>Service the device interrupts (recieve data from device or send
 data to it). This routine should put its data into and get its data
@@ -4016,7 +4065,7 @@ send a wakeup signal to that process.</para>
 </listitem>
 <listitem>
 <para>If the device is ready to send more data and the output buffer
-is emoty, disable the device's &quot;ready to transmit&quot;
+is emoty, disable the device's <quote>ready to transmit</quote>
 interrupts.</para>
 </listitem>
 <listitem>
@@ -4039,7 +4088,7 @@ it must clear the carry and exit with an RTS instruction.</para>
 <para>There are four key rules for programmers writing OS-9 assembly
 language programs:</para>
 <orderedlist  numeration="arabic">
-	<listitem><para>All programs MUST use position-independent-code (PIC). OS9
+	<listitem><para>All programs <emphasis>must</emphasis> use position-independent-code (PIC). OS9
 	selects load addresses based on available memory at run-time. There
 	is no way to force a program to be loaded at a specific address.</para></listitem>
 	<listitem><para>All programs must use the standard OS-9 memory module formats
@@ -4098,7 +4147,7 @@ of RELATIVE, not absolute, addresses.</para>
 
 <para>Programs executed as processes (by <xref linkend="f.fork"/> and
 <xref linkend="f.chain"/> system calls or
-by the Shell) are assigned a RAM memory area for variables, stacks,
+by the <application>Shell</application>) are assigned a RAM memory area for variables, stacks,
 and data structures at execution-time. The addresses cannot be
 determined or specified ahead of time. However, a minimum size for
 this area is specified in the program's module header. Again, thanks
@@ -4110,8 +4159,8 @@ address of the top of the process' data memory area. If the creating
 process passed a parameter area, it will be located from the value of
 the SP to the top of memory (Y), and the D register will contain the
 parameter area size in bytes. If the new process was called by the
-<command>shell</command>, the parameter area will contain
-the part of the <command>shell</command> command
+<application>shell</application>, the parameter area will contain
+the part of the <application>shell</application> command
 line that includes the argument (parameter) text. The U register will
 have the lower bound of the data memory area, and the DP register
 will contain its page number.</para>
@@ -4167,11 +4216,11 @@ processes. They are in effect subroutines called by OS-9 when an
 interrupt occurs.</para>
 
 <para>Therefore, all interrupt-driven device drivers have two basic
-parts: the "mainline" subroutines that execute as part of the calling
+parts: the <quote>mainline</quote> subroutines that execute as part of the calling
 process, and a separate interrupt service routine.</para>
 
-<para>THE TWO ROUTINES ARE ASYNCHRONOUS AND THEREFORE MUST USE SIGNALS
-FOR COMMUNICATIONS AND COORDINATION.</para>
+<para><emphasis>The two routines are asynchronous and therefore must use signals
+for communications and coordination.</emphasis></para>
 
 <para>The INIT initialization subroutine within the driver package
 should allocate static storage for the service routine, get the
@@ -4184,12 +4233,12 @@ service request.
 This results in the process' deactivation. When the interrupt in
 question occurs, its service routine is executed after some random
 interval. It should then do the minimal amount of processing
-required, and send a "wakeup" signal to its associated process using
+required, and send a <quote>wakeup</quote> signal to its associated process using
 the <xref linkend="f.send"/> service request. It may also put some data in its static
 storage (I/O data and status) which is shared with its associated
-"sleeping" process.</para>
+<quote>sleeping</quote> process.</para>
 
-<para>Some time later, the device driver "mainline" routine is awakened
+<para>Some time later, the device driver <quote>mainline</quote> routine is awakened
 by the signal, and can process the data or status returned by the
 interrupt service routine.</para>
 </sect1>
@@ -4310,16 +4359,13 @@ dozen manufacturers offer OS-9 based development systems in all price
 ranges with an excellent selection of time-saving options such as
 hard disks, line printers. PROM programmers, etc.</para>
 
-<para>Microware sells source code for standard I/O drivers, and a &quot;User
-Source Code Package&quot; (On OS-9 format disk only) which contains
-source code to the Kernel. Shell, INIT, SYSGO, device driver and
+<para>A group of OS-9 aficionados has over the years first written
+an alternative to OS-9 called NitrOS9, then also disassembled all
+the original Microware code and commented the source code.
+The software is available on the Internet. You can find
+source code to the Kernel, Shell, INIT, SYSGO, device driver and
 descriptor modules, and a selection of utility commands which can
 be useful when moving OS-9 to a new target system.</para>
-
-<para>WARNING: Standard OS-9 software packages are licensed for use on a
-single system. OS-9 cannot be resold or otherwise distributed (even
-if modified) without a license,. Contact Microware for information
-regarding software licenses.</para>
 
 <sect1>
 <title>Adapting OS-9 to Disk-based Systems</title>
@@ -4339,7 +4385,7 @@ system.</para>
 
 <para>A CLOCK module may be adapted from a standard version, or a new
 one may be created. All other component modules, such as IOMAN,
-RBFMAN, SCFMAN, SHELL, and utilities seldom require modification.</para>
+RBFMAN, SCFMAN, Shell, and utilities seldom require modification.</para>
 </sect1>
 
 <sect1>
@@ -4386,9 +4432,9 @@ to help you do so:</para>
     have SYSGO start the clock.</para></listitem>
 
     <listitem><para>It the target system will receive commands manually, or if
-    any application program uses Shell functions, include the SHELL and
+    any application program uses <application>Shell</application> functions, include the SHELL and
     SYSGO modules, otherwise include a modified SYSGO module which calls
-    your application program instead of <command>shell</command>.</para></listitem>
+    your application program instead of <application>Shell</application>.</para></listitem>
 </orderedlist>
 </sect1>
 
@@ -4398,8 +4444,8 @@ to help you do so:</para>
 <para>INIT is a module that contains system startup parameters.
 It <emphasis>must</emphasis> be
 in ROM in any OS-9 system (it usually resides in the same ROM as the
-kernel). It is a non-executable module named "INIT" and has type
-"system" (code $C). It is scanned once during the system startup. It
+kernel). It is a non-executable module named <quote>INIT</quote> and has type
+<quote>system</quote> (code $C). It is scanned once during the system startup. It
 begins with the standard header followed by:</para>
 <informaltable frame="none">
 <tgroup cols="2">
@@ -4431,7 +4477,7 @@ is required for each device in the system.</entry>
 <row>
 <entry>$E,$F</entry>
 <entry>Offset to a string which is the name of the first module to
-be executed after startup, usually &quot;SYSG0&quot;. There must
+be executed after startup, usually <quote>SYSGO</quote>. There must
 always be a startup module.</entry>
 </row>
 <row>
@@ -4474,12 +4520,12 @@ system start-up sequence. Its function is threefold:</para>
 
 <itemizedlist mark="bullet">
 <listitem><para>It does additional high-level system initialization, for
-example, disk system SYSGO call the <command>shell</command> to process the
+example, disk system SYSGO call the <application>shell</application> to process the
 <filename>Startup</filename> shell procedure file.</para></listitem>
 
-<listitem><para>It starts the first "user" process.</para></listitem>
+<listitem><para>It starts the first <quote>user</quote> process.</para></listitem>
 
-<listitem><para>It thereafter remains in a "wait" state as insurance against all
+<listitem><para>It thereafter remains in a <quote>wait</quote> state as insurance against all
 user processes terminating, thus leaving the system halted. If this
 happens. SYSGO can restart the first user program.</para></listitem>
 </itemizedlist>
@@ -4492,7 +4538,7 @@ non-disk based systems unless it is modified to:</para>
 
 <listitem><para>Remove processing of the <filename>Startup</filename> procedure file.</para></listitem>
 
-<listitem><para>Possibly change the name of the first user program from Shell
+<listitem><para>Possibly change the name of the first user program from <application>Shell</application>
 to the name of a applications program. Here are some example name strings:</para>
 
     <informaltable frame="none">
@@ -4500,7 +4546,7 @@ to the name of a applications program. Here are some example name strings:</para
     <tbody>
     <row>
 	<entry>fcs /userpqm/</entry>
-	<entry>(object code module &quot;userpgm&quot;)</entry>
+	<entry>(object code module <quote>userpgm</quote>)</entry>
     </row>
     <row>
 	<entry>fcs /RunB userpgm/</entry>
@@ -4545,7 +4591,7 @@ instruction immediately followed by a constant byte which is the
 request code. Parameters (if any) will be returned in the MPU
 registers after OS-9 has processed the service request. A standard
 convention for reporting errors is used in all system calls; if an
-error occurred, the "C bit" of the condition code register will be
+error occurred, the <quote>C bit</quote> of the condition code register will be
 set and accumulator B will contain the appropriate error code. This
 permits a BCS or BCC instruction immediately following the system
 call to branch on error/no error.</para>
@@ -4559,7 +4605,7 @@ FCB $8B
 BCS ERROR 
 </programlisting>
 
-<para>Using the assembler's "OS9" directive simplifies the call:</para>
+<para>Using the assembler's <quote>OS9</quote> directive simplifies the call:</para>
 
 <programlisting>
 LDA PATHNUM 
@@ -4569,8 +4615,8 @@ BCS ERROR
 
 <para>The I/O service requests are simpler to use than in many other
 operating systems because the calling program does not have to
-allocate and set up &quot;file control blocks&quot;, &quot;sector
-buffers&quot;, etc. Instead OS-9 will return a one byte path number
+allocate and set up <quote>file control blocks</quote>, <quote>sector
+buffers</quote>, etc. Instead OS-9 will return a one byte path number
 when a path to a file/device is opened or created; then this path
 number may be used in subsequent I/O requests to identify the
 file/device until the path is closed. OS-9 internally allocates and
@@ -4578,8 +4624,8 @@ maintains its
 own data structures and users never have to deal
 with them: in fact attempts to do so are memory violations.</para>
 
-<para>All system calls have a mnemonic name that starts with &quot;F$&quot;
-for system functions, or &quot;I$&quot; for I/O related requests.
+<para>All system calls have a mnemonic name that starts with <quote>F$</quote>
+for system functions, or <quote>I$</quote> for I/O related requests.
 These are defined in the assembler-input equate file
 called <filename>OS9Defs</filename>.</para>
 
@@ -4600,7 +4646,7 @@ character.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$AllBit</entry>
+	<entry>OS9 F$AllBit</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -4642,7 +4688,7 @@ the allocation bit map.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$Chain</entry>
+	<entry>OS9 F$Chain</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -4666,7 +4712,7 @@ the allocation bit map.</para>
 </informaltable>
 
 <para>This system call is similar to <xref linkend="f.fork"/>, but it does not create a new
-process. It effectively "resets" the calling process' program and
+process. It effectively <quote>resets</quote> the calling process' program and
 data memory areas and begins execution of a new primary module. Open
 paths are not closed or otherwise affected.</para>
 
@@ -4679,7 +4725,7 @@ process. It is functionally similar to a <xref linkend="f.fork"/> followed by an
 </para>
 
 <para>1. The system parses the name string ot the new proces'
-"primary module" - the program that will initially be executed. Then
+<quote>primary module</quote> - the program that will initially be executed. Then
 the system module directory is searched to see if a module with the
 same name and type / language is already in memory. If so it is
 linked to. If not, the name string is used as the pathlist of a file
@@ -4724,15 +4770,17 @@ not specify a parameter area, Y, X, and SP will be the same, and D
 will equal zero. The minimum overall data area size is one page (256
 bytes).</para>
 
+<warning>
 <para>
-WARNING: The hardware stack pointer (SP) should be located
+The hardware stack pointer (SP) should be located
 somewhere in the direct page before the <xref linkend="f.chain"/> service request is
-executed to prevent a "suicide attempt" error or an actual suicide
+executed to prevent a <quote>suicide attempt</quote> error or an actual suicide
 (system crash). This will prevent a suicide from occurring in case
 the new module requires a smaller data area than what is currently
 being used. You should allow approximately 200 bytes of stack space
 for execution of the <xref linkend="f.chain"/> service request and other system
-"overhead".</para>
+<quote>overhead</quote>.</para>
+</warning>
 
 <para>
 For more information, please see the <xref linkend="f.fork"/> service request
@@ -4749,7 +4797,7 @@ description.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$CmpNam</entry>
+	<entry>OS9 F$CmpNam</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -4772,7 +4820,7 @@ description.</para>
 <para>
 Given the address and length of a string, and the address of a
 second string, compares them and indicates whether they match.
-Typically used in conjunction with "parsename".</para>
+Typically used in conjunction with <quote>parsename</quote>.</para>
 
 <para>The second name must bave the sign bit (bit 7) of the last
 character set.</para>
@@ -4787,7 +4835,7 @@ character set.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$CRC</entry>
+	<entry>OS9 F$CRC</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -4813,9 +4861,9 @@ character set.</para>
 
 <para>This service request calculates the CRC (cyclic redundancy count)
 for use by compilers, assemblers, or other module generators. The CRC
-is calculated starting at the source address over "byte count" bytes,
+is calculated starting at the source address over <quote>byte count</quote> bytes,
 it is not necessary to cover an entire module in one call, since the
-CRC may be "accumulated" over several calls. The CRC accumulator can
+CRC may be <quote>accumulated</quote> over several calls. The CRC accumulator can
 be any three byte memory location and must be initialized to $FFFFFF
 before the first F$CRC call.</para>
 
@@ -4833,7 +4881,7 @@ be stored) are not included in the CRC generation.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$DelBit</entry>
+	<entry>OS9 F$DelBit</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -4875,7 +4923,7 @@ the allocation bit map.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$Exit</entry>
+	<entry>OS9 F$Exit</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -4917,7 +4965,7 @@ return an OS-9 error code or zero if no error occurred.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$Fork</entry>
+	<entry>OS9 F$Fork</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -4945,11 +4993,11 @@ return an OS-9 error code or zero if no error occurred.</para>
 </tgroup>
 </informaltable>
 
-<para>This system call creates a new process which becomes a "child" of
+<para>This system call creates a new process which becomes a <quote>child</quote> of
 the caller, and sets up the new process' memory and MPU registers.</para>
 
-<para>The system parses the name string of the new process' &quot;primary
-module&quot; - the program that will initially be executed. Then the
+<para>The system parses the name string of the new process' <quote>primary
+module</quote> - the program that will initially be executed. Then the
 system module directory is searched to see if the program is already
 in memory. If so, the module is linked to and executed. If not, the
 name string is used as the pathlist of the file which is to loaded
@@ -4964,13 +5012,13 @@ process' data area). The new process' registers are set up as shown
 in the diagram on the next page. The execution offset given in the
 module header is used to set the PC to the module's entry point.</para>
 
-<para>When the <command>shell</command> processes a command line it passes a string in the
+<para>When the <application>shell</application> processes a command line it passes a string in the
 parameter area which is a copy of the parameter part (if any) of the
 command line. It also inserts an end-of-line character at the end of
 the parameter string to simplify string-oriented processing. The X
 register will point to the beginning of the parameter string. If the
 command line included the optional memory size specification (#n or
-#nK), the <command>shell</command> will pass that size as the requested memory size when
+#nK), the <application>shell</application> will pass that size as the requested memory size when
 executing the <xref linkend="f.fork"/>.</para>
 
 <para>If any of the above operations are unsuccessful, the <xref linkend="f.fork"/> is
@@ -5007,7 +5055,7 @@ newly-created process.</para>
 always have a values at 256-byte page boundaries. If the parent does
 not specify a parameter area, Y, X, and SP will be the same, and D
 will equal zero. The minimum overall data area size is one page (256
-bytes). Shell will always pass at least an end of line character in
+bytes). <application>Shell</application> will always pass at least an end of line character in
 the parameter area.</para>
 
 <para>NOTE: Both the child and parent process will execute
@@ -5015,7 +5063,7 @@ concurrently. If the parent executes a <xref linkend="f.wait"/> call
 immediately after the fork, it will wait until the child dies before
 it resumes execution. Caution should be exercised when recursively
 calling a program that uses the <xref linkend="f.fork"/> service request since another
-child may be created with each &quot;incarnation&quot;. This will
+child may be created with each <quote>incarnation</quote>. This will
 continue until the process table becomes full.</para>
 </sect1>
 
@@ -5029,7 +5077,7 @@ continue until the process table becomes full.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$ICPT</entry>
+	<entry>OS9 F$ICPT</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5061,7 +5109,10 @@ routine will be executed. A signal will abort any process which has
 not used the <xref linkend="f.icpt"/> service request to set a signal trap, and its
 termination status (B register) will be the signal code. Many
 interactive programs will set up an intercept routine to handle
-keyboard abort (control Q), and keyboard interrupt (control C).</para>
+keyboard abort (<keycombo action="simul">
+  <keycap>control<keycap></keycap>Q</keycap></keycombo>),
+and keyboard interrupt (<keycombo action="simul">
+    <keycap>control<keycap></keycap>C</keycap></keycombo>).</para>
 
 <para>The intercept routine is entered asynchronously because a signal
 may be sent at any time (it is like an interrupt) and is passed the
@@ -5098,7 +5149,7 @@ instruction.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$ID</entry>
+	<entry>OS9 F$ID</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5140,7 +5191,7 @@ Several processes can have the same user ID.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$LINK</entry>
+	<entry>OS9 F$LINK</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5232,7 +5283,7 @@ loaded are added to the system module directory, and the first
 module read is LINKed. The parameters returned are the same as the
 <xref linkend="f.link"/> call and apply only to the first module loaded.</para>
 
-<para>In order to be loaded, the file must have the &quot;execute&quot;
+<para>In order to be loaded, the file must have the <quote>execute</quote>
 permission and contain a module or modules that have a proper module
 header. The file will be loaded from the working execution directory
 unless a complete pathlist is given.</para>
@@ -5252,7 +5303,7 @@ that occur on <xref linkend="i.open"/>,
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$Mem</entry>
+	<entry>OS9 F$Mem</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5292,7 +5343,7 @@ by other processes may fragment free memory into smaller, scattered
 blocks that are not adjacent to the caller's present data area. Level
 Two systems do not have this restriction because of the availability
 of hardware for memory relocation, and because each process has its
-own &quot;address space&quot;.</para>
+own <quote>address space</quote>.</para>
 </sect1>
 
 <sect1>
@@ -5305,7 +5356,7 @@ own &quot;address space&quot;.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$PErr</entry>
+	<entry>OS9 F$PErr</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5350,7 +5401,7 @@ routine use the <xref linkend="f.ssvc"/> service request.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$PrsNam</entry>
+	<entry>OS9 F$PrsNam</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5362,7 +5413,7 @@ routine use the <xref linkend="f.ssvc"/> service request.</para>
 </row>
 <row>
 	<entry>OUTPUT:</entry>
-	<entry><literallayout>(X) = Updated past the optional "/"
+	<entry><literallayout>(X) = Updated past the optional <quote>/</quote>
 (Y) = Address of the last character of the name + 1.
 (B) = Length of the name
 </literallayout></entry>
@@ -5415,7 +5466,7 @@ calls may be needed to process a pathlist that has more than one name.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$SchBit</entry>
+	<entry>OS9 F$SchBit</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5438,7 +5489,7 @@ calls may be needed to process a pathlist that has more than one name.</para>
 </informaltable>
 
 <para>This system mode service request searches the specified allocation
-bit map starting at the &quot;beginning bit number&quot; for a free
+bit map starting at the <quote>beginning bit number</quote> for a free
 block (cleared bits) of the required length.</para>
 
 <para>If no block of the specified size exists, it returns with the
@@ -5455,7 +5506,7 @@ carry set, beginning bit number and size of the largest block.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$Send</entry>
+	<entry>OS9 F$Send</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5479,7 +5530,7 @@ carry set, beginning bit number and size of the largest block.</para>
 </tgroup>
 </informaltable>
 
-<para>This system call sends a &quot;signal&quot; to the process
+<para>This system call sends a <quote>signal</quote> to the process
 specified. The signal code is a single byte value of 1 - 255.</para>
 
 <para>If the signal's destination process is sleeping or waiting, it
@@ -5503,10 +5554,10 @@ but does not cause the signal intercept routine to be executed.</para>
 </literallayout>
 
 <para>If an attempt is made to send a signal to a process that has an
-unprocessed, previous signal pending, the current &quot;send&quot;
+unprocessed, previous signal pending, the current <quote>send</quote>
 request will be cancelled and an error will be returned. An attempt
 can be made to re-send the signal later. It is good practice to issue
-a &quot;sleep&quot; call for a few ticks before a retry to avoid
+a <quote>sleep</quote> call for a few ticks before a retry to avoid
 wasting MPU time.</para>
 
 <para>For related information see the <xref linkend="f.icpt"/>,
@@ -5524,7 +5575,7 @@ request descriptions.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$Sleep</entry>
+	<entry>OS9 F$Sleep</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5554,13 +5605,13 @@ the full time interval if a signal is received, therefore sleeping
 indefinitely is a good way to wait for a signal or interrupt without
 wasting CPU time.</para>
 
-<para>The duration of a "tick" is system dependent but is most commonly
+<para>The duration of a <quote>tick</quote> is system dependent but is most commonly
 100 milliseconds.</para>
 
 <para>Due to the fact that it is not known when the <xref linkend="f.sleep"/> request was
 made during the current tick, <xref linkend="f.sleep"/> can not be used for precise
-timing. A sleep of one tick is effectively a &quot;give up remaining
-time slice&quot; request; the process is immediately inserted into
+timing. A sleep of one tick is effectively a <quote>give up remaining
+time slice</quote> request; the process is immediately inserted into
 the active process queue and will resume execution when it reaches
 the front of the queue. A sleep of two or more ticks causes the
 process to be inserted into the active process queue after N-1 ticks
@@ -5578,7 +5629,7 @@ queue.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$SPrior</entry>
+	<entry>OS9 F$SPrior</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5619,7 +5670,7 @@ another process' priority only if it has the same user ID.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$SSVC</entry>
+	<entry>OS9 F$SSVC</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5737,7 +5788,7 @@ NOTE: These categories are defined by convention and not
 enforced by OS9.</para>
 
 <para>
-Codes $25..$27, and $70..$7F will not be used by MICROWARE and
+Codes $25..$27, and $70..$7F will not be used by the operating system and
 are free for user definition.</para>
 </sect1>
 
@@ -5751,7 +5802,7 @@ are free for user definition.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$SSWI</entry>
+	<entry>OS9 F$SSWI</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5788,9 +5839,11 @@ type of vector according to the code number passed in A.</para>
 <para>When a process is created, all three vectors are initialized with
 the address of the OS-9 service call processor.</para>
 
-<para>WARNING: Microware-supplied software uses SWI2 to call OS-9. If
+<warning>
+<para>Software built for OS-9 uses SWI2 to call OS-9. If
 you reset this vector these programs will not work. If you change all
 three vectors, you will not be able to call OS-9 at all.</para>
+</warning>
 </sect1>
 
 <sect1>
@@ -5803,7 +5856,7 @@ three vectors, you will not be able to call OS-9 at all.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$STime</entry>
+	<entry>OS9 F$STime</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5875,7 +5928,7 @@ a time packet as follows:</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$Time</entry>
+	<entry>OS9 F$Time</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5947,7 +6000,7 @@ in X. The packet looks like:</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$Unlink</entry>
+	<entry>OS9 F$Unlink</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -5992,7 +6045,7 @@ the module directory.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$Wait</entry>
+	<entry>OS9 F$Wait</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6046,7 +6099,7 @@ children.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$All64</entry>
+	<entry>OS9 F$All64</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6075,7 +6128,7 @@ has not yet been allocated).</entry>
 <para>This system mode service request is used to dynamically allocate
 64 byte blocks of memory by splitting whole pages (256 byte) into
 tour sections. The first 64 bytes of the base page are used as a
-&quot;page table&quot;, which contains the MSB of all pages in the
+<quote>page table</quote>, which contains the MSB of all pages in the
 memory structure. Passing a value of zero in the X register will
 cause the <xref linkend="f.all64"/> service request to allocate a new base page and the
 first 64 byte memory block. Whenever a new page is needed, an
@@ -6108,7 +6161,7 @@ BASE PAGE  ---&gt;   +-------------+         +-------------+
 </screen>
 </informalfigure>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -6121,7 +6174,7 @@ BASE PAGE  ---&gt;   +-------------+         +-------------+
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$AProc</entry>
+	<entry>OS9 F$AProc</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6153,7 +6206,7 @@ process is in system state, it is inserted after any other process's
 also in system state, but before any process in user state. If the
 process is in user state, it is inserted according to its age.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -6166,7 +6219,7 @@ process is in user state, it is inserted according to its age.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$Find64</entry>
+	<entry>OS9 F$Find64</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6197,7 +6250,7 @@ descriptors when given their number.</para>
 
 <para>Block numbers range from 1..N</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -6210,7 +6263,7 @@ descriptors when given their number.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$IODel</entry>
+	<entry>OS9 F$IODel</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6243,7 +6296,7 @@ error condition is returned.</para>
 <para>This service request is used primarily by IOMAN and may be of
 limited or no use for other applications.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -6256,7 +6309,7 @@ limited or no use for other applications.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$IOQU</entry>
+	<entry>OS9 F$IOQU</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6284,7 +6337,7 @@ the I/O queue of the specified process and performs an untimed sleep.
 It is assumed that routines associated with the specified process
 will send a wakeup signal to the calling process.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1 id="f.irq" xreflabel="F$IRQ">
@@ -6297,7 +6350,7 @@ will send a wakeup signal to the calling process.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$IRQ</entry>
+	<entry>OS9 F$IRQ</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6366,7 +6419,7 @@ identifies an active bit(s)</entry>
 </tgroup>
 </informaltable>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -6379,7 +6432,7 @@ identifies an active bit(s)</entry>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$NProc</entry>
+	<entry>OS9 F$NProc</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6402,7 +6455,7 @@ Active Process Queue and initiates its execution. If there is no
 process in the queue, OS-9 waits for an interrupt, and then checks the
 active process queue again.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -6415,7 +6468,7 @@ active process queue again.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$Ret64</entry>
+	<entry>OS9 F$Ret64</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6442,7 +6495,7 @@ active process queue again.</para>
 <para>This system mode service request deallocates a 64 byte block of
 memory as described in the <xref linkend="f.all64"/> service request.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1 id="f.srqmem" xreflabel="F$SRqMem">
@@ -6455,7 +6508,7 @@ memory as described in the <xref linkend="f.all64"/> service request.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$SRqMem</entry>
+	<entry>OS9 F$SRqMem</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6482,7 +6535,7 @@ memory as described in the <xref linkend="f.all64"/> service request.</para>
 the top of available RAM of the specified size. The size requested is
 rounded to the next 256 byte page boundary.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -6495,7 +6548,7 @@ rounded to the next 256 byte page boundary.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$SRtMem</entry>
+	<entry>OS9 F$SRtMem</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6522,7 +6575,7 @@ rounded to the next 256 byte page boundary.</para>
 This system mode service request is used to deallocate a block of contigous 256 byte pages.
 The U register must point to an even page boundary.
 </para>
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -6535,7 +6588,7 @@ The U register must point to an even page boundary.
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  F$VModul</entry>
+	<entry>OS9 F$VModul</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6564,11 +6617,11 @@ If a module with the same name exists, the one with the highest
 revision level is retained in the module directory. Ties are
 broken in favor of the established module.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 
-<sect1>
+<sect1 id="i.attach" xreflabel="I$Attach">
 <title>I$Attach - Attach a new device to the system</title>
 
 <informaltable frame="none">
@@ -6578,7 +6631,7 @@ broken in favor of the established module.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$Attach</entry>
+	<entry>OS9 I$Attach</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6618,8 +6671,8 @@ hardware).</para>
 <para>If the device has already been attached, it will not be
 reinitialized.</para>
 
-<para>An ATTACH system call is not required to perform routine I/O. It
-does NOT "reserve" the device in question - it just prepares it for
+<para>An I$Attach system call is not required to perform routine I/O. It
+does <emphasis>not</emphasis> <quote>reserve</quote> the device in question - it just prepares it for
 subsequent use by any process. Most devices are automatically
 installed, so it is used mostly when devices are dynamically
 installed or to verify the existence of a device.</para>
@@ -6647,7 +6700,7 @@ write operations will be permitted as follows:
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$ChgDir</entry>
+	<entry>OS9 I$ChgDir</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6704,7 +6757,7 @@ execution directory is changed.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$Close</entry>
+	<entry>OS9 I$Close</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6752,7 +6805,7 @@ desired to change the files/devices they correspond to.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$Create</entry>
+	<entry>OS9 I$Create</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6794,11 +6847,11 @@ bit 6 = sharable file
 </literallayout>
 
 <para>The access mode parameter passed in register A must be either
-&quot;WRITE&quot; or &quot;UPDATE&quot;. This only affects the file
+<quote>WRITE</quote> or <quote>UPDATE</quote>. This only affects the file
 until it is closed; it can be reopened later in any access mode
 allowed by the file attributes (see <xref linkend="i.open"/>).
-Files open for &quot;WRITE&quot;
-may allow faster data transfer than &quot;UPDATE&quot;, which
+Files open for <quote>WRITE</quote>
+may allow faster data transfer than <quote>UPDATE</quote>, which
 sometimes needs to preread setors. These access codes are defined
 as given below:
 </para>
@@ -6816,7 +6869,7 @@ subsequent I/O service requests until the file is closed.</para>
 
 <para>No data storage is initially allocated for the file at the time it
 is created; this is done automatically by <xref linkend="i.write"/>
-or explicitly by the PUTSTAT call.</para>
+or explicitly by the <xref linkend="i.setstt"/> call.</para>
 
 <para>An error will occur if the file name already exists in the
 directory. <xref linkend="i.create"/> calls that specify non-multiple file devices (such
@@ -6835,7 +6888,7 @@ same as <xref linkend="i.open"/>. Create cannot be used to make directory files 
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$Delete</entry>
+	<entry>OS9 I$Delete</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6864,7 +6917,7 @@ the owner), and reside on a multifile mass storage device. Attempts
 to delete devices will result in an error.</para>
 </sect1>
 
-<sect1>
+<sect1 id="i.detach" xreflabel="I$Detach">
 <title>I$Detach - Remove a device from the system</title>
 
 <informaltable frame="none">
@@ -6874,7 +6927,7 @@ to delete devices will result in an error.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9   I$Detach</entry>
+	<entry>OS9 I$Detach</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6903,10 +6956,11 @@ then any permanent storage assigned to the driver is deallocated. The
 device driver and file manager modules associated with the device are
 unlinked (and may be destroyed if not in use by another process.</para>
 
-<para>The I$Detach service request must be used to un-attach devices that
-were attached with the I$Attach service request. Both of these are used
+<para>The <xref linkend="i.detach"/> service request must be used to un-attach devices that
+were attached with the <xref linkend="i.attach"/> service request. Both of these are used
 mainly by IOMAN and are of limited (or no use) to the typical user.
-SCFMAN also uses ATTACH/DETACH to setup its second (echo) device.</para>
+SCFMAN also uses <xref linkend="i.attach"/>/<xref linkend="i.detach"/>
+to setup its second (echo) device.</para>
 </sect1>
 
 <sect1>
@@ -6919,7 +6973,7 @@ SCFMAN also uses ATTACH/DETACH to setup its second (echo) device.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$Dup</entry>
+	<entry>OS9 I$Dup</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6943,12 +6997,12 @@ SCFMAN also uses ATTACH/DETACH to setup its second (echo) device.</para>
 </informaltable>
 
 <para>Given the number of an existing path, returns another synonymous
-path number for the same file or device. SHELL uses this service
+path number for the same file or device. <application>Shell</application> uses this service
 request when it redirects I/O. Service requests using either the old
 or new path numbers operate on the same file or device.</para>
 
 <para>
-NOTE: This only increments the &quot;use count&quot; of a path
+NOTE: This only increments the <quote>use count</quote> of a path
 descriptor and returns the synonymous path number. The path
 descriptor is not copied.</para>
 </sect1>
@@ -6962,7 +7016,7 @@ descriptor is not copied.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$GetStt</entry>
+	<entry>OS9 I$GetStt</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -6987,7 +7041,7 @@ descriptor is not copied.</para>
 </tgroup>
 </informaltable>
 
-<para>This system is a &quot;wild card&quot; call used to handle individual
+<para>This system is a <quote>wild card</quote> call used to handle individual
 device parameters that:</para>
 <orderedlist numeration="loweralpha">
 <listitem><para>are not uniform on all devices</para></listitem>
@@ -7296,9 +7350,9 @@ pathlist. The new directory file contains no entries, except for
 an entry for itself (".") and its parent directory ("..")</para>
 
 <para>The caller is made the owner of the directory. <xref linkend="i.makdir"/> does not
-return a path number because directory files are not "opened" by
+return a path number because directory files are not <quote>opened</quote> by
 this request (use <xref linkend="i.open"/> to do so). The new directory will
-automatically have its "directory" bit set in the access
+automatically have its <quote>directory</quote> bit set in the access
 permission attributes. The remaining attributes are specified by
 the byte passed in the B register, which has individual bits
 defined as follows:</para>
@@ -7324,7 +7378,7 @@ bit 7 = (don't care)
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$Open</entry>
+	<entry>OS9 I$Open</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -7366,7 +7420,7 @@ write operation are permitted as follows:</para>
 may be required for random access of bytes within sectors. The
 access mode must conform to the access permission attributes
 associated with the file or device (see <xref linkend="i.create"/>). Only the owner
-may access a file unless the appropiate "public permit" bits are
+may access a file unless the appropiate <quote>public permit</quote> bits are
 set.</para>
 
 <para>Files can be opened by several processes (users) simultaneously.
@@ -7397,7 +7451,7 @@ in the access mode.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$Read</entry>
+	<entry>OS9 I$Read</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -7458,7 +7512,7 @@ C. An error condition occurs.
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$ReadLn</entry>
+	<entry>OS9 I$ReadLn</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -7512,7 +7566,7 @@ request will return an end of file error.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$Seek</entry>
+	<entry>OS9 I$Seek</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -7537,7 +7591,7 @@ request will return an end of file error.</para>
 </tgroup>
 </informaltable>
 
-<para>This system call repositions the path's "file pointer"; which is
+<para>This system call repositions the path's <quote>file pointer</quote>; which is
 the 32-bit addres of the next byte in the file to be read
 from or written to.</para>
 
@@ -7545,7 +7599,7 @@ from or written to.</para>
 enough. Subsequent WRITEs will automatically expand the file to
 the required size (if possible), but READs will return an end-of-file
 condition. Note that a SEEK to address zero is the same as a
-"rewind" operation.</para>
+<quote>rewind</quote> operation.</para>
 
 <para>Seeks to non-random access devices are usually ignored and return
 without error.</para>
@@ -7560,7 +7614,7 @@ without error.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$SetStt</entry>
+	<entry>OS9 I$SetStt</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -7584,7 +7638,7 @@ without error.</para>
 </tbody>
 </tgroup>
 </informaltable>
-<para>This system is a &quot;wild card&quot; call used to handle individual
+<para>This system is a <quote>wild card</quote> call used to handle individual
 device parameters that:</para>
 <orderedlist numeration="loweralpha">
 <listitem><para>are not uniform on all devices</para></listitem>
@@ -7774,8 +7828,8 @@ for error recovery.</para>
 </informaltable>
 
 <para>This code causes a format track (most floppy disks)
-operation to occur. For hard disks or floppy disks with a "format
-entire disk" command, this command should format the entire media
+operation to occur. For hard disks or floppy disks with a <quote>format
+entire disk</quote> command, this command should format the entire media
 only when the track number equals zero.</para>
 
 <informaltable frame="none">
@@ -7830,7 +7884,7 @@ may be read.</para>
 <tbody>
 <row>
 	<entry>ASSEMBLER CALL:</entry>
-	<entry>OS9  I$Write</entry>
+	<entry>OS9 I$Write</entry>
 </row>
 <row>
 	<entry>MACHINE CODE:</entry>
@@ -8526,7 +8580,7 @@ OFFSET
   <entry>103F 04</entry>
   <entry>F$Wait</entry>
   <entry>Wait for child process to die.</entry>
-  <entry><xref linkend="f.wait"/></entry>
+  <entry></entry>
 </row>
 <row>
   <entry>103F 05</entry>
@@ -9288,7 +9342,7 @@ OFFSET
 <para>Allocates RAM blocks for process DAT image. The blocks do not
 need to be contiguous.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -9326,7 +9380,7 @@ need to be contiguous.</para>
 
 <para>Allocates and initializes a 512-byte process descriptor.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -9441,11 +9495,11 @@ free RAM blocks.</para>
 </tgroup>
 </informaltable>
 
-<para>Links to the module named "Boot" or as specified in the INIT module;
+<para>Links to the module named <quote>Boot</quote> or as specified in the INIT module;
 calls linked module; and expects the return of a pointer and size of
 an area which is then searched for new modules.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -9605,7 +9659,7 @@ memory in the system may be viewed in this way.</para>
 <para>Converts a DAT imaqe block number and block offset to its
 equivalent logical address.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -9684,7 +9738,7 @@ equivalent logical address.</para>
 
 <para>Deallocated memory from the process' address space.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -9722,7 +9776,7 @@ equivalent logical address.</para>
 
 <para>Returns process descriptor memory to system free memory pool.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -9760,7 +9814,7 @@ equivalent logical address.</para>
 
 <para>Marks blocks in system memory block map as unallocated.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -9797,7 +9851,7 @@ equivalent logical address.</para>
 
 <para>Releases the Task number in use by the process.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 
 </sect1>
 
@@ -9835,11 +9889,11 @@ equivalent logical address.</para>
 </tgroup>
 </informaltable>
 
-<para>Performs a "Link" given a pointer to a module directory entry. Note
+<para>Performs a <quote>Link</quote> given a pointer to a module directory entry. Note
 that this call differs from F$Link in that a pointer to the module
 directory entry is supplied rather than a pointer to a module name.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 
 </sect1>
 
@@ -9883,7 +9937,7 @@ directory entry is supplied rather than a pointer to a module name.</para>
 <para>This call returns a pointer to the module directory entry given the
 module name.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -9921,7 +9975,7 @@ module name.</para>
 
 <para>Searches the DAT image for the highest free block of given size.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 
 </sect1>
 
@@ -9960,7 +10014,7 @@ module name.</para>
 
 <para>Searches the DAT image for the lowest free block of given size.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10105,7 +10159,7 @@ descriptor.</para>
 <para>Translates a process ID number to the address of its process
 descriptor in the system address space.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10147,7 +10201,7 @@ given task's address space. This is typically used to get one
 byte from the current process's memory in a system state
 routine.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10187,7 +10241,7 @@ routine.</para>
 <para>Returns one data byte in the memory block specified by the DAT image in
 (Y), offset by (X).</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10225,11 +10279,11 @@ routine.</para>
 </tgroup>
 </informaltable>
 
-<para>Similar to the assembly instruction "LDA ,X+", except that (X) refers
+<para>Similar to the assembly instruction <quote>LDA ,X+</quote>, except that (X) refers
 to an offset in the memory block described by the DAT
 image at (Y).</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10271,7 +10325,7 @@ image at (Y).</para>
 pointed to by (Y). The bytes loaded are at the offset (D+X) in
 the memory block.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10310,7 +10364,7 @@ the memory block.</para>
 
 <para>Maps specified block(s) into unallocated blocks of process address space.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10353,7 +10407,7 @@ the memory block.</para>
 <para>Moves data bytes from one address space to anotber, usually from
 System's to User's, or vice-versa.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10391,7 +10445,7 @@ System's to User's, or vice-versa.</para>
 
 <para>Releases the specified DAT Task number.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10431,7 +10485,7 @@ System's to User's, or vice-versa.</para>
 
 <para>Finds a free DAT task number.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10511,7 +10565,7 @@ System's to User's, or vice-versa.</para>
 
 <para>Sets the process Task DAT registers.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10556,7 +10610,7 @@ System's to User's, or vice-versa.</para>
 <para>Links a module whose name is outside the current (system) process'
 adress space into the Address space that contains its name.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10597,7 +10651,7 @@ adress space into the Address space that contains its name.</para>
 page) in the system's address space. Useful for allocating I/O buffers and
 other semi-permanent system memory.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1 id="f.srtmem">
@@ -10634,7 +10688,7 @@ other semi-permanent system memory.</para>
 Returns system memory (e.g., memory in the system address space)
 after it is no longer needed.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10672,11 +10726,11 @@ after it is no longer needed.</para>
 </tgroup>
 </informaltable>
 
-<para>This is similar to the assembly instruction "STA 0,X", except
+<para>This is similar to the assembly instruction <quote>STA 0,X</quote>, except
 that (X) refers to an address in the given task's address space
 rather than the current address space.</para>
 
-<para>NOTE: THIS IS A PRIVILEGED SYSTEM MODE SERVICE REQUEST</para>
+<note><para>This is a privileged system mode service request.</para></note>
 </sect1>
 
 <sect1>
@@ -10798,7 +10852,7 @@ or me current execution directory (but not both) in the absence of
 a full pathlist. If the access mode is read, write, or update, the
 current data directory is assumed. If the access mode is
 execute, the current execution directory is assumed. Note that
-if a full pathlist (a pathlist beginning with a "/") appears, the
+if a full pathlist (a pathlist beginning with a <quote>/</quote>) appears, the
 access mode is ignored.</para>
 
 <para>ACCESS MODES:</para>
