@@ -2,6 +2,8 @@
 
 include ../../Makefile.rules
 
+vpath %.asm $(LEVEL1)/MODULES
+
 CLOCKELIM       = -aRTCElim=1 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
 CLOCKDISTO2     = -aRTCElim=0 -aRTCDsto2=1 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
 CLOCKDISTO4     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=1 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
@@ -14,32 +16,36 @@ CLOCKSOFT       = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -
 DEPENDS		= ./Makefile
 TPB		= ../../3rdparty/booters
 
-BOOTERS		= boot_1773
-OS9P1		= os9p1
-OS9P2		= os9p2
-REL		= rel
-SYSMODS		= ioman init cc3go os9p3_perr os9p4_regdump
+BOOTERS		= boot_1773 boot_burke boot_idelba boot_rampak boot_wd1002
+BOOTTRACK	= rel $(BOOTERS) os9p1
+KERNEL		= os9p2 os9p3_perr os9p4_regdump
+SYSMODS		= ioman init cc3go
 CLOCKS          = clock_elim clock_disto2 clock_disto4 clock_bnb \
 		clock_smart clock_harris clock_tc3 clock_soft
-FMGRS		= scf.mn rbf.mn pipeman.mn pipeman_named.mn
-DRIVERS		= cc3disk.dr cc3hdisk.dr cc3io.dr modpak.dr \
-		vrn.dr piper.dr printer.dr sio.dr rammer.dr sspak.dr \
-		sacia.dr dacia.dr
-IOSUBS		= windint.io vdgint.io vdgint_small.io \
-		keydrv joydrv_joy \
-		joydrv_6551L joydrv_6552L joydrv_6551M joydrv_6552M snddrv
-DESCS		= d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
+
+RBF		= rbf.mn \
+		cc3disk.dr cc3hdisk.dr rammer.dr \
+		d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		d0_40d.dd d1_40d.dd d2_40d.dd d0_80d.dd \
 		d1_80d.dd d2_80d.dd ddd0_35s.dd ddd0_40d.dd \
 		ddd0_80d.dd r0_8k.dd r0_96k.dd r0_128k.dd r0_192k.dd \
 		ddr0_8k.dd ddr0_96k.dd ddr0_128k.dd ddr0_192k.dd \
-		m1.dd m2.dd nil.dd p.dd pipe.dd t1.dd t2_sacia.dd \
+		h0_10.dd h1_10.dd h0_15.dd h1_15.dd h0_35.dd h1_35.dd
+
+SCF		= scf.mn \
+		cc3io.dr modpak.dr vrn.dr printer.dr sio.dr sspak.dr sacia.dr dacia.dr \
+		windint.io vdgint.io vdgint_small.io \
+		keydrv joydrv_joy joydrv_6551L joydrv_6552L joydrv_6551M joydrv_6552M snddrv \
+		m1.dd m2.dd nil.dd p.dd t1.dd t2_sacia.dd \
 		t3_sacia.dd t2_dacia.dd t3_dacia.dd \
-		h0_10.dd h1_10.dd h0_15.dd h1_15.dd h0_35.dd h1_35.dd \
-		ftdd.dd vi.dd ssp.dd term_t1.dd
-WINDESCS	= term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
+		ftdd.dd vi.dd ssp.dd term_t1.dd \
+		term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
 		w3.dw w4.dw w5.dw w6.dw w7.dw v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw
+
+PIPE		= pipeman.mn pipeman_named.mn \
+		piper.dr \
+		pipe.dd
 
 #
 # The following macros represent a collection of modules for various
@@ -50,12 +56,15 @@ KERNEL_RAMPAK	= rel $(TPB)/boot_rampak os9p1
 KERNEL_KENTON	= rel $(TPB)/boot_kenton os9p1
 KERNEL_IDE	= rel $(TPB)/boot_ide os9p1
 
-ALLOBJS		=  $(BOOTERS) $(OS9P1) $(OS9P2) $(REL) $(SYSMODS) $(CLOCKS) $(FMGRS) \
-		$(DRIVERS) $(IOSUBS) $(DESCS) $(WINDESCS)
+ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
 
 all:	$(ALLOBJS)
 
-# Special cases here
+# Special cases
+cc3hdisk.dr: $(LEVEL1)/MODULES/cchdisk.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS)
+
+# Floppy descriptors
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
 		-aInterlv=3 -aSAS=8 -aDensity=1
 DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
@@ -63,11 +72,6 @@ DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 		-aInterlv=3 -aSAS=8 -aDensity=3
 
-# Special cases
-cc3hdisk.dr: ../../level1/MODULES/cchdisk.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS)
-
-# Floppy descriptors
 ddd0_35s.dd: cc3diskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0 -aDD=1
 
@@ -176,9 +180,26 @@ clean:
 showobjs:
 	@$(ECHO) $(ALLOBJS)
 
-showcopyobjs:
-	@$(ECHO) $(OS9P2) $(SYSMODS) $(CLOCKS) $(FMGRS) \
-		$(DRIVERS) $(IOSUBS) $(DESCS) $(WINDESCS) \
+showboottrack:
+	@$(ECHO) $(BOOTTRACK)
+
+showkernel:
+	@$(ECHO) $(KERNEL)
+
+showsysmods:
+	@$(ECHO) $(SYSMODS)
+
+showclocks:
+	@$(ECHO) $(CLOCKS)
+
+showrbf:
+	@$(ECHO) $(RBF)
+
+showscf:
+	@$(ECHO) $(SCF)
+
+showpipe:
+	@$(ECHO) $(PIPE)
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
