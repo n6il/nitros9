@@ -8,15 +8,26 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>tsleep</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>int <parameter>ticks</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
 </refsynopsisdiv>
 
+<refsect1><title>Assembler Equivalent</title>
+<para>
+os9 F$SLEEP
+</para>
+</refsect1>
 <refsect1><title>Description</title>
 <para>
-Placeholder
+Tsleep deactivates the calling process for a specified number
+of system "ticks" or indefinitely if "ticks" is zero. A tick
+is system dependent but is usually 100ms.
+</para>
+<para>
+For a fuller description of this call, see the OS-9 System
+Programmer's Manual.
 </para>
 </refsect1>
 </refentry>
