@@ -991,40 +991,44 @@ L06E8    neg   <u0002
          stx   $04,s
          puls  pc,x,b,a
 
-L06FB    fcb   $09
-         fdb   $da00,$d909
-         fdb   $3a07,$e101,$9c08,$4408
-         fcb   $4e
-L0709    fcb   $9d
-         fdb   $1b06
-L070C    fdb   $9d1b
-         fcb   $0c
-L070F    fcb   $9d
-L0710    fdb   $1b0e
-L0712    fdb   $9d1b
+L06FB    fdb   UNK5-L06FB
+         fdb   UNK6-L06FB
+         fdb   UNK7-L06FB
+         fdb   UNK8-L06FB
+         fdb   UNK9-L06FB
+         fdb   UNK10-L06FB
+         fdb   UNK11-L06FB
+
+L0709    jsr   <u001B
+         fcb   $06
+L070C    jsr   <u001B
+         fcb   $0C
+L070F    jsr   <u001B
+         fcb   $0E
+L0712    jsr   <u001B
          fcb   $02
-L0715    fcb   $9d
-         fdb   $1b00
-L0718    fdb   $9d1b
-         fcb   $0a
-L071B    fcb   $9d
-         fdb   $1b10
-L071E    fdb   $9d1e
-L0720    fcb   $06
-L0721    fcb   $9d
-         fdb   $2704
-L0724    fdb   $9d27
-         fcb   $0a
-L0727    fcb   $9d
-         fdb   $2702
-L072A    fdb   $9d27
-         fcb   $0c
-L072D    fcb   $9d
-         fdb   $270e
-L0730    fdb   $9d27
+L0715    jsr   <u001B
          fcb   $00
-L0733    fcb   $9d
-         fdb   $2a02
+L0718    jsr   <u001B
+         fcb   $0A
+L071B    jsr   <u001B
+         fcb   $10
+L071E    jsr   <u001E
+         fcb   $06
+L0721    jsr   <u0027
+         fcb   $04
+L0724    jsr   <u0027
+         fcb   $0A
+L0727    jsr   <u0027
+         fcb   $02
+L072A    jsr   <u0027
+         fcb   $0C
+L072D    jsr   <u0027
+         fcb   $0E
+L0730    jsr   <u0027
+         fcb   $00
+L0733    jsr   <u002A
+         fcb   $02
 
 L0736    fdb   L1900-L0736
          fdb   L1900-L0736		PARAM
@@ -1100,6 +1104,7 @@ L0736    fdb   L1900-L0736
 L07C2    fcc   "STOP Encountered"
          fcb   C$LF,$ff
 
+UNK6
 L07D4    lda   <$17,x
          bita  #1
          beq   L07DF
@@ -1196,6 +1201,7 @@ L088A    lbsr  L0F49
 L0894    rts   
 
 L0895    leax  $02,x
+UNK9
 L0897    ldb   ,x+
          bpl   L089D
          addb  #$40
@@ -2030,6 +2036,7 @@ L0EC1    ldx   <u0048
 
 ERROR    jsr   <u0016
          ldb   2,y         
+UNK8
 L0EDC    stb   <u0036
 L0EDE    ldu   <u0031
          beq   L0EFC		not running subroutine
@@ -2089,11 +2096,13 @@ L0F38    ldu   <u0031
          leax  $01,x
          rts   
 
+UNK10
 L0F3F    lda   <u0034
          bita  #$01
          bne   L0F5F
          ora   #$01
          bra   L0F51
+UNK11
 L0F49    lda   <u0034
          bita  #$01
          beq   L0F5F
@@ -2211,6 +2220,8 @@ L1031    fcb   $01
          fcb   $02 
          fcb   $05 
          fcb   $01 
+
+UNK7
 L1035    pshs  u
          ldb   ,x+
          clra  
@@ -2289,10 +2300,12 @@ KILL     jsr   <u0016
          pshs  x
          lbsr  L0718
          puls  pc,x
-         lbsr  L0730
+
+UNK5     lbsr  L0730
          leax  >L0736,pcr
          stx   <table1
          rts   
+
          pshs  x,b,a
          ldb   [<$04,s]
          leax  <L10EF,pcr
@@ -2302,10 +2315,11 @@ KILL     jsr   <u0016
          puls  pc,x,b,a
 
 L10EF    fcb   $14 
-L10F0    fdb   $3401,$6403,$9504,$b706,$1808,$2d09,$1f08
+         fdb   $3401,$6403,$9504,$b706,$1808,$2d09,$1f08
          fcb   $e7
+
 L10FF    fcb   $9d
-L1100    fdb   $1b08
+         fdb   $1b08
 L1102    fdb   $9d24
          fcb   $06
 L1105    fcb   $9d
