@@ -19,7 +19,9 @@
 
 <refsect1><title>Description</title>
 <para>
-Placeholder
+This call is a comprehensive method of catching or ignoring
+signals sent to the current process. Notice that "kill()" does
+the sending of signals, and "signal()" does the catching.
 </para>
 <para>
 The signals used by OS-9 are defined in the header file as

@@ -109,5 +109,5 @@ When this procedure is RUN, it should print:
 </screen>
 indicating that our C function worked!
 </para>
-
+</section>
 </appendix>
