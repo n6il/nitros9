@@ -635,17 +635,28 @@ L043A    cmpa  ,x++
          jmp   b,x
 
 *embedded jumptable            second value
-L0442    fcb   $f2,L045A-L0444+1  *$17
-L0444    fcb   $92,L045E-L0446+1  *$19
-L0446    fcb   $91,L045A-L0448+1  *$13
-L0448    fcb   $90,L0460-L044A+1  *$17
-L044A    fcb   $8f,L0458-L044C+1  *$0D
-L044C    fcb   $8e,L045A-L044E+1  *$0D
-L044E    fcb   $8d,L045C-L0450+1  *$0D
-L0450    fcb   $55,L045A-L0452+1  *$09
-L0452    fcb   $4b,L045E-L0454+1  *$0B
-L0454    fcb   $3e,L0466-L0456+1  *$11
-L0456    fcb   $00,L045E-L0458+1  *$07
+L0442    fcb   $f2
+         fcb   L045A-*  *$17
+L0444    fcb   $92
+         fcb   L045E-*  *$19
+L0446    fcb   $91
+         fcb   L045A-*  *$13
+L0448    fcb   $90
+         fcb   L0460-*  *$17
+L044A    fcb   $8f
+         fcb   L0458-*  *$0D
+L044C    fcb   $8e
+         fcb   L045A-*  *$0D
+L044E    fcb   $8d
+         fcb   L045C-*  *$0D
+L0450    fcb   $55
+         fcb   L045A-*  *$09
+L0452    fcb   $4b
+         fcb   L045E-*  *$0B
+L0454    fcb   $3e
+         fcb   L0466-*  *$11
+L0456    fcb   $00
+         fcb   L045E-*  *$07
 L0458    leay  $03,y
 L045A    leay  $01,y
 L045C    leay  $01,y

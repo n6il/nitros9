@@ -5,6 +5,7 @@
            ENDC
 
 * RunB from BASICBOOST from Chris Dekker - 6309'ized version of RunB
+* Created a proper jump table at L204 R.G. 03/05/13
 
 edition    equ   1
 membase    equ   $00
@@ -456,18 +457,37 @@ L206       CMPA  ,X++
 
 *  embedded jumptable
 *  do not change until L264
-L204       fcb   242,23,146,25,145,19,144,23
-           fcb   143,13,142,13,141,13,85,9,75
-           fcb   11,62,17,0,7
-           LEAY  3,Y
-           LEAY  1,Y
-           LEAY  1,Y
-           BRA   L208
+L204       fcb   $F2
+           fcb   LA2-*
+           fcb   $92
+           fcb   LA4-*
+           fcb   $91
+           fcb   LA2-*
+           fcb   $90
+           fcb   L210-*
+           fcb   $8f
+           fcb   LA1-*
+           fcb   $8e
+           fcb   LA2-*
+           fcb   $8d
+           fcb   LA3-*
+           fcb   $55
+           fcb   LA2-*
+           fcb   $4b
+           fcb   LA4-*
+           fcb   $3e
+           fcb   L21C-*
+           fcb   $00
+           fcb   LA4-*
+LA1        LEAY  3,Y
+LA2        LEAY  1,Y
+LA3        LEAY  1,Y
+LA4        BRA   L208
 
 L210       TST   ,Y+
            BPL   L210
            BRA   L208
-           PULS  PC,X,d
+L21C       PULS  PC,X,d
 
 * check param list for:
            fcb   0,7,3
