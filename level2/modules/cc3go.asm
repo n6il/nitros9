@@ -5,8 +5,13 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 5      Taken from OS-9 L2 Tandy distribution and      BGP 98/10/12
+*   5    Taken from OS-9 L2 Tandy distribution and      BGP 98/10/12
 *        modified banner for V3
+*   5r2  Fixed fork behavior so that if 'shell startup' BGP 03/01/08
+*        fails, system doesn't jmp to Crash, but tries
+*        AutoEx instead.  Also changed /DD back to /H0
+*        for certain boot floppy cases.
+
 
          nam   CC3Go
          ttl   Kickstart program module
@@ -17,7 +22,7 @@
 
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $02
 edition  set   $05
 
          mod   eom,name,tylg,atrv,start,size
@@ -59,10 +64,10 @@ Banner
          fcb   C$LF
 BannLen  equ   *-Banner
          ifeq  ROM
-DefDev   fcc   "/DD"
+DefDev   fcc   "/H0"
          fcb   C$CR
-HDDev    fcc   "/DD/"
-ExecDir  fcc   "Cmds"
+HDDev    fcc   "/H0/"
+ExecDir  fcc   "CMDS"
          fcb   C$CR
          fcc   ",,,,,"
          endc
@@ -138,11 +143,11 @@ L0151    lda   b,y
          ldd   #256
          ldy   #16
          os9   F$Fork
-         bcs   L01A5
+         bcs   DoAuto
          os9   F$Wait
          endc
 * Fork AutoEx here
-         leax  >AutoEx,pcr
+DoAuto   leax  >AutoEx,pcr
          leau  >CRtn,pcr
          ldd   #$0100
          ldy   #$0001
