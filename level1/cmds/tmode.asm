@@ -1,16 +1,7 @@
-********************************************************************
-* Tmode - Show terminal parameters
-*
-* $Id$
-*
-* Ed.    Comments                                       Who YY/MM/DD
-* ------------------------------------------------------------------
-* 11     Original Tandy version
-
          nam   Tmode
-         ttl   Show terminal parameters
+         ttl   program module       
 
-* Disassembled 02/07/06 10:59:42 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 98/09/11 18:35:13 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
@@ -19,6 +10,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   12
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -28,14 +20,13 @@ u0002    rmb   1
 u0003    rmb   2
 u0005    rmb   1
 u0006    rmb   1
-u0007    rmb   27
-u0022    rmb   5
-u0027    rmb   536
+u0007    rmb   32
+u0027    rmb   10
+u0031    rmb   526
 size     equ   .
 
 name     fcs   /Tmode/
-         fcb   $0B 
-
+         fcb   edition
          fcb   $00 
          fcb   $17 
 L0015    fcb   $FF 
@@ -165,8 +156,8 @@ start    lda   #$32
          beq   L00E4
          puls  y,x,b,a
          bra   L0120
-L00DB    cmpx  #80
-         beq   L00E4
+L00DB    cmpx  #55
+         bge   L00E4
          lda   #$16
          sta   <u0002
 L00E4    puls  y,x,b,a
@@ -205,7 +196,7 @@ L0129    ldb   ,y+
 L012B    cmpb  #C$SPAC
          beq   L0129
          leay  -$01,y
-         andcc #^Carry
+         andcc #$FE
          rts   
 L0134    clr   <u0001
          lda   ,y
@@ -215,7 +206,7 @@ L0134    clr   <u0001
          leay  $01,y
 L0140    sty   <u0003
          leax  >L0015,pcr
-         lbsr  L02D0
+         lbsr  L02D1
          bcs   L0181
          lda   ,x
          bpl   L015C
@@ -255,8 +246,7 @@ L0181    leax  <L0192,pcr
 
 L0192    fcc   "SYNTAX Error: "
 
-L01A0    fcb   $10
-         ldx   #80
+L01A0    ldy   #80
 L01A4    lda   #$01
          os9   I$WritLn 
          rts   
@@ -301,141 +291,140 @@ L01EE    comb
          rts   
 L01F0    clr   <u0005
          lda   #'/
-         lbsr  L02AE
-         ldx   <u0022,u
-         ldx   $04,x
-         ldd   $04,x
-         leax  d,x
-         bsr   L0249
+         lbsr  L02AF
+         leax  <u0031,u
+         lda   <u0000
+         ldb   #SS.DevNm
+         os9   I$GetStt 
+         bsr   L024A
          lda   #C$CR
-         lbsr  L02AE
+         lbsr  L02AF
          leax  >L0015,pcr
          leay  u0007,u
          clrb  
-L020E    lda   b,y
-         bsr   L0220
+L020F    lda   b,y
+         bsr   L0221
          incb  
          cmpb  #C$SPAC
-         bcs   L020E
+         bcs   L020F
          lda   #C$CR
-         lbsr  L02AE
+         lbsr  L02AF
          clrb  
          os9   F$Exit   
-L0220    pshs  u,y,x,b,a
+L0221    pshs  u,y,x,b,a
          ldy   -$02,x
-L0225    cmpb  $02,x
-         beq   L0235
+L0226    cmpb  $02,x
+         beq   L0236
          leax  $04,x
-L022B    lda   ,x+
-         bpl   L022B
+L022C    lda   ,x+
+         bpl   L022C
          leay  -$01,y
-         bne   L0225
+         bne   L0226
          puls  pc,u,y,x,b,a
-L0235    bsr   L02AC
+L0236    bsr   L02AD
          tst   ,x
-         bpl   L025D
+         bpl   L025E
          lda   ,s
          cmpa  $03,x
-         beq   L0245
+         beq   L0246
          lda   #'-
-         bsr   L02AE
-L0245    bsr   L024D
+         bsr   L02AF
+L0246    bsr   L024E
          puls  pc,u,y,x,b,a
-L0249    pshs  x
-         bra   L0251
-L024D    pshs  x
+L024A    pshs  x
+         bra   L0252
+L024E    pshs  x
          leax  $04,x
-L0251    lda   ,x
+L0252    lda   ,x
          anda  #$7F
-         bsr   L02AE
+         bsr   L02AF
          lda   ,x+
-         bpl   L0251
+         bpl   L0252
          puls  pc,x
-L025D    bsr   L024D
+L025E    bsr   L024E
          lda   #'=
-         bsr   L02AE
+         bsr   L02AF
          tst   ,x
-         bne   L0290
+         bne   L0291
          ldb   ,s
-         lda   #$2F
+         lda   #'/
          clr   <u0006
-L026D    inca  
+L026E    inca  
          subb  #$64
-         bcc   L026D
-         bsr   L0285
+         bcc   L026E
+         bsr   L0286
          lda   #$3A
-L0276    deca  
+L0277    deca  
          addb  #$0A
-         bcc   L0276
-         bsr   L0285
+         bcc   L0277
+         bsr   L0286
          tfr   b,a
          adda  #$30
-         bsr   L02AE
+         bsr   L02AF
          puls  pc,u,y,x,b,a
-L0285    inc   <u0006
+L0286    inc   <u0006
          cmpa  #$30
-         bne   L02AE
+         bne   L02AF
          dec   <u0006
-         bne   L02AE
+         bne   L02AF
          rts   
-L0290    lda   ,s
+L0291    lda   ,s
          anda  #$F0
          lsra  
          lsra  
          lsra  
          lsra  
-         bsr   L02A2
+         bsr   L02A3
          lda   ,s
          anda  #$0F
-         bsr   L02A2
+         bsr   L02A3
          puls  pc,u,y,x,b,a
-L02A2    adda  #$30
+L02A3    adda  #$30
          cmpa  #$39
-         bls   L02AE
+         bls   L02AF
          adda  #$07
-         bra   L02AE
-L02AC    lda   #C$SPAC
-L02AE    pshs  y,x,b,a
+         bra   L02AF
+L02AD    lda   #C$SPAC
+L02AF    pshs  y,x,b,a
          leax  <u0027,u
          ldb   <u0005
          sta   b,x
          cmpa  #C$CR
-         beq   L02C8
+         beq   L02C9
          incb  
          cmpb  <u0002
-         bcs   L02CC
+         bcs   L02CD
          cmpa  #C$SPAC
-         bne   L02CC
+         bne   L02CD
          lda   #C$CR
          sta   b,x
-L02C8    lbsr  L01A0
+L02C9    lbsr  L01A0
          clrb  
-L02CC    stb   <u0005
+L02CD    stb   <u0005
          puls  pc,y,x,b,a
-L02D0    pshs  u,y,x
+L02D1    pshs  u,y,x
          ldu   -$02,x
-L02D4    ldy   $02,s
+L02D5    ldy   $02,s
          stx   ,s
          leax  $04,x
-L02DB    lda   ,x+
+L02DC    lda   ,x+
          eora  ,y+
          anda  #$DF
          lsla  
-         bne   L02EC
-         bcc   L02DB
+         bne   L02ED
+         bcc   L02DC
          sty   $02,s
          clra  
          puls  pc,u,y,x
-L02EC    leax  -$01,x
-L02EE    lda   ,x+
-         bpl   L02EE
+L02ED    leax  -$01,x
+L02EF    lda   ,x+
+         bpl   L02EF
          leau  -u0001,u
          cmpu  #$0000
-         bne   L02D4
+         bne   L02D5
          coma  
          puls  pc,u,y,x
 
          emod
 eom      equ   *
          end
-
