@@ -6,9 +6,14 @@ FMapBlk  lda   R$B,u        get # blocks
          leas  -$10,s       make a buffer to hold DAT image
          ldx   R$X,u        get start block #
          ldb   #1           block increment value
+         IFNE  H6309
 * Change to W 05/19/93 - used W since one cycle faster per block
          tfr   s,w          point to buffer
 FMapBlk2 stx   ,w++         save block # to buffer
+         ELSE
+         tfr   s,y          point to buffer
+FMapBlk2 stx   ,y++         save block # to buffer
+         ENDC
          abx                Next block
          deca               done?
          bne   FMapBlk2     no, keep going
@@ -17,7 +22,11 @@ FMapBlk2 stx   ,w++         save block # to buffer
          leay  <P$DATImg,x  point to DAT image
          os9   F$FreeHB     find the highest free block offset
          bcs   L0BA6        no room, return error
+         IFNE  H6309
          tfr   d,w          Preserve start block # & # of blocks
+         ELSE
+         pshs  d
+         ENDC
          lsla               Multiply start block # by 32
          lsla  
          lsla  
@@ -25,7 +34,11 @@ FMapBlk2 stx   ,w++         save block # to buffer
          lsla  
          clrb  
          std   R$U,u        save address of first block
+         IFNE  H6309
          tfr   w,d          Restore offset
+         ELSE
+         puls  d
+         ENDC
          leau  ,s           move DAT image into process descriptor
          os9   F$SetImg     Change process dsc to reflect new blocks
 L0BA6    leas  <$10,s       Eat DAT image copy & return
