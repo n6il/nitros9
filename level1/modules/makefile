@@ -53,6 +53,12 @@ oscode: oscode.asm
 oscode_d64: oscode.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=1
 
+sysgo: sysgo.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDiskGo=1
+
+sysgo_rom: sysgo.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDiskGo=0
+
 clean:
 	$(RM) $(ALLOBJS)
 	$(OS92UNIX) $(HELP)
