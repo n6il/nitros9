@@ -1,283 +1,319 @@
 ********************************************************************
-* Copy - Copy files
+* Copy - File copy utility
 *
 * $Id$
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-*   9    From Tandy OS-9 Level Two VR 02.00.01
+* 10     Reworked                                       RML
 
          nam   Copy
-         ttl   Copy files
+         ttl   File copy utility
 
-* Disassembled 02/07/06 13:08:43 by Disasm v1.6 (C) 1988 by RML
+* Edition 10 rewrite 10/28/88 - RML
 
-         ifp1
+         ifp1  
          use   defsfile
-         endc
+         use   rbfdefs
+         endc  
 
-tylg     set   Prgrm+Objct   
+tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   9
+edition  set   10
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   1
-u0001    rmb   1
-u0002    rmb   1
-u0003    rmb   1
-u0004    rmb   2
-u0006    rmb   2
-u0008    rmb   2
-u000A    rmb   2
-u000C    rmb   2
-u000E    rmb   1
-u000F    rmb   1
-u0010    rmb   16
-u0020    rmb   480
-u0200    rmb   256
-u0300    rmb   4096
+inpath   rmb   1          input path number
+outpath  rmb   1          output path number
+indevtyp rmb   1          input device type (1 = RBF)
+verify   rmb   1          verify on/off (1=on)
+bufsize  rmb   2          read/write buffer size
+fsizemsb rmb   2          msb's of file size
+fsizelsb rmb   2          lsb's of file size
+writemsb rmb   2          msb's of bytes written to output
+writelsb rmb   2          lsb's of bytes written to output
+single   rmb   1          single drive copy flag (1=yes)
+attribs  rmb   1          file attributes
+fdbuff   rmb   16         File Descriptor buffer
+optbuff  rmb   32         Path Descriptor Options Buffer
+stack    rmb   448        stack storage
+vfybuff  rmb   256        verify buffer
+buffer   rmb   $2000-.    read/write buffer (minimum..will expand with mem mod)
 size     equ   .
 
 name     fcs   /Copy/
          fcb   edition
 
-L0012    fcc   "Ready SOURCE, hit C to continue: "
-L0033    fcc   "Ready DESTINATION, hit C to continue: "
-L0059    fcb   C$CR
-L005A    fcc   "Use: Copy <Path1> <Path2> [-s]"
-         fcb   C$LF
-         fcc   "  -s = single drive copy (Path2 must be complete pathlist)"
-         fcb   C$CR
-L00B4    fcb   C$BELL
-         fcc   "Error - write verification failed."
-         fcb   C$CR
+start    leas  vfybuff,u  set stack pointer to 512
+         pshs  u          save u reg
+         leau  <optbuff,u point u to 20th byte
 
-start    leas  >u0200,u
-         pshs  u
-         leau  <u0020,u
-L00E1    clr   ,-u
-         cmpu  ,s
-         bhi   L00E1
-         tfr   y,d
-         subd  ,s++
-         subd  #$0300
-         clrb  
-         std   <u0004
-         pshs  x
-L00F4    lda   ,x+
-         cmpa  #'-
-         beq   L0100
-         cmpa  #$0D
-         bne   L00F4
-         bra   L0113
-L0100    ldd   ,x+
-         eora  #'S
-         anda  #$DF
-         bne   L0110
-         cmpb  #$30
-         bcc   L0110
-         inc   <u000E
-         bra   L00F4
-L0110    lbra  L0281
-L0113    puls  x
-         lda   #READ.
-         os9   I$Open   
-         bcc   L0125
-         cmpb  #$D7
-         lbeq  L0281
-         lbra  L0288
-L0125    sta   <u0000
-         pshs  x
-         leax  <u0010,u
-         ldy   #$0010
-         ldb   #SS.FD
-         os9   I$GetStt 
-         puls  x
-         bcs   L0147
-         tst   <u000E
-         beq   L0147
-         lda   ,x
-         ldb   #$D7
-         cmpa  #'/
-         lbne  L0288
-L0147    pshs  x
-         lda   <u0000
-         leax  <u0020,u
-         ldb   #SS.Opt
-         os9   I$GetStt 
-         lbcs  L0288
-         lda   ,x
-         sta   <u0002
-         ldb   #$0F
-         cmpa  #$01
-         bne   L0177
-         pshs  u,x
-         lda   <u0000
-         ldb   #SS.Size
-         os9   I$GetStt 
-         lbcs  L0288
-         stx   <u0006
-         stu   <u0008
-         puls  u,x
-         ldb   <$13,x
-L0177    stb   <u000F
-         ldx   ,s
-         lda   #$01
-         lbsr  L0295
-         lda   #UPDAT.
-         ldb   <u000F
-         os9   I$Create 
-         puls  x
-         bcc   L0198
-         inc   <u0003
-         lda   #WRITE.
-         ldb   <u000F
-         os9   I$Create 
-         lbcs  L0288
-L0198    sta   <u0001
-         leax  <u0020,u
-         ldb   #SS.Opt
-         os9   I$GetStt 
-         lbcs  L0288
-         ldb   ,x
-         cmpb  #$01
-         beq   L01B0
-         inc   <u0003
-         bra   L01E8
-L01B0    tst   <u0003
-         bne   L01C1
-         ldb   #$01
-         stb   $08,x
-         ldb   #SS.Opt
-         os9   I$SetStt 
-         lbcs  L0288
-L01C1    lda   <u0002
-         cmpa  #$01
-         bne   L01E8
-         pshs  u
-         lda   <u0001
-         ldb   #$02
-         ldx   <u0006
-         ldu   <u0008
-         os9   I$SetStt 
-         lbcs  L0288
-         puls  u
-         lda   <u0001
-         leax  <u0010,u
-         ldy   #$0010
-         ldb   #SS.FD
-         os9   I$SetStt 
-L01E8    leax  >u0300,u
-         clra  
-         lbsr  L0295
-         lda   <u0000
-         ldy   <u0004
-         os9   I$Read   
-         bcs   L0265
-         lda   #$01
-         lbsr  L0295
-         lda   <u0001
-         os9   I$Write  
-         lbcs  L0288
-         tst   <u0003
-         bne   L0258
-         pshs  u,y
-         ldx   <u000A
-         ldu   <u000C
-         lda   <u0001
-         os9   I$Seek   
-         bcs   L0288
-         ldu   $02,s
-         leau  >u0300,u
-         ldd   ,s
-         addd  <u000C
-         std   <u000C
-         ldd   ,s
-         bcc   L022D
-         leax  $01,x
-         stx   <u000A
-L022D    ldy   #$0100
-         std   ,s
-         tsta  
-         bne   L0238
-         tfr   d,y
-L0238    ldx   $02,s
-         leax  >$0200,x
-         lda   <u0001
-         os9   I$Read   
-         bcs   L0288
-L0245    lda   ,u+
-         cmpa  ,x+
-         bne   L0276
-         leay  -$01,y
-         bne   L0245
-         ldd   ,s
-         subd  #$0100
-         bhi   L022D
-         puls  u,y
-L0258    lda   <u0000
-         ldb   #SS.EOF
-         os9   I$GetStt 
-         bcc   L01E8
-         cmpb  #E$EOF
-         beq   L026D
-L0265    cmpb  #E$EOF
-         bne   L0288
-         lda   #$01
-         bsr   L0295
-L026D    lda   <u0001
-         os9   I$Close  
-         bcc   L0287
-         bra   L0288
-L0276    leax  >L00B4,pcr
-         bsr   L028B
-         comb  
-         ldb   #$01
-         bra   L0288
-L0281    leax  >L005A,pcr
-         bsr   L028B
-L0287    clrb  
-L0288    os9   F$Exit   
-L028B    ldy   #256
-L028F    lda   #$01
-         os9   I$WritLn 
+clearit  clr   ,-u        clear byte
+         cmpu  ,s         done ?
+         bhi   clearit    loop back
+         tfr   y,d        move in top of mem (after param area)
+         subd  ,s++       subtract current stack
+         subd  #$0300     and back off variable storage
+         clrb             round off to page bondary
+         std   <bufsize   buffer size
+         pshs  x          save x register
+
+getopt   lda   ,x+        get a char
+         cmpa  #'-        was it a '-'??
+         beq   chkopt     yes..go check opt
+         cmpa  #C$CR      was it a <cr>??
+         bne   getopt     no..check next char
+         bra   openin     else done..go finish processing
+
+chkopt   ldd   ,x+        get next 2 chars
+         eora  #'S        check if its an S
+         anda  #$DF       make upper case
+         lbne  sndinstr   not an s.. send instructions
+         cmpb  #$30       else check if next char is number or letter
+         lbhs  sndinstr   yup...send instructions
+         inc   <single    set s option
+         bra   getopt     and check next char
+
+openin   puls  x          restore line pointer
+         lda   #READ.     open first file
+         os9   I$Open
+         lbcs  chkerr     error..go see what it was
+         sta   <inpath    save path number
+         pshs  x          save second path name start
+         leax  <fdbuff,u  point to FD buffer
+         ldy   #FD.SEG    bytes to read
+         ldb   #SS.FD     get file descriptor
+         os9   I$GetStt
+         puls  x          restore line pointer
+         bcs   getintyp   skip this on eror
+         tst   <single    single drive copy ?
+         beq   getintyp   no..skip this stuff
+         lda   ,x         get first char of path name
+         ldb   #E$BPNam   load bad path name error message
+         cmpa  #PDELIM    was it a path separaor ?
+         bne   errjump    nope..error
+
+getintyp pshs  x          save out path name start
+         lda   <inpath    get path number
+         bsr   getopts    get option section
+         lda   ,x         get device type
+         sta   <indevtyp  save it
+         ldb   #PREAD.+EXEC.+READ.+WRITE.  default attributes...read,write,execute,public
+         cmpa  #DT.RBF    was device type RBF ?
+         bne   openout    nope...don't get file size/attributes
+         pshs  u,x        save registers
+         lda   <inpath    get path number
+         ldb   #SS.Size   Get File size
+         bsr   getstat    do the GetStt call..exit on error
+         stx   <fsizemsb  save 2 msb's of file size
+         stu   <fsizelsb  save 2 lsb's of file size
+         puls  u,x        restore registers
+         ldb   <PD.ATT-PD.OPT,x   get file attributes
+
+openout  stb   <attribs   save attributes
+         ldx   ,s         get start of second path name
+         lbsr  destsnd    send destination msg
+         lda   #UPDAT.    open file for update
+         ldb   <attribs   get attributes
+         os9   I$Create   create the file
+         puls  x          restore x register
+         bcc   open010    no error..skip this
+         inc   <verify    set verify off
+         lda   #WRITE.    open filein write only mode
+         ldb   <attribs   get atributes
+         os9   I$Create   create the file
+         bcs   errjump    exit on error
+
+open010  sta   <outpath   save second path number
+         bsr   getopts    get option section
+         ldb   ,x         get device type
+         cmpb  #DT.RBF    was it RBF
+         beq   setvfy     yup...skip this
+         inc   <verify    set verify off
+         bra   mainloop   and skip all this
+
+errjump  lbra  errexit    nope....error
+
+getopts  leax  <optbuff,u point to buffer
+         ldb   #SS.Opt    get option section of path descritor
+
+getstat  os9   I$GetStt
+         bcs   errjump    exit on error
          rts   
-L0295    tst   <u000E
-         beq   L02D2
-         pshs  y,x
-L029B    pshs  a
-         tsta  
-         bne   L02AA
-         leax  >L0012,pcr
-         ldy   #$0021
-         bra   L02B2
-L02AA    leax  >L0033,pcr
-         ldy   #$0026
-L02B2    bsr   L028F
-         leax  ,-s
-         ldy   #$0001
-         clra  
-         os9   I$Read   
-         lda   ,s+
-         eora  #'C
-         anda  #$DF
-         beq   L02CC
-         bsr   L02D3
-         puls  a
-         bne   L029B
-L02CC    bsr   L02D3
-         puls  a
-         puls  y,x
-L02D2    rts   
-L02D3    pshs  y,x,a
-         lda   #$01
-         leax  >L0059,pcr
-         ldy   #$0050
-         os9   I$WritLn 
-         puls  pc,y,x,a
 
-         emod
+setvfy   tst   <verify    do we want verify on
+         bne   setsiz     nope...dont set driver verify on
+         ldb   #1         verify
+         stb   PD.VFY-PD.OPT,x        turn verify on
+         ldb   #SS.OPT    set options
+         os9   I$SetStt
+         bcs   errjump    exit on error
+
+setsiz   lda   <indevtyp  get device type
+         cmpa  #DT.RBF    is it an RBF file
+         bne   mainloop   nope...dont preset file size
+         pshs  u          save register
+         lda   <outpath   get out path number
+         ldb   #SS.Size   set file size
+         ldx   <fsizemsb  get 2 msb's of in file size
+         ldu   <fsizelsb  get 2 lsb's of in file size
+         os9   I$SetStt   set the size
+         bcs   errjump    exit on error
+         puls  u          restore register
+         lda   <outpath   get out path number
+         leax  <fdbuff,u  point to FD buffer
+         ldy   #FD.SEG    number of bytes to write
+         ldb   #SS.FD     write out the FD (for dates,etc.)
+         os9   I$SetStt
+
+mainloop leax  buffer,u   point to buffer
+         clra             source drive code
+         lbsr  chkdrive   send source switch msg
+         lda   <inpath    get in path number
+         ldy   <bufsize   get buffer size
+         os9   I$Read     read a block
+         bcs   chkeof2    if error..go check which one
+         lbsr  destsnd    send destination switch msg
+         lda   <outpath   get out path number
+         os9   I$Write    write the block out
+         bcs   errjump    exit on error
+         tst   <verify    are we verifying ?
+         bne   chkeof     skip this
+         pshs  u,y        save registers
+         ldx   <writemsb  get 2 msb's of last write
+         ldu   <writelsb  get 2 lsb's of last write
+         lda   <outpath   get out path number
+         os9   I$Seek
+         bcs   errjump    exit on error
+         ldu   2,s        get original u back
+         leau  buffer,u   point to buffer start
+         ldd   ,s         get bytes written
+         addd  <writelsb  add on to current 2 lsb positions
+         std   <writelsb  save them
+         ldd   ,s         get bytes written
+         bcc   vfy000     skip if no carry
+         leax  1,x        bump up 2 msb's
+         stx   <writemsb  and save them
+
+vfy000   ldy   #$0100     chars to read for verify
+         std   ,s         save it
+         tsta             did we write more than 255 bytes ?
+         bne   vfy010     yes...only read 256
+         tfr   d,y        else xfer amount we did write
+
+vfy010   ldx   2,s        get u register
+         leax  $200,x     point to start of verify buffer
+         lda   <outpath   get output path number
+         os9   I$Read     read a block in
+         bcs   errexit    exit on error
+
+vfy020   lda   ,u+        get char from in buffer
+         cmpa  ,x+        get char from out buffer
+         bne   snderr1    not equal...send write verfiy msg
+         leay  -1,y       decrement read count
+         bne   vfy020     if more..loop back
+         ldd   ,s         get write count back
+         subd  #$0100     subtract verify buffer size
+         bhi   vfy000     if more left...loop back
+         puls  u,y        else restore registers
+
+chkeof   lda   <inpath    get in path number
+         ldb   #SS.EOF    check for end of file
+         os9   I$GetStt
+         bcc   mainloop   nope...loop back
+         cmpb  #E$EOF     are we at end of file ?
+         beq   closeout   yes...close file
+
+
+chkeof2  cmpb  #E$EOF     check for end of file
+         bne   errexit    nope...error exit
+         bsr   destsnd    send msg for disk switch
+
+closeout lda   <outpath   get out path number
+         os9   I$Close    close the file
+         bcc   exitok     exit w/o error if o.k.
+         bra   errexit    else error exit
+
+errmsg1  fcb   C$BELL
+         fcc   /Error - write verification failed./
+         fcb   C$CR
+
+snderr1  leax  errmsg1,pcr address of 'write verify failed' msg
+         bsr   sndline    send it
+         comb             set carry
+         ldb   #$01       set error
+         bra   errexit    exit
+
+chkerr   cmpb  #E$BPNam   was it bad path name
+         bne   errexit    error exit
+
+sndinstr leax  Help,pcr   get instructions
+         bsr   sndline    send them
+exitok   clrb  
+errexit  os9   F$Exit
+
+sndline  ldy   #256       max chars to send
+         lda   #1         std out
+         os9   I$WritLn   write the line
+         rts   
+
+* Send message and wait for disk switch for single drive copy
+
+destsnd  lda   #1         set flag for destination message
+
+chkdrive tst   <single    are we doing single drive copy
+         beq   msgrts     nope..just exit
+         pshs  y,x        else save registers
+
+sndsrc   pshs  a          save drive flag
+         tsta             do we want source drive ?
+         bne   snddst     nope..do destination message
+         leax  srcmsg,pcr point to 'source' msg
+         ldy   #srcmsgsz  chars to send
+         bra   msgsnd     go send it
+
+srcmsg   fcc   /Ready SOURCE/
+srcmsgsz equ   *-srcmsg
+
+dstmsg   fcc   /Ready DESTINATION/
+dstmsgsz equ   *-dstmsg
+
+cntmsg   fcc   /, hit C to continue: /
+cntmsgsz equ   *-cntmsg
+
+
+snddst   leax  dstmsg,pcr point to 'destination' msg
+         ldy   #dstmsgsz  chars to send
+
+msgsnd   lda   #1         std out
+         os9   I$Write    write it
+         leax  cntmsg,pcr point to 'hit C ...'
+         ldy   #cntmsgsz  get size of message
+         os9   I$Write    write it
+         leax  ,-s        back up for dummy buffer
+         ldy   #1         chars to read
+         clra             std in
+         os9   I$Read     read one char
+         lda   ,s+
+         pshs  y,x,a      save registers
+         leax  crmsg,pcr  point to <cr>
+         bsr   sndline    write it
+         puls  y,x,a      restore registers
+         eora  #'C        check if its a C
+         anda  #$DF       make it upper case
+         puls  a          restore drive status
+         bne   sndsrc     loop back & send message
+         puls  y,x        restore registers
+msgrts   rts   
+
+Help     fcc   /Use: Copy <Path1> <Path2> [-s]/
+         fcb   C$LF
+         fcc   /  -s = single drive copy/
+         fcc   / (Path2 must be complete pathlist)/
+         fcb   C$CR
+crmsg    fcb   C$CR
+
+         emod  
 eom      equ   *
          end
