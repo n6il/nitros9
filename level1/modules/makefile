@@ -12,9 +12,9 @@ DRIVERS		= aciapak.dr cchdisk.dr ccdisk.dr modpak.dr nildrv.dr \
 		piper.dr printer.dr rs232.dr sscpak.dr ccio.dr \
 		ddisk.dr kbvdio.dr
 IOSUBS		= co32.io co80.io grfo.io
-DESCS		= dd_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
-		dd_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
-		dd_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd \
+DESCS		= ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
+		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
+		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd \
 		h0_15.dd h1_15.dd h0_35.dd h1_35.dd \
 		m1.dd m2.dd nil.dd p.dd pipe.dd ssc.dd \
 		t1.dd t2.dd t3.dd term32.dd term80.dd \
