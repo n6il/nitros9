@@ -9,20 +9,20 @@ all:
 	@$(ECHO) "*            3rd Party Packages             *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	$(foreach dir, $(dirs), $(CD) $(dir); make; $(CD) ..;)
+	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
 
 # Clean all components
 clean:	dskclean
-	$(foreach dir, $(dirs), $(CD) $(dir); make clean; $(CD) ..;)
+	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
 
 # Create dsk images
 dsk:
-	$(foreach dir, $(dirs), $(CD) $(dir); make dsk; $(CD) ..;)
+	$(foreach dir, $(dirs), ($(CD) $(dir); make dsk);)
 
 # Copy dsk images
 dskcopy: dsk
-	$(foreach dir, $(dirs), $(CD) $(dir); make dskcopy; $(CD) ..;)
+	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
 
 # Clean dsk images
 dskclean:
-	$(foreach dir, $(dirs), $(CD) $(dir); make dskclean; $(CD) ..;)
+	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)

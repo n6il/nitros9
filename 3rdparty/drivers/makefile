@@ -9,8 +9,8 @@ all:
 	@$(ECHO) "*          3rd Party Device Drivers         *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	$(foreach dir, $(dirs), $(CD) $(dir); make; $(CD) ..;)
+	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
 
 # Clean all components
 clean:
-	$(foreach dir, $(dirs), $(CD) $(dir); make clean; $(CD) ..;)
+	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
