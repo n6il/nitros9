@@ -27,6 +27,9 @@
 
          IFP1            
          use   defsfile  
+         IFGT  Level-1
+         use   cc3iodefs
+         ENDC
          ENDC            
 
 Edtn     equ   9
