@@ -6,6 +6,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 * 22     Tandy/Microware version                        BGP 02/12/26
+*        Tables L000D, L00E9    removed some UNID       RG  03/05/13
+*        Translated jump vectors L00D9, L0442           RG  03/05/13
 *
          nam   RunB
          ttl   Basic09 Runtime
@@ -208,20 +210,13 @@ u00FF    rmb   1
 u0100    rmb   3840
 dsize    equ   .
 
-L000D    fcb   $00 
-         fcb   $D9 Y
-         fcb   $04 
-         fcb   $68 h
-         fcb   $06 
-         fcb   $D8 X
-         fcb   $06 
-         fcb   $EB k
-         fcb   $10 
-         fcb   $DF _
-         fcb   $25 %
-         fcb   $51 Q
-         fcb   $00 
-         fcb   $00 
+L000D    fdb   L00D9
+         fdb   L0468
+         fdb   L06D8
+         fdb   L06EB
+         fdb   L10DF
+         fdb   L2551
+         fdb   $0000 
 
 name     fcs   /RunB/
          fcb   22
@@ -241,50 +236,34 @@ name     fcs   /RunB/
          fcc   "       TO TANDY CORP."
          fcb   C$LF
          fcc   "    ALL RIGHTS RESERVED."
-         fcb   $8A 
-         fcb   $34 4
-         fcb   $16 
-         fcb   $E6 f
-         fcb   $F8 x
-         fcb   $04 
-         fcb   $30 0
-         fcb   $8C 
-         fcb   $08 
-         fcb   $EC l
-         fcb   $85 
-         fcb   $30 0
-         fcb   $8B 
-         fcb   $AF /
-         fcb   $64 d
-         fcb   $35 5
-         fcb   $96 
-         fcb   $03 
-         fcb   $00 
-         fcb   $03 
-         fcb   $25 %
-         fcb   $01 
-         fcb   $65 e
-         fcb   $01 
-         fcb   $5B [
-         fcb   $03 
-         fcb   $29 )
-         fcb   $02 
-         fcb   $7C ü
-         fcb   $02 
-         fcb   $76 v
-         fcb   $02 
-         fcb   $98 
-         fcb   $03 
-         fcb   $4A J
-         fcb   $9D 
-         fcb   $1E 
-         fcb   $04 
+         fcb   $8A
+* Jump vector @ $1B goes here
+L00D9    pshs  d,x
+         ldb   [$04,s]
+         leax  <L00E9,pcr
+         ldd   b,x
+         leax  d,x
+         stx   $04,s
+         puls  d,x,pc
+ 
+L00E9    fdb   L03E9-L00E9
+         fdb   L040E-L00E9
+         fdb   L024E-L00E9 
+         fdb   L0244-L00E9 
+         fdb   L0412-L00E9 
+         fdb   L0365-L00E9 
+         fdb   L035F-L00E9 
+         fdb   L0381-L00E9 
+         fdb   L0433-L00E9
+ 
+L00FB    jsr   <u001E
+         fcb   $04`
 L00FE    jsr   <u001E
          fcb   $02 
 L0101    jsr   <u001E
          fcb   $00
 L0104    jsr   <u0021
-         fcb  $00
+         fcb   $00
 L0107    jsr   <u0024
          fcb   $00
 L010A    jsr   <u0024
@@ -535,11 +514,12 @@ L0357    lbra  L0244
 L035A    ldb   #$33
          lbra  L0262
 
-BYE      bsr   L0381
+BYE
+L035f    bsr   L0381
          clrb  
          os9   F$Exit   
 
-         lbsr  L00FE
+L0365    lbsr  L00FE
          beq   L037D
          lbsr  L03C6
          bcs   L037D
@@ -629,7 +609,7 @@ L040E    os9   F$PErr
          rts   
 
 UNID1
-         pshs  b,a
+L0412    pshs  b,a
          bra   L0426
 L0416    pshs  y,x
 L0418    lda   ,x+
@@ -645,8 +625,8 @@ L0426    cmpy  ,s
          puls  pc,b,a
 L042E    puls  y,x
          clra  
-L0431    puls  pc,b,a
-         pshs  x,b,a
+L0431    puls  pc,b,a      this probably does not need lable
+L0433    pshs  x,b,a
 L0435    leax  <L0442,pcr
          lda   ,y+
 L043A    cmpa  ,x++
@@ -654,22 +634,28 @@ L043A    cmpa  ,x++
          ldb   ,-x
          jmp   b,x
 
-*embedded jumptable
-L0442    fcb   242,23,146,25,145,19,144,23
-         fcb   143,13,142,13,141,13,85,9,75
-         fcb   11,62,17,0,7
-
-         leay  $03,y
-         leay  $01,y
-         leay  $01,y
-         bra   L0435
-
+*embedded jumptable            second value
+L0442    fcb   $f2,L045A-L0444+1  *$17
+L0444    fcb   $92,L045E-L0446+1  *$19
+L0446    fcb   $91,L045A-L0448+1  *$13
+L0448    fcb   $90,L0460-L044A+1  *$17
+L044A    fcb   $8f,L0458-L044C+1  *$0D
+L044C    fcb   $8e,L045A-L044E+1  *$0D
+L044E    fcb   $8d,L045C-L0450+1  *$0D
+L0450    fcb   $55,L045A-L0452+1  *$09
+L0452    fcb   $4b,L045E-L0454+1  *$0B
+L0454    fcb   $3e,L0466-L0456+1  *$11
+L0456    fcb   $00,L045E-L0458+1  *$07
+L0458    leay  $03,y
+L045A    leay  $01,y
+L045C    leay  $01,y
+L045E    bra   L0435
 L0460    tst   ,y+
          bpl   L0460
          bra   L0435
-         puls  pc,x,b,a
+L0466    puls  pc,x,b,a
 
-         pshs  x,b,a
+L0468    pshs  x,b,a
          ldb   [<$04,s]
          leax  <L0478,pcr
          ldd   b,x
@@ -970,7 +956,7 @@ L06CF    tst   -$01,x
          bpl   L06BD
          sty   $03,s
 L06D6    puls  pc,u,y,x,a
-         pshs  x,b,a
+L06D8    pshs  x,b,a
          ldb   [<$04,s]
          leax  <L06E8,pcr
          ldd   b,x
@@ -981,7 +967,7 @@ L06E8    neg   <memsize
          rts   
 
 UNID2
-         pshs  x,b,a
+L06EB    pshs  x,b,a
          ldb   [<$04,s]
          leax  <L06FB,pcr
          ldd   b,x
@@ -2306,7 +2292,7 @@ UNK5     lbsr  L0730
          rts   
 
 UNID3
-         pshs  x,b,a
+L10DF    pshs  x,b,a
          ldb   [<$04,s]
          leax  <L10EF,pcr
          ldd   b,x
@@ -4966,16 +4952,15 @@ L2531    ldd   ,x++
          stx   <u0017
          puls  pc,y,x,b
 
-         pshs  x,b,a
+L2551    pshs  x,b,a
          ldb   [<$04,s]
          leax  <L2561,pcr
          ldd   b,x
          leax  d,x
          stx   $04,s
          puls  pc,x,b,a
-L2561    fcb   $00
-         fdb   $ba00
-         fcb   $10
+L2561    fdb   $00ba
+         fdb   $0010
 L2565    jsr   <u0027
          fcb   $0C
 Flote    jsr   <u0027
