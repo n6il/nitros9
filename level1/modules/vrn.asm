@@ -74,8 +74,13 @@ VEntry   lbra  VInit
          lbra  VGStt
          lbra  VSStt
          lbra  VTerm
+
+         IFGT  Level-1
 IRQPckt  fcb   $00,$01,$0A IRQ packet Flip(1),Mask(1),Priority(1) bytes
+         ENDC
+
 VInit    equ   *
+         IFGT  Level-1
 * Note that all device memory except V.PAGE and
 * V.PORT has already been cleared (zeroed).
          leax  VIRQPckt+Vi.Stat,u fake VIRQ status register
@@ -95,11 +100,18 @@ VInit    equ   *
          pshs  cc,b       save error info
          bsr   DumpIRQ    go remove from IRQ polling
          puls  cc,b,pc    recover error info & exit...
+         ELSE
+         clrb
+         rts
+         ENDC
+
 VRead    equ   *
          comb  
          ldb   #E$EOF
 InitExit rts   
+
 VTerm    equ   *
+         IFGT  Level-1
          ldx   #$0000     code to delete VIRQ entry
          leay  VIRQPckt,u VIRQ software registers
          os9   F$VIRQ     remove from VIRQ polling
@@ -109,8 +121,13 @@ DumpIRQ  leax  VIRQPckt+Vi.Stat,u fake VIRQ status register
          ldx   #$0000     code to remove IRQ entry
          leay  IRQSvc,pc  IRQ service routine
          os9   F$IRQ
+         ELSE
+         clrb
+         ENDC
 Term.Err rts   
+
 VGStt    equ   *
+         IFGT  Level-1
 * [A] = call code
 * call $01:  SS.Ready (device never has data ready)
 * call $80:  return FS2/FS2+ total VIRQ counter
@@ -152,8 +169,13 @@ Chk.GS81 cmpa  #$81       return & clear signals sent?
          lda   FS2.STot,x number of signals sent
          sta   R$A,y      return it to caller
          clr   FS2.STot,x clear signal counter
+         ELSE
+         clrb
+         ENDC
          rts   
+
 VSStt    equ   *
+         IFGT  Level-1
 * [A] = call code
 * call $2A:  SS.Close (clear all process+path entries)
 * call $81:  set process+path FS2 VIRQ, clear process+path FS2/FS2+ VIRQ
@@ -323,9 +345,12 @@ KeepID   ldb   FS2.Sgl,u  signal code
 NoFS2Sgl leau  VTSize,u   next table
          leay  -1,y       done all tables?
          bne   IRQLoop    no, go check next...
+         ENDC
+         
 VWrit    equ   *
          clrb             no error...
          rts   
+
          emod  
 VEnd     equ   *
          end   
