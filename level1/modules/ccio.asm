@@ -87,7 +87,7 @@ u0079    rmb   1
 u007A    rmb   128
 size     equ   .
 
-         fcb   $07
+         fcb   UPDAT.+EXEC.
 
 name     fcs   /CCIO/
          fcb   edition
