@@ -20,17 +20,17 @@ atrv     set   ReEnt+rev
 rev      set   $01
          mod   eom,name,tylg,atrv,start,size
 u0000    rmb   1
-u0001    rmb   3
-u0004    rmb   1
+DevFd    rmb   3
+BTLSN    rmb   1
 u0005    rmb   2
-u0007    rmb   2
+BtSiz    rmb   2
 u0009    rmb   7
-u0010    rmb   3
+sttbuf   rmb   3
 u0013    rmb   17
 u0024    rmb   2
 u0026    rmb   10
 u0030    rmb   2
-u0032    rmb   32
+devnam   rmb   32
 u0052    rmb   16
 u0062    rmb   1
 u0063    rmb   7
@@ -55,131 +55,131 @@ L008C    fcb   C$LF
          fcb   C$LF
          fcc   "on track 34 - this track"
          fcb   C$LF
-	 fcc   "not rewritten."
+         fcc   "not rewritten."
          fcb   C$CR
 L00CF    fcb   C$LF
          fcc   "Error - OS9boot file fragmented"
          fcb   C$CR
-L00F0    fcc   "OS9Boot "
+BfNam    fcc   "OS9Boot "
          fcb   $FF 
 
 start    equ   *
          clrb  
-         lda   #$2F
+         lda   #'/
          cmpa  ,x
-         lbne  L02CA
+         lbne  Usage
          os9   F$PrsNam 
-         lbcs  L02CA
-         lda   #$2F
+         lbcs  Usage
+         lda   #'/
          cmpa  ,y
-         lbeq  L02CA
-         leay  <u0032,u
+         lbeq  Usage
+         leay  <devnam,u
 L0114    sta   ,y+
          lda   ,x+
          decb  
          bpl   L0114
          sty   <u0030
-         lda   #$40
+         lda   #'@
          ldb   #$20
          std   ,y++
-         leax  <u0032,u
-         lda   #$03
+         leax  <devnam,u
+         lda   #UPDAT.
          os9   I$Open   
-         sta   <u0001
-         lbcs  L02CA
+         sta   <DevFd
+         lbcs  Usage
          ldx   <u0030
-         leay  >L00F0,pcr
-         lda   #$2F
+         leay  >BfNam,pcr
+         lda   #'/
 L013A    sta   ,x+
          lda   ,y+
          bpl   L013A
-         lda   <u0001
-         leax  <u0010,u
+         lda   <DevFd
+         leax  <sttbuf,u
          ldb   #$00
          os9   I$GetStt 
-         lbcs  L02DC
-         leax  <u0010,u
+         lbcs  Exit
+         leax  <sttbuf,u
          lda   <u0013,u
          bpl   L015E
          leax  >L006B,pcr
          clrb  
-         lbra  L02CE
-L015E    lda   <u0001
+         lbra  wrerr
+L015E    lda   <DevFd
          pshs  u
          ldx   #$0000
-         ldu   #$0015
+         ldu   #$0015   probably DD.BT
          os9   I$Seek   
          puls  u
-         lbcs  L02DC
-         leax  u0004,u
+         lbcs  Exit
+         leax  BTLSN,u
          ldy   #$0005
-         os9   I$Read   
-         lbcs  L02DC
-         ldd   <u0007
+         os9   I$Read    Read bootstrap sector + size = 5 bytes
+         lbcs  Exit
+         ldd   <BtSiz
          beq   L0193
-         leax  <u0032,u
+         leax  <devnam,u
          os9   I$Delete 
          clra  
          clrb  
-         sta   <u0004
+         sta   <BTLSN
          std   <u0005
-         std   <u0007
-         lbsr  L02F4
-L0193    lda   #$02
-         ldb   #$03
-         leax  <u0032,u
+         std   <BtSiz
+         lbsr  UpLSN0
+L0193    lda   #WRITE.
+         ldb   #UPDAT.
+         leax  <devnam,u
          os9   I$Create 
          sta   <u0000
-         lbcs  L02DC
+         lbcs  Exit
          ldd   >$0068
          subd  >$0066
          tfr   d,y
-         std   <u0007
+         std   <BtSiz
          ldx   >$0066
          lda   <u0000
          os9   I$Write  
-         lbcs  L02DC
-         leax  <u0010,u
-         ldb   #$00
+         lbcs  Exit
+         leax  <sttbuf,u
+         ldb   #SS.OPT
          os9   I$GetStt 
-         lbcs  L02DC
+         lbcs  Exit
          lda   <u0000
          os9   I$Close  
-         lbcs  L02CA
+         lbcs  Usage
          pshs  u
          ldx   <u0024,u
          lda   <u0026,u
          clrb  
          tfr   d,u
-         lda   <u0001
+         lda   <DevFd
          os9   I$Seek   
          puls  u
-         lbcs  L02DC
+         lbcs  Exit
          leax  <u0052,u
          ldy   #$0100
          os9   I$Read   
-         lbcs  L02DC
+         lbcs  Exit
          ldd   <u006A,u
-         lbne  L02DF
+         lbne  Fragd
          ldb   <u0062,u
-         stb   <u0004
+         stb   <BTLSN
          ldd   <u0063,u
          std   <u0005
-         lbsr  L02F4
-         lbsr  L02BB
+         lbsr  UpLSN0
+         lbsr  SkLSN1
          leax  <u0052,u
          ldy   #$0100
          os9   I$Read   
-         lbcs  L02CE
+         lbcs  wrerr
          leax  <u0052,u
          lda   <$4C,x
          bita  #$0F
          beq   L0273
-         lda   <u0001
+         lda   <DevFd
          pshs  u
          ldx   #$0002
          ldu   #$6400
-         os9   I$Seek   
+         os9   I$Seek      Jump to LSN 612
          puls  u
          leax  u0009,u
          ldy   #$0007
@@ -216,58 +216,64 @@ L0273    ora   #$0F
          bne   L02ED
          ora   #$FC
          sta   <$4E,x
-L028C    bsr   L02BB
+L028C    bsr   SkLSN1
          leax  <u0052,u
          ldy   #$0064
          os9   I$Write  
-         bcs   L02CE
+         bcs   wrerr
          pshs  u
          ldx   #$0002
          ldu   #$6400
-         os9   I$Seek   
+         os9   I$Seek   Jump to LSN 612
          puls  u
-         ldx   #$EF00
-         ldy   #$0F80
+         ldx   #$EF00    Address of kernel in RAM
+         ldy   #$0F80    Amount to write
          os9   I$Write  
-         bcs   L02E6
+         bcs   ETrack
          os9   I$Close  
-         bcs   L02CA
+         bcs   Usage
          clrb  
-         bra   L02DC
-L02BB    pshs  u
-         lda   <u0001
+         bra   Exit
+
+SkLSN1   pshs  u
+         lda   <DevFd
          ldx   #$0000
          ldu   #$0100
-         os9   I$Seek   
+         os9   I$Seek   Seek to allocation map at LSN 1
          puls  pc,u
-L02CA    leax  >L0015,pcr
-L02CE    pshs  b
+
+Usage    leax  >L0015,pcr
+wrerr    pshs  b
          lda   #$02
          ldy   #$0100
          os9   I$WritLn 
          comb  
          puls  b
-L02DC    os9   F$Exit   
-L02DF    leax  >L00CF,pcr
+Exit     os9   F$Exit   
+
+Fragd    leax  >L00CF,pcr
          clrb  
-         bra   L02CE
-L02E6    leax  >L004F,pcr
+         bra   wrerr
+
+ETrack   leax  >L004F,pcr
          clrb  
-         bra   L02CE
+         bra   wrerr
+
 L02ED    leax  >L008C,pcr
          clrb  
-         bra   L02CE
-L02F4    pshs  u
+         bra   wrerr
+
+UpLSN0   pshs  u
          ldx   #$0000
-         ldu   #$0015
-         lda   <u0001
+         ldu   #$0015   probably DD.BT
+         lda   <DevFd
          os9   I$Seek   
          puls  u
-         bcs   L02DC
-         leax  u0004,u
+         bcs   Exit
+         leax  BTLSN,u
          ldy   #$0005
          os9   I$Write  
-         bcs   L02DC
+         bcs   Exit
          rts   
          emod
 eom      equ   *

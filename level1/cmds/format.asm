@@ -768,7 +768,7 @@ L0508    leax  >DName,pcr
          clra  
          os9   I$ReadLn 
          bcc   L052C
-         cmpa  #$D3
+         cmpa  #E$EOF
          bne   L0508
 L0525    leax  >Aborted,pcr
          lbra  L066D
