@@ -89,6 +89,10 @@ size limitations.
 <section>
 <title>Implementation-dependent Characteristics</title>
 <para>
+K &amp; R frequently refer to characteristics of the C language
+whose exact operations depend on the architacture and instruction
+set of the computer actually used. This section contains specific
+information regarding this version of C for the 6809 processor.
 </para>
 
 <section>
@@ -142,12 +146,25 @@ should be used as a delimiter.
 
 <section>
 <title>Achieving Maximum Program Performance</title>
-<para>
-</para>
 
 <section>
 <title>Programming Considerations</title>
 <para>
+Because the 6809 is an 8/16 bit microprocessor, the compiler
+can generate efficient code for 8 and 16 bit objects (CHARs, INTs,
+etc.). However, code for 32 and 64 bit values (LONGs, FLOATs,
+DOUBLEs) can be at least four times longer and slower. Therefore
+don't use LONG, FLOAT, or DOUBLE where INT or UNSIGNED will do.
+</para>
+<para>
+The compiler can perform extensive evaluation of constant
+expressions provided they involve only constants of type CHAR, INT,
+and UNSIGNED. There is no constant expression evaluation at
+compile-time (except single constants and "casts" of them) where
+there are constants of type LONG, FLOAT, or DOUBLE, therefore,
+complex constant expressions involving these types are evaluated at
+run time by the compiled program. You should manually compute the
+value of constant expressions of these types if speed is essential.
 </para>
 </section>
 

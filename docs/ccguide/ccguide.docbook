@@ -85,7 +85,8 @@
  ]>
 <book id="cc-guide" lang="en">
 <bookinfo>
- <title>C Compiler User's Guide</title>
+ <title>Microware C Compiler User's Guide</title>
+ <subtitle>for OS-9</subtitle>
 
  <publisher>
   <publishername>Cleglen Publishing Limited</publishername>
@@ -126,7 +127,7 @@ change without notice.</para>
 <preface>
 <title>Acknowledgements</title>
 <para>
-Thw OS-9 C Compiler was written by James McCosh with OS-9
+The OS-9 C Compiler was written by James McCosh with OS-9
 implementation assistance from Terry Crane and Kim Kempf. The
 Relocatable Assembler, Linker, and Profiler was edited by Wes Camden and
 Ken Kaplan.
