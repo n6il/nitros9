@@ -3,22 +3,28 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  -     Original Dragon Data distribution version
+*   4      1985/??/??
+* From Dragon OS-9 Level One VR 02.00.00
 
          nam   ACIA51
          ttl   Serial port device driver    
 
 * Disassembled 02/04/21 22:37:41 by Disasm v1.6 (C) 1988 by RML
 
-         ifp1
+         IFP1
          use   defsfile
-         endc
+         ENDC
+
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
+edition  set   $04
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   1
 u0001    rmb   2
 u0003    rmb   1
@@ -47,10 +53,12 @@ u0077    rmb   9
 u0080    rmb   46
 u00AE    rmb   85
 size     equ   .
-         fcb   $03 
-name     equ   *
-         fcs   /ACIA51/
-         fcb   $04 
+
+         fcb   UPDAT.
+
+name     fcs   /ACIA51/
+         fcb   edition
+
 start    equ   *
          lbra  L002A
          lbra  L0086
@@ -369,5 +377,8 @@ L02B9    ora   #$01
          sta   <u0022,u
          clrb  
          rts   
+
          emod
 eom      equ   *
+         end
+

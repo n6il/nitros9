@@ -8,8 +8,11 @@
 * Track is the literal cylinder #, Cylinder would be including all heads
 * of that track
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
+*   2      ????/??/??
+* Initial version.
 
          nam   Boot
          ttl   Burke & Burke Boot Module
@@ -26,14 +29,14 @@ sector   rmb   1           Sector number (0-63)
 vars     equ   13-buffptr  Size of stack variables buffer
 
 
-         ifp1
+         IFP1
          use   defsfile
          use   rbfdefs
-         endc
+         ENDC
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $02
+rev      set   $00
 edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
@@ -323,8 +326,11 @@ nxtready bsr   stable       Make sure status register is stable and get it
          bne   nxtready     Nope, keep waiting
          lda   >$FF50       Yes, get byte and return
          rts                Padding to get $1D0 Size
-* Pad to $1d0 bytes exactly
+
+         IFGT  Level-1
+* Pad to $1D0 bytes exactly
 Pad      fill  $39,$1D0-3-*
+         ENDC
 
          emod
 eom      equ   *

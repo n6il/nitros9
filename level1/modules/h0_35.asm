@@ -21,7 +21,7 @@ dnum     equ   0
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 

@@ -32,18 +32,18 @@
 *               |                                  |
 *     $0500---->|==================================|
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  14    From Tandy OS-9 Level One VR 02.00.00
-*  15    Module validation consists only of module      BGP 02/07/21
-*        header parity check.  CRC check is not done
-*        unless D.CRC is set to 1, which is NOT the
-*        default case.  By default, D.CRC is set
-*        to 0, thus there is no CRC checking.  Speeds
-*        up module loads quite a bit.
-*        The Init module has a bit in a compatibility
-*        byte that can turn on/off CRC checking
-
+*  14      1985/??/??
+* From Tandy OS-9 Level One VR 02.00.00
+*
+*  15      2002/07/21  Boisy G. Pitre
+* Module validation consists only of module header parity check.
+* CRC check is not done unless D.CRC is set to 1, which is NOT the
+* default case.  By default, D.CRC is set to 0, thus there is no
+* CRC checking.  Speeds up module loads quite a bit. The Init module
+* has a bit in a compatibility byte that can turn on/off CRC checking
 
          nam   OS9
          ttl   OS-9 Level One V2 P1 module
@@ -55,7 +55,7 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   15
 
 L0000    mod   eom,name,tylg,atrv,OS9Cold,size

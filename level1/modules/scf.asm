@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  10    From Tandy OS-9 Level One VR 02.00.00
+*  10      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00
 
          nam   SCF
          ttl   OS-9 Level One V2 SCF file manager
@@ -17,7 +19,7 @@
 
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   10
 
          mod   eom,name,tylg,atrv,start,size

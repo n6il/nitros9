@@ -3,23 +3,29 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* ?      Disassembled                                   AD  94/06/25
-* 6      Redone for IDE                                 PTB 99/08/17
-* 7      Added use of LSN bits 23-16                    BGP 02/06/27
+*   ?      1994/06/25  Alan DeKok
+* Diassembled.
+*
+*   6      1999/08/17  Paul T. Barton
+* Redone for IDE.
+*
+*   7      2002/06/27  Boisy G. Pitre
+* Added use of LSN bits 23-16.
 
          nam   Boot
          ttl   IDE Boot Module (LBA Mode)
 
-         ifp1
+         IFP1
          use   defsfile
          use   rbfdefs
-         endc
+         ENDC
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   2
+rev      set   $00
 edition  set   7
 
 * Disassembled 94/06/25 11:37:47 by Alan DeKok 
@@ -100,7 +106,7 @@ start
          os9   F$SRtMem   return the copy of LSN0 to free memory 
 
          ldd   btsiz,s    get size of boot memory to request 
-         IFEQ  Level-2
+         IFGT  Level-1
          os9   F$BtMem    ask for the boot memory 
          ELSE  
          os9   F$SRqMem   ask for the boot memory 
@@ -204,7 +210,7 @@ Init
          clrb             no errors 
          puls  d,y,pc
 
-         IFEQ  Level-2
+         IFGT  Level-1
 Pad      fill  $39,$1D0-3-*
          ENDC
 
@@ -212,3 +218,4 @@ Pad      fill  $39,$1D0-3-*
          emod  
 eom      equ   *
          end
+

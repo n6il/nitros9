@@ -3,11 +3,16 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  -     Original Dragon Data distribution version
+*   1r2    ????/??/??
+* Original Dragon Data distribution version
 *
 * $Log$
+* Revision 1.3  2003/08/30 20:16:51  boisy
+* Made all modules rev 0
+*
 * Revision 1.2  2002/10/10 14:50:21  boisy
 * Added appropriate header
 *
@@ -24,21 +29,24 @@
 
 * Disassembled 02/04/21 22:37:43 by Disasm v1.6 (C) 1988 by RML
 
-         ifp1
+         IFP1
          use   defsfile
-         endc
+         ENDC
+
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $02
 edition  set   1
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   2
 u0002    rmb   1
 u0003    rmb   1
 u0004    rmb   1
 size     equ   .
-name     equ   *
-         fcs   /Boot/
+
+name     fcs   /Boot/
          fcb   edition
 
 * First, we make a stack...
@@ -230,5 +238,7 @@ L0176    bsr   L016D
 L0178    lbsr  L017B
 L017B    lbsr  L017E
 L017E    rts   
+
          emod
 eom      equ   *
+         end

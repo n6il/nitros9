@@ -7,9 +7,11 @@
 * Copyright 1988, 1989 Bruce Isted
 * All Rights Reserved
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 2      Created by Bruce Isted                         BRI ??/??/??
+*   2      ????/??/??  Bruce Isted
+* Created.
 
          nam   Boot
          ttl   Eliminator WD1002-05 Boot Module
@@ -28,10 +30,10 @@ HDStep   equ   $0F        see step rate table
 *!  $03=18mS/6.0mS  !  $07=10mS/4.0mS  !  $0B=04mS/2.0mS  !  $0F=15uS/ 35uS  !
 *+------------------+------------------+------------------+------------------+
 
-         ifp1  
+         IFP1  
          use   defsfile
          use   rbfdefs
-         endc  
+         ENDC  
 
 * These equates should not have to be changed:
 BEdtn    equ   2
@@ -326,8 +328,10 @@ TfUpdat  stb   PB,y       set WD register address
          sta   WDData,y   write data to WD 1002-05
          rts   
 
-* pad Boot module out to $01D0 exactly
+         IFGT  Level-1
+* Pad Boot module out to $01D0 exactly
 Pad      fill  $39,$1D0-3-*
+         ENDC
 
          emod  
 BEnd     equ   *
