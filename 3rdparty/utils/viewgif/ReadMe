@@ -1,0 +1,151 @@
+The following is some discussion of just what's going on in viewgif, so that
+future code maintainers and modifiers can have an easier time of it.
+
+Viewgif's main purpose is to decode GIF files and turn them into images that
+can be displayed on the CoCo.  The obstacles to such display are:
+
+1. GIF images can contain up to 256 colors, which are specified in RGB-888
+   form (i.e. eight bits of resolution along each axis of RGB space, a 3-D
+   space for colors whose basis consists of {red, green, blue}).  The CoCo
+   can display at most 16 colors out of the 64 colors that live in RGB-222.
+
+2. GIF images are compressed, using Lempel-Ziv compression (up to 12-bit
+   code length).
+
+The second part is no big deal; in fact, the method used in viewgif is that
+used in the early LZ compress program ported to OS-9/6809 a few years ago.
+The first part is the one of major interest here.
+
+Viewgif uses two methods to overcome the GIME's limitations:
+
+1. Representing each color c[i] in the GIF image with a sum of two colors
+   c1[i] and c2[i], where c1[i] + c2[i] is approximately equal to c[i].
+   The c1[i] are displayed on one window and the c2[i] on another, and
+   viewgif alternates rapidly between the two windows.  This gives us
+   additional resolution in RGB space.
+
+2. Dithering, adding random noise to the displayed image.  It may seem odd
+   that adding noise to an image should improve it, but in fact it does,
+   because it spreads out quantization error, and quantization error,
+   the error induced by going from a continuous quantity to a discrete
+   representation or, in our case, cutting down the resolution available,
+   is the big problem here.  The easiest way to see it is to use a non-
+   dithering CoCo GIF viewer on an image with lots of shading--portraits
+   are best, because you know what color people are.  (Starships could be
+   any color. :-)  It will look like someone painted the person brick red
+   or yellow, or like whoever does the *USA Today* weather maps body painted
+   the person.  Or maybe both!
+
+The real guts of viewgif is that portion which determines what "dithering
+factor" is the best for a given image.  (You get to specify whether you
+want one or two windows.)  This is done in the function newwind(), in the
+file viewgif.c, and the functions it calls (setmap() and approx1() and
+approx2() in setmap.c).  newwind() uses a binary search to find the largest
+dithering factor less than or equal to the one given on the command line
+(or the default, if you don't specify one) for which all the colors can
+successfully be mapped to those available on the one or two windows available.
+The dithering factor is "extended" in the negative direction by interpreting
+a negative dithering factor as increased sloppiness about what is considered
+"successful" mapping, so that this search always "succeeds."  Viewgif will
+show a positive "color tolerance" in this case.
+
+(If you look at the function approx2(), the function that approximates the
+the colors in the GIF CLUT (Color Look-Up Table) for the two-screen case,
+you'll note that not all pairs of colors are considered as possible sums;
+instead, only those pairs that are "near" one another are tried.  I can only
+guess at the reason behind this, but I think that it is done to prevent the
+change between windows from being excessively noticeable.  If you know
+of a reference that describes the algorithms used here, it would be nice
+to add that in the program comments.)
+
+Scattered throughout the original code were some numbers like 85, 42, and
+21.  These have to do with the conversion from RGB888 to RGB222.  The
+maximum value for a color component in RGB888 is 255, and in RGB222 is 3,
+so...to convert, one scales by a factor of 255 / 3 = 85.  (For two screens,
+this program uses 85 / 2, or 42.)  toler() and toler2(), the functions that
+determine how "close" two colors are, do their comparison in RGB888 space,
+but consider all colors that would map to the goal color in the CoCo display
+space equally close.  (The upper bound on the dithering factor is the
+"radius" of that neighborhood in RGB888 space.)
+
+For those who saw the original viewgif, here are the changes I've made:
+
+ 1. A header file, viewgif.h, has been added, with #defines that I hope will
+    give some idea where the magic values come from.  We've also anticipated
+    attempts to port to OS-9/68000, though of course the low-level routines
+    are quite CoCo-specific.
+
+ 2. The data have been restructured.  Most notably, the rgbcolor and
+    cocoscreen types are attempts to collect related data in an intelligible
+    fashion, to allow iteration over screens or color components, to let
+    the common outer loop in setmap() be actual common code, and to avoid
+    needless replication of code in the loop that tries to extend just
+    one CLUT in approx2().  We hope we are anticipating generalization to
+    three or more windows, though that way lies madness, more memory usage,
+    and a combinatorial explosion in the approx3() function that one would
+    have to add.
+
+ 3. Scalar global variables have been explicitly put on the direct page
+    for speed.  (This has been made conditional for possible porting.)
+    The assembly-language functions have been changed to reflect this
+    placement as well, since Vaughn Cato tried to pick time-critical
+    functions for conversion to assembly language.  Speaking of which,
+    we added comments showing addpixel() in C--not that it's tough to
+    figure out, but every little bit helps.
+
+ 4. Some judiciously-placed register declarations have been added, again
+    for speed.
+
+ 5. Subscripting has been turned into pointer arithmetic in various places.
+
+ 6. Some functions have been moved into what seems to me to be more
+    appropriate files, considering who calls them and the general purpose
+    of the functions in the file.  (Some more of this should be done; in
+    particular, functions not related to window manipulation should be
+    moved out of gifwin.c.)
+
+ 7. A bug in what was setmap2() but is now approx2() was corrected.  The
+    original was not toggling the "mode" variable, so that it would never
+    look at possible sums extending the larger CLUT.
+
+ 8. approx2() (formerly setmap2()) has added an array in which we recall
+    the results of the nearcolor() function, rather than calling it lots
+    of times.  (I think this is the big win for speeding up the analysis
+    phase.)
+
+ 9. We added a -? option.
+
+10. We added a -z option, that overwrites the global color map after
+    replacing unused colors with some color that is used.  CAUTION:
+    this overwrites the whole global color map, and said color map is
+    manipulated in other ways via the -g, -g2, and -b options.  You
+    can lose information if you combine -z with those options, and
+    perhaps we should prevent them from being used together.
+
+There is still more that can be done to speed things up.
+
+ 1. It should be possible to speed up the decompression.  Alas, the obvious
+    way, i.e. going with a hash table rather than a tree, may eat more memory
+    than we can afford; nevertheless, it is worth investigating.
+
+ 2. It may be worth trying putting two scan lines at a time instead of one,
+    to cut system call overhead.  One would have to allocate get/put buffers
+    for each window to do this.  It's not clear whether it would be a win
+    for interleaved images.
+
+ 3. This version of viewgif shares the problems of the program it is based
+    on.  (Indeed, it would be surprising if it didn't!)  Aside from smarter
+    mapping of colors, which I fear would require two passes over the GIF
+    file, the main one concerns smarter handling of aspect ratios.  Most
+    likely, since the current GIF specification doesn't say beans about
+    aspect ratio, one will have to let the user tweak the aspect ratio
+    on the command line.
+
+ 4. The VEF files generated may not be quite correct; vefprt seems to emit
+    a few lines of junk before putting out the rest of the image properly.
+    This behavior seems to be the same for the old and the new versions of
+    the program.
+
+ 5. The code that waits for the user to type a character could be changed
+    to use the SS_SSIG setstat along with an intercept() routine, to cut
+    system overhead.
