@@ -5,6 +5,7 @@
 BASEDIR		= $(HOME)/os9
 OS9TOOLSDIR	= /usr/local/bin
 DEFDIR		= $(BASEDIR)/defs
+DSKDIR		= $(BASEDIR)/dsks
 
 
 #################### DO NOT CHANGE ANYTHING BELOW THIS LINE ####################

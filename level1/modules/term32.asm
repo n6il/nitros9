@@ -7,7 +7,6 @@
 * ------------------------------------------------------------------
 *        From Tandy OS-9 Level One VR 02.00.00
 
-
          nam   TERM
          ttl   VDG screen device descriptor
 

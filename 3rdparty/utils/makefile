@@ -1,15 +1,24 @@
 include ../../Makefile.rules
 
+dirs	= boisy dasm smartwatch winfo
+
 # Make all components
 all:
-	$(CD) boisy; make
-	$(CD) dasm; make
-	$(CD) smartwatch; make
-	$(CD) winfo; make
+	@$(ECHO) "*********************************************"
+	@$(ECHO) "*                                           *"
+	@$(ECHO) "*                 Utilities                 *"
+	@$(ECHO) "*                                           *"
+	@$(ECHO) "*********************************************"
+	$(foreach dir, $(dirs), $(CD) $(dir); make; $(CD) ..;)
 
 # Clean all components
 clean:
-	-$(CD) boisy; make clean
-	-$(CD) dasm; make clean
-	-$(CD) smartwatch; make clean
-	-$(CD) winfo; make clean
+	$(foreach dir, $(dirs), $(CD) $(dir); make clean; $(CD) ..;)
+
+# Make DSK images
+dsk:
+	$(foreach dir, $(dirs), $(CD) $(dir); make dsk; $(CD) ..;)
+
+# Copy DSK images
+dskcopy:
+	$(foreach dir, $(dirs), $(CD) $(dir); make dskcopy; $(CD) ..;)

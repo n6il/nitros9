@@ -1,5 +1,7 @@
 include ../../Makefile.rules
 
+dirs	= burke disto emudsk flash flashpak ide s16550 sdisk sdisk3 tccc
+
 # Make all components
 all:
 	@$(ECHO) "*********************************************"
@@ -7,26 +9,8 @@ all:
 	@$(ECHO) "*          3rd Party Device Drivers         *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	$(CD) burke; make
-	$(CD) disto; make
-	$(CD) emudsk; make
-	$(CD) flash; make
-	$(CD) flashpak; make
-	$(CD) ide; make
-	$(CD) s16550; make
-	$(CD) sdisk; make
-	$(CD) sdisk3; make
-	$(CD) tccc; make
+	$(foreach dir, $(dirs), $(CD) $(dir); make; $(CD) ..;)
 
 # Clean all components
 clean:
-	-$(CD) burke; make clean
-	-$(CD) disto; make clean
-	-$(CD) emudsk; make clean
-	-$(CD) flash; make clean
-	-$(CD) flashpak; make clean
-	-$(CD) ide; make clean
-	-$(CD) s16550; make clean
-	-$(CD) sdisk; make clean
-	-$(CD) sdisk3; make clean
-	-$(CD) tccc; make clean
+	$(foreach dir, $(dirs), $(CD) $(dir); make clean; $(CD) ..;)
