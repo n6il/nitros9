@@ -32,15 +32,15 @@ Data is transferred using large block reads and writes until end-of-file
 occurs on the input path. Because block transfers are used,
 normal output processing of data does not occur on character-oriented
 devices such as terminals, printers, etc. Therefore, the
-LIST command is preferred over COPY when a file consisting of text
+<command>list</command> command is preferred over <command>copy</command> when a file consisting of text
 is to be sent to a terminal or printer.
 </para>
 <para>
-The &quot;-s&quot; option causes COPY to perform a single drive copy
+The &quot;-s&quot; option causes <command>copy</command> to perform a single drive copy
 operation. The second pathlist must be a full pathlist if &quot;-s
-appears. COPY will read a portion of the source disk into memory,
+appears. <command>Copy</command> will read a portion of the source disk into memory,
 you remove the source disk and place the destination disk into the
-drive, enter a &quot;C&quot; whereupon COPY writes on the destination disk,
+drive, enter a &quot;C&quot; whereupon <command>copy</command> writes on the destination disk,
 this process continues until the entire file is copied.
 </para>
 <para>

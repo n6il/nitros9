@@ -14,21 +14,22 @@
 
 <refsect1><title>Description</title>
 <para>
-EXMODE is an enhanced verison of the XMODE utility, and is useful for
+<command>exmode</command> is an enhanced verison of the <command>xmode</command> utility, and is useful for
 changing initialization parameters specific to CoCo 3 window descriptors
 and enhanced ACIA device descriptors.
 </para>
 <para>
-EXMODE is very similar to the TMODE command. TMODE only operates on
-open paths so its effect is temporary. EXMODE actually updates the
+<command>Exmode</command> is very similar to the <command>tmode</command> command.
+<command>Tmode</command> only operates on
+open paths so its effect is temporary. <command>Exmode</command> actually updates the
 device descriptor so the change persists as long as the computer is
 running, even if paths to the device are repetitively opened and
-closed. If EXMODE is used to change parameter(s) and the COBBLER
+closed. If <command>exmode</command> is used to change parameter(s) and the COBBLER
 program is used to make a new system disk, the changed parameter
 will be permanently reflected on the new system disk.
 </para>
 <para>
-EXMODE requires a device name to be given. If no arguments are
+<command>Exmode</command> requires a device name to be given. If no arguments are
 given, the present values for each parameter are displayed,
 otherwise, the parameter(s) given in the argument list are
 processed. Any number of parameters can be given, and are separated
@@ -36,7 +37,7 @@ by spaces or commas.
 </para>
 
 </refsect1>
-<refsect1><title>EXMODE Parameter Names</title>
+<refsect1><title><command>Exmode</command> Parameter Names</title>
 
 <informaltable frame="none">
 <tgroup cols="2">

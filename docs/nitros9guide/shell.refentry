@@ -13,7 +13,7 @@
 
 <refsect1><title>Description</title>
 <para>
-The Shell is OS-9's command interpreter program. It reads data from
+The <command>shell</command> is OS-9's command interpreter program. It reads data from
 its standard input path (the keyboard or a file), and interprets the
 data as a sequence of commands. - The basic function of the shell is
 to initiate and control execution of other OS-9 programs.
@@ -31,7 +31,7 @@ after the single command line is processed.
 </para>
 <para>
 The rest of this description is a technical specification of the
-shell syntax. Use of the Shell is described fully in Chapters 2
+shell syntax. Use of the <command>shell</command> is described fully in Chapters 2
 and 4 of this manual.
 </para>
 </refsect1>

@@ -22,13 +22,13 @@ It is possible for sectors on a disk to be marked as being allocated
 but in fact are not actually associated with a file or the disk's
 free space. This can happen if a disk is removed from a drive while
 files are still open, or if a directory which still contains files
-is deleted (see 3.5). DCHECK is a diagnostic that can be used to
+is deleted (see 3.5). <command>Dcheck</command> is a diagnostic that can be used to
 detect this condition, as well as the general integrity of the directory/file linkages.
 </para>
 <para>
-DCHECK is given as a parameter the name of the disk device to be
+<command>Dcheck</command> is given as a parameter the name of the disk device to be
 checked. After verifying and printing some vital file structure
-parameters, DCHECK follows pointers down the disk's file system tree
+parameters, <command>dcheck</command> follows pointers down the disk's file system tree
 to all directories and files on the disk. As it does so, it
 verifies the integrity of the file descriptor sectors, reports any
 discrepancies in the directory/file linkages, and builds a sector
@@ -47,9 +47,9 @@ good chance the entire FD is bad if any of it's segment descriptors
 are bad, the allocation map is <emphasis>not</emphasis> updated for corrupt FDs.
 </para>
 <para>
-While building the allocation map, DCHECK also makes sure that each
+While building the allocation map, <command>dcheck</command> also makes sure that each
 disk cluster appears only once and only once in the file structure.
-If this condition is detected, DCHECK will display a message like:
+If this condition is detected, <command>dcheck</command> will display a message like:
 </para>
 <screen>
 Cluster $xxxxxx was previously allocated
@@ -84,11 +84,11 @@ marked as allocated
 in the disk's allocation map. It is possible that this cluster may
 be allocated to another file later, overwriting the contents of the
 cluster with data from the newly allocated file. Any clusters that
-have been reported as &quot;previously allocated&quot; by DCHECK as described
+have been reported as &quot;previously allocated&quot; by <command>dcheck</command> as described
 above surely have this problem.
 </para>
 <para>
-Available DCHECK options are:
+Available <command>dcheck</command> options are:
 </para>
 
 <informaltable frame="none">
@@ -118,38 +118,38 @@ Available DCHECK options are:
 </row>
 <row>
 <entry>-o</entry>
-<entry>print DCHECK's valid options</entry>
+<entry>print <command>dcheck</command>'s valid options</entry>
 </row>
 </tbody>
 </tgroup>
 </informaltable>
 
 <para>
-The &quot;-s&quot; option causes DCHECK to display a count of files and
+The &quot;-s&quot; option causes <command>dcheck</command> to display a count of files and
 directories only; only FDs are checked for validity. The &quot;-b&quot; option
 suppresses listing of clusters allocated but not in file structure.
-The &quot;-p&quot; option causes DCHECK to make a second pass through the file
-structure printing the pathlists for any clusters that DCHECK finds
+The &quot;-p&quot; option causes <command>dcheck</command> to make a second pass through the file
+structure printing the pathlists for any clusters that <command>dcheck</command> finds
 as &quot;already allocated&quot; or &quot;in file structure but not in allocation
-map&quot;. The &quot;-w=&quot; option tells DCHECK where to locate it's allocation
+map&quot;. The &quot;-w=&quot; option tells <command>dcheck</command> where to locate it's allocation
 map work file(s). The pathlist specified must be a FULL pathlist to
 a <emphasis>directory</emphasis>. The directory &quot;/D0&quot; is
 used is used if &quot;-w&quot; is not
 specified. It  is recommended that this pathlist NOT be located on
-the disk being DCHECKed if the disk's file structure integrity is in
+the disk being <command>dcheck</command>ed if the disk's file structure integrity is in
 doubt.
 </para>
 <para>
-DCHECK builds its disk allocation map in a file called
+<command>Dcheck</command> builds its disk allocation map in a file called
 <replaceable>pathlist</replaceable>/DCHECKppO, where <replaceable>pathlist</replaceable>
 is as specified by the
 &quot;-w=&quot; option and pp is the process number in hexadecimal. Each bit
 in this bitmap file corresponds to a cluster of sectors on the disk.
-If the &quot;-p&quot; option appears on the command line, DCHECK creates a
+If the &quot;-p&quot; option appears on the command line, <command>dcheck</command> creates a
 second bitmap file (<replaceable>pathlist</replaceable>/DCHECKpp1) that has a bit set for
-each cluster DCHECK finds as &quot;previously allocated&quot; or &quot;in file
+each cluster <command>dcheck</command> finds as &quot;previously allocated&quot; or &quot;in file
 structure but not in allocation map&quot; while building the allocation
-map. DCHECK them makes another pass through the directory structure
+map. <command>Dcheck</command> them makes another pass through the directory structure
 to determine the pathlists for these questionable clusters. These
 bitmap work files may be saved by specifying the &quot;-m&quot; option on the
 command line.
@@ -157,10 +157,10 @@ command line.
 </refsect1>
 <refsect1><title>Restrictions</title>
 <para>
-For best results, DCHECK should have exclusive access to the disk
-being checked. Otherwise DCHECK may be fooled if the disk allocation map
+For best results, <command>dcheck</command> should have exclusive access to the disk
+being checked. Otherwise <command>dcheck</command> may be fooled if the disk allocation map
 changes while it is building its bitmap file from the
-changing file structure.  DCHECK cannot process disks with a directory
+changing file structure.  <command>Dcheck</command> cannot process disks with a directory
 depth greater than 39 levels.
 </para>
 <para>

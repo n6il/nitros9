@@ -20,16 +20,17 @@ printer, RS232 port, etc. A common use is to change baud rates,
 control key definitions, etc.
 </para>
 <para>
-XMODE is very similar to the TMODE command. TMODE only operates on
-open paths so its effect is temporary. XMODE actually updates the
+<command>Xmode</command> is very similar to the <command>tmode</command> command.
+<command>Tmode</command> only operates on
+open paths so its effect is temporary. <command>Xmode</command> actually updates the
 device descriptor so the change persists as long as the computer is
 running, even if paths to the device are repetitively opened and
-closed. If XMODE is used to change parameter(s) and the COBBLER
+closed. If <command>xmode</command> is used to change parameter(s) and the COBBLER
 program is used to make a new system disk, the changed parameter
 will be permanently reflected on the new system disk.
 </para>
 <para>
-XMODE requires a device name to be given. If no arguments are
+<command>Xmode</command> requires a device name to be given. If no arguments are
 given, the present values for each parameter are displayed,
 otherwise, the parameter(s) given in the argument list are
 processed. Any number of parameters can be given, and are separated

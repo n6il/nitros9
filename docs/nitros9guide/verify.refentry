@@ -26,11 +26,11 @@ If the -u (update) option is specified, the module(s) will be copied
 to the standard output path with the module's header parity and CRC
 values replaced with the computed values. A message will be
 displayed to indicate whether or not the module's values matched
-those computed by VERIFY.
+those computed by <command>verify</command>.
 </para>
 <para>
 If the option is NOT specified, the module will not be copied to
-standard output. VERIFY will only display a message to indicate
+standard output. <command>Verify</command> will only display a message to indicate
 whether or not the module's header parity and CRC matched those
 which were computed.
 </para>

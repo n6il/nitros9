@@ -18,20 +18,20 @@
 This shell &quot;built in&quot; command sends an &quot;abort&quot; signal to the
 process having the process ID number specified. The process to be
 aborted must have the same user ID as the user that executed the
-command. The &quot;procs&quot; command can be used to obtain the process ID
+command. The <command>procs</command> command can be used to obtain the process ID
 numbers.
 </para>
 <para>
 NOTE: If a process is waiting for I/O, it may not die until it
-completes the current I/O operation, therefore, if you KILL a
-process and the PROCS command shows it still exists, it is probably
+completes the current I/O operation, therefore, if you <command>kill</command> a
+process and the <command>procs</command> command shows it still exists, it is probably
 waiting for receive a line of data from a terminal before it can
 die.
 
-Since this is a built-in SHELL command, it does not appear in the
+Since this is a built-in <command>shell</command> command, it does not appear in the
 CMDS directory.
 
-For more information see: 4.5, 5.2, PROCS
+For more information see: 4.5, 5.2, <command>procs</command>
 
 </para>
 </refsect1>

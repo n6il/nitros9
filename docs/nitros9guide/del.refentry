@@ -25,9 +25,9 @@
 <refsect1><title>Description</title>
 <para>
 This command is used to delete the file(s) specified by the
-pathllst(s). The user must have write permission for the file(s).
+pathlist(s). The user must have write permission for the file(s).
 Directory files cannot be deleted unless their type is changed to
-non-directory: see the &quot;ATTR&quot; command description.
+non-directory: see the <command>ATTR</command> command description.
 </para>
 <para>
 If the -x option appears, the current

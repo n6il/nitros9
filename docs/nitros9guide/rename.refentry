@@ -20,8 +20,8 @@
 <para>
 Gives the mass storage file specified in the pathlist a new name.
 The user must have write permission for the file to change its name.
-It is not possible to change the names of devices, &quot;.&quot;, or
-&quot;..&quot;
+It is not possible to change the names of devices, <filename class="directory">.</filename>, or
+<filename class="directory">..</filename>
 </para>
 </refsect1>
 <refsect1><title>Examples</title>

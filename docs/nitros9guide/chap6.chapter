@@ -8,11 +8,13 @@ system disk is generally kept in disk drive zero (&quot;/D0&quot;) when the
 system is running.
 </para>
 <para>
-Two files used during the system startup operation, &quot;OS9Boot&quot; and
-&quot;startup&quot; <emphasis>must</emphasis>
+Two files used during the system startup operation, <filename>OS9Boot</filename> and
+<filename>startup</filename> <emphasis>must</emphasis>
 reside in the system disk's root directory. Other
-files are organized into three directories: CMDS (commands), DEFS
-(system-wide definitions), and SYS (other system files). Other files
+files are organized into three directories:
+<filename class="directory">CMDS</filename> (commands),
+<filename class="directory">DEFS</filename> (system-wide definitions),
+and <filename class="directory">SYS</filename> (other system files). Other files
 and directories created by the system manager and/or users may also
 reside on the system disk. These frequently include each user s
 initial data directory.
@@ -22,11 +24,11 @@ initial data directory.
 <title>The OS9Boot File</title>
 
 <para>
-The file called &quot;OS9Boot&quot; loaded into RAM memory by the
+The file called <filename>OS9Boot</filename> loaded into RAM memory by the
 &quot;bootstrap&quot; routine located in the OS-9 firmware. It includes file
 managers, device drivers and descriptors, and any other modules
 which are permanently resident in memory. A typical Microware OS-9
-distribution disk's &quot;OS9Boot&quot; file contains the following modules:
+distribution disk's <filename>OS9Boot</filename> file contains the following modules:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
@@ -111,7 +113,7 @@ distribution disk's &quot;OS9Boot&quot; file contains the following modules:
 
 <para>
 Users may create new bootstrap files which may include additional
-modules (see &quot;OS9Gen&quot; command). Any module loaded as part of the
+modules (see <command>OS9Gen</command> command). Any module loaded as part of the
 bootstrap cannot be unlinked and is stored in memory with a minimum
 of fragmentation. It may be advantageous to include in the OS9Boot
 file any module used constantly during normal system operation.
@@ -123,7 +125,7 @@ This can be done with the OS9GEN command.
 <title>The SYS Directory</title>
 
 <para>
-The directory &quot;/d0/SYS&quot; contains two important files:
+The directory <filename>/d0/SYS</filename> contains two important files:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
@@ -132,7 +134,7 @@ The directory &quot;/d0/SYS&quot; contains two important files:
 <tbody>
   <row>
 <entry>password</entry>
-<entry>the system password file (see &quot;login&quot; command)</entry>
+<entry>the system password file (see <command>login</command> command)</entry>
   </row>
   <row>
 <entry>errmsg</entry>
@@ -142,9 +144,9 @@ The directory &quot;/d0/SYS&quot; contains two important files:
 </tgroup>
 </informaltable>
 <para>
-These files (and the SYS directory itself) are not absolutely
-required to boot OS-9, they are needed if &quot;login&quot;, &quot;tsmon&quot;, or
-&quot;printerr&quot; will be used. Users may add other system-wide files of
+These files (and the <filename class="directory">SYS</filename> directory itself) are not absolutely
+required to boot OS-9, they are needed if <command>login</command>, <command>tsmon</command>, or
+<command>printerr</command> will be used. Users may add other system-wide files of
 similar nature if desired.
 </para>
 </section>
@@ -153,10 +155,10 @@ similar nature if desired.
 <title>The Startup File</title>
 
 <para>
-The file &quot;/d0/startup&quot; is a shell procedure file which
+The file <filename>/d0/startup</filename> is a shell procedure file which
 is automatically processed immediately after system startup. The
-user may include in &quot;startup&quot; any legal shell command line. Often
-this will include &quot;setime&quot; to start the system clock. If this file
+user may include in <filename>startup</filename> any legal shell command line. Often
+this will include <command>setime</command> to start the system clock. If this file
 is not present the system will still start correctly but the user
 must run the SETIME command manually.
 </para>
@@ -166,11 +168,11 @@ must run the SETIME command manually.
 <title>The CMDS Directory</title>
 
 <para>
-The directory &quot;/d0/CMDS&quot; is the system-wide command object code
+The directory <filename class="directory">/d0/CMDS</filename> is the system-wide command object code
 directory, which is normally shared by all users as their working
-execution directory. If &quot;shell&quot; is not part of the
-&quot;OS9Boot&quot; file, it must be present in this directory. The system
-startup process &quot;sysgo&quot; makes CMDS the initial execution directory.
+execution directory. If <command>shell</command> is not part of the
+<filename>OS9Boot</filename> file, it must be present in this directory. The system
+startup process &quot;sysgo&quot; makes <filename class="directory">CMDS</filename> the initial execution directory.
 </para>
 </section>
 
@@ -178,7 +180,7 @@ startup process &quot;sysgo&quot; makes CMDS the initial execution directory.
 <title>The DEFS Directory</title>
 
 <para>
-The directory &quot;/d0/DEFS&quot; is a directory that contains assembly
+The directory <filename class="directory">/d0/DEFS</filename> is a directory that contains assembly
 language source code files which contain common system-wide symbolic
 definitions, and are normally included in assembly language programs
 by means of the OS-9 Assembler &quot;use&quot; directive. The presence and
@@ -218,8 +220,8 @@ contained in this directory are:
 
 <para>
 The system disk is not usually removed while the system is running, especially
-on multiuser systems. If it is, the &quot;chx&quot; and
-&quot;chd&quot; (if the working data directory was on the system disk)
+on multiuser systems. If it is, the <command>chx</command> and
+<command>chd</command> (if the working data directory was on the system disk)
 commands should be executed to reset the working directory pointers
 because the directories may be at different addresses on the new
 disk, for example:
@@ -252,16 +254,17 @@ The new disk must be formatted.
 </para></listitem>
 
 <listitem><para>
-The &quot;OS9Boot&quot; file must be created and linked by the &quot;OS9Gen&quot; or
-&quot;Cobbler&quot; commands.
+The <filename>OS9Boot</filename> file must be created and linked by the <command>OS9Gen</command> or
+<command>Cobbler</command> commands.
 </para></listitem>
 
 <listitem><para>
-The &quot;startup&quot; file must be created or copied.
+The <filename>startup</filename> file must be created or copied.
 </para></listitem>
 
 <listitem><para>
-The CMDS and SYS directories and the files they contain must be
+The <filename class="directory">CMDS</filename> and
+<filename class="directory">SYS</filename> directories and the files they contain must be
 copied.
 </para></listitem>
 </orderedlist>
@@ -274,11 +277,11 @@ By a shell procedure file created by the user.
 </para></listitem>
 
 <listitem><para>
-By a shell procedure file generated by the &quot;dsave&quot; command
+By a shell procedure file generated by the <command>dsave</command> command
 </para></listitem>
 
 <listitem><para>
-By the &quot;backup&quot; command
+By the <command>backup</command> command
 </para></listitem>
 </orderedlist>
 </para>

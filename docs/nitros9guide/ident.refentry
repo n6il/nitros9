@@ -22,16 +22,16 @@
 <refsect1><title>Description</title>
 <para>
 This command is used to display header information from OS-9 memory
-modules. IDENT displays the module size, CRC bytes (with verification), and for
+modules. <command>Ident</command> displays the module size, CRC bytes (with verification), and for
 program and device driver modules, the execution
-offset and the permanent storage requirement bytes. IDENT will
+offset and the permanent storage requirement bytes. <command>ident</command> will
 print and interpret the type/language and attribute/revision bytes.
-In addition, IDENT displays the byte immediately following the
+In addition, <command>ident</command> displays the byte immediately following the
 module name since most Microware-supplied modules set this byte to
 indicate the module edition.
 </para>
 <para>
-IDENT will display all modules contained in a disk file. If the
+<command>Ident</command> will display all modules contained in a disk file. If the
 &quot;-m&quot; option appears, <replaceable>path</replaceable> is assumed to be a module in memory.
 </para>
 <para>
@@ -42,7 +42,7 @@ The &quot;-x&quot; option implies the pathlist begins in the execution
 directory.
 </para>
 <para>
-The &quot;-s&quot; option causes IDENT to display the. following module
+The &quot;-s&quot; option causes <command>ident</command> to display the. following module
 information on a single line:
 </para>
 <simplelist>
@@ -57,7 +57,7 @@ Module CRC
 </member>
 <member>
 A &quot;.&quot; if the CRC verifies correctly, &quot;?&quot; if incorrect.
-(IDENT will leave this field blank if the &quot;-v&quot; option appears.)
+(<command>Ident</command> will leave this field blank if the &quot;-v&quot; option appears.)
 </member>
 <member>
 Module name

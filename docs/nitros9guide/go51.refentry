@@ -29,13 +29,13 @@ Note, however, that the use of a high resolution graphics page
 means that an extra 6K bytes will be needed in this mode. This
 extra memory requirement is not normally a problem but in memory-critical
 applications, such as the C and Pascal compilers, the user
-can simply avoid the use of GO51.
+can simply avoid the use of <command>go51</command>.
 </para>
 <para>
 This mode of display has a set of <emphasis>escape sequences</emphasis>
 (commands) to
 emulate commercial data terminals. In addition to the video screen
-driver, GO51 provides a new keyboard driver which features auto-repeat.
+driver, <command>go51</command> provides a new keyboard driver which features auto-repeat.
 The keyboard code allocation is the same as described in
 section 2.4.3 and Appendix D.
 </para>

@@ -15,11 +15,11 @@
 <para>
 This command is used to build short text files by copying the
 standard input path into the file specified by
-<replaceable>path</replaceable>. BUILD creates a file according to the pathlist parameter,
+<replaceable>path</replaceable>. <command>Build</command> creates a file according to the pathlist parameter,
 then displays a &quot;?&quot;
 prompt to request an input line. Each line entered is written to
 the output path (file). Entering a line consisting of a carriage
-return only causes BUILD to terminate.
+return only causes <command>build</command> to terminate.
 </para>
 
 </refsect1>

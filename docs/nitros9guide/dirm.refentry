@@ -32,7 +32,7 @@ size, type, revision level, reentant attribute, user count, and name
 of each module is displayed. All numbers shown are in hexadecimal.
 </para>
 <para>
-WARNING: Many of the modules listed by DIRM are OS-9 system modules
+WARNING: Many of the modules listed by <command>dirm</command> are OS-9 system modules
 and NOT executable as programs: always check the module type code
 before running a module if you are not familiar with it!
 </para>

@@ -13,7 +13,7 @@
 
 <refsect1><title>Description</title>
 <para>
-dEd  is a screen-oriented disk  editor  utility.
+<command>dEd</command>  is a screen-oriented disk  editor  utility.
 It was originally conceived as a floppy
 disk  editor, so the display is organized around individual 
 sectors. It performs most of the functions of Patch, from 
@@ -27,22 +27,22 @@ and possibly others (CoCo Level II OS-9).
 </para><para>
 To use, type:
 <screen>
-dEd <replaceable>pathlist</replaceable>
+<command>dEd</command> <replaceable>pathlist</replaceable>
 </screen>
 where &lt;pathlist&gt; is of the form:  filename or dirname
 or  /path/filename
 or  /D0@  (edits entire disk) 
 </para><para>
-dEd will read in and display the first 256 bytes in the file
+<command>dEd</command> will read in and display the first 256 bytes in the file
 (disk). This  is Logical Sector Number (LSN) zero. You move 
 through  the   file sector (LSN) by sector using the up and 
 down arrow keys. The current LSN number is displayed in Hex 
 and  Decimal in the upper left corner of the screen. If the 
 disk itself was accessed (by appending '@' to it's name when
-dEd   was called), the LSN is the disk sector number. If an 
+<command>dEd</command>   was called), the LSN is the disk sector number. If an 
 individual file is being editted, however, the LSN displayed
 refers  to the file, not to the disk. All numbers requested 
-by  dEd must be in Hex format. All commands are accessed by 
+by  <command>dEd</command> must be in Hex format. All commands are accessed by 
 simply pressing the desired key.
 </para>
 </refsect1>

@@ -21,7 +21,7 @@ write permission.
 </para>
 <para>
 The new directory is initialized and initially does not contain
-files except for the &quot;.&quot; and &quot;..&quot; pointers to its parent directory
+files except for the <filename class="directory">.</filename> and <filename class="directory">..</filename> pointers to its parent directory
 and itself, respectively (see 3.7.3). All access permissions are
 enabled (except sharable).
 </para>

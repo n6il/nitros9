@@ -15,10 +15,10 @@
 
 <refsect1><title>Description</title>
 <para>
-PWD displays a pathlist that shows the path from the root
+<command>Pwd</command> displays a pathlist that shows the path from the root
 directory to the user's current data directory. It can be used by
 programs to discover the actual physical location of files, or by
-humans who get lost in the file system. PXD is identical except
+humans who get lost in the file system. <command>Pxd</command> is identical except
 that is shows the pathlist of the user's current execution directory.
 </para>
 </refsect1>

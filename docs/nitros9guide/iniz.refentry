@@ -19,7 +19,7 @@
 Links the specified device to OS-9, places the device addres in a new device
 table entry, allocates the memory needed by the device driver, and calls
 the device driver initialization routine.  If the device is already
-installed, INIZ does not reinitialize it.
+installed, <command>iniz</command> does not reinitialize it.
 </para>
 <refsect2>
 <title>Options:</title>
@@ -30,7 +30,7 @@ installed, INIZ does not reinitialize it.
 <para>
 is the name of the device drivere you want to
 initialize.  Specify as many device drivers as you
-wish with one INIZ command.
+wish with one <command>iniz</command> command.
 </para>
 </listitem>
 </varlistentry>

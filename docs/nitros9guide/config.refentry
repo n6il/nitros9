@@ -13,22 +13,22 @@
 <refsect1><title>Description</title>
 
 <para>
-CONFIG provides menus of all I/O options and all system commands.  You select
+<command>Config</command> provides menus of all I/O options and all system commands.  You select
 the device drivers and commands you want to include on a new system diskette
 from these menus.  Selecting only the device drivers and commands you and
 your system require lets you make the most efficient use of computer
 memory and system diskette storage.
 </para>
 <para>
-The CONFIG utility is on a separate CONFIG/BOOT Diskette.  Make a copy of this
-diskette using the OS-9 BACKUP command and use the copy as your working
+The <command>config</command> utility is on a separate CONFIG/BOOT Diskette.  Make a copy of this
+diskette using the OS-9 <command>backup</command> command and use the copy as your working
 diskette.  Keep the original CONFIG/BOOT Diskette in a safe place to use
 for future backups.  You can use the CONFIG/BOOT Diskette for booting OS-9
 from &make; Disk BASIC from Drive /D0.
 </para>
 <para>
-CONFIG requires no initial parameters.  You establish parameters during the
-operation of CONFIG.  Be sure that the execution directory is at /D0/CMDS
+<command>Config</command> requires no initial parameters.  You establish parameters during the
+operation of <command>config</command>.  Be sure that the execution directory is at /D0/CMDS
 before executing the command.
 </para>
 <para>
@@ -38,12 +38,12 @@ Examples:
 	CONFIG [ENTER]
 </screen>
 <para>
-CONFIG executes and a prompt asks you to indicate whether you wish to use
+<command>Config</command> executes and a prompt asks you to indicate whether you wish to use
 one or two disk drives.  Press [1] for single- or [2] for two-drive
 operation.
 </para>
 <para>
-Next, CONFIG builds a list of the various devices from the MODULES directory.
+Next, <command>config</command> builds a list of the various devices from the MODULES directory.
 When the list is complete, a screen menu appears.  Use the up and down arrow
 keys to move to a device.  Then, press [S] to either select or exclude a
 particular device.  Press [S] once to display an X to the right of the
@@ -181,9 +181,9 @@ that matches the terminal module you previously selected for your console
 device.
 </para>
 <para>
-CONFIG builds a boot list from the selected devices and their associated
+<command>Config</command> builds a boot list from the selected devices and their associated
 drivers and managers.  "Bootlist" is created in the ROOT directory of
-Drive 0.  CONFIG next displays two clock options:
+Drive 0.  <command>Config</command> next displays two clock options:
 </para>
 <literallayout>
  1 - 60Hz (American)
@@ -221,7 +221,7 @@ Press [N] if you want to create a boot file, but do not wish to add any
 commands to the new system diskette.  Use this option to create a new boot
 file on a diskette on which you have prefviously copied the OS-9 system.
 If you have only one disk drive, this procedure is quicker than using
-the CONFIG utility to complete the entire system transfer, as less
+the <command>config</command> utility to complete the entire system transfer, as less
 diskette swaps are required.
 </para>
 <para>
@@ -256,7 +256,7 @@ diskette.
 <para>
 If you have a multi-drive system, a prompt appears asking you to insert your
 OS-9 system diskette in /D0.  Press the spacebar.  The process finishes the
-CONFIG operation and returns to OS-9.
+<command>config</command> operation and returns to OS-9.
 </para>
 <para>
 If you have a single-drive system, you swawp diskettes during the final
@@ -268,10 +268,10 @@ you select.
 </para>
 <para>
 It would be quicker and easier to use BACKUP to create a system disk, use
-CONFIG to create a new bootfile, then delete unwanted commands.  However,
+<command>config</command> to create a new bootfile, then delete unwanted commands.  However,
 this process causes fragmentation of diskette space.  Fragmentation results
 in slower diskette access, and free memory is broken into segments that
-might not be large enough for some OS-9 operations.  CONFIG causes no
+might not be large enough for some OS-9 operations.  <command>Config</command> causes no
 fragmentation.
 </para>
 <para>
