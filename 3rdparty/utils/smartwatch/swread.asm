@@ -324,8 +324,8 @@ nxtdata  dec   ,s
          tst   <century
          beq   not20
          lda   #100
-         adda  1,y
-         sta   1,y
+         adda  ,y
+         sta   ,y
 not20    puls  b,pc
 
 noclk    clr   D.Daywk,u  clear garbage as new date routine reads D.Daywk
