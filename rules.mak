@@ -2,8 +2,9 @@
 
 # These macros should change according to where the base directory of the
 # OS-9 source tree is located
-BASEDIR		= /home/boisy/os9
-OS9TOOLSDIR	= /home/boisy/bin
+BASEDIR		= $(HOME)/os9
+OS9TOOLSDIR	= $(HOME)/bin
+DEFDIR		= $(BASEDIR)/defs
 
 
 #################### DO NOT CHANGE ANYTHING BELOW THIS LINE ####################
@@ -15,7 +16,7 @@ OS9TOOLSDIR	= /home/boisy/bin
 #ASOUT		= o=
 
 # Use the cross assembler
-AS		= $(OS9TOOLSDIR)/os9asm
+AS		= $(OS9TOOLSDIR)/os9asm -i=$(DEFDIR)
 ASOUT		= -o=
 AFLAGS		= -q
 
