@@ -1,8 +1,8 @@
 include ../Makefile.rules
 
 RELEASE		= os9l1v020100ccbeta2
-BOOTFILE	= bootfile_1773
-KERNEL		= kernel_1773
+BOOTFILE	= bootfile_stock
+KERNEL		= kernel_stock
 
 CMDS_D1		= $(shell $(CD) CMDS; make showcocoobjs_d1)
 CMDS_D2		= $(shell $(CD) CMDS; make showcocoobjs_d2)
