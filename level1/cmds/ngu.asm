@@ -86,7 +86,7 @@ stack    rmb   STCKSIZE
 size     equ   .
 
 * The utility name and edition goes here
-name     fcs   /NGE/
+name     fcs   /NGU/
          fcb   edition
 
 * Place constant strings here
@@ -101,6 +101,8 @@ HlpMsg   fcb   C$LF
          fcb   C$CR
 HlpMsgL  equ   *-HlpMsg
          ENDC
+UnkOpt   fcc   /unknown option: /
+UnkOptL  equ   *-UnkOpt
 
 * Here's how registers are set when this process is forked:
 *
@@ -124,11 +126,11 @@ HlpMsgL  equ   *-HlpMsg
 start    pshs  u,x		save registers for later
          leax  <clrmark,u	point to end of area to zero out
          IFNE  H6309
-         subr  u,x
-         tfr   x,w
-         clr   ,-s
-         tfm   s,u+
-         leas  1,s
+         subr  u,x		subtract U from X
+         tfr   x,w		and put X in W
+         clr   ,-s		put a zero on the stack
+         tfm   s,u+		and use TFM to clear starting at U
+         leas  1,s		clean up the stack
          ELSE
          pshs   x		save end pointer on stack
 clrnxt   clr   ,u+		clear out
@@ -151,7 +153,8 @@ clrnxt   clr   ,u+		clear out
          std   <bufsiz		size of our buffer
 
 * At this point we have determined our buffer space and saved pointers
-* for later use.  Now we will parse the command line
+* for later use.  Now we will parse the command line for options that
+* begin with -
          lbsr  SkipSpcs         move past any spaces on command line
          cmpa  #C$CR		CR?
          lbeq  ShowHelp		if so, no parameters... show help and exit
@@ -225,7 +228,17 @@ FixCmdLn lda   #C$SPAC		get space
          lbra  GetDash		possibly another option following?
 
 * We branch here if we encounter an unknown option character
-BadOpt   lbra  ShowHelp
+* A = bad option character
+BadOpt   leax  UnkOpt,pcr
+         ldy   #UnkOptL
+         ldb   #C$CR
+         pshs  d		save bad option and CR on stack
+         lda   #$02		stderr
+         os9   I$Write
+         leax  ,s		point X at option char on stack
+         os9   I$WritLn		print option and CR
+         puls  d		clean up stack
+         lbra  ShowHelp
 
 
 * At this point options are processed.
@@ -310,7 +323,7 @@ SkipSpcs lda   ,x+
          leax  -1,x
          rts
 
-* This routine skips over non-spaces and non-commas
+* This routine skips over everything but spaces, commas and CRs
 *
 * Entry:
 *   X = ptr to data to parse
