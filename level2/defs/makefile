@@ -8,7 +8,6 @@ DEFS		= Defsfile OS9Defs RBFDefs SCFDefs SysType
 ALLOBJS		= $(DEFS)
 
 all:	$(ALLOBJS)
-#	$(UNIX2OS9) $(ALLOBJS)
 
 Defsfile: defsfile
 	$(AS) $(DEFOPTS) -p $< > $@
@@ -29,4 +28,4 @@ clean:
 	$(RM) $(DEFS)
 
 showobjs:
-	@echo $(ALLOBJS)
+	@$(ECHO) $(ALLOBJS)
