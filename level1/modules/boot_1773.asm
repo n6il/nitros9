@@ -165,11 +165,7 @@ L00A3    clrb
          bra   L00AC
 L00A8    leas  $04,s
 L00AA    leas  $02,s
-L00AC
-         IFGT  Level-1
-         sta   >$FFD9		unnecessary - rel does this for us
-         ENDC
-         puls  u,y,x
+L00AC    puls  u,y,x
          leas  size,s		clean up stack
          clr   >$FF40		shut off floppy disk
          rts
