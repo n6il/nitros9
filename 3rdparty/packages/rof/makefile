@@ -4,8 +4,7 @@ DEPENDS		= ./Makefile
 
 DISK		= rof.dsk
 CMDS		= rescue
-SUPPORTFILES	= body heads larms legs lips panel1 rofvar rship.c rtitle.c \
-		scores
+SUPPORTFILES	= body heads larms legs lips panel1 rofvar rship.c rtitle.c scores
 
 ALLOBJS		= $(CMDS)
 
