@@ -1,33 +1,29 @@
-# OS-9 Distributions Makefile
-#
-
 include Makefile.rules
 
+dirs	= $(LEVEL1) $(LEVEL2) $(NLEVEL2) $(3RDPARTY)
+ 
 # Make all components
 all:
-	$(CD) $(LEVEL1); make
-	$(CD) $(LEVEL2); make
-	$(CD) $(NLEVEL2); make
-	$(CD) $(3RDPARTY); make
+	@$(ECHO) "*********************************************"
+	@$(ECHO) "*                                           *"
+	@$(ECHO) "*          COCOOS9 SOURCE PROJECT           *"
+	@$(ECHO) "*                                           *"
+	@$(ECHO) "*********************************************"
+	$(foreach dir, $(dirs), $(CD) $(dir); make; $(CD) ..;)
 
 # Clean all components
-clean:
-	-$(CD) $(LEVEL1); make clean
-	-$(CD) $(LEVEL2); make clean
-	-$(CD) $(NLEVEL2); make clean
-	-$(CD) $(3RDPARTY); make clean
+clean:  dskclean
+	$(foreach dir, $(dirs), $(CD) $(dir); make clean; $(CD) ..;)
 
 # Make DSK images
-dsk:
-	-$(CD) $(LEVEL1); make dsk
-	-$(CD) $(LEVEL2); make dsk
-	-$(CD) $(NLEVEL2); make dsk
-#	-$(CD) $(3RDPARTY); make clean
+dsk:	all
+	$(foreach dir, $(dirs), $(CD) $(dir); make dsk; $(CD) ..;)
 
 # Clean DSK images
 dskclean:
-	-$(CD) $(LEVEL1); make dskclean
-	-$(CD) $(LEVEL2); make dskclean
-	-$(CD) $(NLEVEL2); make dskclean
-#	-$(CD) $(3RDPARTY); make clean
+	$(foreach dir, $(dirs), $(CD) $(dir); make dskclean; $(CD) ..;)
+	rm -f $(DSKDIR)/*
 
+# Copy DSK images
+dskcopy: dsk
+	$(foreach dir, $(dirs), $(CD) $(dir); make dskcopy; $(CD) ..;)

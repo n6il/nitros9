@@ -1,26 +1,28 @@
 include ../Makefile.rules
 
+dirs	= booters drivers fmgrs p2mods subrtns utils packages
+
 # Make all components
 all:
 	@$(ECHO) "*********************************************"
 	@$(ECHO) "*                                           *"
-	@$(ECHO) "*             3rd Party Software            *"
+	@$(ECHO) "*            3rd Party Software             *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	$(CD) booters; make
-	$(CD) drivers; make
-	$(CD) fmgrs; make
-	$(CD) p2mods; make
-	$(CD) subrtns; make
-	$(CD) utils; make
-	$(CD) packages; make
+	$(foreach dir, $(dirs), $(CD) $(dir); make; $(CD) ..;)
 
 # Clean all components
-clean:
-	-$(CD) booters; make clean
-	-$(CD) drivers; make clean
-	-$(CD) fmgrs; make clean
-	-$(CD) p2mods; make clean
-	-$(CD) subrtns; make clean
-	-$(CD) utils; make clean
-	-$(CD) packages; make clean
+clean:	dskclean
+	$(foreach dir, $(dirs), $(CD) $(dir); make clean; $(CD) ..;)
+
+# Make DSK images
+dsk:
+	$(foreach dir, $(dirs), $(CD) $(dir); make dsk; $(CD) ..;)
+
+# Clean DSK images
+dskclean:
+	$(foreach dir, $(dirs), $(CD) $(dir); make dskclean; $(CD) ..;)
+
+# Copy DSK images
+dskcopy: dsk
+	$(foreach dir, $(dirs), $(CD) $(dir); make dskcopy; $(CD) ..;)

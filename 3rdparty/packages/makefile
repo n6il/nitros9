@@ -1,34 +1,16 @@
 include ../../Makefile.rules
 
-DEPENDS		= ./Makefile
+dirs	= basic09 cc fsim2 koronis kq3 kyumgai lsl mm multivue rof subsim
 
+# Make all components
 all:
 	@$(ECHO) "*********************************************"
 	@$(ECHO) "*                                           *"
-	@$(ECHO) "*           3rd Software Packages           *"
+	@$(ECHO) "*            3rd Party Packages             *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	$(CD) basic09; make
-	$(CD) cc; make
-	$(CD) fsim2; make
-	$(CD) koronis; make
-	$(CD) kq3; make
-	$(CD) kyumgai; make
-	$(CD) lsl; make
-	$(CD) mm; make
-	$(CD) multivue; make
-	$(CD) rof; make
-	$(CD) subsim; make
+	$(foreach dir, $(dirs), $(CD) $(dir); make; $(CD) ..;)
 
+# Clean all components
 clean:
-	-$(CD) basic09; make clean
-	-$(CD) cc; make clean
-	-$(CD) fsim2; make clean
-	-$(CD) koronis; make clean
-	-$(CD) kq3; make clean
-	-$(CD) kyumgai; make clean
-	-$(CD) lsl; make clean
-	-$(CD) mm; make clean
-	-$(CD) multivue; make clean
-	-$(CD) rof; make clean
-	-$(CD) subsim; make clean
+	$(foreach dir, $(dirs), $(CD) $(dir); make clean; $(CD) ..;)

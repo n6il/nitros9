@@ -46,12 +46,15 @@ dskclean:
 
 dsk: all $(PACKAGENAME)
 
+dskcopy: dsk
+	$(CP) $(DSK1) $(DSK2) $(PACKAGENAME) $(DSKDIR)
+
 $(PACKAGENAME): $(DSK1) $(DSK2)
 	$(ZIP) $(PACKAGENAME) $(DSK1) $(DSK2) ReadMe ChangeLog
 
 $(DSK1):
 	-$(RM) $(DSK1)
-	$(OS9FORMAT_DS40) $(DSK1) -n"OS-9 Level Two System Disk"
+	$(OS9FORMAT_DS40) -e $(DSK1) -n"OS-9 Level Two System Disk"
 	$(OS9GEN) $(DSK1) -b=BOOTFILES/$(BOOTFILE) -t=BOOTFILES/$(KERNEL)
 	$(MAKDIR) $(DSK1),CMDS
 	$(MAKDIR) $(DSK1),SYS
@@ -65,6 +68,6 @@ $(DSK1):
 
 $(DSK2):
 	-$(RM) $(DSK2)
-	$(OS9FORMAT_DS40) $(DSK2) -n"OS-9 Level Two Modules Disk"
+	$(OS9FORMAT_DS40) -e $(DSK2) -n"OS-9 Level Two Modules Disk"
 	$(MAKDIR) $(DSK2),MODULES
 	$(CD) MODULES; $(CP) $(MODULES) ../$(DSK2),MODULES

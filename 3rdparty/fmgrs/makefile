@@ -1,16 +1,24 @@
 include ../../Makefile.rules
 
+dirs	= msf
+
 # Make all components
 all:
 	@$(ECHO) "*********************************************"
 	@$(ECHO) "*                                           *"
-	@$(ECHO) "*           3rd Party File Managers         *"
+	@$(ECHO) "*               File Managers               *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	$(CD) msf; make
-#	$(CD) cdf; make
+	$(foreach dir, $(dirs), $(CD) $(dir); make; $(CD) ..;)
 
 # Clean all components
 clean:
-	$(CD) msf; make clean
-#	$(CD) cdf; make clean
+	$(foreach dir, $(dirs), $(CD) $(dir); make clean; $(CD) ..;)
+
+# Make DSK images
+dsk:
+	$(foreach dir, $(dirs), $(CD) $(dir); make dsk; $(CD) ..;)
+
+# Copy DSK images
+dskcopy:
+	$(foreach dir, $(dirs), $(CD) $(dir); make dskcopy; $(CD) ..;)

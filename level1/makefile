@@ -41,6 +41,9 @@ dskclean:
 
 dsk: all $(PACKAGENAME)
 
+dskcopy: dsk
+	$(CP) $(DSK1) $(DSK2) $(PACKAGENAME) $(DSKDIR)
+
 $(PACKAGENAME): $(DSK1) $(DSK2)
 	$(ZIP) $(PACKAGENAME) $(DSK1) $(DSK2) ReadMe ChangeLog
 
