@@ -3,7 +3,7 @@ include ../../Makefile.rules
 DEPENDS		= ./Makefile
 TPB		= $(3RDPARTY)/booters
 
-BOOTERS		= oscode oscode_d64 boot_1773 boot_d64 $(TPB)/boot_rom_l1 rom_vectors
+BOOTERS		= oscode oscode_d64 boot_1773 boot_d64
 KERNELS		= os9 os9p2
 ROMMODS		= sysgo_rom
 SYSMODS		= ioman init sysgo sysgo_d64
