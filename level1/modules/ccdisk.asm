@@ -39,10 +39,11 @@ u006F    rmb   56
 u00A7    rmb   2
 u00A9    rmb   1
 u00AA    rmb   1
-u00AB    rmb   2
+VfyBuf   rmb   2
 u00AD    rmb   4
 u00B1    rmb   1
 size     equ   .
+
          fcb   $FF
 
 name     fcs   /CCDisk/
@@ -77,20 +78,20 @@ Init     clra
          lda   ,x
          lda   #$FF
 L003D    ldb   #$04
-         leax  u000F,u
+         leax  DRVBEG,u
 L0041    sta   ,x
          sta   <$15,x
-         leax  <$26,x
+         leax  <DRVMEM,x
          decb  
          bne   L0041
-         leax  >L0156,pcr
+         leax  >NMIRtn,pcr
          stx   >$010A
          lda   #$7E
          sta   >$0109
          pshs  y
          leay  >u00B1,u
          tfr   y,d
-         leay  >L0326,pcr
+         leay  >IRQRtn,pcr
          leax  >IRQPkt,pcr
          os9   F$IRQ    
          puls  y
@@ -101,7 +102,7 @@ L0041    sta   ,x
          tfr   u,x
          puls  u
          bcs   L0082
-         stx   >u00AB,u
+         stx   >VfyBuf,u
 
 * GetStat
 *
@@ -216,7 +217,7 @@ L0106    pshs  x,b,a
          bcs   L0119
          tst   <$28,y
          bne   L0117
-         bsr   L0166
+         bsr   Verify
          bcs   L0119
 L0117    clrb  
 L0118    rts   
@@ -246,25 +247,27 @@ L014C    lda   ,x+
          sta   >DPort+$0B
          stb   >DPort
          bra   L014C
-L0156    leas  $0C,s
+
+NMIRtn   leas  $0C,s
          puls  y,cc
          ldb   >DPort+8
          bitb  #$04
          lbne  L026F
          lbra  L0241
-L0166    pshs  x,b,a
-         ldx   $08,y
+
+Verify   pshs  x,b,a
+         ldx   PD.BUF,y
          pshs  x
-         ldx   >u00AB,u
-         stx   $08,y
+         ldx   >VfyBuf,u
+         stx   PD.BUF,y
          ldx   $04,s
          lbsr  L00B8
          puls  x
-         stx   $08,y
+         stx   PD.BUF,y
          bcs   L019C
          lda   #$20
          pshs  u,y,a
-         ldy   >u00AB,u
+         ldy   >VfyBuf,u
          tfr   x,u
 L0188    ldx   ,u
          cmpx  ,y
@@ -323,20 +326,23 @@ L0201    leax  -$01,x
          puls  x
 L0207    clrb  
          rts   
-L0209    fcb   $01,$02,$04,$40
+
+DrvSel   fcb   $01,$02,$04,$40
+
 L020D    lbsr  L02EB
-         lda   <$21,y
+         lda   <PD.DRV,y	$21,y
          cmpa  #$04
          bcs   L021B
          comb  
          ldb   #E$Unit
          rts   
+
 L021B    pshs  x,b,a
-         leax  >L0209,pcr
+         leax  >DrvSel,pcr
          ldb   a,x
          stb   >u00A9,u
          leax  u000F,u
-         ldb   #$26
+         ldb   #DRVMEM
          mul   
          leax  d,x
          cmpx  >u00A7,u
@@ -405,11 +411,11 @@ L029A    rts
 *    CC = carry set on error
 *    B  = error code
 *
-SetStat  ldx   $06,y
-         ldb   $02,x
-         cmpb  #$03
+SetStat  ldx   PD.RGS,y
+         ldb   R$B,x
+         cmpb  #SS.Reset
          beq   L02D0
-         cmpb  #$04
+         cmpb  #SS.WTrk
          beq   L02AB
          comb  
          ldb   #E$UnkSvc
@@ -424,8 +430,8 @@ L02BA    stb   >u00A9,u
          ldx   >u00A7,u
          lbsr  L01E1
          bcs   L02AA
-         ldx   $06,y
-         ldx   $04,x
+         ldx   PD.RGS,y
+         ldx   R$X,x
          ldb   #$F0
          lbra  L0131
 L02D0    lbsr  L020D
@@ -459,6 +465,7 @@ L0301    bsr   L0312
 L0309    ldd   #$00F0
          std   >u00AD,u
          puls  pc,y,x,b,a
+
 L0312    lda   #$01
          sta   <D.DskTmr
          ldx   #$0001
@@ -467,7 +474,8 @@ L0312    lda   #$01
          ldd   #$00F0
          os9   F$VIRQ   
          rts   
-L0326    pshs  a
+
+IRQRtn   pshs  a
          tst   <D.DMAReq
          beq   L0330
          bsr   L0312
@@ -486,6 +494,7 @@ L0341    lda   $07,x
 L0349    lda   $09,x
          cmpa  #$15
          lbra  L02B6
+
 L0350    lda   <$10,x
          bita  #$01
          beq   L0365
