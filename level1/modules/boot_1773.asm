@@ -35,6 +35,12 @@
 *      $03  = 30ms
 STEP     set   $00
 
+*Drive value & number
+*        $01 = 0
+*        $02 = 1
+*        $03 = 2
+BootDr   set $01
+
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $03
@@ -77,7 +83,7 @@ MakeStak pshs  a		save 0 on stack
          stx   >D.XNMI+1
          lda   #$7E
          sta   >D.XNMI
-         lda   #$08
+         lda   #$08+BootDr   permit alternate drives
          ENDC
          sta   >DPort
 
@@ -170,7 +176,7 @@ L00AC    puls  u,y,x
          clr   >DPort		shut off floppy disk
          rts
 
-L00B7    lda   #$29
+L00B7    lda   #$28+BootDr    permit alternate drives
          sta   ,u
          clr   u0004,u
          lda   #$05
@@ -205,8 +211,8 @@ L00EA    bsr   L013C
          orcc  #IntMasks
          pshs  y
          ldy   #$FFFF
-         ldb   #$80
-         stb   >DPort+8
+         ldb   #$80 
+         stb   >DPort+8 
          ldb   ,u
 * Notes on the next line:
 * The byte in question comes after telling the controller that it should
@@ -254,7 +260,7 @@ L0138    comb
          ldb   #E$Read
          rts
 
-L013C    lda   #$09
+L013C    lda   #$08+BootDr   permit alternate drives
          sta   ,u
          clr   u0009,u
          tfr   x,d
