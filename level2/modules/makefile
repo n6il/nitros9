@@ -1,5 +1,14 @@
 include ../../Makefile.rules
 
+CLOCKELIM       = -aRTCElim=1 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
+CLOCKDISTO2     = -aRTCElim=0 -aRTCDsto2=1 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
+CLOCKDISTO4     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=1 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
+CLOCKBNB        = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=1 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
+CLOCKSMART      = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=1 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=1
+CLOCKHARRIS     = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=1 -aRTCTc3=0 -aRTCSoft=0 -aMPIFlag=0
+CLOCKTC3        = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=1 -aRTCSoft=0 -aMPIFlag=0
+CLOCKSOFT       = -aRTCElim=0 -aRTCDsto2=0 -aRTCDsto4=0 -aRTCBB=0 -aRTCSmart=0 -aRTCHarrs=0 -aRTCTc3=0 -aRTCSoft=1 -aMPIFlag=0
+
 DEPENDS		= ./Makefile
 TPB		= ../../3rdparty/booters
 
@@ -9,8 +18,8 @@ OS9P2		= os9p2
 REL		= rel
 ROMMODS         = rominfo rom_vectors cc3go_rom pakrom
 SYSMODS		= ioman init cc3go
-CLOCKS		= clock clock2_soft clock2_disto clock2_146818 clock2_bb \
-		clock2_tc3
+CLOCKS          = clock_elim clock_disto2 clock_disto4 clock_bnb \
+		clock_smart clock_harris clock_tc3 clock_soft
 FMGRS		= scf.mn rbf.mn pipeman.mn pipeman_named.mn
 DRIVERS		= cc3disk.dr cc3hdisk.dr cc3io.dr modpak.dr \
 		vrn.dr piper.dr printer.dr sio.dr ram.dr sspak.dr \
@@ -134,8 +143,29 @@ dacia.dr: xacia.asm
 rominfo: rominfo.asm
 	$(AS) -aROMPak=0 $(AFLAGS) $< $(ASOUT)$@
 
-clock2_tc3: clock2_bb.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aTC3=1
+clock_elim: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKELIM)
+
+clock_disto2: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO2)
+
+clock_disto4: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO4)
+
+clock_bnb: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKBNB)
+
+clock_smart: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSMART)
+
+clock_harris: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKHARRIS)
+
+clock_tc3: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKTC3)
+
+clock_soft: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
 
 clean:
 	$(RM) $(ALLOBJS)
