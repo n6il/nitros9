@@ -10,7 +10,7 @@ debug
 lccdisk
 . .+7
 =80
-$load ccdisk
+$load /d0/ccdisk
 lccdisk
 . .+3
 =82
