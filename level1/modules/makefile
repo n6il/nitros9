@@ -29,10 +29,11 @@ RBF		= rbf.mn \
 		h0_15.dd h1_15.dd h0_35.dd h1_35.dd
 
 SCF		= scf.mn \
-		aciapak.dr modpak.dr nildrv.dr printer.dr rs232.dr sspak.dr ccio.dr \
+		sacia.dr dacia.dr nildrv.dr printer.dr rs232.dr sspak.dr ccio.dr \
 		co32.io co80.io grfo.io \
-		m1.dd m2.dd nil.dd p.dd pipe.dd ssp.dd \
-		term_t1.dd t1.dd t2.dd t3.dd term32.dd term80.dd
+		nil.dd p.dd pipe.dd ssp.dd \
+		term_t1.dd t1.dd t2_sacia.dd t3_sacia.dd t2_dacia.dd t3_dacia.dd \
+		term32.dd term80.dd
 
 PIPE		= pipeman.mn \
 		piper.dr \
@@ -54,6 +55,13 @@ boot_1773_6ms:	boot_1773.asm
 
 boot_1773_30ms:	boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=3
+
+# Drivers
+sacia.dr: sacia.asm
+        $(AS) -aA6551=1 -aA6552=0 -aMPI.Slot=03 $(AFLAGS) $< $(ASOUT)$@
+
+dacia.dr: sacia.asm
+        $(AS) -aA6551=0 -aA6552=1 -aMPI.Slot=03 $(AFLAGS) $< $(ASOUT)$@
 
 # Clocks
 clock_60hz: clock.asm
