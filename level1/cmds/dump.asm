@@ -20,7 +20,9 @@
          nam   Dump
          ttl   Show file contents in hex
 
+         ifp1
          use   defsfile  
+         endc
 
 * Tweakable options
 DOSCSIZ  set   1	1 = include SS.ScSiz code, 0 = leave out
