@@ -47,7 +47,7 @@ BootMsg  fcc   !OS-9 LEVEL ONE VR. 0!
 
 * For ROM version, cut down on verbage
          IFNE  DiskGo
-         fcc   !BETA1 Release 03/07/2003!
+         fcc   !Release Date: 03/07/2003!
          fcb   C$CR,C$LF
          fcc   !"A CoCo Community Project"!
          fcb   C$CR,C$LF
