@@ -13,7 +13,7 @@
 * Disassembled 02/04/03 22:47:09 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   /dd/defs/os9defs
+         use   defsfile
          endc
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
