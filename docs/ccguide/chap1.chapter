@@ -405,10 +405,10 @@ undefined.
 <para>
 Three new system error numbers are defined in &lt;errno.h&gt;:
 <programlisting>
-   #define  EFPOVR  40   /* floating point overflow of underflow */
-   #define  EDIVERR 41   /* division by zero */
-   #define  EINTERR 42   /* overflow on conversion of floating point
-                            to long integer */
+#define  EFPOVR  40   /* floating point overflow of underflow */
+#define  EDIVERR 41   /* division by zero */
+#define  EINTERR 42   /* overflow on conversion of floating point
+                         to long integer */
 </programlisting>
 </para>
 <para>

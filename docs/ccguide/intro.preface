@@ -50,7 +50,7 @@ compiler phase messages.
 <varlistentry><term>Preprocessor (c.prep):</term>
 <listitem>
 <para>
-C.prep now prints a fatal error is a line exceeds 255 bytes.
+C.prep now prints a fatal error if a line exceeds 255 bytes.
 </para>
 </listitem>
 </varlistentry>
@@ -109,8 +109,7 @@ Macro and repeat block facilities have been added.
 </varlistentry>
 
 <varlistentry><term>Linker (c.link):</term>
-<listitem>
-<para>
+<listitem><para>
 C.link can now handle direct-page initialized data.
 </para>
 <para>
@@ -126,8 +125,7 @@ C.link can now output modules that can be entered by the BASIC09 "RUN" command.
 </varlistentry>
 
 <varlistentry><term>Library (clib.l):</term>
-<listitem>
-<para>
+<listitem><para>
 The standard library FILE structure has been changed to allow
 specification of buffersize for a file. In V1.0, the
 buffersize was fixed at 256 bytes. A new element of the FILE
