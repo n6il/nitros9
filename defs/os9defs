@@ -1089,8 +1089,6 @@ E$NoData rmb   1 Missing data statement
 * System Dependent Error Codes
 *
 
-         ifgt  Level-1
-
          ifne  NitrOS9
          org   183
 E$IWTyp  rmb   1         Illegal window type
@@ -1116,8 +1114,6 @@ E$WUndef rmb   1          Window undefined
 E$Up     rmb   1          Up arrow pressed on SCF I$ReadLn with PD.UP enabled
 E$Dn     rmb   1          Down arrow pressed on SCF I$ReadLn with PD.DOWN enabled
 E$Alias  rmb   1
-         endc
-
          endc
 
 
