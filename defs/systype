@@ -32,12 +32,13 @@ SYSTYPE  set   1
          nam   SysType
          IFEQ  Level-1
          ttl   NitrOS-9 Level 1 System Type Definitions
-         ENDC
+         ELSE
          IFEQ  Level-2
          ttl   NitrOS-9 Level 2 System Type Definitions
          ENDC
          IFEQ  Level-3
          ttl   NitrOS-9 Level 3 System Type Definitions
+         ENDC
          ENDC
 
 
