@@ -2,7 +2,7 @@ include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
-CMDS		= hires joystk
+CMDS		= cpu hires joystk
 
 ALLOBJS		= $(CMDS)
 
