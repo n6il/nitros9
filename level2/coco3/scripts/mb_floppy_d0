@@ -22,7 +22,7 @@ os9gen #32k /d0 -t=bttemp<../BOOTLISTS/standard.bl
 del bttemp
 echo *
 echo * Step 4: Populate the disk with essential files
-copy ../MODULES/SYSMODS/cc3go_dd /d0/cc3go
+copy ../MODULES/SYSMODS/sysgo_dd /d0/sysgo
 makdir /d0/CMDS
 copy -w=/d0/CMDS ../CMDS/shell ../CMDS/grfdrv
 echo *
