@@ -1,0 +1,96 @@
+ ttl DEFs from VDGint
+
+**********************
+* Defs from VDGint
+* all offsets from 'U' (address of device memory area)
+* (see p. 6-9, technical reference: U=start of driver data memory
+*
+* EDITION HISTORY:
+
+*   Date    Changes Made
+* -------- ------------------------------
+* 91/05/07 Wrote original from VDGint source
+
+
+* NOTE: There is LOTS of stuff which is only used once, and some which
+* is not needed.  Here's a list of the un-needed, and un-used (other than
+* once)
+*
+*  It would probably be benificial to patch VDGint to fix these problems,
+* unless anyone else has ideas as to why VDGint is doing things this way.
+*
+* Un-needed
+* VD.EPlt1  - (2) set to VD.NChar, and then read only
+* VD.EPlt2  - (2) set to same as VD.EPlt1, and then unused
+* VD.Chr1   - (1) set to same as VD.CChar, and then unused
+* VD.PlFlg  - (1) initialized to $08, and unused
+*
+* Un-used
+*
+* $1D       - (1) end of SCF memory requirements
+* VD.Strt1  - (2) CLRed, and then read (LDD) - left as $0000
+* $24-$2B   - (8)
+* $33-$34   - (2)
+* $7E-$FF   - (130)
+*
+* total of 22 (150 in whole page) bytes unneeded or unused.
+
+ page
+VD.Start equ   $1E start of VD.XXXX data: number of VDG screens in use
+VD.Strt1 equ   $1F (2) and another start
+VD.Caps  equ   $21 caps lock info: $00=lower $FF=upper
+VD.DFlag equ   $23 0=current screen is valid, $01-$FF = update video
+* $24-$2B unused
+VD.NGChr equ   $2C number of additional characters to get
+VD.RTAdd equ   $2D (2) return address after getting characters
+VD.EPlt1 equ   $2F (2) pointer to where to put next character
+VD.EPlt2 equ   $31 (2) as above.
+* $33-$34 unused
+VD.CFlag equ   $35 true lowercase flag $10=true, $00=false
+VD.CFlg1 equ   $36 VDG display code values
+VD.DGBuf equ   $37 number of currently displayed buffer
+VD.ScrnA equ   $38 (2) screen start address in system memory
+VD.ScrnE equ   $3A (2) address of end of screen
+VD.CrsrA equ   $3C (2) cursor address
+VD.CrsAL equ   $3D cursor address low
+VD.CChar equ   $3E value of character under cursor
+VD.Mode  equ   $3F mode: 0=256x192 x2, 1=128x192 x4
+VD.Chr1  equ   $40 same as under cursor character
+VD.CColr equ   $41 cursor color
+VD.Col   equ   $42 number of columns for this screen
+VD.Row   equ   $43 number of rows
+VD.TFlg1 equ   $44 see WRITE ($0E)
+VD.Alpha equ   $45 0 when in alpha mode
+VD.Rdy   equ   $46 device ready (see SS.DStat 0=not ready
+VD.SBAdd equ   $47 (2) address of block screen is in
+VD.Blk   equ   $49 Block number of screen
+VD.GBuff equ   $4A allocation for graphics buffers (block#)
+VD.AGBuf equ   $4B (2) additional graphics buffer
+VD.HiRes equ   $4D hi-res screen table (block value
+VD.NBlk  equ   $4E number of blocks in this screen
+VD.SType equ   $4F screen type 0-4
+VD.HR2   equ   $50 (3) for screen number 2
+VD.HR3   equ   $53 (3) for screen 3 (same 3 bytes as above
+VD.FF3   equ   $56 (2) data for flood fill
+VD.FF4   equ   $58 (2)  "
+VD.FF5   equ   $5A (2)  "
+VD.FF6   equ   $5C  flood fill flag
+VD.MTabl equ   $5D (2) address of mask table for pixels in byte
+VD.PixBt equ   $5F bit mask for modes (0=$07, 1=$03 )#pixels/byte
+VD.GCrsX equ   $60 graphics cursor X value
+VD.GCrsY equ   $61 graphics cursor Y
+VD.Msk1  equ   $62 mask byte 1
+VD.Msk2  equ   $63 mask byte 2 (00,55,AA,FF)
+VD.MCol  equ   $64 color? (C003,8001
+VD.MCol2 equ   $65 color
+VD.PMask equ   $66 pixel mask for colors (i.e. $55, $CC etc
+VD.FF1   equ   $67 data for flood fill
+VD.FF2   equ   $68 data for flood fill
+VD.FFMsk equ   $69 flood fill mask
+VD.FFFlg equ   $6A flood fill flag
+VD.Palet equ   $6B (16) current palette values
+VD.PlFlg equ   $7B initialized to $08 by L00DB, and then unused!
+VD.NChar equ   $7C character to process
+VD.NChr2 equ   $7D and the next one
+
+* and RMB until we get 256 bytes reserved

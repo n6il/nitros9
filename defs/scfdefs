@@ -1,0 +1,192 @@
+         nam   SCFDefs
+         ttl   Sequential File Manager (SCF) Definitions
+
+*****************
+* Edition History
+*
+* Date     Changes Made                                                 by
+* -------- ------------------------------------------------------------ ---
+* 84/01/11 Added V.KANJI, V.KBUF, V.MODADR for new kanji input process  Y.O
+* 85/04/20 Added V.PDLHd Path Descriptor List Head                      MGH
+* 85/04/21 Added PD.PLP and PD.PST for modem handling                   MGH
+* 87/06/23 Updated with Dev Desc info                                   KKD
+* 98/10/03 Consolidated L1/L2 scfdefs                                   BGP
+
+
+*******************************
+* SCF Device Descriptor Offsets
+*
+         org   M$DTyp
+IT.DVC   rmb   1          Device class
+IT.UPC   rmb   1          Uppercase flag
+IT.BSO   rmb   1          Backspace behavior
+IT.DLO   rmb   1          Delete behavior
+IT.EKO   rmb   1          Echo flag
+IT.ALF   rmb   1          Auto linefeed flag
+IT.NUL   rmb   1          End-of-line null count
+IT.PAU   rmb   1          Page pause flag
+IT.PAG   rmb   1          Number of lines per page
+IT.BSP   rmb   1          Backspace character
+IT.DEL   rmb   1          Delete-line character
+IT.EOR   rmb   1          End-of-record character
+IT.EOF   rmb   1          End-of-file character
+IT.RPR   rmb   1          Reprint-line character
+IT.DUP   rmb   1          Duplicate-last-line character
+IT.PSC   rmb   1          Pause character
+IT.INT   rmb   1          Interrupt character
+IT.QUT   rmb   1          Quit character
+IT.BSE   rmb   1          Backspace echo character
+IT.OVF   rmb   1          Bell character
+IT.PAR   rmb   1          Parity
+IT.BAU   rmb   1          Baud rate
+IT.D2P   rmb   2          Attached device name string offset
+IT.XON   rmb   1          X-ON character
+IT.XOFF  rmb   1          X-OFF character
+IT.COL   rmb   1          Number of columns for display
+IT.ROW   rmb   1          Number of rows for display
+IT.XTYP  rmb   1          Extended type (added by BRI)
+
+         ifgt  Level-1
+* Window Descriptor Additions
+* For CoCo window, where IT.PAR = $80
+         org   IT.ROW+1
+IT.WND   rmb   1          Window number (matches device name) ($2E)
+IT.VAL   rmb   1          Use defaults on Init (0=no, 1=yes)
+IT.STY   rmb   1          Screen type default
+IT.CPX   rmb   1          Column start default
+IT.CPY   rmb   1          Row start default
+IT.FGC   rmb   1          Foreground color default
+IT.BGC   rmb   1          Background color default
+IT.BDC   rmb   1          Border color default
+         endc
+
+         pag
+************************************************************
+* Static storage requirements
+* SCF Devices must reserve this space for SCF
+*
+         org   V.USER
+V.TYPE   rmb   1          Device type or parity
+V.LINE   rmb   1          Lines left until end of page
+V.PAUS   rmb   1          Immediate Pause request
+V.DEV2   rmb   2          Attached device's static
+V.INTR   rmb   1          Interrupt char
+V.QUIT   rmb   1          Quit char
+V.PCHR   rmb   1          Pause char
+V.ERR    rmb   1          Accumulated errors
+V.XON    rmb   1          X-On char
+V.XOFF   rmb   1          X-Off char
+V.KANJI  rmb   1          Kanji mode flag
+V.KBUF   rmb   2          Kana - Kanji convert routine work address
+V.MODADR rmb   2          Kana - Kanji convert module address
+V.PDLHd  rmb   2          Open path descriptor list head pointer
+V.RSV    rmb   5          Reserve bytes for future expansion
+V.SCF    equ   .          Total SCF manager static overhead
+
+***********************
+* Character Definitions
+*
+C$NULL   set   0          Null char
+C$RPET   set   $01        (ctl A - SOH) Repeat last input line
+C$INTR   set   $03        (ctl C - ETX) Keyboard interrupt
+C$RPRT   set   $04        (ctl D - EOT) Reprint current input line
+C$QUIT   set   $05        (ctl E - ENQ) Keyboard Abort
+C$BELL   set   $07        (ctl G - BEL) Line overflow warning
+C$BSP    set   $08        (ctl H - BS ) Back space
+C$EL     set   $05        Erase Line
+C$LF     set   $0A        Line feed
+C$HOME   set   $0B        Home position Code
+C$Clsgr  set   $15        Graphic screen clear (use FM-11)
+C$Clsall set   $16        Graphic & character clear (use FM-11)
+C$CR     set   $0D        Carriage return
+C$FORM   set   $0C        (ctl L - FF ) Form Feed ... screen clear
+C$SI     set   $0F        Shift IN Code
+C$SO     set   $0E        Shift OUT Code
+C$XON    set   $11        (ctl Q - DC1) Transmit Enable
+C$XOFF   set   $13        (ctl S - DC3) Transmit Disable
+C$PAUS   set   $17        (ctl W - ETB) Pause character
+C$DEL    set   $18        (ctl X - CAN) Delete line
+C$EOF    set   $1B        (ctl [ - ESC) END of file
+C$RGT    set   $1C        Cursor right
+C$LFT    set   $1D        Cursor left
+C$UP     set   $1E        Cursor up
+C$DWN    set   $1F        Cursor down
+C$SPAC   set   $20        Space
+C$PERD   set   '.
+C$COMA   set   ',
+
+         pag
+*************************
+* FILE DESCRIPTOR OFFSETS
+*
+         org   PD.FST
+PD.DV2   rmb   2          OUTPUT DEV TBL PTR
+PD.RAW   rmb   1          READ/WRITE OR RDLIN/WRLIN MODE
+PD.MAX   rmb   2          READLINE HIGH BYTE COUNT
+PD.MIN   rmb   1          DEVICES ARE "MINE" IF CLEAR
+PD.STS   rmb   2          Status routine module addr
+PD.STM   rmb   2          Reserved for Status routine
+         org   PD.OPT
+         rmb   1          DEVICE TYPE
+PD.UPC   rmb   1          CASE (0=BOTH, 1=UPPER ONLY)
+PD.BSO   rmb   1          BACKSP (0=BSE, 1=BSE,SP,BSE)
+PD.DLO   rmb   1          DELETE (0=BSE OVER LINE, 1=CRLF)
+PD.EKO   rmb   1          ECHO (0=NO ECHO)
+PD.ALF   rmb   1          AUTOLF (0=NO AUTO LF)
+PD.NUL   rmb   1          END of LINE NULL COUNT
+PD.PAU   rmb   1          PAUSE (0=NO END of PAGE PAUSE)
+PD.PAG   rmb   1          LINES PER PAGE
+PD.BSP   rmb   1          BACKSPACE charACTER
+PD.DEL   rmb   1          DELETE LINE charACTER
+PD.EOR   rmb   1          END of RECORD char (READ ONLY)
+PD.EOF   rmb   1          END of FILE char
+PD.RPR   rmb   1          REPRINT LINE char
+PD.DUP   rmb   1          DUP LAST LINE char
+PD.PSC   rmb   1          PAUSE char
+PD.INT   rmb   1          KBD INTR char (ctl c)
+PD.QUT   rmb   1          KBD QUIT char (ctl q)
+PD.BSE   rmb   1          BACKSPACE ECHO charACTER
+PD.OVF   rmb   1          LINE OVERFLOW char (BELL)
+PD.PAR   rmb   1          PARITY CODE
+PD.BAU   rmb   1          ACIA BAUD RATE (Color Computer)
+PD.D2P   rmb   2          OFFSET of DEV2 name
+PD.XON   rmb   1          ACIA X-ON char
+PD.XOFF  rmb   1          ACIA X-OFF char
+OPTCNT   equ   .-PD.OPT   Total user settable options
+PD.ERR   rmb   1          Most recent I/O error status
+PD.TBL   rmb   2          Device Table addr (copy)
+PD.PLP   rmb   2          Path Descriptor List Pointer
+PD.PST   rmb   1          Current Path Status
+
+********************************************
+* PD.PST values Path Descriptor Status byte
+*
+PST.DCD  equ   %00000001  Set if DCD is lost on Serial port
+
+         pag
+************************************************************
+*
+*     SCF PD.PAR definitions
+*
+* Baud rate
+B110     equ   0
+B300     equ   1
+B600     equ   2
+B1200    equ   3
+B2400    equ   4
+B4800    equ   5
+B9600    equ   6
+B19200   equ   7
+* Word size
+WORD8    equ   %00000000
+WORD7    equ   %00100000
+* Parity
+PARNONE  equ   %00000000
+PARODD   equ   %00100000
+PAREVEN  equ   %01100000
+PARMARK  equ   %10100000
+PARSPACE equ   %11100000
+* Stop bits
+STOP1    equ   %00000000
+STOP2    equ   %00010000
+

@@ -1,0 +1,225 @@
+         nam   RBFDefs
+         ttl   Random Block File Manager Definitions
+
+**********************
+* Modification History
+*
+* Date     Changes Made                                                 by
+* -------- ------------------------------------------------------------ ---
+* 82/07/13 PD.Exten added to path descriptor                            rfd
+* 82/07/13 PE entries defined                                           rfd
+* 82/07/15 V.FileHd inserted in drive static                            rfd
+* 82/09/10 Level One/ Level two cond added                              WGP
+* 82/09/17 Record Lock cond added                                       WGP
+* 82/09/17 PD.SLE renamed to PD.Creat                                   rfd
+* 82/09/17 V.DiskID, V.BMapSz, V.MapSct added for
+*          smart multi-sector bitmap searching                          rfd
+* 82/09/20 reserved areas added in static storage.
+* 83/06/07 Added InDriver flag in PD.SMF.                               rfd
+* 83/06/13 Added PE.Req tmp save for PE.Lock                            rfd
+* 83/08/08 reserved PD.SToff for Japanese                               rfd
+* 83/11/19 Added V.ResBit in drive tables.                              rfd
+* 83/12/12 Added PE.Prior to save process priority.                     rfd
+* 83/12/13 Added BufBusy bit in state flag (PD.SMF)                     rfd
+* 84/07/06 Added Bit Definitions for DD.FMT                             MGH
+* 87/06/23 Updated with Dev Desc Info                                   KKD
+
+*******************************
+* RBF Device Descriptor Offsets
+*
+         org   M$DTyp
+         rmb   1          Device type (IT.DTP) (1=RBF)
+IT.DRV   rmb   1          Drive number
+IT.STP   rmb   1          Step rate
+IT.TYP   rmb   1          Disk device type (5" 8" other)
+IT.DNS   rmb   1          Density capability
+IT.CYL   rmb   2          Number of cylinders
+IT.SID   rmb   1          Number of surfaces
+IT.VFY   rmb   1          0=verify disk writes
+IT.SCT   rmb   2          Default sectors/track
+IT.T0S   rmb   2          Default sectors/track tr00,s0
+IT.ILV   rmb   1          Sector interleave offset
+IT.SAS   rmb   1          Segment allocation size
+
+*************************************
+* IT.TYP/IT.DNS/IT.STP definitions
+*
+TYP.5    equ   %00000000	5" media
+TYP.8    equ   %00000001	8" media
+TYP.CCF  equ   %00100000	CoCo format
+TYP.NCCF equ   %00000000	Non-CoCo format
+TYP.SOF  equ   %00000000	Standard OS-9 format
+TYP.NSF  equ   %01000000	Non-standard format
+TYP.FLP  equ   %00000000	Floppy disk
+TYP.HARD equ   %10000000	Hard disk
+
+DNS.FM   equ   %00000000        Single-density (FM)
+DNS.MFM  equ   %00000001        Double-density (MFM)
+DNS.STD  equ   %00000000        Single track density (48 tpi)
+DNS.DTD  equ   %00000010        Single track density (96 tpi)
+
+STP.30ms equ   0                30ms step rate
+STP.20ms equ   1                20ms step rate
+STP.12ms equ   2                12ms step rate
+STP.6ms  equ   3                6ms step rate
+
+*************************************
+* Random Block Path Descriptor Format
+*
+         org   PD.FST
+PD.SMF   rmb   1          State flags
+PD.CP    rmb   4          Current logical byte position
+PD.SIZ   rmb   4          File size
+PD.SBL   rmb   3          Segment beginning lsn
+PD.SBP   rmb   3          Segment beginning psn
+PD.SSZ   rmb   3          Segment size
+PD.DSK   rmb   2          Disk id
+PD.DTB   rmb   2          Drive table ptr
+         org   PD.OPT
+         rmb   1          Device type
+PD.DRV   rmb   1          Drive number
+PD.STP   rmb   1          Step rate
+PD.TYP   rmb   1          Disk device type (5" 8" other)
+PD.DNS   rmb   1          Density capability
+PD.CYL   rmb   2          Number of cylinders
+PD.SID   rmb   1          Number of surfaces
+PD.VFY   rmb   1          0=verify disk writes
+PD.SCT   rmb   2          Default sectors/track
+PD.T0S   rmb   2          Default sectors/track tr00,s0
+PD.ILV   rmb   1          Sector interleave offset
+PD.SAS   rmb   1          Segment allocation size
+PD.TFM   rmb   1          DMA Transfer Mode
+PD.Exten rmb   2          Path Extension (PE) for record locking
+PD.SToff rmb   1          Sector/Track offsets (for "foreign" disk formats)
+PD.ATT   rmb   1          File attributes
+PD.FD    rmb   3          File descriptor psn
+PD.DFD   rmb   3          Directory file descriptor psn
+PD.DCP   rmb   4          File directory entry ptr
+PD.DVT   rmb   2          User readable dev tbl ptr
+
+* State Flags
+BUFMOD   equ   $01        Buffer modified
+SINBUF   equ   $02        Sector in buffer
+FDBUF    equ   $04        File descriptor in buffer
+*EOFSEC equ $08 End of file sector
+*EOF equ $10 End of file
+InDriver equ   $20        Currently in Disk Driver, or queued
+BufBusy  equ   $40        Buffer is currently busy
+
+         ifne  Level-1
+************************************
+* Random Block Path Extension Format
+*
+         org   0
+PE.PE    rmb   1          PE path number
+PE.PDptr rmb   2          back ptr to this PE's Path Descriptor
+PE.NxFil rmb   2          Drive Open-File list ptr
+PE.Confl rmb   2          circular File Conflict list
+PE.Lock  rmb   1          Path lockout status
+PE.LoLck rmb   4          Low Locked Logical addr
+PE.HiLck rmb   4          High Locked Logical addr
+PE.Wait  rmb   2          PE ptr to (next) locked-out PE
+PE.TmOut rmb   2          Max ticks to wait for locked segment
+PE.Owner rmb   1          Process ID of owner of locked segment
+PE.Req   rmb   1          temp for PE.Lock in GAIN when LockSeg fails
+PE.Prior rmb   1          tmp for process priority while in driver
+         rmb   32-.       reserved
+PE.FilNm rmb   32         temp for filename during directory search
+
+* PE.Lock status codes
+Unlocked equ   0          no portion of file is locked
+RcdLock  equ   1          record from LoLck to HiLck locked
+FileLock equ   2          entire file locked
+EofLock  equ   4          End of file is locked
+         endc  
+
+***********************
+* LSN0 Disk Data Format
+*
+         org   0
+DD.TOT   rmb   3          Total number of sectors
+DD.TKS   rmb   1          Track size in sectors
+DD.MAP   rmb   2          Number of bytes in allocation bit map
+DD.BIT   rmb   2          Number of sectors/bit
+DD.DIR   rmb   3          Address of root directory fd
+DD.OWN   rmb   2          Owner
+DD.ATT   rmb   1          Attributes
+DD.DSK   rmb   2          Disk id
+DD.FMT   rmb   1          Disk format; density/sides
+DD.SPT   rmb   2          Sectors/track
+DD.RES   rmb   2          Reserved for future use
+DD.SIZ   equ   .          Device descriptor minimum size
+DD.BT    rmb   3          System bootstrap sector
+DD.BSZ   rmb   2          Size of system bootstrap
+DD.DAT   rmb   5          Creation date
+DD.NAM   rmb   32         Volume name
+DD.OPT   rmb   32         option area
+
+* DD.FMT Bit Definitions
+FMT.SIDE equ   %00000001  Single Side=0, Double Side=1
+FMT.DNS  equ   %00000010  Single DNS=0, Double DNS=1
+FMT.TDNS equ   %00000100  48tpi=0, 96tpi=1
+FMT.T0DN equ   %00100000  Track 0 DNS, see FMT.DNS
+
+************************
+* File Descriptor Format
+*
+         org   0
+FD.ATT   rmb   1          Attributes
+FD.OWN   rmb   2          Owner
+FD.DAT   rmb   5          Date last modified
+FD.LNK   rmb   1          Link count
+FD.SIZ   rmb   4          File size
+FD.Creat rmb   3          Segment list extension
+FD.SEG   equ   .          Beginning of segment list
+* Segment List Entry Format
+         org   0
+FDSL.A   rmb   3          Segment beginning physical sector number
+FDSL.B   rmb   2          Segment size
+FDSL.S   equ   .          Segment list entry size
+FD.LS1   equ   FD.SEG+((256-FD.SEG)/FDSL.S-1)*FDSL.S
+FD.LS2   equ   (256/FDSL.S-1)*FDSL.S
+MINSEC   set   16
+
+************************
+* Directory Entry Format
+*
+         org   0
+DIR.NM   rmb   29         File name
+DIR.FD   rmb   3          File descriptor physical sector number
+DIR.SZ   equ   .          Directory record size
+
+****************
+* Static Storage
+*
+* Overall Disk Static Storage
+*
+* Note:  This does not reserve any memory for drive tables.  Each Driver is
+*        responsible for reserving sufficient memory for the appropriate
+*        number of tables.
+*
+         org   V.USER     Reserve required           ($06)
+V.NDRV   rmb   1          Number of drives           ($07)
+         rmb   8          reserved                   ($08)
+DRVBEG   equ   .          Beginning of drive tables  ($10)
+*
+* Global Storage For Disk Drive Tables
+* Each Table Contains The First 'DD.Siz' Bytes
+* From Sector 0, And The Current Track, Stepping Rate,
+* Bit-Map Use Flag, And Disk Type
+*
+         org   0
+         rmb   DD.SIZ     Device descriptor, sector 0
+V.TRAK   rmb   2          Current track
+V.BMB    rmb   1          Bit-map use flag
+V.FileHd rmb   2          open file list for this drive
+V.DiskID rmb   2          Disk ID
+V.BMapSz rmb   1          Bitmap Size
+V.MapSct rmb   1          lowest reasonable bitmap sector
+V.ResBit rmb   1          reserved bitmap sector (for compaction)
+V.ScTkOf rmb   1          Sector/Track byte (Combined from descriptor)
+V.ScOfst rmb   1          Sector offset split from byte above
+V.TkOfst rmb   1          Track offset split from byte above
+         rmb   4          reserved
+DRVMEM   equ   .
+
