@@ -6,7 +6,7 @@ DEPENDS		= ./makefile
 
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir disasm \
-		display dmem dmode dsave dump echo edit error exbin exmode \
+		display dmem dmode dsave dump echo edit error exbin \
 		format free grfdrv help ident iniz irqs link list load login \
 		makdir mdir megaread merge mfree mmap modpatch montype mpi os9gen padrom park \
 		prompt pmap proc procs pwd pxd reboot rename runb save setime \

@@ -1,3 +1,0 @@
-@EXMODE
-Syntax: EXMode <devname> [params]
-Usage : Displays or changes the parameters of an SCF device
