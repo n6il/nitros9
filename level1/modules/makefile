@@ -71,36 +71,11 @@ clock_60hz: clock.asm
 clock_50hz: clock.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=50
 
-clock2_elim: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKELIM)
+clock2_bnb: clock2_ds1315.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aBNB=1
 
-clock2_disto2: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO2)
-
-clock2_disto4: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKDISTO4)
-
-clock2_bnb: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKBNB)
-
-clock2_smart: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSMART)
-
-clock2_harris: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKHARRIS)
-
-clock2_cloud9: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKCLOUD9)  
-
-clock2_jvemu: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKJVEMU)  
-
-clock2_messemu: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKMESSEMU)  
-
-clock2_soft: clock2.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< $(CLOCKSOFT)
-
+clock2_cloud9: clock2_ds1315.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCLOUD9=1
 
 # Floppy descriptors
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
