@@ -61,7 +61,6 @@ prn3     set   Red.       border color
          fdb   name       copy of descriptor name address
          fcb   $00        acia xon char
          fcb   $00        acia xoff char
-initsize equ   *
          fcb   szx        (szx) number of columns for display
          fcb   szy        (szy) number of rows for display
          fcb   wnum       window number
@@ -72,6 +71,7 @@ initsize equ   *
          fcb   prn1       (prn1) foreground color
          fcb   prn2       (prn2) background color
          fcb   prn3       (prn3) border color
+initsize equ   *
 
 name     fcc   /W/
          fcb   176+wnum
