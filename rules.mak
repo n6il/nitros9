@@ -19,7 +19,7 @@ DSKDIR		= $(BASEDIR)/dsks
 # Use the cross assembler
 AS		= $(OS9TOOLSDIR)/os9asm -i=$(DEFDIR)
 ASOUT		= -o=
-AFLAGS		= -q $(ADDOPTS)
+AFLAGS		= -q
 
 # Commands
 MAKDIR		= $(OS9TOOLSDIR)/os9 makdir
