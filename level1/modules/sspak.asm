@@ -20,9 +20,11 @@
 * disabled as soon as the Speech-Sound Pak is finished speaking the string
 * received before the carriage return or buffer flush.
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 1      Created                                        BRI 87/05/03
+*   1      1987/05/03  Bruce Isted
+* Created.
 
          nam   SSPak
          ttl   Speech-Sound Pak Text-To-Speech Driver

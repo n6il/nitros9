@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   2    From Tandy OS-9 Level One VR 02.00.00
+*   2      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00
 
          nam   CO80
          ttl   WordPak 80-RS co-driver for CCIO

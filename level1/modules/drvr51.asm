@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    Original Dragon distribution version
+*   1      ????/??/??
+* Original Dragon distribution version
 
 
          nam   drvr51

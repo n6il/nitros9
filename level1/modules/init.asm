@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*        From Tandy OS-9 Level One VR 02.00.00
+*          ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00
 
          nam   Init
          ttl   OS-9 Level One V2 Configuration module

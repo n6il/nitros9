@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  -     Original Dragon Data distribution version
+*   -      ????/??/??
+* Original Dragon Data distribution version
 
          nam   DDisk
          ttl   Dragon Floppy driver
