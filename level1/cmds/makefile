@@ -2,6 +2,7 @@ include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
+BASIC09FILES	= gfx.asm inkey.asm syscall.asm
 COCOCMDS_D1	= attr backup binex build cmp copy date \
 		dcheck debug deiniz del deldir dir display dsave dump \
 		echo edit error exbin free help ident iniz link \
@@ -37,3 +38,6 @@ showcocoobjs_d2:
 
 showdragonobjs:
 	@$(ECHO) $(CMDS) $(DRAGONCMDS)
+
+$(BASIC09FILES): $(BASEDIR)/3rdparty/packages/basic09/$@
+	-$(SOFTLINK) $(BASEDIR)/3rdparty/packages/basic09/$@
