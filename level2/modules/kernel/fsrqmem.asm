@@ -3,8 +3,18 @@
 *
 * Function: Request memory
 *
-* It also updates 8K DAT blocks-if it finds an empty block, it re-does the 32
-* entries in the SMAP table to indicate that they are free
+* F$SRqMem allocates memory from the system's 64K address space in 256 byte 'pages.'
+* There are 256 of these '256 byte pages' in the system's RAM area (256*256=64K).
+* The allocation map, pointed to by D.SysMem holds one byte per page, making the
+* allocation map itself 256 bytes in size.
+*
+* Memory is allocated from the top of the system RAM map downwards.  Rel/Boot/Krn
+* also reside in this area, and are loaded from $ED00-$FFFF.  Since this area is
+* always allocated, we start searching for free pages from page $EB downward.
+*
+* F$SRqMem also updates the system memory map according to 8K DAT blocks. If an
+* empty block is found, this routine re-does the 32 entries in the SMAP table to
+* indicate that they are free.
 *
 * Input:  D = Byte count
 *
@@ -12,50 +22,54 @@
 *
 * Error:  CC = C bit set; B = error code
 *
-FSRqMem  ldd   R$D,u        get size requested
-         addd  #$00FF       round it up to nearest 256 byte page
-         clrb               just keep # of pages (and start 8K block #)
+FSRqMem  ldd   R$D,u        get memory allocation size requested
+         addd  #$00FF       round it up to nearest 256 byte page (e.g. $1FF = $2FE)
+         clrb               just keep # of pages (and start 8K block #, e.g. $2FE = $200)
          std   R$D,u        save rounded version back to user
-         IFGT  Level-1
          ldy   <D.SysMem    get ptr to SMAP table
-         leay  $ED,y      
-         ENDC
-
+*         leay  Bt.Start/256,y      
 *         leay  $20,y        skip Block 0 (always reserved for system)
 * Change to pshs a,b:use 1,s for block # to check, and ,s for TFM spot
 *         incb               skip block 0 (always reserved for system)
          pshs  d            reserve a byte & put 0 byte on stack
-
 * This loop updates the SMAP table if anything can be marked as unused
-*L082F    ldx   <D.SysDAT    get pointer to system DAT block list
-*         lslb               adjust block offset for 2 bytes/entry
-*         ldd   b,x          get block type/# from system DAT
-*         cmpd  #DAT.Free    Unused block?
-*         beq   L0847        yes, mark it free in SMAP table
-*         ldx   <D.BlkMap    No, get ptr to MMAP table
-*         lda   d,x          Get block marker for 2 meg mem map
-*         cmpa  #RAMinUse    Is it in use (not free, ROM or used by module)?
-*         bne   L0848        No, mark it as type it is in SMAP table
-*         leay  $20,y        Yes, move to next block in pages
-*         bra   L084F        move to next block & try again
-
-*L0847    clra               Byte to fill system page map with (0=Not in use)
-*L0848    sta   ,s           Put it on stack
-*         ldw   #$0020       Get size of 8K block in pages
-*         tfm   s,y+         Mark entire block's worth of pages with A
-*L084F    inc   1,s          Bump up to next block to check
-*         ldb   1,s          Get it
-*         cmpb  #8           Done whole 64k system space?
-*         blo   L082F        no, keep checking
+L082F    ldx   <D.SysDAT    get pointer to system DAT block list
+         lslb               adjust block offset for 2 bytes/entry
+         ldd   b,x          get block type/# from system DAT
+         cmpd  #DAT.Free    Unused block?
+         beq   L0847        yes, mark it free in SMAP table
+         ldx   <D.BlkMap    No, get ptr to MMAP table
+         lda   d,x          Get block marker for 2 meg mem map
+         cmpa  #RAMinUse    Is it in use (not free, ROM or used by module)?
+         bne   L0848        No, mark it as type it is in SMAP table
+         leay  32,y         Yes, move to next block in pages
+         bra   L084F        move to next block & try again
+* Free RAM:
+L0847    clra               Byte to fill system page map with (0=Not in use)
+* NOT! RAMinUse:
+         IFNE   H6309
+L0848    sta   ,s           Put it on stack
+         ldw   #$0020       Get size of 8K block in pages
+         tfm   s,y+         Mark entire block's worth of pages with A
+         ELSE
+L0848    ldb   #32		count = 32 pages
+L084A    sta   ,y+		mark the RAM
+         decb
+         bne    L084A
+         ENDC
+L084F    inc   1,s          Bump up to next block to check
+         ldb   1,s          Get it
+         cmpb  #DAT.BlCt    Done whole 64k system space?
+         blo   L082F        no, keep checking
 * Now we can actually attempt to allocate the system RAM requested
 * NOTE: Opt for Coco/TC9 OS9 ONLY: skip last 17 pages with leay -17,y since
-* they are: Kernal (REL/BOOT/OS9P1 - 15 pages), vector RAM & I/O (2 pages)
+* they are: Kernel (REL/BOOT/OS9P1 - 15 pages), vector RAM & I/O (2 pages)
 * (Already permanently marked @ L01D2)
 * At the start, Y is pointing to the end of the SMAP table+1
          ldx   <D.SysMem    Get start of table ptr
-         ldb   #$20         skip block 0: it's always full
+         ldb   #32          skip block 0: it's always full
          abx                same size, but faster than leax $20,x
-*         leay  -17,y        Skip Kernel, Vector RAM & I/O (Can't be free)
+         leay  -17,y        Skip Kernel, Vector RAM & I/O (Can't be free)
 L0857    ldb   R$A,u        Get # 256 byte pages requested
 * Loop (from end of system mem map) to look for # continuous pages requested
 L0859    equ   *
@@ -94,8 +108,9 @@ L0863    lda   ,-y          Get page marker (starting @ end of SMAP)
          lbsr  L09BE        Allocate an image with our start/end block #'s
          bcs   L0894        Couldn't, exit with error
          ldb   R$A,u        Get # pages requested
-         lda   #RAMinUse    Get SMAP in use flag
-L088A    sta   ,y+          Mark all the pages requested as In Use
+*         lda   #RAMinUse    Get SMAP in use flag
+*L088A    sta   ,y+          Mark all the pages requested as In Use
+L088A    inc   ,y+          Since RAMinUse is 1, we can save space by INC'ing from 0->1
          decb
          bne   L088A
          lda   1,s          Get MSB of ptr to start of newly allocated Sys RAM
@@ -210,7 +225,8 @@ L08F3    rts                return
 *
 * Error:  CC = C bit set; B = error code
 *
-FBoot    lda   #'t        tried to boot
+FBoot
+         lda   #'t        tried to boot
          jsr   <D.BtBug
          coma               Set boot flag
          lda   <D.Boot      we booted once before?
@@ -287,18 +303,17 @@ I.VBlock leau  d,x          point to end of bootfile
 L092D    ldd   M$ID,x       get module ID
          cmpd  #M$ID12      legal ID?
          bne   L0954        no, keep looking
+
          ldd   M$Name,x   find name offset pointer
          pshs  x
          leax  d,x
-
-         bsr   name.prt
-*name.prt lda   ,x+        get first character of the name
-*         jsr   <D.BtBug   print it out
-*         bpl   name.prt
-*         lda   #C$SPAC    a space
-*         jsr   <D.BtBug
-
+name.prt lda   ,x+        get first character of the name
+         jsr   <D.BtBug   print it out
+         bpl   name.prt
+         lda   #C$SPAC    a space
+         jsr   <D.BtBug
          puls  x
+
          IFNE  H6309
          ldd   ,s         offset into block
          subr  d,x        make X=offset into block
@@ -331,12 +346,3 @@ L0956    cmpx  2,s          gone thru whole bootfile?
          leas  4,s          purge stack
          clrb
          rts
-
-
-name.prt lda   ,x+        get first character of the name
-         jsr   <D.BtBug   print it out
-         bpl   name.prt
-         lda   #C$SPAC    a space
-         jsr   <D.BtBug
-         rts
-

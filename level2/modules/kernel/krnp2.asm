@@ -243,6 +243,10 @@ L009B    jmp    <D.Crash
 
 svctab   fcb    F$UnLink
          fdb    FUnLink-*-2
+         fcb    F$AllRAM
+         fdb    FAllRAM-*-2
+         fcb    F$AlHRAM+SysState
+         fdb    FAlHRAM-*-2
          fcb    F$Fork
          fdb    FFork-*-2
          fcb    F$Wait
@@ -368,6 +372,8 @@ IOMan    fcs    /IOMan/
          use    ficpt.asm
 
          use    fsleep.asm
+
+         use    fallram.asm
 
          use    fsprior.asm
 
