@@ -575,8 +575,9 @@ L0183    comb
          ldb   #E$UnkSvc
          rts
 
+         ENDC
+
          emod
 eom      equ   *
          end
 
-         ENDC
