@@ -42,7 +42,8 @@ validly opened with the action in the string pointed to by
 The valid actions are:
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
+<colspec colwidth="0.5in"/>
+<colspec colwidth="3.0in"/>
 <tbody>
 <row>
 <entry><quote>r</quote></entry>
@@ -106,7 +107,8 @@ the moment the program runs:
 
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
+<colspec colwidth="1in"/>
+<colspec colwidth="3in"/>
 <tbody>
 <row>
 <entry>stdin</entry>
