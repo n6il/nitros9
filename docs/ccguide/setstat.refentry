@@ -9,9 +9,25 @@
 <funcsynopsisinfo>
 #include &lt;sgstat.h&gt;
 </funcsynopsisinfo>
+
+<funcsynopsisinfo>
+/* code 0 */
+</funcsynopsisinfo>
 <funcprototype>
   <funcdef><function>setstat</function></funcdef>
-  <paramdef>type <parameter>arg1</parameter></paramdef>
+  <paramdef>int <parameter>code</parameter></paramdef>
+  <paramdef>int <parameter>filenum</parameter></paramdef>
+  <paramdef>char *<parameter>buffer</parameter></paramdef>
+</funcprototype>
+
+<funcsynopsisinfo>
+/* code 2 */
+</funcsynopsisinfo>
+<funcprototype>
+  <funcdef><function>setstat</function></funcdef>
+  <paramdef>int <parameter>code</parameter></paramdef>
+  <paramdef>int <parameter>filenum</parameter></paramdef>
+  <paramdef>long <parameter>size</parameter></paramdef>
 </funcprototype>
 </funcsynopsis>
 
