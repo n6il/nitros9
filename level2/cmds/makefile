@@ -41,10 +41,10 @@ $(LEVEL1FILES): $(LEVEL1)/CMDS/$@
 	-$(SOFTLINK) $(LEVEL1)/CMDS/$@
 
 clean:
-	$(RM) $(ALLOBJS) $(LEVEL1FILES) shell utilpak1
+	$(RM) shell utilpak1 $(ALLOBJS) $(LEVEL1FILES)
 
 showobjs:
-	@$(ECHO) $(ALLOBJS) shell utilpak1
+	@$(ECHO) shell utilpak1 $(ALLOBJS)
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
