@@ -85,30 +85,31 @@ BOOTFILE_LUCKEY  = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(C9)/Products/SuperDrivers/software/6809l2/rbsuper.dr \
                 $(C9)/Products/SuperDrivers/software/6809l2/llide.dr \
                 $(C9)/Products/SuperDrivers/software/6809l2/lltc3.dr \
-                $(C9)/Products/SuperDrivers/software/6809l2/h0_fuji128mbcf_ide.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/dd_ide.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/i0_ide.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/ih_255_ide.dd \
                 $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
                 $(MD)/scf.mn $(MD)/cc3io.dr \
                 $(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
-                $(MD)/windint.io \
+                $(MD)/grfint.io \
                 $(MD)/term_win80.dt \
                 $(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
                 $(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
                 $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
                 $(MD)/clock_60hz \
-                $(MD)/clock2_tc3
+                $(MD)/clock2_soft
 
 BOOTFILE_CUST   = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
                 $(MD)/rbf.mn \
                 $(C9)/Products/SuperDrivers/software/6809l2/rbsuper.dr \
                 $(C9)/Products/SuperDrivers/software/6809l2/llide.dr \
                 $(C9)/Products/SuperDrivers/software/6809l2/lltc3.dr \
-                $(C9)/Products/SuperDrivers/software/6809l2/h0_lexar64mbcf_ide.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/h1_fuji128mbcf_ide.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/h2_ibmdpes31080_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/c1_cdrom_ide.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/h5_zip100_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/h6_ibm0661467_tc3.dd \
-                $(C9)/Products/SuperDrivers/software/6809l2/hb_255_tc3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/i0_ide.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/i1_ide.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/ic_ide.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/s0_tc3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/s1_tc3.dd \
+                $(C9)/Products/SuperDrivers/software/6809l2/ih_255_ide.dd \
                 $(C9)/Products/DriveWire/software/6809l2/drivewire.dr \
                 $(C9)/Products/DriveWire/software/6809l2/ddx0.dd \
                 $(C9)/Products/DriveWire/software/6809l2/x1.dd \
