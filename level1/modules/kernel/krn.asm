@@ -46,7 +46,8 @@
 * has a bit in a compatibility byte that can turn on/off CRC checking
 *
 *  15r1    2003/12/09  Boisy G. Pitre
-* Kernel no longer scans for modules in I/O space.
+* Kernel no longer scans for modules in I/O space.  Also, F$PrsNam now
+* allows _ and 0-9 as first chars of a filename.
 
          nam   Kernel
          ttl   NitrOS-9 Level 1 Kernel
@@ -143,20 +144,36 @@ SysTbl   fcb   F$Link
 
          fcb   $80
 
+         IFNE  H6309
+Zoro     fcb   $00
+         ENDC
+
 *
 * OS-9 Genesis!
+
 OS9Cold  equ   *
 * clear out system globals from $0020-$0400
          ldx   #D.FMBM
+         IFNE  H6309
+         ldw   #$400-D.FMBM
+         leay  Zoro,pc
+         tfm   y,x+
+         ELSE
          ldy   #$400-D.FMBM
          clra
          clrb
 L007F    std   ,x++
          leay  -2,y
          bne   L007F
+         ENDC
+
 * set up system globals
+         IFNE  H6309
+         ldd   #$200
+         ELSE
          inca
          inca                          D = $200
+         ENDC
          std   <D.FMBM                 $200 = start of free memory bitmap
          addb  #$20
          std   <D.FMBM+2               $220 = end of free memory bitmap
@@ -192,6 +209,12 @@ L00C2    leax  ,y                      X = end of RAM
 
 * Copy vector code over to address $100
          pshs  y,x
+         IFNE  H6309
+         leax  >VectCode,pcr
+         ldy   #D.XSWI3
+         ldw   #VectCSz
+         tfm   x+,y+
+         ELSE
          leax  >VectCode,pcr
          ldy   #D.XSWI3
          ldb   #VectCSz
@@ -199,8 +222,10 @@ L00D2    lda   ,x+
          sta   ,y+
          decb
          bne   L00D2
+         ENDC
          puls  y,x
-* validate modules at top of RAM (kernel, etc.)
+
+* Validate modules at top of RAM (kernel, etc.)
 L00DB    lbsr  ValMod
          bcs   L00E6
          ldd   M$Size,x
@@ -209,11 +234,10 @@ L00DB    lbsr  ValMod
 L00E6    cmpb  #E$KwnMod
          beq   L00EE
          leax  1,x
-* Modification to stop scan into I/O space
+* Modification to stop scan into I/O space -- Added by BGP
 L00EC    cmpx  #Bt.Start+Bt.Size
          bcs   L00DB
-
-* copy vectors to system globals
+* Copy vectors to system globals
 L00EE    leay  >Vectors,pcr
          leax  >L0000,pcr
          pshs  x
