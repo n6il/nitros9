@@ -6,12 +6,13 @@ MD		= ../MODULES
 CD		= ../CMDS
 # Third Party directory
 TP		= ../../3rdparty
+TPB		= ../../3rdparty/booters
 
 DEPENDS		= ./Makefile
 
 KERNEL_1773	= $(MD)/rel $(MD)/boot_1773 $(MD)/os9p1
-KERNEL_ROM	= $(MD)/rel $(MD)/boot_rom $(MD)/os9p1
-KERNEL_KENTON	= $(MD)/rel $(MD)/boot_kenton $(MD)/os9p1
+KERNEL_ROM	= $(MD)/rel $(TPB)/boot_rom $(MD)/os9p1
+KERNEL_KENTON	= $(MD)/rel $(TPB)/boot_kenton $(MD)/os9p1
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_1773	= $(MD)/os9p2 $(MD)/ioman $(MD)/init $(MD)/rbf.mn $(MD)/cc3disk.dr $(MD)/d0_40d.dd \
@@ -30,8 +31,8 @@ BOOTFILE_ROM	= $(MD)/rominfo $(MD)/os9p2 $(MD)/init $(MD)/ioman \
 		$(CD)/shell $(CD)/mdir $(CD)/mfree $(CD)/procs
 
 # OS-9 disk bootfile to allow booting from Ken-Ton SCSI controller
-BOOTFILE_KENTON	= $(MD)/os9p2 $(MD)/ioman $(MD)/rbf.mn $(MD)/clock $(MD)/clock2_soft $(MD)/rampak.dr \
-		$(MD)/r0_rampak256.dd $(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_80d.dd \
+BOOTFILE_KENTON	= $(MD)/os9p2 $(MD)/ioman $(MD)/rbf.mn $(MD)/clock $(MD)/clock2_soft $(TP)/drivers/rampak/rampak.dr \
+		$(TP)/drivers/rampak/r0_256_l2.dd $(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_80d.dd \
 		$(TP)/drivers/scsisys/scsisys_68_ktlr.dr \
 		$(TP)/drivers/scsisys/h0_ktlr.dd $(MD)/scf.mn $(MD)/cc3io.dr $(MD)/keydrv \
 		$(MD)/joydrv_6551L $(TP)/drivers/s16550/s16550_large.dr $(TP)/drivers/s16550/t2_s16550.dd \
