@@ -16,9 +16,6 @@
 <arg choice="plain">
   &repeatst;<replaceable>path</replaceable>&repeaten;
 </arg>
-<arg choice="opt">
-  <option>-x</option>
-</arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 

@@ -1,18 +1,9 @@
 <preface>
-<title>Welcome to &os9level;!</title>
+<title>Welcome to NitrOS-9!</title>
 <titleabbrev>Introduction</titleabbrev>
 <para>
-At the heart of your &make; is an amazing device: the
-&CPU; central processing unit (CPU).  When introduced in 1980, This
-microprocessor offered sophisticated features that were only
-found only on much larger and costly computers. Even today, it is
-architecture is considered feature-rich.  The OS-9 operating system
-was designed around the 6809 microprocessor to provide an extremely
-efficient and powerful operating system.
-</para>
-<para>
-The foundation of a computer's software system is its
-<emphasis>Operating System</emphasis> or "OS". It is the master control
+The foundation of a modern computer system is its
+<emphasis>Operating System</emphasis> or "OS".  The OS is the master control
 program that interfaces all other software to the system's hardware. Some
 of the things it must do are performing input and output operations,
 coordinating memory use, and many other "housekeeping" functions. All
@@ -25,7 +16,7 @@ efficiency of its OS.
 </para>
 
 <para>
-OS-9's overall structure was based on the famous UNIX<footnote id="unixdesc">
+NitrOS-9 is an operating system for the TRS-80/Tandy Color Computer family which provides harmony to the chaos of multiple devices, memory management and application service requests.  Its overall structure was based on the famous UNIX<footnote id="unixdesc">
 <para>
 UNIX is an operating system designed by Bell Telephone
 Laboratories, which is becoming widely recognized as a standard for
@@ -33,20 +24,16 @@ mini and micro operating systems because of its versatility and
 elegant structure.
 </para>
 </footnote>
-operating system, which has been widely acclaimed as the operating
-system of the future because of its versatility, logical structure,
-and friendly user commands. The OS-9 family of advanced software is
-not only more powerful than most other microcomputer scftware - it
-is also much easier to learn and use.
+operating system.
 </para>
 <para>
-Some of the advanced OS-9 features you'll learn about in this
+NitrOS-9 is 100% compatible with OS-9 Level One and OS-9 Level Two for the Color Computer.  These products were manufactured by Tandy Corporation and sold through Radio Shack stores in the 1980s, and were purchased by many Color Computer users.  Today, the Color Computer is no longer manufactured and those versions of OS-9 are no longer for sale.  NitrOS-9 has evolved to be even better than these operating systems, and stands as the logical choice for those Color Computer owners who wish to use their CoCos today and tomorrow.
+</para>
+<para>
+Some of the advanced NitrOS-9 features you'll learn about in this
 book are:
 </para>
 <orderedlist numeration="arabic">
-
-<listitem><para>Friendly UNIX-like
-user interface and environment</para></listitem>
 
 <listitem><para>Multiuser/Multitasking Real-Time Operating System</para></listitem>
 
@@ -63,19 +50,19 @@ user interface and environment</para></listitem>
 </orderedlist>
 <para>
 If you don't know what some of these thing mean yet - don't
-worry. As you explore OS-9 you'll soon learn how they enhance the
-capability of your &make; and make it so much easier to use
+worry. As you explore NitrOS-9 you'll soon learn how they enhance the
+capability of your Color Computer; and make it so much easier to use
 in almost any application.
 </para>
 <para>
-OS-9 has many commands and functions - definitely more than
-you can learn in an evening! The best way to become an OS-9 expert
-is to study this manual carefully, section-by-section, taking tire
+NitrOS-9 has many commands and functions - definitely more than
+you can learn in an evening! The best way to become an NitrOS-9 expert
+is to study this manual carefully, section-by-section, taking time
 to try out each command or function. Because many functions affect
 others, you'll find this manual extensively cross-referenced so you
 can skip ahead to help you understand a new topic. Taking the time
 to study this book will certainly increase your knowledge and
-enjoyment of OS-9.
+enjoyment of NitrOS-9.
 </para>
 <para>
 But if you can't wait, at least read the rest of this chapter,

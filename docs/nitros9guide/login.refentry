@@ -116,13 +116,14 @@ For more information see: <command>tsmon</command>, <xref linkend="sec4.9"/>,
 <screen>
 OS9: login
 
-OS-9 Level 1 Timesharing System Version 1.2 82/12/04 13:02:22
+NitrOS-9/6309 Timesharing System
+Level 2 V03.02.01
+    2003/12/04 13:02:22
 
 User name?: superuser
 Password: secret
 
-Process #07 logged 81/12/04 13:03:00
-
+Process #07 logged on    2003/12/04 13:03:00
 Welcome!
 </screen>
 </refsect1>

@@ -17,7 +17,7 @@
 <para>
 This command is used to physically initialize, verify, and establish
 an initial file structure on a disk. All disks must be formatted
-before they can be used on an OS-9 system.
+before they can be used on an NitrOS-9 system.
 </para>
 <para>
 NOTE: If the diskette is to be used as a system disk, <command>OS9gen</command> or

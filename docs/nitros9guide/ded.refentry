@@ -19,11 +19,9 @@ disk  editor, so the display is organized around individual
 sectors. It performs most of the functions of Patch, from 
 Computerware, but is faster, more compact, and
 screen-oriented rather than line-oriented. Individual files 
-or the disk itself (hard, floppy, ram) can be examined and 
+or the disk itself (hard, floppy, RAM) can be examined and 
 changed, sectors  can  be  written   to an output file, and 
 executable  modules can be located, linked to and verified. 
-With   simple changes, it will run on any CoCo Level I OS-9 
-and possibly others (CoCo Level II OS-9).
 </para><para>
 To use, type:
 <screen>

@@ -2,17 +2,17 @@
 <title>System Command Descriptions</title>
 <para>
 This section contains descriptions for each of the command
-programs that are supplied with OS-9. These programs are usually
-called using the shell, but can be called from most other OS-9
+programs that are supplied with NitrOS-9. These programs are usually
+called using the shell, but can be called from most other NitrOS-9
 family programs such as BASIC09, Interactive Debugger, Macro Text
 Editor, etc. Unless otherwise noted, these programs are designed to
 run as individual processes.
 </para>
 <warning>
 <para>
-Although many OS-9 commands may work on Level One or Level
-Two systems, there are differences. Take care not to mix command
-files from Level One systems on Level Two, or the reverse.
+Although many NitrOS-9 commands may work on Level 1 or Level
+2 systems, there are differences. Take care not to mix command
+files from Level 1 systems on Level 2, or the reverse.
 </para>
 </warning>
 <section>
@@ -88,7 +88,6 @@ command line before it is passed to the program being called.
 &chdref;
 &cmpref;
 &cobblerref;
-&configref;
 &copyref;
 &cputyperef;
 &dateref;

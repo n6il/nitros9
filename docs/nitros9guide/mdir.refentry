@@ -50,7 +50,7 @@ CAFB   38 F1  1 R   2 TERM
 </screen>
 <caution>
 <para>
-Many of the modules listed by <command>mdir</command> are OS-9 system modules
+Many of the modules listed by <command>mdir</command> are NitrOS-9 system modules
 and <emphasis>not</emphasis> executable as programs: always check the module type code
 before running a module if you are not familiar with it!
 </para>

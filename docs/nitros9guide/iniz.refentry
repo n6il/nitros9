@@ -16,7 +16,7 @@
 <refsect1>
 <title>Description</title>
 <para>
-Links the specified device to OS-9, places the device addres in a new device
+Links the specified device to NitrOS-9, places the device addres in a new device
 table entry, allocates the memory needed by the device driver, and calls
 the device driver initialization routine.  If the device is already
 installed, <command>iniz</command> does not reinitialize it.
@@ -48,10 +48,10 @@ memory fragmentation).
 <refsect1>
 <title>Example:</title>
 <literallayout>
-	INIZ P T2 [ENTER]
+	iniz p t2 [ENTER]
 </literallayout>
 <para>
-initializes the P (printer) and T2 (terminal 2) devices.
+initializes the p (printer) and t2 (terminal 2) devices.
 </para>
 </refsect1>
 </refentry>

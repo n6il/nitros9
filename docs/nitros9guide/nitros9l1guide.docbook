@@ -4,14 +4,14 @@
   <!ENTITY repeatst   "{">
   <!ENTITY repeaten   "}">
   <!ENTITY CPU           "6809">
-  <!ENTITY os9level      "OS-9 Level One">
-  <!ENTITY os9version    "Version 02.01.01 BETA1">
+  <!ENTITY nitros9level      "NitrOS-9 Level 1">
+  <!ENTITY nitros9version    "Version 03.02.01">
   <!ENTITY vendor        "The CoCo Community">
   <!ENTITY make          "TRS-80/Tandy Color Computer">
   <!ENTITY minmem        "64K">
   <!ENTITY DOSCMD        "DOS">
   <!ENTITY ctrlkey       "<keycap>CLEAR</keycap>">
-  <!ENTITY os9guide      SYSTEM "os9guide.book">
+  <!ENTITY nitros9guide      SYSTEM "nitros9guide.book">
   <!ENTITY preface       SYSTEM "intro.preface">
   <!ENTITY chap1         SYSTEM "chap1.chapter">
   <!ENTITY chap2         SYSTEM "chap2.chapter">
@@ -35,7 +35,6 @@
   <!ENTITY chdref        SYSTEM "chd.refentry">
   <!ENTITY cmpref        SYSTEM "cmp.refentry">
   <!ENTITY cobblerref    SYSTEM "cobbler.refentry">
-  <!ENTITY configref     SYSTEM "config.refentry">
   <!ENTITY copyref       SYSTEM "copy.refentry">
   <!ENTITY cputyperef    SYSTEM "cputype.refentry">
   <!ENTITY dateref       SYSTEM "date.refentry">
@@ -93,6 +92,6 @@
   <!ENTITY wcreateref    "">
   <!ENTITY xmoderef      SYSTEM "xmode.refentry">
  ]>
-<book id="os9guide" lang="en">
-&os9guide;
+<book id="nitros9guide" lang="en">
+&nitros9guide;
 </book>

@@ -20,17 +20,17 @@ Motorola-standard format is often directly accepted by commercial PROM
 programmers, emulators, logic analyzers and similar devices that are
 interfaced RS-232 interfaces. It can also be useful for
 transmitting files over data links that can only handle character-type
-data; or to convert OS-9 assembler or compiler-generated
-programs to load on non-OS-9 systems.
+data; or to convert NitrOS-9 assembler or compiler-generated
+programs to load on non-NitrOS-9 systems.
 </para>
 <para>
-<command>Binex</command> converts &quot;path1&quot;, an OS-9 binary format file, to a new file
+<command>Binex</command> converts &quot;path1&quot;, a NitrOS-9 binary format file, to a new file
 named &quot;path2&quot; in S-Record format. If invoked on a non-binary load
 module file, a warning message is printed and the user is asked if
 <command>binex</command> should proceed anyway. A &quot;Y&quot; response means yes; any other
 answer will terminate the program. S-Records have a header record
 to store the program name for informational purposes and each data
-record has an absolute memory address which is not meaningful to OS-9
+record has an absolute memory address which is not meaningful to NitrOS-9
 since it uses position-independent-code. However, the S-Record
 format requires them so <command>binex</command> will prompt the user for a program
 name and starting load address. For example:
