@@ -1116,15 +1116,11 @@ E$NoData rmb   1 Missing data statement
 * System Dependent Error Codes
 *
 
-         IFNE  NitrOS9
-         org   183
-E$IWTyp  rmb   1         Illegal window type
-E$WADef  rmb   1         Window already defined
-E$NFont  rmb   1         Font not found
-         ENDC
-
 * Level 2 windowing error codes
-         org   186
+         org   183
+E$IWTyp  rmb   1          Illegal window type
+E$WADef  rmb   1          Window already defined
+E$NFont  rmb   1          Font not found
 E$StkOvf rmb   1          Stack overflow
 E$IllArg rmb   1          Illegal argument
          rmb   1          reserved
