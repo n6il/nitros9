@@ -32,16 +32,16 @@ size     equ   .
 name     fcs   /go51/
          fcb   edition
 
-L0012    fcs   /KBVDIO/
-L0018    fcs   /drvr51/
-L001E    fcs   /term/
-start    equ   *
-         leax  >L0012,pcr
+IOMod    fcs   /KBVDIO/
+Driver   fcs   /drvr51/
+Desc     fcs   /term/
+
+start    leax  >IOMod,pcr
          lbsr  L00CB
          lbcs  L00C8
          stx   ,u
          lbsr  L00D6
-         leax  >L0018,pcr
+         leax  >Driver,pcr
          lbsr  L00CB
          lbcs  L00C8
          stx   u0002,u
@@ -49,7 +49,7 @@ start    equ   *
          std   u0004,u
          pshs  u,cc
          orcc  #IntMasks
-         ldx   >$006B
+         ldx   >D.AltIRQ
          stx   >$0032
          ldy   ,u
          ldx   u0004,u
@@ -77,14 +77,14 @@ L0054    lda   ,u+
          ldx   ,u
          ldd   $04,x
          leax  d,x
-         leay  >L0012,pcr
+         leay  >IOMod,pcr
          ldb   #$06
 L008B    lda   ,y+
          sta   ,x+
          decb  
          bne   L008B
          lda   #$01
-         ldb   #$00
+         ldb   #SS.Opt
          leax  u0006,u
          os9   I$GetStt 
          bcs   L00C8
@@ -92,11 +92,11 @@ L008B    lda   ,y+
          lda   #$18
          sta   $08,x
          lda   #$01
-         ldb   #$00
+         ldb   #SS.Opt
          os9   I$SetStt 
          bcs   L00C8
-         leax  >L001E,pcr
-         lda   #$F1
+         leax  >Desc,pcr
+         lda   #Devic+Objct
          pshs  u
          os9   F$Link   
          tfr   u,x
@@ -109,7 +109,7 @@ L008B    lda   ,y+
          clrb  
 L00C8    os9   F$Exit   
 L00CB    pshs  u
-         lda   #$E1
+         lda   #Drivr+Objct
          os9   F$Link   
          tfr   u,x
          puls  pc,u
@@ -117,5 +117,7 @@ L00D6    pshs  u
          tfr   x,u
          os9   F$UnLink 
          puls  pc,u
+
          emod
 eom      equ   *
+         end
