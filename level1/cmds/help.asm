@@ -34,7 +34,7 @@ bufptr  rmb     2
 path    rmb     1
 same    rmb     1
 prmptr  rmb     2
-endptr  rmb     2
+prmend  rmb     2
 length  rmb     2
 colbuff rmb     128
 userbuf rmb     128
@@ -166,7 +166,7 @@ nocr    sta     ,u+            store in buffer
         clr     ,u
         tfr     u,y
         puls    u
-        sty     <endptr        store end of all parameters
+        sty     <prmend        store end of all parameters
         leax    parbuff,u       load address of parbuff into X
         stx     <prmptr        save parameter pointer
 entry2  lda     ,x
@@ -198,7 +198,7 @@ rered1  ldd     <length        get length
         leax    d,x            add length to it
         leax    1,x            increment past null byte
 rered2  clrb
-        cmpx    <endptr
+        cmpx    <prmend
         blt     rered25
         jmp     [exitvec,u]
 rered25 stx     <prmptr        store it
@@ -286,7 +286,7 @@ unknown
         leax    d,x            add to X
         leax    1,x            increment past null byte
         clrb
-        cmpx    endptr
+        cmpx    prmend
         lblt    unk2
         jmp     [exitvec,u]
 unk2    stx     <prmptr        store X

@@ -33,7 +33,7 @@ name     fcs   /Error/
 path    rmb     1
 same    rmb     1
 prmptr  rmb     2
-endptr  rmb     2
+prmend  rmb     2
 length  rmb     2
 parbuff rmb     256
 filbuff rmb     256
@@ -59,7 +59,7 @@ nocr    sta     ,u+            store in buffer
         clr     ,u
         tfr     u,y
         puls    u
-        sty     <endptr        store end of all parameters
+        sty     <prmend        store end of all parameters
         leax    parbuff,u       load address of parbuff into X
         stx     <prmptr        save parameter pointer
 entry2  lda     ,x
@@ -81,7 +81,7 @@ rered1  ldd     <length        get length
         leax    d,x            add length to it
         leax    1,x            increment past null byte
 rered2  clrb
-        cmpx    <endptr
+        cmpx    <prmend
         bge     exit
         stx     <prmptr        store it
         lbsr    seek0          rewind the file
@@ -158,7 +158,7 @@ unknown leax    unkmsg,pcr     point to message
         leax    d,x            add to X
         leax    1,x            increment past null byte
         clrb
-        cmpx    endptr
+        cmpx    prmend
         lbge    exit
         stx     <prmptr        store X
         bsr     seek0          rewind file
