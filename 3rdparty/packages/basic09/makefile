@@ -17,6 +17,7 @@ ALLOBJS		= $(OBJS) $(OBJS6809) $(OBJS6309)
 
 all:	$(ALLOBJS) $(DEPENDS)
 	$(UNIX2OS9) $(TXTFILES)
+	$(CHMOD) 755 $(ALLOBJS)
 
 basic09_6309: basic09.asm
 	$(AS) $(ASOUT)$@ $< $(H6309)
