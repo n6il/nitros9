@@ -8,19 +8,19 @@ CMDS		= attr binex build cobbler copy date \
 		merge mfree montype procs pwd pxd rename save \
 		setime shell_21 sleep tee tmode tsmon unlink \
 		verify wcreate xmode
-SUBS            = gfx inkey
+SUBS            = gfx2 gfx inkey
 ALLOBJS		= $(CMDS) $(SUBS)
 
 SHELLMODS	= shell_21 build copy date deiniz del dir display echo iniz \
 		link list load mdir merge mfree procs tmode unlink
 UTILPAK1        = attr deldir ident rename setime xmode
 
-LEVEL1FILES	= binex.asm attr.asm build.asm date.asm deiniz.asm del.asm deldir.asm \
-		dump.asm echo.asm exbin.asm free.asm ident.asm iniz.asm inkey.asm link.asm \
-		list.asm load.asm login.asm merge.asm pwd.asm pxd.asm rename.asm \
+LEVEL1FILES	= binex.asm attr.asm build.asm cobbler.asm date.asm deiniz.asm del.asm deldir.asm \
+		dump.asm echo.asm exbin.asm free.asm gfx.asm ident.asm iniz.asm inkey.asm link.asm \
+		list.asm load.asm login.asm merge.asm os9gen.asm pwd.asm pxd.asm rename.asm \
 		save.asm setime.asm sleep.asm tee.asm tmode.asm tsmon.asm verify.asm
 
-LEVEL2FILES	= gfx.asm mdir.asm mfree.asm montype.asm procs.asm \
+LEVEL2FILES	= gfx2.asm mdir.asm mfree.asm montype.asm procs.asm \
 		shell_21.asm unlink.asm wcreate.asm
 
 # Files not compilable by os9asm: Config attr cmp dcheck dir dsave
