@@ -10,9 +10,9 @@ L0C40    pshs  cc,a,x,u
          bsr   L0BF5
          ldd   a,u
          orcc  #IntMasks
-         stb   >$FFA0
+         stb   >DAT.Regs
          ldb   ,x
-         clr   >$FFA0
+         clr   >DAT.Regs
          puls  cc,a,x,u
 
          stb   R$A,u        Save into caller's A & return
@@ -41,7 +41,7 @@ L0C28    andcc #^Carry
          ldd   a,u          get memory block
          lda   1,s
          orcc  #IntMasks
-         stb   >$FFA0
+         stb   >DAT.Regs
          sta   ,x
-         clr   >$FFA0
+         clr   >DAT.Regs
          puls  cc,d,x,u,pc
