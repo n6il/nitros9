@@ -22,7 +22,7 @@ CLOCKS          = clock_elim clock_disto2 clock_disto4 clock_bnb \
 		clock_smart clock_harris clock_tc3 clock_soft
 FMGRS		= scf.mn rbf.mn pipeman.mn pipeman_named.mn
 DRIVERS		= cc3disk.dr cc3hdisk.dr cc3io.dr modpak.dr \
-		vrn.dr piper.dr printer.dr sio.dr ram.dr sspak.dr \
+		vrn.dr piper.dr printer.dr sio.dr rammer.dr sspak.dr \
 		sacia.dr dacia.dr
 IOSUBS		= windint.io vdgint.io keydrv joydrv_joy \
 		joydrv_6551L joydrv_6552L joydrv_6551M joydrv_6552M snddrv
@@ -107,29 +107,29 @@ d2_80d.dd: dx.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
 
 # RAM Disk descriptors
-r0_8k.dd: rx.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=32
+r0_8k.dd: r0.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=8
 
-ddr0_8k.dd: rx.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=32 -aDD=1
+ddr0_8k.dd: r0.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=8 -aDD=1
 
-r0_96k.dd: rx.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=384
+r0_96k.dd: r0.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=96
 
-ddr0_96k.dd: rx.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=384 -aDD=1
+ddr0_96k.dd: r0.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=96 -aDD=1
 
-r0_128k.dd: rx.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=512
+r0_128k.dd: r0.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=128
 
-ddr0_128k.dd: rx.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=512 -aDD=1
+ddr0_128k.dd: r0.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=128 -aDD=1
 
-r0_192k.dd: rx.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=768
+r0_192k.dd: r0.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=192
 
-ddr0_192k.dd: rx.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSectors=768 -aDD=1
+ddr0_192k.dd: r0.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=192 -aDD=1
 
 cc3go_rom: cc3go.asm
 	$(AS) -aROM=1 $(AFLAGS) $< $(ASOUT)$@
