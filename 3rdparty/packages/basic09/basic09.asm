@@ -1643,7 +1643,11 @@ L07FC    os9   I$Close
          leax  <L07B5,pc  Point to intercept routine and set it up with
          os9   F$Icpt     it's memory area @ start of param area
          leax  >L000D-$d,pc Point to beginning of module header
+         IFNE  H6309
          tfr   x,w        Move it to W
+         ELSE
+         pshs  x
+         ENDC
          ldx   <u0000     Point X to start of data mem
 * Set up some JMP tables from the module header
          leax  <$1B,x     Point $1b bytes into it
@@ -1651,7 +1655,11 @@ L07FC    os9   I$Close
 L082E    lda   #$7E       Opcode for JMP Extended instruction
          sta   ,x+        Store in table
          ldd   ,y++       Get jump offset from module header extension
+         IFNE  H6309
          addr  w,d        Add to start of module address
+         ELSE
+         addd  ,s++
+         ENDC
          std   ,x++       Store as destination of JMP
          ldd   ,y         Keep installing JMP tables until 0000 found
          bne   L082E     
