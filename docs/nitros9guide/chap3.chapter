@@ -165,7 +165,7 @@ Here are examples of <emphasis>illegal</emphasis> names:
 Each physical input/output device supported by the system must
 have a unique name. The actual names used are defined when the
 system is set up and cannot be changed while the system is running.
-The device names used for the Dragon Computer are:
+The device names used for the &make; Computer are:
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
@@ -1070,7 +1070,7 @@ indicate which clusters are in use (or defective), and which are
 free for allocation to files.
 </para>
 <para>
-The Dragon Computer disk system uses the following format:
+The &make; Computer disk system uses the following format:
 </para>
 <itemizedlist mark="square">
 <listitem><para>
