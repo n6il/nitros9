@@ -19,6 +19,7 @@ DSKDIR		= $(BASEDIR)/dsks
 
 # Use the cross assembler
 AS		= $(OS9TOOLSDIR)/mamou -i=$(DEFDIR)
+#AS		= $(OS9TOOLSDIR)/os9asm -i=$(DEFDIR)
 ASOUT		= -o
 AFLAGS		= -q
 
@@ -60,7 +61,7 @@ ARCHIVE		= zip -D
 6809L1		= $(BASEDIR)/6809l1
 6809L2		= $(BASEDIR)/6809l2
 6309L2		= $(BASEDIR)/6309l2
-C9		= $(BASEDIR)/cloud9
+C9		= $(HOME)/cloud9
 
 # File managers
 %.mn: %.asm
