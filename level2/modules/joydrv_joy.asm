@@ -6,11 +6,11 @@
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*   6      1988/??/??
-* L2 Upgrade distribution version.
+*   6      1998/10/09  Robert Gault
+* Added annotations to the L2 Upgrade distribution version
 *
-*          1998/10/09  Robert Gault
-* Annotations.
+*   7      2003/08/28  Robert gault
+* Contains routine for H6309 from CC3IO
 
          nam   JoyDrv
          ttl   Joystick Driver for CoCo 3 Hi-Res Mouse
@@ -24,7 +24,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   6
+edition  set   7
 
          mod   eom,name,tylg,atrv,start,size
 size     equ   .
@@ -95,24 +95,66 @@ L0097    pshs  cc         high res routine
          sta   $01,x      select x/y pot
          lda   #$FF       full DAC value
          sta   <$20,x     store in DAC to charge capacitor
+         IFNE  H6309
+         lda   #$80
+         ELSE
          lda   #$5A       timing loop; wait for voltage to settle
+         ENDC
 L00A2    deca  
          bne   L00A2      wait
-         ldd   #$0329
+         IFNE  H6309
+         ldd   #$2F0
+         lde   #2
+         ELSE
+         ldd   #$329
          pshs  a
          lda   #$02
+         ENDC
          orcc  #IntMasks  kill interrupts
+         IFNE  H6309
+         ste   <$20,x
+         ELSE
          sta   <$20,x     clear DAC; mask RS-232; start cap. discharge
-L00B1    lda   ,x         test comparator
+         ENDC
+L00B1    equ   *
+         IFNE  H6309
+         lde   ,x
+         ELSE
+         lda   ,x         test comparator
+         ENDC
          bmi   L00C0
-         decb             counter  
+         IFNE  H6309
+         decd
+         ELSE
+         decb             counter
+         ENDC  
          bne   L00B1      loop until state change
+         IFNE  H6309
+         ldd   #MaxRows-1 Too big, force to highest possible coord
+         puls  cc,pc
+         ELSE
          dec   ,s         3 -> 0
          bpl   L00B1      loop again
          puls  a
          bra   L00D6      branch to maximum value
 L00C0    puls  a
-         decb  
+         ENDC
+         IFNE  H6309
+L00C0    equ   *
+         ENDC
+         decb
+         IFNE  H6309
+         ldw   #MaxRows   Max coord
+         subr  d,w        Subtract the timing ramp value we got
+         bhs   L0A11      If didn't wrap, we're fine
+         clrd             If went negative, force to 0 coord
+         puls  cc,pc      Turn interrupts back on & return
+L0A11    tfr   w,d        Move to proper exit register for now
+         cmpd  #MaxRows-1 Past maximum X coordinate?
+         blo   L0A1A      No, leave it alone
+         ldd   #MaxRows-1 Don't let it get past end of screen
+L0A1A    puls  pc,cc
+         ELSE
          pshs  b,a
          ldd   #640
          subd  ,s++       convert from 640 -> 0 to 0 -> 640
@@ -124,6 +166,7 @@ L00D0    cmpd  #639
          bcs   L00D9
 L00D6    ldd   #639       maximum value
 L00D9    puls  pc,cc
+         ENDC
 * This routine converts a pot value from width (640) to height (192) to match
 * possible screen values; ie. value divided by 3.33
 L00DB    pshs  a
