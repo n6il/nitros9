@@ -5,7 +5,7 @@
 *
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
-* 7      Original Tandy/Microware version
+* 7      Original Tandy/Microware version               BGP 02/04/06
 
          nam   Ident
          ttl   Show module information
@@ -42,7 +42,7 @@ u0015    rmb   1
 u0016    rmb   1
 u0017    rmb   1
 u0018    rmb   1
-u0019    rmb   1
+path     rmb   1
 u001A    rmb   1
 u001B    rmb   1
 u001C    rmb   2
@@ -60,351 +60,36 @@ size     equ   .
 name     fcs   /Ident/
          fcb   edition
 
-L0013    fcb   $0A 
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $3A :
-         fcb   $20 
-         fcb   $49 I
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $20 
-         fcb   $5B [
-         fcb   $2D -
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $5D ]
-         fcb   $20 
-         fcb   $3C <
-         fcb   $6D m
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $3E >
-         fcb   $20 
-         fcb   $5B [
-         fcb   $2D -
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $5D ]
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $70 p
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $79 y
-         fcb   $20 
-         fcb   $6D m
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $2E .
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $2D -
-         fcb   $6D m
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $70 p
-         fcb   $6C l
-         fcb   $61 a
-         fcb   $79 y
-         fcb   $20 
-         fcb   $6D m
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $2E .
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $2D -
-         fcb   $73 s
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $73 s
-         fcb   $68 h
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $6D m
-         fcb   $2E .
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $2D -
-         fcb   $76 v
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $20 
-         fcb   $43 C
-         fcb   $52 R
-         fcb   $43 C
-         fcb   $20 
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $0A 
-         fcb   $20 
-         fcb   $20 
-         fcb   $2D -
-         fcb   $78 x
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $20 
-         fcb   $65 e
-         fcb   $78 x
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $20 
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $0D 
-L00CD    fcb   $4D M
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $A1 !
-L00E8    fcb   $48 H
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $3A :
-         fcb   $A0 
-L00F4    fcb   $4D M
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $73 s
-         fcb   $69 i
-         fcb   $7A z
-         fcb   $65 e
-         fcb   $BA :
-L0100    fcb   $4D M
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $43 C
-         fcb   $52 R
-         fcb   $43 C
-         fcb   $3A :
-         fcb   $A0 
-L010C    fcb   $48 H
-         fcb   $64 d
-         fcb   $72 r
-         fcb   $20 
-         fcb   $70 p
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $79 y
-         fcb   $3A :
-         fcb   $A0 
-L0118    fcb   $45 E
-         fcb   $78 x
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $2E .
-         fcb   $20 
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $66 f
-         fcb   $3A :
-         fcb   $20 
-         fcb   $A0 
-L0124    fcb   $44 D
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $20 
-         fcb   $53 S
-         fcb   $69 i
-         fcb   $7A z
-         fcb   $65 e
-         fcb   $3A :
-         fcb   $20 
-         fcb   $A0 
-L0130    fcb   $54 T
-         fcb   $79 y
-         fcb   $2F /
-         fcb   $4C L
-         fcb   $61 a
-         fcb   $20 
-         fcb   $41 A
-         fcb   $74 t
-         fcb   $2F /
-         fcb   $52 R
-         fcb   $76 v
-         fcb   $BA :
-L013C    fcb   $45 E
-         fcb   $64 d
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $3A :
-         fcb   $20 
-         fcb   $20 
-         fcb   $20 
-         fcb   $A0 
-L0148    fcb   $6D m
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $AC ,
-L014C    fcb   $72 r
-         fcb   $65 e
-         fcb   $2D -
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $AC ,
-L0152    fcb   $6E n
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $2D -
-         fcb   $73 s
-         fcb   $68 h
-         fcb   $72 r
-         fcb   $AC ,
-L015A    fcb   $52 R
-         fcb   $2F /
-         fcb   $CF O
-L015D    fcb   $52 R
-         fcb   $2F /
-         fcb   $D7 W
-L0160    fcb   $28 (
-         fcb   $47 G
-         fcb   $6F o
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $A9 )
-L0166    fcb   $28 (
-         fcb   $42 B
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $29 )
-         fcb   $87 
+L0013    fcb   C$LF
+         fcc   "Use: Ident [-opts] <module> [-opts]"
+         fcb   C$LF
+         fcc   "  to display module header."
+         fcb   C$LF
+         fcc   "  -m to display module in memory."
+         fcb   C$LF
+         fcc   "  -s for short form."
+         fcb   C$LF
+         fcc   "  -v for no CRC verification"
+         fcb   C$LF
+         fcc   "  -x for file in execution directory"
+         fcb   C$CR
+L00CD    fcs   "Module header is incorrect!"
+L00E8    fcs   "Header for: "
+L00F4    fcs   "Module size:"
+L0100    fcs   "Module CRC: "
+L010C    fcs   "Hdr parity: "
+L0118    fcs   "Exec. off:  "
+L0124    fcs   "Data Size:  "
+L0130    fcs   "Ty/La At/Rv:"
+L013C    fcs   "Edition:    "
+L0148    fcs   "mod,"
+L014C    fcs   "re-en,"
+L0152    fcs   "non-shr,"
+L015A    fcs   "R/O"
+L015D    fcs   "R/W"
+L0160    fcs   "(Good)"
+L0166    fcc   "(Bad)"
+         fcb   $80+C$BELL 
 L016C    fcb   $10 
          fcb   $1C 
          fcb   $20 
@@ -421,98 +106,22 @@ L016C    fcb   $10
          fcb   $56 V
          fcb   $5E ^
          fcb   $65 e
-         fcb   $62 b
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $20 
-         fcb   $74 t
-         fcb   $79 y
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $20 
-         fcb   $66 f
-         fcb   $6F o
-         fcb   $F2 r
-         fcb   $50 P
-         fcb   $72 r
-         fcb   $6F o
-         fcb   $E7 g
-         fcb   $53 S
-         fcb   $75 u
-         fcb   $62 b
-         fcb   $F2 r
-         fcb   $4D M
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $74 t
-         fcb   $E9 i
-         fcb   $44 D
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $E1 a
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $72 r
-         fcb   $20 
-         fcb   $B5 5
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $72 r
-         fcb   $20 
-         fcb   $B6 6
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $72 r
-         fcb   $20 
-         fcb   $B7 7
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $72 r
-         fcb   $20 
-         fcb   $B8 8
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $72 r
-         fcb   $20 
-         fcb   $B9 9
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $72 r
-         fcb   $20 
-         fcb   $C1 A
-         fcb   $55 U
-         fcb   $73 s
-         fcb   $72 r
-         fcb   $20 
-         fcb   $C2 B
-         fcb   $53 S
-         fcb   $79 y
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $ED m
-         fcb   $46 F
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $4D M
-         fcb   $61 a
-         fcb   $EE n
-         fcb   $44 D
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $20 
-         fcb   $44 D
-         fcb   $76 v
-         fcb   $F2 r
-         fcb   $44 D
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $20 
-         fcb   $44 D
-         fcb   $73 s
-         fcb   $E3 c
+         fcs   "bad type for"
+         fcs   "Prog"
+         fcs   "Subr"
+         fcs   "Multi"
+         fcs   "Data"
+         fcs   "Usr 5"
+         fcs   "Usr 6"
+         fcs   "Usr 7"
+         fcs   "Usr 8"
+         fcs   "Usr 9"
+         fcs   "Usr A"
+         fcs   "Usr B"
+         fcs   "System"
+         fcs   "File Man"
+         fcs   "Dev Dvr"
+         fcs   "Dev Dsc"
 L01D8    fcb   $10 
          fcb   $15 
          fcb   $1E 
@@ -529,93 +138,16 @@ L01D8    fcb   $10
          fcb   $60 `
          fcb   $60 `
          fcb   $60 `
-         fcb   $44 D
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $AC ,
-         fcb   $36 6
-         fcb   $38 8
-         fcb   $30 0
-         fcb   $39 9
-         fcb   $20 
-         fcb   $6F o
-         fcb   $62 b
-         fcb   $6A j
-         fcb   $AC ,
-         fcb   $42 B
-         fcb   $41 A
-         fcb   $53 S
-         fcb   $49 I
-         fcb   $43 C
-         fcb   $30 0
-         fcb   $39 9
-         fcb   $20 
-         fcb   $49 I
-         fcb   $2D -
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $AC ,
-         fcb   $50 P
-         fcb   $41 A
-         fcb   $53 S
-         fcb   $43 C
-         fcb   $41 A
-         fcb   $4C L
-         fcb   $20 
-         fcb   $50 P
-         fcb   $2D -
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $AC ,
-         fcb   $43 C
-         fcb   $20 
-         fcb   $49 I
-         fcb   $2D -
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $AC ,
-         fcb   $43 C
-         fcb   $4F O
-         fcb   $42 B
-         fcb   $4F O
-         fcb   $4C L
-         fcb   $20 
-         fcb   $49 I
-         fcb   $2D -
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $AC ,
-         fcb   $46 F
-         fcb   $4F O
-         fcb   $52 R
-         fcb   $54 T
-         fcb   $52 R
-         fcb   $41 A
-         fcb   $4E N
-         fcb   $20 
-         fcb   $49 I
-         fcb   $2D -
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $64 d
-         fcb   $65 e
-         fcb   $AC ,
-         fcb   $3F ?
-         fcb   $3F ?
-         fcb   $3F ?
-         fcb   $3F ?
-         fcb   $AC ,
-start    equ   *
-         leas  >u019C,u
+         fcs   "Data,"
+         fcs   "6809 obj,"
+         fcs   "BASIC09 I-code,"
+         fcs   "PASCAL P-code,"
+         fcs   "C I-code,"
+         fcs   "COBOL I-code,"
+         fcs   "FORTRAN I-code,"
+         fcs   "????,"
+
+start    leas  >u019C,u
          sts   <u0006
          tfr   y,d
          subd  <u0006
@@ -626,51 +158,51 @@ start    equ   *
          clr   <u000B
          clr   <u000C
          clr   <u0018
-         lda   #$01
+         lda   #READ.
          sta   <u000D
          ldd   #$0000
          std   <u0002
          std   <u0004
 L0263    lda   ,x+
-L0265    cmpa  #$20
+L0265    cmpa  #C$SPAC
          beq   L0263
-         cmpa  #$2C
+         cmpa  #C$COMA
          beq   L0263
-         cmpa  #$0D
+         cmpa  #C$CR
          beq   L02BB
-         cmpa  #$2D
+         cmpa  #'-
          beq   L027E
          ldy   <u0002
          bne   L0263
          stx   <u0002
          bra   L0263
 L027E    lda   ,x+
-         cmpa  #$2D
+         cmpa  #'-
          beq   L027E
-         cmpa  #$30
+         cmpa  #'0
          bcs   L0265
-         eora  #$4D
+         eora  #'M
          anda  #$DF
          bne   L0292
          inc   <u000A
          bra   L027E
 L0292    lda   -$01,x
-         eora  #$53
+         eora  #'S
          anda  #$DF
          bne   L029E
          inc   <u000B
          bra   L027E
 L029E    lda   -$01,x
-         eora  #$56
+         eora  #'V
          anda  #$DF
          bne   L02AA
          inc   <u000C
          bra   L027E
 L02AA    lda   -$01,x
-         eora  #$58
+         eora  #'X
          anda  #$DF
          bne   L02B8
-         lda   #$05
+         lda   #EXEC.+READ.
          sta   <u000D
          bra   L027E
 L02B8    lbra  L03C4
@@ -685,7 +217,7 @@ L02BB    ldx   <u0002
          lbcs  L03D2
          stu   <u000E
          ldd   ,u
-         cmpd  #$87CD
+         cmpd  #M$ID12
          beq   L02EB
          puls  u
 L02DD    leay  >L00CD,pcr
@@ -716,7 +248,7 @@ L0314    lda   #$80
          lda   <u000D
          os9   I$Open   
          lbcs  L03D2
-         sta   <u0019
+         sta   <path 
          ldd   #$0000
          std   <u001E
          std   <u0020
@@ -731,7 +263,7 @@ L032C    ldd   <u0020
 L033B    pshs  u
          ldx   <u001E
          ldu   <u0020
-         lda   <u0019
+         lda   <path 
          os9   I$Seek   
          lbcs  L03D2
          puls  u
@@ -740,11 +272,11 @@ L033B    pshs  u
          ldy   #$000E
          os9   I$Read   
          bcc   L0360
-         cmpb  #$D3
+         cmpb  #E$EOF
          bne   L03D2
          bra   L03C1
 L0360    ldd   ,x
-         cmpd  #$87CD
+         cmpd  #M$ID12
          lbne  L02DD
          pshs  u,x
          ldd   $02,x
@@ -755,13 +287,13 @@ L0360    ldd   ,x
          ldx   <u001E
          bcc   L037C
          leax  $01,x
-L037C    lda   <u0019
+L037C    lda   <path 
          os9   I$Seek   
          bcs   L03D2
          puls  u,x
          leax  <u0010,u
          ldy   #$0003
-         lda   <u0019
+         lda   <path 
          os9   I$Read   
          bcs   L03D2
          pshs  u,x
@@ -772,13 +304,13 @@ L037C    lda   <u0019
          ldx   <u001E
          bcc   L03A4
          leax  $01,x
-L03A4    lda   <u0019
+L03A4    lda   <path 
          os9   I$Seek   
          bcs   L03D2
          puls  u,x
          leax  >u0080,u
          ldy   #$0021
-         lda   <u0019
+         lda   <path 
          os9   I$Read   
          bcs   L03D2
          bsr   L03D5
@@ -918,7 +450,7 @@ L0502    ldb   #$06
 L0519    bsr   L0553
          tsta  
          bne   L0520
-         lda   #$2E
+         lda   #C$PERD
 L0520    lbsr  L0608
          lbsr  L0666
          bsr   L04E9
@@ -935,7 +467,7 @@ L0520    lbsr  L0608
          stx   <u0000
          lbsr  L0612
          rts   
-L0543    lda   #$24
+L0543    lda   #'$
          lbsr  L0608
          ldd   <u0010
          lbsr  L066E
@@ -957,7 +489,7 @@ L0553    ldd   #$FFFF
 L0571    pshs  u,x
          ldx   <u001E
          ldu   <u0020
-         lda   <u0019
+         lda   <path 
          os9   I$Seek   
          puls  u,x
          lbcs  L03D2
@@ -978,7 +510,7 @@ L059E    lda   #$3F
          rts   
 L05A1    clra  
          rts   
-L05A3    lda   <u0019
+L05A3    lda   <path 
          ldx   <u0006
          ldy   <u0008
          cmpy  <u001C
@@ -1012,7 +544,7 @@ L05D2    pshs  b,a
          lsrb  
          lsrb  
          lsrb  
-L05E9    lda   #$24
+L05E9    lda   #'$
          bsr   L0608
          lbsr  L0682
          ldb   #$02
@@ -1026,41 +558,41 @@ L05FC    lda   ,y
          bsr   L0608
          lda   ,y+
          bpl   L05FC
-L0606    lda   #$20
+L0606    lda   #C$SPAC
 L0608    pshs  x
          ldx   <u0000
          sta   ,x+
          stx   <u0000
          puls  pc,x
 L0612    pshs  y,x,a
-         lda   #$0D
+         lda   #C$CR
          bsr   L0608
          leax  <u0022,u
          stx   <u0000
-         ldy   #$0050
+         ldy   #80
          lda   #$01
          os9   I$WritLn 
          puls  pc,y,x,a
 L0628    pshs  a
-         lda   #$24
+         lda   #'$
          bsr   L0608
          puls  a
          bsr   L0660
          rts   
 L0633    pshs  a
-         lda   #$24
+         lda   #'$
          bsr   L0608
          puls  a
          bsr   L0664
          rts   
          pshs  a
-         lda   #$24
+         lda   #'$
          bsr   L0608
          puls  a
          bsr   L0682
          rts   
 L0649    pshs  a
-         lda   #$23
+         lda   #'#
          bsr   L0608
          puls  a
          bsr   L0692
@@ -1076,7 +608,7 @@ L0660    bsr   L066E
          bra   L0666
 L0664    bsr   L0674
 L0666    pshs  a
-         lda   #$20
+         lda   #C$SPAC
          bsr   L0608
          puls  pc,a
 L066E    exg   a,b
