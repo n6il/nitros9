@@ -4,6 +4,7 @@ DEPENDS		= ./Makefile
 
 SYSFILES	= errmsg LogBook password motd
 SYSWINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs
+L1SYSFILES	= errmsg
 L1HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
 		chx.hp cmp.hp cobbler.hp config.hp copy.hp date.hp \
 		dcheck.hp debug.hp deiniz.hp del.hp deldir.hp dir.hp \
@@ -31,6 +32,9 @@ $(HELPMSG): $(L1HELPFILES)
 	$(MERGE) $(L1HELPFILES) $(L2HELPFILES) > $@
 
 $(L1HELPFILES): $(LEVEL1)/SYS/$@
+	-$(SOFTLINK) $(LEVEL1)/SYS/$@
+
+$(L1SYSFILES): $(LEVEL1)/SYS/$@
 	-$(SOFTLINK) $(LEVEL1)/SYS/$@
 
 clean:
