@@ -337,6 +337,10 @@ CSTART   pshs  Y          Save ptr to end of parm area
          tfm   s,u+
          leas  1,s        Eat 0 byte
          ELSE
+         clrb
+CSTART1  clr   ,u+
+         decb
+         bne   CSTART1
          ENDC
          ldx   ,S         Get ptr to start of data area again
          leau  ,X         Point U to it again
@@ -347,6 +351,11 @@ CSTART   pshs  Y          Save ptr to end of parm area
          ldw   ,y++       Get size of data block
          tfm   y+,u+      Block copy initialized data
          ELSE
+         ldx   ,y++
+CSTART2  lda   ,y+
+         sta   ,u+
+         leax  -1,x
+         bne   CSTART2
          ENDC
          ldu   2,S        Get ptr to start of data area again
          leau  <TNDYITMS,U Point to Tandy Menu Items array in data area
@@ -358,6 +367,17 @@ CSTART   pshs  Y          Save ptr to end of parm area
          subr  u,w        W=Size of area to clear
          tfm   s,u+       Clear until end of data area
          ELSE
+         ldx   ,y++
+CSTART3  lda   ,y+
+         sta   ,u+
+         leax  -1,x
+         bne   CSTART3
+         ldd   ,s
+         pshs  u
+         subd  ,s++
+CSTART4  clr   ,u+
+         subd  #$0001
+         bne   CSTART4
          ENDC
          ldu   3,s        Get ptr to start of data area again
          leas  5,s        Eat zero byte & End/Start of data markers
@@ -1331,8 +1351,16 @@ DRAWSCRN pshs  U
          ENDC
          std   SELECTED   0 out currently selected icon ptr
          ldd   MAXICONS   Get # icons/screen
+         IFNE  H6309
          muld  SCREENOW   Multiply by screen set #
          stw   2,s        Save result
+         ELSE
+         pshs  x,y,u
+         ldx   SCREENOW
+         bsr   MUL16
+         stu   2,s
+         puls  x,y,u
+         ENDC
          ldu   FTBLSPTR   Get ptr to file icon descriptor table
          bra   DRAWSCR2
 
@@ -4887,9 +4915,19 @@ OLAYGNBK pshs  U
 *NOTE: SINCE THIS MULD DOES THE WIDTH OF A WINDOW, WHICH CAN NEVER GET PAST
 * 106 CHARACTERS, WE SHOULD BE ABLE TO USE A STRAIGHT 8 BIT MUL, FOLLOWED BY
 * AND ADDD#7 ON _BOTH_ THE 6809 & 6309 VERSIONS.
+         IFNE  H6309
          muld  #6         Multiply by 6 (for 6 pixel font chars)
          ldd   #7         Add 7 extra pixels (border?)
          addr  w,d
+         ELSE
+         pshs  x,y,u
+         ldx   #6
+         bsr   MUL16
+         pshs  u
+         ldd   #7
+         addd  ,s++
+         puls  x,y,u
+         ENDC
          lbsr  DIVDX8     Divide by 8 (shift method) for # 8 pixel chars for window width
          addd  #3         Add 3 more for borders?
          cmpd  WINDWSZX   Too big for current screen width?
@@ -7565,10 +7603,21 @@ ATOI3    stb   3,S        Save positive/negative flag
 *   RANGE (?)
 
 ATOI4    ldd   1,S        Get current result (so far)
+         IFNE  H6309
          muld  #10        Bump up by one order of magnitude (Since on next digit)
          ldb   ,S         Get original numeric char
          sex              make 16 bit (note: still ascii version!)
          addr  w,d        Add to current base digit value (1,10,100,1000,10000)
+         ELSE
+         pshs  x,y,u
+         ldx   #10
+         bsr   MUL16
+         ldb   ,s
+         sex
+         pshs  u
+         addd  ,s++ 
+         puls  x,y,u
+         ENDC
          std   1,S        Save current result
 ATOI5    ldb   ,U+        Get next char from ASCII buffer
 ATOI6    subb  #$30       Convert to binary
