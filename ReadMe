@@ -24,8 +24,7 @@ subdirectories for commands, modules and bootfiles.
 DEFINITION FILES
 The defs/ directory has definition files for the OS-9 packages.
 
-	os9defs       ..... Defs files for level1/ and level2/
-	os9defs.l2v3  ..... Defs files for level2v3/
+	os9defs       ..... Defs files for all OS-9 packages
 	systype.l1    ..... Defs files for level1/
 	systype.l2    ..... Defs files for level2/ and level2v3/
 	scfdefs       ..... SCF file manager defs
