@@ -1,19 +1,18 @@
 ********************************************************************
-* sub1 - Sub Battle Simulator
+* sub1 - Sub1 Sub Battle Simulator subroutine
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* There is a lot of extraneous and unneccessary instructions throughout
+* the code. But since we use the jump table at module enter be careful
+* when removing any thing and adjust it accordingly.
+* No explicit edition byte in source.
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 0      Disassembly of original distribution           PWZ 03/03/29
-*        There is a lot of extraneous and unneccessary
-*        instructions through out the code.
-*        But since we use the jump table at module enter
-*        be careful when removing any thing and adjust 
-*        it accordingly
-*        No explicit edition byte in source
-
-* Disassembly by Os9disasm of sub1
+*   0      2003/03/29  Paul W. Zibaila
+* Disassembly of original distribution.
 
       nam sub1
       ttl Sub1 Sub Battle Simulator subroutine
@@ -3003,5 +3002,4 @@ L1602   fcc  "sub/sintbl.dat"
         emod 
 eom
 L1614   equ *
-
         end
