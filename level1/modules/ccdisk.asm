@@ -28,10 +28,7 @@ MaxDrv   set   4
 
 L0000    mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   1
-u0001    rmb   3
-u0004    rmb   4
-u0008    rmb   7
+         rmb   DRVBEG
 u000F    rmb   38
 u0035    rmb   8
 u003D    rmb   18
@@ -275,7 +272,7 @@ Verify   pshs  x,b,a
 L0188    ldx   ,u
          cmpx  ,y
          bne   L0198
-         leau  u0008,u
+         leau  $08,u
          leay  $08,y
          dec   ,s
          bne   L0188
