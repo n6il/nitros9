@@ -13,9 +13,10 @@ all:
 	$(CD) koronis; make
 	$(CD) kyumgai; make
 	$(CD) lsl; make
-	$(CD) rof; make
-	$(CD) multivue; make
 	$(CD) mm; make
+	$(CD) multivue; make
+	$(CD) rof; make
+	$(CD) subsim; make
 
 clean:
 	-$(CD) basic09; make clean
@@ -23,6 +24,7 @@ clean:
 	-$(CD) koronis; make clean
 	-$(CD) kyumgai; make clean
 	-$(CD) lsl; make clean
-	-$(CD) rof; make clean
-	-$(CD) multivue; make clean
 	-$(CD) mm; make clean
+	-$(CD) multivue; make clean
+	-$(CD) rof; make clean
+	-$(CD) subsim; make clean
