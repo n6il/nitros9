@@ -771,11 +771,12 @@ L061D
          stb   R$B,x            put SS.VarSect into caller's B
          lbsr  L0CED            send it to driver
          puls  a,x              get caller's original B and saved PD.RGS
-         bcs   L061C
          sta   R$B,x            restore caller's original B
-****
-
-         ldd   #256
+         bcc   ok@              branch if no error on GetStat
+         cmpb  #E$UnkSvc        Unknown Service call error?
+         lbne  L0B10            if not, return with error
+****     
+ok@      ldd   #256
          stb   PD.BUF+2,y
          os9   F$SRqMem
          bcs   L061C

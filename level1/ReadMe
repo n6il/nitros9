@@ -1,8 +1,8 @@
-****************************
-NitrOS-9/6809 Level 1 ReadMe
-****************************
+***************
+NitrOS-9 ReadMe
+***************
 
-Welcome to NitrOS-9/6809 Level 1 for the Radio Shack/TRS-80 Color Computer.
+Welcome to NitrOS-9!
 
 DISTRIBUTION
 ============
@@ -13,19 +13,20 @@ included in the distribution.
 
 USING THE DISK IMAGES
 =====================
-If you wish to transfer the disk images to a 5.25" floppy disk for use
-with a real CoCo, follow the steps below:
+If you wish to transfer the disk images to a floppy disk for use with a
+real CoCo, follow the steps below:
 
 WINDOWS/DOS:
 
 1. Download and install the latest version of DSKINI/RETRIEVE at
    http://www.nitros9.org/
 
-2. Insert a blank 5.25" DS floppy in to your drive (we assume B:)
+2. Insert a blank double-sided floppy in to your drive (we assume B:)
 
 3. Type the following command, replacing the name of the image:
 
-             DSKINI /T40 /D B: <diskimagefile>
+             DSKINI /T40 /D B: <diskimagefile>     (360K 5.25" floppy disk)
+             DSKINI /T80 /D B: <diskimagefile>     (720K 3.5"  floppy disk)
 
    Where <diskimagefile> is the image file you want to transfer to the
    floppy disk.  The image file transfer should start.  When it is done,
@@ -53,6 +54,7 @@ LINUX:
 4. Type the following command:
 
              setfdprm /dev/fd1 coco360    (360K 5.25" floppy disk)
+             setfdprm /dev/fd1 coco720    (720K 3.5"  floppy disk)
 
    This assumes your floppy drive is /dev/fd1.  You may need to make
    adjustments to the above commands for your environment.
