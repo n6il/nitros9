@@ -12,7 +12,7 @@
          opt d68
          opt w110
 * set printer to 15 cpi!
-h6309    set   0
+*h6309    set   0 now uses NitrOS9's H6309 flag
 
          nam   RAM
          ttl   RAM Disk driver
@@ -23,15 +23,15 @@ h6309    set   0
 * As no irq's are handled here, compensatory
 * changes to register offsets vs stack are not
 * required, therefore not used as defines either.
-* This does require an "os39defs" that can switch
+* This does require an "os9defs" that can switch
 * register offsets etc according to the value
 * assigned to "h6309" and "TRUE", and a late
 * copy of Chris Burkes "xsm" assembler
 
-         ifp1
+        IFP1
          use   defsfile
          use   rbfdefs
-         endc
+        ENDC
 
 rev      set   $02
 edition  set   4
@@ -43,13 +43,13 @@ edition  set   4
 * crash at worst, device table full
 * and nothing else works at best.
 
-         ifeq  h6309-TRUE
-tylg     set   Drivr+Obj_309   
-atrv     set   ReEnt+Ntv_mode+rev
-         else
+        IFNE  H6309
+tylg     set   Drivr+Obj6309   
+atrv     set   ReEnt+ModNat+rev
+        ELSE
 tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
-         endc
+        ENDC
 
 RD.MAP   set   -2 ,x of course!
 FDlocat  set   -3 loc for root FD
@@ -61,7 +61,7 @@ u0002    rmb   2
 u0004    rmb   2
 u0006    rmb   5
 u000B    rmb   2
-u000D    rmb   2 is RD.MAP & FDLocat
+u000D    rmb   2 is RD.MAP & FDlocat
 u000F    rmb   1
 u0010    rmb   32
 OurDesc  rmb   2
@@ -105,17 +105,16 @@ DoInit   inc   OurLink,u so it'll get relinked
 *                    sp  =x, usually $4D0F
          ldu   #$0028 location of time packet
          leax  DD.DAT,x set x to target location
-         ifne h6309-TRUE
+        IFNE  H6309
+         ldw   #$0005 we want to move 5 bytes
+         tfm   u+,x+ do it
+        ELSE
          ldb   #$05 number of byte to move
 GTime    lda   ,u+
          sta   ,x+
          decb
          bne   GTime
-         endc
-         ifeq  h6309-TRUE
-         ldw   #$0005 we want to move 5 bytes
-         tfm   u+,x+ do it
-         endc
+        ENDC
          ldu   2,s
          ldx   ,s
          ldb   #$01 
@@ -135,13 +134,13 @@ GTime    lda   ,u+
          std   $01,x put totsecs in DD.TOT+1
 
 * this could be simplicated to straight 6809 code
-         ifeq  h6309-TRUE
+        IFNE  H6309
 
          lsrd  /2 but this is one cycle quicker at 3
          lsrd  /4
          lsrd  /8 8 sectors per byte
 
-         else
+        ELSE
 
          lsra where this is 2 per 8 bit register
          rorb or 4 cycles for full 16 bit shift
@@ -150,7 +149,7 @@ GTime    lda   ,u+
          lsra
          rorb
 
-         endc
+        ENDC
          std   RD.MAP,x s/b at $400D-E
          subd  #$0001 it grabs extra page otherwise
          std   $04,x DD.MAP (size) addr $13&14
@@ -192,15 +191,15 @@ GTime    lda   ,u+
 * How many 8k blocks of mem do we need?
          ldd   RD.MAP,x already been /8
          addd  #$0003 we'll shift out, but need d2 carry
-         ifeq  h6309-TRUE
+        IFNE  H6309
          lsrd  /16
          lsrd  /32 but its 5 cycles faster!
-         else
+        ELSE
          lsra
          rorb /16
          lsra
          rorb /32
-         endc
+        ENDC
 
 * D is now how many blocks we need
          std   <u0036,u 8k blocks ram needed
@@ -210,12 +209,12 @@ GTime    lda   ,u+
 * else table of blocks won't fit from $C0-$FF,
 * ask for another (d*2) pages
 
-         ifeq  h6309-TRUE
+        IFNE  H6309
          asld  else ask for more memory
-         else
+        ELSE
          lslb
          rola
-         endc
+        ENDC
          os9   F$SRqMem get new U
          lbcs  L017C no more avail!
 * we'll use this instead of $xxC0
@@ -229,11 +228,11 @@ GTime    lda   ,u+
 L008D    equ   *
          stx   <u0038,u $4EC0 for small disk
 
-         ifeq  h6309-TRUE
+        IFNE  H6309
          ldw   <u0036,u number of blocks req
-         else
+        ELSE
          ldy   <u0036,u
-         endc
+        ENDC
 
 * Where did we start?
 L0094    ldb   #$01 ask for one 8K block
@@ -241,17 +240,17 @@ L0094    ldb   #$01 ask for one 8K block
          lbcs  L017C returns B=# of blk allocated
          std   ,x++ make list of blocks
 
-         ifeq  h6309-TRUE
+        IFNE  H6309
          decw  that we own for later release
-         else
+        ELSE
          leay  -1,y
-         endc
+        ENDC
 
          bne   L0094
 
-         ifne  h6309-TRUE
+        IFEQ  H6309
          ldy   <OurDesc,u we destroyed our descriptor pointer
-         endc
+        ENDC
 
          leax  <u0040,u orig U here
          ldd   [u0038,u] addr of # of blocks we own
@@ -310,11 +309,11 @@ FatLoop  equ   *
          ldd   RD.MAP,x saved bitmap siz
 * using size of bitmap for fat, save it in w
 
-         ifeq  h6309-TRUE
+        IFNE  H6309
          tfr   d,w there is a method
-         else
+        ELSE
          std   <u0002,u
-         endc
+        ENDC
 
 * now add enough for even page boundary
          inca
@@ -330,14 +329,14 @@ FatLoop  equ   *
 *                    sp  =   top of fat, $4100
 L00DC    equ   *
 
-         ifeq  h6309-TRUE
+        IFNE  H6309
          leay  w,x set y=where active fat ends
-         else
+        ELSE
          pshs  d
          ldd   <u0002,u
          leay  d,x
          puls  d
-         endc
+        ENDC
 
          pshs  y stack the end of active
 * the stack image is:
@@ -435,17 +434,17 @@ FDmaker  equ   *
          ldx   $06,s
 * now set u to actual offset of FDlocation
 
-         ifeq  h6309-TRUE
+        IFNE  H6309
          lde   FDlocat,x this is why we saved it
          clrf
          tfr w,u neat huh?
-         else
+        ELSE
          pshs  d
-         lda   FDLocat,x
+         lda   FDlocat,x
          clrb
          tfr   d,u
          puls  d
-         endc
+        ENDC
 
          puls  x
 * the stack image is:
@@ -501,17 +500,17 @@ DClr     clr   ,x+
          ldy   #$0040
          ldx   $04,s
 
-         ifeq  h6309-TRUE
+        IFNE  H6309
          lde   DIRloca,x
          clrf
          tfr   w,u
-         else
+        ELSE
          pshs  d
          lda   DIRloca,x
          clrb
          tfr   d,u
          puls  d
-         endc
+        ENDC
 
          ldx   $02,s
          os9   F$Move   
@@ -532,15 +531,15 @@ DClr     clr   ,x+
 L0178    leas  $02,s skip the x offset
          puls  u get orig assignment back!
 
-         ifeq  h6309-TRUE
+        IFNE  H6309
          ldw   <L018A,pcr
          stw   Initstt,u crash time?
-         else
+        ELSE
          pshs  d
          ldd   <L018A,pcr
          std   Initstt,u
          puls  d
-         endc
+        ENDC
 
          clrb
          rts   puls  pc,u U allready pulled, use rts
@@ -549,17 +548,17 @@ L017C    leas  $04,s
          puls  pc,u
 L018A    fcs   /Gene's RamDisk/
 Initchk  equ   *
-         ifeq  h6309-TRUE
+        IFNE  H6309
          ldw   Initstt,u <L018A,pcr  
          cmpw  <L018A,pcr Initstt,u  
          beq   InitOk
-         else
+        ELSE
          pshs  d
          ldd   Initstt,u
          cmpd  <L018A,pcr
          puls  d
          beq   InitOk
-         endc
+        ENDC
          comb
          ldb   E$NotRdy else report error
 InitOk   equ   * relocated to give exit report
@@ -583,7 +582,7 @@ ReadOk1  pshs  u
          ldb   <D.SysTsk u00D0
          ldu   $08,y
          bra   L01B9
-************ A seperate linker 
+************ A separate linker 
 Linkus   pshs  x
          ldx   PD.DVT,y
          inc   V$USRS,x
@@ -629,12 +628,12 @@ L01C7    cmpx  <u0010,u
          bcc   L01F1
          tfr   x,d
 
-         ifeq  h6309-TRUE
+        IFNE  H6309
          lsrd /2
          lsrd /4
          lsrd /8
          lsrd /16
-         else
+        ELSE
          lsra
          rorb
          lsra
@@ -643,7 +642,7 @@ L01C7    cmpx  <u0010,u
          rorb
          lsra
          rorb
-         endc
+        ENDC
 
          andb  #$FE
 L01D8    ldx   <u0038,u
@@ -667,11 +666,11 @@ SGtat    comb
          rts
 Term     equ   *
          pshs  u
-         ifeq  h6309-TRUE
+        IFNE  H6309
          ldw   <u0036,u
-         else
+        ELSE
          ldy   <u0036,u
-         endc
+        ENDC
 
          ldu   <u0038,u 
          beq   L022A
@@ -681,11 +680,11 @@ L020A    ldb   #$01 is now the same as F$AllRAM loop in
          os9   F$DelRAM ends mmap showed
 L0213    equ   *
 
-         ifeq  h6309-TRUE
+        IFNE  H6309
          decw  was leay  -$01,y
-         else
+        ELSE
          leay  -1,y
-         endc
+        ENDC
 
          bne   L020A
          ldu   ,s
@@ -693,12 +692,12 @@ L0213    equ   *
          cmpd  #$0020
          bls   L022A
 
-         ifeq  h6309-TRUE
+        IFNE  H6309
          lsld
-         else
+        ELSE
          lslb
          rora
-         endc
+        ENDC
 
          ldu   <u0038,u
          os9   F$SRtMem 
