@@ -19,7 +19,7 @@ del /DD/GAMES/MM/CMDS/mod6.sbr
 del /DD/GAMES/MM/CMDS/mod7.sbr
 del /DD/GAMES/MM/CMDS/mod8.sbr
 * Copying commands to /DD/GAMES/MM/CMDS
-copy CMDS/mm /DD/GAMES/MM/CMDS/mm
+copy CMDS/AutoEx /DD/GAMES/MM/CMDS/mm
 copy CMDS/mod1.dat /DD/GAMES/MM/CMDS/mod1.dat
 copy CMDS/mod2.dat /DD/GAMES/MM/CMDS/mod2.dat
 copy CMDS/mod3.dat /DD/GAMES/MM/CMDS/mod3.dat
