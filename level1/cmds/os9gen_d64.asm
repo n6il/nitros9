@@ -28,9 +28,6 @@
          use   defsfile
          endc
 
-os9start equ   $EF00
-os9size  equ   $0F80
-
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
@@ -280,8 +277,8 @@ L02C5    lda   #$01
          anda  #$90
          eora  #$90
          lbne  L0385
-         ldx   #os9start    Address of kernel in RAM
-         ldy   #os9size     Amount to write
+         ldx   #Bt.Start    Address of kernel in RAM
+         ldy   #Bt.Size     Amount to write
          lda   <devfd
          os9   I$Write  
          bcs   L0354

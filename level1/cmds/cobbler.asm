@@ -26,9 +26,6 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   7
 
-os9l1start equ $EF00
-os9l1size  equ $0F80
-
          mod   eom,name,tylg,atrv,start,size
 
          org   0
@@ -346,8 +343,8 @@ L0315    clra
          ldb   #$00
          lbsr  Seek2LSN 
          lda   <devpath
-         ldx   #os9l1start
-         ldy   #os9l1size
+         ldx   #Bt.Start
+         ldy   #Bt.Size
 
          ENDC
 

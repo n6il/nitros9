@@ -1204,6 +1204,7 @@ E$DeadLk rmb   1          I/O Deadlock error
 
 
          IFEQ  Level-1
+
 *****************************
 * Boot defs for CoCo 1/2 OS-9
 *
@@ -1211,7 +1212,10 @@ E$DeadLk rmb   1          I/O Deadlock error
 * system.
 *
 Bt.Start equ   $EF00      Start address of the boot track in memory
+Bt.Size  equ   $0F80      Maximum size of bootfile
+
          ELSE
+
 *****************************
 * Boot defs for CoCo 3 OS-9
 *
@@ -1222,6 +1226,7 @@ Bt.Block equ   $3B        Block to map in for the 'OS9BOOT' screen
 Bt.Flag  equ   $8A34      Flag in Bt.Block to verify that it's unchanged
 Bt.Offst equ   2          Offset into the screen where the current ptr is
 Bt.Start equ   $ED00      Start address of the boot track in memory
+
          ENDC
 
 

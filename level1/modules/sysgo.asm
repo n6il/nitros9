@@ -100,11 +100,11 @@ TimePckt fcb   103,03,07,00,00,59
 BasicRst fcb   $55
          neg   <$0074
          nop
-         clr   >$FF03
+         clr   >PIA0Base+3
          nop
          nop
          sta   >$FFDF		turn off ROM mode
-         jmp   >$EF0E		jump to boot
+         jmp   >Bt.Start+2	jump to boot
 BasicRL  equ   *-BasicRst
 
 * SysGo entry point
