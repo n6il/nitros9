@@ -156,9 +156,6 @@ WN.SYNC  equ   $0017
 WN.BAR   equ   $0020
 WINSYNC  equ   $C0C0
 
-DIR.FD   equ   $001D
-DIR.SZ   equ   $0020
-
 PTR.ARR  equ   $0001
 FNT.S8X8 equ   $0001
 FNT.S6X8 equ   $0002
