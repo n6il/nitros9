@@ -16,9 +16,14 @@
 ifndef	NITROS9DIR
 NITROS9DIR	= $(HOME)/nitros9
 endif
+ifndef	CLOUD9DIR
+CLOUD9DIR	= $(HOME)/cloud9
+endif
 ifndef	COCOTOOLSBIN
 COCOTOOLSBIN	= $(HOME)/bin
 endif
+
+C9		= $(CLOUD9DIR)
 DEFSDIR		= $(NITROS9DIR)/defs
 DSKDIR		= $(NITROS9DIR)/dsks
 
@@ -74,7 +79,6 @@ ARCHIVE		= zip -D
 6809L1		= $(NITROS9DIR)/6809l1
 6809L2		= $(NITROS9DIR)/6809l2
 6309L2		= $(NITROS9DIR)/6309l2
-C9		= $(HOME)/cloud9
 
 # File managers
 %.mn: %.asm
