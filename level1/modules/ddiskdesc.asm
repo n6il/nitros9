@@ -29,7 +29,7 @@ Type     set   TYP.CCF+TYP.5
          ENDC
 Density  set   DNS.MFM
 Step     set   STP.6ms
-Cyls     set   35
+Cyls     set   40
 Sides    set   1
 Verify   set   1
 SectTrk  set   18

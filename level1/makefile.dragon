@@ -1,10 +1,11 @@
 include ../rules.mak
 
-RELEASE		= nos96809l1v030204
+RELEASE		= nos96809l1v030204_dragon
 BOOTFILE	= bootfiles/bootfile_d64
 BOOTFILE_DS80	= bootfiles/bootfile_d64
 KERNELFILE	= bootfiles/kernel_d64
-DIRS		= cmds defs sys modules bootfiles
+DIRS		= cmds defs sys 
+#modules bootfiles
 DDIRS		= modules bootfiles
 
 # Specify which shell should be used
@@ -63,7 +64,7 @@ $(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) ReadMe ChangeLog
 
 $(DSK360K_1):
 	$(RM) $@
-	$(OS9FORMAT_SS80) -e -dr -q $@ -n"NitrOS-9/6809 Level 1 Disk 1"
+	$(OS9FORMAT_DS40) -e -dr -q $@ -n"NitrOS-9/6809 Level 1 Disk 1"
 	$(OS9GEN) $@ -d -b=$(BOOTFILE) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS

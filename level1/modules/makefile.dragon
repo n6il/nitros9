@@ -26,12 +26,11 @@ CLOCKS          = clock_60hz clock_50hz \
 		clock2_messemu clock2_jvemu clock_d64
 
 RBF		= rbf.mn \
-		ddisk.dr adisk.dr \
-		ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
-		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
-		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd \
-		ddd0_d64.dd d0_d64.dd d1_d64.dd d2_d64.dd d3_d64.dd
-
+		ddisk.dr \
+		ddd0_d64.dd d0_d64.dd d1_d64.dd d2_d64.dd d3_d64.dd \
+		adisk.dr \
+		ddd0_dalpha.dd d0_dalpha.dd d1_dalpha.dd d2_dalpha.dd d3_dalpha.dd
+		
 SCF		= scf.mn \
 		sc6551.dr vrn.dr printer.dr sio.dr sspak.dr ccio.dr \
 		co32.io co80.io \
@@ -44,7 +43,7 @@ PIPE		= pipeman.mn \
 		piper.dr \
 		pipe.dd
 
-ALLOBJS		= $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
+ALLOBJS		= $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE) 
 
 all:	$(ALLOBJS)
 
@@ -76,77 +75,57 @@ clock2_cloud9: clock2_ds1315.asm
 
 # Floppy descriptors
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=1
+		-aInterlv=2 -aSAS=8 -aDensity=1
 SSDD40		= -aCyls=40 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=1
+		-aInterlv=2 -aSAS=8 -aDensity=1
 DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=1
+		-aInterlv=2 -aSAS=8 -aDensity=1
 SSDD80		= -aCyls=80 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=1 -aD35
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35
 DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=1 -aD35
-
-ddd0_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0 -aDD=1
-
-d0_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0
-
-d1_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=1
-
-d2_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=2
-
-d3_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=3
-
-ddd0_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1
-
-d0_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0
-
-d0_40s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=0
-
-d1_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1
-
-d2_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2
-
-ddd0_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1
-
-d0_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0
-
-d1_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1
-
-d2_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35
 
 #Dragon 64
+#Dragon 64 Drives can be double or single sided, but assume 
+# that /d0 and /d1 are double sided 40 track.
 
 ddd0_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1
 
 d0_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0
 
 d1_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1
 
 d2_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
 
 d3_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3
+
+
+#Dragon Alpha
+# Internal drives on Alpha are Single Sided 80 track.
+
+ddd0_dalpha.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0 -aDD=1
+
+d0_dalpha.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0
+
+d1_dalpha.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1
+
+d2_dalpha.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
+
+d3_dalpha.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3
 
 adisk.dr: ddisk.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDragonAlpha=1
+
 
 rel: rel.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0
@@ -169,6 +148,10 @@ sysgo_h0: sysgo.asm
 
 sysgo_d64: sysgo_d64.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
+
+ddisk.dr: ddisk.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< 
+
 
 clean:
 	$(CD) kernel; make $@
