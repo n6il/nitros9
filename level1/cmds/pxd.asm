@@ -24,7 +24,7 @@ edition  set   1
          mod   eom,name,tylg,atrv,start,size
 
 fildes   rmb   1
-u0001    rmb   2
+bufptr   rmb   2
 u0003    rmb   2
 u0005    rmb   1
 u0006    rmb   2
@@ -34,7 +34,7 @@ u000B    rmb   3
 u000E    rmb   29
 u002B    rmb   2
 u002D    rmb   129
-u00AE    rmb   1
+buffer   rmb   1
 sttbuf   rmb   282
 size     equ   .
 
@@ -49,10 +49,10 @@ cr       fcb   C$CR
 rdmsg    fcc   "read error"
          fcb   C$CR
 
-start    leax  >u00AE,u
-         lda   #$0D
+start    leax  >buffer,u
+         lda   #C$CR
          sta   ,x
-         stx   <u0001
+         stx   <bufptr
          leax  >dot,pcr
          bsr   open
          sta   <fildes
@@ -79,7 +79,7 @@ L0052    bsr   L00C6
          sta   <u000B
          bra   L0052
 L0079    lbsr  L00FB
-         ldx   <u0001
+         ldx   <bufptr
          ldy   #$0081
          lda   #$01
          os9   I$WritLn 
@@ -87,10 +87,10 @@ L0079    lbsr  L00FB
          os9   I$Close  
          clrb  
 L008D    os9   F$Exit   
-chdir    lda   #$85
+chdir    lda   #DIR.+EXEC.+READ.
          os9   I$ChgDir 
          rts   
-open     lda   #$85
+open     lda   #DIR.+EXEC.+READ.
          os9   I$Open   
          rts   
 read32   lda   <fildes
@@ -131,7 +131,7 @@ rdtwo    bsr   read32  * read "." from directory
 L00E2    leax  u000E,u
 prsnam   os9   F$PrsNam 
          bcs   L0109
-         ldx   <u0001
+         ldx   <bufptr
 L00EB    lda   ,-y
          anda  #$7F
          sta   ,-x
@@ -139,10 +139,10 @@ L00EB    lda   ,-y
          bne   L00EB
          lda   #$2F
          sta   ,-x
-         stx   <u0001
+         stx   <bufptr
          rts   
 L00FB    lda   <fildes
-         ldb   #$0E
+         ldb   #SS.DevNm
          leax  >sttbuf,u
          os9   I$GetStt 
          bsr   prsnam
