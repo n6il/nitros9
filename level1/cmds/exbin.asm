@@ -7,6 +7,7 @@
 * ------------------------------------------------------------------
 *  67    From Tandy OS-9 Level One VR 02.00.00
 *  68    Made proper edition number                     BGP 02/07/14
+*   1    Restarted edition, removed Motorola copyright  BGP 03/01/14
 
          nam   Exbin
          ttl   Motorola S-Record utility
@@ -20,7 +21,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   68
+edition  set   1
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -46,18 +47,18 @@ size     equ   .
 name     fcs   /Exbin/
          fcb   edition
 
-         fcc   "Copyright 1982 Motorola, Inc."
-         fcb   $01 
+*         fcc   "Copyright 1982 Motorola, Inc."
+*         fcb   $01 
 
 start    stx   <u0002
-         lda   #$01
+         lda   #READ.
          os9   I$Open   
          bcc   L003C
 L0039    os9   F$Exit   
 L003C    sta   <u0000
          stx   <u0002
-         lda   #$02
-         ldb   #$7F
+         lda   #WRITE.
+         ldb   #SHARE.+PEXEC.+PWRIT.+PREAD.+EXEC.+UPDAT.
          os9   I$Create 
          bcs   L0039
          sta   <u0001
@@ -111,7 +112,7 @@ L009E    bsr   L011F
          beq   L00C0
          cmpx  <u0004
          beq   L00C6
-         leax  >L018D,pcr
+         leax  >NonCtg,pcr
          bra   L00DE
 L00C0    ldx   <u0004
          lda   #$01
@@ -127,7 +128,7 @@ L00CD    bsr   L011F
          lda   <u0008
          inca  
          beq   L00EB
-         leax  >L0171,pcr
+         leax  >CSumErr,pcr
 L00DE    lda   #$02
          ldy   #$00FF
          os9   I$WritLn 
@@ -177,14 +178,14 @@ L013A    suba  #$30
          cmpa  #$0F
          bhi   L0149
 L0148    rts   
-L0149    leax  >L014F,pcr
+L0149    leax  >NonHex,pcr
          bra   L00DE
-L014F    fcc   "** NON-HEX CHARACTER ENCOUNTERED"
-         fcb   $07,C$CR
-L0171    fcc   "** CHECKSUM ERROR DETECTED"
-         fcb   $07,C$CR
-L018D    fcc   "** NON-CONTIGUOUS ADDRESS SPACE DETECTED"
-         fcb   $07,C$CR
+NonHex   fcc   "** Non-hex character encountered"
+         fcb   C$BELL,C$CR
+CSumErr  fcc   "** Checksum error detected"
+         fcb   C$BELL,C$CR
+NonCtg   fcc   "** Non-contiguous address space detected"
+         fcb   C$BELL,C$CR
 
          emod
 eom      equ   *
