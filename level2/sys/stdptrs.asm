@@ -79,7 +79,7 @@ lcross   fcb   $1B,$2B
          fcb   %00000011,%00000000
          fcb   %00000011,%00000000
 
-hourglas fcb   $1B,$2B
+sleep    fcb   $1B,$2B
          fcb   $CA		group #
          fcb   $04              buffer #
          fcb   $05              style 640x192x2
@@ -128,7 +128,7 @@ illegal  fcb   $1B,$2B
          fcb   %00011000,%00110000
          fcb   %00000111,%11000000
 
-insert   fcb   $1B,$2B
+textmark fcb   $1B,$2B
          fcb   $CA		group #
          fcb   $06              buffer #
          fcb   $05              style 640x192x2
