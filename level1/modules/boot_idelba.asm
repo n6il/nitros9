@@ -14,6 +14,10 @@
 *
 *   7      2002/06/27  Boisy G. Pitre
 * Added use of LSN bits 23-16.
+*
+*   7r1    2004/05/12  Boisy G. Pitre
+* Optimized, made to wait on !BUSY and DRDY, added slowdown POKE
+* for Fujitsu 128MB CF (may be temporary)
 
          nam   Boot
          ttl   IDE Boot Module (LBA Mode)
@@ -76,13 +80,13 @@ start
          leas  -size,s
 
          clr   >$FF40     stop the disk 
-         lbsr  Init 
+*         lbsr  Init 
 
          ldd   #$0001     request one byte (will round up to 1 page) 
          os9   F$SRqMem   request the memory 
          bcs   L00B0      exit on error 
 
-* U is implicitely the buffer address to use 
+* U is implicitly the buffer address to use 
 
          clrb  
          ldx   #$0000     X=0: got to sector #$0000 
@@ -153,17 +157,21 @@ Address  fdb   Port
 * Memory: U = where to put it 
 
 GetSect        
+         IFGT  Level-1
+         clr   >$FFD8
+         ENDC
          pshs  b,x,y
          ldy   <Address,pcr grab the device address 
-         bsr   ChkBusy
-
-RdyHuh1        
-         lda   Status,y   is IDE ready for commands? 
-         anda  #DrdyBit   ready ? 
-         beq   RdyHuh1    loop until Drdy =1 
+ChkBusy  tst   Status,y
+         bmi   ChkBusy    if =1 then loop 
 
          lda   #WhchDriv
          sta   DevHead,y  0L0d/0hhh device=LBA 
+RdyHuh1  lda   Status,y   is IDE ready for commands? 
+         anda  #BusyBit+DrdyBit   ready ? 
+         cmpa  #%01000000
+         bne   RdyHuh1    loop until Drdy=1 and Busy=0
+
          lda   #$01       only one at a time 
          sta   SecCnt,y   only one at a time 
          stb   CylHigh,y  bits 23-16 
@@ -188,26 +196,23 @@ BlkLp
          bpl   BlkLp      go get the rest 
          puls  b
 
-         lda   Status,y   check for error-bit 
+*         lda   Status,y   check for error-bit 
          clrb  
+         IFGT  Level-1
+         clr   >$FFD9
+         ENDC
          puls  b,x,y,pc
 * ------------------------------------------ 
 
-ChkBusy        
-         lda   Status,y
-         anda  #BusyBit   1xxx-xxxx 
-         bne   ChkBusy    if =1 then loop 
-         rts              exit when BUSY =0 
-
-Init           
-         pshs  d,y
-         ldy   <Address,pcr
-         bsr   ChkBusy    could be spinning up... 
-         lda   #Diagnos   hits all drives 
-         sta   CmdIde,y   ./ 
-         bsr   ChkBusy    wait 'til both done 
-         clrb             no errors 
-         puls  d,y,pc
+*Init           
+*         pshs  d,y
+*         ldy   <Address,pcr
+*         bsr   ChkBusy    could be spinning up... 
+*         lda   #Diagnos   hits all drives 
+*         sta   CmdIde,y   ./ 
+*         bsr   ChkBusy    wait 'til both done 
+*         clrb             no errors 
+*         puls  d,y,pc
 
          IFGT  Level-1
 Pad      fill  $39,$1D0-3-*
