@@ -1,0 +1,8 @@
+* OS-9 Level and Version equates
+Level    equ   2
+OS9Vrsn  equ   3
+OS9Major equ   0
+OS9Minor equ   2
+
+         use   os9defs.l2v3
+         use   systype.l2

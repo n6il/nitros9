@@ -1,0 +1,11 @@
+* Main defsfile for OS-9 Level One V2
+*
+*
+* OS-9 Level and Version equates
+Level    equ   1
+OS9Vrsn  equ   2
+OS9Major equ   0
+OS9Minor equ   1
+
+         use   os9defs
+         use   systype.l1

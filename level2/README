@@ -1,0 +1,29 @@
+OS-9 LEVEL TWO V3.00.00 SOURCE ARCHIVE
+
+This directory contains the source to OS-9 Level Two as modified
+by Kevin Darling, et al.  This is the infamous "upgrade" version.
+
+FILE ORGANIZATION
+Sources and bootfiles are separated into the following directories:
+
+	DISKS/        ..... Disk images of disks 1 & 2 of OS-9 Level Two
+	CMDS/         ..... Source for all commands
+	MODULES/      ..... Source for all modules
+	BOOTFILES/    ..... Bootfiles generated from the MODULES and CMDS
+                            directories
+
+BUILDING
+Typing 'make' will build modules and command binaries from the sources
+in the CMDS/ and MODULES/ directories, as well as bootfiles in the
+BOOTFILES/ directory.
+
+DISK IMAGES
+The disk images in the DISKS/ directory are provided for reference during
+disassembly and commenting.  They are zipped, and the contents can be
+accessed using the os9tools package on www.sourceforge.net.
+
+CHANGES
+This source archive reflects the changing state of this upgrade, and it is
+expected that the sources will change as features are added to this "upgrade"
+verison.
+
