@@ -107,8 +107,7 @@ L013C    sta   ,y+
          decb  
          bpl   L013C
          sty   <u001E
-         lda   #PENTIR
-         ldb   #C$SPAC
+         ldd   #PENTIR*256+C$SPAC
          std   ,y++
          leax  <fullbnam,u
          lda   #UPDAT.
@@ -225,7 +224,8 @@ L0203    pshs  y
          ENDC
 
          leax  <pathopts,u
-         ldb   #SS.Opt
+         clrb
+*         ldb   #SS.Opt
          lda   <newbpath
          os9   I$GetStt 
          lbcs  Bye
@@ -254,21 +254,18 @@ L0203    pshs  y
          ldd   >bffdbuf+(FD.SEG+1),u
          std   <DD.BT+1
          lbsr  WriteLSN0
-         lda   #$00
-         ldb   #$01
+         ldd   #$0001
          lbsr  Seek2LSN
          leax  >bitmbuf,u
          ldy   <DD.MAP
          lda   <devpath
          os9   I$Read   	read bitmap sector(s)
          lbcs  Bye
-         lda   #$22
-         clrb  
+         ldd   #Bt.Track*256+$00
          ldy   #$0004
          lbsr  L03A7
          bcc   L0304
-         lda   #$22
-         ldb   #$00
+         ldd   #Bt.Track*256+$00
          lbsr  Seek2LSN
          leax  <u0044,u
          ldy   #$0007
@@ -284,27 +281,23 @@ L0203    pshs  y
          lda   $04,x
          cmpa  #$12
          beq   L02F7
-         lda   #$22
-         ldb   #$0F
+         ldd   #Bt.Track*256+$0F
          ldy   #$0003
          lbsr  L03A7
          lbcs  TrkAlloc
 L02F7    clra  
          ldb   <DD.TKS
          tfr   d,y
-         lda   #$22
-         clrb  
+         ldd   #Bt.Track*256+$00
          lbsr  L03FD
          bra   L0315
-L0304    lda   #$22
-         ldb   #$04
+L0304    ldd   #Bt.Track*256+$04
          ldy   #$000E
          lbsr  L03A7
          lbcs  TrkAlloc
          bra   L02F7
 
-L0315    clra  
-         ldb   #$01
+L0315    ldd   #$0001
          lbsr  Seek2LSN		Seek to bitmap sector on disk
          leax  >bitmbuf,u
          ldy   <DD.MAP
@@ -330,8 +323,7 @@ L0315    clra
          subd  <u004B,u
          addd  #$0001
          tfr   d,y
-         lda   #$22
-         ldb   #$00
+         lda   #Bt.Track*256+$00
          lbsr  Seek2LSN
          lda   <devpath
          ldx   <u004B,u
@@ -339,8 +331,7 @@ L0315    clra
          ELSE
 
 * OS-9 Level One: Write out data at $EF00
-         lda   #$22
-         ldb   #$00
+         ldd   #Bt.Track*256+$00
          lbsr  Seek2LSN 
          lda   <devpath
          ldx   #Bt.Start
