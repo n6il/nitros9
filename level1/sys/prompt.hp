@@ -1,0 +1,3 @@
+@PROMPT
+Syntax: Prompt <message>
+Usage : Prints message and waits for a key
