@@ -1,3 +1,13 @@
+********************************************************************
+* PRESUB - Sub Battle Simulator (autoex module)
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 0      Disassembly of original distribution           ??? 03/01/12
+*        
+
          nam   sub
          ttl   startup program
 
