@@ -2,7 +2,7 @@
 
 # These macros should change according to where the base directory of the
 # OS-9 source tree is located
-BASEDIR		= $(HOME)/os9
+BASEDIR		= /c/os9
 OS9TOOLSDIR	= /usr/local/bin
 DEFDIR		= $(BASEDIR)/defs
 DSKDIR		= $(BASEDIR)/dsks
@@ -25,7 +25,7 @@ AFLAGS		= -q $(ADDOPTS)
 MAKDIR		= $(OS9TOOLSDIR)/os9 makdir
 RM		= rm -f
 MERGE		= cat
-ECHO		= echo
+ECHO		= /bin/echo
 CD		= cd
 CP		= $(OS9TOOLSDIR)/os9 copy
 CPL		= $(OS9TOOLSDIR)/os9 copy -l
@@ -50,7 +50,7 @@ LOREMOVE	= sudo /sbin/losetup -d
 LOSETUP		= sudo /sbin/losetup
 LINK		= ln
 SOFTLINK	= $(LINK) -s
-ZIP		= zip -D
+ARCHIVE		= zip -D
 
 # Directories
 3RDPARTY	= $(BASEDIR)/3rdparty
