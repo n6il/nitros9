@@ -1,3 +1,12 @@
+********************************************************************
+* GRFO - Graphics module
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 7      Original Tandy/Microware version               BGP 02/04/06
+
          nam   GRFO
          ttl   Graphics module
 
@@ -20,37 +29,57 @@ size     equ   .
 name     fcs   /GRFO/
          fcb   $01 
 
-start    lbra  L006A
+start    lbra  Entry7
          lbra  L002C
          lbra  L0026
          lbra  L0026
-         lbra  L006A
+         lbra  Entry7
 
 L0022    fdb   $0055
 L0024    fdb   $aaff
-L0026    fdb   $53c6
-L002A    fdb   $d039
-L002C    fdb   $8015,$308c,$0548
-         fdb   $ec86,$6e8b,$0029,$005f,$005c,$003b,$0038,$0121
-         fdb   $0036,$011e,$0204,$0036
-         fdb   $0036
-L004A    fdb   $ecc8,$28c1,$c025
-         fdb   $02c6
-         fcb   $bf
+L0026    comb
+         ldb   #E$UnkSvc
+         rts
+
+L002C    suba  #$15
+         leax  <Table,pcr
+         lsla
+         ldd   a,x
+         jmp   d,x
+
+Table    fdb   Entry1-Table
+         fdb   Entry2-Table
+         fdb   Entry3-Table
+         fdb   Entry4-Table
+         fdb   Entry5-Table
+         fdb   Entry6-Table
+         fdb   Entry7-Table
+         fdb   Entry8-Table
+         fdb   Entry9-Table
+         fdb   Entry7-Table
+         fdb   Entry7-Table
+
+L004A    ldd   <$28,u
+         cmpb  #$C0
+         bcs   L0053
+         ldb   #$BF
 L0053    tst   <$24,u
          bmi   L0059
          lsra  
 L0059    std   <$28,u
          rts   
-         leax  <L0065,pcr
+
+Entry1   leax  <L0065,pcr
 L0060    ldb   #$02
          lbra  L015A
 L0065    bsr   L004A
          std   <$45,u
-L006A    clrb  
+
+Entry7   clrb  
          rts   
-         clr   <$47,u
-         leax  <L0074,pcr
+
+Entry5   clr   <$47,u
+Entry4   leax  <L0074,pcr
          bra   L0060
 L0074    bsr   L004A
          std   <$45,u
@@ -65,8 +94,8 @@ L0081    tfr   a,b
          ora   ,x
          sta   ,x
          rts   
-         clr   <$47,u
-         leax  <L0098,pcr
+Entry3   clr   <$47,u
+Entry2   leax  <L0098,pcr
          bra   L0060
 L0098    bsr   L004A
          leas  -$0E,s
@@ -158,8 +187,8 @@ L014A    lda   <$48,u
          sta   <$47,u
          clrb  
          rts   
-         clr   <$47,u
-         leax  <L0162,pcr
+Entry8   clr   <$47,u
+Entry6   leax  <L0162,pcr
          ldb   #$01
 L015A    stb   <$25,u
          stx   <$26,u
@@ -279,7 +308,7 @@ L0227    pshs  b
          lbmi  L007E
          lsra  
          lbra  L007E
-         clr   <$41,u
+Entry9   clr   <$41,u
          leas  -$07,s
          lbsr  L03AB
          lbcs  L0346
@@ -400,7 +429,7 @@ L0346    leas  $07,s
          clrb  
          ldb   <$41,u
          beq   L0350
-L034E    orcc  #$01
+L034E    orcc  #Carry
 L0350    rts   
 L0351    pshs  b,a
          cmpb  #$BF
@@ -423,9 +452,9 @@ L0367    bita  #$01
          bra   L0367
 L0376    stb   <$4C,u
          cmpb  <$4D,u
-         andcc #$FE
+         andcc #^Carry
          puls  pc,b,a
-L0380    orcc  #$01
+L0380    orcc  #Carry
          puls  pc,b,a
 L0384    pshs  b,a
          jsr   [<$5D,u]
@@ -489,7 +518,7 @@ L03F9    ldd   <$3D,u
          ldd   $01,y
          tfr   d,x
          lda   $03,y
-         andcc #$FE
+         andcc #^Carry
          rts   
 
          emod

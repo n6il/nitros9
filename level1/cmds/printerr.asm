@@ -1,3 +1,12 @@
+********************************************************************
+* Printerr - OS-9 Level One printerr routine
+*
+* $Id$
+*
+* Ed.    Comments                                       Who YY/MM/DD
+* ------------------------------------------------------------------
+* 6      Original Tandy/Microware version               BGP 02/04/06
+
          nam   Printerr
          ttl   OS-9 Level One printerr routine
 
