@@ -24,9 +24,9 @@ rev      set   $01
 
 u0000    rmb   1
 u0001    rmb   1
-u0002    rmb   2
-u0004    rmb   2
-u0006    rmb   2
+AProc    rmb   2
+WProc    rmb   2
+SProc    rmb   2
 u0008    rmb   2
 u000A    rmb   1
 u000B    rmb   2
@@ -83,27 +83,27 @@ L00EF    puls  y,x,b,a
 L00FB    leax  u000D,u
          stx   <u000B
          orcc  #IntMasks
-         ldx   >$004D
-         stx   <u0002
-         ldx   >$004F
-         stx   <u0004
-         ldx   >$0051
-         stx   <u0006
-         ldx   >$004B
-         ldd   $09,x
+         ldx   >D.AProcQ
+         stx   <AProc
+         ldx   >D.WProcQ
+         stx   <WProc
+         ldx   >D.SProcQ
+         stx   <SProc
+         ldx   >D.Proc
+         ldd   P$User,x
          std   <u0008
          pshs  u
          leau  >u0954,u
          lda   #$01
-         ldx   <u0002
+         ldx   <AProc
          lbsr  L0287
          lda   #$02
-         ldx   <u0004
+         ldx   <WProc
          lbsr  L0287
          lda   #$03
-         ldx   <u0006
+         ldx   <SProc
          lbsr  L0287
-         andcc #$AF
+         andcc #^IntMasks
          clra  
          clrb  
          pshu  b,a
@@ -167,7 +167,7 @@ L01BD    bsr   L01F4
          bsr   L0237
          tst   <u0000
          bne   L01EB
-         lda   #$3C
+         lda   #'<
          bsr   L023B
          lda   $01,x
          lbsr  L02B5
@@ -188,11 +188,11 @@ L01F4    lda   ,y
          bpl   L01F4
          rts   
 L01FF    pshs  y,x,a
-         lda   #$0D
+         lda   #C$CR
          bsr   L023B
          leax  u000D,u
          stx   <u000B
-         ldy   #$0050
+         ldy   #80
          lda   #$01
          os9   I$WritLn 
          puls  pc,y,x,a
@@ -223,7 +223,7 @@ L023B    pshs  x
          stx   <u000B
          puls  pc,x
 L0245    fcb   $27,$10,$03,$e8,$00,$64,$00,$0a,$00,$01,$ff
-L0250    fcb   $34,$36
+L0250    pshs  x,y,a,b
          leax  <L0245,pcr
          ldy   #$2F20
 L0259    leay  >$0100,y
@@ -238,7 +238,7 @@ L0259    leay  >$0100,y
          cmpd  #$3020
          bne   L027B
          ldy   #$2F20
-         lda   #$20
+         lda   #C$SPAC
 L027B    bsr   L023B
          puls  b,a
          bra   L0259
@@ -246,28 +246,28 @@ L0281    bsr   L023B
          leas  $02,s
          puls  pc,y,x,b,a
 L0287    pshs  y,b,a
-         leax  ,x
+         leax  ,x		point to first entry in queue
          beq   L02B3
-L028D    ldd   $09,x
+L028D    ldd   P$User,x
          tst   <u0001
          bne   L0298
          cmpd  <u0008
          bne   L02AF
 L0298    pshu  b,a
-         lda   $0B,x
+         lda   P$Prior,x
          ldb   ,s
-         ldy   <$12,x
+         ldy   <P$PModul,x
          pshu  y,b,a
-         lda   $08,x
+         lda   P$PagCnt,x
          pshu  a
-         lda   ,x
-         ldb   <$26,x
+         lda   P$ID,x
+         ldb   <P$PATH,x
          pshu  b,a
-L02AF    ldx   $0E,x
+L02AF    ldx   P$Queue,x
          bne   L028D
 L02B3    puls  pc,y,b,a
 L02B5    pshs  x,b,a
-         ldx   >$0064
+         ldx   >D.PthDBT
          tsta  
          beq   L02CC
          clrb  

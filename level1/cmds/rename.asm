@@ -51,7 +51,7 @@ start    cmpd  #$0004
          os9   I$Open   
          bcs   L00A5
 L0032    stx   <u0005
-         ldb   #$00
+         ldb   #SS.Opt
          leax  <u0020,u
          os9   I$GetStt 
          bcs   L00A5
@@ -66,7 +66,7 @@ L0032    stx   <u0005
          lda   #C$CR
          sta   -1,x
          ldx   <u0000
-         lda   #$03
+         lda   #READ.+WRITE.
          os9   I$ChgDir 
          bcs   L00A5
          ldx   <u0005
@@ -106,7 +106,8 @@ L0082    leax  <L00AC,pcr
 L00A5    os9   F$Exit   
 L00A8    ldb   #E$BPNam
          bra   L00A5
-L00AC    fdb   $2E0D
+L00AC    fcc   "."
+         fcb   C$CR
 L00AE    ldx   <u0000
          bsr   L00F6
          ldu   <u0000
