@@ -6445,7 +6445,7 @@ rounded to the next 256 byte page boundary.</para>
 </sect1>
 
 <sect1>
-<title>SRTMEM System memory request F$SRTM</title>
+<title>SRTMEM Return System Memory F$SRTM</title>
 
 <informaltable frame="none">
 <tgroup cols="2">
