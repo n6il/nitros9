@@ -28,7 +28,7 @@ boot_kenton: boot_scsi.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aKenton=1
 
 boot_kenton_id5: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aKenton=1 -ascsiid=64
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aKenton=1 -ascsiid=32
 
 boot_rampak: boot_rampak.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2
@@ -37,7 +37,7 @@ boot_tc3: boot_scsi.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aTC3=1
 
 boot_tc3_id5: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aTC3=1 -ascsiid=64
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aTC3=1 -ascsiid=32
 
 boot_wd1002: boot_wd1002.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2
@@ -56,13 +56,13 @@ boot_kenton_l1: boot_scsi.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1 -aKenton=1
 
 boot_kenton_id5_l1: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1 -aKenton=1 -ascsiid=64
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1 -aKenton=1 -ascsiid=32
 
 boot_tc3_l1: boot_scsi.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1 -aTC3=1
 
 boot_tc3_id5_l1: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1 -aTC3=1 -ascsiid=64
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1 -aTC3=1 -ascsiid=32
 
 boot_rampak_l1: boot_rampak.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1
