@@ -7,7 +7,9 @@ Welcome to NitrOS-9/6809 Level 2 for the Tandy Color Computer 3.
 DISTRIBUTION
 ============
 There are two double-sided 40 track DSK images ending in '_ds40_1.dsk',
-and '_ds40_2.dsk' for disks 1 and 2, respectively.
+and '_ds40_2.dsk' for disks 1 and 2, respectively.  For those with
+3.5" 720K drives, an 80 track DSK image ending in '_ds80.dsk' is also
+included in the distribution.
 
 USING THE DISK IMAGES
 =====================
