@@ -11,6 +11,13 @@
 *
 *   9r4    2003/01/01  Boisy G. Pitre
 * Back-ported to OS-9 Level Two.
+*
+*  10r1    2003/??/??  Robert Gault
+* Added 6809 code where it was lacking.
+*
+*  10r2    2004/05/03  Boisy G. Pitre
+* Fixed numerous issues with 6809 and Level 1 versions.
+* Tested 6809 Level 1 and Level 2
 
            nam   sc6551
            ttl   6551 Driver
@@ -174,7 +181,7 @@ RxBufDSz   equ   256-.          default Rx buffer gets remainder of page...
 RxBuff     rmb   RxBufDSz       default Rx buffer
 MemSize    equ   .
 
-rev        set   1
+rev        set   2
 edition    set   10
 
            mod   ModSize,ModName,Drivr+Objct,ReEnt+rev,ModEntry,MemSize
@@ -203,21 +210,22 @@ BaudTabl   equ   *
 * NOTE:  SCFMan has already cleared all device memory except for V.PAGE and
 *        V.PORT.  Zero-default variables are:  CDSigPID, CDSigSig, Wrk.XTyp.
 Init       clrb                 default to no error...
-           pshs  cc,b,dp        save IRQ/Carry status, dummy B, system DP
+*           pshs  cc,b,dp        save IRQ/Carry status, dummy B, system DP
+           pshs  cc,dp        save IRQ/Carry status, system DP
            IFNE  H6309
            tfr   u,w
            tfr   e,dp
            tfr   y,w            save descriptor pointer
            ELSE
-           clrb
-           tfr   b,dp
+           tfr   u,d
+           tfr   a,dp
+           pshs  y
            ENDC
            ldd   <V.PORT        base hardware address
            IFNE  H6309
            incd                 point to 6551 status address
            ELSE
            addd  #$0001
-           pshs  y
            ENDC
            leax  IRQPckt,pc
            leay  IRQSvc,pc
@@ -275,7 +283,6 @@ SetRxBuf   std   <RxBufSiz      save Rx buffer size
            IFNE  H6309
            tim   #ForceDTR,<Wrk.XTyp
            ELSE
-* lines seemed to be missing here. RG
            lda   #ForceDTR
            bita  <Wrk.XTyp
            ENDC
@@ -320,7 +327,7 @@ NoDTR      ldx   <V.PORT        get port address
            bmi   NoSelect       no MPI slot select, go on...
            sta   >MPI.Slct      set MPI slot select register
            ENDC
-NoSelect   puls  cc,b,dp,pc     recover IRQ/Carry status, dummy B, system DP, return
+NoSelect   puls  cc,dp,pc       recover IRQ/Carry status, system DP, return
 
 Term       clrb                 default to no error...
            pshs  cc,dp          save IRQ/Carry status, dummy B, system DP
@@ -328,9 +335,7 @@ Term       clrb                 default to no error...
            tfr   u,w            setup our DP
            tfr   e,dp
            ELSE
-* missing lines
-           stu   <regWbuf
-           lda   <regWbuf
+           tfr   u,d
            tfr   a,dp
            ENDC
            ldx   <V.PORT
@@ -397,9 +402,7 @@ Read       clrb                 default to no errors...
            tfr   u,w            setup our DP
            tfr   e,dp
            ELSE
-*missing lines
-           stu   <regWbuf
-           lda   <regWbuf
+           tfr   u,d
            tfr   a,dp
            ENDC
 ReadLoop   orcc  #IntMasks      disable IRQs while checking Rx flow control
@@ -484,7 +487,7 @@ ErrExit    equ  *
            ora   #Carry
            sta   ,s
            ENDC
-           puls  cc,dp,pc       restore dummy A (or Tx character), system DP, return
+           puls  cc,dp,pc       restore CC, system DP, return
 
 HngUpErr   ldb   #E$HangUp
            lda   #PST.DCD       DCD lost flag
@@ -504,10 +507,10 @@ Writ       clrb                 default to no error...
            tfr   e,dp
            tfr   a,e
            ELSE
-*missing lines
-           stu   <regWbuf
-           ldb   <regWbuf
-           tfr   b,dp
+           pshs  a
+           tfr   u,d
+           tfr   a,dp
+           puls  a
            sta   <regWbuf
            ENDC
            orcc  #IntMasks      disable IRQs during error and Tx disable checks
@@ -554,7 +557,6 @@ ChkTxE     equ   *
            IFNE  H6309
            ste   DataReg,x      write Tx character
            ELSE
-*missing lines
            ldb   <regWbuf
            stb   DataReg,x
            ENDC
@@ -567,10 +569,10 @@ GStt       clrb                 default to no error...
            tfr   u,w            setup our DP
            tfr   e,dp
            ELSE
-*missing lines
-           stu   <regWbuf
-           ldb   <regWbuf
-           tfr   b,dp
+           pshs  a
+           tfr   u,d
+           tfr   a,dp
+           puls  a
            ENDC
            ldx   PD.RGS,y       caller's register stack pointer
            cmpa  #SS.EOF
@@ -629,10 +631,10 @@ SStt       clrb                 default to no error...
            tfr   u,w            setup our DP
            tfr   e,dp
            ELSE
-*missing lines
-           stu   <regWbuf
-           ldb   <regWbuf
-           tfr   b,dp
+           pshs  a
+           tfr   u,d
+           tfr   a,dp
+           puls  a
            ENDC
            ldx   PD.RGS,y
            cmpa  #SS.HngUp
@@ -747,7 +749,6 @@ SetPort    pshs  cc             save IRQ enable and Carry status
            IFNE  H6309
            tfr   b,e            save it temporarily
            ELSE
-*missing line
            stb   <regWbuf
            ENDC
            ldb   <Wrk.Baud      get baud info again
@@ -755,18 +756,13 @@ SetPort    pshs  cc             save IRQ enable and Carry status
            IFNE  H6309
            orr   e,b            mask in clock source + baud rate and clean up stack
            ELSE
-*missing lines
-           pshs  b
            orb   <regWbuf
-           stb   <regWbuf
-           puls  b
            ENDC
            ldx   <V.PORT        get port address
            anda  #Cmd.Par       clear all except parity bits
            IFNE  H6309
            tfr   a,e            save new command register contents temporarily
            ELSE
-*missing line
            sta   <regWbuf
            ENDC
            lda   CmdReg,x       get current command register contents
@@ -774,11 +770,7 @@ SetPort    pshs  cc             save IRQ enable and Carry status
            IFNE  H6309
            orr   e,a            mask in new parity
            ELSE
-*missing lines
-           pshs  a
            ora   <regWbuf
-           sta   <regWbuf
-           puls  a
            ENDC
            std   CmdReg,x       set command+control registers
            puls  cc,pc          recover IRQ enable and Carry status, return...
@@ -788,10 +780,8 @@ IRQSvc     pshs  dp             save system DP
            tfr   u,w            setup our DP
            tfr   e,dp
            ELSE
-*missing lines
-           stu   <regWbuf
-           ldb   <regWbuf
-           tfr   b,dp
+           tfr   u,d            setup our DP
+           tfr   a,dp
            ENDC
            ldx   <V.PORT
            ldb   StatReg,x      get current Status register contents
@@ -818,13 +808,15 @@ ChkRDRF    bitb  #Stat.RxF      Rx data?
            lbeq  ChkTrDCD       no, go check DCD transition
            lda   DataReg,x      get Rx data
 RxBreak    beq   SavRxDat       its a null, go save it...
-           IFNE  H6309
-           stf   <SigSent       clear signal sent flag
-           ELSE
-*missing lines
-           ldb   <regWbuf+1
-           stb   <SigSent
-           ENDC
+*           IFNE  H6309
+*           stf   <SigSent       clear signal sent flag
+*           ELSE
+*           pshs  b
+*           ldb   <regWbuf+1
+*           stb   <SigSent
+*           puls  b
+*           ENDC
+           clr   <SigSent
            cmpa  <V.INTR        interrupt?
            bne   Chk.Quit       no, go on...
            ldb   #S$Intrpt
@@ -862,7 +854,6 @@ Chk.Flow   equ   *
            IFNE  H6309
            aim   #^FCTxXOff,<FloCtlTx clear XOFF received bit
            ELSE
-*missing lines
            pshs  a
            lda   #^FCTxXOff
            anda  <FloCtlTx
@@ -881,7 +872,6 @@ SavRxDat   equ   *
            IFNE  H6309
            aim   #^FCRxSend,<FloCtlRx clear possible pending XOFF flag
            ELSE
-*missing lines
            pshs  a
            lda   #^FCRxSend
            anda  <FloCtlRx
@@ -893,7 +883,6 @@ SavRxDat   equ   *
            ldw   <RxDatLen      Rx get Rx buffer data length
            cmpw  <RxBufSiz      Rx buffer already full?
            ELSE
-*missing lines
            pshs  d
            ldd   <RxDatLen
            std   <regWbuf
@@ -904,7 +893,6 @@ SavRxDat   equ   *
            IFNE  H6309
            oim   #OvrFloEr,<V.ERR mark RX buffer overflow error
            ELSE
-*missing lines
            ldb   #OvrFloEr
            orb   <V.ERR
            stb   <V.ERR
@@ -921,7 +909,6 @@ SetLayDn   stx   <RxBufPut      set new Rx data laydown pointer
            stw   <RxDatLen      save new Rx data length
            cmpw  <RxBufMax      at or past maximum fill point?
            ELSE
-*missing lines
            pshs  d
            ldd   <regWbuf
            addd  #1
@@ -936,7 +923,6 @@ DisRxFlo   ldx   <V.PORT
            IFNE  H6309
            tim   #ForceDTR,<Wrk.XTyp forced DTR?
            ELSE
-*missing lines
            lda   #ForceDTR
            bita  <Wrk.XTyp
            ENDC
@@ -944,7 +930,6 @@ DisRxFlo   ldx   <V.PORT
            IFNE  H6309
            tim   #DSRFlow,<Wrk.Type DSR/DTR Flow control?
            ELSE
-*missing lines
            lda   #DSRFlow
            bita  <Wrk.Type
            ENDC
@@ -952,7 +937,6 @@ DisRxFlo   ldx   <V.PORT
            IFNE  H6309
            oim   #FCRxDTR,<Wrk.Type mark RX disabled due to DTR
            ELSE
-*missing lines
            lda   #FCRxDTR
            ora   <Wrk.Type
            sta   <Wrk.Type
@@ -962,7 +946,6 @@ DisRxRTS   equ   *
            IFNE  H6309
            tim   #RTSFlow,<Wrk.Type
            ELSE
-*missing lines
            lda   #RTSFlow
            bita  <Wrk.Type
            ENDC
@@ -970,7 +953,6 @@ DisRxRTS   equ   *
            IFNE  H6309
            tim   #DSRFlow,<Wrk.Type line break?
            ELSE
-*missing lines
            lda   #DSRFlow
            bita  <Wrk.Type
            ENDC
@@ -978,7 +960,6 @@ DisRxRTS   equ   *
            IFNE  H6309
            oim   #FCRxRTS,<FloCtlRx
            ELSE
-*missing lines
            lda   #FCRxRTS
            ora   <FloCtlRx
            sta   <FloCtlRx
