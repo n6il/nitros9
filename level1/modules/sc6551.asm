@@ -1,13 +1,18 @@
 ********************************************************************
-* SACIA - 6551 Driver
+* sc6551 - 6551 Driver
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*        NitrOS-9 2.00 distribution                         ??/??/??
+*          ????/??/??
+* NitrOS-9 2.00 distribution.
+*
+*   9r4    2003/01/01  Boisy G. Pitre
+* Back-ported to OS-9 Level Two.
 
-           nam   SACIA
+           nam   sc6551
            ttl   6551 Driver
 
            ifp1
@@ -22,19 +27,14 @@ MPIFlag    set   true           "true" MPI slot selection, "false" no slot
 * miscellaneous definitions
 DCDStBit   equ   %00100000      DCD status bit for SS.CDSta call
 DSRStBit   equ   %01000000      DSR status bit for SS.CDSta call
-Edtn       equ   10
 SlpBreak   set   TkPerSec/2+1   line Break duration
 SlpHngUp   set   TkPerSec/2+1   hang up (drop DTR) duration
-Vrsn       equ   1
 
        ifeq  TC9-true
 IRQBit     equ   %00000100      GIME IRQ bit to use for IRQ ($FF92)
        else
 IRQBit     equ   %00000001      GIME IRQ bit to use for IRQ ($FF92)
        endc
-
-           nam   SACIA
-           ttl   6551           Single ACIA driver
 
 * 6551 register definitions
            org   0
@@ -174,12 +174,15 @@ RxBufDSz   equ   256-.          default Rx buffer gets remainder of page...
 RxBuff     rmb   RxBufDSz       default Rx buffer
 MemSize    equ   .
 
-           mod   ModSize,ModName,Drivr+Objct,ReEnt+Vrsn,ModEntry,MemSize
+rev        set   1
+edition    set   10
+
+           mod   ModSize,ModName,Drivr+Objct,ReEnt+rev,ModEntry,MemSize
 
            fcb   UPDAT.         access mode(s)
 
-ModName    fcs   "SACIA"
-           fcb   Edtn
+ModName    fcs   "sc6551"
+           fcb   edition
 
        ifeq  MPIFlag-true
 SlotSlct   fcb   MPI.Slot       selected MPI slot

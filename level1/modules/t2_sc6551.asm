@@ -58,7 +58,7 @@ initsize equ   *
 
 name     fcs   /t2/
 mgrnam   fcs   /SCF/
-drvnam   fcs   /SACIA/
+drvnam   fcs   /sc6551/
 
          emod  
 eom      equ   *
