@@ -16,7 +16,7 @@
 
 tylg     set   Systm+$00
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 
          mod   eom,name,tylg,atrv,$00f8,size
 

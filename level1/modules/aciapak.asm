@@ -3,23 +3,25 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  10    From Tandy OS-9 Level One VR 02.00.00
+*  10      1985/??/??
+* From Tandy OS-9 Level One VR 02.00.00
 
          nam   ACIAPAK
          ttl   RS-232 Pak driver
 
 * Disassembled 98/08/23 20:25:56 by Disasm v1.6 (C) 1988 by RML
 
-         ifp1
+         IFP1
          use   defsfile
          use   scfdefs
-         endc
+         ENDC
 
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   10
 
          mod   eom,name,tylg,atrv,start,size

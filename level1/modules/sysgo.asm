@@ -23,7 +23,7 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   15
 
          mod   eom,name,tylg,atrv,start,size

@@ -3,20 +3,24 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 5      Created                                        ADK
-* 6      Fixed small bugs, improved speed               BGP 98/10/20
+*   5      ????/??/??  Alan DeKok
+* Created.
+*
+*   6      1998/10/20  Boisy G. Pitre
+* Fixed small bugs, improved speed.
 
          nam   Boot
          ttl   Disto RAMPak Boot Module
 
 * Disassembled 94/06/25 11:37:47 by Alan DeKok
 
-         ifp1  
+         IFP1  
          use   defsfile
          use   rbfdefs
-         endc  
+         ENDC  
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
@@ -66,11 +70,11 @@ cont     ldd   #$0001     request one byte (will round up to 1 page)
          os9   F$SRtMem   return the copy of LSN0 to free memory
 
          ldd   R.X,s      get size of boot memory to request
-         ifgt  Level-1
+         IFGT  Level-1
          os9   F$BtMem    ask for the boot memory
-         else
+         ELSE
          os9   F$SRqMem   ask for the boot memory
-         endc
+         ENDC
          puls  x          restore the starting sector number
          bcs   L00AE      no memory: exit with error
 
@@ -122,9 +126,9 @@ ReadLp   stb   ,y         save byte number
          clrb             no errors
          puls  d,x,y,pc   restore registers and return
 
-         ifgt  Level-1
+         IFGT  Level-1
 Pad      fill  $39,$1D0-6-*
-         endc
+         ENDC
 
 Address  fdb   $FF40      address of the device to boot from
 PakSlot  fcb   $01        multipak slot number

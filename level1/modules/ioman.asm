@@ -19,7 +19,7 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 * edition 11 = Stock OS-9 Level One Vr. 2.00 IOMan
 * edition 12 = IO Queue sort bug fixed, IAttach bug fixed
 edition  equ   12

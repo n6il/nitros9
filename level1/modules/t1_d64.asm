@@ -18,8 +18,10 @@
 
 tylg     set   Devic+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
+
          mod   eom,name,tylg,atrv,mgrnam,drvnam
+
          fcb   $03 mode byte
          fcb   $FF extended controller address
          fdb   $FF04  physical controller address

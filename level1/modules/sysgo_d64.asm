@@ -8,6 +8,9 @@
 *  -     Original Dragon Data distribution version
 *
 * $Log$
+* Revision 1.3  2003/08/30 20:16:51  boisy
+* Made all modules rev 0
+*
 * Revision 1.2  2002/10/10 14:50:22  boisy
 * Added appropriate header
 *
@@ -30,7 +33,7 @@
          endc
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
          mod   eom,name,tylg,atrv,start,size
 dataarea rmb   200
 size     equ   .

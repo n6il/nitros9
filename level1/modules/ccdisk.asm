@@ -3,11 +3,15 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   4    From Tandy OS-9 Level One VR 02.00.00
-*   5    Patched to handle 6ms step rate and ds drives  BGP 02/07/14
-*        from Kissable OS-9, Rainbow, October 1988
+*   4      1985/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*   5      2002/07/14  Boisy G. Pitre
+* Patched to handle 6ms step rate and ds drives from the "Kissable OS-9"
+* column, Rainbow Magazine, October 1988.
 
          nam   CCDisk
          ttl   WD1773 disk driver for Tandy/Radio Shack controller
@@ -21,7 +25,7 @@
 
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   5
 
 MaxDrv   set   4

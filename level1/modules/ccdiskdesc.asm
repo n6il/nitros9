@@ -18,7 +18,7 @@
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 
 DNum     set   0
 Type     set   TYP.CCF+TYP.5

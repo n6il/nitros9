@@ -1,22 +1,29 @@
 ********************************************************************
-* Boot - WD1773 Boot for OS-9
+* Boot - WD1773 Boot module
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   4    From Tandy OS-9 Level Two VR 02.00.01 and 
-*        modified to work properly under OS-9 Level One
+*   4      1985/??/??   
+* Original Tandy distribution version.
+*
+*   6      1998/10/12  Boisy G. Pitre
+* Obtained from L2 Upgrade archive, has 6ms step rate and disk timeout
+* changes.
+*
+*   6r2    2003/05/18  Boisy G. Pitre
+* Added '.' output for each sector for OS-9 L2 and NitrOS9 for
+* Mark Marlette (a special request :).
 
          nam   Boot
-         ttl   os9 system module    
+         ttl   WD1773 Boot module
 
-* Disassembled 98/08/23 21:21:26 by Disasm v1.6 (C) 1988 by RML
-
-         ifp1
+         IFP1
          use   defsfile
          use   rbfdefs
-         endc
+         ENDC
 
 * Step Rate:
 *      $00  = 6ms
@@ -25,10 +32,10 @@
 *      $03  = 30ms
 STEP     set   $00
 
-tylg     set   Systm+Objct   
+tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
-edition  set   4
+rev      set   $02
+edition  set   6
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -45,18 +52,17 @@ size     equ   .
 name     fcs   /Boot/
          fcb   edition
 
-* First, we make a stack...
-start    clra  
-         ldb   #size
-MakeStak pshs  a
-         decb  
-         bne   MakeStak
+start    clra			clear A
+         ldb   #size		get our 'stack' size
+MakeStak pshs  a		save 0 on stack
+         decb			and continue...
+         bne   MakeStak		until we've created our stack
 
-         tfr   s,u
-         ldx   #DPort+8
+         tfr   s,u		put 'stack statics' in U
+         ldx   #$FF48
          lda   #$D0
          sta   ,x
-         lbsr  L01A7
+         lbsr  L01AA
          lda   ,x
          lda   #$FF
          sta   u0004,u
@@ -70,7 +76,7 @@ MakeStak pshs  a
          sta   >D.XNMI
          lda   #$08
          ENDC
-         sta   >DPort
+         sta   >$FF40
 
 * delay loop
          IFGT  Level-1
@@ -78,24 +84,32 @@ MakeStak pshs  a
          ELSE
          ldd   #$61A8
          ENDC
-L003A    nop   
-         nop   
+         IFNE  NitrOS9
+         nop
+         ENDC
+L003A    nop
+         nop
+         IFNE  NitrOS9
+         nop
+         nop
+         nop
+         ENDC
          subd  #$0001
          bne   L003A
 
 * search for a free page (to use as a 256 byte disk buffer)
          pshs  u,y,x,b,a
          ldd   #$0001
-         os9   F$SRqMem 
+         os9   F$SRqMem
          bcs   L00AA
          tfr   u,d
          ldu   $06,s
          std   u0002,u
-         clrb  
+         clrb
 
 * go get LSN0
          ldx   #$0000
-         bsr   L00C4
+         bsr   ReadSect
          bcs   L00AA
 
 * get bootfile size from LSN0 and allocate memory for it
@@ -113,10 +127,10 @@ L003A    nop
          pshs  x
          ldd   #256
          ldu   u0002,u
-         os9   F$SRtMem 
+         os9   F$SRtMem
          ldd   $02,s
          IFGT  Level-1
-         os9   F$BtMem  
+         os9   F$BtMem
          ELSE
          os9   F$SRqMem
          ENDC
@@ -131,187 +145,182 @@ L003A    nop
 
 * this loop reads a sector at a time from the bootfile
 L0091    pshs  x,b,a
-         clrb  
-         bsr   L00C4
+         clrb
+         bsr   ReadSect
          bcs   L00A8
+         IFGT  Level-1
+         lda   #'.		dump out a period for boot debugging
+         jsr   <D.BtBug		do the debug stuff     
+         ENDC
          puls  x,b,a
          inc   u0002,u
          leax  1,x
          subd  #256
          bhi   L0091
-L00A3    clrb  
+L00A3    clrb
          puls  b,a
          bra   L00AC
 L00A8    leas  $04,s
 L00AA    leas  $02,s
 L00AC
          IFGT  Level-1
-         sta   >$FFD9
+         sta   >$FFD9		unnecessary - rel does this for us
          ENDC
          puls  u,y,x
-         leas  size,s
-         rts   
+         leas  size,s		clean up stack
+         clr   >$FF40		shut off floppy disk
+         rts
 
-L00B4    lda   #$29
+L00B7    lda   #$29
          sta   ,u
          clr   u0004,u
          lda   #$05
-         lbsr  L016D
+         lbsr  L0170
          ldb   #STEP
-         lbra  L0192
+         lbra  L0195
 
-L00C4    lda   #$91
-         cmpx  #$0000
-         bne   L00DC
-         bsr   L00DC
-         bcs   L00D3
+* Read a sector from the 1773
+* Entry: X = LSN to read
+ReadSect lda   #$91
+         cmpx  #$0000		LSN0?
+         bne   L00DF
+         bsr   L00DF
+         bcs   L00D6
          ldy   u0002,u
-         clrb  
-L00D3    rts   
+         clrb
+L00D6    rts
 
-L00D4    bcc   L00DC
+L00D7    bcc   L00DF
          pshs  x,b,a
-         bsr   L00B4
+         bsr   L00B7
          puls  x,b,a
-L00DC    pshs  x,b,a
-         bsr   L00E7
+L00DF    pshs  x,b,a
+         bsr   L00EA
          puls  x,b,a
-         bcc   L00D3
-         lsra  
-         bne   L00D4
-L00E7    bsr   L0139
-         bcs   L00D3
+         bcc   L00D6
+         lsra
+         bne   L00D7
+L00EA    bsr   L013C
+         bcs   L00D6
          ldx   u0002,u
          orcc  #IntMasks
          pshs  y
          ldy   #$FFFF
          ldb   #$80
-         stb   >DPort+8
+         stb   >$FF48
          ldb   ,u
          orb   #$30
          tst   u0009,u
-         beq   L0104
+         beq   L0107
          orb   #$40
-L0104    stb   >DPort
-         lbsr  L01A7
+L0107    stb   >$FF40
+         lbsr  L01AA
          orb   #$80
          lda   #$02
-L010E    bita  >DPort+8
-         bne   L0120
+L0111    bita  >$FF48
+         bne   L0123
          leay  -$01,y
-         bne   L010E
+         bne   L0111
          lda   ,u
-         sta   >DPort
+         sta   >$FF40
          puls  y
-         bra   L0135
-L0120    lda   >DPort+$B
+         bra   L0138
+L0123    lda   >$FF4B
          sta   ,x+
-         stb   >DPort
-         bra   L0120
+         stb   >$FF40
+         bra   L0123
 
-NMIRtn   leas  size+2,s
+NMIRtn   leas  R$Size,s
          puls  y
-         ldb   >DPort+8
+         ldb   >$FF48
          bitb  #$04
-         beq   L018C
-L0135    comb  
+         beq   L018F
+L0138    comb
          ldb   #E$Read
-         rts   
+         rts
 
-L0139    lda   #$09
+L013C    lda   #$09
          sta   ,u
          clr   u0009,u
          tfr   x,d
          cmpd  #$0000
-         beq   L0169
+         beq   L016C
          clr   ,-s
          tst   u0008,u
-         beq   L015F
-         bra   L0155
-L014F    com   u0009,u
-         bne   L0155
+         beq   L0162
+         bra   L0158
+L0152    com   u0009,u
+         bne   L0158
          inc   ,s
-L0155    subb  u0006,u
+L0158    subb  u0006,u
          sbca  #$00
-         bcc   L014F
-         bra   L0165
-L015D    inc   ,s
-L015F    subb  u0006,u
+         bcc   L0152
+         bra   L0168
+L0160    inc   ,s
+L0162    subb  u0006,u
          sbca  #$00
-         bcc   L015D
-L0165    addb  #18
+         bcc   L0160
+L0168    addb  #$12
          puls  a
-L0169    incb  
-         stb   >DPort+$A
-L016D    ldb   u0004,u
-         stb   >DPort+9
+L016C    incb
+         stb   >$FF4A
+L0170    ldb   u0004,u
+         stb   >$FF49
          cmpa  u0004,u
-         beq   L018A
+         beq   L018D
          sta   u0004,u
-         sta   >DPort+$B
+         sta   >$FF4B
          ldb   #$10+STEP
-         bsr   L0192
+         bsr   L0195
          pshs  x
          ldx   #$222E
-L0184    leax  -1,x
-         bne   L0184
+L0187    leax  -$01,x
+         bne   L0187
          puls  x
-L018A    clrb  
-         rts   
-L018C    bitb  #$98
-         bne   L0135
-         clrb  
-         rts   
-L0192    bsr   L01A5
-L0194    ldb   >DPort+$8
+L018D    clrb
+         rts
+L018F    bitb  #$98
+         bne   L0138
+         clrb
+         rts
+L0195    bsr   L01A8
+L0197    ldb   >$FF48
          bitb  #$01
-         bne   L0194
-         rts   
-L019C    lda   ,u
-         sta   >DPort
-         stb   >DPort+$8
-         rts   
-L01A5    bsr   L019C
-L01A7    lbsr  L01AA
-L01AA    lbsr  L01AD
-L01AD    rts   
+         bne   L0197
+         rts
+L019F    lda   ,u
+         sta   >$FF40
+         stb   >$FF48
+         rts
+L01A8 
+         IFNE  NitrOS9
+         nop
+         ENDC
+         bsr   L019F
+L01AA  
+         IFNE  NitrOS9
+         nop
+         nop
+         ENDC
+         lbsr  L01AD
+L01AD 
+         IFNE  NitrOS9
+         nop
+         nop
+         ENDC
+         lbsr  L01B0
+L01B0 
+         IFNE  NitrOS9
+         nop
+         ENDC
+         rts
 
          IFGT  Level-1
-
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-         rts   
-
+* Filler to get $1D0
+Filler   fill  $39,$1D0-3-*
          ENDC
 
          emod
 eom      equ   *
          end
+

@@ -17,8 +17,10 @@
          endc
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
+
          mod   eom,name,tylg,atrv,start,size
+
 u0000    rmb   0
 size     equ   .
 name     equ   *

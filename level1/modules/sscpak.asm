@@ -19,7 +19,7 @@
 
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   1
 
 BusyBit  equ   %10000000  SSPak busy status bit (active low)

@@ -5,12 +5,17 @@
 *
 * NOTE:  This clock is TOTALLY VALID for ALL DATES between 1900-2155
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 5      Tandy/Microware original version
-* 6      Modified to handle leap years properly for     BGP 99/05/03
-*        1900 and 2100 A.D.
-*        Added TC^3 SCSI/B&B RTC Clock Support          BGP 02/05/14
+*   5      1985/??/??
+* From Tandy OS-9 Level One VR 02.00.00
+*
+*   6      1999/05/03  Boisy G. Pitre
+* Modified to handle leap years properly for 1900 and 2100 A.D.
+*
+*          2002/05/14  Boisy G. Pitre
+* Added TC^3 SCSI/B&B RTC Clock Support.
 
          nam   Clock
          ttl   OS-9 Level One V2 Clock module
@@ -21,7 +26,7 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $1
+rev      set   $00
 edition  set   6
 
          mod   eom,name,tylg,atrv,ClkEnt,RTC.Base

@@ -8,6 +8,9 @@
 *  -     Original Dragon Data distribution version
 *
 * $Log$
+* Revision 1.3  2003/08/30 20:16:51  boisy
+* Made all modules rev 0
+*
 * Revision 1.2  2002/10/10 14:50:21  boisy
 * Added appropriate header
 *
@@ -32,8 +35,10 @@
          endc
 tylg     set   Devic+Objct   
 atrv     set   ReEnt+rev
-rev      set   $02
+rev      set   $00
+
          mod   eom,name,tylg,atrv,mgrnam,drvnam
+
          fcb   $FF mode byte
          fcb   $FF extended controller address
          fdb   $FF40  physical controller address
