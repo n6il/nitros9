@@ -10,7 +10,7 @@
   <!ENTITY make          "Tandy Color Computer 3">
   <!ENTITY minmem        "128K">
   <!ENTITY DOSCMD        "DOS">
-  <!ENTITY ctrlkey       "CTRL">
+  <!ENTITY ctrlkey       "<keycap>CTRL</keycap>">
   <!ENTITY os9guide      SYSTEM "os9guide.book">
   <!ENTITY preface       SYSTEM "intro.preface">
   <!ENTITY chap1         SYSTEM "chap1.chapter">
