@@ -37,6 +37,9 @@
 *
 *          2004/03/11  Rodney V. hamilton
 * Updated TFM register selection
+*
+*          2004/07/15  Robert Gault
+* Added code to indicate manual start and end for disassembly.
 
          nam   Disasm
          ttl   6809/6309 disassembler
@@ -100,6 +103,7 @@ atrvhold rmb   1
 revshold rmb   1
 m.opt    rmb   1
 o.opt    rmb   1
+s.opt    rmb   1            manual start & stop RG
 x.opt    rmb   1
 z.opt    rmb   1
 u.opt    rmb   1
@@ -1567,6 +1571,10 @@ line270  fcb   $0a
          fcb   $0a
          fcc   /    o = display line number,address,object code & source code/
          fcb   $0a
+         fcc   /    s = indicate disassembly start & end/
+         fcb   $0a
+         fcc   /        syntax   -s$ssss$eeee/
+         fcb   $0a
          fcc   /    x = take modules from execution directory/
          fcb   $0a
          fcc   '    u = do not convert u/dp offsets to symbolic labels'
@@ -1740,6 +1748,7 @@ pathok   equ   *
          clr   <diskio
          clr   <m.opt
          clr   <o.opt
+         clr   <s.opt           manual start & stop RG
          clr   <x.opt
          clr   <z.opt
          clr   <u.opt
@@ -1754,12 +1763,16 @@ restart  equ   *
          stx   <readpos
          ldd   #0
          std   <numline
+         tst   <s.opt       for manual start & stop RG
+         bne   sopt8
          ldx   #$ffff
          stx   <modend
-         ldx   <xreghold
+sopt8    ldx   <xreghold
          tst   <pass
          lbeq  getprm
          lbsr  clrline
+         tst   <s.opt
+         lbne  sopt7
          leay  line280,pcr
          ldb   #ln280sz
          lbsr  mergline
@@ -1855,7 +1868,7 @@ time025
          lbsr  mergline
          lbsr  writline
          ldx   <xreghold
-         tst   <diskio
+sopt7    tst   <diskio
          lbne  diskmod
          lbra  mem020
 
@@ -1910,8 +1923,31 @@ gtopt040 equ   *
          inc   <u.opt
          inc   <op.cnt
          bra   getopt
-
+gtoptS   lda   ,x+
+         cmpa  #'$
+         bne   gtoptS2
+         lbsr  u$hexin
+         ldd   ,x
+         andcc #^1
+         rts
+gtoptS2  leax  4,x
+         orcc  #1
+         rts
 gtopt050 equ   *
+         cmpa  #'S               add start & stop option RG
+         bne   gtopt060
+         bsr   gtoptS
+         bcs   badopt
+         std   <startadr
+         bsr   gtoptS
+         bcs   badopt
+         addd  #3
+         std   <modend
+         inc   <s.opt
+         inc   <op.cnt
+         bra   getopt
+
+gtopt060 equ   *
          lda   <byte
          cmpa  #'?
          bne   chkopt
@@ -1979,6 +2015,8 @@ gotmod   equ   *
          stx   <address
          lbsr  getbyte
          lbsr  getbyte2
+         tst   <s.opt            for manual start & stop RG
+         bne   sopt1
          std   <modend
          lbsr  clrline
          lda   #$87
@@ -2005,14 +2043,18 @@ gotmod   equ   *
 prtmod   equ   *
          lbsr  mergline
          lbsr  writline
-         lbsr  getbyte2
+sopt1    lbsr  getbyte2
+         tst   <s.opt        for manual start & stop RG
+         bne   sopt2
          std   <nameadr
          leay  hldtylg,u
          lbsr  clrhld
          leay  line290,pcr
          ldb   #ln290sz
          lbsr  mergline
-         lbsr  getbyte
+sopt2    lbsr  getbyte
+         tst   <s.opt        for manual start & stop RG
+         lbne   sopt3
          stb   <tylghold
          andb  #TypeMask
          tstb
@@ -2087,7 +2129,9 @@ chkattr  equ   *
          leay  line300,pcr
          ldb   #ln300sz
          lbsr  mergline
-         lbsr  getbyte
+sopt3    lbsr  getbyte
+         tst   <s.opt        for manual start & stop RG
+         bne   sopt4
          stb   <atrvhold
          andb  #AttrMask
          cmpb  #ReEnt
@@ -2121,17 +2165,22 @@ chkrevs  leay  line320,pcr
          lbsr  merghex
          lda   #$0d
          lbsr  movechar
-         lbsr  getbyte
+sopt4    lbsr  getbyte
          tst   <descript
          lbne  descrhdr
          lbsr  getbyte2
+         tst   <s.opt        for manual start & stop RG
+         bne   sopt5
          std   <startadr
-         lbsr  getbyte2
+sopt5    lbsr  getbyte2
          std   <size
+         tst   <s.opt        for manual start & stop RG
+         lbne  getstart
          ldx   <utabend
          std   ,x
          lbsr  clrline
-         tst   <pass
+* Next line was in code but does nothing RG
+*         tst   <pass
 *        lbra  findname
   
          ldx   <address
@@ -2210,16 +2259,20 @@ getstart lbsr  getbyte
          ldx   <address 
          cmpx  <startadr
          beq   gotstart
+         tst   <s.opt        for manual start & stop RG
+         bne   getstart
          lbsr  fcbline
          bra   getstart
 gotstart equ   *
+         tst   <s.opt        for manual start & stop RG
+         bne   sopt6
          lbsr  clrline
          lbsr  adrmove
          leay  line130,pcr
          ldb   #ln130sz
          lbsr  mergline
          lbsr  writline
-         lda   <byte
+sopt6    lda   <byte
          lbsr  moveobj
          bra   testop
 readbyte lbsr  getbyte
@@ -3725,4 +3778,5 @@ exit     os9   F$Exit
          emod
 eom      equ   *
          end
+
 
