@@ -13,12 +13,12 @@ ROOTFILES = startup
 MD68	= $(6809L2)/modules
 MD63	= $(6309L2)/modules
 
-KERNEL68	= $(MD68)/rel_40 $(MD68)/boot_1773_6ms $(MD68)/kernel
-KERNEL63	= $(MD63)/rel_40 $(MD63)/boot_1773_6ms $(MD63)/kernel
+KERNEL68	= $(MD68)/rel_40 $(MD68)/boot_1773_6ms $(MD68)/krn
+KERNEL63	= $(MD63)/rel_40 $(MD63)/boot_1773_6ms $(MD63)/krn
 
-OS9BOOT68	= $(MD68)/kernelp2 $(MD68)/ioman $(MD68)/init \
+OS9BOOT68	= $(MD68)/krnp2 $(MD68)/ioman $(MD68)/init \
 		$(MD68)/rbf.mn \
-		$(MD68)/cc3disk.dr $(MD68)/ddd0_40d.dd \
+		$(MD68)/rb1773.dr $(MD68)/ddd0_40d.dd \
 		$(MD68)/d0_40d.dd $(MD68)/d1_40d.dd \
 		$(MD68)/scf.mn $(MD68)/cc3io.dr \
 		$(MD68)/keydrv_cc3.sb $(MD68)/joydrv_joy.sb $(MD68)/snddrv_cc3.sb \
@@ -28,9 +28,9 @@ OS9BOOT68	= $(MD68)/kernelp2 $(MD68)/ioman $(MD68)/init \
 		$(MD68)/clock_60hz $(MD68)/clock2_soft \
 		$(MD68)/sysgo_dd
 
-OS9BOOT63	= $(MD63)/kernelp2 $(MD63)/ioman $(MD63)/init \
+OS9BOOT63	= $(MD63)/krpn2 $(MD63)/ioman $(MD63)/init \
 		$(MD63)/rbf.mn \
-		$(MD63)/cc3disk.dr $(MD63)/ddd0_40d.dd \
+		$(MD63)/rb1773.dr $(MD63)/ddd0_40d.dd \
 		$(MD63)/d0_40d.dd $(MD63)/d1_40d.dd \
 		$(MD63)/scf.mn $(MD63)/cc3io.dr \
 		$(MD63)/keydrv_cc3.sb $(MD63)/joydrv_joy.sb $(MD63)/snddrv_cc3.sb \
