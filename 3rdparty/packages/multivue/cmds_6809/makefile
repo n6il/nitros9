@@ -5,7 +5,7 @@ DEPENDS		= ./Makefile
 CMDS		= gshell cocopr control demo fstat gcal gcalc gclock \
 		gport gprint
 
-ALLOBJS		= $(CMDS) $(SUBS)
+ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
 
