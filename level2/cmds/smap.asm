@@ -143,7 +143,7 @@ L013F    os9   F$Exit
 
 FreePgs  fcc   " Number of Free Pages: "
 FreePgsL equ   *-FreePgs
-FreeRAM  fcc   "   Ram Free in KBytes: "
+FreeRAM  fcc   "   RAM Free in KBytes: "
 FreeRAML equ   *-FreeRAM
 
 L0170    pshs  x,a
