@@ -22,6 +22,8 @@ SUPPORTFILES	= SAVE1 SAVE2 crobot2.c ctitle.c korvar \
 		level15 level16 level17 level18 level19 level20 \
 		robotbuff sinwave ultek
 
+SCRIPTFILES	= install2dd
+
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
@@ -29,6 +31,7 @@ all:	$(ALLOBJS)
 
 clean:	dskclean
 	$(RM) $(ALLOBJS)
+	$(OS92UNIX) $(SCRIPTFILES)
 
 dsk:	all
 	$(RM) $(DISK)
@@ -43,6 +46,8 @@ dsk:	all
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(OS9RENAME) $(DISK),CMDS/koronis AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
+	$(UNIX2OS9) $(SCRIPTFILES)
+	$(CP) $(SCRIPTFILES) $(DISK),.
 
 dskclean:
 	$(RM) $(DISK)
