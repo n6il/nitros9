@@ -489,14 +489,14 @@ L0322    fcc   "CC"
          fcb   $00,$88
 
 start    leas  >size,u
-         leas  -$0C,s
+         leas  -R$Size,s
          sts   <u0002
          sts   <u0004
          leay  >L0765,pcr
-         sty   $0A,s
-         lda   #$80
-         sta   ,s
-         tfr   s,x
+         sty   R$PC,s
+         lda   #Entire
+         sta   R$CC,s
+         tfr   s,x		X = size-R$Size
          leax  >-$0145,x
          stx   <u0006
          leax  <-$50,x
