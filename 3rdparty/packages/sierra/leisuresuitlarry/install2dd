@@ -1,0 +1,33 @@
+-x
+t
+**************************************************
+* Leisure Suit Larry Install Script for the CoCo 3
+* Files are copied to the /DD device
+*
+* Creating directories
+makdir /DD/GAMES
+makdir /DD/GAMES/LSL
+makdir /DD/GAMES/LSL/CMDS
+* Deleting old objects from /DD/GAMES/LSL/CMDS, if any
+del /DD/GAMES/LSL/CMDS/sierra
+del /DD/GAMES/LSL/CMDS/mnln
+del /DD/GAMES/LSL/CMDS/scrn
+del /DD/GAMES/LSL/CMDS/shdw
+* Copying commands to /DD/GAMES/LSL/CMDS
+copy CMDS/sierra /DD/GAMES/LSL/CMDS/sierra
+copy CMDS/mnln /DD/GAMES/LSL/CMDS/mnln
+copy CMDS/scrn /DD/GAMES/LSL/CMDS/scrn
+copy CMDS/shdw /DD/GAMES/LSL/CMDS/shdw
+* Copying support files to /DD/GAMES/LSL
+copy vol.0 /DD/GAMES/LSL/vol.0
+copy vol.1 /DD/GAMES/LSL/vol.1
+copy vol.2 /DD/GAMES/LSL/vol.2
+copy vol.3 /DD/GAMES/LSL/vol.3
+copy vol.4 /DD/GAMES/LSL/vol.4
+copy tOC /DD/GAMES/LSL/tOC
+copy object /DD/GAMES/LSL/object
+copy logDir /DD/GAMES/LSL/logDir
+copy picDir /DD/GAMES/LSL/picDir
+copy sndDir /DD/GAMES/LSL/sndDir
+copy viewDir /DD/GAMES/LSL/viewDir
+* All Done!
