@@ -22,61 +22,66 @@ rev      set   $01
 edition  set   3
 
          mod   eom,name,tylg,atrv,start,size
+
+         org   0
 u0000    rmb   2
-u0002    rmb   330
+readbuf  rmb   330
 size     equ   .
 
 name     fcs   /Iniz/
          fcb   edition
 
-start    lda   ,x
-         cmpa  #C$CR
-         beq   L001E
-         bsr   L003F
-         bra   L002E
-L001C    bsr   L003F
-L001E    bsr   L0032
-         bcs   L002A
+start    lda   ,x		get command line char
+         cmpa  #C$CR		CR?
+         beq   ReadnInz		branch if so
+         bsr   FindDevc		skip over spaces
+         bra   ExitOk		exit ok
+L001C    bsr   FindDevc		skip over spaces
+ReadnInz bsr   ReadLine
+         bcs   CheckEOF
          lda   ,x
          cmpa  #C$CR
          bne   L001C
          ldb   #E$EOF
-L002A    cmpb  #E$EOF
-         bne   L002E
-L002E    clrb  
+CheckEOF cmpb  #E$EOF		end of file?
+         bne   ExitOk		branch if not
+ExitOk   clrb  
          os9   F$Exit   
-L0032    clra  
-         leax  u0002,u
+
+ReadLine clra  
+         leax  readbuf,u
          ldy   #80
          os9   I$ReadLn 
          bcc   L003E
 L003E    rts   
-L003F    lda   #C$SPAC
-L0041    cmpa  ,x+
-         beq   L0041
-         leax  -$01,x
-         stx   <u0000
-         lda   #PDELIM
-         cmpa  ,x
-         bne   L0051
-         leax  1,x
+
+FindDevc lda   #C$SPAC		load A with space
+SkipLoop cmpa  ,x+		space at X?
+         beq   SkipLoop		keep going if so
+         leax  -$01,x		else back up X
+         stx   <u0000		and save
+         lda   #PDELIM		get path delim
+         cmpa  ,x		is this char at X?
+         bne   L0051		branch if not
+         leax  1,x		else skip over
 L0051    clra  
-         os9   I$Attach 
-         bcs   L0064
-         lda   ,x+
-         cmpa  #C$COMA
-         beq   L003F
-         lda   ,-x
-         cmpa  #C$CR
-         bne   L003F
+         os9   I$Attach 	attach to the device at X
+         bcs   L0064		branch if error
+         lda   ,x+		get char at X
+         cmpa  #C$COMA		comma?
+         beq   FindDevc		branch if so
+         lda   ,-x		get byte at X-1
+         cmpa  #C$CR		CR?
+         bne   FindDevc		branch if not
          rts   
-L0064    pshs  b
-         lda   #$02
+
+L0064    pshs  b		save error code
+         lda   #$02		stderr
          ldx   <u0000
          ldy   #80
          os9   I$WritLn 
-         puls  b
-         os9   F$PErr   
+         puls  b		pull error code from stack
+         os9   F$PErr   	print error
          rts   
 
          emod
