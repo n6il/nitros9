@@ -1,6 +1,8 @@
 include ../rules.mak
 
-RELEASE		= nos96809l1v030205
+CPU		= 6809
+DISTRO		= $(CPU)L2
+RELEASE		= nos9$(CPU)l1v030205
 BOOTFILE_CO32	= bootfiles/bootfile_co51
 BOOTFILE_CO51	= bootfiles/bootfile_co51
 BOOTFILE_CO80	= bootfiles/bootfile_co51
@@ -27,9 +29,12 @@ DEFS		= $(shell $(CD) defs; make showobjs)
 ROOTFILES	= startup
 
 PACKAGENAME	= $(RELEASE).zip
-DSK360K_1	= $(RELEASE)_ds40_1.dsk
-DSK360K_2	= $(RELEASE)_ds40_2.dsk
-DSK720K		= $(RELEASE)_ds80.dsk
+DSK360K_1       = $(RELEASE)_40d_1.dsk
+LDSK360K_1      = latest_40d_1.dsk
+DSK360K_2       = $(RELEASE)_40d_2.dsk
+LDSK360K_2      = latest_40d_2.dsk
+DSK720K         = $(RELEASE)_80d.dsk
+LDSK720K        = latest_80d.dsk
 
 
 # Make all components
@@ -46,7 +51,10 @@ clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(DSK360K_2) $(DSK720K)
+	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(LDSK360K_1) $(DSK360K_1_50HZ) \
+	$(LDSK360K_1_50HZ) $(DSK360K_2) $(LDSK360K_2)  $(DSK720K) \
+	$(LDSK720K) $(DSK720K_50HZ) $(LDSK720K_50HZ)
+
 
 dsk: all $(PACKAGENAME)
 
@@ -75,6 +83,8 @@ $(DSK360K_1):
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(ROOTFILES) $@,.
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(RM) $(LDSK360K_1)
+	$(SOFTLINK) $@ $(LDSK360K_1)
 
 $(DSK360K_2):
 	$(RM) $@
@@ -111,6 +121,8 @@ $(DSK360K_2):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
+	$(RM) $(LDSK360K_2)
+	$(SOFTLINK) $@ $(LDSK360K_2)
 
 $(DSK720K):
 	$(RM) $@
@@ -160,5 +172,7 @@ $(DSK720K):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
+	$(RM) $(LDSK720K)
+	$(SOFTLINK) $@ $(LDSK720K)
 
 

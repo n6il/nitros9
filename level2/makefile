@@ -29,10 +29,15 @@ SYSGO		= sysgo_dd
 
 PACKAGENAME	= $(RELEASE).zip
 DSK360K_1	= $(RELEASE)_40d_1.dsk
+LDSK360K_1	= latest_40d_1.dsk
 DSK360K_1_50HZ	= $(RELEASE)_40d_1_50hz.dsk
+LDSK360K_1_50HZ	= latest_40d_1_50hz.dsk
 DSK360K_2	= $(RELEASE)_40d_2.dsk
+LDSK360K_2	= latest_40d_2.dsk
 DSK720K		= $(RELEASE)_80d.dsk
+LDSK720K	= latest_80d.dsk
 DSK720K_50HZ	= $(RELEASE)_80d_50hz.dsk
+LDSK720K_50HZ	= latest_80d_50hz.dsk
 TESTDSK		= test.dsk
 
 
@@ -50,7 +55,9 @@ clean: dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(DSK360K_1_50HZ) $(DSK360K_2) $(DSK720K) $(DSK720K_50HZ)
+	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(LDSK360K_1) $(DSK360K_1_50HZ) \
+	 $(LDSK360K_1_50HZ) $(DSK360K_2) $(LDSK360K_2)  $(DSK720K) \
+	$(LDSK720K) $(DSK720K_50HZ) $(LDSK720K_50HZ)
 
 dsk: all $(PACKAGENAME)
 
@@ -82,6 +89,8 @@ $(DSK360K_1):
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(ROOTFILES) $@,.
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(RM) $(LDSK360K_1)
+	$(SOFTLINK) $@ $(LDSK360K_1)
 
 $(DSK360K_1_50HZ):
 	-$(RM) $@
@@ -102,6 +111,8 @@ $(DSK360K_1_50HZ):
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(ROOTFILES) $@,.
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(RM) $(LDSK360K_1_50HZ)
+	$(SOFTLINK) $@ $(LDSK360K_1_50HZ)
 
 $(DSK360K_2):
 	-$(RM) $@
@@ -137,6 +148,8 @@ $(DSK360K_2):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/$(DISTRO)/SCRIPTS
+	$(RM) $(LDSK360K_2)
+	$(SOFTLINK) $@ $(LDSK360K_2)
 
 $(DSK720K):
 	-$(RM) $@
@@ -188,6 +201,8 @@ $(DSK720K):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/$(DISTRO)/SCRIPTS
+	$(RM) $(LDSK720K)
+	$(SOFTLINK) $@ $(LDSK720K)
 
 $(DSK720K_50HZ):
 	-$(RM) $@
@@ -239,5 +254,6 @@ $(DSK720K_50HZ):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/$(DISTRO)/SCRIPTS
-
+	$(RM) $(LDSK720K_50HZ)
+	$(SOFTLINK) $@ $(LDSK720K_50HZ)
 
