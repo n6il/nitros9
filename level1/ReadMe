@@ -1,174 +1,65 @@
-**** OS-9 Level One VR 02.01.00 'Phoenix' Release Notes ****
+*********************
+OS-9 Level One ReadMe
+*********************
 
-This release of OS-9 Level One for the Tandy Color Computer and
-Dragon computers represents the first community-based release
-since the discontinuation of both the CoCo and Dragon in the 1980s.
-Its codename is an obvious parallel: Phoenix.
+Welcome to OS-9 Level One for the TRS-80/Tandy Color Computer.  This is a
+community-based release of OS-9.
 
-There were several reasons for releasing a new version of OS-9
-Level One:
+DISTRIBUTION
+============
+There is one double-sided 40 track DSK image ending in '_ds40.dsk'.
 
-	o It was long overdue (16 years)
+USING THE DISK IMAGES
+=====================
+If you wish to transfer the disk images to a 5.25" floppy disk for use
+with a real CoCo, follow the steps below:
 
-	o Year 2000 fixes were needed
+WINDOWS/DOS:
 
-	o Bringing both CoCo and Dragon OS-9 to the same code base
-	  was desirable
+1. Download and install the latest version of DSKINI/RETRIEVE as modified
+   by John Collyer at http://www.angelfire.com/oh5/johncollyer/coco/m6309.htm
 
-	o This release served to test our methods for assembly and
-	  packaging, which will come in handy as we continue to
-	  work on future possible releases of this and other versions
-	  of OS-9
+2. Insert a blank 5.25" DS floppy in to your drive (we assume B:)
 
-One goal of this release was to consolidate commands and modules from
-both the CoCo and Dragon versions of OS-9 into a single distribution
-that would support both systems.  The last CoCo version of OS-9
-Level One was version 02.00.00, released in mid-1986.  The last Dragon
-version of OS-9 Level One was version 01.02.00, released ????.
-The CoCo version of OS-9, being newer, was the basis for this upgrade,
-and the Dragon distribution disk reflects the newer OS-9 modules from
-the CoCo version.
+3. Type the following command, replacing the name of the image:
 
-This goal was accomplished in tandem with another goal: bringing some
-commonality to commands between OS-9 Level One and OS-9 Level Two.  The
-CoCo 3 version of OS-9 Level Two was released in February 1987, about
-one year after CoCo OS-9 Level One Version 2.  While some commands
-are Level Two specific, most commands can interoperate in both environments,
-and we felt it would be of benefit to "upgrade" Level One to some of these
-commands.  We even went as far as to back-port certain commands like
-os9gen and cobbler from Level Two, because they offered increased
-functionality.  Level Two-specific code was conditionalized out and
-Level One code was introduced.  The obvious benefit for us is that
-we can now build a Level One and Level Two command from the same
-source file.
+             DSKINI /T40 /D B: <diskimagefile>
+
+   Where <diskimagefile> is the image file you want to transfer to the
+   floppy disk.  The image file transfer should start.  When it is done,
+   take out the disk and try booting your CoCo with it.
+
+Repeat steps 2-3 for each additional disk.
 
 
-Color Computer Modules
-======================
+LINUX:
 
-The following list gives information on changes, if any, on each
-module found in the CoCo distribution of OS-9 Level One.
+1. Download and install the latest version of fdutils from
+   http://fdutils.linux.lu/
 
-Command		Edition		Comments
--------		-------		-----------------------------------
-asm		6		Y2K issues resolved, 6309 compatible
-attr		11		From OS-9 Level Two V2.00.01
-backup		8		Unchanged from last Tandy release
-binex		68		Put proper edition in place in code
-build		6		Unchanged from last Tandy release
-cmp		50		Unchanged from last Tandy release
-cobbler		7		From OS-9 Level Two V2.00.01
-                                modified for OS-9 Level One,
-                                supports double-sided drives
-config		5		Modified references of /D0 to /DD
-copy		7		From OS-9 Level Two V2.00.01
-date		6		Y2K issues resolved
-dcheck		4		Unchanged from last Tandy release
-debug		6		Unchanged from last Tandy release
-deiniz		3		From OS-9 Level Two V2.00.01
-del		5		Unchanged from last Tandy release
-deldir		3		Unchanged from last Tandy release
-dir		7		Y2K issues resolved
-display		2		Unchanged from last Tandy release
-dsave		2		Unchanged from last Tandy release
-dump		5		Unchanged from last Tandy release
-echo		5		Unchanged from last Tandy release
-edit		3		Unchanged from last Tandy release
-exbin		68		Put proper edition in place in code
-format		22		From OS-9 Level Two V2.00.01
-free		17		Y2K issues resolved
-grfo		1		Unchanged from last Tandy release
-help		5		From OS-9 Level Two V2.00.01
-ident		7		Unchanged from last Tandy release
-iniz		3		From OS-9 Level Two V2.00.01
-link		5		Unchanged from last Tandy release
-load		4		Unchanged from last Tandy release
-login		18		From OS-9 Level Two V2.00.01, with
-                                minor code changes for Level One
-                                and an rts to rti code fix
-makdir		4		Unchanged from last Tandy release
-mdir		5		Unchanged from last Tandy release
-merge		4		Unchanged from last Tandy release
-mfree		5		Unchanged from last Tandy release
-os9gen		9		From OS-9 Level Two V2.00.01
-                                modified for OS-9 Level One,
-                                supports double-sided drives
-park		2		Changed name from PARK to Park
-printerr	7		Changed /D0 to /DD
-procs		9		Unchanged from last Tandy release
-pwd		1		Unchanged from last Tandy release
-pxd		1		Unchanged from last Tandy release
-rename		6		Unchanged from last Tandy release
-save		3		Unchanged from last Tandy release
-setime		12		Y2K issues resolved
-shell		21		CHD no longer uses WRITE. mode
-sleep		2		Unchanged from last Tandy release
-tee		2		Unchanged from last Tandy release
-tmode		12		From OS-9 Level Two V2.00.01
-tsmon		8		From OS-9 Level Two V2.00.01
-tuneport	3		Unchanged from last Tandy release
-unlink		2		Unchanged from last Tandy release
-verify		5		Unchanged from last Tandy release
-xmode		5		From OS-9 Level Two V2.00.01
+2. Once installed, edit the /usr/local/etc/mediaprm file and add the
+   following lines at the end of the file:
 
-Module		Edition		Comments
--------		-------		-----------------------------------
-aciapak.dr	10		Unchanged from last Tandy release
-ccdisk.dr	5		Supports double-sided drives, 6ms
-                                step rate
-cchdisk.dr	4		Unchanged from last Tandy release
-ccio.dr		12		Unchanged from last Tandy release
-clock.50hz	5		Y2K issues resolved
-clock.60hz	5		Y2K issues resolved
-co32.io		1		Unchanged from last Tandy release
-co80.io		2		Unchanged from last Tandy release
-ddd0_35s.dd			New addition
-d0_35s.dd			New addition, replaces Tandy d0.dd
-d1_35s.dd			New addition, replaces Tandy d1.dd
-d2_35s.dd			New addition, replaces Tandy d2.dd
-d3_35s.dd			New addition, replaces Tandy d3.dd
-ddd0_40d.dd			New addition
-d0_40d.dd			New addition
-d1_40d.dd			New addition
-d2_40d.dd			New addition
-ddd0_80d.dd			New addition
-d0_80d.dd			New addition
-d1_80d.dd			New addition
-d2_80d.dd			New addition
-grfo.io		1		Unchanged from last Tandy release
-h0_15.dd			Unchanged from last Tandy release
-h0_35.dd			Unchanged from last Tandy release
-h1_15.dd			Unchanged from last Tandy release
-h1_35.dd			Unchanged from last Tandy release
-init                            Changed /D0 reference to /DD
-ioman		12		Fixed I/O queue bug, I$Attach bug
-m1.dd				Unchanged from last Tandy release
-m2.dd				Removed two extranous bytes after name
-modpak.dr	10		Unchanged from last Tandy release
-nil.dd				Unchanged from last Tandy release
-nildrv.dr	3		Unchanged from last Tandy release
-os9		15		Module validation now consists of a
-                                header parity check, and, if the
-                                system global D.CRC is non-zero,
-                                a CRC check.  D.CRC is set or
-                                cleared based upon a flag bit
-                                in Init.
-os9p2		10		Unchanged from last Tandy release
-p.dd				Unchanged from last Tandy release
-pipe.dd				Unchanged from last Tandy release
-pipeman.mn	4		Unchanged from last Tandy release
-piper.dr	2		Unchanged from last Tandy release
-printer.dr	10		Unchanged from last Tandy release
-rbf.mn		24		Unchanged from last Tandy release
-rs232.dr	7		Unchanged from last Tandy release
-scf.mn		10		Unchanged from last Tandy release
-ssc.dd				Unchanged from last Tandy release
-sscpak.dr	1		Unchanged from last Tandy release
-sysgo		15		Reflects new OS-9 version, attempts
-                                to fork AutoEx
-t1.dd				Unchanged from last Tandy release
-t2.dd				Removed two extranous bytes after name
-t3.dd				Unchanged from last Tandy release
-term32.dd			Unchanged from last Tandy release
-term80.dd			Unchanged from last Tandy release
+     "COCO360":
+      DS DD sect=18 cyl=40 ssize=256 tpi=48 fm=0 gap=8
+
+3. Insert your blank floppy into the drive on your Linux box.
+
+4. Type the following command:
+
+             setfdprm /dev/fd1 coco360    (360K 5.25" floppy disk)
+
+   This assumes your floppy drive is /dev/fd1.  You may need to make
+   adjustments to the above commands for your environment.
+
+5. After typing the setfdprm command, the floppy drive unit should spin
+   for a second then stop. Type this command:
+
+             dd if=<diskimagefile> of=/dev/fd1
+
+   Where <diskimagefile> is the image file you want to transfer to the
+   floppy disk.  The image file transfer should start.  When it is done,
+   take out the disk and try booting your CoCo with it.
+
+Repeat steps 3-5 for each additional disk.
 
