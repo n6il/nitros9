@@ -17,6 +17,7 @@
          ifp1
          use   defsfile
          use   scfdefs
+	 use   cciodefs
          endc
 
 tylg     set   Devic+Objct   
@@ -49,7 +50,7 @@ rev      set   $00
          fcb   C$QUIT         quit character
          fcb   C$BSP          backspace echo character
          fcb   C$BELL         line overflow character (bell)
-         fcb   $02            init value for dev ctl reg
+         fcb   ModCo80        init value for dev ctl reg
          fcb   $00            baud rate
          fdb   name           copy of descriptor name address
          fcb   $00            acia xon char

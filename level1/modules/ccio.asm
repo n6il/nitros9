@@ -15,6 +15,12 @@
 * 2004/11/28, P.Harvey-Smith.
 * Added code to remap Dragon keyboard inputs to CoCo format.
 *
+* 2004/12/02, P.Harvey-Smith.
+* Changed the way that the entry points for the co?? drivers are
+* called, so that we can have up to 7 different drivers.
+* Integrated changes needed for the co51 driver from Dragon Data
+* OS-9.
+*
 
          nam   CCIO
          ttl   OS-9 Level One V2 CoCo I/O driver
@@ -56,10 +62,17 @@ start    lbra  Init
 *    CC = carry set on error
 *    B  = error code
 *
-Init     stu   >D.KbdSta	store devmem ptr
+Init    pshs	y
+	ldy	#$aa55
+	ldy	#V.5136
+	ldy	#V.51End
+	puls	y
+	
+	stu   >D.KbdSta	store devmem ptr
          clra			clear A
          leax  <V.SCF,u		point to memory after V.SCF
-         ldb   #$5D		get counter
+;         ldb   #$5D		get counter
+	 ldb	#V.51End-V.SCF
 L002E    sta   ,x+		clear mem
          decb			decrement counter
          bne   L002E		continue if more
@@ -77,7 +90,7 @@ L002E    sta   ,x+		clear mem
          leax  >XY2Addr,pcr	get address of XY2Addr
          stx   <V.CnvVct,u
          ldd   <IT.PAR,y	get parity and baud
-         lbra  L05CE		process them
+         lbra  SetupTerm		process them
 
 * Term
 *
@@ -105,15 +118,19 @@ Term     pshs  cc
 *    CC = carry set on error
 *    B  = error code
 *
-Read     leax  <V.InBuf,u	point X to input buffer
-         ldb   <V.IBufT,u	get tail pointer
+Read    pshs	y
+	ldy	#$aa57
+	puls	y
+
+	leax   V.InBuf,u		point X to input buffer
+         ldb   V.IBufT,u	get tail pointer
          orcc  #IRQMask		mask IRQ
-         cmpb  <V.IBufH,u	same as head pointer
+         cmpb  V.IBufH,u	same as head pointer
          beq   Put2Bed		if so, buffer is empty, branch to sleep
          abx			X now points to curr char
          lda   ,x		get char
          bsr   L009D		check for tail wrap
-         stb   <V.IBufT,u	store updated tail
+         stb   V.IBufT,u	store updated tail
          andcc #^(IRQMask+Carry)	unmask IRQ
          rts
 
@@ -199,13 +216,13 @@ L010E    sta   <V.6F,u
          bne   L0105
          ldb   #60
 L011A    stb   <V.ClkCnt,u
-         ldb   <V.IBufH,u	get head pointer in B
-         leax  <V.InBuf,u	point X to input buffer
+         ldb   V.IBufH,u	get head pointer in B
+         leax  V.InBuf,u	point X to input buffer
          abx			X now holds address of head
          lbsr  L009D		check for tail wrap
-         cmpb  <V.IBufT,u	B at tail?
+         cmpb  V.IBufT,u	B at tail?
          beq   L012F		branch if so
-         stb   <V.IBufH,u
+         stb   V.IBufH,u
 L012F    sta   ,x		store our char at ,X
          beq   WakeIt		if nul, do wake-up
          cmpa  V.PCHR,u		pause character?
@@ -558,8 +575,12 @@ Write    ldb   <V.NGChr,u	are we in the process of getting parameters?
 * Here we call the CO-module to write the character
 GoCo     lda   <V.CurCo,u	get CO32/CO80 flag
 CoWrite  ldb   #$03		we want to write
+
 CallCO   leax  <V.GRFOE,u	get base pointer to CO-entries
-         ldx   a,x		get pointer to CO32/CO80
+	 pshs	a
+	 lbsr	GetModOffset	; Get offset
+	 ldx   a,x		get pointer to CO32/CO80
+	 puls	a
          beq   NoIOMod		branch if no module
          lda   <V.WrChr,u	get character to write
 L039D    jmp   b,x		call i/o subroutine
@@ -632,9 +653,10 @@ L0414    decb
          clrb
          puls  pc,x
 
-GRFO     fcs   /GRFO/
-CO32     fcs   /CO32/
-CO80     fcs   /CO80/
+GRFO    fcs  	/GRFO/
+CO32    fcs   	/CO32/
+CO80    fcs   	/CO80/
+CO51	fcs	/CO51/
 
 * GetStat
 *
@@ -650,8 +672,8 @@ CO80     fcs   /CO80/
 GetStat  sta   <V.WrChr,u	save off stat code
          cmpa  #SS.Ready	ready call?
          bne   L0439		branch if not
-         lda   <V.IBufT,u	get buff tail ptr
-         suba  <V.IBufH,u	num of chars ready in A
+         lda   V.IBufT,u	get buff tail ptr
+         suba  V.IBufH,u	num of chars ready in A
          lbeq  NotReady		branch if empty
 SSEOF    clrb	
          rts
@@ -882,32 +904,47 @@ BadMode  comb
          rts
 
 SSCOMST  ldd   R$Y,x		Get caller's Y
-L05CE    bita  #$02		CO80?
-         bne   GoCO80		branch if so
+SetupTerm    
+	 bita  #ModCo32		CO80?
+         beq   GoCO80		branch if so
          ldb   #$10		assume true lower case TRUE
          bita  #$01		true lowercase bit set?
          bne   GoCO32		branch if so
          clrb			true lower case FALSE
+	 
 GoCO32   stb   <V.CFlag,u	save flag for later
-         lda   #$02		CO32 is loaded bit
+         lda   #ModCo32		CO32 is loaded bit
          ldx   #$2010		32x16
          pshs  u,y,x,a
          leax  >CO32,pcr
-         bra   L05F4
-GoCO80   lda   #$04		'CO80 is loaded' bit
-         ldx   #$5018		80x24
-         pshs  u,y,x,a
-         leax  >CO80,pcr
-L05F4    bsr   L0601		load CO-module if not already loaded
-         puls  u,y,x,a
-         bcs   L0600
-         stx   <V.Col,u	save screen size
-         sta   <V.CurCo,u	current module in use? ($02=CO32, $04=C080)
-L0600    rts
-L0601    bita  <V.COLoad,u	module loaded?
+         bra   SetupCoModule
+	 
+GoCO80  bita	#ModCo80	; Co80 needed ?
+	beq	GoCO51
+	lda   	#ModCO80	'CO80 is loaded' bit
+        ldx   	#$5018		80x24
+        pshs  	u,y,x,a
+        leax  	>CO80,pcr
+	 
+SetupCoModule    
+	bsr   	LoadCoModule	load CO-module if not already loaded
+        puls  	u,y,x,a
+        bcs   	L0600
+        stx   	<V.Col,u	save screen size
+        sta   	<V.CurCo,u	current module in use? ($02=CO32, $04=C080)
+L0600   rts
+
+GOCo51	ldx   	#$3318		51x24
+        pshs  	u,y,x,a
+        leax  	>CO51,pcr
+	bra	SetupCoModule
+
+LoadCoModule    
+	bita  <V.COLoad,u	module loaded?
          beq   L0608		branch if not
 L0606    clrb			else clear carry
          rts			and return
+	 
 L0608    pshs  y,x,a
          lbsr  LinkSub
          bcc   L061F		branch if link was successful
@@ -919,11 +956,32 @@ L0608    pshs  y,x,a
          puls  y,x,a
          lbra  NoIOMod
 L061F    leax  <V.GRFOE,u	get base pointer to CO-entries
-         lda   ,s		get A off stack
-         sty   a,x		save off CO32/CO80 entry point
+	lda	,s
+	bsr	GetModOffset	; Get offset in table
+	sty	a,x		; Save address
+
          puls  y,x,a
          ldb   #$00		CO-module init offset
          lbra  CallCO		call it
+
+;
+; Get module offset from V.GRFOE into A reg.
+; I had to do this because the previous system would only work
+; properly for 2 entries !
+;
+
+GetModOffset
+	pshs	b
+	clrb			; Calculate address offset 
+AddrFind
+	bita	#$01		; Done all shifts ?
+	bne	AddrDone
+	addb	#$2		; increment addr offset ptr
+	lsra
+	bra	AddrFind	; Test again
+AddrDone
+	tfr	b,a		; output in a
+	puls	b,pc
 
 * Link to subroutine
 LinkSub  pshs  u

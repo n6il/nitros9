@@ -10,7 +10,13 @@ CCIODEFS  set   1
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-
+*
+* 2004/11/29, P.Harvey-Smith.
+* Added symbolic defines for bits in V.CoLoad.
+*
+* 2004/12/02, P.Harvey-Smith.
+* moved over all variables from co51.asm
+*
          nam    CCIODefs
          ttl    CoCo 1/2 I/O Definitions
 
@@ -95,10 +101,34 @@ V.CFlag  rmb   1  true lowercase flag $10=true, $00=false
 V.GRFOE  rmb   2  GRFO entry point
 V.CO32E  rmb   2  CO32 entry point
 V.CO80E  rmb   2  CO80 entry point
+V.CO51E	 rmb   2  CO51 entry point
+;Co51 vars
+V.51ScrnA		rmb	2	; Screen address.
+V.51XPos		rmb	1	; X co-ordinate
+V.51YPos		rmb	1	; Y co-ordinate
+V.51EscSeq		rmb	1	; In escape sequence
+V.51ReverseFlag		rmb	1	; Reverse video flag
+V.51UnderlineFlag	rmb	1	; Underline flag
+V.51CtrlDispatch	rmb	2	; Ctrl char dispatch address, currently processing
+
+; I'm not sure what these do (yet).
+
+V.5126    rmb   1
+V.5130    rmb   1
+V.5131    rmb   1
+V.5132    rmb   1
+V.5133    rmb   1
+V.5134    rmb   1
+V.5135    rmb   1
+V.5136    rmb   1
+; End of c051 vars
+; **** Note these have to come at the end of the defs, or the keyboard ****
+; **** code can clobber variables defined after these !                ****
 V.IBufH  rmb   1  input buffer head
 V.IBufT  rmb   1  input buffer tail
 V.InBuf  rmb   1  input buffer tail
-         rmb   250-.
+V.51End	rmb	1
+	rmb   250-.
 V.Last   equ   .
 
 
@@ -114,6 +144,14 @@ V.Last   equ   .
 *VD.FFFlg rmb   1  flood fill flag
 *VD.Palet rmb   16 (16) current palette values
 *VD.PlFlg rmb   1  initialized to $08 by L00DB, and then unused!
+
+;
+; Defs for V.COLoad flags.
+; 
+
+ModCo32	equ	%00000010	; Co32, normal VDG 32x16.
+ModCo80	equ	%00000100	; Co80, wordpak rs, 80x25
+ModCo51 equ	%00001000	; Co51, pmode 4 51x25 text
 
          ENDC
 

@@ -59,11 +59,11 @@ Init     ldx   #$FF78
          ldd   #$07D0
          lbsr  L0189
          ldb   <V.COLoad,u
-         orb   #$04
+         orb   #ModCo80
          bra   L004F
 * Term
 Term     ldb   <V.COLoad,u
-         andb  #$FB
+         andb  #~ModCo80
 L004F    stb   <V.COLoad,u
          clrb  
          rts   

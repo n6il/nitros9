@@ -33,7 +33,7 @@ RBF		= rbf.mn \
 		
 SCF		= scf.mn \
 		sc6551.dr vrn.dr printer.dr sio.dr sspak.dr dgnio.dr \
-		co32.io co80.io \
+		co32.io co80.io co51.io\
 		nil.dd p.dd pipe.dd ssp.dd kbvdio.dr akbvdio.dr \
 		drvr51.dr adrvr51.dr \
 		term_sio.dt term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dt \

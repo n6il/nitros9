@@ -1,8 +1,10 @@
 include ../rules.mak
 
+# TERMWIDTH can be either 32 or 51
+TERMWIDTH	= 51
 RELEASE		= nos96809l1v030204_dalpha
-BOOTFILE	= bootfiles/bootfile_dalpha
-BOOTFILE_DS80	= bootfiles/bootfile_dalpha
+BOOTFILE	= bootfiles/bootfile_dalpha_$(TERMWIDTH)
+BOOTFILE_DS80	= bootfiles/bootfile_dalpha_$(TERMWIDTH)
 KERNELFILE	= bootfiles/kernel_dalpha
 DIRS		= cmds modules defs sys bootfiles
 DDIRS		= modules bootfiles
