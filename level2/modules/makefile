@@ -20,7 +20,7 @@ BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		 boot_burke boot_idelba boot_rampak boot_wd1002
 BOOTTRACK	= rel $(BOOTERS) os9p1
 KERNEL		= os9p2 os9p3_perr os9p4_regdump
-SYSMODS		= ioman init cc3go
+SYSMODS		= ioman init cc3go_h0 cc3go_dd
 CLOCKS          = clock_elim clock_disto2 clock_disto4 clock_bnb \
 		clock_smart clock_harris clock_tc3 clock_soft
 
@@ -30,7 +30,7 @@ RBF		= rbf.mn \
 		d0_40d.dd d1_40d.dd d2_40d.dd d0_80d.dd \
 		d1_80d.dd d2_80d.dd ddd0_35s.dd ddd0_40d.dd \
 		ddd0_80d.dd r0_8k.dd r0_96k.dd r0_128k.dd r0_192k.dd \
-		ddr0_8k.dd ddr0_96k.dd ddr0_128k.dd ddr0_192k.dd \
+		ddr0_8k.dd ddr0_96k.dd ddr0_128k.dd ddr0_192k.dd md.dd \
 		h0_10.dd h1_10.dd h0_15.dd h1_15.dd h0_35.dd h1_35.dd
 
 SCF		= scf.mn \
@@ -71,6 +71,12 @@ boot_1773_30ms: boot_1773.asm
 cc3hdisk.dr: $(LEVEL1)/MODULES/cchdisk.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 
+cc3go_dd: cc3go.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1
+	
+cc3go_h0: cc3go.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS)
+	
 # Floppy descriptors
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
 		-aInterlv=3 -aSAS=8 -aDensity=1

@@ -1,4 +1,6 @@
 OS-9 Level Two V03.01.04:
+- There are now two versions of cc3go: cc3go_h0 which performs chd/chx
+  to /H0 on startup, and cc3go_dd which performs chd/chx to /DD on startup.
 - A compatibility issue with os9gen's -t option and OS-9 Level One     
   has been resolved.
 

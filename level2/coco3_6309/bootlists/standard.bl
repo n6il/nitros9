@@ -81,14 +81,14 @@
 * RAMDisk driver
 *../MODULES/RBF/rammer.dr
 * RAMDisk descriptors - select as needed
-*../MODULES/RBF/ddr0_8k.dr
-*../MODULES/RBF/ddr0_96k.dr
-*../MODULES/RBF/ddr0_128k.dr
-*../MODULES/RBF/ddr0_192k.dr
-*../MODULES/RBF/r0_8k.dr
-*../MODULES/RBF/r0_96k.dr
-*../MODULES/RBF/r0_128k.dr
-*../MODULES/RBF/r0_192k.dr
+*../MODULES/RBF/ddr0_8k.dd
+*../MODULES/RBF/ddr0_96k.dd
+*../MODULES/RBF/ddr0_128k.dd
+*../MODULES/RBF/ddr0_192k.dd
+*../MODULES/RBF/r0_8k.dd
+*../MODULES/RBF/r0_96k.dd
+*../MODULES/RBF/r0_128k.dd
+*../MODULES/RBF/r0_192k.dd
 ***************************************
 * SCF Section
 *
@@ -191,6 +191,10 @@
 ***************************************
 * System Kick-Start Module
 *
+* Choose which startup module you wish to use. (cc3go_dd is recommended
+* for most configurations.)
+*
 * Alternatively, this module can reside in the root directory of the
 * boot device, saving precious system RAM.
-../MODULES/SYSMODS/cc3go
+../MODULES/SYSMODS/cc3go_dd
+*../MODULES/SYSMODS/cc3go_h0
