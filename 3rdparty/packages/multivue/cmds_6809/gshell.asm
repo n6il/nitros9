@@ -1,8 +1,6 @@
          nam   GShell Graphics Shell
          ttl   Source derived by Kent D. Meyers.
 
-         IFNE   H6309
-
 * Signal handlers will have to handle new RBF call for directory updates
 * DIR has to be open (uses path #), but can be in READ+DIR mode
 *  Renames, etc. will have to close DIR 1st, do function, re-open.
@@ -358,7 +356,12 @@ CSTART   pshs  Y          Save ptr to end of parm area
          stx   >MEMEND    Save as end of data memory ptr
          leay  ,U         Point Y to start of data area
          bsr   MAIN       Call main GSHELL routine
+         IFNE  H6309
          clrd             No error & exit
+         ELSE
+         clra
+         clrb
+         ENDC
          std   ,--s
          lbra  EXIT
 
@@ -544,7 +547,13 @@ FINLINIX lbsr  STDICONS   Preload built in icons (regular & expanded for some)
          rts   
 
 * Shut cursor & scaling off
-CURSCLOF clrd  
+CURSCLOF
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          pshs  d
          ldb   5,S
          pshs  d
@@ -719,7 +728,13 @@ EQULSIGN ldd   DEVICNOW   If no drive selected, don't bother
 WAITRTN2 lbra  WAITLOOP
 
 * Same screen overlay shell
-LETTERS  clrd  
+LETTERS
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          pshs  d
          pshs  d          No parameter for calling program
          incb  
@@ -824,7 +839,12 @@ ICONDRIV ldd   DEVICNOW   Get current device
          pshs  U
          lbsr  UNSLICON   Bad dir, unselect drive
          leas  2,S
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   SELECTED   Current device=none
          ldd   2,S        Did user have a different drive selected before?
          beq   ICONEXT2   No, exit
@@ -928,7 +948,12 @@ DSLCTALL ldd   SELECTED   Get ptr to current selected icon
          lbsr  UNSLICON   Unselect icon
          lbsr  ENBLSOFF   Shut all FILES menu items off
          leas  2,S
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   SELECTED   Set selected file/device to none
 ICONEXIT leas  4,S
          puls  U,PC
@@ -1004,7 +1029,13 @@ EXECAIFN ldd   ID.PARAM,U Get ptr to parms string
 EXECAIFP pshs  d          Save ptr to parms string
          lbsr  STPREFIX   Prefix that onto Fork line string
          leas  2,S
-EXECAIF2 clrd  
+EXECAIF2
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          pshs  d,U
          ldd   ID.MNAME,U Get ptr to module name to fork
          pshs  d
@@ -1085,7 +1116,12 @@ PARENTD1 clrb             D=0
          std   ,S         Save it
          lbsr  UNSLICON   Unselect the current drive
          leas  2,S
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   STRTICON   Set ptr to start icon for screen to NONE
          std   SELECTED   Current selected icon to NONE
          std   DEVICNOW   Current selected device to NONE
@@ -1102,7 +1138,12 @@ KILPDS00 lbra  KILPDS16   Eat stack & exit
 * Entry: 0-1,s RTS address
 *        2-3,s ptr to GD.* (process table entry ptr) to kill
 KILPDESC pshs  U
+         IFNE  H6309
          clrd             No entry found yet
+         ELSE
+         clra
+         clrb
+         ENDC
          pshs  d          Save it
          ldu   PTBLSPTR   Get ptr to start of process descriptor table
          beq   KILPDS00   None, exit
@@ -1217,7 +1258,12 @@ SETPDESC pshs  U
          lbsr  PUTSTRNG
          leas  2,S
          std   GD.MNAME,U Save ptr to module name
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   GD.MTYPE,U Default stuff to zeros
          std   GD.INDVC,U ??? to 0
          std   GD.PRCID,U Process ID # to 0
@@ -1263,7 +1309,12 @@ DRAWSCRN pshs  U
          lbsr  GCSETOFF   Shut graphics cursor off
          lbsr  MOUSOFF    Shut mouse off
          lbsr  WIPICONS   Wipe icons off screen (should not touch dir bar)
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   SELECTED   0 out currently selected icon ptr
          ldd   MAXICONS   Get # icons/screen
          muld  SCREENOW   Multiply by screen set #
@@ -1273,11 +1324,20 @@ DRAWSCRN pshs  U
 
 DRAWSCR1 ldu   FL.LINK,U
 DRAWSCR2 ldd   2,S        Get screen set # we want to print
+         IFNE  H6309
          decd             Base 0
+         ELSE
+         subd  #$0001
+         ENDC
          std   2,S        Save it back
          bge   DRAWSCR1   If not 1st, skip ahead
          stu   STRTICON   Save ptr to 1st icon on current screen
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          bra   DRAWSCR4
 
 DRAWSCR3 pshs  U
@@ -1285,7 +1345,11 @@ DRAWSCR3 pshs  U
          leas  2,S
          ldu   FL.LINK,U
          ldd   2,S
+         IFNE  H6309
          incd  
+         ELSE
+         addd  #$0001
+         ENDC
 DRAWSCR4 std   2,S
          stu   -2,S
          beq   DRAWSCR5
@@ -1323,7 +1387,13 @@ SCROLBAR ldd   NSCREENS   Get # of screens of icons
          leas  3,s        Eat stack
          decb             Base 0 for scroll bar SETSTAT call
          bge   NotNeg     not negative, skip ahead
-Force0   clrd             Force to 0
+Force0
+         IFNE  H6309
+         clrd             Force to 0
+         ELSE
+         clra
+         clrb
+         ENDC
 NotNeg   cmpb  #20        Past end?
          bls   DRAWSCR6   No, good, so update scroll bars
          ldb   #20        Force to 20
@@ -1378,7 +1448,12 @@ CLRDSCRN pshs  U
          lbsr  CWAREA     Clear out interior window
          lbsr  CLRSCRN
          lbsr  FULLSCRN   Full interior window size (except border)
+         IFNE  H6309
          clrd             Redo scroll bars at 0,0
+         ELSE
+         clra
+         clrb
+         ENDC
          std   4,S
          std   2,S
          lbsr  ST.SBAR
@@ -1390,7 +1465,12 @@ NEWDIREC pshs  U
          ldb   #$ff       Flag that we have to redo icons
          stb   WIPED
          bsr   WIPICONS   Wipe icons off screen (leave current dir border)
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   FILESCTR   # files in current dir=0
          ldb   #PTR.SLP   Hourglass ptr
          pshs  d,X,Y
@@ -1469,7 +1549,11 @@ CLASSIF4 ldd   DIRPTR     Go onto next dir entry
          std   DIRPTR
 
 CLASTEST ldd   ,S         Get # of dir entries in this 2k block
+         IFNE  H6309
          decd             Subtract 1
+         ELSE
+         subd  #$0001
+         ENDC
          std   ,S
          bge   CLASSIFY   Still going, classify file type, otherwise, get next 2k block
 
@@ -1502,11 +1586,21 @@ CANTFLD2 fcc   "Can't open folder"
          fcb   NUL
 
 * Count # of screens to hold icons
-CNTSCRNS clrd  
+CNTSCRNS
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   SCREENOW   Set current "screen" of icons to 0 (1st)
          ldd   FILESCTR   Get # files current dir
          beq   CNTSCRN2   zero, save & exit
+         IFNE  H6309
          decd  
+         ELSE
+         subd  #$0001
+         ENDC
          divd  MAXICONS+1 Divide by # icons/"screen"
          clra             16 bit result
 CNTSCRN2 std   NSCREENS   Save # of icon "screens" & return
@@ -1771,8 +1865,15 @@ NormIcon leax  -9,X       -9 to include text
          bne   Minus9
          leax  -16,x
          ldd   FL.XSTRT,u Get original icon start again
+         IFNE  H6309
          lsld             Put column # in A
          lsld  
+         ELSE
+         lslb
+         rola
+         lslb
+         rola
+         ENDC
 AdjLoop  leax  2,x        2 pixels per column
          deca  
          bne   AdjLoop
@@ -2084,7 +2185,12 @@ ONEDOT   fcb   '.
 FILE.XXX pshs  U
          ldu   4,S        Get ptr to file table entry
          leas  -64,S      Make large buffer on stack
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   28,S
          ldd   FL.FNAME,U Get ptr to filename
          pshs  d
@@ -2185,9 +2291,18 @@ FILE.XXX pshs  U
          ldd   NXTICONO,Y
          ldx   22+6,S
          std   ,X
+         IFNE  H6309
          incd  
+         ELSE
+         addd  #$0001
+         ENDC
          std   NXTICONO,Y
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   ID.LINK,X
          ldd   #24
          std   ,S
@@ -2217,7 +2332,12 @@ FILEXXX1 ldd   14,S
          leas  2,S
 FILEXXX2 ldd   30,S
          bge   FILEXXX3
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          bra   FILEXXX6
 
 FILEXXX3 ldd   28,S
@@ -2278,7 +2398,12 @@ GETNUMB1 leas  2,S
 
 ISIT.AIF ldx   2,S
          ldd   ,X++
+         IFNE  H6309
          andd  #$5f5f
+         ELSE
+         anda  #$5f
+         andb  #$5f
+         ENDC
          cmpd  #"AI
          bne   ISITAIF4
          ldd   ,X
@@ -3265,7 +3390,12 @@ RSTXYPTR ldd   STRTXPOS
 FLSORT   lbsr  SUREBOX6
          std   -2,S
          beq   FLSORT1
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          pshs  d
          pshs  d          No parameter for program
          pshs  d          No overlay window
@@ -4104,7 +4234,13 @@ SETVIEW2 clr   ,X
 * Select off of the TANDY menu
 * Entry: 0-1,s = RTS parameter
 *        2-3,s = Menu item # selected
-TNDYSLCT clrd             Put 4 zero bytes on stack
+TNDYSLCT
+         IFNE  H6309
+         clrd             Put 4 zero bytes on stack
+         ELSE
+         clra
+         clrb
+         ENDC
          pshs  D
          pshs  D
          ldb   7,S        Get 1 byte version of menu item selected
@@ -4420,7 +4556,12 @@ WAITPRSX ldd   <WNDWPATH  Release signals for window
          pshs  d
          lbsr  ST.RELEA
          leas  2,S
+         IFNE  H6309
          clrd             Clear out signal received & return
+         ELSE
+         clra
+         clrb
+         ENDC
          std   <RECDSGNL
          rts   
 
@@ -4540,7 +4681,11 @@ SUREBOX9 std   SUREYPOS+1
          lbsr  SETSGNLS
          tst   RECDSGNL+1
          bne   SUREBOX0
+         IFNE  H6309
          tfr   0,x        Sleep for remainder of tick (ldx #0 for 6809)
+         ELSE
+         ldx   #$0000
+         ENDC
          os9   F$SLEEP
 SUREBOX0 leas  16,S
          ldd   RECDSGNL
@@ -4659,7 +4804,13 @@ OLAYBLW7 ldd   4,S
          bsr   OLAYIOPS
          lbra  ISC128K5
 
-OLAYBERR clrd  
+OLAYBERR
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          puls  U,PC
 
 OLAYIOPS pshs  U
@@ -4667,7 +4818,12 @@ OLAYIOPS pshs  U
          bsr   IOOPTSON
          ldd   WNDWPATH   Get GSHELL window path
          std   GD.WPATH,U Save as window path for forked program
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   GD.SCRNO,U Screen # 0
          incb  
          std   GD.DW.OW,U ??? to 1
@@ -4723,7 +4879,11 @@ OLAYGNBK pshs  U
          decb  
 OLAYGNB1 std   6,S        Save overlay window width
          ldd   20,S       ???
+         IFNE  H6309
          incd  
+         ELSE
+         addd  #$0001
+         ENDC
          std   20,S
          leax  ,S         Where we are going to store Y size
          pshs  X
@@ -4833,7 +4993,12 @@ INPTSGNL cmpb  #S$INTRPT  Interrupt signal?
          beq   INPTQUIT   Yes, abort input
          cmpb  #MOUSIGNL  Mouse signal?
          bne   INPTKYBD   No, skip ahead (must be keyboard)
+         IFNE  H6309
          clrd             Mouse signal, abort input & return
+         ELSE
+         clra
+         clrb
+         ENDC
          bra   INPTEXIT
 
 INPTKYBD cmpb  #KYBDSGNL  Keyboard signal?
@@ -4853,7 +5018,12 @@ INPTQUIT lbsr  ST.RELEA   Release any other pending signals
          ldd   WNDWPATH
          pshs  D,X
          lbsr  I.READ     Read 1 key from keyboard (hot key)
+         IFNE  H6309
          clrd             exit
+         ELSE
+         clra
+         clrb
+         ENDC
          leas  8,S
          rts   
 
@@ -5331,7 +5501,12 @@ COLS408X ldb   #1
 * >128k RAM, try to make new window???
 ISCR512K pshs  U
          ldu   4,S        Get ptr to current GD (forked process table) structure
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   ACTVSCRN   Current active screen to none
          std   DWSETSTY   New window type to none
          ldx   6,S
@@ -5357,7 +5532,13 @@ ISC512K2 cmpb  ID.XSIZE+1,X If min width<>full width window, go to window
          cmpa  #25        routine
          bne   ISC512K6
 * New window is full size goes here
-ISC512K3 clrd             Default window x,y start to 0,0
+ISC512K3
+         IFNE  H6309
+         clrd             Default window x,y start to 0,0
+         ELSE
+         clra
+         clrb
+         ENDC
          std   GD.XSTRT,U
          std   GD.YSTRT,U
          ldd   #319       Default to 320 X pixel size
@@ -5428,7 +5609,11 @@ IS512K10 pshs  X          Save border color (Background copy)
          bsr   DIVDX8
          std   4,S
          ldd   GD.XEND,U  Save X window size
+         IFNE  H6309
          incd  
+         ELSE
+         addd  #$0001
+         ENDC
          bsr   DIVDX8
          subd  4,S
          std   8,S
@@ -6212,14 +6397,24 @@ FIXDRTBL ldb   <DEVICNTR
          leas  2,S
 
 FIXDRTBX ldx   <DRTBLPTR
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   <SELECTED
          std   FL.LINK-FL.SIZE,X
          ldd   <DEVICNOW
          beq   FIXDRTB1
          cmpx  <DEVICNOW
          bhi   FIXDRTB1
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   <DEVICNOW
          std   <STRTICON
          lbsr  ENFREFL1
@@ -6293,7 +6488,13 @@ CHGDEVC3 ldd   #32
          ldb   3,S
          beq   CHGDEVC4
          stu   FL.LINK-FL.SIZE,U
-CHGDEVC4 clrd  
+CHGDEVC4
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   FL.LINK,U
          leau  FL.SIZE,U
          ldb   3,S
@@ -6374,7 +6575,13 @@ FULLSCRN ldb   #23        Save CWAREA height
          rts   
 
 * Draw border stuff for current dir, re-title dir bar
-WRITDBAR clrd  
+WRITDBAR
+         IFNE  H6309
+         clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          pshs  d
          ldx   #39        39,0 for 1st coord (relative to window inside border)
          ldd   WNDWPATH
@@ -6399,7 +6606,12 @@ WRITDBAR clrd
          ldb   #GRP.FNT
          std   2,S
          lbsr  FONT       Set font to special GSHELL font set
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   4,S
          ldb   #6
          std   2,S
@@ -6420,7 +6632,12 @@ WRITDBAR clrd
          ldb   #GRP.FNT
          std   2,S
          lbsr  FONT       Text cursor to 10,0
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   4,S
          ldb   #10
          std   2,S
@@ -6494,16 +6711,29 @@ ANRTS    rts
 MALLOC   pshs  D,U        Preserve regs
          ldd   6,S        Get # bytes to be allocated
          addd  #3         nbytes + sizeof(HEADER) - 1
+         IFNE  H6309
          lsrd             div by sizeof(HEADER) (4 bytes)
          lsrd  
          incd             result+1
+         ELSE
+         lsra
+         rorb
+         lsra
+         rorb
+         addd  #$0001
+         ENDC
          std   ,S         nunits = result (units allocated seems to be 4 byte chunks)
          ldx   ALLOCP,Y   q = allocp  (Get current value)
          bne   MALLOC1    if not 0    (If not zero, it has been initialized)
          ldx   #BASE      q = &base   (Initialize it to BASE)
          stx   ALLOCP,Y   allocp = q = &base
          stx   BASE,Y     base.ptr = .... = &base  (BASE points to itself)
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          std   BASE+2,Y   base.size = 0   (it's size=0)
 MALLOC1  ldu   ,X         p = q->ptr   (Get ptr to current allocp (last mem entry?)
          bra   MALLOC3
@@ -6538,7 +6768,12 @@ MALLOC6  cmpu  ALLOCP,Y   if (p == allocp)
          bne   MALLOC2
          lbsr  MORECORE   nunits above return addr (Get more data mem)
          bne   MALLOC2    if (p = .... == 0) (Get mem failed?)
+         IFNE  H6309
          clrd             set up zero for return
+         ELSE
+         clra
+         clrb
+         ENDC
 MALLOC7  leas  2,S
          puls  U,PC
 
@@ -6660,7 +6895,12 @@ F.NMLINK pshs  X,Y
 F.NML1   bcc   F.NML2
          puls  X,Y
          stb   ERRNO+1,Y
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          rts   
 
 F.NML2   sty   [10,S]
@@ -6703,7 +6943,13 @@ KILLPBUF clrb
 * Exit:  [,x] child's exit code
 *        D=0 - if [,x] ptr was 0
 *   else D=   Child's proces #
-F.WAIT   clrd             Wait for signal
+F.WAIT
+         IFNE  H6309
+         clrd             Wait for signal
+         ELSE
+         clra
+         clrb
+         ENDC
          os9   F$WAIT
          bcs   OS9ERR2    Error, save error code & return (no child process) 
          ldx   2,S        Get ptr to ???
@@ -6737,7 +6983,12 @@ I.READ   pshs  Y          Save Y
 READ1    bcc   WRITE10
          cmpb  #E$EOF     EOF error?
          bne   WRITERR    No, report error
+         IFNE  H6309
          clrd             If EOF error, report 0 bytes read
+         ELSE
+         clra
+         clrb
+         ENDC
          puls  Y,PC
 
 * Read line: Exits with D=# bytes read
@@ -6874,7 +7125,13 @@ STRNCMP1 deca             Done max length?
          bne   STRNCMP4   No,  exit with <>
          tstb             End of string early?
          bne   STRNCMP1   No, continue comparing
-STRNCMP2 clrd             Exit with =
+STRNCMP2
+         IFNE  H6309
+         clrd             Exit with =
+         ELSE
+         clra
+         clrb
+         ENDC
          puls  X,U,PC
 
 * If done up to max length, compare last chars of each string
@@ -7020,7 +7277,12 @@ GT.SCSIZ lda   3,S        Get path to screen
          bcs   SCSIZERR
          stx   [8,S]      Save X size (by pointer)
          sty   [10,S]     Save Y size (by pointer)
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          bra   SCSIZEXT
 
 SCSIZERR ldy   2,S        Get data area pointer back
@@ -7249,7 +7511,12 @@ GFXERR   clra
 * Exit: D=signed 16 bit value
 ATOI     pshs  U          Preserve U
          ldu   4,S        Get ptr to text to convert
+         IFNE  H6309
          clrd             Clear carry, and default # to 0
+         ELSE
+         clra
+         clrb
+         ENDC
          pshs  CC,d,dp    CC=storage for current ASC char, dp=sign, D=current result
 ATOI1    ldb   ,U+        Get 1st ascii character
          stb   ,S         Save it
@@ -7407,7 +7674,12 @@ OS9ERR   clra
          rts   
 
 SYSRET   bcs   OS9ERR
+         IFNE  H6309
          clrd  
+         ELSE
+         clra
+         clrb
+         ENDC
          rts   
 
 EXIT           
@@ -7992,7 +8264,3 @@ DTXCOUNT
          emod  
 MODSIZE  equ   *
          end   
-
-         ELSE
-* 6809 version
-         ENDC              
