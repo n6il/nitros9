@@ -1,14 +1,14 @@
 ********************************************************************
-* Boot - Ken-Ton Boot module
+* Boot - SCSI Boot module
 *
 * $Id$
 *
 * This module allows booting from a hard drive that uses RGB-DOS
-* and is controlled by a Ken-Ton SCSI controller.
+* and is controlled by a TC^3 or Ken-Ton SCSI controller.
 *
 * It was later modified to handle hard drives with sector sizes
 * larger than 256 bytes, and works on both 256 byte and larger drives,
-* so it should totally replace the old Ken-Ton boot module.
+* so it should totally replace the old SCSI boot module.
 *
 * Instructions followed by +++ in the comment field were added for this fix.
 *
@@ -17,10 +17,11 @@
 * 1      Original Roger Krupski distribution version
 * 1b     Added code to allow booting from any sector    BGP 96/??/??
 *        size hard drive
+*        Merged Ken-Ton and TC^3 module source          BGP 02/05/01
 
 
          nam   Boot
-         ttl   Ken-Ton Boot module
+         ttl   SCSI Boot module
 
          ifp1
          use   defsfile
@@ -31,12 +32,22 @@ atrv     set   ReEnt+rev
 rev      set   2
 edition  set   1
 
+* The default SCSI ID is here
+scsiid   equ   %00000001
+
 * Hard Disk Interface registers for the Ken-ton and RGB HDI
+         ifne  Kenton
 dataport equ   $FF74
 status   equ   dataport+1
 select   equ   dataport+2
 reset    equ   dataport+3
-scsiid   equ   %00000001
+         endc
+
+         ifne  TC3
+dataport equ   $FF74
+status   equ   dataport+1
+select   equ   dataport+1
+         endc
 
 * Status register equates
 req      equ   $01
