@@ -1,3 +1,11 @@
+OS-9 Level Two V03.01.05:
+- os9p1 and os9p2 have now been back-ported from NitrOS-9 Level Two.
+- keydrv and snddrv have been renamed to keydrv_cc3.sb and snddrv_cc3.sb,
+  and all relevant bootlist files have been changed.
+- SCF now utilizes the V$DRIVEX field in the device table, resulting in
+  faster calls to the driver and a reduction in code size.
+- ioman has undergone small optimizations to work better with the new
+  back-ported kernel.
 OS-9 Level Two V03.01.04:
 - rel has been back-ported from NitrOS-9 Level Two, adding 40 and 80
   column boot screen options.

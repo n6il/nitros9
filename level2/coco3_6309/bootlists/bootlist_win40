@@ -10,9 +10,9 @@ MODULES/RBF/ddd0_40d.dd
 MODULES/SCF/scf.mn
 MODULES/SCF/cc3io.dr
 MODULES/SCF/windint.io
-MODULES/SCF/keydrv
-MODULES/SCF/joydrv_joy
-MODULES/SCF/snddrv
+MODULES/SCF/keydrv_cc3.sb
+MODULES/SCF/joydrv_joy.sb
+MODULES/SCF/snddrv_cc3.sb
 MODULES/SCF/term_win40.dt
 MODULES/SCF/w.dw
 MODULES/SCF/w1.dw
