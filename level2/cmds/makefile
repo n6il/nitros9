@@ -2,9 +2,9 @@ include ../../Makefile.rules
 
 DEPENDS		= ./Makefile
 
-CMDS		= attr binex build cobbler copy date \
-		deiniz del deldir dir display dump echo exbin \
-		free ident iniz link list load login makdir mdir \
+CMDS		= attr binex build cmp cobbler copy date \
+		deiniz del deldir dir display dump echo error exbin \
+		free help ident iniz link list load login makdir mdir \
 		merge mfree montype procs pwd pxd rename save \
 		setime shell_21 sleep tee tmode tsmon unlink \
 		verify wcreate xmode
@@ -15,10 +15,10 @@ SHELLMODS	= shell_21 build copy date deiniz del dir display echo iniz \
 		link list load mdir merge mfree procs tmode unlink
 UTILPAK1        = attr deldir ident rename setime xmode
 
-LEVEL1FILES	= binex.asm attr.asm build.asm cobbler.asm date.asm deiniz.asm del.asm deldir.asm \
-		dump.asm echo.asm exbin.asm free.asm gfx.asm ident.asm iniz.asm inkey.asm link.asm \
+LEVEL1FILES	= binex.asm attr.asm build.asm cmp.asm cobbler.asm date.asm deiniz.asm del.asm deldir.asm \
+		dir.asm dump.asm echo.asm error.asm exbin.asm free.asm gfx.asm help.asm ident.asm iniz.asm inkey.asm link.asm \
 		list.asm load.asm login.asm merge.asm os9gen.asm pwd.asm pxd.asm rename.asm \
-		save.asm setime.asm sleep.asm tee.asm tmode.asm tsmon.asm verify.asm
+		save.asm setime.asm sleep.asm tee.asm tmode.asm tuneport.asm tsmon.asm verify.asm
 
 LEVEL2FILES	= gfx2.asm mdir.asm mfree.asm montype.asm procs.asm \
 		shell_21.asm unlink.asm wcreate.asm
