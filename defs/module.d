@@ -168,5 +168,5 @@ DT.CDFM    ==       5          ; CD-ROM File Manager
 ;
 ; CRC Result Constant
 ;
-CRCCon1    ==       $80
-CRCCon23   ==       $0FE3
+CRCCon1    ==       0h80
+CRCCon23   ==       0h0FE3
