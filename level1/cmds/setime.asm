@@ -130,9 +130,9 @@ L00E3    clrb
          beq   L0100
          cmpa  #':
          beq   L0100
-         cmpa  #',
+         cmpa  #C$COMA
          beq   L0100
-         cmpa  #'.
+         cmpa  #C$PERD
          beq   L0100
          leax  -1,x
 L0100    rts   
