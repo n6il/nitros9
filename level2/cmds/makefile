@@ -3,9 +3,9 @@ include ../../Makefile.rules
 DEPENDS		= ./Makefile
 
 CMDS		= attr binex build cobbler copy date \
-		deiniz del deldir ddir dir dirm display dmem dump echo exbin \
-		free ident idir iniz link list load login makdir mdir \
-		merge mfree mmap montype pmap proc procs pwd pxd rename save \
+		deiniz del deldir dir display dump echo exbin \
+		free ident iniz link list load login makdir mdir \
+		merge mfree montype procs pwd pxd rename save \
 		setime shell_21 sleep swread swset tee tmode tsmon unlink \
 		verify wcreate xmode
 SUBS            = gfx inkey
@@ -13,8 +13,7 @@ ALLOBJS		= $(CMDS) $(SUBS)
 
 SHELLMODS	= shell_21 build copy date deiniz del dir display echo iniz \
 		link list load mdir merge mfree procs tmode unlink
-UTILPAK1        = attr deldir dirm dmem free ident mmap proc rename setime tmode
-UTILPAK2        = ddir idir pmap xmode
+UTILPAK1        = attr deldir free ident rename setime tmode xmode
 
 LEVEL1FILES	= binex.asm attr.asm build.asm date.asm deiniz.asm del.asm deldir.asm \
 		dump.asm echo.asm exbin.asm free.asm ident.asm iniz.asm inkey.asm link.asm \
