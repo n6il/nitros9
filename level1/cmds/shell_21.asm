@@ -735,6 +735,7 @@ L0527    ldx   <u0004
          ELSE
          pshs  u
          os9   F$Link
+         tfr   u,y
          puls  u
          ENDC
          bcc   L0535
@@ -743,10 +744,15 @@ L0527    ldx   <u0004
          ELSE
          pshs  u
          os9   F$Load
+         tfr   u,y
          puls  u
          ENDC
          bcs   L0561
-L0535    tst   <u0003
+L0535    
+         IFEQ  Level-1
+         ldy   M$Mem,y
+         ENDC
+         tst   <u0003
          bne   L0542
          tfr   y,d
          addd  <u000A

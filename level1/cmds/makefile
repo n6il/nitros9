@@ -10,7 +10,7 @@ CMDS		= asm attr backup binex build cmp cobbler config copy cputype \
 		display dmode dsave dump echo edit error exbin exmode format \
 		free grfo help ident iniz irqs link list load login makdir \
 		mdir merge mfree os9gen padrom park prompt printerr procs pwd pxd \
-		rename runb save setime shell_21 shellplus sleep \
+		rename runb save setime shell shell_21 sleep \
 		tee tmode touch tsmon tuneport unlink verify xmode
 SUBS		= gfx inkey syscall
 ALLOBJS		= $(CMDS) $(DRAGONCMDS) $(SUBS)
