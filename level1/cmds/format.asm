@@ -243,7 +243,7 @@ Geometry leax  >optbuf,u        status packet address
          bcs   Exit             exit if error
          ldb   PD.SID-PD.OPT,x  number of surfaces
          stb   <numsides        save it
-         stb   <u0014           save it
+*         stb   <u0014           save it
          ldb   PD.SToff-PD.OPT,x foreign disk format?
          beq   L0143            no,
          tfr   b,a              yes, get copy
@@ -312,7 +312,7 @@ L0169    ldd   PD.CYL-PD.OPT,x  number of cylinders
 chs@
          stx   <ncyls           save cylinders
          stb   <numsides        save sides
-         stb   <u0014           ????
+*         stb   <u0014           ????
          sty   <sectors         save sectors/track
          sty   <sectors0        save sectors/track 0
 nogo@
@@ -1640,10 +1640,6 @@ SPPRL    equ   *-SPPR
 PRSP     fcc   " bytes)"
          fcb   C$CR
 PRSPL    equ   *-PRSP
-*VAR      fcb   C$CR,C$LF
-*         fcc   "Variables:"
-*         fcb   C$CR,C$LF
-*VARL     equ   *-VAR
 Three5   fcc   !3 1/2"!
          fcb   C$CR
 FiveQ    fcc   !5 1/4"!
@@ -1668,8 +1664,6 @@ HDSummary
          lbsr  ShowNumberSurfaces
          lbsr  ShowTotalPhysCylinders
 o@       lbsr  ShowClusterSize
-*         lbsr  ShowSectorSize
-*         lbsr  ShowLSNOffset
          lbsr  ShowSAS
          rts
 
@@ -1680,7 +1674,6 @@ FloppySummary
          lbsr  ShowSectorsTrackZero
          lbsr  ShowTotalPhysCylinders
          lbsr  ShowSAS
-*         lbsr  ShowVariables
          lbsr  ShowRecordingFormat
          lbsr  ShowTrackDensity
          lbsr  ShowNumberLogCylinders
@@ -1757,12 +1750,6 @@ go@      lda   ,y+
          os9   I$WritLn
          rts         
 
-*ShowSectorSize
-*         leax  SSZ,pcr
-*         ldy   #SSZL
-*         os9   I$Write
-*         lbra  LineFD
-
 ShowSectorsTrack
          leax  SST,pcr
          ldy   #SSTL
@@ -1799,12 +1786,6 @@ ShowSAS
          clra
          ldb   <sas
          lbra  PrintNum
-
-*ShowVariables
-*         leax  VAR,pcr
-*         ldy   #VARL
-*         os9   I$Write
-*         rts
 
 ShowRecordingFormat
          leax  RF,pcr
