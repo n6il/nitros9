@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   4    From Tandy OS-9 Level One VR 02.00.00
-*   5    Makes multiple directories from a single       ADK
+*   4      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*   5      ????/??/??  Alan DeKok
+* Makes multiple directories from a single pathlist.
 
          nam   Makdir
          ttl   Create directory file
@@ -19,7 +23,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   5
 
          mod   eom,name,tylg,atrv,start,size

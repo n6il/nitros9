@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   9    From Tandy OS-9 Level One VR 02.00.00
-*  10    Now uses -e instead of e                       BGP 03/01/14
+*   9      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*  10      2003/01/14  Boisy G. Pitre
+* Now uses -e instead of e.
 
          nam   Procs
          ttl   program module       
@@ -19,7 +23,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   10
 
          mod   eom,name,tylg,atrv,start,size

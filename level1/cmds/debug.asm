@@ -3,12 +3,18 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   6    From Tandy OS-9 Level One VR 02.00.00
-*   9    From Tandy OS-9 Level Two Development System,  BGP 03/01/03
-*        back ported to OS-9 Level One
-*  10    Start of optimizations, works under NitrOS-9   BGP 03/01/05
+*   6      ????/??/??
+* From Tandy OS-9 Level Two VR 02.00.01.
+*
+*   9      2003/01/03  Boisy G. Pitre
+* From Tandy OS-9 Level Two Development System, back-ported to
+* OS-9 Level One.
+*
+*  10      2003/01/05  Boisy G. Pitre
+* Start of optimizations, works under NitrOS-9.
 
          nam   debug
          ttl   6809/6309 debugger
@@ -26,7 +32,7 @@ UnknSiz  equ   80
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   10
 
 L0000    mod   eom,name,tylg,atrv,start,size

@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   6    From Tandy OS-9 Level One VR 02.00.00
-*   7    Changed /D0 to /DD                             BGP 02/07/13
+*   6      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*   7      2002/07/13  Boisy G. Pitre
+* Changed /D0 to /DD.
 
          nam   Printerr
          ttl   OS-9 Level One printerr routine
@@ -17,7 +21,7 @@
 
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   7
 
          mod   eom,name,tylg,atrv,start,size

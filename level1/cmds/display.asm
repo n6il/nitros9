@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 2      Original Tandy/Microware version
-* 3      Added decimal, text features                   ADK
+*   2      ????/??/??
+* Original Tandy/Microware version.
+*
+*   3      ????/??/??  Alan DeKok
+* Added decimal, text features.
 
          nam   Display
          ttl   Character display utility

@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   3    From Tandy OS-9 Level Two VR 02.00.01
-*   4    Tightened code, changed behavior slightly      BGP 03/01/13
+*   3      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*   4      2003/01/13  Boisy G. Pitre
+* Tightened code, changed behavior slightly.
 
          nam   Iniz
          ttl   Initialize a device
@@ -19,7 +23,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   4
 
 lsize    equ   80

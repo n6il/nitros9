@@ -24,12 +24,17 @@
 * this into the next century without any further concerns about
 * the "Y2K" problem.
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  10    Made Y2K compliant                             GH
-*  11    Made totally compliant for 1900-2155           BGP 99/05/07
-*  12    Typing a CR at the prompt no longer sets the   BGP 02/07/20
-*        time to a bogus value.
+*  10      ????/??/??  Gene Heskett
+* Made Y2K compliant.
+*
+*  11      1999/05/07  Boisy G. Pitre
+* Made totally compliant for 1900-2155.
+*
+*  12      2002/07/20  Boisy G. Pitre
+* Typing a CR at the prompt no longer sets the time to a bogus value.
 
          nam   Setime
          ttl   Set Date/Time
@@ -42,7 +47,7 @@
 
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   12
 
          mod   eom,name,tylg,atrv,start,size

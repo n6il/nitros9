@@ -3,11 +3,17 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   2    Original version
-*   3    Reworked                                       AD
-*   4    Renamed to devs ala OS-9/68K, reworked         BGP 03/01/07
+*   2      ????/??/??
+* Original version.
+*
+*   3      ????/??/??  Alan DeKok
+* Reworked.
+*
+*   3      2003/01/07  Boisy G. Pitre
+* Renamed to devs ala OS-9/68K, reworked.
 
          nam   devs
          ttl   Show device table entries
@@ -18,7 +24,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   3
 
          mod   eom,name,tylg,atrv,start,size

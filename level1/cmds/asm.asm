@@ -8,11 +8,17 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   6    Made compliant with 1900-2155                  BGP 99/05/11
-*   7    Added 6309 bitfield instructions               RVH 03/06/27
-*   8    Enabled underscore and lowercase in symbols    RVH 03/07/28
+*   6      1999/05/11  Boisy G. Pitre
+* Made compliant with 1900-2155.
+*
+*   7      2003/06/27  Rodney V. Hamilton
+* Added 6309 bitfield instructions.
+*
+*   8      2003/07/28  Rodney V. Hamilton
+* Enabled underscore and lowercase in symbols.
 
          nam   Asm
          ttl   6809/6309 Assembler

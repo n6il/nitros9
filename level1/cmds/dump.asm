@@ -10,19 +10,28 @@
 * In addition it now allows dumping of memory modules and command modules
 * in the execution directory.
 *
-* Ed.   Comments                                        Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   5   From Tandy OS-9 Level One VR 02.00.00
-*   6   Incorporated R. Telkman's additions from 1987,  BGP 02/12/23
-*       added -d option, added defs to conditionally
-*       assemble without help or screen size check
+*   5      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
 *
-*       Removed -d option                               BGP 03/01/17
-*       Narrow screen now shows properly, only dumps    BGP 03/01/21
-*       16 bits worth of address data to make room.
-*       Fixed bug where header would be shown even if   BGP 03/03/03
-*       there was no data in a file.
-*   7   Restored Rubout processing for terminals        RVH 03/06/06
+*   6      2002/12/23  Boisy G. Pitre
+* Incorporated R. Telkman's additions from 1987, added -d option,
+* added defs to conditionally assemble without help or screen size check.
+*
+*          2003/01/17  Boisy G. Pitre
+* Removed -d option.
+*
+*          2003/01/21  Boisy G. Pitre
+* Narrow screen now shows properly, only dumps 16 bits worth of address
+* data to make room.
+*
+*          2003/03/03  Boisy G. Pitre
+* Fixed bug where header would be shown even if there was no data in a file.
+*
+*   7      2003/06/06  Rodney V. Hamilton
+* Restored Rubout processing for terminals.
 
         nam     Dump
         ttl     Show file contents in hex

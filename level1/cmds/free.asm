@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   6    From Tandy OS-9 Level One VR 02.00.00
-*   7    Y2K fixed
+*   6      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*   7      ????/??/??
+* Y2K fixed.
 
          nam   Free
          ttl   Print disk free space

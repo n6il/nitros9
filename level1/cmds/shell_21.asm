@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*  20    From Tandy OS-9 Level One VR 02.00.00
-*  21    CHD no longer requires WRITE permission        BGP 02/04/05
+*  20      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*  21      2002/04/05  Boisy G. Pitre
+* CHD no longer requires WRITE permission.
 
          nam   Shell
          ttl   OS-9 Command Interpreter
@@ -19,7 +23,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   21
 
          mod   eom,name,tylg,atrv,start,size

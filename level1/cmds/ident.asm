@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   7    From Tandy OS-9 Level One VR 02.00.00
-*   8    Now reports modules with a lang of Obj6309     BGP 03/04/11
+*   7      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*   8      2003/04/11  Boisy G. Pitre
+* Now reports modules with a lang of Obj6309.
 
          nam   Ident
          ttl   Show module information
@@ -21,7 +25,7 @@ DOHELP   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   8
 
          mod   eom,name,tylg,atrv,start,size

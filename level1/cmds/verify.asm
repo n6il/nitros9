@@ -3,10 +3,14 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   5    From Tandy OS-9 Level One VR 02.00.00
-*   6    Option modified to require dash in frot        BGP 03/01/18
+*   5      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*   6      2003/01/18  Boisy G. Pitre
+* Option modified to require dash in front.
 
          nam   Verify
          ttl   Verify a module's CRC
@@ -19,7 +23,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   6
 
          mod   eom,name,tylg,atrv,start,size

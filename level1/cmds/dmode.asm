@@ -1,18 +1,8 @@
-         nam   dmode     
-
-* DMode   by Kevin K. Darling
-* Disk descriptor utility.
+********************************************************************
+* DMode - Disk mode utility
 *
-* This version will do desc file on disk also.
-* 23 Sept 86, 1 Oct 86, 2 Oct 86
-
-* Modified by Roger A. Krupski (HARDWAREHACK)
-* Fixes "lower case bug", allows "$" prefix for hex
-* Last updated: 08-24-89 RAK
-
-* Oversized and kludgy, but works.
-* Apologies for lack of comments.
-************************************************
+* $Id$
+*
 * RBF descriptor utility similar to xmode.
 * Use: dmode </devicename> [options]
 *      dmode -<filename>   [options]
@@ -26,7 +16,25 @@
 * dmode /d0
 * dmode -?
 * dmode -/d1/modules/d2.dd cyl=0028
+*
+* Apologies for lack of comments.
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*          1986/09/23  Kevin Darling
+*
+*          1986/10/01  Kevin Darling
+*
+*          1986/10/02  Kevin Darling
+*
+*          1989/08/24  Roger A. Krupski (HARDWAREHACK)
+* Fixed "lower case bug", allowed "$" prefix for hex
+* Oversized and kludgy, but works.
 
+         nam   DMode
+         ttl   Disk mode utility
+     
          ifp1            
          use   defsfile use defsfile
          use   rbfdefs

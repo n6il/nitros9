@@ -3,9 +3,11 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   5    From Tandy OS-9 Level One VR 02.00.00
+*   5      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
 
          nam   Echo
          ttl   Echo text

@@ -3,11 +3,15 @@
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   5    From Tandy OS-9 Level One VR 02.00.00
-*   6    Now option can be anywhere on command line,    BGP 03/01/13
-*        and all files will be deleted.  Made smaller
+*   5      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
+*
+*   6      2003/01/13  Boisy G. Pitre
+* Now option can be anywhere on command line, and all files will be
+* deleted.  Also made smaller.
 
          nam   Del
          ttl   File deletion utility
@@ -22,7 +26,7 @@ DOHELP   set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $00
 edition  set   6
 
          mod   eom,name,tylg,atrv,start,size

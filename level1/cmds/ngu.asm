@@ -41,9 +41,11 @@
 *    - The current file counter is one byte, counting a maximum
 *      of 255 files.
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-*   1    Put your development info here                 BGP 03/01/11
+*   1      2003/01/11  Boisy G. Pitre
+* Put your development info here.
 
          nam   NGU
          ttl   The "Next Great Utility"
