@@ -11,21 +11,21 @@ CLOCKSOFT       = -aRTCSoft=1
 CLOCKMESSEMU    = -aRTCMessEmu=1
 CLOCKJVEMU      = -aRTCJVEmu=1
 
-DEPENDS		= ./makefile
+DEPENDS		= ./makefile.dragon
 TPB		= $(3RDPARTY)/booters
 
-BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		boot_burke boot_rampak boot_wd1002 boot_d64 boot_dalpha
+BOOTERS		= boot_d64 boot_dalpha
+
 BOOTTRACK	= rel $(BOOTERS) rel_dalpha
 KERNEL		= krn krnp2
 SYSMODS		= ioman init sysgo_dd sysgo_h0
+
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
                 clock2_smart clock2_harris clock2_cloud9 clock2_soft \
 		clock2_messemu clock2_jvemu clock_d64
 
 RBF		= rbf.mn \
-		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
 		ddisk.dr adisk.dr \
 		ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
@@ -35,7 +35,8 @@ RBF		= rbf.mn \
 SCF		= scf.mn \
 		sc6551.dr vrn.dr printer.dr sio.dr sspak.dr ccio.dr \
 		co32.io co80.io \
-		nil.dd p.dd pipe.dd ssp.dd kbvdio.dr \
+		nil.dd p.dd pipe.dd ssp.dd kbvdio.dr akbvdio.dr \
+		drvr51.dr adrvr51.dr \
 		term_sio.dt term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dt \
 		term32.dt term80.dt term_d64.dt t1_d64.dd p1_d64.dd
 
@@ -53,18 +54,6 @@ all:	$(ALLOBJS)
 krn krnp2:
 	$(CD) kernel; make $@
 	$(CP) kernel/$@ .
-
-boot_1773_6ms:	boot_1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=0
-
-boot_1773_30ms:	boot_1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=3
-
-rb1773_scii_ff74.dr:	rb1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1
-
-rb1773_scii_ff58.dr:	rb1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1 -aSCIIALT=1
 
 boot_d64:	boot_d64.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=0
@@ -92,6 +81,8 @@ SSDD40		= -aCyls=40 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
 		-aInterlv=3 -aSAS=8 -aDensity=1
 DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 		-aInterlv=3 -aSAS=8 -aDensity=1
+SSDD80		= -aCyls=80 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
+		-aInterlv=3 -aSAS=8 -aDensity=1 -aD35
 DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 		-aInterlv=3 -aSAS=8 -aDensity=1 -aD35
 
@@ -163,6 +154,12 @@ rel: rel.asm
 rel_dalpha: rel.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0 -aDragonAlpha=1
 	
+akbvdio.dr: kbvdio.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0 -aDragonAlpha=1
+
+adrvr51.dr: drvr51.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0 -aDragonAlpha=1
+
 
 sysgo_dd: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDD=1
