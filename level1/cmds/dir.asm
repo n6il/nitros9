@@ -268,7 +268,7 @@ L02B5    lda   #$20
 L02B7    pshs  x
          ldx   <u000B
          cmpx  #$0090
-         bcs   L02C4
+         bne   L02C4
          bsr   L02F1
          ldx   <u000B
 L02C4    sta   ,x+
