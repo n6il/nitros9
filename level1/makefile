@@ -1,8 +1,9 @@
 include ../Makefile.rules
 
 RELEASE		= os9l1v030101
-BOOTFILE	= bootfile_stock
-KERNEL		= kernel_stock
+BOOTFILE	= BOOTFILES/bootfile_stock
+KERNEL		= BOOTFILES/kernel_stock
+DIRS		= CMDS MODULES DEFS SYS BOOTFILES
 
 CMDS		= $(shell $(CD) CMDS; make showcocoobjs)
 MODULES		= $(shell $(CD) MODULES; make showcopyobjs)
@@ -21,19 +22,11 @@ all:
 	@$(ECHO) "*        OS-9 Level One Distribution        *"
 	@$(ECHO) "*                                           *"
 	@$(ECHO) "*********************************************"
-	$(CD) CMDS; make
-	$(CD) MODULES; make
-	$(CD) DEFS; make
-	$(CD) SYS; make
-	$(CD) BOOTFILES; make
+	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
 
 # Clean all components
 clean:	dskclean
-	-$(CD) CMDS; make clean
-	-$(CD) MODULES; make clean
-	-$(CD) DEFS; make clean
-	-$(CD) SYS; make clean
-	-$(CD) BOOTFILES; make clean
+	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
 	-$(RM) $(PACKAGENAME) $(DSK1) $(DSK2)
@@ -43,13 +36,13 @@ dsk: all $(PACKAGENAME)
 dskcopy: dsk
 	$(CP) $(DSK1) $(DSK2) $(PACKAGENAME) $(DSKDIR)
 
-$(PACKAGENAME): $(DSK1) $(DSK2)
-	$(ARCHIVE) $(PACKAGENAME) $(DSK1) $(DSK2) ReadMe ChangeLog
+$(PACKAGENAME): $(DSK1) $(DSK2) ReadMe ChangeLog
+	$(ARCHIVE) $@ $^
 
 $(DSK1):
 	$(RM) $@
 	$(OS9FORMAT_DS40) $@ -n"OS-9 Level One System Disk"
-	$(OS9GEN) $@ -b=BOOTFILES/$(BOOTFILE) -t=BOOTFILES/$(KERNEL)
+	$(OS9GEN) $@ -b=$(BOOTFILE) -t=$(KERNEL)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(CD) CMDS; $(CP) $(CMDS) ../$@,CMDS
