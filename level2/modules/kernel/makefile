@@ -5,8 +5,8 @@ vpath %.asm $(6809L2)/modules/kernel
 DEPENDS		= ./makefile
 ADDOPTS		= -e
 
-OS9P1		= os9p1
-OS9P2		= os9p2
+KERNEL		= kernel
+KERNELP2	= kernelp2
 SYSCALLS	= fallimg.asm fallram.asm falltsk.asm faproc.asm fcmpnam.asm \
 		fcpymem.asm fdatlog.asm fdelram.asm ffmodul.asm ffreehb.asm \
 		fld.asm fldabx.asm flink.asm fmove.asm fnproc.asm fprsnam.asm \
@@ -17,13 +17,13 @@ SYSCALLS	= fallimg.asm fallram.asm falltsk.asm faproc.asm fcmpnam.asm \
 		fid.asm fmapblk.asm fmem.asm fsend.asm fsleep.asm fsprior.asm \
 		fsswi.asm fstime.asm fsuser.asm funlink.asm funload.asm
 
-ALLOBJS		= $(OS9P1) $(OS9P2)
+ALLOBJS		= $(KERNEL) $(KERNELP2)
 
 all:	$(ALLOBJS)
 
-$(OS9P1):	os9p1.asm $(SYSCALLS)
+$(KERNEL):	kernel.asm $(SYSCALLS)
 
-$(OS9P2):	os9p2.asm $(SYSCALLS)
+$(KERNELP2):	kernelp2.asm $(SYSCALLS)
 
 clean:
 	$(RM) $(ALLOBJS)

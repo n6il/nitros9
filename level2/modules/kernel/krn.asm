@@ -1,17 +1,22 @@
 ********************************************************************
-* OS9p1 - OS-9 Level Two Kernel Part 1
+* Kernel - NitrOS-9 Level 2 Kernel
 *
 * $Id$
 *
-* Ed.    Comments                                       Who YY/MM/DD
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
 * ------------------------------------------------------------------
-* 19r6   Assembles to the os9p1 module that works on    BGP 02/08/21
-*        my NitrOS-9 system
-* 19r7   Added check for CRC feature bit in init module BGP 02/09/26
-* 19r8   Back-ported to OS-9 Level Two                  BGP 02/09/26
+*  19r6    2002/08/21  Boisy G. Pitre
+* Assembles to the os9p1 module that works on my NitrOS-9 system.
+*
+*  19r7    2002/09/26  Boisy G. Pitre
+* Added check for CRC feature bit in init module
+*
+*  19r8    2003/09/22  Boisy G. Pitre
+* Back-ported to OS-9 Level Two.
 
-         nam   OS9p1
-         ttl   OS-9 Level Two Kernel Part 1
+         nam   Kernel
+         ttl   NitrOS-9 Level 2 Kernel
 
          IFP1
          use   defsfile
@@ -20,25 +25,24 @@
 * defines for customizations
 Revision set   8          module revision
 Edition  set   19         module Edition
-Where    equ   $F000      absolute address of where OS9p1 starts in memory
+Where    equ   $F000      absolute address of where Kernel starts in memory
 
          mod   eom,MName,Systm,ReEnt+Revision,OS9P1,0
 
-MName    fcs   /OS9p1/
+MName    fcs   /Kernel/
          fcb   Edition 
 
-         IFNE  H6309
 * FILL - all unused bytes are now here
+         fcc   /www.katvixen.net/
+         IFNE  H6309
          fcc   /0123456789ABCDEF/
          fcc   /0123456789ABCDEF/
-         fcc   /0123456789ABCDEF/
-         fcc   /01234/ 567/
+         fcc   /0/
          ELSE
-         fcc   /123456789ABCDEF/
-         fcc   /12345678/
+         fcc   /123/
          ENDC
 
-* Might as well have this here as just past the end of OS9p1...
+* Might as well have this here as just past the end of Kernel...
 DisTable fdb   L0CD2+Where   D.Clock absolute address at the start
          fdb   XSWI3+Where   D.XSWI3
          fdb   XSWI2+Where   D.XSWI2
@@ -47,7 +51,7 @@ DisTable fdb   L0CD2+Where   D.Clock absolute address at the start
          fdb   XSWI+Where    D.XSWI
          fdb   D.Crash       D.XNMI crash on an NMI
          fdb   $0055         D.ErrRst ??? Not used as far as I can tell
-         fdb   Sys.Vec+Where Initial OS9p1 system call vector
+         fdb   Sys.Vec+Where Initial Kernel system call vector
 DisSize  equ   *-DisTable
 * DO NOT ADD ANYTHING BETWEEN THESE 2 TABLES: see code using 'SubSiz', below
 LowSub   equ   $0160      start of low memory subroutines
@@ -185,7 +189,7 @@ L0065    stu    ,x++        Set all IRQ vectors to go to Vectors for now
          leax  >S.AltIRQ,pc    Setup alternate IRQ vector: pts to an RTS
          stx   <D.AltIRQ
 
-         lda   #'1        --- in OS9p1
+         lda   #'K        --- in Kernel
          jsr   <D.BtBug   ---
 
          leax  >S.Flip1,pc  Setup change to task 1 vector
@@ -309,7 +313,7 @@ L01B0    leax  <init,pc    point to 'Init' module name
 L01B8    os9   F$Boot      error linking init, try & load boot file
          bcc   L01B0       got it, try init again
          bra   L01CE       error, re-booting do D.Crash
-* Save pointer to init module and execute os9p2
+* Save pointer to init module and execute kernelp2
 L01BF    stu   <D.Init     Save init module pointer
          lda   Feature1,u  Get feature byte #1 from init module
          bita  #CRCOn      CRC feature on?
@@ -318,13 +322,13 @@ L01BF    stu   <D.Init     Save init module pointer
 ShowI    lda   #'i         found init module
          jsr   <D.BtBug
 
-L01C1    leax  <os9p2,pc   Point to it's name
+L01C1    leax  <kernelp2,pc   Point to it's name
          bsr   link        Try to link it
          bcc   L01D0       It worked, execute it
          os9   F$Boot      It doesn't exist try re-booting
          bcc   L01C1       No error's, let's try to link it again
 L01CE    jmp   <D.Crash    obviously can't do it, crash machine
-L01D0    jmp   ,y          execute os9p2
+L01D0    jmp   ,y          execute kernelp2
 
 * Mark kernel in system memory map as used memory (256 byte blocks)
 L01D2    ldx   <D.SysMem   Get system mem ptr
@@ -346,7 +350,7 @@ link     lda   #Systm      Attempt to link system module
          rts
 
 init     fcs   'Init'
-os9p2    fcs   'OS9p2'
+kernelp2 fcs   'KernelP2'
 
 * Service vector call pointers
 SysCalls fcb   F$Link
