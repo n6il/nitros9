@@ -1,6 +1,6 @@
 include ../../../rules.mak
 
-vpath %.asm $(LEVEL2)/MODULES
+vpath %.asm $(6809L2)/modules:$(6809L1)/modules
 
 L1_256 = $(AFLAGS) -aLevel=1 -aRAMSize=1
 L2_256 = $(AFLAGS) -aLevel=2 -aRAMSize=1
@@ -39,33 +39,33 @@ cc3disk_sc2_slp.dr: cc3disk_sc2_slp.asm
    
 # Disto Super Controller II Device Descriptors
 # 35 Track Single-Sided
-ddd0_35s.dd: cc3diskdesc.asm
+ddd0_35s.dd: rb1773desc.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(SSDD35) -aDD=1
 
-d0_35s.dd: cc3diskdesc.asm
+d0_35s.dd: rb1773desc.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(SSDD35)
 
-d1_35s.dd: cc3diskdesc.asm
+d1_35s.dd: rb1773desc.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(SSDD35) -aDNum=1
 
 # 40 Track Double-Sided
-ddd0_40d.dd: cc3diskdesc.asm  
+ddd0_40d.dd: rb1773desc.asm  
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD40) -aDD=1
 
-d0_40d.dd: cc3diskdesc.asm       
+d0_40d.dd: rb1773desc.asm       
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD40)
 
-d1_40d.dd: cc3diskdesc.asm
+d1_40d.dd: rb1773desc.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD40) -aDNum=1
 
 # 80 Track Double-Sided
-ddd0_80d.dd: cc3diskdesc.asm
+ddd0_80d.dd: rb1773desc.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD80) -aDD=1
 
-d0_80d.dd: cc3diskdesc.asm
+d0_80d.dd: rb1773desc.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD80)
 
-d1_80d.dd: cc3diskdesc.asm
+d1_80d.dd: rb1773desc.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD80) -aDNum=1
 
 # RAM Disk Descriptors

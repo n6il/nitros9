@@ -1438,6 +1438,7 @@ FindCoMod
          puls  pc,u,y,a		restore regs & return
 
 WindInt  fcs   /WindInt/
+GrfInt   fcs   /GrfInt/ ++
 
 *
 * Try WindInt
@@ -1448,7 +1449,15 @@ FindWind pshs  u,y		preserve regs
          leax  <WindInt,pcr	point to WindInt name
          lda   #$80		get driver type code
          bsr   L08D4		try and link it
-         puls  pc,u,y		restore regs and return
+
+*++
+         bcc   ok
+         leax  <GrfInt,pcr	point to GrfInt name
+         lda   #$80
+         bsr   L08D4
+*++
+
+ok       puls  pc,u,y		restore regs and return
 L08D2    clrb  
          rts   
 

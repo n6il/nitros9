@@ -12,7 +12,7 @@ KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/kernel
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_VDG	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
+		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -25,7 +25,7 @@ BOOTFILE_VDG	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 
 BOOTFILE_WIN40	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
+		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -38,7 +38,7 @@ BOOTFILE_WIN40	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 
 BOOTFILE_WIN80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/cc3disk.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
+		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -86,7 +86,7 @@ clean:
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_VDG_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/cc3disk.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -99,7 +99,7 @@ BOOTFILE_VDG_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 
 BOOTFILE_WIN40_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/cc3disk.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -112,7 +112,7 @@ BOOTFILE_WIN40_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 
 BOOTFILE_WIN80_DS80	= $(MD)/kernelp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/cc3disk.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
