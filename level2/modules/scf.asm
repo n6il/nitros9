@@ -1,5 +1,5 @@
 ********************************************************************
-* SCF - OS-9 Level Two Sequential Character File Manager
+* SCF - NitrOS-9 Level 2 Sequential Character File Manager
 *
 * $Id$
 *
@@ -154,10 +154,10 @@
 * not needed.
 *
 *  16r3    2002/08/16  Boisy G. Pitre
-* OS-9 Level Two now uses V$DRIVEX.
+* Now uses V$DRIVEX.
 
          nam   SCF
-         ttl   OS-9 Level Two Sequential Character File Manager
+         ttl   NitrOS-9 Level 2 Sequential Character File Manager
 
          IFP1
          use   defsfile
@@ -178,7 +178,7 @@ SCFName  fcs   /SCF/
 * Default input buffer setting for SCF devices when Opened/Created
 *               123456789!123456789!1234567890
 *msg      fcc   'by B.Nobel,C.Boyle,W.Gale-1993'
-msg      fcc   'OS-9 Rocks!'
+msg      fcc   'www.nitros9.org'
 msgsize  equ   *-msg        Size of default input buffer message
          fcb   C$CR         2nd CR for buffer pad fill
 blksize  equ   256-msgsize  Size of blank space after it

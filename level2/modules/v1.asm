@@ -1,5 +1,5 @@
 ********************************************************************
-* V1 - OS-9 Level 2 VDG descriptor
+* V1 - VDG descriptor
 *
 * $Id$
 *
@@ -8,7 +8,7 @@
 * ------------------------------------------------------------------
 
          nam   V1
-         ttl   OS-9 Level 2 VDG descriptor
+         ttl   VDG descriptor
 
 * Disassembled 98/08/23 22:38:05 by Disasm v1.6 (C) 1988 by RML
 

@@ -1,5 +1,5 @@
 ********************************************************************
-* Init - OS-9 Level Two Configuration module
+* Init - NitrOS-9 Level 2 Configuration module
 *
 * $Id$
 *
@@ -24,7 +24,7 @@
 * Corrected OS9Defs to match.
 
          nam   Init
-         ttl   OS-9 Level Two Configuration module
+         ttl   NitrOS-9 Level 2 Configuration module
 
          ifp1  
          use   defsfile
