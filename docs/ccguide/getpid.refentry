@@ -8,7 +8,7 @@
 <funcsynopsis>
 <funcprototype>
   <funcdef><function>getpid</function></funcdef>
-  <void>
+  <void/>
 </funcprototype>
 </funcsynopsis>
 

@@ -73,8 +73,8 @@ The form of the call depends on the value of "code".
 </para>
 <informaltable frame="none">
 <tgroup cols="2">
-<colspec colwidth="1in">
-<colspec colwidth="3in">
+<colspec colwidth="1in"/>
+<colspec colwidth="3in"/>
 <tbody>
 <row>
 <entry>Code 0:</entry>
