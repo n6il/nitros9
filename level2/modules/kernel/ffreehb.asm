@@ -67,7 +67,6 @@ L0A8C    pshs  d,x,y,u
          leay  a,y
          IFNE  H6309
          clra
-* Rodney claims this is a bug...
          lslb
          tfr   d,w
          tfm   u+,y+

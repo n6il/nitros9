@@ -2913,10 +2913,6 @@ endit024 tst   <z.opt
          ldb   #ln180sz
          lbsr  mergline
          lbsr  writline
-         leay  line181,pcr
-         ldb   #ln181sz
-         lbsr  mergline
-         lbsr  writline
          lbsr  moveadr
          leax  holdline,u
          lda   ,x
@@ -2926,7 +2922,12 @@ endit024 tst   <z.opt
          ldb   #ln190sz
          lbsr  mergline
          lbsr  writline
-endit030 bsr   close
+endit030 lbsr  clrline
+         leay  line181,pcr
+         ldb   #ln181sz
+         lbsr  mergline
+         lbsr  writline
+         bsr   close
 
          ifeq  testing-1
          lbsr  clrline
