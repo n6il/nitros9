@@ -10,9 +10,9 @@ M6809		= $(AFLAGS)
 DEPENDS		= ./Makefile
 
 TXTFILES	= ReadMe install6809 install6309
-OBJS		= gfx inkey
-OBJS6809	= basic09_6809 runb_6809 syscall_6809
-OBJS6309	= basic09_6309 runb_6309 syscall_6309
+OBJS		= gfx inkey syscall
+OBJS6809	= basic09_6809 runb_6809
+OBJS6309	= basic09_6309 runb_6309
 ALLOBJS		= $(OBJS) $(OBJS6809) $(OBJS6309)
 
 all:	$(ALLOBJS) $(DEPENDS)
@@ -30,12 +30,6 @@ runb_6309: runb.asm
 
 runb_6809: runb.asm
 	$(AS) $(ASOUT)$@ $< $(M6809)
-
-syscall_6809: syscall.asm
-	$(AS) $(ASOUT)$@ $< $(M6809)
-
-syscall_6309: syscall.asm
-	$(AS) $(ASOUT)$@ $< $(H6309)
 
 clean: dskclean
 	$(RM) $(ALLOBJS)
