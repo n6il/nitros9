@@ -27,74 +27,7 @@ atrv     set   ReEnt+rev
 rev      set   5
 edition  set   26
 
-         mod   eom,name,tylg,atrv,start,size
-
-u0000    rmb   1
-u0001    rmb   1
-u0002    rmb   1
-u0003    rmb   1
-u0004    rmb   1
-u0005    rmb   1
-u0006    rmb   3
-u0009    rmb   2
-u000B    rmb   1
-u000C    rmb   1
-u000D    rmb   1
-u000E    rmb   2
-u0010    rmb   6
-u0016    rmb   5
-u001B    rmb   2
-u001D    rmb   1
-u001E    rmb   1
-u001F    rmb   1
-u0020    rmb   2
-u0022    rmb   1
-u0023    rmb   1
-u0024    rmb   1
-u0025    rmb   1
-u0026    rmb   1
-u0027    rmb   1
-u0028    rmb   1
-u0029    rmb   1
-u002A    rmb   1
-u002B    rmb   1
-u002C    rmb   1
-u002D    rmb   2
-u002F    rmb   1
-u0030    rmb   1
-u0031    rmb   2
-u0033    rmb   1
-u0034    rmb   1
-u0035    rmb   6
-u003B    rmb   1
-u003C    rmb   8
-u0044    rmb   4
-u0048    rmb   2
-u004A    rmb   6
-u0050    rmb   6
-u0056    rmb   10
-u0060    rmb   1
-u0061    rmb   1
-u0062    rmb   1
-u0063    rmb   1
-u0064    rmb   1
-u0065    rmb   1
-u0066    rmb   1
-u0067    rmb   25
-u0080    rmb   24
-u0098    rmb   13
-u00A5    rmb   13
-u00B2    rmb   13
-u00BF    rmb   7
-u00C6    rmb   26
-KeyEnt   rmb   2
-KeyStat  rmb   8
-JoyEnt   rmb   2
-JoyStat  rmb   8
-SndEnt   rmb   2
-SndStat  rmb   2
-u00F8    rmb   8
-size     equ   .
+         mod   eom,name,tylg,atrv,start,CC3DSiz
 
          fcb   EXEC.+UPDAT.
 
@@ -127,11 +60,11 @@ Term     equ   *
          bne   noterm		no, execute terminate routine in co-module
 * We are last device that CC3IO has active; terminate ourself
          pshs  u,x
-         ldx   #$10EA
+         ldx   #(WGlobal+G.JoyEnt) $10EA
          bsr   TermSub
-         ldx   #$10F4
+         ldx   #(WGlobal+G.SndEnt) $10F4
          bsr   TermSub
-         ldx   #$10E0
+         ldx   #(WGlobal+G.KeyEnt) $10E0
          bsr   TermSub
          puls  u,x
          pshs  cc
@@ -201,69 +134,91 @@ Init     ldx   <D.CCMem
          sta   <G.KyRept,x	set first delay
          std   <G.KyDly,x	set initial and 2ndary constants
 
-         ldd   <D.SysPrc
-         std   <D.Proc
-         leax  >KeyDrv,pcr
-         bsr   LinkSys
-         sty   >KeyEnt,u
-         leau  >KeyStat,u
+         ldd   <D.SysPrc	get system process desc ptr
+         std   <D.Proc		and make current proc
+         leax  >KeyDrv,pcr	point to keyboard driver sub module name
+         bsr   LinkSys		link to it
+* U = ptr to CC mem
+         sty   >G.KeyEnt,u	and save the entry point
+         leau  >G.KeyMem,u	point U to keydrv statics
          jsr   ,y		call init routine of sub module
-         leax  >JoyDrv,pcr
-         bsr   LinkSys
-         sty   >JoyEnt,u
-         leau  >JoyStat,u
+         leax  >JoyDrv,pcr	point to joystick driver sub module name
+         bsr   LinkSys		link to it
+* U = ptr to CC mem
+         sty   >G.JoyEnt,u	and save the entry point
+         leau  >G.JoyMem,u	point U to joydrv statics
          jsr   ,y		call init routine of sub module
-         leax  >SndDrv,pcr
-         bsr   LinkSys
-         sty   >SndEnt,u
-         leau  >SndStat,u
+         leax  >SndDrv,pcr	point to sound driver sub module name
+         bsr   LinkSys		link to it
+* U = ptr to CC mem
+         sty   >G.SndEnt,u	and save the entry point
+         leau  >G.SndMem,u	point U to sound statics
          jsr   ,y		call init routine of sub module
-         puls  u,y,x,b,a
-         std   <D.Proc
-L00EF    ldd   #$0078
-         std   <MS.Smpl,u
+         puls  u,y,x,b,a	restore saved regs
+         std   <D.Proc		and restore current process
+L00EF    ldd   #$0078		set default SS.Mouse parameters
+         std   <MS.Smpl,u	(Mouse sample rate & fire button timeout value)
          ldd   <IT.PAR,y	get parity/baud bytes from dev desc
          std   <DevPar,u	save it off in our static
-         lbra  L08AA
+         lbra  L08AA		go find and init co-module
 
 KeyDrv   fcs   /KeyDrv/
 JoyDrv   fcs   /JoyDrv/
 SndDrv   fcs   /SndDrv/
 
-LinkSys  lda   #Systm+Objct
-         os9   F$Link
-         ldu   <D.CCMem
+LinkSys  lda   #Systm+Objct	system module
+         os9   F$Link		link to it
+         ldu   <D.CCMem		get ptr to CC mem
          rts   
 
-Read     lda   <SS.SigID,u
-         lbne  L0667
-         leax  >$80,u
-         ldb   <InpPtr,u
-         orcc  #IRQMask
-         cmpb  <EndPtr,u
-         beq   L0138
-         abx   
-         lda   ,x
-         bsr   ChkWrap
-         stb   <InpPtr,u
-         andcc #^(IRQMask!Carry)
-         rts   
-L0138    lda   V.BUSY,u
-         sta   V.WAKE,u
-         andcc #^IRQMask
-         ldx   #$0000
+* NOTE: This just reads keys from the buffer. The physical reading of keys
+*   is done by the IRQ routine
+Read     lda   V.PAUS,u		device paused?
+         bpl   read1		no, do normal read (should this be bne?)
+* Device is paused; check for mouse button press
+         lda   >(WGlobal+G.Mouse+Pt.CBSA) if paused, check mouse button 1
+         beq   read1		button isn't pressed, do normal read
+         clra			clear carry (no error)
+         rts			return
+
+read1    lda   <SS.SigID,u	data ready signal trap set up?
+         lbne  NotReady		no, exit with not ready error
+* Data ready signal trap set up
+         leax  >ReadBuf,u	point to keyboard buffer
+         ldb   <InpPtr,u	get current position in keyboard buffer
+         orcc  #IRQMask		disable IRQs
+         cmpb  <EndPtr,u	same as end of buffer ptr (no keys in buffer)?
+         beq   ReadSlp		yes, no new chars waiting, sleep/scan for them
+* Character(s) waiting in buffer
+         abx   			move ptr to character
+         lda   ,x		get character from buffer
+         bsr   ChkWrap		check for wrap
+         stb   <InpPtr,u	save updated keyboard buffer ptr
+         andcc #^(IRQMask!Carry)	restore IRQ and clear carry
+         rts   			return with A containing char read
+
+* Nothing is in input buffer so wait for it
+ReadSlp  lda   V.BUSY,u		get active process id #
+         sta   V.WAKE,u		save as process id # to wake up when data read
+         andcc #^IRQMask	restore IRQ
+         ldx   #$0000		sleep till data ready
          os9   F$Sleep
-         clr   V.WAKE,u
-         ldx   <D.Proc
-         ldb   <P$Signal,x
-         beq   Read
-         lda   P$State,x
+         clr   V.WAKE,u		signal gotten, disable process # to wake up
+         ldx   <D.Proc		get current proc desc ptr
+         ldb   <P$Signal,x	signal pending?
+         beq   Read		no, go read char
+* Signal was pending already, check it out
+         IFNE  H6309
+         tim   #Condemn,P$State,x	are we condemend?
+         ELSE
+         lda   P$State,x	
          bita  #Condem
-         bne   L0157
-         cmpb  #S$Window
-         bcc   Read
-L0157    coma  
-         rts   
+         ENDC
+         bne   ReadErr		yes, exit with error flag set back to SCF
+         cmpb  #S$Window	window change or higher signal?
+         bcc   Read		yes, read the char since it won't change
+ReadErr  coma  			major signal, return with error flag
+         rts   			(Keyboard abort/interrupt)
 
 * Check wraparound of keyboard buffer (could be inlined)
 ChkWrap  incb  		inc keyboard buffer pointer
@@ -272,20 +227,32 @@ ChkWrap  incb  		inc keyboard buffer pointer
          clrb  		else reset pointer to 0
 L015F    rts   		return
 
-L0160    fdb   $0801,$027f,$f8ff,$0000,$0801,$00bf,$f8ff,$0000
-
-L0170    cmpd  ,y
-         blt   L017B
-         ldd   ,y
-         bpl   L017D
+* Keyboard mouse coordinate deltas
+L0160    fcb   8,1		right arrow (normal, shifted)
+         fdb   MaxRows-1	right arrow (control)
+         fcb   -8,-1		left arrow (normal, shifted)
+         fdb   0		left arrow (control)
+         fcb   8,1		down arrow (normal, shifted)
+         fdb   MaxLine		down arrow (control)
+         fcb   -8,-1		up arrow (normal, shifted)
+         fdb   0		up arrow (control)
+ 
+* Check mouse coordinate
+* Entry: D=Maximum allowed coordinate for current axis being checked
+*        Y=Ptr to current coordinate in mouse packet being checked
+L0170    cmpd  ,y		past maximum allowed coordinate?
+         blt   L017B		
+         ldd   ,y		below zero?
+         bpl   L017D		no, return
          IFNE  H6309
-         clrd
+         clrd			set it to minimum coordinate (zero)
          ELSE
          clra
          clrb
          ENDC
-L017B    std   ,y
-L017D    rts   
+L017B    std   ,y		set it to maximum coordinate
+L017D    rts   			return
+
 
 * Main keyboard scan (after PIA has been read)
 * Check keyboard mouse arrows
@@ -611,12 +578,12 @@ L0369    equ   *
          puls  a
          ENDC
          beq   L0381		no, try joystick
-         ldx   >$10E0		else get ptr to keydrv
+         ldx   >WGlobal+G.KeyEnt $10E0 else get ptr to keydrv
          leau  >$00E2,u		and ptr to its statics
          jsr   $06,x		call into it
          ldu   <D.CCMem		get ptr to CC mem
          sta   <G.KyButt,u	save key button
-L0381    ldx   >$10EA		get ptr to joydrv
+L0381    ldx   >WGlobal+G.JoyEnt $10EA get ptr to joydrv
          leau  >$00EC,u		and ptr to its statics
          jsr   $06,x		get X/Y info
          ldu   <D.CCMem		get ptr to CC mem
@@ -639,7 +606,7 @@ L03A8    lda   <G.KyButt,u
          tstb  
          lbne  L044E
          pshs  u,y,x
-         ldx   >$10E0
+         ldx   >WGlobal+G.KeyEnt $10E0
          leau  >$00E2,u
          jsr   $09,x
          puls  u,y,x
@@ -970,7 +937,7 @@ L0600    ldx   <NxtPrm,u	get ptr of where to put next param byte
          bsr   L05C0
          stu   G.CurDvM,x
          ldx   <PrmStrt,u	reset next param ptr to start
-         stx   <u0031,u
+         stx   <NxtPrm,u
          ldb   <WinType,u	is this device using WindInt?
          beq   L0624		yes, special processing for WindInt
          jsr   [<ParmVct,u]	go execute parameter handler
@@ -1016,14 +983,14 @@ GSComSt  lda   V.TYPE,u		get device type
 
 GSReady  ldb   <EndPtr,u	get input buffer end pointer
          cmpb  <InpPtr,u	anything there?
-         beq   L0667		nope, exit with error
+         beq   NotReady		nope, exit with error
          bhi   L0660		higher?
          addb  #$80		nope, add 128 to count
 L0660    subb  <InpPtr,u	calculate number of characters there
          stb   R$B,x		save it in register stack
 SSEOF    clrb  			clear errors
          rts   			return
-L0667    comb  			set carry
+NotReady comb  			set carry
          ldb   #E$NotRdy	get error code
          rts   			return
 
@@ -1060,7 +1027,7 @@ GSJoy    clrb  			default to no errors
          rts   			return
 
 * Get button status first
-GetJoy   ldx   >$10EA
+GetJoy   ldx   >WGlobal+G.JoyEnt $10EA
          pshs  u		save driver static
          ldu   <D.CCMem		get ptr to CC mem
          leau  >$00EC,u		point to subroutine module's static mem
@@ -1084,7 +1051,7 @@ L06B2    stb   R$A,y		save button status to caller
          ldy   #$0000
          pshs  u		save driver static mem
          ldu   <D.CCMem		get ptr to CC mem
-         ldx   >$10EA		get address of joystick sub module
+         ldx   >WGlobal+G.JoyEnt $10EA get address of joystick sub module
          leau  >$00EC,u		get ptr to sub module's static mem
          jsr   $0F,x		call routine in sub module to get joy X/Y
 * X = joystick X pos, Y = joystick Y pos
@@ -1152,7 +1119,7 @@ L073B    leax  <G.Mouse,x	move X to mouse packet
          tfr   d,y		move mouse res to Y
          lda   Pt.Actv,x	get mouse side
          pshs  u,y,x,b,a	preserve regs
-         ldx   >$10EA		get ptr to mouse sub module
+         ldx   >WGlobal+G.JoyEnt $10EA get ptr to mouse sub module
          ldu   <D.CCMem		get mem pointer
          leau  >$00EC,u		and point to mouse sub module statics
          jsr   $09,x		get data
@@ -1172,11 +1139,11 @@ L0764    cmpd  ,y++		compare mouse's current X to Pt.AcX
          sta   <(G.MseMv-G.Mouse),x	update mouse moved flag
 L0770    rts   
 
-SSTone   ldx   >$10F4		get address of sound sub module
+SSTone   ldx   >WGlobal+G.SndEnt $10F4 get address of sound sub module
          jmp   $06,x		go execute routine in sub module
 
 * Animate Palette?  This obviously isn't implemented yet
-SSAnPal  ldx   >$10F4
+SSAnPal  ldx   >WGlobal+G.SndEnt $10F4
          jmp   $09,x
 
 * SetStat    
