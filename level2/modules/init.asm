@@ -19,6 +19,9 @@
 * Restarted edition number back to 1, removed CMDS/cc3go reference and
 * just have cc3go so that in certain cases, cc3go can be in the bootfile,
 * and so that ROMmed systems don't have to have a special init module.
+*          2003/11/5   Robert Gault
+* Corrected CC3IO info regards mouse. Changed from fcb to fdb low res/ right
+* Corrected OS9Defs to match.
 
          nam   Init
          ttl   OS-9 Level Two Configuration module
@@ -54,7 +57,7 @@ start    equ   *
 
 * CC3IO section
          fcb   Monitor    monitor type
-         fcb   0          mouse info
+         fcb   0,1        mouse info, low res right mouse
          fcb   $1E        key repeat start constant
          fcb   $03        key repeat delay constant
 
