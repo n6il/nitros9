@@ -4,7 +4,7 @@
 * ASM V1.6 - Microware version - 6309 instruction assembly by
 *  L. Curtis Boyle
 *
-* Obtained by Boisy Pitre from L. Curits Boyle on 10/12/2002
+* Obtained by Boisy Pitre from L. Curtis Boyle on 10/12/2002
 *
 * $Id$
 *
@@ -31,6 +31,9 @@
 * Listing buffer overruns prevented. Opt W linewidth now 132 max.
 * 6309 Reg2Reg ops now allow R16->R8 xfers. (sets warning flag)
 * Listing fields spaced correctly, comment field auto-aligned.
+*
+*  10r1    2004/07/31  Rodney V. Hamilton
+* Added "@" as valid symbol char. (but no local label support)
 
          nam   Asm
          ttl   6809/6309 Assembler
@@ -41,7 +44,7 @@
 
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   10
 DOCASE   equ   1		enable case-sensitive symbols
 NEWDEF   equ   1		enable IFDEF/IFNDF conditionals
@@ -609,6 +612,8 @@ L0379    lda   ,x+            Get char
          bsr   L03A0          Check text chars
          bcc   L0393          Found one, skip special parsing
          cmpa  #'_            Is it an underscore?
+         beq   L0393          Yes, go process
+         cmpa  #'@            Is it an at sign?
          beq   L0393          Yes, go process
          cmpa  #'9            Higher than a 9?
          bhi   L039A          Yes, skip ahead
@@ -3653,8 +3658,8 @@ L16CF    puls  pc,y,x
 
 L16D1    lbra  L1017
 * open object file
-L16D4    lda   #$06		mode=write+update
-         ldb   #$2F		permissions=pe pw pr e w r
+L16D4    lda   #$06		mode=write+exec
+         ldb   #$2F		permissions=pe pr e w r
          os9   I$Create
          ldb   #24		'can't open' error
          bcs   L16D1		if create fails
