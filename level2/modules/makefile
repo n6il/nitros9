@@ -33,7 +33,7 @@ RBF		= rbf.mn \
 		
 
 SCF		= scf.mn \
-		cc3io.dr modpak.dr vrn.dr printer.dr sio.dr sspak.dr sacia.dr dacia.dr \
+		cc3io.dr vrn.dr printer.dr sio.dr sspak.dr sacia.dr dacia.dr \
 		windint.io vdgint.io vdgint_small.io \
 		keydrv_cc3.sb snddrv_cc3.sb \
 		joydrv_joy.sb joydrv_6551L.sb joydrv_6552L.sb \
