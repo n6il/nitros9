@@ -38,8 +38,8 @@ SCF		= scf.mn \
 		keydrv_cc3.sb snddrv_cc3.sb \
 		joydrv_joy.sb joydrv_6551L.sb joydrv_6552L.sb \
 		joydrv_6551M.sb joydrv_6552M.sb \
-		m1.dd m2.dd nil.dd p.dd t1.dd t2_sacia.dd \
-		t3_sacia.dd t2_dacia.dd t3_dacia.dd \
+		nil.dd p.dd \
+		t1.dd t2_sacia.dd t3_sacia.dd t2_dacia.dd t3_dacia.dd \
 		ftdd.dd vi.dd ssp.dd term_t1.dd \
 		term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
 		w3.dw w4.dw w5.dw w6.dw w7.dw v1.dw v2.dw v3.dw v4.dw v5.dw \
