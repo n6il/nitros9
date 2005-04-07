@@ -30,14 +30,14 @@ FSTime   ldx   R$X,u           Get address that user wants time packet
          pshs  x               Preserve it
          ldx   <D.SysPrc       Get ptr to system process
          stx   <D.Proc         Save as current process
-         lda   #$C1            Link to Clock module
-         leax  L07E3,pc
+         lda   #Systm+Objct    Link to Clock module
+         leax  ClockNam,pc
          os9   F$Link   
          puls  x               Get back ptr to user's process
          stx   <D.Proc         Make it the active process again
-         bcs   L0816           If error in Link, exit with error code
+         bcs   ex@            If error in Link, exit with error code
          jmp   ,y              Jump into Clock
-L0816    rts   
+ex@      rts   
 
-L07E3    fcs   /Clock/
+ClockNam fcs   /Clock/
 
