@@ -29,48 +29,46 @@ Level      ==       1
 ;
 ; These definitions are for SCF device descriptors.
 
-           .org   M$DTyp
-IT.DVC::   .rmb   1          ; Device type (DT.SCF)
-IT.UPC::   .rmb   1          ; Uppercase flag
-IT.BSO::   .rmb   1          ; Backspace behavior
-IT.DLO::   .rmb   1          ; Delete behavior
-IT.EKO::   .rmb   1          ; Echo flag
-IT.ALF::   .rmb   1          ; Auto linefeed flag
-IT.NUL::   .rmb   1          ; End-of-line null count
-IT.PAU::   .rmb   1          ; Page pause flag
-IT.PAG::   .rmb   1          ; Number of lines per page
-IT.BSP::   .rmb   1          ; Backspace character
-IT.DEL::   .rmb   1          ; Delete-line character
-IT.EOR::   .rmb   1          ; End-of-record character
-IT.EOF::   .rmb   1          ; End-of-file character
-IT.RPR::   .rmb   1          ; Reprint-line character
-IT.DUP::   .rmb   1          ; Duplicate-last-line character
-IT.PSC::   .rmb   1          ; Pause character
-IT.INT::   .rmb   1          ; Interrupt character
-IT.QUT::   .rmb   1          ; Quit character
-IT.BSE::   .rmb   1          ; Backspace echo character
-IT.OVF::   .rmb   1          ; Bell character
-IT.PAR::   .rmb   1          ; Parity
-IT.BAU::   .rmb   1          ; Baud rate
-IT.D2P::   .rmb   2          ; Attached device name string offset
-IT.XON::   .rmb   1          ; X-ON character
-IT.XOFF::  .rmb   1          ; X-OFF character
-IT.COL::   .rmb   1          ; Number of columns for display
-IT.ROW::   .rmb   1          ; Number of rows for display
-IT.XTYP::  .rmb   1          ; Extended type (added by BRI)
+IT.DVC   ==   0h18          ; Device type (DT.SCF)
+IT.UPC   ==   0h19         ; Uppercase flag
+IT.BSO   ==   0h1A         ; Backspace behavior
+IT.DLO   ==   0h1B         ; Delete behavior
+IT.EKO   ==   0h1C         ; Echo flag
+IT.ALF   ==   0h1D         ; Auto linefeed flag
+IT.NUL   ==   0h1E         ; End-of-line null count
+IT.PAU   ==   0h1F         ; Page pause flag
+IT.PAG   ==   0h20         ; Number of lines per page
+IT.BSP   ==   0h21         ; Backspace character
+IT.DEL   ==   0h22         ; Delete-line character
+IT.EOR   ==   0h23         ; End-of-record character
+IT.EOF   ==   0h24         ; End-of-file character
+IT.RPR   ==   0h25         ; Reprint-line character
+IT.DUP   ==   0h26         ; Duplicate-last-line character
+IT.PSC   ==   0h27         ; Pause character
+IT.INT   ==   0h28         ; Interrupt character
+IT.QUT   ==   0h29         ; Quit character
+IT.BSE   ==   0h2A         ; Backspace echo character
+IT.OVF   ==   0h2B         ; Bell character
+IT.PAR   ==   0h2C         ; Parity
+IT.BAU   ==   0h2D         ; Baud rate
+IT.D2P   ==   0h2E         ; Attached device name string offset
+IT.XON   ==   0h30         ; X-ON character
+IT.XOFF  ==   0h31         ; X-OFF character
+IT.COL   ==   0h32         ; Number of columns for display
+IT.ROW   ==   0h33         ; Number of rows for display
+IT.XTYP  ==   0h34         ; Extended type (added by BRI)
 
            .ifgt  Level-1
 ; Window Descriptor Additions
 ; For CoCo window, where IT.PAR = $80
-           .org   IT.ROW+1
-IT.WND::   .rmb   1          ; Window number (matches device name) ($2E)
-IT.VAL::   .rmb   1          ; Use defaults on Init (0=no, 1=yes)
-IT.STY::   .rmb   1          ; Screen type default
-IT.CPX::   .rmb   1          ; Column start default
-IT.CPY::   .rmb   1          ; Row start default
-IT.FGC::   .rmb   1          ; Foreground color default
-IT.BGC::   .rmb   1          ; Background color default
-IT.BDC::   .rmb   1          ; Border color default
+IT.WND   ==   0h33          ; Window number (matches device name) ($2E)
+IT.VAL   ==   0h34          ; Use defaults on Init (0=no, 1=yes)
+IT.STY   ==   0h35          ; Screen type default
+IT.CPX   ==   0h36          ; Column start default
+IT.CPY   ==   0h37          ; Row start default
+IT.FGC   ==   0h38          ; Foreground color default
+IT.BGC   ==   0h39          ; Background color default
+IT.BDC   ==   0h3A          ; Border color default
            .endif
 
 
@@ -80,23 +78,22 @@ IT.BDC::   .rmb   1          ; Border color default
 ;
 ; SCF devices must reserve this space for SCF
 ;
-           .org   V.USER
-V.TYPE::   .rmb   1          ; Device type or parity
-V.LINE::   .rmb   1          ; Lines left until end of page
-V.PAUS::   .rmb   1          ; Immediate Pause request
-V.DEV2::   .rmb   2          ; Attached device's static
-V.INTR::   .rmb   1          ; Interrupt char
-V.QUIT::   .rmb   1          ; Quit char
-V.PCHR::   .rmb   1          ; Pause char
-V.ERR::    .rmb   1          ; Accumulated errors
-V.XON::    .rmb   1          ; X-On char
-V.XOFF::   .rmb   1          ; X-Off char
-V.KANJI::  .rmb   1          ; Kanji mode flag
-V.KBUF::   .rmb   2          ; Kana - Kanji convert routine work address
-V.MODADR:: .rmb   2          ; Kana - Kanji convert module address
-V.PDLHd::  .rmb   2          ; Open path descriptor list head pointer
-V.RSV::    .rmb   5          ; Reserve bytes for future expansion
-V.SCF      ==     .          ; Total SCF manager static overhead
+V.TYPE   ==   0h06          ; Device type or parity
+V.LINE   ==   0h07          ; Lines left until end of page
+V.PAUS   ==   0h08          ; Immediate Pause request
+V.DEV2   ==   0h09          ; Attached device's static
+V.INTR   ==   0h0B          ; Interrupt char
+V.QUIT   ==   0h0C          ; Quit char
+V.PCHR   ==   0h0D          ; Pause char
+V.ERR    ==   0h0E          ; Accumulated errors
+V.XON    ==   0h0F          ; X-On char
+V.XOFF   ==   0h10          ; X-Off char
+V.KANJI  ==   0h11          ; Kanji mode flag
+V.KBUF   ==   0h12          ; Kana - Kanji convert routine work address
+V.MODADR ==   0h14          ; Kana - Kanji convert module address
+V.PDLHd  ==   0h16          ; Open path descriptor list head pointer
+V.RSV    ==   0h18          ; Reserve bytes for future expansion
+V.SCF    ==     0h1D          ; Total SCF manager static overhead
 
            .page
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -106,44 +103,43 @@ V.SCF      ==     .          ; Total SCF manager static overhead
 ; via the I$Open system call (processed by IOMan).  Process
 ; descriptors track state information of a path.
 ;
-           .org   PD.FST
-PD.DV2::   .rmb   2          ; Output device table pointer
-PD.RAW::   .rmb   1          ; Read/Write or ReadLn/WritLn mode
-PD.MAX::   .rmb   2          ; ReadLn high byte count
-PD.MIN::   .rmb   1          ; Devices are "mine" if clear
-PD.STS::   .rmb   2          ; Status routine module addr
-PD.STM::   .rmb   2          ; Reserved for status routine
+PD.DV2   rmb   0h32          ; Output device table pointer
+PD.RAW   rmb   0h34          ; Read/Write or ReadLn/WritLn mode
+PD.MAX   rmb   0h35          ; ReadLn high byte count
+PD.MIN   rmb   0h37          ; Devices are "mine" if clear
+PD.STS   rmb   0h38          ; Status routine module addr
+PD.STM   rmb   0h3A          ; Reserved for status routine
            .org   PD.OPT
            .rmb   1          ; Device type
-PD.UPC::   .rmb   1          ; Case (0=both, 1=upper only)
-PD.BSO::   .rmb   1          ; Backspace (0=BSE, 1=BSE,SP,BSE)
-PD.DLO::   .rmb   1          ; Delete (0=BSE over line, 1=CRLF)
-PD.EKO::   .rmb   1          ; Echo (0=No Echo)
-PD.ALF::   .rmb   1          ; Auto linefeed (0=No auto LF)
-PD.NUL::   .rmb   1          ; End of Line null count
-PD.PAU::   .rmb   1          ; Page pause (0=No end of page pause)
-PD.PAG::   .rmb   1          ; Lines per page
-PD.BSP::   .rmb   1          ; Backspace character
-PD.DEL::   .rmb   1          ; Delete Line character
-PD.EOR::   .rmb   1          ; End of Record character (read only)
-PD.EOF::   .rmb   1          ; End of File character
-PD.RPR::   .rmb   1          ; Reprint Line character
-PD.DUP::   .rmb   1          ; Dup Last Line character
-PD.PSC::   .rmb   1          ; Pause character
-PD.INT::   .rmb   1          ; Keyboard interrupt character (CTRL-C)
-PD.QUT::   .rmb   1          ; Keyboard quit character (CTRL-E)
-PD.BSE::   .rmb   1          ; Backspace echo character
-PD.OVF::   .rmb   1          ; Line overflow character (BELL)
-PD.PAR::   .rmb   1          ; Parity code
-PD.BAU::   .rmb   1          ; ACIA baud rate (Color Computer)
-PD.D2P::   .rmb   2          ; Offset of DEV2 name
-PD.XON::   .rmb   1          ; ACIA X-ON character
-PD.XOFF::  .rmb   1          ; ACIA X-OFF character
+PD.UPC   ==   1          ; Case (0=both, 1=upper only)
+PD.BSO   ==   1          ; Backspace (0=BSE, 1=BSE,SP,BSE)
+PD.DLO   ==   1          ; Delete (0=BSE over line, 1=CRLF)
+PD.EKO   ==   1          ; Echo (0=No Echo)
+PD.ALF   ==   1          ; Auto linefeed (0=No auto LF)
+PD.NUL   ==   1          ; End of Line null count
+PD.PAU   ==   1          ; Page pause (0=No end of page pause)
+PD.PAG   ==   1          ; Lines per page
+PD.BSP   ==   1          ; Backspace character
+PD.DEL   ==   1          ; Delete Line character
+PD.EOR   ==   1          ; End of Record character (read only)
+PD.EOF   ==   1          ; End of File character
+PD.RPR   ==   1          ; Reprint Line character
+PD.DUP   ==   1          ; Dup Last Line character
+PD.PSC   ==   1          ; Pause character
+PD.INT   ==   1          ; Keyboard interrupt character (CTRL-C)
+PD.QUT   ==   1          ; Keyboard quit character (CTRL-E)
+PD.BSE   ==   1          ; Backspace echo character
+PD.OVF   ==   1          ; Line overflow character (BELL)
+PD.PAR   ==   1          ; Parity code
+PD.BAU   ==   1          ; ACIA baud rate (Color Computer)
+PD.D2P   ==   2          ; Offset of DEV2 name
+PD.XON   ==   1          ; ACIA X-ON character
+PD.XOFF  ==   1          ; ACIA X-OFF character
 OPTCNT     ==     .-PD.OPT   ; Total user settable options
-PD.ERR::   .rmb   1          ; Most recent I/O error status
-PD.TBL::   .rmb   2          ; Device table addr (copy)
-PD.PLP::   .rmb   2          ; Path Descriptor List Pointer
-PD.PST::   .rmb   1          ; Current path status
+PD.ERR   .rmb   1          ; Most recent I/O error status
+PD.TBL   .rmb   2          ; Device table addr (copy)
+PD.PLP   .rmb   2          ; Path Descriptor List Pointer
+PD.PST   .rmb   1          ; Current path status
 
 
 ; PD.PST values Path Descriptor Status byte

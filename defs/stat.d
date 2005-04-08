@@ -14,7 +14,7 @@
            .area    STAT (ABS)
 
            .ifndef  Level
-Level      ==       1
+Level      ==       2
            .endif
 
            .org    0

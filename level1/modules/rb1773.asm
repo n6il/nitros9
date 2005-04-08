@@ -78,6 +78,10 @@
 * Separated the sector write and format write loops so that the CPU clock
 * can be slowed down during formats. This "corrects" problems some hardware
 * have with the current NitrOS-9 during formats.  
+*
+*   1r1   2005/04/07   Boisy G. Pitre
+* We now save the contents of D.NMI (Level 2) or D.XNMI (Level 1) before
+* overwriting them, and then restore the original values at term time.
 
          nam   rb1773
          ttl   Western Digital 1773 Disk Controller Driver
@@ -99,7 +103,7 @@ SCIIHACK set   0                 * 0=stock model 1=512 byte buffer
 
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   1
 
 * Configuration Settings
@@ -152,6 +156,9 @@ u00AE    rmb   1              LSB of LSN
          IFGT  Level-1
 FBlock   rmb   2              block number for format
 FTask    rmb   1              task number for format
+NMISave  rmb   2
+         ELSE
+NMISave  rmb   2
          ENDC
 VIRQPak  rmb   2              Vi.Cnt word for VIRQ
 u00B3    rmb   2              Vi.Rst word for VIRQ
@@ -221,10 +228,19 @@ l1       sta   ,x             DD.TOT MSB to bogus value
          leax  <DRVMEM,x      point to next drive table
          decb                 done all drives yet?
          bne   l1             no, init them all
-         leax  >NMISvc,pc     point to NMI service routine
+*** Fix on 04/06/2005: we now save the contents of D.NMI (Level 2)
+*** or D.XNMI (Level 1) before overwriting them.
          IFGT  Level-1
-         stx   <D.NMI         install as system NMI
+         ldx   >D.NMI
+         stx   NMISave,u
+         leax  >NMISvc,pc     point to NMI service routine
+         stx   >D.NMI         install as system NMI
          ELSE
+         ldx   >D.XNMI
+         stx   NMISave,u
+         lda   >D.XNMI+2
+         sta   NMISave+2,u
+         leax  >NMISvc,pc     point to NMI service routine
          stx   >D.XNMI+1      NMI jump vector operand
          lda   #$7E           JMP code
          sta   >D.XNMI        NMI jump vector opcode
@@ -282,6 +298,18 @@ Term     leay  >VIRQPak,u       Point to VIRQ packet
          ENDC
          leay  >IRQSvc,pc     point to IRQ service routine
          os9   F$IRQ          Remove IRQ
+*** Fix: we now restore original D.NMI (Level 2) or D.XNMI (Level 1)
+*** before overwriting them.
+         IFGT  Level-1
+         ldx   NMISave,u
+         stx   >D.NMI
+         ELSE
+         ldx   NMISave,u
+         stx   >D.XNMI
+         lda   NMISave+2,u
+         sta   >D.XNMI+2
+         ENDC
+***
          pshs  u              Save device mem ptr
          ldu   >sectbuf,u     Get pointer to sector buffer
          ldd   #512           Return sector buffer memory
