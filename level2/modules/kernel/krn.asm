@@ -46,7 +46,7 @@ MName    fcs   /Krn/
          IFNE  H6309
          fcc   /www.katvixen.com/
          fcc   /www.katvixen.com/
-         fcc   /www.katvixen.c/
+         fcc   /www.katvixen./
          ELSE
          fcc   /www.katvixen.com/
          fcc   /01/
@@ -972,11 +972,16 @@ SWI2VCT  orcc   #IntMasks   disasble IRQ's
 * saves about 200 cycles (calls to I.LDABX and L029E) on grfdrv-system,
 *  or user-system calls.
 SWICall  ldb   [R$PC,s]   --- get callcode of the system call
-         clr   >DAT.Task  go to map type 1
+* NOTE: Alan DeKok claims that this is BAD.  It crashed Colin McKay's
+* CoCo 3.  Instead, we should do a clra/sta >DAT.Task.
+*         clr   >DAT.Task  go to map type 1
+	clra
+	sta	>DAT.Task
          IFNE  H6309
          tfr   0,dp       set DP to zero
          ELSE
-         clra
+* 6809 version: we don't need to clra anymore since we're doing it above now
+*         clra
          tfr   a,dp
          ENDC
 
