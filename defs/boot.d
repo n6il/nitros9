@@ -57,5 +57,3 @@ L3.End     ==     L3.Start+L3.Size*0h0100 ; end of L3 memory
 L3.SCF     ==     0h0660      ; SCF block ptr
 L3.RBF     ==     L3.SCF+1    ; RBF block ptr
            .endif
-
-           .endif
