@@ -182,7 +182,7 @@ L0194    lda   #$01
          cmpb  #E$UnkSvc
          beq   L01AB
          lbra  L0280
-L01A4    cmpx  #$0046
+L01A4    cmpx  #51
          bcc   L01AB
          inc   <u0000
 L01AB    lda   #READ.

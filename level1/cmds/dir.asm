@@ -91,7 +91,7 @@ start    leay  <linebuff,u	get ptr to line buffer
          clr   <extended
          clr   <narrow
          clr   <dircount
-         ldd   #$1030
+         ldd   #$1030		set default column width and last col
          std   <u0008
          pshs  y,x,b,a
          lda   #$01		standard output
@@ -104,8 +104,12 @@ start    leay  <linebuff,u	get ptr to line buffer
          lbra  L0268
 L0120    cmpx  #64		at least this wide?
          bge   NoScSiz		branch if so
-         inc   <narrow		else we're going narrow
-         ldd   #$0A14
+         cmpx  #51		51 columns?
+         blt   Do32
+         ldd   #$0A28
+         bra   ScSizNr
+Do32     ldd   #$0A14
+ScSizNr  inc   <narrow		else we're going narrow
          std   <u0008
 NoScSiz  puls  y,x,b,a
          pshs  x		save start of command line
