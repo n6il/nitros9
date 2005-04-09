@@ -1,7 +1,7 @@
 include ../rules.mak
 
 CPU		= 6809
-LEVEL		= 1
+LEVEL		= 2
 
 DISTRO		= nos9$(CPU)l$(LEVEL)
 DISTROVER	= $(DISTRO)$(NITROS9VER)

@@ -65,7 +65,7 @@ Banner   equ   *
          fcc   /.0/
          fcb   '0+_$NITROS9MINOR
          fcb   C$CR,C$LF
-         fcc   /(C) 2004 The NitrOS-9 Project/
+         fcc   /(C) 2005 The NitrOS-9 Project/
          fcb   C$CR,C$LF
          IFNE  _$NITROS9DEVEL
          fcc   "**   DEVELOPMENT BUILD   **"

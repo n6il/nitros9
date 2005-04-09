@@ -1,5 +1,8 @@
 NitrOS-9/6809 Level 2 V03.02.05:
-- rb1773 now properly saves/restores system's NMI vector.
+- rb1773 now properly saves/restores system's NMI vector, also updated to
+  go into .89Mhz mode when formatting to get around a problem with some
+  CoCo 3's crashing during format.
+- An issue with formatting 3.5" 720K disks has been resolved.
 
 NitrOS-9/6809 Level 2 V03.02.04:
 - Fixed several problems/mistakes in the V03.02.03 release.
