@@ -809,7 +809,7 @@ L0240b
          ENDC
 L0240c   lda   ,x+
          sta   >DPort+WD_Data
-         bra   L0240b
+         bra   L0240c
 * NMI routine
 NMISvc   leas  R$Size,s       Eat register stack
 * Added to compensate above change in format loop. RG
