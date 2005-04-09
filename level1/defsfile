@@ -4,4 +4,3 @@ Level    equ   1
          use   scfdefs
          use   rbfdefs
          use   systype
-         use   releasedefs
