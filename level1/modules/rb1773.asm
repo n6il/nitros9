@@ -803,15 +803,18 @@ L0240    lda   ,x+             Get byte from write buffer
 *         stb   >DPort+CtrlReg Set up to read next byte
          bra   L0240          Go read it
 * Special loop for format slows CPU clock. RG
-L0240b   sta   >$FFD8
+L0240b
+         IFGT  Level-1
+         sta   >$FFD8
+         ENDC
 L0240c   lda   ,x+
          sta   >DPort+WD_Data
          bra   L0240b
 * NMI routine
 NMISvc   leas  R$Size,s       Eat register stack
 * Added to compensate above change in format loop. RG
-         sta   >$FFD9
          IFGT  Level-1
+         sta   >$FFD9
          ldx   <D.SysDAT  get pointer to system DAT image
          lda   3,x        get block number 1
          sta   >$FFA1     map it back into memory

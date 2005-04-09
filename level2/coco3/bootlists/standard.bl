@@ -81,8 +81,11 @@
 *../MODULES/RBF/hb_255_d4n1.dd
 *../MODULES/RBF/hb_255_hdii.dd
 *
-* WD1773 floppy support
+* WD1773 floppy support for Tandy and compatible disk controllers
 ../MODULES/RBF/rb1773.dr
+* WD1773 floppy support for Disto Super Controller II
+*../MODULES/RBF/rb1773_scii_ff74.dr
+*../MODULES/RBF/rb1773_scii_ff58.dr
 * Floppy device descriptors
 * DD - default device - choose one if needed
 *../MODULES/RBF/ddd0_35s.dd
