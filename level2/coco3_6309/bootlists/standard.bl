@@ -179,10 +179,6 @@
 *../MODULES/SCF/sc6551.dr
 *../MODULES/SCF/t2_sc6551.dd
 *../MODULES/SCF/t3_sc6551.dd
-* 6552 ACIA
-*../MODULES/SCF/dacia.dr
-*../MODULES/SCF/t2_dacia.dd
-*../MODULES/SCF/t3_dacia.dd
 * Tandy Modem Pak
 *../MODULES/SCF/modpak.dr
 *../MODULES/SCF/m1.dd

@@ -1,8 +1,10 @@
 include ../rules.mak
 
 CPU		= 6809
-DISTRO		= $(CPU)L2
-RELEASE		= nos9$(CPU)l2v030205
+LEVEL		= 1
+
+DISTRO		= nos9$(CPU)l$(LEVEL)
+DISTROVER	= $(DISTRO)$(NITROS9VER)
 BOOTFILE_40D	= bootfiles/bootfile_40d
 BOOTFILE_80D	= bootfiles/bootfile_80d
 BOOTFILE_40D_50HZ	= bootfiles/bootfile_40d_50hz
@@ -27,17 +29,17 @@ SYSTEXT		= $(shell $(CD) sys; make showtextobjs)
 ROOTFILES	= startup
 SYSGO		= sysgo_dd
 
-PACKAGENAME	= $(RELEASE).zip
-DSK360K_1	= $(RELEASE)_40d_1.dsk
-LDSK360K_1	= latest_40d_1.dsk
-DSK360K_1_50HZ	= $(RELEASE)_40d_1_50hz.dsk
-LDSK360K_1_50HZ	= latest_40d_1_50hz.dsk
-DSK360K_2	= $(RELEASE)_40d_2.dsk
-LDSK360K_2	= latest_40d_2.dsk
-DSK720K		= $(RELEASE)_80d.dsk
-LDSK720K	= latest_80d.dsk
-DSK720K_50HZ	= $(RELEASE)_80d_50hz.dsk
-LDSK720K_50HZ	= latest_80d_50hz.dsk
+PACKAGENAME	= $(DISTROVER).zip
+DSK360K_1	= $(DISTROVER)_40d_1.dsk
+LDSK360K_1	= $(DISTRO)_40d_1.dsk
+DSK360K_1_50HZ	= $(DISTROVER)_40d_1_50hz.dsk
+LDSK360K_1_50HZ	= $(DISTRO)_40d_1_50hz.dsk
+DSK360K_2	= $(DISTROVER)_40d_2.dsk
+LDSK360K_2	= $(DISTRO)_40d_2.dsk
+DSK720K		= $(DISTROVER)_80d.dsk
+LDSK720K	= $(DISTRO)_80d.dsk
+DSK720K_50HZ	= $(DISTROVER)_80d_50hz.dsk
+LDSK720K_50HZ	= $(DISTRO)_80d_50hz.dsk
 TESTDSK		= test.dsk
 
 

@@ -1,8 +1,14 @@
 include ../rules.mak
 
 CPU		= 6809
-DISTRO		= $(CPU)L2
-RELEASE		= nos9$(CPU)l1v030205
+LEVEL		= 1
+
+# Level 1 - Specify which shell should be used
+#WHICHSHELL	= shellplus
+WHICHSHELL	= shell_21
+
+DISTRO		= nos9$(CPU)l$(LEVEL)
+DISTROVER	= $(DISTRO)$(NITROS9VER)
 BOOTFILE_CO32	= bootfiles/bootfile_co51
 BOOTFILE_CO51	= bootfiles/bootfile_co51
 BOOTFILE_CO80	= bootfiles/bootfile_co51
@@ -10,9 +16,6 @@ BOOTFILE_CO32_DS80	= bootfiles/bootfile_co32_ds80
 KERNELFILE	= bootfiles/kernel_1773
 DIRS		= cmds modules defs sys bootfiles
 
-# Specify which shell should be used
-#WHICHSHELL	= shellplus
-WHICHSHELL	= shell_21
 
 CMDS		= $(shell $(CD) cmds; make showcocoobjs)
 BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
@@ -28,13 +31,13 @@ SYS		= $(shell $(CD) sys; make showobjs)
 DEFS		= $(shell $(CD) defs; make showobjs)
 ROOTFILES	= startup
 
-PACKAGENAME	= $(RELEASE).zip
-DSK360K_1       = $(RELEASE)_40d_1.dsk
-LDSK360K_1      = latest_40d_1.dsk
-DSK360K_2       = $(RELEASE)_40d_2.dsk
-LDSK360K_2      = latest_40d_2.dsk
-DSK720K         = $(RELEASE)_80d.dsk
-LDSK720K        = latest_80d.dsk
+PACKAGENAME	= $(DISTROVER).zip
+DSK360K_1       = $(DISTROVER)_40d_1.dsk
+LDSK360K_1      = $(DISTRO)_40d_1.dsk
+DSK360K_2       = $(DISTROVER)_40d_2.dsk
+LDSK360K_2      = $(DISTRO)_40d_2.dsk
+DSK720K         = $(DISTROVER)_80d.dsk
+LDSK720K        = $(DISTRO)_80d.dsk
 
 
 # Make all components
@@ -51,9 +54,8 @@ clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(LDSK360K_1) $(DSK360K_1_50HZ) \
-	$(LDSK360K_1_50HZ) $(DSK360K_2) $(LDSK360K_2)  $(DSK720K) \
-	$(LDSK720K) $(DSK720K_50HZ) $(LDSK720K_50HZ)
+	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(LDSK360K_1) \
+	$(DSK360K_2) $(LDSK360K_2) $(DSK720K) $(LDSK720K)
 
 
 dsk: all $(PACKAGENAME)

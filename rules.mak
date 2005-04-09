@@ -5,6 +5,7 @@
 # Environment variables are now used to specify any directories other
 # than the defaults below:
 #
+#   NITROS9VER   - current version string for NitrOS-9
 #   NITROS9DIR   - base directory of the NitrOS-9 project on your system
 #   COCOTOOLSBIN - directory where CoCoTools binaries are (assembler, etc)
 #
@@ -12,6 +13,25 @@
 # environment variables.
 
 #################### DO NOT CHANGE ANYTHING BELOW THIS LINE ####################
+
+# NOTE: All three vars must be set or we set all to zero!
+ifndef	NITROS9VERSION
+NITROS9VERSION	= 0
+NITROS9MAJOR	= 0
+NITROS9MINOR	= 0
+endif
+ifndef	NITROS9MAJOR
+NITROS9VERSION	= 0
+NITROS9MAJOR	= 0
+NITROS9MINOR	= 0
+endif
+ifndef	NITROS9MINOR
+NITROS9VERSION	= 0
+NITROS9MAJOR	= 0
+NITROS9MINOR	= 0
+endif
+
+NITROS9VER	= v0$(NITROS9VERSION)0$(NITROS9MAJOR)0$(NITROS9MINOR)
 
 ifndef	NITROS9DIR
 NITROS9DIR	= $(HOME)/nitros9
