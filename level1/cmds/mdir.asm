@@ -65,8 +65,6 @@ stitle   fcb   C$LF
 
 start    stx   <parmptr
          clr   <zflag
-         ldd   #$0C30
-         std   <u000F
          clr   <narrow		assume wide output
          lda   #stdout		standard output
          ldb   #SS.ScSiz	we need screen size
@@ -74,13 +72,20 @@ start    stx   <parmptr
          bcc   L00D2		branch if we got it
          cmpb  #E$UnkSvc	not a known service request error?
          lbne  Exit		if not, exit
-         bra   L00DF
+         bra   Do80
 L00D2    cmpx  #80		80 columns?
-         bge   L00DF		branch if greater or equal to
-         inc   <narrow
+         blt   Chk51		branch if less than
+Do80     ldd   #$0C30
+         bra   SetSize
+Chk51    cmpx  #51		51 columns?
+         blt   Do32
+Do51     ldd   #$0C28
+         bra   SetSize
+Do32     inc   <narrow
          ldd   #$0A15
+SetSize
          std   <u000F
-L00DF    leay  >tophead,pcr
+         leay  >tophead,pcr
          leax  <buffer,u
          stx   <bufptr
          lbsr  copySTR

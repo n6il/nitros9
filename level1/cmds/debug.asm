@@ -626,8 +626,8 @@ start
          beq   L0387
          puls  x,y,b,a
          lbra  L0735
-L0380    cmpx  #80		80 columns?
-         beq   L0387		branch if so
+L0380    cmpx  #51		51 columns?
+         bge   L0387		branch if so
          inc   <isnarrow
 L0387    puls  x,y,b,a
          ENDC
