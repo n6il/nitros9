@@ -46,7 +46,7 @@ MName	fcs	/Krn/
 	ifne	H6309
 	fcc	/www.katvixen.com/
 	fcc	/www.katvixen.com/
-	fcc	/www.katvixen./
+	fcc	/www.katvixe/
 	else	
 	fcc	/www.katvixen.c/
 	fcc	/01/
