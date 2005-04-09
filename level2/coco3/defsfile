@@ -5,4 +5,3 @@ Level    equ   2
          use   rbfdefs
          use   systype
          use   cc3iodefs
-         use   releasedefs
