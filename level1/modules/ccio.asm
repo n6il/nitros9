@@ -62,11 +62,13 @@ start    lbra  Init
 *    CC = carry set on error
 *    B  = error code
 *
-Init    pshs	y
-	ldy	#$aa55
-	ldy	#V.5136
-	ldy	#V.51End
-	puls	y
+Init
+* MESS Debug lines for Phill
+*        pshs	y
+*	ldy	#$aa55
+*	ldy	#V.5136
+*	ldy	#V.51End
+*	puls	y
 	
 	stu   >D.KbdSta	store devmem ptr
          clra			clear A
