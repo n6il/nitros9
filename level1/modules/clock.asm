@@ -30,6 +30,17 @@
 * Fixed incorrect value for PIA initialization.  Robert indicated
 * that it should be $3434, not $3435.
 *		
+*   9r7    2005/04/08  Phill Harvey-Smith
+* Made the above level dependent as having PIAs inited with $3434
+* will disable the IRQ from them, this is ok for Level 2/CoCo 3 as the
+* IRQ is later enabled from the GIME, however the CoCo 1,2 and Dragon
+* do not posses a GIME so anything dependent on the clock tick will 
+* hang. So changed to conditionaly compile based on level :-
+*
+* Level 1  $3435
+* Level 2  $3434
+*
+
 	nam	Clock     
 	ttl	OS-9 System Clock
 		
@@ -176,8 +187,15 @@ InitCont
 	sta	3,x		enable DDRB
 	coma	
 	sta	2,x		set port B all outputs
+
 ;	ldd	#$343C		[A]=PIA0 CRA contents, [B]=PIA0 CRB contents
+
+	IFGT	Level-1
 	ldd	#$3434		as per Robert Gault's suggestion
+	ELSE
+	ldd	#$3435		IRQ needs to be left enabled for Level1, as no GIME generated IRQ
+	ENDIF
+	
 	sta	1,x		CA2 (MUX0) out low, port A, disable HBORD high-to-low IRQs
 	stb	3,x		CB2 (MUX1) out low, port B, disable VBORD low-to-high IRQs
 
