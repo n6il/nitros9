@@ -8,7 +8,8 @@
 * ------------------------------------------------------------------
 *   5r5    2003/07/31  Boisy G. Pitre
 * Back ported NitrOS-9 REL to OS-9 Level Two.
-*		   2004/11/09  P.Harvey-Smith
+*
+*          2004/11/09  P.Harvey-Smith
 * Added code to flip Dragon Alpha into text mode on boot.
 * 
 
