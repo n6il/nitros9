@@ -1,6 +1,8 @@
 NitrOS-9/6809 Level 1 V03.02.05:
 - rb1773 now properly saves/restores system's NMI vector.
 - An issue with formatting 3.5" 720K disks has been resolved.
+- Two new modules: CO51.io and term51.dt are available for 51x24 text
+  support on a graphics screen.
 
 NitrOS-9/6809 Level 1 V03.02.04:
 - Fixed several problems/mistakes in the V03.02.03 release.
