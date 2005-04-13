@@ -1,3 +1,7 @@
+#
+#modules/makefile.dragon
+#
+
 include ../../rules.mak
 
 CLOCKELIM       = -aRTCElim=1
@@ -23,7 +27,7 @@ SYSMODS		= ioman init sysgo_dd sysgo_h0
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
                 clock2_smart clock2_harris clock2_cloud9 clock2_soft \
-		clock2_messemu clock2_jvemu clock_d64
+		clock2_messemu clock2_jvemu 
 
 RBF		= rbf.mn \
 		ddisk.dr \
@@ -34,10 +38,9 @@ RBF		= rbf.mn \
 SCF		= scf.mn \
 		sc6551.dr vrn.dr printer.dr sio.dr sspak.dr dgnio.dr \
 		co32.io co80.io co51.io\
-		nil.dd p.dd pipe.dd ssp.dd kbvdio.dr akbvdio.dr \
-		drvr51.dr adrvr51.dr \
+		nil.dd p.dd pipe.dd ssp.dd \
 		term_sio.dt term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dt \
-		term32.dt term80.dt term_d64.dt t1_d64.dd p1_d64.dd
+		term32.dt term80.dt t1_d64.dd p1_d64.dd
 
 PIPE		= pipeman.mn \
 		piper.dr \
@@ -119,7 +122,7 @@ d0_dalpha.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0
 
 d1_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=1
 
 d2_dalpha.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
@@ -137,12 +140,6 @@ rel: rel.asm
 rel_dalpha: rel.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0 -aDragonAlpha=1
 	
-akbvdio.dr: kbvdio.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0 -aDragonAlpha=1
-
-adrvr51.dr: drvr51.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0 -aDragonAlpha=1
-
 
 sysgo_dd: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDD=1
