@@ -65,6 +65,10 @@ Banner   equ   *
          fcc   /.0/
          fcb   '0+_$NITROS9MINOR
          fcb   C$CR,C$LF
+* For ROM version, cut down on verbage
+         IFEQ  ROM
+         fcc   /Chicago CoCoFEST! '05 Edition/
+         fcb   C$CR,C$LF
          fcc   /(C) 2005 The NitrOS-9 Project/
          fcb   C$CR,C$LF
          IFNE  _$NITROS9DEVEL
@@ -73,8 +77,6 @@ Banner   equ   *
          fcc   "** NOT FOR DISTRIBUTION! **"
          fcb   C$CR,C$LF
          ENDC
-* For ROM version, cut down on verbage
-         IFEQ  ROM
          dts   
          fcb   C$CR,C$LF
          fcc   !http://www.nitros9.org!
