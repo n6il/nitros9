@@ -6,8 +6,8 @@ RELEASE		= nos96809l1v030204_dalpha
 BOOTFILE	= bootfiles/bootfile_dalpha_$(TERMWIDTH)
 BOOTFILE_DS80	= bootfiles/bootfile_dalpha_$(TERMWIDTH)
 KERNELFILE	= bootfiles/kernel_dalpha
-DIRS		= cmds modules defs sys bootfiles
-DDIRS		= modules bootfiles
+DIRS		= cmds modules sys bootfiles
+DDIRS		= modules bootfiles defs
 
 # Specify which shell should be used
 #WHICHSHELL	= shellplus
@@ -24,7 +24,7 @@ PIPE		= $(shell $(CD) modules; make -f makefile.dragon showpipe)
 MODULECMDS	= $(WHICHSHELL) del echo format makdir merge os9gen prompt tmode
 
 SYS		= $(shell $(CD) sys; make showobjs)
-DEFS		= $(shell $(CD) defs; make showobjs)
+DEFS		= $(shell $(CD) defs; make -f makefile.dragon showobjs)
 ROOTFILES	= 
 STARTUP		= startup.dalpha
 

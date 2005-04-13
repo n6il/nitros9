@@ -122,7 +122,7 @@ d0_dalpha.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0
 
 d1_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=1
 
 d2_dalpha.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
