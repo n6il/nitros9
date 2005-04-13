@@ -6,9 +6,9 @@ RELEASE		= nos96809l1v030204_dragon
 BOOTFILE	= bootfiles/bootfile_d64_$(TERMWIDTH)
 BOOTFILE_DS80	= bootfiles/bootfile_d64_$(TERMWIDTH)
 KERNELFILE	= bootfiles/kernel_d64
-DIRS		= cmds defs sys 
+DIRS		= cmds sys 
 #modules bootfiles
-DDIRS		= modules bootfiles
+DDIRS		= modules bootfiles defs
 
 # Specify which shell should be used
 #WHICHSHELL	= shellplus
@@ -25,7 +25,7 @@ PIPE		= $(shell $(CD) modules; make -f makefile.dragon showpipe)
 MODULECMDS	= $(WHICHSHELL) del echo format makdir merge os9gen prompt tmode
 
 SYS		= $(shell $(CD) sys; make showobjs)
-DEFS		= $(shell $(CD) defs; make showobjs)
+DEFS		= $(shell $(CD) defs; make -f makefile.dragon showobjs)
 ROOTFILES	= 
 STARTUP		= startup.dragon
 
