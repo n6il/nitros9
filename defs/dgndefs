@@ -13,7 +13,10 @@ DGNDEFS set   1
 *          2004/11/16  P.Harvey-Smith.
 * Fixed the stupid error I made in the defines below that made all the
 * non DPxxxxx defines equal to FF00 !!!
-
+*
+*	   2005/04/14  P.Harvey-Smith
+* Added non DP defines for ACIA on Dragon 64/Alpha
+*
          nam   DgnDefs  
          ttl   Dragon I/O Definitions
                          
@@ -96,6 +99,11 @@ DPAciaStat	EQU		$05		ACIA status register
 DPAciaCmd	EQU		$06		ACIA command register
 DPAciaCtrl	EQU		$07		ACIA control register
 
+AciaData	EQU		DPAciaData+IO	ACIA Rx/Tx Register
+AciaStat	EQU		DPAciaStat+IO	ACIA status register
+AciaCmd		EQU		DPAciaCmd+IO	ACIA command register
+AciaCtrl	EQU		DPAciaCtrl+IO	ACIA control register
+
 * DragonDos Cartrage IO for WD2797
 * WD2797 Floppy disk controler, used in DragonDos.
 DPCmdRegD	EQU		$40		command/status			
@@ -113,9 +121,9 @@ DSKCTL		EQU		DPDSKCTL+IO
 
 * Disk IO bitmasks (DragonDos).
 NMIEnD    	EQU		%00100000 
-WPCEnD    	EQU   	%00010000 
-SDensEnD  	EQU   	%00001000 
-MotorOnD  	EQU   	%00000100 
+WPCEnD    	EQU   		%00010000 
+SDensEnD  	EQU   		%00001000 
+MotorOnD  	EQU   		%00000100 
 Drive0D		EQU		%00000000
 Drive1D		EQU		%00000001
 Drive2D		EQU		%00000010
@@ -124,9 +132,9 @@ Drive3D		EQU		%00000011
 
 * Disk IO bitmasks (Dragon Alpha).
 NMIEnA    	EQU		%10000000	This is just a guess, but in current code just used as a flag 
-WPCEnA    	EQU   	%01000000 	According to circuit trace by R.Harding.
-SDensEnA  	EQU   	%00000000 	DDen is pulled low on the alpha, so always enabled.
-MotorOnA  	EQU   	%00010000 	
+WPCEnA    	EQU   		%01000000 	According to circuit trace by R.Harding.
+SDensEnA  	EQU   		%00000000 	DDen is pulled low on the alpha, so always enabled.
+MotorOnA  	EQU   		%00010000 	
 Drive0A		EQU		%00000001
 Drive1A		EQU		%00000010
 Drive2A		EQU		%00000100
