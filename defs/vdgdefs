@@ -1,4 +1,5 @@
          IFNE   VDGDEFS-1
+
 VDGDEFS  set    1
 
 ********************************************************************
@@ -10,7 +11,7 @@ VDGDEFS  set    1
 * Comment
 * ------------------------------------------------------------------
 *          1991/05/07  Alan DeKok
-* Wrote original from VDGint source.
+* Wrote original from VDGInt source.
 
 
          nam    VDGDefs
