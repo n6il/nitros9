@@ -59,11 +59,11 @@ Banner   equ   *
          fcc   /Level /
          fcb   '0+Level
          fcc   / V0/
-         fcb   '0+_$NITROS9VERSION
+         fcb   '0+NOS9VER
          fcc   /.0/
-         fcb   '0+_$NITROS9MAJOR
+         fcb   '0+NOS9MAJ
          fcc   /.0/
-         fcb   '0+_$NITROS9MINOR
+         fcb   '0+NOS9MIN
          fcb   C$CR,C$LF
 * For ROM version, cut down on verbage
          IFEQ  ROM
@@ -71,7 +71,7 @@ Banner   equ   *
          fcb   C$CR,C$LF
          fcc   /(C) 2005 The NitrOS-9 Project/
          fcb   C$CR,C$LF
-         IFNE  _$NITROS9DEVEL
+         IFNE  NOS9DBG
          fcc   "**   DEVELOPMENT BUILD   **"
          fcb   C$CR,C$LF
          fcc   "** NOT FOR DISTRIBUTION! **"

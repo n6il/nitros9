@@ -76,11 +76,11 @@ WideMsg  fcb   C$LF,C$LF
          ENDC
          ENDC
          fcc   " V0"
-         fcb   48+_$NITROS9VERSION
+         fcb   48+NOS9VER
          fcc   ".0"
-         fcb   48+_$NITROS9MAJOR
+         fcb   48+NOS9MAJ
          fcc   ".0"
-         fcb   48+_$NITROS9MINOR
+         fcb   48+NOS9MIN
          fcb   C$LF
 WideMsgL equ   *-WideMsg
 NrrwMsg  fcb   C$LF,C$LF
