@@ -1,35 +1,24 @@
 # The NitrOS-9 Project
 # Project-Wide Rules
 
-# NOTE: THERE IS NO NEED TO MODIFY THIS FILE ANYMORE!
 # Environment variables are now used to specify any directories other
 # than the defaults below:
 #
-#   NITROS9VER   - current version string for NitrOS-9
 #   NITROS9DIR   - base directory of the NitrOS-9 project on your system
-#   COCOTOOLSBIN - directory where CoCoTools binaries are (assembler, etc)
 #
 # If the defaults below are fine, then there is no need to set any
 # environment variables.
 
-#################### DO NOT CHANGE ANYTHING BELOW THIS LINE ####################
 
-# NOTE: All three vars must be set or we set all to zero!
-ifndef	NITROS9VERSION
-NITROS9VERSION	= 0
-NITROS9MAJOR	= 0
-NITROS9MINOR	= 0
-endif
-ifndef	NITROS9MAJOR
-NITROS9VERSION	= 0
-NITROS9MAJOR	= 0
-NITROS9MINOR	= 0
-endif
-ifndef	NITROS9MINOR
-NITROS9VERSION	= 0
-NITROS9MAJOR	= 0
-NITROS9MINOR	= 0
-endif
+# NitrOS-9 version, major and minor release numbers are here
+NOS9VER	= 3
+NOS9MAJ	= 2
+NOS9MIN	= 5
+
+# Set this to 1 to turn on "DEVELOPMENT" message in sysgo
+NOS9DBG = 0
+
+#################### DO NOT CHANGE ANYTHING BELOW THIS LINE ####################
 
 NITROS9VER	= v0$(NITROS9VERSION)0$(NITROS9MAJOR)0$(NITROS9MINOR)
 
@@ -38,9 +27,6 @@ NITROS9DIR	= $(HOME)/nitros9
 endif
 ifndef	CLOUD9DIR
 CLOUD9DIR	= $(HOME)/cloud9
-endif
-ifndef	COCOTOOLSBIN
-COCOTOOLSBIN	= $(HOME)/bin
 endif
 
 C9		= $(CLOUD9DIR)
@@ -54,38 +40,38 @@ DSKDIR		= $(NITROS9DIR)/dsks
 #ASOUT		= o=
 
 # Use the cross assembler
-AS		= $(COCOTOOLSBIN)/mamou -i=$(DEFSDIR)
-#AS		= $(COCOTOOLSBIN)/os9asm -i=$(DEFSDIR)
+AS		= mamou -i=$(DEFSDIR)
+#AS		= os9asm -i=$(DEFSDIR)
 ASOUT		= -o
-AFLAGS		= -q
+AFLAGS		= -q -aNOS9VER=$(NOS9VER) -aNOS9MAJ=$(NOS9MAJ) -aNOS9MIN=$(NOS9MIN) -aNOS9DBG=$(NOS9DBG)
 
 # Commands
-MAKDIR		= $(COCOTOOLSBIN)/os9 makdir
+MAKDIR		= os9 makdir
 RM		= rm -f
 MERGE		= cat
 MOVE		= mv
 ECHO		= /bin/echo
 CD		= cd
-CP		= $(COCOTOOLSBIN)/os9 copy -o=0
+CP		= os9 copy -o=0
 CPL		= $(CP) -l
 TAR		= tar
 CHMOD		= chmod
-IDENT		= $(COCOTOOLSBIN)/os9 ident
+IDENT		= os9 ident
 IDENT_SHORT	= $(IDENT) -s
-#UNIX2OS9	= $(COCOTOOLSBIN)/u2o
-#OS92UNIX	= $(COCOTOOLSBIN)/o2u
-OS9FORMAT	= $(COCOTOOLSBIN)/os9 format
-OS9FORMAT_SS35	= $(COCOTOOLSBIN)/os9 format -t35 -ss -dd
-OS9FORMAT_SS40	= $(COCOTOOLSBIN)/os9 format -t40 -ss -dd
-OS9FORMAT_SS80	= $(COCOTOOLSBIN)/os9 format -t80 -ss -dd
-OS9FORMAT_DS40	= $(COCOTOOLSBIN)/os9 format -t40 -ds -dd
-OS9FORMAT_DS80	= $(COCOTOOLSBIN)/os9 format -t80 -ds -dd
-OS9GEN		= $(COCOTOOLSBIN)/os9 gen
-OS9RENAME	= $(COCOTOOLSBIN)/os9 rename
-OS9ATTR		= $(COCOTOOLSBIN)/os9 attr -q
+#UNIX2OS9	= u2o
+#OS92UNIX	= o2u
+OS9FORMAT	= os9 format
+OS9FORMAT_SS35	= os9 format -t35 -ss -dd
+OS9FORMAT_SS40	= os9 format -t40 -ss -dd
+OS9FORMAT_SS80	= os9 format -t80 -ss -dd
+OS9FORMAT_DS40	= os9 format -t40 -ds -dd
+OS9FORMAT_DS80	= os9 format -t80 -ds -dd
+OS9GEN		= os9 gen
+OS9RENAME	= os9 rename
+OS9ATTR		= os9 attr -q
 OS9ATTR_TEXT	= $(OS9ATTR) -npe -npw -pr -ne -w -r
 OS9ATTR_EXEC	= $(OS9ATTR) -pe -npw -pr -e -w -r
-PADROM		= $(COCOTOOLSBIN)/os9 padrom
+PADROM		= os9 padrom
 MOUNT		= sudo mount
 UMOUNT		= sudo umount
 LOREMOVE	= sudo /sbin/losetup -d
