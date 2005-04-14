@@ -49,9 +49,9 @@ start    equ   *
          fdb   DefBoot    offset to boot module name
          fcb   $01        write protect flag (?)
          fcb   Level      OS level
-         fcb   _$NITROS9VERSION   OS version
-         fcb   _$NITROS9MAJOR     OS major revision
-         fcb   _$NITROS9MINOR     OS minor revision
+         fcb   NOS9VER    OS version
+         fcb   NOS9MAJ    OS major revision
+         fcb   NOS9MIN    OS minor revision
          fcb   CRCOff     feature byte #1
          fcb   $00        feature byte #2
          fcb   0,0,0,0,0,0,0,0  reserved
