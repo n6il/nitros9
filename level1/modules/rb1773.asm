@@ -158,7 +158,7 @@ FBlock   rmb   2              block number for format
 FTask    rmb   1              task number for format
 NMISave  rmb   2
          ELSE
-NMISave  rmb   2
+NMISave  rmb   3
          ENDC
 VIRQPak  rmb   2              Vi.Cnt word for VIRQ
 u00B3    rmb   2              Vi.Rst word for VIRQ
