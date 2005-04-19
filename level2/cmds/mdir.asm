@@ -14,6 +14,9 @@
 *
 *  9       2003/08/24  Rodney Hamilton
 * Corrected leading zero supression, more optimizations.
+*
+*  9r1     2005/04/19  Boisy G. Pitre
+* Made column computation and use more efficient.
 
          nam   MDir
          ttl   Show module information
@@ -26,7 +29,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   9
 
          mod   eom,name,tylg,atrv,start,size
@@ -67,24 +70,28 @@ L00D4    clr   ,-u
          puls  u
          clr   <zflag		clear leading zero supression
          clr   <narrow		default to wide
-         ldd   #$0C30		wide column width=12/last start col=48
-         std   <u000C
+*         ldd   #$0C30		wide column width=12/last start col=48
+*         std   <u000C
          stx   <ParamPtr	save args ptr
          leax  linebuf,u
          stx   <bufptr
          lbsr  writeBUF
-         lda   #$01		standard output
-         ldb   #SS.ScSiz	get size of screen
+         ldd   #$01*256+SS.ScSiz	standard output and get screen size
          os9   I$GetStt 	get it!
          bcc   L00FF		branch if ok
-         cmpb  #E$UnkSvc	unknown service?
-         lbne  L0241		exit with error if not
-         bra   L010C		else ignore screen width test
+*         cmpb  #E$UnkSvc	unknown service?
+*         lbne  L0241		exit with error if not
+*         bra   L010C		else ignore screen width test
 
-L00FF    cmpx  #50		compare against 50
-         bge   L010C		if greater or equal, go on
+L00FF    tfr   x,d
+         cmpb  #40		compare against 51
+         bgt   higher		if greater or equal, go on
          inc   <narrow		else set narrow flag
-         ldd   #$0A15		narrow column width=10/last start col=21
+         lda   #10
+         fcb   $8C
+higher   lda   #12		narrow column width=10/last start col=21
+         pshs  a
+         subb  ,s+
          std   <u000C
 L010C    leay  >header,pcr	point to main header
          lbsr  copySTR
