@@ -16,6 +16,13 @@
 *  11      2003/01/14  Boisy G. Pitre
 * Made option handling more flexible, now they must be preceeded
 * by a dash.
+*
+*  11      2003/01/14  Boisy G. Pitre
+* Made option handling more flexible, now they must be preceeded
+* by a dash.
+*
+*  11r1    2005/04/19  Boisy G. Pitre
+* Made column width code more robust.
 
          nam   Dir
          ttl   Show directory
@@ -28,7 +35,7 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   11
 
          mod   eom,name,tylg,atrv,start,size
@@ -59,6 +66,8 @@ u003C    rmb   2
 u003E    rmb   2
 linebuff rmb   530
 size     equ   .
+
+colsize  equ   16
 
 name     fcs   /Dir/
          fcb   edition
@@ -91,27 +100,22 @@ start    leay  <linebuff,u	get ptr to line buffer
          clr   <extended
          clr   <narrow
          clr   <dircount
-         ldd   #$1030		set default column width and last col
-         std   <u0008
          pshs  y,x,b,a
-         lda   #$01		standard output
-         ldb   #SS.ScSiz	we want screen size
+         ldd   #$01*256+SS.ScSiz standard output and screen size call
          os9   I$GetStt 	get it
          bcc   L0120		branch if gotten
-         cmpb  #E$UnkSvc	unknown service error?
-         beq   NoScSiz		branch if so
+         ldx   #80   
+L0120    tfr   x,d
+         cmpb  #51
+         bgt   higher
+         inc   <narrow
+         lda   #10
+         fcb   $8C
+higher   lda   #16
+         pshs  a
+         subb  ,s+
+         std   <u0008		save new column width and last column
          puls  y,x,b,a
-         lbra  L0268
-L0120    cmpx  #64		at least this wide?
-         bge   NoScSiz		branch if so
-         cmpx  #51		51 columns?
-         blt   Do32
-         ldd   #$0A28
-         bra   ScSizNr
-Do32     ldd   #$0A14
-ScSizNr  inc   <narrow		else we're going narrow
-         std   <u0008
-NoScSiz  puls  y,x,b,a
          pshs  x		save start of command line
          lbsr  GetOpts		parse for options
          puls  x		get start of command line
