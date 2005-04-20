@@ -14,7 +14,7 @@ KERNEL_1773_50HZ	= $(MD)/rel_80_50hz $(MD)/boot_1773_6ms $(MD)/krn
 BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
-		$(MD)/ddd0_40d.dd \
+		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io $(MD)/vdgint.io \
@@ -27,7 +27,7 @@ BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 BOOTFILE_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
-		$(MD)/ddd0_80d.dd \
+		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io $(MD)/vdgint.io \
@@ -40,7 +40,7 @@ BOOTFILE_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 BOOTFILE_40D_50HZ	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
-		$(MD)/ddd0_40d.dd \
+		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io $(MD)/vdgint.io \
@@ -53,7 +53,7 @@ BOOTFILE_40D_50HZ	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 BOOTFILE_80D_50HZ	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
-		$(MD)/ddd0_80d.dd \
+		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn $(MD)/cc3io.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/windint.io $(MD)/vdgint.io \
