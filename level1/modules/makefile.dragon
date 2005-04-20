@@ -135,10 +135,10 @@ adisk.dr: ddisk.asm
 
 
 rel: rel.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=1
 
 rel_dalpha: rel.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0 -aDragonAlpha=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=1 -aDragonAlpha=1
 	
 
 sysgo_dd: sysgo.asm
