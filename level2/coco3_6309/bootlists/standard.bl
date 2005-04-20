@@ -101,7 +101,7 @@
 *../MODULES/RBF/d1_80d.dd
 * D2 - drive 2 - choose one if needed
 *../MODULES/RBF/d2_35s.dd
-*../MODULES/RBF/d2_40d.dd
+../MODULES/RBF/d2_40d.dd
 *../MODULES/RBF/d2_80d.dd
 * D3 - drive 3 - choose if needed
 *../MODULES/RBF/d3_35s.dd
