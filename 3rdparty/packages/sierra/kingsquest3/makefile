@@ -45,7 +45,7 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DISK_1) $(DISK_2) $(DISK_3)
 	$(CD) $(6809L2); make
-	$(OS9FORMAT_DS40) $(DISK_1) -n"King's Quest III Disk 1"
+	$(OS9FORMAT_DS40) -q $(DISK_1) -n"King's Quest III Disk 1"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK_1) -b=os9boot -t=kernel_1773
@@ -60,9 +60,9 @@ dsk:	all
 	$(OS9RENAME) $(DISK_1),CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_D1) $(DISK_1),.
 	$(CP) $(SUPPORTFILES_D1) $(DISK_1),.
-	$(OS9FORMAT_DS40) $(DISK_2) -n"King's Quest III Disk 2"
+	$(OS9FORMAT_DS40) -q $(DISK_2) -n"King's Quest III Disk 2"
 	$(CP) $(SUPPORTFILES_D2) $(DISK_2),.
-	$(OS9FORMAT_DS40) $(DISK_3) -n"King's Quest III Disk 3"
+	$(OS9FORMAT_DS40) -q $(DISK_3) -n"King's Quest III Disk 3"
 	$(CP) $(SUPPORTFILES_D3) $(DISK_3),.
 
 dskcopy: dsk
