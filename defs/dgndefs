@@ -17,6 +17,10 @@ DGNDEFS set   1
 *	   2005/04/14  P.Harvey-Smith
 * Added non DP defines for ACIA on Dragon 64/Alpha
 *
+*	   2005/04/21  P.Harvey-Smith
+* Fixed errors in defines for WD2797 non-DP registers.
+*
+
          nam   DgnDefs  
          ttl   Dragon I/O Definitions
                          
@@ -74,10 +78,10 @@ DPTrkRegA	EQU		$2E		Track register
 DPSecRegA	EQU		$2D		Sector register
 DPDataRegA	EQU		$2C		Data register
 
-CmdRegA		EQU		DPCMDREG+IO	command/status			
-TrkRegA		EQU		DPTRKREG+IO	Track register
-SecRegA		EQU		DPSECREG+IO	Sector register
-DataRegA	EQU		DPDATAREG+IO	Data register
+CmdRegA		EQU		DPCMDREGA+IO	command/status			
+TrkRegA		EQU		DPTRKREGA+IO	Track register
+SecRegA		EQU		DPSECREGA+IO	Sector register
+DataRegA	EQU		DPDATAREGA+IO	Data register
 
 * Constants for Alpha AY-8912 sound chip, which is used to control
 * Drive select and motor on the Alpha
@@ -111,10 +115,10 @@ DPTrkRegD	EQU		$41		Track register
 DPSecRegD	EQU		$42		Sector register
 DPDataRegD	EQU		$43		Data register
 
-CmdRegD		EQU		DPCMDREG+IO	command/status			
-TrkRegD		EQU		DPTRKREG+IO	Track register
-SecRegD		EQU		DPSECREG+IO	Sector register
-DataRegD	EQU		DPDATAREG+IO	Data register
+CmdRegD		EQU		DPCMDREGD+IO	command/status			
+TrkRegD		EQU		DPTRKREGD+IO	Track register
+SecRegD		EQU		DPSECREGD+IO	Sector register
+DataRegD	EQU		DPDATAREGD+IO	Data register
 
 DPDSKCTL	EQU		$48		Disk DS/motor control reg
 DSKCTL		EQU		DPDSKCTL+IO		
