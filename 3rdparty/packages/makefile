@@ -1,6 +1,6 @@
 include ../../rules.mak
 
-dirs	= basic09 cc fsim2 koronis kq3 kyumgai lsl mm multivue rof subsim uucpbb
+dirs	= basic09 deskmate3 cc fsim2 koronis kq3 kyumgai lsl mm multivue rof subsim uucpbb
 
 # Make all components
 all:
