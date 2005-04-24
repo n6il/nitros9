@@ -41,9 +41,19 @@
 *	http://www.onastick.clara.net/dragon.html and modified 
 * 	for NitrOS9.
 * 
-* 2004-1127, P.Harvey-Smith.
+* 2004-11-27, P.Harvey-Smith.
 * 	Reformatted with tab=8.
 *
+* 2005-04-22, P.Harvey-Smith.
+*	Hopefully fixed a bug that was causing the Dragon 64 target to
+*	crash and burn when reading disks, this made a successfull boot 
+*	almost imposible ! Fixed by writing disk command before writing
+*	disc control register, the Alpha target needs them the other way 
+*	around. Still has a problem doing lots of retries.
+*
+* 2005-04-24, P.Harvey-Smith.
+*	Fixed constant lost data errors reading disks, again by slightly 
+*	re-ordering the instructions in the read data loop.
 *
 
          nam   DDisk
@@ -72,10 +82,10 @@ PIADB		EQU	DPPIADB+IO	; Side A Data/DDR
 PIACRB		EQU	DPPIACRB+IO	; Side A Control.
 
 ;WD2797 Floppy disk controler, used in Alpha Note registers in reverse order !
-DPCMDREG	EQU	DPCmdRegA		; command/status			
-DPTRKREG	EQU	DPTrkRegA		; Track register
-DPSECREG	EQU	DPSecRegA		; Sector register
-DPDATAREG	EQU	DPDataRegA		; Data register
+DPCMDREG	EQU	DPCmdRegA	; command/status			
+DPTRKREG	EQU	DPTrkRegA	; Track register
+DPSECREG	EQU	DPSecRegA	; Sector register
+DPDATAREG	EQU	DPDataRegA	; Data register
 
 CMDREG		EQU	DPCMDREG+IO	; command/status			
 TRKREG		EQU	DPTRKREG+IO	; Track register
@@ -144,6 +154,8 @@ BuffPtr	 	rmb	2	; Buffer pointer
 SideSel	 	rmb	1	; Side select.
 NMIFlag	 	rmb	1	; Flag for Alpha, should this NMI do an RTI ?
 
+DskError	rmb	1	
+
 VIRQPak  	rmb   	2	; Vi.Cnt word for VIRQ
 u00B3    	rmb   	2	; Vi.Rst word for VIRQ
 u00B5    	rmb   	1	; Vi.Stat byte for VIRQ (drive motor timeout)
@@ -158,16 +170,16 @@ name    equ   	*
 
 VIRQCnt fdb   	TkPerSec*4     Initial count for VIRQ (4 seconds)
 
-start   lbra  	Init	; Initialise Driver
-        lbra  	Read	; Read sector
-        lbra  	Write	; Write sector
-        lbra 	GetStat	; Get status
-        lbra  	SetStat	; Set status
-        lbra  	Term	; Terminate device
+start   lbra  	Init		; Initialise Driver
+        lbra  	Read		; Read sector
+        lbra  	Write		; Write sector
+        lbra 	GetStat		; Get status
+        lbra  	SetStat		; Set status
+        lbra  	Term		; Terminate device
 
-IRQPkt   fcb   	$00 	; Normal bits (flip byte)
-         fcb   	$01	; Bit 1 is interrupt request flag (Mask byte)
-         fcb   	10	; Priority byte
+IRQPkt   fcb   	$00 		; Normal bits (flip byte)
+         fcb   	$01		; Bit 1 is interrupt request flag (Mask byte)
+         fcb   	10		; Priority byte
 
 
 * Init
@@ -298,6 +310,9 @@ ReadDataExit
 ; Read Retry
 
 ReadDataRetry    
+
+	lbsr	RetryErrorDisplay
+
 	bcc   	ReadDataWithRetry	; Retry entry point
         pshs  	x,b,a
         lbsr  	ResetTrack0	; Reset track 0
@@ -318,6 +333,7 @@ DoReadData
         pshs  	y,dp,cc
         ldb   	#ReadCmnd	; Read command
         bsr   	PrepDiskRW	; Prepare disk 
+
 DoReadDataLoop    
 	lda   	<DPPIACRB	; Is data ready ?
         bmi   	ReadDataReady	; Yes : read it
@@ -337,6 +353,9 @@ ReadDataReady
         bra   	ReadDataWait	; do next
 	 
 PrepDiskRW    
+
+	clr	DskError,u
+	
 	lda   	#$FF		; Make DP=$FF, to make io easier
         tfr   	a,dp
         lda   	<DPAciaCmd 	; Save ACIA Command reg	
@@ -368,11 +387,12 @@ L00DE   orcc  	#$50		; Mask inturrupts
          
 	IFNE	DragonAlpha	; Turn on drives & NMI
 	lbsr	AlphaDskCtl
+        stb   	<DPCmdReg	; issue command to controler 
 	ELSE
-        sta   	>DskCtl
+        stb   	<DPCmdReg	; issue command to controler 
+        sta   	<DPDskCtl
 	ENDC
 		 		 
-        stb   	<DPCmdReg	; issue command to controler 
 		 
 	rts  
 		 
@@ -386,7 +406,7 @@ RestoreSavedIO
 	IFNE	DragonAlpha	; Turn off drives & NMI
 	lbsr	AlphaDskCtl
 	ELSE
-        sta   	>DskCtl
+        sta   	<DPDskCtl
 	ENDC
          
 	lda   	>SavePIA0CRB,u	; Recover PIA0 state	
@@ -440,7 +460,7 @@ DoWrite lbsr  	SeekTrack	; Seek to correct track & sector
 		 
 WriteTrackCmd    
 	lbsr  	PrepDiskRW	; Prepare for disk r/w
-        lda   	,x+				; get byte to write
+        lda   	,x+		; get byte to write
 L015A   ldb   	<DPPIACRB	; Ready to write ?
         bmi   	WriteDataReady	; Yes, do it.
         leay  	-1,y
@@ -479,7 +499,10 @@ RealNMI
         bsr   	RestoreSavedIO	; Restore saved IO states
         puls  	y,dp,cc
         ldb   	>CmdReg
-        bitb  	#LostMask	; check for lost record
+
+	stb	DskError,u
+
+	bitb  	#LostMask	; check for lost record
         lbne  	RetReadError	; yes : return read error
         lbra  	TestForError	; esle test for other errors
 	 
@@ -574,7 +597,7 @@ SeekT9  LDB   	PD.Typ,Y  	; Dragon and Coco disks
         BITB  	#TYP.SBO       	; count sectors from 1 no
         BNE   	SeekT8 
         PULS  	B 
-        INCB						; so increment sector number
+        INCB			; so increment sector number
         BRA   	SeekT11 
 SeekT8  PULS  	B		; Count from 0 for other types
 
@@ -949,6 +972,228 @@ MotorRunning
 	RTS
 
 	ENDC
+	
+
+ShowReg
+	pshs	d,x,y,cc,dp,u
+	pshs	x
+	leax	RegBuffD,pcr
+	bsr	RegDToHex
+	
+	puls	d
+	leax	RegBuffX,pcr
+	bsr	RegDToHex
+	
+	tfr	Y,D
+	leax	RegBuffY,pcr
+	bsr	RegDToHex
+
+	tfr	u,d
+	leax	RegBuffU,pcr
+	bsr	RegDToHex
+
+	tfr	s,d
+	leax	RegBuffS,pcr
+	bsr	RegDToHex
+	
+	tfr	cc,a
+	leax	RegBuffCC,pcr
+	bsr	RegAToHex
+
+	tfr	dp,a
+	leax	RegBuffDP,pcr
+	bsr	RegAToHex
+
+	lda	#1			* stdout
+	leax	RegBuff,pcr
+	ldy	#RegBuffEnd-RegBuff
+	os9	I$write
+	
+ShowRegEnd
+	puls	d,x,y,cc,dp,u
+	rts
+	
+RegDtoHex
+	pshs	d
+	bsr	RegAToHex
+	tfr	b,a
+	bsr	RegAToHex
+	puls	d
+	rts
+	
+RegAToHex
+	pshs	d,y
+	
+	leay	HexTable,pcr
+	tfr	a,b
+	anda	#$f0
+	lsra	
+	lsra
+	lsra
+	lsra
+	lda	a,y
+	sta	,x+
+	tfr	b,a
+	anda	#$0f
+	lda	a,y
+	sta	,x+
+		
+	puls	d,y
+	rts
+
+RetryErrorDisplay
+	pshs	a,x,cc
+	
+	lda	DskError,u
+	leax	ErrCode,pcr
+	bsr	RegAToHex
+	
+	leax	RetryMess,pcr
+	bsr	PrintStdOut
+	puls	a,x,cc,pc
+
+
+PrintDot
+	pshs	x,cc
+	leax	DotMess,pcr
+	bsr	PrintStdOut
+	puls	x,cc,pc
+	
+
+PrintReadDone
+	pshs	x,cc
+	leax	ReadDoneMess,pcr
+	bsr	PrintStdOut
+	puls	x,cc,pc
+
+PrintReadDoneFail
+	pshs	x,cc
+	leax	ReadDoneFailMess,pcr
+	bsr	PrintStdOut
+	puls	x,cc,pc
+
+
+PrintStdOut
+	pshs	d,x,y,u,cc,dp
+	leax	-2,x
+	ldy	,x++
+	lda	#1
+	os9	I$write
+	puls	d,x,y,u,cc,dp,pc
+
+PrintCtrlByte
+	pshs	a,cc,x
+	
+	leax	CtrlCode,pcr
+	bsr	RegAToHex
+	
+	leax	CtrlMess,pcr
+	ldy	#CtrlMessLen
+	bsr	PrintStdOut
+	puls	a,cc,x,pc
+
+PrintCmdByte
+	pshs	a,cc,x
+	
+	leax	CmdCode,pcr
+	bsr	RegAToHex
+	
+	leax	CmdMess,pcr
+	bsr	PrintStdOut
+	puls	a,cc,x,pc
+		
+PrintNMIMess
+	pshs	x,cc
+	leax	NMIMess,pcr
+	bsr	PrintStdOut
+	puls	x,cc,pc
+
+
+PrintTimeout
+	pshs	x,cc
+	leax	TimeoutMess,pcr
+	bsr	PrintStdOut
+	puls	x,cc,pc
+
+RegBuff	
+	fcc	"A B  X    Y    U   "
+	fcb	C$CR,C$LF
+RegBuffD
+	fcc	"0000 "
+RegBuffX
+	fcc	"0000 "
+RegBuffY
+	fcc	"0000 "
+RegBuffU
+	fcc	"0000 "
+RegBuffS
+	fcc	"0000 "
+RegBuffCC
+	fcc	"00 "
+RegBuffDP
+	fcc	"00 "
+	
+	fcb	C$CR,C$LF,0
+RegBuffEnd
+
+HexTable
+	fcc	"0123456789ABCDEF"
+	
+
+	fdb	RetryMessLen
+RetryMess
+	fcc	"Read error: retry ("
+ErrCode fcc	"00)"	
+	fcb	C$CR,C$LF,0
+
+RetryMessLen	EQU	*-RetryMess
+
+
+	fdb	CtrlMessLen
+CtrlMess
+	fcc	"Control byte ("
+CtrlCode fcc	"00)"	
+	fcb	C$CR,C$LF,0
+CtrlMessLen	EQU	*-CtrlMess
+
+
+
+	fdb	CtrlMessLen
+CmdMess
+	fcc	"Command byte ("
+CmdCode fcc	"00)"	
+	fcb	C$CR,C$LF,0
+CmdMessLen	EQU	*-CmdMess
+
+	fdb	1
+DotMess	fcc	"."
+	fcb	0
+	
+
+	fdb	ReadDoneMessLen
+ReadDoneMess
+	fcc	"Read Succeded"
+	fcb	C$CR,C$LF,0
+ReadDoneMessLen	EQU	*-ReadDoneMess
+
+	fdb	ReadDoneFailMessLen
+ReadDoneFailMess
+	fcc	"Read Failed"
+	fcb	C$CR,C$LF,0
+ReadDoneFailMessLen	EQU	*-ReadDoneFailMess
+
+
+	fdb	NMIMessLen
+NMIMess
+	fcc	"In NMI"
+	fcb	C$CR,C$LF,0
+NMIMessLen	EQU	*-NMIMess
+
+	fdb	TimeoutMessLen
+TimeoutMess
+	fcc	"Timout !"
+	fcb	C$CR,C$LF,0
+TimeoutMessLen	EQU	*-TimeoutMess
 
         emod
 eom     equ   *
