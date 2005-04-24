@@ -21,6 +21,13 @@
 * Integrated changes needed for the co51 driver from Dragon Data
 * OS-9.
 *
+* 2005/04/24, P.Harvey-Smith.
+* Added cursor flash call to AltIRQ routine, this decrements a
+* counter and when zero calls the routine contained in V.Flash
+* ccio initialises this to point to an rts, the individual COxx 
+* routine can over-ride this in it's init, this should point to
+* a routine to flash the cursor which should end in an rts.
+*
 
          nam   CCIO
          ttl   OS-9 Level One V2 CoCo I/O driver
@@ -78,6 +85,10 @@ Init
 L002E    sta   ,x+		clear mem
          decb			decrement counter
          bne   L002E		continue if more
+	 
+	leax	FlashCursor,pcr	* Point to dummy cursor flash
+	stx	V.Flash,u	* Setup cursor flash
+	 
          coma			A = $FF
          comb			B = $FF
          stb   <V.Caps,u
@@ -92,7 +103,7 @@ L002E    sta   ,x+		clear mem
          leax  >XY2Addr,pcr	get address of XY2Addr
          stx   <V.CnvVct,u
          ldd   <IT.PAR,y	get parity and baud
-         lbra  SetupTerm		process them
+         lbra  SetupTerm	process them
 
 * Term
 *
@@ -120,9 +131,10 @@ Term     pshs  cc
 *    CC = carry set on error
 *    B  = error code
 *
-Read    pshs	y
-	ldy	#$aa57
-	puls	y
+Read   
+*	pshs	y
+*	ldy	#$aa57
+*	puls	y
 
 	leax   V.InBuf,u		point X to input buffer
          ldb   V.IBufT,u	get tail pointer
@@ -159,7 +171,13 @@ L00A3    rts
 *
 * IRQ routine for keyboard
 *
-AltIRQ   ldu   >D.KbdSta	get keyboard static
+AltIRQ  
+*        pshs	y
+*	ldy	#$aa58
+*	puls	y
+
+
+	ldu   >D.KbdSta	get keyboard static
          ldb   <V.CFlg1,u	graphics screen currently being displayed?
          beq   L00B7		branch if not
          ldb   <V.Alpha,u	alpha mode?
@@ -188,7 +206,19 @@ l@       stb   <V.Spcl,u	clear for next time
          comb  
          sta   <V.2Key1,u
          std   <V.2Key2,u
-L00E4    jmp   [>D.Clock]	jump into clock module
+
+CheckFlash
+	dec	V.FlashCount,u	Get flash counter
+	beq	FlashTime	count zero, flash cursor
+	bra	AltIRQEnd	Otherwise just call clock module
+	
+FlashTime	
+	jsr	[V.Flash,u]	Call flash routine
+	lda	#CFlash50hz	Re-init count
+	sta	V.FlashCount,u	
+
+AltIRQEnd    
+	jmp   [>D.Clock]	jump into clock module
 
 L00E8    comb
          stb   $02,x		strobe one column
@@ -209,7 +239,8 @@ L00F1
          beq   L010A
          decb
 L0105    stb   <V.ClkCnt,u
-         bra   L00E4
+*         bra   AltIRQEnd
+	bra	CheckFlash
 L010A    ldb   #$05
          bra   L011A
 L010E    sta   <V.6F,u
@@ -246,7 +277,7 @@ WakeIt   ldb   #S$Wake		get wake signal
 L0153    beq   L0158		branch if none
          os9   F$Send		else send wakeup signal
 L0158    clr   V.WAKE,u		clear process to wake flag
-         bra   L00E4		and move along
+         bra   AltIRQEnd	and move along
 
 L015C    clra
          clrb
@@ -1222,6 +1253,11 @@ DingDuration
 L0805    inca
          bne   L0805
          rts
+
+* Dummy flash cursor routine, can be replaced by COxx module.
+
+FlashCursor
+	rts		
 
          emod
 eom      equ   *
