@@ -1,6 +1,9 @@
 #
 #modules/makefile.dragon
 #
+# 2005-04-24, P.Harvey-Smith, 
+#	made descriptors for both 40 & 80 track drives for Dragon 64.
+# 		
 
 include ../../rules.mak
 
@@ -31,7 +34,8 @@ CLOCKS          = clock_60hz clock_50hz \
 
 RBF		= rbf.mn \
 		ddisk.dr \
-		ddd0_d64.dd d0_d64.dd d1_d64.dd d2_d64.dd d3_d64.dd \
+		ddd0_40_d64.dd d0_40_d64.dd d1_40_d64.dd d2_40_d64.dd d3_40_d64.dd \
+		ddd0_80_d64.dd d0_80_d64.dd d1_80_d64.dd d2_80_d64.dd d3_80_d64.dd \
 		adisk.dr \
 		ddd0_dalpha.dd d0_dalpha.dd d1_dalpha.dd d2_dalpha.dd d3_dalpha.dd
 		
@@ -96,19 +100,35 @@ DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 #Dragon 64 Drives can be double or single sided, but assume 
 # that /d0 and /d1 are double sided 40 track.
 
-ddd0_d64.dd: ddiskdesc.asm
+ddd0_40_d64.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1
 
-d0_d64.dd: ddiskdesc.asm
+d0_40_d64.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0
 
-d1_d64.dd: ddiskdesc.asm
+d1_40_d64.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1
 
-d2_d64.dd: ddiskdesc.asm
+d2_40_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2
+
+d3_40_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=3
+
+
+ddd0_80_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1
+
+d0_80_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0
+
+d1_80_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1
+
+d2_80_d64.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
 
-d3_d64.dd: ddiskdesc.asm
+d3_80_d64.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3
 
 
