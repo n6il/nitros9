@@ -54,7 +54,9 @@
 * 2005-04-24, P.Harvey-Smith.
 *	Fixed constant lost data errors reading disks, again by slightly 
 *	re-ordering the instructions in the read data loop.
-*
+*	
+* 2005-04-24, P.Harvey-Smith.
+*	Removed debugging code/messages.
 
          nam   DDisk
          ttl   Dragon Floppy driver
@@ -154,7 +156,7 @@ BuffPtr	 	rmb	2	; Buffer pointer
 SideSel	 	rmb	1	; Side select.
 NMIFlag	 	rmb	1	; Flag for Alpha, should this NMI do an RTI ?
 
-DskError	rmb	1	
+DskError	rmb	1	; hardware disk error	
 
 VIRQPak  	rmb   	2	; Vi.Cnt word for VIRQ
 u00B3    	rmb   	2	; Vi.Rst word for VIRQ
@@ -192,7 +194,7 @@ IRQPkt   fcb   	$00 		; Normal bits (flip byte)
 *    CC = carry set on error
 *    B  = error code
 *
-DragonDebug	EQU	1
+DragonDebug	EQU	0
 Init    
 	IFNE	DragonDebug
 	pshs	x		; This is here so I can find disk driver in mess
@@ -310,9 +312,6 @@ ReadDataExit
 ; Read Retry
 
 ReadDataRetry    
-
-	lbsr	RetryErrorDisplay
-
 	bcc   	ReadDataWithRetry	; Retry entry point
         pshs  	x,b,a
         lbsr  	ResetTrack0	; Reset track 0
@@ -973,227 +972,6 @@ MotorRunning
 
 	ENDC
 	
-
-ShowReg
-	pshs	d,x,y,cc,dp,u
-	pshs	x
-	leax	RegBuffD,pcr
-	bsr	RegDToHex
-	
-	puls	d
-	leax	RegBuffX,pcr
-	bsr	RegDToHex
-	
-	tfr	Y,D
-	leax	RegBuffY,pcr
-	bsr	RegDToHex
-
-	tfr	u,d
-	leax	RegBuffU,pcr
-	bsr	RegDToHex
-
-	tfr	s,d
-	leax	RegBuffS,pcr
-	bsr	RegDToHex
-	
-	tfr	cc,a
-	leax	RegBuffCC,pcr
-	bsr	RegAToHex
-
-	tfr	dp,a
-	leax	RegBuffDP,pcr
-	bsr	RegAToHex
-
-	lda	#1			* stdout
-	leax	RegBuff,pcr
-	ldy	#RegBuffEnd-RegBuff
-	os9	I$write
-	
-ShowRegEnd
-	puls	d,x,y,cc,dp,u
-	rts
-	
-RegDtoHex
-	pshs	d
-	bsr	RegAToHex
-	tfr	b,a
-	bsr	RegAToHex
-	puls	d
-	rts
-	
-RegAToHex
-	pshs	d,y
-	
-	leay	HexTable,pcr
-	tfr	a,b
-	anda	#$f0
-	lsra	
-	lsra
-	lsra
-	lsra
-	lda	a,y
-	sta	,x+
-	tfr	b,a
-	anda	#$0f
-	lda	a,y
-	sta	,x+
-		
-	puls	d,y
-	rts
-
-RetryErrorDisplay
-	pshs	a,x,cc
-	
-	lda	DskError,u
-	leax	ErrCode,pcr
-	bsr	RegAToHex
-	
-	leax	RetryMess,pcr
-	bsr	PrintStdOut
-	puls	a,x,cc,pc
-
-
-PrintDot
-	pshs	x,cc
-	leax	DotMess,pcr
-	bsr	PrintStdOut
-	puls	x,cc,pc
-	
-
-PrintReadDone
-	pshs	x,cc
-	leax	ReadDoneMess,pcr
-	bsr	PrintStdOut
-	puls	x,cc,pc
-
-PrintReadDoneFail
-	pshs	x,cc
-	leax	ReadDoneFailMess,pcr
-	bsr	PrintStdOut
-	puls	x,cc,pc
-
-
-PrintStdOut
-	pshs	d,x,y,u,cc,dp
-	leax	-2,x
-	ldy	,x++
-	lda	#1
-	os9	I$write
-	puls	d,x,y,u,cc,dp,pc
-
-PrintCtrlByte
-	pshs	a,cc,x
-	
-	leax	CtrlCode,pcr
-	bsr	RegAToHex
-	
-	leax	CtrlMess,pcr
-	ldy	#CtrlMessLen
-	bsr	PrintStdOut
-	puls	a,cc,x,pc
-
-PrintCmdByte
-	pshs	a,cc,x
-	
-	leax	CmdCode,pcr
-	bsr	RegAToHex
-	
-	leax	CmdMess,pcr
-	bsr	PrintStdOut
-	puls	a,cc,x,pc
-		
-PrintNMIMess
-	pshs	x,cc
-	leax	NMIMess,pcr
-	bsr	PrintStdOut
-	puls	x,cc,pc
-
-
-PrintTimeout
-	pshs	x,cc
-	leax	TimeoutMess,pcr
-	bsr	PrintStdOut
-	puls	x,cc,pc
-
-RegBuff	
-	fcc	"A B  X    Y    U   "
-	fcb	C$CR,C$LF
-RegBuffD
-	fcc	"0000 "
-RegBuffX
-	fcc	"0000 "
-RegBuffY
-	fcc	"0000 "
-RegBuffU
-	fcc	"0000 "
-RegBuffS
-	fcc	"0000 "
-RegBuffCC
-	fcc	"00 "
-RegBuffDP
-	fcc	"00 "
-	
-	fcb	C$CR,C$LF,0
-RegBuffEnd
-
-HexTable
-	fcc	"0123456789ABCDEF"
-	
-
-	fdb	RetryMessLen
-RetryMess
-	fcc	"Read error: retry ("
-ErrCode fcc	"00)"	
-	fcb	C$CR,C$LF,0
-
-RetryMessLen	EQU	*-RetryMess
-
-
-	fdb	CtrlMessLen
-CtrlMess
-	fcc	"Control byte ("
-CtrlCode fcc	"00)"	
-	fcb	C$CR,C$LF,0
-CtrlMessLen	EQU	*-CtrlMess
-
-
-
-	fdb	CtrlMessLen
-CmdMess
-	fcc	"Command byte ("
-CmdCode fcc	"00)"	
-	fcb	C$CR,C$LF,0
-CmdMessLen	EQU	*-CmdMess
-
-	fdb	1
-DotMess	fcc	"."
-	fcb	0
-	
-
-	fdb	ReadDoneMessLen
-ReadDoneMess
-	fcc	"Read Succeded"
-	fcb	C$CR,C$LF,0
-ReadDoneMessLen	EQU	*-ReadDoneMess
-
-	fdb	ReadDoneFailMessLen
-ReadDoneFailMess
-	fcc	"Read Failed"
-	fcb	C$CR,C$LF,0
-ReadDoneFailMessLen	EQU	*-ReadDoneFailMess
-
-
-	fdb	NMIMessLen
-NMIMess
-	fcc	"In NMI"
-	fcb	C$CR,C$LF,0
-NMIMessLen	EQU	*-NMIMess
-
-	fdb	TimeoutMessLen
-TimeoutMess
-	fcc	"Timout !"
-	fcb	C$CR,C$LF,0
-TimeoutMessLen	EQU	*-TimeoutMess
 
         emod
 eom     equ   *
