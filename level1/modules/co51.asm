@@ -29,7 +29,10 @@
 * is XORed onto the screen. Commented character drawing routines
 * and replaced the V51xx names with more meaningful ones.
 *
-
+*		   2005/04/24  P.Harvey-Smith.
+* Addded routines to flash the cursor, this is as it was in the 
+* Dragon Data 51 column driver.
+*
          nam   CO51
          ttl   51x24 Graphics Console Output Subroutine for CCIO
 
@@ -62,10 +65,6 @@ start    lbra  Init
          lbra  Term
 
 Init 
-*	pshs	y
-*	ldy	#$aa69
-*	puls	y
-
 	pshs  u,a
 
 	 ldd   #ScreenSize+$100	* Request a screenful of ram + $100 bytes
@@ -91,6 +90,10 @@ L0068    stx   V.51ScrnA,u
          lbsr  DoCLS
 	 ldb   V.COLoad,u
          orb   #ModCo51		* set to CO51 found (?)
+	 
+	leax	FlashCursor,pcr	* Get address of cursor flash routine
+	stx	V.Flash,u
+	
 InitSaveExit
 	 stb   V.COLoad,u
          clrb  
@@ -115,17 +118,19 @@ Term     pshs  y,x
 *        Y = path desc ptr
 
 Write 
-*	pshs	y
-*	ldy	#$aa56
-*	puls	y
 	
-L012C   ldb   V.51EscSeq,u
+L012C   inc	V.Noflash,u	* Flag do not flash cursor
+	ldb   V.51EscSeq,u
          bne   L0165
          cmpa  #$1B		* escape?
          bne   CheckForNormal
          inc   V.51EscSeq,u	* flag ESC seq
+
+WriteExit2
+	 clr	V.NoFlash,u	* Allow cursor to flash
          clrb  
 L0139    rts   
+
 
 CheckForNormal    
 	 cmpa  #$20
@@ -140,7 +145,9 @@ L0148    tst   ,x
          bne   L0150
 CancelEscSequence    
 	 clr   V.51EscSeq,u
-         rts   
+WriteExit
+	clr	V.NoFlash,u
+	rts   
 
 L0150    cmpa  ,x+
          bne   L0161
@@ -148,7 +155,8 @@ L0150    cmpa  ,x+
          leax  >CtrlCharDispatch,pcr
          leax  d,x
          stx   V.51CtrlDispatch,u
-         jmp   ,x
+         jsr   ,x
+	bra	WriteExit
 
 L0161    leax  $02,x
          bra   L0148
@@ -191,6 +199,8 @@ L01A5
          std   V.51OldCursorPosX,u
          dec   V.51CursorChanged,u
 	 lbsr	DoDisplayCursor		* Display cursor
+
+	lbra	WriteExit2
 	 clrb  				* Flag no error
          rts   				* Return to caller
 	 
@@ -695,21 +705,25 @@ L04B9    dec   V.51CursorChanged,u
 * Display Cursor.
 *
 DoDisplayCursor
+	inc	V.NoFlash,u		* Flag in flash
 	tst	V.51CursorOn,u		* Get cursor on flag
 	bne	DoCursorOnEnd		* Yes : don't re-display
 	bsr	DoCursorCommon		* Display cursor
 	inc	V.51CursorOn,u		* Flag cursor on
 DoCursorOnEnd	
+	dec	V.NoFlash,u		* Flag flash done
 	rts
 *
 * Erase cursor
 *
 DoEraseCursor
+	inc	V.NoFlash,u		* Flag in Flash
 	tst	V.51Cursoron,u		* Get cursor on flag
 	beq	DoEraseCursorEnd	* no : don't atempt to turn off
 	bsr	DoCursorCommon		* Hide cursor
 	clr	V.51CursorOn,u		* Flag cursor off
 DoEraseCursorEnd	
+	dec	V.NoFlash,u		* Flag Flash done
 	rts
 
 DoCursorCommon
@@ -735,6 +749,21 @@ GetStat
 SetStat  comb  
          ldb   #E$UnkSvc
          rts   
+
+*
+* Flash cursor, called by IRQ routine from CCIO
+*
+
+FlashCursor
+	tst	V.NoFlash,u		* Should we flash ?
+	bne	FlashExit		* No: just return
+	tst	V.51CursorOn,u		* Is cursor on ?
+	bne	FlashOff		* Yep : turn off
+	bra	DoDisplayCursor		* Else turn it on
+FlashOff
+	bra	DoEraseCursor
+FlashExit
+	rts
 
 
 * control characters dispatch table
