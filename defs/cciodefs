@@ -20,6 +20,9 @@ CCIODEFS set   1
 *          2005/04/09  P.Harvey-Smith.
 * Decoded rest of the CO51 memory locations.
 *
+*	   2005/04/24  P.Harvey-Smith.
+* Added variables for cursor flash, currently only implemented in co51
+*
 
          nam   CCIODefs  
          ttl   CoCo 1/2 I/O Definitions
@@ -107,23 +110,27 @@ V.CO32E  rmb   2          CO32 entry point
 V.CO80E  rmb   2          CO80 entry point
 V.CO51E  rmb   2          CO51 entry point
 
+V.Flash			rmb	2	Cursor flash routine address.
+v.FlashCount		rmb	1	Cursor flash count
+V.NoFlash		rmb	1	When this is noz-zero do not flash cursor
+
 * CO51 vars
 
-V.51ScrnA rmb   2          * Screen address.
-V.51XPos rmb   1          * X co-ordinate
-V.51YPos rmb   1          * Y co-ordinate
-V.51EscSeq rmb   1          * In escape sequence
-V.51ReverseFlag rmb   1          * Reverse video flag
-V.51UnderlineFlag rmb   1          * Underline flag
-V.51CtrlDispatch rmb   2          * Ctrl char dispatch address, currently processing
-V.51BytePixOffset rmb   1          * byte offset in screen line, of character X position        
-V.51OldCursorPosX rmb   1          * Position of old cursor before update        
-V.51OldCursorPosY rmb   1         
-V.51CursorChanged rmb   1          * Has cursor position changed ? 1=yes,0=no
-V.51CursorOn rmb   1          * Is cursor on ? 1=yes 0=no		         
-V.51XORFlag rmb   1          * and data to screen (0) or Xor (1)  		       
-V.51ScreenMask1 rmb   1          * screen masks for drawing characters on screen         
-V.51ScreenMask2 rmb   1         
+V.51ScrnA 		rmb	2	* Screen address.
+V.51XPos 		rmb	1	* X co-ordinate
+V.51YPos 		rmb	1	* Y co-ordinate
+V.51EscSeq 		rmb	1	* In escape sequence
+V.51ReverseFlag 	rmb	1	* Reverse video flag
+V.51UnderlineFlag 	rmb	1	* Underline flag
+V.51CtrlDispatch 	rmb	2	* Ctrl char dispatch address, currently processing
+V.51BytePixOffset 	rmb	1	* byte offset in screen line, of character X position        
+V.51OldCursorPosX 	rmb	1	* Position of old cursor before update        
+V.51OldCursorPosY 	rmb	1         
+V.51CursorChanged 	rmb	1	* Has cursor position changed ? 1=yes,0=no
+V.51CursorOn 		rmb	1	* Is cursor on ? 1=yes 0=no		         
+V.51XORFlag 		rmb	1	* and data to screen (0) or Xor (1)  		       
+V.51ScreenMask1 	rmb	1	* screen masks for drawing characters on screen         
+V.51ScreenMask2 	rmb	1         
 * End of CO51 vars
 **** Note these have to come at the end of the defs, or the keyboard ****
 **** code can clobber variables defined after these !                ****
@@ -155,5 +162,12 @@ V.Last   equ   .
 ModCO32  equ   %00000010  CO32, normal VDG 32x16.
 ModCO80  equ   %00000100  CO80, wordpak rs, 80x25
 ModCO51  equ   %00001000  CO51, pmode 4 51x25 text
+
+*
+* Defs for cursor flash counter
+*
+
+CFlash50hz	equ	25	* 50Hz flash counter
+CFlash60Hz	equ	30	* 60Hz flash counter
 
 	ENDC
