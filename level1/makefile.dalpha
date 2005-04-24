@@ -1,13 +1,26 @@
+#
+#6809l1/makefile.dragon
+#
+# 2005-04-24, P.Harvey-Smith.
+# 	Brought into line with CoCo makefile, for generating disk
+#	names baded on CPU/Level/Release number.
+#
+
 include ../rules.mak
+
+CPU		= 6809
+LEVEL		= 1
 
 # TERMWIDTH can be either 32 or 51
 TERMWIDTH	= 51
-RELEASE		= nos96809l1v030204_dalpha
-BOOTFILE	= bootfiles/bootfile_dalpha_$(TERMWIDTH)
-BOOTFILE_DS80	= bootfiles/bootfile_dalpha_$(TERMWIDTH)
+BOOTFILE	= bootfiles/bootfile_dalpha_SS80_$(TERMWIDTH)
+BOOTFILE_DS80	= bootfiles/bootfile_dalpha_DS80_$(TERMWIDTH)
 KERNELFILE	= bootfiles/kernel_dalpha
 DIRS		= cmds modules sys bootfiles
 DDIRS		= modules bootfiles defs
+
+DISTRO		= nos9$(CPU)l$(LEVEL)
+DISTROVER	= $(DISTRO)$(NITROS9VER)_dalpha
 
 # Specify which shell should be used
 #WHICHSHELL	= shellplus
@@ -18,8 +31,8 @@ BOOTTRACK	= $(shell $(CD) modules; make -f makefile.dragon showboottrack)
 KERNEL		= $(shell $(CD) modules; make -f makefile.dragon showkernel)
 SYSMODS		= $(shell $(CD) modules; make -f makefile.dragon showsysmods)
 CLOCKS		= $(shell $(CD) modules; make -f makefile.dragon showclocks)
-RBF			= $(shell $(CD) modules; make -f makefile.dragon showrbf)
-SCF			= $(shell $(CD) modules; make -f makefile.dragon showscf)
+RBF		= $(shell $(CD) modules; make -f makefile.dragon showrbf)
+SCF		= $(shell $(CD) modules; make -f makefile.dragon showscf)
 PIPE		= $(shell $(CD) modules; make -f makefile.dragon showpipe)
 MODULECMDS	= $(WHICHSHELL) del echo format makdir merge os9gen prompt tmode
 
@@ -28,11 +41,13 @@ DEFS		= $(shell $(CD) defs; make -f makefile.dragon showobjs)
 ROOTFILES	= 
 STARTUP		= startup.dalpha
 
-PACKAGENAME	= $(RELEASE).zip
-DSK360K_1	= $(RELEASE)_ss80_1.dsk
-DSK360K_2	= $(RELEASE)_ss80_2.dsk
-DSK720K		= $(RELEASE)_ds80.dsk
-
+PACKAGENAME	= $(DISTROVER).zip
+DSK360K_1       = $(DISTROVER)_80s_1.dsk
+LDSK360K_1      = $(DISTRO)_80s_1.dsk
+DSK360K_2       = $(DISTROVER)_80s_2.dsk
+LDSK360K_2      = $(DISTRO)_80s_2.dsk
+DSK720K         = $(DISTROVER)_80d.dsk
+LDSK720K        = $(DISTRO)_80d.dsk
 
 # Make all components
 all:
