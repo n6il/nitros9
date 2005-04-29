@@ -1,0 +1,40 @@
+# Makes 'bootlist' and 'bootfile' in the current directory
+set md=$NITROS9DIR/6809l1/modules
+set sd=$CLOUD9DIR/Products/SuperDrivers/software/6809l1
+set dd=$CLOUD9DIR/Products/DriveWire/software/6809l1
+
+set tracklist_1773="$md/rel $md/krn $md/krnp2 $md/init $md/boot_1773_6ms"
+set tracklist_tc3="$md/rel $md/krn $md/krnp2 $md/init $sd/boot_tc3"
+set tracklist_ide="$md/rel $md/krn $md/krnp2 $md/init $sd/boot_ide"
+set tracklist_dw="$md/rel $md/krn $md/krnp2 $md/init $dd/boot_dw"
+
+# IDE Boot with IDE Master as /DD
+set bootlist_dw="$md/ioman $md/rbf.mn $dd/drivewire.dr $dd/ddx0.dd $dd/x1.dd $dd/x2.dd $dd/x3.dd $md/rb1773.dr $md/d0_80d.dd $md/d1_40d.dd $md/scf.mn $md/ccio.dr $md/co32.io $md/term32.dt $md/sc6551.dr $md/t2_sc6551.dd $md/t3_sc6551.dd $md/pipeman.mn $md/piper.dr $md/pipe.dd $md/clock_60hz $dd/clock2_dw $md/sysgo_dd"
+#set bootlist_dw="$md/ioman $md/rbf.mn $sd/rbsuper.dr $sd/llide.dr $sd/lltc3.dr $sd/i0_ide.dd $sd/i0_ide.dd $sd/i1_ide.dd $sd/ih_ide.dd $sd/s0_tc3.dd $sd/s1_tc3.dd $sd/s2_tc3.dd $sd/s3_tc3.dd $sd/s4_tc3.dd $sd/s5_tc3.dd $sd/s6_tc3.dd $sd/s7_tc3.dd $sd/sh_tc3.dd $dd/drivewire.dr $dd/ddx0.dd $dd/x1.dd $dd/x2.dd $dd/x3.dd $md/rb1773.dr $md/d0_80d.dd $md/d1_40d.dd $md/scf.mn $md/ccio.dr $md/co32.io $md/term32.dt $md/sc6551.dr $md/t2_sc6551.dd $md/t3_sc6551.dd $md/pipeman.mn $md/piper.dr $md/pipe.dd $md/clock_60hz $dd/clock2_dw $md/sysgo_dd"
+
+#                $(C9)/Products/SuperDrivers/software/6809l1/lldw.dr \
+#                $(C9)/Products/SuperDrivers/software/6809l1/ddx0.dd \
+#                $(C9)/Products/SuperDrivers/software/6809l1/x1.dd \
+#                $(C9)/Products/SuperDrivers/software/6809l1/x2.dd \
+#                $(C9)/Products/SuperDrivers/software/6809l1/x3.dd \
+
+
+
+# Select our bootlist and tracklist
+set bootlist="$bootlist_dw"
+set tracklist="$tracklist_dw"
+
+# Create the files
+if (-e bootfile) then
+	rm bootfile
+endif
+foreach file ($bootlist)
+	cat $file>>bootfile
+end
+if (-e boottrack) then
+	rm boottrack
+endif
+foreach file ($tracklist)
+	cat $file>>boottrack
+end
+
