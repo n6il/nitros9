@@ -34,7 +34,7 @@ SCF		= scf.mn \
 		sc6551.dr vrn.dr printer.dr sio.dr sspak.dr ccio.dr \
 		co32.io co51.io \
 		nil.dd p.dd pipe.dd ssp.dd \
-		term_sio.dt term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dt \
+		term_sio.dt term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dd \
 		term32.dt term51.dt
 
 PIPE		= pipeman.mn \
