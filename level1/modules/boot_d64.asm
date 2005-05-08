@@ -12,6 +12,8 @@
 *
 * Double sided Disk code added 2004-11-25, P.Harvey-Smith.
 *
+* 2005-05-08, P.Harvey-Smith, added code to force 5/8 line low on
+* Alpha so correct clock selected.
 *
 		nam   Boot
          ttl   os9 system module    
@@ -449,8 +451,8 @@ AlphaDskCtl
 	andb	#%11111100	; mask out drive number
 	stb	,s
 	ora	,s		; recombine
+	anda	#Mask58		; make sure 5/8 bit forced low to select 5.25" clock
 	sta	,s
-		
 		
 	lda	#AYIOREG	; AY-8912 IO register
 	sta	PIA2DB		; Output to PIA

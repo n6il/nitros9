@@ -16,7 +16,7 @@
 *	I am not sure of how to disable NMI on the Alpha, it is
 *	simulated in software using the NMIFlag.
 *
-*   The Dragon Alpha/Professional uses the same FDC chip as 
+*   	The Dragon Alpha/Professional uses the same FDC chip as 
 *	DragonDos, however it is mapped between FF2C and FF2F,
 *	also the register order is REVERSED, so command/status is at
 * 	FF2F.
@@ -102,7 +102,7 @@ SDensEn  	EQU   	SDensEnA
 MotorOn  	EQU   	MotorOnA 
 
 ; These are the bits that we know the function of on the Alpha interface
-KnownBits	EQU	Drive0A+Drive1A+Drive2A+Drive3A+MotorOnA+WPCEnA
+KnownBits	EQU	Drive0A+Drive1A+Drive2A+Drive3A+MotorOnA+SDensEnA+WPCEnA
 
 		ELSE
 		
@@ -949,9 +949,8 @@ AlphaDskCtl
 
 	clra			; No, turn off other bits.
 MotorRunning
-	anda	#KnownBits	; Mask out bits we do not know the function of
-	sta	,s
-		
+	anda	#Mask58		; Mask out 5/8 bit to force the use of 5.25" clock
+	sta	,s	
 		
 	lda	#AYIOREG	; AY-8912 IO register
 	sta	PIA2DB		; Output to PIA
