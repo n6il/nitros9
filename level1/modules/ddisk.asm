@@ -57,6 +57,15 @@
 *	
 * 2005-04-24, P.Harvey-Smith.
 *	Removed debugging code/messages.
+*
+* 2005-05-31, P.Harvey-Smith.
+*	Added ability to read, write and format standard OS-9 format disks 
+*	including single denity, and disks with track 0 single denisity, but
+*	all other tracks double density.
+*	
+*	Added code to make step rates work as on the rb1773 driver, they where
+*	previously working back to front.
+*
 
          nam   DDisk
          ttl   Dragon Floppy driver
@@ -146,8 +155,8 @@ MaxDrv   set   4
          mod   eom,name,tylg,atrv,start,size
 		
 		org	DrvBeg
-		RMB   	MaxDrv*DrvMem
-CDrvTab	  	rmb   	2
+DrvTab		RMB   	MaxDrv*DrvMem	; Drive tables, 1 per drive 
+CDrvTab	  	rmb   	2	; Pointer to current drive table entry above
 DrivSel   	rmb   	1	; Saved drive mask
 Settle	 	rmb	1	; Head settle time
 SavePIA0CRB	rmb 	1	; Saved copy of PIA0 control reg b
@@ -155,6 +164,7 @@ SaveACIACmd	rmb	1	; Saved copy of ACIA command reg
 BuffPtr	 	rmb	2	; Buffer pointer
 SideSel	 	rmb	1	; Side select.
 NMIFlag	 	rmb	1	; Flag for Alpha, should this NMI do an RTI ?
+Density		rmb	1	; Density 0=double, %00001000=single D64, %00100000=single Alpha
 
 DskError	rmb	1	; hardware disk error	
 
@@ -197,9 +207,9 @@ IRQPkt   fcb   	$00 		; Normal bits (flip byte)
 DragonDebug	EQU	0
 Init    
 	IFNE	DragonDebug
-	pshs	x		; This is here so I can find disk driver in mess
-	ldx	#$AA55		; by setting register breakpoint to X=$AA55 !
-	puls	x
+	pshs	y		; This is here so I can find disk driver in mess
+	ldy	#$AA55		; by setting register breakpoint to y=$AA55 !
+	puls	y
 	ENDC
 
 	clra
@@ -351,6 +361,10 @@ ReadDataReady
         sta   	,x+		; save data in memory
         bra   	ReadDataWait	; do next
 	 
+;
+; Prepare to do disk read/write.
+;
+	 
 PrepDiskRW    
 
 	clr	DskError,u
@@ -380,8 +394,11 @@ L00DE   orcc  	#$50		; Mask inturrupts
         sta   	<DPPIACRB	
         lda   	<DPPIADB	; Clear any outstanding inturrupt	
         ldy   	#$FFFF
-        lda   	#NMIEn+MotorOn	; Enable NMI, and turn motor on
+        
+	lda   	#NMIEn+MotorOn	; Enable NMI, and turn motor on
         ora   	>DrivSel,u	; mask in drives
+	ora	>Density,u	; mask in density 
+	
         ORB   	>SideSel,U 	; Set up Side		 
          
 	IFNE	DragonAlpha	; Turn on drives & NMI
@@ -541,7 +558,7 @@ VerifyEnd
 ;
 SeekTrack
 	CLR   	>Settle,U 	; default no settle
-        LBSR  	SelectDrive	; select and start correct d
+        LBSR  	SelectDrive	; select and start correct drive
         TSTB
         BNE   	E.Sect 
 
@@ -570,6 +587,7 @@ SeekT4  INC   	,S
 
 SeekT3  PULS  	A 		; retrieve track count
         LBSR  	SetWPC         	; set write precompensation
+	LBSR	SetDensity	; Set density
         PSHS  	B 
         LDB   	DD.Fmt,X     	; Is the media double sided ?
         LSRB
@@ -589,12 +607,14 @@ SetupSideMask
 SingleSidedDisk
 	clr   	>SideSel,U	; Single sided, make sure sidesel set correctly
 	BRA   	SeekT9
-		 
-SeekT1  clr   	>SideSel,U	; make sure sidesel is always 0 if lsn0
+	
+SeekT1	LBSR	SetDensity	; make sure density set correctly even for LSN0 !
+
+	clr   	>SideSel,U	; make sure sidesel is always 0 if lsn0
 	PSHS  	B 
 SeekT9  LDB   	PD.Typ,Y  	; Dragon and Coco disks
-        BITB  	#TYP.SBO       	; count sectors from 1 no
-        BNE   	SeekT8 
+        BITB  	#TYP.CCF       	; count sectors from 1 no
+        BEQ   	SeekT8 
         PULS  	B 
         INCB			; so increment sector number
         BRA   	SeekT11 
@@ -614,8 +634,10 @@ SeekTS  LDB   	<V.Trak,X	; Entry point for SS.WTrk command
 		 
 SeekT5  STA   	<V.Trak,X	; Do the seek
         STA   	>DataReg 	; Write track no to controler
-        LDB   	#SeekCmnd 
-        ORB   	PD.Stp,Y	; Set Step Rate according to Parameter block
+	ldb	PD.Stp,Y	; Set Step Rate according to Parameter block
+	andb	#%00000011	; mask in only step rate bits
+	eorb	#%00000011	; flip bits to make correct encoding
+        ORB   	#SeekCmnd 	; add seek command
         LBSR  	FDCCommand 
         PSHS  	X 
         LDX   	#$222E		; Wait for head to settle
@@ -817,7 +839,8 @@ Delay3  rts
 *    CC = carry set on error
 *    B  = error code
 *
-SetStat ldx   	PD.Rgs,y	; Retrieve request
+SetStat 
+	ldx   	PD.Rgs,y	; Retrieve request
         ldb   	R$B,x
 		 
         cmpb  	#SS.Reset	; Restore to track 0.
@@ -833,17 +856,23 @@ SetStatEnd
 ;
 
 DoWriteTrack    
+	pshs	y
+	ldy	#$5567
+	puls	y
+
 	lbsr  	SelectDrive	; Select drive
         lda   	R$Y+1,x
         LBSR  	SetSide		; Set Side 2 if appropriate
         LDA   	R$U+1,X 
         BSR   	SetWPC         	; Set WPC by disk type
-
+	bsr	SetDensity	; Set density
+	
 ;L02D5
 	ldx   	>CDrvTab,u
         lbsr  	SeekTS		; Move to correct track
         bcs   	SetStatEnd
-        ldx   	PD.Rgs,y
+
+	ldx   	PD.Rgs,y
         ldx   	R$X,x		
         ldb   	#WtTkCmnd
         pshs  	y,dp,cc
@@ -896,6 +925,8 @@ MotorsRunning
 ;
 ; Set Write Precompensation according to media type
 ;
+; Entry :
+; 	A =	Track no
 
 SetWPC  PSHS  	A,B 
         LDB   	PD.DNS,Y 
@@ -909,6 +940,43 @@ SetWP1  CMPA  	#32		; WPC needed ?
         STA   	>DrivSel,U 
 SetWP2  PULS  	A,B,PC 
 
+
+;
+; Set density acording to disk type.
+;
+; Entry A = 	Track no
+;
+
+SetDensity
+	PSHS  	A,B 
+	ldb	PD.TYP,Y	; Dragon/CoCo disk ?
+	bitb	#TYP.CCF
+	bne	SetDouble	; Always double density
+	
+        LDB   	PD.DNS,Y 	; Get density flags from Path descriptor
+        
+	bitb	#DNS.MFM	; Disk is MFM ?
+	beq	SetSingle	; no : set single density
+	
+	cmpa	#0		; track 0 ?
+	bne	SetDouble	; not track 0, exit
+	
+	tst	SideSel,u	; is this side 0 ?
+	bne	SetDouble	; no : use double density
+	
+	bitb	#DNS.MFM0	; track 0 mfm ?
+	bne	SetDouble
+	
+SetSingle
+	lda	#SDensEn	; flag single density
+	sta	Density,u	
+	bra	ExitDensity
+	
+SetDouble
+	clr	Density,u	; flag double density
+	
+ExitDensity	
+	puls	a,b,pc
 
 	IFNE	DragonAlpha
 
@@ -925,7 +993,7 @@ SetWP2  PULS  	A,B,PC
 ; Also sets NMIFlag.
 
 
-DrvTab	FCB		Drive0A,Drive1A,Drive2A,Drive3A
+ADrvTab	FCB		Drive0A,Drive1A,Drive2A,Drive3A
 
 AlphaDskCtl	
 	PSHS	x,A,B,CC
@@ -936,7 +1004,7 @@ AlphaDskCtl
 		
 	lda	,s		; Convert drives
 	anda	#%00000011	; mask out drive number
-	leax	DrvTab,pcr	; point at table
+	leax	ADrvTab,pcr	; point at table
 	lda	a,x		; get bitmap
 	ldb	,s
 	andb	#%11111100	; mask out drive number
