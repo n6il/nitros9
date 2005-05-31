@@ -5,6 +5,11 @@
 # 	Brought into line with CoCo makefile, for generating disk
 #	names baded on CPU/Level/Release number.
 #
+#
+# 2005-05-31, P.Harvey-Smith.
+#	Added options to specify the step rate of the created 
+#	floppy devices.
+#
 
 include ../rules.mak
 
@@ -26,6 +31,11 @@ DISTROVER	= $(DISTRO)$(NITROS9VER)_dragon
 # Specify which shell should be used
 #WHICHSHELL	= shellplus
 WHICHSHELL	= shell_21
+
+#Default step rate for floppy drives
+#Step can be one of : 0=30ms, 1=20ms, 2=12ms, 3=6ms
+#Note old drives often require 30ms
+STEP		= 0
 
 CMDS		= $(shell $(CD) cmds; make showcocoobjs)
 BOOTTRACK	= $(shell $(CD) modules; make -f makefile.dragon showboottrack)
@@ -59,7 +69,7 @@ all:
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
-	$(foreach dir, $(DDIRS), ($(CD) $(dir); make -f makefile.dragon);)
+	$(foreach dir, $(DDIRS), ($(CD) $(dir); make -f makefile.dragon STEP=$(STEP));)
 
 # Clean all components
 clean:	dskclean
