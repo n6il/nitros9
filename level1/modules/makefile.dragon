@@ -4,6 +4,10 @@
 # 2005-04-24, P.Harvey-Smith, 
 #	made descriptors for both 40 & 80 track drives for Dragon 64.
 # 		
+#
+# 2005-05-31, P.Harvey-Smith,
+# 	Steprate now passed in from ../makefile.dragon or ../makefile.dalpha
+#
 
 include ../../rules.mak
 
@@ -101,54 +105,54 @@ DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 # that /d0 and /d1 are double sided 40 track.
 
 ddd0_40_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1 -aStep=$(STEP)
 
 d0_40_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aStep=$(STEP)
 
 d1_40_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1 -aStep=$(STEP)
 
 d2_40_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2 -aStep=$(STEP)
 
 d3_40_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=3 -aStep=$(STEP)
 
 
 ddd0_80_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1 -aStep=$(STEP)
 
 d0_80_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aStep=$(STEP)
 
 d1_80_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1 -aStep=$(STEP)
 
 d2_80_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2 -aStep=$(STEP)
 
 d3_80_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3 -aStep=$(STEP)
 
 
 #Dragon Alpha
 # Internal drives on Alpha are Single Sided 80 track.
 
 ddd0_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0 -aDD=1 -aStep=$(STEP)
 
 d0_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0
-
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0 -aStep=$(STEP)
+	
 d1_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=1 -aStep=$(STEP)
 
 d2_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2 -aStep=$(STEP)
 
 d3_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3 -aStep=$(STEP)
 
 adisk.dr: ddisk.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDragonAlpha=1
