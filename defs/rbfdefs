@@ -68,6 +68,11 @@ RBFDEFS  set   1
 *          2004/04/14  Boisy G. Pitre
 * Added new entries to device descriptor as per OS-9 Level One V2.00.00
 * addendum.  Pointed out by Rodney Hamilton.
+*
+*	   2005/05/31  P.Harvey-Smith.
+* Added defines for bit 2 of IT.DNS, which the format command uses to 
+* determine if a drive should have it's track 0 as single or double density
+*
 
          nam   RBFDefs
          ttl   Random Block File Manager Definitions
@@ -137,6 +142,10 @@ DNS.FM   equ   %00000000        Single-density (FM)
 DNS.MFM  equ   %00000001        Double-density (MFM)
 DNS.STD  equ   %00000000        Single track distance (48/135 tpi)
 DNS.DTD  equ   %00000010        Double track distance (96 tpi)
+
+* Added PHS,2005-05-31, as format seems to use these
+DNS.FM0  equ   %00000000	Single density track 0
+DNS.MFM0 equ   %00000100	Double density track 0
 
 * Floppy disk step rate definitions
 STP.30ms equ   0                30ms step rate
