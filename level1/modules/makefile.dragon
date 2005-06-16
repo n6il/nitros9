@@ -44,9 +44,9 @@ RBF		= rbf.mn \
 		ddd0_dalpha.dd d0_dalpha.dd d1_dalpha.dd d2_dalpha.dd d3_dalpha.dd
 		
 SCF		= scf.mn \
-		sc6551.dr vrn.dr printer.dr sio.dr sspak.dr dgnio.dr \
+		sc6551.dr vrn.dr printer_d64.dr sio.dr sspak.dr dgnio.dr \
 		co32.io co80.io co51.io\
-		nil.dd p.dd pipe.dd ssp.dd \
+		nil.dd p_d64.dd pipe.dd ssp.dd \
 		term_sio.dt term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dt \
 		term32.dt term80.dt t1_d64.dd p1_d64.dd
 
