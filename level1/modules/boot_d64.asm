@@ -15,6 +15,12 @@
 * 2005-05-08, P.Harvey-Smith, added code to force 5/8 line low on
 * Alpha so correct clock selected.
 *
+* 2005-06-16, P.Harvey-Smith.
+*	Added NMI enable/disable code, as I know know how to enable/disable
+*	NMI on the Alpha, having disasembled the Alpha's OS9's ddisk.
+*
+
+
 		nam   Boot
          ttl   os9 system module    
 
@@ -101,7 +107,6 @@ u0000    	rmb   2
 BuffPtr    	rmb   2
 SideSel    	rmb   1		; Side select mask
 CurrentTrack	rmb   1		; Current track number
-NMIFlag	 	rmb   1		; NMI enabled flag for Alpha.
 size     	equ   .
 
 name     	equ   *
@@ -111,13 +116,14 @@ name     	equ   *
 
 
 start   equ   	*
-	ldx	#$55AA
 	
 	ldx	#CMdReg
         clra  
 		 
 	IFNE	DragonAlpha
-	clr	NMIFlag,u	; Make sure NMI turned off in Dragon Alpha
+	lda	#$30		; Set PIA2 CA2 as output, as used to control NMI
+	ora	PIA2CRA
+	sta	PIA2CRA
 	ENDC
 	 
  	ldb   	#size
@@ -285,24 +291,13 @@ ReadDataWait
         ldb   	<dppiadb	
         sta   	,x+		
         bra   	ReadDataWait	; We break out with an NMI
-
-; The following block of code is needed for the Dragon Alpha, because
-; we currently do not know how to disable it's NMI in hardware,
-; So we check a flag here, and if set we simply return from inturrupt
-; as if nothing happened !
+;
+; NMI service routine.
+;
 
 NMIService
-	IFNE	DragonAlpha
-	pshs	cc
-	tst		NMIFlag,u
-	bne		DoNMI
-	puls	cc
-	RTI
 		
-DoNMI	puls	cc
-	ENDC
-		
-L0106   leas  	R$Size,s	; Drop saved Regs from stack
+	leas  	R$Size,s	; Drop saved Regs from stack
         lda   	#MotorOn
 
 	IFNE	DragonAlpha
@@ -425,7 +420,7 @@ Delay3  rts
 ; converted with a lookup table.
 ; We do not need to preserve the ROM select bit as this code
 ; operates in RAM only mode.
-; Also sets NMIFlag.
+; Also sets PIA2 CA2 to enable/disable NMI
 
 AlphaDskCtlB	
 	pshs	A
@@ -441,7 +436,17 @@ AlphaDskCtl
 
 	PSHS	A	
 	ANDA	#NMIEn		; mask out nmi enable bit
-	sta	>NMIFlag,u	; Save it for later use
+
+	beq	NMIoff		; if zero switch off
+	
+	lda	#NMIEnA		; enable NMI
+	ora	PIA2CRA
+	bra	NMISave		; save it
+	
+NMIoff	lda	#NMIDisA	; disable NMI
+	anda	PIA2CRA		
+NMISave
+	sta	PIA2CRA
 		
 	lda	,s		; Convert drives
 	anda	#%00000011	; mask out drive number

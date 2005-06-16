@@ -66,6 +66,13 @@
 *	Added code to make step rates work as on the rb1773 driver, they where
 *	previously working back to front.
 *
+* 2005-06-06, P.Harvey-Smith.
+*	Verified as working on a real Alpha, by Richard Harding.
+*
+* 2005-06-16, P.Harvey-Smith.
+*	Added NMI enable/disable code, as I know know how to enable/disable
+*	NMI on the Alpha, having disasembled the Alpha's OS9's ddisk.
+*
 
          nam   DDisk
          ttl   Dragon Floppy driver
@@ -163,7 +170,6 @@ SavePIA0CRB	rmb 	1	; Saved copy of PIA0 control reg b
 SaveACIACmd	rmb	1	; Saved copy of ACIA command reg
 BuffPtr	 	rmb	2	; Buffer pointer
 SideSel	 	rmb	1	; Side select.
-NMIFlag	 	rmb	1	; Flag for Alpha, should this NMI do an RTI ?
 Density		rmb	1	; Density 0=double, %00001000=single D64, %00100000=single Alpha
 
 DskError	rmb	1	; hardware disk error	
@@ -204,7 +210,7 @@ IRQPkt   fcb   	$00 		; Normal bits (flip byte)
 *    CC = carry set on error
 *    B  = error code
 *
-DragonDebug	EQU	0
+DragonDebug	EQU	1
 Init    
 	IFNE	DragonDebug
 	pshs	y		; This is here so I can find disk driver in mess
@@ -216,6 +222,11 @@ Init
 	sta	>D.DskTmr	; Zero motor timer
 	
 	IFNE	DragonAlpha	; Turn off all drives
+
+	lda	#$30		; Set PIA2 CA2 as output
+	ora	PIA2CRA
+	sta	PIA2CRA
+
 	lbsr	AlphaDskCtl
 	ELSE
         sta   	>DskCtl
@@ -494,23 +505,11 @@ WriteDataReady
         bra   	WriteDataWait
 	
 
-; The following block of code is needed for the Dragon Alpha, because
-; we currently do not know how to disable it's NMI in hardware,
-; So we check a flag here, and if set we simply return from inturrupt
-; as if nothing happened !
+;
+; NMI Handler code.
+;
 
 NMIService
-	IFNE	DragonAlpha		
-	pshs	cc		; Save flags
-	tst	>NMIFlag,u	; Check NMI enable flag 
-	bne	DoNMI		; if enabled, continue with handler
-	puls	cc		; else restore flags and return
-	RTI
-		
-DoNMI	puls	cc		; restore flags
-	ENDC
-	
-RealNMI    
 	leas  	R$Size,s	; Drop regs from stack
         bsr   	RestoreSavedIO	; Restore saved IO states
         puls  	y,dp,cc
@@ -990,8 +989,7 @@ ExitDensity
 ; converted with a lookup table.
 ; We do not need to preserve the ROM select bit as this code
 ; operates in RAM only mode.
-; Also sets NMIFlag.
-
+; Also sets PIA2 CA2 to enable/disable NMI
 
 ADrvTab	FCB		Drive0A,Drive1A,Drive2A,Drive3A
 
@@ -1000,8 +998,18 @@ AlphaDskCtl
 
 	PSHS	A	
 	ANDA	#NMIEn		; mask out nmi enable bit
-	sta	>NMIFlag,u	; Save it for later use
-		
+
+	beq	NMIoff		; if zero switch off
+	
+	lda	#NMIEnA		; enable NMI
+	ora	PIA2CRA
+	bra	NMISave		; save it
+	
+NMIoff	lda	#NMIDisA	; disable NMI
+	anda	PIA2CRA		
+NMISave
+	sta	PIA2CRA
+	
 	lda	,s		; Convert drives
 	anda	#%00000011	; mask out drive number
 	leax	ADrvTab,pcr	; point at table
