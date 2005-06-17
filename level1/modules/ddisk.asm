@@ -73,6 +73,11 @@
 *	Added NMI enable/disable code, as I know know how to enable/disable
 *	NMI on the Alpha, having disasembled the Alpha's OS9's ddisk.
 *
+* 2005-06-17, P.Harvey-Smith.
+*	Ok, this'll teach me to submit code before testing on the real hardware !
+*	Seperated NMI disable/drive select code on alpha, as above patches
+*	worked fine on Mess, but not on real hardware (timing problems).
+*
 
          nam   DDisk
          ttl   Dragon Floppy driver
@@ -222,12 +227,11 @@ Init
 	sta	>D.DskTmr	; Zero motor timer
 	
 	IFNE	DragonAlpha	; Turn off all drives
+	lbsr	AlphaDskCtl
 
-	lda	#$30		; Set PIA2 CA2 as output
-	ora	PIA2CRA
+	lda	#NMICA2Dis	; Set PIA2 CA2 as output & disable NMI
 	sta	PIA2CRA
 
-	lbsr	AlphaDskCtl
 	ELSE
         sta   	>DskCtl
 	ENDC
@@ -414,7 +418,9 @@ L00DE   orcc  	#$50		; Mask inturrupts
          
 	IFNE	DragonAlpha	; Turn on drives & NMI
 	lbsr	AlphaDskCtl
-        stb   	<DPCmdReg	; issue command to controler 
+        stb   	<DPCmdReg	; issue command to controler
+	lda	#NMICA2En	; Enable NMI
+	sta	<DPPIA2CRA
 	ELSE
         stb   	<DPCmdReg	; issue command to controler 
         sta   	<DPDskCtl
@@ -432,6 +438,8 @@ RestoreSavedIO
         ora   	#MotorOn
 	IFNE	DragonAlpha	; Turn off drives & NMI
 	lbsr	AlphaDskCtl
+	lda	#NMICA2Dis	; Disable NMI
+	sta	<DPPIA2CRA
 	ELSE
         sta   	<DPDskCtl
 	ENDC
@@ -754,6 +762,8 @@ FDCCmdMotorOn
 
 	IFNE	DragonAlpha
 	lbsr	AlphaDskCtl
+	lda	#NMICA2Dis
+	sta	PIA2CRA
 	ELSE
         sta   	>DskCtl
 	ENDC
@@ -989,7 +999,6 @@ ExitDensity
 ; converted with a lookup table.
 ; We do not need to preserve the ROM select bit as this code
 ; operates in RAM only mode.
-; Also sets PIA2 CA2 to enable/disable NMI
 
 ADrvTab	FCB		Drive0A,Drive1A,Drive2A,Drive3A
 
@@ -997,20 +1006,18 @@ AlphaDskCtl
 	PSHS	x,A,B,CC
 
 	PSHS	A	
-	ANDA	#NMIEn		; mask out nmi enable bit
-
-	beq	NMIoff		; if zero switch off
-	
-	lda	#NMIEnA		; enable NMI
-	ora	PIA2CRA
-	bra	NMISave		; save it
-	
-NMIoff	lda	#NMIDisA	; disable NMI
-	anda	PIA2CRA		
-NMISave
-	sta	PIA2CRA
-	
-	lda	,s		; Convert drives
+;	ANDA	#NMIEn		; mask out nmi enable bit
+;
+;	beq	NMIoff		; if zero switch off
+;	
+;	lda	#NMICA2En	; enable NMI
+;	bra	NMISave		; save it
+;	
+;NMIoff	lda	#NMICA2Dis	; disable NMI
+;NMISave
+;	sta	PIA2CRA
+;	
+;	lda	,s		; Convert drives
 	anda	#%00000011	; mask out drive number
 	leax	ADrvTab,pcr	; point at table
 	lda	a,x		; get bitmap
