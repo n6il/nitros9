@@ -135,7 +135,8 @@ Drive3D		EQU		%00000011
 
 
 * Disk IO bitmasks (Dragon Alpha).
-NMIEnA    	EQU		%10000000	This is just a guess, but in current code just used as a flag 
+NMIEnA    	EQU		%00001000	PIA2, CA2, used to enable/disable NMI 
+NMIDisA		EQU		%11110111	Bitmask to foce CA2 off, and disable NMI
 WPCEnA    	EQU   		%01000000 	According to circuit trace by R.Harding.
 SDensEnA  	EQU   		%00100000 	DDen, from circuit trace on R.Harding's machine.
 MotorOnA  	EQU   		%00010000 	
@@ -145,6 +146,9 @@ Drive2A		EQU		%00000100
 Drive3A		EQU		%00001000
 
 Mask58		EQU		%01111111	And mask to make sure 5.25" clock selected by WD2797
+
+NMICA2En	EQU		$3C		Value for PIA CRA to enable NMI
+NMICA2Dis	EQU		$34		Value for PIA CRA to disable NMI
 
 * Disk Commands
 FrcInt   	EQU   	%11010000 
