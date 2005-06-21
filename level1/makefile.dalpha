@@ -9,6 +9,10 @@
 #	Added options to specify the step rate of the created 
 #	floppy devices.
 #
+# 2005-06-20, P.Harvey-Smith.
+#	Set default step rate to match that of the Alpha version of OS-9
+#	as I know the Alpha drives can cope with this.
+
 
 include ../rules.mak
 
@@ -33,7 +37,8 @@ WHICHSHELL	= shell_21
 #Default step rate for floppy drives
 #Step can be one of : 0=30ms, 1=20ms, 2=12ms, 3=6ms
 #Note old drives often require 30ms
-STEP		= 0
+#Alpha OS-9 has this set to 12ms, so we use that setting
+STEP		= 2
 
 CMDS		= $(shell $(CD) cmds; make showcocoobjs)
 BOOTTRACK	= $(shell $(CD) modules; make -f makefile.dragon showboottrack)
