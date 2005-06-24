@@ -14,10 +14,9 @@
 
 * Disassembled 98/09/09 09:50:25 by Disasm v1.6 (C) 1988 by RML
 
-MPI      set   1
-
          ifp1
          use   defsfile
+         use   m51.defs
          endc
 
 tylg     set   Systm+Objct   
@@ -25,22 +24,14 @@ atrv     set   ReEnt+rev
 rev      set   $00
 edition  set   6
 
-         mod   eom,name,tylg,atrv,start,size
+MPISlot  set   $00
 
-u0000    rmb   2
-u0002    rmb   1
-u0003    rmb   2
-u0005    rmb   1
-u0006    rmb   1
-u0007    rmb   8
-u000F    rmb   113
-u0080    rmb   18
-u0092    rmb   21
-u00A7    rmb   65217
-size     equ   .
+         mod   eom,name,tylg,atrv,start,$FF68
 
 name     fcs   /JoyDrv/
          fcb   edition
+
+SlotSlct equ   MPISlot
 
 start    lbra  Init
          lbra  Term
@@ -98,61 +89,92 @@ L0078    pshs  b
          bra   L006D
 L0085    suba  ,s+
          bra   L006D
-L0089    fcb   $00
-L008A    fcb   $0f,$01
 
-Init     fcb   $cc,$00,$07
-          
-L008F    fcb   $a7
-         bitb  #$5A
+IRQPckt  equ   *
+Pkt.Flip fcb   Stat.Flp	D.Poll filp byte
+Pkt.Mask fcb   Stat.Msk	D.Poll mask byte
+         fcb   $01      priority
+*L0089    fcb   $00
+*L008A    fcb   $0f,$01
+
+***      
+* JoyDrv Initialization.
+*        
+* INPUT:  U = JoyDrv data area address (8 bytes)
+*        
+* OUTPUT:  IRQ service entry installed
+*          D, X, and U registers may be altered
+*        
+* ERROR OUTPUT:  CC = Carry set
+*                B = error code
+Init     ldd   #$0007
+L008F    sta   b,u
+         decb
          bpl   L008F
-         ldd   >M$Mem,pcr
-         addd  #$0001
-         leax  >L0089,pcr
-         leay  >L0152,pcr
+         ldd   >M$Mem,pcr	get base hardware address
+         addd  #StatReg		status register address
+         leax  IRQPckt,pcr
+         leay  IRQSvc,pcr
          os9   F$IRQ    
-         bcs   L00F7
-         ldx   >M$Mem,pcr
-         ldd   #$0938
+         bcs   TermExit		go report error...
+         ldx   >M$Mem,pcr	get base hardware address again
+         ldd   #(TIC.RTS!Cmd.DTR)*256+(DB.8!Ctl.RClk!BR.01200) [D]=command:control
          pshs  cc
-         orcc  #IntMasks
-         sta   $01,x
-         std   $02,x
-         lda   >PIA1Base+3
-         anda  #$FC
-         sta   >PIA1Base+3
-         lda   >PIA1Base+2
-         lda   #$01
-         ora   <u0092
-         sta   <u0092
-         sta   >IrqEnR
-         ldb   ,x
-         ldb   $01,x
-         ldb   ,x
-         ldb   $01,x
-         andb  >L008A,pcr
-         bne   L00DF
+         orcc  #IntMasks	disable IRQs while setting up hardware
+         sta   PRstReg,x	reset 6551
+         std   CmdReg,x		set command and control registers
+         lda   >PIA1Base+3	get PIA CART* input control register
+         anda  #$FC		clear PIA CART* control bits
+         sta   >PIA1Base+3	disable PIA CART* control bits
+         lda   >PIA1Base+2	clear possible pending PIA CART* FIRQ
+         lda   #$01		GIME CART* IRQ enable
+         ora   <D.IRQER		mask in current GIME IRQ enables
+         sta   <D.IRQER		save GIME CART* IRQ enable shadow register
+         sta   >IrqEnR		enable GIME CART* IRQs
+         ldb   DataReg,x	ensure old error,
+         ldb   StatReg,x	Rx data, and
+         ldb   DataReg,x	IRQ flags
+         ldb   StatReg,x	are clear
+         andb  Pkt.Mask,pcr	IRQ bits still set?
+         bne   InitErr		yes, go disable ACIA and return...
+         lda   SlotSlct,pcr	get MPI slot select value
+         bmi   InitExit		no MPI slot select, go exit...
+         sta   >MPI.Slct	recover original regs, return...
+InitExit puls  pc,cc
 
-         ifeq  MPI-1
-         lda   #$03
-         sta   MPI.Slct
-         endc
-
-         puls  pc,cc
-
-Term     pshs  cc
-         orcc  #IntMasks
-L00DF    ldx   >M$Mem,pcr
-         lda   #$0B
-         sta   $02,x
+***
+* JoyDrv Termination.
+*
+* INPUT:  U = JoyDrv data area address (8 bytes)
+*
+* OUTPUT:  IRQ service entry removed
+*          D, X, and U registers may be altered
+*
+* ERROR OUTPUT:  CC = Carry set
+*                B = error code
+Term     pshs  cc		save regs we alter
+         orcc  #IntMasks	mask IRQs while disabling ACIA
+InitErr  ldx   M$Mem,pcr	get base address
+         lda   #TIC.RTS!Cmd.RxIE!Cmd.DTR	disable all
+         sta   CmdReg,x		ACIA IRQs
          puls  cc
-         leax  $01,x
-         tfr   x,d
-         ldx   #$0000
-         leay  >L0152,pcr
+         leax  StatReg,x	point to status register
+         tfr   x,d		copy status register address
+         ldx   #$0000		remove IRQ table entry
+         leay  IRQSvc,pcr
          os9   F$IRQ    
-L00F7    rts   
+TermExit rts   
 
+***
+* Joystick button(s) status check.
+*
+* INPUT:  U = JoyDrv data area address (8 bytes)
+*
+* OUTPUT:  B = button or "clear" status
+*              button(s)     = xxxxLRLR
+*          A, X, and U registers may be altered
+*
+* ERROR OUTPUT:  none
 SSJoyBtn ldb   #$FF
          ldx   #PIA0Base
          stb   $02,x
@@ -161,59 +183,100 @@ SSJoyBtn ldb   #$FF
          andb  #$0F
          rts   
 
-SSMsBtn  lda   ,u
-         clrb  
-         bita  #$20
-         beq   L010E
-         orb   #$03
-L010E    bita  #$10
-         beq   L0114
-         orb   #$0C
-L0114    tfr   b,a
-         anda  #$FA
-         pshs  a
-         andb  #$05
-         orb   u0007,u
+***
+* Mouse button(s) status check.
+*
+* INPUT:  U = JoyDrv data area address (8 bytes)
+*        
+* OUTPUT:  B = button or "clear" status
+*              button(s)     = xxxxLRLR
+*              clear         = 10000000
+*              shift-clear   = 11000000
+*          A, X, and U registers may be altered
+*
+* ERROR OUTPUT:  none
+SSMsBtn  lda   ,u			get byte at ,U
+         clrb  				clear B
+         bita  #$20			A %00100000 bit clear?
+         beq   L010E			branch if so
+         orb   #$03			else set OR B with %00000011
+L010E    bita  #$10			A %00010000 bit clear?
+         beq   L0114			branch if so
+         orb   #$0C			else set OR B with %11000000
+L0114    tfr   b,a			move B to A
+         anda  #$FA			AND A with %11111010
+         pshs  a			save A
+         andb  #$05			AND B with %00000101
+         orb   7,u			OR B with ????
          leax  <L0134,pcr
          lda   b,x
          anda  #$0A
-         sta   u0007,u
+         sta   7,u
          ldb   b,x
          andb  #$85
          bpl   L0131
-         ldb   u0002,u
+         ldb   2,u
          andb  #$C0
 L0131    orb   ,s+
          rts   
 L0134    fdb   $0003,$0003,$0806,$0206,$8002,$0002,$0806,$0a06
 
+***
+* Joystick/Mouse XY coordinate read.
+* 
+* INPUT:  A = side flag (1 = right, 2 = left)
+*         Y = resolution (0 = low, 1 = high)
+*         U = JoyDrv data area address (8 bytes)
+* 
+* OUTPUT:  X = horizontal coordinate (left edge = 0)
+*              low resolution = 0 to 63 
+*              high resolution = 0 to HResMaxX
+*          Y = vertical coordinate (top edge = 0)
+*              low resolution = 0 to 63
+*              high resolution = 0 to HResMaxY
+*          D and U registers may be altered
+*        
+* ERROR OUTPUT:  none           
 SSMsXY   pshs  cc
          orcc  #IntMasks
-         ldx   u0003,u
-         ldd   u0005,u
+         ldx   3,u
+         ldd   5,u
          lsra  
          rorb  
          tfr   d,y
          puls  pc,cc
-L0152    ldx   >M$Mem,pcr
-         bita  #$07
-         beq   L0164
-         ldb   ,x
-L015C    lda   u0002,u
-         anda  #$FC
-L0160    sta   u0002,u
-L0162    clrb  
+
+***      
+* Mouse IRQ service routine.
+*        
+* INPUT:  A = flipped and masked device status byte 
+*         U = mouse data area address
+*
+* OUTPUT:  updated serial mouse data
+*          CC Carry clear
+*          D, X, Y, and U registers may be altered
+*
+* ERROR OUTPUT:  none
+IRQSvc   ldx   M$Mem,pcr
+         bita  #Stat.Err	any error(s)?
+         beq   ChkRDRF		no, go check Rx data
+         ldb   DataReg,x	read Rx data register to clear error flags
+L015C    lda   2,u		get current button and Rx data counter
+         anda  #^%00000111	clear Rx data counter
+L0160    sta   2,u		reset Rx mouse data counter to wait for sync...
+IRQExit  clrb  			clear carry to mark IRQ serviced
          rts   
-L0164    bita  #$08
-         beq   L0162
-         ldb   ,x
-         lda   u0002,u
-         anda  #$03
+
+ChkRDRF  bita  #Stat.RxF	Rx data?
+         beq   IRQExit		no, but this branch should never be taken...
+         ldb   DataReg,x	get Rx data
+         lda   2,u		get button status and Rx counter
+         anda  #%00000111	waiting for sync with mouse data?
          bne   L017A
          bitb  #$40
-         beq   L0162
+         beq   IRQExit
 L0174    stb   a,u
-         inc   u0002,u
+         inc   2,u
          clrb  
          rts   
 L017A    bitb  #$40
@@ -225,16 +288,16 @@ L017A    bitb  #$40
          lda   ,u
          lsra  
          lsra  
-         leax  u0005,u
+         leax  5,u
          bsr   L01A9
          ldd   ,u
          ldx   #$027F
          stx   ,s
-         leax  u0003,u
+         leax  3,u
          bsr   L01A9
          leas  $02,s
          lda   #$80
-         ldx   u0003,u
+         ldx   3,u
          cmpx  #$0140
          bcc   L0160
          ora   #$C0
@@ -245,24 +308,24 @@ L01A9    lslb
          rorb  
          lsra  
          rorb  
-         sex   
-         pshs  b,a
-         bpl   L01BB
-         orb   #$07
-         addd  #$0001
-         bra   L01BD
-L01BB    andb  #$F8
-L01BD    asra  
-         rorb  
-         addd  ,s++
-         addd  ,x
-         bpl   L01C7
-         clra  
-         clrb  
-L01C7    cmpd  $02,s
-         bls   L01CE
-         ldd   $02,s
-L01CE    std   ,x
+         sex   			sign extend mouse packet's 2nd XY offset ([D] = -128 to +127)
+         pshs  d		save it temporarily...
+         bpl   PosAdjst		go de-sensitize positive "ballistic" XY offset
+         orb   #%00000111	if -8<XYoffset<0, no "ballistic" response
+         addd  #$0001		"fix" negative offset "ballistic" response
+         bra   RShiftD		go calculate "ballistic" offset
+PosAdjst andb  #%11111000	if 0<XYoffset<8, no "ballistic" response
+RShiftD  asra  			calculate 50% of XY offset
+         rorb  			for "ballistic" response.
+         addd  ,s++		add original XY offset total, clean up stack
+         addd  ,x		add mouse's current XY position
+         bpl   CheckPos		zero or positive XY position, go check it...
+         clra  			set minimum XY position
+         clrb
+CheckPos cmpd  2,s		past maximum XY position?
+         bls   SavePos		no, go save it...
+         ldd   $02,s		get maximum XY position
+SavePos  std   ,x		save new XY position
          rts   
 
          emod

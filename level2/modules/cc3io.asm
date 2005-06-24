@@ -3,6 +3,11 @@
 * 
 * $Id$
 * 
+* NOTE:  CODE ISSUES FOUND!!
+* "Animate Palette?  This obviously isn't implemented yet"
+* Look at this code.  Why is this calling an entry point in
+* SNDDRV???
+*
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
@@ -101,11 +106,11 @@ Term     equ   *
          puls  cc		restore IRQs
 
          pshs  u,x
-         ldx   #(WGlobal+G.JoyEnt) $10EA
+         ldx   #(WGlobal+G.JoyEnt)
          bsr   TermSub
-         ldx   #(WGlobal+G.SndEnt) $10F4
+         ldx   #(WGlobal+G.SndEnt)
          bsr   TermSub
-         ldx   #(WGlobal+G.KeyEnt) $10E0
+         ldx   #(WGlobal+G.KeyEnt)
          bsr   TermSub
          puls  u,x
 noterm   ldb   #$0C		branch table offset for terminate
@@ -668,26 +673,26 @@ L0369    equ   *
          beq   L0381			no, try joystick
          ldx   >WGlobal+G.KeyEnt	else get ptr to keydrv
          leau  >G.KeyMem,u		and ptr to its statics
-         jsr   $06,x			call into it
+         jsr   K$FnKey,x		call into it
          ldu   <D.CCMem			get ptr to CC mem
          sta   <G.KyButt,u		save key button
 L0381    ldx   >WGlobal+G.JoyEnt	get ptr to joydrv
          leau  >G.JoyMem,u		and ptr to its statics
-         jsr   $06,x			get X/Y info
+         jsr   J$MsBtn,x		get mouse button info
          ldu   <D.CCMem			get ptr to CC mem
-         lda   #$82
-         cmpb  #$80
-         beq   L0397
-         inca  
-         cmpb  #$C0
-         bne   L039C
+         lda   #%10000010		A = $82
+         cmpb  #%10000000		clear flag set?
+         beq   L0397			branch if so
+         inca  				A now = $83
+         cmpb  #%11000000		shift clear flag set?
+         bne   L039C			branch if not
 L0397    inc   <G.Clear,u
          bra   L03C8
-L039C    tst   $08,y
-         bpl   L03A8
-         bitb  #$03
-         beq   L03A8
-         lda   #$0D
+L039C    tst   V.PAUS,y			pause screen on?
+         bpl   L03A8			branch if not
+         bitb  #%00000011		any mouse buttons down?
+         beq   L03A8			branch if not
+         lda   #C$CR			load A with carriage return
          bra   L03C8
 L03A8    lda   <G.KyButt,u
          lbsr  L0229
@@ -696,10 +701,10 @@ L03A8    lda   <G.KyButt,u
          pshs  u,y,x
          ldx   >WGlobal+G.KeyEnt
          leau  >G.KeyMem,u
-         jsr   $09,x			call Read Key routine
+         jsr   K$RdKey,x		call Read Key routine
          puls  u,y,x
-         bpl   L03C8
-         clr   <G.LastCh,u
+         bpl   L03C8			branch if valid char received
+         clr   <G.LastCh,u		else clear last character var
          lbra  L044E
 L03C8    cmpa  <G.LastCh,u	is current ASCII code same as last one pressed?
          bne   L03DF		no, no keyboard repeat, skip ahead
@@ -1170,11 +1175,11 @@ GSJoy    clrb  			default to no errors
          rts   			return
 
 * Get button status first
-GetJoy   ldx   >WGlobal+G.JoyEnt $10EA
+GetJoy   ldx   >WGlobal+G.JoyEnt
          pshs  u		save driver static
          ldu   <D.CCMem		get ptr to CC mem
          leau  >G.JoyMem,u	point to subroutine module's static mem
-         jsr   $0C,x		call entry point to get button
+         jsr   J$JyBtn,x	call entry point to get button
 * Joysticks button states returned in B
          puls  u		restore driver static
          lda   R$X+1,y		left or right?
@@ -1194,9 +1199,9 @@ L06B2    stb   R$A,y		save button status to caller
          ldy   #$0000   force low res??
          pshs  u		save driver static mem
          ldu   <D.CCMem		get ptr to CC mem
-         ldx   >WGlobal+G.JoyEnt $10EA get address of joystick sub module
+         ldx   >WGlobal+G.JoyEnt get address of joystick sub module
          leau  >G.JoyMem,u	get ptr to sub module's static mem
-         jsr   $0F,x		call routine in sub module to get joy X/Y
+         jsr   J$JyXY,x		call routine in sub module to get joy X/Y
 * X = joystick X pos, Y = joystick Y pos
          puls  u		restore driver static mem
          pshs  y		save joystick Y
@@ -1262,10 +1267,10 @@ L073B    leax  <G.Mouse,x	move X to mouse packet
          tfr   d,y		move mouse res to Y
          lda   Pt.Actv,x	get mouse side
          pshs  u,y,x,b,a	preserve regs
-         ldx   >WGlobal+G.JoyEnt $10EA get ptr to mouse sub module
+         ldx   >WGlobal+G.JoyEnt get ptr to mouse sub module
          ldu   <D.CCMem		get mem pointer
          leau  >G.JoyMem,u	and point to mouse sub module statics
-         jsr   $09,x		get data
+         jsr   J$MsXY,x		get data
          pshs  y,x
          ldx   $06,s		get ptr to mouse packet in CC mem
          puls  b,a		get X value into D
@@ -1282,12 +1287,12 @@ L0764    cmpd  ,y++		compare mouse's current X to Pt.AcX
          sta   <(G.MseMv-G.Mouse),x	update mouse moved flag
 L0770    rts   
 
-SSTone   ldx   >WGlobal+G.SndEnt $10F4 get address of sound sub module
-         jmp   $06,x		go execute routine in sub module
+SSTone   ldx   >WGlobal+G.SndEnt get address of sound sub module
+         jmp   S$SetStt,x	go execute routine in sub module
 
 * Animate Palette?  This obviously isn't implemented yet
-SSAnPal  ldx   >WGlobal+G.SndEnt $10F4
-         jmp   $09,x
+SSAnPal  ldx   >WGlobal+G.SndEnt
+         jmp   S$Term,x
 
 * SetStat    
 *
