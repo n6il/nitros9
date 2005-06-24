@@ -99,9 +99,10 @@ L0085    suba  ,s+
          bra   L006D
 L0089    fcb   $00
 L008A    fcb   $07,$01
-Init    fcb   $cc,$00,$07
-L008F    fcb   $a7
-         bitb  #$5A
+
+Init     ldd   #$00007
+L008F    sta   b,u
+         decb
          bpl   L008F
          ldd   >M$Mem,pcr
          leax  >L0089,pcr
