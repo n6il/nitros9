@@ -119,6 +119,32 @@ Ptr.Ill  rmb   1          Illegal action pointer
 Ptr.Txt  rmb   1          Text pointer
 Ptr.SCH  rmb   1          Small cross hair pointer
 
+**********************
+* KeyDrv Entry Points
+         org   0
+K$Init   rmb   3	joystick initialization
+K$Term   rmb   3	joystick termination
+K$FnKey  rmb   3	get function key states
+K$RdKey  rmb   3	get key states
+
+**********************
+* JoyDrv Entry Points
+         org   0
+J$Init   rmb   3	joystick initialization
+J$Term   rmb   3	joystick termination
+J$MsBtn  rmb   3	get mouse button states
+J$MsXY   rmb   3	get mouse X/Y coordinates
+J$JyBtn  rmb   3	get joystick button states
+J$JyXY   rmb   3	get joystick X/Y coordinates
+
+**********************
+* SndDrv Entry Points
+         org   0
+S$Init   rmb   3	joystick initialization
+S$GetStt rmb   3	joystick termination
+S$SetStt rmb   3	joystick termination
+S$Term   rmb   3	get joystick X/Y coordinates
+
 ********************************
 * Window/Menu Bar Data Structure
 *
