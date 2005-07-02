@@ -1,6 +1,6 @@
 include ../../rules.mak
 
-vpath %.asm $(6809L1)/cmds:$(3RDPARTY)/packages/basic09
+vpath %.asm $(COMMON)/cmds:$(3RDPARTY)/packages/basic09
 
 DEPENDS		= ./makefile
 
