@@ -77,6 +77,6 @@ rm hdbdrives2.dsk
 echo "Step 3 - Put it all together"
 rm $diskname
 cat tmp.dsk hdbdrives.dsk>$diskname
-rm tmp.dsk hdbdrives.dsk
+#rm tmp.dsk hdbdrives.dsk
 
 echo "Ok, we're done! The file $diskname is now a fresh disk image."

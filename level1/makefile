@@ -7,7 +7,8 @@ LEVEL		= 1
 #WHICHSHELL	= shellplus
 WHICHSHELL	= shell_21
 
-DISTRO		= nos9$(CPU)l$(LEVEL)
+DISTRO		= $(CPU)L$(LEVEL)
+DISTRONAME	= nos9$(CPU)l$(LEVEL)
 DISTROVER	= $(DISTRO)$(NITROS9VER)
 BOOTFILE_CO32	= bootfiles/bootfile_co32
 BOOTFILE_CO51	= bootfiles/bootfile_co51
@@ -33,11 +34,11 @@ ROOTFILES	= startup
 
 PACKAGENAME	= $(DISTROVER).zip
 DSK360K_1       = $(DISTROVER)_40d_1.dsk
-LDSK360K_1      = $(DISTRO)_40d_1.dsk
+LDSK360K_1      = $(DISTRONAME)_40d_1.dsk
 DSK360K_2       = $(DISTROVER)_40d_2.dsk
-LDSK360K_2      = $(DISTRO)_40d_2.dsk
+LDSK360K_2      = $(DISTRONAME)_40d_2.dsk
 DSK720K         = $(DISTROVER)_80d.dsk
-LDSK720K        = $(DISTRO)_80d.dsk
+LDSK720K        = $(DISTRONAME)_80d.dsk
 
 
 # Make all components
