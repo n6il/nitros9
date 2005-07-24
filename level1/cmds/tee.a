@@ -14,7 +14,7 @@
 
 * Disassembled 98/09/14 23:50:52 by Disasm v1.6 (C) 1988 by RML
 
-*         use   os9defs.a
+         use   defsfile.d
 
 rev      set   $00
 edition  set   2
