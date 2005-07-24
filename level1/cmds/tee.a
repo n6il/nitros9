@@ -1,64 +1,63 @@
-;*******************************************************************
-; Tee - Split output to multiple devices
-;
-; $Id$
-;
-; Edt/Rev  YYYY/MM/DD  Modified by
-; Comment
-; ------------------------------------------------------------------
-;   2      ????/??/??
-; From Tandy OS-9 Level One VR 02.00.00.
+********************************************************************
+* Tee - Split output to multiple devices
+*
+* $Id$
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*   2      ????/??/??
+* From Tandy OS-9 Level One VR 02.00.00.
 
-	.include	"/Users/boisy/Projects/nitros9/defs/const.d"
-	.include	"/Users/boisy/Projects/nitros9/defs/io.d"
-	.include	"/Users/boisy/Projects/nitros9/defs/ioman.d"
-	.include	"/Users/boisy/Projects/nitros9/defs/errno.d"
-	.include	"/Users/boisy/Projects/nitros9/defs/syscall.d"
-	.include	"/Users/boisy/Projects/nitros9/defs/module.d"
+         nam   Tee
+         ttl   Split output to multiple devices
 
-         .module	Tee,Prgrm+Objct,ReEnt+0,start,dsize
+* Disassembled 98/09/14 23:50:52 by Disasm v1.6 (C) 1988 by RML
 
-	.area	_DATA
+*         use   os9defs.a
 
-u0000:    .blkb   1
-parray:   .blkb   13
-pcount:   .blkb   1
-buff:     .blkb   256
-          .blkb   450
-dsize     ==      .
+rev      set   $00
+edition  set   2
 
-	.area	_CODE
+         psect tee_a,Prgrm+Objct,ReEnt+rev,edition,200,start
 
-start:   clrb  
-         clr   <pcount,u		; clear path counter
-         cmpy  #0h0000		; any parameters?
-         lbeq  exitok		; exit if none
-         leay  parray,u		; else point Y to path array
+         vsect
+u0000    rmb   1
+parray   rmb   13
+pcount   rmb   1
+buff     rmb   256
+         endsect
 
-; Walk the command line parameters
-parse:   lda   ,x+
+start    clrb  
+         clr   <pcount,u	clear path counter
+         cmpy  #$0000		any parameters?
+         lbeq  exitok		exit if none
+         leay  <parray,u	else point Y to path array
+
+* Walk the command line parameters
+parse    lda   ,x+
          cmpa  #C$SPAC
          beq   parse
          cmpa  #C$COMA
          beq   parse
          cmpa  #C$CR
          lbeq  parsex
-; We've found a file or device name
+* We've found a file or device name
          leax  -1,x
          lda   #WRITE.
          ldb   #PREAD.+UPDAT.
-         os9   I$Create 	; open a path to the device or file
-         bcs   exit		; branch if error
-         ldb   pcount,u		; else get path counter
-         sta   b,y		; save new path in the array offset
-         incb  			; increment counter
-         stb   pcount,u		; and save
-         bra   parse		; continue parsing command line
-parsex:  stb   pcount,u
+         os9   I$Create 	open a path to the device or file
+         bcs   exit		branch if error
+         ldb   <pcount,u	else get path counter
+         sta   b,y		save new path in the array offset
+         incb  			increment counter
+         stb   <pcount,u	and save
+         bra   parse		continue parsing command line
+parsex   stb   <pcount,u
 
-; Devices on command line are open, start pumping data
-L0044:   clra  
-         leax  buff,u
+* Devices on command line are open, start pumping data
+L0044    clra  
+         leax  <buff,u
          ldy   #256
          os9   I$ReadLn 
          bcc   L0057
@@ -66,20 +65,22 @@ L0044:   clra
          beq   exitok
          coma  
          bra   exit
-L0057:   inca  
+L0057    inca  
          os9   I$WritLn 
-         tst   pcount,u
+         tst   <pcount,u
          beq   L0044
          clrb  
-L0060:   leay  parray,u
+L0060    leay  <parray,u
          lda   b,y
-         leax  buff,u
+         leax  <buff,u
          ldy   #256
          os9   I$WritLn 
          bcs   exit
          incb  
-         cmpb  pcount,u
+         cmpb  <pcount,u
          bne   L0060
          bra   L0044
-exitok:  clrb  
-exit:    os9   F$Exit   
+exitok   clrb  
+exit     os9   F$Exit   
+
+         endsect
