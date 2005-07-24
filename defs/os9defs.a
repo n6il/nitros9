@@ -839,7 +839,7 @@ P$PagCnt: rmb   1          Memory Page Count
 P$User:   rmb   2          User Index $09
 P$Prior:  rmb   1          Priority $0B
 P$Age:    rmb   1          Age $0C
-P$State$0D
+P$State:  rmb   1
 P$Queue:  rmb   2          Queue Link (Process ptr) $0E
 P$IOQP:   rmb   1          Previous I/O Queue Link (Process ID) $10
 P$IOQN:   rmb   1          Next     I/O Queue Link (Process ID)
