@@ -20,6 +20,8 @@ NOS9DBG = 1
 
 #################### DO NOT CHANGE ANYTHING BELOW THIS LINE ####################
 
+CC		= c3
+
 NITROS9VER	= v0$(NOS9VER)0$(NOS9MAJ)0$(NOS9MIN)
 
 ifndef	NITROS9DIR
@@ -85,6 +87,16 @@ ARCHIVE		= zip -D
 6809L1		= $(NITROS9DIR)/6809l1
 6809L2		= $(NITROS9DIR)/6809l2
 6309L2		= $(NITROS9DIR)/6309l2
+
+# C-Cubed Rules
+%.r: %.c
+	$(CC) $(CFLAGS) $< -r
+
+%: %.r
+	$(CC) $(LFLAGS) $^ -f=$@
+
+%.r: %.a
+	rma $< -o=$@
 
 # File managers
 %.mn: %.asm
