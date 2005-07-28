@@ -51,6 +51,7 @@
  */
 
 #define BOL     '^'
+#undef EOL
 #define EOL     '$'
 #define ANY     '.'
 #define LITCHAR 'L'
