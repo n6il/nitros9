@@ -14,12 +14,15 @@
 
          use   defsfile.d
 
+Prgrm    set   $10 
+Objct    set   $01
+ReEnt    set   $80
 rev      set   $00
-edition  set   8
+edition  set   2
 
          psect tsmon_a,Prgrm+Objct,ReEnt+rev,edition,200,start
 
-         vsect
+         vsect dp
 childid  rmb   1
 parmptr  rmb   2
 parmlen  rmb   2
@@ -31,12 +34,12 @@ LoginPrm fcb   C$CR
 
 IcptRtn  rti
 
-start    stx   <parmptr,u		save parameter pointer
-         std   <parmlen,u		save parameter length
+start    stx   parmptr			save parameter pointer
+         std   parmlen			save parameter length
          leax  IcptRtn,pcr		point to intercept routine
          os9   F$Icpt   		and set it
-L0024    ldx   <parmptr,u		get pointer to parameter
-         ldd   <parmlen,u		and length
+L0024    ldx   parmptr			get pointer to parameter
+         ldd   parmlen			and length
          cmpd  #$0002			
          bcs   L0052
          lda   ,x			get byte at command line
@@ -57,7 +60,7 @@ L0024    ldx   <parmptr,u		get pointer to parameter
          os9   I$Dup    		dup to stderr
          bcs   Exit			branch if error
 L0052    clra  				stdin
-         leax  <inbuff,u		point to buffer
+         leax  inbuff			point to buffer
          ldy   #$0001			read 1 byte
          os9   I$ReadLn 		read line
          bcs   L0024			branch if error
@@ -68,9 +71,9 @@ L0052    clra  				stdin
          ldy   #$0000			parameter size
          os9   F$Fork   		fork program
          bcs   L0024			branch if error
-         sta   <childid			else save process ID of child
+         sta   childid			else save process ID of child
 L0072    os9   F$Wait   		wait for it to finish
-         cmpa  <childid			same as PID we forked?
+         cmpa  childid			same as PID we forked?
          bne   L0072			if not, wait more
          bra   L0024			else go back
 Exit     os9   F$Exit   		exit

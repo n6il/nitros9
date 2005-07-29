@@ -15,6 +15,12 @@
 
          use   defsfile.d
 
+Prgrm    set   $10 
+Objct    set   $01
+ReEnt    set   $80
+rev      set   $00
+edition  set   2
+
 * Here are some tweakable options
 DOHELP   set   0	1 = include help info
 STACKSZ  set   128	estimated stack size
@@ -28,7 +34,7 @@ edition  set   2
          psect touch_a,Prgrm+Objct,ReEnt+rev,edition,200,start
 
 * Your utility's static storage vars go here
-         vsect
+         vsect dp
 parmptr  rmb   2	pointer to our command line params
 bufptr   rmb   2	pointer to user expandable buffer
 bufsiz   rmb   2	size of user expandable buffer
@@ -39,12 +45,15 @@ filemode rmb   1
 filecnt  rmb   1
 zoptflg  rmb   1	1 = this option has been processed once already
 zpath    rmb   1	path to -z file
-cleartop equ   .	everything up to here gets cleared at start
+cleartop equ   *	everything up to here gets cleared at start
 zopt     rmb   ZOPTSIZ	buffer for what follows after -c=
+         endsect
+
 * Next is a user adjustable buffer with # modifier on command line.
 * Some utilities won't need this, some will.
 * Currently set up to be larger for Level 2 than Level 1
 * Note: this buffer must come just before the stack
+         vsect
          IFGT  Level-1
 bigbuff  rmb   8*1024		8K default buffer for Level 2
          ELSE
@@ -97,7 +106,7 @@ EndCantL equ   *-EndCant
 * our static memory from U to cleartop, then determine the
 * size of our data area (minus the stack).
 start    pshs  u,x		save registers for later
-         leax  <cleartop,u	point to end of area to zero out
+         leax  <cleartop	point to end of area to zero out
          IFNE  H6309
          subr  u,x		subtract U from X
          tfr   x,w		and put X in W
@@ -288,7 +297,7 @@ ProcFile
          beq   DoCreate
 ChkQuit  bsr   CantTouch
          tst   <quiterr
-         beq   ExitOK
+         beq   ExitOk
          bra   ProcRTS
 DoCreate ldb   #PREAD.+UPDAT.
          pshs  x
