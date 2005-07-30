@@ -5,7 +5,7 @@ LEVEL		= 2
 
 DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
-DISTROVER	= $(DISTRO)$(NITROS9VER)
+DISTROVER	= $(DISTRONAME)$(NITROS9VER)
 BOOTFILE_40D	= bootfiles/bootfile_40d
 BOOTFILE_80D	= bootfiles/bootfile_80d
 BOOTFILE_40D_50HZ	= bootfiles/bootfile_40d_50hz

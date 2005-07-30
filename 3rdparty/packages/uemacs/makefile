@@ -1,11 +1,10 @@
 #  makefile for Micro emacs for os9/68000
 # temp files on ram disk
-%.r: %.c
-	$(CC) $(CFLAGS) $< -r -v=/Users/boisy/Projects/mwcc/defs
+include $(NITROS9DIR)/rules.mak
 
-CC	= cc09
+CC	= c3
 
-CFLAGS =
+CFLAGS += -y -q
 
 MAINR  = uemain1.r uemain2.r uemain3.r uemain4.r uemaintable.r
 DISPR  = uedisplay1.r uedisplay2.r uedisplay3.r

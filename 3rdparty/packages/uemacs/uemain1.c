@@ -25,7 +25,7 @@
  *      - Fixes to ^X= command   
  */
   
-/* #include        <stdio.h> */
+#include        <stdio.h>
 #include        "ueed.h"
 #ifdef VMS
 #include        <ssdef.h>
@@ -113,7 +113,9 @@ loop:
         if (c == (CTRL|'X'))                    /* ^X is a prefix       */
                 c = CTLX | getctl();
         if (kbdmip != NULL) {                   /* Save macro strokes.  */
-                if (c!=(CTLX|')') && kbdmip>&kbdm[NKBDM-6]) {
+                if (kbdmip == kbdm[NKBDM-6])
+/*                if (c != ( CTLX | ')' ) && kbdmip > &kbdm[NKBDM-6]) */
+		{
                         ctrlg(FALSE, 0);
                         goto loop;
                 }

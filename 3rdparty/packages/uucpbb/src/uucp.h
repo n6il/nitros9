@@ -35,10 +35,10 @@
 #undef USE_INDEX
 #include <string.h>
 #else                          /* all other C compilers */
-#define USE_INDEX 1
-#define strchr(a,b) index(a,b)
-#define strrchr(a,b) rindex(a,b)
-#include <strings.h>
+#define USE_INDEX 0
+/*#define strchr(a,b) index(a,b) */
+/* #define strrchr(a,b) rindex(a,b) */
+#include <string.h>
 #endif
 
 #include "os_misc.h"                                        /* Added --REB */

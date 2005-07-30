@@ -5,7 +5,7 @@
 # NOTE: This package must be compiled by the SUPERUSER (user 0) in order
 #       for it to work properly.
 
-CC      = cc
+CC      = cc09
 
 # Temporary directory.  This device must have at least 120K of free space
 TMP     = /dd/tmp
