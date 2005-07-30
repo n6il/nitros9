@@ -11,7 +11,7 @@
 /* #define V7      0                       /* V7 UN*X or Coherent          */
 /* #define VMS     0                       /* VAX/VMS                      */
 /* #define CPM     0                       /* CP/M-86                      */
-#define OS9     1                       /* os9/6809 level 1 (coco)      */
+/* #define OS9     1                       /* os9/6809 level 1 (coco)      */
 /* #define OSK     1                       /* os9/68000 predefined         */
 /* #define MSDOS   0                       /* MS-DOS predefined            */
 

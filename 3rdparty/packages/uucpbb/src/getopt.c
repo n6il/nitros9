@@ -69,7 +69,7 @@
 #endif
 
 #ifdef USE_INDEX
-#include <strings.h>                     /* C library string functions */
+#include <string.h>                     /* C library string functions */
 #define strchr index
 #else
 #include <string.h>                      /* C library string functions */

@@ -15,9 +15,6 @@
 
          use   defsfile.d
 
-Prgrm    set   $10 
-Objct    set   $01
-ReEnt    set   $80
 rev      set   $00
 edition  set   2
 

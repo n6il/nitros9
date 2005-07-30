@@ -268,5 +268,5 @@ short lk_map[][2] = {
 
 #endif
 
-#define NULL 0
+/* #define NULL 0 */
 
