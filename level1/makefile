@@ -9,7 +9,7 @@ WHICHSHELL	= shell_21
 
 DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
-DISTROVER	= $(DISTRO)$(NITROS9VER)
+DISTROVER	= $(DISTRONAME)$(NITROS9VER)
 BOOTFILE_CO32	= bootfiles/bootfile_co32
 BOOTFILE_CO51	= bootfiles/bootfile_co51
 BOOTFILE_CO32_DS80	= bootfiles/bootfile_co32_ds80
