@@ -74,7 +74,7 @@ open(FILE, "$bootlist") or die ("Unable to open $bootlist");
 close(FILE);
 foreach $element (@bootarray)
 {
-	if ($element =~ /^#/)
+	if (($element =~ /^#/) || ($element =~ /^\*/))
 	{
 		$element = "";
 	}
@@ -85,8 +85,6 @@ foreach $element (@bootarray)
 	}
 }
 
-
-
 $bls = "@bootarray";
 system("cat $bls>bootfile");
 
@@ -96,7 +94,7 @@ open(FILE, "$tracklist") or die ("Unable to open $tracklist");
 close(FILE);
 foreach $element (@trackarray)
 {
-	if ($element =~ /^#/)
+	if (($element =~ /^#/) || ($element =~ /^\*/))
 	{
 		$element = "";
 	}
