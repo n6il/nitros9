@@ -1,0 +1,4 @@
+# Boot track list for NitrOS-9 Level 2
+$NITROS9DIR/$DISTRO/modules/rel_80
+$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_ide
+$NITROS9DIR/$DISTRO/modules/krn
