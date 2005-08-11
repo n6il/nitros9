@@ -56,7 +56,7 @@ os9 format -qe -l$os9_sectors tmp.dsk
 os9 gen -b=bootfile -t=boottrack tmp.dsk>&/dev/null
 os9 copy -o=0 $NITROS9DIR/6309l2/modules/sysgo_dd tmp.dsk,sysgo
 os9 attr tmp.dsk,sysgo -epepr
-os9 dsave -e $NITROS9DIR/6309l2/nos9309l2_80d.dsk, tmp.dsk, >&/dev/null
+os9 dsave -e $NITROS9DIR/6309l2/nos96309l2_80d.dsk, tmp.dsk, >&/dev/null
 os9 dsave -e $NITROS9DIR/3rdparty/packages/uucpbb/uucpbb21_6309.dsk, tmp.dsk, >&/dev/null
 os9 dsave -e $NITROS9DIR/3rdparty/packages/cc/cc.dsk, tmp.dsk, >&/dev/null
 os9 dsave -e $NITROS9DIR/3rdparty/packages/basic09/basic09v010100.dsk, tmp.dsk, >&/dev/null
