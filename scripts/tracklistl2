@@ -1,4 +1,28 @@
-# Boot track list for NitrOS-9 Level 2
-$NITROS9DIR/$DISTRO/modules/rel_80
-$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_ide
+* Boot track list for NitrOS-9 Level 2
+*
+* REL module - ONLY ONE MUST BE SELECTED!
+*
+*$NITROS9DIR/$DISTRO/modules/rel_32
+*$NITROS9DIR/$DISTRO/modules/rel_40
+*$NITROS9DIR/$DISTRO/modules/rel_80
+*
+* Booters - ONLY ONE MUST BE SELECTED!
+*
+* NitrOS-9 Standard Booters
+*$NITROS9DIR/$DISTRO/modules/boot_1773_30ms
+$NITROS9DIR/$DISTRO/modules/boot_1773_6ms
+*$NITROS9DIR/$DISTRO/modules/boot_burke
+*$NITROS9DIR/$DISTRO/modules/boot_rampak
+*$NITROS9DIR/$DISTRO/modules/boot_wd1002
+* SuperDriver Booters
+*$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_d4n1
+*$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_hdii
+*$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_ide
+*$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_ktlr
+*$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_tc3
+* DriveWire Booters
+*$CLOUD9DIR/Products/DriveWire/software/$DISTRO/boot_dw
+*
+* The NitrOS-9 Kernel - THIS MUST BE SELECTED!
+*
 $NITROS9DIR/$DISTRO/modules/krn
