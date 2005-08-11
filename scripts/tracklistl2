@@ -1,28 +1,51 @@
-* Boot track list for NitrOS-9 Level 2
+***************************************
+* NitrOS-9 Level 2 Boot Track List
 *
-* REL module - ONLY ONE MUST BE SELECTED!
+* $Id$
 *
-*$NITROS9DIR/$DISTRO/modules/rel_32
+* This boot track list is presented as an example for creating custom
+* boot track files.
+* A module may be excluded from the track file if an asterisk (*) is the
+* first character of the line.
+*
+***************************************
+* REL Module Section
+*
+* The REL module readies the computer for NitrOS-9.
+*  Select only one: 32, 40 or 80 column boot screen.
+*
+$NITROS9DIR/$DISTRO/modules/rel_32
 *$NITROS9DIR/$DISTRO/modules/rel_40
 *$NITROS9DIR/$DISTRO/modules/rel_80
 *
-* Booters - ONLY ONE MUST BE SELECTED!
+***************************************
+* Booter Section
 *
-* NitrOS-9 Standard Booters
-*$NITROS9DIR/$DISTRO/modules/boot_1773_30ms
+* The booter module is required to boot NitrOS-9.  Be sure to
+* select only one booter.
+*
+* NitrOS-9 Standard Booters: WD1773 6ms and 30ms step rates,
+* B&B HD, Disto RAMPak or Eliminator WD1002 HD
 $NITROS9DIR/$DISTRO/modules/boot_1773_6ms
+*$NITROS9DIR/$DISTRO/modules/boot_1773_30ms
 *$NITROS9DIR/$DISTRO/modules/boot_burke
 *$NITROS9DIR/$DISTRO/modules/boot_rampak
 *$NITROS9DIR/$DISTRO/modules/boot_wd1002
-* SuperDriver Booters
+*
+* SuperDriver Booters: Disto 4-N-1, Disto HD-II, Cloud-9 TC^3 SCSI,
+* Glenside and Cloud-9 IDE, Ken-Ton/LR-Tech
 *$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_d4n1
 *$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_hdii
+*$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_tc3
 *$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_ide
 *$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_ktlr
-*$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_tc3
-* DriveWire Booters
+*
+* DriveWire Booter
 *$CLOUD9DIR/Products/DriveWire/software/$DISTRO/boot_dw
 *
-* The NitrOS-9 Kernel - THIS MUST BE SELECTED!
+***************************************
+* Kernel Section
+*
+* This is the primary NitrOS-9 kernel and must remain uncommented.
 *
 $NITROS9DIR/$DISTRO/modules/krn
