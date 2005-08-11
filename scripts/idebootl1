@@ -16,21 +16,32 @@ $md="$NITROS9DIR/$DISTRO/modules";
 $sd="$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO";
 $dd="$CLOUD9DIR/Products/DriveWire/software/$DISTRO";
 
-@tracklist_dw=(
+@tracklist_ide=(
 	"$md/rel",
 	"$md/krn",
 	"$md/krnp2",
 	"$md/init",
-	"$dd/boot_dw");
+	"$sd/boot_ide");
 
 # IDE Boot with IDE Master as /DD
-@bootlist_dw=("$md/ioman",
+@bootlist_ide=("$md/ioman",
 	"$md/rbf.mn",
-	"$dd/drivewire.dr",
-	"$dd/ddx0.dd",
-	"$dd/x1.dd",
-	"$dd/x2.dd",
-	"$dd/x3.dd",
+	"$sd/rbsuper.dr",
+	"$sd/llide.dr",
+	"$sd/lltc3.dr",
+	"$sd/dd_ide.dd",
+	"$sd/i0_ide.dd",
+	"$sd/i1_ide.dd",
+	"$sd/ih_ide.dd",
+	"$sd/s0_tc3.dd",
+	"$sd/s1_tc3.dd",
+	"$sd/s2_tc3.dd",
+	"$sd/s3_tc3.dd",
+	"$sd/s4_tc3.dd",
+	"$sd/s5_tc3.dd",
+	"$sd/s6_tc3.dd",
+	"$sd/s7_tc3.dd",
+	"$sd/sh_tc3.dd",
 	"$md/rb1773.dr",
 	"$md/d0_80d.dd",
 	"$md/d1_40d.dd",
@@ -45,13 +56,13 @@ $dd="$CLOUD9DIR/Products/DriveWire/software/$DISTRO";
 	"$md/piper.dr",
 	"$md/pipe.dd",
 	"$md/clock_60hz",
-	"$dd/clock2_dw",
+	"$md/clock2_cloud9",
 	"$md/sysgo_dd");
 
 
 # Select our bootlist and tracklist
-@bootlist = @bootlist_dw;
-@tracklist = @tracklist_dw;
+@bootlist = @bootlist_ide;
+@tracklist = @tracklist_ide;
 
 # Create the files
 if (-e "bootfile")

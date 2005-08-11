@@ -1,8 +1,8 @@
-#!/bin/tcsh
+#!/usr/bin/perl
 #
 # BUNDI - Build the Ultimate NitrOS-9 Disk Image
 #
-# This script builds the ULTIMATE NitrOS-9/6309 Level 2 disk image
+# This script builds the ULTIMATE NitrOS-9 disk image,
 # complete with HDB-DOS drives!
 #
 # The resulting image has a NitrOS-9 partition and an HDB-DOS partition.
@@ -13,70 +13,78 @@
 # $00B100 OS-9 Offset in HDB-DOS
 #
 # ATTENTION!  Set the HDB-DOS offset in your HDB-DOS ROM here! (must be in decimal)
-set hdbdos_offset=45312		# 0x00B100
+$hdbdos_offset = 45312;		# 0x00B100
 # ATTENTION!  Set the number of HDB-DOS virtual disks (must be in decimal)
-set num_hdbdos_disks=128
+$num_hdbdos_disks = 128;
+$NITROS9DIR = $ENV{'NITROS9DIR'};
+$CLOUD9DIR = $ENV{'CLOUD9DIR'};
 
-# Check for argument
-if ($2 == "") then
-	echo "Usage: bundi <bootscript> <diskname>"
-	exit
-endif
 
-set diskname=$2
-set multiplier=2
-@ os9_sectors = $hdbdos_offset * $multiplier
-echo $os9_sectors
-@ hdb_drives = $num_hdbdos_disks - 2
+# Check for proper number of arguments
+$numargs = $#ARGV + 1;
+if ($numargs != 2)
+{
+	print "Usage: bundi <bootscript> <diskname>\n";
+	exit;
+}
 
-echo "########## PART  I ##########"
-echo "#                           #"
-echo "#    Assemble EVERYTHING!   #"
-echo "#                           #"
-echo "#############################"
-echo
-echo "Step 1 - Making the ENTIRE NitrOS-9 Project (could take a while)..."
-#(pushd $NITROS9DIR; make dsk; popd)>&/dev/null
+$scriptname = $ARGV[0];
+$diskname = $ARGV[1];
 
-echo "Step 2 - Making the HDB-DOS Product..."
-(pushd $CLOUD9DIR/Products/HDB-DOS/Software; make dsk; popd)>&/dev/null
 
-echo "Step 3 - Making the Ved Product..."
-(pushd $CLOUD9DIR/Products/Ved/Software; make dsk; popd)>&/dev/null
+$multiplier = 2;
+$os9_sectors = $hdbdos_offset * $multiplier;
+printf("Number of sectors: %d\n", $os9_sectors);
+$hdb_drives = $num_hdbdos_disks - 2;
 
-echo "########## PART II ##########"
-echo "#                           #"
-echo "#   Prepare the Disk Image  #"
-echo "#                           #"
-echo "#############################"
-echo
-echo "Step 1 - Format the disk and make the boot disk"
-os9 format -qe -l$os9_sectors tmp.dsk
-./$1>&/dev/null
-os9 gen -b=bootfile -t=boottrack tmp.dsk>&/dev/null
-os9 copy -o=0 $NITROS9DIR/6309l2/modules/sysgo_dd tmp.dsk,sysgo
-os9 attr tmp.dsk,sysgo -epepr
-os9 dsave -e $NITROS9DIR/6309l2/nos96309l2_80d.dsk, tmp.dsk, >&/dev/null
-os9 dsave -e $NITROS9DIR/3rdparty/packages/uucpbb/uucpbb21_6309.dsk, tmp.dsk, >&/dev/null
-os9 dsave -e $NITROS9DIR/3rdparty/packages/cc/cc.dsk, tmp.dsk, >&/dev/null
-os9 dsave -e $NITROS9DIR/3rdparty/packages/basic09/basic09v010100.dsk, tmp.dsk, >&/dev/null
-os9 dsave -e $CLOUD9DIR/Products/Ved/Software/ved.dsk, tmp.dsk, >&/dev/null
-os9 format -qe -ss -dd boot.dsk
-os9 gen -b=bootfile -t=boottrack boot.dsk>&/dev/null
-rm bootfile boottrack
+print "########## PART  I ##########\n";
+print "#                           #\n";
+print "#    Assemble EVERYTHING!   #\n";
+print "#                           #\n";
+print "#############################\n\n";
 
-echo "Step 2 - Build the HDB-DOS drives"
-rm hdbdrives.dsk
-decb dskini -h$hdb_drives hdbdrives.dsk
-rm hdbdrives2.dsk
-cat $CLOUD9DIR/Products/HDB-DOS/Software/hdbdos.dsk hdbdrives.dsk boot.dsk>hdbdrives2.dsk
-rm hdbdrives.dsk boot.dsk
-decb hdbconv hdbdrives2.dsk hdbdrives.dsk
-rm hdbdrives2.dsk
+print "Step 1 - Making the ENTIRE NitrOS-9 Project (could take a while)...\n";
+#system("cd $NITROS9DIR; make dsk>&/dev/null");
 
-echo "Step 3 - Put it all together"
-rm $diskname
-cat tmp.dsk hdbdrives.dsk>$diskname
-#rm tmp.dsk hdbdrives.dsk
+print "Step 2 - Making the HDB-DOS Product...\n";
+system("cd $CLOUD9DIR/Products/HDB-DOS/Software; make dsk>&/dev/null");
 
-echo "Ok, we're done! The file $diskname is now a fresh disk image."
+print "Step 3 - Making the Ved Product...\n";
+system("cd $ENV{'CLOUD9DIR'}/Products/Ved/Software; make dsk>&/dev/null");
+
+print "########## PART II ##########\n";
+print "#                           #\n";
+print "#   Prepare the Disk Image  #\n";
+print "#                           #\n";
+print "#############################\n\n";
+
+print "Step 1 - Format the disk and make the boot disk\n";
+system("os9 format -qe -l$os9_sectors tmp.dsk");
+system("./$scriptname>&/dev/null");
+system("os9 gen -b=bootfile -t=boottrack tmp.dsk>&/dev/null");
+system("os9 copy -o=0 $NITROS9DIR/6309l2/modules/sysgo_dd tmp.dsk,sysgo");
+system("os9 attr tmp.dsk,sysgo -epepr");
+system("os9 dsave -e $NITROS9DIR/6309l2/nos96309l2_80d.dsk, tmp.dsk, >&/dev/null");
+system("os9 dsave -e $NITROS9DIR/3rdparty/packages/uucpbb/uucpbb21_6309.dsk, tmp.dsk, >&/dev/null");
+system("os9 dsave -e $NITROS9DIR/3rdparty/packages/cc/cc.dsk, tmp.dsk, >&/dev/null");
+system("os9 dsave -e $NITROS9DIR/3rdparty/packages/basic09/basic09v010100.dsk, tmp.dsk, >&/dev/null");
+system("os9 dsave -e $CLOUD9DIR/Products/Ved/Software/ved.dsk, tmp.dsk, >&/dev/null");
+system("os9 format -qe -ss -dd boot.dsk");
+system("os9 gen -b=bootfile -t=boottrack boot.dsk>&/dev/null");
+system("rm bootfile boottrack");
+
+print "Step 2 - Build the HDB-DOS drives\n";
+system("rm hdbdrives.dsk");
+system("decb dskini -h$hdb_drives hdbdrives.dsk");
+system("rm hdbdrives2.dsk");
+system("cat $CLOUD9DIR/Products/HDB-DOS/Software/hdbdos.dsk hdbdrives.dsk boot.dsk>hdbdrives2.dsk");
+system("rm hdbdrives.dsk boot.dsk");
+system("decb hdbconv hdbdrives2.dsk hdbdrives.dsk");
+system("rm hdbdrives2.dsk");
+
+print "Step 3 - Put it all together\n";
+system("rm $diskname");
+system("cat tmp.dsk hdbdrives.dsk>$diskname");
+system("rm tmp.dsk hdbdrives.dsk");
+
+print "Ok, we're done! The file $diskname is now a fresh disk image.\n";

@@ -5,11 +5,11 @@ $CLOUD9DIR = $ENV{'CLOUD9DIR'};
 
 if (@ARGV[0] == '')
 {
-	$DISTRO = "6809l1";
+	$DISTRO = "6809l2";
 }
 else
 {
-	$DISTRO = @ARGV[0]."l1";
+	$DISTRO = @ARGV[0]."l2";
 }
 
 $md="$NITROS9DIR/$DISTRO/modules";
@@ -17,14 +17,15 @@ $sd="$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO";
 $dd="$CLOUD9DIR/Products/DriveWire/software/$DISTRO";
 
 @tracklist_dw=(
-	"$md/rel",
-	"$md/krn",
-	"$md/krnp2",
-	"$md/init",
-	"$dd/boot_dw");
+	"$md/rel_80",
+	"$dd/boot_dw",
+	"$md/krn");
 
-# IDE Boot with IDE Master as /DD
-@bootlist_dw=("$md/ioman",
+# DriveWire Boot with /X0 as /DD
+@bootlist_dw=(
+	"$md/krnp2",
+	"$md/ioman",
+	"$md/init",
 	"$md/rbf.mn",
 	"$dd/drivewire.dr",
 	"$dd/ddx0.dd",
@@ -35,9 +36,20 @@ $dd="$CLOUD9DIR/Products/DriveWire/software/$DISTRO";
 	"$md/d0_80d.dd",
 	"$md/d1_40d.dd",
 	"$md/scf.mn",
-	"$md/ccio.dr",
-	"$md/co32.io",
-	"$md/term32.dt",
+	"$md/cc3io.dr",
+	"$md/term_win80.dt",
+	"$md/keydrv_cc3.sb",
+	"$md/joydrv_joy.sb",
+	"$md/snddrv_cc3.sb",
+	"$md/grfint.io",
+	"$md/w.dw",
+	"$md/w1.dw",
+	"$md/w2.dw",
+	"$md/w3.dw",
+	"$md/w4.dw",
+	"$md/w5.dw",
+	"$md/w6.dw",
+	"$md/w7.dw",
 	"$md/sc6551.dr",
 	"$md/t2_sc6551.dd",
 	"$md/t3_sc6551.dd",
@@ -45,8 +57,14 @@ $dd="$CLOUD9DIR/Products/DriveWire/software/$DISTRO";
 	"$md/piper.dr",
 	"$md/pipe.dd",
 	"$md/clock_60hz",
-	"$dd/clock2_dw",
-	"$md/sysgo_dd");
+	"$md/clock2_cloud9");
+
+#                $(C9)/Products/SuperDrivers/software/$DISTRO/lldw.dr \
+#                $(C9)/Products/SuperDrivers/software/$DISTRO/ddx0.dd \
+#                $(C9)/Products/SuperDrivers/software/$DISTRO/x1.dd \
+#                $(C9)/Products/SuperDrivers/software/$DISTRO/x2.dd \
+#                $(C9)/Products/SuperDrivers/software/$DISTRO/x3.dd \
+
 
 
 # Select our bootlist and tracklist
