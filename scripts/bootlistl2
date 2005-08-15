@@ -22,14 +22,18 @@ $NITROS9DIR/$DISTRO/moduleS/init
 *
 $NITROS9DIR/$DISTRO/modules/rbf.mn
 *
+* EMUDsk (for emulators)
+*$NITROS9DIR/3rdparty/drivers/emudsk/emudsk.dr
+*$NITROS9DIR/3rdparty/drivers/emudsk/ddh0.dd
+*
 * DriveWire driver (Cloud-9 product)
-*$NITROS9DIR/$DISTRO/modules/drivewire.dr
+$CLOUD9DIR/Products/DriveWire/software/$DISTRO/drivewire.dr
 * DriveWire descriptors - select as needed
-*$CLOUD9DIR/Products/DriveWire/software/$DISTRO/ddx0.dd
+$CLOUD9DIR/Products/DriveWire/software/$DISTRO/ddx0.dd
 *$CLOUD9DIR/Products/DriveWire/software/$DISTRO/x0.dd
-*$CLOUD9DIR/Products/DriveWire/software/$DISTRO/x1.dd
-*$CLOUD9DIR/Products/DriveWire/software/$DISTRO/x2.dd
-*$CLOUD9DIR/Products/DriveWire/software/$DISTRO/x3.dd  
+$CLOUD9DIR/Products/DriveWire/software/$DISTRO/x1.dd
+$CLOUD9DIR/Products/DriveWire/software/$DISTRO/x2.dd
+$CLOUD9DIR/Products/DriveWire/software/$DISTRO/x3.dd  
 *
 * SuperDriver Package (Cloud-9 product)
 *$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/rbsuper.dr
@@ -62,7 +66,7 @@ $NITROS9DIR/$DISTRO/modules/rb1773.dr
 * Floppy device descriptors
 * DD - default device - choose one if needed
 *$NITROS9DIR/$DISTRO/modules/ddd0_35s.dd
-$NITROS9DIR/$DISTRO/modules/ddd0_40d.dd
+*$NITROS9DIR/$DISTRO/modules/ddd0_40d.dd
 *../MODULES/RBF/ddd0_80d.dd
 * D0 - drive 0 - choose one if needed
 *$NITROS9DIR/$DISTRO/modules/d0_35s.dd

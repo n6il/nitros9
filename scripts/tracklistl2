@@ -14,9 +14,9 @@
 * The REL module readies the computer for NitrOS-9.
 *  Select only one: 32, 40 or 80 column boot screen.
 *
-$NITROS9DIR/$DISTRO/modules/rel_32
+*$NITROS9DIR/$DISTRO/modules/rel_32
 *$NITROS9DIR/$DISTRO/modules/rel_40
-*$NITROS9DIR/$DISTRO/modules/rel_80
+$NITROS9DIR/$DISTRO/modules/rel_80
 *
 ***************************************
 * Booter Section
@@ -26,7 +26,7 @@ $NITROS9DIR/$DISTRO/modules/rel_32
 *
 * NitrOS-9 Standard Booters: WD1773 6ms and 30ms step rates,
 * B&B HD, Disto RAMPak or Eliminator WD1002 HD
-$NITROS9DIR/$DISTRO/modules/boot_1773_6ms
+*$NITROS9DIR/$DISTRO/modules/boot_1773_6ms
 *$NITROS9DIR/$DISTRO/modules/boot_1773_30ms
 *$NITROS9DIR/$DISTRO/modules/boot_burke
 *$NITROS9DIR/$DISTRO/modules/boot_rampak
@@ -41,7 +41,7 @@ $NITROS9DIR/$DISTRO/modules/boot_1773_6ms
 *$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_ktlr
 *
 * DriveWire Booter
-*$CLOUD9DIR/Products/DriveWire/software/$DISTRO/boot_dw
+$CLOUD9DIR/Products/DriveWire/software/$DISTRO/boot_dw
 *
 ***************************************
 * Kernel Section

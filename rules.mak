@@ -47,6 +47,10 @@ AS		= mamou -i=$(DEFSDIR)
 ASOUT		= -o
 AFLAGS		= -q -aNOS9VER=$(NOS9VER) -aNOS9MAJ=$(NOS9MAJ) -aNOS9MIN=$(NOS9MIN) -aNOS9DBG=$(NOS9DBG)
 
+# RMA/RLINK
+ASM		= rma
+LINKER	= rlink
+
 # Commands
 MAKDIR		= os9 makdir
 RM		= rm -f
@@ -92,11 +96,14 @@ ARCHIVE		= zip -D
 %.r: %.c
 	$(CC) $(CFLAGS) $< -r
 
+%.l: %.r
+	$(MERGE) $^ > $@
+
 %: %.r
 	$(CC) $(LFLAGS) $^ -f=$@
 
 %.r: %.a
-	rma $< -o=$@
+	$(ASM) $< -o=$@
 
 # File managers
 %.mn: %.asm
