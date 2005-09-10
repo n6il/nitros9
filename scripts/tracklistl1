@@ -1,22 +1,12 @@
 ***************************************
-* NitrOS-9 Level 2 Boot Track List
-*
-* $Id$
-*
-* This boot track list is presented as an example for creating custom
-* boot track files.
-* A module may be excluded from the track file if an asterisk (*) is the
-* first character of the line.
-*
-***************************************
 * REL Module Section
 *
 * The REL module readies the computer for NitrOS-9.
-*  Select only one: 32, 40 or 80 column boot screen.
 *
-*$NITROS9DIR/$DISTRO/modules/rel_32
-*$NITROS9DIR/$DISTRO/modules/rel_40
-$NITROS9DIR/$DISTRO/modules/rel_80
+$NITROS9DIR/$DISTRO/modules/rel
+$NITROS9DIR/$DISTRO/modules/krn
+$NITROS9DIR/$DISTRO/modules/krnp2
+$NITROS9DIR/$DISTRO/modules/init
 *
 ***************************************
 * Booter Section
@@ -37,15 +27,8 @@ $NITROS9DIR/$DISTRO/modules/rel_80
 *$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_d4n1
 *$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_hdii
 *$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_tc3
-$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_ide
+*$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_ide
 *$CLOUD9DIR/Products/SuperDrivers/software/$DISTRO/boot_ktlr
 *
 * DriveWire Booter
-*$CLOUD9DIR/Products/DriveWire/software/$DISTRO/boot_dw
-*
-***************************************
-* Kernel Section
-*
-* This is the primary NitrOS-9 kernel and must remain uncommented.
-*
-$NITROS9DIR/$DISTRO/modules/krn
+$CLOUD9DIR/Products/DriveWire/software/$DISTRO/boot_dw

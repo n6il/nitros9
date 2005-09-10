@@ -27,15 +27,16 @@ $DISTRO = "6809l2";
 
 # Check for proper number of arguments
 $numargs = $#ARGV + 1;
-if ($numargs != 3)
+if ($numargs != 4)
 {
-	print "Usage: bundi <bootlist> <tracklist> <diskname>\n";
+	print "Usage: bundi <bootlist> <tracklist> <diskname> <distro>\n";
 	exit;
 }
 
 $bootlist = $ARGV[0];
 $tracklist = $ARGV[1];
 $diskname = $ARGV[2];
+$DISTRO = $ARGV[3];
 
 printf("Building '%s' distribution onto '%s'\n", $DISTRO, $diskname);
 
@@ -108,6 +109,7 @@ foreach $element (@trackarray)
 
 $tls = "@trackarray";
 system("cat $tls>trackfile");
+system("os9 padrom 4608 trackfile");
 
 system("os9 gen -b=bootfile -t=trackfile tmp.dsk>&/dev/null");
 system("os9 copy -o=0 $NITROS9DIR/$DISTRO/modules/sysgo_dd tmp.dsk,sysgo");
