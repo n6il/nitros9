@@ -21,3 +21,5 @@ $(MAINR): ueed.h uemain.h
 $(DISPR): ueed.h uedisplay.h
 $(RESTR): ueed.h
 
+clean:
+	$(RM) $(RFILES) umacs
