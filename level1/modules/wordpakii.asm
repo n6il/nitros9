@@ -1,5 +1,20 @@
+********************************************************************
+* WordPakII - Word-Pak II Driver
+*
+* $Id$
+*
+* NOTE: This driver is currently a stand-alone SCF driver.  Work has
+* started to convert it into a co-module that would fit under the
+* CCIO driver hierarchy, but that work is not complete.
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*   5      1985?/??/??
+* Original OS-9 Level One Driver
+
          nam   WordPakII
-         ttl   os9 device driver    
+         ttl   Word-Pak II Driver    
 
 * Disassembled 2005/01/06 19:47:27 by Disasm v1.5 (C) 1988 by RML
 
@@ -11,6 +26,7 @@
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
+edition  set   5
 
 CO80     equ   0
 SIZEX    equ   80
@@ -30,9 +46,9 @@ name
          ELSE
          fcs   /CO80/
          ENDC
-         fcb   $05 
+         fcb   edition
 
-         fcc   /(C) 1985 PBJ, Inc./
+*         fcc   /(C) 1985 PBJ, Inc./
 
 * WordPak Initialization Values
 WPIV     fcb   $6E		R0
@@ -45,7 +61,7 @@ WPIV     fcb   $6E		R0
          fcb   $19 		R7
          fcb   $78		R8
          fcb   $09 		R9
-L0034    fcb   $60 `		R10
+L0034    fcb   $60 		R10
          fcb   $09 		R11
          fcb   $00 		R12
          fcb   $00 		R13

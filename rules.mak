@@ -96,8 +96,8 @@ ARCHIVE		= zip -D
 %.r: %.c
 	$(CC) $(CFLAGS) $< -r
 
-%.l: %.r
-	$(MERGE) $^ > $@
+#%.l: %.r
+#	$(MERGE) $^ > $@
 
 %: %.r
 	$(CC) $(LFLAGS) $^ -f=$@
