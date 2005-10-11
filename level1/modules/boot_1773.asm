@@ -101,9 +101,46 @@ start    orcc  #IntMasks  ensure IRQs are off (necessary?)
          tfr   s,u        get pointer to data area
          pshs  u          save pointer to data area
                          
-* Device Specific Init
-         lbsr  HWInit    
-*         bcs   error2    
+************ START OF DEVICE-SPECIFIC INIT ***********
+* HWInit - Initialize the device
+HWInit
+         ldy   Address,pcr				get hardware address
+         lda   #%11010000		($D0) Force Interrupt (stops any command in progress)
+         sta   CMDREG,y			write command to command register
+         lbsr  Delay2			delay 54~
+         lda   STATREG,y		clear status register
+         lda   #$FF
+         sta   currtrak,u		set current track to 255
+         leax  >NMIRtn,pcr		point to NMI routine
+         IFGT  Level-1
+         stx   <D.NMI			save address
+         ELSE
+         stx   >D.XNMI+1		save address
+         lda   #$7E
+         sta   >D.XNMI
+         ENDC
+         lda   #MOTON			turn on drive motor
+         ora   WhichDrv,pcr
+         sta   CONTROL,y
+* MOTOR ON spin-up delay loop (~307 mSec)
+         IFGT  Level-1
+         ldd   #50000
+         ELSE
+         ldd   #25000
+         ENDC
+         IFNE  H6309
+         nop
+         ENDC
+L003A    nop
+         nop
+         IFNE  H6309
+         nop
+         nop
+         nop
+         ENDC
+         subd  #$0001
+         bne   L003A
+************ END OF DEVICE-SPECIFIC INIT ***********
                          
 * Request memory for LSN0
          ldd   #256       get sector/fd buffer
@@ -132,13 +169,17 @@ start    orcc  #IntMasks  ensure IRQs are off (necessary?)
          ldd   DD.BT+1,x  LSW of 24 bit address
          std   bootloc+1,u
          ldd   DD.BSZ,x   os9boot size in bytes
-         std   bootsize,u
          beq   FragBoot   if zero, do frag boot
+         std   bootsize,u
 * Old style boot -- make a fake FD segment
          leax  FD.SEG,x  
          addd  #$00FF		round up to next page
-         exg   a,b
-         std   FDSL.B,x   save file size
+* Important note: We are making an assumption that the upper 8 bits of the
+* FDSL.B field will always be zero.  That is a safe assumption, since an
+* FDSL.B value of $00FF would mean the file is 65280 bytes.  A bootfile
+* under NitrOS-9 cannot be this large, and therefore this assumption
+* is safe.
+         sta   FDSL.B+1,x   save file size
          lda   bootloc,u 
          sta   FDSL.A,x  
          ldd   bootloc+1,u
@@ -168,7 +209,7 @@ error
 getpntr  tfr   u,d        save pointer to requested memory
          ldu   2,s        recover pointer to data stack
          std   blockloc,u
-ret      rts             
+         rts             
                          
 * NEW! Fragmented boot support!
 FragBoot ldb   bootloc,u  MSB fd sector location
@@ -226,55 +267,15 @@ NextSeg  leax  FDSL.S,x   advance to next segment entry
 ************************************************************
 ************************************************************
 
-* Device Specific Init
-* HWInit - Initialize the device
-HWInit
-         ldy   Address,pcr				get hardware address
-         lda   #%11010000		($D0) Force Interrupt (stops any command in progress)
-         sta   CMDREG,y			write command to command register
-         lbsr  Delay2			delay 54~
-         lda   STATREG,y		clear status register
-         lda   #$FF
-         sta   currtrak,u		set current track to 255
-         leax  >NMIRtn,pcr		point to NMI routine
-         IFGT  Level-1
-         stx   <D.NMI			save address
-         ELSE
-         stx   >D.XNMI+1		save address
-         lda   #$7E
-         sta   >D.XNMI
-         ENDC
-         lda   #MOTON+BootDr	turn on drive motor
-         sta   CONTROL,y
 
-* MOTOR ON spin-up delay loop (~307 mSec)
-         IFGT  Level-1
-         ldd   #50000
-         ELSE
-         ldd   #25000
-         ENDC
-         IFNE  H6309
-         nop
-         ENDC
-L003A    nop
-         nop
-         IFNE  H6309
-         nop
-         nop
-         nop
-         ENDC
-         subd  #$0001
-         bne   L003A
-		 rts
-
-
-L00B7    lda   #DDEN+MOTON+BootDr	permit alternate drives
+DoDDns   lda   #DDEN+MOTON		double density enable and motor on
+	     ora   WhichDrv,pcr		OR in selected drive
          sta   drvsel,u			save drive selection byte
          clr   currtrak,u		clear current track
          lda   #$05
-         lbsr  L0170
-         ldb   #0+STEP		RESTORE cmd
-         lbra  L0195
+         lbsr  SetTrak			Set the track to the head we want
+         ldb   #0+STEP			RESTORE cmd
+         lbra  Talk2FDC			send command and wait for it to complete
 
 *
 * HWRead - Read a 256 byte sector from the device
@@ -288,23 +289,23 @@ L00B7    lda   #DDEN+MOTON+BootDr	permit alternate drives
 * Entry: B,X = LSN to read
 HWRead   lda   #$91
          bsr   L00DF		else branch subroutine
-         bcs   L00D6		branch if error
+         bcs   HWRRts		branch if error
          ldx   blockloc,u	get buffer pointer in X for caller
          clrb
-L00D6    rts
+HWRRts   rts
 
 L00D7    bcc   L00DF
          pshs  x,b,a
-         bsr   L00B7
+         bsr   DoDDns
          puls  x,b,a
 L00DF    pshs  x,b,a		save LSN, command
-         bsr   L00EA
+         bsr   ReadSect
          puls  x,b,a		restore LSN, command
-         bcc   L00D6		branch if OK
+         bcc   HWRRts		branch if OK
          lsra
          bne   L00D7
-L00EA    bsr   L013C
-         bcs   L00D6		if error, return to caller
+ReadSect bsr   Seek2Sect 	seek to the sector stored in X
+         bcs   HWRRts		if error, return to caller
          ldx   blockloc,u	get address of buffer to fill
          orcc  #IntMasks	mask interrupts
          pshs  x			save X
@@ -348,59 +349,60 @@ L0123    lda   DATAREG,y	read from WD DATA register
 * means that reading a single-density boot disk will not generate the
 * NMI signal needed to exit the read loop!  Single-density disks must
 * use a polled I/O loop instead.
-
 NMIRtn   leas  R$Size,s		adjust stack
          puls  x
          ldb   STATREG,y	read WD STATUS register
          bitb  #$9C			any errors?
 *         bitb  #$04		LOST DATA bit set?
-         beq   RetOK		branch if not
+         beq   r@			branch if not
 *         beq   ChkErr		branch if not
 L0138    comb				else we will return error
          ldb   #E$Read
-RetOK    rts
+r@       rts
 
-L013C    lda   #MOTON+BootDr	permit alternate drives
+Seek2Sect
+         lda   #MOTON			permit alternate drives
+         ora   WhichDrv,pcr		permit alternate drives
          sta   drvsel,u		save byte to static mem
          clr   side,u		start on side 1
-         tfr   x,d
-         cmpd  #$0000
-         beq   L016C
-         clr   ,-s			clear space on stack
+         tfr   x,d			move LSN into D
+         cmpd  #$0000		zero?
+         beq   L016C		branch if so
+         clr   ,-s			else clear space on stack
          tst   dblsided,u	double sided disk?
-         beq   L0162		branch if not
-         bra   L0158
+         beq   SnglSid		branch if not
+         bra   DblSid
 * Double-sided code
 L0152    com   side,u		flag side 2
-         bne   L0158
+         bne   DblSid
          inc   ,s
-L0158    subb  ddtks,u		
+DblSid    subb  ddtks,u		
          sbca  #$00
          bcc   L0152
          bra   L0168
 L0160    inc   ,s
-L0162    subb  ddtks,u
+SnglSid  subb  ddtks,u		subtract sectors per track from B
          sbca  #$00
          bcc   L0160
-L0168    addb  #18			add sectors per track
+L0168    addb  #18			add sectors per track (should this be ddtks?)
          puls  a			get current track indicator off of stack
 L016C    incb
          stb   SECTREG,y	save in sector register
-L0170    ldb   currtrak,u	get current track in B
+SetTrak  ldb   currtrak,u	get current track in B
          stb   TRACKREG,y	save in track register
          cmpa  currtrak,u	same as A?
-         beq   L018D		branch if so
+         beq   rtsok		branch if so
          sta   currtrak,u
          sta   DATAREG,y
          ldb   #$10+STEP	SEEK command
-         bsr   L0195		send command to controller
+         bsr   Talk2FDC		send command to controller
          pshs  x
 * Seek Delay
          ldx   #$222E		delay ~39 mSec (78mS L1)
-L0187    leax  -$01,x
-         bne   L0187
+SeekDly  leax  -$01,x
+         bne   SeekDly
          puls  x
-L018D    clrb
+rtsok    clrb
          rts
 
 *ChkErr   bitb  #$98		evaluate WD status (READY, RNF, CRC err)
@@ -408,23 +410,16 @@ L018D    clrb
 *         clrb
 *         rts
 
-L0195    bsr   L01A8		issue FDC cmd, wait 54~
-L0197    ldb   STATREG,y
-         bitb  #$01		still BUSY?
-         bne   L0197		loop until command completes
+Talk2FDC bsr   DoCMD		issue FDC cmd, wait 54~
+FDCLoop  ldb   STATREG,y	get status
+         bitb  #$01			still BUSY?
+         bne   FDCLoop		loop until command completes
          rts
 
-* Entry: B = command byte
-L019F    lda   drvsel,u
-         sta   CONTROL,y
-         stb   CMDREG,y
-         rts
-
-* issue command and wait 54 clocks
+* Issue command and wait 54 clocks
 * Controller requires a min delay of 14uS (DD) or 28uS (SD)
 * following a command write before status register is valid
-L01A8 
-         bsr   L019F
+DoCMD    bsr   SelNSend
 * Delay branches
 * 54 clock delay including bsr (=30uS/L2,60us/L1)
 Delay2  
@@ -445,13 +440,20 @@ Delay4
          ENDC
          rts
 
+* Select And Send
+* Entry: B = command byte
+SelNSend lda   drvsel,u
+         sta   CONTROL,y
+         stb   CMDREG,y
+         rts
+
          IFGT  Level-1
 * Filler to get $1D0
 Filler   fill  $39,$1D0-3-2-1-*
          ENDC
 
 Address  fdb   DPort
-WhichDrv fcb   0
+WhichDrv fcb   BootDr
 
          emod
 eom      equ   *
