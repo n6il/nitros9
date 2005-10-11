@@ -58,6 +58,7 @@ devopts  rmb   20
 u0032    rmb   2
 u0034    rmb   10
 u003E    rmb   2
+bflag    rmb   1
 sngldrv  rmb   1
 bootdev  rmb   32
 lsn0     rmb   26
@@ -75,7 +76,7 @@ name     fcs   /OS9Gen/
 
          IFNE  DOHELP
 HelpMsg  fcb   C$LF
-         fcc   "Use (CAUTION): OS9Gen </devname> [-s]"
+         fcc   "Use (CAUTION): OS9Gen </devname> <opts>"
          fcb   C$LF
          fcc   " ..reads (std input) pathnames until EOF,"
          fcb   C$LF
@@ -173,7 +174,9 @@ L0222    ldd   ,y+
          anda  #$DF
          cmpa  #'S
          beq   L0232
-         cmpd  #84*256+61	does D = 'T='
+         cmpa  #'B
+         beq   ItsAB
+IsItT    cmpd  #84*256+61	does D = 'T='
          lbne  SoftExit
          leay  1,y		point past =
          sty   <btfname		save pointer to boottrack filename
@@ -186,6 +189,8 @@ SkipNon  lda   ,y+
          bne   SkipNon
          bra   L0216
 L0232    inc   <sngldrv		set single drive flag
+         bra   L0222
+ItsAB    inc   <bflag
          bra   L0222
 L0234    puls  b,a
          leay  <bootdev,u
@@ -325,7 +330,7 @@ L033D    lbsr  GetDest
          ldy   #256
          os9   I$Read   	read LSN0
          bcs   L033C
-L0361    lda   <bfpath
+L0361    lda   <bfpath		get bootfile path in A
          leax  >u047E,u
          ldy   <u0013
          os9   I$Write  
@@ -341,41 +346,45 @@ L0377    leax  <devopts,u
          lda   <bfpath
          os9   I$GetStt 
          lbcs  Bye
-         lda   <bfpath
+         lda   <bfpath			get bootfile path
          ldx   #$0000
          ldu   <u0006
-         ldb   #SS.Size
+         ldb   #SS.Size			set bootfile size
          os9   I$SetStt 
          lbcs  Bye
          ldu   <statptr
          os9   I$Close  
          lbcs  ShowHelp
-         ldx   <u0032,u
+
+		 tst   <bflag			fragmented boot option used?
+		 bne   nonfrag			yes, don't check for fragmented file
+		 
+         ldx   <u0032,u			load X/U with LSN of bootfile fd sector
          lda   <u0034,u
-         clrb  
+         clrb  					round off to sector boundary
          tfr   d,u
-         lda   <devpath
-         os9   I$Seek   
+         lda   <devpath			get path to raw device
+         os9   I$Seek  			seek 
          ldu   <statptr
          lbcs  Bye
-         leax  >u047E,u
-         ldy   #256
-         os9   I$Read   
+         leax  >u047E,u			point to buffer
+         ldy   #256				read one sector
+         os9   I$Read   		do it!
          lbcs  Bye
          ldd   >u047E+(FD.SEG+FDSL.S+FDSL.B),u
-         lbne  ItsFragd		if not zero, file is fragmented
-         lda   <devpath
+         lbne  ItsFragd			if not zero, file is fragmented
+nonfrag  lda   <devpath
          ldx   #$0000
          ldu   #DD.BT
-         os9   I$Seek   	seek to DD.BT
+         os9   I$Seek   		seek to DD.BT
          ldu   <statptr
          lbcs  Bye
          leax  u0008,u
-         ldy   #DD.DAT-DD.BT
-         os9   I$Read   	read bootstrap sector and bootfile size
-         lbcs  Bye
-         ldd   <u000B
-         beq   L040D
+         ldy   #DD.DAT-DD.BT	get DD.BT and DD.BTSZ into u0008,u
+         os9   I$Read   		read bootstrap sector and bootfile size
+         lbcs  Bye				branch if error
+         ldd   <u000b			get DD.BTSZ in D
+         beq   L040D			branch if zero
          ldx   <u003E
          leay  >OS9Boot,pcr
          lda   #PDELIM
@@ -422,20 +431,29 @@ L042E    lda   #$01
          os9   F$UnLink 
          lbcs  Bye
 L045F    ldu   <statptr
-         ldb   >u048E,u
-         stb   <u0008
+         tst   <bflag			new style boot?
+         beq   oldstyle
+         lda   <u0032,u			Get LSN of fdsect
+         stb   <u0008			savein DD.BT
+         ldd   <u0032+1,u
+         std   <u0009			save in DD.BT+1
+         clr   <u000B			clear out DD.BTSZ
+         clr   <u000B+1			since DD.BT points to FD
+         bra   around
+oldstyle ldb   >u048E,u			get size of file bits 23-16
+         stb   <u0008			savein DD.BT
          ldd   >u048F,u
-         std   <u0009
-         ldd   <u0006
-         std   <u000B
-         ldx   #$0000
+         std   <u0009			save in DD.BT+1
+         ldd   <u0006			get size of file bits 15-0
+         std   <u000B			save in DD.BTSZ
+around   ldx   #$0000
          ldu   #DD.BT
          lda   <devpath
-         os9   I$Seek   
+         os9   I$Seek			seek to DD.BT in LSN0
          ldu   <statptr
          lbcs  Bye
-         leax  u0008,u
-         ldy   #DD.DAT-DD.BT
+         leax  u0008,u			point X to modified DD.BT and DD.BTSZ
+         ldy   #DD.DAT-DD.BT	write it out
          os9   I$Write  
          lbcs  Bye
          pshs  u
@@ -444,13 +462,13 @@ L045F    ldu   <statptr
          tfr   d,x
          tfr   d,u
          lda   <devpath
-         os9   I$Seek   	seek to LSN0
+         os9   I$Seek   		seek to LSN0
          lbcs  Bye
          puls  u
          leax  <lsn0,u
          ldy   #DD.DAT
          lda   <devpath
-         os9   I$Read   	read first part of LSN0
+         os9   I$Read   		read first part of LSN0
          lbcs  Bye
          ldd   #$0001
          lbsr  Seek2LSN
@@ -460,19 +478,19 @@ L045F    ldu   <statptr
          os9   I$Read   
          lbcs  Bye
          ldd   #Bt.Track*256	boot track
-         ldy   #$0004		four bits
+         ldy   #$0004			four bits
          lbsr  ABMClear
          bcc   L0520
          ldd   #Bt.Track*256	boot track
-         lbsr  Seek2LSN		seek to it
+         lbsr  Seek2LSN			seek to it
          leax  <u0017,u
          ldy   #$0007
          lda   <devpath
-         os9   I$Read   	read first seven bytes of boot track
+         os9   I$Read   		read first seven bytes of boot track
          lbcs  Bye
          leax  <u0017,u
          ldd   ,x
-         cmpd  #79*256+83	OS ??
+         cmpd  #79*256+83		OS ??
          lbne  WarnUser
 *         cmpb  #'O
 *         lbne  WarnUser
