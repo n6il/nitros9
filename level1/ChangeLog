@@ -1,4 +1,6 @@
 NitrOS-9/6809 Level 1 V03.02.06:
+- Support for booting from fragmented bootfiles has been added.
+- os9gen has been updated to allow the creation of fragmented bootfiles.
 - dir and mdir now have more robust support for various screen widths when
   displaying data.
 - /D2 descriptor now part of standard bootfile.
