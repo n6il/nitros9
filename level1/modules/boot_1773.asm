@@ -25,6 +25,9 @@
 *
 *   7      2005/10/10  Boisy G. Pitre
 * Added fragmented bootfile support
+*   7      2005/10/13  Robert Gault
+* Changed timing loops for H6309L2 so that code shortened enough to
+* fit within the $1D0 boundary.
 
          nam   Boot
          ttl   WD1773 Boot module
@@ -124,22 +127,26 @@ HWInit
          sta   CONTROL,y
 * MOTOR ON spin-up delay loop (~307 mSec)
          IFGT  Level-1
-         ldd   #50000
+         IFNE  H6309
+         ldd   #$F000        3 cycles
          ELSE
-         ldd   #25000
+         ldd   #50000
+         ENDC 
+         ELSE
+         ldd   #25000 
          ENDC
-         IFNE  H6309
-         nop
-         ENDC
-L003A    nop
-         nop
-         IFNE  H6309
-         nop
-         nop
-         nop
-         ENDC
-         subd  #$0001
-         bne   L003A
+*         IFNE  H6309
+*         nop
+*         ENDC
+L003A    nop             1 cycles
+         nop             1 cycles
+*         IFNE  H6309
+*         nop
+*         nop
+*         nop
+*         ENDC
+         subd  #$0001    4 cycles
+         bne   L003A     3 cycles
 ************ END OF DEVICE-SPECIFIC INIT ***********
                          
 * Request memory for LSN0
@@ -422,21 +429,18 @@ FDCLoop  ldb   STATREG,y	get status
 DoCMD    bsr   SelNSend
 * Delay branches
 * 54 clock delay including bsr (=30uS/L2,60us/L1)
+* H6309 code changed to reduce code size, RG
+         IFEQ  H6309
 Delay2  
-         IFNE  H6309
-         nop
-         nop
-         ENDC
          lbsr  Delay3
 Delay3 
-         IFNE  H6309
-         nop
-         nop
-         ENDC
          lbsr  Delay4
 Delay4 
-         IFNE  H6309
-         nop
+         ELSE
+Delay2   lda   #5       3 cycles
+Delay3   exg   a,a      5 cycles  | 10*5
+         deca           2 cycles  |
+         bne   Delay3   3 cycles  |
          ENDC
          rts
 
