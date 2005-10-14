@@ -50,6 +50,9 @@
 * for start/stop and the L labels will still be present.
 * Change in z option required by change in getbyte.
 * S option uses fake data size. Added minor changes suggested by R.V.H.
+*
+*         2005/10/13  Robert Gault
+* Forced to shrink labeltab size so that os9boot could be disassembled.
 
          nam   Disasm
          ttl   6809/6309 disassembler
@@ -144,7 +147,7 @@ hldrev   rmb   40
 hldttl   rmb   40
 pathlist rmb   80
 readbuff rmb   20
-labeltab rmb   $3D0C                was  6742  This makes even $4000 RG
+labeltab rmb   $1D0C
 lbtblend rmb   1
          rmb   255
 datend   equ   .
@@ -3828,3 +3831,4 @@ exit     os9   F$Exit
          emod
 eom      equ   *
          end
+
