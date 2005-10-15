@@ -11,6 +11,9 @@
 *
 *   6      1998/10/20  Boisy G. Pitre
 * Fixed small bugs, improved speed.
+*
+*   7      2005/10/14  Boisy G. Pitre
+* Now uses boot_common.asm for fragmented bootfile support.
 
          nam   Boot
          ttl   Disto RAMPak Boot Module
@@ -24,109 +27,79 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   6
+edition  set   7
 
          mod   eom,name,tylg,atrv,start,size
 
 * on-stack buffer to use
          org   0
+mpisave  rmb   1
+* common booter required static variables
+ddtks    rmb   1
+ddfmt    rmb   1
+seglist  rmb   2
+bootsize rmb   2
+bootloc  rmb   2
+blockloc rmb   2
+blockimg rmb   2
 size     equ   .
 
 name     equ   *
          fcs   /Boot/
          fcb   edition
 
-start    orcc  #IntMasks  ensure IRQ's are off.
+         use   ../../6809l1/modules/boot_common.asm
 
-         pshs  x,d        save 4 bytes of junk
-R.D      equ   1
-R.X      equ   3
-
-         lda   >MPI.Slct  get current slot
-         pshs  a          save off
+* HWInit
+*
+* Entry:  None
+* Exit:   Y = base address of hardware
+*         Hardware has been initialized
+HWInit   lda   >MPI.Slct  get current slot
+         sta   mpisave,u
+         ldy   >Address,pcr grab the device address
          lda   >PakSlot,pcr get multipak slot number
          bmi   cont       if >127, invalid slot number
          anda  #$03       force it to be legal
          ldb   #$11
          mul              put it into both nibbles
          stb   >MPI.Slct  go to the desired slot
+cont     rts
 
-cont     ldd   #$0001     request one byte (will round up to 1 page)
-         os9   F$SRqMem   request the memory
-         bcs   L00AE      exit on error
-* U is implicitely the buffer address to use
 
-         ldx   #$0000     X=0: got to sector #$0000
-         bsr   GetSect    load in LSN0, and point Y to the buffer
-         bcs   L00AE
-
-         ldd   <DD.BSZ,u  size of the bootstrap file
-         std   R.D,s      save it on the stack (0,s is junk)
-         ldx   <DD.BT+1,u get starting sector of the bootstrap file
-
-         pshs  x          save the starting sector number
-         ldd   #$0100     one page of memory
-         os9   F$SRtMem   return the copy of LSN0 to free memory
-
-         ldd   R.X,s      get size of boot memory to request
-         IFGT  Level-1
-         os9   F$BtMem    ask for the boot memory
-         ELSE
-         os9   F$SRqMem   ask for the boot memory
-         ENDC
-         puls  x          restore the starting sector number
-         bcs   L00AE      no memory: exit with error
-
-         stu   R.X,s      save start address of memory allocated
-         std   R.D,s      and the size of the boot memory
-         beq   L00A7      if no memory allocated, exit
-
-SectLp   pshs  x,d        save sector #, size of boot
-         bsr   GetSect    read one sector
-         bcs   L00AC      if there's an error, exit
-         puls  x,d        restor sector, size of boot
-
-         leau  $0100,u    go up one page in memory
-         leax  $01,x      go to the next sector
-         subd  #$0100     take out one sector, need value in B, too.
-         bhi   SectLp     loop until all sectors are read
-
-L00A7    puls  a
+* HWTerm
+*
+* Entry:  Y = base address of hardware
+* Exit:   Hardware has been deinitialized
+HWTerm   lda   mpisave,u
          sta   >MPI.Slct
-         clrb             clear carry
-         puls  d          return size of boot memory to user
-         bra   L00B0      and go exit
+         rts   
 
-L00AC    leas  $04,s      remove X,D off of stack
-L00AE    puls  a
-         sta   >MPI.Slct
-         leas  $02,s      kill D off of the stack
 
-L00B0    puls  x          restore start address of memory allocated
-*         leas  size,s     remove the on-stack buffer
-         clr   >DPort     stop the disk
-L00BA    rts   
-
-* GetSect: read a sector off of the disk
-* Entry: X = sector number to read
-GetSect  pshs  d,x,y
-         ldy   >Address,pcr grab the device address
-         tfr   x,d        move 16 bit LSN into 2 8-bit registers
+* HWRead - Read a 256 byte sector from the device
+*   Entry: Y = hardware address
+*          B = bits 23-16 of LSN
+*          X = bits 15-0  of LSN
+*          blockloc,u = ptr to 256 byte sector
+*   Exit:  X = ptr to data (i.e. ptr in blockloc,u)
+HWRead   tfr   x,d        move 16 bit LSN into 2 8-bit registers
          sta   2,y        save HB LSN
          stb   1,y        save LB LSN
-         leax  ,u         get buffer address to write into
+
+         ldx   blockloc,u
          clrb             and start out at byte zero
 
 ReadLp   stb   ,y         save byte number
          lda   3,y        grab the byte
          sta   ,x+        save in the buffer
-         incb             go to the enxt byte
+         incb             go to the next byte
          bne   ReadLp
+         leax  -256,x
          clrb             no errors
-         puls  d,x,y,pc   restore registers and return
+         rts
 
          IFGT  Level-1
-Pad      fill  $39,$1D0-6-*
+Pad      fill  $39,$1D0-3-2-1-*
          ENDC
 
 Address  fdb   $FF40      address of the device to boot from

@@ -92,18 +92,15 @@ bootsize rmb   2                       size in bytes
 drvsel   rmb   1
 currtrak rmb   1
 ddtks    rmb   1		no. of sectors per track
-dblsided rmb   1
+ddfmt    rmb   1
 side     rmb   1		side 2 flag
 size     equ   .
 
 name     fcs   /Boot/
          fcb   edition
 
-start    orcc  #IntMasks  ensure IRQs are off (necessary?)
-         leas  -size,s   
-         tfr   s,u        get pointer to data area
-         pshs  u          save pointer to data area
-                         
+FLOPPY   equ   1
+
 ************ START OF DEVICE-SPECIFIC INIT ***********
 * HWInit - Initialize the device
 HWInit
@@ -147,127 +144,11 @@ L003A    nop             1 cycles
 *         ENDC
          subd  #$0001    4 cycles
          bne   L003A     3 cycles
+HWTerm   rts
 ************ END OF DEVICE-SPECIFIC INIT ***********
-                         
-* Request memory for LSN0
-         ldd   #256       get sector/fd buffer
-         os9   F$SRqMem   get it!
-         bcs   error2    
-         bsr   getpntr    restore U to point to our statics
-                         
-* Read LSN0
-         clrb             MSB sector
-         ldx   #0         LSW sector
-         lbsr  HWRead     read LSN 0
-         bcs   error      branch if error
-                         
-         ifgt  Level-1   
-         lda   #'0        --- loaded in LSN0'
-         jsr   <D.BtBug   ---
-         endc            
-                         
-* Pull relevant values from LSN0
-         lda   DD.TKS,x    number of tracks on this disk
-         sta   ddtks,u 
-         lda   DD.FMT,x    disk format byte
-         sta   dblsided,u 
-         lda   DD.BT,x    os9boot pointer
-         sta   bootloc,u 
-         ldd   DD.BT+1,x  LSW of 24 bit address
-         std   bootloc+1,u
-         ldd   DD.BSZ,x   os9boot size in bytes
-         beq   FragBoot   if zero, do frag boot
-         std   bootsize,u
-* Old style boot -- make a fake FD segment
-         leax  FD.SEG,x  
-         addd  #$00FF		round up to next page
-* Important note: We are making an assumption that the upper 8 bits of the
-* FDSL.B field will always be zero.  That is a safe assumption, since an
-* FDSL.B value of $00FF would mean the file is 65280 bytes.  A bootfile
-* under NitrOS-9 cannot be this large, and therefore this assumption
-* is safe.
-         sta   FDSL.B+1,x   save file size
-         lda   bootloc,u 
-         sta   FDSL.A,x  
-         ldd   bootloc+1,u
-         std   FDSL.A+1,x save LSN of file (contiguous)
-         clr   FDSL.S,x   make next segment entry 0
-         clr   FDSL.S+1,x
-         clr   FDSL.S+2,x
-         ldd   bootsize,u
-         bra   GrabBootMem
-                         
-Back2Krn ldx   blockimg,u pointer to start of os9boot in memory
-         clrb             clear carry
-         ldd   bootsize,u
-error2   leas  2+size,s   reset the stack    same as PULS U
-         rts              return to kernel
-                         
-* Error point - return allocated memory and then return to kernel
-error                    
-* Return memory allocated for sector buffers
-         ldd   #256      
-         ldu   blockloc,u
-         os9   F$SRtMem  
-         bra   error2    
-                         
-* Routine to save off alloced mem from F$SRqMem into blockloc,u and restore
-* the statics pointer in U
-getpntr  tfr   u,d        save pointer to requested memory
-         ldu   2,s        recover pointer to data stack
-         std   blockloc,u
-         rts             
-                         
-* NEW! Fragmented boot support!
-FragBoot ldb   bootloc,u  MSB fd sector location
-         ldx   bootloc+1,u LSW fd sector location
-         lbsr  HWRead     get fd sector
-         ldd   FD.SIZ+2,x get file size (we skip first two bytes)
-         std   bootsize,u
-         leax  FD.SEG,x   point to segment table
-                         
-GrabBootMem                 
-         ifgt  Level-1   
-         os9   F$BtMem   
-         else            
-         os9   F$SRqMem  
-         endc            
-         bcs   error     
-         bsr   getpntr   
-         std   blockimg,u
-                         
-* Get os9boot into memory
-BootLoop stx   seglist,u  update segment list
-         ldb   FDSL.A,x   MSB sector location
-BL2      ldx   FDSL.A+1,x LSW sector location
-         bne   BL3       
-         tstb            
-         beq   Back2Krn  
-BL3      lbsr  HWRead    
-         inc   blockloc,u point to next input sector in mem
-                         
-         ifgt  Level-1   
-         lda   #'.        Show .'
-         jsr   <D.BtBug  
-         endc            
-                         
-         ldx   seglist,u  get pointer to segment list
-         dec   FDSL.B+1,x get segment size
-         beq   NextSeg    if <=0, get next segment
-                         
-         ldd   FDSL.A+1,x update sector location by one to 24bit word
-         addd  #1        
-         std   FDSL.A+1,x
-         ldb   FDSL.A,x  
-         adcb  #0        
-         stb   FDSL.A,x  
-         bra   BL2       
-                         
-NextSeg  leax  FDSL.S,x   advance to next segment entry
-         bra   BootLoop  
-                         
 
-
+         use   ../../6809l1/modules/boot_common.asm
+                         
 ************************************************************
 ************************************************************
 *              Hardware-Specific Booter Area               *
@@ -276,7 +157,7 @@ NextSeg  leax  FDSL.S,x   advance to next segment entry
 
 
 DoDDns   lda   #DDEN+MOTON		double density enable and motor on
-	     ora   WhichDrv,pcr		OR in selected drive
+         ora   WhichDrv,pcr		OR in selected drive
          sta   drvsel,u			save drive selection byte
          clr   currtrak,u		clear current track
          lda   #$05
@@ -376,7 +257,7 @@ Seek2Sect
          cmpd  #$0000		zero?
          beq   L016C		branch if so
          clr   ,-s			else clear space on stack
-         tst   dblsided,u	double sided disk?
+         tst   ddfmt,u	double sided disk?
          beq   SnglSid		branch if not
          bra   DblSid
 * Double-sided code
