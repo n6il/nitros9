@@ -31,6 +31,11 @@ edition  set   7
 
          mod   eom,name,tylg,atrv,start,size
 
+* Common booter-required defines
+LSN24BIT equ   0
+FLOPPY   equ   0
+
+
 * on-stack buffer to use
          org   0
 mpisave  rmb   1
@@ -39,7 +44,6 @@ ddtks    rmb   1
 ddfmt    rmb   1
 seglist  rmb   2
 bootsize rmb   2
-bootloc  rmb   2
 blockloc rmb   2
 blockimg rmb   2
 size     equ   .
@@ -50,29 +54,29 @@ name     equ   *
 
          use   ../../6809l1/modules/boot_common.asm
 
-* HWInit
-*
-* Entry:  None
-* Exit:   Y = base address of hardware
-*         Hardware has been initialized
+* HWInit - Initialize the device
+*   Entry: Y = hardware address
+*   Exit:  Carry Clear = OK, Set = Error
+*          B = error (Carry Set)
 HWInit   lda   >MPI.Slct  get current slot
          sta   mpisave,u
-         ldy   >Address,pcr grab the device address
          lda   >PakSlot,pcr get multipak slot number
          bmi   cont       if >127, invalid slot number
          anda  #$03       force it to be legal
          ldb   #$11
          mul              put it into both nibbles
          stb   >MPI.Slct  go to the desired slot
-cont     rts
+cont     clrb
+         rts
 
 
-* HWTerm
-*
-* Entry:  Y = base address of hardware
-* Exit:   Hardware has been deinitialized
+* HWTerm - Terminate the device
+*   Entry: Y = hardware address
+*   Exit:  Carry Clear = OK, Set = Error
+*          B = error (Carry Set)
 HWTerm   lda   mpisave,u
          sta   >MPI.Slct
+         clrb
          rts   
 
 

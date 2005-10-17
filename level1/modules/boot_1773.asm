@@ -87,10 +87,11 @@ edition  set   7
 seglist  rmb   2						pointer to segment list
 blockloc rmb   2                       pointer to memory requested
 blockimg rmb   2                       duplicate of the above
-bootloc  rmb   3                       sector pointer; not byte pointer
 bootsize rmb   2                       size in bytes
 drvsel   rmb   1
 currtrak rmb   1
+* Note, for optimization purposes, the following two variables
+* should be adjacent!!
 ddtks    rmb   1		no. of sectors per track
 ddfmt    rmb   1
 side     rmb   1		side 2 flag
@@ -99,12 +100,15 @@ size     equ   .
 name     fcs   /Boot/
          fcb   edition
 
+* Common booter-required defines
+LSN24BIT equ   0
 FLOPPY   equ   1
 
-************ START OF DEVICE-SPECIFIC INIT ***********
 * HWInit - Initialize the device
+*   Entry: Y = hardware address
+*   Exit:  Carry Clear = OK, Set = Error
+*          B = error (Carry Set)
 HWInit
-         ldy   Address,pcr				get hardware address
          lda   #%11010000		($D0) Force Interrupt (stops any command in progress)
          sta   CMDREG,y			write command to command register
          lbsr  Delay2			delay 54~
@@ -144,17 +148,16 @@ L003A    nop             1 cycles
 *         ENDC
          subd  #$0001    4 cycles
          bne   L003A     3 cycles
-HWTerm   rts
-************ END OF DEVICE-SPECIFIC INIT ***********
+* HWTerm - Terminate the device
+*   Entry: Y = hardware address
+*   Exit:  Carry Clear = OK, Set = Error
+*          B = error (Carry Set)
+HWTerm   clrb
+         rts
+
 
          use   ../../6809l1/modules/boot_common.asm
                          
-************************************************************
-************************************************************
-*              Hardware-Specific Booter Area               *
-************************************************************
-************************************************************
-
 
 DoDDns   lda   #DDEN+MOTON		double density enable and motor on
          ora   WhichDrv,pcr		OR in selected drive
@@ -165,16 +168,12 @@ DoDDns   lda   #DDEN+MOTON		double density enable and motor on
          ldb   #0+STEP			RESTORE cmd
          lbra  Talk2FDC			send command and wait for it to complete
 
-*
 * HWRead - Read a 256 byte sector from the device
 *   Entry: Y = hardware address
 *          B = bits 23-16 of LSN
 *          X = bits 15-0  of LSN
 * 		   blockloc,u = ptr to 256 byte sector
 *   Exit:  X = ptr to data (i.e. ptr in blockloc,u)
-*
-* Read a sector from the 1773
-* Entry: B,X = LSN to read
 HWRead   lda   #$91
          bsr   L00DF		else branch subroutine
          bcs   HWRRts		branch if error

@@ -73,7 +73,7 @@ $(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) ReadMe ChangeLog
 $(DSK360K_1):
 	$(RM) $@
 	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/6809 Level 1 Disk 1"
-	$(OS9GEN) $@ -b=$(BOOTFILE_CO51) -t=$(KERNELFILE)
+	$(OS9GEN) $@ -b=$(BOOTFILE_CO32) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
@@ -130,7 +130,7 @@ $(DSK360K_2):
 $(DSK720K):
 	$(RM) $@
 	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/6809 Level 1"
-	$(OS9GEN) $@ -b=$(BOOTFILE_CO51_DS80) -t=$(KERNELFILE)
+	$(OS9GEN) $@ -b=$(BOOTFILE_CO32_DS80) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
