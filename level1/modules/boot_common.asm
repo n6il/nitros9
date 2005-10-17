@@ -11,18 +11,29 @@
 * the main boot source code.  See a booter like boot_1773.asm for an example on
 * how to write a booter which uses this code.
 *
-* FLOPPY BOOTERS: Take note.  Only the lower 16 bits of DD.BT are used, so
-* in that case, we can save some code by ignoring the loading of B as well as
-* loading bits 23-16 of DD.BT.  Floppy booters should have the following
-* line in their code to take advantage of this optimization:
+* Important Notes:
+* For certain devices, only the lower 16 bits of DD.BT are used.  This special
+* case allows us to save some code by ignoring the loading LSN bits 23-16 in
+* DD.BT and FDSL.A.  Booters for such devices (floppy, RAMPak) should have the
+* following line in their code to take advantage of this optimization:
+*
+* LSN24BIT equ 0
+*
+* Floppy booters require the acquistion of DD.TKS and DD.FMT from LSN0 to make
+* certain decisions about the boot process.  In most cases, non-floppy booters
+* do not need these values.  Hence, floppy booters should have this line in their
+* source code file:
 *
 * FLOPPY equ 1
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*   1      2005/10/14  Boisy G. Pitre
+*          2005/10/14  Boisy G. Pitre
 * Created as a stand-alone file.
+*
+*          2005/10/16  Boisy G. Pitre
+* Further optimizations made
                          
 start    orcc  #IntMasks  ensure IRQs are off (necessary?)
          leas  -size,s   
@@ -36,38 +47,33 @@ start    orcc  #IntMasks  ensure IRQs are off (necessary?)
          bsr   getpntr    restore U to point to our statics
                          
 * Initialize Hardware
+         ldy   Address,pcr				get hardware address
          lbsr  HWInit
 
 * Read LSN0
-         IFEQ             FLOPPY
+         IFNE  LSN24BIT
          clrb             MSB sector
          ENDC
          ldx   #0         LSW sector
          lbsr  HWRead     read LSN 0
          bcs   error      branch if error
                          
-         ifgt  Level-1   
+         IFGT  Level-1   
          lda   #'0        --- loaded in LSN0'
          jsr   <D.BtBug   ---
-         endc            
+         ENDC            
                          
 * Pull relevant values from LSN0
          IFNE  FLOPPY
          lda   DD.TKS,x   number of tracks on this disk
-         sta   ddtks,u   
-         lda   DD.FMT,x   disk format byte
-         sta   ddfmt,u   
-         ELSE
-         lda   DD.BT,x    os9boot pointer
-         sta   bootloc,u 
+         ldb   DD.FMT,x   disk format byte
+         std   ddtks,u    TAKE NOTE!  ASSUMES ADJACENT VARS!
          ENDC
-         ldd   DD.BT+1,x  LSW of 24 bit address
-         std   bootloc+1,u
          ldd   DD.BSZ,x   os9boot size in bytes
          beq   FragBoot   if zero, do frag boot
          std   bootsize,u
-* Old style boot -- make a fake FD segment
-         leax  FD.SEG,x  
+* Old style boot -- make a fake FD segment right from LSN0!
+         leax  DD.BT,x  
          addd  #$00FF     round up to next page
 * Important note: We are making an assumption that the upper 8 bits of the
 * FDSL.B field will always be zero.  That is a safe assumption, since an
@@ -75,16 +81,11 @@ start    orcc  #IntMasks  ensure IRQs are off (necessary?)
 * under NitrOS-9 cannot be this large, and therefore this assumption
 * is safe.
          sta   FDSL.B+1,x save file size
-         IFEQ  FLOPPY
-         lda   bootloc,u 
-         sta   FDSL.A,x  
-         ENDC
-         ldd   bootloc+1,u
-         std   FDSL.A+1,x save LSN of file (contiguous)
+         IFNE  LSN24BIT
          clr   FDSL.S,x   make next segment entry 0
+         ENDC
          clr   FDSL.S+1,x
          clr   FDSL.S+2,x
-         ldd   bootsize,u
          bra   GrabBootMem
                          
 Back2Krn lbsr  HWTerm     call HW termination routine
@@ -95,7 +96,7 @@ error2   leas  2+size,s   reset the stack    same as PULS U
          rts              return to kernel
                          
 * Error point - return allocated memory and then return to kernel
-error                    
+error                 
 * Return memory allocated for sector buffers
          ldd   #256      
          ldu   blockloc,u
@@ -110,48 +111,52 @@ getpntr  tfr   u,d        save pointer to requested memory
          rts             
                          
 * NEW! Fragmented boot support!
-FragBoot ldb   bootloc,u  MSB fd sector location
-         ldx   bootloc+1,u LSW fd sector location
+*FragBoot ldb   bootloc,u  MSB fd sector location
+*         ldx   bootloc+1,u LSW fd sector location
+FragBoot ldb   DD.BT,x    MSB fd sector location
+         ldx   DD.BT+1,x  LSW fd sector location
          lbsr  HWRead     get fd sector
          ldd   FD.SIZ+2,x get file size (we skip first two bytes)
          std   bootsize,u
          leax  FD.SEG,x   point to segment table
                          
 GrabBootMem                 
-         ifgt  Level-1   
+         IFGT  Level-1   
          os9   F$BtMem   
-         else            
+         ELSE            
          os9   F$SRqMem  
-         endc            
+         ENDC            
          bcs   error     
          bsr   getpntr   
          std   blockimg,u
                          
 * Get os9boot into memory
 BootLoop stx   seglist,u  update segment list
-         IFEQ  FLOPPY
+         IFNE  LSN24BIT
          ldb   FDSL.A,x   MSB sector location
          ENDC
 BL2      ldx   FDSL.A+1,x LSW sector location
+         IFNE  LSN24BIT
          bne   BL3       
          tstb            
+         ENDC
          beq   Back2Krn  
 BL3      lbsr  HWRead    
          inc   blockloc,u point to next input sector in mem
                          
-         ifgt  Level-1   
-         lda   #'.        Show .'
+         IFGT  Level-1   
+         lda   #'.        show .'
          jsr   <D.BtBug  
-         endc            
+         ENDC            
                          
          ldx   seglist,u  get pointer to segment list
          dec   FDSL.B+1,x get segment size
          beq   NextSeg    if <=0, get next segment
                          
-         ldd   FDSL.A+1,x update sector location by one to 24bit word
+         ldd   FDSL.A+1,x update sector location by one
          addd  #1        
          std   FDSL.A+1,x
-         IFEQ  FLOPPY
+         IFNE  LSN24BIT
          ldb   FDSL.A,x  
          adcb  #0        
          stb   FDSL.A,x  
