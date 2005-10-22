@@ -8,6 +8,10 @@
 * ------------------------------------------------------------------
 *   3      ????/??/??
 * From Tandy OS-9 Level One VR 02.00.00.
+*
+*   3      2005/10/22    Robert Gault
+* Patched the calculation for the beginning of the baud table to
+* accommodate both Level1 and Level2
 
          nam   TunePort
          ttl   Tune Printer Port
@@ -200,7 +204,12 @@ L031D    lda   #Drivr+Objct
          os9   I$Write  
          lbcs  L03D7
 L0345    ldd   <u000D
-         subd  #$000E
+* Patched calc   RG
+         IFGT  Level-1
+         subd  #$0010     Level2 has 8 constants RG
+         ELSE
+         subd  #$000E     Level2 has 7 constants RG
+         ENDIF
          tfr   d,x
          lda   <u0000
          lsla  
