@@ -132,11 +132,15 @@ Drive0D		EQU		%00000000
 Drive1D		EQU		%00000001
 Drive2D		EQU		%00000010
 Drive3D		EQU		%00000011
+DDosDriveMask	EQU		%00000011	Mask out all non drive select bits
+DDosCtrlMask	EQU		%11111100	Mask in all non drive select bits
 
 
 * Disk IO bitmasks (Dragon Alpha).
-NMIEnA    	EQU		%00001000	PIA2, CA2, used to enable/disable NMI 
-NMIDisA		EQU		%11110111	Bitmask to foce CA2 off, and disable NMI
+PIANMIEnA    	EQU		%00001000	PIA2, CA2, used to enable/disable NMI 
+PIANMIDisA	EQU		%11110111	Bitmask to force CA2 off, and disable NMI
+
+NMIEnA		EQU		%10000000	Flag to enable disable NMI, passed to AlphaDskCtl
 WPCEnA    	EQU   		%01000000 	According to circuit trace by R.Harding.
 SDensEnA  	EQU   		%00100000 	DDen, from circuit trace on R.Harding's machine.
 MotorOnA  	EQU   		%00010000 	
@@ -144,6 +148,8 @@ Drive0A		EQU		%00000001
 Drive1A		EQU		%00000010
 Drive2A		EQU		%00000100
 Drive3A		EQU		%00001000
+AlphaDrvMask	EQU		%00001111	Mask out all non drive select bits
+AlphaCtrlMask	EQU		%11110000	Mask in all non drive select bits
 
 Mask58		EQU		%01111111	And mask to make sure 5.25" clock selected by WD2797
 
