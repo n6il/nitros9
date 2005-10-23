@@ -19,6 +19,10 @@
 *	Added NMI enable/disable code, as I know know how to enable/disable
 *	NMI on the Alpha, having disasembled the Alpha's OS9's ddisk.
 *
+*
+* 2005-10-22, P.Harvey-Smith.
+* 	Removed unused user stack variable (u0000).
+*
 
 
 		nam   Boot
@@ -103,7 +107,6 @@ atrv     	set   ReEnt+rev
 rev      	set   $01
 
 		mod   eom,name,tylg,atrv,start,size
-u0000    	rmb   2
 BuffPtr    	rmb   2
 SideSel    	rmb   1		; Side select mask
 CurrentTrack	rmb   1		; Current track number
@@ -117,14 +120,7 @@ name     	equ   *
 
 start   equ   	*
 	
-	ldx	#CMdReg
-        clra  
-		 
-	IFNE	DragonAlpha
-	lda	#$30		; Set PIA2 CA2 as output, as used to control NMI
-	ora	PIA2CRA
-	sta	PIA2CRA
-	ENDC
+        clra  	 
 	 
  	ldb   	#size
 L0015   pshs  	a		; Clear size bytes on system stack
@@ -139,7 +135,12 @@ L0015   pshs  	a		; Clear size bytes on system stack
         lbsr  	Delay		; Wait for command to complete
         lda   	,x
         lda   	>piadb		; Clear DRQ from WD.
-		 
+
+	IFNE	DragonAlpha
+	lda	#NMICA2Dis	; Set PIA2 CA2 as output & disable NMI
+	sta	PIA2CRA
+	ENDC
+ 
         lda   	#$FF
         sta   	CurrentTrack,u
         leax  	>NMIService,pcr	; Setup NMI Handler.
@@ -169,6 +170,7 @@ MotorOnDelay
         ldu   	<D.FMBM+2
         os9   	F$SchBit 
         bcs   	L009C
+	
         exg   	a,b		; Make bitmap into Memory pointer
         ldu   	$04,s
         std   	BuffPtr,u	; Save LSN0 pointer
@@ -177,13 +179,15 @@ MotorOnDelay
         ldx   	#$0000		; Read LSN0 from boot disk.
         bsr   	ReadSec
         bcs   	L009C		; Error : give up !
+	
         ldd   	<DD.BSZ,y	; Get size of boot data from LSN0
         std   	,s
         os9   	F$SRqMem 	; Request memory
         bcs   	L009C		; Error : give up
-        stu   	$02,s
-        ldu   	$04,s
-        ldx   	$02,s
+	
+        stu   	$02,s		; Save load memory pointer
+        ldu   	$04,s		; Fetch temp mem pointer off stack
+        ldx   	$02,s		; Fetch load memory pointer
         stx   	BuffPtr,u
         ldx   	<DD.BT+1,y	; Get LSN of start of boot
         ldd   	<DD.BSZ,y	; Get size of boot.
@@ -199,6 +203,7 @@ LoadBootLoop
         bsr   	ReadSec		; Read a sector of boot
         bcs   	L009A		; Error : exit
         puls  	x,b,a
+	
         inc   	BuffPtr,u	; Increment MSB of buffpointer, point to next page to load into
         leax  	$01,x		; Increment sector number
         subd  	#$0100		; Decrement number of bytes left
@@ -219,7 +224,6 @@ L009E   puls  	u,x
 ;
 		
 ResetTrack0   
-		clr   	,u
         clr   	CurrentTrack,u	; Zero current track
         lda   	#$05
 L00A9   ldb   	#StpICmnd+StepRate	; Step in
@@ -244,7 +248,7 @@ ReadSec
         ldy   	BuffPtr,u
         clrb  
 ReadDataExit   
-		rts   
+	rts   
 
 ReadDataRetry    			
 	bcc   	ReadDataWithRetry	; Retry data read if error
@@ -253,40 +257,53 @@ ReadDataRetry
         puls  	x,b,a
 		 
 ReadDataWithRetry    
-		pshs  	x,b,a
+	pshs  	x,b,a
         bsr   	DoReadData	; Try reading data
         puls  	x,b,a
         bcc   	ReadDataExit	; No error, return to caller
-        lsra  					; decrement retry count
+        lsra  			; decrement retry count
         bne   	ReadDataRetry	; retry read on error
 		 
 DoReadData    
 	bsr   	SeekTrack	; Seek to correct track
         bcs   	ReadDataExit	; Error : exit
-        ldx   	BuffPtr,u	; Set X=Data load address
+        
+	ldx   	BuffPtr,u	; Set X=Data load address
         orcc  	#$50		; Enable FIRQ=DRQ from WD
         pshs  	y,dp,cc
-        lda   	#$FF		; Make DP=$FF, so access to WD regs easier
+        lda   	#$FF		; Make DP=$FF, so access to WD regs faster
         tfr   	a,dp
-        lda   	#$34
+        
+	lda   	#$34
         sta   	<dppia0crb	; Disable out PIA0 IRQ <u0003
-        lda   	#$37
+        
+	lda   	#$37
         sta   	<dppiacrb	; Enable FIRQ
-        lda   	<dppiadb
-        ldb   	#NMIEn+MotorOn	; $24
+        lda   	<dppiadb	; Clear any pending FIRQ
+	
+        lda   	#NMIEn+MotorOn	; $24
 		  
 	IFNE	DragonAlpha
-	lbsr	AlphaDskCtlB
+	lbsr	AlphaDskCtl
 	ELSE
-	stb   	<dpdskctl
+	sta   	<dpdskctl
 	ENDIF
 
         ldb   	#ReadCmnd	; Issue a read command
         orb	>SideSel,U	; mask in side select
 	stb   	<dpcmdreg
-		
+
+	IFNE	DragonAlpha
+	lda	#NMICA2En	; Enable NMI
+	sta	<DPPIA2CRA	
+	ENDIF
+
+;	lda	<dppiadb	; Inturrupt flag set ?
+;	bmi	ReadDataNow	; already inturrupt, read data	
+	
 ReadDataWait    
 	sync  			; Read data from controler, save
+ReadDataNow
         lda   	<dpdatareg	; in memory at X
         ldb   	<dppiadb	
         sta   	,x+		
@@ -302,6 +319,8 @@ NMIService
 
 	IFNE	DragonAlpha
 	lbsr	AlphaDskCtl
+	lda	#NMICA2Dis	; Disable NMI
+	sta	<DPPIA2CRA
 	ELSE
 	sta    	<dpdskctl
 	ENDIF
@@ -310,6 +329,7 @@ NMIService
         sta   	<dppiacrb
         ldb   	<dpcmdreg
         puls  	y,dp,cc
+	
         bitb  	#$04		; Check for error
         lbeq  	L015A
 L011A   comb  
@@ -322,7 +342,6 @@ L011A   comb
 ;
 		 
 SeekTrack    
-	clr   	,u
         tfr   	x,d
         cmpd  	#$0000		; LSN0 ?
         beq   	SeekCalcSkip
@@ -420,45 +439,46 @@ Delay3  rts
 ; converted with a lookup table.
 ; We do not need to preserve the ROM select bit as this code
 ; operates in RAM only mode.
-; Also sets PIA2 CA2 to enable/disable NMI
 
-AlphaDskCtlB	
-	pshs	A
-	tfr	b,a
-	bsr	AlphaDskCtl
-	puls	A
-	rts
-
-DrvTab	FCB	Drive0A,Drive1A,Drive2A,Drive3A
+ADrvTab	FCB		Drive0A,Drive1A,Drive2A,Drive3A
 
 AlphaDskCtl	
 	PSHS	x,A,B,CC
 
+;	ldb	PIA2CRA		; Get control reg 
+;	bita	#NMIEnA		; NMI enable flag set ?
+;	bne	AlphaNMIEnabled	; yes : enable it
+	
+;	andb	#PIANMIDisA	; Set PIA2 CA2 as output & disable NMI
+;	ldb	#NMICA2Dis
+;	bra	AlphaSetNMI
+AlphaNMIEnabled
+;	orb	#PIANMIEnA	; Enable NMI
+;	ldb	#NMICA2En
+	
+AlphaSetNMI
+;	stb	PIA2CRA		; Save back in ctrl reg
+	
 	PSHS	A	
-	ANDA	#NMIEn		; mask out nmi enable bit
-
-	beq	NMIoff		; if zero switch off
-	
-	lda	#NMIEnA		; enable NMI
-	ora	PIA2CRA
-	bra	NMISave		; save it
-	
-NMIoff	lda	#NMIDisA	; disable NMI
-	anda	PIA2CRA		
-NMISave
-	sta	PIA2CRA
-		
-	lda	,s		; Convert drives
-	anda	#%00000011	; mask out drive number
-	leax	DrvTab,pcr	; point at table
+	anda	#DDosDriveMask	; mask out dragondos format drive number
+	leax	ADrvTab,pcr	; point at table
 	lda	a,x		; get bitmap
 	ldb	,s
-	andb	#%11111100	; mask out drive number
+	andb	#AlphaCtrlMask	; mask out drive number bits
 	stb	,s
-	ora	,s		; recombine
-	anda	#Mask58		; make sure 5/8 bit forced low to select 5.25" clock
-	sta	,s
-		
+	ora	,s		; recombine drive no & ctrl bits
+;	sta	,s
+
+	bita	#MotorOn	; test motor on ?
+	bne	MotorRunning
+
+	clra			; No, turn off other bits.
+MotorRunning
+	anda	#Mask58		; Mask out 5/8 bit to force the use of 5.25" clock
+	sta	,s	
+
+        orcc  #$50		; disable inturrupts
+	
 	lda	#AYIOREG	; AY-8912 IO register
 	sta	PIA2DB		; Output to PIA
 	ldb	#AYREGLatch	; Latch register to modify
@@ -466,16 +486,15 @@ NMISave
 		
 	clr	PIA2DA		; Idle AY
 		
-	lda	,s+		; Fetch saved Drive Selects
+	lda	,s+		; Fetch saved Drive Selects etc
 	sta	PIA2DB		; output to PIA
 	ldb	#AYWriteReg	; Write value to latched register
 	stb	PIA2DA		; Set register
 
 	clr	PIA2DA		; Idle AY
-				
+			
 	PULS	x,A,B,CC
 	RTS
-
 
 	ENDC
 
