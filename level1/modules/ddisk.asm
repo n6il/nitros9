@@ -361,6 +361,7 @@ DoReadData
 DoReadDataLoop    
 	lda   	<DPPIACRB	; Is data ready ?
         bmi   	ReadDataReady	; Yes : read it
+	
         leay  	-1,y			
         bne   	DoReadDataLoop
         bsr   	RestoreSavedIO
@@ -384,8 +385,9 @@ PrepDiskRW
 
 	clr	DskError,u
 	
-	lda   	#$FF		; Make DP=$FF, to make io easier
+	lda   	#$FF		; Make DP=$FF, to make i/o faster
         tfr   	a,dp
+	
         lda   	<DPAciaCmd 	; Save ACIA Command reg	
         sta   	>SaveACIACmd,u
         anda  	#$FE		; Disable ACIA inturrupt
@@ -434,12 +436,16 @@ L00DE   orcc  	#$50		; Mask inturrupts
 ;
 
 RestoreSavedIO
+	IFNE	DragonAlpha	
+	lda	#NMICA2Dis	; Disable NMI (Alpha)
+	sta	<DPPIA2CRA
+	ENDC
+
 	lda   	>DrivSel,u	; Deselect drives, but leave motor on
         ora   	#MotorOn
+	
 	IFNE	DragonAlpha	; Turn off drives & NMI
 	lbsr	AlphaDskCtl
-	lda	#NMICA2Dis	; Disable NMI
-	sta	<DPPIA2CRA
 	ELSE
         sta   	<DPDskCtl
 	ENDC
@@ -762,8 +768,6 @@ FDCCmdMotorOn
 
 	IFNE	DragonAlpha
 	lbsr	AlphaDskCtl
-	lda	#NMICA2Dis
-	sta	PIA2CRA
 	ELSE
         sta   	>DskCtl
 	ENDC
@@ -1004,28 +1008,16 @@ ADrvTab	FCB		Drive0A,Drive1A,Drive2A,Drive3A
 
 AlphaDskCtl	
 	PSHS	x,A,B,CC
-
+	
 	PSHS	A	
-;	ANDA	#NMIEn		; mask out nmi enable bit
-;
-;	beq	NMIoff		; if zero switch off
-;	
-;	lda	#NMICA2En	; enable NMI
-;	bra	NMISave		; save it
-;	
-;NMIoff	lda	#NMICA2Dis	; disable NMI
-;NMISave
-;	sta	PIA2CRA
-;	
-;	lda	,s		; Convert drives
-	anda	#%00000011	; mask out drive number
+	anda	#DDosDriveMask	; mask out dragondos format drive number
 	leax	ADrvTab,pcr	; point at table
 	lda	a,x		; get bitmap
 	ldb	,s
-	andb	#%11111100	; mask out drive number
+	andb	#AlphaCtrlMask	; mask out drive number bits
 	stb	,s
-	ora	,s		; recombine
-	sta	,s
+	ora	,s		; recombine drive no & ctrl bits
+;	sta	,s
 
 	bita	#MotorOn	; test motor on ?
 	bne	MotorRunning
@@ -1034,6 +1026,8 @@ AlphaDskCtl
 MotorRunning
 	anda	#Mask58		; Mask out 5/8 bit to force the use of 5.25" clock
 	sta	,s	
+
+        orcc  	#$50		; disable inturrupts
 		
 	lda	#AYIOREG	; AY-8912 IO register
 	sta	PIA2DB		; Output to PIA
@@ -1042,7 +1036,7 @@ MotorRunning
 		
 	clr	PIA2DA		; Idle AY
 		
-	lda	,s+		; Fetch saved Drive Selects
+	lda	,s+		; Fetch saved Drive Selects etc
 	sta	PIA2DB		; output to PIA
 	ldb	#AYWriteReg	; Write value to latched register
 	stb	PIA2DA		; Set register
