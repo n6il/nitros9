@@ -24,7 +24,8 @@ TERMWIDTH	= 51
 BOOTFILE	= bootfiles/bootfile_dalpha_SS80_$(TERMWIDTH)
 BOOTFILE_DS80	= bootfiles/bootfile_dalpha_DS80_$(TERMWIDTH)
 KERNELFILE	= bootfiles/kernel_dalpha
-DIRS		= cmds modules sys bootfiles
+DIRS		= cmds sys 
+#modules bootfiles
 DDIRS		= modules bootfiles defs
 
 DISTRO		= nos9$(CPU)l$(LEVEL)
