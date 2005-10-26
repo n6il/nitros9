@@ -30,6 +30,33 @@
 * are now shown instead of 3 byte track numbers.
 * Also, if a cluster size is not specified on the command line,
 * the best one is automatically calculated.
+*
+*	2005-10-25 P.Harvey-Smith.
+* Added support for formatting Dragon floppies, this is required because
+* dragon floppies are aranged thus :-
+*	LSN	Purpose
+*	0	Standard LSN0
+*	1	Blockmap
+*	2-17	Boot area (as on track 35 of CoCo disk).
+*	18	Begining of root dir
+*	19+	Continuation of root dir ? and data sectors.
+*
+* Note as a limitation of this scheme, is that disks with more than 2048 
+* sectors, need to have a cluster size of 2 as only one sector is available 
+* for the block map.
+*
+* To format a floppy with dragon format, you need to use the command line 
+* parameter 'FD' (format, Dragon).
+*
+*	2005-10-26 P.Harvey-Smith
+* Determined the purpose and commented some of the unknown memory vars,
+* also renamed others to more closeley represent their purpose, e.g.
+* there where two 'cluster size' vars, one was inface number of bytes in
+* bitmap, so that got renamed :)
+* Format can now correctly build a DragonData OS-9 compatible disk
+* that can have (under OS-9) cobbler run on it, and will subsequently then
+* boot.
+*
 
          nam   Format
          ttl   RBF Disk format program
@@ -83,16 +110,14 @@ ready    rmb   1                ready to proceed, skip warning
 dresult  rmb   2                decimal number in binary
 interlv  rmb   1                sector interleave value
 u0022    rmb   2
-clustsiz rmb   1                cluster size
-clustspecified rmb   1                cluster size specified on command line
-ClustSz  rmb   1                cluster size
-u0029    rmb   1
+clustsiz rmb   1                cluster size (specified or default)
+clustspecified rmb   1		cluster size specified on command line
+NumBitmapBytes  rmb   2    	Number of bytes in cluster allocation bitmap
 u002A    rmb   1
 clustcnt rmb   1
-u002C    rmb   1
-u002D    rmb   1
-u002E    rmb   1
-u002F    rmb   1
+NoRootFDSecs    rmb   1		Number of sectors in Root FD (normally 8 ?)
+NoSysSectors	rmb   2		Number of Sectors at beginning of disk reserved for system
+NoSysClusters	rmb   1		Number of system Clusters to allocate
 u0030    rmb   1
 u0031    rmb   1
 u0032    rmb   1
@@ -123,6 +148,9 @@ u0064    rmb   7
 u006B    rmb   4
 dskname  rmb   32               quoted delimited disk name buffer
 u008F    rmb   40
+IsDragon	rmb	1	Is this a dragon disk ?
+SaveRootLSN	rmb	3	Saved copy of DD.DIR
+AddedSysSecs	rmb	2	Additional system sectors (0 for CoCo, $10 for Dragon boot area)
 LSN0     rmb   256              LSN0 build buffer
 optbuf   rmb   256
 numbuf   rmb   32
@@ -168,14 +196,18 @@ dctdat   fdb   $204E,$0000,$0C00,$03F5,$01FE,$0400
 dcfidp   fdb   $0030
 dcsize   fdb   $0154
 
+DragonFlag	equ	'd'	Flag that we are formatting dragon formatted disk.
+DragonRootSec	equ	$12	Dragon root sector is always LSN 18
+DragonBootSize	equ	$10	Size of dragon boot area
+
 ********************************************************************
 * format module execution start address
 ********************************************************************
 
-start    stu   <savedu          save our data pointer
+start   stu   <savedu          save our data pointer
          bsr   ClrWork          clear the work area
          bsr   OpenDev          get device name and open it
-         bsr   Default          handle all the options
+         lbsr  Default          handle all the options
          lbsr  GetDTyp          initialize the device
          lbsr  Proceed
          lbsr  Format           physically format device
@@ -198,6 +230,9 @@ ClrWork  leay  diskpath,u       point to work area
 ClrOne   clr   ,-y              clear it down
          cmpy  ,s               at begin?
          bhi   ClrOne           not yet,
+	 clr	IsDragon,u	Assume we are not formatting a dragon disk
+	 clr	AddedSysSecs,u	Clear aditional system sectors
+	 clr	AddedSysSecs+1,u
          puls  pc,y             done
 
 ********************************************************************
@@ -431,6 +466,15 @@ opt.17   fcc   /,/
 opt.18   fcb   C$SPAC
          fcb   00
          fdb   DoSpace-opt.18
+	 
+opt.19	fcb	'F'
+	fcb	' '
+	fdb	DoFormat-opt.19
+opt.20	fcb	'f'
+	fcb	' '
+	fdb	DoFormat-opt.20
+	
+	 
          fcb   $00
 
 ********************************************************************
@@ -534,6 +578,30 @@ DoColon  lbsr  Decimal          proccess interleave value
          ldb   #$01             yes, default size
 L0243    stb   <interlv         save it
          rts                    return
+
+********************************************************************
+* Format option : formatting a CoCo or a Dragon disk ?
+********************************************************************
+
+DoFormat
+	lda	,x+		Get next char
+	cmpa	#'D'		Do a dragon disk ?
+	beq	DoFmtDragon
+	cmpa	#'d'		
+	bne	DoFmtDragon
+	clr	IsDragon,u	Mark it as a normal CoCo (or other) disk
+	clrb
+	rts
+	
+DoFmtDragon
+	lda	#DragonFlag	Mark as Dragon disk
+	sta	IsDragon,u
+
+	ldd	#DragonBootSize	Setup additional system sectors
+	std	AddedSysSecs,u
+
+	clrb
+	rts
 
 ********************************************************************
 * quoted option /cluster size/ save size in clustsiz
@@ -699,44 +767,47 @@ L0344    exg   d,x
 ack@
          lda   <dtype		get type byte
          bita  #TYPH.DSQ	drive size query bit set?
-         beq   mlex@            branch if so (we don't take bps into account here)
+         beq   mlex             branch if so (we don't take bps into account here)
 **** We now multiply totsects * the bytes per sector
          dec   <bps		decrement bytes per sector (8=7,4=3,2=1,1=0)
-         beq   mlex@		exit out ofloop if zero
+         beq   mlex		exit out ofloop if zero
 ml@      lsl   <totsects+2	else multiply by 2
          rol   <totsects+1
          rol   <totsects
          lsr   <bps		shift out bits
          tst   <bps
          bne   ml@
-mlex@
+
 ************************************************
-         lda   #$08
+* Calculates the correct cluster size & size of bitmap in bytes
+
+mlex     lda   #$08		
          pshs  a
-         ldx   <totsects+1
+         ldx   <totsects+1	
          ldb   <totsects
          bsr   Div24by8		divide totsects by 8
-         lda   <clustsiz        get cluster size
+         lda   <clustsiz        get current cluster size
          pshs  a                save it as divisor
          bsr   Div24by8
-         tstb  			B = 0?
+         tstb  			B = 0? (more than $FFFF bytes required ?)
          beq   L0374		branch if so
+
 * Too small a cluster size comes here
          tst   <clustspecified  did user specify cluster on command line?
          bne   u@		branch if so (show error message)
          lsl   <clustsiz	multiply by 2
          bcs   u@		if carry set to stop
          leas  2,s		else eat stack
-         bra   mlex@		and continue trying
+         bra   mlex		and continue trying
 u@       leax  >ClustMsg,pcr    cluster size mismatch message
          lbsr  PrintLn          print mismatch message
          lbra  L05B1            abort message and exit
 L0374    leas  $02,s
-         stx   <ClustSz
+         stx   <NumBitmapBytes	Save Size of bitmap in bytes
          rts                    return
 
 ********************************************************************
-* multiply (mlbxty)
+* multiply (mlbxty B:X * Y)
 ********************************************************************
 
 Mulbxty  lda   #$08             make stack space
@@ -770,20 +841,20 @@ MulZer   leas  $05,s            clean up space
          puls  pc,x,b           pop results, return
 
 ********************************************************************
-* 24 bit divide (2,s = divisor, B/X = dividend)
+* 24 bit divide (2,s = divisor, B:X = dividend, result in B:X)
 ********************************************************************
 
 L03AE    pshs  x,b		save X,B on stack
-         lsr   ,s		divide X,B by 2
+         lsr   ,s		divide B:X by 2
          ror   $01,s
          ror   $02,s
-         puls  x,b		retrieve X,B
+         puls  x,b		retrieve B:X
          exg   d,x		exchange bits 15-0 in D,X
          adcb  #$00
          adca  #$00
          exg   d,x
          adcb  #$00
-Div24by8 lsr   $02,s
+Div24by8 lsr   $02,s		
          bne   L03AE
          rts   
 
@@ -992,13 +1063,16 @@ InitLSN0 lbsr  ClrBuf		clear the sector buffer
          stb   DD.TKS,x		save
          lda   <clustsiz        get cluster size
          sta   DD.BIT+1,x       save
+	 
          clra  
-         ldb   <ClustSz		get cluster size
-         tst   <u0029
-         beq   L054F
-         addd  #$0001
+         ldb   <NumBitmapBytes	Calculate number of bitmap sectors needed
+         tst   <NumBitmapBytes+1 Exact multiple of sector size ?
+         beq   L054F		Yes no extra sectors needed
+         addd  #$0001		Add extra sector for bytes at end
 L054F    addd  #$0001
+	 addd	AddedSysSecs,u	Add additional system sectors (usually 0)
          std   DD.DIR+1,x	save directory sector
+
          clra  
          tst   <mfm		single density?
          beq   L0561		branch if so
@@ -1015,7 +1089,7 @@ L0569    tst   <tpi 		48tpi?
          beq   L056F		branch if so
          ora   #FMT.TDNS	else set 96 tpi
 L056F    sta   <DD.FMT,x	save
-         ldd   <ClustSz		get cluster size
+         ldd   <NumBitmapBytes	get size of bitmap in bytes
          std   DD.MAP,x		save number of bytes in allocation bit map
          lda   #$FF		attributes
          sta   DD.ATT,x		save
@@ -1059,6 +1133,13 @@ L05D3    addd  ,x++
          bcs   L05D3
          leas  $02,s
          std   >LSN0+DD.DSK,u	save disk ID
+	 
+	 lda	IsDragon,u	Do we need to fixup for dragon ?
+	 cmpa	#DragonFlag
+	 bne	Nofixup
+	 bsr	FixForDragon	Adjust for Dragon disk format
+
+NoFixup
 * Not sure what this code is for...
 *         ldd   >val1,pcr
 *         std   >u01A7,u
@@ -1075,6 +1156,34 @@ L05D3    addd  ,x++
          lbcs  Exit		branch if error
          leax  >LSN0,u		point to LSN0
          lbra  WritSec		and write it!
+
+
+********************************************************************
+* Adjust LSN0 values so we make a Dragon OS-9 compatible disk
+********************************************************************
+
+FixForDragon
+	pshs	x
+	leax	LSN0,u		Point at LSN0
+	
+	lda	dtype,u		Get disk type
+	bita	#TYP.CCF	CoCo/Dragon format disk ?
+	beq	DgnNoFix	Nope, don't adjust
+	
+	ldd	DD.MAP,x	Fixup map
+	cmpd	#$ff		Dragon disks have only one bitmap sector
+	bls	DgnMapOK	only using 1, don't adjust 
+	lsra			Divide map count by 2
+	rorb			
+	std	DD.MAP,x
+	inc	DD.BIT+1,x	Increment cluster size to 2	
+	
+	stb	<clustsiz	Update local cluster size var
+	
+DgnMapOK
+DgnNoFix
+	puls	x,pc
+	
 
 ********************************************************************
 * read in sector 0 of device
@@ -1098,7 +1207,14 @@ ReadLSN0 lda   <diskpath		get disk path
          os9   I$Open   		open in read/write mode
          lbcs  BadSect			branch if error
          sta   <diskpath		else save new disk path
-         rts   				and return
+
+* Save location of start of root directory, for later use
+	 leax	LSN0,u			point to LSN0
+         lda	DD.DIR,x		Get location of root
+	 ldx	DD.DIR+1,x
+	 sta	SaveRootLSN,u		Save a copy for later use
+	 stx	SaveRootLSN+1,u
+	 rts   				and return
 
 ********************************************************************
 *
@@ -1140,35 +1256,49 @@ nothd    ldd   <sectors0	get sectors/track at track 0
          lda   <clustsiz        get cluster size
          sta   <clustcnt        store in cluster counter
          clr   <u002A
+	 
+* Calculate the number of reserved clusters at begining of disk, from
+* number of reserved sectors
+
          clra  
-         ldb   <ClustSz
-         tst   <u0029
-         beq   L069D
-         addd  #$0001
-L069D    addd  #$0009
-         std   <u002D
+         ldb   <NumBitmapBytes		Get no of sectors used by bitmap
+         tst   <NumBitmapBytes+1	Exact number of sectors in bitmap ?
+         beq   L069D			Yes : skip
+         addd  #$0001			No : round up sector count
+L069D    addd  #$0009		Add 8 sectors for root FD (IT.SAS) + 1 sector for LSN0
+	 addd 	AddedSysSecs,u	Add additional system sectors (if any)
+         std   <NoSysSectors
          lda   <clustsiz        get cluster size
+	 
+* Since cluster sizes can only be a power of 2 (1,2,4,8,16 etc) we divide block count
+* by 2 until we get a carry, this gives us the cluster count
+	 
 L06A4    lsra  
-         bcs   L06B5
-         lsr   <u002D
-         ror   <u002E
+         bcs   L06B5		First calculate number of system clusters
+         lsr   <NoSysSectors
+         ror   <NoSysSectors+1
          bcc   L06A4
-         inc   <u002E
+         inc   <NoSysSectors+1
          bne   L06A4
-         inc   <u002D
+         inc   <NoSysSectors
          bra   L06A4
-L06B5    ldb   <u002E
-         stb   <u002F
+	 
+L06B5    ldb   <NoSysSectors+1
+         stb   <NoSysClusters	Save No of clusters
          lda   <clustsiz        get cluster size
-         mul   
-         std   <u002D
-         subd  #$0001
-         subb  <ClustSz
+         mul   			Now work out number of system sectors
+         std   <NoSysSectors	Save it
+	 
+         subd  #$0001		Calculate number of sectors in root FD ?
+         subb  <NumBitmapBytes
+	 subd	AddedSysSecs,u	Remove additional system sectors (if any)
          sbca  #$00
-         tst   <u0029
+         tst   <NumBitmapBytes+1
          beq   L06CC
          subd  #$0001
-L06CC    stb   <u002C
+	 
+L06CC    stb   <NoRootFDSecs
+
 L06CE    tst   <dovfy           do we verify?
          bne   OutScrn          no, output screen display
          lda   <diskpath        yes, get rbf device path
@@ -1183,7 +1313,7 @@ L06CE    tst   <dovfy           do we verify?
          tst   <u0031
          bne   OutScrn          output screen display
          ldx   <u0032
-         cmpx  <u002D
+         cmpx  <NoSysSectors
          bhi   OutScrn          output screen display
 BadSect  leax  >BadSectM,pcr    bad system sector message
 PExit    lbsr  PrintLn          print message
@@ -1338,14 +1468,15 @@ L07DF    puls  x,a              get counted sectors
 * get allocation bit map and write sectors
 ********************************************************************
 
-WrtSecs  pshs  y                save register
+WrtSecs 	
+	pshs  y                save register
          clra                   set number
          ldb   #$01             bits to set
          cmpd  <u0034           map sector?
          bne   L081E            yes, write sector
          leax  >optbuf,u        allocation bit map
          clra                   get number
-         ldb   <u002F           system sectors
+         ldb   <NoSysClusters      system sectors
          tfr   d,y              into register
          clrb                   first bit to set
          os9   F$AllBit         set allocation bit map
@@ -1370,9 +1501,9 @@ AdvSec   ldd   <u0034           get mapped sectors
 * create root directory file descriptor
 ********************************************************************
 
-MkRootFD bsr   GetSec           get sector
+MkRootFD lbsr   GetSec          get sector
          leax  >fdtbuf1,u       sector buff
-         bsr   ClrSec           clear sector
+         lbsr  ClrSec           clear sector
          leax  >fdtbuf2,u       get date last modified
          os9   F$Time           get system time
          leax  >fdtbuf1,u       get file descriptor
@@ -1383,23 +1514,30 @@ MkRootFD bsr   GetSec           get sector
          clra                   directory size
          ldb   #DIR.SZ*2        directory entries (DIR.SZ*2)
          std   FD.SIZ+2,x       save it           (FD.SIZ+2)
-         ldb   <u002C
+         ldb   <NoRootFDSecs
          decb
-         stb   <FD.SEG+FDSL.B+1,x save it  (FD.SEG+FDSL.B+1)
-         ldd   <u0034
+         stb   <FD.SEG+FDSL.B+1,x save it  (c+FDSL.B+1)
+*         ldd   <u0034
+	
+	ldd	SaveRootLSN+1,u		Get saved root dir LSN
+	 
          addd  #$0001
-         std   <FD.SEG+FDSL.A+1,x save it  (FD.SEG+FDSL.A+1)
+         std   <FD.SEG+FDSL.A+1,x save it  (FD.SEG+FDSL.A+1)	
+	 bsr	SeekRootLSN
          bsr   WritSec
          bsr   ClrBuf
          ldd   #$2EAE           (#'.*256+'.+128)
          std   DIR.NM,x         (DIR.NM)
          stb   <DIR.SZ+DIR.NM,x (DIR.NM+DIR.SZ)
-         ldd   <u0034
+*         ldd   <u0034
+	
+	ldd	SaveRootLSN+1,u		Get saved root dir LSN
+	 
          std   <DIR.FD+1,x
          std   <DIR.SZ+DIR.FD+1,x
          bsr   WritSec
          bsr   ClrBuf
-         ldb   <u002C
+         ldb   <NoRootFDSecs
          decb                   make zero offset (0 - 255)
 NextCnt  decb                   decrement sector count
          bne   NextWrt          if more to do
@@ -1408,6 +1546,33 @@ NextWrt  pshs  b                save sector count
          bsr   WritSec          write the sector
          puls  b                get count back
          bra   NextCnt          do until done
+
+********************************************************************
+* Get root dir first LSN
+********************************************************************
+
+GetRootLSN
+	 pshs	x		Retrieve start of Dir from LSN0	
+	 leax	LSN0,u
+	 ldd	DD.DIR+1,x
+	 puls	x
+
+	rts
+
+********************************************************************
+* Seek to Root LSN
+********************************************************************
+
+SeekRootLSN
+	pshs	d,x,u
+	
+	ldx	SaveRootLSN,u	msw of pos
+	lda	SaveRootLSN+2,u	lsw
+	clrb
+	tfr	d,u
+	lbsr	SeekSec
+	
+	puls	d,x,u,pc
 
 ********************************************************************
 * clear the 256 byte sector buffer
@@ -1581,6 +1746,8 @@ HelpMsg  fcc   "Use: FORMAT /devname <opts>"
          fcc   "        :Interleave value:   (in decimal)"
          fcb   C$LF
          fcc   "        /Cluster size/       (in decimal)"
+         fcb   C$LF
+         fcc   "        FD - Dragon format disk"
          fcb   C$CR
 HelpLen  equ   *-HelpMsg
          ENDC
@@ -1675,6 +1842,8 @@ PRSP     fcc   " bytes)"
 PRSPL    equ   *-PRSP
 CoCo     fcc   !CoCo!
          fcb   C$CR
+Dragon	 fcc	!Dragon!
+	 fcb	C$CR
 Standard fcc   !Standard OS-9!
          fcb   C$CR
 Three5   fcc   !3 1/2"!
@@ -1739,7 +1908,12 @@ ShowDiskType
          bitb  #TYP.CCF
          bne   n@
 t@       leax  Standard,pcr
-n@       ldy   #80
+	bra	s@
+n@      ldb	IsDragon,u		Get dragon flag
+	cmpb	#DragonFlag		Dragon disk ?
+	bne	s@
+	leax	Dragon,pcr
+s@	 ldy   #80
          os9   I$WritLn 
          rts
 
