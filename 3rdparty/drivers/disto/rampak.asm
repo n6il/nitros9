@@ -91,7 +91,6 @@ Init010  sta   V.TRAK,x
 *
 Write    pshs  cc
          bsr   SlctSlot
-         ldy   V.PORT,u
 WritLoop lda   ,x+
          stb   ,y
          sta   3,y
@@ -116,7 +115,6 @@ Read     cmpx  #$0000
 
 ReadSect pshs  cc
          bsr   SlctSlot
-         ldy   V.PORT,u
 ReadLoop stb   ,y
          lda   3,y
          sta   ,x+
@@ -158,9 +156,10 @@ SlctSlot orcc  #IntMasks  mask interrupts
          mul              multiply drive no. times $11
          stb   >MPI.Slct  set new MPI slot no.
          tfr   x,d
-         sta   >$FF42     write LSN hi byte to PAK
-         stb   >$FF41     write LSN lo byte to PAK
          ldx   PD.BUF,y   load X with address of path buffer
+         ldy   V.PORT,u	  get HW addr
+         sta   2,y        write LSN hi byte to PAK
+         stb   1,y        write LSN lo byte to PAK
          clrb  
          rts   
 
