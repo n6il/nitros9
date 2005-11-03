@@ -12,10 +12,22 @@ CMDS		= asm attr backup binex build cmp cobbler config copy cputype \
 		megaread mdir merge mfree mpi os9gen padrom park printerr procs prompt pwd pxd \
 		rename runb save setime shellplus shell_21 sleep \
 		tee tmode touch tsmon tuneport unlink verify xmode
+
+DRAGONCMDS	= asm attr backup binex build cmp cobbler_dragon config copy cputype \
+		date dcheck debug ded deiniz del deldir devs dir disasm \
+		display dmode dsave dump echo edit error exbin format \
+		free grfo help ident iniz irqs link list load login makdir \
+		megaread mdir merge mfree mpi os9gen padrom park printerr procs prompt pwd pxd \
+		rename runb save setime shellplus shell_21 sleep \
+		tee tmode touch tsmon tuneport unlink verify xmode
+
 SUBS		= gfx inkey syscall
 ALLOBJS		= $(CMDS) $(DRAGONCMDS) $(SUBS)
 
 all:	$(ALLOBJS)
+
+alldragon: $(DRAGONCMDS) $(SUBS)
+
 
 pwd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
@@ -28,6 +40,9 @@ tmode:	xmode.asm
 
 pxd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPXD=1
+	
+cobbler_dragon: cobbler.asm
+	$(AS) $(AFLAGS) $< $(ASOUT)cobbler -aDRAGON=1
 
 clean:
 	$(RM) $(ALLOBJS)

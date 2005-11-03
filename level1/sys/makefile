@@ -21,6 +21,8 @@ ALLOBJS		= $(SYSFILES) $(HELPMSG)
 
 all:	$(ALLOBJS)
 
+alldragon: $(ALLOBJS)
+
 helpmsg: $(HELPFILES)
 	$(MERGE) $(HELPFILES) > $@
 
