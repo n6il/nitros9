@@ -58,6 +58,11 @@ OS9DEFS  set   1
 *
 *          2003/11/05  Robert Gault
 * Fixed MouseInf. Made it rmb 2 as it should be. Also changes to init and cc3io.
+*
+*	   2005/11/02  P.Harvey-Smith.
+* Added definitions for boot areas on Dragon computers.
+*
+
 
          nam   OS9Defs
          IFEQ  Level-1
@@ -1221,7 +1226,13 @@ E$DeadLk rmb   1          I/O Deadlock error
 * system.
 *
 Bt.Start equ   $EE00      Start address of the boot track in memory
+
+* Boot area size on Dragon is only 16 sectors=4K
+	IFNE	DRAGON
+Bt.Size  equ   $1000	  Max size of boot file
+	ELSE
 Bt.Size  equ   $1080      Maximum size of bootfile
+	ENDC
 
          ELSE
 
@@ -1238,7 +1249,17 @@ Bt.Start equ   $ED00      Start address of the boot track in memory
 
          ENDC
 
+* Boot area on the Dragon starts on track 0 sector 2, imediatly 
+* after the blockmap.
+* On the CoCo, the boot track is all of track 34
+
+	IFNE	DRAGON
+Bt.Track equ   0	  Boot track
+Bt.Sec   equ   2	  Start LSN of boot area on boot track
+	ELSE
 Bt.Track equ   34         Boot track
+Bt.Sec   equ   0	  Start LSN of boot area on boot track
+	ENDC
 
 
          IFGT  Level-2
