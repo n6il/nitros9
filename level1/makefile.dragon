@@ -68,7 +68,7 @@ all:
 	@$(ECHO) "*        NitrOS-9/6809 Level 1 Distribution      *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
-	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
+	$(foreach dir, $(DIRS), ($(CD) $(dir); make alldragon);)
 	$(foreach dir, $(DDIRS), ($(CD) $(dir); make -f makefile.dragon STEP=$(STEP));)
 
 # Clean all components
