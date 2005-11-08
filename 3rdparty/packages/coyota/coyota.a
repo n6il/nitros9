@@ -1,0 +1,106 @@
+****************************************************************************
+*
+* coyota.a - main coyota application
+*
+*
+
+		psect	coyota_a,$01,$81,1,200,coyota
+
+
+* Sleep Duration
+NAPTIME	equ		60
+
+
+* byte stream to send to window to make a 320x192 16 color gfx screen
+type6	fdb		WDWEnd
+		fdb		WDWSet
+		fcb		$08,$00,$00,$28,$18,$00,$02,$02
+		fdb		WSelect
+		fdb		WCurOff
+selfnt	fdb		WFont
+		fcb		$c8,$02			select 6x8 stdfont
+type6L	equ		*-type6
+selfntL	equ		*-selfnt
+
+curon	fdb		WCurOn
+		fcb		$00
+		
+stdfonts
+		fcc		"SYS/stdfonts"
+		fcb		C$CR
+		
+		vsect
+readbuf	rmb		$2000
+		endsect
+
+* Intercept routine
+exit
+		leax	<curon,pcr
+		lbsr	PUTS
+		clrb
+		os9		F$Exit
+		
+intercept
+		cmpb	#S$Abort
+		beq		exit
+		rti
+
+
+* main entry point
+coyota:
+* install intercept routine
+		leax	<intercept,pcr
+		os9		F$Icpt
+		
+* make type 6 (320x192 16 color) graphics screen and select font
+Scrn	leax	<type6,pcr
+		ldy		#type6L
+		lda		#1
+		os9		I$Write
+		bcc		next
+
+* error occurred... merge stdfonts
+		leax	<stdfonts,pcr
+		lda		#READ.
+		os9		I$Open
+		bcs		Scrn
+		leax	readbuf,u
+		pshs	a					save path num to stack
+rl		ldy		#2048
+		os9		I$Read
+		bcs		close		
+		lda		#$01
+		os9		I$Write
+		lda		,s
+		bra		rl	
+close	lda		,s+
+		os9		I$Close
+		leax	<selfnt,pcr
+		ldy		#selfntL
+		lda		#$01
+		os9		I$Write
+
+next	lbsr	dashboard			draw the dashboard
+
+* Main processing loop:
+*  - get values from various instruments
+*  - display them on the appropriate section of the screen
+*  - sleep a while
+*  - go back and do it again!
+main	lbsr	speed					update speedometer
+		lbsr	odometer				update odometer
+		lbsr	engtemp					update engine temperature
+		lbsr	fuelgauge				update fuel gauge
+		lbsr	systime					update system time
+		ldx		#NAPTIME				sleep for a bit
+		os9		F$Sleep
+		bra		main
+
+
+
+* ENTRY: X=buffer for ascii string
+*        D=binary value to convert
+
+* EXIT: all registers (except cc) preserved
+
+		endsect
