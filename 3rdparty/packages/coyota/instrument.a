@@ -1,0 +1,52 @@
+****************************************************************************
+*
+* instrument.a - acquires all needed data values from various instruments
+*
+*
+
+		psect	instrument_a,0,0,3,0,0
+
+
+* Get the current speed
+*
+* Entry: None
+*
+* Exit:  D = speed value in miles per hour
+getspeed:
+		ldd		#55			55 mph
+		rts
+
+
+* Get the odometer value
+*
+* Entry: None
+*
+* Exit:  D = bits 23-16 of odometer
+*        X = bits 15-0  of odometer
+getmileage:
+		ldd		#2			
+		ldx		#0000		2*65536 miles
+		rts
+
+		
+* Get the current engine temperature
+*
+* Entry: None
+*
+* Exit:  D = engine temperature value in Farenheit
+getengtemp:
+		ldd		#200		200 degrees Farenheit
+		rts
+
+		
+* Get the current fuel amount
+*
+* Entry: None
+*
+* Exit:  D = fuel amount in 16ths
+getfuel:
+		ldd		#8			half a tank
+		rts
+
+		
+		endsect
