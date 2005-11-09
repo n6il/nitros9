@@ -6,6 +6,34 @@
 
 		psect	instrument_a,0,0,3,0,0
 
+		vsect
+speed	rmb		2
+mileage	rmb		4
+engtemp	rmb		2
+fuelamt	rmb		2
+		endsect
+		
+* initialize hardware
+*
+* Entry: None
+*
+* Exit:  D = speed value in miles per hour
+insinit:
+		ldd		#55
+		std		speed,u
+
+		ldd		#(171556/65536)
+		std		mileage,u
+		ldd		#40439
+		std		mileage+2,u
+
+		ldd		#200
+		std		engtemp,u
+		
+		ldd		#9
+		std		fuelamt,u
+		
+		rts
 
 * Get the current speed
 *
@@ -13,9 +41,14 @@
 *
 * Exit:  D = speed value in miles per hour
 getspeed:
-		ldd		#55			55 mph
+		ldd		speed,u			55 mph
 		rts
 
+speedplus:
+		ldd		speed,u
+		addd	#$0001
+		std		speed,u
+		rts
 
 * Get the odometer value
 *
@@ -24,8 +57,8 @@ getspeed:
 * Exit:  D = bits 23-16 of odometer
 *        X = bits 15-0  of odometer
 getmileage:
-		ldd		#2			
-		ldx		#0000		2*65536 miles
+		ldd		mileage,u
+		ldx		mileage+2,u
 		rts
 
 		
@@ -35,7 +68,7 @@ getmileage:
 *
 * Exit:  D = engine temperature value in Farenheit
 getengtemp:
-		ldd		#200		200 degrees Farenheit
+		ldd		engtemp,u
 		rts
 
 		
@@ -45,7 +78,7 @@ getengtemp:
 *
 * Exit:  D = fuel amount in 16ths
 getfuel:
-		ldd		#8			half a tank
+		ldd		fuelamt,u
 		rts
 
 		

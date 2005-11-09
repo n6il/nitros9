@@ -7,7 +7,7 @@
 		psect	dashboard_a,0,0,0,200,0
 
 		vsect
-numbuf	rmb		16
+numbuf	rmb		24
 		endsect
 		
 
@@ -51,9 +51,9 @@ dash
 		fdb		WSetDPtr
 		fdb		320,96
 		fdb		WCircle
-		fdb		120
-		fdb		WCircle
 		fdb		128
+		fdb		WCircle
+		fdb		136
 		fdb		WCircle
 		fdb		32
 		fdb		WCircle
@@ -64,7 +64,7 @@ dash
 		fdb		0,-17
 		fdb		WFFill
 		fdb		WRSetDPtr
-		fdb		0,-46
+		fdb		0,-50
 		fdb		WFFill
 
 * draw 0MPH marker
@@ -83,10 +83,10 @@ dash
 		fdb		WFColor
 		fcb		insfill
 		fdb		WSetDPtr
-		fdb		320,36
+		fdb		320,32
 		fdb		WRLine					draw the mid-speed tick mark
-		fdb		0,6
-		fcb		WPosCur,$20+26,$20+6
+		fdb		0,5
+		fcb		WPosCur,$20+26,$20+5
 		fdb		WFColor
 		fcb		txtclr
 		fcc		/60/
@@ -179,7 +179,7 @@ Scrn	leax	dash,pcr
 		rts
 		
 speedtag
-		fcb		WPosCur,$20+26,$20+11
+		fcb		WPosCur,$20+25,$20+11
 		fdb		WFColor
 		fcb		yellow
 		fcb		$00
@@ -205,21 +205,31 @@ speed:
 		rts
 		
 
-odomtag	fcb		WPosCur,$20+0,$20+2
+odomtag	fcb		WPosCur,$20+23,$20+18
+		fdb		WBColor
+		fcb		red
 		fcb		$00
+odomtag2
+		fdb		WBColor
+		fcb		black
+		fcb		$00
+odomtag2l equ	*-odomtag2
 
 odometer:
 		leax	<odomtag,pcr
 		lbsr	PUTS
 		lbsr	getmileage					get odometer in D,X
-		pshs	x
+		pshs	d,x
 		leax	numbuf,u
-		lbsr	BIN_DEC
+		leay	,s
+		lda		#$01
+		lbsr	BIN_DEC32
 		lbsr	PUTS
-		puls	d
-		leax	numbuf,u
-		lbsr	BIN_DEC
-		lbsr	PUTS
+		leas	4,s
+		leax	<odomtag2,pcr
+		ldy		#odomtag2l
+		lda		#$01
+		os9		I$Write
 		rts
 		
 etemptag	fcb	WPosCur,$20+7,$20+8
