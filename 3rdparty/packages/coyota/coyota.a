@@ -7,8 +7,13 @@
 		psect	coyota_a,$01,$81,1,200,coyota
 
 
+		vsect
+orgopt	rmb		32
+curopt	rmb		32
+		endsect
+		
 * Sleep Duration
-NAPTIME	equ		60
+NAPTIME	equ		6
 
 
 * byte stream to send to window to make a 320x192 16 color gfx screen
@@ -30,11 +35,17 @@ stdfonts
 		fcb		C$CR
 		
 		vsect
+ch		rmb		1
 readbuf	rmb		$2000
 		endsect
 
 * Intercept routine
 exit
+		clra
+		clrb
+		leax	orgopt,u
+		os9		I$SetStt
+
 		leax	<curon,pcr
 		lbsr	PUTS
 		clrb
@@ -51,6 +62,20 @@ coyota:
 * install intercept routine
 		leax	<intercept,pcr
 		os9		F$Icpt
+
+* get path options
+		lda		#$01
+		clrb
+		leax	orgopt,u
+		os9		I$GetStt
+		leax	curopt,u
+		os9		I$GetStt
+		
+		clr		PD.EKO-PD.OPT,x
+		os9		I$SetStt
+		
+* initialize instrumentation hardware
+		lbsr	insinit
 		
 * make type 6 (320x192 16 color) graphics screen and select font
 Scrn	leax	<type6,pcr
@@ -93,7 +118,19 @@ main	lbsr	speed					update speedometer
 		lbsr	fuelgauge				update fuel gauge
 		lbsr	systime					update system time
 		ldx		#NAPTIME				sleep for a bit
-		os9		F$Sleep
+
+*		os9		F$Sleep
+		ldd		#SS.Ready
+		os9		I$GetStt
+		bcs		main
+		leax	ch,u
+		ldy		#$0001
+		os9		I$Read
+		lda		,x
+		cmpa	#'x
+		bne		main
+		lbsr	speedplus
+		
 		bra		main
 
 
