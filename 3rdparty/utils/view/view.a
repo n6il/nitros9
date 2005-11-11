@@ -16,7 +16,7 @@ check macro
       endm
 
  ifp1
- use os9defs.a
+ use os9defs.d
  endc
 
 StdOut equ 1

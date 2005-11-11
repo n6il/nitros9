@@ -19,7 +19,7 @@
 * the number of palettes, where 0 indicates 256.
 *
  ifp1
- use os9defs.a
+ use os9defs.d
  endc
 
   psect view_gifcol_a,0,0,0,0,0

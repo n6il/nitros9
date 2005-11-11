@@ -4,7 +4,7 @@
 *               Opens save file, prompts for overwrite, sets up save variables.
 
  ifp1
- use os9defs.a
+ use os9defs.d
  endc
 
 check macro
