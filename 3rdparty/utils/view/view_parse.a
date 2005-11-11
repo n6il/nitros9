@@ -12,7 +12,7 @@
 *         file is opened for buffered input, via the routines in view_io.a
 *
  ifp1
- use os9defs.a
+ use os9defs.d
  endc
 
 StdIn  equ 0

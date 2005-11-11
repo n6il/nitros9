@@ -14,7 +14,7 @@ check macro
       endm
 
  ifp1
- use os9defs.a
+ use os9defs.d
  endc
 
  psect  view_st_a,0,0,0,0,0 

@@ -2,7 +2,8 @@ include $(NITROS9DIR)/rules.mak
 
 TARGET	= view
 #LFLAGS	+= -y -l=$(HOME)/Projects/c3/lib/rmalib/alib.l
-LFLAGS	+= $(C3BASE)/lib/root.r -l=$(C3BASE)/lib/sys.l
+LFLAGS	+= $(C3BASE)/lib/root.r
+RMAFLAGS += -I$(C3BASE)/lib
 
 ROFS	= debug.r view.r view_arith.r view_clp.r view_cm3.r view_convert.r \
 		view_gfx.r view_gfx2.r view_gif.r view_gifcol.r view_gifpix.r \

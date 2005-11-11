@@ -6,7 +6,7 @@
 *   gifoutpix   -- output one pixel, with scaling, etc.
 *
  ifp1
- use  os9defs.a
+ use  os9defs.d
  endc
 
  psect view_gifpix_a,0,0,0,0,0

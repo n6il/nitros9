@@ -17,7 +17,7 @@
 *                  Uses "border" to set screen border for new screens.
 *
  ifp1
- use  os9defs.a
+ use  os9defs.d
  endc
 
 check macro
