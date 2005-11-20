@@ -314,11 +314,11 @@ Creat131 ldb   ,s		get p hysical sector # of segment start
          stx   PD.FD+1,y
          lbsr  L0A2A		update file/record lock for this sector
          leas  $05,s		purge sector buffer from stack
-         IFGT  Level-1
+*         IFGT  Level-1
          ldx   PD.Exten,y	get path extension pointer
          lda   #EofLock		set the file to EOF lock
          sta   PE.Lock,x
-         ENDC
+*         ENDC
          lbra  Open1CC
 * Error on FD write to disk
 Creat151 puls  u,x,a		restore segment start & size
@@ -445,7 +445,7 @@ Open1CE
          ldd   FD.SIZ,u		get file size
          ldx   FD.SIZ+2,u
          ldu   PD.Exten,y	get path extension pointer
-         IFGT  Level-1
+*         IFGT  Level-1
          cmpu  PE.Confl,u	head of the conflict tree?
          beq   Open209		yes, skip ahead
          ldu   PE.Confl,u	get the conflicting path ext. pointer
@@ -453,7 +453,7 @@ Open1CE
 * ldq PD.SIZ,u
          ldd   PD.SIZ,u		get his size instead
          ldx   PD.SIZ+2,u
-         ENDC
+*         ENDC
 * stq PD.SIZ,y
 Open209  std   PD.SIZ,y		set file size in path descriptor of caller
          stx   PD.SIZ+2,y
@@ -577,11 +577,11 @@ Rt100Mem pshs  b,cc		preserve error status
          ldx   PD.Exten,y	get path extension pointer
          beq   RtMem2CF		none, return
          lbsr  L0A90		scan conflict list?
-         IFGT  Level-1
+*         IFGT  Level-1
          lda   PE.PE,x		return path extension to system
          ldx   <D.PthDBT
          os9   F$Ret64
-         ENDC
+*         ENDC
 RtMem2CF puls  pc,b,cc		restore error status & return
 
 * Place date & time into file descriptor
@@ -590,14 +590,18 @@ L02D1    lbsr  RdFlDscr		read in file descriptor sector
          lda   FD.LNK,u		get link count
          ldx   <D.Proc		get current process pointer
          pshs  x,a		preserve 'em
+         IFGT  Level-1
          ldx   <D.SysPrc	switch to system process descriptor
          stx   <D.Proc
+         ENDC
          leax  FD.DAT,u		point to date last modified
          os9   F$Time		put currenttime there
 * Gene Heskett's STUPID "LDA #$01, STA $00FF,u" CRAP went here. DAMN DAMN DAMN
 * He's NEVER getting the RBF source again!
          puls  x,a		restore link count & current process
+         IFGT  Level-1
          stx   <D.Proc
+         ENDC
          sta   FD.LNK,u
          rts   			return
 
@@ -858,10 +862,13 @@ RdLn430  leay  1,y		go up one byte
          beq   RdLn439		yes, we're done
          decb  			count down
          bne   RdLn430		until done one sector, at least
-RdLn439  ldx   6,s		get old U
+RdLn439
+         ldx   6,s		get old U
+         IFGT  Level-1
          bsr   RdLn49B		move bytes from the system to user
          sty   $0A,s		save Y on-stack, above calling routine????
          puls  u,y,x,b,a	restore registers
+         ENDC
          ldd   $02,s		get old saved Y from above
 *         addr  d,x
          leax  d,x		point to how many bytes we've read
@@ -869,7 +876,11 @@ RdLn446  rts   			and exit
 
 RdLn447  lbsr  Read4D3		do reading, calling this routine back again
          leax  -1,x		back up a byte
+         IFGT  Level-1
          lbsr  L097F		get a byte from another task (F$LDABX)
+         ELSE
+         lda   b,x
+         ENDC
          cmpa  #$0D		is it a CR?
          beq   RdLn459		yes, skip ahead
          ldd   $02,s		check data saved on-stack???
@@ -924,18 +935,21 @@ RdLn494  comb  			set carry for error
 RdLn497  leas  $02,s		purge length off stack
          bra   Read4C5		return
 
+         IFGT  Level-1
 * Move bytes from system to user
 * Entry: X=Source pointer
 *        Y=Byte count
 *        U=Destination pointer
-RdLn49B  pshs  x
+RdLn49B
+         pshs  x
          ldx   <D.Proc		get current process pointer
          lda   <D.SysTsk	get source task #
          ldb   P$Task,x		get destination task #
          puls  x
          os9   F$Move		move 'em
          rts   			return
-
+         ENDC
+         
 
 *
 * I$Read Entry Point
@@ -950,11 +964,14 @@ RdLn49B  pshs  x
 Read     bsr   RdLn463		record locked?
          beq   Read4BB		no, allow it
          bsr   Read4BC		do reading
-Read4AF  pshs  u,y,x,b,a	save data on the stack
+Read4AF
+         IFGT  Level-1
+         pshs  u,y,x,b,a	save data on the stack
          exg   x,u
          tfr   d,y
          bsr   RdLn49B		move bytes from system to user
          puls  u,y,x,b,a	restore registers
+         ENDC
 *         addr  d,x
          leax  d,x		point to end of data copied?
 Read4BB  rts   
@@ -969,9 +986,9 @@ Read4C5  pshs  b,cc		preserve error status
          lda   PD.MOD,y		get file mode
          bita  #WRITE.		was it write?
          bne   Read4D0		yes, return
-         IFGT  Level-1
+*         IFGT  Level-1
          lbsr  L0B02		clear lock status, and send signals
-         ENDC
+*         ENDC
 Read4D0  puls  b,cc,pc		restore & return
 
 * do reading/writing
@@ -1045,6 +1062,7 @@ WriteLn  pshs  y		save PD pointer
          clrb  
          ldy   R$Y,u		grab size of data to write
          beq   WtLn55E		exit if none
+         IFGT  Level-1
          ldx   <D.Proc		get process descriptor pointer
          ldb   P$Task,x		grab task number
          ldx   R$X,u		and where to get data from
@@ -1052,10 +1070,15 @@ WriteLn  pshs  y		save PD pointer
 * PipeMan-style copy 32 bytes onto the stack via F$Move, and check that.
 * Doing F$LDABX for a lot of data is _really_ slow.  PipeMan test indicate
 * that it could probably double in speed...
+         ENDC
 WtLn547  leay  -$01,y		back up one byte
          beq   WtLn55E		if done, exit
+         IFGT  Level-1
          os9   F$LDABX		grab one byte from the user
          leax  $01,x		go up a byte
+         ELSE
+         lda   ,x+
+         ENDC
          cmpa  #$0D		is it a CR?
          bne   WtLn547		no, keep it up until done
          tfr   y,d		get number of bytes left
@@ -1086,7 +1109,8 @@ Write    ldd   R$Y,u		get size of write
          bsr   Writ599		expand the file if needed
          bcs   Writ598		error on expand, return
          bsr   Writ582
-Writ571  pshs  y,b,a
+Writ571
+         pshs  y,b,a
          tfr   d,y
          bsr   Writ5CB
          puls  y,b,a
@@ -1147,14 +1171,16 @@ Writ5C9  puls  pc,u		restore U & return
 * Entry: X=Source pointer
 *        Y=Byte count
 *        U=Destination pointer
-Writ5CB  pshs  x
+Writ5CB
+         IFGT  Level-1
+         pshs  x
          ldx   <D.Proc		get source task #
          lda   P$Task,x
          ldb   <D.SysTsk	get destination task #
          puls  x
          os9   F$Move		move 'em
+         ENDC
          rts   			return
-
 
 *
 * I$GetStat Entry Point
@@ -1511,13 +1537,13 @@ FindFile
 ****
 ok@      ldd   #$0100		get size of sector
 * Note, following line is stb PD.SMF,y in v30!
-         IFGT  Level-1
+*         IFGT  Level-1
          stb   PD.FST,y		clear state flags??
-         ENDC
+*         ENDC
          os9   F$SRqMem		request a 256 byte sector buffer
          bcs   Sst7AB		couldn't get memory, return with error
          stu   PD.BUF,y		save ptr to sector buffer
-         IFGT  Level-1
+*         IFGT  Level-1
          leau  ,y		point U to path descriptor
          ldx   <D.PthDBT	get ptr to path descriptor block tables
          os9   F$All64		allocate path descriptor
@@ -1527,7 +1553,7 @@ ok@      ldd   #$0100		get size of sector
          clr   PE.SigID,u	clear send signal proc. ID
          sty   PE.PDptr,u	save back pointer to path descriptor
          stu   PE.Wait,u	init waiting extension to myself
-         ENDC
+*         ENDC
          ldx   PD.RGS,y		get register stack pointer
          ldx   R$X,x		get pointer to pathname
          pshs  u,y,x
@@ -1541,7 +1567,11 @@ ok@      ldd   #$0100		get size of sector
          sta   PD.FD,y		init file descriptor logical sector #
          std   PD.FD+1,y
          std   PD.DSK,y		init disk ID
+         IFGT  Level-1
          lbsr  L097F		get a byte from caller's X
+         ELSE
+         lda   b,x
+         ENDC
          sta   ,s		save it
          cmpa  #PDELIM		is it a device?
          bne   Sst7FB		no, skip ahead
@@ -1630,7 +1660,7 @@ Sst87B   lbsr  L0A2A		check if directory is busy
          sty   $08,s
          ldy   $06,s		get path descriptor pointer
          bcs   L090D		error in pathname, return
-         IFGT  Level-1
+*         IFGT  Level-1
          pshs  u,y
          ldu   PD.Exten,y	get pointer to path extension
          leau  PE.FilNm,u	point to filename buffer
@@ -1638,7 +1668,7 @@ Sst87B   lbsr  L0A2A		check if directory is busy
          tfr   d,y		move it to Y
          lbsr  Writ5CB		move filename to temp area
          puls  u,y
-         ENDC
+*         ENDC
          lbsr  L0957		read in a directory sector
          bra   L08C1
 
@@ -1750,12 +1780,14 @@ L0977    ldb   PD.CP+3,y	get offset into sector
          clrb  			clear error status
 L097E    rts   			return
 
+         IFGT  Level-1
 * Get a byte from other task
 L097F    pshs  u,x,b
          ldu   <D.Proc
          ldb   P$Task,u
          os9   F$LDABX
          puls  pc,u,x,b
+         ENDC
 
 GtDvcNam os9   F$PrsNam		parse the filename
          pshs  x		preserve pointer to name
@@ -1770,7 +1802,11 @@ L0992    pshs  a		preserve last character
          leax  1,x
          tsta  			is it the last character of pathname?
          bmi   L09AD		yes, skip ahead
+         IFGT  Level-1
          bsr   L097F		get next character
+         ELSE
+         lda   b,x
+         ENDC
          cmpb  #$03		third character of DIR?
          bcs   L0992		no, try again
          lda   #PDELIM
@@ -1944,7 +1980,7 @@ L0AC8    stx   PE.NxFil,u	save conflicting extension as next
 L0ACA    sty   PE.Confl,y
          puls  pc,u,y,x,b,a
 
-         IFGT  Level-1
+*         IFGT  Level-1
 L0ACF    lda   #(EofLock!FileLock!RcdLock)	get all types of lockout flags
 L0AD1    pshs  u,y,x,b,a
          bita  PE.Lock,y	anything locked?
@@ -1966,19 +2002,19 @@ L0AE2    ldx   PE.Wait,u
          bra   L0AE2
 L0AFA    stu   PE.Wait,u
 L0AFD    puls  pc,u,y,x,b,a
-         ENDC
+*         ENDC
 
 L0AFF    comb  
          ldb   #E$Share
 L0B02    
-         IFGT  Level-1
+*         IFGT  Level-1
          pshs  y,b,cc
          ldy   PD.Exten,y
          bsr   L0ACF
          puls  pc,y,b,cc
-         ELSE
-         rts
-         ENDC
+*         ELSE
+*         rts
+*         ENDC
 
 L0B0C    equ   *
          IFNE  H6309
@@ -2001,13 +2037,18 @@ L0B1B    pshs  u,y,x,b,a	preserve regs
 L0B1D    ldu   PD.Exten,y	get pointer to path extension
          lda   PE.Lock,u	get lockout status
          sta   PE.Req,u		preserve it
-         lda   ,s		get
+         lda   ,s			get
          bsr   L0B9F		lock the record
          bcc   L0B9D
-         ldu   <D.Proc		get current proces pointer
+         ldu   <D.Proc		get current process pointer
          lda   PE.Owner,x	get owner ID of locked segment
-L0B30    os9   F$GProcP		get a pointer to it
+L0B30    
+         IFGT  Level-1
+         os9   F$GProcP		get a pointer to it
          bcs   L0B42		no process left, skip ahead
+         ELSE
+         ldy   a,x
+         ENDC
          lda   P$DeadLk,y	get dominant proc ID
          beq   L0B42		none, skip ahead
          cmpa  P$ID,u		same as current?
@@ -2068,7 +2109,7 @@ L0B9F
          lbeq  L0B02
 L0BAA    bsr   L0BC2
          lbcs  L0AFF
-         IFGT  Level-1
+*         IFGT  Level-1
          pshs  u,y,x
          ldy   PD.Exten,y
          lda   #$01
@@ -2077,10 +2118,10 @@ L0BAA    bsr   L0BC2
          sta   PE.Lock,y
          clrb  
          puls  pc,u,y,x
-         ELSE
-         clrb
-         rts
-         ENDC
+*         ELSE
+*         clrb
+*         rts
+*         ENDC
 
 L0BC2    pshs  u,y,b,a
          leau  ,y
@@ -2172,7 +2213,11 @@ L0C56    pshs  y,x,b,a
          clr   P$IOQN,x		set to none
          ldb   #S$Wake
          os9   F$Send		wake up
+         IFGT  Level-1
          os9   F$GProcP		get process descriptor pointer
+         ELSE
+         ldy   a,x
+         ENDC
          clr   P$IOQP,y		clear its I/O queue previous pointer
 L0C6C    clrb  
          puls  pc,y,x,b,a
