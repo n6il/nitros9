@@ -11,3 +11,11 @@ Opts  :
   -r = force rewrite of file on copy
   -s<num> = set copy size to num K
   -v = verify copies
+
+Examples:
+   Create a script to copy /h0 to /h5 with forced rewrite:
+	   chd /h0; dsave -r /h5 > dsave.out
+
+   Immediately copy /d0 to /d1 with a 24K copy buffer:
+	   chd /d0; dsave -s24 /d1 ! shell -p
+	   	   
