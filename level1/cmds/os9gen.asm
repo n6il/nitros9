@@ -3,6 +3,12 @@
 *
 * $Id$
 *
+*  -e = extended boot (fragmented)
+*  -q=<path> = quick gen .. set sector zero pointing to <path>
+*  -r = remove pointer to boot file (does not delete file)
+*  -s = single drive option
+*  -t=<boottrack> = boot track file to use
+*
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
@@ -16,6 +22,9 @@
 *  l0r2    2003/07/24  Boisy G. Pitre
 * Fixed bug introduced in V03.01.03 where os9gen wouldn't write boot
 * track on DS disks.
+*
+*  11      2005/10/10  Boisy G. Pitre
+* Added -e option to create fragmented bootfiles.
 
          nam   OS9Gen
          ttl   OS-9 bootfile generator
@@ -31,23 +40,25 @@ DOHD     set   1		allow bootfile creation on HD
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $02
-edition  set   10
+rev      set   $00
+edition  set   11
 
          mod   eom,name,tylg,atrv,start,size
 
          org   0
 btfname  rmb   2
 btflag   rmb   1
+qfname   rmb   2
+qflag    rmb   1
+rflag    rmb   1
 statptr  rmb   2
 bfpath   rmb   1
 devpath  rmb   1
 parmpath rmb   1
-u0005    rmb   1
+u0005    rmb   1			Needed?
 u0006    rmb   2
-u0008    rmb   1
-u0009    rmb   2
-u000B    rmb   2
+ddbt     rmb   3
+ddbtsz   rmb   2
 u000D    rmb   2
 u000F    rmb   2
 u0011    rmb   2
@@ -55,10 +66,10 @@ u0013    rmb   2
 u0015    rmb   2
 u0017    rmb   7
 devopts  rmb   20
-u0032    rmb   2
-u0034    rmb   10
+bfdlsn   rmb   3
+u0035    rmb   9
 u003E    rmb   2
-bflag    rmb   1
+eflag    rmb   1
 sngldrv  rmb   1
 bootdev  rmb   32
 lsn0     rmb   26
@@ -81,6 +92,8 @@ HelpMsg  fcb   C$LF
          fcc   " ..reads (std input) pathnames until EOF,"
          fcb   C$LF
          fcc   "   merging paths into New OS9Boot file."
+         fcb   C$LF
+         fcc   " -e = extended boot (fragmented)"
          fcb   C$LF
          fcc   " -s = single drive operation"
          fcb   C$LF
@@ -139,61 +152,85 @@ TheRel   fcc   "Rel"
          fcb   $FF 
          ENDC
 
+* Here's how registers are set when this process is forked:
+*
+*   +-----------------+  <--  Y          (highest address)
+*   !   Parameter     !
+*   !     Area        !
+*   +-----------------+  <-- X, SP
+*   !   Data Area     !
+*   +-----------------+
+*   !   Direct Page   !
+*   +-----------------+  <-- U, DP       (lowest address)
+*
+*   D = parameter area size
+*  PC = module entry point abs. address
+*  CC = F=0, I=0, others undefined
+
 start    clrb  
          stb   <btflag		assume no -t specified
          stb   <u0005
          stb   <sngldrv		assume multi-drive
          stu   <statptr		save statics pointer
-         leas  >u047E,u
+         leas  >u047E,u		point stack pointer to u047e
          pshs  u
-         tfr   y,d
-         subd  ,s++
+         tfr   y,d			copy pointer to top of our mem in D
+         subd  ,s++			D = Y-u047e
          subd  #u047E
          clrb  
          std   <u0011
          lda   #PDELIM
-         cmpa  ,x
-         lbne  BadName
-         os9   F$PrsNam 
-         lbcs  ShowHelp
+         cmpa  ,x			first char of device name a path delimiter?
+         lbne  BadName		branch if not (bad name)
+         os9   F$PrsNam 	else parse name
+         lbcs  ShowHelp		branch if error
          lda   #PDELIM
          cmpa  ,y
          lbeq  BadName
          pshs  b,a
-L0216    lda   ,y+
-         cmpa  #'-
-         beq   L0222
-         cmpa  #C$CR
-         beq   L0234
-         bra   L0216
-L0222    ldd   ,y+
-         cmpa  #C$CR
-         beq   L0234
-         cmpa  #C$SPAC
-         beq   L0216
-         anda  #$DF
-         cmpa  #'S
-         beq   L0232
-         cmpa  #'B
-         beq   ItsAB
-IsItT    cmpd  #84*256+61	does D = 'T='
+parseopt lda   ,y+			get next character
+         cmpa  #'-			dash?
+         beq   parsein		branch if so
+         cmpa  #C$CR		end of line?
+         beq   getdev		branch if so
+         bra   parseopt		else continue to parse options
+parsein  ldd   ,y+			get two chars after -
+         cmpa  #C$CR		end of line?
+         beq   getdev		branch if so
+         cmpa  #C$SPAC		space?
+         beq   parseopt		yes, look for next char
+         anda  #$DF			else make value in A uppercase
+         cmpa  #'R			is it R?
+         beq   remboot		branch if so
+         cmpa  #'S			is it S?
+         beq   onedrive		branch if so
+         cmpa  #'E			is it E
+         beq   extend		branch if so
+         cmpd  #81*256+61	does D = 'Q='
+         beq   quick
+         cmpd  #84*256+61	does D = 'T='
          lbne  SoftExit
-         leay  1,y		point past =
+         leay  1,y			point past =
          sty   <btfname		save pointer to boottrack filename
          sta   <btflag
 * Skip over non-spaces and non-CRs
 SkipNon  lda   ,y+
          cmpa  #C$CR
-         beq   L0234
+         beq   getdev
          cmpa  #C$SPAC
          bne   SkipNon
-         bra   L0216
-L0232    inc   <sngldrv		set single drive flag
-         bra   L0222
-ItsAB    inc   <bflag
-         bra   L0222
-L0234    puls  b,a
-         leay  <bootdev,u
+         bra   parseopt
+remboot  inc   <rflag		remove bootfile reference from LSN0 flag
+         bra   parsein
+onedrive inc   <sngldrv		set single drive flag
+         bra   parsein
+extend   inc   <eflag		set extended boot flag
+         bra   parsein
+quick    leay  1,y			point past =
+         sty   <qfname		save pointer to quick filename
+         sta   <qflag
+getdev   puls  b,a
+         leay  <bootdev,u	point to boot device
 L0239    sta   ,y+
          lda   ,x+
          decb  
@@ -259,14 +296,14 @@ L0288    lda   ,y+
 * Read Bootlist file, line by line
 ReadBLst leax  sectbuff,u
          ldy   #256
-         clra  				standard input
+         clra  					standard input
          os9   I$ReadLn 		read line
          bcs   L0312			branch if error
-         lda   ,x			else get byte in A
+         lda   ,x				else get byte in A
          ldb   #E$EOF			and EOF error in B
          cmpa  #C$CR			CR?
          beq   L0312			branch if so
-         cmpa  #'*			comment?
+         cmpa  #'*				comment?
          beq   ReadBLst			continue reading if so
          lda   #READ.			else use read perms
          os9   I$Open   		open file at X (line we read)
@@ -356,11 +393,11 @@ L0377    leax  <devopts,u
          os9   I$Close  
          lbcs  ShowHelp
 
-		 tst   <bflag			fragmented boot option used?
+		 tst   <eflag			extended boot option used?
 		 bne   nonfrag			yes, don't check for fragmented file
 		 
-         ldx   <u0032,u			load X/U with LSN of bootfile fd sector
-         lda   <u0034,u
+         ldx   <bfdlsn,u		load X/U with LSN of bootfile fd sector
+         lda   <bfdlsn+2,u
          clrb  					round off to sector boundary
          tfr   d,u
          lda   <devpath			get path to raw device
@@ -373,17 +410,17 @@ L0377    leax  <devopts,u
          lbcs  Bye
          ldd   >u047E+(FD.SEG+FDSL.S+FDSL.B),u
          lbne  ItsFragd			if not zero, file is fragmented
-nonfrag  lda   <devpath
+nonfrag  lda   <devpath			get the device path
          ldx   #$0000
          ldu   #DD.BT
-         os9   I$Seek   		seek to DD.BT
+         os9   I$Seek   		seek to DD.BT in LSN0
          ldu   <statptr
          lbcs  Bye
-         leax  u0008,u
-         ldy   #DD.DAT-DD.BT	get DD.BT and DD.BTSZ into u0008,u
-         os9   I$Read   		read bootstrap sector and bootfile size
+         leax  ddbt,u			point to our internal ddbt copy in statics
+         ldy   #DD.DAT-DD.BT	we want DD.BT and DD.BTSZ into ddbt,u
+         os9   I$Read   		so read bootstrap sector and bootfile size
          lbcs  Bye				branch if error
-         ldd   <u000b			get DD.BTSZ in D
+         ldd   <ddbtsz			get DD.BTSZ in D
          beq   L040D			branch if zero
          ldx   <u003E
          leay  >OS9Boot,pcr
@@ -392,13 +429,13 @@ L03F3    sta   ,x+
          lda   ,y+
          bpl   L03F3
          leax  <bootdev,u
-         os9   I$Delete 
+         os9   I$Delete 		delete the os9boot file
          ldx   <u003E
-         leay  >TempBoot,pcr
+         leay  >TempBoot,pcr	point to "tempboot" name
          lda   #PDELIM
 L0407    sta   ,x+
          lda   ,y+
-         bpl   L0407
+         bpl   L0407			copy it into buffer
 L040D    tst   <sngldrv
          beq   L042E
          clra  
@@ -417,7 +454,7 @@ L042E    lda   #$01
          leax  >Rename,pcr
          ldy   <u000D
          leau  <bootdev,u
-         os9   F$Fork   
+         os9   F$Fork			fork rename tempboot os9gen
          lbcs  Bye
          os9   F$Wait   
          lbcs  Bye
@@ -431,28 +468,28 @@ L042E    lda   #$01
          os9   F$UnLink 
          lbcs  Bye
 L045F    ldu   <statptr
-         tst   <bflag			new style boot?
-         beq   oldstyle
-         lda   <u0032,u			Get LSN of fdsect
-         stb   <u0008			savein DD.BT
-         ldd   <u0032+1,u
-         std   <u0009			save in DD.BT+1
-         clr   <u000B			clear out DD.BTSZ
-         clr   <u000B+1			since DD.BT points to FD
+         tst   <eflag			extended boot?
+         beq   oldstyle			branch if not
+         lda   <bfdlsn,u		get LSN of fdsect
+         stb   <ddbt			save in DD.BT
+         ldd   <bfdlsn+1,u
+         std   <ddbt+1			save in DD.BT+1
+         clr   <ddbtsz			clear out DD.BTSZ
+         clr   <ddbtsz+1		since DD.BT points to FD
          bra   around
 oldstyle ldb   >u048E,u			get size of file bits 23-16
-         stb   <u0008			savein DD.BT
+         stb   <ddbt			savein DD.BT
          ldd   >u048F,u
-         std   <u0009			save in DD.BT+1
+         std   <ddbt+1			save in DD.BT+1
          ldd   <u0006			get size of file bits 15-0
-         std   <u000B			save in DD.BTSZ
+         std   <ddbtsz			save in DD.BTSZ
 around   ldx   #$0000
          ldu   #DD.BT
          lda   <devpath
          os9   I$Seek			seek to DD.BT in LSN0
          ldu   <statptr
          lbcs  Bye
-         leax  u0008,u			point X to modified DD.BT and DD.BTSZ
+         leax  ddbt,u			point X to modified DD.BT and DD.BTSZ
          ldy   #DD.DAT-DD.BT	write it out
          os9   I$Write  
          lbcs  Bye
@@ -500,7 +537,7 @@ around   ldx   #$0000
          cmpa  #$12
          beq   L0512
          ldd   #Bt.Track*256+15	boot track, sector 16
-         ldy   #$0003		sectors 16-18
+         ldy   #$0003			sectors 16-18
          lbsr  ABMClear
          lbcs  WarnUser
 L0512    clra  
@@ -521,13 +558,13 @@ L0531
          leax  sectbuff,u
          ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
          lda   <devpath
-         os9   I$Write  	write out the bitmap
+         os9   I$Write  		write out the bitmap
          lbcs  Bye
 
 * Code added to write alternate boottrack file
 * BGP - 2003/06/26
          tst   <btflag
-         beq   BTMem		get boot track from memory
+         beq   BTMem			get boot track from memory
          lbsr  GetSrc
          ldx   btfname,u
          lda   #READ.
@@ -540,9 +577,9 @@ L0531
 * bytes per sector.
          ldb   #SS.Size
          os9   I$GetStt		get size
-         tfr   u,y		put lower 16 bytes of file size in Y
+         tfr   u,y			put lower 16 bytes of file size in Y
          ldu   <statptr
-         lbcs  Bye		branch if error
+         lbcs  Bye			branch if error
          cmpx  #$0000		correct size?
          bne   BadBTrak		branch if not
          cmpy  #$1200		correct size?
@@ -576,24 +613,24 @@ BTMem
 
 * OS-9 Level Two: Link to Rel, which brings in boot code
          pshs  u
-         lda   #Systm+Objct
-         leax  >TheRel,pcr
-         os9   F$Link   
-         lbcs  L0724
+         lda   #Systm+Objct		we want to link to a system object
+         leax  >TheRel,pcr		point to REL name
+         os9   F$Link   		link to it
+         lbcs  L0724			branch if error
          tfr   u,d
          puls  u
          subd  #$0006
-         std   <u007B,u
+         std   u007B,u
          lda   #$E0
-         anda  <u007B,u
+         anda  u007B,u
          ora   #$1E
          ldb   #$FF
-         subd  <u007B,u
+         subd  u007B,u
          addd  #$0001
          tfr   d,y
          ldd   #Bt.Track*256	boot track
          lbsr  Seek2LSN
-         ldx   <u007B,u
+         ldx   u007B,u
 
          ELSE
 
@@ -663,9 +700,9 @@ ABMClear pshs  x,y,b,a
          bsr   L05AA
          sta   ,-s
          bmi   L05EA
-L05D3    lda   ,x		get byte in bitmap
+L05D3    lda   ,x			get byte in bitmap
          sta   u007D,u
-L05D9    anda  ,s		and with byte on stack
+L05D9    anda  ,s			and with byte on stack
          bne   L0616
          leay  -1,y
          beq   L0612
@@ -798,7 +835,7 @@ Ask4Dst  leax  >Destin,pcr
 L06D4    bsr   DoWrite
          leax  ,-s
          ldy   #$0001
-         lda   #$02		read from stderr
+         lda   #$02			read from stderr
          os9   I$Read   	read one char
          lda   ,s+
          eora  #'C
