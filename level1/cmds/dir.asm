@@ -23,6 +23,9 @@
 *
 *  11r1    2005/04/19  Boisy G. Pitre
 * Made column width code more robust.
+*
+*  12      2005/11/22  Boisy G. Pitre
+* -e option now uses SS.FDInf for portability to other file managers
 
          nam   Dir
          ttl   Show directory
@@ -35,8 +38,8 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
-edition  set   11
+rev      set   $00
+edition  set   12
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -46,24 +49,15 @@ dircount rmb   1
 dirpath  rmb   1
 extended rmb   1
 addmode  rmb   1	additional mode
-rawpath  rmb   1
 u0006    rmb   2
-u0008    rmb   1
-u0009    rmb   1
+colwidth rmb   1
+lastcol  rmb   1
 narrow   rmb   1
-bufptr   rmb   1
-u000C    rmb   1
+bufptr   rmb   2
 date     rmb   3
 time     rmb   3
-u0013    rmb   29
-u0030    rmb   1
-u0031    rmb   1
-u0032    rmb   1
-u0033    rmb   1
-u0034    rmb   2
-u0036    rmb   6
-u003C    rmb   2
-u003E    rmb   2
+dent     rmb   DIR.SZ
+fdsect   rmb   FD.Creat-FD.ATT 
 linebuff rmb   530
 size     equ   .
 
@@ -75,8 +69,6 @@ name     fcs   /Dir/
 DirOf    fcb   C$LF
          fcs   " Directory of "
 Dot      fcc   "."
-         fcb   C$CR
-Raw      fcc   "@"
          fcb   C$CR
 WHeader  fcb   C$CR,C$LF
          fcc   "Owner  Last modified   Attributes Sector Bytecount Name"
@@ -114,7 +106,7 @@ L0120    tfr   x,d
 higher   lda   #16
          pshs  a
          subb  ,s+
-         std   <u0008		save new column width and last column
+         std   <colwidth	save new column width and last column
          puls  y,x,b,a
          pshs  x		save start of command line
          lbsr  GetOpts		parse for options
@@ -151,12 +143,6 @@ L0161    lda   ,x+		get char
          lbsr  CRnWrite
          tst   <extended
          beq   L01B3
-         lda   #READ.
-         ora   <addmode
-         leax  >Raw,pcr
-         os9   I$Open   
-         lbcs  L0268
-         sta   <rawpath
          tst   <narrow
          bne   L01A6
          leax  >WHeader,pcr
@@ -173,37 +159,39 @@ L01B3    lda   <dirpath
          os9   I$Seek   
          puls  u
          lbra  L0253
-L01C5    tst   <u0013
+L01C5    tst   <dent
          lbeq  L0253
          tst   <extended
          bne   L01E8
-         leay  <u0013,u
+         leay  <dent,u
          lbsr  PutStr
 L01D5    lbsr  PutSpace
-         ldb   <u000C
-         subb  #$40
-         cmpb  <u0009
+         ldb   <bufptr+1
+         subb  #64
+         cmpb  <lastcol
          bhi   L022C
-L01E0    subb  <u0008
+L01E0    subb  <colwidth
          bhi   L01E0
          bne   L01D5
          bra   L0253
-L01E8    pshs  u
-         lda   <u0032
-         clrb  
-         tfr   d,u
-         ldx   <u0030
-         lda   <rawpath
-         os9   I$Seek   
+L01E8
+* Use SS.FDInf to get the file descriptor sector
+         pshs  u
+         lda   <dent+DIR.FD
+         ldb   #FD.Creat-FD.ATT
+         tfr   d,y
+         leax  <fdsect,u
+         lda   <dirpath
+         ldb   #SS.FDInf
+         ldu   <dent+DIR.FD+1
+         os9   I$GetStt
          puls  u
-         bcs   L0268
-         leax  <u0033,u
-         ldy   #$000D
-         os9   I$Read   
-         bcs   L0268
-         tst   <narrow
-         bne   L0231
-         ldd   <u0034
+         bcs   L0268					branch if SS.FDInf fails
+         tst   <narrow					are we on a narrow screen?
+         bne   L0231					branch if so
+
+* Wide extended output
+         ldd   <fdsect+FD.OWN
          clr   <u0006
          bsr   L0274
          lbsr  PutSpace
@@ -214,16 +202,18 @@ L01E8    pshs  u
          lbsr  PutSpace
          bsr   L026E
          bsr   L0280
-         leay  <u0013,u
+         leay  <dent,u
          lbsr  PutStr
 L022C    lbsr  CRnWrite
          bra   L0253
+
+* Narrow extended output
 L0231    lbsr  L030B
-         ldd   <u0034
+         ldd   <fdsect+FD.OWN
          clr   <u0006
          bsr   L0274
          bsr   PutSpace
-         leay  <u0013,u
+         leay  <dent,u
          lbsr  PutStr
          lbsr  CRnWrite
          lbsr  L02D3
@@ -232,7 +222,7 @@ L0231    lbsr  L030B
          bsr   L026E
          bsr   L0280
          lbsr  CRnWrite
-L0253    leax  <u0013,u
+L0253    leax  <dent,u
          ldy   #DIR.SZ
          lda   <dirpath
          os9   I$Read   
@@ -242,21 +232,21 @@ L0253    leax  <u0013,u
          clrb  
 L0268    lbsr  CRnWrite
 Exit     os9   F$Exit   
-L026E    lda   <u0030
+L026E    lda   <dent+DIR.FD
          bsr   L0298
-         ldd   <u0031
+         ldd   <dent+DIR.FD+1
 L0274    bsr   L029A
          tfr   b,a
          bsr   L028E
          inc   <u0006
          bsr   L029C
          bra   PutSpace
-L0280    ldd   <u003C
+L0280    ldd   <fdsect+FD.SIZ
          bsr   L0298
          tfr   b,a
          bsr   L029A
          bsr   PutSpace
-         ldd   <u003E
+         ldd   <fdsect+FD.SIZ+2
          bra   L0274
 L028E    pshs  a
          lsra  
@@ -296,7 +286,7 @@ PutOk    sta   ,x+		save A
 PermMask fcc   "dsewrewr"
          fcb    $FF
 
-L02D3    ldb   <u0033
+L02D3    ldb   <fdsect+FD.ATT
          leax  <PermMask,pcr
          lda   ,x+
 L02DA    lslb  
@@ -326,7 +316,7 @@ DoWrite  leax  <linebuff,u
          lda   #$01
          os9   I$WritLn 
          puls  pc,y,x,b,a
-L030B    leax  <u0036,u
+L030B    leax  <fdsect+FD.DAT,u
 L030E    bsr   L0338
          bsr   L0324
          bsr   L0324
@@ -350,7 +340,7 @@ DoColon  lda   #':		put up colon
 L0334    bsr   PutNBuf		put in buffer
          bra   Byte2ASC		show minutes
 
-L0338    lda   #$AE
+L0338    lda   #'.+128
          ldb   ,x
 L033C    inca  
          subb  #100
