@@ -1374,6 +1374,9 @@ Sst6BC   ldd   #$0305
 * Change creation date
          ldd   #$0D03
          bsr   Sst6CB
+* Change attrs
+         ldd   #$0001
+         bsr   Sst6CB
          puls  y
          lbra  L11FD
 * Offset into FD sector

@@ -733,6 +733,9 @@ L05E7    ldd   #$0305
          bsr   L05F6
          ldd   #$0D03
          bsr   L05F6
+* Change attrs
+         ldd   #$0001
+         bsr   Sst6CB
          puls  y
          lbra  L0D38
 L05F6    pshs  u,x
