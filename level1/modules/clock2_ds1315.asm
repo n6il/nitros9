@@ -29,13 +29,16 @@ RTC.Base equ   $FF5C      In SCS* Decode
          ELSE            
          IFNE  SUPERBOARD
 RTC.Base equ   SBRTCBase
+RTC.Zero equ   0          Send zero bit by writing this offset
+RTC.One  equ   1          Send one bit by writing this offset
+RTC.Read equ   2          Read data from this offset
          ELSE
 RTC.Base equ   $FF7C      Fully decoded RTC
-         ENDC            
-         ENDC            
 RTC.Zero equ   -4         Send zero bit by writing this offset
 RTC.One  equ   -3         Send one bit by writing this offset
 RTC.Read equ   0          Read data from this offset
+         ENDC            
+         ENDC            
 
 
          mod   eom,name,tylg,atrv,JmpTable,RTC.Base
