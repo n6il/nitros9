@@ -1,5 +1,7 @@
 NitrOS-9 V03.02.06 Release Goals
 
+TODO
+====
 cc3io
 	- Fix init/term bug (only seen if windowing system is successively brought
 	  up/torn down).  This a long-standing bug, but doesn't impact the typical
@@ -16,13 +18,6 @@ wordpakii
 	- Adapt source to act as CO80 module to CCIO
 	  (Phill-Harvey Smith said he would tackle this... Phill?)
 
-format
-	- Fix bitmap wipeout bug (DONE)
-
-dir
-attr
-	- Use SS.FDInf to get FD sector information instead of raw access (DONE)
-
 os9gen
 	- Add the -q option for quick linking of bootfiles
 
@@ -30,5 +25,16 @@ All boot modules
 	- Handle fragmented bootfiles
 	  (boot_1773 is done, others need to be modified and tested)
 
-rbf (Level 1)
-	- Add SS.FDInf so that new dir and attr will work
+COMPLETED
+=========
+attr
+	- Use SS.FD to set/get FD sector information instead of raw access
+
+dir
+	- Use SS.FDInf to get FD sector information instead of raw access
+
+format
+	- Fix bitmap wipeout bug
+
+rbf
+	- Modify SS.FD to set file attributes
