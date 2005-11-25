@@ -8,6 +8,9 @@
 * ------------------------------------------------------------------
 *  11      ????/??/??
 * From Tandy OS-9 Level Two VR 02.00.01.
+*
+*  12      2005/11/23	CRH
+* Now uses SS.FD to read and write the FD sector
 
          nam   Attr
          ttl   Modify file attributes
@@ -23,21 +26,17 @@ DOHELP   set   0
 tylg     set   Prgrm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   11
+edition  set   12
 
          mod   eom,name,tylg,atrv,start,size
 
 fpath    rmb   1
-rawpath  rmb   1
 parmptr  rmb   2
 cmdperms rmb   2
 u0006    rmb   1
 u0007    rmb   1
-pathopts rmb   20
-u001C    rmb   2
-u001E    rmb   1
-u001F    rmb   9
-u0028    rmb   32
+pathopts rmb   32
+dirent   rmb   32
 filename rmb   32
 fdesc    rmb   16
 u0078    rmb   46
@@ -71,11 +70,17 @@ start    stx   <parmptr		save param ptr
          com   <u0007
 * Open file at X as file
          clra  
+         lda   #WRITE.		need write to change attrs
          os9   I$Open		open file on commandline
          bcc   L00D9		branch if ok
-* If error, try to open as directory with read permission
+* If error, try to open without write permissions
          ldx   <parmptr		get saved param ptr
-         lda   #DIR.!READ.	load perms
+         clra  
+         os9   I$Open
+         bcc   L00D9		branch if ok
+* If error, try to open as directory with read/write permissions
+         ldx   <parmptr		get saved param ptr
+         lda   #DIR.+UPDAT.	load perms
          os9   I$Open		open as directory
          bcc   L00D9		branch if ok
 * One last time, try open as directory only
@@ -90,41 +95,15 @@ L00D9    sta   <fpath		save off path
          os9   I$GetStt		get status
          bcs   L0114		branch if error
          clrb  
-         lda   ,x		get path type
+         lda   ,x			get path type
          cmpa  #DT.RBF		check if rbf path
          lbne  ShowHelp		branch if not
-         ldx   <parmptr		else get parm ptr
-         leay  <filename,u point to buffer
-         lda   ,x+		get file name character
-         cmpa  #PDELIM		path delimiter?
-         bne   L0106		no
-L00FA    sta   ,y+		else save char in Y
-         lda   ,x+		get next file name char
-         cmpa  #C$PERD		period?
-         bcs   L0106		branch if not
-         cmpa  #PDELIM		path delimiter?
-         bne   L00FA		branch if not
-L0106    lda   #PENTIR
-         ldb   #C$SPAC
-         std   ,y++
-         leax  <filename,u	point X to filename
-         lda   #READ.!WRITE.	load perms
-         os9   I$Open		open in raw mode
-L0114    lbcs  ShowHelp		branch if error
-         sta   <rawpath
          lda   <fpath
-         clr   <u001F,u
-         pshs  u
-         ldx   <u001C,u		get MS 16 bits
-         ldu   <u001E,u		get LS 16 bits
-         lda   <rawpath		get path
-         os9   I$Seek		seek
-         puls  u
-         bcs   ShowHelp		branch if error
-         leax  <fdesc,u		point to buffer
+         ldb   #SS.FD		Get my file descriptor
+         leax  fdesc,u		point to buffer
          ldy   #FD.SEG
-         os9   I$Read
-         bcs   ShowHelp
+         os9   I$GetStt
+L0114    bcs   ShowHelp
          os9   F$ID		get ID
          cmpy  #$0000		super user?
          beq   L014B		branch if so
@@ -139,18 +118,11 @@ L0152    lbsr  L021D
          lda   ,x
          cmpa  #C$CR
          bne   ShowHelp
-         pshs  u
-         ldx   <u001C,u
-         ldu   <u001E,u
-         lda   <rawpath
-         os9   I$Seek		seek
-         puls  u
-         bcs   ShowHelp		branch if error
-         leax  <fdesc,u		point to file desc
+         lda   <fpath
+         ldb   #SS.FD           Set my file descriptor
+         leax  fdesc,u		point to file desc
          ldy   #1		only 1 byte
-         os9   I$Write		write out new attributes
-         bcs   ShowHelp		branch if error
-         os9   I$Close		close file
+         os9   I$SetStt		write out new attributes
          bcs   ShowHelp		branch if error
          lda   <fpath		get file path
          os9   I$Close		close file
@@ -199,7 +171,7 @@ L01CF    pshs  u,y,x
          os9   I$Seek
          ldu   $04,s
          bcs   L01BE
-L01E0    leax  <u0028,u
+L01E0    leax  <dirent,u
          ldy   #DIR.SZ
          os9   I$Read
          bcs   L01F7
