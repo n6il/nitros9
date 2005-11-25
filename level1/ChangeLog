@@ -3,6 +3,9 @@ NitrOS-9/6809 Level 1 V03.02.06:
 - os9gen has been updated to allow the creation of fragmented bootfiles.
 - dir and mdir now have more robust support for various screen widths when
   displaying data.
+- dir and attr now use the SS.FDInf getstat call to obtain a file's FD sector.
+- TODO: Modify L1 RBF to handle SS.FDInf!
+- A bug in format which affected 128MB partitions has been fixed.
 - /D2 descriptor now part of standard bootfile.
 
 NitrOS-9/6809 Level 1 V03.02.05:

@@ -2,6 +2,8 @@
 Syntax: OS9Gen devname [<opts>]
 Usage : Creates and links a NitrOS-9 bootstrap file
 Opts  :
-  -b = allow fragmented boots
+  -e = extended boot (fragmented)
+  -q=<path> = quick gen .. set sector zero pointing to <path>
+  -r = remove pointer to boot file (does not delete file)
   -s = single drive option
   -t=<boottrack> = boot track file to use
