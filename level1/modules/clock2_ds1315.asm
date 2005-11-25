@@ -26,6 +26,9 @@ edition  set   1
 
          IFNE  BNB
 RTC.Base equ   $FF5C      In SCS* Decode
+RTC.Zero equ   -4         Send zero bit by writing this offset
+RTC.One  equ   -3         Send one bit by writing this offset
+RTC.Read equ   0          Read data from this offset
          ELSE            
          IFNE  SUPERBOARD
 RTC.Base equ   SBRTCBase
