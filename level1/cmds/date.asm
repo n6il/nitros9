@@ -60,8 +60,9 @@ sysday   rmb   1
 syshour  rmb   1
 sysmin   rmb   1
 syssec   rmb   1
-u0006    rmb   2
-u0008    rmb   440
+bufptr   rmb   2
+buffer   rmb   40
+         rmb   400
 size     equ   .
 
 name     fcs   /Date/
@@ -83,8 +84,8 @@ MonTable fcs   '???'
 
 start    pshs  x
          leax  sysyear,u
-         leau  u0008,u
-         stu   <u0006
+         leau  buffer,u
+         stu   <bufptr
          os9   F$Time
          bsr   Add2Buff		go print the date in buffer
          ldd   [,s++]		now, did we have a -t
@@ -97,7 +98,7 @@ start    pshs  x
 PrBuff   lda   #C$CR		terminate the line to print
          sta   ,u+
          lda   #1		standard out
-         ldx   <u0006
+         ldx   <bufptr
          ldy   #40
          os9   I$WritLn		and go print it
          bcs   Exit
