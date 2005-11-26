@@ -33,19 +33,23 @@ BOOTCMDS	= $(6809L2)/cmds/shell_21 $(6809L2)/cmds/date \
 		$(6809L2)/cmds/echo $(6809L2)/cmds/link \
 		$(6809L2)/cmds/setime
 
-TEXTFILES_D1	= startup tOC.txt
+TEXTFILES_D1	= startup tOC_40d.txt
+TEXTFILES	= startup tOC_80d.txt
 
-SUPPORTFILES_D1	= logDir object picDir sndDir tOC viewDir vol.0 \
+SUPPORTFILES_D1	= logDir object picDir sndDir tOC_40d viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 vol.12 vol.14 words.tok
 
-SUPPORTFILES_D2	= logDir object picDir sndDir tOC viewDir vol.0 \
+SUPPORTFILES_D2	= logDir object picDir sndDir tOC_40d viewDir vol.0 \
 		vol.5 vol.6 vol.7 vol.8 vol.11 vol.12 vol.14 words.tok
 
-SUPPORTFILES_D3	= logDir object picDir sndDir tOC viewDir vol.0 \
+SUPPORTFILES_D3	= logDir object picDir sndDir tOC_40d viewDir vol.0 \
 		vol.5 vol.6 vol.7 vol.9 vol.11 vol.12 vol.14 words.tok
 
+SUPPORTFILES	= logDir object picDir sndDir tOC_80d viewDir vol.0 \
+		vol.1 vol.2 vol.3 vol.4 vol.5 vol.6 vol.7 vol.8 vol.9 \
+		vol.11 vol.12 vol.14 words.tok
+
 ALLOBJS		= $(CMDS)
-TEXTFILES	= tOC.txt startup
 
 all:	$(ALLOBJS)
 
@@ -78,15 +82,19 @@ dsk:	all
 	$(OS9RENAME) $(DISK_1_40D),CMDS/sierra AutoEx
 	$(OS9RENAME) $(DISK_80D),CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_D1) $(DISK_1_40D),.
-	$(CPL) $(TEXTFILES_D1) $(DISK_80D),.
+	$(OS9RENAME) $(DISK_1_40D),tOC_40d.txt tOC.txt
+	$(CPL) $(TEXTFILES) $(DISK_80D),.
+	$(OS9RENAME) $(DISK_80D),tOC_80d.txt tOC.txt
 	$(CP) $(SUPPORTFILES_D1) $(DISK_1_40D),.
-	$(CP) $(SUPPORTFILES_D1) $(DISK_80D),.
+	$(OS9RENAME) $(DISK_1_40D),tOC_40d tOC
 	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n"King's Quest III Disk 2"
 	$(CP) $(SUPPORTFILES_D2) $(DISK_2_40D),.
-	$(CP) $(SUPPORTFILES_D2) $(DISK_80D),.
+	$(OS9RENAME) $(DISK_2_40D),tOC_40d tOC
 	$(OS9FORMAT_DS40) -q $(DISK_3_40D) -n"King's Quest III Disk 3"
 	$(CP) $(SUPPORTFILES_D3) $(DISK_3_40D),.
-	$(CP) $(SUPPORTFILES_D3) $(DISK_80D),.
+	$(OS9RENAME) $(DISK_3_40D),tOC_40d tOC
+	$(CP) $(SUPPORTFILES) $(DISK_80D),.
+	$(OS9RENAME) $(DISK_80D),tOC_80d tOC
 
 dskcopy: dsk
 	$(CP) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D) $(DSKDIR)
