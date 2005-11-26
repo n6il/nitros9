@@ -18,6 +18,9 @@
 *
 *   4r1    2003/09/16  Robert Gault
 * Added patch to work 1MB and 2MB CoCo 3s.
+*
+*   1      2005/11/26  Boisy G. Pitre
+* Renamed from VDGInt, reset edition.
 
          nam   CoVDG
          ttl   CoCo 3 VDG I/O module
@@ -33,8 +36,8 @@ FFStSz   equ   512		flood fill stack size in bytes
 
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
-edition  set   4
+rev      set   $00
+edition  set   1
 
 skip2    equ   $8C		cmpx instruction
 
