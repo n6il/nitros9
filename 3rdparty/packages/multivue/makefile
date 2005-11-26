@@ -20,9 +20,9 @@ OS9BOOT68	= $(MD68)/krnp2 $(MD68)/ioman $(MD68)/init \
 		$(MD68)/rbf.mn \
 		$(MD68)/rb1773.dr $(MD68)/ddd0_40d.dd \
 		$(MD68)/d0_40d.dd $(MD68)/d1_40d.dd \
-		$(MD68)/scf.mn $(MD68)/cc3io.dr \
+		$(MD68)/scf.mn $(MD68)/vtio.dr \
 		$(MD68)/keydrv_cc3.sb $(MD68)/joydrv_joy.sb $(MD68)/snddrv_cc3.sb \
-		$(MD68)/windint.io $(MD68)/term_win40.dt \
+		$(MD68)/cowin.io $(MD68)/term_win40.dt \
 		$(MD68)/w.dw $(MD68)/w1.dw $(MD68)/w2.dw $(MD68)/w3.dw \
 		$(MD68)/w4.dw $(MD68)/w5.dw $(MD68)/w6.dw $(MD68)/w7.dw \
 		$(MD68)/clock_60hz $(MD68)/clock2_soft \
@@ -32,9 +32,9 @@ OS9BOOT63	= $(MD63)/krnp2 $(MD63)/ioman $(MD63)/init \
 		$(MD63)/rbf.mn \
 		$(MD63)/rb1773.dr $(MD63)/ddd0_40d.dd \
 		$(MD63)/d0_40d.dd $(MD63)/d1_40d.dd \
-		$(MD63)/scf.mn $(MD63)/cc3io.dr \
+		$(MD63)/scf.mn $(MD63)/vtio.dr \
 		$(MD63)/keydrv_cc3.sb $(MD63)/joydrv_joy.sb $(MD63)/snddrv_cc3.sb \
-		$(MD63)/windint.io $(MD63)/term_win40.dt \
+		$(MD63)/cowin.io $(MD63)/term_win40.dt \
 		$(MD63)/w.dw $(MD63)/w1.dw $(MD63)/w2.dw $(MD63)/w3.dw \
 		$(MD63)/w4.dw $(MD63)/w5.dw $(MD63)/w6.dw $(MD63)/w7.dw \
 		$(MD63)/clock_60hz $(MD63)/clock2_soft \

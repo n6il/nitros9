@@ -11,9 +11,9 @@ KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
 OS9BOOT		= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/ddd0_40d.dd \
-		$(MD)/scf.mn $(MD)/cc3io.dr \
+		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
-		$(MD)/vdgint_small.io $(MD)/term_vdg.dt \
+		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
 SUPPORTFILES	= body heads larms legs lips panel1 rofvar rship.c rtitle.c scores
