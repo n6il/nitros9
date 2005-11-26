@@ -2,7 +2,7 @@ NitrOS-9 V03.02.06 Release Goals
 
 TODO
 ====
-cc3io
+VTIO
 	- Fix init/term bug (only seen if windowing system is successively
           brought up/torn down).  This a long-standing bug, but doesn't impacth
           the typical user.  More of an irritant than anything else.
@@ -25,7 +25,7 @@ scf
 	- Backport to Level 1
 
 wordpakii
-	- Adapt source to act as CO80 module to CCIO
+	- Adapt source to act as CoWP module to VTIO
 	  (Phill-Harvey Smith said he would tackle this... Phill?)
 
 os9gen
@@ -40,6 +40,39 @@ COMPLETED
 attr
 	- Use SS.FD to set/get FD sector information instead of raw access
 
+ccio (Level 1)
+	- Renamed to VTIO
+
+cciodefs (Level 1)
+	- Renamed to vtiodefs
+
+co32 (Level 1)
+	- Renamed to CoVDG
+
+co51 (Level 1)
+	- Renamed to CoHR
+
+co51 (Level 1)
+	- Renamed to CoHR
+
+grfo (Level 1)
+	- Renamed to GrfDrv
+
+cc3io (Level 2)
+	- Renamed to VTIO
+
+cc3iodefs (Level 2)
+	- Renamed to vtiodefs_cc3
+
+vdgint (Level 2)
+	- Renamed to CoVDG
+
+windint (Level 2)
+	- Renamed to CoWIN
+
+grfint (Level 2)
+	- Renamed to CoGRF
+
 dir
 	- Use SS.FDInf to get FD sector information instead of raw access
 
@@ -50,5 +83,11 @@ format
 	- Fix bitmap wipeout bug
 
 rbf
-	- Modify SS.FD to set file attributes
-	- Level 1: Add SS.FDInf
+	- Modified SS.FD to set file attributes
+	- Level 1: Added SS.FDInf
+
+printer
+	- renamed to scbbp
+	
+sio
+	- renamed to scbbt
