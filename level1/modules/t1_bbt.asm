@@ -1,5 +1,5 @@
 ********************************************************************
-* T1 - CoCo serial device descriptor
+* T1 - CoCo Bit-Banger Terminal Device Descriptor
 *
 * $Id$
 *
@@ -8,7 +8,7 @@
 * ------------------------------------------------------------------
 
          nam   T1
-         ttl   CoCo serial device descriptor
+         ttl   CoCo Bit-Banger Terminal Device Descriptor
 
 * Disassembled 98/08/23 21:16:45 by Disasm v1.6 (C) 1988 by RML
 
@@ -61,7 +61,7 @@ initsize equ   *
 
 name     fcs   /T1/
 mgrnam   fcs   /SCF/
-drvnam   fcs   /SIO/
+drvnam   fcs   /scbbt/
 
          emod  
 eom      equ   *

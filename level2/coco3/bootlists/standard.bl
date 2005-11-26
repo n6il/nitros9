@@ -152,7 +152,7 @@
 *../MODULES/SCF/term_vdg.dt
 *../MODULES/SCF/term_win40.dt
 ../MODULES/SCF/term_win80.dt
-*../MODULES/SCF/term_sio.dt
+*../MODULES/SCF/term_bbt.dt
 *../MODULES/SCF/term_sc6551.dt
 *
 * Select as many window descriptors as needed
@@ -175,8 +175,8 @@
 *../MODULES/SCF/v7.dw
 *
 * Serial port drivers
-* Built-In RS-232 port
-*../MODULES/SCF/sio.dr
+* CoCo Bit-Banger terminal port
+*../MODULES/SCF/scbbt.dr
 *../MODULES/SCF/t1.dd
 * 6551 ACIA
 *../MODULES/SCF/sc6551.dr
@@ -188,7 +188,7 @@
 *../MODULES/SCF/m2.dd
 *
 * Printer drivers
-* ../MODULES/SCF/printer.dr
+* ../MODULES/SCF/scbbp.dr
 * ../MODULES/SCF/p.dd
 *
 * VRN is a driver module used by certain games, including King's Quest III,

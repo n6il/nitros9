@@ -1,5 +1,5 @@
 ********************************************************************
-* SIO - CoCo Serial driver
+* scbbt - CoCo Bit-Banger Terminal Driver
 *
 * $Id$
 *
@@ -15,8 +15,8 @@
 *  11      2003/12/15  Boisy G. Pitre
 * Merged Level 1 and Level 2 sources for now.
 
-         nam   SIO
-         ttl   CoCo Serial driver
+         nam   scbbt
+         ttl   CoCo Bit-Banger Terminal Driver
 
 * Disassembled 98/08/23 20:58:36 by Disasm v1.6 (C) 1988 by RML
 
@@ -33,7 +33,7 @@ edition  set   9
 
          fcb   UPDAT.
 
-name     fcs   /SIO/
+name     fcs   /scbbt/
          fcb   edition
 
          IFGT  Level-1

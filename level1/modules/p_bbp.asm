@@ -1,5 +1,5 @@
 ********************************************************************
-* P - CoCo serial printer device descriptor
+* P - CoCo Bit-Banger Printer Driver Device Descriptor
 *
 * $Id$
 *
@@ -9,7 +9,7 @@
 *          ????/??/??
 
          nam   P
-         ttl   CoCo serial printer device descriptor
+         ttl   CoCo Bit-Banger Printer Driver Device Descriptor
 
 * Disassembled 98/08/23 21:15:24 by Disasm v1.6 (C) 1988 by RML
 
@@ -58,7 +58,7 @@ initsize equ   *
 
 name     fcs   /p/
 mgrnam   fcs   /SCF/
-drvnam   fcs   /Printer/
+drvnam   fcs   /scbbp/
 
          emod  
 eom      equ   *

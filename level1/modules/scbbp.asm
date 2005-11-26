@@ -1,5 +1,5 @@
 ********************************************************************
-* Printer - CoCo Serial Printer Driver
+* scbbp.asm - CoCo Bit-Banger Printer Driver
 *
 * $Id$
 *
@@ -18,8 +18,8 @@
 *          2003/09/04  Boisy G. Pitre
 * Back-ported to OS-9 Level One.
 
-         nam   Printer
-         ttl   CoCo Serial Printer Driver
+         nam   scbbp
+         ttl   CoCo Bit-Banger Printer Driver
 
          ifp1
          use   defsfile
@@ -34,7 +34,7 @@ edition  set   13
 
          fcb   READ.+WRITE.
 
-name     fcs   /Printer/
+name     fcs   /scbbp/
          fcb   edition    one more revision level than the stock printer
 
 * Device memory area: offset from U

@@ -1,5 +1,5 @@
 ********************************************************************
-* TERM - CoCo Serial Device Descriptor for Terminal
+* TERM - CoCo Bit-Banger Terminal Device Descriptor
 *
 * $Id$
 *
@@ -9,8 +9,8 @@
 *          ????/??/??
 * From Tandy OS-9 Level One VR 02.00.00
 
-         nam   T1
-         ttl   CoCo Serial Device Descriptor for Terminal
+         nam   TERM
+         ttl   CoCo Bit-Banger Terminal Device Descriptor
 
 * Disassembled 98/08/23 21:16:45 by Disasm v1.6 (C) 1988 by RML
 
@@ -60,7 +60,7 @@ initsize equ   *
 
 name     fcs   /term/
 mgrnam   fcs   /SCF/
-drvnam   fcs   /SIO/
+drvnam   fcs   /scbbt/
 
          emod  
 eom      equ   *
