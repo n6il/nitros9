@@ -1,5 +1,5 @@
 ********************************************************************
-* CC3IO - CoCo 3 I/O driver
+* VTIO - Video Terminal I/O Driver for CoCo 3
 * 
 * $Id$
 * 
@@ -40,8 +40,8 @@
 * storage of a device whose use count has reached zero (in the
 * case of a hard detach).  See Note below.
 
-         nam   CC3IO
-         ttl   CoCo 3 I/O driver
+         nam   VTIO
+         ttl   Video Terminal I/O Driver for CoCo 3
 
 * Disassembled 98/09/09 08:29:24 by Disasm v1.6 (C) 1988 by RML
 
@@ -62,7 +62,7 @@ GLOBALKEYMOUSE equ	1
 
          fcb   EXEC.+UPDAT.
 
-name     fcs   /CC3IO/
+name     fcs   /VTIO/
          fcb   edition
 
 start    lbra  Init
@@ -89,7 +89,7 @@ Term     equ   *
          cmpu  G.CurDev,x	device to be terminated is current?
 *         cmpu  >WGlobal+G.CurDev	we the only window left?
          bne   noterm		no, execute terminate routine in co-module
-* We are last device that CC3IO has active; terminate ourself
+* We are last device that VTIO has active; terminate ourself
          pshs  cc
          orcc  #IRQMask
          IFNE  H6309
@@ -133,9 +133,9 @@ TermSub  leau  2,x		point U to static area for sub module
 *    B  = error code
 *
 Init     ldx   <D.CCMem		get ptr to CC mem
-         ldd   <G.CurDev,x	has CC3IO itself been initialized?
+         ldd   <G.CurDev,x	has VTIO itself been initialized?
          lbne  PerWinInit	yes, don't bother doing it again
-* CC3IO initialization code - done on the first init of ANY cc3io device
+* VTIO initialization code - done on the first init of ANY VTIO device
 *         leax  >CC3Irq,pcr	set up AltIRQ vector in DP
 *         stx   <D.AltIRQ
          leax  >SHFTCLR,pcr	point to SHIFT-CLEAR subroutine
@@ -580,7 +580,7 @@ L02FD    std   Pt.TTSA,x	save button time this state counts
 NullIRQ  rts   			return
 
 
-* CC3IO IRQ routine - Entered from Clock every 1/60th of a second
+* VTIO IRQ routine - Entered from Clock every 1/60th of a second
 CC3Irq   ldu   <D.CCMem		get ptr to CC mem
          ldy   <G.CurDev,u	get current device's static
          lbeq  L044E		branch if none
@@ -599,7 +599,7 @@ L0319    leax  <NullIRQ,pcr	set AltIRQ to do nothing routine so other IRQs
          lda   V.TYPE,y		device a window?
          bpl   L032F		no, must be VDGInt, so go on
          lda   G.GfBusy,u	0 = GrfDrv free, 1 = GrfDrv busy
-         ora   G.WIBusy,u	0 = WindInt free, 1 = WindInt busy
+         ora   G.WIBusy,u	0 = CoWin free, 1 = CoWin busy
          bne   L034F		one of the two is busy, can't update, skip
 *L032F    lda   #$00
 L032F    clra			special function: select new active window
@@ -618,7 +618,7 @@ L0337    ldb   G.CntTik,u	get current clock tick count for cursor updates
          stb   G.CntTik,u	if still not 0, don't do update
          bne   L034F
          lda   G.GfBusy,u	get GrfDrv busy flag
-         ora   G.WIBusy,u	merge with WindInt busy flag
+         ora   G.WIBusy,u	merge with CoWin busy flag
          beq   L034A		if both not busy, go update cursors
          inc   G.CntTik,u	otherwise bump tick count up again
          bra   L034F		and don't update
@@ -776,7 +776,7 @@ L044E    ldu   <D.CCMem		get ptr to CC mem
          ora   <G.Mouse+Pt.CBSA,u
          beq   L046B
          lda   G.GfBusy,u	check for GrfDrv busy
-         ora   G.WIBusy,u	OR with WindInt busy
+         ora   G.WIBusy,u	OR with CoWin busy
          bne   L046B		branch if they are busy
          lda   #$03
          lbsr  L05DA
@@ -857,11 +857,11 @@ L04BC    ldb   f.nbyte,s	get # of bytes to next entry (signed)
          cmpx  f.ptrend,s	did we hit end of search table?
          bne   L04C6		no, go check if it is a screen device
          ldx   f.ptrstr,s	otherwise wrap around to start of search ptr
-* Check device table entry (any entry we can switch to has to have CC3IO as
+* Check device table entry (any entry we can switch to has to have VTIO as
 *  the driver)
 L04C6    stx   f.ptrchk,s	save new device table ptr we are checking
          ldd   V$DRIV,x		get ptr to driver
-         cmpd  f.ptrdrv,s	same driver as us? (CC3IO)
+         cmpd  f.ptrdrv,s	same driver as us? (VTIO)
          bne   L04BC		no, try next one
 * NOTE: The next two lines are moved down two lines, past the check
 * for our own device table pointer.  This fixes a bug where the last
@@ -878,7 +878,7 @@ L04C6    stx   f.ptrchk,s	save new device table ptr we are checking
 * ...to here.
          ldu   V$STAT,x		get ptr to static storage for tbl entry
          beq   L04BC		there is none, try next one
-* Found an initialized device controlled by CC3IO that is not current device
+* Found an initialized device controlled by VTIO that is not current device
          lda   <V.InfVld,u	is the extra window data in static mem valid?
          beq   L04BA		no, not good enough, try next one
          ldx   <V.PDLHd,u	get ptr to list of open paths on device
@@ -936,7 +936,7 @@ L052D    lda   ,s		get local path # we started on
 L0536    ldx   <D.CCMem		get ptr to CC mem
          stu   <G.CurDev,x	save new active device
          clr   g000A,x		flag that we are not on active device anymore
-         clr   >g00BF,x		clear WindInt's key was pressed flag (new window)
+         clr   >g00BF,x		clear CoWin's key was pressed flag (new window)
 * If there is only one window, it comes here to allow the text/mouse cursors
 * to blink so you know you hit CLEAR or SHIFT-CLEAR
 L0541    inc   <V.ScrChg,u	flag device for a screen change
@@ -1026,11 +1026,11 @@ L05BB    clr   >WGlobal+G.CrDvFl
 
 L05C0    pshs  x,b
          ldx   <D.CCMem		get ptr to CC mem
-         clr   G.WIBusy,x	clear WindInt busy flag
-         ldb   <V.WinType,u	get window type (0 = WindInt)
+         clr   G.WIBusy,x	clear CoWin busy flag
+         ldb   <V.WinType,u	get window type (0 = CoWin)
          bne   L05CE		branch if VDGInt
          incb  			else make B = 1
-         stb   G.WIBusy,x	and make WindInt busy
+         stb   G.WIBusy,x	and make CoWin busy
 L05CE    clr   G.CrDvFl,x	clear 'we are current device'
          cmpu  <G.CurDev,x
          bne   L05D8
@@ -1056,7 +1056,7 @@ L05EB    comb
 L05EF    cmpa  #$1E		$1E code?
          beq   Do1E		branch if so
 * $1F codes fall through to here
-* Escape code handler : Initial code handled by CC3IO, any parameters past
+* Escape code handler : Initial code handled by VTIO, any parameters past
 * $1B xx are handled by co-module later
 * NOTE: Notice that is does NOT update <DevPar,u to contain the param byte,
 *  but leaves the initial <ESC> ($1b) code there. The co-module checks it
@@ -1086,8 +1086,8 @@ L0600    ldx   <V.NxtPrm,u	get ptr of where to put next param byte
          stu   G.CurDvM,x
          ldx   <V.PrmStrt,u	reset next param ptr to start
          stx   <V.NxtPrm,u
-         ldb   <V.WinType,u	is this device using WindInt?
-         beq   L0624		yes, special processing for WindInt
+         ldb   <V.WinType,u	is this device using CoWin?
+         beq   L0624		yes, special processing for CoWin
          jsr   [<V.ParmVct,u]	go execute parameter handler
          bra   L05B0
 L0624    jsr   [<V.ParmVct,u]
@@ -1489,23 +1489,23 @@ FindCoMod
          bsr   L08D4		link to it if it exists
          puls  pc,u,y,a		restore regs & return
 
-WindInt  fcs   /WindInt/
-GrfInt   fcs   /GrfInt/ ++
+CoWin    fcs   /CoWin/
+CoGrf    fcs   /CoGrf/ ++
 *CC3GfxInt fcs   /CC3GfxInt/ ++
 
 *
-* Try WindInt
+* Try CoWin
 *
 FindWind pshs  u,y		preserve regs
          clra  			set window type
          sta   <V.WinType,u
-         leax  <WindInt,pcr	point to WindInt name
+         leax  <CoWin,pcr	point to CoWin name
          lda   #$80		get driver type code
          bsr   L08D4		try and link it
 
 *++
          bcc   ok
-         leax  <GrfInt,pcr	point to GrfInt name
+         leax  <CoGrf,pcr	point to CoGrf name
          lda   #$80
          bsr   L08D4
 *++
@@ -1537,7 +1537,7 @@ L08F0    puls  a		restore vector offset
          leax  <G.CoTble,x	point to vector offsets
          sty   a,x		store co-module entry vector
          puls  y		restore path descriptor pointer
-         cmpa  #$02		was it WindInt?
+         cmpa  #$02		was it CoWin?
          bgt   L08D2		no, return
 L0900    clrb
          lbra  CallCo		send it to co-module

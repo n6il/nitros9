@@ -1,5 +1,5 @@
 ********************************************************************
-* TERM - VDG screen device descriptor for KBVDIO driver
+* TERM - VDG Screen Device Descriptor for KBVDIO Driver
 *
 * $Id$
 *
@@ -10,7 +10,7 @@
 * Original Dragon Data distribution version
 
          nam   TERM
-         ttl   VDG screen device descriptor for KBVDIO driver
+         ttl   VDG Screen Device Descriptor for KBVDIO Driver
 
 * Disassembled 02/04/21 22:38:40 by Disasm v1.6 (C) 1988 by RML
 

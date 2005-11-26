@@ -25,7 +25,7 @@ DGNDEFS set   1
          ttl   Dragon I/O Definitions
                          
 ********************
-* CCIO Static Memory
+* VTIO Static Memory
 *
 * Definitions for ports on Dragon 32/64/Alpha.
 *

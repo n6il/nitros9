@@ -1,5 +1,5 @@
 ********************************************************************
-* TERM - CoCo serial device descriptor for terminal
+* TERM - CoCo Serial Device Descriptor for Terminal
 *
 * $Id$
 *
@@ -10,7 +10,7 @@
 * From Tandy OS-9 Level One VR 02.00.00
 
          nam   T1
-         ttl   CoCo serial device descriptor for terminal
+         ttl   CoCo Serial Device Descriptor for Terminal
 
 * Disassembled 98/08/23 21:16:45 by Disasm v1.6 (C) 1988 by RML
 

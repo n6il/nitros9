@@ -37,8 +37,8 @@ RBF		= rbf.mn \
 		
 
 SCF		= scf.mn \
-		cc3io.dr vrn.dr printer.dr sio.dr sspak.dr sc6551.dr \
-		windint.io grfint.io vdgint.io vdgint_small.io \
+		vtio.dr vrn.dr printer.dr sio.dr sspak.dr sc6551.dr \
+		cowin.io cogrf.io covdg.io covdg_small.io \
 		keydrv_cc3.sb snddrv_cc3.sb \
 		joydrv_joy.sb joydrv_6551L.sb joydrv_6552L.sb \
 		joydrv_6551M.sb joydrv_6552M.sb \
@@ -72,7 +72,7 @@ krn krnp2:
 	$(CP) kernel/$@ .
 
 # Special cases
-grfint.io: windint.asm
+cogrf.io: cowin.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aGrfInt=1
 
 rb1773_scii_ff74.dr:    rb1773.asm
@@ -184,10 +184,10 @@ ddr0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=192 -aDD=1
 
 # VDGInt Modules
-vdgint.io: vdgint.asm
+covdg.io: covdg.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCOCO2=1
 
-vdgint_small.io: vdgint.asm
+covdg_small.io: covdg.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
 
 # Clocks

@@ -76,7 +76,7 @@ initsize equ   *
 
 name     fcs   /Term/
 mgrnam   fcs   /SCF/
-drvnam   fcs   /CC3IO/
+drvnam   fcs   /VTIO/
 
          emod  
 eom      equ   *

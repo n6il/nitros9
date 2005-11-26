@@ -1,9 +1,8 @@
-	IFNE	CCIODEFS-1
-                         
-CCIODEFS set   1         
+	IFNE	VTIODEFS-1
+VTIODEFS set   1         
                          
 ********************************************************************
-* CCIODefs - CoCo 1/2 I/O Definitions
+* VTIODefs - Video Terminal I/O Definitions for CoCo 1/2
 *
 * $Id$
 *
@@ -18,17 +17,17 @@ CCIODEFS set   1
 * Moved over all variables from co51.asm
 *
 *          2005/04/09  P.Harvey-Smith.
-* Decoded rest of the CO51 memory locations.
+* Decoded rest of the CoHR memory locations.
 *
 *	   2005/04/24  P.Harvey-Smith.
 * Added variables for cursor flash, currently only implemented in co51
 *
 
-         nam   CCIODefs  
-         ttl   CoCo 1/2 I/O Definitions
+         nam   VTIODefs  
+         ttl   Video Terminal I/O Definitions for CoCo 1/2
                          
 ********************
-* CCIO Static Memory
+* VTIO Static Memory
 *
          org   V.SCF     
 V.ScrnA  rmb   2          (2) screen start address in system memory
@@ -75,15 +74,15 @@ V.Caps   rmb   1          caps lock info: $00=lower $FF=upper
 V.ClkCnt rmb   1          clock count ??
 V.WrChr  rmb   1          character to write
 V.CurCo  rmb   1          current CO-module in use
-* start of CO80-specific static memory
+* start of CoWP-specific static memory
 V.Co80X  rmb   1          V.54
 V.Co80Y  rmb   1          V.55
 V.ColPtr rmb   1          V.56
 V.RowPtr rmb   1          V.57
-V.C80X   rmb   1          CO80 X position
-V.C80Y   rmb   1          CO80 Y position
+V.C80X   rmb   1          CoWP X position
+V.C80Y   rmb   1          CoWP Y position
 V.Invers rmb   1         
-* end of CO80-specific static memory
+* end of CoWP-specific static memory
 V.DspVct rmb   2          vector to display screen
 V.CnvVct rmb   2          vector to X/Y to address conversion
 V.LKeyCd rmb   1          last key code
@@ -105,16 +104,16 @@ V.KTblLC rmb   1          key table entry #
 V.6F     rmb   1          ???
 V.COLoad rmb   1          CO-module loaded flags
 V.CFlag  rmb   1          true lowercase flag $10=true, $00=false
-V.GRFOE  rmb   2          GRFO entry point
-V.CO32E  rmb   2          CO32 entry point
-V.CO80E  rmb   2          CO80 entry point
-V.CO51E  rmb   2          CO51 entry point
+V.GrfDrvE  rmb 2          GrfDrv entry point
+V.CoVDGE rmb   2          CoVDG entry point
+V.CoWPE  rmb   2          CoWP entry point
+V.CoHRE  rmb   2          CoHR entry point
 
 V.Flash			rmb	2	Cursor flash routine address.
 v.FlashCount		rmb	1	Cursor flash count
 V.NoFlash		rmb	1	When this is noz-zero do not flash cursor
 
-* CO51 vars
+* CoHR vars
 
 V.51ScrnA 		rmb	2	* Screen address.
 V.51XPos 		rmb	1	* X co-ordinate
@@ -131,7 +130,7 @@ V.51CursorOn 		rmb	1	* Is cursor on ? 1=yes 0=no
 V.51XORFlag 		rmb	1	* and data to screen (0) or Xor (1)  		       
 V.51ScreenMask1 	rmb	1	* screen masks for drawing characters on screen         
 V.51ScreenMask2 	rmb	1         
-* End of CO51 vars
+* End of CoHR vars
 **** Note these have to come at the end of the defs, or the keyboard ****
 **** code can clobber variables defined after these !                ****
 V.IBufH  rmb   1          input buffer head
@@ -159,9 +158,9 @@ V.Last   equ   .
 * Defs for V.COLoad flags.
 * 
                          
-ModCO32  equ   %00000010  CO32, normal VDG 32x16.
-ModCO80  equ   %00000100  CO80, wordpak rs, 80x25
-ModCO51  equ   %00001000  CO51, pmode 4 51x25 text
+ModCoVDG equ   %00000010  CoVDG, Built-in VDG 32x16.
+ModCoWP  equ   %00000100  CoWP, WordPak, 80x25
+ModCoHR  equ   %00001000  CoHR, PMODE 4 51x25 text
 
 *
 * Defs for cursor flash counter

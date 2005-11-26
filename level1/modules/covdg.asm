@@ -1,5 +1,5 @@
 ********************************************************************
-* CO32 - VDG Console Output Subroutine for CCIO
+* CoVDG - VDG Console Output Subroutine for VTIO
 *
 * $Id$
 *
@@ -12,14 +12,14 @@
 *          2003/09/22  Rodney Hamilton
 * recoded dispatch table fcbs, fixed cursor color bug
 
-         nam   CO32
-         ttl   VDG Console Output Subroutine for CCIO
+         nam   CoVDG
+         ttl   VDG Console Output Subroutine for VTIO
 
 * Disassembled 98/08/23 17:47:40 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
-         use   cciodefs
+         use   vtiodefs
          endc
 
 tylg     set   Systm+Objct   
@@ -33,7 +33,7 @@ u0000    rmb   0
 size     equ   .
          fcb   $07 
 
-name     fcs   /CO32/
+name     fcs   /CoVDG/
          fcb   edition
 
 start    equ   *
@@ -48,7 +48,7 @@ Term     pshs  y,x
          os9   F$SRtMem 	return to system
          puls  u		restore U
          ldb   <V.COLoad,u
-         andb  #~ModCo32
+         andb  #~ModCoVDG
          bra   L0086
 * Init
 Init     pshs  y,x		save regs
@@ -72,7 +72,7 @@ L0056    ldd   #256		and return last 256 bytes
          leay  -$0E,y
          clra  
          clrb  
-         jsr   [<V.DspVct,u]	display screen (routine in CCIO)
+         jsr   [<V.DspVct,u]	display screen (routine in VTIO)
          puls  y
          stx   <V.CrsrA,u 	save start cursor position
          leax  >512,x		point to end of screen
@@ -82,7 +82,7 @@ L0056    ldd   #256		and return last 256 bytes
          sta   <V.Chr1,u	only referenced here ??
          lbsr  ClrScrn		clear the screen
          ldb   <V.COLoad,u
-         orb   #ModCo32		set to CO32 found (?)
+         orb   #ModCoVDG	set to CoVDG found (?)
 L0086    stb   <V.COLoad,u
          clrb  
          puls  pc,y,x
@@ -172,7 +172,7 @@ DCodeTbl fdb   NoOp-DCodeTbl		$00:no-op (null)
          fdb   ErEOLine-DCodeTbl	$04:CLEAR TO EOL
          fdb   Do05-DCodeTbl		$05:CURSOR ON/OFF
          fdb   CurRght-DCodeTbl		$005e  $06:CURSOR RIGHT
-         fdb   NoOp-DCodeTbl		$07:no-op (bel:handled in CCIO)
+         fdb   NoOp-DCodeTbl		$07:no-op (bel:handled in VTIO)
          fdb   CurLeft-DCodeTbl		$0050  $08:CURSOR LEFT
          fdb   CurUp-DCodeTbl		$0119  $09:CURSOR UP
          fdb   CurDown-DCodeTbl		$0038  $0A:CURSOR DOWN
@@ -332,7 +332,7 @@ L023E    lbra  ShowCrsr		and show cursor
 * $0E - switch screen to alphanumeric mode
 DoAlpha  clra  
          clrb  
-         jmp   [<V.DspVct,u]	display screen (routine in CCIO)
+         jmp   [<V.DspVct,u]	display screen (routine in VTIO)
 
 * GetStat
 GetStat  ldx   PD.RGS,y		get caller's regs

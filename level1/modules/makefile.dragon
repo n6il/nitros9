@@ -84,8 +84,8 @@ clock2_bnb: clock2_ds1315.asm
 clock2_cloud9: clock2_ds1315.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCLOUD9=1
 
-#Terminals, dgnio, is based on ccio, with code to remap keyboad.
-dgnio.dr: ccio.asm
+#Terminals, dgnio, is based on vtio, with code to remap keyboad.
+dgnio.dr: vtio.asm
 	$(AS) $(ASFLAGS) $(ASOUT)$@ $<  -aDragonIO=1
 
 # Floppy descriptors

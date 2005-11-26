@@ -77,7 +77,7 @@ initsize equ   *
 name     fcc   /W/
          fcb   176+wnum
 mgrnam   fcs   /SCF/
-drvnam   fcs   /CC3IO/
+drvnam   fcs   /VTIO/
 
          emod  
 eom      equ   *

@@ -10,10 +10,10 @@ WHICHSHELL	= shell_21
 DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
 DISTROVER	= $(DISTRONAME)$(NITROS9VER)
-BOOTFILE_CO32	= bootfiles/bootfile_co32
-BOOTFILE_CO51	= bootfiles/bootfile_co51
-BOOTFILE_CO32_DS80	= bootfiles/bootfile_co32_ds80
-BOOTFILE_CO51_DS80	= bootfiles/bootfile_co51_ds80
+BOOTFILE_COVDG	= bootfiles/bootfile_covdg
+BOOTFILE_COHR	= bootfiles/bootfile_cohr
+BOOTFILE_COVDG_DS80	= bootfiles/bootfile_covdg_ds80
+BOOTFILE_COHR_DS80	= bootfiles/bootfile_cohr_ds80
 KERNELFILE	= bootfiles/kernel_1773
 DIRS		= cmds modules defs sys bootfiles
 
@@ -73,7 +73,7 @@ $(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) ReadMe ChangeLog
 $(DSK360K_1):
 	$(RM) $@
 	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/6809 Level 1 Disk 1"
-	$(OS9GEN) $@ -b=$(BOOTFILE_CO32) -t=$(KERNELFILE)
+	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
@@ -130,7 +130,7 @@ $(DSK360K_2):
 $(DSK720K):
 	$(RM) $@
 	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/6809 Level 1"
-	$(OS9GEN) $@ -b=$(BOOTFILE_CO32_DS80) -t=$(KERNELFILE)
+	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_DS80) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS

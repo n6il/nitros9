@@ -1,9 +1,8 @@
-         IFNE  CC3IODEFS-1
-
-CC3IODEFS  set   1
+         IFNE  VTIODEFS-1
+VTIODEFS  set   1
 
 ********************************************************************
-* CC3IODefs - CoCo 3 I/O Definitions
+* VTIODefs - Video Terminal I/O Definitions for CoCo 3
 *
 * $Id$
 *
@@ -13,9 +12,8 @@ CC3IODEFS  set   1
 *          2004/07/18  Boisy G. Pitre
 * Started from systype
 
-         nam   CC3IODefs
-         ttl   CoCo 3 I/O Definitions
-
+         nam   VTIODefs
+         ttl   Video Terminal I/O Definitions for CoCo 3
 
 ****************
 * Window Devices
@@ -265,7 +263,7 @@ MId.Fnt  rmb   1          Font menu
 ******************************************************************************
 ******************************************************************************
 
-* User settable values for CC3IO/TC9IO/GrfInt/WindInt & GrfDrv
+* User settable values for VTIO/TC9IO/GrfInt/WindInt & GrfDrv
 MaxLines equ   25         Max. Y coord text value
 Meg      set   false      "true" if 1 or 2 meg machine
 
@@ -287,8 +285,8 @@ MaxLine  equ   191        maximum Y co-ordinate allowed on mouse
          ENDC  
 
 *****************************************************************************
-* Static memory area for each window (CC3IO/TC9IO)
-* Should set up a write buffer (using parm area?) between SCF, CC3IO & Grfdrv
+* Static memory area for each window (VTIO/TC9IO)
+* Should set up a write buffer (using parm area?) between SCF, VTIO & Grfdrv
 * so we can 'burst mode' text output (copy up to 48 chars to Grfdrv's parm
 * area, and have grfdrv loop through & write all 48 chars to screen in 1 loop
 * May have to have smaller limit for text to gfx screens, as it will run much

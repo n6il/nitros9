@@ -127,7 +127,7 @@
 * CoCo 3 I/O driver
 * Joystick modules: choose Joystick OR
 * (M)icrosoft or (L)ogitech mouse using 6551 or 6552 ACIA
-../MODULES/SCF/cc3io.dr
+../MODULES/SCF/vtio.dr
 ../MODULES/SCF/keydrv_cc3.sb  
 ../MODULES/SCF/snddrv_cc3.sb
 ../MODULES/SCF/joydrv_joy.sb
@@ -136,17 +136,17 @@
 *../MODULES/SCF/joydrv_6551L.sb
 *../MODULES/SCF/joydrv_6552L.sb
 *
-* GrfInt/WindInt subroutine module
-* Use WindInt with Multi-Vue; use GrfInt
+* CoGrf/CoWin subroutine module
+* Use CoWin with Multi-Vue; use CoGrf
 * for basic text and graphic window support..
 * Select only one.
-*../MODULES/SCF/grfint.io
-../MODULES/SCF/windint.io
+*../MODULES/SCF/cogrf.io
+../MODULES/SCF/cowin.io
 *
-* VDGInt I/O subroutine module
+* CoVDG I/O subroutine module
 * Select one or both
-*../MODULES/SCF/vdgint.io
-*../MODULES/SCF/vdgint_small.io
+*../MODULES/SCF/covdg.io
+*../MODULES/SCF/covdg_small.io
 *
 * Select only one term descriptor
 *../MODULES/SCF/term_vdg.dt

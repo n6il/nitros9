@@ -1,5 +1,5 @@
 ********************************************************************
-* TERM - 80 column device descriptor
+* TERM - Hi-Res 51x24 Device Descriptor
 *
 * $Id$
 *
@@ -16,14 +16,14 @@
 
 
          nam   TERM
-         ttl   51 column device descriptor
+         ttl   Hi-Res 51x24 Device Descriptor
 
 * Disassembled 98/08/23 17:19:25 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
          use   scfdefs
-	 use   cciodefs	
+	 use   vtiodefs	
          endc
 
 tylg     set   Devic+Objct   
@@ -56,7 +56,7 @@ rev      set   $00
          fcb   C$QUIT         quit character
          fcb   C$BSP          backspace echo character
          fcb   C$BELL         line overflow character (bell)
-         fcb   ModCo51        init value for dev ctl reg
+         fcb   ModCoHR        init value for dev ctl reg
          fcb   $00            baud rate
          fdb   name           copy of descriptor name address
          fcb   $00            acia xon char
@@ -67,9 +67,8 @@ initsize equ   *
 
 name     fcs   /TERM/
 mgrnam   fcs   /SCF/
-drvnam   fcs   /CCIO/
+drvnam   fcs   /VTIO/
 
          emod
 eom      equ   *
          end
-

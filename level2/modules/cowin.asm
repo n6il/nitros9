@@ -1,5 +1,5 @@
 *******************************************************************
-* GrfInt/WindInt - NitrOS-9 Text/Graphics Window Module
+* CoGrf/CoWin - NitrOS-9 Text/Graphics Window Module
 *
 * $Id$
 *
@@ -13,7 +13,7 @@
 * Patches to scrollbar windows to recover arrows and markers.
 * Includes new stdfonts with graphics added to the end.
 
-         nam   GrfInt/WindInt
+         nam   CoGrf/CoWin
          ttl   NitrOS-9 Window Module
 
          ifp1  
@@ -36,10 +36,10 @@ WColor3  equ   3          (white)
 size     equ   .
 
 name     equ   *
-         IFEQ  GrfInt-1
-         fcs   /GrfInt/
+         IFEQ  CoGrf-1
+         fcs   /CoGrf/
          ELSE
-         fcs   /WindInt/
+         fcs   /CoWin/
          ENDC
          fcb   edition
 
@@ -474,7 +474,7 @@ L02F1    clrb             No error & return
 L02F2    rts   
 
 ****************************
-* Main Entry point from CC3IO
+* Main Entry point from VTIO
 * Entry: U=Device memory pointer
 *        Y=Path descriptor pointer
 
@@ -520,7 +520,7 @@ Write    ldb   #$3a       get grfdrv function for Alpha put as default
          tsta             Any parameter bytes needed?
          beq   L0339      No, just go do function
          bmi   L0A96      $FF=Empty, exit with error
-         sta   V.ParmCnt,u  Preserve for CC3IO to get the rest
+         sta   V.ParmCnt,u  Preserve for VTIO to get the rest
 L032F    equ   *
          IFNE  H6309
          addr  w,x        Point to vector
@@ -530,8 +530,8 @@ L032F    equ   *
          leax  d,x
          puls  b
          ENDC
-         stx   V.ParmVct,u  Save vector for CC3IO to call
-         clra             No error & return so CC3IO can get rest of parms
+         stx   V.ParmVct,u  Save vector for VTIO to call
+         clra             No error & return so VTIO can get rest of parms
          rts   
 
 * No param calls go here
@@ -552,7 +552,7 @@ L0347    cmpa  #$1F       $1F codes?
 L034D    cmpa  #$02       Cursor X,Y?
          bne   L0356      No, check next
          leax  <L036E,pc  Point to Cursor X,Y routine
-         bra   L0362      Let CC3IO get rest of parms
+         bra   L0362      Let VTIO get rest of parms
 
 L0356    cmpa  #$05       Cursor On/Off?
          beq   L0396      Go to cursor on/off routine
@@ -621,7 +621,7 @@ UnDef2   ldb   #E$WUndef  Undefined Window error
 * Set counts up for CC3/TC9IO to get rest of needed parms
 L0362    sta   V.ParmCnt,u  Store # bytes to get for params in static mem
          stx   V.ParmVct,u  Store vector to function in static mem
-         clra             No error & return so CC3IO can get rest of parms
+         clra             No error & return so VTIO can get rest of parms
          rts   
 
 * Process CurXY after parms are gotten
@@ -681,7 +681,7 @@ L03D7    cmpb  #$FF       is it same screen?
          leax  <L03E5,pc  point to processor for border color
          lda   #$01       get # bytes to get
          puls  u,y        purge stack
-         bra   L0362      let cc3io get it for me
+         bra   L0362      let VTIO get it for me
 
 * If the window was not on the current screen grab the optional border color
 L03E5    pshs  u,y        Preserve static mem & path dsc. ptrs
@@ -930,7 +930,7 @@ L052C    puls  y,u,pc     restore & return
 L052E    puls  y,u        Restore static mem & path dsc. ptrs
          lbsr  L0436      set lines per page in path descriptor
         
-         IFNE  GrfInt-1
+         IFNE  CoGrf-1
          IFNE  H6309
          tste		is screen type a regular no box window?
          ELSE
@@ -1017,7 +1017,7 @@ CWArea   pshs  y,u        Save device mem ptr & path dsc. ptr on stack
          pshs  d
          lbsr  L0423      move coords to window table
          bcs   L0609      didn't pan out, restore originals & return error
-* The rest of this is unique to WindInt.  What it does is calculate the
+* The rest of this is unique to CoWin.  What it does is calculate the
 * maximum allowable window sizes based on the window type defined in the
 * menuing system.
 * NOTE: MAY BE ABLE TO USE E & F FOR SOME OF THE ,S STUFF
@@ -1033,7 +1033,7 @@ CWArea   pshs  y,u        Save device mem ptr & path dsc. ptr on stack
          ldd   Wt.DfSZX,y Get default X/Y sizes from window table
          pshs  d          Make them the ending X,Y coords
 
-         IFNE  GrfInt-1
+         IFNE  CoGrf-1
          lda   ,x         get graphics table window type
          beq   L05E3      If normal window, skip all adjustments
          deca             Is it a WT.FWin (framed window=1)?
@@ -1365,7 +1365,7 @@ L0730    ldx   V$STAT,x   Get device's static mem ptr
          ENDC 
          sta   V.ULCase,x   Save in new device (kybrd mouse in Gshell)
          stx   >WGlobal+G.CurDev     Make it the current device's static mem ptr
-         lbra  L0C86      Select the window & do setmouse in CC3IO
+         lbra  L0C86      Select the window & do setmouse in VTIO
 
 * If current screen window, go here
 * Entry: A=Screen type from caller
@@ -1399,7 +1399,7 @@ L076D    pshs  x,y        Preserve window table ptr & path dsc. ptr
          lda   V.TYPE,y   Get device type
          bpl   L07AB      not a window, exit with error
          lda   V.WinType,y  Get type of window flag
-         bne   L07AB      If not a Grf/WindInt window, error
+         bne   L07AB      If not a Grf/CoWin window, error
          lda   V.InfVld,y   Get 'device mem info is valid' flag
          beq   L07AB      If clear, error
          leau  ,y         Point U to static mem
@@ -1681,7 +1681,7 @@ L08CD    subd  #72        subtract 72 from count
          leax  <L08DD,pc  get vector
          bra   L08B9      save into parameter area of static mem.
 
-* Place CC3IO comes to for next gpload sub-buffer
+* Place VTIO comes to for next gpload sub-buffer
 L08DD    pshs  u,y        Preserve static & path dsc. ptrs
          lbsr  L06AE      Get window tbl ptr
          bsr   L08EA      Move data to shared buffer & then Grfdrv
@@ -1713,7 +1713,7 @@ L08FC    equ   *
          ELSE
          ldb   >WGlobal+g0070
 *         stb   >GrfMem+$B6        grfdrv regF
-         stb   >GrfMem+gr00B5+1   windint regF
+         stb   >GrfMem+gr00B5+1   cowin regF
          ENDC
          ldb   #$32       get move buffer code
          lbra  L0101      send it to grfdrv & return from there
@@ -2052,7 +2052,7 @@ GetStt   cmpa  #SS.ScSiz  get screen size?
          lbeq  L0AF4      yes, go process
          cmpa  #SS.DfPal  get default colors?
          beq   L0AC3      yes, go process
-         IFNE  GrfInt-1
+         IFNE  CoGrf-1
          cmpa  #SS.MnSel  menu select?
          lbeq  L1515      yes, go process
          ENDC
@@ -2194,7 +2194,7 @@ SetStt   cmpa  #SS.Open   Open window call (for /W)
          lbeq  L0BD1
          cmpa  #SS.DfPal  Set default palettes
          beq   L0B38
-         IFNE  GrfInt-1
+         IFNE  CoGrf-1
          cmpa  #SS.WnSet
          lbeq  L0D23
          cmpa  #SS.SBar
@@ -2418,7 +2418,7 @@ L0C58    lda   >GrfMem+gr00B5+1
 L0CF1    rts              return
 
 ******************************
-* Special windowing processor (called from AltIRQ in cc3io/tc9io)
+* Special windowing processor (called from AltIRQ in VTIO)
 * Entry: A=$00 - Screen has changed in some way
 *          $01 - Update mouse packet window region (Pt.Stat)
 *          $02 - Update text & graphics cursor
@@ -2426,14 +2426,14 @@ L0CF1    rts              return
 L0C68    tsta             Screen change?
          beq   L0C7F      Yes, go do
          deca             Update mouse packet?
-* TODO: Does update mouse packet go in GrfInt?
-         IFNE  GrfInt-1
+* TODO: Does update mouse packet go in CoGrf?
+         IFNE  CoGrf-1
          lbeq  L1CC8      Yes, go do
          ENDC
          deca             Update cursors?
          beq   L0CE7      Yes, go do
-* TODO: Does auto-follow mouse go in GrfInt?
-         IFNE  GrfInt-1
+* TODO: Does auto-follow mouse go in CoGrf?
+         IFNE  CoGrf-1
          deca             Update auto-follow mouse?
          lbeq  L1B4D      Yes, go do
          ENDC
@@ -2454,7 +2454,7 @@ L0C86    clr   ,-s        clear activate/deactivate flag
          beq   L0CB3      nothing there, skip ahead
          pshs  y          preserve new window table pointer
          bsr   L0CF2      any overlay windows or frames?
-         IFNE  GrfInt-1
+         IFNE  CoGrf-1
          bcs   L0CA3      no, skip ahead
          lbsr  L1034      set menu bar to in-active state
          ENDC
@@ -2472,7 +2472,7 @@ L0CB3    ldb   #$10       Get select callcode
          beq   L0CE1      no, skip activate
          pshs  y,u        Preserve regs
          bsr   L0CF2      any overlay or framed windows?
-         IFNE  GrfInt-1
+         IFNE  CoGrf-1
          bcs   L0CCA      no, skip ahead
          lbsr  L13E9      set menu bar to active state
          ENDC
@@ -2503,7 +2503,7 @@ L0CEC    ldb   #$46       get set window code
 L0CF2    lda   #$FF       initialize new window table flag
          sta   >WGlobal+g00BE
 L0CFA    lbsr  L06AE      get window table pointer of this window
-         IFNE  GrfInt-1
+         IFNE  CoGrf-1
          lbsr  L0E34      framed or scroll barred window?
          bcs   L0D06      no, skip ahead
          rts   
@@ -2522,7 +2522,7 @@ L0D1B    sta   V.WinNum,u   save back link as current window in static mem
 L0D20    coma             set carry & return
          rts   
 
-         IFNE  GrfInt-1
+         IFNE  CoGrf-1
 * SS.WnSet SetStt call processor
 L0D23    lbsr  L1358      setup the graphics table entry
          ldx   PD.RGS,y   get register stack pointer
@@ -2569,7 +2569,7 @@ L0D77    bcs   L0D7F      error on printing, return
          lbra  L11F3      change window working size for frame & exit
 
 * Setup graphics table entry with window type & check sizes
-* Entry: A=Window type (Not related to grfdrv, windint specific)
+* Entry: A=Window type (Not related to grfdrv, cowin specific)
 *        X=Graphics table entry pointer
 *        Y=Path descriptor pointer
 
@@ -2701,7 +2701,7 @@ L0E34    pshs  a,x        preserve registers
          tst   V.TYPE,u   is this a window?
          bpl   L0E48      no, return with carry
          lbsr  L06B9      get graphics table pointer
-         lda   Gt.WTyp,x  get windint screen type
+         lda   Gt.WTyp,x  get cowin screen type
          beq   L0E48      if no box, return with carry set
          cmpa  #WT.FSWin  scroll barred or framed?
          bhi   L0E48      no, return carry set
@@ -2855,7 +2855,7 @@ L0FBB    pshs  y,u        preserve registers
          lbsr  L0E04      we an overlay window?
          bcc   L0FF0      no, return
          lbsr  L06B9      get graphics table pointer
-         lda   Gt.WTyp,x  get windint screen type
+         lda   Gt.WTyp,x  get cowin screen type
          beq   L0FF0      it's a plain window, return
          cmpa  #WT.FSWin  framed or scroll barred window?
          bhi   L0FF0      no, return
@@ -2923,7 +2923,7 @@ L0FFC    ldy   >WGlobal+g00BB     Get ptr to work window table
          puls  a,pc
          ENDC
 
-         IFNE  GrfInt-1
+         IFNE  CoGrf-1
 * Draw a 3D frame around window for scroll barred window
 FSWin    ldy   >WGlobal+g00BB     Get ptr to work window table
          lbsr  L12BE      clear screen
@@ -3610,7 +3610,7 @@ L13B5    pshs  u,y,d
          ldy   #MN.SIZ
          bra   L1381      Copy the memory
 
-* Set the root window menu bar to active state (Called from CC3IO special calls)
+* Set the root window menu bar to active state (Called from VTIO special calls)
 L13E9    lbsr  L116C      setup working window table
          leas  -8,s       make a buffer
          clr   2,s        clear a flag?
@@ -3813,10 +3813,10 @@ L1515    leas  <-$23,s    make a buffer
          tst   >WGlobal+G.CrDvFl     Are we the current active device?
          beq   L160A      No, return with nothing
          ldx   #WGlobal+G.Mouse Get ptr to mouse packet
-         clr   >WGlobal+G.WIBusy     flag windint free
+         clr   >WGlobal+G.WIBusy     flag cowin free
 L1530    tst   Pt.CBSA,x  button A still down?
          bne   L1530      yes, wait for release
-         inc   >WGlobal+G.WIBusy     flag windint busy
+         inc   >WGlobal+G.WIBusy     flag cowin busy
          lbsr  L06A0      verify window
          lbsr  L1D24      copy current mouse coords to work cords.
          leax  Pt.Siz,x   point to my work coords (hidden outside packet)
@@ -4322,10 +4322,10 @@ L1864    clra             set X co-ordinate
 * Main pointer processing loop for a pulldown
 * waits for either a keypress or a mouse button click while updating
 * item text in pull down
-L18A5    clr   >WGlobal+G.WIBusy     flag windint not busy
-         ldx   #1         let cc3io scan keyboard & update mouse pointer
+L18A5    clr   >WGlobal+G.WIBusy     flag cowin not busy
+         ldx   #1         let VTIO scan keyboard & update mouse pointer
          os9   F$Sleep
-         inc   >WGlobal+G.WIBusy     flag windint busy
+         inc   >WGlobal+G.WIBusy     flag cowin busy
          lda   >WGlobal+g00BF     was a key pressed?
          bmi   L18CB      no, skip ahead
          beq   L1943      already processed, remove pull down & return
@@ -4578,7 +4578,7 @@ L1A33    tst   Pt.CBSA,x  button A down?
          clr   Pt.TTSA,x  clear time this state
          rts              return
 
-* Copy window table into a buffer for preservation while windint is processing
+* Copy window table into a buffer for preservation while cowin is processing
 * the menu bar selections. It does this for ease of restoration of window
 * to do overlays & such
 L1A3C    pshs  d          preserve registers
@@ -4866,8 +4866,8 @@ L1B72    std   ,s         Save current mouse coords
 *   in a bordered window, this means it could be in the menu bar or scroll bar
 *   areas (within DWSet range, but not CWArea)
 * Gets here ok when cursor on different window
-* REQUIRES TC9/CC3IO TO SET MSEMOVE FLAG WHEN BUTTON PRESSED (DONE IN TC9IO)
-* May want to change to send MsSig here in WINDINT instead - then we can leave
+* REQUIRES VTIO TO SET MSEMOVE FLAG WHEN BUTTON PRESSED (DONE IN TC9IO)
+* May want to change to send MsSig here in CoWin instead - then we can leave
 * Tc9/CC3 IO alone.
 * NOTE: WE _WILL_ HAVE TO MAKE SURE IT IS A WINDOW LINKED WITH A PROCESS IN
 *   SOME WAY (AS TC9IO'S CLEAR ROUTINE DOES), AS IT WILL SELECT "GHOST"
@@ -4927,7 +4927,7 @@ CheckScn equ   *
 * See TC9IO source, but basically, get Device Table ptr, get # of devices max,
 *   use that as range, Get our V$DRIV, check for match (going through Device
 *   table), if match, get V$STAT for static storage. Go in there, make sure
-*   $1d indicates GRFDRV/WINDINT, $1e >0 (Valid window). If so, we found our
+*   $1d indicates GRFDRV/CoWin, $1e >0 (Valid window). If so, we found our
 *   ptr. If not, skip to AdjstCrs. Do NOT have to go back in loop, as only
 *   one window can be in same area (at this time... until movable/resizable
 *   windows are implimented in 16K grfdrv)
@@ -5223,7 +5223,7 @@ L1CBC    ldb   #Wt.Siz    get size of entrys
          ENDC
          rts              return
 
-* Update mouse packet pointer status based on where it is (called from CC3IO)
+* Update mouse packet pointer status based on where it is (called from VTIO)
 * Entry: None
 L1CC8    lbsr  L06A0      verify window (don't care about errors)
          bsr   L1D24      copy current mouse coords to work area
@@ -5490,7 +5490,7 @@ BoldOff  equ    *
          clrb             No error & return
          rts   
 
-         IFNE  GrfInt-1
+         IFNE  CoGrf-1
 * FIXMENU - redos the graphics on the menu bar affected by menu pulldown
 * Entry: X=Ptr to menu text (NUL terminated)
 *        Y=Window table ptr

@@ -42,7 +42,7 @@ entry    equ   *
 
 * Read - read keys if pressed
 * Exit: A = key pressed
-ReadKys  ldu   <D.CCMem		Get CC3IO global memory into U
+ReadKys  ldu   <D.CCMem		Get VTIO global memory into U
          ldx   #PIA0Base	base address of PIA #0
          ldb   #$FF
          stb   $02,x		clear all row strobes
@@ -345,7 +345,7 @@ Term     clrb
 * This entry point tests for the F1/F2 function keys on a CoCo 3
 * keyboard.
 * Exit: A = Function keys pressed (Bit 0 = F1, Bit 2 = F2)
-FuncKeys ldu   <D.CCMem		get CC3IO global mem pointer into U
+FuncKeys ldu   <D.CCMem		get VTIO global mem pointer into U
          ldx   #PIA0Base	get address of PIA #0
          clra			clear A
          ldb   #%11011111	strobe column #6 of PIA #0

@@ -73,12 +73,14 @@ $NITROS9DIR/$DISTRO/modules/scf.mn
 * CoCo I/O driver and subroutine modules
 $NITROS9DIR/$DISTRO/modules/ccio.dr
 * Choose from CO32 (32x16 VDG) or CO51 (51x24 graphics screen)
-$NITROS9DIR/$DISTRO/modules/co32.io
+*$NITROS9DIR/$DISTRO/modules/co32.io
 *$NITROS9DIR/$DISTRO/modules/co51.io
+$NITROS9DIR/$DISTRO/modules/wordpakii.dr
 *
 * Select only one term descriptor
-$NITROS9DIR/$DISTRO/modules/term32.dt
+*$NITROS9DIR/$DISTRO/modules/term32.dt
 *$NITROS9DIR/$DISTRO/modules/term51.dt
+$NITROS9DIR/$DISTRO/modules/term80.dt
 *$NITROS9DIR/$DISTRO/modules/term_sio.dt
 *$NITROS9DIR/$DISTRO/modules/term_sc6551.dt
 *
@@ -115,7 +117,7 @@ $NITROS9DIR/$DISTRO/modules/clock_60hz
 * hardware clocks are supported: Burke & Burke, Disto 2-N-1, Disto 4-N-1,
 * Eliminator, Harris, SmartWatch, Cloud-9, the MESS emulator, Jeff
 * Vavasour's CoCo emulator, and DriveWire.
-$NITROS9DIR/$DISTRO/modules/clock2_soft
+*$NITROS9DIR/$DISTRO/modules/clock2_soft
 *$NITROS9DIR/$DISTRO/modules/clock2_bnb
 *$NITROS9DIR/$DISTRO/modules/clock2_disto2
 *$NITROS9DIR/$DISTRO/modules/clock2_disto4
@@ -125,7 +127,7 @@ $NITROS9DIR/$DISTRO/modules/clock2_soft
 *$NITROS9DIR/$DISTRO/modules/clock2_jvemu
 *$NITROS9DIR/$DISTRO/modules/clock2_messemu
 *$NITROS9DIR/$DISTRO/modules/clock2_cloud9
-*$NITROS9DIR/$DISTRO/modules/clock2_dw
+$CLOUD9DIR/Products/DriveWire/software/$DISTRO/clock2_dw
 * 
 ***************************************
 * System Kick-Start Module
