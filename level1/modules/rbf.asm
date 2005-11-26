@@ -11,6 +11,9 @@
 *
 *  25      2003/10/07  Rodney V. Hamilton
 * Fix for LSN0 DD.TOT=0 lockout problem
+*
+*  26      2005/11/26  Boisy G. Pitre
+* Added SS.FDInf which is now used by dir -e
 
          nam   RBF
          ttl   Disk file manager
@@ -24,7 +27,7 @@
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   25
+edition  set   26
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -635,7 +638,7 @@ L0515    cmpx  ,s
 L051B    puls  pc,u,y,x
 
 GetStat  ldb   $02,u
-         cmpb  #$00
+         cmpb  #SS.Opt
          beq   L0543
          cmpb  #$06
          bne   L052F
@@ -643,26 +646,26 @@ GetStat  ldb   $02,u
 L0529    clra
          ldb   #$01
          lbra  L03CD
-L052F    cmpb  #$01
+L052F    cmpb  #SS.Ready
          bne   L0536
          clr   $02,u
          rts   
-L0536    cmpb  #$02
+L0536    cmpb  #SS.Size
          bne   L0544
          ldd   $0F,y
          std   $04,u
          ldd   <$11,y
          std   $08,u
 L0543    rts
-L0544    cmpb  #$05
+L0544    cmpb  #SS.Pos
          bne   L0551
          ldd   $0B,y
          std   $04,u
          ldd   $0D,y
          std   $08,u
-         rts   
-L0551    cmpb  #$0F
-         bne   L056B
+Gst5FF   rts   
+L0551    cmpb  #SS.FD
+         bne   SSFDInf
          lbsr  L0CD4
          bcs   L0543
          ldu   $06,y
@@ -673,6 +676,19 @@ L0551    cmpb  #$0F
 L0564    ldx   $04,u
          ldu   $08,y
          lbra  L03FD
+SSFDInf  cmpb  #SS.FDInf
+         bne   L056B
+         lbsr  L0D72            check for sector flush
+         bcs   Gst5FF
+         ldb   R$Y,u            get MSB of sector #
+         ldx   R$U,u            get LSW of sector #
+         lbsr  L0CEB            read the sector
+         bcs   Gst5FF           error, return
+         ldu   PD.RGS,y         get register stack pointer
+         ldd   R$Y,u            get length of data to move
+         clra                   clear MSB
+         bra   L0564            move it to user
+
 L056B    lda   #$09
          lbra  L0CED
 
