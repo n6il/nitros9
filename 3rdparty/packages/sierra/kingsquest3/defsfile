@@ -3,5 +3,4 @@ Level	equ	2
 	use	os9defs
 	use	scfdefs
         use     systype
-        use     cc3iodefs
-        use     releasedefs
+        use     vtiodefs_cc3
