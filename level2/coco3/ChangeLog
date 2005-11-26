@@ -4,6 +4,7 @@ NitrOS-9/6809 Level 2 V03.02.06:
 - dir and mdir now have more robust support for various screen widths when
   displaying data.
 - dir and attr now use the SS.FDInf getstat call to obtain a file's FD sector.
+- dsave now has -t and -n options.
 - A bug in format which affected 128MB partitions has been fixed.
 - /D2 descriptor now part of standard bootfile.
 

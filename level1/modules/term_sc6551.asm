@@ -1,5 +1,5 @@
 ********************************************************************
-* TERM - 6551 device descriptor
+* TERM - 6551 Device Descriptor
 *
 * $Id$
 *
@@ -8,7 +8,7 @@
 * ------------------------------------------------------------------
 
          nam   TERM
-         ttl   6551 device descriptor
+         ttl   6551 Device Descriptor
 
 * Disassembled 98/08/23 21:16:50 by Disasm v1.6 (C) 1988 by RML
 

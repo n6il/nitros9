@@ -135,7 +135,7 @@ Loop2    bsr   SendByte   send it (Y=tone delay)
          ldb   >WGlobal+G.TnCnt else get ticks left
          bne   ToneLoop   and do again if any, else...
 
-* Note: G.TnCnt is counted down by cc3io at 60hz.
+* Note: G.TnCnt is counted down by vtio at 60hz.
 
 ToneExit clr   >WGlobal+G.BelTnF clear bell flag
          puls  a          reset PIA's as before:

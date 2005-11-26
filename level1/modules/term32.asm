@@ -1,5 +1,5 @@
 ********************************************************************
-* TERM - VDG screen device descriptor
+* TERM - VDG Screen Device Descriptor
 *
 * $Id$
 *
@@ -10,14 +10,14 @@
 * From Tandy OS-9 Level One VR 02.00.00
 
          nam   TERM
-         ttl   VDG screen device descriptor
+         ttl   VDG Screen Device Descriptor
 
 * Disassembled 98/08/23 17:19:25 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
          use   scfdefs
-	 use   cciodefs
+	 use   vtiodefs
          endc
 
 tylg     set   Devic+Objct   
@@ -50,7 +50,7 @@ rev      set   $00
          fcb   C$QUIT         quit character
          fcb   C$BSP          backspace echo character
          fcb   C$BELL         line overflow character (bell)
-         fcb   ModCo32        init value for dev ctl reg
+         fcb   ModCoVDG       init value for dev ctl reg
          fcb   $00            baud rate
          fdb   name           copy of descriptor name address
          fcb   $00            acia xon char
@@ -61,7 +61,7 @@ initsize equ   *
 
 name     fcs   /TERM/
 mgrnam   fcs   /SCF/
-drvnam   fcs   /CCIO/
+drvnam   fcs   /VTIO/
 
          emod
 eom      equ   *

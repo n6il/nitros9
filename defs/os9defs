@@ -702,7 +702,7 @@ Feature2 rmb   1          feature byte 2
          rmb   8          reserved for future use
 
          IFGT  Level-1
-* -- CC3IO area -- (NitrOS-9 Level 2 and above) *
+* -- VTIO area -- (NitrOS-9 Level 2 and above) *
 MonType  rmb   1          Monitor type (0=CMP,1=RGB,2=MONO)
 MouseInf rmb   2          Mouse resolution/Mouse port; was 1, major error RG.
 KeyRptS  rmb   1          Key repeat start constant

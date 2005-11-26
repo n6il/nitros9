@@ -4,4 +4,4 @@ Level    equ   2
          use   scfdefs
          use   rbfdefs
          use   systype
-         use   cc3iodefs
+         use   vtiodefs_cc3

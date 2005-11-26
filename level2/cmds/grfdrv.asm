@@ -153,7 +153,7 @@
 **            - Added screen table references from cc3global.defs
 **            - Added graphics table references from cc3global.defs
 **            - Added graphics buffer references from cc3global.defs
-**   11/12/93 - Removed code that has been moved to WindInt/GrfInt
+**   11/12/93 - Removed code that has been moved to CoWin/CoGrf
 **   12/15/93 - Changed TST Wt.BSW,y @ L0F8E to LDB Wt.BSW,y (cycle faster)
 **   12/21/93 - Moved L1E9D to near next line routine to speed up some alpha
 **              writes. Also used U instead of Y in L1E9D (smaller & a cycle
@@ -191,7 +191,7 @@
 **              and Overlay window saves)
 **              Also changed LBSR L0CBD to BSR @ L0BEA (part of OWSet save)
 **   05/05/94 - Changed L0B79: Took out TFR A,B, changed CLRA to CLRE, changed
-**              TFR D,W to TFR W,D (reflects change in WindInt)
+**              TFR D,W to TFR W,D (reflects change in CoWin)
 **   05/08/94 - Eliminated LDB #$FF @ L108C, change BNE above it to go to
 **              L108E instead (saves 2 cyc/bytes in proportional fonts)
 **            - Change to L127E to move LDF to just before BRA (saves 3 cyc
@@ -288,7 +288,7 @@
 **          - Changed 3 LBSR's to BSR's (@ L01B5,L1BB4,L1D40)
 ** 12/02/97 - Attempted to fix GetBlk, PutBlk & GPLoad to handle full width
 **            lines @ L0BAE (GetBlk), L0CBB (PutBlk),
-**            NOTE: TO SAVE SPACE GRFDRV, MAYBE HAVE WINDINT DO THE INITIAL
+**            NOTE: TO SAVE SPACE GRFDRV, MAYBE HAVE CoWin DO THE INITIAL
 **              DEC ADJUSTMENTS, AND JUST DO THE INC'S IN GRFDRV
 ** 07/10/98 - Fixed OWSet/CWArea bug: changed DECB to DECD @ L05C0
 ** 07/21/98 - Fixed screen wrap on CWAREA or Overlay window on hardware text
@@ -332,7 +332,7 @@ name     fcs   /GrfDrv/
 
 ******************************
 * Main entry point
-*   Entry: B=Internal function code (from GRFINT or WINDINT)
+*   Entry: B=Internal function code (from CoGRF or CoWin)
 *          A=Character (for Write routine)
 *          U=Pointer to GRFDRV memory area ($1100 in system)
 *          Y=Current window Window Table Pointer
@@ -369,18 +369,18 @@ L0028    fdb   L0080+GrfStrt  Initialization ($00)
          fdb   L056E+GrfStrt  CWArea         ($0E)
          fdb   L07D7+GrfStrt  Select         ($10)
          fdb   L0611+GrfStrt  PSet           ($12)
-         fdb   $0000          Border         ($14) NOW IN WINDINT
-         fdb   $0000          Palette        ($16) NOW IN WINDINT
+         fdb   $0000          Border         ($14) NOW IN CoWin
+         fdb   $0000          Palette        ($16) NOW IN CoWin
          fdb   L063C+GrfStrt  Font           ($18)
          fdb   L068B+GrfStrt  GCSet          ($1A)
-         fdb   $0000          DefColor       ($1C) NOW IN WINDINT
+         fdb   $0000          DefColor       ($1C) NOW IN CoWin
          fdb   L06A4+GrfStrt  LSet           ($1E)
          fdb   L0707+GrfStrt  FColor         ($20)
          fdb   L0726+GrfStrt  BColor         ($22)
-         fdb   $0000          TChrSW         ($24) NOW IN WINDINT
-         fdb   $0000          PropSW         ($26) NOW IN WINDINT
-         fdb   $0000          Scale          ($28) NOW IN WINDINT
-         fdb   $0000          Bold           ($2A) NOW IN WINDINT
+         fdb   $0000          TChrSW         ($24) NOW IN CoWin
+         fdb   $0000          PropSW         ($26) NOW IN CoWin
+         fdb   $0000          Scale          ($28) NOW IN CoWin
+         fdb   $0000          Bold           ($2A) NOW IN CoWin
          fdb   L08DC+GrfStrt  DefGB          ($2C)
          fdb   L0A3A+GrfStrt  KillBuf        ($2E)
          fdb   L0B3F+GrfStrt  GPLoad         ($30)
@@ -503,7 +503,7 @@ L00A9    clr   ,x           Set first block # used (A=0 from L0097 loop)
          stb   <$35            previous)
          std   <$39           Text cursor & gfx cursors off
 L0102    clra
-         tfr   a,dp           Set DP to 0 for Wind/GrfInt, which need it there
+         tfr   a,dp           Set DP to 0 for Wind/CoGrf, which need it there
          rts                  Return
 
 * Termination routine
@@ -1782,7 +1782,7 @@ L08DB    ldx   #$FF90       point to Gime registers
 *ATD: Do a TFR 0,DP: larger but faster?
          ldu   #$0090       point to shadow RAM for GIME hardware
          IFNE  H6309
-         aim   #$7f,,u      remove Coco 1/2 compatibility bit: set from VDGInt
+         aim   #$7f,,u      remove Coco 1/2 compatibility bit: set from CoVDG
          ldb   ,u           get new value
          ELSE
          ldb   ,u 
@@ -2372,7 +2372,7 @@ L0B60    stb   Wt.NBlk,y    Save buffer block # to GPLoad into
          jmp   >GrfStrt+L0F78 no errors, and exit
 
 * Move buffer entry point (This ONLY gets called via the Move Buffer vector
-*   from GRFINT or WINDINT)
+*   from CoGRF or CoWin)
 * It's used to do Get/Put buffer loads in small chunks since GRFDRV's memory
 *   map can't fit a window's static mem
 * Entry: F=Byte count (Maximum value=72 / $42)
@@ -2381,7 +2381,7 @@ L0B79    ldb   Wt.NBlk,y    get block # for next graphic buffer
          stb   <$0097       save it
          lbsr  L017C        go map it in
          ldx   Wt.NOff,y    get offset into block
-         ldu   #$1200       Point to buffer of where GRFInt/WindInt put info
+         ldu   #$1200       Point to buffer of where GRFInt/CoWin put info
          IFNE  H6309
          clre               make 16 bit number in W
          tfr   w,d          dupe count into D
@@ -2389,7 +2389,7 @@ L0B79    ldb   Wt.NBlk,y    get block # for next graphic buffer
          ELSE
          clra
          sta   <$B5
-         ldb   <$B6         loaded in windint
+         ldb   <$B6         loaded in CoWin
          pshs  x
          addd  ,s++         addr x,d
          ENDC 
@@ -4091,7 +4091,7 @@ L1129    lbsr  L0FFF         Set up font sizes (and font if on gfx screen)
          asla               2 bytes per entry
          ldd   a,x          get pointer to routine
          jsr   d,x          call it
-L1130    jmp   >GrfStrt+L0F78 return to WindInt: No errors
+L1130    jmp   >GrfStrt+L0F78 return to CoWin: No errors
 
 T.1133   fdb   L11E1-T.1133 1 home cursor
          fdb   L1130-T.1133 2   GOTO X,Y: handled elsewhere
@@ -6534,7 +6534,7 @@ X1F18    ldb   #1             Bump screen address by 1
 
 * Switch to next line for FFill
 L1CC2    leas  4,s          Eat last set of X start ($47), end ($9B)
-* $101B is a counter counted down continuously by CC3IO.
+* $101B is a counter counted down continuously by VTIO.
 * this is DEBUG code... check out 1D28: if no NEW PIXEL is put down for
 * 255 ticks (~4 seconds), exit with error.
 * May have to add it back in for SnakeByte Pattern paint bug?

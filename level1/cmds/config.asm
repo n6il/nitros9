@@ -2707,9 +2707,9 @@ L19CF    fcc   "SysGo"
          fcb   $00
 L19D5    fcc   "Shell"
          fcb   $00
-L19DB    fcc   "CCIO"
+L19DB    fcc   "VTIO"
          fcb   $00
-L19E0    fcc   "ccio"
+L19E0    fcc   "vtio"
          fcb   $00
 L19E5    fcc   "Clock.60hz"
          fcb   $00

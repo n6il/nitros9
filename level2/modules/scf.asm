@@ -913,7 +913,7 @@ L0508    pshs  d
 * Use callcode $06 to call grfdrv (old DWProtSW from previous versions,
 *   now unused by GrfDrv
 L0523    ldb   PD.PAR,y     get device parity: bit 7 set = window
-         cmpb  #$80         is it even potentially a WindInt window?
+         cmpb  #$80         is it even potentially a CoWin window?
          bne   L0524        no, skip the rest of the crap
 
          clrb               set to no uppercase conversion
@@ -1356,8 +1356,7 @@ get.wptr pshs  x,u
          ldx   V$DRIV,u     get device driver module
          ldd   M$Name,x     offset to name
          ldd   d,x
-*         cmpd  #"CC         is it CC3IO?
-         cmpd  #$4343         is it CC3IO?
+         cmpd  #"VT         is it VTIO?
          bne   no.fast      no, don't do the fast stuff
          ldd   >WGlobal+G.GrfEnt     does GrfDrv have an entry address?
          beq   no.fast      nope, don't bother calling it.
@@ -1366,7 +1365,7 @@ get.wptr pshs  x,u
          tst   V.ParmCnt,u  are we busy getting more parameters?
          bne   no.fast      yes, don't do buffered writes
 
-* Get window table pointer & verify it: copied from WindInt and modified
+* Get window table pointer & verify it: copied from CoWin and modified
          ldb   V.WinNum,u   Get window # from device mem
          lda   #Wt.Siz      Size of each entry
          mul                Calculate window table offset

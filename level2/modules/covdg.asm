@@ -1,5 +1,5 @@
 ********************************************************************
-* VDGInt - CoCo 3 VDG I/O module
+* CoVDG - CoCo 3 VDG I/O module
 *
 * $Id$
 *
@@ -19,7 +19,7 @@
 *   4r1    2003/09/16  Robert Gault
 * Added patch to work 1MB and 2MB CoCo 3s.
 
-         nam   VDGInt
+         nam   CoVDG
          ttl   CoCo 3 VDG I/O module
 
 * Disassembled 98/09/31 12:15:57 by Disasm v1.6 (C) 1988 by RML
@@ -45,7 +45,7 @@ size     equ   .
 
          fcb   $07 
 
-name     fcs   /VDGInt/
+name     fcs   /CoVDG/
          fcb   edition
 
 start    lbra  Read		actually more like INIZ...
@@ -55,11 +55,11 @@ start    lbra  Read		actually more like INIZ...
          lbra  Term 
 
 * Update Window
-* Called from CC3IO
+* Called from VTIO
 * Entry:  A = function code
 *           0 = select new window to be active
 *           1 = update mouse packet
-*          >1 = only used by GRFINT/WINDINT
+*          >1 = only used by CoGrf/CoWin
 *         U = device memory pointer
 *         X = path descriptor pointer
 
@@ -290,7 +290,7 @@ DCodeTbl fdb   NoOp-DCodeTbl		$00 - No Operation
          fdb   ErEOLine-DCodeTbl	$04 - Erase to End Of Line
          fdb   CrsrSw-DCodeTbl		$05 - Switch Cursor Color
          fdb   CurRght-DCodeTbl		$06 - Move Cursor Right
-         fdb   NoOp-DCodeTbl		$07 - Bell (Handled by CC3IO)
+         fdb   NoOp-DCodeTbl		$07 - Bell (Handled by VTIO)
          fdb   CurLeft-DCodeTbl		$08 - Move Cursor Left
          fdb   CurUp-DCodeTbl		$09 - Move Cursor Up
          fdb   CurDown-DCodeTbl		$0A - Move Cursor Down

@@ -10,7 +10,7 @@
 * Added annotations to the L2 Upgrade distribution version
 *
 *   7      2003/08/28  Robert gault
-* Contains routine for H6309 from CC3IO
+* Contains routine for H6309 from VTIO
 
          nam   JoyDrv
          ttl   Joystick Driver for CoCo 3 Hi-Res Mouse

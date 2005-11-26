@@ -20,7 +20,7 @@
 
          ifp1
          use   defsfile
-         use   cciodefs
+         use   vtiodefs
          endc
 
 tylg     set   Drivr+Objct   

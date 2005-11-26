@@ -43,7 +43,7 @@ printf("Building '%s' distribution onto '%s'\n", $DISTRO, $diskname);
 $multiplier = 2;
 $os9_sectors = $hdbdos_offset * $multiplier;
 printf("Number of sectors: %d\n", $os9_sectors);
-$hdb_drives = $num_hdbdos_disks - 2;
+$hdb_drives = $num_hdbdos_disks - 3;
 
 print "########## PART  I ##########\n";
 print "#                           #\n";
@@ -126,7 +126,7 @@ print "Step 2 - Build the HDB-DOS drives\n";
 system("rm hdbdrives.dsk");
 system("decb dskini -h$hdb_drives hdbdrives.dsk");
 system("rm hdbdrives2.dsk");
-system("cat $CLOUD9DIR/Products/HDB-DOS/Software/hdbdos.dsk hdbdrives.dsk boot.dsk>hdbdrives2.dsk");
+system("cat $CLOUD9DIR/Products/HDB-DOS/Software/hdbdos.dsk hdbdrives.dsk $CLOUD9DIR/Products/SuperIDE/Distributions/v1.0/superide.dsk boot.dsk>hdbdrives2.dsk");
 system("rm hdbdrives.dsk boot.dsk");
 system("decb hdbconv hdbdrives2.dsk hdbdrives.dsk");
 system("rm hdbdrives2.dsk");

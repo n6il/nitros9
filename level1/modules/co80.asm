@@ -1,5 +1,5 @@
 ********************************************************************
-* CO80 - Mysterious 80 column co-driver for CCIO
+* CO80 - Mysterious 80 Column Co-Driver for VTIO
 *
 * $Id$
 *
@@ -16,13 +16,13 @@
 * recoded dispatch table fcbs
 
          nam   CO80
-         ttl   Mysterious 80 column co-driver for CCIO
+         ttl   Mysterious 80 column co-driver for VTIO
 
 BASEADDR equ   $FF78
 
          ifp1
          use   defsfile
-         use   cciodefs
+         use   vtiodefs
          endc
 
 tylg     set   Systm+Objct   
@@ -138,7 +138,7 @@ FuncTbl  fdb   NoOp-FuncTbl	$00:no-op (null)
          fdb   ErEOL-FuncTbl	$04:ERASE TO EOL
          fdb   CurOnOff-FuncTbl	$05:CURSOR ON/OFF
          fdb   CurRgt-FuncTbl	$06:CURSOR RIGHT
-         fdb   NoOp-FuncTbl	$07:no-op (bel:handled in CCIO)
+         fdb   NoOp-FuncTbl	$07:no-op (bel:handled in VTIO)
          fdb   CurLft-FuncTbl	$08:CURSOR LEFT
          fdb   CurUp-FuncTbl	$09:CURSOR UP
          fdb   CurDown-FuncTbl	$0A:CURSOR DOWN

@@ -37,7 +37,7 @@ rev      set   $00
 * $0100 1 page allocated for '/term' device static storage
 * $0100 1 page allocated for '/term' PD.BUF buffer
 *
-* CC3IO does an F$Load to get GrfDrv into memory, and we then have
+* VTIO does an F$Load to get GrfDrv into memory, and we then have
 * $0200 2 pages allocated by IOMan via F$AllPrc, for the F$Load
 *-------   total
 * $0700   pages UP from $4000, so GrfDrv can load

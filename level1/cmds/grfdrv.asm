@@ -1,5 +1,5 @@
 ********************************************************************
-* GRFO - Graphics module
+* GrfDrv - Graphics module
 *
 * $Id$
 *
@@ -9,14 +9,14 @@
 *   1      ????/??/??
 * From Tandy OS-9 Level One VR 02.00.00.
 
-         nam   GRFO
+         nam   GrfDrv
          ttl   Graphics module
 
 * Disassembled 02/04/05 23:44:21 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
          use   defsfile
-         use   cciodefs
+         use   vtiodefs
          endc
 
 tylg     set   Systm+Objct   
@@ -30,7 +30,7 @@ edition  set   1
 size     equ   .
 
          fcb   $07 
-name     fcs   /GRFO/
+name     fcs   /GrfDrv/
          fcb   edition
 
 * Dispatch table
