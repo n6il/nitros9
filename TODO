@@ -7,6 +7,9 @@ cc3io
 	  up/torn down).  This a long-standing bug, but doesn't impact the typical
 	  user.  More of an irritant than anything else.
 
+dsave
+	- Add -t and -n options and update dsave.hp (DONE)
+
 rb1773
 	- Fix SS.WrTrk to handle high density drives (is this working now?)
 	- Fix SS.WrtTrk bug which causes crashes on some CoCos (I believe the
