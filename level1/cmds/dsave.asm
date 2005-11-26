@@ -12,6 +12,9 @@
 *   1r1    2003/12/11  Boisy G. Pitre
 * Fixed -b option so that it prepends device name in front of os9boot
 * filename.  Also fixed -b= option to work as well.
+*
+*   2r0    2005/11/26  Boisy G. Pitre
+* Added -t and -n options, ala OS-9/68K.
 
          nam   dsave
          ttl   Multi-file copy utility
@@ -29,8 +32,8 @@ PARMSZ   set   256	estimated parameter size in bytes
 * Module header definitions
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
-edition  set   1
+rev      set   $00
+edition  set   2
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -49,6 +52,8 @@ doboot   rmb   1
 indent   rmb   1
 onelevel rmb   1
 nomakdir rmb   1
+noload   rmb   1	don't load copy/cmp
+notmode  rmb   1
 rewrite  rmb   1
 cpymemsz rmb   1
 doverify rmb   1
@@ -269,8 +274,16 @@ IsItM    cmpa  #'m		is it this option?
          sta   <nomakdir
          bra   FixCmdLn
 IsItR    cmpa  #'r		is it this option?
-         bne   IsItS		branch if not
+         bne   IsItT		branch if not
          sta   <rewrite
+         bra   FixCmdLn
+IsItT    cmpa  #'t		is it this option?
+         bne   IsItN		branch if not
+         sta   <notmode
+         bra   FixCmdLn
+IsItN    cmpa  #'n		is it this option?
+         bne   IsItS		branch if not
+         sta   <noload
          bra   FixCmdLn
 IsItS    cmpa  #'s		is it this option?
          bne   IsItV		branch if not
@@ -658,6 +671,8 @@ CopyCmd3 lbsr  StrCpy			copy command
          rts
 
 DoPauseOn
+         tst   <notmode			do we do the tmode?
+         bne   CPRts
          leax  TMode,pcr
          bsr   CopyCmd
          leax  TPause,pcr		get pause command
@@ -691,6 +706,8 @@ CPRts    rts
 *ExecRTS  puls  u,pc
 
 DoPauseOff 
+         tst   <notmode			do we do the tmode?
+         bne   CPRts
          leax  TMode,pcr
          bsr   CopyCmd
          leax  TNoPause,pcr
@@ -699,6 +716,8 @@ DoPauseOff
 *         bra   ExecCmd
 
 DoLoadCmp
+         tst   <noload			do we load the utility?
+         bne   CPRts
          leax  Load,pcr			point to load command
          bsr   CopyCmd			copy it to buffer
          leax  Cmp,pcr			point to copy command
@@ -707,6 +726,8 @@ DoLoadCmp
 *         bra   ExecCmd
 
 DoUnlinkCmp
+         tst   <noload			do we load the utility?
+         bne   CPRts
          leax  Unlink,pcr
          lbsr  CopyCmd
          leax  Cmp,pcr
@@ -715,6 +736,8 @@ DoUnlinkCmp
 *         bra   ExecCmd
 
 DoLoadCopy
+         tst   <noload			do we load the utility?
+         bne   CPRts
          leax  Load,pcr			point to load command
          lbsr  CopyCmd			copy it to buffer
          leax  Copy,pcr			point to copy command
@@ -723,6 +746,8 @@ DoLoadCopy
 *         bra   ExecCmd
 
 DoUnlinkCopy
+         tst   <noload			do we load the utility?
+         bne   CPRts
          leax  Unlink,pcr
          lbsr  CopyCmd
          leax  Copy,pcr
