@@ -79,7 +79,7 @@ datend   equ   .
 
 E$Param  equ   $38 bad Parameter error
 
-cc3io    fcs   /CC3IO/ used to compare device driver name
+vtio     fcs   /VTIO/ used to compare device driver name
 
 tmpdat   fcb   0,0 mini-dat image for block 0 data fetches
 
@@ -92,7 +92,7 @@ blktable fcb   1,1,0,0,2,2,4,4
 errmsg1  equ   *
          fcc   /Requested device not in device table/
 errm1ln  equ   *-errmsg1
-errmsg2  fcc   /Requested device is not CC3IO/
+errmsg2  fcc   /Requested device is not VTIO/
 errm2ln  equ   *-errmsg2
 errmsg3  fcc   /Can not access window until written to/
 errm3ln  equ   *-errmsg3
@@ -229,7 +229,7 @@ not.l3   ldy   #2 2 bytes to get
          ldd   V$DRIV,x driver module start addr
          addd  mdname,u + module offset to driver name
          tfr   d,x put it in x so we can grab it
-         ldy   #5 5 bytes in name (CC3IO)
+         ldy   #5 5 bytes in name (VTIO)
          ldd   <datimg addr of sys DAT image
          pshs  u save u
          leau  devname,u addr of receiver
@@ -237,10 +237,10 @@ not.l3   ldy   #2 2 bytes to get
          puls  u restore u
          lbcs  exit exit on error
 
-* we got the requested device...now see if its cc3io
+* we got the requested device...now see if its vtio
 
          ldb   #5 5 bytes to compare
-         leax  cc3io,pcr get addr of 'CC3IO'
+         leax  vtio,pcr get addr of 'VTIO'
          leay  devname,u get addr of the driver nam
          os9   F$CmpNam see if they're the same
          lbcs  error2 if not-skip to next entry
