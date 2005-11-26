@@ -12,6 +12,9 @@
 *  19r1    2003/11/14  Robert Gault
 * Patches to scrollbar windows to recover arrows and markers.
 * Includes new stdfonts with graphics added to the end.
+*
+*  1       2005/11/26  Boisy G. Pitre
+* Renamed from WindInt/GrfInt, reset edition.
 
          nam   CoGrf/CoWin
          ttl   NitrOS-9 Window Module
@@ -22,8 +25,8 @@
   
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
-edition  equ   19
+rev      set   $00
+edition  equ   1
 
 * Color table for 3D look stuff & others - WILL NEED TO SWAP 1 & 2 FOR MENUS
 * This should now match VIEW's color table
