@@ -5,4 +5,4 @@ echo * world of 3-D adventuring.  *
 link shell
 * Start system time from keyboard
 setime </1
-date t
+date -t

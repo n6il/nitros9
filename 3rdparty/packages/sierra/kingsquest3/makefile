@@ -23,7 +23,7 @@ BOOTCMDS	= $(6809L2)/cmds/shell_21 $(6809L2)/cmds/date \
 		$(6809L2)/cmds/echo $(6809L2)/cmds/link \
 		$(6809L2)/cmds/setime
 
-TEXTFILES_D1	= Startup tOC.txt
+TEXTFILES_D1	= startup tOC.txt
 
 SUPPORTFILES_D1	= logDir object picDir sndDir tOC viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 vol.12 vol.14 words.tok
@@ -35,7 +35,7 @@ SUPPORTFILES_D3	= logDir object picDir sndDir tOC viewDir vol.0 \
 		vol.5 vol.6 vol.7 vol.9 vol.11 vol.12 vol.14 words.tok
 
 ALLOBJS		= $(CMDS)
-TEXTFILES	= tOC.txt Startup
+TEXTFILES	= tOC.txt startup
 
 all:	$(ALLOBJS)
 
