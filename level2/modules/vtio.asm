@@ -597,7 +597,7 @@ L0319    leax  <NullIRQ,pcr	set AltIRQ to do nothing routine so other IRQs
          ldb   <V.ScrChg,y	check screen update request flag (cur screen)
          beq   L0337		no update needed, skip ahead
          lda   V.TYPE,y		device a window?
-         bpl   L032F		no, must be VDGInt, so go on
+         bpl   L032F		no, must be CoVDG, so go on
          lda   G.GfBusy,u	0 = GrfDrv free, 1 = GrfDrv busy
          ora   G.WIBusy,u	0 = CoWin free, 1 = CoWin busy
          bne   L034F		one of the two is busy, can't update, skip
@@ -1028,7 +1028,7 @@ L05C0    pshs  x,b
          ldx   <D.CCMem		get ptr to CC mem
          clr   G.WIBusy,x	clear CoWin busy flag
          ldb   <V.WinType,u	get window type (0 = CoWin)
-         bne   L05CE		branch if VDGInt
+         bne   L05CE		branch if CoVDG
          incb  			else make B = 1
          stb   G.WIBusy,x	and make CoWin busy
 L05CE    clr   G.CrDvFl,x	clear 'we are current device'
@@ -1471,11 +1471,11 @@ SSComSt  ldd   R$Y,x		get requested window type
          lbcc  L07B5		carry it over to co-module
          rts   			return
 
-VDGInt   fcs   /VDGInt/
+CoVDG    fcs   /CoVDG/
 
 *
 * Link to proper co-module
-* Try VDGInt first
+* Try CoVDG first
 *
 * Entry: A = window type (If bit 7 is set, it's a window, else VDG screen)
 *
@@ -1485,7 +1485,7 @@ FindCoMod
          pshs  u,y,a		..else VDG
          lda   #$02		get code for VDG type window
          sta   <V.WinType,u	save it
-         leax  <VDGInt,pcr	point to VDGInt name
+         leax  <CoVDG,pcr	point to CoVDG name
          bsr   L08D4		link to it if it exists
          puls  pc,u,y,a		restore regs & return
 
