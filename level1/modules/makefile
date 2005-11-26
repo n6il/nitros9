@@ -31,10 +31,10 @@ RBF		= rbf.mn \
 		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd
 
 SCF		= scf.mn \
-		sc6551.dr vrn.dr printer.dr sio.dr sspak.dr vtio.dr \
+		sc6551.dr vrn.dr scbbp.dr scbbt.dr sspak.dr vtio.dr \
 		covdg.io cohr.io \
 		nil.dd p.dd pipe.dd ssp.dd \
-		term_sio.dt term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dd \
+		term_bbt.dt term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dd \
 		term32.dt term51.dt
 
 PIPE		= pipeman.mn \

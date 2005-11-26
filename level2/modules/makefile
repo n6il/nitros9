@@ -37,14 +37,14 @@ RBF		= rbf.mn \
 		
 
 SCF		= scf.mn \
-		vtio.dr vrn.dr printer.dr sio.dr sspak.dr sc6551.dr \
+		vtio.dr vrn.dr scbbp.dr scbbt.dr sspak.dr sc6551.dr \
 		cowin.io cogrf.io covdg.io covdg_small.io \
 		keydrv_cc3.sb snddrv_cc3.sb \
 		joydrv_joy.sb joydrv_6551L.sb joydrv_6552L.sb \
 		joydrv_6551M.sb joydrv_6552M.sb \
 		nil.dd p.dd \
 		t1.dd t2_sc6551.dd t3_sc6551.dd \
-		ftdd.dd vi.dd ssp.dd term_sio.dt term_sc6551.dt \
+		ftdd.dd vi.dd ssp.dd term_bbt.dt term_sc6551.dt \
 		term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
 		w3.dw w4.dw w5.dw w6.dw w7.dw v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw
