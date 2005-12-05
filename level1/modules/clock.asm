@@ -37,10 +37,10 @@
 * do not posses a GIME so anything dependent on the clock tick will 
 * hang. So changed to conditionaly compile based on level :-
 *
-* Level 1  $3435
-* Level 2  $3434
-*
-                         
+*   9r8    2005/12/04  Boisy G. Pitre
+* Minor code optimizations, fixed issue in Level 1 where clock ran slow
+* due to improper initialization of certain system globals.
+ 
          nam   Clock     
          ttl   NitrOS-9 System Clock
                          
@@ -53,7 +53,7 @@
                          
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev 
-rev      set   7         
+rev      set   8
 edition  set   9         
                          
                          
@@ -116,6 +116,7 @@ FSTime   equ   *
          lda   #TkPerSec  reset to start of second
          sta   <D.Tick   
          ldx   <D.Clock2  get entry point to Clock2
+         clra             clear carry
          jmp   $06,x      and call SetTime entry point
                          
                          
@@ -205,8 +206,13 @@ InitCont
          lda   2,x        clear possible pending PIA0 VBORD IRQ
                          
 * Don't need to explicitly read RTC during initialization
-         ldd   #59*256+TkPerTS last second and time slice in minute
+         ldd   #59*256+$01 last second and last tick
          std   <D.Sec     will prompt RTC read at next time slice
+         ifeq  Level-1
+         ldb   #TkPerSec
+         stb   <D.TSec    set ticks per second
+         endc
+         ldb   #TkPerTS   get ticks per time slice
          stb   <D.TSlice  set ticks per time slice
          stb   <D.Slice   set first time slice
          leax  SvcIRQ,pcr set IRQ handler
@@ -240,14 +246,14 @@ InitRts  puls  cc,pc      recover IRQ enable status and return
 *
 * Clock IRQ Entry Point
 *
-* Called once every 1.66666ms
+* For CoCo 1/2, called once every 16.667 milliseconds
 SvcIRQ                   
          clra            
          tfr   a,dp       set direct page to zero
-         lda   PIA0Base+3 get hw byte
+         tst   PIA0Base+3 get hw byte
          bmi   L0032      branch if sync flag on
          jmp   [>D.SvcIRQ] else service other possible IRQ
-L0032    lda   PIA0Base+2 clear interrupt
+L0032    tst   PIA0Base+2 clear interrupt
          dec   <D.Tick    decrement tick counter
          bne   L007F      go around if not zero
          ldb   <D.Sec     get minutes/seconds
