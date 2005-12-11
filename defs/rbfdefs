@@ -73,6 +73,12 @@ RBFDEFS  set   1
 * Added defines for bit 2 of IT.DNS, which the format command uses to 
 * determine if a drive should have it's track 0 as single or double density
 *
+*        2005/11/23  Robert Gault
+* Added IT.MPI giving it duplicate location with IT.TFM. This will not be
+* transferred to the path descriptor, thus the  equ *  rahter than  rmb 1.
+*
+*        2005/12/11  Boisy G. Pitre
+* Added IT.SOFF1-ITSOFF3 and IT.LLDRV for SuperDrivers.
 
          nam   RBFDefs
          ttl   Random Block File Manager Definitions
@@ -105,6 +111,14 @@ IT.SToff rmb   1          Sector/Track offsets (for "foreign" disk formats)
 IT.WPC   rmb   1          Write precomp cyl/4 (HD)
 IT.OFS   rmb   2          Starting cylinder offset (HD)
 IT.RWC   rmb   2          Reduced write current cylinder (HD)
+* These fields have been added because of SuperDriver.  They probably
+* can be used in other drivers
+         org   IT.WPC
+IT.SOFF1 rmb   1
+IT.SOFF2 rmb   1
+IT.SOFF3 rmb   1
+IT.LLDRV rmb   2
+IT.MPI   rmb   1
 
 
 * IT.TYP Definitions
