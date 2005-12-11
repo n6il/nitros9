@@ -59,8 +59,11 @@ OS9DEFS  set   1
 *          2003/11/05  Robert Gault
 * Fixed MouseInf. Made it rmb 2 as it should be. Also changes to init and cc3io.
 *
-*	   2005/11/02  P.Harvey-Smith.
+*	   2005/11/02  P.Harvey-Smith
 * Added definitions for boot areas on Dragon computers.
+*
+*	   2005/12/11  Boisy G> Pitre
+* Added SS.Eject setstat for removable media
 *
 
 
@@ -265,7 +268,7 @@ SS.Pos   rmb   1          Get File Current Position
 SS.EOF   rmb   1          Test for End of File
 SS.Link  rmb   1          Link to Status routines
 SS.ULink rmb   1          Unlink Status routines
-SS.Feed  rmb   1          issue form feed
+SS.Feed  rmb   1          Issue form feed
 SS.Frz   rmb   1          Freeze DD. information
 SS.SPT   rmb   1          Set DD.TKS to given value
 SS.SQD   rmb   1          Sequence down hard disk
@@ -285,13 +288,13 @@ SS.ELog  rmb   1          Read Error Log
 SS.SSig  rmb   1          Send signal on data ready
 SS.Relea rmb   1          Release device
 SS.AlfaS rmb   1          Return Alfa Display Status (CoCo, SCF/GetStat)
-SS.Attr  equ   SS.AlfaS   to serve 68K/RBF/SetStat only, thru NET
+SS.Attr  equ   SS.AlfaS   To serve 68K/RBF/SetStat only, thru NET
 SS.Break rmb   1          Send break signal out acia
 SS.RsBit rmb   1          Reserve bitmap sector (do not allocate in) LSB(X)=sct#
-         rmb   1          reserved
-SS.FDInf equ   $20        to serve 68K/RBF/GetStat only, thru NET
-         rmb   4          reserve $20-$23 for Japanese version (Hoshi)
-SS.SetMF rmb   1          reserve $24 for Gimix G68 (Flex compatability?)
+         rmb   1          Reserved
+SS.FDInf equ   $20        To serve 68K/RBF/GetStat only, thru NET
+         rmb   4          Reserve $20-$23 for Japanese version (Hoshi)
+SS.SetMF rmb   1          Reserve $24 for Gimix G68 (Flex compatability?)
 SS.Cursr rmb   1          Cursor information for COCO
 SS.ScSiz rmb   1          Return screen size for COCO
 SS.KySns rmb   1          Getstat/SetStat for COCO keyboard
@@ -299,9 +302,10 @@ SS.ComSt rmb   1          Getstat/SetStat for Baud/Parity
 SS.Open  rmb   1          SetStat to tell driver a path was opened
 SS.Close rmb   1          SetStat to tell driver a path was closed
 SS.HngUp rmb   1          SetStat to tell driver to hangup phone
-SS.FSig  rmb   1          new signal for temp locked files
+SS.FSig  rmb   1          New signal for temp locked files
 SS.DSize equ   SS.ScSiz   Return disk size (RBF GetStat)
 SS.VarSect equ SS.DStat   Variable Sector Size (RBF GetStat)
+SS.Eject equ   SS.Joy     Eject removable disk media
 
 * System Specific and User defined codes above $80
          org   $80
