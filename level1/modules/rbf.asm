@@ -730,7 +730,7 @@ L05AD    std   PD.SIZ,y
 L05C2    comb
          ldb   #E$BMode
          rts
-L05C6    cmpb  ##SS.FD
+L05C6    cmpb  #SS.FD
          bne   L0604
          lbsr  L0CD4
          bcs   L061C
