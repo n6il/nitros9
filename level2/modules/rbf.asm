@@ -1354,14 +1354,14 @@ Sst69A   rts   			return
 *        R$Y = # bytes to write
 Sst69B   cmpb  #SS.FD		is it SS.FD?
          bne   Sst6D9		no, keep checking
-         lda   PD.MOD,y
-         bita  #WRITE.		is it write mode?
-         beq   Sst697		no, return bad mode error
          lbsr  RdFlDscr		read in file descriptor
          bcs   Sst69A		error, return
          pshs  y		preserve path descriptor pointer
          ldx   R$X,u		get pointer to caller's buffer
          ldu   PD.BUF,y		get pointer to FD
+         lda   PD.MOD,y
+         bita  #WRITE.		is it write mode?
+         beq   Sst6BF		no, only change attrs
          ldy   <D.Proc		get current process pointer
          ldd   P$User,y		get user #
          bne   Sst6BC		not super user, skip ahead
@@ -1375,7 +1375,7 @@ Sst6BC   ldd   #$0305
          ldd   #$0D03
          bsr   Sst6CB
 * Change attrs
-         ldd   #$0001
+Sst6BF   ldd   #$0001
          bsr   Sst6CB
          puls  y
          lbra  L11FD

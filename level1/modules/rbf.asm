@@ -730,16 +730,16 @@ L05AD    std   PD.SIZ,y
 L05C2    comb
          ldb   #E$BMode
          rts
-L05C6    cmpb  #$0F
+L05C6    cmpb  ##SS.FD
          bne   L0604
-         lda   $01,y
-         bita  #$02
-         beq   L05C2
          lbsr  L0CD4
          bcs   L061C
          pshs  y
          ldx   $04,u
          ldu   $08,y
+         lda   $01,y
+         bita  #$02
+         beq   L05F0
          ldy   <$004B
          ldd   $09,y
          bne   L05E7
@@ -750,7 +750,7 @@ L05E7    ldd   #$0305
          ldd   #$0D03
          bsr   L05F6
 * Change attrs
-         ldd   #$0001
+L05F0    ldd   #$0001
          bsr   L05F6
          puls  y
          lbra  L0D38
