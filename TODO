@@ -18,6 +18,30 @@ rb1773
 	- Fix SS.WrTrk to handle high density drives (is this working now?)
 	- Fix SS.WrtTrk bug which causes crashes on some CoCos (I believe the
 	  slowdown was employed as a temporary workaround?)
+	12/16/05:
+	Using a Disto Super Controller I hooked up to a 6309 CoCo 3, I
+	booted to V03.02.04 and formatted /d1 which is a 5.25" 360K drive.
+	I experienced the same computer lock-ups that others have seen.
+	12/17/05:
+	With the same setup that I made the above discovery, I made
+	a new system disk with the latest code, the only thing being
+	different was rb1773.asm which I retrieved from the repository
+	at revision 1.10, the same revision that was part of V03.02.04.  I
+	did a physical format on a 360K disk SIX times without any lockups.
+	I then reverted to the format that was part of V03.02.04 and again,
+	SIX physical formats yielded no lockups.
+
+	Finally, I reinstated the latest rb1773 and format, then modified
+	rb1773.asm to not slow down and speed up the CoCo 3 around the
+	SS.WrTrk code.  Six physical formats did not show a single lock-up.
+
+	Conclusion: Further research is needed to warrant what caused this
+	bug in V03.02.04.  It does not appear to be related to the driver
+	directly, nor to the format utility.  It may be related to the
+	kernel since that component has changed since V03.02.04.  At this
+	point and time, further testing of the latest repository is needed
+	to confirm on other systems that this bug no longer exists.
+
 	- Add code to select MPI slot where disk controller is (can assume
           slot 4 or allow the value to be placed in the descriptor)
 
