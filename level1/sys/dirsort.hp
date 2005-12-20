@@ -1,0 +1,10 @@
+@DIRSORT
+Syntax: dirsort [<path>]
+            Default path is current directory .
+            Dot names ., .., ..., etc. may be use and full or partial path names.
+            ex.  dirsort graphics       dirsort /dd/cmds     dirsort ...
+Usage : Sorts the contents of a directory placing all capitalized names first.
+            That will place subdirectories first if the convention of making
+            directory names upper case is followed. All deleted directory names
+            are placed invisibly placed at the end. That means new entries will
+           appear at the end of the directory list.
