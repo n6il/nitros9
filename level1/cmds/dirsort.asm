@@ -18,8 +18,11 @@
                NAM       dirsort
 * This ensures the assembler knows predefined OS-9 terms
                IFP1      
-               USE       defsfile
+               USE       /dd/defs/defsfile
                ENDC      
+
+* If you want built-in help change the next line.
+HELP           SET       FALSE
 
 TyLg           SET       Prgrm+Objct         program object code
 * Re-entrant means multiple users possible
@@ -89,11 +92,15 @@ l1             lda       ,x+                 skip over spaces, if any
                bne       a1
 noprm          leax      default,pcr         point to default directory, dot
                bra       a9
+               IFNE      HELP
 a1             cmpa      #'?                 if "?" then show syntax
                lbeq      syntax
                cmpa      #'-                 if attempt at options, syntax
                lbeq      syntax
-               leax      -1,x                backstep to first character of directory
+               leax      -1,x
+               ELSE      
+a1             leax      -1,x                backstep to first character of directory
+               ENDC      
 a9             lda       #%11000011          directory, single user access, update
                os9       I$Open              attempt to open a path to the directory
                lbcs      error
@@ -346,6 +353,7 @@ huh            EQU       *
                FCB       C$CR,C$LF
 endhuh         EQU       *
 
+               IFNE      HELP
 syntax         leax      usage,pcr
                ldy       #enduse-usage
                clr       ,-s
@@ -359,6 +367,8 @@ usage          FCC       /USAGE: dirsort will sort any directory. If no director
                FCC       "       dirsort /dd/cmds"
                FCB       C$CR,C$LF
 enduse         EQU       *
+               ENDC      
 
                EMOD      
 Eom            EQU       *
+               END       
