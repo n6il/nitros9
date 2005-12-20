@@ -18,6 +18,24 @@
 ../MODULES/SYSMODS/init
 *
 ***************************************
+* CDF Section (HawkSoft)
+*
+*../MODULES/CDF/cdf.mn
+*
+* CDF descriptors - select as needed
+* SCSI descriptors (IDs 0-6)
+*../MODULES/CDF/sc0.dd
+*../MODULES/CDF/sc1.dd
+*../MODULES/CDF/sc2.dd
+*../MODULES/CDF/sc3.dd
+*../MODULES/CDF/sc4.dd
+*../MODULES/CDF/sc5.dd
+*../MODULES/CDF/sc6.dd
+* IDE descriptors (master/slave)
+*../MODULES/CDF/ic0.dd
+*../MODULES/CDF/ic1.dd
+*
+***************************************
 * RBF Section
 *
 ../MODULES/RBF/rbf.mn
