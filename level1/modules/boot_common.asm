@@ -98,9 +98,11 @@ error2   leas  2+size,s   reset the stack    same as PULS U
 * Error point - return allocated memory and then return to kernel
 error                 
 * Return memory allocated for sector buffers
+         pshs  cc
          ldd   #256      
          ldu   blockloc,u
          os9   F$SRtMem  
+         puls  cc
          bra   error2    
                          
 * Routine to save off alloced mem from F$SRqMem into blockloc,u and restore
