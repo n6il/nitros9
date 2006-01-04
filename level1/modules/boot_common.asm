@@ -34,6 +34,10 @@
 *
 *          2005/10/16  Boisy G. Pitre
 * Further optimizations made
+*
+*	   2006-01-04  P.Harvey-Smith.
+* Added pointer to loaded LSN0 to data passed to hardware dependent section.
+*
                          
 start    orcc  #IntMasks  ensure IRQs are off (necessary?)
          leas  -size,s   
@@ -62,7 +66,8 @@ start    orcc  #IntMasks  ensure IRQs are off (necessary?)
          lda   #'0        --- loaded in LSN0'
          jsr   <D.BtBug   ---
          ENDC            
-                         
+        
+	 stx	LSN0Ptr,u	Save LSN0 pointer
 * Pull relevant values from LSN0
          IFNE  FLOPPY
          lda   DD.TKS,x   number of tracks on this disk
