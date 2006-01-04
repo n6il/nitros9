@@ -88,6 +88,7 @@ seglist  rmb   2						pointer to segment list
 blockloc rmb   2                       pointer to memory requested
 blockimg rmb   2                       duplicate of the above
 bootsize rmb   2                       size in bytes
+LSN0Ptr	 rmb   2		In memory LSN0 pointer
 drvsel   rmb   1
 currtrak rmb   1
 * Note, for optimization purposes, the following two variables

@@ -46,6 +46,7 @@ seglist  rmb   2
 bootsize rmb   2
 blockloc rmb   2
 blockimg rmb   2
+LSN0Ptr		rmb   2		In memory LSN0 pointer
 size     equ   .
 
 name     equ   *
