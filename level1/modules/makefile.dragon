@@ -8,6 +8,9 @@
 # 2005-05-31, P.Harvey-Smith,
 # 	Steprate now passed in from ../makefile.dragon or ../makefile.dalpha
 #
+# 2005-12-31, P.Harvey-Smith,
+#	Fixed up for renamed video drivers.
+#
 
 include ../../rules.mak
 
@@ -44,10 +47,10 @@ RBF		= rbf.mn \
 		ddd0_dalpha.dd d0_dalpha.dd d1_dalpha.dd d2_dalpha.dd d3_dalpha.dd
 		
 SCF		= scf.mn \
-		sc6551.dr vrn.dr printer_d64.dr sio.dr sspak.dr dgnio.dr \
-		co32.io co80.io co51.io\
+		vrn.dr printer_d64.dr sspak.dr vtio.dr \
+		covdg.io cohr.io\
 		nil.dd p_d64.dd pipe.dd ssp.dd \
-		term_sio.dt term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dt \
+		term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dt \
 		term32.dt term80.dt t1_d64.dd p1_d64.dd
 
 PIPE		= pipeman.mn \
@@ -84,8 +87,8 @@ clock2_bnb: clock2_ds1315.asm
 clock2_cloud9: clock2_ds1315.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCLOUD9=1
 
-#Terminals, dgnio, is based on vtio, with code to remap keyboad.
-dgnio.dr: vtio.asm
+#Terminals, vtio, is compiled with code to remap keyboad from CoCo to Dragon layout.
+vtio.dr: vtio.asm
 	$(AS) $(ASFLAGS) $(ASOUT)$@ $<  -aDragonIO=1
 
 # Floppy descriptors
