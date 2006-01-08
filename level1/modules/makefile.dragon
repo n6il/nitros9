@@ -13,7 +13,7 @@
 #
 # 2006-01-08, P.Harvey-Smith.
 #	Added descriptors for original Dragon Data single sided 5.25" drives.
-#
+#	Pass step rate to boot_d64, so that boot module steprate set correctly.
 
 include ../../rules.mak
 
@@ -73,10 +73,10 @@ krn krnp2:
 	$(CP) kernel/$@ .
 
 boot_d64:	boot_d64.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=$(STEP)
 
 boot_dalpha:	boot_d64.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=0 -aDragonAlpha=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=$(STEP) -aDragonAlpha=1
 
 # Clocks
 clock_60hz: clock.asm
