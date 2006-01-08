@@ -37,6 +37,10 @@ WHICHSHELL	= shell_21
 #Note old drives often require 30ms
 STEP		= 0
 
+#Is this machine a real 64, or a 32, upgraded to 64K.
+#Set to 1 for upgraded machine.
+UPGRADED32	= 0
+
 CMDS		= $(shell $(CD) cmds; make showcocoobjs)
 BOOTTRACK	= $(shell $(CD) modules; make -f makefile.dragon showboottrack)
 KERNEL		= $(shell $(CD) modules; make -f makefile.dragon showkernel)
@@ -69,7 +73,7 @@ all:
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make alldragon);)
-	$(foreach dir, $(DDIRS), ($(CD) $(dir); make -f makefile.dragon STEP=$(STEP));)
+	$(foreach dir, $(DDIRS), ($(CD) $(dir); make -f makefile.dragon STEP=$(STEP) UPGRADED32=$(UPGRADED32));)
 
 # Clean all components
 clean:	dskclean
