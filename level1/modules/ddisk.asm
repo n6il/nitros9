@@ -78,13 +78,19 @@
 *	Seperated NMI disable/drive select code on alpha, as above patches
 *	worked fine on Mess, but not on real hardware (timing problems).
 *
-* 2006-01-08
+* 2006-01-08, P.Harvey-Smith.
 * 	Added support for Dragon 32, that has had a memory upgraded to 64K,
 * 	this is treated like the Dragon 64 EXCEPT that the code to manipulate
 *	the ACIA is not included. This is required due to the incomplete 
 *	address decoding, writes to the non-existant ACIA would hit the PIA 
 *	at FF00, and cause a crash.
-*	
+*
+* 2006-01-08, P.Harvey-Smith.
+*	Since I now have a genuine Dragon 5.25" drive, found that nitros format
+* 	fell over accessing it, this was due to the step rate not being set 
+*	correctly in the drive recalibrate routine, I ahve corrected this to
+*	use the value in the descriptor.
+*
 
          nam   DDisk
          ttl   Dragon Floppy driver
@@ -212,6 +218,10 @@ IRQPkt   fcb   	$00 		; Normal bits (flip byte)
          fcb   	10		; Priority byte
 
 
+	nop
+	nop
+	nop
+	lbsr	ResetTrack0
 * Init
 *
 * Entry:
@@ -222,11 +232,12 @@ IRQPkt   fcb   	$00 		; Normal bits (flip byte)
 *    CC = carry set on error
 *    B  = error code
 *
-DragonDebug	EQU	1
+DragonDebug	EQU	0
 Init    
 	IFNE	DragonDebug
 	pshs	y		; This is here so I can find disk driver in mess
 	ldy	#$AA55		; by setting register breakpoint to y=$AA55 !
+	sty	$8000
 	puls	y
 	ENDC
 
@@ -669,9 +680,7 @@ SeekTS  LDB   	<V.Trak,X	; Entry point for SS.WTrk command
 		 
 SeekT5  STA   	<V.Trak,X	; Do the seek
         STA   	>DataReg 	; Write track no to controler
-	ldb	PD.Stp,Y	; Set Step Rate according to Parameter block
-	andb	#%00000011	; mask in only step rate bits
-	eorb	#%00000011	; flip bits to make correct encoding
+	bsr	GetStepInB	; get step rate
         ORB   	#SeekCmnd 	; add seek command
         LBSR  	FDCCommand 
         PSHS  	X 
@@ -682,6 +691,15 @@ SeekT7  LEAX  	-1,X
 
 SeekT6  CLRB			; return no error to caller
         RTS
+
+;
+; Get step rate in bottom 2 bits of B
+;
+GetStepInB
+	ldb	PD.Stp,Y	; Set Step Rate according to Parameter block
+	andb	#%00000011	; mask in only step rate bits
+	eorb	#%00000011	; flip bits to make correct encoding
+	rts
 
 ; Set Side2 Mask
 ; A contains the track number on entry
@@ -891,9 +909,6 @@ SetStatEnd
 ;
 
 DoWriteTrack    
-	pshs	y
-	ldy	#$5567
-	puls	y
 
 	lbsr  	SelectDrive	; Select drive
         lda   	R$Y+1,x
@@ -919,14 +934,18 @@ ResetTrack0
         ldx   	>CDrvTab,u
         clr   	<V.Trak,x	; Set current track as 0
         lda   	#$05
+
 ResetTrack0Loop    
-	ldb   	#StpICmnd	; Step away from track 0 5 times
+	lbsr	GetStepInB	; Get step rate for this drive
+	orb   	#StpICmnd	; Step away from track 0 5 times
         pshs  	a
         lbsr  	FDCCommand
         puls  	a
         deca  
-        bne   	ResetTrack0Loop
-        ldb   	#RestCmnd	; Now issue a restore
+	bne   	ResetTrack0Loop
+
+        lbsr	GetStepInB	; Get step rate for this drive
+        orb   	#RestCmnd	; Now issue a restore
         lbra  	FDCCommand
 ;
 ;Start drive motors
