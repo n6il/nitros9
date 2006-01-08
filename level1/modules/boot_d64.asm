@@ -1,19 +1,21 @@
 *
-* Boot_d64, bootfile for Dragon 64, Dragon Alpha/Professional.
+* Boot_d64, bootfile for Dragon 32/64, Dragon Alpha/Professional.
 * 
-* First disasembly and porting 2004-11-07, P.Harvey-Smith.
+* 2004-11-07, P.Harvey-Smith.
+*	First disasembly and porting 
 *
-* Dragon Alpha code, 2004-11-09, P.Harvey-Smith.
-*	I am not sure of how to disable NMI on the Alpha, it is
-*	simulated in software using the NMIFlag.
+* 2004-11-09, P.Harvey-Smith.
+* 	Dragon Alpha code, I am not sure of how to disable NMI 
+*	on the Alpha, it is simulated in software using the NMIFlag.
 *
 * See DDisk.asm for a fuller discription of how Dragon Alpha
 * interface works.
 *
-* Double sided Disk code added 2004-11-25, P.Harvey-Smith.
+* 2004-11-25, P.Harvey-Smith.
+* 	Double sided Disk code added 
 *
-* 2005-05-08, P.Harvey-Smith, added code to force 5/8 line low on
-* Alpha so correct clock selected.
+* 2005-05-08, P.Harvey-Smith, 
+*	Added code to force 5/8 line low on Alpha so correct clock selected.
 *
 * 2005-06-16, P.Harvey-Smith.
 *	Added NMI enable/disable code, as I know know how to enable/disable
@@ -26,7 +28,15 @@
 *	Converted to using new boot system which can support fragmented
 *	boot files.
 *
-
+* 2006-01-08, P.Harvey-Smith.
+*	Fixed up steprate so that it is the same as that specified as the
+*	default when building NitrOS9, currently the distribution sets 
+*	this to 12ms, as this seems to be the default for both the 
+*	Dragon Data original 5.25" floppies, and for the Sony 3.5"
+*	drives in the Alpha. This allows NitrOS9 to boot correctly
+*	on Dragon Data 5.25" drives, and should also make booting on 
+*	the Alpha much more relaiable.
+*
 
 	nam   Boot
         ttl   os9 system module    
@@ -130,7 +140,7 @@ BootDr   set DRVSEL2		Alternate boot from drive 2
 BootDr   set DRVSEL3		Alternate boot from drive 3
          ENDC
 
-StepRate	EQU	%00000011
+StepRate	EQU	3-STEP	Convert OS9 steprate code to WD.
 
 tylg     	set   Systm+Objct   
 atrv     	set   ReEnt+rev
@@ -167,15 +177,7 @@ FLOPPY   equ   1
 
 ;start   equ   	*
 	
-HWInit  clra  	 
-	 
-; 	ldb   	#size
-;L0015   pshs  	a		; Clear size bytes on system stack
-;        decb  
-;        bne   	L0015
-
-;        tfr   	s,u		; Point u to data area on s stack.
-		 
+HWInit  clra  	 		 
         ldx   	#CMDREG		; Force inturrupt
         lda   	#FrcInt
         sta   	,x
@@ -216,64 +218,6 @@ HWTerm	clrb
 	rts
 	
         use   	../../6809l1/modules/boot_common.asm
-	 
-	
-;        pshs  	u,x,b,a
-;        clra  
-;        clrb  
-;        ldy   	#$0001
-;        ldx   	<D.FMBM	
-;        ldu   	<D.FMBM+2
-;        os9   	F$SchBit 
-;        bcs   	L009C
-	
-;        exg   	a,b		; Make bitmap into Memory pointer
-;        ldu   	$04,s
-;        std   	BuffPtr,u	; Save LSN0 pointer
-;        clrb  
-		 
-;        ldx   	#$0000		; Read LSN0 from boot disk.
-;        bsr   	ReadSec
-;        bcs   	L009C		; Error : give up !
-	
-;        ldd   	<DD.BSZ,y	; Get size of boot data from LSN0
-;        std   	,s
-;        os9   	F$SRqMem 	; Request memory
-;        bcs   	L009C		; Error : give up
-	
-;        stu   	$02,s		; Save load memory pointer
-;        ldu   	$04,s		; Fetch temp mem pointer off stack
-;        ldx   	$02,s		; Fetch load memory pointer
-;        stx   	BuffPtr,u
-;        ldx   	<DD.BT+1,y	; Get LSN of start of boot
-;        ldd   	<DD.BSZ,y	; Get size of boot.
-;        beq   	L0095		; Zero size boot ?, yes : exit
-;
-; At this point X=start LSN of boot area, D=size of boot
-; BuffPtr,u=address to load next sector, Y=pointer to LSN0
-;
-
-;LoadBootLoop   
-;	pshs  	x,b,a
-;       clrb  			; We are only interested in the number of full blocks
-;        bsr   	ReadSec		; Read a sector of boot
-;        bcs   	L009A		; Error : exit
-;        puls  	x,b,a
-;	
-;        inc   	BuffPtr,u	; Increment MSB of buffpointer, point to next page to load into
-;        leax  	$01,x		; Increment sector number
-;        subd  	#$0100		; Decrement number of bytes left
-;        bhi   	LoadBootLoop	; Any bytes left to load ?, yes : loop again
-;
-;L0095   clrb  
-;        puls  	b,a
-;        bra   	L009E
-		 
-;L009A   leas  	$04,s
-;L009C   leas  	$02,s
-;L009E   puls  	u,x
-;        leas  	Size,s		; Drop stacked vars.
-;        rts   
 
 ;
 ; Reset disk heads to track 0
@@ -288,7 +232,7 @@ L00A9   ldb   	#StpICmnd+StepRate	; Step in
         puls  	a
         deca  
         bne   	L00A9
-        ldb   	#RestCmnd	; Restore to track 0
+        ldb   	#RestCmnd+StepRate	; Restore to track 0
         lbra  	CommandWaitReady
 
 ;
@@ -304,8 +248,6 @@ L00A9   ldb   	#StpICmnd+StepRate	; Step in
 ReadSec 
 HWRead   
 	lda   	#$91		; Retry count
-;        cmpx  	#$0000		; Reading LSN0 ?
-;        bne   	ReadDataWithRetry	; No, just read sector
         bsr   	ReadDataWithRetry	; Yes read sector
         bcs   	ReadDataExit		; And restore Y=LSN0 pointer
         ldx   	blockloc,u
@@ -344,7 +286,6 @@ DoReadData
         sta   	<dppiacrb	; Enable FIRQ
         lda   	<dppiadb	; Clear any pending FIRQ
 	
-;        lda   	#NMIEn+MotorOn	; $24
 	lda	drvsel,u	
 	ora	#NMIEn
 	  
@@ -355,7 +296,6 @@ DoReadData
 	ENDIF
 
         ldb   	#ReadCmnd	; Issue a read command
-;        orb	>SideSel,U	; mask in side select
 	orb	side,u		; mask in side select
 	stb   	<dpcmdreg
 
@@ -363,9 +303,6 @@ DoReadData
 	lda	#NMICA2En	; Enable NMI
 	sta	<DPPIA2CRA	
 	ENDIF
-
-;	lda	<dppiadb	; Inturrupt flag set ?
-;	bmi	ReadDataNow	; already inturrupt, read data	
 	
 ReadDataWait    
 	sync  			; Read data from controler, save
@@ -418,11 +355,8 @@ SeekTrack
 L012C   inc   	,s
 L012E   
 	subd  	DD.Spt,Y	; Take sectors per track from LSN
-;	subd	ddtks,u		; Take sectors per track from LSN
-;        sbca  	#$00
 	bcc   	L012C		; still +ve ? keep looping
         addd  	DD.Spt,Y	; Compensate for over-loop
-;	addd	ddtks,u		; Compensate for over-loop
         puls  	a		; retrieve track count.
 
 ; At this point the A contains the track number, 
@@ -432,7 +366,6 @@ SeekCalcSkip
 	pshs	b		; Save sector number
 
         LDB   	DD.Fmt,Y     	; Is the media double sided ?
-;	ldb	ddfmt,u		; Is the media double sided ?
         LSRB
         BCC   	DiskSide0	; skip if not
 
@@ -444,7 +377,6 @@ SeekCalcSkip
 DiskSide0
 	clrb			; Single sided, make sure sidesel set correctly
 SetSide
-;	stb   	>SideSel,U	; Set side
 	stb   	side,U		; Set side
 		
 	puls	b		; Get sector number
@@ -483,7 +415,6 @@ CommandWait
         rts   
 		 
 MotorOnCmdB    
-;	lda   	#MotorOn	; Turn on motor
 	lda	drvsel,u	; Turn on motor
 	
 	IFNE	DragonAlpha
@@ -503,45 +434,13 @@ Delay3  rts
 
 	IFNE	DragonAlpha
 
-; Translate DragonDos Drive select mechinisim to work on Alpha 
-; Takes byte that would be output to $FF48, reformats it and 
-; outputs to Alpha AY-8912's IO port, which is connected to 
-; Drive selects, motor on and enable precomp.
-; This code now expects Alpha NMI/DDEN etc codes, as defined
-; at top of this file (and dgndefs). The exception to this is
-; the drive number is still passed in the bottom 2 bits and
-; converted with a lookup table.
-; We do not need to preserve the ROM select bit as this code
-; operates in RAM only mode.
 
-ADrvTab	FCB		Drive0A,Drive1A,Drive2A,Drive3A
+;
+; Turn on drives/motor/nmi for The Dragon Alpha.
+;
 
 AlphaDskCtl	
 	PSHS	X,A,B,CC
-
-;	ldb	PIA2CRA		; Get control reg 
-;	bita	#NMIEnA		; NMI enable flag set ?
-;	bne	AlphaNMIEnabled	; yes : enable it
-	
-;	andb	#PIANMIDisA	; Set PIA2 CA2 as output & disable NMI
-;	ldb	#NMICA2Dis
-;	bra	AlphaSetNMI
-AlphaNMIEnabled
-;	orb	#PIANMIEnA	; Enable NMI
-;	ldb	#NMICA2En
-	
-AlphaSetNMI
-;	stb	PIA2CRA		; Save back in ctrl reg
-	
-	PSHS	A	
-;	anda	#DDosDriveMask	; mask out dragondos format drive number
-;	leax	ADrvTab,pcr	; point at table
-;	lda	a,x		; get bitmap
-;	ldb	,s
-;	andb	#AlphaCtrlMask	; mask out drive number bits
-;	stb	,s
-;	ora	,s		; recombine drive no & ctrl bits
-;	sta	,s
 
 	bita	#MotorOn	; test motor on ?
 	bne	MotorRunning
@@ -555,23 +454,17 @@ MotorRunning
 	
 	ldx	#PIA2DA
 	lda	#AYIOREG	; AY-8912 IO register
-;	sta	PIA2DB		; Output to PIA
 	sta	2,X		; Output to PIA
 	ldb	#AYREGLatch	; Latch register to modify
-;	stb	PIA2DA
 	stb	,x
 		
-;	clr	PIA2DA		; Idle AY
 	clr	,x		; Idle AY
 	
 	lda	,s+		; Fetch saved Drive Selects etc
-;	sta	PIA2DB		; output to PIA
 	sta	2,x		; output to PIA
 	ldb	#AYWriteReg	; Write value to latched register
-;	stb	PIA2DA		; Set register
 	stb	,x
 	
-;	clr	PIA2DA		; Idle AY
 	clr	,x	
 	
 	PULS	x,A,B,CC
