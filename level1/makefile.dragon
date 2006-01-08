@@ -15,6 +15,12 @@
 #	to 64K, this is almost the same as the 64, except that it lacks
 #	a serial port.
 #
+# 2006-01-08, P.Harvey-Smith.
+#	Determined experementally the correct step rate for Dragon Data
+# 	5.25" drives, which is 12ms, this is over half the time of the
+#	value determined by using dmode under Dragon OS9. It seems that 
+#	the Dragon OS9 dis driver ignored the value set for stp, and always
+#	used 12ms !!!! 
 
 include ../rules.mak
 
@@ -25,6 +31,7 @@ LEVEL		= 1
 TERMWIDTH	= 51
 BOOTFILE	= bootfiles/bootfile_d64_DS40_$(TERMWIDTH)
 BOOTFILE_DS80	= bootfiles/bootfile_d64_DS80_$(TERMWIDTH)
+BOOTFILE_SS40	= bootfiles/bootfile_d64_SS40_$(TERMWIDTH)
 KERNELFILE	= bootfiles/kernel_d64
 DIRS		= cmds sys 
 #modules bootfiles
@@ -40,13 +47,18 @@ WHICHSHELL	= shell_21
 #Default step rate for floppy drives
 #Step can be one of : 0=30ms, 1=20ms, 2=12ms, 3=6ms
 #Note old drives often require 30ms
-STEP		= 0
+#After experimenting with a real Dragon Data 5.25" drive I
+#have determined that the drive will cope with 12ms step.
+#Therefore setting this as the default for 32/64 also.
+STEP		= 2
 
 #Is this machine a real 64, or a 32, upgraded to 64K.
 #Set to 1 for upgraded machine.
 UPGRADED32	= 0
 
 CMDS		= $(shell $(CD) cmds; make showcocoobjs)
+CMDS525		= $(shell $(CD) cmds; make showdragon525objs)
+CMDS525_2	= $(shell $(CD) cmds; make showdragon525objs2)
 BOOTTRACK	= $(shell $(CD) modules; make -f makefile.dragon showboottrack)
 KERNEL		= $(shell $(CD) modules; make -f makefile.dragon showkernel)
 SYSMODS		= $(shell $(CD) modules; make -f makefile.dragon showsysmods)
@@ -68,8 +80,10 @@ DSK360K_2       = $(DISTROVER)_40d_2.dsk
 LDSK360K_2      = $(DISTRO)_40d_2.dsk
 DSK720K         = $(DISTROVER)_80d.dsk
 LDSK720K        = $(DISTRO)_80d.dsk
+DSK180K_1	= $(DISTROVER)_40s_1.dsk
+DSK180K_2	= $(DISTROVER)_40s_2.dsk
 
-
+ 
 # Make all components
 all:
 	@$(ECHO) "**************************************************"
@@ -86,7 +100,7 @@ clean:	dskclean
 	$(foreach dir, $(DDIRS), ($(CD) $(dir); make -f makefile.dragon clean);)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(DSK360K_2) $(DSK720K)
+	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(DSK180K_1) $(DSK180K_2)
 
 dsk: all $(PACKAGENAME)
 
@@ -96,7 +110,7 @@ dskcopy: dsk
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
 
-$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) ReadMe ChangeLog
+$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(DSK180K_1) $(DSK180K_2) ReadMe ChangeLog
 	$(ARCHIVE) $@ $^
 
 $(DSK360K_1):
@@ -206,3 +220,28 @@ $(DSK720K):
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
 
 
+$(DSK180K_1):
+	$(RM) $@
+	$(OS9FORMAT_SS40) -e -dr -q $@ -n"NitrOS-9/6809 Level 1 Disk 1"
+	$(OS9GEN) $@ -d -b=$(BOOTFILE) -t=$(KERNELFILE)
+	$(MAKDIR) $@,CMDS
+	$(MAKDIR) $@,SYS
+	$(CD) cmds; $(CP) $(CMDS525) ../$@,CMDS
+	$(foreach file, $(CMDS525), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
+	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
+	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(MAKDIR) $@,DEFS
+	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
+	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(CPL) $(ROOTFILES) $@,.
+	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
+
+$(DSK180K_2):
+	$(RM) $@
+	$(OS9FORMAT_SS40) -e -dr -q $@ -n"NitrOS-9/6809 Level 1 Disk 2"
+	$(MAKDIR) $@,CMDS
+	$(CD) cmds; $(CP) $(CMDS525_2) ../$@,CMDS
+	$(foreach file, $(CMDS525_2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
