@@ -178,7 +178,8 @@ sysgo_d64: sysgo_d64.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
 
 ddisk.dr: ddisk.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< 
+	$(AS) $(AFLAGS) $(ASOUT)$@ -aUPGRADED32=$(UPGRADED32)
+#$< 
 
 
 clean:
