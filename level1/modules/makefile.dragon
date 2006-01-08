@@ -11,6 +11,9 @@
 # 2005-12-31, P.Harvey-Smith,
 #	Fixed up for renamed video drivers.
 #
+# 2006-01-08, P.Harvey-Smith.
+#	Added descriptors for original Dragon Data single sided 5.25" drives.
+#
 
 include ../../rules.mak
 
@@ -41,7 +44,8 @@ CLOCKS          = clock_60hz clock_50hz \
 
 RBF		= rbf.mn \
 		ddisk.dr \
-		ddd0_40_d64.dd d0_40_d64.dd d1_40_d64.dd d2_40_d64.dd d3_40_d64.dd \
+		ddd0_40d_d64.dd d0_40d_d64.dd d1_40d_d64.dd d2_40d_d64.dd d3_40d_d64.dd \
+		ddd0_40s_d64.dd d0_40s_d64.dd d1_40s_d64.dd d2_40s_d64.dd d3_40s_d64.dd \
 		ddd0_80_d64.dd d0_80_d64.dd d1_80_d64.dd d2_80_d64.dd d3_80_d64.dd \
 		adisk.dr \
 		ddd0_dalpha.dd d0_dalpha.dd d1_dalpha.dd d2_dalpha.dd d3_dalpha.dd
@@ -107,20 +111,36 @@ DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
 #Dragon 64 Drives can be double or single sided, but assume 
 # that /d0 and /d1 are double sided 40 track.
 
-ddd0_40_d64.dd: ddiskdesc.asm
+ddd0_40d_d64.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1 -aStep=$(STEP)
 
-d0_40_d64.dd: ddiskdesc.asm
+d0_40d_d64.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aStep=$(STEP)
 
-d1_40_d64.dd: ddiskdesc.asm
+d1_40d_d64.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1 -aStep=$(STEP)
 
-d2_40_d64.dd: ddiskdesc.asm
+d2_40d_d64.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2 -aStep=$(STEP)
 
-d3_40_d64.dd: ddiskdesc.asm
+d3_40d_d64.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=3 -aStep=$(STEP)
+
+#Single sided 40 track drives.
+ddd0_40s_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=0 -aDD=1 -aStep=$(STEP)
+
+d0_40s_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=0 -aStep=$(STEP)
+
+d1_40s_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=1 -aStep=$(STEP)
+
+d2_40s_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=2 -aStep=$(STEP)
+
+d3_40s_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=3 -aStep=$(STEP)
 
 
 ddd0_80_d64.dd: ddiskdesc.asm
@@ -178,8 +198,7 @@ sysgo_d64: sysgo_d64.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
 
 ddisk.dr: ddisk.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ -aUPGRADED32=$(UPGRADED32)
-#$< 
+	$(AS) $(AFLAGS) $(ASOUT)$@ -aUPGRADED32=$(UPGRADED32) $< 
 
 
 clean:
