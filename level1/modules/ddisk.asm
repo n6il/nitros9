@@ -78,6 +78,13 @@
 *	Seperated NMI disable/drive select code on alpha, as above patches
 *	worked fine on Mess, but not on real hardware (timing problems).
 *
+* 2006-01-08
+* 	Added support for Dragon 32, that has had a memory upgraded to 64K,
+* 	this is treated like the Dragon 64 EXCEPT that the code to manipulate
+*	the ACIA is not included. This is required due to the incomplete 
+*	address decoding, writes to the non-existant ACIA would hit the PIA 
+*	at FF00, and cause a crash.
+*	
 
          nam   DDisk
          ttl   Dragon Floppy driver
@@ -388,6 +395,11 @@ PrepDiskRW
 	lda   	#$FF		; Make DP=$FF, to make i/o faster
         tfr   	a,dp
 	
+;
+; Do not attempt to talk to ACIA if this machine does not have one !
+;
+	
+	IFEQ	Upgraded32
         lda   	<DPAciaCmd 	; Save ACIA Command reg	
         sta   	>SaveACIACmd,u
         anda  	#$FE		; Disable ACIA inturrupt
@@ -397,15 +409,20 @@ PrepDiskRW
 L00D8   lda   	<DPAciaStat	; Yes, wait for Tx to complete
         bita  	#$10
         beq   	L00D8
+	ENDC
 		 
 L00DE   orcc  	#$50		; Mask inturrupts
         lda   	<DPPia0CRB	; Save PIA0 IRQ Status
         sta   	>SavePIA0CRB,u	
         lda   	#$34		; Disable it.
         sta   	<DPPia0CRB	
+
+	IFEQ	Upgraded32
 	lda   	<DPACIACmd	; Disable ACIA Inturrupt
         anda  	#$FE
         sta   	<DPACIACmd	
+	ENDC
+	
         lda   	<DPPIACRB	; Set PIA to generate FIRQ on FDC DRQ
         ora   	#$03
         sta   	<DPPIACRB	
@@ -452,11 +469,16 @@ RestoreSavedIO
          
 	lda   	>SavePIA0CRB,u	; Recover PIA0 state	
         sta   	<DPPia0CRB	
-        lda   	<DPPIACRB	; Recover ACIA state
+	
+        lda   	<DPPIACRB	; Disable Drive FIRQ source.
         anda  	#$FC
-        sta   	<DPPIACRB	; Disable Drive FIRQ source.
-        lda   	>SaveACIACmd,u
+        sta   	<DPPIACRB	
+
+	IFEQ	Upgraded32
+        lda   	>SaveACIACmd,u	; Recover ACIA state
         sta   	<DPAciaCmd	
+	ENDC
+	
         rts   
 
 * Write
