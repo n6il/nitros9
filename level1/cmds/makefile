@@ -21,6 +21,16 @@ DRAGONCMDS	= asm attr backup binex build cmp cobbler_dragon copy cputype \
 		rename runb save setime shellplus shell_21 sleep \
 		tee tmode touch tsmon tuneport unlink verify xmode
 
+DRAGON525CMDS	= asm attr backup binex build cmp cobbler copy date del deldir \
+		dir display dmode dsave dump echo exbin format free ident link list \
+		load login makdir mdir merge mfree os9gen printerr procs pwd pxd rename \
+		save setime shell_21 sleep tee tmode tsmon unlink verify xmode acia51 dmode        
+
+DRAGON525CMDS2	= cputype dcheck debug ded deiniz devs dirsort disasm edit error \
+		grfdrv help iniz irqs megaread mpi os9gen padrom park printerr prompt \
+		runb shellplus shell_21 touch tuneport 
+
+
 SUBS		= gfx inkey syscall
 ALLOBJS		= $(CMDS) $(DRAGONCMDS) $(SUBS)
 
@@ -58,3 +68,9 @@ showcocoobjs:
 
 showdragonobjs:
 	@$(ECHO) $(CMDS) $(DRAGONCMDS)
+
+showdragon525objs:
+	@$(ECHO) $(DRAGON525CMDS) $(SUBS)
+
+showdragon525objs2:
+	@$(ECHO) $(DRAGON525CMDS2) $(SUBS)
