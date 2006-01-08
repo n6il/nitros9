@@ -10,6 +10,11 @@
 #	Added options to specify the step rate of the created 
 #	floppy devices.
 #
+# 2006-01-08, P.Harvey-Smith.
+#	Added option to compile for a Dragon 32 that has been upgraded
+#	to 64K, this is almost the same as the 64, except that it lacks
+#	a serial port.
+#
 
 include ../rules.mak
 
