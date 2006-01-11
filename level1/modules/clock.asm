@@ -47,7 +47,7 @@
          ifp1            
          use   defsfile  
          ifgt  Level-1   
-         use   cc3iodefs 
+         use   vtiodefs_cc3
          endc            
          endc            
                          
