@@ -61,11 +61,6 @@ OS9DEFS  set   1
 *
 *	   2005/11/02  P.Harvey-Smith
 * Added definitions for boot areas on Dragon computers.
-*
-*	   2005/12/11  Boisy G> Pitre
-* Added SS.Eject setstat for removable media
-*
-
 
          nam   OS9Defs
          IFEQ  Level-1
@@ -305,7 +300,6 @@ SS.HngUp rmb   1          SetStat to tell driver to hangup phone
 SS.FSig  rmb   1          New signal for temp locked files
 SS.DSize equ   SS.ScSiz   Return disk size (RBF GetStat)
 SS.VarSect equ SS.DStat   Variable Sector Size (RBF GetStat)
-SS.Eject equ   SS.Joy     Eject removable disk media
 
 * System Specific and User defined codes above $80
          org   $80
@@ -490,6 +484,7 @@ D.WDBtDr rmb   1          FHL/Isted WD1002-05 boot physical device drive num.
 D.SWPage rmb   1          SmartWatch page # (see clock2_smart)
          rmb   5
 D.COCOXT rmb   1          Busy flag for CoCo-XT driver (one drive at a time)
+D.DbgMem rmb   1          Busy flag for CoCo-XT driver (one drive at a time)
 
 	 org   $20
 D.Tasks  rmb   2          Task User Table
