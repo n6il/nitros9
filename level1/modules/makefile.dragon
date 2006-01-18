@@ -14,6 +14,11 @@
 # 2006-01-08, P.Harvey-Smith.
 #	Added descriptors for original Dragon Data single sided 5.25" drives.
 #	Pass step rate to boot_d64, so that boot module steprate set correctly.
+#
+# 2006-01-18, P.Harvey-Smith,
+#	Added ability to build for the Tano Dragon 64, using an RS-DOS
+#	disk controler and a 60Hz clock.
+#
 
 include ../../rules.mak
 
@@ -31,7 +36,7 @@ CLOCKJVEMU      = -aRTCJVEmu=1
 DEPENDS		= ./makefile.dragon
 TPB		= $(3RDPARTY)/booters
 
-BOOTERS		= boot_d64 boot_dalpha
+BOOTERS		= boot_d64 boot_1773_tano boot_dalpha
 
 BOOTTRACK	= rel $(BOOTERS) rel_dalpha
 KERNEL		= krn krnp2
@@ -47,6 +52,9 @@ RBF		= rbf.mn \
 		ddd0_40d_d64.dd d0_40d_d64.dd d1_40d_d64.dd d2_40d_d64.dd d3_40d_d64.dd \
 		ddd0_40s_d64.dd d0_40s_d64.dd d1_40s_d64.dd d2_40s_d64.dd d3_40s_d64.dd \
 		ddd0_80_d64.dd d0_80_d64.dd d1_80_d64.dd d2_80_d64.dd d3_80_d64.dd \
+		rb1773.dr \
+		ddd0_40d_d64tano.dd d0_40d_d64tano.dd d1_40d_d64tano.dd d2_40d_d64tano.dd d3_40d_d64tano.dd \
+		ddd0_80_d64tano.dd d0_80_d64tano.dd d1_80_d64tano.dd d2_80_d64tano.dd d3_80_d64tano.dd \
 		adisk.dr \
 		ddd0_dalpha.dd d0_dalpha.dd d1_dalpha.dd d2_dalpha.dd d3_dalpha.dd
 		
@@ -74,6 +82,9 @@ krn krnp2:
 
 boot_d64:	boot_d64.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=$(STEP)
+
+boot_1773_tano:	boot_1773.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=$(STEP)
 
 boot_dalpha:	boot_d64.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=$(STEP) -aDragonAlpha=1
@@ -156,6 +167,40 @@ d2_80_d64.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2 -aStep=$(STEP)
 
 d3_80_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3 -aStep=$(STEP)
+
+#
+#Tano Dragon 64, using rb1773 driver
+# 40 track DS
+ddd0_40d_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1 -aStep=$(STEP)
+
+d0_40d_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aStep=$(STEP)
+
+d1_40d_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1 -aStep=$(STEP)
+
+d2_40d_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2 -aStep=$(STEP)
+
+d3_40d_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=3 -aStep=$(STEP)
+
+#80track DS
+ddd0_80_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1 -aStep=$(STEP)
+
+d0_80_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aStep=$(STEP)
+
+d1_80_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1 -aStep=$(STEP)
+
+d2_80_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2 -aStep=$(STEP)
+
+d3_80_d64tano.dd: rb1773desc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3 -aStep=$(STEP)
 
 
