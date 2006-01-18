@@ -15,6 +15,13 @@
 *
 *  1       2005/11/26  Boisy G. Pitre
 * Renamed from WindInt/GrfInt, reset edition.
+*
+*          2006/01/09  Robert Gault
+* Changed Select window routine so that it will work within a script and
+* DWSet routine so that it will not require a [CLEAR] if the active window
+* is killed with a display 1b 24 and restarted with a display 1b 20; ie
+* DWSet. Changes are compatible with MultiVue and all test procedures
+* tried. Short Sleep added to stabilize the screen change.
 
          nam   CoGrf/CoWin
          ttl   NitrOS-9 Window Module
@@ -717,6 +724,17 @@ L03F9    lbsr  L00F7      let grfdrv take over
          sta   >V.ULCase,u   Save in new window
 Nowin    ldy   ,s         get path descriptor pointer
          bsr   L0436      setup lines per page
+* The following new lines permit a sequence like
+* display 1b 24    kill window
+* display 1b 20 2 0 0 50 18 0 1 2  change window format
+* without requiring the additional line
+* display 1b 21    display window
+* which seems redundant. The change is compatible with MultiVue. RG
+         ldb   >GrfMem+Gr.STYMk     get screen type from Grfdrv Mem
+         cmpb  #1           Is it an overlay?
+         bls   L0408        don't flag screen if overlay
+         inc   V.ScrChg,u   Flag that screen has changed for AltIRQ routine
+* End of change to Nowin. RG
 L0408    puls  pc,u,y     all done, return
 
 * DWSet didn't work, flag window table entry as free again
@@ -960,19 +978,26 @@ L052E    puls  y,u        Restore static mem & path dsc. ptrs
 * Select entry point
 * Entry: U=Static memory pointer
 *        Y=Path descriptor pointer
+* Routine is patched to permit
+* display 1b 21
+* to work within a script file. Multivue was not affected nor
+* any other program during testing. RG
+
 Select   ldx   PD.RGS,y   get register stack pointer
          lda   R$A,x      get path # to new window
          ldx   <D.Proc    get current process pointer
-         cmpa  P$SelP,x   same as current selected path?
-         beq   L0591      yes, nothing to do so return
+* This does not seem to be of any use except to prevent script use. RG
+*         cmpa  P$SelP,x   same as current selected path
+*         beq   L0591      yes, nothing to do so return
          ldb   P$SelP,x   get the current selected path
          sta   P$SelP,x   save new path
          pshs  y          save path descriptor pointer
-         bsr   L0592      Get the device table ptr for new window
+         bsr   L0592      Get the device table ptr for old window
          ldx   V$STAT,y   Get static mem ptr
-         cmpx  >WGlobal+G.CurDev     Same as current device?
+* Again can't find a use for this or next branch. RG 
+*         cmpx  >WGlobal+G.CurDev     Same as current device?
          puls  y          restore path descriptor pointer
-         bne   L0590      no match on current device, return
+*        bne   L0590      no match on old device, return
          pshs  b          save old window path block #
          leax  ,u         point to static mem
          lbsr  L06A0      verify window table of new window
@@ -987,19 +1012,24 @@ L0582    ldu   >WGlobal+G.CurDev     Get current device mem ptr
          stu   >WGlobal+G.PrWMPt     Save as previoius device mem ptr
          stx   >WGlobal+G.CurDev     Save new current device mem ptr
          inc   V.ScrChg,x   Flag screen has changed for AltIRQ routine
+* Give system a chance to stabilize. RG
+         ldx   #2
+         os9   F$Sleep
 L0590    clrb             clear errors
 L0591    rts              return
 
 * Get ptr to device table
 * Entry: X=Pointer to process descriptor
-*        B=Path block # to get
+*        B=Path block # to get 
 * Exit : Y=Pointer to device table entry
 L0592    leax  P$Path,x   get pointer to path #'s
-         lda   b,x        get path block #
+* Added next line to protect regB from os9 F$Find64 error report. RG
+         pshs  b
+         lda   b,x        get path block
          ldx   <D.PthDBT  get pointer to descriptor block table
          os9   F$Find64   get pointer to path descriptor
          ldy   PD.DEV,y   get pointer to device table entry
-         rts              return
+         puls  b,pc       return
 
 ****************************
 * CWArea entry point
