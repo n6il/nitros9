@@ -21,6 +21,11 @@
 *
 *   1      2005/11/26  Boisy G. Pitre
 * Renamed from VDGInt, reset edition.
+*
+*          2006/01/17  Robert Gault
+* Changed the Select routine to permit the use of display 1b 21 within
+* scripts when changing from a window to a vdg screen. See discriptions
+* in cowin.asm. RG
 
          nam   CoVDG
          ttl   CoCo 3 VDG I/O module
@@ -335,6 +340,8 @@ Escape   ldx   <VD.EPlt1,u	now X points to VD.NChar
          lbsr  SetupPal		do default palette
          lbra  L026E		put palette and exit
 
+* The reasons for the commented out lines below are discussed in cowin.asm
+* where the functions are identical. RG
 L0209    cmpa  #$31		change palette?
          IFNE  COCO2
          lbeq  PalProc		branch if so
@@ -343,21 +350,26 @@ L0209    cmpa  #$31		change palette?
          ldx   PD.RGS,y		get registers
          lda   R$A,x		get path
          ldx   <D.Proc		get current proc
-         cmpa  >P$SelP,x	compare against selected path
-         beq   L0249		branch if empty
+* There does not seem to be a reason for the next two lines. RG
+*         cmpa  >P$SelP,x	compare against selected path
+*         beq   L0249		branch if empty
          ldb   >P$SelP,x	else load selected path from process descriptor
          sta   >P$SelP,x	and store passed path
          pshs  y		save our path desc ptr
          bsr   L024A		get device table entry for path
          ldy   V$STAT,y		get driver statics
          ldx   <D.CCMem		get CoCo memory
-         cmpy  <G.CurDev,x
+* Again, there does not seem to be a reason for this or the next branch. RG
+*         cmpy  <G.CurDev,x
          puls  y		restore our path desc ptr
-         bne   L0248
+*         bne   L0248 
          inc   <VD.DFlag,u
          ldy   <G.CurDev,x	get current static mem
          sty   <G.PrWMPt,x	copy to previous
          stu   <G.CurDev,x	and save new static mem ptr
+* Give system a chance to stabilize. RG
+         ldx   #2
+         os9   F$Sleep
 L0248    clrb  
 L0249    rts   
 
@@ -365,9 +377,11 @@ L0249    rts
 L024A    leax  <P$Path,x	point to path table in process descriptor
          lda   b,x		get system path number
          ldx   <D.PthDBT	point to path descriptor base table
+* protect regB incase of error report. RG
+         pshs  b
          os9   F$Find64 	put found path descriptor in Y
          ldy   PD.DEV,y		load Y with device table entry
-         rts   
+         puls  b,pc   
          ELSE
          bne   NoOp
          ENDC
