@@ -1,5 +1,5 @@
 ;
-; SuperDos E6, Copyright (C) 1986 ???, Compusense.
+; SuperDos E6, Copyright (C) 1986 ???, Grosvenor.
 ;
 ; Disassembled 2004-11-05, P.Harvey-Smith.
 ;
@@ -12,15 +12,51 @@
 ; Ported to RS-DOS cartrage (FD-500), using WD1773,
 ; 2006-01-16 P.Harvey-Smith.
 ;
-
+; Began porting to run natively on Tandy CoCo 1/2 
+; 2006-01-26 P.Harvey-Smith.
+;
+; Completed port to CoCo.
+; 2006-01-30 P.Harvey-Smith.
+;
+; The CoCo port has the following differences from the Dragon version,
+; these are largely due to the fact that on the CoCo, Color basic, and 
+; Extended color basic are in 2 roms that are linked, whereas the Dragon
+; has the equivelent of Extended basic but all in one ROM.
+; Also some of the meanings of the Low ram vectors are slightly different.
+;
+; 1) The RUN vector at $829C, is not called before a program is run, as DOS 
+; 	takes over this vector, the upshot of this is that the parameters for
+;	the PLAY command are not reset on each run. However this is easily
+;	enough remedied by EXEC &H829C as the first line of your program.
+;
+; 2) The error hook at $88F0 is not called however, the SuperDos error handler
+;	calls the Basic error handler if needed (if errors are not trapped with 
+;	on error)
+;
+; 3) The close single file hook gets re-directed to the DOS handler, scanning the
+; 	code this should only be a problem if writing a file to cassete.
+;
+; 4) The Console output hook is overwritten by DOS, this does not appear to have 
+;	any effect.
 
 ;
-; These are defined by the makefile
+; These are defined by the makefile, and are the DOS controlers supported.
 ;
 ;DragonDos	EQU		1	; Define this if compiling for Standard DragonDos Cart.
 ;DragonAlpha	EQU		1	; Define this if compiling for Dragon Alpha.
 ;RSDos		EQU		1	; Define this if compiling for the RS-DOS cart.
+;
+;These are also defined in the makefile and are the Machines supported.
+;
+;Dragon		EQU		1	; Build for Dragon 32/64/Alpha/Tano/200.
+;Tandy		EQU		1	; Build for Tandy CoCo 1/2/3.
+;
 
+;
+; The file RomDefs.asm contains a set of definitions for calling the ROM routines
+; of either the Dragon or CoCo machines, these will be assembled conditionally
+; depending on weather Dragon or Tandy is defined.
+;
 		ifp1
 		use		dgndefs.asm
 		use		romdefs.asm
@@ -150,6 +186,20 @@ DriveMask	EQU		DriveMaskT	; Mask to extract drives form DskCtl
 		ENDC
 
 
+		IFNE	Tandy
+; Compiling to run on Tandy CoCo
+
+NextResJump	EQU	BasStub3+StubResJumpOfs		; Jump to reserved word handler of user table
+NextFuncsJump	EQU	BasStub3+StubFuncsJumpOfs	; Jump to functions handler of user table
+
+		ELSE
+; Compiling to run on Dragon 32/64/Alpha
+
+NextResJump	EQU	BasStub2+StubResJumpOfs		; Jump to reserved word handler of user table
+NextFuncsJump	EQU	BasStub2+StubFuncsJumpOfs	; Jump to functions handler of user table
+
+		ENDC
+
 		ORG     $C000
 
 ; Disk controler ID, if a cartrage starts with the chars 'DK', then the basic rom routines
@@ -161,6 +211,7 @@ LC002   BRA     DosInit
 
 ;
 ; Jump table containing the addresses of the various dos routines, these should be called by :
+; JSR [JumpAddr] rather than jumping directly to the routine.
 ; JSR [JumpAddr] rather than jumping directly to the routine.
 ;
         FDB     SuperDosLowLevel		; Low Level disk IO routine
@@ -198,11 +249,11 @@ LC02F   CLR     ,X+		; Clear a byte, increment X
         TFR     X,D
         TFR     A,B
         ADDB    #$18
-        STB     <BasTextPtr	; Setup new begining of basic
-        JSR     >$AA87
-        LDA     <GrfBasePtr	; Adjust graphics ram pages
+        STB     <BasStartProg	; Setup new begining of basic
+        JSR     >BasLocateScreen
+        LDA     <GrDisplayStartAddr	; Adjust graphics ram pages
         ADDA    #$06
-        STA     <GrfTopPtr
+        STA     <GrLastDisplayAddr
 	
 ;
 ; Init various low ram stuff, inturrupt vectors, basic stub etc
@@ -216,9 +267,9 @@ LC049   LDB     ,X+		; Get byte count byte
         BRA     LC049		; do next
 
 LC054   CLR     DosHWMaskFF48	; clear hardware mask		
-        COM     $0608		; function unknown 
-        LDX     #$0683		; Adjust usr vector base
-        STX     <BasUsrBasePtr	
+        COM     DosVerifyFlag		; function unknown 
+        LDX     #DosNewUSRTable	; Adjust usr vector base
+        STX     <BasUSRTableAddr	
         LDU     #BasFCError	; Setup the 10 usr vectors to point to BasFCError
         LDB     #$0A		; do 10
 LC064   STU     ,X++		; setup vector
@@ -228,7 +279,7 @@ LC064   STU     ,X++		; setup vector
         INC     DosDefDriveNo	
         BSR     LC09D
 	
-        LDX     #RamHooks	; Point to ram hooks
+        LDX     #VectBase	; Point to ram hooks
         LDY     #RamHookTable	; Point to ram hook table in rom
         LDD     #$137E		; load A with number of vectors B with opcode for JMP
 LC078   STB     ,X+		; setup jump
@@ -238,23 +289,23 @@ LC078   STB     ,X+		; setup jump
         BNE     LC078		; Loop again if more to do
 	
         LDX     #ResetVector	; Setup new reset vector
-        STX     <ResetVecAddr
+        STX     <IndVecReset
         ANDCC   #$AF		; reenable inturrupts
 	
         LDX     #BasSignonMess	; Print staandard Basic signon message
-        JSR     >BasPrintStr
+        JSR     >TextOutString
         JSR     >DosDoRestore
 	
         LDX     #DosSignonMess
-        JSR     >BasPrintStr
+        JSR     >TextOutString
         JSR     >LDC08
-        JMP     >CmdMode	; Jump to normal basic command mode
+        JMP     >BasCmdMode	; Jump to normal basic command mode
 	
 
 LC09D   LDA     #WDCmdForceInt	; Force WD2797 to inturrupt & reset
         STA     cmdreg
         LDX     #DosD0Online	; Clear drive online flags
-        LDD     <Zero16Bit	; load D with 16 bit zero !!!!
+        LDD     <Misc16BitScratch	; load D with 16 bit zero !!!!
         STD     ,X
         STD     2,X
 	
@@ -268,7 +319,7 @@ LC09D   LDA     #WDCmdForceInt	; Force WD2797 to inturrupt & reset
         
 	LDX     #DosDirSecStatus ; Clear Dirctory status, FCBs etc
 LC0BC   CLR     ,X+
-        CMPX    #$07F3
+        CMPX    #DosFCBEnd
         BNE     LC0BC
 
 
@@ -316,19 +367,19 @@ LC0ED   RTS
 
 LC0F8	LDB	#DosFnReadAddr
 
-	FCB	$8C		; CMPX
+	FCB	Skip2		; CMPX
 DosDoWriteTrack	
 	LDB	#DosFnWriteTrack
 
-	FCB	$8C		; CMPX
+	FCB	Skip2		; CMPX
 DosDoWriteSec2	
 	LDB	#DosFnWriteSec2  
 
-	FCB	$8C		; CMPX
+	FCB	Skip2		; CMPX
 DosDoWriteSec   
 	LDB	#DosFnWriteSec
 
-	FCB	$8C		; CMPX
+	FCB	Skip2		; CMPX
 DosDoReadSec	
 	LDB	#DosFnReadSec
 
@@ -365,6 +416,7 @@ LC132   LDA     <DskTrackNo	; Save Track no whilst doing restore
         STA     <DskTrackNo	; Put track no back
         BRA     LC111		; Try again
 
+; We come here when all reties exhausted
 LC13A   CMPB    #$80		
         BNE     LC156
         TST     $0600
@@ -372,7 +424,7 @@ LC13A   CMPB    #$80
         COM     $0600
         BRA     LC152
 
-; Something to do with dir track ?
+; Something to do with dir track ? Make sure same op done to both copies of Dir
 LC148   LDA     <DskTrackNo	; Get track number
         CMPA    #$14		; Track 20 ?
         BNE     LC156		; no : error
@@ -382,7 +434,7 @@ LC152   LDB     1,S		; Get Dos op code
         BRA     LC10D		; So same to track 16
 
 LC156   ORCC    #$01		; Flag error
-        FCB	$21		; opcocode for BRN		
+        FCB	Skip1		; opcocode for BRN		
 LC159	CLRB			; Flag no error
         LEAS    2,S		; Drop bytes from stack
         PULS    A,PC		; restore & return
@@ -394,11 +446,11 @@ LC159	CLRB			; Flag no error
 DosDoReadSec2   
 	LDB     #DosFnReadSec2
 
-	FCB	$8C		; CMPX
+	FCB	Skip2		; CMPX
 DosDoSeek	
 	LDB	#DosFnSeek
 
-	FCB	$8C		; CMPX
+	FCB	Skip2		; CMPX
 DosDoRestore   
 	LDB	#DosFnRestore
         STB     <DosHWByte	; save in hardware byte
@@ -421,7 +473,7 @@ LC178   JSR     >ResetAndStartDrive
         BCC     LC18B		; Error ?
         LDB     #$FD		; yes flag error
 
-        FCB     $8C		; Andothe CMPX saving.....
+        FCB     Skip2		; Andothe CMPX saving.....
 
 LC180   LDB     #$FC		; Set error code
         ORCC    #$01		; and carry bit
@@ -488,7 +540,7 @@ RSDosSetSide01
 	
 LC1C2   STA     secreg		; Save in sector register
         STA     <DosSectorSeek	; Save sector we are looking for
-LC1C7   LDY     <Zero16Bit
+LC1C7   LDY     <Misc16BitScratch
         LDX     <DiskBuffPtr	; Point to buffer
         LDB     <DosHWByte	; Get hardware byte (function code)
         ASLB			; Calculate offset in table
@@ -527,7 +579,7 @@ LC1FA   TST     DosErrorMask	; is this write sector ?
         CMPA    #$10		; Secondary dir track ?
         BEQ     LC210
 	
-        TST     $0608
+        TST     DosVerifyFlag
         ANDCC   #$FE		; re-enable inturrupts
         BPL     LC213
 	
@@ -731,7 +783,7 @@ LC2E8   MUL				; burn up CPU time waiting....
 ; 
 DosFunctionReadAddr   
 	LDB     #WDCmdReadAddr		; Read address mark
-        FCB     $8C			; CMPX again :)
+        FCB     Skip2			; CMPX again :)
 
 ;
 ; Dos function 2 : Read sector (RS-Dos)
@@ -768,10 +820,11 @@ RNext	LDB	dpDataReg		; Get byte
 
 DosFunctionReadAddr   
 	LDA     #WDCmdReadAddr		; Read address mark
-        FCB     $8C			; CMPX again :)
+        FCB     Skip2			; CMPX again :)
 ;
 ; Dos function 2 : Read sector (Dragon/Cumana)
 ; 
+DosFunctionReadSec
 	LDA     #WDCmdReadSec		; Read a sector
         LDB     #$3F
         STB     DosErrorMask
@@ -912,7 +965,7 @@ TSetHalt
 DosFunctionWriteSec2   
 	LDA     #$5F
 
-        FCB     $8C
+        FCB     Skip2
 
 ;
 ; Dos function 3
@@ -1065,7 +1118,7 @@ LC3B0
 CmdDskInit   
 	BEQ     LC3D9		; No parameters : use defaults
         JSR     >GetDriveNoInB	; Get drive no
-        STB     <$EB		; save it
+        STB     <DosLastDrive	; save it
         JSR     >GetCommaThen8Bit	; Get comma, and then no of sides
         BEQ     LC3DE		; Error, use default sides & tracks
 	
@@ -1073,14 +1126,14 @@ CmdDskInit
         CMPB    #$01		; > 1 sides specified : error & exit
         BHI     LC3D6
         
-	STB     <$F4		; Save sides
+	STB     <DosRecLenFlag		; Save sides
         JSR     >GetCommaThen8Bit	; Get comman, then tracks
         BEQ     LC3E0		; Error : use default tracks
         
 	CMPB    #$28		; 40 tracks ?
         BEQ     LC3E2		; Yes skip on
 	
-        NEG     <$F4
+        NEG     <DosRecLenFlag
         CMPB    #$50		; 80 tracks ?
         BEQ     LC3E2		; yes, skip on
 LC3D6   JMP     >DosPRError
@@ -1088,64 +1141,64 @@ LC3D6   JMP     >DosPRError
 ;
 ; Set defaults for format : disk=1,sides=1,tracks=40
 ;
-LC3D9   LDB     $060A		; Get default drive
-        STB     <$EB
-LC3DE   CLR     <$F4		; 1 side only 
+LC3D9   LDB     DosDefDriveNo		; Get default drive
+        STB     <DosLastDrive	; Save as last used drive
+LC3DE   CLR     <DosRecLenFlag		; 1 side only 
 LC3E0   LDB     #$28		; 40 tracks
-LC3E2   STB     <$F2
+LC3E2   STB     <DosBytesInDTA
 
         JSR     >DosHookCloseSingle	; Close single file ????
-        LBNE    LC471
+        LBNE    CmdDskInitErrorExit
 	
         LDX     #$0800		; Pointer to param area for format
-        STX     <$EE
+        STX     <DiskBuffPtr
         JSR     DosDoRestore	; Restore to track 0
-        BNE     LC471		; Error : exit
+        BNE     CmdDskInitErrorExit		; Error : exit
         LDA     #$01
-        STA     <$ED
+        STA     <DskSectorNo
         JSR     >DosDoReadSec2	; Read sector from disk to be formatted ?
         CMPB    #$80
-        BEQ     LC471
+        BEQ     CmdDskInitErrorExit
 	
-LC400   CLR     <$F3
-        CLR     <$ED
-        JSR     >LC509
+LC400   CLR     <DosNoBytesMove
+        CLR     <DskSectorNo
+        JSR     >SetupTrackImage
         JSR     >DosDoWriteTrack
-        BCS     LC471
-        TST     <$F4
+        BCS     CmdDskInitErrorExit
+        TST     <DosRecLenFlag
         BEQ     LC41F
         LDA     #$01
-        STA     <$F3
+        STA     <DosNoBytesMove
         NEGA
-        STA     <$ED
-        JSR     >LC509
+        STA     <DskSectorNo
+        JSR     >SetupTrackImage
         JSR     >DosDoWriteTrack
-        BCS     LC471
-LC41F   INC     <$EC
-        LDA     <$EC
-        CMPA    <$F2
+        BCS     CmdDskInitErrorExit
+LC41F   INC     <DskTrackNo
+        LDA     <DskTrackNo
+        CMPA    <DosBytesInDTA
         BCS     LC400
         JSR     >DosDoRestore
-        BCS     LC471
+        BCS     CmdDskInitErrorExit
 LC42C   JSR     >DosDoSeek
-        BCS     LC471
+        BCS     CmdDskInitErrorExit
         CLRA
         JSR     >LC4F2
-        INC     <$EC
-        LDA     <$EC
-        CMPA    <$F2
+        INC     <DskTrackNo
+        LDA     <DskTrackNo
+        CMPA    <DosBytesInDTA
         BCS     LC42C
-        LDX     <$EE
-        LDD     <Zero16Bit
+        LDX     <DiskBuffPtr
+        LDD     <Misc16BitScratch
 LC441   STD     ,X++
         CMPX    #$0B00
         BNE     LC441
         LDA     #$01
-        STA     <$ED
+        STA     <DskSectorNo
         LDA     #$14
         BSR     LC45A
-        DEC     <$ED
-        DEC     <$EE
+        DEC     <DskSectorNo
+        DEC     <DiskBuffPtr
         LDA     #$10
         BSR     LC460
         BRA     LC474
@@ -1153,19 +1206,24 @@ LC441   STD     ,X++
 LC45A   PSHS    A
         BSR     LC49B
         PULS    A
-LC460   STA     <$EC
+LC460   STA     <DskTrackNo
         JSR     >DosDoWriteSec
-        BCS     LC471
-        INC     <$ED
-        INC     <$EE
+        BCS     CmdDskInitErrorExit
+        INC     <DskSectorNo
+        INC     <DiskBuffPtr
         JSR     >DosDoWriteSec
-        BCS     LC471
+        BCS     CmdDskInitErrorExit
         RTS
 
-LC471   JMP     >DosHookSysError
+;
+; Exit with error, allow basic to handle it.
+;
 
-LC474   INC     <$EE
-        LDX     <$EE
+CmdDskInitErrorExit   
+	JMP     >DosHookSysError
+
+LC474   INC     <DiskBuffPtr
+        LDX     <DiskBuffPtr
         LDD     #$890A
 LC47B   STA     ,X
         LEAX    $19,X
@@ -1173,43 +1231,43 @@ LC47B   STA     ,X
         BNE     LC47B
         BSR     LC489
         LDA     #$14
-        STA     <$EC
+        STA     <DskTrackNo
 LC489   LDD     #$1003
-        STB     <$ED
+        STB     <DskSectorNo
 LC48E   JSR     >DosDoWriteSec
-        BCS     LC471
-        INC     <$ED
+        BCS     CmdDskInitErrorExit
+        INC     <DskSectorNo
         DECA
         BNE     LC48E
         JMP     >LC09D
 
-LC49B   STA     <$EC
+LC49B   STA     <DskTrackNo
         LDA     #$12
         LDB     #$5A
-        TST     <$F4
+        TST     <DosRecLenFlag
         BEQ     LC4A7
         ASLB
         ASLA
 LC4A7   STA     $08FD
         COMA
         STA     $08FF
-        LDA     <$F2
+        LDA     <DosBytesInDTA
         STA     $08FC
-        TST     <$F4
+        TST     <DosRecLenFlag
         BNE     LC4BC
         CMPA    #$50
         BNE     LC4BC
         ASLB
 LC4BC   COMA
         STA     $08FE
-        LDX     <$EE
+        LDX     <DiskBuffPtr
         LDU     #$0900
         LDA     #$FF
 LC4C7   STA     ,X+
         DECB
         BNE     LC4C7
         LDD     #$242D
-        TST     <$F4
+        TST     <DosRecLenFlag
         BEQ     LC4E0
         BPL     LC4DD
         LDD     #$B4FF
@@ -1217,25 +1275,25 @@ LC4D8   STB     ,U+
         DECA
         BNE     LC4D8
 LC4DD   LDD     #$485A
-LC4E0   LDU     <Zero16Bit
+LC4E0   LDU     <Misc16BitScratch
         PSHS    A
         BSR     LC4E8
         PULS    B
-LC4E8   LDX     <$EE
+LC4E8   LDX     <DiskBuffPtr
         ABX
         LDA     #$FC
         STU     ,X++
         STA     ,X
         RTS
 
-LC4F2   CLR     <$ED
-        TST     <$F4
+LC4F2   CLR     <DskSectorNo
+        TST     <DosRecLenFlag
         BEQ     LC4FA
         BSR     LC4FA
 LC4FA   LDA     #$12
-LC4FC   INC     <$ED
+LC4FC   INC     <DskSectorNo
         JSR     >DosDoReadSec2
-        LBCS    LC471
+        LBCS    CmdDskInitErrorExit
         DECA
         BNE     LC4FC
 LC508   RTS
@@ -1244,7 +1302,9 @@ LC508   RTS
 ; Setup format block for write track
 ;
 
-LC509   LDU     <$EE
+;LC509
+SetupTrackImage   
+	LDU     <DiskBuffPtr
         LDX     #DDDFD
         LDY     #DDDEA
         LDB     #$0C
@@ -1253,9 +1313,9 @@ LC516   LDX     #DDE09
         LDB     #$06
         BSR     LC537
         LDA     #$01
-        LDB     <$EC
+        LDB     <DskTrackNo
         STD     ,U++
-        LDB     <$F3
+        LDB     <DosNoBytesMove
         STB     ,U+
         LDB     ,Y+
         STD     ,U++
@@ -1305,7 +1365,7 @@ CmdBackup
         TFR     S,U		; Point U at base of tempory space (Like OS-9 !)
         TFR     U,D		
         SUBD    #$0040		; reserve room for working stack
-        SUBD    <BasEndInUse	; Check that we have suficient memory available
+        SUBD    <BasVarEnd	; Check that we have suficient memory available
         LBMI    BasOMError	; NO: report ?OM error
 	
         CMPA    #$01		; At least 1 sector's worth of ram (256 bytes) available
@@ -1313,7 +1373,7 @@ CmdBackup
         STA     BupAvailPages,U	; Store memory page count of avaiable RAM
         LDA     #$12		; Sectors per track, initially 18 for SS disk
         STA     BupSecTrk,U
-        LDD     <BasEndInUse	; Get end of RAM in use by basic
+        LDD     <BasVarEnd	; Get end of RAM in use by basic
         STD     BupSrcBuff,U	; save in buffer pointers for source and dest
         STD     BupDestBuff,U
 
@@ -1396,7 +1456,7 @@ LC5E0   CMPA    BupAvailPages,U	; Filled all available RAM pages ?
         BNE     LC5F2		; no : do next sector
         BSR     BupWriteToDest	; Yes : write to destination
         PSHS    D
-        LDD     <BasEndInUse	; Get end of basic storage
+        LDD     <BasVarEnd	; Get end of basic storage
         STD     BupDestBuff,U	; Save in source and dest buffer pointers
         STD     BupSrcBuff,U
         PULS    D
@@ -1429,7 +1489,7 @@ LC608   PSHS    D
         LDB     1,S		; Get function, read or write
         JSR     >DosDoFuncinB
         BCC     LC631		; no error continue
-        STB     $0603		; Temp storage (error code from dos)
+        STB     DosErrorCode		; Temp storage (error code from dos)
 	
         LDA     1,S		; Get function, read or write
         CMPA    #DosFnReadSec	; Read ?
@@ -1445,7 +1505,7 @@ LC608   PSHS    D
 ;        FCB     $C5
 ;        FCB     $F9
 
-LC62B   LDB     $0603		; Retrieve error code
+LC62B   LDB     DosErrorCode		; Retrieve error code
         JMP     >DosHookSysError
 
 LC631   INC     2,X		; Increment sector number
@@ -1467,10 +1527,10 @@ LC643   LDB     ,U		; get source drive
         JSR     >TextCls	; clear screen
         LDX     1,S		; get message pointer
         LDX     3,X
-        JSR     >BasPrintStr	; Print message (insert source/insert dest)
+        JSR     >TextOutString	; Print message (insert source/insert dest)
         LDX     #MessPressAnyKey
-        JSR     >BasPrintStr	; Print press any key
-        JSR     >TextWaitKey	; Wait for a kepress
+        JSR     >TextOutString	; Print press any key
+        JSR     >TextWaitKeyCurs2	; Wait for a kepress
         JSR     >TextCls
         PULS    A,X,Y,U,PC
 ;
@@ -1494,9 +1554,9 @@ LC67A   JMP     >BasSNError
 LC67D   CMPA    #$1A
         BCC     LC687
         LDX     #CommandDispatchTable
-        JMP     >$84ED
+        JMP     >BasDoDipatch
 
-LC687   JMP     [>$0137]
+LC687   JMP     [>NextResJump]	; Jump to user reserved word handler >$0137
 
 LC68B   SUBB    #$44
         BPL     LC691
@@ -1506,16 +1566,16 @@ LC691   CMPB    #$0E
         BCC     LC69D
         LDX     #FunctionDipatchTable
         JSR     [B,X]
-        JMP     >$8874
+        JMP     >VarGetExprCC
 
-LC69D   JMP     [>$013C]
+LC69D   JMP     [>NextFuncsJump]	; Jump to user function handler >$013C
 
-LC6A1   LDX     #$0634
+LC6A1   LDX     #Buff1Details
 LC6A4   JSR     >LD2E2
         BNE     DosHookSysError
         CLR     2,X
         LEAX    7,X
-        CMPX    #$0650
+        CMPX    #DosCurDriveInfo	; $0650
         BCS     LC6A4
 LC6B2   RTS
 
@@ -1536,39 +1596,38 @@ LC6BC   CMPB    #$04		; Drive in range
 DosDNError   
 	LDB     #$28
    
-	FCB	$8C		; CMPX
+	FCB	Skip2		; CMPX
 DosPRError
 	LDB 	#$A4
 
 DosHookSysError   
-	STB     DosErrLast	; save last error code
-        LDX     <BasCurrentLine	; Get current line no
-        STX     DosErrLineNo	; save for ERR routine
-        JSR     >BasResetStack	; reset basic stack
+	STB     DosErrLast		; save last error code
+        LDX     <BasCurrentLine		; Get current line no
+        STX     DosErrLineNo		; save for ERR routine
+        JSR     >BasResetStack		; reset basic stack
         CLR     <DosIOInProgress	; Flag no IO in progress
-        CLR     <BasDeviceNo	; Set device no back to console
-        TST     DosErrGotoFlag	; Do we have an error handler ?
-        BPL     LC6DF		; Yes, handle errors
-        LDX     <BasCurrentLine	; Get current line no
+        CLR     <TextDevN		; Set device no back to console
+        TST     DosErrGotoFlag		; Do we have an error handler ?
+        BPL     LC6DF			; Yes, handle errors
+        LDX     <BasCurrentLine		; Get current line no
         LEAX    1,X
         BNE     LC6F9
 	
-LC6DF   JSR     >TextOutCRLF	; Output a return
-        JSR     >CasMotorOff	; turn off cassette motor
-        JSR     >SndDisable	; disable cassette sound
-        JSR     >TextOutQuestion ; output '?'
-        LDX     #$82A9
-        LDB     DosErrLast	; Get last error code
+LC6DF   JSR     >TextOutCRLF		; Output a return
+        JSR     >CasMotorOff		; turn off cassette motor
+        JSR     >SndDisable		; disable cassette sound
+        JSR     >TextOutQuestion 	; output '?'
+        LDX     #BasErrorCodeTable	; Point to error code table $82A9
+        LDB     DosErrLast		; Get last error code
         BPL     LC6F6
-;        LDX     #DDF2A		; Get pointer to error table !
 	LDX	#DosErrorCodeTable-$80 	; Get pointer to error table !
-LC6F6   JMP     >$835E		; Jump to basic Error handler
+LC6F6   JMP     >SysErr2		; Jump to basic Error handler
 
-LC6F9   LDX     #$84DA
+LC6F9   LDX     #BasBRARun		; Go back to main interpreter loop $84DA
 DC6FC   PSHS    X
-        LDD     $0615
-        STD     <$2B
-        JMP     >$85E7
+        LDD     DosErrDestLine
+        STD     <BasTempLine
+        JMP     >BasSkipLineNo
 
 ;
 ; New reset vector
@@ -1584,7 +1643,7 @@ ResetVector
         CLR     DosAutoFlag
         LDA     #$35		; Re-enable NMI
         STA     PIA0CRB
-        JMP     >$B44F		; Jump back to Main ROM reset routine
+        JMP     >WarmStart	; Jump back to Main ROM reset routine
 
 ;
 ; NMI vector, called to break out of read & write loops between 6809 & WD
@@ -1629,18 +1688,18 @@ IRQSrv  CLRA			; Reset DP=0
         STA     DskCtl		; Actually turn off motor
 	endc
 		
-LC748   JMP     >$9D3D		; Jump to BASIC IRQ
+LC748   JMP     >BasIRQVec	; Jump to BASIC IRQ
 
 LC74B   JMP     >DosHookSysError		; Jump to system error trap
 
 LC74E   TFR     S,D
         SUBD    #$0100
-        SUBD    <$1F
+        SUBD    <BasVarEnd
         BMI     LC75B
         CLRB
         TSTA
         BNE     LC726
-LC75B   JMP     >$8342
+LC75B   JMP     >BasOMError
 
 ;
 ; Copy directory from track 20 to track 16.
@@ -1648,62 +1707,69 @@ LC75B   JMP     >$8342
 
 SuperDosSyncDir   
 	JSR     >LC6A1
-        LEAS    -8,S
-        LEAU    ,S
+        LEAS    -8,S			; Make room on stack
+        LEAU    ,S			; Point U at stack frame
         LEAY    4,U
-        LDX     #$0800
-        STX     <$EE
+        LDX     #DosDiskBuffBase	; Point at tempory buffer area
+        STX     <DiskBuffPtr
         CLR     2,U
-        LDB     <$EB
-        STB     1,U
+        LDB     <DosLastDrive		; Get last accessed drive
+        STB     1,U			; Save it
         LDB     #$01
         STB     ,U
-        CLR     <$EB
-        LDX     #$06AA
-LC77B   LDB     #$12
+        CLR     <DosLastDrive
+        LDX     #DosDirSecStatus-1	; $06AA
+	
+LC77B   LDB     #SectorsPerTrack	; Sector count
         STB     3,U
-        INC     <$EB
+        INC     <DosLastDrive
+
 LC781   LDB     3,U
         LDA     B,X
         BITA    ,U
         BEQ     LC7A7
+
         COMA
         ANDA    B,X
         STA     B,X
         INC     2,U
-        STB     <$ED
+        STB     <DskSectorNo
         STB     ,Y+
-        LDB     #$14
-        STB     <$EC
-        JSR     >DosDoReadSec
-        BNE     LC7BE
-        INC     <$EE
-        LDB     2,U
+        LDB     #DirPrimary		; Track 20
+        STB     <DskTrackNo		
+        JSR     >DosDoReadSec		; Go read sector
+        BNE     LC7BE			; Error !
+	
+        INC     <DiskBuffPtr		; use next disk buffer
+        LDB     2,U			; Check to see if we have filled all buffers
         CMPB    #$04
         BCS     LC7A7
         BSR     LC7C1
+
 LC7A7   DEC     3,U
         BNE     LC781
         TST     2,U
         BEQ     LC7B1
         BSR     LC7C1
+	
 LC7B1   ASL     ,U
         LDA     ,U
         CMPA    #$08
         BLS     LC77B
-        LDA     1,U
-        STA     <$EB
-        CLRB
-LC7BE   LEAS    8,U
+	
+        LDA     SyncDrive,U		; Restore last used drive
+        STA     <DosLastDrive
+        CLRB				; Flag no error
+LC7BE   LEAS    8,U			; Drop stack frame
         RTS
 
-LC7C1   LDA     #$10
-        STA     <$EC
-LC7C5   DEC     <$EE
+LC7C1   LDA     #DirBackup		; Backup track no
+        STA     <DskTrackNo
+LC7C5   DEC     <DiskBuffPtr
         LEAY    -1,Y
         LDA     ,Y
-        STA     <$ED
-        JSR     >DosDoWriteSec
+        STA     <DskSectorNo		; Pickup sector no
+        JSR     >DosDoWriteSec		; Go write it
         BEQ     LC7D5
         LEAS    8,U
         RTS
@@ -1717,177 +1783,248 @@ FIRQSrv
         TST     PIACRB
         RTI			; and return
 	
-LC7E1   BSR     SuperDosValidFilename	; Validate filename
+DosValidateAndOpen   
+	BSR     SuperDosValidFilename	; Validate filename
         BNE     LC857			; Error : exit
         JMP     >SuperDosOpenFile	; Open file if valid
 
 ;
 ; Validate filename and copy to current drive block
 ;
+;	  On entry:
+;	    X points to filename e.g. '3:FILENAME.EXT'
+;	    B length of filename e.g. 0x0e
+;	    Y points to default extension to use if none is given e.g. 'DAT'.
+;             Use '   ' for no default extension
+;	  On Return:
+;	    Filename appears at $0650-$065a
+;	    CC.Z clear on error
+;	    B contains error code
+;	    U $065b always (SuperDosE6)
+;
+
 
 SuperDosValidFilename   
-	LDA     $060A
-        STA     $065B
-        CLR     $0660
-        LDU     #$0650
-        LDA     #$07
+	LDA     DosDefDriveNo
+        STA     DosCurDriveNo		; Set current drive number, default if non specified
+        CLR     DosCurCount
+        LDU     #DosCurDriveInfo	; Point at current drive info
+
+        LDA     #$07			; Zero out first 8 bytes (filename)	
 LC7F6   CLR     A,U
         DECA
         BPL     LC7F6
-        LDA     2,Y
-        STA     $065A
+        
+	LDA     2,Y			; Transfer extension into current details
+        STA     DosCurExtension+2	; $065A
         LDA     1,Y
-        STA     $0659
+        STA     DosCurExtension+1	; $0659
         LDA     ,Y
-        STA     $0658
-        CMPB    #$0E
-        BHI     LC855
-        TSTB
-        BEQ     LC855
-        CMPB    #$03
-        BCS     LC83D
-        SUBB    #$02
+        STA     DosCurExtension		; $0658
+	
+        CMPB    #MaxFilenameLen		; Filename too long ?
+        BHI     LC855			; Yep : error
+	
+        TSTB				; Too short ?
+        BEQ     LC855			; Yep : error
+	
+        CMPB    #$03			; Long enough to contain drive no ?
+        BCS     LC83D			; nope : skip on
+	
+; Because of the order of compare a drive letter at the END of the filename always
+; takes presedence, this would only be siginificant if the filename where something like
+; '1:2' which would access a file called '1' on drive 2, and NOT 2 on drive 1
+	
+        SUBB    #$02			; Look for drive no at end of filename
         LDA     B,X
-        CMPA    #$3A
-        BNE     LC823
+        CMPA    #':			; Seperator present ? $3A
+        BNE     LC823			; No skip on
         INCB
-        LDA     B,X
+        LDA     B,X			; Get drive no
         INCB
-        BRA     LC82D
+        BRA     LC82D			; Go process it
 
-LC823   ADDB    #$02
+LC823   ADDB    #$02			; Check for drive at begining of path
         LDA     1,X
-        CMPA    #$3A
-        BNE     LC83D
-        LDA     ,X++
-LC82D   SUBA    #$30
+        CMPA    #':			; Seperator present ? $3A
+        BNE     LC83D			; nope, use default drive
+	
+        LDA     ,X++			; Get ascii drive no
+LC82D   SUBA    #$30			; Work out drive number
         BLS     LC835
-        CMPA    #$04
+        
+	CMPA    #MaxDriveNo		; Drive valid ?
         BLS     LC838
-LC835   LDB     #$1C
+	
+LC835   LDB     #$1C			; Error !
         RTS
 
-LC838   STA     $065B
+LC838   STA     DosCurDriveNo		; Set current drive if specified
         SUBB    #$02
-LC83D   LDA     ,X+
-        DECB
-        BMI     LC8A6
-        CMPA    #$2F
+	
+; Parse filename looking for extension seperator
+	
+LC83D   LDA     ,X+			; Get next char
+        DECB				; Decrement path count
+        BMI     LC8A6			; Reached end : yes skip
+	
+        CMPA    #'/			; Check for slash $2F
         BEQ     LC84A
-        CMPA    #$2E
+	
+        CMPA    #'.			; Check for period $2E
         BNE     LC866
-LC84A   CMPU    #$0650
+	
+LC84A   CMPU    #DosCurDriveInfo	; $0650
         BEQ     LC855
-        TST     $0660
-        BEQ     LC858
-LC855   LDB     #$96
+	
+        TST     DosCurCount		; First pass ?
+        BEQ     LC858			; yes : skip on
+
+LC855   LDB     #$96			; Error ?
 LC857   RTS
 
-LC858   INC     $0660
-        LDU     #$0658
-        CLR     ,U
+LC858   INC     DosCurCount		; Mark second pass
+        LDU     #DosCurExtension	; $0658
+        CLR     ,U			; Zero out extension
         CLR     1,U
         CLR     2,U
         BRA     LC83D
 
-LC866   CMPA    #$41
-        BCS     LC87A
-        CMPA    #$5A
-        BLS     LC886
-        SUBA    #$20
-        CMPA    #$41
-        BCS     LC855
-        CMPA    #$5A
-        BLS     LC886
+
+; Validate filename chars
+
+LC866   CMPA    #'A			; $41
+        BCS     LC87A			; Below, check if still valid
+	
+        CMPA    #'Z			; $5A
+        BLS     LC886			; valid, skip on
+	
+        SUBA    #$20			; Convert to lower case if upper
+        CMPA    #'A			; $41
+        BCS     LC855			; Invalid, return error
+	
+        CMPA    #'Z			; $5A
+        BLS     LC886			; Valid: skip on
         BRA     LC855
 
-LC87A   CMPA    #$2D
-        BEQ     LC886
-        CMPA    #$30
-        BCS     LC855
-        CMPA    #$39
-        BHI     LC855
-LC886   STA     ,U+
-        CMPU    #$065B
-        BNE     LC893
-        TSTB
-        BNE     LC855
+LC87A   CMPA    #'-			; $2D
+        BEQ     LC886			; Valid skip on
+	
+        CMPA    #'0			; $30
+        BCS     LC855			; Invalid : error
+        CMPA    #'9			; $39
+        BHI     LC855			; Invalid : error
+	
+LC886   STA     ,U+			; Save char in path
+        CMPU    #DosCurDriveNo		; Path full ?
+        BNE     LC893			; nope : skip
+        
+	TSTB				; Done all path chars ?
+        BNE     LC855			; nope : error !
         BRA     LC8A6
 
-LC893   CMPU    #$0658
+LC893   CMPU    #DosCurExtension	; Reached extension ? $0658
         BNE     LC83D
-        LDA     ,X+
-        DECB
-        BMI     LC8A6
-        CMPA    #$2E
-        BEQ     LC84A
-        CMPA    #$2F
-        BEQ     LC84A
+	
+        LDA     ,X+			; Get next 
+        DECB				; Dec count
+        BMI     LC8A6			; Done, return
+	
+        CMPA    #'.			; Check for seperator $2E
+        BEQ     LC84A			; yep loop back
+        CMPA    #'/			; Check for seperator $2F
+        BEQ     LC84A			; Yep loop back
+	
 LC8A6   CLRB
         RTS
 
 ;
 ; Open a file and copy dir entry into FCB.
 ;
+;  On entry:
+;	    Filename at $0650 ??
+;	  Returns:
+;	    CC.Z clear on error
+;	    A FCB number (0-9)
+;	    B contains error code
+;
+
 
 SuperDosOpenFile   
-	LDX     #$06BD
-        CLR     <$F1
-        LDD     $0650
-LC8B0   CMPD    ,X
-        BNE     LC8CB
-        LDU     #$0652
-        LEAY    2,X
-        LDB     #$0A
-LC8BC   LDA     ,U+
-        CMPA    ,Y+
-        BNE     LC8C8
-        DECB
-        BNE     LC8BC
-        JMP     >LC973
+	LDX     #DosFCB0Addr		; Point to first FCB
+        CLR     <DosCurrCtrlBlk
+        LDD     DosCurDriveInfo		; Get first 2 bytes of current drive info
+LC8B0   CMPD    ,X			; Does this FCB point to it ?
+        BNE     LC8CB			; Nope : check next
+	
+; Found matching first 2 bytes of name in an FCB
+	
+        LDU     #DosCurDriveInfo+2	; Check bytes 2..end of filename
+        LEAY    2,X			; Compare from byte 2 of FCB
+        LDB     #$0A			; Do 10 bytes, rest of filename + ext
+LC8BC   LDA     ,U+			; Get a byte from current
+        CMPA    ,Y+			; compare to FCB
+        BNE     LC8C8			; Don't match : exit check
+        DECB				; Decrement counter
+        BNE     LC8BC			; Not at end : do next
+        JMP     >LC973			; Found it, already have an FCB for it
 
-LC8C8   LDD     $0650
-LC8CB   LEAX    $1F,X
-        INC     <$F1
-        CMPX    #$07F3
-        BCS     LC8B0
-        CLR     <$F1
-        LDX     #$06BD
-LC8DA   TST     ,X
-        BEQ     LC8EB
-        LEAX    $1F,X
-        INC     <$F1
-        CMPX    #$07F3
-        BCS     LC8DA
+; Move to check next FCB
+
+LC8C8   LDD     DosCurDriveInfo		; Re-get first 2 chars of current filaname
+LC8CB   LEAX    DosFCBLength,X		; Skip to next FCB
+        INC     <DosCurrCtrlBlk		; Set current control block
+        CMPX    #DosFCBEnd		; End of blocks ?
+        BCS     LC8B0			; No, loop back and check this block
+	
+        CLR     <DosCurrCtrlBlk		; Set current block to zero
+        LDX     #DosFCB0Addr		; Point at first FCB
+	
+LC8DA   TST     ,X			; FCB in use ?
+        BEQ     LC8EB			; No : skip on
+	
+        LEAX    DosFCBLength,X		; Check next FCB
+        INC     <DosCurrCtrlBlk		
+        CMPX    #DosFCBEnd		; Done all FCBs
+        BCS     LC8DA			; No : check next, yes error, can't open file, no free FCBS
         LDB     #$A2
 LC8EA   RTS
 
-LC8EB   LDB     #$0C
-        TFR     X,Y
-        LDU     #$0650
-LC8F2   LDA     ,U+
+LC8EB   LDB     #$0C			; Copy 12 characters of filename
+        TFR     X,Y			; Point Y at selected FCB
+        LDU     #DosCurDriveInfo	; Point at current info
+LC8F2   LDA     ,U+			; Copy filename
         STA     ,Y+
-        DECB
-        BNE     LC8F2
-        STA     <$EB
-        LDU     #$0616
-        LDB     #$06
+        DECB				; Dec count
+        BNE     LC8F2			; if not all done : do next
+	
+        STA     <DosLastDrive		; Save current drive
+
+; Note in disassembled source, the following was LDU #$0616, which is part of the error line !
+; This makes no sense, and is Drv0Details, in DragonDos source,	I think I just fixed a 20 year old
+; bug !!!!!!
+
+        LDU     #Drv0Details		; Get drive details	 
+        LDB     #$06			; 6 bytes/drive
         MUL
-        LEAU    D,U
-        INC     5,U
-        LDB     #$13
+        LEAU    D,U			; Point at drive detail block
+        INC     5,U			; Increment usage/open file count
+	
+        LDB     #$13			; Clear rest of FCB
 LC907   CLR     ,Y+
-        DECB
-        BNE     LC907
+        DECB				; Dec counter
+        BNE     LC907			; Loop if more
+	
         LDA     #$80
         STA     15,X
         CLR     $0681
-        JSR     >LD1A3
+        JSR     >DosGetDiskGeometry
         BNE     LC8EA
         LDY     ,X
         LEAY    2,Y
         LDA     #$10
-        STA     $0660
+        STA     DosCurCount
+
 LC922   STY     $065C
         JSR     >SuperDosFindAndRead
         BNE     LC8EA
@@ -1897,7 +2034,7 @@ LC922   STY     $065C
 LC934   LDA     ,X
         BITA    #$81
         BNE     LC954
-        LDD     $0650
+        LDD     DosCurDriveInfo
         CMPD    1,X
         BNE     LC954
         LDU     #$0652
@@ -1919,7 +2056,7 @@ LC954   LDA     ,X
         BCS     LC934
         LDY     $065C
         LEAY    1,Y
-        DEC     $0660
+        DEC     DosCurCount
         BNE     LC922
 LC970   JSR     >DosFCBNoToAddr
 LC973   CLRB
@@ -1927,7 +2064,7 @@ LC973   CLRB
         BPL     LC97A
         LDB     #$A0
 LC97A   LEAX    12,X
-        LDA     <$F1
+        LDA     <DosCurrCtrlBlk
         TSTB
         RTS
 
@@ -1960,16 +2097,16 @@ LC980   PSHS    X
 ;
 
 SuperDosFRead   
-	CLR     <$F5
-        STA     <$F1
+	CLR     <DosIRQTimeFlag
+        STA     <DosCurrCtrlBlk
         BRA     LC9CA
 
 LC9C3   LDA     #$01
 
-        FCB     $8C
+        FCB     Skip2
 
 LC9C6   LDA     #$FF
-        STA     <$F5
+        STA     <DosIRQTimeFlag
 LC9CA   STY     $0661
         LBEQ    LCAB0
         STU     $0669
@@ -1977,8 +2114,8 @@ LC9CA   STY     $0661
         PSHS    X
         JSR     >DosFCBNoToAddr
         LDA     11,X
-        STA     <$EB
-        TST     <$F5
+        STA     <DosLastDrive
+        TST     <DosIRQTimeFlag
         BNE     LC9F0
         LDD     $0661
         ADDD    13,X
@@ -2002,7 +2139,7 @@ LCA03   PSHS    D,X
         LDA     15,X
         BITA    #$02
         BEQ     LCA1E
-        TST     <$F5
+        TST     <DosIRQTimeFlag
         BEQ     LCA1E
         LDB     #$98
 LCA1B   LEAS    4,S
@@ -2011,7 +2148,7 @@ LCA1B   LEAS    4,S
 LCA1E   LDX     2,S
         TST     1,S
         BNE     LCA4E
-        TST     <$F5
+        TST     <DosIRQTimeFlag
         BEQ     LCA2F
         BPL     LCA34
         JSR     >LD330
@@ -2032,14 +2169,14 @@ LCA37   BNE     LCA1B
         BNE     LC9F5
         RTS
 
-LCA4E   TST     <$F5
+LCA4E   TST     <DosIRQTimeFlag
         BMI     LCA93
         JSR     >SuperDosFindAndRead
         BNE     LCA1B
         STX     $0667
         LDY     2,S
         LDB     $0663
-        TST     <$F5
+        TST     <DosIRQTimeFlag
         BEQ     LCA87
         LDA     #$FF
         STA     2,X
@@ -2135,14 +2272,19 @@ LCAF1   SUBB    2,Y
         STD     $18,X
 LCB1E   BRA     LCAB5
 
+;
+; Entry : X=Address of a FCB
+;	  B=File number (on disk), also in $1d,X
+;
+
 LCB20   PSHS    X
         CLR     $066C
         CLR     $066B
         STU     $066D
-        LDB     $1D,X
-        STB     $0682
-        JSR     >SuperDosGetDirEntry
-        BNE     LCB7C
+        LDB     FCBDiskFileNo,X
+        STB     DosCurFileNo
+        JSR     >SuperDosGetDirEntry		; Go get directory entry
+        BNE     LCB7C				; Error : exit
         TFR     X,U
         PULS    X
         LEAY    12,U
@@ -2164,7 +2306,7 @@ LCB49   LDD     $066B
         LDB     ,S
         BEQ     LCB79
         LEAS    2,S
-        STB     $0682
+        STB     DosCurFileNo
         PSHS    X
         JSR     >SuperDosGetDirEntry
         TFR     X,U
@@ -2176,29 +2318,29 @@ LCB49   LDD     $066B
 
 LCB79   LEAY    -3,Y
 LCB7B   CLRB
-LCB7C   LEAS    2,S
-LCB7E   RTS
+LCB7C   LEAS    2,S				; Drop stack frame
+LCB7E   RTS					; Return
 
 ;
 ; Write data from memory to file, verify if verify on.
 ;
 
 SuperDosFWrite   
-	STA     <$F1
+	STA     <DosCurrCtrlBlk
         STX     $0671
         STU     $0673
         STY     $0675
         STB     $0677
         JSR     >DosFCBNoToAddr
         LDB     11,X
-        STB     <$EB
+        STB     <DosLastDrive
 LCB95   JSR     >SuperDosGetFLen
         BEQ     LCBA8
         CMPB    #$9C
         BEQ     LCB9F
         RTS
 
-LCB9F   LDA     <$F1
+LCB9F   LDA     <DosCurrCtrlBlk
         JSR     >SuperDosCreateFile
         BNE     LCB7E
         BRA     LCB95
@@ -2240,7 +2382,7 @@ LCBE6   LEAS    1,S
         LDU     $0675
         JSR     >LC9C3
         BNE     LCBB7
-        TST     $0608
+        TST     DosVerifyFlag
         BEQ     LCBB7
         LDB     $0677
         LDX     $0671
@@ -2255,8 +2397,8 @@ LCC12   LEAS    -12,S
         STD     ,S
         STD     10,S
         LDA     #$01
-        STA     <$F6
-        JSR     >LD1A3
+        STA     <DosIOInProgress
+        JSR     >DosGetDiskGeometry
         LBNE    LCD08
         STX     8,S
         JSR     >DosFCBNoToAddr
@@ -2264,7 +2406,7 @@ LCC12   LEAS    -12,S
         JSR     >SuperDosGetDirEntry
         LBNE    LCD08
         STX     4,S
-        LDU     $067F
+        LDU     DosCurDirBuff
         LDA     #$FF
         STA     2,U
         CLRA
@@ -2369,7 +2511,7 @@ LCD01   STD     $11,X
         STB     $18,U
         CLRB
 LCD08   LEAS    12,S
-        CLR     <$F6
+        CLR     <DosIOInProgress
         TSTB
         RTS
 
@@ -2411,7 +2553,7 @@ LCD4B   CLR     ,-Y
 LCD57   STS     $0601
         LEAS    -9,S
         CLR     4,S
-        JSR     >LD1A3
+        JSR     >DosGetDiskGeometry
         LBNE    LCE5A
         LDY     ,X
         LDU     $11,S
@@ -2454,7 +2596,7 @@ LCDB2   JMP     >LCE60
 LCDB5   LDA     #$FF
         STA     7,S
         LDA     4,S
-LCDBB   LDU     <Zero16Bit
+LCDBB   LDU     <Misc16BitScratch
         LSRA
         BCS     LCDC3
         LDU     #$05A0
@@ -2539,8 +2681,13 @@ LCE37   INCB
 LCE4A   BITA    ,X
         BNE     LCE37
         TFR     B,A
-LCE51   EQU     *+1
-        CMPX    #$86FF
+
+;LCE51   EQU     *+1
+;        CMPX    #$86FF
+	
+	FCB	Skip2
+LCE51	LDA	#$FF
+	
         LDX     2,S
         LDB     #$FF
         STB     2,X
@@ -2588,7 +2735,7 @@ LCE84   LDX     10,S
 ;
 
 SuperDosGetFLen   
-	STA     <$F1
+	STA     <DosCurrCtrlBlk
         BSR     DosFCBNoToAddr
         TST     15,X
         BPL     LCEAA
@@ -2601,7 +2748,7 @@ LCEAA   LDA     $12,X
         BNE     LCED0
         JSR     >LCB20
         BNE     LCEA9
-        LDB     $0682
+        LDB     DosCurFileNo
         STB     $1E,X
 LCEBF   LDA     $18,U
         STA     $12,X
@@ -2634,14 +2781,14 @@ DosFCBNoToAddr
 
 SuperDosCloseAll   
 	LDA     #$09
-        STA     <$F1
+        STA     <DosCurrCtrlBlk
 LCEE5   BSR     DosFCBNoToAddr
         LDA     11,X
-        CMPA    <$EB
+        CMPA    <DosLastDrive
         BNE     LCEF1
         BSR     LCEF9
         BNE     LCEA9
-LCEF1   DEC     <$F1
+LCEF1   DEC     <DosCurrCtrlBlk
         BPL     LCEE5
 LCEF5   CLRB
         RTS
@@ -2651,16 +2798,16 @@ LCEF5   CLRB
 ;
 
 SuperDosCloseFile   
-		STA     <$F1
+		STA     <DosCurrCtrlBlk
 LCEF9   BSR     DosFCBNoToAddr
         TST     ,X
         BEQ     LCEF5
-        LDA     <$EB
+        LDA     <DosLastDrive
         PSHS    A
         LDA     11,X
-        STA     <$EB
+        STA     <DosLastDrive
         CLR     ,X
-        JSR     >LD1A3
+        JSR     >DosGetDiskGeometry
         BNE     LCF34
         TST     5,X
         BEQ     LCF19
@@ -2678,11 +2825,11 @@ LCF19   LDB     2,X
         BNE     LCF34
         CLR     2,X
 LCF2A   JSR     >SuperDosSyncDir
-        LDU     #$0696
-        LDA     <$EB
+        LDU     #DosD0Online-1
+        LDA     <DosLastDrive
         CLR     A,U
 LCF34   PULS    A
-        STA     <$EB
+        STA     <DosLastDrive
         TSTB
 LCF39   RTS
 
@@ -2695,7 +2842,7 @@ SuperDosCreateFile
         JSR     >DosFCBNoToAddr
         STX     $0678
         LDB     #$0C
-        LDU     #$0650
+        LDU     #DosCurDriveInfo
 LCF48   LDA     ,X+
         STA     ,U+
         DECB
@@ -2737,7 +2884,7 @@ LCF92   LDD     $067A
         BEQ     LCFA7
         CMPB    #$A0
         BNE     LCF39
-LCFA7   STA     <$F1
+LCFA7   STA     <DosCurrCtrlBlk
         JSR     >DosFCBNoToAddr
         TST     15,X
         BMI     LCFB3
@@ -2748,7 +2895,7 @@ LCFB3   CLRA
         JSR     >LD123
         BNE     LCFB2
         JSR     >DosFCBNoToAddr
-        STA     $1D,X
+        STA     FCBDiskFileNo,X
         STA     $1E,X
         LDB     #$1C
 LCFC4   CLR     B,X
@@ -2776,7 +2923,7 @@ SuperDosDeleteFile
 	JSR     >LD0E4
         BNE     LCFB2
         PSHS    X
-        LDB     $1D,X
+        LDB     FCBDiskFileNo,X
         JSR     >LD237
         BNE     LD035
         TFR     X,U
@@ -2814,7 +2961,7 @@ LD017   DEC     3,S
         BRA     LCFF6
 
 LD034   CLRB
-LD035   CLR     <$F6
+LD035   CLR     <DosIOInProgress
         LEAS    2,S
         TSTB
         RTS
@@ -2822,7 +2969,7 @@ LD035   CLR     <$F6
 LD03B   CLRA
         PSHS    A
         PSHS    D,X
-        JSR     >LD1A3
+        JSR     >DosGetDiskGeometry
         BNE     LD0C2
         LDY     ,X
         LDD     2,S
@@ -2897,24 +3044,29 @@ LD0C4   RTS
 ;
 
 SuperDosProtect   
-	STA     <$F1
+	STA     <DosCurrCtrlBlk
         JSR     >DosFCBNoToAddr
         LDA     15,X
         BMI     LD0F4
         TSTB
         BEQ     LD0D4
         ORA     #$02
-LD0D4   EQU     *+1
-        CMPX    #$84FD
+
+;LD0D4   EQU     *+1
+;        CMPX    #$84FD
+
+	FCB	Skip2
+LD0D4	ANDA	#$FD	
+
         STA     15,X
-        LDB     $1D,X
+        LDB     FCBDiskFileNo,X
         JSR     >LD237
         BNE     LD0C4
         STA     ,X
         CLRB
         RTS
 
-LD0E4   STA     <$F1
+LD0E4   STA     <DosCurrCtrlBlk
         JSR     >DosFCBNoToAddr
         LDA     15,X
         BMI     LD0F4
@@ -2931,37 +3083,37 @@ LD0F4   LDB     #$9C
 ;
 
 SuperDosRename   
-		BSR     LD0E4
+	BSR     LD0E4
         BNE     LD122
         LDB     #$0B
-        LDU     #$0650
+        LDU     #DosCurDriveInfo
 LD100   LDA     ,U+
         STA     ,X+
         DECB
         BNE     LD100
         LEAX    -11,X
-        LDB     $1D,X
+        LDB     FCBDiskFileNo,X
         JSR     >LD237
         BNE     LD122
-        LDU     #$0650
+        LDU     #DosCurDriveInfo
         LDB     #$0B
         LEAX    1,X
 LD118   LDA     ,U+
         STA     ,X+
         DECB
         BNE     LD118
-        CLR     <$F6
+        CLR     <DosIOInProgress
         CLRB
 LD122   RTS
 
 LD123   CLRB
         STD     $067D
-        BSR     LD1A3
+        BSR     DosGetDiskGeometry
         BNE     LD122
         LDX     ,X
         PSHS    X
         LEAX    2,X
-LD131   STX     $066F
+LD131   STX     DosCurLSN
         TFR     X,Y
         JSR     >SuperDosFindAndRead
         BNE     LD170
@@ -3000,10 +3152,10 @@ LD170   LEAS    2,S
 ;
 
 SuperDosGetFree   
-	BSR     LD1A3
+	BSR     DosGetDiskGeometry
         BNE     LD187
         LDY     ,X
-        LDX     <Zero16Bit
+        LDX     <Misc16BitScratch
         BSR     LD188
         BNE     LD187
         LEAY    1,Y
@@ -3028,263 +3180,355 @@ LD19C   TSTA
         BNE     LD195
         RTS
 
-LD1A3   LDX     #$061C
-        LDU     #$0696
-        LDB     #$06
-        LDA     <$EB
-        LEAU    A,U
-        DECA
-        MUL
+;
+; Get geometry for a disk and set the apropreate low memory vars.
+;
+; Entry : DosLastDrive, set to last drive
+;
+; Exit  : Drive vars setup in low ram, to be same as disk in drive.
+;	  X=Address of buffer detail entry for buffer to use
+
+DosGetDiskGeometry   
+	LDX     #Drv0Details		; Point at drive details
+        LDU     #DosD0Online-1		; Point at drive online table
+        LDB     #DrvDeatailLen		; Get drive table entry len
+        LDA     <DosLastDrive		; Get last used drive
+        LEAU    A,U			; Point U at drive online flag
+        DECA				; Make zero based
+        MUL				; Calculate offset of drive we need
         LEAX    D,X
-        TST     ,U
-        BNE     LD1FF
-        LDY     #$0168
-        LDA     #$12
-        STA     $10,U
-        TST     12,U
-        BNE     LD1CA
-        JSR     >DosDoRestore
-        BCC     LD1CA
+        TST     ,U			; Is drive online ?
+        BNE     LD1FF			; Yes : exit
+	
+        LDY     #SectorsPerTrack*DirPrimary 	; First sector of DIR track ($0168)
+        LDA     #SectorsPerTrack	; Set sectors per track for this drive
+        STA     $10,U			; Set it
+        TST     $0C,U			; Do we know how many tracks this disk has ?
+        BNE     LD1CA			; Yes : skip on
+	
+        JSR     >DosDoRestore		; No, do restore
+        BCC     LD1CA			; no error : skip
         RTS
 
-LD1CA   PSHS    X
-        JSR     >SuperDosFindAndRead
-        BNE     LD170
-        CLR     2,X
-        LDX     5,X
-        LDD     $00FE,X
-        COMA
+LD1CA   PSHS    X			; Save drive detail pointer		
+        JSR     >SuperDosFindAndRead	; Find free buffer and read sector
+        BNE     LD170			; Error : exit
+	
+; At this point X points to buffer details ???
+	
+        CLR     BuffFlag,X		; Reset buffer flag
+        LDX     BuffAddr,X		; Get address of buffer data
+        LDD     DirTracks1s,X		; Get complements of tracks/secs per track
+        COMA				; Complemetn them for compare
         COMB
-        CMPD    $00FC,X
-        PULS    X
-        BNE     LD201
-        STB     $10,U
-        STA     12,U
-        DEC     ,U
-        CMPB    #$12
-        BEQ     LD1F0
-        CLRB
-LD1F0   PSHS    B
-        CLR     2,X
-        LDD     #$0168
-        TST     ,S+
-        BNE     LD1FD
-        ASLB
+        CMPD    DirTracks,X		; compare them to validate the disk
+        PULS    X			; restore drive detail pointer
+        BNE     LD201			; Not the same, may be ds disk
+	
+        STB     $10,U			; Set Sectors/Track for this disk
+        STA     $0C,U			; Set tracks for this disk
+        DEC     ,U			; Mark drive online
+        CMPB    #$12			; Disk single sided ?
+        BEQ     LD1F0			; yes : skip on
+	
+        CLRB				; zero it
+LD1F0   PSHS    B			; save it
+        CLR     BuffFlag,X		; Clear buffer flag
+        LDD     #SectorsPerTrack*DirPrimary 	; First sector of DIR track ($0168)
+        TST     ,S+			; Do we need to double ? 
+        BNE     LD1FD			; yes : skip
+        ASLB				; Multiply D by 2, as we have 2 sides
         ROLA
-LD1FD   STD     ,X
-LD1FF   CLRB
-        RTS
+LD1FD   STD     ,X			; save it
+LD1FF   CLRB				; No error
+        RTS				; Return
 
-LD201   LDB     #$90
+LD201   LDB     #$90			; Flag error
         RTS
 
 ;
 ; Get directory entry.
 ;
+; Entry : B= File number(on disk) to get entry for???
+;
+; Exit  : X=Pointer to required Dir entry.
+;
 
 SuperDosGetDirEntry   
-	LDA     #$FF
-LD206   INCA
-        SUBB    #$0A
-        BCC     LD206
-        ADDB    #$0A
-        PSHS    D
-        BSR     LD1A3
-        LBNE    LCB7C
-        LDD     ,X
-        ADDD    #$0002
-        ADDB    ,S+
-        ADCA    #$00
-        STD     $066F
-        TFR     D,Y
-        BSR     SuperDosFindAndRead
-        PULS    A
-        BNE     LD236
-        TFR     X,U
-        LDB     #$19
-        MUL
-        STX     $067F
-        LDX     5,X
-        LEAX    D,X
-        CLRB
+	LDA     #$FF			; Init sector counter
+LD206   INCA				; increment sector counter
+        SUBB    #DirEntPerSec		; Decrement file no, by a sectors worth of files
+        BCC     LD206			; Done all ? no : continue looping
+	
+        ADDB    #DirEntPerSec		; Compensate for over loop
+	
+; At this point A contains the sector number within the directory that we are intereted in.
+; and B contains the entry within that sector of the file's details.
+	
+        PSHS    D			; Save them
+        BSR     DosGetDiskGeometry	; Setup disk geometry from disk in drive
+        LBNE    LCB7C			; Error : exit
+	
+        LDD     ,X			; Get LSN number from buffer
+        ADDD    #$0002			; Advance past bitmap sectors
+        ADDB    ,S+			; Add sector offset calculated above
+        ADCA    #$00			; Deal with carry
+        STD     DosCurLSN		; Save LSN
+        TFR     D,Y			; Get LSN into Y
+        BSR     SuperDosFindAndRead	; Find free buffer and read sector
+        PULS    A			; Retrieve entry number witin sector
+
+        BNE     LD236			; Error: exit
+        TFR     X,U			
+        LDB     #$19			; Length of dir entry
+        MUL				; Calculate offset
+        STX     DosCurDirBuff		; Saave block def pointer
+        LDX     BuffAddr,X		; Get pointer to block data
+        LEAX    D,X			; Get offset of DIR entry into X
+        CLRB				; Flag no error
 LD236   RTS
 
 LD237   PSHS    D
-        BSR     SuperDosGetDirEntry
-        LBNE    LCB7C
-        LDY     $067F
-        LDA     #$FE
-        STA     2,Y
-        CLRB
-        PULS    D,PC
+        BSR     SuperDosGetDirEntry	; Get directory entry we are interested in
+        LBNE    LCB7C			; Error :
+        LDY     DosCurDirBuff		; Get Buffer def block for this entry
+        LDA     #$FE			; Set flag
+        STA     BuffFlag,Y
+        CLRB				; Flag no error
+        PULS    D,PC			; Restore and return
 
-LD24A   LDX     #$0634
-        LDU     <Zero16Bit
-        LDB     #$04
-LD251   LDA     2,X
-        BEQ     LD26C
-        CMPA    #$55
-        BEQ     LD26E
+;
+; Find a free disk buffer.
+;
+; Entry	: Y=??
+;
+; Exits : U=pointer to detail entry for free buffer.
+;	  B=Error code
+;
+
+FindFreeBuffer
+        LDX     #Buff1Details		; Point at disk buffer detail table
+        LDU     <Misc16BitScratch	; Load U with 0 ?
+        LDB     #BuffCount		; 4 Disk buffers
+LD251   LDA     BuffFlag,X		; Get buffer flag in A
+        BEQ     LD26C			; Zero ?
+	
+        CMPA    #BuffInUse		; Is buffer in use ?
+        BEQ     LD26E			; Yes, try next buffer
         CMPY    ,X
         BNE     LD268
-        LDA     <$EB
-        CMPA    3,X
-        BNE     LD268
-        BSR     LD2CB
-        CLRB
+	
+        LDA     <DosLastDrive		; Get last drive
+        CMPA    BuffDrive,X		; Is this buffer using the same drive ?
+        BNE     LD268			; nope, skip on
+        BSR     MakeBuffYoungest	; Make this the youngest buffer
+        CLRB				; Flag no error
         RTS
 
-LD268   TST     2,X
-        BNE     LD26E
-LD26C   TFR     X,U
-LD26E   LEAX    7,X
-        DECB
-        BNE     LD251
-        LDB     #$FF
-        RTS
+LD268   TST     BuffFlag,X		; Is buffer free ?
+        BNE     LD26E			; nope, look at next
+LD26C   TFR     X,U			; Select this buffer
+LD26E   LEAX    BuffDetailSize,X	; move on to next buffer detail entry
+        DECB				; Decrement counter
+        BNE     LD251			; Any more to check ? : yes loop again
+        LDB     #$FF			; Flag error
+        RTS					
 
 ;
 ; Find a free buffer and read sector.
 ;
+; Entry : 
+;	  Y= ???
+;	  U= ???
+;
 
 SuperDosFindAndRead   
 	PSHS    U
-        BSR     LD24A
+        BSR     FindFreeBuffer		; Find free buffer, pointer to details returned in U
         LBEQ    LCB7C
-        LEAX    ,U
+        LEAX    ,U			; Make X point to details
         PULS    U
         BNE     LD288
-        BSR     LD2A2
-        BNE     LD2A1
-LD288   CLR     2,X
+        BSR     FindFreeDiskBuffer	; Find buffer to read data into
+        BNE     LD2A1			; Error : exit
+	
+LD288   CLR     BuffFlag,X		; Make buffer free
         STY     ,X
-        LDA     <$EB
-        STA     3,X
-        PSHS    X
-        LDX     5,X
-        JSR     >SuperDosReadAbsSector
-        PULS    X
-        BNE     LD2A1
-        LDA     #$01
-        STA     2,X
-        CLRB
+        LDA     <DosLastDrive		; Get last drive
+        STA     BuffDrive,X		; Set this drive's buffer
+        PSHS    X			; Save buffer detail pointer
+        LDX     BuffAddr,X		; Get address of buffer
+        JSR     >SuperDosReadAbsSector	; Read the sector
+        PULS    X			; Restore buff detail pointer
+        BNE     LD2A1			; Error : exit
+	
+        LDA     #$01			; Set flag to 1
+        STA     BuffFlag,X
+        CLRB				; No error
 LD2A1   RTS
 
-LD2A2   PSHS    D,Y,U
-LD2A4   LDX     #$0634
-        LDB     #$04
-LD2A9   LDA     4,X
-        CMPA    #$01
-        BEQ     LD2B4
-        LEAX    7,X
-        DECB
-        BNE     LD2A9
-LD2B4   BSR     LD2CB
-        LDA     2,X
-        CMPA    #$55
-        BEQ     LD2A4
-        INCA
-        BNE     LD2C3
-        DEC     2,X
-        BRA     LD2A4
+;
+; Find least recently used disk buffer, if none, and there is 
+; a dirty buffer, then flush it and use that one.
+;
+; Exit : X=pointer to buffer info block.
+;
 
-LD2C3   BSR     LD2E2
-        BEQ     LD2C9
-        STB     1,S
-LD2C9   PULS    D,Y,U,PC
+FindFreeDiskBuffer   
+	PSHS    D,Y,U
+LD2A4   LDX     #Buff1Details		; Point to disk buffer table
+        LDB     #$04			; Check 4 buffers
+LD2A9   LDA     BuffAge,X		; Get buffer age
+        CMPA    #$01			; Oldest ?
+        BEQ     LD2B4			; Yes go process it
+        LEAX    7,X			; Do next bufffer
+        DECB				; Decrement buffer count
+        BNE     LD2A9			; More : do next
+	
+LD2B4   BSR     MakeBuffYoungest	; Adjust ages of all other buffers
+        LDA     BuffFlag,X		; Get buffer flag byte 
+        CMPA    #$55			; In use ???
+        BEQ     LD2A4			; yes, select another buffer
+        INCA				; Check for Flag=$FF
+        BNE     LD2C3			; no : skip on
+        DEC     BuffFlag,X		; yes, select another buffer
+        BRA     LD2A4	
 
-LD2CB   LDB     #$04
-        LDA     4,X
-        LDU     #$0634
-LD2D2   CMPA    4,U
-        BHI     LD2D8
-        DEC     4,U
-LD2D8   LEAU    7,U
-        DECB
-        BNE     LD2D2
-        LDA     #$04
-        STA     4,X
+LD2C3   BSR     LD2E2			; Check for buffer flush needed ?
+        BEQ     LD2C9			; No error: skip
+        STB     1,S			; Flag error to caller
+LD2C9   PULS    D,Y,U,PC		; restore and return
+
+MakeBuffYoungest
+	LDB     #BuffCount		; Process 4 buffers
+        LDA     BuffAge,X		; Get current buffer Age
+        LDU     #Buff1Details		; Point to disk buffer table
+LD2D2   CMPA    BuffAge,U		; Compare to current buffer age
+        BHI     LD2D8			; higher ? skip
+        DEC     BuffAge,U		; Decrement Age byte (make older)
+	
+LD2D8   LEAU    BuffDetailSize,U	; Do next buffer
+        DECB				; Decrement count
+        BNE     LD2D2			; More : do next
+        LDA     #$04			; Mark this as youngest buffer
+        STA     BuffAge,X
         RTS
 
-LD2E2   TST     2,X
-        BMI     LD2E8
-        CLRB
+LD2E2   TST     BuffFlag,X		; Buffer dirty ? 
+        BMI     FlushBuffer		; Yes, flush it !
+        CLRB				; No error ?
         RTS
 
-LD2E8   LDA     <$EB
-        PSHS    A
-        PSHS    X
-        LDA     #$FF
-        STA     <$F6
-        CLR     2,X
-        LDA     3,X
-        STA     <$EB
-        LDY     ,X
-        LDX     5,X
-        BSR     SuperDosWriteAbsSector
-        PULS    X
-        BNE     LD31F
-        LDA     <$EC
-        CMPA    #$14
-        BNE     LD31A
-        LDU     #$A673
-        LDA     <$EB
+FlushBuffer   
+	LDA     <DosLastDrive		; Get last drive accessed
+        PSHS    A			; save it on stack
+        PSHS    X			; Save buffer pointer
+        LDA     #$FF			; Flag Dos IO in progress
+        STA     <DosIOInProgress
+        CLR     2,X			; Flag buffer no longer dirty
+        LDA     3,X			; Get drive this buffer refers to
+        STA     <DosLastDrive		; Save in last accessed drive
+        LDY     ,X			; get LSN ?
+        LDX     5,X			; Get buffer pointer
+        BSR     SuperDosWriteAbsSector	; Write it
+        PULS    X			; Retrieve buffer pointer
+        BNE     LD31F			; no error : skip ahead
+        LDA     <DskTrackNo		; Get current track no
+        CMPA    #$14			; track 20 (directory) ?
+        BNE     LD31A			; no : skip ahead
+        
+;
+; I do not have a clue why this code does this, it seems to take a byte from
+; the basic rom do some stuff to it and update the Directory sector status table 
+; with it !
+; 
+; Looking at $A673, the 8 bytes before it are $80,$40,$20,$10,$08,$04,$02,$01
+; This is the 2 colour pixel mask table, but is a convenient table for mapping a bit
+; number to the bit it represents.
+;
+	
+	LDU     #PixMaskTable4Col	; This for some strange reason points U at basic rom !!!	
+        LDA     <DosLastDrive		; get last drive
         NEGA
         LDA     A,U
-        LDU     #$06AA
-        LDB     <$ED
-        ORA     B,U
+	
+        LDU     #DosDirSecStatus-1	; Point to directory status table
+        LDB     <DskSectorNo		; get sector number
+        ORA     B,U			; Put a byte in table
         STA     B,U
-LD31A   LDA     #$01
-        STA     2,X
+	
+LD31A   LDA     #$01			; Mark bufer as youngest
+        STA     BuffFlag,X
         CLRB
 LD31F   PULS    A
-        STA     <$EB
-        CLR     <$F6
+        STA     <DosLastDrive		; Restore last drive
+        CLR     <DosIOInProgress	; Mark no io in progress
         TSTB
         RTS
 
 ;
 ; Write absolute sector.
 ;
+; Entry	:    X=Address to store data
+;	     Y=LSN to read
+;	 $00EA=Drive number
+;
 
 SuperDosWriteAbsSector   
-	BSR     LD33E
+	BSR     CalcTrackFromLSN		; Setup disk vars in low ram with trackno
         JSR     >DosDoWriteSec2
-LD32C   LDX     <$EE
-        TSTB
-        RTS
+LD32C   LDX     <DiskBuffPtr			; Restore buffer pointer 
+        TSTB					; Test for Error
+        RTS					; return to caller
 
-LD330   BSR     LD33E
+LD330   BSR     CalcTrackFromLSN		; Setup disk vars in low ram with trackno
         JSR     >DosDoReadSec2
         BRA     LD32C
 
 ;
 ; Read absolute sector.
 ;
+; Entry	:    X=Address to store data
+;	     Y=LSN to read
+;	 $00EA=Drive number
+;
 
 SuperDosReadAbsSector   
-	BSR     LD33E
-        JSR     >DosDoReadSec
-        BRA     LD32C
+	BSR     CalcTrackFromLSN		; Setup disk vars in low ram with trackno
+        JSR     >DosDoReadSec			; Go read data
+        BRA     LD32C				; Return to caller
 
-LD33E   STX     <$EE
-        LDX     #$06A6
-        LDB     <$EB
-        LDB     B,X
+;
+; Calculate track from Logical sector number.
+;
+; Entry : X=Buffer pointer
+;	  Y=LSN to read/write
+;
+; Exit  : D=Disk track no, Low ram vars also set.
+;
+
+CalcTrackFromLSN   
+	STX     <DiskBuffPtr			; Save in buffer pointer
+        LDX     #DosD0SecTrack-1		; Point to Sec/Track table
+        LDB     <DosLastDrive			; Get last drive
+        LDB     B,X				; Get Sec/Track for that drive
         CLRA
-        PSHS    D
-        CLR     ,-S
-        TFR     Y,D
-LD34E   INC     ,S
-        SUBD    1,S
-        BPL     LD34E
-        ADDB    2,S
-        LDA     ,S
-        DECA
+        PSHS    D				; Save it
+        CLR     ,-S				; Make room on stack
+        TFR     Y,D				; Get LSN into D
+	
+; Calculate which track we need
+	
+LD34E   INC     ,S				; Inc track counter
+        SUBD    1,S				; Decrement sec/track from LSN
+        BPL     LD34E				; keep looping till it goes -ve
+	
+        ADDB    2,S				; Compensate for over-loop
+        LDA     ,S				; Get track needed
+        DECA					; Compensate track for over loop
         INCB
-        LEAS    3,S
-        STD     <$EC
+        LEAS    3,S				; Drop stack temps
+        STD     <DskTrackNo			; Save track no
         RTS
 
 ;
@@ -3313,7 +3557,7 @@ CmdCopy
 	
         TFR     S,D			; move to D
         SUBD    #$0100			; Make room for 1 sector
-        SUBD    <BasEndInUse		; Will we overwrite basic ?		
+        SUBD    <BasVarEnd		; Will we overwrite basic ?		
         LBMI    BasOMError		; yes : error, exit
 	
         CLRB
@@ -3376,7 +3620,7 @@ LD3DF   LDA     ,S			; Get source FCB no
         LDU     12,X			; Get number of bytes to read
         LDB     14,X			; Y:B=position to read from
         LDY     2,S			
-        LDX     <BasEndInUse		; Point to end of basic memory
+        LDX     <BasVarEnd		; Point to end of basic memory
         JSR     >SuperDosFRead		; Read from source file
         BNE     LD39F			; error : exit
         
@@ -3387,7 +3631,7 @@ LD3DF   LDA     ,S			; Get source FCB no
         LDY     $10,X
         LDB     $12,X
         LDU     2,S
-        LDX     <BasEndInUse		; Point to end of basic memory
+        LDX     <BasVarEnd		; Point to end of basic memory
         JSR     >SuperDosFWrite		; Write to destination
         BNE     LD39F			; Error : exit
         BRA     LD3A2			; continue copying
@@ -3404,27 +3648,27 @@ LD408   JSR     >SuperDosCloseAll	; Close all files, finished copy
 ;
 
 CmdMerge   
-	JSR     >LD6CB
+	JSR     >DosValidateAndOpenBas
         BNE     LD39F
         BSR     LD494
         BNE     LD39F
         CMPA    #$01
         BNE     LD45B
-        LDU     <$1B
-        LDY     <$19
+        LDU     <BasVarSimpleAddr
+        LDY     <BasStartProg
         PSHS    Y,U
         LEAU    1,U
-        STU     <$19
+        STU     <BasStartProg
         JSR     >LD507
         PULS    X,U
-        STU     <$1B
-        STX     <$19
+        STU     <BasVarSimpleAddr
+        STX     <BasStartProg
         LEAU    1,U
 LD433   LDD     ,U++
         BEQ     LD455
         LDD     ,U++
-        STD     $02DA
-        STD     <$2B
+        STD     BasLinInpHead
+        STD     <BasTempLine
         CLRB
         LDX     #$02DC
 LD442   INCB
@@ -3432,54 +3676,57 @@ LD442   INCB
         STA     ,X+
         BNE     LD442
         ADDB    #$04
-        STB     <$03
+        STB     <BasGenCount
         PSHS    U
         BSR     LD45E
         PULS    U
         BRA     LD433
 
-LD455   CLR     $0611
+LD455   CLR     DosRunLoadFlag
         JMP     >LD4E4
 
-LD45B   JMP     >$B848
+LD45B   JMP     >BasFMError
 
-LD45E   JSR     >$83FF
+LD45E   JSR     >BasFindLineNo
         BCS     LD475
-        LDD     <$47
+        LDD     <BasVarFPAcc4+2
         SUBD    ,X
-        ADDD    <$1B
-        STD     <$1B
+        ADDD    <BasVarSimpleAddr
+        STD     <BasVarSimpleAddr
         LDU     ,X
 LD46D   LDA     ,U+
         STA     ,X+
-        CMPX    <$1B
+        CMPX    <BasVarSimpleAddr
         BNE     LD46D
-LD475   LDD     <$1B
-        STD     <$43
-        ADDB    <$03
+LD475   LDD     <BasVarSimpleAddr
+        STD     <BasVarFPAcc3+3
+        ADDB    <BasGenCount
         ADCA    #$00
-        STD     <$41
-        JSR     >$831C
+        STD     <BasVarFPAcc3+1
+        JSR     >BasChkArrSpaceMv	
         LDU     #$02D8
 LD485   LDA     ,U+
         STA     ,X+
-        CMPX    <$45
+        CMPX    <BasVarFPAcc4
         BNE     LD485
-        LDX     <$41
-        STX     <$1B
-        JMP     >$83ED
+        LDX     <BasVarFPAcc3+1
+        STX     <BasVarSimpleAddr
+        JMP     >BasVect2
 
-LD494   LDX     #$0650
+
+LD494   LDX     #DosCurDriveInfo		; Get current drive info
         LDY     #$0009
-        LDU     <Zero16Bit
+        LDU     <Misc16BitScratch		; U=0 ?
         CLRB
-        LDA     <$F1
-        JSR     >SuperDosFRead
-        BNE     LD4B6
+        LDA     <DosCurrCtrlBlk			; Get current FCB address
+        JSR     >SuperDosFRead			; Go read the file
+        BNE     LD4B6				; Error : exit
+	
         LDA     #$55
-        LDX     #$0650
+        LDX     #DosCurDriveInfo		; Get current drive info
         CMPA    ,X
         BNE     LD45B
+	
         COMA
         CMPA    8,X
         BNE     LD45B
@@ -3487,14 +3734,15 @@ LD494   LDX     #$0650
         CLRB
 LD4B6   RTS
 
-DosHookRun   CLR     $0614
+DosHookRun   
+	CLR     $0614
         CLR     $0619
         CLR     $0617
         CLR     $0618
         CMPA    #$22
         BEQ     LD4C9
         TSTA
-        RTS
+        RTS					; Dragon, just return
 
 LD4C9   LEAS    2,S
         LDB     #$01
@@ -3510,57 +3758,61 @@ LD4C9   LEAS    2,S
 ;
 
 CmdLoad   
-	CLRB
-        STB     $0611
-        JSR     >LD6CB
-        BNE     LD4DB
+	CLRB					; Set run/load flag to load
+        STB     DosRunLoadFlag
+	
+        JSR     >DosValidateAndOpenBas		; Open supplied filename
+        BNE     LD4DB				; Error : exit
+	
         BSR     LD494
-        BEQ     LD4DE
+        BEQ     LD4DE				; No error : skip
+	
 LD4DB   JMP     >DosHookSysError
 
 LD4DE   CMPA    #$01
         BNE     LD529
         BSR     LD507
-LD4E4   CLR     <$F6
-        LDX     <$19
-        JSR     >$85EE
-        LDX     <$27
-        STX     <$23
-        LDX     <$1B
-        STX     <$1D
-        STX     <$1F
-LD4F5   JSR     >$8514
-        JSR     >$8434
-        TST     $0611
-        BEQ     LD503
-        JMP     >$849F
+	
+LD4E4   CLR     <DosIOInProgress		; Flag no DOS IO in progress
+        LDX     <BasStartProg			; Get start of program
+        JSR     >BasSetProgPtrX			; Set program pointer to X
+        LDX     <AddrFWareRamTop		; Set Top of string space
+        STX     <BasVarStrTop		
+        LDX     <BasVarSimpleAddr		; Set Array base=simple var base	
+        STX     <BasVarArrayAddr
+        STX     <BasVarEnd			; Set Basic var end at seme place
+	
+LD4F5   JSR     >CmdRestore			; So the equivelent of a basic 'RESTORE' command
+        JSR     >BasResetStack			; Reset basic stack
+        TST     DosRunLoadFlag			; Is this a load only or load & then run ?
+        BEQ     LD503				; Just a load, return to basic
+        JMP     >BasRun				; Run basic program
 
-LD503   CLRA
-        JMP     >$8371
+LD503   CLRA					; Clear error
+        JMP     >BasCmdMode			; Go to command mode
 
 LD507   LDD     4,X
         TFR     D,Y
-        ADDD    <$19
-        STD     <$1F
+        ADDD    <BasStartProg
+        STD     <BasVarEnd
         LDB     #$40
-        JSR     >$8331
-LD514   LDA     <$F1
+        JSR     >BasChkB2Free
+LD514   LDA     <DosCurrCtrlBlk
         LDB     #$09
-        LDX     <$19
-        LDU     <Zero16Bit
+        LDX     <BasStartProg
+        LDU     <Misc16BitScratch
         JSR     >SuperDosFRead
         BNE     LD4DB
-        JSR     >$83ED
+        JSR     >BasVect2
         LEAX    2,X
-        STX     <$1B
+        STX     <BasVarSimpleAddr
         RTS
 
 LD529   CMPA    #$02
-DD52E   EQU     *+3
         LBNE    LD45B
         LDU     6,X
-        STU     <$9D
-        JSR     <$A5
+        STU     <BasExecAddr
+        JSR     <BasChrGetCurr
         BEQ     LD549
         PSHS    X
         BSR     LD5AA
@@ -3570,17 +3822,17 @@ DD52E   EQU     *+3
         SUBD    2,X
         STU     2,X
         ADDD    2,X
-        STD     <$9D
+        STD     <BasExecAddr
 LD549   LDY     4,X
-        LDA     <$F1
+        LDA     <DosCurrCtrlBlk
         LDB     #$09
-        LDU     <Zero16Bit
+        LDU     <Misc16BitScratch
         LDX     2,X
         JSR     >SuperDosFRead
         BNE     LD5A1
-        TST     $0611
+        TST     DosRunLoadFlag
         BEQ     LD5A9
-        JMP     [>$009D]
+        JMP     [>BasExecAddr]
 
 ;
 ; Save command dispatch routine.
@@ -3591,9 +3843,9 @@ LD549   LDY     4,X
 ;
 
 CmdSave   
-	JSR     >$8887
-        JSR     >$8877
-        JSR     <$A5
+	JSR     >VarGetStr
+        JSR     >VarGetExpr
+        JSR     <BasChrGetCurr
         BEQ     LD5B0
         LDY     #DosExtBin
         BSR     LD598
@@ -3622,39 +3874,39 @@ LD5A4   JSR     >SuperDosCreateFile
         BNE     LD5A1
 LD5A9   RTS
 
-LD5AA   JSR     >$89AA
-        JMP     >$8E83
+LD5AA   JSR     >VarCKComma
+        JMP     >VarGet16Bit
 
 LD5B0   LDY     #DosExtBas
         BSR     LD598
-        LDX     <$19
+        LDX     <BasStartProg
         STX     $0652
-        LDD     <$1B
-        SUBD    <$19
+        LDD     <BasVarSimpleAddr
+        SUBD    <BasStartProg
         STD     $0654
         LDX     #BasFCError
         STX     $0656
         LDB     #$01
-LD5CA   LDX     #$0650
+LD5CA   LDX     #DosCurDriveInfo
         LDA     #$55
         STA     ,X
         COMA
         STA     8,X
         STB     1,X
-        LDA     <$F1
+        LDA     <DosCurrCtrlBlk
         CLRB
-        LDY     <Zero16Bit
+        LDY     <Misc16BitScratch
         LDU     #$0009
         JSR     >SuperDosFWrite
         BNE     LD5A1
-        LDA     <$F1
+        LDA     <DosCurrCtrlBlk
         LDB     #$09
         LDX     $0652
         LDU     $0654
-        LDY     <Zero16Bit
+        LDY     <Misc16BitScratch
         JSR     >SuperDosFWrite
         BNE     LD5A1
-        CLR     <$F6
+        CLR     <DosIOInProgress
         RTS
 
 ;
@@ -3666,65 +3918,65 @@ LD5CA   LDX     #$0650
 
 CmdChain   
 	BSR     LD670
-        JSR     >LD6CB
+        JSR     >DosValidateAndOpenBas
         BNE     LD5A1
         JSR     >LD494
         BNE     LD5A1
         CMPA    #$01
         LBNE    LD45B
-        JSR     <$A5
+        JSR     <BasChrGetCurr
         BEQ     LD61E
-        JSR     >$89AA
-        JSR     >$869A
+        JSR     >VarCKComma
+        JSR     >BasGetLineNo
         BSR     LD629
-        LDD     <$2B
-        JSR     >$85E7
+        LDD     <BasTempLine
+        JSR     >BasSkipLineNo
         BRA     LD626
 
 LD61E   BSR     LD629
-        LDU     <$19
+        LDU     <BasStartProg
         LEAU    -1,U
-        STU     <$A6
+        STU     <BasAddrSigByte
 LD626   JMP     >LD4F5
 
 LD629   LDD     $0654
         TFR     D,Y
-        ADDD    <$19
-        SUBD    <$1B
+        ADDD    <BasStartProg
+        SUBD    <BasVarSimpleAddr
         PSHS    D
-        ADDD    <$1F
-        STD     <$1F
+        ADDD    <BasVarEnd
+        STD     <BasVarEnd
         LDB     #$40
-        STB     $0611
-        JSR     >$8331
+        STB     DosRunLoadFlag
+        JSR     >BasChkB2Free
         LDD     ,S
         BPL     LD653
-        LDX     <$1B
+        LDX     <BasVarSimpleAddr
         LEAU    D,X
 LD648   LDA     ,X+
         STA     ,U+
-        CMPU    <$1F
+        CMPU    <BasVarEnd
         BLS     LD648
         BRA     LD661
 
-LD653   LDX     <$1F
+LD653   LDX     <BasVarEnd
         LEAX    1,X
         LEAU    D,X
 LD659   LDA     ,-X
         STA     ,-U
-        CMPX    <$1B
+        CMPX    <BasVarSimpleAddr
         BCC     LD659
 LD661   LDD     ,S
-        ADDD    <$1B
-        STD     <$1B
+        ADDD    <BasVarSimpleAddr
+        STD     <BasVarSimpleAddr
         PULS    D
-        ADDD    <$1D
-        STD     <$1D
+        ADDD    <BasVarArrayAddr
+        STD     <BasVarArrayAddr
         JMP     >LD514
 
-LD670   LDX     <BasVarsPtr	; Get pointer to start of vars
+LD670   LDX     <BasVarSimpleAddr	; Get pointer to start of vars
         LEAX    2,X		
-LD674   CMPX    <BasArrayPtr	; More than 2 bytes of vars ?
+LD674   CMPX    <BasVarArrayAddr	; More than 2 bytes of vars ?
         BCC     LD682
 	
         TST     -1,X
@@ -3733,8 +3985,8 @@ LD674   CMPX    <BasArrayPtr	; More than 2 bytes of vars ?
 LD67E   LEAX    7,X
         BRA     LD674
 
-LD682   LDU     <BasArrayPtr	; Array pointer
-LD684   CMPU    <BasEndInUse	; any arrays in use ?
+LD682   LDU     <BasVarArrayAddr	; Array pointer
+LD684   CMPU    <BasVarEnd		; any arrays in use ?
         BCC     LD6A7
         LDD     2,U
         LEAX    D,U
@@ -3753,14 +4005,14 @@ LD69B   BSR     LD6AA
 LD6A3   PULS    U
         BRA     LD684
 
-LD6A7   JMP     >$8CD7
+LD6A7   JMP     >VarGarbageCollect
 
 LD6AA   PSHS    X,U
-        CMPX    <$21
+        CMPX    <BasVarStringBase
         BCC     LD6C3
         LDB     ,X
         BEQ     LD6C3
-        JSR     >$8CB3
+        JSR     >BasResStr2
         TFR     X,U
         LDY     ,S
         LDX     2,Y
@@ -3769,59 +4021,70 @@ LD6AA   PSHS    X,U
 LD6C3   PULS    X,U,PC
 
 LD6C5   LDY     #DosExtDat
-        BRA     LD6D5
+        BRA     DosGetFilenameAndOpenExt
 
-LD6CB   LDY     #DosExtBas
-        BRA     LD6D5
+;
+; Validate and open Basic program file supplied on command
+;
+
+DosValidateAndOpenBas   
+	LDY     #DosExtBas			; Point to 'BAS' file extension
+        BRA     DosGetFilenameAndOpenExt	; Validate and open file
 
 ;
 ; Get a filename from Dos and open it
 ; 	Takes a string supplied on command name, fetches it and
 ;	tries to open the file of that name.
 ; 
+; If entered at DosGetFilenameAndOpenExt then extension must be pointed to by Y
 ;
 ; Exits with :-
 ;		A=FCB number for opened file
 ;		B= Error code ?
-;		Y=ptr to error code table !
+;		Y=ptr to extension
 ;
 
 
 DosGetFilenameAndOpen   
-	LDY     #DosErrorCodeTable		; Point to error messages
-LD6D5   PSHS    Y
-        JSR     >VarGetStr	; get string into temp variable
-        JSR     >VarGetExpr	; Get address of string in FAC
+	LDY     #DosExtNone		; Point to Blank extension
+	
+DosGetFilenameAndOpenExt   
+	PSHS    Y
+        JSR     >VarGetStr		; get string into temp variable
+        JSR     >VarGetExpr		; Get address of string in FAC
         PULS    Y
-LD6DF   LDX     <BasStrAddr	; Get string address
+LD6DF   LDX     <BasVarAssign16		; Get string address
         PSHS    X
-        LDB     ,X		; Get string length
-        LDX     2,X		; Get pointer to actual string data
-        JSR     >LC7E1		; Validate & open file (if valid)
+        LDB     ,X			; Get string length
+        LDX     2,X			; Get pointer to actual string data
+        JSR     >DosValidateAndOpen	; Validate & open file (if valid)
         PULS    X
         PSHS    D
-        JSR     >VarDelVar	; Delete tempory variable
+        JSR     >VarDelVar		; Delete tempory variable
         PULS    D
-        TSTB			; Get error?
+        TSTB				; Get error?
         RTS
 
 DosHookCloseSingle   
 	LDA     #$09
-        STA     <$F1
+        STA     <DosCurrCtrlBlk
 LD6F9   JSR     >LCEF9
         BNE     LD717
-        DEC     <$F1
+        DEC     <DosCurrCtrlBlk
         BPL     LD6F9
-LD702   CLR     <$F6
+LD702   CLR     <DosIOInProgress		
         CMPX    #$39FD
-LD707   CLRA
+	
+DosFlagDrivesOffline   
+	CLRA					; Clears some dos vars
         CLRB
-        STD     $0697
-        STD     $0699
+        STD     DosD0Online			; Drives 0 & 1
+        STD     DosD2Online			; Drives 2 & 3
         RTS
 
-LD710   BSR     LD707
-        JMP     >$BA77
+DosDrivesOffCLS   
+	BSR     DosFlagDrivesOffline		; Flag all drives as offline
+        JMP     >TextCls			; Clear screen
 
 LD715   BEQ     LD702
 LD717   JMP     >DosHookSysError
@@ -3843,25 +4106,25 @@ CmdCreate
         BEQ     LD72B
         CMPB    #$A0
         BNE     LD717
-LD72B   LDA     <$F1
+LD72B   LDA     <DosCurrCtrlBlk
         JSR     >SuperDosCreateFile
         BNE     LD717
-        JSR     <$A5
+        JSR     <BasChrGetCurr
         BEQ     LD76C
-        JSR     >$89AA
-        JSR     >$8887
+        JSR     >VarCKComma
+        JSR     >VarGetStr
         JSR     >LD879
-LD73F   TST     <$51
+LD73F   TST     <BasVarFPAcc1+2
         BEQ     LD755
         LDD     #$FF00
         BSR     LD767
-        LDD     <$52
+        LDD     <BasVarAssign16
         SUBD    #$FF00
-        STD     <$52
+        STD     <BasVarAssign16
         BCC     LD73F
-        DEC     <$51
+        DEC     <BasVarFPAcc1+2
         BNE     LD73F
-LD755   LDD     <$52
+LD755   LDD     <BasVarAssign16
         BEQ     LD76C
         CMPD    #$FF00
         BLS     LD767
@@ -3906,7 +4169,7 @@ LD787   BSR     LD790
 LD78B   JSR     >SuperDosProtect
         BRA     LD775
 
-LD790   JSR     <$9F
+LD790   JSR     <BasChrGet
         JSR     >DosGetFilenameAndOpen
         BNE     LD7BB
         RTS
@@ -3927,7 +4190,7 @@ CmdRename
         BNE     LD7BB
         PSHS    A
         LDB     #$BC
-        JSR     >$89AC
+        JSR     >VarCKChar
         JSR     >DosGetFilenameAndOpen
         BEQ     LD7B9
         CMPB    #$A0
@@ -3948,12 +4211,12 @@ LD7BB   JMP     >DosHookSysError
 ;
 
 CmdFLRead   
-		BSR     LD7CD
+	BSR     LD7CD
         LDA     #$FF
-        STA     $0612
+        STA     DosFlFreadFlag
         JSR     >LD95D
         BSR     LD7F8
-        JMP     >$9DD9
+        JMP     >BasLineInputEntry
 
 LD7CD   JSR     >LD6C5
         BNE     LD822
@@ -3968,7 +4231,7 @@ LD7CD   JSR     >LD6C5
 LD7E6   JSR     >LD9CF
         LDX     #$02DC
         CLR     ,X
-        JMP     <$9F
+        JMP     <BasChrGet
 
 ;
 ; Fread command dispatch routine
@@ -3980,49 +4243,49 @@ LD7E6   JSR     >LD9CF
 
 CmdFRead   
 	BSR     LD7CD
-        CLR     $0612
-        JSR     >$877A
+        CLR     DosFlFreadFlag
+        JSR     >CmdReadFromX
 LD7F8   JSR     >DosFCBNoToAddr
         LDB     $0604
         BEQ     LD80E
-	CLR     $0603
-        LDD     13,X
+	CLR     DosErrorCode
+        LDD     FCBFilePointer+1,X	; Get filepointer LSW
         SUBD    $0603
-        STD     13,X
+        STD     FCBFilePointer+1,X	; Resave filepointer LSW
         BCC     LD80E
-        DEC     12,X
-LD80E   TST     <$F4
+        DEC     FCBFilePointer,X	; Decrement filepointer MSB
+LD80E   TST     <DosRecLenFlag
         BEQ     LD81F
-        LDB     <$F3
+        LDB     <DosNoBytesMove
         BEQ     LD81F
         CLRA
-        ADDD    13,X
-        STD     13,X
+        ADDD    FCBFilePointer+1,X
+        STD     FCBFilePointer+1,X
         BCC     LD81F
-        INC     12,X
-LD81F   CLR     <$6F
+        INC     FCBFilePointer,X
+LD81F   CLR     <TextDevN
         RTS
 
 LD822   JMP     >DosHookSysError
 
-LD825   JSR     >$9C76
-        LDA     <$F1
+LD825   JSR     >BasChkDirect
+        LDA     <DosCurrCtrlBlk
         JSR     >SuperDosGetFLen
         BNE     LD822
         STU     $0664
         STA     $0666
-        CLR     <$F4
+        CLR     <DosRecLenFlag
         CLR     $067E
         LDA     #$01
-        STA     <$6F
-LD83E   JSR     <$A5
+        STA     <TextDevN
+LD83E   JSR     <BasChrGetCurr
         CMPA    #$3B
         BEQ     LD896
-        JSR     >$89AA
+        JSR     >VarCKComma
         CMPA    #$E5
         BNE     LD85F
-        JSR     <$9F
-        JSR     >$8887
+        JSR     <BasChrGet
+        JSR     >VarGetStr
         BSR     LD879
         STU     $0664
         STA     $0666
@@ -4032,34 +4295,34 @@ LD83E   JSR     <$A5
 
 LD85F   CMPA    #$80
         BNE     LD870
-        JSR     <$9F
+        JSR     <BasChrGet
         JSR     >Get8BitorError
-        STB     <$F3
+        STB     <DosNoBytesMove
         LDB     #$FF
-        STB     <$F4
+        STB     <DosRecLenFlag
         BRA     LD83E
 
 LD870   JMP     >BasSNError
 
 LD873   JMP     >BasFCError
 
-LD876   JMP     >$8882
+LD876   JMP     >BasTMError
 
-LD879   TST     <$54
+LD879   TST     <BasVarFPAcc1+5
         BMI     LD873
-        TST     <$06
+        TST     <BasVarType
         BNE     LD876
         LDA     #$A0
-        SUBA    <$4F
+        SUBA    <BasVarFPAcc1
         BEQ     LD892
-LD887   LSR     <$50
-        ROR     <$51
-        ROR     <$52
-        ROR     <$53
+LD887   LSR     <BasVarFPAcc1+1
+        ROR     <BasVarFPAcc1+2
+        ROR     <BasVarAssign16
+        ROR     <BasVarFPAcc1+4
         DECA
         BNE     LD887
-LD892   LDU     <$51
-        LDA     <$53
+LD892   LDU     <BasVarFPAcc1+2
+        LDA     <BasVarFPAcc1+4
 LD896   RTS
 
 ;
@@ -4078,30 +4341,30 @@ CmdFWrite
         JSR     >SuperDosCreateFile
         BNE     LD908
 LD8A5   JSR     >LD825
-        JSR     >LD2A2
+        JSR     >FindFreeDiskBuffer
         BNE     LD908
         STX     $060B
         LDA     #$55
         STA     2,X
-        CLR     <$F2
-        JSR     <$9F
-        JSR     >$903D
-        TST     <$F4
+        CLR     <DosBytesInDTA
+        JSR     <BasChrGet
+        JSR     >CmdPrint
+        TST     <DosRecLenFlag
         BEQ     LD8CA
-        LDB     <$F3
+        LDB     <DosNoBytesMove
         BEQ     LD8CA
         LDA     #$20
 LD8C5   BSR     LD911
         DECB
         BNE     LD8C5
-LD8CA   TST     <$F2
+LD8CA   TST     <DosBytesInDTA
         BEQ     LD8E6
         LDX     $060B
         LDX     5,X
         CLRA
-        LDB     <$F2
+        LDB     <DosBytesInDTA
         TFR     D,U
-        LDA     <$F1
+        LDA     <DosCurrCtrlBlk
         LDY     $0664
         LDB     $0666
         JSR     >SuperDosFWrite
@@ -4118,33 +4381,33 @@ DosHookCheckIONum
 
 DosHookOpenDev   
 	LEAS    2,S
-        JSR     >$8887
-        JSR     >$8DEA
+        JSR     >VarGetStr
+        JSR     >BasGetStrFirst
         PSHS    B
-        JSR     >$B7D4
+        JSR     >BasGetDevNo
         TSTB
-        LBLE    $B835
+        LBLE    CmdOpenEntry
 LD906   LDB     #$28
 LD908   JMP     >DosHookSysError
 
 DosHookCharOut   
-	TST     <$6F
+	TST     <TextDevN
         BLE     LD8EB
         LEAS    2,S
 LD911   PSHS    D,X,Y,U
-        LDB     <$F4
+        LDB     <DosRecLenFlag
         BEQ     LD91B
-        LDB     <$F3
+        LDB     <DosNoBytesMove
         BEQ     LD952
 LD91B   LDX     $060B
         LDX     5,X
-        LDB     <$F2
+        LDB     <DosBytesInDTA
         ABX
         STA     ,X
-        DEC     <$F3
-        INC     <$F2
+        DEC     <DosNoBytesMove
+        INC     <DosBytesInDTA
         BNE     LD952
-        LDA     <$F1
+        LDA     <DosCurrCtrlBlk
         LDX     $060B
         LDX     5,X
         LDU     #$0100
@@ -4162,46 +4425,46 @@ LD94F   STD     $0665
 LD952   PULS    D,X,Y,U,PC
 
 DosHookDiskItem   
-	TST     <$6F
+	TST     <TextDevN
         BLE     LD9BB
         LDX     #$879A
         STX     ,S
-LD95D   LDA     <$F4
+LD95D   LDA     <DosRecLenFlag
         BEQ     LD965
-        LDA     <$F3
+        LDA     <DosNoBytesMove
         BEQ     LD9B2
 LD965   LDX     #$02DD
-        LDB     <$F2
+        LDB     <DosBytesInDTA
         STB     $0603
         ABX
         LDB     $0604
-        STB     $0611
+        STB     DosRunLoadFlag
         CLRB
         STB     -1,X
-        STB     <$00
-LD979   DEC     <$F3
+        STB     <BasBreakFlag
+LD979   DEC     <DosNoBytesMove
         DEC     $0604
-        INC     <$F2
+        INC     <DosBytesInDTA
         LDA     ,X+
         BEQ     LD9B2
         CMPA    #$0D
         BEQ     LD9B2
-        TST     $0612
+        TST     DosFlFreadFlag
         BNE     LD995
         CMPA    #$2C
         BEQ     LD9B2
         CMPA    #$3A
         BEQ     LD9B2
-LD995   LDA     <$F4
+LD995   LDA     <DosRecLenFlag
         BEQ     LD99D
-        LDA     <$F3
+        LDA     <DosNoBytesMove
         BEQ     LD9B2
 LD99D   INCB
         CMPB    #$FF
         BEQ     LD9B0
         LDA     $0604
         BNE     LD979
-        LDB     <$00
+        LDB     <BasBreakFlag
         BNE     LD9B0
         BSR     LD9BC
         CLRB
@@ -4216,7 +4479,7 @@ LD9BB   RTS
 
 LD9BC   JSR     >DosFCBNoToAddr
         CLRA
-        LDB     $0611
+        LDB     DosRunLoadFlag
         PSHS    D
         LDD     13,X
         SUBD    ,S++
@@ -4228,7 +4491,7 @@ LD9CF   PSHS    Y,U
         BSR     LD9EF
         LDU     #$02DD
         CLR     D,U
-        LDA     <$F1
+        LDA     <DosCurrCtrlBlk
         LDB     14,X
         LDX     12,X
         EXG     X,U
@@ -4254,12 +4517,12 @@ LD9EF   PSHS    U
         SUBD    13,X
         BEQ     LDA23
         STD     ,S
-        COM     <$00
+        COM     <BasBreakFlag
 LDA14   LDD     ,S
         STB     $0604
-        STB     $0611
+        STB     DosRunLoadFlag
         CLR     $0603
-        CLR     <$F2
+        CLR     <DosBytesInDTA
         PULS    Y,PC
 
 LDA23   LDB     #$9A
@@ -4273,79 +4536,111 @@ LDA25   JMP     >DosHookSysError
 ;
 
 CmdDir   
-	BEQ     LDA2F
-        JSR     >GetDriveNoInB
+	BEQ     LDA2F				; No drive specified, use default
+        JSR     >GetDriveNoInB			; Else get from command 
         BRA     LDA32
 
-LDA2F   LDB     $060A
-LDA32   STB     <$EB
-        CLR     ,-S
-        JSR     >LD710
+LDA2F   LDB     DosDefDriveNo			; Get default drive
+
+LDA32   STB     <DosLastDrive			; Flag as last drive used
+        CLR     ,-S				; make temp on stack (file number on disk counter)
+        JSR     >DosDrivesOffCLS		; Flag drives offline, and clear screen
+	
         CLRB
-LDA3A   JSR     >$851B
-        JSR     >SuperDosGetDirEntry
-        BNE     LDA25
-        LDA     ,X
-        BITA    #$08
-        BNE     LDAA2
-        BITA    #$81
-        BNE     LDA9A
-        LEAX    1,X
-        LDB     #$08
-        BSR     LDAB2
-        LDB     #$04
-        LDA     #$2E
-        BSR     LDAB8
-        LDA     -12,X
-        BITA    #$02
-        BEQ     LDA61
-        LDA     #$70
-LDA61   EQU     *+1
-        CMPX    #$8620
-        JSR     >$B54A
-        JSR     >$90F5
+LDA3A   JSR     >BasPollKeyboard		; Read keyboard, check for break
+        JSR     >SuperDosGetDirEntry		; Get next dir entry
+        BNE     LDA25				; Error : exit
+	
+        LDA     ,X				; Get Attribute byte
+        BITA    #AttrEndOfDir			; Check for end of directory $08
+        BNE     CmdDirDoneAll			; Yes : stop processing
+	
+        BITA    #AttrDeleted+AttrIsCont 	; Is entry a deleted file, or continuation entry ? $81				; and another thing
+        BNE     CmdDirDoNextEntry		; yes : do next
+	
+        LEAX    1,X				; Point at filename
+        LDB     #$08				; Up to 8 chars
+        BSR     PrintBCharsFromX		; Print it
+        LDB     #$04				; 5 chars
+        LDA     #$2E				; '.'
+        BSR     LDAB8				; Print extension
+        LDA     -12,X				; Point at attributes
+        BITA    #AttrWriteProt			; Is this a protected file ?
+        BEQ     LDA61				; no skip on
+        LDA     #'p				; Flag protected $70
+;LDA61   EQU     *+1
+;        CMPX    #$8620
+
+	FCB	Skip2				; CMPX trick
+LDA61	LDA	#$20 
+        JSR     >TextOutChar			; output attribute byte
+        JSR     >TextOutSpace			; And a space
         LDU     #$FFFF
-        LDX     #$06BD
-        LDB     ,S
-        STB     $1D,X
+        LDX     #DosFCB0Addr			; Point at first FCB
+        LDB     ,S				; Get file number
+        STB     FCBDiskFileNo,X			; Save in FCB
         JSR     >LCB20
-        BNE     LDA25
+        BNE     LDA25				; Check for error
+	
         JSR     >LCEBF
-        BSR     LDABF
-        LDD     <$88
-        CMPD    #$05A0
-        BLS     LDA97
-        PSHS    D,X,Y,U
-        LDX     #DDFE0
-        JSR     >BasPrintStr
-        JSR     >$852B
-        JSR     >$BA77
-        PULS    D,X,Y,U
-LDA97   EQU     *+1
-        LDA     #$BD
-        SUBA    <$A1
-LDA9A   INC     ,S
-        LDB     ,S
-        CMPB    #$A0
-        BCS     LDA3A
-LDAA2   PULS    A
-        JSR     >SuperDosGetFree
+        BSR     LDABF				; Print filesize
+        LDD     <TextVDUCursAddr		; Check for near end of screen
+        CMPD    #$05A0				
+        BLS     LDA97				; not near end, skip on
+        PSHS    D,X,Y,U				; save regs
+        LDX     #DosMoreMess			; Point to message
+        JSR     >TextOutString			; Print more: prompt
+        JSR     >TextWaitKey			; wait for a key
+	JSR     >TextCls			; clear screen
+        PULS    D,X,Y,U				; Restore regs
+;LDA97   EQU     *+1
+;        LDA     #$BD
+;        SUBA    <$A1
+	
+	IFNE	Tandy
+	BRA	CmdDirDoNextEntry
+	ELSE
+	FCB	Skip1LD				; LDA, like cmpx trick
+	ENDC
+	
+LDA97	JSR	TextOutCRLF			; Output EOL
+	
+CmdDirDoNextEntry   
+	INC     ,S				; do next
+        LDB     ,S				; Get disk file number counter
+        CMPB    #$A0				; More than max files on disk ?
+        BCS     LDA3A				; Less, loop again.
+
+;
+; We come here either when we have processed $A0 entries, which is the maximum,
+; or we have reached an entry with the AttrEndOfDir bit set which signals the end
+; of the directory.
+;
+
+CmdDirDoneAll   
+	PULS    A
+        JSR     >SuperDosGetFree		; Get free bytes on drive
         CLRA
         TFR     X,U
-        BSR     LDABF
-        LDX     #BytesFreeMess-1
-        JMP     >BasPrintStr
+        BSR     LDABF				; Display free bytes
+        LDX     #BytesFreeMess-1		; Point to message
+        JMP     >TextOutString			; print it, and return
 
-LDAB2   LDA     ,X+
-        BNE     LDAB8
-        LDA     #$20
-LDAB8   JSR     >$B54A
-        DECB
-        BNE     LDAB2
+
+; Print B chars pointed to by X, if char is $00, then output a space.
+; Used to print filenames.
+
+PrintBCharsFromX   
+	LDA     ,X+				; Fetch a char
+        BNE     LDAB8				; Is it zero ? no : skip
+        LDA     #$20				; Replace it with a space
+LDAB8   JSR     >TextOutChar			; Output it
+        DECB					; Decrement count
+        BNE     PrintBCharsFromX		; any left yes : loop again
         RTS
 
 LDABF   JSR     >LDD9B
-        JMP     >$9582
+        JMP     >TextOutNumFPA0
 
 DosHookReadInput   
 	PSHS    D,X,U
@@ -4384,13 +4679,13 @@ CmdAuto
         JSR     <BasChrGetCurr		; Fetch current char pointed to by basic
         BEQ     CmdAutoDoAuto		; Last char : yes proceed 
         JSR     >VarGet16Bit		; get start line no
-        LDD     <$52			; check for error
+        LDD     <BasVarAssign16			; check for error
         STD     2,S
         JSR     <BasChrGetCurr		; Fetch current char pointed to by basic
         BEQ     CmdAutoDoAuto		; Last char : yes proceed
         JSR     >VarCKComma		; check for comma
         JSR     >VarGet16Bit		; Get Line increment
-        LDD     <$52
+        LDD     <BasVarAssign16
         BEQ     CmdAutoErrorExit
         STD     ,S
         JSR     <BasChrGetCurr		; Fetch current char pointed to by basic
@@ -4421,9 +4716,9 @@ LDB34   LDD     $060D
         CMPD    #$F9FF
         BHI     LDB32
         STD     ,S
-        JSR     >$957A
+        JSR     >TextOutNum16
         LDA     #$20
-        JSR     >$B54A
+        JSR     >TextOutChar
         LDU     #$03DA
         LDD     ,S
         STD     $060D
@@ -4438,28 +4733,28 @@ LDB56   LDA     ,U+
 LDB5F   LDA     #$20
         STA     ,X+
         INCB
-LDB64   JSR     >$B505
+LDB64   JSR     >TextWaitKeyCurs2
         CMPA    #$0D
         BEQ     LDB6F
         CMPA    #$03
         BNE     LDB85
 LDB6F   CLR     $0613
         LDA     #$0D
-        JSR     >$B54A
+        JSR     >TextOutChar
         LEAS    8,S
-        CLR     <$85
+        CLR     <CasLastSine
         LDX     #$02DD
         LDA     #$0D
         LDB     #$01
-        JMP     >$B5D3
+        JMP     >BasInBuffFromX
 
 LDB85   CMPA    #$20
         BCS     LDB64
         CMPA    #$7B
         BCC     LDB64
         LEAS    8,S
-        CLR     <$85
-        JMP     >$B5D3
+        CLR     <CasLastSine
+        JMP     >BasInBuffFromX
 
 LDB94   CLRA			; A=0	
         LDX     #$0008		; Repeat 8 times
@@ -4478,13 +4773,18 @@ LDB98   JSR     >CasByteOut	; Output A to cassette
 CmdBeep   
 	BEQ     LDBA6		; if no params, default to 1 beep
         JSR     >Get8BitorError	; get beep count 
-LDBA6   EQU     *+1
-        CMPX    #$C601		; LDB #$01 (default beep count)
+
+;LDBA6   EQU     *+1
+;        CMPX    #$C601		; LDB #$01 (default beep count)
+	
+	FCB	Skip2
+LDBA6	LDB	#$01		; Default beep count
+
         PSHS    B		; save count on stack
         CLRB
         JSR     >SndDTOAOn	; switch dound to D to A
 LDBAE   BSR     LDB94
-        JSR     >$851B
+        JSR     >BasPollKeyboard
         DEC     ,S		; decrement beep count
         BEQ     LDBC1		; done all : restore and exit
         LDY     #$6000		; wait a short while
@@ -4503,9 +4803,9 @@ LDBC1   PULS    B,PC		; restore and return
 
 CmdWait   
 	BEQ     LDBD6
-        JSR     >$8E83
-        LDX     <$52
-LDBCA   JSR     >$851B
+        JSR     >VarGet16Bit
+        LDX     <BasVarAssign16
+LDBCA   JSR     >BasPollKeyboard
         LDB     #$A0
 LDBCF   DECB
         BNE     LDBCF
@@ -4521,16 +4821,16 @@ LDBD6   RTS
 ;
 
 CmdSwap   
-	JSR     >$8A94
-        LDX     <$39
-        LDA     <$06
+	JSR     >VarGetVar
+        LDX     <BasVarPtrLast
+        LDA     <BasVarType
         PSHS    A,X
-        JSR     >$89AA
-        JSR     >$8A94
+        JSR     >VarCKComma
+        JSR     >VarGetVar
         PULS    A,Y
-        CMPA    <$06
-        LBNE    $8882
-        LDU     <$39
+        CMPA    <BasVarType
+        LBNE    BasTMError
+        LDU     <BasVarPtrLast
         LDX     #$0005
 LDBF3   LDA     ,U
         LDB     ,Y
@@ -4541,12 +4841,12 @@ LDBF3   LDA     ,U
         RTS
 
 LDC00   LDB     #$8E
-LDC02   TST     <$71
+LDC02   TST     <WarmStartFlag
         NOP
         LBRA    DosHookSysError
 
 LDC08   LDA     #$55
-        STA     <$71
+        STA     <WarmStartFlag
         RTS
 
 ;
@@ -4630,7 +4930,7 @@ LDC17   LDA     #BootFirstSector; Read boot sector
         BCS     LDC02		; error : exit
 	
         LDD     #BootSignature	; Boot signature found ?
-        CMPD    <$4F
+        CMPD    <BasVarFPAcc1
         BNE     LDC00		; no : error
 	
         LDD     #BootLoadAddr	; start at boot load address
@@ -4658,7 +4958,7 @@ LDC34   JSR     >DosDoReadSec	; Read a sector
 CmdDrive   
 	BEQ     LDC4F
         JSR     >GetDriveNoInB
-        STB     $060A
+        STB     DosDefDriveNo
         RTS
 
 LDC4F   JMP     >BasSNError
@@ -4673,15 +4973,15 @@ LDC4F   JMP     >BasSNError
 CmdError2   
 	CMPA    #$81
         BNE     LDC4F
-        JSR     <$9F
+        JSR     <BasChrGet
         CMPA    #$BC
         BNE     LDC4F
-        JSR     <$9F
-        JSR     >$869A
-        LDX     <$2B
+        JSR     <BasChrGet
+        JSR     >BasGetLineNo
+        LDX     <BasTempLine
         CMPX    #$F9FF
         LBHI    BasFCError
-        STX     $0615
+        STX     DosErrDestLine
         BEQ     LDC75
         LDA     #$FF
         STA     $0614
@@ -4690,9 +4990,9 @@ CmdError2
 LDC75   CLR     $0614
         RTS
 
-LDC79   JSR     >$89AA
-        JSR     >$8A94
-        JMP     >$8877
+LDC79   JSR     >VarCKComma
+        JSR     >VarGetVar
+        JMP     >VarGetExpr
 
 ;
 ;Sread command dispatch routine.
@@ -4702,37 +5002,40 @@ LDC79   JSR     >$89AA
 ;
 
 CmdSread   
-	JSR     >LDD21
-        BSR     LDC79
-        PSHS    X
-        BSR     LDC79
-        PSHS    X
+	JSR     >GetSreadWriteParams	; Get drive,track,secno
+        BSR     LDC79			; Get address of first 128 bytes to read
+        PSHS    X			; save on stack
+        BSR     LDC79			; Get address of second 128 bytes to read
+        
+	PSHS    X			; save on stack
         LDB     #$FF
-        STB     <$F6
-        JSR     >LD2A2
-        BNE     LDCBA
-        CLR     2,X
-        LDX     5,X
-        STX     <$EE
-        JSR     >DosDoReadSec
-        STB     $0603
-        LDU     <$EE
-        LEAU    $0080,U
-        PULS    X
-        BSR     LDCBD
-        LDU     <$EE
-        PULS    X
-        BSR     LDCBD
-        CLR     <$F6
-        LDB     $0603
-        BNE     LDCBA
-        RTS
+        STB     <DosIOInProgress	; Flag Dos IO in progress
+        JSR     >FindFreeDiskBuffer	; Find a buffer to read sector into
+        BNE     LDCBA			; Error : exit
+	
+        CLR     BuffFlag,X		; Clear buffer flag
+        LDX     BuffAddr,X		; Get buffer address
+        STX     <DiskBuffPtr		; Save as pointer to do read
+        JSR     >DosDoReadSec		; Read the sector
+	
+        STB     $0603			; Save error code in temp storage
+        LDU     <DiskBuffPtr		; Get pointer to read data
+        LEAU    $0080,U			; Point to second half of sector
+        PULS    X			; Get address of second string
+        BSR     LDCBD			; Copy bytes to string
+        LDU     <DiskBuffPtr		; Point at begining of disk buffer
+        PULS    X			; Get address of first string
+        BSR     LDCBD			; Copy bytes to string
+        CLR     <DosIOInProgress	; Flag Dos IO not in progress
+        LDB     $0603			; Retrieve error code from read
+        BNE     LDCBA			; Error : go to error handler
+        RTS				; return to caller
 
-LDCBA   JMP     >DosHookSysError
+LDCBA   JMP     >DosHookSysError	; Jump to error hook
 
-LDCBD   PSHS    X,U
+LDCBD   PSHS    X,U			
         LDB     #$80
-        JSR     >$8C52
+        JSR     >BasResStr
         LEAU    ,X
         PULS    X
         STB     ,X
@@ -4748,56 +5051,61 @@ LDCBD   PSHS    X,U
 ;
 
 CmdSwrite   
-	BSR     LDD21
+	BSR     GetSreadWriteParams	; Get drive,track,secno
         BSR     LDD1B
-        JSR     >$8877
-        LDX     <$52
+        JSR     >VarGetExpr
+        LDX     <BasVarAssign16
         PSHS    X
         BSR     LDD1B
-        JSR     >$8D9A
+        JSR     >BasGetStrLenAddr
         PSHS    B,X
         LDB     #$FF
-        STB     <$F6
-        JSR     >LD2A2
+        STB     <DosIOInProgress
+        JSR     >FindFreeDiskBuffer
         BNE     LDCBA
         CLR     2,X
         LDX     5,X
-        STX     <$EE
+        STX     <DiskBuffPtr
         CLRB
 LDCF3   CLR     ,X+
         DECB
         BNE     LDCF3
         PULS    B,X
-        LDU     <$EE
+        LDU     <DiskBuffPtr
         LEAU    $0080,U
         TSTB
         BEQ     LDD06
         JSR     >UtilCopyBXtoU
 LDD06   PULS    X
-        JSR     >$8D9F
-        LDU     <$EE
+        JSR     >VarDelVar
+        LDU     <DiskBuffPtr
         TSTB
         BEQ     LDD13
         JSR     UtilCopyBXtoU
 LDD13   JSR     >DosDoWriteSec
         BCS     LDCBA
-        CLR     <$F6
+        CLR     <DosIOInProgress
         RTS
 
-LDD1B   JSR     $89AA
-        JMP     >$8887
+LDD1B   JSR     VarCKComma
+        JMP     >VarGetStr
 
-LDD21   BNE     LDD26
-        JMP     >BasSNError
+GetSreadWriteParams   
+	BNE     LDD26		; params, read them
+        JMP     >BasSNError	; none : SN Error
 
-LDD26   JSR     GetDriveNoInB
-        STB     <$EB
-        JSR     $8E7E
-        CMPB    #$4F
-        BHI     LDD3A
-        STB     <$EC
-        JSR     $8E7E
-        STB     <$ED
+;
+; Get params for Sread/Swrite
+;
+
+LDD26   JSR     GetDriveNoInB	; Drive number
+        STB     <DosLastDrive
+        JSR     >VarGetComma8	; Track number
+        CMPB    #$4F		; greater than track 80 ?
+        BHI     LDD3A		; Yes : error
+        STB     <DskTrackNo	; Save track number
+        JSR     >VarGetComma8	; Get sector number
+        STB     <DskSectorNo	; save it
 LDD39   RTS
 
 LDD3A   JMP     >BasFCError
@@ -4822,12 +5130,13 @@ LDD46   CMPA    #$88
         JMP     >BasSNError
 
 LDD4D   LDB     #$FF
-LDD4F   STB     $0608
-        JMP     <$9F
+LDD4F   STB     DosVerifyFlag
+        JMP     <BasChrGet
 
-DosHookEOF   TST     <$06
+DosHookEOF   
+	TST     <BasVarType
         BEQ     LDD39
-        CLR     <$06
+        CLR     <BasVarType
         LEAS    2,S
         LDY     #DosExtDat
         JSR     LD6DF
@@ -4840,9 +5149,14 @@ DosHookEOF   TST     <$06
         CMPA    14,X
         BLS     LDD78
 LDD76   CLRA
-LDD78   EQU     *+1
-        CMPX    #$8601
-        LDU     <Zero16Bit
+
+;LDD78   EQU     *+1
+;        CMPX    #$8601
+
+	FCB	Skip2
+LDD78	LDA	#$01	
+
+        LDU     <Misc16BitScratch
         BRA     LDD99
 
 LDD7E   JMP     >DosHookSysError
@@ -4860,23 +5174,24 @@ FuncLof
         BNE     LDD7E
         JSR     SuperDosGetFLen
         BNE     LDD7E
-LDD99   CLR     <$06
+LDD99   CLR     <BasVarType
+
 LDD9B   CLRB
-        STU     <$51
-        STD     <$53
-        CLR     <$63
+        STU     <BasVarFPAcc1+2
+        STD     <BasVarFPAcc1+4
+        CLR     <BasVarFPAcc2+7
         LDA     #$A0
-        STD     <$4F
-        JMP     >$9165
+        STD     <BasVarFPAcc1
+        JMP     >VarNormFPA0
 
 FuncFree
-	JSR     <$A5
+	JSR     <BasChrGetCurr
         BEQ     LDDB2
         JSR     GetDriveNoInB
         BRA     LDDB5
 
-LDDB2   LDB     $060A
-LDDB5   STB     <$EB
+LDDB2   LDB     DosDefDriveNo
+LDDB5   STB     <DosLastDrive
         JSR     SuperDosGetFree
         BNE     LDD7E
         TFR     X,U
@@ -4885,7 +5200,7 @@ LDDB5   STB     <$EB
 
 FuncErl   
 	LDD     $0617
-LDDC4   JMP     >$8C37
+LDDC4   JMP     >VarAssign16Bit2
 
 FuncErr   
 	CLRA
@@ -4893,13 +5208,13 @@ FuncErr
         BRA     LDDC4
 
 FuncHimem   
-	LDD     <$27
+	LDD     <AddrFWareRamTop
         BRA     LDDC4
 
 FuncFres   
-	JSR     $8CD7
-        LDD     <$23
-        SUBD    <$21
+	JSR     VarGarbageCollect
+        LDD     <BasVarStrTop
+        SUBD    <BasVarStringBase
         BRA     LDDC4
 
 ;
@@ -4994,19 +5309,25 @@ LDE2A   JMP     >IRQSrv
 
 LDE2D   JMP     >FIRQSrv
 
-; Dos vars, step rates for drives ?
+; Dos vars, step rates for drives
 
         FCB     $04		; No bytes
-        FDB     $069F		; address to copy
-        FCB     $02
-        FCB     $02
-        FCB     $02
-        FCB     $02
+        FDB     DosD0StepRate	; address to copy
+        FCB     SeepRateDefault
+        FCB     SeepRateDefault
+        FCB     SeepRateDefault
+        FCB     SeepRateDefault
 	
 ; New basic dispatch stub
 	
         FCB     $1E		; No bytes
-        FDB     $012A		; address to copy
+	
+	IFEQ	Tandy
+	FDB	BasStub1	; Copy to stub 1 ($012A) on Dragons
+	ELSE	
+        FDB     BasStub2	; Copy to stub 1 ($0134) on Tandy 
+	ENDC
+	
         FCB     $1A
         FDB     DDEDA
         FDB     LC670
@@ -5079,6 +5400,8 @@ FunctionDipatchTable
 ; New ram hook table copied into low ram
 ;
 
+	IFEQ	Tandy
+; Dragon Table
 RamHookTable   
 	FDB     DosHookOpenDev		; open dev/file
         FDB     DosHookCheckIONum	; check io num
@@ -5100,6 +5423,35 @@ RamHookTable
         FDB     DosHookSysError		; System error trap
         FDB     DosHookRun		; run statement
 	
+	ELSE
+;CoCo Table.
+RamHookTable   
+	FDB     DosHookOpenDev		; open dev/file
+        FDB     DosHookCheckIONum	; check io num
+        FDB     DosHookRetDevParam	; return dev parameters
+        FDB     DosHookCharOut		; char output
+        FDB     CoCoVect16A		; char input
+        FDB     DosHookRetDevParam	; check dev open for input
+        FDB     DosHookRetDevParam	; check dev open for output
+        FDB     DosHookRetDevParam	; close all devs and files
+        FDB     DosHookCloseSingle	; close single dev/file
+        FDB     CoCoVect179		; first char of new statement
+        FDB     DosHookDiskItem		; Disk file item scanner
+        FDB     DosHookRetDevParam	; poll for break
+        FDB     DosHookReadInput	; read line of input
+        FDB     DosHookRetDevParam	; finish loading ASCII program
+        FDB     DosHookEOF		; EOF function
+        FDB     CoCoVect18B		; Eval expression
+        FDB     DosHookRetDevParam	; User error trap
+        FDB     DosHookSysError		; System error trap
+        FDB     DosHookRun		; run statement
+
+	ENDC
+	
+;
+; New Function names table
+;
+	
 DDEC1   FCC     /LO/
         FCB     $C6
         FCC     /FRE/
@@ -5114,6 +5466,11 @@ DDEC1   FCC     /LO/
         FCB     $C3
         FCC     /FRE/
         FCB     $A4
+	
+;
+; New Command names table
+;
+	
 DDEDA   FCC     /AUT/
         FCB     $CF
         FCC     /BACKU/
@@ -5146,7 +5503,6 @@ DDEDA   FCC     /AUT/
         FCB     $C4
         FCC     /MERG/
         FCB     $C5
-DDF2A   EQU     *+3
         FCC     /PROTEC/
         FCB     $D4
         FCC     /WAI/
@@ -5167,28 +5523,55 @@ DDF2A   EQU     *+3
         FCB     $C4
         FCC     /SWA/
         FCB     $D0
-        FCC     /INSERT SOURCE     /
+	
+;
+; Some mesagaes
+;
+
+; Dragon versions slightly more verbose, as I had to create space for extra
+; code whenporting to RS-DOS cart, by shortening messages, iliminating 
+; whitespace etc
+; 
+	IFEQ	RSDos 
+        FCC     /INSERT SOURCE    /
+        FCB     $0D
+        FCB     $00
+        FCC     /INSERT DESTINATION     /
+        FCB     $0D
+MessPressAnyKey   
+	FCB     $00
+        FCC     /PRESS ANY KEY        /
+        FCB     $0D
+        FCB     $00
+
+	ELSE
+
+        FCC     /INSERT SOURCE    /
         FCB     $0D
         FCB     $00
         FCC     /INSERT DEST/
-	IFEQ	RSDos
-	FCC	/INATION/
-	ENDC
+	FCC	/INATION     /
         FCB     $0D
 MessPressAnyKey   
 	FCB     $00
         FCC     /PRESS ANY KEY     /
         FCB     $0D
         FCB     $00
+
+	ENDC
+;
+; File extensions
+;
+	
 DosExtBas   
 	FCC     /BAS/
 DosExtDat	
 	FCC	/DAT/
 DosExtBin	
 	FCC	/BIN/
-
+DosExtNone	
+	FCC	/   /
 	
-	FCC	/      /
 DosErrorCodeTable
 	FCC	/NRSKWPRTRFCCLDBTIVFDDFFSPTPEFFFENETFPR?/
 
@@ -5202,12 +5585,19 @@ DosSignonMess
 	endc
 	
 	ifne	RSDos	
-	FCC	/?SUPERDOS E7T/
+	ifne	Tandy
+	FCC	/?SUPERDOS E7C/		; RSDos cart/Tandy CoCo
+	else
+	FCC	/?SUPERDOS E7T/		; RSDos cart/Dragon
+	endc
 	endc
 		
         FCB     $0D
         FCB     $00
-DDFE0   FCB     $00
+DosMoreMess   FCB     $00
+	IFEQ	RSDos
+	FCC	/  /
+	ENDC
         FCC     / MORE:/
         FCB     $00
         FCB     $00
@@ -5216,14 +5606,20 @@ DDFE0   FCB     $00
 	FCC    	/        /
 	endc
 
+;
+; Drive lookup table used by Dragon Alpha
+;
 	ifne	DragonAlpha
 	FCC	/    /
 ADriveTab
 	FCB	Drive0,Drive1,Drive2,Drive3
 	ENDC
+
+;
+; Drive lookup table used on RS-DOS controler
+;
 	
 	IFNE	RSDos
-;	FCC	/    /
 TDriveTab
 	FCB	Drive0,Drive1,Drive2,Drive3
 	ENDC
@@ -5232,7 +5628,7 @@ LDFF3   LDA     2,X
         DECA
         BNE     LDFFA
         STA     2,X
-LDFFA   LDX     $066F
+LDFFA   LDX     DosCurLSN
         RTS
 
         FCB     $61
