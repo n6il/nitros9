@@ -26,6 +26,10 @@
 * ------------------------------------------------------------------
 *   1      2005/04/03  Boisy G. Pitre
 * Started
+*
+*   2      2006/02/02  Boisy G. Pitre
+* Added USERSTATE flag to allow module to debug current process or
+* system.
 
                NAM       KrnP3     
                TTL       NoICE Serial Debugger for 6809/6309
@@ -128,6 +132,14 @@ notbp          clr       firsttime,u
 
 * mainloop - processes requests from the server
 mainloop                 
+
+* ADDITION: We insist on having a "Pre-Opcode" OP_XBUG if we are using
+* this client in conjunction with DriveWire on the same serial line.
+* This is because DriveWire's Opcodes conflict with NoICE's.
+*               lbsr      llread              get command byte
+*               cmpa      #OP_XBUG            X-Bug Op-Code?
+*               bne       mainloop            if not, continue waiting
+               
                clrb                          clear B (for checksum)
                leax      combuff,u           point to comm buffer
                lbsr      llread              get command byte
@@ -212,15 +224,24 @@ sb1@           pshs      b                   save loop counter
 *       U = next place in com buffer to write "previous" byte
 * Read current data at byte location in process' space
                pshs      u,a                 save byte spot for later and "next" ptr
+               IFNE      USERSTATE
                ldu       <D.Proc
                ldb       P$Task,u
                os9       F$LDABX
+               ELSE
+               lda       ,x
+               ENDC
                sta       ,s                  save original ,X value on stack for now
 * A now holds the data byte -- insert new data at byte location
                lda       3,y                 get byte to store
+               IFNE      USERSTATE
                os9       F$STABX
 * Re-read current data at byte location in process' space
                os9       F$LDABX
+               ELSE
+               sta       ,x
+               lda       ,x
+               ENDC
                cmpa      3,y                 compare what we read from what we wrote
                puls      a,u                 get "original" value and next ptr
                puls      b                   restore loop count
@@ -252,22 +273,26 @@ _readmem
                tfr       d,y                 put count in Y
                pshs      u,x                 save source pointer
                leau      combuff+2,u         point U to destination
+               IFNE      USERSTATE
+* User state
                ldx       <D.Proc             get current process pointer
+*               cmpx      <D.SysPrc           same as system process?
+*               beq       copysys
                lda       P$Task,x            get source task #
                ldb       <D.SysTsk           get destination task #
                puls      x                   restore source pointer
                os9       F$Move              move 'em out!
+               ELSE
+* System state
+               puls      x
+l@             lda       ,x+                 get byte at source and inc
+               sta       ,u+                 save byte at dest and inc
+               leay      -1,y                done?
+               bne       l@                  branch if not
+               ENDC
                puls      u                   restore statics pointer
-
-* System state copy
-*	lda	,y+	get byte at Y and inc
-*	sta	,x+	save byte at X and inc
-*	decb		done?
-*	bne	l@	branch if not
-
                bsr       _sendtohost
                lbra      mainloop
-
 
 * This routine writes memory from the host to the calling process'
 * address space using F$Move.
@@ -281,11 +306,21 @@ _writemem
                exg       a,b                 byte swap!
                pshs      u,x                 save on stack
                tfr       d,u                 and put source in U
+               IFNE      USERSTATE
+* User state
                ldx       <D.Proc             get current process pointer
                lda       <D.SysTsk           get source task #
                ldb       P$Task,x            get destination task #
                puls      x                   restore source pointer
                os9       F$Move              move 'em out!
+               ELSE
+* System state
+               puls      x
+l@             lda       ,x+                 get byte at source and inc
+               sta       ,u+                 save byte at dest and inc
+               leay      -1,y                done?
+               bne       l@                  branch if not
+               ENDC
                puls      u                   restore our static pointer
                ldd       #$0100              assume successful write
                std       combuff+1,u
