@@ -30,15 +30,22 @@ size     equ   .
 name     fcs   /CallDBG/
          fcb   edition
 
+message1 fcc   /Execution halted/
+message2 fcc   /Execution resumed/
+         fcb   C$CR
 start
-	os9   F$Debug		call debugger
-loop
-	lda	#$03
-	cmpa	#$03
-	beq	loop
-	
+         lda   #$01
+         ldy   #200
+         leax  message1,pcr
+         os9   I$WritLn
+
+         os9   F$Debug		call debugger
+
+         leax  message2,pcr
+         os9   I$WritLn
+
 exit     clrb
-	os9   F$Exit   
+         os9   F$Exit   
 
          emod
 eom      equ   *
