@@ -97,7 +97,7 @@ start
                os9       F$SRqMem            allocate memory
                bcs       ex@
                stu       <D.DbgMem           save our allocated memory
-* clear thes firsttime flag so that the first time we get
+* clear the firsttime flag so that the first time we get
 * called at dbgent, we DON'T subtract the SWI from the PC.
                sta       firsttime,u         A = $01
 * get next KrnP module going
@@ -328,12 +328,33 @@ l@             lda       ,x+                 get byte at source and inc
                lbra      mainloop
 
 
+* This data is provided to the NoICE server upon receipt of FN_GET_STATUS.
 statdata                 
-               FCB       20
-* TODO: 6309 unsupported!!!
-               FCB       5
-               FCB       cbsize,0,0,0,$FF,$FF,3,$10,$3F,F$Debug
-               FCC       "NitrOS-9"
+               FCB       33					number of bytes to send
+               IFNE      H6309
+               FCB       17					processor type: 6309
+               ELSE
+               FCB       5					processor type: 6809
+               ENDC
+               FCB       cbsize				size of communications buffer
+               FCB       %00000000			options flags
+               FDB       $0000				target mapped memory low bound
+               FDB       $FFFF				target mapped memory high bound
+               FCB       3					length of breakpoint instruction
+               FCB       $10,$3F,F$Debug	breakpoint instruction
+* target description
+               FCC       "NitrOS-9/6"
+               IFNE      H6309
+               FCC       "3"
+               ELSE
+               FCC       "8"
+               ENDC
+               FCC       "09 Level "
+               IFEQ      Level-1
+               FCC       "1"
+               ELSE
+               FCC       "2"
+               ENDC
                FCB       0
 
 _getstatus               
@@ -344,7 +365,7 @@ _getstatus
 l@             lda       ,x+
                sta       ,y+
                decb      
-               bne       l@
+               bpl       l@
                bsr       _sendtohost
                lbra      mainloop
 
