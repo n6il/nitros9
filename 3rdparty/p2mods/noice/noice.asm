@@ -49,7 +49,7 @@ edition        SET       1
 
 * If an MPI is being used, set RS232SLOT to slot value - 1 and set MPI to 1
 *MPI            EQU       1
-*RS232SLOT      EQU       3            slot 2
+*RS232SLOT      EQU       1            slot 2
 
 FN_ERROR       EQU       $F0
 FN_SET_BYTES   EQU       $F9
