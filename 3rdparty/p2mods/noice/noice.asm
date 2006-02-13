@@ -47,6 +47,10 @@ atrv           SET       ReEnt+rev
 rev            SET       $00
 edition        SET       1
 
+* If an MPI is being used, set RS232SLOT to slot value - 1 and set MPI to 1
+*MPI            EQU       1
+*RS232SLOT      EQU       3            slot 2
+
 FN_ERROR       EQU       $F0
 FN_SET_BYTES   EQU       $F9
 FN_RUN_TARGET  EQU       $FA
@@ -67,6 +71,9 @@ cbsize         EQU       200
                ORG       0
 callregs       RMB       2
 firsttime      RMB       1
+               IFNE      MPI
+slot           RMB       1
+               ENDC
 combuff        RMB       cbsize
 size           EQU       .
 
@@ -507,23 +514,51 @@ llinit
 *
 * Note, this routine currently doesn't timeout
 llread                   
+               IFNE      MPI
+               lda       $FF7F
+               sta       slot,u
+               lda       #RS232SLOT
+               sta       $FF7F
+               ENDC
 r@             lda       A_STATUS            get status byte
                anda      #$08                mask rx buffer status flag
                beq       r@                  loop if rx buffer empty
                lda       A_RXD               get byte from ACIA data port
+               IFNE      MPI
+               pshs      b
+               ldb       slot,u
+               stb       $FF7F
+               puls      b,pc
+               ELSE
                rts       
+               ENDC
 
 * llwrite - Write one character to 6551
 *
 * Entry: A = character to write
 * Exit:  None
 llwrite                  
+               IFNE      MPI
+               pshs      d
+               ldb       $FF7F
+               stb       slot,u
+               ldb       #RS232SLOT
+               stb       $FF7F
+               ELSE
                pshs      a                   save byte to write
+               ENDC
 w@             lda       A_STATUS            get status byte
                anda      #$10                mask tx buffer status flag
                beq       w@                  loop if tx buffer full
+               IFNE      MPI
+               puls      d                   get byte
+               sta       A_TXD               save to ACIA data port
+               lda       slot,u
+               sta       $FF7F
+               ELSE
                puls      a                   get byte
                sta       A_TXD               save to ACIA data port
+               ENDC
                rts       
 
 * llterm - Terminate
