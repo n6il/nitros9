@@ -136,7 +136,7 @@ Init     ldx   <D.CCMem		get ptr to CC mem
          ldd   <G.CurDev,x	has VTIO itself been initialized?
          lbne  PerWinInit	yes, don't bother doing it again
 * VTIO initialization code - done on the first init of ANY VTIO device
-*         leax  >CC3Irq,pcr	set up AltIRQ vector in DP
+*         leax  >ISR,pcr	set up AltIRQ vector in DP
 *         stx   <D.AltIRQ
          leax  >SHFTCLR,pcr	point to SHIFT-CLEAR subroutine
          pshs  x		save it on stack
@@ -199,7 +199,7 @@ Init     ldx   <D.CCMem		get ptr to CC mem
 
          ldx   <D.AltIRQ	get original D.AltIRQ address
          stx   >WGlobal+G.OrgAlt	save in window globals for later
-         leax  >CC3Irq,pcr	set up AltIRQ vector in DP
+         leax  >ISR,pcr		set up AltIRQ vector in DP
          stx   <D.AltIRQ
 
 * This code is executed on init of every window
@@ -244,17 +244,19 @@ LinkSys  lda   #Systm+Objct	system module
 *    CC = carry set on error
 *    B  = error code
 *
-Read     lda   V.PAUS,u		device paused?
-         bpl   read1		no, do normal read (should this be bne?)
-* Device is paused; check for mouse button press
-         lda   >(WGlobal+G.Mouse+Pt.CBSA) if paused, check mouse button 1
+Read     tst   V.PAUS,u		device paused?
+         bpl   read1		no, do normal read
+* Here, device is paused; check for mouse button down
+* If it is down, we simply return without error.
+         tst   >(WGlobal+G.Mouse+Pt.CBSA) test current button state A
          beq   read1		button isn't pressed, do normal read
          clra			clear carry (no error)
          rts			return
 
+* Check to see if there is a signal-on-data-ready set for this path.
+* If so, we return a Not Ready error.
 read1    lda   <V.SSigID,u	data ready signal trap set up?
-         lbne  NotReady		no, exit with not ready error
-* Data ready signal trap set up
+         lbne  NotReady		yes, exit with not ready error
          leax  >ReadBuf,u	point to keyboard buffer
          ldb   <V.InpPtr,u	get current position in keyboard buffer
          orcc  #IRQMask		disable IRQs
@@ -393,7 +395,7 @@ L01E6    tst   <G.Clear,u	clear key down?
          beq   L0225		yes, return
          clr   <G.Clear,u	clear out clear key flag
 * Check CTRL-0 (CAPS-Lock)
-         cmpa  #$81		control-0?
+         cmpa  #%10000001	CTRL-0?
          bne   L01FF		no, keep checking
          ldb   <G.KySame,u	same key pressed?
          bne   L0223
@@ -407,17 +409,17 @@ L01E6    tst   <G.Clear,u	clear key down?
          ENDC
          bra   L0223		return
 * Check CLEAR key
-L01FF    cmpa  #$82		was it clear key?
+L01FF    cmpa  #%10000010	was it CLEAR key?
          bne   L0208		no, keep going
          lbsr  CLEAR		find next window
          bra   L0223		return
 * Check SHIFT-CLEAR
-L0208    cmpa  #$83		was it shift clear?
+L0208    cmpa  #%10000011	was it SHIFT-CLEAR?
          bne   L0211		no, keep checking
          lbsr  SHFTCLR		yes, find back window
          bra   L0223		return
 * Check CTRL-CLEAR
-L0211    cmpa  #$84		keyboard mouse toggle key?
+L0211    cmpa  #%10000100	keyboard mouse toggle key?
          bne   L0225		no, return
          ldb   <G.KySame,u	same key pressed?
          bne   L0223		yes, return
@@ -580,43 +582,51 @@ L02FD    std   Pt.TTSA,x	save button time this state counts
 NullIRQ  rts   			return
 
 
+*
 * VTIO IRQ routine - Entered from Clock every 1/60th of a second
-CC3Irq   ldu   <D.CCMem		get ptr to CC mem
+*
+* The interrupt service routine is responsible for:
+*   - Decrementing the tone counter
+*   - Select the new active window if needed
+*   - Updating graphics cursors if needed
+*   - Checking for mouse update
+*
+ISR      ldu   <D.CCMem		get ptr to CC mem
          ldy   <G.CurDev,u	get current device's static
-         lbeq  L044E		branch if none
-         lda   <G.TnCnt,u	get tone counter
-         beq   L0319		branch if zero
-         deca			else decrement
-         sta   <G.TnCnt,u	and save back
+         lbeq  CheckAutoMouse	branch if none (meaning no window is currently created)
+         tst   <G.TnCnt,u	get tone counter
+         beq   CheckScrChange	branch if zero
+         dec   <G.TnCnt,u	else decrement
+
 * Check for any change on screen
 * U=Unused now (sitting as NullIRQ ptr) - MAY WANT TO CHANGE TO CUR DEV PTR
 * Y=Current Device mem ptr
-L0319    leax  <NullIRQ,pcr	set AltIRQ to do nothing routine so other IRQs
+CheckScrChange
+         leax  <NullIRQ,pcr	set AltIRQ to do nothing routine so other IRQs
          stx   <D.AltIRQ	can fall through to IOMan polling routine
          andcc  #^(IntMasks)	re-enable interrupts
          ldb   <V.ScrChg,y	check screen update request flag (cur screen)
          beq   L0337		no update needed, skip ahead
          lda   V.TYPE,y		device a window?
-         bpl   L032F		no, must be CoVDG, so go on
+         bpl   SelNewWindow	no, must be CoVDG, so go on
          lda   G.GfBusy,u	0 = GrfDrv free, 1 = GrfDrv busy
          ora   G.WIBusy,u	0 = CoWin free, 1 = CoWin busy
          bne   L034F		one of the two is busy, can't update, skip
-*L032F    lda   #$00
-L032F    clra			special function: select new active window
+SelNewWindow
+         clra			special function: select new active window
          lbsr  L05DA		go execute co-module
          clr   <V.ScrChg,y	clear screen change flag in device mem
 *
 * CHECK IF GFX/TEXT CURSORS NEED TO BE UPDATED            
 * G.GfBusy = 1 Grfdrv is busy processing something else
-* G.WIBusy = 1 Windint is busy processing something else
+* G.WIBusy = 1 CoWin is busy processing something else
 * g0000 = # of clock ticks/cursor update constant (2) for 3 ticks: 2,1,0
 * G.CntTik = current clock tick for cursor update
 *
-L0337    ldb   G.CntTik,u	get current clock tick count for cursor updates
+L0337    tst   G.CntTik,u	get current clock tick count for cursor updates
          beq   L034F		if 0, no update required
-         decb  			decrement the tick count
-         stb   G.CntTik,u	if still not 0, don't do update
-         bne   L034F
+         dec   G.CntTik,u	decrement the tick count
+         bne   L034F		if still not 0, don't do update
          lda   G.GfBusy,u	get GrfDrv busy flag
          ora   G.WIBusy,u	merge with CoWin busy flag
          beq   L034A		if both not busy, go update cursors
@@ -648,6 +658,7 @@ L034F    equ   *
          puls  u,y,x		restore regs
          lda   <G.MSmpRV,u	get # ticks/mouse read reset value
 L0366    sta   <G.MSmpRt,u	save updated tick count
+
 * Check keyboard
 L0369    equ   *
          IFNE  H6309
@@ -675,10 +686,11 @@ L0369    equ   *
          leau  >G.KeyMem,u		and ptr to its statics
          jsr   K$FnKey,x		call into it
          ldu   <D.CCMem			get ptr to CC mem
-         sta   <G.KyButt,u		save key button
+         sta   <G.KyButt,u		save keyboard/button state
 L0381    ldx   >WGlobal+G.JoyEnt	get ptr to joydrv
          leau  >G.JoyMem,u		and ptr to its statics
          jsr   J$MsBtn,x		get mouse button info
+* Here, B now holds the value from the MsBtn routine in JoyDrv.
          ldu   <D.CCMem			get ptr to CC mem
          lda   #%10000010		A = $82
          cmpb  #%10000000		clear flag set?
@@ -770,6 +782,7 @@ L0447    beq   L044E		no process to wake, return
          clr   V.WAKE,u		clear it
          os9   F$Send		send the signal
 L044E    ldu   <D.CCMem		get ptr to CC mem
+CheckAutoMouse
          lda   <G.AutoMs,u	auto mouse flag set?
          beq   L046B		branch if not
          lda   <G.MseMv,u	get mouse moved flag
@@ -782,7 +795,7 @@ L044E    ldu   <D.CCMem		get ptr to CC mem
          lbsr  L05DA
          clr   <G.MseMv,u	clear mouse move flag
 L046B    orcc  #IntMasks	mask interrupts
-         leax  >CC3Irq,pcr	get CC3Irq vector
+         leax  >ISR,pcr		get IRQ vector
          stx   <D.AltIRQ	and store in AltIRQ
          rts   			return
 
@@ -1563,4 +1576,3 @@ L091B    puls  u,x,b,a		restore regs
          emod  
 eom      equ   *
          end
-
