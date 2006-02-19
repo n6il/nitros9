@@ -416,6 +416,7 @@ _readregs
                lda       firsttime,u         get first time called flag
                sta       ,x+                 write it
                clr       ,x+                 clear page reg
+               leax      2,x                 skip PC for now
                ldd       R$U,y
                exg       a,b
                std       ,x++
