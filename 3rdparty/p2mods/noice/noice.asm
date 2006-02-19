@@ -437,6 +437,32 @@ _readregs
                stb       ,x+                 DP
                ldb       R$CC,y
                stb       ,x+                 CC
+
+               IFNE      H6309
+* All this code is necessary to get the value of MD
+* Note: bits 2-5 are unused
+               clrb
+               bitmd     #%00000001
+               beq       md1
+               incb                         set bit 0
+md1            bitmd     #%00000010
+               beq       md6
+               orb       #%00000010         set bit 1
+md6            bitmd     #%01000000
+               beq       md7
+               orb       #%01000000
+md7            bitmd     #%10000000
+               beq       tfrmd
+               orb       #%10000000
+tfrmd          stb       ,x+                 MD
+
+
+* V register
+               tfr       v,d
+               exg       a,b
+               std       ,x++                V
+               ENDC
+
                ldd       R$PC,y
                exg       a,b
                std       ,x++                PC
@@ -444,7 +470,7 @@ _readregs
                ldd       P$SP,y
                exg       a,b
                std       combuff+4,u
-               bsr       _sendtohost
+               lbsr      _sendtohost
                lbra      mainloop
 
 
@@ -475,6 +501,15 @@ _writeregs
                stb       R$DP,y
                ldb       ,x+
                stb       R$CC,y
+
+               IFNE      H6309
+               ldb       ,x+              MD register
+
+               ldd       ,x++
+               exg       a,b
+               tfr       d,v              V register
+               ENDC
+
                ldd       ,x++
                exg       a,b
                std       R$PC,y
