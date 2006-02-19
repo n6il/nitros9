@@ -465,7 +465,7 @@ tfrmd          stb       ,x+                 MD
 
                ldd       R$PC,y
                exg       a,b
-               std       ,x++                PC
+               std       ,x                  PC
                ldy       <D.Proc             get SP from proc desc
                ldd       P$SP,y
                exg       a,b
@@ -503,7 +503,15 @@ _writeregs
                stb       R$CC,y
 
                IFNE      H6309
-               ldb       ,x+              MD register
+* Note: because the only way to write to the MD register is via immediate mode,
+* we must build a "ldmd #XX; rts" instruction on the stack then execute it in order
+* to avoid "self modifying" code.
+               ldd       #$113D           "ldmd" instruction
+               std       -6,s
+               lda       ,x+              MD register
+               ldb       #$39             "rts" instruction
+               std       -4,s
+               jsr       -6,s             call code on stack to modify MD
 
                ldd       ,x++
                exg       a,b
