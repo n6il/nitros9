@@ -31,6 +31,7 @@ name     fcs   /CallDBG/
          fcb   edition
 
 message1 fcc   /Execution halted/
+         fcb   C$CR
 message2 fcc   /Execution resumed/
          fcb   C$CR
 start
