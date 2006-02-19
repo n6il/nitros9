@@ -48,8 +48,10 @@ rev            SET       $00
 edition        SET       1
 
 * If an MPI is being used, set RS232SLOT to slot value - 1 and set MPI to 1
+MPICTRL        EQU       $FF7F
+RS232SLOT      EQU       1            slot 2
+
 *MPI            EQU       1
-*RS232SLOT      EQU       1            slot 2
 
 FN_ERROR       EQU       $F0
 FN_SET_BYTES   EQU       $F9
@@ -404,30 +406,40 @@ n@             addb      ,x                  compute checksum
 
 _readregs                
                ldy       callregs,u          get pointer to caller's regs
+               leax      combuff+1,u
+               IFNE      H6309
+               ldb       #21                 get number of bytes to send
+               ELSE
                ldb       #16                 get number of bytes to send
-               stb       combuff+1,u         save number of bytes
+               ENDC
+               stb       ,x+                 save number of bytes
                lda       firsttime,u         get first time called flag
-               sta       combuff+2,u         write it
-               clr       combuff+3,u         clear page reg
+               sta       ,x+                 write it
+               clr       ,x+                 clear page reg
                ldd       R$U,y
                exg       a,b
-               std       combuff+6,u
+               std       ,x++
                ldd       R$Y,y
                exg       a,b
-               std       combuff+8,u
+               std       ,x++
                ldd       R$X,y
                exg       a,b
-               std       combuff+10,u
+               std       ,x++
+               IFNE      H6309
+               ldd       R$E,y
+               exg       a,b
+               std       ,x++
+               ENDC
                ldd       R$A,y
                exg       a,b
-               std       combuff+12,u
+               std       ,x++
                ldb       R$DP,y
-               stb       combuff+14,u        DP
+               stb       ,x+                 DP
                ldb       R$CC,y
-               stb       combuff+15,u        CC
+               stb       ,x+                 CC
                ldd       R$PC,y
                exg       a,b
-               std       combuff+16,u        PC
+               std       ,x++                PC
                ldy       <D.Proc             get SP from proc desc
                ldd       P$SP,y
                exg       a,b
@@ -438,26 +450,32 @@ _readregs
 
 _writeregs               
                ldy       callregs,u          get caller's reg ptr
+               leax      combuff+6,u
 *	lda	D.Debug
 *	anda	#D_BRKPT
 *	sta	<D.Debug
-               ldd       combuff+6,u
+               ldd       ,x++
                exg       a,b
                std       R$U,y
-               ldd       combuff+8,u
+               ldd       ,x++
                exg       a,b
                std       R$Y,y
-               ldd       combuff+10,u
+               ldd       ,x++
                exg       a,b
                std       R$X,y
-               ldd       combuff+12,u
+               IFNE      H6309
+               ldd       ,x++
+               exg       a,b
+               std       R$E,y
+               ENDC
+               ldd       ,x++
                exg       a,b
                std       R$A,y
-               ldb       combuff+14,u
+               ldb       ,x+
                stb       R$DP,y
-               ldb       combuff+15,u
+               ldb       ,x+
                stb       R$CC,y
-               ldd       combuff+16,u        PC
+               ldd       ,x++
                exg       a,b
                std       R$PC,y
                ldd       combuff+4,u
@@ -494,6 +512,14 @@ BAUD           EQU       _B9600
 * llinit - Initialize the low-level I/O
 * Exit: Carry = 0: Init success; Carry = 1; Init failed
 llinit                   
+               IFNE      MPI
+               pshs      a
+               lda       MPICTRL
+               sta       slot,u
+               lda       #RS232SLOT
+               sta       MPICTRL
+               puls      a
+               ENDC
                sta       A_RESET             soft reset (value not important)
 * Set specific modes and functions:
 * - no parity, no echo, no Tx interrupt
@@ -504,6 +530,12 @@ llinit
                sta       A_CTRL              select proper baud rate
 * Read any junk rx byte that may be in the register
                lda       A_RXD
+               IFNE      MPI
+               pshs      a
+               lda       slot,u
+               sta       MPICTRL
+               puls      a
+               ENDC
                rts       
 
 
@@ -515,7 +547,7 @@ llinit
 * Note, this routine currently doesn't timeout
 llread                   
                IFNE      MPI
-               lda       $FF7F
+               lda       MPICTRL
                sta       slot,u
                lda       #RS232SLOT
                sta       $FF7F
@@ -527,7 +559,7 @@ r@             lda       A_STATUS            get status byte
                IFNE      MPI
                pshs      b
                ldb       slot,u
-               stb       $FF7F
+               stb       MPICTRL
                puls      b,pc
                ELSE
                rts       
@@ -540,10 +572,10 @@ r@             lda       A_STATUS            get status byte
 llwrite                  
                IFNE      MPI
                pshs      d
-               ldb       $FF7F
+               ldb       MPICTRL
                stb       slot,u
                ldb       #RS232SLOT
-               stb       $FF7F
+               stb       MPICTRL
                ELSE
                pshs      a                   save byte to write
                ENDC
@@ -554,7 +586,7 @@ w@             lda       A_STATUS            get status byte
                puls      d                   get byte
                sta       A_TXD               save to ACIA data port
                lda       slot,u
-               sta       $FF7F
+               sta       MPICTRL
                ELSE
                puls      a                   get byte
                sta       A_TXD               save to ACIA data port
