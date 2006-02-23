@@ -9,3 +9,6 @@ RFILES = amatch.r append.r bitmap.r catsub.r ckglob.r deflt.r del.r docmd.r \
 	optpat.r set.r setbuf.r subst.r unmkpat.r
 
 ed: $(RFILES)
+
+clean:
+	$(RM) $(RFILES)
