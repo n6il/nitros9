@@ -272,35 +272,35 @@ ChkRDRF  bita  #Stat.RxF	Rx data?
          ldb   DataReg,x	get Rx data
          lda   2,u		get button status and Rx counter
          anda  #%00000111	waiting for sync with mouse data?
-         bne   L017A
-         bitb  #$40
-         beq   IRQExit
-L0174    stb   a,u
-         inc   2,u
+         bne   L017A        branch if counter is not zero
+         bitb  #$40         OR Rx data with $40
+         beq   IRQExit      exit if 0
+L0174    stb   a,u          else save B at a,u
+         inc   2,u          and increment counter
          clrb  
          rts   
-L017A    bitb  #$40
-         bne   L015C
-         cmpa  #$02
-         bcs   L0174
-         ldx   #$017E
-         pshs  x
-         lda   ,u
-         lsra  
-         lsra  
-         leax  5,u
-         bsr   L01A9
-         ldd   ,u
-         ldx   #$027F
-         stx   ,s
-         leax  3,u
-         bsr   L01A9
-         leas  $02,s
+L017A    bitb  #$40         OR Rx data with $40
+         bne   L015C        if set, reset data counter
+         cmpa  #$02         is this third byte?
+         bcs   L0174        branch if less than
+         ldx   #HResMaxY*2
+         pshs  x            save on stack
+         lda   ,u           get first byte of mouse packet
+         lsra               shift right
+         lsra               and again
+         leax  5,u          point to X to CrntYPos,u
+         bsr   L01A9        process
+         ldd   ,u           get first and second byte of mouse packet
+         ldx   #HResMaxX    get max X value        
+         stx   ,s           save on stack in place of earlier X
+         leax  3,u          point X to CrntXPos,u
+         bsr   L01A9        process
+         leas  $02,s        restore stack
          lda   #$80
-         ldx   3,u
-         cmpx  #$0140
-         bcc   L0160
-         ora   #$C0
+         ldx   3,u          get CrntXPos,u
+         cmpx  #320     
+         bcc   L0160        branch if equal
+         ora   #192
          bra   L0160
 L01A9    lslb  
          lslb  
