@@ -4,7 +4,7 @@ TODO
 ====
 VTIO
 	- Fix init/term bug (only seen if windowing system is successively
-          brought up/torn down).  This a long-standing bug, but doesn't impacth
+          brought up/torn down).  This a long-standing bug, but doesn't impact
           the typical user.  More of an irritant than anything else.
 	- Backport along with keydrv, joydrv, snddrv to Level 1.
 
@@ -72,9 +72,6 @@ cciodefs (Level 1)
 
 co32 (Level 1)
 	- Renamed to CoVDG
-
-co51 (Level 1)
-	- Renamed to CoHR
 
 co51 (Level 1)
 	- Renamed to CoHR
