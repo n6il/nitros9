@@ -61,6 +61,9 @@ OS9DEFS  set   1
 *
 *	   2005/11/02  P.Harvey-Smith
 * Added definitions for boot areas on Dragon computers.
+*
+*	   2006/03/03  Boisy G. Pitre
+* Added F$Debug and D.DbgMem areas, common to all levels of NitrOS-9
 
          nam   OS9Defs
          IFEQ  Level-1
@@ -105,28 +108,36 @@ F$AllBit rmb   1          Allocate in Bit Map
 F$DelBit rmb   1          Deallocate in Bit Map
 F$Time   rmb   1          Get Current Time
 F$STime  rmb   1          Set Current Time
-F$CRC    rmb   1          Generate CRC
+F$CRC    rmb   1          Generate CRC ($17)
 
          IFGT  Level-1
 
 * NitrOS-9 Level 2 system calls
-F$GPrDsc rmb   1          Get Process Descriptor copy
-F$GBlkMp rmb   1          Get System Block Map copy
-F$GModDr rmb   1          Get Module Directory copy
-F$CpyMem rmb   1          Copy External Memory
-F$SUser  rmb   1          Set User ID number
-F$UnLoad rmb   1          Unlink Module by name
-F$Alarm  rmb   1          Color Computer 3 Alarm Call
-         rmb   2          Reserved - For overlap of other systems
-F$NMLink rmb   1          Color Computer 3 Non-Mapping Link
-F$NMLoad rmb   1          Color Computer 3 Non-Mapping Load
+F$GPrDsc rmb   1          Get Process Descriptor copy ($18)
+F$GBlkMp rmb   1          Get System Block Map copy ($19)
+F$GModDr rmb   1          Get Module Directory copy ($1A)
+F$CpyMem rmb   1          Copy External Memory ($1B)
+F$SUser  rmb   1          Set User ID number ($1C)
+F$UnLoad rmb   1          Unlink Module by name ($1D)
+F$Alarm  rmb   1          Color Computer 3 Alarm Call ($1E)
+         rmb   2          Reserved - For overlap of other systems ($1F)
+F$NMLink rmb   1          Color Computer 3 Non-Mapping Link ($20)
+F$NMLoad rmb   1          Color Computer 3 Non-Mapping Load ($21)
+F$Debug  rmb   1          Drop the system into the debugger ($22)
          org   $25
 F$TPS    rmb   1          Return System's Ticks Per Second
 F$TimAlm rmb   1          CoCo individual process alarm call
 
+         ELSE
+
+* NitrOS-9 Level 1 system calls
+         rmb   10         Padded so F$Debug can match on Level 1/2
+F$Debug  rmb   1          Drop the system into the debugger ($22)
+
          ENDC
 
          org   $27        Beginning of System Reserved Calls
+* NitrOS-9 common system calls
 F$VIRQ   rmb   1          Install/Delete Virtual IRQ
 F$SRqMem rmb   1          System Memory Request
 F$SRtMem rmb   1          System Memory Return
@@ -177,9 +188,7 @@ F$GCMDir rmb   1          Pack module directory
 F$AlHRAM rmb   1          Allocate HIGH RAM Blocks
 
 * Alan DeKok additions
-* F$ReBoot has been renamed to F$Debug
-*F$ReBoot rmb   1          Reboot machine (reload OS9Boot) or drop to RSDOS
-F$Debug   rmb   1          Drop the system into the debugger
+F$ReBoot rmb   1          Reboot machine (reload OS9Boot) or drop to RSDOS
 F$CRCMod rmb   1          CRC mode, toggle or report current status
 F$XTime  rmb   1          Get Extended time packet from RTC (fractions of second)
 F$VBlock rmb   1          Verify modules in a block of memory, add to module directory
@@ -191,8 +200,10 @@ F$VBlock rmb   1          Verify modules in a block of memory, add to module dir
 *
          org   $70
 
-	 IFEQ  Level-1
-	 rmb   16         Reserved for user definition
+	     IFEQ  Level-1
+
+         rmb   16         Reserved for user definition
+
          ELSE
 
 F$RegDmp rmb   1          Ron Lammardo's debugging register dump
@@ -397,17 +408,19 @@ SS.DrvCh equ SS.WnSet     SDisk3 (DMC ONLY) Set drive number to cache, or return
 **********************************
 * Direct Page Variable Definitions
 *
-         IFEQ  Level-1
-
-* Level 1 DP vars
          org   $00
 D.WDAddr rmb   2          FHL/Isted WD1002-05 interface base address
 D.WDBtDr rmb   1          FHL/Isted WD1002-05 boot physical device drive num.
 D.SWPage rmb   1          SmartWatch page # (see clock2_smart)
          rmb   5
 D.COCOXT rmb   1          Busy flag for CoCo-XT driver (one drive at a time)
+D.DbgMem rmb   2          Debug memory pointer
 
-	 org   $20
+         org   $20
+
+         IFEQ  Level-1
+         
+* Level 1 DP vars
 D.FMBM   rmb   4          Free memory bit map pointers
 D.MLIM   rmb   2          Memory limit $24
 D.ModDir rmb   4          Module directory $26
@@ -476,17 +489,8 @@ SVCTNM   equ   2          Number of service request tables
 SVCTSZ   equ   (256-BMAPSZ)/SVCTNM-2 Service request table size
 
          ELSE
-
+         
 * Level 2 DP vars
-         org   $00
-D.WDAddr rmb   2          FHL/Isted WD1002-05 interface base address
-D.WDBtDr rmb   1          FHL/Isted WD1002-05 boot physical device drive num.
-D.SWPage rmb   1          SmartWatch page # (see clock2_smart)
-         rmb   5
-D.COCOXT rmb   1          Busy flag for CoCo-XT driver (one drive at a time)
-D.DbgMem rmb   1          Busy flag for CoCo-XT driver (one drive at a time)
-
-	 org   $20
 D.Tasks  rmb   2          Task User Table
 D.TmpDAT rmb   2          Temporary DAT Image stack
 D.Init   rmb   2          Initialization Module ptr
