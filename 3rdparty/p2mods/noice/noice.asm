@@ -30,6 +30,10 @@
 *   2      2006/02/02  Boisy G. Pitre
 * Added USERSTATE flag to allow module to debug current process or
 * system.
+*
+*   3      2006/03/02  Boisy G. Pitre
+* NoICE now displays user or system information in Level 2 with the
+* addition of a system state system call and the ssflag variable.
 
                NAM       KrnP3     
                TTL       NoICE Serial Debugger for 6809/6309
@@ -38,14 +42,14 @@
                USE       defsfile
                ENDC      
 
-               IFNE      KRNMOD
+               IFGT      Level-1
 tylg           SET       Systm+Objct
                ELSE      
 tylg           SET       Prgrm+Objct
                ENDC      
 atrv           SET       ReEnt+rev
 rev            SET       $00
-edition        SET       1
+edition        SET       3
 
 * If an MPI is being used, set RS232SLOT to slot value - 1 and set MPI to 1
 MPICTRL        EQU       $FF7F
@@ -73,6 +77,9 @@ cbsize         EQU       200
                ORG       0
 callregs       RMB       2
 firsttime      RMB       1
+               IFGT      Level-1
+ssflag         RMB       1
+               ENDC
                IFNE      MPI
 slot           RMB       1
                ENDC
@@ -83,23 +90,33 @@ size           EQU       .
 L0000          MOD       eom,name,tylg,atrv,start,size
 
 name           EQU       *
-               IFNE      KRNMOD
+               IFGT      Level-1
                FCS       /KrnP3/
                ELSE      
                FCS       /noice/
                ENDC      
                FCB       edition
 
+               IFGT      Level-1
 nextname       FCC       /krnp4/             next module name to link to
                FCB       C$CR
+               ENDC
 
 svctabl        FCB       F$Debug
                FDB       dbgent-*-2
+               IFGT      Level-1
+               FCB       F$Debug+$80
+               FDB       dbgentss-*-2
+               ENDC
                FCB       $80
 
 start                    
-               IFNE      KRNMOD
-               leay      <svctabl,pcr
+               IFEQ      Level-1
+               leax      <name,pcr
+               clra
+               os9       F$Link
+               ENDC
+               leay      svctabl,pcr
                os9       F$SSvc
                bcs       ex@
                ldd       #$0100
@@ -109,22 +126,34 @@ start
 * clear the firsttime flag so that the first time we get
 * called at dbgent, we DON'T subtract the SWI from the PC.
                sta       firsttime,u         A = $01
-* get next KrnP module going
+               IFGT      Level-1
+* Level > 1: get next KrnP module going
                lda       #tylg               get next module type (same as this one!)
                leax      <nextname,pcr       get address of next module name
                os9       F$Link              attempt to link to it
                bcs       ex@                 no good...skip this
                jsr       ,y                  else go execute it
 ex@            rts                           return
-               ENDC      
+               ELSE
+               clrb
+ex@            os9       F$Exit
+               ENDC
 
 
 * Debugger Entry Point
 * 
 * We enter here when a process or the system makes an os9 F$Debug call.
-dbgent                   
+dbgent
                ldx       <D.DbgMem           get pointer to our statics in X
-               stu       callregs,x          save pointer to caller's regs
+               IFGT      Level-1
+               clra                          we aren't in system state
+               bra       dbg2@
+dbgentss       ldx       <D.DbgMem
+               lda       #$01
+dbg2@
+               sta       <ssflag,x
+               ENDC
+               stu       <callregs,x         save pointer to caller's regs
                exg       x,u                 exchange X and U
 * If this is a breakpoint (state = 1) then back up PC to point at SWI2
                tst       firsttime,u
@@ -134,7 +163,7 @@ dbgent
                std       R$PC,x
 * set bit so next time we do the sub on the $PC
 notbp          clr       firsttime,u
-               lbsr      llinit              initialize I/O
+               lbsr      ioinit              initialize I/O
                lda       #FN_RUN_TARGET
                sta       combuff,u
                lbra      _readregs
@@ -145,27 +174,27 @@ mainloop
 * ADDITION: We insist on having a "Pre-Opcode" OP_XBUG if we are using
 * this client in conjunction with DriveWire on the same serial line.
 * This is because DriveWire's Opcodes conflict with NoICE's.
-*               lbsr      llread              get command byte
+*               lbsr      ioread              get command byte
 *               cmpa      #OP_XBUG            X-Bug Op-Code?
 *               bne       mainloop            if not, continue waiting
                
                clrb                          clear B (for checksum)
                leax      combuff,u           point to comm buffer
-               lbsr      llread              get command byte
+               lbsr      ioread              get command byte
                sta       ,x+                 save in comm buffer and inc X
                addb      -1,x                compute checksum
-               lbsr      llread              get byte count of incoming message
+               lbsr      ioread              get byte count of incoming message
                sta       ,x+                 save in comm buffer and inc X
                addb      -1,x                compute checksum
                pshs      a                   save count on stack
                tsta                          count zero?
                beq       csum@               branch if so
-n@             lbsr      llread              read data byte (count on stack)
+n@             lbsr      ioread              read data byte (count on stack)
                sta       ,x+                 save in our local buffer
                addb      -1,x                compute checksum
                dec       ,s                  decrement count
                bne       n@                  if not zero, get next byte
-csum@          lbsr      llread              read checksum byte from host
+csum@          lbsr      ioread              read checksum byte from host
                sta       ,s                  save on stack (where count was)
                negb                          make 2's complement
                cmpa      ,s+                 same as host's?
@@ -204,13 +233,8 @@ _sendstatus
                bra       mainloop
 
 _runtarget               
-               IFNE      KRNMOD
                clrb      
                rts       
-               ELSE      
-               clrb      
-               os9       F$Exit
-               ENDC      
 
 * This routine is given a list of bytes to change.  It must read the current
 * byte at that location and return it in a packet to the host so that
@@ -220,11 +244,11 @@ _setbytes
                clr       combuff+1,u         set return count as zero
                lsrb                          divide number of bytes by 4
                lsrb      
-               beq       sb9@
+               beq       sb9
                pshs      u                   save our statics pointer
                leau      combuff+2,u         point U to write outgoing data
                tfr       u,y                 point Y to first 4 bytes
-sb1@           pshs      b                   save loop counter
+sb1            pshs      b                   save loop counter
                ldd       1,y                 get address to write to
                exg       a,b                 swap!
                tfr       d,x                 memory address is now in X
@@ -233,25 +257,27 @@ sb1@           pshs      b                   save loop counter
 *       U = next place in com buffer to write "previous" byte
 * Read current data at byte location in process' space
                pshs      u,a                 save byte spot for later and "next" ptr
-               IFNE      USERSTATE
+               IFGT      Level-1
+               ldu       4,s                 get original U
+               tst       <ssflag,u
+               bne       ss@
                ldu       <D.Proc
                ldb       P$Task,u
                os9       F$LDABX
-               ELSE
-               lda       ,x
-               ENDC
                sta       ,s                  save original ,X value on stack for now
-* A now holds the data byte -- insert new data at byte location
                lda       3,y                 get byte to store
-               IFNE      USERSTATE
                os9       F$STABX
 * Re-read current data at byte location in process' space
                os9       F$LDABX
-               ELSE
+               bra       p@
+               ENDC
+ss@            lda       ,x
+               sta       ,s                  save original ,X value on stack for now
+* A now holds the data byte -- insert new data at byte location
+               lda       3,y                 get byte to store
                sta       ,x
                lda       ,x
-               ENDC
-               cmpa      3,y                 compare what we read from what we wrote
+p@             cmpa      3,y                 compare what we read from what we wrote
                puls      a,u                 get "original" value and next ptr
                puls      b                   restore loop count
                bne       sb8@                carry affected by last cmpa
@@ -262,10 +288,10 @@ sb1@           pshs      b                   save loop counter
 * Loop for next byte
                leay      4,y                 step to next byte in specifier
                cmpb      combuff+1,x         done?
-               bne       sb1@
+               bne       sb1
 * Return buffer with data from byte locations
 sb8@           puls      u                   restore our original statics ptr
-sb9@           lbsr      _sendtohost
+sb9            lbsr      _sendtohost
                lbra      mainloop
 sbe@           puls      u                   restore what's on the stack
                bra       _senderror
@@ -282,7 +308,9 @@ _readmem
                tfr       d,y                 put count in Y
                pshs      u,x                 save source pointer
                leau      combuff+2,u         point U to destination
-               IFNE      USERSTATE
+               IFGT      Level-1
+               tst       <ssflag-combuff-2,u
+               bne       ss@
 * User state
                ldx       <D.Proc             get current process pointer
 *               cmpx      <D.SysPrc           same as system process?
@@ -291,15 +319,15 @@ _readmem
                ldb       <D.SysTsk           get destination task #
                puls      x                   restore source pointer
                os9       F$Move              move 'em out!
-               ELSE
+               bra       p@
+               ENDC
 * System state
-               puls      x
+ss@            puls      x
 l@             lda       ,x+                 get byte at source and inc
                sta       ,u+                 save byte at dest and inc
                leay      -1,y                done?
                bne       l@                  branch if not
-               ENDC
-               puls      u                   restore statics pointer
+p@             puls      u                   restore statics pointer
                bsr       _sendtohost
                lbra      mainloop
 
@@ -314,23 +342,27 @@ _writemem
                ldd       combuff+3,u         get destination pointer
                exg       a,b                 byte swap!
                pshs      u,x                 save on stack
-               tfr       d,u                 and put source in U
-               IFNE      USERSTATE
+               IFGT      Level-1
+               tst       <ssflag,u
+               bne       ss@
 * User state
+               tfr       d,u                 and put source in U
                ldx       <D.Proc             get current process pointer
                lda       <D.SysTsk           get source task #
                ldb       P$Task,x            get destination task #
                puls      x                   restore source pointer
                os9       F$Move              move 'em out!
-               ELSE
+               bra       p@
+               ENDC
 * System state
+ss@            
+               tfr       d,u                 and put source in U
                puls      x
 l@             lda       ,x+                 get byte at source and inc
                sta       ,u+                 save byte at dest and inc
                leay      -1,y                done?
                bne       l@                  branch if not
-               ENDC
-               puls      u                   restore our static pointer
+p@             puls      u                   restore our static pointer
                ldd       #$0100              assume successful write
                std       combuff+1,u
                bsr       _sendtohost
@@ -393,14 +425,14 @@ _sendtohost
                clrb                          B is now used for checksum
 n@             addb      ,x                  compute checksum
                lda       ,x+                 get byte from buffer and inc X
-               lbsr      llwrite             write it out
+               lbsr      iowrite             write it out
                dec       ,s                  decrement count on stack
                bne       n@                  if not zero, branch
                negb                          make 2's complement
 *	comb			make 2's complement
 *	incb			
                tfr       b,a                 put in A
-               lbsr      llwrite             write it
+               lbsr      iowrite             write it
                puls      b,pc                return
 
 
@@ -442,13 +474,13 @@ _readregs
                IFNE      H6309
 * All this code is necessary to get the value of MD
 * Note: bits 2-5 are unused
-               clrb
-               bitmd     #%00000001
-               beq       md1
-               incb                         set bit 0
-md1            bitmd     #%00000010
-               beq       md6
-               orb       #%00000010         set bit 1
+               ldb        <D.MDREG           get shadow register from sysglobs
+*               bitmd     #%00000001
+*               beq       md1
+*               incb                         set bit 0
+*md1            bitmd     #%00000010
+*               beq       md6
+*               orb       #%00000010         set bit 1
 md6            bitmd     #%01000000
                beq       md7
                orb       #%01000000
@@ -507,12 +539,12 @@ _writeregs
 * Note: because the only way to write to the MD register is via immediate mode,
 * we must build a "ldmd #XX; rts" instruction on the stack then execute it in order
 * to avoid "self modifying" code.
-               ldd       #$113D           "ldmd" instruction
-               std       -6,s
+*               ldd       #$113D           "ldmd" instruction
+*               std       -6,s
                lda       ,x+              MD register
-               ldb       #$39             "rts" instruction
-               std       -4,s
-               jsr       -6,s             call code on stack to modify MD
+*               ldb       #$39             "rts" instruction
+*               std       -4,s
+*               jsr       -6,s             call code on stack to modify MD
 
                ldd       ,x++
                exg       a,b
@@ -553,9 +585,9 @@ _B19200        EQU       $1F                 19200 bps, 8-N-1
 
 BAUD           EQU       _B9600
 
-* llinit - Initialize the low-level I/O
+* ioinit - Initialize the low-level I/O
 * Exit: Carry = 0: Init success; Carry = 1; Init failed
-llinit                   
+ioinit                   
                IFNE      MPI
                pshs      a
                lda       MPICTRL
@@ -583,13 +615,13 @@ llinit
                rts       
 
 
-* llread - Read one character from 6551
+* ioread - Read one character from 6551
 *
 * Entry: None
 * Exit:  A = character that was read
 *
 * Note, this routine currently doesn't timeout
-llread                   
+ioread                   
                IFNE      MPI
                lda       MPICTRL
                sta       slot,u
@@ -609,11 +641,11 @@ r@             lda       A_STATUS            get status byte
                rts       
                ENDC
 
-* llwrite - Write one character to 6551
+* iowrite - Write one character to 6551
 *
 * Entry: A = character to write
 * Exit:  None
-llwrite                  
+iowrite                  
                IFNE      MPI
                pshs      d
                ldb       MPICTRL
@@ -637,16 +669,16 @@ w@             lda       A_STATUS            get status byte
                ENDC
                rts       
 
-* llterm - Terminate
-*llterm		
+* ioterm - Terminate
+*ioterm		
 *	rts	
 
 
                IFNE      0
-* llwout - Write an entire string
-* llwerr - Write an entire string
-llwerr                   
-llwout                   
+* iowout - Write an entire string
+* iowerr - Write an entire string
+iowerr                   
+iowout                   
                pshs      a
 l@             lda       ,x+
                cmpa      #C$CR

@@ -7,22 +7,31 @@ CMD             = $(6809L1)/cmds
 BD              = ../../booters
 
 
-all:	calldbg krnp3_6309 krnp3_6809 krnp3_6309_mpi krnp3_6809_mpi
+all:	calldbg_l1 calldbg_l2 krnp3_6309 krnp3_6809 krnp3_6309_mpi krnp3_6809_mpi noice noice_mpi
 
-calldbg: calldbg.asm
-#	$(AS) $(ASOUT)$@ $<
+calldbg_l2: calldbg.asm
+	$(AS) $(ASOUT)$@ $< -aLevel=2 $(AFLAGS)
+
+calldbg_l1: calldbg.asm
+	$(AS) $(ASOUT)$@ $< -aLevel=1 $(AFLAGS)
 
 krnp3_6309: noice.asm
-	$(AS) $(ASOUT)$@ $< -aKRNMOD -aH6309 -e $(AFLAGS)
+	$(AS) $(ASOUT)$@ $< -aLevel=2 -aH6309 -e $(AFLAGS)
 
 krnp3_6309_mpi: noice.asm
-	$(AS) $(ASOUT)$@ $< -aKRNMOD -aH6309 -e $(AFLAGS) -aMPI=1
+	$(AS) $(ASOUT)$@ $< -aLevel=2 -aH6309 -e $(AFLAGS) -aMPI=1
 
 krnp3_6809: noice.asm
-	$(AS) $(ASOUT)$@ $< -aKRNMOD $(AFLAGS)
+	$(AS) $(ASOUT)$@ $< -aLevel=2 $(AFLAGS)
 
 krnp3_6809_mpi: noice.asm
-	$(AS) $(ASOUT)$@ $< -aKRNMOD $(AFLAGS) -aMPI=1
+	$(AS) $(ASOUT)$@ $< -aLevel=2 $(AFLAGS) -aMPI=1
+
+noice: noice.asm
+	$(AS) $(ASOUT)$@ $< -aLevel=1 $(AFLAGS)
+
+noice_mpi: noice.asm
+	$(AS) $(ASOUT)$@ $< -aLevel=1 $(AFLAGS) -aMPI=1
 
 clean:
-	$(RM) calldbg krnp3_6309 krnp3_6809 krnp3_6309_mpi krnp3_6809_mpi
+	$(RM) calldbg_l1 calldbg_l2 krnp3_6309 krnp3_6809 krnp3_6309_mpi krnp3_6809_mpi noice noice_mpi
