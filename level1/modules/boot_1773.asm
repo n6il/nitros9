@@ -25,9 +25,13 @@
 *
 *   7      2005/10/10  Boisy G. Pitre
 * Added fragmented bootfile support
+*
 *   7      2005/10/13  Robert Gault
 * Changed timing loops for H6309L2 so that code shortened enough to
 * fit within the $1D0 boundary.
+*
+*   8      2006/03/03  Boisy G. Pitre
+* Drive motors now turned off before returning to kernel.
 
          nam   Boot
          ttl   WD1773 Boot module
@@ -79,7 +83,7 @@ STEP     set   $00
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   7
+edition  set   8
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -154,6 +158,7 @@ L003A    nop             1 cycles
 *   Exit:  Carry Clear = OK, Set = Error
 *          B = error (Carry Set)
 HWTerm   clrb
+         stb   CONTROL,y        turn off all drive motors (BGP)
          rts
 
 
