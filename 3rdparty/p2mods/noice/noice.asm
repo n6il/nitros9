@@ -51,9 +51,8 @@ atrv           SET       ReEnt+rev
 rev            SET       $00
 edition        SET       3
 
-* If an MPI is being used, set RS232SLOT to slot value - 1 and set MPI to 1
-MPICTRL        EQU       $FF7F
-RS232SLOT      EQU       1            slot 2
+* If an MPI is being used, set DEVICESLOT to slot value - 1 and set MPI to 1
+DEVICESLOT     EQU       1            slot 2
 
 *MPI            EQU       1
 
@@ -124,7 +123,7 @@ start
                bcs       ex@
                stu       <D.DbgMem           save our allocated memory
 * clear the firsttime flag so that the first time we get
-* called at dbgent, we DON'T subtract the SWI from the PC.
+* called at dbgent, we DO NOT subtract the SWI from the PC.
                sta       firsttime,u         A = $01
                IFGT      Level-1
 * Level > 1: get next KrnP module going
@@ -590,10 +589,10 @@ BAUD           EQU       _B9600
 ioinit                   
                IFNE      MPI
                pshs      a
-               lda       MPICTRL
+               lda       MPI.Slct
                sta       slot,u
-               lda       #RS232SLOT
-               sta       MPICTRL
+               lda       #DEVICESLOT
+               sta       MPI.Slct
                puls      a
                ENDC
                sta       A_RESET             soft reset (value not important)
@@ -609,7 +608,7 @@ ioinit
                IFNE      MPI
                pshs      a
                lda       slot,u
-               sta       MPICTRL
+               sta       MPI.Slct
                puls      a
                ENDC
                rts       
@@ -623,9 +622,9 @@ ioinit
 * Note, this routine currently doesn't timeout
 ioread                   
                IFNE      MPI
-               lda       MPICTRL
+               lda       MPI.Slct
                sta       slot,u
-               lda       #RS232SLOT
+               lda       #DEVICESLOT
                sta       $FF7F
                ENDC
 r@             lda       A_STATUS            get status byte
@@ -635,7 +634,7 @@ r@             lda       A_STATUS            get status byte
                IFNE      MPI
                pshs      b
                ldb       slot,u
-               stb       MPICTRL
+               stb       MPI.Slct
                puls      b,pc
                ELSE
                rts       
@@ -648,10 +647,10 @@ r@             lda       A_STATUS            get status byte
 iowrite                  
                IFNE      MPI
                pshs      d
-               ldb       MPICTRL
+               ldb       MPI.Slct
                stb       slot,u
-               ldb       #RS232SLOT
-               stb       MPICTRL
+               ldb       #DEVICESLOT
+               stb       MPI.Slct
                ELSE
                pshs      a                   save byte to write
                ENDC
@@ -662,7 +661,7 @@ w@             lda       A_STATUS            get status byte
                puls      d                   get byte
                sta       A_TXD               save to ACIA data port
                lda       slot,u
-               sta       MPICTRL
+               sta       MPI.Slct
                ELSE
                puls      a                   get byte
                sta       A_TXD               save to ACIA data port
