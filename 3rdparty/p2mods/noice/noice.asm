@@ -34,6 +34,10 @@
 *   3      2006/03/02  Boisy G. Pitre
 * NoICE now displays user or system information in Level 2 with the
 * addition of a system state system call and the ssflag variable.
+*
+*   4      2006/03/04  Boisy G. Pitre
+* Memory now allocated upon first encounter of system call (for Level 1)
+* Now has been verified to work under Level 1.
 
                NAM       KrnP3     
                TTL       NoICE Serial Debugger for 6809/6309
@@ -49,7 +53,7 @@ tylg           SET       Prgrm+Objct
                ENDC      
 atrv           SET       ReEnt+rev
 rev            SET       $00
-edition        SET       3
+edition        SET       4
 
 * If an MPI is being used, set DEVICESLOT to slot value - 1 and set MPI to 1
 DEVICESLOT     EQU       1            slot 2
@@ -113,44 +117,64 @@ start
                IFEQ      Level-1
                leax      <name,pcr
                clra
-               os9       F$Link
+               os9       F$Link              link module into memory (Level 1)
                ENDC
                leay      svctabl,pcr
-               os9       F$SSvc
+               os9       F$SSvc              install F$Debug service
                bcs       ex@
+               IFEQ      Level-1
+* Level 1 allocates debug memory upon first invocation of debugger
+               clra
+               clrb
+               std       <D.DbgMem           set pointer to $0000 so it will be allocated later
+ex@            os9       F$Exit
+               ELSE
+* Level 2 allocates debug memory at system call install time
                ldd       #$0100
                os9       F$SRqMem            allocate memory
                bcs       ex@
                stu       <D.DbgMem           save our allocated memory
-* clear the firsttime flag so that the first time we get
-* called at dbgent, we DO NOT subtract the SWI from the PC.
-               sta       firsttime,u         A = $01
-               IFGT      Level-1
-* Level > 1: get next KrnP module going
+* Set the firsttime flag so that the first time we get
+* called at dbgent, we DON'T subtract the SWI from the PC.
+               sta       firsttime,u         A > $00
                lda       #tylg               get next module type (same as this one!)
                leax      <nextname,pcr       get address of next module name
                os9       F$Link              attempt to link to it
                bcs       ex@                 no good...skip this
                jsr       ,y                  else go execute it
 ex@            rts                           return
-               ELSE
-               clrb
-ex@            os9       F$Exit
                ENDC
+
 
 
 * Debugger Entry Point
 * 
 * We enter here when a process or the system makes an os9 F$Debug call.
-dbgent
-               ldx       <D.DbgMem           get pointer to our statics in X
-               IFGT      Level-1
+               IFEQ      Level-1
+ex             puls      u,pc
+
+dbgent         ldx       <D.DbgMem           get pointer to our statics in X
+               bne       gotmem
+* Level 1 must allocate memory in system state here
+               pshs      u
+               ldd       #$0100
+               os9       F$SRqMem            allocate memory
+               bcs       ex
+               stu       <D.DbgMem           save our allocated memory
+* Set the firsttime flag so that the first time we get
+* called at dbgent, we DON'T subtract the SWI from the PC.
+               sta       firsttime,u         A > $00
+               tfr       u,x
+               puls      u
+gotmem
+               ELSE
+* Level 2 must make distinction between user and system state
+dbgent         ldx       <D.DbgMem
                clra                          we aren't in system state
-               bra       dbg2@
+               bra       dbgcont
 dbgentss       ldx       <D.DbgMem
                lda       #$01
-dbg2@
-               sta       <ssflag,x
+dbgcont        sta       <ssflag,x
                ENDC
                stu       <callregs,x         save pointer to caller's regs
                exg       x,u                 exchange X and U

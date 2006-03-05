@@ -42,6 +42,7 @@ start
 
          os9   F$Debug		call debugger
 
+         ldy   #200
          leax  message2,pcr
          os9   I$WritLn
 
