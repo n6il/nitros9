@@ -121,9 +121,9 @@ F$SUser  rmb   1          Set User ID number ($1C)
 F$UnLoad rmb   1          Unlink Module by name ($1D)
 F$Alarm  rmb   1          Color Computer 3 Alarm Call ($1E)
          rmb   2          Reserved - For overlap of other systems ($1F)
-F$NMLink rmb   1          Color Computer 3 Non-Mapping Link ($20)
-F$NMLoad rmb   1          Color Computer 3 Non-Mapping Load ($21)
-F$Debug  rmb   1          Drop the system into the debugger ($22)
+F$NMLink rmb   1          Color Computer 3 Non-Mapping Link ($21)
+F$NMLoad rmb   1          Color Computer 3 Non-Mapping Load ($22)
+F$Debug  rmb   1          Drop the system into the debugger ($23)
          org   $25
 F$TPS    rmb   1          Return System's Ticks Per Second
 F$TimAlm rmb   1          CoCo individual process alarm call
@@ -131,8 +131,8 @@ F$TimAlm rmb   1          CoCo individual process alarm call
          ELSE
 
 * NitrOS-9 Level 1 system calls
-         rmb   10         Padded so F$Debug can match on Level 1/2
-F$Debug  rmb   1          Drop the system into the debugger ($22)
+         rmb   11         Padded so F$Debug can match on Level 1/2
+F$Debug  rmb   1          Drop the system into the debugger ($23)
 
          ENDC
 
