@@ -15,6 +15,8 @@
 *               |        Free Memory Bitmap        |
 *  $0200-$021F  |     (1 bit = 256 byte page)      |
 *               |----------------------------------|
+*  $0220-$0221  |      IOMan I/O Call Pointer      |
+*               |----------------------------------|
 *               |      System Dispatch Table       |
 *  $0222-$0291  |     (Room for 56 addresses)      |
 *               |----------------------------------|
@@ -65,7 +67,7 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   15
 
-L0000    mod   eom,name,tylg,atrv,OS9Cold,size
+ModTop   mod   eom,name,tylg,atrv,OS9Cold,size
 
 size     equ   .
 
@@ -99,52 +101,36 @@ VectCSz  equ   *-VectCode
 
 SysTbl   fcb   F$Link
          fdb   FLink-*-2
-
          fcb   F$Fork
          fdb   FFork-*-2
-
          fcb   F$Chain
          fdb   FChain-*-2
-
          fcb   F$Chain+$80
          fdb   SFChain-*-2
-
          fcb   F$PrsNam
          fdb   FPrsNam-*-2
-
          fcb   F$CmpNam
          fdb   FCmpNam-*-2
-
          fcb   F$SchBit
          fdb   FSchBit-*-2
-
          fcb   F$AllBit
          fdb   FAllBit-*-2
-
          fcb   F$DelBit
          fdb   FDelBit-*-2
-
          fcb   F$CRC
          fdb   FCRC-*-2
-
          fcb   F$SRqMem+$80
          fdb   FSRqMem-*-2
-
          fcb   F$SRtMem+$80
          fdb   FSRtMem-*-2
-
          fcb   F$AProc+$80
          fdb   FAProc-*-2
-
          fcb   F$NProc+$80
          fdb   FNProc-*-2
-
          fcb   F$VModul+$80
          fdb   FVModul-*-2
-
          fcb   F$SSvc
          fdb   FSSvc-*-2
-
          fcb   $80
 
          IFNE  H6309
@@ -242,13 +228,13 @@ L00EC    cmpx  #Bt.Start+Bt.Size
          bcs   L00DB
 * Copy vectors to system globals
 L00EE    leay  >Vectors,pcr
-         leax  >L0000,pcr
+         leax  >ModTop,pcr
          pshs  x
          ldx   #D.SWI3
 L00FB    ldd   ,y++
          addd  ,s
          std   ,x++
-         cmpx  #$0036
+         cmpx  #D.NMI
          bls   L00FB
          leas  2,s                     restore stack
 
@@ -300,12 +286,13 @@ L0158    ldx   <D.FMBM
          negb
          lbsr  L065A
 
-* jump into OS9p2 here
+* jump into krnp2 here
          leax  >P2Nam,pcr
          lda   #Systm+Objct
          os9   F$Link
          lbcs  OS9Cold
          jmp   ,y
+
 SWI3     pshs  pc,x,b
          ldb   #P$SWI3
          bra   L018C
@@ -325,17 +312,17 @@ UsrIRQ   leay  <L01B1,pcr
 * transition from user to system state
 URtoSs   clra
          tfr   a,dp                    clear direct page
-         ldx   <D.Proc
-         ldd   <D.SysSvc
-         std   <D.SWI2
-         ldd   <D.SysIRQ
-         std   <D.SvcIRQ
-         leau  ,s
-         stu   P$SP,x
-         lda   P$State,x
-         ora   #SysState
-         sta   P$State,x
-         jmp   ,y
+         ldx   <D.Proc                 get current process desc
+         ldd   <D.SysSvc               get system state system call vector
+         std   <D.SWI2                 store in D.SWI2
+         ldd   <D.SysIRQ               get system IRQ vector
+         std   <D.SvcIRQ               store in D.SvcIRQ
+         leau  ,s                      point U to S
+         stu   P$SP,x                  and save in process P$SP
+         lda   P$State,x               get state field in proc desc
+         ora   #SysState               mark process to be in system state
+         sta   P$State,x               store it
+         jmp   ,y                      jump to ,y
 
 L01B1    jsr   [>D.Poll]
          bcc   L01BD
@@ -468,44 +455,48 @@ L023F    stu   P$Queue,x
          puls  pc,u,y				restore U/Y and return
 
 
+* User-State system call entry point
 UsrSvc   leay  <L024E,pcr
          orcc  #IntMasks
          lbra  URtoSs
 
 L024E    andcc #^IntMasks
          ldy   <D.UsrDis
-         bsr   L0278
+         bsr   DoSysCall
 L0255    ldx   <D.Proc                 get current proc desc
          beq   FNProc                  branch to FNProc if none
-         orcc  #IntMasks
-         ldb   P$State,x
-         andb  #^SysState
-         stb   P$State,x
-         bitb  #TimOut
-         beq   L02D1
-         andb  #^TimOut
-         stb   P$State,x
+         orcc  #IntMasks               mask interrupts
+         ldb   P$State,x               get state value in proc desc
+         andb  #^SysState              turn off system state flag
+         stb   P$State,x               save state value
+         bitb  #TimOut                 timeout bit set?
+         beq   L02D1                   branch if not
+         andb  #^TimOut                else turn off bit
+         stb   P$State,x               in state value
          bsr   L021A
          bra   FNProc
 
-* system call entry
+* System-State system call entry point
 SysSvc   clra
          tfr   a,dp                    set direct page to 0
-         leau  ,s
-         ldy   <D.SysDis
-         bsr   L0278
+         leau  ,s                      point U to SP
+         ldy   <D.SysDis               get system state dispatch table ptr
+         bsr   DoSysCall
          rti
 
-L0278    pshs  u
+* Entry: Y = Dispatch table (user or system)
+DoSysCall
+         pshs  u
          ldx   R$PC,u                  point X to PC
          ldb   ,x+                     get func code at X
          stx   R$PC,u                  restore updated PC
-         lslb                          multiply by 2
-         bcc   L0288                   branch if user call
-         rorb
-         ldx   -2,y
+         lslb                          high bit set?
+         bcc   L0288                   branch if not (non I/O call)
+         rorb                          else restore B (its an I/O call)
+         ldx   -2,y                    grab IOMan vector
+* Note: should check if X is zero in case IOMan was not installed.
          bra   L0290
-L0288    cmpb  #$6E
+L0288    cmpb  #$37*2
          bcc   L02A7
          ldx   b,y                     X = addr of system call
          beq   L02A7
@@ -1185,13 +1176,13 @@ L073B    leas  $05,s
 *L07C9    andcc #^Carry
 *         rts
 
-FSSvc    ldy   R$Y,u
-         bra   InstSSvc
+FSSvc    ldy   R$Y,u                   get caller's Y
+         bra   InstSSvc                install the service
 SSvcLoop tfr   b,a                     put syscall code in A
          anda  #$7F                    kill hi bit
          cmpa  #$7F                    is code $7F?
          beq   SSvcOK
-         cmpa  #$37			compare against highest call allowed
+         cmpa  #$37                    compare against highest call allowed
          bcs   SSvcOK                  branch if A less than highest call
          comb
          ldb   #E$ISWI
@@ -1213,12 +1204,11 @@ InstSSvc ldb   ,y+                     get system call code in B
 eom      equ   *
 
          fdb   Clock
-Vectors  fdb   SWI3			SWI3 
-         fdb   SWI2 			SWI2
-         fdb   DUMMY			FIRQ
-         fdb   SVCIRQ			IRQ
-         fdb   SWI			SWI
-         fdb   DUMMY			NMI
+Vectors  fdb   SWI3                    SWI3 
+         fdb   SWI2                    SWI2
+         fdb   DUMMY                   FIRQ
+         fdb   SVCIRQ                  IRQ
+         fdb   SWI                     SWI
+         fdb   DUMMY                   NMI
 
          end
-
