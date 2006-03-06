@@ -81,6 +81,7 @@ cbsize         EQU       200
 callregs       RMB       2
 firsttime      RMB       1
                IFGT      Level-1
+syssp          RMB       2
 ssflag         RMB       1
                ENDC
                IFNE      MPI
@@ -173,6 +174,16 @@ dbgent         ldx       <D.DbgMem
                clra                          we aren't in system state
                bra       dbgcont
 dbgentss       ldx       <D.DbgMem
+
+* Interesting trick here... I cannot see where the kernel stores the stack
+* register when processing a system call in system state.  I observed that
+* the actual value of S was $15 bytes from where S is when entering the
+* system call.  We'll see how this holds up during system state debugging,
+* and whether changes to the kernel will affect this offset.
+               leas      $15,s
+               sts       <syssp,x
+               leas      -$15,s
+               
                lda       #$01
 dbgcont        sta       <ssflag,x
                ENDC
@@ -522,9 +533,15 @@ tfrmd          stb       ,x+                 MD
                ldd       R$PC,y
                exg       a,b
                std       ,x                  PC
-               ldy       <D.Proc             get SP from proc desc
+               IFGT      Level-1
+               tst       <ssflag,u           system state?
+               beq       us@
+               ldd       <syssp,u
+               bra       cmn@
+               ENDC
+us@            ldy       <D.Proc             get SP from proc desc
                ldd       P$SP,y
-               exg       a,b
+cmn@           exg       a,b
                std       combuff+4,u
                lbsr      _sendtohost
                lbra      mainloop
@@ -579,9 +596,15 @@ _writeregs
                std       R$PC,y
                ldd       combuff+4,u
                exg       a,b
-               ldy       <D.Proc
+               IFGT      Level-1
+               tst       <ssflag,u
+               beq       us@
+               std       <syssp,u
+               bra       cmn@
+               ENDC
+us@            ldy       <D.Proc
                std       P$SP,y
-               ldd       #$0100
+cmn@           ldd       #$0100
                std       combuff+1,u
                lbsr      _sendtohost
                lbra      mainloop
