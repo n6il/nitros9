@@ -39,6 +39,10 @@
 * an infinite loop.  The problem was that IOMan clears the static
 * storage of a device whose use count has reached zero (in the
 * case of a hard detach).  See Note below.
+*
+*   1      2006/03/04  Boisy G. Pitre
+* Added detection of CTRL-ALT-BREAK to invoke system debugger.
+* Renamed to VTIO and reset edition to 1.
 
          nam   VTIO
          ttl   Video Terminal I/O Driver for CoCo 3
@@ -52,7 +56,7 @@
 tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
 rev      set   0
-edition  set   27
+edition  set   1
 
 * Comment out next line for global keyboard mouse; otherwise, it's on/off
 * on a per-window basis.
@@ -387,7 +391,7 @@ L01CD    std   ,s		save key count & key
          bsr   L0170		check X coordinate
          leay  $02,y		move to Y coordinate
          ldd   #MaxLine		get maximum Y coordinate
-         bsr   L0170		check it
+         lbsr  L0170		check it
 L01DF    lda   <G.KyButt,u	key button down?
          bne   L0223		yes, return
          lda   ,s		get back character read
@@ -718,7 +722,16 @@ L03A8    lda   <G.KyButt,u
          bpl   L03C8			branch if valid char received
          clr   <G.LastCh,u		else clear last character var
          lbra  L044E
-L03C8    cmpa  <G.LastCh,u	is current ASCII code same as last one pressed?
+L03C8
+*** Inserted detection of debugger invocation key sequence here...
+         cmpa  #$9B             CTRL+ALT+BREAK?
+         bne   n@               no, move on
+         jsr   [>WGlobal+G.BelVec]	for whom the bell tolls...
+         os9   F$Debug
+         lbra  L044E
+n@
+***
+         cmpa  <G.LastCh,u	is current ASCII code same as last one pressed?
          bne   L03DF		no, no keyboard repeat, skip ahead
          ldb   <G.KyRept,u	get repeat delay constant
          beq   L044E		if keyboard repeat shut off, skip repeat code
