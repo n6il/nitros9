@@ -36,8 +36,11 @@
 * addition of a system state system call and the ssflag variable.
 *
 *   4      2006/03/04  Boisy G. Pitre
-* Memory now allocated upon first encounter of system call (for Level 1)
-* Now has been verified to work under Level 1.
+* Memory now allocated upon first encounter of system call.
+*
+*   5      2006/03/05  Boisy G. Pitre
+* User and system call entry points for F$Debug now part of both
+* NitrOS-9 Level 1 and Level 2.
 
                NAM       KrnP3     
                TTL       NoICE Serial Debugger for 6809/6309
@@ -53,7 +56,7 @@ tylg           SET       Prgrm+Objct
                ENDC      
 atrv           SET       ReEnt+rev
 rev            SET       $00
-edition        SET       4
+edition        SET       5
 
 * If an MPI is being used, set DEVICESLOT to slot value - 1 and set MPI to 1
 DEVICESLOT     EQU       1            slot 2
@@ -80,10 +83,8 @@ cbsize         EQU       200
                ORG       0
 callregs       RMB       2
 firsttime      RMB       1
-               IFGT      Level-1
 syssp          RMB       2
 ssflag         RMB       1
-               ENDC
                IFNE      MPI
 slot           RMB       1
                ENDC
@@ -102,16 +103,14 @@ name           EQU       *
                FCB       edition
 
                IFGT      Level-1
-nextname       FCC       /krnp4/             next module name to link to
+nextname       FCC       /KrnP4/             next module name to link to
                FCB       C$CR
                ENDC
 
 svctabl        FCB       F$Debug
                FDB       dbgent-*-2
-               IFGT      Level-1
                FCB       F$Debug+$80
                FDB       dbgentss-*-2
-               ENDC
                FCB       $80
 
 start                    
@@ -123,21 +122,12 @@ start
                leay      svctabl,pcr
                os9       F$SSvc              install F$Debug service
                bcs       ex@
-               IFEQ      Level-1
-* Level 1 allocates debug memory upon first invocation of debugger
                clra
                clrb
                std       <D.DbgMem           set pointer to $0000 so it will be allocated later
+               IFEQ      Level-1
 ex@            os9       F$Exit
                ELSE
-* Level 2 allocates debug memory at system call install time
-               ldd       #$0100
-               os9       F$SRqMem            allocate memory
-               bcs       ex@
-               stu       <D.DbgMem           save our allocated memory
-* Set the firsttime flag so that the first time we get
-* called at dbgent, we DON'T subtract the SWI from the PC.
-               sta       firsttime,u         A > $00
                lda       #tylg               get next module type (same as this one!)
                leax      <nextname,pcr       get address of next module name
                os9       F$Link              attempt to link to it
@@ -148,45 +138,49 @@ ex@            rts                           return
 
 
 
-* Debugger Entry Point
-* 
-* We enter here when a process or the system makes an os9 F$Debug call.
-               IFEQ      Level-1
-ex             puls      u,pc
-
-dbgent         ldx       <D.DbgMem           get pointer to our statics in X
-               bne       gotmem
-* Level 1 must allocate memory in system state here
-               pshs      u
+* Called to get debugger memory
+getmem         pshs      u
+               ldx       <D.DbgMem           get pointer to our statics in X
+               bne       retok
                ldd       #$0100
                os9       F$SRqMem            allocate memory
-               bcs       ex
+               bcs       ret
                stu       <D.DbgMem           save our allocated memory
 * Set the firsttime flag so that the first time we get
 * called at dbgent, we DON'T subtract the SWI from the PC.
                sta       firsttime,u         A > $00
                tfr       u,x
-               puls      u
-gotmem
-               ELSE
-* Level 2 must make distinction between user and system state
-dbgent         ldx       <D.DbgMem
-               clra                          we aren't in system state
-               bra       dbgcont
-dbgentss       ldx       <D.DbgMem
+retok          clrb
+ret            puls      u,pc
+
+* User State Debugger Entry Point
+* 
+* We enter here when a process or the system makes an os9 F$Debug call from
+* user state.
+dbgent         bsr       getmem
+               bcc       dbgentok
+exit           rts
+dbgentok       clra
+               bra       dostack
+
+* System State Debugger Entry Point
+* 
+* We enter here when a process or the system makes an os9 F$Debug call from
+* system state.
+dbgentss       bsr       getmem
+               bcs       exit
+               lda       #$01
 
 * Interesting trick here... I cannot see where the kernel stores the stack
 * register when processing a system call in system state.  I observed that
 * the actual value of S was $15 bytes from where S is when entering the
 * system call.  We'll see how this holds up during system state debugging,
 * and whether changes to the kernel will affect this offset.
-               leas      $15,s
+dostack        leas      $15,s
                sts       <syssp,x
                leas      -$15,s
                
-               lda       #$01
-dbgcont        sta       <ssflag,x
-               ENDC
+               sta       <ssflag,x
                stu       <callregs,x         save pointer to caller's regs
                exg       x,u                 exchange X and U
 * If this is a breakpoint (state = 1) then back up PC to point at SWI2
@@ -347,8 +341,6 @@ _readmem
                bne       ss@
 * User state
                ldx       <D.Proc             get current process pointer
-*               cmpx      <D.SysPrc           same as system process?
-*               beq       copysys
                lda       P$Task,x            get source task #
                ldb       <D.SysTsk           get destination task #
                puls      x                   restore source pointer
@@ -533,12 +525,10 @@ tfrmd          stb       ,x+                 MD
                ldd       R$PC,y
                exg       a,b
                std       ,x                  PC
-               IFGT      Level-1
                tst       <ssflag,u           system state?
                beq       us@
                ldd       <syssp,u
                bra       cmn@
-               ENDC
 us@            ldy       <D.Proc             get SP from proc desc
                ldd       P$SP,y
 cmn@           exg       a,b
@@ -596,12 +586,10 @@ _writeregs
                std       R$PC,y
                ldd       combuff+4,u
                exg       a,b
-               IFGT      Level-1
                tst       <ssflag,u
                beq       us@
                std       <syssp,u
                bra       cmn@
-               ENDC
 us@            ldy       <D.Proc
                std       P$SP,y
 cmn@           ldd       #$0100
