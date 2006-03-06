@@ -123,16 +123,21 @@ F$Alarm  rmb   1          Color Computer 3 Alarm Call ($1E)
          rmb   2          Reserved - For overlap of other systems ($1F)
 F$NMLink rmb   1          Color Computer 3 Non-Mapping Link ($21)
 F$NMLoad rmb   1          Color Computer 3 Non-Mapping Load ($22)
-F$Debug  rmb   1          Drop the system into the debugger ($23)
-         org   $25
-F$TPS    rmb   1          Return System's Ticks Per Second
-F$TimAlm rmb   1          CoCo individual process alarm call
 
          ELSE
 
-* NitrOS-9 Level 1 system calls
-         rmb   11         Padded so F$Debug can match on Level 1/2
+* NitrOS-9 Level 1 system call padding
+         rmb   11
+         
+         ENDC
+         
 F$Debug  rmb   1          Drop the system into the debugger ($23)
+
+         IFGT  Level-1
+         
+         org   $25
+F$TPS    rmb   1          Return System's Ticks Per Second
+F$TimAlm rmb   1          CoCo individual process alarm call
 
          ENDC
 
