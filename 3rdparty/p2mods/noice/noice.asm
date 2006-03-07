@@ -115,7 +115,7 @@ svctabl        FCB       F$Debug
 
 start                    
                IFEQ      Level-1
-               leax      <name,pcr
+               leax      name,pcr
                clra
                os9       F$Link              link module into memory (Level 1)
                ENDC
@@ -124,12 +124,12 @@ start
                bcs       ex@
                clra
                clrb
-               std       <D.DbgMem           set pointer to $0000 so it will be allocated later
+               std       >D.DbgMem           set pointer to $0000 so it will be allocated later
                IFEQ      Level-1
 ex@            os9       F$Exit
                ELSE
                lda       #tylg               get next module type (same as this one!)
-               leax      <nextname,pcr       get address of next module name
+               leax      nextname,pcr       get address of next module name
                os9       F$Link              attempt to link to it
                bcs       ex@                 no good...skip this
                jsr       ,y                  else go execute it
@@ -139,8 +139,8 @@ ex@            rts                           return
 
 
 * Called to get debugger memory
-getmem         pshs      u
-               ldx       <D.DbgMem           get pointer to our statics in X
+getmem         tfr       u,x                 put regs ptr in X
+               ldu       <D.DbgMem           get pointer to our statics in X
                bne       retok
                ldd       #$0100
                os9       F$SRqMem            allocate memory
@@ -148,41 +148,38 @@ getmem         pshs      u
                stu       <D.DbgMem           save our allocated memory
 * Set the firsttime flag so that the first time we get
 * called at dbgent, we DON'T subtract the SWI from the PC.
-               sta       firsttime,u         A > $00
-               tfr       u,x
-retok          clrb
-ret            puls      u,pc
+               sta       firsttime,u        A > $00
+retok          stx       callregs,u         save pointer to caller's regs
+               clrb
+ret            rts
+
 
 * User State Debugger Entry Point
 * 
 * We enter here when a process or the system makes an os9 F$Debug call from
 * user state.
 dbgent         bsr       getmem
-               bcc       dbgentok
-exit           rts
-dbgentok       clra
-               bra       dostack
+               bcs       ret
+               clra
+               bra       usernext
 
 * System State Debugger Entry Point
 * 
 * We enter here when a process or the system makes an os9 F$Debug call from
 * system state.
 dbgentss       bsr       getmem
-               bcs       exit
+               bcs       ret
                lda       #$01
-
 * Interesting trick here... I cannot see where the kernel stores the stack
 * register when processing a system call in system state.  I observed that
 * the actual value of S was $15 bytes from where S is when entering the
 * system call.  We'll see how this holds up during system state debugging,
 * and whether changes to the kernel will affect this offset.
-dostack        leas      $15,s
-               sts       <syssp,x
+               leas      $15,s
+               sts       syssp,u
                leas      -$15,s
                
-               sta       <ssflag,x
-               stu       <callregs,x         save pointer to caller's regs
-               exg       x,u                 exchange X and U
+usernext       sta       ssflag,u
 * If this is a breakpoint (state = 1) then back up PC to point at SWI2
                tst       firsttime,u
                bne       notbp
@@ -287,7 +284,7 @@ sb1            pshs      b                   save loop counter
                pshs      u,a                 save byte spot for later and "next" ptr
                IFGT      Level-1
                ldu       4,s                 get original U
-               tst       <ssflag,u
+               tst       ssflag,u
                bne       ss@
                ldu       <D.Proc
                ldb       P$Task,u
@@ -337,7 +334,7 @@ _readmem
                pshs      u,x                 save source pointer
                leau      combuff+2,u         point U to destination
                IFGT      Level-1
-               tst       <ssflag-combuff-2,u
+               tst       ssflag-combuff-2,u
                bne       ss@
 * User state
                ldx       <D.Proc             get current process pointer
@@ -369,7 +366,7 @@ _writemem
                exg       a,b                 byte swap!
                pshs      u,x                 save on stack
                IFGT      Level-1
-               tst       <ssflag,u
+               tst       ssflag,u
                bne       ss@
 * User state
                tfr       d,u                 and put source in U
@@ -525,9 +522,9 @@ tfrmd          stb       ,x+                 MD
                ldd       R$PC,y
                exg       a,b
                std       ,x                  PC
-               tst       <ssflag,u           system state?
+               tst       ssflag,u           system state?
                beq       us@
-               ldd       <syssp,u
+               ldd       syssp,u
                bra       cmn@
 us@            ldy       <D.Proc             get SP from proc desc
                ldd       P$SP,y
@@ -586,9 +583,9 @@ _writeregs
                std       R$PC,y
                ldd       combuff+4,u
                exg       a,b
-               tst       <ssflag,u
+               tst       ssflag,u
                beq       us@
-               std       <syssp,u
+               std       syssp,u
                bra       cmn@
 us@            ldy       <D.Proc
                std       P$SP,y
