@@ -9,18 +9,20 @@
 * in a May 1983, BYTE article by Terry Barron and
 * George Diehr (both at University of Washington)
 *
-* Edt/Rev YYYY/MM/DD Modified by
+* Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * -------------------------------------------------------------
-* 1       2005/12/19 Robert Gault
+*   1      2005/12/19  Robert Gault
 * Very fast and fairly simple
-* 2       2005/12/20 Robert Gault
+*
+*   2      2005/12/20  Robert Gault
 * Minor change of use /dd/defs/defsfile to use defsfile. The first
 * was for my OS-9 system. The current one is for the NitrOS-9
 * project.
 
                NAM       dirsort
-* This ensures the assembler knows predefined OS-9 terms
+               TTL       Directory sorting utility
+
                IFP1      
                USE       defsfile
                ENDC      
