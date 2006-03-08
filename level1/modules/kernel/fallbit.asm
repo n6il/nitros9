@@ -1,8 +1,21 @@
-FAllBit  ldd   R$D,u
-         leau  R$X,u
+**************************************************
+* System Call: F$AllBit
+*
+* Function: Sets bits in an allocation bitmap
+*
+* Input:  X = Address of allocation bitmap
+*         D = Number of first bit to set
+*         Y = Bit count (number of bits to set)
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
+FAllBit  ldd   R$D,u        get bit # to start with
+         leau  R$X,u        get address of allocation bit map
          pulu  y,x
 L065A    pshs  y,x,b,a
-         bsr   L0690
+         bsr   CalcBit      calculate byte & position & get first bit mask
          tsta
          pshs  a
          bmi   L0671
@@ -30,7 +43,21 @@ L0689    sta   ,x
          clra
          leas  1,s
          puls  pc,y,x,b,a
-L0690    pshs  b
+
+* Calculate address of first byte we want, and which bit in that byte, from
+*   a bit allocation map given the address of the map & the bit # we want to
+*   point to
+* Entry: D=Bit #
+*        X=Ptr to bit mask table
+* Exit:  A=Mask to point to bit # within byte we are starting on
+*        X=Ptr in allocation map to first byte we are starting on
+CalcBit  pshs  b
+         IFNE  H6309
+         lsrd               divide bit # by 8 to calculate byte # to start
+         lsrd               allocating at
+         lsrd
+         addr  d,x          offset that far into the map
+         ELSE
          lsra
          rorb
          lsra
@@ -38,20 +65,35 @@ L0690    pshs  b
          lsra
          rorb
          leax  d,x
+         ENDC
          puls  b
          lda   #$80
-         andb  #$07
+         andb  #$07           round it down to nearest bit
          beq   L06A6
 L06A2    lsra
          decb
          bne   L06A2
 L06A6    rts
 
-FDelBit  ldd   R$D,u
-         leau  R$X,u
+
+**************************************************
+* System Call: F$DelBit
+*
+* Function: Clears bits in an allocation bitmap
+*
+* Input:  X = Address of allocation bitmap
+*         D = Number of first bit to clear
+*         Y = Bit count (number of bits to clear)
+*
+* Output: None
+*
+* Error:  CC = C bit set; B = error code
+*
+FDelBit  ldd   R$D,u        get bit # to start with
+         leau  R$X,u        get addr. of bit allocation map
          pulu  y,x
 L06AD    pshs  y,x,b,a
-         bsr   L0690
+         bsr   CalcBit
          coma
          pshs  a
          bpl   L06C4
@@ -77,11 +119,27 @@ L06D8    sta   ,x
          clr   ,s+
          puls  pc,y,x,b,a
 
+
+**************************************************
+* System Call: F$SchBit
+*
+* Function: Search bitmap for a free area
+*
+* Input:  X = Address of allocation bitmap
+*         D = Starting bit number
+*         Y = Bit count (free bit block size)
+*         U = Address of end of allocation bitmap
+*
+* Output: D = Beginning bit number
+*         Y = Bit count
+*
+* Error:  CC = C bit set; B = error code
+*
 FSchBit  pshs  u
-         ldd   R$D,u
-         ldx   R$X,u
-         ldy   R$Y,u
-         ldu   R$U,u
+         ldd   R$D,u        get start bit #
+         ldx   R$X,u        get addr. of allocation bitmap
+         ldy   R$Y,u        get bit count
+         ldu   R$U,u        get address of end of allocation bitmap
          bsr   L06F3
          puls  u
          std   R$D,u
@@ -92,7 +150,7 @@ L06F3    pshs  u,y,x,b,a
          clr   8,s
          clr   9,s
          tfr   d,y
-         bsr   L0690
+         bsr   CalcBit
          pshs  a
          bra   L0710
 L0703    leay  $01,y
