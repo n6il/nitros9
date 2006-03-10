@@ -172,12 +172,17 @@ dbgentss       bsr       getmem
                lda       #$01
 * Interesting trick here... I cannot see where the kernel stores the stack
 * register when processing a system call in system state.  I observed that
-* the actual value of S was $15 bytes from where S is when entering the
+* the actual value of S was some constant from where S is when entering the
 * system call.  We'll see how this holds up during system state debugging,
 * and whether changes to the kernel will affect this offset.
-               leas      $15,s
+               IFEQ      Level-1
+stackoff       equ       $12
+               ELSE
+stackoff       equ       $15
+               ENDC
+               leas      stackoff,s
                sts       syssp,u
-               leas      -$15,s
+               leas      -stackoff,s
                
 usernext       sta       ssflag,u
 * If this is a breakpoint (state = 1) then back up PC to point at SWI2
