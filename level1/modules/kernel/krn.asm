@@ -105,7 +105,7 @@ SysTbl   fcb   F$Link
          fdb   FFork-*-2
          fcb   F$Chain
          fdb   FChain-*-2
-         fcb   F$Chain+$80
+         fcb   F$Chain+SysState
          fdb   SFChain-*-2
          fcb   F$PrsNam
          fdb   FPrsNam-*-2
@@ -119,15 +119,15 @@ SysTbl   fcb   F$Link
          fdb   FDelBit-*-2
          fcb   F$CRC
          fdb   FCRC-*-2
-         fcb   F$SRqMem+$80
+         fcb   F$SRqMem+SysState
          fdb   FSRqMem-*-2
-         fcb   F$SRtMem+$80
+         fcb   F$SRtMem+SysState
          fdb   FSRtMem-*-2
-         fcb   F$AProc+$80
+         fcb   F$AProc+SysState
          fdb   FAProc-*-2
-         fcb   F$NProc+$80
+         fcb   F$NProc+SysState
          fdb   FNProc-*-2
-         fcb   F$VModul+$80
+         fcb   F$VModul+SysState
          fdb   FVModul-*-2
          fcb   F$SSvc
          fdb   FSSvc-*-2
