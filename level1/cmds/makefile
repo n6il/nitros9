@@ -52,7 +52,7 @@ pxd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPXD=1
 	
 cobbler_dragon: cobbler.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)cobbler -aDRAGON=1
+	$(AS) $(AFLAGS) $< $(ASOUT)cobbler_dragon -aDRAGON=1
 
 clean:
 	$(RM) $(ALLOBJS)
