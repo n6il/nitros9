@@ -1,6 +1,6 @@
-         IFNE  SYSTYPE-1
+               IFNE      SYSTYPE-1
 
-SYSTYPE  set   1
+SYSTYPE        SET       1
 
 ********************************************************************
 * SysType - NitrOS-9 System Specific Definitions
@@ -32,110 +32,110 @@ SYSTYPE  set   1
 *          2004/07/18  Boisy G. Pitre
 * Moved CoCo 3 Window stuff into cc3iodefs
 
-         nam   SysType
-         IFEQ  Level-1
-         ttl   NitrOS-9 Level 1 System Type Definitions
-         ELSE
-         IFEQ  Level-2
-         ttl   NitrOS-9 Level 2 System Type Definitions
-         ENDC
-         IFEQ  Level-3
-         ttl   NitrOS-9 Level 3 System Type Definitions
-         ENDC
-         ENDC
+               NAM       SysType
+               IFEQ      Level-1
+               TTL       NitrOS-9 Level 1 System Type Definitions
+               ELSE      
+               IFEQ      Level-2
+               TTL       NitrOS-9 Level 2 System Type Definitions
+               ENDC      
+               IFEQ      Level-3
+               TTL       NitrOS-9 Level 3 System Type Definitions
+               ENDC      
+               ENDC      
 
 
 **********************
 * CPU Type Definitions
 *
-Color    set   1
-Color3   set   2
-         IFEQ  Level-1
-CPUType  set   Color
-         ELSE
-CPUType  set   Color3
-         ENDC
+Color          SET       1
+Color3         SET       2
+               IFEQ      Level-1
+CPUType        SET       Color
+               ELSE      
+CPUType        SET       Color3
+               ENDC      
 
 
 ******************************
 * Clock Speed Type Definitions
 *
-OneMHz   equ   1
-TwoMHz   equ   2
-         IFEQ  CPUType-Color
-CPUSpeed set   OneMHz
-         ELSE
-CPUSpeed set   TwoMHz
-         ENDC
+OneMHz         EQU       1
+TwoMHz         EQU       2
+               IFEQ      CPUType-Color
+CPUSpeed       SET       OneMHz
+               ELSE      
+CPUSpeed       SET       TwoMHz
+               ENDC      
 
 
 **********************************
 * Power Line Frequency Definitions
 *
-Hz50     equ   1          Assemble clock for 50 hz power
-Hz60     equ   2          Assemble clock for 60 hz power
-PwrLnFrq set   Hz60       Set to Appropriate freq
+Hz50           EQU       1                   Assemble clock for 50 hz power
+Hz60           EQU       2                   Assemble clock for 60 hz power
+PwrLnFrq       SET       Hz60                Set to Appropriate freq
 
 
 **********************************
 * Ticks per second
 *
-         IFEQ  PwrLnFrq-Hz50
-TkPerSec set   50
-         ELSE
-TkPerSec set   60
-         ENDC
+               IFEQ      PwrLnFrq-Hz50
+TkPerSec       SET       50
+               ELSE      
+TkPerSec       SET       60
+               ENDC      
 
 
 ******************
 * ACIA type set up
 *
-         org   1
-ACIA6850 rmb   1          MC6850 acia.
-ACIA6551 rmb   1          SY6551 acia.
-ACIA2661 rmb   1          SC2661 acia.
-ACIATYPE set   ACIA6551
+               ORG       1
+ACIA6850       RMB       1                   MC6850 acia.
+ACIA6551       RMB       1                   SY6551 acia.
+ACIA2661       RMB       1                   SC2661 acia.
+ACIATYPE       SET       ACIA6551
 
 
 ****************************************
 * Special character Bit position equates
 *
-SHIFTBIT equ   %00000001
-CNTRLBIT equ   %00000010
-ALTERBIT equ   %00000100
-UPBIT    equ   %00001000
-DOWNBIT  equ   %00010000
-LEFTBIT  equ   %00100000
-RIGHTBIT equ   %01000000
-SPACEBIT equ   %10000000
+SHIFTBIT       EQU       %00000001
+CNTRLBIT       EQU       %00000010
+ALTERBIT       EQU       %00000100
+UPBIT          EQU       %00001000
+DOWNBIT        EQU       %00010000
+LEFTBIT        EQU       %00100000
+RIGHTBIT       EQU       %01000000
+SPACEBIT       EQU       %10000000
 
 
 ******************
 * Device addresses for miscellaneous hardware
 *
-A.AciaP  set   $FF68      Aciapak Address
-A.ModP   set   $FF6C      ModPak Address
-DPort    set   $FF40      Disk controller base address
-MPI.Slct set   $FF7F      Multi-Pak slot select
-MPI.Slot set   $03        Multi-Pak default slot
-PIA0Base equ   $FF00
-PIA1Base equ   $FF20
+A.AciaP        SET       $FF68               Aciapak Address
+A.ModP         SET       $FF6C               ModPak Address
+DPort          SET       $FF40               Disk controller base address
+MPI.Slct       SET       $FF7F               Multi-Pak slot select
+MPI.Slot       SET       $03                 Multi-Pak default slot
+PIA0Base       EQU       $FF00
+PIA1Base       EQU       $FF20
 
 
 ******************
 * VDG Devices
 *
-A.TermV  set   $FFC0      VDG Term
-A.V1     set   $FFC1      Possible additional VDG Devices
-A.V2     set   $FFC2
-A.V3     set   $FFC3
-A.V4     set   $FFC4
-A.V5     set   $FFC5
-A.V6     set   $FFC6
-A.V7     set   $FFC7
+A.TermV        SET       $FFC0               VDG Term
+A.V1           SET       $FFC1               Possible additional VDG Devices
+A.V2           SET       $FFC2
+A.V3           SET       $FFC3
+A.V4           SET       $FFC4
+A.V5           SET       $FFC5
+A.V6           SET       $FFC6
+A.V7           SET       $FFC7
 
 
-         IFEQ  Level-1
+               IFEQ      Level-1
 
 *************************************************
 *
@@ -143,9 +143,9 @@ A.V7     set   $FFC7
 *
 *************************************************
 
-HW.Page  set   $FF        Device descriptor hardware page
+HW.Page        SET       $FF                 Device descriptor hardware page
 
-         ELSE
+               ELSE      
 
 *************************************************
 *
@@ -156,50 +156,50 @@ HW.Page  set   $FF        Device descriptor hardware page
 ****************************************
 * Dynamic Address Translator Definitions
 *
-DAT.BlCt equ   8          D.A.T. blocks/address space
-DAT.BlSz equ   (256/DAT.BlCt)*256 D.A.T. block size
-DAT.ImSz equ   DAT.BlCt*2 D.A.T. Image size
-DAT.Addr equ   -(DAT.BlSz/256) D.A.T. MSB Address bits
-DAT.Task equ   $FF91      Task Register address
-DAT.TkCt equ   32         Number of DAT Tasks
-DAT.Regs equ   $FFA0      DAT Block Registers base address
-DAT.Free equ   $333E      Free Block Number
-DAT.BlMx equ   $3F        Maximum Block number
-DAT.BMSz equ   $40        Memory Block Map size
-DAT.WrPr equ   0          no write protect
-DAT.WrEn equ   0          no write enable
-SysTask  equ   0          Coco System Task number
-IOBlock  equ   $3F
-ROMBlock equ   $3F
-IOAddr   equ   $7F
-ROMCount equ   1          number of blocks of ROM (High RAM Block)
-RAMCount equ   1          initial blocks of RAM
-MoveBlks equ   DAT.BlCt-ROMCount-2 Block numbers used for copies
-BlockTyp equ   1          chk only first bytes of RAM block
-ByteType equ   2          chk entire block of RAM
-Limited  equ   1          chk only upper memory for ROM modules
-UnLimitd equ   2          chk all NotRAM for modules
+DAT.BlCt       EQU       8                   D.A.T. blocks/address space
+DAT.BlSz       EQU       (256/DAT.BlCt)*256  D.A.T. block size
+DAT.ImSz       EQU       DAT.BlCt*2          D.A.T. Image size
+DAT.Addr       EQU       -(DAT.BlSz/256)     D.A.T. MSB Address bits
+DAT.Task       EQU       $FF91               Task Register address
+DAT.TkCt       EQU       32                  Number of DAT Tasks
+DAT.Regs       EQU       $FFA0               DAT Block Registers base address
+DAT.Free       EQU       $333E               Free Block Number
+DAT.BlMx       EQU       $3F                 Maximum Block number
+DAT.BMSz       EQU       $40                 Memory Block Map size
+DAT.WrPr       EQU       0                   no write protect
+DAT.WrEn       EQU       0                   no write enable
+SysTask        EQU       0                   Coco System Task number
+IOBlock        EQU       $3F
+ROMBlock       EQU       $3F
+IOAddr         EQU       $7F
+ROMCount       EQU       1                   number of blocks of ROM (High RAM Block)
+RAMCount       EQU       1                   initial blocks of RAM
+MoveBlks       EQU       DAT.BlCt-ROMCount-2 Block numbers used for copies
+BlockTyp       EQU       1                   chk only first bytes of RAM block
+ByteType       EQU       2                   chk entire block of RAM
+Limited        EQU       1                   chk only upper memory for ROM modules
+UnLimitd       EQU       2                   chk all NotRAM for modules
 * NOTE: this check assumes any NotRAM with a module will
 *       always start with $87CD in first two bytes of block
-RAMCheck equ   BlockTyp   chk only beg bytes of block
-ROMCheck equ   Limited    chk only upper few blocks for ROM
-LastRAM  equ   IOBlock    maximum RAM block number
+RAMCheck       EQU       BlockTyp            chk only beg bytes of block
+ROMCheck       EQU       Limited             chk only upper few blocks for ROM
+LastRAM        EQU       IOBlock             maximum RAM block number
 
 ***************************
 * Color Computer 3 Specific
 *
-MappedIO equ   true       (Actually False but it works better this way)
+MappedIO       EQU       true                (Actually False but it works better this way)
 
 ********************
 * Hardware addresses
 *
-GIMERegs equ   $FF00      Base address of GIME registers
-IrqEnR   equ   $FF92      GIME IRQ enable/status register
-BordReg  equ   $FF9A      Border color register
-PalAdr   equ   $FFB0      Palette registers
+GIMERegs       EQU       $FF00               Base address of GIME registers
+IrqEnR         EQU       $FF92               GIME IRQ enable/status register
+BordReg        EQU       $FF9A               Border color register
+PalAdr         EQU       $FFB0               Palette registers
 
-HW.Page  set   $07        Device descriptor hardware page
+HW.Page        SET       $07                 Device descriptor hardware page
 
-         ENDC
-         ENDC
+               ENDC      
+               ENDC      
 
