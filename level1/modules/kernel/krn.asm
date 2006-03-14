@@ -251,11 +251,11 @@ L00FB    ldd   ,y++
          leax  >SysSvc,pcr
          stx   <D.SysSvc
          stx   <D.SWI2
-         leax  >Poll,pcr
-         stx   <D.Poll
-         leax  >Clock,pcr
-         stx   <D.Clock
-         stx   <D.AltIRQ
+         leax  >Poll,pcr          point to default poll routine
+         stx   <D.Poll            and save it 
+         leax  >Clock,pcr         get default clock routine
+         stx   <D.Clock           and save it to the vector
+         stx   <D.AltIRQ          and in the alternate IRQ vector
 
 * install system calls
          leay  >SysTbl,pcr
@@ -308,13 +308,17 @@ L018C    ldx   >D.Proc
          stx   3,s                     put in PC on stack
          puls  pc,x,b
 
-UsrIRQ   leay  <L01B1,pcr
+UsrIRQ   leay  <DoIRQPoll,pcr
 * transition from user to system state
 URtoSs   clra
          tfr   a,dp                    clear direct page
          ldx   <D.Proc                 get current process desc
+* Note that we are putting the system state service routine address into
+* the D.SWI2 vector.  If a system call is made while we are in system state,
+* D.SWI2 will be vectored to the system state service routine vector.
          ldd   <D.SysSvc               get system state system call vector
          std   <D.SWI2                 store in D.SWI2
+* The same comment above applies to the IRQ service vector.
          ldd   <D.SysIRQ               get system IRQ vector
          std   <D.SvcIRQ               store in D.SvcIRQ
          leau  ,s                      point U to S
@@ -324,45 +328,49 @@ URtoSs   clra
          sta   P$State,x               store it
          jmp   ,y                      jump to ,y
 
-L01B1    jsr   [>D.Poll]
-         bcc   L01BD
-         ldb   ,s
-         orb   #$10
-         stb   ,s
-L01BD    lbra  L0255
+DoIRQPoll
+         jsr   [>D.Poll]               call vectored polling routine
+         bcc   L01BD                   branch if carry clear
+         ldb   ,s                      get the CC on the stack
+         orb   #IRQMask                mask IRQs
+         stb   ,s                      and save it back
+L01BD    lbra  ActivateProc
+
+
 
 SysIRQ   clra
-         tfr   a,dp
-         jsr   [>D.Poll]
-         bcc   L01CF
-         ldb   ,s
-         orb   #$10
-         stb   ,s
+         tfr   a,dp                    make DP be 0
+         jsr   [>D.Poll]               call the vectored IRQ polling routine
+         bcc   L01CF                   branch if carry is clear
+         ldb   ,s                      get the CC on the stack
+         orb   #IRQMask                mask IRQs
+         stb   ,s                      and save it back
 L01CF    rti
+
 Poll     comb
          rts
 
 * Default clock routine - executed 60 times/sec
-Clock    ldx   <D.SProcQ
-         beq   L01FD
-         lda   P$State,x
-         bita  #TimSleep
-         beq   L01FD
-         ldu   P$SP,x
-         ldd   P$SP,u
-         subd  #$0001
-         std   P$SP,u
-         bne   L01FD
-L01E7    ldu   P$Queue,x
-         bsr   L021A
+Clock    ldx   <D.SProcQ               get pointer to sleeping proc queue
+         beq   L01FD                   branch if no process sleeping
+         lda   P$State,x               get state of that process
+         bita  #TimSleep               timed sleep?
+         beq   L01FD                   branch if clear
+         ldu   P$SP,x                  else get process stack pointer
+         ldd   R$X,u                   get the value of the process X reg
+         subd  #$0001                  subtract one from it
+         std   P$SP,u                  and store it
+         bne   L01FD                   branch if not zero (still will sleep)
+L01E7    ldu   P$Queue,x               get process current queue pointer
+         bsr   L021A 
          leax  ,u
          beq   L01FB
-         lda   P$State,x
-         bita  #TimSleep
-         beq   L01FB
-         ldu   P$SP,x
-         ldd   P$SP,u
-         beq   L01E7
+         lda   P$State,x               get process state byte
+         bita  #TimSleep               bit set?
+         beq   L01FB                   branch if not
+         ldu   P$SP,x                  get process stack pointer
+         ldd   R$X,u                   then get process X register
+         beq   L01E7                   branch if zero
 L01FB    stx   <D.SProcQ
 L01FD    dec   <D.Slice                decrement slice
          bne   ClockRTI                if not 0, exit ISR
@@ -376,7 +384,7 @@ L01FD    dec   <D.Slice                decrement slice
          bpl   L0212                   branch if not system state
 ClockRTI rti
 
-L0212    leay  >L0255,pcr
+L0212    leay  >ActivateProc,pcr
          bra   URtoSs
 
 
@@ -408,14 +416,18 @@ L0212    leay  >L0255,pcr
          use    faproc.asm
          
 * User-State system call entry point
-UsrSvc   leay  <L024E,pcr
+*
+* All system calls made from user-state will go through this code.
+UsrSvc   leay  <MakeSysCall,pcr
          orcc  #IntMasks
          lbra  URtoSs
 
-L024E    andcc #^IntMasks
-         ldy   <D.UsrDis
-         bsr   DoSysCall
-L0255    ldx   <D.Proc                 get current proc desc
+MakeSysCall
+         andcc #^IntMasks              unmask IRQ/FIRQ
+         ldy   <D.UsrDis               get pointer to user syscall dispatch table
+         bsr   DoSysCall               go do the system call
+ActivateProc
+         ldx   <D.Proc                 get current proc desc
          beq   FNProc                  branch to FNProc if none
          orcc  #IntMasks               mask interrupts
          ldb   P$State,x               get state value in proc desc
