@@ -1,6 +1,6 @@
-         IFNE   VDGDEFS-1
+               IFNE      VDGDEFS-1
 
-VDGDEFS  set    1
+VDGDEFS        SET       1
 
 ********************************************************************
 * VDGDefs - VDG Interface Definititions
@@ -13,12 +13,9 @@ VDGDEFS  set    1
 *          1991/05/07  Alan DeKok
 * Wrote original from VDGInt source.
 
+               NAM       VDGDefs
+               TTL       VDG Interface Definitions
 
-         nam    VDGDefs
-         ttl    VDG Interface Definitions
-
-
-         pag
 * Notes:
 *
 * All offsets from 'U' (address of device memory area)
@@ -46,67 +43,67 @@ VDGDEFS  set    1
 *
 * Total of 22 (150 in whole page) bytes unneeded or unused.
 
-         org   $1E
-VD.Start rmb   1  start of VD.XXXX data: number of VDG screens in use
-VD.Strt1 rmb   2  (2) and another start
-VD.Caps  rmb   2  caps lock info: $00=lower $FF=upper
-VD.DFlag rmb   1  0=current screen is valid, $01-$FF = update video
+               ORG       $1E
+VD.Start       RMB       1                   start of VD.XXXX data: number of VDG screens in use
+VD.Strt1       RMB       2                   (2) and another start
+VD.Caps        RMB       2                   caps lock info: $00=lower $FF=upper
+VD.DFlag       RMB       1                   0=current screen is valid, $01-$FF = update video
 * $24-$2B unused
-         rmb   8
-VD.NGChr rmb   1  number of additional characters to get
-VD.RTAdd rmb   2  (2) return address after getting characters
-VD.EPlt1 rmb   2  (2) pointer to where to put next character
-VD.EPlt2 rmb   2  (2) as above.
+               RMB       8
+VD.NGChr       RMB       1                   number of additional characters to get
+VD.RTAdd       RMB       2                   (2) return address after getting characters
+VD.EPlt1       RMB       2                   (2) pointer to where to put next character
+VD.EPlt2       RMB       2                   (2) as above.
 * $33-$34 unused
-         rmb   2
-VD.CFlag rmb   1  true lowercase flag $10=true, $00=false
-VD.CFlg1 rmb   1  VDG display code values
-VD.DGBuf rmb   1  number of currently displayed buffer
-VD.ScrnA rmb   2  (2) screen start address in system memory
-VD.ScrnE rmb   2  (2) address of end of screen
-VD.CrsrA rmb   1  (2) cursor address
-VD.CrsAL rmb   1  cursor address low
-VD.CChar rmb   1  value of character under cursor
-VD.Mode  rmb   1  mode: 0=256x192 x2, 1=128x192 x4
-VD.Chr1  rmb   1  same as under cursor character
-VD.CColr rmb   1  cursor color
-VD.Col   rmb   1  number of columns for this screen
-VD.Row   rmb   1  number of rows
-VD.TFlg1 rmb   1  see WRITE ($0E)
-VD.Alpha rmb   1  0 when in alpha mode
-VD.Rdy   rmb   1  device ready (see SS.DStat 0=not ready)
-VD.SBAdd rmb   2  (2) address of block screen is in
-VD.Blk   rmb   1  Block number of screen
-VD.GBuff rmb   1  allocation for graphics buffers (block#)
-VD.AGBuf rmb   2  (2) additional graphics buffer
-VD.HiRes rmb   1  hi-res screen table (block value)
-VD.NBlk  rmb   1  number of blocks in this screen
-VD.SType rmb   1  screen type 0-4
-VD.HR2   rmb   3  (3) for screen number 2
-VD.HR3   rmb   3  (3) for screen 3 (same 3 bytes as above)
-VD.FFMem rmb   2  (2) bottom of stack for flood fill
-VD.FFSPt rmb   2  (2) flood fill stack pointer
-VD.FFSTp rmb   2  (2) flood fill stack top pointer
-VD.FF6   rmb   1   flood fill flag
-VD.MTabl rmb   2  (2) address of mask table for pixels in byte
-VD.PixBt rmb   1  bit mask for modes (0=$07, 1=$03 )#pixels/byte
-VD.GCrsX rmb   1  graphics cursor X value
-VD.GCrsY rmb   1  graphics cursor Y
-VD.Msk1  rmb   1  mask byte 1
-VD.Msk2  rmb   1  mask byte 2 (00,55,AA,FF)
-VD.MCol  rmb   1  color? (C003,8001)
-VD.MCol2 rmb   1  color
-VD.PMask rmb   1  pixel mask for colors (i.e. $55, $CC etc)
-VD.FF1   rmb   1  data for flood fill
-VD.FF2   rmb   1  data for flood fill
-VD.FFMsk rmb   1  flood fill mask
-VD.FFFlg rmb   1  flood fill flag
-VD.Palet rmb   16 (16) current palette values
-VD.PlFlg rmb   1  initialized to $08 by L00DB, and then unused!
-VD.NChar rmb   1  character to process
-VD.NChr2 rmb   1  and the next one
+               RMB       2
+VD.CFlag       RMB       1                   true lowercase flag $10=true, $00=false
+VD.CFlg1       RMB       1                   VDG display code values
+VD.DGBuf       RMB       1                   number of currently displayed buffer
+VD.ScrnA       RMB       2                   (2) screen start address in system memory
+VD.ScrnE       RMB       2                   (2) address of end of screen
+VD.CrsrA       RMB       1                   (2) cursor address
+VD.CrsAL       RMB       1                   cursor address low
+VD.CChar       RMB       1                   value of character under cursor
+VD.Mode        RMB       1                   mode: 0=256x192 x2, 1=128x192 x4
+VD.Chr1        RMB       1                   same as under cursor character
+VD.CColr       RMB       1                   cursor color
+VD.Col         RMB       1                   number of columns for this screen
+VD.Row         RMB       1                   number of rows
+VD.TFlg1       RMB       1                   see WRITE ($0E)
+VD.Alpha       RMB       1                   0 when in alpha mode
+VD.Rdy         RMB       1                   device ready (see SS.DStat 0=not ready)
+VD.SBAdd       RMB       2                   (2) address of block screen is in
+VD.Blk         RMB       1                   Block number of screen
+VD.GBuff       RMB       1                   allocation for graphics buffers (block#)
+VD.AGBuf       RMB       2                   (2) additional graphics buffer
+VD.HiRes       RMB       1                   hi-res screen table (block value)
+VD.NBlk        RMB       1                   number of blocks in this screen
+VD.SType       RMB       1                   screen type 0-4
+VD.HR2         RMB       3                   (3) for screen number 2
+VD.HR3         RMB       3                   (3) for screen 3 (same 3 bytes as above)
+VD.FFMem       RMB       2                   (2) bottom of stack for flood fill
+VD.FFSPt       RMB       2                   (2) flood fill stack pointer
+VD.FFSTp       RMB       2                   (2) flood fill stack top pointer
+VD.FF6         RMB       1                   flood fill flag
+VD.MTabl       RMB       2                   (2) address of mask table for pixels in byte
+VD.PixBt       RMB       1                   bit mask for modes (0=$07, 1=$03 )#pixels/byte
+VD.GCrsX       RMB       1                   graphics cursor X value
+VD.GCrsY       RMB       1                   graphics cursor Y
+VD.Msk1        RMB       1                   mask byte 1
+VD.Msk2        RMB       1                   mask byte 2 (00,55,AA,FF)
+VD.MCol        RMB       1                   color? (C003,8001)
+VD.MCol2       RMB       1                   color
+VD.PMask       RMB       1                   pixel mask for colors (i.e. $55, $CC etc)
+VD.FF1         RMB       1                   data for flood fill
+VD.FF2         RMB       1                   data for flood fill
+VD.FFMsk       RMB       1                   flood fill mask
+VD.FFFlg       RMB       1                   flood fill flag
+VD.Palet       RMB       16                  (16) current palette values
+VD.PlFlg       RMB       1                   initialized to $08 by L00DB, and then unused!
+VD.NChar       RMB       1                   character to process
+VD.NChr2       RMB       1                   and the next one
 
 * and RMB until we get 256 bytes reserved
 
-         ENDC
+               ENDC      
 

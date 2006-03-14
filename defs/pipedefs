@@ -1,6 +1,6 @@
-         IFNE  PIPEDEFS-1
+               IFNE      PIPEDEFS-1
 
-PIPEDEFS set   1
+PIPEDEFS       SET       1
 
 ********************************************************************
 * PipeDefs - Pipe File Manager Definitions
@@ -13,60 +13,58 @@ PIPEDEFS set   1
 *          1988/12/03  Chris J. Burke
 * Coded from new PIPEMAN comments.
 
-
-         nam   PipeDefs
-         ttl   Pipe File Manager Definitions
-
+               NAM       PipeDefs
+               TTL       Pipe File Manager Definitions
 
 *
 *   IOMan equates duplicated for PipeMan use
 *
 
-NPATHS   set   16         ;Maximum local paths per task -- must match IOMan
-NameMax  set   29         ;Maximum length of a file name
+NPATHS         SET       16                  ;Maximum local paths per task -- must match IOMan
+NameMax        SET       29                  ;Maximum length of a file name
 
 *
 *   Device Driver Static Storage Layout
 *
-         org   V.User
-V.List   rmb   2          ;Pointer to 1st pipe's pipe buffer
-PManMem  equ   .          ;Device driver memory (drive table equivalent)
+               ORG       V.User
+V.List         RMB       2                   ;Pointer to 1st pipe's pipe buffer
+PManMem        EQU       .                   ;Device driver memory (drive table equivalent)
 
 *
 *   Pipe Buffer Data Structure
 *
-         org   0
-PP.PD    rmb   2          ;Pointer to shared path descriptor
-PP.Next  rmb   2          ;Pointer to next pipe buffer in system map
-PP.Prev  rmb   2          ;Pointer to previous pipe buffer in system map
-PP.Rsrv  rmb   2          ;Reserved
-PP.Data  equ   .          ;Data buffer begins at this offset
+               ORG       0
+PP.PD          RMB       2                   ;Pointer to shared path descriptor
+PP.Next        RMB       2                   ;Pointer to next pipe buffer in system map
+PP.Prev        RMB       2                   ;Pointer to previous pipe buffer in system map
+PP.Rsrv        RMB       2                   ;Reserved
+PP.Data        EQU       .                   ;Data buffer begins at this offset
 
 *
 *   Unique Path Descriptor Variables
 *
-         org   PD.FST
+               ORG       PD.FST
 *** PP.Read must have bit 4 clear; PP.Writ must be PP.Read XOR 4
-PD.Read  equ   .
-PD.RPID  rmb   1          ;Process ID of reader waiting on signal
-PD.RCT   rmb   1          ;Number of blocked readers
-PD.RSIG  rmb   1          ;Signal to send reader
-PD.REOR  rmb   1          ;Read EOR character
-PD.Writ  equ   .
-PD.WPID  rmb   1          ;Process ID of writer waiting on signal
-PD.WCT   rmb   1          ;Number of blocked writers
-PD.WSIG  rmb   1          ;Signal to send writer
-PD.WEOR  rmb   1          ;Write EOR character (dummy)
+PD.Read        EQU       .
+PD.RPID        RMB       1                   ;Process ID of reader waiting on signal
+PD.RCT         RMB       1                   ;Number of blocked readers
+PD.RSIG        RMB       1                   ;Signal to send reader
+PD.REOR        RMB       1                   ;Read EOR character
+PD.Writ        EQU       .
+PD.WPID        RMB       1                   ;Process ID of writer waiting on signal
+PD.WCT         RMB       1                   ;Number of blocked writers
+PD.WSIG        RMB       1                   ;Signal to send writer
+PD.WEOR        RMB       1                   ;Write EOR character (dummy)
 *** End of special section
-PD.End   rmb   2          ;Pointer to end of pipe buffer
-PD.NxtI  rmb   2          ;Next in pointer
-PD.NxtO  rmb   2          ;Next out pointer
-PD.RFlg  rmb   1          ;"Ready" flag
-PD.Wrtn  rmb   1          ;"Written" flag
-PD.BCnt  rmb   2          ;# queue elements currently bufered
-PD.Own   rmb   1          ;Process ID of pipe original creator
-PD.Keep  rmb   1          ;Non-zero if pipe has been kept open artificailly
-PD.QSiz  rmb   2          ;Max. elements in queue (copied from OPT section)
+PD.End         RMB       2                   ;Pointer to end of pipe buffer
+PD.NxtI        RMB       2                   ;Next in pointer
+PD.NxtO        RMB       2                   ;Next out pointer
+PD.RFlg        RMB       1                   ;"Ready" flag
+PD.Wrtn        RMB       1                   ;"Written" flag
+PD.BCnt        RMB       2                   ;# queue elements currently bufered
+PD.Own         RMB       1                   ;Process ID of pipe original creator
+PD.Keep        RMB       1                   ;Non-zero if pipe has been kept open artificailly
+PD.QSiz        RMB       2                   ;Max. elements in queue (copied from OPT section)
 
 *
 *   Path descriptor option section
@@ -75,24 +73,24 @@ PD.QSiz  rmb   2          ;Max. elements in queue (copied from OPT section)
 *   PD.ECnt is copied to PD.QSiz as part of OPEN or CREATE,
 *   to make room for the pipe name.
 *
-         org   (PD.OPT+1)
-PD.ESiz  rmb   1          ;Size of each queue element
-PD.ECnt  rmb   2          ;Max. elements in queue (initial position)
-         IFGT  Level-1
-         org   (PD.OPT+3)
-PD.Name  rmb   NameMax
-         ENDC
+               ORG       (PD.OPT+1)
+PD.ESiz        RMB       1                   ;Size of each queue element
+PD.ECnt        RMB       2                   ;Max. elements in queue (initial position)
+               IFGT      Level-1
+               ORG       (PD.OPT+3)
+PD.Name        RMB       NameMax
+               ENDC      
 
 *
 *   Device Descriptor definitions
 *
-IT.PDC   equ   $12        ;Pipe device class (like IT.DTP, IT.DVC)
-         org   IT.PDC
-         rmb   1          ;Leave room for device class
-IT.ESiz  rmb   1          ;Size of each queue element
-IT.ECnt  rmb   2          ;Max. elements in queue (initial position)
+IT.PDC         EQU       $12                 ;Pipe device class (like IT.DTP, IT.DVC)
+               ORG       IT.PDC
+               RMB       1                   ;Leave room for device class
+IT.ESiz        RMB       1                   ;Size of each queue element
+IT.ECnt        RMB       2                   ;Max. elements in queue (initial position)
 
 *   End of pipedefs
 
-         ENDC
+               ENDC      
 
