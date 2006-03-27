@@ -63,7 +63,6 @@
 *../MODULES/RBF/s4_tc3.dd
 *../MODULES/RBF/s5_tc3.dd
 *../MODULES/RBF/s6_tc3.dd
-*../MODULES/RBF/s7_tc3.dd
 * SCSI HDB-DOS descriptor
 *../MODULES/RBF/sh_ide.dd
 * IDE descriptors (master/slave)
