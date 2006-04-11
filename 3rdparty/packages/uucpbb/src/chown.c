@@ -37,7 +37,7 @@
 #include <modes.h>
 #include <password.h>
 
-#define OK         0
+/* #define OK         0 */
 #define OPENERROR  1
 #define GFDERROR   2
 #define SFDERROR   3

@@ -7,7 +7,9 @@
 
 #define F_NMLINK  0x21
 #define F_NMLOAD  0x22
+#if 0
 #define F_UNLOAD  0x1d
+#endif
 
 extern int errno;
 
