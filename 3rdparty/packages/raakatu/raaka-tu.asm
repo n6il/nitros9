@@ -525,6 +525,7 @@ L0379    ldb   ,x
          bra   L0379
 L038D    puls  y
          lda   >$01BD
+*         lbsr  >L0CE5
          jsr   >$09E1+BaseOff
 L0395    ldy   #$1343+BaseOff
          lda   >$01BD
