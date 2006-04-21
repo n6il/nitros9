@@ -71,33 +71,6 @@
 * IDE HDB-DOS descriptor
 *../MODULES/RBF/ih_ide.dd
 *
-* SuperSCSI drivers (Cloud-9 product)
-* Select SCSI driver for TC^3, Ken-Ton or Disto Controller
-*../MODULES/RBF/superscsi_tc3.dr
-*../MODULES/RBF/superscsi_ktlr.dr
-*../MODULES/RBF/superscsi_disto.dr
-* SuperSCSI descriptors - select as needed
-*../MODULES/RBF/dd_ez135_tc3.dd
-*../MODULES/RBF/dd_ez135_ktlr.dd
-*../MODULES/RBF/dd_ez135_d4n1.dd
-*../MODULES/RBF/dd_ez135_hdii.dd
-*../MODULES/RBF/h0_ez135_tc3.dd
-*../MODULES/RBF/h0_ez135_ktlr.dd
-*../MODULES/RBF/h0_ez135_d4n1.dd
-*../MODULES/RBF/h0_ez135_hdii.dd
-*../MODULES/RBF/c3_cdrom_tc3.dd
-*../MODULES/RBF/c3_cdrom_ktlr.dd
-*../MODULES/RBF/c3_cdrom_d4n1.dd
-*../MODULES/RBF/c3_cdrom_hdii.dd
-*../MODULES/RBF/h5_zip100_tc3.dd
-*../MODULES/RBF/h5_zip100_ktlr.dd
-*../MODULES/RBF/h5_zip100_d4n1.dd
-*../MODULES/RBF/h5_zip100_hdii.dd
-*../MODULES/RBF/hb_255_tc3.dd
-*../MODULES/RBF/hb_255_ktlr.dd
-*../MODULES/RBF/hb_255_d4n1.dd
-*../MODULES/RBF/hb_255_hdii.dd
-*
 * WD1773 floppy support for Tandy and compatible disk controllers
 ../MODULES/RBF/rb1773.dr
 * WD1773 floppy support for Disto Super Controller II
