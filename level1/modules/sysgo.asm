@@ -67,7 +67,7 @@ Banner   equ   *
          fcb   C$CR,C$LF
 * For ROM version, cut down on verbage
          IFEQ  ROM
-         fcc   /(C) 2005 The NitrOS-9 Project/
+         fcc   /(C) 2006 The NitrOS-9 Project/
          fcb   C$CR,C$LF
          IFNE  NOS9DBG
          fcc   "**   DEVELOPMENT BUILD   **"
