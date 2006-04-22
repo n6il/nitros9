@@ -1,0 +1,283 @@
+#
+#modules/makefile
+#
+# 2005-04-24, P.Harvey-Smith, 
+#	made descriptors for both 40 & 80 track drives for Dragon 64.
+# 		
+#
+# 2005-05-31, P.Harvey-Smith,
+# 	Steprate now passed in from ../makefile.dragon or ../makefile.dalpha
+#
+# 2005-12-31, P.Harvey-Smith,
+#	Fixed up for renamed video drivers.
+#
+# 2006-01-08, P.Harvey-Smith.
+#	Added descriptors for original Dragon Data single sided 5.25" drives.
+#	Pass step rate to boot_d64, so that boot module steprate set correctly.
+#
+# 2006-01-18, P.Harvey-Smith,
+#	Added ability to build for the Tano Dragon 64, using an RS-DOS
+#	disk controler and a 60Hz clock.
+#
+
+PORT = tano
+include $(NITROS9DIR)/rules.mak
+
+vpath %.asm $(6809L1)/modules
+
+CLOCKELIM       = -aRTCElim=1
+CLOCKDISTO2     = -aRTCDsto2=1
+CLOCKDISTO4     = -aRTCDsto4=1
+CLOCKBNB        = -aRTCBB=1
+CLOCKSMART      = -aRTCSmart=1 -aMPIFlag=1
+CLOCKHARRIS     = -aRTCHarrs=1
+CLOCKCLOUD9     = -aRTCCloud9=1
+CLOCKSOFT       = -aRTCSoft=1
+CLOCKMESSEMU    = -aRTCMessEmu=1
+CLOCKJVEMU      = -aRTCJVEmu=1
+
+DEPENDS		= ./makefile
+TPB		= $(3RDPARTY)/booters
+
+BOOTERS		= boot_d64 boot_1773_tano boot_dalpha
+
+BOOTTRACK	= rel $(BOOTERS) rel_dalpha
+KERNEL		= krn krnp2
+SYSMODS		= ioman init sysgo_dd sysgo_h0
+
+CLOCKS          = clock_60hz clock_50hz \
+		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
+                clock2_smart clock2_harris clock2_cloud9 clock2_soft \
+		clock2_messemu clock2_jvemu 
+
+RBF		= rbf.mn \
+		ddisk.dr \
+		ddd0_40d_d64.dd d0_40d_d64.dd d1_40d_d64.dd d2_40d_d64.dd d3_40d_d64.dd \
+		ddd0_40s_d64.dd d0_40s_d64.dd d1_40s_d64.dd d2_40s_d64.dd d3_40s_d64.dd \
+		ddd0_80_d64.dd d0_80_d64.dd d1_80_d64.dd d2_80_d64.dd d3_80_d64.dd \
+		rb1773.dr \
+		ddd0_40d_d64tano.dd d0_40d_d64tano.dd d1_40d_d64tano.dd d2_40d_d64tano.dd d3_40d_d64tano.dd \
+		ddd0_80_d64tano.dd d0_80_d64tano.dd d1_80_d64tano.dd d2_80_d64tano.dd d3_80_d64tano.dd \
+		adisk.dr \
+		ddd0_dalpha.dd d0_dalpha.dd d1_dalpha.dd d2_dalpha.dd d3_dalpha.dd
+		
+SCF		= scf.mn \
+		vrn.dr printer_d64.dr sspak.dr vtio.dr \
+		covdg.io cohr.io\
+		nil.dd p_d64.dd pipe.dd ssp.dd \
+		term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dt \
+		term32.dt term51.dt term80.dt t1_d64.dd p1_d64.dd
+
+PIPE		= pipeman.mn \
+		piper.dr \
+		pipe.dd
+
+ALLOBJS		= $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE) 
+
+all:	$(ALLOBJS)
+
+# Special cases
+
+# Kernel
+krn krnp2:
+	$(CD) kernel; make $@
+	$(CP) kernel/$@ .
+
+boot_d64:	boot_d64.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=$(STEP)
+
+boot_1773_tano:	boot_1773.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=$(STEP)
+
+boot_dalpha:	boot_d64.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=$(STEP) -aDragonAlpha=1
+
+# Clocks
+clock_60hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=60
+
+clock_50hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=50
+
+clock2_bnb: clock2_ds1315.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aBNB=1
+
+clock2_cloud9: clock2_ds1315.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCLOUD9=1
+
+#Terminals, vtio, is compiled with code to remap keyboad from CoCo to Dragon layout.
+vtio.dr: vtio.asm
+	$(AS) $(ASFLAGS) $(ASOUT)$@ $<  -aDragonIO=1
+
+# Floppy descriptors
+SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
+		-aInterlv=2 -aSAS=8 -aDensity=1
+SSDD40		= -aCyls=40 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
+		-aInterlv=2 -aSAS=8 -aDensity=1
+DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
+		-aInterlv=2 -aSAS=8 -aDensity=1
+SSDD80		= -aCyls=80 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35
+DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35
+
+#Dragon 64
+#Dragon 64 Drives can be double or single sided, but assume 
+# that /d0 and /d1 are double sided 40 track.
+
+ddd0_40d_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1 -aStep=$(STEP)
+
+d0_40d_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aStep=$(STEP)
+
+d1_40d_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1 -aStep=$(STEP)
+
+d2_40d_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2 -aStep=$(STEP)
+
+d3_40d_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=3 -aStep=$(STEP)
+
+#Single sided 40 track drives.
+ddd0_40s_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=0 -aDD=1 -aStep=$(STEP)
+
+d0_40s_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=0 -aStep=$(STEP)
+
+d1_40s_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=1 -aStep=$(STEP)
+
+d2_40s_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=2 -aStep=$(STEP)
+
+d3_40s_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=3 -aStep=$(STEP)
+
+
+ddd0_80_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1 -aStep=$(STEP)
+
+d0_80_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aStep=$(STEP)
+
+d1_80_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1 -aStep=$(STEP)
+
+d2_80_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2 -aStep=$(STEP)
+
+d3_80_d64.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3 -aStep=$(STEP)
+
+#
+#Tano Dragon 64, using rb1773 driver
+# 40 track DS
+ddd0_40d_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1 -aStep=$(STEP)
+
+d0_40d_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aStep=$(STEP)
+
+d1_40d_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1 -aStep=$(STEP)
+
+d2_40d_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2 -aStep=$(STEP)
+
+d3_40d_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=3 -aStep=$(STEP)
+
+#80track DS
+ddd0_80_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1 -aStep=$(STEP)
+
+d0_80_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aStep=$(STEP)
+
+d1_80_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1 -aStep=$(STEP)
+
+d2_80_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2 -aStep=$(STEP)
+
+d3_80_d64tano.dd: rb1773desc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3 -aStep=$(STEP)
+
+
+#Dragon Alpha
+# Internal drives on Alpha are Single Sided 80 track.
+
+ddd0_dalpha.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0 -aDD=1 -aStep=$(STEP)
+
+d0_dalpha.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0 -aStep=$(STEP)
+	
+d1_dalpha.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=1 -aStep=$(STEP)
+
+d2_dalpha.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2 -aStep=$(STEP)
+
+d3_dalpha.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3 -aStep=$(STEP)
+
+adisk.dr: ddisk.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDragonAlpha=1
+
+
+rel: rel.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=1
+
+rel_dalpha: rel.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=1 -aDragonAlpha=1
+	
+
+sysgo_dd: sysgo.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDD=1
+
+sysgo_h0: sysgo.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $<
+
+sysgo_d64: sysgo_d64.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $<
+
+ddisk.dr: ddisk.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ -aUPGRADED32=$(UPGRADED32) $< 
+
+
+clean:
+	$(CD) kernel; make $@
+	$(RM) $(ALLOBJS)
+
+showobjs:
+	@$(ECHO) $(ALLOBJS)
+
+showboottrack:
+	@$(ECHO) $(BOOTTRACK)
+
+showkernel:
+	@$(ECHO) $(KERNEL)
+
+showsysmods:
+	@$(ECHO) $(SYSMODS)
+
+showclocks:
+	@$(ECHO) $(CLOCKS)
+
+showrbf:
+	@$(ECHO) $(RBF)
+
+showscf:
+	@$(ECHO) $(SCF)
+
+showpipe:
+	@$(ECHO) $(PIPE)
+
+identify:
+	$(IDENT_SHORT) $(ALLOBJS)
+
+
