@@ -413,7 +413,7 @@ L0212    leay  >ActivateProc,pcr
 *         puls  cc,b,x,y,u,pc
 
 
-         use    faproc.asm
+         use    ../../../modules/kernel/faproc.asm
          
 * User-State system call entry point
 *
@@ -662,7 +662,7 @@ L03EC    comb
          ldb   #E$BMCRC
 L03EF    puls  pc,y,x
 
-         use   fcrc.asm
+         use   ../../../modules/kernel/fcrc.asm
 
 L0443    ldu   #$0000
          tfr   a,b
@@ -875,15 +875,15 @@ L05BE    ldx   <D.Proc
 L05E5    ldb   #E$IForkP
 L05E7    puls  pc,u,x
 
-         use   fsrqmem.asm
+         use   ../../../modules/kernel/fsrqmem.asm
          
-         use   fallbit.asm
+         use   ../../../modules/kernel/fallbit.asm
          
-         use   fprsnam.asm
+         use   ../../../modules/kernel/fprsnam.asm
 
-         use   fcmpnam.asm
+         use   ../../../modules/kernel/fcmpnam.asm
 
-         use   fssvc.asm
+         use   ../../../modules/kernel/fssvc.asm
           
          emod
 eom      equ   *
