@@ -17,6 +17,7 @@
 #	disk controler and a 60Hz clock.
 #
 
+PORT = dragon
 include $(NITROS9DIR)/rules.mak
 
 # Module directory

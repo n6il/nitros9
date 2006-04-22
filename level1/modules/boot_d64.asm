@@ -44,7 +44,7 @@
 * Disassembled 1900/00/00 00:05:56 by Disasm v1.5 (C) 1988 by RML
 
         ifp1
-	use 	defsfile.dragon
+	use 	defsfile
         endc
 
 	IFNE	DragonAlpha
@@ -217,7 +217,7 @@ MotorOnDelay
 HWTerm	clrb
 	rts
 	
-        use   	../../6809l1/modules/boot_common.asm
+        use   	../../modules/boot_common.asm
 
 ;
 ; Reset disk heads to track 0

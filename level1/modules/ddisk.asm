@@ -98,7 +98,7 @@
 * Disassembled 02/04/21 22:37:46 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   defsfile.dragon
+         use   defsfile
          endc
 
 		IFNE	DragonAlpha
