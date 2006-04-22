@@ -37,7 +37,7 @@
          ttl   Hi-Res 51x24 Graphics Console Output Subroutine for VTIO
                          
          ifp1            
-         use   defsfile.dragon
+         use   defsfile
          use   vtiodefs  
          endc            
                          

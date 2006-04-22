@@ -53,7 +53,7 @@ name     equ   *
          fcs   /Boot/
          fcb   edition
 
-         use   ../../6809l1/modules/boot_common.asm
+         use   ../../../6809l1/modules/boot_common.asm
 
 * HWInit - Initialize the device
 *   Entry: Y = hardware address
