@@ -1,3 +1,4 @@
+PORT = 
 include ../../rules.mak
 
 vpath %.asm $(3RDPARTY)/packages/basic09
