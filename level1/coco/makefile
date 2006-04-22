@@ -1,3 +1,4 @@
+PORT = coco
 include $(NITROS9DIR)/rules.mak
 
 CPU		= 6809
@@ -9,7 +10,7 @@ WHICHSHELL	= shell_21
 
 DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
-DISTROVER	= $(DISTRONAME)$(NITROS9VER)
+DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
 BOOTFILE_COVDG	= bootfiles/bootfile_covdg
 BOOTFILE_COHR	= bootfiles/bootfile_cohr
 BOOTFILE_COVDG_DS80	= bootfiles/bootfile_covdg_ds80
