@@ -1,3 +1,4 @@
+PORT = coco
 include $(NITROS9DIR)/rules.mak
 
 # Module directory

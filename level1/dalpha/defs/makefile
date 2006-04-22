@@ -1,3 +1,4 @@
+PORT = dalpha
 include $(NITROS9DIR)/rules.mak
 
 DEPENDS		= ./makefile

@@ -10,7 +10,7 @@
 * Disassembled 1900/00/00 00:08:11 by Disasm v1.5 (C) 1988 by RML
 
         ifp1
-        use   	defsfile.dragon
+        use   	defsfile
         endc
 
 tylg    set   	Drivr+Objct   

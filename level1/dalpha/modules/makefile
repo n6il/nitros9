@@ -20,7 +20,7 @@
 #	disk controler and a 60Hz clock.
 #
 
-PORT = tano
+PORT = dalpha
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm $(6809L1)/modules
