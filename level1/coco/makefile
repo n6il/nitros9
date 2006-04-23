@@ -46,7 +46,7 @@ LDSK720K        = $(DISTRONAME)_80d.dsk
 all:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
-	@$(ECHO) "*        NitrOS-9/6809 Level 1 Distribution      *"
+	@$(ECHO) "*         NitrOS-9/6809 Level 1 CoCo Port        *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
