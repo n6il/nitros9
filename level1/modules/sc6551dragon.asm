@@ -19,7 +19,7 @@
 *	Code clean up/commenting.
 *
 
-	nam   ACIA51
+	nam   sc6551
         ttl   os9 device driver    
 
         ifp1
@@ -155,7 +155,7 @@ size    equ   	.
         fcb   	$03 
 	
 name    equ   	*
-        fcs   	/ACIA51/
+        fcs   	/sc6551/
         fcb   	$04 
 
 start   equ   	*
