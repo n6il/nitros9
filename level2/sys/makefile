@@ -1,3 +1,4 @@
+PORT = coco3
 include ../../rules.mak
 
 vpath %.hp $(6809L1)/sys

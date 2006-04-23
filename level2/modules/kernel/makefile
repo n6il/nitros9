@@ -1,3 +1,4 @@
+PORT = coco3
 include ../../../rules.mak
 
 vpath %.asm $(6809L1)/modules/kernel
