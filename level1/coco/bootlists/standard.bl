@@ -111,7 +111,7 @@
 * Serial port drivers
 * CoCo Bit-Banger terminal port
 *../MODULES/SCF/scbbt.dr
-*../MODULES/SCF/t1.dd
+*../MODULES/SCF/t1_bbt.dd
 * 6551 ACIA
 *../MODULES/SCF/sc6551.dr
 *../MODULES/SCF/t2_sc6551.dd
@@ -119,7 +119,7 @@
 *
 * Printer drivers
 * ../MODULES/SCF/scbbp.dr
-* ../MODULES/SCF/p.dd
+* ../MODULES/SCF/p_bbp.dd
 *
 ***************************************
 * Pipe Section

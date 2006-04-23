@@ -13,10 +13,10 @@
 # NitrOS-9 version, major and minor release numbers are here
 NOS9VER	= 3
 NOS9MAJ	= 2
-NOS9MIN	= 6
+NOS9MIN	= 7
 
 # Set this to 1 to turn on "DEVELOPMENT" message in sysgo
-NOS9DBG = 0
+NOS9DBG = 1
 
 #################### DO NOT CHANGE ANYTHING BELOW THIS LINE ####################
 
@@ -45,7 +45,7 @@ DSKDIR		= $(NITROS9DIR)/dsks
 AS		= mamou -i=$(DEFSDIR)
 #AS		= os9asm -i=$(DEFSDIR)
 ASOUT		= -o
-AFLAGS		= -q -aNOS9VER=$(NOS9VER) -aNOS9MAJ=$(NOS9MAJ) -aNOS9MIN=$(NOS9MIN) -aNOS9DBG=$(NOS9DBG)
+AFLAGS		= -q -aNOS9VER=$(NOS9VER) -aNOS9MAJ=$(NOS9MAJ) -aNOS9MIN=$(NOS9MIN) -aNOS9DBG=$(NOS9DBG) -a$(PORT)=1
 
 # RMA/RLINK
 ASM		= rma
