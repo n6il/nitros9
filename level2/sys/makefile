@@ -1,7 +1,7 @@
 PORT = coco3
 include ../../rules.mak
 
-vpath %.hp $(6809L1)/sys
+vpath %.hp $(LEVEL1)/sys
 
 DEPENDS		= ./makefile
 
@@ -44,8 +44,8 @@ all:	$(ALLOBJS) $(DEPENDS)
 $(HELPMSG): $(HELPFILES)
 	$(MERGE) $^ > $@
 
-$(L1TXTFILES): $(6809L1)/sys/$@
-	-$(SOFTLINK) $(6809L1)/sys/$@
+$(L1TXTFILES): $(LEVEL1)/sys/$@
+	-$(SOFTLINK) $(LEVEL1)/sys/$@
 
 clean:
 	$(RM) $(HELPMSG) $(L1TXTFILES) $(BINFILES)

@@ -1,6 +1,6 @@
 include rules.mak
 
-dirs	= $(6809L1) $(6809L2) $(6309L2) $(3RDPARTY)
+dirs	= $(LEVEL1) $(LEVEL1) $(3RDPARTY)
  
 # Make all components
 all:
@@ -22,8 +22,3 @@ dsk:	all
 # Clean DSK images
 dskclean:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
-	-rm -f $(DSKDIR)/*
-
-# Copy DSK images
-dskcopy: dsk
-	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
