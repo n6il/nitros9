@@ -1,10 +1,10 @@
 PORT = coco3
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm $(6809L2)/modules/kernel:$(6809L1)/modules/kernel
+vpath %.asm $(LEVEL2)/modules/kernel:$(LEVEL1)/modules/kernel
 
 DEPENDS		= ./makefile
-AFLAGS		+= -I$(6809L2)/modules/kernel -I$(6809L1)/modules/kernel
+AFLAGS		+= -I$(LEVEL2)/modules/kernel -I$(LEVEL1)/modules/kernel
 
 KERNEL		= krn
 KERNELP2	= krnp2

@@ -1,7 +1,7 @@
 PORT = coco3
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm $(6809L2)/cmds:$(6809L1)/cmds:$(3RDPARTY)/packages/basic09
+vpath %.asm $(LEVEL2)/cmds:$(LEVEL1)/cmds:$(3RDPARTY)/packages/basic09
 
 DEPENDS		= ./makefile
 
