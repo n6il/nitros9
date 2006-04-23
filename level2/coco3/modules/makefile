@@ -1,7 +1,9 @@
 PORT = coco3
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm kernel:$(6809L2)/modules:$(6809L1)/modules
+vpath %.asm kernel:$(LEVEL2)/modules:$(LEVEL1)/modules
+
+AFLAGS		+= -I$(LEVEL1)/modules
 
 CLOCKELIM       = -aRTCElim=1
 CLOCKDISTO2     = -aRTCDsto2=1
