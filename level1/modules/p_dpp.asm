@@ -5,7 +5,7 @@
 *
 
 	nam   	p
-        ttl   	Dragon paralell printer device discriptor
+        ttl   	Dragon parallel printer device discriptor
 	
         ifp1
         use   	defsfile
@@ -52,7 +52,7 @@ name    	equ   	*
 mgrnam  equ  	*
         fcs   	/SCF/
 drvnam  equ   	*
-        fcs   	/PRINTER/
+        fcs   	/scdpp/
 	
         emod
 eom     equ   	*

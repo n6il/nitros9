@@ -1,11 +1,10 @@
-*
-* Paralell Printer device for Dragon 32/64/Alpha.
+* Parallel Printer device for Dragon 32/64/Alpha.
 *
 * Disassembled from the Alpha OS-9 2005-06-14, P.Harvey-Smith.
 *
 
-	nam   Printer
-        ttl   Dragon Paralell Printer Driver 
+	nam   scdpp
+        ttl   Dragon Parallel Printer Driver 
 
 * Disassembled 1900/00/00 00:08:11 by Disasm v1.5 (C) 1988 by RML
 
@@ -24,7 +23,7 @@ size    equ   .
 
 	fcb	$03 
 name    equ   	*
-        fcs   	/PRINTER/
+        fcs   	/scdpp/
         fcb   	edition
 	
 start   equ   	*

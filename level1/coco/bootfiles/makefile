@@ -20,7 +20,7 @@ BOOTFILE_COVDG	= $(MD)/ioman \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
-		$(MD)/scbbp.dr $(MD)/p.dd \
+		$(MD)/scbbp.dr $(MD)/p_bbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
@@ -32,7 +32,7 @@ BOOTFILE_COHR	= $(MD)/ioman \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
-		$(MD)/scbbp.dr $(MD)/p.dd \
+		$(MD)/scbbp.dr $(MD)/p_bbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
@@ -44,7 +44,7 @@ BOOTFILE_COWP	= $(MD)/ioman \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/cowp.io $(MD)/term80.dt \
-		$(MD)/scbbp.dr $(MD)/p.dd \
+		$(MD)/scbbp.dr $(MD)/p_bbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
@@ -56,7 +56,7 @@ BOOTFILE_COVDG_DS80	= $(MD)/ioman \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
-		$(MD)/scbbp.dr $(MD)/p.dd \
+		$(MD)/scbbp.dr $(MD)/p_bbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
@@ -68,7 +68,7 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
-		$(MD)/scbbp.dr $(MD)/p.dd \
+		$(MD)/scbbp.dr $(MD)/p_bbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
