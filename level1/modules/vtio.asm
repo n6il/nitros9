@@ -295,7 +295,7 @@ L015C    clra
          sta   $02,x      write column strobe
 L016F    lda   ,x         read row from PIA0Base
                          
-         ifeq  DragonIO-1
+         ifne  (tano+d64+dalpha)
          lbsr  DragonToCoCo ; Translate Dragon keyboard layout to CoCo
          endc            
                          
@@ -528,7 +528,7 @@ L0320    rts
 ; Exit	a=CoCo formatted keyboard input from PIA
 ;
                          
-         ifeq  DragonIO-1
+         ifne  (tano+d64+dalpha)
 DragonToCoCo                 
          pshs  b         
          sta   ,-s        ; Save on stack

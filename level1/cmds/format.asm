@@ -1847,9 +1847,9 @@ SPPRL    equ   *-SPPR
 PRSP     fcc   " bytes)" 
          fcb   C$CR      
 PRSPL    equ   *-PRSP    
-CoCo     fcc   !CoCo!    
+_CoCo    fcc   !CoCo!    
          fcb   C$CR      
-Dragon   fcc   !Dragon!  
+_Dragon  fcc   !Dragon!  
          fcb   C$CR      
 Standard fcc   !Standard OS-9!
          fcb   C$CR      
@@ -1911,7 +1911,7 @@ ShowDiskType
          ldy   #FMTL     
          os9   I$Write   
          ldb   <dtype    
-         leax  CoCo,pcr  
+         leax  _CoCo,pcr  
          bitb  #TYP.CCF  
          bne   n@        
 t@       leax  Standard,pcr
@@ -1919,7 +1919,7 @@ t@       leax  Standard,pcr
 n@       ldb   IsDragon,u Get dragon flag
          cmpb  #DragonFlag Dragon disk ?
          bne   s@        
-         leax  Dragon,pcr
+         leax  _Dragon,pcr
 s@       ldy   #80       
          os9   I$WritLn  
          rts             

@@ -278,7 +278,7 @@ Pad      fill  $39,$127-*
 
 start    clr   PIA0Base+3
 
-         IFNE  Dragon64
+         IFNE  (tano+d64+dalpha)
          clr   PIA0Base+1		added for Dragon, works on CoCo
          ENDC
 
@@ -291,7 +291,7 @@ L262B    sta   ,x++
          bne   L262B
          sta   1,x
 
-	 IFNE	DragonAlpha
+	 IFNE	dalpha
 	 clr	$ffc0		* Reset to text mode if Dragon Alpha
 	 clr	$ffc2
 	 clr	$ffc4
@@ -318,7 +318,7 @@ L2649    lda   ,y+
          decb
          bne   L2649
 
-         IFNE  Dragon64
+         IFNE  (tano+d64+dalpha)
          tst   <$72
          ELSE
          ldd   #$1212

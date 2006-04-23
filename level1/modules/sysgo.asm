@@ -66,6 +66,21 @@ Banner   equ   *
          fcb   '0+NOS9MIN
          fcb   C$CR,C$LF
 * For ROM version, cut down on verbage
+         IFNE  tano
+         fcc   "Tano Dragon (US)"
+         ELSE
+         IFNE  d64
+         fcc   "Dragon (UK)"
+         ELSE
+         IFNE  dalpha
+         fcc   "Dragon Alpha"
+         ELSE
+         fcc   "Color Computer"
+         ENDC
+         ENDC
+         ENDC
+         fcc   " Port"
+         fcb   C$CR,C$LF
          IFEQ  ROM
          fcc   /(C) 2006 The NitrOS-9 Project/
          fcb   C$CR,C$LF
