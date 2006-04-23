@@ -1,5 +1,5 @@
 ***************************************
-* NitrOS-9 Level 1 Bootlist
+* NitrOS-9 Level 1 Tano Bootlist
 *
 * $Id$
 *
@@ -105,21 +105,17 @@
 * Select only one term descriptor
 ../MODULES/SCF/term32.dt
 *../MODULES/SCF/term51.dt
-*../MODULES/SCF/term_bbt.dt
 *../MODULES/SCF/term_sc6551.dt
 *
 * Serial port drivers
-* CoCo Bit-Banger terminal port
-*../MODULES/SCF/scbbt.dr
-*../MODULES/SCF/t1.dd
 * 6551 ACIA
-*../MODULES/SCF/sc6551.dr
-*../MODULES/SCF/t2_sc6551.dd
-*../MODULES/SCF/t3_sc6551.dd
+*../MODULES/SCF/sc6551dragon.dr
+*../MODULES/SCF/t2_sc6551dragon.dd
+*../MODULES/SCF/t3_sc6551dragon.dd
 *
 * Printer drivers
-* ../MODULES/SCF/scbbp.dr
-* ../MODULES/SCF/p.dd
+* ../MODULES/SCF/scdpp.dr
+* ../MODULES/SCF/p_dpp.dd
 *
 ***************************************
 * Pipe Section
@@ -139,8 +135,7 @@
 * Select one clock2 module that supports your real-time clock, if any.
 * Besides support for the internal software clock, the following
 * hardware clocks are supported: Burke & Burke, Disto 2-N-1, Disto 4-N-1,
-* Eliminator, Harris, SmartWatch, Cloud-9, the MESS emulator, Jeff
-* Vavasour's CoCo emulator, and DriveWire.
+* Eliminator, Harris, SmartWatch, Cloud-9, the MESS emulator and DriveWire.
 ../MODULES/CLOCKS/clock2_soft
 *../MODULES/CLOCKS/clock2_bnb
 *../MODULES/CLOCKS/clock2_disto2
@@ -148,7 +143,6 @@
 *../MODULES/CLOCKS/clock2_elim
 *../MODULES/CLOCKS/clock2_harris
 *../MODULES/CLOCKS/clock2_smart
-*../MODULES/CLOCKS/clock2_jvemu
 *../MODULES/CLOCKS/clock2_messemu
 *../MODULES/CLOCKS/clock2_cloud9
 *../MODULES/CLOCKS/clock2_dw
