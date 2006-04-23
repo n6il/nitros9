@@ -1,4 +1,4 @@
-include ../../rules.mak
+include $(NITROS9DIR)/rules.mak
 
 # Module directory
 MD		= ../modules
