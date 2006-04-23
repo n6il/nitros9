@@ -1,7 +1,7 @@
 PORT = coco3
 include $(NITROS9DIR)/rules.mak
 
-CPU		= 6809
+CPU		= 6309
 LEVEL		= 2
 
 DISTRO		= $(CPU)L$(LEVEL)
