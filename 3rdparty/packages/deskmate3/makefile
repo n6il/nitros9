@@ -1,9 +1,9 @@
-include ../../../rules.mak
+include $(NITROS9DIR)/rules.mak
 
 DISK	= deskmate3.dsk
 
-CD68	= $(6809L2)/cmds
-MD68	= $(6809L2)/modules
+CD68	= $(LEVEL2)/coco3/6809/cmds
+MD68	= $(LEVEL2)/coco3/6809/modules
 
 UTILS	= $(CD68)/shell $(CD68)/format $(CD68)/rename
 CMDS	= accdata autoex desk dmalt dmapps dmbackup dmcaln dmcards dmdskini \
@@ -52,9 +52,6 @@ dsk:	all
 	$(foreach file, $(HELP), $(OS9ATTR_EXEC) $(DISK),CMDS/$(notdir $(file));)
 	$(CPL) $(ROOTFILES) $(DISK),.
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)
-
-dskcopy: dsk
-	$(CP) $(DISK) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DISK)

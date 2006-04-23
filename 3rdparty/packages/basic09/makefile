@@ -1,4 +1,4 @@
-include ../../../rules.mak
+include $(NITROS9DIR)/rules.mak
 
 DISK	= basic09v010100.dsk
 
