@@ -23,7 +23,7 @@
         ttl   os9 device driver    
 
         ifp1
-        use   	defsfile.dragon
+        use   	defsfile
 	endc
 		
 * Following definitions borrowed from sc6551.asm	
