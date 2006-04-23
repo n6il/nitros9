@@ -75,7 +75,11 @@ Banner   equ   *
          IFNE  dalpha
          fcc   "Dragon Alpha"
          ELSE
+         IFNE  coco
          fcc   "Color Computer"
+         ELSE
+         fcc   "Color Computer 3"
+         ENDC
          ENDC
          ENDC
          ENDC
