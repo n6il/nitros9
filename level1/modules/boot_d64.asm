@@ -217,7 +217,7 @@ MotorOnDelay
 HWTerm	clrb
 	rts
 	
-        use   	../../modules/boot_common.asm
+        use   	boot_common.asm
 
 ;
 ; Reset disk heads to track 0

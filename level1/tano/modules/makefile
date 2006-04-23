@@ -1,7 +1,9 @@
 PORT = tano
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm $(6809L1)/modules
+vpath %.asm $(LEVEL1)/modules
+
+AFLAGS		+= -I$(LEVEL1)/modules
 
 CLOCKELIM       = -aRTCElim=1
 CLOCKDISTO2     = -aRTCDsto2=1
