@@ -1,3 +1,4 @@
+PORT = coco3
 include ../rules.mak
 
 CPU		= 6809
