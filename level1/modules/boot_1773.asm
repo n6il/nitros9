@@ -162,7 +162,7 @@ HWTerm   clrb
          rts
 
 
-         use   ../../../6809l1/modules/boot_common.asm
+         use   boot_common.asm
                          
 
 DoDDns   lda   #DDEN+MOTON		double density enable and motor on

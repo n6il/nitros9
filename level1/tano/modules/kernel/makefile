@@ -1,13 +1,15 @@
 PORT = tano
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm $(6809L1)/modules/kernel
+vpath %.asm $(LEVEL1)/modules/kernel
 
 DEPENDS		= ./makefile
 
 KERNEL		= krn
 KERNELP2	= krnp2
 SYSCALLS	= fcmpnam.asm fprsnam.asm
+
+AFLAGS		+= -I$(LEVEL1)/modules/kernel
 
 ALLOBJS		= $(KERNEL) $(KERNELP2)
 
