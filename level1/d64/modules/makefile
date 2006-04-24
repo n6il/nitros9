@@ -20,10 +20,12 @@
 #	disk controler and a 60Hz clock.
 #
 
-PORT = dragon
+PORT = d64
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm $(6809L1)/modules
+vpath %.asm $(LEVEL1)/modules
+
+AFLAGS			+= -I$(LEVEL1)/modules
 
 CLOCKELIM       = -aRTCElim=1
 CLOCKDISTO2     = -aRTCDsto2=1
@@ -39,9 +41,9 @@ CLOCKJVEMU      = -aRTCJVEmu=1
 DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
 
-BOOTERS		= boot_d64 boot_1773_tano boot_dalpha
+BOOTERS		= boot_d64
 
-BOOTTRACK	= rel $(BOOTERS) rel_dalpha
+BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= krn krnp2
 SYSMODS		= ioman init sysgo_dd sysgo_h0
 
@@ -52,21 +54,16 @@ CLOCKS          = clock_60hz clock_50hz \
 
 RBF		= rbf.mn \
 		ddisk.dr \
-		ddd0_40d_d64.dd d0_40d_d64.dd d1_40d_d64.dd d2_40d_d64.dd d3_40d_d64.dd \
-		ddd0_40s_d64.dd d0_40s_d64.dd d1_40s_d64.dd d2_40s_d64.dd d3_40s_d64.dd \
-		ddd0_80_d64.dd d0_80_d64.dd d1_80_d64.dd d2_80_d64.dd d3_80_d64.dd \
-		rb1773.dr \
-		ddd0_40d_d64tano.dd d0_40d_d64tano.dd d1_40d_d64tano.dd d2_40d_d64tano.dd d3_40d_d64tano.dd \
-		ddd0_80_d64tano.dd d0_80_d64tano.dd d1_80_d64tano.dd d2_80_d64tano.dd d3_80_d64tano.dd \
-		adisk.dr \
-		ddd0_dalpha.dd d0_dalpha.dd d1_dalpha.dd d2_dalpha.dd d3_dalpha.dd
+		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd d3_40d.dd \
+		ddd0_40s.dd d0_40s.dd d1_40s.dd d2_40s.dd d3_40s.dd \
+		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd d3_80d.dd
 		
 SCF		= scf.mn \
-		vrn.dr printer_d64.dr sspak.dr vtio.dr \
+		vrn.dr scdpp.dr sspak.dr vtio.dr \
 		covdg.io cohr.io\
-		nil.dd p_d64.dd pipe.dd ssp.dd \
-		term_sc6551.dt t1.dd t2_sc6551.dd t3_sc6551.dt \
-		term32.dt term51.dt term80.dt t1_d64.dd p1_d64.dd
+		nil.dd p_dpp.dd pipe.dd ssp.dd \
+		term_sc6551.dt t2_sc6551.dt t3_sc6551.dt \
+		term32.dt term51.dt term80.dt p1_sc6551dragon.dd
 
 PIPE		= pipeman.mn \
 		piper.dr \
@@ -84,13 +81,7 @@ krn krnp2:
 	$(CP) kernel/$@ .
 
 boot_d64:	boot_d64.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=$(STEP)
-
-boot_1773_tano:	boot_1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=$(STEP)
-
-boot_dalpha:	boot_d64.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=$(STEP) -aDragonAlpha=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=0
 
 # Clocks
 clock_60hz: clock.asm
@@ -105,144 +96,74 @@ clock2_bnb: clock2_ds1315.asm
 clock2_cloud9: clock2_ds1315.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCLOUD9=1
 
-#Terminals, vtio, is compiled with code to remap keyboad from CoCo to Dragon layout.
-vtio.dr: vtio.asm
-	$(AS) $(ASFLAGS) $(ASOUT)$@ $<  -aDragonIO=1
-
 # Floppy descriptors
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aStep=0
 SSDD40		= -aCyls=40 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aStep=0
 DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aStep=0
 SSDD80		= -aCyls=80 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35 -aStep=0
 DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35 -aStep=0
 
 #Dragon 64
 #Dragon 64 Drives can be double or single sided, but assume 
 # that /d0 and /d1 are double sided 40 track.
 
-ddd0_40d_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1 -aStep=$(STEP)
+ddd0_40d.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1
 
-d0_40d_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aStep=$(STEP)
+d0_40d.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0
 
-d1_40d_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1 -aStep=$(STEP)
+d1_40d.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1
 
-d2_40d_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2 -aStep=$(STEP)
+d2_40d.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2
 
-d3_40d_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=3 -aStep=$(STEP)
+d3_40d.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=3
 
 #Single sided 40 track drives.
-ddd0_40s_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=0 -aDD=1 -aStep=$(STEP)
+ddd0_40s.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=0 -aDD=1
 
-d0_40s_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=0 -aStep=$(STEP)
+d0_40s.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=0
 
-d1_40s_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=1 -aStep=$(STEP)
+d1_40s.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=1
 
-d2_40s_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=2 -aStep=$(STEP)
+d2_40s.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=2
 
-d3_40s_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=3 -aStep=$(STEP)
-
-
-ddd0_80_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1 -aStep=$(STEP)
-
-d0_80_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aStep=$(STEP)
-
-d1_80_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1 -aStep=$(STEP)
-
-d2_80_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2 -aStep=$(STEP)
-
-d3_80_d64.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3 -aStep=$(STEP)
-
-#
-#Tano Dragon 64, using rb1773 driver
-# 40 track DS
-ddd0_40d_d64tano.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1 -aStep=$(STEP)
-
-d0_40d_d64tano.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aStep=$(STEP)
-
-d1_40d_d64tano.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1 -aStep=$(STEP)
-
-d2_40d_d64tano.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2 -aStep=$(STEP)
-
-d3_40d_d64tano.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=3 -aStep=$(STEP)
-
-#80track DS
-ddd0_80_d64tano.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1 -aStep=$(STEP)
-
-d0_80_d64tano.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aStep=$(STEP)
-
-d1_80_d64tano.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1 -aStep=$(STEP)
-
-d2_80_d64tano.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2 -aStep=$(STEP)
-
-d3_80_d64tano.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3 -aStep=$(STEP)
+d3_40s.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -aDNum=3
 
 
-#Dragon Alpha
-# Internal drives on Alpha are Single Sided 80 track.
+ddd0_80d.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1
 
-ddd0_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0 -aDD=1 -aStep=$(STEP)
+d0_80d.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0
 
-d0_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0 -aStep=$(STEP)
-	
-d1_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=1 -aStep=$(STEP)
+d1_80d.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1
 
-d2_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2 -aStep=$(STEP)
+d2_80d.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
 
-d3_dalpha.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3 -aStep=$(STEP)
+d3_80d.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3
 
-adisk.dr: ddisk.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDragonAlpha=1
-
-
-rel: rel.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=1
-
-rel_dalpha: rel.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=1 -aDragonAlpha=1
-	
 
 sysgo_dd: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDD=1
 
 sysgo_h0: sysgo.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $<
-
-sysgo_d64: sysgo_d64.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
 
 ddisk.dr: ddisk.asm
@@ -279,5 +200,3 @@ showpipe:
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
-
-
