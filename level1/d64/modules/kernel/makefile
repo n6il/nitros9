@@ -1,7 +1,8 @@
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm $(6809L1)/modules/kernel
+vpath %.asm $(LEVEL1)/modules/kernel
 
+AFLAGS		+= -I$(LEVEL1)/modules/kernel
 DEPENDS		= ./makefile
 
 KERNEL		= krn
