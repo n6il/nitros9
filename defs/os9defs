@@ -707,7 +707,9 @@ OSMajor        RMB       1                   OS major
 OSMinor        RMB       1                   OS minor
 Feature1       RMB       1                   feature byte 1
 Feature2       RMB       1                   feature byte 2
-               RMB       8                   reserved for future use
+OSName         RMB       2                   OS name string
+MachineName    RMB       2                   machine name string
+               RMB       6                   reserved for future use
 
                IFGT      Level-1
 * -- VTIO area -- (NitrOS-9 Level 2 and above) *
@@ -720,6 +722,8 @@ KeyRptD        RMB       1                   Key repeat delay constant
 * Feature1 byte definitions
 CRCOn          EQU       %00000001           CRC checking on
 CRCOff         EQU       %00000000           CRC checking off
+Proc6809       EQU       %00000000           6809 procesor
+Proc6309       EQU       %00000010           6309 procesor
 
                PAG       
 **************************

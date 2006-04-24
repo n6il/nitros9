@@ -36,11 +36,10 @@ edition  set   $05
 
          mod   eom,name,tylg,atrv,start,size
 
-u0000    rmb   32
-u0020    rmb   42
-u004A    rmb   33
-u006B    rmb   6
-u0071    rmb   655
+
+         org   0
+InitAddr rmb   2
+         rmb   250
 size     equ   .
 
 name     fcs   /SysGo/
@@ -50,44 +49,9 @@ name     fcs   /SysGo/
 DefPrior set   128         
 
 Banner   equ   *
-         fcc   "NitrOS-9/"
-         IFNE  H6309
-         fcc   /6309 /
-         ELSE
-         fcc   /6809 /
-         ENDC
-         fcc   /Level /
-         fcb   '0+Level
-         fcc   / V0/
-         fcb   '0+NOS9VER
-         fcc   /.0/
-         fcb   '0+NOS9MAJ
-         fcc   /.0/
-         fcb   '0+NOS9MIN
-         fcb   C$CR,C$LF
-* For ROM version, cut down on verbage
-         IFNE  tano
-         fcc   "Tano Dragon (US)"
-         ELSE
-         IFNE  d64
-         fcc   "Dragon (UK)"
-         ELSE
-         IFNE  dalpha
-         fcc   "Dragon Alpha"
-         ELSE
-         IFNE  coco
-         fcc   "Color Computer"
-         ELSE
-         fcc   "Color Computer 3"
-         ENDC
-         ENDC
-         ENDC
-         ENDC
-         fcc   " Port"
-         fcb   C$CR,C$LF
          IFEQ  ROM
          fcc   /(C) 2006 The NitrOS-9 Project/
-         fcb   C$CR,C$LF
+CrRtn    fcb   C$CR,C$LF
          IFNE  NOS9DBG
          fcc   "**   DEVELOPMENT BUILD   **"
          fcb   C$CR,C$LF
@@ -154,6 +118,7 @@ BasicRst fcb   $55
 BasicRL  equ   *-BasicRst
          ENDC
 
+Init     fcs   /Init/
 
 * SysGo Entry Point
 start    leax  >IcptRtn,pcr
@@ -162,11 +127,30 @@ start    leax  >IcptRtn,pcr
          os9   F$ID
          ldb   #DefPrior
          os9   F$SPrior
-* Show banner
+
+* Write OS name and Machine name strings
+         leax  Init,pcr
+         clra
+         os9   F$Link
+         bcs   SignOn
+         stx   <InitAddr
+         ldd   OSName,u
+         leax  d,u						point to name
+         ldy   #80
+         lda   #$01
+         os9   I$WritLn
+         ldd   MachineName,u
+         leax  d,u						point to name
+         lda   #$01
+         os9   I$WritLn
+
+* Show rest of banner
+SignOn
          leax  >Banner,pcr
          ldy   #BannLen
          lda   #$01                    standard output
          os9   I$Write                 write out banner
+
 * Set default time
          leax  >DefTime,pcr
          os9   F$STime                 set time to default

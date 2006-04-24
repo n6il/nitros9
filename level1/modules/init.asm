@@ -52,9 +52,15 @@ start    equ   *
          fcb   NOS9VER    OS version
          fcb   NOS9MAJ    OS major revision
          fcb   NOS9MIN    OS minor revision
+         IFNE  H6309
+         fcb   Proc6309+CRCOff     feature byte #1
+         ELSE
          fcb   CRCOff     feature byte #1
+         ENDC
          fcb   $00        feature byte #2
-         fcb   0,0,0,0,0,0,0,0  reserved
+         fdb   OSStr
+         fdb   MachStr
+         fcb   0,0,0,0  reserved
 
          IFGT  Level-1
 * CC3IO section
@@ -71,6 +77,47 @@ DefProg  fcs   "SysGo"
 DefDev   fcs   "/DD"
 DefCons  fcs   "/Term"
 DefBoot  fcs   "Boot"
+
+OSStr    equ   *
+         fcc   "NitrOS-9/"
+         IFNE  H6309
+         fcc   /6309 /
+         ELSE
+         fcc   /6809 /
+         ENDC
+         fcc   /Level /
+         fcb   '0+Level
+         fcc   / V0/
+         fcb   '0+NOS9VER
+         fcc   /.0/
+         fcb   '0+NOS9MAJ
+         fcc   /.0/
+         fcb   '0+NOS9MIN
+         fcb   C$CR
+
+MachStr  equ   *
+         IFNE   coco
+         fcc    "Radio Shack Color Computer"
+         ELSE
+         IFNE   coco3
+         fcc    "Tandy Color Computer 3"
+         ELSE
+         IFNE   tano
+         fcc    "Tano Dragon (US)"
+         ELSE
+         IFNE   d64
+         fcc    "Dragon 64 (UK)"
+         ELSE
+         IFNE   dalpha
+         fcc    "Dragon Alpha"
+         ELSE
+         fcc    "Unknown Machine"
+         ENDC
+         ENDC
+         ENDC
+         ENDC
+         ENDC
+         fcb   C$CR
 
          emod  
 eom      equ   *

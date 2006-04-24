@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-dirs	= coco3
+dirs	= coco3 coco3_6309
 
 # Make all components
 all:
