@@ -1,4 +1,4 @@
-PORT = dragon
+PORT = d64
 include $(NITROS9DIR)/rules.mak
 
 DEPENDS		= ./makefile
