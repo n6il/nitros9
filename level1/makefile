@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-dirs	= coco tano
+dirs	= coco tano d64 dalpha
 
 # Make all components
 all:
