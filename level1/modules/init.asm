@@ -59,7 +59,7 @@ start    equ   *
          ENDC
          fcb   $00        feature byte #2
          fdb   OSStr
-         fdb   MachStr
+         fdb   InstStr
          fcb   0,0,0,0  reserved
 
          IFGT  Level-1
@@ -93,9 +93,9 @@ OSStr    equ   *
          fcb   '0+NOS9MAJ
          fcc   /.0/
          fcb   '0+NOS9MIN
-         fcb   C$CR
+         fcb   0
 
-MachStr  equ   *
+InstStr  equ   *
          IFNE   coco
          fcc    "Radio Shack Color Computer"
          ELSE
@@ -117,7 +117,7 @@ MachStr  equ   *
          ENDC
          ENDC
          ENDC
-         fcb   C$CR
+         fcb   0
 
          emod  
 eom      equ   *
