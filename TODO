@@ -1,7 +1,5 @@
-NitrOS-9 V03.02.06 Release Goals
-
-TODO
-====
+NitrOS-9 V03.02.07 Release Goals TODO
+=====================================
 VTIO
 	- Fix init/term bug (only seen if windowing system is successively
           brought up/torn down).  This a long-standing bug, but doesn't impact
@@ -14,6 +12,9 @@ ioman
 rbf
 	- Backport to Level 1
 
+format
+    - Add option to allow formatting of Dragon disk format.
+    
 rb1773
 	- Fix SS.WrTrk to handle high density drives (is this working now?)
 	- Fix SS.WrtTrk bug which causes crashes on some CoCos (I believe the
@@ -59,8 +60,8 @@ All boot modules
 	- Handle fragmented bootfiles
 	  (boot_1773 is done, others need to be modified and tested)
 
-COMPLETED
-=========
+NitrOS-9 V03.02.06 Release Goals COMPLETED
+==========================================
 attr
 	- Use SS.FD to set/get FD sector information instead of raw access
 
