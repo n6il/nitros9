@@ -120,6 +120,21 @@ BasicRL  equ   *-BasicRst
 
 Init     fcs   /Init/
 
+* Entry: X = pointer to start of nul terminated string
+* Exit:  D = length of string
+strlen   pshs  x
+         ldd   #-1
+go@      addd  #$0001
+         tst   ,x+
+         bne   go@
+         puls  x,pc
+
+WriteCR  pshs  y
+         leax  CrRtn,pcr
+         ldy   #$0001
+         os9   I$WritLn
+         puls  y,pc
+         
 * SysGo Entry Point
 start    leax  >IcptRtn,pcr
          os9   F$Icpt
@@ -135,15 +150,19 @@ start    leax  >IcptRtn,pcr
          os9   F$Link
          bcs   SignOn
          stx   <InitAddr
-         ldd   OSName,u
-         leax  d,u						point to name
-         ldy   #80
+         ldd   OSName,u					point to OS name in INIT module
+         bsr   strlen         
+         tfr   d,y
          lda   #$01
-         os9   I$WritLn
-         ldd   MachineName,u
-         leax  d,u						point to name
+         os9   I$Write
+         bsr   WriteCR
+         ldd   InstallName,u
+         leax  d,u						point to install name in INIT module
+         bsr   strlen         
+         tfr   d,y
          lda   #$01
-         os9   I$WritLn
+         os9   I$Write
+         bsr   WriteCR
          
 * Show rest of banner
 SignOn
