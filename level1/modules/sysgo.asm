@@ -131,6 +131,7 @@ start    leax  >IcptRtn,pcr
 * Write OS name and Machine name strings
          leax  Init,pcr
          clra
+         pshs  u
          os9   F$Link
          bcs   SignOn
          stx   <InitAddr
@@ -143,9 +144,10 @@ start    leax  >IcptRtn,pcr
          leax  d,u						point to name
          lda   #$01
          os9   I$WritLn
-
+         
 * Show rest of banner
 SignOn
+         puls  u
          leax  >Banner,pcr
          ldy   #BannLen
          lda   #$01                    standard output
