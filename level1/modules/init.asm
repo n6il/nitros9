@@ -87,11 +87,11 @@ OSStr    equ   *
          ENDC
          fcc   /Level /
          fcb   '0+Level
-         fcc   / V0/
+         fcc   / V/
          fcb   '0+NOS9VER
-         fcc   /.0/
+         fcc   /./
          fcb   '0+NOS9MAJ
-         fcc   /.0/
+         fcc   /./
          fcb   '0+NOS9MIN
          fcb   0
 
