@@ -151,6 +151,7 @@ start    leax  >IcptRtn,pcr
          bcs   SignOn
          stx   <InitAddr
          ldd   OSName,u					point to OS name in INIT module
+         leax  d,u						point to install name in INIT module
          bsr   strlen         
          tfr   d,y
          lda   #$01
