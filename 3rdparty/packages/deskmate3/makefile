@@ -2,8 +2,8 @@ include $(NITROS9DIR)/rules.mak
 
 DISK	= deskmate3.dsk
 
-CD68	= $(LEVEL2)/coco3/6809/cmds
-MD68	= $(LEVEL2)/coco3/6809/modules
+CD68	= $(LEVEL2)/coco3/cmds
+MD68	= $(LEVEL2)/coco3/modules
 
 UTILS	= $(CD68)/shell $(CD68)/format $(CD68)/rename
 CMDS	= accdata autoex desk dmalt dmapps dmbackup dmcaln dmcards dmdskini \

@@ -7,7 +7,7 @@ DISK_2_40D	= kq3_d2_40d.dsk
 DISK_3_40D	= kq3_d3_40d.dsk
 DISK_80D	= kq3_80d.dsk
 CMDS		= sierra mnln scrn shdw tocgen
-MD		= $(6809L2)/modules
+MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
@@ -29,9 +29,9 @@ OS9BOOT_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-BOOTCMDS	= $(6809L2)/cmds/shell_21 $(6809L2)/cmds/date \
-		$(6809L2)/cmds/echo $(6809L2)/cmds/link \
-		$(6809L2)/cmds/setime
+BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
+		$(LEVEL2)/coco3/cmds/echo $(LEVEL2)/coco3/cmds/link \
+		$(LEVEL2)/coco3/cmds/setime
 
 TEXTFILES_D1	= startup tOC_40d.txt
 TEXTFILES	= startup tOC_80d.txt
@@ -58,7 +58,7 @@ clean:	dskclean
 
 dsk:	all
 	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D)
-	$(CD) $(6809L2); make
+	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS40) -q $(DISK_1_40D) -n"King's Quest III Disk 1"
 	$(OS9FORMAT_DS80) -q $(DISK_80D) -n"King's Quest III"
 	$(MERGE) $(OS9BOOT_40D)>os9boot_40d
