@@ -4,7 +4,7 @@ DEPENDS		= ./makefile
 
 DISK		= lsl.dsk
 CMDS		= sierra mnln scrn shdw
-MD		= $(6809L2)/modules
+MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
@@ -29,7 +29,7 @@ clean:	dskclean
 
 dsk:	all
 	$(RM) $(DISK)
-	$(CD) $(6809L2); make
+	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS40) $(DISK) -n"Leisure Suit Larry"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773

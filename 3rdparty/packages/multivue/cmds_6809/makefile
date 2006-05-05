@@ -2,9 +2,9 @@ include ../../../../rules.mak
 
 DEPENDS		= ./makefile
 
-OSCMDS		= $(6809L2)/cmds/shell $(6809L2)/cmds/utilpak1 \
-		$(6809L2)/cmds/grfdrv $(6809L2)/cmds/backup \
-		$(6809L2)/cmds/format $(6809L2)/cmds/free $(6809L2)/cmds/help
+OSCMDS		= $(LEVEL2)/coco3/cmds/shell $(LEVEL2)/coco3/cmds/utilpak1 \
+		$(LEVEL2)/coco3/cmds/grfdrv $(LEVEL2)/coco3/cmds/backup \
+		$(LEVEL2)/coco3/cmds/format $(LEVEL2)/coco3/cmds/free $(LEVEL2)/coco3/cmds/help
 CMDS		= gshell cocopr control demo fstat \
 		gcal gcalc gclock gport gprint gsort
 
@@ -13,7 +13,7 @@ ALLOBJS		= $(OSCMDS) $(CMDS)
 all:	cmds $(ALLOBJS)
 
 cmds:
-	$(CD) $(6809L2)/cmds; make
+	$(CD) $(LEVEL2)/coco3/cmds; make
 
 gshell: gshell.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS)

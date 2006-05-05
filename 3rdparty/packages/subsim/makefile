@@ -4,7 +4,7 @@ DEPENDS		= ./makefile
 
 DISK		= subsim.dsk
 CMDS		= presub sub sub1 sub2 sub3 sub4 sub5 sub6
-MD		= $(6809L2)/modules
+MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
@@ -29,7 +29,7 @@ clean:	dskclean
 
 dsk:	all
 	$(RM) $(DISK)
-	$(CD) $(6809L2); make
+	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS40) $(DISK) -n"Sub Battle Simulator"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
@@ -38,7 +38,7 @@ dsk:	all
 	$(MAKDIR) $(DISK),CMDS $(DISK),SUB
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
-	$(CP) $(6809L2)/cmds/shell_21 $(DISK),CMDS/shell
+	$(CP) $(LEVEL2)/coco3/cmds/shell_21 $(DISK),CMDS/shell
 	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
 	$(OS9RENAME) $(DISK),CMDS/presub AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),SUB

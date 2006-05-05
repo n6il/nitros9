@@ -1,6 +1,6 @@
 include ../../../../rules.mak
 
-vpath %.asm	$(6809L2)/sys
+vpath %.asm	$(LEVEL2)/sys
 
 DEPENDS		= ./makefile
 

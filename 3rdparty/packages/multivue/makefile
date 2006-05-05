@@ -1,4 +1,4 @@
-include ../../../rules.mak
+include $(NITROS9DIR)/rules.mak
 
 DISK68	= multivue_6809.dsk
 DISK63	= multivue_6309.dsk
@@ -10,8 +10,8 @@ SYSTEXT	= $(shell $(CD) sys; make showtextobjs)
 DEMO	= aif.dmo
 ROOTFILES = startup
 
-MD68	= $(6809L2)/modules
-MD63	= $(6309L2)/modules
+MD68	= $(LEVEL2)/coco3/modules
+MD63	= $(LEVEL2)/coco3_6309/modules
 
 KERNEL68	= $(MD68)/rel_40 $(MD68)/boot_1773_6ms $(MD68)/krn
 KERNEL63	= $(MD63)/rel_40 $(MD63)/boot_1773_6ms $(MD63)/krn
