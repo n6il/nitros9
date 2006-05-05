@@ -32,6 +32,9 @@
 *
 *   8      2006/03/03  Boisy G. Pitre
 * Drive motors now turned off before returning to kernel.
+*
+*   9      2006/05/05  Boisy G. Pitre
+* Fixed bug where single sided booting was broken
 
          nam   Boot
          ttl   WD1773 Boot module
@@ -83,7 +86,7 @@ STEP     set   $00
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   8
+edition  set   9
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -254,7 +257,7 @@ L0138    comb				else we will return error
 r@       rts
 
 Seek2Sect
-         lda   #MOTON			permit alternate drives
+         lda   #MOTON		permit alternate drives
          ora   WhichDrv,pcr		permit alternate drives
          sta   drvsel,u		save byte to static mem
          clr   side,u		start on side 1
@@ -262,14 +265,17 @@ Seek2Sect
          cmpd  #$0000		zero?
          beq   L016C		branch if so
          clr   ,-s			else clear space on stack
-         tst   ddfmt,u	double sided disk?
+         pshs  a
+         lda   ddfmt,u
+         bita  #FMT.SIDE	double sided disk?
+         puls  a
          beq   SnglSid		branch if not
          bra   DblSid
 * Double-sided code
 L0152    com   side,u		flag side 2
          bne   DblSid
          inc   ,s
-DblSid    subb  ddtks,u		
+DblSid   subb  ddtks,u		
          sbca  #$00
          bcc   L0152
          bra   L0168
