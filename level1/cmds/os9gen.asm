@@ -26,6 +26,9 @@
 *  11      2005/10/10  Boisy G. Pitre
 * Added -e option to create fragmented bootfiles.
 
+*  12      2006/5/9    Christopher R. Hawks
+* Weren't clearing -e option, so all os9boot files were extended.
+
          nam   OS9Gen
          ttl   OS-9 bootfile generator
 
@@ -41,7 +44,7 @@ DOHD     set   1		allow bootfile creation on HD
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   11
+edition  set   12
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -171,6 +174,7 @@ start    clrb
          stb   <btflag		assume no -t specified
          stb   <u0005
          stb   <sngldrv		assume multi-drive
+         stb   <eflag       assume not extended bootfile
          stu   <statptr		save statics pointer
          leas  >u047E,u		point stack pointer to u047e
          pshs  u
