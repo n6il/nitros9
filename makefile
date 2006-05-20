@@ -1,6 +1,6 @@
 include rules.mak
 
-dirs	= $(LEVEL1) $(LEVEL1) $(3RDPARTY)
+dirs	= $(LEVEL1) $(LEVEL2) $(3RDPARTY)
  
 # Make all components
 all:

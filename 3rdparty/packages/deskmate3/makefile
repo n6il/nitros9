@@ -50,7 +50,7 @@ dsk:	all
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(notdir $(file));)
 	$(CPL) $(HELP) $(DISK),CMDS
 	$(foreach file, $(HELP), $(OS9ATTR_EXEC) $(DISK),CMDS/$(notdir $(file));)
-	$(CPL) $(ROOTFILES) $(DISK),.
+	$(CP) $(ROOTFILES) $(DISK),.
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)
 
 dskclean:
