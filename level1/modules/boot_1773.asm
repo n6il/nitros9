@@ -35,6 +35,10 @@
 *
 *   9      2006/05/05  Boisy G. Pitre
 * Fixed bug where single sided booting was broken
+*
+*          2006/06/04  Boisy G. Pitre
+* Removed hard-coded value of #18 when adding back sectors per track and replaced
+* with the appropriate value: ddtks,u
 
          nam   Boot
          ttl   WD1773 Boot module
@@ -283,8 +287,8 @@ L0160    inc   ,s
 SnglSid  subb  ddtks,u		subtract sectors per track from B
          sbca  #$00
          bcc   L0160
-L0168    addb  #18			add sectors per track (should this be ddtks?)
-         puls  a			get current track indicator off of stack
+L0168    addb  ddtks,u		add sectors per track
+         puls  a		get current track indicator off of stack
 L016C    incb
          stb   SECTREG,y	save in sector register
 SetTrak  ldb   currtrak,u	get current track in B
