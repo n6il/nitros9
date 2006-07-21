@@ -46,7 +46,7 @@ SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 words.tok
 
 SUPPORTFILES_D2	= logDir object picDir sndDir viewDir vol.0 \
-		vol.1 vol.2 words.tok
+		vol.2 words.tok
 
 SUPPORTFILES	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 words.tok
