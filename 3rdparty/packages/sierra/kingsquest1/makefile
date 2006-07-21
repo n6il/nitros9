@@ -7,6 +7,11 @@ DEPENDS		= ./makefile
 DISK_1_40D	= kq1_d1_40d.dsk
 DISK_2_40D	= kq1_d2_40d.dsk
 DISK_80D	= kq1_80d.dsk
+
+DISK_1_40D_NAME	= "King's Quest I Disk 1"
+DISK_2_40D_NAME	= "King's Quest I Disk 2"
+DISK_80D_NAME	= "King's Quest I"
+
 CMDS		= sierra mnln scrn shdw tocgen
 MD		= $(LEVEL2)/coco3/modules
 
@@ -56,9 +61,9 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D)
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) -q $(DISK_1_40D) -n"King's Quest I Disk 1"
-	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n"King's Quest I Disk 2"
-	$(OS9FORMAT_DS80) -q $(DISK_80D) -n"King's Quest I"
+	$(OS9FORMAT_DS40) -q $(DISK_1_40D) -n$(DISK_1_40D_NAME)
+	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n$(DISK_2_40D_NAME)
+	$(OS9FORMAT_DS80) -q $(DISK_80D) -n$(DISK_80D_NAME)
 	$(MERGE) $(OS9BOOT_40D)>os9boot_40d
 	$(MERGE) $(OS9BOOT_80D)>os9boot_80d
 	$(MERGE) $(KERNEL)>kernel_1773
@@ -81,13 +86,11 @@ dsk:	all
 	$(OS9RENAME) $(DISK_80D),CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_D1) $(DISK_1_40D),.
 	$(OS9RENAME) $(DISK_1_40D),tOC_40d.txt tOC.txt
-	tocgen tOC_40d.txt
-	$(CP) tOC $(DISK_1_40D),.
-	$(CP) tOC $(DISK_2_40D),.
+	tocgen $(DISK_1_40D),tOC.txt $(DISK_1_40D),tOC
+	tocgen $(DISK_1_40D),tOC.txt $(DISK_2_40D),tOC
 	$(CPL) $(TEXTFILES) $(DISK_80D),.
 	$(OS9RENAME) $(DISK_80D),tOC_80d.txt tOC.txt
-	tocgen tOC_80d.txt
-	$(CP) tOC $(DISK_80D),.
+	tocgen $(DISK_80D),tOC.txt $(DISK_80D),tOC
 	$(CP) $(SUPPORTFILES_D1) $(DISK_1_40D),.
 	$(CP) $(SUPPORTFILES_D2) $(DISK_2_40D),.
 	$(CP) $(SUPPORTFILES) $(DISK_80D),.
