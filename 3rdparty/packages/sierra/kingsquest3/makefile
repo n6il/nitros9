@@ -1,4 +1,6 @@
-include ../../../rules.mak
+include $(NITROS9DIR)/rules.mak
+
+vpath %.asm ../objs
 
 DEPENDS		= ./makefile
 
