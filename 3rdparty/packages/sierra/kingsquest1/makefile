@@ -37,13 +37,13 @@ BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 TEXTFILES_D1	= startup tOC_40d.txt
 TEXTFILES	= startup tOC_80d.txt
 
-SUPPORTFILES_D1	= logDir object picDir sndDir tOC_40d viewDir vol.0 \
+SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 words.tok
 
-SUPPORTFILES_D2	= logDir object picDir sndDir tOC_40d viewDir vol.0 \
+SUPPORTFILES_D2	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 words.tok
 
-SUPPORTFILES	= logDir object picDir sndDir tOC_80d viewDir vol.0 \
+SUPPORTFILES	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 words.tok
 
 ALLOBJS		= $(CMDS)
@@ -57,6 +57,7 @@ dsk:	all
 	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D)
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS40) -q $(DISK_1_40D) -n"King's Quest I Disk 1"
+	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n"King's Quest I Disk 2"
 	$(OS9FORMAT_DS80) -q $(DISK_80D) -n"King's Quest I"
 	$(MERGE) $(OS9BOOT_40D)>os9boot_40d
 	$(MERGE) $(OS9BOOT_80D)>os9boot_80d
@@ -80,15 +81,16 @@ dsk:	all
 	$(OS9RENAME) $(DISK_80D),CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_D1) $(DISK_1_40D),.
 	$(OS9RENAME) $(DISK_1_40D),tOC_40d.txt tOC.txt
+	tocgen tOC_40d.txt
+	$(CP) tOC $(DISK_1_40D),.
+	$(CP) tOC $(DISK_2_40D),.
 	$(CPL) $(TEXTFILES) $(DISK_80D),.
 	$(OS9RENAME) $(DISK_80D),tOC_80d.txt tOC.txt
+	tocgen tOC_80d.txt
+	$(CP) tOC $(DISK_80D),.
 	$(CP) $(SUPPORTFILES_D1) $(DISK_1_40D),.
-	$(OS9RENAME) $(DISK_1_40D),tOC_40d tOC
-	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n"King's Quest I Disk 2"
 	$(CP) $(SUPPORTFILES_D2) $(DISK_2_40D),.
-	$(OS9RENAME) $(DISK_2_40D),tOC_40d tOC
 	$(CP) $(SUPPORTFILES) $(DISK_80D),.
-	$(OS9RENAME) $(DISK_80D),tOC_80d tOC
 
 dskcopy: dsk
 	$(CP) $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D) $(DSKDIR)
