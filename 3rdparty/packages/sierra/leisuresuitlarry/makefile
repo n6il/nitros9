@@ -5,6 +5,8 @@ vpath %.asm ../objs_lsl
 DEPENDS		= ./makefile
 
 DISK		= lsl.dsk
+DISK_NAME	= "Leisure Suit Larry"
+
 CMDS		= sierra mnln scrn shdw
 MD		= $(LEVEL2)/coco3/modules
 
@@ -19,7 +21,7 @@ OS9BOOT		= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-SUPPORTFILES	= logDir object picDir sndDir tOC viewDir vol.0 \
+SUPPORTFILES	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 words.tok
 
 ALLOBJS		= $(CMDS)
@@ -32,7 +34,7 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DISK)
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) $(DISK) -n"Leisure Suit Larry"
+	$(OS9FORMAT_DS40) $(DISK) -n$(DISK_NAME)
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK) -b=os9boot -t=kernel_1773
@@ -42,6 +44,7 @@ dsk:	all
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
 	$(OS9RENAME) $(DISK),CMDS/sierra AutoEx
 	$(CP) $(SUPPORTFILES) $(DISK),.
+	tocgen tOC.txt $(DISK),tOC
 	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)
 
 dskcopy: dsk
