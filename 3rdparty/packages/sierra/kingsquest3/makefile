@@ -8,6 +8,12 @@ DISK_1_40D	= kq3_d1_40d.dsk
 DISK_2_40D	= kq3_d2_40d.dsk
 DISK_3_40D	= kq3_d3_40d.dsk
 DISK_80D	= kq3_80d.dsk
+
+DISK_1_40D_NAME = "King's Quest III Disk 1"
+DISK_2_40D_NAME = "King's Quest III Disk 2"
+DISK_3_40D_NAME = "King's Quest III Disk 3"
+DISK_80D_NAME   = "King's Quest III"
+
 CMDS		= sierra mnln scrn shdw tocgen
 MD		= $(LEVEL2)/coco3/modules
 
@@ -38,16 +44,16 @@ BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 TEXTFILES_D1	= startup tOC_40d.txt
 TEXTFILES	= startup tOC_80d.txt
 
-SUPPORTFILES_D1	= logDir object picDir sndDir tOC_40d viewDir vol.0 \
+SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 vol.12 vol.14 words.tok
 
-SUPPORTFILES_D2	= logDir object picDir sndDir tOC_40d viewDir vol.0 \
+SUPPORTFILES_D2	= logDir object picDir sndDir viewDir vol.0 \
 		vol.5 vol.6 vol.7 vol.8 vol.11 vol.12 vol.14 words.tok
 
-SUPPORTFILES_D3	= logDir object picDir sndDir tOC_40d viewDir vol.0 \
+SUPPORTFILES_D3	= logDir object picDir sndDir viewDir vol.0 \
 		vol.5 vol.6 vol.7 vol.9 vol.11 vol.12 vol.14 words.tok
 
-SUPPORTFILES	= logDir object picDir sndDir tOC_80d viewDir vol.0 \
+SUPPORTFILES	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 vol.5 vol.6 vol.7 vol.8 vol.9 \
 		vol.11 vol.12 vol.14 words.tok
 
@@ -61,8 +67,8 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D)
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) -q $(DISK_1_40D) -n"King's Quest III Disk 1"
-	$(OS9FORMAT_DS80) -q $(DISK_80D) -n"King's Quest III"
+	$(OS9FORMAT_DS40) -q $(DISK_1_40D) -n$(DISK_1_40D_NAME)
+	$(OS9FORMAT_DS80) -q $(DISK_80D) -n$(DISK_80D_NAME)
 	$(MERGE) $(OS9BOOT_40D)>os9boot_40d
 	$(MERGE) $(OS9BOOT_80D)>os9boot_80d
 	$(MERGE) $(KERNEL)>kernel_1773
@@ -88,15 +94,15 @@ dsk:	all
 	$(CPL) $(TEXTFILES) $(DISK_80D),.
 	$(OS9RENAME) $(DISK_80D),tOC_80d.txt tOC.txt
 	$(CP) $(SUPPORTFILES_D1) $(DISK_1_40D),.
-	$(OS9RENAME) $(DISK_1_40D),tOC_40d tOC
-	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n"King's Quest III Disk 2"
+	tocgen $(DISK_1_40D),tOC.txt $(DISK_1_40D),tOC
+	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n$(DISK_2_40D_NAME)
 	$(CP) $(SUPPORTFILES_D2) $(DISK_2_40D),.
-	$(OS9RENAME) $(DISK_2_40D),tOC_40d tOC
-	$(OS9FORMAT_DS40) -q $(DISK_3_40D) -n"King's Quest III Disk 3"
+	tocgen $(DISK_1_40D),tOC.txt $(DISK_2_40D),tOC
+	$(OS9FORMAT_DS40) -q $(DISK_3_40D) -n$(DISK_3_40D_NAME)
 	$(CP) $(SUPPORTFILES_D3) $(DISK_3_40D),.
-	$(OS9RENAME) $(DISK_3_40D),tOC_40d tOC
+	tocgen $(DISK_1_40D),tOC.txt $(DISK_3_40D),tOC
 	$(CP) $(SUPPORTFILES) $(DISK_80D),.
-	$(OS9RENAME) $(DISK_80D),tOC_80d tOC
+	tocgen $(DISK_80D),tOC.txt $(DISK_80D),tOC
 
 dskcopy: dsk
 	$(CP) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D) $(DSKDIR)
