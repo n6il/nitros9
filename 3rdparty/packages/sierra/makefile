@@ -1,12 +1,12 @@
 include $(NITROS9DIR)/rules.mak
 
-dirs	= basic09 deskmate3 cc fsim2 koronis kq3 kyumgai lsl mm multivue rof subsim uucpbb
+dirs	= kq1 kq2 kq3 sq1 sq2 lsl
 
 # Make all components
 all:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
-	@$(ECHO) "*               3rd Party Packages               *"
+	@$(ECHO) "*             Sierra Adventure Games             *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
 	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
