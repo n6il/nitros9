@@ -253,6 +253,7 @@
 * 02/12/95 - Changed routines around L57EB to skip ORCC if not necessary (blo&
 *            bcs)
 *          - Changed LEAX to 8 bit from 16 @ L4B89
+* 06/07/14 - Changed Date$ to conform with Y2K changes in F$Time. RG
 ********************************
 
 * Version Numbers
@@ -11243,6 +11244,7 @@ L4FEC    lda   #$FF
          puls  pc,x      
 
 * DATE$ routine
+* Minor change to accommodate Y2K changes in year. RG
 L4FF8    pshs  x         
          leay  -6,y      
          leax  -6,y      
@@ -11250,7 +11252,15 @@ L4FF8    pshs  x
          stu   1,y       
          os9   F$Time     Get time packet
          bcs   L4FEC      Error, exit
-         bsr   L5021      Start converting
+*         bsr   L5021      Start converting
+         lda   ,x+
+         ldb   #'/
+         cmpa  #100
+         blo   Y19
+cnty     suba  #100
+         bhs   cnty
+         adda  #100
+Y19      bsr   L5025
          lda   #'/        Append / 
          bsr   L501F     
          lda   #'/       
