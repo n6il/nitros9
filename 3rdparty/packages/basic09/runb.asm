@@ -12,6 +12,8 @@
 *          2003/05/13  Robert Gault
 * Tables L000D, L00E9 removed some UNID, translated jump
 * vectors L00D9, L0442.
+*
+* 06/07/14 - Minor change to Date$ to accommodate F$Time Y2K changes. RG
          nam   RunB
          ttl   Basic09 Runtime
 
@@ -4904,7 +4906,15 @@ DATE$    pshs  x
          stu   $01,y
          os9   F$Time   
          bcs   L24BF
-         bsr   L24F4
+*         bsr   L24F4      Correction for Y2000 changes. RG
+         lda   ,x+
+         ldb   #$2F
+         cmpa  #100
+         blo   Y19
+cnty     suba  #100
+         bhs   cnty
+         adda  #100
+Y19      bsr   L24F8
          lda   #$2F
          bsr   L24F2
          lda   #$2F
