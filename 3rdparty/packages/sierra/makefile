@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-dirs	= kq1 kq2 kq3 sq1 sq2 lsl
+dirs	= kq1 kq2 kq3 kq4 pq1 sq1 sq2 lsl
 
 # Make all components
 all:
