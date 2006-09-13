@@ -4,7 +4,7 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DISK		= lsl.dsk
+DISK		= leisuresuitlarry.dsk
 DISK_NAME	= "Leisure Suit Larry"
 
 CMDS		= sierra mnln scrn shdw

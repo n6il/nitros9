@@ -47,11 +47,9 @@ TEXTFILES	= startup tOC_80d.txt
 SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 words.tok
 
-SUPPORTFILES_D2	= logDir object picDir sndDir viewDir vol.0 \
-		vol.2 words.tok
+SUPPORTFILES_D2	= object vol.0 vol.2
 
-SUPPORTFILES_D3	= logDir object picDir sndDir viewDir vol.0 \
-		vol.3 words.tok
+SUPPORTFILES_D3	= object vol.0 vol.3
 
 SUPPORTFILES	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.3 words.tok
@@ -96,10 +94,8 @@ dsk:	all
 	tocgen $(DISK_1_40D),tOC.txt $(DISK_1_40D),tOC
 	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n$(DISK_2_40D_NAME)
 	$(CP) $(SUPPORTFILES_D2) $(DISK_2_40D),.
-	tocgen $(DISK_1_40D),tOC.txt $(DISK_2_40D),tOC
 	$(OS9FORMAT_DS40) -q $(DISK_3_40D) -n$(DISK_3_40D_NAME)
 	$(CP) $(SUPPORTFILES_D3) $(DISK_3_40D),.
-	tocgen $(DISK_1_40D),tOC.txt $(DISK_3_40D),tOC
 	$(CP) $(SUPPORTFILES) $(DISK_80D),.
 	tocgen $(DISK_80D),tOC.txt $(DISK_80D),tOC
 

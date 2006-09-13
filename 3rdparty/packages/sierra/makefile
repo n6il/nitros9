@@ -1,6 +1,9 @@
 include $(NITROS9DIR)/rules.mak
 
-dirs	= kq1 kq2 kq3 kq4 pq1 sq1 sq2 lsl
+dirs	= blackcauldron goldrush \
+	kingsquest1 kingsquest2 kingsquest3 kingsquest4 \
+	leisuresuitlarry manhunter1 manhunter2 \
+	policequest1 policequest2 spacequest1 spacequest2
 
 # Make all components
 all:
