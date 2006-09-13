@@ -3,7 +3,7 @@ include $(NITROS9DIR)/rules.mak
 dirs	= blackcauldron goldrush \
 	kingsquest1 kingsquest2 kingsquest3 kingsquest4 \
 	leisuresuitlarry manhunter1 manhunter2 \
-	policequest1 policequest2 spacequest1 spacequest2
+	policequest1 spacequest1 spacequest2
 
 # Make all components
 all:
