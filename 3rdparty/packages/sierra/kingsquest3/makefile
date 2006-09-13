@@ -4,10 +4,10 @@ vpath %.asm ../objs
 
 DEPENDS		= ./makefile
 
-DISK_1_40D	= kq3_d1_40d.dsk
-DISK_2_40D	= kq3_d2_40d.dsk
-DISK_3_40D	= kq3_d3_40d.dsk
-DISK_80D	= kq3_80d.dsk
+DISK_1_40D	= kingquest3_d1_40d.dsk
+DISK_2_40D	= kingquest3_d2_40d.dsk
+DISK_3_40D	= kingquest3_d3_40d.dsk
+DISK_80D	= kingquest3_80d.dsk
 
 DISK_1_40D_NAME = "King's Quest III Disk 1"
 DISK_2_40D_NAME = "King's Quest III Disk 2"
@@ -47,11 +47,9 @@ TEXTFILES	= startup tOC_80d.txt
 SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 vol.12 vol.14 words.tok
 
-SUPPORTFILES_D2	= logDir object picDir sndDir viewDir vol.0 \
-		vol.5 vol.6 vol.7 vol.8 vol.11 vol.12 vol.14 words.tok
+SUPPORTFILES_D2	= object vol.0 vol.5 vol.6 vol.7 vol.8 vol.11 vol.12 vol.14
 
-SUPPORTFILES_D3	= logDir object picDir sndDir viewDir vol.0 \
-		vol.5 vol.6 vol.7 vol.9 vol.11 vol.12 vol.14 words.tok
+SUPPORTFILES_D3	= object vol.0 vol.5 vol.6 vol.7 vol.9 vol.11 vol.12 vol.14
 
 SUPPORTFILES	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 vol.5 vol.6 vol.7 vol.8 vol.9 \
@@ -97,10 +95,8 @@ dsk:	all
 	tocgen $(DISK_1_40D),tOC.txt $(DISK_1_40D),tOC
 	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n$(DISK_2_40D_NAME)
 	$(CP) $(SUPPORTFILES_D2) $(DISK_2_40D),.
-	tocgen $(DISK_1_40D),tOC.txt $(DISK_2_40D),tOC
 	$(OS9FORMAT_DS40) -q $(DISK_3_40D) -n$(DISK_3_40D_NAME)
 	$(CP) $(SUPPORTFILES_D3) $(DISK_3_40D),.
-	tocgen $(DISK_1_40D),tOC.txt $(DISK_3_40D),tOC
 	$(CP) $(SUPPORTFILES) $(DISK_80D),.
 	tocgen $(DISK_80D),tOC.txt $(DISK_80D),tOC
 

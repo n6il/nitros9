@@ -4,9 +4,9 @@ vpath %.asm ../objs
 
 DEPENDS		= ./makefile
 
-DISK_1_80D	= gr_d1_80d.dsk
-DISK_2_80D	= gr_d2_80d.dsk
-DISK_3_80D	= gr_d3_80d.dsk
+DISK_1_80D	= goldrush_d1_80d.dsk
+DISK_2_80D	= goldrush_d2_80d.dsk
+DISK_3_80D	= goldrush_d3_80d.dsk
 
 DISK_1_80D_NAME = "Gold Rush Disk 1"
 DISK_2_80D_NAME = "Gold Rush Disk 2"
