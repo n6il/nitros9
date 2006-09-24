@@ -23,6 +23,11 @@
 *          2003/11/05  Robert Gault
 * Corrected CC3IO info regards mouse. Changed from fcb to fdb low res/ right
 * Corrected OS9Defs to match.
+*
+*	   2006/07/06	P.Harvey-Smith.
+* Conditionally excluded port messages on Dragon Alpha, due to insufficient
+* space !
+*
 
          nam   Init
          ttl   NitrOS-9 Configuration module
@@ -78,6 +83,12 @@ DefDev   fcs   "/DD"
 DefCons  fcs   "/Term"
 DefBoot  fcs   "Boot"
 
+*
+* The DragonAlpha is so pushed for boot track space, that we have to exclude these
+* messages !
+*
+
+	IFEQ	dalpha
 OSStr    equ   *
          fcc   "NitrOS-9/"
          IFNE  H6309
@@ -118,6 +129,11 @@ InstStr  equ   *
          ENDC
          ENDC
          fcb   0
+	ELSE
+OSStr    equ   *
+InstStr  equ   *
+	fcb	0
+	ENDC
 
          emod  
 eom      equ   *
