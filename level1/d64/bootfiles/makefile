@@ -27,7 +27,7 @@ CD		= ../cmds
 
 DEPENDS		= ./makefile
 
-KERNEL_1773	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
+KERNEL_DRAGON	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		  $(MD)/boot_d64
 
 IDE	= $(3PD)/ide
@@ -35,54 +35,81 @@ SCSI	= $(3PD)/scsisys
 
 
 BOOTFILE_COVDG_DS40 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
 		$(MD)/rbf.mn $(MD)/ddisk.dr \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/d0_40d.dd $(MD)/d1_40d.dd \
-		$(MD)/d2_40d.dd \
+		$(MD)/d2_40d.dd $(MD)/d3_40d.dd\
 		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_DS40 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
 		$(MD)/rbf.mn $(MD)/ddisk.dr \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/d0_40d.dd $(MD)/d1_40d.dd \
-		$(MD)/d2_40d.dd \
+		$(MD)/d2_40d.dd $(MD)/d3_40d.dd\
 		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
+		$(MD)/sysgo_dd
 
 BOOTFILE_COVDG_DS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
 		$(MD)/rbf.mn $(MD)/ddisk.dr \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/d0_80d.dd $(MD)/d1_80d.dd \
-		$(MD)/d2_80d.dd \
+		$(MD)/d2_80d.dd $(MD)/d3_80d.dd \
 		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_DS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
 		$(MD)/rbf.mn $(MD)/ddisk.dr \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/d0_80d.dd $(MD)/d1_80d.dd \
-		$(MD)/d2_80d.dd \
+		$(MD)/d2_80d.dd $(MD)/d3_80d.dd\
 		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
+BOOTFILE_COVDG_SS40 = $(MD)/ioman \
+		$(MD)/rbf.mn $(MD)/ddisk.dr \
+		$(MD)/ddd0_40d.dd \
+		$(MD)/d0_40s.dd $(MD)/d1_40s.dd \
+		$(MD)/d2_40s.dd $(MD)/d3_40s.dd\
+		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
+		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_soft \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COHR_SS40 = $(MD)/ioman \
+		$(MD)/rbf.mn $(MD)/ddisk.dr \
+		$(MD)/ddd0_40d.dd \
+		$(MD)/d0_40s.dd $(MD)/d1_40s.dd \
+		$(MD)/d2_40s.dd $(MD)/d3_40s.dd\
+		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
+		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_soft \
+		$(MD)/sysgo_dd
+
+
 BOOTFILES	= bootfile_cohr_ds40 bootfile_covdg_ds40 \
-		  bootfile_cohr_ds80 bootfile_covdg_ds80
+		  bootfile_cohr_ds80 bootfile_covdg_ds80 \
+		  bootfile_cohr_ss40 bootfile_covdg_ss40
 		  
 KERNELS		= kernel
 
@@ -105,8 +132,14 @@ bootfile_covdg_ds80: 	$(BOOTFILE_COVDG_DS80) $(DEPENDS)
 bootfile_cohr_ds80: 	$(BOOTFILE_COHR_DS80) $(DEPENDS)
 				$(MERGE) $(BOOTFILE_COHR_DS80)>$@
 
-kernel:	$(KERNEL_1773) $(DEPENDS)
-		$(MERGE) $(KERNEL_1773)>$@
+bootfile_covdg_ss40: 	$(BOOTFILE_COVDG_SS40) $(DEPENDS)
+				$(MERGE) $(BOOTFILE_COVDG_SS40)>$@
+
+bootfile_cohr_ss40: 	$(BOOTFILE_COHR_SS40) $(DEPENDS)
+				$(MERGE) $(BOOTFILE_COHR_SS40)>$@
+
+kernel:	$(KERNEL_DRAGON) $(DEPENDS)
+		$(MERGE) $(KERNEL_DRAGON)>$@
 		$(PADROM) 4096 $@
 
 clean:

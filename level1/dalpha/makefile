@@ -1,5 +1,5 @@
 #
-#level1/d64/makefile
+#level1/dalpha/makefile
 #
 # 2005-04-24, P.Harvey-Smith.
 # 	Brought into line with CoCo makefile, for generating disk
@@ -29,7 +29,7 @@
 #	Updated to use new build system, for multiple supported platforms.
 #
 
-PORT = d64
+PORT = dalpha
 include $(NITROS9DIR)/rules.mak
 
 CPU		= 6809
@@ -60,16 +60,13 @@ DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
 DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
 
-BOOTFILE_COVDG		= bootfiles/bootfile_covdg_ds40
-BOOTFILE_COHR		= bootfiles/bootfile_cohr_ds40
+BOOTFILE_COVDG		= bootfiles/bootfile_covdg_ss80
+BOOTFILE_COHR		= bootfiles/bootfile_cohr_ss80
 BOOTFILE_COVDG_DS80	= bootfiles/bootfile_covdg_ds80
 BOOTFILE_COHR_DS80	= bootfiles/bootfile_cohr_ds80
-BOOTFILE_COVDG_SS40	= bootfiles/bootfile_covdg_ss40
-BOOTFILE_COHR_SS40	= bootfiles/bootfile_cohr_ss40
 
-BOOTFILE_DS40		= bootfiles/bootfile_co$(TERMWIDTH)_ds40
+BOOTFILE_SS80		= bootfiles/bootfile_co$(TERMWIDTH)_ss80
 BOOTFILE_DS80		= bootfiles/bootfile_co$(TERMWIDTH)_ds80
-BOOTFILE_SS40		= bootfiles/bootfile_co$(TERMWIDTH)_ss40
 
 KERNELFILE	= bootfiles/kernel
 DIRS		= cmds modules defs sys bootfiles
@@ -79,8 +76,6 @@ DIRS		= cmds modules defs sys bootfiles
 #DDIRS		= modules bootfiles defs
 
 CMDS		= $(shell $(CD) cmds; make showcocoobjs)
-CMDS525		= $(shell $(CD) cmds; make showdragon525objs)
-CMDS525_2	= $(shell $(CD) cmds; make showdragon525objs2)
 BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
 KERNEL		= $(shell $(CD) modules; make showkernel)
 SYSMODS		= $(shell $(CD) modules; make showsysmods)
@@ -95,16 +90,12 @@ DEFS		= $(shell $(CD) defs; make showobjs)
 ROOTFILES	= startup
 
 PACKAGENAME	= $(DISTROVER).zip
-DSK360K_1       = $(DISTROVER)_40d_1.dsk
-LDSK360K_1      = $(DISTRONAME)_40d_1.dsk
-DSK360K_2       = $(DISTROVER)_40d_2.dsk
-LDSK360K_2      = $(DISTRONAME)_40d_2.dsk
+DSK360K_1       = $(DISTROVER)_80s_1.dsk
+LDSK360K_1      = $(DISTRONAME)_80s_1.dsk
+DSK360K_2       = $(DISTROVER)_80s_2.dsk
+LDSK360K_2      = $(DISTRONAME)_80s_2.dsk
 DSK720K         = $(DISTROVER)_80d.dsk
 LDSK720K        = $(DISTRONAME)_80d.dsk
-#These are for the original SS40 Dragon drives, which still seem to be the most comon :(
-DSK180K_1	= $(DISTROVER)_40s_1.dsk
-DSK180K_2	= $(DISTROVER)_40s_2.dsk
-
 
 # Make all components
 all:
@@ -122,26 +113,26 @@ clean:	dskclean
 dskclean:
 	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(LDSK360K_1) \
 	$(DSK360K_2) $(LDSK360K_2) $(DSK720K) $(LDSK720K) \
-	$(DSK180K_1) $(DSK180K_2) 
+	
 
 
 dsk: all $(PACKAGENAME)
 
 dskcopy: dsk
-	$(CP) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(DSK180K_1) $(DSK180K_2) $(PACKAGENAME) $(DSKDIR)
+	$(CP) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(PACKAGENAME) $(DSKDIR)
 
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
 
-$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(DSK180K_1) $(DSK180K_2) ReadMe ChangeLog
+$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) ReadMe ChangeLog
 	$(ARCHIVE) $@ $^
 
-#Dragon 64/32+
+#Dragon Alpha internal drives are Single sided 80 track
 
 $(DSK360K_1):
 	$(RM) $@
-	$(OS9FORMAT_DS40) -q -dr $@ -n"NitrOS-9/6809 Dragon Level 1 Disk 1"
-	$(OS9GEN) $@ -d -b=$(BOOTFILE_DS40) -t=$(KERNELFILE)
+	$(OS9FORMAT_SS80) -q -dr $@ -n"NitrOS-9/6809 Dragon Alpha Level 1 Disk 1"
+	$(OS9GEN) $@ -d -b=$(BOOTFILE_SS80) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
@@ -159,7 +150,7 @@ $(DSK360K_1):
 
 $(DSK360K_2):
 	$(RM) $@
-	$(OS9FORMAT_DS40) -q -dr $@ -n"NitrOS-9/6809 Dragon Level 1 Disk 2"
+	$(OS9FORMAT_SS80) -q -dr $@ -n"NitrOS-9/6809 Dragon Alpha Level 1 Disk 2"
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/6809L1
 	$(MAKDIR) $@,NITROS9/6809L1/CMDS
@@ -245,31 +236,4 @@ $(DSK720K):
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
 	$(RM) $(LDSK720K)
 	$(SOFTLINK) $@ $(LDSK720K)
-
-
-$(DSK180K_1):
-	$(RM) $@
-	$(OS9FORMAT_SS40) -e -dr -q $@ -n"NitrOS-9/6809/Dragon Level 1 Disk 1"
-	$(OS9GEN) $@ -d -b=$(BOOTFILE_SS40) -t=$(KERNELFILE)
-	$(MAKDIR) $@,CMDS
-	$(MAKDIR) $@,SYS
-	$(CD) cmds; $(CP) $(CMDS525) ../$@,CMDS
-	$(foreach file, $(CMDS525), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
-	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
-	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
-	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
-	$(MAKDIR) $@,DEFS
-	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
-	$(CPL) $(STARTUP) $@,startup
-	$(OS9ATTR_TEXT) $@,startup
-
-$(DSK180K_2):
-	$(RM) $@
-	$(OS9FORMAT_SS40) -e -dr -q $@ -n"NitrOS-9/6809/Dragon Level 1 Disk 2"
-	$(MAKDIR) $@,CMDS
-	$(CD) cmds; $(CP) $(CMDS525_2) ../$@,CMDS
-	$(foreach file, $(CMDS525_2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 

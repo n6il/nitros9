@@ -1,5 +1,5 @@
 #
-#modules/makefile
+#level1/dalpha/modules/makefile
 #
 # 2005-04-24, P.Harvey-Smith, 
 #	made descriptors for both 40 & 80 track drives for Dragon 64.
@@ -25,7 +25,8 @@ include $(NITROS9DIR)/rules.mak
 
 vpath %.asm $(LEVEL1)/modules
 
-AFLAGS			+= -I$(LEVEL1)/modules
+AFLAGS		+= -I$(LEVEL1)/modules
+
 CLOCKELIM       = -aRTCElim=1
 CLOCKDISTO2     = -aRTCDsto2=1
 CLOCKDISTO4     = -aRTCDsto4=1
@@ -79,7 +80,7 @@ krn krnp2:
 	$(CP) kernel/$@ .
 
 boot_dalpha:	boot_d64.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=$(STEP)
 
 # Clocks
 clock_60hz: clock.asm
@@ -98,13 +99,13 @@ clock2_cloud9: clock2_ds1315.asm
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
 		-aInterlv=2 -aSAS=8 -aDensity=1 -aStep=0
 SSDD40		= -aCyls=40 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1 -aStep=0
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aStep=$(STEP)
 DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1 -aStep=0
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aStep=$(STEP)
 SSDD80		= -aCyls=80 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35 -aStep=0
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35 -aStep=$(STEP)
 DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35 -aStep=0
+		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35 -aStep=$(STEP)
 
 #Dragon Alpha
 # Internal drives on Alpha are Single Sided 80 track.
