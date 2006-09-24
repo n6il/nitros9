@@ -47,7 +47,7 @@
 	use 	defsfile
         endc
 
-	IFNE	DragonAlpha
+	IFNE	dalpha
 
 * Dragon Alpha has a third PIA at FF24, this is used for
 * Drive select / motor control, and provides FIRQ from the
@@ -177,7 +177,7 @@ FLOPPY   equ   1
 
 ;start   equ   	*
 	
-HWInit  clra  	 		 
+HWInit  clra  	
         ldx   	#CMDREG		; Force inturrupt
         lda   	#FrcInt
         sta   	,x
@@ -185,7 +185,7 @@ HWInit  clra
         lda   	,x
         lda   	piadb		; Clear DRQ from WD.
 
-	IFNE	DragonAlpha
+	IFNE	dalpha
 	lda	#NMICA2Dis	; Set PIA2 CA2 as output & disable NMI
 	sta	PIA2CRA
 	ENDC
@@ -201,7 +201,7 @@ HWInit  clra
         ora   	WhichDrv,pcr	; OR in selected drive
         sta   	drvsel,u	; save drive selection byte
 	
-	IFNE	DragonAlpha
+	IFNE	dalpha
 	lbsr	AlphaDskCtl
 	ELSE
 	sta   	>DSKCTL
@@ -289,7 +289,7 @@ DoReadData
 	lda	drvsel,u	
 	ora	#NMIEn
 	  
-	IFNE	DragonAlpha
+	IFNE	dalpha
 	lbsr	AlphaDskCtl
 	ELSE
 	sta   	<dpdskctl
@@ -299,7 +299,7 @@ DoReadData
 	orb	side,u		; mask in side select
 	stb   	<dpcmdreg
 
-	IFNE	DragonAlpha
+	IFNE	dalpha
 	lda	#NMICA2En	; Enable NMI
 	sta	<DPPIA2CRA	
 	ENDIF
@@ -320,7 +320,7 @@ NMIService
 	leas  	R$Size,s	; Drop saved Regs from stack
         lda   	#MotorOn
 
-	IFNE	DragonAlpha
+	IFNE	dalpha
 	lbsr	AlphaDskCtl
 	lda	#NMICA2Dis	; Disable NMI
 	sta	<DPPIA2CRA
@@ -417,7 +417,7 @@ CommandWait
 MotorOnCmdB    
 	lda	drvsel,u	; Turn on motor
 	
-	IFNE	DragonAlpha
+	IFNE	dalpha
 	bsr	AlphaDskCtl
 	ELSE
 	sta   	>DSKCTL
@@ -432,7 +432,7 @@ Delay   lbsr  	Delay2
 Delay2  lbsr  	Delay3
 Delay3  rts   
 
-	IFNE	DragonAlpha
+	IFNE	dalpha
 
 
 ;
@@ -448,9 +448,9 @@ AlphaDskCtl
 	clra			; No, turn off other bits.
 MotorRunning
 	anda	#Mask58		; Mask out 5/8 bit to force the use of 5.25" clock
-	sta	,s	
+	sta	-1,s	
 
-        orcc  #$50		; disable inturrupts
+        orcc  	#$50		; disable inturrupts
 	
 	ldx	#PIA2DA
 	lda	#AYIOREG	; AY-8912 IO register
@@ -460,7 +460,7 @@ MotorRunning
 		
 	clr	,x		; Idle AY
 	
-	lda	,s+		; Fetch saved Drive Selects etc
+	lda	-1,s		; Fetch saved Drive Selects etc
 	sta	2,x		; output to PIA
 	ldb	#AYWriteReg	; Write value to latched register
 	stb	,x
