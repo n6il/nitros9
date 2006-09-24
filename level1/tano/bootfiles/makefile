@@ -35,47 +35,47 @@ SCSI	= $(3PD)/scsisys
 
 
 BOOTFILE_COVDG_DS40 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd \
 		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_DS40 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
 		$(MD)/ddd0_40d.dd \
 		$(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd \
 		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 
 BOOTFILE_COVDG_DS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/d0_80d.dd $(MD)/d1_80d.dd \
 		$(MD)/d2_80d.dd \
 		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_DS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/d0_80d.dd $(MD)/d1_80d.dd \
 		$(MD)/d2_80d.dd \
 		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
