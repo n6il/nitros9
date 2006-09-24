@@ -101,7 +101,7 @@
          use   defsfile
          endc
 
-		IFNE	DragonAlpha
+		IFNE	dalpha
 
 * Dragon Alpha has a third PIA at FF24, this is used for
 * Drive select / motor control, and provides FIRQ from the
@@ -244,7 +244,7 @@ Init
 	clra
 	sta	>D.DskTmr	; Zero motor timer
 	
-	IFNE	DragonAlpha	; Turn off all drives
+	IFNE	dalpha	; Turn off all drives
 	lbsr	AlphaDskCtl
 
 	lda	#NMICA2Dis	; Set PIA2 CA2 as output & disable NMI
@@ -446,7 +446,7 @@ L00DE   orcc  	#$50		; Mask inturrupts
 	
         ORB   	>SideSel,U 	; Set up Side		 
          
-	IFNE	DragonAlpha	; Turn on drives & NMI
+	IFNE	dalpha	; Turn on drives & NMI
 	lbsr	AlphaDskCtl
         stb   	<DPCmdReg	; issue command to controler
 	lda	#NMICA2En	; Enable NMI
@@ -464,7 +464,7 @@ L00DE   orcc  	#$50		; Mask inturrupts
 ;
 
 RestoreSavedIO
-	IFNE	DragonAlpha	
+	IFNE	dalpha	
 	lda	#NMICA2Dis	; Disable NMI (Alpha)
 	sta	<DPPIA2CRA
 	ENDC
@@ -472,7 +472,7 @@ RestoreSavedIO
 	lda   	>DrivSel,u	; Deselect drives, but leave motor on
         ora   	#MotorOn
 	
-	IFNE	DragonAlpha	; Turn off drives & NMI
+	IFNE	dalpha	; Turn off drives & NMI
 	lbsr	AlphaDskCtl
 	ELSE
         sta   	<DPDskCtl
@@ -806,7 +806,7 @@ FDCCmdMotorOn
  	lda   	#MotorOn	; Turn on motor
         ora   	>DrivSel,u
 
-	IFNE	DragonAlpha
+	IFNE	dalpha
 	lbsr	AlphaDskCtl
 	ELSE
         sta   	>DskCtl
@@ -857,7 +857,7 @@ IRQSvc  pshs  	a
         bsr   	InsVIRQ
         bra   	IRQOut
 L0509    
-	IFNE	DragonAlpha
+	IFNE	dalpha
 	lbsr	AlphaDskCtl
 	ELSE
         sta   	>DskCtl
@@ -957,7 +957,7 @@ StartMotor
         bne   	MotorsRunning				
         lda   	#MotorOn	; else spin up
 		 
-        IFNE	DragonAlpha
+        IFNE	dalpha
 	bsr	AlphaDskCtl
 	ELSE
         sta   	>DskCtl
@@ -1032,7 +1032,7 @@ SetDouble
 ExitDensity	
 	puls	a,b,pc
 
-	IFNE	DragonAlpha
+	IFNE	dalpha
 
 ; Translate DragonDos Drive select mechinisim to work on Alpha 
 ; Takes byte that would be output to $FF48, reformats it and 
