@@ -130,7 +130,7 @@ $(DSK360K_2):
 
 $(DSK720K):
 	$(RM) $@
-	$(OS9FORMAT_DS80) -dr -q $@ -n"NitrOS-9/6809 Level 1"
+	$(OS9FORMAT_DS80) -dr -q -c2 $@ -n"NitrOS-9/6809 Level 1"
 	$(OS9GEN) $@ -d -b=$(BOOTFILE_COVDG_DS80) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
