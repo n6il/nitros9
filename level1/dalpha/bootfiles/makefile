@@ -1,5 +1,5 @@
 #
-#bootfiles/makefile
+#level1/dalpha/bootfiles/makefile
 #
 # 2005-04-24, P.Harvey-Smith.
 #	Added kernels for both DS40 and DS80 disks for Dragon 64
