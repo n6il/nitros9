@@ -1,44 +1,27 @@
 PORT = coco
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm $(LEVEL1)/cmds:$(3RDPARTY)/packages/basic09
+vpath %.asm $(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
 
 DEPENDS		= ./makefile
 
-BASIC09FILES	= runb.asm gfx.asm inkey.asm syscall.asm
+AFLAGS		+= -i=$(NITROS9DIR)/3rdparty/packages/basic09
+
+BASIC09FILES	= basic09.asm runb.asm gfx.asm inkey.asm syscall.asm
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirsort disasm \
 		display dmode dsave dump echo edit error exbin format \
 		free grfdrv help ident iniz irqs link list load login makdir \
 		megaread mdir merge mfree mpi os9gen padrom park printerr procs prompt pwd pxd \
-		rename runb save setime shellplus shell_21 sleep \
+		rename save setime shellplus shell_21 sleep \
 		tee tmode touch tsmon tuneport unlink verify xmode
 
-DRAGONCMDS	= asm attr backup binex build cmp cobbler_dragon copy cputype \
-		date dcheck debug ded deiniz del deldir devs dir dirsort disasm \
-		display dmode dsave dump echo edit error exbin format \
-		free grfdrv help ident iniz irqs link list load login makdir \
-		megaread mdir merge mfree mpi os9gen padrom park printerr procs prompt pwd pxd \
-		rename runb save setime shellplus shell_21 sleep \
-		tee tmode touch tsmon tuneport unlink verify xmode
-
-DRAGON525CMDS	= asm attr backup binex build cmp cobbler copy date del deldir \
-		dir display dmode dsave dump echo exbin format free ident link list \
-		load login makdir mdir merge mfree os9gen printerr procs pwd pxd rename \
-		save setime shell_21 sleep tee tmode tsmon unlink verify xmode acia51 dmode        
-
-DRAGON525CMDS2	= cputype dcheck debug ded deiniz devs dirsort disasm edit error \
-		grfdrv help iniz irqs megaread mpi os9gen padrom park printerr prompt \
-		runb shellplus shell_21 touch tuneport 
-
+CMDS_D2		= basic09 runb gfx gfx2 inkey syscall
 
 SUBS		= gfx inkey syscall
-ALLOBJS		= $(CMDS) $(DRAGONCMDS) $(SUBS)
+ALLOBJS		= $(CMDS) $(CMDS_D2) $(SUBS)
 
 all:	$(ALLOBJS)
-
-alldragon: $(DRAGONCMDS) $(SUBS)
-
 
 pwd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
@@ -52,26 +35,17 @@ tmode:	xmode.asm
 pxd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPXD=1
 	
-cobbler_dragon: cobbler.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)cobbler_dragon -aDRAGON=1
-
 clean:
 	$(RM) $(ALLOBJS)
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
 
+showobjs:
+	@$(ECHO) $(CMDS)
+
+showobjs_d2:
+	@$(ECHO) $(CMDS_D2)
+
 showallobjs:
 	@$(ECHO) $(ALLOBJS)
-
-showcocoobjs:
-	@$(ECHO) $(CMDS) $(SUBS)
-
-showdragonobjs:
-	@$(ECHO) $(CMDS) $(DRAGONCMDS)
-
-showdragon525objs:
-	@$(ECHO) $(DRAGON525CMDS) $(SUBS)
-
-showdragon525objs2:
-	@$(ECHO) $(DRAGON525CMDS2) $(SUBS)
