@@ -16,6 +16,7 @@ KERNELFILE_50HZ	= bootfiles/kernel_1773_50hz
 DIRS		= cmds modules defs sys bootfiles
 
 CMDS		= $(shell $(CD) cmds; make showobjs)
+CMDS_D2		= $(shell $(CD) cmds; make showobjs_d2)
 BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
 KERNEL		= $(shell $(CD) modules; make showkernel)
 SYSMODS		= $(shell $(CD) modules; make showsysmods)
@@ -121,6 +122,9 @@ $(DSK360K_1_50HZ):
 $(DSK360K_2):
 	-$(RM) $@
 	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 2 Disk 2"
+	$(MAKDIR) $@,CMDS
+	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
+	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
@@ -166,6 +170,8 @@ $(DSK720K):
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
+	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
@@ -219,6 +225,8 @@ $(DSK720K_50HZ):
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
+	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
