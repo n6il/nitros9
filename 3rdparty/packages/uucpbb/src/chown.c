@@ -47,7 +47,7 @@ QQ unsigned myuid;
 unsigned getuserid();
 
 
-main (argc, argv)
+int main (argc, argv)
 int argc;
 char **argv;
 {

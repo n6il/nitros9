@@ -115,7 +115,7 @@ QQ char *defw = DEFWORKDIR,             /* default data and execution */
 /*  FUNCTION    main()
     PURPOSE     main loop  */
 
-main()
+int main()
 {
      int i;
 

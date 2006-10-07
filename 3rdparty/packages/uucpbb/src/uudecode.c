@@ -17,7 +17,7 @@ char *decode();
 char buf[256];
 
 
-main (argc, argv)
+int main (argc, argv)
 int   argc;
 char  *argv[];
 {

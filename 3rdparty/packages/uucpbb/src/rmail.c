@@ -70,7 +70,7 @@ void openlog(), closelog(), logerror();
 long _gs_size();
 
 
-main (argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 {

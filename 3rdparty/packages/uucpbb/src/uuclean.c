@@ -96,7 +96,7 @@ struct fildes fdbuf;                        /* file descriptor buffer */
 void mail_owner();
 void mvlogs();
 
-main (argc, argv)
+int main (argc, argv)
 int argc;
 char *argv[];
 {
@@ -310,7 +310,7 @@ char *dirname;
    Slightly modified by Mark Griffith to return a time the number of days less
    than the current time as passed in offset. */
 
-rtime (offset, datebuff)
+int rtime (offset, datebuff)
 long offset;
 struct sgtbuf *datebuff;
 {

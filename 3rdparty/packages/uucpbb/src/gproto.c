@@ -33,7 +33,7 @@
 
 
 /* used for a quick calculation of packet sizes, only in this file */
-static uucpbufsiz[9] = {0, 32, 64, 128, 256, 512, 1024, 2048, 4096};
+static int uucpbufsiz[9] = {0, 32, 64, 128, 256, 512, 1024, 2048, 4096};
 
 /* This variable tells swin_flush() to accept a LDATA(HY) in response to
    a LDATA(HY) sent by us.  Normally, only an RR or RJ are accepted -- BAS */

@@ -254,7 +254,7 @@ int secs;
 
 
 
-static logerror (msg)
+static int logerror (msg)
 char *msg;
 {
      fprintf (log, "%s %s %s\n", sender, gtime(), msg);

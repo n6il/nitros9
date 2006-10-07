@@ -56,7 +56,7 @@ char *getword(), getresponse(), *getarticlepath(), *fixgroupname();
 char *mailer = MAILER;
 
 
-main (argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 {

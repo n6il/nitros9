@@ -34,7 +34,7 @@
 QQ int debuglvl = 0;
 struct mbuf *getgroups();
 
-main(argc,argv)
+int main(argc,argv)
 int argc;
 char *argv[];
 {

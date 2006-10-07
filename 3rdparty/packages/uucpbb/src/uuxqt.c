@@ -64,7 +64,7 @@ char fname[100];
 void openlog(), closelog();
 
 
-main (argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 {

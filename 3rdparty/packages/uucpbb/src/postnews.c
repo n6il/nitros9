@@ -67,7 +67,7 @@ char reference[256],article[100], distrib[50], localgroup[256];
 char tempfile[100];                /* moved from postgroup() so interrupt() */
                                    /* can clean up -- REB */
 
-main (argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 {
