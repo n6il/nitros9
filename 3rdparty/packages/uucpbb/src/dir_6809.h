@@ -20,4 +20,4 @@ typedef struct {
 extern DIR           *opendir();
 extern DIRECT        *readdir();
 extern long          telldir();
-extern /* void */    seekdir(), closedir();
+extern int /* void */    seekdir(), closedir();

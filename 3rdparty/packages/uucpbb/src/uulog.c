@@ -45,7 +45,7 @@ char sysname[9], username[20], logfile[256], fsysname[9], fusername[20];
 void usage(), fatal();
 
 
-main (argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 {

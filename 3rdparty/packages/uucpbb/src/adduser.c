@@ -139,7 +139,7 @@ QQ FILE *fp;                               /*                         */
 QQ PWENT *entry;                           /*                         */
 
 
-main (argc, argv)
+int main (argc, argv)
 int argc;
 char *argv[];
 {

@@ -96,7 +96,7 @@ int sig;
 
 
 
-main()
+int main()
 {
      char replyto[256], address[256], line[BUFSIZE], buff[BUFSIZE];
      register char *lp;

@@ -30,7 +30,7 @@
 #endif
 
 
-main()
+int main()
 {
      register PWENT *pwentry;
      unsigned myuid;

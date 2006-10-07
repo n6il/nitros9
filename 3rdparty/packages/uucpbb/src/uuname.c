@@ -28,7 +28,7 @@ char buf[256];
 void showlocalname(), showsystems(), fatal(), usage();
 
 
-main (argc, argv)
+int main (argc, argv)
 int argc;
 char *argv[];
 {
