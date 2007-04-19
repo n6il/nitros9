@@ -2635,7 +2635,7 @@ L1BC7    ldx   >$0111,s
          tstb  
          lbeq  L1DF4
          ldb   ,s
-         cmpb  #'%'             ; $25
+         cmpb  #'%             ; $25
          beq   L1BF4
          ldd   >$010D,s
          addd  #$0001
@@ -2655,7 +2655,7 @@ L1BF4    leax  $0D,s
          stb   $08,s
          clr   $06,s
          ldb   [>$0111,s]
-         cmpb  #'-'             ; $2D
+         cmpb  #'-             ; $2D
          bne   L1C1C
          ldd   >$0111,s
          addd  #$0001
@@ -2681,7 +2681,7 @@ L1C42    clrb
          clra  
          std   $02,s
 L1C46    ldb   [>$0111,s]
-         cmpb  #'.'            ; $2E
+         cmpb  #'.            ; $2E
          bne   L1C68
          ldd   >$0111,s
          addd  #$0001
@@ -2699,17 +2699,17 @@ L1C68    ldx   >$0111,s
          ldb   ,s
          clra  
          lbsr  L1E87
-         cmpb  #'d'          ; $64
+         cmpb  #'d          ; $64
          beq   L1C9D
-         cmpb  #'u'          ; $75
+         cmpb  #'u          ; $75
          beq   L1CCA
-         cmpb  #'x'          ; $78
+         cmpb  #'x          ; $78
          lbeq  L1CD0
-         cmpb  #'o'          ; $6F
+         cmpb  #'o          ; $6F
          lbeq  L1CD6
-         cmpb  #'c'          ; $63
+         cmpb  #'c          ; $63
          lbeq  L1D00
-         cmpb  #'s'          ; $73
+         cmpb  #'s          ; $73
          lbeq  L1D22
          lbra  L1DDD
 
