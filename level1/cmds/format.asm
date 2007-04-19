@@ -590,9 +590,9 @@ L0243    stb   <interlv   save it
                          
 DoFormat                 
          lda   ,x+        Get next char
-         cmpa  #'D'       Do a dragon disk ?
+         cmpa  #'D       Do a dragon disk ?
          beq   DoFmtDragon
-         cmpa  #'d'      
+         cmpa  #'d      
          bne   DoFmtDragon
          clr   IsDragon,u Mark it as a normal CoCo (or other) disk
          clrb            
