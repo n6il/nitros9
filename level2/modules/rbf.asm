@@ -1881,7 +1881,7 @@ L0A0C    leas  $02,s		purge attributes from stack
          coma  			set carry
          puls  pc,x		restore & return
 
-L0A11    ldb   #E$Share,s	get shareable file error
+L0A11    ldb   #E$Share		get shareable file error
          bra   L0A0C		return
 
 L0A15    ldb   1,s		get directory bits
