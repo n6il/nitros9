@@ -580,10 +580,10 @@ L03A1    pshs  d          Preserve write char & GrfDrv function code
 L0101    ldx   >WGlobal+G.GrfEnt     Get GrfDrv entry address
          orcc  #Entire    Set up 'pull all regs' for RTI
          IFNE  H6309
-         pshs  e
+         pshsw
          tfr   cc,e
          ste   >WGlobal+g0005
-         puls  e
+         pulsw
          ELSE
          pshs  d
          ldd   >GrfMem+gr00B5
