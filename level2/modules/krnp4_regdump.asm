@@ -57,10 +57,9 @@ nextname fcc   /krnp5/    next module name to link to
          fcb   C$CR
 
 regdmp   equ   *
-         IFNE  H6309
-         pshs  cc,a,b,e,f,dp,x,y,u save all registers
-         ELSE
          pshs  cc,a,b,dp,x,y,u save all registers
+         IFNE  H6309
+         pshsw
          ENDC
          tfr   u,y        transfer addresses
          leas  -60,s      back up for some variable storage
@@ -106,10 +105,9 @@ clrloop  sta   ,x+        initialize a space
          lbsr  reg060     send a <CR>
          leas  60,s       restore stack pointer
          IFNE  H6309
-         puls  cc,a,b,e,f,dp,x,y,u,pc restore all registers and return
-         ELSE
-         puls  cc,a,b,dp,x,y,u,pc restore all registers and return
+         pulsw
          ENDC
+         puls  cc,a,b,dp,x,y,u,pc restore all registers and return
 
 * Dump a register in "D"
 * X = Control Table Location
