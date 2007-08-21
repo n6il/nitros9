@@ -1439,7 +1439,7 @@ do.grf   sts   >WGlobal+G.GrfStk    stack pointer for GrfDrv
          ldb   $017E
          stb   R$CC,s
          ENDC
-         jmp   [>D.FLip1]   flip to grfdrv and execute it
+         jmp   [>D.Flip1]   flip to grfdrv and execute it
 
 * GrfDrv will execute function, and then call [D.Flip0] to return here. It 
 * will use an RTS to return to the code that called here in the first place
