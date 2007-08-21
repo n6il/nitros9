@@ -3,7 +3,7 @@ include $(NITROS9DIR)/rules.mak
 
 DEPENDS		= ./makefile
 
-DEFOPTS		= -ls -x -z -aLevel=2
+DEFOPTS		= -ls -x -z -aLevel=2 -aH6309=1
 PERMDEFS	= Defsfile
 DEFS		= OS9Defs RBFDefs SCFDefs SysType VTIODefs
 ALLOBJS		= $(DEFS) $(PERMDEFS)
