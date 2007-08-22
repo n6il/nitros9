@@ -43,6 +43,13 @@
 *   1      2006/03/04  Boisy G. Pitre
 * Added detection of CTRL-ALT-BREAK to invoke system debugger.
 * Renamed to VTIO and reset edition to 1.
+*
+*   2      2007/08/22  Boisy G. Pitre
+* Fixed bug where an error other than E$MNF when linking to CoWin would be ignored.
+* Now, if the error returned from linking CoWin is not E$MNF, we don't bother to look
+* for CoGrf... we just return immediately.
+* 
+* Renamed to VTIO and reset edition to 1.
 
          nam   VTIO
          ttl   Video Terminal I/O Driver for CoCo 3
@@ -56,7 +63,7 @@
 tylg     set   Drivr+Objct
 atrv     set   ReEnt+rev
 rev      set   0
-edition  set   1
+edition  set   2
 
 * Comment out next line for global keyboard mouse; otherwise, it's on/off
 * on a per-window basis.
@@ -1531,6 +1538,17 @@ FindWind pshs  u,y		preserve regs
 
 *++
          bcc   ok
+
+* Bug fix by Boisy on 08/22/2007 - The three lines below were inserted to check to see
+* the nature of the error that occurred fromfailing to link to CoWin/CoGrf.  Since CoWin/CoGrf
+* also load GrfDrv, an error other than E$MNF might arise.  We expect an E$MNF if CoGrf is in
+* place instead of CoWin, but any other error just gets blown away without the three lines below.
+* Now, if any error other than E$MNF is returned from trying to link to CoWin, we don't bother trying
+* to link to CoGrf... we just return the error as is.
+         cmpb  #E$MNF		compare the error to what we expect
+         orcc  #Carry		set the carry again (cmpb above clears it)
+         bne   ok		if the error in B is not E$MNF, just leave this routine
+
          leax  <CoGrf,pcr	point to CoGrf name
          lda   #$80
          bsr   L08D4
