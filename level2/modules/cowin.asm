@@ -22,6 +22,10 @@
 * is killed with a display 1b 24 and restarted with a display 1b 20; ie
 * DWSet. Changes are compatible with MultiVue and all test procedures
 * tried. Short Sleep added to stabilize the screen change.
+*
+*  2       2007/08/22  Boisy G. Pitre
+* Fixed crash bug in case where grfdrv wasn't loaded.  See comments at
+* Term label.
 
          nam   CoGrf/CoWin
          ttl   NitrOS-9 Window Module
@@ -33,7 +37,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  equ   1
+edition  equ   2
 
 * Color table for 3D look stuff & others - WILL NEED TO SWAP 1 & 2 FOR MENUS
 * This should now match VIEW's color table
@@ -396,7 +400,18 @@ L0282    rts              Return
 * Terminate routine
 * Entry: U=Static mem ptr
 *        Y=Path dsc. ptr
-Term     clra             Get start window # for de-allocate
+Term
+* Next two lines added by Boisy on 08/22/2007
+* This test is necessary to prevent a crash in the case that grfdrv cannot be
+* loaded.  If grfdrv isn't properly initialized, then the high bit of BCFFlg will
+* be clear.  Without this check, the test for Wt.STbl,y to be equal to $FF would fail,
+* and a DWEnd would be attempted.  Since grfdrv's init routine sets Wt.STBl,y to $FFFF
+* for each window table entry, this wasn't getting done, and the call to DWEnd would
+* be vectored to grfdrv, which wasn't to be found!
+         tst   WGlobal+G.BCFFlg was Grfdrv found? (hi bit set if so)
+         bpl   TermEx           if not, no nothing got initialized, so leave quietly
+*
+         clra             Get start window # for de-allocate
          ldb   V.DWNum,u    Get device window # from static mem
          pshs  u,y        Preserve static mem & path dsc. ptrs
          bsr   L026A      De-allocate it from window map
@@ -473,7 +488,7 @@ L02B9    equ   *
          ldd   #$02FF     Size of graphics tables
          os9   F$SRtMem   Return graphics table memory to system
          bcs   L02F2      If error, exit with it
-         clrb  
+TermEx   clrb  
          rts   
 
          IFEQ  H6309
@@ -1442,7 +1457,7 @@ L076D    pshs  x,y        Preserve window table ptr & path dsc. ptr
          leas  2,s        Eat window device dsc. ptr
          ldd   WT.STbl,y  Get screen table ptr of process window
          puls  y          Get window tbl ptr
-         std   WT.Stbl,y  Put into current window's screen tbl ptr
+         std   WT.STbl,y  Put into current window's screen tbl ptr
          clra             No error
          rts              return
 
