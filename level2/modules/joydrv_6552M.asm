@@ -16,9 +16,9 @@
 
 MPI      set   1
 
-         ifp1
+         IFP1
          use   defsfile
-         endc
+         ENDC
 
 tylg     set   Systm+Objct   
 atrv     set   ReEnt+rev
@@ -132,10 +132,10 @@ L008F    sta   b,u
          andb  >L008A,pcr
          bne   L00DF
 
-         ifeq  MPI-1
+         IFEQ  MPI-1
          lda   #$03
          sta   MPI.Slct
-         endc
+         ENDC
 
          puls  pc,cc
 

@@ -113,10 +113,10 @@
 *
 *   Global equates
 *
-         ifp1  
+         IFP1  
          use   defsfile
          use   pipedefs
-         endc  
+         ENDC  
 
 *
 *   Local Equates
@@ -444,7 +444,7 @@ ChkLoop  pshs  X
 
 NewPipe  ldy   10,S       ;Get PD pointer
 
-         ifeq  (PIPEDIR-YESDIR)
+         IFEQ  (PIPEDIR-YESDIR)
          lda   PD.MOD,Y   ;Check pipe attributes
          bita  #DIR.
          beq   NEWP1
@@ -453,7 +453,7 @@ NewPipe  ldy   10,S       ;Get PD pointer
 
          lbsr  SizDirP
 *         beq    XYZZY       ;Special if no pipes created
-         endc  
+         ENDC  
 
 *   Normal (non-dir) processing
 
@@ -639,7 +639,7 @@ OldPipe  equ   *
 *   Update IOMAN variables.
 *   Reg-Y = where IOMAN thinks the PD is.
 
-         ifeq  (CAUTION-CAREFUL)
+         IFEQ  (CAUTION-CAREFUL)
          cmpy  (14+IOMAGIC),S ;Make sure the stack looks right (PD matches)
          beq   OKMagic
 
@@ -649,7 +649,7 @@ OldPipe  equ   *
          ldb   #E$Bug
          leas  14,S
          rts   
-         endc  
+         ENDC  
 
 *   Stack is right; go fix PD pointers
 
@@ -678,7 +678,7 @@ OpnXit   equ   *
          sta   PD.CNT,Y   ;Get rid of any artificial openings
          clr   PD.Keep,Y
 
-         ifeq  (PIPEDIR-YESDIR)
+         IFEQ  (PIPEDIR-YESDIR)
 *   Handle prefill of pipe directory buffer
 
          lda   PD.Mod,Y   ;Is this a DIR. open?
@@ -686,7 +686,7 @@ OpnXit   equ   *
          beq   OpnXt2
 
          lbsr  FilDirP    ;Send directory info to pipe
-         endc  
+         ENDC  
 
 OpnXt2   ldu   12,S       ;Point at caller's registers
          ldd   4,S        ;Get revised path name pointer
@@ -1079,7 +1079,7 @@ G.EOF    bsr   G.Siz
 
 *   Not SS.EOF.  Check for SS.FD
 
-         ifeq  (PIPEDIR-YESDIR)
+         IFEQ  (PIPEDIR-YESDIR)
 NotSSEOF cmpa  #SS.FD
          bne   NotSSFD
 
@@ -1087,9 +1087,9 @@ NotSSEOF cmpa  #SS.FD
 
          lbsr  DoSSFD
          bra   G.OK       ;Successful always
-         else  
+         ELSE  
 NotSSEOF equ   *
-         endc  
+         ENDC  
 
 *   Not SS.FD.  Check for SS.ScSiz
 
@@ -1694,7 +1694,7 @@ MovSet   os9   F$Move     ;Do inter-process block move
 
          rts   
 
-         ifeq  (PIPEDIR-YESDIR)
+         IFEQ  (PIPEDIR-YESDIR)
 
 *
 *   Find out how many pipes there are for the
@@ -1854,7 +1854,7 @@ SSFD01   clr   ,-S
          leas  (16+5),S
          puls  U,X,Y,D,PC
 
-         endc  
+         ENDC  
 
          emod  
 
