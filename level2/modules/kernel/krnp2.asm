@@ -63,9 +63,9 @@
 ** If Network I/O ptrs are disabled, F$Fork runs 72 cycles faster
 Network  equ    0             Set to 1 to enable network I/O ptrs
 
-         ifp1
+         IFP1
          use    defsfile
-         endc
+         ENDC
 
 TC9      set    false       "true" use TC-9 6309 trap vector
 Edition  equ    18
@@ -77,7 +77,7 @@ Revision equ    6
 MName    fcs    /KrnP2/
          fcb    Edition
 
-         ifeq   TC9-1
+         IFEQ   TC9-1
 * Entry: None
 * Exit : Process killed & register dump produced for user
 Trap     bitmd  #%01000000  illegal instruction?
@@ -166,17 +166,17 @@ Uday     lda    ,x+
          ldb    $0D,x
          std    >$FFA5      map 'em back in
          puls   cc,u,pc     restore IRQ's, register stack pointer & return
-     endc
+     ENDC
 
 krnp2    lda   #'2        into krnp2
          jsr   <D.BtBug
 
          leay   SvcTab,pc   install system calls
          os9    F$SSvc
-     ifeq  TC9-1
+     IFEQ  TC9-1
          leax   Trap,pc
          stx    <D.SWI
-     endc
+     ENDC
 * Change to default directory
 L003A    ldu    <D.Init     get init module pointer
          ldd    SysStr,u    get pointer to system device name (usually '/dd')

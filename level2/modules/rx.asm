@@ -42,11 +42,11 @@ SAS      set   4
 
 initsize equ   *         
 
-         ifne   DD
+         IFNE   DD
 name     fcs   /DD/
-         else
+         ELSE
 name     fcs   /R0/      
-         endc
+         ENDC
 mgrnam   fcs   /RBF/     
 drvnam   fcs   /RAM/     
 
