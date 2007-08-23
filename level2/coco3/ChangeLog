@@ -1,3 +1,7 @@
+NitrOS-9/6809 Level 2 V03.02.07:
+- A bug which caused the system to crash during boot if grfdrv wasn't
+  in the CMDS directory has been fixed.
+
 NitrOS-9/6809 Level 2 V03.02.06:
 - Support for booting from fragmented bootfiles has been added.
 - os9gen has been updated to allow the creation of fragmented bootfiles.
