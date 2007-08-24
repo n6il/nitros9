@@ -1,4 +1,8 @@
-NitrOS-9/6809 Level 2 V03.02.06:
+NitrOS-9/6309 Level 2 V03.02.07:
+- A bug which caused the system to crash during boot if grfdrv wasn't
+  in the CMDS directory has been fixed.
+
+NitrOS-9/6309 Level 2 V03.02.06:
 - Support for booting from fragmented bootfiles has been added.
 - os9gen has been updated to allow the creation of fragmented bootfiles.
 - dir and mdir now have more robust support for various screen widths when
@@ -8,16 +12,16 @@ NitrOS-9/6809 Level 2 V03.02.06:
 - A bug in format which affected 128MB partitions has been fixed.
 - /D2 descriptor now part of standard bootfile.
 
-NitrOS-9/6809 Level 2 V03.02.05:
+NitrOS-9/6309 Level 2 V03.02.05:
 - rb1773 now properly saves/restores system's NMI vector, also updated to
   go into .89Mhz mode when formatting to get around a problem with some
   CoCo 3's crashing during format.
 - An issue with formatting 3.5" 720K disks has been resolved.
 
-NitrOS-9/6809 Level 2 V03.02.04:
+NitrOS-9/6309 Level 2 V03.02.04:
 - Fixed several problems/mistakes in the V03.02.03 release.
 
-NitrOS-9/6809 Level 2 V03.02.03:
+NitrOS-9/6309 Level 2 V03.02.03:
 - format has been enhanced to show more information about the disk being
   formatted.
 - dirm has been removed from the commands list.
@@ -28,7 +32,7 @@ NitrOS-9/6809 Level 2 V03.02.03:
 - An RBF bug that was introduced in V03.02.02 has been fixed.
 - Bugs in the clock2_jvemu and clock2_smart modules have been fixed.
 
-NitrOS-9/6809 Level 2 V03.02.02:
+NitrOS-9/6309 Level 2 V03.02.02:
 - Two new clocks have been added for Jeff Vavasour's CoCo emulator and MESS:
   clock2_jvemu and clock2_messemu, respectively.
 - kernel, kernelp2, kernelp3_perr and kernelp4_regdump have been renamed to
@@ -47,17 +51,17 @@ NitrOS-9/6809 Level 2 V03.02.02:
 - The copy command now has write verification with -v.
 - term_t1.dd has been renamed to term_sio.dd and term_sc6551.dd has been added.
 
-NitrOS-9/6809 Level 2 V03.02.01 (May 14, 2004):
+NitrOS-9/6309 Level 2 V03.02.01 (May 14, 2004):
 - Bugs in the mpi and megaread utilities have been fixed.
 
-NitrOS-9/6809 Level 2 V03.02.01:
+NitrOS-9/6309 Level 2 V03.02.01:
 - A minor bug in the unlink command has been fixed.
 - The mpi and megaread utilities have been added to the CMDS directory.
 - The dmode utility has been updated.
 - sacia has been renamed to sc6551.
 - Several bugs in dsave's -b option have been fixed.
 
-NitrOS-9/6809 Level 2 V03.02.00:
+NitrOS-9/6309 Level 2 V03.02.00:
 - os9p1 and os9p2 have been renamed to kernel and kernelp2, and have
   been back-ported from NitrOS-9/6309 Level 2.
 - windint and grfdrv have been backported from NitrOS-9/6309 Level 2.
