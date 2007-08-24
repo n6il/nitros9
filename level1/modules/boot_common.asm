@@ -47,12 +47,26 @@
 * instead allocate the memory temporarily off the stack.  This gives us
 * two system ram pages that were not available before, and also prevents
 * a needless system call.
+* Note: For Level 1, we actually use the page above the stack at $500-$5FF
+* to hold LSN0 during the bootfile acquisition process. This is because the
+* system stack is only 256 bytes and we are using more than that.  Since
+* the module directory table is at $400-$4FF, we must do this; otherwise, we
+* would overwrite the bottom portion of the module directory table and corrupt
+* it (it's already setup by krn before boot is called!)
                          
 start    orcc  #IntMasks  ensure IRQs are off (necessary?)
 * allocate memory on stack for vars and sector buffer
-         leas  -size-256,s   
+		 IFEQ  Level-1
+* Level 1: stack is only 256 bytes and its bottom runs against moddir ptrs... so cheat and use free page just above stack
+* for 256 byte disk buffer
+		 leas  -size,s   
+         tfr   s,u        get pointer to data area
+         ldx   #$500
+		 ELSE
+		 leas  -size-256,s   
          tfr   s,u        get pointer to data area
          leax  size,u     point U to 256 byte sector buffer
+		 ENDC
          pshs  u          save pointer to data area
          stx   blockloc,u
                          
@@ -104,7 +118,12 @@ Back2Krn lbsr  HWTerm     call HW termination routine
          ldx   blockimg,u pointer to start of os9boot in memory
          clrb             clear carry
          ldd   bootsize,u
-error    leas  2+size+256,s   reset the stack    same as PULS U
+error
+         IFEQ  Level-1
+         leas  2+size,s			reset the stack    same as PULS U
+		 ELSE
+         leas  2+size+256,s   reset the stack    same as PULS U
+		 ENDC
          rts              return to kernel
 
 
