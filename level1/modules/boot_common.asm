@@ -42,17 +42,19 @@
 * Added 'subd #$00FF' to counteract earlier 'addd #$00FF'.  We need to undo
 * to give F$SRqMem the right amount of memory to allocate.
 *
+*	   2007/08/24  Boisy G. Pitre
+* We no longer use F$SRqMem to get the 256 byte buffer for LSN0, but
+* instead allocate the memory temporarily off the stack.  This gives us
+* two system ram pages that were not available before, and also prevents
+* a needless system call.
                          
 start    orcc  #IntMasks  ensure IRQs are off (necessary?)
-         leas  -size,s   
+* allocate memory on stack for vars and sector buffer
+         leas  -size-256,s   
          tfr   s,u        get pointer to data area
+         leax  size,u     point U to 256 byte sector buffer
          pshs  u          save pointer to data area
-                         
-* Request memory for LSN0
-         ldd   #256       get sector/fd buffer
-         os9   F$SRqMem   get it!
-         bcs   error2    
-         bsr   getpntr    restore U to point to our statics
+         stx   blockloc,u
                          
 * Initialize Hardware
          ldy   Address,pcr				get hardware address
@@ -71,7 +73,7 @@ start    orcc  #IntMasks  ensure IRQs are off (necessary?)
          jsr   <D.BtBug   ---
          ENDC            
         
-	 stx	LSN0Ptr,u	Save LSN0 pointer
+	     stx   LSN0Ptr,u	Save LSN0 pointer
 * Pull relevant values from LSN0
          IFNE  FLOPPY
          lda   DD.TKS,x   number of tracks on this disk
@@ -102,26 +104,10 @@ Back2Krn lbsr  HWTerm     call HW termination routine
          ldx   blockimg,u pointer to start of os9boot in memory
          clrb             clear carry
          ldd   bootsize,u
-error2   leas  2+size,s   reset the stack    same as PULS U
+error    leas  2+size+256,s   reset the stack    same as PULS U
          rts              return to kernel
-                         
-* Error point - return allocated memory and then return to kernel
-error                 
-* Return memory allocated for sector buffers
-         pshs  cc
-         ldd   #256      
-         ldu   blockloc,u
-         os9   F$SRtMem  
-         puls  cc
-         bra   error2    
-                         
-* Routine to save off alloced mem from F$SRqMem into blockloc,u and restore
-* the statics pointer in U
-getpntr  tfr   u,d        save pointer to requested memory
-         ldu   2,s        recover pointer to data stack
-         std   blockloc,u
-         rts             
-                         
+
+
 * NEW! Fragmented boot support!
 *FragBoot ldb   bootloc,u  MSB fd sector location
 *         ldx   bootloc+1,u LSW fd sector location
@@ -138,8 +124,12 @@ GrabBootMem
          ELSE            
          os9   F$SRqMem  
          ENDC            
-         bcs   error     
-         bsr   getpntr   
+         bcs   error
+* Save off alloced mem from F$SRqMem into blockloc,u and restore
+* the statics pointer in U
+         tfr   u,d        save pointer to requested memory
+         ldu   ,s         recover pointer to data stack
+         std   blockloc,u
          std   blockimg,u
                          
 * Get os9boot into memory
