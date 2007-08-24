@@ -62,14 +62,14 @@ L084F    inc   1,s          Bump up to next block to check
          cmpb  #DAT.BlCt    Done whole 64k system space?
          blo   L082F        no, keep checking
 * Now we can actually attempt to allocate the system RAM requested
-* NOTE: Opt for Coco/TC9 OS9 ONLY: skip last 17 pages with leay -17,y since
-* they are: Kernel (REL/BOOT/OS9P1 - 15 pages), vector RAM & I/O (2 pages)
+* NOTE: Opt for CoCo/TC9 OS9 ONLY: skip last 19 pages since
+* they are: Kernel (REL/BOOT/KRN - 17 pages), vector RAM & I/O (2 pages)
 * (Already permanently marked @ L01D2)
 * At the start, Y is pointing to the end of the SMAP table+1
          ldx   <D.SysMem    Get start of table ptr
          ldb   #32          skip block 0: it's always full
          abx                same size, but faster than leax $20,x
-         leay  -17,y        Skip Kernel, Vector RAM & I/O (Can't be free)
+         leay  -19,y        Skip Kernel, Vector RAM & I/O (Can't be free)
 L0857    ldb   R$A,u        Get # 256 byte pages requested
 * Loop (from end of system mem map) to look for # continuous pages requested
 L0859    equ   *
