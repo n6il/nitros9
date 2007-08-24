@@ -35,8 +35,12 @@
 *          2005/10/16  Boisy G. Pitre
 * Further optimizations made
 *
-*	   2006-01-04  P.Harvey-Smith.
+*	   2006/01/04  P.Harvey-Smith.
 * Added pointer to loaded LSN0 to data passed to hardware dependent section.
+*
+*	   2007/08/23  Boisy G. Pitre
+* Added 'subd #$00FF' to counteract earlier 'addd #$00FF'.  We need to undo
+* to give F$SRqMem the right amount of memory to allocate.
 *
                          
 start    orcc  #IntMasks  ensure IRQs are off (necessary?)
@@ -91,6 +95,7 @@ start    orcc  #IntMasks  ensure IRQs are off (necessary?)
          ENDC
          clr   FDSL.S+1,x
          clr   FDSL.S+2,x
+         subd  #$00FF     undo previous add #$00FF
          bra   GrabBootMem
                          
 Back2Krn lbsr  HWTerm     call HW termination routine
