@@ -118,8 +118,7 @@ go@      addd  #$0001
          bne   go@
          puls  x,pc
 
-start    leas  >linebuff,u
-         pshs  y,x
+start    pshs  y,x
          leax  <IcptRtn,pcr
          os9   F$Icpt   
          IFGT  Level-1
@@ -341,11 +340,14 @@ strandtime
 
 * Entry: X = ptr to string to copy
 *        Y = length of string
-copystr  lda   ,x+
+copystr
+         cmpy  #$0000
+         beq   copyex
+         lda   ,x+
          lbsr  puta
          leay  -$01,y
          bne   copystr
-         rts   
+copyex   rts   
 
 L0347    bsr   copystr
          lbsr  writestr
