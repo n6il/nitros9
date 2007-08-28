@@ -62,43 +62,53 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk:	all
-	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D)
+dsk_40d:	all
+	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D)
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS40) -q $(DISK_1_40D) -n$(DISK_1_40D_NAME)
-	$(OS9FORMAT_DS80) -q $(DISK_80D) -n$(DISK_80D_NAME)
 	$(MERGE) $(OS9BOOT_40D)>os9boot_40d
-	$(MERGE) $(OS9BOOT_80D)>os9boot_80d
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK_1_40D) -b=os9boot_40d -t=kernel_1773
-	$(OS9GEN) $(DISK_80D) -b=os9boot_80d -t=kernel_1773
-	$(RM) os9boot_40d os9boot_80d kernel_1773
+	$(RM) os9boot_40d kernel_1773
 	$(MAKDIR) $(DISK_1_40D),CMDS
-	$(MAKDIR) $(DISK_80D),CMDS
 	$(CP) $(CMDS) $(DISK_1_40D),CMDS
-	$(CP) $(CMDS) $(DISK_80D),CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_1_40D),CMDS/$(file);)
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_80D),CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
 	$(CP) shell $(DISK_1_40D),CMDS
-	$(CP) shell $(DISK_80D),CMDS
 	$(RM) shell
 	$(OS9ATTR) $(DISK_1_40D),CMDS/shell -e -pe -pr -e -w -r
-	$(OS9ATTR) $(DISK_80D),CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $(DISK_1_40D),CMDS/sierra AutoEx
-	$(OS9RENAME) $(DISK_80D),CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_D1) $(DISK_1_40D),.
 	$(OS9RENAME) $(DISK_1_40D),tOC_40d.txt tOC.txt
-	$(CPL) $(TEXTFILES) $(DISK_80D),.
-	$(OS9RENAME) $(DISK_80D),tOC_80d.txt tOC.txt
 	$(CP) $(SUPPORTFILES_D1) $(DISK_1_40D),.
 	tocgen $(DISK_1_40D),tOC.txt $(DISK_1_40D),tOC
 	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n$(DISK_2_40D_NAME)
 	$(CP) $(SUPPORTFILES_D2) $(DISK_2_40D),.
 	$(OS9FORMAT_DS40) -q $(DISK_3_40D) -n$(DISK_3_40D_NAME)
 	$(CP) $(SUPPORTFILES_D3) $(DISK_3_40D),.
+
+dsk_80d:	all
+	$(RM) $(DISK_80D)
+	$(CD) $(LEVEL2)/coco3; make
+	$(OS9FORMAT_DS80) -q $(DISK_80D) -n$(DISK_80D_NAME)
+	$(MERGE) $(OS9BOOT_80D)>os9boot_80d
+	$(MERGE) $(KERNEL)>kernel_1773
+	$(OS9GEN) $(DISK_80D) -b=os9boot_80d -t=kernel_1773
+	$(RM) os9boot_80d kernel_1773
+	$(MAKDIR) $(DISK_80D),CMDS
+	$(CP) $(CMDS) $(DISK_80D),CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_80D),CMDS/$(file);)
+	$(MERGE) $(BOOTCMDS)>shell
+	$(CP) shell $(DISK_80D),CMDS
+	$(RM) shell
+	$(OS9ATTR) $(DISK_80D),CMDS/shell -e -pe -pr -e -w -r
+	$(OS9RENAME) $(DISK_80D),CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES) $(DISK_80D),.
+	$(OS9RENAME) $(DISK_80D),tOC_80d.txt tOC.txt
 	$(CP) $(SUPPORTFILES) $(DISK_80D),.
 	tocgen $(DISK_80D),tOC.txt $(DISK_80D),tOC
+
+dsk:	dsk_40d dsk_80d
 
 dskcopy: dsk
 	$(CP) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D) $(DSKDIR)
