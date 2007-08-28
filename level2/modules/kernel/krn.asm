@@ -43,13 +43,15 @@ MName	fcs	/Krn/
 	fcc	/www.katvixen.com/
 	fcc	/www.katvixen.com/
 	fcc	/www.katvixen.com/
+	fcc	/www.katvixen.com/
+	fcc	/www.katvixen.com/
+	fcc	/www.katvix/
 	IFNE	H6309
 	fcc	/www.katvixen.com/
 	fcc	/www.katvixen.com/
-	fcc	/www.katvixe/
+	fcc	/www.katvixen./
 	ELSE	
-	fcc	/www.katvixen.c/
-	fcc	/01/
+	fcc	/www.katvixen.com/
 	ENDC	
 		
 * Might as well have this here as just past the end of Kernel...
