@@ -10,7 +10,7 @@
 *
 * Memory is allocated from the top of the system RAM map downwards.  Rel/Boot/Krn
 * also reside in this area, and are loaded from $ED00-$FFFF.  Since this area is
-* always allocated, we start searching for free pages from page $EB downward.
+* always allocated, we start searching for free pages from page $EC downward.
 *
 * F$SRqMem also updates the system memory map according to 8K DAT blocks. If an
 * empty block is found, this routine re-does the 32 entries in the SMAP table to
@@ -26,12 +26,21 @@ FSRqMem  ldd   R$D,u        get memory allocation size requested
          addd  #$00FF       round it up to nearest 256 byte page (e.g. $1FF = $2FE)
          clrb               just keep # of pages (and start 8K block #, e.g. $2FE = $200)
          std   R$D,u        save rounded version back to user
-         ldy   <D.SysMem    get ptr to SMAP table
 *         leay  Bt.Start/256,y      
 *         leay  $20,y        skip Block 0 (always reserved for system)
 * Change to pshs a,b:use 1,s for block # to check, and ,s for TFM spot
 *         incb               skip block 0 (always reserved for system)
          pshs  d            reserve a byte & put 0 byte on stack
+
+
+* IMPORTANT!!!
+* The following code was put in some time back to fix a problem.  That problem was not documented
+* so I cannot recall why this code was in place.  What it appears to do is reset the system page
+* memory map based upon the state of the system DAT image.
+* This code really slows down F$SRqMem and since that system call is used quite often in the system,
+* I am commenting it out in the hopes that I can remember what the hell I put it in for. -- Boisy
+         IFEQ  1
+         ldy   <D.SysMem    get ptr to SMAP table
 * This loop updates the SMAP table if anything can be marked as unused
 L082F    ldx   <D.SysDAT    get pointer to system DAT block list
          lslb               adjust block offset for 2 bytes/entry
@@ -61,15 +70,19 @@ L084F    inc   1,s          Bump up to next block to check
          ldb   1,s          Get it
          cmpb  #DAT.BlCt    Done whole 64k system space?
          blo   L082F        no, keep checking
+         ENDC
+
+
 * Now we can actually attempt to allocate the system RAM requested
-* NOTE: Opt for CoCo/TC9 OS9 ONLY: skip last 19 pages since
+* NOTE: Opt for CoCo/TC9 OS9 ONLY: skip last 256 - Bt.Start pages since
 * they are: Kernel (REL/BOOT/KRN - 17 pages), vector RAM & I/O (2 pages)
 * (Already permanently marked @ L01D2)
 * At the start, Y is pointing to the end of the SMAP table+1
          ldx   <D.SysMem    Get start of table ptr
+         leay  Bt.Start>>8,x
          ldb   #32          skip block 0: it's always full
          abx                same size, but faster than leax $20,x
-         leay  -19,y        Skip Kernel, Vector RAM & I/O (Can't be free)
+*         leay  -(256-(Bt.Start>>8)),y  skip Kernel, Vector RAM & I/O (Can't be free)
 L0857    ldb   R$A,u        Get # 256 byte pages requested
 * Loop (from end of system mem map) to look for # continuous pages requested
 L0859    equ   *
