@@ -2576,8 +2576,8 @@ L1381    rts
 
 * these get accessed for a getstat call
 * if a call to the Seek routine contained a value in b
-         fcb   #SS.pos     $05
-         fcb   #SS.size    $02
+         fcb   SS.Pos     $05
+         fcb   SS.Size    $02
 
 *        Think these values have no significance
 *        and are just junk place holders ??
