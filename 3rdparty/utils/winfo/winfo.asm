@@ -80,6 +80,7 @@ datend   equ   .
 E$Param  equ   $38 bad Parameter error
 
 vtio     fcs   /VTIO/ used to compare device driver name
+vtiolen  equ   *-vtio
 
 tmpdat   fcb   0,0 mini-dat image for block 0 data fetches
 
@@ -229,7 +230,7 @@ not.l3   ldy   #2 2 bytes to get
          ldd   V$DRIV,x driver module start addr
          addd  mdname,u + module offset to driver name
          tfr   d,x put it in x so we can grab it
-         ldy   #5 5 bytes in name (VTIO)
+         ldy   #vtiolen length of name
          ldd   <datimg addr of sys DAT image
          pshs  u save u
          leau  devname,u addr of receiver
