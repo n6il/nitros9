@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm ../objs
+vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
