@@ -14,9 +14,9 @@
 * Monitor type bug now fixed.
 
 *Monitor defs
-COMP    equ   0
-RGB     equ   1
-MONO    equ   2
+#COMP    equ   0
+#RGB     equ   1
+#MONO    equ   2
 
 
 * I/O path definitions
