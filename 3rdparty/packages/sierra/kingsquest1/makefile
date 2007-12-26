@@ -47,7 +47,7 @@ SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 
 SUPPORTFILES_D2	= object vol.0 vol.2
 
-SUPPORTFILES	= object vol.0 vol.1 vol.2
+SUPPORTFILES	= $(SUPPORTFILES_D1) object vol.0 vol.1 vol.2
 
 ALLOBJS		= $(CMDS)
 
