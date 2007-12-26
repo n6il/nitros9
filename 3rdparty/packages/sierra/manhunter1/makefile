@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm ../objs
+vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
@@ -34,9 +34,9 @@ TEXTFILES_D1	= startup tOC_80d.txt
 TEXTFILES	= startup tOC_80d.txt
 
 SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
-		vol.2 vol.9 vol.10 vol.11 vol.12 words.tok
+		vol.1 vol.2 vol.9 vol.10 vol.11 vol.12 words.tok
 
-SUPPORTFILES_D2	= object vol.0 vol.4 vol.9 vol.10 vol.11 vol.12
+SUPPORTFILES_D2	= object vol.0 vol.3 vol.4 vol.9 vol.10 vol.11 vol.12
 
 SUPPORTFILES_D3	= object vol.0 vol.5 vol.9 vol.10 vol.11 vol.12
 
