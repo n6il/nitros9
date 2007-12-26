@@ -1,13 +1,13 @@
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm ../objs
+vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DISK_1_40D	= sq2_d1_40d.dsk
-DISK_2_40D	= sq2_d2_40d.dsk
-DISK_3_40D	= sq2_d3_40d.dsk
-DISK_80D	= sq2_80d.dsk
+DISK_1_40D	= spacequest2_d1_40d.dsk
+DISK_2_40D	= spacequest2_d2_40d.dsk
+DISK_3_40D	= spacequest2_d3_40d.dsk
+DISK_80D	= spacequest2_80d.dsk
 
 DISK_1_40D_NAME = "Space Quest II Disk 1"
 DISK_2_40D_NAME = "Space Quest II Disk 2"
