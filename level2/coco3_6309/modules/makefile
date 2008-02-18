@@ -49,7 +49,9 @@ SCF		= scf.mn \
 		t1_bbt.dd t2_sc6551.dd t3_sc6551.dd \
 		ftdd.dd vi.dd ssp.dd term_bbt.dt term_sc6551.dt \
 		term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
-		w3.dw w4.dw w5.dw w6.dw w7.dw v1.dw v2.dw v3.dw v4.dw v5.dw \
+		w3.dw w4.dw w5.dw w6.dw w7.dw \
+		w8.dw w9.dw w10.dw w11.dw w12.dw w13.dw w14.dw w15.dw \
+		v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw
 
 PIPE		= pipeman.mn pipeman_named.mn \
