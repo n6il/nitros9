@@ -9,7 +9,7 @@
 *   6      1998/10/09  Robert Gault
 * Added annotations to the L2 Upgrade distribution version
 *
-*   7      2003/08/28  Robert gault
+*   7      2003/08/28  Robert Gault
 * Contains routine for H6309 from VTIO
 
          nam   JoyDrv
