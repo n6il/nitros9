@@ -55,7 +55,17 @@
 *../MODULES/RBF/lltc3.dr
 *../MODULES/RBF/llide.dr
 * SuperDriver descriptors - select as needed
-* SCSI descriptors (IDs 0-7)
+* SuperBoard SCSI descriptors (IDs 0-6)
+*../MODULES/RBF/s0_sb.dd
+*../MODULES/RBF/s1_sb.dd
+*../MODULES/RBF/s2_sb.dd
+*../MODULES/RBF/s3_sb.dd
+*../MODULES/RBF/s4_sb.dd
+*../MODULES/RBF/s5_sb.dd
+*../MODULES/RBF/s6_sb.dd
+* SuperBoard SCSI HDB-DOS descriptor
+*../MODULES/RBF/sh_sb.dd
+* TC^3 SCSI descriptors (IDs 0-6)
 *../MODULES/RBF/s0_tc3.dd
 *../MODULES/RBF/s1_tc3.dd
 *../MODULES/RBF/s2_tc3.dd
@@ -63,8 +73,8 @@
 *../MODULES/RBF/s4_tc3.dd
 *../MODULES/RBF/s5_tc3.dd
 *../MODULES/RBF/s6_tc3.dd
-* SCSI HDB-DOS descriptor
-*../MODULES/RBF/sh_ide.dd
+* TC^3 SCSI HDB-DOS descriptor
+*../MODULES/RBF/sh_tc3.dd
 * IDE descriptors (master/slave)
 *../MODULES/RBF/i0_ide.dd
 *../MODULES/RBF/i1_ide.dd
@@ -114,13 +124,19 @@
 *
 ../MODULES/SCF/scf.mn
 *
-* CoCo 3 I/O driver
-* Joystick modules: choose Joystick OR
-* (M)icrosoft or (L)ogitech mouse using 6551 or 6552 ACIA
+* CoCo 3 I/O sub-drivers
+* Keyboard modules: choose cc3 for CoCo 3 keyboard
+* or ps2 for SuperBoard PS/2 keyboard
 ../MODULES/SCF/vtio.dr
-../MODULES/SCF/keydrv_cc3.sb  
+../MODULES/SCF/keydrv_cc3.sb
+*../MODULES/SCF/keydrv_ps2.sb
+* Sound module: CoCo 3 built-in sound generator
 ../MODULES/SCF/snddrv_cc3.sb
+* Joystick modules: choose joy for hi-res joystick adapter,
+* ps2 for SuperBoard PS/2 mouse, or
+* (M)icrosoft or (L)ogitech mouse using 6551 or 6552 ACIA
 ../MODULES/SCF/joydrv_joy.sb
+*../MODULES/SCF/joydrv_ps2.sb
 *../MODULES/SCF/joydrv_6551M.sb
 *../MODULES/SCF/joydrv_6552M.sb
 *../MODULES/SCF/joydrv_6551L.sb
@@ -176,10 +192,17 @@
 *../MODULES/SCF/modpak.dr
 *../MODULES/SCF/m1.dd
 *../MODULES/SCF/m2.dd
+* SuperBoard TL16C552A serial port
+*../MODULES/sctlsp.dd
+*../MODULES/t4_sctlsp.dd
+*../MODULES/t5_sctlsp.dd
 *
 * Printer drivers
 * ../MODULES/SCF/scbbp.dr
 * ../MODULES/SCF/p.dd
+* SuperBoard TL16C552A parallel port
+*../MODULES/sctlpp.dd
+*../MODULES/p1_sctlpp.dd
 *
 * VRN is a driver module used by certain games, including King's Quest III,
 * Leisure Suit Larry and Flight Simulator II.  A /nil descriptor is also
@@ -206,8 +229,8 @@
 * Select one clock2 module that supports your real-time clock, if any.
 * Besides support for the internal software clock, the following
 * hardware clocks are supported: Burke & Burke, Disto 2-N-1, Disto 4-N-1,
-* Eliminator, Harris, SmartWatch, Cloud-9, the MESS emulator, Jeff
-* Vavasour's CoCo emulator, and DriveWire.
+* Eliminator, Harris, SmartWatch, Cloud-9 (SuperIDE), the MESS emulator, Jeff
+* Vavasour's CoCo emulator, DriveWire and SuperBoard.
 ../MODULES/CLOCKS/clock2_soft
 *../MODULES/CLOCKS/clock2_bnb
 *../MODULES/CLOCKS/clock2_disto2
@@ -219,6 +242,7 @@
 *../MODULES/CLOCKS/clock2_messemu
 *../MODULES/CLOCKS/clock2_cloud9
 *../MODULES/CLOCKS/clock2_dw
+*../MODULES/CLOCKS/clock2_sb
 *
 ***************************************
 * System Kick-Start Module

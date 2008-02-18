@@ -1,4 +1,8 @@
 NitrOS-9/6809 Level 2 V03.02.07:
+- Device windows W8-W15 have been added to the distribution.
+- A bug in os9gen which caused it to create fragmented bootfiles by default
+  has been fixed.  os9gen defaults to creating non-fragmented bootfiles, and
+  the -e option must be used to create fragmented bootfiles.
 - A bug which caused the system to crash during boot if grfdrv wasn't
   in the CMDS directory has been fixed.
 
