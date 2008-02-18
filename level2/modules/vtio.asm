@@ -39,6 +39,8 @@
 * an infinite loop.  The problem was that IOMan clears the static
 * storage of a device whose use count has reached zero (in the
 * case of a hard detach).  See Note below.
+* 
+* Renamed to VTIO and reset edition to 1.
 *
 *   1      2006/03/04  Boisy G. Pitre
 * Added detection of CTRL-ALT-BREAK to invoke system debugger.
@@ -48,8 +50,6 @@
 * Fixed bug where an error other than E$MNF when linking to CoWin would be ignored.
 * Now, if the error returned from linking CoWin is not E$MNF, we don't bother to look
 * for CoGrf... we just return immediately.
-* 
-* Renamed to VTIO and reset edition to 1.
 
          nam   VTIO
          ttl   Video Terminal I/O Driver for CoCo 3
