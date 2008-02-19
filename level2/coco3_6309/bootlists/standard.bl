@@ -170,6 +170,14 @@
 ../MODULES/SCF/w5.dw
 ../MODULES/SCF/w6.dw
 ../MODULES/SCF/w7.dw
+../MODULES/SCF/w8.dw
+../MODULES/SCF/w9.dw
+../MODULES/SCF/w10.dw
+../MODULES/SCF/w11.dw
+../MODULES/SCF/w12.dw
+../MODULES/SCF/w13.dw
+../MODULES/SCF/w14.dw
+../MODULES/SCF/w15.dw
 *
 * Select as many VDG window descriptors as needed
 *../MODULES/SCF/v1.dw
