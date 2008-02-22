@@ -25,8 +25,8 @@
 *
 *  11      2005/10/10  Boisy G. Pitre
 * Added -e option to create fragmented bootfiles.
-
-*  12      2006/5/9    Christopher R. Hawks
+*
+*  12      2006/05/09  Christopher R. Hawks
 * Weren't clearing -e option, so all os9boot files were extended.
 
          nam   OS9Gen
