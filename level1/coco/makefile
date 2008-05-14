@@ -69,7 +69,7 @@ dskcopy: dsk
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
 
-$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) ReadMe ../../ChangeLog
+$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
 
 $(DSK360K_1):
