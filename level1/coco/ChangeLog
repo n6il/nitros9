@@ -1,3 +1,8 @@
+NitrOS-9/6809 Level 1 V03.02.07:
+- A bug in os9gen which caused it to create fragmented bootfiles by default
+  has been fixed.  os9gen defaults to creating non-fragmented bootfiles, and
+  the -e option must be used to create fragmented bootfiles.
+
 NitrOS-9/6809 Level 1 V03.02.06:
 - rbf now supports the SS.FDInf GetStat call.
 - Support for booting from fragmented bootfiles has been added.
