@@ -1,5 +1,6 @@
 NitrOS-9 V03.02.07:
 
+- Basic09 and supporting modules are now included in the NitrOS-9 distribution.
 - A bug in os9gen which caused it to create fragmented bootfiles by default
   has been fixed.  os9gen defaults to creating non-fragmented bootfiles, and
   the -e option must be used to create fragmented bootfiles.
