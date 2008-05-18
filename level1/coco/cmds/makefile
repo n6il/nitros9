@@ -16,7 +16,8 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		rename save setime shellplus shell_21 sleep \
 		tee tmode touch tsmon tuneport unlink verify xmode
 
-CMDS_D2		= basic09 runb gfx inkey syscall
+CMDS_D2		= basic09 runb gfx inkey syscall copy del echo format \
+		merge os9gen prompt tmode
 
 SUBS		= gfx inkey syscall
 ALLOBJS		= $(CMDS) $(CMDS_D2) $(SUBS)
