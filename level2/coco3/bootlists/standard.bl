@@ -158,7 +158,7 @@
 *../MODULES/SCF/term_vdg.dt
 *../MODULES/SCF/term_win40.dt
 ../MODULES/SCF/term_win80.dt
-*../MODULES/SCF/term_bbt.dt
+*../MODULES/SCF/term_scbbt.dt
 *../MODULES/SCF/term_sc6551.dt
 *
 * Select as many window descriptors as needed
@@ -191,7 +191,7 @@
 * Serial port drivers
 * CoCo Bit-Banger terminal port
 *../MODULES/SCF/scbbt.dr
-*../MODULES/SCF/t1.dd
+*../MODULES/SCF/t1_scbbt.dd
 * 6551 ACIA
 *../MODULES/SCF/sc6551.dr
 *../MODULES/SCF/t2_sc6551.dd
@@ -207,7 +207,7 @@
 *
 * Printer drivers
 * ../MODULES/SCF/scbbp.dr
-* ../MODULES/SCF/p.dd
+* ../MODULES/SCF/p_scbbp.dd
 * SuperBoard TL16C552A parallel port
 *../MODULES/sctlpp.dd
 *../MODULES/p1_sctlpp.dd

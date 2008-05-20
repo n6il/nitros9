@@ -45,9 +45,9 @@ SCF		= scf.mn \
 		keydrv_cc3.sb snddrv_cc3.sb \
 		joydrv_joy.sb joydrv_6551L.sb joydrv_6552L.sb \
 		joydrv_6551M.sb joydrv_6552M.sb \
-		nil.dd p_bbp.dd \
-		t1_bbt.dd t2_sc6551.dd t3_sc6551.dd \
-		ftdd.dd vi.dd ssp.dd term_bbt.dt term_sc6551.dt \
+		nil.dd p_scbbp.dd \
+		t1_scbbt.dd t2_sc6551.dd t3_sc6551.dd \
+		ftdd.dd vi.dd ssp.dd term_scbbt.dt term_sc6551.dt \
 		term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
 		w3.dw w4.dw w5.dw w6.dw w7.dw \
 		w8.dw w9.dw w10.dw w11.dw w12.dw w13.dw w14.dw w15.dw \
