@@ -4,6 +4,9 @@ NitrOS-9 V03.02.07:
 - A bug in os9gen which caused it to create fragmented bootfiles by default
   has been fixed.  os9gen defaults to creating non-fragmented bootfiles, and
   the -e option must be used to create fragmented bootfiles.
+- The init module has been extended to include the version string that was
+  formerly in the Sysgo module.  Sysgo has been modified to print this string
+  from the init module.
 
 Level 2 Only:
 - Device windows W8-W15 have been added to the distribution.
