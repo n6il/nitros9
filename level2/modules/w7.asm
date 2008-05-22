@@ -23,7 +23,6 @@ rev      set   $00
 * Window descriptor definitions
 szx      set   80         number of columns for display
 szy      set   24         number for rows for display
-wnum     set   7          window number
 sty      set   2          window type
 cpx      set   0          x cursor position
 cpy      set   0          y cursor position
@@ -64,7 +63,7 @@ prn3     set   Blue.      border color
          fcb   $00        acia xoff char
          fcb   szx        (szx) number of columns for display
          fcb   szy        (szy) number of rows for display
-         fcb   wnum       window number
+         fcb   7          window number
          fcb   $01        data in rest of descriptor valid
          fcb   sty        (sty) window type
          fcb   cpx        (cpx) x cursor position
@@ -74,8 +73,7 @@ prn3     set   Blue.      border color
          fcb   prn3       (prn3) border color
 initsize equ   *
 
-name     fcc   /W/
-         fcb   176+wnum
+name     fcs   /W7/
 mgrnam   fcs   /SCF/
 drvnam   fcs   /VTIO/
 
