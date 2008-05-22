@@ -23,7 +23,6 @@ rev      set   $00
 * Window descriptor definitions
 szx      set   0          number of columns for display
 szy      set   0          number for rows for display
-wnum     set   $FF        window number
 sty      set   0          window type
 cpx      set   0          x cursor position
 cpy      set   0          y cursor position
@@ -64,7 +63,7 @@ prn3     set   0          border color
          fcb   $00        acia xoff char
          fcb   szx        (szx) number of columns for display
          fcb   szy        (szy) number of rows for display
-         fcb   wnum       window number
+         fcb   $FF        window number
          fcb   $00        data in rest of descriptor valid
          fcb   sty        (sty) window type
          fcb   cpx        (cpx) x cursor position
