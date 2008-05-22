@@ -105,7 +105,7 @@
 * Select only one term descriptor
 ../MODULES/SCF/term32.dt
 *../MODULES/SCF/term51.dt
-*../MODULES/SCF/term_bbt.dt
+*../MODULES/SCF/term_scbbt.dt
 *../MODULES/SCF/term_sc6551.dt
 *
 * Serial port drivers
