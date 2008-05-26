@@ -13,11 +13,15 @@ rbf
 	- Backport to Level 1
 
 format
-    - Add option to allow formatting of Dragon disk format.
+	- Add option to allow formatting of Dragon disk format.
+	BGP, 01/15/08:
+	Is this needed?  format.asm builds for the Dragon port
+	to allow formatting a Dragon disk.  So the Dragon version of NitrOS-9
+	has its own 'format' executable, as does the CoCo version.
     
 rb1773
-	- Fix SS.WrTrk to handle high density drives (is this working now?)
-	- Fix SS.WrtTrk bug which causes crashes on some CoCos (I believe the
+	- Fix SS.WTrk to handle high density drives (is this working now?)
+	- Fix SS.WTrk bug which causes crashes on some CoCos (I believe the
 	  slowdown was employed as a temporary workaround?)
 	12/16/05:
 	Using a Disto Super Controller I hooked up to a 6309 CoCo 3, I
@@ -34,7 +38,7 @@ rb1773
 
 	Finally, I reinstated the latest rb1773 and format, then modified
 	rb1773.asm to not slow down and speed up the CoCo 3 around the
-	SS.WrTrk code.  Six physical formats did not show a single lock-up.
+	SS.WTrk code.  Six physical formats did not show a single lock-up.
 
 	Conclusion: Further research is needed to warrant what caused this
 	bug in V03.02.04.  It does not appear to be related to the driver
