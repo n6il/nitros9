@@ -1,4 +1,4 @@
-NitrOS-9 V03.02.07:
+NitrOS-9 V3.2.8:
 
 - Basic09 and supporting modules are now included in the NitrOS-9 distribution.
 - A bug in os9gen which caused it to create fragmented bootfiles by default
@@ -15,7 +15,7 @@ Level 2 Only:
 
 ------------------------------------------------------
 
-NitrOS-9 V03.02.06:
+NitrOS-9 V3.2.6:
 
 - Support for booting from fragmented bootfiles has been added.
 - os9gen has been updated to allow the creation of fragmented bootfiles.
@@ -31,7 +31,7 @@ Level 1 Only:
 
 ------------------------------------------------------
 
-NitrOS-9 V03.02.05:
+NitrOS-9 V3.2.5:
 
 - rb1773 now properly saves/restores system's NMI vector, also updated to
   go into .89Mhz mode when formatting to get around a problem with some
@@ -46,13 +46,13 @@ Level 1 Only:
 
 ------------------------------------------------------
 
-NitrOS-9 V03.02.04:
+NitrOS-9 V3.2.4:
 
-- Fixed several problems/mistakes in the V03.02.03 release.
+- Fixed several problems/mistakes in the V3.2.3 release.
 
 ------------------------------------------------------
 
-NitrOS-9 V03.02.03:
+NitrOS-9 V3.2.3:
 
 - format has been enhanced to show more information about the disk being
   formatted.
@@ -66,7 +66,7 @@ NitrOS-9 V03.02.03:
 
 ------------------------------------------------------
 
-NitrOS-9 V03.02.02:
+NitrOS-9 V3.2.2:
 
 - Two new clocks have been added for Jeff Vavasour's CoCo emulator and MESS:
   clock2_jvemu and clock2_messemu, respectively.
@@ -89,7 +89,7 @@ Level 2 Only:
 
 ------------------------------------------------------
 
-NitrOS-9 V03.02.01 (May 14, 2004):
+NitrOS-9 V3.2.1 (May 14, 2004):
 
 - Bugs in the mpi and megaread utilities have been fixed.
 
@@ -101,7 +101,7 @@ Level 1 Only:
 
 ------------------------------------------------------
 
-NitrOS-9 V03.02.01:
+NitrOS-9 V3.2.1:
 
 - A minor bug in the unlink command has been fixed.
 - The mpi and megaread utilities have been added to the CMDS directory.
@@ -121,7 +121,7 @@ Level 1 Only:
 
 ------------------------------------------------------
 
-NitrOS-9 V03.02.00:
+NitrOS-9 V3.2.0:
 
 - A new utility, padrom, has been added to the standard commands.
 - Merge now supports -z to get a list of files from standard input.
@@ -154,7 +154,7 @@ Level 2 Only:
 
 ------------------------------------------------------
 
-OS-9 V03.01.04:
+OS-9 V3.1.4:
 
 - asm is now at edition 8 and includes the following fixes/additions:
   o Symbols now allow underscores.
@@ -178,7 +178,7 @@ Level 2 Only:
 
 ------------------------------------------------------
 
-OS-9 V03.01.03:
+OS-9 V3.1.3:
 
 - The asm program now supports 6309 bitfield instructions.
 - The prompt command has been added to the standard command set.
@@ -204,7 +204,7 @@ Level 2 Only:
 
 ------------------------------------------------------
 
-OS-9 V03.01.02:
+OS-9 V3.1.2:
 - A bug in the help utility has been fixed.
 - The MODULES directory structure has been enhanced to include
   multiple subdirectories for better module organization.
@@ -223,7 +223,7 @@ Level 2 Only:
 
 ------------------------------------------------------
 
-OS-9 V03.01.01:
+OS-9 V3.1.1:
 
 - SYS/helpmsg expanded to include new commands.
 - ident now correctly reports modules with a language byte of Obj6309.
@@ -241,7 +241,7 @@ Level 2 Only:
 
 ------------------------------------------------------
 
-OS-9 V03.01.00:
+OS-9 V3.1.0:
 
 - New common version among all releases of OS-9 for the CoCo
 - Many commands have been updated and optimized:
