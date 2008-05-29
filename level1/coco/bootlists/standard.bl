@@ -51,7 +51,9 @@
 *../MODULES/RBF/lltc3.dr
 *../MODULES/RBF/llide.dr
 * SuperDriver descriptors - select as needed
-* SCSI descriptors (IDs 0-7)
+* TC^3 SCSI DD Descriptor (ID 0)
+*../MODULES/RBF/dds0_tc3.dd
+* TC^3 SCSI descriptors (IDs 0-6)
 *../MODULES/RBF/s0_tc3.dd
 *../MODULES/RBF/s1_tc3.dd
 *../MODULES/RBF/s2_tc3.dd
@@ -59,8 +61,10 @@
 *../MODULES/RBF/s4_tc3.dd
 *../MODULES/RBF/s5_tc3.dd
 *../MODULES/RBF/s6_tc3.dd
-* SCSI HDB-DOS descriptor
-*../MODULES/RBF/sh_ide.dd
+* TC^3 SCSI HDB-DOS descriptor
+*../MODULES/RBF/sh_tc3.dd
+* IDE DD descriptor (Master)
+*../MODULES/RBF/ddi0_ide.dd
 * IDE descriptors (master/slave)
 *../MODULES/RBF/i0_ide.dd
 *../MODULES/RBF/i1_ide.dd
