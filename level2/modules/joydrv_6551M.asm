@@ -31,7 +31,7 @@ MPISlot  set   $00
 name     fcs   /JoyDrv/
          fcb   edition
 
-SlotSlct equ   MPISlot
+SlotSlct fcb   MPISlot
 
 start    lbra  Init
          lbra  Term

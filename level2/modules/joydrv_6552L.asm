@@ -37,7 +37,7 @@ start    lbra  Init
          lbra  SSMsXY
          lbra  SSJoyBtn
 
-SlotSlct equ   MPISlot
+SlotSlct fcb   MPISlot
 
 SSJoyXY  pshs  x,b,a
          ldx   #PIA0Base
