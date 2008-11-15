@@ -32,7 +32,7 @@
 
 DOHELP   set   1
 * Default 0 means do not save destination disk ID. 1 means save it. RG
-SAVEID    set   1
+SAVEID    set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
