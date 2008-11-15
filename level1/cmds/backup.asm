@@ -32,7 +32,7 @@
 
 DOHELP   set   1
 * Default 0 means do not save destination disk ID. 1 means save it. RG
-SAVEID    set   0
+SAVEID    set   1
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
@@ -360,17 +360,13 @@ L035C    lda   <srcerr
 * Verification code
          leay  >vfypass,pcr
          lbsr  L0456
-         lda   <srcpath
-         os9   I$Close        close source path
-         bcs   L03AF
          lda   <dstpath
-         os9   I$Close        close destination path
-         bcs   L03AF
-         leax  <dstdev,u
-         lda   #READ.
-         os9   I$Open         open source path in READ mode
-         bcs   L03AF
          sta   <srcpath       save newly acquired path number
+         pshs  u
+         ldx   #$0000
+         leau  1,x
+         os9   I$Seek       seek to LSN0
+         puls  u
          clr   <curlsn
          clr   <curlsn+1
          clr   <curlsn+2
