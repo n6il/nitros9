@@ -14,6 +14,12 @@
 * instead of dev1. Full path or local file can be used. There is
 * still a comparison of LSN0 to make sure that a disk actually has
 * been formatted for the correct number of sides and tracks.
+* 10     2008/11/12 Robert Gault
+* Removed what seemed unnecessary Close and reOpen lines.
+* Relocated verification turn off routine.
+* Preservation of new disk ID is now possible per Gene's idea.
+* SAVEID is a switch to select save/no_save of ID on destination disk.
+* Copy and Verification start at LSN1 since LSN0 gets checked several times anyway.
 
          nam   Backup
          ttl   Make a backup copy of a disk
@@ -25,11 +31,13 @@
          endc
 
 DOHELP   set   1
+* Default 0 means do not save destination disk ID. 1 means save it. RG
+SAVEID    set   0
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   $09
+edition  set   10
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -236,16 +244,12 @@ L0238b   ldx   <u0002
          lda   #READ.
          os9   I$Open         open source device (the one we're backing up)
          bcs   L027C          branch if error
+* Relocated since Close Open is removed. RG
+         sta   <srcpath      save path to source
          leax  >srclsn0,u
          ldy   #256
          os9   I$Read         read LSN 0 of source
          bcs   L027C
-         os9   I$Close  
-         ldx   <u0002
-         lda   #READ.
-         os9   I$Open   
-         bcs   L027C
-         sta   <srcpath      save path to source
          ldx   <u0004
          leay  <dstdev,u
 L0267    ldb   ,x+
@@ -259,9 +263,21 @@ L0267    ldb   ,x+
          os9   I$Open        open destination device (the one we're writing to)
 L027C    lbcs  L03AF
          sta   <dstpath      save destination path
+* Relocated so that Close Open can be removed. RG
+         leax  <optbuf,u
+         ldb   #SS.OPT
+         os9   I$GetStt 
+         ldb   #$01
+         stb   PD.VFY,x     turn off verify
+         ldb   #SS.OPT
+         os9   I$SetStt 
+         lbcs  L03AF
+*
          clr   <curlsn
          clr   <curlsn+1
          clr   <curlsn+2
+* This starts copy routine at LSN1 instead of LSN0. RG
+         inc  <curlsn+2
          lbsr  L0419
          lda   <dstpath      get destination path
          leax  >dstlsn0,u
@@ -296,6 +312,15 @@ DsksOk   leax  >dstlsn0,u    X now points to source LSN0
          lbne  exit 		exit if not ok to scratch
          lda   <dstpath     get destination path
          leax  >srclsn0,u   get src LSN0 read earlier
+         ifne   SAVEID
+* New routine to preserved destination disk ID. Gene's idea. RG
+         pshs d
+         leay >dstlsn0,u
+         ldd <DD.DSK,y
+         std <DD.DSK,x
+         puls d
+         endif
+*
          ldy   #256
          os9   I$Write		write it to destination
 		 lbcs  L03AF
@@ -308,21 +333,6 @@ DsksOk   leax  >dstlsn0,u    X now points to source LSN0
          leax  >srclsn0,u
          os9   I$Read   
          lbcs  L03AF
-         os9   I$Close      close path
-         leax  <dstdev,u
-         lda   #WRITE.
-         os9   I$Open       open destination in write only mode
-         lbcs  L03AF
-         sta   <dstpath     save new destination path
-         leax  <optbuf,u
-         ldb   #SS.OPT
-         os9   I$GetStt 
-         ldb   #$01
-         stb   PD.VFY,x     turn off verify
-         ldb   #SS.OPT
-         os9   I$SetStt 
-         lbcs  L03AF
-
 copyloop leay  >rdysrc,pcr
          lbsr  doprompt		possibly show "ready source" message
          lda   <numpages
@@ -368,7 +378,7 @@ L035C    lda   <srcerr
 L0396    lda   <numpages
          sta   <pagcntr
          leax  >dstlsn0,u
-         bsr   L0403
+         lbsr   L0403
          lda   <srcerr
          cmpa  #E$EOF
          bne   L0396
@@ -379,7 +389,7 @@ L03AF    os9   F$PErr
          leay  >bkabort,pcr
 L03B6    lbsr  L0456
          comb  
-exit     ldb   #$00
+exit    ldb   #$00
          os9   F$Exit   
 L03BF    ldy   #256
          lda   <srcpath
@@ -423,7 +433,7 @@ ShowHelp equ   *
          leax  <strbuf,u     get address of buffer
          stx   <bufptr       store as current buffer pointer
          leay  >HelpMsg,pcr  point to help message data
-         bra   L03B6
+         lbra   L03B6
          ELSE
          bra   exit
          ENDC
