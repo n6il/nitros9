@@ -12,6 +12,9 @@
 *
 *   1      2004/08/18  Boisy G. Pitre
 * Separated clock2 modules for source clarity.
+*
+*   2      2009/01/11  Robert Gault
+* Corrected code for day of week. Was bitb #4 but should be bita #4.
 
          nam   Clock2
          ttl   MESS Emulator RTC Driver
@@ -65,7 +68,7 @@ not20    bsr   getval       month
          lda   #7           AM/PM mask
          stb   1,x
          anda  ,x
-         bitb  #4
+         bita  #4
          pshs  cc
          anda  #3
          bsr   getval1
