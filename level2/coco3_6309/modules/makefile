@@ -20,32 +20,34 @@ DEPENDS		= ./makefile
 TPB		= ../../3rdparty/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		 boot_burke boot_rampak boot_wd1002
+		 boot_burke boot_rampak boot_wd1002 boot_dw3
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_h0 sysgo_dd
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
 		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
-		clock2_jvemu clock2_messemu
+		clock2_jvemu clock2_messemu clock2_dw3
 
 RBF		= rbf.mn \
+		rbdw3.dr dw3.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
 		d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		d0_40d.dd d1_40d.dd d2_40d.dd d0_80d.dd \
 		d1_80d.dd d2_80d.dd \
 		ddd0_35s.dd ddd0_40d.dd ddd0_80d.dd \
 		rammer.dr r0_8k.dd r0_96k.dd r0_128k.dd r0_192k.dd \
-		ddr0_8k.dd ddr0_96k.dd ddr0_128k.dd ddr0_192k.dd md.dd
+		ddr0_8k.dd ddr0_96k.dd ddr0_128k.dd ddr0_192k.dd md.dd \
+		ddx0.dd x0.dd x1.dd x2.dd x3.dd
 		
 
 SCF		= scf.mn \
-		vtio.dr vrn.dr scbbp.dr scbbt.dr sspak.dr sc6551.dr \
+		vtio.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr sc6551.dr \
 		cowin.io cogrf.io covdg.io covdg_small.io \
 		keydrv_cc3.sb snddrv_cc3.sb \
 		joydrv_joy.sb joydrv_6551L.sb joydrv_6552L.sb \
 		joydrv_6551M.sb joydrv_6552M.sb \
-		nil.dd p_scbbp.dd \
+		nil.dd p_scbbp.dd p_scdwp.dd \
 		t1_scbbt.dd t2_sc6551.dd t3_sc6551.dd \
 		ftdd.dd vi.dd ssp.dd term_scbbt.dt term_sc6551.dt \
 		term_vdg.dt term_win40.dt term_win80.dt w.dw w1.dw w2.dw \
@@ -187,6 +189,22 @@ r0_192k.dd: r0.asm
 
 ddr0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=192 -aDD=1
+
+# DriveWire 3 descriptors
+ddx0.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1 -aDNum=0
+
+x0.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0
+
+x1.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=1
+
+x2.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=2
+
+x3.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
 
 # VDGInt Modules
 covdg.io: covdg.asm

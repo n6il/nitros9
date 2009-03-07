@@ -75,6 +75,8 @@ OS9FORMAT_SS40	= os9 format -t40 -ss -dd
 OS9FORMAT_SS80	= os9 format -t80 -ss -dd
 OS9FORMAT_DS40	= os9 format -t40 -ds -dd
 OS9FORMAT_DS80	= os9 format -t80 -ds -dd
+# DriveWire 3 format: 4096 256byte sectors (1,048,576 bytes)
+OS9FORMAT_DW3	= os9 format -l4096
 OS9GEN		= os9 gen
 OS9RENAME	= os9 rename
 OS9ATTR		= os9 attr -q
