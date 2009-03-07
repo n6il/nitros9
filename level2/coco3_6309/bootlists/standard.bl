@@ -40,8 +40,9 @@
 *
 ../MODULES/RBF/rbf.mn
 *
-* DriveWire driver (Cloud-9 product)
-*../MODULES/RBF/drivewire.dr
+* DriveWire 3 driver
+*../MODULES/RBF/rbdw3.dr
+*../MODULES/RBF/dw3.sb
 * DriveWire descriptors - select as needed
 *../MODULES/RBF/ddx0.dd
 *../MODULES/RBF/x0.dd
@@ -214,6 +215,9 @@
 * Printer drivers
 * ../MODULES/SCF/scbbp.dr
 * ../MODULES/SCF/p_scbbp.dd
+* DriveWire 3 Printer drivers
+* ../MODULES/SCF/scdwp.dr
+* ../MODULES/SCF/p_scdwp.dd
 * SuperBoard TL16C552A parallel port
 *../MODULES/sctlpp.dd
 *../MODULES/p1_sctlpp.dd
@@ -255,7 +259,7 @@
 *../MODULES/CLOCKS/clock2_jvemu
 *../MODULES/CLOCKS/clock2_messemu
 *../MODULES/CLOCKS/clock2_cloud9
-*../MODULES/CLOCKS/clock2_dw
+*../MODULES/CLOCKS/clock2_dw3
 *../MODULES/CLOCKS/clock2_sb
 *
 ***************************************
