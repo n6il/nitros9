@@ -20,25 +20,27 @@ DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		boot_burke boot_rampak boot_wd1002
+		boot_burke boot_rampak boot_wd1002 boot_dw3
 BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= krn krnp2
 SYSMODS		= ioman init sysgo_dd sysgo_h0
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
                 clock2_smart clock2_harris clock2_cloud9 clock2_soft \
-		clock2_messemu clock2_jvemu
+		clock2_messemu clock2_jvemu clock2_dw3
 
 RBF		= rbf.mn \
+		rbdw3.dr dw3.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
 		ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
-		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd
+		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd \
+		ddx0.dd x0.dd x1.dd x2.dd x3.dd
 
 SCF		= scf.mn \
-		sc6551.dr vrn.dr scbbp.dr scbbt.dr sspak.dr vtio.dr \
+		sc6551.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr vtio.dr \
 		covdg.io cohr.io \
-		nil.dd p_scbbp.dd pipe.dd ssp.dd \
+		nil.dd p_scbbp.dd p_scdwp.dd pipe.dd ssp.dd \
 		term_scbbt.dt term_sc6551.dt t1_scbbt.dd t2_sc6551.dd t3_sc6551.dd \
 		term32.dt term51.dt
 
@@ -128,6 +130,22 @@ d1_80d.dd: rb1773desc.asm
 
 d2_80d.dd: rb1773desc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
+
+# DriveWire 3 descriptors
+ddx0.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1 -aDNum=0
+
+x0.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0
+
+x1.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=1
+
+x2.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=2
+
+x3.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
 
 rel: rel.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDragon64=0

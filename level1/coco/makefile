@@ -14,8 +14,11 @@ DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
 BOOTFILE_COVDG	= bootfiles/bootfile_covdg
 BOOTFILE_COHR	= bootfiles/bootfile_cohr
 BOOTFILE_COVDG_DS80	= bootfiles/bootfile_covdg_ds80
+BOOTFILE_COVDG_DW3	= bootfiles/bootfile_covdg_dw3
 BOOTFILE_COHR_DS80	= bootfiles/bootfile_cohr_ds80
+BOOTFILE_COHR_DW3	= bootfiles/bootfile_cohr_dw3
 KERNELFILE	= bootfiles/kernel_1773
+KERNELFILE_DW3	= bootfiles/kernel_dw3
 DIRS		= cmds modules defs sys bootfiles
 
 
@@ -35,6 +38,8 @@ DEFS		= $(shell $(CD) defs; make showobjs)
 ROOTFILES	= startup
 
 PACKAGENAME	= $(DISTROVER).zip
+DSKDW3          = $(DISTROVER)_dw3.dsk
+LDSKDW3         = $(DISTRONAME)_dw3.dsk
 DSK360K_1       = $(DISTROVER)_40d_1.dsk
 LDSK360K_1      = $(DISTRONAME)_40d_1.dsk
 DSK360K_2       = $(DISTROVER)_40d_2.dsk
@@ -57,20 +62,73 @@ clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(LDSK360K_1) \
+	-$(RM) $(PACKAGENAME) $(DSKDW3) $(DSK360K_1) $(LDSK360K_1) \
 	$(DSK360K_2) $(LDSK360K_2) $(DSK720K) $(LDSK720K)
 
 
 dsk: all $(PACKAGENAME)
 
 dskcopy: dsk
-	$(CP) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(PACKAGENAME) $(DSKDIR)
+	$(CP) $(DSKDW3) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(PACKAGENAME) $(DSKDIR)
 
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
 
-$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) ../../ReadMe ../../ChangeLog
+$(PACKAGENAME): $(DSKDW3) $(DSK360K_1) $(DSK360K_2) $(DSK720K) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
+
+$(DSKDW3):
+	$(RM) $@
+	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/6809 Level 1"
+	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_DW3) -t=$(KERNELFILE_DW3)
+	$(MAKDIR) $@,CMDS
+	$(MAKDIR) $@,SYS
+	$(MAKDIR) $@,DEFS
+	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
+	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
+	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
+	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
+	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(CPL) $(ROOTFILES) $@,.
+	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(MAKDIR) $@,NITROS9
+	$(MAKDIR) $@,NITROS9/6809L1
+	$(MAKDIR) $@,NITROS9/6809L1/CMDS
+	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/6809L1/CMDS
+	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/CMDS/$(file);)
+	$(OS9RENAME) $@,NITROS9/6809L1/CMDS/$(WHICHSHELL) shell
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/BOOTTRACK/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/KERNEL
+	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/6809L1/MODULES/KERNEL
+	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/KERNEL/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SYSMODS
+	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/6809L1/MODULES/SYSMODS
+	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SYSMODS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/CLOCKS
+	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/6809L1/MODULES/CLOCKS
+	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/CLOCKS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/RBF
+	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/6809L1/MODULES/RBF
+	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/RBF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SCF
+	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/6809L1/MODULES/SCF
+	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SCF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/PIPE
+	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/6809L1/MODULES/PIPE
+	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/PIPE/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/BOOTLISTS
+	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
+	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
+	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
+	$(RM) $(LDSKDW3)
+	$(SOFTLINK) $@ $(LDSKDW3)
 
 $(DSK360K_1):
 	$(RM) $@
