@@ -11,7 +11,10 @@ DEPENDS		= ./makefile
 KERNEL_1773	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		$(MD)/boot_1773_6ms
 
-KERNEL_DW3	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
+KERNEL_DW3_COCO1	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
+		$(MD)/boot_dw3_coco1
+
+KERNEL_DW3_COCO2	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		$(MD)/boot_dw3
 
 IDE		= $(3PD)/ide
@@ -53,7 +56,20 @@ BOOTFILE_COWP	= $(MD)/ioman \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
-BOOTFILE_COVDG_DW3	= $(MD)/ioman \
+BOOTFILE_COVDG_DW3_COCO1	= $(MD)/ioman \
+		$(MD)/rbdw3.dr $(MD)/dw3_coco1.sb \
+		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
+		$(MD)/rbf.mn $(MD)/rb1773.dr \
+		$(MD)/d0_80d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd \
+		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
+		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
+		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_soft \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COVDG_DW3_COCO2	= $(MD)/ioman \
 		$(MD)/rbdw3.dr $(MD)/dw3.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
@@ -78,7 +94,21 @@ BOOTFILE_COVDG_DS80	= $(MD)/ioman \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
-BOOTFILE_COHR_DW3	= $(MD)/ioman \
+BOOTFILE_COHR_DW3_COCO1	= $(MD)/ioman \
+		$(MD)/rbdw3.dr $(MD)/dw3_coco1.sb \
+		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
+		$(MD)/rbf.mn $(MD)/rb1773.dr \
+		$(MD)/d0_80d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd \
+		$(MD)/ddd0_80d.dd \
+		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
+		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
+		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COHR_DW3_COCO2	= $(MD)/ioman \
 		$(MD)/rbdw3.dr $(MD)/dw3.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
@@ -104,8 +134,9 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
-BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw3 bootfile_cohr_dw3 bootfile_covdg_ds80 bootfile_cohr_ds80
-KERNELS		= kernel_1773 kernel_dw3
+BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw3_coco1 bootfile_covdg_dw3_coco2 \
+		bootfile_cohr_dw3_coco1 bootfile_cohr_dw3_coco2 bootfile_covdg_ds80 bootfile_cohr_ds80
+KERNELS		= kernel_1773 kernel_dw3_coco1 kernel_dw3_coco2
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -123,14 +154,20 @@ bootfile_cowp: $(BOOTFILE_COWP) $(DEPENDS)
 bootfile_covdg_ds80: $(BOOTFILE_COVDG_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DS80)>$@
 
-bootfile_covdg_dw3: $(BOOTFILE_COVDG_DW3) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_COVDG_DW3)>$@
+bootfile_covdg_dw3_coco1: $(BOOTFILE_COVDG_DW3_COCO1) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVDG_DW3_COCO1)>$@
+
+bootfile_covdg_dw3_coco2: $(BOOTFILE_COVDG_DW3_COCO2) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVDG_DW3_COCO2)>$@
 
 bootfile_cohr_ds80: $(BOOTFILE_COHR_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR_DS80)>$@
 
-bootfile_cohr_dw3: $(BOOTFILE_COHR_DW3) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_COHR_DW3)>$@
+bootfile_cohr_dw3_coco1: $(BOOTFILE_COHR_DW3_COCO1) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COHR_DW3_COCO1)>$@
+
+bootfile_cohr_dw3_coco2: $(BOOTFILE_COHR_DW3_COCO2) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COHR_DW3_COCO2)>$@
 
 # Dragon64 Disk boot
 bootfile_d64: $(BOOTFILE_D64) $(DEPENDS)
@@ -142,8 +179,12 @@ kernel_1773: $(KERNEL_1773) $(DEPENDS)
 	$(PADROM) 4608 $@
 
 # DriveWire 3 Kernel
-kernel_dw3: $(KERNEL_DW3) $(DEPENDS)
-	$(MERGE) $(KERNEL_DW3)>$@
+kernel_dw3_coco1: $(KERNEL_DW3_COCO1) $(DEPENDS)
+	$(MERGE) $(KERNEL_DW3_COCO1)>$@
+	$(PADROM) 4608 $@
+
+kernel_dw3_coco2: $(KERNEL_DW3_COCO2) $(DEPENDS)
+	$(MERGE) $(KERNEL_DW3_COCO2)>$@
 	$(PADROM) 4608 $@
 
 clean:

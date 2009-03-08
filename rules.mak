@@ -13,10 +13,10 @@
 # NitrOS-9 version, major and minor release numbers are here
 NOS9VER	= 3
 NOS9MAJ	= 2
-NOS9MIN	= 8
+NOS9MIN	= 9
 
 # Set this to 1 to turn on "DEVELOPMENT" message in sysgo
-NOS9DBG = 0
+NOS9DBG = 1
 
 #################### DO NOT CHANGE ANYTHING BELOW THIS LINE ####################
 
