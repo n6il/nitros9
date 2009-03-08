@@ -1,4 +1,77 @@
- IFNE H6309-1
+          IFNE BAUD38400
+
+******************************************************************************
+* COCO 38400 BAUD BIT-BANGER RECEIVER
+******************************************************************************
+*
+* WAITS FOR A SPECIFIED TIMEOUT PERIOD UNTIL A START-BIT APPEARS ON THE
+* BIT-BANGER INPUT. DATA RECEPTION IS INITIATED IF A START-BIT APPEARS
+* BEFORE THE TIMEOUT PERIOD EXPIRES. THE SERIAL DATA FORMAT MUST BE:
+*    1 START BIT, 8 DATA BITS, NO PARITY, 1..2 STOP BITS.
+*
+* DATA RECPEPTION TERMINATES WHEN:
+*   - A PERIOD OF 4 MS ELLAPSES WITHOUT A NEW START BIT
+*   - A FRAMING ERROR IS DETECTED.
+*
+*  ON ENTRY:
+*    X = ADDRESS FOR DATA STORAGE
+*    A = TIMEOUT VALUE (125 = APPROX ONE SECOND)
+*
+*  ON EXIT:
+*    Y = DATA CHECKSUM
+*    D = NUMBER OF BYTES RECEIVED
+*    X AND U ARE PRESERVED
+*    CC.CARRY IS SET ONLY IF A FRAMING ERROR WAS DETECTED
+*
+******************************************************************************
+BBIN      EQU       $FF22         ; BIT-BANGER INPUT ADDRESS
+BUFBAS    EQU       1             ; OFFSET TO STORAGE ADDRESS ON STACK
+
+DWRead
+RCV38K    CLRB                    ; CLEAR CARRY FLAG (NO FRAMING ERROR)
+          PSHS      U,X,CC        ; PRESERVE REGISTERS
+          ORCC      #$50          ; MASK INTERRUPTS
+          TFR       D,Y           ; SET Y TO INITIAL TIMEOUT COUNTER
+          LEAU      ,X            ; POINT U TO STORAGE BUFFER
+          LDX       #0            ; INITIALIZE CHECKSUM
+          LDA       #1            ; A = SERIAL INPUT MASK
+
+WAIT1     LEAY      ,Y            ; TEST TIMEOUT COUNTER
+          BEQ       FINISH        ; BRANCH IF TIMEOUT HAS EXPIRED
+WAIT2     BITA      BBIN          ; CHECK FOR START BIT
+          BEQ       BSTART        ; BRANCH IF START BIT DETECTED
+          LEAY      -1,Y          ; DECREMENT TIMEOUT COUNTER
+          BITA      BBIN          ; CHECK FOR START BIT
+          BNE       WAIT1         ; LOOP IF STILL NO START BIT
+
+BSTART    LDY       #BBIN         ; POINT Y TO BIT BANGER INPUT REGISTER 
+          LEAU      ,U            ; 4 CYCLE DELAY
+          LDB       #$7F          ; INITIALIZE B FOR SHIFT COUNTER
+RDLOOP    TST       ,Y++          ; 9 CYCLE DELAY
+          LDA       ,--Y          ; READ DATA BIT
+          LSRA                    ; SHIFT DATA INTO CARRY
+          RORB                    ; ROTATE INTO BYTE ACCUMULATOR
+          BCS       RDLOOP        ; LOOP UNTIL 8 DATA BITS HAVE BEEN READ
+
+          STB       ,U+           ; STORE RECEIVED BYTE
+          ABX                     ; ACCUMULATE CHECKSUM
+          CLRA                    ; DO THE EQUIVALENT OF..
+          INCA                    ; ..LDA #1 USING 4 CYCLES
+          ANDA      ,Y            ; CHECK FOR THE STOP BIT
+          LDY       #128          ; SET TIMEOUT COUNTER TO 4MS
+          TSTA                    ; IF STOP BIT IS GOOD THEN..
+          BNE       WAIT2         ; ..GO WAIT FOR NEXT BYTE
+
+FINISH    INCA                    ; A=1 IF FRAMING ERROR, 2 OTHERWISE
+          ORA       ,S            ; SETS CARRY BIT IN CC VALUE ON..
+          STA       ,S            ; ..STACK IF FRAMING ERROR DETECTED
+          LEAY      ,X            ; RETURN CHECKSUM IN Y
+          TFR       U,D           ; CALCULATE NUMBER..
+          SUBD      BUFBAS,S      ; ..OF BYTES RECEIVED
+          PULS      CC,X,U,PC     ; RESTORE REGISTERS AND RETURN
+
+          ELSE
+          IFNE H6309-1
 **
 ** Rev 3 Notes:
 **
@@ -115,16 +188,7 @@ FINISH    INCA                          ; IF FRAMING ERROR THEN A=1 ELSE A=2
           PULS      CC,DP,X,U,PC        ; RESTORE REGISTERS AND RETURN
           SETDP     $00
 
-
-
-
-
-
-
-
- ELSE
-
-
+          ELSE
 
 ** Rev 4 Notes:
 **
@@ -224,6 +288,6 @@ FINISH    INCA                          ; IF FRAMING ERROR THEN A=1 ELSE A=2
           LEAY      ,X                  ; RETURN CHECKSUM IN Y
           PULS      CC,X,U,PC           ; RESTORE REGISTERS AND RETURN
 
- ENDC
-
+          ENDC
+          ENDC
 

@@ -20,7 +20,7 @@ DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		boot_burke boot_rampak boot_wd1002 boot_dw3
+		boot_burke boot_rampak boot_wd1002 boot_dw3 boot_dw3_coco1
 BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= krn krnp2
 SYSMODS		= ioman init sysgo_dd sysgo_h0
@@ -30,7 +30,7 @@ CLOCKS          = clock_60hz clock_50hz \
 		clock2_messemu clock2_jvemu clock2_dw3
 
 RBF		= rbf.mn \
-		rbdw3.dr dw3.sb \
+		rbdw3.dr dw3.sb dw3_coco1.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
 		ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
@@ -53,6 +53,13 @@ ALLOBJS		= $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
 all:	$(ALLOBJS)
 
 # Special cases
+
+# DriveWire 3
+boot_dw3_coco1: boot_dw3.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBAUD38400=1
+
+dw3_coco1.sb: dw3.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBAUD38400=1
 
 # Kernel
 krn krnp2:
