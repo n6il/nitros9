@@ -66,7 +66,7 @@ BOOTFILE_COVDG_DW3_COCO1	= $(MD)/ioman \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_soft \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COVDG_DW3_COCO2	= $(MD)/ioman \
