@@ -14,6 +14,7 @@
 
          ifp1
          use   defsfile
+         use   dwdefs.d
          endc
 
 tylg     set   Drivr+Objct   
@@ -88,7 +89,7 @@ Init
 *
 Write    equ   *
          tfr   a,b
-         lda   #'Q
+         lda   #OP_PRINT
          pshs  d
          leax  ,s
          ldy   #$0002
@@ -147,7 +148,7 @@ L0123    clra
 SetStt   
 Close    cmpa  #SS.Close	close the device?
          bne   L0173
-         lda   #'F		send PrintQueue Flush Packet
+         lda   #OP_PRINTFLUSH	send PrintQueue Flush Packet
          pshs  a
          ldy   #$0001
          leax  ,s

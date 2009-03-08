@@ -25,7 +25,10 @@ OP_REWRIT   equ   'w		Re-write one sector
 OP_GETSTA   equ   'G		GetStat routine called
 OP_SETSTA   equ   'S		SetStat routine called
 OP_TERM     equ   'T		Term routine called
-OP_PRINT    equ   'P		PrintTerm routine called
+
+* Printer opcodes
+OP_PRINT    equ   'P		Print byte to the print buffer
+OP_PRINTFLUSH equ 'F		Flush the server print buffer
 
 * WireBug opcodes (Server-initiated)
 OP_WIREBUG_MODE  equ   'B
