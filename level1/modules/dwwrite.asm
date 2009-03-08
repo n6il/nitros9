@@ -1,4 +1,65 @@
- IFNE H6309-1
+          IFNE BAUD38400
+**
+** Rev Notes:
+**
+**   For CoCo 1
+**   38400 bps
+**   6809 Timing @ 0.89 MHz
+**
+
+******************************************************************************
+* COCO 38400 BAUD BIT-BANGER TRANSMITTER
+******************************************************************************
+*
+* TRNSMITS A SPECIFIED NUMBER OF DATA BYTES THROUGH THE BIT-BANGER PORT
+* AT HIGH SPEED. ALL OF THE DATA IS SENT IN A SINGLE BURST, NO HANDSHAKING
+* IS PROVIDED. THE TRANSMISSION FORMAT IS:
+*    1 START BIT, 8 DATA BITS, NO PARITY, 1 STOP BIT.
+*
+*  ON ENTRY:
+*    X = ADDRESS OF DATA TO TRANSMIT
+*    Y = NUMBER OF BYTES TO TRANSMIT
+*
+*  ON EXIT:
+*    X = ADDRESS OF LAST BYTE TRANSMITTED + 1
+*    Y = 0
+*    A, B AND U ARE PRESERVED
+*
+******************************************************************************
+BBOUT     EQU       $FF20         ; BIT-BANGER OUTPUT ADDRESS
+
+DWWrite
+XMT38K    PSHS      U,D,CC        ; PRESERVE REGISTERS
+          ORCC      #$50          ; MASK INTERRUPTS
+          LDU       #BBOUT        ; POINT U TO BIT BANGER OUTPUT REGISTER
+          FCB       $8C           ; SKIP NEXT INSTRUCTION
+
+OUTBYT    STB       ,--U          ; TRANSMIT STOP BIT (RESTORES BUMPED U)
+          LEAU      ,U+           ; 6 CYCLE DELAY (U UNCHANGED)
+          LDA       #8            ; INITIALIZE LOOP COUNTER
+          LDB       ,X+           ; GET BYTE TO TRANSMIT
+          LSLB                    ; BIT 7->CARRY .. BIT 0->B.1 .. '0'->B.0
+          ROLB                    ; BIT 7 -> B.0 .. BIT 0->B.2 .. '0'->B.1
+
+WRLOOP    STB       ,U++          ; TRANSMIT A BIT (BUMPING U)
+          TST       ,--U          ; 9 CYCLE DELAY (RESTORES BUMPED U)
+          RORB                    ; MOVE NEXT BIT INTO POSITION
+          DECA                    ; DECREMENT LOOP COUNTER
+          BNE       WRLOOP        ; LOOP UNTIL BIT 6 HAS BEEN TRANSMITTED
+
+          LEAU      ,U            ; 4 CYCLE DELAY
+          STB       ,U            ; TRANSMIT BIT 7
+          LDA       ,U++          ; 7 CYCLE DELAY (BUMPING U)
+          LDB       #$02          ; PREPARE VALUE FOR STOP BIT
+          LEAY      -1,Y          ; DECREMENT BYTES REMAINING COUNTER
+          BNE       OUTBYT        ; LOOP IF MORE TO TRANSMIT
+
+          STB       ,--U          ; TRANSMIT STOP BIT
+          PULS      CC,D,U,PC     ; RESTORE REGISTERS AND RETURN
+
+          ELSE
+          IFNE H6309-1
+
 **
 ** Rev 3 Notes:
 **
@@ -63,13 +124,7 @@ ODDBIT    STB       <BBOUT    4 \       ; START BIT, DATA BITS 1,3 AND 5
           PULS      CC,D,DP,U,PC        ; RESTORE REGISTERS AND RETURN
           SETDP     $00
 
-
-
-
- ELSE
-
-
-
+          ELSE
 
 ** Rev 4 Notes:
 **
@@ -133,6 +188,5 @@ BSEND     STB       ,U        4 \       ; BIT OUTPUT
           STB       ,U                  ; FINAL STOP BIT
           PULS      CC,D,U,PC           ; RESTORE REGISTERS AND RETURN
 
- ENDC
-
-
+          ENDC
+          ENDC

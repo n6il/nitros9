@@ -94,11 +94,11 @@ Read2          ldb       WhichDrv,pcr
                std       ,s
                leax      ,s
                ldy       #5
-               lbsr      XMT56K             send it to server
+               lbsr      DWWrite              send it to server
 * Get 256 bytes of sector data
                ldx       blockloc,u
                lda       #255
-               bsr       RCV56K              read bytes from server
+               bsr       DWRead               read bytes from server
                bcs       ReadEr               branch if framing error
                cmpd     #256
                bne      ReadEr2
@@ -107,9 +107,9 @@ Read2          ldb       WhichDrv,pcr
                pshs      y
 	 		      leax      ,s
 			      ldy       #2
-			      lbsr      XMT56K
+			      lbsr      DWWrite 
                               lda       #255
-			      bsr       RCV56K
+			      bsr       DWRead 
 			      leas      2,s
      			   bcs       ReadEx
                            cmpd     #1
