@@ -8,7 +8,7 @@ DEPENDS		= ./makefile
 AFLAGS		+= -i=$(NITROS9DIR)/3rdparty/packages/basic09
 
 BASIC09FILES	= basic09.asm runb.asm gfx.asm inkey.asm syscall.asm
-CMDS		= asm attr backup binex build cmp cobbler copy cputype \
+CMDS		= asm attr backup binex build calldbg cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirsort disasm \
 		display dmode dsave dump echo edit error exbin format \
 		free grfdrv help ident iniz irqs link list load login makdir \
