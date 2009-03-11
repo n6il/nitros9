@@ -27,8 +27,8 @@ Step     set   0
 Cyls     set   1024
 Sides    set   1
 Verify   set   1
-SectTrk  set   32
-SectTrk0 set   32
+SectTrk  set   18
+SectTrk0 set   18
 Interlv  set   0
 SAS      set   8
 
