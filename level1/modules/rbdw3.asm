@@ -223,7 +223,7 @@ Read2
          
          lda   #OP_REREADEX		reread opcode
          bra   Read2			and try getting sector again
-ReadErr0 puls  d
+ReadEr0 puls  d
 ReadEr1  ldb   #E$Read			read error
 ReadEr2  lda   9,s
          ora   #Carry
