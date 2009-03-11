@@ -22,3 +22,12 @@ dsk:	all
 # Clean DSK images
 dskclean:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
+
+# DriveWire 3 DSK images
+dw3:	dsk
+	$(CP) level1/coco/nos96809l1coco1_dw3.dsk .
+	$(CP) level1/coco/nos96809l1coco2_dw3.dsk .
+	$(CP) level2/coco3/nos96809l2_dw3.dsk .
+	$(CP) level2/coco3_6309/nos96309l2_dw3.dsk .
+	zip -C nitros9.zip nos96809l1coco1_dw3.dsk nos96809l1coco2_dw3.dsk \
+	nos96809l2_dw3.dsk nos96309l2_dw3.dsk
