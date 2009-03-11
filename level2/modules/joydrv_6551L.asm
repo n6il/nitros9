@@ -27,7 +27,7 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   6         
                          
-MPISlot  set   $00       
+MPISlot  set   $FF
                          
          mod   eom,name,tylg,atrv,start,$FF68
                          
