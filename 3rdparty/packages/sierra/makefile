@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-dirs	= blackcauldron goldrush \
+dirs	= blackcauldron christmas86 goldrush \
 	kingsquest1 kingsquest2 kingsquest3 kingsquest4 \
 	leisuresuitlarry manhunter1 manhunter2 \
 	policequest1 spacequest0 spacequest1 spacequest2
