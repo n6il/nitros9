@@ -39,6 +39,7 @@
 * DriveWire 3 RBF driver
 *../MODULES/RBF/rbdw3.dr
 *../MODULES/RBF/dw3.sb
+*../MODULES/RBF/dw3_coco1.sb
 * DriveWire descriptors - select as needed
 *../MODULES/RBF/ddx0.dd
 *../MODULES/RBF/x0.dd
