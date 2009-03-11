@@ -1221,7 +1221,7 @@ L0489    puls  pc,u,y         Restore regs & return
 * seek the head to track 0
 sktrk0   lbsr  chkdrv
          ldx   >lastdrv,u
-         clr   <$15,x
+         clr   <V.TRAK,x
          lda   #1             was 5 but that causes head banging
 L0497    ldb   <PD.STP,y
          andb  #%00000011     Just keep usable settings (6-30 ms)

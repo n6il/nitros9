@@ -21,6 +21,9 @@
 *
 *   2      2008/04/22  Boisy G. Pitre
 * Verified working operation on a CoCo 3 running NitrOS-9/6809 Level 1 @ 57.6Kbps
+*
+*   3      2009/03/09  Boisy G. Pitre
+* Added checks for size after reading as noted by Darren A's email.
 
          nam   rbdw3
          ttl   DriveWire 3 driver
@@ -37,7 +40,7 @@ NumDrvs  set   4
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   2
+edition  set   3
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -205,8 +208,10 @@ Read2
          leax  ,s
          lda   #255
          jsr   3,u
+         bcs   ReadEr0			branch if we timed out
+         cmpd  #0001
+         bne   ReadEr0
          puls  d
-         bcs   ReadEr1			branch if we timed out
          tfr   a,b				transfer byte to B (in case of error)
          tstb					is it zero?
          beq   ReadEx			if not, exit with error
@@ -218,6 +223,7 @@ Read2
          
          lda   #OP_REREADEX		reread opcode
          bra   Read2			and try getting sector again
+ReadErr0 puls  d
 ReadEr1  ldb   #E$Read			read error
 ReadEr2  lda   9,s
          ora   #Carry
@@ -281,8 +287,10 @@ Write15
          lda   #255
          leax  ,s
          jsr   3,u				read ack byte from server
+         bcs   WritEx0
+         cmpd  #$0001
+         bne   WritEx0
          puls  d				  
-         bcs   WritEx1
          tsta
          beq   WritEx			yep
          tfr   a,b
@@ -293,6 +301,7 @@ Write15
          beq   WritEx1			exit with error if no more
          lda   #OP_REWRIT		else resend
          bra   Write15
+WritEx0  puls  d
 WritEx1  ldb   #E$Write
 WritEx2  lda   9,s
          ora   #Carry
