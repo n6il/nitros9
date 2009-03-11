@@ -1,7 +1,7 @@
          NAM    mach_coco
          TTL    CoCo machine routines
 
-         PSECT  mach_coco,0,0,0,0,mach_init
+         PSECT  mach_coco3,0,0,0,0,mach_init
 
          VSECT
          ENDSECT

@@ -89,7 +89,7 @@ LOREMOVE	= sudo /sbin/losetup -d
 LOSETUP		= sudo /sbin/losetup
 LINK		= ln
 SOFTLINK	= $(LINK) -s
-ARCHIVE		= zip -D
+ARCHIVE		= zip -D -j
 
 # Directories
 3RDPARTY	= $(NITROS9DIR)/3rdparty
