@@ -3,57 +3,49 @@
 
 BOOTTRACK equ   0
 
-         PSECT  bootman,$11,0,0,0,entry
+
+         PSECT  bootman,$11,$80,0,0,entry
 
          VSECT
          ENDSECT
 
 TOP      EQU   $FE00
 
-*         ORG   $2600
-
-* This code is executed first - it moves the actual boot manager code
-* into high RAM so it is out of the way to load boot files
-         fcc    "OS"
-entry
-         lds    #TOP-1             set stack to absolute TOP - 1
-         ldd    #bmgrsiz           get size of boot manager
-         pshs   d                  save on stack
-         ldd    #TOP               get address at top
-         subd   ,s++               subtract size of boot manager
-         clrb                      D now holds the address where we copy boot manager
-         deca                      minus 256 bytes for stack 
-         deca                      minus 256 bytes for statics
-         
-         pshs   d                  save address for later
-
-         tfr    d,u                place boot manager's dest addr in U
-         ldd    #bmgrsiz
-         leax   bootmain,pcr
-cloop    ldy    ,x++
-         sty    ,u++
-         subd   #$0002
-         bgt    cloop
-
-         jmp    ,s++               send control to moved code
-         
 * The entry point of the boot manager
 * Entry: stack is set up, U points to static storage
          csect
 sectptr  rmb    2
          endsect
 
-bootmain lbsr   mach_init   initialize the machine we're running on
-         lds    #$FDFF      set up stack
-         ldu    #$F200      set up static storage
-         leax   256,u
+entry    lbsr   mach_init   initialize the machine we're running on
+         leas   entry,pcr   set up stack
+         leau   entry-256,pcr set up static storage
+         leax   entry-512,pcr set up sector buffer pointer
          stx    sectptr,u
          leax   welcome,pcr
          bsr    writestr
+
+* start booter calling
+bootup
+         leax   cfg_boot,pcr
+         ldy    ,x             get address of booter
+         beq    bootup         if 0, try again
+
+* call booter's get info entry
+         leax   attempt,pcr
+         bsr    writestr
+         jsr    12,y
+         bsr    writestr
+         leax   crlf,pcr
+         bsr    writestr
+
 loop     bra    loop
 
 
+attempt  fcc     "Attempting to boot from "
+         fcb     0
 welcome  fcc     "NitrOS-9 Boot Manager"
+crlf     fcb     13,10
          fcb     0
 
 * Helpful routines
@@ -71,6 +63,4 @@ writeloop
 writedone
          rts
          
-bmgrsiz  equ     *-bootmain
-
          endsect
