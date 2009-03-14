@@ -1,3 +1,4 @@
 @MEGAREAD
-Syntax: megaread</dev
+Syntax: megaread [#####] </dev
 Usage : Measures disk performance
+Opts  : ##### = number of 1K blocks to read, default 1024
