@@ -13,7 +13,12 @@ all:
 
 # Clean all components
 clean:  dskclean
+	-$(RM) nitros9project.zip dsks/*.dsk
 	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
+
+# Do CVS update
+cvs:
+	cvs update -d
 
 # Make DSK images
 dsk:	all
@@ -34,7 +39,7 @@ dw3dsk = $(LEVEL1)/coco/nos96809l1coco1_dw3.dsk $(LEVEL1)/coco/nos96809l1coco2_d
 dw3:
 	$(ARCHIVE) nitros9_drivewire3.zip $(dw3dsk)
 
-nightly: clean dskcopy
-	-$(RM) nitros9project.zip dsks/*.dsk
-	cvs update -d
-	($(CD) dsks; zip ../nitros9project *)
+nightly: cvs clean dskcopy
+	$(ARCHIVE) nitros9project dsks/*
+	scp nitros9project.zip boisy@nitros9.org:/home/nitros9/public_html
+
