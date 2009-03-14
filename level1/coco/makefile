@@ -76,7 +76,7 @@ dskclean:
 dsk: all $(PACKAGENAME)
 
 dskcopy: dsk
-	$(CP) $(DSKDW3COCO1) $(DSKDW3COCO2) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(PACKAGENAME) $(DSKDIR)
+	$(CP) $(DSKDW3COCO1) $(DSKDW3COCO2) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(DSKDIR)
 
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html

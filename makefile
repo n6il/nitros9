@@ -19,6 +19,10 @@ clean:  dskclean
 dsk:	all
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dsk);)
 
+# COpy DSK images
+dskcopy:	all
+	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
+
 # Clean DSK images
 dskclean:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
@@ -29,3 +33,8 @@ dw3dsk = $(LEVEL1)/coco/nos96809l1coco1_dw3.dsk $(LEVEL1)/coco/nos96809l1coco2_d
 
 dw3:
 	$(ARCHIVE) nitros9_drivewire3.zip $(dw3dsk)
+
+nightly: clean dskcopy
+	-$(RM) nitros9project.zip dsks/*.dsk
+	cvs update -d
+	($(CD) dsks; zip ../nitros9project *)

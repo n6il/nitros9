@@ -33,8 +33,8 @@ name     fcs   /CallDBG/
 start
 		 ldb   #$01
 		 lda   #$02
-*	     os9   F$Debug			call debugger
- swi
+	     os9   F$Debug			call debugger
+* swi
          lda   #$03
 		 ldb   #$04
 		 leax  start,pcr
