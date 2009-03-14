@@ -50,7 +50,7 @@ DefPrior set   128
 
 Banner   equ   *
          IFEQ  ROM
-         fcc   /(C) 2008 The NitrOS-9 Project/
+         fcc   /(C) 2009 The NitrOS-9 Project/
 CrRtn    fcb   C$CR,C$LF
          IFNE  NOS9DBG
          fcc   "**   DEVELOPMENT BUILD   **"
