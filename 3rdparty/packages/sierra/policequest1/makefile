@@ -76,7 +76,7 @@ dsk:	all
 	$(CP) $(SUPPORTFILES_D3) $(DISK_3_40D),.
 
 dskcopy: dsk
-	$(CP) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D)
+	$(CP) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D)
+	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DSKDIR)
