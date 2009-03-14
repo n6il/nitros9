@@ -4,20 +4,23 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DISK_1_40D	= blackcauldron_d1_40d.dsk
-DISK_2_40D	= blackcauldron_d2_40d.dsk
-DISK_80D	= blackcauldron_80d.dsk
+DSK_1_40D	= blackcauldron_d1_40d.dsk
+DSK_2_40D	= blackcauldron_d2_40d.dsk
+DSK_80D		= blackcauldron_80d.dsk
+DSK_DW3		= blackcauldron_dw3.dsk
 
-DISK_1_40D_NAME = "The Black Cauldron Disk 1"
-DISK_2_40D_NAME = "The Black Cauldron Disk 2"
-DISK_80D_NAME   = "The Black Cauldron"
+DSK_1_40D_NAME = "The Black Cauldron DSK 1"
+DSK_2_40D_NAME = "The Black Cauldron DSK 2"
+DSK_80D_NAME   = "The Black Cauldron"
+DSK_DW3_NAME   = $(DSK_80D_NAME)
 
 CMDS		= sierra mnln scrn shdw tocgen
 MD		= $(LEVEL2)/coco3/modules
 
-# We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
-OS9BOOT_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+# We make our own bootfile and KERNEL_FLOPPY track
+KERNEL_FLOPPY	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
+KERNEL_DW3	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
+BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
@@ -26,7 +29,7 @@ OS9BOOT_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-OS9BOOT_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
@@ -34,6 +37,15 @@ OS9BOOT_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
+
+BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/rbdw3.dr $(MD)/dw3.sb $(MD)/ddx0.dd \
+		$(MD)/scf.mn $(MD)/vtio.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
+		$(MD)/vrn.dr $(MD)/vi.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 $(MD)/sysgo_dd
 
 BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 		$(LEVEL2)/coco3/cmds/echo $(LEVEL2)/coco3/cmds/link \
@@ -57,53 +69,74 @@ clean:	dskclean
 	$(RM) $(ALLOBJS)
 
 dsk_40d:	all
-	$(RM) $(DISK_1_40D) $(DISK_2_40D)
+	$(RM) $(DSK_1_40D) $(DSK_2_40D)
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) -q $(DISK_1_40D) -n$(DISK_1_40D_NAME)
-	$(MERGE) $(OS9BOOT_40D)>os9boot_40d
-	$(MERGE) $(KERNEL)>kernel_1773
-	$(OS9GEN) $(DISK_1_40D) -b=os9boot_40d -t=kernel_1773
-	$(RM) os9boot_40d kernel_1773
-	$(MAKDIR) $(DISK_1_40D),CMDS
-	$(CP) $(CMDS) $(DISK_1_40D),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_1_40D),CMDS/$(file);)
+	$(OS9FORMAT_DS40) -q $(DSK_1_40D) -n$(DSK_1_40D_NAME)
+	$(MERGE) $(BOOTFILE_40D)>os9boot
+	$(MERGE) $(KERNEL_FLOPPY)>kernel
+	$(OS9GEN) $(DSK_1_40D) -b=os9boot -t=kernel
+	$(RM) os9boot kernel
+	$(MAKDIR) $(DSK_1_40D),CMDS
+	$(CP) $(CMDS) $(DSK_1_40D),CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DSK_1_40D),CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
-	$(CP) shell $(DISK_1_40D),CMDS
+	$(CP) shell $(DSK_1_40D),CMDS
 	$(RM) shell
-	$(OS9ATTR) $(DISK_1_40D),CMDS/shell -e -pe -pr -e -w -r
-	$(OS9RENAME) $(DISK_1_40D),CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES_D1) $(DISK_1_40D),.
-	$(OS9RENAME) $(DISK_1_40D),tOC_40d.txt tOC.txt
-	$(CP) $(SUPPORTFILES_D1) $(DISK_1_40D),.
-	tocgen $(DISK_1_40D),tOC.txt $(DISK_1_40D),tOC
-	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n$(DISK_2_40D_NAME)
-	$(CP) $(SUPPORTFILES_D2) $(DISK_2_40D),.
+	$(OS9ATTR) $(DSK_1_40D),CMDS/shell -e -pe -pr -e -w -r
+	$(OS9RENAME) $(DSK_1_40D),CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES_D1) $(DSK_1_40D),.
+	$(OS9RENAME) $(DSK_1_40D),tOC_40d.txt tOC.txt
+	$(CP) $(SUPPORTFILES_D1) $(DSK_1_40D),.
+	tocgen $(DSK_1_40D),tOC.txt $(DSK_1_40D),tOC
+	$(OS9FORMAT_DS40) -q $(DSK_2_40D) -n$(DSK_2_40D_NAME)
+	$(CP) $(SUPPORTFILES_D2) $(DSK_2_40D),.
 
 dsk_80d:	all
-	$(RM) $(DISK_80D)
+	$(RM) $(DSK_80D)
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS80) -q $(DISK_80D) -n$(DISK_80D_NAME)
-	$(MERGE) $(OS9BOOT_80D)>os9boot_80d
-	$(MERGE) $(KERNEL)>kernel_1773
-	$(OS9GEN) $(DISK_80D) -b=os9boot_80d -t=kernel_1773
-	$(RM) os9boot_80d kernel_1773
-	$(MAKDIR) $(DISK_80D),CMDS
-	$(CP) $(CMDS) $(DISK_80D),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_80D),CMDS/$(file);)
+	$(OS9FORMAT_DS80) -q $(DSK_80D) -n$(DSK_80D_NAME)
+	$(MERGE) $(BOOTFILE_80D)>os9boot
+	$(MERGE) $(KERNEL_FLOPPY)>kernel
+	$(OS9GEN) $(DSK_80D) -b=os9boot -t=kernel
+	$(RM) os9boot kernel
+	$(MAKDIR) $(DSK_80D),CMDS
+	$(CP) $(CMDS) $(DSK_80D),CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DSK_80D),CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
-	$(CP) shell $(DISK_80D),CMDS
+	$(CP) shell $(DSK_80D),CMDS
 	$(RM) shell
-	$(OS9ATTR) $(DISK_80D),CMDS/shell -e -pe -pr -e -w -r
-	$(OS9RENAME) $(DISK_80D),CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES) $(DISK_80D),.
-	$(OS9RENAME) $(DISK_80D),tOC_40d.txt tOC.txt
-	$(CP) $(SUPPORTFILES) $(DISK_80D),.
-	tocgen $(DISK_80D),tOC.txt $(DISK_80D),tOC
+	$(OS9ATTR) $(DSK_80D),CMDS/shell -e -pe -pr -e -w -r
+	$(OS9RENAME) $(DSK_80D),CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES) $(DSK_80D),.
+	$(OS9RENAME) $(DSK_80D),tOC_40d.txt tOC.txt
+	$(CP) $(SUPPORTFILES) $(DSK_80D),.
+	tocgen $(DSK_80D),tOC.txt $(DSK_80D),tOC
 
-dsk:	dsk_40d dsk_80d
+dsk_dw3:	all
+	$(RM) $(DSK_DW3)
+	$(CD) $(LEVEL2)/coco3; make
+	$(OS9FORMAT_DW3) -q $(DSK_DW3) -n$(DSK_DW3_NAME)
+	$(MERGE) $(BOOTFILE_DW3)>os9boot
+	$(MERGE) $(KERNEL_DW3)>kernel
+	$(OS9GEN) $(DSK_DW3) -b=os9boot -t=kernel
+	$(RM) os9boot kernel
+	$(MAKDIR) $(DSK_DW3),CMDS
+	$(CP) $(CMDS) $(DSK_DW3),CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DSK_DW3),CMDS/$(file);)
+	$(MERGE) $(BOOTCMDS)>shell
+	$(CP) shell $(DSK_DW3),CMDS
+	$(RM) shell
+	$(OS9ATTR) $(DSK_DW3),CMDS/shell -e -pe -pr -e -w -r
+	$(OS9RENAME) $(DSK_DW3),CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES) $(DSK_DW3),.
+	$(OS9RENAME) $(DSK_DW3),tOC_40d.txt tOC.txt
+	$(CP) $(SUPPORTFILES) $(DSK_DW3),.
+	tocgen $(DSK_DW3),tOC.txt $(DSK_DW3),tOC
+
+dsk:	dsk_40d dsk_80d dsk_dw3
 
 dskcopy: dsk
-	$(CP) $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D) $(DSKDIR)
+	$(CP) $(DSK_1_40D) $(DSK_2_40D) $(DSK_80D) $(DSK_DW3) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D)
+	$(RM) $(DSK_1_40D) $(DSK_2_40D) $(DSK_80D) $(DSK_DW3)
