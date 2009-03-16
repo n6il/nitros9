@@ -74,7 +74,38 @@ Term     equ   *
 *    B  = error code
 *
 Init
-         rts
+* Check if D.DWSUB already holds a valid subroutine module pointer
+         IFGT  Level-1
+         ldx   <D.DWSUB
+         ELSE
+         ldx   >D.DWSUB
+         ENDC
+         bne   InitEx
+
+* If here, D.DWSUB is 0, so we must link to subroutine module
+         IFGT  Level-1
+         ldx   <D.Proc
+         pshs  x
+         ldx   <D.SysPrc
+         stx   <D.Proc
+         ENDC
+         clra
+         leax  dw3name,pcr
+         os9   F$Link
+         IFGT  Level-1
+         puls  x
+         stx   <D.Proc
+         ENDC
+         bcs   InitEx
+         IFGT  Level-1
+         sty   <D.DWSUB
+         ELSE
+         sty   >D.DWSUB
+         ENDC
+         jsr   ,y			call init routine
+InitEx   rts
+
+dw3name  fcs  /dw3/
 
 * Write
 *
