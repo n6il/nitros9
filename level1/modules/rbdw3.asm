@@ -138,7 +138,7 @@ Init2    sta   DD.TOT,x			invalidate drive tables
          jsr   6,u
          clrb
 
-bye
+InitEx
          IFGT  Level-1
          puls  a,x
          stx   <D.Proc
