@@ -98,6 +98,16 @@ Term
 *    B  = error code
 *
 Init
+         IFGT  Level-1
+* Perform this so we can successfully do F$Link below
+         ldx   <D.Proc
+         pshs  a,x
+         ldx   <D.SysPrc
+         stx   <D.Proc 
+         ELSE
+         pshs  a
+         ENDC
+
          ldb   #NumDrvs
          stb   V.NDRV,u
          leax  DRVBEG,u
@@ -113,7 +123,7 @@ Init2    sta   DD.TOT,x			invalidate drive tables
          clra
          leax  name+2,pcr
          os9   F$Link
-         bcs   CpyLSNEx 
+         bcs   InitEx 
          tfr   y,u		 
          IFGT  LEVEL-1
          stu   <D.DWSUB
@@ -123,12 +133,19 @@ Init2    sta   DD.TOT,x			invalidate drive tables
 * Initialize the low level device
          jsr   ,u
          lda   #OP_INIT
-         pshs  a
          leax  ,s
          ldy   #$0001
          jsr   6,u
          clrb
+
+bye
+         IFGT  Level-1
+         puls  a,x
+         stx   <D.Proc
+         rts
+         ELSE
          puls  a,pc
+         ENDC
 
 * Read
 *
