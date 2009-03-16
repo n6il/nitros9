@@ -58,12 +58,29 @@ GetTime  pshs  u,y,x
 UpdLeave puls  x,y,u,pc
 
 
-Init     leax    subname,pcr
+Init     
+         IFGT    Level-1
+         ldx     <D.Proc
+         pshs    x
+         ldx     <D.SysPrc
+         stx     <D.Proc
+         ENDC
+         leax    subname,pcr
          clra
          os9     F$Link
+         IFGT    Level-1
+         bcs     InitEx
+         sty     >D.DWSUB
+         jsr     ,y			call initialization routine
+InitEx  
+         puls    x
+         stx     <D.Proc
+         rts
+         ELSE
          bcs     ex
          sty     >D.DWSUB
          jmp     ,y			call initialization routine
+         ENDC
 
          emod            
 eom      equ   *         
