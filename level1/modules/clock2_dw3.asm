@@ -69,20 +69,18 @@ Init
          clra
          os9     F$Link
          IFGT    Level-1
-         bcs     InitEx
-         sty     >D.DWSUB
-         jsr     ,y			call initialization routine
-InitEx  
          puls    x
          stx     <D.Proc
-         rts
+         bcs     InitEx
+         sty     <D.DWSUB
          ELSE
          bcs     ex
          sty     >D.DWSUB
-         jmp     ,y			call initialization routine
          ENDC
+         jsr     ,y			call initialization routine
+InitEx   rts
 
-         emod            
+         emod          
 eom      equ   *         
          end             
 
