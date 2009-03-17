@@ -7,6 +7,8 @@ DEPENDS		= ./makefile
 DISK		= leisuresuitlarry.dsk
 DISK_NAME	= "Leisure Suit Larry"
 
+DSKS		= $(DISK)
+
 CMDS		= sierra mnln scrn shdw
 MD		= $(LEVEL2)/coco3/modules
 
@@ -32,7 +34,7 @@ clean:	dskclean
 	$(RM) $(ALLOBJS)
 
 dsk:	all
-	$(RM) $(DISK)
+	$(RM) $(DSKS)
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS40) $(DISK) -n$(DISK_NAME)
 	$(MERGE) $(OS9BOOT)>os9boot
@@ -48,7 +50,11 @@ dsk:	all
 	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)
 
 dskcopy: dsk
-	$(CP) $(DISK) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** Leisure Suit Larry ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)

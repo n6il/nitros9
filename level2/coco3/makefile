@@ -49,6 +49,7 @@ DSK720K_50HZ	= $(DISTROVER)_80d_50hz.dsk
 LDSK720K_50HZ	= $(DISTRONAME)_80d_50hz.dsk
 TESTDSK		= test.dsk
 
+ARCHIVE_DSKS	= $(DSKDW3) $(DSK360K_1) $(DSK360K_1_50HZ) $(DSK360K_2) $(DSK720K) $(DSK720K_50HZ)
 
 # Make all components
 all:
@@ -72,12 +73,12 @@ dskclean:
 dsk: all $(PACKAGENAME)
 
 dskcopy: dsk
-	$(CP) $(DSKDW3) $(DSK360K_1) $(DSK360K_1_50HZ) $(DSK360K_2) $(DSK720K) $(DSK720K_50HZ) $(DSKDIR)
+	$(CP) $(ARCHIVE_DSKS) $(DSKDIR)
 
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
 
-$(PACKAGENAME): $(DSKDW3) $(DSK360K_1) $(DSK360K_1_50HZ) $(DSK360K_2) $(DSK720K) $(DSK720K_50HZ) ../../ReadMe ../../ChangeLog
+$(PACKAGENAME): $(ARCHIVE_DSKS) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
 
 $(DSKDW3):
@@ -329,3 +330,6 @@ $(DSK720K_50HZ):
 	$(RM) $(LDSK720K_50HZ)
 	$(SOFTLINK) $@ $(LDSK720K_50HZ)
 
+info:
+	@$(ECHO) "*** NitrOS-9/6809 Level 2 for the Tandy Color Computer 3 ***"
+	@$(foreach dsk, $(ARCHIVE_DSKS), $(ECHO) $(dsk);)

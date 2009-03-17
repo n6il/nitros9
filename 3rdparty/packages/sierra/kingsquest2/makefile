@@ -8,6 +8,8 @@ DISK_1_40D	= kingsquest2_d1_40d.dsk
 DISK_2_40D	= kingsquest2_d2_40d.dsk
 DISK_80D	= kingsquest2_80d.dsk
 
+DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D)
+
 DISK_1_40D_NAME	= "King's Quest II Disk 1"
 DISK_2_40D_NAME	= "King's Quest II Disk 2"
 DISK_80D_NAME	= "King's Quest II"
@@ -104,7 +106,11 @@ dsk_80d:	all
 dsk:	dsk_40d dsk_80d
 
 dskcopy: dsk
-	$(CP) $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** King's Quest II ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)

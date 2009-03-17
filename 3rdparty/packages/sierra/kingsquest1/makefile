@@ -6,6 +6,8 @@ DEPENDS		= ./makefile
 
 DISK_40D	= kingsquest1_40d.dsk
 
+DSKS		= $(DISK_40D)
+
 DISK_40D_NAME	= "King's Quest I"
 
 CMDS		= sierra mnln scrn shdw tocgen
@@ -40,7 +42,7 @@ clean:	dskclean
 	$(RM) $(ALLOBJS)
 
 dsk:	all
-	$(RM) $(DISK_40D) $(DISK_2_40D)
+	$(RM) $(DISK_40D)
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS40) -q $(DISK_40D) -n$(DISK_40D_NAME)
 	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n$(DISK_2_40D_NAME)
@@ -62,7 +64,11 @@ dsk:	all
 	$(CP) $(SUPPORTFILES) $(DISK_40D),.
 
 dskcopy: dsk
-	$(CP) $(DISK_40D) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK_40D)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** King's Quest I ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)

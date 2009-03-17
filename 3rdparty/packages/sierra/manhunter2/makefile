@@ -8,6 +8,8 @@ DISK_1_80D	= manhunter2_d1_80d.dsk
 DISK_2_80D	= manhunter2_d2_80d.dsk
 DISK_3_80D	= manhunter2_d3_80d.dsk
 
+DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D)
+
 DISK_1_80D_NAME = "Manhunter II Disk 1"
 DISK_2_80D_NAME = "Manhunter II Disk 2"
 DISK_3_80D_NAME = "Manhunter II Disk 3"
@@ -73,7 +75,11 @@ dsk:	all
 	$(CP) $(SUPPORTFILES_D3) $(DISK_3_80D),.
 
 dskcopy: dsk
-	$(CP) $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** Manhunter II ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)

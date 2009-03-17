@@ -8,6 +8,8 @@ DISK_1_40D	= policequest1_d1_40d.dsk
 DISK_2_40D	= policequest1_d2_40d.dsk
 DISK_3_40D	= policequest1_d3_40d.dsk
 
+DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D)
+
 DISK_1_40D_NAME = "Police Quest I Disk 1"
 DISK_2_40D_NAME = "Police Quest I Disk 2"
 DISK_3_40D_NAME = "Police Quest I Disk 3"
@@ -76,7 +78,11 @@ dsk:	all
 	$(CP) $(SUPPORTFILES_D3) $(DISK_3_40D),.
 
 dskcopy: dsk
-	$(CP) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DSKDIR)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** Police Quest I ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)

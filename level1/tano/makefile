@@ -41,6 +41,7 @@ LDSK360K_2      = $(DISTRONAME)_40d_2.dsk
 DSK720K         = $(DISTROVER)_80d.dsk
 LDSK720K        = $(DISTRONAME)_80d.dsk
 
+ARCHIVE_DSKS	= $(DSK360K_1) $(DSK360K_2) $(DSK720K)
 
 # Make all components
 all:
@@ -63,12 +64,12 @@ dskclean:
 dsk: all $(PACKAGENAME)
 
 dskcopy: dsk
-	$(CP) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(DSKDIR)
+	$(CP) $(ARCHIVE_DSKS) $(DSKDIR)
 
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
 
-$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) ../../ReadMe ../../ChangeLog
+$(PACKAGENAME): $(ARCHIVE_DSKS) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
 
 $(DSK360K_1):
@@ -179,4 +180,6 @@ $(DSK720K):
 	$(RM) $(LDSK720K)
 	$(SOFTLINK) $@ $(LDSK720K)
 
-
+info:
+	@$(ECHO) "*** NitrOS-9/6809 Level 1 for the Tano Dragon ***"
+	@$(foreach dsk, $(ARCHIVE_DSKS), $(ECHO) $(dsk);)

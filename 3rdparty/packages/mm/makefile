@@ -8,6 +8,8 @@ CMDS		= mm mod1.dat mod2.dat mod3.dat mod4.dat mod5.dat \
 		mod6.sbr mod7.sbr mod8.sbr
 MD		= $(LEVEL2)/coco3/modules
 
+DSKS		= $(DSK_FLOPPY) $(DSK_DW3)
+
 # We make our own bootfile and kernel track
 KERNEL_FLOPPY	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_DW3	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
@@ -36,7 +38,7 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk:	all $(DSK_FLOPPY) $(DSK_DW3)
+dsk:	all $(DSKS)
 
 $(DSK_FLOPPY):
 	$(RM) $@
@@ -73,7 +75,11 @@ $(DSK_DW3):
 	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_EXEC) $@,$(file);)
 
 dskcopy: dsk
-	$(CP) $(DSK_FLOPPY) $(DSK_DW3) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DSK_FLOPPY) $(DSK_DW3)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** Microscopic Mission ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)

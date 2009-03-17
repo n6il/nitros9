@@ -53,6 +53,8 @@ DSK720K         = $(DISTROVER)_80d.dsk
 LDSK720K        = $(DISTRONAME)_80d.dsk
 
 
+ARCHIVE_DSKS	= $(DSKDW3COCO1) $(DSKDW3COCO2) $(DSK360K_1) $(DSK360K_2) $(DSK720K)
+
 # Make all components
 all:
 	@$(ECHO) "**************************************************"
@@ -81,7 +83,7 @@ dskcopy: dsk
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
 
-$(PACKAGENAME): $(DSKDW3COCO1) $(DSKDW3COCO2) $(DSK360K_1) $(DSK360K_2) $(DSK720K) ../../ReadMe ../../ChangeLog
+$(PACKAGENAME): $(ARCHIVE_DSKS) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
 
 $(DSKDW3COCO1):
@@ -303,4 +305,7 @@ $(DSK720K):
 	$(RM) $(LDSK720K)
 	$(SOFTLINK) $@ $(LDSK720K)
 
-
+info:
+	@echo "*** NitrOS-9/6809 Level 1 for the Tandy Color Computer ***" 
+	@$(foreach dsk, $(ARCHIVE_DSKS), $(ECHO) $(dsk);)
+	

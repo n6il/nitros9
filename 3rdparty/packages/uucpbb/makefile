@@ -11,6 +11,8 @@ CMDS63WIN	= $(shell $(CD) cmds_6309; make showwinobjs) $(CMDS63)
 CONFIG	= Devices FileServ.help Systems bin.list Dialers Parameters active distributions
 DOCS	= adduser.man aliases.doc chown.man cnvrtmail.man fileserv.man fixtext.man login.man mailrc.doc mailx.man parameters.doc postnews.man profile.doc readnews.man rmail.man rnews.man signature.doc subscribe.man uucico.man uuclean.man uucp.man uucpbb.doc uulog.man uuxqt.man whoami.man
 
+DSKS	= $(DISK68) $(DISK63)
+
 # Make all components
 all:
 	@$(ECHO) "**************************************************"
@@ -78,9 +80,12 @@ dsk:	all
 	$(CPL) copying readme.first $(DISK63),UUCP
 
 dskcopy: dsk
-	$(CP) $(DISK68) $(DSKDIR)
-	$(CP) $(DISK63) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK68) $(DISK63)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** UUCPbb 2.1 ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
 

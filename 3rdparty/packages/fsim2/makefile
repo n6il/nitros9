@@ -7,6 +7,8 @@ DSK_DW3		= fsim2_dw3.dsk
 CMDS		= fs f2 f3 f4
 MD		= $(LEVEL2)/coco3/modules
 
+DSKS		= $(DSK_FLOPPY) $(DSK_DW3)
+
 # We make our own bootfile and kernel track
 KERNEL_FLOPPY	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_DW3	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
@@ -40,7 +42,7 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk:	$(DSK_FLOPPY) $(DSK_DW3)
+dsk:	$(DSKS)
 
 $(DSK_DW3):
 	$(RM) $@
@@ -77,7 +79,11 @@ $(DSK_FLOPPY):
 	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
 dskcopy: dsk
-	$(CP) $(DSK_FLOPPY) $(DSK_DW3) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DSK_DW3) $(DSK_FLOPPY)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** Flight Simulator 2 ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)

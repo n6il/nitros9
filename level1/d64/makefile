@@ -105,7 +105,7 @@ LDSK720K        = $(DISTRONAME)_80d.dsk
 DSK180K_1	= $(DISTROVER)_40s_1.dsk
 DSK180K_2	= $(DISTROVER)_40s_2.dsk
 
-
+ARCHIVE_DSKS	= $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(DSK180K_1) $(DSK180K_2)
 # Make all components
 all:
 	@$(ECHO) "**************************************************"
@@ -128,12 +128,12 @@ dskclean:
 dsk: all $(PACKAGENAME)
 
 dskcopy: dsk
-	$(CP) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(DSK180K_1) $(DSK180K_2) $(DSKDIR)
+	$(CP) $(ARCHIVE_DSKS) $(DSKDIR)
 
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
 
-$(PACKAGENAME): $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(DSK180K_1) $(DSK180K_2) ../../ReadMe ../../ChangeLog
+$(PACKAGENAME): $(ARCHIVE_DSKS) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
 
 #Dragon 64/32+
@@ -273,3 +273,6 @@ $(DSK180K_2):
 	$(CD) cmds; $(CP) $(CMDS525_2) ../$@,CMDS
 	$(foreach file, $(CMDS525_2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 
+info:
+	@$(ECHO) "*** NitrOS-9/6809 Level 1 for the Dragon 64 ***"
+	@$(foreach dsk, $(ARCHIVE_DSKS), $(ECHO) $(dsk);)
