@@ -7,6 +7,8 @@ DEPENDS		= ./makefile
 DSK_FLOPPY	= christmas86.dsk
 DSK_DW3		= christmas86_dw3.dsk
 
+DSKS		= $(DSK_FLOPPY) $(DSK_DW3)
+
 DSK_NAME	= "Christmas 1986"
 
 CMDS		= sierra mnln scrn shdw tocgen
@@ -49,7 +51,7 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk: $(DSK_FLOPPY) $(DSK_DW3)
+dsk: $(DSKS)
 
 $(DSK_FLOPPY):	all
 	$(RM) $@
@@ -92,7 +94,11 @@ $(DSK_DW3):	all
 	$(CP) $(SUPPORTFILES) $@,.
 
 dskcopy: dsk
-	$(CP) $(DSK_FLOPPY) $(DSK_DW3) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DSK_FLOPPY) $(DSK_DW3)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** Christmas 1986 ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)

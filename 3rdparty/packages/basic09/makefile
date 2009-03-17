@@ -53,3 +53,7 @@ dsk:	all
 
 dskclean:
 	-$(RM) $(DISK)
+
+info:
+	@$(ECHO) "*** Basic09 ***"
+	@$(ECHO) $(DISK)

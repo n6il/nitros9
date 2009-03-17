@@ -56,3 +56,6 @@ dsk:	all
 dskclean:
 	$(RM) $(DISK)
 
+info:
+	@$(ECHO) "*** DeskMate 3 ***"
+	@$(ECHO) $(DISK)

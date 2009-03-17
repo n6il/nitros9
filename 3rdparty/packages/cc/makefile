@@ -40,3 +40,6 @@ dskcopy: dsk
 dskclean:
 	$(RM) $(DISK)
 
+info:
+	@$(ECHO) "*** Microware C Compiler ***"
+	@$(ECHO) $(DISK)

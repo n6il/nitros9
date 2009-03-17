@@ -26,3 +26,7 @@ dskclean:
 # Copy DSK images
 dskcopy: dsk
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
+
+# Info
+info:
+	@$(foreach dir, $(dirs), ($(CD) $(dir); make info; $(ECHO));)

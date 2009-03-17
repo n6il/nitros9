@@ -12,6 +12,8 @@ SYSTEXT	= $(shell $(CD) sys; make showtextobjs)
 DEMO	= aif.dmo
 ROOTFILES = startup
 
+DSKS	= $(DSK68_FLOPPY) $(DSK63_FLOPPY) $(DSK68_DW3) $(DSK63_DW3)
+
 MD68	= $(LEVEL2)/coco3/modules
 MD63	= $(LEVEL2)/coco3_6309/modules
 
@@ -85,7 +87,7 @@ clean:	dskclean
 	-$(CD) cmds_6309; make clean
 	-$(CD) sys; make clean
 
-dsk:	all $(DSK68_FLOPPY) $(DSK63_FLOPPY) $(DSK68_DW3) $(DSK63_DW3)
+dsk:	all $(DSKS)
 
 $(DSK68_FLOPPY):
 	$(RM) $@
@@ -188,8 +190,12 @@ $(DSK63_DW3):
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
 dskcopy: dsk
-	$(CP) $(DSK68_FLOPPY) $(DSK63_FLOPPY) $(DSK68_DW3) $(DSK63_DW3) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DSK68_FLOPPY) $(DSK63_FLOPPY) $(DSK68_DW3) $(DSK63_DW3)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** Multi-Vue ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
 

@@ -9,6 +9,8 @@ DSK_2_40D	= blackcauldron_d2_40d.dsk
 DSK_80D		= blackcauldron_80d.dsk
 DSK_DW3		= blackcauldron_dw3.dsk
 
+DSKS		= $(DSK_1_40D) $(DSK_2_40D) $(DSK_80D) $(DSK_DW3)
+
 DSK_1_40D_NAME = "The Black Cauldron DSK 1"
 DSK_2_40D_NAME = "The Black Cauldron DSK 2"
 DSK_80D_NAME   = "The Black Cauldron"
@@ -136,7 +138,11 @@ dsk_dw3:	all
 dsk:	dsk_40d dsk_80d dsk_dw3
 
 dskcopy: dsk
-	$(CP) $(DSK_1_40D) $(DSK_2_40D) $(DSK_80D) $(DSK_DW3) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DSK_1_40D) $(DSK_2_40D) $(DSK_80D) $(DSK_DW3)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** The Black Cauldron ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)

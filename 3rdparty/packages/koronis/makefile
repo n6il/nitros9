@@ -7,6 +7,8 @@ DSK_DW3		= koronis_dw3.dsk
 CMDS		= koronis
 MD		= $(LEVEL2)/coco3/modules
 
+DSKS		= $(DSK_FLOPPY) $(DSK_DW3)
+
 # We make our own bootfile and kernel track
 KERNEL_FLOPPY	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_DW3	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
@@ -39,7 +41,7 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk:	all $(DSK_FLOPPY) $(DSK_DW3)
+dsk:	all $(DSKS)
 
 $(DSK_FLOPPY):
 	$(RM) $@
@@ -75,7 +77,11 @@ $(DSK_DW3):
 	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
 dskcopy: dsk
-	$(CP) $(DSK_FLOPPY) $(DSK_DW3) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DSK_FLOPPY) $(DSK_DW3)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** Koronis Rift ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)

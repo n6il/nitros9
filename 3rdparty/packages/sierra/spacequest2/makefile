@@ -9,6 +9,8 @@ DISK_2_40D	= spacequest2_d2_40d.dsk
 DISK_3_40D	= spacequest2_d3_40d.dsk
 DISK_80D	= spacequest2_80d.dsk
 
+DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D)
+
 DISK_1_40D_NAME = "Space Quest II Disk 1"
 DISK_2_40D_NAME = "Space Quest II Disk 2"
 DISK_3_40D_NAME = "Space Quest II Disk 3"
@@ -110,7 +112,11 @@ dsk_80d:	all
 dsk:	dsk_40d dsk_80d
 
 dskcopy: dsk
-	$(CP) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D)
+	$(RM) $(DSKS)
+
+info:
+	@$(ECHO) "*** Space Quest II ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)

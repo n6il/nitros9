@@ -39,7 +39,11 @@ dw3dsk = $(LEVEL1)/coco/nos96809l1coco1_dw3.dsk $(LEVEL1)/coco/nos96809l1coco2_d
 dw3:
 	$(ARCHIVE) nitros9_drivewire3.zip $(dw3dsk)
 
+info:
+	@$(foreach dir, $(dirs), ($(CD) $(dir); make info);)
+	
 nightly: cvs clean dskcopy
+	make info>dsks/ReadMe
 	$(ARCHIVE) nitros9project dsks/*
 	scp nitros9project.zip boisy,nitros9@web.sourceforge.net:/home/groups/n/ni/nitros9/htdocs
 
