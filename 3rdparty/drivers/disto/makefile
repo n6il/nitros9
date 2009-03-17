@@ -1,6 +1,6 @@
 include ../../../rules.mak
 
-vpath %.asm $(6809L2)/modules:$(6809L1)/modules
+vpath %.asm $(LEVEL2)/modules:$(LEVEL1)/modules
 
 L1_256 = $(AFLAGS) -aLevel=1 -aRAMSize=1
 L2_256 = $(AFLAGS) -aLevel=2 -aRAMSize=1
