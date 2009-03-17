@@ -53,7 +53,8 @@ DSK720K         = $(DISTROVER)_80d.dsk
 LDSK720K        = $(DISTRONAME)_80d.dsk
 
 
-ARCHIVE_DSKS	= $(DSKDW3COCO1) $(DSKDW3COCO2) $(DSK360K_1) $(DSK360K_2) $(DSK720K)
+DSKS		= $(DSKDW3COCO1) $(DSKDW3COCO2) $(DSK360K_1) $(DSK360K_2) $(DSK720K)
+LDSKS		= $(LDSKDW3COCO1) $(LDSKDW3COCO2) $(LDSK360K_1) $(LDSK360K_2) $(LDSK720K)
 
 # Make all components
 all:
@@ -69,21 +70,17 @@ clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSKDW3COCO1) $(DSKDW3COCO2) \
-	$(LDSKDW3COCO1) $(LDSKDW3COCO2) \
-	$(DSK360K_1) $(LDSK360K_1) \
-	$(DSK360K_2) $(LDSK360K_2) $(DSK720K) $(LDSK720K)
-
+	-$(RM) $(PACKAGENAME) $(DSKS) $(LDSKS)
 
 dsk: all $(PACKAGENAME)
 
 dskcopy: dsk
-	$(CP) $(DSKDW3COCO1) $(DSKDW3COCO2) $(DSK360K_1) $(DSK360K_2) $(DSK720K) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
 
-$(PACKAGENAME): $(ARCHIVE_DSKS) ../../ReadMe ../../ChangeLog
+$(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
 
 $(DSKDW3COCO1):
@@ -307,5 +304,5 @@ $(DSK720K):
 
 info:
 	@echo "*** NitrOS-9/6809 Level 1 for the Tandy Color Computer ***" 
-	@$(foreach dsk, $(ARCHIVE_DSKS), $(ECHO) $(dsk);)
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
 	
