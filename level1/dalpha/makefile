@@ -97,7 +97,7 @@ LDSK360K_2      = $(DISTRONAME)_80s_2.dsk
 DSK720K         = $(DISTROVER)_80d.dsk
 LDSK720K        = $(DISTRONAME)_80d.dsk
 
-ARCHIVE_DSKS	= $(DSK360K_1) $(DSK360K_2) $(DSK720K)
+DSKS		= $(DSK360K_1) $(DSK360K_2) $(DSK720K)
 
 # Make all components
 all:
@@ -113,20 +113,17 @@ clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 	
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSK360K_1) $(LDSK360K_1) \
-	$(DSK360K_2) $(LDSK360K_2) $(DSK720K) $(LDSK720K) \
-	
-
+	-$(RM) $(PACKAGENAME) $(DSKS) $(LDSKS)
 
 dsk: all $(PACKAGENAME)
 
 dskcopy: dsk
-	$(CP) $(ARCHIVE_DSKS) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
 
-$(PACKAGENAME): $(ARCHIVE_DSKS) ../../ReadMe ../../ChangeLog
+$(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
 
 #Dragon Alpha internal drives are Single sided 80 track
@@ -241,4 +238,4 @@ $(DSK720K):
 
 info:
 	@$(ECHO) "*** NitrOS-9/6809 Level 1 for the Dragon Alpha ***"
-	@$(foreach dsk, $(ARCHIVE_DSKS), $(ECHO) $(dsk);)
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
