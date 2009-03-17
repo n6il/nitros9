@@ -41,5 +41,5 @@ dw3:
 
 nightly: cvs clean dskcopy
 	$(ARCHIVE) nitros9project dsks/*
-	scp nitros9project.zip boisy@nitros9.org:/home/nitros9/public_html
+	scp nitros9project.zip boisy,nitros9@web.sourceforge.net:/home/groups/n/ni/nitros9/htdocs
 
