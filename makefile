@@ -12,7 +12,7 @@ all:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
 
 # Clean all components
-clean:  dskclean
+clean:
 	-$(RM) nitros9project.zip dsks/*.dsk
 	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
 
