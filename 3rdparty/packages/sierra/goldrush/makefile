@@ -44,8 +44,8 @@ BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 		$(LEVEL2)/coco3/cmds/echo $(LEVEL2)/coco3/cmds/link \
 		$(LEVEL2)/coco3/cmds/setime
 
-TEXTFILES_D1	= startup tOC_80d.txt tOC_dw3.txt
-TEXTFILES	= startup tOC_80d.txt tOC_dw3.txt
+TEXTFILES_D1	= startup tOC_80d.txt
+TEXTFILES_DW3	= startup tOC_dw3.txt
 
 SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.9 vol.10 vol.11 vol.12 words.tok
@@ -79,9 +79,7 @@ $(DSKDW3):
 	$(RM) shell
 	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES_D1) $@,.
-	$(CPL) $(TEXTFILES_D2) $@,.
-	$(CPL) $(TEXTFILES_D3) $@,.
+	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_dw3.txt tOC.txt
 	$(CP) $(SUPPORTFILES_D1) $@,.
 	$(CP) $(SUPPORTFILES_D2) $@,.
