@@ -36,7 +36,7 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DSKS)
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) $(DISK) -n$(DISK_NAME)
+	$(OS9FORMAT_DS40) -q $(DISK) -n$(DISK_NAME)
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK) -b=os9boot -t=kernel_1773
