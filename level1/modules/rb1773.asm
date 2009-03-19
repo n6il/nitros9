@@ -82,6 +82,9 @@
 *   1r1   2005/04/07   Boisy G. Pitre
 * We now save the contents of D.NMI (Level 2) or D.XNMI (Level 1) before
 * overwriting them, and then restore the original values at term time.
+*
+*	2009/03/19	Robert Gault
+* Removed slow down hack from format and write sector but left code just in case.
 
          nam   rb1773
          ttl   Western Digital 1773 Disk Controller Driver
@@ -781,40 +784,43 @@ WrTrk     lbsr  L01A1          Send command to controller (including delay)
          ENDC
 L0230    stb   >DPort+CtrlReg  send data to control register
 * These lines converted to separate sector writes from format. RG
-*         nop
-*         nop
-         cmpb   #$F0           if format, then
-         beq   L0240b          go to special loop
+* Removed slow down but left code just in case. RG
+         nop
+         nop
+*         cmpb   #$F0           if format, then
+*         beq   L0240b          go to special loop
          bra   L0240           wait a bit for HALT to enable
 
 * Write sector routine (Entry: B= drive/side select) (NMI will break out)
-* Part of timing change mentioned above. RG
-*L0240    nop               --- wait a bit more
-L0240    lda   ,x+             Get byte from write buffer
+* Was part of timing change mentioned above.  Removed RG
+L0240    nop               --- wait a bit more
+	 lda   ,x+             Get byte from write buffer
+*L0240    lda   ,x+             Get byte from write buffer
          sta   >DPort+WD_Data  Save to FDC's data register
 * EAT 2 CYCLES: TC9 ONLY (TRY 1 CYCLE AND SEE HOW IT WORKS)
          IFEQ TC9-1
          nop
          nop
-         ELSE
-* See above. RG
-         nop
+*         ELSE
+* See above. RG Now removed.
+*         nop
          ENDC
+* No blob change.
 *         stb   >DPort+CtrlReg Set up to read next byte
          bra   L0240          Go read it
-* Special loop for format slows CPU clock. RG
-L0240b
-         IFGT  Level-1
-         sta   >$FFD8
-         ENDC
-L0240c   lda   ,x+
-         sta   >DPort+WD_Data
-         bra   L0240c
+* Special loop for format slows CPU clock. RG Now removed.
+*L0240b
+*         IFGT  Level-1
+*         sta   >$FFD8
+*         ENDC
+*L0240c   lda   ,x+
+*         sta   >DPort+WD_Data
+*         bra   L0240c
 * NMI routine
 NMISvc   leas  R$Size,s       Eat register stack
-* Added to compensate above change in format loop. RG
+* Added to compensate above change in format loop. RG Now removed.
          IFGT  Level-1
-         sta   >$FFD9
+*         sta   >$FFD9
          ldx   <D.SysDAT  get pointer to system DAT image
          lda   3,x        get block number 1
          sta   >$FFA1     map it back into memory
