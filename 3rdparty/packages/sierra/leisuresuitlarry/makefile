@@ -4,17 +4,19 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DISK		= leisuresuitlarry.dsk
-DISK_NAME	= "Leisure Suit Larry"
+DSK_FLOPPY	= leisuresuitlarry.dsk
+DSK_DW3		= leisuresuitlarry_dw3.dsk
+DSK_NAME	= "Leisure Suit Larry"
 
-DSKS		= $(DISK)
+DSKS		= $(DSK_FLOPPY) $(DSK_DW3)
 
 CMDS		= sierra mnln scrn shdw
 MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
-OS9BOOT		= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+KERNEL_FLOPPY	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
+KERNEL_DW3	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
+BOOTFILE_FLOPPY	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
@@ -22,6 +24,14 @@ OS9BOOT		= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
+BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/rbdw3.dr $(MD)/dw3.sb $(MD)/ddx0.dd \
+		$(MD)/scf.mn $(MD)/vtio.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
+		$(MD)/vrn.dr $(MD)/vi.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 $(MD)/sysgo_dd
 
 SUPPORTFILES	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 words.tok
@@ -33,21 +43,39 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk:	all
-	$(RM) $(DSKS)
+dsk:	all $(DSKS)
+
+$(DSK_FLOPPY):
+	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) -q $(DISK) -n$(DISK_NAME)
-	$(MERGE) $(OS9BOOT)>os9boot
-	$(MERGE) $(KERNEL)>kernel_1773
-	$(OS9GEN) $(DISK) -b=os9boot -t=kernel_1773
-	$(RM) os9boot kernel_1773
-	$(MAKDIR) $(DISK),CMDS
-	$(CP) $(CMDS) $(DISK),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
-	$(OS9RENAME) $(DISK),CMDS/sierra AutoEx
-	$(CP) $(SUPPORTFILES) $(DISK),.
-	tocgen tOC.txt $(DISK),tOC
-	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)
+	$(OS9FORMAT_DS40) -q $@ -n$(DSK_NAME)
+	$(MERGE) $(BOOTFILE_FLOPPY)>os9boot
+	$(MERGE) $(KERNEL_FLOPPY)>kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
+	$(RM) os9boot kernel
+	$(MAKDIR) $@,CMDS
+	$(CP) $(CMDS) $@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9RENAME) $@,CMDS/sierra AutoEx
+	$(CP) $(SUPPORTFILES) $@,.
+	tocgen tOC.txt $@,tOC
+	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+
+$(DSK_DW3):
+	$(RM) $@
+	$(CD) $(LEVEL2)/coco3; make
+	$(OS9FORMAT_DS40) -q $@ -n$(DSK_NAME)
+	$(MERGE) $(BOOTFILE_DW3)>os9boot
+	$(MERGE) $(KERNEL_DW3)>kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
+	$(RM) os9boot kernel
+	$(MAKDIR) $@,CMDS
+	$(CP) $(CMDS) $@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9RENAME) $@,CMDS/sierra AutoEx
+	$(CP) $(SUPPORTFILES) $@,.
+	tocgen tOC.txt $@,tOC
+	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
 dskcopy: dsk
 	$(CP) $(DSKS) $(DSKDIR)
