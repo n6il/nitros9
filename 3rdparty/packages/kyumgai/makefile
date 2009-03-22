@@ -48,7 +48,7 @@ dsk:	all $(DSKS)
 $(DSK_FLOPPY):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) $@ -n"Kyum-Gai: To Be Ninja"
+	$(OS9FORMAT_DS40) -q $@ -n"Kyum-Gai: To Be Ninja"
 	$(MERGE) $(BOOTFILE_FLOPPY)>os9boot
 	$(MERGE) $(KERNEL_FLOPPY)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
@@ -65,7 +65,7 @@ $(DSK_FLOPPY):
 $(DSK_DW3):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_SS80) $@ -n"Kyum-Gai: To Be Ninja"
+	$(OS9FORMAT_SS80) -q $@ -n"Kyum-Gai: To Be Ninja"
 	$(MERGE) $(BOOTFILE_DW3)>os9boot
 	$(MERGE) $(KERNEL_DW3)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel

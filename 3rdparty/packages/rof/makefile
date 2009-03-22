@@ -42,7 +42,7 @@ dsk:	all $(DSKS)
 $(DSK_FLOPPY):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_SS35) $@ -n"Rescue on Fractalus"
+	$(OS9FORMAT_SS35) -q $@ -n"Rescue on Fractalus"
 	$(MERGE) $(BOOTFILE_FLOPPY)>os9boot
 	$(MERGE) $(KERNEL_FLOPPY)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
@@ -59,7 +59,7 @@ $(DSK_FLOPPY):
 $(DSK_DW3):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_SS35) $@ -n"Rescue on Fractalus"
+	$(OS9FORMAT_SS35) -q $@ -n"Rescue on Fractalus"
 	$(MERGE) $(BOOTFILE_DW3)>os9boot
 	$(MERGE) $(KERNEL_DW3)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel

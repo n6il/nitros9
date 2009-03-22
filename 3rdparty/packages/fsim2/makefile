@@ -47,7 +47,7 @@ dsk:	$(DSKS)
 $(DSK_DW3):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_SS35) $@ -n"Flight Simulator 2"
+	$(OS9FORMAT_SS35) -q $@ -n"Flight Simulator 2"
 	$(MERGE) $(BOOTFILE_DW3)>os9boot
 	$(MERGE) $(KERNEL_DW3)>kernel_1773
 	$(OS9GEN) $@ -b=os9boot -t=kernel_1773
@@ -64,7 +64,7 @@ $(DSK_DW3):
 $(DSK_FLOPPY):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_SS35) $@ -n"Flight Simulator 2"
+	$(OS9FORMAT_SS35) -q $@ -n"Flight Simulator 2"
 	$(MERGE) $(BOOTFILE_FLOPPY)>os9boot
 	$(MERGE) $(KERNEL_FLOPPY)>kernel_1773
 	$(OS9GEN) $@ -b=os9boot -t=kernel_1773
