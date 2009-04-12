@@ -97,22 +97,20 @@ Read2          ldb       WhichDrv,pcr
                lbsr      DWWrite              send it to server
 * Get 256 bytes of sector data
                ldx       blockloc,u
-               lda       #255
+               ldy       #256
                bsr       DWRead               read bytes from server
                bcs       ReadEr               branch if framing error
-               cmpd     #256
-               bne      ReadEr2
+               bne       ReadEr2
                
 * Send two byte checksum
                pshs      y
 	 		      leax      ,s
 			      ldy       #2
 			      lbsr      DWWrite 
-                              lda       #255
+                              ldy       #1
 			      bsr       DWRead 
 			      leas      2,s
      			   bcs       ReadEx
-                           cmpd     #1
                            bne      ReadEr2
 			      ldb       ,s
 			      beq       ReadEx

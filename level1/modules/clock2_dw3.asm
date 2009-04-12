@@ -51,9 +51,8 @@ GetTime  pshs  u,y,x
 	 jsr   6,u
          puls  a        
 * Consider the following optimization
-*        ldx   #D.Year
-	 leax  D.Year,y	Note: Y = 0 after returning from XMT56K
-	 lda   #255
+         ldx   #D.Year
+	 ldy   #$0005
          jsr   3,u
 UpdLeave puls  x,y,u,pc
 

@@ -211,10 +211,9 @@ Read2
 * Get 256 bytes of sector data
          ldx   5,s
          ldx   PD.BUF,x			get buffer pointer into X
-         lda   #255
+         ldy   #$0100
          jsr   3,u
          bcs   ReadEr1
-         cmpd  #256
          bne   ReadEr1
          pshs  y
          leax  ,s
@@ -223,10 +222,9 @@ Read2
 
 * Get error code byte
          leax  ,s
-         lda   #255
+         ldy   #$0001
          jsr   3,u
          bcs   ReadEr0			branch if we timed out
-         cmpd  #0001
          bne   ReadEr0
          puls  d
          tfr   a,b				transfer byte to B (in case of error)
@@ -300,12 +298,10 @@ Write15
          jsr   6,u
 
 * Await acknowledgement from server on receipt of sector
-*         ldy   #$0001
-         lda   #255
          leax  ,s
+         ldy   #$0001
          jsr   3,u				read ack byte from server
          bcs   WritEx0
-         cmpd  #$0001
          bne   WritEx0
          puls  d				  
          tsta
