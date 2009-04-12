@@ -1,293 +1,244 @@
+*******************************************************
+*
+* DWRead
+*    Receive a response from the DriveWire server.
+*    Times out if serial port goes idle for more than 1.4 (0.7) seconds.
+*    Serial data format:  1-8-N-1
+*    4/12/2009 by Darren Atkinson
+*
+* Entry:
+*    X  = starting address where data is to be stored
+*    Y  = number of bytes expected
+*
+* Exit:
+*    CC = carry set on framing error, Z set if all bytes received
+*    X  = starting address of data received
+*    Y  = checksum
+*    U is preserved.  All accumulators are clobbered
+*
+
+
           IFNE BAUD38400
+*******************************************************
+* 38400 bps using 6809 code and timimg
+*******************************************************
 
-******************************************************************************
-* COCO 38400 BAUD BIT-BANGER RECEIVER
-******************************************************************************
-*
-* WAITS FOR A SPECIFIED TIMEOUT PERIOD UNTIL A START-BIT APPEARS ON THE
-* BIT-BANGER INPUT. DATA RECEPTION IS INITIATED IF A START-BIT APPEARS
-* BEFORE THE TIMEOUT PERIOD EXPIRES. THE SERIAL DATA FORMAT MUST BE:
-*    1 START BIT, 8 DATA BITS, NO PARITY, 1..2 STOP BITS.
-*
-* DATA RECPEPTION TERMINATES WHEN:
-*   - A PERIOD OF 4 MS ELLAPSES WITHOUT A NEW START BIT
-*   - A FRAMING ERROR IS DETECTED.
-*
-*  ON ENTRY:
-*    X = ADDRESS FOR DATA STORAGE
-*    A = TIMEOUT VALUE (125 = APPROX ONE SECOND)
-*
-*  ON EXIT:
-*    Y = DATA CHECKSUM
-*    D = NUMBER OF BYTES RECEIVED
-*    X AND U ARE PRESERVED
-*    CC.CARRY IS SET ONLY IF A FRAMING ERROR WAS DETECTED
-*
-******************************************************************************
-BBIN      EQU       $FF22         ; BIT-BANGER INPUT ADDRESS
-BUFBAS    EQU       1             ; OFFSET TO STORAGE ADDRESS ON STACK
+DWRead    clra                          ; clear Carry (no framing error)
+          deca                          ; clear Z flag, A = timeout msb ($ff)
+          tfr       cc,b
+          pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
+          orcc      #$50                ; mask interrupts
+          tfr       a,dp                ; set direct page to $FFxx
+          setdp     $ff
+          leau      ,x                  ; U = storage ptr
+          ldx       #0                  ; initialize checksum
+          adda      #2                  ; A = $01 (serial in mask), set Carry
 
-DWRead
-RCV38K    CLRB                    ; CLEAR CARRY FLAG (NO FRAMING ERROR)
-          PSHS      U,X,CC        ; PRESERVE REGISTERS
-          ORCC      #$50          ; MASK INTERRUPTS
-          TFR       D,Y           ; SET Y TO INITIAL TIMEOUT COUNTER
-          LEAU      ,X            ; POINT U TO STORAGE BUFFER
-          LDX       #0            ; INITIALIZE CHECKSUM
-          LDA       #1            ; A = SERIAL INPUT MASK
+* Wait for a start bit or timeout
+rx0010    bcc       rxExit              ; exit if timeout expired
+          ldb       #$ff                ; init timeout lsb
+rx0020    bita      <BBIN               ; check for start bit
+          beq       rxByte              ; branch if start bit detected
+          subb      #1                  ; decrement timeout lsb
+          bita      <BBIN
+          beq       rxByte
+          bcc       rx0020              ; loop until timeout lsb rolls under
+          bita      <BBIN
+          beq       rxByte
+          addb      ,s                  ; B = timeout msb - 1
+          bita      <BBIN
+          beq       rxByte
+          stb       ,s                  ; store decremented timeout msb
+          bita      <BBIN
+          bne       rx0010              ; loop if still no start bit
 
-WAIT1     LEAY      ,Y            ; TEST TIMEOUT COUNTER
-          BEQ       FINISH        ; BRANCH IF TIMEOUT HAS EXPIRED
-WAIT2     BITA      BBIN          ; CHECK FOR START BIT
-          BEQ       BSTART        ; BRANCH IF START BIT DETECTED
-          LEAY      -1,Y          ; DECREMENT TIMEOUT COUNTER
-          BITA      BBIN          ; CHECK FOR START BIT
-          BNE       WAIT1         ; LOOP IF STILL NO START BIT
+* Read a byte
+rxByte    leay      ,-y                 ; decrement request count
+          ldd       #$ff80              ; A = timeout msb, B = shift counter
+          sta       ,s                  ; reset timeout msb for next byte
+rx0030    exg       a,a
+          nop
+          lda       <BBIN               ; read data bit
+          lsra                          ; shift into carry
+          rorb                          ; rotate into byte accumulator
+          lda       #$01                ; prep stop bit mask
+          bcc       rx0030              ; loop until all 8 bits read
 
-BSTART    LDY       #BBIN         ; POINT Y TO BIT BANGER INPUT REGISTER 
-          LEAU      ,U            ; 4 CYCLE DELAY
-          LDB       #$7F          ; INITIALIZE B FOR SHIFT COUNTER
-RDLOOP    TST       ,Y++          ; 9 CYCLE DELAY
-          LDA       ,--Y          ; READ DATA BIT
-          LSRA                    ; SHIFT DATA INTO CARRY
-          RORB                    ; ROTATE INTO BYTE ACCUMULATOR
-          BCS       RDLOOP        ; LOOP UNTIL 8 DATA BITS HAVE BEEN READ
+          stb       ,u+                 ; store received byte to memory
+          abx                           ; update checksum
+          ldb       #$ff                ; set timeout lsb for next byte
+          anda      <BBIN               ; read stop bit
+          beq       rxExit              ; exit if framing error
+          leay      ,y                  ; test request count
+          bne       rx0020              ; loop if another byte wanted
+          lda       #$03                ; setup to return SUCCESS
 
-          STB       ,U+           ; STORE RECEIVED BYTE
-          ABX                     ; ACCUMULATE CHECKSUM
-          CLRA                    ; DO THE EQUIVALENT OF..
-          INCA                    ; ..LDA #1 USING 4 CYCLES
-          ANDA      ,Y            ; CHECK FOR THE STOP BIT
-          LDY       #128          ; SET TIMEOUT COUNTER TO 4MS
-          TSTA                    ; IF STOP BIT IS GOOD THEN..
-          BNE       WAIT2         ; ..GO WAIT FOR NEXT BYTE
+* Clean up, set status and return
+rxExit    leas      1,s                 ; remove timeout msb from stack
+          inca                          ; A = status to be returned in C and Z
+          ora       ,s                  ; place status information into the..
+          sta       ,s                  ; ..C and Z bits of the preserved CC
+          leay      ,x                  ; return checksum in Y
+          puls      cc,dp,x,u,pc        ; restore registers and return
+          setdp     $00
 
-FINISH    INCA                    ; A=1 IF FRAMING ERROR, 2 OTHERWISE
-          ORA       ,S            ; SETS CARRY BIT IN CC VALUE ON..
-          STA       ,S            ; ..STACK IF FRAMING ERROR DETECTED
-          LEAY      ,X            ; RETURN CHECKSUM IN Y
-          TFR       U,D           ; CALCULATE NUMBER..
-          SUBD      BUFBAS,S      ; ..OF BYTES RECEIVED
-          PULS      CC,X,U,PC     ; RESTORE REGISTERS AND RETURN
 
           ELSE
           IFNE H6309-1
-**
-** Rev 3 Notes:
-**
-**   For CoCo 1,2 or 3
-**   6809 Timing
-**   No Read Count in Receiver
-**
+*******************************************************
+* 57600 (115200) bps using 6809 code and timimg
+*******************************************************
 
+DWRead    clra                          ; clear Carry (no framing error)
+          deca                          ; clear Z flag, A = timeout msb ($ff)
+          tfr       cc,b
+          pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
+          orcc      #$50                ; mask interrupts
+          tfr       a,dp                ; set direct page to $FFxx
+          setdp     $ff
+          leau      ,x                  ; U = storage ptr
+          ldx       #0                  ; initialize checksum
+          lda       #$01                ; A = serial in mask
+          bra       rx0030              ; go wait for start bit
 
-******************************************************************************
-* COCO 57600 / 115.2K BAUD BIT-BANGER RECEIVER
-******************************************************************************
-*
-* WAITS FOR A SPECIFIED TIMEOUT PERIOD UNTIL A START-BIT APPEARS ON THE
-* BIT-BANGER INPUT. DATA RECEPTION IS INITIATED IF A START-BIT APPEARS
-* BEFORE THE TIMEOUT PERIOD EXPIRES. THE SERIAL DATA FORMAT MUST BE:
-*    1 START BIT, 8 DATA BITS, NO PARITY, 1..2 STOP BITS.
-*
-* DATA RECPEPTION TERMINATES WHEN:
-*   - A PERIOD OF APPROX 5.5 MS (2.75 MS) ELLAPSES WITHOUT A NEW START-BIT
-*   - A FRAMING ERROR IS DETECTED.
-*
-*  ON ENTRY:
-*    X = START ADDRESS FOR DATA STORAGE
-*    A = TIMEOUT VALUE (182 = APPROX ONE SECOND @ 0.89 MHZ)
-*
-*  ON EXIT:
-*    Y = DATA CHECKSUM
-*    D = ACTUAL NUMBER OF BYTES RECEIVED
-*    X AND U ARE PRESERVED
-*    CC.CARRY IS SET ONLY IF A FRAMING ERROR WAS DETECTED
-*
-******************************************************************************
-BBIN      EQU       $FF22               ; BIT-BANGER INPUT ADDRESS
-BCTR      EQU       1                   ; OFFSET TO BIT LOOP COUNTER ON STACK
-RCVSTA    EQU       2                   ; OFFSET TO CC VALUE ON THE STACK
-BUFBAS    EQU       4                   ; OFFSET TO STORAGE ADDRESS ON STACK
+* Read a byte
+rxByte    leau      1,u                 ; bump storage ptr
+          leay      ,-y                 ; decrement request count
+          lda       <BBIN               ; read bit 0
+          lsra                          ; move bit 0 into Carry
+          ldd       #$ff20              ; A = timeout msb, B = shift counter
+          sta       ,s                  ; reset timeout msb for next byte
+          rorb                          ; rotate bit 0 into byte accumulator
+rx0010    lda       <BBIN               ; read bit (d1, d3, d5)
+          lsra
+          rorb
+          bita      1,s                 ; 5 cycle delay
+          bcs       rx0020              ; exit loop after reading bit 5
+          lda       <BBIN               ; read bit (d2, d4)
+          lsra
+          rorb
+          leau      ,u
+          bra       rx0010
 
-DWRead
-RCV56K    CLRB                          ; CLEAR CARRY FLAG (NO FRAMING ERROR)
-          PSHS      U,X,DP,CC           ; PRESERVE REGISTERS
-          STA       ,--S                ; STORE INITIAL TIMEOUT DURATION
-          LDD       #$01FF              ; A = SERIAL INPUT MASK, B = $FF
-          ORCC      #$50                ; MASK INTERRUPTS
-          TFR       B,DP                ; SET DIRECT PAGE TO $FFXX
-          SETDP     $FF                 ; INFORM ASSEMBLER OF NEW DP VALUE
-          LEAU      ,X                  ; POINT U TO STORAGE ADDRESS
-          LDX       #0                  ; INITIALIZE CHECKSUM
-          BRA       WAIT1               ; GO WAIT FOR A START BIT
+rx0020    lda       <BBIN               ; read bit 6
+          lsra
+          rorb
+          leay      ,y                  ; test request count
+          beq       rx0050              ; branch if final byte of request
+          lda       <BBIN               ; read bit 7
+          lsra
+          rorb                          ; byte is now complete
+          stb       -1,u                ; store received byte to memory
+          abx                           ; update checksum
+          lda       <BBIN               ; read stop bit
+          anda      #$01                ; mask out other bits
+          beq       rxExit              ; exit if framing error
 
-BSTART    LEAU      1,U       5 \ 11    ; ADVANCE THE STORAGE PTR
-          CLR       ,S        6 /       ; RESET TIMEOUT MSB TO 1
+* Wait for a start bit or timeout
+rx0030    bita      <BBIN               ; check for start bit
+          beq       rxByte              ; branch if start bit detected
+          bita      <BBIN               ; again
+          beq       rxByte
+          ldb       #$ff                ; init timeout lsb
+rx0040    bita      <BBIN
+          beq       rxByte
+          subb      #1                  ; decrement timeout lsb
+          bita      <BBIN
+          beq       rxByte
+          bcc       rx0040              ; loop until timeout lsb rolls under
+          bita      <BBIN
+          beq       rxByte
+          addb      ,s                  ; B = timeout msb - 1
+          bita      <BBIN
+          beq       rxByte
+          stb       ,s                  ; store decremented timeout msb
+          bita      <BBIN
+          beq       rxByte
+          bcs       rx0030              ; loop if timeout hasn't expired
+          bra       rxExit              ; exit due to timeout
 
-          LDB       <BBIN     4 \       ; BIT 0
-          LSRB                2  |
-          RORB                2  | 15
-          LDA       #3        2  |
-          STA       BCTR,S    5 /
+rx0050    lda       <BBIN               ; read bit 7 of final byte
+          lsra
+          rorb                          ; byte is now complete
+          stb       -1,u                ; store received byte to memory
+          abx                           ; calculate final checksum
+          lda       <BBIN               ; read stop bit
+          anda      #$01                ; mask out other bits
+          ora       #$02                ; return SUCCESS if no framing error
 
-BLOOP     LDA       <BBIN     4 \       ; BITS 1,3 AND 5
-          LSRA                2  | 15
-          RORB                2  |
-          DEC       BCTR,S    7 /
+* Clean up, set status and return
+rxExit    leas      1,s                 ; remove timeout msb from stack
+          inca                          ; A = status to be returned in C and Z
+          ora       ,s                  ; place status information into the..
+          sta       ,s                  ; ..C and Z bits of the preserved CC
+          leay      ,x                  ; return checksum in Y
+          puls      cc,dp,x,u,pc        ; restore registers and return
+          setdp     $00
 
-          LDA       <BBIN     4 \       ; BITS 2,4 AND 6
-          LSRA                2  |
-          RORB                2  | 16
-          LDA       BCTR,S    5  |
-          BNE       BLOOP     3 /
-
-          LDA       <BBIN     4 \       ; BIT 7
-          LSRA                2  |
-          RORB                2  | 16
-          ABX                 3  |      ; ACCUMULATE CHECKSUM
-          STB       -1,U      5 /       ; PUT BYTE INTO STORAGE
-
-          LDA       <BBIN     4 \       ; STOP BIT
-          ANDA      #1        2  | 9    ; MASK OUT ALL OTHER BITS (1-7)
-          BEQ       FINISH    3 /       ; BRANCH IF FRAMING ERROR
-
-WAIT1     BITA      <BBIN     4 \  7    ; TWO RAPID TESTS FOR NEXT START BIT
-          BEQ       BSTART    3 /
-          BITA      <BBIN     4 \
-          BEQ       BSTART    3  | 9
-          LDB       #$FF      2 /       ; INIT TIMEOUT LSB
-
-WAIT2     BITA      <BBIN     4 \
-          BEQ       BSTART    3  | 9
-          SUBB      #1        2 /       ; DECREMENT TIMEOUT LSB
-          BITA      <BBIN     4 \
-          BEQ       BSTART    3  | 10
-          BCC       WAIT2     3 /       ; LOOP UNTIL TIMEOUT LSB < 0
-
-          BITA      <BBIN     4 \
-          BEQ       BSTART    3  | 11
-          LDB       ,S        4 /       ; GET TIMEOUT MSB
-          BITA      <BBIN     4 \
-          BEQ       BSTART    3  | 9
-          SUBB      #1        2 /       ; DECREMENT TIMEOUT MSB
-          BITA      <BBIN     4 \
-          BEQ       BSTART    3  | 11
-          STB       ,S        4 /       ; STORE TIMEOUT MSB
-          BITA      <BBIN     4 \
-          BEQ       BSTART    3  | 10
-          BCC       WAIT1     3 /       ; LOOP IF TIMEOUT NOT EXPIRED
-
-FINISH    INCA                          ; IF FRAMING ERROR THEN A=1 ELSE A=2
-          ORA       RCVSTA,S            ; SET CARRY BIT IN CC VALUE ON..
-          STA       RCVSTA,S            ; ..THE STACK ONLY IF FRAMING ERROR
-          LEAY      ,X                  ; RETURN CHECKSUM IN Y
-          TFR       U,D                 ; CALCULATE ACTUAL NUMBER..
-          SUBD      BUFBAS,S            ; ..OF BYTES RECEIVED
-          LEAS      2,S                 ; POP TIMEOUT AND BIT LOOP COUNTERS
-          PULS      CC,DP,X,U,PC        ; RESTORE REGISTERS AND RETURN
-          SETDP     $00
 
           ELSE
+*******************************************************
+* 57600 (115200) bps using 6309 native mode
+*******************************************************
 
-** Rev 4 Notes:
-**
-**   For CoCo 2 or 3
-**   6309 Native Mode
-**   No Read Count in Receiver
-**
+DWRead    clrb                          ; clear Carry (no framing error)
+          decb                          ; clear Z flag, B = $FF
+          pshs      u,x,dp,cc           ; preserve registers
+          orcc      #$50                ; mask interrupts
+*         ldmd      #1                  ; requires 6309 native mode
+          tfr       b,dp                ; set direct page to $FFxx
+          setdp     $ff
+          leay      -1,y                ; adjust request count
+          leau      ,x                  ; U = storage ptr
+          tfr       0,x                 ; initialize checksum
+          lda       #$01                ; A = serial in mask
+          bra       rx0030              ; go wait for start bit
 
-******************************************************************************
-* COCO 57600 / 115.2K BAUD BIT-BANGER RECEIVER
-******************************************************************************
-*
-* WAITS FOR A SPECIFIED TIMEOUT PERIOD UNTIL A START-BIT APPEARS ON THE
-* BIT-BANGER INPUT. DATA RECEPTION IS INITIATED IF A START-BIT APPEARS
-* BEFORE THE TIMEOUT PERIOD EXPIRES. THE SERIAL DATA FORMAT MUST BE:
-*    1 START BIT, 8 DATA BITS, NO PARITY, 1..2 STOP BITS.
-*
-* DATA RECPEPTION TERMINATES WHEN:
-*   - A PERIOD OF APPROX 5.5 MS (2.75 MS) ELLAPSES WITHOUT A NEW START-BIT
-*   - A FRAMING ERROR IS DETECTED.
-*
-*  ON ENTRY:
-*    X = START ADDRESS FOR DATA STORAGE
-*    A = TIMEOUT VALUE (183 = APPROX ONE SECOND @ 0.89 MHZ)
-*
-*  ON EXIT:
-*    Y = DATA CHECKSUM
-*    D = ACTUAL NUMBER OF BYTES RECEIVED
-*    X AND U ARE PRESERVED
-*    E AND F ARE CLOBBERED
-*    CC.CARRY IS SET ONLY IF A FRAMING ERROR WAS DETECTED
-*
-******************************************************************************
-BBIN      EQU       $FF22               ; BIT-BANGER INPUT ADDRESS
-RCVSTA    EQU       0                   ; OFFSET TO CC VALUE ON THE STACK
-BUFBAS    EQU       1                   ; OFFSET TO STORAGE ADDRESS ON STACK
+* Read a byte
+rxByte    sexw                          ; 4 cycle delay
+          ldw       #$006a              ; shift counter and timing flags
+          clra                          ; clear carry so next will branch
+rx0010    bcc       rx0020              ; branch if even bit number (15 cycles)
+          nop                           ; extra (16th) cycle
+rx0020    lda       <BBIN               ; read bit
+          lsra                          ; move bit into carry
+          rorb                          ; rotate bit into byte accumulator
+          lda       #0                  ; prep A for 8th data bit
+          lsrw                          ; bump shift count, timing bit to carry
+          bne       rx0010              ; loop until 7th data bit has been read
+          incw                          ; W = 1 for subtraction from Y
+          inca                          ; A = 1 for reading bit 7
+          anda      <BBIN               ; read bit 7
+          lsra                          ; move bit 7 into carry, A = 0
+          rorb                          ; byte is now complete
+          stb       ,u+                 ; store received byte to memory
+          abx                           ; update checksum
+          subr      w,y                 ; decrement request count
+          inca                          ; A = 1 for reading stop bit
+          anda      <BBIN               ; read stop bit
+          bls       rxExit              ; exit if completed or framing error
 
-DWRead
-RCV56K    CLRB                          ; CLEAR CARRY FLAG (NO FRAMING ERROR)
-          PSHS      U,X,CC              ; PRESERVE REGISTERS
-          LDU       #BBIN               ; POINT U TO BIT BANGER INPUT
-          TFR       A,F                 ; COPY INTITAL TIMEOUT TO F
-          LDD       #$01FF              ; A = SERIAL IN MASK, B = TIMEOUT LSB
-          LEAY      ,X                  ; POINT Y TO STORAGE ADDRESS
-          LDX       #0                  ; INITIALIZE CHECKSUM
-          ORCC      #$50                ; MASK INTERRUPTS
-*          LDMD      #1                  ; REQUIRES 6309 NATIVE MODE
-          BRA       WAIT1               ; GO WAIT FOR A START BIT
+* Wait for a start bit or timeout
+rx0030    clrw                          ; initialize timeout counter
+rx0040    bita      <BBIN               ; check for start bit
+          beq       rxByte              ; branch if start bit detected
+          addw      #1                  ; bump timeout counter
+          bita      <BBIN
+          beq       rxByte
+          bcc       rx0040              ; loop until timeout rolls over
+          lda       #$03                ; setup to return TIMEOUT status
 
-BSTART    SEXW                4 \       ; 4-CYCLE DELAY (CLOBBERS D)
-          LDW       #$005A    4  | 11   ; PREP SHIFT COUNTER / TIMING FLAGS
-          BRA       BSAMP     3 /       ; ENTER THE LOOP
-
-BLOOP     BCC       BSAMP     3         ; BRANCH IF A 15-CYCLE BIT
-          NOP                 1         ; ONE MORE FOR A 16-CYCLE BIT
-BSAMP     LDA       ,U        4 \       ; SAMPLE DATA BIT
-          LSRA                1  |      ; SHIFT INTO CARRY
-          RORB                1  | 12   ; ROTATE INTO BYTE ACCUMULATOR
-          NOP                 1  |      ; DELAY CYCLE
-          LSRW                2  |      ; BUMP THE SHIFT COUNTER / TIMING FLAGS
-          BNE       BLOOP     3 /       ; LOOP UNTIL BIT 6 HAS BEEN SAMPLED
-          LEAU      ,U        4         ; CONSUME 4 CYCLES (16 TOTAL FOR BIT 6)
-
-          LDA       ,U        4 \       ; BIT 7
-          LSRA                1  |
-          RORB                1  | 15
-          STB       ,Y+       5  |      ; PUT BYTE INTO STORAGE
-          ABX                 1  |      ; ACCUMULATE CHECKSUM
-          LDD       #$01FF    3 /       ; A = SERIAL IN MASK, B = TIMEOUT LSB
-
-          ANDA      ,U        4 \ 7     ; STOP BIT
-          BEQ       FINISH    3 /       ; BRANCH IF FRAMING ERROR
-
-WAIT1     BITA      ,U        4 \  7    ; TWO RAPID TESTS FOR NEXT START BIT
-          BEQ       BSTART    3 /
-WAIT2     BITA      ,U        4 \
-          BEQ       BSTART    3  | 9
-          SUBB      #1        2 /       ; DECREMENT TIMEOUT LSB
-          BITA      ,U        4 \
-          BEQ       BSTART    3  | 10
-          BCC       WAIT2     3 /       ; LOOP UNTIL TIMEOUT LSB < 0
-
-          BITA      ,U        4 \  7 
-          BEQ       BSTART    3 /
-          BITA      ,U        4 \
-          BEQ       BSTART    3  | 10
-          SUBF      #1        3 /       ; DECREMENT TIMEOUT MSB
-          BITA      ,U        4 \
-          BEQ       BSTART    3  | 10
-          BCC       WAIT1     3 /       ; LOOP IF TIMEOUT NOT EXPIRED
-
-FINISH    INCA                          ; IF FRAMING ERROR THEN A=1 ELSE A=2
-          ORA       RCVSTA,S            ; SET CARRY BIT IN CC VALUE ON..
-          STA       RCVSTA,S            ; ..THE STACK ONLY IF FRAMING ERROR
-          TFR       Y,D                 ; CALCULATE ACTUAL NUMBER..
-          SUBD      BUFBAS,S            ; ..OF BYTES RECEIVED
-          LEAY      ,X                  ; RETURN CHECKSUM IN Y
-          PULS      CC,X,U,PC           ; RESTORE REGISTERS AND RETURN
+* Clean up, set status and return
+rxExit    beq       rx0050              ; branch if framing error
+          eora      #$02                ; toggle SUCCESS flag
+rx0050    inca                          ; A = status to be returned in C and Z
+          ora       ,s                  ; place status information into the..
+          sta       ,s                  ; ..C and Z bits of the preserved CC
+          leay      ,x                  ; return checksum in Y
+          puls      cc,dp,x,u,pc        ; restore registers and return
+          setdp     $00
 
           ENDC
           ENDC
+
 

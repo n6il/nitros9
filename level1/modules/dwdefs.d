@@ -10,6 +10,10 @@
          nam   dwdefs
          ttl   DriveWire Definitions File
 
+* Addresses
+BBOUT       equ    $FF20
+BBIN        equ    $FF22
+
 * Opcodes
 OP_NOP      equ    $00		No-Op
 OP_RESET1   equ    $FE		Server Reset

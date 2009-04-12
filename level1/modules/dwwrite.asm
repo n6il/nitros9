@@ -1,192 +1,134 @@
+*******************************************************
+*
+* DWWrite
+*    Send a packet to the DriveWire server.
+*    Serial data format:  1-8-N-1
+*    4/12/2009 by Darren Atkinson
+*
+* Entry:
+*    X  = starting address of data to send
+*    Y  = number of bytes to send
+*
+* Exit:
+*    X  = address of last byte sent + 1
+*    Y  = 0
+*    All others preserved
+*
+
+
           IFNE BAUD38400
-**
-** Rev Notes:
-**
-**   For CoCo 1
-**   38400 bps
-**   6809 Timing @ 0.89 MHz
-**
+*******************************************************
+* 38400 bps using 6809 code and timimg
+*******************************************************
 
-******************************************************************************
-* COCO 38400 BAUD BIT-BANGER TRANSMITTER
-******************************************************************************
-*
-* TRNSMITS A SPECIFIED NUMBER OF DATA BYTES THROUGH THE BIT-BANGER PORT
-* AT HIGH SPEED. ALL OF THE DATA IS SENT IN A SINGLE BURST, NO HANDSHAKING
-* IS PROVIDED. THE TRANSMISSION FORMAT IS:
-*    1 START BIT, 8 DATA BITS, NO PARITY, 1 STOP BIT.
-*
-*  ON ENTRY:
-*    X = ADDRESS OF DATA TO TRANSMIT
-*    Y = NUMBER OF BYTES TO TRANSMIT
-*
-*  ON EXIT:
-*    X = ADDRESS OF LAST BYTE TRANSMITTED + 1
-*    Y = 0
-*    A, B AND U ARE PRESERVED
-*
-******************************************************************************
-BBOUT     EQU       $FF20         ; BIT-BANGER OUTPUT ADDRESS
+DWWrite   pshs      u,d,cc              ; preserve registers
+          orcc      #$50                ; mask interrupts
+          ldu       #BBOUT              ; point U to bit banger out register
+          lda       3,u                 ; read PIA 1-B control register
+          anda      #$f7                ; clear sound enable bit
+          sta       3,u                 ; disable sound output
+          fcb       $8c                 ; skip next instruction
 
-DWWrite
-XMT38K    PSHS      U,D,CC        ; PRESERVE REGISTERS
-          ORCC      #$50          ; MASK INTERRUPTS
-          LDU       #BBOUT        ; POINT U TO BIT BANGER OUTPUT REGISTER
-          FCB       $8C           ; SKIP NEXT INSTRUCTION
+txByte    stb       ,--u                ; send stop bit
+          leau      ,u+
+          lda       #8                  ; counter for start bit and 7 data bits
+          ldb       ,x+                 ; get a byte to transmit
+          lslb                          ; left rotate the byte two positions..
+          rolb                          ; ..placing a zero (start bit) in bit 1
+tx0010    stb       ,u++                ; send bit
+          tst       ,--u
+          rorb                          ; move next bit into position
+          deca                          ; decrement loop counter
+          bne       tx0010              ; loop until 7th data bit has been sent
+          leau      ,u
+          stb       ,u                  ; send bit 7
+          lda       ,u++                
+          ldb       #$02                ; value for stop bit (MARK)
+          leay      -1,y                ; decrement byte counter
+          bne       txByte              ; loop if more to send
 
-OUTBYT    STB       ,--U          ; TRANSMIT STOP BIT (RESTORES BUMPED U)
-          LEAU      ,U+           ; 6 CYCLE DELAY (U UNCHANGED)
-          LDA       #8            ; INITIALIZE LOOP COUNTER
-          LDB       ,X+           ; GET BYTE TO TRANSMIT
-          LSLB                    ; BIT 7->CARRY .. BIT 0->B.1 .. '0'->B.0
-          ROLB                    ; BIT 7 -> B.0 .. BIT 0->B.2 .. '0'->B.1
+          stb       ,--u                ; leave bit banger output at MARK
+          puls      cc,d,u,pc           ; restore registers and return
 
-WRLOOP    STB       ,U++          ; TRANSMIT A BIT (BUMPING U)
-          TST       ,--U          ; 9 CYCLE DELAY (RESTORES BUMPED U)
-          RORB                    ; MOVE NEXT BIT INTO POSITION
-          DECA                    ; DECREMENT LOOP COUNTER
-          BNE       WRLOOP        ; LOOP UNTIL BIT 6 HAS BEEN TRANSMITTED
-
-          LEAU      ,U            ; 4 CYCLE DELAY
-          STB       ,U            ; TRANSMIT BIT 7
-          LDA       ,U++          ; 7 CYCLE DELAY (BUMPING U)
-          LDB       #$02          ; PREPARE VALUE FOR STOP BIT
-          LEAY      -1,Y          ; DECREMENT BYTES REMAINING COUNTER
-          BNE       OUTBYT        ; LOOP IF MORE TO TRANSMIT
-
-          STB       ,--U          ; TRANSMIT STOP BIT
-          PULS      CC,D,U,PC     ; RESTORE REGISTERS AND RETURN
 
           ELSE
           IFNE H6309-1
+*******************************************************
+* 57600 (115200) bps using 6809 code and timimg
+*******************************************************
 
-**
-** Rev 3 Notes:
-**
-**   For CoCo 1,2 or 3
-**   6809 Timing
-**   No Read Count in Receiver
-**
+DWWrite   pshs      dp,d,cc             ; preserve registers
+          orcc      #$50                ; mask interrupts
+          ldd       #$04ff              ; A = loop counter, B = $ff
+          tfr       b,dp                ; set direct page to $FFxx
+          setdp     $ff
+          ldb       <$ff23              ; read PIA 1-B control register
+          andb      #$f7                ; clear sound enable bit
+          stb       <$ff23              ; disable sound output
+          fcb       $8c                 ; skip next instruction
 
+txByte    stb       <BBOUT              ; send stop bit
+          ldb       ,x+                 ; get a byte to transmit
+          nop
+          lslb                          ; left rotate the byte two positions..
+          rolb                          ; ..placing a zero (start bit) in bit 1
+tx0020    stb       <BBOUT              ; send bit (start bit, d1, d3, d5)
+          rorb                          ; move next bit into position
+          exg       a,a
+          nop
+          stb       <BBOUT              ; send bit (d0, d2, d4, d6)
+          rorb                          ; move next bit into position
+          leau      ,u
+          deca                          ; decrement loop counter
+          bne       tx0020              ; loop until 7th data bit has been sent
 
-******************************************************************************
-* COCO 57600 / 115.2K BAUD BIT-BANGER TRANSMITTER
-******************************************************************************
-*
-* TRNSMITS A SPECIFIED NUMBER OF DATA BYTES THROUGH THE BIT-BANGER PORT
-* AT HIGH SPEED. ALL OF THE DATA IS SENT IN A SINGLE BURST, NO HANDSHAKING
-* IS PROVIDED. THE TRANSMISSION FORMAT IS:
-*    1 START BIT, 8 DATA BITS, NO PARITY, 1 STOP BIT.
-*
-*  ON ENTRY:
-*    X = ADDRESS OF DATA TO TRANSMIT
-*    Y = NUMBER OF BYTES TO TRANSMIT
-*
-*  ON EXIT:
-*    X = ADDRESS OF LAST BYTE TRANSMITTED + 1
-*    Y = 0
-*    A, B AND U ARE PRESERVED
-*
-******************************************************************************
-BBOUT     EQU       $FF20               ; BIT-BANGER OUTPUT ADDRESS
+          stb       <BBOUT              ; send bit 7
+          ldd       #$0402              ; A = loop counter, B = MARK value
+          leay      ,-y                 ; decrement byte counter
+          bne       txByte              ; loop if more to send
 
-DWWrite
-XMT56K    PSHS      U,DP,D,CC           ; PRESERVE REGISTERS
-          LDD       #$04FF              ; A = LOOP COUNTER, B = $FF
-          ORCC      #$50                ; MASK INTERRUPTS
-          TFR       B,DP                ; SET DIRECT PAGE TO $FFXX
-          SETDP     $FF                 ; INFORM ASSEMBLER OF NEW DP VALUE
-          FCB       $8C                 ; SKIP NEXT INSTRUCTION
+          stb       <BBOUT              ; leave bit banger output at MARK
+          puls      cc,d,dp,pc          ; restore registers and return
+          setdp     $00
 
-OUTBYT    STB       <BBOUT    4 \       ; STOP BIT
-          LDB       ,X+       6  |      ; GET NEXT BYTE FROM STORAGE
-          NOP                 2  | 16   ; CONSUME 2 CYCLES
-          LSLB                2  |      ; BIT 7->CARRY .. BIT 0->B.1 ..'0'->B.0
-          ROLB                2 /       ; BIT 7 -> B.0 .. BIT 0->B.2 ..'0'->B.1
-
-ODDBIT    STB       <BBOUT    4 \       ; START BIT, DATA BITS 1,3 AND 5
-          RORB                2  | 16   ; MOVE NEXT BIT INTO POSITION
-          EXG       A,A       8  |      ; 8-CYCLE DELAY
-          NOP                 2 /       ; MORE DELAY
-
-          STB       <BBOUT    4 \       ; DATA BITS 0,2,4 AND 6
-          RORB                2  |      ; MOVE NEXT BIT INTO POSITION
-          LEAU      ,U        4  | 15   ; 4-CYCLE DELAY
-          DECA                2  |      ; DECREMENT LOOP COUNTER
-          BNE       ODDBIT    3 /       ; LOOP UNTIL BIT 6 HAS BEEN TRANSMITTED
-
-          STB       <BBOUT    4 \       ; DATA BIT 7
-          LDD       #$0402    3  | 16   ; A = LOOP COUNTER, B = STOP BIT VALUE
-          LEAY      ,-Y       6  |      ; DECREMENT BYTES REMAINING COUNT
-          BNE       OUTBYT    3 /       ; LOOP IF MORE TO TRANSMIT
-
-          STB       <BBOUT              ; FINAL STOP BIT
-          PULS      CC,D,DP,U,PC        ; RESTORE REGISTERS AND RETURN
-          SETDP     $00
 
           ELSE
+*******************************************************
+* 57600 (115200) bps using 6309 native mode
+*******************************************************
 
-** Rev 4 Notes:
-**
-**   For CoCo 2 or 3
-**   6309 Native Mode
-**   No Read Count in Receiver
-**
+DWWrite   pshs      u,d,cc              ; preserve registers
+          orcc      #$50                ; mask interrupts
+*         ldmd      #1                  ; requires 6309 native mode
+          ldu       #BBOUT+1            ; point U to bit banger out register +1
+          aim       #$f7,2,u            ; disable sound output
+          lda       #8                  ; counter for start bit and 7 data bits
+          fcb       $8c                 ; skip next instruction
 
+txByte    stb       -1,u                ; send stop bit
+tx0010    ldb       ,x+                 ; get a byte to transmit
+          lslb                          ; left rotate the byte two positions..
+          rolb                          ; ..placing a zero (start bit) in bit 1
+          bra       tx0030
 
-******************************************************************************
-* COCO 57600 / 115.2K BAUD BIT-BANGER TRANSMITTER
-******************************************************************************
-*
-* TRNSMITS A SPECIFIED NUMBER OF DATA BYTES THROUGH THE BIT-BANGER PORT
-* AT HIGH SPEED. ALL OF THE DATA IS SENT IN A SINGLE BURST, NO HANDSHAKING
-* IS PROVIDED. THE TRANSMISSION FORMAT IS:
-*    1 START BIT, 8 DATA BITS, NO PARITY, 1 STOP BIT.
-*
-*  ON ENTRY:
-*    X = ADDRESS OF DATA TO TRANSMIT
-*    Y = NUMBER OF BYTES TO TRANSMIT
-*
-*  ON EXIT:
-*    X = ADDRESS OF LAST BYTE TRANSMITTED + 1
-*    Y = 0
-*    A, B, E, F AND U ARE PRESERVED
-*
-******************************************************************************
-BBOUT     EQU       $FF20               ; BIT-BANGER OUTPUT ADDRESS
+tx0020    bita      #1                  ; even or odd bit number ?
+          beq       tx0040              ; branch if even (15 cycles)
+tx0030    nop                           ; extra (16th) cycle
+tx0040    stb       -1,u                ; send bit
+          rorb                          ; move next bit into position
+          deca                          ; decrement loop counter
+          bne       tx0020              ; loop until 7th data bit has been sent
+          leau      ,u+
+          stb       -1,u                ; send bit 7
+          ldd       #$0802              ; A = loop counter, B = MARK value
+          leay      -1,y                ; decrement byte counter
+          bne       txByte              ; loop if more to send
 
-DWWrite
-XMT56K    PSHS      U,D,CC              ; PRESERVE REGISTERS
-          LDU       #BBOUT              ; POINT U TO BIT BANGER OUTPUT
-          ORCC      #$50                ; MASK INTERRUPTS
-*          LDMD      #1                  ; REQUIRES 6309 NATIVE MODE
-          BRA       XSTART              ; SKIP NEXT INSTRUCTION
+          stb       -1,u                ; final stop bit
+          puls      cc,d,u,pc           ; restore registers and return
 
-OUTBYT    STB       ,U        4 \       ; STOP BIT
-XSTART    LDB       ,X+       5  |      ; GET NEXT BYTE FROM STORAGE
-          LSLB                1  | 16   ; BIT 7->CARRY .. BIT 0->B.1 ..'0'->B.0
-          ROLB                1  |      ; BIT 7 -> B.0 .. BIT 0->B.2 ..'0'->B.1
-          LDA       #8        2  |      ; BIT COUNT (START BIT, DATA BITS 0-6)
-          BRA       BSEND     3 /       ; ENTER THE LOOP
-
-XLOOP     BITA      #1        2         ; BIT COUNTER EVEN OR ODD?
-          BEQ       BSEND     3         ; BRANCH IF EVEN (15-CYCLE BIT)
-          NOP                 1         ; ONE MORE FOR A 16-CYCLE BIT
-BSEND     STB       ,U        4 \       ; BIT OUTPUT
-          RORB                1  |      ; ROTATE NEXT BIT INTO POSITION
-          NOP                 1  | 10   ; DELAY CYCLE
-          DECA                1  |      ; DECREMENT BIT COUNTER
-          BNE       XLOOP     3 /       ; LOOP UNTIL BIT 6 HAS BEEN SAMPLED
-          LEAU      ,U++      6         ; CONSUME 6 CYCLES (16 TOTAL FOR BIT 6)
-
-          STB       ,U        4 \       ; BIT 7 OUTPUT
-          LDB       #2        2  |      ; PREPARE STOP BIT
-          NOP                 1  | 15   ; DELAY CYCLE
-          LEAY      -1,Y      5  |      ; DECREMENT BYTES REMAINING COUNT
-          BNE       OUTBYT    3 /       ; LOOP IF MORE TO TRANSMIT
-
-          STB       ,U                  ; FINAL STOP BIT
-          PULS      CC,D,U,PC           ; RESTORE REGISTERS AND RETURN
 
           ENDC
           ENDC
+
+
