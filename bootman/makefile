@@ -13,4 +13,4 @@ dsk: bootman
 	decb copy -b -2 bootman bootman.dsk,BOOTMAN.BIN
 
 clean:
-	-$(RM) *.r bootman
+	-$(RM) *.r bootman bootman.dsk
