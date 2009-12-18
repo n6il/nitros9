@@ -49,10 +49,10 @@ dw3doscc.bin:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -aCoCo=1 -aBIN=1 -mb
 
 dw3doscc3.wav:	dw3doscc3.bin
-	makewav $< -r -d2400 -o$@
+	makewav $< -r -d0x2400 -e0x2400 -o$@ -nDWDOSCC3
 
 dw3doscc.wav:	dw3doscc.bin
-	makewav $< -r -d2400 -o$@
+	makewav $< -r -d0x2400 -e0x2400 -o$@ -nDWDOSCC
 
 # DWDOS Tracks
 dw3dos_cc3.trk:	dw3dos.asm
