@@ -12,9 +12,11 @@ ROMS		= dw3dos_mb_cc3.rom dw3dos_mb_cc.rom \
 		dw3dos_dsk_cc3.rom dw3dos_dsk_cc.rom \
 		dw3doscc.bin dw3doscc3.bin
 
+CASSFILES	= dw3doscc.wav dw3doscc3.wav
+
 TRACKS		= dw3dos_cc3.trk dw3dos_cc.trk
 
-ALLOBJS		= $(ROMS) $(TRACKS)
+ALLOBJS		= $(ROMS) $(CASSFILES) $(TRACKS)
 
 all:	banner $(ALLOBJS) $(DEPENDS) 
 
@@ -45,6 +47,12 @@ dw3doscc3.bin:	dw3dos.asm
 
 dw3doscc.bin:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -aCoCo=1 -aBIN=1 -mb
+
+dw3doscc3.wav:	dw3doscc3.bin
+	makewav $< -r -d2400 -o$@
+
+dw3doscc.wav:	dw3doscc.bin
+	makewav $< -r -d2400 -o$@
 
 # DWDOS Tracks
 dw3dos_cc3.trk:	dw3dos.asm
