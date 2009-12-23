@@ -8,7 +8,7 @@ MD68L2		= $(LEVEL2)/coco3/modules
 BF63L2		= $(LEVEL2)/coco3_6309/bootfiles
 MD63L2		= $(LEVEL2)/coco3_6309/modules
 
-ROMS		= dw3dos_mb_cc3.rom dw3dos_mb_cc2.rom dw2dos_mb_cc1.rom \
+ROMS		= dw3dos_mb_cc3.rom dw3dos_mb_cc2.rom dw3dos_mb_cc1.rom \
 		dw3dos_dsk_cc3.rom dw3dos_dsk_cc2.rom dw3dos_dsk_cc1.rom \
 		dw3doscc3.bin dw3doscc2.bin dw3doscc1.bin
 
