@@ -354,11 +354,7 @@ PalTbl
 BootMsg  fcc    /DWs/
          fcb    $60
          fcc    /CC/
-         IFEQ   CoCo-3
-         fcc    /s/
-         ELSE
-         fcb    $60
-         ENDC
+         fcb    112+CoCo
          fcb    $60
          fcc    /BOOT/
 BootMLen equ    *-BootMsg
