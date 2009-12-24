@@ -26,7 +26,10 @@ BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
+                $(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
+                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd  
 
 # OS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
