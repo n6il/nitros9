@@ -56,11 +56,24 @@ BOOTFILE_COWP	= $(MD)/ioman \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
-BOOTFILE_COVDG_DW3_COCO1	= $(MD)/ioman \
+BOOTFILE_DW3_COCO1	= $(MD)/ioman \
+		$(MD)/rbf.mn \
 		$(MD)/rbdw3.dr $(MD)/dw3_coco1.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
+		$(MD)/scf.mn \
+		$(MD)/scdwt.dr $(MD)/term_scdwt.dt \
+		$(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
+		$(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COVDG_DW3_COCO1	= $(MD)/ioman \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
 		$(MD)/d0_80d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd \
+		$(MD)/rbdw3.dr $(MD)/dw3_coco1.sb \
+		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
 		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
@@ -71,12 +84,24 @@ BOOTFILE_COVDG_DW3_COCO1	= $(MD)/ioman \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
 		$(MD)/sysgo_dd
 		
-
-BOOTFILE_COVDG_DW3_COCO2	= $(MD)/ioman \
+BOOTFILE_DW3_COCO2	= $(MD)/ioman \
+		$(MD)/rbf.mn \
 		$(MD)/rbdw3.dr $(MD)/dw3.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
+		$(MD)/scf.mn \
+		$(MD)/scdwt.dr $(MD)/term_scdwt.dt \
+                $(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
+                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COVDG_DW3_COCO2	= $(MD)/ioman \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
 		$(MD)/d0_80d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd \
+		$(MD)/rbdw3.dr $(MD)/dw3.sb \
+		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
 		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
@@ -100,11 +125,10 @@ BOOTFILE_COVDG_DS80	= $(MD)/ioman \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_DW3_COCO1	= $(MD)/ioman \
-		$(MD)/rbdw3.dr $(MD)/dw3_coco1.sb \
-		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
 		$(MD)/d0_80d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd \
-		$(MD)/ddd0_80d.dd \
+		$(MD)/rbdw3.dr $(MD)/dw3_coco1.sb \
+		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
 		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
@@ -116,11 +140,10 @@ BOOTFILE_COHR_DW3_COCO1	= $(MD)/ioman \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_DW3_COCO2	= $(MD)/ioman \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb \
-		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
 		$(MD)/d0_80d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd \
-		$(MD)/ddd0_80d.dd \
+		$(MD)/rbdw3.dr $(MD)/dw3.sb \
+		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
 		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
@@ -144,6 +167,7 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(MD)/sysgo_dd
 
 BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw3_coco1 bootfile_covdg_dw3_coco2 \
+		bootfile_dw3_coco1 bootfile_dw3_coco2 \
 		bootfile_cohr_dw3_coco1 bootfile_cohr_dw3_coco2 bootfile_covdg_ds80 bootfile_cohr_ds80
 KERNELS		= kernel_1773 kernel_dw3_coco1 kernel_dw3_coco2
 
@@ -163,8 +187,14 @@ bootfile_cowp: $(BOOTFILE_COWP) $(DEPENDS)
 bootfile_covdg_ds80: $(BOOTFILE_COVDG_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DS80)>$@
 
+bootfile_dw3_coco1: $(BOOTFILE_DW3_COCO1) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_DW3_COCO1)>$@
+
 bootfile_covdg_dw3_coco1: $(BOOTFILE_COVDG_DW3_COCO1) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DW3_COCO1)>$@
+
+bootfile_dw3_coco2: $(BOOTFILE_DW3_COCO2) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_DW3_COCO2)>$@
 
 bootfile_covdg_dw3_coco2: $(BOOTFILE_COVDG_DW3_COCO2) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DW3_COCO2)>$@
@@ -177,10 +207,6 @@ bootfile_cohr_dw3_coco1: $(BOOTFILE_COHR_DW3_COCO1) $(DEPENDS)
 
 bootfile_cohr_dw3_coco2: $(BOOTFILE_COHR_DW3_COCO2) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR_DW3_COCO2)>$@
-
-# Dragon64 Disk boot
-bootfile_d64: $(BOOTFILE_D64) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_D64)>$@
 
 # WD1773 Kernel
 kernel_1773: $(KERNEL_1773) $(DEPENDS)
