@@ -63,14 +63,13 @@ BOOTFILE_COVDG_DW3_COCO1	= $(MD)/ioman \
 		$(MD)/d0_80d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
-		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
-		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
-		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 \
-		$(MD)/sysgo_dd \
 		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
 		$(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
-		$(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd 
+		$(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/sysgo_dd
 		
 
 BOOTFILE_COVDG_DW3_COCO2	= $(MD)/ioman \
@@ -80,14 +79,13 @@ BOOTFILE_COVDG_DW3_COCO2	= $(MD)/ioman \
 		$(MD)/d0_80d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
-		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
-		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
-		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 \
-		$(MD)/sysgo_dd \
 		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
                 $(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
-                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd  
+                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/sysgo_dd
 
 BOOTFILE_COVDG_DS80	= $(MD)/ioman \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
@@ -109,14 +107,13 @@ BOOTFILE_COHR_DW3_COCO1	= $(MD)/ioman \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
-		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
-		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
-		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 \
-		$(MD)/sysgo_dd \
 		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
                 $(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
-                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd  
+                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_DW3_COCO2	= $(MD)/ioman \
 		$(MD)/rbdw3.dr $(MD)/dw3.sb \
@@ -126,14 +123,13 @@ BOOTFILE_COHR_DW3_COCO2	= $(MD)/ioman \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
-		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
-		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
-		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 \
-		$(MD)/sysgo_dd \
 		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
                 $(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
-                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd  
+                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(MD)/rbf.mn $(MD)/rb1773.dr \
