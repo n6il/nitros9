@@ -12,18 +12,19 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		format free grfdrv help ident iniz irqs link list load login \
 		makdir mdir megaread merge mfree mmap modpatch montype mpi os9gen padrom park \
 		pmap proc procs prompt pwd pxd reboot rename save setime \
-		shell_21 sleep smap tee tmode touch tsmon tuneport unlink verify wcreate xmode \
-		dw wget ftp
+		shell_21 sleep smap tee tmode touch tsmon tuneport unlink verify wcreate xmode
 
 CMDS_D2         = basic09 runb gfx2 gfx inkey syscall copy del echo format \
 		merge os9gen prompt tmode
+
+CMDS_DW         = dw wget ftp
 
 SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
 UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
 		merge mfree procs rename tmode
 
 # Files not compilable by os9asm: config
-all:	$(CMDS) $(CMDS_D2) shell utilpak1 $(DEPENDS)
+all:	$(CMDS) $(CMDS_D2) $(CMDS_DW) shell utilpak1 $(DEPENDS)
 
 runb:	runb.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
@@ -64,6 +65,9 @@ showobjs:
 
 showobjs_d2:
 	@$(ECHO) $(CMDS_D2)
+
+showobjs_dw:
+	@$(ECHO) $(CMDS_DW)
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)

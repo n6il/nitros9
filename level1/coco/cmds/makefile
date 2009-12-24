@@ -14,14 +14,15 @@ CMDS		= asm attr backup binex build calldbg cmp cobbler copy cputype \
 		free grfdrv help ident iniz irqs link list load login makdir \
 		megaread mdir merge mfree mpi os9gen padrom park printerr procs prompt pwd pxd \
 		rename save setime shellplus shell_21 sleep \
-		tee tmode touch tsmon tuneport unlink verify xmode \
-		dw ftp wget
+		tee tmode touch tsmon tuneport unlink verify xmode
 
 CMDS_D2		= basic09 runb gfx inkey syscall copy del echo format \
 		merge os9gen prompt tmode
 
+CMDS_DW		= dw ftp wget
+
 SUBS		= gfx inkey syscall
-ALLOBJS		= $(CMDS) $(CMDS_D2) $(SUBS)
+ALLOBJS		= $(CMDS) $(CMDS_D2) $(CMDS_DW) $(SUBS)
 
 all:	$(ALLOBJS)
 
@@ -48,6 +49,9 @@ showobjs:
 
 showobjs_d2:
 	@$(ECHO) $(CMDS_D2)
+
+showobjs_dw:
+	@$(ECHO) $(CMDS_DW)
 
 showallobjs:
 	@$(ECHO) $(ALLOBJS)
