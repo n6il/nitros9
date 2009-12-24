@@ -49,7 +49,6 @@ RxBufPut   rmb   2              ;Rx buffer input pointer
 RxGrab     rmb   1              ;bytes to grab in multiread
 RxBufPtr   rmb   2              ;pointer to Rx buffer
 RxBufDSz   equ   256-.          ;default Rx buffer gets remainder of page...
-*RxBufDSz	equ		20
 RxBuff     rmb   RxBufDSz       ;default Rx buffer
 
 memsize     equ   	.
@@ -88,7 +87,6 @@ start    	equ   	*
 * Exit:
 *    CC = carry set on error
 *    B  = error code   
-* NEEDS WORK
 Term     	equ   	*
 
 			lda		<V.PORT+1,u		;get our port #
@@ -198,11 +196,6 @@ Init		equ		*
        	
          	puls	u				;restore u
       	
-* Setup D.DWTAdr - install IRQ handler if we are the first port
-DWSetOk		equ		*
-         	* the value seems to remain in memory through a reset, so see if any ports active
-         	* should be >0 only if the IRQ is installed
-         	* trying local byte..
          	bsr     CheckStats
          	bne		IRQok
          	
