@@ -112,7 +112,9 @@ start1   orcc  #IntMasks  turn off IRQ's
 * This is done so I can tell what went on in the direct page if there's
 * a crash. 0(crash) 1(reset) -1(startup)
          beq   Cont       --don't clear out direct page if it's a crash
-         ldb   #$20       start out at $20
+* BGP 12/24/2009: clear out ALL of direct page (even $00-$1F)
+*         ldb   #$20       start out at $20
+         clrb
          tfr   d,x        here, too
 L0072    sta   ,x+        clear out the direct page
          incb             Boot won't be using any of it!

@@ -50,5 +50,9 @@ OP_WIREBUG_READMEM    equ  'M	Read the CoCo's memory
 OP_WIREBUG_WRITEMEM   equ  'm	Write the CoCo's memory
 OP_WIREBUG_GO         equ  'G	Tell CoCo to get out of WireBug mode and continue execution
 
+* VPort opcodes (CoCo-initiated)
+OP_VPORT_READ         equ  'V
+OP_VPORT_WRITE        equ  'v
+
 * Error definitions
 E_CRC      equ   $F3            Same as NitrOS-9 E$CRC

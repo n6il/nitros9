@@ -29,13 +29,9 @@ edition  	set   	1
 DWTAdr		rmb		2			;pointer to instance with irq handler       
 
 * these are only used in the primary instance
-IRQPorts	rmb		1			;# ports active  
-Instnces	rmb		14			;pointers to each instance of the driver
-RxWaiter	rmb		7			;need to know who to wake per port..
-DWErrors	rmb		1			;number of errors talking to DW server
 
 * For ISR
-VIRQPckt 	rmb   	5			;VIRQ packet Counter(2),Reset(2),Status(1) bytes
+*VIRQPckt 	rmb   	5			;VIRQ packet Counter(2),Reset(2),Status(1) bytes
 
 * port status variables...
 * none yet
@@ -50,7 +46,7 @@ RxBufSiz   rmb   1              ;Rx buffer size
 RxBufEnd   rmb   2              ;end of Rx buffer
 RxBufGet   rmb   2              ;Rx buffer output pointer
 RxBufPut   rmb   2              ;Rx buffer input pointer
-RxGrab		rmb		1			;bytes to grab in multiread
+RxGrab     rmb   1              ;bytes to grab in multiread
 RxBufPtr   rmb   2              ;pointer to Rx buffer
 RxBufDSz   equ   256-.          ;default Rx buffer gets remainder of page...
 *RxBufDSz	equ		20
@@ -78,7 +74,7 @@ start    	equ   	*
          	lbra  	GetStt
          	lbra  	SetStt
 	 	
-         	
+
 ***********************************************************************
 * Term
 *
@@ -94,32 +90,23 @@ start    	equ   	*
 *    B  = error code   
 * NEEDS WORK
 Term     	equ   	*
-			ldy		DWTAdr,u		;main instance base addr
-			* decrement port count
-			*lda		IRQPorts,y		;# ports open
-			*deca	
-			*sta		IRQPorts,y
-			*pshs	a			; save remaining port #
-			pshs	u			; for after dwsub call
-			
-			* remove any waiter table entry
+
 			lda		<V.PORT+1,u		;get our port #
-			leax	RxWaiter,y		;get waiter table base
-			clr		a,x				; clear our entry
+
 			* put setstat args on stack for later
 			ldb		#255
 			pshs 	d				;port #, 255 (term) on stack
-			* remove instance table entry
-			asla					; a*2 
-			leax	Instnces,y		;base of instance table
-			clr		a,x+			;clear 1st byte, inc x
-			clr		a,x				;clear 2nd byte
+			* clear statics table entry
+			ldx   	#D.DWSTATS
+			clr		a,x				;clear out
 			* tell server
 			lda     #OP_SERSETSTAT ; load command
 			pshs   	a      		; command store on stack
 			leax    ,s     		; point X to stack 
 			ldy     #3          ; 3 bytes to send 
     
+            pshs    u
+
 			IFGT  Level-1
 			ldu   	<D.DWSUB
 			ELSE
@@ -127,36 +114,48 @@ Term     	equ   	*
 			ENDC
 			
     		jsr     6,u      	; call DWrite
+
+            puls    u
+			
     		leas	3,s			; clean 3 DWsub args from stack 
 			
-    		puls 	u
-    		*lda		,s+			; remaining ports
-    		lda		lportct,pcr
-    		deca
-    		sta		lportct,pcr
+* Check if we need to clean up IRQ
+			bsr     CheckStats
     		beq		DumpVIRQ	;no more ports, lets bail
     		clrb
 			rts
 			
-			* no more ports open.. are we the primary instance?
-DumpVIRQ   	cmpu	DWTAdr,u
-			bne		Term.Err	;we are not.. hmmm
-		 	leay  	VIRQPckt,u	;VIRQ software registers
+* no more ports open.. are we the primary instance?
+DumpVIRQ   	
+			ldy     #D.DWVIRQPkt
          	ldx   	#$0000		;code to delete VIRQ entry
          	os9   	F$VIRQ		;remove from VIRQ polling
          	bcs   	Term.Err	;go report error...
-DumpIRQ  	leax  	VIRQPckt+Vi.Stat,u	;fake VIRQ status register
+DumpIRQ
+			ldx     #D.DWVIRQPkt
+         	leax  	Vi.Stat,x	;fake VIRQ status register
          	tfr   	x,d			;copy address...
          	ldx   	#$0000		;code to remove IRQ entry
+			ldu     #D.DWSTATS  ;ISR doesn't use static storage, so set to $0000
          	leay  	IRQSvc,pc	;IRQ service routine
          	os9   	F$IRQ
 Term.Err    rts
 
 
-*** byte in code to store port count... is this acceptable?
-lportct		fcb		0
-
-
+***********************************************************************
+* CheckStats - Check if the D.DWSTATS table is empty
+* Entry: None
+* Exit:  B=0, stat table is empty; B!=0, stat table is not empty
+CheckStats
+         	pshs  	x
+			ldx     #D.DWSTATS
+			ldb     #7
+CheckLoop   tst     ,x+
+			bne     CheckExit
+			decb
+			bne     CheckLoop
+CheckExit   puls    x,pc
+         	
 ***********************************************************************
 * Init
 *
@@ -172,15 +171,7 @@ lportct		fcb		0
 Init		equ		*
 			pshs  cc        save IRQ/Carry status
 
-* Check if D.DWSUB already holds a valid subroutine module pointer
-         	IFGT  	Level-1
-         	ldx   	<D.DWSUB
-         	ELSE
-         	ldx   	>D.DWSUB
-         	ENDC
-         	bne   	DWSetOk
-
-* If here, D.DWSUB is 0, so we must link to subroutine module
+* link to subroutine module
          	pshs	u				;preserve u since os9 link is coming up
 
 			IFGT  	Level-1
@@ -212,65 +203,42 @@ DWSetOk		equ		*
          	* the value seems to remain in memory through a reset, so see if any ports active
          	* should be >0 only if the IRQ is installed
          	* trying local byte..
-         	lda		lportct,pcr
-         	bne		DWTAdrOk
+         	bsr     CheckStats
+         	bne		IRQok
          	
-         	
-* If here, ports is 0, so we must install ISR and set D.DWTAdr
+* If here, we must install ISR
      
 
 * Install the IRQ/VIRQ entry 
-
-InstIRQ		leax  	VIRQPckt+Vi.Stat,u 	;fake VIRQ status register
+InstIRQ
+			ldx     #D.DWVIRQPkt
+		    leax  	Vi.Stat,x		;fake VIRQ status register
          	lda   	#$80			;VIRQ flag clear, repeated VIRQs
          	sta   	,x				;set it while we're here...
          	tfr   	x,d				;copy fake VIRQ status register address
          	leax  	IRQPckt,pcr		;IRQ polling packet
          	leay  	IRQSvc,pcr  	;IRQ service entry
+            pshs    u
+			ldu     #D.DWSTATS
          	os9   	F$IRQ			;install
+			puls    u
          	bcs   	InitEx   		;exit with error
          	ldd   	#$0003     		;lets try every 6 ticks (0.1 seconds) -- testing 3, gives better response in interactive things
-         	std   	VIRQPckt+Vi.Rst,u 	;reset count
+			ldx     #D.DWVIRQPkt
+         	std   	Vi.Rst,x		;reset count
+			tfr     x,y             ;move VIRQ software packet to Y
          	ldx   	#$0001     		;code to install new VIRQ
-         	leay  	VIRQPckt,u 		;VIRQ software registers
          	os9   	F$VIRQ			;install
          	bcc   	IRQok1st   		;no error, continue
 *         	bsr   	DumpIRQ    		;go remove from IRQ polling - is this necessary? according to OS9 dev ref, if I return an error it calls Term for me?  vrn.asm does this though
          	puls  	cc,pc			;recover error info and exit
          	
-IRQok1st	lda		#1				;first port opening
-			sta		lportct,pcr		;store
-			pshs	a				;for dwsub call
-			
-			* Set D.DWTAdr
-			IFGT  	Level-1
-         	stu   	<D.DWTAdr
-         	ELSE
-         	stu   	>D.DWTAdr
-         	ENDC
-         	
-         	stu		DWTAdr,u		;local DWTAdr pointer
-         	tfr		u,x				;x is used below
-			bra		IRQok
-			
-			* value of exisiting DWTAdr in X 
-DWTAdrOk	inca					;otherwise, note +1 ports
-			sta		lportct,pcr		;store it
-			pshs	a				; for dwsub call
-			
-			* save our pointer to ISR instance
-			IFGT  	Level-1
-         	ldx   	<D.DWTAdr
-         	ELSE
-         	ldx   	>D.DWTAdr
-         	ENDC
-			stx		DWTAdr,u				
-
-			* add our address to main instance's pointer table
-IRQok  		lda		<V.PORT+1,u		;get our port #
-			asla					; *2 
-			leax	Instnces,x		;base of instance table
-			stu		a,x				;store in table
+IRQok1st	
+IRQok
+         	ldx   	#D.DWSTATS
+			tfr     u,d
+	        ldb		<V.PORT+1,u		;get our port #
+			sta		b,x				;store in table
 	
 			* set up local buffer
 			ldb   	#RxBufDSz      	;default Rx buffer size
@@ -284,6 +252,7 @@ IRQok  		lda		<V.PORT+1,u		;get our port #
 
 			* tell DW we've got a new port opening
 			ldb		<V.PORT+1,u		; get our port #			
+			pshs    b
 			lda     #OP_SERSETSTAT 	; command 
 			pshs   	d      			; command + port # on stack
 			leax    ,s     			; point X to stack 
@@ -312,7 +281,8 @@ dw3name  	fcs  	/dw3/
 * Interrupt handler  - Much help from Darren Atkinson
 
 			
-IRQMulti3	cmpb	RxGrab,u	;compare room in buffer to server's byte
+IRQMulti3   pshs    a			;save port #
+         	cmpb	RxGrab,u	;compare room in buffer to server's byte
            	bhs		IRQM06		;room left >= server's bytes, no problem
   					
            	stb		RxGrab,u	;else replace with room left in our buffer
@@ -327,7 +297,7 @@ IRQM05		cmpb	RxGrab,u	;compare b (room left) to grab bytes
 			stb		RxGrab,u	;else set grab to room left
 			
 			* send multiread req
-IRQM03		lda		4,s			;port # is on stack behind our U and the PC from bsr call in multi2		
+IRQM03		puls    a			;port # is on stack
 			ldb		RxGrab,u
 
 			pshs	u
@@ -375,15 +345,9 @@ IRQM04   	stx   	RxBufPut,u 	;set new Rx data laydown pointer
 			addb	RxGrab,u
 			stb		RxDatLen,u	;store new value
 			
-			puls	u
 			rts
 			
-IRQMulti	pshs	u			;save local u
-			
- 			leax    Instnces,u	;base of instance pointer table
-           	asla           		;a*2 bytes per instance address
-           	ldu     a,x     	;U = pointer to instance data from table, now buffervar,u points to this port's buffer, etc	
-  			
+IRQMulti			
            	* initial grab bytes
            	stb		RxGrab,u	
            	
@@ -392,32 +356,25 @@ IRQMulti	pshs	u			;save local u
            	subb	RxDatLen,u	;current bytes in buffer
            	bne		IRQMulti3	;continue, we have some space in buffer
   			* no room in buffer
-  			puls	u
-  			rts
-           	
-IRQMulti2	anda    #$07		;mask first 5 bits, a is now port #+1
-  			deca				;we pass +1 to use 0 for no data
-  			pshs	a			;save port # for serreadm call and return to cksuspnd
-  			bsr		IRQMulti
-  			cmpb	#0
+  			tstb
   			bne		CkSuspnd
-  			leas	1,s
   			bra		IRQExit
   			
+
+**** IRQ ENTRY POINT
 IRQSvc		equ		*
 			pshs  	cc,dp 		;save system cc,DP
 			orcc	#$50		;mask interrupts
 			
 			* mark VIRQ handled
-			lda   	VIRQPckt+Vi.Stat,u	;VIRQ status register
+			ldx     #D.DWVIRQPkt
+			lda   	Vi.Stat,x	;VIRQ status register
 			anda  	#^Vi.IFlag 	;clear flag in VIRQ status register
-			sta   	VIRQPckt+Vi.Stat,u	;save it...
+			sta   	Vi.Stat,x	;save it...
 			
 			* poll server for incoming serial data
-			
+ 			
 			* send request
-			pshs 	u			;see U later
-			
 			lda     #OP_SERREAD ; load command
 			pshs   	a      		; command store on stack
 			leax    ,s     		; point X to stack 
@@ -437,35 +394,51 @@ IRQSvc		equ		*
 			jsr     3,u    		; call DWRead
 			beq     IRQSvc2		; branch if no error
 			leas    2,s     	; error, cleanup stack 2
-			puls	u			; get U back
-			lda		DWErrors,u	; current error count	 
-			inca
-			* TODO - At some point, decide to bail out
-			sta		DWErrors,u	; store new error count
 			bra		IRQExit2	; don't reset error count on the way out
 			
 			* process response	
-IRQSvc2		ldd     ,s++     	; pull returned status byte into A,data into B (set Z if zero, N if multiread)
-
-  			puls	u			; get local u back - stack should be clean except initial save of cc and dp
-
+IRQSvc2
+     		ldd     ,s++     	; pull returned status byte into A,data into B (set Z if zero, N if multiread)
   			beq   	IRQExit  	; branch if D = 0 (nothing to do)
-  			
-  			bmi		IRQMulti2	; branch for multiread
-  			
-  			* get port # (last 3 bits of status byte (a)
+
+* save back D on stack and build our U
+            pshs    d
   			anda    #$07		;mask first 5 bits, a is now port #+1
   			deca				;we pass +1 to use 0 for no data
+* here we set U to the static storage area of the device we are working with
+			ldx     #D.DWSTATS
+			lda     a,x
+			tfr     a,dp		;put in DP
+			clrb
+			tfr     d,u
+
+     		ldd     ,s++     	; pull returned status byte into A,data into B (set Z if zero, N if multiread)
   			
-  			pshs	a			;save port #
-  			bsr		IRQPutCh	;put one character into buffer
+  			bmi		IRQMulti	; branch for multiread
+  			
+* put byte B in port A's buffer - optimization help from Darren Atkinson       
+IRQPutCh   	ldx     RxBufPut,u	;point X to the data buffer
+        
+			* sc6551 now does lots of things with flow control, we might want some of this
+			* but implemented differently.. for now.. skip it
+		   
+			* store our data byte
+			stb    	,x+     	; store and increment buffer pointer
+        
+			* adjust RxBufPut	
+			cmpx  	RxBufEnd,u 	;end of Rx buffer?
+			blo   	IRQSkip1	;no, go keep laydown pointer
+			ldx   	RxBufPtr,u 	;get Rx buffer start address
+IRQSkip1   	stx   	RxBufPut,u 	;set new Rx data laydown pointer
+
+			* increment RxDatLen
+			inc		RxDatLen,u
+
 
   			* check if we have a process waiting for data	
-CkSuspnd   	puls	b			;stack has port #
-			leax	RxWaiter,u	;waiter table
-			lda   	b,x       	;waiter?
+CkSuspnd   	lda   	<V.WAKE,u   	;V.WAKE?
 			beq   	IRQExit   	;no
-			clr 	b,x			;clear waiter
+			clr 	<V.WAKE,u		;clear V.WAKE
 			
 			* wake up waiter for read
 			IFEQ  	Level-1
@@ -479,38 +452,10 @@ CkSuspnd   	puls	b			;stack has port #
 			sta   	P$State,x      ;save state flags
 			ENDC
 
-IRQExit		clr		DWErrors,u	;reset DW error count	           
-IRQExit2  	puls  	cc,dp		;restore interrupts cc,dp
-			rts					;return
+IRQExit
+IRQExit2  	puls  	cc,dp,pc		;restore interrupts cc,dp, return
          
 
-* put byte B in port A's buffer - optimization help from Darren Atkinson       
-IRQPutCh    pshs    u,b     	;save u and our data byte
-           	leax    Instnces,u	;base of instance pointer table
-           	asla           		;a*2 bytes per instance address
-           	ldu     a,x     	;U = pointer to instance data from table
-           	ldx     RxBufPut,u	;point X to the data buffer
-        
-			* sc6551 now does lots of things with flow control, we might want some of this
-			* but implemented differently.. for now.. skip it
-		   
-			* store our data byte
-			puls	a			;retrieve data byte
-			sta    	,x+     	; store and increment buffer pointer
-        
-			* adjust RxBufPut	
-			cmpx  	RxBufEnd,u 	;end of Rx buffer?
-			blo   	IRQSkip1	;no, go keep laydown pointer
-			ldx   	RxBufPtr,u 	;get Rx buffer start address
-IRQSkip1   	stx   	RxBufPut,u 	;set new Rx data laydown pointer
-
-			* increment RxDatLen
-			lda		RxDatLen,u
-			inca	
-			sta		RxDatLen,u
-
-			puls	u,pc		;restore u, rts
-	
 			
 *****************************************************************************
 * Write
@@ -570,17 +515,13 @@ ReadChr1   	stx   	RxBufGet,u	;set new Rx data pickup pointer
 
 ReadSlp		equ		*
 
-			ldy		DWTAdr,u	;offset to main instance
-			leax	RxWaiter,y	; X = waiter table address
-			ldb		V.PORT+1,u	;port number into B
-			
            	IFEQ  	Level-1
-ReadSlp2   	lda   	<V.BUSY
-           	sta   	b,x			;store process id in this port's entry in the waiter table
+ReadSlp2   	lda   	<V.BUSY,u
+           	sta   	<V.WAKE,u		;store process id in this port's entry in the waiter table
            	lbsr  	Sleep0     	;sleep level 1 style
            	ELSE
 ReadSlp2   	lda   	>D.Proc    	;process descriptor address MSB
-           	sta   	b,x        	;save MSB in waiter table
+           	sta   	<V.WAKE,u        	;save MSB in V.WAKE
            	clrb
            	tfr		d,x			;process descriptor address
            	IFNE  	H6309
@@ -613,10 +554,7 @@ ChkState   	equ   	*
            	bne   	PrAbtErr 	;yes, go do it...
            	
            	* check that our waiter byte was cleared by ISR instance
-           	ldy		DWTAdr,u	;offset to main instance
-			leax	RxWaiter,y	; X = waiter address for this port
-			ldb		V.PORT+1,u	;port number into B
-			lda		b,x			;our waiter byte
+			lda		<V.WAKE,u		;our waiter byte
 			beq		ReadChr		;0 = its our turn, go get a character 
            	bra   	ReadSlp		;false alarm, go back to sleep
 
