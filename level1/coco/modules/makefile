@@ -43,7 +43,7 @@ SCF		= scf.mn \
 		nil.dd p_scbbp.dd p_scdwp.dd pipe.dd ssp.dd \
 		term_scbbt.dt term_sc6551.dt t1_scbbt.dd t2_sc6551.dd t3_sc6551.dd \
 		term32.dt term51.dt \
-		scdwt.dr t0_scdwt.dd \
+		scdwt.dr term_scdwt.dt t0_scdwt.dd \
                 t1_scdwt.dd t2_scdwt.dd t3_scdwt.dd \
                 t4_scdwt.dd t5_scdwt.dd t6_scdwt.dd  
 

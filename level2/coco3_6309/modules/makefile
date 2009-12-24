@@ -55,7 +55,7 @@ SCF		= scf.mn \
 		w8.dw w9.dw w10.dw w11.dw w12.dw w13.dw w14.dw w15.dw \
 		v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw \
-		 scdwt.dr t0_scdwt.dd t1_scdwt.dd t2_scdwt.dd t3_scdwt.dd \
+		 scdwt.dr term_scdwt.dt t0_scdwt.dd t1_scdwt.dd t2_scdwt.dd t3_scdwt.dd \
                 t4_scdwt.dd t5_scdwt.dd t6_scdwt.dd
 
 PIPE		= pipeman.mn pipeman_named.mn \
