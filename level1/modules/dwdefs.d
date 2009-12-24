@@ -34,6 +34,13 @@ OP_TERM     equ   'T		Term routine called
 OP_PRINT    equ   'P		Print byte to the print buffer
 OP_PRINTFLUSH equ 'F		Flush the server print buffer
 
+* Serial opcodes
+OP_SERREAD equ 'C
+OP_SERREADM equ 'c
+OP_SERWRITE equ 'C+128
+OP_SERGETSTAT equ 'D
+OP_SERSETSTAT equ 'D+128
+
 * WireBug opcodes (Server-initiated)
 OP_WIREBUG_MODE  equ   'B
 * WireBug opcodes (Server-initiated)
