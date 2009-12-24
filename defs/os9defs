@@ -421,7 +421,8 @@ D.SWPage       RMB       1                   SmartWatch page # (see clock2_smart
 D.COCOXT       RMB       1                   Busy flag for CoCo-XT driver (one drive at a time)
 D.DbgMem       RMB       2                   Debug memory pointer
 D.DWSUB        RMB       2                   DriveWire Subroutine Module entry point
-D.DWTAdr       RMB  	 2
+D.DWSTATS      RMB  	 7
+D.DWVIRQPkt    RMB       5
                ORG       $20
 
                IFEQ      Level-1
