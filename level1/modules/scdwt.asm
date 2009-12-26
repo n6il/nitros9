@@ -131,10 +131,10 @@ DumpVIRQ
          	bcs   	Term.Err	;go report error...
 DumpIRQ
 			ldx     #D.DWVIRQPkt
+			tfr     x,u
          	leax  	Vi.Stat,x	;fake VIRQ status register
          	tfr   	x,d			;copy address...
          	ldx   	#$0000		;code to remove IRQ entry
-			ldu     #D.DWSTATS  ;ISR doesn't use static storage, so set to $0000
          	leay  	IRQSvc,pc	;IRQ service routine
          	os9   	F$IRQ
 Term.Err    rts
@@ -167,6 +167,7 @@ CheckExit   puls    x,pc
 *
             
 Init		equ		*
+ clr $0016
 			pshs  cc        save IRQ/Carry status
 
 * link to subroutine module
@@ -205,14 +206,14 @@ Init		equ		*
 * Install the IRQ/VIRQ entry 
 InstIRQ
 			ldx     #D.DWVIRQPkt
+            pshs    u
+			tfr     x,u
 		    leax  	Vi.Stat,x		;fake VIRQ status register
          	lda   	#$80			;VIRQ flag clear, repeated VIRQs
          	sta   	,x				;set it while we're here...
          	tfr   	x,d				;copy fake VIRQ status register address
          	leax  	IRQPckt,pcr		;IRQ polling packet
          	leay  	IRQSvc,pcr  	;IRQ service entry
-            pshs    u
-			ldu     #D.DWSTATS
          	os9   	F$IRQ			;install
 			puls    u
          	bcs   	InitEx   		;exit with error
@@ -249,7 +250,7 @@ IRQok
 			lda     #OP_SERSETSTAT 	; command 
 			pshs   	d      			; command + port # on stack
 			leax    ,s     			; point X to stack 
-			ldy     #3          	; 2 bytes to send
+			ldy     #3          	; 3 bytes to send
 			
 			IFGT  Level-1
 			ldu   	<D.DWSUB
@@ -359,11 +360,10 @@ IRQSvc		equ		*
 			pshs  	cc,dp 		;save system cc,DP
 			orcc	#$50		;mask interrupts
 			
-			* mark VIRQ handled
-			ldx     #D.DWVIRQPkt
-			lda   	Vi.Stat,x	;VIRQ status register
+			* mark VIRQ handled (note U is pointer to our VIRQ packet in DP)
+			lda   	Vi.Stat,u	;VIRQ status register
 			anda  	#^Vi.IFlag 	;clear flag in VIRQ status register
-			sta   	Vi.Stat,x	;save it...
+			sta   	Vi.Stat,u	;save it...
 			
 			* poll server for incoming serial data
  			
@@ -401,7 +401,6 @@ IRQSvc2
 * here we set U to the static storage area of the device we are working with
 			ldx     #D.DWSTATS
 			lda     a,x
-			tfr     a,dp		;put in DP
 			clrb
 			tfr     d,u
 
