@@ -141,14 +141,17 @@ Zoro     fcb   $00
 * OS-9 Genesis!
 
 OS9Cold  equ   *
-* clear out system globals from $0020-$0400
-         ldx   #D.FMBM
+* clear out system globals from $0000-$0400
+*         ldx   #D.FMBM
+         ldx   #$0000
          IFNE  H6309
-         ldw   #$400-D.FMBM
+*         ldw   #$400-D.FMBM
+         ldw   #$400
          leay  Zoro,pc
          tfm   y,x+
          ELSE
-         ldy   #$400-D.FMBM
+*         ldy   #$400-D.FMBM
+         ldy   #$400
          clra
          clrb
 L007F    std   ,x++
