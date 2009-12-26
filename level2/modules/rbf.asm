@@ -89,6 +89,11 @@
 * error if error code is != E$UnkSvc (fixes problems with drivers
 * which do not support SS.VarSect and return E$UnkSvc in their GetStat
 * routines after evaluating an unknown service code.)
+*
+*  37r3    2009/12/26  Boisy G. Pitre
+* Moved SS.VarSect code down to fix a problem where code to call driver
+* expected PD.Exten to be allocated when it wasn't, and that caused
+* a write to PE.Prior to go into the system globals area (address $0016).
 
          nam   RBF
          ttl   Random Block File Manager
@@ -97,7 +102,7 @@
          use   defsfile
          endc  
 
-rev      set   $02
+rev      set   $03
 ty       set   FlMgr
          IFNE  H6309
 lg       set   Obj6309
@@ -1518,27 +1523,7 @@ Sst7AB   rts
 * Entry: U=caller's stack reg. ptr
 *        Y=Path dsc. ptr
 FindFile 
-**** ADDED 06/19/2004 ****
-* Call to SS.VarSect in Driver:
-*
-* This code calls the driver's SS.VarSect GetStat, which will
-* update the PD.TYP byte in the path descriptor to the sector
-* size of the media to which this path references.
-* If the driver doesn't support the GetStat, it will return
-* an error, and won't touch the PD.TYP anyway, so we ignore it.
-         ldx   PD.RGS,y		get caller's regs
-         lda   R$B,x		get caller's B
-         pshs  x,a		save PD.RGS ptr and caller's original B
-         ldd   #D$GSTA*256+SS.VarSect	getstat function/SS.VarSect GetStat
-         stb   R$B,x		put SS.VarSect into caller's B
-         lbsr  L113C		send it to driver
-         puls  a,x		get caller's original B and saved PD.RGS
-         sta   R$B,x		restore caller's original B
-         bcc   ok@		branch if no error on GetStat
-         cmpb  #E$UnkSvc	Unknown Service call error?
-         bne   Sst782		if not, return with error
-****
-ok@      ldd   #$0100		get size of sector
+         ldd   #$0100		get size of sector
 * Note, following line is stb PD.SMF,y in v30!
          IFGT  Level-1
          stb   PD.FST,y		clear state flags??
@@ -1557,6 +1542,31 @@ ok@      ldd   #$0100		get size of sector
          sty   PE.PDptr,u	save back pointer to path descriptor
          stu   PE.Wait,u	init waiting extension to myself
          ENDC
+
+
+**** ADDED 06/19/2004 ****
+**** MOVED 12/26/2009 due to issue with PD.Exten not being allocated and
+**** causing a write into system direct page memory
+* Call to SS.VarSect in Driver:
+*
+* This code calls the driver's SS.VarSect GetStat, which will
+* update the PD.TYP byte in the path descriptor to the sector
+* size of the media to which this path references.
+* If the driver doesn't support the GetStat, it will return
+* an error, and won't touch the PD.TYP anyway, so we ignore it.
+         ldx   PD.RGS,y		get caller's regs
+         lda   R$B,x		get caller's B
+         pshs  x,a		save PD.RGS ptr and caller's original B
+         ldd   #D$GSTA*256+SS.VarSect	getstat function/SS.VarSect GetStat
+         stb   R$B,x		put SS.VarSect into caller's B
+         lbsr  L113C		send it to driver
+         puls  a,x		get caller's original B and saved PD.RGS
+         sta   R$B,x		restore caller's original B
+         bcc   ok@		branch if no error on GetStat
+         cmpb  #E$UnkSvc	Unknown Service call error?
+         bne   Sst782		if not, return with error
+ok@
+****
          ldx   PD.RGS,y		get register stack pointer
          ldx   R$X,x		get pointer to pathname
          pshs  u,y,x

@@ -3,6 +3,7 @@ NitrOS-9 V3.2.9:
 Level 2 Only:
 - joydrv_6551L,  joydrv_6551M and joydrv_6552L now have their MPI slot
   select bytes properly represented and should work.
+- A bug that caused RBF to write to the system globals area has been fixed.
 
 ------------------------------------------------------
 
