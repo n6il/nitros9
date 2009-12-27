@@ -20,7 +20,7 @@ rev      set   $00
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
-         fcb   UPDAT.+SHARE.    	mode byte (share set to prevent multiple access)
+         fcb   UPDAT.    	mode byte (share set to prevent multiple access)
          fcb   HW.Page    extended controller address
          fdb   $FF05      physical controller address
          fcb   initsize-*-1 initilization table size
