@@ -92,6 +92,9 @@ dw3dos_cc2.trk:	dw3dos.asm
 dw3dos_cc1.trk:	dw3dos.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) -aCoCo=1 -aDOSTRACK
 
+drivewire.zip: $(ALLOBJS)
+	zip $@ $(ALLOBJS)
+
 clean:
-	$(RM) $(ALLOBJS)
+	$(RM) $(ALLOBJS) drivewire.zip
 
