@@ -192,7 +192,32 @@ r0_192k.dd: r0.asm
 ddr0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=192 -aDD=1
 
-# DriveWire 3 descriptors
+# DriveWire 3 SCF descriptors
+term_scdwt.dt: dwtdesc.asm
+        $(AS) $< $(ASOUT)$@ $(AFLAGS) -aTERM=1
+
+t0_scdwt.dt: dwtdesc.asm
+        $(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=0
+
+t1_scdwt.dt: dwtdesc.asm
+        $(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=1
+
+t2_scdwt.dt: dwtdesc.asm
+        $(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=2
+
+t3_scdwt.dt: dwtdesc.asm
+        $(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=3
+
+t4_scdwt.dt: dwtdesc.asm
+        $(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=4
+
+t5_scdwt.dt: dwtdesc.asm
+        $(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=5
+
+t6_scdwt.dt: dwtdesc.asm
+        $(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=6
+
+# DriveWire 3 RBF descriptors
 ddx0.dd: dwdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1 -aDNum=0
 
