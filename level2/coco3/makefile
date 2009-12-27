@@ -34,6 +34,7 @@ DEFS		= $(shell $(CD) defs; make showobjs)
 SYSBIN		= $(shell $(CD) sys; make showbinobjs)
 SYSTEXT		= $(shell $(CD) sys; make showtextobjs)
 ROOTFILES	= startup
+ROOTFILES_DW	= $(ROOTFILES) startup.dw
 SYSGO		= sysgo_dd
 
 PACKAGENAME	= $(DISTROVER).zip
@@ -104,8 +105,8 @@ $(DSKDW3):
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(ROOTFILES_DW) $@,.
+	$(foreach file, $(ROOTFILES_DW), $(OS9ATTR_TEXT) $@,$(file);)
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
@@ -161,8 +162,8 @@ $(DSKDW3_MIN):
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(ROOTFILES_DW) $@,.
+	$(foreach file, $(ROOTFILES_DW), $(OS9ATTR_TEXT) $@,$(file);)
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
