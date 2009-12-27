@@ -267,7 +267,8 @@ dw3name  	fcs  	/dw3/
 * Interrupt handler  - Much help from Darren Atkinson
 
 			
-IRQMulti3   anda    #$7F
+IRQMulti3   anda    #$07		;mask first 5 bits, a is now port #+1
+  			deca				;we pass +1 to use 0 for no data
             pshs    a			;save port #
          	cmpb	RxGrab,u	;compare room in buffer to server's byte
            	bhs		IRQM06		;room left >= server's bytes, no problem
@@ -332,7 +333,7 @@ IRQM04   	stx   	RxBufPut,u 	;set new Rx data laydown pointer
 			addb	RxGrab,u
 			stb		RxDatLen,u	;store new value
 			
-			bra     IRQExit
+			bra     CkSuspnd
 			
 IRQMulti			
            	* initial grab bytes
