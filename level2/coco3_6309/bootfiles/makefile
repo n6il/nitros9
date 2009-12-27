@@ -16,6 +16,7 @@ BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rbdw3.dr $(MD)/dw3.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
+		$(MD)/rammer.dr $(MD)/r0_96k.dd \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
