@@ -21,7 +21,7 @@ rev      set   $00
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
-         fcb   UPDAT.+SHARE.      mode byte
+         fcb   UPDAT.      mode byte
          fcb   HW.Page    extended controller address
          fdb   $FF01      physical controller address
          fcb   initsize-*-1 initilization table size

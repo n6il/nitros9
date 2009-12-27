@@ -393,6 +393,10 @@ IRQSvc2
 * here we set U to the static storage area of the device we are working with
 			ldx     #D.DWSTATS
 			lda     a,x
+			bne		IRQCont		;if A is 0, then this device is not active, so exit
+            puls    d
+			bra     IRQExit
+IRQCont
 			clrb
 			tfr     d,u
 
