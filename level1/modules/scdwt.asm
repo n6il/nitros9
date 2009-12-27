@@ -26,13 +26,6 @@ edition  	set   	1
 * Device memory area: offset from U
          	org   	V.SCF      	;V.SCF: free memory for driver to use
 
-DWTAdr		rmb		2			;pointer to instance with irq handler       
-
-* these are only used in the primary instance
-
-* For ISR
-*VIRQPckt 	rmb   	5			;VIRQ packet Counter(2),Reset(2),Status(1) bytes
-
 * port status variables...
 * none yet
 FlowCtrl	rmb		1			;flow control flags
@@ -167,7 +160,6 @@ CheckExit   puls    x,pc
 *
             
 Init		equ		*
- clr $0016
 			pshs  cc        save IRQ/Carry status
 
 * link to subroutine module
