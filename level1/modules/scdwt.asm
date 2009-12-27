@@ -350,7 +350,7 @@ IRQMulti
 **** IRQ ENTRY POINT
 IRQSvc		equ		*
 			pshs  	cc,dp 		;save system cc,DP
-			orcc	#$50		;mask interrupts
+			orcc	#IntMasks	;mask interrupts
 			
 			* mark VIRQ handled (note U is pointer to our VIRQ packet in DP)
 			lda   	Vi.Stat,u	;VIRQ status register
