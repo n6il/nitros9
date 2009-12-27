@@ -31,7 +31,7 @@ rev      set   $04
 
          fcb   UPDAT.    	mode byte (share set to prevent multiple access)
          fcb   HW.Page    extended controller address
-         fdb   $FF00      physical controller address
+         fdb   $FF00+TNum      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   $00        case:0=up&lower,1=upper only
