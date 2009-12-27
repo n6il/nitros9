@@ -332,7 +332,7 @@ IRQM04   	stx   	RxBufPut,u 	;set new Rx data laydown pointer
 			addb	RxGrab,u
 			stb		RxDatLen,u	;store new value
 			
-			rts
+			bra     IRQExit
 			
 IRQMulti			
            	* initial grab bytes
