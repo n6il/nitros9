@@ -267,7 +267,8 @@ dw3name  	fcs  	/dw3/
 * Interrupt handler  - Much help from Darren Atkinson
 
 			
-IRQMulti3   pshs    a			;save port #
+IRQMulti3   anda    #$7F
+            pshs    a			;save port #
          	cmpb	RxGrab,u	;compare room in buffer to server's byte
            	bhs		IRQM06		;room left >= server's bytes, no problem
   					
