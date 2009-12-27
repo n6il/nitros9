@@ -1,0 +1,8 @@
+* Start tsmon on all terminals
+* tsmon /t0 &
+tsmon /t1 &
+tsmon /t2 &
+tsmon /t3 &
+tsmon /t4 &
+tsmon /t5 &
+tsmon /t6 &
