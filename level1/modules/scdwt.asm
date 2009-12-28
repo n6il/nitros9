@@ -1,13 +1,17 @@
 ********************************************************************
-* scdwt.asm - CoCo DriveWire Virtual Serial Driver
+* scdwt - CoCo DriveWire Virtual Serial Driver
 *
-* many parts copied or only slightly modified from other nitros-9 modules or the DriveWire project  
+* $Id$
 *
-* serreadm working, finally
-* 
-* Aaron Wolfe
-* v0.8 11/30/09
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*   1      2009/11/30  Aaron Wolfe
+* Started
 *
+*          2009/12/28  Boisy G. Pitre
+* Modified so that F$STime is called if we get an error on calling
+* F$VIRQ (which means the clock module has not be initialized)
 
          	nam   	scdwt
          	ttl   	CoCo DriveWire Virtual Serial Driver
@@ -199,9 +203,6 @@ CheckExit   puls    x,pc
 DefTime         dtb
 
 Init		equ		*
-* Set default time
-         leax  >DefTime,pcr
-         os9   F$STime                 set time to default
 
 			pshs  cc        save IRQ/Carry status
 
@@ -252,10 +253,10 @@ Init		equ		*
 			stx     >D.DWStat
 			ENDC
 * clear out 256 byte page at X
-                        clrb
-loop@                   clr     ,x+
-                        decb
-                        bne     loop@
+			clrb
+loop@       clr     ,x+
+			decb
+			bne     loop@
         	
 * If here, we must install ISR
      
@@ -287,11 +288,15 @@ InstIRQ
 			leax    DW.VIRQPkt,x
          	std   	Vi.Rst,x		;reset count
 			tfr     x,y             ;move VIRQ software packet to Y
-         	ldx   	#$0001     		;code to install new VIRQ
+tryagain  	ldx   	#$0001     		;code to install new VIRQ
          	os9   	F$VIRQ			;install
          	bcc   	IRQok1st   		;no error, continue
-*         	bsr   	DumpIRQ    		;go remove from IRQ polling - is this necessary? according to OS9 dev ref, if I return an error it calls Term for me?  vrn.asm does this though
-         	puls  	cc,pc			;recover error info and exit
+            cmpb    #E$UnkSvc
+			bne     InitExBad
+* If we get an E$UnkSvc error, then clock has not been initialized, so do it here
+            leax    DefTime,pcr
+            os9     F$STime
+			bra     tryagain        ; note: this has the slim potential of looping forever
          	
 IRQok1st	
 IRQok
@@ -330,15 +335,15 @@ IRQok
 			ENDC
     		jsr     6,u      		; call DWrite
     		
-			*for now setstat doesn't respond    		
+			*for now setstat does not respond    		
     		leas	2,s				;clean dw args off stack
     		
 InitEx		equ		*
 			puls	cc,pc
 InitExBad
-                puls cc
-                orcc  #Carry
-                rts
+			puls cc
+			orcc  #Carry
+			rts
 
 * drivewire info
 dw3name  	fcs  	/dw3/
@@ -494,7 +499,7 @@ IRQCont
   			
   			bmi		IRQMulti	; branch for multiread
   			
-* put byte B in port A's buffer - optimization help from Darren Atkinson       
+* put byte B in port As buffer - optimization help from Darren Atkinson       
 IRQPutCh   	ldx     RxBufPut,u	;point X to the data buffer
         
 * process interrupt/quit characters here
@@ -624,7 +629,7 @@ ReadSlp2   	lda   	>D.Proc    	;process descriptor address MSB
            	lbsr  Sleep1		;sleep level 2 style
            	ENDC
            	
-           	* we've been awakened..
+           	* we have been awakened..
            	
            	* check for signals
            	ldx   	>D.Proc		;process descriptor address
@@ -758,8 +763,6 @@ L0173    comb
          ldb   #E$UnkSVc
          rts
 
-         
-         
          emod
 eom      equ   *
          end
