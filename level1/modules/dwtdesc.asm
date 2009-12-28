@@ -29,7 +29,11 @@ rev      set   $04
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
-         fcb   UPDAT.    	mode byte (share set to prevent multiple access)
+         IFEQ  TNum
+         fcb   UPDAT.+SHARE.   	mode byte (share set to prevent multiple access on /T0)
+         ELSE
+         fcb   UPDAT.    	mode byte
+         ENDC
          fcb   HW.Page    extended controller address
          fdb   $FF00+TNum      physical controller address
          fcb   initsize-*-1 initilization table size
@@ -69,7 +73,7 @@ rev      set   $04
 initsize equ   *
 
          IFNE  TERM
-name     fcc   /Term/
+name     fcs   /Term/
          ELSE
 name     fcc   /T/
          fcb   176+TNum

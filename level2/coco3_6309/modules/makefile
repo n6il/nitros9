@@ -194,7 +194,7 @@ ddr0_192k.dd: r0.asm
 
 # DriveWire 3 SCF descriptors
 term_scdwt.dt: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTERM=1 -aTNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTERM=1 -aTNum=1
 
 t0_scdwt.dd: dwtdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=0
