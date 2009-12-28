@@ -154,6 +154,12 @@ ReleaseMem
 			ENDC
 			ldd     #$0100
 			os9     F$SRtMem
+			ldd     #$0000
+			IFGT    Level-1
+			std   	<D.DWStat
+			ELSE
+			std   	>D.DWStat
+			ENDC
 Term.Err    rts
 
 
