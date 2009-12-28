@@ -189,7 +189,14 @@ CheckExit   puls    x,pc
 *    B  = error code
 *
             
+* Default time packet
+DefTime         dtb
+
 Init		equ		*
+* Set default time
+         leax  >DefTime,pcr
+         os9   F$STime                 set time to default
+
 			pshs  cc        save IRQ/Carry status
 
 * link to subroutine module
@@ -209,7 +216,7 @@ Init		equ		*
          	puls  	x
          	stx   	<D.Proc
          	ENDC
-         	lbcs   	InitEx
+         	lbcs   	InitExBad
          	IFGT  	Level-1
          	sty   	<D.DWSubAddr
          	ELSE
@@ -232,7 +239,7 @@ Init		equ		*
 			os9     F$SRqMem
 			tfr     u,x
 			puls    u
-			bcs     InitEx
+			bcs     InitExBad
 			IFGT    Level-1
 			stx     <D.DWStat
 			ELSE
@@ -246,7 +253,6 @@ loop@                   clr     ,x+
         	
 * If here, we must install ISR
      
-
 * Install the IRQ/VIRQ entry 
 InstIRQ
 			IFGT    Level-1
@@ -265,7 +271,7 @@ InstIRQ
          	leay  	IRQSvc,pcr  	;IRQ service entry
          	os9   	F$IRQ			;install
 			puls    u
-         	bcs   	InitEx   		;exit with error
+         	bcs   	InitExBad   		;exit with error
          	ldd   	#$0003     		;lets try every 6 ticks (0.1 seconds) -- testing 3, gives better response in interactive things
 			IFGT    Level-1
 			ldx   	<D.DWStat
@@ -323,7 +329,10 @@ IRQok
     		
 InitEx		equ		*
 			puls	cc,pc
-
+InitExBad
+                puls cc
+                orcc  #Carry
+                rts
 
 * drivewire info
 dw3name  	fcs  	/dw3/
