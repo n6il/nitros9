@@ -15,9 +15,17 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		shell_21 sleep smap tee tmode touch tsmon tuneport unlink verify wcreate xmode
 
 CMDS_D2         = basic09 runb gfx2 gfx inkey syscall copy del echo format \
-		merge os9gen prompt tmode
+                merge os9gen prompt tmode
 
-CMDS_DW         = dw wget ftp
+CMDS_DW         = $(CMDS) $(CMDS_D2) dw ftp wget
+
+CMDS_DW_SERVER  = attr build cmp copy cputype date deiniz del deldir devs \
+		dir display dmem dmode dump echo edit error free grfdrv \
+		help ident iniz link list load login makdir mdir merge \
+		mfree mmap mpi pmap proc procs prompt pwd pxd rename save \
+		shell sleep smap tee tmode touch tsmon unlink verify xmode \
+		utilpak1 \
+		dw ftp wget
 
 SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
 UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
@@ -68,6 +76,9 @@ showobjs_d2:
 
 showobjs_dw:
 	@$(ECHO) $(CMDS_DW)
+
+showobjs_dw_server:
+	@$(ECHO) $(CMDS_DW_SERVER)
 
 identify:
 	$(IDENT_SHORT) $(ALLOBJS)
