@@ -230,15 +230,20 @@ Init		equ		*
 			pshs    u
 			ldd     #$0100
 			os9     F$SRqMem
-			tfr     u,d
+			tfr     u,x
 			puls    u
 			bcs     InitEx
 			IFGT    Level-1
-			std     <D.DWStat
+			stx     <D.DWStat
 			ELSE
-			std     >D.DWStat
+			stx     >D.DWStat
 			ENDC
-         	
+* clear out 256 byte page at X
+                        clrb
+loop@                   clr     ,x+
+                        decb
+                        bne     loop@
+        	
 * If here, we must install ISR
      
 
@@ -301,7 +306,7 @@ IRQok
 
 			* tell DW we have a new port opening
 			ldb		<V.PORT+1,u		; get our port #			
-			lda     #OP_SERSETSTAT 	; command 
+			lda     #OP_SERINIT 	; command 
 			pshs   	d      			; command + port # on stack
 			leax    ,s     			; point X to stack 
 			ldy     #2          	; 2 bytes to send
