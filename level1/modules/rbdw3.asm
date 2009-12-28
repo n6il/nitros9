@@ -80,9 +80,9 @@ Term
          sta   ,x
          ldy   #$0001
          IFGT  LEVEL-1
-         ldu   <D.DWSUB
+         ldu   <D.DWSubAddr
          ELSE
-         ldu   >D.DWSUB
+         ldu   >D.DWSubAddr
          ENDC
          jsr   6,u
          puls  a,cc,pc
@@ -126,9 +126,9 @@ Init2    sta   DD.TOT,x			invalidate drive tables
          bcs   InitEx 
          tfr   y,u		 
          IFGT  LEVEL-1
-         stu   <D.DWSUB
+         stu   <D.DWSubAddr
          ELSE
-         stu   >D.DWSUB
+         stu   >D.DWSubAddr
          ENDC
 * Initialize the low level device
          jsr   ,u
@@ -201,9 +201,9 @@ Read2
          std   ,x
          ldy    #5 
          IFGT  LEVEL-1
-         ldu   <D.DWSUB
+         ldu   <D.DWSubAddr
          ELSE
-         ldu   >D.DWSUB
+         ldu   >D.DWSubAddr
          ENDC
          orcc  #IntMasks
          jsr   6,u
@@ -278,9 +278,9 @@ Write15
          std   ,x
          ldy   #$0005
          IFGT  LEVEL-1
-         ldu   <D.DWSUB
+         ldu   <D.DWSubAddr
          ELSE
-         ldu   >D.DWSUB
+         ldu   >D.DWSubAddr
          ENDC
          orcc  #IntMasks
          jsr   6,u
@@ -365,9 +365,9 @@ GetStat
          leax  ,s
          ldy   #$0003
          IFGT  LEVEL-1
-         ldu   <D.DWSUB
+         ldu   <D.DWSubAddr
          ELSE
-         ldu   >D.DWSUB
+         ldu   >D.DWSubAddr
          ENDC
          jsr   6,u
          leas  3,s

@@ -74,15 +74,15 @@ Term     equ   *
 *    B  = error code
 *
 Init
-* Check if D.DWSUB already holds a valid subroutine module pointer
+* Check if D.DWSubAddr already holds a valid subroutine module pointer
          IFGT  Level-1
-         ldx   <D.DWSUB
+         ldx   <D.DWSubAddr
          ELSE
-         ldx   >D.DWSUB
+         ldx   >D.DWSubAddr
          ENDC
          bne   InitEx
 
-* If here, D.DWSUB is 0, so we must link to subroutine module
+* If here, D.DWSubAddr is 0, so we must link to subroutine module
          IFGT  Level-1
          ldx   <D.Proc
          pshs  x
@@ -98,9 +98,9 @@ Init
          ENDC
          bcs   InitEx
          IFGT  Level-1
-         sty   <D.DWSUB
+         sty   <D.DWSubAddr
          ELSE
-         sty   >D.DWSUB
+         sty   >D.DWSubAddr
          ENDC
          jsr   ,y			call init routine
 InitEx   rts
@@ -124,7 +124,7 @@ Write    equ   *
          pshs  d
          leax  ,s
          ldy   #$0002
-         ldu   >D.DWSUB
+         ldu   >D.DWSubAddr
          jsr   6,u
          puls  d,pc
 
@@ -183,7 +183,7 @@ Close    cmpa  #SS.Close	close the device?
          pshs  a
          ldy   #$0001
          leax  ,s
-         ldu   >D.DWSUB
+         ldu   >D.DWSubAddr
          jsr   6,u
          puls  a,pc
 
