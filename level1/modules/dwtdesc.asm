@@ -34,9 +34,14 @@ rev      set   $04
          fdb   $FF00+TNum      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf
+         IFEQ  TNum
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00
+         fcb   $00,$00,$00,$00,$00,$00,$00,$00
+         fcb   $00,$00,$00
+         ELSE
          fcb   $00        case:0=up&lower,1=upper only
-         fcb   $00        backspace:0=bsp,1=bsp then sp & bsp
-         fcb   $01        delete:0=bsp over line,1=return
+         fcb   $01        backspace:0=bsp,1=bsp then sp & bsp
+         fcb   $00        delete:0=bsp over line,1=return
          fcb   $01        echo:0=no echo
          fcb   $01        auto line feed:0=off
          fcb   $00        end of line null count
@@ -53,6 +58,7 @@ rev      set   $04
          fcb   C$QUIT     quit character
          fcb   C$BSP      backspace echo character
          fcb   C$BELL     line overflow character (bell)
+         ENDC
          fcb   $00        init value for dev ctl reg
          fcb   B600       baud rate
          fdb   name       copy of descriptor name address
