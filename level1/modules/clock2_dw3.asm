@@ -47,7 +47,7 @@ GetTime  pshs  u,y,x
 	 pshs  a
 	 leax  ,s
 	 ldy   #$0001
-         ldu   >D.DWSUB
+         ldu   >D.DWSubAddr
 	 jsr   6,u
          puls  a        
 * Consider the following optimization
@@ -71,10 +71,10 @@ Init
          puls    x
          stx     <D.Proc
          bcs     InitEx
-         sty     <D.DWSUB
+         sty     <D.DWSubAddr
          ELSE
          bcs     ex
-         sty     >D.DWSUB
+         sty     >D.DWSubAddr
          ENDC
          jsr     ,y			call initialization routine
 InitEx   rts

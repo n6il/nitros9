@@ -84,31 +84,36 @@ Term     	equ   	*
 
 			lda		<V.PORT+1,u		;get our port #
 
-			* put setstat args on stack for later
-			ldb		#255
-			pshs 	d				;port #, 255 (term) on stack
+			pshs 	a				;port # on stack
 			* clear statics table entry
-			ldx   	#D.DWSTATS
+			IFGT    Level-1
+			ldx   	<D.DWStat
+			ELSE
+			ldx   	>D.DWStat
+			ENDC
+* Cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
+*			leax    DW.StatTbl,x
 			clr		a,x				;clear out
+
 			* tell server
-			lda     #OP_SERSETSTAT ; load command
+			lda     #OP_SERTERM ; load command
 			pshs   	a      		; command store on stack
 			leax    ,s     		; point X to stack 
-			ldy     #3          ; 3 bytes to send 
+			ldy     #2          ; 2 bytes to send 
     
             pshs    u
 
 			IFGT  Level-1
-			ldu   	<D.DWSUB
+			ldu   	<D.DWSubAddr
 			ELSE
-			ldu   	>D.DWSUB
+			ldu   	>D.DWSubAddr
 			ENDC
 			
     		jsr     6,u      	; call DWrite
 
             puls    u
 			
-    		leas	3,s			; clean 3 DWsub args from stack 
+    		leas	2,s			; clean 3 DWsub args from stack 
 			
 * Check if we need to clean up IRQ
 			bsr     CheckStats
@@ -118,28 +123,53 @@ Term     	equ   	*
 			
 * no more ports open.. are we the primary instance?
 DumpVIRQ   	
-			ldy     #D.DWVIRQPkt
+			IFGT    Level-1
+			ldy   	<D.DWStat
+			ELSE
+			ldy   	>D.DWStat
+			ENDC
+			leay    DW.VIRQPkt,y
          	ldx   	#$0000		;code to delete VIRQ entry
          	os9   	F$VIRQ		;remove from VIRQ polling
-         	bcs   	Term.Err	;go report error...
+         	bcs   	ReleaseMem	;go
 DumpIRQ
-			ldx     #D.DWVIRQPkt
+			IFGT    Level-1
+			ldx   	<D.DWStat
+			ELSE
+			ldx   	>D.DWStat
+			ENDC
+			leax    DW.VIRQPkt,x
 			tfr     x,u
          	leax  	Vi.Stat,x	;fake VIRQ status register
          	tfr   	x,d			;copy address...
          	ldx   	#$0000		;code to remove IRQ entry
          	leay  	IRQSvc,pc	;IRQ service routine
          	os9   	F$IRQ
+
+ReleaseMem
+			IFGT    Level-1
+			ldu     <D.DWStat
+			ELSE
+			ldu     >D.DWStat
+			ENDC
+			ldd     #$0100
+			os9     F$SRtMem
 Term.Err    rts
 
 
 ***********************************************************************
-* CheckStats - Check if the D.DWSTATS table is empty
+* CheckStats - Check if the D.DWStat table is empty
 * Entry: None
 * Exit:  B=0, stat table is empty; B!=0, stat table is not empty
 CheckStats
          	pshs  	x
-			ldx     #D.DWSTATS
+			IFGT    Level-1
+			ldx     <D.DWStat
+			ELSE
+			ldx     >D.DWStat
+			ENDC
+* Cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
+*			leax    DW.StatTbl,x
 			ldb     #7
 CheckLoop   tst     ,x+
 			bne     CheckExit
@@ -181,23 +211,45 @@ Init		equ		*
          	ENDC
          	lbcs   	InitEx
          	IFGT  	Level-1
-         	sty   	<D.DWSUB
+         	sty   	<D.DWSubAddr
          	ELSE
-         	sty   	>D.DWSUB
+         	sty   	>D.DWSubAddr
          	ENDC
          	jsr   	,y			call DW init routine
        	
          	puls	u				;restore u
       	
-         	bsr     CheckStats
-         	bne		IRQok
+			IFGT    Level-1
+			ldx     <D.DWStat
+			ELSE
+			ldx     >D.DWStat
+			ENDC
+			bne     IRQok
+
+* allocate DW stat page
+			pshs    u
+			ldd     #$0100
+			os9     F$SRqMem
+			tfr     u,d
+			puls    u
+			bcs     InitEx
+			IFGT    Level-1
+			std     <D.DWStat
+			ELSE
+			std     >D.DWStat
+			ENDC
          	
 * If here, we must install ISR
      
 
 * Install the IRQ/VIRQ entry 
 InstIRQ
-			ldx     #D.DWVIRQPkt
+			IFGT    Level-1
+			ldx   	<D.DWStat
+			ELSE
+			ldx   	>D.DWStat
+			ENDC
+			leax    DW.VIRQPkt,x
             pshs    u
 			tfr     x,u
 		    leax  	Vi.Stat,x		;fake VIRQ status register
@@ -210,7 +262,12 @@ InstIRQ
 			puls    u
          	bcs   	InitEx   		;exit with error
          	ldd   	#$0003     		;lets try every 6 ticks (0.1 seconds) -- testing 3, gives better response in interactive things
-			ldx     #D.DWVIRQPkt
+			IFGT    Level-1
+			ldx   	<D.DWStat
+			ELSE
+			ldx   	>D.DWStat
+			ENDC
+			leax    DW.VIRQPkt,x
          	std   	Vi.Rst,x		;reset count
 			tfr     x,y             ;move VIRQ software packet to Y
          	ldx   	#$0001     		;code to install new VIRQ
@@ -221,7 +278,13 @@ InstIRQ
          	
 IRQok1st	
 IRQok
-         	ldx   	#D.DWSTATS
+			IFGT    Level-1
+			ldx     <D.DWStat
+			ELSE
+			ldx     >D.DWStat
+			ENDC
+* Cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
+*			leax    DW.StatTbl,x
 			tfr     u,d
 	        ldb		<V.PORT+1,u		;get our port #
 			sta		b,x				;store in table
@@ -236,23 +299,22 @@ IRQok
 			abx  						;add buffer size to buffer start..
 			stx   	RxBufEnd,u      	;save Rx buffer end address
 
-			* tell DW we've got a new port opening
+			* tell DW we have a new port opening
 			ldb		<V.PORT+1,u		; get our port #			
-			pshs    b
 			lda     #OP_SERSETSTAT 	; command 
 			pshs   	d      			; command + port # on stack
 			leax    ,s     			; point X to stack 
-			ldy     #3          	; 3 bytes to send
+			ldy     #2          	; 2 bytes to send
 			
 			IFGT  Level-1
-			ldu   	<D.DWSUB
+			ldu   	<D.DWSubAddr
 			ELSE
-			ldu   	>D.DWSUB
+			ldu   	>D.DWSubAddr
 			ENDC
     		jsr     6,u      		; call DWrite
     		
 			*for now setstat doesn't respond    		
-    		leas	3,s				;clean dw args off stack
+    		leas	2,s				;clean dw args off stack
     		
 InitEx		equ		*
 			puls	cc,pc
@@ -298,9 +360,9 @@ IRQM03		puls    a			;port # is on stack
 			ldy     #3          ; 3 bytes to send
     
 			IFGT  Level-1
-			ldu   	<D.DWSUB
+			ldu   	<D.DWSubAddr
 			ELSE
-			ldu   	>D.DWSUB
+			ldu   	>D.DWSubAddr
 			ENDC
     		jsr     6,u      	; call DWrite
     		
@@ -368,9 +430,9 @@ IRQSvc		equ		*
 			ldy     #1          ; 1 byte to send
     
 			IFGT  Level-1
-			ldu   	<D.DWSUB
+			ldu   	<D.DWSubAddr
 			ELSE
-			ldu   	>D.DWSUB
+			ldu   	>D.DWSubAddr
 			ENDC
     		jsr     6,u      	; call DWrite
     		
@@ -393,7 +455,13 @@ IRQSvc2
   			anda    #$07		;mask first 5 bits, a is now port #+1
   			deca				;we pass +1 to use 0 for no data
 * here we set U to the static storage area of the device we are working with
-			ldx     #D.DWSTATS
+			IFGT    Level-1
+			ldx   	<D.DWStat
+			ELSE
+			ldx   	>D.DWStat
+			ENDC
+* Cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
+*			leax    DW.StatTbl,x
 			lda     a,x
 			bne		IRQCont		;if A is 0, then this device is not active, so exit
             puls    d
@@ -409,9 +477,21 @@ IRQCont
 * put byte B in port A's buffer - optimization help from Darren Atkinson       
 IRQPutCh   	ldx     RxBufPut,u	;point X to the data buffer
         
-			* sc6551 now does lots of things with flow control, we might want some of this
-			* but implemented differently.. for now.. skip it
-		   
+* process interrupt/quit characters here
+* note we will have to do this in the multiread (ugh)                     
+*                  lda  #S$Intrpt
+*		  cmpb V.INTR,u
+*                  bne  test2
+test2
+*                  lda  #S$Abort
+*                  cmpb V.QUIT,u
+*                  bne store
+*                  ldb  V.LPRC,u
+*                  exg  a,b
+*                  os9  F$Send 
+*                  bra  IRQExit
+ 
+store
 			* store our data byte
 			stb    	,x+     	; store and increment buffer pointer
         
@@ -468,9 +548,9 @@ Write    	equ   	*
          	leax  	,s
          	ldy   	#$0003			; 3 bytes to send.. ugh.  need WRITEM (data mode)
          	IFGT  	Level-1
-         	ldu   	<D.DWSUB
+         	ldu   	<D.DWSubAddr
          	ELSE
-         	ldu   	>D.DWSUB
+         	ldu   	>D.DWSubAddr
          	ENDC
          	jsr   	6,u
 WriteOK   	clrb
@@ -646,9 +726,9 @@ Close    cmpa  #SS.Close	close the device?
          ldy   #$0001
          leax  ,s
          IFGT  Level-1
-         ldu   <D.DWSUB
+         ldu   <D.DWSubAddr
          ELSE
-         ldu   >D.DWSUB
+         ldu   >D.DWSubAddr
          ENDC
          jsr   6,u
          puls  a,pc

@@ -31,6 +31,8 @@ OP_REWRIT   equ    'w		Re-write one sector
 OP_GETSTA   equ    'G		GetStat routine called
 OP_SETSTA   equ    'S		SetStat routine called
 OP_TERM     equ    'T		Term routine called
+OP_SERINIT  equ    'E
+OP_SERTERM  equ    'E+128
 
 * Printer opcodes
 OP_PRINT    equ    'P		Print byte to the print buffer
