@@ -19,7 +19,13 @@ CMDS_D2         = basic09 runb gfx2 gfx inkey syscall copy del echo format \
 
 CMDS_DW         = $(CMDS) $(CMDS_D2) dw ftp wget
 
-CMDS_DW_SERVER  = echo grfdrv link load login shell touch tsmon utilpak1
+CMDS_DW_SERVER  = attr build cmp copy cputype date deiniz del deldir devs \
+		dir display dmem dmode dump echo edit error free grfdrv \
+		help ident iniz link list load login makdir mdir merge \
+		mfree mmap mpi pmap proc procs prompt pwd pxd rename save \
+		shell sleep smap tee tmode touch tsmon unlink verify xmode \
+		utilpak1 \
+		dw ftp wget
 
 SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
 UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
