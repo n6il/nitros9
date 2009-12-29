@@ -60,10 +60,6 @@ wrpb02		rts
 * dw main
 *
 
-* default to port /t0.. and use it no matter what, maybe set on cmdline in future?	
-defport  	fcc   '/t0'
-         	fcb   C$CR
-         	fcb   $00,$00               
 
          	
 wrname		ldy		#0001
@@ -101,14 +97,36 @@ start      	pshs	d
 			sta		outpath,u
 			
 			
-			* open port
+			* see if we can find a port to use
 			
-			lda   #UPDAT.      get mode for modem path
-			leax	<defport,pc    point to modem path
-			os9   I$Open       open it
-			lbcs  errex1        If error, exit with it
-			sta   portpath,u    save path to modem
+			* first setup pbuffer
+			leax 	pbuffer,u
+			lda		#47
+			sta		,x+
+			lda		#85
+			sta		,x+
+			lda		#48
+			sta		,x+
+			lda		#13
+			sta		,x
+						
+tryport		lda   #UPDAT.      		get mode for modem path
+			leax	pbuffer,u    	point to modem path
+			os9   	I$Open      	open it
+			bcc		gotport		
 			
+			cmpb	#250		;in use?
+			lbne	errex1		;other error, bail out
+			leax	pbuffer,u
+			lda		2,x
+			inca
+			sta		2,x
+			bra		tryport
+		
+chat		fcs		'chat'				
+			
+gotport		sta		portpath,u
+							
 			bsr		wrname			;write our name to server
 		
 			* write parameters to port - X = start addr, y = # bytes, A = path#
