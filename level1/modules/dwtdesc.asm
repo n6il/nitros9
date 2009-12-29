@@ -12,9 +12,12 @@
 *   0.4    2009/12/27  Boisy G. Pitre
 * Removed SHARE. bit from mode because of tsmon issues.
 *
+*   0.5    2009/12/29  Boisy G. Pitre
+* Made U and T descriptor templates. Backspace is now $7F for
+* telnet clients which are likely to access the T ports.
+*
 * This descriptor has slightly different defaults, intended to be used as 
 * the channel for the DriveWire utilities
-*
 
          nam   DWTDesc
          ttl   DriveWire Virtual Serial Device Descriptor
@@ -25,7 +28,7 @@
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
-rev      set   $04
+rev      set   $05
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
@@ -50,8 +53,8 @@ rev      set   $04
          fcb   $01        auto line feed:0=off
          fcb   $00        end of line null count
          fcb   $00        pause:0=no end of page pause
-         fcb   24         lines per page
-         fcb   C$BSP      backspace character
+         fcb   24         lines per page (not a safe assumption anymore!)
+         fcb   $7F        backspace character (on most telnet clients)
          fcb   C$DEL      delete line character
          fcb   C$CR       end of record character
          fcb   C$EOF      end of file character
@@ -65,13 +68,13 @@ rev      set   $04
          ENDC
          IFNE  UTIL
          fcb   $03        mode byte for utility descriptor
-		 ELSE
+	 ELSE
          fcb   $00        mode byte for terminal descriptor
-		 ENDC
-         fcb   B600       baud rate
+	 ENDC
+         fcb   B600       baud rate (not used, maybe future assignment?)
          fdb   name       copy of descriptor name address
-         fcb   $00        acia xon char
-         fcb   $00        acia xoff char
+         fcb   $00        acia xon char (not used, maybe future assignment?)
+         fcb   $00        acia xoff char (not used, maybe future assignment?)
          fcb   80         (szx) number of columns for display
          fcb   24         (szy) number of rows for display
 initsize equ   *
@@ -79,9 +82,9 @@ initsize equ   *
          IFNE  TERM
 name     fcs   /Term/
          ELSE
-		 IFNE  UTIL
+	 IFNE  UTIL
 name     fcc   /U/
-		 ELSE
+	 ELSE
 name     fcc   /T/
          ENDC
          fcb   176+TNum
