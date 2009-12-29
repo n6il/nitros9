@@ -1,5 +1,5 @@
 ********************************************************************
-* T0 - Drivewire Virtual Serial Port on T0
+* DWTDesc - Drivewire Virtual Serial Device Descriptor
 *
 * $Id$
 *
@@ -29,7 +29,7 @@ rev      set   $04
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
-         IFEQ  TNum
+         IFNE  UTIL
          fcb   UPDAT.+SHARE.   	mode byte (share set to prevent multiple access on /T0)
          ELSE
          fcb   UPDAT.    	mode byte
@@ -38,7 +38,7 @@ rev      set   $04
          fdb   $FF00+TNum      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf
-         IFEQ  TNum
+         IFNE  UTIL
          fcb   $00,$00,$00,$00,$00,$00,$00,$00
          fcb   $00,$00,$00,$00,$00,$00,$00,$00
          fcb   $00,$00,$00
@@ -63,7 +63,11 @@ rev      set   $04
          fcb   C$BSP      backspace echo character
          fcb   C$BELL     line overflow character (bell)
          ENDC
-         fcb   $00        init value for dev ctl reg
+         IFNE  UTIL
+         fcb   $03        mode byte for utility descriptor
+		 ELSE
+         fcb   $00        mode byte for terminal descriptor
+		 ENDC
          fcb   B600       baud rate
          fdb   name       copy of descriptor name address
          fcb   $00        acia xon char
@@ -75,7 +79,11 @@ initsize equ   *
          IFNE  TERM
 name     fcs   /Term/
          ELSE
+		 IFNE  UTIL
+name     fcc   /U/
+		 ELSE
 name     fcc   /T/
+         ENDC
          fcb   176+TNum
          ENDC
 mgrnam   fcs   /SCF/
