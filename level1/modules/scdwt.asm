@@ -519,7 +519,7 @@ send@		lda		V.LPRC,u
  
 store
 			* store our data byte
-			stb    	,x+     	; store and increment buffer pointer
+			sta    	,x+     	; store and increment buffer pointer
         
 			* adjust RxBufPut	
 			cmpx  	RxBufEnd,u 	; end of Rx buffer?
