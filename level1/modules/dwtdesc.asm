@@ -84,7 +84,7 @@ name     fcc   /U/
 		 ELSE
 name     fcc   /T/
          ENDC
-         fcb   176+TNum
+         fcb   176+TNum-8
          ENDC
 mgrnam   fcs   /SCF/
 drvnam   fcs   /scdwt/
