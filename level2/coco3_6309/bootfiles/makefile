@@ -35,21 +35,19 @@ BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 # minimum bootfile without graphics console support
 BOOTFILE_DW3_SERVER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/dw3.sb \
-		$(MD)/dw3.sb \
-		$(MD)/dw3.sb \
-		$(MD)/dw3.sb \
-		$(MD)/dw3.sb \
-		$(MD)/dw3.sb \
-		$(MD)/dw3.sb \
-		$(MD)/dw3.sb \
-		$(MD)/rbf.mn \
 		$(MD)/rbdw3.dr \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
-		$(MD)/sc6551.dr $(MD)/term_sc6551.dt \
+		$(MD)/vtio.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/cowin.io $(MD)/covdg.io \
+		$(MD)/term_win80.dt \
+		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
 		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
 		$(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
 		$(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/t7_scdwt.dd \
 		$(MD)/u0_scdwt.dd $(MD)/u1_scdwt.dd $(MD)/u2_scdwt.dd \
 		$(MD)/u3_scdwt.dd $(MD)/u4_scdwt.dd $(MD)/u5_scdwt.dd \
 		$(MD)/u6_scdwt.dd \
