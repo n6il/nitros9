@@ -81,10 +81,11 @@ name     fcs   /Term/
          ELSE
 		 IFNE  UTIL
 name     fcc   /U/
+         fcb   176+TNum-8
 		 ELSE
 name     fcc   /T/
+         fcb   176+TNum
          ENDC
-         fcb   176+TNum-8
          ENDC
 mgrnam   fcs   /SCF/
 drvnam   fcs   /scdwt/
