@@ -29,9 +29,6 @@ size        equ     .
 name        fcs     /chat/
            fcb     edition
 
-int			fcs		/int/
-	
-
 ******************************************			
 * writech - write character in A to screen
 * In:
@@ -86,43 +83,7 @@ wrnout		ldb		#C$CR		 	;end with a CR
 			lbcs	errex2
 			rts
 
-			* ask for next open port
-getport		leax	<int,pc
-			bsr		wrname
-			* send it twice for arg
-			leax	<int,pc
-			bsr		wrname
-			* read response
-			ldy		#0006
-			lda		portpath,u
-			leax	pbuffer,u
-			os9		I$Read
-			lbcs	errex2
-			lda		pbuffer,u
-			lbeq		errex2			; no ports left
-			* close /t0
-			lda		portpath,u
-			os9		I$Close
-			lbcs	errex2
-			
-			* write port name
-			lda	#4
-			sta	numbyt,u
-			bsr	writepb
-			* open given port
-			lda   	#UPDAT.      		get mode for modem path
-			leax	pbuffer,u    	point to modem path
-			os9   	I$Open      	open it
-			lbcs  	errex1        	If error, exit with it
-			sta		portpath,u		;set our working port
-			rts
-
-* use /t0 to get next available util port	
-defport  	fcc   '/t0'
-        	fcb   C$CR
-        	fcb   $00,$00
-
-chat		fcs		'chat'			
+	
         	
 			
            * save initial parameters
@@ -134,19 +95,45 @@ start      	pshs	d
 			sta		outpath,u
 			
 			
-			* open /t0 first to get working port
+			* see if we can find a port to use
 			
-			lda   #UPDAT.      		get mode for modem path
-			leax	<defport,pc    	point to modem path
+			* first setup pbuffer
+			leax 	pbuffer,u
+			lda		#47
+			sta		,x+
+			lda		#85
+			sta		,x+
+			lda		#48
+			sta		,x+
+			lda		#13
+			sta		,x
+						
+tryport		lda   #UPDAT.      		get mode for modem path
+			leax	pbuffer,u    	point to modem path
 			os9   	I$Open      	open it
-			lbcs  	errex1        	If error, exit with it
-			sta		portpath,u
+			bcc		gotport		
 			
-			bsr		getport			;find open utility port
+			cmpb	#250		;in use?
+			lbne	errex1		;other error, bail out
+			leax	pbuffer,u
+			lda		2,x
+			inca
+			sta		2,x
+			bra		tryport
+		
+chat		fcs		'chat'				
 			
+gotport		sta		portpath,u
+				
+			*print out port we got
+			lda		#4
+			sta		numbyt,u
+			leax	pbuffer,u
+			lbsr		writepb
+						
 			* at this point we should have a port
 			leax		chat,pc
-			lbsr		wrname			;write our name to server
+			lbsr		wrname			;write our command to server
 		
 			* write parameters to port - X = start addr, y = # bytes, A = path#
 			

@@ -68,14 +68,35 @@ start      nop
 			pshs	d
 			pshs	x
 			
-			* open port
+			* see if we can find a port to use
 			
-			lda   #UPDAT.      get mode for modem path
-			leax	<defport,pc    point to modem path
-			os9   I$Open       open it
-			lbcs  errex1        If error, exit with it
-			sta   portpath,u    save path to modem
+			* first setup pbuffer
+			leax 	pbuffer,u
+			lda		#47
+			sta		,x+
+			lda		#85
+			sta		,x+
+			lda		#48
+			sta		,x+
+			lda		#13
+			sta		,x
+						
+tryport		lda   #UPDAT.      		get mode for modem path
+			leax	pbuffer,u    	point to modem path
+			os9   	I$Open      	open it
+			bcc		gotport		
 			
+			cmpb	#250		;in use?
+			lbne	errex1		;other error, bail out
+			leax	pbuffer,u
+			lda		2,x
+			inca
+			sta		2,x
+			bra		tryport
+
+gotport		sta		portpath,u
+				
+		
 			* write our name
 			ldy		#0001
 			leax	<name,pc
