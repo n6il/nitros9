@@ -204,8 +204,8 @@ DefTime         dtb
 
 Init		equ		*
 
-			pshs  cc        save IRQ/Carry status
-
+ lda IT.PAR,y
+			pshs  cc,a        save IRQ/Carry status
 * link to subroutine module
          	pshs	u				;preserve u since os9 link is coming up
 
@@ -322,7 +322,7 @@ IRQok
 			stx   	RxBufEnd,u      	;save Rx buffer end address
 
 			* tell DW we have a new port opening
-			ldb		PD.PAR,u		; get our port mode
+			ldb		1,s		; get our port mode from stack
 			pshs    b
 			ldb		<V.PORT+1,u		; get our port #			
 			lda     #OP_SERINIT 	; command 
@@ -341,9 +341,9 @@ IRQok
     		leas	3,s				;clean dw args off stack
     		
 InitEx		equ		*
-			puls	cc,pc
+			puls	cc,a,pc
 InitExBad
-			puls cc
+			puls cc,a
 			orcc  #Carry
 			rts
 
