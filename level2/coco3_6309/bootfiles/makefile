@@ -34,6 +34,7 @@ BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 # NitrOS-9 disk bootfile to allow booting from DriveWire 3 server
 # minimum bootfile without graphics console support
 BOOTFILE_DW3_SERVER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
 		$(MD)/dw3.sb \
 		$(MD)/rbdw3.dr \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
