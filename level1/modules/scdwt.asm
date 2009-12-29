@@ -246,7 +246,7 @@ Init		equ		*
 			os9     F$SRqMem
 			tfr     u,x
 			puls    u
-			bcs     InitExBad
+			lbcs    InitExBad
 			IFGT    Level-1
 			stx     <D.DWStat
 			ELSE
