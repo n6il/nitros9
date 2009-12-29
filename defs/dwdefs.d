@@ -63,6 +63,6 @@ E_CRC      equ   $F3            Same as NitrOS-9 E$CRC
 
 * DW Globals Page Definitions (must be 256 bytes max)
            org   $00
-DW.StatTbl rmb   7
+DW.StatTbl rmb   31             room for 31 ports
 DW.VIRQPkt rmb   5
 
