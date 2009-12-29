@@ -56,7 +56,9 @@ SCF		= scf.mn \
 		v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw \
 		scdwt.dr term_scdwt.dt t0_scdwt.dd t1_scdwt.dd t2_scdwt.dd t3_scdwt.dd \
-                t4_scdwt.dd t5_scdwt.dd t6_scdwt.dd
+                t4_scdwt.dd t5_scdwt.dd t6_scdwt.dd t7_scdwt.dd \
+		u0_scdwt.dd u1_scdwt.dd u2_scdwt.dd u3_scdwt.dd \
+                u4_scdwt.dd u5_scdwt.dd u6_scdwt.dd
 
 PIPE		= pipeman.mn pipeman_named.mn \
 		piper.dr \
@@ -216,6 +218,30 @@ t5_scdwt.dd: dwtdesc.asm
 
 t6_scdwt.dd: dwtdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=6
+
+t7_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=7
+
+u0_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aUTIL=1 -aTNum=8
+
+u1_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aUTIL=1 -aTNum=9
+
+u2_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aUTIL=1 -aTNum=10
+
+u3_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aUTIL=1 -aTNum=11
+
+u4_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aUTIL=1 -aTNum=12
+
+u5_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aUTIL=1 -aTNum=13
+
+u6_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aUTIL=1 -aTNum=14
 
 # DriveWire 3 RBF descriptors
 ddx0.dd: dwdesc.asm

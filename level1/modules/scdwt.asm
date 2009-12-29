@@ -322,11 +322,13 @@ IRQok
 			stx   	RxBufEnd,u      	;save Rx buffer end address
 
 			* tell DW we have a new port opening
+			ldb		PD.PAR,u		; get our port mode
+			pshs    b
 			ldb		<V.PORT+1,u		; get our port #			
 			lda     #OP_SERINIT 	; command 
 			pshs   	d      			; command + port # on stack
 			leax    ,s     			; point X to stack 
-			ldy     #2          	; 2 bytes to send
+			ldy     #3          	; # of bytes to send
 			
 			IFGT  Level-1
 			ldu   	<D.DWSubAddr
@@ -336,7 +338,7 @@ IRQok
     		jsr     6,u      		; call DWrite
     		
 			*for now setstat does not respond    		
-    		leas	2,s				;clean dw args off stack
+    		leas	3,s				;clean dw args off stack
     		
 InitEx		equ		*
 			puls	cc,pc
@@ -354,7 +356,7 @@ dw3name  	fcs  	/dw3/
 * Interrupt handler  - Much help from Darren Atkinson
 
 			
-IRQMulti3   anda    #$07		;mask first 5 bits, a is now port #+1
+IRQMulti3   anda    #$1F		;mask first 5 bits, a is now port #+1
   			deca				;we pass +1 to use 0 for no data
             pshs    a			;save port #
          	cmpb	RxGrab,u	;compare room in buffer to server's byte
@@ -477,7 +479,7 @@ IRQSvc2
 
 * save back D on stack and build our U
             pshs    d
-  			anda    #$07		;mask first 5 bits, a is now port #+1
+  			anda    #$1F		;mask first 5 bits, a is now port #+1
   			deca				;we pass +1 to use 0 for no data
 * here we set U to the static storage area of the device we are working with
 			IFGT    Level-1
