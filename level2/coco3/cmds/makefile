@@ -17,7 +17,7 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 CMDS_D2         = basic09 runb gfx2 gfx inkey syscall copy del echo format \
                 merge os9gen prompt tmode
 
-CMDS_DW         = $(CMDS) $(CMDS_D2) dw ftp wget
+CMDS_DW         = $(CMDS) $(CMDS_D2) dw ftp wget chat
 
 CMDS_DW_SERVER  = attr build cmp copy cputype date deiniz del deldir devs \
 		dir display dmem dmode dump echo edit error free grfdrv \
@@ -25,7 +25,7 @@ CMDS_DW_SERVER  = attr build cmp copy cputype date deiniz del deldir devs \
 		mfree mmap mpi pmap proc procs prompt pwd pxd rename save \
 		shell sleep smap tee tmode touch tsmon unlink verify xmode \
 		utilpak1 \
-		dw ftp wget
+		dw ftp wget chat
 
 SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
 UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
