@@ -1,5 +1,5 @@
 ********************************************************************
-* TERM - 6551 Device Descriptor
+* Term - 6551 Device Descriptor
 *
 * $Id$
 *
@@ -7,7 +7,7 @@
 * Comment
 * ------------------------------------------------------------------
 
-         nam   TERM
+         nam   Term
          ttl   6551 Device Descriptor
 
 * Disassembled 98/08/23 21:16:50 by Disasm v1.6 (C) 1988 by RML
@@ -56,7 +56,7 @@ rev      set   $00
          fcb   $00        Extended type
 initsize equ   *
 
-name     fcs   /TERM/
+name     fcs   /Term/
 mgrnam   fcs   /SCF/
 drvnam   fcs   /sc6551/
 
