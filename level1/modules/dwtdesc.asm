@@ -35,7 +35,7 @@ rev      set   $04
          fcb   UPDAT.    	mode byte
          ENDC
          fcb   HW.Page    extended controller address
-         fdb   $FF00+TNum      physical controller address
+         fdb   $FF00+Addr      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.SCF     device type:0=scf,1=rbf,2=pipe,3=scf
          IFNE  UTIL
@@ -81,11 +81,10 @@ name     fcs   /Term/
          ELSE
 		 IFNE  UTIL
 name     fcc   /U/
-         fcb   176+TNum-8
 		 ELSE
 name     fcc   /T/
-         fcb   176+TNum
          ENDC
+         fcb   176+TNum
          ENDC
 mgrnam   fcs   /SCF/
 drvnam   fcs   /scdwt/
