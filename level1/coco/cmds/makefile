@@ -19,8 +19,6 @@ CMDS		= asm attr backup binex build calldbg cmp cobbler copy cputype \
 CMDS_D2		= basic09 runb gfx inkey syscall copy del echo format \
 		merge os9gen prompt tmode
 
-CMDS_DW		= dw ftp wget
-
 SUBS		= gfx inkey syscall
 ALLOBJS		= $(CMDS) $(CMDS_D2) $(CMDS_DW) $(SUBS)
 
@@ -49,9 +47,6 @@ showobjs:
 
 showobjs_d2:
 	@$(ECHO) $(CMDS_D2)
-
-showobjs_dw:
-	@$(ECHO) $(CMDS_DW)
 
 showallobjs:
 	@$(ECHO) $(ALLOBJS)
