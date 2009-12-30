@@ -8,7 +8,6 @@ DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
 DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
 BOOTFILE_DW3	= bootfiles/bootfile_dw3
-BOOTFILE_DW3_SERVER	= bootfiles/bootfile_dw3_server
 BOOTFILE_40D	= bootfiles/bootfile_40d
 BOOTFILE_80D	= bootfiles/bootfile_80d
 BOOTFILE_40D_50HZ	= bootfiles/bootfile_40d_50hz
@@ -20,8 +19,6 @@ DIRS		= cmds modules defs sys bootfiles
 
 CMDS		= $(shell $(CD) cmds; make showobjs)
 CMDS_D2		= $(shell $(CD) cmds; make showobjs_d2)
-CMDS_DW		= $(shell $(CD) cmds; make showobjs_dw)
-CMDS_DW_SERVER	= $(shell $(CD) cmds; make showobjs_dw_server)
 BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
 KERNEL		= $(shell $(CD) modules; make showkernel)
 SYSMODS		= $(shell $(CD) modules; make showsysmods)
@@ -35,14 +32,11 @@ DEFS		= $(shell $(CD) defs; make showobjs)
 SYSBIN		= $(shell $(CD) sys; make showbinobjs)
 SYSTEXT		= $(shell $(CD) sys; make showtextobjs)
 STARTUP		= startup
-STARTUP_DW_SERVER	= startup.dwserver
 SYSGO		= sysgo_dd
 
 PACKAGENAME	= $(DISTROVER).zip
 DSKDW3		= $(DISTROVER)_dw3.dsk
 LDSKDW3		= $(DISTRONAME)_dw3.dsk
-DSKDW3_SERVER	= $(DISTROVER)_dw3_server.dsk
-LDSKDW3_SERVER	= $(DISTRONAME)_dw3_server.dsk
 DSK360K_1	= $(DISTROVER)_40d_1.dsk
 LDSK360K_1	= $(DISTRONAME)_40d_1.dsk
 DSK360K_1_50HZ	= $(DISTROVER)_40d_1_50hz.dsk
@@ -55,8 +49,8 @@ DSK720K_50HZ	= $(DISTROVER)_80d_50hz.dsk
 LDSK720K_50HZ	= $(DISTRONAME)_80d_50hz.dsk
 TESTDSK		= test.dsk
 
-DSKS		= $(DSKDW3) $(DSKDW3_SERVER) $(DSK360K_1) $(DSK360K_1_50HZ) $(DSK360K_2) $(DSK720K) $(DSK720K_50HZ)
-LDSKS		= $(LDSKDW3) $(LDSKDW3_SERVER) $(LDSK360K_1) $(LDSK360K_1_50HZ) $(LDSK360K_2) $(LDSK720K) $(LDSK720K_50HZ)
+DSKS		= $(DSKDW3) $(DSK360K_1) $(DSK360K_1_50HZ) $(DSK360K_2) $(DSK720K) $(DSK720K_50HZ)
+LDSKS		= $(LDSKDW3) $(LDSK360K_1) $(LDSK360K_1_50HZ) $(LDSK360K_2) $(LDSK720K) $(LDSK720K_50HZ)
 
 # Make all components
 all:
@@ -137,25 +131,6 @@ $(DSKDW3):
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/$(DISTRO)/SCRIPTS
 	$(RM) $(LDSKDW3)
 	$(SOFTLINK) $@ $(LDSKDW3)
-
-$(DSKDW3_SERVER):
-	-$(RM) $@
-	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/$(CPU) Level 2"
-	$(OS9GEN) $@ -b=$(BOOTFILE_DW3_SERVER) -t=$(KERNELFILE_DW3)
-	$(MAKDIR) $@,CMDS
-	$(MAKDIR) $@,SYS
-	$(CP) modules/$(SYSGO) $@,sysgo
-	$(OS9ATTR_EXEC) $@,sysgo
-	$(CD) cmds; $(CP) $(CMDS_DW_SERVER) ../$@,CMDS
-	$(foreach file, $(CMDS_DW_SERVER), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
-	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
-	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
-	$(CPL) $(STARTUP_DW_SERVER) $@,startup
-	$(OS9ATTR_TEXT) $@,startup
-	$(RM) $(LDSKDW3_SERVER)
-	$(SOFTLINK) $@ $(LDSKDW3_SERVER)
 
 $(DSK360K_1):
 	-$(RM) $@

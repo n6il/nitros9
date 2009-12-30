@@ -67,7 +67,7 @@ start    	equ   	*
          	lbra  	Init
          	lbra  	Read
          	lbra  	Write
-         	lbra  	GetStt
+         	lbra  	GetStat
          	lbra  	SetStat
 	 	
 
@@ -691,25 +691,9 @@ TimedSlp	andcc 	#^Intmasks  ; enable IRQs
 *    B  = error code 
 *
 
-GetStt
-* advertise our GetStt code to the server
-         pshs  a,y,u
-         ldb   V.PORT+1,u
-         exg   a,b
-         pshs  d
-         lda   #OP_SERGETSTAT
-         pshs  a
-         leax  ,s
-         ldy   #$0003
-         IFGT  LEVEL-1
-         ldu   <D.DWSubAddr
-         ELSE
-         ldu   >D.DWSubAddr
-         ENDC
-         jsr   6,u                    
-         leas  3,s
-         puls  a,y,u
-
+GetStat
+         ldb   #OP_SERGETSTAT
+                bsr    SendStat
 		clrb    			; default to no error...
 			pshs  	cc,dp  		; save IRQ/Carry status,system DP
            
@@ -751,6 +735,27 @@ GetComSt   	cmpa  	#SS.ComSt
            	sta   	R$B,x		; set 6551 ACIA style DCD/DSR status in caller's [B]
            	puls  	cc,dp,pc	; restore Carry status, system DP, return			
 
+* A = Function Code
+* B = OP_SERGETSTAT or OP_SERSETSTAT
+SendStat
+* advertise our GetStt code to the server
+         pshs  a,y,u
+         leas  -3,s
+         leax  ,s
+         stb   ,x
+         sta   2,x
+         ldb   V.PORT+1,u
+         stb   1,x
+         ldy   #$0003
+         IFGT  LEVEL-1
+         ldu   <D.DWSubAddr
+         ELSE
+         ldu   >D.DWSubAddr
+         ENDC
+         jsr   6,u                    
+         leas  3,s
+         puls  a,y,u,pc
+
 *************************************************************************         
 * SetStat
 *
@@ -765,35 +770,24 @@ GetComSt   	cmpa  	#SS.ComSt
 *  
 * also needs much work
 SetStat  
-         pshs  y,u
-         ldb   V.PORT+1,u
-         exg   a,b
-         pshs  d
-         lda   #OP_SERSETSTAT
-         pshs  a
-         leax  ,s
-         ldy   #$0003
+         ldb   #OP_SERSETSTAT
+         bsr   SendStat
+         cmpa  #SS.ComSt
+         bne   donebad
+         leax  PD.OPT,y
+         ldy   #OPTCNT
          IFGT  LEVEL-1
          ldu   <D.DWSubAddr
          ELSE
          ldu   >D.DWSubAddr
          ENDC
-         jsr   6,u                    
-* check for error?
-         leas  1,s
-         puls  d
-         cmpb  #SS.ComSt
-         bne   donebad
-         ldx   ,s			get Y (path descriptor) from stack
-         leax  PD.OPT,x
-         ldy   #OPTCNT
          jsr   6,u
 done
          clrb
-         puls  y,u,pc
+         rts
 donebad  comb
          ldb   #E$UnkSVc
-         puls  y,u,pc
+         rts
           
          emod
 eom      equ   *

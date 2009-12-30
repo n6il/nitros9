@@ -31,31 +31,6 @@ BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3
 
-# NitrOS-9 disk bootfile to allow booting from DriveWire 3 server
-# minimum bootfile without graphics console support
-BOOTFILE_DW3_SERVER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
-		$(MD)/rbf.mn \
-		$(MD)/dw3.sb \
-		$(MD)/rbdw3.dr \
-		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
-		$(MD)/scf.mn \
-		$(MD)/vtio.dr \
-		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
-		$(MD)/cowin.io $(MD)/covdg.io \
-		$(MD)/term_win80.dt \
-		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
-		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
-		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
-		$(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
-		$(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
-		$(MD)/t7_scdwt.dd \
-		$(MD)/u0_scdwt.dd $(MD)/u1_scdwt.dd $(MD)/u2_scdwt.dd \
-		$(MD)/u3_scdwt.dd $(MD)/u4_scdwt.dd $(MD)/u5_scdwt.dd \
-		$(MD)/u6_scdwt.dd \
-		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
-		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3
-
 # NitrOS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -109,7 +84,7 @@ BOOTFILE_80D_50HZ	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_50hz $(MD)/clock2_soft
 
-BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d bootfile_80d_50hz bootfile_dw3 bootfile_dw3_server
+BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d bootfile_80d_50hz bootfile_dw3
 KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw3
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
@@ -131,9 +106,6 @@ bootfile_80d_50hz: $(BOOTFILE_80D_50HZ) $(DEPENDS)
 
 bootfile_dw3: $(BOOTFILE_DW3) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_DW3)>$@
-
-bootfile_dw3_server: $(BOOTFILE_DW3_SERVER) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_DW3_SERVER)>$@
 
 # Kernels
 kernel_1773: $(KERNEL_1773) $(DEPENDS)
