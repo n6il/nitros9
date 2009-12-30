@@ -29,7 +29,6 @@ DIRS		= cmds modules defs sys bootfiles
 
 CMDS		= $(shell $(CD) cmds; make showobjs)
 CMDS_D2		= $(shell $(CD) cmds; make showobjs_d2)
-CMDS_DW		= $(shell $(CD) cmds; make showobjs_dw)
 BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
 KERNEL		= $(shell $(CD) modules; make showkernel)
 SYSMODS		= $(shell $(CD) modules; make showsysmods)
@@ -97,8 +96,6 @@ $(DSKDW3COCO1):
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
 	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
-	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
@@ -153,8 +150,6 @@ $(DSKDW3COCO2):
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
 	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
-	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
