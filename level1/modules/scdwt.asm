@@ -68,7 +68,7 @@ start    	equ   	*
          	lbra  	Read
          	lbra  	Write
          	lbra  	GetStt
-         	lbra  	SetStt
+         	lbra  	SetStat
 	 	
 
 ***********************************************************************
@@ -514,6 +514,7 @@ IRQPutCh   	ldx     RxBufPut,u	; point X to the data buffer
 			cmpa	V.QUIT,u
 			bne		store
 send@		lda		V.LPRC,u
+                        beq             IRQExit
 			os9		F$Send 
 			bra		IRQExit
  
@@ -690,7 +691,26 @@ TimedSlp	andcc 	#^Intmasks  ; enable IRQs
 *    B  = error code 
 *
 
-GetStt		clrb    			; default to no error...
+GetStt
+* advertise our GetStt code to the server
+         pshs  a,y,u
+         ldb   V.PORT+1,u
+         exg   a,b
+         pshs  d
+         lda   #OP_SERGETSTAT
+         pshs  a
+         leax  ,s
+         ldy   #$0003
+         IFGT  LEVEL-1
+         ldu   <D.DWSubAddr
+         ELSE
+         ldu   >D.DWSubAddr
+         ENDC
+         jsr   6,u                    
+         leas  3,s
+         puls  a,y,u
+
+		clrb    			; default to no error...
 			pshs  	cc,dp  		; save IRQ/Carry status,system DP
            
         	ldx   	PD.RGS,y	; caller's register stack pointer
@@ -744,26 +764,37 @@ GetComSt   	cmpa  	#SS.ComSt
 *    B  = error code 
 *  
 * also needs much work
-SetStt   
-Close    cmpa  #SS.Close		; close the device?
-         bne   L0173
-         lda   #OP_NOP	
+SetStat  
+         pshs  y,u
+         ldb   V.PORT+1,u
+         exg   a,b
+         pshs  d
+         lda   #OP_SERSETSTAT
          pshs  a
-         ldy   #$0001
          leax  ,s
-         IFGT  Level-1
+         ldy   #$0003
+         IFGT  LEVEL-1
          ldu   <D.DWSubAddr
          ELSE
          ldu   >D.DWSubAddr
          ENDC
+         jsr   6,u                    
+* check for error?
+         leas  1,s
+         puls  d
+         cmpb  #SS.ComSt
+         bne   donebad
+         ldx   ,s			get Y (path descriptor) from stack
+         leax  PD.OPT,x
+         ldy   #OPTCNT
          jsr   6,u
-         puls  a,pc
-
-
-L0173    comb
+done
+         clrb
+         puls  y,u,pc
+donebad  comb
          ldb   #E$UnkSVc
-         rts
-
+         puls  y,u,pc
+          
          emod
 eom      equ   *
          end
