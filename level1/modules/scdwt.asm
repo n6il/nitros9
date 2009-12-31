@@ -12,6 +12,9 @@
 *          2009/12/28  Boisy G. Pitre
 * Modified so that F$STime is called if we get an error on calling
 * F$VIRQ (which means the clock module has not be initialized)
+*
+*          2009/12/31  Boisy G. Pitre
+* Fixed crash in Init where F$Link failure wouldn't clean up stack
 
          	nam   	scdwt
          	ttl   	CoCo DriveWire Virtual Serial Driver
@@ -95,11 +98,13 @@ Term     	equ   	*
 			ELSE
 			ldx   	>D.DWStat
 			ENDC
+                        beq     tell
 ; cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
 ;			leax    DW.StatTbl,x
 			clr		a,x				;clear out
 
 			* tell server
+tell
 			lda     #OP_SERTERM ; load command
 			pshs   	a      		; command store on stack
 			leax    ,s     		; point X to stack 
@@ -112,7 +117,7 @@ Term     	equ   	*
 			ELSE
 			ldu   	>D.DWSubAddr
 			ENDC
-			
+	                beq     nosub		
     		jsr     6,u      	; call DWrite
 
             puls    u
@@ -124,7 +129,13 @@ Term     	equ   	*
     		beq		DumpVIRQ	;no more ports, lets bail
     		clrb
 			rts
-			
+
+nosub
+                         puls u
+                        leas 2,s
+                        bsr  ReleaseMem
+                        rts  			
+
 ; no more ports open... tear down ISR
 DumpVIRQ   	
 			IFGT    Level-1
@@ -156,6 +167,7 @@ ReleaseMem
 			ELSE
 			ldu     >D.DWStat
 			ENDC
+                        beq     Term.Err
 			ldd     #$0100
 			os9     F$SRtMem
 			ldd     #$0000
@@ -232,7 +244,7 @@ Init		equ		*
          	puls  	x
          	stx   	<D.Proc
          	ENDC
-         	lbcs   	InitEx
+         	lbcs   	InitEx2
          	IFGT  	Level-1
          	sty   	<D.DWSubAddr
          	ELSE
@@ -346,6 +358,9 @@ IRQok
     		leas	2,s				; clean dw args off stack (leave port mode)
     		
 InitEx		equ		*
+			puls	a,pc
+InitEx2
+                puls    u
 			puls	a,pc
 
 ; drivewire info
