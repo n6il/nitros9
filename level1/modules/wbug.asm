@@ -79,9 +79,9 @@ start
                os9       F$Link
                bcs       ex@
                IFGT      Level-1
-			   sty       <D.DWSUB
+			   sty       <D.DWSubAddr
 			   ELSE
-			   sty       >D.DWSUB
+			   sty       >D.DWSubAddr
                ENDC
 * install F$Debug system call
                leay      SvcTbl,pcr
@@ -140,9 +140,9 @@ cmn         pshs      cc
 			   ENDC
                pshs      u
                IFGT      Level-1
-			   ldu       <D.DWSUB
+			   ldu       <D.DWSubAddr
 			   ELSE
-			   ldu       >D.DWSUB
+			   ldu       >D.DWSubAddr
                ENDC
 			   jsr       ,u					initialize I/O
 			   puls      u
@@ -167,9 +167,9 @@ mainloop
                leax      combuff,u           point to comm buffer
                pshs      u
                IFGT      Level-1
-			   ldu       <D.DWSUB
+			   ldu       <D.DWSubAddr
 			   ELSE
-			   ldu       >D.DWSUB
+			   ldu       >D.DWSubAddr
                ENDC
 l@
 			   ldy       #24
@@ -315,9 +315,9 @@ l@             adda      ,x+				add up
 			   ldy       #24			   
                pshs      u
                IFGT      Level-1
-			   ldu       <D.DWSUB
+			   ldu       <D.DWSubAddr
 			   ELSE
-			   ldu       >D.DWSUB
+			   ldu       >D.DWSubAddr
                ENDC
 			   jsr       6,u				write it out
 			   puls      u,pc
