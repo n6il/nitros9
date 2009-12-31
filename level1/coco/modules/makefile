@@ -43,9 +43,10 @@ SCF		= scf.mn \
 		nil.dd p_scbbp.dd p_scdwp.dd pipe.dd ssp.dd \
 		term_scbbt.dt term_sc6551.dt t1_scbbt.dd t2_sc6551.dd t3_sc6551.dd \
 		term32.dt term51.dt \
-		scdwt.dr term_scdwt.dt t0_scdwt.dd \
-                t1_scdwt.dd t2_scdwt.dd t3_scdwt.dd \
-                t4_scdwt.dd t5_scdwt.dd t6_scdwt.dd  
+		scdwt.dr term_scdwt.dt t0_scdwt.dd t1_scdwt.dd t2_scdwt.dd \
+		t3_scdwt.dd t4_scdwt.dd t5_scdwt.dd t6_scdwt.dd t7_scdwt.dd \
+		u0_scdwt.dd u1_scdwt.dd u2_scdwt.dd u3_scdwt.dd u4_scdwt.dd \
+		u5_scdwt.dd u6_scdwt.dd
 
 PIPE		= pipeman.mn \
 		piper.dr \
@@ -143,28 +144,52 @@ d2_80d.dd: rb1773desc.asm
 
 # DriveWire 3 SCF descriptors
 term_scdwt.dt: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTERM=1 -aTNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTERM=1 -aAddr=1 -aTNum=1
 
 t0_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=0 -aTNum=0
 
 t1_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=1 -aTNum=1
 
 t2_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=2 -aTNum=2
 
 t3_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=3 -aTNum=3
 
 t4_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=4
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=4 -aTNum=4
 
 t5_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=5
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=5 -aTNum=5
 
 t6_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTNum=6
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=6 -aTNum=6
+
+t7_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=7 -aTNum=7
+
+u0_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=8 -aUTIL=1 -aTNum=0
+
+u1_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=9 -aUTIL=1 -aTNum=1
+
+u2_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=10 -aUTIL=1 -aTNum=2
+
+u3_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=11 -aUTIL=1 -aTNum=3
+
+u4_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=12 -aUTIL=1 -aTNum=4
+
+u5_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=13 -aUTIL=1 -aTNum=5
+
+u6_scdwt.dd: dwtdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=14 -aUTIL=1 -aTNum=6
 
 # DriveWire 3 RBF descriptors
 ddx0.dd: dwdesc.asm
