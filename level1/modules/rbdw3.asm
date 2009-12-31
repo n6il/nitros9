@@ -24,6 +24,11 @@
 *
 *   3      2009/03/09  Boisy G. Pitre
 * Added checks for size after reading as noted by Darren A's email.
+*
+*   4      2009/12/31  Boisy G. Pitre
+* Fixed a crash in Term by adding a check for DWSubAddr of $0000 
+* (possible if Init fails due to subroutine module not being in
+*  memory and I$Detach calls Term)
 
          nam   rbdw3
          ttl   DriveWire 3 driver
@@ -40,7 +45,7 @@ NumDrvs  set   4
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
-edition  set   3
+edition  set   4
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -74,18 +79,22 @@ start    bra   Init
 Term
 * Send OP_TERM to the server
          clrb				clear Carry
-         pshs  a,cc			then push CC on stack
+         pshs  cc			then push CC on stack
          lda   #OP_TERM
-         leax  1,s
-         sta   ,x
+         pshs  a
+         leax  ,s
          ldy   #$0001
          IFGT  LEVEL-1
          ldu   <D.DWSubAddr
          ELSE
          ldu   >D.DWSubAddr
          ENDC
+* Fix crash in certain cases
+         beq   no@
+         orcc  #IntMasks
          jsr   6,u
-         puls  a,cc,pc
+no@      puls  a
+         puls  cc,pc
 
 * Init
 *
