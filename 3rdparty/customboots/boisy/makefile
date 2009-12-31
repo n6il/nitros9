@@ -5,7 +5,7 @@ vpath %.asm ..:$(LEVEL2)/cmds:$(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/bas
 DEPENDS		= ./makefile
 
 DSK 		= test.dsk
-DISTDIR		= $(LEVEL2)/coco3_6309
+DISTDIR		= $(LEVEL2)/coco3
 CD		= $(DISTDIR)/cmds
 MD		= $(DISTDIR)/modules
 DSKS		= $(DSK)
