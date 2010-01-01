@@ -49,7 +49,7 @@ MName	fcs	/Krn/
 	IFNE	H6309
 	fcc	/www.katvixen.com/
 	fcc	/www.katvixen.com/
-	fcc	/www.katvixen./
+	fcc	/www.kat/
 	ELSE	
 	fcc	/www.kat/
 	ENDC	
