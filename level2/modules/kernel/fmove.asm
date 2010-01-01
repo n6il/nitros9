@@ -13,6 +13,12 @@
 *
 * Error:  CC = C bit set; B = error code
 *
+* 2009/12/31 - Modified 6809 version so that it does not use the stack
+* while MMU is in used... this addresses a crash that occurred when the
+* bootfile was too small, causing the process descriptor to be allocated
+* in the $AXXX range, and as a result, the process stack pointer would get
+* switched out when $FFA5-$FFA6 was written and the stack would disappear.
+*
          IFEQ  H6309
 L0A01    clrb
          rts
@@ -140,35 +146,55 @@ L0B89    cmpd  #$0040
 L0B84    std   $0F,s
          puls  y
          orcc  #IntMasks
+         lda   $0E,s  +++
          sty   >$FFA5
+***** NO STACK USE BETWEEN HERE.....
+		 tfr   d,y    +++
          andb  #$07
          beq   L0B99
 L0B92    lda   ,x+
          sta   ,u+
          decb     
          bne   L0B92       
-L0B99    ldb   $0E,s
-         lsrb
-         lsrb       
-         lsrb       
+L0B99
+         tfr   y,d    +++
+*         ldb   $0E,s  ---
+*         lsrb        ---
+*         lsrb        ---
+*         lsrb        ---
+         lsra        +++
+         lsra        +++
+         lsra        +++
          beq   L0BBC
-         pshs  b    
+*         pshs  b      ---  
          exg   x,u  
-L0BA4    pulu  y,b,a
-         std   ,x    
-         sty   $02,x
-         pulu  y,b,a 
-         std   $04,x
-         sty   $06,x
-         leax  $08,x    
-         dec   ,s    
-         bne   L0BA4
-         leas  $01,s
+L0BA4
+*         pulu  y,b,a  ---
+*         std   ,x     ---
+*         sty   $02,x  ---
+*         pulu  y,b,a  ---
+*         std   $04,x  ---
+*         sty   $06,x  ---
+*         leax  $08,x  ---
+*         dec   ,s     ---
+*         bne   L0BA4  ---
+*         leas  $01,s  ---
+		 pulu  y      +++
+		 sty   ,x++   +++ 
+		 pulu  y      +++
+		 sty   ,x++   +++
+		 pulu  y      +++
+ 		 sty   ,x++   +++
+		 pulu  y      +++
+		 sty   ,x++   +++
+		 deca         +++
+		 bne   L0BA4  +++
          exg   x,u
 L0BBC    ldy   <D.SysDAT
          lda   $0B,y
          ldb   $0D,y       
          std   >$FFA5
+***** AND HERE...........
          puls  cc   
          ldd   $0E,s 
          subd  $0C,s
