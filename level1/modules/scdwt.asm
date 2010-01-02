@@ -14,7 +14,7 @@
 * F$VIRQ (which means the clock module has not be initialized)
 *
 *          2009/12/31  Boisy G. Pitre
-* Fixed crash in Init where F$Link failure wouldn't clean up stack
+* Fixed crash in Init where F$Link failure would not clean up stack
 
          	nam   	scdwt
          	ttl   	CoCo DriveWire Virtual Serial Driver
@@ -33,23 +33,17 @@ edition  	set   	1
 * Device memory area: offset from U
          	org   	V.SCF      	;V.SCF: free memory for driver to use
 
-* port status variables...
-* none yet
-FlowCtrl	rmb		1			;flow control flags
-
-regWbuf    	rmb   	2			;substitute for regW
-
 * input buffer redesign to support multiball, used per instance
 * heavily borrowed from sc6551
-RxDatLen   rmb   1              ;current length of data in Rx buffer
-RxBufSiz   rmb   1              ;Rx buffer size
-RxBufEnd   rmb   2              ;end of Rx buffer
-RxBufGet   rmb   2              ;Rx buffer output pointer
-RxBufPut   rmb   2              ;Rx buffer input pointer
-RxGrab     rmb   1              ;bytes to grab in multiread
-RxBufPtr   rmb   2              ;pointer to Rx buffer
-RxBufDSz   equ   256-.          ;default Rx buffer gets remainder of page...
-RxBuff     rmb   RxBufDSz       ;default Rx buffer
+RxDatLen	rmb		1              ;current length of data in Rx buffer
+RxBufSiz	rmb		1              ;Rx buffer size
+RxBufEnd	rmb		2              ;end of Rx buffer
+RxBufGet	rmb		2              ;Rx buffer output pointer
+RxBufPut	rmb		2              ;Rx buffer input pointer
+RxGrab		rmb		1              ;bytes to grab in multiread
+RxBufPtr	rmb		2              ;pointer to Rx buffer
+RxBufDSz	equ		256-.          ;default Rx buffer gets remainder of page...
+RxBuff		rmb		RxBufDSz       ;default Rx buffer
 
 memsize     equ   	.
 
@@ -73,7 +67,6 @@ start    	equ   	*
          	lbra  	GetStat
          	lbra  	SetStat
 	 	
-
 ***********************************************************************
 * Term
 *
@@ -112,12 +105,12 @@ tell
     
             pshs    u
 
-			IFGT  Level-1
+			IFGT	Level-1
 			ldu   	<D.DWSubAddr
 			ELSE
 			ldu   	>D.DWSubAddr
 			ENDC
-	                beq     nosub		
+			beq     nosub		
     		jsr     6,u      	; call DWrite
 
             puls    u
@@ -131,10 +124,10 @@ tell
 			rts
 
 nosub
-                         puls u
-                        leas 2,s
-                        bsr  ReleaseMem
-                        rts  			
+			puls	u
+			leas	2,s
+			bsr		ReleaseMem
+			rts  			
 
 ; no more ports open... tear down ISR
 DumpVIRQ   	
@@ -167,7 +160,7 @@ ReleaseMem
 			ELSE
 			ldu     >D.DWStat
 			ENDC
-                        beq     Term.Err
+			beq     Term.Err
 			ldd     #$0100
 			os9     F$SRtMem
 			ldd     #$0000
@@ -269,7 +262,7 @@ already
 			os9     F$SRqMem
 			tfr     u,x
 			puls    u
-			lbcs    InitEx
+			bcs		InitEx
 			IFGT    Level-1
 			stx     <D.DWStat
 			ELSE
@@ -348,7 +341,7 @@ IRQok
 			leax    ,s     			; point X to stack 
 			ldy     #3          	; # of bytes to send
 			
-			IFGT  Level-1
+			IFGT	Level-1
 			ldu   	<D.DWSubAddr
 			ELSE
 			ldu   	>D.DWSubAddr
@@ -360,7 +353,7 @@ IRQok
 InitEx		equ		*
 			puls	a,pc
 InitEx2
-                puls    u
+			puls    u
 			puls	a,pc
 
 ; drivewire info
@@ -379,7 +372,7 @@ IRQMulti3   anda    #$1F		; mask first 5 bits, a is now port #+1
   					
            	stb		RxGrab,u	; else replace with room left in our buffer
   			
-           	* also limit to end of buffer
+           	; also limit to end of buffer
 IRQM06		ldd		RxBufEnd,u	; end addr of buffer
 			subd	RxBufPut,u	; subtract current write pointer, result is # bytes left going forward in buff.
 
@@ -388,20 +381,20 @@ IRQM05		cmpb	RxGrab,u	; compare b (room left) to grab bytes
 			
 			stb		RxGrab,u	; else set grab to room left
 			
-			* send multiread req
+			; send multiread req
 IRQM03		puls    a			; port # is on stack
 			ldb		RxGrab,u
 
 			pshs	u
 						
-			* setup DWsub command
+			; setup DWsub command
 			pshs	d			; (a port, b bytes)
 			lda     #OP_SERREADM ; load command
 			pshs   	a      		; command store on stack
 			leax    ,s     		; point X to stack 
 			ldy     #3          ; 3 bytes to send
     
-			IFGT  Level-1
+			IFGT	Level-1
 			ldu   	<D.DWSubAddr
 			ELSE
 			ldu   	>D.DWSubAddr
@@ -415,16 +408,16 @@ IRQM03		puls    a			; port # is on stack
     		clra				; 0 in high byte		
     		tfr		d,y			; set # bytes for DW
     		
-    		ldx    RxBufPut,x	; point X to insert position in this port's buffer
-    		* receive response
+    		ldx		RxBufPut,x	; point X to insert position in this port's buffer
+    		; receive response
     		jsr     3,u    		; call DWRead
-			* handle errors?
+			; handle errors?
 			
 			
 			puls	u
 			ldb		RxGrab,u	; our grab bytes
  
-			* set new RxBufPut
+			; set new RxBufPut
 			ldx 	RxBufPut,u	; current write pointer
 			abx					; add b (# bytes) to RxBufPut
 			cmpx  	RxBufEnd,u 	; end of Rx buffer?
@@ -432,7 +425,7 @@ IRQM03		puls    a			; port # is on stack
 			ldx   	RxBufPtr,u 	; get Rx buffer start address
 IRQM04   	stx   	RxBufPut,u 	; set new Rx data laydown pointer
 
-			* set new RxDatLen
+			; set new RxDatLen
 			ldb		RxDatLen,u
 			addb	RxGrab,u
 			stb		RxDatLen,u	; store new value
@@ -440,14 +433,14 @@ IRQM04   	stx   	RxBufPut,u 	; set new Rx data laydown pointer
 			bra     CkSuspnd
 			
 IRQMulti			
-           	* initial grab bytes
+           	; initial grab bytes
            	stb		RxGrab,u	
            	
-  			* limit server bytes to bufsize - datlen
+  			; limit server bytes to bufsize - datlen
   			ldb		RxBufSiz,u	; size of buffer
            	subb	RxDatLen,u	; current bytes in buffer
            	bne		IRQMulti3	; continue, we have some space in buffer
-  			* no room in buffer
+  			; no room in buffer
   			tstb
   			bne		CkSuspnd
   			bra		IRQExit
@@ -458,14 +451,14 @@ IRQSvc		equ		*
 			pshs  	cc,dp 		; save system cc,DP
 			orcc	#IntMasks	; mask interrupts
 			
-			* mark VIRQ handled (note U is pointer to our VIRQ packet in DP)
+			; mark VIRQ handled (note U is pointer to our VIRQ packet in DP)
 			lda   	Vi.Stat,u	; VIRQ status register
 			anda  	#^Vi.IFlag 	; clear flag in VIRQ status register
 			sta   	Vi.Stat,u	; save it...
 			
-			* poll server for incoming serial data
+			; poll server for incoming serial data
  			
-			* send request
+			; send request
 			lda     #OP_SERREAD ; load command
 			pshs   	a      		; command store on stack
 			leax    ,s     		; point X to stack 
@@ -478,7 +471,7 @@ IRQSvc		equ		*
 			ENDC
     		jsr     6,u      	; call DWrite
     		
-    		* receive response
+    		; receive response
     		leas	-1,s		; one more byte to fit response
 			leax    ,s   		; point X to stack head
 			ldy     #2    		; 2 bytes to retrieve
@@ -487,7 +480,7 @@ IRQSvc		equ		*
 			leas    2,s     	; error, cleanup stack 2
 			bra		IRQExit2	; don't reset error count on the way out
 			
-			* process response	
+			; process response	
 IRQSvc2
      		ldd     ,s++     	; pull returned status byte into A,data into B (set Z if zero, N if multiread)
   			beq   	IRQExit  	; branch if D = 0 (nothing to do)
@@ -529,30 +522,30 @@ IRQPutCh   	ldx     RxBufPut,u	; point X to the data buffer
 			cmpa	V.QUIT,u
 			bne		store
 send@		lda		V.LPRC,u
-                        beq             IRQExit
+			beq     IRQExit
 			os9		F$Send 
 			bra		IRQExit
  
 store
-			* store our data byte
+			; store our data byte
 			sta    	,x+     	; store and increment buffer pointer
         
-			* adjust RxBufPut	
+			; adjust RxBufPut	
 			cmpx  	RxBufEnd,u 	; end of Rx buffer?
 			blo   	IRQSkip1	; no, go keep laydown pointer
 			ldx   	RxBufPtr,u 	; get Rx buffer start address
 IRQSkip1   	stx   	RxBufPut,u 	; set new Rx data laydown pointer
 
-			* increment RxDatLen
+			; increment RxDatLen
 			inc		RxDatLen,u
 
 
-  			* check if we have a process waiting for data	
+  			; check if we have a process waiting for data	
 CkSuspnd   	lda   	<V.WAKE,u  	; V.WAKE?
 			beq   	IRQExit   	; no
 			clr 	<V.WAKE,u	; clear V.WAKE
 			
-			* wake up waiter for read
+			; wake up waiter for read
 			IFEQ  	Level-1
 			ldb   	#S$Wake
 			os9   	F$Send
@@ -580,7 +573,6 @@ IRQExit2  	puls  	cc,dp,pc	; restore interrupts cc,dp, return
 * Exit:
 *    CC = carry set on error
 *    B  = error code
-*
 * 
 Write    	equ   	*
          	pshs	a			; character to send on stack
@@ -600,17 +592,26 @@ WriteExit 	puls	a,x,pc		; clean stack, return
 
 	
 *************************************************************************************
-* Read - my crazy attempt #4
-
+* Read
+*
+* Entry:
+*    Y  = address of path descriptor
+*    U  = address of device memory area
+*
+* Exit:
+*    A  = character read
+*    CC = carry set on error
+*    B  = error code
+*
 Read    	equ  	*
 			pshs  	cc,dp       ; save IRQ/Carry status, system DP
 
-ReadChr		orcc	#$50		; mask interrupts
+ReadChr		orcc	#IntMasks	; mask interrupts
 			
 			lda   	RxDatLen,u 	; get our Rx buffer count
 			beq   	ReadSlp 	; no data, go sleep while waiting for new Rx data...
 			
-			* we have data waiting
+			; we have data waiting
 			deca				; one less byte in buffer
 			sta   	RxDatLen,u 	; save new Rx data count
 			
@@ -622,7 +623,7 @@ ReadChr		orcc	#$50		; mask interrupts
 			ldx   	RxBufPtr,u 	; get Rx buffer start address
 ReadChr1   	stx   	RxBufGet,u	; set new Rx data pickup pointer
 			
-			* return to caller
+			; return to caller
 			puls  	cc,dp,pc   	; recover IRQ/Carry status, system DP, return with character in A
 
 ReadSlp		equ		*
@@ -643,20 +644,20 @@ ReadSlp2   	lda   	>D.Proc    	; process descriptor address MSB
            	orb   	#Suspend
            	stb   	P$State,x 	; suspend
            	ENDC
-           	lbsr	Sleep1		; sleep level 2 style
+           	bsr		Sleep1		; sleep level 2 style
            	ENDC
            	
-           	* we have been awakened..
+           	; we have been awakened..
            	
-           	* check for signals
+           	; check for signals
            	ldx   	>D.Proc		; process descriptor address
            	ldb   	P$Signal,x 	; pending signal for this process?
            	beq   	ChkState  	; no, go check process state...
            	cmpb  	#S$Intrpt  	; (interrupt only)
-           	lbls  	ErrExit    	; yes, go do it...
+           	bls  	ErrExit    	; yes, go do it...
 
 ChkState   	equ   	*
-			* have we been condemned to die?
+			; have we been condemned to die?
            	IFNE  	H6309
           	tim   	#Condem,P$State,x
           	ELSE
@@ -665,8 +666,8 @@ ChkState   	equ   	*
            	ENDC
            	bne   	PrAbtErr 	; yes, go do it...
            	
-           	* check that our waiter byte was cleared by ISR instance
-			lda		<V.WAKE,u	; our waiter byte
+           	; check that our waiter byte was cleared by ISR instance
+			tst		<V.WAKE,u	; our waiter byte
 			beq		ReadChr		; 0 = its our turn, go get a character 
            	bra   	ReadSlp		; false alarm, go back to sleep
 
@@ -705,9 +706,8 @@ TimedSlp	andcc 	#^Intmasks  ; enable IRQs
 *    CC = carry set on error
 *    B  = error code 
 *
-
 GetStat
-		clrb    			; default to no error...
+			clrb    			; default to no error...
 			pshs  	cc,dp  		; save IRQ/Carry status,system DP
            
         	ldx   	PD.RGS,y	; caller's register stack pointer
@@ -717,7 +717,7 @@ GetStat
         	cmpa  	#SS.Ready
         	bne   	Advertise	; next check
            	
-        	* SS.Ready
+        	; SS.Ready
         	lda   	RxDatLen,u	; get Rx data length
         	beq   	NRdyErr    	; none, go report error
         	sta   	R$B,x		; set Rx data available in caller's [B]
@@ -729,11 +729,12 @@ NRdyErr		ldb  	#E$NotRdy
 UnSvcErr   	ldb   	#E$UnkSvc
            	bra   	ErrExit		; return error code			
 			
-* We advertise all of our SERGETSTAT calls (except SS.Ready) to the server
+; We advertise all of our SERGETSTAT calls (except SS.Ready) to the server
 Advertise
-         ldb   #OP_SERGETSTAT
-                bsr    SendStat
+			ldb		#OP_SERGETSTAT
+			bsr		SendStat
 
+; Note: Here we could somehow obtain the size of the terminal window from the server
 GetScSiz   	cmpa  	#SS.ScSiz
            	bne   	GetComSt	; next check
            	ldu   	PD.DEV,y
@@ -746,33 +747,33 @@ GetScSiz   	cmpa  	#SS.ScSiz
            	puls  	cc,dp,pc	; restore Carry status, system DP, return
 
 GetComSt   	cmpa  	#SS.ComSt
-           	lbne  	UnSvcErr	; no, we have no more answers, report error
-           	ldd   	FlowCtrl,u	; flow control info
+           	bne  	UnSvcErr	; no, we have no more answers, report error
+           	ldd   	#$0000		; not used, return $0000
            	std   	R$Y,x
-           	clra                ; default to DCD and DSR enabled
-           	sta   	R$B,x		; set 6551 ACIA style DCD/DSR status in caller's [B]
+           	sta   	R$B,x
            	puls  	cc,dp,pc	; restore Carry status, system DP, return			
 
+* Advertise Stat Code to server
 * A = Function Code
 * B = OP_SERGETSTAT or OP_SERSETSTAT
 SendStat
 * advertise our GetStt code to the server
-         pshs  a,y,u
-         leas  -3,s
-         leax  ,s
-         stb   ,x
-         sta   2,x
-         ldb   V.PORT+1,u
-         stb   1,x
-         ldy   #$0003
-         IFGT  LEVEL-1
-         ldu   <D.DWSubAddr
-         ELSE
-         ldu   >D.DWSubAddr
-         ENDC
-         jsr   6,u                    
-         leas  3,s
-         puls  a,y,u,pc
+			pshs	a,y,u
+			leas	-3,s
+			leax	,s
+			stb		,x
+			sta		2,x
+			ldb		V.PORT+1,u
+			stb		1,x
+			ldy		#$0003
+			IFGT	LEVEL-1
+			ldu		<D.DWSubAddr
+			ELSE
+			ldu		>D.DWSubAddr
+			ENDC
+			jsr		6,u                    
+			leas	3,s
+			puls	a,y,u,pc
 
 *************************************************************************         
 * SetStat
@@ -785,28 +786,27 @@ SendStat
 * Exit:
 *    CC = carry set on error
 *    B  = error code 
-*  
-* also needs much work
+*
 SetStat  
-         ldb   #OP_SERSETSTAT
-         bsr   SendStat
-         cmpa  #SS.ComSt
-         bne   donebad
-         leax  PD.OPT,y
-         ldy   #OPTCNT
-         IFGT  LEVEL-1
-         ldu   <D.DWSubAddr
-         ELSE
-         ldu   >D.DWSubAddr
-         ENDC
-         jsr   6,u
+			ldb		#OP_SERSETSTAT
+			bsr		SendStat
+			cmpa	#SS.ComSt
+			bne		donebad
+			leax	PD.OPT,y
+			ldy		#OPTCNT
+			IFGT	LEVEL-1
+			ldu		<D.DWSubAddr
+			ELSE
+			ldu		>D.DWSubAddr
+			ENDC
+			jsr		6,u
 done
-         clrb
-         rts
-donebad  comb
-         ldb   #E$UnkSVc
-         rts
+			clrb
+			rts
+donebad		comb
+			ldb		#E$UnkSVc
+			rts
           
-         emod
-eom      equ   *
-         end
+			emod
+eom			equ		*
+			end
