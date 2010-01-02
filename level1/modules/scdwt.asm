@@ -707,8 +707,6 @@ TimedSlp	andcc 	#^Intmasks  ; enable IRQs
 *
 
 GetStat
-         ldb   #OP_SERGETSTAT
-                bsr    SendStat
 		clrb    			; default to no error...
 			pshs  	cc,dp  		; save IRQ/Carry status,system DP
            
@@ -717,7 +715,7 @@ GetStat
         	beq   	GSExitOK 	; SCF devices never return EOF
            
         	cmpa  	#SS.Ready
-        	bne   	GetScSiz	; next check
+        	bne   	Advertise	; next check
            	
         	* SS.Ready
         	lda   	RxDatLen,u	; get Rx data length
@@ -731,6 +729,11 @@ NRdyErr		ldb  	#E$NotRdy
 UnSvcErr   	ldb   	#E$UnkSvc
            	bra   	ErrExit		; return error code			
 			
+* We advertise all of our SERGETSTAT calls (except SS.Ready) to the server
+Advertise
+         ldb   #OP_SERGETSTAT
+                bsr    SendStat
+
 GetScSiz   	cmpa  	#SS.ScSiz
            	bne   	GetComSt	; next check
            	ldu   	PD.DEV,y
