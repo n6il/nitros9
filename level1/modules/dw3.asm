@@ -168,10 +168,10 @@ InitEx
 ; ***********************************************************************
 ; Interrupt handler  - Much help from Darren Atkinson
 			
-IRQMulti3 anda    #$1F		; mask first 5 bits, a is now port #+1
-		deca				; we pass +1 to use 0 for no data
-          pshs    a			; save port #
-         	cmpb	RxGrab,u	; compare room in buffer to server's byte
+IRQMulti3 anda    	#$0F		; mask first 4 bits, a is now port #+1
+		  deca					; we pass +1 to use 0 for no data
+          pshs    	a			; save port #
+          cmpb		RxGrab,u	; compare room in buffer to server's byte
           bhs		IRQM06		; room left >= server's bytes, no problem
                     
           stb		RxGrab,u	; else replace with room left in our buffer
@@ -234,7 +234,7 @@ IRQM04   	stx   	RxBufPut,u 	; set new Rx data laydown pointer
           addb	RxGrab,u
           stb		RxDatLen,u	; store new value
           
-          bra     CkSuspnd
+          lbra     CkSuspnd    ; had to lbra
           
 IRQMulti			
           ; initial grab bytes
@@ -246,8 +246,8 @@ IRQMulti
           bne		IRQMulti3	; continue, we have some space in buffer
           ; no room in buffer
           tstb
-          bne		CkSuspnd
-          bra		IRQExit
+          lbne		CkSuspnd   ;had to lbra
+          lbra		IRQExit    ;had to lbra
           
 
 ; **** IRQ ENTRY POINT
@@ -288,10 +288,20 @@ IRQSvc    equ		*
 IRQSvc2
           ldd     ,s++     	; pull returned status byte into A,data into B (set Z if zero, N if multiread)
           beq   	IRQExit  	; branch if D = 0 (nothing to do)
+          						; future - handle backing off on polling interval
 
+          	          						
 ; save back D on stack and build our U
           pshs    d
-          anda    #$1F		; mask first 5 bits, a is now port #+1
+          * mode switch on bits 7+6 of A: 00 = vserial, 01 = system, 10 = wirebug?, 11 = ?							
+		  anda		#$C0	; mask last 6 bits
+		  beq		mode00	; virtual serial mode
+          					; future - handle other modes
+		  bra		IRQExit ; for now, bail
+		  
+mode00	  lda		,s		; restore A		  
+          anda    #$0F		; mask first 4 bits, a is now port #+1
+          beq	  IRQCont	; if we're here with 0 in the port, its not really a port # (can we jump straight to status?)
           deca				; we pass +1 to use 0 for no data
 ; here we set U to the static storage area of the device we are working with
           IFGT    Level-1
@@ -309,12 +319,24 @@ IRQCont
           clrb
           tfr     d,u
 
-          ldd     ,s++     	; pull returned status byte into A,data into B (set Z if zero, N if multiread)
+          lda     ,s     	; orig status byte into A
 
-          bmi		IRQMulti	; branch for multiread
+          * multiread/status flag is in bit 4 of A
+          anda		#$10
+          beq		IRQPutch	; branch if multiread not set
+ 
+          * all 0s in port means status, anything else is multiread
+          lda		,s		;get original A again
+          anda    	#$0F	;mask bit 7-4
+          puls		d
+          beq		dostat	;port # all 0, this is a status response
+          bra		IRQMulti ;its not all 0, this is a multiread
 
+dostat		bra		IRQExit ; not implemented yet
+          
 ; put byte B in port As buffer - optimization help from Darren Atkinson       
-IRQPutCh   ldx     RxBufPut,u	; point X to the data buffer
+IRQPutCh  	puls		d		; get original A and B off the stack
+			ldx     RxBufPut,u	; point X to the data buffer
         
 ; process interrupt/quit characters here
 ; note we will have to do this in the multiread (ugh)
