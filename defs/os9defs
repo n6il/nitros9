@@ -366,7 +366,10 @@ SS.CDSig       RMB       1
 SS.CDRel       RMB       1
                ENDC      
 
-
+* scdwt defined
+SS.PortSta     EQU       SS.CDSta
+SS.PortSig     EQU       SS.CDSig
+SS.PortRel     EQU       SS.CDRel
 
                ORG       $A0
 *
