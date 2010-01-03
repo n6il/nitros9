@@ -14,13 +14,16 @@ CMDS		= $(CD)/shell
 SYSGO		= $(MD)/sysgo_dd
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/krn
+KERNEL		= $(MD)/rel_80 $(MD)/boot_dw3 $(MD)/krn
 BOOTFILE	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/dw3.sb \
 		$(MD)/scf.mn \
 		$(MD)/scdwt.dr $(MD)/term_scdwt.dt \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
-		$(SYSGO) $(CD)/shell_21
+		$(SYSGO) $(CD)/shell_21 \
+		$(CD)/mdir $(CD)/pmap $(CD)/dmem $(CD)/dump
+#		$(MD)/rbf.mn \
+#		$(MD)/rbdw3.dr $(MD)/ddx0.dd \
 
 SUPPORTFILES	= startup
 

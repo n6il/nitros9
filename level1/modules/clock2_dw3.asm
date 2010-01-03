@@ -65,8 +65,13 @@ UpdLeave puls  b,x,y,u,pc
 
 
 Init     
-* We do not bother checking if D.DWSubAddr is $0000 because it will always be since
-* we are the first module to use the subroutine module.
+* Check if subroutine already linked
+         IFGT    Level-1
+         ldx     <D.DWSubAddr
+         ELSE
+         ldx     >D.DWSubAddr
+         ENDC
+         bne     leave
          IFGT    Level-1
          ldx     <D.Proc
          pshs    x
@@ -86,6 +91,7 @@ Init
          sty     >D.DWSubAddr
          ENDC
          jmp     ,y			call initialization routine
+leave    rts
 
          emod          
 eom      equ   *         
