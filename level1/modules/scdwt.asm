@@ -160,6 +160,22 @@ Init		equ		*
 			puls	u				; restore u
       	
 already
+; tell DW we have a new port opening (port mode already on stack)
+			ldb		<V.PORT+1,u		; get our port #			
+			lda     #OP_SERINIT 	; command 
+			pshs   	d      			; command + port # on stack
+			leax    ,s     			; point X to stack 
+			ldy     #3          	; # of bytes to send
+			
+    pshs u
+			IFGT	Level-1
+			ldu   	<D.DWSubAddr
+			ELSE
+			ldu   	>D.DWSubAddr
+			ENDC
+    		jsr     6,u      		; call DWrite
+ puls u
+    		
 ; set up local buffer
 			ldb   	#RxBufDSz      	; default Rx buffer size
 			leax  	RxBuff,u       	; default Rx buffer address
@@ -170,22 +186,17 @@ already
 			abx  					; add buffer size to buffer start..
 			stx   	RxBufEnd,u     	; save Rx buffer end address
 
-; tell DW we have a new port opening (port mode already on stack)
-			ldb		<V.PORT+1,u		; get our port #			
-			lda     #OP_SERINIT 	; command 
-			pshs   	d      			; command + port # on stack
-			leax    ,s     			; point X to stack 
-			ldy     #3          	; # of bytes to send
-			
-			IFGT	Level-1
-			ldu   	<D.DWSubAddr
-			ELSE
-			ldu   	>D.DWSubAddr
-			ENDC
-    		jsr     6,u      		; call DWrite
-    		
-    		leas	2,s				; clean dw args off stack (leave port mode)
-    		
+                        tfr     u,d (A = high page of statics)
+                        puls    b
+    		        puls    b (B = port number)
+                        IFGT    Level-1
+                        ldx     <D.DWStat
+                        ELSE
+                        ldx     >D.DWStat
+                        ENDC
+; cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
+;			leax    DW.StatTbl,x
+    	                sta	b,x
 InitEx		equ		*
 			puls	a,pc
 InitEx2
@@ -437,6 +448,7 @@ SetStat
                 clrb
 		rts
 
+ IFEQ 1
 SetPortSig      cmpa   #SS.PortSig
                 bne    SetPortRel
                 lda    PD.CPR,y       current process ID
@@ -450,6 +462,7 @@ SetPortRel      cmpa   #SS.PortRel
                 bsr    ReleaSig
                 clrb
                 rts
+ ENDC
 donebad		comb
 		ldb	#E$UnkSVc
 		rts

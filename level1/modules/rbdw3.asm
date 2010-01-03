@@ -128,6 +128,13 @@ Init2    sta   DD.TOT,x			invalidate drive tables
          decb
          bne   Init2
 
+* Check if subroutine module has already been linked
+         IFGT  LEVEL-1
+         ldu   <D.DWSubAddr
+         ELSE
+         ldu   >D.DWSubAddr
+         ENDC
+         bne   InitEx2
 * Link to subroutine module
          clra
          leax  name+2,pcr
@@ -151,8 +158,10 @@ InitEx
          IFGT  Level-1
          puls  a,x
          stx   <D.Proc
+InitEx2
          rts
          ELSE
+InitEx2
          puls  a,pc
          ENDC
 
