@@ -124,7 +124,11 @@ Write    equ   *
          pshs  d
          leax  ,s
          ldy   #$0002
+         IFGT  Level-1
+         ldu   <D.DWSubAddr
+         ELSE
          ldu   >D.DWSubAddr
+         ENDC
          jsr   6,u
          puls  d,pc
 
@@ -183,10 +187,13 @@ Close    cmpa  #SS.Close	close the device?
          pshs  a
          ldy   #$0001
          leax  ,s
+         IFGT  Level-1
+         ldu   <D.DWSubAddr
+         ELSE
          ldu   >D.DWSubAddr
+         ENDC
          jsr   6,u
          puls  a,pc
-
 
 Read     comb  
          ldb   #E$BMode
