@@ -59,7 +59,7 @@ GetTime  pshs  u,y,x,b
 	 jsr   6,u
 * Consider the following optimization
          ldx   #D.Year
-	 ldy   #$0005
+	 ldy   #$0006
          jsr   3,u
 UpdLeave puls  b,x,y,u,pc
 

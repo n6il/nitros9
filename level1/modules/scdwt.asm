@@ -15,6 +15,9 @@
 *
 *          2009/12/31  Boisy G. Pitre
 * Fixed crash in Init where F$Link failure would not clean up stack
+*
+*          2010/01/03  Boisy G. Pitre
+* Moved IRQ stuff into DW3 subroutine module
 
          	nam   	scdwt
          	ttl   	CoCo DriveWire Virtual Serial Driver
@@ -116,9 +119,6 @@ nosub
 *    B  = error code
 *
             
-* Default time packet
-DefTime     dtb
-
 Init		equ		*
 
 			lda		IT.PAR,y
