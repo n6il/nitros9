@@ -403,7 +403,7 @@ GetComSt   	cmpa  	#SS.ComSt
 * B = OP_SERGETSTAT or OP_SERSETSTAT
 SendStat
 * advertise our GetStt code to the server
-			pshs	a,y,u
+			pshs	a,y,x,u
 			leas	-3,s
 			leax	,s
 			stb		,x
@@ -418,7 +418,7 @@ SendStat
 			ENDC
 			jsr		6,u                    
 			leas	3,s
-			puls	a,y,u,pc
+			puls	a,y,x,u,pc
 
 *************************************************************************         
 * SetStat
