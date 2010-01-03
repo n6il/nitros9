@@ -26,7 +26,7 @@ rev       set   $01
 * irq
 IRQPckt   fcb     $00,$01,$0A     ;IRQ packet Flip(1),Mask(1),Priority(1) bytes
 * Default time packet
-DefTime   dtb
+DefTime   fcb     109,12,31,23,59,59
 
 name      fcs   /dw3/
 
