@@ -63,6 +63,22 @@ E_CRC      equ   $F3            Same as NitrOS-9 E$CRC
 
 * DW Globals Page Definitions (must be 256 bytes max)
            org   $00
-DW.StatTbl rmb   31             room for 31 ports
+DW.StatTbl rmb   15             page pointers for terminal device static storage
 DW.VIRQPkt rmb   5
 
+
+* SCF Multi Terminal Driver Definitions
+
+         	org   	        V.SCF      	;V.SCF: free memory for driver to use
+PortSigPID      rmb             1              ;process ID for CD signal
+PortSigSig      rmb             1              ;CD signal code
+RxDatLen	rmb		1              ;current length of data in Rx buffer
+RxBufSiz	rmb		1              ;Rx buffer size
+RxBufEnd	rmb		2              ;end of Rx buffer
+RxBufGet	rmb		2              ;Rx buffer output pointer
+RxBufPut	rmb		2              ;Rx buffer input pointer
+RxGrab		rmb		1              ;bytes to grab in multiread
+RxBufPtr	rmb		2              ;pointer to Rx buffer
+RxBufDSz	equ		256-.          ;default Rx buffer gets remainder of page...
+RxBuff		rmb		RxBufDSz       ;default Rx buffer
+SCFDrvMemSz     equ             .
