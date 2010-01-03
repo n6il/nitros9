@@ -242,7 +242,7 @@ IRQMulti
           
           ; limit server bytes to bufsize - datlen
           ldb		RxBufSiz,u	; size of buffer
-          subb	RxDatLen,u	; current bytes in buffer
+          subb		RxDatLen,u	; current bytes in buffer
           bne		IRQMulti3	; continue, we have some space in buffer
           ; no room in buffer
           tstb
@@ -319,24 +319,22 @@ IRQCont
           clrb
           tfr     d,u
 
-          lda     ,s     	; orig status byte into A
-
+          puls		d
+          
           * multiread/status flag is in bit 4 of A
-          anda		#$10
+          bita		#$10
           beq		IRQPutch	; branch if multiread not set
  
           * all 0s in port means status, anything else is multiread
-          lda		,s		;get original A again
-          anda    	#$0F	;mask bit 7-4
-          puls		d
+          
+          bita    	#$0F	;mask bit 7-4
           beq		dostat	;port # all 0, this is a status response
           bra		IRQMulti ;its not all 0, this is a multiread
 
 dostat		bra		IRQExit ; not implemented yet
           
 ; put byte B in port As buffer - optimization help from Darren Atkinson       
-IRQPutCh  	puls		d		; get original A and B off the stack
-			ldx     RxBufPut,u	; point X to the data buffer
+IRQPutCh  	ldx     RxBufPut,u	; point X to the data buffer
         
 ; process interrupt/quit characters here
 ; note we will have to do this in the multiread (ugh)
