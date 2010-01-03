@@ -282,12 +282,12 @@ IRQSvc    equ		*
           jsr     3,u    		; call DWRead
           beq     IRQSvc2		; branch if no error
           leas    2,s     	; error, cleanup stack 2
-          bra		IRQExit2	; don't reset error count on the way out
+          lbra		IRQExit2	; don't reset error count on the way out
 
           ; process response	
 IRQSvc2
           ldd     ,s++     	; pull returned status byte into A,data into B (set Z if zero, N if multiread)
-          beq   	IRQExit  	; branch if D = 0 (nothing to do)
+          lbeq   	IRQExit  	; branch if D = 0 (nothing to do)
           						; future - handle backing off on polling interval
 
           	          						
@@ -331,8 +331,28 @@ IRQCont
           beq		dostat	;port # all 0, this is a status response
           bra		IRQMulti ;its not all 0, this is a multiread
 
-dostat		bra		IRQExit ; not implemented yet
-          
+
+		 * in status events, databyte is split, 4bits status, 4bits port #          
+dostat	 	bitb	#$F0	;mask low bits
+			bne		IRQExit	;we only implement code 0000, term
+			* set u to port #
+			IFGT    Level-1
+			ldx   	<D.DWStat
+			ELSE
+			ldx   	>D.DWStat
+			ENDC
+			lda     b,x
+			bne		statcont		; if A is 0, then this device is not active, so exit
+			bra     IRQExit
+statcont	clrb
+          	tfr     d,u
+			lda		<V.LPRC,u
+			beq		IRQExit ; no last process, bail
+			*ldb		#S$Peer
+			ldb		#0	; sending 0 works
+			os9		F$Send	; send signal, don't think we can do anything about an error result anyway.. so
+			bra		CkSuspnd  ; do we need to go check suspend?
+
 ; put byte B in port As buffer - optimization help from Darren Atkinson       
 IRQPutCh  	ldx     RxBufPut,u	; point X to the data buffer
         
