@@ -298,7 +298,7 @@ ReadSlp2   	lda   	>D.Proc    	; process descriptor address MSB
            	ldx   	>D.Proc		; process descriptor address
            	ldb   	P$Signal,x 	; pending signal for this process?
            	beq   	ChkState  	; no, go check process state...
-           	cmpb  	#S$Intrpt  	; (interrupt only)
+           	cmpb  	#S$Peer  	; (S$Peer or lower)
            	bls  	ErrExit    	; yes, go do it...
 
 ChkState   	equ   	*
@@ -336,6 +336,7 @@ Sleep0     	ldx   	#$0			; sleep till ISR wakes us
 Sleep1     	ldx   	#$1			; just sleep till end of slice, we are suspended (level 2)             
 TimedSlp	andcc 	#^Intmasks  ; enable IRQs
 			os9   	F$Sleep
+                clr    <V.WAKE,u
            	rts          		; return
 
 
