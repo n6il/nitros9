@@ -144,7 +144,7 @@ d2_80d.dd: rb1773desc.asm
 
 # DriveWire 3 SCF descriptors
 term_scdwt.dt: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTERM=1 -aAddr=1 -aTNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTERM=1 -aAddr=0
 
 t0_scdwt.dd: dwtdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=0 -aTNum=0
