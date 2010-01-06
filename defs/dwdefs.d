@@ -20,6 +20,7 @@ OP_NOP      equ    $00		No-Op
 OP_RESET1   equ    $FE		Server Reset
 OP_RESET2   equ    $FF		Server Reset
 OP_RESET3   equ    $F8		Server Reset
+OP_DWINIT	equ	   'Z		DriveWire dw3 init/OS9 boot
 OP_TIME     equ    '#	 	Current time requested
 OP_INIT     equ    'I		Init routine called
 OP_READ     equ    'R		Read one sector

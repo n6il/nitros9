@@ -111,6 +111,22 @@ loop@     clr     ,x+
           decb
           bne     loop@
 
+* send OP_DWINIT
+         ; setup DWsub command
+         pshs		u
+         lda     	#OP_DWINIT 	; load command
+         pshs   	a      		; command store on stack
+         leax    	,s     		; point X to stack 
+         ldy     	#1          ; 1 byte to send
+          IFGT	Level-1
+          ldu   	<D.DWSubAddr
+          ELSE
+          ldu   	>D.DWSubAddr
+          ENDC
+          jsr     6,u      	; call DWrite
+         leas		1,s			; clean 1 DWsub arg from stack 
+         puls		u
+         
 * install ISR
 InstIRQ
           IFGT    Level-1
