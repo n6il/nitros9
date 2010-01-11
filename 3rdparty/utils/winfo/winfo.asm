@@ -4,6 +4,7 @@
 *
 * 11/22/87 - Edition #1 - for OS9 Level II V02.00.01
 * 12/22/95 - Edition #2 - for ALL versions of OS-9 by Alan DeKok
+* 01/20/2010 - Edition #3 - for vtio instead of cc3io Willard Goosey
 *
 
          ifp1
@@ -17,7 +18,7 @@ revision set   1
          mod   Eom,Mname,Typelang,Attrev,Start,Datend
 
 mname    fcs   /WInfo/
-edition  fcb   2 edition
+edition  fcb   3 edition
 
          org   0
          use   winfodefs
@@ -240,7 +241,7 @@ not.l3   ldy   #2 2 bytes to get
 
 * we got the requested device...now see if its vtio
 
-         ldb   #5 5 bytes to compare
+         ldb   #vtiolen  N bytes to compare
          leax  vtio,pcr get addr of 'VTIO'
          leay  devname,u get addr of the driver nam
          os9   F$CmpNam see if they're the same
@@ -733,3 +734,4 @@ smllbuff equ   *
 
          emod
 eom      equ   *
+
