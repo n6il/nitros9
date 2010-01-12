@@ -55,10 +55,10 @@ SCF		= scf.mn \
 		w8.dw w9.dw w10.dw w11.dw w12.dw w13.dw w14.dw w15.dw \
 		v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw \
-		scdwt.dr term_scdwt.dt t0_scdwt.dd t1_scdwt.dd t2_scdwt.dd t3_scdwt.dd \
-                t4_scdwt.dd t5_scdwt.dd t6_scdwt.dd t7_scdwt.dd \
-		u0_scdwt.dd u1_scdwt.dd u2_scdwt.dd u3_scdwt.dd \
-                u4_scdwt.dd u5_scdwt.dd u6_scdwt.dd
+		scdwn.dr term_scdwn.dt n0_scdwn.dd n1_scdwn.dd n2_scdwn.dd n3_scdwn.dd \
+                n4_scdwn.dd n5_scdwn.dd n6_scdwn.dd n7_scdwn.dd \
+		n8_scdwn.dd n9_scdwn.dd n10_scdwn.dd n11_scdwn.dd \
+                n12_scdwn.dd n13_scdwn.dd n14_scdwn.dd
 
 PIPE		= pipeman.mn pipeman_named.mn \
 		piper.dr \
@@ -195,53 +195,53 @@ ddr0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=192 -aDD=1
 
 # DriveWire 3 SCF descriptors
-term_scdwt.dt: dwtdesc.asm
+term_scdwn.dt: scdwndesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTERM=1 -aAddr=0
 
-t0_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=0 -aTNum=0
+n0_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=0
 
-t1_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=1 -aTNum=1
+n1_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=1
 
-t2_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=2 -aTNum=2
+n2_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=2
 
-t3_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=3 -aTNum=3
+n3_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=3
 
-t4_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=4 -aTNum=4
+n4_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=4
 
-t5_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=5 -aTNum=5
+n5_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=5
 
-t6_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=6 -aTNum=6
+n6_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=6
 
-t7_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=7 -aTNum=7
+n7_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=7
 
-u0_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=8 -aUTIL=1 -aTNum=0
+n8_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=8 -aUTIL=1
 
-u1_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=9 -aUTIL=1 -aTNum=1
+n9_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=9 -aUTIL=1
 
-u2_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=10 -aUTIL=1 -aTNum=2
+n10_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=10 -aUTIL=1
 
-u3_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=11 -aUTIL=1 -aTNum=3
+n11_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=11 -aUTIL=1
 
-u4_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=12 -aUTIL=1 -aTNum=4
+n12_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=12 -aUTIL=1
 
-u5_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=13 -aUTIL=1 -aTNum=5
+n13_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=13 -aUTIL=1
 
-u6_scdwt.dd: dwtdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=14 -aUTIL=1 -aTNum=6
+n14_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=14 -aUTIL=1
 
 # DriveWire 3 RBF descriptors
 ddx0.dd: dwdesc.asm

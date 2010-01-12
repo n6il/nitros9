@@ -61,9 +61,9 @@ BOOTFILE_DW3_COCO1	= $(MD)/ioman \
 		$(MD)/rbdw3.dr $(MD)/dw3_coco1.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
-		$(MD)/scdwt.dr $(MD)/term_scdwt.dt \
-		$(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
-		$(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwn.dr $(MD)/term_scdwn.dt \
+		$(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd $(MD)/n3_scdwn.dd \
+		$(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd $(MD)/n6_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
@@ -76,9 +76,9 @@ BOOTFILE_COVDG_DW3_COCO1	= $(MD)/ioman \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
-		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
-		$(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
-		$(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwn.dr $(MD)/n0_scdwn.dd \
+		$(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd $(MD)/n3_scdwn.dd \
+		$(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd $(MD)/n6_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
@@ -89,9 +89,9 @@ BOOTFILE_DW3_COCO2	= $(MD)/ioman \
 		$(MD)/rbdw3.dr $(MD)/dw3.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
-		$(MD)/scdwt.dr $(MD)/term_scdwt.dt \
-                $(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
-                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwn.dr $(MD)/term_scdwn.dt \
+                $(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd $(MD)/n3_scdwn.dd \
+                $(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd $(MD)/n6_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
@@ -104,9 +104,9 @@ BOOTFILE_COVDG_DW3_COCO2	= $(MD)/ioman \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
-		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
-                $(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
-                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwn.dr $(MD)/n0_scdwn.dd \
+                $(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd $(MD)/n3_scdwn.dd \
+                $(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd $(MD)/n6_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
@@ -131,9 +131,9 @@ BOOTFILE_COHR_DW3_COCO1	= $(MD)/ioman \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
-		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
-                $(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
-                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwn.dr $(MD)/n0_scdwn.dd \
+                $(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd $(MD)/n3_scdwn.dd \
+                $(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd $(MD)/n6_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
@@ -146,9 +146,9 @@ BOOTFILE_COHR_DW3_COCO2	= $(MD)/ioman \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
-		$(MD)/scdwt.dr $(MD)/t0_scdwt.dd \
-                $(MD)/t1_scdwt.dd $(MD)/t2_scdwt.dd $(MD)/t3_scdwt.dd \
-                $(MD)/t4_scdwt.dd $(MD)/t5_scdwt.dd $(MD)/t6_scdwt.dd \
+		$(MD)/scdwn.dr $(MD)/n0_scdwn.dd \
+                $(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd $(MD)/n3_scdwn.dd \
+                $(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd $(MD)/n6_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
