@@ -84,7 +84,7 @@ krn krnp2:
 
 # Special cases
 cogrf.io: cowin.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aGrfInt=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aCoGrf=1
 
 rb1773_scii_ff74.dr:    rb1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1
