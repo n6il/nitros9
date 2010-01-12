@@ -1,5 +1,5 @@
 ********************************************************************
-* DWTDesc - Drivewire Virtual Serial Device Descriptor
+* scdwdesc - Drivewire Network Device Descriptor
 *
 * $Id$
 *
@@ -18,9 +18,12 @@
 *
 * This descriptor has slightly different defaults, intended to be used as 
 * the channel for the DriveWire utilities
+*
+*   0.6    2010/01/12  Boisy G. Pitre
+* Renamed.
 
-         nam   DWTDesc
-         ttl   DriveWire Virtual Serial Device Descriptor
+         nam   scdwdesc
+         ttl   DriveWire network Device Descriptor
 
          ifp1  
          use   defsfile
@@ -82,15 +85,16 @@ initsize equ   *
          IFNE  TERM
 name     fcs   /Term/
          ELSE
-	 IFNE  UTIL
-name     fcc   /U/
-	 ELSE
-name     fcc   /T/
+name     fcc   /N/
+         IFGT  Addr-9
+         fcc   '1'
+         fcb   176+Addr-10
+         ELSE
+         fcb   176+Addr
          ENDC
-         fcb   176+TNum
          ENDC
 mgrnam   fcs   /SCF/
-drvnam   fcs   /scdwt/
+drvnam   fcs   /scdwn/
 
          emod  
 eom      equ   *

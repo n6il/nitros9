@@ -1,5 +1,5 @@
 ********************************************************************
-* scdwt - CoCo DriveWire Virtual Serial Driver
+* scdwn - CoCo DriveWire Network Driver
 *
 * $Id$
 *
@@ -19,8 +19,8 @@
 *          2010/01/03  Boisy G. Pitre
 * Moved IRQ stuff into DW3 subroutine module
 
-         	nam   	scdwt
-         	ttl   	CoCo DriveWire Virtual Serial Driver
+         	nam   	scdwn
+         	ttl   	CoCo DriveWire Network Driver
 
          	ifp1
          	use   	defsfile
@@ -38,7 +38,7 @@ edition  	set   	1
 
 * module info         	
          	fcb   	READ.+WRITE.	;driver access modes
-name     	fcs   	/scdwt/		;driver name
+name     	fcs   	/scdwn/		;driver name
          	fcb   	edition   	;driver edition 
 
 * dispatch calls            
