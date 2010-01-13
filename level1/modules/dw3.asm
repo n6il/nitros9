@@ -262,7 +262,7 @@ IRQMulti
           bne		IRQMulti3	; continue, we have some space in buffer
           ; no room in buffer
           tstb
-          lbne		CkSig   ;had to lbra
+          lbne		CkSSig   ;had to lbra
           lbra		IRQExit    ;had to lbra
           
 
@@ -399,11 +399,11 @@ IRQSkip1  stx   	RxBufPut,u 	; set new Rx data laydown pointer
           inc		RxDatLen,u
 
 CkSSig
-          lda           <V.SSigID,u     ; send signal on data ready?
+          lda           <SSigID,u     ; send signal on data ready?
           beq           CkSuspnd
-          ldb           <V.SSigSg,u     ; else get signal code
+          ldb           <SSigSg,u     ; else get signal code
           os9           F$Send
-          clr           <V.SSigID,u
+          clr           <SSigID,u
           bra           IRQExit
 
           ; check if we have a process waiting for data	

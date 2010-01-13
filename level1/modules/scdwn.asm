@@ -113,7 +113,7 @@ nosub
             
 Init		equ		*
 
-          lda		IT.PAR,y
+          lda	IT.PAR,y
           pshs      a				; save parity byte for later
 
 ; link to subroutine module
@@ -247,9 +247,8 @@ NotReady  comb
 Read      equ           *
 * Check to see if there is a signal-on-data-ready set for this path.
 * If so, we return a Not Ready error.
-          lda           <V.SSigID,u     data ready signal trap set up?
+          lda           <SSigID,u     data ready signal trap set up?
           bne           NotReady        yes, exit with not ready error
-
           pshs  	cc,dp       ; save IRQ/Carry status, system DP
 
 ReadChr   orcc          #IntMasks	; mask interrupts
@@ -440,7 +439,14 @@ SetStat
 		cmpa      #SS.ComSt
                 beq       comst
                 cmpa      #SS.SSig
-		bne       donebad
+		beq       ssig
+                cmpa      #SS.Relea
+                bne      donebad
+relea           lda      PD.CPR,y	get curr proc #
+                cmpa     <SSigID,u    same?
+                bne      ex
+                clr      <SSigID,u    clear process id
+ex              rts
 ssig            pshs    cc
                 orcc    #IntMasks
                 lda     PD.CPR,y        ; get curr proc #
@@ -451,7 +457,7 @@ ssig            pshs    cc
 * if here, we have data so send signal immediately
                 os9     F$Send
                 puls    cc,pc
-ssigsetup       std     <V.SSigID,u     ; save process ID & signal
+ssigsetup       std     <SSigID,u     ; save process ID & signal
                 puls    cc,pc
 
 comst		leax      PD.OPT,y
