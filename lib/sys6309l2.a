@@ -7,5 +7,7 @@ H6309          equ       1
                use       os9defs.a
                use       rbfdefs.a
                use       scfdefs.a
+               use       pipedefs.a
+               use       systype.a
 
                endsect
