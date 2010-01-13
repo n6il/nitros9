@@ -35,11 +35,7 @@ rev      set   $05
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
-         IFNE  UTIL
-         fcb   UPDAT.+SHARE.   	mode byte (share set to prevent multiple access on /T0)
-         ELSE
          fcb   UPDAT.    	mode byte
-         ENDC
          fcb   HW.Page    extended controller address
          fdb   $FF00+Addr      physical controller address
          fcb   initsize-*-1 initilization table size
