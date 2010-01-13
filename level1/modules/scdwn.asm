@@ -436,6 +436,8 @@ SendStat
 SetStat  
 		ldb       #OP_SERSETSTAT
 		bsr       SendStat
+		cmpa      #SS.Open
+                beq       open
 		cmpa      #SS.ComSt
                 beq       comst
                 cmpa      #SS.SSig
@@ -470,6 +472,14 @@ comst		leax      PD.OPT,y
 		jsr       6,u
           clrb
           rts
+
+open            tst     <V.PORT,u     check if this is 0 (wildcard)
+                bne     openex
+* wildcard /N device... search for free device
+openex          rts
+
+* Search for a free device
+getnextdev      
 
           IFEQ      1
 SetPortSig    

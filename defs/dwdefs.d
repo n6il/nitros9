@@ -71,8 +71,8 @@ DW.VIRQPkt rmb   5
 * SCF Multi Terminal Driver Definitions
 
          	org   	        V.SCF      	;V.SCF: free memory for driver to use
-PortSigPID      rmb             1              ;process ID for CD signal
-PortSigSig      rmb             1              ;CD signal code
+SSigID          rmb             1              ;process ID for signal on data ready
+SSigSg          rmb             1              ;signal on data ready code
 RxDatLen	rmb		1              ;current length of data in Rx buffer
 RxBufSiz	rmb		1              ;Rx buffer size
 RxBufEnd	rmb		2              ;end of Rx buffer
