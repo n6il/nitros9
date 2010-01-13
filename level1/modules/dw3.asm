@@ -250,7 +250,7 @@ IRQM04   	stx   	RxBufPut,u 	; set new Rx data laydown pointer
           addb	RxGrab,u
           stb		RxDatLen,u	; store new value
           
-          lbra     CkSuspnd    ; had to lbra
+          lbra     CkSSig    ; had to lbra
           
 IRQMulti			
           ; initial grab bytes
@@ -262,7 +262,7 @@ IRQMulti
           bne		IRQMulti3	; continue, we have some space in buffer
           ; no room in buffer
           tstb
-          lbne		CkSuspnd   ;had to lbra
+          lbne		CkSig   ;had to lbra
           lbra		IRQExit    ;had to lbra
           
 
@@ -398,6 +398,7 @@ IRQSkip1  stx   	RxBufPut,u 	; set new Rx data laydown pointer
           ; increment RxDatLen
           inc		RxDatLen,u
 
+CkSSig
           lda           <V.SSigID,u     ; send signal on data ready?
           beq           CkSuspnd
           ldb           <V.SSigSg,u     ; else get signal code
