@@ -228,6 +228,10 @@ WriteOK   clrb
 WriteExit puls      a,x,pc		; clean stack, return
 
 	
+NotReady  comb
+          ldb       #E$NotRdy
+          rts
+
 *************************************************************************************
 * Read
 *
@@ -240,10 +244,15 @@ WriteExit puls      a,x,pc		; clean stack, return
 *    CC = carry set on error
 *    B  = error code
 *
-Read    	equ  	*
+Read      equ           *
+* Check to see if there is a signal-on-data-ready set for this path.
+* If so, we return a Not Ready error.
+          lda           <V.SSigID,u     data ready signal trap set up?
+          bne           NotReady        yes, exit with not ready error
+
           pshs  	cc,dp       ; save IRQ/Carry status, system DP
 
-ReadChr	orcc      #IntMasks	; mask interrupts
+ReadChr   orcc          #IntMasks	; mask interrupts
           
           lda   	RxDatLen,u 	; get our Rx buffer count
           beq   	ReadSlp 	; no data, go sleep while waiting for new Rx data...
@@ -429,8 +438,23 @@ SetStat
 		ldb       #OP_SERSETSTAT
 		bsr       SendStat
 		cmpa      #SS.ComSt
+                beq       comst
+                cmpa      #SS.SSig
 		bne       donebad
-		leax      PD.OPT,y
+ssig            pshs    cc
+                orcc    #IntMasks
+                lda     PD.CPR,y        ; get curr proc #
+                ldx     PD.RGS,y
+                ldb     R$X+1,x         ; get user signal code
+        	tst     RxDatLen,u	; get Rx data length
+                beq     ssigsetup       ; branch if no data in buffer
+* if here, we have data so send signal immediately
+                os9     F$Send
+                puls    cc,pc
+ssigsetup       std     <V.SSigID,u     ; save process ID & signal
+                puls    cc,pc
+
+comst		leax      PD.OPT,y
 		ldy       #OPTCNT
 		IFGT      LEVEL-1
 		ldu       <D.DWSubAddr

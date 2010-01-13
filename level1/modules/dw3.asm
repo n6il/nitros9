@@ -313,7 +313,7 @@ IRQSvc2
 		  anda		#$C0	; mask last 6 bits
 		  beq		mode00	; virtual serial mode
           					; future - handle other modes
-		  bra		IRQExit ; for now, bail
+		  lbra		IRQExit ; for now, bail
 		  
 mode00	  lda		,s		; restore A		  
           anda    #$0F		; mask first 4 bits, a is now port #+1
@@ -398,9 +398,16 @@ IRQSkip1  stx   	RxBufPut,u 	; set new Rx data laydown pointer
           ; increment RxDatLen
           inc		RxDatLen,u
 
+          lda           <V.SSigID,u     ; send signal on data ready?
+          beq           CkSuspnd
+          ldb           <V.SSigSg,u     ; else get signal code
+          os9           F$Send
+          clr           <V.SSigID,u
+          bra           IRQExit
 
           ; check if we have a process waiting for data	
-CkSuspnd  lda   	<V.WAKE,u  	; V.WAKE?
+CkSuspnd
+          lda   	<V.WAKE,u  	; V.WAKE?
           beq   	IRQExit   	; no
           clr 	<V.WAKE,u	; clear V.WAKE
           
