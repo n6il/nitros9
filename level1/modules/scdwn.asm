@@ -113,9 +113,6 @@ nosub
             
 Init		equ		*
 
-          lda	IT.PAR,y
-          pshs      a				; save parity byte for later
-
 ; link to subroutine module
 ; has the link already been done?
           IFGT      Level-1
@@ -157,7 +154,7 @@ already
           lda       #OP_SERINIT         ; command 
           pshs   	d      			; command + port # on stack
           leax      ,s     			; point X to stack 
-          ldy       #3                  ; # of bytes to send
+          ldy       #2                  ; # of bytes to send
 			
           pshs u
           IFGT      Level-1
@@ -190,10 +187,10 @@ already
 ;		leax      DW.StatTbl,x
           sta       b,x
 InitEx	equ		*
-          puls      a,pc
+          rts
 InitEx2
           puls      u
-          puls      a,pc
+          rts
 
 ; drivewire info
 dw3name  	fcs  	/dw3/
@@ -443,7 +440,7 @@ SetStat
                 cmpa      #SS.SSig
 		beq       ssig
                 cmpa      #SS.Relea
-                bne      donebad
+                lbne      donebad
 relea           lda      PD.CPR,y	get curr proc #
                 cmpa     <SSigID,u    same?
                 bne      ex
@@ -473,13 +470,83 @@ comst		leax      PD.OPT,y
           clrb
           rts
 
-open            tst     <V.PORT,u     check if this is 0 (wildcard)
+* SS.Open processor
+* Entry: X=Register stack pointer
+*        Y=Path descriptor pointer
+*        U=Static memory pointer
+open            pshs    u,y
+                tst     <V.PORT+1,u     check if this is $FF00 (wildcard)
                 bne     openex
 * wildcard /N device... search for free device
-openex          rts
+                IFGT    Level-1
+                ldx   	<D.DWStat
+                ELSE
+                ldx    	>D.DWStat
+                ENDC
+; cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
+;		leax      DW.StatTbl,x
+                clrb
+next            tst     ,x+
+                beq     found
+                incb
+                cmpb    #DW.StatCnt-1
+                blt     next
+                comb
+                ldb     #E$MNF		failed to find device
+openex          puls    y,u,pc
 
-* Search for a free device
-getnextdev      
+* we have found a free device (B holds #), build name, link it, then
+* put into device table
+found
+* build name
+                leas    -4,s
+                leax    ,s
+                lda     #'N
+                sta     ,x+
+* take byte in B and turn into ASCII string at X
+                lda     #'0
+                cmpb    #9
+                bls     lo1
+lo10            subb    #10
+                bcs     hi10
+                inca
+                bra     lo10 
+hi10            addb     #10
+                sta      ,x+
+                lda      #'0
+lo1             decb
+                bmi      hi1
+                inca
+                bra      lo1
+hi1             
+* terminate with CR
+                ldb      #13
+                std      ,x
+* switch to system process descriptor
+                IFGT     Level-1
+                ldd      <D.Proc    Get current process dsc. ptr
+                pshs     d          Save on stack
+                ldd      <D.SysPrc  Get system process dsc. ptr
+                std      <D.Proc    Make it the current process
+                ENDC
+* link device
+                leax     2,s
+                lda      #Devic+Objct get module type
+                os9      F$Link     try & link it
+                IFGT     Level-1
+                puls     y
+* switch back to current process descriptor
+                sty      <D.Proc    Make it the current process
+                ENDC
+                leas     4,s        restore stack
+                bcs      openex
+* if no error on link, manipulate device table
+* Got a device descriptor, put into device table & save window # into static
+                ldy      ,s         get path descriptor pointer
+                ldx      PD.DEV,y   get pointer to device table
+                stu      V$DESC,x   save pointer to descriptor into it
+                os9      F$UnLink   unlink it from system map
+                bra      openex
 
           IFEQ      1
 SetPortSig    
@@ -499,7 +566,7 @@ SetPortRel
           rts
           ENDC
 donebad	comb
-		ldb       #E$UnkSVc
+		ldb       #E$UnkSvc
 		rts
           
 ReleaSig  pshs    cc             save IRQ enable status
