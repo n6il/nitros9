@@ -99,8 +99,8 @@ LEVEL2		= $(NITROS9DIR)/level2
 %.r: %.c
 	$(CC) $(CFLAGS) $< -r
 
-#%.l: %.r
-#	$(MERGE) $^ > $@
+%.l: %.a
+	$(ASM) $< -o=$@
 
 %: %.r
 	$(LINKER) $(LFLAGS) $^ -o=$@
