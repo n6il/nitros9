@@ -435,6 +435,8 @@ SetStat
 		bsr       SendStat
 		cmpa      #SS.Open
                 beq       open
+		cmpa      #SS.Close
+                beq       ex
 		cmpa      #SS.ComSt
                 beq       comst
                 cmpa      #SS.SSig
