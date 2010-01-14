@@ -223,25 +223,25 @@ n7_scdwn.dd: scdwndesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=7
 
 n8_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=8 -aUTIL=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=8
 
 n9_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=9 -aUTIL=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=9
 
 n10_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=10 -aUTIL=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=10
 
 n11_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=11 -aUTIL=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=11
 
 n12_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=12 -aUTIL=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=12
 
 n13_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=13 -aUTIL=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=13
 
 n14_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=14 -aUTIL=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=14
 
 # DriveWire 3 RBF descriptors
 ddx0.dd: dwdesc.asm
