@@ -7,7 +7,7 @@
 * Comment
 * ------------------------------------------------------------------
 *   0.3    2009/12/??  Aaron Wolfe
-* ADded SHARE. bit to mode.
+* Added SHARE. bit to mode.
 *
 *   0.4    2009/12/27  Boisy G. Pitre
 * Removed SHARE. bit from mode because of tsmon issues.
@@ -35,7 +35,7 @@ rev      set   $05
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
-         fcb   UPDAT.    	mode byte
+         fcb   SHARE.+UPDAT.   	mode byte
          fcb   HW.Page    extended controller address
          fdb   $FF00+Addr      physical controller address
          fcb   initsize-*-1 initilization table size
