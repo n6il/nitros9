@@ -37,7 +37,7 @@ edition  	set   	1
          	mod   	eom,name,tylg,atrv,start,SCFDrvMemSz
 
 * module info         	
-         	fcb   	READ.+WRITE.	;driver access modes
+         	fcb   	UPDAT.+SHARE.	;driver access modes
 name     	fcs   	/scdwn/		;driver name
          	fcb   	edition   	;driver edition 
 
