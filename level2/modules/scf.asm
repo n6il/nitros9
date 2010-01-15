@@ -158,6 +158,10 @@
 *
 *  16r4    2004/07/12  Boisy G. Pitre
 * 6809 version now calls the FAST TEXT entry point of GrfDrv.
+*
+*  17      2010/01/15  Boisy G. Pitre
+* Fix for bug described in Artifact 2932883 on SF
+* Also added Level 1 conditionals for eventual backporting
 
          nam   SCF
          ttl   NitrOS-9 Level 2 Sequential Character File Manager
@@ -169,8 +173,8 @@
 
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
-rev      set   4
-edition  equ   16
+rev      set   0
+edition  equ   17
 
          mod   eom,SCFName,tylg,atrv,SCFEnt,0
 
@@ -263,13 +267,17 @@ CopyCR   sta   ,u+
          rola
          rorb
          rola
+         IFGT  Level-1
          pshs  y            Save path descriptor pointer temporarily
          ldy   <D.Proc      Get current process pointer
          ldu   <D.SysPrc    Get system process descriptor pointer
          stu   <D.Proc      Make system current process
+         ENDC
          os9   I$Attach     Attempt to attach to device name in device desc.
+         IFGT  Level-1
          sty   <D.Proc      Restore old current process pointer
          puls  y            Restore path descriptor pointer
+         ENDC
          bcs   L0111        Couldn't attach to device, detach & exit with error
          stu   PD.DV2,y     Save new output (echo) device table pointer
 *         ldu   PD.DEV,y     Get device table pointer
@@ -291,33 +299,37 @@ L00CF    ldu   V$STAT,u     Point to it's static storage
          pshs  d            Save 0 on stack
          ldx   V.PDLHd,u    Get path descriptor list header pointer
 * 05/25/93 mod - Boisy Pitre's non-sharable device patches
-         beq   Yespath      No path's open, so we know we can open it
-
-         pshs  u,x          Preserve static mem & path dsc. hdr ptrs
-         ldu   PD.DEV,y     Get device table ptr
-         ldx   V$DRIV,u     Get ptr to device driver
+* 01/15/10 mod - Boisy Pitre redoes his non-sharable device patch
+         beq   Yespath      No paths open, so we know we can open it
+* IOMan has already vetted the mode byte of the driver and the descriptor
+* and compared it to REGA of I$Open (now in PD.MOD of this current path).
+* here we know there is at least one path open for this device.
+* in order to properly support SHARE. (device exclusivity), we get the
+* mode byte for the path we are opening and see if the SHARE. bit is set.
+* if so, then we return error since we cannot have exclusivity to the device.
          IFNE  H6309
-         tim   #SHARE.,M$Mode,x Non-sharable driver?
+         tim   #SHARE.,PD.MOD,y
          ELSE
-         ldb   M$Mode,x
-         bitb  #SHARE.
+         lda   PD.MOD,y 
+         bita  #SHARE.
          ENDC
-         bne   NoShare      Yes, driver busy
-         ldx   V$DESC,u     Get ptr to device descriptor
+         bne   NoShare      
+* we now know that the path's mode doesn't have the SHARE. bit set, so 
+* we need to look at the mode of the path in the list header pointer to
+* see if ITS SHARE. bit is set (meaning it wants exclusive access to the
+* port).  If so we bail out
          IFNE  H6309
-         tim   #SHARE.,M$Mode,x Non-sharable device?
+         tim   #SHARE.,PD.MOD,x
          ELSE
-         ldb   M$Mode,x
-         bitb  #SHARE.
+         lda   PD.MOD,x 
+         bita  #SHARE.
          ENDC
-         beq   Shrble       No, check for carrier status
-NoShare  puls  u,x          Restore regs
-         leas  2,s          Eat extra stack (including good path count)
+         beq   Shrble
+NoShare  leas  2,s          Eat extra stack (including good path count)
          comb
          ldb   #E$DevBsy    Non-sharable device busy error
          bra   L0111        Go detach device & exit with error
-Shrble   puls  u,x          Restore Static mem & path dsc. ptrs
-         bra   L00E8        Check carrier status
+Shrble   bra   L00E8        Check carrier status
          
 Yespath  sty   V.PDLHd,u    Save path descriptor ptr
          bra   L00F8        Go open the path
@@ -425,7 +437,11 @@ L0182    beq   L012A        No device table, return to caller
          pshs  d,x,y        Save everything
          cmpa  V.LPRC,x     Current process same as last process using path?
          bne   L01CA        No, return
+         IFGT  Level-1
          ldx   <D.Proc      Get current process pointer
+         ELSE
+         ldx   >D.Proc      Get current process pointer
+         ENDC
          leax  P$Path,x     Point to local path table
          clra               Start path # = 0 (Std In)
 L0198    cmpb  a,x          Same path as one is process' local path list?
@@ -448,7 +464,11 @@ L0198    cmpb  a,x          Same path as one is process' local path list?
 
          bsr   L01FA        Execute driver setstat routine
          puls  y            Restore path pointer
+         IFGT  Level-1
          ldx   <D.Proc      Get current process pointer
+         ELSE
+         ldx   >D.Proc      Get current process pointer
+         ENDC
          lda   P$PID,x      Get parent process ID
          sta   ,s           Save it
          os9   F$GProcP     Get pointer to parent process descriptor
@@ -527,9 +547,14 @@ putkey   cmpa  #SS.Fill     Buffer preload?
          IFEQ  H6309
          pshs  u,y,x
          ENDC
+         IFGT  Level-1
          ldx   <D.Proc      Get current process pointer
+         ELSE
+         ldx   >D.Proc      Get current process pointer
+         ENDC
          lda   R$Y,u        Get flag byte for CR/NO CR
          pshs  a            Save it
+         IFGT  Level-1
          lda   P$Task,x     Get task number
          ldb   <D.SysTsk    Get system task
          IFNE  H6309
@@ -551,6 +576,13 @@ putkey   cmpa  #SS.Fill     Buffer preload?
          os9   F$Move       Move it
          bcs   putkey1      Exit if error
          tfr   y,d          Move number of bytes to D
+         ELSE
+loop
+         lda   ,x+
+         sta   ,u+
+         leay  -1,y
+         bne   loop
+         ENDC
          lda   ,s           Get CR flag
          bmi   putkey1      Don't want CR appended, exit
          lda   #C$CR        Get code for carriage return
@@ -566,6 +598,7 @@ L021B    ldb   #D$PSTA      Get driver entry offset for setstat
          bne   putkey       Not SS.OPT, go check buffer load
 * SS.OPT SETSTAT
          ldx   PD.PAU,y     Get current pause & page
+         IFGT  Level-1
          pshs  y,x          Preserve Path pointer & pause/page
          ldx   <D.Proc      Get current process pointer
          lda   P$Task,x     Get task number
@@ -576,6 +609,18 @@ L021B    ldb   #D$PSTA      Get driver entry offset for setstat
          os9   F$Move       Move it to caller
          puls  y,x          Restore Path pointer & page/pause status
          bcs   L01F7        Return if error from move
+         ELSE
+         pshs  x,y
+         ldx   R$X,u
+         leay  PD.OPT,y
+         ldb   #OPTCNT
+optloop
+         lda   ,x+
+         sta   ,y+
+         decb
+         bne   optloop
+         puls  x,y
+         ENDC
          IFEQ  H6309
          pshs  x
          ENDC
@@ -730,7 +775,10 @@ L0435    clrb                 Force to even page
          ldf   1,s            LSB of count on even page?
          bne   L0442          No, go on
          ince                 Make it even 256 
-L0442    lda   <D.SysTsk      Get source task number
+L0442
+         IFGT  Level-1
+         lda   <D.SysTsk      Get source task number
+         ENDC
          ELSE
          leau  d,u
          clra
@@ -738,8 +786,11 @@ L0442    lda   <D.SysTsk      Get source task number
          bne   L0442          No, go on
          inca
 L0442    pshs  d
+         IFGT  Level-1
          lda   <D.SysTsk      Get source task number
          ENDC
+         ENDC
+         IFGT  Level-1
          ldx   <D.Proc        Get destination task number
          ldb   P$Task,x
          ldx   PD.BUF,y       Get buffer pointer
@@ -749,6 +800,13 @@ L0442    pshs  d
          puls  y
          ENDC
          os9   F$Move         Move it to caller
+         ELSE
+L0443
+         lda   ,x+
+         sta   ,u+
+         leay  -1,y
+         bne   L0443
+         ENDC
 L0451    puls  pc,y,x         Restore & return
 
 * I$ReadLn entry point
@@ -770,7 +828,12 @@ L02EF    pshs  d            Save character count
 * Wait for device - Clears out V.BUSY if either Default or output devices are
 * no longer busy
 * Modifies X and A
-L0453    ldx   <D.Proc        Get current process
+L0453 
+         IFGT  Level-1
+         ldx   <D.Proc        Get current process
+         ELSE
+         ldx   >D.Proc        Get current process
+         ENDC
          lda   P$ID,x         Get it's process ID
          ldx   PD.DEV,y       Get device table pointer from our path dsc.
          bsr   L045D          Check if it's busy
@@ -793,7 +856,11 @@ L046A    ldx   V$STAT,x       Get device static storage address
          tfr   b,a            Get process # busy using device
          os9   F$IOQu         Put our process into the IO Queue
          inc   PD.MIN,y       Mark device as not mine
+         IFGT  Level-1
          ldx   <D.Proc        Get current process
+         ELSE
+         ldx   >D.Proc        Get current process
+         ENDC
          ldb   P$Signal,x     Get signal code
          lda   ,s             Get our process id # again for L046A
          beq   L046A          No signal go try again
@@ -815,7 +882,12 @@ L049F    clra                 No error & return
 * Wait for device?
 L04A2    lda   PD.PST,y       Get path status (carrier)
          bne   L04C4          If carrier was lost, hang up process
-L04A7    ldx   <D.Proc        Get current process ID
+L04A7
+         IFGT  Level-1
+         ldx   <D.Proc        Get current process ID
+         ELSE
+         ldx   >D.Proc        Get current process ID
+         ENDC
          clra
          sta   PD.MIN,y       Flag device is mine
          lda   P$ID,x         Get process ID #
@@ -894,6 +966,7 @@ L0508    pshs  d
          tfr   d,u            Move it to U
          lda   #C$CR          Put a carriage return 1 byte before start
          sta   -1,u           of write portion of buffer
+         IFGT  Level-1
          ldy   <D.Proc        Get current process pointer
          lda   P$Task,y       Get the task number
          ldb   <D.SysTsk      Get system task number
@@ -903,6 +976,12 @@ L0508    pshs  d
          puls  y
          ENDC
          os9   F$Move         Move data to buffer
+         ELSE
+L0509    lda   ,x+
+         sta   ,u+
+         leay  -1,y
+         bne   L0509
+         ENDC
          puls  y,x            Restore path descriptor pointer and data offset
 
 * at this point, we have
@@ -923,6 +1002,7 @@ L0523    ldb   PD.PAR,y     get device parity: bit 7 set = window
 
 g.raw    pshs  b,x,y,u      save length, PD, data buffer pointers
 
+         IFGT  Level-1
          lbsr  get.wptr     get window table ptr into Y
          bcs   no.wptr      do old method on error
 
@@ -966,6 +1046,7 @@ g.done   leas  1,s          kill max. count of characters to use
          stu   5,s          save old U, too
          puls  b,x,y,u      restore registers
          bra   L0544        do end-buffer checks and continue
+         ENDC
 
 no.wptr  puls  b,x,y,u      restore all registers
 
@@ -1350,6 +1431,7 @@ L03BF    leau  -1,u         Mover buffer pointer back 1 character
 L03D4    lda   PD.BSE,y     Get BSE
          lbra  L0565        Send it to driver
 
+         IFGT  Level-1
 * check PD.DTP,y and update PD.WPTR,y if it's device type $10 (grfdrv)
 get.wptr pshs  x,u
          ldu   PD.DEV,y     get device table entry
@@ -1440,6 +1522,7 @@ do.grf   sts   >WGlobal+G.GrfStk    stack pointer for GrfDrv
          stb   R$CC,s
          ENDC
          jmp   [>D.Flip1]   flip to grfdrv and execute it
+         ENDC
 
 * GrfDrv will execute function, and then call [D.Flip0] to return here. It 
 * will use an RTS to return to the code that called here in the first place
