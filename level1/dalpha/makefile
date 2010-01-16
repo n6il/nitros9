@@ -75,18 +75,18 @@ DIRS		= cmds modules defs sys bootfiles
 #modules bootfiles
 #DDIRS		= modules bootfiles defs
 
-CMDS		= $(shell $(CD) cmds; make showcocoobjs)
-BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
-KERNEL		= $(shell $(CD) modules; make showkernel)
-SYSMODS		= $(shell $(CD) modules; make showsysmods)
-CLOCKS		= $(shell $(CD) modules; make showclocks)
-RBF		= $(shell $(CD) modules; make showrbf)
-SCF		= $(shell $(CD) modules; make showscf)
-PIPE		= $(shell $(CD) modules; make showpipe)
+CMDS		= $(shell $(CD) cmds; make --no-print-directory showcocoobjs)
+BOOTTRACK	= $(shell $(CD) modules; make --no-print-directory showboottrack)
+KERNEL		= $(shell $(CD) modules; make --no-print-directory showkernel)
+SYSMODS		= $(shell $(CD) modules; make --no-print-directory showsysmods)
+CLOCKS		= $(shell $(CD) modules; make --no-print-directory showclocks)
+RBF		= $(shell $(CD) modules; make --no-print-directory showrbf)
+SCF		= $(shell $(CD) modules; make --no-print-directory showscf)
+PIPE		= $(shell $(CD) modules; make --no-print-directory showpipe)
 MODULECMDS	= $(WHICHSHELL) del echo format makdir merge os9gen prompt tmode
 
-SYS		= $(shell $(CD) sys; make showobjs)
-DEFS		= $(shell $(CD) defs; make showobjs)
+SYS		= $(shell $(CD) sys; make --no-print-directory showobjs)
+DEFS		= $(shell $(CD) defs; make --no-print-directory showobjs)
 ROOTFILES	= startup
 
 PACKAGENAME	= $(DISTROVER).zip

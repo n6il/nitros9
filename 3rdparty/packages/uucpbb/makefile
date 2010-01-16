@@ -2,12 +2,12 @@ include ../../../rules.mak
 
 DISK68	= uucpbb21_6809.dsk
 DISK63	= uucpbb21_6309.dsk
-CMDS68		= $(shell $(CD) cmds_6809; make showobjs)
-CMDS68TCAP	= $(shell $(CD) cmds_6809; make showtcapobjs) $(CMDS68)
-CMDS68WIN	= $(shell $(CD) cmds_6809; make showwinobjs) $(CMDS68)
-CMDS63		= $(shell $(CD) cmds_6309; make showobjs)
-CMDS63TCAP	= $(shell $(CD) cmds_6309; make showtcapobjs) $(CMDS63)
-CMDS63WIN	= $(shell $(CD) cmds_6309; make showwinobjs) $(CMDS63)
+CMDS68		= $(shell $(CD) cmds_6809; make --no-print-directory showobjs)
+CMDS68TCAP	= $(shell $(CD) cmds_6809; make --no-print-directory showtcapobjs) $(CMDS68)
+CMDS68WIN	= $(shell $(CD) cmds_6809; make --no-print-directory showwinobjs) $(CMDS68)
+CMDS63		= $(shell $(CD) cmds_6309; make --no-print-directory showobjs)
+CMDS63TCAP	= $(shell $(CD) cmds_6309; make --no-print-directory showtcapobjs) $(CMDS63)
+CMDS63WIN	= $(shell $(CD) cmds_6309; make --no-print-directory showwinobjs) $(CMDS63)
 CONFIG	= Devices FileServ.help Systems bin.list Dialers Parameters active distributions
 DOCS	= adduser.man aliases.doc chown.man cnvrtmail.man fileserv.man fixtext.man login.man mailrc.doc mailx.man parameters.doc postnews.man profile.doc readnews.man rmail.man rnews.man signature.doc subscribe.man uucico.man uuclean.man uucp.man uucpbb.doc uulog.man uuxqt.man whoami.man
 
