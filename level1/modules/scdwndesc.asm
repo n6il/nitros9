@@ -43,12 +43,12 @@ rev      set   $05
          fcb   $00        case:0=up&lower,1=upper only
          fcb   $01        backspace:0=bsp,1=bsp then sp & bsp
          fcb   $00        delete:0=bsp over line,1=return
-         fcb   $01        echo:0=no echo
-         fcb   $01        auto line feed:0=off
+         fcb   $00        echo:0=no echo
+         fcb   $00        auto line feed:0=off
          fcb   $00        end of line null count
          fcb   $00        pause:0=no end of page pause
          fcb   24         lines per page (not a safe assumption anymore!)
-         fcb   $7F        backspace character (on most telnet clients)
+         fcb   C$BSP      backspace character (on most telnet clients)
          fcb   C$DEL      delete line character
          fcb   C$CR       end of record character
          fcb   C$EOF      end of file character
