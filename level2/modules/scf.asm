@@ -163,6 +163,30 @@
 * Fix for bug described in Artifact 2932883 on SF
 * Also added Level 1 conditionals for eventual backporting
 
+*
+*  17      2010/01/15  Boisy G. Pitre
+* Handling of device exclusivity using the SHARE. bit has been rearchitected.
+* The '93 patch looked at the mode bytes in the descriptor and driver and
+* determined that if both were set, then only one path would be allowed to
+* be opened on the device at a time.
+* I now believe this is wrong.
+* The mode bytes in the device driver and descriptor are capability bytes.
+* They advertise what the device is capable of doing (READ, WRITE, etc) so
+* the mode bytes alone do not convey action, but merely what is possible.
+* When the user calls I$Open on a device, he passes the desired mode byte
+* in RegA and IOMan checks to make sure that all bits in that register are
+* set in the mode bytes of the driver and descriptor.  So once we get into
+* the Open call of this file manager, we know that all set bits in RegA are
+* also set in the mode bytes of the driver and descriptor.
+*
+* For SHARE., what we SHOULD be doing is checking the number of open paths
+* on the device.  If the SHARE. bit is set in RegA, then we check if a path
+* is already open and if so, return the E$DevBsy error.
+* Likewise, if SHARE. is not set in RegA, we check the path at the head of
+* the open path list, and if ITS mode byte has the SHARE. bit set, we exit
+* with E$DevBsy too.  The idea is that if the SHARE. bit is set on the newly
+* opened path or an existing path, then there can "be only one."
+
          nam   SCF
          ttl   NitrOS-9 Level 2 Sequential Character File Manager
 
