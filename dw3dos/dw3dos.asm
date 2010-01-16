@@ -48,7 +48,7 @@ E$NotRdy equ   246
          ELSE
          use   defsfile
          ENDC
-         use   ../level1/modules/dwdefs.d
+         use   ../defs/dwdefs.d
          endc  
 
 * Set up Level definition for low level read/write routines
