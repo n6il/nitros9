@@ -4,11 +4,11 @@ DSK68_FLOPPY	= multivue_6809.dsk
 DSK63_FLOPPY	= multivue_6309.dsk
 DSK68_DW3	= multivue_6809_dw3.dsk
 DSK63_DW3	= multivue_6309_dw3.dsk
-CMDS68	= $(shell $(CD) cmds_6809; make showobjs)
-CMDS63	= $(shell $(CD) cmds_6309; make showobjs)
+CMDS68	= $(shell $(CD) cmds_6809; make --no-print-directory showobjs)
+CMDS63	= $(shell $(CD) cmds_6309; make --no-print-directory showobjs)
 ICONS	= icon.demo
-SYSBIN	= $(shell $(CD) sys; make showbinobjs)
-SYSTEXT	= $(shell $(CD) sys; make showtextobjs)
+SYSBIN	= $(shell $(CD) sys; make --no-print-directory showbinobjs)
+SYSTEXT	= $(shell $(CD) sys; make --no-print-directory showtextobjs)
 DEMO	= aif.dmo
 ROOTFILES = startup
 
