@@ -55,27 +55,27 @@ L003D    rts
 
 * Open/Create entry
 Open
-Create   ldx   PD.DEV,y
-         stx   <$3B,y
-         ldu   PD.RGS,y
-         pshs  y
-         ldx   R$X,u
-         os9   F$PrsNam
-         bcs   L0038
+Create   ldx   PD.DEV,y                get device table entry
+         stx   <PD.TBL,y               save copy
+         ldu   PD.RGS,y                get caller's registers in U
+         pshs  y                       save path descriptor pointer on stack
+         ldx   R$X,u                   get device name pointer
+         os9   F$PrsNam                parse it
+         bcs   L0038                   branch if error
          lda   -1,y                    get last char
          bmi   L0059                   branch if hi bit set
          leax  ,y                      else point X at last char + 1
-         os9   F$PrsNam
-         bcc   L0038
-L0059    sty   R$X,u
+         os9   F$PrsNam                parse... better not have another slash!
+         bcc   L0038                   another slash follows, not good!
+L0059    sty   R$X,u                   save pointer past our device name back
          puls  y
          lda   #READ.
          bita  PD.MOD,y
          beq   L00A2
          ldd   #$0001
          os9   F$SRqMem                allocate buffer
-         bcs   L003D
-         stu   PD.BUF,y
+         bcs   L003D                   branch if error
+         stu   PD.BUF,y                else save off
          clrb
          bsr   L0091
 
@@ -119,17 +119,17 @@ L00C6    ldu   V$STAT,u
          clra
          clrb
          pshs  b,a
-         ldx   <V.PDLHd,u
-         bne   L00D9
-         sty   <V.PDLHd,u
+         ldx   <V.PDLHd,u              get path descriptor list head pointer
+         bne   L00D9                   branch if not empty (an open path already exists for this device)
+         sty   <V.PDLHd,u              else save this path descriptor as the head
          bra   L00E9
 L00D7    tfr   d,x
-L00D9    ldb   <$3F,x
+L00D9    ldb   <PD.PST,x               get path status in B
          bne   L00E0
-         inc   1,s                     in B on stack
-L00E0    ldd   <$3D,x
-         bne   L00D7
-         sty   <$3D,x
+         inc   1,s                     inc B on stack
+L00E0    ldd   <PD.PLP,x               get pointer to next path descriptor
+         bne   L00D7                   if not empty, branch
+         sty   <PD.PLP,x               else add this path descriptor to the tail of the list
 L00E9    lda   #$29
          pshs  a
          inc   2,s                     inc B on stack
@@ -153,39 +153,39 @@ Seek
 Delete   clra
          rts
 
-L0104    ldu   PD.DV2,y
-         beq   L010B
-         os9   I$Detach
-L010B    ldu   PD.BUF,y
-         beq   L0115
+L0104    ldu   PD.DV2,y                get output device table pointer
+         beq   L010B                   branch if empty
+         os9   I$Detach                else detach it
+L010B    ldu   PD.BUF,y                get path descriptor buffer pointer
+         beq   L0115                   branch if empty
          ldd   #$0001
-         os9   F$SRtMem
+         os9   F$SRtMem                else return to free system ram
 L0115    ldx   #$0001
          lda   #$2A
          pshs  x,a
          ldu   PD.DEV,y
          ldu   V$STAT,u
          ldx   <V.PDLHd,u
-         ldd   <$3D,y
+         ldd   <PD.PLP,y
          cmpy  <V.PDLHd,u
          bne   L013A
          std   <V.PDLHd,u
          bne   L0143
          clr   2,s
          bra   L0143
-L0135    ldx   <$3D,x
+L0135    ldx   <PD.PLP,x
          beq   L0147
-L013A    cmpy  <$3D,x
+L013A    cmpy  <PD.PLP,x
          bne   L0135
-         std   <$3D,x
-L0143    sty   <$3D,y
+         std   <PD.PLP,x
+L0143    sty   <PD.PLP,y
 L0147    lbsr  L01BD
          leas  3,s                     fix stack
          rts
 
 
 * getstat routine
-GetStat  lda   <$3F,y
+GetStat  lda   <PD.PST,y
          lbne  L0404
          ldx   PD.RGS,y
          lda   R$B,x                   get status code
@@ -203,7 +203,7 @@ GetStat  lda   <$3F,y
          ldd   R$Y,x
          stu   R$Y,x
          bcs   L0177
-         std   <$34,y
+         std   <PD.PAR,y
 L0177    clrb
          rts
 L0179    ldb   #$09                    getstat offset
@@ -239,7 +239,7 @@ L01A9    lda   ,x+
          bne   L01A9
          puls  y
 
-L01B2    ldx   <$34,y
+L01B2    ldx   <PD.PAR,y
          lda   #SS.ComSt
          pshs  x,a
          bsr   L01BD
@@ -336,7 +336,7 @@ L0265    cmpx  PD.MAX,y
 L026B    leax  1,x
          cmpx  ,s
          bcs   L027B
-         lda   <$33,y
+         lda   <PD.OVF,y
          lbsr  L046C
          leax  -1,x
          bra   L0252
@@ -449,7 +449,7 @@ L0357    leax  ,x
          tfr   u,d		D now holds pointer to static storage of device 2
          ldu   V$STAT,x		U now holds ???
          std   V.DEV2,u
-         ldu   #$0003
+         ldu   #$0003           call READ routine in driver
          lbsr  L04D3
 L0367    puls  pc,u,y,x
 
@@ -517,7 +517,7 @@ L03C8    lda   ,s                      get passed PID on stack
 L03DD    clra
          puls  pc,x,a
 
-L03E0    lda   <$3F,y
+L03E0    lda   <PD.PST,y
          bne   L0402
 L03E5    ldx   <D.Proc
          lda   P$ID,x
@@ -541,7 +541,7 @@ L0404    ldb   #E$HangUp
          lda   PD.CPR,y
          ldb   #S$Kill
          os9   F$Send
-L0411    inc   <$3F,y
+L0411    inc   <PD.PST,y
          orcc  #Carry
          rts
 
@@ -640,15 +640,16 @@ L04C5    lda   #C$NULL
 L04CC    leas  1,s
 L04CE    puls  pc,u,x,a
 
-L04D0    ldu   #$0006
+* Call Driver
+L04D0    ldu   #$0006        call write routine in driver
 L04D3    pshs  u,y,x,a
-         ldu   V$STAT,x
-         clr   V.WAKE,u
-         ldx   V$DRIV,x
-         ldd   M$Exec,x
-         addd  $05,s
-         leax  d,x
-         lda   ,s+
+         ldu   V$STAT,x      get pointer to device static storage entry
+         clr   V.WAKE,u      clear V.WAKE (driver will populate this)
+         ldx   V$DRIV,x      get pointer to device driver for this path
+         ldd   M$Exec,x      get entry point into device driver
+         addd  $05,s         add in offset
+         leax  d,x           
+         lda   ,s+           
          jsr   ,x
          puls  pc,u,y,x
 
