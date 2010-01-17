@@ -94,6 +94,7 @@ ARCHIVE		= zip -D -j
 3RDPARTY	= $(NITROS9DIR)/3rdparty
 LEVEL1		= $(NITROS9DIR)/level1
 LEVEL2		= $(NITROS9DIR)/level2
+LEVEL3		= $(NITROS9DIR)/level3
 
 # C-Cubed Rules
 %.r: %.c
