@@ -1,0 +1,46 @@
+  My version of Level III!
+
+  The file 'LevelIII.lzh' has a previous (8k block) version, along with
+much documentation as to how to set it up.
+
+  Quick theory:
+
+The system map has 64k available, of which memory can be mapped in and out
+in 8k blocks.
+
+SCF and RBF (and all other file managers) are completely independent.  You
+can boot OS-9 without ANY SCF modules, and likewise without any RBF modules.
+
+Next idea: map SCF and RBF in and out of the system map dynamically, so that
+only one of them is in the map at a time.
+
+The memory map looks like this:
+
+$0000-$1FFF  block 0, system direct page, etc.
+$2000-$3FFF  File Manager Local memory.  Mapped in and out as appropriate.
+$4000-$ECFF  Process/path/device descriptors, Clock, IOMan, etc.
+$ED00-$FEFF  Kernel track: REL Boot OS9p1
+
+  On every system call and IRQ, the 16k block starting at $2000 is mapped
+in or out, and the system DAT image changed also.
+
+  On boot up, the module 'NitrOS-9'  (nitro.a here) sets up the various
+maps, and moves up to 16k of SCF or RBF modules into the FM local memory.
+
+  Once the system is running, IOMan intercepts F$SRqMem and F$SRtMem calls
+from all modules, and allocates FM local memory if the call originates from
+there.  i.e. RBF allocates a drive buffer, and IOMan gives it local memory,
+so a 'smap' would show no change in the number of free pages.
+
+  One problem:  CC3IO and Windint CANNOT be in FM local memory, as they are
+both called via tha D.AltIRQ vector.  Every time I try to put them in local
+memory, the system crashes, despite all precautions I take.  So don't.
+
+  The version of OS9p1 here is Level II OR Level III compliant.
+
+  IOMan is ONLY Level III, and Nitro.a is the Level 3 File Manager setup
+module.  '_end' is a dummy module, just a place-holder.
+
+  I've just discovered that CC3Disk11 will crash on trying to format a floppy
+disk under Level III.  It's probably the memory extensions I made to CC3Disk,
+and I'm checking it out.

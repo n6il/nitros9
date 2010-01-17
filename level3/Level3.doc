@@ -1,0 +1,208 @@
+The Level III modifications are Copyright 1996 by Alan T. DeKok, all rights
+reserved.
+
+
+Level III
+=========
+
+  It's what everybody's been asking for, so here goes.
+
+  One warning: Level III is VERY dependant on the order of modules in the
+OS9Boot file.  If you do NOT follow the directions below exactly, your
+system will NOT BOOT.  I'm willing to answer questions and perform support,
+but Level III is not for the faint of heart or the OS-9 beginner.
+
+  When you install Level III, you MUST do it on a system using NitrOS-9.
+
+  When you build a Level III OS9Boot, be aware that you WILL NOT be able
+to cobbler a disk once LIII is booted.  You must copy the OS9Boot by hand,
+and use 'ezgen' to update LSN0, or use OS9Gen.
+
+******************************************************************************
+** DO NOT COBBLER DISKS WITH LEVEL III!  IT WILL COBBLER BUT WILL NOT BOOT! **
+******************************************************************************
+
+  Your OS9Boot file MUST be magically formatted as follows.  The reasons for
+this are long and detailed.  I'll just say that if it isn't done this way,
+Level III will NOT work.
+
+****** start of the OS9Boot file.
+NitrOS9     (from the NitrOS9.L3 file.)
+SCF
+            (other SCF modules, i.e. SACIA, Printer, VRN)
+            ( NOT CC3IO or WindInt or VDGInt.  Never!)
+            (up to a limit of 15k of modules)
+_end        <--- specifies the end of SCF information, from the _end.L3 file.
+RBF
+            (other RBF modules, i.e. CC3Disk, Rammer, RamPak, CCHDisk, etc.)
+_end        <--- specifies the end of RBF information
+            (everything else.  Order does not matter here.)
+            (ALL descriptors, Clock, IOMan, OS9p2, Init, CC3IO, Windint,
+              PipeMan, etc.)
+****** End of the OS9Boot file.
+
+  Late tests indicate it is possible to put CC3IO inside the SCF local memory.
+Whether or not it works is dependent on local system configurations.  Either
+way, there's plenty of system memory, and it doesn't appear to make any
+difference to anything.
+
+  Similarly, PipeMan may be put in SCF local memory between SCF and the first
+_end module.  Note that PipeMan may NOT be put in with RBF!
+
+  An 'ident -s' of my Level III OS9Boot file (with comments) looks like this:
+
+    1 $C7 $389B28 . NitrOS9 
+   16 $D1 $E2B0EB . SCF       \
+   12 $E1 $82D6D3 . SACIA     |  SCF and SCF device drivers
+    1 $E1 $329D69 . VRN       |
+   13 $E1 $3389A4 . PRINTER   /
+    1 $C7 $BB7259 . _end 
+   30 $D1 $753C86 . RBF       \
+    4 $E1 $3AB3AA . Rammer    |  RBF and RBF device drivers
+    2 $E1 $BCE29D . RamPak    |
+   11 $E1 $CFAA38 . CC3Disk   /
+    1 $C7 $BB7259 . _end 
+    1 $C1 $BFF958 . OS9p3    everything else
+   67 $C0 $680456 . Init 
+   82 $F1 $7EBD63 . DD       DEVICE DESCRIPTORS GO HERE
+   82 $F1 $93C195 . D0 
+   82 $F1 $F09A9D . D1 
+   82 $F1 $323E4F . D2 
+   82 $F1 $092A49 . MD 
+   82 $F1 $B31A99 . R0 
+  114 $F1 $FD590E . T2 
+   83 $F1 $C9B7C1 . P 
+   19 $C1 $67D5A0 . WindInt    OUTSIDE SCF local memory!
+   20 $E1 $B4F1E2 . CC3IO      perhaps here, perhaps in SCF local memory
+   83 $F1 $17FBEF . Term 
+   83 $F1 $F8D0CB . W 
+   83 $F1 $5EA5AA . W1         WINDOW DESCRIPTORS HERE!
+   83 $F1 $691BAA . W2 
+   83 $F1 $FB498B . W3 
+   83 $F1 $05BFAA . W4 
+   83 $F1 $97ED8B . W5 
+   83 $F1 $E30B59 . W6 
+   83 $F1 $710B78 . W7 
+   83 $F1 $9F0B78 . W8 
+   83 $F1 $0D0B59 . W9 
+   18 $C0 $826A54 . OS9p2     All these modules MUST come after the '_end'
+   12 $C1 $1B5CA4 . IOMan     module, or your system will crash.
+    9 $C1 $402FE2 . Clock 
+    4 $D1 $ED94CC . PipeMan 
+    2 $E1 $ADB22E . Piper 
+   80 $F1 $CC06AF . Pipe 
+    1 $F1 $B2004F . Nil 
+
+
+  OK, now the theory behind the magic.
+
+  When booting OS-9, the startup routine in OS9p1 calls the Boot module to
+load in the OS9Boot file.  OS9p1 then looks for a module named 'NitrOS9
+as the FIRST module of the OS9Boot file.  If it exists, that module is called
+BEFORE verifying the OS9Boot file.
+
+  The NitrOS9 module allocates memory, and moves the SCF modules (up to
+the _end module) into 'SCF local memory', and verifies the modules.  The
+same procedure is followed for RBF modules, and when I get the chance later,
+for PipeMan and SBF modules.
+
+  Extra memory is allocated in 16k chunks, and mapped into address $2000
+to $5FFF of the system map.  An 'smap' will show you that this memory is
+allocated.
+
+  IOMan intercepts EVERY system call, and EVERY request/return system call.
+Any module inside 'local memory' asking for system RAM gets allocated
+RAM from that local memory.  Any module in 'system global memory' asking
+for system RAM gets allocated RAM from the global memory pool.
+
+  The net result of this is that you lose 16k of memory from the bottom
+of the system memory map, but you move about 16k of modules into system local
+memory.  On my setup, I had about 14K free after booting, and now 'smap'
+usually gives me 11k of _global_ memory free.  And I still have 8k of SCF
+memory, and 9k of RBF memory left!
+
+  The ONLY things that take memory out of 'system global memory' are process
+descriptors (.5k each) and path descriptors (.0625K, 64 bytes).  11K is
+room for another 20 processes, each with STDIN, STDOUT, and STDERR going
+to a window.  And 8k of SCF memory is just about enough memory for SCF
+buffers for each of those 20 processes.
+
+  i.e. Level III enables you to have about 25 _different_ processes
+running in different windows, all at the same time!  The only way that this
+is possible on a Level II system is to strip your OS9Boot file down to almost
+nothing.  Level III allows you to keep all of your favorite modules in your
+OS9Boot.
+
+  VDG windows come out of system global memory, too.  That's why I added the
+'largest free block' display to the 'sfree' command, below.  If you have
+less than 6k free in one block, you can't run many old Coco2 games.
+
+  The local 16k memory map is saved and restored across every system call,
+and changed whenever a call to SCF/RBF is done.  Because only IOMan knows
+about the changes, only it (and clock) have to be modified.  All of the
+old file managers and drivers work perfectly.  This includes programs
+like 'winfo' and 'wdir'.
+
+  I got the idea from thinking that it's perfectly possible to boot OS-9
+with NO SCF modules, and likewise with NO RBF modules.  If that's possible,
+why not map SCF and RBF into the same area of memory, and switch between
+them on the fly?  So far, I would say it's taken me the equivalent of 4 weeks
+full-time work, as I ran into HORRIBLE problems.  Level III is sufficiently
+different from Level II that you can't really think the same way about it.
+
+  Anyways, here's an 'sfree' of my current system, with OSTerm running
+in another window, and 3 'shell' windows:
+
+ ----- Level III System Memory ----- System memory:
+37 free pages, largest block 37 pages.
+9K of free RAM.
+
+SCF local memory:
+21 free pages, largest block 21 pages.
+5K of free RAM.
+
+RBF local memory:
+31 free pages, largest block 31 pages.
+7K of free RAM.
+
+----
+  That's 89 pages (22K) of free RAM, and my OS9Boot file is $73E2 bytes long!
+Even with a 4K SACia buffer open, 8 processes, and 4 windows!  I like it...
+
+  Here's an 'smap':
+
+    0 1 2 3 4 5 6 7 8 9 A B C D E F
+ #  = = = = = = = = = = = = = = = =
+ 0  U U U U U U U U U U U U U U U U 
+ 1  U U U U U U U U U U U U U U U U 
+ 2  U U U U U U U U U U U U U U U U 
+ 3  U U U U U U U U U U U U U U U U 
+ 4  U U U U U U U U U U U U U U U U 
+ 5  U U U U U U U U U U U U U U U U 
+ 6  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ 7  _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+ 8  _ _ _ _ _ U U U U U U U U U U U 
+ 9  U U U U U U U U U U U U U U U U 
+ A  U U U U U U U U U U U U U U U U 
+ B  U U U U U U U U U U U U U U U U 
+ C  U U U U U U U U U U U U U U U U 
+ D  U U U U U U U U U U U U U U U U 
+ E  U U U U U U U U U U U U U U U U 
+ F  U U U U U U U U U U U U U U U . 
+
+ Number of Free Pages:  37
+   Ram Free in KBytes:   9
+
+
+---
+  This is enough room to format a disk (greater than 7K), even with many
+processes and OSTerm running!
+
+  I've been running Level III for just under a year, and I've had it in
+beta test on 10+ systems for 8 months.  One system was running a BBS, and
+at one report was up and running for 2 months without a reboot.  I think
+it's stable enough to release to the general public.
+
+  Have fun!
+
+  Alan DeKok.
