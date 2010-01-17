@@ -659,22 +659,22 @@ virqexit puls  cc
                          
 DelVIRQ  pshs  x,y       
 DelVLup                  
-         ifgt  Level-2   
+         IFEQ  H6309-1   
          ldq              ,y++		move entries up in table
          leay  2,y       
          stq              -8,y
          bne   DelVLup   
          puls  x,y,pc    
-         else            
+         ELSE
          ldx   ,y++       move entries up in table
          stx   -4,y      
          bne   DelVLup   
          puls  x,y       
          leay  -2,y      
          rts             
-         endc            
+         ENDC
                          
-         ifgt  Level-1   
+         IFGT  Level-1   
 *------------------------------------------------------------
 *
 * Handle F$Alarm call
