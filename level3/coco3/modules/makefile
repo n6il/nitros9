@@ -1,7 +1,7 @@
 PORT = coco3
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm kernel:$(LEVEL2)/modules/kernel:$(LEVEL2)/modules:$(LEVEL1)/modules
+vpath %.asm kernel:$(LEVEL2)/modules/kernel:$(LEVEL3)/modules:$(LEVEL2)/modules:$(LEVEL1)/modules
 
 AFLAGS		+= -I$(LEVEL1)/modules
 
@@ -23,7 +23,7 @@ BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		 boot_burke boot_rampak boot_wd1002 boot_dw3
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
-SYSMODS		= ioman init sysgo_h0 sysgo_dd
+SYSMODS		= ioman init sysgo_h0 sysgo_dd nitro end
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
 		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
