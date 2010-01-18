@@ -11,29 +11,15 @@ KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_1773_50HZ	= $(MD)/rel_80_50hz $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_DW3	= $(MD)/rel_80 $(MD)/boot_dw3 $(MD)/krn
 
-# NitrOS-9 disk bootfile to allow booting from DriveWire 3 server
-BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
-		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb \
-		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
-		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
-		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
-		$(MD)/scf.mn $(MD)/vtio.dr \
-		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
-		$(MD)/cowin.io $(MD)/covdg.io \
-		$(MD)/term_win80.dt \
-		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
-		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
-		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
-		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3
-
 # NitrOS-9 disk bootfile to allow booting from WD1773 disk controller
-BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_40D	= $(MD)/scf.mn \
+		$(MD)_end \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
-		$(MD)/scf.mn $(MD)/vtio.dr \
+		$(MD)_end \
+		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cowin.io $(MD)/covdg.io \
 		$(MD)/term_win80.dt \
@@ -42,11 +28,14 @@ BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILE_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_80D	= $(MD)/scf.mn \
+		$(MD)_end \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
-		$(MD)/scf.mn $(MD)/vtio.dr \
+		$(MD)_end \
+		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cowin.io $(MD)/covdg.io \
 		$(MD)/term_win80.dt \
@@ -55,11 +44,14 @@ BOOTFILE_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILE_40D_50HZ	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_40D_50HZ	= $(MD)/scf.mn \
+		$(MD)_end \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
-		$(MD)/scf.mn $(MD)/vtio.dr \
+		$(MD)_end \
+		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cowin.io $(MD)/covdg.io \
 		$(MD)/term_win80.dt \
@@ -68,11 +60,14 @@ BOOTFILE_40D_50HZ	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_50hz $(MD)/clock2_soft
 
-BOOTFILE_80D_50HZ	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
-		$(MD)/rbf.mn \
+BOOTFILE_80D_50HZ	= $(MD)/scf.mn \
+		$(MD)_end \
 		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
-		$(MD)/scf.mn $(MD)/vtio.dr \
+		$(MD)_end \
+		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cowin.io $(MD)/covdg.io \
 		$(MD)/term_win80.dt \
