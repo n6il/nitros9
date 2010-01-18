@@ -478,7 +478,8 @@ comst		leax      PD.OPT,y
 *        U=Static memory pointer
 open            pshs    u,y
                 tst     <V.PORT+1,u     check if this is $FF00 (wildcard)
-                bne     openex
+ bra openex
+*                bne     openex
 * wildcard /N device... search for free device
                 IFGT    Level-1
                 ldx   	<D.DWStat
