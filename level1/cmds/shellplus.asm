@@ -204,10 +204,10 @@ L0061    fcc   '+++END+++'
          fcb   C$CR
 * Intercept routine
 L006B    stb   <u000E         Save signal code & return
-+++ BGP added for peer disconnect
+* +++ BGP added for peer disconnect
          cmpb  #S$Peer
          lbeq  exit
-+++
+* +++
          rti
 
 start    leas  -5,s           Make 5 byte buffer on stack
