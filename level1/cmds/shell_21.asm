@@ -11,6 +11,10 @@
 *
 *  21/2    2003/01/22  Boisy Pitre
 * CHD no longer sets WRITE. permission.
+*
+*  22      2010/01/19  Boisy Pitre
+* Added code to honor S$Peer signal and exit when received to support
+* networking. 
 
          nam   Shell
          ttl   NitrOS-9 command line interpreter
@@ -23,8 +27,8 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $02
-edition  set   21
+rev      set   $00
+edition  set   22
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -89,6 +93,10 @@ OS9PrmL  equ   *-OS9Prmpt
 DefPrmL  equ   *-DefPrmpt
 
 IcptRtn  stb   <kbdsignl
++++ BGP added for peer disconnect
+         cmpb  #S$Peer
+         lbeq  exit
++++
          rti
 
 start    leas  -$05,s

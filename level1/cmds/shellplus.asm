@@ -13,6 +13,10 @@
 *
 *  22/2    ????/??/??
 * History and numerous features added.
+*
+*  23      2010/01/19  Boisy G. Pitre
+* Added code to honor S$Peer signal and exit when received to support
+* networking.
 
          nam   Shell
          ttl   Enhanced shell for NitrOS-9
@@ -28,7 +32,9 @@
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
-rev      set   $02
+rev      set   $00
+edition  set   23
+
          mod   eom,name,tylg,atrv,start,size
 
 u0000    rmb   1              Path # for standard input
@@ -180,7 +186,7 @@ u1B3D    rmb   963            Local stack space, etc.
 size     equ   .
 name     equ   *
 L000D    fcs   /Shell/
-         fcb   $16 
+         fcb   edition
 L0013    fcb   Prgrm+PCode 
          fcs   'PascalS'
          fcb   Sbrtn+CblCode
@@ -198,6 +204,10 @@ L0061    fcc   '+++END+++'
          fcb   C$CR
 * Intercept routine
 L006B    stb   <u000E         Save signal code & return
++++ BGP added for peer disconnect
+         cmpb  #S$Peer
+         lbeq  exit
++++
          rti
 
 start    leas  -5,s           Make 5 byte buffer on stack
@@ -399,7 +409,7 @@ L020D    pshs  b,cc           Save error # & flags
          leax  >L0061,pc      Point to '+++END+++' string
          lbsr  L07E7          Close log file if one is open, restore ID #
          puls  b,cc           Restore error # & flags
-         os9   F$Exit         Terminate shellplus
+exit     os9   F$Exit         Terminate shellplus
 
 L021B    ldy   #80            Write up to 80 chars or CR
 L021F    lda   #$02           Std error path
