@@ -364,8 +364,8 @@ statcont	clrb
           	tfr     d,u
 			lda		<V.LPRC,u
 			beq		IRQExit ; no last process, bail
-*			ldb		#S$Peer
-			ldb		#S$Kill
+			ldb		#S$Peer
+*			ldb		#S$Kill
 			os9		F$Send	; send signal, don't think we can do anything about an error result anyway.. so
 			bra		CkSuspnd  ; do we need to go check suspend?
 
