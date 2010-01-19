@@ -93,10 +93,10 @@ OS9PrmL  equ   *-OS9Prmpt
 DefPrmL  equ   *-DefPrmpt
 
 IcptRtn  stb   <kbdsignl
-+++ BGP added for peer disconnect
+* +++ BGP added for peer disconnect
          cmpb  #S$Peer
          lbeq  exit
-+++
+* +++
          rti
 
 start    leas  -$05,s
