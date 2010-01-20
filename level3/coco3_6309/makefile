@@ -52,7 +52,7 @@ LDSKS		= $(LDSK360K_1) $(LDSK360K_1_50HZ) $(LDSK360K_2) $(LDSK720K) $(LDSK720K_5
 all:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
-	@$(ECHO) "*        NitrOS-9/$(CPU) Level 2 Distribution      *"
+	@$(ECHO) "*        NitrOS-9/$(CPU) Level 3 Distribution      *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
@@ -77,7 +77,7 @@ $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 
 $(DSK360K_1):
 	-$(RM) $@
-	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 2 Disk 1"
+	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 3 Disk 1"
 	$(OS9GEN) $@ -b=$(BOOTFILE_40D) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -99,7 +99,7 @@ $(DSK360K_1):
 
 $(DSK360K_1_50HZ):
 	-$(RM) $@
-	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 2 Disk 1"
+	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 3 Disk 1"
 	$(OS9GEN) $@ -b=$(BOOTFILE_40D_50HZ) -t=$(KERNELFILE_50HZ)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -121,7 +121,7 @@ $(DSK360K_1_50HZ):
 
 $(DSK360K_2):
 	-$(RM) $@
-	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 2 Disk 2"
+	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 3 Disk 2"
 	$(MAKDIR) $@,CMDS
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
 	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
@@ -161,7 +161,7 @@ $(DSK360K_2):
 
 $(DSK720K):
 	-$(RM) $@
-	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/$(CPU) Level 3"
 	$(OS9GEN) $@ -b=$(BOOTFILE_80D) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -216,7 +216,7 @@ $(DSK720K):
 
 $(DSK720K_50HZ):
 	-$(RM) $@
-	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/$(CPU) Level 3"
 	$(OS9GEN) $@ -b=$(BOOTFILE_80D_50HZ) -t=$(KERNELFILE_50HZ)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -270,5 +270,5 @@ $(DSK720K_50HZ):
 	$(SOFTLINK) $@ $(LDSK720K_50HZ)
 
 info:
-	@$(ECHO) "*** NitrOS-9/6809 Level 2 for the Tandy Color Computer 3 ***"
+	@$(ECHO) "*** NitrOS-9/6809 Level 3 for the Tandy Color Computer 3 ***"
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
