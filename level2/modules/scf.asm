@@ -348,18 +348,17 @@ L00CF    ldu   V$STAT,u     Point to it's static storage
          lda   PD.MOD,x 
          bita  #SHARE.
          ENDC
-         beq   Shrble
+         beq   CkCar        Check carrier status
 NoShare  leas  2,s          Eat extra stack (including good path count)
          comb
          ldb   #E$DevBsy    Non-sharable device busy error
          bra   L0111        Go detach device & exit with error
-Shrble   bra   L00E8        Check carrier status
          
 Yespath  sty   V.PDLHd,u    Save path descriptor ptr
          bra   L00F8        Go open the path
 
 L00E6    tfr   d,x          Change to PD.PLP path descriptor
-L00E8    ldb   PD.PST,x     Get Carrier status
+CkCar    ldb   PD.PST,x     Get Carrier status
          bne   L00EF        Carrier was lost, don't update count
          inc   1,s          Carrier not lost, bump up count of good paths
 L00EF    ldd   PD.PLP,x     Get path descriptor list pointer
