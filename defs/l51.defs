@@ -1,12 +1,13 @@
-
 * miscellaneous definitions
 HResMaxX equ   639        high resolution X limit
 HResMaxY equ   191        high resolution Y limit
 MousData equ   $0008      arbitrary choice for mouse data area ($0008-$000F)
-PcktSize equ   5          number of bytes in mouse data packet
-SyncData equ   %10000000  initial mouse data byte pattern
-SyncMask equ   %11111000  mask for initial mouse data byte pattern
-
+*PcktSize equ  5	  wrong for M$, Logitek mice
+PcktSize equ   4          number of bytes in mouse data packet, wrong. max 4, usually 3
+*SyncData equ   %10000000  initial mouse data byte pattern- wrong
+SyncData equ   %01000000  initial mouse data byte pattern, d7 is NOT used
+*SyncMask equ   %11111000  mask for initial mouse data byte pattern-wrong
+SyncMask equ   %01111000  mask for initial mouse data byte pattern
 * 6551 register definitions
          org   0
 DataReg  rmb   1          receive/transmit data
@@ -60,7 +61,9 @@ DB.5     equ   %01100000  five data bits per character
 DB.6     equ   %01000000  six data bits per character
 DB.7     equ   %00100000  seven data bits per character
 DB.8     equ   %00000000  eight data bits per character
-
+* GH 28/06/2008 Note, data format is only 7 bits
+* but most mice send 8 bits with the last bit,
+* MSB set which=extra stop bit, so use DB.7
 * baud rate table
          org   0
 BR.ExClk rmb   1          16x external clock
@@ -81,14 +84,25 @@ BR.09600 rmb   1          9600 baud
 BR.19200 rmb   1          19200 baud
 
 * Btn.Cntr bit definitions
-BC.Butn1 equ   %00100000  button #1 (left, 1 = pressed)
-BC.Butn2 equ   %00010000  button #2 (middle, 1 = pressed)
-BC.Butn3 equ   %00001000  button #3 (right, 1 = pressed)
-BC.RxCnt equ   %00000111  Rx data counter
+BC.ButnL equ   %00100000  button #1 (left, 1 = pressed=$20)
+BC.ButnR equ   %00010000  button #2 (right, 1 = pressed=$10)
+BC.ButnC equ   %00001000  button #3 (center, 1 = pressed=$08)
+BC.RxCnt equ   %00000111  Rx data byte count
+BC.Butns equ   BC.ButnL!BC.ButnR!BC.ButnC mask for all buttons
 
-BC.Butns equ   BC.Butn1!BC.Butn2!BC.Butn3 mask for all buttons
+* added 06/21/2008 GH some defines for button up
+BU.ButnL equ   %00011111  to clear button #1 left
+BU.ButnR equ   %00101111  to clear button #2 right
+BU.ButnC equ   %00110111  to clear button #3 center
 
-
+* Added 06/21/2008 GH more possibly handy defines
+* here is a good place to define mouse buttons
+* as the mouse output data delivers them to us
+MD.Sync  equ %01000000 never set unless sync byte
+MD.ButnL equ %00100000 left, in first 'sync' byte of logitek mouse
+MD.ButnR equ %00010000 right, in first 'sync' byte of logitek mouse
+MD.ButnC equ %00100000 center, but in 4th byte only
+MskYYXX  equ  %11000000 for use after shifted to msbits
 * mouse static data area definitions
          org   0
 Btn.Cntr rmb   1          mouse button status and Rx data counter
@@ -96,3 +110,25 @@ Buffer   rmb   3          Rx buffer for 1st 3 bytes of XY mouse data (must start
 CrntXPos rmb   2          mouse X position (0 to HResMaxX)
 CrntYPos rmb   2          mouse Y position (0 to HResMaxY*2)
 
+* added, may, may not be usefull, GH
+* logitek mouse data defs, almost same as M$, bit D7 of any byte is don't care
+* BECAUSE THE MOUSE IS A 7N1 MOUSE!
+* Assume Btn.Cntr will be inc'd as last processing op of each byte rx'd here.
+LkMsMask equ	%01111111 d7 ignored
+LkMsSync equ	%01000000 only set for first byte of packet, set Btn.Cntr=0
+LkMsLBtn equ	%00100000 if left button pushed, in sync byte
+LkMsRbtn equ	%00010000 if right button pushed, in sync byte
+* except this one in 4th byte
+LgtkCBtn equ	%00100000 if center button pushed, and Btn.Cntr=3
+* sign bits
+LkMsYSgn equ	%00001000 direction of current move, in sync byte
+LkMsXSgn equ	%00000010 direction of current move, in sync byte
+* direction since last packet bits
+LkMsYMsb equ	%00000100 MSB of current Y move, in sync byte
+LkMsXMsb equ	%00000001 MSB of current X move, in sync byte
+LkMsXMov equ	%00111111 the rest of an 7 bit value, when Btn.Cntr=1 (second byte)
+LkMsYMov equ	%00111111 the rest of an 7 bit value, when Btn.Cntr=2
+
+* Microsoft sends the center button down as a no data packet
+* sync bit only in first byte
+* ANYTHING else is a center button up event.
