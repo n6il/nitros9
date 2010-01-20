@@ -21,6 +21,9 @@
 *
 *   0.6    2010/01/12  Boisy G. Pitre
 * Renamed.
+*
+*   0.7    2010/01/20  Boisy G. Pitre
+* No more /N0.  /Term is /N0.
 
          nam   scdwdesc
          ttl   DriveWire network Device Descriptor
@@ -31,7 +34,7 @@
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
-rev      set   $05
+rev      set   $07
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
@@ -68,7 +71,7 @@ rev      set   $05
          fcb   24         (szy) number of rows for display
 initsize equ   *
 
-         IFNE  TERM
+         IFEQ  Addr-0
 name     fcs   /Term/
          ELSE
 name     fcc   /N/
