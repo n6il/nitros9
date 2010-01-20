@@ -43,7 +43,7 @@ SCF		= scf.mn \
 		nil.dd p_scbbp.dd p_scdwp.dd pipe.dd ssp.dd \
 		term_scbbt.dt term_sc6551.dt t1_scbbt.dd t2_sc6551.dd t3_sc6551.dd \
 		term32.dt term51.dt \
-		scdwn.dr term_scdwn.dt n0_scdwn.dd n1_scdwn.dd n2_scdwn.dd \
+		scdwn.dr term_scdwn.dt n1_scdwn.dd n2_scdwn.dd \
 		n3_scdwn.dd n4_scdwn.dd n5_scdwn.dd n6_scdwn.dd n7_scdwn.dd \
 		n8_scdwn.dd n9_scdwn.dd n10_scdwn.dd n11_scdwn.dd n12_scdwn.dd \
 		n13_scdwn.dd n14_scdwn.dd
@@ -144,9 +144,6 @@ d2_80d.dd: rb1773desc.asm
 
 # DriveWire 3 SCF descriptors
 term_scdwn.dt: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aTERM=1 -aAddr=0
-
-n0_scdwn.dd: scdwndesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=0
 
 n1_scdwn.dd: scdwndesc.asm
