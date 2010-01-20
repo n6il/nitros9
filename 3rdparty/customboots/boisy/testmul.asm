@@ -1,5 +1,5 @@
          ifp1
-         use   defsfile
+         use   os9defs
          endc
 
 tylg     set   Prgrm+Objct   

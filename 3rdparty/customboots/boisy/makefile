@@ -63,6 +63,7 @@ ALLOBJS		= $(CMDS) $(CMDS_DW) $(CMDS_THESIS)
 all:	$(ALLOBJS)
 
 clean:	dskclean
+	rm $(CMDS_THESIS)
 
 dsk:	all $(DSKS)
 
