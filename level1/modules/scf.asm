@@ -8,6 +8,9 @@
 * ------------------------------------------------------------------
 *  10      ????/??/??
 * From Tandy OS-9 Level One VR 02.00.00
+*
+*  11      2010/01/20  Boisy G. Pitre
+* Added support for SHARE. bit
 
          nam   SCF
          ttl   OS-9 Level One V2 SCF file manager
@@ -20,7 +23,7 @@
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   10
+edition  set   11
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -120,12 +123,42 @@ L00C6    ldu   V$STAT,u
          clrb
          pshs  b,a
          ldx   <V.PDLHd,u              get path descriptor list head pointer
-         bne   L00D9                   branch if not empty (an open path already exists for this device)
+         beq   YesPath                 branch if not empty (an open path already exists for this device)
+* IOMan has already vetted the mode byte of the driver and the descriptor
+* and compared it to REGA of I$Open (now in PD.MOD of this current path).
+* here we know there is at least one path open for this device.
+* in order to properly support SHARE. (device exclusivity), we get the
+* mode byte for the path we are opening and see if the SHARE. bit is set.
+* if so, then we return error since we cannot have exclusivity to the device.
+         IFNE  H6309
+         tim   #SHARE.,PD.MOD,y
+         ELSE
+         lda   PD.MOD,y 
+         bita  #SHARE.
+         ENDC
+         bne   NoShare      
+* we now know that the path's mode doesn't have the SHARE. bit set, so 
+* we need to look at the mode of the path in the list header pointer to
+* see if ITS SHARE. bit is set (meaning it wants exclusive access to the
+* port).  If so we bail out
+         IFNE  H6309
+         tim   #SHARE.,PD.MOD,x
+         ELSE
+         lda   PD.MOD,x 
+         bita  #SHARE.
+         ENDC
+         beq   CkCar        Check carrier status
+NoShare  leas  2,s          Eat extra stack (including good path count)
+         comb
+         ldb   #E$DevBsy    Non-sharable device busy error
+         bra   OpenErr      Go detach device & exit with error
+
+YesPath
          sty   <V.PDLHd,u              else save this path descriptor as the head
          bra   L00E9
 
 L00D7    tfr   d,x                     change to PD.PLP path descriptor
-L00D9    ldb   <PD.PST,x               get carrier status in B
+CkCar    ldb   <PD.PST,x               get carrier status in B
          bne   L00E0                   carrier was lost, do not update count
          inc   1,s                     carrier not lost, bump up count of good paths
 L00E0    ldd   <PD.PLP,x               get path descriptor list pointer
@@ -143,10 +176,24 @@ L00E9    lda   #SS.Open                internal open call
 L00FC    clrb
 L00FD    rts
 
+* we come here if there was an error in Open (after I$Attach and F$SRqMem!)
+OpenErr  pshs   b,cc
+         bsr    DetDev
+         puls   b,cc,pc
+    
+* Detach device and return memory    
+DetDev   ldu   PD.DV2,y                get output device table pointer
+         beq   L010B                   branch if empty
+         os9   I$Detach                else detach it
+L010B    ldu   PD.BUF,y                get path descriptor buffer pointer
+         beq   L0EX                    branch if empty
+         ldd   #$0001
+         os9   F$SRtMem                else return to free system ram
+L0EX     rts
 
 * term routine
 Term     tst   PD.CNT,y
-         beq   L0104                   branch if count is zero
+         beq   L0115                   branch if count is zero
 
 
 * seek/delete routine
@@ -154,15 +201,9 @@ Seek
 Delete   clra
          rts
 
-L0104    ldu   PD.DV2,y                get output device table pointer
-         beq   L010B                   branch if empty
-         os9   I$Detach                else detach it
-L010B    ldu   PD.BUF,y                get path descriptor buffer pointer
-         beq   L0115                   branch if empty
-         ldd   #$0001
-         os9   F$SRtMem                else return to free system ram
-L0115    ldx   #$0001
-         lda   #$2A
+L0115    bsr   DetDev
+         ldx   #$0001
+         lda   #SS.Close
          pshs  x,a
          ldu   PD.DEV,y
          ldu   V$STAT,u
