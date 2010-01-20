@@ -123,22 +123,23 @@ L00C6    ldu   V$STAT,u
          bne   L00D9                   branch if not empty (an open path already exists for this device)
          sty   <V.PDLHd,u              else save this path descriptor as the head
          bra   L00E9
-L00D7    tfr   d,x
-L00D9    ldb   <PD.PST,x               get path status in B
-         bne   L00E0
-         inc   1,s                     inc B on stack
-L00E0    ldd   <PD.PLP,x               get pointer to next path descriptor
-         bne   L00D7                   if not empty, branch
+
+L00D7    tfr   d,x                     change to PD.PLP path descriptor
+L00D9    ldb   <PD.PST,x               get carrier status in B
+         bne   L00E0                   carrier was lost, do not update count
+         inc   1,s                     carrier not lost, bump up count of good paths
+L00E0    ldd   <PD.PLP,x               get path descriptor list pointer
+         bne   L00D7                   there is one, go make it the current one
          sty   <PD.PLP,x               else add this path descriptor to the tail of the list
-L00E9    lda   #$29
-         pshs  a
-         inc   2,s                     inc B on stack
-         lbsr  L01BD
-         lda   2,s                     get B on stack
+L00E9    lda   #SS.Open                internal open call
+         pshs  a                       save it on the stack
+         inc   2,s                     bump counter of good paths up by 1
+         lbsr  L01BD                   do the SS.Open call to th driver
+         lda   2,s                     get counter of good paths
          leas  3,s                     clean up stack
-         deca
-         bne   L00FC
-         lbra  L01B2
+         deca                          bump down good path count
+         bne   L00FC                   if more still open, exit without error
+         lbra  L01B2                   set parity/baud & return
 L00FC    clrb
 L00FD    rts
 
@@ -220,7 +221,7 @@ JsrDrvr  pshs  a
 
 * putstat routine
 PutStat  lbsr  L03E0
-L018F    bsr   L0198
+PutStat2 bsr   L0198
          pshs  b,cc
          lbsr  L0391
          puls  pc,b,cc
@@ -244,6 +245,7 @@ L01B2    ldx   <PD.PAR,y
          pshs  x,a
          bsr   L01BD
          puls  pc,x,a
+         
 L01BD    pshs  u,y,x
          ldx   PD.RGS,y
          ldu   R$Y,x
@@ -255,7 +257,7 @@ L01BD    pshs  u,y,x
          sta   R$B,x
          ldb   #$0C
          lbsr  L03E5
-         bsr   L018F
+         bsr   PutStat2
          puls  u,y,x,a
          stu   R$Y,x
          sta   R$B,x
