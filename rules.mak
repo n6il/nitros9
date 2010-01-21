@@ -95,6 +95,10 @@ ARCHIVE		= zip -D -j
 LEVEL1		= $(NITROS9DIR)/level1
 LEVEL2		= $(NITROS9DIR)/level2
 LEVEL3		= $(NITROS9DIR)/level3
+CC68L1          = $(LEVEL1)/coco
+CC368L2         = $(LEVEL2)/coco3
+CC363L2         = $(LEVEL2)/coco3_6309
+CC363L3         = $(LEVEL3)/coco3_6309
 
 # C-Cubed Rules
 %.r: %.c
