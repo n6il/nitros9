@@ -9,6 +9,7 @@ AFLAGS		+= -aNoTerm=1 -acoco3=1
 
 LFLAGS		+= -y -l=$(NITROS9DIR)/3rdparty/packages/drivewire/netlib/netlib.l -l=$(NITROS9DIR)/3rdparty/libs/alib/alib.l -l=../netlib/netlib.l -l=$(NITROS9DIR)/lib/sys6309l2.l 
 3PDW63          = $(3RDPARTY)/packages/drivewire/6309l2
+3PBOISY         = $(3RDPARTY)/utils/boisy
 
 DEPENDS		= ./makefile
 
@@ -30,8 +31,8 @@ CMDS		= $(CD)/attr $(CD)/build $(CD)/cmp $(CD)/copy $(CD)/cputype $(CD)/date \
 		$(CD)/sleep $(CD)/smap $(CD)/tee $(CD)/tmode $(CD)/touch $(CD)/tsmon \
 		$(CD)/unlink $(CD)/verify $(CD)/xmode $(CD)/utilpak1 $(CD)/basic09 $(CD)/syscall
 
-CMDS_DW		= $(3PDW63)/telnetd $(3PDW63)/inetd $(3PDW63)/dw \
-		$(3PDW63)/telnet
+CMDS_DW		= $(3PDW63)/inetd $(3PDW63)/dw \
+		$(3PDW63)/telnet $(3PBOISY)/send
 
 CMDS_THESIS	= testmul
 
@@ -62,7 +63,12 @@ SUPPORTFILES	= startup
 
 ALLOBJS		= $(CMDS) $(CMDS_DW) $(CMDS_THESIS)
 
-all:	$(ALLOBJS)
+all:	makedepends $(ALLOBJS)
+
+makedepends:
+	cd $(LEVEL2)/coco3_6309; make
+	cd $(3RDPARTY)/packages/drivewire; make
+	cd $(3PBOISY); make
 
 clean:	dskclean
 	rm $(CMDS_THESIS)
