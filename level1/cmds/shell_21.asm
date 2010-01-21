@@ -13,7 +13,7 @@
 * CHD no longer sets WRITE. permission.
 *
 *  22      2010/01/19  Boisy Pitre
-* Added code to honor S$Peer signal and exit when received to support
+* Added code to honor S$HUP signal and exit when received to support
 * networking. 
 
          nam   Shell
@@ -93,8 +93,8 @@ OS9PrmL  equ   *-OS9Prmpt
 DefPrmL  equ   *-DefPrmpt
 
 IcptRtn  stb   <kbdsignl
-* +++ BGP added for peer disconnect
-         cmpb  #S$Peer
+* +++ BGP added for Hang Up
+         cmpb  #S$HUP
          lbeq  exit
 * +++
          rti

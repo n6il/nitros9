@@ -262,7 +262,7 @@ S$Wake:        RMB       1                   Wake-up Sleeping Process
 S$Abort:       RMB       1                   Keyboard Abort
 S$Intrpt:      RMB       1                   Keyboard Interrupt
 S$Window:      RMB       1                   Window Change
-S$Peer:        EQU       S$Window            Peer disconnected (scdwt)
+S$HUP:         EQU       S$Window            Hang up
 S$Alarm:       RMB       1                   CoCo individual process' alarm signal
                endsect
 

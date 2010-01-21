@@ -1,3 +1,6 @@
+# NitrOS-9/6309 Level 2 bootfile for a 128K CoCo 3 with a Hitachi 6309
+# For Boisy's thesis work
+
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm ../../../utils/boisy:..:$(LEVEL2)/cmds:$(LEVEL1)/cmds:$(LEVEL1)/modules:$(NITROS9DIR)/3rdparty/packages/basic09
@@ -47,7 +50,6 @@ BOOTFILE	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/n10_scdwn.dd $(MD)/n11_scdwn.dd $(MD)/n12_scdwn.dd \
 		$(MD)/n13_scdwn.dd $(MD)/n14_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
-		$(MD)/vrn.dr $(MD)/nil.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
 		$(MD)/sysgo_dd
