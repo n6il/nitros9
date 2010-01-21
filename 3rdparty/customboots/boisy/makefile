@@ -34,7 +34,7 @@ CMDS		= $(CD)/attr $(CD)/build $(CD)/cmp $(CD)/copy $(CD)/cputype $(CD)/date \
 CMDS_DW		= $(3PDW63)/inetd $(3PDW63)/dw \
 		$(3PDW63)/telnet $(3PBOISY)/send
 
-CMDS_THESIS	= testmul
+CMDS_THESIS	= testmul testtfr testexg testadd testcwai
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_80 $(MD)/boot_dw3 $(MD)/krn
@@ -44,6 +44,7 @@ BOOTFILE	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rammer.dr $(MD)/r0_128k.dd \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
+		$(MD)/sc6551.dr $(MD)/t2_sc6551.dd $(MD)/t3_sc6551.dd \
 		$(MD)/scdwn.dr $(MD)/term_scdwn.dt \
 		$(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd $(MD)/n3_scdwn.dd \
 		$(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd $(MD)/n6_scdwn.dd \
@@ -71,7 +72,7 @@ makedepends:
 	cd $(3PBOISY); make
 
 clean:	dskclean
-	rm $(CMDS_THESIS)
+	-$(RM) $(CMDS_THESIS)
 
 dsk:	all $(DSKS)
 
@@ -99,7 +100,7 @@ dskcopy: dsk
 	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DSKS)
+	-$(RM) $(DSKS)
 
 info:
 	@$(ECHO) "*** NitrOS-9/6309 Level 2 DriveWire Server ***"
