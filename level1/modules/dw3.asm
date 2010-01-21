@@ -330,7 +330,7 @@ mode00	  lda		,s		; restore A
           lda     a,x
           bne		IRQCont		; if A is 0, then this device is not active, so exit
           puls    d
-          bra     IRQExit
+          lbra    IRQExit
 IRQCont
           clrb
           tfr     d,u
@@ -350,7 +350,7 @@ IRQCont
 
 		 * in status events, databyte is split, 4bits status, 4bits port #          
 dostat	 	bitb	#$F0	;mask low bits
-			bne		IRQExit	;we only implement code 0000, term
+			lbne	IRQExit	;we only implement code 0000, term
 			* set u to port #
 			IFGT    Level-1
 			ldx   	<D.DWStat
@@ -359,14 +359,62 @@ dostat	 	bitb	#$F0	;mask low bits
 			ENDC
 			lda     b,x
 			bne		statcont		; if A is 0, then this device is not active, so exit
-			bra     IRQExit
+			lbra    IRQExit
+
+* This routine roots through process descriptors in a queue and
+* checks to see if the process has a path that is open to the device
+* represented by the static storage pointer in U. if so, the S$HUP
+* signal is sent to that process
+*
+* Entry: X = process descriptor to evaluate
+*        U = static storage of device we want to check against
+RootThrough
+                        ldb     #NumPaths
+                        leay    P$Path,x
+                        pshs    x
+loop                    decb
+                        bmi     out
+                        lda     ,y+
+                        beq     loop
+                        pshs    y
+                        IFGT    Level-1
+                        ldx     <D.PthDBT
+                        ELSE
+                        ldx     >D.PthDBT
+                        ENDC
+                        os9     F$Find64
+                        ldx     PD.DEV,y
+                        leax    V$STAT,x
+                        puls    y
+                        bcs     out
+                        
+                        cmpu    ,x
+                        bne     loop
+                        
+                        ldx     ,s
+                        lda     P$ID,x
+                        ldb     #S$HUP
+                        os9     F$Send
+
+out                     puls    x                        
+                        ldx     P$Queue,x
+                        bne     RootThrough
+                        rts
+
 statcont	clrb
           	tfr     d,u
-			lda		<V.LPRC,u
-			beq		IRQExit ; no last process, bail
-			ldb		#S$Peer
-*			ldb		#S$Kill
-			os9		F$Send	; send signal, don't think we can do anything about an error result anyway.. so
+* NEW: root through all process descriptors. if any has a path open to this
+* device, send then S$HUP
+                        ldx             <D.AProcQ
+                        beq             dowait
+                        bsr             RootThrough
+dowait                  ldx             <D.WProcQ
+                        beq             dosleep
+                        bsr             RootThrough
+dosleep                 ldx             <D.SProcQ
+                        beq             CkSuspnd
+                        bsr             RootThrough
+
 			bra		CkSuspnd  ; do we need to go check suspend?
 
 ; put byte B in port As buffer - optimization help from Darren Atkinson       

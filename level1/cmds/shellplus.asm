@@ -15,7 +15,7 @@
 * History and numerous features added.
 *
 *  23      2010/01/19  Boisy G. Pitre
-* Added code to honor S$Peer signal and exit when received to support
+* Added code to honor S$HUP signal and exit when received to support
 * networking.
 
          nam   Shell
@@ -204,8 +204,9 @@ L0061    fcc   '+++END+++'
          fcb   C$CR
 * Intercept routine
 L006B    stb   <u000E         Save signal code & return
-* +++ BGP added for peer disconnect
-         cmpb  #S$Peer
+* +++ BGP added for Hang Up
+* +++ Note we are exiting even if shell is immortal!
+         cmpb  #S$HUP
          lbeq  exit
 * +++
          rti

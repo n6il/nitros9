@@ -295,7 +295,7 @@ ReadSlp2   lda   	>D.Proc    	; process descriptor address MSB
           ldx   	>D.Proc		; process descriptor address
           ldb   	P$Signal,x 	; pending signal for this process?
           beq   	ChkState  	; no, go check process state...
-          cmpb  	#S$Peer  	; (S$Peer or lower)
+          cmpb  	#S$HUP  	; (S$HUP or lower)
           bls  	ErrExit    	; yes, go do it...
 
 ChkState 	equ   	*
