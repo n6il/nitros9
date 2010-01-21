@@ -415,9 +415,10 @@ dowait         ldx       <D.WProcQ
                beq       dosleep
                bsr       RootThrough
 dosleep        ldx       <D.SProcQ
-               beq       CkSuspnd
+               beq       CkLPRC
                bsr       RootThrough
 
+CkLPRC
                lda       <V.LPRC,u
                beq       IRQExit             ; no last process, bail
                ldb       #S$HUP
