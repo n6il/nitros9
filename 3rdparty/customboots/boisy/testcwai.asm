@@ -12,11 +12,11 @@ edition  set   1
 stack    rmb   200
 size     equ   .
 
-name     fcs   /testmul/
+name     fcs   /testcwai/
          fcb   edition
 
 start
-         cwai  #^IntMasks
+         cwai  #$FF
          
          clrb
          os9   F$Exit
