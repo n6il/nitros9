@@ -12,7 +12,7 @@ edition  set   1
 stack    rmb   200
 size     equ   .
 
-name     fcs   /testmul/
+name     fcs   /testadd/
          fcb   edition
 
 start
