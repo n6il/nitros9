@@ -76,15 +76,20 @@ rev      set   $07
          fcb   24         (szy) number of rows for display
 initsize equ   *
 
+name     equ   *
          IFEQ  Addr-0
-name     fcs   /Term/
+         fcs   /Term/
          ELSE
-name     fcc   /N/
+         IFNE  Addr-255
+         fcc   /N/
          IFGT  Addr-9
          fcc   '1'
          fcb   176+Addr-10
          ELSE
          fcb   176+Addr
+         ENDC
+         ELSE
+         fcs   /N/
          ENDC
          ENDC
 mgrnam   fcs   /SCF/
