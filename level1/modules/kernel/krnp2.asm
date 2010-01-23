@@ -202,8 +202,8 @@ L0138    lda   P$SID,y
          cmpa  ,s
          bne   L0135
          ldu   $03,s
-         ldb   $02,u
-         stb   $02,y
+         ldb   R$B,u
+         stb   P$SID,y
          os9   F$Ret64
          puls  pc,u,y,x,a
 
@@ -260,7 +260,7 @@ L01B2    ldd   P$Queue,x
          os9   F$AProc
          leay  ,u
          ldu   P$SP,x
-         ldu   $01,u
+         ldu   R$D,u
          lbsr  L0126
 L01C2    clra
          clrb
@@ -320,9 +320,9 @@ L0217    ldx   <D.FMBM
 L0225    std   P$ADDR,x
 L0227    lda   P$PagCnt,x
          clrb
-         std   $01,u
+         std   R$D,u
          adda  P$ADDR,x
-         std   $06,u
+         std   R$Y,u
          rts
 L0231    comb
          ldb   #E$MemFul
@@ -434,7 +434,7 @@ L02EE    ldd   R$X,u                   get timeout
          std   R$X,u                   save back to caller
          beq   L02E9                   branch if give up tslice
          pshs  u,x
-         ldx   #$0043
+         ldx   #(D.SProcQ-P$Queue)
 L02FE    leay  ,x
          ldx   P$Queue,x
          beq   L0316
@@ -444,9 +444,9 @@ L02FE    leay  ,x
          puls  b,a
          beq   L0316
          ldu   P$SP,x
-         subd  $04,u
+         subd  R$X,u
          bcc   L02FE
-         addd  $04,u
+         addd  R$X,u
 L0316    puls  u,x
          std   R$X,u
          ldd   P$Queue,y
@@ -468,7 +468,7 @@ L0316    puls  u,x
 L033A    lda   P$State,x
          anda  #^TimSleep
          sta   P$State,x
-         ldd   #$0043
+         ldd   #(D.SProcQ-P$Queue)
 L0343    tfr   d,y
          ldd   P$Queue,y
          bne   L0343
