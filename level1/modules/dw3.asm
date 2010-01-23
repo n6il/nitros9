@@ -409,12 +409,12 @@ statcont       clrb
 * NEW: root through all process descriptors. if any has a path open to this
 * device, send then S$HUP
                ldx       <D.AProcQ
-               beq       dowait
+               beq       dowaitq
                bsr       RootThrough
-dowait         ldx       <D.WProcQ
-               beq       dosleep
+dowaitq        ldx       <D.WProcQ
+               beq       dosleepq
                bsr       RootThrough
-dosleep        ldx       <D.SProcQ
+dosleepq       ldx       <D.SProcQ
                beq       CkLPRC
                bsr       RootThrough
 
