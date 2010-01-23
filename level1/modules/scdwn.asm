@@ -3,6 +3,30 @@
 *
 * $Id$
 *
+* How this wildcard /N stuff works:
+* A process interested in obtaining a path to a network device
+* can open any /Nx descriptor but it may be in use by another process.
+* The safest way to obtain a new network device is to open the wildcard
+* descriptor /N. This works similarly to the way /W works in the CoCo 3
+* VTIO driver.
+*
+* When /N is open, the INIT routine is called but most of it is bypassed
+* because it detects the wildcard device (which has an address of $FFFF). 
+*
+* The SS.Open I$SetStat entry point is called. That routine also detects
+* the wildcard is used, so the hunt is on for the next available /Nx
+* descriptor (it does this by checking the DW static storage for each /Nx
+* in the DW static storage page).  If it finds a free page, it notes the
+* offset as a number, then builds a descriptor name (ex: /N4) and then
+* F$Links to it.  It then takes the descriptor module address and sticks it
+* in the device table entry for /N.  It also takes the V.PORT address and sticks
+* it in the static storage memory allocated for /N.
+* Afer that, SS.Open does something really sneaky: it branches into the
+* Init routine which detects via the static storage that this is not a /N 
+* descriptor but a /N4 descriptor.  Init then sends the SERINIT and initializes
+* the DW static storage for /N4.  Control is returned to the SS.Open code which
+* then advertises the SS.Open to the server.
+*
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
