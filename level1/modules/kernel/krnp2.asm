@@ -333,8 +333,8 @@ L0236    addd  #$00FF
          exg   a,b
          rts
 
-FSend    lda   R$A,u
-         bne   L024F
+FSend    lda   R$A,u		get process ID of recipient
+         bne   L024F		branch if > 0
          inca
 L0242    ldx   <D.Proc
          cmpa  P$ID,x
@@ -355,43 +355,44 @@ L0259    comb
          ldb   #E$IPrcID
          puls  pc,y,a
 
+* Entry: A = recipient PID
 L025E    pshs  y,a
-         ldb   P$SID,u
-         bne   L0275
-         ldx   <D.Proc
-         ldd   P$User,x
-         beq   L026F
-         cmpd  P$User,y
-         bne   L0259
-L026F    lda   P$State,y
-         ora   #Condem
-         sta   P$State,y
+         ldb   R$B,u			get caller regB (signal)
+         bne   L0275			branch if not 0
+         ldx   <D.Proc			get active process desc
+         ldd   P$User,x			get user id
+         beq   L026F			branch if super user ID
+         cmpd  P$User,y			same as user of recipient process?
+         bne   L0259            no, cannot send signal to another users process
+L026F    lda   P$State,y		get state of recipient
+         ora   #Condem			set condemn bit
+         sta   P$State,y		and set it back
 L0275    orcc  #FIRQMask+IRQMask
-         lda   <P$Signal,y
-         beq   L0284
-         deca
-         beq   L0284
-         comb
+         lda   <P$Signal,y		get recipient pending signal
+         beq   L0284			branch if none
+         deca					is the pending signal the wake signal?
+         beq   L0284			branch if so
+         comb					else indicate signal already pending
          ldb   #E$USigP
          puls  pc,y,a
 
-L0284    ldb   P$SID,u
+L0284    ldb   R$B,u			get caller regB (signal)
          stb   <P$Signal,y
-         ldx   #$0043
+         ldx   #(D.SProcQ-P$Queue) get pointer to sleeping process queue
          bra   L02B4
-L028E    cmpx  $01,s
-         bne   L02B4
-         lda   P$State,x
-         bita  #$40
-         beq   L02C7
-         ldu   P$SP,x
-         ldd   R$X,u
-         beq   L02C7
-         ldu   P$Queue,x
-         beq   L02C7
+L028E    cmpx  $01,s			same as process descriptor of recipient?
+         bne   L02B4            branch if not
+         lda   P$State,x        else get state of recipient
+         bita  #TimSleep        timed sleep?
+         beq   L02C7            branch if not
+         ldu   P$SP,x           else get recipient stack pointer
+         ldd   R$X,u            and X
+         beq   L02C7            if X == 0 (sleep forever), then branch
+         ldu   P$Queue,x        get queue pointer of recipient
+         beq   L02C7            branch if empty
          pshs  b,a
          lda   P$State,u
-         bita  #$40
+         bita  #TimSleep
          puls  b,a
          beq   L02C7
          ldu   P$SP,u
@@ -401,7 +402,7 @@ L028E    cmpx  $01,s
 L02B4    leay  ,x
          ldx   P$Queue,y
          bne   L028E
-         ldx   #$0041
+         ldx   #(D.WProcQ-P$Queue)
 L02BD    leay  ,x
          ldx   P$Queue,y
          beq   L02D7
