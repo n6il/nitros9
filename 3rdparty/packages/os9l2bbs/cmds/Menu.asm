@@ -49,99 +49,11 @@ u0EC5    rmb   4450
 size     equ   .
 name     equ   *
          fcs   /menu/
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $79 y
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $67 g
-         fcb   $68 h
-         fcb   $74 t
-         fcb   $20 
-         fcb   $28 (
-         fcb   $43 C
-         fcb   $29 )
-         fcb   $20 
-         fcb   $31 1
-         fcb   $39 9
-         fcb   $38 8
-         fcb   $38 8
-         fcb   $42 B
-         fcb   $79 y
-         fcb   $20 
-         fcb   $4B K
-         fcb   $65 e
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $20 
-         fcb   $41 A
-         fcb   $6C l
-         fcb   $70 p
-         fcb   $68 h
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $73 s
-         fcb   $6F o
-         fcb   $4C L
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $41 A
-         fcb   $6C l
-         fcb   $70 p
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $20 
-         fcb   $53 S
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $74 t
-         fcb   $77 w
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20 
-         fcb   $54 T
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $67 g
-         fcb   $69 i
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $41 A
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20 
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $67 g
-         fcb   $68 h
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $20 
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $64 d
+         fcc   /Copyright (C) 1988/
+         fcc   /By Keith Alphonso/
+         fcc   /Licenced to Alpha Software Technologies/
+         fcc   /All rights reserved/
+
          fcb   $EC l
          fcb   $E6 f
          fcb   $EA j
