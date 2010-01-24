@@ -462,18 +462,18 @@ SendStat
 *
 SetStat                  
                cmpa      #SS.Open
-               bne       isitclose
+               bne       isitcomst
                bsr       open
+               bcs       ssbye
                ldd       #SS.Open*256+OP_SERSETSTAT
                bra       SendStat
-               
-isitclose
+isitcomst                              
                ldb       #OP_SERSETSTAT
                bsr       SendStat
-               cmpa      #SS.Close
-               beq       ex
                cmpa      #SS.ComSt
                beq       comst
+               cmpa      #SS.Close
+               beq       ex
                cmpa      #SS.SSig
                beq       ssig
                cmpa      #SS.Relea
@@ -505,18 +505,20 @@ comst          leax      PD.OPT,y
                endc      
                jsr       6,u
                clrb      
-               rts       
+ssbye          rts       
 
 * SS.Open processor
 * Entry: X=Register stack pointer
 *        U=Static memory pointer
 *        Y=Path descriptor pointer
 open     pshs  u,y        preserve registers
-         tst   <V.PORT+1,u         check if this is $FF00 (wildcard)
+         tst   <V.PORT+1,u         check if this is $FFFF (wildcard)
          lbpl  L0BCD
          ldx   PD.DEV,y   get pointer to device table entry
          ldx   V$DESC,x   get pointer to /N descriptor
          pshs  x          save device descriptor pointer
+* start at /N1
+         ldb       #1      
 L0B58    equ   *
          ifgt      Level-1
          ldx       <D.DWStat
@@ -525,18 +527,15 @@ L0B58    equ   *
          endc      
 ; cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
 ;		leax      DW.StatTbl,x
-* start at /N1
-         ldb       #1      
-         leax      1,x
-next     tst       ,x+
+next     cmpb      #DW.StatCnt-1
+         bge       opexer
+         tst       b,x
          beq       found
          incb      
-         cmpb      #DW.StatCnt-1
-         blt       next
-         puls  u,y,x      purge stack
-         comb             set carry
+         bra       next
+opexer   comb             set carry
          ldb   #E$MNF     get module not found error
-         rts              return
+         puls  x,y,u,pc      purge stack and return
          
 * Found a free spot
 found    pshs  b          save # of free entry
@@ -571,12 +570,15 @@ L0B92    leas  -2,s       make a buffer for process decriptor pointer
          lda   #Devic+Objct get module type
          os9   F$Link     try & link it
          IFGT  Level-1
+         pshs  cc
          lbsr  L0244      switch back to current process
+         puls  cc
          ENDC
          leas  7,s        purge stack
          bcc   L0BAB      it's linked, skip ahead
-L0BA7    leas  1,s        purge netdev #
-         bra   L0B58      go look for another one
+L0BA7    puls  b          get original number
+         incb
+         bra   L0B58      go find another free space
 
          IFGT  Level-1
 * Switch to system process descriptor

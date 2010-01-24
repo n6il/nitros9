@@ -186,6 +186,11 @@
 * the open path list, and if ITS mode byte has the SHARE. bit set, we exit
 * with E$DevBsy too.  The idea is that if the SHARE. bit is set on the newly
 * opened path or an existing path, then there can "be only one."
+*
+*  17r1    2010/01/23  Boisy G. Pitre
+* SCF now returns on carry set after calling SS.Open.  Prior to this
+* change, SS.ComSt would be called right after SS.Open even if SS.Open
+* failed. This caused misery with the scdwn driver wildcard feature.
 
          nam   SCF
          ttl   NitrOS-9 Level 2 Sequential Character File Manager
@@ -197,7 +202,7 @@
 
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
-rev      set   0
+rev      set   1
 edition  equ   17
 
          mod   eom,SCFName,tylg,atrv,SCFEnt,0
@@ -370,6 +375,8 @@ L00F8    lda   #SS.Open     Internal open call
          lbsr  L025B        Do the SS.Open call to the driver
          lda   2,s          Get counter of good paths
          leas  3,s          Eat stack
+* NEW: return with error if SS.Open return error
+         bcs   L010F        +++BGP+++
          deca               Bump down good path count
          bne   L0129        If more still open, exit without error
          blo   L010F        If negative, something went wrong
