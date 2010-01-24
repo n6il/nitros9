@@ -6,7 +6,7 @@
          ifp1
          use   defsfile
          endc
-tylg     set   Data +Objct   
+tylg     set   Data+Objct   
 atrv     set   ReEnt+rev
 rev      set   $01
          mod   eom,name,tylg,atrv,start,size
