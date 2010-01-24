@@ -551,6 +551,7 @@ found          pshs      b                   save # of free entry
 * Convert netdev # in B to ASCII eqivalent with high bit set
 
                ifne      H6309
+               clra
                divd      #10                 divide it by 10
                else      
                lda       #-1
