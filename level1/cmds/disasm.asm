@@ -1457,7 +1457,7 @@ devtype  equ   *
          fcc   /Prgrm/
          fcc   /Sbrtn/
          fcc   /Multi/
-         fcc   /Data /
+         fcc   / Data/
          fcc   /Systm/
          fcc   /FlMgr/
          fcc   /Drivr/
