@@ -223,7 +223,7 @@ blksize  equ   256-msgsize  Size of blank space after it
 opbpnam  puls  y
 bpnam    comb               Set carry for error
          ldb   #E$BPNam     Get error code
-openerr  rts                Return to caller
+oerr     rts                Return to caller
 
 * I$Create/I$Open entry point
 * Entry: Y= Path dsc. ptr
@@ -243,7 +243,7 @@ open1    sty   R$X,u        Save updated name pointer to caller
          puls  y            Restore path descriptor pointer
          ldd   #256         Get size of input buffer in bytes
          os9   F$SRqMem     Allocate it
-         bcs   openerr      Can't allocate it return with error
+         bcs   oerr         Can't allocate it return with error
          stu   PD.BUF,y     Save buffer address to path descriptor
          leax  <msg,pc      Get ptr to init string
 
@@ -307,7 +307,7 @@ CopyCR   sta   ,u+
          sty   <D.Proc      Restore old current process pointer
          puls  y            Restore path descriptor pointer
          ENDC
-         bcs   L0111        Couldn't attach to device, detach & exit with error
+         bcs   OpenErr     Couldn't attach to device, detach & exit with error
          stu   PD.DV2,y     Save new output (echo) device table pointer
 *         ldu   PD.DEV,y     Get device table pointer
 L00CF    ldu   V$STAT,u     Point to it's static storage
@@ -357,7 +357,7 @@ L00CF    ldu   V$STAT,u     Point to it's static storage
 NoShare  leas  2,s          Eat extra stack (including good path count)
          comb
          ldb   #E$DevBsy    Non-sharable device busy error
-         bra   L0111        Go detach device & exit with error
+         bra   OpenErr       Go detach device & exit with error
          
 Yespath  sty   V.PDLHd,u    Save path descriptor ptr
          bra   L00F8        Go open the path
@@ -382,8 +382,9 @@ L00F8    lda   #SS.Open     Internal open call
          blo   L010F        If negative, something went wrong
          lbra  L0250        Set parity/baud & return
 
+* we come here if there was an error in Open (after I$Attach and F$SRqMem!)
 L010F    bsr   L0149        Error, go clear stuff out
-L0111    pshs  b,cc         Preserve error status
+OpenErr  pshs  b,cc         Preserve error status
          bsr   L0136        Detach device
          puls  pc,b,cc      Restore error status & return
 
@@ -501,7 +502,12 @@ L0198    cmpb  a,x          Same path as one is process' local path list?
          ENDC
          lda   P$PID,x      Get parent process ID
          sta   ,s           Save it
+         IFGT  Level-1
          os9   F$GProcP     Get pointer to parent process descriptor
+         ELSE
+         ldx   <D.PrcDBT
+         os9   F$Find64
+         ENDC
          leax  P$Path,y     Point to local path table
          ldb   1,s          Get path number
          clra               Get starting path number
@@ -547,7 +553,15 @@ L01F7    rts                Return
 L01F8    ldf   #D$GSTA      Get Getstat driver entry offset
 L01FA    ldx   PD.DEV,y     Get device table pointer
          ldu   V$STAT,x     Get static storage pointer
+         IFGT  Level-1
          ldx   V$DRIVEX,x   get execution pointer of driver
+         ELSE
+         pshs  d
+         ldx   V$DRIV,x     get driver module
+         ldd   M$EXEC,x
+         leax  d,x
+         puls  d
+         ENDC
          pshs  y,u          Preserve registers
          jsr   f,x          Execute driver
          puls  y,u,pc       Restore & return
@@ -557,9 +571,17 @@ L01FA    ldx   PD.DEV,y     Get device table pointer
 L01F8    ldb   #D$GSTA
 L01FA    ldx   PD.DEV,y
          ldu   V$STAT,x
+         IFGT  Level-1
          ldx   V$DRIVEX,x
+         ELSE
+         pshs  d
+         ldx   V$DRIV,x     get driver module
+         ldd   M$EXEC,x
+         leax  d,x
+         puls  d
+         ENDC
          pshs  u,y
-         jsr   b,x
+LC486    jsr   b,x
          puls  y,u,pc
 
          ENDC
@@ -783,7 +805,15 @@ L03F1    tfr   u,d          Yes, move echo device' static storage to D
          std   V.DEV2,u     Save echo device's static storage into input device
          clra
          sta   V.WAKE,u     Flag input device to be awake
+         IFGT  Level-1
          ldx   V$DRIVEX,x   Get driver execution pointer
+         ELSE
+         pshs  d
+         ldx   V$DRIV,x     get driver module
+         ldd   M$EXEC,x
+         leax  d,x
+         puls  d
+         ENDC
          jsr   D$READ,x     Execute READ routine in driver
 L0401    puls  pc,u,y,x     Restore regs & return
 
@@ -831,11 +861,14 @@ L0442    pshs  d
          ENDC
          os9   F$Move         Move it to caller
          ELSE
+         puls  y
+         pshs  u
 L0443
          lda   ,x+
          sta   ,u+
          leay  -1,y
          bne   L0443
+         puls  u
          ENDC
 L0451    puls  pc,y,x         Restore & return
 
@@ -986,7 +1019,7 @@ L0508    ldd   PD.BUF,y       Get buffer ptr
          ldd   R$Y,u
          subd  ,s
          cmpd  #$0020
-         bls  L0508
+         bls   L0508
          ldd   #$0020
 L0508    pshs  d
          ldd   PD.BUF,y
@@ -1007,10 +1040,13 @@ L0508    pshs  d
          ENDC
          os9   F$Move         Move data to buffer
          ELSE
+         puls  y
+         pshs  u
 L0509    lda   ,x+
          sta   ,u+
          leay  -1,y
          bne   L0509
+         puls  u
          ENDC
          puls  y,x            Restore path descriptor pointer and data offset
 
@@ -1194,7 +1230,15 @@ L05C9    ldu   V$STAT,x       Get device static storage pointer
          pshs  y,x            Preserve registers
          clrb
          stb   V.WAKE,u       Wake it up
+         IFGT  Level-1
          ldx   V$DRIVEX,x     Get driver execution pointer
+         ELSE
+         pshs  d
+         ldx   V$DRIV,x     get driver module
+         ldd   M$EXEC,x
+         leax  d,x
+         puls  d
+         ENDC
          jsr   D$WRIT,x       Execute driver
          puls  pc,y,x         Restore & return
 
@@ -1207,7 +1251,15 @@ L0565    pshs  u,y,x,a        Preserve registers
 L056F    ldu   V$STAT,x       Get device static storage pointer
          clrb
          stb   V.WAKE,u       Wake it up
+         IFGT  Level-1
          ldx   V$DRIVEX,x     Get driver execution pointer
+         ELSE
+         pshs  d
+         ldx   V$DRIV,x     get driver module
+         ldd   M$EXEC,x
+         leax  d,x
+         puls  d
+         ENDC
          jsr   D$WRIT,x       Execute driver
 L0571    puls  pc,u,y,x,a     Restore & return
 
@@ -1371,7 +1423,7 @@ L032C    pshs  x,pc         Preserve character count & PC
          abx                Point to entry point
          stx   2,s          Save it in PC on stack
          puls  x            Restore X
-         jsr   [,s++]       Execute routine
+C8E3         jsr   [,s++]       Execute routine
          lbra  L05F8        Continue on
 
 * Vector points for PD.BSP-PD.QUT
