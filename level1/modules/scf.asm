@@ -167,9 +167,11 @@ L00E0    ldd   <PD.PLP,x               get path descriptor list pointer
 L00E9    lda   #SS.Open                internal open call
          pshs  a                       save it on the stack
          inc   2,s                     bump counter of good paths up by 1
-         lbsr  L01BD                   do the SS.Open call to th driver
+         lbsr  L01BD                   do the SS.Open call to the driver
          lda   2,s                     get counter of good paths
          leas  3,s                     clean up stack
+* NEW: return with error if SS.Open return error
+         bcs   L00FD                   +++BGP+++
          deca                          bump down good path count
          bne   L00FC                   if more still open, exit without error
          lbra  L01B2                   set parity/baud & return
