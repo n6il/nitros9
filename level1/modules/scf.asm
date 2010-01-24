@@ -11,6 +11,11 @@
 *
 *  11      2010/01/20  Boisy G. Pitre
 * Added support for SHARE. bit
+*
+*  11r1    2010/01/23  Boisy G. Pitre
+* SCF now returns on carry set after calling SS.Open.  Prior to this
+* change, SS.ComSt would be called right after SS.Open even if SS.Open
+* failed. This caused misery with the scdwn driver wildcard feature.
 
          nam   SCF
          ttl   OS-9 Level One V2 SCF file manager
@@ -22,7 +27,7 @@
 
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 edition  set   11
 
          mod   eom,name,tylg,atrv,start,size
