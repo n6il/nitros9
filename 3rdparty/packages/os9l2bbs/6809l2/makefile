@@ -2,6 +2,8 @@ include $(NITROS9DIR)/rules.mak
 
 vpath %.asm ../cmds
 
+DSK	= os9l2bbs.dsk
+
 PROBCMDS = AnsiEd AnsiFilt BBS.chat New_user Quikterm pause suser
 CMDS	= Ansicode Answer At \
 	BBS.archive BBS.build BBS.conf BBS.conf.who BBS.convert \
@@ -16,6 +18,13 @@ CMDS	= Ansicode Answer At \
 	Uloada Uloadx Uloadxc Uloady ViewBBS
 
 all: $(CMDS)
+
+dsk:
+	$(OS9FORMAT) -q $(DSK)
+	$(MAKDIR) $(DSK),GAME
+	os9 dsave ../game $(DSK),GAME -e
+	$(MAKDIR) $(DSK),BBS
+	os9 dsave ../bbs $(DSK),BBS -e
 
 clean:
 	-$(RM) $(CMDS)
