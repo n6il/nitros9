@@ -4,7 +4,7 @@
 * Disassembled 2010/01/24 10:24:18 by Disasm v1.5 (C) 1988 by RML
 
          ifp1
-         use   /dd/defs/defsfile
+         use   defsfile
          endc
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
