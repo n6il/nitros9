@@ -1058,9 +1058,11 @@ L0509    lda   ,x+
 * X = number of characters written
 * Y = PD pointer
 * U = pointer to data buffer to write
-* Use callcode $06 to call grfdrv (old DWProtSW from previous versions,
+* Level 2: Use callcode $06 to call grfdrv (old DWProtSW from previous versions,
 *   now unused by GrfDrv
-L0523    ldb   PD.PAR,y     get device parity: bit 7 set = window
+L0523
+         IFGT  Level-1
+         ldb   PD.PAR,y     get device parity: bit 7 set = window
          cmpb  #$80         is it even potentially a CoWin window?
          bne   L0524        no, skip the rest of the crap
 
@@ -1071,7 +1073,6 @@ L0523    ldb   PD.PAR,y     get device parity: bit 7 set = window
 
 g.raw    pshs  b,x,y,u      save length, PD, data buffer pointers
 
-         IFGT  Level-1
          lbsr  get.wptr     get window table ptr into Y
          bcs   no.wptr      do old method on error
 
@@ -1115,9 +1116,9 @@ g.done   leas  1,s          kill max. count of characters to use
          stu   5,s          save old U, too
          puls  b,x,y,u      restore registers
          bra   L0544        do end-buffer checks and continue
-         ENDC
 
 no.wptr  puls  b,x,y,u      restore all registers
+         ENDC
 
 L0524    lda   ,u+            Get character to write
          ldb   PD.RAW,y       Raw mode?
