@@ -527,7 +527,7 @@ L0B58    equ   *
          endc      
 ; cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
 ;		leax      DW.StatTbl,x
-next     cmpb      #DW.StatCnt-1
+next     cmpb      #DW.StatCnt
          bge       opexer
          tst       b,x
          beq       found
