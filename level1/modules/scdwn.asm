@@ -575,9 +575,7 @@ L0B92          leas      -2,s                make a buffer for process decriptor
                lda       #Devic+Objct        get module type
                os9       F$Link              try & link it
                ifgt      Level-1
-               pshs      cc
                lbsr      L0244               switch back to current process
-               puls      cc
                endc      
                leas      7,s                 purge stack
                bcc       L0BAB               it's linked, skip ahead
