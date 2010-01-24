@@ -1,18 +1,29 @@
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm cmds
+dirs	=  6809l2
+ 
+# Make all components
+all:
+	@$(ECHO) "**************************************************"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "*                OS-9 LEVEL 2 BBS                *"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "**************************************************"
+	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
 
-CMDS	= AnsiEd AnsiFilt Ansicode Answer At \
-	BBS.archive BBS.build BBS.chat BBS.conf BBS.conf.who BBS.convert \
-	BBS.create BBS.delete BBS.download BBS.form BBS.forward BBS.list \
-	BBS.mail.check BBS.mail.delete BBS.mail.post BBS.mail.read \
-	BBS.mail.readD BBS.new BBS.pack BBS.page BBS.post BBS.read BBS.reply \
-	BBS.scan BBS.search BBS.stat BBS.upload BBS.validate BBS.who \
-	Conf.dat \
-	DLD.add DLD.list DLD.read DLD.search DLD.unvalidate DLD.validate \
-	Dloada Dloadx Dloadxc Dloady \
-	Login Makdir Menu Monitor New_user Prompt Quikterm T1mon Tsmon \
-	Uloada Uloadx Uloadxc Uloady ViewBBS pause suser
+# Clean all components
+clean:
+	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
 
-all: $(CMDS)
+# Make DSK images
+dsk:	all
+	$(foreach dir, $(dirs), ($(CD) $(dir); make dsk);)
+
+# Copy DSK images
+dskcopy:	all
+	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
+
+# Clean DSK images
+dskclean:
+	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
 
