@@ -1,5 +1,5 @@
 ********************************************************************
-* SCF - NitrOS-9 Level 2 Sequential Character File Manager
+* SCF - NitrOS-9 Sequential Character File Manager
 *
 * $Id$
 *
@@ -187,13 +187,15 @@
 * with E$DevBsy too.  The idea is that if the SHARE. bit is set on the newly
 * opened path or an existing path, then there can "be only one."
 *
-*  17r1    2010/01/23  Boisy G. Pitre
+*  18      2010/01/23  Boisy G. Pitre
+* SCF has successfully been backported to NitrOS-9 Level 1.
 * SCF now returns on carry set after calling SS.Open.  Prior to this
 * change, SS.ComSt would be called right after SS.Open even if SS.Open
 * failed. This caused misery with the scdwn driver wildcard feature.
+*
 
          nam   SCF
-         ttl   NitrOS-9 Level 2 Sequential Character File Manager
+         ttl   NitrOS-9 Sequential Character File Manager
 
          IFP1
          use   defsfile
@@ -202,8 +204,8 @@
 
 tylg     set   FlMgr+Objct
 atrv     set   ReEnt+rev
-rev      set   1
-edition  equ   17
+rev      set   0
+edition  equ   18
 
          mod   eom,SCFName,tylg,atrv,SCFEnt,0
 
