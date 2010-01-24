@@ -12,7 +12,7 @@ CMDS	= Ansicode Answer At \
 	Conf.dat \
 	DLD.add DLD.list DLD.read DLD.search DLD.unvalidate DLD.validate \
 	Dloada Dloadx Dloadxc Dloady \
-	Login Makdir Menu Monitor Prompt T1mon Tsmon \
+	Login Makdir Menu Monitor New_user Prompt T1mon Tsmon \
 	Uloada Uloadx Uloadxc Uloady ViewBBS
 
 all: $(CMDS)
