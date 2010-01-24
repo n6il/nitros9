@@ -90,26 +90,26 @@ start          equ       *
 *    CC = carry set on error
 *    B  = error code   
 Term           equ       *
-               lda       <V.PORT+1,u         ;get our port #
- bmi termbye
-               pshs      a                   ;port # on stack
-          * clear statics table entry
+               lda       <V.PORT+1,u         get our port #
+               bmi       termbye			if this is wildcard, skip TERM
+               pshs      a                   port # on stack
+* clear statics table entry
                ifgt      Level-1
                ldx       <D.DWStat
                else      
                ldx       >D.DWStat
                endc      
                beq       tell
-; cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
-;		leax      DW.StatTbl,x
-               clr       a,x                 ;clear out
+* cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
+*	           leax      DW.StatTbl,x
+               clr       a,x                 clear out
 
-          ; tell server
+* tell server
 tell                     
-               lda       #OP_SERTERM         ; load command
-               pshs      a                   ; command store on stack
-               leax      ,s                  ; point X to stack 
-               ldy       #2                  ; 2 bytes to send 
+               lda       #OP_SERTERM         load command
+               pshs      a                   command store on stack
+               leax      ,s                  point X to stack 
+               ldy       #2                  2 bytes to send 
 
                pshs      u
 
@@ -119,11 +119,11 @@ tell
                ldu       >D.DWSubAddr
                endc      
                beq       nosub
-               jsr       6,u                 ; call DWrite
+               jsr       6,u                 call DWrite
 
 nosub                    
                puls      u
-               leas      2,s                 ; clean 3 DWsub args from stack 
+               leas      2,s                 clean 3 DWsub args from stack 
 termbye        clrb      
                rts       
 
@@ -180,7 +180,7 @@ already
 ; tell DW we have a new port opening (port mode already on stack)
                ldb       <V.PORT+1,u         ; get our port #	
 * if /N wildcard, skip advertising via SERINIT
- bmi initEx              
+               bmi       initEx
                lda       #OP_SERINIT         ; command 
                pshs      d                   ; command + port # on stack
                leax      ,s                  ; point X to stack 
@@ -467,7 +467,7 @@ SetStat
                bcs       ssbye
                ldd       #SS.Open*256+OP_SERSETSTAT
                bra       SendStat
-isitcomst                              
+isitcomst                
                ldb       #OP_SERSETSTAT
                bsr       SendStat
                cmpa      #SS.ComSt
@@ -477,7 +477,7 @@ isitcomst
                cmpa      #SS.SSig
                beq       ssig
                cmpa      #SS.Relea
-               lbne      donebad
+               bne       donebad
 relea          lda       PD.CPR,y            get curr proc #
                cmpa      <SSigID,u           same?
                bne       ex
@@ -496,6 +496,10 @@ ssig           pshs      cc
 ssigsetup      std       <SSigID,u           ; save process ID & signal
                puls      cc,pc
 
+donebad        comb      
+               ldb       #E$UnkSvc
+               rts       
+
 comst          leax      PD.OPT,y
                ldy       #OPTCNT
                ifgt      LEVEL-1
@@ -511,139 +515,107 @@ ssbye          rts
 * Entry: X=Register stack pointer
 *        U=Static memory pointer
 *        Y=Path descriptor pointer
-open     pshs  u,y        preserve registers
-         tst   <V.PORT+1,u         check if this is $FFFF (wildcard)
-         lbpl  L0BCD
-         ldx   PD.DEV,y   get pointer to device table entry
-         ldx   V$DESC,x   get pointer to /N descriptor
-         pshs  x          save device descriptor pointer
+open           tst       <V.PORT+1,u         check if this is $FFFF (wildcard)
+               bpl       ssbye               if not, we have nothing to do
+               pshs      u,y                 preserve registers
+               ldx       PD.DEV,y            get pointer to device table entry
+               ldx       V$DESC,x            get pointer to /N descriptor
+               pshs      x                   save device descriptor pointer
 * start at /N1
-         ldb       #1      
-L0B58    equ   *
-         ifgt      Level-1
-         ldx       <D.DWStat
-         else      
-         ldx       >D.DWStat
-         endc      
+               ldb       #1
+L0B58          equ       *
+               ifgt      Level-1
+               ldx       <D.DWStat
+               else      
+               ldx       >D.DWStat
+               endc      
 ; cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
 ;		leax      DW.StatTbl,x
-next     cmpb      #DW.StatCnt
-         bge       opexer
-         tst       b,x
-         beq       found
-         incb      
-         bra       next
-opexer   comb             set carry
-         ldb   #E$MNF     get module not found error
-         puls  x,y,u,pc      purge stack and return
-         
+next           cmpb      #DW.StatCnt
+               bge       opexer
+               tst       b,x
+               beq       found
+               incb      
+               bra       next
+opexer         comb                          set carry
+               ldb       #E$MNF              get module not found error
+               puls      x,y,u,pc            purge stack and return
+
 * Found a free spot
-found    pshs  b          save # of free entry
-         leas  -5,s
-         leay  ,s
-         ldb   #'N        get netdev name prefix
-         stb   ,y+        put it in buffer
-         ldb   5,s        get netdev # that was free
+found          pshs      b                   save # of free entry
+               leas      -5,s
+               leay      ,s
+               ldb       #'N                 get netdev name prefix
+               stb       ,y+                 put it in buffer
+               ldb       5,s                 get netdev # that was free
 * Convert netdev # in B to ASCII eqivalent with high bit set
 
-         IFNE  H6309
-         divd  #10        divide it by 10
-         ELSE
-         lda   #-1
-L0B87b   inca
-         subb  #10
-         bcc   L0B87b
-         addb  #10
-         exg   a,b
-         cmpb  #0
-         ENDC
-         beq   L0B87      if answer is 0 there is only 1 digit, skip ahead 
-         orb   #$30       make first digit ASCII
-         stb   ,y+        put it in buffer
-L0B87    ora   #$B0       make remainder ASCII with high bit set
-         sta   ,y+        put it in buffer
-L0B92    leas  -2,s       make a buffer for process decriptor pointer
-         IFGT  Level-1
-         lbsr  L0238      switch to system process descriptor
-         ENDC
-         leax  2,s         Point to calculated dsc. name
-         lda   #Devic+Objct get module type
-         os9   F$Link     try & link it
-         IFGT  Level-1
-         pshs  cc
-         lbsr  L0244      switch back to current process
-         puls  cc
-         ENDC
-         leas  7,s        purge stack
-         bcc   L0BAB      it's linked, skip ahead
-L0BA7    puls  b          get original number
-         incb
-         bra   L0B58      go find another free space
+               ifne      H6309
+               divd      #10                 divide it by 10
+               else      
+               lda       #-1
+L0B87b         inca      
+               subb      #10
+               bcc       L0B87b
+               addb      #10
+               exg       a,b
+               cmpb      #0
+               endc      
+               beq       L0B87               if answer is 0 there is only 1 digit, skip ahead 
+               orb       #$30                make first digit ASCII
+               stb       ,y+                 put it in buffer
+L0B87          ora       #$B0                make remainder ASCII with high bit set
+               sta       ,y+                 put it in buffer
+L0B92          leas      -2,s                make a buffer for process decriptor pointer
+               ifgt      Level-1
+               lbsr      L0238               switch to system process descriptor
+               endc      
+               leax      2,s                 Point to calculated dsc. name
+               lda       #Devic+Objct        get module type
+               os9       F$Link              try & link it
+               ifgt      Level-1
+               pshs      cc
+               lbsr      L0244               switch back to current process
+               puls      cc
+               endc      
+               leas      7,s                 purge stack
+               bcc       L0BAB               it's linked, skip ahead
+L0BA7          puls      b                   get original number
+               incb      
+               bra       L0B58               go find another free space
 
-         IFGT  Level-1
+               ifgt      Level-1
 * Switch to system process descriptor
-L0238    pshs  d          Preserve D
-         ldd   <D.Proc    Get current process dsc. ptr
-         std   4,s        Preserve on stack
-         ldd   <D.SysPrc  Get system process dsc. ptr
-         std   <D.Proc    Make it the current process
-         puls  d,pc       Restore D & return
+L0238          pshs      d                   Preserve D
+               ldd       <D.Proc             Get current process dsc. ptr
+               std       4,s                 Preserve on stack
+               ldd       <D.SysPrc           Get system process dsc. ptr
+               std       <D.Proc             Make it the current process
+               puls      d,pc                Restore D & return
 
 * Switch back to current process
-L0244    pshs  d          Preserve D
-         ldd   4,s        Get current process ptr
-         std   <D.Proc    Make it the current process
-         puls  d,pc       Restore D & return
-         ENDC
-         
-* Got a device descriptor, put into device table & save netdev # into static
-L0BAB    
-         lda   M$PORT+2,u get MSB of port byte of newly linked /N? descriptor
-         ldy   3,s        get path descriptor pointer
-         ldx   PD.DEV,y   get pointer to device table
-         stu   V$DESC,x   save pointer to descriptor into it
-         ldu   1,s        get pointer to descriptor
-         os9   F$UnLink   unlink it from system map
-         ldu   5,s        get static mem pointer
-         sta   V.PORT+1,u
-         leas  7,s        purge stack
-* Load Y with address of descriptor and U with address of memory area
- ldy   V$DESC,x
- pshs  x,y,u
- lbsr  Init
- puls  x,y,u,pc
-
-L0BCD    clrb             No error
-         puls             y,u,pc
-
-               ifeq      1
-SetPortSig               
-               cmpa      #SS.PortSig
-               bne       SetPortRel
-               lda       PD.CPR,y            current process ID
-               ldb       R$X+1,x             LSB of [X] is signal code
-               std       <PortSigPID
-               clrb      
-               rts       
-SetPortRel               
-               cmpa      #SS.PortRel
-               bne       donebad
-               leax      PortSigPID,u
-               bsr       ReleaSig
-               clrb      
-               rts       
+L0244          pshs      d                   Preserve D
+               ldd       4,s                 Get current process ptr
+               std       <D.Proc             Make it the current process
+               puls      d,pc                Restore D & return
                endc      
-donebad        comb      
-               ldb       #E$UnkSvc
-               rts       
 
-ReleaSig       pshs      cc                  save IRQ enable status
-               orcc      #IntMasks           disable IRQs while releasing signal
-               lda       PD.CPR,y            get current process ID
-               suba      ,x                  same as signal process ID?
-               bne       NoReleas            no, go return...
-               sta       ,x                  clear this signal's process ID
-NoReleas       puls      cc,pc               restore IRQ enable status, return
+* Got a device descriptor, put into device table & save netdev # into static
+L0BAB                    
+               lda       M$PORT+2,u          get MSB of port byte of newly linked /N? descriptor
+               ldy       3,s                 get path descriptor pointer
+               ldx       PD.DEV,y            get pointer to device table
+               stu       V$DESC,x            save pointer to descriptor into it
+               ldu       1,s                 get pointer to /N descriptor
+               os9       F$UnLink            unlink it from system map
+               ldu       5,s                 get static mem pointer
+               sta       V.PORT+1,u
+               leas      7,s                 purge stack
+* Load Y with address of descriptor and U with address of memory area
+               ldy       V$DESC,x
+               pshs      x,y,u
+               lbsr      Init                call Init to setup dw statics
+               puls      x,y,u,pc
 
                emod      
 eom            equ       *

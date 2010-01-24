@@ -385,7 +385,7 @@ L00F8    lda   #SS.Open     Internal open call
          lbra  L0250        Set parity/baud & return
 
 * we come here if there was an error in Open (after I$Attach and F$SRqMem!)
-L010F    bsr   L0149        Error, go clear stuff out
+L010F    bsr   RemoveFromPDList        Error, go clear stuff out
 OpenErr  pshs  b,cc         Preserve error status
          bsr   L0136        Detach device
          puls  pc,b,cc      Restore error status & return
@@ -404,7 +404,7 @@ L0129    clra               Clear carry
 L012A    rts                Return
 
 * Detach device & return buffer memory
-L012B    bsr   L0149
+L012B    bsr   RemoveFromPDList
          lda   #SS.Close    Get setstat code for close
          ldx   PD.DEV,y     get pointer to device table
          ldx   V$STAT,x     get static mem ptr
@@ -423,7 +423,10 @@ L013D    ldu   PD.BUF,y     Get buffer pointer
 L0147    clra               Clear carry
          rts                Return
 
-L0149    ldx   #1
+* Remove path descriptor from device path descriptor linked list
+* Entry: Y = path descriptor
+RemoveFromPDList
+         ldx   #1
          pshs  cc,d,x,y,u
          ldu   PD.DEV,y     Get device table pointer
          beq   L017B        None, skip ahead
@@ -432,30 +435,25 @@ L0149    ldx   #1
          ldx   V.PDLHd,u    Get path descriptor list header
          beq   L017B        None, skip ahead
          ldd   PD.PLP,y     Get path descriptor list pointer
-         cmpy  V.PDLHd,u
-         bne   L0172
+         cmpy  V.PDLHd,u    is the passed path descriptor the same?
+         bne   L0172        branch if not
          std   V.PDLHd,u
          bne   L017B
          clr   4,s          Clear LSB of X on stack
          bra   L017B        Return
 
-L016D    ldx   PD.PLP,x
-         beq   L0180
-L0172    cmpy  PD.PLP,x
-         bne   L016D
-         std   PD.PLP,x
-
+* D = path descriptor to store
+L016D    ldx   PD.PLP,x     advance to next path descriptor in list
+         beq   L0180        branch if at end of linked list
+L0172    cmpy  PD.PLP,x     is the passed path descriptor the same?
+         bne   L016D        branch if not
+         std   PD.PLP,x     store
          IFNE  H6309
-
 L017B    clrd
-
          ELSE
-
 L017B    clra
          clrb
-
          ENDC
-
          std   PD.PLP,y
 L0180    puls  cc,d,x,y,u,pc
 
