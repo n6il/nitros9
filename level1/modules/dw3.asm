@@ -11,7 +11,10 @@
 *
 *   2      2010/01/20  Boisy G. Pitre
 * Added support for DWNet
-
+*
+*   3      2010/01/23  Aaron A. Wolfe
+* Added dynamic polling frequency
+*
                nam       DW3
                ttl       DriveWire 3 Low Level Subroutine Module
 
@@ -30,6 +33,17 @@ rev            set       $01
 IRQPckt        fcb       $00,$01,$0A         ;IRQ packet Flip(1),Mask(1),Priority(1) bytes
 * Default time packet
 DefTime        fcb       109,12,31,23,59,59
+
+* for dynamic poll frequency, number of ticks between firing poller
+* speed 1 = interactive (typing)
+PollSpd1       fcb       3
+* speed 2 = bulk transfer
+PollSpd2       fcb       6
+* speed 3 = idle
+PollSpd3       fcb       40
+* X pollidle -> drop to next slower rate
+PollIdle       fcb       60
+
 
 name           fcs       /dw3/
 
@@ -149,7 +163,8 @@ InstIRQ
                os9       F$IRQ               ;install
                puls      u
                bcs       InitEx              ;exit with error
-               ldd       #$0003              ;lets try every 6 ticks (0.1 seconds) -- testing 3, gives better response in interactive things
+               clra      
+               ldb       PollSpd3,pcr        ; start at idle
                ifgt      Level-1
                ldx       <D.DWStat
                else      
@@ -256,6 +271,12 @@ IRQM04         stx       RxBufPut,u          ; set new Rx data laydown pointer
                lbra      CkSSig              ; had to lbra
 
 IRQMulti                 
+		  ; set IRQ freq for bulk
+               pshs      a
+               lda       PollSpd2,pcr
+               lbsr      IRQsetFRQ
+               puls      a
+
           ; initial grab bytes
                stb       RxGrab,u
 
@@ -306,12 +327,38 @@ IRQSvc         equ       *
           ; process response	
 IRQSvc2                  
                ldd       ,s++                ; pull returned status byte into A,data into B (set Z if zero, N if multiread)
-               lbeq      IRQExit             ; branch if D = 0 (nothing to do)
-          						; future - handle backing off on polling interval
+               bne       IRQGotOp            ; branch if D != 0 (something to do)
+* this is a NOP response.. do we need to reschedule
+               ifgt      Level-1
+               ldx       <D.DWStat
+               else      
+               ldx       >D.DWStat
+               endc      
+               lda       DW.VIRQFRQ,x
+               cmpa      PollSpd3,pcr
+               lbeq      IRQExit             ;we are already at idle speed
 
+               lda       DW.VIRQNOP,x
+               inca      
+               cmpa      PollIdle,pcr
+               beq       FRQdown
+
+               sta       DW.VIRQNOP,x        ;inc NOP count, exit
+               lbra      IRQExit
+
+FRQdown        lda       DW.VIRQFRQ,x
+               cmpa      PollSpd1,pcr
+               beq       FRQd1
+               lda       PollSpd3,pcr
+FRQd2                    
+               sta       DW.VIRQFRQ,x
+               clr       DW.VIRQNOP,x
+               lbra      IRQExit
+FRQd1          lda       PollSpd2,pcr
+               bra       FRQd2
 
 ; save back D on stack and build our U
-               pshs      d
+IRQGotOp       pshs      d
           * mode switch on bits 7+6 of A: 00 = vserial, 01 = system, 10 = wirebug?, 11 = ?							
                anda      #$C0                ; mask last 6 bits
                beq       mode00              ; virtual serial mode
@@ -342,13 +389,13 @@ IRQCont
 
           * multiread/status flag is in bit 4 of A
                bita      #$10
-               beq       IRQPutch            ; branch if multiread not set
+               beq       IRQPutch            ; branch for read1 if multiread not set
 
           * all 0s in port means status, anything else is multiread
 
                bita      #$0F                ;mask bit 7-4
                beq       dostat              ;port # all 0, this is a status response
-               bra       IRQMulti            ;its not all 0, this is a multiread
+               lbra      IRQMulti            ;its not all 0, this is a multiread
 
 
 		 * in status events, databyte is split, 4bits status, 4bits port #          
@@ -363,6 +410,21 @@ dostat         bitb      #$F0                ;mask low bits
                lda       b,x
                bne       statcont            ; if A is 0, then this device is not active, so exit
                lbra      IRQExit
+
+* IRQ set freq routine
+* sets freq and clears NOP counter
+* a = desired IRQ freq
+IRQsetFRQ      pshs      x                   ; preserve
+               ifgt      Level-1
+               ldx       <D.DWStat
+               else      
+               ldx       >D.DWStat
+               endc      
+               sta       DW.VIRQFRQ,x
+               clr       DW.VIRQNOP,x
+               puls      x
+               rts       
+
 
 * This routine roots through process descriptors in a queue and
 * checks to see if the process has a path that is open to the device
@@ -418,7 +480,7 @@ dosleepq       ldx       <D.SProcQ
                beq       CkLPRC
                bsr       RootThrough
 
-CkLPRC
+CkLPRC                   
                lda       <V.LPRC,u
                beq       IRQExit             ; no last process, bail
                ldb       #S$HUP
@@ -426,7 +488,10 @@ CkLPRC
                bra       CkSuspnd            ; do we need to go check suspend?
 
 ; put byte B in port As buffer - optimization help from Darren Atkinson       
-IRQPutCh       ldx       RxBufPut,u          ; point X to the data buffer
+IRQPutCh                 
+		  ; set IRQ freq for bulk
+               lbsr      IRQsetFRQ
+               ldx       RxBufPut,u          ; point X to the data buffer
 
 ; process interrupt/quit characters here
 ; note we will have to do this in the multiread (ugh)
