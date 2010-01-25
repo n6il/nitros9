@@ -23,7 +23,7 @@ u000C    rmb   1
 u000D    rmb   2
 u000F    rmb   2
 u0011    rmb   2
-u0013    rmb   2
+userid   rmb   2
 u0015    rmb   4
 u0019    rmb   4
 u001D    rmb   1
@@ -68,263 +68,28 @@ name     equ   *
          fcb   $EF o
          fcb   $F4 t
          fcb   $F0 p
-L007C    fcb   $73 s
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $0D 
-L0082    fcb   $55 U
-         fcb   $73 s
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $65 e
-         fcb   $20 
-         fcb   $69 i
-         fcb   $73 s
-         fcb   $3A :
-         fcb   $0A 
-         fcb   $4D M
-         fcb   $45 E
-         fcb   $4E N
-         fcb   $55 U
-         fcb   $20 
-         fcb   $3C <
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $75 u
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $3E >
-         fcb   $20 
-         fcb   $3C <
-         fcb   $63 c
-         fcb   $6D m
-         fcb   $64 d
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $3E >
-         fcb   $0A 
-         fcb   $0D 
-L00A7    fcb   $0A 
-         fcb   $0A 
-         fcb   $0D 
-L00AA    fcb   $53 S
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $79 y
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $20 
-         fcb   $64 d
-         fcb   $6F o
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $20 
-         fcb   $61 a
-         fcb   $63 c
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $73 s
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $0D 
-L00D7    fcb   $41 A
-         fcb   $20 
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $70 p
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $79 y
-         fcb   $20 
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $6C l
-         fcb   $20 
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $20 
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $20 
-         fcb   $73 s
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $69 i
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20 
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $63 c
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $74 t
-         fcb   $6C l
-         fcb   $79 y
-         fcb   $21 !
-         fcb   $0D 
-L010D    fcb   $2F /
-         fcb   $64 d
-         fcb   $64 d
-         fcb   $2F /
-         fcb   $62 b
-         fcb   $62 b
-         fcb   $73 s
-         fcb   $2F /
-         fcb   $42 B
-         fcb   $42 B
-         fcb   $53 S
-         fcb   $2E .
-         fcb   $75 u
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $73 s
-         fcb   $74 t
-         fcb   $61 a
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $0D 
-L0123    fcb   $49 I
-         fcb   $27 '
-         fcb   $6D m
-         fcb   $20 
-         fcb   $73 s
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $62 b
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $20 
-         fcb   $79 y
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $72 r
-         fcb   $20 
-         fcb   $74 t
-         fcb   $69 i
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $20 
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $20 
-         fcb   $65 e
-         fcb   $78 x
-         fcb   $70 p
-         fcb   $69 i
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $21 !
-         fcb   $0D 
-L0149    fcb   $57 W
-         fcb   $41 A
-         fcb   $52 R
-         fcb   $4E N
-         fcb   $49 I
-         fcb   $4E N
-         fcb   $47 G
-         fcb   $21 !
-         fcb   $21 !
-         fcb   $20 
-         fcb   $20 
-         fcb   $59 Y
-         fcb   $6F o
-         fcb   $75 u
-         fcb   $20 
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $20 
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $6C l
-         fcb   $79 y
-         fcb   $20 
-         fcb   $61 a
-         fcb   $20 
-         fcb   $66 f
-         fcb   $65 e
-         fcb   $77 w
-         fcb   $20 
-         fcb   $6D m
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20 
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $66 f
-         fcb   $74 t
-         fcb   $20 
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $6C l
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $65 e
-         fcb   $21 !
-         fcb   $0D 
+         
+L007C    fcc   /shell/
+         fcb   C$CR
+
+L0082    fcc   /Usage is:/
+         fcb   C$LF
+         fcc   /MENU <menuname> <cmdname>/
+         fcb   C$LF
+         fcb   C$CR
+L00A7    fcb   C$LF
+         fcb   C$LF
+         fcb   C$CR
+L00AA    fcc   /Sorry, you do not have access to that option/
+         fcb   C$CR
+L00D7    fcc   /A user priority level has been specified incorrectly!/
+         fcb   C$CR
+ustatfile    fcc   "/dd/bbs/BBS.userstats"
+         fcb   C$CR
+L0123    fcc   "I'm sorry, but your time has expired!"
+         fcb   C$CR
+L0149    fcc   "WARNING!!  You have only a few minutes left online!"
+         fcb   C$CR
 L017D    fcb   $1F 
          fcb   $1C 
          fcb   $1F 
@@ -337,12 +102,13 @@ L017D    fcb   $1F
          fcb   $1F 
          fcb   $1E 
          fcb   $1F 
+
 start    equ   *
          pshs  u,y,x,b,a
-         os9   F$ID     
-         sty   <u0013,u
+         os9   F$ID     	get user ID
+         sty   <userid,u
          puls  u,y,x,b,a
-         ldd   #$0A0D
+         ldd   #C$LF*256+C$CR
          std   >u0E73,u
          sty   u000B,u
          leay  <u0045,u
@@ -352,26 +118,26 @@ L01A1    lda   ,x+
          sta   ,y+
          cmpa  #$20
          bne   L01A1
-         lda   #$0D
+         lda   #C$CR
          sta   -$01,y
          leay  <u0065,u
 L01B6    lda   ,x+
          cmpx  u000B,u
          lbhi  L0586
          sta   ,y+
-         cmpa  #$0D
+         cmpa  #C$CR
          bne   L01B6
-         leax  >L010D,pcr
-         lda   #$01
+         leax  >ustatfile,pcr
+         lda   #1			stdout
          os9   I$Open   
          lbcs  L027C
          sta   ,u
 L01D3    leax  <u0019,u
-         ldy   #$0020
+         ldy   #32
          lda   ,u
          os9   I$Read   
          bcs   L01EC
-         ldd   <u0013,u
+         ldd   <userid,u
          cmpd  <u0019,u
          bne   L01D3
          bra   L01F4
@@ -411,7 +177,7 @@ L020C    subd  #$003C
          sta   <u001E,u
          lda   <u001D,u
          inca  
-         cmpa  #$64
+         cmpa  #'d
          bcs   L0249
          clra  
 L0249    sta   <u001D,u
@@ -442,7 +208,7 @@ L027C    leax  >u0153,u
          leax  >u017B,u
          stx   u0009,u
          leax  <u0065,u
-         lda   #$01
+         lda   #1
          os9   I$Open   
          lbcs  L0594
          sta   u0002,u
@@ -450,30 +216,30 @@ L029C    ldx   u0005,u
          ldy   #$0001
          os9   I$Read   
          ldb   ,x
-         cmpb  #$2F
+         cmpb  #'/
          beq   L02F4
-         cmpb  #$3E
+         cmpb  #'>
          lbeq  L03AB
-         cmpb  #$3C
+         cmpb  #'<
          lbeq  L03AB
-         cmpb  #$3D
+         cmpb  #'=
          lbeq  L03AB
          ldy   u0009,u
          pshs  b,a
-         lda   #$2D
+         lda   #'-	
          sta   ,y+
          ldd   #$FFFF
          std   ,y++
          puls  b,a
          sty   u0009,u
-L02D0    cmpb  #$61
+L02D0    cmpb  #'a
          bcs   L02D8
-         andb  #$DF
+         andb  #%11011111		make uppercase
          stb   ,x
 L02D8    leax  $01,x
          stx   u0005,u
          ldx   u0007,u
-         ldy   #$0050
+         ldy   #80
          os9   I$ReadLn 
          lbcs  L0594
          sty   <$4E,x
@@ -481,7 +247,7 @@ L02D8    leax  $01,x
          stx   u0007,u
          bra   L029C
 L02F4    leax  >u0E75,u
-         ldy   #$0050
+         ldy   #80
          os9   I$ReadLn 
          lbcs  L0594
          sty   <u0011,u
@@ -492,7 +258,7 @@ L02F4    leax  >u0E75,u
          os9   I$Close  
          lbcs  L0594
          leax  <u0045,u
-         lda   #$01
+         lda   #1
          os9   I$Open   
          lbcs  L0594
          sta   u0001,u
@@ -511,13 +277,13 @@ L02F4    leax  >u0E75,u
          ldy   #$0001
 L034A    pshs  x
          lda   #$01
-         ldb   #$01
+         ldb   #SS.Ready
          os9   I$GetStt 
          lbcc  L0440
          ldy   <u0015,u
          ldx   ,s
 L035D    lda   ,x+
-         cmpa  #$0D
+         cmpa  #C$CR
          beq   L0374
          leay  -$01,y
          bne   L035D
@@ -565,12 +331,12 @@ L03AB    pshs  x,a
          ldb   ,x
          lbra  L02D0
 L03DB    leax  >L0123,pcr
-         ldy   #$00C8
-         lda   #$01
+         ldy   #200
+         lda   #1
          os9   I$WritLn 
          lbra  L0582
 L03EB    leax  >L0149,pcr
-         ldy   #$00C8
+         ldy   #200
          lda   #$01
          os9   I$WritLn 
          rts   
@@ -589,11 +355,11 @@ L0414    cmpb  #$03
          bgt   L0431
          ldd   <u003C,u
          addb  #$05
-         cmpb  #$3C
+         cmpb  #60
          bcs   L0429
-         subb  #$3C
+         subb  #60
          inca  
-         cmpa  #$18
+         cmpa  #24
          bcs   L0429
          clra  
 L0429    cmpd  <u0042,u
@@ -617,9 +383,9 @@ L0440    leax  u0003,u
          lda   ,x
          cmpa  #$3F
          lbeq  L027C
-         cmpa  #$61
+         cmpa  #'a
          bcs   L046B
-         anda  #$DF
+         anda  #%11011111
          sta   ,x
 L046B    lda   ,x
          leax  >u0153,u
@@ -629,7 +395,7 @@ L0472    tst   ,x
          cmpa  ,x+
          beq   L0482
          incb  
-         cmpb  #$28
+         cmpb  #'(
          bls   L0472
          lbra  L03F9
 L0482    pshs  b
@@ -638,59 +404,59 @@ L0482    pshs  b
          leax  >u017B,u
          leax  d,x
          lda   ,x+
-         cmpa  #$3C
+         cmpa  #'<
          beq   L04DF
-         cmpa  #$3E
+         cmpa  #'>
          beq   L04EF
-         cmpa  #$3D
+         cmpa  #'=
          beq   L04FF
 L049B    puls  b
-         lda   #$50
+         lda   #80
          mul   
          pshs  u
          leau  >u01F3,u
          leau  d,u
          lda   u0001,u
-         anda  #$DF
-         cmpa  #$43
+         anda  #%11011111
+         cmpa  #'C
          bne   L04CC
          lda   u0002,u
-         anda  #$DF
-         cmpa  #$48
+         anda  #%11011111
+         cmpa  #'H
          bne   L04CC
          lda   u0003,u
-         anda  #$DF
-         cmpa  #$4D
+         anda  #%11011111
+         cmpa  #'M
          lbeq  L0557
-         cmpa  #$58
+         cmpa  #'X
          lbeq  L0549
-         cmpa  #$44
+         cmpa  #'D
          beq   L053B
 L04CC    lda   u0001,u
-         anda  #$DF
-         cmpa  #$45
+         anda  #%11011111
+         cmpa  #'E
          bne   L051F
          lda   u0002,u
-         anda  #$DF
-         cmpa  #$58
+         anda  #%11011111
+         cmpa  #'X
          bne   L051F
          lbra  L0582
-L04DF    ldd   <u0013,u
+L04DF    ldd   <userid,u
          lbeq  L049B
          cmpd  ,x
          lbcs  L049B
          bra   L050D
-L04EF    ldd   <u0013,u
+L04EF    ldd   <userid,u
          lbeq  L049B
          cmpd  ,x
          lbhi  L049B
          bra   L050D
-L04FF    ldd   <u0013,u
+L04FF    ldd   <userid,u
          lbeq  L049B
          cmpd  ,x
          lbeq  L049B
 L050D    leax  >L00AA,pcr
-         ldy   #$00C8
+         ldy   #200
          lda   #$01
          os9   I$WritLn 
          puls  b
@@ -698,7 +464,7 @@ L050D    leax  >L00AA,pcr
 L051F    ldy   <u004E,u
          leax  >L007C,pcr
          ldb   #$03
-         lda   #$11
+         lda   #Prgrm+Objct
          os9   F$Fork   
          puls  u
          bcc   L0535
@@ -708,13 +474,13 @@ L0535    os9   F$Wait
 L053B    tfr   u,x
          puls  u
          leax  $04,x
-         lda   #$01
+         lda   #READ.
          os9   I$ChgDir 
          lbra  L027C
 L0549    tfr   u,x
          puls  u
          leax  $04,x
-         lda   #$04
+         lda   #EXEC.
          os9   I$ChgDir 
          lbra  L027C
 L0557    tfr   u,x
@@ -722,42 +488,42 @@ L0557    tfr   u,x
          leay  <u0045,u
          leax  $04,x
 L0560    lda   ,x+
-         cmpa  #$20
+         cmpa  #C$SPAC
          beq   L0560
          leax  -$01,x
 L0568    lda   ,x+
          sta   ,y+
-         cmpa  #$20
+         cmpa  #C$SPAC
          bne   L0568
-         lda   #$0D
+         lda   #C$CR
          sta   -$01,y
          leay  <u0065,u
 L0577    lda   ,x+
          sta   ,y+
-         cmpa  #$0D
+         cmpa  #C$CR
          bne   L0577
          lbra  L027C
 L0582    clrb  
          os9   F$Exit   
 L0586    leax  >L0082,pcr
-         ldy   #$00C8
+         ldy   #200
          lda   #$01
          os9   I$WritLn 
          clrb  
 L0594    os9   F$Exit   
 L0597    pshs  y
 L0599    lda   ,x+
-         cmpa  #$0D
+         cmpa  #C$CR
          lbeq  L064E
-         cmpa  #$30
+         cmpa  #'0
          bcs   L0599
-         cmpa  #$39
+         cmpa  #'9
          bhi   L0599
          leax  -$01,x
 L05AB    lda   ,x+
-         cmpa  #$30
+         cmpa  #'0
          bcs   L05B7
-         cmpa  #$39
+         cmpa  #'9
          bhi   L05B7
          bra   L05AB
 L05B7    pshs  x
@@ -767,11 +533,11 @@ L05B7    pshs  x
          ldd   #$0001
          std   u000D,u
 L05C4    lda   ,-x
-         cmpa  #$30
+         cmpa  #'0
          bcs   L05F8
-         cmpa  #$39
+         cmpa  #'9
          bhi   L05F8
-         suba  #$30
+         suba  #'0
          sta   u0004,u
          ldd   #$0000
 L05D5    tst   u0004,u
@@ -781,7 +547,7 @@ L05D5    tst   u0004,u
          bra   L05D5
 L05DF    addd  u000B,u
          std   u000B,u
-         lda   #$0A
+         lda   #10
          sta   u0004,u
          ldd   #$0000
 L05EA    tst   u0004,u
@@ -795,33 +561,33 @@ L05F8    ldd   u000B,u
          puls  x
          puls  pc,y
          std   u000B,u
-         lda   #$30
+         lda   #'0
          sta   ,x
          sta   $01,x
          sta   $02,x
          sta   $03,x
          sta   $04,x
-         ldd   #$2710
+         ldd   #10000
          std   u000D,u
          ldd   u000B,u
          lbsr  L063F
-         ldd   #$03E8
+         ldd   #1000
          std   u000D,u
          ldd   u000B,u
          bsr   L063F
-         ldd   #$0064
+         ldd   #100
          std   u000D,u
          ldd   u000B,u
          bsr   L063F
-         ldd   #$000A
+         ldd   #10
          std   u000D,u
          ldd   u000B,u
          bsr   L063F
-         ldd   #$0001
+         ldd   #1
          std   u000D,u
          ldd   u000B,u
          bsr   L063F
-         lda   #$0D
+         lda   #C$CR
          sta   ,x
          rts   
 L063F    subd  u000D,u
@@ -833,11 +599,12 @@ L0647    addd  u000D,u
          leax  $01,x
          rts   
 L064E    leax  >L00D7,pcr
-         ldy   #$00C8
+         ldy   #200
          lda   #$01
          os9   I$WritLn 
          lda   #$01
          lbra  L0594
+         
          emod
 eom      equ   *
          end
