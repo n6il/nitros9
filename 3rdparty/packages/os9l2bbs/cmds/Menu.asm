@@ -25,7 +25,7 @@ u000F    rmb   2
 u0011    rmb   2
 userid   rmb   2
 u0015    rmb   4
-u0019    rmb   4
+userent  rmb   4
 u001D    rmb   1
 u001E    rmb   1
 u001F    rmb   1
@@ -132,15 +132,15 @@ L01B6    lda   ,x+
          os9   I$Open   
          lbcs  L027C
          sta   ,u
-L01D3    leax  <u0019,u
-         ldy   #32
-         lda   ,u
-         os9   I$Read   
-         bcs   L01EC
-         ldd   <userid,u
-         cmpd  <u0019,u
-         bne   L01D3
-         bra   L01F4
+L01D3    leax  <userent,u	point to buffer
+         ldy   #32			read userstat entry
+         lda   ,u			get path to file
+         os9   I$Read   	read userstat entry
+         bcs   L01EC		branch if error
+         ldd   <userid,u	get this process user ID
+         cmpd  <userent,u	same as entry?
+         bne   L01D3		if not, get next entry
+         bra   L01F4		else we have a match
 L01EC    lda   ,u
          os9   I$Close  
          lbra  L027C
@@ -263,7 +263,7 @@ L02F4    leax  >u0E75,u
          lbcs  L0594
          sta   u0001,u
          leax  >u0EC5,u
-         ldy   #$0FA0
+         ldy   #4000
          lda   u0001,u
          os9   I$Read   
          sty   <u0015,u
