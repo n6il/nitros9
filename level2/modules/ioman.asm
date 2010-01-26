@@ -572,12 +572,22 @@ L02B4    cmpx  V$STAT,y
          ldb   P$ID,y    
          stb   V$USRS,u  
          ldy   V$DESC,u  
+         IFGT  LEVEL-1
          ldu   V$DRIVEX,u
          exg   x,u       
          pshs  u         
          jsr   $0F,x     
          puls  u         
-L02D1    ldx   $01,s     	get ptr to dev table
+         ELSE
+         ldu   V$DRIV,u
+         exg   x,u                     X pts to driver, U pts to static
+         ldd   M$Exec,x
+         leax  d,x
+         pshs  u
+         jsr   $0F,x     
+         puls  u         
+         ENDC
+         ldx   $01,s     	get ptr to dev table
          ldx   V$DRIV,x  	load X with driver addr
          ldd   M$Mem,x   	get static storage size
          addd  #$00FF    	round up one page
@@ -1052,7 +1062,13 @@ L0524
          sta   PD.CPR,y  
          stu   PD.RGS,y  
          ldx   PD.DEV,y  
+         IFGT  Leve-1         
          ldx   V$FMGREX,x     	get file manager address
+         ELSE
+         ldx   V$FMGR,x
+         ldd   M$Exec,x
+         leax  d,x
+         ENDC
          lda   #$03      	length of lbra instruction
          mul             
          jsr   b,x       
