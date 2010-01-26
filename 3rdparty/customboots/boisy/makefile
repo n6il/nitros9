@@ -1,4 +1,4 @@
-# NitrOS-9/6309 Level 2 bootfile for a 128K CoCo 3 with a Hitachi 6309
+# NitrOS-9/6809 Level 2 bootfile for a 128K CoCo 3 with a Motorla 6809
 # For Boisy's thesis work
 
 include $(NITROS9DIR)/rules.mak
@@ -7,17 +7,17 @@ vpath %.asm ../../../utils/boisy:..:$(LEVEL2)/cmds:$(LEVEL1)/cmds:$(LEVEL1)/modu
 
 AFLAGS		+= -aNoTerm=1 -acoco3=1
 
-LFLAGS		+= -y -l=$(NITROS9DIR)/3rdparty/packages/drivewire/netlib/netlib.l -l=$(NITROS9DIR)/3rdparty/libs/alib/alib.l -l=../netlib/netlib.l -l=$(NITROS9DIR)/lib/sys6309l2.l 
-3PDW63          = $(3RDPARTY)/packages/drivewire/6309l2
+LFLAGS		+= -y -l=$(NITROS9DIR)/3rdparty/packages/drivewire/netlib/netlib.l -l=$(NITROS9DIR)/3rdparty/libs/alib/alib.l -l=../netlib/netlib.l -l=$(NITROS9DIR)/lib/sys6809l2.l 
+3PDW68          = $(3RDPARTY)/packages/drivewire/6809l2
 3PBOISY         = $(3RDPARTY)/utils/boisy
 
 DEPENDS		= ./makefile
 
-AFLAGS          += -e -aH6309=1
+#AFLAGS          += -e -aH6309=1
 
 DSK 		= thesis.dsk
-CD		= $(LEVEL2)/coco3_6309/cmds
-MD		= $(LEVEL2)/coco3_6309/modules
+CD		= $(LEVEL2)/coco3/cmds
+MD		= $(LEVEL2)/coco3/modules
 SYSTEXT		= motd password
 DSKS		= $(DSK)
 
@@ -31,8 +31,8 @@ CMDS		= $(CD)/attr $(CD)/build $(CD)/cmp $(CD)/copy $(CD)/cputype $(CD)/date \
 		$(CD)/sleep $(CD)/smap $(CD)/tee $(CD)/tmode $(CD)/touch $(CD)/tsmon \
 		$(CD)/unlink $(CD)/verify $(CD)/xmode $(CD)/utilpak1 $(CD)/basic09 $(CD)/syscall
 
-CMDS_DW		= $(3PDW63)/inetd $(3PDW63)/dw \
-		$(3PDW63)/telnet $(3PBOISY)/send
+CMDS_DW		= $(3PDW68)/inetd $(3PDW68)/dw \
+		$(3PDW68)/telnet $(3PBOISY)/send
 
 CMDS_THESIS	= testmul testtfr testexg testadd testcwai
 
@@ -46,6 +46,7 @@ BOOTFILE	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/scf.mn \
 		$(MD)/sc6551.dr $(MD)/t2_sc6551.dd $(MD)/t3_sc6551.dd \
 		$(MD)/scdwn.dr $(MD)/term_scdwn.dt \
+		$(MD)/n_scdwn.dd \
 		$(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd $(MD)/n3_scdwn.dd \
 		$(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd $(MD)/n6_scdwn.dd \
 		$(MD)/n7_scdwn.dd $(MD)/n8_scdwn.dd $(MD)/n9_scdwn.dd \
@@ -67,7 +68,7 @@ ALLOBJS		= $(CMDS) $(CMDS_DW) $(CMDS_THESIS)
 all:	makedepends $(ALLOBJS)
 
 makedepends:
-	cd $(LEVEL2)/coco3_6309; make
+	cd $(LEVEL2)/coco3; make
 	cd $(3RDPARTY)/packages/drivewire; make
 	cd $(3PBOISY); make
 
@@ -79,7 +80,7 @@ dsk:	all $(DSKS)
 $(DSK):
 	cd $(3RDPARTY)/utils/supercomm; make
 	$(RM) $@
-	$(CD) $(LEVEL2)/coco3_6309; make
+	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_SS80) -q $@ -n"NitrOS-9 Level 2 DriveWire Server"
 	$(MERGE) $(BOOTFILE)>os9boot
 	$(MERGE) $(KERNEL)>kernel
@@ -103,5 +104,5 @@ dskclean:
 	-$(RM) $(DSKS)
 
 info:
-	@$(ECHO) "*** NitrOS-9/6309 Level 2 DriveWire Server ***"
+	@$(ECHO) "*** NitrOS-9/6809 Level 2 DriveWire Server ***"
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
