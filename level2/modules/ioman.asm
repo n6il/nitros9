@@ -73,6 +73,7 @@ start    ldx   <D.Init   		get pointer to init module
          addd  $02,s     		add to size of device table
          os9   F$SRqMem  		allocate memory
          bcs   Crash     		branch if error
+* clear allocated mem
          leax  ,u        		point to memory
          IFNE  H6309     
          leay  <TheZero,pcr
@@ -115,7 +116,12 @@ ClrLoop  clr   ,x+			clear a byte
 *
 * Fatal error Crash the system
 *
-Crash    jmp   <D.Crash  
+Crash
+         IFGT  Level-1
+         jmp   <D.Crash  
+         ELSE
+         jmp   [>$FFFE]
+         ENDC
 
 ******************************
 *
@@ -220,8 +226,8 @@ SysIODis fdb   IAttach-SysIODis
 UsrIO    leax  <UsrIODis,pcr
          bra   IODsptch     
 SysIO    leax  <SysIODis,pcr
-IODsptch cmpb  #$20      
-         bhi   L00F9     
+IODsptch cmpb  #I$DeletX-$70 		compare with last I/O call
+         bhi   L00F9		     branch if greater
          IFNE  H6309     
          ldw   b,x       
          lsrb            
@@ -1074,7 +1080,9 @@ UIGetStt lbsr  S2UPath     	get usr path #
          rts             
 
 SIGetStt lda   R$A,u     
+         IFGT  Level-1
          ldx   <D.SysPrc 
+         ENDC
 L0568    pshs  x,b,a     
          lda   R$B,u    	get func code 
          sta   $01,s    	place on stack in B 
@@ -1115,13 +1123,21 @@ L0595    pshs  y
          clr   <P$IOQN,y 	else clear it
          ldb   #S$Wake   	get wake signal
          os9   F$Send    	wake up process ID in A with signal in B
+         IFGT  Level-1
          os9   F$GProcP  
+         ELSE
+         ldx   <D.PrcDBT
+         os9   F$Find64
+         ENDC         
          clr   P$IOQP,y  
 L05AC    clrb            
          puls  pc,y      
 
-SSDevNm  lda   <D.SysTsk 
+SSDevNm
+         IFGT  Level-1
+         lda   <D.SysTsk 
          ldb   P$Task,x  
+         ENDC
          IFEQ  H6309
          pshs  d
          ENDC
@@ -1333,7 +1349,9 @@ L06DF    comb
 L06E2    puls  pc,u      
          ENDC
 
-FLoad    pshs  u         	place caller's reg ptr on stack
+FLoad
+         IFGT  Level-1
+         pshs  u         	place caller's reg ptr on stack
          ldx   R$X,u     	get pathname to load
          bsr   LoadMod     	allocate a process descriptor
          bcs   L070F     	exit if error
@@ -1353,7 +1371,26 @@ L06EE    pshs  y         	preserve y
          sty   R$Y,x     
          stu   R$U,x     
 L070F    puls  pc,u      
-
+         ELSE
+         pshs  u
+         ldx   R$X,u
+         bsr   L05BC
+         bcs   L05BA
+         inc   $02,u                   increment link count
+         ldy   ,u                      get mod header addr
+         ldu   ,s                      get caller regs
+         stx   R$X,u
+         sty   R$U,u
+         lda   M$Type,y
+         ldb   M$Revs,y
+         std   R$D,u
+         ldd   M$Exec,y
+         leax  d,y
+         stx   R$Y,u
+L05BA    puls  pc,u
+         ENDC         
+         
+         IFGT  Level-1
 IDetach0 pshs  u          save off regs ptr
          ldx   R$X,u      get ptr to device name
          bsr   LoadMod     
@@ -1366,14 +1403,17 @@ IDetach0 pshs  u          save off regs ptr
          bsr   L06EE     
          puls  x         
          stx   <D.Proc   
-L0729    puls  pc,u      
+L0729    puls  pc,u   
+         ENDC
 
 * Load module from file
 * Entry: X = pathlist to file containing module(s)
 * A fake process descriptor is created, then the file is
 * opened and validated into memory.
 
-LoadMod  os9   F$AllPrc   allocate proc desc
+LoadMod
+         IFGT  Level-1
+         os9   F$AllPrc   allocate proc desc
          bcc   L0731     
          rts             
 L0731    leay  ,u         point Y at new alloced mem
@@ -1602,7 +1642,63 @@ L08C2    lda   $0E,s
          os9   I$Read    
 L08CC    leas  $04,s
          puls  pc,x      
-
+         ELSE
+L05BC    lda   #EXEC.
+         os9   I$Open
+         bcs   L0632
+         leas  -$0A,s                  make room on stack
+         ldu   #$0000
+         pshs  u,y,x
+         sta   6,s                     save path
+L05CC    ldd   4,s                     get U (caller regs) from stack
+         bne   L05D2
+         stu   4,s
+L05D2    lda   6,s                     get path
+         leax  7,s                     point to place on stack
+         ldy   #M$IDSize               read M$IDSize bytes
+         os9   I$Read
+         bcs   L061E
+         ldd   ,x
+         cmpd  #M$ID12
+         bne   L061C
+         ldd   $09,s                   get module size
+         os9   F$SRqMem                allocate mem
+         bcs   L061E
+         ldb   #M$IDSize
+L05F0    lda   ,x+                     copy over first M$IDSize bytes
+         sta   ,u+
+         decb
+         bne   L05F0
+         lda   $06,s                   get path
+         leax  ,u                      point X at updated U
+         ldu   $09,s                   get module size
+         leay  -M$IDSize,u             subtract count
+         os9   I$Read
+         leax  -M$IDSize,x
+         bcs   L060B
+         os9   F$VModul                validate module
+         bcc   L05CC
+L060B    pshs  u,b
+         leau  ,x                      point U at memory allocated
+         ldd   M$Size,x
+         os9   F$SRtMem                return mem
+         puls  u,b
+         cmpb  #E$KwnMod
+         beq   L05CC
+         bra   L061E
+L061C    ldb   #E$BMID
+L061E    puls  u,y,x
+         lda   ,s                      get path
+         stb   ,s                      save error code
+         os9   I$Close                 close path
+         ldb   ,s
+         leas  $0A,s                   clear up stack
+         cmpu  #$0000
+         bne   L0632
+         coma
+L0632    rts
+         ENDC
+         
 ********************************
 *
 * F$PErr System call entry point
@@ -1637,6 +1733,7 @@ L08F9    dec   ErrNum+1,s
          bcc   L08F9     
          addb  #$30      
          stb   ErrNum+2,s
+         IFGT  Level-1
          ldx   <D.Proc   	get current process pointer
          ldu   P$SP,x    	get the stack pointer
          leau  -ErrMessL,u	put a buffer on it
@@ -1650,6 +1747,14 @@ L0913    os9   F$Move    	move it to the process
          lda   <P$PATH+2,u	get path number
          os9   I$WritLn  	write the text
          leas  ErrMessL,s	purge the buffer
+         ELSE
+         ldx   <D.Proc
+         leax  ,s                      point to error message
+         ldu   <D.Proc
+         lda   <P$PATH+2,u
+         os9   I$WritLn                write message
+         leas  ErrMessL,s              fix up stack
+         ENDC
 L0922    rts             	return
 
 FIOQu                    
@@ -1674,8 +1779,13 @@ L092B    lda   <P$IOQN,y
          ELSE            
          clr   <P$IOQN,y 
          ENDC            
+         IFGT  Level-1
          os9   F$GProcP  
-         bcs   L09B1     
+         ELSE
+         ldx   <D.PrcDBT
+         os9   F$Find64
+         ENDC
+         bcs   L0922  
          IFNE  H6309     
          stf   P$IOQP,y  
          ELSE            
@@ -1685,7 +1795,13 @@ L092B    lda   <P$IOQN,y
          os9   F$Send    
          ldu   <D.Proc   
          bra   L0958     
-L094A    os9   F$GProcP  
+L094A
+         IFGT  Level-1
+         os9   F$GProcP  
+         ELSE
+         ldx   <D.PrcDBT
+         os9   F$Find64
+         ENDC
          bcc   L092B     
 L094F                    
          IFNE  H6309     
@@ -1694,12 +1810,22 @@ L094F
          lda   R$A,u     
          ENDC            
          ldu   <D.Proc   
+         IFGT  Level-1
          os9   F$GProcP  
+         ELSE
+         ldx   <D.PrcDBT
+         os9   F$Find64
+         ENDC
          bcs   L09B1     
 L0958    leax  ,y        
          lda   <P$IOQN,y 
          beq   L097A     
+         IFGT  Level-1
          os9   F$GProcP  
+         ELSE
+         ldx   <D.PrcDBT
+         os9   F$Find64
+         ENDC
          bcs   L09B1     
          ldb   P$Age,u   
          cmpb  P$Age,y   	FYI, was cmpd, bug in OS-9 Level Two from Tandy
@@ -1724,7 +1850,12 @@ L097A    lda   ,u
          ldu   <D.Proc   
          lda   P$IOQP,u  
          beq   L09B1     
+         IFGT  Level-1
          os9   F$GProcP  
+         ELSE
+         ldx   <D.PrcDBT
+         os9   F$Find64
+         ENDC
          bcs   L09AE     
          lda   <P$IOQN,y 
          beq   L09AE     
@@ -1735,8 +1866,13 @@ L097A    lda   ,u
          stf   <P$IOQN,u 
          ELSE            
          clr   <P$IOQN,u 
-         ENDC            
+         ENDC  
+         IFGT  Level-1
          os9   F$GProcP  
+         ELSE
+         ldx   <D.PrcDBT
+         os9   F$Find64
+         ENDC
          bcs   L09AE     
          lda   P$IOQP,u  
          sta   P$IOQP,y  
