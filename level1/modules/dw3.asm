@@ -334,7 +334,7 @@ IRQSvc2
                else      
                ldx       >D.DWStat
                endc      
-               lda       DW.VIRQFRQ,x
+               lda       DW.VIRQPkt+Vi.Rst+1,x
                cmpa      PollSpd3,pcr
                lbeq      IRQExit             ;we are already at idle speed
 
@@ -346,12 +346,12 @@ IRQSvc2
                sta       DW.VIRQNOP,x        ;inc NOP count, exit
                lbra      IRQExit
 
-FRQdown        lda       DW.VIRQFRQ,x
+FRQdown        lda       DW.VIRQPkt+Vi.Rst+1,x
                cmpa      PollSpd1,pcr
                beq       FRQd1
                lda       PollSpd3,pcr
 FRQd2                    
-               sta       DW.VIRQFRQ,x
+               sta       DW.VIRQPkt+Vi.Rst+1,x
                clr       DW.VIRQNOP,x
                lbra      IRQExit
 FRQd1          lda       PollSpd2,pcr
@@ -420,7 +420,11 @@ IRQsetFRQ      pshs      x                   ; preserve
                else      
                ldx       >D.DWStat
                endc      
-               sta       DW.VIRQFRQ,x
+               sta       DW.VIRQPkt+Vi.Rst+1,x
+* +++ BGP +++ added following line so that the counter (which was copied by
+* clock before calling us) gets reset to the same value the reset value. Without
+* this line, we get called again with the PRIOR Vi.Rst value.
+               sta       DW.VIRQPkt+Vi.Cnt+1,x
                clr       DW.VIRQNOP,x
                puls      x
                rts       
@@ -490,6 +494,7 @@ CkLPRC
 ; put byte B in port As buffer - optimization help from Darren Atkinson       
 IRQPutCh                 
 		  ; set IRQ freq for bulk
+               lda       PollSpd1,pcr
                lbsr      IRQsetFRQ
                ldx       RxBufPut,u          ; point X to the data buffer
 
