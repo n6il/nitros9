@@ -1062,7 +1062,7 @@ L0524
          sta   PD.CPR,y  
          stu   PD.RGS,y  
          ldx   PD.DEV,y  
-         IFGT  Leve-1         
+         IFGT  Level-1         
          ldx   V$FMGREX,x     	get file manager address
          ELSE
          ldx   V$FMGR,x
