@@ -1015,6 +1015,7 @@ POLSIZ         EQU       .
 Vi.Cnt         RMB       2                   count down counter
 Vi.Rst         RMB       2                   reset value for counter
 Vi.Stat        RMB       1                   status byte
+Vi.PkSz        EQU       .
 
 Vi.IFlag       EQU       %00000001           status byte virq flag
 
