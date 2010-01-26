@@ -18,7 +18,7 @@ DEPENDS		= ./makefile
 DSK 		= thesis.dsk
 CD		= $(LEVEL2)/coco3/cmds
 MD		= $(LEVEL2)/coco3/modules
-SYSTEXT		= motd password
+SYSTEXT		= motd password inetd.conf
 DSKS		= $(DSK)
 
 CMDS		= $(CD)/attr $(CD)/build $(CD)/cmp $(CD)/copy $(CD)/cputype $(CD)/date \
@@ -55,11 +55,11 @@ BOOTFILE	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
-		$(MD)/sysgo_dd
-#		$(MD)/vtio.dr \
-#		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
-#		$(MD)/cowin.io $(MD)/covdg.io \
-#		$(MD)/term_win80.dt \
+		$(MD)/sysgo_dd \
+		$(MD)/vtio.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/cowin.io $(MD)/covdg.io \
+		$(MD)/w1.dw \
 
 SUPPORTFILES	= startup
 
