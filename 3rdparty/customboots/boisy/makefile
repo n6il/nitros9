@@ -55,11 +55,11 @@ BOOTFILE	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
-		$(MD)/sysgo_dd \
-		$(MD)/vtio.dr \
-		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
-		$(MD)/cowin.io $(MD)/covdg.io \
-		$(MD)/w1.dw \
+		$(MD)/sysgo_dd
+#		$(MD)/vtio.dr \
+#		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+#		$(MD)/cowin.io $(MD)/covdg.io \
+#		$(MD)/w1.dw \
 
 SUPPORTFILES	= startup
 
