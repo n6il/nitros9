@@ -35,10 +35,11 @@ CMDS_DW		= $(3PDW68)/inetd $(3PDW68)/dw \
 		$(3PDW68)/telnet $(3PBOISY)/send
 
 CMDS_THESIS	= testmul testtfr testexg testadd testcwai
+SRC_THESIS	= testmul.asm testtfr.asm testexg.asm testadd.asm testcwai.asm
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_80 $(MD)/boot_dw3 $(MD)/krn
-BOOTFILE	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_DWTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rbdw3.dr $(MD)/dw3.sb \
 		$(MD)/rammer.dr $(MD)/r0_128k.dd \
@@ -56,12 +57,31 @@ BOOTFILE	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
 		$(MD)/sysgo_dd
-#		$(MD)/vtio.dr \
-#		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
-#		$(MD)/cowin.io $(MD)/covdg.io \
-#		$(MD)/w1.dw \
+
+BOOTFILE_WINTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/rbdw3.dr $(MD)/dw3.sb \
+		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
+		$(MD)/scf.mn \
+		$(MD)/vtio.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/cowin.io $(MD)/covdg.io \
+		$(MD)/term_win80.dt $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
+		$(MD)/scdwn.dr \
+		$(MD)/n_scdwn.dd \
+		$(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd $(MD)/n3_scdwn.dd \
+		$(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd $(MD)/n6_scdwn.dd \
+		$(MD)/n7_scdwn.dd $(MD)/n8_scdwn.dd $(MD)/n9_scdwn.dd \
+		$(MD)/n10_scdwn.dd $(MD)/n11_scdwn.dd $(MD)/n12_scdwn.dd \
+		$(MD)/n13_scdwn.dd $(MD)/n14_scdwn.dd \
+		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/sysgo_dd
 
 SUPPORTFILES	= startup
+BOOTFILE	= $(BOOTFILE_DWTERM)
 
 ALLOBJS		= $(CMDS) $(CMDS_DW) $(CMDS_THESIS)
 
@@ -90,6 +110,8 @@ $(DSK):
 	$(MAKDIR) $@,SYS
 	$(CP) $(CMDS) $(CMDS_DW) $(CMDS_THESIS) $@,CMDS
 	$(foreach file, $(CMDS) $(CMDS_DW) $(CMDS_THESIS), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
+	$(MAKDIR) $@,SRC
+	$(CPL) $(SRC_THESIS) $@,SRC
 	$(CP) $(3RDPARTY)/utils/supercomm/supercomm $@,CMDS
 	$(OS9ATTR_EXEC) $@,CMDS/supercomm
 	$(CPL) $(SYSTEXT) $@,SYS
