@@ -15,6 +15,9 @@
 *  18      2002/07/20  Boisy G. Pitre
 * Changed icpt routine rts to rti, put in conditionals for Level One
 * not to execute the os9 F$SUser command.
+*
+*  19      2010/01/29  Boisy G. Pitre
+* Changed icpt routine to honor the S$HUP signal and exit
 
          nam   Login
          ttl   Timeshare login utility
@@ -28,7 +31,7 @@
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   18
+edition  set   19
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -107,7 +110,10 @@ MOTD     fcc   "SYS/MOTD"
 
 root     fcc   "...... "
 
-IcptRtn  rti			note, was rts in original code
+IcptRtn
+         cmpb  #S$HUP
+         lbeq  Exit
+         rti			note, was rts in original code
 
 * Entry: X = pointer to start of nul terminated string
 * Exit:  D = length of string
