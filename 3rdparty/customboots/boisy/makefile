@@ -34,8 +34,8 @@ CMDS		= $(CD)/attr $(CD)/build $(CD)/cmp $(CD)/copy $(CD)/cputype $(CD)/date \
 CMDS_DW		= $(3PDW68)/inetd $(3PDW68)/dw \
 		$(3PDW68)/telnet $(3PBOISY)/send
 
-CMDS_THESIS	= testmul testtfr testexg testadd testcwai
-SRC_THESIS	= testmul.asm testtfr.asm testexg.asm testadd.asm testcwai.asm
+CMDS_THESIS	= testmul0000 testmulAA55 testtfr testexg testadd testcwai testnop
+SRC_THESIS	= testmul0000.asm testmulAA55.asm testtfr.asm testexg.asm testadd.asm testcwai.asm testnop.asm
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_80 $(MD)/boot_dw3 $(MD)/krn
