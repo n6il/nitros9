@@ -20,13 +20,9 @@ start
 
 * set up appropriate registers for test
 
-* measure mul multiplying 0
-         lda   #0
-         ldb   #0
-
 * measure mul multiplying alternating bit patterns
-*         lda   #%01010101
-*         ldb   #%10101010
+         lda   #%01010101
+         ldb   #%10101010
 
 top
 * 100 instructions in series
