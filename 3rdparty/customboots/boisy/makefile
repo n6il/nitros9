@@ -7,7 +7,7 @@ vpath %.asm ../../../utils/boisy:..:$(LEVEL2)/cmds:$(LEVEL1)/cmds:$(LEVEL1)/modu
 
 AFLAGS		+= -aNoTerm=1 -acoco3=1
 
-LFLAGS		+= -y -l=$(NITROS9DIR)/3rdparty/packages/drivewire/netlib/netlib.l -l=$(NITROS9DIR)/3rdparty/libs/alib/alib.l -l=../netlib/netlib.l -l=$(NITROS9DIR)/lib/sys6809l2.l 
+LFLAGS		+= -y -l=$(NITROS9DIR)/3rdparty/libs/alib/alib.l -l=$(NITROS9DIR)/lib/sys6809l2.l 
 3PDW68          = $(3RDPARTY)/packages/drivewire/6809l2
 3PBOISY         = $(3RDPARTY)/utils/boisy
 
@@ -34,8 +34,8 @@ CMDS		= $(CD)/attr $(CD)/build $(CD)/cmp $(CD)/copy $(CD)/cputype $(CD)/date \
 CMDS_DW		= $(3PDW68)/inetd $(3PDW68)/dw \
 		$(3PDW68)/telnet $(3PBOISY)/send
 
-CMDS_THESIS	= testmul0000 testmulAA55 testtfr testexg testadd testcwai testnop
-SRC_THESIS	= testmul0000.asm testmulAA55.asm testtfr.asm testexg.asm testadd.asm testcwai.asm testnop.asm
+CMDS_THESIS	= testmul testtfr testexg testadd testnop
+SRC_THESIS	= testmul.a testtfr.a testexg.a testadd.a testnop.a
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_80 $(MD)/boot_dw3 $(MD)/krn
