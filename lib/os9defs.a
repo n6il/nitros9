@@ -1234,7 +1234,7 @@ E$WP:          RMB       1                   Write Protect
 E$CRC:         RMB       1                   Bad Check Sum
 E$Read:        RMB       1                   Read Error
 E$Write:       RMB       1                   Write Error
-E$NotRd:       RMB       1                   Device Not Ready
+E$NotRdy:      RMB       1                   Device Not Ready
 E$Seek:        RMB       1                   Seek Error
 E$Full:        RMB       1                   Media Full
 E$BTyp:        RMB       1                   Bad Type (incompatable) media
