@@ -828,7 +828,7 @@ P$PagCnt:      RMB       1                   Memory Page Count
 P$User:        RMB       2                   User Index $09
 P$Prior:       RMB       1                   Priority $0B
 P$Age:         RMB       1                   Age $0C
-P$State:       RMB       1
+P$State$State $0D
 P$Queue:       RMB       2                   Queue Link (Process ptr) $0E
 P$IOQP:        RMB       1                   Previous I/O Queue Link (Process ID) $10
 P$IOQN:        RMB       1                   Next     I/O Queue Link (Process ID)
@@ -1303,6 +1303,4 @@ L3.Blks:       EQU       L3.Size/$20         Number of slots
 L3.End:        EQU       L3.Start+L3.Size*$0100 end of L3 memory
 L3.SCF:        EQU       $0660               SCF block ptr
 L3.RBF:        EQU       L3.SCF+1            RBF block ptr
-               ENDC      
-
                ENDC      
