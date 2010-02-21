@@ -34,12 +34,12 @@ IRQPckt        fcb       $00,$01,$0A         ;IRQ packet Flip(1),Mask(1),Priorit
 * Default time packet
 DefTime        fcb       109,12,31,23,59,59
 
-* for dynamic poll frequency, number of ticks between firing poller
+* for dynamic poll frequency, number of ticks between firing poller - should we move to dwdefs?
 * speed 1 = interactive (typing)
 PollSpd1       fcb       3
-* speed 2 = bulk transfer
+* speed 2 = bulk transfer (depending on how much processing needs to be done to incoming stream, 5-8 seems good)
 PollSpd2       fcb       6
-* speed 3 = idle
+* speed 3 = idle 
 PollSpd3       fcb       40
 * X pollidle -> drop to next slower rate
 PollIdle       fcb       60
