@@ -792,7 +792,7 @@ DT.Pipe        EQU       2                   Pipe File Manager
 DT.SBF         EQU       3                   Sequential Block File Manager
 DT.NFM         EQU       4                   Network File Manager
 DT.CDFM        EQU       5                   CD-ROM File Manager
-
+DT.RFM			EQU		6					Remote File Manager
 
 *********************
 * CRC Result Constant

@@ -46,6 +46,9 @@ OP_SERWRITE equ 'C+128
 OP_SERGETSTAT equ 'D
 OP_SERSETSTAT equ 'D+128
 
+* for dw vfm
+OP_VFM equ 'V+128
+
 * WireBug opcodes (Server-initiated)
 OP_WIREBUG_MODE  equ   'B
 * WireBug opcodes (Server-initiated)
