@@ -20,7 +20,8 @@ edition  set   $01
 wtf  rmb   1
 size     equ   .
 
-   
+ 		fcb   READ.+WRITE.
+
 name     fcs   /rfmdrv/
          fcb   edition
 
