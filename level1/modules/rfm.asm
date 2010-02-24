@@ -163,10 +163,11 @@ readln	pshs u
         ldy		#1
         jsr		3,u
         
-        puls	b
-        bne		readln1
+        ldb		,s
+       * bne		readln1
         
         * eof
+        leas	1,s
         ldb		#211
         orcc	#1
         puls	u
@@ -174,7 +175,7 @@ readln	pshs u
         
         * read B chars into mem at addr in caller's X
         * first into our buffer INCOMPLETE/FUBAR
-readln1	pshs 	b
+readln1	puls 	b
 		leax	pathtmp,pcr
 		clra
 		tfr		d,y
