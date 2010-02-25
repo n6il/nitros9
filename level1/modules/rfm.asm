@@ -135,8 +135,17 @@ delete	lda		#DW.delete
 		lbra	sendit
 seek	lda		#DW.seek
 		lbra	sendit
-read	lda		#DW.read
-		lbra	sendit
+		
+read	pshs u
+				
+		* put path # on stack
+		lda		,y
+		pshs	a
+		
+		* put rfm op and DW op on stack
+		ldb		#DW.read
+		bra		read1
+		
 write	lda		#DW.write
 		lbra	sendit
 		
@@ -148,7 +157,7 @@ readln	pshs u
 		
 		* put rfm op and DW op on stack
 		ldb		#DW.readln
-		lda		#OP_VFM
+read1  	lda		#OP_VFM
 		pshs	d
 		
 		leax      ,s                  ; point X to stack 
@@ -181,34 +190,51 @@ readln	pshs u
        	beq		readln1		; 0 bytes = EOF
         
        	* read the data from server if > 0
-       	leas	-b,s		; doesnt work
-       	pshs	b
+       	tfr		b,a
+       	comb
+       	incb
+       	leas	b,s		; reserve room on stack
+       	pshs	a		; save count 
        	leax	1,s
        	clra
        	tfr		d,y
-       	jsr		6,u
-       	
-       	puls 	a
-       	
-		ldx   <D.Proc   	get curr proc desc
-        ldb   P$Task,x  	get task #
-       	
-        inca	
-       	ldx		a,s		;pointer to caller's stack is on our stack, behind the data and one byte
-       	deca
-       	ldx		R$X,x	; should be X from caller
-       	
-       	* ok.. now data is on stack, data size in A, caller's task in B, addr in caller to put it at is in X 
-       	* get it into calling proc with F$STABX?
+       	jsr		3,u
        	
        	
+       	* F$Move
+       	* a = my task #
+       	* b = caller's task #
+       	* X = source ptr
+       	* Y = byte count
+       	* U = dest ptr
        	
+       	puls 	b
+       	clra
+       	tfr		d,y		; y= byte count (was set in dwsub call, not sure if preserved)
        	
-       clrb
-       bra		readln2
+       	incb	
+       	ldx		b,s		;pointer to caller's stack is on our stack, behind the data and one byte
+       	ldu		R$X,x	; U = caller's X = dest ptr
+       
+	   	lda		<D.SysTsk ; A = system task #  (??)
+       
+       	ldx   <D.Proc   	get calling proc desc
+        ldb   P$Task,x  	; B = callers task #
+       	       	
+       	leax	,s		; x = src ptr
+       	
+       * try this F$Move
+       os9	F$Move
+       	
+       * cleanup
+       	tfr		y,d
+		leas	b,s
+		
+		clrb
+		bra		readln2
        	
 readln1	orcc	#1
-       	ldb		#211
+       	ldb		#E$EOF
 readln2	leas	1,s
         puls	u
         rts
