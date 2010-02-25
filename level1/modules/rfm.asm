@@ -109,8 +109,10 @@ open1  os9	f$ldabx
         ldy		#1
         jsr		3,u
         puls 	b
-        
-		puls 	u
+        cmpb	#0
+        beq		open2
+        orcc	#1			;set error
+open2	puls 	u
 		rts
 
 makdir	lda		#DW.makdir
