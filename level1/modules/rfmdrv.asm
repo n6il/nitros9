@@ -20,7 +20,8 @@ edition  set   $01
 wtf  rmb   1
 size     equ   .
 
- 		fcb   READ.+WRITE.
+ 		 fcb   DIR.+SHARE.+PEXEC.+PWRIT.+PREAD.+EXEC.+UPDAT.
+
 
 name     fcs   /rfmdrv/
          fcb   edition

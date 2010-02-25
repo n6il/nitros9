@@ -21,7 +21,8 @@ edition  equ   1
 
          mod   eom,RFMName,tylg,atrv,RFMEnt,size
 
-pathtmp	 rmb	256		         
+*         org V.RFM
+pathtmp	 equ	128		         
 size	 equ	*         
          
 RFMName  fcs   /RFM/
@@ -51,9 +52,16 @@ RFMEnt   lbra  create         Create path
          lbra  setstt       Set Status
          lbra  close        Close path
 
-create	lda		#DW.create
-		lbra	sendit
-
+create	pshs u
+				
+		* put path # on stack
+		lda		,y
+		pshs	a
+		
+		* put rfm op and DW op on stack
+		ldb		#DW.create
+		bra		create1
+		
 open	pshs u
 				
 		* put path # on stack
@@ -62,7 +70,7 @@ open	pshs u
 		
 		* put rfm op and DW op on stack
 		ldb		#DW.open
-		lda		#OP_VFM
+create1	lda		#OP_VFM
 		pshs	d
 		
 		leax      ,s                  ; point X to stack 
@@ -85,24 +93,28 @@ open	pshs u
        
         ldx		,s		; orig U is on stack
         ldx		R$X,x	; should be X from caller
-		leay		pathtmp,pcr
-		
+        	
 		clra	
 		pshs 	a
+		
+		leas	-pathtmp,s
+		leay	,s
 		
 open1  os9	f$ldabx
 		sta		,y+
         leax	1,x
-        inc		,s
+        inc		pathtmp,s
         cmpa	#$0D
         bne		open1
 
         * send to server
         clra 
-        ldb		,s		; leave a byte on stack for response
+        ldb		pathtmp,s		; leave a byte on stack for response
         tfr		d,y
-        leax 	pathtmp,pcr	
+        leax 	,s	
         jsr		6,u
+        
+        leas	pathtmp,s
         
 		* read response from server -> B
         leax	,s
@@ -166,29 +178,40 @@ readln	pshs u
         jsr		3,u
         
         ldb		,s
-       * bne		readln1
+       	beq		readln1		; 0 bytes = EOF
         
-        * eof
-        leas	1,s
-        ldb		#211
-        orcc	#1
+       	* read the data from server if > 0
+       	leas	-b,s		; doesnt work
+       	pshs	b
+       	leax	1,s
+       	clra
+       	tfr		d,y
+       	jsr		6,u
+       	
+       	puls 	a
+       	
+		ldx   <D.Proc   	get curr proc desc
+        ldb   P$Task,x  	get task #
+       	
+        inca	
+       	ldx		a,s		;pointer to caller's stack is on our stack, behind the data and one byte
+       	deca
+       	ldx		R$X,x	; should be X from caller
+       	
+       	* ok.. now data is on stack, data size in A, caller's task in B, addr in caller to put it at is in X 
+       	* get it into calling proc with F$STABX?
+       	
+       	
+       	
+       	
+       clrb
+       bra		readln2
+       	
+readln1	orcc	#1
+       	ldb		#211
+readln2	leas	1,s
         puls	u
         rts
-        
-        * read B chars into mem at addr in caller's X
-        * first into our buffer INCOMPLETE/FUBAR
-readln1	puls 	b
-		leax	pathtmp,pcr
-		clra
-		tfr		d,y
-		jsr		3,u
-		
-		puls	u		; done with dwsub
-		
-		
-		
-		clrb
-		rts
 
         
 writln	lda		#DW.writln
@@ -218,9 +241,17 @@ close	pshs u
         endc      
          
         jsr		6,u
-        leas	3,s		;clean stack
+        leas	2,s		;clean stack (leave 1 byte)
 		
-		clrb
+        * read server response
+        leax	,s
+        ldy		#1
+        jsr		3,u
+        
+        ldb		,s ; server sends result code
+        beq		close1
+        orcc	#1	; set error flag if != 0
+close1	leas	1,s
 		puls	u
 		rts
 		
