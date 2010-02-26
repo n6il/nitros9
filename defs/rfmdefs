@@ -25,7 +25,9 @@ DW.close EQU $0D
 * RFM Static Storage
 
                ORG       V.USER
+V.DWCMD        RMB       1                   last DW command sent
 V.BUF          RMB       2                   pointer to buffer
-V.PATHNUM	   RMB		 1					 current path #
+V.PATHNAME     RMB       2		     pointer to pathname
+V.PATHNAMELEN  RMB       2		     pathname length
 V.RFM          EQU       .                   Total RFM manager static overhead
 
