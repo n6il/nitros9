@@ -22,17 +22,8 @@ edition  equ   1
          mod   eom,RFMName,tylg,atrv,RFMEnt,size
 
       
-         rmb   $0000
 size     equ   .
 
-
-         org   $0000
- 
-pathlen  rmb   1
-pathnum	 rmb   1
-origu	 rmb   2
-xfersz	 rmb   2        
-bufptr	 rmb   2
 
 RFMName  fcs   /RFM/
          fcb   edition
@@ -61,35 +52,32 @@ RFMEnt   lbra  create         Create path
          lbra  setstt       Set Status
          lbra  close        Close path
 
-create	stu		origu,pc
-			
-		* put path # on stack
-		lda		,y
-		sta		pathnum,pc
-		pshs	a
-		
-		* put rfm op on stack
-		ldb		#DW.create
+create	ldb		#DW.create
 		bra		create1
 
 		
-open	stu		origu,pc
+open	ldb		#DW.open
+create1	pshs	u,y         ; RD Regs
+
+		ldx		PD.DEV,y	; to our static storage
+		pshs	x			; PD.DEV PD Regs
 		
 		* put path # on stack
 		lda		,y
-		sta		pathnum,pc
-		pshs	a
+		sta		V.PATHNUM,x
+		pshs	a			; p# PD.DEV PD Regs
 		
 		* put rfm op and DW op on stack
-		ldb		#DW.open
-
-create1	lda		#OP_VFM
-		pshs	d
 		
+		lda		#OP_VFM
+		pshs	d			; DWOP RFMOP p# PD.DEV PD Regs
+		
+		* TODO lets not create multiple buffers when multiple open/create on same path
      	* get system mem
-        ldd		#256
+     	ldd		#256
        	os9		F$SRqMem	; ask for D bytes (# bytes server said is coming)
-       	stu		bufptr,pc	; store pointer to our memory
+       	ldx		3,s			; PD.DEV
+       	stu		V.BUF,x		
        	
 		leax      ,s                  ; point X to stack 
         ldy       #3                  ; 3 bytes to send
@@ -101,60 +89,58 @@ create1	lda		#OP_VFM
         endc      
          
         jsr		6,u
-        leas	3,s		;clean stack
+        leas	3,s		;clean stack   PD.DEV PD Regs
        
         * now send path string
         
         * copy path string 
 
-        clr		pathlen,pc
+        leas	-1,s		; use stack for counter    0 PD.DEV PD Regs
+        clr		,s		; set size ctr to 0
         
 		
        	ldx   <D.Proc   	get curr proc desc
         ldb   P$Task,x  	get task #
        
-        ldx		origu,pc
+        ldx		5,s		; original U - Regs
         ldx		R$X,x	; should be X from caller
-        	
-       	ldy		bufptr,pc
+        
+        ldy		1,s		; pd.dev
+       	ldy		V.BUF,y	
        	
 open1  	os9		f$ldabx
 		sta		,y+
         leax	1,x
-        inc		pathlen,pc
+        inc		,s
         cmpa	#$0D
         bne		open1
         
         * store advanced X in calling process (SCF does this.. ?)
         leax	-1,x
-        ldy		origu,pc
+        ldy		5,s	; original U
         stx		R$X,y
                 
         * send to server
         clra 
-        ldb		pathlen,pc	
+        ldb		,s		; counter	
         tfr		d,y		; set Y to pathlen
-        ldx		bufptr,pc	
+        ldx		1,s		; pd.dev
+        ldx		V.BUF,x
         jsr		6,u
         
 		* read response from server -> B
-		leas 	-1,s	;room for response byte
-        leax	,s
+		leax	,s
         ldy		#1
         jsr		3,u
         
-        * free system mem
-        ldd		#256
-		ldu		bufptr,pc
-		os9		F$SRtMem
-        
 		* pull server's response into B
-        puls 	b
+        puls 	b		; PD.DEV PD Regs
         tstb
         beq		open2
         
         orcc	#1			;set error
-open2	ldu		origu,pc
+open2	leas	4,s		; Regs
+		puls	u		; clean stack
 		rts
 
 makdir	lda		#DW.makdir
@@ -166,15 +152,7 @@ delete	lda		#DW.delete
 seek	lda		#DW.seek
 		lbra	sendit
 		
-read	stu		origu,pc
-		
-		* put path # on stack
-		lda		,y
-		sta		pathnum,pc
-		pshs	a
-		
-		* put rfm op on stack
-		ldb		#DW.read
+read	ldb		#DW.read
 		bra		read1		; join readln routine
 		
 		
@@ -184,17 +162,21 @@ write	lda		#DW.write
 		
 		
 	
-readln	stu		origu,pc    	; store pointer to caller's register stack
+readln	ldb		#DW.readln
+read1	pshs	y,u
+		
+		ldx		PD.DEV,y	; to our static storage
+		pshs	x			; PD.DEV PD Regs
 		
 		* put path # on stack
 		lda		,y
-		sta		pathnum,pc		;also store, not really needed (yet?)
-		pshs	a
+		sta		V.PATHNUM,x
+		pshs	a			; p# PD.DEV PD Regs
 		
 		* put rfm op and DW op on stack
-		ldb		#DW.readln
-read1  	lda		#OP_VFM
-		pshs	d
+		
+		lda		#OP_VFM
+		pshs	d			; DWOP RFMOP p# PD.DEV PD Regs
 		
 		leax      ,s                  ; point X to stack 
         ldy       #3                  ; 3 bytes to send
@@ -208,10 +190,10 @@ read1  	lda		#OP_VFM
          
         * send dw op, rfm op, path #
         jsr		6,u
-        leas	3,s		;clean stack
+        leas	3,s		;clean stack - PD.DEV PD Regs
        
         * put caller's Y on stack (maximum allowed bytes)
-        ldx		origu,pc
+        ldx		4,s
         ldx		R$Y,x
         pshs	x
         
@@ -229,24 +211,20 @@ read1  	lda		#OP_VFM
         
         * store size
         clra
-        puls	b
-        std		xfersz,pc
+        puls	b		;PD.DEV PD Regs
+       
         
         * check for 0
         tstb
         beq		readln1		; 0 bytes = EOF
         
        	* read the data from server if > 0
-       
-       	* get system mem
-       	pshs	u			; save U for later (ptr to dwsub)
-       	os9		F$SRqMem	; ask for D bytes (# bytes server said is coming)
-       	stu		bufptr,pc	; store pointer to our memory
-       	puls	u			; get dwsub ptr back into U
-       	
+        pshs	d		;xfersz PD.DEV PD Regs
+              	
        	* load data from server into mem block
-       	ldx		bufptr,pc
-       	ldy		xfersz,pc
+       	ldx		2,s		; pd.dev
+       	ldx		V.BUF,x	
+       	ldy		,s		;xfersz
        	jsr		3,u
        	
        	* F$Move
@@ -258,9 +236,9 @@ read1  	lda		#OP_VFM
        	
        	* move from our mem to caller
        	
-       	ldy		xfersz,pc		;Y = byte count (already set?)
+       	puls	y		;Y = byte count (already set?)    -  PD.DEV PD Regs
        	
-       	ldx		origu,pc
+       	ldx		4,s
        	ldu		R$X,x	; U = caller's X = dest ptr
        
 	   	lda		<D.SysTsk ; A = system task # 
@@ -268,28 +246,27 @@ read1  	lda		#OP_VFM
        	ldx   <D.Proc   	get calling proc desc
         ldb   P$Task,x  	; B = callers task #
        	       	
-       	ldx		bufptr,pc		; x = src ptr
+       	puls	x			; pd.dev     - PD Regs
+       	ldx		V.BUF,x
        	
        *  F$Move the bytes (seems to work)
        os9	F$Move
        	
-       * return system mem
-       
-       	ldd		xfersz,pc
-		ldu		bufptr,pc
-		os9		F$SRtMem
-		
 		* assume everything worked (not good)
 		clrb
-		ldy		xfersz,pc	; Y is supposed to be set to bytes read.. do we need to set this in the caller's regs?
+		*ldy		xfersz,pc	; Y is supposed to be set to bytes read.. do we need to set this in the caller's regs?
 		bra		readln2
        	
 readln1	ldb		#E$EOF
 		ldy		#0			; Y should be 0 if we didnt read any?  in callers regs?
 		orcc	#1			; set error bit
-       	
-readln2	ldu		origu,pc	; put U back to the entry value.. needed?
+		leas	2,s			; clean stack down 
+		
+readln2	puls	y,u
 		rts
+
+*ldu		origu,pc	; put U back to the entry value.. needed?
+*		rts
 
         
 writln	lda		#DW.writln
@@ -299,7 +276,7 @@ getstt	lda		#DW.getstt
 setstt	lda		#DW.setstt
 		lbra	sendit
 		
-close	pshs u
+close	pshs u,y
 				
 		* put path # on stack
 		lda		,y
@@ -326,11 +303,18 @@ close	pshs u
         ldy		#1
         jsr		3,u
         
+        * free system mem
+        ldd		#256
+        ldx		1,s		; orig Y
+        ldx		PD.DEV,x
+        ldu		V.BUF,x
+        os9		F$SRtMem
+        
         ldb		,s ; server sends result code
         beq		close1
         orcc	#1	; set error flag if != 0
 close1	leas	1,s
-		puls	u
+		puls	u,y
 		rts
 		
 		
