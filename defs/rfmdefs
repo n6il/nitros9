@@ -21,3 +21,11 @@ DW.getstt EQU $0B
 DW.setstt EQU $0C
 DW.close EQU $0D
 
+********************
+* RFM Static Storage
+
+               ORG       V.USER
+V.BUF          RMB       2                   pointer to buffer
+V.PATHNUM	   RMB		 1					 current path #
+V.RFM          EQU       .                   Total RFM manager static overhead
+
