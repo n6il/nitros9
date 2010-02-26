@@ -138,8 +138,7 @@ open1          os9       f$ldabx
 
                orcc      #1                  ;set error
 open2          leas      4,s                 ; Regs
-               puls      u                   ; clean stack
-               rts       
+               puls      u,pc                ; clean stack & return
 
 makdir         lda       #DW.makdir
                lbra      sendit
@@ -260,8 +259,7 @@ readln1        ldb       #E$EOF
                orcc      #1                  ; set error bit
                leas      2,s                 ; clean stack down 
 
-readln2        puls      y,u
-               rts       
+readln2        puls      y,u,pc
 
 *ldu		origu,pc	; put U back to the entry value.. needed?
 *		rts
@@ -436,12 +434,11 @@ close          pshs      u,y
                beq       close1
                orcc      #1                  ; set error flag if != 0
 close1         leas      1,s
-               puls      u,y
-               rts       
+               puls      u,y,pc
 
 
 * just send OP_VMF + vfmop
-sendit         pshs      a
+sendit         pshs      a,x,y,u
 
                lda       #OP_VFM             ; load command
                pshs      a                   ; command store on stack
@@ -457,7 +454,7 @@ sendit         pshs      a
                leas      2,s                 ;clean stack
 
                clrb      
-               rts       
+               puls      x,y,u,pc
 
                emod      
 eom            equ       *
