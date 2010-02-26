@@ -73,6 +73,8 @@ create1
                ldu       4,s                 ; get pointer to caller's registers
                ldy       R$X,u
                sty       V.PATHNAME,x
+* MOVE THIS UP ONE LINE AND NO CRASH ON 'list /y0/test'
+ lbra openerr
                tfr       y,x
 prsloop        os9       F$PrsNam
                bcs       open2
@@ -165,8 +167,7 @@ moverr         puls      cc
                beq       open2
 
 openerr        coma                          ; set error
-open2          leas      6,s                 ; clean stack
-               rts
+open2          puls      x,y,u,pc
 
 makdir         lda       #DW.makdir
                lbra      sendit
