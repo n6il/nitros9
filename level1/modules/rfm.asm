@@ -59,19 +59,45 @@ create         ldb       #DW.create
 open           ldb       #DW.open
 create1        
                ldx       PD.DEV,y            ; get ptr to our static storage
-               pshs      b,x,y,u               ; save all on stack
-
+               pshs      x,y,u               ; save all on stack
+               stb       V.DWCMD,x
+               
 * TODO lets not create multiple buffers when multiple open/create on same path
 * get system mem
                ldd       #256
                os9       F$SRqMem            ; ask for D bytes (# bytes server said is coming)
-               puls      a
-               bcs       open2
+               lbcs      open2
                stu       V.BUF,x
 
-* put path # on stack
+* use PrsNam to validate pathlist and count length
+               ldu       4,s                 ; get pointer to caller's registers
+               ldy       R$X,u
+               sty       V.PATHNAME,x
+               tfr       y,x
+prsloop        os9       F$PrsNam
+               bcs       open2
+               tfr       y,x
+               anda      #$7F
+               cmpa      #PENTIR
+               bne       chkdelim
+               ldb       #E$BPNam
+               bra       openerr
+chkdelim       cmpa      #PDELIM
+               beq       prsloop
+* at this point X points to the character AFTER the last character in the name
+* update callers R$X
+               ldu       4,s                 ; get caller's registers
+               stx       R$X,u
+               
+* compute the length of the pathname and save it
+               tfr       x,d
+               ldx       ,s                  ; get the device memory pointer
+               subd      V.PATHNAME,x
+               std       V.PATHNAMELEN,x      ; save the length
+
+* put command byte & path # on stack
+               lda       V.DWCMD,x
                ldb       PD.PD,y
-               stb       V.PATHNUM,x
                pshs      cc
                pshs      d                   ; p# PD.DEV PD Regs
 
@@ -93,52 +119,52 @@ create1
                leas      3,s                 ;clean stack   PD.DEV PD Regs
 
 * now send path string
+* move from caller to our mem
 
-* copy path string 
+               ldx       <D.Proc             get calling proc desc
+               lda       P$Task,x            ; A = callers task # (source)
 
-               clr       ,-s                 ; set size ctr to 0
+               ldb       <D.SysTsk           ; B = system task # (dest)
 
-               ldx       <D.Proc             ; get curr proc desc
-               ldb       P$Task,x            ; get task #
+               ldx       1,s                 ; get device mem ptr
+               ldu       V.BUF,x             ; get destination pointer in U
+               ldy       V.PATHNAMELEN,x     ; get count in Y
+               ldx       V.PATHNAME,x        ; get source in X
 
-               ldx       6,s                 ; original U - Regs
-               ldx       R$X,x               ; should be X from caller
+*  F$Move the bytes (seems to work)
+               os9       F$Move
 
-               ldy       2,s                 ; pd.dev
-               ldy       V.BUF,y
+               bcs       moverr
 
-open1          os9       F$LDABX
-               sta       ,y+
-               leax      1,x
-               inc       ,s
-               cmpa      #C$CR
-               bne       open1
-
-* store advanced X in calling process (SCF does this.. ?)
-               leax      -1,x
-               ldy       6,s                 ; original U
-               stx       R$X,y
+* Add carriage return
+               tfr       u,x
+               tfr       y,d
+               leau      d,u
+               lda       #C$CR
+               sta       ,u
+               leay      1,y
 
 * send to server
-               clra      
-               ldb       ,s                  ; counter	
-               tfr       d,y                 ; set Y to pathlen
-               ldx       2,s                 ; pd.dev
-               ldx       V.BUF,x
+               ifgt      Level-1
+               ldu       <D.DWSubAddr
+               else      
+               ldu       >D.DWSubAddr
+               endc      
                jsr       6,u
 
 * read response from server -> B
+               clr       ,-s
                leax      ,s
                ldy       #1
                jsr       3,u
 
 * pull server's response into B
                puls      b                   ; PD.DEV PD Regs
-               puls      cc
+moverr         puls      cc
                tstb      
                beq       open2
 
-               coma                          ; set error
+openerr        coma                          ; set error
 open2          leas      6,s                 ; clean stack
                rts
 
@@ -167,7 +193,6 @@ read1          ldx       PD.DEV,y            ; to our static storage
 
 * put path # on stack
                lda       PD.PD,y
-               sta       V.PATHNUM,x
                pshs      cc
                pshs      a                   ; p# PD.DEV PD Regs
 
@@ -240,7 +265,8 @@ go_on          pshs      d                   ;xfersz PD.DEV PD Regs
 
                ldx       4,s
                ldu       R$X,x               ; U = caller's X = dest ptr
-
+               sty       R$Y,x
+               
                lda       <D.SysTsk           ; A = system task # 
 
                ldx       <D.Proc             get calling proc desc
@@ -365,7 +391,8 @@ GstFDInf
 * Error: CC Carry set
 *        B = errcode
 *
-setstt         lda       #DW.setstt
+setstt 
+               lda       #DW.setstt
                lbsr      sendit
 
                ldb       R$B,u
@@ -396,10 +423,11 @@ SstFSig
                rts       
 
 
-close          pshs      u,y
+close          
+               pshs      y,u
 
 * put path # on stack
-               lda       ,y
+               lda       PD.PD,y
                pshs      a
 
 * put rfm op and DW op on stack
@@ -430,11 +458,11 @@ close          pshs      u,y
                ldu       V.BUF,x
                os9       F$SRtMem
 
-               ldb       ,s                  ; server sends result code
+               puls      b                   ; server sends result code
+               tstb
                beq       close1
-               orcc      #1                  ; set error flag if != 0
-close1         leas      1,s
-               puls      u,y,pc
+               coma                          ; set error flag if != 0
+close1         puls      u,y,pc
 
 
 * just send OP_VMF + vfmop

@@ -7,6 +7,7 @@
 
          ifp1
          	use   defsfile
+         	use   rfmdefs
          endc
          
 tylg     set   Drivr+Objct   
@@ -17,6 +18,7 @@ edition  set   $01
          mod   eom,name,tylg,atrv,start,size
 
         
+         org   V.RFM
 size     equ   .
 
          fcb   DIR.+SHARE.+PEXEC.+PWRIT.+PREAD.+EXEC.+UPDAT.
