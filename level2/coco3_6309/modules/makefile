@@ -65,7 +65,7 @@ PIPE		= pipeman.mn pipeman_named.mn \
 		piper.dr \
 		pipe.dd
 
-RFM		= rfm.mn rfmdrv.dt y0_rfm.dd
+RFM		= rfm.mn rfmdrv.dr y0_rfm.dd
 
 #
 # The following macros represent a collection of modules for various
