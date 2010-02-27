@@ -294,7 +294,7 @@ FD.OWN         RMB       2                   Owner
 FD.DAT         RMB       5                   Date last modified
 FD.LNK         RMB       1                   Link count
 FD.SIZ         RMB       4                   File size
-FD.Creat       RMB       3                   Segment list extension
+FD.Creat       RMB       3                   File creation date (YY/MM/DD)
 FD.SEG         EQU       .                   Beginning of segment list
 * Segment List Entry Format
                ORG       0
