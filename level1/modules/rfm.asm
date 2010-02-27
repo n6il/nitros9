@@ -438,7 +438,7 @@ writln         lda       #DW.writln
 *        B = error code (if CC.Carry == 1)
 *
 getstt                   
-               lda       #DW.getstt
+               lda       PD.PD,y
                lbsr      sendgstt
 
                ldb       R$B,u               get function code
@@ -499,8 +499,59 @@ GstPOS
 *        X = ptr to 256 byte buffer
 *        Y = # of bytes of FD required
 
-GstFD                    
-               rts       
+* path # and SS.FD already sent to server, so
+* send Y, recv Y bytes, get them into caller at X
+* Y and U here are still as at entry
+GstFD       
+		pshs	y,u
+		
+		* send caller's Y (do we really need this to be 16bit?  X points to 256byte buff?
+		ldx		R$X,u
+		pshs	x
+		leax	,s
+		ldy		#2
+		
+		* set U to dwsub
+        ifgt      Level-1
+        ldu       <D.DWSubAddr
+        else      
+        ldu       >D.DWSubAddr
+        endc      
+
+        jsr       6,u
+        
+        * recv bytes into v.buf
+        puls	y
+        ldx     ,s                 ; orig Y
+        ldx       PD.DEV,x
+        ldx       V$STAT,x
+        ldx       V.BUF,x		
+		pshs	x
+        
+        jsr		3,u
+        
+        * move v.buf into caller
+        
+        ldx       4,s
+        ldu       R$X,x               ; U = caller's X = dest ptr
+        sty       R$Y,x				  ; do we need to set this for caller?
+               
+        lda       <D.SysTsk           ; A = system task # 
+
+        ldx       <D.Proc             get calling proc desc
+        ldb       P$Task,x            ; B = callers task #
+
+        puls      x                   ; V.BUF from earlier
+        
+        
+*  F$Move the bytes (seems to work)
+               os9       F$Move
+
+* assume everything worked (not good)
+               clrb   
+        
+		puls	y,u,pc
+                  
 
 * SS.FDInf - 
 * Entry: A = path
