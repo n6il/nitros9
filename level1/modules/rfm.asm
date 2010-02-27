@@ -594,10 +594,12 @@ GstPOS
 * send Y, recv Y bytes, get them into caller at X
 * Y and U here are still as at entry
 GstFD       
-		pshs	y,u
+        ldx     PD.DEV,y
+        ldx     V$STAT,x
+		pshs	x,y,u
 		
 		* send caller's Y (do we really need this to be 16bit?  X points to 256byte buff?
-		ldx		R$X,u
+		ldx		R$Y,u
 		pshs	x
 		leax	,s
 		ldy		#2
@@ -613,9 +615,7 @@ GstFD
         
         * recv bytes into v.buf
         puls	y
-        ldx     ,s                 ; orig Y
-        ldx       PD.DEV,x
-        ldx       V$STAT,x
+        ldx     ,s                 ; V$STAT
         ldx       V.BUF,x		
 		pshs	x
         
@@ -641,7 +641,7 @@ GstFD
 * assume everything worked (not good)
                clrb   
         
-		puls	y,u,pc
+		puls	x,y,u,pc
                   
 
 * SS.FDInf - 
@@ -690,7 +690,69 @@ setstt
 
 SstOpt                   
 SstSize                  
-SstFD                    
+               rts
+
+* Entry: A = path
+*        B = SS.FD
+*        X = ptr to 256 byte buffer
+*        Y = # of bytes of FD to write
+
+* path # and SS.FD already sent to server, so
+* send Y, recv Y bytes, get them into caller at X
+* Y and U here are still as at entry
+SstFD             
+        ldx     PD.DEV,y
+        ldx     V$STAT,x
+		pshs	x,y,u
+		
+		* send caller's Y (do we really need this to be 16bit?  X points to 256byte buff?
+		ldx		R$Y,u
+		pshs	x
+		leax	,s
+		ldy		#2
+		
+		* set U to dwsub
+        ifgt      Level-1
+        ldu       <D.DWSubAddr
+        else      
+        ldu       >D.DWSubAddr
+        endc      
+        jsr       6,u
+
+        * move caller bytes into v.buf
+        
+        puls      y                   ; get number of bytes pushed earlier
+        ldx       4,s
+        ldx       R$X,x               ; U = caller's X = dest ptr
+        ldu       ,s
+        ldu       V.BUF,u
+               
+        ldx       <D.Proc             get calling proc desc
+        lda       P$Task,x            ; A = callers task #
+
+        ldb       <D.SysTsk           ; B = system task # 
+
+        
+*  F$Move the bytes (seems to work)
+        os9       F$Move
+
+* write bytes from v.buf
+        tfr       u,x
+        
+        ifgt      Level-1
+        ldu       <D.DWSubAddr
+        else      
+        ldu       >D.DWSubAddr
+        endc      
+        
+        jsr		3,u
+        
+* assume everything worked (not good)
+               clrb   
+        
+		puls	x,y,u,pc
+                  
+       
 SstLock                  
 SstRsBit                 
 SstAttr                  
