@@ -294,8 +294,8 @@ read           ldb    #DW.read
 * Exit:  CC.Carry = 0 (no error), 1 (error)
 *        B = error code (if CC.Carry == 1)
 *
-write          lda    #DW.write
-               lbra   sendit
+write          ldb    #DW.write
+               lbra   write1
 
 
 
@@ -414,6 +414,8 @@ readln1
 readln2        puls      y,u,pc
 
 
+
+
 ******************************
 *
 * WritLn - writes a line of data to a file on the remote device
@@ -424,9 +426,98 @@ readln2        puls      y,u,pc
 * Exit:  CC.Carry = 0 (no error), 1 (error)
 *        B = error code (if CC.Carry == 1)
 *
-writln         lda       #DW.writln
-               lbra      sendit
+writln         ldb       #DW.writln
 
+write1         ldx       PD.DEV,y            ; to our static storage
+               ldx       V$STAT,x
+               pshs      x,y,u				; Vstat pd regs
+
+* put path # on stack
+               lda       PD.PD,y		
+               pshs      cc					; cc vstat pd regs
+               pshs      a                   ; p# cc vstat PD Regs
+
+* put rfm op and DW op on stack
+
+               lda       #OP_VFM
+               pshs      d                   ; DWOP RFMOP p# cc vstat PD.PD Regs
+
+               leax      ,s                  ; point X to stack 
+               ldy       #3                  ; 3 bytes to send
+
+* set U to dwsub
+               ifgt      Level-1
+               ldu       <D.DWSubAddr
+               else      
+               ldu       >D.DWSubAddr
+               endc      
+
+* send dw op, rfm op, path #
+               orcc      #IntMasks
+               jsr       6,u
+               leas      3,s                 ;clean stack - cc vstat PD.PD Regs
+
+* put caller's Y on stack (maximum allowed bytes)
+               ldx       5,s
+               ldx       R$Y,x
+               pshs      x				;bytes cc vstat PD.PD Regs
+
+* send 2 bytes from stack
+               leax      ,s
+               ldy       #2
+               jsr       6,u
+
+* move caller's data into our buf               	
+
+* F$Move
+* a = my task #
+* b = caller's task #
+* X = source ptr
+* Y = byte count
+* U = dest ptr
+
+               puls      y                   ;Y = byte count (already set?)  cc vstat PD.PD Regs
+               
+               ifgt      Level-1
+                
+               ldb       <D.SysTsk           ; dst B = us 
+
+               pshs		u					; dwsub  cc vstat PD.PD Regs
+               ldx		3,s	
+               ldu		V.BUF,x				; dst U = our v.buf
+               
+               ldx       <D.Proc             get calling proc desc
+               lda       P$Task,x            ; src A = callers task #
+
+               ldx       7,s		; orig U
+               ldx       R$X,x               ; src = caller's X
+              
+              
+*  F$Move the bytes 
+               os9       F$Move
+               endc
+
+               * send v.buf to server
+               
+               puls		u		;      cc vstat PD.PD Regs          
+               ldx		1,s
+               ldx		V.BUF,x
+               
+               jsr		6,u
+               
+               puls 	 cc		; vstat PD.PD Regs
+               bra       writln2
+* error exit?
+               
+writln2        puls      y,u,pc               
+               
+               
+               
+               
+               
+               
+               
+               
 ******************************
 *
 * GetStat - obtain status of file on the remote device
