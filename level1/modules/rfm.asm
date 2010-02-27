@@ -175,8 +175,41 @@ chgdir         lda       #DW.chgdir
                lbra      sendit
 delete         lda       #DW.delete
                lbra      sendit
-seek           lda       #DW.seek
-               lbra      sendit
+               
+               
+* seek = send dwop, rfmop, path, caller's X + U               
+seek        pshs		y,u
+			
+			ldx		R$U,u
+			pshs	x
+			
+			ldx		R$X,u
+			pshs	x
+			
+			lda     PD.PD,y
+			pshs	a
+			
+			ldb		#DW.seek
+			lda		#OP_VFM
+            pshs	d
+            
+            leax      ,s                  ; point X to stack 
+            ldy       #7                  ; 7 bytes to send
+
+* set U to dwsub
+               ifgt      Level-1
+               ldu       <D.DWSubAddr
+               else      
+               ldu       >D.DWSubAddr
+               endc      
+
+* send dw op, rfm op, path #
+               jsr       6,u
+               leas      7,s                 ;clean stack - PD.PD Regs
+               
+               clrb
+               puls  y,u,pc
+
 
 read           ldb       #DW.read
                bra       read1               ; join readln routine
@@ -308,7 +341,7 @@ writln         lda       #DW.writln
 *
 getstt                   
                lda       #DW.getstt
-               lbsr      sendit
+               lbsr      sendgstt
 
                ldb       R$B,u               get function code
                beq       GstOPT
@@ -466,6 +499,33 @@ close
                beq       close1
                coma                          ; set error flag if != 0
 close1         puls      u,y,pc
+
+
+* send dwop, rfmop, path, set/getstat op   (path is in A)
+sendgstt        pshs      x,y,u
+
+				ldb		R$B,u	
+				pshs	d	
+				
+			   lda       #OP_VFM             ; load command
+			   ldb		 #DW.getstt
+               pshs      d                   ; command store on stack
+               leax      ,s                  ; point X to stack 
+               ldy       #4                  ; 2 byte to send
+               ifgt      Level-1
+               ldu       <D.DWSubAddr
+               else      
+               ldu       >D.DWSubAddr
+               endc      
+
+               jsr       6,u
+               leas      4,s                 ;clean stack
+
+               clrb      
+               puls      x,y,u,pc
+
+
+
 
 
 * just send OP_VMF + vfmop
