@@ -29,6 +29,8 @@ CLOCKS          = clock_60hz clock_50hz \
 		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
 		clock2_jvemu clock2_messemu clock2_dw3
 
+RFM		= rfm.mn rfmdrv.dr y0_rfm.dd
+
 RBF		= rbf.mn \
 		rbdw3.dr dw3.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
@@ -65,8 +67,6 @@ PIPE		= pipeman.mn pipeman_named.mn \
 		piper.dr \
 		pipe.dd
 
-RFM		= rfm.mn rfmdrv.dr y0_rfm.dd
-
 #
 # The following macros represent a collection of modules for various
 # kernel tracks and bootfile configurations.
@@ -76,7 +76,7 @@ KERNEL_RAMPAK	= rel_32 $(TPB)/boot_rampak krn
 KERNEL_KENTON	= rel_32 $(TPB)/boot_kenton krn
 KERNEL_IDE	= rel_32 $(TPB)/boot_ide krn
 
-ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE) $(RFM)
+ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RFM) $(RBF) $(SCF) $(PIPE)
 
 all:	$(ALLOBJS)
 
