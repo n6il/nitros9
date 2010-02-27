@@ -98,6 +98,7 @@ chkdelim       cmpa      #PDELIM
 
 * put command byte & path # on stack
                lda       V.DWCMD,x
+               ldy       2,s
                ldb       PD.PD,y
                pshs      cc
                pshs      d                   ; p# PD.PD Regs
