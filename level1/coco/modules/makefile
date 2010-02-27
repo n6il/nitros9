@@ -29,6 +29,8 @@ CLOCKS          = clock_60hz clock_50hz \
                 clock2_smart clock2_harris clock2_cloud9 clock2_soft \
 		clock2_messemu clock2_jvemu clock2_dw3
 
+RFM		= rfm.mn rfmdrv.dr y0_rfm.dd
+
 RBF		= rbf.mn \
 		rbdw3.dr dw3.sb dw3_coco1.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
@@ -52,7 +54,7 @@ PIPE		= pipeman.mn \
 		piper.dr \
 		pipe.dd
 
-ALLOBJS		= $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
+ALLOBJS		= $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE) $(RFM)
 
 all:	$(ALLOBJS)
 

@@ -36,10 +36,6 @@ RFMName        fcs       /RFM/
 *
 * file manager entry point
 *
-* Entry: Y = Path descriptor pointer
-*        U = Callers register stack pointer
-*
-
 RFMEnt         lbra      create              Create path
                lbra      open                Open path
                lbra      makdir              Makdir
@@ -72,6 +68,9 @@ create         ldb       #DW.create
 *
 * Entry: Y = Path descriptor pointer
 *        U = Callers register stack pointer
+*
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
 *
 open           ldb       #DW.open
 create1        
@@ -137,6 +136,7 @@ chkdelim       cmpa      #PDELIM
                jsr       6,u
                leas      3,s                 ;clean stack   PD.PD Regs
 
+               ifgt      Level-1
 * now send path string
 * move from caller to our mem
 
@@ -144,17 +144,19 @@ chkdelim       cmpa      #PDELIM
                lda       P$Task,x            ; A = callers task # (source)
 
                ldb       <D.SysTsk           ; B = system task # (dest)
-
+               endc
+               
                ldx       1,s                 ; get device mem ptr
                ldu       V.BUF,x             ; get destination pointer in U
                ldy       V.PATHNAMELEN,x     ; get count in Y
                ldx       V.PATHNAME,x        ; get source in X
 
+               ifgt      Level-1
 *  F$Move the bytes (seems to work)
                os9       F$Move
-
                bcs       moverr
-
+               endc
+               
 * Add carriage return
                tfr       u,x
                tfr       y,d
@@ -186,10 +188,43 @@ moverr         puls      cc
 openerr        coma                          ; set error
 open2          puls      x,y,u,pc
 
+
+******************************
+*
+* MakDir - creates a directory on the remote device
+*
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
+*
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
+*
 makdir         lda       #DW.makdir
                lbra      sendit
+
+******************************
+*
+* ChgDir - changes the data/execution directory on the remote device
+*
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
+*
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
+*
 chgdir         lda       #DW.chgdir
                lbra      sendit
+
+******************************
+*
+* Delete - delete a file on the remote device
+*
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
+*
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
+*
 delete         lda       #DW.delete
                lbra      sendit
                
@@ -201,38 +236,37 @@ delete         lda       #DW.delete
 * Entry: Y = Path descriptor pointer
 *        U = Callers register stack pointer
 *
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
+*
 * seek = send dwop, rfmop, path, caller's X + U               
-seek        pshs		y,u
+seek        pshs    y,u
 			
 			ldx		R$U,u
 			pshs	x
-			
 			ldx		R$X,u
 			pshs	x
-			
 			lda     PD.PD,y
 			pshs	a
-			
-			ldb		#DW.seek
-			lda		#OP_VFM
+			ldd		#OP_VFM*256+DW.seek
             pshs	d
             
-            leax      ,s                  ; point X to stack 
-            ldy       #7                  ; 7 bytes to send
+            leax    ,s                  ; point X to stack 
+            ldy     #7                  ; 7 bytes to send
 
 * set U to dwsub
-               ifgt      Level-1
-               ldu       <D.DWSubAddr
-               else      
-               ldu       >D.DWSubAddr
-               endc      
+            ifgt    Level-1
+            ldu     <D.DWSubAddr
+            else      
+            ldu     >D.DWSubAddr
+            endc      
 
 * send dw op, rfm op, path #
-               jsr       6,u
-               leas      7,s                 ;clean stack - PD.PD Regs
+            jsr     6,u
+            leas    7,s                 ;clean stack - PD.PD Regs
                
-               clrb
-               puls  y,u,pc
+            clrb
+            puls    y,u,pc
 
 
 ******************************
@@ -242,8 +276,11 @@ seek        pshs		y,u
 * Entry: Y = Path descriptor pointer
 *        U = Callers register stack pointer
 *
-read           ldb       #DW.read
-               bra       read1               ; join readln routine
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
+*
+read           ldb    #DW.read
+               bra    read1               ; join readln routine
 
 
 
@@ -254,8 +291,11 @@ read           ldb       #DW.read
 * Entry: Y = Path descriptor pointer
 *        U = Callers register stack pointer
 *
-write          lda       #DW.write
-               lbra      sendit
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
+*
+write          lda    #DW.write
+               lbra   sendit
 
 
 
@@ -265,6 +305,9 @@ write          lda       #DW.write
 *
 * Entry: Y = Path descriptor pointer
 *        U = Callers register stack pointer
+*
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
 *
 readln         ldb       #DW.readln
 read1          ldx       PD.DEV,y            ; to our static storage
@@ -343,6 +386,7 @@ go_on          pshs      d                   ;xfersz PD.PD Regs
                puls      y                   ;Y = byte count (already set?)    -  PD.PD Regs
                puls      cc
 
+               ifgt      Level-1
                ldx       4,s
                ldu       R$X,x               ; U = caller's X = dest ptr
                sty       R$Y,x
@@ -357,10 +401,9 @@ go_on          pshs      d                   ;xfersz PD.PD Regs
 
 *  F$Move the bytes (seems to work)
                os9       F$Move
-
+               endc
 * assume everything worked (not good)
                clrb      
-*ldy		xfersz,pc	; Y is supposed to be set to bytes read.. do we need to set this in the caller's regs?
                bra       readln2
 
 readln1
@@ -377,6 +420,9 @@ readln2        puls      y,u,pc
 *
 * Entry: Y = Path descriptor pointer
 *        U = Callers register stack pointer
+*
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
 *
 writln         lda       #DW.writln
                lbra      sendit
@@ -414,7 +460,7 @@ getstt
                rts       
 
 * SS.OPT
-* RBF does nothing here, so we do nothing
+* RFM does nothing here, so we do nothing
 GstOPT                   
                rts       
 
