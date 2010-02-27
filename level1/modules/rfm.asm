@@ -1,9 +1,13 @@
 ********************************************************************
 * RFM - Remote File Manager
 *
+* $Id$
 *
-*  1       2010/02/20  AAW
-*          first version - just send ops
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*   1      2010/02/20  Aaron Wolfe
+* initial version - just sends ops to server
 
                nam       RFM
                ttl       Remote File Manager
@@ -21,13 +25,11 @@ edition        equ       1
 
                mod       eom,RFMName,tylg,atrv,RFMEnt,size
 
-
 size           equ       .
 
 
 RFMName        fcs       /RFM/
                fcb       edition
-
 
 
 ******************************
@@ -52,10 +54,25 @@ RFMEnt         lbra      create              Create path
                lbra      setstt              Set Status
                lbra      close               Close path
 
+
+******************************
+*
+* Create - creates a file on the remote device
+*
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
+*
 create         ldb       #DW.create
                bra       create1
 
 
+******************************
+*
+* Open - opens a file on the remote device
+*
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
+*
 open           ldb       #DW.open
 create1        
                ldx       PD.DEV,y            ; get ptr to our device memory
@@ -177,6 +194,13 @@ delete         lda       #DW.delete
                lbra      sendit
                
                
+******************************
+*
+* Seek - seeks into a file on the remote device
+*
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
+*
 * seek = send dwop, rfmop, path, caller's X + U               
 seek        pshs		y,u
 			
@@ -211,16 +235,37 @@ seek        pshs		y,u
                puls  y,u,pc
 
 
+******************************
+*
+* Read - reads data from a file on the remote device
+*
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
+*
 read           ldb       #DW.read
                bra       read1               ; join readln routine
 
 
 
+******************************
+*
+* Write - writes data to a file on the remote device
+*
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
+*
 write          lda       #DW.write
                lbra      sendit
 
 
 
+******************************
+*
+* ReadLn - reads a line of data from a file on the remote device
+*
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
+*
 readln         ldb       #DW.readln
 read1          ldx       PD.DEV,y            ; to our static storage
                ldx       V$STAT,x
@@ -326,18 +371,25 @@ readln1
 readln2        puls      y,u,pc
 
 
+******************************
+*
+* WritLn - writes a line of data to a file on the remote device
+*
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
+*
 writln         lda       #DW.writln
                lbra      sendit
 
+******************************
 *
-* I$GetStat Entry Point
+* GetStat - obtain status of file on the remote device
 *
-* Entry:
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
 *
-* Exit:
-*
-* Error: CC Carry set
-*        B = errcode
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
 *
 getstt                   
                lda       #DW.getstt
@@ -416,15 +468,15 @@ GstFDInf
 
 
 
+******************************
 *
-* I$SetStat Entry Point
+* SetStat - change status of file on the remote device
 *
-* Entry:
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
 *
-* Exit:
-*
-* Error: CC Carry set
-*        B = errcode
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
 *
 setstt 
                lda       #DW.setstt
@@ -458,6 +510,16 @@ SstFSig
                rts       
 
 
+******************************
+*
+* Close - close path to file on the remote device
+*
+* Entry: Y = Path descriptor pointer
+*        U = Callers register stack pointer
+*
+* Exit:  CC.Carry = 0 (no error), 1 (error)
+*        B = error code (if CC.Carry == 1)
+*
 close          
                pshs      y,u
 
