@@ -100,11 +100,11 @@ chkdelim       cmpa      #PDELIM
                lda       V.DWCMD,x
                ldb       PD.PD,y
                pshs      cc
-               pshs      d                   ; p# PD.DEV PD Regs
+               pshs      d                   ; p# PD.PD Regs
 
 * put rfm op and DW op on stack 
                lda       #OP_VFM
-               pshs      a                   ; DWOP RFMOP p# PD.DEV PD Regs
+               pshs      a                   ; DWOP RFMOP p# PD.PD Regs
 
                leax      ,s                  ; point X to stack 
                ldy       #3                  ; 3 bytes to send
@@ -117,7 +117,7 @@ chkdelim       cmpa      #PDELIM
 
                orcc      #IntMasks
                jsr       6,u
-               leas      3,s                 ;clean stack   PD.DEV PD Regs
+               leas      3,s                 ;clean stack   PD.PD Regs
 
 * now send path string
 * move from caller to our mem
@@ -160,7 +160,7 @@ chkdelim       cmpa      #PDELIM
                jsr       3,u
 
 * pull server's response into B
-               puls      b                   ; PD.DEV PD Regs
+               puls      b                   ; PD.PD Regs
 moverr         puls      cc
                tstb      
                beq       open2
@@ -189,17 +189,18 @@ write          lda       #DW.write
 
 readln         ldb       #DW.readln
 read1          ldx       PD.DEV,y            ; to our static storage
+               ldx       V$STAT,x
                pshs      x,y,u
 
 * put path # on stack
                lda       PD.PD,y
                pshs      cc
-               pshs      a                   ; p# PD.DEV PD Regs
+               pshs      a                   ; p# PD.PD Regs
 
 * put rfm op and DW op on stack
 
                lda       #OP_VFM
-               pshs      d                   ; DWOP RFMOP p# PD.DEV PD Regs
+               pshs      d                   ; DWOP RFMOP p# PD.PD Regs
 
                leax      ,s                  ; point X to stack 
                ldy       #3                  ; 3 bytes to send
@@ -214,7 +215,7 @@ read1          ldx       PD.DEV,y            ; to our static storage
 * send dw op, rfm op, path #
                orcc      #IntMasks
                jsr       6,u
-               leas      3,s                 ;clean stack - PD.DEV PD Regs
+               leas      3,s                 ;clean stack - PD.PD Regs
 
 * put caller's Y on stack (maximum allowed bytes)
                ldx       5,s
@@ -235,7 +236,7 @@ read1          ldx       PD.DEV,y            ; to our static storage
 
 * store size
                clra      
-               puls      b                   ;PD.DEV PD Regs
+               puls      b                   ;PD.PD Regs
 
 
 * check for 0
@@ -243,7 +244,7 @@ read1          ldx       PD.DEV,y            ; to our static storage
                beq       readln1             ; 0 bytes = EOF
 
 * read the data from server if > 0
-go_on          pshs      d                   ;xfersz PD.DEV PD Regs
+go_on          pshs      d                   ;xfersz PD.PD Regs
 
 * load data from server into mem block
                ldx       3,s                 ; pd.dev
@@ -260,7 +261,7 @@ go_on          pshs      d                   ;xfersz PD.DEV PD Regs
 
 * move from our mem to caller
 
-               puls      y                   ;Y = byte count (already set?)    -  PD.DEV PD Regs
+               puls      y                   ;Y = byte count (already set?)    -  PD.PD Regs
                puls      cc
 
                ldx       4,s
@@ -455,6 +456,7 @@ close
                ldd       #256
                ldx       1,s                 ; orig Y
                ldx       PD.DEV,x
+               ldx       V$STAT,x
                ldu       V.BUF,x
                os9       F$SRtMem
 
