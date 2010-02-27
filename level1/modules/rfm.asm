@@ -247,7 +247,7 @@ read1          ldx       PD.DEV,y            ; to our static storage
 go_on          pshs      d                   ;xfersz PD.PD Regs
 
 * load data from server into mem block
-               ldx       3,s                 ; pd.dev
+               ldx       3,s                 ; V$STAT
                ldx       V.BUF,x
                ldy       ,s                  ;xfersz
                jsr       3,u
@@ -273,7 +273,7 @@ go_on          pshs      d                   ;xfersz PD.PD Regs
                ldx       <D.Proc             get calling proc desc
                ldb       P$Task,x            ; B = callers task #
 
-               puls      x                   ; pd.dev     - PD Regs
+               puls      x                   ; V$STAT     - PD Regs
                ldx       V.BUF,x
 
 *  F$Move the bytes (seems to work)
