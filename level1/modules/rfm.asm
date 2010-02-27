@@ -58,7 +58,8 @@ create         ldb       #DW.create
 
 open           ldb       #DW.open
 create1        
-               ldx       PD.DEV,y            ; get ptr to our static storage
+               ldx       PD.DEV,y            ; get ptr to our device memory
+               ldx       V$STAT,x            ; get ptr to our static storage
                pshs      x,y,u               ; save all on stack
                stb       V.DWCMD,x
                
@@ -73,8 +74,6 @@ create1
                ldu       4,s                 ; get pointer to caller's registers
                ldy       R$X,u
                sty       V.PATHNAME,x
-* MOVE THIS UP ONE LINE AND NO CRASH ON 'list /y0/test'
- lbra openerr
                tfr       y,x
 prsloop        os9       F$PrsNam
                bcs       open2
