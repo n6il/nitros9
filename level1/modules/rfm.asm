@@ -509,7 +509,7 @@ write1         ldx       PD.DEV,y            ; to our static storage
                bra       writln2
 * error exit?
                
-writln2        puls      y,u,pc               
+writln2        puls      x,y,u,pc               
                
                
                
