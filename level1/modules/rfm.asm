@@ -506,13 +506,16 @@ write1         ldx       PD.DEV,y            ; to our static storage
               
 *  F$Move the bytes 
                os9       F$Move
-               endc
 
                * send v.buf to server
                
                puls		u		;      cc vstat PD.PD Regs          
                ldx		1,s
                ldx		V.BUF,x
+               else
+               ldx      5,s
+               ldx      R$X,x
+               endc
                
                jsr		6,u
                
@@ -557,8 +560,9 @@ getstt
                beq       GstFD
                cmpb      #SS.FDInf
                beq       GstFDInf
-               comb      
-               ldb       #E$UnkSvc
+*               comb      
+*               ldb       #E$UnkSvc
+               clrb
                rts       
 
 * SS.OPT
