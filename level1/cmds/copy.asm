@@ -347,7 +347,7 @@ L041B    lda   <srcpath		get source path
          lbcs  ShutDown		branch if error
          lda   ,x		get device type
          sta   <devtyp		save
-         ldb   #$0F
+         ldb   #READ.+WRITE.+EXEC.+PREAD.
          cmpa  #DT.RBF		rbf device?
          bne   L0449		branch if not
          pshs  u,x		save regs
