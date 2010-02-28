@@ -29,8 +29,6 @@ CLOCKS          = clock_60hz clock_50hz \
 		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
 		clock2_jvemu clock2_messemu clock2_dw3
 
-RFM		= rfm.mn rfmdrv.dr y0_rfm.dd
-
 RBF		= rbf.mn \
 		rbdw3.dr dw3.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
@@ -67,6 +65,8 @@ PIPE		= pipeman.mn pipeman_named.mn \
 		piper.dr \
 		pipe.dd
 
+RFM		= rfm.mn rfmdrv.dr ddy0.dd y0.dd y1.dd y2.dd y3.dd
+
 #
 # The following macros represent a collection of modules for various
 # kernel tracks and bootfile configurations.
@@ -76,7 +76,7 @@ KERNEL_RAMPAK	= rel_32 $(TPB)/boot_rampak krn
 KERNEL_KENTON	= rel_32 $(TPB)/boot_kenton krn
 KERNEL_IDE	= rel_32 $(TPB)/boot_ide krn
 
-ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RFM) $(RBF) $(SCF) $(PIPE)
+ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE) $(RFM)
 
 all:	$(ALLOBJS)
 
@@ -260,6 +260,22 @@ x2.dd: dwdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=2
 
 x3.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
+
+# RFM descriptors
+ddy0.dd: rfmdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1 -aDNum=0
+
+y0.dd: rfmdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0
+
+y1.dd: rfmdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=1
+
+y2.dd: rfmdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=2
+
+y3.dd: rfmdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
 
 # VDGInt Modules
