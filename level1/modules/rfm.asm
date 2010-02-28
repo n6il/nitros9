@@ -147,7 +147,9 @@ chkdelim       cmpa      #PDELIM
                endc
                
                ldx       1,s                 ; get device mem ptr
+               ifgt      Level-1
                ldu       V.BUF,x             ; get destination pointer in U
+               endc
                ldy       V.PATHNAMELEN,x     ; get count in Y
                ldx       V.PATHNAME,x        ; get source in X
 
@@ -158,7 +160,11 @@ chkdelim       cmpa      #PDELIM
                endc
                
 * Add carriage return
+               ifgt      Level-1
                tfr       u,x
+               else
+               tfr       x,u
+               endc
                tfr       y,d
                leau      d,u
                lda       #C$CR
@@ -369,8 +375,14 @@ read1          ldx       PD.DEV,y            ; to our static storage
 go_on          pshs      d                   ;xfersz PD.PD Regs
 
 * load data from server into mem block
+               ifgt      Level-1
                ldx       3,s                 ; V$STAT
                ldx       V.BUF,x
+               else
+               ldx       7,s                 ; caller regs
+               std       R$Y,x
+               ldx       R$X,x
+               endc
                ldy       ,s                  ;xfersz
                jsr       3,u
 
@@ -396,7 +408,7 @@ go_on          pshs      d                   ;xfersz PD.PD Regs
                ldx       <D.Proc             get calling proc desc
                ldb       P$Task,x            ; B = callers task #
 
-               puls      x                   ; V$STAT     - PD Regs
+               ldx       ,s                  ; V$STAT     - PD Regs
                ldx       V.BUF,x
 
 *  F$Move the bytes (seems to work)
@@ -410,8 +422,7 @@ readln1
                puls      cc
                comb
                ldb       #E$EOF
-               leas      2,s                 ; clean stack down 
-readln2        puls      y,u,pc
+readln2        puls      x,y,u,pc
 
 
 
@@ -617,10 +628,14 @@ GstFD
         puls	y
         ldx     ,s                 ; V$STAT
         ldx       V.BUF,x		
+
+        ifgt    Level-1
 		pshs	x
+        endc
         
         jsr		3,u
-        
+
+        ifgt      Level-1        
         * move v.buf into caller
         
         ldx       4,s
@@ -633,11 +648,13 @@ GstFD
         ldb       P$Task,x            ; B = callers task #
 
         puls      x                   ; V.BUF from earlier
-        
-        
+
 *  F$Move the bytes (seems to work)
                os9       F$Move
 
+        else
+        endc
+                
 * assume everything worked (not good)
                clrb   
         
@@ -719,7 +736,8 @@ SstFD
         endc      
         jsr       6,u
 
-        * move caller bytes into v.buf
+        ifgt      Level-1
+* move caller bytes into v.buf
         
         puls      y                   ; get number of bytes pushed earlier
         ldx       4,s
@@ -735,7 +753,7 @@ SstFD
         
 *  F$Move the bytes (seems to work)
         os9       F$Move
-
+      
 * write bytes from v.buf
         tfr       u,x
         
@@ -744,8 +762,15 @@ SstFD
         else      
         ldu       >D.DWSubAddr
         endc      
+
+        else
+        puls      y
+        ldx       4,s
+        ldx       R$X,x
+        endc
+                
         
-        jsr		3,u
+        jsr		6,u
         
 * assume everything worked (not good)
                clrb   
