@@ -21,7 +21,7 @@ MD		= $(LEVEL2)/coco3/modules
 SYSTEXT		= motd password inetd.conf
 DSKS		= $(DSK)
 
-CMDS		= $(CD)/attr $(CD)/build $(CD)/cmp $(CD)/copy $(CD)/cputype $(CD)/date \
+CMDS		= $(CD)/attr $(CD)/build $(CD)/cmp $(CD)/copy $(CD)/cputype $(CD)/date $(CD)/debug \
 		$(CD)/deiniz $(CD)/del $(CD)/deldir $(CD)/devs $(CD)/dir $(CD)/display \
 		$(CD)/dmem $(CD)/dmode $(CD)/dump $(CD)/echo $(CD)/edit $(CD)/error \
 		$(CD)/free $(CD)/grfdrv $(CD)/help $(CD)/ident $(CD)/iniz $(CD)/link \
