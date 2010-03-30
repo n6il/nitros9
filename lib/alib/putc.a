@@ -1,0 +1,25 @@
+**********************************
+
+* Put single character to standard out.
+
+* OTHER MODULES NEEDED: FPUTC
+
+* ENTRY: B=character to print
+
+* EXIT: CC carry set if error
+*       B=error code if any
+
+ nam Print Char to Std. Out
+ ttl Assembler Library Module
+
+
+ psect PUTC,0,0,0,0,0
+
+PUTC:
+ pshs a
+ lda #1 stn out
+ bsr FPUTC
+ puls a,pc
+
+ endsect
+

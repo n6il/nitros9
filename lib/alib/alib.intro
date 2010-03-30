@@ -1,0 +1,56 @@
+                           RMA Library
+
+                               by
+
+                         Bob van der Poel
+
+
+WARNING: The entire contents of this file including the documentation and
+the actual binary library code are protected by copyright and is the sole
+property of Bob van der Poel. You are given permission to use this
+software and to post it on other information systems, etc. However, you
+may not sell it, or claim it as your own. Any commercial expoltation will
+be prosectuted to the full extent of the law.
+
+                   Bob van der Poel Software
+
+               P.O. Box 57          P.O. Box 355
+               Wynndel, B.C.        Porthill, ID
+               Canada V0B 2N0         USA  83853
+
+
+To use the routines in this library, just include calls to them in your
+programs with a "lbsr". For example, the following code segment calls a
+library routine to print a number via standard out:
+
+ ldd number
+ lbsr PRINT_DEC
+
+To use a routine make sure you have set up all the registers properly.
+None of the routines use any memory other than stated. Since the hardware
+stack is used for all temporary variables all the routines are re-entrant
+and shareable. It is up to the user to ensure an adequate stack area.
+Note that most of the routines have all uppercase names. It is hoped that
+this will make your code more readable since you can tell at a glance
+which routines are external.
+
+To compile an assembler program using the library first use RMA to
+generate a ".r" file, then use RLINK to compile. A sample command line
+would be:
+
+ rlink yourprog.a -o=yourprog -l=/d0/lib/alib.l
+
+The file alib.doc is a formatted listing of all the commands available in
+the library. Just list it to your printer.
+
+Included in the SRC directory is the file "makefile" which can be used
+with MAKE to create a new library file. List "makefile" first to see
+which directories, etc. you'll need.
+
+Also included on the disk is the file "LIB/alib.l".  This is the complied
+version of the library, ready for you to link with.
+
+If you have any comments or suggestions for future improvement--or even
+if you want to send money (yes, I take contributions!)--please write me
+at the above address or email bvdp@uniserve.com.
+
