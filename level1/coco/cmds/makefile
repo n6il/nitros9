@@ -1,11 +1,13 @@
 PORT = coco
 include $(NITROS9DIR)/rules.mak
 
+vpath %.a $(LEVEL1)/cmds
 vpath %.asm $(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
 
 DEPENDS		= ./makefile
 
 AFLAGS		+= -i=$(NITROS9DIR)/3rdparty/packages/basic09
+LFLAGS		+= -l=$(NITROS9DIR)/lib/net.l -l=$(NITROS9DIR)/lib/alib.l -l=$(NITROS9DIR)/lib/sys6809l1.l
 
 BASIC09FILES	= basic09.asm runb.asm gfx.asm inkey.asm syscall.asm
 CMDS		= asm attr backup binex build calldbg cmp cobbler copy cputype \
@@ -18,6 +20,8 @@ CMDS		= asm attr backup binex build calldbg cmp cobbler copy cputype \
 
 CMDS_D2		= basic09 runb gfx inkey syscall copy del echo format \
 		merge os9gen prompt tmode
+
+CMDS_DW		= inetd telnet dw
 
 SUBS		= gfx inkey syscall
 ALLOBJS		= $(CMDS) $(CMDS_D2) $(CMDS_DW) $(SUBS)
