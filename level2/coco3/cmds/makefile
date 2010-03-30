@@ -1,10 +1,12 @@
 PORT = coco3
 include $(NITROS9DIR)/rules.mak
 
+vpath %.a $(LEVEL2)/cmds:$(LEVEL1)/cmds
 vpath %.asm $(LEVEL2)/cmds:$(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
 
 DEPENDS		= ./makefile
 AFLAGS		+= -i=$(NITROS9DIR)/3rdparty/packages/basic09
+LFLAGS		+= -l=$(NITROS9DIR)/lib/net.l -l=$(NITROS9DIR)/lib/alib.l -l=$(NITROS9DIR)/lib/sys6809l1.l
 
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirsort disasm \
@@ -17,12 +19,14 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 CMDS_D2         = basic09 runb gfx2 gfx inkey syscall copy del echo format \
                 merge os9gen prompt tmode
 
+CMDS_DW		= inetd dw telnet
+
 SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
 UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
 		merge mfree procs rename tmode
 
 # Files not compilable by os9asm: config
-all:	$(CMDS) $(CMDS_D2) shell utilpak1 $(DEPENDS)
+all:	$(CMDS) $(CMDS_D2) $(CMDS_DW) shell utilpak1 $(DEPENDS)
 
 runb:	runb.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
