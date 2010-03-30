@@ -5,7 +5,7 @@ vpath %.a $(LEVEL2)/cmds:$(LEVEL1)/cmds
 vpath %.asm $(LEVEL2)/cmds:$(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
 
 DEPENDS		= ./makefile
-AFLAGS		+= -i=$(NITROS9DIR)/3rdparty/packages/basic09
+AFLAGS          += -i=$(NITROS9DIR)/3rdparty/packages/basic09
 LFLAGS		+= -l=$(NITROS9DIR)/lib/net.l -l=$(NITROS9DIR)/lib/alib.l -l=$(NITROS9DIR)/lib/sys6809l1.l
 
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
@@ -64,6 +64,9 @@ clean:
 # Only $(CMDS) are shown here
 showobjs:
 	@$(ECHO) shell utilpak1 $(CMDS)
+
+showobjs_dw:
+	@$(ECHO) shell utilpak1 $(CMDS) $(CMDS_DW)
 
 showobjs_d2:
 	@$(ECHO) $(CMDS_D2)

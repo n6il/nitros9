@@ -56,7 +56,7 @@ BOOTFILE_COWP	= $(MD)/ioman \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
-BOOTFILE_DW3_COCO1	= $(MD)/ioman \
+BOOTFILE_HEADLESS_DW3_COCO1	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(MD)/rbdw3.dr $(MD)/dw3_coco1.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
@@ -91,7 +91,7 @@ BOOTFILE_COVDG_DW3_COCO1	= $(MD)/ioman \
 		$(MD)/clock_60hz $(MD)/clock2_dw3 \
 		$(MD)/sysgo_dd
 		
-BOOTFILE_DW3_COCO2	= $(MD)/ioman \
+BOOTFILE_HEADLESS_DW3_COCO2	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(MD)/rbdw3.dr $(MD)/dw3.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
@@ -187,7 +187,7 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(MD)/sysgo_dd
 
 BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw3_coco1 bootfile_covdg_dw3_coco2 \
-		bootfile_dw3_coco1 bootfile_dw3_coco2 \
+		bootfile_headless_dw3_coco1 bootfile_headless_dw3_coco2 \
 		bootfile_cohr_dw3_coco1 bootfile_cohr_dw3_coco2 bootfile_covdg_ds80 bootfile_cohr_ds80
 KERNELS		= kernel_1773 kernel_dw3_coco1 kernel_dw3_coco2
 
@@ -207,14 +207,14 @@ bootfile_cowp: $(BOOTFILE_COWP) $(DEPENDS)
 bootfile_covdg_ds80: $(BOOTFILE_COVDG_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DS80)>$@
 
-bootfile_dw3_coco1: $(BOOTFILE_DW3_COCO1) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_DW3_COCO1)>$@
+bootfile_headless_dw3_coco1: $(BOOTFILE_HEADLESS_DW3_COCO1) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_HEADLESS_DW3_COCO1)>$@
 
 bootfile_covdg_dw3_coco1: $(BOOTFILE_COVDG_DW3_COCO1) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DW3_COCO1)>$@
 
-bootfile_dw3_coco2: $(BOOTFILE_DW3_COCO2) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_DW3_COCO2)>$@
+bootfile_headless_dw3_coco2: $(BOOTFILE_HEADLESS_DW3_COCO2) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_HEADLESS_DW3_COCO2)>$@
 
 bootfile_covdg_dw3_coco2: $(BOOTFILE_COVDG_DW3_COCO2) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DW3_COCO2)>$@

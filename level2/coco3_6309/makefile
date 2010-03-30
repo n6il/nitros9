@@ -20,6 +20,7 @@ DIRS		= cmds modules defs sys bootfiles
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)
 CMDS_D2		= $(shell $(CD) cmds; make --no-print-directory showobjs_d2)
+CMDS_DW		= $(shell $(CD) cmds; make --no-print-directory showobjs_dw)
 BOOTTRACK	= $(shell $(CD) modules; make --no-print-directory showboottrack)
 KERNEL		= $(shell $(CD) modules; make --no-print-directory showkernel)
 SYSMODS		= $(shell $(CD) modules; make --no-print-directory showsysmods)
@@ -91,8 +92,8 @@ $(DSKDW3):
 	$(MAKDIR) $@,DEFS
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
-	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS) $(CMDS_DW) ../$@,CMDS
+	$(foreach file, $(CMDS) $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
@@ -144,8 +145,8 @@ $(DSKDW3HEADLESS):
 	$(MAKDIR) $@,DEFS
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
-	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS) $(CMDS_DW) ../$@,CMDS
+	$(foreach file, $(CMDS) $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS

@@ -52,5 +52,8 @@ showobjs:
 showobjs_d2:
 	@$(ECHO) $(CMDS_D2)
 
+showobjs_dw:
+	@$(ECHO) $(CMDS) $(CMDS_DW)
+
 showallobjs:
 	@$(ECHO) $(ALLOBJS)
