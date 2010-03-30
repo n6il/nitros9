@@ -14,8 +14,8 @@ DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
 BOOTFILE_COVDG	= bootfiles/bootfile_covdg
 BOOTFILE_COHR	= bootfiles/bootfile_cohr
 BOOTFILE_COVDG_DS80	= bootfiles/bootfile_covdg_ds80
-BOOTFILE_DW3_COCO1	= bootfiles/bootfile_dw3_coco1
-BOOTFILE_DW3_COCO2	= bootfiles/bootfile_dw3_coco2
+BOOTFILE_HEADLESS_DW3_COCO1	= bootfiles/bootfile_headless_dw3_coco1
+BOOTFILE_HEADLESS_DW3_COCO2	= bootfiles/bootfile_headless_dw3_coco2
 BOOTFILE_COVDG_DW3_COCO1	= bootfiles/bootfile_covdg_dw3_coco1
 BOOTFILE_COVDG_DW3_COCO2	= bootfiles/bootfile_covdg_dw3_coco2
 BOOTFILE_COHR_DS80	= bootfiles/bootfile_cohr_ds80
@@ -29,6 +29,7 @@ DIRS		= cmds modules defs sys bootfiles
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)
 CMDS_D2		= $(shell $(CD) cmds; make --no-print-directory showobjs_d2)
+CMDS_DW		= $(shell $(CD) cmds; make --no-print-directory showobjs_dw)
 BOOTTRACK	= $(shell $(CD) modules; make --no-print-directory showboottrack)
 KERNEL		= $(shell $(CD) modules; make --no-print-directory showkernel)
 SYSMODS		= $(shell $(CD) modules; make --no-print-directory showsysmods)
@@ -92,8 +93,8 @@ $(DSKDW3COCO1):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
+	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
 	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
@@ -141,12 +142,12 @@ $(DSKDW3COCO1):
 $(DSKDW3COCO2):
 	$(RM) $@
 	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/6809 Level 1"
-	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_DW3_COCO2) -t=$(KERNELFILE_DW3_COCO2)
+	$(OS9GEN) $@ -b=$(BOOTFILE_HEADLESS_DW3_COCO2) -t=$(KERNELFILE_DW3_COCO2)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
+	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
 	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
