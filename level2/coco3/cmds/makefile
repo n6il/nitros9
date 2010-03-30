@@ -59,7 +59,7 @@ utilpak1:  $(UTILPAK1) $(DEPENDS)
 	@$(ECHO) ""
 
 clean:
-	$(RM) shell utilpak1 $(SUBS) $(SHELLMODS) $(CMDS) $(CMDS_D2)
+	$(RM) shell utilpak1 $(SUBS) $(SHELLMODS) $(CMDS) $(CMDS_D2) $(CMDS_DW)
 
 # Only $(CMDS) are shown here
 showobjs:
