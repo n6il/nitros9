@@ -62,7 +62,7 @@ LDSKS		= $(LDSKDW3COCO1) $(LDSKDW3COCO2) $(LDSK360K_1) $(LDSK360K_2) $(LDSK720K)
 all:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
-	@$(ECHO) "*         NitrOS-9/6809 Level 1 CoCo Port        *"
+	@$(ECHO) "*         NitrOS-9/$(CPU) Level 1 CoCo Port        *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
@@ -87,7 +87,7 @@ $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 
 $(DSKDW3COCO1):
 	$(RM) $@
-	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/6809 Level 1"
+	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/$(CPU) Level 1"
 	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_DW3_COCO1) -t=$(KERNELFILE_DW3_COCO1)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
