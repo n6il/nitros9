@@ -1,0 +1,1013 @@
+.s="",ss=0,p="",n="",sn=80,  * normal (pica) characters, 80 per 8 inch line
+.lm=5, rm=75, tm=5, bm=60
+.lh=5,rh=75,p=""
+.he0="Assembler Library Documentation", he1="Page ##"
+.he2="String Handlers"
+.hf0=r,hf1=l,hf2=r
+.hl0=2,hl1=2,hl2=3
+.lf=c
+.tf=_
+=====================
+== String Handlers ==
+=====================
+.lf=l
+
+
+.nl=7
+\t66\
+
+STIMESTR: Get current system time as an ascii string.
+
+OTHER MODULES NEEDED: DATESTR
+
+ENTRY:  X=buffer for ascii
+
+EXIT: all registers preserved (except cc)
+
+
+.nl=7
+\t66\
+
+DATESTR: Convert a date to a string. This can be used
+         for converting the system time as well as
+         modify/create dates from files. The date must
+         be 6 bytes -- null pad file dates.
+
+OTHER MODULES NEEDED: BIN_ASC
+
+ENTRY: X=binary date
+       Y=buffer for ascii
+
+EXIT: all registers preserved (except cc)
+
+
+.nl=7
+\t66\
+
+TO_NON_SP: Advance X to 1st non-space character
+
+OTHER MODULES NEEDED: none
+
+ENTRY: X=somewhere in a string
+
+EXIT: X=1st non-space character in string
+      B=char at X
+
+
+.nl=7
+\t66\
+
+PRINT_DEC: Print decimal number to standard out.
+
+ENTRY: D=value to print
+
+EXIT: CC carry set if error (from I$WritLn)
+      B error code, if any
+
+
+.nl=7
+\t66\
+
+PRINT_HEX: Print hex number to standard out.
+
+ENTRY: D=value to print
+
+EXIT: CC carry set if error (from I$WritLn)
+      B error code, if any
+
+
+.nl=7
+\t66\
+
+PRINT_ASC: Print binary number to standard out.
+
+ENTRY: D=value to print
+
+EXIT: CC carry set if error (from I$WritLn)
+      B error code, if any
+
+
+.nl=7
+\t66\
+
+STRCMP: compare two null terminated strings.
+
+NOTE: This routine first finds the length of both
+      strings and passes the length of the longer
+      one to strncmp.
+
+OTHER MODULES NEEDED: STRNCMP, STRLEN
+
+ENTRY: X=start of 1st string
+       Y=start of 2nd string
+
+EXIT: CC zero set  if equal (beq)
+         carry + zero clear if 1>2 (bhi)
+         carry set if 1<2 (blo)
+
+
+.nl=7
+\t66\
+
+STRNCMP: compare 2 null terminated strings
+         maximum number of bytes to compare in D
+
+OTHER MODULES NEEDED: COMPARE
+
+ENTRY: X=start of 1st string
+       Y=start of 2nd string
+       D=number of bytes to compare
+       CASEMTCH:(a global variable in COMPARE)
+                0=match for case
+               -1=ignore case differences
+
+EXIT: CC zero set  if equal (beq)
+         carry + zero clear if 1>2 (bhi)
+         carry set if 1<2 (blo)
+
+
+.nl=7
+\t66\
+
+STRLEN: String Length: find length of null terminated string.
+        note:null NOT included in count.
+
+ENTRY: X=start of string
+
+EXIT: D=length
+      all other regs (except cc) preserved
+
+
+.nl=7
+\t66\
+
+STRHLEN: find length of sign-bit terminated string.
+         note: sign-bit set byte IS included in count.
+
+OTHER MODULES NEEDED: none
+
+ENTRY: X=start of string
+
+EXIT: D=length
+      all other regs (except cc) preserved
+
+
+.nl=7
+\t66\
+
+B09STRLEN: Find the length of a BASIC09 string.
+
+OTHER MODULES NEEDED: none
+
+ENTRY: X=start of string
+       D=max possible length (size passed to subroutine)
+
+EXIT: D=actual length (either at $FF or max size)
+      all other regs (except cc) preserved
+
+.nl=7
+\t66\
+
+STRCAT: append 2 null terminated strings
+        User must ensure there is room in buffer!!!
+
+OTHER MODULES NEEDED: STRCPY, STRLEN
+
+ENTRY: X=start of string to move
+       Y=start of string to append to
+
+EXIT: all regs preserved (except cc)
+
+
+.nl=7
+\t66\
+
+STRNCPY: copy N bytes of a null terminated string
+         User must ensure there is room in buffer!!!
+         If N>string length only N bytes will be moved
+
+OTHER MODULES NEEDED: STRLEN, MEMMOVE
+
+ENTRY: X=start of string to move
+       Y=buffer for copy of string
+
+EXIT: D = actual number of bytes moved
+      all other regs preserved (except cc)
+
+
+.nl=7
+\t66\
+
+STRCPY: copy a null terminated string
+        User must ensure there is room in buffer!!!
+
+OTHER MODULES NEEDED: STRNCPY
+
+ENTRY: X=start of string to move
+       Y=buffer for copy of string
+
+EXIT: all regs preserved (except cc)
+
+.nl=7
+\t66\
+
+STRNCPY: copy N bytes of a null terminated string
+         User must ensure there is room in buffer!!!
+         If N>string length only N bytes will be moved
+
+OTHER MODULES NEEDED: STRLEN, MEMMOVE
+
+ENTRY: X=start of string to move
+       Y=buffer for copy of string
+
+EXIT: D = actual number of bytes moved
+      all other regs preserved (except cc)
+
+
+.nl=7
+\t66\
+
+STRHCPY: copy sign-bit terminated string
+         User must ensure there is room in buffer!!!
+         See also PARSNSTR, this routine does not change
+         sign-bit termination.
+
+OTHER MODULES NEEDED: strhlen,memmove
+
+ENTRY: X=start of string to move
+       Y=buffer for copy of string
+
+
+.nl=7
+\t66\
+
+TO_UPPRS: convert a null terminated string to all uppercase
+
+OTHER MODULES NEEDED: TO_UPPER
+
+ENTRY: X=start of string
+
+EXIT:  all registers (except CC) preserved
+
+
+.nl=7
+\t66\
+
+TO_UPPER: Convert character in "B" to uppercase
+
+OTHER MODULES NEEDED: IS_LOWER
+
+ENTRY: B=ascii value of character to convert
+
+EXIT: B=ascii value of character in uppercase
+
+Note: control codes, etc. are not effected.
+
+
+.nl=7
+\t66\
+
+TO_LOWRS: convert a null terminated string to all lowercase
+
+OTHER MODULES NEEDED: TO_LOWER
+
+ENTRY: X=start of string
+
+EXIT:  all registers (except CC) preserved
+
+
+.nl=7
+\t66\
+
+TO_LOWER: Convert character in "B" to lowercase
+
+OTHER MODULES NEEDED: IS_UPPER
+
+ENTRY: B=ascii value of character to convert
+
+EXIT: B=ascii value of character in lowercase
+
+Note: control codes, etc. are not effected.
+
+
+.nl=7
+\t66\
+
+PARSNSTR: Parse sign bit terminated string to convert it to a
+          null terminated string. Note: if X and Y are the same
+          the existing string will be overwritten -- don't do this
+          with psects...
+
+OTHER MODULES NEEDED: none
+
+ENTRY: X=start of sign bit terminated string
+       Y=buffer for null terminated string
+
+EXIT: D=string size (not including null)
+      All other regs (except cc) preserved
+
+
+.lf=c, he2="I/O Routines",pg
+==================
+== I/O Routines ==
+==================
+.lf=l
+
+.nl=7
+\t66\
+
+PRINTS: Print a program embedded, null terminated string to std out.
+
+OTHER MODULES NEEDED: puts
+
+ENTRY: Null terminated string must follow PRINTS call
+       eg:  LBSR PRINTS
+            fcc /this is a string to print/
+            fcb $0d
+            fcc /a second string/
+            fcb $0d,0
+            lbsr morestuff... 
+
+EXIT: CC carry set if error
+      B error code (if any)
+
+.nl=7
+\t66\
+
+PUTS: Print a null terminated string to standard out.
+
+OTHER MODULES NEEDED: fputs
+
+ENTRY: X=string to print
+
+EXIT: CC carry set if error
+      B error code (if any)
+
+
+.nl=7
+\t66\
+
+FPUTS: print null terminated string to "A".
+
+OTHER MODULES REQUIRED: none
+
+ENTRY: X=start of string
+       A=path
+
+EXIT: CC carry set if error
+      B = OS9 error if any (from I$WritLn)
+
+NOTE: string is feed through I$WritLn for editing (adding LF, etc.)
+
+
+.nl=7
+\t66\
+
+PUTCR: Subroutine to print a carriage return to std. out.
+
+OTHER MODULES REQUIRED: FPUTCR
+
+ENTRY: none
+
+EXIT: CC carry set if error (from I$WritLn)
+      B  error code if any.
+
+
+.nl=7
+\t66\
+
+FPUTCR: Subroutine to print a carriage return
+
+OTHER MODULES REQUIRED: FPUTC
+
+ENTRY: A=path
+
+EXIT: CC carry set if error (from I$WritLn)
+      B  error code if any.
+
+
+.nl=7
+\t66\
+
+PUTSPACE: Subroutine to print a space to std. out
+
+OTHER MODULES REQUIRED: FPUTSPACE
+
+ENTRY: none
+
+EXIT: CC carry set if error (from I$WritLn)
+      B  error code if any.
+
+
+.nl=7
+\t66\
+
+FPUTSPACE: Subroutine to print a space
+
+OTHER MODULES REQUIRED: FPUTC
+
+ENTRY: A=path
+
+EXIT: CC carry set if error (from I$WritLn)
+      B  error code if any.
+
+
+.nl=7
+\t66\
+
+PUTC: Put single character to standard out.
+
+OTHER MODULES NEEDED: FPUTC
+
+ENTRY: B=character to print
+
+EXIT: CC carry set if error
+      B=error code if any
+
+
+.nl=7
+\t66\
+
+FPUTC: Subroutine to print one character.
+
+OTHER MODULES NEEDED: none
+
+ENTRY: A=path
+       B=char to print
+
+EXIT:  CC carry set if error (from I$WritLn)
+       B  error code if any
+
+
+.nl=7
+\t66\
+
+GETC: Subroutine to input one character from std in.
+
+OTHER MODULES NEEDED: FGETC
+
+ENTRY: none
+
+EXIT:  A  character
+       CC carry set if error (from I$Read)
+       B  error code if any
+
+
+.nl=7
+\t66\
+
+FGETC: Subroutine to input one character.
+
+OTHER MODULES NEEDED: none
+
+ENTRY: A=path
+
+EXIT:  A  character
+       CC carry set if error (from I$Read)
+       B  error code if any
+
+
+.nl=7
+\t66\
+
+GETS: Subroutine to input a null terminated string from Std. In
+
+OTHER MODULES NEEDED: FGETS
+
+ENTRY: X=buffer for string
+       Y=max buffer size (leave room for null!!)
+
+EXIT:  CC carry set if error (from I$ReadLn)
+       B  error code if any
+
+NOTE: The string entered must end with an end-of-record char
+      (usually a $0D), the null is appended for ease in string
+      handling.
+
+
+.nl=7
+\t66\
+
+FGETS: Subroutine to input a null terminated string.
+
+OTHER MODULES NEEDED: none
+
+ENTRY: A=path
+       X=buffer for string
+       Y=max buffer size (leave room for null!!)
+
+EXIT:  CC carry set if error (from I$ReadLn)
+       B  error code if any
+
+
+NOTE: The string entered must end with an end-of-record char
+      (usually a $0D), the null is appended for ease in string
+      handling.
+
+.nl=7
+\t66\
+
+INKEY: Checks STDIN for a keypress and returns it if avail.
+
+ENTRY: none
+
+EXIT: A=character, 0=no character
+      B=error code (if any)
+      CC=carry set if error (from I$Read)
+
+NOTE: NULLs entered from the keyboard are returned as "no keypress".
+
+
+.he2="Integer Math",pg,lf=c
+==================
+== Integer Math ==
+==================
+.lf=l
+
+
+.nl=7
+\t66\
+
+MULT168: 16 x 8 Multiply (24 bit result)
+
+OTHER MODULES NEEDED: none
+
+ENTRY: A = multiplier
+       X = multiplicand
+
+EXIT: A = product byte 1
+      X = product bytes 2 & 3
+      B modified
+
+
+.nl=7
+\t66\
+
+MULT16: 16 x 16 Multiply
+
+ENTRY: D = multiplier
+       X = multiplicand
+
+EXIT: Y = product 2 msbs
+       U =    "    2 lsbs
+       D & X preserved
+
+
+.nl=7
+\t66\
+
+DIV168: 16 x 8 bit integer divide
+
+Result must be an 8 bit value
+
+ENTRY: A = divisor
+       X = dividend
+
+EXIT:  A = remainder
+       B = quotient
+       all other registers (except CC) preserved
+
+
+.nl=7
+\t66\
+
+DIV16: 16 x 16 bit integer divide
+
+OTHER MODULES NEEDED: none
+
+ENTRY: D = divisor
+       X = dividend
+
+EXIT: X = quotient
+      D = remainder
+
+
+.nl=7
+\t66\
+
+DIV88: 8 x 8 Divide
+
+OTHER MODULES NEEDED: none
+
+ENTRY: A = divisor
+       B = dividend
+
+EXIT: A = remainder
+      B = quotient
+
+
+.he2="Number Conversions",pg,lf=c
+========================
+== Number Conversions ==
+========================
+.lf=l
+
+
+.nl=7
+\t66\
+
+DEC_BIN: DECIMAL to BINARY conversion routine
+
+OTHER MODULES NEEDED: DECTAB$, IS_TERMIN
+
+ENTRY: X = start of asci decimal string terminated by
+           a space, comma, CR or null.
+
+EXIT: D = binary value
+      CC carry set if error (too large, not numeric)
+      Y = terminator or error char.
+
+
+.nl=7
+\t66\
+
+BIN_DEC: Binary to decimal conversion
+
+OTHER MODULES NEEDED: DECTAB$
+
+ENTRY: X=buffer for ascii string
+       D=binary value to convert
+
+EXIT: all registers (except cc) preserved
+
+
+.nl=7
+\t66\
+
+ASC_BIN: ASCII String to binary byte conversion
+
+OTHER MODULES NEEDED: IS_TERMIN
+
+ENTRY: X = start of string of binary digits (001101)
+           terminated by space, comma, CR or null.
+
+EXIT: D = value
+      CC carry set if error (string too long, not binary digits)
+      Y = terminator or error pos.
+
+
+.nl=7
+\t66\
+
+BIN_ASC: Binary word to ASCII string conversion
+
+OTHER MODULES NEEDED: none
+
+ENTRY: D = binary value
+       X = buffer for 16 bit number
+
+EXIT: all registers (except cc) preserved
+
+
+.nl=7
+\t66\
+
+HEX_BIN: Hexadecimal string to BINARY conversion
+
+OTHER MODULES REQUIRED: TO_UPPER, IS_TERMIN, IS_XDIGIT
+
+ENTRY: X=start of a hex string terminated by a space,
+         comma, CR, or NULL.
+
+EXIT: D=binary number
+      CC carry set iferror (too large, non-numeric)
+      Y=terminator position or error char.
+
+
+.nl=7
+\t66\
+
+BIN_HEX: Binary to hexadecimal convertor
+
+This subroutine will convert the binary value in
+'D' to a 4 digit hexadecimal ascii string.
+
+OTHER MODULES NEEDED: BIN2HEX
+
+ENTRY: D=value to convert
+       X=buffer for hex string-null terminated
+
+EXIT all registers (except CC) preserved.
+
+
+.nl=7
+\t66\
+
+HEX2BIN: Convert hex byte to 2 hex digits
+
+OTHER MODULES REQUIRED: none
+
+ENTRY: B= value to convert
+
+EXIT: D=2 byte hex digits
+
+
+.nl=7
+\t66\
+
+DECTAB: table of decimal numbers for use by binary/decimal conversion
+routines.
+
+
+.he2="What's IT??",pg,lf=c
+=================
+== What's IT?? ==
+=================
+.lf=l
+
+
+.nl=7
+\t66\
+
+IS_PUNCT: See if character in "B" is a punctuation character
+
+OTHER MODULES NEEDED: IS_ALNUM, IS_CNTRL
+
+ENTRY: B=character to test
+
+EXIT: CC zero=1 if punct., 0 if not
+
+
+.nl=7
+\t66\
+
+IS_PRINT: See if character in "B" is a printable character
+controls are defined as $00..$1F and $7F+ -- all others are printable
+
+OTHER MODULES NEEDED: IS_CNTRL
+
+ENTRY: B=character to test
+
+EXIT: CC zero=1 if printable, 0 if not
+
+
+.nl=7
+\t66\
+
+IS_CNTRL: See if character in "B" is a control character
+controls are defined as $00..$1F and $7F+
+
+OTHER MODULES NEEDED: none
+
+ENTRY: B=character to test
+
+EXIT: CC zero=1 if control, 0 if not
+
+
+.nl=7
+\t66\
+
+IS_SPACE: See if character in "B" is a space ($20)
+
+NOTE: This module is included for completeness only,
+      it is much more efficient to do an inline test.
+
+OTHER MODULES NEEDED: none
+
+ENTRY: B=character to test
+
+EXIT: CC zero=1 if space, 0 if not
+
+
+.nl=7
+\t66\
+
+IS_XDIGIT: See if character in "B" is a hexdigit 0..9, A..F or a..f
+
+OTHER MODULES NEEDED: IS_DIGIT
+
+ENTRY: B=character to test
+
+EXIT: CC zero=1 if hex digit, 0 if not
+
+
+.nl=7
+\t66\
+
+IS_ALNUM: See if character in "B" is a
+          alpha letter a..z or A..Z or digit 0..9
+
+OTHER MODULES NEEDED: IS_ALPHA, IS_DIGIT
+
+ENTRY: B=character to test
+
+EXIT: CC zero=1 if alphanumeric, 0 if not
+
+
+.nl=7
+\t66\
+
+IS_ALPHA: See if character in "B" is a alpha letter a..z or A..Z
+
+OTHER MODULES NEEDED: IS_LOWER, IS_UPPER
+
+ENTRY: B=character to test
+
+EXIT: CC zero=1 if alpha, 0 if not
+
+
+.nl=7
+\t66\
+
+IS_DIGIT: See if character in "B" is a digit 0..9
+
+OTHER MODULES NEEDED: none
+
+ENTRY: B=character to test
+
+EXIT: CC zero=1 if digit, 0 if not
+
+
+.nl=7
+\t66\
+
+IS_LOWER: See if character in "B" is a lowercase letter
+
+OTHER MODULES NEEDED: none
+
+ENTRY: B=character to test
+
+EXIT: CC zero=1 if lowercase, 0 if not
+
+
+.nl=7
+\t66\
+
+IS_UPPER: See if character in "B" is a uppercase letter
+
+OTHER MODULES NEEDED: none
+
+ENTRY: B=character to test
+
+EXIT: CC zero=1 if uppercase, 0 if not
+
+
+.nl=7
+\t66\
+
+IS_TERMIN: See if character in "B" is a valid string terminator.
+
+NOTE: This module is used by HEX_BIN, DEC_BIN, etc. It permits
+      SPACE, CR, COMMA and NULL to be used as a delimiter -- useful
+      for paramater and list processing....
+
+OTHER MODULES NEEDED: none
+
+ENTRY: B=character to test
+
+EXIT: CC zero=1 if space, 0 if not
+
+
+.he2="OS9 File Specific",lf=c
+=======================
+== OS9 File Specific ==
+=======================
+.lf=l
+
+
+.nl=7
+\t66\
+
+GETFMD: Get the "last modified" date of an open file
+
+NOTE: Even though OS9 does not save seconds in its
+      files this routine stores a zero in this position.
+      This is done to make the routine compatible with
+      DATESTR.
+
+OTHER MODULES NEEDED: none
+
+ENTRY: X=buffer for 6 byte date
+       A=path of open file
+
+EXIT: CC carry set if error
+      B  error code (if any) from SS.FD
+
+
+.nl=7
+\t66\
+
+MKTEMP: This subroutine creates a temorary filename
+by adding a "." and a 2digit hex value based
+on the process id.
+IMPORTANT: there must be room after the filename
+for at least 6 bytes!! Filename must be variable
+area, not parameter or program sections!!!
+
+OTHER MODULES NEEDED: BIN_HEX
+
+ENTRY: X= filename
+
+EXIT: no registers (expect cc) modified
+      filename ends in ".processid",$0d
+
+
+.he2="Miscellaneous Routines",pg,lf=c
+============================
+== Miscellaneous Routines ==
+============================
+.lf=l
+
+
+.nl=7
+\t66\
+
+LINEDIT: Edit/input line.
+
+This routine does not use cursor positioning,
+instead it uses backspacing, etc. This means it
+can be used without a GOTOXY module, however it
+is a bit slow, especially when lines get longer than
+one line. If the buffer contains data, you will be
+able to edit; to enter new data pass a buffer of
+blanks.
+
+OTHER MODULES NEEDED: STRLEN,IS_PRINT, FPUTS, FPUTC, FGETC, MEMMOVE
+
+ENTRY: X=null terminated string to edit
+       A=input path (normally 0)
+       B=output path (normally 1)
+
+EXIT: CC carry set if error (GetStt, Setstt, Write, Read, etc.)
+      B=error code, if any
+
+
+.nl=7
+\t66\
+
+SHO_REGS: Display the 6809 registers to standard error.
+
+OTHER MODULES NEEDED: BIN2HEX, BIN_HEX,  PUTS
+
+ENTRY: none
+
+EXIT: none
+
+
+NOTE: The value used for PC is that of the calling routine
+      S is assumed to be 2 greater than actual to comp for
+      the subroutine call...
+
+
+.nl=7
+\t66\
+
+MEMMOVE: Memory move
+
+NOTE: This routine properly moves overlapping areas of memory.
+      Uses fast move algorithm
+
+ENTRY: X=source data
+       Y=destination
+       D=count
+
+EXIT: all registers (except CC) preserved
+
+
+.nl=7
+\t66\
+
+PTSEARCH: Pattern Search
+
+OTHER MODULES REQUIRED: COMPARE
+
+ENTRY: X=start of memory to search
+       U=end of memory
+       Y=start of pattern
+       D=size of pattern
+       CASEMTCH (a global variable in COMPARE) =0 if A<>a, -1 if A=a
+
+EXIT: X=address of match if found, unchanged if no match
+      CC zero set if match, clear for no-match
+      A,B,U,Y preserved
+
+
+.nl=7
+\t66\
+
+MEMSET: Set bytes in memory to specified value
+
+OTHER MODULES NEEDED: none
+
+ENTRY: X=start of memory
+       Y=number of bytes to set
+       B=character to set
+
+EXIT: all registers (except cc) preserved
+
+
+.nl=7
+\t66\
+
+COMPARE: Subroutine for string comparsion routines.
+         Compares chars in A/B, will convert both to
+         uppercase first if CASEMTCH is set (negative)
+
+OTHER MODULES NEEDED: TO_UPPER
+
+ENTRY: A/B=characters to compare
+       CASEMTCH=0 (or positive value) if A<>a
+               -1 (or neg value) if A=a
+
+EXIT: CC zero set if characters match.
+      All other registers preserved.
