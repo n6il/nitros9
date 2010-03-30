@@ -1,7 +1,7 @@
 PORT = coco3
 include $(NITROS9DIR)/rules.mak
 
-CPU		= 6809
+CPU		= 6309
 LEVEL		= 2
 
 DISTRO		= $(CPU)L$(LEVEL)
@@ -185,8 +185,8 @@ $(DSKDW3HEADLESS):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/$(DISTRO)/SCRIPTS
-	$(RM) $(LDSKDW3)
-	$(SOFTLINK) $@ $(LDSKDW3)
+	$(RM) $(LDSKDW3HEADLESS)
+	$(SOFTLINK) $@ $(LDSKDW3HEADLESS)
 
 $(DSK360K_1):
 	-$(RM) $@

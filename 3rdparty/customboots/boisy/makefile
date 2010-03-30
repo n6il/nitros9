@@ -81,7 +81,7 @@ BOOTFILE_WINTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/sysgo_dd
 
 SUPPORTFILES	= startup
-BOOTFILE	= $(BOOTFILE_DWTERM)
+BOOTFILE	= $(BOOTFILE_WINTERM)
 
 ALLOBJS		= $(CMDS) $(CMDS_DW) $(CMDS_THESIS)
 
