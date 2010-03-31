@@ -39,15 +39,15 @@ MODS = stimestr.r datestr.r getfmd.r mktemp.r linedit.r sho_regs.r \
 	to_sp.r to_non_sp.r memset.r rnd.r
 
 
-all:	alib.l alib.zip
+all:	../alib.l ../alib.zip
 
-alib.zip: $(SRC)
+../alib.zip: $(SRC)
 	zip $@ $(SRC)
 
-alib.l: $(MODS)
+../alib.l: $(MODS)
 	$(MERGE) $^ > $@
 
 dskclean: clean
 
 clean:
-	$(RM) *.r alib.l alib.zip
+	$(RM) *.r ../alib.l ../alib.zip

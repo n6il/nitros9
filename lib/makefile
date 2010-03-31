@@ -11,8 +11,8 @@ sys6309l2.l: sys6309l2.a
 net.l: net.a
 
 alib.l:
-	cd alib; make; cp alib.l ..
+	cd alib; make
 
 clean:
 	$(RM) *.l *.r
-	$(RM) alib/*.r
+	cd alib; make clean
