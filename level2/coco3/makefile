@@ -63,6 +63,7 @@ all:
 	@$(ECHO) "*        NitrOS-9/$(CPU) Level 2 Distribution      *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
+	cd $(NITROS9DIR)/lib; make
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
 
 # Clean all components

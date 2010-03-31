@@ -7,7 +7,7 @@ vpath %.asm $(LEVEL2)/sys
 DEPENDS		= ./makefile
 
 L1TXTFILES	= errmsg password inetd.conf
-L2TXTFILES	= motd
+L2TXTFILES	= $(NITROS9DIR)/level2/sys/motd
 BINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs \
 		ibmedcfont isolatin1font
 HELPFILES	= asm.hp attr.hp \
