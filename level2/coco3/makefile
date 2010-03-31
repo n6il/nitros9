@@ -93,8 +93,8 @@ $(DSKDW3):
 	$(MAKDIR) $@,DEFS
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
-	$(CD) cmds; $(CP) $(CMDS) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS) $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
+	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
@@ -146,8 +146,8 @@ $(DSKDW3HEADLESS):
 	$(MAKDIR) $@,DEFS
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
-	$(CD) cmds; $(CP) $(CMDS) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS) $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
+	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
