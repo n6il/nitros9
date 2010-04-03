@@ -9749,8 +9749,12 @@ L51E3    ldb   ,u+
          cmpb  #$FF
          beq   L5234
          lslb
-         lda   ,u+
-         sta   >$FF20
+
+         nop
+*         lda   ,u+
+*         sta   >$FF20
+         jsr    fxsnd1,pcr
+
          ldy   ,u++
          leax  >L4F6B,pcr     data table
          abx
@@ -9759,14 +9763,22 @@ L51E3    ldb   ,u+
          leax  >$007A,x
          ldd   ,x
          std   <u0090
-         tst   >$FF20
+
+*         tst   >$FF20
+         tst   -3,u
+         nop
+
          beq   L521E
 L5208    ldx   <u0090
 L520A    ldd   <u008E
 L520C    subd  #$0001
          bne   L520C
-         com   >$FF20
-         leax  -$01,x
+
+*         com   >$FF20
+*         leax  -$01,x
+         jsr   fxsnd2,pcr
+         nop
+
          bne   L520A
          leay  -$01,y
          bne   L5208
@@ -9787,8 +9799,10 @@ L5234    bsr   L5265
          rts
 
 *        read keyboard & joystick pias
-L523B    orcc  #IntMasks         $50
-         clr   >$FF20
+L523B    jsr   fxsnd3,pcr
+         nop
+*         orcc  #IntMasks         $50
+*         clr   >$FF20
          lda   >$FF01
          sta   >L4F68,pcr        data byte
          anda  #$F7
@@ -9809,8 +9823,11 @@ L5265    lda   >L4F68,pcr        data byte
          sta   >$FF03
          lda   >L4F6A,pcr        data byte
          sta   >$FF23
-         clr   >$FF20
-         lda   >$FF02
+*         clr   >$FF20
+*         lda   >$FF02
+         jsr   fxsnd4,pcr
+         nop
+         nop
          lda   >$FF22
          andcc #^IntMasks        $AF
          rts
@@ -11551,6 +11568,22 @@ L601E    fcb   $00,$00,$00,$00
          fcb   $00,$00,$00,$00
 L6026    fcc   'mnln'
          fcb   C$NULL
+
+fxsnd1   lda   ,u+
+fxsnd    ora   #2
+         sta   $ff20
+         rts
+
+fxsnd2   lda   $ff20
+         coma
+         bsr   fxsnd
+         leax  -1,x
+         rts
+
+fxsnd3   orcc  #$50
+fxsnd4   lda   #2
+         sta   $ff02
+         rts
 
          emod
 eom      equ   *
