@@ -1,3 +1,6 @@
+ifndef	NITROS9DIR
+NITROS9DIR	= $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm ../objs_lsl
@@ -89,7 +92,9 @@ dsk_40d:	all
 	$(CPL) $(TEXTFILES_D1) $(DSK_1_40D),.
 	$(OS9RENAME) $(DSK_1_40D),tOC_40d.txt tOC.txt
 	$(CP) $(SUPPORTFILES_D1) $(DSK_1_40D),.
+	$(MOVE) tocgen toctmp
 	tocgen $(DSK_1_40D),tOC.txt $(DSK_1_40D),tOC
+	$(MOVE) toctmp tocgen
 	$(OS9FORMAT_DS40) -q $(DSK_2_40D) -n$(DSK_2_40D_NAME)
 	$(CP) $(SUPPORTFILES_D2) $(DSK_2_40D),.
 
@@ -112,7 +117,9 @@ dsk_80d:	all
 	$(CPL) $(TEXTFILES) $(DSK_80D),.
 	$(OS9RENAME) $(DSK_80D),tOC_40d.txt tOC.txt
 	$(CP) $(SUPPORTFILES) $(DSK_80D),.
+	$(MOVE) tocgen toctmp
 	tocgen $(DSK_80D),tOC.txt $(DSK_80D),tOC
+	$(MOVE) toctmp tocgen
 
 dsk_dw3:	all
 	$(RM) $(DSK_DW3)
@@ -133,6 +140,7 @@ dsk_dw3:	all
 	$(CPL) $(TEXTFILES) $(DSK_DW3),.
 	$(OS9RENAME) $(DSK_DW3),tOC_40d.txt tOC.txt
 	$(CP) $(SUPPORTFILES) $(DSK_DW3),.
+	$(RM) tocgen
 	tocgen $(DSK_DW3),tOC.txt $(DSK_DW3),tOC
 
 dsk:	dsk_40d dsk_80d dsk_dw3
