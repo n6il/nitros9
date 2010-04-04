@@ -1,3 +1,6 @@
+ifndef	NITROS9DIR
+NITROS9DIR	= $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm ../objs_lsl
@@ -10,7 +13,7 @@ DSK_NAME	= "Leisure Suit Larry"
 
 DSKS		= $(DSK_FLOPPY) $(DSK_DW3)
 
-CMDS		= sierra mnln scrn shdw
+CMDS		= sierra mnln scrn shdw tocgen
 MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
@@ -48,7 +51,7 @@ dsk:	all $(DSKS)
 $(DSK_FLOPPY):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) -q $@ -n$(DSK_NAME)
+	$(OS9FORMAT_DS80) -q $@ -n$(DSK_NAME)
 	$(MERGE) $(BOOTFILE_FLOPPY)>os9boot
 	$(MERGE) $(KERNEL_FLOPPY)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
@@ -58,13 +61,15 @@ $(DSK_FLOPPY):
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CP) $(SUPPORTFILES) $@,.
+	$(MOVE) tocgen toctmp
 	tocgen tOC.txt $@,tOC
+	$(MOVE) toctmp tocgen
 	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
 $(DSK_DW3):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) -q $@ -n$(DSK_NAME)
+	$(OS9FORMAT_DW3) -q $@ -n$(DSK_NAME)
 	$(MERGE) $(BOOTFILE_DW3)>os9boot
 	$(MERGE) $(KERNEL_DW3)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
@@ -74,6 +79,7 @@ $(DSK_DW3):
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CP) $(SUPPORTFILES) $@,.
+	$(RM) tocgen
 	tocgen tOC.txt $@,tOC
 	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,$(file);)
 
