@@ -1,3 +1,6 @@
+ifndef	NITROS9DIR
+NITROS9DIR	= $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm ../objs_lsl
@@ -73,7 +76,9 @@ $(DISK_40D):
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
+	$(MOVE) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
+	$(MOVE) toctmp tocgen
 	$(CP) $(SUPPORTFILES) $@,.
 
 $(DSKDW3):
@@ -94,6 +99,7 @@ $(DSKDW3):
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
+	$(RM) tocgen
 	tocgen $@,tOC.txt $@,tOC
 	$(CP) $(SUPPORTFILES) $@,.
 
