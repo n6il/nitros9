@@ -61,7 +61,7 @@ BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 
 TEXTFILES_D1	= startup tOC_40d.txt
 TEXTFILES	= startup tOC_80d.txt
-TEXTFILES_DW3	= startup tOC_DW3.txt
+TEXTFILES_DW3 = startup tOC_dw3.txt
 
 SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 vol.12 vol.14 words.tok
@@ -100,8 +100,9 @@ dsk_40d:	all
 	$(CPL) $(TEXTFILES_D1) $(DISK_1_40D),.
 	$(OS9RENAME) $(DISK_1_40D),tOC_40d.txt tOC.txt
 	$(CP) $(SUPPORTFILES_D1) $(DISK_1_40D),.
-	$(RENAME) tocgen toctmp
+	$(MOVE) tocgen toctmp
 	tocgen $(DISK_1_40D),tOC.txt $(DISK_1_40D),tOC
+	$(MOVE) toctmp tocgen
 	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n$(DISK_2_40D_NAME)
 	$(CP) $(SUPPORTFILES_D2) $(DISK_2_40D),.
 	$(OS9FORMAT_DS40) -q $(DISK_3_40D) -n$(DISK_3_40D_NAME)
@@ -109,7 +110,6 @@ dsk_40d:	all
 
 dsk_80d:	all
 	$(RM) $(DISK_80D)
-	$(RENAME) toctmp tocgen
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS80) -q $(DISK_80D) -n$(DISK_80D_NAME)
 	$(MERGE) $(OS9BOOT_80D)>os9boot_80d
@@ -127,12 +127,12 @@ dsk_80d:	all
 	$(CPL) $(TEXTFILES) $(DISK_80D),.
 	$(OS9RENAME) $(DISK_80D),tOC_80d.txt tOC.txt
 	$(CP) $(SUPPORTFILES) $(DISK_80D),.
-	$(RENAME) tocgen toctmp
+	$(MOVE) tocgen toctmp
 	tocgen $(DISK_80D),tOC.txt $(DISK_80D),tOC
+	$(MOVE) toctmp tocgen
 
 dsk_dw3:	all
 	$(RM) $(DSK_DW3)
-	$(RENAME) toctmp tocgen
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DW3) -q $(DSK_DW3) -n$(DSK_DW3_NAME)
 	$(MERGE) $(BOOTFILE_DW3)>os9boot_dw3
@@ -148,7 +148,7 @@ dsk_dw3:	all
 	$(OS9ATTR) $(DSK_DW3),CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $(DSK_DW3),CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_DW3) $(DSK_DW3),.
-	$(OS9RENAME) $(DSK_DW3),tOC_DW3.txt tOC.txt
+	$(OS9RENAME) $(DSK_DW3),tOC_dw3.txt tOC.txt
 	$(CP) $(SUPPORTFILES) $(DSK_DW3),.
 	$(RM) tocgen
 	tocgen $(DSK_DW3),tOC.txt $(DSK_DW3),tOC
