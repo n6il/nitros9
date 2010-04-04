@@ -1,3 +1,6 @@
+ifndef	NITROS9DIR
+NITROS9DIR	= $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm ../objs_lsl
@@ -79,15 +82,17 @@ $(DSKDW3):
 	$(RM) shell
 	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES) $@,.
+	$(CPL) $(TEXTFILES_DW3) $@,.
 	$(OS9RENAME) $@,tOC_dw3.txt tOC.txt
 	$(CP) $(SUPPORTFILES_D1) $@,.
 	$(CP) $(SUPPORTFILES_D2) $@,.
 	$(CP) $(SUPPORTFILES_D3) $@,.
+	$(RENAME) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
 
 $(DISK_1_80D):
 	$(RM) $@
+	$(RENAME) toctmp tocgen
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS80) -q $@ -n$(DISK_1_80D_NAME)
 	$(MERGE) $(BOOTFILE_80D)>os9boot
@@ -105,7 +110,9 @@ $(DISK_1_80D):
 	$(CPL) $(TEXTFILES_D1) $@,.
 	$(OS9RENAME) $@,tOC_80d.txt tOC.txt
 	$(CP) $(SUPPORTFILES_D1) $@,.
+	$(RM) tocgen
 	tocgen $@,tOC.txt $@,tOC
+
 
 $(DISK_2_80D):
 	$(RM) $@
