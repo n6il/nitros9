@@ -49,7 +49,7 @@ BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 
 TEXTFILES_D1	= startup tOC_80d.txt
 TEXTFILES	= startup tOC_80d.txt
-TEXTFILES_DW3	= startup tOC_DW3.txt
+TEXTFILES_DW3	= startup tOC_dw3.txt
 
 SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.9 vol.10 vol.11 words.tok
