@@ -87,12 +87,12 @@ $(DSKDW3):
 	$(CP) $(SUPPORTFILES_D1) $@,.
 	$(CP) $(SUPPORTFILES_D2) $@,.
 	$(CP) $(SUPPORTFILES_D3) $@,.
-	$(RENAME) tocgen toctmp
+	$(MOVE) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
 
 $(DISK_1_80D):
 	$(RM) $@
-	$(RENAME) toctmp tocgen
+	$(MOVE) toctmp tocgen
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS80) -q $@ -n$(DISK_1_80D_NAME)
 	$(MERGE) $(BOOTFILE_80D)>os9boot
