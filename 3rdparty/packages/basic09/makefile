@@ -51,6 +51,9 @@ dsk:	all
 	$(CPL) $(TXTFILES) $(DISK),.
 	$(foreach file, $(TXTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)
 
+dskcopy: dsk
+	$(CP) $(DISK) $(DSKDIR)
+
 dskclean:
 	-$(RM) $(DISK)
 
