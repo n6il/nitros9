@@ -21,7 +21,7 @@ DISK_2_40D_NAME	= "Space Quest 0 Disk 2"
 DISK_3_40D_NAME	= "Space Quest 0 Disk 3"
 DISK_1_80D_NAME	= "Space Quest 0 Disk 1"
 DISK_2_80D_NAME	= "Space Quest 0 Disk 2"
-DISK_DW3_NAME	= "Space Quest 0 Disk"
+DISK_DW3_NAME	= "Space Quest 0"
 
 CMDS		= sierra mnln scrn shdw tocgen
 MD		= $(LEVEL2)/coco3/modules

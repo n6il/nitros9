@@ -14,8 +14,8 @@ DSK_DW3		= blackcauldron_dw3.dsk
 
 DSKS		= $(DSK_1_40D) $(DSK_2_40D) $(DSK_80D) $(DSK_DW3)
 
-DSK_1_40D_NAME = "The Black Cauldron DSK 1"
-DSK_2_40D_NAME = "The Black Cauldron DSK 2"
+DSK_1_40D_NAME = "The Black Cauldron Disk 1"
+DSK_2_40D_NAME = "The Black Cauldron Disk 2"
 DSK_80D_NAME   = "The Black Cauldron"
 DSK_DW3_NAME   = $(DSK_80D_NAME)
 

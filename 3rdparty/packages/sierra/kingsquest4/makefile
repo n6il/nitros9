@@ -17,7 +17,7 @@ DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DISK_DW3)
 DISK_1_80D_NAME = "King's Quest IV Disk 1"
 DISK_2_80D_NAME = "King's Quest IV Disk 2"
 DISK_3_80D_NAME = "King's Quest IV Disk 3"
-DISK_DW3_NAME =	"King's Quest IV Disk DW3"
+DISK_DW3_NAME =	"King's Quest IV"
 
 CMDS		= sierra mnln scrn shdw tocgen
 MD		= $(LEVEL2)/coco3/modules
