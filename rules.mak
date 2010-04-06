@@ -89,6 +89,7 @@ LOSETUP		= sudo /sbin/losetup
 LINK		= ln
 SOFTLINK	= $(LINK) -s
 ARCHIVE		= zip -D -j
+MKDSKINDEX	= $(NITROS9DIR)/3rdparty/utils/aaw/mkdskindex
 
 # Directories
 3RDPARTY	= $(NITROS9DIR)/3rdparty

@@ -1,0 +1,105 @@
+#!/usr/bin/perl
+
+# generate pretty index.html from directory of .dsks
+# AAW 4/5/10
+
+
+$dirtoget=$ARGV[0];
+
+opendir(DSKD, $dirtoget) || die("Cannot open directory");
+
+@dsks=readdir(DSKD);
+
+&header;
+
+print "<TABLE class=tab1>";
+
+print "<TR id='header'><TD class='h1'>File</td><TD class='h1'>Name</td><TD class='h1'>Size</td><TD class='h1'>Created</td><TD class='h1'>Sectors</td><TD class='h1'>Format</td></tr>";
+
+foreach $dsk (sort @dsks)
+{
+
+ if ($dsk =~ m/.*\.dsk$/)
+ {
+  @os9id = `os9 id $dirtoget/$dsk`;
+
+  foreach $line (@os9id)
+  {
+   if ($line =~ m/Disk\sname\s+:\s+(.*)/)
+   {
+    $name = $1;
+   } 
+   elsif ($line =~ m/Disk\sformat\s+:.*\((.*)\)/)
+   {
+    $format = $1;
+   }
+   elsif ($line =~ m/Creation\sdate\s+:\s+(.*)/)
+   {
+    $created = $1;
+   }
+   elsif ($line =~ m/Total\ssectors\s+:\s+(.*)/)
+   {
+    $sectors = $1;
+   }
+
+
+  }  
+
+  if ($dsk =~ m/_dw3[\._]/)
+  {
+    $format = "DriveWire 3/4";
+  }
+
+  $size = -s "$dirtoget/$dsk";
+
+  $size = int($size / 1024) . "k";
+
+  print "<TR class='r1'>";
+  print "<td class='d1'><A HREF=$dsk>$dsk</A></td>";
+  print "<TD class='d1'>$name</td>";
+  print "<TD class='d1'>$size</td>";
+  print "<td class='d1'>$created</td>";
+  print "<td class='d1'>$sectors</td>";
+  print "<TD class='d1'>$format</TD>";
+  print "</tr>\r\n";
+ 
+ }
+}
+
+print "</TABLE>";
+
+&footer;
+
+closedir(DSKD);
+
+
+
+
+
+sub header
+{
+  print "<HTML><HEAD><TITLE>Latest disk images</TITLE>";
+
+  print '<style type="text/css">';
+
+  print 'body { margin: 0px; padding 0px; }';
+  print 'td.h1 { font-family: arial; padding: 5px; padding-right: 10px; font-size:12px; color: #FFFFFF; background-color: #444444; }';
+  print 'td.d1 { font-family: arial; padding: 5px; padding-right: 10px; font-size:12px; }';
+  print 'table.tab1 { margin: 10px; border-collapse:collapse;}';
+
+  print 'h4 { font-family: arial; padding: 10px;}';
+
+  print "</style>";
+
+  print "</HEAD><BODY>";
+  print "<H4>NitrOS-9: Latest disk images</h4>";
+
+}
+
+
+sub footer
+{
+ print "</BODY></HTML>";
+
+
+}
