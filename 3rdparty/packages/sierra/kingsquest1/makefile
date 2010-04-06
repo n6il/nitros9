@@ -44,7 +44,7 @@ BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 		$(LEVEL2)/coco3/cmds/echo $(LEVEL2)/coco3/cmds/link \
 		$(LEVEL2)/coco3/cmds/setime
 
-TEXTFILES	= startup tOC_40d.txt
+TEXTFILES	= ../startup tOC_40d.txt
 
 SUPPORTFILES	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 words.tok
