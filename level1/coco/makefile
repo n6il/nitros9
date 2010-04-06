@@ -41,7 +41,8 @@ MODULECMDS	= $(WHICHSHELL) del echo format makdir merge os9gen prompt tmode
 
 SYS		= $(shell $(CD) sys; make --no-print-directory showobjs)
 DEFS		= $(shell $(CD) defs; make --no-print-directory showobjs)
-ROOTFILES	= startup
+STARTUP		= startup
+STARTUP_DW	= startup.dw
 
 PACKAGENAME	= $(DISTROVER).zip
 DSKDW3COCO1     = $(DISTROVER)1_dw3.dsk
@@ -102,8 +103,8 @@ $(DSKDW3COCO1):
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP_DW) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/6809L1
 	$(MAKDIR) $@,NITROS9/6809L1/CMDS
@@ -155,8 +156,8 @@ $(DSKDW3COCO2):
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP_DW) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/6809L1
 	$(MAKDIR) $@,NITROS9/6809L1/CMDS
@@ -206,8 +207,8 @@ $(DSK360K_1):
 	$(MAKDIR) $@,DEFS
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 	$(RM) $(LDSK360K_1)
 	$(SOFTLINK) $@ $(LDSK360K_1)
 
@@ -268,8 +269,8 @@ $(DSK720K):
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/6809L1
 	$(MAKDIR) $@,NITROS9/6809L1/CMDS
