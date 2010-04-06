@@ -33,6 +33,7 @@ DEFS		= $(shell $(CD) defs; make --no-print-directory showobjs)
 SYSBIN		= $(shell $(CD) sys; make --no-print-directory showbinobjs)
 SYSTEXT		= $(shell $(CD) sys; make --no-print-directory showtextobjs)
 STARTUP		= startup
+STARTUP_DW	= startup.dw
 SYSGO		= sysgo_dd
 
 PACKAGENAME	= $(DISTROVER).zip
@@ -100,8 +101,8 @@ $(DSKDW3):
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(STARTUP) $@,.
-	$(foreach file, $(STARTUP), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP_DW) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
@@ -153,8 +154,8 @@ $(DSKDW3HEADLESS):
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(STARTUP) $@,.
-	$(foreach file, $(STARTUP), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP_DW) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
@@ -206,8 +207,8 @@ $(DSK360K_1):
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(STARTUP) $@,.
-	$(foreach file, $(STARTUP), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 	$(RM) $(LDSK360K_1)
 	$(SOFTLINK) $@ $(LDSK360K_1)
 
@@ -228,8 +229,8 @@ $(DSK360K_1_50HZ):
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(STARTUP) $@,.
-	$(foreach file, $(STARTUP), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 	$(RM) $(LDSK360K_1_50HZ)
 	$(SOFTLINK) $@ $(LDSK360K_1_50HZ)
 
@@ -292,8 +293,8 @@ $(DSK720K):
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(STARTUP) $@,.
-	$(foreach file, $(STARTUP), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
@@ -347,8 +348,8 @@ $(DSK720K_50HZ):
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(STARTUP) $@,.
-	$(foreach file, $(STARTUP), $(OS9ATTR_TEXT) $@,$(file);)
+	$(CPL) $(STARTUP) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
