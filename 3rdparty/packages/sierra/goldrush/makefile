@@ -16,7 +16,7 @@ DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DSKDW3)
 
 DISK_1_80D_NAME = "Gold Rush Disk 1"
 DISK_2_80D_NAME = "Gold Rush Disk 2"
-DISK_3_80D_NAME = "Gold Rush d1_80dDisk 3"
+DISK_3_80D_NAME = "Gold Rush Disk 3"
 DSKDW3_NAME	= "Gold Rush"
 
 CMDS		= sierra mnln scrn shdw tocgen

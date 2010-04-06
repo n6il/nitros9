@@ -17,7 +17,7 @@ DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DISK_DW3)
 DISK_1_80D_NAME = "Manhunter II Disk 1"
 DISK_2_80D_NAME = "Manhunter II Disk 2"
 DISK_3_80D_NAME = "Manhunter II Disk 3"
-DISK_DW3_NAME = "Manhunter II DW3"
+DISK_DW3_NAME = "Manhunter II"
 
 CMDS		= sierra mnln scrn shdw tocgen
 MD		= $(LEVEL2)/coco3/modules
