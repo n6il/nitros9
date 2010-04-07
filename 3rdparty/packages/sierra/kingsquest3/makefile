@@ -3,7 +3,7 @@ NITROS9DIR	= $(HOME)/nitros9
 endif
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm ../objs
+vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
