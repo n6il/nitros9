@@ -55,7 +55,11 @@
 *                 - Minor mods to F$STime
 *                 - Changed F$GModDr to BRA to similar code in F$GBlkMp
 *
-* 18r6  Back-ported to OS-9 Level Two from NitrOS-9 Level Two
+*  18r6  Back-ported to OS-9 Level Two from NitrOS-9 Level Two
+*
+*  18r7    2004/06/18  Boisy G. Pitre
+* Kernel no longer attempts a reboot when failing to open term device, but
+* crashes upon error.
 
          nam    krnp2
          ttl    NitrOS-9 Level 2 Kernel Part 2
@@ -69,8 +73,7 @@ Network  equ    0             Set to 1 to enable network I/O ptrs
 
 TC9      set    false       "true" use TC-9 6309 trap vector
 Edition  equ    18
-Revision equ    6
-*DAT.Free equ   $333E      --- remove this def later
+Revision equ    7
 
          mod    eom,MName,Systm,ReEnt+Revision,krnp2,$0100
 
@@ -202,8 +205,13 @@ L004F    ldu    <D.Init     get pointer to init
          lda    #UPDAT.     get file mode
          os9    I$Open      open path to it
          bcc    L0066       went ok, save path #
-         os9    F$Boot      try & re-boot
-         bcc    L004F       go try again
+*         os9    F$Boot      try & re-boot
+ nop
+ nop
+ nop
+*         bcc    L004F       go try again
+ nop
+ nop
          bra    L009B       crash machine
 L0066    ldx    <D.Proc     get current process pointer
          sta    <P$Path,x   save stdin path
