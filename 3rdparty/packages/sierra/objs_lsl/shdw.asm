@@ -43,47 +43,45 @@ rev      set   $01
 size           equ   .
 
 Xffa9          equ $FFA9   task 1 block 2
-X01ae          equ $01AE   a state.flag byte
-X0551          equ $0551   given_pic_data
+FlagByte       equ $01AE   a state.flag byte
+PicData        equ $0551   given_pic_data
 
 
 * OS9 data area definitions
 
-u001a          equ $001A    shdw MMU block data
-u002e          equ $002e    Load offset 
-u0042          equ $0042    Sierra process descriptor block
-u0043          equ $0043    Sierra 2nd 8K data block    
-u005a          equ $005A    color
-u005b          equ $005B    sbuff_drawmask
-u005c          equ $005C    flag_control 
-u006b          equ $006B    pen_status
+MMUData        equ $001A    shdw MMU block data
+LoadOffset     equ $002e    Load offset 
+PDescBlk       equ $0042    Sierra process descriptor block
+DBlk8K         equ $0043    Sierra 2nd 8K data block    
+DrawColr       equ $005A    color
+DrawMask       equ $005B    sbuff_drawmask
+CtrlFlag       equ $005C    flag_control 
+PenStatus      equ $006B    pen_status
 
 * these look like gen purpose scratch vars
 
-u009e          equ $009E    
-u009f          equ $009F    
-u00a0          equ $00A0    
-u00a1          equ $00A1     
-u00a2          equ $00A2    
-u00a3          equ $00A3    
-u00a4          equ $00A4    
-u00a5          equ $00A5    
-u00a6          equ $00A6    
-u00a7          equ $00A7    
-u00a8          equ $00A8    
-u00a9          equ $00A9    
-u00aa          equ $00AA
-u00ab          equ $00AB    
-u00ac          equ $00AC    
-u00ad          equ $00AD    
-u00ae          equ $00AE
-u00af          equ $00AF
-u00b0          equ $00B0
-u00b1          equ $00B1
-u00b2          equ $00B2
-u00b3          equ $00B3
-u00b4          equ $00B4
-u00b5          equ $00B5
+param0         equ $00A0    
+param1         equ $00A1     
+param2         equ $00A2    
+param3         equ $00A3    
+param4         equ $00A4    
+param5         equ $00A5    
+param6         equ $00A6    
+param7         equ $00A7    
+param8         equ $00A8    
+param9         equ $00A9    
+param10        equ $00AA
+param11        equ $00AB    
+param12        equ $00AC    
+param13        equ $00AD    
+param14        equ $00AE
+param15        equ $00AF
+param16        equ $00B0
+param17        equ $00B1
+param18        equ $00B2
+param19        equ $00B3
+param20        equ $00B4
+param21        equ $00B5
 
 
 
@@ -154,19 +152,19 @@ L0012 lbra  L05fb      gfx_picbuff_update_remap
 * Twiddles with MMU
 * accd is loaded by calling program
 *
-*  u001a = shdw mem block data
-*  u0042 = sierra process descriptor block
-*  u0043 = Sierra 2nd 8K data block
+*  MMUData = shdw mem block data
+*  PDescBlk = sierra process descriptor block
+*  DBlk8K = Sierra 2nd 8K data block
 
-L0074 cmpa  u001a      compare to shdw mem block
+L0074 cmpa  MMUData      compare to shdw mem block
       beq   L008e      equal ?? no work to be done move on
       orcc  #IntMasks  turn off interupts
-      sta   u001a      store the value passed in by a
-      lda   u0042      get sierra process descriptor map block
+      sta   MMUData      store the value passed in by a
+      lda   PDescBlk      get sierra process descriptor map block
       sta   Xffa9      map it in to $2000-$3FFF
-      ldu   u0043      2nd 8K data block in Sierra
-      lda   u001a      load my mem block value
-      sta   ,u         save my values at address held in u0043
+      ldu   DBlk8K      2nd 8K data block in Sierra
+      lda   MMUData      load my mem block value
+      sta   ,u         save my values at address held in DBlk8K
       stb   $02,u        
       std   Xffa9      map it to task 1 block 2
       andcc #^IntMasks restore the interupts
@@ -277,33 +275,33 @@ L0132 fcb $00,$00        0
 
 * select case dispatch table for pic_cmd_loop()
 
-L0142 fdb $01bc        enable_pic_draw()
-      fdb $01c9        disable_pic_draw()
-      fdb $01d4        enable_pri_draw()
-      fdb $01e9        disable_pri_draw()
-      fdb $02e1        draw_y_corner()
-      fdb $02d4        draw_x_corner()
-      fdb $030c        absolute_line()
-      fdb $0320        relative_line()
-      fdb $035c        pic_fill()
-      fdb $0215        read_pen_status()
-      fdb $01f4        plot_with_pen()
+L0142 fdb enable_pic_draw
+      fdb disable_pic_draw
+      fdb enable_pri_draw
+      fdb disable_pri_draw
+      fdb draw_y_corner
+      fdb draw_x_corner        draw_x_corner()
+      fdb absolute_line        absolute_line()
+      fdb relative_line        relative_line()
+      fdb pic_fill        pic_fill()
+      fdb read_pen_status        read_pen_status()
+      fdb plot_with_pen        plot_with_pen()
 
 
 * This code adds the load offsets to the program offsets above
 *
-*  u00ab = loop counter
+*  param11 = loop counter
 *
 L0158 tst   L008f,pcr  test if we've loaded the offsets already
       bne   L0174      done once leave
       inc   L008f,pcr  not done set the flag 
       lda   #$0b       set our index to 11
-      sta   u00ad      stow it in mem since we are going to clobber b
+      sta   param13      stow it in mem since we are going to clobber b
       leau  >L0142,pcr load table head address
-L016a ldd   u002e      get load offset set in sierra
+L016a ldd   LoadOffset      get load offset set in sierra
       addd  ,u         add the load offset 
       std   ,u++       and stow it back, bump pointer
-      dec   u00ad      decrement the index
+      dec   param13      decrement the index
       bne   L016a      ain't done go again
 L0174 rts              we're out of here
 
@@ -327,25 +325,25 @@ L0175 ldd   #$4f4f     load the color
       
 * pic_cmd_loop() (pic_render.c)
 *
-*  u005a = color
-*  u005b = sbuff_drawmask
-*  u006b = pen_status
+*  DrawColr = color
+*  DrawMask = sbuff_drawmask
+*  PenStatus = pen_status
 
 L0189 pshs  y
       bsr   L0158      ensure load offset has been added to table address
       lbsr  L06fc      sbuff_fill()
       clra             make a zero
-      sta   u005b      sbuff_drawmask
-      sta   u006b      pen_status
+      sta   DrawMask      sbuff_drawmask
+      sta   PenStatus      pen_status
       coma             make the complement FF
-      sta   u005a      store color
+      sta   DrawColr      store color
       
       ldu   4,s        get the word passed in to us on the stack
       ldd   5,u        pull out the required info for the mmu twiddle
       lbsr  L0074      twiddle mmu 
       
 * pic_cmd_loop()  (pic_render.c) starts here      
-      ldx   X0551      given_pic_data  set in pic_res.c
+      ldx   PicData      given_pic_data  set in pic_res.c
 L01a2 lda   ,x+        pic_byte
 
 L01a4 cmpa  #$ff       if it's FF were done 
@@ -368,8 +366,8 @@ L01b9 puls  y          done then fetch the y back
 *  does't have colour_render()
 *  and setting of colour_picpart
 *
-*  u005a = color
-*  u005b = sbuff_drawmask
+*  DrawColr = color
+*  DrawMask = sbuff_drawmask
 *  
 *  x contains pointer to given_pic_data known as the pic_byte         
 *  after ldd
@@ -377,11 +375,12 @@ L01b9 puls  y          done then fetch the y back
 *  b contains draw mask
 *  returns the next pic_byte in a
 
-L01bc ldd   u005a      pulls in color and sbuff_drawmask
+enable_pic_draw
+      ldd   DrawColr      pulls in color and sbuff_drawmask
       anda  #$f0       and color with $F0
       ora   ,x+        or that result with the pic_byte and bump to next
       orb   #$0f       or the sbuff_drawmask with $0F
-      std   u005a      store the updated values
+      std   DrawColr      store the updated values
       lda   ,x+        return value ignored so this just bumps to next pic_byte
       rts
       
@@ -389,51 +388,53 @@ L01bc ldd   u005a      pulls in color and sbuff_drawmask
 * Command $F1 Disable picture draw
 *  disable_pic_draw() 
 *
-*  u005a = color
-*  u005b = sbuff_drawmask
+*  DrawColr = color
+*  DrawMask = sbuff_drawmask
 *  x contains pointer to given_pic_data known as the pic_byte         
 *  after ldd
 *  a contains color
 *  b contains draw mask
 *  returns the next pic_byte in a
 
-L01c9 ldd   u005a      pulls in color and sbuff_drawmask
+disable_pic_draw
+      ldd   DrawColr      pulls in color and sbuff_drawmask
       ora   #$0f       ors color with $0F (white ??)
       andb  #$f0       ands draw mask with $F0
-      std   u005a      store the updated values
+      std   DrawColr      store the updated values
       lda   ,x+        return value ignored so this just bumps to next pic_byte
       rts
       
 * Command $F2 Changes priority color and enables priority draw
 *  enable_pri_draw() pic_render.c
 *
-*  u005a = color
-*  u005b = sbuff_drawmask
+*  DrawColr = color
+*  DrawMask = sbuff_drawmask
 *  x contains pointer to given_pic_data known as the pic_byte         
 *  after ldd
 *  a contains color
 *  b contains draw mask
 *  returns the next pic_byte in a
 
-L01d4 ldd   u005a      pulls in color and sbuff_drawmask      
+enable_pri_draw
+    ldd   DrawColr      pulls in color and sbuff_drawmask      
       anda  #$0f       ands color with $0F
-      sta   u005a      save color 
+      sta   DrawColr      save color 
       lda   ,x+        loads pic_byte and bumps to next
       asla             times 2 with sign extend
       asla             again times 2
       asla             and again times 2
       asla             end result is multiply pic_byte by 16 ($10)  
-      ora   u005a      or that value with the modified color
+      ora   DrawColr      or that value with the modified color
       orb   #$f0       or the sbuff_drawmask with $F0
-      std   u005a      store the updated values
+      std   DrawColr      store the updated values
       lda   ,x+        return value ignored so this just bumps to next pic_byte
       rts
       
 * Command $F3 Disable priority draw
 *  diasable_pri_draw() pic_render.c
 *
-*  u005a = color
-*  u005b = sbuff_drawmask
+*  DrawColr = color
+*  DrawMask = sbuff_drawmask
 *  x contains pointer to given_pic_data known as the pic_byte         
 *  after ldd
 *  a contains color
@@ -441,10 +442,11 @@ L01d4 ldd   u005a      pulls in color and sbuff_drawmask
 *  returns the next pic_byte in a
 
 
-L1e9  ldd   u005a      pulls in color and sbuff_drawmask
+disable_pri_draw
+      ldd   DrawColr      pulls in color and sbuff_drawmask
       ora   #$f0       or the color with $F0
       andb  #$0f       and the sbuff_drawmask with $0F
-      std   u005a      store the updated values
+      std   DrawColr      store the updated values
       lda   ,x+        return value ignored so this just bumps to next pic_byte
       rts
       
@@ -452,16 +454,17 @@ L1e9  ldd   u005a      pulls in color and sbuff_drawmask
 * Logic is pic_byte >= 0xF0 in c source.
 * Emailed Nick Sonneveld 3/14/ 03
 *
-*  u006b = pen_status
-*  u00a2 = pen_x position
-*  u00a3 = pen_y position
-*  u00a6 = texture_num
+*  PenStatus = pen_status
+*  param2 = pen_x position
+*  param3 = pen_y position
+*  param6 = texture_num
 *
 *  x contains pointer to given_pic_data known as the pic_byte         
 *  returns the next pic_byte in a
 
 * plot_with_pen()  (pic_render.c)        
-L01f4 lda   u006b      pen_status
+plot_with_pen
+      lda   PenStatus      pen_status
       bita  #$20       and but don't change check for pen type solid or splater ($20)
       beq   L0204      is splater 
       lda   ,x+        load pic_byte (acca) from pic_code and bump pointer
@@ -471,10 +474,10 @@ L01f4 lda   u006b      pen_status
 *                      if it is less than $F0 it's just a picture byte 
 *                      fix next rev. 
       lbcc  L02ea      branch to a return statement miles away (could be fixed)
-      sta   u00a8      save our pic_byte in texture_num
+      sta   param8      save our pic_byte in texture_num
 L0204 lbsr  L0364      call read_xy_postion
       lblo  L02ea      far off rts
-      std   u00a4      pen x/y position 
+      std   param4      pen x/y position 
       fcb   $34,$10,$8D,$0B,$35,$10,$20,$DF 
 *      bsr   L0218      call plot_with_pen2()
 *      bra   L01f4      go again ...
@@ -484,13 +487,14 @@ L0204 lbsr  L0364      call read_xy_postion
 * Command $F9 Change pen size and style
 *  read_pen_status() pic_render.c
 *
-*  u006b = pen_status
+*  PenStatus = pen_status
 *
 *  x contains pointer to given_pic_data known as the pic_byte         
 *  returns the next pic_byte in a
 
-L0211 lda   ,x+        get pic_byte
-      sta   u006b      save as pen_status
+read_pen_status
+      lda   ,x+        get pic_byte
+      sta   PenStatus      save as pen_status
       lda   ,x+        return value ignored so this just bumps to next pic_byte  
       rts
       
@@ -499,29 +503,29 @@ L0211 lda   ,x+        get pic_byte
 * called from plot with pen
 *  Sets up circle_ptr
 *         
-*  u006b = pen_status
-*  u009e = pos_init_x
-*  u009f = pos_init_y
-*  u00a2 = pen_x position
-*  u00a3 = pen_y position
-*  u00a4 = pen_final_x
-*  u00a5 = pen_final_y
-*  u00a7 = pen.size
-*  u00a8 = t
-*  u00a9 = pensize x 2
-*  u00aa =  "
-*  u00ab = scratch var
-*  u00ac = scratch var
-*  u00ad = penwidth
-*  u00ae =  "
+*  PenStatus = pen_status
+*  param0 = pos_init_x
+*  param1 = pos_init_y
+*  param2 = pen_x position
+*  param3 = pen_y position
+*  param4 = pen_final_x
+*  param5 = pen_final_y
+*  param7 = pen.size
+*  param8 = t
+*  param9 = pensize x 2
+*  param10 =  "
+*  param11 = scratch var
+*  param12 = scratch var
+*  param13 = penwidth
+*  param14 =  "
 
-L0218 ldb   u006b      pen_status
+L0218 ldb   PenStatus      pen_status
       andb  #$07        
-      stb   u00a9      pen.size ?? save for pen_status & $07 
+      stb   param9      pen.size ?? save for pen_status & $07 
       
       clra             clear a and condition codes
       lslb             multiply by 2 
-      std   u00ab      pen size x 2
+      std   param11      pen size x 2
       leau  L0132,pcr  circle_list[]
       ldd   b,u        d now holds one of the circle_list values 
       leau  L00b0,pcr  circle_data[]
@@ -530,59 +534,59 @@ L0218 ldb   u006b      pen_status
 
 *  Set up x position       
       clra  
-      ldb   u00a4      load pen_x position
+      ldb   param4      load pen_x position
       lslb             multiply by two
       rola  
-      subb  u00a9      subtract the pen.size
+      subb  param9      subtract the pen.size
       bcc   L023f      outcome not less than zero move on
       deca               
       bpl   L023f      if we still have pos must be 0 or >
       ldd   #0000        
       bra   L024d
-L023f std   u00ad      store pen_x at scratch 
+L023f std   param13      store pen_x at scratch 
 
       ldd   #$013E     start with 320
-      subd  u00ab      subtract 2 x pen.size
-      cmpd  u00ad      pen_x to calc
+      subd  param11      subtract 2 x pen.size
+      cmpd  param13      pen_x to calc
       bls   L024d      if pen_x is greater keep temp calc
-      ldd   u00ad      otherwise use pen_x
+      ldd   param13      otherwise use pen_x
       
 L024d lsra             divide by 2
       rorb  
-      stb   u00a4      stow at pen_x
-      stb   u00a6      stow at pen_final_x
+      stb   param4      stow at pen_x
+      stb   param6      stow at pen_final_x
       
 *  Set up y position      
-      lda   u00a5      pen_y
-      suba  u00a9      pen.size
+      lda   param5      pen_y
+      suba  param9      pen.size
       bcc   L025c      >= 0 Ok go stow it
       clra             otherwise less than zero so set it to 0
       bra   L0268      go stow it
-L025c sta   u00ad      store pen_y at scratch
+L025c sta   param13      store pen_y at scratch
 
       lda   #y_max     start with 167
-      suba  u00ac      subtract 2 x pen.size
-      cmpa  u00ad      compare to pen_y calced so far
+      suba  param12      subtract 2 x pen.size
+      cmpa  param13      compare to pen_y calced so far
       bls   L0268      if pen_y > calc use calc and save it
-      lda   u00ad      otherwise use pen_y
-L0268 sta   u00a5      pen_y
-      sta   u00a7      pen_final_y
+      lda   param13      otherwise use pen_y
+L0268 sta   param5      pen_y
+      sta   param7      pen_final_y
       
-      lda   u00a8      texture_num
+      lda   param8      texture_num
       ora   #$01
-      sta   u00aa      t ??
+      sta   param10      t ??
       
-      ldb   u00ac      2 x pen.size
+      ldb   param12      2 x pen.size
       incb             bump it by one
       tfr   b,a        copy b into a
-      adda  u00a7      add value to pen_final_y
-      sta   u00a7      save new pen_final_y
+      adda  param7      add value to pen_final_y
+      sta   param7      save new pen_final_y
       lslb             shift b left (multiply by 2)
       
       leax  L0090,pcr  binary list[]
  fcb $3a,$9f,$af
 *      ldd   b,x        use 2x pensize + 1 to index into list 
-*      std   u00ad      pen width ???
+*      std   param13      pen width ???
 
 *   this looks like it should have been nested for loops
 *   but not coded that way in pic_render.c
@@ -591,7 +595,7 @@ L0268 sta   u00a5      pen_y
 L0284 leax  L0090,pcr  binary_list[]
 
 *  new x
-L0288 lda   u006b      pen_status
+L0288 lda   PenStatus      pen_status
       bita  #O_UPDATE  and it with $10 but don't change 
       bne   L0298      not equal zero go on to next pen status test
       ldd   ,u         otherwise  load data at circle_ptr
@@ -602,38 +606,38 @@ L0288 lda   u006b      pen_status
 *                      and binary_list       
       beq   L02ba      that outcome is equ zero head for next calcs 
 
-L0298 lda   u006b      pen_status
+L0298 lda   PenStatus      pen_status
       bita  #$20       anded with $20 but don't change  
       beq   L02af      equals zero set up and plot buffer
-      lda   u00aa      otherwise load t (texture_num | $01)
+      lda   param10      otherwise load t (texture_num | $01)
       lsra             divide by 2
       bcc   L02a5      no remainder save that number as t
       eora  #$b8       exclusive or t with $B8
-L02a5 sta   u00aa      save new t
+L02a5 sta   param10      save new t
       bita  #O_DRAWN     anded with 1 but don't change 
       bne   L02ba        not equal zero don't plot
       bita  #O_BLKIGNORE anded with 2 but don't change 
       beq   L02ba        does equal zero don't plot
 
 L02af pshs  u          save current u sbuff_plot uses it
-      ldd   u00a4      load pen_x/pen_y values
-      std   u00a0      save at pos_init_x/y positions
+      ldd   param4      load pen_x/pen_y values
+      std   param0      save at pos_init_x/y positions
       lbsr  L046f      head for sbuff_plot()
       puls  u          retrieve u from before call
 
-L02ba inc   u00a4      increment pen_x value
+L02ba inc   param4      increment pen_x value
 
       leax  $04,x      move four bytes in the binary_list
-      cmpx  u00af      comapre that value to pen_width
+      cmpx  param15      comapre that value to pen_width
       bls   L0288      less or same go again
       
       leau  $02,u      bump circle_ptr to next location in circle_data[]
       
-      lda   u00a6      load pen_final_x
-      sta   u00a4      store at pen_x       
-      inc   u00a5      bump pen_y
-      lda   u00a5      pen_y
-      cmpa  u00a7      compare to pen_final_y
+      lda   param6      load pen_final_x
+      sta   param4      store at pen_x       
+      inc   param5      bump pen_y
+      lda   param5      pen_y
+      cmpa  param7      compare to pen_final_y
       bne   L0284      not equal go do the next row
       rts
       
@@ -641,12 +645,13 @@ L02ba inc   u00a4      increment pen_x value
 * Command $F5 Draw an X corner 
 * draw_x_corner()  pic_render.c  
 *
-*  u009e = pos_init_x
-*  u009f = pos_init_y
+*  param0 = pos_init_x
+*  param1 = pos_init_y
       
-L02d1 lbsr  L0364      call read_xy_pos
+draw_x_corner
+      lbsr  L0364      call read_xy_pos
       bcs   L02ea      next subs rts
-      std   u00a0      save pos_init_x/y positions
+      std   param0      save pos_init_x/y positions
       lbsr  L046f      head for sbuff_plot()
       bsr   L02eb      draw_corner(0)
       rts
@@ -655,12 +660,13 @@ L02d1 lbsr  L0364      call read_xy_pos
 * Command $F4 Draw a Y corner         
 * draw_y_corner()  pic_render.c
 *
-*  u009e = pos_init_x
-*  u009f = pos_init_y
+*  param0 = pos_init_x
+*  param1 = pos_init_y
 
-L02de lbsr  L0364      call read_xy_pos
+draw_y_corner
+     lbsr  L0364      call read_xy_pos
       bcs   L02ea      return
-      std   u00a0      save at pos_init_x/y positions
+      std   param0      save at pos_init_x/y positions
       lbsr  L046f      head for sbuff_plot()
       bsr   L02f9      draw_corner(1)
 L02ea rts
@@ -669,25 +675,25 @@ L02ea rts
 
 * draw_corner(u8 type)  pic_render.c
 *
-*  u009e = pos_init_x
-*  u009f = pos_init_y
-*  u00a0 = pos_final_x
-*  u00a1 = pos_final_y 
+*  param0 = pos_init_x
+*  param1 = pos_init_y
+*  param0 = pos_final_x
+*  param1 = pos_final_y 
 
 draw_x:   
 L02eb lbsr  L036f      get_x_pos()
       bcs   L02ea      prior subs return
-      sta   u00a2      store as pos_final_x
-      ldb   u00a1      load pos_init_y
-      stb   u00a3      store as pos_final_y
+      sta   param2      store as pos_final_x
+      ldb   param1      load pos_init_y
+      stb   param3      store as pos_final_y
       lbsr  L0421      call sbuff_xline()
 
 draw_y:
 L02f9 lbsr  L0381      get_y_pos
       bcs   L02ea      prior subs return
-      stb   u00a3      save pos_final_y
-      lda   u00a0      load pos_init_x
-      sta   u00a2      save pos_final_x
+      stb   param3      save pos_final_y
+      lda   param0      load pos_init_x
+      sta   param2      save pos_final_x
       lbsr  L0447      sbuff_yline()     
       bra   L02eb      head for draw_x
 
@@ -697,18 +703,19 @@ L02f9 lbsr  L0381      get_y_pos
 * absolute_line()
 * This command is before Draw X corner in nagi source
 *
-*  u009e = pos_init_x
-*  u009f = pos_init_y
-*  u00a0 = pos_final_x
-*  u00a1 = pos_final_y 
+*  param0 = pos_init_x
+*  param1 = pos_init_y
+*  param0 = pos_final_x
+*  param1 = pos_final_y 
 
-L0309 bsr   L0364      call read_xy_pos
+absolute_line
+      bsr   L0364      call read_xy_pos
       bcs   L02ea      prior subs return
-      std   u00a0      save at pos_init_x/y positions
+      std   param0      save at pos_init_x/y positions
       lbsr  L046f      head for sbuff_plot()
 L0312 bsr   L0364      call read_xy_pos
       bcs   L02ea      prior subs return
-      std   u00a2      save at pos_final_x/y and passed draw_line in d
+      std   param2      save at pos_final_x/y and passed draw_line in d
       lbsr  L0394      call draw_line()
       bra   L0312      go again
       
@@ -716,14 +723,15 @@ L0312 bsr   L0364      call read_xy_pos
       
 * relative_line()      
 *
-*  u009e = pos_init_x
-*  u009f = pos_init_y
-*  u00a0 = pos_final_x
-*  u00a1 = pos_final_y 
+*  param0 = pos_init_x
+*  param1 = pos_init_y
+*  param0 = pos_final_x
+*  param1 = pos_final_y 
 
-L031D bsr   L0364      call read_xy_pos
+relative_line
+      bsr   L0364      call read_xy_pos
       bcs   L02ea      prior subs return
-      std   u00a0      save at pos_init_x/y positions
+      std   param0      save at pos_init_x/y positions
       lbsr  L046f      head for sbuff_plot()
 
 * calc x
@@ -742,11 +750,11 @@ L0326 lda   ,x+        get next pic_byte
       ldb   -$01,x       get the original value
       bpl   L0337      if original value not negative move on
       nega             else it was so flip the sign of the computed value
-L0337 adda  u00a0      add pos_init_x position
+L0337 adda  param0      add pos_init_x position
       cmpa  #x_max     compare to 159
       bls   L033f      if it's less or same move on
       lda   #x_max     else cap it at 159
-L033f sta   u00a2      store as pos_final_x
+L033f sta   param2      store as pos_final_x
 
 * calc y
 *                      not quite the same as pic_render.c almost
@@ -757,11 +765,11 @@ L033f sta   u00a2      store as pos_final_x
       beq   L034a      if result = 0 move on
       andb  #$07       else and it with $07
       negb             and negate it
-L034a addb  u00a1      add calced value to pos_init_y
+L034a addb  param1      add calced value to pos_init_y
       cmpb  #y_max     compare to 167 
       bls   L0352      less or same move on
       ldb   #y_max     greater ? cap it
-L0352 stb   u00a3      pos_final_y
+L0352 stb   param3      pos_final_y
 
 *                      passes pos_final_x/y in d
       lbsr  L0394      call draw_line()
@@ -771,14 +779,15 @@ L0352 stb   u00a3      pos_final_y
 * Command $F8 Fill
 * pic_fill()
 *
-*  u009e = pos_init_x
-*  u009f = pos_init_y
+*  param0 = pos_init_x
+*  param1 = pos_init_y
 
-L0359 bsr   L0364      call read_xy_pos
+pic_fill
+      bsr   L0364      call read_xy_pos
       bcs   L02ea      returned a 1 head for prior subs return
-      std   u00a0      save at pos_init_x/y position
+      std   param0     save at pos_init_x/y position
       lbsr  L0486      call sbuff_picfill()
-      bra   L0359      loop till we get a 1 back from read_xy_pos
+      bra   pic_fill   loop till we get a 1 back from read_xy_pos
 
 * read_xy_pos() 
 L0364 lbsr  L036f      go get x position
@@ -817,108 +826,108 @@ L0391 andcc #$fe       clear CC and return
 * draw_line()  pic_render.c
 * while this is a void function() seems pos_final_x/y are passed in d
 * 
-*  u009e = pos_init_x
-*  u009f = pos_init_y
-*  u00a0 = pos_final_x
-*  u00a1 = pos_final_y 
-*  u00a2 = x_count
-*  u00a3 = y_count
-*  u00a4 = pos_x
-*  u00a5 = pos_y
-*  u00a6 = line_x_inc
-*  u00a7 = line_y_inc
-*  u00a8 = x_component
-*  u00a9 = y_component
-*  u00aa = largest_line
-*  u00ab = counter
+*  param0 = pos_init_x
+*  param1 = pos_init_y
+*  param0 = pos_final_x
+*  param1 = pos_final_y 
+*  param2 = x_count
+*  param3 = y_count
+*  param4 = pos_x
+*  param5 = pos_y
+*  param6 = line_x_inc
+*  param7 = line_y_inc
+*  param8 = x_component
+*  param9 = y_component
+*  param10 = largest_line
+*  param11 = counter
 
 *  process straight lines
-L0394 cmpb  u00a1      compare pos_final_y with pos_init_y
+L0394 cmpb  param1      compare pos_final_y with pos_init_y
       lbeq  L0421      if equal call sbuff_xline() and don't return here
-      cmpa  u00a0      else compare with pos_init_x position
+      cmpa  param0      else compare with pos_init_x position
       lbeq  L0447      if equal call sbuff_yline() and don't return here
 
-      ldd   u00a0      load pos_init_x/y positions
-      std   u00a6      store at pen_final ??? not in pic_render.c version
+      ldd   param0      load pos_init_x/y positions
+      std   param6      store at pen_final ??? not in pic_render.c version
 
 *  process y      
       lda   #$01       line_y_inc
       
-      ldb   u00a3      load pos_final_y
-      subb  u00a1      subtract pos_init_y
+      ldb   param3      load pos_final_y
+      subb  param1      subtract pos_init_y
       bcc   L03ae      greater or equal zero don't negate
 *                      less than zero         
       nega             flip the sign of line_y_inc
       negb             flip the sign of y_component
       
-L03ae sta   u00a9      store line_y_inc
-      stb   u00ab      store y_component
+L03ae sta   param9      store line_y_inc
+      stb   param11      store y_component
       
 * process x      
       lda   #$01       line_x_inc
       
-      ldb   u00a2      load pos_final_x
-      subb  u00a0      subtract pos_init_x
+      ldb   param2      load pos_final_x
+      subb  param0      subtract pos_init_x
       bcc   L03bc      greater or equal zero don't negate
 *                      less than zero      
       nega             flip the sign of line_x_inc
       negb             flip the sign of x_component
-L03bc sta   u00a8      store line_x_inc
-      stb   u00aa      store x_component 
+L03bc sta   param8      store line_x_inc
+      stb   param10      store x_component 
 
 * compare x/y components
-      cmpb  u00ab      compare y_component to x_component
+      cmpb  param11      compare y_component to x_component
       blo   L03d0      if x_component is smaller move on
 
 
 *  x >= y 
 *                      x_component is in b
-      stb   u00ad      counter
-      stb   u00ac      largest_line 
+      stb   param13      counter
+      stb   param12      largest_line 
       lsrb             divide by 2
-      stb   u00a5      store y_count
+      stb   param5      store y_count
       clra             make a zero
-      sta   u00a4      store x_count
+      sta   param4      store x_count
       bra   L03dc      move on
 
 *  x < y      
-L03d0 lda   u00ab      load y_component
-      sta   u00ad      stow as counter
-      sta   u00ac      stow as largest line
+L03d0 lda   param11      load y_component
+      sta   param13      stow as counter
+      sta   param12      stow as largest line
       lsra             divide by 2
-      sta   u00a4      store x_count
+      sta   param4      store x_count
       clrb             make a zero
-      stb   u00a5      store as y_count
+      stb   param5      store as y_count
       
 
 * loops through the line and uses sbuff_plot to do the screen write
 *                      y_count is in b      
-L03dc addb  u00ab      add in the y_component
-      stb   u00a5      and stow back as y_count
-      cmpb  u00ac      compare that with line_largest
+L03dc addb  param11      add in the y_component
+      stb   param5      and stow back as y_count
+      cmpb  param12      compare that with line_largest
       blo   L03ee      if y_count >= line_largest is not the case branch
-      subb  u00ac      subtract line_largest
-      stb   u00a5      store as y_count
-      ldb   u00a7      load pos_y
-      addb  u00a9      add line_y_inc
-      stb   u00a7      stow as pos_y
+      subb  param12      subtract line_largest
+      stb   param5      store as y_count
+      ldb   param7      load pos_y
+      addb  param9      add line_y_inc
+      stb   param7      stow as pos_y
 
 *                      x_count is in a
-L03ee adda  u00aa      add in x_component
-      sta   u00a4      store as x_count
-      cmpa  u00ac      compare that with line_largest
+L03ee adda  param10      add in x_component
+      sta   param4      store as x_count
+      cmpa  param12      compare that with line_largest
       blo   L0400      if x_count >= line_largest is not the case branch
-      suba  u00ac      subtract line_longest
-      sta   u00a4      store at x_count
-      lda   u00a6      load pos_x
-      adda  u00a8      add line_x_inc
-      sta   u00a6      stow as pos_x
+      suba  param12      subtract line_longest
+      sta   param4      store at x_count
+      lda   param6      load pos_x
+      adda  param8      add line_x_inc
+      sta   param6      stow as pos_x
 
-L0400 ldd   u00a6      load computed pos_x/y
-      std   u00a0      store at pos_init_x/y positions
+L0400 ldd   param6      load computed pos_x/y
+      std   param0      store at pos_init_x/y positions
       lbsr  L046f      head for sbuff_plot()
-      ldd   u00a4      reload x/y_count
-      dec   u00ad      decrement counter
+      ldd   param4      reload x/y_count
+      dec   param13      decrement counter
       bne   L03dc      if counter not zero go again
       rts
       
@@ -943,79 +952,79 @@ L0418 std   ,--u       store them and dec dest address
 * sbuff_xline()  sbuff_util.c
 * gets called here with pos_final_x/y in accd
 *
-*  u005a = color
-*  u005b = sbuff_drawmask
-*  u009e = pos_init_x
-*  u009f = pos_init_y
-*  u00a0 = pos_final_x
-*  u00a1 = pos_final_y 
-*  u00ac = x_orig
+*  DrawColr = color
+*  DrawMask = sbuff_drawmask
+*  param0 = pos_init_x
+*  param1 = pos_init_y
+*  param0 = pos_final_x
+*  param1 = pos_final_y 
+*  param12 = x_orig
  
-L0421 sta   u00ae      stow as x_orig
-      cmpa  u00a0      compare with pos_init_x position
+L0421 sta   param14      stow as x_orig
+      cmpa  param0      compare with pos_init_x position
       bhs   L042d      if pos_final_x same or greater branch
       
 *                      otherwise init >  final so swap init and final     
-      ldb   u00a0      load pos_init_x position
-      stb   u00a2      save pos_final_x position
-      sta   u00a0      save pos_init_x position
+      ldb   param0      load pos_init_x position
+      stb   param2      save pos_final_x position
+      sta   param0      save pos_init_x position
       
 L042d bsr   L046f      head for sbuff_plot() returns pointer in u
 
-      ldb   u00a2      load pos_final_x
-      subb  u00a0      subtract pos_init_x position
+      ldb   param2      load pos_final_x
+      subb  param0      subtract pos_init_x position
       beq   L0442      if they are the same move on
 *                      b now holds the loop counter len
 *                      u is the pointer returned from sbuff_plot
       leau  $01,u      bump the pointer one byte right 
 L0437 lda   ,u         get the the byte
-      ora   u005b      or it with sbuff_drawmmask
-      anda  u005a      and it with the color
+      ora   DrawMask      or it with sbuff_drawmmask
+      anda  DrawColr      and it with the color
       sta   ,u+        save it back and bump u to next byte
       decb             decrememnt the loop counter
       bne   L0437      done them all? Nope loop
       
-L0442 lda   u00ae      x_orig (pos_final_x)
-      sta   u00a0      save at pos_init_x position
+L0442 lda   param14      x_orig (pos_final_x)
+      sta   param0      save at pos_init_x position
       rts
       
 
 * sbuff_yline() sbuf_util.c
 * gets called here with pos_final_x/y in accd
 *
-*  u005a = color
-*  u005b = sbuff_drawmask
-*  u009e = pos_init_x
-*  u009f = pos_init_y
-*  u00a0 = pos_final_x
-*  u00a1 = pos_final_y 
-*  u00ac = y_orig
+*  DrawColr = color
+*  DrawMask = sbuff_drawmask
+*  param0 = pos_init_x
+*  param1 = pos_init_y
+*  param0 = pos_final_x
+*  param1 = pos_final_y 
+*  param12 = y_orig
 
-L0447 stb   u00ae           stow as y_orig
-      cmpb  u00a1           compare with pos_init_y
+L0447 stb   param14           stow as y_orig
+      cmpb  param1           compare with pos_init_y
       bhs   L0453           if pos_final same or greater branch
 
 *                           otherwise init > final so swap 'em   
-      lda   u00a1           load pos_init_y
-      sta   u00a3           stow as pos_final_y
-      stb   u00a1           stow as pos_init_y
+      lda   param1           load pos_init_y
+      sta   param3           stow as pos_final_y
+      stb   param1           stow as pos_init_y
       
 L0453 bsr   L046f           head for sbuff_plot() returns pointer in u
-      ldb   u00a3           load pos_final_y
-      subb  u00a1           subtract pos_init_y
+      ldb   param3           load pos_final_y
+      subb  param1           subtract pos_init_y
       beq   L046a           if they are the same move on
 *                           b now holds the loop counter len
 *                           u is the pointer returned from sbuff_plot
 L045b leau  PICBUFF_WIDTH,u bump ptr one line up
       lda   ,u              get the byte  
-      ora   u005b           or it with sbuff_drawmmask
-      anda  u005a           and it with the color
+      ora   DrawMask           or it with sbuff_drawmmask
+      anda  DrawColr           and it with the color
       sta   ,u              save it back out
       decb                  decrement the loop counter
       bne   L045b           done them all ? Nope loop
       
-L046a ldb   u00ae           load y_orig
-      stb   u00a1           save it as pos_init_y
+L046a ldb   param14           load y_orig
+      stb   param1           save it as pos_init_y
       rts
       
       
@@ -1024,21 +1033,21 @@ L046a ldb   u00ae           load y_orig
 * which next 3 lines equate to so the $A0 is from 2 x 5  
 * pointer is returned in index reg u
 *
-*  u005a = color
-*  u005b = sbuff_drawmask
-*  u009e = pos_init_x
-*  u009f = pos_init_y
+*  DrawColr = color
+*  DrawMask = sbuff_drawmask
+*  param0 = pos_init_x
+*  param1 = pos_init_y
 
-L046f ldb   u00a1           load pos_init_y
+L046f ldb   param1           load pos_init_y
       lda   #$A0            according to PBUF_MULT() 
       mul                   do the math
-      addb  u00a0           add pos_init_x position 
+      addb  param0           add pos_init_x position 
       adca  #0000           this adds the carry bit in to a
       addd  #gfx_picbuff    add that to the start of the screen buf $6040
       tfr   d,u             move this into u
       lda   ,u              get the byte u points to 
-      ora   u005b           or it with sbuff_drawmask
-      anda  u005a           and it with the color
+      ora   DrawMask           or it with sbuff_drawmask
+      anda  DrawColr           and it with the color
       sta   ,u              and stow it back at the same place
       rts                   return
       
@@ -1046,26 +1055,26 @@ L046f ldb   u00a1           load pos_init_y
 
 
 * sbuff_picfill(u8 ypos, u8 xpos) sbuf_util.c         
-* u005a = color
-* u005b = sbuff_drawmask
-* u009e = pos_init_x
-* u009f = pos_init_y
-* u00a0 = left
-* u00a1 = right 
-* u00a2 = old_direction
-* u00a3 = direction
-* u00a4 = old_initx
-* u00a5 = old_inity
-* u00a6 = old_left
-* u00a7 = old_right
-* u00a8 = stack_left
-* u00a9 = stack_right
-* u00aa = toggle
-* u00ab = old_toggle
-* u00ae = color_bl
-* u00af = mask_dl
-* u00b0 = old_buff (word)
-* u00b2 = temp (buff)
+* DrawColr = color
+* DrawMask = sbuff_drawmask
+* param0 = pos_init_x
+* param1 = pos_init_y
+* param2 = left
+* param3 = right 
+* param4 = old_direction
+* param5 = direction
+* param6 = old_initx
+* param7 = old_inity
+* param8 = old_left
+* param9 = old_right
+* param10 = stack_left
+* param11 = stack_right
+* param12 = toggle
+* param13 = old_toggle
+* param14 = color_bl
+* param15 = mask_dl
+* param16 = old_buff (word)
+* param18 = temp (buff)
 
 
 colorbl  set $4F
@@ -1077,18 +1086,18 @@ L0486 pshs  x               save x
       tfr   x,s             make that the stack
 *                           s is now stack_ptr pointing to fill_stack      
       
-      ldb   u00a1           pos_init_y
+      ldb   param1           pos_init_y
       lda   #$a0            set up PBUF_MULT
       mul                   do the math
-      addb  u00a0           add pos_init_x
+      addb  param0           add pos_init_x
       adca  #0000           add in that carry bit
       addd  #gfx_picbuff    add the start of screen buffer $6040
       tfr   d,u             move this to u
 *                           u now is pointer to screen buffer b
 
       
-      ldb   u005a           load color  
-      lda   u005b           load sbuff_drawmask
+      ldb   DrawColr           load color  
+      lda   DrawMask           load sbuff_drawmask
       
 *                           next 2 lines must have been a if (sbuff_drawmask > 0)
 *                           not in the nagi source
@@ -1109,12 +1118,12 @@ L04b8 andb  #$0f            and color with $0F
       lbeq  L05f5           if so we're done   
       lda   #$0f            set up value for mask_dl
       
-L04c2 sta   u00b1           stow as mask_dl
+L04c2 sta   param17           stow as mask_dl
       anda  #colorbl        and that with $4F 
-      sta   u00b0           stow that as color_bl
+      sta   param16           stow that as color_bl
       lda   ,u              get byte at screen buffer
-      anda  u00b1           and with mask_dl
-      cmpa  u00b0           compare to color_bl
+      anda  param17           and with mask_dl
+      cmpa  param16           compare to color_bl
       lbne  L05f5           not equal were done
       
       ldd   #$FFFF          push 7 $FF bytes on temp stack
@@ -1124,170 +1133,170 @@ L04c2 sta   u00b1           stow as mask_dl
       pshs  a
 
       lda   #$a1            load a with 161
-      sta   u00a2           stow it at left
+      sta   param2           stow it at left
       clra                  make a zero
-      sta   u00a3           stow it at right
-      sta   u00ac           stow it at toggle 
+      sta   param3           stow it at right
+      sta   param12           stow it at toggle 
       inca                  now we want a 1
-      sta   u00a5           stow it at direction
+      sta   param5           stow it at direction
 
 * fill a new line
-L04e9 ldd   u00a2           load left/right
-      std   u00a8           stow at old_left/right
-      lda   u00ac           load toggle
-      sta   u00ad           stow at old_toggle
-      ldb   u00a0           load pos_init_x
-      stb   u00a6           store as old_initx
+L04e9 ldd   param2           load left/right
+      std   param8           stow at old_left/right
+      lda   param12           load toggle
+      sta   param13           stow at old_toggle
+      ldb   param0           load pos_init_x
+      stb   param6           store as old_initx
       incb                  accb now becomes counter
-      stu   u00b2           stow current screen byte as old_buff
+      stu   param18           stow current screen byte as old_buff
 
 L04f8 lda   ,u              get the screen byte pointed to by u
-      ora   u005b           or it with sbuff_drawmmask
-      anda  u005a           and that with the color
+      ora   DrawMask           or it with sbuff_drawmmask
+      anda  DrawColr           and that with the color
       sta   ,u              stow that back
       lda   ,-u             get the screen byte befor that one
-      anda  u00b1           and that with mask_dl
-      cmpa  u00b0           compare result with color_bl
+      anda  param17           and that with mask_dl
+      cmpa  param16           compare result with color_bl
       bne   L050b           not equal move on
       decb                  otherwise decrement the counter
       bne   L04f8           if were not at zero go again
       
 L050b leau  1,u             since cranked to zero bump the screen pointer by one
       tfr   u,d             move that into d
-      subd  u00b2           subtract old_buff
-      addb  u00a0           add pos_init_x
-      stb   u00a2           stow at left
-      lda   u00a0           load pos_init_x 
-      stb   u00a0           store left at pos_init_x
-      stu   u00b4           temp buff
-      ldu   u00b2           load  old_buff
+      subd  param18           subtract old_buff
+      addb  param0           add pos_init_x
+      stb   param2           stow at left
+      lda   param0           load pos_init_x 
+      stb   param0           store left at pos_init_x
+      stu   param20           temp buff
+      ldu   param18           load  old_buff
       leau  1,u             bump to the next byte
       nega                  negate pos_init_x value
       adda  #x_max          add that to 159 (subtract pos_init_x)
       beq   L0537           that's the new counter and if zero move on
 
 L0524 ldb   ,u              get that screen byte (color_old)
-      andb  u00b1           and it with mask_dl
-      cmpb  u00b0           check against color_bl
+      andb  param17           and it with mask_dl
+      cmpb  param16           check against color_bl
       bne   L0537           not equal move on
       ldb   ,u              load that byte again to do something with
-      orb   u005b           or it with sbuff_drawmmask
-      andb  u005a           and it with color
+      orb   DrawMask           or it with sbuff_drawmmask
+      andb  DrawColr           and it with color
       stb   ,u+             stow it back and bump the pointer
       deca                  decrement the counter 
       bne   L0524           if we haven't hit zero go again
       
 L0537 tfr   u,d             move the screen buff ptr to d
-      subd  u00b4           subtract that saved old pointer
+      subd  param20           subtract that saved old pointer
       decb                  sunbtract a 1
-      addb  u00a2           add in the left
-      stb   u00a3           store as the right
-      lda   u00a8           load old_left
+      addb  param2           add in the left
+      stb   param3           store as the right
+      lda   param8           load old_left
       cmpa  #$a1            compare to 161
       beq   L0577           if it is move on
       
-      cmpb  u00a9           if the new right == old right
+      cmpb  param9           if the new right == old right
       beq   L0552           then move on
       bhi   L0566           not equal and right > old_right
 *                           otherwise    
-      stb   u00a6           stow right as old_initx
-      clr   u00ac           clear toggle
+      stb   param6           stow right as old_initx
+      clr   param12           clear toggle
       bra   L056c           head for next calc
 *                           they were equal      
-L0552 lda   u00a2           load a with left
-      cmpa  u00a8           compare that to old_left
+L0552 lda   param2           load a with left
+      cmpa  param8           compare that to old_left
       bne   L0566           move on          
       lda   #$01            set up a one
-      cmpa  u00ac           compare toggle
+      cmpa  param12           compare toggle
       beq   L0577           is a one ? go to locnext
-      sta   u00ac           not one ? set it to 1
-      lda   u00a3           load right
-      sta   u00a6           stow it as old_initx
+      sta   param12           not one ? set it to 1
+      lda   param3           load right
+      sta   param6           stow it as old_initx
       bra   L056c           head for the next calc
 *                           right > old_right or left > old left      
-L0566 clr   u00ac           clear toggle
-      lda   u00a9           load old right
-      sta   u00a6           save as old_initx
+L0566 clr   param12           clear toggle
+      lda   param9           load old right
+      sta   param6           save as old_initx
 
 *         push a bunch on our temp stack
-L056c ldy   u00a4           old_direction/direction         
-      ldx   u00a6           old_initx/y
-      ldu   u00a8           old_left/right
-      lda   u00ad           old_toggle
+L056c ldy   param4           old_direction/direction         
+      ldx   param6           old_initx/y
+      ldu   param8           old_left/right
+      lda   param13           old_toggle
       pshs  a,x,y,u         push them on the stack
 
 locnext:
-L0577 lda   u00a5           load direction
-      sta   u00a4           stow as old_direction
-      ldb   u00a1           load pos_init_y
-      stb   u00a7           stow as old_inity
+L0577 lda   param5           load direction
+      sta   param4           stow as old_direction
+      ldb   param1           load pos_init_y
+      stb   param7           stow as old_inity
 
-L057f addb  u00a5           add direction to pos_init_y 
-      stb   u00a1           stow the updated pos_init_y
+L057f addb  param5           add direction to pos_init_y 
+      stb   param1           stow the updated pos_init_y
       cmpb  #y_max          compare that to 167 
       bhi   L05c5           greater than 167 go test direction
 
-L0587 ldb   u00a1           load pos_init_y
+L0587 ldb   param1           load pos_init_y
       lda   #$A0            according to PBUF_MULT
       mul                   do the math
-      addb  u00a0           add pos_init_x position
+      addb  param0           add pos_init_x position
       adca  #0000           this adds the carry bit into the answer
       addd  #gfx_picbuff    add that to the screen buff start addr $6040
       tfr   d,u             move it into u
       lda   ,u              get the byte pointed to
-      anda  u00b1           and with mask_dl
-      cmpa  u00b0           compare with color_bl
+      anda  param17           and with mask_dl
+      cmpa  param16           compare with color_bl
       lbeq  L04e9           if equal go fill a new line
       
-      lda   u00a0           load pos_init_x
-      ldb   u00a5           load direction
-      cmpb  u00a4           compare to old_direction
+      lda   param0           load pos_init_x
+      ldb   param5           load direction
+      cmpb  param4           compare to old_direction
       beq   L05bc           go comapre pos_init_x and right
-      tst   u00ac           test toggle
+      tst   param12           test toggle
       bne   L05bc           not zero go comapre pos_init_x and right
-      cmpa  u00aa           compare pos_init_x and stack_left
+      cmpa  param10           compare pos_init_x and stack_left
       blo   L05bc           less than stack_left go comapre pos_init_x and right
-      cmpa  u00ab           compare it to stack_right
+      cmpa  param11           compare it to stack_right
       bhi   L05bc           greater than go comapre pos_init_x and right
-      lda   u00ab           load stack_right 
-      cmpa  u00a3           compare to right
+      lda   param11           load stack_right 
+      cmpa  param3           compare to right
       bhs   L05c5           greater or equal go check direction
       inca                  add one to stack_right
-      sta   u00a0           stow as pos_init_x
+      sta   param0           stow as pos_init_x
       
-L05bc cmpa  u00a3           compare updated value to right
+L05bc cmpa  param3           compare updated value to right
       bhs   L05c5           go check directions
       inca                  less than then increment by 1
-      sta   u00a0           stow updated value pos_init_x
+      sta   param0           stow updated value pos_init_x
       bra   L0587           loop for next byte
       
 * test direction and toggle      
-L05c5 lda   u00a5           load direction
-      cmpa  u00a4           compare old_direction
+L05c5 lda   param5           load direction
+      cmpa  param4           compare old_direction
       bne   L05dc           not equal go pull stacked values
-      tst   u00ac           test toggle
+      tst   param12           test toggle
       bne   L05dc           not zero go pull stack values
       nega                  negate direction
-      sta   u00a5           store back at direction
-      lda   u00a2           load left
-      sta   u00a0           stow as pos_init_x
-      ldb   u00a7           load old_inity
-      stb   u00a1           stow at pos_init_y
+      sta   param5           store back at direction
+      lda   param2           load left
+      sta   param0           stow as pos_init_x
+      ldb   param7           load old_inity
+      stb   param1           stow at pos_init_y
       bra   L05ef           go grab off stack and move on
 
 * directions not equal      
 L05dc puls  a,x,y,u         grab the stuff off the stack
       cmpa  #$FF            test toggle for $FF source has test of pos_init_y
       beq   L05f5           equal ? clean up stack and return
-      sty   u00a4           stow old_direction/direction
-      stx   u00a0           stow pos_init_x/y
-      stu   u00a2           stow left/right
-      sta   u00ac           stow toggle
+      sty   param4           stow old_direction/direction
+      stx   param0           stow pos_init_x/y
+      stu   param2           stow left/right
+      sta   param12           stow toggle
       
-      ldb   u00a1           load pos_init_y
-      stb   u00a7           stow old_inity
+      ldb   param1           load pos_init_y
+      stb   param7           stow old_inity
 L05ef ldx   $05,s           gets left right  off stack
-      stx   u00aa           stow stack_left/right
+      stx   param10           stow stack_left/right
       bra   L057f           always loop
 
 L05f5 lds   ,s              reset stack
@@ -1487,11 +1496,11 @@ L0712 rts
 *typedef struct view_struct VIEW;
 
 
-*  u00a5 = flag_signal
-*  u00a6 = flag_water
-*  u005c = flag_control
+*  param5 = flag_signal
+*  param6 = flag_water
+*  CtrlFlag = flag_control
 *
-*  X01ae is location of state.flag
+*  FlagByte is location of state.flag
 *  see agi.h for definition of state structure
 L0713 pshs  y             save y
 
@@ -1519,15 +1528,15 @@ L072f lda   #$A0          set up PBUF_MULT()
        
       ldy   $10,x         load y with cel_data ptr
       clra                make a zero
-      sta   u00a8         stow it at flag_water
-      sta   u00a7         stow it at flag_signal
+      sta   param8         stow it at flag_water
+      sta   param7         stow it at flag_signal
       inca                make a 1
-      sta   u005c         stow it at flag_contro1
+      sta   CtrlFlag         stow it at flag_contro1
       ldb   $24,x         load priority
       cmpb  #$0F          compare it with 15
       beq   L078b         If it equals 15 move on
 *                         otherwise if not equal 15      
-      sta   u00a8         stow that 1 at flag_water
+      sta   param8         stow that 1 at flag_water
       ldb   ,y            cx  first byte of cel_data  (cel_width)
 
 *  do while cx != 0
@@ -1538,7 +1547,7 @@ L0752 lda   ,u+           (pri) put byte at pb in acca and bump pointer
       
       cmpa  #$30          compare pri to 48 (water ??)
       beq   L0766         not equal  move to end of loop
-      clr   u00a8         clear the water flag
+      clr   param8         clear the water flag
       cmpa  #$10          compare it with 16 (conditional ??)
       beq   L077e         if equal go test for observe blocks
       cmpa  #$20          compare with 32
@@ -1548,7 +1557,7 @@ L0766 decb                decrement cx
       bne   L0752         not zero yet loop again
 
       lda   $25,x         load flags in  acca
-      tst   u00a8         test flag_water
+      tst   param8         test flag_water
       bne   L0776         not zero next test
       bita  #O_DRAWN      should be O_WATER Looks like a BUG in ours
       beq   L078b         if it equals one head for check_finish
@@ -1556,7 +1565,7 @@ L0766 decb                decrement cx
 L0776 bita  #O_HRZNIGNORE should be O_LAND  Looks like a BUG in ours 
       beq   L078b
       
-L077a clr   u005c         clear flag_control
+L077a clr   CtrlFlag         clear flag_control
       bra   L078b         head for check_finish
       
 L077e lda   $26,x         load flags in acca
@@ -1564,7 +1573,7 @@ L077e lda   $26,x         load flags in acca
       beq   L077a         equals zero clear flag_control and go check_finish 
       bra   L0766         then  head back in the loop
 
-L0787 sta   u00a7         store acca at flag signal (obj_picbuff.c has =1) 
+L0787 sta   param7         store acca at flag signal (obj_picbuff.c has =1) 
       bra   L0766        continue with loop
 
 
@@ -1573,29 +1582,29 @@ L078b lda   $02,x         load num
       bne   L07bb         if not zero were done head out
 
 * flag signal test
-      lda   u00a7         load flag_signal  
+      lda   param7         load flag_signal  
 *                         operates on F03_EGOSIGNAL      
       beq   L079d         if its zero go reset the signal
 *                         otherwise set the flag      
-      lda   X01ae         load the state.flag element
+      lda   FlagByte         load the state.flag element
       ora   #$10          set the bits
-      sta   X01ae         save it back
+      sta   FlagByte         save it back
       bra   L07a5         go test the water flag
-L079d lda   X01ae         load the state.flag element
+L079d lda   FlagByte         load the state.flag element
       anda  #$ef          reset the bits 
-      sta   X01ae         save it back
+      sta   FlagByte         save it back
       
 * flag_water test      
-L07a5 lda   u00a8         load flag_water     
+L07a5 lda   param8         load flag_water     
       beq   L07b3         if zero go reset the flag
 *                         otherwise set it      
-      lda   X01ae         load the state.flag element
+      lda   FlagByte         load the state.flag element
       ora   #$80          set the bits
-      sta   X01ae         save it back
+      sta   FlagByte         save it back
       bra   L07bb         baby we're out of here
-L07b3 lda   X01ae         load the state.flag element
+L07b3 lda   FlagByte         load the state.flag element
       anda  #$7f          reset the bits
-      sta   X01ae         save it back
+      sta   FlagByte         save it back
 
 L07bb puls  y             retrieve our y and leave
       rts   
@@ -1604,13 +1613,13 @@ L07bb puls  y             retrieve our y and leave
 *  obj_blit(VIEW *v)   obj_blit.c
 *  our index reg x points to the view structure
 *  are 3 = x, 4 = y instead of 3-4 = x & 5-6 = y ???
-*  u00a2 = cel_height
-*  u00a7 = cel_trans
-*  u00a8 = init (pb)
-*  u00ac = cel_invis
-*  u00ad = pb_pri
-*  u009e = view_pri
-*  u009f = col
+*  param2 = cel_height
+*  param7 = cel_trans
+*  param8 = init (pb)
+*  param12 = cel_invis
+*  param13 = pb_pri
+*  param0 = view_pri
+*  param1 = col
 
 L07be ldx   $02,s        pull our x pointer off the stack
       ldd   $08,x        load d with view_data
@@ -1625,7 +1634,7 @@ L07be ldx   $02,s        pull our x pointer off the stack
       
 L07d1 ldd   ,u++         load the first 2 bytes of cel_data and bump to next word
 *                        cel_width is in acca we ignore 
-      stb   u00a4        save as cel_height
+      stb   param4        save as cel_height
 *                        obj_blit.c has and $0F which is a divide by 16
 *                        we do a multiply x 16 ???      
       lda   ,u+          cel_trans 
@@ -1633,28 +1642,28 @@ L07d1 ldd   ,u++         load the first 2 bytes of cel_data and bump to next wor
       asla  
       asla  
       asla  
-      sta   u00a9        save as cel_tran
+      sta   param9        save as cel_tran
       
       lda   $24,x        priority
       asla               shift left 4
       asla  
       asla  
       asla  
-      sta   u00a0        view_pri
+      sta   param0        view_pri
       
       ldb   $04,x        load the y value
-      subb  u00a4        subtract the cel_height
+      subb  param4        subtract the cel_height
       incb               add 1
       lda   #$a0         set up PBUF_MULT()
       mul                do the math
       addb  $03,x        add in the x value
       adca  #0000        add in the carry from multiply
       addd  #gfx_picbuff add this to the start of the screen buff addr $6040
-      std   u00aa        pb pointer to the pic buffer
-      ldx   u00aa        load it in an index reg
+      std   param10        pb pointer to the pic buffer
+      ldx   param10        load it in an index reg
       
       lda   #$01
-      sta   u00ae        set cel_invis to 1 and save
+      sta   param14        set cel_invis to 1 and save
       
       bra   L0800
 L07ff abx                bump the pb pointer
@@ -1664,37 +1673,37 @@ L0800 lda   ,u+          get the next "chunk"
       ldb   -$01,u       not zero load the same byte in accb
       anda  #$f0         and chunk with $F0 (col) 
       andb  #$0f         and chunk with $0F (chunk_len)
-      cmpa  u00a9        compare with cel_trans
+      cmpa  param9        compare with cel_trans
       beq   L07ff        set up and go again color is trasnparent
       lsra               shift right 4
       lsra  
       lsra  
       lsra  
-      sta   u00a1        save the color
+      sta   param1        save the color
       
 L0814 lda   ,x           get the byte pointed to by pb 
       anda  #$f0         get the priority portion
       cmpa  #$20         compare to $20
       bls   L083b        less or equal
-      cmpa  u00a0        compare to view_pri
+      cmpa  param0        compare to view_pri
       bhi   L085b        pb_pri > view_pri
 *                        otherwise      
-      lda   u00a0        load view_pri
-L0822 ora   u00a1        or it with col
+      lda   param0        load view_pri
+L0822 ora   param1        or it with col
       sta   ,x+          store that at pb and bump the pointer
-      clr   u00ae        zero cel_invis
+      clr   param14        zero cel_invis
       decb               decrement chunk_len
       bne   L0814        not equal zero go again inner loop
       bra   L0800        go again outer loop
       
-L082d dec   u00a4             decrement cel_height
+L082d dec   param4             decrement cel_height
       beq   L0862             equal zero move on out of cel_height loop
-      ldx   u00aa             load init
+      ldx   param10             load init
       leax  >PICBUFF_WIDTH,x  move 160 into screen
-      stx   u00aa             stow that back as init/pb
+      stx   param10             stow that back as init/pb
       bra   L0800             go again
       
-L083b stx   u00af             save the pointer
+L083b stx   param15             save the pointer
       clra                    set up ch  
 
 L083e cmpx  #blit_end         compare to gfx_picbuff+$6860
@@ -1706,8 +1715,8 @@ L083e cmpx  #blit_end         compare to gfx_picbuff+$6860
       cmpa  #$20              test against $20
       bls   L083e             less or equal go again
       
-L084f ldx   u00af        load pb_pri      
-      cmpa  u00a0        compare with view_pri
+L084f ldx   param15        load pb_pri      
+      cmpa  param0        compare with view_pri
       bhi   L085b        pb_pri > view_pri
       lda   ,x           make the next 
       anda  #$f0         pb_pri
@@ -1721,19 +1730,19 @@ L085b leax  $01,x        bump the pb pointer
 L0862 ldx   $02,s        pull our view pointer back off the stack 
       lda   $02,x        get the num
       bne   L087e        if not zero exit routine
-      lda   u00ae        get the cel_invis value
+      lda   param14        get the cel_invis value
       beq   L0876        reset the flag
 
 * set the flag
-      lda   X01ae        load the state.flag
+      lda   FlagByte        load the state.flag
       ora   #$40         set it
-      sta   X01ae        stow it back
+      sta   FlagByte        stow it back
       bra   L087e        exit routine
       
 * reset the flag      
-L0876 lda   X01ae        load state.flag
+L0876 lda   FlagByte        load state.flag
       anda  #$bf         clear it 
-      sta   X01ae        stow it
+      sta   FlagByte        stow it
 L087e rts   
 
 
@@ -1746,13 +1755,13 @@ L087e rts
 *
 *    saves and restores x,y,u regs on exit
 *
-*  u00a1 = width
-*  u00a2 = height_count
-*  u00a7 = trans transparent color left shifted 4
-*  u00aa = tran_size ??
-*  u00ab = meat_size
-*  u00af = loop_cur << 4
-*  u00b0 = al
+*  param1 = width
+*  param2 = height_count
+*  param7 = trans transparent color left shifted 4
+*  param10 = tran_size ??
+*  param11 = meat_size
+*  param15 = loop_cur << 4
+*  param16 = al
 
 
 L087f anda  #$30      and that with $30  (nagi has $70)
@@ -1770,31 +1779,31 @@ L087f anda  #$30      and that with $30  (nagi has $70)
       asla  
       asla  
       asla  
-      sta   u00b1      stow it as ??
+      sta   param17      stow it as ??
       lda   #$cf       load a with with $CF  (nagi has $8F)
       anda  $02,u      and that with cel[2]
-      ora   u00b1      or with loop_cur<<4
+      ora   param17      or with loop_cur<<4
       sta   $02,u      stow it back at cel[2]
       
       ldy   #gbuffend  
       
       ldd   ,u++       load d with width and hieght
-      std   u00a3      stow that
+      std   param3      stow that
       lda   ,u+        load a with trans color 
       asla             and shift left 4
       asla  
       asla  
       asla  
-      sta   u00a9      stow as trans
-      stu   u00b2      stow u as al
+      sta   param9      stow as trans
+      stu   param18      stow u as al
 L08af clrb             make a zero 
-      stb   u00ad      stow it as meat_size
+      stb   param13      stow it as meat_size
 
 *                      nagi code has tran_size set to width and
 *                      al&$0F subtracted from it.
 *                      in this loop
 
-L08b2 stb   u00ac      and tran_size
+L08b2 stb   param12      and tran_size
 
       lda   ,u+        load in the next cel_data byte
       beq   L08fc      if its a zero leave loop
@@ -1802,55 +1811,55 @@ L08b2 stb   u00ac      and tran_size
 *                      at this point a & b both have the same data byte      
       anda  #$f0       and the a copy with $F0
       andb  #$0f       and the b copy with $0F
-      cmpa  u00a9      compare byte&$F0 with trans
+      cmpa  param9      compare byte&$F0 with trans
       bne   L08cc      not equal branch out of loop
-      addb  u00ac      otherwise add in tran_size
+      addb  param12      otherwise add in tran_size
       bra   L08b2      and loop
       
 L08c6 ldb   ,u+        load the nbext byte and bump the pointer
       beq   L08d4      if it was zero move on
       andb  #$0f       otherwise and it with $0F
-L08cc addb  u00ac      add in tran_size
-      stb   u00ac      save it as tran_size
-      inc   u00ad      bump meat_size
+L08cc addb  param12      add in tran_size
+      stb   param12      save it as tran_size
+      inc   param13      bump meat_size
       bra   L08c6      loop to the next byte
       
-L08d4 lda   u00ac      load tran_size
+L08d4 lda   param12      load tran_size
       nega             negate it
-      adda  u00a3      add in the width
+      adda  param3      add in the width
       beq   L08f1      if that is zero move on
 
 L08db suba  #$0f       subtract 15 from it
       bls   L08eb      less or same move on
-      sta   u00ac      otherwise stow that back as tran_size
-      lda   u00a9      fetch trans
+      sta   param12      otherwise stow that back as tran_size
+      lda   param9      fetch trans
       ora   #$0f       or it with 15
       sta   ,y+        store it at buff (gbuffend) and bump pointer
-      lda   u00ac      fetch tra_size
+      lda   param12      fetch tra_size
       bra   L08db      loop again
       
 L08eb adda  #$0f       add 15 back into a (tran_size)
-      ora   u00a9      or that with trans
+      ora   param9      or that with trans
       sta   ,y+        stow that at buff and bump the pointer
       
 L08f1 leax  -$01,u     set x to the last cel_data byte processed
-      ldb   u00ad      load b with the meat_size (the loop counter)
+      ldb   param13      load b with the meat_size (the loop counter)
 L08f5 lda   ,-x        copy from the cel_data end 
       sta   ,y+        to the buff front
       decb             dec the counter
       bne   L08f5      not done loop again
       
 L08fc stb   ,y+        on entry b should always = 0 stow that at the next buff location
-      dec   u00a4      decrement the height_count
+      dec   param4      decrement the height_count
       bne   L08af      not zero go again
       
 * now we are going to copy the backward temp buffer back to the cel      
       tfr   y,d        get the buff pointer in d
       subd  #gbuffend  subtract the starting value of the buffer
-      stb   u00b4      save that as the buffer size
+      stb   param20      save that as the buffer size
       andb  #$fe       make it an even number
       tfr   d,x        transfer that to x 
-      ldu   u00b2      al cel_data pointer
+      ldu   param18      al cel_data pointer
       ldy   #gbuffend  load y start of our temp buffer
 
 L0913 ldd   ,y++       get a word
@@ -1858,7 +1867,7 @@ L0913 ldd   ,y++       get a word
       leax  -$02,x     dec the counter by a word
       bne   L0913      not zero go again
 *                      so we've moved an even number of bytes      
-      lda   u00b4      load the actual byte count 
+      lda   param20      load the actual byte count 
       lsra             divide by 2 
       bcc   L0924      no remainder (not odd) we're done
       lda   ,y         otherwise move the last
@@ -1872,12 +1881,12 @@ L0926 rts              and return to caller
 * obj_add_pic_pri(VIEW *v)  obj_picbuff.c
 * our index reg x points to the view structure
 *
-*  u009e = priority&$F0
-*  u00a3 = pri_table[y]
-*  u00a4 = pri_table[y]
-*  u00a8 = pb (word)
-*  u00a9 = "
-*  u00b3 = pri_height/height
+*  param0 = priority&$F0
+*  param3 = pri_table[y]
+*  param4 = pri_table[y]
+*  param8 = pb (word)
+*  param9 = "
+*  param19 = pri_height/height
 
 L0927 pshs  y          save the y
       ldx   $04,s      get the the pointer to our view
@@ -1890,7 +1899,7 @@ L0927 pshs  y          save the y
 *      leau  L0654,pcr  load pri_table address
  fcb $CE,$05,$EE
       lda   d,u        fetch the pri_table y data
-      std   u00a5      stow it in a temp
+      std   param5      stow it in a temp
       ldb   $24,x      load priority
       andb  #$0f       and that with $0F
       bne   L0948      if that equals zero move on
@@ -1907,15 +1916,15 @@ L0948 pshs  x          push the pointer to the view on the stack
 
  fcb $ce,$05,$ee,$d6,$a6,$0f,$b5
 *      leau  L0654,pcr  load pri_table address
-*      ldb   u00a6      fetch pri_table[y] (cx)
-*      clr   u00b5      clear pri_height
+*      ldb   param6      fetch pri_table[y] (cx)
+*      clr   param21      clear pri_height
 L0962 clra             zero acca
-      inc   u00b5      bump pri_hieght
+      inc   param21      bump pri_hieght
       tstb             is pri_table[y] 
       beq   L096f      equal zero if so move on
       decb             dec our counter cx
       lda   d,u        load pri_table[cx]
-      cmpa  u00a5      compare to pri_table[y]
+      cmpa  param5      compare to pri_table[y]
       beq   L0962      if they are equal loop again
       
 * set up and execute PBUF_MULT call      
@@ -1926,30 +1935,30 @@ L096f ldb   $04,x        load the view->y in
       adca  #0000         add in the carry
       addd  #gfx_picbuff add in the base address $6040
       tfr   d,u          move that to an index reg (pb)
-      stu   u00aa        stow it as pb
+      stu   param10        stow it as pb
       
       ldy   $10,x        load y with cel_data pointer     
       ldb   $01,y        get the second byte (height)
-      cmpb  u00b5        compare to pri_height
+      cmpb  param21        compare to pri_height
       bhi   L098b        greater move on
-      stb   u00b5        otherwise save the largest as pri_height
+      stb   param21        otherwise save the largest as pri_height
 L098b lda   $24,x        load the priority again
       anda  #$f0         and it with $F0
-      sta   u00a0        stow that for later use
+      sta   param0        stow that for later use
 
 * bottom line
       ldb   ,y           load b with the first byte in cel_data (cx)
 L0994 lda   ,u           get the byte at our pic buff pb
       anda  #$0f         and it with $0F
-      ora   u00a0        or it with priority&F0
+      ora   param0        or it with priority&F0
       sta   ,u+          stow it back and bump the pointer
       decb               dec the loop counter cx 
       bne   L0994        not zero go again
  
 * it has a height     
-      dec   u00b5        test "height" for > 1
+      dec   param21        test "height" for > 1
       beq   L09d5        wasn't head no more to do so head out
-      ldu   u00aa        reset u to our pb pic buff pointer   
+      ldu   param10        reset u to our pb pic buff pointer   
 
 * the sides
       ldb   ,y           get the first byte of cel_data
@@ -1958,15 +1967,15 @@ L09a8 leau  -$A0,u       decrement pb by 160
       tfr   u,x          move that value into x
       lda   ,u           get the data
       anda  #$0f         and it with $0F
-      ora   u00a0        or it priority&$F0
+      ora   param0        or it priority&$F0
       sta   ,u           stow it back
       clra               zero a so we can use d as a pointer
       lda   d,u          use "sideoff" as an index into pb 
       anda  #$0f         and that with $0F
-      ora   u00a0        or that rascal with priority&$F0
+      ora   param0        or that rascal with priority&$F0
       abx                add that value to our x pointer 
       sta   ,x           and store it there
-      dec   u00b5        dec the height
+      dec   param21        dec the height
       bne   L09a8        greater than zero go again
       
 * the top of the box
@@ -1976,7 +1985,7 @@ L09a8 leau  -$A0,u       decrement pb by 160
       leau  $01,u        bump the pb pointer
 L09ca lda   ,u           grab the byte
       anda  #$0f         and that with $0F
-      ora   u00a0        or it with priority &$F0
+      ora   param0        or it with priority &$F0
       sta   ,u+          stow it back and bump the pointer
       decb               dec our counter
       bne   L09ca        loop if not finished
@@ -1989,11 +1998,11 @@ L09d5 puls  y            return the y value
 * blit_save(BLIT *b) obj_blit.c
 *  our blit_struct is a bit different from the one in nagi
 *
-* u00a0 = zeroed and never changed cause we use the next byte :-)
-* u00a1 = x_count (x_size)         when cmpx ha ha 
-* u00a2 = y_count (y_size)
-* u00a8 = pic buffer start pic_cur
-* u00ad = pic_cur + offset
+* param2 = zeroed and never changed cause we use the next byte :-)
+* param3 = x_count (x_size)         when cmpx ha ha 
+* param4 = y_count (y_size)
+* param10 = pic buffer start pic_cur
+* param13 = pic_cur + offset
 
 L09d8 ldu   $02,s        get the pointer to the blit_struct
       ldd   $0C,u        get the pointer to the view_data for mmu twiddler
@@ -2001,8 +2010,8 @@ L09d8 ldu   $02,s        get the pointer to the blit_struct
       
       ldu   $02,s        get the pointer to the blit_struct data back in u
       ldd   $08,u        load the x/y_size
-      std   u00a3        stow that at x/y_count
-      clr   u00a2        zero some adder
+      std   param3        stow that at x/y_count
+      clr   param2        zero some adder
       ldb   $07,u        get the y value
       lda   #$a0         set up PBUF_MULT
       mul                do the math
@@ -2011,18 +2020,18 @@ L09d8 ldu   $02,s        get the pointer to the blit_struct
       addd  #gfx_picbuff add in pic buff base $6040
       
       ldu   $0A,u        load u with with the buffer pointer blit_cur 
-L09f5 std   u00aa        save the buffer start pointer pic_cur
-      addd  u00a2        add in the offset x_size
-      std   u00af        stow that at pic_cur + offset
-      ldx   u00aa        load x with pic_cur
+L09f5 std   param10        save the buffer start pointer pic_cur
+      addd  param2        add in the offset x_size
+      std   param15        stow that at pic_cur + offset
+      ldx   param10        load x with pic_cur
 L09fd ldd   ,x++         copy 2 bytes at a time
       std   ,u++         to the buffer at blit_cur
-      cmpx  u00af        have we copied it all ?? 
+      cmpx  param15        have we copied it all ?? 
       blo   L09fd        nope loop again
       
-      ldd   u00aa        load with pic buffer start
+      ldd   param10        load with pic buffer start
       addd  #PICBUFF_WIDTH       add 160
-      dec   u00a4        dec y_count
+      dec   param4        dec y_count
       bne   L09f5        not zero loop again
       rts   
 
@@ -2031,11 +2040,11 @@ L09fd ldd   ,x++         copy 2 bytes at a time
 * blit_save(BLIT *b) obj_blit.c
 *  our blit_struct is a bit different from the one in nagi
 *
-* u00a0 = zeroed and never changed cause we use the next byte :-)
-* u00a1 = x_count (x_size)         when cmpx ha ha 
-* u00a2 = y_count (y_size)
-* u00a8 = pic buffer start pic_cur
-* u00ad = pic_cur + offset
+* param2 = zeroed and never changed cause we use the next byte :-)
+* param3 = x_count (x_size)         when cmpx ha ha 
+* param4 = y_count (y_size)
+* param10 = pic buffer start pic_cur
+* param13 = pic_cur + offset
 
 L0a0f ldu   $02,s         get the pointer to the blit structure
       ldd   $0C,u
@@ -2043,8 +2052,8 @@ L0a0f ldu   $02,s         get the pointer to the blit structure
 
       ldu   $02,s         get the blit_structure back in u
       ldd   $08,u         load x/y_size
-      std   u00a3         stow them at x/y_count
-      clr   u00a2         clear the byte prior to x_size
+      std   param3         stow them at x/y_count
+      clr   param2         clear the byte prior to x_size
       ldb   $07,u         get the y value
       lda   #$a0          set up PBUF_MULT
       mul                 do the math
@@ -2053,18 +2062,18 @@ L0a0f ldu   $02,s         get the pointer to the blit structure
       addd  #gfx_picbuff  add in the base address $6040
 
       ldu   $0A,u         load u with buffer pointer blit_cur
-L0a2c std   u00aa         save the screen start buffer pic_cur
-      addd  u00a2         add in the x_size
-      std   u00af         stow at pic_cur + offset 
-      ldx   u00aa         load x pic_cur pointer
+L0a2c std   param10         save the screen start buffer pic_cur
+      addd  param2         add in the x_size
+      std   param15         stow at pic_cur + offset 
+      ldx   param10         load x pic_cur pointer
 L0a34 ldd   ,u++          grab em from the buffer
       std   ,x++          and send them to the screen
-      cmpx  u00af         moved them all ??
+      cmpx  param15         moved them all ??
       blo   L0a34         nope then keep on keeping on
       
-      ldd   u00aa         load the pic_cur pointer
+      ldd   param10         load the pic_cur pointer
       addd  #PICBUFF_WIDTH        add 160
-      dec   u00a4         dec the y count
+      dec   param4         dec the y count
       bne   L0a2c         not zero move some more
       rts   
       
