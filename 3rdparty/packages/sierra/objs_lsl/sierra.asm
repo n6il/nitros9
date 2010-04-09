@@ -1,7 +1,9 @@
 ********************************************************************
-* sierra - Leisure Suit Larry setup module
+* sierra - Sierra setup module
 *
 * $Id$
+*
+* Notes: This module is for the 2.072 version of the interpreter.
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
@@ -25,7 +27,7 @@ StdOut   equ   1
 StdErr   equ   2
 
          nam   sierra
-         ttl   Leisure Suit Larry setup module
+         ttl   Sierra setup module
 
          ifp1
          use   defsfile
@@ -108,7 +110,7 @@ name     fcs   /sierra/
 
 start    equ   *
 L0014   lbra L007D  branch to entry process params
-L0017   lbra L00DB  branch to clean up routines
+L0017   lbra L00DB  agi_exit() branch to clean up routines
 
 
 *                   Multi-tasking flag (0=No multitask, 1=multitask) 
@@ -191,6 +193,7 @@ L00DA    rts               return
 
 
 *  This is just a relay call to L0336
+agi_exit
 L00DB    lbsr  L0133
 
 L00DE    clrb              NOBODY USES ME ? 
@@ -251,6 +254,7 @@ L0120    lbsr  L01FA  copies two subs to data area so others can use them
          rts   
 
 * clean up and shut down
+agi_shutdown
 L0133    lbsr  L0336  go deallocate hi res screens 
 L0136    lbsr  L0370  unloads the three other modules
 L0139    lbsr  L04BD  Close VIRQ device
@@ -308,7 +312,7 @@ L0146    std   ,x++
          tfr   x,d         save in d appears he expects montype returned
          stb   >L0119,pcr  trim it to a byte and save it 
          andb  #$01        mask out mono type only RGB or COMP
-         stb   >$0553      save that value off 
+         stb   >$0553      save that value off as display_type
 
 *  set current montype
 *  SetStat Function Code $92 
