@@ -1,11 +1,290 @@
+********************************************************************
+* MNLN - Kings Quest III main line module
+*
+* $Id$
+*
+*        Header for : mnln
+*        Module size: $6372  #25458
+*        Module CRC : $81A0CC (Good)
+*        Hdr parity : $39
+*        Exec. off  : $0012  #18
+*        Data size  : $0000  #0
+*        Edition    : $00  #0
+*        Ty/La At/Rv: $11 $81
+*        Prog mod, 6809 Obj, re-ent, R/O
+*
+* Edt/Rev  YYYY/MM/DD  Modified by
+* Comment
+* ------------------------------------------------------------------
+*   0      2003/03/06  Paul W. Zibaila
+* Disassembly of original distribution; assembles to original mnln.
+*
+* NitrOS-9 has switched from the original to the code from Leisure Suit Larry. Paul's comments
+* are mostly still believed to be accurate but locations may have moved and some things are likely wrong.
+*
+* New version disassembled 2010/03/28 11:51:53 by Disasm v1.5 (C) 1988 by RML
+* April 10, 2010 - Code that writes to $FF20 was changed to prevent RS-232 line from trashing.
+*                 The I/O port gets changed to make RS-232 an input.
+*                 This solves multiple problems with DW3 application. Robert Gault
+
+
+*  >$0154  flag for using extended lookups
+*  >$0541  joystick button status
+*  >$0532  vol_handle_table
+*  >$05B9  input_edit_disabled
+
+ 
+StdIn  equ 0
+StdOut equ 1
+StdErr equ 2
+
+*  equates for direct page vars
+*  shared with sierra module
+u0000 equ $00    holds size of data block
+u0009 equ $09    sierra - offset from entry to the routine for the remap call
+u000A equ $0A 
+u0019 equ $19    scrn - offset from entry to the routine for the remap call 
+u0021 equ $21    shdw - offset from entry to the routine for the remap call
+u0022 equ $22    sierra remap value holder
+u0026 equ $26    scrn remap value holder 
+u0028 equ $28    shdw remap value holder 
+u002C equ $2C 
+u002E equ $2E 
+u0030 equ $30 
+u0032 equ $32 
+u0034 equ $34 
+u0036 equ $36 
+u0038 equ $38 
+u003A equ $3A 
+u003C equ $3C 
+u003E equ $3E 
+u0040 equ $40 
+u0041 equ $41 
+u0042 equ $42 
+u0043 equ $43 
+u0045 equ $45 
+u004B equ $4B 
+u004D equ $4D 
+u004F equ $4F 
+u0051 equ $51 
+u0053 equ $53 
+u0055 equ $55 
+u0057 equ $57 
+u0058 equ $58 
+u005C equ $5C 
+u005F equ $5F 
+u0062 equ $62 
+u0064 equ $64 
+u0066 equ $66 
+u0068 equ $68 
+u0069 equ $69 
+u006A equ $6A 
+u006C equ $6C 
+u006E equ $6E 
+u006F equ $6F 
+u0070 equ $70 
+u0071 equ $71 
+u0072 equ $72 
+u0073 equ $73 
+u0074 equ $74 
+u0075 equ $75 
+u0076 equ $76 
+u0077 equ $77   open path counter
+u0078 equ $78   path number holder
+u0079 equ $79 
+u007B equ $7B 
+u007D equ $7D 
+u007E equ $7E 
+u0080 equ $80 
+u0081 equ $81 
+u0083 equ $83 
+u0084 equ $84    seek MSW
+u0086 equ $86    seek LSW
+u0088 equ $88 
+u0089 equ $89 
+u008B equ $8B 
+u008C equ $8C 
+u008D equ $8D 
+u008E equ $8E 
+u0090 equ $90 
+u0092 equ $92 
+u0094 equ $94 
+u0096 equ $96    holds joystick number
+u0097 equ $97 
+u0098 equ $98 
+u0099 equ $99 
+u009A equ $9A 
+u009C equ $9C 
+u009D equ $9D 
+
+
+X0089 equ $0089  ???
+
+X0100 equ $0100   pic_visible
+X0101 equ $0101
+X0102 equ $0102   clock_state
+
+X0154 equ $0154   flag for extended table look up
+X0155 equ $0155
+
+X0157 equ $0157
+X0158 equ $0158
+X0159 equ $0159
+X015A equ $015A
+X015B equ $015B
+X015C equ $015C
+
+X0167 equ $0167
+
+X0172 equ $0172
+X0173 equ $0173
+X0176 equ $0176
+X0177 equ $0177
+X0178 equ $0178
+X0179 equ $0179
+X017B equ $017B
+X017C equ $017C
+X017D equ $017D
+X017E equ $017E
+X017F equ $017F
+X0180 equ $0180
+X01A9 equ $01A9
+X01AB equ $01AB
+X01AD equ $01AD    state.block_state
+X01AE equ $01AE    state.cursor
+X01AF equ $01AF    state.flag
+X01B0 equ $01B0    state.flag
+X01B1 equ $01B1
+X01D6 equ $01D6
+X01D7 equ $01D7
+X01D8 equ $01D8
+X023D equ $023D    state.block_x2
+X023E equ $023E    state.block_y2
+X0240 equ $0240
+X0241 equ $0241    state.pic_num
+X0242 equ $0242
+X0244 equ $0244    state.script_saved
+X0245 equ $0245    state.script_count
+X0246 equ $0246
+X0247 equ $0247    state.status_state
+X0248 equ $0248
+X0249 equ $0249
+X024B equ $024B
+
+X024D equ $024D    state.text_fg
+X024E equ $024E    state.text_bg
+
+X024F equ $024F    state.block_x1
+X0250 equ $0250    state.block_y1
+X0251 equ $0251    state.ego_control_state
+
+X0252 equ $0252    state.string
+
+X0432 equ $0432    state.var[] 
+X0433 equ $0433    
+X0434 equ $0434    
+X0435 equ $0435    
+X0436 equ $0436    
+X0437 equ $0437
+X0438 equ $0438
+X0439 equ $0439
+X043A equ $043A
+X043B equ $043B
+X043C equ $043C
+X043D equ $043D
+X043E equ $043E
+X043F equ $043F
+X0440 equ $0440
+X0441 equ $0441
+X0442 equ $0442
+X0443 equ $0443
+X0444 equ $0444
+X0445 equ $0445
+X0446 equ $0446
+X0447 equ $0447
+X0448 equ $0448
+X044A equ $044A
+X044B equ $044B
+X044C equ $044C
+
+X0532 equ $0532
+X0541 equ $0541
+X0542 equ $0542
+X0543 equ $0543
+X0545 equ $0545
+X0547 equ $0547
+
+X0550 equ $0550   gfx_picbuffrotate
+X0551 equ $0551   given_pic_data
+X0553 equ $0553   display_type
+
+X05AE equ $05AE
+X05AF equ $05AF
+X05B1 equ $05B1   obj_displayed in obj_show()
+X05B8 equ $05B8
+X05B9 equ $05B9   input_edit_disabled
+X05EC equ $05EC   chgen_textmode
+X05ED equ $05ED
+X0659 equ $0659
+
+XFF01 equ $FF01  hsync control
+XFF02 equ $FF02  keyboard col
+XFF03 equ $FF03  vsync control
+XFF20 equ $FF20  d/a, cassette & rs232 out
+XFF22 equ $FF22  vdg control and rs-232 in
+XFF23 equ $FF23  control reg
+
+
+XFFA9 equ $FFA9   task 1 block 2
+
+
+* Program equates
+*  Cycle Types
+CY_NORM   equ   0
+CY_END    equ   1
+CY_REVEND equ   2
+CY_REV    equ   3
+
+*  Motion Types
+MT_NORM   equ   0
+MT_WANDER equ   1
+MT_FOLLOW equ   2
+MT_MOVE   equ   3
+MT_EGO    equ   4
+
+*  Loop Directions
+RIGHT     equ   $00
+LEFT      equ   $01
+DOWN      equ   $02
+UP        equ   $03
+IGNORE    equ   $04
+
+
+* VIEW OBJECTS FLAGS
+
+O_DRAWN        equ $01   * 0  - object has been drawn
+O_BLKIGNORE    equ $02   * 1  - ignore blocks and condition lines
+O_PRIFIXED     equ $04   * 2  - fixes priority agi cannot change it based on position
+O_HRZNIGNORE   equ $08   * 3  - ignore horizon
+O_UPDATE       equ $10   * 4  - update every cycle
+O_CYCLE        equ $20   * 5  - the object cycles
+O_ANIMATE      equ $40   * 6  - animated
+O_BLOCK        equ $80   * 7  - resting on a block
+O_WATER        equ $100  * 8  - only allowed on water
+O_OBJIGNORE    equ $200  * 9  - ignore other objects when determining contacts
+O_REPOS        equ $400  * 10 - set whenever a obj is repositioned
+*                                that way the interpeter doesn't check it's next movement for one cycle
+O_LAND         equ $800  * 11 - only allowed on land
+O_SKIPUPDATE   equ $1000 * 12 - does not update obj for one cycle
+O_LOOPFIXED    equ $2000 * 13 - agi cannot set the loop depending on direction
+O_MOTIONLESS   equ $4000 * 14 - no movement.  
+*                                if position is same as position in last cycle then this flag is set.
+*                                follow/wander code can then create a new direction
+*                                (ie, if it hits a wall or something)
+O_UNUSED       equ $8000
+
          nam   mnln
          ttl   program module       
-
-* Disassembled 1910/03/28 11:51:53 by Disasm v1.5 (C) 1988 by RML
-* April 2, 2010 - Code that writes to $FF20 was changed to keep RS-232 line high.
-*                 I think that is the correct neutral state but at least it will not be toggled.
-*                 This solves multiple problems with DW3 application. Robert Gault
-* April 3, 2010 - Minor changes to prevent locking of game after message displayed. RG
 
          ifp1
          use   defsfile
@@ -20,6 +299,15 @@ size     equ   .
 name     equ   *
          fcs   /mnln/
          fcb   $00 
+
+* This module is linked to in sierra
+* upon entry
+*   a -> type language
+*   b -> attributes / revision level
+*   x -> address of the last byte of the module name + 1
+*   y -> module entry point absolute address
+*   u -> module header absolute address
+
 start    equ   *
          lbra  L00B9
 L0015    fcc   /AGI (c) copyright 1988 SIERRA On-Line/
@@ -33,12 +321,15 @@ L0082    fcc  /Press ENTER to quit./
          fcb  $0a
          fcc  /Press CTRL-BREAK to keep playing./
          fcb  0
-L00B9    leas  -6,s
-         lbsr  L0488
-         lbsr  L0D72
-         lbsr  L2188
+
+L00B9    leas  -6,s     make room on the stack 
+         lbsr  L0488    modifies table values at 1B0
+         lbsr  L0D72    modifies table values at D09
+         lbsr  L2188    calls the mmu twiddler at >$659
+*                         uses toc and words.tok
+
 L00C4    clra  
-         ldb   >$043B
+         ldb   >$043B     ** who loads me with ??
          std   ,s
 L00CA    lbsr  L130A
 L00CD    ldd   <$003E
@@ -50,7 +341,7 @@ L00D2    bcc   L00DD
          bra   L00CA
 L00DD    ldd   #$0000
          std   <$003E
-         lbsr  L096F
+         lbsr  L096F       self contained call to clear 50 bytes 05BA
 L00E5    lda   >$01AE
          anda  #$DF
 L00EA    sta   >$01AE
@@ -113,226 +404,246 @@ L0156    clra
          lbne  L00C4
          lbsr  L069E
          lbra  L00C4
-         lda   #$01
-         sta   >$0102
-         lbsr  L12FC
-         leau  >L0056,pcr
-         lbsr  L3AA7
-         clr   >$0102
+
+cmd_pause
+L0184    lda   #$01
+         sta   >$0102      set clock_state = 1
+         lbsr  L12FC       events_clear
+         leau  >L0056,pcr  get addr of game paused msg
+         lbsr  L3AA7       pass it to message_box()
+         clr   >$0102      set clock_state = 0
          rts   
-         lda   ,y+
+
+cmd_quit
+L0197    lda   ,y+
          cmpa  #$01
-         beq   L01A6
-         leau  >L0082,pcr
-         lbsr  L3AA7
-         beq   L01AF
-L01A6    lda   #$03
+         beq   L01A6	    if arg was a 1 then quit
+         leau  >L0082,pcr   get addr of quit / continue msg
+         lbsr  L3AA7        pass it to message_box()
+         beq   L01AF        if we didn't get a 1 continue play
+
+L01A6    lda   #$03         load the offset to exit_agi()
          sta   <$0009
-         ldx   <$0022
-         jsr   >$0701
+         ldx   <$0022       set up to jump to sierra
+         jsr   >$0701       mmu twiddle
 L01AF    rts   
-L01B0    fdb  $5a16,$0000
-         fdb  $5f08,$180
-         fdb  $5f16,$180
-         fdb  $5f24,$280
-         fdb  $5f2f,$2c0
-         fdb  $5f40,$280
-         fdb  $5f4d,$2c0
-         fdb  $5f60,$280
-         fdb  $5f6d,$2c0
-         fdb  $5f81,$2c0
-         fdb  $5fa9,$2c0
-         fdb  $5f98,$280
 
-         fdb  $1701,$100
-         fdb  $1705,$100
-         fdb  $1709,$100
-         fdb  $170d,$180
-         fdb  $1717,$180
-         fdb  $1721,$180
+* every other word gets added to by a value saved in sierra
+* when this module is loaded. I assume it's a mem offset
+* Jump table of some kind  but what are the second words used 
+* to do ????
 
-         fdb  $323b,$100
-         fdb  $3240,$180
-         
-         fdb  $25a7,$100
-         fdb  $25ac,$180
-         fdb  $2640,$100
-         fdb  $2653,$180
-         
-         fdb  $379a,$180
-         fdb  $37fa,$180
-         fdb  $388b,$0000
-         fdb  $389f,$180
-         fdb  $3841,$180
-         
-         fdb  $0cbc,$0000
+* the first word is the pointer to the function
+* the second word holds two items
+*   MSB = number of parameters
+*   LSB = parameter flag
 
-         fdb  $603f,$100
-         fdb  $6046,$180
-         fdb  $62a8,$100
+cmd_table
+L01B0    fdb  L5A16,$0000	*do nothing
+         fdb  L5F08,$180	*increment
+         fdb  L5F16,$180	*decrement
+         fdb  L5F24,$280	*assign nn
+         fdb  L5F2F,$2c0	*assign nv
+         fdb  L5F40,$280	*add n
+         fdb  L5F4D,$2c0	*add v
+         fdb  L5F60,$280	*sub n
+         fdb  L5F6D,$2c0	*sub v
+         fdb  L5F81,$2c0	*l indirect v
+         fdb  L5FA9,$2c0	*r indirect
+         fdb  L5F98,$280	*l indirect n
 
-         fdb  $0650,$100
-         fdb  $0686,$0000
-         
-         fdb  $0f6f,$100
-         fdb  $0ff4,$100
-         
-         fdb  $38e9,$300
-         fdb  $38fa,$360
-         fdb  $3919,$360
-         fdb  $3937,$360
-         
-         fdb  $60b3,$200
-         fdb  $60ce,$240
-         fdb  $6118,$200
-         fdb  $6133,$240
-         
-         fdb  $053b,$100
-         fdb  $054d,$100
+         fdb  L1701,$100	*set
+         fdb  L1705,$100	*reset
+         fdb  L1709,$100	*toggle
+         fdb  L170D,$180	*set v
+         fdb  L1717,$180	*reset v
+         fdb  L1721,$180	*toggle v
 
-         fdb  $6196,$200
-         fdb  $61b1,$240
-         fdb  $6243,$240
-         fdb  $6258,$240
-         fdb  $626c,$240
-         fdb  $6280,$240
-         fdb  $6294,$240
+         fdb  L323B,$100	*new room
+         fdb  L3240,$180	*new room v
          
-         fdb  $3fd7,$200
-         fdb  $4015,$240
-         fdb  $3fee,$100
-         fdb  $4000,$240
+         fdb  L25A7,$100	*load logics
+         fdb  L25AC,$180	*load logics v
+         fdb  L2640,$100	*call
+         fdb  L2653,$180	*call v
+         
+         fdb  L379A,$180	*load pic
+         fdb  L37FA,$180	*draw pic
+         fdb  L388B,$0000	*show pic
+         fdb  L389F,$180	*discard overlay
+         fdb  L3841,$180	*animate obj
+         
+         fdb  L0CBC,$0000	*show pri
 
-         fdb  $05e9,$100
-         fdb  $05f5,$100
-         fdb  $0601,$100
-         
-         fdb  $39f6,$100
-         fdb  $3a08,$100
-         fdb  $39f0,$100
-         fdb  $39ba,$100
-         fdb  $39cc,$100
-         fdb  $39de,$100
-         
-         fdb  $08fa,$100
-         fdb  $090c,$100
-         fdb  $091e,$320
-         fdb  $0a2a,$100
-         fdb  $0a3c,$100
-         fdb  $09a2,$100
-         fdb  $09b9,$200
-         fdb  $09da,$100
-         fdb  $09f1,$200
-         fdb  $0a12,$240
+         fdb  L603F,$100	*load view
+         fdb  L6046,$180	*load view v
+         fdb  L62A8,$100	*discard view
 
-         fdb  $2fb5,$100
-         fdb  $2fd3,$100
-         fdb  $2fef,$240
-         fdb  $3004,$240
-         fdb  $2ebf,$500
-         fdb  $2f00,$570
-         fdb  $2f53,$300
-         fdb  $2f87,$100
-         fdb  $2fa6,$100
-         fdb  $301a,$240
-         fdb  $302f,$240
+         fdb  L0650,$100	*animate obj
+         fdb  L0686,$0000	*unanumate all
+         
+         fdb  L0F6F,$100	*draw
+         fdb  L0FF4,$100	*erase
+         
+         fdb  L38E9,$300	*position
+         fdb  L38FA,$360	*position v
+         fdb  L3919,$360	*get position
+         fdb  L3937,$360	*reposition
+         
+         fdb  L60B3,$200	*set view
+         fdb  L60CE,$240	*set view v
+         fdb  L6118,$200	*set loop
+         fdb  L6133,$240	*set loop v
+         
+         fdb  L053B,$100	*fix loop
+         fdb  L054D,$100	*release loop
 
-         fdb  $085f,$100
-         fdb  $0871,$100
-         fdb  $0841,$400
-         fdb  $085b,$0000
+         fdb  L6196,$200	*set cel
+         fdb  L61B1,$240	*set cel v
+         fdb  L6243,$240	*last cel
+         fdb  L6258,$240	*current cel
+         fdb  L626C,$240	*current loop
+         fdb  L6280,$240	*current view
+         fdb  L6294,$240	*number of loops
          
-         fdb  $330a,$100
-         fdb  $3311,$180
-         fdb  $3318,$100
-         fdb  $3351,$200
-         fdb  $335e,$240
-         fdb  $336b,$2c0
+         fdb  L3FD7,$200	*set priority
+         fdb  L4015,$240	*set priority v
+         fdb  L3FEE,$100	*release priority
+         fdb  L4000,$240	*get priority
+
+         fdb  L05E9,$100	*stop update
+         fdb  L05F5,$100	*start update
+         fdb  L0601,$100	*force update
          
-         fdb  $5391,$100
-         fdb  $53ed,$200
-         fdb  $5a16,$0000
-         fdb  $3a5a,$100
-         fdb  $3a62,$180
-         fdb  $3e35,$300
-         fdb  $3e65,$3e0
-         fdb  $483a,$300
-         fdb  $4821,$0000
-         fdb  $4833,$0000
-         fdb  $5eb9,$100
-         fdb  $486a,$200
-         fdb  $5a14,$100
-         fdb  $48a3,$300
-         fdb  $5863,$0000
-         fdb  $586b,$0000
-         fdb  $58ec,$200
-         fdb  $587f,$500
-         fdb  $5904,$200
-         fdb  $3541,$100
-         fdb  $0baa,$240
-         fdb  $5ea4,$0000
-         fdb  $5eb1,$0000
-         fdb  $097a,$300
-         fdb  $368c,$700
-         fdb  $36ac,$7fe
-         fdb  $5619,$0000
-         fdb  $4567,$0000
-         fdb  $41d0,$0000
-         fdb  $5a16,$0000
-         fdb  $40bb,$0000
-         fdb  $5156,$100
-         fdb  $12bd,$320
-         fdb  $3044,$0000
-         fdb  $3048,$0000
-         fdb  $0bf4,$180
-         fdb  $0197,$100
-         fdb  $0cd4,$0000
-         fdb  $0184,$0000
-         fdb  $5e4b,$0000
-         fdb  $5e3d,$0000
-         fdb  $2367,$0000
-         fdb  $48c2,$0000
-         fdb  $0ccc,$0000
-         fdb  $49c2,$100
-         fdb  $59a8,$100
-         fdb  $5a14,$100
-         fdb  $26e0,$0000
-         fdb  $26e6,$0000
-         fdb  $397a,$300
-         fdb  $3993,$360
-         fdb  $5a5a,$0000
-         fdb  $5adb,$300
-         fdb  $3a70,$400
-         fdb  $3a75,$480
-         fdb  $62ad,$180
-         fdb  $484e,$500
-         fdb  $5a12,$200
-         fdb  $2835,$100
-         fdb  $28b3,$200
-         fdb  $2935,$0000
-         fdb  $2958,$100
-         fdb  $297f,$100
-         fdb  $29ae,$0000
-         fdb  $514b,$100
-         fdb  $5a16,$0000
-         fdb  $5a16,$0000
-         fdb  $5fc0,$280
-         fdb  $5fce,$2c0
-         fdb  $5fe2,$280
-         fdb  $5ff1,$2c0
-         fdb  $3c4c,$0000
-         fdb  $4552,$100
-         fdb  $49d1,$0000
-         fdb  $49d8,$0000
-         fdb  $5a16,$0000
-         fdb  $115c,$100
-         fdb  $5a14,$180
-         fdb  $5a16,$0000
-         fdb  $29bb,$100
-         fdb  $5a16,$0000
-         fdb  $5a0e,$400
-         fdb  $5a12,$2c0
-         fdb  $5a16,$0000
+         fdb  L39F6,$100	*ignore horizon
+         fdb  L3A08,$100	*observe horizon
+         fdb  L39F0,$100	*set horizon
+         fdb  L39BA,$100	*obj on water
+         fdb  L39CC,$100	*obj on land
+         fdb  L39DE,$100	*obj on anything
+         
+         fdb  L08FA,$100	*ignore objects
+         fdb  L090C,$100	*observe objects
+         fdb  L091E,$320	*distance
+         fdb  L0A2A,$100	*stop cycling
+         fdb  L0A3C,$100	*start cycling
+         fdb  L09A2,$100	*normal cycle
+         fdb  L09B9,$200	*end of loop
+         fdb  L09DA,$100	*reverse cycle
+         fdb  L09F1,$200	*reverse loop
+         fdb  L0A12,$240	*cycle time
+
+         fdb  L2FB5,$100	*stop motion
+         fdb  L2FD3,$100	*start motion
+         fdb  L2FEF,$240	*step size
+         fdb  L3004,$240	*step time
+         fdb  L2EBF,$500	*move obj
+         fdb  L2F00,$570	*move obj v
+         fdb  L2F53,$300	*follow ego
+         fdb  L2F87,$100	*wander
+         fdb  L2FA6,$100	*normal motion
+         fdb  L301A,$240	*set dir
+
+         fdb  L302F,$240	*get dir
+
+         fdb  L085F,$100	*ignore blocks
+         fdb  L0871,$100	*observe blocks
+         fdb  L0841,$400	*block
+         fdb  L085B,$0000	*unblock
+         
+         fdb  L330A,$100	*get
+         fdb  L3311,$180	*get v
+         fdb  L3318,$100	*drop
+         fdb  L3351,$200	*put
+         fdb  L335E,$240	*put v
+         fdb  L336B,$2c0	*get room v
+         
+         fdb  L5391,$100	*load sound
+         fdb  L53ED,$200	*sound
+         fdb  L5A16,$0000	*stop sound
+         fdb  L3A5A,$100	*print
+         fdb  L3A62,$180	*print v
+         fdb  L3E35,$300	*display
+
+         fdb  L3E65,$3e0	*display v
+         fdb  L483A,$300	*clear lines
+         fdb  L4821,$0000	*text screen
+         fdb  L4833,$0000	*graphics
+         fdb  L5EB9,$100	*set cursor char
+         fdb  L486A,$200	*set text attribute
+         fdb  L5A14,$100	*shake screen
+         fdb  L48A3,$300	*config screen
+         fdb  L5863,$0000	*status line on
+         fdb  L586B,$0000	*status line off
+
+         fdb  L58EC,$200	*set string
+         fdb  L587F,$500	*get string
+         fdb  L5904,$200	*word to string
+         fdb  L3541,$100	*parse
+         fdb  L0BAA,$240	*get num
+         fdb  L5EA4,$0000	*prevent input
+         fdb  L5EB1,$0000	*accept inpur
+         fdb  L097A,$300	*set key
+         fdb  L368C,$700	*add to pic
+         fdb  L36AC,$7fe	*add to pic v
+         fdb  L5619,$0000	*status
+         fdb  L4567,$0000	*save game
+         fdb  L41D0,$0000	*restore game
+         fdb  L5A16,$0000	*init disk
+         fdb  L40BB,$0000	*restart game
+         fdb  L5156,$100	*sow obj
+         fdb  L12BD,$320	*random
+         fdb  L3044,$0000	*program control
+         fdb  L3048,$0000	*player control
+         fdb  L0BF4,$180	*obj status v
+         fdb  L0197,$100	*quit
+         fdb  L0CD4,$0000	*show mem
+         fdb  L0184,$0000	*pause
+         fdb  L5E4B,$0000	*echo line
+         fdb  L5E3D,$0000	*cancel line
+         fdb  L2367,$0000	*init joy
+         fdb  L48C2,$0000	*toggle monitor
+         fdb  L0CCC,$0000	*version
+         fdb  L49C2,$100	*script size
+         fdb  L59A8,$100	*set game id
+         fdb  L5A14,$100	*log
+         fdb  L26E0,$0000	*set scan start
+         fdb  L26E6,$0000	*reset scan start
+         fdb  L397A,$300	*reposition to
+         fdb  L3993,$360	*reposition to v
+         fdb  L5A5A,$0000	*trace on
+         fdb  L5ADB,$300	*trace info
+         fdb  L3A70,$400	*print at
+         fdb  L3A75,$480	*print at v
+         fdb  L62AD,$180	*discard view v
+         fdb  L484E,$500	*clear text rect
+         fdb  L5A12,$200	*set upper left
+         fdb  L2835,$100	*set menu
+         fdb  L28B3,$200	*set menu item
+         fdb  L2935,$0000	*submit menu
+         fdb  L2958,$100	*enable item
+         fdb  L297F,$100	*disable item
+         fdb  L29AE,$0000	*menu input
+         fdb  L514B,$100	*show obj v
+         fdb  L5A16,$0000	*open dialogue
+         fdb  L5A16,$0000	*close dialogue
+         fdb  L5FC0,$280	*mult n
+         fdb  L5FCE,$2c0	*mult v
+         fdb  L5FE2,$280	*div n
+         fdb  L5FF1,$2c0	*div v
+         fdb  L3C4C,$0000	*close window
+         fdb  L4552,$100	*set simple
+         fdb  L49D1,$0000	*push script
+         fdb  L49D8,$0000	*pop script
+         fdb  L5A16,$0000	*hold key
+         fdb  L115C,$100	*set pri base
+         fdb  L5A14,$180	*discard sound
+         fdb  L5A16,$0000	*do nothing
+         fdb  L29BB,$100
+         fdb  L5A16,$0000	*do nothing
+         fdb  L5A0E,$400	*hide mouse
+         fdb  L5A12,$2c0	*allow menu
+         fdb  L5A16,$0000	*do nothing
 
 L0488    leas  -$01,s
          lda   #$B6
@@ -421,7 +732,7 @@ L0520    lda   <$27,u
          ldb   <$0074
 L0537    lbsr  L61D2
 L053A    rts   
-         lda   ,y+
+L053B    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -430,7 +741,7 @@ L053A    rts
          ora   #$20
          sta   <$25,x
          rts   
-         lda   ,y+
+L054D    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -501,21 +812,21 @@ L05DC    ldx   #$0548
          ldx   #$054C
          lbsr  L3391
          rts   
-         lda   ,y+
+L05E9    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
          tfr   d,u
          bsr   L060A
          rts   
-         lda   ,y+
+L05F5    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
          tfr   d,u
          bsr   L0624
          rts   
-         lda   ,y+
+L0601         lda   ,y+
          bsr   L058F
          bsr   L059C
          bsr   L05BB
@@ -570,7 +881,7 @@ L066C    lda   <$26,u
          sta   <$21,u
 L0683    leas  $01,s
          rts   
-         lbsr  L058F
+L0686    lbsr  L058F
          ldu   <$0030
 L068B    cmpu  <$0032
          bcc   L069D
@@ -761,7 +1072,7 @@ L082B    lda   <$26,u
          clr   >$0437
 L083E    leas  $03,s
          rts   
-         lda   #$01
+L0841    lda   #$01
          sta   >$01AC
          lda   ,y+
          sta   >$024E
@@ -772,9 +1083,9 @@ L083E    leas  $03,s
          lda   ,y+
          sta   >$023D
          rts   
-         clr   >$01AC
+L085B    clr   >$01AC
          rts   
-         lda   ,y+
+L085F    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -783,7 +1094,7 @@ L083E    leas  $03,s
          ora   #$02
          sta   <$26,u
          rts   
-         lda   ,y+
+L0871    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -846,7 +1157,7 @@ L08F2    leax  <$2B,x
          bra   L08AC
 L08F7    lda   #$01
 L08F9    rts   
-         lda   ,y+
+L08FA    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -855,7 +1166,7 @@ L08F9    rts
          ora   #$02
          sta   <$25,u
          rts   
-         lda   ,y+
+L090C     lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -864,7 +1175,7 @@ L08F9    rts
          anda  #$FD
          sta   <$25,u
          rts   
-         lda   ,y+
+L091E     lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -911,7 +1222,7 @@ L096F    ldu   #$05BA
          clrb  
          lbsr  L2C7A
          rts   
-         ldx   #$01D8
+L097A    ldx   #$01D8
          lda   #$32
 L097F    tst   ,x
          beq   L098F
@@ -931,7 +1242,7 @@ L0999    ldb   ,y+
          beq   L09A1
          std   ,x
 L09A1    rts   
-         lda   ,y+
+L09A2    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -942,7 +1253,7 @@ L09A1    rts
          ora   #$20
          sta   <$26,u
          rts   
-         lda   ,y+
+L09B9    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -957,7 +1268,7 @@ L09A1    rts
          sta   <$27,u
          lbsr  L1732
          rts   
-         lda   ,y+
+L09DA    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -968,7 +1279,7 @@ L09A1    rts
          ora   #$20
          sta   <$26,u
          rts   
-         lda   ,y+
+L09F1    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -983,7 +1294,7 @@ L09A1    rts
          sta   <$27,u
          lbsr  L1732
          rts   
-         lda   ,y+
+L0A12    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -995,7 +1306,7 @@ L09A1    rts
          sta   <$1F,u
          sta   <$20,u
          rts   
-         lda   ,y+
+L0A2A    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -1004,7 +1315,7 @@ L09A1    rts
          anda  #$DF
          sta   <$26,u
          rts   
-         lda   ,y+
+L0A3C    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -1099,7 +1410,7 @@ L0BED    abx
          sta   ,x
          leas  <$54,s
          rts   
-         leas  >-$0194,s
+L0BF4    leas  >-$0194,s
          ldx   #$0431
          ldb   ,y+
          abx   
@@ -1178,16 +1489,16 @@ L0C71    pshs  u
          lbsr  L3AA7
          leas  >$0194,s
          rts   
-         inc   >$0550
+L0CBC    inc   >$0550
          lbsr  L2E9B
          lbsr  L13C3
          lbsr  L2E9B
          clr   >$0550
          rts   
-         leau  >L0B03,pcr
+L0CCC    leau  >L0B03,pcr
          lbsr  L3AA7
          rts   
-         leas  >-$00C8,s
+L0CD4    leas  >-$00C8,s
          ldd   <$0057
          pshs  b,a
          ldd   <$0053
@@ -1476,7 +1787,7 @@ L0F6A    lda   #$01
          rts   
 L0F6D    clra  
          rts   
-         lda   ,y+
+L0F6F    lda   ,y+
          pshs  y
          bsr   L0F78
          puls  y
@@ -1534,7 +1845,7 @@ L0F99    lda   <$26,u
          leas  $02,s
 L0FF1    leas  $03,s
          rts   
-         lda   ,y+
+L0FF4    lda   ,y+
          pshs  y
          bsr   L0FFD
          puls  y
@@ -1840,7 +2151,7 @@ L12B2    cmpa  #$41
          bhi   L12BC
          ora   #$20
 L12BC    rts   
-         lbsr  L4032
+L12BD    lbsr  L4032
          lda   $01,y
          suba  ,y++
          inca  
@@ -3464,10 +3775,10 @@ L259C    stu   <$0064
          cmpb  $02,u
          bne   L259C
 L25A6    rts   
-         ldb   ,y+
+L25A7    ldb   ,y+
          bsr   L25B7
          rts   
-         ldb   ,y+
+L25AC    ldb   ,y+
          ldx   #$0431
          abx   
          ldb   ,x
@@ -3537,7 +3848,7 @@ L2633    lbsr  L059C
          ldu   $01,s
 L263D    leas  $07,s
          rts   
-         leas  -$02,s
+L2640    leas  -$02,s
          ldb   ,y+
          sty   ,s
          bsr   L266C
@@ -3546,7 +3857,7 @@ L263D    leas  $07,s
          ldy   ,s
 L2650    leas  $02,s
          rts   
-         leas  -$02,s
+L2653    leas  -$02,s
          ldb   ,y+
          ldx   #$0431
          abx   
@@ -3612,10 +3923,10 @@ L26D2    ldu   $01,s
          lbsr  L280B
 L26DD    leas  $0A,s
          rts   
-         ldx   <$0062
+L26E0    ldx   <$0062
          sty   $08,x
          rts   
-         ldx   <$0062
+L26E6    ldx   <$0062
          ldd   $06,x
          std   $08,x
          rts   
@@ -3816,7 +4127,7 @@ L2870    ldx   >L282D,pcr
          sta   >L282B,pcr
 L28B0    leas  $04,s
          rts   
-         leas  -$05,s
+L28B3    leas  -$05,s
          ldb   ,y+
          lbsr  L3E0D
          stu   ,s
@@ -3869,7 +4180,7 @@ L291E    ldd   >L282B,pcr
          inc   $0F,x
 L2932    leas  $05,s
          rts   
-         ldu   >L2829,pcr
+L2935    ldu   >L2829,pcr
          ldd   $0B,u
          bne   L293F
          sta   $0A,u
@@ -3882,7 +4193,7 @@ L293F    ldd   <$0055
          lda   #$01
          sta   >L2834,pcr
          rts   
-         lda   ,y+
+L2958    lda   ,y+
          ldb   #$01
          bsr   L2986
          rts   
@@ -3900,7 +4211,7 @@ L2975    ldu   ,u
          cmpu  >L282D,pcr
          bne   L2965
 L297E    rts   
-         lda   ,y+
+L297F    lda   ,y+
          ldb   #$00
          bsr   L2986
          rts   
@@ -3922,13 +4233,13 @@ L29A2    ldu   ,u
          bne   L298E
          leas  $02,s
          rts   
-         lda   >$01AF
+L29AE    lda   >$01AF
          anda  #$02
          beq   L29BA
          lda   #$01
          sta   >$05AE
 L29BA    rts   
-         ldb   ,y+
+L29BB    ldb   ,y+
          stb   >L2826,pcr
          rts   
 L29C2    leas  -$04,s
@@ -4511,7 +4822,7 @@ L2EA9    ldd   #$A8A0
          jsr   >$0701
          leas  $04,s
          rts   
-         lda   ,y+
+L2EBF    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -4538,7 +4849,7 @@ L2EE4    lda   ,y+
          clr   >$0250
 L2EFC    lbsr  L31A4
          rts   
-         lda   ,y+
+L2F00    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -4574,7 +4885,7 @@ L2F37    lda   ,y+
          clr   >$0250
 L2F4F    lbsr  L31A4
          rts   
-         lda   ,y+
+L2F53    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -4596,7 +4907,7 @@ L2F71    lda   ,y+
          ora   #$10
          sta   <$26,u
          rts   
-         lda   ,y+
+L2F87    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -4610,7 +4921,7 @@ L2F71    lda   ,y+
          bne   L2FA5
          clr   >$0250
 L2FA5    rts   
-         lda   ,y+
+L2FA6    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -4618,7 +4929,7 @@ L2FA5    rts
          lda   #$00
          sta   <$22,u
          rts   
-         lda   ,y+
+L2FB5    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -4631,8 +4942,8 @@ L2FA5    rts
          bne   L2FD2
          sta   >$0437
          sta   >$0250
-L2FD2    rts   
-         lda   ,y+
+l2FD2    rts   
+L2FD3    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -4854,7 +5165,7 @@ L3192    leau  <$2B,u
 L3198    leas  $0B,s
          rts   
 L319B    fcb   8,1,2,7,0,3,6,5,4
-L31a4    ldb   $1e,u
+L31A4    ldb   $1e,u
          pshs  b,a
          ldd   <$27,u
          pshs  b,a
@@ -4923,10 +5234,10 @@ L322D    ldd   $02,s
          bra   L323A
 L3238    lda   #$01
 L323A    rts   
-         lda   ,y
+L323B    lda   ,y
          bsr   L324B
          rts   
-         ldb   ,y
+L3240    ldb   ,y
          ldx   #$0431
          abx   
          lda   ,x
@@ -5011,15 +5322,15 @@ L32F2    lda   >$01AE
          ldy   #$0000
          leas  $01,s
          rts   
-         bsr   L331F
+L330A    bsr   L331F
          lda   #$FF
          sta   $02,u
          rts   
-         bsr   L3335
+L3311    bsr   L3335
          lda   #$FF
          sta   $02,u
          rts   
-         bsr   L331F
+L3318    bsr   L331F
          lda   #$00
          sta   $02,u
          rts   
@@ -5049,22 +5360,22 @@ L3335    ldb   ,y+
          lda   #$17
          ldb   -$01,y
          lbsr  L10ED
-L3350    rts   
-         bsr   L331F
+l3350    rts   
+L3351    bsr   L331F
          ldb   ,y+
          ldx   #$0431
          abx   
          lda   ,x
          sta   $02,u
          rts   
-         bsr   L3335
+L335E    bsr   L3335
          ldb   ,y+
          ldx   #$0431
          abx   
          lda   ,x
          sta   $02,u
          rts   
-         bsr   L3335
+L336B    bsr   L3335
          ldb   ,y+
          ldx   #$0431
          abx   
@@ -5434,7 +5745,7 @@ L3681    lda   ,x+
          clr   -$01,x
 L368B    rts   
 
-L369C    ldu   #$05B2
+L368C    ldu   #$05B2
          lda   ,y+
          sta   ,u
          lda   ,y+
@@ -5900,17 +6211,17 @@ L3A5A    ldb   ,y+
          lbsr  L3E0D
          bsr   L3AA7
          rts   
-         ldx   #$0431
+L3A62    ldx   #$0431
          ldb   ,y+
          abx   
          ldb   ,x
          lbsr  L3E0D
          bsr   L3AA7
          rts   
-         ldb   ,y+
+L3A70    ldb   ,y+
          bsr   L3A80
          rts   
-         ldx   #$0431
+L3A75    ldx   #$0431
          ldb   ,y+
          abx   
          ldb   ,x
@@ -7518,7 +7829,7 @@ L49C2    lda   ,y+
          lbsr  L492F
          lbsr  L059C
          rts   
-         lda   >$0244
+L49D1    lda   >$0244
          sta   >$0243
          rts   
 
@@ -8743,13 +9054,8 @@ L54ED    ldb   ,u+
          cmpb  #$FF
          beq   L553E
          lslb
-
-* Changes to keep RS-232 bit from toggling. RG
-         nop              1-byte
-*         lda   ,u+       2-bytes
-         jsr   fxsnd1,pcr    4-bytes
-*         sta   >$FF20    3-bytes
-
+         lda   ,u+
+         sta   >$FF20
          ldy   ,u++
          leax  >L5275,pcr
          abx   
@@ -8758,27 +9064,18 @@ L54ED    ldb   ,u+
          leax  >$007A,x
          ldd   ,x
          std   <$0090
-
-* More RS-232 toggle changes. RG
-* No problem with reading $FF20 but it will never equal 0 with RS-232 high.
-* As the value won't change from what was put there by the sta $FF20, we
-* can get that value from regU.
-*         tst   >$FF20    3-bytes
-         tst   -3,u       2-bytes
-         nop
-
+* The RS-232 line will see whatever is sent to it by the Drivewire server.
+* Therefore it can't be tested for $00 and we will have to test the actual
+* data stream. RG
+*         tst   $FF20	old
+         tst  -3,u	new
          beq   L5528
 L5512    ldx   <$0090
 L5514    ldd   <$008E
 L5516    subd  #$0001
          bne   L5516
-
-* RS-232
-*         com   >$FF20      3-bytes
-         jsr   fxsnd2,pcr   4-bytes
-*         leax  -$01,x      2-bytes
-         nop                1-byte
-
+         com   $FF20
+         leax  -$01,x
          bne   L5514
          leay  -$01,y
          bne   L5512
@@ -8787,7 +9084,7 @@ L5528    ldx   <$0090
 L552A    ldd   <$008E
 L552C    subd  #$0001
          bne   L552C
-* Here, nothing is done with the value in $FF20 so no need to change the code. RG
+* This is a meaningless test and must be here to balance cycles. RG
          tst   >$FF20
          leax  -$01,x
          bne   L552A
@@ -8799,38 +9096,59 @@ L553E    bsr   L556F
          puls  y
          rts   
 
+*Sound on
 * RS-232 toggle change. RG
-L5545    jsr   fxsnd3,pcr  4-bytes
-*L5545    orcc  #$50       2-bytes
-*         clr   >$FF20     3-bytes
-         nop               1-byte
-
-         lda   >$FF01
+L5545    orcc  #$50
+         lda   >$FF01		save PIA setting
          sta   >L5272,pcr
-         anda  #$F7
+         anda  #$F7		set MUX to 0
          sta   >$FF01
-         lda   >$FF03
-         sta   >L5273,pcr
-         anda  #$F7
-         sta   >$FF03
-         lda   >$FF23
+         lda   >$FF03		save PIA setting
+         sta   >L5273,pcr	
+         anda  #$F7		set MUX to 0
+         sta   >$FF03		DAC now selected
+         lda   >$FF23		save Sound setting
          sta   >L5274,pcr
-         ora   #$08
-         sta   >$FF23
-         rts   
+         ora   #$08		turn sound on
+         sta   >$FF23 
+         ifeq  0
+* New routine to protect RS-232 out. RG
+         lda   $FF21
+         pshs  a
+         anda  #%11111011	data direction on
+         sta   $FF21
+         lda   #%11111100	make RS-232 line input
+         sta   $FF20
+         puls  a
+         ora   #4             data direction off
+         sta   $FF21
+         endc
+         clr   $FF20
+         rts
 
-L556F    lda   >L5272,pcr
-         sta   >$FF01
-         lda   >L5273,pcr
-         sta   >$FF03
-         lda   >L5274,pcr
-         sta   >$FF23
-* More changes. RG
-*         clr   >$FF20     3-bytes
-         jsr   fxsnd4,pcr  4-bytes
-*         lda   >$FF02     3-bytes
-         nop               1-byte
-         nop               1-byte
+*Sound off
+* RS-232 toggle change. RG
+L556F    lda   >L5272,pcr	get saved PIA HSYNC setting
+         sta   >$FF01		restore it
+         lda   >L5273,pcr	get saved PIA VSYNC setting
+         sta   >$FF03		restore it
+         lda   >L5274,pcr	get Sound setting (presumably off)
+         sta   >$FF23		restore it
+* This will make RS-232 an output again. RG
+         ifeq  0
+         lda   $FF21
+         pshs  a
+         anda  #%11111011
+         sta   $FF21
+         lda   #%11111110	RS-232 output
+         sta   $FF20
+         puls  a
+         ora   #4
+         sta   $FF21
+         endc
+         lda   #2			make RS-232 line high
+         sta   $FF20
+         lda   >$FF02
          lda   >$FF22
          andcc #$AF
          rts   
@@ -9328,17 +9646,17 @@ L5A0E    lda   ,y+
          lda   ,y+
 L5A12    lda   ,y+
 L5A14    lda   ,y+
-         rts   
+L5A16    rts   
 L5A17    fcc   /==========/
          fcc   /================/
          fcb   0
-L5a32    fcc   /%d: %d/
+L5A32    fcc   /%d: %d/
          fcb   0
-L5a39    fcc   /%d: %s/
+L5A39    fcc   /%d: %s/
          fcb   0
-L5a40    fcc   / :%c/
+L5A40    fcc   / :%c/
          fcb   0
-L5a45    fcc   /%d/
+L5A45    fcc   /%d/
          fcb   0
 L5A48    fcc   /return/
          fcb   0
@@ -10375,7 +10693,7 @@ L6280    lda   ,y+
          sta   ,x
          rts   
 
-L6293    lda   ,y+
+L6294    lda   ,y+
          ldb   #$2B
          mul   
          addd  <$0030
@@ -10456,6 +10774,7 @@ L6334    rts
 L633D    fcc   /mnln/
          fcb   0
 
+         ifeq  1
 * This code added to prevent the RS-232 line from changing. It was placed here instead of
 * where it should be to keep code from moving and invalidating jump tables. RG
 fxsnd1   lda   ,u+
@@ -10474,6 +10793,7 @@ fxsnd4   lda   #2
          sta   $ff20
          lda   $ff02        * this is not needed by fxsnd3 but makes code simpler. RG
          rts
+         endc
 
          emod
 eom      equ   *
