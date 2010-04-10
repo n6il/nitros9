@@ -1,5 +1,5 @@
 ********************************************************************
-* scrn - Sierra screen module
+* scrn - Kings Quest III screen module
 *
 * $Id$
 *
@@ -7,9 +7,9 @@
 * and accesses data set up in that module.
 *
 *       Header for : scrn
-*       Module size: $7C5  #1989
-*       Module CRC : $F3E370 (Good)
-*       Hdr parity : $EA
+*       Module size: $7CC  #1996
+*       Module CRC : $887015 (Good)
+*       Hdr parity : $E3
 *       Exec. off  : $0012  #18
 *       Data size  : $0000  #0
 *       Edition    : $00  #0
@@ -21,11 +21,15 @@
 * ------------------------------------------------------------------
 *   0      2003/03/06  Paul W. Zibaila
 * Disassembly of original distribution.
+*
+*   1      2010/04/10  Robert Gault
+* Disassembly of Leisure Suit Larry version and transfer of comments
+* from Paul's disassembly.
 
          nam   scrn
-         ttl   Sierra screen module
+         ttl   program module       
 
-* Disassembled 00/00/00 00:15:39 by Disasm v1.6 (C) 1988 by RML
+* Disassembled 2010/04/10 11:01:53 by Disasm v1.5 (C) 1988 by RML
 
          ifp1
          use   defsfile
@@ -84,10 +88,12 @@ u00FE EQU $00FE
 u00FF EQU $00FF
 
 X0100 equ $0100   pic_visible
-X024D equ $024D
+X024E equ $024E
 XFFA9 equ $FFA9
 
 
+
+u0000    rmb   0
 size     equ   .
 name     equ   *
          fcs   /scrn/
@@ -102,47 +108,42 @@ name     equ   *
 *   u -> module header absolute address
 
 start    equ   *
-         lbra  L015A twiddles with map blocks ??
-         lbra  L014C sets up another call to L015A
-         lbra  L009C whats in D here ? call screen clear
-         lbra  L00B3 sets D to 0000 and call clear screen
+         lbra  L015A
+         lbra  L014C
+         lbra  L009C
+         lbra  L00B3
          lbra  L00D2
-         lbra  L0745
+         lbra  L074C
          lbra  L0209
          lbra  L00C5
-         lbra  L025D
-         lbra  L02A0
+         lbra  L0264
+         lbra  L02A7
 
-* probably was an info directive for an include file
 L0030    fcc   'AGI (c) copyright 1988 SIERRA On-Line'
          fcc   'CoCo3 version by Chris Iden'
-         fcb   $00
-Infosz   equ   *-L0030
-
-
+         fcb   0
 
 * map block check and sets
 * u0012 is set in code in L015A sub
 * entry:
 *      a -> value to be tested
 
-L0071    cmpa  <u0012      check MMU block
-         beq   L008B       if block 0  OK to leave
-         orcc  #IntMasks   Turn off interrupts 
-         sta   <u0012      store the value passed in by a 
+L0071    cmpa  <u0012
+         beq   L008B
+         orcc  #$50
+         sta   <u0012      store the value passed in by a
          lda   <u0042      get sierra process descriptor map block
-         sta   >XFFA9      map it in to $2000-$3FFF
+         sta   >$FFA9	   map it in to $2000-$3FFF
          ldx   <u0043      2nd 8K data block in Sierra
          lda   <u0012      get mmu block num
-         sta   ,x          store that 
+         sta   ,x
          stb   $02,x
-         std   >XFFA9      Map it into task 1 block 2
-         andcc #^IntMasks  turn on interrupts $AF
-L008B    rts   
-
+         std   >$FFA9      why not stb $FFAA ?? RG
+         andcc #$AF
+L008B    rts  
 
 * 16 marker bytes for some thing
-* coco_view_pal[]     vid_render.c
+* coco_view_pal[]     vid_render.c 
 L008C    fcb   $00
          fcb   $11
          fcb   $22
@@ -160,7 +161,6 @@ L008C    fcb   $00
          fcb   $EE
          fcb   $FF
 
-
 * Clears the area allocated to the screen in sierra
 * entry:
 *      d -> value to be written to screen
@@ -170,138 +170,133 @@ L008C    fcb   $00
 *      x -> restored to initial value
 *      u -> contains starting address of the screen
 
-L009C    pshs  x         save the x values as this routine uses it
-L009E    ldu   #$D800    end address of high res screen
-         ldx   #$7800    Scrn is from $6000 to $D800
+L009C    pshs  x
+L009E    ldu   #$D800
+         ldx   #$7800    end address of high res screen
 L00A4    std   ,--u      set it to value passed us in d & dec d
-         leax  -$02,x    decrement x 
+         leax  -$02,x
          bne   L00A4     keep going till all of screen is cleared
-         puls  x         restore x`
-         rts             move on
-
-* Loads D to clear screen
-L00AD    ldd   #$0000    zeros screen bytes
-         bsr   L009C     go clear it
+         puls  x
          rts   
 
-L00B3    bsr   L00AD     clear the screen 
+* Loads D to clear screen
+L00AD    ldd   #$0000
+         bsr   L009C
+         rts   
+
+L00B3    bsr   L00AD     clear the screen
          ldd   #$A8A0
-         pshs  d
+         pshs  b,a
          ldd   #$00A7
-         pshs  d
+         pshs  b,a
          lbsr  L015A
          leas  $04,s
          rts   
 
-L00C5    lda   >X024D
+L00C5    lda   >$024D
          tfr   a,b
          bsr   L009C
-         ldd   #$0000    clears value at u0040
+         ldd   #$0000
          std   <u0040
          rts   
-         
+
 L00D2    ldd   $06,s
-         pshs  d
+         pshs  b,a
          ldd   $06,s
-         pshs  d
+         pshs  b,a
          ldd   $06,s
-         pshs  d
+         pshs  b,a
          lbsr  L01D4
          leas  $06,s
          clra  
          ldb   $06,s
-         pshs  d
+         pshs  b,a
          lda   #$01
          ldb   $07,s
          subb  #$02
-         pshs  d
+         pshs  b,a
          ldd   $06,s
          inca  
          decb  
-         pshs  d
+         pshs  b,a
          lbsr  L01D4
          leas  $06,s
          clra  
          ldb   $06,s
-         pshs  d
+         pshs  b,a
          lda   $06,s
          suba  #$04
          ldb   #$01
-         pshs  d
+         pshs  b,a
          ldd   $06,s
          adda  $09,s
          suba  #$02
          subb  #$02
-         pshs  d
+         pshs  b,a
          lbsr  L01D4
          leas  $06,s
          clra  
          ldb   $06,s
-         pshs  d
+         pshs  b,a
          lda   #$01
          ldb   $07,s
          subb  #$02
-         pshs  d
+         pshs  b,a
          ldd   $06,s
          inca  
          subb  $08,s
          addb  #$02
-         pshs  d
+         pshs  b,a
          lbsr  L01D4
          leas  $06,s
          clra  
          ldb   $06,s
-         pshs  d
+         pshs  b,a
          lda   $06,s
          suba  #$04
          ldb   #$01
-         pshs  d
+         pshs  b,a
          ldd   $06,s
          inca  
          subb  #$02
-         pshs  d
+         pshs  b,a
          lbsr  L01D4
          leas  $06,s
          rts   
 
 L014C    ldd   $04,s
-         pshs  d
+         pshs  b,a
          ldd   $04,s
-         pshs  d
+         pshs  b,a
          lbsr  L015A
          leas  $04,s
          rts   
 
 * first call in module is here
-* who put what on the stack for us ?
-L015A    pshs  y            save our y  module entry abs addr
-
-         ldd   $04,s     
-         sta   <u0047   
-         incb          
-         subb  $06,s  
-         lda   #$A0 
-         mul            
-         addd  <u0046  
-         tfr   d,x     
-         addd  <u002C  
-         tfr   d,y    
-         leax  <$40,x       
+L015A    pshs  y
+         ldd   $04,s
+         sta   <u0047
+         incb  
+         subb  $06,s
+         lda   #$A0
+         mul   
+         addd  <u0046
+         tfr   d,x
+         addd  <u002C
+         tfr   d,y
+         leax  <$40,x
          ldd   $06,s
          std   <u00A0
-
          ldb   #$A0
          subb  <u00A1
          clra  
          std   <u00A2
          sta   <u0012       twiddle with the map block value
-
-         orcc  #IntMasks    turn off interrupts $50
+         orcc  #$50
          lda   <u0042
-         sta   >XFFA9       second block in task 1
+         sta   >$FFA9
          cmpx  #$A000
          bcs   L0192
-
          ldd   <u001E
          leax  >-$8000,x
          bra   L0198
@@ -310,10 +305,9 @@ L0192    ldd   <u001C
 L0198    ldu   <u0043
          sta   ,u
          stb   $02,u
-         std   >XFFA9        second block in task 1
-         andcc #^IntMasks    turn on ints $AF
-
-         leau  >L008C,pcr    point u to the  sequential data bytes
+         std   >$FFA9
+         andcc #$AF
+         leau  >L008C,pcr
 L01A7    ldb   <u00A1
 L01A9    lda   ,x+
          anda  #$0F
@@ -322,22 +316,20 @@ L01A9    lda   ,x+
          decb  
          bne   L01A9
          dec   <u00A0
-         beq   L01D1         pull our y and exit routine
+         beq   L01D1
          ldd   <u00A2
          leay  d,y
          abx   
          cmpx  #$6000
          bcs   L01A7
-
-         orcc  #IntMasks     turn off interrupts $50
+         orcc  #$50
          lda   <u0042
-         sta   >XFFA9        second block in task 1
+         sta   >$FFA9
          ldd   <u001E
          leax  >-$4000,x
          bra   L0198
 L01D1    puls  y
          rts   
-
 
 L01D4    ldd   $02,s
          sta   <u0047
@@ -357,20 +349,16 @@ L01D4    ldd   $02,s
          lda   $07,s
          anda  #$0F
          lda   a,u
-
 L01F8    ldb   <u00A1
 L01FA    sta   ,x+
          decb  
          bne   L01FA
-
          dec   <u00A0
          beq   L0208
          ldb   <u00A2
          abx   
          bra   L01F8
 L0208    rts   
-
-
 L0209    leas  -$04,s
          ldd   $0A,s
          std   $02,s
@@ -382,13 +370,13 @@ L0209    leas  -$04,s
          lsla  
          ldb   #$A0
          mul   
-         std   <u00A4
+         std   <u00A4	changed value from older version
          clra  
          ldb   $01,s
          lslb  
          lslb  
-         addd  <u00A4
-         tfr   d,u
+         addd  <u00A4	new line of code
+         tfr   d,u	new line of code
          leau  >$6000,u
          ldb   $02,s
          lslb  
@@ -401,66 +389,64 @@ L0209    leas  -$04,s
          lsla  
          lsla  
          lsla  
-         ldb   ,s
-         subb  1,s
-         incb
+         ldb   ,s		new line of code
+         subb  $01,s	new line of code
+         incb  		new line of code
          lslb  
-         lslb  
-         abx
-         exg    u,x
-         abx
-         exg    u,x
-L023F    pshs   u,x,b,a
-L0241    lda    ,-x
-         sta    ,-u
-         decb
-         bne    L0241
-         puls   u,x,b,a
+         lslb 
+* This is all new 
+         abx   
+         exg   u,x
+         abx   
+         exg   u,x
+* Now code out of sync with older version. This line was L023F
+L0246    pshs  u,x,b,a
+L0248    lda   ,-x
+         sta   ,-u
+         decb  
+         bne   L0248
+         puls  u,x,b,a
          leau  >$00A0,u
          leax  >$00A0,x
          cmpx  #$D800
-         bcc   L025A
+         bcc   L0261
          deca  
-         bne   L023F
-L025A    leas  $04,s
+         bne   L0246
+L0261    leas  $04,s
          rts   
-
-
-
-L025D    leas  -$04,s
+L0264    leas  -$04,s
          ldx   $06,s
          ldu   ,x
-L0263    stu   ,s
-         beq   L029D
+L026A    stu   ,s
+         beq   L02A4
          ldu   $04,u
          stu   $02,s
          pshs  u
-         lbsr  L02A0
+         lbsr  L02A7
          leas  $02,s
          ldu   $02,s
          lda   $01,u
          cmpa  ,u
-         bne   L0297
+         bne   L029E
          ldd   $03,u
          cmpd  <$1A,u
-         bne   L028C
+         bne   L0293
          lda   <$25,u
          ora   #$40
          sta   <$25,u
-         bra   L0297
-L028C    std   <$1A,u
+         bra   L029E
+L0293    std   <$1A,u
          lda   <$25,u
          anda  #$BF
          sta   <$25,u
-L0297    ldu   ,s
+L029E    ldu   ,s
          ldu   ,u
-         bra   L0263
-L029D    leas  $04,s
-         rts   
-
-
-L02A0    lda   >X0100   pic_visible
-         lbeq  L0344
+         bra   L026A
+L02A4    leas  $04,s
+         rts 
+  
+L02A7    lda   >$0100	pic_visible
+         lbeq  L034B
          ldu   $02,s
          ldd   $08,u
          lbsr  L0071
@@ -479,18 +465,18 @@ L02A0    lda   >X0100   pic_visible
          lda   $04,u
          ldb   <u00A3
          cmpa  <$1B,u
-         bcs   L02E1
+         bcs   L02E8
          sta   <u00A5
          stb   <u00A6
          lda   <$1B,u
          ldb   <u00A1
-         bra   L02EC
-L02E1    ldb   <$1B,u
+         bra   L02F3
+L02E8    ldb   <$1B,u
          stb   <u00A5
          ldb   <u00A1
          stb   <u00A6
          ldb   <u00A3
-L02EC    stb   <u00AA
+L02F3    stb   <u00AA
          inca  
          suba  <u00AA
          ldb   <u00A5
@@ -498,35 +484,35 @@ L02EC    stb   <u00AA
          subb  <u00A6
          stb   <u00A9
          cmpa  <u00A9
-         bcs   L02FE
+         bcs   L0305
          lda   <u00A9
-L02FE    nega  
+L0305    nega  
          adda  <u00A5
          inca  
          sta   <u00A6
          lda   $03,u
          ldb   <u00A2
          cmpa  <$1A,u
-         bhi   L0318
+         bhi   L031F
          sta   <u00A4
          stb   <u00AB
          lda   <$1A,u
          ldb   <u00A0
-         bra   L0323
-L0318    ldb   <$1A,u
+         bra   L032A
+L031F    ldb   <$1A,u
          stb   <u00A4
          ldb   <u00A0
          stb   <u00AB
          ldb   <u00A2
-L0323    stb   <u00AC
+L032A    stb   <u00AC
          adda  <u00AC
          sta   <u00A8
          lda   <u00A4
          adda  <u00AB
          cmpa  <u00A8
-         bhi   L0333
+         bhi   L033A
          lda   <u00A8
-L0333    suba  <u00A4
+L033A    suba  <u00A4
          sta   <u00A7
          ldd   <u00A6
          pshs  b,a
@@ -534,14 +520,14 @@ L0333    suba  <u00A4
          pshs  b,a
          lbsr  L015A
          leas  $04,s
-L0344    rts   
+L034B    rts   
 
 * This jumbled mass of bytes disassembles 
 * but looks like a data block
 * or probably a bit map ??? 
-* L0345 - L0745 is 1024 bytes of data
+* L034C - L074B is 1024 bytes of data
 
-L0345    fcb   $00,$00,$00,$00
+L034C    fcb   $00,$00,$00,$00
          fcb   $00,$00,$00,$00
          fcb   $7E,$81,$A5,$81
          fcb   $BD,$99,$81,$7E
@@ -798,10 +784,10 @@ L0345    fcb   $00,$00,$00,$00
          fcb   $00,$10,$38,$6C
          fcb   $C6,$C6,$FE,$00
 
-L0745    leas  -$02,s
+L074C    leas  -2,s
          pshs  y
          ldx   $06,s
-         ldu   #X024D
+         ldu   #$024D
          lda   <u0040
          lsla  
          lsla  
@@ -815,11 +801,11 @@ L0745    leas  -$02,s
          lslb  
          addd  #$6000
          leay  d,y
-L0762    tst   ,x
-         lbeq  L07B0
+L0769    tst   ,x
+         lbeq  L07B7
          ldb   ,x+
          stx   $06,s
-         leax  >L0345,pcr
+         leax  >L034C,pcr
          lslb  
          abx   
          abx   
@@ -827,10 +813,10 @@ L0762    tst   ,x
          abx   
          lda   #$08
          sta   $02,s
-L0779    ldb   ,x+
+L0780    ldb   ,x+
          lda   #$04
          sta   $03,s
-L077F    sex   
+L0786    sex   
          lda   a,u
          anda  #$F0
          sta   ,y
@@ -843,28 +829,26 @@ L077F    sex
          sta   ,y+
          lslb  
          dec   $03,s
-         bne   L077F
+         bne   L0786
          lda   <u0045 flag for palettes set in sierra
-         beq   L079E
+         beq   L07A5
          coma  
          sta   <u0045 flag for palettes set in sierra
-L079E    leay  >$009C,y
+L07A5    leay  >$009C,y
          dec   $02,s
-         bne   L0779
+         bne   L0780
          ldx   $06,s
          inc   <u0041
          leay  >-$04FC,y
-         bra   L0762
-L07B0    puls  y
+         bra   L0769
+L07B7    puls  y
          leas  $02,s
          rts   
-
-L07B5    fcb   $00,$00,$00,$00
-         fcb   $00,$00,$00,$00
-L07BD    fcc   /scrn/
-L07C1    fcb   $00                
+L07BC    fcb   0,0,0,0
+         fcb   0,0,0,0
+L07C4    fcc   /scrn/
+L07C8    fcb   0
 
          emod
 eom      equ   *
          end
-
