@@ -134,7 +134,7 @@ Init2    sta   DD.TOT,x			invalidate drive tables
          ELSE
          ldu   >D.DWSubAddr
          ENDC
-         bne   InitEx2
+         bne   InitEx
 * Link to subroutine module
          clra
          leax  name+2,pcr
