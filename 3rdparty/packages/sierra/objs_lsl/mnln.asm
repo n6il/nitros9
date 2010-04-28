@@ -26,6 +26,8 @@
 * April 10, 2010 - Code that writes to $FF20 was changed to prevent RS-232 line from trashing.
 *                 The I/O port gets changed to make RS-232 an input.
 *                 This solves multiple problems with DW3 application. Robert Gault
+* April 28, 2010 - Adjusting the RS-232 input direction seems to cause other problems, probably at the other
+*                 end of the RS-232 connection. I've gone back to masking the bit at $FF20. RG
 
 
 *  >$0154  flag for using extended lookups
@@ -9055,6 +9057,7 @@ L54ED    ldb   ,u+
          beq   L553E
          lslb
          lda   ,u+
+         ora   #2
          sta   >$FF20
          ldy   ,u++
          leax  >L5275,pcr
@@ -9064,8 +9067,8 @@ L54ED    ldb   ,u+
          leax  >$007A,x
          ldd   ,x
          std   <$0090
-* The RS-232 line will see whatever is sent to it by the Drivewire server.
-* Therefore it can't be tested for $00 and we will have to test the actual
+* The RS-232 line is now masked and forced high.
+* Therefore $FF20 can't be tested for $00 but we can test the actual
 * data stream. RG
 *         tst   $FF20	old
          tst  -3,u	new
@@ -9074,8 +9077,12 @@ L5512    ldx   <$0090
 L5514    ldd   <$008E
 L5516    subd  #$0001
          bne   L5516
-         com   $FF20
-         leax  -$01,x
+*         com   $FF20
+         lda   $ff20   patch RG
+         coma
+         ora   #2
+         sta   $ff20
+         leax  -1,x
          bne   L5514
          leay  -$01,y
          bne   L5512
@@ -9098,7 +9105,11 @@ L553E    bsr   L556F
 
 *Sound on
 * RS-232 toggle change. RG
-L5545    orcc  #$50
+
+L5545    orcc  #IntMasks
+*        clr   $FF20		this would trash the RS-232 line while zeroing the DAC
+         lda   #2			patch RG
+         sta   $ff20
          lda   >$FF01		save PIA setting
          sta   >L5272,pcr
          anda  #$F7		set MUX to 0
@@ -9111,19 +9122,6 @@ L5545    orcc  #$50
          sta   >L5274,pcr
          ora   #$08		turn sound on
          sta   >$FF23 
-         ifeq  0
-* New routine to protect RS-232 out. RG
-         lda   $FF21
-         pshs  a
-         anda  #%11111011	data direction on
-         sta   $FF21
-         lda   #%11111100	make RS-232 line input
-         sta   $FF20
-         puls  a
-         ora   #4             data direction off
-         sta   $FF21
-         endc
-         clr   $FF20
          rts
 
 *Sound off
@@ -9134,24 +9132,12 @@ L556F    lda   >L5272,pcr	get saved PIA HSYNC setting
          sta   >$FF03		restore it
          lda   >L5274,pcr	get Sound setting (presumably off)
          sta   >$FF23		restore it
-* This will make RS-232 an output again. RG
-         ifeq  0
-         lda   $FF21
-         pshs  a
-         anda  #%11111011
-         sta   $FF21
-         lda   #%11111110	RS-232 output
+         lda   #2			patch RG
          sta   $FF20
-         puls  a
-         ora   #4
-         sta   $FF21
-         endc
-         lda   #2			make RS-232 line high
-         sta   $FF20
-         lda   >$FF02
-         lda   >$FF22
+         lda   $FF02
+         lda   $FF22
          andcc #$AF
-         rts   
+         rts
 
 L5590    fcc   /nothing/
          fcb   0
@@ -10773,27 +10759,6 @@ L6334    rts
          fcb   0,0,0,0,0,0,0,0
 L633D    fcc   /mnln/
          fcb   0
-
-         ifeq  1
-* This code added to prevent the RS-232 line from changing. It was placed here instead of
-* where it should be to keep code from moving and invalidating jump tables. RG
-fxsnd1   lda   ,u+
-fxsnd    ora   #2
-         sta   $ff20
-         rts
-
-fxsnd2   lda   $FF20
-         coma
-         bsr   fxsnd
-         leax  -1,x
-         rts
-
-fxsnd3   orcc  #$50
-fxsnd4   lda   #2
-         sta   $ff20
-         lda   $ff02        * this is not needed by fxsnd3 but makes code simpler. RG
-         rts
-         endc
 
          emod
 eom      equ   *
