@@ -1,505 +1,507 @@
-         nam   Uloadxc
-         ttl   program module       
+           nam    Uloadxc
+           ttl    program module
 
-* Disassembled 2010/01/24 10:50:36 by Disasm v1.5 (C) 1988 by RML
+           ifp1
+           use    defsfile
+           endc
 
-         ifp1
-         use   defsfile
-         endc
-tylg     set   Prgrm+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
-u0000    rmb   1
-u0001    rmb   1
-u0002    rmb   1
-u0003    rmb   1
-u0004    rmb   1
-u0005    rmb   1
-u0006    rmb   1
-u0007    rmb   1
-u0008    rmb   1
-u0009    rmb   1
-u000A    rmb   1
-u000B    rmb   2
-u000D    rmb   32
-u002D    rmb   1
-u002E    rmb   1
-u002F    rmb   128
-u00AF    rmb   2
-u00B1    rmb   32
-u00D1    rmb   432
-size     equ   .
-name     equ   *
-         fcs   /Uloadxc/
-         fcb   $43 C
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $79 y
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $67 g
-         fcb   $68 h
-         fcb   $74 t
-         fcb   $20 
-         fcb   $28 (
-         fcb   $43 C
-         fcb   $29 )
-         fcb   $20 
-         fcb   $31 1
-         fcb   $39 9
-         fcb   $38 8
-         fcb   $38 8
-         fcb   $42 B
-         fcb   $79 y
-         fcb   $20 
-         fcb   $4B K
-         fcb   $65 e
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $20 
-         fcb   $41 A
-         fcb   $6C l
-         fcb   $70 p
-         fcb   $68 h
-         fcb   $6F o
-         fcb   $6E n
-         fcb   $73 s
-         fcb   $6F o
-         fcb   $4C L
-         fcb   $69 i
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $41 A
-         fcb   $6C l
-         fcb   $70 p
-         fcb   $68 h
-         fcb   $61 a
-         fcb   $20 
-         fcb   $53 S
-         fcb   $6F o
-         fcb   $66 f
-         fcb   $74 t
-         fcb   $77 w
-         fcb   $61 a
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $20 
-         fcb   $54 T
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $68 h
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $67 g
-         fcb   $69 i
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $41 A
-         fcb   $6C l
-         fcb   $6C l
-         fcb   $20 
-         fcb   $72 r
-         fcb   $69 i
-         fcb   $67 g
-         fcb   $68 h
-         fcb   $74 t
-         fcb   $73 s
-         fcb   $20 
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $EC l
-         fcb   $E6 f
-         fcb   $EA j
-         fcb   $F5 u
-         fcb   $E9 i
-         fcb   $A0 
-         fcb   $E2 b
-         fcb   $ED m
-         fcb   $F1 q
-         fcb   $E9 i
-         fcb   $F0 p
-         fcb   $EF o
-         fcb   $F4 t
-         fcb   $F0 p
-L007F    fcb   $46 F
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $20 
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $79 y
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $72 r
-         fcb   $65 e
-         fcb   $63 c
-         fcb   $69 i
-         fcb   $65 e
-         fcb   $76 v
-         fcb   $65 e
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $0D 
-L009E    fcb   $45 E
-         fcb   $6E n
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $72 r
-         fcb   $20 
-         fcb   $66 f
-         fcb   $69 i
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $6E n
-         fcb   $61 a
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $75 u
-         fcb   $70 p
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $3A :
-         fcb   $20 
-L00B8    fcb   $55 U
-         fcb   $70 p
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $20 
-         fcb   $61 a
-         fcb   $62 b
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $74 t
-         fcb   $65 e
-         fcb   $64 d
-         fcb   $21 !
-         fcb   $0D 
-L00C8    fcb   $55 U
-         fcb   $70 p
-         fcb   $6C l
-         fcb   $6F o
-         fcb   $61 a
-         fcb   $64 d
-         fcb   $20 
-         fcb   $73 s
-         fcb   $75 u
-         fcb   $63 c
-         fcb   $63 c
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $73 s
-         fcb   $66 f
-         fcb   $75 u
-         fcb   $6C l
-         fcb   $21 !
-         fcb   $0D 
-start    equ   *
-         pshs  x
-         os9   F$ID     
-         ldb   #$FF
-         os9   F$SPrior 
-         lda   ,x
-         cmpa  #$0D
-         bne   L0102
-         leax  >L009E,pcr
-         ldy   #$0019
-         lda   #$01
-         os9   I$Write  
-         leax  u000D,u
-         ldy   #$0020
-         clra  
-         os9   I$ReadLn 
-L0102    stx   u000B,u
-         lda   #$02
-         ldb   #$1B
-         os9   I$Create 
-         lbcs  L0320
-         sta   u0001,u
-         clr   u0003,u
-         clr   u0002,u
-         clr   >u00AF,u
-         dec   >u00AF,u
-         leax  >L007F,pcr
-         ldy   #$00C8
-         lda   #$01
-         os9   I$WritLn 
-         lda   #$04
-         sta   u0006,u
-         leax  >u00B1,u
-         clra  
-         clrb  
-         os9   I$GetStt 
-         lbcs  L0320
-         leax  >u00D1,u
-         clra  
-         clrb  
-         os9   I$GetStt 
-         lbcs  L0320
-         leax  >u00D1,u
-         leax  <-$20,x
-         clr   <$2B,x
-         clr   <$2C,x
-         clr   <$2E,x
-         clr   <$2F,x
-         clr   <$30,x
-         clr   <$31,x
-         clr   <$38,x
-         clr   <$39,x
-         clr   <$24,x
-         clr   <$2D,x
-         clr   <$27,x
-         clr   <$28,x
-         clr   <$29,x
-         clra  
-         clrb  
-         leax  >u00D1,u
-         os9   I$SetStt 
-L017F    tst   u0006,u
-         beq   L018B
-         dec   u0006,u
-         lda   #$43
-         sta   ,u
-         bra   L018F
-L018B    lda   #$15
-         sta   ,u
-L018F    leax  ,u
-         lda   #$01
-         ldy   #$0001
-         os9   I$Write  
-         clr   u0004,u
-         lda   u0003,u
-         inca  
-         sta   u0003,u
-         cmpa  #$0A
-         bcs   L01AA
-         ldb   #$01
-         lbra  L0319
-L01AA    clra  
-         ldb   #$01
-         os9   I$GetStt 
-         bcc   L01C3
-         lda   u0004,u
-         inca  
-         sta   u0004,u
-         cmpa  #$FE
-         bcc   L017F
-         ldx   #$0002
-         os9   F$Sleep  
-         bra   L01AA
-L01C3    leax  ,u
-         ldy   #$0001
-         clra  
-         os9   I$Read   
-         lda   ,u
-         cmpa  #$01
-         beq   L01E1
-         cmpa  #$04
-         lbeq  L02F4
-         cmpa  #$18
-         lbeq  L0323
-         bra   L01AA
-L01E1    leax  <u002D,u
-         tst   u0006,u
-         beq   L01EC
-         lda   #$84
-         bra   L01EE
-L01EC    lda   #$83
-L01EE    sta   u0005,u
-         clr   u0004,u
-         bsr   L01FD
-         lbcs  L018B
-         inc   u0002,u
-         lbra  L0250
-L01FD    clra  
-         ldb   #$01
-         os9   I$GetStt 
-         bcc   L0219
-         inc   u0004,u
-         lda   u0004,u
-         cmpa  #$FF
-         bhi   L0232
-         pshs  x
-         ldx   #$0001
-         os9   F$Sleep  
-         puls  x
-         bra   L01FD
-L0219    clr   u0004,u
-         clra  
-         tfr   d,y
-         os9   I$Read   
-         bcs   L0236
-         tfr   y,d
-         leax  b,x
-         lda   u0005,u
-         stb   u0005,u
-         suba  u0005,u
-         sta   u0005,u
-         bne   L01FD
-         rts   
-L0232    lda   #$FF
-         rola  
-         rts   
-L0236    pshs  x
-         ldx   #$003C
-         os9   F$Sleep  
-         puls  x
-         clra  
-         ldb   #$01
-         os9   I$GetStt 
-         clra  
-         tfr   d,y
-         os9   I$Read   
-         lda   #$FF
-         rola  
-         rts   
-L0250    lda   <u002D,u
-         inca  
-         cmpa  u0002,u
-         lbeq  L02D8
-         deca  
-         cmpa  u0002,u
-         beq   L0264
-         dec   u0002,u
-         lbra  L018B
-L0264    coma  
-         cmpa  <u002E,u
-         beq   L026F
-         dec   u0002,u
-         lbra  L018B
-L026F    leax  <u002F,u
-         tst   u0006,u
-         bne   L028B
-         ldb   #$80
-         clra  
-L0279    adda  ,x+
-         decb  
-         bne   L0279
-         cmpa  >u00AF,u
-         lbeq  L02CA
-         dec   u0002,u
-         lbra  L018B
-L028B    lda   #$80
-         sta   u0007,u
-         clra  
-         clrb  
-         std   u0009,u
-L0293    lda   ,x+
-         clrb  
-         eora  u0009,u
-         eorb  u000A,u
-         std   u0009,u
-         lda   #$08
-         sta   u0008,u
-L02A0    ldd   u0009,u
-         bita  #$80
-         beq   L02B0
-         lslb  
-         rola  
-         eora  #$10
-         eorb  #$21
-         std   u0009,u
-         bra   L02B4
-L02B0    lslb  
-         rola  
-         std   u0009,u
-L02B4    dec   u0008,u
-         bne   L02A0
-         dec   u0007,u
-         bne   L0293
-         ldd   u0009,u
-         cmpd  >u00AF,u
-         beq   L02CA
-         dec   u0002,u
-         lbra  L018B
-L02CA    lda   u0001,u
-         leax  <u002F,u
-         ldy   #$0080
-         os9   I$Write  
-         bra   L02DA
-L02D8    dec   u0002,u
-L02DA    ldx   #$003C
-         os9   F$Sleep  
-         lda   #$06
-         sta   ,u
-         lda   #$01
-         leax  ,u
-         ldy   #$0001
-         os9   I$Write  
-         clr   u0003,u
-         lbra  L01AA
-L02F4    lda   #$06
-         sta   ,u
-         lda   #$01
-         leax  ,u
-         ldy   #$0001
-         os9   I$Write  
-         lda   u0001,u
-         os9   I$Close  
-         lbsr  L0344
-         leax  >L00C8,pcr
-         ldy   #$00C8
-         lda   #$01
-         os9   I$WritLn 
-         clrb  
-L0319    pshs  b
-         lbsr  L0344
-         puls  b
-L0320    os9   F$Exit   
-L0323    bsr   L0344
-         leax  >L00B8,pcr
-         ldy   #$00C8
-         lda   #$01
-         os9   I$WritLn 
-         lda   u0001,u
-         os9   I$Close  
-         ldx   u000B,u
-         os9   I$Delete 
-         lbcs  L0319
-         ldb   #$01
-         bra   L0319
-L0344    leax  >u00B1,u
-         clra  
-         clrb  
-         os9   I$SetStt 
-         rts   
-         emod
-eom      equ   *
-         end
+tylg       set    Prgrm+Objct
+atrv       set    ReEnt+rev
+rev        set    $01
+
+           mod    eom,name,tylg,atrv,start,size
+
+U0000      rmb    1
+U0001      rmb    1
+U0002      rmb    1
+U0003      rmb    1
+U0004      rmb    1
+U0005      rmb    1
+U0006      rmb    1
+U0007      rmb    1
+U0008      rmb    1
+U0009      rmb    1
+U000A      rmb    1
+U000B      rmb    2
+U000D      rmb    32
+U002D      rmb    1
+U002E      rmb    1
+U002F      rmb    128
+U00AF      rmb    2
+U00B1      rmb    32
+U00D1      rmb    1
+U00D2      rmb    431
+size       equ    .
+
+name       fcs    /Uloadxc/                                             * 000D 55 6C 6F 61 64 78 E3 Uloadxc
+           fcb    $43                                                   * 0014 43             C
+           fcb    $6F                                                   * 0015 6F             o
+           fcb    $70                                                   * 0016 70             p
+           fcb    $79                                                   * 0017 79             y
+           fcb    $72                                                   * 0018 72             r
+           fcb    $69                                                   * 0019 69             i
+           fcb    $67                                                   * 001A 67             g
+           fcb    $68                                                   * 001B 68             h
+           fcb    $74                                                   * 001C 74             t
+           fcb    $20                                                   * 001D 20
+           fcb    $28                                                   * 001E 28             (
+           fcb    $43                                                   * 001F 43             C
+           fcb    $29                                                   * 0020 29             )
+           fcb    $20                                                   * 0021 20
+           fcb    $31                                                   * 0022 31             1
+           fcb    $39                                                   * 0023 39             9
+           fcb    $38                                                   * 0024 38             8
+           fcb    $38                                                   * 0025 38             8
+           fcb    $42                                                   * 0026 42             B
+           fcb    $79                                                   * 0027 79             y
+           fcb    $20                                                   * 0028 20
+           fcb    $4B                                                   * 0029 4B             K
+           fcb    $65                                                   * 002A 65             e
+           fcb    $69                                                   * 002B 69             i
+           fcb    $74                                                   * 002C 74             t
+           fcb    $68                                                   * 002D 68             h
+           fcb    $20                                                   * 002E 20
+           fcb    $41                                                   * 002F 41             A
+           fcb    $6C                                                   * 0030 6C             l
+           fcb    $70                                                   * 0031 70             p
+           fcb    $68                                                   * 0032 68             h
+           fcb    $6F                                                   * 0033 6F             o
+           fcb    $6E                                                   * 0034 6E             n
+           fcb    $73                                                   * 0035 73             s
+           fcb    $6F                                                   * 0036 6F             o
+           fcb    $4C                                                   * 0037 4C             L
+           fcb    $69                                                   * 0038 69             i
+           fcb    $63                                                   * 0039 63             c
+           fcb    $65                                                   * 003A 65             e
+           fcb    $6E                                                   * 003B 6E             n
+           fcb    $63                                                   * 003C 63             c
+           fcb    $65                                                   * 003D 65             e
+           fcb    $64                                                   * 003E 64             d
+           fcb    $20                                                   * 003F 20
+           fcb    $74                                                   * 0040 74             t
+           fcb    $6F                                                   * 0041 6F             o
+           fcb    $20                                                   * 0042 20
+           fcb    $41                                                   * 0043 41             A
+           fcb    $6C                                                   * 0044 6C             l
+           fcb    $70                                                   * 0045 70             p
+           fcb    $68                                                   * 0046 68             h
+           fcb    $61                                                   * 0047 61             a
+           fcb    $20                                                   * 0048 20
+           fcb    $53                                                   * 0049 53             S
+           fcb    $6F                                                   * 004A 6F             o
+           fcb    $66                                                   * 004B 66             f
+           fcb    $74                                                   * 004C 74             t
+           fcb    $77                                                   * 004D 77             w
+           fcb    $61                                                   * 004E 61             a
+           fcb    $72                                                   * 004F 72             r
+           fcb    $65                                                   * 0050 65             e
+           fcb    $20                                                   * 0051 20
+           fcb    $54                                                   * 0052 54             T
+           fcb    $65                                                   * 0053 65             e
+           fcb    $63                                                   * 0054 63             c
+           fcb    $68                                                   * 0055 68             h
+           fcb    $6E                                                   * 0056 6E             n
+           fcb    $6F                                                   * 0057 6F             o
+           fcb    $6C                                                   * 0058 6C             l
+           fcb    $6F                                                   * 0059 6F             o
+           fcb    $67                                                   * 005A 67             g
+           fcb    $69                                                   * 005B 69             i
+           fcb    $65                                                   * 005C 65             e
+           fcb    $73                                                   * 005D 73             s
+           fcb    $41                                                   * 005E 41             A
+           fcb    $6C                                                   * 005F 6C             l
+           fcb    $6C                                                   * 0060 6C             l
+           fcb    $20                                                   * 0061 20
+           fcb    $72                                                   * 0062 72             r
+           fcb    $69                                                   * 0063 69             i
+           fcb    $67                                                   * 0064 67             g
+           fcb    $68                                                   * 0065 68             h
+           fcb    $74                                                   * 0066 74             t
+           fcb    $73                                                   * 0067 73             s
+           fcb    $20                                                   * 0068 20
+           fcb    $72                                                   * 0069 72             r
+           fcb    $65                                                   * 006A 65             e
+           fcb    $73                                                   * 006B 73             s
+           fcb    $65                                                   * 006C 65             e
+           fcb    $72                                                   * 006D 72             r
+           fcb    $76                                                   * 006E 76             v
+           fcb    $65                                                   * 006F 65             e
+           fcb    $64                                                   * 0070 64             d
+           fcb    $EC                                                   * 0071 EC             l
+           fcb    $E6                                                   * 0072 E6             f
+           fcb    $EA                                                   * 0073 EA             j
+           fcb    $F5                                                   * 0074 F5             u
+           fcb    $E9                                                   * 0075 E9             i
+           fcb    $A0                                                   * 0076 A0
+           fcb    $E2                                                   * 0077 E2             b
+           fcb    $ED                                                   * 0078 ED             m
+           fcb    $F1                                                   * 0079 F1             q
+           fcb    $E9                                                   * 007A E9             i
+           fcb    $F0                                                   * 007B F0             p
+           fcb    $EF                                                   * 007C EF             o
+           fcb    $F4                                                   * 007D F4             t
+           fcb    $F0                                                   * 007E F0             p
+L007F      fcb    $46                                                   * 007F 46             F
+           fcb    $69                                                   * 0080 69             i
+           fcb    $6C                                                   * 0081 6C             l
+           fcb    $65                                                   * 0082 65             e
+           fcb    $20                                                   * 0083 20
+           fcb    $6F                                                   * 0084 6F             o
+           fcb    $70                                                   * 0085 70             p
+           fcb    $65                                                   * 0086 65             e
+           fcb    $6E                                                   * 0087 6E             n
+           fcb    $2C                                                   * 0088 2C             ,
+           fcb    $20                                                   * 0089 20
+           fcb    $72                                                   * 008A 72             r
+           fcb    $65                                                   * 008B 65             e
+           fcb    $61                                                   * 008C 61             a
+           fcb    $64                                                   * 008D 64             d
+           fcb    $79                                                   * 008E 79             y
+           fcb    $20                                                   * 008F 20
+           fcb    $74                                                   * 0090 74             t
+           fcb    $6F                                                   * 0091 6F             o
+           fcb    $20                                                   * 0092 20
+           fcb    $72                                                   * 0093 72             r
+           fcb    $65                                                   * 0094 65             e
+           fcb    $63                                                   * 0095 63             c
+           fcb    $69                                                   * 0096 69             i
+           fcb    $65                                                   * 0097 65             e
+           fcb    $76                                                   * 0098 76             v
+           fcb    $65                                                   * 0099 65             e
+           fcb    $2E                                                   * 009A 2E             .
+           fcb    $2E                                                   * 009B 2E             .
+           fcb    $2E                                                   * 009C 2E             .
+           fcb    $0D                                                   * 009D 0D             .
+L009E      fcb    $45                                                   * 009E 45             E
+           fcb    $6E                                                   * 009F 6E             n
+           fcb    $74                                                   * 00A0 74             t
+           fcb    $65                                                   * 00A1 65             e
+           fcb    $72                                                   * 00A2 72             r
+           fcb    $20                                                   * 00A3 20
+           fcb    $66                                                   * 00A4 66             f
+           fcb    $69                                                   * 00A5 69             i
+           fcb    $6C                                                   * 00A6 6C             l
+           fcb    $65                                                   * 00A7 65             e
+           fcb    $6E                                                   * 00A8 6E             n
+           fcb    $61                                                   * 00A9 61             a
+           fcb    $6D                                                   * 00AA 6D             m
+           fcb    $65                                                   * 00AB 65             e
+           fcb    $20                                                   * 00AC 20
+           fcb    $74                                                   * 00AD 74             t
+           fcb    $6F                                                   * 00AE 6F             o
+           fcb    $20                                                   * 00AF 20
+           fcb    $75                                                   * 00B0 75             u
+           fcb    $70                                                   * 00B1 70             p
+           fcb    $6C                                                   * 00B2 6C             l
+           fcb    $6F                                                   * 00B3 6F             o
+           fcb    $61                                                   * 00B4 61             a
+           fcb    $64                                                   * 00B5 64             d
+           fcb    $3A                                                   * 00B6 3A             :
+           fcb    $20                                                   * 00B7 20
+L00B8      fcb    $55                                                   * 00B8 55             U
+           fcb    $70                                                   * 00B9 70             p
+           fcb    $6C                                                   * 00BA 6C             l
+           fcb    $6F                                                   * 00BB 6F             o
+           fcb    $61                                                   * 00BC 61             a
+           fcb    $64                                                   * 00BD 64             d
+           fcb    $20                                                   * 00BE 20
+           fcb    $61                                                   * 00BF 61             a
+           fcb    $62                                                   * 00C0 62             b
+           fcb    $6F                                                   * 00C1 6F             o
+           fcb    $72                                                   * 00C2 72             r
+           fcb    $74                                                   * 00C3 74             t
+           fcb    $65                                                   * 00C4 65             e
+           fcb    $64                                                   * 00C5 64             d
+           fcb    $21                                                   * 00C6 21             !
+           fcb    $0D                                                   * 00C7 0D             .
+L00C8      fcb    $55                                                   * 00C8 55             U
+           fcb    $70                                                   * 00C9 70             p
+           fcb    $6C                                                   * 00CA 6C             l
+           fcb    $6F                                                   * 00CB 6F             o
+           fcb    $61                                                   * 00CC 61             a
+           fcb    $64                                                   * 00CD 64             d
+           fcb    $20                                                   * 00CE 20
+           fcb    $73                                                   * 00CF 73             s
+           fcb    $75                                                   * 00D0 75             u
+           fcb    $63                                                   * 00D1 63             c
+           fcb    $63                                                   * 00D2 63             c
+           fcb    $65                                                   * 00D3 65             e
+           fcb    $73                                                   * 00D4 73             s
+           fcb    $73                                                   * 00D5 73             s
+           fcb    $66                                                   * 00D6 66             f
+           fcb    $75                                                   * 00D7 75             u
+           fcb    $6C                                                   * 00D8 6C             l
+           fcb    $21                                                   * 00D9 21             !
+           fcb    $0D                                                   * 00DA 0D             .
+start      pshs   X                                                     * 00DB 34 10          4.
+           os9    F$ID                                                  * 00DD 10 3F 0C       .?.
+           ldb    #255                                                  * 00E0 C6 FF          F.
+           os9    F$SPrior                                              * 00E2 10 3F 0D       .?.
+           lda    0,X                                                   * 00E5 A6 84          &.
+           cmpa   #13                                                   * 00E7 81 0D          ..
+           bne    L0102                                                 * 00E9 26 17          &.
+           leax   L009E,PC                                              * 00EB 30 8D FF AF    0../
+           ldy    #25                                                   * 00EF 10 8E 00 19    ....
+           lda    #1                                                    * 00F3 86 01          ..
+           os9    I$Write                                               * 00F5 10 3F 8A       .?.
+           leax   U000D,U                                               * 00F8 30 4D          0M
+           ldy    #32                                                   * 00FA 10 8E 00 20    ...
+           clra                                                         * 00FE 4F             O
+           os9    I$ReadLn                                              * 00FF 10 3F 8B       .?.
+L0102      stx    U000B,U                                               * 0102 AF 4B          /K
+           lda    #2                                                    * 0104 86 02          ..
+           ldb    #27                                                   * 0106 C6 1B          F.
+           os9    I$Create                                              * 0108 10 3F 83       .?.
+           lbcs   L0320                                                 * 010B 10 25 02 11    .%..
+           sta    U0001,U                                               * 010F A7 41          'A
+           clr    U0003,U                                               * 0111 6F 43          oC
+           clr    U0002,U                                               * 0113 6F 42          oB
+           clr    >U00AF,U                                              * 0115 6F C9 00 AF    oI./
+           dec    >U00AF,U                                              * 0119 6A C9 00 AF    jI./
+           leax   L007F,PC                                              * 011D 30 8D FF 5E    0..^
+           ldy    #200                                                  * 0121 10 8E 00 C8    ...H
+           lda    #1                                                    * 0125 86 01          ..
+           os9    I$WritLn                                              * 0127 10 3F 8C       .?.
+           lda    #4                                                    * 012A 86 04          ..
+           sta    U0006,U                                               * 012C A7 46          'F
+           leax   >U00B1,U                                              * 012E 30 C9 00 B1    0I.1
+           clra                                                         * 0132 4F             O
+           clrb                                                         * 0133 5F             _
+           os9    I$GetStt                                              * 0134 10 3F 8D       .?.
+           lbcs   L0320                                                 * 0137 10 25 01 E5    .%.e
+           leax   >U00D1,U                                              * 013B 30 C9 00 D1    0I.Q
+           clra                                                         * 013F 4F             O
+           clrb                                                         * 0140 5F             _
+           os9    I$GetStt                                              * 0141 10 3F 8D       .?.
+           lbcs   L0320                                                 * 0144 10 25 01 D8    .%.X
+           leax   >U00D1,U                                              * 0148 30 C9 00 D1    0I.Q
+           leax   <$FFE0,X                                              * 014C 30 88 E0       0.`
+           clr    <$002B,X                                              * 014F 6F 88 2B       o.+
+           clr    <$002C,X                                              * 0152 6F 88 2C       o.,
+           clr    <$002E,X                                              * 0155 6F 88 2E       o..
+           clr    <$002F,X                                              * 0158 6F 88 2F       o./
+           clr    <$0030,X                                              * 015B 6F 88 30       o.0
+           clr    <$0031,X                                              * 015E 6F 88 31       o.1
+           clr    <$0038,X                                              * 0161 6F 88 38       o.8
+           clr    <$0039,X                                              * 0164 6F 88 39       o.9
+           clr    <$0024,X                                              * 0167 6F 88 24       o.$
+           clr    <$002D,X                                              * 016A 6F 88 2D       o.-
+           clr    <$0027,X                                              * 016D 6F 88 27       o.'
+           clr    <$0028,X                                              * 0170 6F 88 28       o.(
+           clr    <$0029,X                                              * 0173 6F 88 29       o.)
+           clra                                                         * 0176 4F             O
+           clrb                                                         * 0177 5F             _
+           leax   >U00D1,U                                              * 0178 30 C9 00 D1    0I.Q
+           os9    I$SetStt                                              * 017C 10 3F 8E       .?.
+L017F      tst    U0006,U                                               * 017F 6D 46          mF
+           beq    L018B                                                 * 0181 27 08          '.
+           dec    U0006,U                                               * 0183 6A 46          jF
+           lda    #67                                                   * 0185 86 43          .C
+           sta    U0000,U                                               * 0187 A7 C4          'D
+           bra    L018F                                                 * 0189 20 04           .
+L018B      lda    #21                                                   * 018B 86 15          ..
+           sta    U0000,U                                               * 018D A7 C4          'D
+L018F      leax   U0000,U                                               * 018F 30 C4          0D
+           lda    #1                                                    * 0191 86 01          ..
+           ldy    #1                                                    * 0193 10 8E 00 01    ....
+           os9    I$Write                                               * 0197 10 3F 8A       .?.
+           clr    U0004,U                                               * 019A 6F 44          oD
+           lda    U0003,U                                               * 019C A6 43          &C
+           inca                                                         * 019E 4C             L
+           sta    U0003,U                                               * 019F A7 43          'C
+           cmpa   #10                                                   * 01A1 81 0A          ..
+           bcs    L01AA                                                 * 01A3 25 05          %.
+           ldb    #1                                                    * 01A5 C6 01          F.
+           lbra   L0319                                                 * 01A7 16 01 6F       ..o
+L01AA      clra                                                         * 01AA 4F             O
+           ldb    #1                                                    * 01AB C6 01          F.
+           os9    I$GetStt                                              * 01AD 10 3F 8D       .?.
+           bcc    L01C3                                                 * 01B0 24 11          $.
+           lda    U0004,U                                               * 01B2 A6 44          &D
+           inca                                                         * 01B4 4C             L
+           sta    U0004,U                                               * 01B5 A7 44          'D
+           cmpa   #254                                                  * 01B7 81 FE          .~
+           bcc    L017F                                                 * 01B9 24 C4          $D
+           ldx    #2                                                    * 01BB 8E 00 02       ...
+           os9    F$Sleep                                               * 01BE 10 3F 0A       .?.
+           bra    L01AA                                                 * 01C1 20 E7           g
+L01C3      leax   U0000,U                                               * 01C3 30 C4          0D
+           ldy    #1                                                    * 01C5 10 8E 00 01    ....
+           clra                                                         * 01C9 4F             O
+           os9    I$Read                                                * 01CA 10 3F 89       .?.
+           lda    U0000,U                                               * 01CD A6 C4          &D
+           cmpa   #1                                                    * 01CF 81 01          ..
+           beq    L01E1                                                 * 01D1 27 0E          '.
+           cmpa   #4                                                    * 01D3 81 04          ..
+           lbeq   L02F4                                                 * 01D5 10 27 01 1B    .'..
+           cmpa   #24                                                   * 01D9 81 18          ..
+           lbeq   L0323                                                 * 01DB 10 27 01 44    .'.D
+           bra    L01AA                                                 * 01DF 20 C9           I
+L01E1      leax   <U002D,U                                              * 01E1 30 C8 2D       0H-
+           tst    U0006,U                                               * 01E4 6D 46          mF
+           beq    L01EC                                                 * 01E6 27 04          '.
+           lda    #132                                                  * 01E8 86 84          ..
+           bra    L01EE                                                 * 01EA 20 02           .
+L01EC      lda    #131                                                  * 01EC 86 83          ..
+L01EE      sta    U0005,U                                               * 01EE A7 45          'E
+           clr    U0004,U                                               * 01F0 6F 44          oD
+           bsr    L01FD                                                 * 01F2 8D 09          ..
+           lbcs   L018B                                                 * 01F4 10 25 FF 93    .%..
+           inc    U0002,U                                               * 01F8 6C 42          lB
+           lbra   L0250                                                 * 01FA 16 00 53       ..S
+L01FD      clra                                                         * 01FD 4F             O
+           ldb    #1                                                    * 01FE C6 01          F.
+           os9    I$GetStt                                              * 0200 10 3F 8D       .?.
+           bcc    L0219                                                 * 0203 24 14          $.
+           inc    U0004,U                                               * 0205 6C 44          lD
+           lda    U0004,U                                               * 0207 A6 44          &D
+           cmpa   #255                                                  * 0209 81 FF          ..
+           bhi    L0232                                                 * 020B 22 25          "%
+           pshs   X                                                     * 020D 34 10          4.
+           ldx    #1                                                    * 020F 8E 00 01       ...
+           os9    F$Sleep                                               * 0212 10 3F 0A       .?.
+           puls   X                                                     * 0215 35 10          5.
+           bra    L01FD                                                 * 0217 20 E4           d
+L0219      clr    U0004,U                                               * 0219 6F 44          oD
+           clra                                                         * 021B 4F             O
+           tfr    D,Y                                                   * 021C 1F 02          ..
+           os9    I$Read                                                * 021E 10 3F 89       .?.
+           bcs    L0236                                                 * 0221 25 13          %.
+           tfr    Y,D                                                   * 0223 1F 20          .
+           leax   B,X                                                   * 0225 30 85          0.
+           lda    U0005,U                                               * 0227 A6 45          &E
+           stb    U0005,U                                               * 0229 E7 45          gE
+           suba   U0005,U                                               * 022B A0 45           E
+           sta    U0005,U                                               * 022D A7 45          'E
+           bne    L01FD                                                 * 022F 26 CC          &L
+           rts                                                          * 0231 39             9
+L0232      lda    #255                                                  * 0232 86 FF          ..
+           rola                                                         * 0234 49             I
+           rts                                                          * 0235 39             9
+L0236      pshs   X                                                     * 0236 34 10          4.
+           ldx    #60                                                   * 0238 8E 00 3C       ..<
+           os9    F$Sleep                                               * 023B 10 3F 0A       .?.
+           puls   X                                                     * 023E 35 10          5.
+           clra                                                         * 0240 4F             O
+           ldb    #1                                                    * 0241 C6 01          F.
+           os9    I$GetStt                                              * 0243 10 3F 8D       .?.
+           clra                                                         * 0246 4F             O
+           tfr    D,Y                                                   * 0247 1F 02          ..
+           os9    I$Read                                                * 0249 10 3F 89       .?.
+           lda    #255                                                  * 024C 86 FF          ..
+           rola                                                         * 024E 49             I
+           rts                                                          * 024F 39             9
+L0250      lda    <U002D,U                                              * 0250 A6 C8 2D       &H-
+           inca                                                         * 0253 4C             L
+           cmpa   U0002,U                                               * 0254 A1 42          !B
+           lbeq   L02D8                                                 * 0256 10 27 00 7E    .'.~
+           deca                                                         * 025A 4A             J
+           cmpa   U0002,U                                               * 025B A1 42          !B
+           beq    L0264                                                 * 025D 27 05          '.
+           dec    U0002,U                                               * 025F 6A 42          jB
+           lbra   L018B                                                 * 0261 16 FF 27       ..'
+L0264      coma                                                         * 0264 43             C
+           cmpa   <U002E,U                                              * 0265 A1 C8 2E       !H.
+           beq    L026F                                                 * 0268 27 05          '.
+           dec    U0002,U                                               * 026A 6A 42          jB
+           lbra   L018B                                                 * 026C 16 FF 1C       ...
+L026F      leax   <U002F,U                                              * 026F 30 C8 2F       0H/
+           tst    U0006,U                                               * 0272 6D 46          mF
+           bne    L028B                                                 * 0274 26 15          &.
+           ldb    #128                                                  * 0276 C6 80          F.
+           clra                                                         * 0278 4F             O
+L0279      adda   ,X+                                                   * 0279 AB 80          +.
+           decb                                                         * 027B 5A             Z
+           bne    L0279                                                 * 027C 26 FB          &{
+           cmpa   >U00AF,U                                              * 027E A1 C9 00 AF    !I./
+           lbeq   L02CA                                                 * 0282 10 27 00 44    .'.D
+           dec    U0002,U                                               * 0286 6A 42          jB
+           lbra   L018B                                                 * 0288 16 FF 00       ...
+L028B      lda    #128                                                  * 028B 86 80          ..
+           sta    U0007,U                                               * 028D A7 47          'G
+           clra                                                         * 028F 4F             O
+           clrb                                                         * 0290 5F             _
+           std    U0009,U                                               * 0291 ED 49          mI
+L0293      lda    ,X+                                                   * 0293 A6 80          &.
+           clrb                                                         * 0295 5F             _
+           eora   U0009,U                                               * 0296 A8 49          (I
+           eorb   U000A,U                                               * 0298 E8 4A          hJ
+           std    U0009,U                                               * 029A ED 49          mI
+           lda    #8                                                    * 029C 86 08          ..
+           sta    U0008,U                                               * 029E A7 48          'H
+L02A0      ldd    U0009,U                                               * 02A0 EC 49          lI
+           bita   #128                                                  * 02A2 85 80          ..
+           beq    L02B0                                                 * 02A4 27 0A          '.
+           aslb                                                         * 02A6 58             X
+           rola                                                         * 02A7 49             I
+           eora   #16                                                   * 02A8 88 10          ..
+           eorb   #33                                                   * 02AA C8 21          H!
+           std    U0009,U                                               * 02AC ED 49          mI
+           bra    L02B4                                                 * 02AE 20 04           .
+L02B0      aslb                                                         * 02B0 58             X
+           rola                                                         * 02B1 49             I
+           std    U0009,U                                               * 02B2 ED 49          mI
+L02B4      dec    U0008,U                                               * 02B4 6A 48          jH
+           bne    L02A0                                                 * 02B6 26 E8          &h
+           dec    U0007,U                                               * 02B8 6A 47          jG
+           bne    L0293                                                 * 02BA 26 D7          &W
+           ldd    U0009,U                                               * 02BC EC 49          lI
+           cmpd   >U00AF,U                                              * 02BE 10 A3 C9 00 AF .#I./
+           beq    L02CA                                                 * 02C3 27 05          '.
+           dec    U0002,U                                               * 02C5 6A 42          jB
+           lbra   L018B                                                 * 02C7 16 FE C1       .~A
+L02CA      lda    U0001,U                                               * 02CA A6 41          &A
+           leax   <U002F,U                                              * 02CC 30 C8 2F       0H/
+           ldy    #128                                                  * 02CF 10 8E 00 80    ....
+           os9    I$Write                                               * 02D3 10 3F 8A       .?.
+           bra    L02DA                                                 * 02D6 20 02           .
+L02D8      dec    U0002,U                                               * 02D8 6A 42          jB
+L02DA      ldx    #60                                                   * 02DA 8E 00 3C       ..<
+           os9    F$Sleep                                               * 02DD 10 3F 0A       .?.
+           lda    #6                                                    * 02E0 86 06          ..
+           sta    U0000,U                                               * 02E2 A7 C4          'D
+           lda    #1                                                    * 02E4 86 01          ..
+           leax   U0000,U                                               * 02E6 30 C4          0D
+           ldy    #1                                                    * 02E8 10 8E 00 01    ....
+           os9    I$Write                                               * 02EC 10 3F 8A       .?.
+           clr    U0003,U                                               * 02EF 6F 43          oC
+           lbra   L01AA                                                 * 02F1 16 FE B6       .~6
+L02F4      lda    #6                                                    * 02F4 86 06          ..
+           sta    U0000,U                                               * 02F6 A7 C4          'D
+           lda    #1                                                    * 02F8 86 01          ..
+           leax   U0000,U                                               * 02FA 30 C4          0D
+           ldy    #1                                                    * 02FC 10 8E 00 01    ....
+           os9    I$Write                                               * 0300 10 3F 8A       .?.
+           lda    U0001,U                                               * 0303 A6 41          &A
+           os9    I$Close                                               * 0305 10 3F 8F       .?.
+           lbsr   L0344                                                 * 0308 17 00 39       ..9
+           leax   L00C8,PC                                              * 030B 30 8D FD B9    0.}9
+           ldy    #200                                                  * 030F 10 8E 00 C8    ...H
+           lda    #1                                                    * 0313 86 01          ..
+           os9    I$WritLn                                              * 0315 10 3F 8C       .?.
+           clrb                                                         * 0318 5F             _
+L0319      pshs   B                                                     * 0319 34 04          4.
+           lbsr   L0344                                                 * 031B 17 00 26       ..&
+           puls   B                                                     * 031E 35 04          5.
+L0320      os9    F$Exit                                                * 0320 10 3F 06       .?.
+L0323      bsr    L0344                                                 * 0323 8D 1F          ..
+           leax   L00B8,PC                                              * 0325 30 8D FD 8F    0.}.
+           ldy    #200                                                  * 0329 10 8E 00 C8    ...H
+           lda    #1                                                    * 032D 86 01          ..
+           os9    I$WritLn                                              * 032F 10 3F 8C       .?.
+           lda    U0001,U                                               * 0332 A6 41          &A
+           os9    I$Close                                               * 0334 10 3F 8F       .?.
+           ldx    U000B,U                                               * 0337 AE 4B          .K
+           os9    I$Delete                                              * 0339 10 3F 87       .?.
+           lbcs   L0319                                                 * 033C 10 25 FF D9    .%.Y
+           ldb    #1                                                    * 0340 C6 01          F.
+           bra    L0319                                                 * 0342 20 D5           U
+L0344      leax   >U00B1,U                                              * 0344 30 C9 00 B1    0I.1
+           clra                                                         * 0348 4F             O
+           clrb                                                         * 0349 5F             _
+           os9    I$SetStt                                              * 034A 10 3F 8E       .?.
+           rts                                                          * 034D 39             9
+
+           emod
+eom        equ    *
+           end

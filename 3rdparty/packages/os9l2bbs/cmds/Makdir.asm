@@ -1,25 +1,26 @@
-         nam   Makdir
-         ttl   program module       
+           nam    Makdir
+           ttl    program module
 
-* Disassembled 2010/01/24 10:24:09 by Disasm v1.5 (C) 1988 by RML
+           ifp1
+           use    defsfile
+           endc
 
-         ifp1
-         use   defsfile
-         endc
-tylg     set   Prgrm+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
-u0000    rmb   400
-size     equ   .
-name     equ   *
-         fcs   /Makdir/
-start    equ   *
-         ldb   #$3F
-         os9   I$MakDir 
-         bcs   L001B
-         clrb  
-L001B    os9   F$Exit   
-         emod
-eom      equ   *
-         end
+tylg       set    Prgrm+Objct
+atrv       set    ReEnt+rev
+rev        set    $01
+
+           mod    eom,name,tylg,atrv,start,size
+
+U0000      rmb    400
+size       equ    .
+
+name       fcs    /Makdir/                                              * 000D 4D 61 6B 64 69 F2 Makdir
+start      ldb    #63                                                   * 0013 C6 3F          F?
+           os9    I$MakDir                                              * 0015 10 3F 85       .?.
+           bcs    L001B                                                 * 0018 25 01          %.
+           clrb                                                         * 001A 5F             _
+L001B      os9    F$Exit                                                * 001B 10 3F 06       .?.
+
+           emod
+eom        equ    *
+           end
