@@ -1,210 +1,191 @@
-         nam   BBS.chat
-         ttl   program module       
+           nam    BBS.chat
+           ttl    program module
 
-* Disassembled 2010/01/24 10:30:31 by Disasm v1.5 (C) 1988 by RML
+           ifp1
+           use    defsfile
+           endc
 
-         ifp1
-         use   defsfile
-         endc
-tylg     set   Prgrm+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
-u0000    rmb   1
-u0001    rmb   1
-u0002    rmb   3
-u0005    rmb   1
-u0006    rmb   1
-u0007    rmb   402
-size     equ   .
-name     equ   *
-         fcs   /BBS.chat/
-L0015    fcb   $50 P
-         fcb   $61 a
-         fcb   $67 g
-         fcb   $69 i
-         fcb   $6E n
-         fcb   $67 g
-         fcb   $20 
-         fcb   $53 S
-         fcb   $79 y
-         fcb   $73 s
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $2E .
-         fcb   $50 P
-         fcb   $6C l
-         fcb   $65 e
-         fcb   $61 a
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $20 
-         fcb   $77 w
-         fcb   $61 a
-         fcb   $69 i
-         fcb   $74 t
-         fcb   $0D 
-L0030    fcb   $53 S
-         fcb   $6F o
-         fcb   $72 r
-         fcb   $72 r
-         fcb   $79 y
-         fcb   $2C ,
-         fcb   $20 
-         fcb   $62 b
-         fcb   $75 u
-         fcb   $74 t
-         fcb   $20 
-         fcb   $74 t
-         fcb   $68 h
-         fcb   $65 e
-         fcb   $20 
-         fcb   $73 s
-         fcb   $79 y
-         fcb   $73 s
-         fcb   $6F o
-         fcb   $70 p
-         fcb   $20 
-         fcb   $64 d
-         fcb   $6F o
-         fcb   $65 e
-         fcb   $73 s
-         fcb   $20 
-         fcb   $6E n
-         fcb   $6F o
-         fcb   $74 t
-         fcb   $20 
-         fcb   $73 s
-         fcb   $65 e
-         fcb   $65 e
-         fcb   $6D m
-         fcb   $20 
-         fcb   $74 t
-         fcb   $6F o
-         fcb   $20 
-         fcb   $62 b
-         fcb   $65 e
-         fcb   $20 
-         fcb   $68 h
-         fcb   $6F o
-         fcb   $6D m
-         fcb   $65 e
-         fcb   $21 !
-         fcb   $0D 
-L005F    fcb   $0A 
-         fcb   $0D 
-L0061    fcb   $2F /
-         fcb   $77 w
-         fcb   $0D 
-L0064    fcb   $2E .
-         fcb   $0D 
-L0066    fcb   $07 
-start    equ   *
-         bra   L006B
-L0069    neg   <u0000
-L006B    stx   u0007,u
-         lda   #$0A
-         sta   ,u
-         leax  >L0170,pcr
-         os9   F$Icpt   
-         lda   #$FF
-         sta   u0002,u
-         lda   #$0A
-         sta   u0005,u
-         leax  >L0061,pcr
-         lda   #$03
-         os9   I$Open   
-         lbcs  L016D
-         sta   u0006,u
-         leax  >L0015,pcr
-         ldy   #$00C8
-         lda   #$01
-         os9   I$WritLn 
-L009C    lda   ,u
-         sta   u0001,u
-L00A0    leax  >L0066,pcr
-         lda   u0006,u
-         ldy   #$0001
-         os9   I$Write  
-         lbcs  L016D
-         ldx   #$0004
-         os9   F$Sleep  
-         dec   u0001,u
-         bne   L00A0
-         ldx   #$005A
-         os9   F$Sleep  
-         tst   u0002,u
-         beq   L00E6
-         leax  >L0064,pcr
-         ldy   #$0001
-         lda   #$01
-         os9   I$Write  
-         dec   u0005,u
-         bne   L009C
-         leax  >L0030,pcr
-         ldy   #$00C8
-         lda   #$01
-         os9   I$WritLn 
-         lbra  L016C
-L00E6    clr   >L0069,pcr
-L00EA    clra  
-         ldb   #$01
-         os9   I$GetStt 
-         bcc   L0120
-         tst   >L0069,pcr
-         beq   L00EA
-L00F8    leax  >L006A,pcr
-         ldy   #$0001
-         lda   #$01
-         os9   I$Write  
-         lda   >L006A,pcr
-         cmpa  #$0D
-         bne   L011A
-         leax  >L005F,pcr
-         ldy   #$0001
-         lda   #$01
-         os9   I$Write  
-L011A    clr   >L0069,pcr
-         bra   L00EA
-L0120    tst   >L0069,pcr
-         bne   L00F8
-         leax  >L006A,pcr
-         ldy   #$0001
-         clra  
-         os9   I$Read   
-         lda   ,x
-         cmpa  #$0D
-         bne   L0145
-         leax  >L005F,pcr
-         ldy   #$0001
-         lda   #$01
-         os9   I$Write  
-L0145    pshs  cc
-         orcc  #$50
-         tst   >L0069,pcr
-         bne   L0167
-         lda   #$01
-         sta   >L0069,pcr
-         puls  cc
-L0157    lda   >L0069,pcr
-         lbeq  L00EA
-         ldx   #$0001
-         os9   F$Sleep  
-         bra   L0157
-L0167    puls  cc
-         lbra  L00F8
-L016C    clrb  
-L016D    os9   F$Exit   
-L0170    cmpb  #$02
-         beq   L017B
-         cmpb  #$03
-         beq   L017A
-         clr   u0002,u
-L017A    rti   
-L017B    clrb  
-         os9   F$Exit   
-         emod
-eom      equ   *
-         end
+tylg       set    Prgrm+Objct
+atrv       set    ReEnt+rev
+rev        set    $01
+
+           mod    eom,name,tylg,atrv,start,size
+
+DefCntr    rmb    1
+BeepCntr   rmb    1
+Flag       rmb    3
+DotCntr    rmb    1
+WPath      rmb    1
+XSave      rmb    2
+U0009      rmb    400
+size       equ    .
+
+name       fcs    /BBS.chat/                                            * 000D 42 42 53 2E 63 68 61 F4 BBS.chat
+
+Paging     fcc    "Paging Sysop...Please wait"                          * 0015 50 61 67 69 6E 67 20 53 79 73 6F 70 2E 2E 2E 50 6C 65 61 73 65 20 77 61 69 74 Paging Sysop...Please wait
+           fcb    $0D                                                   * 002F 0D             .
+
+NotHome    fcc    "Sorry, but the sysop does not seem to be home!"      * 0030 53 6F 72 72 79 2C 20 62 75 74 20 74 68 65 20 73 79 73 6F 70 20 64 6F 65 73 20 6E 6F 74 20 73 65 65 6D 20 74 6F 20 62 65 20 68 6F 6D 65 21 Sorry, but the sysop does not seem to be home!
+           fcb    $0D                                                   * 005E 0D             .
+
+lf         fcb    $0A                                                   * 005F 0A             .
+           fcb    $0D                                                   * 0060 0D             .
+
+w          fcc    "/w"                                                  * 0061 2F 77          /w
+           fcb    $0D                                                   * 0063 0D             .
+
+dot        fcc    "."                                                   * 0064 2E             .
+           fcb    $0D                                                   * 0065 0D             .
+
+bell       fcb    $07                                                   * 0066 07             .
+
+start      bra    start_a                                               * 0067 20 02           .
+
+DataRdy    fcb    $00                                                   * 0069 00             .
+ChatBuf    fcb    $00                                                   * 006A 00             .
+
+start_a    stx    XSave,U                                               * 006B AF 47          /G
+           lda    #10                                                   * 006D 86 0A          ..
+           sta    DefCntr,U  * Initialize the default counter           * 006F A7 C4          'D
+
+* Set up the signal intercept handler
+           leax   Icpt,PC                                               * 0071 30 8D 00 FB    0..{
+           os9    F$Icpt                                                * 0075 10 3F 09       .?.
+
+           lda    #255                                                  * 0078 86 FF          ..
+           sta    Flag,U     * Set the flag                             * 007A A7 42          'B
+           lda    #10                                                   * 007C 86 0A          ..
+           sta    DotCntr,U  * Initialize the counter                   * 007E A7 45          'E
+
+* Open /w for read/write
+           leax   w,PC                                                  * 0080 30 8D FF DD    0..]
+           lda    #3                                                    * 0084 86 03          ..
+           os9    I$Open                                                * 0086 10 3F 84       .?.
+           lbcs   ErrExit    * Exit on error                            * 0089 10 25 00 E0    .%.`
+           sta    WPath,U    * Store the path                           * 008D A7 46          'F
+
+* Inform the user we are paging the sysop
+           leax   Paging,PC                                             * 008F 30 8D FF 82    0...
+           ldy    #200                                                  * 0093 10 8E 00 C8    ...H
+           lda    #1                                                    * 0097 86 01          ..
+           os9    I$WritLn                                              * 0099 10 3F 8C       .?.
+
+**************************************************
+* Page the sysop to join the chat
+PageLoop   lda    DefCntr,U  * Get the default counter                  * 009C A6 C4          &D
+           sta    BeepCntr,U * Initialize the beep counter              * 009E A7 41          'A
+
+* Ding the sysop
+BeepBeep   leax   bell,PC                                               * 00A0 30 8D FF C2    0..B
+           lda    WPath,U                                               * 00A4 A6 46          &F
+           ldy    #1                                                    * 00A6 10 8E 00 01    ....
+           os9    I$Write                                               * 00AA 10 3F 8A       .?.
+           lbcs   ErrExit    * Exit on error                            * 00AD 10 25 00 BC    .%.<
+           ldx    #4                                                    * 00B1 8E 00 04       ...
+           os9    F$Sleep    * Sleep 4 ticks                            * 00B4 10 3F 0A       .?.
+           dec    BeepCntr,U * Decrement the counter                    * 00B7 6A 41          jA
+           bne    BeepBeep   * Beep again if the counter is not zero    * 00B9 26 E5          &e
+
+           ldx    #90                                                   * 00BB 8E 00 5A       ..Z
+           os9    F$Sleep    * Sleep 90 ticks                           * 00BE 10 3F 0A       .?.
+           tst    Flag,U     * Is the sysop home?                       * 00C1 6D 42          mB
+           beq    L00E6      * Yes, and he answered the chat            * 00C3 27 21          '!
+
+* Write a dot on /w
+           leax   dot,PC                                                * 00C5 30 8D FF 9B    0...
+           ldy    #1                                                    * 00C9 10 8E 00 01    ....
+           lda    #1                                                    * 00CD 86 01          ..
+           os9    I$Write                                               * 00CF 10 3F 8A       .?.
+           dec    DotCntr,U  * Decrement the counter                    * 00D2 6A 45          jE
+           bne    PageLoop   * Try again if the counter is not zero     * 00D4 26 C6          &F
+
+* Nobody's home so inform the user and exit
+           leax   NotHome,PC                                            * 00D6 30 8D FF 56    0..V
+           ldy    #200                                                  * 00DA 10 8E 00 C8    ...H
+           lda    #1                                                    * 00DE 86 01          ..
+           os9    I$WritLn                                              * 00E0 10 3F 8C       .?.
+           lbra   Exit                                                  * 00E3 16 00 86       ...
+
+L00E6      clr    DataRdy,PC * No data is available yet                 * 00E6 6F 8D FF 7F    o...
+
+* Wait for the user or the sysop to press a key
+DataLoop   clra                                                         * 00EA 4F             O
+           ldb    #1         * SS.Ready                                 * 00EB C6 01          F.
+           os9    I$GetStt   * Has the user pressed a key?              * 00ED 10 3F 8D       .?.
+           bcc    TestFlag   * Yes, so go read it                       * 00F0 24 2E          $.
+           tst    DataRdy,PC * Has the sysop pressed a key?             * 00F2 6D 8D FF 73    m..s
+           beq    DataLoop   * No, so continue polling                  * 00F6 27 F2          'r
+
+* Echo the sysop's char to the user
+Echo       leax   ChatBuf,PC                                            * 00F8 30 8D FF 6E    0..n
+           ldy    #1                                                    * 00FC 10 8E 00 01    ....
+           lda    #1                                                    * 0100 86 01          ..
+           os9    I$Write                                               * 0102 10 3F 8A       .?.
+
+           lda    ChatBuf,PC * Get the char the sysop typed             * 0105 A6 8D FF 61    &..a
+           cmpa   #13        * Is it a CR?                              * 0109 81 0D          ..
+           bne    ClrFlag    * No, clear the flag and poll for more     * 010B 26 0D          &.
+
+* Append LF to CR on the output path
+           leax   lf,PC                                                 * 010D 30 8D FF 4E    0..N
+           ldy    #1                                                    * 0111 10 8E 00 01    ....
+           lda    #1                                                    * 0115 86 01          ..
+           os9    I$Write                                               * 0117 10 3F 8A       .?.
+
+ClrFlag    clr    DataRdy,PC * We are ready for more data               * 011A 6F 8D FF 4B    o..K
+           bra    DataLoop   * Check for more data                      * 011E 20 CA           J
+
+TestFlag   tst    DataRdy,PC * Is data available yet?                   * 0120 6D 8D FF 45    m..E
+           bne    Echo       * Yes, go read it                          * 0124 26 D2          &R
+
+* Read one character from the user
+           leax   ChatBuf,PC                                            * 0126 30 8D FF 40    0..@
+           ldy    #1                                                    * 012A 10 8E 00 01    ....
+           clra                                                         * 012E 4F             O
+           os9    I$Read                                                * 012F 10 3F 89       .?.
+
+           lda    0,X        * Get the character read                   * 0132 A6 84          &.
+           cmpa   #13        * Is it a CR?                              * 0134 81 0D          ..
+           bne    SetFlag    * No, so don't write an LF                 * 0136 26 0D          &.
+
+* Append an LF to the CR
+           leax   lf,PC                                                 * 0138 30 8D FF 23    0..#
+           ldy    #1                                                    * 013C 10 8E 00 01    ....
+           lda    #1                                                    * 0140 86 01          ..
+           os9    I$Write                                               * 0142 10 3F 8A       .?.
+
+SetFlag    pshs   CC         * Save the condition codes                 * 0145 34 01          4.
+           orcc   #80        * Disable interrupts                       * 0147 1A 50          .P
+           tst    DataRdy,PC * Is data available yet?                   * 0149 6D 8D FF 1C    m...
+           bne    SleepRet   * Yes, echo it to the user                 * 014D 26 18          &.
+           lda    #1                                                    * 014F 86 01          ..
+           sta    DataRdy,PC * Set the data available flag              * 0151 A7 8D FF 14    '...
+           puls   CC                                                    * 0155 35 01          5.
+
+* Sleep until the flag is cleared
+Sleep      lda    DataRdy,PC * Get the data available flag              * 0157 A6 8D FF 0E    &...
+           lbeq   DataLoop   * Flag reset, so continue the loop         * 015B 10 27 FF 8B    .'..
+           ldx    #1                                                    * 015F 8E 00 01       ...
+           os9    F$Sleep    * Sleep the remainder of the time slice    * 0162 10 3F 0A       .?.
+           bra    Sleep                                                 * 0165 20 F0           p
+
+SleepRet   puls   CC         * Restore interrupts                       * 0167 35 01          5.
+           lbra   Echo       * Echo the character to the user           * 0169 16 FF 8C       ...
+
+Exit       clrb              * Clear the error flag...                  * 016C 5F             _
+ErrExit    os9    F$Exit     * ... and exit                             * 016D 10 3F 06       .?.
+
+* Interrupt service handler
+Icpt       cmpb   #2                                                    * 0170 C1 02          A.
+           beq    Exit2      * Exit if signal 2                         * 0172 27 07          '.
+           cmpb   #3                                                    * 0174 C1 03          A.
+           beq    Return     * Return if signal 3                       * 0176 27 02          '.
+           clr    Flag,U     * Clear the flag...                        * 0178 6F 42          oB
+Return     rti               * ... and exit the interrupt handler       * 017A 3B             ;
+
+Exit2      clrb              * Clear the error flag...                  * 017B 5F             _
+           os9    F$Exit     * ... and exit                             * 017C 10 3F 06       .?.
+
+           emod
+eom        equ    *
+           end
