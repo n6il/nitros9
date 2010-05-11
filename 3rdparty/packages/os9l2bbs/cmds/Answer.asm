@@ -82,7 +82,7 @@ ProcLoop   lda    ProcId,U                                              * 0127 A
 
 * Have we found BBS_Chat yet?
            leax   >ProcBuf,U                                            * 0162 30 C9 02 0F    0I..
-           leay   BBS_Chat,PC                                            * 0166 31 8D FF 45    1..E
+           leay   >BBS_Chat,PC                                            * 0166 31 8D FF 45    1..E
 
 CmpNames   lda    ,X+                                                   * 016A A6 80          &.
            cmpa   ,Y+                                                   * 016C A1 A0          !
@@ -106,19 +106,19 @@ ChatSignl  lda    ChatId,U   * Get BBS_Chat process Id                  * 017D A
            bra    ChatSignl  * ... and try again                        * 018C 20 EF           o
 
 * Write "answering call..."
-L018E      leax   Answer,PC                                             * 018E 30 8D FE EC    0.~l
+L018E      leax   >Answer,PC                                            * 018E 30 8D FE EC    0.~l
            ldy    #200                                                  * 0192 10 8E 00 C8    ...H
            lda    #1                                                    * 0196 86 01          ..
            os9    I$WritLn                                              * 0198 10 3F 8C       .?.
 
 * Write a line of dashes
-           leax   Line,PC                                               * 019B 30 8D FF 3D    0..=
+           leax   >Line,PC                                              * 019B 30 8D FF 3D    0..=
            ldy    #65                                                   * 019F 10 8E 00 41    ...A
            lda    #1                                                    * 01A3 86 01          ..
            os9    I$WritLn                                              * 01A5 10 3F 8C       .?.
 
 * Link to BBS_Chat
-           leax   BBS_Chat,PC                                            * 01A8 30 8D FF 03    0...
+           leax   >BBS_Chat,PC                                            * 01A8 30 8D FF 03    0...
            lda    #17                                                   * 01AC 86 11          ..
            pshs   U                                                     * 01AE 34 40          4@
            os9    F$Link                                                * 01B0 10 3F 00       .?.
@@ -147,7 +147,7 @@ Loop       pshs   X                                                     * 01CA 3
 
 * Write LF after each CR
            pshs   X                                                     * 01DF 34 10          4.
-           leax   lf_cr,PC                                              * 01E1 30 8D FE C8    0.~H
+           leax   >lf_cr,PC                                             * 01E1 30 8D FE C8    0.~H
            ldy    #1                                                    * 01E5 10 8E 00 01    ....
            lda    #1                                                    * 01E9 86 01          ..
            os9    I$Write                                               * 01EB 10 3F 8A       .?.
@@ -167,7 +167,7 @@ L01F4      leax   ReadBuf,U                                             * 01F4 3
            bne    L021A      * No, don't write LF                       * 0209 26 0F          &.
 
 * Write LF after each CR
-           leax   lf_cr,PC                                              * 020B 30 8D FE 9E    0.~.
+           leax   >lf_cr,PC                                             * 020B 30 8D FE 9E    0.~.
            ldy    #1                                                    * 020F 10 8E 00 01    ....
            lda    #1                                                    * 0213 86 01          ..
            os9    I$Write    * Write LF                                 * 0215 10 3F 8A       .?.
@@ -204,7 +204,7 @@ L0243      lda    U0005,U                                               * 0243 A
            os9    F$Sleep                                               * 0252 10 3F 0A       .?.
            bra    Exit                                                  * 0255 20 11           .
 
-L0257      leax   NoChat,PC                                             * 0257 30 8D FE 5C    0.~\
+L0257      leax   >NoChat,PC                                            * 0257 30 8D FE 5C    0.~\
            ldy    #200                                                  * 025B 10 8E 00 C8    ...H
            lda    #1                                                    * 025F 86 01          ..
            os9    I$WritLn                                              * 0261 10 3F 8C       .?.

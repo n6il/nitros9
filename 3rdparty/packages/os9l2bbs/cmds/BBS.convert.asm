@@ -22,7 +22,7 @@ L0018      fcb    $FF                                                   * 0018 F
 msginx     fcc    "BBS.msg.inx"                                         * 001A 42 42 53 2E 6D 73 67 2E 69 6E 78 BBS.msg.inx
            fcb    $0D                                                   * 0025 0D             .
 
-start      leax   msginx,PC                                             * 0026 30 8D FF F0    0..p
+start      leax   >msginx,PC                                            * 0026 30 8D FF F0    0..p
            lda    #3                                                    * 002A 86 03          ..
            os9    I$Open     * Open BBS.msg.inx                         * 002C 10 3F 84       .?.
            lbcs   ErrExit    * Exit on error                            * 002F 10 25 00 21    .%.!
@@ -34,7 +34,7 @@ Loop       lda    inxpath,U  * Get the path                             * 0035 A
            os9    I$Read     * Read 62 bytes                            * 003D 10 3F 89       .?.
            lbcs   Exit       * Exit on error/EOF                        * 0040 10 25 00 0F    .%..
 
-           leax   L0018,PC                                              * 0044 30 8D FF D0    0..P
+           leax   >L0018,PC                                             * 0044 30 8D FF D0    0..P
            ldy    #2                                                    * 0048 10 8E 00 02    ....
            lda    inxpath,U                                             * 004C A6 C4          &D
            os9    I$Write    * Write $FFFF to BBS.msg.inx               * 004E 10 3F 8A       .?.

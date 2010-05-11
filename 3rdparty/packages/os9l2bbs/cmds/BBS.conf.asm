@@ -51,12 +51,12 @@ L00BA      ldd    ,X++                                                  * 00BA E
            os9    F$Exit                                                * 00D4 10 3F 06       .?.
            fcb    $3B                                                   * 00D7 3B             ;
 
-start      leax   Icpt,PC                                               * 00D8 30 8D FF DC    0..\
+start      leax   >Icpt,PC                                              * 00D8 30 8D FF DC    0..\
            os9    F$Icpt                                                * 00DC 10 3F 09       .?.
            os9    F$ID                                                  * 00DF 10 3F 0C       .?.
            leay   $01,Y                                                 * 00E2 31 21          1!
            sty    U0002,U                                               * 00E4 10 AF 42       ./B
-           leax   handle,PC                                             * 00E7 30 8D FF 34    0..4
+           leax   >handle,PC                                            * 00E7 30 8D FF 34    0..4
            ldy    #18                                                   * 00EB 10 8E 00 12    ....
            lda    #1                                                    * 00EF 86 01          ..
            os9    I$Write                                               * 00F1 10 3F 8A       .?.
@@ -64,14 +64,14 @@ start      leax   Icpt,PC                                               * 00D8 3
            leax   >buffer,U                                             * 00F5 30 C9 00 D4    0I.T
            ldy    #20                                                   * 00F9 10 8E 00 14    ....
            os9    I$ReadLn                                              * 00FD 10 3F 8B       .?.
-           leax   prompt,PC                                             * 0100 30 8D FF 2D    0..-
+           leax   >prompt,PC                                            * 0100 30 8D FF 2D    0..-
            ldy    #200                                                  * 0104 10 8E 00 C8    ...H
            lda    #1                                                    * 0108 86 01          ..
            os9    I$WritLn                                              * 010A 10 3F 8C       .?.
-           leax   line,PC                                               * 010D 30 8D FF 5D    0..]
+           leax   >line,PC                                              * 010D 30 8D FF 5D    0..]
            ldy    #200                                                  * 0111 10 8E 00 C8    ...H
            os9    I$WritLn                                              * 0115 10 3F 8C       .?.
-           leax   confdat,PC                                            * 0118 30 8D FE F9    0.~y
+           leax   >confdat,PC                                            * 0118 30 8D FE F9    0.~y
            lda    #65                                                   * 011C 86 41          .A
            pshs   U                                                     * 011E 34 40          4@
            os9    F$Link                                                * 0120 10 3F 00       .?.
@@ -113,7 +113,7 @@ L0174      lda    ,X+                                                   * 0174 A
            rts                                                          * 0178 39             9
 L0179      lda    #1                                                    * 0179 86 01          ..
            sta    -$01,X                                                * 017B A7 1F          '.
-           leax   L001D,PC                                              * 017D 30 8D FE 9C    0.~.
+           leax   >L001D,PC                                             * 017D 30 8D FE 9C    0.~.
            ldy    #1                                                    * 0181 10 8E 00 01    ....
            lda    #1                                                    * 0185 86 01          ..
            os9    I$WritLn                                              * 0187 10 3F 8C       .?.
@@ -172,7 +172,7 @@ L01D3      clra                                                         * 01D3 4
            lbeq   L023D                                                 * 0203 10 27 00 36    .'.6
            stx    U0008,U                                               * 0207 AF 48          /H
            bra    L023E                                                 * 0209 20 33           3
-L020B      leax   L001D,PC                                              * 020B 30 8D FE 0E    0.~.
+L020B      leax   >L001D,PC                                             * 020B 30 8D FE 0E    0.~.
            ldy    #1                                                    * 020F 10 8E 00 01    ....
            lda    #1                                                    * 0213 86 01          ..
            os9    I$WritLn                                              * 0215 10 3F 8C       .?.
@@ -217,9 +217,9 @@ L0263      os9    F$Exit                                                * 0263 1
 L0266      lda    #17                                                   * 0266 86 11          ..
            ldb    #3                                                    * 0268 C6 03          F.
            ldy    #1                                                    * 026A 10 8E 00 01    ....
-           leax   confwho,PC                                            * 026E 30 8D FE 39    0.~9
+           leax   >confwho,PC                                            * 026E 30 8D FE 39    0.~9
            pshs   U                                                     * 0272 34 40          4@
-           leau   L001D,PC                                              * 0274 33 8D FD A5    3.}%
+           leau   >L001D,PC                                             * 0274 33 8D FD A5    3.}%
            os9    F$Fork                                                * 0278 10 3F 03       .?.
            os9    F$Wait                                                * 027B 10 3F 04       .?.
            puls   U                                                     * 027E 35 40          5@

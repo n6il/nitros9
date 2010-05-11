@@ -66,7 +66,7 @@ start      lda    0,X                                                   * 00BD A
            lda    #1                                                    * 00C3 86 01          ..
            os9    I$ChgDir                                              * 00C5 10 3F 86       .?.
            lbcs   L01F6                                                 * 00C8 10 25 01 2A    .%.*
-L00CC      leax   L0036,PC                                              * 00CC 30 8D FF 66    0..f
+L00CC      leax   >L0036,PC                                             * 00CC 30 8D FF 66    0..f
            ldy    #74                                                   * 00D0 10 8E 00 4A    ...J
            lda    #1                                                    * 00D4 86 01          ..
            os9    I$Write                                               * 00D6 10 3F 8A       .?.
@@ -74,7 +74,7 @@ L00CC      leax   L0036,PC                                              * 00CC 3
            ldy    #1                                                    * 00DB 10 8E 00 01    ....
            clra                                                         * 00DF 4F             O
            os9    I$Read                                                * 00E0 10 3F 89       .?.
-           leax   L00A5,PC                                              * 00E3 30 8D FF BE    0..>
+           leax   >L00A5,PC                                             * 00E3 30 8D FF BE    0..>
            ldy    #1                                                    * 00E7 10 8E 00 01    ....
            lda    #1                                                    * 00EB 86 01          ..
            os9    I$Write                                               * 00ED 10 3F 8A       .?.
@@ -91,19 +91,19 @@ L00CC      leax   L0036,PC                                              * 00CC 3
            cmpa   #81                                                   * 0104 81 51          .Q
            lbeq   L01F5                                                 * 0106 10 27 00 EB    .'.k
            bra    L00CC                                                 * 010A 20 C0           @
-L010C      leax   L0080,PC                                              * 010C 30 8D FF 70    0..p
+L010C      leax   >L0080,PC                                             * 010C 30 8D FF 70    0..p
            bra    L0124                                                 * 0110 20 12           .
-L0112      leax   L008F,PC                                              * 0112 30 8D FF 79    0..y
+L0112      leax   >L008F,PC                                             * 0112 30 8D FF 79    0..y
            bra    L0124                                                 * 0116 20 0C           .
-L0118      leax   L0087,PC                                              * 0118 30 8D FF 6B    0..k
+L0118      leax   >L0087,PC                                             * 0118 30 8D FF 6B    0..k
            bra    L0124                                                 * 011C 20 06           .
-L011E      leax   L009E,PC                                              * 011E 30 8D FF 7C    0..|
+L011E      leax   >L009E,PC                                             * 011E 30 8D FF 7C    0..|
            bra    L0124                                                 * 0122 20 00           .
 L0124      ldy    #1                                                    * 0124 10 8E 00 01    ....
            lda    #17                                                   * 0128 86 11          ..
            ldb    #3                                                    * 012A C6 03          F.
            pshs   U                                                     * 012C 34 40          4@
-           leau   L00A5,PC                                              * 012E 33 8D FF 73    3..s
+           leau   >L00A5,PC                                             * 012E 33 8D FF 73    3..s
            os9    F$Fork                                                * 0132 10 3F 03       .?.
            lbcs   L01F6                                                 * 0135 10 25 00 BD    .%.=
            clrb                                                         * 0139 5F             _
@@ -112,7 +112,7 @@ L0124      ldy    #1                                                    * 0124 1
            cmpb   #0                                                    * 0141 C1 00          A.
            lbne   L01F6                                                 * 0143 10 26 00 AF    .&./
            puls   U                                                     * 0147 35 40          5@
-           leax   L00A7,PC                                              * 0149 30 8D FF 5A    0..Z
+           leax   >L00A7,PC                                             * 0149 30 8D FF 5A    0..Z
            lda    #3                                                    * 014D 86 03          ..
            os9    I$Open                                                * 014F 10 3F 84       .?.
            bcc    L015D                                                 * 0152 24 09          $.

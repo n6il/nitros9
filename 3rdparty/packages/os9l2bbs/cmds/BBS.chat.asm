@@ -49,7 +49,7 @@ start_a    stx    XSave,U                                               * 006B A
            sta    DefCntr,U  * Initialize the default counter           * 006F A7 C4          'D
 
 * Set up the signal intercept handler
-           leax   Icpt,PC                                               * 0071 30 8D 00 FB    0..{
+           leax   >Icpt,PC                                              * 0071 30 8D 00 FB    0..{
            os9    F$Icpt                                                * 0075 10 3F 09       .?.
 
            lda    #255                                                  * 0078 86 FF          ..
@@ -58,14 +58,14 @@ start_a    stx    XSave,U                                               * 006B A
            sta    DotCntr,U  * Initialize the counter                   * 007E A7 45          'E
 
 * Open /w for read/write
-           leax   w,PC                                                  * 0080 30 8D FF DD    0..]
+           leax   >w,PC                                                 * 0080 30 8D FF DD    0..]
            lda    #3                                                    * 0084 86 03          ..
            os9    I$Open                                                * 0086 10 3F 84       .?.
            lbcs   ErrExit    * Exit on error                            * 0089 10 25 00 E0    .%.`
            sta    WPath,U    * Store the path                           * 008D A7 46          'F
 
 * Inform the user we are paging the sysop
-           leax   Paging,PC                                             * 008F 30 8D FF 82    0...
+           leax   >Paging,PC                                            * 008F 30 8D FF 82    0...
            ldy    #200                                                  * 0093 10 8E 00 C8    ...H
            lda    #1                                                    * 0097 86 01          ..
            os9    I$WritLn                                              * 0099 10 3F 8C       .?.
@@ -76,7 +76,7 @@ PageLoop   lda    DefCntr,U  * Get the default counter                  * 009C A
            sta    BeepCntr,U * Initialize the beep counter              * 009E A7 41          'A
 
 * Ding the sysop
-BeepBeep   leax   bell,PC                                               * 00A0 30 8D FF C2    0..B
+BeepBeep   leax   >bell,PC                                              * 00A0 30 8D FF C2    0..B
            lda    WPath,U                                               * 00A4 A6 46          &F
            ldy    #1                                                    * 00A6 10 8E 00 01    ....
            os9    I$Write                                               * 00AA 10 3F 8A       .?.
@@ -92,7 +92,7 @@ BeepBeep   leax   bell,PC                                               * 00A0 3
            beq    L00E6      * Yes, and he answered the chat            * 00C3 27 21          '!
 
 * Write a dot on /w
-           leax   dot,PC                                                * 00C5 30 8D FF 9B    0...
+           leax   >dot,PC                                               * 00C5 30 8D FF 9B    0...
            ldy    #1                                                    * 00C9 10 8E 00 01    ....
            lda    #1                                                    * 00CD 86 01          ..
            os9    I$Write                                               * 00CF 10 3F 8A       .?.
@@ -100,46 +100,46 @@ BeepBeep   leax   bell,PC                                               * 00A0 3
            bne    PageLoop   * Try again if the counter is not zero     * 00D4 26 C6          &F
 
 * Nobody's home so inform the user and exit
-           leax   NotHome,PC                                            * 00D6 30 8D FF 56    0..V
+           leax   >NotHome,PC                                            * 00D6 30 8D FF 56    0..V
            ldy    #200                                                  * 00DA 10 8E 00 C8    ...H
            lda    #1                                                    * 00DE 86 01          ..
            os9    I$WritLn                                              * 00E0 10 3F 8C       .?.
            lbra   Exit                                                  * 00E3 16 00 86       ...
 
-L00E6      clr    DataRdy,PC * No data is available yet                 * 00E6 6F 8D FF 7F    o...
+L00E6      clr    >DataRdy,PC * No data is available yet                 * 00E6 6F 8D FF 7F    o...
 
 * Wait for the user or the sysop to press a key
 DataLoop   clra                                                         * 00EA 4F             O
            ldb    #1         * SS.Ready                                 * 00EB C6 01          F.
            os9    I$GetStt   * Has the user pressed a key?              * 00ED 10 3F 8D       .?.
            bcc    TestFlag   * Yes, so go read it                       * 00F0 24 2E          $.
-           tst    DataRdy,PC * Has the sysop pressed a key?             * 00F2 6D 8D FF 73    m..s
+           tst    >DataRdy,PC * Has the sysop pressed a key?             * 00F2 6D 8D FF 73    m..s
            beq    DataLoop   * No, so continue polling                  * 00F6 27 F2          'r
 
 * Echo the sysop's char to the user
-Echo       leax   ChatBuf,PC                                            * 00F8 30 8D FF 6E    0..n
+Echo       leax   >ChatBuf,PC                                            * 00F8 30 8D FF 6E    0..n
            ldy    #1                                                    * 00FC 10 8E 00 01    ....
            lda    #1                                                    * 0100 86 01          ..
            os9    I$Write                                               * 0102 10 3F 8A       .?.
 
-           lda    ChatBuf,PC * Get the char the sysop typed             * 0105 A6 8D FF 61    &..a
+           lda    >ChatBuf,PC * Get the char the sysop typed             * 0105 A6 8D FF 61    &..a
            cmpa   #13        * Is it a CR?                              * 0109 81 0D          ..
            bne    ClrFlag    * No, clear the flag and poll for more     * 010B 26 0D          &.
 
 * Append LF to CR on the output path
-           leax   lf,PC                                                 * 010D 30 8D FF 4E    0..N
+           leax   >lf,PC                                                * 010D 30 8D FF 4E    0..N
            ldy    #1                                                    * 0111 10 8E 00 01    ....
            lda    #1                                                    * 0115 86 01          ..
            os9    I$Write                                               * 0117 10 3F 8A       .?.
 
-ClrFlag    clr    DataRdy,PC * We are ready for more data               * 011A 6F 8D FF 4B    o..K
+ClrFlag    clr    >DataRdy,PC * We are ready for more data               * 011A 6F 8D FF 4B    o..K
            bra    DataLoop   * Check for more data                      * 011E 20 CA           J
 
-TestFlag   tst    DataRdy,PC * Is data available yet?                   * 0120 6D 8D FF 45    m..E
+TestFlag   tst    >DataRdy,PC * Is data available yet?                   * 0120 6D 8D FF 45    m..E
            bne    Echo       * Yes, go read it                          * 0124 26 D2          &R
 
 * Read one character from the user
-           leax   ChatBuf,PC                                            * 0126 30 8D FF 40    0..@
+           leax   >ChatBuf,PC                                            * 0126 30 8D FF 40    0..@
            ldy    #1                                                    * 012A 10 8E 00 01    ....
            clra                                                         * 012E 4F             O
            os9    I$Read                                                * 012F 10 3F 89       .?.
@@ -149,25 +149,25 @@ TestFlag   tst    DataRdy,PC * Is data available yet?                   * 0120 6
            bne    SetFlag    * No, so don't write an LF                 * 0136 26 0D          &.
 
 * Append an LF to the CR
-           leax   lf,PC                                                 * 0138 30 8D FF 23    0..#
+           leax   >lf,PC                                                * 0138 30 8D FF 23    0..#
            ldy    #1                                                    * 013C 10 8E 00 01    ....
            lda    #1                                                    * 0140 86 01          ..
            os9    I$Write                                               * 0142 10 3F 8A       .?.
 
 SetFlag    pshs   CC         * Save the condition codes                 * 0145 34 01          4.
            orcc   #80        * Disable interrupts                       * 0147 1A 50          .P
-           tst    DataRdy,PC * Is data available yet?                   * 0149 6D 8D FF 1C    m...
+           tst    >DataRdy,PC * Is data available yet?                   * 0149 6D 8D FF 1C    m...
            bne    SleepRet   * Yes, echo it to the user                 * 014D 26 18          &.
            lda    #1                                                    * 014F 86 01          ..
-           sta    DataRdy,PC * Set the data available flag              * 0151 A7 8D FF 14    '...
+           sta    >DataRdy,PC * Set the data available flag              * 0151 A7 8D FF 14    '...
            puls   CC                                                    * 0155 35 01          5.
 
 * Sleep until the flag is cleared
-Sleep      lda    DataRdy,PC * Get the data available flag              * 0157 A6 8D FF 0E    &...
+Sleep      lda    >DataRdy,PC * Get the data available flag              * 0157 A6 8D FF 0E    &...
            lbeq   DataLoop   * Flag reset, so continue the loop         * 015B 10 27 FF 8B    .'..
            ldx    #1                                                    * 015F 8E 00 01       ...
            os9    F$Sleep    * Sleep the remainder of the time slice    * 0162 10 3F 0A       .?.
-           bra    Sleep                                                 * 0165 20 F0           p
+           bra    Sleep      * ... until the flag is cleared            * 0165 20 F0           p
 
 SleepRet   puls   CC         * Restore interrupts                       * 0167 35 01          5.
            lbra   Echo       * Echo the character to the user           * 0169 16 FF 8C       ...

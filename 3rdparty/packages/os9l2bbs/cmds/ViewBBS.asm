@@ -16,18 +16,16 @@ U0001      rmb    400
 size       equ    .
 
 name       fcs    /ViewBBS/                                             * 000D 56 69 65 77 42 42 D3 ViewBBS
-L0014      fcb    $2F                                                   * 0014 2F             /
-           fcb    $77                                                   * 0015 77             w
-           fcb    $62                                                   * 0016 62             b
+L0014      fcc    "/wb"                                                 * 0014 2F 77 62       /wb
            fcb    $0D                                                   * 0017 0D             .
 L0018      fcb    $1B                                                   * 0018 1B             .
            fcb    $21                                                   * 0019 21             !
-start      leax   L0014,PC                                              * 001A 30 8D FF F6    0..v
+start      leax   >L0014,PC                                             * 001A 30 8D FF F6    0..v
            lda    #3                                                    * 001E 86 03          ..
            os9    I$Open                                                * 0020 10 3F 84       .?.
            lbcs   L004E                                                 * 0023 10 25 00 27    .%.'
            sta    U0000,U                                               * 0027 A7 C4          'D
-           leax   L0018,PC                                              * 0029 30 8D FF EB    0..k
+           leax   >L0018,PC                                             * 0029 30 8D FF EB    0..k
            ldy    #2                                                    * 002D 10 8E 00 02    ....
            lda    U0000,U                                               * 0031 A6 C4          &D
            os9    I$Write                                               * 0033 10 3F 8A       .?.

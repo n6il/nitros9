@@ -69,18 +69,18 @@ start      os9    F$ID                                                  * 010E 1
            sty    U000E,U                                               * 0111 10 AF 4E       ./N
            ldy    #0                                                    * 0114 10 8E 00 00    ....
            os9    F$SUser                                               * 0118 10 3F 1C       .?.
-           leax   L0086,PC                                              * 011B 30 8D FF 67    0..g
+           leax   >L0086,PC                                             * 011B 30 8D FF 67    0..g
            lda    #1                                                    * 011F 86 01          ..
            os9    I$Open                                                * 0121 10 3F 84       .?.
            lbcs   L01F3                                                 * 0124 10 25 00 CB    .%.K
            sta    U0000,U                                               * 0128 A7 C4          'D
            clr    U0004,U                                               * 012A 6F 44          oD
-           leax   L009C,PC                                              * 012C 30 8D FF 6C    0..l
+           leax   >L009C,PC                                             * 012C 30 8D FF 6C    0..l
            lda    #1                                                    * 0130 86 01          ..
            os9    I$Open                                                * 0132 10 3F 84       .?.
            lbcs   L01F3                                                 * 0135 10 25 00 BA    .%.:
            sta    U0007,U                                               * 0139 A7 47          'G
-           leax   L00B0,PC                                              * 013B 30 8D FF 71    0..q
+           leax   >L00B0,PC                                             * 013B 30 8D FF 71    0..q
            ldy    #200                                                  * 013F 10 8E 00 C8    ...H
            lda    #1                                                    * 0143 86 01          ..
            os9    I$WritLn                                              * 0145 10 3F 8C       .?.
@@ -103,7 +103,7 @@ L0172      cmpb   #211                                                  * 0172 C
            tst    U0004,U                                               * 0178 6D 44          mD
            beq    L017F                                                 * 017A 27 03          '.
            lbra   L01F2                                                 * 017C 16 00 73       ..s
-L017F      leax   L00C5,PC                                              * 017F 30 8D FF 42    0..B
+L017F      leax   >L00C5,PC                                             * 017F 30 8D FF 42    0..B
            ldy    #200                                                  * 0183 10 8E 00 C8    ...H
            lda    #1                                                    * 0187 86 01          ..
            os9    I$WritLn                                              * 0189 10 3F 8C       .?.
@@ -130,7 +130,7 @@ L01B6      inc    U0006,U                                               * 01B6 6
            lbsr   L0200                                                 * 01C0 17 00 3D       ..=
            cmpd   >U014E,U                                              * 01C3 10 A3 C9 01 4E .#I.N
            bne    L01A4                                                 * 01C8 26 DA          &Z
-           leax   L00EE,PC                                              * 01CA 30 8D FF 20    0..
+           leax   >L00EE,PC                                             * 01CA 30 8D FF 20    0..
            ldy    #8                                                    * 01CE 10 8E 00 08    ....
            lda    #1                                                    * 01D2 86 01          ..
            os9    I$Write                                               * 01D4 10 3F 8A       .?.
@@ -140,7 +140,7 @@ L01B6      inc    U0006,U                                               * 01B6 6
            tfr    D,Y                                                   * 01DD 1F 02          ..
            lda    #1                                                    * 01DF 86 01          ..
            os9    I$Write                                               * 01E1 10 3F 8A       .?.
-           leax   L00F6,PC                                              * 01E4 30 8D FF 0E    0...
+           leax   >L00F6,PC                                             * 01E4 30 8D FF 0E    0...
            ldy    #200                                                  * 01E8 10 8E 00 C8    ...H
            os9    I$WritLn                                              * 01EC 10 3F 8C       .?.
            lbra   L0158                                                 * 01EF 16 FF 66       ..f
