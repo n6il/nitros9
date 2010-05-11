@@ -18,7 +18,7 @@ name       fcs    /Ansicode/                                            * 000D 4
 L0015      fcb    $1B                                                   * 0015 1B             .
            fcb    $5B                                                   * 0016 5B             [
 start      pshs   X                                                     * 0017 34 10          4.
-           leax   L0015,PC                                              * 0019 30 8D FF F8    0..x
+           leax   >L0015,PC                                             * 0019 30 8D FF F8    0..x
            ldy    #2                                                    * 001D 10 8E 00 02    ....
            lda    #1                                                    * 0021 86 01          ..
            os9    I$Write                                               * 0023 10 3F 8A       .?.

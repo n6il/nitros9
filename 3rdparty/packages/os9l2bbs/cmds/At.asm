@@ -47,7 +47,7 @@ Icpt       cmpb   #S$Abort                                              * 004F C
 * executes the command line each day at the specified time
 
 start      pshs   X          * Save X                                   * 005C 34 10          4.
-           leax   Icpt,PC    * Point to the intercept handler           * 005E 30 8D FF ED    0..m
+           leax   >Icpt,PC   * Point to the intercept handler           * 005E 30 8D FF ED    0..m
            os9    F$Icpt     * Set up the signal intercept handler      * 0062 10 3F 09       .?.
            puls   X          * Restore X                                * 0065 35 10          5.
 
@@ -65,7 +65,7 @@ L006D      lbsr   Parse      * Parse a byte                             * 006D 1
            stx    Param,U                                               * 0076 AF 46          /F
 
 * Write "Event scheduled" to the output path
-           leax   Sched,PC                                              * 0078 30 8D FF BD    0..=
+           leax   >Sched,PC                                             * 0078 30 8D FF BD    0..=
            ldy    #200                                                  * 007C 10 8E 00 C8    ...H
            lda    #1                                                    * 0080 86 01          ..
            os9    I$WritLn                                              * 0082 10 3F 8C       .?.
@@ -108,7 +108,7 @@ DoShell2   incb              * Increment the counter                    * 00B6 5
 
            clra              * Clear the most significant byte          * 00BD 4F             O
            tfr    D,Y        * Size of the parameter area               * 00BE 1F 02          ..
-           leax   Shell,PC   * Get the address of the module name       * 00C0 30 8D FF 85    0...
+           leax   >Shell,PC  * Get the address of the module name       * 00C0 30 8D FF 85    0...
            pshs   U          * Save U                                   * 00C4 34 40          4@
            ldu    Param,U    * Point to the parameters to the shell     * 00C6 EE 46          nF
            lda    #Prgrm+Objct * Type/Language code                       * 00C8 86 11          ..
@@ -255,7 +255,7 @@ unused_2   addd   U0004,U                                               * 01BB E
            rts                                                          * 01C1 39             9
 
 * Print the usage syntax and exit
-ShowHelp   leax   Usage,PC                                              * 01C2 30 8D FE 49    0.~I
+ShowHelp   leax   >Usage,PC                                             * 01C2 30 8D FE 49    0.~I
            ldy    #200                                                  * 01C6 10 8E 00 C8    ...H
            lda    #1                                                    * 01CA 86 01          ..
            os9    I$WritLn                                              * 01CC 10 3F 8C       .?.

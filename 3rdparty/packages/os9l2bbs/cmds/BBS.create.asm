@@ -42,7 +42,7 @@ bbsmsg     fcc    "BBS.msg"                                             * 008E 4
            fcb    $0D                                                   * 0095 0D             .
 
 * Create BBS.msg.inx
-start      leax   msginx,PC                                             * 0096 30 8D FF E8    0..h
+start      leax   >msginx,PC                                            * 0096 30 8D FF E8    0..h
            lda    #11                                                   * 009A 86 0B          ..
            tfr    A,B                                                   * 009C 1F 89          ..
            os9    I$Create                                              * 009E 10 3F 83       .?.
@@ -50,7 +50,7 @@ start      leax   msginx,PC                                             * 0096 3
            sta    inxpath,U                                             * 00A5 A7 C4          'D
 
 * Create BBS.msg
-           leax   bbsmsg,PC                                             * 00A7 30 8D FF E3    0..c
+           leax   >bbsmsg,PC                                            * 00A7 30 8D FF E3    0..c
            lda    #11                                                   * 00AB 86 0B          ..
            tfr    A,B                                                   * 00AD 1F 89          ..
            os9    I$Create                                              * 00AF 10 3F 83       .?.

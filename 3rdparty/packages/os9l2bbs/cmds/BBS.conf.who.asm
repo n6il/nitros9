@@ -36,7 +36,7 @@ these      fcc    "These people are in conference"                      * 004C 5
 line       fcc    "------------------------------"                      * 006B 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D 2D ------------------------------
            fcb    $0D                                                   * 0089 0D             .
 
-start      leax   confdat,PC                                            * 008A 30 8D FF 8B    0...
+start      leax   >confdat,PC                                            * 008A 30 8D FF 8B    0...
            lda    #65                                                   * 008E 86 41          .A
            pshs   U                                                     * 0090 34 40          4@
            os9    F$Link     * Link to Conf.dat                         * 0092 10 3F 00       .?.
@@ -45,11 +45,11 @@ start      leax   confdat,PC                                            * 008A 3
            puls   U                                                     * 009B 35 40          5@
            std    dataddr,U  * Save module offset                       * 009D ED 48          mH
            sty    U000A,U                                               * 009F 10 AF 4A       ./J
-           leax   these,PC                                              * 00A2 30 8D FF A6    0..&
+           leax   >these,PC                                             * 00A2 30 8D FF A6    0..&
            ldy    #200                                                  * 00A6 10 8E 00 C8    ...H
            lda    #1                                                    * 00AA 86 01          ..
            os9    I$WritLn                                              * 00AC 10 3F 8C       .?.
-           leax   line,PC                                               * 00AF 30 8D FF B8    0..8
+           leax   >line,PC                                              * 00AF 30 8D FF B8    0..8
            ldy    #200                                                  * 00B3 10 8E 00 C8    ...H
            os9    I$WritLn                                              * 00B7 10 3F 8C       .?.
            ldx    U000A,U                                               * 00BA AE 4A          .J
@@ -71,14 +71,14 @@ L00D8      clrb                                                         * 00D8 5
            puls   U                                                     * 00E0 35 40          5@
            clrb                                                         * 00E2 5F             _
            os9    F$Exit                                                * 00E3 10 3F 06       .?.
-L00E6      leax   noone,PC                                              * 00E6 30 8D FF 4A    0..J
+L00E6      leax   >noone,PC                                             * 00E6 30 8D FF 4A    0..J
            lda    #1                                                    * 00EA 86 01          ..
            ldy    #200                                                  * 00EC 10 8E 00 C8    ...H
            os9    I$WritLn                                              * 00F0 10 3F 8C       .?.
            clrb                                                         * 00F3 5F             _
            os9    F$Exit                                                * 00F4 10 3F 06       .?.
 L00F7      std    U0002,U                                               * 00F7 ED 42          mB
-           leax   bbsalias,PC                                            * 00F9 30 8D FF 25    0..%
+           leax   >bbsalias,PC                                            * 00F9 30 8D FF 25    0..%
            lda    #1                                                    * 00FD 86 01          ..
            os9    I$Open                                                * 00FF 10 3F 84       .?.
            lbcs   L0203                                                 * 0102 10 25 00 FD    .%.}

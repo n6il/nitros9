@@ -136,12 +136,12 @@ start      os9    F$ID                                                  * 01BD 1
            std    U0008,U                                               * 01C6 ED 48          mH
            ldy    #0                                                    * 01C8 10 8E 00 00    ....
            os9    F$SUser                                               * 01CC 10 3F 1C       .?.
-           leax   L00B0,PC                                              * 01CF 30 8D FE DD    0.~]
+           leax   >L00B0,PC                                             * 01CF 30 8D FE DD    0.~]
            lda    #1                                                    * 01D3 86 01          ..
            os9    I$Open                                                * 01D5 10 3F 84       .?.
            lbcs   L062E                                                 * 01D8 10 25 04 52    .%.R
            sta    U0001,U                                               * 01DC A7 41          'A
-           leax   L0172,PC                                              * 01DE 30 8D FF 90    0...
+           leax   >L0172,PC                                             * 01DE 30 8D FF 90    0...
            lda    #3                                                    * 01E2 86 03          ..
            os9    I$Open                                                * 01E4 10 3F 84       .?.
            bcc    L01F8                                                 * 01E7 24 0F          $.
@@ -151,7 +151,7 @@ start      os9    F$ID                                                  * 01BD 1
            os9    I$Create                                              * 01F1 10 3F 83       .?.
            lbcs   L062E                                                 * 01F4 10 25 04 36    .%.6
 L01F8      sta    U0003,U                                               * 01F8 A7 43          'C
-           leax   L00BC,PC                                              * 01FA 30 8D FE BE    0.~>
+           leax   >L00BC,PC                                             * 01FA 30 8D FE BE    0.~>
            lda    #1                                                    * 01FE 86 01          ..
            os9    I$Open                                                * 0200 10 3F 84       .?.
            lbcs   L062E                                                 * 0203 10 25 04 27    .%.'
@@ -164,8 +164,8 @@ L01F8      sta    U0003,U                                               * 01F8 A
            ldd    <U005C,U                                              * 0219 EC C8 5C       lH\
            leax   <U0036,U                                              * 021C 30 C8 36       0H6
            lbsr   L06A1                                                 * 021F 17 04 7F       ...
-           leax   L0083,PC                                              * 0222 30 8D FE 5D    0.~]
-           ldy    L0094,PC                                              * 0226 10 AE 8D FE 69 ...~i
+           leax   >L0083,PC                                             * 0222 30 8D FE 5D    0.~]
+           ldy    >L0094,PC                                             * 0226 10 AE 8D FE 69 ...~i
            lda    #1                                                    * 022B 86 01          ..
            os9    I$Write                                               * 022D 10 3F 8A       .?.
            lbcs   L062E                                                 * 0230 10 25 03 FA    .%.z
@@ -173,12 +173,12 @@ L01F8      sta    U0003,U                                               * 01F8 A
            ldy    #6                                                    * 0237 10 8E 00 06    ....
            os9    I$WritLn                                              * 023B 10 3F 8C       .?.
            lbcs   L062E                                                 * 023E 10 25 03 EC    .%.l
-           leax   L0096,PC                                              * 0242 30 8D FE 50    0.~P
+           leax   >L0096,PC                                             * 0242 30 8D FE 50    0.~P
            ldy    #200                                                  * 0246 10 8E 00 C8    ...H
            lda    #1                                                    * 024A 86 01          ..
            os9    I$WritLn                                              * 024C 10 3F 8C       .?.
            lbcs   L062E                                                 * 024F 10 25 03 DB    .%.[
-           leax   L00AF,PC                                              * 0253 30 8D FE 58    0.~X
+           leax   >L00AF,PC                                             * 0253 30 8D FE 58    0.~X
            ldy    #1                                                    * 0257 10 8E 00 01    ....
            os9    I$Write                                               * 025B 10 3F 8A       .?.
            lbcs   L062E                                                 * 025E 10 25 03 CC    .%.L
@@ -248,7 +248,7 @@ L02FD      cmpb   #211                                                  * 02FD C
            os9    I$Write                                               * 0311 10 3F 8A       .?.
 L0314      lda    U0003,U                                               * 0314 A6 43          &C
            os9    I$Close                                               * 0316 10 3F 8F       .?.
-           leax   L0151,PC                                              * 0319 30 8D FE 34    0.~4
+           leax   >L0151,PC                                             * 0319 30 8D FE 34    0.~4
            ldy    #200                                                  * 031D 10 8E 00 C8    ...H
            lda    #1                                                    * 0321 86 01          ..
            os9    I$WritLn                                              * 0323 10 3F 8C       .?.
@@ -260,15 +260,15 @@ L0326      lda    U0001,U                                               * 0326 A
            ldd    <U0036,U                                              * 0337 EC C8 36       lH6
            addd   #1                                                    * 033A C3 00 01       C..
            std    <U0036,U                                              * 033D ED C8 36       mH6
-           leax   L014E,PC                                              * 0340 30 8D FE 0A    0.~.
+           leax   >L014E,PC                                             * 0340 30 8D FE 0A    0.~.
            ldy    #2                                                    * 0344 10 8E 00 02    ....
            lda    #1                                                    * 0348 86 01          ..
            os9    I$WritLn                                              * 034A 10 3F 8C       .?.
            ldd    <U0036,U                                              * 034D EC C8 36       lH6
            leax   <U003C,U                                              * 0350 30 C8 3C       0H<
            lbsr   L06A1                                                 * 0353 17 03 4B       ..K
-           leax   L00DE,PC                                              * 0356 30 8D FD 84    0.}.
-           ldy    L010B,PC                                              * 035A 10 AE 8D FD AC ...},
+           leax   >L00DE,PC                                             * 0356 30 8D FD 84    0.}.
+           ldy    >L010B,PC                                             * 035A 10 AE 8D FD AC ...},
            lda    #1                                                    * 035F 86 01          ..
            os9    I$Write                                               * 0361 10 3F 8A       .?.
            lbcs   L062E                                                 * 0364 10 25 02 C6    .%.F
@@ -284,8 +284,8 @@ L036B      lda    ,X+                                                   * 036B A
            ldd    >U00EC,U                                              * 0380 EC C9 00 EC    lI.l
            cmpd   #-1                                                   * 0384 10 83 FF FF    ....
            lbeq   L0501                                                 * 0388 10 27 01 75    .'.u
-           leax   L00E7,PC                                              * 038C 30 8D FD 57    0.}W
-           ldy    L010B,PC                                              * 0390 10 AE 8D FD 76 ...}v
+           leax   >L00E7,PC                                             * 038C 30 8D FD 57    0.}W
+           ldy    >L010B,PC                                             * 0390 10 AE 8D FD 76 ...}v
            lda    #1                                                    * 0395 86 01          ..
            os9    I$Write                                               * 0397 10 3F 8A       .?.
            leax   >U00F0,U                                              * 039A 30 C9 00 F0    0I.p
@@ -293,14 +293,14 @@ L036B      lda    ,X+                                                   * 036B A
            lda    #1                                                    * 03A2 86 01          ..
            os9    I$WritLn                                              * 03A4 10 3F 8C       .?.
            lbcs   L062E                                                 * 03A7 10 25 02 83    .%..
-           leax   L00F0,PC                                              * 03AB 30 8D FD 41    0.}A
-           ldy    L010B,PC                                              * 03AF 10 AE 8D FD 57 ...}W
+           leax   >L00F0,PC                                             * 03AB 30 8D FD 41    0.}A
+           ldy    >L010B,PC                                             * 03AF 10 AE 8D FD 57 ...}W
            lda    #1                                                    * 03B4 86 01          ..
            os9    I$Write                                               * 03B6 10 3F 8A       .?.
            ldd    >U012A,U                                              * 03B9 EC C9 01 2A    lI.*
            cmpd   #-1                                                   * 03BD 10 83 FF FF    ....
            beq    L0423                                                 * 03C1 27 60          '`
-           leax   L0194,PC                                              * 03C3 30 8D FD CD    0.}M
+           leax   >L0194,PC                                             * 03C3 30 8D FD CD    0.}M
            lda    #1                                                    * 03C7 86 01          ..
            os9    I$Open                                                * 03C9 10 3F 84       .?.
            lbcs   L062E                                                 * 03CC 10 25 02 5E    .%.^
@@ -326,19 +326,19 @@ L03E5      lda    ,X+                                                   * 03E5 A
            lda    U0004,U                                               * 0406 A6 44          &D
            os9    I$Close                                               * 0408 10 3F 8F       .?.
            lbra   L0430                                                 * 040B 16 00 22       .."
-L040E      leax   L01A6,PC                                              * 040E 30 8D FD 94    0.}.
+L040E      leax   >L01A6,PC                                             * 040E 30 8D FD 94    0.}.
            ldy    #200                                                  * 0412 10 8E 00 C8    ...H
            lda    #1                                                    * 0416 86 01          ..
            os9    I$WritLn                                              * 0418 10 3F 8C       .?.
            lda    U0004,U                                               * 041B A6 44          &D
            os9    I$Close                                               * 041D 10 3F 8F       .?.
            lbra   L0430                                                 * 0420 16 00 0D       ...
-L0423      leax   L01B3,PC                                              * 0423 30 8D FD 8C    0.}.
+L0423      leax   >L01B3,PC                                             * 0423 30 8D FD 8C    0.}.
            ldy    #200                                                  * 0427 10 8E 00 C8    ...H
            lda    #1                                                    * 042B 86 01          ..
            os9    I$WritLn                                              * 042D 10 3F 8C       .?.
-L0430      leax   L00F9,PC                                              * 0430 30 8D FC C5    0.|E
-           ldy    L010B,PC                                              * 0434 10 AE 8D FC D2 ...|R
+L0430      leax   >L00F9,PC                                             * 0430 30 8D FC C5    0.|E
+           ldy    >L010B,PC                                             * 0434 10 AE 8D FC D2 ...|R
            lda    #1                                                    * 0439 86 01          ..
            os9    I$Write                                               * 043B 10 3F 8A       .?.
            leax   <U003C,U                                              * 043E 30 C8 3C       0H<
@@ -400,8 +400,8 @@ L04CD      lda    ,X+                                                   * 04CD A
            lda    #1                                                    * 04D9 86 01          ..
            os9    I$WritLn                                              * 04DB 10 3F 8C       .?.
            lbcs   L062E                                                 * 04DE 10 25 01 4C    .%.L
-           leax   L0102,PC                                              * 04E2 30 8D FC 1C    0.|.
-           ldy    L010B,PC                                              * 04E6 10 AE 8D FC 20 ...|
+           leax   >L0102,PC                                             * 04E2 30 8D FC 1C    0.|.
+           ldy    >L010B,PC                                             * 04E6 10 AE 8D FC 20 ...|
            lda    #1                                                    * 04EB 86 01          ..
            os9    I$Write                                               * 04ED 10 3F 8A       .?.
            leax   >U0104,U                                              * 04F0 30 C9 01 04    0I..
@@ -409,12 +409,12 @@ L04CD      lda    ,X+                                                   * 04CD A
            os9    I$WritLn                                              * 04F8 10 3F 8C       .?.
            lbcs   L062E                                                 * 04FB 10 25 01 2F    .%./
            bra    L0511                                                 * 04FF 20 10           .
-L0501      leax   L00C4,PC                                              * 0501 30 8D FB BF    0.{?
+L0501      leax   >L00C4,PC                                             * 0501 30 8D FB BF    0.{?
            ldy    #200                                                  * 0505 10 8E 00 C8    ...H
            lda    #1                                                    * 0509 86 01          ..
            os9    I$WritLn                                              * 050B 10 3F 8C       .?.
            lbra   L0326                                                 * 050E 16 FE 15       .~.
-L0511      leax   L010D,PC                                              * 0511 30 8D FB F8    0.{x
+L0511      leax   >L010D,PC                                             * 0511 30 8D FB F8    0.{x
            ldy    #80                                                   * 0515 10 8E 00 50    ...P
            lda    #1                                                    * 0519 86 01          ..
            os9    I$WritLn                                              * 051B 10 3F 8C       .?.
@@ -443,18 +443,18 @@ L054C      lda    U0002,U                                               * 054C A
            os9    I$WritLn                                              * 055B 10 3F 8C       .?.
            cmpy   #1                                                    * 055E 10 8C 00 01    ....
            bhi    L0533                                                 * 0562 22 CF          "O
-           leax   L010D,PC                                              * 0564 30 8D FB A5    0.{%
+           leax   >L010D,PC                                             * 0564 30 8D FB A5    0.{%
            ldy    #200                                                  * 0568 10 8E 00 C8    ...H
            lda    #1                                                    * 056C 86 01          ..
            os9    I$WritLn                                              * 056E 10 3F 8C       .?.
-           leax   L014E,PC                                              * 0571 30 8D FB D9    0.{Y
+           leax   >L014E,PC                                             * 0571 30 8D FB D9    0.{Y
            ldy    #5                                                    * 0575 10 8E 00 05    ....
            os9    I$WritLn                                              * 0579 10 3F 8C       .?.
            ldd    U0008,U                                               * 057C EC 48          lH
            addd   #1                                                    * 057E C3 00 01       C..
            std    U0008,U                                               * 0581 ED 48          mH
            lbra   L0326                                                 * 0583 16 FD A0       .}
-L0586      leax   L017E,PC                                              * 0586 30 8D FB F4    0.{t
+L0586      leax   >L017E,PC                                             * 0586 30 8D FB F4    0.{t
            lda    #3                                                    * 058A 86 03          ..
            os9    I$Open                                                * 058C 10 3F 84       .?.
            bcc    L059A                                                 * 058F 24 09          $.

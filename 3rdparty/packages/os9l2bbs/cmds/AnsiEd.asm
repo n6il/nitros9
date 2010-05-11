@@ -97,7 +97,7 @@ csta10     ldx    0,S        * get the beginning of data address        * 0028 A
            leau   0,X        * (tfr x,u)                                * 002A 33 84          3.
            leax   >$37E4,X   * get the end of bss address               * 002C 30 89 37 E4    0.7d
            pshs   X          * save it                                  * 0030 34 10          4.
-           leay   etext,PC   * point to dp-data count word              * 0032 31 8D 3B 2B    1.;+
+           leay   >etext,PC  * point to dp-data count word              * 0032 31 8D 3B 2B    1.;+
 
            ldx    ,Y++       * get count of dp-data to be moved         * 0036 AE A1          .!
            beq    csta15     * bra if none                              * 0038 27 04          '.
@@ -120,7 +120,7 @@ clrbss     cmpu   0,S        * reached the end?                         * 0049 1
 reldt      ldu    $02,S      * restore to data bottom                   * 0052 EE 62          nb
            ldd    ,Y++       * get data-text ref. count                 * 0054 EC A1          l!
            beq    reldd                                                 * 0056 27 07          '.
-           leax   ,PC        * point to text                            * 0058 30 8D FF A4    0..$
+           leax   >,PC       * point to text                            * 0058 30 8D FF A4    0..$
            lbsr   patch      * patch them                               * 005C 17 01 03       ...
 
 * and the data-data refs.
@@ -363,7 +363,7 @@ L01BB      ldd    #4                                                    * 01BB C
            pshs   D                                                     * 0222 34 06          4.
            lbsr   L3AEC                                                 * 0224 17 38 C5       .8E
            leas   $02,S                                                 * 0227 32 62          2b
-           leax   savprmpt,PC                                            * 0229 30 8D 24 41    0.$A
+           leax   >savprmpt,PC                                            * 0229 30 8D 24 41    0.$A
            pshs   X                                                     * 022D 34 10          4.
            lbsr   printf                                                * 022F 17 2B 1B       .+.
            leas   $02,S                                                 * 0232 32 62          2b
@@ -414,19 +414,19 @@ L0284      leas   $02,S                                                 * 0284 3
            pshs   D                                                     * 029D 34 06          4.
            lbsr   L3AFB                                                 * 029F 17 38 59       .8Y
            leas   $02,S                                                 * 02A2 32 62          2b
-           leax   Title,PC                                              * 02A4 30 8D 23 DA    0.#Z
+           leax   >Title,PC                                             * 02A4 30 8D 23 DA    0.#Z
            pshs   X                                                     * 02A8 34 10          4.
            lbsr   printf                                                * 02AA 17 2A A0       .*
            leas   $02,S                                                 * 02AD 32 62          2b
-           leax   Copyright,PC                                            * 02AF 30 8D 23 F8    0.#x
+           leax   >Copyright,PC                                            * 02AF 30 8D 23 F8    0.#x
            pshs   X                                                     * 02B3 34 10          4.
            lbsr   printf                                                * 02B5 17 2A 95       .*.
            leas   $02,S                                                 * 02B8 32 62          2b
-           leax   License,PC                                            * 02BA 30 8D 24 16    0.$.
+           leax   >License,PC                                            * 02BA 30 8D 24 16    0.$.
            pshs   X                                                     * 02BE 34 10          4.
            lbsr   printf                                                * 02C0 17 2A 8A       .*.
            leas   $02,S                                                 * 02C3 32 62          2b
-           leax   Rights,PC                                             * 02C5 30 8D 24 34    0.$4
+           leax   >Rights,PC                                            * 02C5 30 8D 24 34    0.$4
            pshs   X                                                     * 02C9 34 10          4.
            lbsr   printf                                                * 02CB 17 2A 7F       .*.
            leas   $02,S                                                 * 02CE 32 62          2b
@@ -575,7 +575,7 @@ L03E2      pshs   U                                                     * 03E2 3
            bne    L0420                                                 * 0407 26 17          &.
            ldd    >U01DB,Y                                              * 0409 EC A9 01 DB    l).[
            pshs   D                                                     * 040D 34 06          4.
-           leax   CantOpen1,PC                                            * 040F 30 8D 23 13    0.#.
+           leax   >CantOpen1,PC                                            * 040F 30 8D 23 13    0.#.
            pshs   X                                                     * 0413 34 10          4.
            lbsr   L2561                                                 * 0415 17 21 49       .!I
            leas   $04,S                                                 * 0418 32 64          2d
@@ -623,7 +623,7 @@ L0420      ldd    #4                                                    * 0420 C
            pshs   D                                                     * 047D 34 06          4.
            lbsr   L3AEC                                                 * 047F 17 36 6A       .6j
            leas   $02,S                                                 * 0482 32 62          2b
-           leax   PutScrn,PC                                            * 0484 30 8D 22 B6    0."6
+           leax   >PutScrn,PC                                            * 0484 30 8D 22 B6    0."6
            pshs   X                                                     * 0488 34 10          4.
            lbsr   printf                                                * 048A 17 28 C0       .(@
            leas   $02,S                                                 * 048D 32 62          2b
@@ -650,7 +650,7 @@ L04BA      ldd    #1                                                    * 04BA C
            pshs   D                                                     * 04BD 34 06          4.
            lbsr   L3AEC                                                 * 04BF 17 36 2A       .6*
            leas   $02,S                                                 * 04C2 32 62          2b
-           leax   ClrScrn,PC                                            * 04C4 30 8D 22 8F    0.".
+           leax   >ClrScrn,PC                                            * 04C4 30 8D 22 8F    0.".
            pshs   X                                                     * 04C8 34 10          4.
            lbsr   printf                                                * 04CA 17 28 80       .(.
            leas   $02,S                                                 * 04CD 32 62          2b
@@ -727,7 +727,7 @@ L0555      pshs   U                                                     * 0555 3
            bne    L058C                                                 * 0573 26 17          &.
            ldd    >U01DB,Y                                              * 0575 EC A9 01 DB    l).[
            pshs   D                                                     * 0579 34 06          4.
-           leax   CantOpen2,PC                                            * 057B 30 8D 21 F2    0.!r
+           leax   >CantOpen2,PC                                            * 057B 30 8D 21 F2    0.!r
            pshs   X                                                     * 057F 34 10          4.
            lbsr   L2561                                                 * 0581 17 1F DD       ..]
            leas   $04,S                                                 * 0584 32 64          2d
@@ -772,7 +772,7 @@ L058C      clra                                                         * 058C 4
            pshs   D                                                     * 05D3 34 06          4.
            lbsr   L3A52                                                 * 05D5 17 34 7A       .4z
            leas   <$0010,S                                              * 05D8 32 E8 10       2h.
-           leax   ReadFile,PC                                            * 05DB 30 8D 21 A3    0.!#
+           leax   >ReadFile,PC                                            * 05DB 30 8D 21 A3    0.!#
            pshs   X                                                     * 05DF 34 10          4.
            lbsr   printf                                                * 05E1 17 27 69       .'i
            leas   $02,S                                                 * 05E4 32 62          2b
@@ -810,7 +810,7 @@ L061A      ldb    $01,S                                                 * 061A E
 L0625      clra                                                         * 0625 4F             O
            clrb                                                         * 0626 5F             _
 L0627      std    >U0007,Y                                              * 0627 ED A9 00 07    m)..
-           leax   AddLf,PC                                              * 062B 30 8D 21 84    0.!.
+           leax   >AddLf,PC                                             * 062B 30 8D 21 84    0.!.
            pshs   X                                                     * 062F 34 10          4.
            lbsr   printf                                                * 0631 17 27 19       .'.
            leas   $02,S                                                 * 0634 32 62          2b
@@ -1032,15 +1032,15 @@ L080D      clra                                                         * 080D 4
            ldd    >U0219,Y                                              * 0841 EC A9 02 19    l)..
            addd   #1                                                    * 0845 C3 00 01       C..
            pshs   D                                                     * 0848 34 06          4.
-           leax   Status,PC                                             * 084A 30 8D 1F 8A    0...
+           leax   >Status,PC                                            * 084A 30 8D 1F 8A    0...
            pshs   X                                                     * 084E 34 10          4.
            lbsr   printf                                                * 0850 17 24 FA       .$z
            leas   $06,S                                                 * 0853 32 66          2f
            ldd    >U0007,Y                                              * 0855 EC A9 00 07    l)..
            beq    L0861                                                 * 0859 27 06          '.
-           leax   Editing,PC                                            * 085B 30 8D 1F 8F    0...
+           leax   >Editing,PC                                            * 085B 30 8D 1F 8F    0...
            bra    L0865                                                 * 085F 20 04           .
-L0861      leax   Recording,PC                                            * 0861 30 8D 1F 93    0...
+L0861      leax   >Recording,PC                                            * 0861 30 8D 1F 93    0...
 L0865      pshs   X                                                     * 0865 34 10          4.
            lbsr   printf                                                * 0867 17 24 E3       .$c
            leas   $02,S                                                 * 086A 32 62          2b
@@ -1065,16 +1065,16 @@ L0865      pshs   X                                                     * 0865 3
            ldb    0,X                                                   * 08A0 E6 84          f.
            sex                                                          * 08A2 1D             .
            pshs   D                                                     * 08A3 34 06          4.
-           leax   CharDump,PC                                            * 08A5 30 8D 1F 59    0..Y
+           leax   >CharDump,PC                                            * 08A5 30 8D 1F 59    0..Y
            pshs   X                                                     * 08A9 34 10          4.
            lbsr   printf                                                * 08AB 17 24 9F       .$.
            leas   $04,S                                                 * 08AE 32 64          2d
            bra    L08BD                                                 * 08B0 20 0B           .
-L08B2      leax   Char,PC                                               * 08B2 30 8D 1F 57    0..W
+L08B2      leax   >Char,PC                                              * 08B2 30 8D 1F 57    0..W
            pshs   X                                                     * 08B6 34 10          4.
            lbsr   printf                                                * 08B8 17 24 92       .$.
            leas   $02,S                                                 * 08BB 32 62          2b
-L08BD      leax   Attrs,PC                                              * 08BD 30 8D 1F 55    0..U
+L08BD      leax   >Attrs,PC                                             * 08BD 30 8D 1F 55    0..U
            pshs   X                                                     * 08C1 34 10          4.
            lbsr   printf                                                * 08C3 17 24 87       .$.
            leas   $02,S                                                 * 08C6 32 62          2b
@@ -1083,9 +1083,9 @@ L08BD      leax   Attrs,PC                                              * 08BD 3
            clrb                                                         * 08CE 5F             _
            std    -$02,S                                                * 08CF ED 7E          m~
            beq    L08D9                                                 * 08D1 27 06          '.
-           leax   L281F,PC                                              * 08D3 30 8D 1F 48    0..H
+           leax   >L281F,PC                                             * 08D3 30 8D 1F 48    0..H
            bra    L08DD                                                 * 08D7 20 04           .
-L08D9      leax   L2821,PC                                              * 08D9 30 8D 1F 44    0..D
+L08D9      leax   >L2821,PC                                             * 08D9 30 8D 1F 44    0..D
 L08DD      pshs   X                                                     * 08DD 34 10          4.
            lbsr   printf                                                * 08DF 17 24 6B       .$k
            leas   $02,S                                                 * 08E2 32 62          2b
@@ -1094,9 +1094,9 @@ L08DD      pshs   X                                                     * 08DD 3
            clrb                                                         * 08EA 5F             _
            std    -$02,S                                                * 08EB ED 7E          m~
            beq    L08F5                                                 * 08ED 27 06          '.
-           leax   L2823,PC                                              * 08EF 30 8D 1F 30    0..0
+           leax   >L2823,PC                                             * 08EF 30 8D 1F 30    0..0
            bra    L08F9                                                 * 08F3 20 04           .
-L08F5      leax   L2825,PC                                              * 08F5 30 8D 1F 2C    0..,
+L08F5      leax   >L2825,PC                                             * 08F5 30 8D 1F 2C    0..,
 L08F9      pshs   X                                                     * 08F9 34 10          4.
            lbsr   printf                                                * 08FB 17 24 4F       .$O
            leas   $02,S                                                 * 08FE 32 62          2b
@@ -1105,9 +1105,9 @@ L08F9      pshs   X                                                     * 08F9 3
            clrb                                                         * 0906 5F             _
            std    -$02,S                                                * 0907 ED 7E          m~
            beq    L0911                                                 * 0909 27 06          '.
-           leax   L2827,PC                                              * 090B 30 8D 1F 18    0...
+           leax   >L2827,PC                                             * 090B 30 8D 1F 18    0...
            bra    L0915                                                 * 090F 20 04           .
-L0911      leax   L2829,PC                                              * 0911 30 8D 1F 14    0...
+L0911      leax   >L2829,PC                                             * 0911 30 8D 1F 14    0...
 L0915      pshs   X                                                     * 0915 34 10          4.
            lbsr   printf                                                * 0917 17 24 33       .$3
            leas   $02,S                                                 * 091A 32 62          2b
@@ -1116,9 +1116,9 @@ L0915      pshs   X                                                     * 0915 3
            clrb                                                         * 0922 5F             _
            std    -$02,S                                                * 0923 ED 7E          m~
            beq    L092D                                                 * 0925 27 06          '.
-           leax   L282B,PC                                              * 0927 30 8D 1F 00    0...
+           leax   >L282B,PC                                             * 0927 30 8D 1F 00    0...
            bra    L0931                                                 * 092B 20 04           .
-L092D      leax   L282D,PC                                              * 092D 30 8D 1E FC    0..|
+L092D      leax   >L282D,PC                                             * 092D 30 8D 1E FC    0..|
 L0931      pshs   X                                                     * 0931 34 10          4.
            lbsr   printf                                                * 0933 17 24 17       .$.
            leas   $02,S                                                 * 0936 32 62          2b
@@ -1127,9 +1127,9 @@ L0931      pshs   X                                                     * 0931 3
            clrb                                                         * 093E 5F             _
            std    -$02,S                                                * 093F ED 7E          m~
            beq    L0949                                                 * 0941 27 06          '.
-           leax   L282F,PC                                              * 0943 30 8D 1E E8    0..h
+           leax   >L282F,PC                                             * 0943 30 8D 1E E8    0..h
            bra    L094D                                                 * 0947 20 04           .
-L0949      leax   L2831,PC                                              * 0949 30 8D 1E E4    0..d
+L0949      leax   >L2831,PC                                             * 0949 30 8D 1E E4    0..d
 L094D      pshs   X                                                     * 094D 34 10          4.
            lbsr   printf                                                * 094F 17 23 FB       .#{
            leas   $02,S                                                 * 0952 32 62          2b
@@ -1160,12 +1160,12 @@ L094D      pshs   X                                                     * 094D 3
            leax   D,X                                                   * 098F 30 8B          0.
            ldd    0,X                                                   * 0991 EC 84          l.
            pshs   D                                                     * 0993 34 06          4.
-           leax   ColorsOn,PC                                            * 0995 30 8D 1E 9A    0...
+           leax   >ColorsOn,PC                                            * 0995 30 8D 1E 9A    0...
            pshs   X                                                     * 0999 34 10          4.
            lbsr   printf                                                * 099B 17 23 AF       .#/
            leas   $06,S                                                 * 099E 32 66          2f
            bra    L09AD                                                 * 09A0 20 0B           .
-L09A2      leax   ColorsBW,PC                                            * 09A2 30 8D 1E A0    0..
+L09A2      leax   >ColorsBW,PC                                            * 09A2 30 8D 1E A0    0..
            pshs   X                                                     * 09A6 34 10          4.
            lbsr   printf                                                * 09A8 17 23 A2       .#"
            leas   $02,S                                                 * 09AB 32 62          2b
@@ -1234,63 +1234,63 @@ L09E5      ldd    #4                                                    * 09E5 C
            pshs   D                                                     * 0A42 34 06          4.
            lbsr   L3AEC                                                 * 0A44 17 30 A5       .0%
            leas   $02,S                                                 * 0A47 32 62          2b
-           leax   Help,PC                                               * 0A49 30 8D 1E 14    0...
+           leax   >Help,PC                                              * 0A49 30 8D 1E 14    0...
            pshs   X                                                     * 0A4D 34 10          4.
            lbsr   printf                                                * 0A4F 17 22 FB       ."{
            leas   $02,S                                                 * 0A52 32 62          2b
-           leax   Line,PC                                               * 0A54 30 8D 1E 27    0..'
+           leax   >Line,PC                                              * 0A54 30 8D 1E 27    0..'
            pshs   X                                                     * 0A58 34 10          4.
            lbsr   printf                                                * 0A5A 17 22 F0       ."p
            leas   $02,S                                                 * 0A5D 32 62          2b
-           leax   AltG,PC                                               * 0A5F 30 8D 1E 44    0..D
+           leax   >AltG,PC                                              * 0A5F 30 8D 1E 44    0..D
            pshs   X                                                     * 0A63 34 10          4.
            lbsr   printf                                                * 0A65 17 22 E5       ."e
            leas   $02,S                                                 * 0A68 32 62          2b
-           leax   AltR,PC                                               * 0A6A 30 8D 1E 53    0..S
+           leax   >AltR,PC                                              * 0A6A 30 8D 1E 53    0..S
            pshs   X                                                     * 0A6E 34 10          4.
            lbsr   printf                                                * 0A70 17 22 DA       ."Z
            leas   $02,S                                                 * 0A73 32 62          2b
-           leax   AltE,PC                                               * 0A75 30 8D 1E 61    0..a
+           leax   >AltE,PC                                              * 0A75 30 8D 1E 61    0..a
            pshs   X                                                     * 0A79 34 10          4.
            lbsr   printf                                                * 0A7B 17 22 CF       ."O
            leas   $02,S                                                 * 0A7E 32 62          2b
-           leax   AltC,PC                                               * 0A80 30 8D 1E 6D    0..m
+           leax   >AltC,PC                                              * 0A80 30 8D 1E 6D    0..m
            pshs   X                                                     * 0A84 34 10          4.
            lbsr   printf                                                * 0A86 17 22 C4       ."D
            leas   $02,S                                                 * 0A89 32 62          2b
-           leax   AltN,PC                                               * 0A8B 30 8D 1E 7C    0..|
+           leax   >AltN,PC                                              * 0A8B 30 8D 1E 7C    0..|
            pshs   X                                                     * 0A8F 34 10          4.
            lbsr   printf                                                * 0A91 17 22 B9       ."9
            leas   $02,S                                                 * 0A94 32 62          2b
-           leax   AltS,PC                                               * 0A96 30 8D 1E 93    0...
+           leax   >AltS,PC                                              * 0A96 30 8D 1E 93    0...
            pshs   X                                                     * 0A9A 34 10          4.
            lbsr   printf                                                * 0A9C 17 22 AE       .".
            leas   $02,S                                                 * 0A9F 32 62          2b
-           leax   AltA,PC                                               * 0AA1 30 8D 1E AA    0..*
+           leax   >AltA,PC                                              * 0AA1 30 8D 1E AA    0..*
            pshs   X                                                     * 0AA5 34 10          4.
            lbsr   printf                                                * 0AA7 17 22 A3       ."#
            leas   $02,S                                                 * 0AAA 32 62          2b
-           leax   AltP,PC                                               * 0AAC 30 8D 1E C4    0..D
+           leax   >AltP,PC                                              * 0AAC 30 8D 1E C4    0..D
            pshs   X                                                     * 0AB0 34 10          4.
            lbsr   printf                                                * 0AB2 17 22 98       .".
            leas   $02,S                                                 * 0AB5 32 62          2b
-           leax   AltL,PC                                               * 0AB7 30 8D 1E DD    0..]
+           leax   >AltL,PC                                              * 0AB7 30 8D 1E DD    0..]
            pshs   X                                                     * 0ABB 34 10          4.
            lbsr   printf                                                * 0ABD 17 22 8D       .".
            leas   $02,S                                                 * 0AC0 32 62          2b
-           leax   AltK,PC                                               * 0AC2 30 8D 1E EE    0..n
+           leax   >AltK,PC                                              * 0AC2 30 8D 1E EE    0..n
            pshs   X                                                     * 0AC6 34 10          4.
            lbsr   printf                                                * 0AC8 17 22 82       .".
            leas   $02,S                                                 * 0ACB 32 62          2b
-           leax   AltZ,PC                                               * 0ACD 30 8D 1E FD    0..}
+           leax   >AltZ,PC                                              * 0ACD 30 8D 1E FD    0..}
            pshs   X                                                     * 0AD1 34 10          4.
            lbsr   printf                                                * 0AD3 17 22 77       ."w
            leas   $02,S                                                 * 0AD6 32 62          2b
-           leax   AltX,PC                                               * 0AD8 30 8D 1F 0B    0...
+           leax   >AltX,PC                                              * 0AD8 30 8D 1F 0B    0...
            pshs   X                                                     * 0ADC 34 10          4.
            lbsr   printf                                                * 0ADE 17 22 6C       ."l
            leas   $02,S                                                 * 0AE1 32 62          2b
-           leax   AltQ,PC                                               * 0AE3 30 8D 1F 19    0...
+           leax   >AltQ,PC                                              * 0AE3 30 8D 1F 19    0...
            pshs   X                                                     * 0AE7 34 10          4.
            lbsr   printf                                                * 0AE9 17 22 61       ."a
            leas   $02,S                                                 * 0AEC 32 62          2b
@@ -1359,7 +1359,7 @@ L0B26      ldd    #4                                                    * 0B26 C
            pshs   D                                                     * 0B83 34 06          4.
            lbsr   L3AEC                                                 * 0B85 17 2F 64       ./d
            leas   $02,S                                                 * 0B88 32 62          2b
-           leax   Sure,PC                                               * 0B8A 30 8D 1E 91    0...
+           leax   >Sure,PC                                              * 0B8A 30 8D 1E 91    0...
            pshs   X                                                     * 0B8E 34 10          4.
            lbsr   printf                                                * 0B90 17 21 BA       .!:
            leas   $02,S                                                 * 0B93 32 62          2b
@@ -1401,19 +1401,19 @@ L0B26      ldd    #4                                                    * 0B26 C
            pshs   D                                                     * 0BEC 34 06          4.
            lbsr   L3AFB                                                 * 0BEE 17 2F 0A       ./.
            leas   $02,S                                                 * 0BF1 32 62          2b
-           leax   Title2,PC                                             * 0BF3 30 8D 1E 39    0..9
+           leax   >Title2,PC                                            * 0BF3 30 8D 1E 39    0..9
            pshs   X                                                     * 0BF7 34 10          4.
            lbsr   printf                                                * 0BF9 17 21 51       .!Q
            leas   $02,S                                                 * 0BFC 32 62          2b
-           leax   CpyRite2,PC                                            * 0BFE 30 8D 1E 57    0..W
+           leax   >CpyRite2,PC                                            * 0BFE 30 8D 1E 57    0..W
            pshs   X                                                     * 0C02 34 10          4.
            lbsr   printf                                                * 0C04 17 21 46       .!F
            leas   $02,S                                                 * 0C07 32 62          2b
-           leax   License2,PC                                            * 0C09 30 8D 1E 75    0..u
+           leax   >License2,PC                                            * 0C09 30 8D 1E 75    0..u
            pshs   X                                                     * 0C0D 34 10          4.
            lbsr   printf                                                * 0C0F 17 21 3B       .!;
            leas   $02,S                                                 * 0C12 32 62          2b
-           leax   Rights2,PC                                            * 0C14 30 8D 1E 93    0...
+           leax   >Rights2,PC                                            * 0C14 30 8D 1E 93    0...
            pshs   X                                                     * 0C18 34 10          4.
            lbsr   printf                                                * 0C1A 17 21 30       .!0
            leas   $02,S                                                 * 0C1D 32 62          2b
@@ -1476,7 +1476,7 @@ L0C3D      ldd    #4                                                    * 0C3D C
            pshs   D                                                     * 0CA4 34 06          4.
            lbsr   L3AEC                                                 * 0CA6 17 2E 43       ..C
            leas   $02,S                                                 * 0CA9 32 62          2b
-           leax   LoadPrompt,PC                                            * 0CAB 30 8D 1E 25    0..%
+           leax   >LoadPrompt,PC                                            * 0CAB 30 8D 1E 25    0..%
            pshs   X                                                     * 0CAF 34 10          4.
            lbsr   printf                                                * 0CB1 17 20 99       . .
            leas   $02,S                                                 * 0CB4 32 62          2b
@@ -1561,7 +1561,7 @@ L0D07      ldd    #4                                                    * 0D07 C
            pshs   D                                                     * 0D6E 34 06          4.
            lbsr   L3AEC                                                 * 0D70 17 2D 79       .-y
            leas   $02,S                                                 * 0D73 32 62          2b
-           leax   SavePrompt,PC                                            * 0D75 30 8D 1D 6F    0..o
+           leax   >SavePrompt,PC                                            * 0D75 30 8D 1D 6F    0..o
            pshs   X                                                     * 0D79 34 10          4.
            lbsr   printf                                                * 0D7B 17 1F CF       ..O
            leas   $02,S                                                 * 0D7E 32 62          2b
@@ -1674,7 +1674,7 @@ L0E31      ldd    #4                                                    * 0E31 C
            pshs   D                                                     * 0E8E 34 06          4.
            lbsr   L3AEC                                                 * 0E90 17 2C 59       .,Y
            leas   $02,S                                                 * 0E93 32 62          2b
-           leax   PosSaved,PC                                            * 0E95 30 8D 1C 63    0..c
+           leax   >PosSaved,PC                                            * 0E95 30 8D 1C 63    0..c
            pshs   X                                                     * 0E99 34 10          4.
            lbsr   printf                                                * 0E9B 17 1E AF       ../
            leas   $02,S                                                 * 0E9E 32 62          2b
@@ -1740,7 +1740,7 @@ L0ED6      ldd    #4                                                    * 0ED6 C
            pshs   D                                                     * 0F33 34 06          4.
            lbsr   L3AEC                                                 * 0F35 17 2B B4       .+4
            leas   $02,S                                                 * 0F38 32 62          2b
-           leax   PosRestrd,PC                                            * 0F3A 30 8D 1B D1    0..Q
+           leax   >PosRestrd,PC                                            * 0F3A 30 8D 1B D1    0..Q
            pshs   X                                                     * 0F3E 34 10          4.
            lbsr   printf                                                * 0F40 17 1E 0A       ...
            leas   $02,S                                                 * 0F43 32 62          2b
@@ -1940,7 +1940,7 @@ L1116      ldd    #4                                                    * 1116 C
            pshs   D                                                     * 1173 34 06          4.
            lbsr   L3AEC                                                 * 1175 17 29 74       .)t
            leas   $02,S                                                 * 1178 32 62          2b
-           leax   MovBuff,PC                                            * 117A 30 8D 19 A5    0..%
+           leax   >MovBuff,PC                                            * 117A 30 8D 19 A5    0..%
            pshs   X                                                     * 117E 34 10          4.
            lbsr   printf                                                * 1180 17 1B CA       ..J
            leas   $02,S                                                 * 1183 32 62          2b
@@ -2001,27 +2001,27 @@ L11AC      ldd    #4                                                    * 11AC C
            pshs   D                                                     * 1209 34 06          4.
            lbsr   L3AEC                                                 * 120B 17 28 DE       .(^
            leas   $02,S                                                 * 120E 32 62          2b
-           leax   Zap,PC                                                * 1210 30 8D 19 2A    0..*
+           leax   >Zap,PC                                               * 1210 30 8D 19 2A    0..*
            pshs   X                                                     * 1214 34 10          4.
            lbsr   printf                                                * 1216 17 1B 34       ..4
            leas   $02,S                                                 * 1219 32 62          2b
-           leax   RecBuff,PC                                            * 121B 30 8D 19 39    0..9
+           leax   >RecBuff,PC                                            * 121B 30 8D 19 39    0..9
            pshs   X                                                     * 121F 34 10          4.
            lbsr   printf                                                * 1221 17 1B 29       ..)
            leas   $02,S                                                 * 1224 32 62          2b
-           leax   BothBuffs,PC                                            * 1226 30 8D 19 47    0..G
+           leax   >BothBuffs,PC                                            * 1226 30 8D 19 47    0..G
            pshs   X                                                     * 122A 34 10          4.
            lbsr   printf                                                * 122C 17 1B 1E       ...
            leas   $02,S                                                 * 122F 32 62          2b
-           leax   ScrnChar,PC                                            * 1231 30 8D 19 56    0..V
+           leax   >ScrnChar,PC                                            * 1231 30 8D 19 56    0..V
            pshs   X                                                     * 1235 34 10          4.
            lbsr   printf                                                * 1237 17 1B 13       ...
            leas   $02,S                                                 * 123A 32 62          2b
-           leax   RecChar,PC                                            * 123C 30 8D 19 67    0..g
+           leax   >RecChar,PC                                            * 123C 30 8D 19 67    0..g
            pshs   X                                                     * 1240 34 10          4.
            lbsr   printf                                                * 1242 17 1B 08       ...
            leas   $02,S                                                 * 1245 32 62          2b
-           leax   Choose,PC                                             * 1247 30 8D 19 78    0..x
+           leax   >Choose,PC                                            * 1247 30 8D 19 78    0..x
            pshs   X                                                     * 124B 34 10          4.
            lbsr   printf                                                * 124D 17 1A FD       ..}
            leas   $02,S                                                 * 1250 32 62          2b
@@ -2060,7 +2060,7 @@ L11AC      ldd    #4                                                    * 11AC C
            ldb    <$0022,S                                              * 129A E6 E8 22       fh"
            cmpb   #84                                                   * 129D C1 54          AT
            bne    L12CA                                                 * 129F 26 29          &)
-L12A1      leax   Sure2,PC                                              * 12A1 30 8D 19 2B    0..+
+L12A1      leax   >Sure2,PC                                             * 12A1 30 8D 19 2B    0..+
            pshs   X                                                     * 12A5 34 10          4.
            lbsr   printf                                                * 12A7 17 1A A3       ..#
            leas   $02,S                                                 * 12AA 32 62          2b
@@ -2170,7 +2170,7 @@ L1361      ldd    >U0219,Y                                              * 1361 E
            std    0,X                                                   * 139F ED 84          m.
            ldd    #1                                                    * 13A1 CC 00 01       L..
            pshs   D                                                     * 13A4 34 06          4.
-           leax   L2BE6,PC                                              * 13A6 30 8D 18 3C    0..<
+           leax   >L2BE6,PC                                             * 13A6 30 8D 18 3C    0..<
            pshs   X                                                     * 13AA 34 10          4.
            ldd    #1                                                    * 13AC CC 00 01       L..
            pshs   D                                                     * 13AF 34 06          4.
@@ -2186,7 +2186,7 @@ L13B9      ldd    >U000D,Y                                              * 13B9 E
            leas   $02,S                                                 * 13CC 32 62          2b
            ldd    #1                                                    * 13CE CC 00 01       L..
            pshs   D                                                     * 13D1 34 06          4.
-           leax   L2BE8,PC                                              * 13D3 30 8D 18 11    0...
+           leax   >L2BE8,PC                                             * 13D3 30 8D 18 11    0...
            pshs   X                                                     * 13D7 34 10          4.
            ldd    #1                                                    * 13D9 CC 00 01       L..
            pshs   D                                                     * 13DC 34 06          4.
@@ -2355,51 +2355,51 @@ L154E      ldd    #3                                                    * 154E C
            pshs   D                                                     * 15AB 34 06          4.
            lbsr   L3AEC                                                 * 15AD 17 25 3C       .%<
            leas   $02,S                                                 * 15B0 32 62          2b
-           leax   SetGraphs,PC                                            * 15B2 30 8D 16 34    0..4
+           leax   >SetGraphs,PC                                            * 15B2 30 8D 16 34    0..4
            pshs   X                                                     * 15B6 34 10          4.
            lbsr   printf                                                * 15B8 17 17 92       ...
            leas   $02,S                                                 * 15BB 32 62          2b
-           leax   Line2,PC                                              * 15BD 30 8D 16 45    0..E
+           leax   >Line2,PC                                             * 15BD 30 8D 16 45    0..E
            pshs   X                                                     * 15C1 34 10          4.
            lbsr   printf                                                * 15C3 17 17 87       ...
            leas   $02,S                                                 * 15C6 32 62          2b
-           leax   RestGraph,PC                                            * 15C8 30 8D 16 59    0..Y
+           leax   >RestGraph,PC                                            * 15C8 30 8D 16 59    0..Y
            pshs   X                                                     * 15CC 34 10          4.
            lbsr   printf                                                * 15CE 17 17 7C       ..|
            leas   $02,S                                                 * 15D1 32 62          2b
-           leax   BoldOn,PC                                             * 15D3 30 8D 16 75    0..u
+           leax   >BoldOn,PC                                            * 15D3 30 8D 16 75    0..u
            pshs   X                                                     * 15D7 34 10          4.
            lbsr   printf                                                * 15D9 17 17 71       ..q
            leas   $02,S                                                 * 15DC 32 62          2b
-           leax   UndrOn,PC                                             * 15DE 30 8D 16 79    0..y
+           leax   >UndrOn,PC                                            * 15DE 30 8D 16 79    0..y
            pshs   X                                                     * 15E2 34 10          4.
            lbsr   printf                                                * 15E4 17 17 66       ..f
            leas   $02,S                                                 * 15E7 32 62          2b
-           leax   BlnkOn,PC                                             * 15E9 30 8D 16 83    0...
+           leax   >BlnkOn,PC                                            * 15E9 30 8D 16 83    0...
            pshs   X                                                     * 15ED 34 10          4.
            lbsr   printf                                                * 15EF 17 17 5B       ..[
            leas   $02,S                                                 * 15F2 32 62          2b
-           leax   RevVidOn,PC                                            * 15F4 30 8D 16 88    0...
+           leax   >RevVidOn,PC                                            * 15F4 30 8D 16 88    0...
            pshs   X                                                     * 15F8 34 10          4.
            lbsr   printf                                                * 15FA 17 17 50       ..P
            leas   $02,S                                                 * 15FD 32 62          2b
-           leax   InvisOn,PC                                            * 15FF 30 8D 16 95    0...
+           leax   >InvisOn,PC                                            * 15FF 30 8D 16 95    0...
            pshs   X                                                     * 1603 34 10          4.
            lbsr   printf                                                * 1605 17 17 45       ..E
            leas   $02,S                                                 * 1608 32 62          2b
-           leax   SetForClr,PC                                            * 160A 30 8D 16 9E    0...
+           leax   >SetForClr,PC                                            * 160A 30 8D 16 9E    0...
            pshs   X                                                     * 160E 34 10          4.
            lbsr   printf                                                * 1610 17 17 3A       ..:
            leas   $02,S                                                 * 1613 32 62          2b
-           leax   SetBckClr,PC                                            * 1615 30 8D 16 AF    0../
+           leax   >SetBckClr,PC                                            * 1615 30 8D 16 AF    0../
            pshs   X                                                     * 1619 34 10          4.
            lbsr   printf                                                * 161B 17 17 2F       ../
            leas   $02,S                                                 * 161E 32 62          2b
-           leax   Done,PC                                               * 1620 30 8D 16 C0    0..@
+           leax   >Done,PC                                              * 1620 30 8D 16 C0    0..@
            pshs   X                                                     * 1624 34 10          4.
            lbsr   printf                                                * 1626 17 17 24       ..$
            leas   $02,S                                                 * 1629 32 62          2b
-           leax   SelChoice,PC                                            * 162B 30 8D 16 C1    0..A
+           leax   >SelChoice,PC                                            * 162B 30 8D 16 C1    0..A
            pshs   X                                                     * 162F 34 10          4.
            lbsr   printf                                                * 1631 17 17 19       ...
            leas   $02,S                                                 * 1634 32 62          2b
@@ -2666,7 +2666,7 @@ L18BA      ldd    $01,S                                                 * 18BA E
            pshs   D                                                     * 18C6 34 06          4.
            ldd    $03,S                                                 * 18C8 EC 63          lc
            pshs   D                                                     * 18CA 34 06          4.
-           leax   NumString,PC                                            * 18CC 30 8D 14 35    0..5
+           leax   >NumString,PC                                            * 18CC 30 8D 14 35    0..5
            pshs   X                                                     * 18D0 34 10          4.
            lbsr   printf                                                * 18D2 17 14 78       ..x
            leas   $06,S                                                 * 18D5 32 66          2f
@@ -2676,7 +2676,7 @@ L18DC      std    $01,S                                                 * 18DC E
            ldd    $01,S                                                 * 18DE EC 61          la
            cmpd   #8                                                    * 18E0 10 83 00 08    ....
            lblt   L188C                                                 * 18E4 10 2D FF A4    .-.$
-           leax   ClrNum,PC                                             * 18E8 30 8D 14 22    0.."
+           leax   >ClrNum,PC                                            * 18E8 30 8D 14 22    0.."
            pshs   X                                                     * 18EC 34 10          4.
            lbsr   printf                                                * 18EE 17 14 5C       ..\
            leas   $02,S                                                 * 18F1 32 62          2b
@@ -3994,7 +3994,7 @@ L2561      pshs   U                                                     * 2561 3
            ldd    #19                                                   * 25E0 CC 00 13       L..
            subd   ,S++                                                  * 25E3 A3 E1          #a
            pshs   D                                                     * 25E5 34 06          4.
-           leax   Spaces,PC                                             * 25E7 30 8D 07 2D    0..-
+           leax   >Spaces,PC                                            * 25E7 30 8D 07 2D    0..-
            pshs   X                                                     * 25EB 34 10          4.
            ldd    #1                                                    * 25ED CC 00 01       L..
            pshs   D                                                     * 25F0 34 06          4.
@@ -4002,13 +4002,13 @@ L2561      pshs   U                                                     * 2561 3
            leas   $06,S                                                 * 25F5 32 66          2f
            ldd    $05,S                                                 * 25F7 EC 65          le
            pshs   D                                                     * 25F9 34 06          4.
-           leax   String,PC                                             * 25FB 30 8D 07 2E    0...
+           leax   >String,PC                                            * 25FB 30 8D 07 2E    0...
            pshs   X                                                     * 25FF 34 10          4.
            lbsr   printf                                                * 2601 17 07 49       ..I
            leas   $04,S                                                 * 2604 32 64          2d
            ldd    $07,S                                                 * 2606 EC 67          lg
            pshs   D                                                     * 2608 34 06          4.
-           leax   ErrNum,PC                                             * 260A 30 8D 07 23    0..#
+           leax   >ErrNum,PC                                            * 260A 30 8D 07 23    0..#
            pshs   X                                                     * 260E 34 10          4.
            lbsr   printf                                                * 2610 17 07 3A       ..:
            leas   $04,S                                                 * 2613 32 64          2d
@@ -4287,7 +4287,7 @@ printf     pshs   U                                                     * 2D4D 3
            pshs   X                                                     * 2D69 34 10          4.
            ldd    $08,S                                                 * 2D6B EC 68          lh
 L2D6D      pshs   D                                                     * 2D6D 34 06          4.
-           leax   L3225,PC                                              * 2D6F 30 8D 04 B2    0..2
+           leax   >L3225,PC                                             * 2D6F 30 8D 04 B2    0..2
            pshs   X                                                     * 2D73 34 10          4.
            bsr    L2D9F                                                 * 2D75 8D 28          .(
            leas   $06,S                                                 * 2D77 32 66          2f
@@ -4299,13 +4299,13 @@ L2D6D      pshs   D                                                     * 2D6D 3
            pshs   X                                                     * 2D85 34 10          4.
            ldd    $08,S                                                 * 2D87 EC 68          lh
            pshs   D                                                     * 2D89 34 06          4.
-           leax   L3238,PC                                              * 2D8B 30 8D 04 A9    0..)
+           leax   >L3238,PC                                             * 2D8B 30 8D 04 A9    0..)
            pshs   X                                                     * 2D8F 34 10          4.
            bsr    L2D9F                                                 * 2D91 8D 0C          ..
            leas   $06,S                                                 * 2D93 32 66          2f
            clra                                                         * 2D95 4F             O
            clrb                                                         * 2D96 5F             _
-           stb    [$37B5,Y]                                             * 2D97 E7 B9 37 B5    g975
+           stb    [>$37B5,Y]                                            * 2D97 E7 B9 37 B5    g975
            ldd    $04,S                                                 * 2D9B EC 64          ld
            puls   PC,U                                                  * 2D9D 35 C0          5@
 L2D9F      pshs   U                                                     * 2D9F 34 40          4@
@@ -4571,7 +4571,7 @@ L2FEC      pshs   U,D                                                   * 2FEC 3
            sbca   #0                                                    * 2FFC 82 00          ..
            std    $06,S                                                 * 2FFE ED 66          mf
            bge    L3016                                                 * 3000 2C 14          ,.
-           leax   L324A,PC                                              * 3002 30 8D 02 44    0..D
+           leax   >L324A,PC                                             * 3002 30 8D 02 44    0..D
            pshs   X                                                     * 3006 34 10          4.
            leax   >U37B7,Y                                              * 3008 30 A9 37 B7    0)77
            pshs   X                                                     * 300C 34 10          4.
@@ -4866,9 +4866,9 @@ L3275      ldd    U0006,U                                               * 3275 E
            clra                                                         * 328B 4F             O
            andb   #64                                                   * 328C C4 40          D@
            beq    L3296                                                 * 328E 27 06          '.
-           leax   writln,PC                                             * 3290 30 8D 06 5A    0..Z
+           leax   >writln,PC                                            * 3290 30 8D 06 5A    0..Z
            bra    L329A                                                 * 3294 20 04           .
-L3296      leax   write,PC                                              * 3296 30 8D 06 3B    0..;
+L3296      leax   >write,PC                                             * 3296 30 8D 06 3B    0..;
 L329A      tfr    X,D                                                   * 329A 1F 10          ..
            tfr    D,X                                                   * 329C 1F 01          ..
            jsr    0,X                                                   * 329E AD 84          -.
@@ -5165,7 +5165,7 @@ L34FC      pshs   U                                                     * 34FC 3
 L3505      ldd    [<$06,S]                                              * 3505 EC F8 06       lx.
            addd   #4                                                    * 3508 C3 00 04       C..
            std    [<$06,S]                                              * 350B ED F8 06       mx.
-           leax   L3539,PC                                              * 350E 30 8D 00 27    0..'
+           leax   >L3539,PC                                             * 350E 30 8D 00 27    0..'
            bra    L351E                                                 * 3512 20 0A           .
 L3514      ldb    $05,S                                                 * 3514 E6 65          fe
            stb    >U003A,Y                                              * 3516 E7 A9 00 3A    g).:
@@ -5182,7 +5182,7 @@ L3522      cmpx   #100                                                  * 3522 8
            puls   PC,U                                                  * 3537 35 C0          5@
 L3539      fcb    $00                                                   * 3539 00             .
 L353A      pshs   U                                                     * 353A 34 40          4@
-           leax   L3544,PC                                              * 353C 30 8D 00 04    0...
+           leax   >L3544,PC                                             * 353C 30 8D 00 04    0...
            tfr    X,D                                                   * 3540 1F 10          ..
            puls   PC,U                                                  * 3542 35 C0          5@
 L3544      fcb    $00                                                   * 3544 00             .
@@ -5370,10 +5370,10 @@ L369C      lda    $04,S                                                 * 369C A
            leas   $08,S                                                 * 36AD 32 68          2h
            rts                                                          * 36AF 39             9
            clr    >U37CF,Y                                              * 36B0 6F A9 37 CF    o)7O
-           leax   L36F8,PC                                              * 36B4 30 8D 00 40    0..@
+           leax   >L36F8,PC                                             * 36B4 30 8D 00 40    0..@
            stx    >U37D0,Y                                              * 36B8 AF A9 37 D0    /)7P
            bra    L36D2                                                 * 36BC 20 14           .
-L36BE      leax   L3711,PC                                              * 36BE 30 8D 00 4F    0..O
+L36BE      leax   >L3711,PC                                             * 36BE 30 8D 00 4F    0..O
            stx    >U37D0,Y                                              * 36C2 AF A9 37 D0    /)7P
            clr    >U37CF,Y                                              * 36C6 6F A9 37 CF    o)7O
            tst    $02,S                                                 * 36CA 6D 62          mb
@@ -5386,7 +5386,7 @@ L36D2      subd   #0                                                    * 36D2 8
            jmp    0,X                                                   * 36DB 6E 84          n.
 L36DD      ldx    $02,S                                                 * 36DD AE 62          .b
            pshs   X                                                     * 36DF 34 10          4.
-           jsr    [$37D0,Y]                                             * 36E1 AD B9 37 D0    -97P
+           jsr    [>$37D0,Y]                                            * 36E1 AD B9 37 D0    -97P
            ldd    0,S                                                   * 36E5 EC E4          ld
            std    $02,S                                                 * 36E7 ED 62          mb
            tfr    X,D                                                   * 36E9 1F 10          ..
@@ -5937,23 +5937,7 @@ etext      fcb    $00                                                   * 3B61 0
            fcb    $07                                                   * 3B81 07             .
            fcb    $00                                                   * 3B82 00             .
            fcb    $00                                                   * 3B83 00             .
-           fcb    $26                                                   * 3B84 26             &
-           fcb    $3F                                                   * 3B85 3F             ?
-           fcb    $26                                                   * 3B86 26             &
-           fcb    $45                                                   * 3B87 45             E
-           fcb    $26                                                   * 3B88 26             &
-           fcb    $49                                                   * 3B89 49             I
-           fcb    $26                                                   * 3B8A 26             &
-           fcb    $4F                                                   * 3B8B 4F             O
-           fcb    $26                                                   * 3B8C 26             &
-           fcb    $56                                                   * 3B8D 56             V
-           fcb    $26                                                   * 3B8E 26             &
-           fcb    $5B                                                   * 3B8F 5B             [
-           fcb    $26                                                   * 3B90 26             &
-           fcb    $63                                                   * 3B91 63             c
-           fcb    $26                                                   * 3B92 26             &
-           fcb    $68                                                   * 3B93 68             h
-           fcb    $27                                                   * 3B94 27             '
+           fcc    "&?&E&I&O&V&[&c&h'"                                   * 3B84 26 3F 26 45 26 49 26 4F 26 56 26 5B 26 63 26 68 27 &?&E&I&O&V&[&c&h'
            fcb    $10                                                   * 3B95 10             .
            fcb    $03                                                   * 3B96 03             .
            fcb    $E8                                                   * 3B97 E8             h
@@ -5962,9 +5946,7 @@ etext      fcb    $00                                                   * 3B61 0
            fcb    $00                                                   * 3B9A 00             .
            fcb    $0A                                                   * 3B9B 0A             .
            fcb    $00                                                   * 3B9C 00             .
-           fcb    $37                                                   * 3B9D 37             7
-           fcb    $6C                                                   * 3B9E 6C             l
-           fcb    $78                                                   * 3B9F 78             x
+           fcc    "7lx"                                                 * 3B9D 37 6C 78       7lx
            fcb    $00                                                   * 3BA0 00             .
            fcb    $00                                                   * 3BA1 00             .
            fcb    $00                                                   * 3BA2 00             .
@@ -6207,45 +6189,7 @@ etext      fcb    $00                                                   * 3B61 0
            fcb    $01                                                   * 3C8F 01             .
            fcb    $01                                                   * 3C90 01             .
            fcb    $01                                                   * 3C91 01             .
-           fcb    $30                                                   * 3C92 30             0
-           fcb    $20                                                   * 3C93 20
-           fcb    $20                                                   * 3C94 20
-           fcb    $20                                                   * 3C95 20
-           fcb    $20                                                   * 3C96 20
-           fcb    $20                                                   * 3C97 20
-           fcb    $20                                                   * 3C98 20
-           fcb    $20                                                   * 3C99 20
-           fcb    $20                                                   * 3C9A 20
-           fcb    $20                                                   * 3C9B 20
-           fcb    $20                                                   * 3C9C 20
-           fcb    $20                                                   * 3C9D 20
-           fcb    $20                                                   * 3C9E 20
-           fcb    $20                                                   * 3C9F 20
-           fcb    $20                                                   * 3CA0 20
-           fcb    $20                                                   * 3CA1 20
-           fcb    $48                                                   * 3CA2 48             H
-           fcb    $48                                                   * 3CA3 48             H
-           fcb    $48                                                   * 3CA4 48             H
-           fcb    $48                                                   * 3CA5 48             H
-           fcb    $48                                                   * 3CA6 48             H
-           fcb    $48                                                   * 3CA7 48             H
-           fcb    $48                                                   * 3CA8 48             H
-           fcb    $48                                                   * 3CA9 48             H
-           fcb    $48                                                   * 3CAA 48             H
-           fcb    $48                                                   * 3CAB 48             H
-           fcb    $20                                                   * 3CAC 20
-           fcb    $20                                                   * 3CAD 20
-           fcb    $20                                                   * 3CAE 20
-           fcb    $20                                                   * 3CAF 20
-           fcb    $20                                                   * 3CB0 20
-           fcb    $20                                                   * 3CB1 20
-           fcb    $20                                                   * 3CB2 20
-           fcb    $42                                                   * 3CB3 42             B
-           fcb    $42                                                   * 3CB4 42             B
-           fcb    $42                                                   * 3CB5 42             B
-           fcb    $42                                                   * 3CB6 42             B
-           fcb    $42                                                   * 3CB7 42             B
-           fcb    $42                                                   * 3CB8 42             B
+           fcc    "0               HHHHHHHHHH       BBBBBB"             * 3C92 30 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 48 48 48 48 48 48 48 48 48 48 20 20 20 20 20 20 20 42 42 42 42 42 42 0               HHHHHHHHHH       BBBBBB
            fcb    $02                                                   * 3CB9 02             .
            fcb    $02                                                   * 3CBA 02             .
            fcb    $02                                                   * 3CBB 02             .
@@ -6266,18 +6210,7 @@ etext      fcb    $00                                                   * 3B61 0
            fcb    $02                                                   * 3CCA 02             .
            fcb    $02                                                   * 3CCB 02             .
            fcb    $02                                                   * 3CCC 02             .
-           fcb    $20                                                   * 3CCD 20
-           fcb    $20                                                   * 3CCE 20
-           fcb    $20                                                   * 3CCF 20
-           fcb    $20                                                   * 3CD0 20
-           fcb    $20                                                   * 3CD1 20
-           fcb    $20                                                   * 3CD2 20
-           fcb    $44                                                   * 3CD3 44             D
-           fcb    $44                                                   * 3CD4 44             D
-           fcb    $44                                                   * 3CD5 44             D
-           fcb    $44                                                   * 3CD6 44             D
-           fcb    $44                                                   * 3CD7 44             D
-           fcb    $44                                                   * 3CD8 44             D
+           fcc    "      DDDDDD"                                        * 3CCD 20 20 20 20 20 20 44 44 44 44 44 44       DDDDDD
            fcb    $04                                                   * 3CD9 04             .
            fcb    $04                                                   * 3CDA 04             .
            fcb    $04                                                   * 3CDB 04             .
@@ -6298,10 +6231,7 @@ etext      fcb    $00                                                   * 3B61 0
            fcb    $04                                                   * 3CEA 04             .
            fcb    $04                                                   * 3CEB 04             .
            fcb    $04                                                   * 3CEC 04             .
-           fcb    $20                                                   * 3CED 20
-           fcb    $20                                                   * 3CEE 20
-           fcb    $20                                                   * 3CEF 20
-           fcb    $20                                                   * 3CF0 20
+           fcc    "    "                                                * 3CED 20 20 20 20
            fcb    $01                                                   * 3CF1 01             .
            fcb    $00                                                   * 3CF2 00             .
            fcb    $08                                                   * 3CF3 08             .
@@ -6324,13 +6254,7 @@ etext      fcb    $00                                                   * 3B61 0
            fcb    $00                                                   * 3D04 00             .
            fcb    $01                                                   * 3D05 01             .
            fcb    $00                                                   * 3D06 00             .
-           fcb    $37                                                   * 3D07 37             7
-           fcb    $41                                                   * 3D08 41             A
-           fcb    $6E                                                   * 3D09 6E             n
-           fcb    $73                                                   * 3D0A 73             s
-           fcb    $69                                                   * 3D0B 69             i
-           fcb    $45                                                   * 3D0C 45             E
-           fcb    $64                                                   * 3D0D 64             d
+           fcc    "7AnsiEd"                                             * 3D07 37 41 6E 73 69 45 64 7AnsiEd
            fcb    $00                                                   * 3D0E 00             .
 
            emod

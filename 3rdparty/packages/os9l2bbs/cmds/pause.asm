@@ -25,7 +25,7 @@ start      lda    ,X+                                                   * 0014 A
            beq    L0028                                                 * 0018 27 0E          '.
            cmpa   #13                                                   * 001A 81 0D          ..
            bne    start                                                 * 001C 26 F6          &v
-           leax   L0065,PC                                              * 001E 30 8D 00 43    0..C
+           leax   >L0065,PC                                             * 001E 30 8D 00 43    0..C
            ldy    #28                                                   * 0022 10 8E 00 1C    ....
            bra    L0041                                                 * 0026 20 19           .
 L0028      clr    U0001,U                                               * 0028 6F 41          oA
@@ -50,39 +50,12 @@ L0041      lda    #1                                                    * 0041 8
            os9    I$Read                                                * 004F 10 3F 89       .?.
            bcs    L0062                                                 * 0052 25 0E          %.
            lda    #1                                                    * 0054 86 01          ..
-           leax   L0012,PC                                              * 0056 30 8D FF B8    0..8
+           leax   >L0012,PC                                             * 0056 30 8D FF B8    0..8
            ldy    #2                                                    * 005A 10 8E 00 02    ....
            os9    I$WritLn                                              * 005E 10 3F 8C       .?.
            clrb                                                         * 0061 5F             _
 L0062      os9    F$Exit                                                * 0062 10 3F 06       .?.
-L0065      fcb    $50                                                   * 0065 50             P
-           fcb    $72                                                   * 0066 72             r
-           fcb    $65                                                   * 0067 65             e
-           fcb    $73                                                   * 0068 73             s
-           fcb    $73                                                   * 0069 73             s
-           fcb    $20                                                   * 006A 20
-           fcb    $61                                                   * 006B 61             a
-           fcb    $6E                                                   * 006C 6E             n
-           fcb    $79                                                   * 006D 79             y
-           fcb    $20                                                   * 006E 20
-           fcb    $6B                                                   * 006F 6B             k
-           fcb    $65                                                   * 0070 65             e
-           fcb    $79                                                   * 0071 79             y
-           fcb    $20                                                   * 0072 20
-           fcb    $74                                                   * 0073 74             t
-           fcb    $6F                                                   * 0074 6F             o
-           fcb    $20                                                   * 0075 20
-           fcb    $63                                                   * 0076 63             c
-           fcb    $6F                                                   * 0077 6F             o
-           fcb    $6E                                                   * 0078 6E             n
-           fcb    $74                                                   * 0079 74             t
-           fcb    $69                                                   * 007A 69             i
-           fcb    $6E                                                   * 007B 6E             n
-           fcb    $75                                                   * 007C 75             u
-           fcb    $65                                                   * 007D 65             e
-           fcb    $2E                                                   * 007E 2E             .
-           fcb    $2E                                                   * 007F 2E             .
-           fcb    $2E                                                   * 0080 2E             .
+L0065      fcc    "Press any key to continue..."                        * 0065 50 72 65 73 73 20 61 6E 79 20 6B 65 79 20 74 6F 20 63 6F 6E 74 69 6E 75 65 2E 2E 2E Press any key to continue...
            fcb    $0D                                                   * 0081 0D             .
 
            emod

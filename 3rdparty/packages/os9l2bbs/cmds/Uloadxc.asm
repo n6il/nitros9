@@ -34,99 +34,7 @@ U00D2      rmb    431
 size       equ    .
 
 name       fcs    /Uloadxc/                                             * 000D 55 6C 6F 61 64 78 E3 Uloadxc
-           fcb    $43                                                   * 0014 43             C
-           fcb    $6F                                                   * 0015 6F             o
-           fcb    $70                                                   * 0016 70             p
-           fcb    $79                                                   * 0017 79             y
-           fcb    $72                                                   * 0018 72             r
-           fcb    $69                                                   * 0019 69             i
-           fcb    $67                                                   * 001A 67             g
-           fcb    $68                                                   * 001B 68             h
-           fcb    $74                                                   * 001C 74             t
-           fcb    $20                                                   * 001D 20
-           fcb    $28                                                   * 001E 28             (
-           fcb    $43                                                   * 001F 43             C
-           fcb    $29                                                   * 0020 29             )
-           fcb    $20                                                   * 0021 20
-           fcb    $31                                                   * 0022 31             1
-           fcb    $39                                                   * 0023 39             9
-           fcb    $38                                                   * 0024 38             8
-           fcb    $38                                                   * 0025 38             8
-           fcb    $42                                                   * 0026 42             B
-           fcb    $79                                                   * 0027 79             y
-           fcb    $20                                                   * 0028 20
-           fcb    $4B                                                   * 0029 4B             K
-           fcb    $65                                                   * 002A 65             e
-           fcb    $69                                                   * 002B 69             i
-           fcb    $74                                                   * 002C 74             t
-           fcb    $68                                                   * 002D 68             h
-           fcb    $20                                                   * 002E 20
-           fcb    $41                                                   * 002F 41             A
-           fcb    $6C                                                   * 0030 6C             l
-           fcb    $70                                                   * 0031 70             p
-           fcb    $68                                                   * 0032 68             h
-           fcb    $6F                                                   * 0033 6F             o
-           fcb    $6E                                                   * 0034 6E             n
-           fcb    $73                                                   * 0035 73             s
-           fcb    $6F                                                   * 0036 6F             o
-           fcb    $4C                                                   * 0037 4C             L
-           fcb    $69                                                   * 0038 69             i
-           fcb    $63                                                   * 0039 63             c
-           fcb    $65                                                   * 003A 65             e
-           fcb    $6E                                                   * 003B 6E             n
-           fcb    $63                                                   * 003C 63             c
-           fcb    $65                                                   * 003D 65             e
-           fcb    $64                                                   * 003E 64             d
-           fcb    $20                                                   * 003F 20
-           fcb    $74                                                   * 0040 74             t
-           fcb    $6F                                                   * 0041 6F             o
-           fcb    $20                                                   * 0042 20
-           fcb    $41                                                   * 0043 41             A
-           fcb    $6C                                                   * 0044 6C             l
-           fcb    $70                                                   * 0045 70             p
-           fcb    $68                                                   * 0046 68             h
-           fcb    $61                                                   * 0047 61             a
-           fcb    $20                                                   * 0048 20
-           fcb    $53                                                   * 0049 53             S
-           fcb    $6F                                                   * 004A 6F             o
-           fcb    $66                                                   * 004B 66             f
-           fcb    $74                                                   * 004C 74             t
-           fcb    $77                                                   * 004D 77             w
-           fcb    $61                                                   * 004E 61             a
-           fcb    $72                                                   * 004F 72             r
-           fcb    $65                                                   * 0050 65             e
-           fcb    $20                                                   * 0051 20
-           fcb    $54                                                   * 0052 54             T
-           fcb    $65                                                   * 0053 65             e
-           fcb    $63                                                   * 0054 63             c
-           fcb    $68                                                   * 0055 68             h
-           fcb    $6E                                                   * 0056 6E             n
-           fcb    $6F                                                   * 0057 6F             o
-           fcb    $6C                                                   * 0058 6C             l
-           fcb    $6F                                                   * 0059 6F             o
-           fcb    $67                                                   * 005A 67             g
-           fcb    $69                                                   * 005B 69             i
-           fcb    $65                                                   * 005C 65             e
-           fcb    $73                                                   * 005D 73             s
-           fcb    $41                                                   * 005E 41             A
-           fcb    $6C                                                   * 005F 6C             l
-           fcb    $6C                                                   * 0060 6C             l
-           fcb    $20                                                   * 0061 20
-           fcb    $72                                                   * 0062 72             r
-           fcb    $69                                                   * 0063 69             i
-           fcb    $67                                                   * 0064 67             g
-           fcb    $68                                                   * 0065 68             h
-           fcb    $74                                                   * 0066 74             t
-           fcb    $73                                                   * 0067 73             s
-           fcb    $20                                                   * 0068 20
-           fcb    $72                                                   * 0069 72             r
-           fcb    $65                                                   * 006A 65             e
-           fcb    $73                                                   * 006B 73             s
-           fcb    $65                                                   * 006C 65             e
-           fcb    $72                                                   * 006D 72             r
-           fcb    $76                                                   * 006E 76             v
-           fcb    $65                                                   * 006F 65             e
-           fcb    $64                                                   * 0070 64             d
+           fcc    "Copyright (C) 1988By Keith AlphonsoLicenced to Alpha Software TechnologiesAll rights reserved" * 0014 43 6F 70 79 72 69 67 68 74 20 28 43 29 20 31 39 38 38 42 79 20 4B 65 69 74 68 20 41 6C 70 68 6F 6E 73 6F 4C 69 63 65 6E 63 65 64 20 74 6F 20 41 6C 70 68 61 20 53 6F 66 74 77 61 72 65 20 54 65 63 68 6E 6F 6C 6F 67 69 65 73 41 6C 6C 20 72 69 67 68 74 73 20 72 65 73 65 72 76 65 64 Copyright (C) 1988By Keith AlphonsoLicenced to Alpha Software TechnologiesAll rights reserved
            fcb    $EC                                                   * 0071 EC             l
            fcb    $E6                                                   * 0072 E6             f
            fcb    $EA                                                   * 0073 EA             j
@@ -141,97 +49,12 @@ name       fcs    /Uloadxc/                                             * 000D 5
            fcb    $EF                                                   * 007C EF             o
            fcb    $F4                                                   * 007D F4             t
            fcb    $F0                                                   * 007E F0             p
-L007F      fcb    $46                                                   * 007F 46             F
-           fcb    $69                                                   * 0080 69             i
-           fcb    $6C                                                   * 0081 6C             l
-           fcb    $65                                                   * 0082 65             e
-           fcb    $20                                                   * 0083 20
-           fcb    $6F                                                   * 0084 6F             o
-           fcb    $70                                                   * 0085 70             p
-           fcb    $65                                                   * 0086 65             e
-           fcb    $6E                                                   * 0087 6E             n
-           fcb    $2C                                                   * 0088 2C             ,
-           fcb    $20                                                   * 0089 20
-           fcb    $72                                                   * 008A 72             r
-           fcb    $65                                                   * 008B 65             e
-           fcb    $61                                                   * 008C 61             a
-           fcb    $64                                                   * 008D 64             d
-           fcb    $79                                                   * 008E 79             y
-           fcb    $20                                                   * 008F 20
-           fcb    $74                                                   * 0090 74             t
-           fcb    $6F                                                   * 0091 6F             o
-           fcb    $20                                                   * 0092 20
-           fcb    $72                                                   * 0093 72             r
-           fcb    $65                                                   * 0094 65             e
-           fcb    $63                                                   * 0095 63             c
-           fcb    $69                                                   * 0096 69             i
-           fcb    $65                                                   * 0097 65             e
-           fcb    $76                                                   * 0098 76             v
-           fcb    $65                                                   * 0099 65             e
-           fcb    $2E                                                   * 009A 2E             .
-           fcb    $2E                                                   * 009B 2E             .
-           fcb    $2E                                                   * 009C 2E             .
+L007F      fcc    "File open, ready to recieve..."                      * 007F 46 69 6C 65 20 6F 70 65 6E 2C 20 72 65 61 64 79 20 74 6F 20 72 65 63 69 65 76 65 2E 2E 2E File open, ready to recieve...
            fcb    $0D                                                   * 009D 0D             .
-L009E      fcb    $45                                                   * 009E 45             E
-           fcb    $6E                                                   * 009F 6E             n
-           fcb    $74                                                   * 00A0 74             t
-           fcb    $65                                                   * 00A1 65             e
-           fcb    $72                                                   * 00A2 72             r
-           fcb    $20                                                   * 00A3 20
-           fcb    $66                                                   * 00A4 66             f
-           fcb    $69                                                   * 00A5 69             i
-           fcb    $6C                                                   * 00A6 6C             l
-           fcb    $65                                                   * 00A7 65             e
-           fcb    $6E                                                   * 00A8 6E             n
-           fcb    $61                                                   * 00A9 61             a
-           fcb    $6D                                                   * 00AA 6D             m
-           fcb    $65                                                   * 00AB 65             e
-           fcb    $20                                                   * 00AC 20
-           fcb    $74                                                   * 00AD 74             t
-           fcb    $6F                                                   * 00AE 6F             o
-           fcb    $20                                                   * 00AF 20
-           fcb    $75                                                   * 00B0 75             u
-           fcb    $70                                                   * 00B1 70             p
-           fcb    $6C                                                   * 00B2 6C             l
-           fcb    $6F                                                   * 00B3 6F             o
-           fcb    $61                                                   * 00B4 61             a
-           fcb    $64                                                   * 00B5 64             d
-           fcb    $3A                                                   * 00B6 3A             :
-           fcb    $20                                                   * 00B7 20
-L00B8      fcb    $55                                                   * 00B8 55             U
-           fcb    $70                                                   * 00B9 70             p
-           fcb    $6C                                                   * 00BA 6C             l
-           fcb    $6F                                                   * 00BB 6F             o
-           fcb    $61                                                   * 00BC 61             a
-           fcb    $64                                                   * 00BD 64             d
-           fcb    $20                                                   * 00BE 20
-           fcb    $61                                                   * 00BF 61             a
-           fcb    $62                                                   * 00C0 62             b
-           fcb    $6F                                                   * 00C1 6F             o
-           fcb    $72                                                   * 00C2 72             r
-           fcb    $74                                                   * 00C3 74             t
-           fcb    $65                                                   * 00C4 65             e
-           fcb    $64                                                   * 00C5 64             d
-           fcb    $21                                                   * 00C6 21             !
+L009E      fcc    "Enter filename to upload: "                          * 009E 45 6E 74 65 72 20 66 69 6C 65 6E 61 6D 65 20 74 6F 20 75 70 6C 6F 61 64 3A 20 Enter filename to upload:
+L00B8      fcc    "Upload aborted!"                                     * 00B8 55 70 6C 6F 61 64 20 61 62 6F 72 74 65 64 21 Upload aborted!
            fcb    $0D                                                   * 00C7 0D             .
-L00C8      fcb    $55                                                   * 00C8 55             U
-           fcb    $70                                                   * 00C9 70             p
-           fcb    $6C                                                   * 00CA 6C             l
-           fcb    $6F                                                   * 00CB 6F             o
-           fcb    $61                                                   * 00CC 61             a
-           fcb    $64                                                   * 00CD 64             d
-           fcb    $20                                                   * 00CE 20
-           fcb    $73                                                   * 00CF 73             s
-           fcb    $75                                                   * 00D0 75             u
-           fcb    $63                                                   * 00D1 63             c
-           fcb    $63                                                   * 00D2 63             c
-           fcb    $65                                                   * 00D3 65             e
-           fcb    $73                                                   * 00D4 73             s
-           fcb    $73                                                   * 00D5 73             s
-           fcb    $66                                                   * 00D6 66             f
-           fcb    $75                                                   * 00D7 75             u
-           fcb    $6C                                                   * 00D8 6C             l
-           fcb    $21                                                   * 00D9 21             !
+L00C8      fcc    "Upload successful!"                                  * 00C8 55 70 6C 6F 61 64 20 73 75 63 63 65 73 73 66 75 6C 21 Upload successful!
            fcb    $0D                                                   * 00DA 0D             .
 start      pshs   X                                                     * 00DB 34 10          4.
            os9    F$ID                                                  * 00DD 10 3F 0C       .?.
@@ -240,7 +63,7 @@ start      pshs   X                                                     * 00DB 3
            lda    0,X                                                   * 00E5 A6 84          &.
            cmpa   #13                                                   * 00E7 81 0D          ..
            bne    L0102                                                 * 00E9 26 17          &.
-           leax   L009E,PC                                              * 00EB 30 8D FF AF    0../
+           leax   >L009E,PC                                             * 00EB 30 8D FF AF    0../
            ldy    #25                                                   * 00EF 10 8E 00 19    ....
            lda    #1                                                    * 00F3 86 01          ..
            os9    I$Write                                               * 00F5 10 3F 8A       .?.
@@ -258,7 +81,7 @@ L0102      stx    U000B,U                                               * 0102 A
            clr    U0002,U                                               * 0113 6F 42          oB
            clr    >U00AF,U                                              * 0115 6F C9 00 AF    oI./
            dec    >U00AF,U                                              * 0119 6A C9 00 AF    jI./
-           leax   L007F,PC                                              * 011D 30 8D FF 5E    0..^
+           leax   >L007F,PC                                             * 011D 30 8D FF 5E    0..^
            ldy    #200                                                  * 0121 10 8E 00 C8    ...H
            lda    #1                                                    * 0125 86 01          ..
            os9    I$WritLn                                              * 0127 10 3F 8C       .?.
@@ -475,7 +298,7 @@ L02F4      lda    #6                                                    * 02F4 8
            lda    U0001,U                                               * 0303 A6 41          &A
            os9    I$Close                                               * 0305 10 3F 8F       .?.
            lbsr   L0344                                                 * 0308 17 00 39       ..9
-           leax   L00C8,PC                                              * 030B 30 8D FD B9    0.}9
+           leax   >L00C8,PC                                             * 030B 30 8D FD B9    0.}9
            ldy    #200                                                  * 030F 10 8E 00 C8    ...H
            lda    #1                                                    * 0313 86 01          ..
            os9    I$WritLn                                              * 0315 10 3F 8C       .?.
@@ -485,7 +308,7 @@ L0319      pshs   B                                                     * 0319 3
            puls   B                                                     * 031E 35 04          5.
 L0320      os9    F$Exit                                                * 0320 10 3F 06       .?.
 L0323      bsr    L0344                                                 * 0323 8D 1F          ..
-           leax   L00B8,PC                                              * 0325 30 8D FD 8F    0.}.
+           leax   >L00B8,PC                                             * 0325 30 8D FD 8F    0.}.
            ldy    #200                                                  * 0329 10 8E 00 C8    ...H
            lda    #1                                                    * 032D 86 01          ..
            os9    I$WritLn                                              * 032F 10 3F 8C       .?.
