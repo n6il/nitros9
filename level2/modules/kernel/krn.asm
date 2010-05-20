@@ -40,18 +40,18 @@ MName	fcs	/Krn/
 	fcb	Edition
 		
 * FILL - all unused bytes are now here
-	fcc	/www.katvixen.com/
-	fcc	/www.katvixen.com/
-	fcc	/www.katvixen.com/
-	fcc	/www.katvixen.com/
-	fcc	/www.katvixen.com/
-	fcc	/www.katvixen.com/
+	fcc	/www.nitros9.org /
+	fcc	/www.nitros9.org /
+	fcc	/www.nitros9.org /
+	fcc	/www.nitros9.org /
+	fcc	/www.nitros9.org /
+	fcc	/www.nitros9.org /
 	IFNE	H6309
-	fcc	/www.katvixen.com/
-	fcc	/www.katvixen.com/
-	fcc	/www.kat/
+	fcc	/www.nitros9.org /
+	fcc	/www.nitros9.org /
+	fcc	/www.nit/
 	ELSE	
-	fcc	/www.kat/
+	fcc	/www.nit/
 	ENDC	
 		
 * Might as well have this here as just past the end of Kernel...
