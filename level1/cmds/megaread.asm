@@ -19,6 +19,9 @@
 * Added functionality to read a number of 1K blocks as specified on the command line.
 * Command line is now: megaread #####
 * where ##### is the number of 1K blocks to read; default 1024 
+*
+*  01/02   2010/05/22  Boisy G. Pitre
+* Made source more configurable in terms of read chunk size and total read count
 
          nam   MegaRead
          ttl   Disk Performance Utilty
@@ -32,12 +35,15 @@ atrv     set   ReEnt+rev
 rev      set   $02
 edition  set   1
 
-ReadK    equ   1024       1024K is 1 megabyte (modify as desired)
+ChunkSz  equ   1024
+ChnkCnt  equ   1024^2/ChunkSz       1024^2 is 1 megabyte (modify as desired)
                          
          mod   eom,name,tylg,atrv,start,size
 
          org   0
-KiloBuff rmb   $0400     
+StartTm  rmb   5
+EndTm    rmb   5
+KiloBuff rmb   ChunkSz
          rmb   200        stack space
 size     equ   .
 
@@ -51,24 +57,36 @@ start    clra
          bsr   dec2bin
          bsr   dec2bin
          bsr   dec2bin
-         ldx   #ReadK     seed X with value for 1 meg read
+* capture start time
+         leax  StartTm,u
+         os9   F$Time
+         ldx   #ChnkCnt   seed X with count value to read target size
          cmpd  #0         is command line number given?
          beq   loop       no, so use default (in X)
          tfr   d,x        yes, use it
 loop     pshs  x          save counter
          leax  KiloBuff,u point (X) to buffer
-         ldy   #$0400     read 1K
+         ldy   #ChunkSz   read predetermined chunk
          clra             std input
          os9   I$Read    
          bcs   eofchk    
          puls  x          recover counter
          leax  -1,x       done yet?
-         bne   loop       no, go get another 1K
-         bra   exitok     yes, exit
+         bne   loop       no, go get another chunk
+         bra   fini       yes, exit
 eofchk   cmpb  #E$EOF     end of media?
          bne   exit       no, a real error
-exitok   clrb            
+
+* capture end time 
+fini
+         leax  EndTm,u
+         os9   F$Time
+
+* calculate difference and report
+
+         clrb            
 exit     os9   F$Exit
+
 dec2bin  pshs  b,a
          ldb   ,x         get char from command line at X    
          subb  #$30       convert decimal char to binary
