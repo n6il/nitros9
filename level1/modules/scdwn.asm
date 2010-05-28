@@ -45,7 +45,10 @@
 *
 *   2      2010/01/23  Boisy G. Pitre
 * Added code in SS.Open to use /N wildcard device (tricky stuff!)
-
+*
+*		   2010/05/28  Aaron Wolfe	  
+* Added FASTSERWRITE support
+*
                nam       scdwn
                ttl       CoCo DriveWire Network Driver
 
@@ -240,11 +243,11 @@ dw3name        fcs       /dw3/
 * 
 Write          equ       *
                pshs      a                   ; character to send on stack
-               ldb       <V.PORT+1,u         ; port number into B
-               lda       #OP_SERWRITE        ; put command into A
-               pshs      d
+               lda       <V.PORT+1,u         ; port number into a
+               adda      #128    ; add base of command into A
+               pshs      a
                leax      ,s
-               ldy       #$0003              ; 3 bytes to send.. ugh.  need WRITEM (data mode)
+               ldy       #$0002              ; 3 bytes to send.. ugh.  need WRITEM (data mode)
                ifgt      Level-1
                ldu       <D.DWSubAddr
                else      
@@ -252,7 +255,7 @@ Write          equ       *
                endc      
                jsr       6,u
 WriteOK        clrb      
-WriteExit      puls      a,x,pc              ; clean stack, return
+WriteExit      puls      x,pc              ; clean stack, return
 
 
 NotReady       comb      
