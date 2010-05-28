@@ -112,11 +112,15 @@ chkdelim       cmpa      #PDELIM
                subd      V.PATHNAME,x
                std       V.PATHNAMELEN,x      ; save the length
 
+* put the mode byte on the stack
+               pshs      cc
+               lda       R$A,u
+               pshs      a
+               
 * put command byte & path # on stack
                lda       V.DWCMD,x
-               ldy       2,s
+               ldy       4,s
                ldb       PD.PD,y
-               pshs      cc
                pshs      d                   ; p# PD.PD Regs
 
 * put rfm op and DW op on stack 
@@ -124,7 +128,7 @@ chkdelim       cmpa      #PDELIM
                pshs      a                   ; DWOP RFMOP p# PD.PD Regs
 
                leax      ,s                  ; point X to stack 
-               ldy       #3                  ; 3 bytes to send
+               ldy       #4                  ; 3 bytes to send
 
                ifgt      Level-1
                ldu       <D.DWSubAddr
@@ -134,7 +138,7 @@ chkdelim       cmpa      #PDELIM
 
                orcc      #IntMasks
                jsr       6,u
-               leas      3,s                 ;clean stack   PD.PD Regs
+               leas      4,s                 ;clean stack   PD.PD Regs
 
                ifgt      Level-1
 * now send path string
