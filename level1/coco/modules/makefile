@@ -46,7 +46,7 @@ SCF		= scf.mn \
 		scdwn.dr term_scdwn.dt n_scdwn.dd n1_scdwn.dd n2_scdwn.dd \
 		n3_scdwn.dd n4_scdwn.dd n5_scdwn.dd n6_scdwn.dd n7_scdwn.dd \
 		n8_scdwn.dd n9_scdwn.dd n10_scdwn.dd n11_scdwn.dd n12_scdwn.dd \
-		n13_scdwn.dd n14_scdwn.dd
+		n13_scdwn.dd midi_scdwn.dd
 
 PIPE		= pipeman.mn \
 		piper.dr \
@@ -190,7 +190,7 @@ n12_scdwn.dd: scdwndesc.asm
 n13_scdwn.dd: scdwndesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=13
 
-n14_scdwn.dd: scdwndesc.asm
+midi_scdwn.dd: scdwndesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=14
 
 # DriveWire 3 RBF descriptors

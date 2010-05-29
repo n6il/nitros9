@@ -24,6 +24,9 @@
 *
 *   0.7    2010/01/20  Boisy G. Pitre
 * No more /N0.  /Term is /N0.
+*
+*   0.8    2010/05/28  Aaron Wolfe
+* /N14 is now /MIDI
 
          nam   scdwdesc
          ttl   DriveWire network Device Descriptor
@@ -56,6 +59,19 @@ rev      set   $07
          fcb   $00        end of line null count
          fcb   $00        pause:0=no end of page pause
          fcb   24         lines per page (not a safe assumption anymore!)
+         IFEQ  Addr-14
+         fcb   0      backspace character (on most telnet clients)
+         fcb   0      delete line character
+         fcb   0       end of record character
+         fcb   0      end of file character
+         fcb   0     reprint line character
+         fcb   0     duplicate last line character
+         fcb   0     pause character
+         fcb   0     interrupt character
+         fcb   0     quit character
+         fcb   0      backspace echo character
+         fcb   0     line overflow character (bell)
+         ELSE
          fcb   C$BSP      backspace character (on most telnet clients)
          fcb   C$DEL      delete line character
          fcb   C$CR       end of record character
@@ -67,6 +83,7 @@ rev      set   $07
          fcb   C$QUIT     quit character
          fcb   C$BSP      backspace echo character
          fcb   C$BELL     line overflow character (bell)
+         ENDC
          fcb   $00        mode byte for terminal descriptor
          fcb   B600       baud rate (not used, maybe future assignment?)
          fdb   name       copy of descriptor name address
@@ -80,6 +97,9 @@ name     equ   *
          IFEQ  Addr-0
          fcs   /Term/
          ELSE
+         IFEQ  Addr-14
+         fcs  /MIDI/
+         ELSE
          IFNE  Addr-255
          fcc   /N/
          IFGT  Addr-9
@@ -90,6 +110,7 @@ name     equ   *
          ENDC
          ELSE
          fcs   /N/
+         ENDC
          ENDC
          ENDC
 mgrnam   fcs   /SCF/
