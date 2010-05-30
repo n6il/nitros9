@@ -273,10 +273,20 @@ seek        pshs    y,u
 
 * send dw op, rfm op, path #
             jsr     6,u
-            leas    7,s                 ;clean stack - PD.PD Regs
-               
-            clrb
-            puls    y,u,pc
+            leas    6,s                 ;clean stack - PD.PD Regs
+            
+* read response from server
+            leax    ,s
+            ldy     #1
+            jsr     3,u
+            
+            puls    b
+            tstb
+            beq     ok@
+            coma
+            bra     notok@
+ok@         clrb
+notok@      puls    y,u,pc
 
 
 ******************************
