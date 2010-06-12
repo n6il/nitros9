@@ -19,48 +19,25 @@
 
 
           IFNE BECKER
-DWRead    clra                          ; clear Carry (no framing error)
-          deca                          ; clear Z flag, A = timeout msb ($ff)
-          tfr       cc,b
-          pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
-          orcc      #$50                ; mask interrupts
-;          tfr       a,dp                ; set direct page to $FFxx
-;          setdp     $ff
-          leau      ,x                  ; U = storage ptr
-          ldx       #0                  ; initialize checksum
-          adda      #2                  ; A = $01 (serial in mask), set Carry
+* NOTE: There is no timeout currently on here...
+DWRead    pshs   cc,d,x,u
+          leau   ,x 
+          ldx    #$0000
+          orcc   #IntMasks
+loop@     ldb    $FF41
+          bitb   #$02
+          beq    loop@
+          ldb    $FF42
+          stb    ,u+
+          abx
+          leay   -1,y
+          bne    loop@
 
-* Wait for byte or timeout
-rx0010    bcc       rxExit              ; exit if timeout expired
-          ldb       #$ff                ; init timeout lsb
-rx0020    lda       $FF41               ; check for byte ready
-          bita      #$02
-          bne       rxByte              ; branch if start bit detected
-          subb      #1                  ; decrement timeout lsb
-          bcc       rx0020              ; loop until timeout lsb rolls under
-          beq       rxByte
-          addb      ,s                  ; B = timeout msb - 1
-          stb       ,s                  ; store decremented timeout msb
-          bra       rx0010              ; loop if still no start bit
-
-* Read a byte
-rxByte    ldb       $FF42
-
-          stb       ,u+                 ; store received byte to memory
-          abx                           ; update checksum
-          ldb       #$ff                ; set timeout lsb for next byte
-          leay      ,y                  ; test request count
-          bne       rx0020              ; loop if another byte wanted
-          lda       #$03                ; setup to return SUCCESS
-
-* Clean up, set status and return
-rxExit    leas      1,s                 ; remove timeout msb from stack
-          inca                          ; A = status to be returned in C and Z
-          ora       ,s                  ; place status information into the..
-          sta       ,s                  ; ..C and Z bits of the preserved CC
-          leay      ,x                  ; return checksum in Y
-          puls      cc,dp,x,u,pc        ; restore registers and return
-;          setdp     $00
+          tfr    x,y
+          puls   cc
+          andcc  #^Carry
+          orcc   #Zero
+          puls   d,x,u,pc
 
           ELSE
           IFNE BAUD38400
