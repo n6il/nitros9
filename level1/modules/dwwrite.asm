@@ -17,7 +17,7 @@
 
 
           IFNE BECKER
-DWWrite   pshs      u,d,cc              ; preserve registers
+DWWrite   pshs      d,cc              ; preserve registers
           orcc      #$50                ; mask interrupts
 ;          ldu       #BBOUT              ; point U to bit banger out register
 ;          lda       3,u                 ; read PIA 1-B control register
@@ -31,7 +31,7 @@ txByte
           leay      -1,y                ; decrement byte counter
           bne       txByte              ; loop if more to send
 
-          puls      cc,d,u,pc           ; restore registers and return
+          puls      cc,d,pc           ; restore registers and return
 
 
           ELSE
