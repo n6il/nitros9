@@ -22,7 +22,7 @@
 DWRead    clra                          ; clear Carry (no framing error)
           deca                          ; clear Z flag, A = timeout msb ($ff)
           tfr       cc,b
-          pshs      u,x,b,a          ; preserve registers, push timeout msb
+          pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
           orcc      #$50                ; mask interrupts
 ;          tfr       a,dp                ; set direct page to $FFxx
 ;          setdp     $ff
@@ -59,7 +59,7 @@ rxExit    leas      1,s                 ; remove timeout msb from stack
           ora       ,s                  ; place status information into the..
           sta       ,s                  ; ..C and Z bits of the preserved CC
           leay      ,x                  ; return checksum in Y
-          puls      cc,x,u,pc        ; restore registers and return
+          puls      cc,dp,x,u,pc        ; restore registers and return
 ;          setdp     $00
 
           ELSE
