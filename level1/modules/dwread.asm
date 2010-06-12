@@ -34,7 +34,7 @@ DWRead    clra                          ; clear Carry (no framing error)
 rx0010    bcc       rxExit              ; exit if timeout expired
           ldb       #$ff                ; init timeout lsb
 rx0020    lda       $FF41               ; check for byte ready
-          bita      #$01
+          bita      #$02
           bne       rxByte              ; branch if start bit detected
           subb      #1                  ; decrement timeout lsb
           bcc       rx0020              ; loop until timeout lsb rolls under
