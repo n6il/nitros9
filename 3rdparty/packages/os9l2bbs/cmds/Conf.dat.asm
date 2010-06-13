@@ -1,157 +1,313 @@
-         nam   Conf.dat
-         ttl   data module          
+           NAM    Conf.dat
+           TTL    data module
 
-* Disassembled 2010/01/24 10:39:20 by Disasm v1.5 (C) 1988 by RML
+           IFP1
+           USE    defsfile
+           ENDC
 
-         ifp1
-         use   defsfile
-         endc
-tylg     set   Data+Objct   
-atrv     set   ReEnt+rev
-rev      set   $01
-         mod   eom,name,tylg,atrv,start,size
-u0000    rmb   13
-u000D    rmb   387
-size     equ   .
-name     equ   *
-         fcs   /Conf.dat/
-start    equ   *
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         stu   >$FFFF
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         tst   <u000D
-         emod
-eom      equ   *
-         end
+tylg       SET    Data+Objct
+atrv       SET    ReEnt+rev
+rev        SET    $01
+
+           MOD    eom,name,tylg,atrv,start,size
+
+U0000      RMB    400
+size       EQU    .
+
+name       FCS    /Conf.dat/                                            * 000D 43 6F 6E 66 2E 64 61 F4 Conf.dat
+start      FCB    $FF                                                   * 0015 FF             .
+           FCB    $FF                                                   * 0016 FF             .
+           FCB    $FF                                                   * 0017 FF             .
+           FCB    $FF                                                   * 0018 FF             .
+           FCB    $FF                                                   * 0019 FF             .
+           FCB    $FF                                                   * 001A FF             .
+           FCB    $FF                                                   * 001B FF             .
+           FCB    $FF                                                   * 001C FF             .
+           FCB    $FF                                                   * 001D FF             .
+           FCB    $FF                                                   * 001E FF             .
+           FCB    $FF                                                   * 001F FF             .
+           FCB    $FF                                                   * 0020 FF             .
+           FCB    $FF                                                   * 0021 FF             .
+           FCB    $FF                                                   * 0022 FF             .
+           FCB    $FF                                                   * 0023 FF             .
+           FCB    $FF                                                   * 0024 FF             .
+           FCB    $FF                                                   * 0025 FF             .
+           FCB    $FF                                                   * 0026 FF             .
+           FCB    $FF                                                   * 0027 FF             .
+           FCB    $FF                                                   * 0028 FF             .
+           FCB    $FF                                                   * 0029 FF             .
+           FCB    $FF                                                   * 002A FF             .
+           FCB    $FF                                                   * 002B FF             .
+           FCB    $FF                                                   * 002C FF             .
+           FCB    $FF                                                   * 002D FF             .
+           FCB    $FF                                                   * 002E FF             .
+           FCB    $FF                                                   * 002F FF             .
+           FCB    $FF                                                   * 0030 FF             .
+           FCB    $FF                                                   * 0031 FF             .
+           FCB    $FF                                                   * 0032 FF             .
+           FCB    $FF                                                   * 0033 FF             .
+           FCB    $FF                                                   * 0034 FF             .
+           FCB    $FF                                                   * 0035 FF             .
+           FCB    $FF                                                   * 0036 FF             .
+           FCB    $FF                                                   * 0037 FF             .
+           FCB    $FF                                                   * 0038 FF             .
+           FCB    $FF                                                   * 0039 FF             .
+           FCB    $FF                                                   * 003A FF             .
+           FCB    $FF                                                   * 003B FF             .
+           FCB    $FF                                                   * 003C FF             .
+           FCB    $FF                                                   * 003D FF             .
+           FCB    $FF                                                   * 003E FF             .
+           FCB    $FF                                                   * 003F FF             .
+           FCB    $FF                                                   * 0040 FF             .
+           FCB    $FF                                                   * 0041 FF             .
+           FCB    $FF                                                   * 0042 FF             .
+           FCB    $FF                                                   * 0043 FF             .
+           FCB    $FF                                                   * 0044 FF             .
+           FCB    $FF                                                   * 0045 FF             .
+           FCB    $FF                                                   * 0046 FF             .
+           FCB    $FF                                                   * 0047 FF             .
+           FCB    $FF                                                   * 0048 FF             .
+           FCB    $FF                                                   * 0049 FF             .
+           FCB    $FF                                                   * 004A FF             .
+           FCB    $FF                                                   * 004B FF             .
+           FCB    $FF                                                   * 004C FF             .
+           FCB    $FF                                                   * 004D FF             .
+           FCB    $FF                                                   * 004E FF             .
+           FCB    $FF                                                   * 004F FF             .
+           FCB    $FF                                                   * 0050 FF             .
+           FCB    $0D                                                   * 0051 0D             .
+           FCB    $0D                                                   * 0052 0D             .
+           FCB    $0D                                                   * 0053 0D             .
+           FCB    $0D                                                   * 0054 0D             .
+           FCB    $0D                                                   * 0055 0D             .
+           FCB    $0D                                                   * 0056 0D             .
+           FCB    $0D                                                   * 0057 0D             .
+           FCB    $0D                                                   * 0058 0D             .
+           FCB    $0D                                                   * 0059 0D             .
+           FCB    $0D                                                   * 005A 0D             .
+           FCB    $0D                                                   * 005B 0D             .
+           FCB    $0D                                                   * 005C 0D             .
+           FCB    $0D                                                   * 005D 0D             .
+           FCB    $0D                                                   * 005E 0D             .
+           FCB    $0D                                                   * 005F 0D             .
+           FCB    $0D                                                   * 0060 0D             .
+           FCB    $0D                                                   * 0061 0D             .
+           FCB    $0D                                                   * 0062 0D             .
+           FCB    $0D                                                   * 0063 0D             .
+           FCB    $0D                                                   * 0064 0D             .
+           FCB    $0D                                                   * 0065 0D             .
+           FCB    $0D                                                   * 0066 0D             .
+           FCB    $0D                                                   * 0067 0D             .
+           FCB    $0D                                                   * 0068 0D             .
+           FCB    $0D                                                   * 0069 0D             .
+           FCB    $0D                                                   * 006A 0D             .
+           FCB    $0D                                                   * 006B 0D             .
+           FCB    $0D                                                   * 006C 0D             .
+           FCB    $0D                                                   * 006D 0D             .
+           FCB    $0D                                                   * 006E 0D             .
+           FCB    $0D                                                   * 006F 0D             .
+           FCB    $0D                                                   * 0070 0D             .
+           FCB    $0D                                                   * 0071 0D             .
+           FCB    $0D                                                   * 0072 0D             .
+           FCB    $0D                                                   * 0073 0D             .
+           FCB    $0D                                                   * 0074 0D             .
+           FCB    $0D                                                   * 0075 0D             .
+           FCB    $0D                                                   * 0076 0D             .
+           FCB    $0D                                                   * 0077 0D             .
+           FCB    $0D                                                   * 0078 0D             .
+           FCB    $0D                                                   * 0079 0D             .
+           FCB    $0D                                                   * 007A 0D             .
+           FCB    $0D                                                   * 007B 0D             .
+           FCB    $0D                                                   * 007C 0D             .
+           FCB    $0D                                                   * 007D 0D             .
+           FCB    $0D                                                   * 007E 0D             .
+           FCB    $0D                                                   * 007F 0D             .
+           FCB    $0D                                                   * 0080 0D             .
+           FCB    $0D                                                   * 0081 0D             .
+           FCB    $0D                                                   * 0082 0D             .
+           FCB    $0D                                                   * 0083 0D             .
+           FCB    $0D                                                   * 0084 0D             .
+           FCB    $0D                                                   * 0085 0D             .
+           FCB    $0D                                                   * 0086 0D             .
+           FCB    $0D                                                   * 0087 0D             .
+           FCB    $0D                                                   * 0088 0D             .
+           FCB    $0D                                                   * 0089 0D             .
+           FCB    $0D                                                   * 008A 0D             .
+           FCB    $0D                                                   * 008B 0D             .
+           FCB    $0D                                                   * 008C 0D             .
+           FCB    $0D                                                   * 008D 0D             .
+           FCB    $0D                                                   * 008E 0D             .
+           FCB    $0D                                                   * 008F 0D             .
+           FCB    $0D                                                   * 0090 0D             .
+           FCB    $0D                                                   * 0091 0D             .
+           FCB    $0D                                                   * 0092 0D             .
+           FCB    $0D                                                   * 0093 0D             .
+           FCB    $0D                                                   * 0094 0D             .
+           FCB    $0D                                                   * 0095 0D             .
+           FCB    $0D                                                   * 0096 0D             .
+           FCB    $0D                                                   * 0097 0D             .
+           FCB    $0D                                                   * 0098 0D             .
+           FCB    $0D                                                   * 0099 0D             .
+           FCB    $0D                                                   * 009A 0D             .
+           FCB    $0D                                                   * 009B 0D             .
+           FCB    $0D                                                   * 009C 0D             .
+           FCB    $0D                                                   * 009D 0D             .
+           FCB    $0D                                                   * 009E 0D             .
+           FCB    $0D                                                   * 009F 0D             .
+           FCB    $0D                                                   * 00A0 0D             .
+           FCB    $0D                                                   * 00A1 0D             .
+           FCB    $0D                                                   * 00A2 0D             .
+           FCB    $0D                                                   * 00A3 0D             .
+           FCB    $0D                                                   * 00A4 0D             .
+           FCB    $0D                                                   * 00A5 0D             .
+           FCB    $0D                                                   * 00A6 0D             .
+           FCB    $0D                                                   * 00A7 0D             .
+           FCB    $0D                                                   * 00A8 0D             .
+           FCB    $0D                                                   * 00A9 0D             .
+           FCB    $0D                                                   * 00AA 0D             .
+           FCB    $0D                                                   * 00AB 0D             .
+           FCB    $0D                                                   * 00AC 0D             .
+           FCB    $0D                                                   * 00AD 0D             .
+           FCB    $0D                                                   * 00AE 0D             .
+           FCB    $0D                                                   * 00AF 0D             .
+           FCB    $0D                                                   * 00B0 0D             .
+           FCB    $0D                                                   * 00B1 0D             .
+           FCB    $0D                                                   * 00B2 0D             .
+           FCB    $0D                                                   * 00B3 0D             .
+           FCB    $0D                                                   * 00B4 0D             .
+           FCB    $0D                                                   * 00B5 0D             .
+           FCB    $0D                                                   * 00B6 0D             .
+           FCB    $0D                                                   * 00B7 0D             .
+           FCB    $0D                                                   * 00B8 0D             .
+           FCB    $0D                                                   * 00B9 0D             .
+           FCB    $0D                                                   * 00BA 0D             .
+           FCB    $0D                                                   * 00BB 0D             .
+           FCB    $0D                                                   * 00BC 0D             .
+           FCB    $0D                                                   * 00BD 0D             .
+           FCB    $0D                                                   * 00BE 0D             .
+           FCB    $0D                                                   * 00BF 0D             .
+           FCB    $0D                                                   * 00C0 0D             .
+           FCB    $0D                                                   * 00C1 0D             .
+           FCB    $0D                                                   * 00C2 0D             .
+           FCB    $0D                                                   * 00C3 0D             .
+           FCB    $0D                                                   * 00C4 0D             .
+           FCB    $0D                                                   * 00C5 0D             .
+           FCB    $0D                                                   * 00C6 0D             .
+           FCB    $0D                                                   * 00C7 0D             .
+           FCB    $0D                                                   * 00C8 0D             .
+           FCB    $0D                                                   * 00C9 0D             .
+           FCB    $0D                                                   * 00CA 0D             .
+           FCB    $0D                                                   * 00CB 0D             .
+           FCB    $0D                                                   * 00CC 0D             .
+           FCB    $0D                                                   * 00CD 0D             .
+           FCB    $0D                                                   * 00CE 0D             .
+           FCB    $0D                                                   * 00CF 0D             .
+           FCB    $0D                                                   * 00D0 0D             .
+           FCB    $0D                                                   * 00D1 0D             .
+           FCB    $0D                                                   * 00D2 0D             .
+           FCB    $0D                                                   * 00D3 0D             .
+           FCB    $0D                                                   * 00D4 0D             .
+           FCB    $0D                                                   * 00D5 0D             .
+           FCB    $0D                                                   * 00D6 0D             .
+           FCB    $0D                                                   * 00D7 0D             .
+           FCB    $0D                                                   * 00D8 0D             .
+           FCB    $0D                                                   * 00D9 0D             .
+           FCB    $0D                                                   * 00DA 0D             .
+           FCB    $0D                                                   * 00DB 0D             .
+           FCB    $0D                                                   * 00DC 0D             .
+           FCB    $0D                                                   * 00DD 0D             .
+           FCB    $0D                                                   * 00DE 0D             .
+           FCB    $0D                                                   * 00DF 0D             .
+           FCB    $0D                                                   * 00E0 0D             .
+           FCB    $0D                                                   * 00E1 0D             .
+           FCB    $0D                                                   * 00E2 0D             .
+           FCB    $0D                                                   * 00E3 0D             .
+           FCB    $0D                                                   * 00E4 0D             .
+           FCB    $0D                                                   * 00E5 0D             .
+           FCB    $0D                                                   * 00E6 0D             .
+           FCB    $0D                                                   * 00E7 0D             .
+           FCB    $0D                                                   * 00E8 0D             .
+           FCB    $0D                                                   * 00E9 0D             .
+           FCB    $0D                                                   * 00EA 0D             .
+           FCB    $0D                                                   * 00EB 0D             .
+           FCB    $0D                                                   * 00EC 0D             .
+           FCB    $0D                                                   * 00ED 0D             .
+           FCB    $0D                                                   * 00EE 0D             .
+           FCB    $0D                                                   * 00EF 0D             .
+           FCB    $0D                                                   * 00F0 0D             .
+           FCB    $0D                                                   * 00F1 0D             .
+           FCB    $0D                                                   * 00F2 0D             .
+           FCB    $0D                                                   * 00F3 0D             .
+           FCB    $0D                                                   * 00F4 0D             .
+           FCB    $0D                                                   * 00F5 0D             .
+           FCB    $0D                                                   * 00F6 0D             .
+           FCB    $0D                                                   * 00F7 0D             .
+           FCB    $0D                                                   * 00F8 0D             .
+           FCB    $0D                                                   * 00F9 0D             .
+           FCB    $0D                                                   * 00FA 0D             .
+           FCB    $0D                                                   * 00FB 0D             .
+           FCB    $0D                                                   * 00FC 0D             .
+           FCB    $0D                                                   * 00FD 0D             .
+           FCB    $0D                                                   * 00FE 0D             .
+           FCB    $0D                                                   * 00FF 0D             .
+           FCB    $0D                                                   * 0100 0D             .
+           FCB    $0D                                                   * 0101 0D             .
+           FCB    $0D                                                   * 0102 0D             .
+           FCB    $0D                                                   * 0103 0D             .
+           FCB    $0D                                                   * 0104 0D             .
+           FCB    $0D                                                   * 0105 0D             .
+           FCB    $0D                                                   * 0106 0D             .
+           FCB    $0D                                                   * 0107 0D             .
+           FCB    $0D                                                   * 0108 0D             .
+           FCB    $0D                                                   * 0109 0D             .
+           FCB    $0D                                                   * 010A 0D             .
+           FCB    $0D                                                   * 010B 0D             .
+           FCB    $0D                                                   * 010C 0D             .
+           FCB    $0D                                                   * 010D 0D             .
+           FCB    $0D                                                   * 010E 0D             .
+           FCB    $0D                                                   * 010F 0D             .
+           FCB    $0D                                                   * 0110 0D             .
+           FCB    $0D                                                   * 0111 0D             .
+           FCB    $0D                                                   * 0112 0D             .
+           FCB    $0D                                                   * 0113 0D             .
+           FCB    $0D                                                   * 0114 0D             .
+           FCB    $0D                                                   * 0115 0D             .
+           FCB    $0D                                                   * 0116 0D             .
+           FCB    $0D                                                   * 0117 0D             .
+           FCB    $0D                                                   * 0118 0D             .
+           FCB    $0D                                                   * 0119 0D             .
+           FCB    $0D                                                   * 011A 0D             .
+           FCB    $0D                                                   * 011B 0D             .
+           FCB    $0D                                                   * 011C 0D             .
+           FCB    $0D                                                   * 011D 0D             .
+           FCB    $0D                                                   * 011E 0D             .
+           FCB    $0D                                                   * 011F 0D             .
+           FCB    $0D                                                   * 0120 0D             .
+           FCB    $0D                                                   * 0121 0D             .
+           FCB    $0D                                                   * 0122 0D             .
+           FCB    $0D                                                   * 0123 0D             .
+           FCB    $0D                                                   * 0124 0D             .
+           FCB    $0D                                                   * 0125 0D             .
+           FCB    $0D                                                   * 0126 0D             .
+           FCB    $0D                                                   * 0127 0D             .
+           FCB    $0D                                                   * 0128 0D             .
+           FCB    $0D                                                   * 0129 0D             .
+           FCB    $0D                                                   * 012A 0D             .
+           FCB    $0D                                                   * 012B 0D             .
+           FCB    $0D                                                   * 012C 0D             .
+           FCB    $0D                                                   * 012D 0D             .
+           FCB    $0D                                                   * 012E 0D             .
+           FCB    $0D                                                   * 012F 0D             .
+           FCB    $0D                                                   * 0130 0D             .
+           FCB    $0D                                                   * 0131 0D             .
+           FCB    $0D                                                   * 0132 0D             .
+           FCB    $0D                                                   * 0133 0D             .
+           FCB    $0D                                                   * 0134 0D             .
+           FCB    $0D                                                   * 0135 0D             .
+           FCB    $0D                                                   * 0136 0D             .
+           FCB    $0D                                                   * 0137 0D             .
+           FCB    $0D                                                   * 0138 0D             .
+
+           EMOD
+eom        EQU    *
+           END
