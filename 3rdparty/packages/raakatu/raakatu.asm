@@ -186,7 +186,7 @@ u01E1 rmb 1    tmp1E1                used in making index of data fields
 u01E2 rmb 1    tmp1E2                used in input processing                    
 u01E3 rmb 1    tillMORE              rows left until MORE prompt (not used here)               
 ;
-u01E4 rmb 1     inputTokens           input token buffer
+u01E4 rmb $21b     inputTokens           input token buffer
 u03FF equ .    stack                 top of stack (just below screen memory)
 
 ;##Start
@@ -205,7 +205,7 @@ L0615          ldx       #$05E0              ; Set cursor to ...
 L0618          stx       >$88                ; ... bottom row of screen
 L061A          ldb       #$96                ; Starting ...
 L061C          stb       u01D5               ; ... room
-L061F          ldx       #$1523              ; Room descriptions
+L061F          leax      L1523,pc            ; Room descriptions
 L0622          lbsr      L0A1F               ; Find room data
 L0625          stx       u01D6               ; Store current room data
 L0628          lbsr      L0D4A               ; Print room description
@@ -236,7 +236,7 @@ L0663          stx       u01D3               ; Active object's data
 L0666          lbsr      L0A42               ; Skip length
 L0669          ldb       ,X                  ; Get player location
 L066B          stb       u01D5               ; Current room
-L066E          ldx       #$1523              ; Room scripts
+L066E          leax      L1523,pc            ; Room scripts
 L0671          lbsr      L0A1F               ; Find sublist ... script for room
 L0674          stx       u01D6               ; Script for current room
 L0677          ldx       #u01E3              ; Input token list area
@@ -290,7 +290,7 @@ L06C2          bne       L06E5               ; No ... continue
 ; code has a bug or two. It actually does nothing at all. The replacement
 ; list for BEDLAM and RAAKATU is empty so the code is never used anyway.
 ;
-L06C4          ldx       #$1332              ;  Multi verb translation list (empty list for BEDLAM and RAAKATU)
+L06C4          leax      L1333-1,pc          ;  Multi verb translation list (empty list for BEDLAM and RAAKATU)
 L06C7          lbsr      L0A1F               ;  Look for an entry for the given verb
 
 L06CA          bcc       L06DF               ;  No entry ... use the word as-is
@@ -382,7 +382,7 @@ L0775          leax      2,X                 ;  Skip 2 bytes
 L0777          lda       ,X                  ;  Object parameter bits
 L0779          sta       u01CE               ;  Hold second noun's parameter bits
 
-L077C          ldx       #$135B              ;  Syntax list
+L077C          leax      L135B,pc            ;  Syntax list
 L077F          lda       ,X                  ;  End of list?
 L0781          lbeq      $0951               ;  Yes ... "?PHRASE?"
 L0785          lda       u01B3               ;  Verb ...
@@ -455,7 +455,7 @@ L0802          ldx       u01CC               ; Move 2nd ...
 L0805          stx       u01C6               ; ... noun to ...
 L0808          lda       u01C9               ; ... first ...
 L080B          sta       u01C3               ; ... descriptor
-L080E          ldx       #$323C              ; General command scripts
+L080E          leax      L323C,pc            ; General command scripts
 L0811          lbsr      L0A42               ; Skip over end delta
 L0814          lbsr      L0C03               ; Execute script
 L0817          lbsr      L0F66               ; Allow objects to move
@@ -486,7 +486,7 @@ L082E          lda       ,X+                 ; Noun's adjective
 L0830          sta       u01B7               ; Hold it
 L0833          lda       ,X                  ; LSB of word in buffer
 L0835          sta       u01CF               ; Hold it
-L0838          ldx       #$20FF              ; Object data
+L0838          leax      L20FF,pc            ; Object data
 L083B          lbsr      L0A1F               ; Get pointer to next object that matches word
 
 L083E          bcc       L089A               ; Not found
@@ -565,7 +565,7 @@ L08C0          ldb       ,X                  ; Location again
 L08C2          cmpb      u01D2               ; Being held by the active object?
 
 L08C5          beq       L08A5               ; Yes ... return OK
-L08C7          ldx       #$20FF              ; Strange. 117D does this too.
+L08C7          leax      L20FF,pc            ; Strange. 117D does this too.
 L08CA          lbsr      L1133               ; Get object's container object (if any)
 
 L08CD          bra       L08AA               ; Repeat check
@@ -588,7 +588,7 @@ L08D7          clr       u01E1               ; Object index starts at 0
 L08DA          pshs      Y                   ; Hold noun descriptor
 L08DC          lda       ,X                  ; Object parameter mask bits
 L08DE          sta       u01AB               ; Hold
-L08E1          ldx       #$20FF              ; Object data
+L08E1          leax      L20FF,pc            ; Object data
 L08E4          lbsr      L0A42               ; Skip ID and load end
 L08E7          lbsr      L0A58               ; At end of object data?
 
@@ -639,12 +639,12 @@ L0944          puls      X                   ; Restore phrase data pointer
 L0946          clra                          ; Set Z=1
 L0947          rts                           ; Done
 
-L0948          ldy       #$1343              ; "?WHAT?"
+L0948          leay      L1343,pc            ; "?WHAT?"
 L094C          lda       u01CF               ; LSB of screen location
 
 L094F          bra       L099B               ; Go flash error and try again
 
-L0951          ldy       #$1352              ; "?PHRASE?"
+L0951          leay      L1352,pc            ; "?PHRASE?"
 L0955          lda       u01BC               ; LSB of screen location
 
 L0958          bra       L099B               ; Go flash error and try again
@@ -655,7 +655,7 @@ L095D          beq       L0983               ; No ... just plain "?WHAT?"
 L095F          lda       u01B4               ; Preposition word number?
 
 L0962          bne       L0983               ; No word ... just plain "?WHAT?"
-L0964          ldx       #$3ECF              ; Prepositions list
+L0964          leax      L3ECF,pc            ; Prepositions list
 L0967          ldb       ,X                  ; Length of word
 
 L0969          beq       L0983               ; Reached the end ... do "?WHAT?"
@@ -672,15 +672,15 @@ L0979          bra       L0967               ; Next word
 L097B          puls      Y                   ; Word text to Y
 L097D          lda       u01BD               ; LSB of error message
 L0980          lbsr      L09E1               ; Push preposition word
-L0983          ldy       #$1343              ; "?WHAT?"
+L0983          leay      L1343,pc            ; "?WHAT?"
 L0987          lda       u01BD               ; LSB of screen location
 
 L098A          bra       L099B               ; Go flash error and try again
-L098C          ldy       #$134A              ; "?WHICH"?
+L098C          leay      L134A,pc            ; "?WHICH"?
 L0990          lda       u01CF               ; LSB of screen location
 
 L0993          bra       L099B               ; Go flash error and try again
-L0995          ldy       #$133C              ; "?VERB?"
+L0995          leay      L133C,pc            ; "?VERB?"
 
 L0999          lda       #$E0                ; LSB of start of input line
 L099B          lds       #$03FF              ; Reset the stack (we jump back into the main loop)
@@ -966,7 +966,7 @@ L0B4C          lda       ,X                  ; Next in input
 L0B4E          cmpa      #$60                ; Valid character?
 
 L0B50          bcc       L0B40               ; No ... skip till we find one
-L0B52          ldy       #$3C29              ; Word token table
+L0B52          leay      L3C29,pc            ; Word token table
 L0B56          lbsr      L0B8B               ; Try first list
 
 L0B59          beq       L0B42               ; Found a match ... ignore it
@@ -1086,7 +1086,7 @@ L0C07          bita      #$80                ; Upper bit set?
 
 L0C09          beq       L0C1E               ; No ... do commands
 L0C0B          pshs      Y,X                 ; Hold
-L0C0D          ldx       #$37FA              ; Common commands
+L0C0D          leax      L37FA,pc            ; Common commands
 L0C10          lbsr      L0A1F               ; Find common command
 
 L0C13          bcc       L0C1B               ; Not found ... skip
@@ -1096,7 +1096,7 @@ L0C1B          puls      X,Y                 ; Restore
 L0C1D          rts                           ; Out
 
 L0C1E          tfr       B,A                 ; Hold original command
-L0C20          ldy       #L12E5              ; Function table
+L0C20          leay      L12E5,pc            ; Function table
 L0C24          asla                          ; Jump to ...
 L0C25          jmp       [A,Y]               ; ... command
 
@@ -1172,7 +1172,7 @@ L0C8D          lda       ,X+                 ; New room number
 L0C8F          pshs      X                   ; Hold script
 L0C91          sta       u01D5               ; Store new actvie room number
 L0C94          tfr       A,B                 ; Store ...
-L0C96          ldx       #$1523              ; ... pointer ...
+L0C96          leax      L1523,pc            ; ... pointer ...
 L0C99          lbsr      L0A1F               ; ... to ...
 L0C9C          stx       u01D6               ; ... new room
 L0C9F          ldx       u01D3               ; Active object
@@ -1238,7 +1238,7 @@ L0D10          stb       u01C9               ; ... index
 L0D13          beq       L0D1B               ; There isn't one ... skip
 L0D15          lbsr      L1133               ; Lookup object in B
 L0D18          stx       u01CC               ; Temporary 2nd noun
-L0D1B          ldx       #$323C              ; General commands
+L0D1B          leax      L323C,pc           ; General commands
 L0D1E          lbsr      L0A42               ; Skip ID and length
 L0D21          lbsr      L0C03               ; Execute general script
 L0D24          tfr       CC,A                ; Hold the result ...
@@ -1275,7 +1275,7 @@ L0D62          lbsr      L114C               ; Print the packed message
 ;
 ; Print object descriptions
 ;
-L0D65          ldx       #$20FF              ; Object data
+L0D65          leax      L20FF,pc            ; Object data
 L0D68          lbsr      L0A42               ; Skip length
 L0D6B          pshs      Y                   ; Hold end
 L0D6D          lbsr      L0A42               ; Skip this object's length
@@ -1365,7 +1365,7 @@ L0DE8          rts                           ; Done
 L0DE9          pshs      X                   ; Hold script pointer
 L0DEB          lda       #$0D                ; Print ...
 L0DED          lbsr      L1184               ; ... CR
-L0DF0          ldx       #$20FF              ; Objects
+L0DF0          leax      L20FF,pc            ; Objects
 L0DF3          lbsr      L0A42               ; Skip size of objects
 ;
 L0DF6          lbsr      L0A58               ; CompareXY
@@ -1591,7 +1591,7 @@ L0F61          lbsr      L1133               ; Look up owner object
 L0F64          bra       L0F4B               ; Check again
 
 ; Execute any turn-scripts on the objects
-L0F66          ldx       #$20FF              ; Start of object data
+L0F66          leax      L20FF,pc            ; Start of object data
 L0F69          clr       u01D0               ; Object number
 L0F6C          lbsr      L0A42               ; Skip length
 L0F6F          lbsr      L0A58               ; End of objects?
@@ -1631,7 +1631,7 @@ L0FB4          puls      X                   ; Restore pointer
 
 L0FB6          bra       L0FC9               ; Next object
 L0FB8          stb       u01D5               ; Objects location
-L0FBB          ldx       #$1523              ; Get room ...
+L0FBB          leax      L1523,pc            ; Get room ...
 L0FBE          lbsr      L0A1F               ; ... scripts for object
 L0FC1          stx       u01D6               ; Hold
 L0FC4          puls      X                   ; Restore turn-script
@@ -1805,7 +1805,7 @@ L10D0          cmpa      #$96                ; Player in the treasure room?
 
 L10D2          bne       L10D7               ; No ... regular score
 L10D4          inc       u01B0               ; Yes ... carried objects count double
-L10D7          ldx       #$20FF              ; Object data
+L10D7          leax      L20FF,pc            ; Object data
 L10DA          lbsr      L0A42               ; Skip header
 L10DD          lbsr      L0A58               ; Reached end?
 
@@ -1857,7 +1857,7 @@ L1131          clra                          ; OK
 L1132          rts                           ; Done
 
 ; Find object index in B
-L1133          ldx       #$20FF              ; Start of objects
+L1133          leax      L20FF,pc            ; Start of objects
 L1136          lbsr      L0A42               ; Skip end
 L1139          decb                          ; Found desired object?
 
@@ -1976,16 +1976,16 @@ L11EB          rts                           ; OOPS
 ; Every 2 bytes holds 3 characters. Each character can be from 0 to 39.
 ; 40*40*40 = 64000 ... totally ingenious.
 ;
-L11EC          ldy       #$12A4              ;
+L11EC          leay      L12A4,pc            ;
 L11F0          ldb       #$03                ;
-L11F2          stb       $12A1               ;
+L11F2          stb       L12A1,pc               ;
 L11F5          lda       ,X+                 ;
 L11F7          sta       u01DE               ;
 L11FA          lda       ,X+                 ;
 L11FC          sta       u01DD               ;
 L11FF          leay      3,Y                 ;
 L1201          ldu       #$0028              ;
-L1204          stu       $12A2               ;
+L1204          stu       L12A2,pc            ;
 L1207          lda       #$11                ;
 L1209          sta       u01DA               ;
 L120C          clr       u01DB               ;
@@ -2000,15 +2000,24 @@ L121F          adca      #$00                ; This algorithm is identical to th
 L1221          asl       u01DC               ; used in Pyramid2000. Check the comments there for
 L1224          rol       u01DB               ; more detail.
 L1227          adda      u01DC               ;
-L122A          suba      $12A3               ;
+L122A          suba      L12A3,pc            ;
 L122D          sta       u01E0               ;
 L1230          lda       u01DB               ;
-L1233          sbca      $12A2               ;
+L1233          sbca      L12A2,pc            ;
 L1236          sta       u01DF               ;
 
 L1239          bcc       L1246               ;
-L123B          ldd       u01DF               ;
-L123E          addd      $12A2               ;
+
+* BGP: replacing following two lines with next three lines
+* WARNING: Not sure U is not being used elsewhere
+*L123B          ldd       u01DF               ;
+*L123E          addd      L12A2               ;
+
+
+			   leau      L12A2,pc
+			   tfr       u,d
+			   addd      u01DF
+			   
 L1241          std       u01DB               ;
 
 L1244          bra       L124C               ;
@@ -2024,15 +2033,21 @@ L1252          andcc     #$FE                ;
 
 L1254          bra       L1212               ;
 ; Process the result of the division
-L1256          ldd       u01DB               ;
-L1259          addd      #$1279              ;
+* BGP: replacing following two lines with next three lines
+* WARNING: Not sure U is not being used elsewhere
+*L1256          ldd       u01DB               ;
+*L1259          addd      #$1279              ;
+L1256          leau      L1279,pc
+			   tfr       u,d
+			   addd      u01DB
+			   
 L125C          tfr       D,U                 ;
 L125E          lda       ,U                  ;
 L1260          sta       ,-Y                 ;
-L1262          dec       $12A1               ;
+L1262          dec       L12A1,pc            ;
 
 L1265          bne       L1201               ;
-L1267          ldy       #$12A4              ;
+L1267          leay      L12A4,pc            ;
 L126B          ldb       #$03                ;
 L126D          lda       ,Y+                 ;
 L126F          lbsr      L1184               ; Print character
@@ -2051,10 +2066,13 @@ L1299          fcb       $2C,$2E
 ;     V  W  X  Y  Z  -  ,  .
 
 L12A1          fcb       $00                 ; Temporaries for decompression algorithm above            
+L12A2          fcb       $00
+L12A3          fcb       $00
+L12A4          fcb       $00,$00,$00,$00
 
 ; Generate random number
 L12A8          pshs      X,B                 ; Random number generator. Uses seed at 13B8.
-L12AA          ldx       #$1338              ;
+L12AA          leax      L1338,pc            ;
 L12AD          ldb       #$17                ;
 L12AF          lda       ,X                  ;
 L12B1          leax      1,X                 ;
@@ -2147,20 +2165,21 @@ L1331          fcb       $10,$C5             ; 26
 L1333          fcb       $00                 ; List is the length. List is pointed to by 1331 which is ignored
 
 ; Random number seed
-L1334          fcb       $12,$23,$44,$1D,$27,$4D,$2D,$13,
+L1334          fcb       $12,$23,$44,$1D
+L1338          fcb       $27,$4D,$2D,$13
 
 ;##FeedbackPrompts
 ; "?VERB?"  
-L133C          fcb       $06,$3F,$56,$45,$52,$42,$3F,
+L133C          fcb       $06,$3F,$56,$45,$52,$42,$3F
 ;       
 ; "?WHAT?"
-L1343          fcb       $06,$3F,$57,$48,$41,$54,$3F,
+L1343          fcb       $06,$3F,$57,$48,$41,$54,$3F
 ;          
 ; "?WHICH?"        
-L134A          fcb       $07,$3F,$57,$48,$49,$43,$48,$3F,
+L134A          fcb       $07,$3F,$57,$48,$49,$43,$48,$3F
 ;           
 ; "?PHRASE?"         
-L1352          fcb       $08,$3F,$50,$48,$52,$41,$53,$45,$3F,
+L1352          fcb       $08,$3F,$50,$48,$52,$41,$53,$45,$3F
 
 ;##PhraseList 
 L135B          fcb       $05,$00,$00,$00,$01 ; 01: NORTH *     *          *       
