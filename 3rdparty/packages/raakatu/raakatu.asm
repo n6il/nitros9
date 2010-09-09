@@ -136,8 +136,7 @@ L0604          ldu       #$6060              ; Space-space
 L0607          stu       ,X++                ; Clear ...
 L0609          deca                          ; ... text ...
 
-***** Error: branch out of range
-L060A          bne       $607                ; ... screen
+L060A          bne       L0607                ; ... screen
 
 L060C          lds       #$03FF              ; Stack starts just below screen
 L0610          lda       #$1D                ; Player object ...
@@ -186,50 +185,42 @@ L067D          clr       ,X                  ; Empty token ... clear the list
 L067F          ldx       #$05E0              ; Bottom row is input buffer
 L0682          jsr       $0B42               ; Decode input word
 
-***** Error: branch out of range
-L0685          beq       $692                ; All words done
+L0685          beq       L0692                ; All words done
 L0687          lda       ,X+                 ; Next character
 L0689          cmpa      #$60                ; A space?
 
-***** Error: branch out of range
-L068B          beq       $682                ; Yes ... decode next
+L068B          beq       L0682                ; Yes ... decode next
 L068D          cmpx      #$0600              ; End of input buffer?
 
-***** Error: branch out of range
-L0690          bne       $687                ; No ... look for next word
+L0690          bne       L0687                ; No ... look for next word
 L0692          cmpx      #$0600              ; End of input buffer?
 
-***** Error: branch out of range
-L0695          bne       $682                ; No ... keep looking
+L0695          bne       L0682                ; No ... keep looking
 L0697          clr       [$01D8]             ; Terminate token list
 L069B          ldx       #$01E3              ; Input buffer
 L069E          lda       ,X                  ; List number of first word
 L06A0          lbeq      $0736               ; Nothing entered
 L06A4          cmpa      #$02                ; First word a noun?
 
-***** Error: branch out of range
-L06A6          bne       $6B7                ; No ... move on
+L06A6          bne       L06B7                ; No ... move on
 L06A8          leax      1,X                 ; Point to word number
 L06AA          lda       ,X                  ; Get word number
 L06AC          leax      -1,X                ; Back to list number
 L06AE          cmpa      #$06                ; Living things (people, dogs, etc) are <6
 
-***** Error: branch out of range
-L06B0          bcc       $6B7                ; Not a living thing
+L06B0          bcc       L06B7                ; Not a living thing
 L06B2          sta       $01B8               ; Remember living thing. We are giving them a command so process normally
 L06B5          leax      3,X                 ; Next word
 
 L06B7          lda       ,X+                 ; Word list
 
-***** Error: branch out of range
-L06B9          beq       $736                ; End of list ... go process
+L06B9          beq       L0736                ; End of list ... go process
 L06BB          ldb       ,X                  ; Word number to B
 L06BD          ldu       ,X++                ; LSB to LSB of U
 L06BF          pshs      X                   ; Hold token buffer
 L06C1          deca                          ; List 1? Verbs?
 
-***** Error: branch out of range
-L06C2          bne       $6E5                ; No ... continue
+L06C2          bne       L06E5                ; No ... continue
 
 ; I believe the goal here was to allow multiple verbs given on an input line
 ; to be translated to a single verb. The code finds a replacement list for the
@@ -242,31 +233,26 @@ L06C2          bne       $6E5                ; No ... continue
 L06C4          ldx       #$1332              ;  Multi verb translation list (empty list for BEDLAM and RAAKATU)
 L06C7          jsr       $0A1F               ;  Look for an entry for the given verb
 
-***** Error: branch out of range
-L06CA          bcc       $6DF                ;  No entry ... use the word as-is
+L06CA          bcc       L06DF                ;  No entry ... use the word as-is
 L06CC          jsr       $0A42               ;  Skip length of entry
 L06CF          jsr       $0A58               ;  End of list?
 L06D2          tfr       B,A                 ;  ?? Held in A but ...
 
-***** Error: branch out of range
-L06D4          bcc       $6DF                ;  Reached end of list. This input is the verb.
+L06D4          bcc       L06DF                ;  Reached end of list. This input is the verb.
 L06D6          ldb       ,X+                 ;  ??
 L06D8          lda       ,X+                 ;  ?? ... A is mangled here?
 L06DA          cmpb      $01B3               ;  ?? Compare to 01B3 ...
 
-***** Error: branch out of range
-L06DD          bne       $6CF                ;  Continue running list
+L06DD          bne       L06CF                ;  Continue running list
 L06DF          stb       $01B3               ;  ?? ... then store if equal?
 L06E2          jmp       $0731               ;  Continue with next word
 
 L06E5          deca                          ;  List 2 Noun
 
-***** Error: branch out of range
-L06E6          bne       $71E                ;  Not a noun
+L06E6          bne       L071E                ;  Not a noun
 L06E8          tst       $01B5               ;  Has prepostion been given?
 
-***** Error: branch out of range
-L06EB          beq       $70D                ;  No ... this is first noun
+L06EB          beq       L070D                ;  No ... this is first noun
 L06ED          ldx       #$01C9              ;  2nd noun area
 L06F0          stb       ,X+                 ;  Store word number
 L06F2          lda       $01B7               ;  Last adjective
@@ -274,16 +260,14 @@ L06F5          sta       ,X+                 ;  Keep with noun
 L06F7          lda       $01BA               ;  LSB of adjective
 L06FA          sta       ,X                  ;  Keep with noun
 
-***** Error: branch out of range
-L06FC          bne       $702                ;  There was one ... go on
+L06FC          bne       L0702                ;  There was one ... go on
 L06FE          tfr       U,D                 ;  Use LSB of ...
 L0700          stb       ,X                  ;  ... noun if no adjective
 L0702          clr       $01B7               ;  Adjective moved
 L0705          clr       $01B5               ;  Preposition moved
 L0708          clr       $01BA               ;  LSB moved
 
-***** Error: branch out of range
-L070B          bra       $731                ;  Continue with next word
+L070B          bra       L0731                ;  Continue with next word
 
 L070D          ldx       $01C3               ;  Copy ...
 L0710          stx       $01C9               ;  ... any ...
@@ -291,19 +275,16 @@ L0713          ldx       $01C5               ;  ... first noun ...
 L0716          stx       $01CB               ;  ... to second
 L0719          ldx       #$01C3              ;  First word area
 
-***** Error: branch out of range
-L071C          bra       $6F0                ;  Go fill out first word
+L071C          bra       L06F0                ;  Go fill out first word
 
 L071E          deca                          ;  List 3 Adjective
 
-***** Error: branch out of range
-L071F          bne       $72B                ;  Not a proposition
+L071F          bne       L072B                ;  Not a proposition
 L0721          stb       $01B7               ;  Store adjective number
 L0724          tfr       U,D                 ;  Store ...
 L0726          stb       $01BA               ;  ... adjective LSB in buffer
 
-***** Error: branch out of range
-L0729          bra       $731                ;  Continue with next word
+L0729          bra       L0731                ;  Continue with next word
 
 L072B          stb       $01B4               ;  Preposition
 L072E          stb       $01B5               ;  Preoposition given (noun should follow)
@@ -326,8 +307,7 @@ L0755          clr       $01B5               ;  Clear preposition flag
 L0758          ldx       $01C6               ;  Pointer to first noun object data
 L075B          lda       $01C3               ;  First noun index
 
-***** Error: branch out of range
-L075E          beq       $767                ;  No first noun ... store a 0
+L075E          beq       L0767                ;  No first noun ... store a 0
 L0760          jsr       $0A42               ;  Skip ID and load end
 L0763          leax      2,X                 ;  Skip 2 bytes
 L0765          lda       ,X                  ;  Object parameter bits
@@ -336,8 +316,7 @@ L0767          sta       $01C8               ;  Hold first noun's parameter bits
 L076A          ldx       $01CC               ;  Pointer to second noun object data
 L076D          lda       $01C9               ;  Second noun number
 
-***** Error: branch out of range
-L0770          beq       $779                ;  No second noun ... store 0
+L0770          beq       L0779                ;  No second noun ... store 0
 L0772          jsr       $0A42               ;  Skip ID and load end
 L0775          leax      2,X                 ;  Skip 2 bytes
 L0777          lda       ,X                  ;  Object parameter bits
@@ -349,46 +328,38 @@ L0781          lbeq      $0951               ;  Yes ... "?PHRASE?"
 L0785          lda       $01B3               ;  Verb ...
 L0788          cmpa      ,X+                 ;  ... matches?
 
-***** Error: branch out of range
-L078A          bne       $7E7                ;  No ... move to next entry
+L078A          bne       L07E7                ;  No ... move to next entry
 L078C          lda       ,X                  ;  Phrase's proposition
 L078E          sta       $01B6               ;  Hold it
 L0791          lda       $01B4               ;  Preposition word number
 
-***** Error: branch out of range
-L0794          beq       $79A                ;  None given ... skip prep check
+L0794          beq       L079A                ;  None given ... skip prep check
 L0796          cmpa      ,X                  ;  Given prep matches?
 
-***** Error: branch out of range
-L0798          bne       $7E7                ;  No ... move to next phrase
+L0798          bne       L07E7                ;  No ... move to next phrase
 L079A          leax      1,X                 ;  Skip to next phrase component
 L079C          lda       ,X                  ;  First noun required by phrase
 
-***** Error: branch out of range
-L079E          beq       $7B4                ;  Not given in phrase ... skip check
+L079E          beq       L07B4                ;  Not given in phrase ... skip check
 L07A0          lda       $01C3               ;  1st noun index
 
-***** Error: branch out of range
-L07A3          bne       $7BB                ;  Requested by phrase but not given by user ... next phrase
+L07A3          bne       L07BB                ;  Requested by phrase but not given by user ... next phrase
 L07A5          lda       $01BB               ;  LSB of verb ...
 L07A8          sta       $01BD               ;  ... to location of error
 L07AB          ldy       #$01C3              ;  Descriptor for 1st noun
 L07AF          jsr       $08D2               ;  Decode 1st noun as per phrase
 
-***** Error: branch out of range
-L07B2          bra       $7BB                ;  We just processed a first one. We know it is there.
+L07B2          bra       L07BB                ;  We just processed a first one. We know it is there.
 L07B4          lda       $01C3               ;  Is there a 1st noun?
 
 L07B7          lbne      $0951               ; No ... next entry
 L07BB          leax      1,X                 ; Next in phrase
 L07BD          lda       ,X                  ; Phrase wants a second noun?
 
-***** Error: branch out of range
-L07BF          beq       $7DA                ; No ... skip
+L07BF          beq       L07DA                ; No ... skip
 L07C1          lda       $01C9               ; User given 2nd noun
 
-***** Error: branch out of range
-L07C4          bne       $7E1                ; Yes ... use this phrase
+L07C4          bne       L07E1                ; Yes ... use this phrase
 L07C6          lda       $01BC               ; Location of ...
 L07C9          sta       $01BD               ; ... error on screen
 L07CC          lda       #$01                ; Set preposition ...
@@ -396,16 +367,14 @@ L07CE          sta       $01B5               ; ... flag to YES
 L07D1          ldy       #$01C9              ; 2nd noun index
 L07D5          jsr       $08D2               ; Decode 2nd noun as per phrase
 
-***** Error: branch out of range
-L07D8          bra       $7E1                ; Use this
+L07D8          bra       L07E1                ; Use this
 
 L07DA          lda       $01C9               ; Is there a second noun?
 L07DD          lbne      $0951               ; No ... phrase error
 L07E1          leax      1,X                 ; Get matched ...
 L07E3          lda       ,X                  ; ... phrase number
 
-***** Error: branch out of range
-L07E5          bra       $7F0                ; Store and continue
+L07E5          bra       L07F0                ; Store and continue
 L07E7          leax      1,X                 ; Skip ...
 L07E9          leax      1,X                 ; ... to ...
 L07EB          leax      2,X                 ; ... next entry
@@ -421,8 +390,7 @@ L07F8          lda       #$0D                ; Print ...
 L07FA          jsr       $1184               ; ... CR
 L07FD          lda       $01C3               ; First noun given?
 
-***** Error: branch out of range
-L0800          bne       $80E                ; Yes ... keep what we have
+L0800          bne       L080E                ; Yes ... keep what we have
 L0802          ldx       $01CC               ; Move 2nd ...
 L0805          stx       $01C6               ; ... noun to ...
 L0808          lda       $01C9               ; ... first ...
@@ -451,8 +419,7 @@ L0822          clr       $01BF               ; Input object number
 L0825          ldb       ,X+                 ; Word number of noun
 L0827          stb       $01B2               ; Hold it
 
-***** Error: branch out of range
-L082A          bne       $82E                ; Real object ... go decode
+L082A          bne       L082E                ; Real object ... go decode
 L082C          clra                          ; Not found
 L082D          rts                           ; Out
 L082E          lda       ,X+                 ; Noun's adjective
@@ -462,20 +429,17 @@ L0835          sta       $01CF               ; Hold it
 L0838          ldx       #$20FF              ; Object data
 L083B          jsr       $0A1F               ; Get pointer to next object that matches word
 
-***** Error: branch out of range
-L083E          bcc       $89A                ; Not found
+L083E          bcc       L089A                ; Not found
 L0840          pshs      Y                   ; Hold end of object data
 L0842          pshs      X                   ; Hold pointer to noun descriptor
 L0844          lda       $01E1               ; Index of object in the object list
 L0847          sta       $01E2               ; Remember this
 L084A          jsr       $08AA               ; Is object in this room or on player?
 
-***** Error: branch out of range
-L084D          bne       $8A6                ; No ... can't be target ... out
+L084D          bne       L08A6                ; No ... can't be target ... out
 L084F          lda       $01B7               ; Noun's adjective
 
-***** Error: branch out of range
-L0852          beq       $873                ; No adjective ... skip this
+L0852          beq       L0873                ; No adjective ... skip this
 L0854          puls      X                   ; Restore pointer to noun descriptor
 L0856          pshs      X                   ; Hold it again
 L0858          jsr       $0A42               ; Skip the id and end
@@ -483,18 +447,15 @@ L085B          leax      3,X                 ; Skip the object data
 L085D          ldb       #$01                ; Look up adjective ...
 L085F          jsr       $0A27               ; ... list for object
 
-***** Error: branch out of range
-L0862          bcc       $873                ; No adjective ... ignore
+L0862          bcc       L0873                ; No adjective ... ignore
 L0864          jsr       $0A42               ; Skip the id and length
 L0867          jsr       $0A58               ; End of adjective list?
 
-***** Error: branch out of range
-L086A          bcc       $8A6                ; Yes ... no match ... next object
+L086A          bcc       L08A6                ; Yes ... no match ... next object
 L086C          lda       $01B7               ; Adjective
 L086F          cmpa      ,X+                 ; In this list?
 
-***** Error: branch out of range
-L0871          bne       $867                ; No ... keep searching list
+L0871          bne       L0867                ; No ... keep searching list
 L0873          puls      X                   ; Restore object pointer
 L0875          lda       $01BF               ; Last object index that matched
 L0878          lbne      $098C               ; Multiple matches ... do "?WHICH?"
@@ -509,19 +470,16 @@ L088F          lda       $01E2               ; Current object index
 L0892          sta       $01E1               ; Start count for next pass
 L0895          jsr       $0A27               ; Find next matching object
 
-***** Error: branch out of range
-L0898          bcs       $840                ; Got one ... go test it
+L0898          bcs       L0840                ; Got one ... go test it
 L089A          ldx       $01C0               ; Object data to X
 L089D          lda       $01BF               ; Object found?
 
-***** Error: branch out of range
-L08A0          bne       $8A5                ; Yes ...  out
+L08A0          bne       L08A5                ; Yes ...  out
 L08A2          jmp       $0948               ; No ... "?WHAT?"
 L08A5          rts                           ; Done
 L08A6          puls      X                   ; Restore object pointer
 
-***** Error: branch out of range
-L08A8          bra       $885                ; Do next object
+L08A8          bra       L0885                ; Do next object
 
 ; This function checks if the target object is in the current room or being
 ; held by the active object.
@@ -533,30 +491,24 @@ L08AA          jsr       $0A42               ; Skip size
 L08AD          lda       $01D5               ; Current room number
 L08B0          cmpa      ,X                  ; Is object in room?
 
-***** Error: branch out of range
-L08B2          beq       $8A5                ; Yes ... return OK
+L08B2          beq       L08A5                ; Yes ... return OK
 L08B4          lda       ,X                  ; Get object's room number
 
-***** Error: branch out of range
-L08B6          beq       $8CF                ; 0 ... fail
+L08B6          beq       L08CF                ; 0 ... fail
 L08B8          cmpa      #$FF                ; FF ...
 
-***** Error: branch out of range
-L08BA          beq       $8A5                ; ... return OK
+L08BA          beq       L08A5                ; ... return OK
 L08BC          bita      #$80                ; Upper bit of object location set ...
 
-***** Error: branch out of range
-L08BE          bne       $8CF                ; ... then fail
+L08BE          bne       L08CF                ; ... then fail
 L08C0          ldb       ,X                  ; Location again
 L08C2          cmpb      $01D2               ; Being held by the active object?
 
-***** Error: branch out of range
-L08C5          beq       $8A5                ; Yes ... return OK
+L08C5          beq       L08A5                ; Yes ... return OK
 L08C7          ldx       #$20FF              ; Strange. 117D does this too.
 L08CA          jsr       $1133               ; Get object's container object (if any)
 
-***** Error: branch out of range
-L08CD          bra       $8AA                ; Repeat check
+L08CD          bra       L08AA                ; Repeat check
 L08CF          ora       #$01                ; Mark failure
 L08D1          rts                           ; Out
 
@@ -580,16 +532,14 @@ L08E1          ldx       #$20FF              ; Object data
 L08E4          jsr       $0A42               ; Skip ID and load end
 L08E7          jsr       $0A58               ; At end of object data?
 
-***** Error: branch out of range
-L08EA          bcc       $92C                ; Yes ... done
+L08EA          bcc       L092C                ; Yes ... done
 L08EC          inc       $01E1               ; Bump object index
 L08EF          pshs      Y                   ; Hold end of object
 L08F1          pshs      X                   ; Hold pointer to object
 L08F3          jsr       $08AA               ; Is object in room or on player?
 L08F6          puls      X                   ; Restore pointer to object
 
-***** Error: branch out of range
-L08F8          bne       $927                ; No ... next object
+L08F8          bne       L0927                ; No ... next object
 L08FA          ldb       ,X                  ; Object word number
 L08FC          stx       $01D8               ; Pointer to object data
 L08FF          jsr       $0A42               ; Skip ID and load end
@@ -598,12 +548,10 @@ L0904          lda       ,X                  ; Get parameters
 L0906          anda      $01AB               ; Compare to phrase data ...
 L0909          cmpa      $01AB               ; ... this is a strange way to do it
 
-***** Error: branch out of range
-L090C          bne       $921                ; Not a match ... next word
+L090C          bne       L0921                ; Not a match ... next word
 L090E          lda       $01B2               ; Already got a word number?
 
-***** Error: branch out of range
-L0911          bne       $95A                ; Yes ... error
+L0911          bne       L095A                ; Yes ... error
 L0913          stb       $01B2               ; Found word number
 L0916          lda       ,X                  ; Remember ...
 L0918          sta       $01B7               ; ... object parameters
@@ -612,16 +560,13 @@ L091E          stx       $01AD               ; ... object pointer
 L0921          exg       X,Y                 ; Start of next object to X
 L0923          puls      Y                   ; Restore end of object pointer
 
-***** Error: branch out of range
-L0925          bra       $8E7                ; Continue with next object
+L0925          bra       L08E7                ; Continue with next object
 L0927          jsr       $0A42               ; Skip ID and load end
 
-***** Error: branch out of range
-L092A          bra       $921                ; Try next object
+L092A          bra       L0921                ; Try next object
 L092C          lda       $01B2               ; Did we find an object word?
 
-***** Error: branch out of range
-L092F          beq       $95A                ; No .... error
+L092F          beq       L095A                ; No .... error
 L0931          puls      Y                   ; Noun descriptor
 L0933          ldx       $01AD               ; Object data pointer
 L0936          lda       $01E1               ; New ...
@@ -637,53 +582,44 @@ L0947          rts                           ; Done
 L0948          ldy       #$1343              ; "?WHAT?"
 L094C          lda       $01CF               ; LSB of screen location
 
-***** Error: branch out of range
-L094F          bra       $99B                ; Go flash error and try again
+L094F          bra       L099B                ; Go flash error and try again
 
 L0951          ldy       #$1352              ; "?PHRASE?"
 L0955          lda       $01BC               ; LSB of screen location
 
-***** Error: branch out of range
-L0958          bra       $99B                ; Go flash error and try again
+L0958          bra       L099B                ; Go flash error and try again
 
 L095A          lda       $01B5               ; Preposition given?
 
-***** Error: branch out of range
-L095D          beq       $983                ; No ... just plain "?WHAT?"
+L095D          beq       L0983                ; No ... just plain "?WHAT?"
 L095F          lda       $01B4               ; Preposition word number?
 
-***** Error: branch out of range
-L0962          bne       $983                ; No word ... just plain "?WHAT?"
+L0962          bne       L0983                ; No word ... just plain "?WHAT?"
 L0964          ldx       #$3ECF              ; Prepositions list
 L0967          ldb       ,X                  ; Length of word
 
-***** Error: branch out of range
-L0969          beq       $983                ; Reached the end ... do "?WHAT?"
+L0969          beq       L0983                ; Reached the end ... do "?WHAT?"
 L096B          pshs      X                   ; Hold start of word
 L096D          ldb       ,X+                 ; Get length again
 L096F          abx                           ; Point to end of word
 L0970          lda       $01B6               ; Target preposition
 L0973          cmpa      ,X+                 ; Matches?
 
-***** Error: branch out of range
-L0975          beq       $97B                ; Yes ... error includes this word
+L0975          beq       L097B                ; Yes ... error includes this word
 L0977          puls      A,B                 ; Restore stack
 
-***** Error: branch out of range
-L0979          bra       $967                ; Next word
+L0979          bra       L0967                ; Next word
 L097B          puls      Y                   ; Word text to Y
 L097D          lda       $01BD               ; LSB of error message
 L0980          jsr       $09E1               ; Push preposition word
 L0983          ldy       #$1343              ; "?WHAT?"
 L0987          lda       $01BD               ; LSB of screen location
 
-***** Error: branch out of range
-L098A          bra       $99B                ; Go flash error and try again
+L098A          bra       L099B                ; Go flash error and try again
 L098C          ldy       #$134A              ; "?WHICH"?
 L0990          lda       $01CF               ; LSB of screen location
 
-***** Error: branch out of range
-L0993          bra       $99B                ; Go flash error and try again
+L0993          bra       L099B                ; Go flash error and try again
 L0995          ldy       #$133C              ; "?VERB?"
 
 L0999          lda       #$E0                ; LSB of start of input line
@@ -697,39 +633,33 @@ L09AC          lda       #$60                ; SPACE
 L09AE          sta       ,X+                 ; Flash off ...
 L09B0          dec       $01AB               ; ... error ...
 
-***** Error: branch out of range
-L09B3          bne       $9AC                ; ... word
+L09B3          bne       L09AC                ; ... word
 L09B5          jsr       $09D6               ; Long delay
 L09B8          puls      X                   ; Restore insertion point
 L09BA          decb                          ; All flashes done?
 
-***** Error: branch out of range
-L09BB          bne       $9D1                ; No ... keep flashing error word
+L09BB          bne       L09D1                ; No ... keep flashing error word
 L09BD          lda       ,Y                  ; Size of error word
 L09BF          inca                          ; Plus the extra space
 L09C0          sta       $01AB               ; Hold counter
 L09C3          jsr       $0ADB               ; Close up the ...
 L09C6          dec       $01AB               ; ... error ...
 
-***** Error: branch out of range
-L09C9          bne       $9C3                ; ... word
+L09C9          bne       L09C3                ; ... word
 L09CB          jsr       $0A63               ; Get input line
 L09CE          jmp       $0637               ; Continue processing
 L09D1          jsr       $0A00               ; Flash message and pause
 
-***** Error: branch out of range
-L09D4          bra       $9A5                ; Continue flashing and read new line
+L09D4          bra       L09A5                ; Continue flashing and read new line
 
 ;Long delay
 L09D6          lda       #$32                ; Outer loop counts
 L09D8          dec       $01AB               ; Decrease inner count (doesn't matter what's there)
 
-***** Error: branch out of range
-L09DB          bne       $9D8                ; Kill inner time
+L09DB          bne       L09D8                ; Kill inner time
 L09DD          deca                          ; All 256 loops done?
 
-***** Error: branch out of range
-L09DE          bne       $9D8                ; No ... keep pausing
+L09DE          bne       L09D8                ; No ... keep pausing
 L09E0          rts                           ; Done
 
 L09E1          sta       $01AB               ; Hold LSB of cursor
@@ -743,8 +673,7 @@ L09F2          pshs      Y                   ; Hold message
 L09F4          jsr       $0B06               ; Slide right past insertion point
 L09F7          dec       $01AB               ; Space opened up?
 
-***** Error: branch out of range
-L09FA          bne       $9F4                ; No ... open all the spaces for the error word
+L09FA          bne       L09F4                ; No ... open all the spaces for the error word
 L09FC          puls      Y                   ; Restore pointer
 L09FE          ldb       #$08                ; 8 flashes
 L0A00          lda       ,Y                  ; Count again
@@ -755,8 +684,7 @@ L0A09          lda       ,Y+                 ; Copy error word ...
 L0A0B          sta       ,X+                 ; ... to screen
 L0A0D          dec       $01AB               ; All done?
 
-***** Error: branch out of range
-L0A10          bne       $A09                ; No ... go back and do all
+L0A10          bne       L0A09                ; No ... go back and do all
 L0A12          leax      1,X                 ; Bump ...
 L0A14          tfr       X,D                 ; ... LSB ...
 L0A16          stb       $01BD               ; ... of screen pointer
@@ -775,21 +703,18 @@ L0A21          jsr       $0A44               ; Read end of list to Y
 L0A24          clr       $01E1               ; Clear index of sublist
 L0A27          jsr       $0A58               ; Compare X to Y
 
-***** Error: branch out of range
-L0A2A          bcs       $A2D                ; X is smaller ... keep going
+L0A2A          bcs       L0A2D                ; X is smaller ... keep going
 L0A2C          rts                           ; Done (C=0 not found)
 L0A2D          inc       $01E1               ; Keep up with index of sublist
 L0A30          cmpb      ,X                  ; Is this the sublist we want?
 
-***** Error: branch out of range
-L0A32          beq       $A3F                ; Found ... C=1 and out
+L0A32          beq       L0A3F                ; Found ... C=1 and out
 L0A34          pshs      Y                   ; Hold the end
 L0A36          jsr       $0A42               ; Skip ID and read end of list to Y
 L0A39          tfr       Y,X                 ; Jump to the end of this list
 L0A3B          puls      Y                   ; Restore the end of the master lsit
 
-***** Error: branch out of range
-L0A3D          bra       $A27                ; Keep looking for the sublist
+L0A3D          bra       L0A27                ; Keep looking for the sublist
 ;
 L0A3F          orcc      #$01                ; C=1
 L0A41          rts                           ; Done
@@ -805,8 +730,7 @@ L0A45          pshs      B                   ; Hold lower
 L0A47          ldb       ,X+                 ; Get lower
 L0A49          bitb      #$80                ; One or two byte value?
 
-***** Error: branch out of range
-L0A4B          beq       $A53                ; Just a one byte ... use it
+L0A4B          beq       L0A53                ; Just a one byte ... use it
 L0A4D          andb      #$7F                ; This is the ...
 L0A4F          tfr       B,A                 ; ... MSB
 L0A51          ldb       ,X+                 ; Now get 2nd byte (LSB)
@@ -826,42 +750,33 @@ L0A63          jsr       $0B23               ; Slide bottom row to right after c
 L0A66          jsr       $0B2B               ; Get a key from the keyboard
 L0A69          cmpa      #$15                ;
 
-***** Error: branch out of range
-L0A6B          beq       $A8D                ; Swap cursor and character to left
+L0A6B          beq       L0A8D                ; Swap cursor and character to left
 L0A6D          cmpa      #$5D                ; ']' ?
 
-***** Error: branch out of range
-L0A6F          beq       $AA0                ; Swap cursor and character to right
+L0A6F          beq       L0AA0                ; Swap cursor and character to right
 L0A71          cmpa      #$09                ; Backspace
 
-***** Error: branch out of range
-L0A73          beq       $AB3                ; Go handle backspace
+L0A73          beq       L0AB3                ; Go handle backspace
 L0A75          cmpa      #$0D                ; CR?
 
-***** Error: branch out of range
-L0A77          beq       $AC8                ; Handle it and out
+L0A77          beq       L0AC8                ; Handle it and out
 L0A79          cmpa      #$0C                ; BREAK?
 
-***** Error: branch out of range
-L0A7B          beq       $ACC                ; Yes ... clear the row
+L0A7B          beq       L0ACC                ; Yes ... clear the row
 L0A7D          cmpa      #$08                ; Backspace?
 
-***** Error: branch out of range
-L0A7F          beq       $ABC                ; Yes go handle
+L0A7F          beq       L0ABC                ; Yes go handle
 L0A81          cmpx      #$05FF              ; At the end of the screen?
 
-***** Error: branch out of range
-L0A84          beq       $A66                ; Yes ... ignore and get another
+L0A84          beq       L0A66                ; Yes ... ignore and get another
 L0A86          jsr       $0B06               ; Slide bottom row beyond insertion
 L0A89          sta       ,X+                 ; Store character
 
-***** Error: branch out of range
-L0A8B          bra       $A66                ; Go get another character
+L0A8B          bra       L0A66                ; Go get another character
 
 L0A8D          cmpx      #$05E0              ; Nothing typed?
 
-***** Error: branch out of range
-L0A90          beq       $A66                ; Yes ... ignore and get another
+L0A90          beq       L0A66                ; Yes ... ignore and get another
 L0A92          leax      -1,X                ; Swap ...
 L0A94          lda       ,X+                 ; ... cursor ...
 L0A96          sta       ,X                  ; ... and ...
@@ -869,13 +784,11 @@ L0A98          leax      -1,X                ; ... character ...
 L0A9A          lda       #$CF                ; ... to the ...
 L0A9C          sta       ,X                  ; ... left
 
-***** Error: branch out of range
-L0A9E          bra       $A66                ; Go get another character
+L0A9E          bra       L0A66                ; Go get another character
 
 L0AA0          cmpx      #$05FF              ; End of screen?
 
-***** Error: branch out of range
-L0AA3          beq       $A66                ; Yes ... go get another key
+L0AA3          beq       L0A66                ; Yes ... go get another key
 L0AA5          leax      1,X                 ; Swap ...
 L0AA7          lda       ,X                  ; ... cursor ...
 L0AA9          leax      -1,X                ; ... and ...
@@ -883,25 +796,21 @@ L0AAB          sta       ,X+                 ; ... character ...
 L0AAD          lda       #$CF                ; ... to the ...
 L0AAF          sta       ,X                  ; ... right
 
-***** Error: branch out of range
-L0AB1          bra       $A66                ; Go get another key
+L0AB1          bra       L0A66                ; Go get another key
 ;
 L0AB3          jsr       $0ADB               ; Back off trailing cursor block
 L0AB6          lda       #$CF                ; Store ...
 L0AB8          sta       ,X                  ; ... cursor block
 
-***** Error: branch out of range
-L0ABA          bra       $A66                ; Go get another key
+L0ABA          bra       L0A66                ; Go get another key
 ;
 L0ABC          cmpx      #$05E0              ; At the start of the row?
 
-***** Error: branch out of range
-L0ABF          beq       $A66                ; Yes ... go get another key
+L0ABF          beq       L0A66                ; Yes ... go get another key
 L0AC1          leax      -1,X                ; Back up one character
 L0AC3          jsr       $0ADB               ; Erase the end
 
-***** Error: branch out of range
-L0AC6          bra       $A66                ; Go get another key
+L0AC6          bra       L0A66                ; Go get another key
 ;
 L0AC8          jsr       $0ADB               ; Back off cursor character
 L0ACB          rts                           ; Done
@@ -912,8 +821,7 @@ L0AD1          lda       #$60                ; SPACE character
 L0AD3          sta       ,X+                 ; Clear ...
 L0AD5          decb                          ; ... the ...
 
-***** Error: branch out of range
-L0AD6          bne       $AD3                ; ... bottom row
+L0AD6          bne       L0AD3                ; ... bottom row
 L0AD8          jmp       $0A60               ; Go get another key
 ;
 L0ADB          tfr       X,U                 ; Hold X
@@ -923,22 +831,18 @@ L0AE1          sta       ,X                  ; ... block
 ;
 L0AE3          cmpy      #$0600              ; End of screen?
 
-***** Error: branch out of range
-L0AE7          beq       $ACB                ; Yes out
+L0AE7          beq       L0ACB                ; Yes out
 L0AE9          cmpy      #$0601              ; End of screen?
 
-***** Error: branch out of range
-L0AED          beq       $ACB                ; Yes out
+L0AED          beq       L0ACB                ; Yes out
 L0AEF          cmpy      #$0602              ; End of screen?
 
-***** Error: branch out of range
-L0AF3          beq       $ACB                ; Yes out
+L0AF3          beq       L0ACB                ; Yes out
 L0AF5          lda       ,Y+                 ; Back ...
 L0AF7          sta       ,X+                 ; ... up ...
 L0AF9          cmpy      #$0600              ; ... row ...
 
-***** Error: branch out of range
-L0AFD          bne       $AF5                ; ... over cursor
+L0AFD          bne       L0AF5                ; ... over cursor
 L0AFF          lda       #$60                ; Clear last ...
 L0B01          sta       ,X                  ; ... character
 L0B03          tfr       U,X                 ; Restore X
@@ -946,8 +850,7 @@ L0B05          rts                           ; Done
 ;
 L0B06          cmpx      #$0600              ; Past end of screen?
 
-***** Error: branch out of range
-L0B09          beq       $B22                ; Yes ... out
+L0B09          beq       L0B22                ; Yes ... out
 L0B0B          stx       $01A7               ; Hold insertion point
 L0B0E          ldx       #$0600              ; End+1
 L0B11          ldy       #$05FF              ; End
@@ -955,8 +858,7 @@ L0B15          ldb       ,-Y                 ; Slide bottom row ...
 L0B17          stb       ,-X                 ; ... to the right
 L0B19          cmpx      $01A7               ; At the insertion point?
 
-***** Error: branch out of range
-L0B1C          bne       $B15                ; No ... slide all
+L0B1C          bne       L0B15                ; No ... slide all
 L0B1E          ldb       #$60                ; SPACE
 L0B20          stb       ,X                  ; Clear first character
 L0B22          rts                           ; Done
@@ -971,16 +873,13 @@ L0B2B          jsr       $12A8               ; Get random number every key
 L0B2E          jsr       [$A000]             ; Get key from user
 L0B32          tsta                          ; Anything pressed?
 
-***** Error: branch out of range
-L0B33          beq       $B2B                ; No ... keep waiting
+L0B33          beq       L0B2B                ; No ... keep waiting
 L0B35          cmpa      #$41                ; Letter 'A'
 
-***** Error: branch out of range
-L0B37          bcc       $B3F                ; Greater or equal ... use it
+L0B37          bcc       L0B3F                ; Greater or equal ... use it
 L0B39          cmpa      #$20                ; Space
 
-***** Error: branch out of range
-L0B3B          bcs       $B3F                ; Lower .... use it
+L0B3B          bcs       L0B3F                ; Lower .... use it
 L0B3D          adda      #$40                ; Not really sure why. '!' becomes 'a'.
 L0B3F          rts                           ; Done
 
@@ -1002,29 +901,24 @@ L0B42          tfr       X,D                 ; Hold ...
 L0B44          stb       $01CF               ; ... LSB of first word (could be ignored)
 L0B47          cmpx      #$0600              ; End of buffer?
 
-***** Error: branch out of range
-L0B4A          beq       $B3F                ; Yes ... out
+L0B4A          beq       L0B3F                ; Yes ... out
 L0B4C          lda       ,X                  ; Next in input
 L0B4E          cmpa      #$60                ; Valid character?
 
-***** Error: branch out of range
-L0B50          bcc       $B40                ; No ... skip till we find one
+L0B50          bcc       L0B40                ; No ... skip till we find one
 L0B52          ldy       #$3C29              ; Word token table
 L0B56          jsr       $0B8B               ; Try first list
 
-***** Error: branch out of range
-L0B59          beq       $B42                ; Found a match ... ignore it
+L0B59          beq       L0B42                ; Found a match ... ignore it
 L0B5B          ldb       #$01                ; Staring list number
 L0B5D          leay      1,Y                 ; Next list of words
 L0B5F          jsr       $0B8B               ; Try and match
 
-***** Error: branch out of range
-L0B62          beq       $B6C                ; Found a match ... record it
+L0B62          beq       L0B6C                ; Found a match ... record it
 L0B64          incb                          ; Next list of words
 L0B65          cmpb      #$05                ; All tried?
 
-***** Error: branch out of range
-L0B67          bne       $B5D                ; No ... go back and try all
+L0B67          bne       L0B5D                ; No ... go back and try all
 L0B69          ora       #$01                ; Not-zero ... error
 L0B6B          rts                           ; Done
 
@@ -1038,8 +932,7 @@ L0B7A          stx       $01D8               ; Bump result token pointer
 L0B7D          exg       X,Y                 ; Restore X
 L0B7F          cmpb      #$01                ; Is this the first (VERB) list?
 
-***** Error: branch out of range
-L0B81          bne       $B89                ; No ... skip marking
+L0B81          bne       L0B89                ; No ... skip marking
 L0B83          lda       $01BC               ; Mark the input buffer location ...
 L0B86          sta       $01BB               ; ... of the verb
 L0B89          clra                          ; OK
@@ -1059,8 +952,7 @@ L0B8A          rts                           ; Return
 ;
 L0B8B          lda       ,Y                  ; Length of word
 
-***** Error: branch out of range
-L0B8D          bne       $B92                ; It is a word ... go check it
+L0B8D          bne       L0B92                ; It is a word ... go check it
 L0B8F          ora       #$01                ; End of list ...
 L0B91          rts                           ; ... return not-zero
 L0B92          sta       $01AB               ; Temporary
@@ -1070,57 +962,46 @@ L0B9A          leay      1,Y                 ; Skip over word length in table
 L0B9C          lda       ,X                  ; Character from input (from screen)
 L0B9E          cmpa      #$60                ; Space?
 
-***** Error: branch out of range
-L0BA0          beq       $BF5                ; Yes. Didn't match the target word. Next.
+L0BA0          beq       L0BF5                ; Yes. Didn't match the target word. Next.
 L0BA2          cmpx      #$0600              ; Past screen (end of buffer)?
 
-***** Error: branch out of range
-L0BA5          beq       $BF5                ; Yes. Didn't match the target word. next
+L0BA5          beq       L0BF5                ; Yes. Didn't match the target word. next
 L0BA7          cmpa      #$60                ; Valid character?
 
-***** Error: branch out of range
-L0BA9          bcs       $BAF                ; Yes ... do compare
+L0BA9          bcs       L0BAF                ; Yes ... do compare
 L0BAB          leax      1,X                 ; No ... skip this
 
-***** Error: branch out of range
-L0BAD          bra       $B9C                ; Look for valid character
+L0BAD          bra       L0B9C                ; Look for valid character
 L0BAF          cmpa      ,Y                  ; Matches target word?
 
-***** Error: branch out of range
-L0BB1          bne       $BF5                ; No ... next word
+L0BB1          bne       L0BF5                ; No ... next word
 L0BB3          leax      1,X                 ; Next in input
 L0BB5          leay      1,Y                 ; Next in match
 L0BB7          dec       $01AB               ; All done?
 
-***** Error: branch out of range
-L0BBA          bne       $B9C                ; No ... keep looking
+L0BBA          bne       L0B9C                ; No ... keep looking
 L0BBC          lda       $01D0               ; Original length
 L0BBF          cmpa      #$06                ; Six letter input?
 
-***** Error: branch out of range
-L0BC1          beq       $BC9                ; Yes ... could be truncated. That's enough of a match.
+L0BC1          beq       L0BC9                ; Yes ... could be truncated. That's enough of a match.
 L0BC3          lda       ,X                  ; Next from screen
 L0BC5          cmpa      #$60                ; Space? End of word?
 
-***** Error: branch out of range
-L0BC7          bcs       $BFC                ; No. Try next word
+L0BC7          bcs       L0BFC                ; No. Try next word
 L0BC9          lda       ,Y                  ; Get the word data
 L0BCB          puls      Y                   ; Drop the input buffer pointer
 L0BCD          sta       $01AB               ; Hold the word data
 L0BD0          lda       ,X                  ; Next in input buffer?
 L0BD2          cmpa      #$60                ; Is it a space?
 
-***** Error: branch out of range
-L0BD4          beq       $BE2                ; Yes ... ready for next word
+L0BD4          beq       L0BE2                ; Yes ... ready for next word
 L0BD6          stx       $01A7               ; Start of next word (in case end of buffer)
 L0BD9          cmpx      #$0600              ; Is this the end of the input buffer?
 
-***** Error: branch out of range
-L0BDC          beq       $BE8                ; Yes. Done
+L0BDC          beq       L0BE8                ; Yes. Done
 L0BDE          leax      1,X                 ; Skip to next input word
 
-***** Error: branch out of range
-L0BE0          bra       $BD0                ; Keep looking for input
+L0BE0          bra       L0BD0                ; Keep looking for input
 L0BE2          stx       $01A7               ; Pointer to ending space
 L0BE5          inc       $01A8               ; Point to next character past space (start of next word)
 L0BE8          lda       $01A8               ; Keep ...
@@ -1132,8 +1013,7 @@ L0BF4          rts                           ; Done
 L0BF5          leay      1,Y                 ; Skip next in word data
 L0BF7          dec       $01AB               ; All skipped
 
-***** Error: branch out of range
-L0BFA          bne       $BF5                ; No ... skip all
+L0BFA          bne       L0BF5                ; No ... skip all
 L0BFC          puls      X                   ; Restore pointer to word
 L0BFE          leay      1,Y                 ; Skip word data
 L0C00          jmp       $0B8B               ; Keep trying
@@ -1144,14 +1024,12 @@ L0C03          lda       ,X+                 ; Next in script
 L0C05          tfr       A,B                 ; Hold original command
 L0C07          bita      #$80                ; Upper bit set?
 
-***** Error: branch out of range
-L0C09          beq       $C1E                ; No ... do commands
+L0C09          beq       L0C1E                ; No ... do commands
 L0C0B          pshs      Y,X                 ; Hold
 L0C0D          ldx       #$37FA              ; Common commands
 L0C10          jsr       $0A1F               ; Find common command
 
-***** Error: branch out of range
-L0C13          bcc       $C1B                ; Not found ... skip
+L0C13          bcc       L0C1B                ; Not found ... skip
 L0C15          jsr       $0A42               ; Skip length of command
 L0C18          jsr       $0C03               ; Execute command
 L0C1B          puls      X,Y                 ; Restore
@@ -1169,14 +1047,12 @@ L0C25          jmp       [A,Y]               ; ... command
 L0C27          jsr       $0A44               ; Read length of command
 L0C2A          jsr       $0A58               ; Are we past the end?
 
-***** Error: branch out of range
-L0C2D          bcc       $C3B                ; Yes ... end successfully
+L0C2D          bcc       L0C3B                ; Yes ... end successfully
 L0C2F          pshs      Y                   ; Hold the end
 L0C31          jsr       $0C03               ; Execute the command
 L0C34          puls      Y                   ; Restore the end
 
-***** Error: branch out of range
-L0C36          beq       $C2A                ; Command successful? Yes ... keep processing
+L0C36          beq       L0C2A                ; Command successful? Yes ... keep processing
 L0C38          exg       X,Y                 ; Fail ... put us at the end
 L0C3A          rts                           ; Done
 L0C3B          exg       X,Y                 ; Point to end of list
@@ -1187,14 +1063,12 @@ L0C3E          rts                           ; Done
 L0C3F          jsr       $0A44               ; Load the end
 L0C42          jsr       $0A58               ; Reached end of list?
 
-***** Error: branch out of range
-L0C45          bcc       $C53                ; Yes ... error
+L0C45          bcc       L0C53                ; Yes ... error
 L0C47          pshs      Y                   ; Hold end of command
 L0C49          jsr       $0C03               ; Execute command
 L0C4C          puls      Y                   ; Restore end
 
-***** Error: branch out of range
-L0C4E          bne       $C42                ; Command failed ... try next
+L0C4E          bne       L0C42                ; Command failed ... try next
 L0C50          exg       X,Y                 ; Set script pointer to end of list
 L0C52          rts                           ; Out
 ; 
@@ -1207,22 +1081,19 @@ L0C58          jsr       $0A44               ; Get size of switch list
 L0C5B          ldb       ,X+                 ; Get function to call
 L0C5D          jsr       $0A58               ; End of options?
 
-***** Error: branch out of range
-L0C60          bcc       $C53                ; Yes ... out with error
+L0C60          bcc       L0C53                ; Yes ... out with error
 L0C62          pshs      Y                   ; Hold total switch size
 L0C64          pshs      B                   ; Hold function to call
 L0C66          tfr       B,A                 ; Call the ...
 L0C68          jsr       $0C20               ; ... target function
 L0C6B          puls      B                   ; Restore function to call
 
-***** Error: branch out of range
-L0C6D          beq       $C78                ; Got our script ... go do it
+L0C6D          beq       L0C78                ; Got our script ... go do it
 L0C6F          jsr       $0A44               ; Size of pass script
 L0C72          exg       X,Y                 ; Skip over this option
 L0C74          puls      Y                   ; End of script
 
-***** Error: branch out of range
-L0C76          bra       $C5D                ; Keep looking
+L0C76          bra       L0C5D                ; Keep looking
 L0C78          jsr       $0A44               ; Skip length
 L0C7B          jsr       $0C03               ; Execute
 L0C7E          puls      X                   ; Restore script
@@ -1273,8 +1144,7 @@ L0CCA          ldb       ,X+                 ; Get object number from script
 L0CCC          pshs      X                   ; Hold script pointer
 L0CCE          stb       $01BF               ; Store target object number
 
-***** Error: branch out of range
-L0CD1          beq       $CD9                ; 0 ... no-object
+L0CD1          beq       L0CD9                ; 0 ... no-object
 L0CD3          jsr       $1133               ; Find object data
 L0CD6          stx       $01C0               ; Store target object data
 L0CD9          puls      X                   ; Restore script
@@ -1299,15 +1169,13 @@ L0CFE          pshs      X                   ; Hold script
 L0D00          sta       $01C3               ; Temporary 1st noun
 L0D03          tfr       A,B                 ; To B (for lookup)
 
-***** Error: branch out of range
-L0D05          beq       $D0D                ; Not one ... skip
+L0D05          beq       L0D0D                ; Not one ... skip
 L0D07          jsr       $1133               ; Lookup object in B
 L0D0A          stx       $01C6               ; Temporary 1st noun data
 L0D0D          ldb       $01AB               ; Temporary 2nd noun ...
 L0D10          stb       $01C9               ; ... index
 
-***** Error: branch out of range
-L0D13          beq       $D1B                ; There isn't one ... skip
+L0D13          beq       L0D1B                ; There isn't one ... skip
 L0D15          jsr       $1133               ; Lookup object in B
 L0D18          stx       $01CC               ; Temporary 2nd noun
 L0D1B          ldx       #$323C              ; General commands
@@ -1334,16 +1202,14 @@ L0D49          rts                           ; Done
 L0D4A          lda       $01D2               ; Actiuve object number
 L0D4D          cmpa      #$1D                ; Is this the SYSTEM object?
 
-***** Error: branch out of range
-L0D4F          bne       $D49                ; No ... return
+L0D4F          bne       L0D49                ; No ... return
 L0D51          ldx       $01D6               ; Current room script
 L0D54          jsr       $0A42               ; Skip length
 L0D57          leax      1,X                 ;
 L0D59          ldb       #$03                ; You are in DESCRIPTION script
 L0D5B          jsr       $0A27               ; Get room description
 
-***** Error: branch out of range
-L0D5E          bcc       $D65                ; No room description ... print objects in room
+L0D5E          bcc       L0D65                ; No room description ... print objects in room
 L0D60          leax      1,X                 ; Assume length is one byte
 L0D62          jsr       $114C               ; Print the packed message
 ;
@@ -1356,14 +1222,12 @@ L0D6D          jsr       $0A42               ; Skip this object's length
 L0D70          lda       $01D5               ; Current room
 L0D73          cmpa      ,X                  ; Object in room?
 
-***** Error: branch out of range
-L0D75          bne       $D89                ; No ... next object
+L0D75          bne       L0D89                ; No ... next object
 L0D77          leax      3,X                 ; Skip data
 L0D79          ldb       #$03                ; Get description ...
 L0D7B          jsr       $0A27               ; ... field
 
-***** Error: branch out of range
-L0D7E          bcc       $D89                ; No description ... next object
+L0D7E          bcc       L0D89                ; No description ... next object
 L0D80          leax      1,X                 ; Skip length
 L0D82          pshs      Y                   ; Hold end of object
 L0D84          jsr       $114C               ; Print description
@@ -1372,8 +1236,7 @@ L0D89          exg       X,Y                 ; Next object
 L0D8B          puls      Y                   ; End of objects
 L0D8D          jsr       $0A58               ; All done?
 
-***** Error: branch out of range
-L0D90          bcs       $D6B                ; No ... keep printing
+L0D90          bcs       L0D6B                ; No ... keep printing
 L0D92          rts                           ; Done
 
 ;##Com01_IsObjectInPackOrRoom
@@ -1415,8 +1278,7 @@ L0DC3          lda       $01D2               ; Active object
 L0DC6          cmpa      #$1D                ; Is this the player?
 
 
-***** Error: branch out of range
-L0DC8          bne       $DD8                ; No ... must be system
+L0DC8          bne       L0DD8                ; No ... must be system
 
 ;##Com1F_PrintMessage
 L0DCA          ldb       #$1D                ; Player number
@@ -1425,13 +1287,11 @@ L0DCE          jsr       $1133               ; Look up Player
 L0DD1          jsr       $08AA               ; Is Player in current room?
 L0DD4          puls      X                   ; Restore
 
-***** Error: branch out of range
-L0DD6          beq       $DDF                ; Yes ... do printing
+L0DD6          beq       L0DDF                ; Yes ... do printing
 L0DD8          jsr       $0A44               ; Skip to ...
 L0DDB          exg       X,Y                 ; ... end of packed message.
 
-***** Error: branch out of range
-L0DDD          bra       $DE2                ; Return OK but no printing
+L0DDD          bra       L0DE2                ; Return OK but no printing
 L0DDF          jsr       $114C               ; Print packed message at X
 L0DE2          clra                          ; OK
 L0DE3          rts                           ; Done
@@ -1450,21 +1310,18 @@ L0DF3          jsr       $0A42               ; Skip size of objects
 ;
 L0DF6          jsr       $0A58               ; CompareXY
 
-***** Error: branch out of range
-L0DF9          bcc       $E1F                ; End of list ... out
+L0DF9          bcc       L0E1F                ; End of list ... out
 L0DFB          pshs      Y                   ; Hold end of master list of objects
 L0DFD          jsr       $0A42               ; Get pointer to next object
 L0E00          ldb       ,X                  ; Object location
 L0E02          cmpb      $01D2               ; Active object?
 
-***** Error: branch out of range
-L0E05          bne       $E19                ; No ... skip this object
+L0E05          bne       L0E19                ; No ... skip this object
 L0E07          leax      3,X                 ; Skip data
 L0E09          ldb       #$02                ; Find short name ...
 L0E0B          jsr       $0A27               ; ... string
 
-***** Error: branch out of range
-L0E0E          bcc       $E19                ; No short name ... skip
+L0E0E          bcc       L0E19                ; No short name ... skip
 L0E10          leax      1,X                 ; Skip the 02 data id
 L0E12          pshs      Y                   ; Hold next-object
 L0E14          jsr       $1143               ; Print packed message and CR
@@ -1472,8 +1329,7 @@ L0E17          puls      Y                   ; Restore next-object
 L0E19          exg       X,Y                 ; Move to next object
 L0E1B          puls      Y                   ; End of master list
 
-***** Error: branch out of range
-L0E1D          bra       $DF6                ; Do all objects
+L0E1D          bra       L0DF6                ; Do all objects
 L0E1F          clra                          ; Success
 L0E20          puls      X                   ; Restore script pointer
 L0E22          rts                           ; Done
@@ -1485,8 +1341,7 @@ L0E26          lda       $01C3               ; 1st noun number
 L0E29          stu       $01D8               ; Hold
 L0E2C          tsta                          ; Is there an object?
 
-***** Error: branch out of range
-L0E2D          beq       $E3F                ; No ... error
+L0E2D          beq       L0E3F                ; No ... error
 L0E2F          ldb       ,X+                 ; Object number from script
 L0E31          pshs      X                   ; Hold script
 L0E33          jsr       $1133               ; Find object
@@ -1501,8 +1356,7 @@ L0E40          rts                           ; Done
 L0E41          ldu       $01CC               ; 2nd noun data
 L0E44          lda       $01C9               ; 2nd noun number
 
-***** Error: branch out of range
-L0E47          bra       $E29                ; Do compare
+L0E47          bra       L0E29                ; Do compare
 
 ;##Com0A_CompareToPhraseForm
 L0E49          ldb       ,X+                 ; Compare from script ...
@@ -1539,34 +1393,28 @@ L0E79          leax      1,X                 ; Skip
 L0E7B          ldb       #$04                ; Get ...
 L0E7D          jsr       $0A27               ; ... phrase script
 
-***** Error: branch out of range
-L0E80          bcc       $E8A                ; No phrase script ... skip
+L0E80          bcc       L0E8A                ; No phrase script ... skip
 L0E82          jsr       $0A42               ; Skip id and length
 L0E85          jsr       $0C03               ; Execute
 
-***** Error: branch out of range
-L0E88          beq       $EC5                ; Move passed ... OK and out
+L0E88          beq       L0EC5                ; Move passed ... OK and out
 L0E8A          lda       $01C9               ; Is there a 2nd noun?
 
-***** Error: branch out of range
-L0E8D          beq       $EA6                ; No ... skip
+L0E8D          beq       L0EA6                ; No ... skip
 L0E8F          ldx       $01CC               ; Second noun data
 L0E92          jsr       $0A42               ; Skip ...
 L0E95          leax      3,X                 ; ... object header
 L0E97          ldb       #$06                ; Get "noun is second" ...
 L0E99          jsr       $0A27               ; ... phrase script
 
-***** Error: branch out of range
-L0E9C          bcc       $EA6                ; None ... move on
+L0E9C          bcc       L0EA6                ; None ... move on
 L0E9E          jsr       $0A42               ; Skip header
 L0EA1          jsr       $0C03               ; Execute script
 
-***** Error: branch out of range
-L0EA4          beq       $EC5                ; Script passed ... OK and out
+L0EA4          beq       L0EC5                ; Script passed ... OK and out
 L0EA6          lda       $01C3               ; Is there a 1st noun?
 
-***** Error: branch out of range
-L0EA9          bne       $EB0                ; Yes ... go do it
+L0EA9          bne       L0EB0                ; Yes ... go do it
 L0EAB          puls      X                   ; Restore script
 L0EAD          ora       #$01                ; Nobody took the phrase ..
 L0EAF          rts                           ; .. error and and out
@@ -1576,8 +1424,7 @@ L0EB6          leax      3,X                 ; ... object header
 L0EB8          ldb       #$07                ; Get "noun is first" ...
 L0EBA          jsr       $0A27               ; ... phrase script
 
-***** Error: branch out of range
-L0EBD          bcc       $EAB                ; None ... error and out
+L0EBD          bcc       L0EAB                ; None ... error and out
 L0EBF          jsr       $0A42               ; Skip the id and length
 L0EC2          jsr       $0C03               ; Execute script (use return)
 L0EC5          puls      X                   ; Restore script pointer
@@ -1588,8 +1435,7 @@ L0EC8          pshs      X                   ; Save script pointer
 L0ECA          ldx       $01C0               ; Var noun data
 L0ECD          lda       $01BF               ; Var noun index
 
-***** Error: branch out of range
-L0ED0          bra       $EDA                ; Print short name
+L0ED0          bra       L0EDA                ; Print short name
 
 ;##Com11_Print1stNounShortName
 L0ED2          pshs      X                   ; Save script pointer
@@ -1597,23 +1443,20 @@ L0ED4          ldx       $01C6               ; 1st noun data
 L0ED7          lda       $01C3               ; 1st noun index
 ;
 
-***** Error: branch out of range
-L0EDA          beq       $EC5                ; Return Z=1 return
+L0EDA          beq       L0EC5                ; Return Z=1 return
 L0EDC          ldb       #$1D                ; User object
 L0EDE          pshs      X                   ; Hold noun data
 L0EE0          jsr       $1133               ; Lookup user object
 L0EE3          jsr       $08AA               ; User in current room?
 L0EE6          puls      X                   ; Restore noun data
 
-***** Error: branch out of range
-L0EE8          bne       $EFB                ; Not in current room ... skip print
+L0EE8          bne       L0EFB                ; Not in current room ... skip print
 L0EEA          jsr       $0A42               ; Skip object ...
 L0EED          leax      3,X                 ; ... header
 L0EEF          ldb       #$02                ; Get object ...
 L0EF1          jsr       $0A27               ; ... short name
 
-***** Error: branch out of range
-L0EF4          bcc       $EFB                ; No short name ... out with OK
+L0EF4          bcc       L0EFB                ; No short name ... out with OK
 L0EF6          leax      1,X                 ; Skip the 2
 L0EF8          jsr       $114C               ; Print packed message at X
 L0EFB          puls      X                   ; Restore script
@@ -1625,8 +1468,7 @@ L0EFF          pshs      X                   ; Save script pointer
 L0F01          ldx       $01CC               ; 2nd noun data
 L0F04          lda       $01C9               ; 2nd noun index
 
-***** Error: branch out of range
-L0F07          bra       $EDA                ; Print short name
+L0F07          bra       L0EDA                ; Print short name
 
 ;##Com15_CheckObjBits
 ; Check target bits in an object.
@@ -1634,8 +1476,7 @@ L0F09          pshs      X                   ; Hold script pointer
 L0F0B          ldx       $01C0               ; Input object pointer
 L0F0E          lda       $01BF               ; Var object number
 
-***** Error: branch out of range
-L0F11          beq       $F21                ; No object ... return error
+L0F11          beq       L0F21                ; No object ... return error
 L0F13          jsr       $0A42               ; Skip the pointer-to-next object
 L0F16          leax      2,X                 ; Skip to data byte
 L0F18          lda       ,X                  ; Get the object data
@@ -1652,8 +1493,7 @@ L0F27          rts                           ; Return
 ;##Com14_ExecuteCommandAndReverseReturn
 L0F28          jsr       $0C03               ; Execute command
 
-***** Error: branch out of range
-L0F2B          bne       $F30                ; Command returned a non-zero ... return zero
+L0F2B          bne       L0F30                ; Command returned a non-zero ... return zero
 L0F2D          ora       #$01                ; Command returned a zero ... return non-zerio
 L0F2F          rts                           ; Done
 L0F30          clra                          ; Zero
@@ -1680,18 +1520,15 @@ L0F50          puls      X                   ; Restore script
 L0F52          lbeq      $08CF               ; Out-of-game ... error and out
 L0F56          cmpb      $01D2               ; Is this the active object?
 
-***** Error: branch out of range
-L0F59          beq       $F45                ; Yes ... return OK
+L0F59          beq       L0F45                ; Yes ... return OK
 L0F5B          bitb      #$80                ; Test upper bit
 
-***** Error: branch out of range
-L0F5D          bne       $F45                ; It is in a room ... error and out
+L0F5D          bne       L0F45                ; It is in a room ... error and out
 ;
 L0F5F          pshs      X                   ; Hold script
 L0F61          jsr       $1133               ; Look up owner object
 
-***** Error: branch out of range
-L0F64          bra       $F4B                ; Check again
+L0F64          bra       L0F4B                ; Check again
 
 ; Execute any turn-scripts on the objects
 L0F66          ldx       #$20FF              ; Start of object data
@@ -1699,8 +1536,7 @@ L0F69          clr       $01D0               ; Object number
 L0F6C          jsr       $0A42               ; Skip length
 L0F6F          jsr       $0A58               ; End of objects?
 
-***** Error: branch out of range
-L0F72          bcc       $F45                ; Yes ... out
+L0F72          bcc       L0F45                ; Yes ... out
 L0F74          inc       $01D0               ; Next object number
 L0F77          pshs      Y                   ; Hold end-of-objects
 L0F79          jsr       $0A42               ; Skip length
@@ -1709,14 +1545,12 @@ L0F7E          sta       $01AB               ; Hold
 L0F81          pshs      Y                   ; End of object
 L0F83          lda       ,X                  ; Location
 
-***** Error: branch out of range
-L0F85          beq       $FC9                ; If it is out-of-game it doesn't get a turn
+L0F85          beq       L0FC9                ; If it is out-of-game it doesn't get a turn
 L0F87          leax      3,X                 ; Skip data
 L0F89          ldb       #$08                ; Turn-script
 L0F8B          jsr       $0A27               ; Find turn script
 
-***** Error: branch out of range
-L0F8E          bcc       $FC9                ; Nothing to do ... next object
+L0F8E          bcc       L0FC9                ; Nothing to do ... next object
 L0F90          jsr       $0A42               ; Skip length
 L0F93          pshs      X                   ; Hold pointer
 L0F95          jsr       $12A8               ; Generate random number
@@ -1727,18 +1561,15 @@ L0FA1          stx       $01D3               ; Hold pointer to active object dat
 L0FA4          ldb       $01AB               ; Object's location
 L0FA7          tstb                          ; Check upper bit
 
-***** Error: branch out of range
-L0FA8          bmi       $FB8                ; If in a room ... go handle
+L0FA8          bmi       L0FB8                ; If in a room ... go handle
 L0FAA          jsr       $1133               ; Get object's owner
 L0FAD          jsr       $0A42               ; Skip length
 L0FB0          ldb       ,X                  ; Get owner location
 
-***** Error: branch out of range
-L0FB2          bne       $FA7                ; Still in game ... find room location of owner chain
+L0FB2          bne       L0FA7                ; Still in game ... find room location of owner chain
 L0FB4          puls      X                   ; Restore pointer
 
-***** Error: branch out of range
-L0FB6          bra       $FC9                ; Next object
+L0FB6          bra       L0FC9                ; Next object
 L0FB8          stb       $01D5               ; Objects location
 L0FBB          ldx       #$1523              ; Get room ...
 L0FBE          jsr       $0A1F               ; ... scripts for object
@@ -1748,18 +1579,15 @@ L0FC6          jsr       $0C03               ; Execute turn-script
 L0FC9          puls      X                   ; Restore
 L0FCB          puls      Y                   ; Restore
 
-***** Error: branch out of range
-L0FCD          bra       $F6F                ; Next object
+L0FCD          bra       L0F6F                ; Next object
 
 ;##Com05_IsRandomLessOrEqual
 L0FCF          lda       $1338               ; Random value
 L0FD2          cmpa      ,X+                 ; Compare random value to script
 
-***** Error: branch out of range
-L0FD4          bcs       $FDB                ; If less than ... OK
+L0FD4          bcs       L0FDB                ; If less than ... OK
 
-***** Error: branch out of range
-L0FD6          beq       $FDB                ; If the same ... OK
+L0FD6          beq       L0FDB                ; If the same ... OK
 L0FD8          ora       #$01                ; Greater than ... FAIL
 L0FDA          rts                           ; Done
 L0FDB          clra                          ; Less than or equal ... OK
@@ -1777,23 +1605,20 @@ L0FEE          pshs      Y                   ; ... and Y
 L0FF0          ldb       #$09                ; Get target's ...
 L0FF2          jsr       $0A27               ; ... combat info
 
-***** Error: branch out of range
-L0FF5          bcc       $1020               ; Not found. Do nothing (return OK)
+L0FF5          bcc       L1020               ; Not found. Do nothing (return OK)
 L0FF7          jsr       $0A42               ; Skip length
 L0FFA          leax      1,X                 ; Hit points
 L0FFC          lda       ,X                  ; Hit points
 L0FFE          suba      $01AB               ; Subtract attack from hit points
 
-***** Error: branch out of range
-L1001          bcc       $1004               ; Not negative ... keep it
+L1001          bcc       L1004               ; Not negative ... keep it
 L1003          clra                          ; Floor the hit points
 L1004          sta       ,X                  ; New hit points
 L1006          puls      Y                   ; Restore ...
 L1008          puls      X                   ; ... X and Y
 L100A          tsta                          ; Hit points zero?
 
-***** Error: branch out of range
-L100B          beq       $1011               ; Yes ... object dies
+L100B          beq       L1011               ; Yes ... object dies
 L100D          puls      X                   ; Restore list
 L100F          clra                          ; Return OK
 L1010          rts                           ; Done
@@ -1802,19 +1627,16 @@ L1010          rts                           ; Done
 L1011          ldb       #$0A                ; Object being killed script
 L1013          jsr       $0A27               ; Find a script for handling being killed
 
-***** Error: branch out of range
-L1016          bcc       $100D               ; Not found ... nothing happens (return OK)
+L1016          bcc       L100D               ; Not found ... nothing happens (return OK)
 L1018          jsr       $0A42               ; Skip id and length
 L101B          jsr       $0C03               ; Execute "being killed" script
 
-***** Error: branch out of range
-L101E          bra       $100D               ; Done (return OK)
+L101E          bra       L100D               ; Done (return OK)
 
 L1020          puls      Y                   ; Reset ...
 L1022          puls      X                   ; ... stack
 
-***** Error: branch out of range
-L1024          bra       $100D               ; Return OK
+L1024          bra       L100D               ; Return OK
 
 ;##Com1E_SwapObjects
 L1026          ldb       ,X+                 ; 1st object number
@@ -1846,18 +1668,15 @@ L1059          leax      3,X                 ; Skip data
 L105B          ldb       #$09                ; Get object ...
 L105D          jsr       $0A27               ; ... hit points
 
-***** Error: branch out of range
-L1060          bcc       $1070               ; Doesn't have any ... error and out
+L1060          bcc       L1070               ; Doesn't have any ... error and out
 L1062          jsr       $0A42               ; Skip length
 L1065          leax      1,X                 ; Get current ...
 L1067          lda       ,X                  ; ... hit points
 L1069          cmpa      $01AB               ; Compare hit points to value
 
-***** Error: branch out of range
-L106C          bcs       $1075               ; Less than ..
+L106C          bcs       L1075               ; Less than ..
 
-***** Error: branch out of range
-L106E          beq       $1075               ; ... or equal ... OK and out
+L106E          beq       L1075               ; ... or equal ... OK and out
 L1070          puls      X                   ; Restore script
 L1072          ora       #$01                ; Error
 L1074          rts                           ; Done
@@ -1875,22 +1694,19 @@ L1086          leax      3,X                 ; Skip data
 L1088          ldb       #$09                ; Get object ...
 L108A          jsr       $0A27               ; ... hit points
 
-***** Error: branch out of range
-L108D          bcc       $1075               ; No entry ... do nothing (but OK)
+L108D          bcc       L1075               ; No entry ... do nothing (but OK)
 L108F          jsr       $0A42               ; Skip length
 L1092          ldd       ,X                  ; Get HP info
 L1094          addb      $01AB               ; Add to health
 L1097          sta       $01AB               ; Max value
 L109A          cmpb      $01AB               ; Over the max?
 
-***** Error: branch out of range
-L109D          bcs       $10A2               ; No ... keep it
+L109D          bcs       L10A2               ; No ... keep it
 L109F          ldb       $01AB               ; Use max value
 L10A2          leax      1,X                 ; Store ...
 L10A4          stb       ,X                  ; ... new health
 
-***** Error: branch out of range
-L10A6          bra       $1075               ; OK out
+L10A6          bra       L1075               ; OK out
 
 ;##Com25_RestartGame
 ; No return to script
@@ -1902,8 +1718,7 @@ L10B2          jmp       $060C               ; Restart game
 
 ;##Com24_EndlessLoop
 
-***** Error: branch out of range
-L10B5          bra       $10B5               ; Spin forever
+L10B5          bra       L10B5               ; Spin forever
 
 ; This snippet of code is never called by anyone, but this is a print
 ; for null-terminate ASCII strings. Presumably the PrintScore function
@@ -1911,14 +1726,12 @@ L10B5          bra       $10B5               ; Spin forever
 
 L10B7          lda       ,Y+                 ; Get next character
 
-***** Error: branch out of range
-L10B9          beq       $10C4               ; Null means done
+L10B9          beq       L10C4               ; Null means done
 L10BB          pshs      Y                   ; Hold Y
 L10BD          jsr       $1184               ; Print character
 L10C0          puls      Y                   ; Restore Y
 
-***** Error: branch out of range
-L10C2          bra       $10B7               ; Keep going
+L10C2          bra       L10B7               ; Keep going
 L10C4          rts                           ; Done
 
 ;##Com26_PrintScore
@@ -1930,46 +1743,39 @@ L10CA          clr       $01B0
 L10CD          lda       $01D5               ; Player location
 L10D0          cmpa      #$96                ; Player in the treasure room?
 
-***** Error: branch out of range
-L10D2          bne       $10D7               ; No ... regular score
+L10D2          bne       L10D7               ; No ... regular score
 L10D4          inc       $01B0               ; Yes ... carried objects count double
 L10D7          ldx       #$20FF              ; Object data
 L10DA          jsr       $0A42               ; Skip header
 L10DD          jsr       $0A58               ; Reached end?
 
-***** Error: branch out of range
-L10E0          bcc       $110F               ; Yes ... move on
+L10E0          bcc       L110F               ; Yes ... move on
 L10E2          pshs      Y                   ; Hold end
 L10E4          jsr       $0A42               ; Skip object length
 L10E7          ldb       ,X+                 ; Get owner
 L10E9          cmpb      #$96                ; Treasure room?
 
-***** Error: branch out of range
-L10EB          beq       $10F1               ; Yes ... count it
+L10EB          beq       L10F1               ; Yes ... count it
 L10ED          cmpb      #$1D                ; Carried by user?
 
-***** Error: branch out of range
-L10EF          bne       $1109               ; No ... next object
+L10EF          bne       L1109               ; No ... next object
 L10F1          lda       $01AF               ; Score tally
 L10F4          adda      ,X                  ; Add to score value
 L10F6          daa                           ; Decimal adjust
 L10F7          sta       $01AF               ; New score
 L10FA          cmpb      #$96                ; Treasure room?
 
-***** Error: branch out of range
-L10FC          beq       $1103               ; Yes ... counts double
+L10FC          beq       L1103               ; Yes ... counts double
 L10FE          tst       $01B0               ; Player in treasure room?
 
-***** Error: branch out of range
-L1101          beq       $1109               ; No ... just count once
+L1101          beq       L1109               ; No ... just count once
 L1103          adda      ,X                  ; Double ...
 L1105          daa                           ; ... the ...
 L1106          sta       $01AF               ; ... score value
 L1109          tfr       Y,X                 ; Next object
 L110B          puls      Y                   ; Restore end of list
 
-***** Error: branch out of range
-L110D          bra       $10DD               ; Do all objects
+L110D          bra       L10DD               ; Do all objects
 ;        
 L110F          lda       $01AF               ; Score value
 L1112          asra                          ; Left ...
@@ -1995,13 +1801,11 @@ L1133          ldx       #$20FF              ; Start of objects
 L1136          jsr       $0A42               ; Skip end
 L1139          decb                          ; Found desired object?
 
-***** Error: branch out of range
-L113A          beq       $10C4               ; Yes ... out OK
+L113A          beq       L10C4               ; Yes ... out OK
 L113C          jsr       $0A42               ; Length of object
 L113F          exg       X,Y                 ; Next object
 
-***** Error: branch out of range
-L1141          bra       $1139               ; Keep looking
+L1141          bra       L1139               ; Keep looking
 
 ; Print packed message and CR
 L1143          jsr       $114C               ; Print packed message at X
@@ -2015,8 +1819,7 @@ L114C          clra                          ; Assume MSB is 0
 L114D          ldb       ,X                  ; Get length
 L114F          bitb      #$80                ; Is it single byte length?
 
-***** Error: branch out of range
-L1151          beq       $1157               ; Yes ... use D
+L1151          beq       L1157               ; Yes ... use D
 L1153          lda       ,X+                 ; Get the ...
 L1155          anda      #$7F                ; ... MSB and ...
 L1157          ldb       ,X+                 ; ... LSB
@@ -2024,25 +1827,21 @@ L1159          std       $01AB               ; Store byte count
 L115C          ldd       $01AB               ; Number of bytes left in message
 L115F          cmpd      #$0002              ; Less than 2?
 
-***** Error: branch out of range
-L1163          bcs       $1173               ; Yes ... these aren't compressed
+L1163          bcs       L1173               ; Yes ... these aren't compressed
 L1165          jsr       $11EC               ; Decompress and print two bytes pointed to by X
 L1168          ldd       $01AB               ; Get byte count
 L116B          subd      #$0002              ; Handled 2
 L116E          std       $01AB               ; Store count
 
-***** Error: branch out of range
-L1171          bra       $115C               ; Keep decompressing
+L1171          bra       L115C               ; Keep decompressing
 L1173          tstb                          ; Any characters on the end to print?
 
-***** Error: branch out of range
-L1174          beq       $117E               ; No ... skip
+L1174          beq       L117E               ; No ... skip
 L1176          lda       ,X+                 ; Get character
 L1178          jsr       $1184               ; Print the character
 L117B          decb                          ; Decrement count
 
-***** Error: branch out of range
-L117C          bra       $1173               ; Keeop going
+L117C          bra       L1173               ; Keeop going
 L117E          lda       #$20                ; Print ...
 L1180          jsr       $1184               ; ... space on end
 L1183          rts                           ; Done
@@ -2055,39 +1854,32 @@ L1184          pshs      B,A                 ; Hold B and A
 L1186          lda       $01BE               ; Last printed character
 L1189          cmpa      #$20                ; Last printed a space?
 
-***** Error: branch out of range
-L118B          bne       $11A7               ; No ... print this
+L118B          bne       L11A7               ; No ... print this
 L118D          puls      A,B                 ; Hold
 L118F          cmpa      #$20                ; Space now?
 
-***** Error: branch out of range
-L1191          beq       $11EA               ; Yes ... just ignore
+L1191          beq       L11EA               ; Yes ... just ignore
 L1193          cmpa      #$2E                ; A '.' ?
 
-***** Error: branch out of range
-L1195          beq       $119F               ; Yes. Ignore leading space.
+L1195          beq       L119F               ; Yes. Ignore leading space.
 L1197          cmpa      #$3F                ; A '?' ?
 
-***** Error: branch out of range
-L1199          beq       $119F               ; Yes. Ignore leading space.
+L1199          beq       L119F               ; Yes. Ignore leading space.
 L119B          cmpa      #$21                ; A '!' ?
 
-***** Error: branch out of range
-L119D          bne       $11A9               ; Yes. Ignore leading space.
+L119D          bne       L11A9               ; Yes. Ignore leading space.
 L119F          ldu       >$88                ; Back screen ...
 L11A1          leau      -1,U                ; ... pointer up ...
 L11A3          stu       >$88                ; ... over ignored space
 
-***** Error: branch out of range
-L11A5          bra       $11A9               ; Store and print
+L11A5          bra       L11A9               ; Store and print
 L11A7          puls      A,B                 ; Restore A and B
 L11A9          sta       $01BE               ; Last printed character
 L11AC          jsr       [$A002]             ; Output character
 L11B0          lda       >$89                ; LSB of screen position
 L11B2          cmpa      #$FE                ; Reached end of screen?
 
-***** Error: branch out of range
-L11B4          bcs       $11EA               ; No ... done
+L11B4          bcs       L11EA               ; No ... done
 L11B6          ldu       >$88                ; Cursor position
 L11B8          leau      $-21,U              ; Back up to end of current row
 L11BB          lda       #$0D                ; CR ...
@@ -2095,32 +1887,27 @@ L11BD          jsr       [$A002]             ; ... to screen
 L11C1          lda       ,U                  ; Find the ...
 L11C3          cmpa      #$60                ; ... space before ...
 
-***** Error: branch out of range
-L11C5          beq       $11CB               ; ... the last ...
+L11C5          beq       L11CB               ; ... the last ...
 L11C7          leau      -1,U                ; ... word ...
 
-***** Error: branch out of range
-L11C9          bra       $11C1               ; ... on the line
+L11C9          bra       L11C1               ; ... on the line
 L11CB          leau      1,U                 ; Now pointing to last word on line
 L11CD          lda       ,U                  ; Get next character in buffer
 L11CF          cmpa      #$60                ; Is it a space?
 
-***** Error: branch out of range
-L11D1          beq       $11EA               ; Yes ... all done
+L11D1          beq       L11EA               ; Yes ... all done
 L11D3          pshs      B                   ; Hold B
 L11D5          ldb       #$60                ; Put ...
 L11D7          stb       ,U                  ; ... space
 L11D9          puls      B                   ; Restore B
 L11DB          cmpa      #$60                ; Make sure ...
 
-***** Error: branch out of range
-L11DD          bcs       $11E1               ; ... upper ...
+L11DD          bcs       L11E1               ; ... upper ...
 L11DF          suba      #$40                ; ... case
 L11E1          sta       $01BE               ; Last printed character
 L11E4          jsr       [$A002]             ; Output to screen
 
-***** Error: branch out of range
-L11E8          bra       $11CB               ; Move overhang to next line
+L11E8          bra       L11CB               ; Move overhang to next line
 L11EA          rts                           ; Done
 L11EB          rts                           ; OOPS
 
@@ -2147,8 +1934,7 @@ L1212          rol       $01DE               ;
 L1215          rol       $01DD               ;
 L1218          dec       $01DA               ;
 
-***** Error: branch out of range
-L121B          beq       $1256               ;
+L121B          beq       L1256               ;
 L121D          lda       #$00                ;
 L121F          adca      #$00                ; This algorithm is identical to the decompression
 L1221          asl       $01DC               ; used in Pyramid2000. Check the comments there for
@@ -2160,28 +1946,23 @@ L1230          lda       $01DB               ;
 L1233          sbca      $12A2               ;
 L1236          sta       $01DF               ;
 
-***** Error: branch out of range
-L1239          bcc       $1246               ;
+L1239          bcc       L1246               ;
 L123B          ldd       $01DF               ;
 L123E          addd      $12A2               ;
 L1241          std       $01DB               ;
 
-***** Error: branch out of range
-L1244          bra       $124C               ;
+L1244          bra       L124C               ;
 L1246          ldd       $01DF               ;
 L1249          std       $01DB               ;
 ; Compliment C flag and continue
 
-***** Error: branch out of range
-L124C          bcs       $1252               ;
+L124C          bcs       L1252               ;
 L124E          orcc      #$01                ;
 
-***** Error: branch out of range
-L1250          bra       $1212               ;
+L1250          bra       L1212               ;
 L1252          andcc     #$FE                ;
 
-***** Error: branch out of range
-L1254          bra       $1212               ;
+L1254          bra       L1212               ;
 ; Process the result of the division
 L1256          ldd       $01DB               ;
 L1259          addd      #$1279              ;
@@ -2190,16 +1971,14 @@ L125E          lda       ,U                  ;
 L1260          sta       ,-Y                 ;
 L1262          dec       $12A1               ;
 
-***** Error: branch out of range
-L1265          bne       $1201               ;
+L1265          bne       L1201               ;
 L1267          ldy       #$12A4              ;
 L126B          ldb       #$03                ;
 L126D          lda       ,Y+                 ;
 L126F          jsr       $1184               ; Print character
 L1272          decb                          ;
 
-***** Error: branch out of range
-L1273          bne       $126D               ;
+L1273          bne       L126D               ;
 L1275          ldd       $01AB               ;
 L1278          rts                           ;
 
@@ -2222,42 +2001,35 @@ L12B1          leax      1,X                 ;
 L12B3          orcc      #$01                ;
 L12B5          anda      #$06                ;
 
-***** Error: branch out of range
-L12B7          beq       $12C0               ;
+L12B7          beq       L12C0               ;
 L12B9          cmpa      #$06                ;
 L12BB          orcc      #$01                ;
 
-***** Error: branch out of range
-L12BD          beq       $12C0               ;
+L12BD          beq       L12C0               ;
 L12BF          clra                          ;
 L12C0          lda       ,X                  ;
 
-***** Error: branch out of range
-L12C2          bcs       $12C7               ;
+L12C2          bcs       L12C7               ;
 L12C4          lsra                          ;
 
-***** Error: branch out of range
-L12C5          bra       $12CA               ;
+L12C5          bra       L12CA               ;
 L12C7          lsra                          ;
 L12C8          ora       #$80                ;
 L12CA          sta       ,X                  ;
 L12CC          leax      -1,X                ;
 L12CE          lda       ,X                  ;
 
-***** Error: branch out of range
-L12D0          bcs       $12D5               ;
+L12D0          bcs       L12D5               ;
 L12D2          lsra                          ;
 
-***** Error: branch out of range
-L12D3          bra       $12D8               ;
+L12D3          bra       L12D8               ;
 L12D5          lsra                          ;
 L12D6          ora       #$80                ;
 L12D8          anda      #$FE                ;
 L12DA          sta       ,X                  ;
 L12DC          decb                          ;
 
-***** Error: branch out of range
-L12DD          bne       $12B1               ;
+L12DD          bne       L12B1               ;
 L12DF          lda       $1339               ;
 L12E2          puls      B,X                 ;
 L12E4          rts                           ;
