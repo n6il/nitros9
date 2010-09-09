@@ -28,7 +28,7 @@ clean:	dskclean
 dsk:	all
 	$(RM) $(DISK)
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) $(DISK) -n"Raaka-Tu"
+	$(OS9FORMAT_SS35) $(DISK) -n"Raaka-Tu"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
 	$(OS9GEN) $(DISK) -b=os9boot -t=kernel_1773
