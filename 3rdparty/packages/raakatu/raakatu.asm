@@ -305,7 +305,7 @@ L06DA          cmpb      u01B3               ;  ?? Compare to 01B3 ...
 
 L06DD          bne       L06CF               ;  Continue running list
 L06DF          stb       u01B3               ;  ?? ... then store if equal?
-L06E2          jmp       $0731               ;  Continue with next word
+L06E2          lbra      L0731               ;  Continue with next word
 
 L06E5          deca                          ;  List 2 Noun
 
@@ -349,7 +349,7 @@ L0729          bra       L0731               ;  Continue with next word
 L072B          stb       u01B4               ;  Preposition
 L072E          stb       u01B5               ;  Preoposition given (noun should follow)
 L0731          puls      X                   ;  Restore token pointer
-L0733          jmp       $06B7               ;  Next word
+L0733          lbra      L06B7               ;  Next word
 
 
 L0736          tst       u01B3               ;  Verb given?
@@ -438,7 +438,7 @@ L07E5          bra       L07F0               ; Store and continue
 L07E7          leax      1,X                 ; Skip ...
 L07E9          leax      1,X                 ; ... to ...
 L07EB          leax      2,X                 ; ... next entry
-L07ED          jmp       $077F               ; Keep looking
+L07ED          lbra      L077F               ; Keep looking
 
 ; Unlike BEDLAM, there is no giving a command to something else. Just
 ; ignore any commanded object and give the phrase to the user.
@@ -461,7 +461,7 @@ L0814          lbsr      L0C03               ; Execute script
 L0817          lbsr      L0F66               ; Allow objects to move
 L081A          lda       #$0D                ; Print ...
 L081C          lbsr      L1184               ; ... CR
-L081F          jmp       $0630               ; Top of game loop
+L081F          lbra      L0630               ; Top of game loop
 
 
 ; This function decodes the NOUN descriptor pointed to by X. The AJECTIVE-NOUN
@@ -535,7 +535,7 @@ L089A          ldx       u01C0               ; Object data to X
 L089D          lda       u01BF               ; Object found?
 
 L08A0          bne       L08A5               ; Yes ...  out
-L08A2          jmp       $0948               ; No ... "?WHAT?"
+L08A2          lbra      L0948               ; No ... "?WHAT?"
 L08A5          rts                           ; Done
 L08A6          puls      X                   ; Restore object pointer
 
@@ -707,7 +707,7 @@ L09C6          dec       u01AB               ; ... error ...
 
 L09C9          bne       L09C3               ; ... word
 L09CB          lbsr      L0A63               ; Get input line
-L09CE          jmp       $0637               ; Continue processing
+L09CE          lbra      L0637               ; Continue processing
 L09D1          lbsr      L0A00               ; Flash message and pause
 
 L09D4          bra       L09A5               ; Continue flashing and read new line
@@ -882,7 +882,7 @@ L0AD3          sta       ,X+                 ; Clear ...
 L0AD5          decb                          ; ... the ...
 
 L0AD6          bne       L0AD3               ; ... bottom row
-L0AD8          jmp       $0A60               ; Go get another key
+L0AD8          lbra      L0A60               ; Go get another key
 ;
 L0ADB          tfr       X,U                 ; Hold X
 L0ADD          leay      1,X                 ; Clear trailing ...
@@ -1076,7 +1076,7 @@ L0BF7          dec       u01AB               ; All skipped
 L0BFA          bne       L0BF5               ; No ... skip all
 L0BFC          puls      X                   ; Restore pointer to word
 L0BFE          leay      1,Y                 ; Skip word data
-L0C00          jmp       $0B8B               ; Keep trying
+L0C00          lbra      L0B8B               ; Keep trying
 
 ;##ProcessCommand
 ; Either a direct command or a common command
@@ -1096,7 +1096,7 @@ L0C1B          puls      X,Y                 ; Restore
 L0C1D          rts                           ; Out
 
 L0C1E          tfr       B,A                 ; Hold original command
-L0C20          ldy       #$12E5              ; Function table
+L0C20          ldy       #L12E5              ; Function table
 L0C24          asla                          ; Jump to ...
 L0C25          jmp       [A,Y]               ; ... command
 
@@ -1314,7 +1314,7 @@ L0DA5          rts                           ; Done
 
 ;##Com02_CheckObjectIsOwnedByActive
 L0DA6          ldb       ,X+
-L0DA8          jmp       $0F5F
+L0DA8          lbra      L0F5F
 
 ;##Com03_IsObjectYAtX
 ; Check to see if an object is at a target location.
@@ -1774,7 +1774,7 @@ L10A8          lda       #$0D                ; Print first ...
 L10AA          lbsr      L1184               ; ... CR
 L10AD          lda       #$0D                ; Print second ...
 L10AF          lbsr      L1184               ; ... CR
-L10B2          jmp       $060C               ; Restart game
+L10B2          lbra      L060C               ; Restart game
 
 ;##Com24_EndlessLoop
 
