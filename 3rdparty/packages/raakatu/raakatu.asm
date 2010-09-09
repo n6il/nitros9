@@ -129,6 +129,23 @@
 ; $01E4     inputTokens           input token buffer
 ; $03FF     stack                 top of stack (just below screen memory)
 
+         nam   Raaka-Tu
+         ttl   program module       
+
+* Disassembled 2004/07/13 07:31:17 by Disasm v1.5 (C) 1988 by RML
+
+         ifp1
+         use   os9defs
+         endc
+
+tylg     set   Prgrm+Objct   
+atrv     set   ReEnt+rev
+rev      set   $00
+
+topmod   equ   $C000
+
+         mod   eom,name,tylg,atrv,start,size
+
 	  rmb   $01A7
 u01A7 rmb 1 ..  tmp1A7                used in decoding the input                   
 u01A8 rmb 1 ..  tmp1A7                used in decoding the input                   
@@ -188,17 +205,27 @@ u01E3 rmb 1    tillMORE              rows left until MORE prompt (not used here)
 ;
 u01E4 rmb $21b     inputTokens           input token buffer
 u03FF equ .    stack                 top of stack (just below screen memory)
+size  equ      .
+
+name     equ   *
+         fcs   /Raaka-Tu/
+         fcb   $00 
 
 ;##Start
-L0600          clra                          ; 256 word (512 bytes on screen)
-L0601          ldx       #$0400              ; Start of screen
-L0604          ldu       #$6060              ; Space-space
-L0607          stu       ,X++                ; Clear ...
-L0609          deca                          ; ... text ...
+start          equ       *
 
-L060A          bne       L0607               ; ... screen
+* Screen clearing code for CoCo BASIC environment is removed
+* L0600          clra                          ; 256 word (512 bytes on screen)
+* L0601          ldx       #$0400              ; Start of screen
+* L0604          ldu       #$6060              ; Space-space
+* L0607          stu       ,X++                ; Clear ...
+* L0609          deca                          ; ... text ...
 
-L060C          lds       #$03FF              ; Stack starts just below screen
+* L060A          bne       L0607               ; ... screen
+
+* L060C          lds       #$03FF              ; Stack starts just below screen
+
+L060C
 L0610          lda       #$1D                ; Player object ...
 L0612          sta       u01D2               ; ... is the active object number
 L0615          ldx       #$05E0              ; Set cursor to ...
@@ -213,7 +240,8 @@ L062B          lda       #$0D                ; Print ...
 L062D          lbsr      L1184               ; ... CR
 
 ;##MainLoop
-L0630          lds       #$03FF              ; Initialize stack
+* L0630          lds       #$03FF              ; Initialize stack
+L0630
 L0634          lbsr      L0ACC               ; Get user input
 
 L0637          clr       u01B7               ; Adjective word number
@@ -930,7 +958,8 @@ L0B2A          rts                           ; Done
 
 ;##-GetKey
 L0B2B          lbsr      L12A8               ; Get random number every key
-L0B2E          jsr       [$A000]             ; Get key from user
+*L0B2E          jsr       [$A000]             ; Get key from user
+			lbsr   os9read
 L0B32          tsta                          ; Anything pressed?
 
 L0B33          beq       L0B2B               ; No ... keep waiting
@@ -1935,7 +1964,8 @@ L11A3          stu       >$88                ; ... over ignored space
 L11A5          bra       L11A9               ; Store and print
 L11A7          puls      A,B                 ; Restore A and B
 L11A9          sta       u01BE               ; Last printed character
-L11AC          jsr       [$A002]             ; Output character
+*L11AC          jsr       [$A002]             ; Output character
+         lbsr   os9write
 L11B0          lda       >$89                ; LSB of screen position
 L11B2          cmpa      #$FE                ; Reached end of screen?
 
@@ -1943,7 +1973,8 @@ L11B4          bcs       L11EA               ; No ... done
 L11B6          ldu       >$88                ; Cursor position
 L11B8          leau      $-21,U              ; Back up to end of current row
 L11BB          lda       #$0D                ; CR ...
-L11BD          jsr       [$A002]             ; ... to screen
+*L11BD          jsr       [$A002]             ; ... to screen
+         lbsr   os9write
 L11C1          lda       ,U                  ; Find the ...
 L11C3          cmpa      #$60                ; ... space before ...
 
@@ -1965,7 +1996,8 @@ L11DB          cmpa      #$60                ; Make sure ...
 L11DD          bcs       L11E1               ; ... upper ...
 L11DF          suba      #$40                ; ... case
 L11E1          sta       u01BE               ; Last printed character
-L11E4          jsr       [$A002]             ; Output to screen
+*L11E4          jsr       [$A002]             ; Output to screen
+         lbsr   os9write
 
 L11E8          bra       L11CB               ; Move overhang to next line
 L11EA          rts                           ; Done
@@ -2121,45 +2153,45 @@ L12E4          rts                           ;
 ; -----------------------------------------------------------------------------------------------------------------
 
 ;##CommandJumpTable 
-L12E5          fcb       $0C,$81             ; 00            
-L12E7          fcb       $0D,$93             ; 01            
-L12E9          fcb       $0D,$A6             ; 02            
-L12EB          fcb       $0D,$AB             ; 03            
-L12ED          fcb       $0D,$C3             ; 04            
-L12EF          fcb       $0F,$CF             ; 05            
-L12F1          fcb       $0D,$E9             ; 06            
-L12F3          fcb       $0D,$E4             ; 07            
-L12F5          fcb       $0E,$23             ; 08            
-L12F7          fcb       $0E,$41             ; 09           
-L12F9          fcb       $0E,$49             ; 0A            
-L12FB          fcb       $0C,$58             ; 0B            
-L12FD          fcb       $0D,$C0             ; 0C           
-L12FF          fcb       $0C,$27             ; 0D           
-L1301          fcb       $0C,$3F             ; 0E            
-L1303          fcb       $0E,$4F             ; 0F           
-L1305          fcb       $0E,$60             ; 10            
-L1307          fcb       $0E,$D2             ; 11           
-L1309          fcb       $0E,$FF             ; 12            
-L130B          fcb       $0E,$71             ; 13            
-L130D          fcb       $0F,$28             ; 14           
-L130F          fcb       $0F,$09             ; 15            
-L1311          fcb       $0E,$C8             ; 16            
-L1313          fcb       $0F,$32             ; 17            
-L1315          fcb       $0F,$46             ; 18            
-L1317          fcb       $0C,$8D             ; 19           
-L1319          fcb       $0C,$AE             ; 1A           
-L131B          fcb       $0C,$BC             ; 1B            
-L131D          fcb       $0C,$CA             ; 1C           
-L131F          fcb       $0F,$DD             ; 1D            
-L1321          fcb       $10,$26             ; 1E
-L1323          fcb       $0D,$CA             ; 1F          
-L1325          fcb       $0D,$A0             ; 20            
-L1327          fcb       $0C,$DD             ; 21            
-L1329          fcb       $10,$4C             ; 22                
-L132B          fcb       $10,$79             ; 23               
-L132D          fcb       $10,$B5             ; 24                
-L132F          fcb       $10,$A8             ; 25               
-L1331          fcb       $10,$C5             ; 26
+L12E5    fdb   L0C81+topmod
+         fdb   L0D93+topmod
+         fdb   L0DA6+topmod
+		 fdb   L0DAB+topmod
+		 fdb   L0DC3+topmod
+		 fdb   L0FCF+topmod
+         fdb   L0DE9+topmod
+		 fdb   L0DE4+topmod
+		 fdb   L0E23+topmod
+		 fdb   L0E41+topmod
+         fdb   L0E49+topmod
+		 fdb   L0C58+topmod
+		 fdb   L0DC0+topmod
+		 fdb   L0C27+topmod
+         fdb   L0C3F+topmod
+		 fdb   L0E4F+topmod
+		 fdb   L0E60+topmod
+		 fdb   L0ED2+topmod
+         fdb   L0EFF+topmod
+		 fdb   L0E71+topmod
+		 fdb   L0F28+topmod
+		 fdb   L0F09+topmod
+         fdb   L0EC8+topmod
+		 fdb   L0F32+topmod
+		 fdb   L0F46+topmod
+		 fdb   L0C8D+topmod
+         fdb   L0CAE+topmod
+		 fdb   L0CBC+topmod
+		 fdb   L0CCA+topmod
+		 fdb   L0FDD+topmod
+         fdb   L1026+topmod
+		 fdb   L0DCA+topmod
+		 fdb   L0DA0+topmod
+		 fdb   L0CDD+topmod
+         fdb   L104C+topmod
+		 fdb   L1079+topmod
+		 fdb   L10B5+topmod
+		 fdb   L10A8+topmod
+         fdb   L10C5+topmod
 
 ; Multi-verb replacement list (code doesn't work that uses this anyway)              
 L1333          fcb       $00                 ; List is the length. List is pointed to by 1331 which is ignored
@@ -5073,3 +5105,78 @@ L3F03          fcb       $06,$42,$45,$48,$49,$4E,$44,$0A ; BEHIND   10
 L3F0B          fcb       $06,$41,$52,$4F,$55,$4E,$44,$0B ; AROUND   11
 L3F13          fcb       $02,$4F,$4E,$0C     ; ON       12
 L3F17          fcb       $00
+
+
+os9read  pshs  y,x,d
+         clra
+         leax  ,s
+         ldy   #$0001
+         os9   I$Read
+ok       puls  d,x,y,pc
+         
+os9write pshs  y,x,d
+         cmpa  #$0D
+         beq   WriteCR
+         lda   #$01
+         leax  ,s
+         ldy   #$0001
+         os9   I$Write
+         bra   DoCHROUT
+WriteCR
+         lda   #$01
+         leax  ,s
+         ldy   #$0001
+         os9   I$WritLn
+DoCHROUT
+         puls  d,x,y
+         pshs  x,b,a
+         ldx   $88			get cursor position
+         cmpa  #$08			backspace character?
+         bne   LA31D		branch if not...
+         cmpx  #$400		else is current screen pointer at top?
+         beq   LA35D		branch if so...
+         lda   #$60			else put SPACE to erase character and move X back
+         sta   ,-x
+         bra   LA344
+LA31D    cmpa  #$0D
+         bne   LA32F
+         ldx   $88
+LA323    lda   #$60
+         sta   ,x+
+         tfr   x,d
+         bitb  #$1F
+         bne   LA323
+         bra   LA344
+LA32F    cmpa  #$20
+         bcs   LA35D
+         tsta
+         bmi   LA342
+         cmpa  #$40
+         bcs   LA340
+         CMPA  #$60
+         bcs   LA342
+         anda  #$DF
+LA340    eora  #$40
+LA342    sta   ,x+
+LA344    stx   $88
+         cmpx  #$400+511
+         bls   LA35D
+         ldx   #$400
+
+* SCROLL SCREEN
+LA34E    ldd   32,x
+         std   ,x++
+         cmpx  #$400+$1E0
+         bcs   LA34E
+         ldb   #$60
+LA92D    stx   $88
+LA92F    stb   ,x+
+         cmpx  #$400+511
+         bls   LA92F
+LA35D    puls  d,x,pc
+
+os9exit  os9   F$Exit
+
+               emod
+eom            equ       *
+			   end
