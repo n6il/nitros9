@@ -129,6 +129,66 @@
 ; $01E4     inputTokens           input token buffer
 ; $03FF     stack                 top of stack (just below screen memory)
 
+	  rmb   $01A7
+u01A7 rmb 1 ..  tmp1A7                used in decoding the input                   
+u01A8 rmb 1 ..  tmp1A7                used in decoding the input                   
+u01A9 rmb 1    tmp1A9                used in comparing X to Y                     
+u01AA rmb 1    not1AA                never used
+u01AB rmb 1    tmp1AB                used in lots of places                       
+u01AC rmb 1    not1AC                never used
+u01AD rmb 1    tmp1AD                used in the phrase decoding                  
+u01AE rmb 1    not1AE                never used
+u01AF rmb 1    not1AF                never used
+u01B0 rmb 1    not1B0                never used
+u01B1 rmb 1    not1B1                never used
+u01B2 rmb 1    tmp1B2                used in word decoding                        
+u01B3 rmb 1    verbWord              input verb word number                       
+u01B4 rmb 1    perpWord              preposition word number                      
+u01B5 rmb 1    prepGiven             preposition given flag                       
+u01B6 rmb 1    phrasePrep            used in phrase decoding                      
+u01B7 rmb 1    adjWord               adjective word number                        
+u01B8 rmb 1    commandTarg           target object of input command               
+u01B9 rmb 1    not1B9                cleared before decode but never used        
+u01BA rmb 1    lsbAdj1               screen LSB of 1st adjective                  
+u01BB rmb 1    lsbVerb               screen LSB of verb                           
+u01BC rmb 1    lsbCursor             screen lsb used in decoding the input line   
+u01BD rmb 1    lsbError              screen lsb used for flashing error messages  
+u01BE rmb 1    lastChar              last character printed to screen             
+u01BF rmb 1      VAR_OBJ_NUMBER      variable object number                       
+u01C0 rmb 2 ..    VAR_OBJ_DATA        variable object data                         
+u01C2 rmb 1    not1C2                never used
+u01C3 rmb 1      FIRST_NOUN_NUM      first input noun number                      
+u01C4 rmb 1    firstNounAdj          first input noun adjective word number
+u01C5 rmb 1    firstNounLSB          first input noun screen LSB                  
+u01C6 rmb 2 ..    FIRST_NOUN_DATA     first input noun object data                
+u01C8 rmb 1    firstNounParams       first input noun parameter bits             
+u01C9 rmb 1      SECOND_NOUN_NUM     second input noun number                     
+u01CA rmb 1    secondNounAdj         second input noun adjective word number
+u01CB rmb 1    secondNounLSB         second input noun noun screen LSB           
+u01CC rmb 2 ..    SECOND_NOUN_DATA    second input noun object data                
+u01CE rmb 1    secondNounParams      second input noun parameter bits             
+u01CF rmb 1    tmp1CF                another screen pointer used in decode       
+u01D0 rmb 1    tmp1DO                used in making index of data fields         
+u01D1 rmb 1      PHRASE_FORM         decoded phrase form                          
+u01D2 rmb 1      ACTIVE_OBJ_NUM      active object                                
+u01D3 rmb 2 ..    ACTIVE_OBJ_DATA     active object data                          
+u01D5 rmb 1      CUR_ROOM            current room number                         
+u01D6 rmb 2 ..    CUR_ROOM_DATA       current room data                          
+u01D8 rmb 2 ..  nextToken             used in decoding input                      
+u01DA rmb 1    tmp1DA                used in unpacking bytes                      
+u01DB rmb 1    tmp1DB                used in unpacking bytes                    
+u01DC rmb 1    tmp1DC                used in unpacking bytes                     
+u01DD rmb 1    tmp1DD                used in unpacking bytes                     
+u01DE rmb 1    tmp1DE                used in unpacking bytes                      
+u01DF rmb 1    tmp1DF                used in unpacking bytes                     
+u01E0 rmb 1    tmp1EO                used in unpacking bytes                      
+u01E1 rmb 1    tmp1E1                used in making index of data fields         
+u01E2 rmb 1    tmp1E2                used in input processing                    
+u01E3 rmb 1    tillMORE              rows left until MORE prompt (not used here)               
+;
+u01E4 rmb 1     inputTokens           input token buffer
+u03FF equ .    stack                 top of stack (just below screen memory)
+
 ;##Start
 L0600          clra                          ; 256 word (512 bytes on screen)
 L0601          ldx       #$0400              ; Start of screen
@@ -136,91 +196,91 @@ L0604          ldu       #$6060              ; Space-space
 L0607          stu       ,X++                ; Clear ...
 L0609          deca                          ; ... text ...
 
-L060A          bne       L0607                ; ... screen
+L060A          bne       L0607               ; ... screen
 
 L060C          lds       #$03FF              ; Stack starts just below screen
 L0610          lda       #$1D                ; Player object ...
-L0612          sta       $01D2               ; ... is the active object number
+L0612          sta       u01D2               ; ... is the active object number
 L0615          ldx       #$05E0              ; Set cursor to ...
 L0618          stx       >$88                ; ... bottom row of screen
 L061A          ldb       #$96                ; Starting ...
-L061C          stb       $01D5               ; ... room
+L061C          stb       u01D5               ; ... room
 L061F          ldx       #$1523              ; Room descriptions
-L0622          jsr       $0A1F               ; Find room data
-L0625          stx       $01D6               ; Store current room data
-L0628          jsr       $0D4A               ; Print room description
+L0622          lbsr      L0A1F               ; Find room data
+L0625          stx       u01D6               ; Store current room data
+L0628          lbsr      L0D4A               ; Print room description
 L062B          lda       #$0D                ; Print ...
-L062D          jsr       $1184               ; ... CR
+L062D          lbsr      L1184               ; ... CR
 
 ;##MainLoop
 L0630          lds       #$03FF              ; Initialize stack
-L0634          jsr       $0ACC               ; Get user input
+L0634          lbsr      L0ACC               ; Get user input
 
-L0637          clr       $01B7               ; Adjective word number
-L063A          clr       $01BA               ; LSB of 1st adjective in buffer (not used)
-L063D          clr       $01BB               ; LSB of verb
-L0640          clr       $01B2               ; Misc
-L0643          clr       $01B3               ; Verb word number
-L0646          clr       $01B9               ; Never used again
-L0649          clr       $01B8               ; Target object of command (not used)
-L064C          clr       $01B4               ; Preposition number
-L064F          clr       $01B5               ; Preposition given flag (not 0 if given)
-L0652          clr       $01BF               ; VAR object number
-L0655          clr       $01C3               ; 1st noun word number
-L0658          clr       $01C9               ; 2nd noun word number
+L0637          clr       u01B7               ; Adjective word number
+L063A          clr       u01BA               ; LSB of 1st adjective in buffer (not used)
+L063D          clr       u01BB               ; LSB of verb
+L0640          clr       u01B2               ; Misc
+L0643          clr       u01B3               ; Verb word number
+L0646          clr       u01B9               ; Never used again
+L0649          clr       u01B8               ; Target object of command (not used)
+L064C          clr       u01B4               ; Preposition number
+L064F          clr       u01B5               ; Preposition given flag (not 0 if given)
+L0652          clr       u01BF               ; VAR object number
+L0655          clr       u01C3               ; 1st noun word number
+L0658          clr       u01C9               ; 2nd noun word number
 
 L065B          ldb       #$1D                ; Player object ...
-L065D          stb       $01D2               ; ... is active object
-L0660          jsr       $1133               ; Get player object data
-L0663          stx       $01D3               ; Active object's data
-L0666          jsr       $0A42               ; Skip length
+L065D          stb       u01D2               ; ... is active object
+L0660          lbsr      L1133               ; Get player object data
+L0663          stx       u01D3               ; Active object's data
+L0666          lbsr      L0A42               ; Skip length
 L0669          ldb       ,X                  ; Get player location
-L066B          stb       $01D5               ; Current room
+L066B          stb       u01D5               ; Current room
 L066E          ldx       #$1523              ; Room scripts
-L0671          jsr       $0A1F               ; Find sublist ... script for room
-L0674          stx       $01D6               ; Script for current room
-L0677          ldx       #$01E3              ; Input token list area
-L067A          stx       $01D8               ; Where decoder fills in
+L0671          lbsr      L0A1F               ; Find sublist ... script for room
+L0674          stx       u01D6               ; Script for current room
+L0677          ldx       #u01E3              ; Input token list area
+L067A          stx       u01D8               ; Where decoder fills in
 L067D          clr       ,X                  ; Empty token ... clear the list
 L067F          ldx       #$05E0              ; Bottom row is input buffer
-L0682          jsr       $0B42               ; Decode input word
+L0682          lbsr      L0B42               ; Decode input word
 
-L0685          beq       L0692                ; All words done
+L0685          beq       L0692               ; All words done
 L0687          lda       ,X+                 ; Next character
 L0689          cmpa      #$60                ; A space?
 
-L068B          beq       L0682                ; Yes ... decode next
+L068B          beq       L0682               ; Yes ... decode next
 L068D          cmpx      #$0600              ; End of input buffer?
 
-L0690          bne       L0687                ; No ... look for next word
+L0690          bne       L0687               ; No ... look for next word
 L0692          cmpx      #$0600              ; End of input buffer?
 
-L0695          bne       L0682                ; No ... keep looking
-L0697          clr       [$01D8]             ; Terminate token list
-L069B          ldx       #$01E3              ; Input buffer
+L0695          bne       L0682               ; No ... keep looking
+L0697          clr       [u01D8]             ; Terminate token list
+L069B          ldx       #u01E3              ; Input buffer
 L069E          lda       ,X                  ; List number of first word
 L06A0          lbeq      $0736               ; Nothing entered
 L06A4          cmpa      #$02                ; First word a noun?
 
-L06A6          bne       L06B7                ; No ... move on
+L06A6          bne       L06B7               ; No ... move on
 L06A8          leax      1,X                 ; Point to word number
 L06AA          lda       ,X                  ; Get word number
 L06AC          leax      -1,X                ; Back to list number
 L06AE          cmpa      #$06                ; Living things (people, dogs, etc) are <6
 
-L06B0          bcc       L06B7                ; Not a living thing
-L06B2          sta       $01B8               ; Remember living thing. We are giving them a command so process normally
+L06B0          bcc       L06B7               ; Not a living thing
+L06B2          sta       u01B8               ; Remember living thing. We are giving them a command so process normally
 L06B5          leax      3,X                 ; Next word
 
 L06B7          lda       ,X+                 ; Word list
 
-L06B9          beq       L0736                ; End of list ... go process
+L06B9          beq       L0736               ; End of list ... go process
 L06BB          ldb       ,X                  ; Word number to B
 L06BD          ldu       ,X++                ; LSB to LSB of U
 L06BF          pshs      X                   ; Hold token buffer
 L06C1          deca                          ; List 1? Verbs?
 
-L06C2          bne       L06E5                ; No ... continue
+L06C2          bne       L06E5               ; No ... continue
 
 ; I believe the goal here was to allow multiple verbs given on an input line
 ; to be translated to a single verb. The code finds a replacement list for the
@@ -231,150 +291,150 @@ L06C2          bne       L06E5                ; No ... continue
 ; list for BEDLAM and RAAKATU is empty so the code is never used anyway.
 ;
 L06C4          ldx       #$1332              ;  Multi verb translation list (empty list for BEDLAM and RAAKATU)
-L06C7          jsr       $0A1F               ;  Look for an entry for the given verb
+L06C7          lbsr      L0A1F               ;  Look for an entry for the given verb
 
-L06CA          bcc       L06DF                ;  No entry ... use the word as-is
-L06CC          jsr       $0A42               ;  Skip length of entry
-L06CF          jsr       $0A58               ;  End of list?
+L06CA          bcc       L06DF               ;  No entry ... use the word as-is
+L06CC          lbsr      L0A42               ;  Skip length of entry
+L06CF          lbsr      L0A58               ;  End of list?
 L06D2          tfr       B,A                 ;  ?? Held in A but ...
 
-L06D4          bcc       L06DF                ;  Reached end of list. This input is the verb.
+L06D4          bcc       L06DF               ;  Reached end of list. This input is the verb.
 L06D6          ldb       ,X+                 ;  ??
 L06D8          lda       ,X+                 ;  ?? ... A is mangled here?
-L06DA          cmpb      $01B3               ;  ?? Compare to 01B3 ...
+L06DA          cmpb      u01B3               ;  ?? Compare to 01B3 ...
 
-L06DD          bne       L06CF                ;  Continue running list
-L06DF          stb       $01B3               ;  ?? ... then store if equal?
+L06DD          bne       L06CF               ;  Continue running list
+L06DF          stb       u01B3               ;  ?? ... then store if equal?
 L06E2          jmp       $0731               ;  Continue with next word
 
 L06E5          deca                          ;  List 2 Noun
 
-L06E6          bne       L071E                ;  Not a noun
-L06E8          tst       $01B5               ;  Has prepostion been given?
+L06E6          bne       L071E               ;  Not a noun
+L06E8          tst       u01B5               ;  Has prepostion been given?
 
-L06EB          beq       L070D                ;  No ... this is first noun
-L06ED          ldx       #$01C9              ;  2nd noun area
+L06EB          beq       L070D               ;  No ... this is first noun
+L06ED          ldx       #u01C9              ;  2nd noun area
 L06F0          stb       ,X+                 ;  Store word number
-L06F2          lda       $01B7               ;  Last adjective
+L06F2          lda       u01B7               ;  Last adjective
 L06F5          sta       ,X+                 ;  Keep with noun
-L06F7          lda       $01BA               ;  LSB of adjective
+L06F7          lda       u01BA               ;  LSB of adjective
 L06FA          sta       ,X                  ;  Keep with noun
 
-L06FC          bne       L0702                ;  There was one ... go on
+L06FC          bne       L0702               ;  There was one ... go on
 L06FE          tfr       U,D                 ;  Use LSB of ...
 L0700          stb       ,X                  ;  ... noun if no adjective
-L0702          clr       $01B7               ;  Adjective moved
-L0705          clr       $01B5               ;  Preposition moved
-L0708          clr       $01BA               ;  LSB moved
+L0702          clr       u01B7               ;  Adjective moved
+L0705          clr       u01B5               ;  Preposition moved
+L0708          clr       u01BA               ;  LSB moved
 
-L070B          bra       L0731                ;  Continue with next word
+L070B          bra       L0731               ;  Continue with next word
 
-L070D          ldx       $01C3               ;  Copy ...
-L0710          stx       $01C9               ;  ... any ...
-L0713          ldx       $01C5               ;  ... first noun ...
-L0716          stx       $01CB               ;  ... to second
-L0719          ldx       #$01C3              ;  First word area
+L070D          ldx       u01C3               ;  Copy ...
+L0710          stx       u01C9               ;  ... any ...
+L0713          ldx       u01C5               ;  ... first noun ...
+L0716          stx       u01CB               ;  ... to second
+L0719          ldx       #u01C3              ;  First word area
 
-L071C          bra       L06F0                ;  Go fill out first word
+L071C          bra       L06F0               ;  Go fill out first word
 
 L071E          deca                          ;  List 3 Adjective
 
-L071F          bne       L072B                ;  Not a proposition
-L0721          stb       $01B7               ;  Store adjective number
+L071F          bne       L072B               ;  Not a proposition
+L0721          stb       u01B7               ;  Store adjective number
 L0724          tfr       U,D                 ;  Store ...
-L0726          stb       $01BA               ;  ... adjective LSB in buffer
+L0726          stb       u01BA               ;  ... adjective LSB in buffer
 
-L0729          bra       L0731                ;  Continue with next word
+L0729          bra       L0731               ;  Continue with next word
 
-L072B          stb       $01B4               ;  Preposition
-L072E          stb       $01B5               ;  Preoposition given (noun should follow)
+L072B          stb       u01B4               ;  Preposition
+L072E          stb       u01B5               ;  Preoposition given (noun should follow)
 L0731          puls      X                   ;  Restore token pointer
 L0733          jmp       $06B7               ;  Next word
 
 
-L0736          tst       $01B3               ;  Verb given?
+L0736          tst       u01B3               ;  Verb given?
 L0739          lbeq      $0995               ;  No ... ?VERB? error
-L073D          ldx       #$01C9              ;  Second noun
-L0740          jsr       $0822               ;  Decode it (only returns if OK)
-L0743          sta       $01C9               ;  Hold target object index
-L0746          stx       $01CC               ;  Hold target object pointer
-L0749          ldx       #$01C3              ;  First noun
-L074C          jsr       $0822               ;  Decode it (only returns if OK)
-L074F          sta       $01C3               ;  Hold target object index
-L0752          stx       $01C6               ;  Hold target object pointer
-L0755          clr       $01B5               ;  Clear preposition flag
+L073D          ldx       #u01C9              ;  Second noun
+L0740          lbsr      L0822               ;  Decode it (only returns if OK)
+L0743          sta       u01C9               ;  Hold target object index
+L0746          stx       u01CC               ;  Hold target object pointer
+L0749          ldx       #u01C3              ;  First noun
+L074C          lbsr      L0822               ;  Decode it (only returns if OK)
+L074F          sta       u01C3               ;  Hold target object index
+L0752          stx       u01C6               ;  Hold target object pointer
+L0755          clr       u01B5               ;  Clear preposition flag
 
-L0758          ldx       $01C6               ;  Pointer to first noun object data
-L075B          lda       $01C3               ;  First noun index
+L0758          ldx       u01C6               ;  Pointer to first noun object data
+L075B          lda       u01C3               ;  First noun index
 
-L075E          beq       L0767                ;  No first noun ... store a 0
-L0760          jsr       $0A42               ;  Skip ID and load end
+L075E          beq       L0767               ;  No first noun ... store a 0
+L0760          lbsr      L0A42               ;  Skip ID and load end
 L0763          leax      2,X                 ;  Skip 2 bytes
 L0765          lda       ,X                  ;  Object parameter bits
-L0767          sta       $01C8               ;  Hold first noun's parameter bits
+L0767          sta       u01C8               ;  Hold first noun's parameter bits
 
-L076A          ldx       $01CC               ;  Pointer to second noun object data
-L076D          lda       $01C9               ;  Second noun number
+L076A          ldx       u01CC               ;  Pointer to second noun object data
+L076D          lda       u01C9               ;  Second noun number
 
-L0770          beq       L0779                ;  No second noun ... store 0
-L0772          jsr       $0A42               ;  Skip ID and load end
+L0770          beq       L0779               ;  No second noun ... store 0
+L0772          lbsr      L0A42               ;  Skip ID and load end
 L0775          leax      2,X                 ;  Skip 2 bytes
 L0777          lda       ,X                  ;  Object parameter bits
-L0779          sta       $01CE               ;  Hold second noun's parameter bits
+L0779          sta       u01CE               ;  Hold second noun's parameter bits
 
 L077C          ldx       #$135B              ;  Syntax list
 L077F          lda       ,X                  ;  End of list?
 L0781          lbeq      $0951               ;  Yes ... "?PHRASE?"
-L0785          lda       $01B3               ;  Verb ...
+L0785          lda       u01B3               ;  Verb ...
 L0788          cmpa      ,X+                 ;  ... matches?
 
-L078A          bne       L07E7                ;  No ... move to next entry
+L078A          bne       L07E7               ;  No ... move to next entry
 L078C          lda       ,X                  ;  Phrase's proposition
-L078E          sta       $01B6               ;  Hold it
-L0791          lda       $01B4               ;  Preposition word number
+L078E          sta       u01B6               ;  Hold it
+L0791          lda       u01B4               ;  Preposition word number
 
-L0794          beq       L079A                ;  None given ... skip prep check
+L0794          beq       L079A               ;  None given ... skip prep check
 L0796          cmpa      ,X                  ;  Given prep matches?
 
-L0798          bne       L07E7                ;  No ... move to next phrase
+L0798          bne       L07E7               ;  No ... move to next phrase
 L079A          leax      1,X                 ;  Skip to next phrase component
 L079C          lda       ,X                  ;  First noun required by phrase
 
-L079E          beq       L07B4                ;  Not given in phrase ... skip check
-L07A0          lda       $01C3               ;  1st noun index
+L079E          beq       L07B4               ;  Not given in phrase ... skip check
+L07A0          lda       u01C3               ;  1st noun index
 
-L07A3          bne       L07BB                ;  Requested by phrase but not given by user ... next phrase
-L07A5          lda       $01BB               ;  LSB of verb ...
-L07A8          sta       $01BD               ;  ... to location of error
-L07AB          ldy       #$01C3              ;  Descriptor for 1st noun
-L07AF          jsr       $08D2               ;  Decode 1st noun as per phrase
+L07A3          bne       L07BB               ;  Requested by phrase but not given by user ... next phrase
+L07A5          lda       u01BB               ;  LSB of verb ...
+L07A8          sta       u01BD               ;  ... to location of error
+L07AB          ldy       #u01C3              ;  Descriptor for 1st noun
+L07AF          lbsr      L08D2               ;  Decode 1st noun as per phrase
 
-L07B2          bra       L07BB                ;  We just processed a first one. We know it is there.
-L07B4          lda       $01C3               ;  Is there a 1st noun?
+L07B2          bra       L07BB               ;  We just processed a first one. We know it is there.
+L07B4          lda       u01C3               ;  Is there a 1st noun?
 
 L07B7          lbne      $0951               ; No ... next entry
 L07BB          leax      1,X                 ; Next in phrase
 L07BD          lda       ,X                  ; Phrase wants a second noun?
 
-L07BF          beq       L07DA                ; No ... skip
-L07C1          lda       $01C9               ; User given 2nd noun
+L07BF          beq       L07DA               ; No ... skip
+L07C1          lda       u01C9               ; User given 2nd noun
 
-L07C4          bne       L07E1                ; Yes ... use this phrase
-L07C6          lda       $01BC               ; Location of ...
-L07C9          sta       $01BD               ; ... error on screen
+L07C4          bne       L07E1               ; Yes ... use this phrase
+L07C6          lda       u01BC               ; Location of ...
+L07C9          sta       u01BD               ; ... error on screen
 L07CC          lda       #$01                ; Set preposition ...
-L07CE          sta       $01B5               ; ... flag to YES
-L07D1          ldy       #$01C9              ; 2nd noun index
-L07D5          jsr       $08D2               ; Decode 2nd noun as per phrase
+L07CE          sta       u01B5               ; ... flag to YES
+L07D1          ldy       #u01C9              ; 2nd noun index
+L07D5          lbsr      L08D2               ; Decode 2nd noun as per phrase
 
-L07D8          bra       L07E1                ; Use this
+L07D8          bra       L07E1               ; Use this
 
-L07DA          lda       $01C9               ; Is there a second noun?
+L07DA          lda       u01C9               ; Is there a second noun?
 L07DD          lbne      $0951               ; No ... phrase error
 L07E1          leax      1,X                 ; Get matched ...
 L07E3          lda       ,X                  ; ... phrase number
 
-L07E5          bra       L07F0                ; Store and continue
+L07E5          bra       L07F0               ; Store and continue
 L07E7          leax      1,X                 ; Skip ...
 L07E9          leax      1,X                 ; ... to ...
 L07EB          leax      2,X                 ; ... next entry
@@ -383,24 +443,24 @@ L07ED          jmp       $077F               ; Keep looking
 ; Unlike BEDLAM, there is no giving a command to something else. Just
 ; ignore any commanded object and give the phrase to the user.
 
-L07F0          sta       $01D1               ; Store the phrase number
+L07F0          sta       u01D1               ; Store the phrase number
 L07F3          ldx       #$05FF              ; Move cursor to ...
 L07F6          stx       >$88                ; ... end of line
 L07F8          lda       #$0D                ; Print ...
-L07FA          jsr       $1184               ; ... CR
-L07FD          lda       $01C3               ; First noun given?
+L07FA          lbsr      L1184               ; ... CR
+L07FD          lda       u01C3               ; First noun given?
 
-L0800          bne       L080E                ; Yes ... keep what we have
-L0802          ldx       $01CC               ; Move 2nd ...
-L0805          stx       $01C6               ; ... noun to ...
-L0808          lda       $01C9               ; ... first ...
-L080B          sta       $01C3               ; ... descriptor
+L0800          bne       L080E               ; Yes ... keep what we have
+L0802          ldx       u01CC               ; Move 2nd ...
+L0805          stx       u01C6               ; ... noun to ...
+L0808          lda       u01C9               ; ... first ...
+L080B          sta       u01C3               ; ... descriptor
 L080E          ldx       #$323C              ; General command scripts
-L0811          jsr       $0A42               ; Skip over end delta
-L0814          jsr       $0C03               ; Execute script
-L0817          jsr       $0F66               ; Allow objects to move
+L0811          lbsr      L0A42               ; Skip over end delta
+L0814          lbsr      L0C03               ; Execute script
+L0817          lbsr      L0F66               ; Allow objects to move
 L081A          lda       #$0D                ; Print ...
-L081C          jsr       $1184               ; ... CR
+L081C          lbsr      L1184               ; ... CR
 L081F          jmp       $0630               ; Top of game loop
 
 
@@ -415,71 +475,71 @@ L081F          jmp       $0630               ; Top of game loop
 ; @return A index of target object
 ; @return X pointer to target object data
 ;
-L0822          clr       $01BF               ; Input object number
+L0822          clr       u01BF               ; Input object number
 L0825          ldb       ,X+                 ; Word number of noun
-L0827          stb       $01B2               ; Hold it
+L0827          stb       u01B2               ; Hold it
 
-L082A          bne       L082E                ; Real object ... go decode
+L082A          bne       L082E               ; Real object ... go decode
 L082C          clra                          ; Not found
 L082D          rts                           ; Out
 L082E          lda       ,X+                 ; Noun's adjective
-L0830          sta       $01B7               ; Hold it
+L0830          sta       u01B7               ; Hold it
 L0833          lda       ,X                  ; LSB of word in buffer
-L0835          sta       $01CF               ; Hold it
+L0835          sta       u01CF               ; Hold it
 L0838          ldx       #$20FF              ; Object data
-L083B          jsr       $0A1F               ; Get pointer to next object that matches word
+L083B          lbsr      L0A1F               ; Get pointer to next object that matches word
 
-L083E          bcc       L089A                ; Not found
+L083E          bcc       L089A               ; Not found
 L0840          pshs      Y                   ; Hold end of object data
 L0842          pshs      X                   ; Hold pointer to noun descriptor
-L0844          lda       $01E1               ; Index of object in the object list
-L0847          sta       $01E2               ; Remember this
-L084A          jsr       $08AA               ; Is object in this room or on player?
+L0844          lda       u01E1               ; Index of object in the object list
+L0847          sta       u01E2               ; Remember this
+L084A          lbsr      L08AA               ; Is object in this room or on player?
 
-L084D          bne       L08A6                ; No ... can't be target ... out
-L084F          lda       $01B7               ; Noun's adjective
+L084D          bne       L08A6               ; No ... can't be target ... out
+L084F          lda       u01B7               ; Noun's adjective
 
-L0852          beq       L0873                ; No adjective ... skip this
+L0852          beq       L0873               ; No adjective ... skip this
 L0854          puls      X                   ; Restore pointer to noun descriptor
 L0856          pshs      X                   ; Hold it again
-L0858          jsr       $0A42               ; Skip the id and end
+L0858          lbsr      L0A42               ; Skip the id and end
 L085B          leax      3,X                 ; Skip the object data
 L085D          ldb       #$01                ; Look up adjective ...
-L085F          jsr       $0A27               ; ... list for object
+L085F          lbsr      L0A27               ; ... list for object
 
-L0862          bcc       L0873                ; No adjective ... ignore
-L0864          jsr       $0A42               ; Skip the id and length
-L0867          jsr       $0A58               ; End of adjective list?
+L0862          bcc       L0873               ; No adjective ... ignore
+L0864          lbsr      L0A42               ; Skip the id and length
+L0867          lbsr      L0A58               ; End of adjective list?
 
-L086A          bcc       L08A6                ; Yes ... no match ... next object
-L086C          lda       $01B7               ; Adjective
+L086A          bcc       L08A6               ; Yes ... no match ... next object
+L086C          lda       u01B7               ; Adjective
 L086F          cmpa      ,X+                 ; In this list?
 
-L0871          bne       L0867                ; No ... keep searching list
+L0871          bne       L0867               ; No ... keep searching list
 L0873          puls      X                   ; Restore object pointer
-L0875          lda       $01BF               ; Last object index that matched
+L0875          lda       u01BF               ; Last object index that matched
 L0878          lbne      $098C               ; Multiple matches ... do "?WHICH?"
-L087C          lda       $01E2               ; Object index
-L087F          sta       $01BF               ; Current guess at matching object index
-L0882          stx       $01C0               ; Input object data
-L0885          jsr       $0A42               ; Skip id and end
+L087C          lda       u01E2               ; Object index
+L087F          sta       u01BF               ; Current guess at matching object index
+L0882          stx       u01C0               ; Input object data
+L0885          lbsr      L0A42               ; Skip id and end
 L0888          tfr       Y,X                 ; Next object
 L088A          puls      Y                   ; End of object data
-L088C          ldb       $01B2               ; Restore word number of noun
-L088F          lda       $01E2               ; Current object index
-L0892          sta       $01E1               ; Start count for next pass
-L0895          jsr       $0A27               ; Find next matching object
+L088C          ldb       u01B2               ; Restore word number of noun
+L088F          lda       u01E2               ; Current object index
+L0892          sta       u01E1               ; Start count for next pass
+L0895          lbsr      L0A27               ; Find next matching object
 
-L0898          bcs       L0840                ; Got one ... go test it
-L089A          ldx       $01C0               ; Object data to X
-L089D          lda       $01BF               ; Object found?
+L0898          bcs       L0840               ; Got one ... go test it
+L089A          ldx       u01C0               ; Object data to X
+L089D          lda       u01BF               ; Object found?
 
-L08A0          bne       L08A5                ; Yes ...  out
+L08A0          bne       L08A5               ; Yes ...  out
 L08A2          jmp       $0948               ; No ... "?WHAT?"
 L08A5          rts                           ; Done
 L08A6          puls      X                   ; Restore object pointer
 
-L08A8          bra       L0885                ; Do next object
+L08A8          bra       L0885               ; Do next object
 
 ; This function checks if the target object is in the current room or being
 ; held by the active object.
@@ -487,28 +547,28 @@ L08A8          bra       L0885                ; Do next object
 ; @param X pointer to target object
 ; @return Z=1 for yes or Z=0 for no
 ;
-L08AA          jsr       $0A42               ; Skip size
-L08AD          lda       $01D5               ; Current room number
+L08AA          lbsr      L0A42               ; Skip size
+L08AD          lda       u01D5               ; Current room number
 L08B0          cmpa      ,X                  ; Is object in room?
 
-L08B2          beq       L08A5                ; Yes ... return OK
+L08B2          beq       L08A5               ; Yes ... return OK
 L08B4          lda       ,X                  ; Get object's room number
 
-L08B6          beq       L08CF                ; 0 ... fail
+L08B6          beq       L08CF               ; 0 ... fail
 L08B8          cmpa      #$FF                ; FF ...
 
-L08BA          beq       L08A5                ; ... return OK
+L08BA          beq       L08A5               ; ... return OK
 L08BC          bita      #$80                ; Upper bit of object location set ...
 
-L08BE          bne       L08CF                ; ... then fail
+L08BE          bne       L08CF               ; ... then fail
 L08C0          ldb       ,X                  ; Location again
-L08C2          cmpb      $01D2               ; Being held by the active object?
+L08C2          cmpb      u01D2               ; Being held by the active object?
 
-L08C5          beq       L08A5                ; Yes ... return OK
+L08C5          beq       L08A5               ; Yes ... return OK
 L08C7          ldx       #$20FF              ; Strange. 117D does this too.
-L08CA          jsr       $1133               ; Get object's container object (if any)
+L08CA          lbsr      L1133               ; Get object's container object (if any)
 
-L08CD          bra       L08AA                ; Repeat check
+L08CD          bra       L08AA               ; Repeat check
 L08CF          ora       #$01                ; Mark failure
 L08D1          rts                           ; Out
 
@@ -523,172 +583,172 @@ L08D1          rts                           ; Out
 ; @return descriptor filled out with object
 ;
 L08D2          pshs      X                   ; Hold phrase data pointer
-L08D4          clr       $01B2               ; Found word flag
-L08D7          clr       $01E1               ; Object index starts at 0
+L08D4          clr       u01B2               ; Found word flag
+L08D7          clr       u01E1               ; Object index starts at 0
 L08DA          pshs      Y                   ; Hold noun descriptor
 L08DC          lda       ,X                  ; Object parameter mask bits
-L08DE          sta       $01AB               ; Hold
+L08DE          sta       u01AB               ; Hold
 L08E1          ldx       #$20FF              ; Object data
-L08E4          jsr       $0A42               ; Skip ID and load end
-L08E7          jsr       $0A58               ; At end of object data?
+L08E4          lbsr      L0A42               ; Skip ID and load end
+L08E7          lbsr      L0A58               ; At end of object data?
 
-L08EA          bcc       L092C                ; Yes ... done
-L08EC          inc       $01E1               ; Bump object index
+L08EA          bcc       L092C               ; Yes ... done
+L08EC          inc       u01E1               ; Bump object index
 L08EF          pshs      Y                   ; Hold end of object
 L08F1          pshs      X                   ; Hold pointer to object
-L08F3          jsr       $08AA               ; Is object in room or on player?
+L08F3          lbsr      L08AA               ; Is object in room or on player?
 L08F6          puls      X                   ; Restore pointer to object
 
-L08F8          bne       L0927                ; No ... next object
+L08F8          bne       L0927               ; No ... next object
 L08FA          ldb       ,X                  ; Object word number
-L08FC          stx       $01D8               ; Pointer to object data
-L08FF          jsr       $0A42               ; Skip ID and load end
+L08FC          stx       u01D8               ; Pointer to object data
+L08FF          lbsr      L0A42               ; Skip ID and load end
 L0902          leax      2,X                 ; Point to object parameters
 L0904          lda       ,X                  ; Get parameters
-L0906          anda      $01AB               ; Compare to phrase data ...
-L0909          cmpa      $01AB               ; ... this is a strange way to do it
+L0906          anda      u01AB               ; Compare to phrase data ...
+L0909          cmpa      u01AB               ; ... this is a strange way to do it
 
-L090C          bne       L0921                ; Not a match ... next word
-L090E          lda       $01B2               ; Already got a word number?
+L090C          bne       L0921               ; Not a match ... next word
+L090E          lda       u01B2               ; Already got a word number?
 
-L0911          bne       L095A                ; Yes ... error
-L0913          stb       $01B2               ; Found word number
+L0911          bne       L095A               ; Yes ... error
+L0913          stb       u01B2               ; Found word number
 L0916          lda       ,X                  ; Remember ...
-L0918          sta       $01B7               ; ... object parameters
-L091B          ldx       $01D8               ; Remember ...
-L091E          stx       $01AD               ; ... object pointer
+L0918          sta       u01B7               ; ... object parameters
+L091B          ldx       u01D8               ; Remember ...
+L091E          stx       u01AD               ; ... object pointer
 L0921          exg       X,Y                 ; Start of next object to X
 L0923          puls      Y                   ; Restore end of object pointer
 
-L0925          bra       L08E7                ; Continue with next object
-L0927          jsr       $0A42               ; Skip ID and load end
+L0925          bra       L08E7               ; Continue with next object
+L0927          lbsr      L0A42               ; Skip ID and load end
 
-L092A          bra       L0921                ; Try next object
-L092C          lda       $01B2               ; Did we find an object word?
+L092A          bra       L0921               ; Try next object
+L092C          lda       u01B2               ; Did we find an object word?
 
-L092F          beq       L095A                ; No .... error
+L092F          beq       L095A               ; No .... error
 L0931          puls      Y                   ; Noun descriptor
-L0933          ldx       $01AD               ; Object data pointer
-L0936          lda       $01E1               ; New ...
+L0933          ldx       u01AD               ; Object data pointer
+L0936          lda       u01E1               ; New ...
 L0939          sta       ,Y                  ; ... object number
 L093B          leay      3,Y                 ; New ...
 L093D          stx       ,Y++                ; ... pointer to object data
-L093F          lda       $01B7               ; New ...
+L093F          lda       u01B7               ; New ...
 L0942          sta       ,Y                  ; ... object parameters
 L0944          puls      X                   ; Restore phrase data pointer
 L0946          clra                          ; Set Z=1
 L0947          rts                           ; Done
 
 L0948          ldy       #$1343              ; "?WHAT?"
-L094C          lda       $01CF               ; LSB of screen location
+L094C          lda       u01CF               ; LSB of screen location
 
-L094F          bra       L099B                ; Go flash error and try again
+L094F          bra       L099B               ; Go flash error and try again
 
 L0951          ldy       #$1352              ; "?PHRASE?"
-L0955          lda       $01BC               ; LSB of screen location
+L0955          lda       u01BC               ; LSB of screen location
 
-L0958          bra       L099B                ; Go flash error and try again
+L0958          bra       L099B               ; Go flash error and try again
 
-L095A          lda       $01B5               ; Preposition given?
+L095A          lda       u01B5               ; Preposition given?
 
-L095D          beq       L0983                ; No ... just plain "?WHAT?"
-L095F          lda       $01B4               ; Preposition word number?
+L095D          beq       L0983               ; No ... just plain "?WHAT?"
+L095F          lda       u01B4               ; Preposition word number?
 
-L0962          bne       L0983                ; No word ... just plain "?WHAT?"
+L0962          bne       L0983               ; No word ... just plain "?WHAT?"
 L0964          ldx       #$3ECF              ; Prepositions list
 L0967          ldb       ,X                  ; Length of word
 
-L0969          beq       L0983                ; Reached the end ... do "?WHAT?"
+L0969          beq       L0983               ; Reached the end ... do "?WHAT?"
 L096B          pshs      X                   ; Hold start of word
 L096D          ldb       ,X+                 ; Get length again
 L096F          abx                           ; Point to end of word
-L0970          lda       $01B6               ; Target preposition
+L0970          lda       u01B6               ; Target preposition
 L0973          cmpa      ,X+                 ; Matches?
 
-L0975          beq       L097B                ; Yes ... error includes this word
+L0975          beq       L097B               ; Yes ... error includes this word
 L0977          puls      A,B                 ; Restore stack
 
-L0979          bra       L0967                ; Next word
+L0979          bra       L0967               ; Next word
 L097B          puls      Y                   ; Word text to Y
-L097D          lda       $01BD               ; LSB of error message
-L0980          jsr       $09E1               ; Push preposition word
+L097D          lda       u01BD               ; LSB of error message
+L0980          lbsr      L09E1               ; Push preposition word
 L0983          ldy       #$1343              ; "?WHAT?"
-L0987          lda       $01BD               ; LSB of screen location
+L0987          lda       u01BD               ; LSB of screen location
 
-L098A          bra       L099B                ; Go flash error and try again
+L098A          bra       L099B               ; Go flash error and try again
 L098C          ldy       #$134A              ; "?WHICH"?
-L0990          lda       $01CF               ; LSB of screen location
+L0990          lda       u01CF               ; LSB of screen location
 
-L0993          bra       L099B                ; Go flash error and try again
+L0993          bra       L099B               ; Go flash error and try again
 L0995          ldy       #$133C              ; "?VERB?"
 
 L0999          lda       #$E0                ; LSB of start of input line
 L099B          lds       #$03FF              ; Reset the stack (we jump back into the main loop)
 L099F          ldx       #$05E0              ; Error goes at start of line
-L09A2          jsr       $09E1               ; Push error message on and pause
+L09A2          lbsr      L09E1               ; Push error message on and pause
 L09A5          lda       ,Y                  ; Get length
-L09A7          sta       $01AB               ; Hold in counter
+L09A7          sta       u01AB               ; Hold in counter
 L09AA          pshs      X                   ; Hold X
 L09AC          lda       #$60                ; SPACE
 L09AE          sta       ,X+                 ; Flash off ...
-L09B0          dec       $01AB               ; ... error ...
+L09B0          dec       u01AB               ; ... error ...
 
-L09B3          bne       L09AC                ; ... word
-L09B5          jsr       $09D6               ; Long delay
+L09B3          bne       L09AC               ; ... word
+L09B5          lbsr      L09D6               ; Long delay
 L09B8          puls      X                   ; Restore insertion point
 L09BA          decb                          ; All flashes done?
 
-L09BB          bne       L09D1                ; No ... keep flashing error word
+L09BB          bne       L09D1               ; No ... keep flashing error word
 L09BD          lda       ,Y                  ; Size of error word
 L09BF          inca                          ; Plus the extra space
-L09C0          sta       $01AB               ; Hold counter
-L09C3          jsr       $0ADB               ; Close up the ...
-L09C6          dec       $01AB               ; ... error ...
+L09C0          sta       u01AB               ; Hold counter
+L09C3          lbsr      L0ADB               ; Close up the ...
+L09C6          dec       u01AB               ; ... error ...
 
-L09C9          bne       L09C3                ; ... word
-L09CB          jsr       $0A63               ; Get input line
+L09C9          bne       L09C3               ; ... word
+L09CB          lbsr      L0A63               ; Get input line
 L09CE          jmp       $0637               ; Continue processing
-L09D1          jsr       $0A00               ; Flash message and pause
+L09D1          lbsr      L0A00               ; Flash message and pause
 
-L09D4          bra       L09A5                ; Continue flashing and read new line
+L09D4          bra       L09A5               ; Continue flashing and read new line
 
 ;Long delay
 L09D6          lda       #$32                ; Outer loop counts
-L09D8          dec       $01AB               ; Decrease inner count (doesn't matter what's there)
+L09D8          dec       u01AB               ; Decrease inner count (doesn't matter what's there)
 
-L09DB          bne       L09D8                ; Kill inner time
+L09DB          bne       L09D8               ; Kill inner time
 L09DD          deca                          ; All 256 loops done?
 
-L09DE          bne       L09D8                ; No ... keep pausing
+L09DE          bne       L09D8               ; No ... keep pausing
 L09E0          rts                           ; Done
 
-L09E1          sta       $01AB               ; Hold LSB of cursor
+L09E1          sta       u01AB               ; Hold LSB of cursor
 L09E4          ldd       #$05E0              ; Start of input line
-L09E7          ldb       $01AB               ; Replace LSB
+L09E7          ldb       u01AB               ; Replace LSB
 L09EA          tfr       D,X                 ; Place for error word in X
 L09EC          lda       ,Y                  ; Get length of message
 L09EE          inca                          ; Plus a space after
-L09EF          sta       $01AB               ; Store length
+L09EF          sta       u01AB               ; Store length
 L09F2          pshs      Y                   ; Hold message
-L09F4          jsr       $0B06               ; Slide right past insertion point
-L09F7          dec       $01AB               ; Space opened up?
+L09F4          lbsr      L0B06               ; Slide right past insertion point
+L09F7          dec       u01AB               ; Space opened up?
 
-L09FA          bne       L09F4                ; No ... open all the spaces for the error word
+L09FA          bne       L09F4               ; No ... open all the spaces for the error word
 L09FC          puls      Y                   ; Restore pointer
 L09FE          ldb       #$08                ; 8 flashes
 L0A00          lda       ,Y                  ; Count again
-L0A02          sta       $01AB               ; Size of word
+L0A02          sta       u01AB               ; Size of word
 L0A05          pshs      Y,X,B               ; Hold all
 L0A07          leay      1,Y                 ; Skip size
 L0A09          lda       ,Y+                 ; Copy error word ...
 L0A0B          sta       ,X+                 ; ... to screen
-L0A0D          dec       $01AB               ; All done?
+L0A0D          dec       u01AB               ; All done?
 
-L0A10          bne       L0A09                ; No ... go back and do all
+L0A10          bne       L0A09               ; No ... go back and do all
 L0A12          leax      1,X                 ; Bump ...
 L0A14          tfr       X,D                 ; ... LSB ...
-L0A16          stb       $01BD               ; ... of screen pointer
-L0A19          jsr       $09D6               ; Long pause
+L0A16          stb       u01BD               ; ... of screen pointer
+L0A19          lbsr      L09D6               ; Long pause
 L0A1C          puls      B,X,Y               ; Restore
 L0A1E          rts                           ; Done
 
@@ -699,22 +759,22 @@ L0A1E          rts                           ; Done
 ; Return sublist pointer in X
 ; Return C=0 if not found, C=1 if found
 L0A1F          leax      1,X                 ; Skip list ID
-L0A21          jsr       $0A44               ; Read end of list to Y
-L0A24          clr       $01E1               ; Clear index of sublist
-L0A27          jsr       $0A58               ; Compare X to Y
+L0A21          lbsr      L0A44               ; Read end of list to Y
+L0A24          clr       u01E1               ; Clear index of sublist
+L0A27          lbsr      L0A58               ; Compare X to Y
 
-L0A2A          bcs       L0A2D                ; X is smaller ... keep going
+L0A2A          bcs       L0A2D               ; X is smaller ... keep going
 L0A2C          rts                           ; Done (C=0 not found)
-L0A2D          inc       $01E1               ; Keep up with index of sublist
+L0A2D          inc       u01E1               ; Keep up with index of sublist
 L0A30          cmpb      ,X                  ; Is this the sublist we want?
 
-L0A32          beq       L0A3F                ; Found ... C=1 and out
+L0A32          beq       L0A3F               ; Found ... C=1 and out
 L0A34          pshs      Y                   ; Hold the end
-L0A36          jsr       $0A42               ; Skip ID and read end of list to Y
+L0A36          lbsr      L0A42               ; Skip ID and read end of list to Y
 L0A39          tfr       Y,X                 ; Jump to the end of this list
 L0A3B          puls      Y                   ; Restore the end of the master lsit
 
-L0A3D          bra       L0A27                ; Keep looking for the sublist
+L0A3D          bra       L0A27               ; Keep looking for the sublist
 ;
 L0A3F          orcc      #$01                ; C=1
 L0A41          rts                           ; Done
@@ -730,7 +790,7 @@ L0A45          pshs      B                   ; Hold lower
 L0A47          ldb       ,X+                 ; Get lower
 L0A49          bitb      #$80                ; One or two byte value?
 
-L0A4B          beq       L0A53                ; Just a one byte ... use it
+L0A4B          beq       L0A53               ; Just a one byte ... use it
 L0A4D          andb      #$7F                ; This is the ...
 L0A4F          tfr       B,A                 ; ... MSB
 L0A51          ldb       ,X+                 ; Now get 2nd byte (LSB)
@@ -740,43 +800,43 @@ L0A57          rts                           ; Done
 
 ;##CompareXY
 ; Compare X to Y (flags = X - Y)
-L0A58          sty       $01A9               ; Do compare ...
-L0A5C          cmpx      $01A9               ; X - Y
+L0A58          sty       u01A9               ; Do compare ...
+L0A5C          cmpx      u01A9               ; X - Y
 L0A5F          rts                           ; Done
 
 ;##GetInputLine
 L0A60          ldx       #$05E0              ; Start of bottom row
-L0A63          jsr       $0B23               ; Slide bottom row to right after cursor and draw cursor
-L0A66          jsr       $0B2B               ; Get a key from the keyboard
+L0A63          lbsr      L0B23               ; Slide bottom row to right after cursor and draw cursor
+L0A66          lbsr      L0B2B               ; Get a key from the keyboard
 L0A69          cmpa      #$15                ;
 
-L0A6B          beq       L0A8D                ; Swap cursor and character to left
+L0A6B          beq       L0A8D               ; Swap cursor and character to left
 L0A6D          cmpa      #$5D                ; ']' ?
 
-L0A6F          beq       L0AA0                ; Swap cursor and character to right
+L0A6F          beq       L0AA0               ; Swap cursor and character to right
 L0A71          cmpa      #$09                ; Backspace
 
-L0A73          beq       L0AB3                ; Go handle backspace
+L0A73          beq       L0AB3               ; Go handle backspace
 L0A75          cmpa      #$0D                ; CR?
 
-L0A77          beq       L0AC8                ; Handle it and out
+L0A77          beq       L0AC8               ; Handle it and out
 L0A79          cmpa      #$0C                ; BREAK?
 
-L0A7B          beq       L0ACC                ; Yes ... clear the row
+L0A7B          beq       L0ACC               ; Yes ... clear the row
 L0A7D          cmpa      #$08                ; Backspace?
 
-L0A7F          beq       L0ABC                ; Yes go handle
+L0A7F          beq       L0ABC               ; Yes go handle
 L0A81          cmpx      #$05FF              ; At the end of the screen?
 
-L0A84          beq       L0A66                ; Yes ... ignore and get another
-L0A86          jsr       $0B06               ; Slide bottom row beyond insertion
+L0A84          beq       L0A66               ; Yes ... ignore and get another
+L0A86          lbsr      L0B06               ; Slide bottom row beyond insertion
 L0A89          sta       ,X+                 ; Store character
 
-L0A8B          bra       L0A66                ; Go get another character
+L0A8B          bra       L0A66               ; Go get another character
 
 L0A8D          cmpx      #$05E0              ; Nothing typed?
 
-L0A90          beq       L0A66                ; Yes ... ignore and get another
+L0A90          beq       L0A66               ; Yes ... ignore and get another
 L0A92          leax      -1,X                ; Swap ...
 L0A94          lda       ,X+                 ; ... cursor ...
 L0A96          sta       ,X                  ; ... and ...
@@ -784,11 +844,11 @@ L0A98          leax      -1,X                ; ... character ...
 L0A9A          lda       #$CF                ; ... to the ...
 L0A9C          sta       ,X                  ; ... left
 
-L0A9E          bra       L0A66                ; Go get another character
+L0A9E          bra       L0A66               ; Go get another character
 
 L0AA0          cmpx      #$05FF              ; End of screen?
 
-L0AA3          beq       L0A66                ; Yes ... go get another key
+L0AA3          beq       L0A66               ; Yes ... go get another key
 L0AA5          leax      1,X                 ; Swap ...
 L0AA7          lda       ,X                  ; ... cursor ...
 L0AA9          leax      -1,X                ; ... and ...
@@ -796,23 +856,23 @@ L0AAB          sta       ,X+                 ; ... character ...
 L0AAD          lda       #$CF                ; ... to the ...
 L0AAF          sta       ,X                  ; ... right
 
-L0AB1          bra       L0A66                ; Go get another key
+L0AB1          bra       L0A66               ; Go get another key
 ;
-L0AB3          jsr       $0ADB               ; Back off trailing cursor block
+L0AB3          lbsr      L0ADB               ; Back off trailing cursor block
 L0AB6          lda       #$CF                ; Store ...
 L0AB8          sta       ,X                  ; ... cursor block
 
-L0ABA          bra       L0A66                ; Go get another key
+L0ABA          bra       L0A66               ; Go get another key
 ;
 L0ABC          cmpx      #$05E0              ; At the start of the row?
 
-L0ABF          beq       L0A66                ; Yes ... go get another key
+L0ABF          beq       L0A66               ; Yes ... go get another key
 L0AC1          leax      -1,X                ; Back up one character
-L0AC3          jsr       $0ADB               ; Erase the end
+L0AC3          lbsr      L0ADB               ; Erase the end
 
-L0AC6          bra       L0A66                ; Go get another key
+L0AC6          bra       L0A66               ; Go get another key
 ;
-L0AC8          jsr       $0ADB               ; Back off cursor character
+L0AC8          lbsr      L0ADB               ; Back off cursor character
 L0ACB          rts                           ; Done
 ;
 L0ACC          ldx       #$05E0              ; Start of bottom row
@@ -821,7 +881,7 @@ L0AD1          lda       #$60                ; SPACE character
 L0AD3          sta       ,X+                 ; Clear ...
 L0AD5          decb                          ; ... the ...
 
-L0AD6          bne       L0AD3                ; ... bottom row
+L0AD6          bne       L0AD3               ; ... bottom row
 L0AD8          jmp       $0A60               ; Go get another key
 ;
 L0ADB          tfr       X,U                 ; Hold X
@@ -831,18 +891,18 @@ L0AE1          sta       ,X                  ; ... block
 ;
 L0AE3          cmpy      #$0600              ; End of screen?
 
-L0AE7          beq       L0ACB                ; Yes out
+L0AE7          beq       L0ACB               ; Yes out
 L0AE9          cmpy      #$0601              ; End of screen?
 
-L0AED          beq       L0ACB                ; Yes out
+L0AED          beq       L0ACB               ; Yes out
 L0AEF          cmpy      #$0602              ; End of screen?
 
-L0AF3          beq       L0ACB                ; Yes out
+L0AF3          beq       L0ACB               ; Yes out
 L0AF5          lda       ,Y+                 ; Back ...
 L0AF7          sta       ,X+                 ; ... up ...
 L0AF9          cmpy      #$0600              ; ... row ...
 
-L0AFD          bne       L0AF5                ; ... over cursor
+L0AFD          bne       L0AF5               ; ... over cursor
 L0AFF          lda       #$60                ; Clear last ...
 L0B01          sta       ,X                  ; ... character
 L0B03          tfr       U,X                 ; Restore X
@@ -850,36 +910,36 @@ L0B05          rts                           ; Done
 ;
 L0B06          cmpx      #$0600              ; Past end of screen?
 
-L0B09          beq       L0B22                ; Yes ... out
-L0B0B          stx       $01A7               ; Hold insertion point
+L0B09          beq       L0B22               ; Yes ... out
+L0B0B          stx       u01A7               ; Hold insertion point
 L0B0E          ldx       #$0600              ; End+1
 L0B11          ldy       #$05FF              ; End
 L0B15          ldb       ,-Y                 ; Slide bottom row ...
 L0B17          stb       ,-X                 ; ... to the right
-L0B19          cmpx      $01A7               ; At the insertion point?
+L0B19          cmpx      u01A7               ; At the insertion point?
 
-L0B1C          bne       L0B15                ; No ... slide all
+L0B1C          bne       L0B15               ; No ... slide all
 L0B1E          ldb       #$60                ; SPACE
 L0B20          stb       ,X                  ; Clear first character
 L0B22          rts                           ; Done
 ;
-L0B23          jsr       $0B06               ; Slide row over from cursor
+L0B23          lbsr      L0B06               ; Slide row over from cursor
 L0B26          lda       #$CF                ; Cursor character (white block)
 L0B28          sta       ,X                  ; Cursor to screen
 L0B2A          rts                           ; Done
 
 ;##-GetKey
-L0B2B          jsr       $12A8               ; Get random number every key
+L0B2B          lbsr      L12A8               ; Get random number every key
 L0B2E          jsr       [$A000]             ; Get key from user
 L0B32          tsta                          ; Anything pressed?
 
-L0B33          beq       L0B2B                ; No ... keep waiting
+L0B33          beq       L0B2B               ; No ... keep waiting
 L0B35          cmpa      #$41                ; Letter 'A'
 
-L0B37          bcc       L0B3F                ; Greater or equal ... use it
+L0B37          bcc       L0B3F               ; Greater or equal ... use it
 L0B39          cmpa      #$20                ; Space
 
-L0B3B          bcs       L0B3F                ; Lower .... use it
+L0B3B          bcs       L0B3F               ; Lower .... use it
 L0B3D          adda      #$40                ; Not really sure why. '!' becomes 'a'.
 L0B3F          rts                           ; Done
 
@@ -898,43 +958,43 @@ L0B3F          rts                           ; Done
 L0B40          leax      1,X                 ; Next in buffer
 ;
 L0B42          tfr       X,D                 ; Hold ...
-L0B44          stb       $01CF               ; ... LSB of first word (could be ignored)
+L0B44          stb       u01CF               ; ... LSB of first word (could be ignored)
 L0B47          cmpx      #$0600              ; End of buffer?
 
-L0B4A          beq       L0B3F                ; Yes ... out
+L0B4A          beq       L0B3F               ; Yes ... out
 L0B4C          lda       ,X                  ; Next in input
 L0B4E          cmpa      #$60                ; Valid character?
 
-L0B50          bcc       L0B40                ; No ... skip till we find one
+L0B50          bcc       L0B40               ; No ... skip till we find one
 L0B52          ldy       #$3C29              ; Word token table
-L0B56          jsr       $0B8B               ; Try first list
+L0B56          lbsr      L0B8B               ; Try first list
 
-L0B59          beq       L0B42                ; Found a match ... ignore it
+L0B59          beq       L0B42               ; Found a match ... ignore it
 L0B5B          ldb       #$01                ; Staring list number
 L0B5D          leay      1,Y                 ; Next list of words
-L0B5F          jsr       $0B8B               ; Try and match
+L0B5F          lbsr      L0B8B               ; Try and match
 
-L0B62          beq       L0B6C                ; Found a match ... record it
+L0B62          beq       L0B6C               ; Found a match ... record it
 L0B64          incb                          ; Next list of words
 L0B65          cmpb      #$05                ; All tried?
 
-L0B67          bne       L0B5D                ; No ... go back and try all
+L0B67          bne       L0B5D               ; No ... go back and try all
 L0B69          ora       #$01                ; Not-zero ... error
 L0B6B          rts                           ; Done
 
 L0B6C          exg       X,Y                 ; X to Y
-L0B6E          ldx       $01D8               ; Current result token pointer
+L0B6E          ldx       u01D8               ; Current result token pointer
 L0B71          stb       ,X+                 ; Store list number
 L0B73          sta       ,X+                 ; Store word number
-L0B75          lda       $01CF               ; Start of word
+L0B75          lda       u01CF               ; Start of word
 L0B78          sta       ,X+                 ; Store word start
-L0B7A          stx       $01D8               ; Bump result token pointer
+L0B7A          stx       u01D8               ; Bump result token pointer
 L0B7D          exg       X,Y                 ; Restore X
 L0B7F          cmpb      #$01                ; Is this the first (VERB) list?
 
-L0B81          bne       L0B89                ; No ... skip marking
-L0B83          lda       $01BC               ; Mark the input buffer location ...
-L0B86          sta       $01BB               ; ... of the verb
+L0B81          bne       L0B89               ; No ... skip marking
+L0B83          lda       u01BC               ; Mark the input buffer location ...
+L0B86          sta       u01BB               ; ... of the verb
 L0B89          clra                          ; OK
 L0B8A          rts                           ; Return
 
@@ -952,68 +1012,68 @@ L0B8A          rts                           ; Return
 ;
 L0B8B          lda       ,Y                  ; Length of word
 
-L0B8D          bne       L0B92                ; It is a word ... go check it
+L0B8D          bne       L0B92               ; It is a word ... go check it
 L0B8F          ora       #$01                ; End of list ...
 L0B91          rts                           ; ... return not-zero
-L0B92          sta       $01AB               ; Temporary
-L0B95          sta       $01D0               ; Temporary
+L0B92          sta       u01AB               ; Temporary
+L0B95          sta       u01D0               ; Temporary
 L0B98          pshs      X                   ; Hold pointer to input word
 L0B9A          leay      1,Y                 ; Skip over word length in table
 L0B9C          lda       ,X                  ; Character from input (from screen)
 L0B9E          cmpa      #$60                ; Space?
 
-L0BA0          beq       L0BF5                ; Yes. Didn't match the target word. Next.
+L0BA0          beq       L0BF5               ; Yes. Didn't match the target word. Next.
 L0BA2          cmpx      #$0600              ; Past screen (end of buffer)?
 
-L0BA5          beq       L0BF5                ; Yes. Didn't match the target word. next
+L0BA5          beq       L0BF5               ; Yes. Didn't match the target word. next
 L0BA7          cmpa      #$60                ; Valid character?
 
-L0BA9          bcs       L0BAF                ; Yes ... do compare
+L0BA9          bcs       L0BAF               ; Yes ... do compare
 L0BAB          leax      1,X                 ; No ... skip this
 
-L0BAD          bra       L0B9C                ; Look for valid character
+L0BAD          bra       L0B9C               ; Look for valid character
 L0BAF          cmpa      ,Y                  ; Matches target word?
 
-L0BB1          bne       L0BF5                ; No ... next word
+L0BB1          bne       L0BF5               ; No ... next word
 L0BB3          leax      1,X                 ; Next in input
 L0BB5          leay      1,Y                 ; Next in match
-L0BB7          dec       $01AB               ; All done?
+L0BB7          dec       u01AB               ; All done?
 
-L0BBA          bne       L0B9C                ; No ... keep looking
-L0BBC          lda       $01D0               ; Original length
+L0BBA          bne       L0B9C               ; No ... keep looking
+L0BBC          lda       u01D0               ; Original length
 L0BBF          cmpa      #$06                ; Six letter input?
 
-L0BC1          beq       L0BC9                ; Yes ... could be truncated. That's enough of a match.
+L0BC1          beq       L0BC9               ; Yes ... could be truncated. That's enough of a match.
 L0BC3          lda       ,X                  ; Next from screen
 L0BC5          cmpa      #$60                ; Space? End of word?
 
-L0BC7          bcs       L0BFC                ; No. Try next word
+L0BC7          bcs       L0BFC               ; No. Try next word
 L0BC9          lda       ,Y                  ; Get the word data
 L0BCB          puls      Y                   ; Drop the input buffer pointer
-L0BCD          sta       $01AB               ; Hold the word data
+L0BCD          sta       u01AB               ; Hold the word data
 L0BD0          lda       ,X                  ; Next in input buffer?
 L0BD2          cmpa      #$60                ; Is it a space?
 
-L0BD4          beq       L0BE2                ; Yes ... ready for next word
-L0BD6          stx       $01A7               ; Start of next word (in case end of buffer)
+L0BD4          beq       L0BE2               ; Yes ... ready for next word
+L0BD6          stx       u01A7               ; Start of next word (in case end of buffer)
 L0BD9          cmpx      #$0600              ; Is this the end of the input buffer?
 
-L0BDC          beq       L0BE8                ; Yes. Done
+L0BDC          beq       L0BE8               ; Yes. Done
 L0BDE          leax      1,X                 ; Skip to next input word
 
-L0BE0          bra       L0BD0                ; Keep looking for input
-L0BE2          stx       $01A7               ; Pointer to ending space
-L0BE5          inc       $01A8               ; Point to next character past space (start of next word)
-L0BE8          lda       $01A8               ; Keep ...
-L0BEB          sta       $01BC               ; ... only LSB
-L0BEE          lda       $01AB               ; Return word data in A
-L0BF1          clr       $01A7               ; return is-zero for found
+L0BE0          bra       L0BD0               ; Keep looking for input
+L0BE2          stx       u01A7               ; Pointer to ending space
+L0BE5          inc       u01A8               ; Point to next character past space (start of next word)
+L0BE8          lda       u01A8               ; Keep ...
+L0BEB          sta       u01BC               ; ... only LSB
+L0BEE          lda       u01AB               ; Return word data in A
+L0BF1          clr       u01A7               ; return is-zero for found
 L0BF4          rts                           ; Done
 ;
 L0BF5          leay      1,Y                 ; Skip next in word data
-L0BF7          dec       $01AB               ; All skipped
+L0BF7          dec       u01AB               ; All skipped
 
-L0BFA          bne       L0BF5                ; No ... skip all
+L0BFA          bne       L0BF5               ; No ... skip all
 L0BFC          puls      X                   ; Restore pointer to word
 L0BFE          leay      1,Y                 ; Skip word data
 L0C00          jmp       $0B8B               ; Keep trying
@@ -1024,14 +1084,14 @@ L0C03          lda       ,X+                 ; Next in script
 L0C05          tfr       A,B                 ; Hold original command
 L0C07          bita      #$80                ; Upper bit set?
 
-L0C09          beq       L0C1E                ; No ... do commands
+L0C09          beq       L0C1E               ; No ... do commands
 L0C0B          pshs      Y,X                 ; Hold
 L0C0D          ldx       #$37FA              ; Common commands
-L0C10          jsr       $0A1F               ; Find common command
+L0C10          lbsr      L0A1F               ; Find common command
 
-L0C13          bcc       L0C1B                ; Not found ... skip
-L0C15          jsr       $0A42               ; Skip length of command
-L0C18          jsr       $0C03               ; Execute command
+L0C13          bcc       L0C1B               ; Not found ... skip
+L0C15          lbsr      L0A42               ; Skip length of command
+L0C18          lbsr      L0C03               ; Execute command
 L0C1B          puls      X,Y                 ; Restore
 L0C1D          rts                           ; Out
 
@@ -1044,15 +1104,15 @@ L0C25          jmp       [A,Y]               ; ... command
 ; Execute a list of commands as long as they pass. Either way end pointing one
 ; past end.
 ; Data: LENGTH + list of command
-L0C27          jsr       $0A44               ; Read length of command
-L0C2A          jsr       $0A58               ; Are we past the end?
+L0C27          lbsr      L0A44               ; Read length of command
+L0C2A          lbsr      L0A58               ; Are we past the end?
 
-L0C2D          bcc       L0C3B                ; Yes ... end successfully
+L0C2D          bcc       L0C3B               ; Yes ... end successfully
 L0C2F          pshs      Y                   ; Hold the end
-L0C31          jsr       $0C03               ; Execute the command
+L0C31          lbsr      L0C03               ; Execute the command
 L0C34          puls      Y                   ; Restore the end
 
-L0C36          beq       L0C2A                ; Command successful? Yes ... keep processing
+L0C36          beq       L0C2A               ; Command successful? Yes ... keep processing
 L0C38          exg       X,Y                 ; Fail ... put us at the end
 L0C3A          rts                           ; Done
 L0C3B          exg       X,Y                 ; Point to end of list
@@ -1060,15 +1120,15 @@ L0C3D          clra                          ; Z=1 ... success
 L0C3E          rts                           ; Done
 
 ;##Com0E_ExecuteFailingList
-L0C3F          jsr       $0A44               ; Load the end
-L0C42          jsr       $0A58               ; Reached end of list?
+L0C3F          lbsr      L0A44               ; Load the end
+L0C42          lbsr      L0A58               ; Reached end of list?
 
-L0C45          bcc       L0C53                ; Yes ... error
+L0C45          bcc       L0C53               ; Yes ... error
 L0C47          pshs      Y                   ; Hold end of command
-L0C49          jsr       $0C03               ; Execute command
+L0C49          lbsr      L0C03               ; Execute command
 L0C4C          puls      Y                   ; Restore end
 
-L0C4E          bne       L0C42                ; Command failed ... try next
+L0C4E          bne       L0C42               ; Command failed ... try next
 L0C50          exg       X,Y                 ; Set script pointer to end of list
 L0C52          rts                           ; Out
 ; 
@@ -1077,32 +1137,32 @@ L0C55          ora       #$01                ; Return fail
 L0C57          rts                           ; Done
 
 ;##Com0B_Switch
-L0C58          jsr       $0A44               ; Get size of switch list
+L0C58          lbsr      L0A44               ; Get size of switch list
 L0C5B          ldb       ,X+                 ; Get function to call
-L0C5D          jsr       $0A58               ; End of options?
+L0C5D          lbsr      L0A58               ; End of options?
 
-L0C60          bcc       L0C53                ; Yes ... out with error
+L0C60          bcc       L0C53               ; Yes ... out with error
 L0C62          pshs      Y                   ; Hold total switch size
 L0C64          pshs      B                   ; Hold function to call
 L0C66          tfr       B,A                 ; Call the ...
-L0C68          jsr       $0C20               ; ... target function
+L0C68          lbsr      L0C20               ; ... target function
 L0C6B          puls      B                   ; Restore function to call
 
-L0C6D          beq       L0C78                ; Got our script ... go do it
-L0C6F          jsr       $0A44               ; Size of pass script
+L0C6D          beq       L0C78               ; Got our script ... go do it
+L0C6F          lbsr      L0A44               ; Size of pass script
 L0C72          exg       X,Y                 ; Skip over this option
 L0C74          puls      Y                   ; End of script
 
-L0C76          bra       L0C5D                ; Keep looking
-L0C78          jsr       $0A44               ; Skip length
-L0C7B          jsr       $0C03               ; Execute
+L0C76          bra       L0C5D               ; Keep looking
+L0C78          lbsr      L0A44               ; Skip length
+L0C7B          lbsr      L0C03               ; Execute
 L0C7E          puls      X                   ; Restore script
 L0C80          rts                           ; Done
 
 ;##Com00_MoveActiveObjectToRoomAndLook
-L0C81          jsr       $0C8D               ; Move active object to new room
+L0C81          lbsr      L0C8D               ; Move active object to new room
 L0C84          pshs      X                   ; Hold script
-L0C86          jsr       $0D4A               ; Print room description and objects
+L0C86          lbsr      L0D4A               ; Print room description and objects
 L0C89          puls      X                   ; Restore script
 L0C8B          clra                          ; OK
 L0C8C          rts                           ; Done
@@ -1110,145 +1170,145 @@ L0C8C          rts                           ; Done
 ;##Com19_MoveActiveObjectToRoom
 L0C8D          lda       ,X+                 ; New room number
 L0C8F          pshs      X                   ; Hold script
-L0C91          sta       $01D5               ; Store new actvie room number
+L0C91          sta       u01D5               ; Store new actvie room number
 L0C94          tfr       A,B                 ; Store ...
 L0C96          ldx       #$1523              ; ... pointer ...
-L0C99          jsr       $0A1F               ; ... to ...
-L0C9C          stx       $01D6               ; ... new room
-L0C9F          ldx       $01D3               ; Active object
-L0CA2          jsr       $0A42               ; Skip size
-L0CA5          lda       $01D5               ; New location
+L0C99          lbsr      L0A1F               ; ... to ...
+L0C9C          stx       u01D6               ; ... new room
+L0C9F          ldx       u01D3               ; Active object
+L0CA2          lbsr      L0A42               ; Skip size
+L0CA5          lda       u01D5               ; New location
 L0CA8          sta       ,X                  ; Move object to active room
 L0CAA          puls      X                   ; Restore script
 L0CAC          clra                          ; OK
 L0CAD          rts                           ; Done
 
 ;##Com1A_SetVarObjectTo1stNoun
-L0CAE          ldu       $01C6               ; Copy 1st noun ...
-L0CB1          stu       $01C0               ; ... data pointer
-L0CB4          lda       $01C3               ; Copy 1st noun ...
-L0CB7          sta       $01BF               ; ... object number
+L0CAE          ldu       u01C6               ; Copy 1st noun ...
+L0CB1          stu       u01C0               ; ... data pointer
+L0CB4          lda       u01C3               ; Copy 1st noun ...
+L0CB7          sta       u01BF               ; ... object number
 L0CBA          clra                          ; Z=1 for OK
 L0CBB          rts                           ; Done
 
 ;##Com1B_SetVarObjectTo2ndNoun
-L0CBC          ldu       $01CC               ; Copy 2nd noun ...
-L0CBF          stu       $01C0               ; ... data pointer
-L0CC2          lda       $01C9               ; Copy 2nd noun ...
-L0CC5          sta       $01BF               ; ... object number
+L0CBC          ldu       u01CC               ; Copy 2nd noun ...
+L0CBF          stu       u01C0               ; ... data pointer
+L0CC2          lda       u01C9               ; Copy 2nd noun ...
+L0CC5          sta       u01BF               ; ... object number
 L0CC8          clra                          ; Z=1 for OK
 L0CC9          rts                           ; Done
 
 ;##Com1C_SetVarObject
 L0CCA          ldb       ,X+                 ; Get object number from script
 L0CCC          pshs      X                   ; Hold script pointer
-L0CCE          stb       $01BF               ; Store target object number
+L0CCE          stb       u01BF               ; Store target object number
 
-L0CD1          beq       L0CD9                ; 0 ... no-object
-L0CD3          jsr       $1133               ; Find object data
-L0CD6          stx       $01C0               ; Store target object data
+L0CD1          beq       L0CD9               ; 0 ... no-object
+L0CD3          lbsr      L1133               ; Find object data
+L0CD6          stx       u01C0               ; Store target object data
 L0CD9          puls      X                   ; Restore script
 L0CDB          clra                          ; Return OK
 L0CDC          rts                           ; Done
 
 ;##Com21_RunGeneralWithTempPhrase
-L0CDD          ldu       $01C6               ; 1st noun data ...
+L0CDD          ldu       u01C6               ; 1st noun data ...
 L0CE0          pshs      U                   ; ... on stack
-L0CE2          ldu       $01CC               ; 2nd noun data ...
+L0CE2          ldu       u01CC               ; 2nd noun data ...
 L0CE5          pshs      U                   ; ... on stack
-L0CE7          lda       $01C9               ; 2nd noun number
-L0CEA          ldb       $01C3               ; 1st noun number
+L0CE7          lda       u01C9               ; 2nd noun number
+L0CEA          ldb       u01C3               ; 1st noun number
 L0CED          pshs      B,A                 ; Hold these
-L0CEF          lda       $01D1               ; Phrase number
+L0CEF          lda       u01D1               ; Phrase number
 L0CF2          pshs      A                   ; Hold it
 L0CF4          lda       ,X+                 ; New temporary ...
-L0CF6          sta       $01D1               ; ... phrase number
+L0CF6          sta       u01D1               ; ... phrase number
 L0CF9          ldd       ,X++                ; Temporary 1st and 2nd noun numbers
-L0CFB          stb       $01AB               ; Hold 2nd noun for now
+L0CFB          stb       u01AB               ; Hold 2nd noun for now
 L0CFE          pshs      X                   ; Hold script
-L0D00          sta       $01C3               ; Temporary 1st noun
+L0D00          sta       u01C3               ; Temporary 1st noun
 L0D03          tfr       A,B                 ; To B (for lookup)
 
-L0D05          beq       L0D0D                ; Not one ... skip
-L0D07          jsr       $1133               ; Lookup object in B
-L0D0A          stx       $01C6               ; Temporary 1st noun data
-L0D0D          ldb       $01AB               ; Temporary 2nd noun ...
-L0D10          stb       $01C9               ; ... index
+L0D05          beq       L0D0D               ; Not one ... skip
+L0D07          lbsr      L1133               ; Lookup object in B
+L0D0A          stx       u01C6               ; Temporary 1st noun data
+L0D0D          ldb       u01AB               ; Temporary 2nd noun ...
+L0D10          stb       u01C9               ; ... index
 
-L0D13          beq       L0D1B                ; There isn't one ... skip
-L0D15          jsr       $1133               ; Lookup object in B
-L0D18          stx       $01CC               ; Temporary 2nd noun
+L0D13          beq       L0D1B               ; There isn't one ... skip
+L0D15          lbsr      L1133               ; Lookup object in B
+L0D18          stx       u01CC               ; Temporary 2nd noun
 L0D1B          ldx       #$323C              ; General commands
-L0D1E          jsr       $0A42               ; Skip ID and length
-L0D21          jsr       $0C03               ; Execute general script
+L0D1E          lbsr      L0A42               ; Skip ID and length
+L0D21          lbsr      L0C03               ; Execute general script
 L0D24          tfr       CC,A                ; Hold the result ...
-L0D26          sta       $01AB               ; ... for a moment
+L0D26          sta       u01AB               ; ... for a moment
 L0D29          puls      Y                   ;
 L0D2B          puls      A                   ;
-L0D2D          sta       $01D1               ; Restore ...
+L0D2D          sta       u01D1               ; Restore ...
 L0D30          puls      A,B                 ; ... phrase ...
-L0D32          stb       $01C3               ; ... and ...
-L0D35          sta       $01C9               ; ... nouns
+L0D32          stb       u01C3               ; ... and ...
+L0D35          sta       u01C9               ; ... nouns
 L0D38          puls      U                   ;
-L0D3A          stu       $01CC               ;
+L0D3A          stu       u01CC               ;
 L0D3D          puls      U                   ;
-L0D3F          stu       $01C6               ;
+L0D3F          stu       u01C6               ;
 L0D42          exg       X,Y                 ;
-L0D44          lda       $01AB               ;
+L0D44          lda       u01AB               ;
 L0D47          tfr       A,CC                ; Restore result
 L0D49          rts                           ; Done
 
 ; Print room description
-L0D4A          lda       $01D2               ; Actiuve object number
+L0D4A          lda       u01D2               ; Actiuve object number
 L0D4D          cmpa      #$1D                ; Is this the SYSTEM object?
 
-L0D4F          bne       L0D49                ; No ... return
-L0D51          ldx       $01D6               ; Current room script
-L0D54          jsr       $0A42               ; Skip length
+L0D4F          bne       L0D49               ; No ... return
+L0D51          ldx       u01D6               ; Current room script
+L0D54          lbsr      L0A42               ; Skip length
 L0D57          leax      1,X                 ;
 L0D59          ldb       #$03                ; You are in DESCRIPTION script
-L0D5B          jsr       $0A27               ; Get room description
+L0D5B          lbsr      L0A27               ; Get room description
 
-L0D5E          bcc       L0D65                ; No room description ... print objects in room
+L0D5E          bcc       L0D65               ; No room description ... print objects in room
 L0D60          leax      1,X                 ; Assume length is one byte
-L0D62          jsr       $114C               ; Print the packed message
+L0D62          lbsr      L114C               ; Print the packed message
 ;
 ; Print object descriptions
 ;
 L0D65          ldx       #$20FF              ; Object data
-L0D68          jsr       $0A42               ; Skip length
+L0D68          lbsr      L0A42               ; Skip length
 L0D6B          pshs      Y                   ; Hold end
-L0D6D          jsr       $0A42               ; Skip this object's length
-L0D70          lda       $01D5               ; Current room
+L0D6D          lbsr      L0A42               ; Skip this object's length
+L0D70          lda       u01D5               ; Current room
 L0D73          cmpa      ,X                  ; Object in room?
 
-L0D75          bne       L0D89                ; No ... next object
+L0D75          bne       L0D89               ; No ... next object
 L0D77          leax      3,X                 ; Skip data
 L0D79          ldb       #$03                ; Get description ...
-L0D7B          jsr       $0A27               ; ... field
+L0D7B          lbsr      L0A27               ; ... field
 
-L0D7E          bcc       L0D89                ; No description ... next object
+L0D7E          bcc       L0D89               ; No description ... next object
 L0D80          leax      1,X                 ; Skip length
 L0D82          pshs      Y                   ; Hold end of object
-L0D84          jsr       $114C               ; Print description
+L0D84          lbsr      L114C               ; Print description
 L0D87          puls      Y                   ; Restore length
 L0D89          exg       X,Y                 ; Next object
 L0D8B          puls      Y                   ; End of objects
-L0D8D          jsr       $0A58               ; All done?
+L0D8D          lbsr      L0A58               ; All done?
 
-L0D90          bcs       L0D6B                ; No ... keep printing
+L0D90          bcs       L0D6B               ; No ... keep printing
 L0D92          rts                           ; Done
 
 ;##Com01_IsObjectInPackOrRoom
 L0D93          ldb       ,X+                 ; Get object number from script
 L0D95          pshs      X                   ; Hold script pointer
-L0D97          jsr       $1133               ; Get object data
-L0D9A          jsr       $08AA               ; See if it is in pack or room
+L0D97          lbsr      L1133               ; Get object data
+L0D9A          lbsr      L08AA               ; See if it is in pack or room
 L0D9D          puls      X                   ; Restore script
 L0D9F          rts                           ; Out
 
 ;##Com20_CheckActiveObject
-L0DA0          lda       $01D2               ; Active object
+L0DA0          lda       u01D2               ; Active object
 L0DA3          cmpa      ,X+                 ; Matches target?
 L0DA5          rts                           ; Done
 
@@ -1260,11 +1320,11 @@ L0DA8          jmp       $0F5F
 ; Check to see if an object is at a target location.
 L0DAB          ldd       ,X++                ; Room and object
 L0DAD          pshs      X                   ; Hold script
-L0DAF          sta       $01AB               ; Remember the room
-L0DB2          jsr       $1133               ; Locate the object
-L0DB5          jsr       $0A42               ; Skip the length
+L0DAF          sta       u01AB               ; Remember the room
+L0DB2          lbsr      L1133               ; Locate the object
+L0DB5          lbsr      L0A42               ; Skip the length
 L0DB8          ldd       ,X++                ; Get the room to A
-L0DBA          cmpa      $01AB               ; Is this object in the target place?
+L0DBA          cmpa      u01AB               ; Is this object in the target place?
 L0DBD          puls      X                   ; Restore script
 L0DBF          rts                           ; Out
 
@@ -1274,101 +1334,101 @@ L0DC0          ora       #$01                ; Set the fail flag
 L0DC2          rts                           ; Done
 
 ;##Com04_PrintSYSTEMOrPlayerMessage
-L0DC3          lda       $01D2               ; Active object
+L0DC3          lda       u01D2               ; Active object
 L0DC6          cmpa      #$1D                ; Is this the player?
 
 
-L0DC8          bne       L0DD8                ; No ... must be system
+L0DC8          bne       L0DD8               ; No ... must be system
 
 ;##Com1F_PrintMessage
 L0DCA          ldb       #$1D                ; Player number
 L0DCC          pshs      X                   ; Hold script
-L0DCE          jsr       $1133               ; Look up Player
-L0DD1          jsr       $08AA               ; Is Player in current room?
+L0DCE          lbsr      L1133               ; Look up Player
+L0DD1          lbsr      L08AA               ; Is Player in current room?
 L0DD4          puls      X                   ; Restore
 
-L0DD6          beq       L0DDF                ; Yes ... do printing
-L0DD8          jsr       $0A44               ; Skip to ...
+L0DD6          beq       L0DDF               ; Yes ... do printing
+L0DD8          lbsr      L0A44               ; Skip to ...
 L0DDB          exg       X,Y                 ; ... end of packed message.
 
-L0DDD          bra       L0DE2                ; Return OK but no printing
-L0DDF          jsr       $114C               ; Print packed message at X
+L0DDD          bra       L0DE2               ; Return OK but no printing
+L0DDF          lbsr      L114C               ; Print packed message at X
 L0DE2          clra                          ; OK
 L0DE3          rts                           ; Done
 
 ;##Com07_Look
-L0DE4          jsr       $0D4A               ; Print room description
+L0DE4          lbsr      L0D4A               ; Print room description
 L0DE7          clra                          ; OK
 L0DE8          rts                           ; Done
 
 ;##Com06_Inventory
 L0DE9          pshs      X                   ; Hold script pointer
 L0DEB          lda       #$0D                ; Print ...
-L0DED          jsr       $1184               ; ... CR
+L0DED          lbsr      L1184               ; ... CR
 L0DF0          ldx       #$20FF              ; Objects
-L0DF3          jsr       $0A42               ; Skip size of objects
+L0DF3          lbsr      L0A42               ; Skip size of objects
 ;
-L0DF6          jsr       $0A58               ; CompareXY
+L0DF6          lbsr      L0A58               ; CompareXY
 
-L0DF9          bcc       L0E1F                ; End of list ... out
+L0DF9          bcc       L0E1F               ; End of list ... out
 L0DFB          pshs      Y                   ; Hold end of master list of objects
-L0DFD          jsr       $0A42               ; Get pointer to next object
+L0DFD          lbsr      L0A42               ; Get pointer to next object
 L0E00          ldb       ,X                  ; Object location
-L0E02          cmpb      $01D2               ; Active object?
+L0E02          cmpb      u01D2               ; Active object?
 
-L0E05          bne       L0E19                ; No ... skip this object
+L0E05          bne       L0E19               ; No ... skip this object
 L0E07          leax      3,X                 ; Skip data
 L0E09          ldb       #$02                ; Find short name ...
-L0E0B          jsr       $0A27               ; ... string
+L0E0B          lbsr      L0A27               ; ... string
 
-L0E0E          bcc       L0E19                ; No short name ... skip
+L0E0E          bcc       L0E19               ; No short name ... skip
 L0E10          leax      1,X                 ; Skip the 02 data id
 L0E12          pshs      Y                   ; Hold next-object
-L0E14          jsr       $1143               ; Print packed message and CR
+L0E14          lbsr      L1143               ; Print packed message and CR
 L0E17          puls      Y                   ; Restore next-object
 L0E19          exg       X,Y                 ; Move to next object
 L0E1B          puls      Y                   ; End of master list
 
-L0E1D          bra       L0DF6                ; Do all objects
+L0E1D          bra       L0DF6               ; Do all objects
 L0E1F          clra                          ; Success
 L0E20          puls      X                   ; Restore script pointer
 L0E22          rts                           ; Done
 
 ;##Com08_CompareObjectToFirstNoun
-L0E23          ldu       $01C6               ; 1st noun data
-L0E26          lda       $01C3               ; 1st noun number
+L0E23          ldu       u01C6               ; 1st noun data
+L0E26          lda       u01C3               ; 1st noun number
 ;
-L0E29          stu       $01D8               ; Hold
+L0E29          stu       u01D8               ; Hold
 L0E2C          tsta                          ; Is there an object?
 
-L0E2D          beq       L0E3F                ; No ... error
+L0E2D          beq       L0E3F               ; No ... error
 L0E2F          ldb       ,X+                 ; Object number from script
 L0E31          pshs      X                   ; Hold script
-L0E33          jsr       $1133               ; Find object
+L0E33          lbsr      L1133               ; Find object
 L0E36          exg       X,Y                 ; Pointer of found object to Y
 L0E38          puls      X                   ; Restore script pointer
-L0E3A          cmpy      $01D8               ; Object the same?
+L0E3A          cmpy      u01D8               ; Object the same?
 L0E3E          rts                           ; Done
 L0E3F          tstb                          ; B can't be 0 ... Z=0 error
 L0E40          rts                           ; Done
 
 ;##Com09_CompareObjectToSecondNoun
-L0E41          ldu       $01CC               ; 2nd noun data
-L0E44          lda       $01C9               ; 2nd noun number
+L0E41          ldu       u01CC               ; 2nd noun data
+L0E44          lda       u01C9               ; 2nd noun number
 
-L0E47          bra       L0E29                ; Do compare
+L0E47          bra       L0E29               ; Do compare
 
 ;##Com0A_CompareToPhraseForm
 L0E49          ldb       ,X+                 ; Compare from script ...
-L0E4B          cmpb      $01D1               ; ... to phrase form
+L0E4B          cmpb      u01D1               ; ... to phrase form
 L0E4E          rts                           ; Done
 
 ;##Com0F_PickUpObject
 ; Move noun object to pack.
 L0E4F          pshs      X                   ; Hold script
-L0E51          ldx       $01C0               ; Pointer to noun object
-L0E54          jsr       $0A42               ; Skip length
-L0E57          lda       $01D2               ; Back pack "location" value
+L0E51          ldx       u01C0               ; Pointer to noun object
+L0E54          lbsr      L0A42               ; Skip length
+L0E57          lda       u01D2               ; Back pack "location" value
 L0E5A          sta       ,X                  ; Move object to pack
 L0E5C          clra                          ; OK
 L0E5D          puls      X                   ; Restore script
@@ -1377,9 +1437,9 @@ L0E5F          rts                           ; Done
 ;##Com10_DropObject
 ; Move noun object to current room.
 L0E60          pshs      X                   ; Hold script
-L0E62          ldx       $01C0               ; Pointer to noun object
-L0E65          jsr       $0A42               ; Skip length
-L0E68          lda       $01D5               ; Current room
+L0E62          ldx       u01C0               ; Pointer to noun object
+L0E65          lbsr      L0A42               ; Skip length
+L0E68          lda       u01D5               ; Current room
 L0E6B          sta       ,X                  ; Move object to room
 L0E6D          puls      X                   ; Restore script
 L0E6F          clra                          ; Done
@@ -1387,97 +1447,97 @@ L0E70          rts                           ; Out
 
 ;##Com13_PhraseWithRoom1st2nd
 L0E71          pshs      X                   ; Save script
-L0E73          ldx       $01D6               ; Current room script
-L0E76          jsr       $0A42               ; Skip id and length
+L0E73          ldx       u01D6               ; Current room script
+L0E76          lbsr      L0A42               ; Skip id and length
 L0E79          leax      1,X                 ; Skip
 L0E7B          ldb       #$04                ; Get ...
-L0E7D          jsr       $0A27               ; ... phrase script
+L0E7D          lbsr      L0A27               ; ... phrase script
 
-L0E80          bcc       L0E8A                ; No phrase script ... skip
-L0E82          jsr       $0A42               ; Skip id and length
-L0E85          jsr       $0C03               ; Execute
+L0E80          bcc       L0E8A               ; No phrase script ... skip
+L0E82          lbsr      L0A42               ; Skip id and length
+L0E85          lbsr      L0C03               ; Execute
 
-L0E88          beq       L0EC5                ; Move passed ... OK and out
-L0E8A          lda       $01C9               ; Is there a 2nd noun?
+L0E88          beq       L0EC5               ; Move passed ... OK and out
+L0E8A          lda       u01C9               ; Is there a 2nd noun?
 
-L0E8D          beq       L0EA6                ; No ... skip
-L0E8F          ldx       $01CC               ; Second noun data
-L0E92          jsr       $0A42               ; Skip ...
+L0E8D          beq       L0EA6               ; No ... skip
+L0E8F          ldx       u01CC               ; Second noun data
+L0E92          lbsr      L0A42               ; Skip ...
 L0E95          leax      3,X                 ; ... object header
 L0E97          ldb       #$06                ; Get "noun is second" ...
-L0E99          jsr       $0A27               ; ... phrase script
+L0E99          lbsr      L0A27               ; ... phrase script
 
-L0E9C          bcc       L0EA6                ; None ... move on
-L0E9E          jsr       $0A42               ; Skip header
-L0EA1          jsr       $0C03               ; Execute script
+L0E9C          bcc       L0EA6               ; None ... move on
+L0E9E          lbsr      L0A42               ; Skip header
+L0EA1          lbsr      L0C03               ; Execute script
 
-L0EA4          beq       L0EC5                ; Script passed ... OK and out
-L0EA6          lda       $01C3               ; Is there a 1st noun?
+L0EA4          beq       L0EC5               ; Script passed ... OK and out
+L0EA6          lda       u01C3               ; Is there a 1st noun?
 
-L0EA9          bne       L0EB0                ; Yes ... go do it
+L0EA9          bne       L0EB0               ; Yes ... go do it
 L0EAB          puls      X                   ; Restore script
 L0EAD          ora       #$01                ; Nobody took the phrase ..
 L0EAF          rts                           ; .. error and and out
-L0EB0          ldx       $01C6               ; First noun data
-L0EB3          jsr       $0A42               ; Skip ...
+L0EB0          ldx       u01C6               ; First noun data
+L0EB3          lbsr      L0A42               ; Skip ...
 L0EB6          leax      3,X                 ; ... object header
 L0EB8          ldb       #$07                ; Get "noun is first" ...
-L0EBA          jsr       $0A27               ; ... phrase script
+L0EBA          lbsr      L0A27               ; ... phrase script
 
-L0EBD          bcc       L0EAB                ; None ... error and out
-L0EBF          jsr       $0A42               ; Skip the id and length
-L0EC2          jsr       $0C03               ; Execute script (use return)
+L0EBD          bcc       L0EAB               ; None ... error and out
+L0EBF          lbsr      L0A42               ; Skip the id and length
+L0EC2          lbsr      L0C03               ; Execute script (use return)
 L0EC5          puls      X                   ; Restore script pointer
 L0EC7          rts                           ; Done
 
 ;##Com16_PrintVarShortName
 L0EC8          pshs      X                   ; Save script pointer
-L0ECA          ldx       $01C0               ; Var noun data
-L0ECD          lda       $01BF               ; Var noun index
+L0ECA          ldx       u01C0               ; Var noun data
+L0ECD          lda       u01BF               ; Var noun index
 
-L0ED0          bra       L0EDA                ; Print short name
+L0ED0          bra       L0EDA               ; Print short name
 
 ;##Com11_Print1stNounShortName
 L0ED2          pshs      X                   ; Save script pointer
-L0ED4          ldx       $01C6               ; 1st noun data
-L0ED7          lda       $01C3               ; 1st noun index
+L0ED4          ldx       u01C6               ; 1st noun data
+L0ED7          lda       u01C3               ; 1st noun index
 ;
 
-L0EDA          beq       L0EC5                ; Return Z=1 return
+L0EDA          beq       L0EC5               ; Return Z=1 return
 L0EDC          ldb       #$1D                ; User object
 L0EDE          pshs      X                   ; Hold noun data
-L0EE0          jsr       $1133               ; Lookup user object
-L0EE3          jsr       $08AA               ; User in current room?
+L0EE0          lbsr      L1133               ; Lookup user object
+L0EE3          lbsr      L08AA               ; User in current room?
 L0EE6          puls      X                   ; Restore noun data
 
-L0EE8          bne       L0EFB                ; Not in current room ... skip print
-L0EEA          jsr       $0A42               ; Skip object ...
+L0EE8          bne       L0EFB               ; Not in current room ... skip print
+L0EEA          lbsr      L0A42               ; Skip object ...
 L0EED          leax      3,X                 ; ... header
 L0EEF          ldb       #$02                ; Get object ...
-L0EF1          jsr       $0A27               ; ... short name
+L0EF1          lbsr      L0A27               ; ... short name
 
-L0EF4          bcc       L0EFB                ; No short name ... out with OK
+L0EF4          bcc       L0EFB               ; No short name ... out with OK
 L0EF6          leax      1,X                 ; Skip the 2
-L0EF8          jsr       $114C               ; Print packed message at X
+L0EF8          lbsr      L114C               ; Print packed message at X
 L0EFB          puls      X                   ; Restore script
 L0EFD          clra                          ; Return ...
 L0EFE          rts                           ; ... OK
 
 ;##Com12_Print2ndNounShortName
 L0EFF          pshs      X                   ; Save script pointer
-L0F01          ldx       $01CC               ; 2nd noun data
-L0F04          lda       $01C9               ; 2nd noun index
+L0F01          ldx       u01CC               ; 2nd noun data
+L0F04          lda       u01C9               ; 2nd noun index
 
-L0F07          bra       L0EDA                ; Print short name
+L0F07          bra       L0EDA               ; Print short name
 
 ;##Com15_CheckObjBits
 ; Check target bits in an object.
 L0F09          pshs      X                   ; Hold script pointer
-L0F0B          ldx       $01C0               ; Input object pointer
-L0F0E          lda       $01BF               ; Var object number
+L0F0B          ldx       u01C0               ; Input object pointer
+L0F0E          lda       u01BF               ; Var object number
 
-L0F11          beq       L0F21                ; No object ... return error
-L0F13          jsr       $0A42               ; Skip the pointer-to-next object
+L0F11          beq       L0F21               ; No object ... return error
+L0F13          lbsr      L0A42               ; Skip the pointer-to-next object
 L0F16          leax      2,X                 ; Skip to data byte
 L0F18          lda       ,X                  ; Get the object data
 L0F1A          puls      X                   ; Restore the script
@@ -1491,9 +1551,9 @@ L0F25          ora       #$01                ; Set error
 L0F27          rts                           ; Return
 
 ;##Com14_ExecuteCommandAndReverseReturn
-L0F28          jsr       $0C03               ; Execute command
+L0F28          lbsr      L0C03               ; Execute command
 
-L0F2B          bne       L0F30                ; Command returned a non-zero ... return zero
+L0F2B          bne       L0F30               ; Command returned a non-zero ... return zero
 L0F2D          ora       #$01                ; Command returned a zero ... return non-zerio
 L0F2F          rts                           ; Done
 L0F30          clra                          ; Zero
@@ -1502,8 +1562,8 @@ L0F31          rts                           ; Done
 ;##Com17_MoveObjectXToLocationY
 L0F32          ldb       ,X+                 ; Get object number
 L0F34          pshs      X                   ; Hold script
-L0F36          jsr       $1133               ; Find object
-L0F39          jsr       $0A42               ; Skip over length
+L0F36          lbsr      L1133               ; Find object
+L0F39          lbsr      L0A42               ; Skip over length
 L0F3C          puls      Y                   ; Script to Y
 L0F3E          lda       ,Y+                 ; Get new location
 L0F40          sta       ,X                  ; Set object's new location
@@ -1513,81 +1573,81 @@ L0F45          rts                           ; Done
 
 ;##Com18_CheckVarOwnedByActiveObject
 L0F46          pshs      X                   ; Save script pointer
-L0F48          ldx       $01C0               ; Var object data
-L0F4B          jsr       $0A42               ; Skip length
+L0F48          ldx       u01C0               ; Var object data
+L0F4B          lbsr      L0A42               ; Skip length
 L0F4E          ldb       ,X                  ; Location
 L0F50          puls      X                   ; Restore script
 L0F52          lbeq      $08CF               ; Out-of-game ... error and out
-L0F56          cmpb      $01D2               ; Is this the active object?
+L0F56          cmpb      u01D2               ; Is this the active object?
 
-L0F59          beq       L0F45                ; Yes ... return OK
+L0F59          beq       L0F45               ; Yes ... return OK
 L0F5B          bitb      #$80                ; Test upper bit
 
-L0F5D          bne       L0F45                ; It is in a room ... error and out
+L0F5D          bne       L0F45               ; It is in a room ... error and out
 ;
 L0F5F          pshs      X                   ; Hold script
-L0F61          jsr       $1133               ; Look up owner object
+L0F61          lbsr      L1133               ; Look up owner object
 
-L0F64          bra       L0F4B                ; Check again
+L0F64          bra       L0F4B               ; Check again
 
 ; Execute any turn-scripts on the objects
 L0F66          ldx       #$20FF              ; Start of object data
-L0F69          clr       $01D0               ; Object number
-L0F6C          jsr       $0A42               ; Skip length
-L0F6F          jsr       $0A58               ; End of objects?
+L0F69          clr       u01D0               ; Object number
+L0F6C          lbsr      L0A42               ; Skip length
+L0F6F          lbsr      L0A58               ; End of objects?
 
-L0F72          bcc       L0F45                ; Yes ... out
-L0F74          inc       $01D0               ; Next object number
+L0F72          bcc       L0F45               ; Yes ... out
+L0F74          inc       u01D0               ; Next object number
 L0F77          pshs      Y                   ; Hold end-of-objects
-L0F79          jsr       $0A42               ; Skip length
+L0F79          lbsr      L0A42               ; Skip length
 L0F7C          lda       ,X                  ; Location
-L0F7E          sta       $01AB               ; Hold
+L0F7E          sta       u01AB               ; Hold
 L0F81          pshs      Y                   ; End of object
 L0F83          lda       ,X                  ; Location
 
-L0F85          beq       L0FC9                ; If it is out-of-game it doesn't get a turn
+L0F85          beq       L0FC9               ; If it is out-of-game it doesn't get a turn
 L0F87          leax      3,X                 ; Skip data
 L0F89          ldb       #$08                ; Turn-script
-L0F8B          jsr       $0A27               ; Find turn script
+L0F8B          lbsr      L0A27               ; Find turn script
 
-L0F8E          bcc       L0FC9                ; Nothing to do ... next object
-L0F90          jsr       $0A42               ; Skip length
+L0F8E          bcc       L0FC9               ; Nothing to do ... next object
+L0F90          lbsr      L0A42               ; Skip length
 L0F93          pshs      X                   ; Hold pointer
-L0F95          jsr       $12A8               ; Generate random number
-L0F98          ldb       $01D0               ; Current object number ...
-L0F9B          stb       $01D2               ; ... is now the active object
-L0F9E          jsr       $1133               ; Get its data pointer
-L0FA1          stx       $01D3               ; Hold pointer to active object data
-L0FA4          ldb       $01AB               ; Object's location
+L0F95          lbsr      L12A8               ; Generate random number
+L0F98          ldb       u01D0               ; Current object number ...
+L0F9B          stb       u01D2               ; ... is now the active object
+L0F9E          lbsr      L1133               ; Get its data pointer
+L0FA1          stx       u01D3               ; Hold pointer to active object data
+L0FA4          ldb       u01AB               ; Object's location
 L0FA7          tstb                          ; Check upper bit
 
-L0FA8          bmi       L0FB8                ; If in a room ... go handle
-L0FAA          jsr       $1133               ; Get object's owner
-L0FAD          jsr       $0A42               ; Skip length
+L0FA8          bmi       L0FB8               ; If in a room ... go handle
+L0FAA          lbsr      L1133               ; Get object's owner
+L0FAD          lbsr      L0A42               ; Skip length
 L0FB0          ldb       ,X                  ; Get owner location
 
-L0FB2          bne       L0FA7                ; Still in game ... find room location of owner chain
+L0FB2          bne       L0FA7               ; Still in game ... find room location of owner chain
 L0FB4          puls      X                   ; Restore pointer
 
-L0FB6          bra       L0FC9                ; Next object
-L0FB8          stb       $01D5               ; Objects location
+L0FB6          bra       L0FC9               ; Next object
+L0FB8          stb       u01D5               ; Objects location
 L0FBB          ldx       #$1523              ; Get room ...
-L0FBE          jsr       $0A1F               ; ... scripts for object
-L0FC1          stx       $01D6               ; Hold
+L0FBE          lbsr      L0A1F               ; ... scripts for object
+L0FC1          stx       u01D6               ; Hold
 L0FC4          puls      X                   ; Restore turn-script
-L0FC6          jsr       $0C03               ; Execute turn-script
+L0FC6          lbsr      L0C03               ; Execute turn-script
 L0FC9          puls      X                   ; Restore
 L0FCB          puls      Y                   ; Restore
 
-L0FCD          bra       L0F6F                ; Next object
+L0FCD          bra       L0F6F               ; Next object
 
 ;##Com05_IsRandomLessOrEqual
 L0FCF          lda       $1338               ; Random value
 L0FD2          cmpa      ,X+                 ; Compare random value to script
 
-L0FD4          bcs       L0FDB                ; If less than ... OK
+L0FD4          bcs       L0FDB               ; If less than ... OK
 
-L0FD6          beq       L0FDB                ; If the same ... OK
+L0FD6          beq       L0FDB               ; If the same ... OK
 L0FD8          ora       #$01                ; Greater than ... FAIL
 L0FDA          rts                           ; Done
 L0FDB          clra                          ; Less than or equal ... OK
@@ -1595,21 +1655,21 @@ L0FDC          rts                           ; Done
 
 ;##Com1D_AttackObject
 L0FDD          lda       ,X+                 ; Get attack value
-L0FDF          sta       $01AB               ; Hold attack value
+L0FDF          sta       u01AB               ; Hold attack value
 L0FE2          pshs      X                   ; Hold script
-L0FE4          ldx       $01C0               ; Target object data
-L0FE7          jsr       $0A42               ; Skip length
+L0FE4          ldx       u01C0               ; Target object data
+L0FE7          lbsr      L0A42               ; Skip length
 L0FEA          leax      3,X                 ; Skip object data
 L0FEC          pshs      X                   ; Hold X ...
 L0FEE          pshs      Y                   ; ... and Y
 L0FF0          ldb       #$09                ; Get target's ...
-L0FF2          jsr       $0A27               ; ... combat info
+L0FF2          lbsr      L0A27               ; ... combat info
 
 L0FF5          bcc       L1020               ; Not found. Do nothing (return OK)
-L0FF7          jsr       $0A42               ; Skip length
+L0FF7          lbsr      L0A42               ; Skip length
 L0FFA          leax      1,X                 ; Hit points
 L0FFC          lda       ,X                  ; Hit points
-L0FFE          suba      $01AB               ; Subtract attack from hit points
+L0FFE          suba      u01AB               ; Subtract attack from hit points
 
 L1001          bcc       L1004               ; Not negative ... keep it
 L1003          clra                          ; Floor the hit points
@@ -1625,11 +1685,11 @@ L1010          rts                           ; Done
 
 ;Handle object being killed
 L1011          ldb       #$0A                ; Object being killed script
-L1013          jsr       $0A27               ; Find a script for handling being killed
+L1013          lbsr      L0A27               ; Find a script for handling being killed
 
 L1016          bcc       L100D               ; Not found ... nothing happens (return OK)
-L1018          jsr       $0A42               ; Skip id and length
-L101B          jsr       $0C03               ; Execute "being killed" script
+L1018          lbsr      L0A42               ; Skip id and length
+L101B          lbsr      L0C03               ; Execute "being killed" script
 
 L101E          bra       L100D               ; Done (return OK)
 
@@ -1641,14 +1701,14 @@ L1024          bra       L100D               ; Return OK
 ;##Com1E_SwapObjects
 L1026          ldb       ,X+                 ; 1st object number
 L1028          lda       ,X+                 ; 2nd object
-L102A          sta       $01AB               ; Hold second object
+L102A          sta       u01AB               ; Hold second object
 L102D          pshs      X                   ; Hold script
-L102F          jsr       $1133               ; Look up object
-L1032          jsr       $0A42               ; Skip length
+L102F          lbsr      L1133               ; Look up object
+L1032          lbsr      L0A42               ; Skip length
 L1035          tfr       X,U                 ; 1st object pointer to U
-L1037          ldb       $01AB               ; 2nd object
-L103A          jsr       $1133               ; Look up object
-L103D          jsr       $0A42               ; Skip length
+L1037          ldb       u01AB               ; 2nd object
+L103A          lbsr      L1133               ; Look up object
+L103D          lbsr      L0A42               ; Skip length
 L1040          lda       ,X                  ; Swap ...
 L1042          ldb       ,U                  ; ... location ...
 L1044          sta       ,U                  ; ... of ...
@@ -1661,18 +1721,18 @@ L104B          rts                           ; Done
 ;##Com22_CompareHealthToValue
 L104C          lda       ,X+                 ; Get value
 L104E          pshs      X                   ; Hold script pointer
-L1050          sta       $01AB               ; Hold value
-L1053          ldx       $01C0               ; Var object data
-L1056          jsr       $0A42               ; Skip length
+L1050          sta       u01AB               ; Hold value
+L1053          ldx       u01C0               ; Var object data
+L1056          lbsr      L0A42               ; Skip length
 L1059          leax      3,X                 ; Skip data
 L105B          ldb       #$09                ; Get object ...
-L105D          jsr       $0A27               ; ... hit points
+L105D          lbsr      L0A27               ; ... hit points
 
 L1060          bcc       L1070               ; Doesn't have any ... error and out
-L1062          jsr       $0A42               ; Skip length
+L1062          lbsr      L0A42               ; Skip length
 L1065          leax      1,X                 ; Get current ...
 L1067          lda       ,X                  ; ... hit points
-L1069          cmpa      $01AB               ; Compare hit points to value
+L1069          cmpa      u01AB               ; Compare hit points to value
 
 L106C          bcs       L1075               ; Less than ..
 
@@ -1686,23 +1746,23 @@ L1078          rts                           ; Done
 
 ;##Com23_HealVarObject
 L1079          lda       ,X+                 ; Get healing value
-L107B          sta       $01AB               ; Hold it
+L107B          sta       u01AB               ; Hold it
 L107E          pshs      X                   ; Hold script
-L1080          ldx       $01C0               ; Var object data
-L1083          jsr       $0A42               ; Skip length
+L1080          ldx       u01C0               ; Var object data
+L1083          lbsr      L0A42               ; Skip length
 L1086          leax      3,X                 ; Skip data
 L1088          ldb       #$09                ; Get object ...
-L108A          jsr       $0A27               ; ... hit points
+L108A          lbsr      L0A27               ; ... hit points
 
 L108D          bcc       L1075               ; No entry ... do nothing (but OK)
-L108F          jsr       $0A42               ; Skip length
+L108F          lbsr      L0A42               ; Skip length
 L1092          ldd       ,X                  ; Get HP info
-L1094          addb      $01AB               ; Add to health
-L1097          sta       $01AB               ; Max value
-L109A          cmpb      $01AB               ; Over the max?
+L1094          addb      u01AB               ; Add to health
+L1097          sta       u01AB               ; Max value
+L109A          cmpb      u01AB               ; Over the max?
 
 L109D          bcs       L10A2               ; No ... keep it
-L109F          ldb       $01AB               ; Use max value
+L109F          ldb       u01AB               ; Use max value
 L10A2          leax      1,X                 ; Store ...
 L10A4          stb       ,X                  ; ... new health
 
@@ -1711,9 +1771,9 @@ L10A6          bra       L1075               ; OK out
 ;##Com25_RestartGame
 ; No return to script
 L10A8          lda       #$0D                ; Print first ...
-L10AA          jsr       $1184               ; ... CR
+L10AA          lbsr      L1184               ; ... CR
 L10AD          lda       #$0D                ; Print second ...
-L10AF          jsr       $1184               ; ... CR
+L10AF          lbsr      L1184               ; ... CR
 L10B2          jmp       $060C               ; Restart game
 
 ;##Com24_EndlessLoop
@@ -1728,7 +1788,7 @@ L10B7          lda       ,Y+                 ; Get next character
 
 L10B9          beq       L10C4               ; Null means done
 L10BB          pshs      Y                   ; Hold Y
-L10BD          jsr       $1184               ; Print character
+L10BD          lbsr      L1184               ; Print character
 L10C0          puls      Y                   ; Restore Y
 
 L10C2          bra       L10B7               ; Keep going
@@ -1738,20 +1798,20 @@ L10C4          rts                           ; Done
 ; Second byte of object data is points. If the object is in the
 ; treasure room (dropped or carried) it counts double.
 L10C5          pshs      X
-L10C7          clr       $01AF               ; Score tally
-L10CA          clr       $01B0
-L10CD          lda       $01D5               ; Player location
+L10C7          clr       u01AF               ; Score tally
+L10CA          clr       u01B0
+L10CD          lda       u01D5               ; Player location
 L10D0          cmpa      #$96                ; Player in the treasure room?
 
 L10D2          bne       L10D7               ; No ... regular score
-L10D4          inc       $01B0               ; Yes ... carried objects count double
+L10D4          inc       u01B0               ; Yes ... carried objects count double
 L10D7          ldx       #$20FF              ; Object data
-L10DA          jsr       $0A42               ; Skip header
-L10DD          jsr       $0A58               ; Reached end?
+L10DA          lbsr      L0A42               ; Skip header
+L10DD          lbsr      L0A58               ; Reached end?
 
 L10E0          bcc       L110F               ; Yes ... move on
 L10E2          pshs      Y                   ; Hold end
-L10E4          jsr       $0A42               ; Skip object length
+L10E4          lbsr      L0A42               ; Skip object length
 L10E7          ldb       ,X+                 ; Get owner
 L10E9          cmpb      #$96                ; Treasure room?
 
@@ -1759,58 +1819,58 @@ L10EB          beq       L10F1               ; Yes ... count it
 L10ED          cmpb      #$1D                ; Carried by user?
 
 L10EF          bne       L1109               ; No ... next object
-L10F1          lda       $01AF               ; Score tally
+L10F1          lda       u01AF               ; Score tally
 L10F4          adda      ,X                  ; Add to score value
 L10F6          daa                           ; Decimal adjust
-L10F7          sta       $01AF               ; New score
+L10F7          sta       u01AF               ; New score
 L10FA          cmpb      #$96                ; Treasure room?
 
 L10FC          beq       L1103               ; Yes ... counts double
-L10FE          tst       $01B0               ; Player in treasure room?
+L10FE          tst       u01B0               ; Player in treasure room?
 
 L1101          beq       L1109               ; No ... just count once
 L1103          adda      ,X                  ; Double ...
 L1105          daa                           ; ... the ...
-L1106          sta       $01AF               ; ... score value
+L1106          sta       u01AF               ; ... score value
 L1109          tfr       Y,X                 ; Next object
 L110B          puls      Y                   ; Restore end of list
 
 L110D          bra       L10DD               ; Do all objects
 ;        
-L110F          lda       $01AF               ; Score value
+L110F          lda       u01AF               ; Score value
 L1112          asra                          ; Left ...
 L1113          asra                          ; ... most ...
 L1114          asra                          ; ... digit ...
 L1115          asra                          ; ... value
 L1116          adda      #$30                ; Convert to ASCII
-L1118          jsr       $1184               ; Print the left digit
-L111B          lda       $01AF               ; Score value
+L1118          lbsr      L1184               ; Print the left digit
+L111B          lda       u01AF               ; Score value
 L111E          anda      #$0F                ; Mask off the right digit
 L1120          adda      #$30                ; Convert ot ASCII
-L1122          jsr       $1184               ; Print the right digit
+L1122          lbsr      L1184               ; Print the right digit
 L1125          lda       #$2E                ; Print ...
-L1127          jsr       $1184               ; ... "."
+L1127          lbsr      L1184               ; ... "."
 L112A          lda       #$20                ; Print ...
-L112C          jsr       $1184               ; ... SPACE
+L112C          lbsr      L1184               ; ... SPACE
 L112F          puls      X                   ; Restore script
 L1131          clra                          ; OK
 L1132          rts                           ; Done
 
 ; Find object index in B
 L1133          ldx       #$20FF              ; Start of objects
-L1136          jsr       $0A42               ; Skip end
+L1136          lbsr      L0A42               ; Skip end
 L1139          decb                          ; Found desired object?
 
 L113A          beq       L10C4               ; Yes ... out OK
-L113C          jsr       $0A42               ; Length of object
+L113C          lbsr      L0A42               ; Length of object
 L113F          exg       X,Y                 ; Next object
 
 L1141          bra       L1139               ; Keep looking
 
 ; Print packed message and CR
-L1143          jsr       $114C               ; Print packed message at X
+L1143          lbsr      L114C               ; Print packed message at X
 L1146          lda       #$0D                ; Print ...
-L1148          jsr       $1184               ; ... CR
+L1148          lbsr      L1184               ; ... CR
 L114B          rts                           ; Done
 
 ;##PrintPackedMessage
@@ -1823,27 +1883,27 @@ L1151          beq       L1157               ; Yes ... use D
 L1153          lda       ,X+                 ; Get the ...
 L1155          anda      #$7F                ; ... MSB and ...
 L1157          ldb       ,X+                 ; ... LSB
-L1159          std       $01AB               ; Store byte count
-L115C          ldd       $01AB               ; Number of bytes left in message
+L1159          std       u01AB               ; Store byte count
+L115C          ldd       u01AB               ; Number of bytes left in message
 L115F          cmpd      #$0002              ; Less than 2?
 
 L1163          bcs       L1173               ; Yes ... these aren't compressed
-L1165          jsr       $11EC               ; Decompress and print two bytes pointed to by X
-L1168          ldd       $01AB               ; Get byte count
+L1165          lbsr      L11EC               ; Decompress and print two bytes pointed to by X
+L1168          ldd       u01AB               ; Get byte count
 L116B          subd      #$0002              ; Handled 2
-L116E          std       $01AB               ; Store count
+L116E          std       u01AB               ; Store count
 
 L1171          bra       L115C               ; Keep decompressing
 L1173          tstb                          ; Any characters on the end to print?
 
 L1174          beq       L117E               ; No ... skip
 L1176          lda       ,X+                 ; Get character
-L1178          jsr       $1184               ; Print the character
+L1178          lbsr      L1184               ; Print the character
 L117B          decb                          ; Decrement count
 
 L117C          bra       L1173               ; Keeop going
 L117E          lda       #$20                ; Print ...
-L1180          jsr       $1184               ; ... space on end
+L1180          lbsr      L1184               ; ... space on end
 L1183          rts                           ; Done
 
 ;##PrintCharacterAutoWrap
@@ -1851,7 +1911,7 @@ L1183          rts                           ; Done
 ; auto MORE prompting.
 ;
 L1184          pshs      B,A                 ; Hold B and A
-L1186          lda       $01BE               ; Last printed character
+L1186          lda       u01BE               ; Last printed character
 L1189          cmpa      #$20                ; Last printed a space?
 
 L118B          bne       L11A7               ; No ... print this
@@ -1874,7 +1934,7 @@ L11A3          stu       >$88                ; ... over ignored space
 
 L11A5          bra       L11A9               ; Store and print
 L11A7          puls      A,B                 ; Restore A and B
-L11A9          sta       $01BE               ; Last printed character
+L11A9          sta       u01BE               ; Last printed character
 L11AC          jsr       [$A002]             ; Output character
 L11B0          lda       >$89                ; LSB of screen position
 L11B2          cmpa      #$FE                ; Reached end of screen?
@@ -1904,7 +1964,7 @@ L11DB          cmpa      #$60                ; Make sure ...
 
 L11DD          bcs       L11E1               ; ... upper ...
 L11DF          suba      #$40                ; ... case
-L11E1          sta       $01BE               ; Last printed character
+L11E1          sta       u01BE               ; Last printed character
 L11E4          jsr       [$A002]             ; Output to screen
 
 L11E8          bra       L11CB               ; Move overhang to next line
@@ -1920,40 +1980,40 @@ L11EC          ldy       #$12A4              ;
 L11F0          ldb       #$03                ;
 L11F2          stb       $12A1               ;
 L11F5          lda       ,X+                 ;
-L11F7          sta       $01DE               ;
+L11F7          sta       u01DE               ;
 L11FA          lda       ,X+                 ;
-L11FC          sta       $01DD               ;
+L11FC          sta       u01DD               ;
 L11FF          leay      3,Y                 ;
 L1201          ldu       #$0028              ;
 L1204          stu       $12A2               ;
 L1207          lda       #$11                ;
-L1209          sta       $01DA               ;
-L120C          clr       $01DB               ;
-L120F          clr       $01DC               ;
-L1212          rol       $01DE               ;
-L1215          rol       $01DD               ;
-L1218          dec       $01DA               ;
+L1209          sta       u01DA               ;
+L120C          clr       u01DB               ;
+L120F          clr       u01DC               ;
+L1212          rol       u01DE               ;
+L1215          rol       u01DD               ;
+L1218          dec       u01DA               ;
 
 L121B          beq       L1256               ;
 L121D          lda       #$00                ;
 L121F          adca      #$00                ; This algorithm is identical to the decompression
-L1221          asl       $01DC               ; used in Pyramid2000. Check the comments there for
-L1224          rol       $01DB               ; more detail.
-L1227          adda      $01DC               ;
+L1221          asl       u01DC               ; used in Pyramid2000. Check the comments there for
+L1224          rol       u01DB               ; more detail.
+L1227          adda      u01DC               ;
 L122A          suba      $12A3               ;
-L122D          sta       $01E0               ;
-L1230          lda       $01DB               ;
+L122D          sta       u01E0               ;
+L1230          lda       u01DB               ;
 L1233          sbca      $12A2               ;
-L1236          sta       $01DF               ;
+L1236          sta       u01DF               ;
 
 L1239          bcc       L1246               ;
-L123B          ldd       $01DF               ;
+L123B          ldd       u01DF               ;
 L123E          addd      $12A2               ;
-L1241          std       $01DB               ;
+L1241          std       u01DB               ;
 
 L1244          bra       L124C               ;
-L1246          ldd       $01DF               ;
-L1249          std       $01DB               ;
+L1246          ldd       u01DF               ;
+L1249          std       u01DB               ;
 ; Compliment C flag and continue
 
 L124C          bcs       L1252               ;
@@ -1964,7 +2024,7 @@ L1252          andcc     #$FE                ;
 
 L1254          bra       L1212               ;
 ; Process the result of the division
-L1256          ldd       $01DB               ;
+L1256          ldd       u01DB               ;
 L1259          addd      #$1279              ;
 L125C          tfr       D,U                 ;
 L125E          lda       ,U                  ;
@@ -1975,11 +2035,11 @@ L1265          bne       L1201               ;
 L1267          ldy       #$12A4              ;
 L126B          ldb       #$03                ;
 L126D          lda       ,Y+                 ;
-L126F          jsr       $1184               ; Print character
+L126F          lbsr      L1184               ; Print character
 L1272          decb                          ;
 
 L1273          bne       L126D               ;
-L1275          ldd       $01AB               ;
+L1275          ldd       u01AB               ;
 L1278          rts                           ;
 
 ; Character translation table
@@ -4993,4 +5053,4 @@ L3EFD          fcb       $04,$4F,$56,$45,$52,$09 ; OVER     9
 L3F03          fcb       $06,$42,$45,$48,$49,$4E,$44,$0A ; BEHIND   10
 L3F0B          fcb       $06,$41,$52,$4F,$55,$4E,$44,$0B ; AROUND   11
 L3F13          fcb       $02,$4F,$4E,$0C     ; ON       12
-L3F17          fcb       $00,$,$F            ,$4E,$0C ; ON       12
+L3F17          fcb       $00
