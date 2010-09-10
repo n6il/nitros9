@@ -214,18 +214,13 @@ name     equ   *
 ;##Start
 start          equ       *
 
-* Screen clearing code for CoCo BASIC environment is removed
-* L0600          clra                          ; 256 word (512 bytes on screen)
-* L0601          ldx       #$0400              ; Start of screen
-* L0604          ldu       #$6060              ; Space-space
-* L0607          stu       ,X++                ; Clear ...
-* L0609          deca                          ; ... text ...
-
-* L060A          bne       L0607               ; ... screen
-
-* L060C          lds       #$03FF              ; Stack starts just below screen
-
-L060C
+L0600          clra                          ; 256 word (512 bytes on screen)
+L0601          ldx       #$0400              ; Start of screen
+L0604          ldu       #$6060              ; Space-space
+L0607          stu       ,X++                ; Clear ...
+L0609          deca                          ; ... text ...
+L060A          bne       L0607               ; ... screen
+L060C          lds       #$03FF              ; Stack starts just below screen
 L0610          lda       #$1D                ; Player object ...
 L0612          sta       u01D2               ; ... is the active object number
 L0615          ldx       #$05E0              ; Set cursor to ...
@@ -240,8 +235,7 @@ L062B          lda       #$0D                ; Print ...
 L062D          lbsr      L1184               ; ... CR
 
 ;##MainLoop
-* L0630          lds       #$03FF              ; Initialize stack
-L0630
+L0630          lds       #$03FF              ; Initialize stack
 L0634          lbsr      L0ACC               ; Get user input
 
 L0637          clr       u01B7               ; Adjective word number
@@ -287,7 +281,7 @@ L0695          bne       L0682               ; No ... keep looking
 L0697          clr       [u01D8]             ; Terminate token list
 L069B          ldx       #u01E3              ; Input buffer
 L069E          lda       ,X                  ; List number of first word
-L06A0          lbeq      $0736               ; Nothing entered
+L06A0          lbeq      L0736               ; Nothing entered
 L06A4          cmpa      #$02                ; First word a noun?
 
 L06A6          bne       L06B7               ; No ... move on
@@ -381,7 +375,7 @@ L0733          lbra      L06B7               ;  Next word
 
 
 L0736          tst       u01B3               ;  Verb given?
-L0739          lbeq      $0995               ;  No ... ?VERB? error
+L0739          lbeq      L0995               ;  No ... ?VERB? error
 L073D          ldx       #u01C9              ;  Second noun
 L0740          lbsr      L0822               ;  Decode it (only returns if OK)
 L0743          sta       u01C9               ;  Hold target object index
@@ -412,7 +406,7 @@ L0779          sta       u01CE               ;  Hold second noun's parameter bit
 
 L077C          leax      L135B,pc            ;  Syntax list
 L077F          lda       ,X                  ;  End of list?
-L0781          lbeq      $0951               ;  Yes ... "?PHRASE?"
+L0781          lbeq      L0951               ;  Yes ... "?PHRASE?"
 L0785          lda       u01B3               ;  Verb ...
 L0788          cmpa      ,X+                 ;  ... matches?
 
@@ -440,7 +434,7 @@ L07AF          lbsr      L08D2               ;  Decode 1st noun as per phrase
 L07B2          bra       L07BB               ;  We just processed a first one. We know it is there.
 L07B4          lda       u01C3               ;  Is there a 1st noun?
 
-L07B7          lbne      $0951               ; No ... next entry
+L07B7          lbne      L0951               ; No ... next entry
 L07BB          leax      1,X                 ; Next in phrase
 L07BD          lda       ,X                  ; Phrase wants a second noun?
 
@@ -458,7 +452,7 @@ L07D5          lbsr      L08D2               ; Decode 2nd noun as per phrase
 L07D8          bra       L07E1               ; Use this
 
 L07DA          lda       u01C9               ; Is there a second noun?
-L07DD          lbne      $0951               ; No ... phrase error
+L07DD          lbne      L0951               ; No ... phrase error
 L07E1          leax      1,X                 ; Get matched ...
 L07E3          lda       ,X                  ; ... phrase number
 
@@ -546,7 +540,7 @@ L086F          cmpa      ,X+                 ; In this list?
 L0871          bne       L0867               ; No ... keep searching list
 L0873          puls      X                   ; Restore object pointer
 L0875          lda       u01BF               ; Last object index that matched
-L0878          lbne      $098C               ; Multiple matches ... do "?WHICH?"
+L0878          lbne      L098C               ; Multiple matches ... do "?WHICH?"
 L087C          lda       u01E2               ; Object index
 L087F          sta       u01BF               ; Current guess at matching object index
 L0882          stx       u01C0               ; Input object data
@@ -1606,7 +1600,7 @@ L0F48          ldx       u01C0               ; Var object data
 L0F4B          lbsr      L0A42               ; Skip length
 L0F4E          ldb       ,X                  ; Location
 L0F50          puls      X                   ; Restore script
-L0F52          lbeq      $08CF               ; Out-of-game ... error and out
+L0F52          lbeq      L08CF               ; Out-of-game ... error and out
 L0F56          cmpb      u01D2               ; Is this the active object?
 
 L0F59          beq       L0F45               ; Yes ... return OK
@@ -1671,7 +1665,11 @@ L0FCB          puls      Y                   ; Restore
 L0FCD          bra       L0F6F               ; Next object
 
 ;##Com05_IsRandomLessOrEqual
-L0FCF          lda       $1338               ; Random value
+L0FCF          pshs       x
+               leax       L1338,pc            ; Random value
+			   lda        ,x
+			   puls       x
+			   
 L0FD2          cmpa      ,X+                 ; Compare random value to script
 
 L0FD4          bcs       L0FDB               ; If less than ... OK
@@ -2010,91 +2008,93 @@ L11EB          rts                           ; OOPS
 ;
 L11EC          leay      L12A4,pc            ;
 L11F0          ldb       #$03                ;
-L11F2          stb       L12A1,pc               ;
-L11F5          lda       ,X+                 ;
-L11F7          sta       u01DE               ;
-L11FA          lda       ,X+                 ;
-L11FC          sta       u01DD               ;
-L11FF          leay      3,Y                 ;
+			   pshs      x
+               leax      L12A1,pc
+			   stb       ,x
+			   puls      x
+               lda       ,X+                 ;
+               sta       u01DE               ;
+               lda       ,X+                 ;
+               sta       u01DD               ;
+               leay      3,Y                 ;
 L1201          ldu       #$0028              ;
-L1204          stu       L12A2,pc            ;
-L1207          lda       #$11                ;
-L1209          sta       u01DA               ;
-L120C          clr       u01DB               ;
-L120F          clr       u01DC               ;
+			   pshs      x
+		       leax      L12A2,pc
+			   stu       ,x
+			   puls      x
+               lda       #$11                ;
+               sta       u01DA               ;
+               clr       u01DB               ;
+               clr       u01DC               ;
 L1212          rol       u01DE               ;
-L1215          rol       u01DD               ;
-L1218          dec       u01DA               ;
+               rol       u01DD               ;
+               dec       u01DA               ;
 
-L121B          beq       L1256               ;
-L121D          lda       #$00                ;
-L121F          adca      #$00                ; This algorithm is identical to the decompression
-L1221          asl       u01DC               ; used in Pyramid2000. Check the comments there for
-L1224          rol       u01DB               ; more detail.
-L1227          adda      u01DC               ;
-L122A          suba      L12A3,pc            ;
-L122D          sta       u01E0               ;
+               beq       L1256               ;
+               lda       #$00                ;
+               adca      #$00                ; This algorithm is identical to the decompression
+               asl       u01DC               ; used in Pyramid2000. Check the comments there for
+               rol       u01DB               ; more detail.
+               adda      u01DC               ;
+               pshs      x
+			   leax      L12A3,pc
+			   suba      ,x
+			   puls      x
+               sta       u01E0               ;
 L1230          lda       u01DB               ;
-L1233          sbca      L12A2,pc            ;
-L1236          sta       u01DF               ;
-
-L1239          bcc       L1246               ;
-
-* BGP: replacing following two lines with next three lines
-* WARNING: Not sure U is not being used elsewhere
-*L123B          ldd       u01DF               ;
-*L123E          addd      L12A2               ;
-
-
-			   leau      L12A2,pc
-			   tfr       u,d
+			   pshs      x
+			   leax      L12A2,pc
+			   sbca      ,x
+			   puls      x
+               sta       u01DF               ;
+               bcc       L1246               ;
+			   ldd       u01DF
+			   
+			   pshs      x
+			   leax      L12A2,pc
 			   addd      u01DF
+			   puls      x
 			   
-L1241          std       u01DB               ;
-
-L1244          bra       L124C               ;
+               std       u01DB               ;
+               bra       L124C               ;
 L1246          ldd       u01DF               ;
-L1249          std       u01DB               ;
+               std       u01DB               ;
 ; Compliment C flag and continue
-
 L124C          bcs       L1252               ;
-L124E          orcc      #$01                ;
-
-L1250          bra       L1212               ;
+               orcc      #$01                ;
+               bra       L1212               ;
 L1252          andcc     #$FE                ;
-
-L1254          bra       L1212               ;
+               bra       L1212               ;
 ; Process the result of the division
-* BGP: replacing following two lines with next three lines
-* WARNING: Not sure U is not being used elsewhere
-*L1256          ldd       u01DB               ;
-*L1259          addd      #$1279              ;
-L1256          leau      L1279,pc
-			   tfr       u,d
-			   addd      u01DB
-			   
-L125C          tfr       D,U                 ;
-L125E          lda       ,U                  ;
-L1260          sta       ,-Y                 ;
-L1262          dec       L12A1,pc            ;
-
-L1265          bne       L1201               ;
-L1267          leay      L12A4,pc            ;
-L126B          ldb       #$03                ;
+L1256          ldd       u01DB
+			   pshs      x
+			   leax      L1279,pc
+			   addd      ,x
+			   puls      x
+               tfr       D,U                 ;
+               lda       ,U                  ;
+               sta       ,-Y                 ;
+			   pshs      x
+			   leax      L12A1,pc
+			   dec       ,x
+			   puls      x
+               lbne      L1201               ;
+               leay      L12A4,pc            ;
+               ldb       #$03                ;
 L126D          lda       ,Y+                 ;
-L126F          lbsr      L1184               ; Print character
-L1272          decb                          ;
+               lbsr      L1184               ; Print character
+               decb                          ;
 
-L1273          bne       L126D               ;
-L1275          ldd       u01AB               ;
-L1278          rts                           ;
+               bne       L126D               ;
+               ldd       u01AB               ;
+               rts                           ;
 
 ; Character translation table
 ;     ?  !  2  .  "  '  <  >  /  0  3  A  B  C  D  E
 L1279          fcb       $3C,$3E,$2F,$30,$33,$41,$42,$43,$44,$45
 ;     F  G  H  I  J  K  L  M  N  O  P  Q  R  S  T  U
-L1289          fcb       $4C,$4D,$4E,$4F,$50,$51,$52,$53,$54,$55
-L1299          fcb       $2C,$2E
+               fcb       $4C,$4D,$4E,$4F,$50,$51,$52,$53,$54,$55
+               fcb       $2C,$2E
 ;     V  W  X  Y  Z  -  ,  .
 
 L12A1          fcb       $00                 ; Temporaries for decompression algorithm above            
@@ -2104,45 +2104,42 @@ L12A4          fcb       $00,$00,$00,$00
 
 ; Generate random number
 L12A8          pshs      X,B                 ; Random number generator. Uses seed at 13B8.
-L12AA          leax      L1338,pc            ;
-L12AD          ldb       #$17                ;
-L12AF          lda       ,X                  ;
+               leax      L1338,pc            ;
+               ldb       #$17                ;
+               lda       ,X                  ;
 L12B1          leax      1,X                 ;
-L12B3          orcc      #$01                ;
-L12B5          anda      #$06                ;
+               orcc      #$01                ;
+               anda      #$06                ;
 
-L12B7          beq       L12C0               ;
-L12B9          cmpa      #$06                ;
-L12BB          orcc      #$01                ;
-
-L12BD          beq       L12C0               ;
-L12BF          clra                          ;
+               beq       L12C0               ;
+               cmpa      #$06                ;
+               orcc      #$01                ;
+               beq       L12C0               ;
+               clra                          ;
 L12C0          lda       ,X                  ;
-
-L12C2          bcs       L12C7               ;
-L12C4          lsra                          ;
-
-L12C5          bra       L12CA               ;
+               bcs       L12C7               ;
+               lsra                          ;
+               bra       L12CA               ;
 L12C7          lsra                          ;
-L12C8          ora       #$80                ;
+               ora       #$80                ;
 L12CA          sta       ,X                  ;
-L12CC          leax      -1,X                ;
-L12CE          lda       ,X                  ;
-
-L12D0          bcs       L12D5               ;
-L12D2          lsra                          ;
-
-L12D3          bra       L12D8               ;
+               leax      -1,X                ;
+               lda       ,X                  ;
+               bcs       L12D5               ;
+               lsra                          ;
+               bra       L12D8               ;
 L12D5          lsra                          ;
-L12D6          ora       #$80                ;
+               ora       #$80                ;
 L12D8          anda      #$FE                ;
-L12DA          sta       ,X                  ;
-L12DC          decb                          ;
-
-L12DD          bne       L12B1               ;
-L12DF          lda       $1339               ;
-L12E2          puls      B,X                 ;
-L12E4          rts                           ;
+               sta       ,X                  ;
+               decb                          ;
+               bne       L12B1
+			   pshs      x
+			   leax      L1339,pc            ;
+               lda       ,x                  ;
+			   puls      x
+               puls      B,X                 ;
+               rts                           ;
 
 ; -----------------------------------------------------------------------------------------------------------------
 ; Data Here Down
@@ -2198,7 +2195,9 @@ L1333          fcb       $00                 ; List is the length. List is point
 
 ; Random number seed
 L1334          fcb       $12,$23,$44,$1D
-L1338          fcb       $27,$4D,$2D,$13
+L1338          fcb       $27
+
+L1339          fcb       $4D,$2D,$13
 
 ;##FeedbackPrompts
 ; "?VERB?"  

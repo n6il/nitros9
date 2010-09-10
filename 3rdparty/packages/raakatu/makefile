@@ -46,3 +46,6 @@ dskcopy:
 
 dskclean:
 	$(RM) $(DISK)
+
+run: dsk
+	mess -inipath ~/Documents/SDLMESS -video opengl -window coco3 -flop1 $(DISK)
