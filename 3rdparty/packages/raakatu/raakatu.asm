@@ -212,97 +212,91 @@ name     equ   *
          fcb   $00 
 
 ;##Start
-start          equ       *
-
-L0600          clra                          ; 256 word (512 bytes on screen)
-L0601          ldx       #$0400              ; Start of screen
-L0604          ldu       #$6060              ; Space-space
+start    equ   *
+               clra                          ; 256 word (512 bytes on screen)
+               ldx       #$0400              ; Start of screen
+               ldu       #$6060              ; Space-space
 L0607          stu       ,X++                ; Clear ...
-L0609          deca                          ; ... text ...
-L060A          bne       L0607               ; ... screen
+               deca                          ; ... text ...
+               bne       L0607               ; ... screen
 L060C          lds       #$03FF              ; Stack starts just below screen
-L0610          lda       #$1D                ; Player object ...
-L0612          sta       u01D2               ; ... is the active object number
-L0615          ldx       #$05E0              ; Set cursor to ...
-L0618          stx       >$88                ; ... bottom row of screen
-L061A          ldb       #$96                ; Starting ...
-L061C          stb       u01D5               ; ... room
-L061F          leax      L1523,pc            ; Room descriptions
-L0622          lbsr      L0A1F               ; Find room data
-L0625          stx       u01D6               ; Store current room data
-L0628          lbsr      L0D4A               ; Print room description
-L062B          lda       #$0D                ; Print ...
-L062D          lbsr      L1184               ; ... CR
+               lda       #$1D                ; Player object ...
+               sta       u01D2               ; ... is the active object number
+               ldx       #$05E0              ; Set cursor to ...
+               stx       >$88                ; ... bottom row of screen
+               ldb       #$96                ; Starting ...
+               stb       u01D5               ; ... room
+               leax      L1523,pc            ; Room descriptions
+               lbsr      L0A1F               ; Find room data
+               stx       u01D6               ; Store current room data
+               lbsr      L0D4A               ; Print room description
+               lda       #$0D                ; Print ...
+               lbsr      L1184               ; ... CR
 
 ;##MainLoop
 L0630          lds       #$03FF              ; Initialize stack
-L0634          lbsr      L0ACC               ; Get user input
-
+               lbsr      L0ACC               ; Get user input
 L0637          clr       u01B7               ; Adjective word number
-L063A          clr       u01BA               ; LSB of 1st adjective in buffer (not used)
-L063D          clr       u01BB               ; LSB of verb
-L0640          clr       u01B2               ; Misc
-L0643          clr       u01B3               ; Verb word number
-L0646          clr       u01B9               ; Never used again
-L0649          clr       u01B8               ; Target object of command (not used)
-L064C          clr       u01B4               ; Preposition number
-L064F          clr       u01B5               ; Preposition given flag (not 0 if given)
-L0652          clr       u01BF               ; VAR object number
-L0655          clr       u01C3               ; 1st noun word number
-L0658          clr       u01C9               ; 2nd noun word number
-
-L065B          ldb       #$1D                ; Player object ...
-L065D          stb       u01D2               ; ... is active object
-L0660          lbsr      L1133               ; Get player object data
-L0663          stx       u01D3               ; Active object's data
-L0666          lbsr      L0A42               ; Skip length
-L0669          ldb       ,X                  ; Get player location
-L066B          stb       u01D5               ; Current room
-L066E          leax      L1523,pc            ; Room scripts
-L0671          lbsr      L0A1F               ; Find sublist ... script for room
-L0674          stx       u01D6               ; Script for current room
-L0677          ldx       #u01E3              ; Input token list area
-L067A          stx       u01D8               ; Where decoder fills in
-L067D          clr       ,X                  ; Empty token ... clear the list
-L067F          ldx       #$05E0              ; Bottom row is input buffer
+               clr       u01BA               ; LSB of 1st adjective in buffer (not used)
+               clr       u01BB               ; LSB of verb
+               clr       u01B2               ; Misc
+               clr       u01B3               ; Verb word number
+               clr       u01B9               ; Never used again
+               clr       u01B8               ; Target object of command (not used)
+               clr       u01B4               ; Preposition number
+               clr       u01B5               ; Preposition given flag (not 0 if given)
+               clr       u01BF               ; VAR object number
+               clr       u01C3               ; 1st noun word number
+               clr       u01C9               ; 2nd noun word number
+               ldb       #$1D                ; Player object ...
+               stb       u01D2               ; ... is active object
+               lbsr      L1133               ; Get player object data
+               stx       u01D3               ; Active object's data
+               lbsr      L0A42               ; Skip length
+               ldb       ,X                  ; Get player location
+               stb       u01D5               ; Current room
+               leax      L1523,pc            ; Room scripts
+               lbsr      L0A1F               ; Find sublist ... script for room
+               stx       u01D6               ; Script for current room
+               ldx       #u01E3              ; Input token list area
+               stx       u01D8               ; Where decoder fills in
+               clr       ,X                  ; Empty token ... clear the list
+               ldx       #$05E0              ; Bottom row is input buffer
 L0682          lbsr      L0B42               ; Decode input word
-
-L0685          beq       L0692               ; All words done
+               beq       L0692               ; All words done
 L0687          lda       ,X+                 ; Next character
-L0689          cmpa      #$60                ; A space?
-
-L068B          beq       L0682               ; Yes ... decode next
-L068D          cmpx      #$0600              ; End of input buffer?
-
-L0690          bne       L0687               ; No ... look for next word
+               cmpa      #$60                ; A space?
+               beq       L0682               ; Yes ... decode next
+               cmpx      #$0600              ; End of input buffer?
+               bne       L0687               ; No ... look for next word
 L0692          cmpx      #$0600              ; End of input buffer?
 
-L0695          bne       L0682               ; No ... keep looking
-L0697          clr       [u01D8]             ; Terminate token list
-L069B          ldx       #u01E3              ; Input buffer
-L069E          lda       ,X                  ; List number of first word
-L06A0          lbeq      L0736               ; Nothing entered
-L06A4          cmpa      #$02                ; First word a noun?
+               bne       L0682               ; No ... keep looking
+               clr       [u01D8]             ; Terminate token list
+               ldx       #u01E3              ; Input buffer
+               lda       ,X                  ; List number of first word
+               lbeq      L0736               ; Nothing entered
+               cmpa      #$02                ; First word a noun?
 
-L06A6          bne       L06B7               ; No ... move on
-L06A8          leax      1,X                 ; Point to word number
-L06AA          lda       ,X                  ; Get word number
-L06AC          leax      -1,X                ; Back to list number
-L06AE          cmpa      #$06                ; Living things (people, dogs, etc) are <6
+               bne       L06B7               ; No ... move on
+               leax      1,X                 ; Point to word number
+               lda       ,X                  ; Get word number
+               leax      -1,X                ; Back to list number
+               cmpa      #$06                ; Living things (people, dogs, etc) are <6
 
-L06B0          bcc       L06B7               ; Not a living thing
-L06B2          sta       u01B8               ; Remember living thing. We are giving them a command so process normally
-L06B5          leax      3,X                 ; Next word
+               bcc       L06B7               ; Not a living thing
+               sta       u01B8               ; Remember living thing. We are giving them a command so process normally
+               leax      3,X                 ; Next word
 
 L06B7          lda       ,X+                 ; Word list
 
-L06B9          beq       L0736               ; End of list ... go process
-L06BB          ldb       ,X                  ; Word number to B
-L06BD          ldu       ,X++                ; LSB to LSB of U
-L06BF          pshs      X                   ; Hold token buffer
-L06C1          deca                          ; List 1? Verbs?
+               beq       L0736               ; End of list ... go process
+               ldb       ,X                  ; Word number to B
+               ldu       ,X++                ; LSB to LSB of U
+               pshs      X                   ; Hold token buffer
+               deca                          ; List 1? Verbs?
 
-L06C2          bne       L06E5               ; No ... continue
+               bne       L06E5               ; No ... continue
 
 ; I believe the goal here was to allow multiple verbs given on an input line
 ; to be translated to a single verb. The code finds a replacement list for the
@@ -312,171 +306,170 @@ L06C2          bne       L06E5               ; No ... continue
 ; code has a bug or two. It actually does nothing at all. The replacement
 ; list for BEDLAM and RAAKATU is empty so the code is never used anyway.
 ;
-L06C4          leax      L1333-1,pc          ;  Multi verb translation list (empty list for BEDLAM and RAAKATU)
-L06C7          lbsr      L0A1F               ;  Look for an entry for the given verb
+               leax      L1333-1,pc          ;  Multi verb translation list (empty list for BEDLAM and RAAKATU)
+               lbsr      L0A1F               ;  Look for an entry for the given verb
 
-L06CA          bcc       L06DF               ;  No entry ... use the word as-is
-L06CC          lbsr      L0A42               ;  Skip length of entry
+               bcc       L06DF               ;  No entry ... use the word as-is
+               lbsr      L0A42               ;  Skip length of entry
 L06CF          lbsr      L0A58               ;  End of list?
-L06D2          tfr       B,A                 ;  ?? Held in A but ...
+               tfr       B,A                 ;  ?? Held in A but ...
 
-L06D4          bcc       L06DF               ;  Reached end of list. This input is the verb.
-L06D6          ldb       ,X+                 ;  ??
-L06D8          lda       ,X+                 ;  ?? ... A is mangled here?
-L06DA          cmpb      u01B3               ;  ?? Compare to 01B3 ...
+               bcc       L06DF               ;  Reached end of list. This input is the verb.
+               ldb       ,X+                 ;  ??
+               lda       ,X+                 ;  ?? ... A is mangled here?
+               cmpb      u01B3               ;  ?? Compare to 01B3 ...
 
-L06DD          bne       L06CF               ;  Continue running list
+               bne       L06CF               ;  Continue running list
 L06DF          stb       u01B3               ;  ?? ... then store if equal?
-L06E2          lbra      L0731               ;  Continue with next word
+               lbra      L0731               ;  Continue with next word
 
 L06E5          deca                          ;  List 2 Noun
+               bne       L071E               ;  Not a noun
+               tst       u01B5               ;  Has prepostion been given?
 
-L06E6          bne       L071E               ;  Not a noun
-L06E8          tst       u01B5               ;  Has prepostion been given?
-
-L06EB          beq       L070D               ;  No ... this is first noun
-L06ED          ldx       #u01C9              ;  2nd noun area
+               beq       L070D               ;  No ... this is first noun
+               ldx       #u01C9              ;  2nd noun area
 L06F0          stb       ,X+                 ;  Store word number
-L06F2          lda       u01B7               ;  Last adjective
-L06F5          sta       ,X+                 ;  Keep with noun
-L06F7          lda       u01BA               ;  LSB of adjective
-L06FA          sta       ,X                  ;  Keep with noun
+               lda       u01B7               ;  Last adjective
+               sta       ,X+                 ;  Keep with noun
+               lda       u01BA               ;  LSB of adjective
+               sta       ,X                  ;  Keep with noun
 
-L06FC          bne       L0702               ;  There was one ... go on
-L06FE          tfr       U,D                 ;  Use LSB of ...
-L0700          stb       ,X                  ;  ... noun if no adjective
+               bne       L0702               ;  There was one ... go on
+               tfr       U,D                 ;  Use LSB of ...
+               stb       ,X                  ;  ... noun if no adjective
 L0702          clr       u01B7               ;  Adjective moved
-L0705          clr       u01B5               ;  Preposition moved
-L0708          clr       u01BA               ;  LSB moved
+               clr       u01B5               ;  Preposition moved
+               clr       u01BA               ;  LSB moved
 
-L070B          bra       L0731               ;  Continue with next word
+               bra       L0731               ;  Continue with next word
 
 L070D          ldx       u01C3               ;  Copy ...
-L0710          stx       u01C9               ;  ... any ...
-L0713          ldx       u01C5               ;  ... first noun ...
-L0716          stx       u01CB               ;  ... to second
-L0719          ldx       #u01C3              ;  First word area
+               stx       u01C9               ;  ... any ...
+               ldx       u01C5               ;  ... first noun ...
+               stx       u01CB               ;  ... to second
+               ldx       #u01C3              ;  First word area
 
-L071C          bra       L06F0               ;  Go fill out first word
+               bra       L06F0               ;  Go fill out first word
 
 L071E          deca                          ;  List 3 Adjective
 
-L071F          bne       L072B               ;  Not a proposition
-L0721          stb       u01B7               ;  Store adjective number
-L0724          tfr       U,D                 ;  Store ...
-L0726          stb       u01BA               ;  ... adjective LSB in buffer
+               bne       L072B               ;  Not a proposition
+               stb       u01B7               ;  Store adjective number
+               tfr       U,D                 ;  Store ...
+               stb       u01BA               ;  ... adjective LSB in buffer
 
-L0729          bra       L0731               ;  Continue with next word
+               bra       L0731               ;  Continue with next word
 
 L072B          stb       u01B4               ;  Preposition
-L072E          stb       u01B5               ;  Preoposition given (noun should follow)
+               stb       u01B5               ;  Preoposition given (noun should follow)
 L0731          puls      X                   ;  Restore token pointer
-L0733          lbra      L06B7               ;  Next word
+               lbra      L06B7               ;  Next word
 
 
 L0736          tst       u01B3               ;  Verb given?
-L0739          lbeq      L0995               ;  No ... ?VERB? error
-L073D          ldx       #u01C9              ;  Second noun
-L0740          lbsr      L0822               ;  Decode it (only returns if OK)
-L0743          sta       u01C9               ;  Hold target object index
-L0746          stx       u01CC               ;  Hold target object pointer
-L0749          ldx       #u01C3              ;  First noun
-L074C          lbsr      L0822               ;  Decode it (only returns if OK)
-L074F          sta       u01C3               ;  Hold target object index
-L0752          stx       u01C6               ;  Hold target object pointer
-L0755          clr       u01B5               ;  Clear preposition flag
+               lbeq      L0995               ;  No ... ?VERB? error
+               ldx       #u01C9              ;  Second noun
+               lbsr      L0822               ;  Decode it (only returns if OK)
+               sta       u01C9               ;  Hold target object index
+               stx       u01CC               ;  Hold target object pointer
+               ldx       #u01C3              ;  First noun
+               lbsr      L0822               ;  Decode it (only returns if OK)
+               sta       u01C3               ;  Hold target object index
+               stx       u01C6               ;  Hold target object pointer
+               clr       u01B5               ;  Clear preposition flag
 
-L0758          ldx       u01C6               ;  Pointer to first noun object data
-L075B          lda       u01C3               ;  First noun index
+               ldx       u01C6               ;  Pointer to first noun object data
+               lda       u01C3               ;  First noun index
 
-L075E          beq       L0767               ;  No first noun ... store a 0
-L0760          lbsr      L0A42               ;  Skip ID and load end
-L0763          leax      2,X                 ;  Skip 2 bytes
-L0765          lda       ,X                  ;  Object parameter bits
+               beq       L0767               ;  No first noun ... store a 0
+               lbsr      L0A42               ;  Skip ID and load end
+               leax      2,X                 ;  Skip 2 bytes
+               lda       ,X                  ;  Object parameter bits
 L0767          sta       u01C8               ;  Hold first noun's parameter bits
 
-L076A          ldx       u01CC               ;  Pointer to second noun object data
-L076D          lda       u01C9               ;  Second noun number
+               ldx       u01CC               ;  Pointer to second noun object data
+               lda       u01C9               ;  Second noun number
 
-L0770          beq       L0779               ;  No second noun ... store 0
-L0772          lbsr      L0A42               ;  Skip ID and load end
-L0775          leax      2,X                 ;  Skip 2 bytes
-L0777          lda       ,X                  ;  Object parameter bits
+               beq       L0779               ;  No second noun ... store 0
+               lbsr      L0A42               ;  Skip ID and load end
+               leax      2,X                 ;  Skip 2 bytes
+               lda       ,X                  ;  Object parameter bits
 L0779          sta       u01CE               ;  Hold second noun's parameter bits
 
-L077C          leax      L135B,pc            ;  Syntax list
+               leax      L135B,pc            ;  Syntax list
 L077F          lda       ,X                  ;  End of list?
-L0781          lbeq      L0951               ;  Yes ... "?PHRASE?"
-L0785          lda       u01B3               ;  Verb ...
-L0788          cmpa      ,X+                 ;  ... matches?
+               lbeq      L0951               ;  Yes ... "?PHRASE?"
+               lda       u01B3               ;  Verb ...
+               cmpa      ,X+                 ;  ... matches?
 
-L078A          bne       L07E7               ;  No ... move to next entry
-L078C          lda       ,X                  ;  Phrase's proposition
-L078E          sta       u01B6               ;  Hold it
-L0791          lda       u01B4               ;  Preposition word number
+               bne       L07E7               ;  No ... move to next entry
+               lda       ,X                  ;  Phrase's proposition
+               sta       u01B6               ;  Hold it
+               lda       u01B4               ;  Preposition word number
 
-L0794          beq       L079A               ;  None given ... skip prep check
-L0796          cmpa      ,X                  ;  Given prep matches?
+               beq       L079A               ;  None given ... skip prep check
+               cmpa      ,X                  ;  Given prep matches?
 
-L0798          bne       L07E7               ;  No ... move to next phrase
+               bne       L07E7               ;  No ... move to next phrase
 L079A          leax      1,X                 ;  Skip to next phrase component
-L079C          lda       ,X                  ;  First noun required by phrase
+               lda       ,X                  ;  First noun required by phrase
 
-L079E          beq       L07B4               ;  Not given in phrase ... skip check
-L07A0          lda       u01C3               ;  1st noun index
+               beq       L07B4               ;  Not given in phrase ... skip check
+               lda       u01C3               ;  1st noun index
 
-L07A3          bne       L07BB               ;  Requested by phrase but not given by user ... next phrase
-L07A5          lda       u01BB               ;  LSB of verb ...
-L07A8          sta       u01BD               ;  ... to location of error
-L07AB          ldy       #u01C3              ;  Descriptor for 1st noun
-L07AF          lbsr      L08D2               ;  Decode 1st noun as per phrase
+               bne       L07BB               ;  Requested by phrase but not given by user ... next phrase
+               lda       u01BB               ;  LSB of verb ...
+               sta       u01BD               ;  ... to location of error
+               ldy       #u01C3              ;  Descriptor for 1st noun
+               lbsr      L08D2               ;  Decode 1st noun as per phrase
 
-L07B2          bra       L07BB               ;  We just processed a first one. We know it is there.
+               bra       L07BB               ;  We just processed a first one. We know it is there.
 L07B4          lda       u01C3               ;  Is there a 1st noun?
 
-L07B7          lbne      L0951               ; No ... next entry
+               lbne      L0951               ; No ... next entry
 L07BB          leax      1,X                 ; Next in phrase
-L07BD          lda       ,X                  ; Phrase wants a second noun?
+               lda       ,X                  ; Phrase wants a second noun?
 
-L07BF          beq       L07DA               ; No ... skip
-L07C1          lda       u01C9               ; User given 2nd noun
+               beq       L07DA               ; No ... skip
+               lda       u01C9               ; User given 2nd noun
 
-L07C4          bne       L07E1               ; Yes ... use this phrase
-L07C6          lda       u01BC               ; Location of ...
-L07C9          sta       u01BD               ; ... error on screen
-L07CC          lda       #$01                ; Set preposition ...
-L07CE          sta       u01B5               ; ... flag to YES
-L07D1          ldy       #u01C9              ; 2nd noun index
-L07D5          lbsr      L08D2               ; Decode 2nd noun as per phrase
+               bne       L07E1               ; Yes ... use this phrase
+               lda       u01BC               ; Location of ...
+               sta       u01BD               ; ... error on screen
+               lda       #$01                ; Set preposition ...
+               sta       u01B5               ; ... flag to YES
+               ldy       #u01C9              ; 2nd noun index
+               lbsr      L08D2               ; Decode 2nd noun as per phrase
 
-L07D8          bra       L07E1               ; Use this
+               bra       L07E1               ; Use this
 
 L07DA          lda       u01C9               ; Is there a second noun?
-L07DD          lbne      L0951               ; No ... phrase error
+               lbne      L0951               ; No ... phrase error
 L07E1          leax      1,X                 ; Get matched ...
-L07E3          lda       ,X                  ; ... phrase number
+               lda       ,X                  ; ... phrase number
 
-L07E5          bra       L07F0               ; Store and continue
+               bra       L07F0               ; Store and continue
 L07E7          leax      1,X                 ; Skip ...
-L07E9          leax      1,X                 ; ... to ...
-L07EB          leax      2,X                 ; ... next entry
-L07ED          lbra      L077F               ; Keep looking
+               leax      1,X                 ; ... to ...
+               leax      2,X                 ; ... next entry
+               lbra      L077F               ; Keep looking
 
 ; Unlike BEDLAM, there is no giving a command to something else. Just
 ; ignore any commanded object and give the phrase to the user.
 
 L07F0          sta       u01D1               ; Store the phrase number
-L07F3          ldx       #$05FF              ; Move cursor to ...
-L07F6          stx       >$88                ; ... end of line
-L07F8          lda       #$0D                ; Print ...
-L07FA          lbsr      L1184               ; ... CR
-L07FD          lda       u01C3               ; First noun given?
+               ldx       #$05FF              ; Move cursor to ...
+               stx       >$88                ; ... end of line
+               lda       #$0D                ; Print ...
+               lbsr      L1184               ; ... CR
+               lda       u01C3               ; First noun given?
 
-L0800          bne       L080E               ; Yes ... keep what we have
-L0802          ldx       u01CC               ; Move 2nd ...
-L0805          stx       u01C6               ; ... noun to ...
-L0808          lda       u01C9               ; ... first ...
-L080B          sta       u01C3               ; ... descriptor
+               bne       L080E               ; Yes ... keep what we have
+               ldx       u01CC               ; Move 2nd ...
+               stx       u01C6               ; ... noun to ...
+               lda       u01C9               ; ... first ...
+               sta       u01C3               ; ... descriptor
 L080E          leax      L323C,pc            ; General command scripts
 L0811          lbsr      L0A42               ; Skip over end delta
 L0814          lbsr      L0C03               ; Execute script
