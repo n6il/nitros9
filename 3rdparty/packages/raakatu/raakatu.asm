@@ -1938,68 +1938,57 @@ L1183          rts                           ; Done
 ; auto MORE prompting.
 ;
 L1184          pshs      B,A                 ; Hold B and A
-L1186          lda       u01BE               ; Last printed character
-L1189          cmpa      #$20                ; Last printed a space?
-
-L118B          bne       L11A7               ; No ... print this
-L118D          puls      A,B                 ; Hold
-L118F          cmpa      #$20                ; Space now?
-
-L1191          beq       L11EA               ; Yes ... just ignore
-L1193          cmpa      #$2E                ; A '.' ?
-
-L1195          beq       L119F               ; Yes. Ignore leading space.
-L1197          cmpa      #$3F                ; A '?' ?
-
-L1199          beq       L119F               ; Yes. Ignore leading space.
-L119B          cmpa      #$21                ; A '!' ?
-
-L119D          bne       L11A9               ; Yes. Ignore leading space.
+               lda       u01BE               ; Last printed character
+               cmpa      #$20                ; Last printed a space?
+               bne       L11A7               ; No ... print this
+               puls      A,B                 ; Hold
+               cmpa      #$20                ; Space now?
+               beq       L11EA               ; Yes ... just ignore
+               cmpa      #$2E                ; A '.' ?
+               beq       L119F               ; Yes. Ignore leading space.
+               cmpa      #$3F                ; A '?' ?
+               beq       L119F               ; Yes. Ignore leading space.
+               cmpa      #$21                ; A '!' ?
+               bne       L11A9               ; Yes. Ignore leading space.
 L119F          ldu       >$88                ; Back screen ...
-L11A1          leau      -1,U                ; ... pointer up ...
-L11A3          stu       >$88                ; ... over ignored space
-
-L11A5          bra       L11A9               ; Store and print
+               leau      -1,U                ; ... pointer up ...
+               stu       >$88                ; ... over ignored space
+               bra       L11A9               ; Store and print
 L11A7          puls      A,B                 ; Restore A and B
 L11A9          sta       u01BE               ; Last printed character
 *L11AC          jsr       [$A002]             ; Output character
          lbsr   os9write
-L11B0          lda       >$89                ; LSB of screen position
-L11B2          cmpa      #$FE                ; Reached end of screen?
-
-L11B4          bcs       L11EA               ; No ... done
-L11B6          ldu       >$88                ; Cursor position
-L11B8          leau      $-21,U              ; Back up to end of current row
-L11BB          lda       #$0D                ; CR ...
+               lda       >$89                ; LSB of screen position
+               cmpa      #$FE                ; Reached end of screen?
+               bcs       L11EA               ; No ... done
+               ldu       >$88                ; Cursor position
+               leau      $-21,U              ; Back up to end of current row
+               lda       #$0D                ; CR ...
 *L11BD          jsr       [$A002]             ; ... to screen
          lbsr   os9write
 L11C1          lda       ,U                  ; Find the ...
-L11C3          cmpa      #$60                ; ... space before ...
-
-L11C5          beq       L11CB               ; ... the last ...
-L11C7          leau      -1,U                ; ... word ...
-
-L11C9          bra       L11C1               ; ... on the line
+               cmpa      #$60                ; ... space before ...
+               beq       L11CB               ; ... the last ...
+               leau      -1,U                ; ... word ...
+               bra       L11C1               ; ... on the line
 L11CB          leau      1,U                 ; Now pointing to last word on line
-L11CD          lda       ,U                  ; Get next character in buffer
-L11CF          cmpa      #$60                ; Is it a space?
-
-L11D1          beq       L11EA               ; Yes ... all done
-L11D3          pshs      B                   ; Hold B
-L11D5          ldb       #$60                ; Put ...
-L11D7          stb       ,U                  ; ... space
-L11D9          puls      B                   ; Restore B
-L11DB          cmpa      #$60                ; Make sure ...
-
-L11DD          bcs       L11E1               ; ... upper ...
-L11DF          suba      #$40                ; ... case
+               lda       ,U                  ; Get next character in buffer
+               cmpa      #$60                ; Is it a space?
+               beq       L11EA               ; Yes ... all done
+               pshs      B                   ; Hold B
+               ldb       #$60                ; Put ...
+               stb       ,U                  ; ... space
+               puls      B                   ; Restore B
+               cmpa      #$60                ; Make sure ...
+               bcs       L11E1               ; ... upper ...
+               suba      #$40                ; ... case
 L11E1          sta       u01BE               ; Last printed character
 *L11E4          jsr       [$A002]             ; Output to screen
          lbsr   os9write
 
-L11E8          bra       L11CB               ; Move overhang to next line
+               bra       L11CB               ; Move overhang to next line
 L11EA          rts                           ; Done
-L11EB          rts                           ; OOPS
+               rts                           ; OOPS
 
 ;##UnpackBytes
 ; Unpack three characters stored in 2 bytes pointed to by X and print to screen.
@@ -2007,7 +1996,7 @@ L11EB          rts                           ; OOPS
 ; 40*40*40 = 64000 ... totally ingenious.
 ;
 L11EC          leay      L12A4,pc            ;
-L11F0          ldb       #$03                ;
+               ldb       #$03                ;
 			   pshs      x
                leax      L12A1,pc
 			   stb       ,x
