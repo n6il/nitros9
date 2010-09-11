@@ -36,9 +36,9 @@ dsk:	all
 	$(MAKDIR) $(DISK),CMDS
 	$(CP) $(CMDS) $(DISK),CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
+	$(OS9RENAME) $(DISK),CMDS/raakatu AutoEx
 	$(CP) $(LEVEL2)/coco3/cmds/shell_21 $(DISK),CMDS/shell
 	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
-#	$(OS9RENAME) $(DISK),CMDS/raaka-tu AutoEx
 #	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $(DISK),SUB/$(file);)
 
 dskcopy:
