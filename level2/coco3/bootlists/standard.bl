@@ -203,6 +203,7 @@
 * DriveWire Networking
 *../MODULES/SCF/scdwn.dr
 *../MODULES/SCF/term_scdwn.dt
+*../MODULES/SCF/n_scdwn.dd
 *../MODULES/SCF/n1_scdwn.dd
 *../MODULES/SCF/n2_scdwn.dd
 *../MODULES/SCF/n3_scdwn.dd
