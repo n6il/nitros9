@@ -56,18 +56,6 @@
 *../MODULES/RBF/lltc3.dr
 *../MODULES/RBF/llide.dr
 * SuperDriver descriptors - select as needed
-* SuperBoard SCSI DD descriptor (ID 0)
-*../MODULES/RBF/dds0_sb.dd
-* SuperBoard SCSI descriptors (IDs 0-6)
-*../MODULES/RBF/s0_sb.dd
-*../MODULES/RBF/s1_sb.dd
-*../MODULES/RBF/s2_sb.dd
-*../MODULES/RBF/s3_sb.dd
-*../MODULES/RBF/s4_sb.dd
-*../MODULES/RBF/s5_sb.dd
-*../MODULES/RBF/s6_sb.dd
-* SuperBoard SCSI HDB-DOS descriptor
-*../MODULES/RBF/sh_sb.dd
 * TC^3 SCSI DD descriptor (ID 0)
 *../MODULES/RBF/dds0_tc3.dd
 * TC^3 SCSI descriptors (IDs 0-6)
@@ -132,18 +120,13 @@
 ../MODULES/SCF/scf.mn
 *
 * CoCo 3 I/O sub-drivers
-* Keyboard modules: choose cc3 for CoCo 3 keyboard
-* or ps2 for SuperBoard PS/2 keyboard
 ../MODULES/SCF/vtio.dr
 ../MODULES/SCF/keydrv_cc3.sb
-*../MODULES/SCF/keydrv_ps2.sb
 * Sound module: CoCo 3 built-in sound generator
 ../MODULES/SCF/snddrv_cc3.sb
-* Joystick modules: choose joy for hi-res joystick adapter,
-* ps2 for SuperBoard PS/2 mouse, or
+* Joystick modules: choose joy for hi-res joystick adapter or
 * (M)icrosoft or (L)ogitech mouse using 6551 or 6552 ACIA
 ../MODULES/SCF/joydrv_joy.sb
-*../MODULES/SCF/joydrv_ps2.sb
 *../MODULES/SCF/joydrv_6551M.sb
 *../MODULES/SCF/joydrv_6552M.sb
 *../MODULES/SCF/joydrv_6551L.sb
@@ -207,20 +190,51 @@
 *../MODULES/SCF/modpak.dr
 *../MODULES/SCF/m1.dd
 *../MODULES/SCF/m2.dd
-* SuperBoard TL16C552A serial port
-*../MODULES/sctlsp.dd
-*../MODULES/t4_sctlsp.dd
-*../MODULES/t5_sctlsp.dd
 *
 * Printer drivers
 * ../MODULES/SCF/scbbp.dr
 * ../MODULES/SCF/p_scbbp.dd
+*
 * DriveWire 3 Printer drivers
 * ../MODULES/SCF/scdwp.dr
 * ../MODULES/SCF/p_scdwp.dd
-* SuperBoard TL16C552A parallel port
-*../MODULES/sctlpp.dd
-*../MODULES/p1_sctlpp.dd
+*
+* DriveWire Networking
+*../MODULES/SCF/scdwn.dr
+*../MODULES/SCF/term_scdwn.dt
+*../MODULES/SCF/n1_scdwn.dd
+*../MODULES/SCF/n2_scdwn.dd
+*../MODULES/SCF/n3_scdwn.dd
+*../MODULES/SCF/n4_scdwn.dd
+*../MODULES/SCF/n5_scdwn.dd
+*../MODULES/SCF/n6_scdwn.dd
+*../MODULES/SCF/n7_scdwn.dd
+*../MODULES/SCF/n8_scdwn.dd
+*../MODULES/SCF/n9_scdwn.dd
+*../MODULES/SCF/n10_scdwn.dd
+*../MODULES/SCF/n11_scdwn.dd
+*../MODULES/SCF/n12_scdwn.dd
+*../MODULES/SCF/n13_scdwn.dd
+*../MODULES/SCF/n14_scdwn.dd
+*
+* DriveWire Networking
+*../MODULES/SCF/scdwn.dr
+*../MODULES/SCF/term_scdwn.dt
+*../MODULES/SCF/n0_scdwn.dd
+*../MODULES/SCF/n1_scdwn.dd
+*../MODULES/SCF/n2_scdwn.dd
+*../MODULES/SCF/n3_scdwn.dd
+*../MODULES/SCF/n4_scdwn.dd
+*../MODULES/SCF/n5_scdwn.dd
+*../MODULES/SCF/n6_scdwn.dd
+*../MODULES/SCF/n7_scdwn.dd
+*../MODULES/SCF/n8_scdwn.dd
+*../MODULES/SCF/n9_scdwn.dd
+*../MODULES/SCF/n10_scdwn.dd
+*../MODULES/SCF/n11_scdwn.dd
+*../MODULES/SCF/n12_scdwn.dd
+*../MODULES/SCF/n13_scdwn.dd
+*../MODULES/SCF/n14_scdwn.dd
 *
 * VRN is a driver module used by certain games, including King's Quest III,
 * Leisure Suit Larry and Flight Simulator II.  A /nil descriptor is also
@@ -248,7 +262,7 @@
 * Besides support for the internal software clock, the following
 * hardware clocks are supported: Burke & Burke, Disto 2-N-1, Disto 4-N-1,
 * Eliminator, Harris, SmartWatch, Cloud-9 (SuperIDE), the MESS emulator, Jeff
-* Vavasour's CoCo emulator, DriveWire and SuperBoard.
+* Vavasour's CoCo emulator and DriveWire
 *../MODULES/CLOCKS/clock2_soft
 *../MODULES/CLOCKS/clock2_bnb
 *../MODULES/CLOCKS/clock2_disto2
@@ -260,7 +274,6 @@
 *../MODULES/CLOCKS/clock2_messemu
 *../MODULES/CLOCKS/clock2_cloud9
 ../MODULES/CLOCKS/clock2_dw3
-*../MODULES/CLOCKS/clock2_sb
 *
 ***************************************
 * System Kick-Start Module
