@@ -283,6 +283,7 @@ ReRead   pshs  a
 		 ldd   #133*1		1 second timeout
 		 bsr   DWRead
          bcs   ReadEx
+         bne   ReadEx
 * Send 2 byte checksum
 		 pshs  y
 		 leax  ,s
@@ -293,6 +294,8 @@ ReRead   pshs  a
 		 bsr   DWRead
 		 leas  2,s
 		 bcs   ReadEx
+                 bne   ReadEx
+* Send 2 byte checksum
 		 lda   ,s
 		 beq   ReadEx
 		 cmpa  #E_CRC
@@ -303,8 +306,13 @@ ReRead   pshs  a
 ReadErr  comb
 ReadEx	 puls  d,x,y,pc
 
+         IFEQ  DW4-1
+         use   ../level1/modules/dw4read.asm 
+         use   ../level1/modules/dw4write.asm 
+         ELSE
          use   ../level1/modules/dwread.asm 
          use   ../level1/modules/dwwrite.asm 
+         ENDC
 
          IFEQ  CoCo-3
 * MMU
