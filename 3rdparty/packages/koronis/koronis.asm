@@ -21,6 +21,10 @@
 *          2003/01/12  Boisy G. Pitre
 * Disassembled from original binary; patched so that standard output
 * is used and /TERM is no longer assumed.
+*          2011/08/01  Robert Gault
+* Changed two routines that toggle the RS-232 line at $FF20 to the
+* single bit sound line at $FF22. This preserves timing and prevents
+* DriveWire complications. L5A1F, L5A2C
 
          nam   Koronis
          ttl   Koronis Rift Program
@@ -9810,16 +9814,20 @@ L5917    fcb   $FF
          fcb   $E3,$DD,$EF,$F7,$F7,$FF,$F7,$FF   c]oww.w.
          fcb   $C7,$AB,$6D,$01,$6D,$AB,$C7
 
+* These next two routines change the RS-232 line and can't have any use in the game.
+* They do interfere with DW4 so I've changed them to toggle the single bit sound as
+* that might just make some sense. Also no timing changes will result by switching to
+* $FF22. RG
 L5A1F    pshs  a
-         lda   >$FF20
+         lda   >$FF22
          anda  #$FD
-         sta   >$FF20
+         sta   >$FF22
          puls  a
          rts   
 L5A2C    pshs  a
-         lda   >$FF20
+         lda   >$FF22
          ora   #$02
-         sta   >$FF20
+         sta   >$FF22
          puls  a
          rts   
 * Needs Label
