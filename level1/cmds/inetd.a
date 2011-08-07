@@ -11,6 +11,9 @@
 *
 *   2      2010/01/22  Boisy G. Pitre
 * Now reads inetd.conf file.
+*
+*   3      2011/08/07  Boisy G. Pitre
+* Fixed bug where conf file wasn't being processed correctly.
 
                nam       inetd
                ttl       internet daemon
@@ -18,7 +21,7 @@
 tylg           set       $01       Prgrm+Objct
 atrv           set       $80+rev   ReEnt+rev
 rev            set       $00
-edition        set       2
+edition        set       3
 
                psect     inetd_a,$01,$80,1,200,start
 
@@ -288,6 +291,9 @@ setuplisten
                lbsr      TCPListen
 ret0           rts
 
+retcc          clrb
+               rts
+
 * Fork Proccess that matches target port
 * Extract first parameter at X and see if it matches target port
 * if so, read rest of line and fork the process
@@ -305,10 +311,18 @@ ForkProcForPort
                lbsr      PRINTS
                fcb       C$CR
                fcb       $00
+               lbsr      PRINTS
+               fcc       /Comparing to port /
+               fcb       $00
+               ldd       targetport,u
+               lbsr      PRINT_DEC
+               lbsr      PRINTS
+               fcb       C$CR
+               fcb       $00
                puls      d
                ENDC
                cmpd      targetport,u
-               lbne      ret
+               lbne      retcc
 * point Y to byte after comma
 portloop       lda       ,y+
                cmpa      #C$CR
