@@ -43,9 +43,13 @@ childnetpath   rmb       1
 netpath        rmb       1
 targetprog     rmb       128
 targetparams   rmb       128
+tmodeparamlen  rmb       1
+tmodeparams    rmb       128
                endsect
 
 NetSig         equ       2
+
+tmode          fcs       /tmode/
 
 * signal intercept routine
 sigint         cmpb      #NetSig
@@ -297,7 +301,7 @@ retcc          clrb
 * Fork Proccess that matches target port
 * Extract first parameter at X and see if it matches target port
 * if so, read rest of line and fork the process
-* Line looks like this:  portnumberplusoptions,prog,params
+* Line looks like this:  portnumberplusoptions,prog,params,path opts
 ForkProcForPort
 * get port number
                lbsr      DEC_BIN
@@ -342,12 +346,24 @@ prgloop        lda       ,x+
 sethi          lda       -1,y
                ora       #$80
                sta       -1,y
-copypar        leay      targetparams,u
+copypar        clr       tmodeparamlen,u
+               leay      targetparams,u
 parloop        lda       ,x+
                sta       ,y+
+               cmpa      #',
+               beq       procopts
                cmpa      #C$CR
-               bne       parloop
+               beq       gotprocparms
 
+procopts
+               leay      tmodeparams,u
+procoptsloop   lda       ,x+
+               sta       ,y+
+               inc       targetparams,u
+               cmpa      #C$CR
+               beq       procoptsloop
+
+gotprocparms
                IFNE      DEBUG
                pshs      d
                lbsr      PRINTS
@@ -440,7 +456,21 @@ duper
                os9       I$Dup
                lbcs      errex
 
+* fork tmode process if tmode param length > 0
+               tst       tmodeparamlen,u
+               beq       forkchild
+               pshs      u 
+               leax      tmode,pcr
+               leau      tmodeparams,u
+               lda       #Objct
+               clrb
+               ldy       #256
+               os9       F$Fork
+               puls      u
+               os9       F$Wait
+
 * fork child process
+forkchild
                pshs      u 
                leax      targetprog,u
                leau      targetparams,u
