@@ -15,11 +15,21 @@
 *	   2005/11/03  P.Harvey-Smith.
 * Added the ability to assemble for either CoCo or Dragon.
 *
+*        2011/09/13 Robert Gault
+* Added support for DD.BIT cluster size.
+* Removed hard coded FAT buffer and calculated the size from DD.BIT.
+* Added error message if not enough memory for buffer.
+* Moved common code into subroutine for CheckAlloc & Allocate.
 
          nam   Cobbler
          ttl   Write OS9Boot to a disk
 
 * Disassembled 02/07/06 13:08:41 by Disasm v1.6 (C) 1988 by RML
+
+*The next line needed for stand-alone compiling. It should not
+* be present in the NitrOS-9 project.
+
+*LEVEL    equ	2
 
          IFP1
          use   defsfile
@@ -30,7 +40,7 @@ DOHELP   set   0
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   7
+edition  set   8
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -52,12 +62,13 @@ bffdbuf  	rmb   16
 u008E    	rmb   1
 u008F    	rmb   7
 u0096    	rmb   232
-bitmbuf  	rmb   1024
-         
+
 		IFGT  Level-1
 u057E    	rmb   76
 u05CA    	rmb   8316
 		ENDC
+
+bitmbuf  	equ   .		New flexible buffer R.G.
 size     	equ   .
 
 name     fcs   /Cobbler/
@@ -109,6 +120,9 @@ BootName fcc   "OS9Boot "
          fcb   $FF 
 RelNam   fcc   "Rel"
          fcb   $FF 
+* This might happen if there is not enough memory present.
+MemSpace fcc	"There is not enough memory for buffer space"
+	fcb	C$CR
 
 DragonRootSec	equ	$12	Dragon root sector is always LSN 18
 
@@ -160,7 +174,14 @@ L0162    sta   ,x+			Append boot name to dev name e.g. '/d1/OS9Boot'
          lda   <devpath
          os9   I$Read   		read LSN0
          lbcs  Bye			Error : exit
-	 
+
+* Request memory fot the FAT buffer + 256 bytes for stack space R.G.
+         ldd	<DD.MAP
+         addd	#size+256
+         os9	F$Mem
+         lbcs	NoMem
+	 tfr	y,s
+
          ldd   <DD.BSZ			get size of bootfile currently
          beq   L019F			branch if none
 	 
@@ -406,6 +427,7 @@ RewriteBitmap
          lbra  Bye			
 
 * Get absolute LSN
+* regA=track, regB=sector
 * Returns in D
 AbsLSN   pshs  b
          ldb   <DD.FMT		get format byte
@@ -415,45 +437,94 @@ AbsLSN   pshs  b
          bra   L0381
 L037F    ldb   #$01
 L0381    mul   
-         lda   <DD.TKS
+         lda   <DD.TKS		sectors per track
          mul   
-         addb  ,s
+         addb  ,s+
          adca  #$00
-         leas  $01,s
          rts   
 
-* Returns bit in bitmap corresponding to LSN in A
+* Determine bit shift from DD.BIT
+* Return shift in regY needed for division R.G.
+FShift
+	 ldd	lsn0buff+DD.BIT,u		get sectors per cluster
+         ldy	#-1
+* This finds number of bit shifts for DD.BIT
+SF1      lsra
+         rorb
+         leay	1,y
+         cmpd	#0
+         bne	SF1
+         rts
+
+* Returns bit in bitmap corresponding to LSN in regA
 * X=bitmap buffer, on exit X points to bitmap byte of our LSN
 GetBitmapBit    
-	pshs  y,b
-* Divide D by 8
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-         leax  d,x		Point X at byte witin bitmap of our LSN ?
-         puls  b
-         leay  <BitTable,pcr	Point to bit table
-         andb  #$07		Make sure offset within table
-         lda   b,y		Get bit from table
-         puls  pc,y		Restore and return
-
+* We need to divide by DD.BITx8 R.G.
+	 pshs y,d
+	 bsr	FShift
+         ldd	,s		recover LSN
+         cmpy	#0
+         beq	GBB3
+* Divide LSN by DD.BIT
+GBB2     lsra
+         rorb
+         leay	-1,y
+         bne	GBB2
+GBB3     stb	,s		save lsb
+	 andb	#7		Make sure offset within table
+	 stb	1,s		save table mask
+         ldy	#3
+* Now regY is the number of right shifts required for 8
+         ldb	,s		recover the lsb
+GBB4     lsra
+         rorb
+         leay	-1,y
+         bne	GBB4
+* Now regD is the byte number in the FAT
+         leax	d,x		point regX at the byte
+	 puls	d
+         leay	<BitTable,pcr	Point to bit table
+         lda 	b,y		Get bit from table
+         puls	pc,y		Restore regY and return
+	
 BitTable    fcb   $80,$40,$20,$10,$08,$04,$02,$01	Bitmap bit table
 
+* Common code for CheckAlloc & Allocate moved to subroutine R.G.
+Initcalc bsr   AbsLSN		go get absolute LSN in D
+         leax  >bitmbuf,u	point X to our bitmap buffer
+         bsr   GetBitmapBit	regA is bit from table
+* New code to obtain a shift value R.G.
+         pshs	d,y
+	 bsr	FShift
+	 cmpy	#0
+	 bne	CA2
+	 puls	d,y
+	 bra	CA3
+CA2	 ldd	2,s		recover regY sector count
+* Divide sector count by DD.BIT
+CAloop   lsra
+	 rorb
+	 leay	-1,y
+	 bne	CAloop
+	 cmpd	#0
+	 bne	CAnz
+	 incb			should never be zero bits
+CAnz	 tfr	d,y		regY has been divided by DD.BIT
+	 ldd	,s		recover content
+	 leas	4,s		clean stack
+	 rts
+CA3	equ	*
 *
 * CheckAlloc, check to see if a block of sectors is allocated.
 * 
 * Entry : A=track, B= sector, Y=number of sectors
 * Exit : Carry Set, sectors are already allocated. Carry clear, sectors are free.
 *
+* I think regY needs to be divided by DD.BIT R.G.
 CheckAlloc
 	pshs  y,x,b,a
-         bsr   AbsLSN		go get absolute LSN in D
-         leax  >bitmbuf,u	point X to our bitmap buffer
-         bsr   GetBitmapBit		
-         
+	bsr   Initcalc
+* Back to older code
 	 sta   ,-s		save off
          bmi   L03CB
 	 
@@ -507,13 +578,11 @@ L03F9    leas  $01,s		Drop saved byte
 * Allocate, allocate blocks in bitmap
 * Entry : A=track, B=sector, Y=block count.
 *
-	 
+* I think regY should be divided by DD.BIT R.G.
 Allocate    
 	 pshs  y,x,b,a
-         lbsr  AbsLSN		get absolute LSN
-         leax  >bitmbuf,u	Point to bitmap buffer
-         bsr   GetBitmapBit	Get bit corisponding to LSN
-	 
+	 bsr   Initcalc
+* Back to old code
          sta   ,-s		Save it
          bmi   L041C
 	 
@@ -536,7 +605,6 @@ L0420    sta   ,x
 L0426    cmpy  #$0008
          bhi   L0420
          beq   L043A
-	 
 L042E    lsra  
          leay  -$01,y
          bne   L042E
@@ -612,6 +680,10 @@ WriteBad leax  >WritErr,pcr
 TrkAlloc leax  >FileWarn,pcr
          clrb  
          bra   DisplayErrorAndExit
+
+NoMem	leax	>MemSpace,pcr
+	clrb
+	bra	DisplayErrorAndExit
 
          IFGT  Level-1
 NoRel    leax  >RelMsg,pcr
