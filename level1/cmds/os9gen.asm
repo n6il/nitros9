@@ -28,11 +28,23 @@
 *
 *  12      2006/05/09  Christopher R. Hawks
 * Weren't clearing -e option, so all os9boot files were extended.
+*
+*  13      2011/09/13  Robert Gault
+* A flexible buffer is now used to hold the FAT map.
+* The boot file name is now copied into the data space for which
+* 160 bytes are reserved. F$Mem trashes parameter space.
+* DD.BIT can now be used to obtain a reasonably sized FAT with large drives.
+* Added error message if not enough room for bit map.
+* Replace sectbuff with bitmbuff for all FAT (DD.MAP) work.
+* Moved common code in ABMClear & ABMSet to subroutine.
 
          nam   OS9Gen
          ttl   OS-9 bootfile generator
 
 * Disassembled 02/07/06 13:11:11 by Disasm v1.6 (C) 1988 by RML
+
+*Needed for stand alone compile
+*LEVEL    equ   2
 
          IFP1
          use   defsfile
@@ -76,6 +88,7 @@ eflag    rmb   1
 sngldrv  rmb   1
 bootdev  rmb   32
 lsn0     rmb   26
+btfstr   rmb   160
 u007B    rmb   2
 u007D    rmb   1
 sectbuff rmb   1024
@@ -83,6 +96,8 @@ u047E    rmb   16
 u048E    rmb   1
 u048F    rmb   7
 u0496    rmb   7018
+
+bitmbuf	 equ   .
 size     equ   .
 
 name     fcs   /OS9Gen/
@@ -107,6 +122,12 @@ HelpMsg  fcb   C$LF
 ErrWrit  fcb   C$LF
          fcc   "Error writing kernel track"
          fcb   C$CR
+MemErr	 fcb   C$LF
+	 fcc   "Not enough memory for bit map"
+	 fcb   C$CR
+TrkErr	 fcb   C$LF
+	 fcc   "Can't read data"
+	 fcb   C$CR
          IFEQ  DOHD
 HDGen    fcb   C$LF
          fcc   "Error - cannot gen to hard disk"
@@ -179,8 +200,8 @@ start    clrb
          leas  >u047E,u		point stack pointer to u047e
          pshs  u
          tfr   y,d			copy pointer to top of our mem in D
-         subd  ,s++			D = Y-u047e
-         subd  #u047E
+         subd  ,s++			D = Y-u047e = 7039
+         subd  #u047E			D = 5889 = $1701 What is it? R.G.
          clrb  
          std   <u0011
          lda   #PDELIM
@@ -215,14 +236,22 @@ parsein  ldd   ,y+			get two chars after -
          cmpd  #84*256+61	does D = 'T='
          lbne  SoftExit
          leay  1,y			point past =
-         sty   <btfname		save pointer to boottrack filename
+*         sty   <btfname	save pointer to boottrack filename R.G.
          sta   <btflag
+         pshs  x		copy btfname into data space
+         leax  btfstr,u		making room to expand the data space R.G.
+         stx   btfname,u
 * Skip over non-spaces and non-CRs
 SkipNon  lda   ,y+
          cmpa  #C$CR
-         beq   getdev
+         beq   getdev2		we must recover regX
          cmpa  #C$SPAC
-         bne   SkipNon
+         beq   parseopt2	""
+         sta   ,x+
+         bra   SkipNon
+getdev2	 puls  x
+         bra   getdev
+parseopt2 puls x
          bra   parseopt
 remboot  inc   <rflag		remove bootfile reference from LSN0 flag
          bra   parsein
@@ -513,16 +542,27 @@ around   ldx   #$0000
          lbcs  Bye
          ldd   #$0001
          lbsr  Seek2LSN
-         leax  sectbuff,u
+*        leax  sectbuff,u		R.G. Expand memory to hold buffer
+	 ldd	<lsn0+DD.MAP,u
+	 addd	#bitmbuf+256		expand memory by DD.MAP+256 bytes
+	 os9	F$Mem
+	 leax	MemErr,pcr
+	 lbcs	WritExit
+	 tfr	y,s			relocate stack
+
+*        leax  sectbuff,u
+	 leax	bitmbuf,u
          ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
          lda   <devpath
-         os9   I$Read   
-         lbcs  Bye
-         ldd   #Bt.Track*256	boot track
+         os9   I$Read   	read the FAT into the bitmbuf
+         leax	TrkErr,pcr
+         lbcs  WritExit
+
+         ldd   #Bt.Track*256	boot track regD=$2200
          ldy   #$0004			four bits
-         lbsr  ABMClear
+         lbsr  ABMClear		this should test for clear not clear it
          bcc   L0520
-         ldd   #Bt.Track*256	boot track
+         ldd   #Bt.Track*256	boot track, as it was not clear
          lbsr  Seek2LSN			seek to it
          leax  <u0017,u
          ldy   #$0007
@@ -531,35 +571,37 @@ around   ldx   #$0000
          lbcs  Bye
          leax  <u0017,u
          ldd   ,x
-         cmpd  #79*256+83		OS ??
-         lbne  WarnUser
+         cmpd  #256*'O+'S		is this an OS-9 boot track
+         lbne  WarnUser			go if not
 *         cmpb  #'O
 *         lbne  WarnUser
 *         cmpb  #'S
 *         lbne  WarnUser
          lda   $04,x
-         cmpa  #$12
+         cmpa  #$12			also check for NOP
          beq   L0512
          ldd   #Bt.Track*256+15	boot track, sector 16
          ldy   #$0003			sectors 16-18
          lbsr  ABMClear
          lbcs  WarnUser
 L0512    clra  
-         ldb   <lsn0+DD.TKS,u	get number of tracks in D
+         ldb   <lsn0+DD.TKS,u	get number of sectors in D
          tfr   d,y
          ldd   #Bt.Track*256	boot track
          lbsr  ABMSet
          bra   L0531
 L0520    ldd   #Bt.Track*256+4	boot track
          ldy   #$000E		sectors 5-18
-         lbsr  ABMClear
+         lbsr  ABMClear		test rest of track
          lbcs  WarnUser
          bra   L0512
 
+* Write altered map back to disk
 L0531
          ldd   #$0001
          lbsr  Seek2LSN
-         leax  sectbuff,u
+*         leax  sectbuff,u
+	 leax	bitmbuf,u
          ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
          lda   <devpath
          os9   I$Write  		write out the bitmap
@@ -675,46 +717,97 @@ AbsLSN2  mul   			multiply sides times track
 *         leas  $01,s
          rts   
 
-* Bitmap conversion from bit to byte
-* Entry: X = pointer to bitmap
-*        D = bit
-* Exit:  A = bit mask
-*        X = pointer to byte represented by bit D
-L05AA    pshs  y,b
-         lsra  		divide D by 8
-         rorb  
-         lsra  
-         rorb  
-         lsra  
-         rorb  
-         leax  d,x
-         puls  b
-         leay  <BitMask,pcr
-         andb  #$07
-         lda   b,y
-         puls  pc,y
+* Determine bit shift from DD.BIT R.G.
+* Return shift in regY needed for division
+FShift
+	 ldd	lsn0+DD.BIT,u		get sectors per cluster
+         ldy	#-1
+* This finds number of bit shifts for DD.BIT R.G.
+SF1      lsra
+         rorb
+         leay	1,y
+         cmpd	#0
+         bne	SF1
+         rts
 
-BitMask  fcb   $80,$40,$20,$10,$08,$04,$02,$01
+
+* Returns bit in bitmap corresponding to LSN in regA
+* X=bitmap buffer, on exit X points to bitmap byte of our LSN
+L05AA    
+* We need to divide by DD.BITx8 R.G.
+	 pshs y,d
+	 bsr	FShift
+         ldd	,s		recover LSN
+         cmpy	#0
+         beq	GBB3
+* Divide LSN by DD.BIT R.G.
+GBB2     lsra
+         rorb
+         leay	-1,y
+         bne	GBB2
+GBB3     stb	,s		save lsb
+	 andb	#7		Make sure offset within table
+	 stb	1,s		save table mask
+         ldy	#3
+* Now regY is the number of right shifts required for 8 R.G.
+         ldb	,s		recover the lsb
+GBB4     lsra
+         rorb
+         leay	-1,y
+         bne	GBB4
+* Now regD is the byte number in the FAT
+         leax	d,x		point regX at the byte
+	 puls	d
+         leay	<BitTable,pcr	Point to bit table
+         lda 	b,y		Get bit from table
+         puls	pc,y		Restore regY and return
+
+BitTable    fcb   $80,$40,$20,$10,$08,$04,$02,$01	Bitmap bit table
+
+* Common routine used by ABMSet & ABMClear  R.G.
+Initcalc bsr   AbsLSN		convert A:B to LSN
+*         leax  sectbuff,u	R.G.
+	 leax	bitmbuf,u
+         bsr   L05AA		getbitmapbit
+         pshs	d,y
+	 bsr	FShift		R.G. code to include DD.BIT
+	 cmpy	#0
+	 bne	ABM2
+	 puls	d,y
+	 bra	ABM3
+ABM2	 ldd	2,s		recover regY sector count
+* Divide sector count by DD.BIT
+ABMlp    lsra
+	 rorb
+	 leay	-1,y
+	 bne	ABMlp
+	 cmpd	#0
+	 bne	ABMnz
+	 incb			should never be zero bits
+ABMnz	 tfr	d,y		regY has been divided by DD.BIT
+	 ldd	,s		recover content
+	 leas	4,s		clean stack
+	 rts
+ABM3	 equ	*
 
 * Clear bits in the allocation bitmap
 * Entry: A = Track, B = Sector, Y = number of bits to clear
 ABMClear pshs  x,y,b,a
-         bsr   AbsLSN		convert A:B to LSN
-         leax  sectbuff,u
-         bsr   L05AA
-         sta   ,-s
-         bmi   L05EA
+	 bsr   Initcalc
+* Back to older code
+         sta   ,-s		save map bit
+         bmi   L05EA		go if bit #7
 L05D3    lda   ,x			get byte in bitmap
          sta   u007D,u
-L05D9    anda  ,s			and with byte on stack
-         bne   L0616
-         leay  -1,y
+L05D9    anda  ,s			test byte on stack
+         bne   L0616		go if already set
+         leay  -1,y		next bit to test
          beq   L0612
          lda   u007D,u
          lsr   ,s
          bcc   L05D9
          leax  $01,x
-L05EA    lda   #$FF
+L05EA    lda   #$FF		
          sta   ,s
          bra   L05FA
 L05F0    lda   ,x
@@ -743,9 +836,8 @@ L0618    leas  $01,s
 * Set bits in the allocation bitmap
 * Entry: A = Track, B = Sector, Y = number of bits to set
 ABMSet   pshs  y,x,b,a
-         lbsr  AbsLSN
-         leax  sectbuff,u
-         bsr   L05AA
+	 lbsr   Initcalc
+* Back to old code
          sta   ,-s
          bmi   L063A
          lda   ,x
