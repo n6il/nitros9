@@ -37,6 +37,10 @@
 * Added error message if not enough room for bit map.
 * Replace sectbuff with bitmbuff for all FAT (DD.MAP) work.
 * Moved common code in ABMClear & ABMSet to subroutine.
+*
+* 14       2011/09/16 Robert Gault
+* Corrected a typo which occured when committing code. Exit of Initcalc had
+* ABM3 in wrong place.
 
          nam   OS9Gen
          ttl   OS-9 bootfile generator
@@ -787,8 +791,8 @@ ABMlp    lsra
 ABMnz	 tfr	d,y		regY has been divided by DD.BIT
 	 ldd	,s		recover content
 	 leas	4,s		clean stack
-	 rts
-ABM3	 equ	*
+ABM3	 rts
+
 
 * Clear bits in the allocation bitmap
 * Entry: A = Track, B = Sector, Y = number of bits to clear
