@@ -20,6 +20,10 @@
 * Removed hard coded FAT buffer and calculated the size from DD.BIT.
 * Added error message if not enough memory for buffer.
 * Moved common code into subroutine for CheckAlloc & Allocate.
+*
+*        2011/09/16 Robert Gault
+* Corrected a typo which occured when committing code. Exit of Initcalc had
+* ABM3 in wrong place.
 
          nam   Cobbler
          ttl   Write OS9Boot to a disk
@@ -29,7 +33,7 @@
 *The next line needed for stand-alone compiling. It should not
 * be present in the NitrOS-9 project.
 
-*LEVEL    equ	2
+*Level    equ	2
 
          IFP1
          use   defsfile
@@ -62,7 +66,6 @@ bffdbuf  	rmb   16
 u008E    	rmb   1
 u008F    	rmb   7
 u0096    	rmb   232
-
 		IFGT  Level-1
 u057E    	rmb   76
 u05CA    	rmb   8316
@@ -90,7 +93,9 @@ WritErr  fcb   C$LF
          fcb   C$LF
          fcc   "Error - cannot gen to hard disk"
          fcb   C$CR
-	 
+SeekErr	 fcb	C$LF
+	 fcc	"Error seeking sector"
+	 fcb	C$CR	 
 	IFNE	DRAGON
 FileWarn fcb   C$LF
          fcc   "Warning - not a Dragon "
@@ -175,12 +180,14 @@ L0162    sta   ,x+			Append boot name to dev name e.g. '/d1/OS9Boot'
          os9   I$Read   		read LSN0
          lbcs  Bye			Error : exit
 
+	ifeq	0
 * Request memory fot the FAT buffer + 256 bytes for stack space R.G.
          ldd	<DD.MAP
          addd	#size+256
          os9	F$Mem
          lbcs	NoMem
 	 tfr	y,s
+	endc
 
          ldd   <DD.BSZ			get size of bootfile currently
          beq   L019F			branch if none
@@ -309,7 +316,7 @@ L0203    pshs  y
          ldd   >bffdbuf+(FD.SEG+1),u
          std   <DD.BT+1
          lbsr  WriteLSN0		Write bootfile loc to LSN0 on disk
-	 
+ 
          ldd   #$0001
          lbsr  Seek2LSN
          leax  >bitmbuf,u		Point to bitmap buffer
@@ -512,8 +519,8 @@ CAloop   lsra
 CAnz	 tfr	d,y		regY has been divided by DD.BIT
 	 ldd	,s		recover content
 	 leas	4,s		clean stack
-	 rts
-CA3	equ	*
+CA3	 rts
+
 *
 * CheckAlloc, check to see if a block of sectors is allocated.
 * 
@@ -632,7 +639,7 @@ Seek2LSN pshs  u,y,x,b,a
          tfr   d,x
          lda   <devpath
          os9   I$Seek   
-         bcs   WriteBad
+         bcs   SeekBad
          puls  pc,u,y,x,b,a
 
 WriteLSN0
@@ -676,7 +683,9 @@ IsFragd  leax  >BootFrag,pcr
 WriteBad leax  >WritErr,pcr
          clrb  
          bra   DisplayErrorAndExit
-
+SeekBad	leax	SeekErr,pcr
+	clrb
+	bsr	DisplayErrorAndExit
 TrkAlloc leax  >FileWarn,pcr
          clrb  
          bra   DisplayErrorAndExit
