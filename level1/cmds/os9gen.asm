@@ -40,7 +40,7 @@
 *
 * 14       2011/09/16 Robert Gault
 * Corrected a typo which occured when committing code. Exit of Initcalc had
-* ABM3 in wrong place.
+* ABM3 in wrong place. Also included C$CR in file name copy.
 
          nam   OS9Gen
          ttl   OS-9 bootfile generator
@@ -253,7 +253,8 @@ SkipNon  lda   ,y+
          beq   parseopt2	""
          sta   ,x+
          bra   SkipNon
-getdev2	 puls  x
+getdev2  sta   ,x			this was added in rev 14 to correct an oversight R.G.
+         puls  x
          bra   getdev
 parseopt2 puls x
          bra   parseopt
