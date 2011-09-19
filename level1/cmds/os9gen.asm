@@ -41,6 +41,11 @@
 * 14       2011/09/16 Robert Gault
 * Corrected a typo which occured when committing code. Exit of Initcalc had
 * ABM3 in wrong place. Also included C$CR in file name copy.
+*
+*         2011/09/18 Robert Gault
+* Cleaned up code and removed multiple calculations of shift divisor by
+* calculating it once and storing it in data.
+* Corrected sector count calculation to include partial clusters.
 
          nam   OS9Gen
          ttl   OS-9 bootfile generator
@@ -48,7 +53,7 @@
 * Disassembled 02/07/06 13:11:11 by Disasm v1.6 (C) 1988 by RML
 
 *Needed for stand alone compile
-*LEVEL    equ   2
+LEVEL    equ   2
 
          IFP1
          use   defsfile
@@ -91,6 +96,8 @@ u003E    rmb   2
 eflag    rmb   1
 sngldrv  rmb   1
 bootdev  rmb   32
+btshift  rmb   2
+bitflag  rmb   1
 lsn0     rmb   26
 btfstr   rmb   160
 u007B    rmb   2
@@ -405,6 +412,8 @@ L033D    lbsr  GetDest
          ldy   #256
          os9   I$Read   	read LSN0
          bcs   L033C
+         lbsr	FShift
+         sty	btshift,u	save divisor value R.G.
 L0361    lda   <bfpath		get bootfile path in A
          leax  >u047E,u
          ldy   <u0013
@@ -548,19 +557,19 @@ around   ldx   #$0000
          ldd   #$0001
          lbsr  Seek2LSN
 *        leax  sectbuff,u		R.G. Expand memory to hold buffer
-	 ldd	<lsn0+DD.MAP,u
-	 addd	#bitmbuf+256		expand memory by DD.MAP+256 bytes
-	 os9	F$Mem
-	 leax	MemErr,pcr
-	 lbcs	WritExit
-	 tfr	y,s			relocate stack
+	   ldd   <lsn0+DD.MAP,u
+	   addd  #bitmbuf+256		expand memory by DD.MAP+256 bytes
+	   os9   F$Mem
+	   leax  MemErr,pcr
+	   lbcs  WritExit
+	   tfr   y,s			relocate stack
 
 *        leax  sectbuff,u
-	 leax	bitmbuf,u
+	   leax  bitmbuf,u
          ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
          lda   <devpath
          os9   I$Read   	read the FAT into the bitmbuf
-         leax	TrkErr,pcr
+         leax  TrkErr,pcr
          lbcs  WritExit
 
          ldd   #Bt.Track*256	boot track regD=$2200
@@ -606,7 +615,7 @@ L0531
          ldd   #$0001
          lbsr  Seek2LSN
 *         leax  sectbuff,u
-	 leax	bitmbuf,u
+	   leax   bitmbuf,u
          ldy   <lsn0+DD.MAP,u	get number of bytes in device's bitmap
          lda   <devpath
          os9   I$Write  		write out the bitmap
@@ -724,81 +733,83 @@ AbsLSN2  mul   			multiply sides times track
 
 * Determine bit shift from DD.BIT R.G.
 * Return shift in regY needed for division
-FShift
-	 ldd	lsn0+DD.BIT,u		get sectors per cluster
-         ldy	#-1
+FShift   pshs   d
+	   ldd    lsn0+DD.BIT,u		get sectors per cluster
+         ldy    #-1
 * This finds number of bit shifts for DD.BIT R.G.
 SF1      lsra
          rorb
-         leay	1,y
-         cmpd	#0
-         bne	SF1
-         rts
+         leay   1,y
+         cmpd   #0
+         bne    SF1
+         puls   d,pc
 
 
 * Returns bit in bitmap corresponding to LSN in regA
 * X=bitmap buffer, on exit X points to bitmap byte of our LSN
 L05AA    
 * We need to divide by DD.BITx8 R.G.
-	 pshs y,d
-	 bsr	FShift
-         ldd	,s		recover LSN
-         cmpy	#0
-         beq	GBB3
+	   pshs   y,d
+	   ldy    btshift,u
+         cmpy   #0
+         beq    GBB3
 * Divide LSN by DD.BIT R.G.
 GBB2     lsra
          rorb
-         leay	-1,y
-         bne	GBB2
-GBB3     stb	,s		save lsb
-	 andb	#7		Make sure offset within table
-	 stb	1,s		save table mask
-         ldy	#3
+         leay   -1,y
+         bne    GBB2
+GBB3     stb    ,s	save lsb
+	   andb   #7	Make sure offset within table
+	   stb    1,s	save table mask
+         ldy    #3
 * Now regY is the number of right shifts required for 8 R.G.
-         ldb	,s		recover the lsb
+         ldb    ,s	recover the lsb
 GBB4     lsra
          rorb
-         leay	-1,y
-         bne	GBB4
+         leay   -1,y
+         bne    GBB4
 * Now regD is the byte number in the FAT
-         leax	d,x		point regX at the byte
-	 puls	d
-         leay	<BitTable,pcr	Point to bit table
-         lda 	b,y		Get bit from table
-         puls	pc,y		Restore regY and return
+         leax   d,x	point regX at the byte
+	   puls   d
+         leay   <BitTable,pcr	Point to bit table
+         lda    b,y	Get bit from table
+         puls   pc,y	Restore regY and return
 
 BitTable    fcb   $80,$40,$20,$10,$08,$04,$02,$01	Bitmap bit table
 
 * Common routine used by ABMSet & ABMClear  R.G.
+* Enter: see ABMSet & ABMClear
+* Exit: regY=divisor, regD=LSN
 Initcalc bsr   AbsLSN		convert A:B to LSN
-*         leax  sectbuff,u	R.G.
-	 leax	bitmbuf,u
+	   leax  bitmbuf,u
          bsr   L05AA		getbitmapbit
-         pshs	d,y
-	 bsr	FShift		R.G. code to include DD.BIT
-	 cmpy	#0
-	 bne	ABM2
-	 puls	d,y
-	 bra	ABM3
-ABM2	 ldd	2,s		recover regY sector count
+         pshs  d,y
+	   ldy   btshift		R.G. code to include DD.BIT
+	   cmpy  #0
+	   bne   ABM2
+	   puls  d,y,pc
+ABM2	   ldd   2,s		recover regY sector count
+         clr    bitflag,u
 * Divide sector count by DD.BIT
 ABMlp    lsra
-	 rorb
-	 leay	-1,y
-	 bne	ABMlp
-	 cmpd	#0
-	 bne	ABMnz
-	 incb			should never be zero bits
-ABMnz	 tfr	d,y		regY has been divided by DD.BIT
-	 ldd	,s		recover content
-	 leas	4,s		clean stack
-ABM3	 rts
+	   rorb
+	   bcc    ABMlp2
+	   inc    bitflag,u	mark carry over
+ABMlp2   leay   -1,y
+	   bne    ABMlp
+	   tst    bitflag,u
+         beq    ABMnz
+	   incb			include partial cluster
+ABMnz	   tfr   d,y		regY has been divided by DD.BIT 
+	   ldd   ,s		recover content
+	   leas  4,s		clean stack
+ABM3	   rts
 
 
 * Clear bits in the allocation bitmap
 * Entry: A = Track, B = Sector, Y = number of bits to clear
 ABMClear pshs  x,y,b,a
-	 bsr   Initcalc
+	   bsr   Initcalc
 * Back to older code
          sta   ,-s		save map bit
          bmi   L05EA		go if bit #7
@@ -841,7 +852,7 @@ L0618    leas  $01,s
 * Set bits in the allocation bitmap
 * Entry: A = Track, B = Sector, Y = number of bits to set
 ABMSet   pshs  y,x,b,a
-	 lbsr   Initcalc
+	   lbsr   Initcalc
 * Back to old code
          sta   ,-s
          bmi   L063A
