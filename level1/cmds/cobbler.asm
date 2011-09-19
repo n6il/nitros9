@@ -24,6 +24,12 @@
 *        2011/09/16 Robert Gault
 * Corrected a typo which occured when committing code. Exit of Initcalc had
 * ABM3 in wrong place.
+*
+*        2011/09/18 Robert Gault
+* Cleaned up code and removed multiple calculations of shift divisor by
+* calculating it once and storing it in data.
+* Corrected sector count calculation to include partial clusters.
+
 
          nam   Cobbler
          ttl   Write OS9Boot to a disk
@@ -33,7 +39,7 @@
 *The next line needed for stand-alone compiling. It should not
 * be present in the NitrOS-9 project.
 
-*Level    equ	2
+Level    equ	2
 
          IFP1
          use   defsfile
@@ -44,7 +50,7 @@ DOHELP   set   0
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   8
+edition  set   9
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -52,7 +58,9 @@ edition  set   8
 lsn0buff 	rmb   26	Buffer to hold data from LSN0 of traget device
 newbpath 	rmb   1
 devpath  	rmb   3
-EndDevName    	rmb   2		pointer to last character of device name when moving to fullbnam
+EndDevName  rmb   2		pointer to last character of device name when moving to fullbnam
+btshift     rmb   2         division factor
+bitflag     rmb   1         indicates fractional division
 fullbnam 	rmb   20	this buffer hodls the entire name (i.e. /D0/OS9Boot)
 u0034    	rmb   16
 BootBuf    	rmb   7		Area to read part of current boot area into, to check for boot stuff
@@ -94,9 +102,9 @@ WritErr  fcb   C$LF
          fcc   "Error - cannot gen to hard disk"
          fcb   C$CR
 SeekErr	 fcb	C$LF
-	 fcc	"Error seeking sector"
-	 fcb	C$CR	 
-	IFNE	DRAGON
+	   fcc	"Error seeking sector"
+	   fcb	C$CR	 
+	 IFNE	DRAGON
 FileWarn fcb   C$LF
          fcc   "Warning - not a Dragon "
          fcb   C$LF
@@ -179,15 +187,14 @@ L0162    sta   ,x+			Append boot name to dev name e.g. '/d1/OS9Boot'
          lda   <devpath
          os9   I$Read   		read LSN0
          lbcs  Bye			Error : exit
-
-	ifeq	0
+         lbsr  FShift                   get divisor from DD.BIT R.G.
+         sty   btshift,u
 * Request memory fot the FAT buffer + 256 bytes for stack space R.G.
          ldd	<DD.MAP
          addd	#size+256
          os9	F$Mem
          lbcs	NoMem
-	 tfr	y,s
-	endc
+	   tfr	y,s
 
          ldd   <DD.BSZ			get size of bootfile currently
          beq   L019F			branch if none
@@ -195,7 +202,7 @@ L0162    sta   ,x+			Append boot name to dev name e.g. '/d1/OS9Boot'
          leax  <fullbnam,u
          os9   I$Delete 		delete existing bootfile
          
-	 clra  
+	   clra  
          clrb  
          sta   <DD.BT			Init some of the LSN0 vars
          std   <DD.BT+1
@@ -303,7 +310,7 @@ L0203    pshs  y
          puls  u
          lbcs  Bye			Error: exit
 	 
-         leax  <bffdbuf,u		Point to buffer for filedes sector
+         leax  bffdbuf,u		Point to buffer for filedes sector
          ldy   #256
          os9   I$Read   		read in filedes sector
          lbcs  Bye			Error: exit
@@ -384,7 +391,7 @@ L0304    ldd   #(Bt.Track*256)+Bt.Sec+$04	Check to see if sectors 5..18 of boot 
 	ENDC
 
 RewriteBitmap    
-	ldd   #$0001
+	   ldd   #$0001
          lbsr  Seek2LSN			Seek to bitmap sector on disk
          leax  >bitmbuf,u
          ldy   <DD.MAP
@@ -452,7 +459,7 @@ L0381    mul
 
 * Determine bit shift from DD.BIT
 * Return shift in regY needed for division R.G.
-FShift
+FShift   pshs   d
 	 ldd	lsn0buff+DD.BIT,u		get sectors per cluster
          ldy	#-1
 * This finds number of bit shifts for DD.BIT
@@ -461,15 +468,15 @@ SF1      lsra
          leay	1,y
          cmpd	#0
          bne	SF1
-         rts
+         puls   d,pc
 
-* Returns bit in bitmap corresponding to LSN in regA
-* X=bitmap buffer, on exit X points to bitmap byte of our LSN
+* Enter: regD=LSN to test,regX=bitmap buffer
+* Exit: regX points to bitmap byte of our LSN
+*       regA=bit mask, regB not preserved
 GetBitmapBit    
 * We need to divide by DD.BITx8 R.G.
-	 pshs y,d
-	 bsr	FShift
-         ldd	,s		recover LSN
+	   pshs y,d
+	   ldy	btshift,u
          cmpy	#0
          beq	GBB3
 * Divide LSN by DD.BIT
@@ -478,8 +485,8 @@ GBB2     lsra
          leay	-1,y
          bne	GBB2
 GBB3     stb	,s		save lsb
-	 andb	#7		Make sure offset within table
-	 stb	1,s		save table mask
+	   andb	#7		Make sure offset within table
+	   stb	1,s		save table mask
          ldy	#3
 * Now regY is the number of right shifts required for 8
          ldb	,s		recover the lsb
@@ -489,7 +496,7 @@ GBB4     lsra
          bne	GBB4
 * Now regD is the byte number in the FAT
          leax	d,x		point regX at the byte
-	 puls	d
+	   puls	d
          leay	<BitTable,pcr	Point to bit table
          lda 	b,y		Get bit from table
          puls	pc,y		Restore regY and return
@@ -497,29 +504,33 @@ GBB4     lsra
 BitTable    fcb   $80,$40,$20,$10,$08,$04,$02,$01	Bitmap bit table
 
 * Common code for CheckAlloc & Allocate moved to subroutine R.G.
+* Enter: see CheckAlloc & Allocate
+* Exit: regY=divisor, regD=LSN
 Initcalc bsr   AbsLSN		go get absolute LSN in D
          leax  >bitmbuf,u	point X to our bitmap buffer
          bsr   GetBitmapBit	regA is bit from table
 * New code to obtain a shift value R.G.
          pshs	d,y
-	 bsr	FShift
-	 cmpy	#0
-	 bne	CA2
-	 puls	d,y
-	 bra	CA3
-CA2	 ldd	2,s		recover regY sector count
+	   ldy	btshift,u
+	   cmpy	#0
+	   bne	CA2
+	   puls	d,y,pc
+CA2      ldd    2,s             recover number of sectors
+         clr    bitflag,u
 * Divide sector count by DD.BIT
 CAloop   lsra
-	 rorb
-	 leay	-1,y
-	 bne	CAloop
-	 cmpd	#0
-	 bne	CAnz
-	 incb			should never be zero bits
-CAnz	 tfr	d,y		regY has been divided by DD.BIT
-	 ldd	,s		recover content
-	 leas	4,s		clean stack
-CA3	 rts
+	   rorb
+	   bcc    CAlp2
+	   inc    bitflag,u	indicate fractional result
+CAlp2	   leay	-1,y
+	   bne	CAloop
+	   tst    bitflag,u
+	   beq	CAnz
+	   incb			include partial cluster
+CAnz	   tfr	d,y		regY has been divided by DD.BIT
+	   ldd	,s		recover content
+	   leas	4,s		clean stack
+	   rts
 
 *
 * CheckAlloc, check to see if a block of sectors is allocated.
@@ -529,10 +540,10 @@ CA3	 rts
 *
 * I think regY needs to be divided by DD.BIT R.G.
 CheckAlloc
-	pshs  y,x,b,a
-	bsr   Initcalc
+	   pshs  y,x,b,a
+	   bsr   Initcalc
 * Back to older code
-	 sta   ,-s		save off
+	   sta   ,-s		save off
          bmi   L03CB
 	 
          lda   ,x		Get bitmap byte of our LSN
@@ -540,14 +551,14 @@ CheckAlloc
 L03BB    anda  ,s		Is our LSN allocated ?
          bne   L03F7		Yes : flag error
          
-	 leay  -$01,y		Decrement sector count		
+	   leay  -$01,y		Decrement sector count		
          beq   L03F3		All done : yes, exit
          
-	 lda   <LSNBitmapByte	Get saved bitmap byte
+	   lda   <LSNBitmapByte	Get saved bitmap byte
          lsr   ,s		Check next sector
          bcc   L03BB		If carry, we need to fetch next byte from bitmap
          
-	 leax  $01,x		Increment bitmap pointer
+	   leax  $01,x		Increment bitmap pointer
 L03CB    lda   #$FF		
          sta   ,s
          bra   L03DB
@@ -556,7 +567,7 @@ L03D1    lda   ,x
          anda  ,s
          bne   L03F7
          
-	 leax  $01,x
+	   leax  $01,x
          leay  -$08,y
 L03DB    cmpy  #$0008		Done a whole byte's worth of blocks ?
          bhi   L03D1		Yes
@@ -567,7 +578,7 @@ L03E5    lsra  			Process next sector
          leay  -$01,y		decrement sector count
          bne   L03E5		Any more : yes continue
          
-	 coma  
+	   coma  
          sta   ,s
 L03ED    lda   ,x
          anda  ,s
@@ -587,8 +598,8 @@ L03F9    leas  $01,s		Drop saved byte
 *
 * I think regY should be divided by DD.BIT R.G.
 Allocate    
-	 pshs  y,x,b,a
-	 bsr   Initcalc
+	   pshs  y,x,b,a
+	   lbsr   Initcalc
 * Back to old code
          sta   ,-s		Save it
          bmi   L041C
@@ -651,7 +662,7 @@ WriteLSN0
          lda   <devpath
          os9   I$Seek   	Seek to LSN0
          
-	 puls  u		added for OS-9 Level One +BGP+
+	   puls  u		added for OS-9 Level One +BGP+
          leax  lsn0buff,u	Point to our LSN buffer
          ldy   #DD.DAT
          lda   <devpath
@@ -668,7 +679,7 @@ ShowHelp equ   *
          ENDC
 	 
 DisplayErrorAndExit    
-	pshs  b
+	   pshs  b
          lda   #$02
          ldy   #256
          os9   I$WritLn 
@@ -683,16 +694,16 @@ IsFragd  leax  >BootFrag,pcr
 WriteBad leax  >WritErr,pcr
          clrb  
          bra   DisplayErrorAndExit
-SeekBad	leax	SeekErr,pcr
-	clrb
-	bsr	DisplayErrorAndExit
+SeekBad  leax  SeekErr,pcr
+	   clrb
+	   bsr   DisplayErrorAndExit
 TrkAlloc leax  >FileWarn,pcr
          clrb  
          bra   DisplayErrorAndExit
 
-NoMem	leax	>MemSpace,pcr
-	clrb
-	bra	DisplayErrorAndExit
+NoMem	  leax   >MemSpace,pcr
+	  clrb
+	  bra    DisplayErrorAndExit
 
          IFGT  Level-1
 NoRel    leax  >RelMsg,pcr
