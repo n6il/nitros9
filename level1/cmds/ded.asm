@@ -46,7 +46,11 @@
 *        more than $##0000 sectors and/or DD.BIT >1.  *
 *        Converted all u and L addressing to normal   *
 *        lables.                                      *
-*        Added cluster/sector toggle.
+*        Added cluster/sector toggle.                 *
+*******************************************************
+* 11/09/20  Robert Gault                              *
+*        Corrected BAM presentation in sector mode    *
+*        when DD.BIT>1.                               *
 *******************************************************
 * Disassembled 2006/01/10 00:57:52 by Disasm v1.5 (C) 1988 by RML and RG
 
@@ -54,6 +58,7 @@
          ifp1
          use   defsfile
          endc
+
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
 rev      set   $02
@@ -565,6 +570,7 @@ disp     lbsr  dsplylin
          ldd   <ddbit       sectors per bit
          lbsr  mulDbyX      mul regD * regX
          stu   <ddbitcalc   sectors per page of allocation map, hope for no overflow
+         tfr   u,x          !!!!!!!!!!!!!!!!!!!
          puls  d            recover LSN
 
 csf1     lbsr  mulDbyX      mul regD*regX = value first sector on this page allocation map
