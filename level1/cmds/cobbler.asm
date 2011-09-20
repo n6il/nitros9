@@ -39,7 +39,7 @@
 *The next line needed for stand-alone compiling. It should not
 * be present in the NitrOS-9 project.
 
-Level    equ	2
+*Level    equ	2
 
          IFP1
          use   defsfile
