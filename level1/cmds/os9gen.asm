@@ -53,7 +53,7 @@
 * Disassembled 02/07/06 13:11:11 by Disasm v1.6 (C) 1988 by RML
 
 *Needed for stand alone compile
-LEVEL    equ   2
+*LEVEL    equ   2
 
          IFP1
          use   defsfile
