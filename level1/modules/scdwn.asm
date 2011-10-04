@@ -433,6 +433,15 @@ GetKySns
                cmpa      #SS.KySns
                bne       UnSvcErr            ; no, we have no more answers, report error
 * Get key sense byte from server and return to caller
+               pshs      u
+               ifgt      Level-1
+               ldu       <D.DWSubAddr
+               else      
+               ldu       >D.DWSubAddr
+               jsr       3,u
+               endc      
+               puls      u
+               sta       R$A,x
 
                puls      cc,dp,pc            ; restore Carry status, system DP, return			
 
