@@ -423,10 +423,17 @@ GetScSiz       cmpa      #SS.ScSiz
                puls      cc,dp,pc            ; restore Carry status, system DP, return
 
 GetComSt       cmpa      #SS.ComSt
-               bne       UnSvcErr            ; no, we have no more answers, report error
+               bne       GetKySns            ; no, we have no more answers, report error
                ldd       #$0000              ; not used, return $0000
                std       R$Y,x
                sta       R$B,x
+               puls      cc,dp,pc            ; restore Carry status, system DP, return			
+
+GetKySns
+               cmpa      #SS.KySns
+               bne       UnSvcErr            ; no, we have no more answers, report error
+* Get key sense byte from server and return to caller
+
                puls      cc,dp,pc            ; restore Carry status, system DP, return			
 
 * Advertise Stat Code to server
@@ -486,6 +493,8 @@ relea          lda       PD.CPR,y            get curr proc #
                bne       ex
                clr       <SSigID,u           clear process id
 ex             rts       
+sskysns        
+               rts
 ssig           pshs      cc
                orcc      #IntMasks
                lda       PD.CPR,y            ; get curr proc #
