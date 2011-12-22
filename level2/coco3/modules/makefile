@@ -15,12 +15,15 @@ CLOCKCLOUD9     = -aRTCCloud9=1
 CLOCKSOFT       = -aRTCSoft=1
 CLOCKMESSEMU    = -aRTCMessEmu=1
 CLOCKJVEMU      = -aRTCJVEmu=1
+TC3FLAGS        = $(AFLAGS) -aTC3=1 $(FLAGS)
+IDEFLAGS        = $(AFLAGS) -aIDE=1 $(FLAGS)
 
 DEPENDS		= ./makefile
-TPB		= ../../3rdparty/booters
+TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		 boot_burke boot_rampak boot_wd1002 boot_dw3 boot_dw3_becker
+		 boot_burke boot_rampak boot_wd1002 boot_dw3 boot_dw3_becker \
+		boot_tc3 boot_ide
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_h0 sysgo_dd
@@ -38,8 +41,11 @@ RBF		= rbf.mn \
 		ddd0_35s.dd ddd0_40d.dd ddd0_80d.dd \
 		rammer.dr r0_8k.dd r0_96k.dd r0_128k.dd r0_192k.dd \
 		ddr0_8k.dd ddr0_96k.dd ddr0_128k.dd ddr0_192k.dd md.dd \
-		ddx0.dd x0.dd x1.dd x2.dd x3.dd
-		
+		ddx0.dd x0.dd x1.dd x2.dd x3.dd \
+		rbsuper.dr lltc3.dr llide.dr \
+		ddi0_ide.dd i0_ide.dd i1_ide.dd ih_ide.dd \
+		dds0_tc3.dd s0_tc3.dd s1_tc3.dd s2_tc3.dd s3_tc3.dd s4_tc3.dd \
+		s5_tc3.dd s6_tc3.dd sh_tc3.dd
 
 SCF		= scf.mn \
 		vtio.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr sc6551.dr \
@@ -86,21 +92,40 @@ krn krnp2:
 	$(CP) kernel/$@ .
 
 # Special cases
+# TC^3 SCSI Booter
+boot_tc3: boot_scsi.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS)
+
+# SuperIDE/Glenside IDE Booter
+boot_ide: boot_ide.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
+
+# DriveWire 3 Becker Booter
 boot_dw3_becker: boot_dw3.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBECKER=1
 
+# DriveWire 3 Becker Submodule
 dw3_becker.sb: dw3.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBECKER=1
 
+# CoGrf/CoVDG Modules
 cogrf.io: cowin.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aCoGrf=1
 
+covdg.io: covdg.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCOCO2=1
+
+covdg_small.io: covdg.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $<
+
+# Disto SC-II Drivers
 rb1773_scii_ff74.dr:    rb1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1
                                                                             
 rb1773_scii_ff58.dr:    rb1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1 -aSCIIALT=1
                                                                             
+# REL Modules
 rel_32: rel.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=32
 
@@ -119,18 +144,28 @@ rel_40_50hz: rel.asm
 rel_80_50hz: rel.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=80 -aTkPerSec=50
 
+# Floppy Booters
 boot_1773_6ms: boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSTEP=0
 
 boot_1773_30ms: boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSTEP=3
 
+# SysGo Modules
 sysgo_dd: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1
 	
 sysgo_h0: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 	
+# TC^3 SCSI Driver
+lltc3.dr: llscsi.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS)
+
+# IDE Driver
+llide.dr: llide.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
+
 # Floppy descriptors
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
 		-aInterlv=3 -aSAS=8 -aDensity=1
@@ -268,6 +303,47 @@ x2.dd: dwdesc.asm
 x3.dd: dwdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
 
+# TC^3 SCSI Descriptors
+dds0_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) -aDD=1
+
+s0_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) $(SCSI_HD)
+
+s1_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID1) $(SCSI_HD)
+
+s2_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID2) $(SCSI_HD)
+
+s3_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID3) $(SCSI_HD)
+
+s4_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID4) $(SCSI_HD)
+
+s5_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID5) $(SCSI_HD)
+
+s6_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID6) $(SCSI_HD)
+
+sh_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(HDBDOS)
+
+# IDE Descriptors
+ddi0_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER) -aDD=1
+
+i0_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER)
+
+i1_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SLAVE)
+
+ih_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS)
+
 # RFM descriptors
 ddy0.dd: rfmdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1 -aDNum=0
@@ -283,13 +359,6 @@ y2.dd: rfmdesc.asm
 
 y3.dd: rfmdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
-
-# VDGInt Modules
-covdg.io: covdg.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCOCO2=1
-
-covdg_small.io: covdg.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $<
 
 # Clocks
 clock_60hz: clock.asm

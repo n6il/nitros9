@@ -15,12 +15,15 @@ CLOCKCLOUD9     = -aRTCCloud9=1
 CLOCKSOFT       = -aRTCSoft=1
 CLOCKMESSEMU    = -aRTCMessEmu=1
 CLOCKJVEMU      = -aRTCJVEmu=1
+TC3FLAGS        = $(AFLAGS) -aTC3=1 $(FLAGS)
+IDEFLAGS        = $(AFLAGS) -aIDE=1 $(FLAGS)
 
 DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		boot_burke boot_rampak boot_wd1002 boot_dw3 boot_dw3_coco1
+		boot_burke boot_rampak boot_wd1002 boot_dw3 boot_dw3_coco1 \
+		boot_tc3 boot_ide
 BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= krn krnp2 wbug
 SYSMODS		= ioman init sysgo_dd sysgo_h0
@@ -35,7 +38,11 @@ RBF		= rbf.mn \
 		ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
 		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd \
-		ddx0.dd x0.dd x1.dd x2.dd x3.dd
+		ddx0.dd x0.dd x1.dd x2.dd x3.dd \
+		rbsuper.dr lltc3.dr llide.dr \
+		ddi0_ide.dd i0_ide.dd i1_ide.dd ih_ide.dd \
+		dds0_tc3.dd s0_tc3.dd s1_tc3.dd s2_tc3.dd s3_tc3.dd s4_tc3.dd \
+                s5_tc3.dd s6_tc3.dd sh_tc3.dd
 
 SCF		= scf.mn \
 		sc6551.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr vtio.dr \
@@ -58,7 +65,19 @@ ALLOBJS		= $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE) $(R
 
 all:	$(ALLOBJS)
 
+# Kernel
+krn krnp2:
+	$(CD) kernel; make $@
+	$(CP) kernel/$@ .
+
 # Special cases
+# TC^3 SCSI Booter
+boot_tc3: boot_scsi.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS)
+
+# SuperIDE/Glenside IDE Booter
+boot_ide: boot_ide.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
 
 # DriveWire 3
 boot_dw3_coco1: boot_dw3.asm
@@ -66,11 +85,6 @@ boot_dw3_coco1: boot_dw3.asm
 
 dw3_coco1.sb: dw3.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBAUD38400=1
-
-# Kernel
-krn krnp2:
-	$(CD) kernel; make $@
-	$(CP) kernel/$@ .
 
 boot_1773_6ms:	boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=0
@@ -84,18 +98,13 @@ rb1773_scii_ff74.dr:	rb1773.asm
 rb1773_scii_ff58.dr:	rb1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1 -aSCIIALT=1
 
-# Clocks
-clock_60hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=60
+# TC^3 SCSI Driver
+lltc3.dr: llscsi.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS)
 
-clock_50hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=50
-
-clock2_bnb: clock2_ds1315.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aBNB=1
-
-clock2_cloud9: clock2_ds1315.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCLOUD9=1
+# IDE Driver
+llide.dr: llide.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
 
 # Floppy descriptors
 SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
@@ -209,6 +218,47 @@ x2.dd: dwdesc.asm
 x3.dd: dwdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
 
+# TC^3 SCSI Descriptors
+dds0_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) -aDD=1
+
+s0_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) $(SCSI_HD)
+
+s1_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID1) $(SCSI_HD)
+
+s2_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID2) $(SCSI_HD)
+
+s3_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID3) $(SCSI_HD)
+
+s4_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID4) $(SCSI_HD)
+
+s5_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID5) $(SCSI_HD)
+
+s6_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID6) $(SCSI_HD)
+
+sh_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(HDBDOS)
+
+# IDE Descriptors
+ddi0_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER) -aDD=1
+
+i0_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER)
+
+i1_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SLAVE)
+
+ih_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS)
+
 # RFM descriptors
 ddy0.dd: rfmdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1 -aDNum=0
@@ -233,6 +283,19 @@ sysgo_dd: sysgo.asm
 
 sysgo_h0: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
+
+# Clocks
+clock_60hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=60
+
+clock_50hz: clock.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=50
+
+clock2_bnb: clock2_ds1315.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aBNB=1
+
+clock2_cloud9: clock2_ds1315.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCLOUD9=1
 
 clean:
 	$(CD) kernel; make $@
