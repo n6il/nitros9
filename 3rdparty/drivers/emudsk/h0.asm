@@ -6,6 +6,8 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  01    Modified to compile under OS9Source            tjl 02/08/28
+*  02    Corrected device address for MESS          R.Gault 11/12/24
+*        Address not used by driver but still ....
 
  IFP1
  USE os9defs
