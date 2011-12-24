@@ -6,6 +6,12 @@
 * Ed.    Comments                                       Who YY/MM/DD
 * ------------------------------------------------------------------
 *  01    Modified to compile under OS9Source            tjl 02/08/28
+*  02    Modified to handle two .vhd drives        R. Gault 11/12/23
+*        Conforms to MESS v1.44 or more recent
+*        Added and enhanced some comments
+*        Note the forced > extended addressing in some cases.
+*        That is required as this code is relocatable but the
+*        addresses are fixed. Part of original code.
 
 * EmuDisk floppy disk controller driver
 * Edition #1
@@ -33,7 +39,8 @@ command  equ  $FF83           where to put the commands
 *   $FF84-$FF85: 6809's 16-bit buffer address (cannot cross an 8K boundary due
 *          to interference from the MMU emulation).
 buffer   equ  $FF84           pointer to the buffer
-
+*   $FF86: controls .vhd drive 0=drive1 1=drive2
+vhdnum   equ  $FF86
 *
 * Returns:
 *
@@ -62,34 +69,39 @@ buffer   equ  $FF84           pointer to the buffer
 
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
-rev      set   $01
+rev      set   $02
 
          mod   eom,name,tylg,atrv,start,size
          fcb   $ff
 
          org   0
-u0000    rmb   $FF            Normal RBF device mem for 4 drives
+u0000    rmb   DRVBEG+(DRVMEM*2) Normal RBF device mem for 2 drives RG
+         rmb   255-.             residual page RAM for stack etc. RG
 size     equ   .
 
          fcb   $FF            This byte is the driver permissions
 name     fcs   /EmuDsk/
-         fcb   1              edition #1
+         fcb   2              edition #2 RG
 
 
 * Entry: Y=Ptr to device descriptor
 *        U=Ptr to device mem
 *
 * Default to only one drive supported, there's really no need for more.
-INIT     lda   #$FF          'Invalid' value & # of drives
-         leax  DRVBEG,u       Point to start of drive tables
-         sta   ,x             DD.TOT MSB to bogus value
-         sta   <V.TRAK,x      Init current track # to bogus value
-
+* Since MESS now offers second vhd drive, EmuDsk will support it. RG
+INIT     ldd   #$FF02        'Invalid' value & # of drives
+         stb   V.NDRV,u      Tell RBF how many drives
+         leax  DRVBEG,u      Point to start of drive tables
+init2    sta   DD.TOT,x      Set media size to bogus value $FF0000
+         sta   V.TRAK,x      Init current track # to bogus value
+         leax  DRVMEM,x      Move to second drive memory. RG
+         decb
+         bne   init2
 * for now, TERM routine goes here.  Perhaps it should be pointing to the
 * park routine? ... probably not.
 TERM
 GETSTA   clrb                 no GetStt calls - return, no error, ignore
-L0086    rts   
+         rts   
 
 start    lbra   INIT           3 bytes per entry to keep RBF happy
          lbra   READ
@@ -101,11 +113,11 @@ start    lbra   INIT           3 bytes per entry to keep RBF happy
 * Entry: B:X = LSN
 *        Y   = path dsc. ptr
 *        U   = Device mem ptr
-READ     clra                 READ the sector
+READ     clra                 READ command value=0
          bsr   GetSect        Go read the sector, exiting if there's an error
-         tstb
+         tstb                 msb of LSN
          bne   GETSTA         if not sector 0, return
-         leax  ,x             sets CC.Z bit
+         leax  ,x             sets CC.Z bit if lsw of LSN not $0000
          bne   GETSTA         if not sector zero, return
 
 * LSN0, standard OS-9 format
@@ -113,7 +125,10 @@ READ     clra                 READ the sector
 * LSN0 never changes after it's read in once.  But we'll do it anyhow
          ldx   PD.BUF,y       Get ptr to sector buffer
          leau  DRVBEG,u       point to the beginning of the drive tables
-         ldb   #DD.SIZ        copy bytes over
+         lda   PD.DRV,y       Get vhd drive number from descriptor RG
+         beq   copy.i         go if first vhd drive
+         leau  DRVMEM,u       point to second drive memory
+copy.i   ldb   #DD.SIZ        copy bytes over
 copy.0   lda   ,x+            grab from LSN0
          sta   ,u+            save into device static storage 
          decb
@@ -121,7 +136,9 @@ copy.0   lda   ,x+            grab from LSN0
          clrb
          rts   
 
-WRITE    lda   #$01           WRITE to emulator disk, and fall thru to GetSect
+WRITE    lda   #$01           WRITE command = 1
+         bsr   GetSect        Use same code as used by READ
+         rts
 
 * Get Sector comes here with:
 * Entry: A = read/write command code (0/1)
@@ -129,25 +146,27 @@ WRITE    lda   #$01           WRITE to emulator disk, and fall thru to GetSect
 *        Y   = path dsc. ptr
 *        U   = Device static storage ptr
 * Exit:  A   = error status from command register
-GetSect  tst   <PD.DRV,y      get drive number requested
-         bne   DrivErr        only one drive allowed, return error
-
-         pshs  x,b            save LSN for later
-         stb   >LSN
+GetSect  pshs  x,d            Moved up in routine to save command code. RG
+         lda   PD.DRV,y       Get drive number requested
+         cmpa  #2             Only two drives allowed. RG
+         bhs   DrivErr        Return error if "bad" drive#
+         stb   >LSN           Tell MESS which LSN
          stx   >LSN+1
-
-         ldx   PD.BUF,y       where the 256-byte LSN should go
+         ldx   PD.BUF,y       Where the 256-byte LSN should go
+         sta   >vhdnum        Set to MESS drive#  RG
 * Note: OS-9 allocates buffers from system memory on page boundaries, so
 * the low byte of X should now be $00, ensuring that the sector is not
 * falling over an 8K MMU block boundary.
+* This is the job of RBF not EmuDsk! RG
 
          stx   >buffer        set up the buffer address
+         puls  a              recover command
          sta   >command       get the emulator to blast over the sector
-         lda   >command       restore the error status
-         bne   FixErr         if non-zero, go fix the error and exit
-         puls  b,x,pc         restore LSN and exit
+         lda   >command       get the error status
+         bne   FixErr         if non-zero, go report the error and exit
+         puls  d,x,pc         restore registers and exit
 
-DrivErr  leas  2,s            kill address of calling routine (Read/Write)
+DrivErr  leas  6,s            kill address of calling routine (Read/Write)
          comb
 * FIND ERROR CODE TO USE
 *        ldb   #E$            find appropriate error code...
@@ -225,7 +244,14 @@ SETSTA   ldx   PD.RGS,y       Get caller's register stack ptr
          ldb   #E$UnkSvc      return illegal service request error
          rts   
 
-park     ldb   #$02           close the drive
+* This next is pointless for a virtual drive but probably does not hurt.
+* MESS does not require this if hard drives are swapped in mid-stream. In
+* real hardware, this is important as would be closing all open files. RG
+park     lda   PD.DRV,y       get drive number RG
+         cmpa  #2             test for illegal value RG
+         bhs   format         ignore if illegal RG
+         sta   $FF86          tell MESS which drive to halt RG
+         ldb   #$02           close the drive
          stb   >command       save in command register
 
 format   clrb                 ignore physical formats.  They're not
