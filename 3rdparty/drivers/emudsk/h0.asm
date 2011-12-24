@@ -16,7 +16,7 @@
 type SET Devic+Objct
  MOD rend,rnam,type,ReEnt+1,fmnam,drvnam
  FCB $FF  all access modes
- FCB $07,$FF,$E0 device address
+ FCB $07,$FF,$80 device address
 
  FCB optl number of options
 
