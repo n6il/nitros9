@@ -12,6 +12,7 @@
 *        Note the forced > extended addressing in some cases.
 *        That is required as this code is relocatable but the
 *        addresses are fixed. Part of original code.
+*  03    Corrected minor errors in GETSTAT.        R. Gault 11/12/26
 
 * EmuDisk floppy disk controller driver
 * Edition #1
@@ -81,7 +82,7 @@ size     equ   .
 
          fcb   $FF            This byte is the driver permissions
 name     fcs   /EmuDsk/
-         fcb   2              edition #2 RG
+         fcb   3              edition #2 RG
 
 
 * Entry: Y=Ptr to device descriptor
@@ -150,10 +151,10 @@ GetSect  pshs  x,d            Moved up in routine to save command code. RG
          lda   PD.DRV,y       Get drive number requested
          cmpa  #2             Only two drives allowed. RG
          bhs   DrivErr        Return error if "bad" drive#
+         sta   >vhdnum        Set to MESS drive#  RG
          stb   >LSN           Tell MESS which LSN
          stx   >LSN+1
          ldx   PD.BUF,y       Where the 256-byte LSN should go
-         sta   >vhdnum        Set to MESS drive#  RG
 * Note: OS-9 allocates buffers from system memory on page boundaries, so
 * the low byte of X should now be $00, ensuring that the sector is not
 * falling over an 8K MMU block boundary.
@@ -163,13 +164,13 @@ GetSect  pshs  x,d            Moved up in routine to save command code. RG
          puls  a              recover command
          sta   >command       get the emulator to blast over the sector
          lda   >command       get the error status
+         clr   >vhdnum
          bne   FixErr         if non-zero, go report the error and exit
-         puls  d,x,pc         restore registers and exit
+         puls  b,x,pc         restore registers and exit
 
 DrivErr  leas  6,s            kill address of calling routine (Read/Write)
          comb
 * FIND ERROR CODE TO USE
-*        ldb   #E$            find appropriate error code...
          ldb   #E$NotRdy      not ready
          rts
 
@@ -253,6 +254,7 @@ park     lda   PD.DRV,y       get drive number RG
          sta   $FF86          tell MESS which drive to halt RG
          ldb   #$02           close the drive
          stb   >command       save in command register
+         clr   >vhdnum
 
 format   clrb                 ignore physical formats.  They're not
          rts                  necessary
