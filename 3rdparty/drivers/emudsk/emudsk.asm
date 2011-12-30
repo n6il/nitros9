@@ -12,7 +12,8 @@
 *        Note the forced > extended addressing in some cases.
 *        That is required as this code is relocatable but the
 *        addresses are fixed. Part of original code.
-*  03    Corrected minor errors in GETSTAT.        R. Gault 11/12/26
+*  03    Corrected minor errors in GetSect.        R. Gault 11/12/26
+*  04    Added a tsta I left out in GetSect.       R. Gault 11/12/29
 
 * EmuDisk floppy disk controller driver
 * Edition #1
@@ -73,7 +74,6 @@ atrv     set   ReEnt+rev
 rev      set   $02
 
          mod   eom,name,tylg,atrv,start,size
-         fcb   $ff
 
          org   0
 u0000    rmb   DRVBEG+(DRVMEM*2) Normal RBF device mem for 2 drives RG
@@ -82,7 +82,7 @@ size     equ   .
 
          fcb   $FF            This byte is the driver permissions
 name     fcs   /EmuDsk/
-         fcb   3              edition #2 RG
+         fcb   4              edition #4 RG
 
 
 * Entry: Y=Ptr to device descriptor
@@ -165,6 +165,7 @@ GetSect  pshs  x,d            Moved up in routine to save command code. RG
          sta   >command       get the emulator to blast over the sector
          lda   >command       get the error status
          clr   >vhdnum
+         tsta
          bne   FixErr         if non-zero, go report the error and exit
          puls  b,x,pc         restore registers and exit
 
