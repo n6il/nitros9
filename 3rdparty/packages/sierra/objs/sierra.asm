@@ -12,7 +12,13 @@
 *
 *   1      2003/03/10  Boisy G. Pitre
 * Monitor type bug now fixed.
-
+*   2      2012/01/05  Robert Gault
+* Converted raw reads of $FFA0-$FFAF to a routine that gets images
+* from the system. Now works with 2 or 8Meg systems. Unfortunately
+* it was necessary to make buffers within the code rather than data
+* area because it was safer given data was shared with other modules.
+*
+* Simplified some other routines.
 
 * I/O path definitions
 StdIn    equ   0
@@ -130,7 +136,9 @@ L0086    lbsr  L011A      relay call to L0140
 
 L0089    ldd   <u0000     load the data pointer
          beq   L00DF      if it is zero we have a problem
-         ldd   >$FFA9     ??? MMU task 1 block 1 ???
+*         ldd   >$FFA9     ??? MMU task 1 block 1 ???
+         lbsr  mmuini2    get MMU values $FFA8-$FFAF
+         ldd   mmubuf+9,pcr
          std   <u000A     save the task 1 block one value
          lda   #$00       clear a to zero 
          sta   <u0011     save that value
@@ -255,7 +263,7 @@ L0119    fcb   $00  Monitor type Coco set to when Sierra ran
 
 * L011A called by L0086
 L011A    lbsr  L0140  Clears data area, sets up vars and saves montype
-
+         lbsr  mmuini1 get MMU values $FFA0-$FFA7
          lbsr  L01AF  Change our process image to dupe block 0 to 1-2
 L0120    lbsr  L01FA  copies two subs to data area so others can use them
 
@@ -443,7 +451,8 @@ L01AF    orcc  #IntMasks    Shut interrupts off
 *        As per above NOTE, should postpone this until we have DAT image 
 *        available for Sierra process
 
-         lda   >$FFAF         Get MMU block # SIERRA is in
+*         lda   >$FFAF         Get MMU block # SIERRA is in
+         lda   mmubuf+$0F,pcr
          sta   <u0008         Save it
          clr   >$FFA9         Map system block 0 into $2000-$3FFF
          ldd   >D.Proc+$2000  Get SIERRA's process dsc. ptr
@@ -457,16 +466,20 @@ L01AF    orcc  #IntMasks    Shut interrupts off
          ldb   >D.Proc+$2000      Get MSB of SIERRA's process dsc. ptr
          andb  #$E0               Calculate which 8K block within 
 *                                 system task it's in
-         lsrb  
-         lsrb  
-         lsrb  
-         lsrb  
-         lsrb  
+*         lsrb  
+*         lsrb  
+*         lsrb  
+*         lsrb  
+*         lsrb  
+         lda   #8
+         mul
 
 * NOTE: HAVE TO CHANGE THIS TO GET BLOCK #'S FROM SYSTEM DAT IMAGE, 
 *       NOT RAW GIME REGS (TO WORK WITH >512K MACHINES)
-         ldx   #$FFA0       Point to base of System task DAT register set block 0 task 0
-         lda   b,x          Get block # that has process desc. for SIERRA
+*         ldx   #$FFA0       Point to base of System task DAT register set block 0 task 0
+         leax  mmubuf,pcr
+*         lda   b,x          Get block # that has process desc. for SIERRA
+         lda   a,x
          sta   <u0042       Save it
          sta   >$FFA9       Map in block with process dsc. to $2000-$3FFF
          ldx   <u0043       Get offset to 2nd 8K block in DAT map for SIERRA
@@ -489,9 +502,11 @@ L01AF    orcc  #IntMasks    Shut interrupts off
 * NOTE: 6809/6309 MOD: STUPID. DO LEAX, AND THEN PSHS X
 
 * load first routine
-L01FA    leas  -2,s         Make 2 word buffer on stack
-         leax  >L054F,pc    Point to end of routine
-         stx   ,s           Save ptr
+*L01FA    leas  -2,s         Make 2 word buffer on stack
+*         leax  >L054F,pc    Point to end of routine
+*         stx   ,s           Save ptr
+L01FA    leax  L054F,pcr
+         pshs  x
          leax  >L04DA,pc    Point to routine
 *         ldu   #$0659      Point to place in data area to copy it
          ldu   #sub659
@@ -509,8 +524,9 @@ L021E    lda   ,x+          copy routine
          sta   ,u+
          cmpx  ,s           Done whole routine yet?
          blo   L021E        No, keep going
-         leas  $02,s        clean up stack
-         rts                return
+*         leas  $02,s        clean up stack
+*         rts                return
+         puls  x,pc
 
 * Called from dispatch table at L0120
 * The last op in the subroutine before this one
@@ -590,6 +606,7 @@ L026B    leas  -$04,s       mamke room om stack 2 words
 
 * call with application address of screen in x
 * returns with values in u
+         lbsr  mmuini2      get current MMU values
          lbsr  L03B6        twiddle addresses
          stu   <u0004       stow it two places
          stu   <u0014
@@ -928,15 +945,21 @@ L0388    orcc  #IntMasks    Shut off interrupts
 * returns block # in a 
 *         ?????   in u
 L03B6    tfr   x,d          Move address to D
-         exg   a,b          Swap MSB/LSB
-         lsrb               Divide MSB by 32 (calculate 8k block # in proc map)
-         lsrb  
-         lsrb  
-         lsrb  
-         lsrb  
-         pshs  b            Save block # in process map
-         ldu   #$FFA8       Point to start of user DAT image
-         lda   b,u
+*         exg   a,b          Swap MSB/LSB
+*         lsrb               Divide MSB by 32 (calculate 8k block # in proc map)
+*         lsrb  
+*         lsrb  
+*         lsrb  
+*         lsrb  
+*         pshs  b            Save block # in process map
+*         ldu   #$FFA8       Point to start of user DAT image
+*         lda   b,u
+         ldb   #8
+         mul
+         pshs  a
+         leau  mmubuf+8,pcr
+         lda   a,u          get MMU value
+         ldb   ,s
          incb  
          andb  #$07
          ldb   b,u
@@ -998,6 +1021,7 @@ L03D0    leas  -$08,s       Make a little scratch on the stack
          bcs   L0408        exit on error
          stu   $06,s        store module header address
          tfr   u,x
+         lbsr  mmuini2      get current MMU values
 L03E8    stx   $04,s
          lbsr  L03B6        Go twiddle with address`
          ldx   ,s
@@ -1230,6 +1254,38 @@ L04DA    ldd   ,s++       load d with current stack pointer and bump it
 
 L054F    fcb   $00,$00,$00,$00,$00,$00,$00,$00   ........
 L0557    fcb   $73,$69,$65,$72,$72,$61,$00       sierra.
+
+* New routines so we don't have raw reads of the MMU bytes. RG
+mmubuf   fcb   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+gprbuf   fzb   512
+* Get $FFA0-$FFA7
+mmuini1  pshs  cc,x,y
+         orcc  #$50
+         lda   #1               system ID#
+         leax  gprbuf,pcr
+         os9   F$GPrDsc		get system process descriptor
+         leay  $41,x		point to its mmu block values
+         leax  mmubuf,pcr
+         ldb   #8
+m2lup    lda   ,y++		get MMU value and skip over usage
+         sta   ,x+
+         decb
+         bne   m2lup
+         puls  cc,x,y,pc
+* Get $FFA8-$FFAF
+mmuini2  pshs  cc,x,y
+         orcc  #$50
+         os9   F$ID             get our ID#
+         leax  gprbuf,pcr
+         os9   F$GPrDsc		get our process descriptor
+         leay  $41,x		point to our mmu block values
+         leax  mmubuf+8,pcr
+         ldb   #8
+mloop    lda   ,y++
+         sta   ,x+
+         decb
+         bne   mloop
+         puls  cc,x,y,pc
 
          emod
 eom      equ   *
