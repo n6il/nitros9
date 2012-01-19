@@ -1,4 +1,4 @@
-	IFNE	H6309-1
+	IFEQ	H6309-1
 
 *******************************************************
 *
@@ -117,7 +117,7 @@ rxDone	sta	5,s		; store status on stack
 	stb	<$FF03
 	lda	<$FF20		; make sure the CD FIRQ has been cleared
 
-        IFNE    NITROS9-1
+        IFEQ    NITROS9-1
 * Restoration of GIME interrupts in NitrOS9
 	ldd	>D.IRQER		; retrieve shadow copy of IRQ/FIRQ enable regs
 	std	<$FF92		; restore GIME
@@ -253,7 +253,7 @@ rxDone	sta	6,s		; store status on stack
 	stb	<$FF03
 	lda	<$FF20		; make sure the CD FIRQ has been cleared
 
-        IFNE    NITROS9-1
+        IFEQ    NITROS9-1
 * Restoration of GIME interrupts in NitrOS9
 	ldd	>D.IRQER		; retrieve shadow copy of IRQ/FIRQ enable regs
 	std	<$FF92		; restore GIME
