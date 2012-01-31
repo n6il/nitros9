@@ -47,7 +47,7 @@
 ../MODULES/RBF/x2.dd
 ../MODULES/RBF/x3.dd
 *
-* SuperDriver Package (Cloud-9 product)
+* SuperDriver Package
 *../MODULES/RBF/rbsuper.dr
 * Select Low level SCSI and/or IDE driver
 *../MODULES/RBF/lltc3.dr
