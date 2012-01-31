@@ -49,9 +49,9 @@ name     fcs   /SysGo/
 DefPrior set   128         
 
 Banner   equ   *
-         IFEQ  ROM
          fcc   /(C) 2009 The NitrOS-9 Project/
 CrRtn    fcb   C$CR,C$LF
+         IFEQ  ROM
          IFNE  NOS9DBG
          fcc   "**   DEVELOPMENT BUILD   **"
          fcb   C$CR,C$LF

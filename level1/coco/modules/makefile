@@ -23,10 +23,10 @@ TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		boot_burke boot_rampak boot_wd1002 boot_dw3 boot_dw3_coco1 \
-		boot_tc3 boot_ide
+		boot_tc3 boot_ide boot_rom
 BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= krn krnp2 wbug
-SYSMODS		= ioman init sysgo_dd sysgo_h0
+SYSMODS		= ioman init sysgo_dd sysgo_h0 rominfo vectors
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
                 clock2_smart clock2_harris clock2_cloud9 clock2_soft \
