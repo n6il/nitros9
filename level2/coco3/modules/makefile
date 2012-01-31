@@ -23,10 +23,10 @@ TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		 boot_burke boot_rampak boot_wd1002 boot_dw3 boot_dw3_becker \
-		boot_tc3 boot_ide
+		boot_tc3 boot_ide boot_rom
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
-SYSMODS		= ioman init sysgo_h0 sysgo_dd
+SYSMODS		= ioman init sysgo_h0 sysgo_dd sysgo_rom rominfo vectors
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
 		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
@@ -157,6 +157,9 @@ sysgo_dd: sysgo.asm
 	
 sysgo_h0: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS)
+	
+sysgo_rom: sysgo.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aROM=1
 	
 # TC^3 SCSI Driver
 lltc3.dr: llscsi.asm
