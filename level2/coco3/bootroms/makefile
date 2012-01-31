@@ -15,7 +15,9 @@ BOOTFILE_ROM	= $(MD)/rominfo $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/covdg.io \
 		$(MD)/term_vdg.dt \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
-		$(MD)/sysgo_rom
+		$(MD)/sysgo_rom \
+		$(CD)/shell_21 \
+		$(CD)/mdir
 
 BOOTROMS	= nos96809l2.rom
 KERNELS		= kernel_rom
