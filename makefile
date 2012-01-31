@@ -17,8 +17,8 @@ clean:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
 
 # Do CVS update
-cvsupdate:
-	cvs update -d
+hgupdate:
+	hg update
 
 # Make DSK images
 dsk:	all
@@ -44,7 +44,7 @@ dw3:
 info:
 	@$(foreach dir, $(dirs), ($(CD) $(dir); make info);)
 	
-nightly: clean cvsupdate dskcopy
+nightly: clean hgupdate dskcopy
 	make info>dsks/ReadMe
 	$(ARCHIVE) nitros9project dsks/*
 	scp nitros9project.zip boisy,nitros9@web.sourceforge.net:/home/groups/n/ni/nitros9/htdocs
