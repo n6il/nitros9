@@ -122,3 +122,8 @@ clean:	dskclean
 
 dskclean:
 	$(RM) $(DISK_40D) $(DISK_80D)
+
+info:
+	@$(ECHO) "*** NitrOS-9 Arcade Pak ***"
+	@$(ECHO) $(DISK_40D) $(DISK_80D)
+

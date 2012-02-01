@@ -34,8 +34,12 @@ dsk:
 	$(MAKDIR) $(DSK),BBS
 	$(CP) $(BBSFILES) $(DSK),BBS
 
-clean:
+clean: dskclean
 	-$(RM) $(CMDS)
 
 dskclean:
 	-$(RM) $(DSK)
+
+info:
+	@$(ECHO) "*** OS-9 L2 BBS for 6809 ***"
+	@$(ECHO) $(DSK)
