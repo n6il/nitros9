@@ -27,3 +27,6 @@ dskcopy:	all
 dskclean:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
 
+info:
+	$(foreach dir, $(dirs), ($(CD) $(dir); make info);)
+

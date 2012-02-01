@@ -8,3 +8,5 @@ pacos9: $(RFILES)
 
 clean:
 	$(RM) $(RFILES) pacos9
+
+info:
