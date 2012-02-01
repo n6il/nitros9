@@ -120,6 +120,9 @@ clean:	dskclean
 	$(CD) thexder; make clean
 	$(CD) shanghai; make clean
 
+dskcopy: dsk
+	$(CP) $(DISK_40D) $(DISK_80D) $(DSKDIR)
+
 dskclean:
 	$(RM) $(DISK_40D) $(DISK_80D)
 
