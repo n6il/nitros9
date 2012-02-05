@@ -182,7 +182,9 @@ SignOn
          lda   #EXEC.
          os9   I$ChgDir                change exec. dir
          leax  >DefDev,pcr
-         lda   #READ.+WRITE.
+* Made READ. so that no write occurs at boot (Boisy on Feb 5, 2012)
+*         lda   #READ.+WRITE.
+         lda   #READ.
          os9   I$ChgDir                change data dir.
          bcs   L0125
          leax  >HDDev,pcr
