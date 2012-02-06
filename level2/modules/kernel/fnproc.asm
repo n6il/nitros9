@@ -89,7 +89,7 @@ L0DF2    ldu   <D.UsrSvc   Get current User's system call service routine ptr
          lbsr  L0E8D      re-map the DAT image, if necessary
 
          ldb   <D.Quick   get quick return flag
-         bra   L0E4C       Go switch GIME over to new process & run
+         lbra  L0E4C       Go switch GIME over to new process & run
 
 * Process a signal (process had no signal trap)
 L0DFD    equ   *

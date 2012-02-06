@@ -1,0 +1,142 @@
+* I eliminated the manual padding of the kernel.  I inserted a fill
+  directive much further down in the source between the "regular"
+  module part of the kernel, and the fe00 page code.  Down at that end
+  the assembler will auto-compute the size needed
+
+* At entry, the kernel now pulls the size of the bootfile from the U
+  stack, which is still setup from CCB, and saves it to
+  its proper place in the DP.  Also misc. DP flags are set - if boot
+  was attempted, and CPU speed is set (CCB uses high speed for coco3)
+
+* at entry, the kernel now installs it's own debug printing and crash
+  routines, something that REL used to do.
+
+* there's a place where some IRQ-ish tables are copied down to the DP,
+  where I found a bug: reg Y was being filled with a bogus source
+  address.  I'm NOT good with PCR addressing, but after fixing, my code
+  changes started working....maybe you want to verify this change.
+
+* read comments in the "calculate memory size" section... I got way
+  lucky on this one!
+
+* the biggest functional changes occur at label L0170: 
+
+  - The kernel no longer verifies itself (and hense adds itself to the
+    modules directory), it now verifies itself and the preloaded
+    bootfile together. The kernel no longer reserves it's own memory
+    either, it now simply calls f$srqmem to do this for us and the
+    bootfile together as one big block.  
+
+  - AFTER reserving system memory and verifying, we now mark up the
+    sysDAT... I don't understand why we have to do this.  Shouldn't
+    f$rsysmem do this for us?!?!  
+
+  - we link to init and set CRC checking and jump to krnp2's exec.
+
+* Near commented out label L01D2, I've commented out this section, it
+  no longer needed as f$rsysmem DOES do this for the entire kernel
+  now, not just the bootfile
+
+* the code at L01DF can be "inlined", nothing calls it but one place.
+  One of the IRQ vectors borrow's this routine's  RTS though ... goofy
+  speghetti code!
+
+* AFTER all the normal included system call files, and BEFORE the FE00
+  page stuff near label S.SysIRQ I added automatic padding
+
+* S.SysIRQ which is supposed to be in FE page, assembles at around
+  fdf1 or so.... which according to the comments is a BAD thing.
+  Nothing seems to happen.  Basically, the FE page code it TOO BIG to
+  fit!
+
+
+And in f$srqmem.asm:
+
+* I modified this system call to request memory starting from 0xff00
+  rather than ed00... it might be a touch lesss efficient AFTER
+  booting, but it sure helped DURING booting.  This is how I reused
+  fsrqmem to setup the KRN and OS9BOOT file in one swoop.
+
+* I changed f$boot to just issue a kernel panic.  I'm not sure if this
+  is the thing to do.  KRNP2 calls f$boot on chdir and open default
+  device error.  I'm not sure if anything else calls it.  Maybe it can
+  be it can be deleted and KRNP2 changed just to panic itself rather
+  than system calling to do so.
+
+
+*** All changes were made to a fresh CVS'd copy of Nitros9 Version 3.2.9.
+*** I have no idea if this all works on a coco2 or a 6309
+
+
+*** CoCoBoot / OS9 Contract:
+
+- Size of the pre-loaded bootfile (NOT boot and cckrn) is passed as
+  the top 2 bytes on the U stack.  MSB on top... the usually motorola
+  byte order.  In Forth lingo, the top cell of the data stack is the
+  size of the bootfile. Calling the kernel works and appears just like
+  calling any other forth word, except we don't return, e.i.:
+
+: gotokernel ( u -- ) \ jump to kernel passing it u - the bootfile
+\ size in bytes, this funtion doesn't return.
+
+- Module CCBKRN is loaded to block 0x3f at offset 0x1000, or 0xf000 in
+  cpu-space. CCBKRN must be exactly 0x0f00 in size and be in a
+  standard os9 executable module format.
+
+- The OS9Boot file is loaded on a page boundary just low enough in
+  cpu-space to fit below 0xf000 (the CCBKRN module)  physical blocks
+  are allocated in order starting with block 0x01 (or 0x31 on a 128k
+  machine).  
+
+- The source of OS9Boot and CCBKRN is not guaranteed!
+
+- Register Guarantees:
+    D  - not guaranteed
+    DP - not guaranteed
+    X  - not guaranteed
+    Y  - not guaranteed but usually will be in the 0x3800-0x6000 range
+    U  - set to top of a stack usually in the 0x7e00-0x7f00
+    S  - not guaranteed but usually will be in the 0x7f00 - 0x8000 range
+    CC - not guaranteed.
+    
+- MMU Guarantees:
+  physical block 0x3f will be banked in at 0xe000-0xff00 in cpu-space
+
+
+
+
+*** CoCoBoot does this but maybe CCBKRN should do instead:
+  
+- physical block 0x00 is in cpu-space at 0x0000 upon calling to
+  CCBKRN.  DP is set to 0x00 and the DP area in block 0x00 is cleared.
+
+- CPU interrupts and Pia0 side B's interrupts are disabled.
+
+- memory map is guaranteed to look like this (in hex):
+
+  00 39 3a 3b 3c 3d 3e 3f
+
+- Physical Block 3b will be cleared to spaces except offset 0x0000:
+  will be initialized to 0x0008.  This serves as a screen pointer to
+  kernel debug printing.
+
+- The GIME registers will be set as follows:
+  
+  starting at 0xff90:
+  6c      init0
+  00      init1
+  00      irq enable
+  00      firq enable
+  0900    timer register
+  0000    unused
+  0320    screen settings
+  0000    ????
+  00      ????
+  ec01    physical video address (block 3b offset 0x0008 )
+  00      horizontal offset / scroll
+  
+  A mirror of these bytes will appear at 0x0090-0x009f in the DP
+
+
+
+Brett M. Gordon

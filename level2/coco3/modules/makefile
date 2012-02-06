@@ -87,7 +87,7 @@ ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE) $(
 all:	$(ALLOBJS)
 
 # Kernel
-krn krnp2:
+ccbkrn krn krnp2:
 	$(CD) kernel; make $@
 	$(CP) kernel/$@ .
 
