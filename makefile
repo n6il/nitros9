@@ -18,6 +18,7 @@ clean:
 
 # Do CVS update
 hgupdate:
+	hg pull
 	hg update
 
 # Make DSK images
