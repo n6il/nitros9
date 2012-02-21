@@ -88,7 +88,7 @@ DefBoot  fcs   "Boot"
 * messages !
 *
 
-	IFEQ	dalpha
+	     IFEQ	dalpha
 OSStr    equ   *
          fcc   "NitrOS-9/"
          IFNE  H6309
@@ -122,18 +122,22 @@ InstStr  equ   *
          IFNE   dalpha
          fcc    "Dragon Alpha"
          ELSE
+         IFNE   atari
+         fcc    "Atari XL/XE"
+         ELSE
          fcc    "Unknown Machine"
          ENDC
          ENDC
          ENDC
          ENDC
          ENDC
+         ENDC
          fcb   0
-	ELSE
-OSStr    equ   *
+		 ELSE
+		 OSStr    equ   *
 InstStr  equ   *
-	fcb	0
-	ENDC
+		 fcb	0
+		 ENDC
 
          emod  
 eom      equ   *

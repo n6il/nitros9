@@ -53,6 +53,9 @@
 *
 *  15r1    2004/05/23  Boisy G. Pitre
 * Renamed to 'krn'
+*
+*  16      2004/05/23  Boisy G. Pitre
+* Added changes for Atari port
 
          nam   krn
          ttl   NitrOS-9 Level 1 Kernel
@@ -64,8 +67,8 @@
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $01
-edition  set   15
+rev      set   $00
+edition  set   16
 
 ModTop   mod   eom,name,tylg,atrv,OS9Cold,size
 
@@ -192,7 +195,11 @@ ChkRAM   leay  ,x
          bne   L00C2                   nope, not RAM here!
          std   ,y                      else restore org contents
          leax  >$0100,y                check top of next 256 block
+         IFNE  atari
+         cmpx  #$C000                  stop short of ROM starting at $C000
+         ELSE
          cmpx  #Bt.Start               stop short of boot track mem
+         ENDC
          bcs   ChkRAM
          leay  ,x
 * Here, Y = end of RAM
@@ -217,6 +224,10 @@ L00D2    lda   ,x+
          ENDC
          puls  y,x
 
+         IFNE  atari
+         ldx   #$D800                  skip $C000-$D7FF for now...
+         ENDC
+         
 * Validate modules at top of RAM (kernel, etc.)
 L00DB    lbsr  ValMod
          bcs   L00E6
@@ -226,9 +237,16 @@ L00DB    lbsr  ValMod
 L00E6    cmpb  #E$KwnMod
          beq   L00EE
          leax  1,x
+
+L00EC
+         IFNE  atari
+         cmpx  #$FF00
+         ELSE
 * Modification to stop scan into I/O space -- Added by BGP
-L00EC    cmpx  #Bt.Start+Bt.Size
+         cmpx  #Bt.Start+Bt.Size
+         ENDC
          bcs   L00DB
+
 * Copy vectors to system globals
 L00EE    leay  >Vectors,pcr
          leax  >ModTop,pcr
@@ -898,5 +916,19 @@ Vectors  fdb   SWI3                    SWI3
          fdb   SVCIRQ                  IRQ
          fdb   SWI                     SWI
          fdb   DUMMY                   NMI
-
+         IFNE  atari
+         fdb   $0000
+		 fdb   $0100
+		 fdb   $0103
+		 fdb   $0106
+		 fdb   $0109
+		 fdb   $010C
+		 fdb   $010F
+         IFP2
+         fdb   $10000-eomem+OS9Cold                 RESET         
+         ELSE
+         fdb   $0000
+         ENDC
+		 ENDC
+eomem    equ   *
          end
