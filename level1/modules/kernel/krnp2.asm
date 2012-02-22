@@ -739,5 +739,5 @@ ValBoot2 cmpx  <D.BTHI
          bcs   ValBoot
 JmpBtEr  puls  pc,u
 
-         emod
+		emod
 eom      equ   *

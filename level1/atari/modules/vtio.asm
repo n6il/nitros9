@@ -15,7 +15,7 @@
          ifp1            
          use   defsfile  
          use   scfdefs   
-         use   vtiodefs  
+         use   atarivtio.d
          endc            
                          
 tylg     set   Drivr+Objct
@@ -39,6 +39,8 @@ start    lbra  Init
          lbra  SetStat   
          lbra  Term      
                          
+
+
 * Init
 *
 * Entry:
@@ -49,38 +51,56 @@ start    lbra  Init
 *    CC = carry set on error
 *    B  = error code
 *
-Init                     
-***********************************
- clrb
-cleario
- ldx   #$D000
- clr   b,x
- ldx   #$D200
- clr   b,x
- ldx   #$D300
- clr   b,x
- ldx   #$D400
- clr   b,x
- decb
- bne   cleario
- lda   #3
- sta   $D20F ; set Pokey to active
+Init      
+		pshs	u
 
-delay
- lda   #$E4
- sta   $D01A  ; set screen color
-* lda   #$A0
-* sta   $D200
-* lda   #$A1
-* sta   $D202  ; set audf1 and audf2
-* lda   #$A8
-* sta   $D201
-* sta   $D203  ; set audc1 and audc2
-wait
- jmp   wait
-***********************************
+* setup static vars
+		clra
+		clrb
+		std	V.CurRow,u
 
-                         
+* Screen memory starts at $0500
+* Clear with As
+          ldy  #ScrStart+Cols*Rows
+          pshs y
+          ldy  #ScrStart
+          ldd  #$0000
+clearLoop@
+     	std	,y++
+     	cmpy	,s
+     	bne	clearLoop@
+     	puls	y
+* tell the ANTIC where the dlist is
+		ldd	#$00FF		byte swapped (address is $FF00, currently in krn)
+		std	DLISTL
+
+* tell the ANTIC where the character set is (page aligned, currently in krn)		
+		lda	#$F8
+		sta	CHBASE
+		
+* set background color
+		lda	#$00
+ 		sta	COLBK
+
+* set text color
+		lda	#$0F
+ 		sta	COLPF0
+ 		sta	COLPF1
+ 		sta	COLPF3
+		lda	#$94
+ 		sta	COLPF2
+ 		
+* tell ANTIC to start DMA
+		lda	#$22
+ 		sta	DMACTL
+
+* tell ANTIC to enable characters
+		lda	#$01
+ 		sta	CHACTL
+ 		
+		clrb
+		puls	u,pc
+  
 * Term
 *
 * Entry:
@@ -90,8 +110,9 @@ wait
 *    CC = carry set on error
 *    B  = error code
 *
-Term     pshs  cc        
-         puls  pc,cc     
+Term		
+		clrb
+		rts
                          
 * Read
 *
@@ -105,7 +126,8 @@ Term     pshs  cc
 *    B  = error code
 *
 Read                     
-L00A3    rts             
+		clrb
+		rts             
                          
 
 * Write
@@ -120,8 +142,41 @@ L00A3    rts
 *    B  = error code
 *
 Write
-
-         rts             
+		cmpa		#C$CR
+		bne		checklf
+		clr		V.CurCol,u
+		clrb
+		rts
+		
+checklf	cmpa		#C$LF
+		bne		wchar
+		ldd		V.CurRow,u
+		bra		incrow
+wchar		
+		suba		#$20
+		pshs		a
+		lda		V.CurRow,u
+		ldb		#Cols
+		mul
+		addb		V.CurCol,u
+		adca		#0
+		ldx		#ScrStart
+		leax		d,x
+		puls		a
+		sta		,x
+		ldd		V.CurRow,u
+		incb
+		cmpb		#40
+		blt		ok
+		clrb
+incrow
+		inca
+		cmpa		#24
+		blt		ok
+		clra
+ok		std		V.CurRow,u		
+		clrb
+		rts             
                          
 * GetStat
 *
@@ -135,8 +190,8 @@ Write
 *    B  = error code
 *
 GetStat
-         clrb            
-         rts             
+		clrb            
+		rts             
                                                  
 * SetStat
 *
@@ -150,8 +205,10 @@ GetStat
 *    B  = error code
 *
 SetStat
-L055C    rts             
-                         
-         emod            
-eom      equ   *         
-         end             
+		clrb
+		rts             
+
+	
+		emod            
+eom		equ	*
+		end             

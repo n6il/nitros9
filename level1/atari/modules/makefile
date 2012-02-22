@@ -23,7 +23,7 @@ TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= 
 KERNEL		= krn krnp2
-SYSMODS		= ioman init sysgo_dd sysgo_h0
+SYSMODS		= ioman init sysgo
 CLOCKS      = clock_60hz clock_50hz
 
 RBF		= rbf.mn
@@ -47,11 +47,8 @@ krn krnp2:
 	$(CP) kernel/$@ .
 
 
-sysgo_dd: sysgo.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDD=1
-
-sysgo_h0: sysgo.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $<
+sysgo: sysgo.asm
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aROM=1
 
 # Clocks
 clock_60hz: clock.asm
