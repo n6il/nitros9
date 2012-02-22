@@ -9,7 +9,7 @@ DEPENDS		= ./makefile
 
 BOOTFILE_ROM	= $(MD)/krnp2 $(MD)/init \
 				$(MD)/ioman $(MD)/scf.mn $(MD)/vtio.dr $(MD)/term.dt \
-				$(MD)/sysgo $(CD)/mfree \
+				$(MD)/sysgo $(CD)/mdir \
 				$(MD)/krn
 
 BOOTFILE_ROM_OLD	= $(MD)/rominfo $(MD)/ioman \
