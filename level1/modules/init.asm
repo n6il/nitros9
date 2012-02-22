@@ -134,7 +134,7 @@ InstStr  equ   *
          ENDC
          fcb   0
 		 ELSE
-		 OSStr    equ   *
+OSStr    equ   *
 InstStr  equ   *
 		 fcb	0
 		 ENDC

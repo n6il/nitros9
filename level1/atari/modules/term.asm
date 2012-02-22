@@ -28,10 +28,10 @@ rev      set   $00
 
          fcb   UPDAT.         mode byte
          fcb   HW.Page        extended controller address
-         fdb   $C000          physical controller address
+         fdb   $D000          physical controller address
          fcb   initsize-*-1   initilization table size
          fcb   DT.SCF         device type:0=scf,1=rbf,2=pipe,3=scf
-         fcb   $01            case:0=up&lower,1=upper only
+         fcb   $00            case:0=up&lower,1=upper only
          fcb   $01            backspace:0=bsp,1=bsp then sp & bsp
          fcb   $00            delete:0=bsp over line,1=return
          fcb   $01            echo:0=no echo

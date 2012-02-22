@@ -166,16 +166,26 @@ wchar
 		sta		,x
 		ldd		V.CurRow,u
 		incb
-		cmpb		#40
+		cmpb		#Cols
 		blt		ok
 		clrb
 incrow
 		inca
 		cmpa		#24
-		blt		ok
+		blt		clrrow
 		clra
+clrrow	std		V.CurRow,u
+		ldb		#Cols
+		mul
+		ldx		#ScrStart
+		leax		d,x
+		lda		#Cols
+clrloop@	clr		,x+
+		deca
+		bne		clrloop@
+		bra		okex
 ok		std		V.CurRow,u		
-		clrb
+okex		clrb
 		rts             
                          
 * GetStat
@@ -190,7 +200,18 @@ ok		std		V.CurRow,u
 *    B  = error code
 *
 GetStat
-		clrb            
+		cmpa		#SS.ScSiz
+		bne		gserr
+		ldx		PD.RGS,y
+		ldd		#Cols
+		std		R$X,x
+		ldd		#Rows
+		std		R$Y,x
+		clrb
+		rts
+gserr
+		comb
+		ldb		#E$UnkSvc            
 		rts             
                                                  
 * SetStat

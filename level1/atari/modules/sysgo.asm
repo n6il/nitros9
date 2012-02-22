@@ -84,8 +84,11 @@ ExecDir  fcc   "CMDS"
 
 Shell    fcc   "Shell"
          fcb   C$CR
-AutoEx   fcc   "mfree"
+AutoEx   fcc   "mdir"
          fcb   C$CR
+AutoExPr fcc   "-e"
+         fcb   C$CR
+AutoExPrL equ  *-AutoExPr
 
          IFEQ  ROM
 Startup  fcc   "startup -p"
@@ -199,9 +202,9 @@ DoStartup leax  >Shell,pcr
          ENDC
 * Fork AutoEx here
 DoAuto   leax  >AutoEx,pcr
-         leau  >CRtn,pcr
+         leau  >AutoExPr,pcr
          ldd   #$0100
-         ldy   #$0001
+         ldy   #AutoExPrL
          os9   F$Fork
          bcs   L0186
          os9   F$Wait
