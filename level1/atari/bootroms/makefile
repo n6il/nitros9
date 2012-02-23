@@ -7,16 +7,13 @@ CD		= ../cmds
 
 DEPENDS		= ./makefile
 
-BOOTFILE_ROM	= $(MD)/krnp2 $(MD)/init \
+BOOTFILE_ROM_P1	= $(MD)/krnp2 $(MD)/init \
 				$(MD)/ioman $(MD)/scf.mn $(MD)/vtio.dr $(MD)/term.dt \
-				$(MD)/sysgo $(CD)/mdir \
+				$(MD)/sysgo \
+				$(MD)/clock_60hz $(MD)/clock2_soft \
 				$(MD)/krn
 
-BOOTFILE_ROM_OLD	= $(MD)/rominfo $(MD)/ioman \
-		$(MD)/scf.mn $(MD)/vtio.dr \
-		$(MD)/covdg.io \
-		$(MD)/term32.dt \
-		$(MD)/clock_60hz $(MD)/clock2_soft
+BOOTFILE_ROM_P2	= $(CD)/shell_21 $(CD)/mdir
 
 BOOTROMS	= nos96809l1.rom
 
@@ -26,9 +23,13 @@ all:	$(ALLROMS)
 
 # Bootfiles
 nos96809l1.rom: $(BOOTFILE_ROM) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_ROM)>$@
-	$(PADROM) -b 10240 $@
-#	$(PADROM) -b 16384 $@
+	$(MERGE) $(BOOTFILE_ROM_P1)>$@_p1
+	$(MERGE) $(BOOTFILE_ROM_P2)>$@_p2
+	$(PADROM) -b 10240 $@_p1
+	$(PADROM) -b 12288 $@_p1
+	$(MERGE) $@_p2 $@_p1>$@
+	$(PADROM) -b 16384 $@
+#	$(RM) $@_p2 $@_p1
 	
 clean:
 	$(RM) $(ALLROMS)

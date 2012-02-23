@@ -37,7 +37,7 @@ rev      set   $00
          fcb   $01            echo:0=no echo
          fcb   $01            auto line feed:0=off
          fcb   $00            end of line null count
-         fcb   $01            pause:0=no end of page pause
+         fcb   $00            pause:0=no end of page pause
          fcb   24             lines per page
          fcb   C$BSP          backspace character
          fcb   C$DEL          delete line character

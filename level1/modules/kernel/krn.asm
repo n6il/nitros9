@@ -88,69 +88,6 @@ size     equ   .
 name     fcs   /Krn/
          fcb   edition
 
-InitNam  fcs   /Init/
-
-P2Nam    fcs   /krnp2/
-
-VectCode bra   SWI3Jmp		$0100
-         nop
-         bra   SWI2Jmp		$0103
-         nop
-         bra   SWIJmp		$0106
-         nop
-         bra   NMIJmp		$0109
-         nop
-         bra   IRQJmp		$010C
-         nop
-         bra   FIRQJmp		$010F
-
-SWI3Jmp  jmp   [>D.SWI3]
-SWI2Jmp  jmp   [>D.SWI2]
-SWIJmp   jmp   [>D.SWI]
-NMIJmp   jmp   [>D.NMI]
-IRQJmp   jmp   [>D.IRQ]
-FIRQJmp  jmp   [>D.FIRQ]
-VectCSz  equ   *-VectCode
-
-
-SysTbl   fcb   F$Link
-         fdb   FLink-*-2
-         fcb   F$Fork
-         fdb   FFork-*-2
-         fcb   F$Chain
-         fdb   FChain-*-2
-         fcb   F$Chain+SysState
-         fdb   SFChain-*-2
-         fcb   F$PrsNam
-         fdb   FPrsNam-*-2
-         fcb   F$CmpNam
-         fdb   FCmpNam-*-2
-         fcb   F$SchBit
-         fdb   FSchBit-*-2
-         fcb   F$AllBit
-         fdb   FAllBit-*-2
-         fcb   F$DelBit
-         fdb   FDelBit-*-2
-         fcb   F$CRC
-         fdb   FCRC-*-2
-         fcb   F$SRqMem+SysState
-         fdb   FSRqMem-*-2
-         fcb   F$SRtMem+SysState
-         fdb   FSRtMem-*-2
-         fcb   F$AProc+SysState
-         fdb   FAProc-*-2
-         fcb   F$NProc+SysState
-         fdb   FNProc-*-2
-         fcb   F$VModul+SysState
-         fdb   FVModul-*-2
-         fcb   F$SSvc
-         fdb   FSSvc-*-2
-         fcb   $80
-
-         IFNE  H6309
-Zoro     fcb   $00
-         ENDC
-
 *
 * OS-9 Genesis!
 
@@ -160,6 +97,7 @@ OS9Cold  equ   *
 * Currently NitrOS-9 is in ROM on the Atari.
 * Since the Liber809 is coming here directly from reset,
 * we will be good and get the hardware initialized properly.
+		lds #$1000
 		lbsr	InitAtari
          ENDC
          
@@ -244,28 +182,21 @@ L00D2    lda   ,x+
          puls  y,x
 
          IFNE  atari
-         ldx   #$D800                  skip $C000-$D7FF for now...
+* for some reason, we need to increment X from $C000 to $C001.  If we do not
+* do this, then the screen background color goes to black at random resets??
+*         leax	1,x			
+         ldy   #$D000
+         ELSE
+         ldy	#Bt.Start+Bt.Size
          ENDC
          
-* Validate modules at top of RAM (kernel, etc.)
-L00DB    lbsr  ValMod
-         bcs   L00E6
-         ldd   M$Size,x
-         leax  d,x                     go past module
-         bra   L00EC
-L00E6    cmpb  #E$KwnMod
-         beq   L00EE
-         leax  1,x
-
-L00EC
+         lbsr	ValMods
          IFNE  atari
-         cmpx  #$FF00
-         ELSE
-* Modification to stop scan into I/O space -- Added by BGP
-         cmpx  #Bt.Start+Bt.Size
+         ldx   #$D800				
+         ldy   #$FF00
+         lbsr	ValMods
          ENDC
-         bcs   L00DB
-
+         
 * Copy vectors to system globals
 L00EE    leay  >Vectors,pcr
          leax  >ModTop,pcr
@@ -349,7 +280,8 @@ SWI3     pshs  pc,x,b
 SWI2     pshs  pc,x,b
          ldb   #P$SWI2
          bra   L018C
-DUMMY    rti
+SVCNMI	jmp	[>D.IRQ]
+DUMMY	rti
 SVCIRQ   jmp   [>D.SvcIRQ]
 SWI      pshs  pc,x,b
          ldb   #P$SWI
@@ -612,9 +544,10 @@ FVModul  pshs  u
          puls  y
          stu   R$U,y
          rts
+
 * X = address of module to validate
 ValMod   bsr   ChkMHCRC
-         bcs   L039A
+         bcs   ValModEx
          lda   M$Type,x
          pshs  x,a
          ldd   M$Name,x
@@ -622,10 +555,10 @@ ValMod   bsr   ChkMHCRC
          puls  a
          lbsr  L0443
          puls  x
-         bcs   L039B
+         bcs   ValLea
          ldb   #E$KwnMod
          cmpx  ,u
-         beq   L03A1
+         beq   errex@
          lda   M$Revs,x
          anda  #RevsMask
          pshs  a
@@ -633,13 +566,13 @@ ValMod   bsr   ChkMHCRC
          lda   M$Revs,y
          anda  #RevsMask
          cmpa  ,s+                     same revision as other mod?
-         bcc   L03A1
+         bcc   errex@
          pshs  y,x
          ldb   M$Size,u
-         bne   L0395
+         bne   ValPul
          ldx   ,u
          cmpx  <D.BTLO
-         bcc   L0395
+         bcc   ValPul
          ldd   $02,x
          addd  #$00FF
          tfr   a,b
@@ -649,29 +582,29 @@ ValMod   bsr   ChkMHCRC
          ldx   <D.FMBM
          os9   F$DelBit
          clr   $02,u
-L0395    puls  y,x
-L0397    stx   ,u
+ValPul   puls  y,x
+ValSto   stx   ,u
          clrb
-L039A    rts
-L039B    leay  ,u
-         bne   L0397
+ValModEx rts
+ValLea   leay  ,u
+         bne   ValSto
          ldb   #E$DirFul
-L03A1    coma
+errex@   coma
          rts
 
 * check module header and CRC
 * X = address of potential module
 ChkMHCRC ldd   ,x
          cmpd  #M$ID12                 sync bytes?
-         bne   L03B1                   nope, not a module here
+         bne   ChkMHEx                nope, not a module here
          leay  M$Parity,x
          bsr   ChkMHPar                check header parity
-         bcc   L03B5                   branch if ok
-L03B1    comb
+         bcc   Chk4CRC                 branch if ok
+ChkMHEx  comb
          ldb   #E$BMID
          rts
 
-L03B5
+Chk4CRC
 * Following 4 lines added to support no CRC checks - 2002/07/21
          lda   <D.CRC			is CRC checking on?
          bne   DoCRCCk			branch if so
@@ -682,6 +615,7 @@ DoCRCCk  pshs  x
          ldy   M$Size,x
          bsr   ChkMCRC                 checkm module CRC
          puls  pc,x
+         
 * check module header parity
 * Y = pointer to parity byte
 ChkMHPar pshs  y,x
@@ -1120,9 +1054,23 @@ hextable	fcb $30-$20,$31-$20,$32-$20,$33-$20,$34-$20,$35-$20,$36-$20,$37-$20
 
 		use   fssvc.asm
 
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+* Validate modules subroutine
+* Entry: X = address to start searching
+*	    Y = address to stop (actually stops at Y-1)
+ValMods	pshs	y
+valloop@	lbsr	ValMod
+		bcs	valerr
+		ldd	M$Size,x
+		leax	d,x                     go past module
+		bra	valcheck
+valerr	cmpb	#E$KwnMod
+		beq	valret
+		leax	1,x
+valcheck	cmpx	,s
+		bcs	valloop@
+valret	puls  y,pc
+
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
@@ -1173,13 +1121,70 @@ cleario
          sta   $D20F
 		rts
 		
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+VectCode bra   SWI3Jmp		$0100
+         nop
+         bra   SWI2Jmp		$0103
+         nop
+         bra   FIRQJmp		$0106
+         nop
+         bra   IRQJmp		$0109
+         nop
+         bra   SWIJmp		$010C
+         nop
+         bra   NMIJmp		$010F
+
+SWI3Jmp  jmp   [>D.SWI3]
+SWI2Jmp  jmp   [>D.SWI2]
+FIRQJmp  jmp   [>D.FIRQ]
+IRQJmp   jmp   [>D.IRQ]
+SWIJmp   jmp   [>D.SWI]
+NMIJmp   jmp   [>D.NMI]
+VectCSz  equ   *-VectCode
+
+
+SysTbl   fcb   F$Link
+         fdb   FLink-*-2
+         fcb   F$Fork
+         fdb   FFork-*-2
+         fcb   F$Chain
+         fdb   FChain-*-2
+         fcb   F$Chain+SysState
+         fdb   SFChain-*-2
+         fcb   F$PrsNam
+         fdb   FPrsNam-*-2
+         fcb   F$CmpNam
+         fdb   FCmpNam-*-2
+         fcb   F$SchBit
+         fdb   FSchBit-*-2
+         fcb   F$AllBit
+         fdb   FAllBit-*-2
+         fcb   F$DelBit
+         fdb   FDelBit-*-2
+         fcb   F$CRC
+         fdb   FCRC-*-2
+         fcb   F$SRqMem+SysState
+         fdb   FSRqMem-*-2
+         fcb   F$SRtMem+SysState
+         fdb   FSRtMem-*-2
+         fcb   F$AProc+SysState
+         fdb   FAProc-*-2
+         fcb   F$NProc+SysState
+         fdb   FNProc-*-2
+         fcb   F$VModul+SysState
+         fdb   FVModul-*-2
+         fcb   F$SSvc
+         fdb   FSSvc-*-2
+         fcb   $80
+
+         IFNE  H6309
+Zoro     fcb   $00
+         ENDC
+
+InitNam  fcs   /Init/
+
+P2Nam    fcs   /krnp2/
+
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
@@ -1196,15 +1201,15 @@ Vectors  fdb   SWI3                    SWI3
          fdb   DUMMY                   FIRQ
          fdb   SVCIRQ                  IRQ
          fdb   SWI                     SWI
-         fdb   DUMMY                   NMI
+         fdb   SVCNMI                  NMI
          IFNE  atari
-         fdb   $0000
-		 fdb   $0100
-		 fdb   $0103
-		 fdb   $0106
-		 fdb   $0109
-		 fdb   $010C
-		 fdb   $010F
+         fdb   $0000				RESERVED
+		 fdb   $0100				SWI3
+		 fdb   $0103				SWI2
+		 fdb   $0106				FIRQ
+		 fdb   $0109				IRQ
+		 fdb   $010C				SWI
+		 fdb   $010F				NMI
          IFP2
          fdb   $10000-eomem+OS9Cold                 RESET         
          ELSE
