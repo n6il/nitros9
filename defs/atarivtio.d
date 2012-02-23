@@ -30,6 +30,10 @@ Rows           EQU       24
                ORG       V.SCF
 V.CurRow       RMB       1
 V.CurCol       RMB       1
+V.KySns        RMB       1                   key sense flags
+V.IBufH        RMB       1                   input buffer head
+V.IBufT        RMB       1                   input buffer tail
+V.InBuf        RMB       1                   input buffer ptr
                RMB       250-.
 V.Last         EQU       .
 

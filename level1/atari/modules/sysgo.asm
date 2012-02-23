@@ -208,7 +208,7 @@ DoAuto   leax  >AutoEx,pcr
          os9   F$Fork
          bcs   L0186
          os9   F$Wait
-         bra   DoAuto
+*         bra   DoAuto
 L0186    equ   *
          puls  u,y
 FrkShell leax  >ShellPrm,pcr
