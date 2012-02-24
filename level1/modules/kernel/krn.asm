@@ -859,19 +859,7 @@ L05BE    ldx   <D.Proc
 L05E5    ldb   #E$IForkP
 L05E7    puls  pc,u,x
 
-         IFNE	atari-1
-         use   fsrqmem.asm
-         
-         use   fallbit.asm
-         
-         use   fprsnam.asm
-
-         use   fcmpnam.asm
-
-         use   fssvc.asm
-         
-         ELSE
-
+		IFNE	atari
 * Character Set -- must be aligned on a 1K boundary!
 CharSet
 		fcb	$00,$00,$00,$00,$00,$00,$00,$00	;$00 - space
@@ -1010,7 +998,6 @@ CharSet
 		fcb	$00,$18,$30,$7E,$30,$18,$00,$00	;$5E - left arrow
 		fcb	$00,$18,$0C,$7E,$0C,$18,$00,$00	;$5F - right arrow
 		
- use atarivtio.d
 dump
  pshs d,x
  leax hextable,pcr
@@ -1044,6 +1031,31 @@ m jmp m
 hextable	fcb $30-$20,$31-$20,$32-$20,$33-$20,$34-$20,$35-$20,$36-$20,$37-$20
 		fcb $38-$20,$39-$20,$41-$20,$42-$20,$43-$20,$44-$20,$45-$20,$46-$20
 
+***********************************************************************
+* Atari initialization code goes here since we have to pad the area due
+* to 1K alignment of character set above
+InitAtari
+         orcc  #IntMasks
+* Clear I/O devices
+         clrb
+cleario
+         ldx   #$D000
+         clr   b,x
+         ldx   #$D200
+         clr   b,x
+         ldx   #$D300
+         clr   b,x
+         ldx   #$D400
+         clr   b,x
+         decb
+         bne   cleario         
+* set POKEY to active
+         lda   #3
+         sta   $D20F
+		rts
+
+		ENDC
+		
 		use   fsrqmem.asm
          
 		use   fallbit.asm
@@ -1070,28 +1082,6 @@ valcheck	cmpx	,s
 		bcs	valloop@
 valret	puls  y,pc
 
-***********************************************************************
-* Atari initialization code goes here since we have to pad the area due
-* to 1K alignment of character set above
-InitAtari
-         orcc  #IntMasks
-* Clear I/O devices
-         clrb
-cleario
-         ldx   #$D000
-         clr   b,x
-         ldx   #$D200
-         clr   b,x
-         ldx   #$D300
-         clr   b,x
-         ldx   #$D400
-         clr   b,x
-         decb
-         bne   cleario         
-* set POKEY to active
-         lda   #3
-         sta   $D20F
-		rts
 		
 VectCode bra   SWI3Jmp		$0100
          nop
@@ -1156,6 +1146,7 @@ InitNam  fcs   /Init/
 
 P2Nam    fcs   /krnp2/
 
+		IFNE	atari
 * This area must be padded so that the Character Set above starts at $F800
 * in ROM
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
