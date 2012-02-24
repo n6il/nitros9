@@ -3,9 +3,8 @@
 
 * Disassembled 98/06/01 09:08:21 by Disasm v1.5 (C) 1988 by RML
 
-Level    equ   2
          ifp1
-         use   os9defs
+         use   defsfile
          endc
 
 * MPI slot selection code

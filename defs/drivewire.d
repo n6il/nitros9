@@ -1,5 +1,7 @@
+          IFNE      DRIVEWIRE.D-1
+DRIVEWIRE.D   SET       1
 ********************************************************************
-* dwdefs - DriveWire Definitions File
+* drivewire.d - DriveWire Definitions File
 *
 * $Id$
 *
@@ -8,7 +10,7 @@
 *   1    Started                                        BGP 03/04/03
 *   2    Added DWGLOBS area                             BGP 09/12/27
 
-         nam   dwdefs
+         nam   drivewire.d
          ttl   DriveWire Definitions File
 
 * Addresses
@@ -87,3 +89,6 @@ RxBufPtr	rmb		2              ;pointer to Rx buffer
 RxBufDSz	equ		256-.          ;default Rx buffer gets remainder of page...
 RxBuff		rmb		RxBufDSz       ;default Rx buffer
 SCFDrvMemSz     equ             .
+
+                ENDC
+

@@ -70,7 +70,6 @@
 
          ifp1
          use   defsfile
-         use   scfdefs
          IFNE	atari
          use   atari.d
          ENDC

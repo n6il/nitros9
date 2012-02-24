@@ -34,6 +34,9 @@
 
          ifp1  
          use   defsfile
+         IFGT  Level-1
+         use	cocovtio.d
+         ENDC
          endc  
 
 tylg     set   Systm+$00

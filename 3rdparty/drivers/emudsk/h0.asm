@@ -10,7 +10,7 @@
 *        Address not used by driver but still ....
 
  IFP1
- USE os9defs
+ USE os9.d
  ENDC
 
 type SET Devic+Objct

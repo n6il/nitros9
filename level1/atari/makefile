@@ -24,7 +24,7 @@ BOOTFILE_COHR_DW3_COCO2	= bootfiles/bootfile_cohr_dw3_coco2
 KERNELFILE	= bootfiles/kernel_1773
 KERNELFILE_DW3_COCO1	= bootfiles/kernel_dw3_coco1
 KERNELFILE_DW3_COCO2	= bootfiles/kernel_dw3_coco2
-DIRS		= cmds modules defs sys bootfiles
+DIRS		= cmds modules defs sys bootroms
 
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)

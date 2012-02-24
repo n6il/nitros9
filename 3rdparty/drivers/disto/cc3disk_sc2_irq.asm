@@ -24,8 +24,9 @@ nh_stat  equ   nh_base
 nh_data  equ   nh_base+2
 
          ifp1
-         use   os9defs
+         use   defsfile
          endc
+
 tylg     set   Drivr+Objct   
 atrv     set   ReEnt+rev
 rev      set   $02

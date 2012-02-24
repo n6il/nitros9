@@ -1,3 +1,6 @@
+            IFNE      RBSUPER.D-1
+RBSUPER.D   SET       1
+
 ********************************************************************
 * rbsuper.d - rbsuper definitions
 *
@@ -77,3 +80,6 @@ V.LLMemSz      EQU       .-V.LLMem
 * zero when it really starts beyond DRVBEG+(DRVMEM*DrvCount).
                RMB       UOFFSET
 V.RBSuper      EQU       .                   end of RBSuper's (and ll driver's) memory requirements
+
+               ENDC
+

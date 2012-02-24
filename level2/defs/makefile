@@ -1,29 +1,29 @@
 PORT = coco3
-include ../../rules.mak
+include $(NITROS9DIR)/rules.mak
 
 DEPENDS		= ./makefile
 
 DEFOPTS		= -ls -x -z -aLevel=2
 PERMDEFS	= Defsfile
-DEFS		= OS9Defs RBFDefs SCFDefs SysType VTIODefs
+DEFS		= os9.d rbf.d scf.d coco.d coco3vtio.d
 ALLOBJS		= $(DEFS) $(PERMDEFS)
 
 all:	$(ALLOBJS)
 
-OS9Defs: $(DEFSDIR)/os9defs
-	$(AS) $(DEFOPTS) -aOS9DEFS=0 $< > $@
+os9.d: $(DEFSDIR)/os9.d
+	$(AS) $(AFLAGS) $(DEFOPTS) -aOS9.D=0 $< > $@
 
-RBFDefs: $(DEFSDIR)/rbfdefs
-	$(AS) $(DEFOPTS) -aRBFDEFS=0 $< > $@
+rbf.d: $(DEFSDIR)/rbf.d
+	$(AS) $(AFLAGS) $(DEFOPTS) -aRBF.D=0 $< > $@
 
-SCFDefs: $(DEFSDIR)/scfdefs
-	$(AS) $(DEFOPTS) -aSCFDEFS=0 $< > $@
+scf.d: $(DEFSDIR)/scf.d
+	$(AS) $(AFLAGS) $(DEFOPTS) -aSCF.D=0 $< > $@
 
-SysType: $(DEFSDIR)/systype
-	$(AS) $(DEFOPTS) -aSYSTYPE=0 $< > $@
+coco.d: $(DEFSDIR)/coco.d
+	$(AS) $(AFLAGS) $(DEFOPTS) -aCOCO.D=0 $< > $@
 
-VTIODefs: $(DEFSDIR)/vtiodefs_cc3
-	$(AS) $(DEFOPTS) -aVTIODEFS=0 $< > $@
+coco3vtio.d: $(DEFSDIR)/cocovtio.d
+	$(AS) $(AFLAGS) $(DEFOPTS) -aCOCOVTIO.D=0 $< > $@
 
 clean:
 	$(RM) $(DEFS)

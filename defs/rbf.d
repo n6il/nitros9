@@ -1,9 +1,9 @@
-               IFNE      RBFDEFS-1
+               IFNE      RBF.D-1
 
-RBFDEFS        SET       1
+RBF.D          SET       1
 
 ********************************************************************
-* RBFDefs - Random Block File Manager Definitions
+* rbf.d - Random Block File Manager Definitions
 *
 * $Id$
 *
@@ -80,7 +80,7 @@ RBFDEFS        SET       1
 *          2005/12/11  Boisy G. Pitre
 * Added IT.SOFF1-ITSOFF3 and IT.LLDRV for SuperDrivers.
 
-               NAM       RBFDefs
+               NAM       rbf.d
                TTL       Random Block File Manager Definitions
 
                PAG       

@@ -15,7 +15,8 @@
 * Disassembled 98/09/09 09:02:10 by Disasm v1.6 (C) 1988 by RML
 
          ifp1            
-         use   defsfile  
+         use   defsfile
+         use   cocovtio.d
          ENDC            
 
 tylg     set   Systm+Objct

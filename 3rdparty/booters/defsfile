@@ -1,4 +1,2 @@
-	use	os9defs
-	use	systype
-        use     scfdefs
-	use	rbfdefs
+	use	os9.d
+	use	rbf.d

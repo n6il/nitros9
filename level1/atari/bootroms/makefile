@@ -29,7 +29,7 @@ nos96809l1.rom: $(BOOTFILE_ROM) $(DEPENDS)
 	$(PADROM) -b 12288 $@_p1
 	$(MERGE) $@_p2 $@_p1>$@
 	$(PADROM) -b 16384 $@
-#	$(RM) $@_p2 $@_p1
+	$(RM) $@_p2 $@_p1
 	
 clean:
 	$(RM) $(ALLROMS)

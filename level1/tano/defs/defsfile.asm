@@ -1,8 +1,8 @@
 Level equ 1
 
  ifp1
- use /dd/defs/os9defs
- use /dd/defs/rbfdefs
- use /dd/defs/scfdefs
- use /dd/defs/systype
+ use /dd/defs/os9.d
+ use /dd/defs/rbf.d
+ use /dd/defs/scf.d
+ use /dd/defs/dragon.d
  endc

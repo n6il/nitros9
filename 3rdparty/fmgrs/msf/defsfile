@@ -1,6 +1,6 @@
 Level equ 2
 
- use os9defs
- use systype
- use rbfdefs
+ use os9.d
+ use rbf.d
+ use coco.d
  use msfdefs

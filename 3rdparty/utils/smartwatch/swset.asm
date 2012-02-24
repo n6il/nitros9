@@ -21,7 +21,6 @@
 
          ifp1  
          use   defsfile
-         use   systype
          endc  
 
 type     set   prgrm+objct

@@ -15,7 +15,7 @@
          ifp1            
          use   defsfile  
          use   scfdefs   
-         use   atari.d
+         use   atarivtio.d
          endc            
                          
 tylg     set   Drivr+Objct

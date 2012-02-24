@@ -12,6 +12,7 @@
 
          ifp1  
          use   defsfile
+         use   cocovtio.d
          endc  
 
 tylg     set   Devic+Objct

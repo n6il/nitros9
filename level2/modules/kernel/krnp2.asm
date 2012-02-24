@@ -69,6 +69,7 @@ Network  equ    0             Set to 1 to enable network I/O ptrs
 
          IFP1
          use    defsfile
+         use    cocovtio.d
          ENDC
 
 TC9      set    false       "true" use TC-9 6309 trap vector

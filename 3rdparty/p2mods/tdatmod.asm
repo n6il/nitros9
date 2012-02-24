@@ -1,5 +1,5 @@
          ifp1
-         use   os9defs
+         use   defsfile
          endc
 
 F$DatMod equ   $25

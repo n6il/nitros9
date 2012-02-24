@@ -5,28 +5,28 @@ DEPENDS		= ./makefile
 
 DEFOPTS		= -ls -x -z -aLevel=1
 DEFSDIR		= ../../../defs
-DEFS		= Defsfile OS9Defs RBFDefs SCFDefs SysType VTIODefs
+DEFS		= defsfile os9.d rbf.d scf.d atari.d atarivtio.d
 ALLOBJS		= $(DEFS)
 
 all:	$(ALLOBJS)
 
-Defsfile: defsfile.asm
+defsfile: defsfile.asm
 	$(AS) $(DEFOPTS) -p $< > $@
 
-OS9Defs: $(DEFSDIR)/os9defs
-	$(AS) $(DEFOPTS) -aOS9DEFS=0 $< > $@
+os9.d: $(DEFSDIR)/os9.d
+	$(AS) $(DEFOPTS) -aOS9.D=0 $< > $@
 
-RBFDefs: $(DEFSDIR)/rbfdefs
-	$(AS) $(DEFOPTS) -aRBFDEFS=0 $< > $@
+rbf.d: $(DEFSDIR)/rbf.d
+	$(AS) $(DEFOPTS) -aRBF.D=0 $< > $@
 
-SCFDefs: $(DEFSDIR)/scfdefs
-	$(AS) $(DEFOPTS) -aSCFDEFS=0 $< > $@
+scf.d: $(DEFSDIR)/scf.d
+	$(AS) $(DEFOPTS) -aSCF.D=0 $< > $@
 
-SysType: $(DEFSDIR)/systype
-	$(AS) $(DEFOPTS) -aSYSTYPE=0 $< > $@
+atari.d: $(DEFSDIR)/atari.d
+	$(AS) $(DEFOPTS) -aATARI.D=0 $< > $@
 
-VTIODefs: $(DEFSDIR)/vtiodefs
-	$(AS) $(DEFOPTS) -aVTIODEFS=0 $< > $@
+atarivtio.d: $(DEFSDIR)/atarivtio.d
+	$(AS) $(DEFOPTS) -aATARIVTIO.D=0 $< > $@
 
 clean:
 	$(RM) $(DEFS)

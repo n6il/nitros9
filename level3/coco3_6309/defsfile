@@ -1,7 +1,7 @@
 Level    equ   3
 
-         use   os9defs
-         use   scfdefs
-         use   rbfdefs
-         use   systype
-         use   vtiodefs_cc3
+         use   os9.d
+         use   scf.d
+         use   rbf.d
+         use   coco.d
+         use   cocovtio.d

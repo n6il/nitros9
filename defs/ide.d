@@ -1,3 +1,5 @@
+          IFNE      IDE.D-1
+IDE.D    SET       1
 ********************************************************************
 * ide.d - IDE definitions
 *
@@ -53,3 +55,6 @@ RdyDrq         EQU       %01011000           ready w/ data
                IFNE      IDE
 SDAddr         SET       $FF50
                ENDC      
+
+               ENDC      
+

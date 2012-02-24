@@ -1,9 +1,9 @@
-               IFNE      SCFDEFS-1
+               IFNE      SCF.D-1
 
-SCFDEFS        SET       1
+SCF.D          SET       1
 
 ********************************************************************
-* SCFDefs - Sequential Character File Manager Definitions
+* scf.d - Sequential Character File Manager Definitions
 *
 * $Id$
 *
@@ -40,7 +40,7 @@ SCFDEFS        SET       1
 *          2004/05/17  Boisy G. Pitre
 * Added higher baud rates.
 
-               NAM       SCFDefs
+               NAM       scf.d
                TTL       Sequential File Manager Definitions
 
                PAG       

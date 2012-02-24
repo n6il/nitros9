@@ -14,7 +14,7 @@
 
                IFP1      
                USE       defsfile
-               USE       dwdefs.d
+               USE       drivewire.d
                ENDC      
 
 tylg           SET       Systm+Objct

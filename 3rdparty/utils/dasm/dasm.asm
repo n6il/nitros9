@@ -4,7 +4,7 @@
 *****************************
 
          ifp1
-         use  os9defs
+         use  os9.d
          endc
 
 begin    mod  len,name,prgrm+objct,reent+1,entry,dsize

@@ -1,6 +1,6 @@
 include ../../rules.mak
 
-dirs	= burke disto emudsk ide s16550 sdisk sdisk3 tccc
+dirs	= burke disto emudsk ide mmc s16550 sdisk sdisk3 tccc
 
 # Make all components
 all:

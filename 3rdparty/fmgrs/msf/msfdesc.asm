@@ -1,8 +1,6 @@
          IFP1            
 Level    set   2         
-         use   os9defs   
-         use   rbfdefs   
-         use   msfdefs   
+         use   defsfile   
          ENDC            
 
 **************************************************************

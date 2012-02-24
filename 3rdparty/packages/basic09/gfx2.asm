@@ -15,7 +15,7 @@
 * Disassembled 02/07/06 13:10:09 by Disasm v1.6 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   os9.d
          endc
 
 tylg     set   Sbrtn+Objct   

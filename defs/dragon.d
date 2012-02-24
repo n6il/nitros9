@@ -1,6 +1,5 @@
-	IFNE	DGNDEFS-1
-                         
-DGNDEFS set   1         
+         IFNE	DRAGON.D-1
+DRAGON.D set   1         
                          
 ********************************************************************
 * DgnDefs - Dragon I/O Definitions
@@ -24,6 +23,44 @@ DGNDEFS set   1
          nam   DgnDefs  
          ttl   Dragon I/O Definitions
                          
+*************************************************
+*
+* NitrOS-9 Level 1 Section
+*
+*************************************************
+
+HW.Page        SET       $FF                 Device descriptor hardware page
+
+**********************************
+* Power Line Frequency Definitions
+*
+Hz50           EQU       1                   Assemble clock for 50 hz power
+Hz60           EQU       2                   Assemble clock for 60 hz power
+PwrLnFrq       SET       Hz60                Set to Appropriate freq
+
+
+**********************************
+* Ticks per second
+*
+               IFEQ      PwrLnFrq-Hz50
+TkPerSec       SET       50
+               ELSE      
+TkPerSec       SET       60
+               ENDC      
+
+
+****************************************
+* Special character Bit position equates
+*
+SHIFTBIT       EQU       %00000001
+CNTRLBIT       EQU       %00000010
+ALTERBIT       EQU       %00000100
+UPBIT          EQU       %00001000
+DOWNBIT        EQU       %00010000
+LEFTBIT        EQU       %00100000
+RIGHTBIT       EQU       %01000000
+SPACEBIT       EQU       %10000000
+
 ********************
 * VTIO Static Memory
 *
@@ -42,6 +79,7 @@ IO		equ		$ff00		IO page on Dragon
 
 * PIA 0 and 1 standard on all Dragons.
 DPPIA0DA	EQU		$00		Side A Data/DDR
+PIA0Base  EQU       DPPIA0DA
 DPPIA0CRA	EQU		$01		Side A Control.
 DPPIA0DB	EQU		$02		Side B Data/DDR
 DPPIA0CRB	EQU		$03		Side B Control.
@@ -52,6 +90,7 @@ PIA0DB		EQU		DPPIA0DB+IO	Side A Data/DDR
 PIA0CRB		EQU		DPPIA0CRB+IO	Side A Control.
 
 DPPIA1DA	EQU		$20		Side A Data/DDR
+PIA1Base  EQU       DPPIA1DA
 DPPIA1CRA	EQU		$21		Side A Control.
 DPPIA1DB	EQU		$22		Side B Data/DDR
 DPPIA1CRB	EQU		$23		Side B Control.
@@ -82,6 +121,8 @@ CmdRegA		EQU		DPCMDREGA+IO	command/status
 TrkRegA		EQU		DPTRKREGA+IO	Track register
 SecRegA		EQU		DPSECREGA+IO	Sector register
 DataRegA	EQU		DPDATAREGA+IO	Data register
+
+DPort          SET       $DataRegA               Disk controller base address
 
 * Constants for Alpha AY-8912 sound chip, which is used to control
 * Drive select and motor on the Alpha

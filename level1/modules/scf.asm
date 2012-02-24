@@ -200,6 +200,9 @@
          IFP1
          use   defsfile
          use   scfdefs
+         IFGT  Level-1
+         use   cocovtio.d
+         ENDC
          ENDC
 
 tylg     set   FlMgr+Objct

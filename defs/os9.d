@@ -1,9 +1,9 @@
-               IFNE      OS9DEFS-1
+               IFNE      OS9.D-1
 
-OS9DEFS        SET       1
+OS9.D        SET       1
 
 ********************************************************************
-* OS9Defs - NitrOS-9 System Definitions
+* os9.d - NitrOS-9 System Definitions
 *
 * $Id$
 *
@@ -65,7 +65,7 @@ OS9DEFS        SET       1
 *	       2006/03/03  Boisy G. Pitre
 * Added F$Debug and D.DbgMem areas, common to all levels of NitrOS-9
 
-               NAM       OS9Defs
+               NAM       os9.d
                IFEQ      Level-1
                TTL       NitrOS-9 Level 1 System Symbol Definitions
                ELSE      

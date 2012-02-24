@@ -20,7 +20,7 @@
 
                ifp1      
                use       defsfile
-               use       dwdefs.d
+               use       drivewire.d
                endc      
 
 tylg           set       Sbrtn+Objct
