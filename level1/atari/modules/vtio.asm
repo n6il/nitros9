@@ -1,5 +1,5 @@
 ********************************************************************
-* VTIO - NitrOS-9 Level 1 Video Terminal I/O driver for Atari XE/XL
+* VTIO - NitrOS-9 Video Terminal I/O driver for Atari XE/XL
 *
 * $Id$
 *
@@ -7,15 +7,15 @@
 * Comment
 * ------------------------------------------------------------------
 *  1       2012/02/20  Boisy G. Pitre
-* Started from VTIO for the CoCo
+* Started from VTIO for the Atari XE/XL
                          
          nam   VTIO      
-         ttl   OS-9 Level One V2 CoCo I/O driver
+         ttl   NitrOS-9 Video Terminal I/O driver for Atari XE/XL
                          
          ifp1            
          use   defsfile  
          use   scfdefs   
-         use   atarivtio.d
+         use   atari.d
          endc            
                          
 tylg     set   Drivr+Objct
@@ -40,6 +40,20 @@ start    lbra  Init
          lbra  Term      
                          
 
+* The display list sets up the ANTIC chip to display the main screen. 
+* It is copied to the Atari Screen Area in low memory (see atari.d)
+* The size of this code MUST be <= G.DListSize
+DList
+		fcb	$70,$70,$70	3 * 8 blank scanlines
+		fcb	$42			Mode 2 with LMS (Load Memory Scan).  Mode 2 = 40 column hires text, next 2 bytes L/H determine screen origin
+		fdbs	G.ScrStart+(G.Cols*0)		origin
+		fcb	2,2,2,2,2,2,2,2,2,2
+		fcb	2,2,2,2,2,2,2,2,2,2
+		fcb	2,2,2
+* 23 extra mode 2 lines for total of 24.  240 scanlines can be used for display area, but a hires line cannot be on scanline 240 due to an Antic bug
+		fcb	$41			this is the end of Display List command JVB (Jump and wait for Vertical Blank)
+         	fdb  $0000
+DListSz	equ	*-DList
 
 * Init
 *
@@ -60,23 +74,36 @@ Init
 		clrb
 		std	V.CurRow,u
 
-* Screen memory starts at $0500
-* Clear with As
-          ldy  #ScrStart+Cols*Rows
+* Clear screen memory
+          ldy  #G.DList
           pshs y
-          ldy  #ScrStart
+          ldy  #G.ScrStart
           ldd  #$0000
 clearLoop@
      	std	,y++
      	cmpy	,s
      	bne	clearLoop@
-     	puls	y
+     	puls	u				G.DList address is aleady in U
+     	
+* copy the display list into our memory area to the globa location in low RAM
+		leax	DList,pcr
+		ldy	#DListSz
+dlcopy@
+		ldd	,x++
+		std	,u++
+		leay	-2,y
+		bne	dlcopy@
+* patch last word to be address of start of DList (byte swap for ANTIC)
+		leau	-DListSz,u
+		tfr	u,d
+		exg	a,b
+		std	DListSz-2,u
+		
 * tell the ANTIC where the dlist is
-		ldd	#$00FF		byte swapped (address is $FF00, currently in krn)
 		std	DLISTL
 
-* tell the ANTIC where the character set is (page aligned, currently in krn)		
-		lda	#$F8
+* tell the ANTIC where the character set is (page aligned, currently in Krn)		
+		lda	#G.CharSetAddr>>8
 		sta	CHBASE
 		
 * set background color
@@ -95,22 +122,26 @@ clearLoop@
 		lda	#$22
  		sta	DMACTL
 
-* tell ANTIC to enable characters
+* tell ANTIC to enable character set 2
 		lda	#$02
  		sta	CHACTL
 
 * install keyboard ISR
-		leay	IRQSvc,pcr
-		leax	IRQPkt,pcr
-		ldu	,s
-		os9	F$IRQ
+		ldd	#IRQST				POKEY IRQ status address
+		leay	IRQSvc,pcr			pointer to our service routine
+		leax	IRQPkt,pcr			F$IRQ requires a 3 byte packet
+		ldu	,s					use our saved devmem as ISR static
+		os9	F$IRQ				install the ISR
 		bcs	initex
 		
-* tell POKEY to enale keyboard scanning
-		sta	SKCTL
+* tell POKEY to enable keyboard scanning
+		lda	#%11000000
+		sta	IRQEN
 
+* clear carry and return
 		clrb
 initex	puls	u,pc
+
   
 * Term
 *
@@ -122,8 +153,10 @@ initex	puls	u,pc
 *    B  = error code
 *
 Term		
+* clear carry and return
 		clrb
 		rts
+
                          
 * Read
 *
@@ -164,10 +197,12 @@ Put2Bed  lda   V.BUSY,u   get calling process ID
          rts             
 * Check if we need to wrap around tail pointer to zero
 cktail   incb             increment pointer
-         cmpb  #$7F       at end?
+         cmpb  #KBufSz-1  at end?
          bls   readex     branch if not
+* clear carry and return
          clrb             else clear pointer (wrap to head)
 readex   rts                                      
+
 
 * Write
 *
@@ -181,54 +216,39 @@ readex   rts
 *    B  = error code
 *
 Write
-		cmpa		#C$CR
-		bne		checklf
-		lda		V.CurRow,u
-		ldb		#Cols
-		mul
-		addb		V.CurCol,u
-		adca		#0
-		ldx		#ScrStart
-		leax		d,x
-		lda		#C$SPAC-$20
-		sta		,x
-		clr		V.CurCol,u
-		clrb
-		rts
+		bsr		hidecursor		
+
+		cmpa		#C$SPAC			space or greater?
+		bcs		ChDispatch		branch if not
 		
-checklf	cmpa		#C$LF
-		bne		wchar
-		ldd		V.CurRow,u
-		bra		incrow
-wchar		
-		suba		#$20
+wchar	suba		#$20
 		pshs		a
 		lda		V.CurRow,u
-		ldb		#Cols
+		ldb		#G.Cols
 		mul
 		addb		V.CurCol,u
 		adca		#0
-		ldx		#ScrStart
+		ldx		#G.ScrStart
 		leax		d,x
 		puls		a
 		sta		,x
 		ldd		V.CurRow,u
 		incb
-		cmpb		#Cols
+		cmpb		#G.Cols
 		blt		ok
 		clrb
 incrow
 		inca
-		cmpa		#Rows
-		blt		clrrow
-SCROLL	equ		1
+		cmpa		#G.Rows
+		blt		clrline
+SCROLL	EQU		1
 		IFNE		SCROLL
-		deca						set A to Rows - 1
+		deca						set A to G.Rows - 1
 		pshs		d				save off Row/Col
-		ldx		#ScrStart			get start of screen memory
-		ldy		#Cols*(Rows-1)		set Y to size of screen minus last row
+		ldx		#G.ScrStart		get start of screen memory
+		ldy		#G.Cols*(G.Rows-1)	set Y to size of screen minus last row
 scroll_loop
-		ldd		Cols,x			get two bytes on next row
+		ldd		G.Cols,x			get two bytes on next row
 		std		,x++				store on this row
 		leay		-2,y				decrement Y
 		bne		scroll_loop		branch if not 0
@@ -236,31 +256,129 @@ scroll_loop
 		ELSE
 		clra
 		ENDC
-* clear last row
-clrrow	std		V.CurRow,u
-		ldb		#Cols
-		mul
-		ldx		#ScrStart
-		leax		d,x
-		lda		#Cols
-clrloop@	clr		,x+
-		deca
-		bne		clrloop@
-		bra		okex
+* clear line
+clrline	std		V.CurRow,u
+		bsr		DelLine
+		bra		drawcursor
 ok		std		V.CurRow,u
-
-		ldb		#Cols
+		bra		drawcursor
+		
+* calculates the cursor location in screen memory
+* Exit: X = address of cursor
+*       All other regs preserved
+calcloc
+		pshs		d
+		lda		V.CurRow,u
+		ldb		#G.Cols
 		mul
 		addb		V.CurCol,u
 		adca		#0
-		ldx		#ScrStart
+		ldx		#G.ScrStart
 		leax		d,x
+		puls		d,pc
+
+drawcursor
+		bsr		calcloc
+		lda		,x
+		sta		V.CurChr,u
 		lda		#$80
 		sta		,x
+		rts
+
+hidecursor
+		pshs		a
+		bsr		calcloc
+		lda		V.CurChr,u
+		sta		,x
+		puls		a,pc
+
+ChDispatch
+		cmpa  #$0D		$0D?
+		bhi   drawcursor	branch if higher than
+		leax  <DCodeTbl,pcr	deal with screen codes
+		lsla  			adjust for table entry size
+		ldd   a,x		get address in D
+		jmp   d,x		and jump to routine
+
+* display functions dispatch table
+DCodeTbl	fdb   NoOp-DCodeTbl			$00:no-op (null)
+		fdb   CurHome-DCodeTbl		$01:HOME cursor
+		fdb   CurXY-DCodeTbl		$02:CURSOR XY
+		fdb   DelLine-DCodeTbl		$03:ERASE LINE
+		fdb   ErEOLine-DCodeTbl		$04:CLEAR TO EOL
+		fdb   Do05-DCodeTbl			$05:CURSOR ON/OFF
+		fdb   CurRght-DCodeTbl		$005e  $06:CURSOR RIGHT
+		fdb   NoOp-DCodeTbl			$07:no-op (bel:handled in VTIO)
+		fdb   CurLeft-DCodeTbl		$08:CURSOR LEFT
+		fdb   CurUp-DCodeTbl		$09:CURSOR UP
+		fdb   CurDown-DCodeTbl		$0A:CURSOR DOWN
+		fdb   ErEOScrn-DCodeTbl		$0B:ERASE TO EOS
+		fdb   ClrScrn-DCodeTbl		$0C:CLEAR SCREEN
+		fdb   Retrn-DCodeTbl		$0D:RETURN
+         
+DelLine
+		lda		V.CurRow,u
+		ldb		#G.Cols
+		mul
+		ldx		#G.ScrStart
+		leax		d,x
+		lda		#G.Cols
+clrloop@	clr		,x+
+		deca
+		bne		clrloop@
+		rts
 		
-okex		clrb
-		rts             
-                         
+ClrScrn
+ErEOScrn
+CurUp
+NoOp
+CurHome
+CurXY
+ErEOLine
+Do05
+CurRght
+		bra		drawcursor
+
+CurLeft
+		ldd		V.CurRow,u
+		beq		leave
+		decb
+		bpl		erasechar
+		ldb		#G.Cols-1
+		deca
+		bpl		erasechar
+		clra
+erasechar
+		std		V.CurRow,u
+		ldb		#G.Cols
+		mul
+		addb		V.CurCol,u
+		adca		#0
+		ldx		#G.ScrStart
+		leax		d,x
+		clr		1,x
+		
+leave	ldd		V.CurRow,u
+		bra		drawcursor
+
+CurDown
+		ldd		V.CurRow,u
+		lbra		incrow
+
+Retrn
+		lda		V.CurRow,u
+		ldb		#G.Cols
+		mul
+		addb		V.CurCol,u
+		adca		#0
+		ldx		#G.ScrStart
+		leax		d,x
+		lda		#C$SPAC-$20
+		sta		,x
+		clr		V.CurCol,u
+		lbra		drawcursor
+
+
 * GetStat
 *
 * Entry:
@@ -276,17 +394,19 @@ GetStat
 		cmpa		#SS.ScSiz
 		bne		gserr
 		ldx		PD.RGS,y
-		ldd		#Cols
+		ldd		#G.Cols
 		std		R$X,x
-		ldd		#Rows
+		ldd		#G.Rows
 		std		R$Y,x
+* clear carry and return
 		clrb
 		rts
 gserr
 		comb
 		ldb		#E$UnkSvc            
 		rts             
-                                                 
+             
+             
 * SetStat
 *
 * Entry:
@@ -299,22 +419,33 @@ gserr
 *    B  = error code
 *
 SetStat
+* clear carry and return
 		clrb
 		rts             
 
 	
 IRQPkt	equ	*
-Pkt.Flip	fcb	$80		flip byte
-Pkt.Mask 	fcb	$81		mask byte
+Pkt.Flip	fcb	%11000000		flip byte
+Pkt.Mask 	fcb	%11000000		mask byte
 		fcb 	$0A		priority
+
 	
 *
 * IRQ routine for keyboard
 *
-IRQSvc                   
-		ldb	KBCODE
+IRQSvc
+		ldb	KBCODE	get keyboard code from POKEY
+		pshs b
+		andb	#$7F		mask out potential CTRL key
 		leax	ATASCI,pcr
-		lda	b,x
+		lda	b,x		fetch character for code
+		tst	,s+		CTRL key down?
+		bpl	noctrl@	branch if not
+		cmpa	#$40
+		bcs	noctrl@
+		anda	#$5F
+		suba	#$40
+noctrl@
 		ldb	V.IBufH,u  get head pointer in B
 		leax	V.InBuf,u  point X to input buffer
 		abx              X now holds address of head
@@ -343,10 +474,20 @@ WakeIt	ldb	#S$Wake    get wake signal
 L0153	beq	L0158      branch if none
 		os9	F$Send     else send wakeup signal
 L0158	clr	V.WAKE,u   clear process to wake flag
+
+* Update the shadow register then the real register to disable and
+* re-enable the keyboard interrupt
+		lda	D.IRQENShdw
+		tfr	a,b
+		anda	#^%11000000
+		orb	#%11000000
+		sta	IRQEN
+		stb	D.IRQENShdw
+		stb	IRQEN
 		rts
 		
 ATASCI	fcb	$6C,$6A,$3B,$80,$80,$6B,$2B,$2A ;LOWER CASE
-		fcb	$6F,$80,$70,$75,$9B,$69,$2D,$3D
+		fcb	$6F,$80,$70,$75,$0D,$69,$2D,$3D
 
 		fcb	$76,$80,$63,$80,$80,$62,$78,$7A
 		fcb	$34,$80,$33,$36,$1B,$35,$32,$31
@@ -354,7 +495,7 @@ ATASCI	fcb	$6C,$6A,$3B,$80,$80,$6B,$2B,$2A ;LOWER CASE
 		fcb	$2C,$20,$2E,$6E,$80,$6D,$2F,$81
 		fcb	$72,$80,$65,$79,$7F,$74,$77,$71
 
-		fcb	$39,$80,$30,$37,$7E,$38,$3C,$3E
+		fcb	$39,$80,$30,$37,$08,$38,$3C,$3E
 		fcb	$66,$68,$64,$80,$82,$67,$73,$61
 
 
@@ -371,17 +512,17 @@ ATASCI	fcb	$6C,$6A,$3B,$80,$80,$6B,$2B,$2A ;LOWER CASE
 		fcb	$46,$48,$44,$80,$83,$47,$53,$41
 
 
-		fcb	$0C,$0A,$7B,$80,$80,$0B,$1E,$1F ;CONTROL
-		fcb	$0F,$80,$10,$15,$9B,$09,$1C,$1D
+*		fcb	$0C,$0A,$7B,$80,$80,$0B,$1E,$1F ;CONTROL
+*		fcb	$0F,$80,$10,$15,$9B,$09,$1C,$1D
 
-		fcb	$16,$80,$03,$80,$80,$02,$18,$1A
-		fcb	$80,$80,$85,$80,$1B,$80,$FD,$80
+*		fcb	$16,$80,$03,$80,$80,$02,$18,$1A
+*		fcb	$80,$80,$85,$80,$1B,$80,$FD,$80
 
-		fcb	$00,$20,$60,$0E,$80,$0D,$80,$81
-		fcb	$12,$80,$05,$19,$9E,$14,$17,$11
+*		fcb	$00,$20,$60,$0E,$80,$0D,$80,$81
+*		fcb	$12,$80,$05,$19,$9E,$14,$17,$11
 
-		fcb	$80,$80,$80,$80,$FE,$80,$7D,$FF
-		fcb	$06,$08,$04,$80,$84,$07,$13,$01
+*		fcb	$80,$80,$80,$80,$FE,$80,$7D,$FF
+*		fcb	$06,$08,$04,$80,$84,$07,$13,$01
         
 		emod            
 eom		equ	*

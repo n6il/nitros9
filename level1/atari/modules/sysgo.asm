@@ -84,9 +84,9 @@ ExecDir  fcc   "CMDS"
 
 Shell    fcc   "Shell"
          fcb   C$CR
-AutoEx   fcc   "mdir"
+AutoEx   fcc   "AutoEx"
          fcb   C$CR
-AutoExPr fcc   "-e"
+AutoExPr fcc   ""
          fcb   C$CR
 AutoExPrL equ  *-AutoExPr
 

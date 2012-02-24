@@ -108,8 +108,8 @@ InitCont
          ldb   #TkPerTS   get ticks per time slice
          stb   <D.TSlice  set ticks per time slice
          stb   <D.Slice   set first time slice
-         leax  SvcIRQ,pcr set IRQ handler
-         stx   <D.IRQ    
+         leax  SvcIRQ,pcr set NMI handler
+         stx   <D.NMI    
                          
          leay  NewSvc,pcr insert syscalls
          os9   F$SSvc    
