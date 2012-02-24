@@ -1,32 +1,32 @@
-PORT = tano
+PORT = d64
 include $(NITROS9DIR)/rules.mak
 
 DEPENDS		= ./makefile
 
 DEFOPTS		= -ls -x -z -aLevel=1
 DEFSDIR		= ../../../defs
-DEFS		= Defsfile OS9Defs RBFDefs SCFDefs SysType VTIODefs
+DEFS		= defsfile os9.d rbf.d scf.d dragon.d dragonvtio.d
 ALLOBJS		= $(DEFS)
 
 all:	$(ALLOBJS)
 
-Defsfile: defsfile.asm
-	$(AS) $(AFLAGS) $(DEFOPTS) -p $< > $@
+defsfile: defsfile.asm
+	$(AS) $(DEFOPTS) -p $< > $@
 
-OS9Defs: $(DEFSDIR)/os9defs
-	$(AS) $(AFLAGS) $(DEFOPTS) -aOS9DEFS=0 $< > $@
+os9.d: $(DEFSDIR)/os9.d
+	$(AS) $(DEFOPTS) -aOS9.D=0 $< > $@
 
-RBFDefs: $(DEFSDIR)/rbfdefs
-	$(AS) $(AFLAGS) $(DEFOPTS) -aRBFDEFS=0 $< > $@
+rbf.d: $(DEFSDIR)/rbf.d
+	$(AS) $(DEFOPTS) -aRBF.D=0 $< > $@
 
-SCFDefs: $(DEFSDIR)/scfdefs
-	$(AS) $(AFLAGS) $(DEFOPTS) -aSCFDEFS=0 $< > $@
+scf.d: $(DEFSDIR)/scf.d
+	$(AS) $(DEFOPTS) -aSCF.D=0 $< > $@
 
-SysType: $(DEFSDIR)/systype
-	$(AS) $(AFLAGS) $(DEFOPTS) -aSYSTYPE=0 $< > $@
+dragon.d: $(DEFSDIR)/dragon.d
+	$(AS) $(DEFOPTS) -aDRAGON.D=0 $< > $@
 
-VTIODefs: $(DEFSDIR)/vtiodefs
-	$(AS) $(AFLAGS) $(DEFOPTS) -aVTIODEFS=0 $< > $@
+dragonvtio.d: $(DEFSDIR)/cocovtio.d
+	$(AS) $(DEFOPTS) -aDRAGONVTIO.D=0 $< > $@
 
 clean:
 	$(RM) $(DEFS)

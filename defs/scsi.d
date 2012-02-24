@@ -1,3 +1,6 @@
+          IFNE      SCSI.D-1
+SCSI.D    SET       1
+
 ********************************************************************
 * scsi.d - SCSI definitions
 *
@@ -96,4 +99,6 @@ SDAddr         SET       $FF5B
                ELSE      
 SDAddr         SET       $FF53
                ENDC      
+               ENDC      
+
                ENDC      

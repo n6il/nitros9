@@ -12,6 +12,7 @@
 
          ifp1  
          use   defsfile
+         use   cocovtio.d
          endc  
 
 Edtn     equ   1

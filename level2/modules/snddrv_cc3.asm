@@ -23,6 +23,7 @@
 
          ifp1  
          use   defsfile
+         use   cocovtio.d
          endc  
 
 * SYSTEM MAP GLOBALS:

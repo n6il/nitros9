@@ -11,7 +11,7 @@
          ttl   HiRes Joystick Subroutine Module
 
          ifp1  
-         use   os9defs
+         use   defsfile
          endc  
 
 edition  set   1

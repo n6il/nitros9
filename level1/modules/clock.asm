@@ -47,7 +47,7 @@
          ifp1            
          use   defsfile  
          ifgt  Level-1   
-         use   vtiodefs_cc3
+         use   cocovtio.d
          endc            
          endc            
                          

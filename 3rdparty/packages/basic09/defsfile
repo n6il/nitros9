@@ -1,2 +1,2 @@
-         use   os9defs   
-         use   scfdefs   
+         use   os9.d   
+         use   scf.d   

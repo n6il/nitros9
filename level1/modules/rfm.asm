@@ -15,7 +15,7 @@
                ifp1      
                use       defsfile
                use       rfmdefs
-               use       dwdefs.d
+               use       drivewire.d
                endc      
 
 tylg           set       FlMgr+Objct

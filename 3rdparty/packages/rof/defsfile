@@ -1,4 +1,4 @@
 Level   equ 2
 
-	use os9defs
-	use scfdefs
+	use os9.d
+	use scf.d

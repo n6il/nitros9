@@ -1,4 +1,4 @@
-	use	os9defs
-	use	scfdefs
-        use     rbfdefs
-        use     systype
+	use	os9.d
+	use	scf.d
+        use     rbf.d
+	use     coco.d

@@ -1,6 +1,5 @@
-          IFNE      ATARIDEFS-1
-
-ATARIDEFS SET       1
+          IFNE      ATARI.D-1
+ATARI.D   SET       1
 
 ********************************************************************
 * AtariDefs - NitrOS-9 System Definitions for the Atari XE/XL
@@ -16,6 +15,33 @@ ATARIDEFS SET       1
                NAM       AtariDefs
                TTL       NitrOS-9 System Definitions for the Atari XE/XL
 
+
+
+**********************************
+* Power Line Frequency Definitions
+*
+Hz50           EQU       1                   Assemble clock for 50 hz power
+Hz60           EQU       2                   Assemble clock for 60 hz power
+PwrLnFrq       SET       Hz60                Set to Appropriate freq
+
+
+**********************************
+* Ticks per second
+*
+               IFEQ      PwrLnFrq-Hz50
+TkPerSec       SET       50
+               ELSE      
+TkPerSec       SET       60
+               ENDC      
+
+
+*************************************************
+*
+* NitrOS-9 Level 1 Section
+*
+*************************************************
+
+HW.Page        SET       $FF                 Device descriptor hardware page
 
 
 ********************************************************************
@@ -43,8 +69,6 @@ G.CharSetAddr  EQU       $F800
 * (Yes, we are stealing an existing variable that is so old it should be
 *  removed from os9defs)
 D.IRQENShdw    EQU       D.WDBtDr
-
-
 
 
 ********************************************************************
@@ -206,27 +230,5 @@ WSYNC	EQU	$D40A	;wait for HBLANK synchronization
 NMIEN	EQU	$D40E	;NMI enable
 NMIRES	EQU	$D40F	;NMI interrupt status reset
 
-
-
-********************************************************************
-* VTIO Defs for the Atari XE/XL
-* Everything that the VTIO driver needs is defined here, including
-* static memory definitions
-
-* Constant Definitions
-KBufSz    EQU       8                   circular buffer size
-
-
-* Driver Static Memory
-          ORG       V.SCF
-V.CurRow  RMB       1
-V.CurCol  RMB       1
-V.CurChr  RMB       1                   character under the cursor
-V.KySns   RMB       1                   key sense flags
-V.IBufH   RMB       1                   input buffer head
-V.IBufT   RMB       1                   input buffer tail
-V.InBuf   RMB       KBufSz              input buffer
-          RMB       250-.
-V.Last    EQU       .
 
           ENDC

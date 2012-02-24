@@ -37,7 +37,7 @@ NUMRETRIES equ  8
 
          ifp1
          use   defsfile
-         use   dwdefs.d
+         use   drivewire.d
          endc
 
 NumDrvs  set   4

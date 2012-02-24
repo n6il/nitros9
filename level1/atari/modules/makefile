@@ -5,18 +5,7 @@ vpath %.asm $(LEVEL1)/modules
 
 AFLAGS		+= -I$(LEVEL1)/modules
 
-CLOCKELIM       = -aRTCElim=1
-CLOCKDISTO2     = -aRTCDsto2=1
-CLOCKDISTO4     = -aRTCDsto4=1
-CLOCKBNB        = -aRTCBB=1
-CLOCKSMART      = -aRTCSmart=1 -aMPIFlag=1
-CLOCKHARRIS     = -aRTCHarrs=1
-CLOCKCLOUD9     = -aRTCCloud9=1
 CLOCKSOFT       = -aRTCSoft=1
-CLOCKMESSEMU    = -aRTCMessEmu=1
-CLOCKJVEMU      = -aRTCJVEmu=1
-TC3FLAGS        = $(AFLAGS) -aTC3=1 $(FLAGS)
-IDEFLAGS        = $(AFLAGS) -aIDE=1 $(FLAGS)
 
 DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
@@ -29,7 +18,7 @@ CLOCKS      = clock_60hz clock_50hz clock2_soft
 RBF		= rbf.mn
 
 SCF		= scf.mn \
-		sc6551.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr vtio.dr \
+		vrn.dr vtio.dr \
 		nil.dd \
 		term.dt
 
@@ -37,7 +26,7 @@ PIPE		= pipeman.mn \
 		piper.dr \
 		pipe.dd
 
-ALLOBJS		= $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
+ALLOBJS		= $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
 
 all:	$(ALLOBJS)
 
@@ -63,9 +52,6 @@ clean:
 
 showobjs:
 	@$(ECHO) $(ALLOBJS)
-
-showboottrack:
-	@$(ECHO) $(BOOTTRACK)
 
 showkernel:
 	@$(ECHO) $(KERNEL)

@@ -17,7 +17,7 @@
          ifp1
          use   defsfile
          use   scfdefs
-	 use   vtiodefs
+         use   cocovtio.d
          endc
 
 tylg     set   Devic+Objct   

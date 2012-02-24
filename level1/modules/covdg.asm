@@ -19,7 +19,7 @@
 
          ifp1
          use   defsfile
-         use   vtiodefs
+         use   cocovtio.d
          endc
 
 tylg     set   Systm+Objct   

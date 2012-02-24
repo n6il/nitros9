@@ -6,7 +6,7 @@
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
-*          2012/02/22  Boisy G. Pitre
+*   1      2012/02/22  Boisy G. Pitre
 * Created
  
          nam   Clock     

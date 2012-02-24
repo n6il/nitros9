@@ -65,8 +65,8 @@ vhdnum   equ  $FF86
          ttl   os9 device driver    
 
          ifp1
-         use   os9defs
-         use   rbfdefs
+         use   os9.d
+         use   rbf.d
          endc
 
 tylg     set   Drivr+Objct   

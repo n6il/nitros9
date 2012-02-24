@@ -1,5 +1,5 @@
 Level   equ 2
 
-	use os9defs
-        use rbfdefs
-        use systype
+	use os9.d
+        use rbf.d
+        use coco.d

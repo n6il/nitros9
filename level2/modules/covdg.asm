@@ -39,6 +39,7 @@
 
          ifp1
          use   defsfile
+         use   cocovtio.d
          use   vdgdefs
          endc
 

@@ -5,7 +5,6 @@
 
          ifp1  
          use   defsfile
-         use   scfdefs
          endc  
 
 tylg     set   Devic+Objct

@@ -1,9 +1,8 @@
-               IFNE      SYSTYPE-1
-
-SYSTYPE        SET       1
+               IFNE      COCO.D-1
+COCO.D         SET       1
 
 ********************************************************************
-* SysType - NitrOS-9 System Specific Definitions
+* CoCoDefs - NitrOS-9 System Definitions for the Tandy Color Computer
 *
 * $Id$
 *
@@ -31,16 +30,20 @@ SYSTYPE        SET       1
 *
 *          2004/07/18  Boisy G. Pitre
 * Moved CoCo 3 Window stuff into cc3iodefs
+*
+*          2012/02/24  Boisy G. Pitre
+* Consolidated all CoCo-specific defs files into here.
 
-               NAM       SysType
+               NAM       CoCoDefs
                IFEQ      Level-1
-               TTL       NitrOS-9 Level 1 System Type Definitions
+               TTL       NitrOS-9 System Definitions for the Tandy Color Computer
                ELSE      
                IFEQ      Level-2
                TTL       NitrOS-9 Level 2 System Type Definitions
-               ENDC      
+               ELSE      
                IFEQ      Level-3
                TTL       NitrOS-9 Level 3 System Type Definitions
+               ENDC      
                ENDC      
                ENDC      
 
@@ -200,6 +203,7 @@ PalAdr         EQU       $FFB0               Palette registers
 
 HW.Page        SET       $07                 Device descriptor hardware page
 
-               ENDC      
+               ENDC
+               
                ENDC      
 

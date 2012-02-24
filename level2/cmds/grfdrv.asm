@@ -310,6 +310,7 @@
 
          ifp1
          use   defsfile
+         use   cocovtio.d
          endc
 
 GrfStrt  equ   $4000          Position of GRFDRV in it's own task
