@@ -72,7 +72,7 @@
          use   defsfile
          use   scfdefs
          IFNE	atari
-         use   atarivtio.d
+         use   atari.d
          ENDC
          endc
 
@@ -280,7 +280,7 @@ SWI3     pshs  pc,x,b
 SWI2     pshs  pc,x,b
          ldb   #P$SWI2
          bra   L018C
-SVCNMI	jmp	[>D.IRQ]
+SVCNMI   jmp	[>D.NMI]
 DUMMY	rti
 SVCIRQ   jmp   [>D.SvcIRQ]
 SWI      pshs  pc,x,b
@@ -1021,11 +1021,11 @@ dump
  lsrb
  lsrb
  lda b,x
- sta ScrStart+0
+ sta G.ScrStart+0
  ldb ,s
  andb #$0F
  lda b,x
- sta ScrStart+1
+ sta G.ScrStart+1
 
  ldb 1,s
  andb #$F0
@@ -1034,11 +1034,11 @@ dump
  lsrb
  lsrb
  lda b,x
- sta ScrStart+2
+ sta G.ScrStart+2
  ldb 1,s
  andb #$0F
  lda b,x
- sta ScrStart+3
+ sta G.ScrStart+3
 m jmp m
 
 hextable	fcb $30-$20,$31-$20,$32-$20,$33-$20,$34-$20,$35-$20,$36-$20,$37-$20
@@ -1069,34 +1069,6 @@ valerr	cmpb	#E$KwnMod
 valcheck	cmpx	,s
 		bcs	valloop@
 valret	puls  y,pc
-
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39
-* The display list sets up the ANTIC chip to display the main screen. 
-* It cannot cross a 1K boundary.
-dlist
-		fcb	$70,$70,$70	3 * 8 blank scanlines
-		fcb	$42			Mode 2 with LMS (Load Memory Scan).  Mode 2 = 40 column hires text, next 2 bytes L/H determine screen origin
-		fdbs	ScrStart		screen origin.  Usually put at top of available RAM.  Screen data will wrap around 4K boundary unless another LMS is used
-* default with Atari OS in >= 48K system is $9C40 for a 40*24 screen
-		fcb	2,2,2,2,2,2,2,2,2,2
-		fcb	2,2,2,2,2,2,2,2,2,2
-		fcb	2,2,2
-* 23 extra mode 2 lines for total of 24.  240 scanlines can be used for display area, but a hires line can't be on scanline 240 due to an Antic bug
-		fcb	$41			this is the end of Display List command JVB (Jump and wait for Vertical Blank)
-          IFP2
-         	fdbs $10000-eomem+dlist
-         	ELSE
-         	fdb  $0000
-         	ENDC
 
 ***********************************************************************
 * Atari initialization code goes here since we have to pad the area due
@@ -1184,18 +1156,30 @@ InitNam  fcs   /Init/
 
 P2Nam    fcs   /krnp2/
 
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+* This area must be padded so that the Character Set above starts at $F800
+* in ROM
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-*          fcb  $39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb	$39
 
 		ENDC
 		
 		emod
 eom      	equ	*
 
-         fdb   Clock
 Vectors  fdb   SWI3                    SWI3 
          fdb   SWI2                    SWI2
          fdb   DUMMY                   FIRQ

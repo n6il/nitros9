@@ -13,7 +13,7 @@ BOOTFILE_ROM_P1	= $(MD)/krnp2 $(MD)/init \
 				$(MD)/clock_60hz $(MD)/clock2_soft \
 				$(MD)/krn
 
-BOOTFILE_ROM_P2	= $(CD)/shell_21 $(CD)/mdir
+BOOTFILE_ROM_P2	= $(CD)/shell_21 $(CD)/debug
 
 BOOTROMS	= nos96809l1.rom
 
