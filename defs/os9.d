@@ -482,12 +482,19 @@ D.CRC          RMB       1                   CRC checking mode flag $89 (added i
 D.Clock2       RMB       2                   CC Clock2 entry address
 
                ORG       $100
+*D.XSWI3        RMB       3
+*D.XSWI2        RMB       3
+*D.XFIRQ        RMB       3
+*D.XIRQ         RMB       3
+*D.XSWI         RMB       3
+*D.XNMI         RMB       3
+
 D.XSWI3        RMB       3
 D.XSWI2        RMB       3
-D.XFIRQ        RMB       3
-D.XIRQ         RMB       3
 D.XSWI         RMB       3
 D.XNMI         RMB       3
+D.XIRQ         RMB       3
+D.XFIRQ        RMB       3
 
 * Table Sizes
 BMAPSZ         EQU       32                  Bitmap table size
