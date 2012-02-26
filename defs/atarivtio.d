@@ -16,6 +16,8 @@ V.CurRow  RMB       1
 V.CurCol  RMB       1
 V.CurChr  RMB       1                   character under the cursor
 V.KySns   RMB       1                   key sense flags
+V.EscCh1  RMB       2                   escape vector handler
+V.EscVect RMB       2                   escape vector handler
 V.IBufH   RMB       1                   input buffer head
 V.IBufT   RMB       1                   input buffer tail
 V.InBuf   RMB       KBufSz              input buffer

@@ -16,8 +16,7 @@
 
          ifp1
          use   defsfile
-         use   scfdefs
-	 use   vtiodefs
+          use   atarivtio.d
          endc
 
 tylg     set   Devic+Objct   
