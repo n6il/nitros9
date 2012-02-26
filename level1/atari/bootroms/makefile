@@ -21,14 +21,14 @@ BOOTFILE_ROM_P2	= $(MD)/rbf.mn $(MD)/rbdw3.dr \
                     $(CD)/mdir $(CD)/dump
                     
 
-BOOTROMS	= nos96809l1.rom dw3boot.rom
+BOOTROMS	= nos96809l1.rom liber809.rom
 
 ALLROMS		= $(BOOTROMS)
 
 all:	$(ALLROMS)
 
 # Boot ROMs
-dw3boot.rom: dw3boot.asm
+liber809.rom: liber809.asm
 	$(AS) $(AFLAGS) -mr -I../modules $< $(ASOUT)$@
 
 nos96809l1.rom: $(BOOTFILE_ROM) $(DEPENDS)
