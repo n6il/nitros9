@@ -15,7 +15,7 @@ KERNEL		= krn krnp2
 SYSMODS		= ioman init sysgo
 CLOCKS      = clock_60hz clock_50hz clock2_soft
 
-RBF		= rbf.mn
+RBF		= rbf.mn rbdw3.dr ddx0.dd x0.dd x1.dd x2.dd x3.dd
 
 SCF		= scf.mn \
 		vrn.dr vtio.dr \
@@ -26,7 +26,9 @@ PIPE		= pipeman.mn \
 		piper.dr \
 		pipe.dd
 
-ALLOBJS		= $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
+DW		= scdwp.dr p_scdwp.dd dw3.sb
+
+ALLOBJS		= $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE) $(DW)
 
 all:	$(ALLOBJS)
 
@@ -38,6 +40,22 @@ krn krnp2:
 
 sysgo: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aROM=1
+
+# DriveWire 3 RBF descriptors
+ddx0.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1 -aDNum=0
+
+x0.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0
+
+x1.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=1
+
+x2.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=2
+
+x3.dd: dwdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
 
 # Clocks
 clock_60hz: clock.asm

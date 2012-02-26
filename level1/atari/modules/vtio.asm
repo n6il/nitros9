@@ -14,7 +14,6 @@
                          
          ifp1            
          use   defsfile  
-         use   scfdefs   
          use   atarivtio.d
          endc            
                          
@@ -69,6 +68,9 @@ Init
 		stu		>D.KbdSta  store devmem ptr
 		pshs	u
 
+		leax	ChkSpc,pcr
+		stx	V.EscVect,u
+		
 * setup static vars
 		clra
 		clrb
@@ -112,9 +114,9 @@ dlcopy@
 
 * set text color
 		lda	#$0F
- 		sta	COLPF0
+* 		sta	COLPF0
  		sta	COLPF1
- 		sta	COLPF3
+* 		sta	COLPF3
 		lda	#$94
  		sta	COLPF2
  		
@@ -134,6 +136,10 @@ dlcopy@
 		os9	F$IRQ				install the ISR
 		bcs	initex
 		
+* set POKEY to active
+		lda	#3
+		sta	SKCTL
+
 * tell POKEY to enable keyboard scanning
 		lda	#%11000000
 		sta	IRQEN
@@ -218,8 +224,12 @@ readex   rts
 Write
 		bsr		hidecursor		
 
+		ldx		V.EscVect,u
+		jmp		,x
+
+ChkSpc
 		cmpa		#C$SPAC			space or greater?
-		bcs		ChDispatch		branch if not
+		bcs		ChkESC			branch if not
 		
 wchar	suba		#$20
 		pshs		a
@@ -292,7 +302,9 @@ hidecursor
 		sta		,x
 		puls		a,pc
 
-ChDispatch
+ChkESC
+		cmpa	#$1B			ESC?
+		lbeq	EscHandler
 		cmpa  #$0D		$0D?
 		bhi   drawcursor	branch if higher than
 		leax  <DCodeTbl,pcr	deal with screen codes
@@ -359,7 +371,7 @@ erasechar
 		clr		1,x
 		
 leave	ldd		V.CurRow,u
-		bra		drawcursor
+		lbra		drawcursor
 
 CurDown
 		ldd		V.CurRow,u
@@ -378,6 +390,41 @@ Retrn
 		clr		V.CurCol,u
 		lbra		drawcursor
 
+EscHandler
+		leax		EscHandler2,pcr
+eschandlerout
+		stx		V.EscVect,u
+		lbra		drawcursor
+
+EscHandler2
+		sta		V.EscCh1,u
+		leax		EscHandler3,pcr
+		bra		eschandlerout
+
+EscHandler3
+		ldb		V.EscCh1,u
+		cmpb		#$32
+		beq		DoFore
+		cmpb		#$33
+		beq		DoBack
+		cmpb		#$34
+		beq		DoBord
+eschandler3out
+		leax		ChkSpc,pcr
+		bra		eschandlerout
+
+DoFore
+*		sta		COLPF0
+		sta		COLPF1
+*		sta		COLPF3
+		bra		eschandler3out
+DoBack
+		sta		COLPF2
+		bra		eschandler3out
+DoBord
+		sta		COLBK
+		bra		eschandler3out
+		
 
 * GetStat
 *
@@ -477,12 +524,15 @@ L0158	clr	V.WAKE,u   clear process to wake flag
 
 * Update the shadow register then the real register to disable and
 * re-enable the keyboard interrupt
+		pshs cc
+          orcc #IntMasks
 		lda	D.IRQENShdw
 		tfr	a,b
 		anda	#^%11000000
 		orb	#%11000000
 		sta	IRQEN
 		stb	D.IRQENShdw
+		puls cc
 		stb	IRQEN
 		rts
 		

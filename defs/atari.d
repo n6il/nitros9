@@ -4,6 +4,49 @@ ATARI.D   SET       1
 ********************************************************************
 * AtariDefs - NitrOS-9 System Definitions for the Atari XE/XL
 *
+* This is a high level view of the Atari XE/XL memory map as setup by
+* NitrOS-9.
+*
+*     $0000----> ================================== 
+*               |                                  |
+*               |      NitrOS-9 Globals/Stack      |
+*               |                                  |
+*     $0500---->|==================================|
+*               |                                  |
+*               |               Atari              |
+*  $0500-$08BF  |           Screen Memory          |
+*               |              (40x24)             |
+*               |                                  |
+*               |----------------------------------|
+*  $08C0-$08FF  |         ANTIC Display List       |
+*     $9000---->|----------------------------------|
+*               |                                  |
+*                 . . . . . . . . . . . . . . . . .
+*               |                                  |
+*               |   RAM available for allocation   |
+*               |       by NitrOS-9 and Apps       |
+*               |                                  |
+*                 . . . . . . . . . . . . . . . . .
+*               |                                  |
+*     $C000---->|==================================|
+*               |                                  |
+*  $C000-$CFFF  |               ROM                |
+*               |                                  |
+*     $D000---->|==================================|
+*               |                                  |
+*               |   XEGS Memory Mapped I/O Region  |
+*               |(may differ in location on others)|
+*               |                                  |
+*     $D800---->|==================================|
+*               |                                  |
+*  $D800-$FFFF  |               ROM                |
+*               |                                  |
+*               |==================================|
+*
+*
+* Atari Hardware is documented here:
+*   http://user.xmission.com/~trevin/atari/pokey_regs.html
+*
 * $Id$
 *
 * Edt/Rev  YYYY/MM/DD  Modified by

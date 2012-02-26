@@ -26,7 +26,6 @@
 
          IFP1
          use   defsfile
-         use   scfdefs
          ENDC
 
 tylg     set   Prgrm+Objct

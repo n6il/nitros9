@@ -93,11 +93,13 @@ name     fcs   /Krn/
 OS9Cold  equ   *
 
          IFNE  atari
-* Currently NitrOS-9 is in ROM on the Atari.
+         IFNE	ROM
+* For when NitrOS-9 is in ROM on the Atari.
 * Since the Liber809 is coming here directly from reset,
 * we will be good and get the hardware initialized properly.
 		lds #$1000
 		lbsr	InitAtari
+         ENDC
          ENDC
          
 * clear out system globals from $0000-$0400
@@ -152,7 +154,11 @@ ChkRAM   leay  ,x
          std   ,y                      else restore org contents
          leax  >$0100,y                check top of next 256 block
          IFNE  atari
+         IFNE  ROM
          cmpx  #$C000                  stop short of ROM starting at $C000
+         ELSE
+         cmpx  #$8000                  stop short of ROM starting at $8000
+         ENDC
          ELSE
          cmpx  #Bt.Start               stop short of boot track mem
          ENDC
@@ -184,7 +190,11 @@ L00D2    lda   ,x+
 * for some reason, we need to increment X from $C000 to $C001.  If we do not
 * do this, then the screen background color goes to black at random resets??
 *         leax	1,x			
+		IFNE	ROM
          ldy   #$D000
+         ELSE
+         ldy   #$D000
+         ENDC
          ELSE
          ldy	#Bt.Start+Bt.Size
          ENDC
@@ -1030,6 +1040,7 @@ m jmp m
 hextable	fcb $30-$20,$31-$20,$32-$20,$33-$20,$34-$20,$35-$20,$36-$20,$37-$20
 		fcb $38-$20,$39-$20,$41-$20,$42-$20,$43-$20,$44-$20,$45-$20,$46-$20
 
+		IFNE	ROM
 ***********************************************************************
 * Atari initialization code goes here since we have to pad the area due
 * to 1K alignment of character set above
@@ -1048,10 +1059,8 @@ cleario
          clr   b,x
          decb
          bne   cleario         
-* set POKEY to active
-         lda   #3
-         sta   $D20F
 		rts
+		ENDC
 
 		ENDC
 		
@@ -1163,7 +1172,11 @@ P2Nam    fcs   /krnp2/
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
           fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
-          fcb	$39
+          fcb	$39,$39,$39,$39,$39,$39
+          IFEQ	ROM
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          fcb  $39,$39,$39,$39,$39,$39,$39,$39,$39,$39,$39
+          ENDC
 
 		ENDC
 		
