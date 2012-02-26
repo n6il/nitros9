@@ -13,7 +13,7 @@
 *    Y  = checksum
 *    U is preserved.  All accumulators are clobbered
 *
-Read                    
+DWRead                    
           clrb                     clear carry
           pshs      cc,a,x,y,u
           tfr       x,u
