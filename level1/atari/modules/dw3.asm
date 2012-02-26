@@ -67,8 +67,10 @@ Term
                clrb                          clear Carry
                rts       
 
+Read
                use       dwread.asm
                
+Write
                use       dwwrite.asm
                
 

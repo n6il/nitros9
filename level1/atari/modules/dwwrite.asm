@@ -13,7 +13,7 @@
 *
 SKSEND    equ   $23
 MSKSEND   equ   %00010000
-Write        
+DWWrite        
           pshs      d,cc
           orcc      #$50
 *          lda	    #SKSEND

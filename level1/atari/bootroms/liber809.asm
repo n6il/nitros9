@@ -1,6 +1,6 @@
 *****************************************************
 *
-* Boot ROM for the 6809-based Atari XL/XE
+* Liber809 Boot ROM for the 6809-based Atari XL/XE
 * Currently DriveWire based
 *
 * (C) 2012 Boisy G. Pitre
@@ -85,21 +85,21 @@ keepon
           pshs a
           leax ,s
           ldy  #$0005
-          lbsr Write
+          lbsr DWWrite
           leas 5,s
 
 * Get Sector Data
           ldy  #$100
           ldx  ,s
           clra
-          lbsr Read
+          lbsr DWRead
           bcs  readerr
           
 * Send CRC
           pshs y
           leax ,s
           ldy  #$0002
-          lbsr Write
+          lbsr DWWrite
           leas 2,s
           
 * Get Error Code
@@ -107,7 +107,7 @@ keepon
           leax ,s
           ldy  #$0001
           clra
-          lbsr Read          
+          lbsr DWRead          
           puls a,x,y
           bcs  readerr
           tsta
@@ -172,16 +172,18 @@ SetupPOKEY
      	rts
 
 
-SetupSerial                     
-          ldd       #$1000    initialize POKEY to ~38.4K
-*          ldd       #$2800    initialize POKEY to ~19.2K
-          std       AUDF3
+SetupSerial 
+BAUD19200	EQU		$2800
+BAUD38400	EQU		$1000
 
-          lda	#$23
-          sta	SKCTL
+          ldd		#BAUD38400	get POKEY baud rate
+          std		AUDF3		and store it in HW reg
 
-          lda  #$28	     clock ch. 3 with 1.79 MHz, ch. 4 with ch. 3
-          sta  AUDCTL	set audio control
+          lda		#$23
+          sta		SKCTL
+
+          lda 		#$28	     clock ch. 3 with 1.79 MHz, ch. 4 with ch. 3
+          sta		AUDCTL	set audio control
           rts
           
 * setup ANTIC here
@@ -191,7 +193,8 @@ SetupANTIC
      	rts
 
 
-* DriveWire read/write routines
+
+* DriveWire read/write routines for SIO are here
           use  dwread.asm
           
           use  dwwrite.asm
