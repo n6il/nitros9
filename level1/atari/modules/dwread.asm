@@ -1,0 +1,76 @@
+* DWRead
+*    Receive a response from the DriveWire server.
+*    Times out if serial port goes idle for more than 1.4 (0.7) seconds.
+*    Serial data format:  1-8-N-1
+*
+* Entry:
+*    X  = starting address where data is to be stored
+*    Y  = number of bytes expected
+*
+* Exit:
+*    CC = carry set on framing error, Z set if all bytes received
+*    X  = starting address of data received
+*    Y  = checksum
+*    U is preserved.  All accumulators are clobbered
+*
+Read                    
+          clrb                     clear carry
+          pshs      cc,a,x,y,u
+          tfr       x,u
+          ldx       #$0000
+          orcc      #$50
+*          lda       D.IRQENSHDW
+*          sta       IRQEN
+*          ora       #%00100000
+* enable the serial input interrupt
+          
+          ldb       SERIN               read what is in the buffer
+
+          lda	#$13
+          sta	SKCTL
+          sta	SKRES
+
+          lda       D.IRQENSHDW
+inloop@
+          ora       #%00100000
+          sta       IRQEN
+*          lda       1,s
+loop@
+*          ldb       #2
+*loopin@
+*          decb
+*          bne       loopin@
+*          deca
+*          beq       outtahere@
+          ldb       IRQST
+          bitb      #%00100000
+          bne       loop@
+          ldb       SERIN
+          lda       D.IRQENSHDW
+          sta       IRQEN
+* check for framing error
+          lda       SKSTAT
+          bpl       outtahere@	framing error
+          lsla
+          bpl       outtahere@	data input overrun
+          stb       ,u+
+          abx
+          leay      -1,y
+          bne       inloop@
+          stx       4,s
+          bsr       CleanUp
+          puls      cc,a,x,y,u,pc
+outtahere@
+          clr       SKRES          clear framing or data input overrun bits
+          bsr       CleanUp
+          puls      cc,a
+          stx       2,s
+          orcc      #$01
+          puls      x,y,u,pc
+          
+CleanUp   lda       #$40
+          lda	#$23
+          sta	SKCTL
+          sta	SKRES
+*          sta       AUDC4	reset POKEY
+          rts
