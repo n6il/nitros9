@@ -1091,24 +1091,46 @@ valcheck	cmpx	,s
 valret	puls  y,pc
 
 		
+
+*VectCode bra   SWI3Jmp		$0100
+*         nop
+*         bra   SWI2Jmp		$0103
+*         nop
+*         bra   FIRQJmp		$0106
+*         nop
+*         bra   IRQJmp		$0109
+*         nop
+*         bra   SWIJmp		$010C
+*         nop
+*         bra   NMIJmp		$010F
+
+*SWI3Jmp  jmp   [>D.SWI3]
+*SWI2Jmp  jmp   [>D.SWI2]
+*FIRQJmp  jmp   [>D.FIRQ]
+*IRQJmp   jmp   [>D.IRQ]
+*SWIJmp   jmp   [>D.SWI]
+*NMIJmp   jmp   [>D.NMI]
+*VectCSz  equ   *-VectCode
+
+
 VectCode bra   SWI3Jmp		$0100
          nop
          bra   SWI2Jmp		$0103
          nop
-         bra   FIRQJmp		$0106
+         bra   SWIJmp		$0106
          nop
-         bra   IRQJmp		$0109
+         bra   NMIJmp		$0109
          nop
-         bra   SWIJmp		$010C
+         bra   IRQJmp		$010C
          nop
-         bra   NMIJmp		$010F
+         bra   FIRQJmp		$010F
 
 SWI3Jmp  jmp   [>D.SWI3]
 SWI2Jmp  jmp   [>D.SWI2]
-FIRQJmp  jmp   [>D.FIRQ]
-IRQJmp   jmp   [>D.IRQ]
 SWIJmp   jmp   [>D.SWI]
 NMIJmp   jmp   [>D.NMI]
+IRQJmp   jmp   [>D.IRQ]
+FIRQJmp  jmp   [>D.FIRQ]
 VectCSz  equ   *-VectCode
 
 
@@ -1193,10 +1215,10 @@ Vectors  fdb   SWI3                    SWI3
          fdb   $0000				RESERVED
 		 fdb   $0100				SWI3
 		 fdb   $0103				SWI2
-		 fdb   $0106				FIRQ
-		 fdb   $0109				IRQ
-		 fdb   $010C				SWI
-		 fdb   $010F				NMI
+		 fdb   $010F				FIRQ
+		 fdb   $010C				IRQ
+		 fdb   $0106				SWI
+		 fdb   $0109				NMI
          IFP2
          fdb   $10000-eomem+OS9Cold                 RESET         
          ELSE
