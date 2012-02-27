@@ -1,0 +1,17 @@
+Things that need to be done:
+
+Kernel:
+- D.BTLO and D.BTHI need to be set.  This is usually done in KrnP2's JmpBoot,
+but the Atari port doesn't have a boot module.  We need to rethink how this will get
+done  in this port as well as the CoCo port as CoCoBoot moves forward.
+
+VTIO:
+- SS.KySns needs to be implemented
+
+dw3.sb:
+- Currently branch to init serial VIRQ is commented out.  Had system reliability
+troubles with it uncommented.
+
+Other:
+- CoCoBoot needs to be ported to the Atari.
+
