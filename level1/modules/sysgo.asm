@@ -26,7 +26,6 @@
 
          IFP1
          use   defsfile
-         use   scfdefs
          ENDC
 
 tylg     set   Prgrm+Objct
@@ -49,7 +48,7 @@ name     fcs   /SysGo/
 DefPrior set   128         
 
 Banner   equ   *
-         fcc   /(C) 2009 The NitrOS-9 Project/
+         fcc   /(C) 2012 The NitrOS-9 Project/
 CrRtn    fcb   C$CR,C$LF
          IFEQ  ROM
          IFNE  NOS9DBG
@@ -88,6 +87,9 @@ Shell    fcc   "Shell"
          fcb   C$CR
 AutoEx   fcc   "AutoEx"
          fcb   C$CR
+AutoExPr fcc   ""
+         fcb   C$CR
+AutoExPrL equ  *-AutoExPr
 
          IFEQ  ROM
 Startup  fcc   "startup -p"
@@ -105,8 +107,9 @@ ShellPL  equ   *-ShellPrm
 * Default time packet
 DefTime  dtb
 
+         IFEQ  atari
          IFEQ  Level-1
-* BASIC reset code      
+* BASIC reset code (CoCo port only)
 BasicRst fcb   $55
          neg   <$0074
          nop
@@ -116,6 +119,7 @@ BasicRst fcb   $55
          sta   >$FFDF           turn off ROM mode
          jmp   >Bt.Start+2      jump to boot
 BasicRL  equ   *-BasicRst
+         ENDC
          ENDC
 
 Init     fcs   /Init/
@@ -192,10 +196,11 @@ SignOn
          os9   I$ChgDir                change exec. dir to HD
          ENDC
 
-* Setup BASIC code
 L0125    equ   *
          pshs  u,y
+         IFEQ  atari
          IFEQ  Level-1
+* Setup BASIC code (CoCo port only)
          leax  >BasicRst,pcr
          ldu   #D.CBStrt
          ldb   #BasicRL
@@ -228,16 +233,19 @@ L0151    lda   b,y
          decb
          bpl   L0151
          ENDC
+         ENDC
 
          IFEQ  ROM
 * Fork shell startup here
-* Added 12/14/03: If SHIFT is held down, startup is not run
+		IFEQ	atari
+* Added 12/14/03: If SHIFT is held down, startup is not run (CoCo only)
          lda   #$01			standard output
          ldb   #SS.KySns
          os9   I$GetStt
          bcs   DoStartup
          bita  #SHIFTBIT		SHIFT key down?
          bne   L0186			Yes, don't to startup or autoex
+     	ENDC
 DoStartup leax  >Shell,pcr
          leau  >Startup,pcr
          ldd   #256
