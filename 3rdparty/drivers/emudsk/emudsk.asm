@@ -13,7 +13,8 @@
 *        That is required as this code is relocatable but the
 *        addresses are fixed. Part of original code.
 *  03    Corrected minor errors in GetSect.        R. Gault 11/12/26
-*  04    Added a tsta I left out in GetSect.       R. Gault 11/12/29
+*  04    Corrected more logic errors.              R. Gault 11/12/29
+*                                                & R. Gault 12/02/24
 
 * EmuDisk floppy disk controller driver
 * Edition #1
@@ -59,7 +60,6 @@ vhdnum   equ  $FF86
 * restores the metacontroller to its power-up state.  The hard drive must be
 * enabled by the user using the MS-DOS command "ECHO >COCO3.VHD" (another
 * crash safeguard), so error code 2 indicates this has not been done.
-  
 
          nam   EmuDsk
          ttl   os9 device driver    
@@ -76,14 +76,21 @@ rev      set   $02
          mod   eom,name,tylg,atrv,start,size
 
          org   0
-u0000    rmb   DRVBEG+(DRVMEM*2) Normal RBF device mem for 2 drives RG
+         rmb   DRVBEG+(DRVMEM*2) Normal RBF device mem for 2 drives RG
+prevdr   rmb   1               previously used drive RG
          rmb   255-.             residual page RAM for stack etc. RG
 size     equ   .
 
          fcb   $FF            This byte is the driver permissions
 name     fcs   /EmuDsk/
-         fcb   4              edition #4 RG
+         fcb   4               edition #4 RG
 
+start    lbra   INIT           3 bytes per entry to keep RBF happy
+         lbra   READ
+         lbra   WRITE
+         lbra   GETSTA
+         lbra   SETSTA
+         lbra   TERM
 
 * Entry: Y=Ptr to device descriptor
 *        U=Ptr to device mem
@@ -93,23 +100,17 @@ name     fcs   /EmuDsk/
 INIT     ldd   #$FF02        'Invalid' value & # of drives
          stb   V.NDRV,u      Tell RBF how many drives
          leax  DRVBEG,u      Point to start of drive tables
-init2    sta   DD.TOT,x      Set media size to bogus value $FF0000
+init2    sta   DD.TOT+2,x      Set media size to bogus value $FF0000
          sta   V.TRAK,x      Init current track # to bogus value
          leax  DRVMEM,x      Move to second drive memory. RG
          decb
          bne   init2
+         stb   prevdr,u      preset previous drive to 1st vhd
 * for now, TERM routine goes here.  Perhaps it should be pointing to the
 * park routine? ... probably not.
 TERM
 GETSTA   clrb                 no GetStt calls - return, no error, ignore
          rts   
-
-start    lbra   INIT           3 bytes per entry to keep RBF happy
-         lbra   READ
-         lbra   WRITE
-         lbra   GETSTA
-         lbra   SETSTA
-         lbra   TERM
 
 * Entry: B:X = LSN
 *        Y   = path dsc. ptr
@@ -126,20 +127,24 @@ READ     clra                 READ command value=0
 * LSN0 never changes after it's read in once.  But we'll do it anyhow
          ldx   PD.BUF,y       Get ptr to sector buffer
          leau  DRVBEG,u       point to the beginning of the drive tables
+         ldb   #DD.SIZ        copy bytes over
          lda   PD.DRV,y       Get vhd drive number from descriptor RG
-         beq   copy.i         go if first vhd drive
+         beq   copy.0         go if first vhd drive
          leau  DRVMEM,u       point to second drive memory
-copy.i   ldb   #DD.SIZ        copy bytes over
+         IFNE  H6309
+copy.0   clra
+         tfr   d,w
+         tfm   x+,u+
+         ELSE
 copy.0   lda   ,x+            grab from LSN0
          sta   ,u+            save into device static storage 
          decb
          bne   copy.0
+         ENDC
          clrb
          rts   
 
 WRITE    lda   #$01           WRITE command = 1
-         bsr   GetSect        Use same code as used by READ
-         rts
 
 * Get Sector comes here with:
 * Entry: A = read/write command code (0/1)
@@ -151,21 +156,22 @@ GetSect  pshs  x,d            Moved up in routine to save command code. RG
          lda   PD.DRV,y       Get drive number requested
          cmpa  #2             Only two drives allowed. RG
          bhs   DrivErr        Return error if "bad" drive#
-         sta   >vhdnum        Set to MESS drive#  RG
-         stb   >LSN           Tell MESS which LSN
+         cmpa  prevdr,u       did the drive change? RG
+         beq   gs.2           no, then don't reset the drive
+         sta   >vhdnum         set to new vhd# RG
+         sta   prevdr,u       update RG
+gs.2     stb   >LSN           Tell MESS which LSN
          stx   >LSN+1
          ldx   PD.BUF,y       Where the 256-byte LSN should go
 * Note: OS-9 allocates buffers from system memory on page boundaries, so
 * the low byte of X should now be $00, ensuring that the sector is not
 * falling over an 8K MMU block boundary.
-* This is the job of RBF not EmuDsk! RG
+* This should be the job of RBF not EmuDsk! RG
 
          stx   >buffer        set up the buffer address
          puls  a              recover command
          sta   >command       get the emulator to blast over the sector
          lda   >command       get the error status
-         clr   >vhdnum
-         tsta
          bne   FixErr         if non-zero, go report the error and exit
          puls  b,x,pc         restore registers and exit
 
@@ -252,10 +258,10 @@ SETSTA   ldx   PD.RGS,y       Get caller's register stack ptr
 park     lda   PD.DRV,y       get drive number RG
          cmpa  #2             test for illegal value RG
          bhs   format         ignore if illegal RG
-         sta   $FF86          tell MESS which drive to halt RG
+         sta   >vhdnum        tell which drive to halt RG
          ldb   #$02           close the drive
          stb   >command       save in command register
-         clr   >vhdnum
+         clr   >vhdnum        force the drive to first vhd drive although it may not be needed RG
 
 format   clrb                 ignore physical formats.  They're not
          rts                  necessary

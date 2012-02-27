@@ -35,7 +35,7 @@ optns EQU *
  FCB $20 min allocation
 optl EQU *-optns
 
-rnam FCS /H0/
+rnam FCS /H1/
 fmnam FCS /RBF/
 drvnam FCS /EmuDsk/
 
