@@ -142,6 +142,11 @@ dlcopy@
 
 * tell POKEY to enable keyboard scanning
 		lda	#%11000000
+		pshs	cc
+		orcc	#IntMasks
+		ora	D.IRQENSHDW
+		sta	D.IRQENSHDW
+		puls	cc
 		sta	IRQEN
 
 * clear carry and return

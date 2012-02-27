@@ -53,19 +53,15 @@ scp: dsk
 $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
 
+#	$(OS9GEN) $@ -b=$(BOOTFILE)	
 $(DSK):
 	$(RM) $@
 	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/$(CPU) Level 1"
-
-XX:
-	$(OS9GEN) $@ -b=$(BOOTFILE)	
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
-	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)

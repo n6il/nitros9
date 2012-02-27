@@ -10,16 +10,14 @@ AFLAGS		+= -i=$(NITROS9DIR)/3rdparty/packages/basic09
 LFLAGS		+= -l=$(NITROS9DIR)/lib/net.l -l=$(NITROS9DIR)/lib/alib.l -l=$(NITROS9DIR)/lib/sys6809l1.l
 
 BASIC09FILES	= basic09.asm runb.asm gfx.asm inkey.asm syscall.asm
-CMDS		= asm attr backup binex build calldbg cmp cobbler copy cputype \
+CMDS		= asm attr backup binex build calldbg cmp copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirsort disasm \
 		display dmode dsave dump echo edit error exbin format \
-		free grfdrv help ident iniz irqs link list load login makdir \
-		megaread mdir merge mfree mpi os9gen padrom park printerr procs prompt pwd pxd \
+		free help ident iniz irqs link list load login makdir \
+		megaread mdir merge mfree os9gen padrom park printerr procs prompt pwd pxd \
 		rename save setime shellplus shell_21 sleep \
-		tee tmode touch tsmon tuneport unlink verify xmode
-
-CMDS_D2		= basic09 runb gfx inkey syscall copy del echo format \
-		merge os9gen prompt tmode
+		tee tmode touch tsmon tuneport unlink verify xmode\
+          basic09 runb gfx inkey syscall 
 
 CMDS_DW		= inetd telnet dw
 
