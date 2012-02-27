@@ -11,14 +11,13 @@ DEPENDS		= ./makefile
 BOOTFILE_P1 = $(MD)/krnp2 $(MD)/init \
 		$(MD)/ioman $(MD)/scf.mn $(MD)/vtio.dr $(MD)/term.dt \
 		$(MD)/sysgo \
-		$(MD)/clock_60hz $(MD)/clock2_soft \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
 		$(MD)/krn
 
 BOOTFILE_P2 = $(MD)/rbf.mn $(MD)/rbdw3.dr \
-		$(MD)/x0.dd $(MD)/dw3.sb \
+		$(MD)/x0.dd $(MD)/x1.dd $(MD)/dw3.sb \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
-		$(CD)/shell_21 $(CD)/dir \
-		$(CD)/mdir $(CD)/dump
+		$(CD)/shell_21 $(CD)/date
 
 BOOTFILES	= bootfile
 
@@ -33,6 +32,7 @@ bootfile: $(BOOTFILE_P1) $(BOOTFILE_P2) $(DEPENDS)
 	$(PADROM) -b 12288 $@_p1
 	$(MERGE) $@_p2 $@_p1>$@
 	$(RM) $@_p2 $@_p1
+	$(PADROM) -b 32768 $@
 
 clean:
 	$(RM) $(ALLOBJS)

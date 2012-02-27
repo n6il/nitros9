@@ -25,7 +25,6 @@ DWRead
 * enable the serial input interrupt
           
           ldb       SERIN               read what is in the buffer
-
           lda	#$13
           sta	SKCTL
           sta	SKRES
@@ -34,16 +33,15 @@ DWRead
 inloop@
           ora       #%00100000
           sta       IRQEN
-*          lda       1,s
+          lda       1,s
+          clrb
 loop@
-*          ldb       #2
-*loopin@
-*          decb
-*          bne       loopin@
-*          deca
-*          beq       outtahere@
+          subd      #$0001
+          beq       outtahere@
+          pshs      b
           ldb       IRQST
           bitb      #%00100000
+          puls      b
           bne       loop@
           ldb       SERIN
           lda       D.IRQENSHDW
@@ -58,6 +56,7 @@ loop@
           leay      -1,y
           bne       inloop@
           stx       4,s
+bye
           bsr       CleanUp
           puls      cc,a,x,y,u,pc
 outtahere@

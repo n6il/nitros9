@@ -139,9 +139,7 @@ loop@          clr       ,x+
                leax      ,s                  ; point X to stack head
                ldy       #1                  ; 1 byte to retrieve
                jsr       3,u                 ; call DWRead
-               IFNE      atari-1
-               beq       InstIRQ             ; branch if no error
-               ENDC
+*               beq       InstIRQ             ; branch if no error
                leas      3,s                 ; error, cleanup stack (u and 1 byte from read) 
                lbra      InitEx            	 ; don't install IRQ handler
 
