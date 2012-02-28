@@ -11,7 +11,11 @@ VTIO:
 dw3.sb:
 - Currently branch to init serial VIRQ is commented out.  Had system reliability
 troubles with it uncommented.
+- NMI as clock source could be a problem for DriveWire because OP_TIME could come in
+the middle of a DriveWire read or write.
+- dwread.asm/dwwrite.asm could use improvement, there are occasional errors in SIO.
 
 Other:
 - CoCoBoot needs to be ported to the Atari.
-
+- Do this:  xyz</x1@ and the keyboard stops working after getting the WHAT?? from the shell.
+Wondering why this is?
