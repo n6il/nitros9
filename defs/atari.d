@@ -1,5 +1,5 @@
-          IFNE      ATARI.D-1
-ATARI.D   SET       1
+               ifne      ATARI.D-1
+ATARI.D        set       1
 
 ********************************************************************
 * AtariDefs - NitrOS-9 System Definitions for the Atari XE/XL
@@ -43,6 +43,7 @@ ATARI.D   SET       1
 *               |                                  |
 *               |==================================|
 *
+* Note that ROM above becomes RAM if booting from DriveWire.
 *
 * Atari Hardware is documented here:
 *   http://user.xmission.com/~trevin/atari/pokey_regs.html
@@ -55,27 +56,27 @@ ATARI.D   SET       1
 *          2012/02/23  Boisy G. Pitre
 * Started
 
-               NAM       AtariDefs
-               TTL       NitrOS-9 System Definitions for the Atari XE/XL
+               nam       AtariDefs
+               ttl       NitrOS-9 System Definitions for the Atari XE/XL
 
 
 
 **********************************
 * Power Line Frequency Definitions
 *
-Hz50           EQU       1                   Assemble clock for 50 hz power
-Hz60           EQU       2                   Assemble clock for 60 hz power
-PwrLnFrq       SET       Hz60                Set to Appropriate freq
+Hz50           equ       1                   Assemble clock for 50 hz power
+Hz60           equ       2                   Assemble clock for 60 hz power
+PwrLnFrq       set       Hz60                Set to Appropriate freq
 
 
 **********************************
 * Ticks per second
 *
-               IFEQ      PwrLnFrq-Hz50
-TkPerSec       SET       50
-               ELSE      
-TkPerSec       SET       60
-               ENDC      
+               ifeq      PwrLnFrq-Hz50
+TkPerSec       set       50
+               else      
+TkPerSec       set       60
+               endc      
 
 
 *************************************************
@@ -84,7 +85,7 @@ TkPerSec       SET       60
 *
 *************************************************
 
-HW.Page        SET       $FF                 Device descriptor hardware page
+HW.Page        set       $FF                 Device descriptor hardware page
 
 
 ********************************************************************
@@ -97,21 +98,21 @@ HW.Page        SET       $FF                 Device descriptor hardware page
 * Screen memory range is $0500-$08FF (1K).  Of that, 40*24 (960) bytes
 * are for the screen buffer and the remaining 64 bytes are for the
 * ANTIC's Display List
-G.Cols         EQU       40
-G.Rows         EQU       24
-G.ScrStart     EQU       $0500
-G.DList        EQU       G.ScrStart+(G.Cols*G.Rows)
-G.DListSize    EQU       64
+G.Cols         equ       40
+G.Rows         equ       24
+G.ScrStart     equ       $0500
+G.DList        equ       G.ScrStart+(G.Cols*G.Rows)
+G.DListSize    equ       64
 
 * The Character Set must be aligned to a 4K address.  We can really only
 * guarnatee that in the Krn module, which is always at the end of RAM.  So
 * for now, the character set is located at $F800
-G.CharSetAddr  EQU       $F800
+G.CharSetAddr  equ       $F800
 
 * POKEY requires shadow registers.  We allocate them in the kernel's DP
 * (Yes, we are stealing an existing variable that is so old it should be
 *  removed from os9defs)
-D.IRQENShdw    EQU       D.WDBtDr
+D.IRQENShdw    equ       D.WDBtDr
 
 
 ********************************************************************
@@ -120,181 +121,194 @@ D.IRQENShdw    EQU       D.WDBtDr
 * These were lifted from the Atari OS disassembly, and represents all
 * of the hardware registers available on the Atari XE/XL
 *
+
+
+*************************************************
 **	CTIA/GTIA Address Equates
-CTIA	EQU	$D000	;CTIA/GTIA area
+CTIA           equ       $D000               ;CTIA/GTIA area
 
 *	Read/Write Addresses
-CONSOL	EQU	$D01F	;console switches and speaker control
+CONSOL         equ       CTIA+$1F            ;console switches and speaker control
 
 *	Read Addresses
-M0PF	EQU	$D000	;missle 0 and playfield collision
-M1PF	EQU	$D001	;missle 1 and playfield collision
-M2PF	EQU	$D002	;missle 2 and playfield collision
-M3PF	EQU	$D003	;missle 3 and playfield collision
+M0PF           equ       CTIA+$00            ;missle 0 and playfield collision
+M1PF           equ       CTIA+$01            ;missle 1 and playfield collision
+M2PF           equ       CTIA+$02            ;missle 2 and playfield collision
+M3PF           equ       CTIA+$03            ;missle 3 and playfield collision
 
-P0PF	EQU	$D004	;player 0 and playfield collision
-P1PF	EQU	$D005	;player 1 and playfield collision
-P2PF	EQU	$D006	;player 2 and playfield collision
-P3PF	EQU	$D007	;player 3 and playfield collision
+P0PF           equ       CTIA+$04            ;player 0 and playfield collision
+P1PF           equ       CTIA+$05            ;player 1 and playfield collision
+P2PF           equ       CTIA+$06            ;player 2 and playfield collision
+P3PF           equ       CTIA+$07            ;player 3 and playfield collision
 
-M0PL	EQU	$D008	;missle 0 and player collision
-M1PL	EQU	$D009	;missle 1 and player collision
-M2PL	EQU	$D00A	;missle 2 and player collision
-M3PL	EQU	$D00B	;missle 3 and player collision
+M0PL           equ       CTIA+$08            ;missle 0 and player collision
+M1PL           equ       CTIA+$09            ;missle 1 and player collision
+M2PL           equ       CTIA+$0A            ;missle 2 and player collision
+M3PL           equ       CTIA+$0B            ;missle 3 and player collision
 
-P0PL	EQU	$D00C	;player 0 and player collision
-P1PL	EQU	$D00D	;player 1 and player collision
-P2PL	EQU	$D00E	;player 2 and player collision
-P3PL	EQU	$D00F	;player 3 and player collision
+P0PL           equ       CTIA+$0C            ;player 0 and player collision
+P1PL           equ       CTIA+$0D            ;player 1 and player collision
+P2PL           equ       CTIA+$0E            ;player 2 and player collision
+P3PL           equ       CTIA+$0F            ;player 3 and player collision
 
-TRIG0	EQU	$D010	;joystick trigger 0
-TRIG1	EQU	$D011	;joystick trigger 1
+TRIG0          equ       CTIA+$10            ;joystick trigger 0
+TRIG1          equ       CTIA+$11            ;joystick trigger 1
 
-TRIG2	EQU	$D012	;cartridge interlock
-TRIG3	EQU	$D013	;ACMI module interlock
+TRIG2          equ       CTIA+$12            ;cartridge interlock
+TRIG3          equ       CTIA+$13            ;ACMI module interlock
 
-PAL	EQU	$D014	;PAL/NTSC indicator
+PAL            equ       CTIA+$14            ;PAL/NTSC indicator
 
-*	Write Addresses
-HPOSP0	EQU	$D000	;player 0 horizontal position
-HPOSP1	EQU	$D001	;player 1 horizontal position
-HPOSP2	EQU	$D002	;player 2 horizontal position
-HPOSP3	EQU	$D003	;player 3 horizontal position
+* Write Addresses
+HPOSP0         equ       CTIA+$00            ;player 0 horizontal position
+HPOSP1         equ       CTIA+$01            ;player 1 horizontal position
+HPOSP2         equ       CTIA+$02            ;player 2 horizontal position
+HPOSP3         equ       CTIA+$03            ;player 3 horizontal position
 
-HPOSM0	EQU	$D004	;missle 0 horizontal position
-HPOSM1	EQU	$D005	;missle 1 horizontal position
-HPOSM2	EQU	$D006	;missle 2 horizontal position
-HPOSM3	EQU	$D007	;missle 3 horizontal position
+HPOSM0         equ       CTIA+$04            ;missle 0 horizontal position
+HPOSM1         equ       CTIA+$05            ;missle 1 horizontal position
+HPOSM2         equ       CTIA+$06            ;missle 2 horizontal position
+HPOSM3         equ       CTIA+$07            ;missle 3 horizontal position
 
-SIZEP0	EQU	$D008	;player 0 size
-SIZEP1	EQU	$D009	;player 1 size
-SIZEP2	EQU	$D00A	;player 2 size
-SIZEP3	EQU	$D00B	;player 3 size
+SIZEP0         equ       CTIA+$08            ;player 0 size
+SIZEP1         equ       CTIA+$09            ;player 1 size
+SIZEP2         equ       CTIA+$0A            ;player 2 size
+SIZEP3         equ       CTIA+$0B            ;player 3 size
 
-SIZEM	EQU	$D00C	;missle sizes
+SIZEM          equ       CTIA+$0C            ;missle sizes
 
-GRAFP0	EQU	$D00D	;player 0 graphics
-GRAFP1	EQU	$D00E	;player 1 graphics
-GRAFP2	EQU	$D00F	;player 2 graphics
-GRAFP3	EQU	$D010	;player 3 graphics
+GRAFP0         equ       CTIA+$0D            ;player 0 graphics
+GRAFP1         equ       CTIA+$0E            ;player 1 graphics
+GRAFP2         equ       CTIA+$0F            ;player 2 graphics
+GRAFP3         equ       CTIA+$10            ;player 3 graphics
 
-GRAFM	EQU	$D011	;missle graphics
+GRAFM          equ       CTIA+$11            ;missle graphics
 
-COLPM0	EQU	$D012	;player-missle 0 color/luminance
-COLPM1	EQU	$D013	;player-missle 1 color/luminance
-COLPM2	EQU	$D014	;player-missle 2 color/luminance
-COLPM3	EQU	$D015	;player-missle 3 color/luminance
+COLPM0         equ       CTIA+$12            ;player-missle 0 color/luminance
+COLPM1         equ       CTIA+$13            ;player-missle 1 color/luminance
+COLPM2         equ       CTIA+$14            ;player-missle 2 color/luminance
+COLPM3         equ       CTIA+$15            ;player-missle 3 color/luminance
 
-COLPF0	EQU	$D016	;playfield 0 color/luminance
-COLPF1	EQU	$D017	;playfield 1 color/luminance
-COLPF2	EQU	$D018	;playfield 2 color/luminance
-COLPF3	EQU	$D019	;playfield 3 color/luminance
+COLPF0         equ       CTIA+$16            ;playfield 0 color/luminance
+COLPF1         equ       CTIA+$17            ;playfield 1 color/luminance
+COLPF2         equ       CTIA+$18            ;playfield 2 color/luminance
+COLPF3         equ       CTIA+$19            ;playfield 3 color/luminance
 
-COLBK	EQU	$D01A	;background color/luminance
+COLBK          equ       CTIA+$1A            ;background color/luminance
 
-PRIOR	EQU	$D01B	;priority select
-VDELAY	EQU	$D01C	;vertical delay
-GRACTL	EQU	$D01D	;graphic control
-HITCLR	EQU	$D01E	;collision clear
-
-
-**	POKEY Address Equates
-POKEY	EQU	$D200	;POKEY area
-
-*	Read Addresses
-POT0	EQU	$D200	;potentiometer 0
-POT1	EQU	$D201	;potentiometer 1
-POT2	EQU	$D202	;potentiometer 2
-POT3	EQU	$D203	;potentiometer 3
-POT4	EQU	$D204	;potentiometer 4
-POT5	EQU	$D205	;potentiometer 5
-POT6	EQU	$D206	;potentiometer 6
-POT7	EQU	$D207	;potentiometer 7
-
-ALLPOT	EQU	$D208	;potentiometer port state
-KBCODE	EQU	$D209	;keyboard code
-RANDOM	EQU	$D20A	;random number generator
-SERIN	EQU	$D20D	;serial port input
-IRQST	EQU	$D20E	;IRQ interrupt status
-IRQST.BREAKDOWN     equ  %10000000
-IRQST.KEYDOWN       equ  %01000000
-IRQST.SERINRDY      equ  %00100000
-IRQST.SEROUTNEEDED  equ  %00010000
-IRQST.SEROUTDONE    equ  %00001000
-IRQST.TIMER4        equ  %00000100
-IRQST.TIMER2        equ  %00000010
-IRQST.TIMER1        equ  %00000001
-
-SKSTAT	EQU	$D20F	;serial port and keyboard status
-
-*	Write Addresses
-AUDF1	EQU	$D200	;channel 1 audio frequency
-AUDC1	EQU	$D201	;channel 1 audio control
-
-AUDF2	EQU	$D202	;channel 2 audio frequency
-AUDC2	EQU	$D203	;channel 2 audio control
-
-AUDF3	EQU	$D204	;channel 3 audio frequency
-AUDC3	EQU	$D205	;channel 3 audio control
-
-AUDF4	EQU	$D206	;channel 4 audio frequency
-AUDC4	EQU	$D207	;channel 4 audio control
-
-AUDCTL	EQU	$D208	;audio control
-STIMER	EQU	$D209	;start timers
-SKRES	EQU	$D20A	;reset SKSTAT status
-POTGO	EQU	$D20B	;start potentiometer scan sequence
-SEROUT	EQU	$D20D	;serial port output
-IRQEN	EQU	$D20E	;IRQ interrupt enable
-IRQEN.BREAKDOWN     equ  %10000000
-IRQEN.KEYDOWN       equ  %01000000
-IRQEN.SERINRDY      equ  %00100000
-IRQEN.SEROUTNEEDED  equ  %00010000
-IRQEN.SEROUTDONE    equ  %00001000
-IRQEN.TIMER4        equ  %00000100
-IRQEN.TIMER2        equ  %00000010
-IRQEN.TIMER1        equ  %00000001
-
-SKCTL	EQU	$D20F	;serial port and keyboard control
-SKCTL.FORECEBREAK   equ  %10000000
-SKCTL.SERMODECTRLMASK equ  %01110000
-SKCTL.TWOTONEMODE   equ  %00001000
-SKCTL.FASTPOTSCAN   equ  %00000100
-SKCTL.KEYBRDSCAN    equ  %00000010
-SKCTL.KEYDEBOUNCE   equ  %00000001
-
-**	PIA Address Equates
-PIA	EQU	$D300	;PIA area
-
-*	Read/Write Addresses
-PORTA	EQU	$D300	;port A direction register or jacks 0 and 1
-PORTB	EQU	$D301	;port B direction register or memory control
-
-PACTL	EQU	$D302	;port A control
-PBCTL	EQU	$D303	;port B control
+PRIOR          equ       CTIA+$1B            ;priority select
+VDELAY         equ       CTIA+$1C            ;vertical delay
+GRACTL         equ       CTIA+$1D            ;graphic control
+HITCLR         equ       CTIA+$1E            ;collision clear
 
 
-**	ANTIC Address Equates
-ANTIC	EQU	$D400	;ANTIC area
+*************************************************
+** POKEY Address Equates
+POKEY          equ       $D200               ;POKEY area
 
-*	Read Addresses
-VCOUNT	EQU	$D40B	;vertical line counter
-PENH	EQU	$D40C	;light pen horizontal position
-PENV	EQU	$D40D	;light pen vertical position
-NMIST	EQU	$D40F	;NMI interrupt status
+*Read Addresses
+POT0           equ       POKEY+$00           ;potentiometer 0
+POT1           equ       POKEY+$01           ;potentiometer 1
+POT2           equ       POKEY+$02           ;potentiometer 2
+POT3           equ       POKEY+$03           ;potentiometer 3
+POT4           equ       POKEY+$04           ;potentiometer 4
+POT5           equ       POKEY+$05           ;potentiometer 5
+POT6           equ       POKEY+$06           ;potentiometer 6
+POT7           equ       POKEY+$07           ;potentiometer 7
 
-*	Write Addresses
-DMACTL	EQU	$D400	;DMA control
-CHACTL	EQU	$D401	;character control
-DLISTL	EQU	$D402	;low display list address
-DLISTH	EQU	$D403	;high disply list address
-HSCROL	EQU	$D404	;horizontal scroll
-VSCROL	EQU	$D405	;vertical scroll
-PMBASE	EQU	$D407	;player-missle base address
-CHBASE	EQU	$D409	;character base address
-WSYNC	EQU	$D40A	;wait for HBLANK synchronization
-NMIEN	EQU	$D40E	;NMI enable
-NMIRES	EQU	$D40F	;NMI interrupt status reset
+ALLPOT         equ       POKEY+$08           ;potentiometer port state
+KBCODE         equ       POKEY+$09           ;keyboard code
+RANDOM         equ       POKEY+$0A           ;random number generator
+SERIN          equ       POKEY+$0D           ;serial port input
+IRQST          equ       POKEY+$0E           ;IRQ interrupt status
+IRQST.BREAKDOWN equ       %10000000
+IRQST.KEYDOWN  equ       %01000000
+IRQST.SERINRDY equ       %00100000
+IRQST.SEROUTNEEDED equ       %00010000
+IRQST.SEROUTDONE equ       %00001000
+IRQST.TIMER4   equ       %00000100
+IRQST.TIMER2   equ       %00000010
+IRQST.TIMER1   equ       %00000001
+
+SKSTAT         equ       POKEY+$0F           ;serial port and keyboard status
+
+* Write Addresses
+AUDF1          equ       POKEY+$00           ;channel 1 audio frequency
+AUDC1          equ       POKEY+$01           ;channel 1 audio control
+
+AUDF2          equ       POKEY+$02           ;channel 2 audio frequency
+AUDC2          equ       POKEY+$03           ;channel 2 audio control
+
+AUDF3          equ       POKEY+$04           ;channel 3 audio frequency
+AUDC3          equ       POKEY+$05           ;channel 3 audio control
+
+AUDF4          equ       POKEY+$06           ;channel 4 audio frequency
+AUDC4          equ       POKEY+$07           ;channel 4 audio control
+
+AUDCTL         equ       POKEY+$08           ;audio control
+STIMER         equ       POKEY+$09           ;start timers
+SKRES          equ       POKEY+$0A           ;reset SKSTAT status
+POTGO          equ       POKEY+$0B           ;start potentiometer scan sequence
+SEROUT         equ       POKEY+$0D           ;serial port output
+IRQEN          equ       POKEY+$0E           ;IRQ interrupt enable
+IRQEN.BREAKDOWN equ       %10000000
+IRQEN.KEYDOWN  equ       %01000000
+IRQEN.SERINRDY equ       %00100000
+IRQEN.SEROUTNEEDED equ       %00010000
+IRQEN.SEROUTDONE equ       %00001000
+IRQEN.TIMER4   equ       %00000100
+IRQEN.TIMER2   equ       %00000010
+IRQEN.TIMER1   equ       %00000001
+
+SKCTL          equ       POKEY+$0F           ;serial port and keyboard control
+SKCTL.FORECEBREAK equ       %10000000
+SKCTL.SERMODECTRLMASK equ       %01110000
+SKCTL.TWOTONEMODE equ       %00001000
+SKCTL.FASTPOTSCAN equ       %00000100
+SKCTL.KEYBRDSCAN equ       %00000010
+SKCTL.KEYDEBOUNCE equ       %00000001
 
 
-          ENDC
+*************************************************
+** PIA Address Equates
+PIA            equ       $D300               ;PIA area
+
+* Read/Write Addresses
+PORTA          equ       PIA+$00             ;port A direction register or jacks 0 and 1
+PORTB          equ       PIA+$01             ;port B direction register or memory control
+
+PACTL          equ       PIA+$02             ;port A control
+PBCTL          equ       PIA+$03             ;port B control
+
+* PIA bit assignments for XEGS:
+* bit 7 0 = Self-Test switched in, but only if OS Rom is also switched in
+* bit 6 0 = Missile Command @ $A000 but ony if Basic Rom is switched out
+* 
+* bit 1 0 = Basic switched in
+* bit 0 1 = OS Rom switched in, opposite behaviour for this bit vs all the others relating to Rom. 
+
+
+*************************************************
+** ANTIC Address Equates
+ANTIC          equ       $D400               ;ANTIC area
+
+* Read Addresses
+VCOUNT         equ       ANTIC+$0B           ;vertical line counter
+PENH           equ       ANTIC+$0C           ;light pen horizontal position
+PENV           equ       ANTIC+$0D           ;light pen vertical position
+NMIST          equ       ANTIC+$0F           ;NMI interrupt status
+
+* Write Addresses
+DMACTL         equ       ANTIC+$00           ;DMA control
+CHACTL         equ       ANTIC+$01           ;character control
+DLISTL         equ       ANTIC+$02           ;low display list address
+DLISTH         equ       ANTIC+$03           ;high disply list address
+HSCROL         equ       ANTIC+$04           ;horizontal scroll
+VSCROL         equ       ANTIC+$05           ;vertical scroll
+PMBASE         equ       ANTIC+$07           ;player-missle base address
+CHBASE         equ       ANTIC+$09           ;character base address
+WSYNC          equ       ANTIC+$0A           ;wait for HBLANK synchronization
+NMIEN          equ       ANTIC+$0E           ;NMI enable
+NMIRES         equ       ANTIC+$0F           ;NMI interrupt status reset
+
+               endc      
