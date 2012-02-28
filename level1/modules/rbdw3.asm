@@ -77,24 +77,25 @@ start    bra   Init
 *    B  = error code
 *
 Term
+          clrb
+          pshs cc
 * Send OP_TERM to the server
-         clrb				clear Carry
-         pshs  cc			then push CC on stack
-         lda   #OP_TERM
-         pshs  a
-         leax  ,s
-         ldy   #$0001
-         IFGT  LEVEL-1
-         ldu   <D.DWSubAddr
-         ELSE
-         ldu   >D.DWSubAddr
-         ENDC
+          IFGT  LEVEL-1
+          ldu   <D.DWSubAddr
+          ELSE
+          ldu   >D.DWSubAddr
+          ENDC
 * Fix crash in certain cases
-         beq   no@
-         orcc  #IntMasks
-         jsr   6,u
-no@      puls  a
-         puls  cc,pc
+          beq   no@
+          ldy   #$0001
+          lda   #OP_TERM
+          pshs a
+          leax ,s
+          orcc  #IntMasks
+          jsr   DW$Write,u
+          clrb
+          puls a
+no@       puls cc,pc
 
 * Init
 *
@@ -147,11 +148,11 @@ Init2    sta   DD.TOT,x			invalidate drive tables
          stu   >D.DWSubAddr
          ENDC
 * Initialize the low level device
-         jsr   ,u
+         jsr   DW$Init,u
          lda   #OP_INIT
          leax  ,s
          ldy   #$0001
-         jsr   6,u
+         jsr   DW$Write,u
          clrb
 
 InitEx
@@ -184,7 +185,7 @@ Read
          bne   ReadSect			branch if not
          tstb	   			LSN 0?
          bne   ReadSect			branch if not
-* At this point we're reading LSN0
+* At this point we are reading LSN0
          bsr   ReadSect			read the sector
          bcs   CpyLSNEx			if error, exit
          leax  DRVBEG,u			point to start of drive table
@@ -224,24 +225,24 @@ Read2
          ldu   >D.DWSubAddr
          ENDC
          orcc  #IntMasks
-         jsr   6,u
+         jsr   DW$Write,u
 		 
 * Get 256 bytes of sector data
          ldx   5,s
          ldx   PD.BUF,x			get buffer pointer into X
          ldy   #$0100
-         jsr   3,u
+         jsr   DW$Read,u
          bcs   ReadEr1
          bne   ReadEr1
          pshs  y
          leax  ,s
          ldy   #$0002
-         jsr   6,u				write checksum to server
+         jsr   DW$Write,u				write checksum to server
 
 * Get error code byte
          leax  ,s
          ldy   #$0001
-         jsr   3,u
+         jsr   DW$Read,u
          bcs   ReadEr0			branch if we timed out
          bne   ReadEr0
          puls  d
@@ -301,7 +302,7 @@ Write15
          ldu   >D.DWSubAddr
          ENDC
          orcc  #IntMasks
-         jsr   6,u
+         jsr   DW$Write,u
 
 * Compute checksum on sector we just sent and send checksum to server
          ldy   5,s				get Y from stack
@@ -313,12 +314,12 @@ Write15
          pshs  d
          leax  ,s
          ldy   #$0002
-         jsr   6,u
+         jsr   DW$Write,u
 
 * Await acknowledgement from server on receipt of sector
          leax  ,s
          ldy   #$0001
-         jsr   3,u				read ack byte from server
+         jsr   DW$Read,u				read ack byte from server
          bcs   WritEx0
          bne   WritEx0
          puls  d				  
