@@ -216,6 +216,15 @@ KBCODE	EQU	$D209	;keyboard code
 RANDOM	EQU	$D20A	;random number generator
 SERIN	EQU	$D20D	;serial port input
 IRQST	EQU	$D20E	;IRQ interrupt status
+IRQST.BREAKDOWN     equ  %10000000
+IRQST.KEYDOWN       equ  %01000000
+IRQST.SERINRDY      equ  %00100000
+IRQST.SEROUTNEEDED  equ  %00010000
+IRQST.SEROUTDONE    equ  %00001000
+IRQST.TIMER4        equ  %00000100
+IRQST.TIMER2        equ  %00000010
+IRQST.TIMER1        equ  %00000001
+
 SKSTAT	EQU	$D20F	;serial port and keyboard status
 
 *	Write Addresses
@@ -237,8 +246,22 @@ SKRES	EQU	$D20A	;reset SKSTAT status
 POTGO	EQU	$D20B	;start potentiometer scan sequence
 SEROUT	EQU	$D20D	;serial port output
 IRQEN	EQU	$D20E	;IRQ interrupt enable
-SKCTL	EQU	$D20F	;serial port and keyboard control
+IRQEN.BREAKDOWN     equ  %10000000
+IRQEN.KEYDOWN       equ  %01000000
+IRQEN.SERINRDY      equ  %00100000
+IRQEN.SEROUTNEEDED  equ  %00010000
+IRQEN.SEROUTDONE    equ  %00001000
+IRQEN.TIMER4        equ  %00000100
+IRQEN.TIMER2        equ  %00000010
+IRQEN.TIMER1        equ  %00000001
 
+SKCTL	EQU	$D20F	;serial port and keyboard control
+SKCTL.FORECEBREAK   equ  %10000000
+SKCTL.SERMODECTRLMASK equ  %01110000
+SKCTL.TWOTONEMODE   equ  %00001000
+SKCTL.FASTPOTSCAN   equ  %00000100
+SKCTL.KEYBRDSCAN    equ  %00000010
+SKCTL.KEYDEBOUNCE   equ  %00000001
 
 **	PIA Address Equates
 PIA	EQU	$D300	;PIA area

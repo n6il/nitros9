@@ -45,7 +45,7 @@
          ifp1
          use   defsfile
          use   pipedefs
-         use   scfdefs
+         use   scf.d
          endc
 
 tylg     set   FlMgr+Objct   

@@ -22,8 +22,9 @@ OP_NOP      equ    $00		No-Op
 OP_RESET1   equ    $FE		Server Reset
 OP_RESET2   equ    $FF		Server Reset
 OP_RESET3   equ    $F8		Server Reset
-OP_DWINIT	equ	   'Z		DriveWire dw3 init/OS9 boot
+OP_DWINIT	  equ    'Z		DriveWire dw3 init/OS9 boot
 OP_TIME     equ    '#	 	Current time requested
+OP_SETTIME  equ    '$	 	Current time requested
 OP_INIT     equ    'I		Init routine called
 OP_READ     equ    'R		Read one sector
 OP_REREAD   equ    'r		Re-read one sector
@@ -74,8 +75,20 @@ DW.StatTbl rmb   DW.StatCnt     page pointers for terminal device static storage
 DW.VIRQPkt rmb   Vi.PkSz
 DW.VIRQNOP rmb   1
 
-* SCF Multi Terminal Driver Definitions
 
+*****************************************
+* dw3 subroutine module entry points
+*
+DW$Init   equ  0
+DW$Read   equ  3
+DW$Write  equ  6
+DW$Term   equ  9
+
+
+
+*****************************************
+* SCF Multi Terminal Driver Definitions
+*
          	org   	        V.SCF      	;V.SCF: free memory for driver to use
 SSigID          rmb             1              ;process ID for signal on data ready
 SSigSg          rmb             1              ;signal on data ready code
