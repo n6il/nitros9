@@ -66,27 +66,15 @@ Term
                clrb                          clear Carry
                rts       
 
-* Read
-*
-*  ON ENTRY:
-*    X = ADDRESS OF THE RECEIVE BUFFER
-*    A = TIMEOUT VALUE (182 = APPROX ONE SECOND @ 0.89 MHz)
-*
-*  ON EXIT:
-*    Y = DATA CHECKSUM
-*    D = ACTUAL NUMBER OF BYTES RECEIVED
-*    X AND U ARE PRESERVED
-*    CC.CARRY IS SET IF A FRAMING ERROR WAS DETECTED
-*
 Read                     
                use       dwread.asm
 
-* Write
-*
-* Entry:
 Write                    
                use       dwwrite.asm
 
+
+			use		dwinit.asm
+			
 * Init
 *
 * Entry:
@@ -101,14 +89,7 @@ Write
 Init                     
                clrb                          clear Carry
                pshs      y,x,cc              then push CC on stack
-               orcc      #IntMasks
-               ldx       #PIA1Base           $FF20
-               clr       1,x                 clear CD
-               lda       #%11111110
-               sta       ,x
-               lda       #%00110100
-               sta       1,x
-               lda       ,x
+               bsr		DWInit
 
 ; allocate DW statics page
                pshs      u
