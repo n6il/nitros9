@@ -46,6 +46,7 @@ shortdelay@
 byteloop@
           lda       ,x+
           ldb       #IMSEND
+* NOTE: Potential infinite loop here!
 waitloop@
           bitb      IRQST
           bne       waitloop@
