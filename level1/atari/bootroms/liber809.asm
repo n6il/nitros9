@@ -131,7 +131,7 @@ readerr
 green     clra
 gl@       inca
           sta  COLBK
-          lbsr  Wait
+          lbrn $0000
           cmpx ,s
           bra  gl@
 

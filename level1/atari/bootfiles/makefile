@@ -11,13 +11,13 @@ DEPENDS		= ./makefile
 BOOTFILE_P1 = $(MD)/krnp2 $(MD)/init \
 		$(MD)/ioman $(MD)/scf.mn $(MD)/vtio.dr $(MD)/term.dt \
 		$(MD)/sysgo \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/krn
 
 BOOTFILE_P2 = $(MD)/rbf.mn $(MD)/rbdw3.dr \
 		$(MD)/x0.dd $(MD)/x1.dd $(MD)/dw3.sb \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
-		$(CD)/shell_21 $(CD)/date
+		$(CD)/shell_21 $(CD)/ded
 
 BOOTFILES	= bootfile
 
