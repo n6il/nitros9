@@ -43,7 +43,7 @@ JmpTable
           bra       Init
           nop
           bra       GetTime   	RTC Get Time
-
+          nop
 
 SetTime   pshs      u,y,x,d
           IFGT      Level-1
@@ -52,21 +52,16 @@ SetTime   pshs      u,y,x,d
           ldu       >D.DWSubAddr
           ENDC
           beq       UpdLeave      in case we failed to link it, just exit
-          ldx       #D.Year
-          ldd       4,x
-          pshs      d
-          ldd       2,x
-          pshs      d
-          ldd       ,x
-          pshs      d
           lda       #OP_SETTIME
           pshs      a
+          ldy       #$0001
           leax      ,s
-          ldy       #$0007
           jsr       DW$Write,u
-          leas      7,s
+          puls      a
+          ldx       #D.Year
+          ldy       #$0006
+          jsr       DW$Write,u
           bra       UpdLeave
-
 
 GetTime   pshs      u,y,x,d
           IFGT      Level-1
