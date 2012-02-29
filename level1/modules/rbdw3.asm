@@ -150,6 +150,7 @@ Init2    sta   DD.TOT,x			invalidate drive tables
 * Initialize the low level device
          jsr   DW$Init,u
          lda   #OP_INIT
+         sta   ,s
          leax  ,s
          ldy   #$0001
          jsr   DW$Write,u
