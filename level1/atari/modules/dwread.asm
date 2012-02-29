@@ -29,8 +29,8 @@ DWRead
           sta	SKCTL
           sta	SKRES
 
-          lda       D.IRQENSHDW
 inloop@
+          lda       D.IRQENSHDW
           ora       #%00100000
           sta       IRQEN
           ldd       #$0000
