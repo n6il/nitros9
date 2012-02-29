@@ -122,14 +122,16 @@ loop@          clr       ,x+
                else      
                ldu       >D.DWSubAddr
                endc      
-               jsr       6,u                 ; call DWrite
+               jsr       DW$Write,u                 ; call DWrite
                leas      1,s                 ; leave one byte on stack for response 
                
                ; read protocol version response, 1 byte
                leax      ,s                  ; point X to stack head
                ldy       #1                  ; 1 byte to retrieve
-               jsr       3,u                 ; call DWRead
+               jsr       DW$Read,u                 ; call DWRead
+               IFNE      atari-1
                beq       InstIRQ             ; branch if no error
+               ENDC
                leas      3,s                 ; error, cleanup stack (u and 1 byte from read) 
                lbra      InitEx            	 ; don't install IRQ handler
 
@@ -228,7 +230,7 @@ IRQM03         puls      a                   ; port # is on stack
                else      
                ldu       >D.DWSubAddr
                endc      
-               jsr       6,u                 ; call DWrite
+               jsr       DW$Write,u                 ; call DWrite
 
                leas      3,s                 ; clean 3 DWsub args from stack 
 
@@ -239,7 +241,7 @@ IRQM03         puls      a                   ; port # is on stack
 
                ldx       RxBufPut,x          ; point X to insert position in this port's buffer
           ; receive response
-               jsr       3,u                 ; call DWRead
+               jsr       DW$Read,u                 ; call DWRead
           ; handle errors?
 
 
@@ -304,13 +306,13 @@ IRQSvc         equ       *
                else      
                ldu       >D.DWSubAddr
                endc      
-               jsr       6,u                 ; call DWrite
+               jsr       DW$Write,u                 ; call DWrite
 
           ; receive response
                leas      -1,s                ; one more byte to fit response
                leax      ,s                  ; point X to stack head
                ldy       #2                  ; 2 bytes to retrieve
-               jsr       3,u                 ; call DWRead
+               jsr       DW$Read,u                 ; call DWRead
                beq       IRQSvc2             ; branch if no error
                leas      2,s                 ; error, cleanup stack 2
                lbra      IRQExit2            ; don't reset error count on the way out

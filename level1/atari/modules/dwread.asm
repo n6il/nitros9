@@ -33,8 +33,7 @@ DWRead
 inloop@
           ora       #%00100000
           sta       IRQEN
-          lda       #$20
-          clrb
+          ldd       #$0000
 loop@
           subd      #$0001
           beq       outtahere@
