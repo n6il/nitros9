@@ -173,10 +173,12 @@ SetupPOKEY
 
 
 SetupSerial 
-BAUD19200	EQU		$2800
-BAUD38400	EQU		$1000
+BAUD192K	EQU		$2800
+BAUD384K	EQU		$1000
+BAUD576K	EQU		$0800
+BAUD1152K	EQU		$0400
 
-          ldd		#BAUD38400	get POKEY baud rate
+          ldd		#BAUD576K 	get POKEY baud rate
           std		AUDF3		and store it in HW reg
 
           lda		#$23
