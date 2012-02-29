@@ -37,7 +37,8 @@ shortdelay@
           lda	     #SKSEND        	; set pokey to transmit data mode
           sta	     SKCTL
           sta	     SKRES
-          lda       #MSKSEND
+          lda       D.IRQENSHDW
+          ora       #MSKSEND
           sta       IRQEN
           lda       ,x+
           sta       SEROUT
