@@ -17,7 +17,7 @@ BOOTFILE_P1 = $(MD)/krnp2 $(MD)/init \
 BOOTFILE_P2 = $(MD)/rbf.mn $(MD)/rbdw3.dr \
 		$(MD)/x0.dd $(MD)/x1.dd $(MD)/dw3.sb \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
-		$(CD)/shell_21 $(CD)/ded $(CD)/iniz $(CD)/deiniz
+		$(CD)/shell_21
 
 BOOTFILES	= bootfile
 
