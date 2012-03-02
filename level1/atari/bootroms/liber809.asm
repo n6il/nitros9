@@ -6,9 +6,11 @@
 * (C) 2012 Boisy G. Pitre
 *
 
-     use  atari.d
-     use  drivewire.d
-     use   atarivtio.d
+Level     equ  1
+          use  os9.d
+          use  atari.d
+          use  drivewire.d
+          use  atarivtio.d
 
 RAMDest      EQU  $1000			location of routine copied to RAM
 
@@ -64,6 +66,7 @@ loop
 Target
 *          org  RAMDest
 * Character Set -- must be aligned on a 1K boundary!
+* This actually gets copied into G.CharSetAddr ($F800)
 CharSet
 		fcb	$00,$00,$00,$00,$00,$00,$00,$00	;$00 - space
 		fcb	$00,$18,$18,$18,$18,$00,$18,$00	;$01 - !
@@ -213,42 +216,53 @@ DList
 		fcb	2,2,2
 * 23 extra mode 2 lines for total of 24.  240 scanlines can be used for display area, but a hires line cannot be on scanline 240 due to an Antic bug
 		fcb	$41			this is the end of Display List command JVB (Jump and wait for Vertical Blank)
-         	fdbs RAMDest+(DList-Target)
+         	fdbs G.CharSetAddr
+DListSz   equ  *-DList
 
+
+* DriveWire read/write routines for SIO are here
+          use  dwread.asm
+          
+          use  dwwrite.asm
+          
+UpCopySz  equ  *-CharSet
 
 SignOn    fcc  "Liber809 Boot ROM for the Atari XL/XE"
           fcb  $0D,$0A
           fcc  "Copyright (C) 2012 Boisy G. Pitre"
           fcb  $0D,$0A
           fcc  00
-          
+
 * setup the stack and the Atari hardware
 TargetEntry
-          ldu  #$400
-     	lbsr SetupPIA
+* Put Atari into All RAM mode
+     	lbsr SetupPIA            first, setup PIA
+          clr  $D40E
+          clr  $D20E
+          lda  #%11111110          $8000-$CFFF, $D800-$FFFF RAM!!!
+          sta  PORTB
+* copy CharSet into G.CharSetAddr
+          leax CharSet,pcr
+          ldu  #G.CharSetAddr
+          ldy  #UpCopySz
+copy@
+          ldd  ,x++
+          std  ,u++
+          leay -1,y
+          bne  copy@
+          
           lbsr	SetupPOKEY
           lbsr SetupSerial
-          lbsr	SetupANTIC
+          ldu  #$400
+          lbsr	VTIOInit
           
           leax SignOn,pcr
           lbsr WriteString
 
-* Put Atari into All RAM mode
-          clr  $D40E
-          clr  $D20E
-          lda  #%11111110    $8000-$CFFF, $D800-$FFFF RAM!!!
-          sta  PORTB
-          IFNE  TEST_RAM_MODE
-TESTADDR  equ  $5000
-          ldx  #$0013
-          stx  TESTADDR
-          ldx  TESTADDR
-          cmpx #$0013
-          lbne green
-          ENDC
-
+* Acquire!
           ldx  #$8000
           ldy  #$0000
+          lda  #OP_READEX
 ReadLoop
 * Send Read Command
           cmpy #$0050
@@ -256,12 +270,10 @@ ReadLoop
           leax $800,x
           leay 8,y            skip sectors $50-$57 ($D000-$D7FFF)
 keepon
-          pshs x,y
+          pshs a,x,y
           pshs y
-          ldd  #$0000
-          pshs d
-          lda  #OP_READEX
-          pshs a
+          ldy  #$0000
+          pshs a,y
           leax ,s
           ldy  #$0005
           lbsr DWWrite
@@ -269,12 +281,15 @@ keepon
 
 * Get Sector Data
           ldy  #$100
-          ldx  ,s
+          ldx  1,s
           clra
           lbsr DWRead
-          bcs  readerr
+          bcc  sendcrc
+          puls a,x,y
+          bra  ReRead
           
 * Send CRC
+sendcrc
           pshs y
           leax ,s
           ldy  #$0002
@@ -287,14 +302,19 @@ keepon
           ldy  #$0001
           clra
           lbsr DWRead          
-          puls a,x,y
-          bcs  ReadLoop
+          puls d,x,y
+          bcc  ReadOk
           tsta
-          bne  ReadLoop
-          pshs x,y
+          beq  ReadOk
+ReRead
+          ldb  #OP_REREADEX
+          lda  #'?
+          fcb  $8C
+ReadOk          
           lda  #'.
+          pshs b,x,y
           lbsr WriteChar
-          puls x,y
+          puls a,x,y
           leax $100,x
           leay 1,y
           cmpx #$0000
@@ -310,12 +330,6 @@ JumpMsg   fcb  $0D,$0A
           fcc  "Jumping into Kernel..."
           fcb  0
 
-checkerr
-* redo transfer
-          leax -$100,x
-          leay -1,y
-          lbra ReadLoop
-          
 readerr
 
 green     clra
@@ -362,56 +376,97 @@ BAUD1152K	EQU		$0400
           sta		AUDCTL	set audio control
           rts
           
-* setup ANTIC here
-SetupANTIC
-		leax	ChkSpc,pcr
-		stx	V.EscVect,u
+VTIOInit      
+		stu		>D.KbdSta  store devmem ptr
+		pshs 	u
 
+		leax 	ChkSpc,pcr
+		stx  	V.EscVect,u
+		
 * setup static vars
 		clra
 		clrb
-		std	V.CurRow,u
+		std	     V.CurRow,u
 
 * Clear screen memory
-          ldd  #G.ScrStart+(G.Rows*G.Cols)
-          pshs d
-          ldy  #G.ScrStart
-          ldd  #$0000
+          ldy       #G.DList
+          pshs y
+          ldy       #G.ScrStart
+          ldd       #$0000
 clearLoop@
-     	std	,y++
-     	cmpy	,s
-     	bne	clearLoop@
-     	puls d
+     	std	     ,y++
+     	cmpy 	,s
+     	bne	     clearLoop@
+     	puls	     u				G.DList address is aleady in U
      	
+* copy the display list into our memory area to the globa location in low RAM
+		leax	     DList,pcr
+		ldy	     #DListSz
+dlcopy@
+		ldd	     ,x++
+		std	     ,u++
+		leay	     -2,y
+		bne	     dlcopy@
+* patch last word to be address of start of DList (byte swap for ANTIC)
+		leau	     -DListSz,u
+		tfr	     u,d
+		exg	     a,b
+		std	     DListSz-2,u
+		
 * tell the ANTIC where the dlist is
-		ldd	#RAMDest+(DList-Target)
-		exg  a,b
-		std	DLISTL
+		std	     DLISTL
 
 * tell the ANTIC where the character set is (page aligned, currently in Krn)		
-		lda	#RAMDest>>8
-		sta	CHBASE
+		lda	     #G.CharSetAddr>>8
+		sta	     CHBASE
 		
 * set background color
-		lda	#$00
- 		sta	COLBK
+		lda	     #$00
+ 		sta	     COLBK
 
 * set text color
-		lda	#$0F
-* 		sta	COLPF0
- 		sta	COLPF1
-* 		sta	COLPF3
-		lda	#$94
- 		sta	COLPF2
+		lda	     #$0F
+* 		sta	     COLPF0
+ 		sta	     COLPF1
+* 		sta	     COLPF3
+		lda	     #$94
+ 		sta	     COLPF2
  		
 * tell ANTIC to start DMA
-		lda	#$22
- 		sta	DMACTL
+		lda	     #$22
+ 		sta	     DMACTL
 
 * tell ANTIC to enable character set 2
-		lda	#$02
- 		sta	CHACTL
-done     	rts
+		lda	     #$02
+ 		sta	     CHACTL
+
+          IFNE KEYBOARD
+* install keyboard ISR
+		ldd	     #IRQST				POKEY IRQ status address
+		leay	     IRQSvc,pcr			pointer to our service routine
+		leax	     IRQPkt,pcr			F$IRQ requires a 3 byte packet
+		ldu	     ,s					use our saved devmem as ISR static
+		os9	     F$IRQ				install the ISR
+		bcs	     initex
+		
+* set POKEY to active
+		lda	     #3
+		sta	     SKCTL
+
+* tell POKEY to enable keyboard scanning
+		lda	     #%11000000
+		pshs	     cc
+		orcc	     #IntMasks
+		ora	     D.IRQENSHDW
+		sta	     D.IRQENSHDW
+		puls	     cc
+		sta	     IRQEN
+          ENDC
+          
+* clear carry and return
+		clrb
+initex	puls	     u,pc
+
 
 * X = nul-terminated string to write
 WriteString
@@ -421,7 +476,7 @@ WriteString
           bsr  WriteChar
           puls x
           bra  WriteString
-          
+done      rts          
 
 WriteChar
 		bsr		hidecursor		
@@ -628,11 +683,6 @@ DoBord
 		bra		eschandler3out
 		
 
-* DriveWire read/write routines for SIO are here
-          use  dwread.asm
-          
-          use  dwwrite.asm
-          
 * Unused vectors routed here
 SWI3Vct
 SWI2Vct
