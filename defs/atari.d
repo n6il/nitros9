@@ -310,4 +310,36 @@ WSYNC          equ       ANTIC+$0A           ;wait for HBLANK synchronization
 NMIEN          equ       ANTIC+$0E           ;NMI enable
 NMIRES         equ       ANTIC+$0F           ;NMI interrupt status reset
 
+
+*************************************************
+** Display List Equates
+ADLI           equ       $80                 ;display list interrupt
+AVB            equ       $40                 ;vertical blank
+ALMS           equ       $40                 ;set screen data address
+AVSCR          equ       $20
+AHSCR          equ       $10
+AJMP           equ       $01                 ;jump
+AEMPTY1        equ       $00
+AEMPTY2        equ       $10
+AEMPTY3        equ       $20
+AEMPTY4        equ       $30
+AEMPTY5        equ       $40
+AEMPTY6        equ       $50
+AEMPTY7        equ       $60
+AEMPTY8        equ       $70
+AMODE2         equ       $02
+AMODE3         equ       $03
+AMODE4         equ       $04
+AMODE5         equ       $05
+AMODE6         equ       $06
+AMODE7         equ       $07
+AMODE8         equ       $08
+AMODE9         equ       $09
+AMODEA         equ       $0A
+AMODEB         equ       $0B
+AMODEC         equ       $0C
+AMODED         equ       $0D
+AMODEE         equ       $0E
+AMODEF         equ       $0F
+
                endc      
