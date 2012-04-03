@@ -35,6 +35,8 @@ CLR2        equ     $00                 ;text background
 VOICES      equ     2                   ;number of sound channels to use
 
          org   0
+CharRead  rmb  1
+OrgNMI    rmb  2
 Clr0Next  rmb   1
 SndAddrs  rmb  VOICES*2
 SndDurs   rmb  VOICES
@@ -81,7 +83,7 @@ InitPokey   lda     #$03
             sta     SKCTL               ;set POKEY 2-tone mode
             lda     #$00          
             sta     AUDCTL              ;set POKEY clock base to 15 KHz
-            bsr     InitSnd
+            lbsr    InitSnd
 
 * Initialize GTIA color registers
 InitClr     lda     #CLR0
@@ -124,13 +126,28 @@ InitDL      leax    DList,pcr
 
 * Set up and enable non-maskable interrupt
 InitNMI     leax    NMIVect,pcr
-            stx     $fffc               ;point 6809 to custom interrupt vector
+            ldy     $FFFC
+            sty     OrgNMI,u
+            stx     $FFFC               ;point 6809 to custom interrupt vector
             lda     #$C0                
             sta     NMIEN               ;enable both display list and vertical blank interrupts
 
-* End of main program
-End         bra     End
+* Read one character
+            clra
+            ldy     #$0001
+            leax    CharRead,u
+            os9     I$Read
+          
+* Now awake, time to quit
+            lda     #$00
+            sta     NMIEN
+            ldy     OrgNMI,u
+            sty     D.NMI
+            ldd     #$00F8
+            std     DLISTL
 
+            clrb
+            os9     F$Exit
 
 * Initialize sound pointers
 InitSnd
@@ -176,7 +193,8 @@ vcycle@     suba    #$a1                ;reset color for top line of Fuji
 
 SndVect     ldd     #$0000        
             tfr     d,x                 ;start with voice #0
-
+ rts
+ 
 PlayVoice   lda     SndDurs,x  
             bne     UpdateDur           ;skip work if same note keeps playing
 
