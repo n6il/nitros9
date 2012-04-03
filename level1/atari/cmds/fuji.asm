@@ -23,17 +23,6 @@ PARMSZ   set   256      estimated parameter size in bytes
 
          mod   eom,name,tylg,atrv,start,size
 
-         org   0
-Clr0Next  rmb   1
-SndAddrs  rmb  8
-SndDurs   rmb  8
-* Finally the stack for any PSHS/PULS/BSR/LBSRs that we might do
-         rmb   STACKSZ+PARMSZ
-size     equ   .
-
-name     fcs   /Merge/
-         fcb   edition    change to 6, as merge 5 has problems?
-
 GRSIZE      equ     40                  ;memory per graphics mode line
 GRCOUNT     equ     80                  ;total graphics mode lines
 TXTSIZE     equ     40                  ;memory per text mode line
@@ -44,6 +33,17 @@ CLR1        equ     $0E                 ;text foreground
 CLR2        equ     $00                 ;text background
 
 VOICES      equ     2                   ;number of sound channels to use
+
+         org   0
+Clr0Next  rmb   1
+SndAddrs  rmb  VOICES*2
+SndDurs   rmb  VOICES
+* Finally the stack for any PSHS/PULS/BSR/LBSRs that we might do
+         rmb   STACKSZ+PARMSZ
+size     equ   .
+
+name     fcs   /Merge/
+         fcb   edition    change to 6, as merge 5 has problems?
 
 
 * Screen display areas
@@ -154,23 +154,23 @@ VBITest@    lda     NMIST
 done@       puls    d,x,y               ;restore register
             rti
 
-DLIVect     lda     Clr0Next            ;get color for next mode line
+DLIVect     lda     Clr0Next,u          ;get color for next mode line
             adda    #2                  ;adjust for rainbow effect
             cmpa    #CLR0               ;skip grey tones
             bhi     dcycle@
             adda    #CLR0
-dcycle@     sta     Clr0Next            ;save shadow for next interrupt
+dcycle@     sta     Clr0Next,u          ;save shadow for next interrupt
             sta     WSYNC               ;wait for horizontal sync
             sta     COLPF0              ;update GTIA color register
             rts
 
 VBIVect     bsr     SndVect
-            lda     Clr0Next            ;get color for next mode line
+            lda     Clr0Next,u          ;get color for next mode line
             cmpa    #$af                ;adjust for skipped grey tones
             bhi     vcycle@
             suba    #CLR0
 vcycle@     suba    #$a1                ;reset color for top line of Fuji
-            sta     Clr0Next            ;save shadow
+            sta     Clr0Next,u          ;save shadow
             bsr     DLIVect             ;chain to DLI routine
             rts
 
