@@ -42,17 +42,17 @@ start    lbra  Init
 * The display list sets up the ANTIC chip to display the main screen. 
 * It is copied to the Atari Screen Area in low memory (see atari.d)
 * The size of this code MUST be <= G.DListSize
-DList
-		fcb	$70,$70,$70	3 * 8 blank scanlines
-		fcb	$42			Mode 2 with LMS (Load Memory Scan).  Mode 2 = 40 column hires text, next 2 bytes L/H determine screen origin
-		fdbs	G.ScrStart+(G.Cols*0)		origin
-		fcb	2,2,2,2,2,2,2,2,2,2
-		fcb	2,2,2,2,2,2,2,2,2,2
-		fcb	2,2,2
+*DList
+*		fcb	$70,$70,$70	3 * 8 blank scanlines
+*		fcb	$42			Mode 2 with LMS (Load Memory Scan).  Mode 2 = 40 column hires text, next 2 bytes L/H determine screen origin
+*		fdbs	G.ScrStart+(G.Cols*0)		origin
+*		fcb	2,2,2,2,2,2,2,2,2,2
+*		fcb	2,2,2,2,2,2,2,2,2,2
+*		fcb	2,2,2
 * 23 extra mode 2 lines for total of 24.  240 scanlines can be used for display area, but a hires line cannot be on scanline 240 due to an Antic bug
-		fcb	$41			this is the end of Display List command JVB (Jump and wait for Vertical Blank)
-         	fdb  $0000
-DListSz	equ	*-DList
+*		fcb	$41			this is the end of Display List command JVB (Jump and wait for Vertical Blank)
+*         	fdb  $0000
+*DListSz	equ	*-DList
 
 * Init
 *
@@ -77,7 +77,7 @@ Init
 		std	V.CurRow,u
 
 * Clear screen memory
-          ldy  #G.DList
+          ldy  #G.ScrEnd
           pshs y
           ldy  #G.ScrStart
           ldd  #$0000
@@ -87,26 +87,26 @@ clearLoop@
      	bne	clearLoop@
      	puls	u				G.DList address is aleady in U
      	
-* copy the display list into our memory area to the globa location in low RAM
-		leax	DList,pcr
-		ldy	#DListSz
-dlcopy@
-		ldd	,x++
-		std	,u++
-		leay	-2,y
-		bne	dlcopy@
+* copy the display list into our memory area to the global location in low RAM
+*		leax	DList,pcr
+*		ldy	#DListSz
+*dlcopy@
+*		ldd	,x++
+*		std	,u++
+*		leay	-2,y
+*		bne	dlcopy@
 * patch last word to be address of start of DList (byte swap for ANTIC)
-		leau	-DListSz,u
-		tfr	u,d
-		exg	a,b
-		std	DListSz-2,u
+*		leau	-DListSz,u
+*		tfr	u,d
+*		exg	a,b
+*		std	DListSz-2,u
 		
 * tell the ANTIC where the dlist is
-		std	DLISTL
+*		std	DLISTL
 
 * tell the ANTIC where the character set is (page aligned, currently in Krn)		
-		lda	#G.CharSetAddr>>8
-		sta	CHBASE
+*		lda	#G.CharSetAddr>>8
+*		sta	CHBASE
 		
 * set background color
 		lda	#$00

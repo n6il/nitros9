@@ -18,6 +18,8 @@ BBOUT       equ    $FF20
 BBIN        equ    $FF22
 
 * Opcodes
+OP_NAMEOBJ_MOUNT   equ    $01 Named Object Mount
+OP_NAMEOBJ_CREATE  equ    $02 Named Object Create
 OP_NOP      equ    $00		No-Op
 OP_RESET1   equ    $FE		Server Reset
 OP_RESET2   equ    $FF		Server Reset

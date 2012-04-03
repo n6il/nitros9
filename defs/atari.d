@@ -101,8 +101,7 @@ HW.Page        set       $FF                 Device descriptor hardware page
 G.Cols         equ       40
 G.Rows         equ       24
 G.ScrStart     equ       $0500
-G.DList        equ       G.ScrStart+(G.Cols*G.Rows)
-G.DListSize    equ       64
+G.ScrEnd       equ       G.ScrStart+(G.Cols*G.Rows)
 
 * The Character Set must be aligned to a 4K address.  We can really only
 * guarnatee that in the Krn module, which is always at the end of RAM.  So
