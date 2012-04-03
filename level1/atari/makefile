@@ -16,15 +16,16 @@ DIRS		= cmds modules defs sys bootfiles
 
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs_dw)
+CMDS_DEMO = $(shell $(CD) cmds; make --no-print-directory showobjs_demo)
 SYS		= $(shell $(CD) sys; make --no-print-directory showobjs)
 DEFS		= $(shell $(CD) defs; make --no-print-directory showobjs)
 STARTUP		= startup
 
 PACKAGENAME	= $(DISTROVER).zip
 DSK		     = $(DISTROVER).dsk
+DSK_DEMO       = ataridemo.dsk
 
-
-DSKS		= $(DSK)
+DSKS		= $(DSK) $(DSK_DEMO)
 
 # Make all components
 all:
@@ -69,6 +70,13 @@ $(DSK):
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
+
+$(DSK_DEMO):
+	$(RM) $@
+	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9 Atari Demo Disk"
+	$(MAKDIR) $@,CMDS
+	$(CD) cmds; $(CP) $(CMDS_DEMO) ../$@,CMDS
+	$(foreach file, $(CMDS_DEMO), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 
 info:
 	@echo "*** NitrOS-9/6809 Level 1 for the Atari XL/XE ***" 

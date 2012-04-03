@@ -21,8 +21,10 @@ CMDS		= asm attr backup binex build calldbg cmp copy cputype \
 
 CMDS_DW		= inetd telnet dw
 
+CMDS_DEMO      = fuji
+
 SUBS		= gfx inkey syscall
-ALLOBJS		= $(CMDS) $(CMDS_D2) $(CMDS_DW) $(SUBS)
+ALLOBJS		= $(CMDS) $(CMDS_D2) $(CMDS_DW) $(CMDS_DEMO) $(SUBS)
 
 all:	$(ALLOBJS)
 
@@ -49,6 +51,9 @@ showobjs:
 
 showobjs_dw:
 	@$(ECHO) $(CMDS) $(CMDS_DW)
+
+showobjs_demo:
+	@$(ECHO) $(CMDS_DEMO)
 
 showallobjs:
 	@$(ECHO) $(ALLOBJS)
