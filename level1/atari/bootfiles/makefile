@@ -16,7 +16,7 @@ BOOTFILE_P1 = $(MD)/krnp2 $(MD)/init $(MD)/ioman $(MD)/sysgo \
 
 BOOTFILE_P2 = $(MD)/scf.mn $(MD)/vtio.dr $(MD)/term.dt \
 		$(MD)/rbf.mn $(MD)/rbdw3.dr \
-		$(MD)/x0.dd $(MD)/x1.dd \
+		$(MD)/ddx0.dd $(MD)/x1.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(CD)/shell_21
 

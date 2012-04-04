@@ -91,15 +91,6 @@ name     fcs   /Krn/
 * OS-9 Genesis!
 
 OS9Cold  equ   *
-         IFNE  atari
-         IFNE	ROM
-* For when NitrOS-9 is in ROM on the Atari.
-* Since the Liber809 is coming here directly from reset,
-* we will be good and get the hardware initialized properly.
-		lds #$1000
-		lbsr	InitAtari
-         ENDC
-         ENDC
          
 * clear out system globals from $0000-$0400
 *         ldx   #D.FMBM
@@ -139,6 +130,12 @@ L007F    std   ,x++
          stx   <D.ModDir+2             X = $400 = mod dir end
          leas  >$0100,x                S = $500 (system stack?)
 
+* NOTE: This routine checks for RAM by writing a pattern at an address
+* then reading it back for validation.  On the CoCo, we pretty much know
+* that we are in all-RAM mode at this point, and the same goes for the
+* other supported platforms.  So I am taking this code out for the time being.
+
+         IFNE  CHECK_FOR_VALID_RAM
 * Check for valid RAM starting at $400
 ChkRAM   leay  ,x
          ldd   ,y                      store org contents in D
@@ -153,11 +150,7 @@ ChkRAM   leay  ,x
          std   ,y                      else restore org contents
          leax  >$0100,y                check top of next 256 block
          IFNE  atari
-         IFNE  ROM
-         cmpx  #$C000                  stop short of ROM starting at $C000
-         ELSE
          cmpx  #$8000                  stop short of ROM starting at $8000
-         ENDC
          ELSE
          cmpx  #Bt.Start               stop short of boot track mem
          ENDC
@@ -165,10 +158,19 @@ ChkRAM   leay  ,x
          leay  ,x
 * Here, Y = end of RAM
 L00C2    leax  ,y                      X = end of RAM
+         
+         ELSE
+         
+         IFNE  atari
+         ldx   #$8000
+         ELSE
+         ldx   #Bt.Start         
+         ENDC
+         ENDC
          stx   <D.MLIM                 save off memory limit
 
 * Copy vector code over to address $100
-         pshs  y,x
+         pshs  x
          IFNE  H6309
          leax  >VectCode,pcr
          ldy   #D.XSWI3
@@ -183,13 +185,12 @@ L00D2    lda   ,x+
          decb
          bne   L00D2
          ENDC
-         puls  y,x
+         puls  x
 
          IFNE  atari
          ldy   #$D000
 
          inc   <D.Boot
-         stx   <D.MLIM
          stx   <D.BTLO
          ldx	#$FFFF
          stx   <D.BTHI
@@ -874,28 +875,6 @@ L05BE    ldx   <D.Proc
 L05E5    ldb   #E$IForkP
 L05E7    puls  pc,u,x
 
-		IFNE	ROM
-***********************************************************************
-* Atari initialization code goes here since we have to pad the area due
-* to 1K alignment of character set above
-InitAtari
-         orcc  #IntMasks
-* Clear I/O devices
-         clrb
-cleario
-         ldx   #$D000
-         clr   b,x
-         ldx   #$D200
-         clr   b,x
-         ldx   #$D300
-         clr   b,x
-         ldx   #$D400
-         clr   b,x
-         decb
-         bne   cleario         
-		rts
-		ENDC
-
 		use   fsrqmem.asm
          
 		use   fallbit.asm
@@ -923,28 +902,6 @@ valcheck	cmpx	,s
 valret	puls  y,pc
 
 		
-
-*VectCode bra   SWI3Jmp		$0100
-*         nop
-*         bra   SWI2Jmp		$0103
-*         nop
-*         bra   FIRQJmp		$0106
-*         nop
-*         bra   IRQJmp		$0109
-*         nop
-*         bra   SWIJmp		$010C
-*         nop
-*         bra   NMIJmp		$010F
-
-*SWI3Jmp  jmp   [>D.SWI3]
-*SWI2Jmp  jmp   [>D.SWI2]
-*FIRQJmp  jmp   [>D.FIRQ]
-*IRQJmp   jmp   [>D.IRQ]
-*SWIJmp   jmp   [>D.SWI]
-*NMIJmp   jmp   [>D.NMI]
-*VectCSz  equ   *-VectCode
-
-
 VectCode bra   SWI3Jmp		$0100
          nop
          bra   SWI2Jmp		$0103

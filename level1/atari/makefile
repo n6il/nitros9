@@ -68,7 +68,7 @@ $(DSK):
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
-	$(CPL) $(STARTUP_DW) $@,startup
+	$(CPL) $(STARTUP) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 
 $(DSK_DEMO):

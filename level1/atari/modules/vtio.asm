@@ -109,24 +109,22 @@ clearLoop@
 *		sta	CHBASE
 		
 * set background color
-		lda	#$00
+		clra
  		sta	COLBK
 
 * set text color
 		lda	#$0F
-* 		sta	COLPF0
  		sta	COLPF1
-* 		sta	COLPF3
 		lda	#$94
  		sta	COLPF2
  		
 * tell ANTIC to start DMA
-		lda	#$22
- 		sta	DMACTL
+*		lda	#$22
+* 		sta	DMACTL
 
 * tell ANTIC to enable character set 2
-		lda	#$02
- 		sta	CHACTL
+*		lda	#$02
+* 		sta	CHACTL
 
 * install keyboard ISR
 		ldd	#IRQST				POKEY IRQ status address
@@ -228,12 +226,11 @@ readex   rts
 *
 Write
 		bsr		hidecursor		
-
 		ldx		V.EscVect,u
-		jmp		,x
+		jsr		,x
+		bra		drawcursor
 
-ChkSpc
-		cmpa		#C$SPAC			space or greater?
+ChkSpc    cmpa		#C$SPAC			space or greater?
 		bcs		ChkESC			branch if not
 		
 wchar	suba		#$20
@@ -274,9 +271,9 @@ scroll_loop
 * clear line
 clrline	std		V.CurRow,u
 		bsr		DelLine
-		bra		drawcursor
+		rts
 ok		std		V.CurRow,u
-		bra		drawcursor
+ret		rts
 		
 * calculates the cursor location in screen memory
 * Exit: X = address of cursor
@@ -311,7 +308,7 @@ ChkESC
 		cmpa	#$1B			ESC?
 		lbeq	EscHandler
 		cmpa  #$0D		$0D?
-		bhi   drawcursor	branch if higher than
+		bhi   ret			branch if higher than
 		leax  <DCodeTbl,pcr	deal with screen codes
 		lsla  			adjust for table entry size
 		ldd   a,x		get address in D
@@ -354,7 +351,7 @@ CurXY
 ErEOLine
 Do05
 CurRght
-		bra		drawcursor
+		rts
 
 CurLeft
 		ldd		V.CurRow,u
@@ -374,32 +371,21 @@ erasechar
 		ldx		#G.ScrStart
 		leax		d,x
 		clr		1,x
-		
-leave	ldd		V.CurRow,u
-		lbra		drawcursor
+leave	rts
 
 CurDown
 		ldd		V.CurRow,u
 		lbra		incrow
 
 Retrn
-		lda		V.CurRow,u
-		ldb		#G.Cols
-		mul
-		addb		V.CurCol,u
-		adca		#0
-		ldx		#G.ScrStart
-		leax		d,x
-		lda		#C$SPAC-$20
-		sta		,x
 		clr		V.CurCol,u
-		lbra		drawcursor
+		rts
 
 EscHandler
 		leax		EscHandler2,pcr
 eschandlerout
 		stx		V.EscVect,u
-		lbra		drawcursor
+		rts
 
 EscHandler2
 		sta		V.EscCh1,u
