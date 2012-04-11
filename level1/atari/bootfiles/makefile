@@ -11,7 +11,7 @@ DEPENDS		= ./makefile
 # IMPORTANT! KRN MUST BE THE LAST MODULE IN BOOTFILE_P1!!
 BOOTFILE_P1 = $(MD)/krnp2 $(MD)/init $(MD)/ioman $(MD)/sysgo \
 		$(MD)/dw3.sb \
-		$(MD)/clock_60hz $(MD)/clock2_soft \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 \
           $(MD)/krn
 
 BOOTFILE_P2 = $(MD)/scf.mn $(MD)/vtio.dr $(MD)/term.dt \
