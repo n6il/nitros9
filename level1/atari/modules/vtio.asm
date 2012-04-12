@@ -523,9 +523,8 @@ L0158	clr	V.WAKE,u   clear process to wake flag
 		orb	#%11000000
 		sta	IRQEN
 		stb	D.IRQENShdw
-		puls cc
 		stb	IRQEN
-		rts
+		puls cc,pc
 		
 ATASCI	fcb	$6C,$6A,$3B,$80,$80,$6B,$2B,$2A ;LOWER CASE
 		fcb	$6F,$80,$70,$75,$0D,$69,$2D,$3D

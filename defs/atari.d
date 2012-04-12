@@ -112,6 +112,14 @@ G.CharSetAddr  equ       $F800
 * (Yes, we are stealing an existing variable that is so old it should be
 *  removed from os9defs)
 D.IRQENShdw    equ       D.WDBtDr
+D.ATARIFLAGS   equ       D.SWPage
+
+* The clock interrupt is driven by the unmaskable NMI.  Therefore,
+* the rbdw3 driver uses the DWIOSEMA flag in the D.ATARIFLAGS field as
+* a signal, setting it before doing an DW operation and clearing it after.
+* The clock ISR checks if this flag is set, and, if so, defers the OP_TIME
+* command to the server.
+DWIOSEMA       equ       %10000000
 
 
 ********************************************************************

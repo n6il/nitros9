@@ -15,7 +15,7 @@
 * into 6809 assembly language by Boisy G. Pitre.
 *
 RMSEND    equ       %11101111
-SKSEND    equ       $23
+SKSEND    equ       %00100011
 MSKSEND   equ       %00010000
 IMSEND    equ       %00010000
 IMSCPL    equ       $08

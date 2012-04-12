@@ -77,25 +77,35 @@ start    bra   Init
 *    B  = error code
 *
 Term
-          clrb
-          pshs cc
+         clrb
+         pshs cc
 * Send OP_TERM to the server
           IFGT  LEVEL-1
-          ldu   <D.DWSubAddr
-          ELSE
-          ldu   >D.DWSubAddr
-          ENDC
+         ldu   <D.DWSubAddr
+         ELSE
+         ldu   >D.DWSubAddr
+         ENDC
 * Fix crash in certain cases
-          beq   no@
-          ldy   #$0001
-          lda   #OP_TERM
-          pshs a
-          leax ,s
-          orcc  #IntMasks
-          jsr   DW$Write,u
-          clrb
-          puls a
-no@       puls cc,pc
+         beq   no@
+         ldy   #$0001
+         IFNE  atari
+         lda   D.ATARIFLAGS
+         ora   #DWIOSEMA
+         sta   D.ATARIFLAGS
+         ENDC
+         lda   #OP_TERM
+         pshs a
+         leax ,s
+         orcc  #IntMasks
+         jsr   DW$Write,u
+         IFNE  atari
+         lda   D.ATARIFLAGS
+         anda  #^DWIOSEMA
+         sta   D.ATARIFLAGS
+         ENDC
+         clrb
+         puls a
+no@      puls cc,pc
 
 * Init
 *
@@ -148,12 +158,22 @@ Init2    sta   DD.TOT,x			invalidate drive tables
          stu   >D.DWSubAddr
          ENDC
 * Initialize the low level device
+         IFNE  atari
+         lda   D.ATARIFLAGS
+         ora   #DWIOSEMA
+         sta   D.ATARIFLAGS
+         ENDC
          jsr   DW$Init,u
          lda   #OP_INIT
          sta   ,s
          leax  ,s
          ldy   #$0001
          jsr   DW$Write,u
+         IFNE  atari
+         lda   D.ATARIFLAGS
+         anda  #^DWIOSEMA
+         sta   D.ATARIFLAGS
+         ENDC
          clrb
 
 InitEx
@@ -213,13 +233,18 @@ ReadSect pshs  cc
          ldb   #E$Unit
          bra   ReadEr2
 Read1    sta   driveno,u
+         IFNE  atari
+         lda   D.ATARIFLAGS
+         ora   #DWIOSEMA
+         sta   D.ATARIFLAGS
+         ENDC
          lda   #OP_READEX		load A with READ opcode
          
 Read2
          ldb   driveno,u
          leax  ,s
          std   ,x
-         ldy    #5 
+         ldy   #5 
          IFGT  LEVEL-1
          ldu   <D.DWSubAddr
          ELSE
@@ -244,9 +269,9 @@ Read2
          leax  ,s
          ldy   #$0001
          jsr   DW$Read,u
+         puls  d
          bcs   ReadEr0			branch if we timed out
          bne   ReadEr0
-         puls  d
          tfr   a,b				transfer byte to B (in case of error)
          tstb					is it zero?
          beq   ReadEx			if not, exit with error
@@ -258,12 +283,17 @@ Read2
          
          lda   #OP_REREADEX		reread opcode
          bra   Read2			and try getting sector again
-ReadEr0 puls  d
+ReadEr0 
 ReadEr1  ldb   #E$Read			read error
 ReadEr2  lda   9,s
          ora   #Carry
          sta   9,s
 ReadEx   leas  5,s
+         IFNE  atari
+         lda   D.ATARIFLAGS
+         anda  #^DWIOSEMA
+         sta   D.ATARIFLAGS
+         ENDC
          puls  y,u
          puls  cc,pc
 
@@ -283,6 +313,11 @@ Write    lda   #NUMRETRIES
          sta   retries,u
          pshs  cc
          pshs  u,y,x,b,a,cc
+         IFNE  atari
+         lda   D.ATARIFLAGS
+         ora   #DWIOSEMA
+         sta   D.ATARIFLAGS
+         ENDC
 * Send out op code and 3 byte LSN
          lda   PD.DRV,y
          cmpa  #NumDrvs
@@ -340,6 +375,11 @@ WritEx2  lda   9,s
          ora   #Carry
          sta   9,s
 WritEx   leas  5,s
+         IFNE  atari
+         lda   D.ATARIFLAGS
+         anda  #^DWIOSEMA
+         sta   D.ATARIFLAGS
+         ENDC
          puls  y,u
          puls  cc,pc
  
@@ -373,6 +413,11 @@ SetStat  lda   #OP_SETSTA
 *    B  = error code
 *
 GetStat  
+         IFNE  atari
+         lda   D.ATARIFLAGS
+         ora   #DWIOSEMA
+         sta   D.ATARIFLAGS
+         ENDC
          lda   #OP_GETSTA
          clrb				clear Carry
          pshs  cc			and push CC on stack
@@ -391,6 +436,11 @@ GetStat
          ENDC
          jsr   6,u
          leas  3,s
+         IFNE  atari
+         lda   D.ATARIFLAGS
+         anda  #^DWIOSEMA
+         sta   D.ATARIFLAGS
+         ENDC
          puls  cc,pc
 		 
          emod

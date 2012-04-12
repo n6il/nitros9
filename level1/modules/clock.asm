@@ -150,7 +150,7 @@ InitCont
           IFNE atari
 * Atari - Tell ANTIC to assert NMI on Vertical Blank
      	lda     #$40
-     	sta     $D40E		enable VBlank NMI
+     	sta     NMIEN		enable VBlank NMI
           rts
           ELSE
          ldx   #PIA0Base  point to PIA0
@@ -183,9 +183,8 @@ SvcIRQ
          clra            
          tfr   a,dp       set direct page to zero
          IFNE  atari
-          sta   $D40F     clear NMI interrupt
-         ELSE
-         tst   PIA0Base+3 get hw byte
+         sta   NMIRES     clear NMI interrupt
+         ELSE         tst   PIA0Base+3 get hw byte
          bmi   L0032      branch if sync flag on
          jmp   [>D.SvcIRQ] else service other possible IRQ
 L0032    tst   PIA0Base+2 clear interrupt
