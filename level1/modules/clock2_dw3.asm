@@ -46,6 +46,10 @@ JmpTable
           nop
 
 SetTime   pshs      u,y,x,d
+          IFNE      atari
+          tst       D.ATARIFLAGS
+          bmi       UpdLeave
+          ENDC
           IFGT      Level-1
           ldu       <D.DWSubAddr
           ELSE
@@ -63,18 +67,21 @@ SetTime   pshs      u,y,x,d
           jsr       DW$Write,u
           bra       UpdLeave
 
-GetTime   pshs      u,y,x,d
+GetTime 
+          lda       #OP_TIME        Time packet
+          pshs      u,y,x,d
+          IFNE      atari
+          tst       D.ATARIFLAGS
+          bmi       UpdLeave
+          ENDC
           IFGT      Level-1
           ldu       <D.DWSubAddr
           ELSE
           ldu       >D.DWSubAddr
           ENDC
           beq       UpdLeave      in case we failed to link it, just exit
-          lda       #OP_TIME        Time packet
-          sta       ,s
           leax      ,s
           ldy       #$0001
-          beq       UpdLeave      in case we failed to link it, just exit
           jsr       DW$Write,u
           ldx       #D.Year
           ldy       #$0006

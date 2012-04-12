@@ -24,7 +24,7 @@ DWRead
 *          ora       #%00100000
 * enable the serial input interrupt
           
-          ldb       SERIN               read what is in the buffer
+          ldb  SERIN               read what is in the buffer
           lda	#$13
           sta	SKCTL
           sta	SKRES
@@ -56,19 +56,11 @@ loop@
           bne       inloop@
           stx       4,s
 bye
-          bsr       CleanUp
+          sta	     SKRES          clear framing or data input overrun bits
           puls      cc,a,x,y,u,pc
 outtahere@
-          clr       SKRES          clear framing or data input overrun bits
-          bsr       CleanUp
+          sta	     SKRES          clear framing or data input overrun bits
           puls      cc,a
           stx       2,s
           orcc      #$01
           puls      x,y,u,pc
-          
-CleanUp   lda       #$40
-          lda	#$23
-          sta	SKCTL
-          sta	SKRES
-*          sta       AUDC4	reset POKEY
-          rts
