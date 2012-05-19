@@ -184,7 +184,8 @@ SvcIRQ
          tfr   a,dp       set direct page to zero
          IFNE  atari
          sta   NMIRES     clear NMI interrupt
-         ELSE         tst   PIA0Base+3 get hw byte
+         ELSE
+         tst   PIA0Base+3 get hw byte
          bmi   L0032      branch if sync flag on
          jmp   [>D.SvcIRQ] else service other possible IRQ
 L0032    tst   PIA0Base+2 clear interrupt
