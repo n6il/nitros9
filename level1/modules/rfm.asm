@@ -14,7 +14,7 @@
 
                ifp1      
                use       defsfile
-               use       rfmdefs
+               use       rfm.d
                use       drivewire.d
                endc      
 
@@ -574,6 +574,8 @@ getstt
                beq       GstFD
                cmpb      #SS.FDInf
                beq       GstFDInf
+               cmpb      #SS.DirEnt
+               beq       GstDirEnt
 *               comb      
 *               ldb       #E$UnkSvc
                clrb
@@ -688,6 +690,67 @@ GstFD
 *        U = LSW of LSN
 GstFDInf                 
                rts       
+
+* SS.DirEnt - 
+* Entry: A = path
+*        B = SS.DirEnt
+*        X = ptr to 64 byte buffer
+GstDirEnt
+        ldx     PD.DEV,y
+        ldx     V$STAT,x
+		pshs	x,y,u
+
+		* send caller's Y (do we really need this to be 16bit?  X points to 256byte buff?
+		ldx		R$Y,u
+		pshs	x
+		leax	,s
+		ldy		#2
+		
+		* set U to dwsub
+        ifgt      Level-1
+        ldu       <D.DWSubAddr
+        else      
+        ldu       >D.DWSubAddr
+        endc      
+
+        jsr       6,u
+        
+        * recv bytes into v.buf
+        puls	y
+        ldx     ,s                 ; V$STAT
+        ldx       V.BUF,x		
+
+        ifgt    Level-1
+		pshs	x
+        endc
+        
+        jsr		3,u
+
+        ifgt      Level-1        
+        * move v.buf into caller
+        
+        ldx       4,s
+        ldu       R$X,x               ; U = caller's X = dest ptr
+        sty       R$Y,x				  ; do we need to set this for caller?
+               
+        lda       <D.SysTsk           ; A = system task # 
+
+        ldx       <D.Proc             get calling proc desc
+        ldb       P$Task,x            ; B = callers task #
+
+        puls      x                   ; V.BUF from earlier
+
+*  F$Move the bytes (seems to work)
+               os9       F$Move
+
+        else
+        endc
+                
+* assume everything worked (not good)
+               clrb   
+        
+		puls	x,y,u,pc
+                  
 
 
 

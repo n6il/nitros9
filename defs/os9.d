@@ -305,7 +305,8 @@ SS.Break       RMB       1                   Send break signal out acia
 SS.RsBit       RMB       1                   Reserve bitmap sector (do not allocate in) LSB(X)=sct#
                RMB       1                   Reserved
 SS.FDInf       EQU       $20                 To serve 68K/RBF/GetStat only, thru NET
-               RMB       4                   Reserve $20-$23 for Japanese version (Hoshi)
+SS.DirEnt      RMB       1                   Reserve bitmap sector (do not allocate in) LSB(X)=sct#
+               RMB       3                   Reserve $20-$23 for Japanese version (Hoshi)
 SS.SetMF       RMB       1                   Reserve $24 for Gimix G68 (Flex compatability?)
 SS.Cursr       RMB       1                   Cursor information for COCO
 SS.ScSiz       RMB       1                   Return screen size for COCO
