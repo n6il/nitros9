@@ -2290,7 +2290,7 @@ L13CF    fcc   "MAC$"
          fdb   $110B
          fcc   "EOB"
          fcb   C$CR
-         fdb   $10DE"
+         fdb   $10DE
          fcc   "NEOB"
          fcb   C$CR
          fdb   $10d6
