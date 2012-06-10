@@ -86,7 +86,7 @@ Term     clra
 
 Init     ldd   <$2C,y
          std   <u001D,u
-         lda   <,y
+         lda   ,y
          sta   <u001F,u
          clrb  
          rts   
