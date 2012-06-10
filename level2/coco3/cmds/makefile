@@ -5,7 +5,7 @@ vpath %.a $(LEVEL2)/cmds:$(LEVEL1)/cmds
 vpath %.asm $(LEVEL2)/cmds:$(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
 
 DEPENDS		= ./makefile
-AFLAGS          += -i=$(NITROS9DIR)/3rdparty/packages/basic09
+AFLAGS          += --includedir=$(NITROS9DIR)/3rdparty/packages/basic09
 LFLAGS		+= -l=$(NITROS9DIR)/lib/net.l -l=$(NITROS9DIR)/lib/alib.l -l=$(NITROS9DIR)/lib/sys6809l1.l
 
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
@@ -29,22 +29,22 @@ UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
 all:	$(CMDS) $(CMDS_D2) $(CMDS_DW) shell utilpak1 $(DEPENDS)
 
 runb:	runb.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ DPWD=1
 	$(MERGE) $@ $(SUBS)>$@.tmp
 	$(RM) $@
 	$(MOVE) $@.tmp $@
 
 tmode:	xmode.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aTMODE=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DTMODE=1
 
 xmode:	xmode.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aXMODE=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DXMODE=1
 
 pwd:	pd.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DPWD=1
 
 pxd:	pd.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPXD=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DPXD=1
 
 shell:  $(SHELLMODS) $(DEPENDS)
 	$(MERGE) $(SHELLMODS)>$@
