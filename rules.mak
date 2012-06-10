@@ -43,7 +43,7 @@ DSKDIR		= $(NITROS9DIR)/dsks
 
 # Use the cross assembler
 #AS		= os9asm -i=$(DEFSDIR)
-AS		= lwasm --6309 --format=os9 --pragma=pcaspcr,nosymbolcase,condundefzero --includedir=$(DEFSDIR)
+AS		= lwasm --6309 --format=os9 --pragma=pcaspcr,nosymbolcase,condundefzero --includedir=. --includedir=$(DEFSDIR)
 ASOUT		= -o
 AFLAGS		= -DNOS9VER=$(NOS9VER) -DNOS9MAJ=$(NOS9MAJ) -DNOS9MIN=$(NOS9MIN) -DNOS9DBG=$(NOS9DBG)
 ifdef PORT
