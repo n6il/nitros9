@@ -79,7 +79,7 @@ L084F    inc   1,s          Bump up to next block to check
 * (Already permanently marked @ L01D2)
 * At the start, Y is pointing to the end of the SMAP table+1
          ldx   <D.SysMem    Get start of table ptr
-         leay  Bt.Start>>8,x
+         leay  Bt.Start/256,x
          ldb   #32          skip block 0: it's always full
          abx                same size, but faster than leax $20,x
 *         leay  -(256-(Bt.Start>>8)),y  skip Kernel, Vector RAM & I/O (Can't be free)
