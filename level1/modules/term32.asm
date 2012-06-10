@@ -16,7 +16,7 @@
 
          ifp1
          use   defsfile
-         use   scfdefs
+;         use   scfdefs
          use   cocovtio.d
          endc
 

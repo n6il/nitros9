@@ -18,7 +18,7 @@
 
          ifp1  
          use   defsfile
-         use   rbfdefs
+;         use   rbfdefs
          endc  
 
 tylg     set   Drivr+Objct
