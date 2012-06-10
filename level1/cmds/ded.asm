@@ -186,7 +186,7 @@ helper   fcc   "   Up/Down Arrows  Read & display Next/Previous sector"
          fcb   $0A
          fcc   /   E  Edit the displayed sector/
          fcb   $0A
-         fcc   /   F  Find a byte or text string (BREAK aborts)/)
+         fcc   /   F  Find a byte or text string (BREAK aborts)/
          fcb   $0A
          fcc   /   H  Help screen (also use '?')/
          fcb   $0A
