@@ -58,79 +58,79 @@ krn krnp2:
 	$(CP) kernel/$@ .
 
 boot_1773_6ms:	boot_1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0 -DSTEP=0
 
 boot_1773_30ms:	boot_1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0 -DSTEP=3
 
 rb1773_scii_ff74.dr:	rb1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSCII=1
 
 rb1773_scii_ff58.dr:	rb1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1 -aSCIIALT=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSCII=1 -DSCIIALT=1
 
 # Clocks
 clock_60hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=60
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=60
 
 clock_50hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=50
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=50
 
 clock2_bnb: clock2_ds1315.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aBNB=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DBNB=1
 
 clock2_cloud9: clock2_ds1315.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCLOUD9=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCLOUD9=1
 
 # Floppy descriptors
-SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=1
-DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=1
-DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=1 -aD35
+SSDD35		= -DCyls=35 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
+		-DInterlv=3 -DSAS=8 -DDensity=1
+DSDD40		= -DCyls=40 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
+		-DInterlv=3 -DSAS=8 -DDensity=1
+DSDD80		= -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
+		-DInterlv=3 -DSAS=8 -DDensity=1 -DD35
 
 ddd0_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=0 -DDD=1
 
 d0_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=0
 
 d1_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=1
 
 d2_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=2
 
 d3_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=3
 
 ddd0_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -DDNum=0 -DDD=1
 
 d0_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -DDNum=0
 
 d1_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -DDNum=1
 
 d2_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -DDNum=2
 
 ddd0_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=0 -DDD=1
 
 d0_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=0
 
 d1_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=1
 
 d2_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=2
 
 sysgo_dd: sysgo.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDD=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDD=1
 
 sysgo_h0: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<

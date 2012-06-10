@@ -6,7 +6,7 @@ vpath %.asm $(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
 
 DEPENDS		= ./makefile
 
-AFLAGS		+= -i=$(NITROS9DIR)/3rdparty/packages/basic09
+AFLAGS		+= --includedir=$(NITROS9DIR)/3rdparty/packages/basic09
 LFLAGS		+= -l=$(NITROS9DIR)/lib/net.l -l=$(NITROS9DIR)/lib/alib.l -l=$(NITROS9DIR)/lib/sys6809l1.l
 
 BASIC09FILES	= basic09.asm runb.asm gfx.asm inkey.asm syscall.asm
@@ -29,16 +29,16 @@ ALLOBJS		= $(CMDS) $(CMDS_D2) $(CMDS_DW) $(CMDS_DEMO) $(SUBS)
 all:	$(ALLOBJS)
 
 pwd:	pd.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DPWD=1
 
 xmode:	xmode.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aXMODE=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DXMODE=1
 
 tmode:	xmode.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aTMODE=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DTMODE=1
 
 pxd:	pd.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPXD=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DPXD=1
 	
 clean:
 	$(RM) $(ALLOBJS)

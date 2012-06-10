@@ -13,37 +13,37 @@ clean:
 
 # OS-9 Level Two Booters
 boot_ktlr_id0: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aKTLR=1 -ascsiid=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DLevel=2 -DKTLR=1 -Dscsiid=1
 
 boot_ktlr_id5: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aKTLR=1 -ascsiid=32
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DLevel=2 -DKTLR=1 -Dscsiid=32
 
 boot_tc3_id0: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aTC3=1 -ascsiid=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DLevel=2 -DTC3=1 -Dscsiid=1
 
 boot_tc3_id5: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2 -aTC3=1 -ascsiid=32
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DLevel=2 -DTC3=1 -Dscsiid=32
 
 boot_vhd: boot_vhd.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DLevel=2
 
 boot_mmc_l2: boot_mmc.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=2
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DLevel=2
 
 # OS-9 Level One Booters
 boot_ktlr_id0_l1: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1 -aKTLR=1 -ascsiid=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DLevel=1 -DKTLR=1 -Dscsiid=1
 
 boot_ktlr_id5_l1: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1 -aKTLR=1 -ascsiid=32
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DLevel=1 -DKTLR=1 -Dscsiid=32
 
 boot_tc3_id0_l1: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1 -aTC3=1 -ascsiid=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DLevel=1 -DTC3=1 -Dscsiid=1
 
 boot_tc3_id5_l1: boot_scsi.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1 -aTC3=1 -ascsiid=32
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DLevel=1 -DTC3=1 -Dscsiid=32
 
 boot_mmc_l1: boot_mmc.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aLevel=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DLevel=1
 
 
