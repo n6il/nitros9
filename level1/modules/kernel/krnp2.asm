@@ -103,7 +103,7 @@ L0073    ldd   InitStr,u
          clrb
          ldy   #$0000
          os9   F$Chain
-L0081    jmp   [<$FFFE]
+L0081    jmp   [$FFFE]
 
 *
 * U = address of init module
