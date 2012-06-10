@@ -27,16 +27,16 @@ vpath %.asm $(LEVEL1)/modules
 
 AFLAGS		+= -I$(LEVEL1)/modules
 
-CLOCKELIM       = -aRTCElim=1
-CLOCKDISTO2     = -aRTCDsto2=1
-CLOCKDISTO4     = -aRTCDsto4=1
-CLOCKBNB        = -aRTCBB=1
-CLOCKSMART      = -aRTCSmart=1 -aMPIFlag=1
-CLOCKHARRIS     = -aRTCHarrs=1
-CLOCKCLOUD9     = -aRTCCloud9=1
-CLOCKSOFT       = -aRTCSoft=1
-CLOCKMESSEMU    = -aRTCMessEmu=1
-CLOCKJVEMU      = -aRTCJVEmu=1
+CLOCKELIM       = -DRTCElim=1
+CLOCKDISTO2     = -DRTCDsto2=1
+CLOCKDISTO4     = -DRTCDsto4=1
+CLOCKBNB        = -DRTCBB=1
+CLOCKSMART      = -DRTCSmart=1 -DMPIFlag=1
+CLOCKHARRIS     = -DRTCHarrs=1
+CLOCKCLOUD9     = -DRTCCloud9=1
+CLOCKSOFT       = -DRTCSoft=1
+CLOCKMESSEMU    = -DRTCMessEmu=1
+CLOCKJVEMU      = -DRTCJVEmu=1
 
 DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
@@ -80,72 +80,72 @@ krn krnp2:
 	$(CP) kernel/$@ .
 
 boot_dalpha:	boot_d64.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aStep=$(STEP)
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0 -DSTEP=$(STEP)
 
 # Clocks
 clock_60hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=60
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=60
 
 clock_50hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=50
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=50
 
 clock2_bnb: clock2_ds1315.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aBNB=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DBNB=1
 
 clock2_cloud9: clock2_ds1315.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCLOUD9=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCLOUD9=1
 
 # Floppy descriptors
-SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1 -aStep=0
-SSDD40		= -aCyls=40 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1 -aStep=$(STEP)
-DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1 -aStep=$(STEP)
-SSDD80		= -aCyls=80 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35 -aStep=$(STEP)
-DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=2 -aSAS=8 -aDensity=1 -aD35 -aStep=$(STEP)
+SSDD35		= -DCyls=35 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
+		-DInterlv=2 -DSAS=8 -DDensity=1 -DSTEP=0
+SSDD40		= -DCyls=40 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
+		-DInterlv=2 -DSAS=8 -DDensity=1 -DSTEP=$(STEP)
+DSDD40		= -DCyls=40 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
+		-DInterlv=2 -DSAS=8 -DDensity=1 -DSTEP=$(STEP)
+SSDD80		= -DCyls=80 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
+		-DInterlv=2 -DSAS=8 -DDensity=1 -DD35 -DSTEP=$(STEP)
+DSDD80		= -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
+		-DInterlv=2 -DSAS=8 -DDensity=1 -DD35 -DSTEP=$(STEP)
 
 #Dragon Alpha
 # Internal drives on Alpha are Single Sided 80 track.
 
 ddd0_80s.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -DDNum=0 -DDD=1
 
 ddd0_80d.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=0 -DDD=1
 
 d0_80s.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -DDNum=0
 	
 d0_80d.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=0
 	
 d1_80s.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -DDNum=1
 
 d1_80d.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=1
 
 d2_80s.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -DDNum=2
 
 d2_80d.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=2
 
 d3_80s.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -DDNum=3
 
 d3_80d.dd: ddiskdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=3
 
 adisk.dr: ddisk.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 
 
 sysgo_dd: sysgo.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aDD=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDD=1
 
 sysgo_h0: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<

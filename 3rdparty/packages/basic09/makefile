@@ -3,7 +3,7 @@ include $(NITROS9DIR)/rules.mak
 DISK	= basic09v010100.dsk
 
 # NitrOS-9
-H6309		= $(AFLAGS) -aH6309=1 -e
+H6309		= $(AFLAGS) -DH6309=1
 # Non-NitrOS-9
 M6809		= $(AFLAGS)
 

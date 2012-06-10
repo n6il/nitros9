@@ -5,7 +5,7 @@ vpath %.asm $(LEVEL1)/modules
 
 AFLAGS		+= -I$(LEVEL1)/modules
 
-CLOCKSOFT       = -aRTCSoft=1
+CLOCKSOFT       = -DRTCSoft=1
 
 DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
@@ -43,79 +43,79 @@ krn krnp2:
 
 
 sysgo_rom: sysgo.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aROM=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DROM=1
 
 # DriveWire 3 RBF descriptors
 ddx0.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1 -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1 -DDNum=0
 
 x0.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0
 
 x1.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=1
 
 x2.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=2
 
 x3.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=3
 
 # DriveWire 3 SCF descriptors
 term_scdwn.dt: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=0
 
 n_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=255
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=255
 
 n1_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=1
 
 n2_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=2
 
 n3_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=3
 
 n4_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=4
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=4
 
 n5_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=5
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=5
 
 n6_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=6
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=6
 
 n7_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=7
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=7
 
 n8_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=8
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=8
 
 n9_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=9
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=9
 
 n10_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=10
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=10
 
 n11_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=11
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=11
 
 n12_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=12
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=12
 
 n13_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=13
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=13
 
 midi_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=14
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=14
 
 # Clocks
 clock_60hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=60
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=60
 
 clock_50hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=50
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=50
 
 clean:
 	$(CD) kernel; make $@

@@ -9,7 +9,7 @@ KERNEL		= krn
 KERNELP2	= krnp2
 SYSCALLS	= fcmpnam.asm fprsnam.asm
 
-AFLAGS		+= -aATARI=1 -I$(LEVEL1)/modules/kernel
+AFLAGS		+= -DATARI=1 -I$(LEVEL1)/modules/kernel
 
 ALLOBJS		= $(KERNEL) $(KERNELP2)
 
