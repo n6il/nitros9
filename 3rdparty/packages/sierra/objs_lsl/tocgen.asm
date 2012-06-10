@@ -60,9 +60,9 @@ nfiles  equ 2                    stdin and stdout at least
 Stk     equ nfiles*256+128+256   stdin,stdout,stderr and fudge
 
 * These are probably defined in scfdefs
-C$CR    equ $0D
+C$CR    set $0D
 C$SPC   equ $20
-C$COMA  equ $2C
+C$COMA  set $2C
 C$DQUt  equ $22
 C$SQUT  equ $27
 
@@ -543,7 +543,7 @@ patch10 ldd ,y++         get the offset
 
 main    pshs  u
          ldd   #$FD57
-         lbsr  _stkcheck:   check for sufficient stack available:
+         lbsr  _stkcheck   check for sufficient stack available:
 
          leas  >-$025D,s
          ldd   >$0261,s     
@@ -1021,7 +1021,7 @@ L0648    ldd   ,s
          orb   #$02
          pshs  b,a
          pshs  u
-         lbsr  open:
+         lbsr  open
          leas  $04,s
          std   $02,s
          cmpd  #$FFFF
@@ -1034,20 +1034,20 @@ L0648    ldd   ,s
          pshs  b,a
          ldd   $08,s
          pshs  b,a
-         lbsr  lseek:
+         lbsr  lseek
          leas  $08,s
          bra   L06B8
 L0673    ldd   ,s
          orb   #$02
          pshs  b,a
          pshs  u
-         lbsr  creat:
+         lbsr  creat
          bra   L068B
 L0680    ldd   ,s
          orb   #$81
 L0684    pshs  b,a
          pshs  u
-         lbsr  open:
+         lbsr  open
 L068B    leas  $04,s
          std   $02,s
          bra   L06B8
@@ -1831,7 +1831,7 @@ L0D21    pshs  b,a
          beq   L0D38
          leax  >L13EC,pcr    writeln: ??
          bra   L0D3C
-L0D38    leax  >L13D3,pcr    write:  ??
+L0D38    leax  >L13D3,pcr    write  ??
 L0D3C    tfr   x,d
          tfr   d,x
          jsr   ,x
@@ -1928,7 +1928,7 @@ L0E09    clra
 L0E0B    std   ,s
          ldd   u0008,u
          pshs  b,a
-         lbsr  close:
+         lbsr  close
          leas  $02,s
          clra  
          clrb  
@@ -1982,7 +1982,7 @@ L0E4C    pshs  u
          pshs  b,a
          ldd   u0008,u
          pshs  b,a
-         lbsr  lseek:
+         lbsr  lseek
          leas  $08,s
 L0E7E    ldd   ,u
          subd  u0002,u
@@ -2027,7 +2027,7 @@ L0ECD    ldd   $02,s
          pshs  b,a
          ldd   u0008,u
          pshs  b,a
-         lbsr  write:      was L13D3
+         lbsr  write      was L13D3
          leas  $06,s
          cmpd  $02,s
          beq   L0EF6
@@ -2166,7 +2166,7 @@ L0FEC    ldd   u0006,u
          beq   L100C
          leax  >L13C3,pcr  readln:
          bra   L1010
-L100C    leax  >L13A2,pcr  compiler dosent like "read:" label
+L100C    leax  >L13A2,pcr  compiler dosent like "read" label
 L1010    tfr   x,d
          tfr   d,x
          jsr   ,x
@@ -2178,7 +2178,7 @@ L1018    ldd   #$0001
          pshs  x
          ldd   u0008,u
          pshs  b,a
-         lbsr  read:
+         lbsr  read
 
 L102A    leas  $06,s
          std   ,s
@@ -2220,7 +2220,7 @@ L1062    pshs  u
          clra  
          clrb  
          pshs  b,a
-         lbsr  getstat:
+         lbsr  getstat
          leas  $06,s
          ldd   u0006,u
          pshs  b,a
@@ -2576,7 +2576,7 @@ getstat: lda   $05,s      get the path number
 
 *  can't do other codes
          ldb   #E$UnkSvc  load error unknow service code
-         lbra  _os9err:   head for error routine
+         lbra  _os9err   head for error routine
 
 
 * Code 2
@@ -2610,7 +2610,7 @@ getst10  pshs  u         stack u since getstt modifies it
          os9   I$GetStt 
          bcc   getst20   successful ?? go store info
          puls  u         otherwise pop our u
-         lbra  _os9err:  head for error procesing
+         lbra  _os9err  head for error procesing
 
 getst20  stx   [<$08,s]  store MSW
          ldx   $08,s     get address of destination
@@ -2695,7 +2695,7 @@ setsat:
          beq   setst20
 *                         No other codes permitted
          ldb   #E$UnkSvc  unknow service code
-         lbra  _os9err:
+         lbra  _os9err
 
 * Code 0
 * entry:
@@ -2788,7 +2788,7 @@ access10 lbra  _sysret   return
 open:    ldx   $02,s    get address of the path list
          lda   $05,s    get access mode permisions
          os9   I$Open   attempt the opoen
-         lbcs  _os9err: didn't open go to error handler
+         lbcs  _os9err didn't open go to error handler
          tfr   a,b      path is open put a in b
          clra           clear a
          rts            return
@@ -2848,18 +2848,18 @@ ccret    tfr   a,b      move path to b
          rts            return
 
 creat10  cmpb  #E$CEF   already there ?    
-         lbne  _os9err: no a different error bail out
+         lbne  _os9err no a different error bail out
 
 *  is it a directory although we want a file instead?
          lda   $05,s    get the mode
          bita  #$80     trying to create a directrory?
-         lbne  _os9err: yes - bail out
+         lbne  _os9err yes - bail out
 
 *  if already there attempt to open with proper access rights
          anda  #$07     access mode bits
          ldx   $02,s    get the name again
          os9   I$Open   try and open it 
-         lbcs  _os9err: still fails - bail out
+         lbcs  _os9err still fails - bail out
 
 
 * Set Stat Code 2 (SS.SIZE)
@@ -2887,7 +2887,7 @@ creat10  cmpb  #E$CEF   already there ?
          pshs  b        set stat fail ? save error code
          os9   I$Close  call close on file
          puls  b        pop the setstat error code
-         lbra  _os9err: head for error handler
+         lbra  _os9err head for error handler
 
 
 * unlink(fname)
@@ -2923,7 +2923,7 @@ unlink:  ldx   $02,s     get address of the path list
 
 dup:     lda   $03,s    get path number
          os9   I$Dup    make the call
-         lbcs  _os9err: didn't dup go to error handler
+         lbcs  _os9err didn't dup go to error handler
          tfr   a,b      move the new path num into b
          clra           clear a
          rts            return
@@ -2970,7 +2970,7 @@ read1    bcc   rdexit  no problem if carry clear
          puls  pc,y,x  pop the stacked values (cheap rts)
 
 read10   puls  y,x
-         lbra  _os9err:
+         lbra  _os9err
 rdexit   tfr   y,d
          puls  pc,y,x
 
@@ -3009,7 +3009,7 @@ L13D3    pshs  y        save data pointer
 
 write1   bcc   write10  good write head out
          puls  y        error in writing ? get data pointer
-         lbra  _os9err: head for error handler
+         lbra  _os9err head for error handler
 
 write10  tfr   y,d      good write
          puls  pc,y     return 
