@@ -122,7 +122,7 @@ TrkRegA		EQU		DPTRKREGA+IO	Track register
 SecRegA		EQU		DPSECREGA+IO	Sector register
 DataRegA	EQU		DPDATAREGA+IO	Data register
 
-DPort          SET       $DataRegA               Disk controller base address
+DPort          SET       DataRegA               Disk controller base address
 
 * Constants for Alpha AY-8912 sound chip, which is used to control
 * Drive select and motor on the Alpha
