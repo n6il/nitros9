@@ -2,12 +2,12 @@ include ../../../rules.mak
 
 vpath %.asm $(LEVEL2)/modules:$(LEVEL1)/modules
 
-L1_256 = $(AFLAGS) -aLevel=1 -aRAMSize=1
-L2_256 = $(AFLAGS) -aLevel=2 -aRAMSize=1
-L1_512 = $(AFLAGS) -aLevel=1 -aRAMSize=2
-L2_512 = $(AFLAGS) -aLevel=2 -aRAMSize=2
+L1_256 = $(AFLAGS) -DLevel=1 -DRAMSize=1
+L2_256 = $(AFLAGS) -DLevel=2 -DRAMSize=1
+L1_512 = $(AFLAGS) -DLevel=1 -DRAMSize=2
+L2_512 = $(AFLAGS) -DLevel=2 -DRAMSize=2
 
-L2_DNHFC = $(AFLAGS) -aLevel=2
+L2_DNHFC = $(AFLAGS) -DLevel=2
 
 DEPENDS		= ./makefile
 DRVRS		= rampak.dr parallel.dr
@@ -21,12 +21,12 @@ DESCS		= $(FLOPPYDESCS) $(RAMDISKDESCS) $(PRINTERDESCS)
 ALLOBJS		= $(DRVRS) $(DESCS) $(NHDRVRS)
 
 # Device Descriptor Macros
-SSDD35          = -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-                -aInterlv=3 -aSAS=8 -aDensity=1
-DSDD40          = -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-                -aInterlv=3 -aSAS=8 -aDensity=1
-DSDD80          = -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-                -aInterlv=3 -aSAS=8 -aDensity=3
+SSDD35          = -DCyls=35 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
+                -DInterlv=3 -DSAS=8 -DDensity=1
+DSDD40          = -DCyls=40 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
+                -DInterlv=3 -DSAS=8 -DDensity=1
+DSDD80          = -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
+                -DInterlv=3 -DSAS=8 -DDensity=3
 
 all:	$(ALLOBJS) $(DEPENDS)
 
@@ -40,33 +40,33 @@ cc3disk_sc2_slp.dr: cc3disk_sc2_slp.asm
 # Disto Super Controller II Device Descriptors
 # 35 Track Single-Sided
 ddd0_35s.dd: rb1773desc.asm
-	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(SSDD35) -aDD=1
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(SSDD35) -DDD=1
 
 d0_35s.dd: rb1773desc.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(SSDD35)
 
 d1_35s.dd: rb1773desc.asm
-	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(SSDD35) -aDNum=1
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(SSDD35) -DDNum=1
 
 # 40 Track Double-Sided
 ddd0_40d.dd: rb1773desc.asm  
-	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD40) -aDD=1
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD40) -DDD=1
 
 d0_40d.dd: rb1773desc.asm       
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD40)
 
 d1_40d.dd: rb1773desc.asm
-	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD40) -aDNum=1
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD40) -DDNum=1
 
 # 80 Track Double-Sided
 ddd0_80d.dd: rb1773desc.asm
-	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD80) -aDD=1
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD80) -DDD=1
 
 d0_80d.dd: rb1773desc.asm
 	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD80)
 
 d1_80d.dd: rb1773desc.asm
-	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD80) -aDNum=1
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) $(DSDD80) -DDNum=1
 
 # RAM Disk Descriptors
 r0_256_l1.dd: r0.asm
