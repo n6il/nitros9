@@ -3,7 +3,7 @@ include $(NITROS9DIR)/rules.mak
 
 DEPENDS		= ./makefile
 
-DEFOPTS		= -ls -x -z -aLevel=1
+DEFOPTS		= --preprocess -DLevel=1
 DEFSDIR		= ../../../defs
 DEFS		= defsfile os9.d rbf.d scf.d dragon.d dragonvtio.d
 ALLOBJS		= $(DEFS)
