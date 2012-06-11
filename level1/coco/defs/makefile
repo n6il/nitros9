@@ -11,7 +11,7 @@ ALLOBJS		= $(DEFS)
 all:	$(ALLOBJS)
 
 defsfile: defsfile.asm
-	$(AS) $(DEFOPTS) -p $< > $@
+	$(AS) $(DEFOPTS)  $< > $@
 
 os9.d: $(DEFSDIR)/os9.d
 	$(AS) $(DEFOPTS) -DOS9.D=0 $< > $@

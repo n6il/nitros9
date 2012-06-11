@@ -11,22 +11,22 @@ ALLOBJS		= $(DEFS)
 all:	$(ALLOBJS)
 
 defsfile: defsfile.asm
-	$(AS) $(DEFOPTS) -p $< > $@
+	$(AS) $(DEFOPTS) $< > $@
 
 os9.d: $(DEFSDIR)/os9.d
-	$(AS) $(DEFOPTS) -aOS9.D=0 $< > $@
+	$(AS) $(DEFOPTS) -DOS9.D=0 $< > $@
 
 rbf.d: $(DEFSDIR)/rbf.d
-	$(AS) $(DEFOPTS) -aRBF.D=0 $< > $@
+	$(AS) $(DEFOPTS) -DRBF.D=0 $< > $@
 
 scf.d: $(DEFSDIR)/scf.d
-	$(AS) $(DEFOPTS) -aSCF.D=0 $< > $@
+	$(AS) $(DEFOPTS) -DSCF.D=0 $< > $@
 
 dragon.d: $(DEFSDIR)/dragon.d
-	$(AS) $(DEFOPTS) -aDRAGON.D=0 $< > $@
+	$(AS) $(DEFOPTS) -DDRAGON.D=0 $< > $@
 
 dragonvtio.d: $(DEFSDIR)/cocovtio.d
-	$(AS) $(DEFOPTS) -aDRAGONVTIO.D=0 $< > $@
+	$(AS) $(DEFOPTS) -DDRAGONVTIO.D=0 $< > $@
 
 clean:
 	$(RM) $(DEFS)
