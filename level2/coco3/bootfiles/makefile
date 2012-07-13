@@ -41,23 +41,24 @@ BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rbdw3.dr $(MD)/dw3.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
-		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
-		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cowin.io \
 		$(MD)/term_win80.dt \
 		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
+		$(MD)/scdwn.dr \
+		$(MD)/n_scdwn.dd $(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd \
+		$(MD)/n3_scdwn.dd $(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd \
+		$(MD)/n6_scdwn.dd $(MD)/n7_scdwn.dd $(MD)/n8_scdwn.dd \
+		$(MD)/n9_scdwn.dd $(MD)/n10_scdwn.dd $(MD)/n11_scdwn.dd \
+		$(MD)/n12_scdwn.dd $(MD)/n13_scdwn.dd $(MD)/midi_scdwn.dd \
+		$(MD)/z1_scdwn.dd $(MD)/z2_scdwn.dd $(MD)/z3_scdwn.dd \
+		$(MD)/z4_scdwn.dd $(MD)/z5_scdwn.dd $(MD)/z6_scdwn.dd \
+		$(MD)/z7_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3
-#		$(MD)/scdwn.dr \
-#		$(MD)/n_scdwn.dd $(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd \
-#		$(MD)/n3_scdwn.dd $(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd \
-#		$(MD)/n6_scdwn.dd $(MD)/n7_scdwn.dd $(MD)/n8_scdwn.dd \
-#		$(MD)/n9_scdwn.dd $(MD)/n10_scdwn.dd $(MD)/n11_scdwn.dd \
-#		$(MD)/n12_scdwn.dd $(MD)/n13_scdwn.dd $(MD)/midi_scdwn.dd \
 
 # NitrOS-9 disk bootfile to allow booting from DriveWire 3 server
 # Headless mode
@@ -68,13 +69,17 @@ BOOTFILE_DW3_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
-		$(MD)/scdwn.dr $(MD)/term_scdwn.dt \
+		$(MD)/scdwn.dr \
 		$(MD)/n_scdwn.dd $(MD)/n1_scdwn.dd $(MD)/n2_scdwn.dd \
 		$(MD)/n3_scdwn.dd $(MD)/n4_scdwn.dd $(MD)/n5_scdwn.dd \
 		$(MD)/n6_scdwn.dd $(MD)/n7_scdwn.dd $(MD)/n8_scdwn.dd \
 		$(MD)/n9_scdwn.dd $(MD)/n10_scdwn.dd $(MD)/n11_scdwn.dd \
 		$(MD)/n12_scdwn.dd $(MD)/n13_scdwn.dd $(MD)/midi_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
+		$(MD)/term_z_scdwn.dd \
+		$(MD)/z1_scdwn.dd $(MD)/z2_scdwn.dd $(MD)/z3_scdwn.dd \
+		$(MD)/z4_scdwn.dd $(MD)/z5_scdwn.dd $(MD)/z6_scdwn.dd \
+		$(MD)/z7_scdwn.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3
 
