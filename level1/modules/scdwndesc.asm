@@ -101,7 +101,7 @@ name     equ   *
          fcs  /MIDI/
          ELSE
          IFEQ  Addr-255
-         fcb   'N'
+         fcs   'N'
          ELSE
          IFGT  Addr-64
          IFEQ  Addr-65
