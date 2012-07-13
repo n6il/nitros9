@@ -100,7 +100,17 @@ name     equ   *
          IFEQ  Addr-14
          fcs  /MIDI/
          ELSE
-         IFNE  Addr-255
+         IFEQ  Addr-255
+         fcb   'N'
+         ELSE
+         IFGT  Addr-64
+         IFEQ  Addr-65
+         fcs   /Term/
+         ELSE
+         fcc   /Z/
+         fcb   176+Addr-65
+         ENDC
+         ELSE
          fcc   /N/
          IFGT  Addr-9
          fcc   '1'
@@ -108,8 +118,7 @@ name     equ   *
          ELSE
          fcb   176+Addr
          ENDC
-         ELSE
-         fcs   /N/
+         ENDC
          ENDC
          ENDC
          ENDC

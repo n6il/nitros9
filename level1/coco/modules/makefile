@@ -50,10 +50,13 @@ SCF		= scf.mn \
 		nil.dd p_scbbp.dd p_scdwp.dd pipe.dd ssp.dd \
 		term_scbbt.dt term_sc6551.dt t1_scbbt.dd t2_sc6551.dd t3_sc6551.dd \
 		term32.dt term51.dt \
-		scdwn.dr term_scdwn.dt n_scdwn.dd n1_scdwn.dd n2_scdwn.dd \
-		n3_scdwn.dd n4_scdwn.dd n5_scdwn.dd n6_scdwn.dd n7_scdwn.dd \
-		n8_scdwn.dd n9_scdwn.dd n10_scdwn.dd n11_scdwn.dd n12_scdwn.dd \
-		n13_scdwn.dd midi_scdwn.dd
+		scdwn.dr term_scdwn.dt \
+		n_scdwn.dd n1_scdwn.dd n2_scdwn.dd n3_scdwn.dd n4_scdwn.dd n5_scdwn.dd \
+		n6_scdwn.dd n7_scdwn.dd n8_scdwn.dd n9_scdwn.dd n10_scdwn.dd \
+		n11_scdwn.dd n12_scdwn.dd n13_scdwn.dd midi_scdwn.dd \
+		term_z_scdwn.dd \
+		z1_scdwn.dd z2_scdwn.dd z3_scdwn.dd z4_scdwn.dd z5_scdwn.dd \
+		z6_scdwn.dd z7_scdwn.dd
 
 PIPE		= pipeman.mn \
 		piper.dr \
@@ -201,6 +204,30 @@ n13_scdwn.dd: scdwndesc.asm
 
 midi_scdwn.dd: scdwndesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=14
+
+term_z_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=65
+
+z1_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=66
+
+z2_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=67
+
+z3_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=68
+
+z4_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=69
+
+z5_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=70
+
+z6_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=71
+
+z7_scdwn.dd: scdwndesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=72
 
 # DriveWire 3 RBF descriptors
 ddx0.dd: dwdesc.asm
