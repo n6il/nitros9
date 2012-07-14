@@ -53,8 +53,13 @@ rev      set   $07
          fcb   $01        echo:0=no echo
          fcb   $01        auto line feed:0=off
          ELSE
+         IFGT  Addr-14
+         fcb   $01        echo:0=no echo
+         fcb   $01        auto line feed:0=off
+         ELSE
          fcb   $00        echo:0=no echo
          fcb   $00        auto line feed:0=off
+         ENDC
          ENDC
          fcb   $00        end of line null count
          fcb   $00        pause:0=no end of page pause
