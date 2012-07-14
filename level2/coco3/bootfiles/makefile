@@ -32,6 +32,9 @@ BOOTFILE_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/n6_scdwn.dd $(MD)/n7_scdwn.dd $(MD)/n8_scdwn.dd \
 		$(MD)/n9_scdwn.dd $(MD)/n10_scdwn.dd $(MD)/n11_scdwn.dd \
 		$(MD)/n12_scdwn.dd $(MD)/n13_scdwn.dd $(MD)/midi_scdwn.dd \
+		$(MD)/z1_scdwn.dd $(MD)/z2_scdwn.dd $(MD)/z3_scdwn.dd \
+		$(MD)/z4_scdwn.dd $(MD)/z5_scdwn.dd $(MD)/z6_scdwn.dd \
+		$(MD)/z7_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw3_becker

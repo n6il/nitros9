@@ -294,28 +294,28 @@ midi_scdwn.dd: scdwndesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=14
 
 term_z_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=65
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=16
 
 z1_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=66
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=17
 
 z2_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=67
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=18
 
 z3_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=68
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=19
 
 z4_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=69
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=20
 
 z5_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=70
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=21
 
 z6_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=71
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=22
 
 z7_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=72
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=23
 
 # DriveWire 3 RBF descriptors
 ddx0.dd: dwdesc.asm

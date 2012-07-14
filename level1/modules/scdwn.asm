@@ -432,7 +432,7 @@ GetKySns
                cmpa      #SS.KySns
                bne       GetSSMntr           ; no, we have no more answers, report error
 * Get key sense byte from server and return to caller
-               pshs      a,u
+               pshs      a,x,u
                leax      ,s
                ldy       #$001
                ifgt      Level-1
@@ -441,7 +441,7 @@ GetKySns
                ldu       >D.DWSubAddr
                jsr       DW$Read,u
                endc      
-               puls      a,u
+               puls      a,x,u
                sta       R$A,x
                puls      cc,dp,pc            ; restore Carry status, system DP, return			
 
@@ -449,7 +449,6 @@ GetSSMntr      cmpa      #SS.Montr
                bne       UnSvcErr            ; no, we have no more answers, report error
                lda       #$01
                sta       R$A,x
-               
                puls      cc,dp,pc            ; restore Carry status, system DP, return			
 
 * Advertise Stat Code to server
@@ -502,6 +501,8 @@ isitcomst
                beq       ex
                cmpa      #SS.SSig
                beq       ssig
+               cmpa      #SS.Montr
+               beq       ex
                cmpa      #SS.Relea
                bne       donebad
 relea          lda       PD.CPR,y            get curr proc #
