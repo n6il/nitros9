@@ -103,12 +103,12 @@ name     equ   *
          IFEQ  Addr-255
          fcs   'N'
          ELSE
-         IFGT  Addr-64
-         IFEQ  Addr-65
+         IFGT  Addr-14
+         IFEQ  Addr-15
          fcs   /Term/
          ELSE
          fcc   /Z/
-         fcb   176+Addr-65
+         fcb   176+Addr-16
          ENDC
          ELSE
          fcc   /N/

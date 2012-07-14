@@ -352,12 +352,40 @@ FRQd1          lda       PollSpd2,pcr
 
 ; save back D on stack and build our U
 IRQGotOp       pshs      d
-          * mode switch on bits 7+6 of A: 00 = vserial, 01 = system, 10 = wirebug?, 11 = ?							
+          * mode switch on bits 7+6 of A: 00 = vserial, 01 = vwindow, 10 = wirebug?, 11 = ?							
                anda      #$C0                ; mask last 6 bits
                beq       mode00              ; virtual serial mode
           					; future - handle other modes
+               cmpa      #%01000000          ; vwindow?
+               beq       mode01
                lbra      IRQExit             ; for now, bail
 
+* Virtual Window Handler
+mode01
+               lda       ,s
+               anda      #%00110000
+               beq       key
+               lbra      IRQExit
+
+key
+               lda       ,s
+               anda      #$0F
+               ora       #$10
+               ifgt      Level-1
+               ldx       <D.DWStat
+               else      
+               ldx       >D.DWStat
+               endc      
+; cheat: we know DW.StatTbl is at offset $00 from D.DWStat, do not bother with leax
+;			leax    DW.StatTbl,x
+               lda       a,x
+               clrb      
+               tfr       d,u
+               puls      d
+               lbra      IRQPutch
+
+               
+* Virtual Serial Handler
 mode00         lda       ,s                  ; restore A		  
                anda      #$0F                ; mask first 4 bits, a is now port #+1
                beq       IRQCont             ; if we're here with 0 in the port, its not really a port # (can we jump straight to status?)
