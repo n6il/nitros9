@@ -108,8 +108,8 @@ name     equ   *
          IFEQ  Addr-255
          fcs   'N'
          ELSE
-         IFGT  Addr-14
-         IFEQ  Addr-15
+         IFGT  Addr-15
+         IFEQ  Addr-16
          fcs   /Term/
          ELSE
          fcc   /Z/
