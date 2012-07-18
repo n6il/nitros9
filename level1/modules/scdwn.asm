@@ -1,5 +1,5 @@
 ********************************************************************
-* scdwn - CoCo DriveWire Network Driver
+* scdwn - DriveWire Network Driver
 *
 * $Id$
 *
@@ -50,13 +50,12 @@
 * Added FASTSERWRITE support
 *
                nam       scdwn
-               ttl       CoCo DriveWire Network Driver
+               ttl       DriveWire Network Driver
 
                ifp1      
                use       defsfile
                use       drivewire.d
                endc      
-
 
 tylg           set       Drivr+Objct
 atrv           set       ReEnt+Rev
@@ -431,18 +430,25 @@ GetComSt       cmpa      #SS.ComSt
 
 GetKySns
                cmpa      #SS.KySns
-               bne       UnSvcErr            ; no, we have no more answers, report error
+               bne       GetSSMntr           ; no, we have no more answers, report error
 * Get key sense byte from server and return to caller
-               pshs      u
+               pshs      a,x,u
+               leax      ,s
+               ldy       #$001
                ifgt      Level-1
                ldu       <D.DWSubAddr
                else      
                ldu       >D.DWSubAddr
-               jsr       3,u
+               jsr       DW$Read,u
                endc      
-               puls      u
+               puls      a,x,u
                sta       R$A,x
+               puls      cc,dp,pc            ; restore Carry status, system DP, return			
 
+GetSSMntr      cmpa      #SS.Montr
+               bne       UnSvcErr            ; no, we have no more answers, report error
+               lda       #$01
+               sta       R$A,x
                puls      cc,dp,pc            ; restore Carry status, system DP, return			
 
 * Advertise Stat Code to server
@@ -463,7 +469,7 @@ SendStat
                else      
                ldu       >D.DWSubAddr
                endc      
-               jsr       6,u
+               jsr       DW$Write,u
                leas      3,s
                puls      a,y,x,u,pc
 
@@ -495,6 +501,8 @@ isitcomst
                beq       ex
                cmpa      #SS.SSig
                beq       ssig
+               cmpa      #SS.Montr
+               beq       ex
                cmpa      #SS.Relea
                bne       donebad
 relea          lda       PD.CPR,y            get curr proc #
@@ -528,7 +536,7 @@ comst          leax      PD.OPT,y
                else      
                ldu       >D.DWSubAddr
                endc      
-               jsr       6,u
+               jsr       DW$Write,u
                clrb      
 ssbye          rts       
 

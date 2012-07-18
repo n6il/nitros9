@@ -7,8 +7,7 @@
 
          ifp1
          	use   defsfile
-;         	use   rfmdefs
-		use   rfm.d
+         	use   rfm.d
          endc
          
 tylg     set   Drivr+Objct   

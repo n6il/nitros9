@@ -53,8 +53,13 @@ rev      set   $07
          fcb   $01        echo:0=no echo
          fcb   $01        auto line feed:0=off
          ELSE
+         IFGT  Addr-14
+         fcb   $01        echo:0=no echo
+         fcb   $01        auto line feed:0=off
+         ELSE
          fcb   $00        echo:0=no echo
          fcb   $00        auto line feed:0=off
+         ENDC
          ENDC
          fcb   $00        end of line null count
          fcb   $00        pause:0=no end of page pause
@@ -100,7 +105,17 @@ name     equ   *
          IFEQ  Addr-14
          fcs  /MIDI/
          ELSE
-         IFNE  Addr-255
+         IFEQ  Addr-255
+         fcs   'N'
+         ELSE
+         IFGT  Addr-15
+         IFEQ  Addr-16
+         fcs   /Term/
+         ELSE
+         fcc   /Z/
+         fcb   176+Addr-16
+         ENDC
+         ELSE
          fcc   /N/
          IFGT  Addr-9
          fcc   '1'
@@ -108,8 +123,7 @@ name     equ   *
          ELSE
          fcb   176+Addr
          ENDC
-         ELSE
-         fcs   /N/
+         ENDC
          ENDC
          ENDC
          ENDC
