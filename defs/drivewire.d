@@ -71,7 +71,7 @@ OP_VPORT_WRITE        equ  'v
 E_CRC      equ   $F3            Same as NitrOS-9 E$CRC
 
 * DW Globals Page Definitions (must be 256 bytes max)
-DW.StatCnt equ   15
+DW.StatCnt equ   15+16
            org   $00
 DW.StatTbl rmb   DW.StatCnt     page pointers for terminal device static storage
 DW.VIRQPkt rmb   Vi.PkSz

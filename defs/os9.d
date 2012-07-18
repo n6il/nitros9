@@ -328,8 +328,8 @@ SS.RdNet       RMB       1                   Read Raw Sector from Network 4 Omni
 SS.MpGPB       RMB       1                   SetStat to request a Get/Put Buffer be mapped in workspace
 SS.Slots       RMB       1                   Network 4 slots? getstat
 
-               IFGT      Level-1
-
+*               IFGT      Level-1
+               IFNE      1
 * Level 2 Windowing
 SS.WnSet       RMB       1                   Set up High Level Windowing Information
 SS.MnSel       RMB       1                   Request High level Menu Handler take determine next event
