@@ -29,7 +29,9 @@
 #	Updated to use new build system, for multiple supported platforms.
 #
 
-PORT = d64
+ifeq ($(PORT),)
+	PORT=d64
+endif
 include $(NITROS9DIR)/rules.mak
 
 CPU		= 6809
