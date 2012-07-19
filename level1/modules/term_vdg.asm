@@ -61,7 +61,11 @@ prn3     set   Black.     border color
          IFGT  Level-1
          fcb   $01        init value for dev ctl reg
          ELSE
+         IFEQ  coco2b-1
+         fcb   ModCoVDG+1 init value for dev ctl reg
+         ELSE
          fcb   ModCoVDG   init value for dev ctl reg
+         ENDC
          ENDC
          fcb   $00        baud rate
          fdb   name       copy of descriptor name address

@@ -1,4 +1,6 @@
-PORT = coco
+ifeq ($(PORT),)
+        PORT=coco1
+endif
 include $(NITROS9DIR)/rules.mak
 
 vpath %.hp	$(LEVEL1)/sys
