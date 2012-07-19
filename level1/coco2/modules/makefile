@@ -1,4 +1,4 @@
-PORT = coco
+PORT = coco2
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm $(LEVEL1)/modules
@@ -22,7 +22,7 @@ DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		boot_burke boot_rampak boot_wd1002 boot_dw3 boot_dw3_coco1 \
+		boot_burke boot_rampak boot_wd1002 boot_dw3 \
 		boot_tc3 boot_ide boot_rom
 BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= krn krnp2 wbug
@@ -33,7 +33,7 @@ CLOCKS          = clock_60hz clock_50hz \
 		clock2_messemu clock2_jvemu clock2_dw3
 
 RBF		= rbf.mn \
-		rbdw3.dr dw3.sb dw3_coco1.sb \
+		rbdw3.dr dw3.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
 		ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
@@ -46,14 +46,17 @@ RBF		= rbf.mn \
 
 SCF		= scf.mn \
 		sc6551.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr vtio.dr \
-		covdg.io cohr.io \
+		covdg.io cohr.io co80.io \
 		nil.dd p_scbbp.dd p_scdwp.dd pipe.dd ssp.dd \
 		term_scbbt.dt term_sc6551.dt t1_scbbt.dd t2_sc6551.dd t3_sc6551.dd \
-		term32.dt term51.dt \
-		scdwn.dr term_scdwn.dt n_scdwn.dd n1_scdwn.dd n2_scdwn.dd \
-		n3_scdwn.dd n4_scdwn.dd n5_scdwn.dd n6_scdwn.dd n7_scdwn.dd \
-		n8_scdwn.dd n9_scdwn.dd n10_scdwn.dd n11_scdwn.dd n12_scdwn.dd \
-		n13_scdwn.dd midi_scdwn.dd
+		term_vdg.dt term_51.dt term_80.dt \
+		scdwv.dr term_scdwv.dt n_scdwv.dd n1_scdwv.dd n2_scdwv.dd \
+		n3_scdwv.dd n4_scdwv.dd n5_scdwv.dd n6_scdwv.dd n7_scdwv.dd \
+		n8_scdwv.dd n9_scdwv.dd n10_scdwv.dd n11_scdwv.dd n12_scdwv.dd \
+		n13_scdwv.dd midi_scdwv.dd \
+		term_z_scdwv.dt \
+		z1_scdwv.dd z2_scdwv.dd z3_scdwv.dd z4_scdwv.dd z5_scdwv.dd \
+		z6_scdwv.dd z7_scdwv.dd
 
 PIPE		= pipeman.mn \
 		piper.dr \
@@ -80,12 +83,6 @@ boot_ide: boot_ide.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
 
 # DriveWire 3
-boot_dw3_coco1: boot_dw3.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBAUD38400=1
-
-dw3_coco1.sb: dw3.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBAUD38400=1
-
 boot_1773_6ms:	boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0 -DSTEP=0
 
@@ -154,53 +151,77 @@ d2_80d.dd: rb1773desc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=2
 
 # DriveWire 3 SCF descriptors
-term_scdwn.dt: scdwndesc.asm
+term_scdwv.dt: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=0
 
-n_scdwn.dd: scdwndesc.asm
+n_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=255
 
-n1_scdwn.dd: scdwndesc.asm
+n1_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=1
 
-n2_scdwn.dd: scdwndesc.asm
+n2_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=2
 
-n3_scdwn.dd: scdwndesc.asm
+n3_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=3
 
-n4_scdwn.dd: scdwndesc.asm
+n4_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=4
 
-n5_scdwn.dd: scdwndesc.asm
+n5_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=5
 
-n6_scdwn.dd: scdwndesc.asm
+n6_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=6
 
-n7_scdwn.dd: scdwndesc.asm
+n7_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=7
 
-n8_scdwn.dd: scdwndesc.asm
+n8_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=8
 
-n9_scdwn.dd: scdwndesc.asm
+n9_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=9
 
-n10_scdwn.dd: scdwndesc.asm
+n10_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=10
 
-n11_scdwn.dd: scdwndesc.asm
+n11_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=11
 
-n12_scdwn.dd: scdwndesc.asm
+n12_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=12
 
-n13_scdwn.dd: scdwndesc.asm
+n13_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=13
 
-midi_scdwn.dd: scdwndesc.asm
+midi_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=14
+
+term_z_scdwv.dt: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=16
+
+z1_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=17
+
+z2_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=18
+
+z3_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=19
+
+z4_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=20
+
+z5_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=21
+
+z6_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=22
+
+z7_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=23
 
 # DriveWire 3 RBF descriptors
 ddx0.dd: dwdesc.asm

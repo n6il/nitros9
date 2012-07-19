@@ -1,5 +1,5 @@
 ********************************************************************
-* scdwdesc - Drivewire Network Device Descriptor
+* scdwvdesc - Drivewire Virtual Device Descriptor
 *
 * $Id$
 *
@@ -29,7 +29,7 @@
 * /N14 is now /MIDI
 
          nam   scdwdesc
-         ttl   DriveWire network Device Descriptor
+         ttl   DriveWire Virtual Device Descriptor
 
          ifp1  
          use   defsfile
@@ -128,7 +128,7 @@ name     equ   *
          ENDC
          ENDC
 mgrnam   fcs   /SCF/
-drvnam   fcs   /scdwn/
+drvnam   fcs   /scdwv/
 
          emod  
 eom      equ   *

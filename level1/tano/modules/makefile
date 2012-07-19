@@ -40,7 +40,7 @@ SCF		= scf.mn \
 		covdg.io cohr.io \
 		nil.dd p_dpp.dd p1_sc6551dragon.dd pipe.dd ssp.dd \
 		term_sc6551.dt t2_sc6551.dd t3_sc6551.dd \
-		term32.dt term51.dt
+		term_vdg.dt term_hr.dt
 
 PIPE		= pipeman.mn \
 		piper.dr \
