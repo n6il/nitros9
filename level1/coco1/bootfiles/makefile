@@ -80,9 +80,9 @@ BOOTFILE_HEADLESS_DW3	= $(MD)/ioman \
 		$(MD)/scf.mn \
 		$(MD)/scdwv.dr \
 		$(SCDWV_NET) \
-		$(MD)/term_z_scdwv.dt \
+		$(MD)/term_scdwv.dt \
 		$(SCDWV_WIN) \
-		$(SCDWP)\
+		$(SCDWP) \
 		$(PIPE) \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
@@ -96,7 +96,7 @@ BOOTFILE_COVDG_DW3	= $(MD)/ioman \
 		$(MD)/scdwv.dr \
 		$(SCDWV_NET) \
 		$(SCDWV_WIN) \
-		$(SCDWP)\
+		$(SCDWP) \
 		$(PIPE) \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
