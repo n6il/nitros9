@@ -61,11 +61,11 @@ SCF		= scf.mn \
 		w8.dw w9.dw w10.dw w11.dw w12.dw w13.dw w14.dw w15.dw \
 		v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw \
-		scdwn.dr term_scdwn.dt n_scdwn.dd \
-		n1_scdwn.dd n2_scdwn.dd n3_scdwn.dd \
-                n4_scdwn.dd n5_scdwn.dd n6_scdwn.dd n7_scdwn.dd \
-		n8_scdwn.dd n9_scdwn.dd n10_scdwn.dd n11_scdwn.dd \
-                n12_scdwn.dd n13_scdwn.dd midi_scdwn.dd
+		scdwv.dr term_scdwv.dt n_scdwv.dd \
+		n1_scdwv.dd n2_scdwv.dd n3_scdwv.dd \
+                n4_scdwv.dd n5_scdwv.dd n6_scdwv.dd n7_scdwv.dd \
+		n8_scdwv.dd n9_scdwv.dd n10_scdwv.dd n11_scdwv.dd \
+                n12_scdwv.dd n13_scdwv.dd midi_scdwv.dd
 
 PIPE		= pipeman.mn pipeman_named.mn \
 		piper.dr \
@@ -242,52 +242,52 @@ ddr0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192 -DDD=1
 
 # DriveWire 3 SCF descriptors
-term_scdwn.dt: scdwndesc.asm
+term_scdwv.dt: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=0
 
-n_scdwn.dd: scdwndesc.asm
+n_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=255
 
-n1_scdwn.dd: scdwndesc.asm
+n1_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=1
 
-n2_scdwn.dd: scdwndesc.asm
+n2_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=2
 
-n3_scdwn.dd: scdwndesc.asm
+n3_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=3
 
-n4_scdwn.dd: scdwndesc.asm
+n4_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=4
 
-n5_scdwn.dd: scdwndesc.asm
+n5_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=5
 
-n6_scdwn.dd: scdwndesc.asm
+n6_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=6
 
-n7_scdwn.dd: scdwndesc.asm
+n7_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=7
 
-n8_scdwn.dd: scdwndesc.asm
+n8_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=8
 
-n9_scdwn.dd: scdwndesc.asm
+n9_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=9
 
-n10_scdwn.dd: scdwndesc.asm
+n10_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=10
 
-n11_scdwn.dd: scdwndesc.asm
+n11_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=11
 
-n12_scdwn.dd: scdwndesc.asm
+n12_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=12
 
-n13_scdwn.dd: scdwndesc.asm
+n13_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=13
 
-midi_scdwn.dd: scdwndesc.asm
+midi_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=14
 
 # DriveWire 3 RBF descriptors
