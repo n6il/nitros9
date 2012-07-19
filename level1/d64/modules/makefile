@@ -20,7 +20,9 @@
 #	disk controler and a 60Hz clock.
 #
 
-PORT = d64
+ifeq ($(PORT),)
+        PORT=d64
+endif
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm $(LEVEL1)/modules

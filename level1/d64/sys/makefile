@@ -1,4 +1,6 @@
-PORT = d64
+ifeq ($(PORT),)
+        PORT=d64
+endif
 include $(NITROS9DIR)/rules.mak
 
 vpath %.hp	$(LEVEL1)/sys
