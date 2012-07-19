@@ -33,7 +33,7 @@ KERNEL	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 #Dragon Alpha Bootfiles
 
 BOOTFILE_COVDG_SS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
+		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt \
 		$(MD)/rbf.mn $(MD)/adisk.dr \
 		$(MD)/ddd0_80s.dd\
                 $(MD)/d0_80s.dd $(MD)/d1_80s.dd \
@@ -45,7 +45,7 @@ BOOTFILE_COVDG_SS80 = $(MD)/ioman \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_SS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
+		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt \
 		$(MD)/rbf.mn $(MD)/adisk.dr \
 		$(MD)/ddd0_80s.dd\
                 $(MD)/d0_80s.dd $(MD)/d1_80s.dd \
@@ -57,7 +57,7 @@ BOOTFILE_COHR_SS80 = $(MD)/ioman \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COVDG_DS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term32.dt \
+		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt \
 		$(MD)/rbf.mn $(MD)/adisk.dr \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/d0_80d.dd $(MD)/d1_80d.dd \
@@ -69,7 +69,7 @@ BOOTFILE_COVDG_DS80 = $(MD)/ioman \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_DS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term51.dt \
+		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt \
 		$(MD)/rbf.mn $(MD)/adisk.dr \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/d0_80d.dd $(MD)/d1_80d.dd \

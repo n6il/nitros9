@@ -1,5 +1,5 @@
 ***************************************
-* NitrOS-9 Level 1 Bootlist
+* NitrOS-9 Level 1 CoCo Bootlist
 *
 * $Id$
 *
@@ -36,8 +36,9 @@
 *
 ../MODULES/RBF/rbf.mn
 *
-* DriveWire driver (Cloud-9 product)
-*../MODULES/RBF/drivewire.dr
+* DriveWire 3 RBF driver
+*../MODULES/RBF/rbdw3.dr
+*../MODULES/RBF/dw3.sb
 * DriveWire descriptors - select as needed
 *../MODULES/RBF/ddx0.dd
 *../MODULES/RBF/x0.dd
@@ -45,13 +46,15 @@
 *../MODULES/RBF/x2.dd
 *../MODULES/RBF/x3.dd
 *
-* SuperDriver Package (Cloud-9 product)
+* SuperDriver Package
 *../MODULES/RBF/rbsuper.dr
 * Select Low level SCSI and/or IDE driver
 *../MODULES/RBF/lltc3.dr
 *../MODULES/RBF/llide.dr
 * SuperDriver descriptors - select as needed
-* SCSI descriptors (IDs 0-7)
+* TC^3 SCSI DD Descriptor (ID 0)
+*../MODULES/RBF/dds0_tc3.dd
+* TC^3 SCSI descriptors (IDs 0-6)
 *../MODULES/RBF/s0_tc3.dd
 *../MODULES/RBF/s1_tc3.dd
 *../MODULES/RBF/s2_tc3.dd
@@ -59,8 +62,10 @@
 *../MODULES/RBF/s4_tc3.dd
 *../MODULES/RBF/s5_tc3.dd
 *../MODULES/RBF/s6_tc3.dd
-* SCSI HDB-DOS descriptor
-*../MODULES/RBF/sh_ide.dd
+* TC^3 SCSI HDB-DOS descriptor
+*../MODULES/RBF/sh_tc3.dd
+* IDE DD descriptor (Master)
+*../MODULES/RBF/ddi0_ide.dd
 * IDE descriptors (master/slave)
 *../MODULES/RBF/i0_ide.dd
 *../MODULES/RBF/i1_ide.dd
@@ -98,20 +103,22 @@
 *
 * Video Terminal I/O driver and subroutine modules
 ../MODULES/SCF/vtio.dr
-* Choose from CoVDG (32x16 VDG) or CoHR (Hi-Res 51x24 graphics screen)
+* Choose from CoVDG (32x16 VDG),  CoHR (Hi-Res 51x24 graphics screen), or Co80 (WordPak)
 ../MODULES/SCF/covdg.io
 *../MODULES/SCF/cohr.io
+*../MODULES/SCF/co80.io
 *
 * Select only one term descriptor
 ../MODULES/SCF/term_vdg.dt
 *../MODULES/SCF/term_hr.dt
-*../MODULES/SCF/term_bbt.dt
+*../MODULES/SCF/term_80.dt
+*../MODULES/SCF/term_scbbt.dt
 *../MODULES/SCF/term_sc6551.dt
 *
 * Serial port drivers
 * CoCo Bit-Banger terminal port
 *../MODULES/SCF/scbbt.dr
-*../MODULES/SCF/t1.dd
+*../MODULES/SCF/t1_scbbt.dd
 * 6551 ACIA
 *../MODULES/SCF/sc6551.dr
 *../MODULES/SCF/t2_sc6551.dd
@@ -119,7 +126,38 @@
 *
 * Printer drivers
 * ../MODULES/SCF/scbbp.dr
-* ../MODULES/SCF/p.dd
+* ../MODULES/SCF/p_scbbp.dd
+*
+* DriveWire 3 Printer drivers
+* ../MODULES/SCF/scdwp.dr
+* ../MODULES/SCF/p_scdwp.dd
+*
+* DriveWire Virtual Channel Driver
+*../MODULES/SCF/scdwv.dr
+*../MODULES/SCF/term_scdwv.dt
+*../MODULES/SCF/n_scdwv.dd
+*../MODULES/SCF/n1_scdwv.dd
+*../MODULES/SCF/n2_scdwv.dd
+*../MODULES/SCF/n3_scdwv.dd
+*../MODULES/SCF/n4_scdwv.dd
+*../MODULES/SCF/n5_scdwv.dd
+*../MODULES/SCF/n6_scdwv.dd
+*../MODULES/SCF/n7_scdwv.dd
+*../MODULES/SCF/n8_scdwv.dd
+*../MODULES/SCF/n9_scdwv.dd
+*../MODULES/SCF/n10_scdwv.dd
+*../MODULES/SCF/n11_scdwv.dd
+*../MODULES/SCF/n12_scdwv.dd
+*../MODULES/SCF/n13_scdwv.dd
+*../MODULES/SCF/n14_scdwv.dd
+*../MODULES/SCF/term_z_scdwv.dt
+*../MODULES/SCF/z1_scdwv.dd
+*../MODULES/SCF/z2_scdwv.dd
+*../MODULES/SCF/z3_scdwv.dd
+*../MODULES/SCF/z4_scdwv.dd
+*../MODULES/SCF/z5_scdwv.dd
+*../MODULES/SCF/z6_scdwv.dd
+*../MODULES/SCF/z7_scdwv.dd
 *
 ***************************************
 * Pipe Section
@@ -151,7 +189,7 @@
 *../MODULES/CLOCKS/clock2_jvemu
 *../MODULES/CLOCKS/clock2_messemu
 *../MODULES/CLOCKS/clock2_cloud9
-*../MODULES/CLOCKS/clock2_dw
+*../MODULES/CLOCKS/clock2_dw3
 * 
 ***************************************
 * System Kick-Start Module

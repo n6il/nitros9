@@ -61,6 +61,18 @@ LEFTBIT        EQU       %00100000
 RIGHTBIT       EQU       %01000000
 SPACEBIT       EQU       %10000000
 
+******************
+* VDG Devices
+*
+A.TermV        SET       $FFC0               VDG Term
+A.V1           SET       $FFC1               Possible additional VDG Devices
+A.V2           SET       $FFC2
+A.V3           SET       $FFC3
+A.V4           SET       $FFC4
+A.V5           SET       $FFC5
+A.V6           SET       $FFC6
+A.V7           SET       $FFC7
+
 ********************
 * VTIO Static Memory
 *

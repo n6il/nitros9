@@ -36,16 +36,15 @@
 *
 ../MODULES/RBF/rbf.mn
 *
-* DriveWire 3 RBF driver
-*../MODULES/RBF/rbdw3.dr
-*../MODULES/RBF/dw3.sb
-*../MODULES/RBF/dw3_coco1.sb
+* DriveWire 3 RBF driver 
+../MODULES/RBF/rbdw3.dr
+../MODULES/RBF/dw3.sb
 * DriveWire descriptors - select as needed
-*../MODULES/RBF/ddx0.dd
+../MODULES/RBF/ddx0.dd
 *../MODULES/RBF/x0.dd
-*../MODULES/RBF/x1.dd
-*../MODULES/RBF/x2.dd
-*../MODULES/RBF/x3.dd
+../MODULES/RBF/x1.dd
+../MODULES/RBF/x2.dd
+../MODULES/RBF/x3.dd
 *
 * SuperDriver Package
 *../MODULES/RBF/rbsuper.dr
@@ -81,7 +80,7 @@
 * Floppy device descriptors
 * DD - default device - choose one if needed
 *../MODULES/RBF/ddd0_35s.dd
-../MODULES/RBF/ddd0_40d.dd
+*../MODULES/RBF/ddd0_40d.dd
 *../MODULES/RBF/ddd0_80d.dd
 * D0 - drive 0 - choose one if needed
 *../MODULES/RBF/d0_35s.dd
@@ -104,13 +103,15 @@
 *
 * Video Terminal I/O driver and subroutine modules
 ../MODULES/SCF/vtio.dr
-* Choose from CoVDG (32x16 VDG) or CoHR (Hi-Res 51x24 graphics screen)
+* Choose from CoVDG (32x16 VDG), CoHR (Hi-Res 51x24 graphics screen), or Co80 (WordPak)
 ../MODULES/SCF/covdg.io
 *../MODULES/SCF/cohr.io
+*../MODULES/SCF/co80.io
 *
 * Select only one term descriptor
-../MODULES/SCF/term32.dt
-*../MODULES/SCF/term51.dt
+../MODULES/SCF/term_vdg.dt
+*../MODULES/SCF/term_hr.dt
+*../MODULES/SCF/term_51.dt
 *../MODULES/SCF/term_scbbt.dt
 *../MODULES/SCF/term_sc6551.dt
 *
@@ -131,24 +132,32 @@
 * ../MODULES/SCF/scdwp.dr
 * ../MODULES/SCF/p_scdwp.dd
 *
-* DriveWire Networking
-*../MODULES/SCF/scdwn.dr
-*../MODULES/SCF/term_scdwn.dt
-*../MODULES/SCF/n_scdwn.dd
-*../MODULES/SCF/n1_scdwn.dd
-*../MODULES/SCF/n2_scdwn.dd
-*../MODULES/SCF/n3_scdwn.dd
-*../MODULES/SCF/n4_scdwn.dd
-*../MODULES/SCF/n5_scdwn.dd
-*../MODULES/SCF/n6_scdwn.dd
-*../MODULES/SCF/n7_scdwn.dd
-*../MODULES/SCF/n8_scdwn.dd
-*../MODULES/SCF/n9_scdwn.dd
-*../MODULES/SCF/n10_scdwn.dd
-*../MODULES/SCF/n11_scdwn.dd
-*../MODULES/SCF/n12_scdwn.dd
-*../MODULES/SCF/n13_scdwn.dd
-*../MODULES/SCF/n14_scdwn.dd
+* DriveWire Virtual Channel Driver
+*../MODULES/SCF/scdwv.dr
+*../MODULES/SCF/term_scdwv.dt
+*../MODULES/SCF/n_scdwv.dd
+*../MODULES/SCF/n1_scdwv.dd
+*../MODULES/SCF/n2_scdwv.dd
+*../MODULES/SCF/n3_scdwv.dd
+*../MODULES/SCF/n4_scdwv.dd
+*../MODULES/SCF/n5_scdwv.dd
+*../MODULES/SCF/n6_scdwv.dd
+*../MODULES/SCF/n7_scdwv.dd
+*../MODULES/SCF/n8_scdwv.dd
+*../MODULES/SCF/n9_scdwv.dd
+*../MODULES/SCF/n10_scdwv.dd
+*../MODULES/SCF/n11_scdwv.dd
+*../MODULES/SCF/n12_scdwv.dd
+*../MODULES/SCF/n13_scdwv.dd
+*../MODULES/SCF/n14_scdwv.dd
+*../MODULES/SCF/term_z_scdwv.dt
+*../MODULES/SCF/z1_scdwv.dd
+*../MODULES/SCF/z2_scdwv.dd
+*../MODULES/SCF/z3_scdwv.dd
+*../MODULES/SCF/z4_scdwv.dd
+*../MODULES/SCF/z5_scdwv.dd
+*../MODULES/SCF/z6_scdwv.dd
+*../MODULES/SCF/z7_scdwv.dd
 *
 ***************************************
 * Pipe Section
@@ -170,7 +179,7 @@
 * hardware clocks are supported: Burke & Burke, Disto 2-N-1, Disto 4-N-1,
 * Eliminator, Harris, SmartWatch, Cloud-9, the MESS emulator, Jeff
 * Vavasour's CoCo emulator, and DriveWire.
-../MODULES/CLOCKS/clock2_soft
+*../MODULES/CLOCKS/clock2_soft
 *../MODULES/CLOCKS/clock2_bnb
 *../MODULES/CLOCKS/clock2_disto2
 *../MODULES/CLOCKS/clock2_disto4
@@ -180,7 +189,7 @@
 *../MODULES/CLOCKS/clock2_jvemu
 *../MODULES/CLOCKS/clock2_messemu
 *../MODULES/CLOCKS/clock2_cloud9
-*../MODULES/CLOCKS/clock2_dw3
+../MODULES/CLOCKS/clock2_dw3
 * 
 ***************************************
 * System Kick-Start Module

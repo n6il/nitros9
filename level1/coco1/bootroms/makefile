@@ -12,7 +12,7 @@ KERNEL_ROM	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init $(MD)/boot_rom
 BOOTFILE_ROM	= $(MD)/rominfo $(MD)/ioman \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/covdg.io \
-		$(MD)/term32.dt \
+		$(MD)/term_vdg.dt \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
 BOOTROMS	= nos96809l1.rom

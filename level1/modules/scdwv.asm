@@ -1,5 +1,5 @@
 ********************************************************************
-* scdwn - DriveWire Network Driver
+* scdwv - DriveWire Virtual Channel Driver
 *
 * $Id$
 *
@@ -49,7 +49,7 @@
 *		   2010/05/28  Aaron Wolfe	  
 * Added FASTSERWRITE support
 *
-               nam       scdwn
+               nam       scdwv
                ttl       DriveWire Network Driver
 
                ifp1      
@@ -67,7 +67,7 @@ edition        set       2
 
 * module info         	
                fcb       UPDAT.+SHARE.       ;driver access modes
-name           fcs       /scdwn/             ;driver name
+name           fcs       /scdwv/             ;driver name
                fcb       edition             ;driver edition 
 
 * dispatch calls            
