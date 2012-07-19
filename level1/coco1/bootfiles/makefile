@@ -23,11 +23,11 @@ FLOPPY_40D = $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd \
           $(MD)/ddd0_40d.dd
 FLOPPY_80D = $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd \
           $(MD)/ddd0_80d.dd
-VTIO_32COL = $(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt
-VTIO_51COL = $(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt
-VTIO_80COL = $(MD)/vtio.dr $(MD)/co80.io $(MD)/term_80.dt
+VTIO_COVDG = $(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt
+VTIO_COHR  = $(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt
+VTIO_CO80  = $(MD)/vtio.dr $(MD)/co80.io $(MD)/term_80.dt
 PIPE       = $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
-CLOCK60HZ   = $(MD)/clock_60hz $(MD)/clock2_soft
+CLOCK60HZ  = $(MD)/clock_60hz $(MD)/clock2_soft
 CLOCK60HZDW = $(MD)/clock_60hz $(MD)/clock2_dw3
 RBDW3      = $(MD)/rbdw3.dr $(MD)/dw3.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
@@ -47,7 +47,7 @@ BOOTFILE_COVDG	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_40D) \
 		$(MD)/scf.mn \
-		$(VTIO_32COL) \
+		$(VTIO_COVDG) \
 		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
@@ -58,7 +58,7 @@ BOOTFILE_COHR	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_40D) \
 		$(MD)/scf.mn \
-		$(VTIO_51COL) \
+		$(VTIO_COHR) \
 		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
@@ -69,7 +69,7 @@ BOOTFILE_CO80	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_40D) \
 		$(MD)/scf.mn \
-		$(VTIO_80COL) \
+		$(VTIO_CO80) \
 		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
@@ -94,7 +94,7 @@ BOOTFILE_COVDG_DW3	= $(MD)/ioman \
 		$(FLOPPY_40D) \
 		$(RBDW3) \
 		$(MD)/scf.mn \
-		$(VTIO_32COL) \
+		$(VTIO_COVDG) \
 		$(MD)/scdwv.dr \
 		$(SCDWV_NET) \
 		$(SCDWV_WIN) \
@@ -107,7 +107,7 @@ BOOTFILE_COVDG_DS80	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_80D) \
 		$(MD)/scf.mn \
-		$(VTIO_32COL) \
+		$(VTIO_COVDG) \
 		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
@@ -119,7 +119,7 @@ BOOTFILE_COHR_DW3	= $(MD)/ioman \
 		$(FLOPPY_40D) \
 		$(RBDW3) \
 		$(MD)/scf.mn \
-		$(VTIO_51COL) \
+		$(VTIO_COHR) \
 		$(MD)/scdwv.dr \
 		$(SCDWV_NET) \
 		$(SCDWP)\
@@ -131,7 +131,7 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_80D) \
 		$(MD)/scf.mn \
-		$(VTIO_80COL) \
+		$(VTIO_CO80) \
 		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
