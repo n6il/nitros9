@@ -1,4 +1,6 @@
-PORT = coco1
+ifeq ($(PORT),)
+	PORT=coco1
+endif
 include $(NITROS9DIR)/rules.mak
 
 CPU		= 6809

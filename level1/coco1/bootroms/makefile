@@ -1,3 +1,6 @@
+ifeq ($(PORT),)
+        PORT=coco1
+endif
 include $(NITROS9DIR)/rules.mak
 
 # Module directory

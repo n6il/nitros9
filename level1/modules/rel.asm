@@ -36,7 +36,7 @@ edition  set   5
 ********************************************************************
 * Any changes to the next 3 lines requires changes in XX.Size, above
          fcc   /OS/       sync bytes
-         bra   Start+XX.Size+4  execution start
+         bra   Start+XX.Size+*-2  execution start
          fdb   $1205      filler bytes
 
 Begin    mod   eom,name,tylg,atrv,start,size
