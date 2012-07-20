@@ -20,7 +20,10 @@ tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
 rev      set   $01
 
+         IFNDEF  DNum
 DNum     set   0
+         ENDC
+         
 Type     set   TYP.HARD
 Density  set   0
 Step     set   0
@@ -39,7 +42,7 @@ SAS      set   8
          fdb   $0000      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.RBF     device type:0=scf,1=rbf,2=pipe,3=scf
-         fcb   dnum       drive number
+         fcb   DNum       drive number
          fcb   Step       step rate
          fcb   Type       drive device type
          fcb   Density    media density:0=single,1=double
@@ -56,7 +59,7 @@ initsize equ   *
 name     fcs   /DD/
          ELSE
 name     fcc   /X/
-         fcb   176+dnum
+         fcb   176+DNum
          ENDC
 mgrnam   fcs   /RBF/
 drvnam   fcs   /rbdw3/
