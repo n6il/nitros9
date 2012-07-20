@@ -478,10 +478,10 @@ loop           cmpb      #NumPaths
                ldx       >D.PthDBT
                endc      
                os9       F$Find64
-               puls      y
-               bcs       loop   +BGP+ Jul 20, 2012: continue even if error in F$Find64
                ldx       PD.DEV,y
                leax      V$STAT,x
+               puls      y
+               bcs       loop   +BGP+ Jul 20, 2012: continue even if error in F$Find64
 
                cmpu      ,x
                bne       loop
@@ -499,7 +499,7 @@ out            puls      x
 statcont       clrb      
                tfr       d,u
 * NEW: root through all process descriptors. if any has a path open to this
-* device, set the Condem bit of the P$State
+* device, condem it
                ldx       <D.AProcQ
                beq       dowaitq
                bsr       RootThrough
