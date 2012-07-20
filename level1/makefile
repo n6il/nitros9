@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-dirs	= coco1 coco2 tano d64 dalpha atari
+dirs	= coco1 coco2 coco2b tano d64 dalpha atari
 
 # Make all components
 all:
