@@ -453,17 +453,22 @@ IRQsetFRQ      pshs      x                   ; preserve
 
 * This routine roots through process descriptors in a queue and
 * checks to see if the process has a path that is open to the device
-* represented by the static storage pointer in U. if so, the S$HUP
+* represented by the static storage pointer in U. If so, the S$HUP
 * signal is sent to that process
+*
+* Note: we start with path 0 and continue until we get to either (a) the
+* last path for that process or (b) a hit on the static storage that we
+* are seeking.
 *
 * Entry: X = process descriptor to evaluate
 *        U = static storage of device we want to check against
 RootThrough              
-               ldb       #NumPaths
+               clrb
                leay      P$Path,x
                pshs      x
-loop           decb      
-               bmi       out
+loop           cmpb      #NumPaths      
+               beq       out
+               incb
                lda       ,y+
                beq       loop
                pshs      y
