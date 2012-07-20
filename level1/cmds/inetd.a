@@ -68,6 +68,17 @@ start:
                leax      nbuffer,u
                stx       nnext,u
 
+* Turn off pause in standard out
+               ldd		#$01*256+SS.Opt
+               leas      -32,s
+               tfr       s,x
+               os9       I$GetStt
+               bcs       opterr
+               clr       PD.PAU-PD.OPT,x
+               os9       I$SetStt
+opterr
+               leas      32,s
+
 * open the path to the control channel
                lbsr      TCPOpen
                lbcs      errex

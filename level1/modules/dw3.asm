@@ -410,7 +410,7 @@ IRQCont
 
           * multiread/status flag is in bit 4 of A
                bita      #$10
-               beq       IRQPutch            ; branch for read1 if multiread not set
+               lbeq       IRQPutch            ; branch for read1 if multiread not set
 
           * all 0s in port means status, anything else is multiread
 
@@ -453,8 +453,8 @@ IRQsetFRQ      pshs      x                   ; preserve
 
 * This routine roots through process descriptors in a queue and
 * checks to see if the process has a path that is open to the device
-* represented by the static storage pointer in U. If so, the S$HUP
-* signal is sent to that process
+* represented by the static storage pointer in U. If so, set the Condem
+* bit of the P$State of that process.
 *
 * Note: we start with path 0 and continue until we get to either (a) the
 * last path for that process or (b) a hit on the static storage that we
@@ -487,9 +487,9 @@ loop           cmpb      #NumPaths
                bne       loop
 
                ldx       ,s
-               lda       P$ID,x
-               ldb       #S$HUP
-               os9       F$Send
+			lda   	P$State,x		get state of recipient
+			ora   	#Condem			set condemn bit
+			sta   	P$State,x		and set it back
 
 out            puls      x
                ldx       P$Queue,x
@@ -499,7 +499,7 @@ out            puls      x
 statcont       clrb      
                tfr       d,u
 * NEW: root through all process descriptors. if any has a path open to this
-* device, send then S$HUP
+* device, set the Condem bit of the P$State
                ldx       <D.AProcQ
                beq       dowaitq
                bsr       RootThrough
