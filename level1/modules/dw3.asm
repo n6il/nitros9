@@ -476,7 +476,7 @@ loop           decb
                ldx       PD.DEV,y
                leax      V$STAT,x
                puls      y
-               bcs       out
+               bcs       loop   +BGP+ Jul 20, 2012: continue even if error in F$Find64
 
                cmpu      ,x
                bne       loop
