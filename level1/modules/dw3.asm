@@ -478,10 +478,10 @@ loop           cmpb      #NumPaths
                ldx       >D.PthDBT
                endc      
                os9       F$Find64
-               ldx       PD.DEV,y
-               leax      V$STAT,x
                puls      y
                bcs       loop   +BGP+ Jul 20, 2012: continue even if error in F$Find64
+               ldx       PD.DEV,y
+               leax      V$STAT,x
 
                cmpu      ,x
                bne       loop
