@@ -447,8 +447,8 @@ GetKySns
 
 GetSSMntr      cmpa      #SS.Montr
                bne       UnSvcErr            ; no, we have no more answers, report error
-               lda       #$01
-               sta       R$A,x
+               ldd       #$0001
+               std       R$X,x
                puls      cc,dp,pc            ; restore Carry status, system DP, return			
 
 * Advertise Stat Code to server
