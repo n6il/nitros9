@@ -79,11 +79,10 @@ BOOTFILE_HEADLESS_DW3	= $(MD)/ioman \
 		$(RBDW3) \
 		$(MD)/scf.mn \
 		$(MD)/scdwv.dr \
-		$(SCDWV_NET) \
 		$(MD)/term_scdwv.dt \
+		$(SCDWV_NET) \
 		$(SCDWV_WIN) \
 		$(SCDWP) \
-		$(PIPE) \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
 
