@@ -64,7 +64,7 @@ BOOTFILE_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(RBDW3BECKER) \
 		$(FLOPPY_40D) \
-	        $(MD)/ddd0_40d.dd \
+	     $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COGRF_80) \
 		$(MD)/scdwv.dr \
@@ -78,9 +78,10 @@ BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(RBDW3) \
           $(MD)/ddx0.dd \
-          $(FLOPPY_40D) \
 		$(MD)/scf.mn \
 		$(VTIO_COGRF_80) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
 		$(SCDWP) \
 		$(PIPE) \
 		$(CLOCK60HZDW)
