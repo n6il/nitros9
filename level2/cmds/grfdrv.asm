@@ -2058,7 +2058,7 @@ L096E    equ   *
 * Exit: B=Block #, X=Ptr to where next GP buffer could go
 L0975    pshs  b,y          Preserve regs
          ldy   <$0080       get size of buffer requested
-         ldx   GrfStrt+L0AE0  Set vector to find empty space in a block big
+         ldx   #GrfStrt+L0AE0  Set vector to find empty space in a block big
          stx   <$00A1         enough to fit the size we want
          lbsr  L0ACD        Go find it
          bcs   L09A6        Couldn't find, exit with carry set
