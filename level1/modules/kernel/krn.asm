@@ -562,7 +562,7 @@ ValMod   bsr   ChkMHCRC
          pshs  x,a
          ldd   M$Name,x
          leax  d,x                     X = addr of name in mod
-         IFNE  ATARI
+         IFNE  atari
 * jsr [>$FFE8]
 * lda	#$20
 * jsr [>$FFE4]
@@ -976,7 +976,7 @@ Vectors  fdb   SWI3                    SWI3
          fdb   SVCNMI                  NMI
          
          
-         IFNE  ATARI
+         IFNE  atari
          fdb	$F3FE-(*-OS9Cold)
          ENDC
          

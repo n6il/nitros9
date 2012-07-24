@@ -1,4 +1,4 @@
-PORT = coco
+PORT = atari
 include $(NITROS9DIR)/rules.mak
 
 vpath %.hp	$(LEVEL1)/sys
