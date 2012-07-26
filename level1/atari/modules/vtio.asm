@@ -135,15 +135,15 @@ clearLoop@
 		bcs	initex
 		
 * set POKEY to active
-		lda	#3
+		lda	#$13
 		sta	SKCTL
 
 * tell POKEY to enable keyboard scanning
-		lda	#%11000000
+		lda	#(IRQST.BREAKDOWN|IRQST.KEYDOWN)
 		pshs	cc
 		orcc	#IntMasks
-		ora	D.IRQENSHDW
-		sta	D.IRQENSHDW
+		ora	>D.IRQENSHDW
+		sta	>D.IRQENSHDW
 		puls	cc
 		sta	IRQEN
 
@@ -463,8 +463,8 @@ SetStat
 
 	
 IRQPkt	equ	*
-Pkt.Flip	fcb	%11000000		flip byte
-Pkt.Mask 	fcb	%11000000		mask byte
+Pkt.Flip	fcb	(IRQST.BREAKDOWN|IRQST.KEYDOWN)		flip byte
+Pkt.Mask	fcb	(IRQST.BREAKDOWN|IRQST.KEYDOWN)		mask byte
 		fcb 	$0A		priority
 
 	
@@ -472,7 +472,15 @@ Pkt.Mask 	fcb	%11000000		mask byte
 * IRQ routine for keyboard
 *
 IRQSvc
+* check if BREAK key pressed; if so, it's a C$QUIT char
+          ldb  IRQST
+          bitb #IRQST.BREAKDOWN
+          bne  getcode
+          lda  #C$QUIT
+          bra  noctrl@
+getcode          
 		ldb	KBCODE	get keyboard code from POKEY
+gotcode
 		pshs b
 		andb	#$7F		mask out potential CTRL key
 		leax	ATASCI,pcr
@@ -517,12 +525,12 @@ L0158	clr	V.WAKE,u   clear process to wake flag
 * re-enable the keyboard interrupt
 		pshs cc
           orcc #IntMasks
-		lda	D.IRQENShdw
+		lda	>D.IRQENShdw
 		tfr	a,b
-		anda	#^%11000000
-		orb	#%11000000
+		anda	#^(IRQST.BREAKDOWN|IRQST.KEYDOWN)
+		orb	#(IRQST.BREAKDOWN|IRQST.KEYDOWN)
 		sta	IRQEN
-		stb	D.IRQENShdw
+		stb	>D.IRQENShdw
 		stb	IRQEN
 		puls cc,pc
 		

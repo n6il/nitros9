@@ -26,19 +26,20 @@ DWRead
           tfr       x,u
           ldx       #$0000
           orcc      #$50
-*          lda       D.IRQENSHDW
+*          lda       D.IRQENShdw
 *          sta       IRQEN
 *          ora       #%00100000
 * enable the serial input interrupt
           
           ldb  SERIN               read what is in the buffer
-          lda	#$13
+          lda	#SKCTL.SERMODEIN|SKCTL.KEYBRDSCAN|SKCTL.KEYDEBOUNCE
           sta	SKCTL
           sta	SKRES
 
 inloop@
-          lda       D.IRQENSHDW
-          ora       #%00100000
+          lda       >D.IRQENShdw
+          ora       #IRQEN.SERINRDY
+          sta       >D.IRQENShdw
           sta       IRQEN
           ldd       #$0000
 loop@
@@ -46,17 +47,19 @@ loop@
           beq       outtahere@
           pshs      b
           ldb       IRQST
-          bitb      #%00100000
+          bitb      #IRQST.SERINRDY
           puls      b
           bne       loop@
           ldb       SERIN
-          lda       D.IRQENSHDW
+          lda       >D.IRQENShdw
+          anda      #^IRQEN.SERINRDY
+          sta       >D.IRQENShdw
           sta       IRQEN
 * check for framing error
           lda       SKSTAT
           bpl       outtahere@	framing error
           lsla
-          bpl       outtahere@	data input overrun
+          bcc       outtahere@	data input overrun
           stb       ,u+
           abx
           leay      -1,y

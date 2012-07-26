@@ -46,10 +46,6 @@ JmpTable
           nop
 
 SetTime   pshs      u,y,x,d
-          IFNE      atari
-          tst       D.ATARIFLAGS
-          bmi       UpdLeave
-          ENDC
           IFGT      Level-1
           ldu       <D.DWSubAddr
           ELSE
@@ -70,10 +66,6 @@ SetTime   pshs      u,y,x,d
 GetTime 
           lda       #OP_TIME        Time packet
           pshs      u,y,x,d
-          IFNE      atari
-          tst       D.ATARIFLAGS
-          bmi       UpdLeave
-          ENDC
           IFGT      Level-1
           ldu       <D.DWSubAddr
           ELSE
