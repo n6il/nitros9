@@ -32,6 +32,7 @@ BOOTFILE_P2 = $(MD)/scf.mn \
 		$(RBDW3) \
 		$(MD)/scdwv.dr \
 		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
 		$(CD)/shell_21
 
 BOOTFILES	= bootfile
@@ -51,5 +52,5 @@ bootfile: $(BOOTFILE_P1) $(BOOTFILE_P2) $(DEPENDS)
 	$(PADROM) -b 29696 $@
 
 clean:
-	$(RM) $(ALLOBJS) bootfile_p1 bootfile_p2
+	$(RM) $(ALLOBJS) $(BOOTFILE_P1) $(BOOTFILE_P2)
 

@@ -45,7 +45,15 @@ JmpTable
           bra       GetTime   	RTC Get Time
           nop
 
-SetTime   pshs      u,y,x,d
+SetTime   
+          IFGT      Level-1
+          lda       <D.DWSrvID
+          ELSE
+          lda       >D.DWSrvID
+          ENDC
+          cmpa      #128
+          bne       leave
+          pshs      u,y,x,d
           IFGT      Level-1
           ldu       <D.DWSubAddr
           ELSE
