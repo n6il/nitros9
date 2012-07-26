@@ -83,7 +83,6 @@ opterr
                lbsr      TCPOpen
                lbcs      errex
                sta       netpath,u
-
                leax      SetupPorts,pcr
                lbsr      ProcInetd
                lbcs      errex
@@ -421,7 +420,7 @@ turnonechoalf
                fcb       $00
                puls      d
                ENDC
-               lbsr      SetEcho
+               lbsr      SetEchoOn
                lbcs      ret
                lbsr      SetAutoLF
                lbcs      ret
