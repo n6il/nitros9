@@ -116,6 +116,7 @@ $(DISK_80D): all
 	$(CPL) startup $@,
 
 clean:	dskclean
+	$(RM) shell
 	$(CD) smash; make clean
 	$(CD) thexder; make clean
 	$(CD) shanghai; make clean

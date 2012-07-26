@@ -62,7 +62,7 @@ ALLOBJS		= $(CMDS)
 all:	$(ALLOBJS)
 
 clean:	dskclean
-	$(RM) $(ALLOBJS)
+	$(RM) $(ALLOBJS) kernel os9boot
 
 dsk:	all $(DSKDW3) $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D)
 

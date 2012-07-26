@@ -35,6 +35,7 @@ all:
 
 # Clean all components
 clean:	dskclean
+	$(RM) os9boot
 
 dsk:	all
 	$(RM) $(DISK)
