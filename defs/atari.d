@@ -112,7 +112,7 @@ G.CharSetAddr  equ       $F800
 * (Yes, we are stealing an existing variable that is so old it should be
 *  removed from os9defs)
 D.IRQENShdw    equ       D.WDBtDr
-D.ATARIFLAGS   equ       D.SWPage
+D.SKCTLShdw    equ       D.SWPage
 
 * The clock interrupt is driven by the unmaskable NMI.  Therefore,
 * the rbdw3 driver uses the DWIOSEMA flag in the D.ATARIFLAGS field as
@@ -270,6 +270,8 @@ IRQEN.TIMER1   equ       %00000001
 SKCTL          equ       POKEY+$0F           ;serial port and keyboard control
 SKCTL.FORECEBREAK equ       %10000000
 SKCTL.SERMODECTRLMASK equ       %01110000
+SKCTL.SERMODEOUT equ       %00100000
+SKCTL.SERMODEIN  equ       %00010000
 SKCTL.TWOTONEMODE equ       %00001000
 SKCTL.FASTPOTSCAN equ       %00000100
 SKCTL.KEYBRDSCAN equ       %00000010

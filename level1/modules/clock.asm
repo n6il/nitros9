@@ -131,9 +131,8 @@ InitCont
          stb   <D.TSlice  set ticks per time slice
          stb   <D.Slice   set first time slice
          IFNE  atari
-* Atari gets its clock source from the NMI
-         leax  SvcIRQ,pcr set NMI handler
-         stx   <D.NMI    
+         leax  SvcIRQ,pcr set IRQ handler
+         stx   <D.IRQ    
          ELSE
          leax  SvcIRQ,pcr set IRQ handler
          stx   <D.IRQ    
@@ -147,11 +146,20 @@ InitCont
          jsr   ,y         call init entry point of Clock2
 
 * Initialize clock hardware
-          IFNE atari
-* Atari - Tell ANTIC to assert NMI on Vertical Blank
-     	lda     #$40
-     	sta     NMIEN		enable VBlank NMI
-          rts
+          IFNE  atari
+          lda   #IRQST.TIMER1
+          pshs  cc
+	  orcc	#IntMasks
+	  ora	<D.IRQENShdw
+	  sta	<D.IRQENShdw
+	  sta   IRQEN
+          lda   #%00101001
+          sta   AUDCTL
+          clr   AUDC1
+     	  lda   #$FF
+          sta   AUDF1
+          sta   STIMER
+	  puls	cc,pc
           ELSE
          ldx   #PIA0Base  point to PIA0
          clra             no error for return...
@@ -182,8 +190,22 @@ InitCont
 SvcIRQ                   
          clra            
          tfr   a,dp       set direct page to zero
-         IFNE  atari
-         sta   NMIRES     clear NMI interrupt
+         IFNE atari
+         lda   IRQST      get hw byte
+         bita  #IRQST.TIMER1
+         beq   L0032      branch if interrupt occurred
+         jmp   [>D.SvcIRQ] else service other possible IRQ
+L0032
+     	 lda   #$FF
+         sta   AUDF1
+         lda   <D.IRQENShdw
+         tfr   a,b 			A = clear interrupt, B = set interrupt
+         anda  #^IRQST.TIMER1
+         orb   #IRQST.TIMER1
+         sta   IRQEN
+         stb   IRQEN
+         stb   <D.IRQENShdw
+         sta   STIMER
          ELSE
          tst   PIA0Base+3 get hw byte
          bmi   L0032      branch if sync flag on

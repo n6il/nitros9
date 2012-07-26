@@ -20,56 +20,67 @@
 * Based on the hipatch source for the Atari and translated
 * into 6809 assembly language by Boisy G. Pitre.
 *
-RMSEND    equ       %11101111
-SKSEND    equ       %00100011
-MSKSEND   equ       %00010000
-IMSEND    equ       %00010000
-IMSCPL    equ       $08
 DWWrite
           andcc     #^$01               ; clear carry to assume no error
           pshs      d,cc
 ; setup pokey
-          lda       #$28
-          sta       AUDCTL
+*          lda       #$28
+*          sta       AUDCTL
 *          lda       #$A0
-          lda       #$A8
-          sta       AUDC4
-* short delay before send
-          clra
-shortdelay@
-          deca
-          bne       shortdelay@
+*          lda       #$A8
+*          sta       AUDC4
+* delay before send
+          pshs      y
+          ldy       #50
+delay@
+          leay      -1,y
+          bne       delay@
+          puls      y
           orcc      #$50                ; mask interrupts
-          lda	     #SKSEND        	; set pokey to transmit data mode
+; set pokey to transmit data mode
+          lda		#SKCTL.SERMODEOUT|SKCTL.KEYBRDSCAN|SKCTL.KEYDEBOUNCE
           sta	     SKCTL
           sta	     SKRES
-          lda       D.IRQENSHDW
-          ora       #MSKSEND
+          lda       >D.IRQENSHDW
+          ora       #IRQEN.SEROUTNEEDED
+          sta       >D.IRQENSHDW
           sta       IRQEN
+*          bsr       somedelay
           lda       ,x+
           sta       SEROUT
           leay      -1,y
           beq       ex@
 byteloop@
           lda       ,x+
-          ldb       #IMSEND
+          ldb       #IRQST.SEROUTNEEDED
 * NOTE: Potential infinite loop here!
 waitloop@
           bitb      IRQST
           bne       waitloop@
-          ldb       #RMSEND
+          ldb       >D.IRQENSHDW
+          andb      #^IRQEN.SEROUTNEEDED
           stb       IRQEN
-          ldb       D.IRQENSHDW
-          orb       #MSKSEND
+          ldb       >D.IRQENSHDW
           stb       IRQEN
           sta       SEROUT
           leay      -1,y
           bne       byteloop@
 ex@
-          lda       #IMSCPL
+          lda       #IRQST.SEROUTDONE
 wt        bita      IRQST	; wait until transmit complete
           bne       wt
+          bsr       somedelay
           puls      cc,d,pc
+
+
+somedelay
+          pshs      y
+          ldy       #20
+delay@
+          leay      -1,y
+          bne       delay@
+          puls      y,pc
+
 
           ELSE
           IFNE BECKER
