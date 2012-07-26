@@ -126,7 +126,7 @@ loop@          clr       ,x+
                leas      1,s                 ; leave one byte on stack for response 
                
                ; read protocol version response, 1 byte
-               leax      ,s                  ; point X to stack head
+               ldx       #D.DWSrvID
                ldy       #1                  ; 1 byte to retrieve
                jsr       DW$Read,u                 ; call DWRead
                beq       InstIRQ             ; branch if no error
@@ -135,7 +135,7 @@ loop@          clr       ,x+
 
 * install ISR
 InstIRQ                  
-			   puls      a,u		; a has proto version from server.. not used yet
+			   puls      a,u
 
 			   ifgt      Level-1
                ldx       <D.DWStat

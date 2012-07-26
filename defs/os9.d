@@ -422,6 +422,7 @@ D.COCOXT       RMB       1                   Busy flag for CoCo-XT driver (one d
 D.DbgMem       RMB       2                   Debug memory pointer
 D.DWSubAddr    RMB  	 2                   DriveWire subroutine module pointer
 D.DWStat       RMB  	 2                   DriveWire statics page
+D.DWSrvID      RMB  	 1                   DriveWire server ID
 
                ORG       $20
 
