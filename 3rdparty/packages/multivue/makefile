@@ -83,6 +83,7 @@ all:
 
 # Clean all components
 clean:	dskclean
+	-$(RM) os9boot
 	-$(CD) cmds_6809; make clean
 	-$(CD) cmds_6309; make clean
 	-$(CD) sys; make clean
