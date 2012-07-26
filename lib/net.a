@@ -34,16 +34,31 @@ setopts        leax      nbuffer,u
                os9       I$SetStt
                rts
             
-* Set Echo
+* Set Echo On
 *
 * Entry: A = path to network device
 * Exit:
 *        Success: CC carry clear 
 *        Failure: CC carry set, B = error code
-SetEcho:       pshs      a,x
+SetEchoOn:     pshs      a,x
                bsr       getopts
                bcs       rawex           
                ldb       #1
+               stb       PD.EKO-PD.OPT,x
+               bsr       setopts
+               puls      a,x,pc
+
+
+* Set Echo Off
+*
+* Entry: A = path to network device
+* Exit:
+*        Success: CC carry clear 
+*        Failure: CC carry set, B = error code
+SetEchoOff:    pshs      a,x
+               bsr       getopts
+               bcs       rawex           
+               clrb
                stb       PD.EKO-PD.OPT,x
                bsr       setopts
                puls      a,x,pc
@@ -92,6 +107,9 @@ TCPOpen:       pshs      x,y
                lda       #UPDAT.
                leax      devnam,pcr
                os9       I$Open
+               bcs       openerr
+               bsr       SetEchoOff
+openerr
                puls      x,y,pc
 
 
