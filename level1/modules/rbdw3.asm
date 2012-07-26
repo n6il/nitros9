@@ -373,7 +373,6 @@ SetStat  lda   #OP_SETSTA
 *    B  = error code
 *
 GetStat  
-         IFNE  atari
          lda   #OP_GETSTA
          clrb				clear Carry
          pshs  cc			and push CC on stack
