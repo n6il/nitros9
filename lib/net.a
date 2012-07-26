@@ -58,23 +58,36 @@ SetEchoOn:     pshs      a,x
 SetEchoOff:    pshs      a,x
                bsr       getopts
                bcs       rawex           
-               clrb
-               stb       PD.EKO-PD.OPT,x
+               clr       PD.EKO-PD.OPT,x
                bsr       setopts
                puls      a,x,pc
 
 
-* Set Auto Linefeed
+* Set Auto Linefeed On
 *
 * Entry: A = path to network device
 * Exit:
 *        Success: CC carry clear 
 *        Failure: CC carry set, B = error code
-SetAutoLF:     pshs      a,x
+SetAutoLFOn:   pshs      a,x
                bsr       getopts
                bcs       rawex           
                ldb       #1
                stb       PD.ALF-PD.OPT,x
+               bsr       setopts
+               puls      a,x,pc
+
+
+* Set Auto Linefeed Off
+*
+* Entry: A = path to network device
+* Exit:
+*        Success: CC carry clear 
+*        Failure: CC carry set, B = error code
+SetAutoLFOff:  pshs      a,x
+               bsr       getopts
+               bcs       rawex           
+               clr       PD.ALF-PD.OPT,x
                bsr       setopts
                puls      a,x,pc
 
@@ -109,6 +122,7 @@ TCPOpen:       pshs      x,y
                os9       I$Open
                bcs       openerr
                bsr       SetEchoOff
+               bsr       SetAutoLFOff
 openerr
                puls      x,y,pc
 
