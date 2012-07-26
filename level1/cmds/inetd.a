@@ -422,7 +422,7 @@ turnonechoalf
                ENDC
                lbsr      SetEchoOn
                lbcs      ret
-               lbsr      SetAutoLF
+               lbsr      SetAutoLFOn
                lbcs      ret
 
 * dup paths
