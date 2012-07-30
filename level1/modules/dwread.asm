@@ -20,60 +20,70 @@
 
           IFNE atari
 * ATARI SIO Version
+TIMEOUT   equ       $1000
 DWRead                    
-          clrb                     clear carry
-          pshs      cc,a,x,y,u
+          clrb                     clear Carry & Zero CC flags
+          pshs      cc,dp,a,x,y,u
+          tfr       b,dp
+          setdp     $00
           tfr       x,u
           ldx       #$0000
-          orcc      #$50
+          orcc      #IntMasks
 *          lda       D.IRQENShdw
 *          sta       IRQEN
 *          ora       #%00100000
 * enable the serial input interrupt
           
-          ldb  SERIN               read what is in the buffer
-          lda	#SKCTL.SERMODEIN|SKCTL.KEYBRDSCAN|SKCTL.KEYDEBOUNCE
-          sta	SKCTL
-          sta	SKRES
-
+          ldb       SERIN               read what is in the buffer
+          lda	    #SKCTL.SERMODEIN|SKCTL.KEYBRDSCAN|SKCTL.KEYDEBOUNCE
+          sta	    SKCTL
+          sta	    SKRES
 inloop@
-          lda       >D.IRQENShdw
+          lda       D.IRQENShdw
           ora       #IRQEN.SERINRDY
-          sta       >D.IRQENShdw
+          sta       D.IRQENShdw
           sta       IRQEN
-          ldd       #$0000
-loop@
-          subd      #$0001
-          beq       outtahere@
+* timing loop to read a character from the serial chip
+          ldd       #TIMEOUT
+loop@     subd      #$0001
+          beq       overrun_error@
           pshs      b
           ldb       IRQST
           bitb      #IRQST.SERINRDY
           puls      b
           bne       loop@
           ldb       SERIN
-          lda       >D.IRQENShdw
+          lda       D.IRQENShdw
           anda      #^IRQEN.SERINRDY
-          sta       >D.IRQENShdw
+          sta       D.IRQENShdw
           sta       IRQEN
 * check for framing error
           lda       SKSTAT
-          bpl       outtahere@	framing error
+          bpl       framing_error@	framing error
           lsla
-          bcc       outtahere@	data input overrun
+          bcc       overrun_error@	data input overrun
           stb       ,u+
           abx
           leay      -1,y
           bne       inloop@
-          stx       4,s
-bye
-          sta	     SKRES          clear framing or data input overrun bits
-          puls      cc,a,x,y,u,pc
+bye@      sta	    SKRES          clear framing or data input overrun bits
+          stx       5,s
+          puls      cc,dp,a,x,y,u,pc
+framing_error@
+          lda       ,s
+          ora       #Carry
+          sta       ,s
+          bra       outtahere@
+overrun_error@
+          lda       ,s
+          anda      #^Zero
+          sta       ,s 
 outtahere@
-          sta	     SKRES          clear framing or data input overrun bits
-          puls      cc,a
-          stx       2,s
-          orcc      #$01
-          puls      x,y,u,pc
+          lda       D.IRQENShdw
+          anda      #^IRQEN.SERINRDY
+          sta       D.IRQENShdw
+          sta       IRQEN
+          bra       bye@
 
           ELSE
           IFNE BECKER
