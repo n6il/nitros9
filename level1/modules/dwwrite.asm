@@ -20,9 +20,14 @@
 * Based on the hipatch source for the Atari and translated
 * into 6809 assembly language by Boisy G. Pitre.
 *
+SENDDELAY equ       20
+
 DWWrite
-          andcc     #^$01               ; clear carry to assume no error
-          pshs      d,cc
+          andcc     #^Carry               ; clear carry to assume no error
+          pshs      cc,dp,d
+          clra
+          tfr       a,dp
+          setdp     $00
 ; setup pokey
 *          lda       #$28
 *          sta       AUDCTL
@@ -30,20 +35,15 @@ DWWrite
 *          lda       #$A8
 *          sta       AUDC4
 * delay before send
-          pshs      y
-          ldy       #50
-delay@
-          leay      -1,y
-          bne       delay@
-          puls      y
-          orcc      #$50                ; mask interrupts
+          bsr       somedelay
+          orcc      #IntMasks                ; mask interrupts
 ; set pokey to transmit data mode
-          lda		#SKCTL.SERMODEOUT|SKCTL.KEYBRDSCAN|SKCTL.KEYDEBOUNCE
-          sta	     SKCTL
-          sta	     SKRES
-          lda       >D.IRQENSHDW
+          lda       #SKCTL.SERMODEOUT|SKCTL.KEYBRDSCAN|SKCTL.KEYDEBOUNCE
+          sta	    SKCTL
+          sta	    SKRES
+          lda       D.IRQENSHDW
           ora       #IRQEN.SEROUTNEEDED
-          sta       >D.IRQENSHDW
+          sta       D.IRQENSHDW
           sta       IRQEN
 *          bsr       somedelay
           lda       ,x+
@@ -57,10 +57,10 @@ byteloop@
 waitloop@
           bitb      IRQST
           bne       waitloop@
-          ldb       >D.IRQENSHDW
+          ldb       D.IRQENSHDW
           andb      #^IRQEN.SEROUTNEEDED
           stb       IRQEN
-          ldb       >D.IRQENSHDW
+          ldb       D.IRQENSHDW
           stb       IRQEN
           sta       SEROUT
           leay      -1,y
@@ -69,8 +69,9 @@ ex@
           lda       #IRQST.SEROUTDONE
 wt        bita      IRQST	; wait until transmit complete
           bne       wt
+          puls      cc
           bsr       somedelay
-          puls      cc,d,pc
+          puls      dp,d,pc
 
 
 somedelay

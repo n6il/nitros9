@@ -126,7 +126,7 @@ loop@          clr       ,x+
                leas      1,s                 ; leave one byte on stack for response 
                
                ; read protocol version response, 1 byte
-               ldx       #D.DWSrvID
+               leax      ,s                  ; point X to stack head
                ldy       #1                  ; 1 byte to retrieve
                jsr       DW$Read,u                 ; call DWRead
                beq       InstIRQ             ; branch if no error
@@ -135,7 +135,7 @@ loop@          clr       ,x+
 
 * install ISR
 InstIRQ                  
-			   puls      a,u
+			   puls      a,u		; a has proto version from server.. not used yet
 
 			   ifgt      Level-1
                ldx       <D.DWStat
@@ -280,6 +280,9 @@ IRQMulti
                lbne      CkSSig              ;had to lbra
                lbra      IRQExit             ;had to lbra
 
+bad
+               leas      2,s                 ; error, cleanup stack 2
+               lbra      IRQExit2            ; don't reset error count on the way out
 
 ; **** IRQ ENTRY POINT
 IRQSvc         equ       *
@@ -311,9 +314,8 @@ IRQSvc         equ       *
                leax      ,s                  ; point X to stack head
                ldy       #2                  ; 2 bytes to retrieve
                jsr       DW$Read,u                 ; call DWRead
-               beq       IRQSvc2             ; branch if no error
-               leas      2,s                 ; error, cleanup stack 2
-               lbra      IRQExit2            ; don't reset error count on the way out
+               bcs       bad
+               bne       bad
 
           ; process response	
 IRQSvc2                  
