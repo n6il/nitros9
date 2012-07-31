@@ -1,12 +1,13 @@
 PORT = coco3
 include $(NITROS9DIR)/rules.mak
+TELNET_PORT	= 6806
 
 vpath %.hp $(LEVEL2)/sys:$(LEVEL1)/sys
 vpath %.asm $(LEVEL2)/sys
 
 DEPENDS		= ./makefile
 
-L1TXTFILES	= errmsg password inetd.conf
+L1TXTFILES	= errmsg password
 L2TXTFILES	= $(NITROS9DIR)/level2/sys/motd
 BINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs \
 		ibmedcfont isolatin1font
@@ -38,7 +39,7 @@ HELPFILES	= asm.hp attr.hp \
 HELPMSG		= helpmsg
 
 TEXTFILES	= $(L2TXTFILES) $(HELPMSG) $(L1TXTFILES)
-ALLOBJS		= $(TEXTFILES) $(BINFILES)
+ALLOBJS		= $(TEXTFILES) $(BINFILES) inetd.conf
 
 all:	$(ALLOBJS) $(DEPENDS)
 
@@ -48,8 +49,11 @@ $(HELPMSG): $(HELPFILES)
 $(L1TXTFILES): $(LEVEL1)/sys/$@
 	-$(SOFTLINK) $(LEVEL1)/sys/$@
 
+inetd.conf:     $(LEVEL1)/sys/inetd.conf
+	@sed 's/%TELNET_PORT%/$(TELNET_PORT)/' $^ > $@
+
 clean:
-	$(RM) $(HELPMSG) $(L1TXTFILES) $(BINFILES)
+	$(RM) $(HELPMSG) $(L1TXTFILES) $(BINFILES) inetd.conf
 
 showbinobjs:
 	@$(ECHO) $(BINFILES)

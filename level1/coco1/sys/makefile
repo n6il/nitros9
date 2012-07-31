@@ -2,12 +2,13 @@ ifeq ($(PORT),)
         PORT=coco1
 endif
 include $(NITROS9DIR)/rules.mak
+TELNET_PORT	= 6803
 
 vpath %.hp	$(LEVEL1)/sys
 
 DEPENDS		= ./makefile
 
-SYSFILES	= ../../sys/errmsg ../../sys/motd ../../sys/password ../../sys/inetd.conf
+SYSFILES	= ../../sys/errmsg ../../sys/motd ../../sys/password inetd.conf
 HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
 		chx.hp cmp.hp cobbler.hp config.hp copy.hp cputype.hp date.hp \
 		dcheck.hp debug.hp ded.hp deiniz.hp del.hp deldir.hp devs.hp \
@@ -26,13 +27,16 @@ ALLOBJS		= $(SYSFILES) $(HELPMSG)
 
 all:	$(ALLOBJS) $(DEPENDS)
 
+inetd.conf:     $(LEVEL1)/sys/inetd.conf
+	@sed 's/%TELNET_PORT%/$(TELNET_PORT)/' $^ > $@
+
 alldragon: $(ALLOBJS)
 
 helpmsg: $(HELPFILES)
 	$(MERGE) $^ > $@
 
 clean:
-	$(RM) $(HELPMSG)
+	$(RM) $(HELPMSG) inetd.conf
 
 showobjs:
 	@$(ECHO) $(ALLOBJS)
