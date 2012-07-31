@@ -1,5 +1,6 @@
 PORT = atari
 include $(NITROS9DIR)/rules.mak
+TELNET_PORT	= 6802
 
 vpath %.hp	$(LEVEL1)/sys
 
@@ -22,6 +23,9 @@ HELPMSG		= helpmsg
 ALLOBJS		= $(SYSFILES) $(HELPMSG)
 
 
+inetd.conf:	$(LEVEL1)/sys/inetd.conf
+	@sed 's/%TELNET_PORT%/$(TELNET_PORT)/' $^ > $@
+
 all:	$(ALLOBJS) $(DEPENDS)
 
 alldragon: $(ALLOBJS)
@@ -30,7 +34,7 @@ helpmsg: $(HELPFILES)
 	$(MERGE) $^ > $@
 
 clean:
-	$(RM) $(HELPMSG)
+	$(RM) $(HELPMSG) inetd.conf
 
 showobjs:
 	@$(ECHO) $(ALLOBJS)
