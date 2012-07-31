@@ -70,7 +70,7 @@ nextname       FCC       /KrnP4/             next module name to link to
                FCB       C$CR
                ENDC
 			   
-subname        FCS       /dw3/
+subname        FCS       /dwio/
 
 start
 * attach to low level module

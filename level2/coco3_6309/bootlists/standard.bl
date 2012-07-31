@@ -40,9 +40,9 @@
 *
 ../MODULES/RBF/rbf.mn
 *
-* DriveWire 3 driver
-*../MODULES/RBF/rbdw3.dr
-*../MODULES/RBF/dw3.sb
+* DriveWire driver
+*../MODULES/RBF/rbdw.dr
+*../MODULES/RBF/dwio.sb
 * DriveWire descriptors - select as needed
 *../MODULES/RBF/ddx0.dd
 *../MODULES/RBF/x0.dd
@@ -256,7 +256,7 @@
 *../MODULES/CLOCKS/clock2_jvemu
 *../MODULES/CLOCKS/clock2_messemu
 *../MODULES/CLOCKS/clock2_cloud9
-*../MODULES/CLOCKS/clock2_dw3
+*../MODULES/CLOCKS/clock2_dw
 *
 ***************************************
 * System Kick-Start Module

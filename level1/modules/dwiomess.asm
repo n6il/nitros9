@@ -1,5 +1,5 @@
 ********************************************************************
-* DW3 - DriveWire 3 Low Level Subroutine Module - MESS version
+* dwio - DriveWire I/O Subroutine Module - MESS version
 *
 * $Id$
 *
@@ -19,8 +19,8 @@
 * hacked to use MESS FIFO routines
 *
 *
-               nam       DW3
-               ttl       DriveWire 3 Low Level Subroutine Module
+               nam       dwio
+               ttl       DriveWire I/O Subroutine Module - MESS version
 
                ifp1      
                use       defsfile
@@ -49,7 +49,7 @@ PollSpd3       fcb       40
 PollIdle       fcb       60
 
 
-name           fcs       /dw3/
+name           fcs       /dwio/
 
 * DriveWire subroutine entry table
 start          lbra      Init

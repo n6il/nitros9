@@ -35,12 +35,12 @@ dskcopy:	all
 dskclean:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
 
-# DriveWire 3 DSK images
-dw3dsk = $(LEVEL1)/coco/nos96809l1coco1_dw3.dsk $(LEVEL1)/coco/nos96809l1coco2_dw3.dsk \
-	$(LEVEL2)/coco3/nos96809l2_dw3.dsk $(LEVEL2)/coco3_6309/nos96309l2_dw3.dsk
+# DriveWire DSK images
+dwdsk = $(LEVEL1)/coco/nos96809l1coco1_dw.dsk $(LEVEL1)/coco/nos96809l1coco2_dw.dsk \
+	$(LEVEL2)/coco3/nos96809l2_dw.dsk $(LEVEL2)/coco3_6309/nos96309l2_dw.dsk
 
-dw3:
-	$(ARCHIVE) nitros9_drivewire3.zip $(dw3dsk)
+dw:
+	$(ARCHIVE) nitros9_drivewire.zip $(dwdsk)
 
 info:
 	@$(foreach dir, $(dirs), ($(CD) $(dir); make info);)

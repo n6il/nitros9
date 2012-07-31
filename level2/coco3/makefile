@@ -10,8 +10,8 @@ DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
 DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
 BOOTFILE_BECKER	= bootfiles/bootfile_becker
-BOOTFILE_DW3	= bootfiles/bootfile_dw3
-BOOTFILE_DW3HEADLESS	= bootfiles/bootfile_dw3_headless
+BOOTFILE_DW 	= bootfiles/bootfile_dw
+BOOTFILE_DWHEADLESS	= bootfiles/bootfile_dw_headless
 BOOTFILE_40D	= bootfiles/bootfile_40d
 BOOTFILE_80D	= bootfiles/bootfile_80d
 BOOTFILE_40D_50HZ	= bootfiles/bootfile_40d_50hz
@@ -19,7 +19,7 @@ BOOTFILE_80D_50HZ	= bootfiles/bootfile_80d_50hz
 KERNELFILE_BECKER	= bootfiles/kernel_becker
 KERNELFILE	= bootfiles/kernel_1773
 KERNELFILE_50HZ	= bootfiles/kernel_1773_50hz
-KERNELFILE_DW3	= bootfiles/kernel_dw3
+KERNELFILE_DW 	= bootfiles/kernel_dw
 DIRS		= cmds modules defs sys bootfiles
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)
@@ -43,10 +43,10 @@ SYSGO		= sysgo_dd
 CCBKRN		= ccbkrn
 
 PACKAGENAME	= $(DISTROVER).zip
-DSKDW3		= $(DISTROVER)_dw3.dsk
-LDSKDW3		= $(DISTRONAME)_dw3.dsk
-DSKDW3HEADLESS	= $(DISTROVER)_dw3_headless.dsk
-LDSKDW3HEADLESS	= $(DISTRONAME)_dw3_headless.dsk
+DSKDW		= $(DISTROVER)_dw.dsk
+LDSKDW		= $(DISTRONAME)_dw.dsk
+DSKDWHEADLESS	= $(DISTROVER)_dw_headless.dsk
+LDSKDWHEADLESS	= $(DISTRONAME)_dw_headless.dsk
 DSK360K_1	= $(DISTROVER)_40d_1.dsk
 LDSK360K_1	= $(DISTRONAME)_40d_1.dsk
 DSK360K_1_50HZ	= $(DISTROVER)_40d_1_50hz.dsk
@@ -61,8 +61,8 @@ LDSK720K_50HZ	= $(DISTRONAME)_80d_50hz.dsk
 LDSKBECKER	= $(DISTRONAME)_80d_becker.dsk
 TESTDSK		= test.dsk
 
-DSKS		= $(DSKDW3) $(DSK360K_1) $(DSK360K_1_50HZ) $(DSK360K_2) $(DSK720K) $(DSK720K_50HZ) $(DSKDW3) $(DSKDW3HEADLESS) $(DSKBECKER)
-LDSKS		= $(LDSKDW3) $(LDSK360K_1) $(LDSK360K_1_50HZ) $(LDSK360K_2) $(LDSK720K) $(LDSK720K_50HZ) $(LDSKDW3) $(LDSKDW3HEADLESS) $(LDSKBECKER)
+DSKS		= $(DSKDW) $(DSK360K_1) $(DSK360K_1_50HZ) $(DSK360K_2) $(DSK720K) $(DSK720K_50HZ) $(DSKDW) $(DSKDWHEADLESS) $(DSKBECKER)
+LDSKS		= $(LDSKDW) $(LDSK360K_1) $(LDSK360K_1_50HZ) $(LDSK360K_2) $(LDSK720K) $(LDSK720K_50HZ) $(LDSKDW) $(LDSKDWHEADLESS) $(LDSKBECKER)
 
 # Make all components
 all:
@@ -94,7 +94,7 @@ $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 
 $(DSKBECKER):
 	-$(RM) $@
-	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
 	$(OS9GEN) $@ -b=$(BOOTFILE_BECKER) -t=$(KERNELFILE_BECKER)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -146,10 +146,10 @@ $(DSKBECKER):
 	$(RM) $(LDSKBECKER)
 	$(SOFTLINK) $@ $(LDSKBECKER)
 
-$(DSKDW3):
+$(DSKDW):
 	-$(RM) $@
-	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/$(CPU) Level 2"
-	$(OS9GEN) $@ -b=$(BOOTFILE_DW3) -t=$(KERNELFILE_DW3)
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9GEN) $@ -b=$(BOOTFILE_DW) -t=$(KERNELFILE_DW)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
@@ -197,13 +197,13 @@ $(DSKDW3):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/$(DISTRO)/SCRIPTS
-	$(RM) $(LDSKDW3)
-	$(SOFTLINK) $@ $(LDSKDW3)
+	$(RM) $(LDSKDW)
+	$(SOFTLINK) $@ $(LDSKDW)
 
-$(DSKDW3HEADLESS):
+$(DSKDWHEADLESS):
 	-$(RM) $@
-	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/$(CPU) Level 2"
-	$(OS9GEN) $@ -b=$(BOOTFILE_DW3HEADLESS) -t=$(KERNELFILE_DW3)
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9GEN) $@ -b=$(BOOTFILE_DWHEADLESS) -t=$(KERNELFILE_DW)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
@@ -251,8 +251,8 @@ $(DSKDW3HEADLESS):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/$(DISTRO)/SCRIPTS
-	$(RM) $(LDSKDW3HEADLESS)
-	$(SOFTLINK) $@ $(LDSKDW3HEADLESS)
+	$(RM) $(LDSKDWHEADLESS)
+	$(SOFTLINK) $@ $(LDSKDWHEADLESS)
 
 $(DSK360K_1):
 	-$(RM) $@

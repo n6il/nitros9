@@ -62,7 +62,7 @@ name     fcc   /X/
          fcb   176+DNum
          ENDC
 mgrnam   fcs   /RBF/
-drvnam   fcs   /rbdw3/
+drvnam   fcs   /rbdw/
 
          emod  
 eom      equ   *

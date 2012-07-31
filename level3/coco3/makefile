@@ -7,14 +7,14 @@ LEVEL		= 3
 DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
 DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
-BOOTFILE_DW3	= bootfiles/bootfile_dw3
+BOOTFILE_DW	= bootfiles/bootfile_dw
 BOOTFILE_40D	= bootfiles/bootfile_40d
 BOOTFILE_80D	= bootfiles/bootfile_80d
 BOOTFILE_40D_50HZ	= bootfiles/bootfile_40d_50hz
 BOOTFILE_80D_50HZ	= bootfiles/bootfile_80d_50hz
 KERNELFILE	= bootfiles/kernel_1773
 KERNELFILE_50HZ	= bootfiles/kernel_1773_50hz
-KERNELFILE_DW3	= bootfiles/kernel_dw3
+KERNELFILE_DW	= bootfiles/kernel_dw
 DIRS		= cmds modules defs sys bootfiles
 
 CMDS		= $(shell $(CD) cmds; make showobjs)
@@ -35,8 +35,8 @@ STARTUP		= startup
 SYSGO		= sysgo_dd
 
 PACKAGENAME	= $(DISTROVER).zip
-DSKDW3		= $(DISTROVER)_dw3.dsk
-LDSKDW3		= $(DISTRONAME)_dw3.dsk
+DSKDW		= $(DISTROVER)_dw.dsk
+LDSKDW		= $(DISTRONAME)_dw.dsk
 DSK360K_1	= $(DISTROVER)_40d_1.dsk
 LDSK360K_1	= $(DISTRONAME)_40d_1.dsk
 DSK360K_1_50HZ	= $(DISTROVER)_40d_1_50hz.dsk
@@ -49,8 +49,8 @@ DSK720K_50HZ	= $(DISTROVER)_80d_50hz.dsk
 LDSK720K_50HZ	= $(DISTRONAME)_80d_50hz.dsk
 TESTDSK		= test.dsk
 
-DSKS		= $(DSKDW3) $(DSK360K_1) $(DSK360K_1_50HZ) $(DSK360K_2) $(DSK720K) $(DSK720K_50HZ)
-LDSKS		= $(LDSKDW3) $(LDSK360K_1) $(LDSK360K_1_50HZ) $(LDSK360K_2) $(LDSK720K) $(LDSK720K_50HZ)
+DSKS		= $(DSKDW) $(DSK360K_1) $(DSK360K_1_50HZ) $(DSK360K_2) $(DSK720K) $(DSK720K_50HZ)
+LDSKS		= $(LDSKDW) $(LDSK360K_1) $(LDSK360K_1_50HZ) $(LDSK360K_2) $(LDSK720K) $(LDSK720K_50HZ)
 
 # Make all components
 all:
@@ -79,10 +79,10 @@ scp: dsk
 $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
 
-$(DSKDW3):
+$(DSKDW):
 	-$(RM) $@
-	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/$(CPU) Level 2"
-	$(OS9GEN) $@ -b=$(BOOTFILE_DW3) -t=$(KERNELFILE_DW3)
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9GEN) $@ -b=$(BOOTFILE_DW) -t=$(KERNELFILE_DW)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
@@ -129,8 +129,8 @@ $(DSKDW3):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/$(DISTRO)/SCRIPTS
-	$(RM) $(LDSKDW3)
-	$(SOFTLINK) $@ $(LDSKDW3)
+	$(RM) $(LDSKDW)
+	$(SOFTLINK) $@ $(LDSKDW)
 
 $(DSK360K_1):
 	-$(RM) $@

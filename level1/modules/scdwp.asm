@@ -90,7 +90,7 @@ Init
          stx   <D.Proc
          ENDC
          clra
-         leax  dw3name,pcr
+         leax  dwioname,pcr
          os9   F$Link
          IFGT  Level-1
          puls  x
@@ -105,7 +105,7 @@ Init
          jsr   ,y			call init routine
 InitEx   rts
 
-dw3name  fcs  /dw3/
+dwioname fcs  /dwio/
 
 * Write
 *
