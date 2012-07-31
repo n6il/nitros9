@@ -5,7 +5,7 @@ vpath %.hp	$(LEVEL1)/sys
 
 DEPENDS		= ./makefile
 
-SYSFILES	= ../../sys/errmsg ../../sys/motd ../../sys/password ../../sys/inetd.conf
+SYSFILES	= ../../sys/errmsg ../../sys/motd ../../sys/password inetd.conf
 HELPFILES	= asm.hp attr.hp backup.hp binex.hp build.hp chd.hp \
 		chx.hp cmp.hp cobbler.hp config.hp copy.hp cputype.hp date.hp \
 		dcheck.hp debug.hp ded.hp deiniz.hp del.hp deldir.hp devs.hp \
