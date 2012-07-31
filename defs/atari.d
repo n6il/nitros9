@@ -111,8 +111,8 @@ G.CharSetAddr  equ       $F800
 * POKEY requires shadow registers.  We allocate them in the kernel's DP
 * (Yes, we are stealing an existing variable that is so old it should be
 *  removed from os9defs)
-D.IRQENShdw    equ       D.WDBtDr
-D.SKCTLShdw    equ       D.SWPage
+D.IRQENShdw    equ       $02               ; was D.WDBtDr
+D.SKCTLShdw    equ       $03               ; was D.SWPage
 
 * The clock interrupt is driven by the unmaskable NMI.  Therefore,
 * the rbdw3 driver uses the DWIOSEMA flag in the D.ATARIFLAGS field as

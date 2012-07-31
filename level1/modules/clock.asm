@@ -49,6 +49,9 @@ atrv     set   ReEnt+rev
 rev      set   8
 edition  set   9         
                          
+         IFNE  atari
+USENMI   EQU   0
+         ENDC
                          
 *------------------------------------------------------------
 *
@@ -132,7 +135,11 @@ InitCont
          stb   <D.Slice   set first time slice
          IFNE  atari
          leax  SvcIRQ,pcr set IRQ handler
+         IFNE  USENMI
+         stx   <D.NMI
+         ELSE
          stx   <D.IRQ    
+         ENDC
          ELSE
          leax  SvcIRQ,pcr set IRQ handler
          stx   <D.IRQ    
@@ -146,21 +153,27 @@ InitCont
          jsr   ,y         call init entry point of Clock2
 
 * Initialize clock hardware
-          IFNE  atari
-          lda   #IRQST.TIMER1
-          pshs  cc
-	  orcc	#IntMasks
-	  ora	<D.IRQENShdw
-	  sta	<D.IRQENShdw
-	  sta   IRQEN
-          lda   #%00101001
-          sta   AUDCTL
-          clr   AUDC1
-     	  lda   #$FF
-          sta   AUDF1
-          sta   STIMER
-	  puls	cc,pc
-          ELSE
+         IFNE  atari
+         IFNE  USENMI
+         lda   #$40
+         sta   NMIEN           enable VBlank NMI
+         rts
+         ELSE
+         lda   #IRQST.TIMER1
+         pshs  cc
+	    orcc	#IntMasks
+	    ora	<D.IRQENShdw
+	    sta	<D.IRQENShdw
+	    sta   IRQEN
+         lda   #%00101001
+         sta   AUDCTL
+         clr   AUDC1
+         lda   #$FF
+         sta   AUDF1
+         sta   STIMER
+	    puls	cc,pc
+	    ENDC
+         ELSE
          ldx   #PIA0Base  point to PIA0
          clra             no error for return...
          pshs  cc         save IRQ enable status (and Carry clear)
@@ -190,7 +203,10 @@ InitCont
 SvcIRQ                   
          clra            
          tfr   a,dp       set direct page to zero
-         IFNE atari
+         IFNE  atari
+         IFNE  USENMI
+         sta   NMIRES     clear NMI interrupt
+         ELSE
          lda   IRQST      get hw byte
          bita  #IRQST.TIMER1
          beq   L0032      branch if interrupt occurred
@@ -206,6 +222,7 @@ L0032
          stb   IRQEN
          stb   <D.IRQENShdw
          sta   STIMER
+         ENDC
          ELSE
          tst   PIA0Base+3 get hw byte
          bmi   L0032      branch if sync flag on
