@@ -13,8 +13,8 @@ DEPENDS		= ./makefile
 KERNEL_1773	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		$(MD)/boot_1773_6ms
 
-KERNEL_DW3	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
-		$(MD)/boot_dw3
+KERNEL_DW	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
+		$(MD)/boot_dw
 
 IDE		= $(3PD)/ide
 SCSI		= $(3PD)/scsisys
@@ -28,8 +28,8 @@ VTIO_COHR  = $(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt
 VTIO_CO80  = $(MD)/vtio.dr $(MD)/co80.io $(MD)/term_80.dt
 PIPE       = $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
 CLOCK60HZ  = $(MD)/clock_60hz $(MD)/clock2_soft
-CLOCK60HZDW = $(MD)/clock_60hz $(MD)/clock2_dw3
-RBDW3      = $(MD)/rbdw3.dr $(MD)/dw3.sb \
+CLOCK60HZDW = $(MD)/clock_60hz $(MD)/clock2_dw
+RBDW       = $(MD)/rbdw.dr $(MD)/dwio.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
 SCDWV_NET  = $(MD)/n_scdwv.dd $(MD)/n1_scdwv.dd $(MD)/n2_scdwv.dd \
 		$(MD)/n3_scdwv.dd $(MD)/n4_scdwv.dd $(MD)/n5_scdwv.dd \
@@ -74,9 +74,9 @@ BOOTFILE_CO80	= $(MD)/ioman \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd
 
-BOOTFILE_HEADLESS_DW3	= $(MD)/ioman \
+BOOTFILE_HEADLESS_DW	= $(MD)/ioman \
 		$(MD)/rbf.mn \
-		$(RBDW3) \
+		$(RBDW) \
 		$(MD)/scf.mn \
 		$(MD)/scdwv.dr \
 		$(MD)/term_scdwv.dt \
@@ -86,10 +86,10 @@ BOOTFILE_HEADLESS_DW3	= $(MD)/ioman \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
 
-BOOTFILE_COVDG_DW3	= $(MD)/ioman \
+BOOTFILE_COVDG_DW	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_40D) \
-		$(RBDW3) \
+		$(RBDW) \
 		$(MD)/scf.mn \
 		$(VTIO_COVDG) \
 		$(MD)/scdwv.dr \
@@ -111,10 +111,10 @@ BOOTFILE_COVDG_DS80	= $(MD)/ioman \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd
 
-BOOTFILE_COHR_DW3	= $(MD)/ioman \
+BOOTFILE_COHR_DW	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_40D) \
-		$(RBDW3) \
+		$(RBDW) \
 		$(MD)/scf.mn \
 		$(VTIO_COHR) \
 		$(MD)/scdwv.dr \
@@ -135,10 +135,10 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd
 
-BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw3 \
-		bootfile_headless_dw3 \
-		bootfile_cohr_dw3 bootfile_covdg_ds80 bootfile_cohr_ds80
-KERNELS		= kernel_1773 kernel_dw3
+BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw \
+		bootfile_headless_dw \
+		bootfile_cohr_dw bootfile_covdg_ds80 bootfile_cohr_ds80
+KERNELS		= kernel_1773 kernel_dw
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -156,17 +156,17 @@ bootfile_co80: $(BOOTFILE_CO80) $(DEPENDS)
 bootfile_covdg_ds80: $(BOOTFILE_COVDG_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DS80)>$@
 
-bootfile_headless_dw3: $(BOOTFILE_HEADLESS_DW3) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_HEADLESS_DW3)>$@
+bootfile_headless_dw: $(BOOTFILE_HEADLESS_DW) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_HEADLESS_DW)>$@
 
-bootfile_covdg_dw3: $(BOOTFILE_COVDG_DW3) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_COVDG_DW3)>$@
+bootfile_covdg_dw: $(BOOTFILE_COVDG_DW) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVDG_DW)>$@
 
 bootfile_cohr_ds80: $(BOOTFILE_COHR_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR_DS80)>$@
 
-bootfile_cohr_dw3: $(BOOTFILE_COHR_DW3) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_COHR_DW3)>$@
+bootfile_cohr_dw: $(BOOTFILE_COHR_DW) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COHR_DW)>$@
 
 # WD1773 Kernel
 kernel_1773: $(KERNEL_1773) $(DEPENDS)
@@ -174,8 +174,8 @@ kernel_1773: $(KERNEL_1773) $(DEPENDS)
 	$(PADROM) 4608 $@
 
 # DriveWire 3 Kernel
-kernel_dw3: $(KERNEL_DW3) $(DEPENDS)
-	$(MERGE) $(KERNEL_DW3)>$@
+kernel_dw: $(KERNEL_DW) $(DEPENDS)
+	$(MERGE) $(KERNEL_DW)>$@
 	$(PADROM) 4608 $@
 
 clean:

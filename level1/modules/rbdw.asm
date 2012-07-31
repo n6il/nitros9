@@ -1,5 +1,5 @@
 ********************************************************************
-* rbdw3 - DriveWire 3 driver
+* rbdw - DriveWire RBF driver
 *
 * $Id$
 *
@@ -30,8 +30,8 @@
 * (possible if Init fails due to subroutine module not being in
 *  memory and I$Detach calls Term)
 
-         nam   rbdw3
-         ttl   DriveWire 3 driver
+         nam   rbdw
+         ttl   DriveWire RBF driver
 
 NUMRETRIES equ  8
 
@@ -56,7 +56,7 @@ size     equ   .
 
          fcb   DIR.+SHARE.+PEXEC.+PREAD.+PWRIT.+EXEC.+UPDAT.
 
-name     fcs   /rbdw3/
+name     fcs   /rbdw/
          fcb   edition
 
 start    bra   Init
@@ -137,7 +137,7 @@ Init2    sta   DD.TOT,x			invalidate drive tables
          bne   InitEx
 * Link to subroutine module
          clra
-         leax  name+2,pcr
+         leax  dwiosub,pcr
          os9   F$Link
          bcs   InitEx 
          tfr   y,u		 
@@ -392,6 +392,8 @@ GetStat
          jsr   6,u
          leas  3,s
          puls  cc,pc
+
+dwiosub  fcs   /dwio/
 		 
          emod
 eom      equ   *

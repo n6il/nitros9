@@ -8,19 +8,19 @@ vpath %.asm ../objs_lsl
 DEPENDS		= ./makefile
 
 DISK_40D	= kingsquest1_40d.dsk
-DSKDW3		= kingsquest1_dw3.dsk
+DSKDW		= kingsquest1_dw.dsk
 
-DSKS		= $(DISK_40D) $(DSKDW3)
+DSKS		= $(DISK_40D) $(DSKDW)
 
 DISK_40D_NAME	= "King's Quest I"
-DSKDW3_NAME	= $(DISK_40D_NAME)
+DSKDW_NAME	= $(DISK_40D_NAME)
 
 CMDS		= sierra mnln scrn shdw tocgen
 MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
 KERNEL_FLOPPY	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
-KERNEL_DW3	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
+KERNEL_DW	= $(MD)/rel_32 $(MD)/boot_dw $(MD)/krn
 
 BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -31,14 +31,14 @@ BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb $(MD)/ddx0.dd \
+		$(MD)/rbdw.dr $(MD)/dwio.sb $(MD)/ddx0.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
 		$(MD)/vrn.dr $(MD)/vi.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 $(MD)/sysgo_dd
+		$(MD)/clock_60hz $(MD)/clock2_dw $(MD)/sysgo_dd
 
 BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 		$(LEVEL2)/coco3/cmds/echo $(LEVEL2)/coco3/cmds/link \
@@ -56,7 +56,7 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk:	all $(DISK_40D) $(DSKDW3)
+dsk:	all $(DISK_40D) $(DSKDW)
 
 $(DISK_40D):
 	$(RM) $@
@@ -81,12 +81,12 @@ $(DISK_40D):
 	$(MOVE) toctmp tocgen
 	$(CP) $(SUPPORTFILES) $@,.
 
-$(DSKDW3):
+$(DSKDW):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DW3) -q $@ -n$(DISK_40D_NAME)
-	$(MERGE) $(BOOTFILE_DW3)>os9boot
-	$(MERGE) $(KERNEL_DW3)>kernel
+	$(OS9FORMAT_DW) -q $@ -n$(DISK_40D_NAME)
+	$(MERGE) $(BOOTFILE_DW)>os9boot
+	$(MERGE) $(KERNEL_DW)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS

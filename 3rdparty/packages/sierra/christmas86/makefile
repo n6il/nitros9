@@ -8,9 +8,9 @@ vpath %.asm ../objs_lsl
 DEPENDS		= ./makefile
 
 DSK_FLOPPY	= christmas86.dsk
-DSK_DW3		= christmas86_dw3.dsk
+DSK_DW		= christmas86_dw.dsk
 
-DSKS		= $(DSK_FLOPPY) $(DSK_DW3)
+DSKS		= $(DSK_FLOPPY) $(DSK_DW)
 
 DSK_NAME	= "Christmas 1986"
 
@@ -19,7 +19,7 @@ MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
 KERNEL_FLOPPY	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
-KERNEL_DW3	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
+KERNEL_DW	= $(MD)/rel_32 $(MD)/boot_dw $(MD)/krn
 
 BOOTFILE_FLOPPY	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -30,14 +30,14 @@ BOOTFILE_FLOPPY	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb $(MD)/ddx0.dd \
+		$(MD)/rbdw.dr $(MD)/dwio.sb $(MD)/ddx0.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
 		$(MD)/vrn.dr $(MD)/vi.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 $(MD)/sysgo_dd
+		$(MD)/clock_60hz $(MD)/clock2_dw $(MD)/sysgo_dd
 
 BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 		$(LEVEL2)/coco3/cmds/echo $(LEVEL2)/coco3/cmds/link \
@@ -78,12 +78,12 @@ $(DSK_FLOPPY):	all
 	$(MOVE) toctmp tocgen
 	$(CP) $(SUPPORTFILES) $@,.
 
-$(DSK_DW3):	all
+$(DSK_DW):	all
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS40) -q $@ -n$(DSK_NAME)
-	$(MERGE) $(BOOTFILE_DW3)>os9boot
-	$(MERGE) $(KERNEL_DW3)>kernel
+	$(MERGE) $(BOOTFILE_DW)>os9boot
+	$(MERGE) $(KERNEL_DW)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS

@@ -33,7 +33,7 @@ RTC.Base  equ       $0000
 name      fcs       "Clock2"  
           fcb       edition
 
-subname   fcs       "dw3"
+subname   fcs       "dwio"
 
 * Three Entry Points:
 *   - Init

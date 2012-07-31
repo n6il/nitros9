@@ -1,5 +1,5 @@
 ********************************************************************
-* DW3 - DriveWire 3 Low Level Subroutine Module
+* dwio - DriveWire Low Level Subroutine Module
 *
 * $Id$
 *
@@ -15,7 +15,7 @@
 *   3      2010/01/23  Aaron A. Wolfe
 * Added dynamic polling frequency
 *
-               nam       DW3
+               nam       dwio
                ttl       DriveWire 3 Low Level Subroutine Module
 
                ifp1      
@@ -45,7 +45,7 @@ PollSpd3       fcb       40
 PollIdle       fcb       60
 
 
-name           fcs       /dw3/
+name           fcs       /dwio/
 
 * DriveWire subroutine entry table
 start          lbra      Init

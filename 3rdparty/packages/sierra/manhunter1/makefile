@@ -10,21 +10,21 @@ DEPENDS		= ./makefile
 DISK_1_80D	= manhunter1_d1_80d.dsk
 DISK_2_80D	= manhunter1_d2_80d.dsk
 DISK_3_80D	= manhunter1_d3_80d.dsk
-DISK_DW3	= manhunter1_dw3.dsk
+DISK_DW	= manhunter1_dw.dsk
 
-DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DISK_DW3)
+DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DISK_DW)
 
 DISK_1_80D_NAME = "Manhunter I Disk 1"
 DISK_2_80D_NAME = "Manhunter I Disk 2"
 DISK_3_80D_NAME = "Manhunter I Disk 3"
-DISK_DW3_NAME = "Manhunter I"
+DISK_DW_NAME = "Manhunter I"
 
 CMDS		= sierra mnln scrn shdw tocgen
 MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
-KERNEL_DW3	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
+KERNEL_DW	= $(MD)/rel_32 $(MD)/boot_dw $(MD)/krn
 
 OS9BOOT_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -35,14 +35,14 @@ OS9BOOT_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-OS9BOOT_DW3 = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+OS9BOOT_DW = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb $(MD)/ddx0.dd \
+		$(MD)/rbdw.dr $(MD)/dwio.sb $(MD)/ddx0.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
 		$(MD)/vrn.dr $(MD)/vi.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 $(MD)/sysgo_dd
+		$(MD)/clock_60hz $(MD)/clock2_dw $(MD)/sysgo_dd
 
 BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 		$(LEVEL2)/coco3/cmds/echo $(LEVEL2)/coco3/cmds/link \
@@ -50,7 +50,7 @@ BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 
 TEXTFILES_D1	= ../startup tOC_80d.txt
 TEXTFILES	= ../startup tOC_80d.txt
-TEXTFILES_DW3	= ../startup tOC_dw3.txt
+TEXTFILES_DW	= ../startup tOC_dw.txt
 
 SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.9 vol.10 vol.11 vol.12 words.tok
@@ -59,7 +59,7 @@ SUPPORTFILES_D2	= object vol.0 vol.3 vol.4 vol.9 vol.10 vol.11 vol.12
 
 SUPPORTFILES_D3	= object vol.0 vol.5 vol.9 vol.10 vol.11 vol.12
 
-SUPPORTFILES_DW3	= logDir object picDir sndDir viewDir vol.0 \
+SUPPORTFILES_DW	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.3 vol.4 vol.5 vol.9 vol.10 vol.11 vol.12 words.tok
 
 ALLOBJS		= $(CMDS)
@@ -70,40 +70,40 @@ clean:	dskclean
 	$(RM) $(ALLOBJS)
 
 dsk:	all
-	$(RM) $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DISK_DW3)
+	$(RM) $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DISK_DW)
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS80) -q $(DISK_1_80D) -n$(DISK_1_80D_NAME)
-	$(OS9FORMAT_DW3) -q $(DISK_DW3) -n$(DISK_DW3_NAME)
+	$(OS9FORMAT_DW) -q $(DISK_DW) -n$(DISK_DW_NAME)
 	$(MERGE) $(OS9BOOT_80D)>os9boot_80d
-	$(MERGE) $(OS9BOOT_DW3)>os9boot_dw3
+	$(MERGE) $(OS9BOOT_DW)>os9boot_dw
 	$(MERGE) $(KERNEL)>kernel_1773
-	$(MERGE) $(KERNEL_DW3)>kernel_dw3
+	$(MERGE) $(KERNEL_DW)>kernel_dw
 	$(OS9GEN) $(DISK_1_80D) -b=os9boot_80d -t=kernel_1773
-	$(OS9GEN) $(DISK_DW3) -b=os9boot_dw3 -t=kernel_dw3
-	$(RM) os9boot_80d os9boot_80d kernel_1773 os9boot_dw3 kernel_dw3
+	$(OS9GEN) $(DISK_DW) -b=os9boot_dw -t=kernel_dw
+	$(RM) os9boot_80d os9boot_80d kernel_1773 os9boot_dw kernel_dw
 	$(MAKDIR) $(DISK_1_80D),CMDS
-	$(MAKDIR) $(DISK_DW3),CMDS
+	$(MAKDIR) $(DISK_DW),CMDS
 	$(CP) $(CMDS) $(DISK_1_80D),CMDS
-	$(CP) $(CMDS) $(DISK_DW3),CMDS
+	$(CP) $(CMDS) $(DISK_DW),CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_1_80D),CMDS/$(file);)
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_DW3),CMDS/$(file);)
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_DW),CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
 	$(CP) shell $(DISK_1_80D),CMDS
-	$(CP) shell $(DISK_DW3),CMDS
+	$(CP) shell $(DISK_DW),CMDS
 	$(RM) shell
 	$(OS9ATTR) $(DISK_1_80D),CMDS/shell -e -pe -pr -e -w -r
-	$(OS9ATTR) $(DISK_DW3),CMDS/shell -e -pe -pr -e -w -r
+	$(OS9ATTR) $(DISK_DW),CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $(DISK_1_80D),CMDS/sierra AutoEx
-	$(OS9RENAME) $(DISK_DW3),CMDS/sierra AutoEx
+	$(OS9RENAME) $(DISK_DW),CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_D1) $(DISK_1_80D),.
-	$(CPL) $(TEXTFILES_DW3) $(DISK_DW3),.
+	$(CPL) $(TEXTFILES_DW) $(DISK_DW),.
 	$(OS9RENAME) $(DISK_1_80D),tOC_80d.txt tOC.txt
-	$(OS9RENAME) $(DISK_DW3),tOC_dw3.txt tOC.txt
+	$(OS9RENAME) $(DISK_DW),tOC_dw.txt tOC.txt
 	$(CP) $(SUPPORTFILES_D1) $(DISK_1_80D),.
-	$(CP) $(SUPPORTFILES_DW3) $(DISK_DW3),.
+	$(CP) $(SUPPORTFILES_DW) $(DISK_DW),.
 	$(RM) tocgen
 	tocgen $(DISK_1_80D),tOC.txt $(DISK_1_80D),tOC
-	tocgen $(DISK_DW3),tOC.txt $(DISK_DW3),tOC
+	tocgen $(DISK_DW),tOC.txt $(DISK_DW),tOC
 	$(OS9FORMAT_DS80) -q $(DISK_2_80D) -n$(DISK_2_80D_NAME)
 	$(CP) $(SUPPORTFILES_D2) $(DISK_2_80D),.
 	$(OS9FORMAT_DS80) -q $(DISK_3_80D) -n$(DISK_3_80D_NAME)

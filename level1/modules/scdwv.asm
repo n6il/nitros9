@@ -162,7 +162,7 @@ Init           equ       *
                endc      
                clra      
 
-               leax      dw3name,pcr
+               leax      dwioname,pcr
                os9       F$Link
                ifgt      Level-1
                puls      x
@@ -225,7 +225,7 @@ InitEx2
                rts       
 
 ; drivewire info
-dw3name        fcs       /dw3/
+dwioname       fcs       /dwio/
 
 
 *****************************************************************************

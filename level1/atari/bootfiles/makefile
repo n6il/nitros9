@@ -8,7 +8,7 @@ CD		= ../cmds
 
 DEPENDS		= ./makefile
 
-RBDW3      = $(MD)/rbdw3.dr \
+RBDW       = $(MD)/rbdw.dr \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
 SCDWV_NET  = $(MD)/n_scdwv.dd $(MD)/n1_scdwv.dd $(MD)/n2_scdwv.dd \
 		$(MD)/n3_scdwv.dd $(MD)/n4_scdwv.dd $(MD)/n5_scdwv.dd \
@@ -22,14 +22,14 @@ SCDWP     = $(MD)/scdwp.dr $(MD)/p_scdwp.dd
 
 # IMPORTANT! KRN MUST BE THE LAST MODULE IN BOOTFILE_P1!!
 BOOTFILE_P1 = $(MD)/krnp2 $(MD)/init $(MD)/ioman $(MD)/sysgo \
-		$(MD)/dw3.sb \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/dwio.sb \
+		$(MD)/clock_60hz $(MD)/clock2_dw \
           $(MD)/krn
 
 BOOTFILE_P2 = $(MD)/scf.mn \
 		$(MD)/vtio.dr $(MD)/term.dt \
 		$(MD)/rbf.mn \
-		$(RBDW3) \
+		$(RBDW) \
 		$(MD)/scdwv.dr \
 		$(SCDWV_NET) \
 		$(SCDWV_WIN) \

@@ -36,9 +36,9 @@
 *
 ../MODULES/RBF/rbf.mn
 *
-* DriveWire 3 RBF driver 
-../MODULES/RBF/rbdw3.dr
-../MODULES/RBF/dw3.sb
+* DriveWire RBF driver 
+../MODULES/RBF/rbdw.dr
+../MODULES/RBF/dwio.sb
 * DriveWire descriptors - select as needed
 ../MODULES/RBF/ddx0.dd
 *../MODULES/RBF/x0.dd
@@ -103,7 +103,7 @@
 *
 * Video Terminal I/O driver and subroutine modules
 ../MODULES/SCF/vtio.dr
-* Choose from CoVDG (32x16 VDG), CoHR (Hi-Res 51x24 graphics screen) or Co80 (Word-Pak)
+* Choose from CoVDG (32x16 VDG), CoHR (Hi-Res 51x24 graphics screen), or Co80 (WordPak)
 ../MODULES/SCF/covdg.io
 *../MODULES/SCF/cohr.io
 *../MODULES/SCF/co80.io
@@ -111,7 +111,7 @@
 * Select only one term descriptor
 ../MODULES/SCF/term_vdg.dt
 *../MODULES/SCF/term_hr.dt
-*../MODULES/SCF/term_80.dt
+*../MODULES/SCF/term_51.dt
 *../MODULES/SCF/term_scbbt.dt
 *../MODULES/SCF/term_sc6551.dt
 *
@@ -189,7 +189,7 @@
 *../MODULES/CLOCKS/clock2_jvemu
 *../MODULES/CLOCKS/clock2_messemu
 *../MODULES/CLOCKS/clock2_cloud9
-../MODULES/CLOCKS/clock2_dw3
+../MODULES/CLOCKS/clock2_dw
 * 
 ***************************************
 * System Kick-Start Module
