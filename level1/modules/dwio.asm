@@ -66,14 +66,26 @@ Term
                clrb                          clear Carry
                rts       
 
-Read                     
+Read                   
+               IFNE      atari
+               jmp       [$FFE0]
+               ELSE
                use       dwread.asm
+               ENDC
 
 Write                    
+               IFNE      atari
+               jmp       [$FFE2]
+               ELSE
                use       dwwrite.asm
+               ENDC
 
 
+               IFNE      atari
+DWInit         rts
+               ELSE
 			use		dwinit.asm
+               ENDC
 			
 * Init
 *
