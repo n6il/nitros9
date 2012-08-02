@@ -59,7 +59,7 @@ showbinobjs:
 	@$(ECHO) $(BINFILES)
 
 showtextobjs:
-	@$(ECHO) $(TEXTFILES)
+	@$(ECHO) $(TEXTFILES) inetd.conf
 
 showobjs:
 	@$(ECHO) $(ALLOBJS)

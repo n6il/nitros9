@@ -77,6 +77,7 @@ BOOTFILE_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 BOOTFILE_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(RBDW) \
+		$(FLOPPY_40D) \
           $(MD)/ddx0.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COGRF_80) \
