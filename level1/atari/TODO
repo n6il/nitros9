@@ -8,10 +8,10 @@ done  in this port as well as the CoCo port as CoCoBoot moves forward.
 VTIO:
 - SS.KySns needs to be implemented
 
-dw3.sb:
-- Currently branch to init serial VIRQ is commented out.  Had system reliability
+dw.sb:
+- FIXED: Currently branch to init serial VIRQ is commented out.  Had system reliability
 troubles with it uncommented.
-- NMI as clock source could be a problem for DriveWire because OP_TIME could come in
+- FIXED: NMI as clock source could be a problem for DriveWire because OP_TIME could come in
 the middle of a DriveWire read or write.
 
 Other:
