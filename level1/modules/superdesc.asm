@@ -52,22 +52,48 @@
                TTL       Super Driver Device Descriptor Template
 
 * Super Driver specific fields
+               IFEQ      ITDRV
 ITDRV          SET       $00
+               ENDC
+               IFEQ      ITSTP
 ITSTP          SET       $00
+               ENDC
+               IFEQ      ITTYP
 ITTYP          SET       $81
+               ENDC
+               IFEQ      ITDNS
 ITDNS          SET       $00
+               ENDC
 
+               IFEQ      ITSOFS1
 ITSOFS1        SET       $00
+               ENDC
+               IFEQ      ITSOFS2
 ITSOFS2        SET       $00
+               ENDC
+               IFEQ      ITSOFS3
 ITSOFS3        SET       $00
+               ENDC
 
 * Geometry for an EZ-135
+               IFEQ      Sides
 Sides          SET       $40
+               ENDC
+               IFEQ      Cyls
 Cyls           SET       $007f
+               ENDC
+               IFEQ      SectTrk
 SectTrk        SET       $0020
+               ENDC
+               IFEQ      SectTrk0
 SectTrk0       SET       $0020
+               ENDC
+               IFEQ      Interlv
 Interlv        SET       $01
+               ENDC
+               IFEQ      SAS
 SAS            SET       $08
+               ENDC
 
                IFP1      
                USE       defsfile

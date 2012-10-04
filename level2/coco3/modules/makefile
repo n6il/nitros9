@@ -65,7 +65,9 @@ SCF		= scf.mn \
 		n1_scdwv.dd n2_scdwv.dd n3_scdwv.dd \
                 n4_scdwv.dd n5_scdwv.dd n6_scdwv.dd n7_scdwv.dd \
 		n8_scdwv.dd n9_scdwv.dd n10_scdwv.dd n11_scdwv.dd \
-                n12_scdwv.dd n13_scdwv.dd midi_scdwv.dd
+                n12_scdwv.dd n13_scdwv.dd midi_scdwv.dd \
+		z1_scdwv.dd z2_scdwv.dd z3_scdwv.dd \
+                z4_scdwv.dd z5_scdwv.dd z6_scdwv.dd z7_scdwv.dd \
 
 PIPE		= pipeman.mn pipeman_named.mn \
 		piper.dr \
@@ -100,11 +102,11 @@ boot_tc3: boot_scsi.asm
 boot_ide: boot_ide.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
 
-# DriveWire 3 Becker Booter
+# DriveWire Becker Booter
 boot_dw_becker: boot_dw.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBECKER=1
 
-# DriveWire 3 Becker Submodule
+# DriveWire Becker Submodule
 dwio_becker.sb: dwio.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBECKER=1
 
@@ -177,6 +179,9 @@ DSDD40		= -DCyls=40 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
 DSDD80		= -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
 		-DInterlv=3 -DSAS=8 -DDensity=1 -DD35
 
+# HDB-DOS for SuperDriver
+HDBDOS                  = -DHB $(SSDD35)
+
 ddd0_35s.dd: rb1773desc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=0 -DDD=1
 
@@ -241,7 +246,7 @@ r0_192k.dd: r0.asm
 ddr0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192 -DDD=1
 
-# DriveWire 3 SCF descriptors
+# DriveWire SCF descriptors
 term_scdwv.dt: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=0
 
@@ -290,7 +295,28 @@ n13_scdwv.dd: scdwvdesc.asm
 midi_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=14
 
-# DriveWire 3 RBF descriptors
+z1_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=1
+
+z2_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=2
+
+z3_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=3
+
+z4_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=4
+
+z5_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=5
+
+z6_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=6
+
+z7_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=7
+
+# DriveWire RBF descriptors
 ddx0.dd: dwdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1 -DDNum=0
 
