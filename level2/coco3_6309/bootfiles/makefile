@@ -41,6 +41,7 @@ BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rbdw3.dr $(MD)/dw3.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
+		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cowin.io \

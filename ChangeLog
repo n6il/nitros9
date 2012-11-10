@@ -1,5 +1,43 @@
 NitrOS-9 V3.2.9:
 
+----------------------------------------------------------
+2012/11/09 Gene Heskett
+Boisy;
+List of files changed since hg clone on 2012/11/03
+M ChangeLog
+M ReadMe
+M defs/rbf.d
+M defs/rbsuper.d
+M defs/scsi.d
+M level1/atari/cmds/fuji.asm
+M level1/coco/modules/makefile
+M level1/modules/boot_scsi.asm
+M level1/modules/superdesc.asm
+M level2/coco3/bootfiles/makefile
+M level2/coco3/modules/makefile
+M level2/coco3_6309/bootfiles/makefile
+M level2/modules/joydrv_6551L.asm
+M rules.mak
+
+AFAICT it will now build bootable .dsk's for all coco's
+Running fine on my coco3, and on Roberts Coco3
+
+-----------------------------------------------------
+With switch to mercurial (Gene Heskett notes, 2012/11/03)
+
+Level 2 builld, run tested
+- joydrv_6551L broken, boot failed, no clue why, code didn't change
+  Fixed now, works, 2012/11/07 GH
+
+- All tc^3 drive descriptors broken, over write them in the .dsk's with known
+  good versions before doing a mb!
+
+Level 1 atari build
+- fuji stuff build failed, assembler syntax error
+  Fixed, builds but not run tested, I don't have a 6502 or Liber8 fitted atari
+
+-----------------------------------------------------
+
 Level 2 Only:
 - joydrv_6551L,  joydrv_6551M and joydrv_6552L now have their MPI slot
   select bytes properly represented and should work.

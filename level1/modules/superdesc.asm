@@ -1,3 +1,4 @@
+	opt	w132	wide listing
 ********************************************************************
 * SuperDesc - Super Driver Device Descriptor Template
 *
@@ -47,17 +48,20 @@
 *
 *   0      2005/12/08  Boisy G. Pitre
 * Reserved two bits in IT.TYP for llscsi.
-
+*
+*   1      2012/11/06  Gene Heskett
+* passing config opts from makefile
                NAM       SuperDesc
                TTL       Super Driver Device Descriptor Template
 
 * Super Driver specific fields
-ITDRV          SET       $00
-ITSTP          SET       $00
-ITTYP          SET       $81
-ITDNS          SET       $00
+*ITDRV          SET       $00 GH - conflicting? Set in makefile GH
+ITSTP          SET       $00 GH - HDBDOS drive num in $hex
+ITTYP          SET       $81 GH - default=Hard drive, 512 byte sectors
 
-ITSOFS1        SET       $00
+*ITDNS          SET       $00 GH - conflicting? Set in makefile
+ITDNS		SET	ITDRV
+ITSOFS1        SET       $00 GH - partition offsets
 ITSOFS2        SET       $00
 ITSOFS3        SET       $00
 
@@ -67,7 +71,8 @@ Cyls           SET       $007f
 SectTrk        SET       $0020
 SectTrk0       SET       $0020
 Interlv        SET       $01
-SAS            SET       $08
+* GH - conditionalize this eventually to reduce disk fragmentation
+SAS            SET       $08 GH - S/B reset to $20 if not floppy
 
                IFP1      
                USE       defsfile
@@ -81,7 +86,7 @@ SAS            SET       $08
 
 tylg           SET       Devic+Objct
 atrv           SET       ReEnt+rev
-rev            SET       $09
+rev            SET       $0A
 
                MOD       eom,name,tylg,atrv,mgrnam,drvnam
 
@@ -94,10 +99,14 @@ rev            SET       $09
                FDB       SDAddr              physical controller address
                FCB       initsize-*-1        initilization table size
                FCB       DT.RBF              device type:0=scf,1=rbf,2=pipe,3=scf
-               FCB       ITDRV               drive number
-               FCB       ITSTP               step rate
+               FCB       Dnum               drive number
+	       IFNE	 HDBDOS
+	       FCB	$80
+	       ELSE
+               FCB       ITSTP               step rate or HDBDOS #
+	       ENDC
                FCB       ITTYP               drive device type
-               FCB       ITDNS               media density
+               FCB       ITDNS               media density or bus addr SEE DEFS ABOVE!
                FDB       Cyls                number of cylinders (tracks)
                FCB       Sides               number of sides
                FCB       $01                 verify disk writes:0=on
@@ -122,7 +131,7 @@ initsize       EQU       *
 
                IFNE      NULL
 name           FCC       /NULL/
-               FCB       ITDRV+$B0
+               FCB       Dnum+$B0
                ELSE      
                IFNE      DD
 name           FCS       /DD/
@@ -132,15 +141,15 @@ name           FCC       /X/
                IFNE      HB
                FCS       /H/
                ELSE      
-               FCB       ITDRV+$B0
+               FCB       Dnum+$B0
                ENDC      
                ELSE      
                IFNE      IDE
 name           FCC       /I/
-               IFNE      HB
+               IFNE      HDBDOS
                FCS       /H/
                ELSE      
-               FCB       ITDRV+$B0
+               FCB       Dnum+$B0
                ENDC      
                ELSE      
                IFNE      SD
@@ -148,14 +157,14 @@ name           FCC       /SD/
                IFNE      HB
                FCS       /H/
                ELSE      
-               FCB       ITDRV+$B0
+               FCB       Dnum+$B0
                ENDC      
                ELSE      
 name           FCC       /S/
-               IFNE      HB
+               IFNE      HDBDOS
                FCS       /H/
                ELSE      
-               FCB       ITDRV+$B0
+               FCB       Dnum+$B0
                ENDC      
                ENDC      
                ENDC      
