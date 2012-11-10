@@ -76,7 +76,7 @@ krn krnp2:
 # Special cases
 # TC^3 SCSI Booter
 boot_tc3: boot_scsi.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) -aMPI=1 -aDnum=0 -aITDRV=0 -aITDNS=0
 
 # SuperIDE/Glenside IDE Booter
 boot_ide: boot_ide.asm
@@ -247,44 +247,44 @@ x3.dd: dwdesc.asm
 
 # TC^3 SCSI Descriptors
 dds0_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) -aDD=1
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) -aDD=1 -aDnum=0 -aITDRV=0
 
 s0_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) $(SCSI_HD) -aDnum=0 -aITDRV=0
 
 s1_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID1) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID1) $(SCSI_HD) -aDnum=1 -aITDRV=1
 
 s2_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID2) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID2) $(SCSI_HD) -aDnum=2 -aITDRV=2
 
 s3_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID3) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID3) $(SCSI_HD) -aDnum=3 -aITDRV=3
 
 s4_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID4) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID4) $(SCSI_HD) -aDnum=4 -aITDRV=4
 
 s5_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID5) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID5) $(SCSI_HD) -aDnum=5 -aITDRV=5
 
 s6_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID6) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID6) $(SCSI_HD) -aDnum=6 -aITDRV=6
 
 sh_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(HDBDOS)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(SSDD35) -aHDBDOS=1 -aHD=1 -a Dnum=7 -aITDRV=0
 
 # IDE Descriptors
 ddi0_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER) -aDD=1
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER) -aDD=1 -aDnum=0 -aITDRV=0
 
 i0_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER)
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER) -aDnum=0 -aITDRV=0
 
 i1_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SLAVE)
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SLAVE) -aDnum=1 -aITDRV=1
 
 ih_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS)
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SSDD35) -aHD=1 -aHDBDOS=1 -aDnum=0 -aITDRV=0 
 
 # RFM descriptors
 ddy0.dd: rfmdesc.asm

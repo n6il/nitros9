@@ -76,7 +76,7 @@ V.LLTerm       RMB       2                   low level term entry point
 V.LLMem        EQU       .                   start of low level driver memory
                RMB       llreserve           reserved area... low level driver uses this as it wants
 V.LLMemSz      EQU       .-V.LLMem
-* Note: we trick rbsuper to so that it thinks its static storage starts at
+* Note: we trick rbsuper too so that it thinks its static storage starts at
 * zero when it really starts beyond DRVBEG+(DRVMEM*DrvCount).
                RMB       UOFFSET
 V.RBSuper      EQU       .                   end of RBSuper's (and ll driver's) memory requirements
