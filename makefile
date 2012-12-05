@@ -1,4 +1,4 @@
-include rules.mak
+include /rules.mak
 
 dirs	=  lib $(LEVEL1) $(LEVEL2) $(LEVEL3) $(3RDPARTY)
  
