@@ -1,6 +1,19 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2012/12/05 Robert Gualt
+List of files changed
+M ChangeLog
+M level1/modules/kernel/krn.asm
+
+Changed the GetMem rountine for Level1 krn. The routine compared
+MaxMem against D.MLIM. This seemed to result in unwarranted loss
+of memory and prevented at least one game, Interbank Incident, from running.
+The comparison was removed resulting in an increase of available
+memory. No problems have been noted.
+
+
+----------------------------------------------------------
 2012/12/05 David Ladd
 List of files changed since hg clone on 2012/12/05
 M ChangeLog
