@@ -252,11 +252,13 @@ L00FB    ldd   ,y++
          bita  #CRCOn			CRC on?
          beq   GetMem			branch if not (already cleared earlier)
          inc   <D.CRC			else turn on CRC checking
-GetMem   ldd   MaxMem+1,u
-         clrb
-         cmpd  <D.MLIM
-         bcc   L0158
-         std   <D.MLIM
+GetMem   equ   *
+         clra
+*         ldd   MaxMem+1,u
+*         clrb
+*         cmpd  <D.MLIM
+*         bcc   L0158
+*         std   <D.MLIM
 L0158    ldx   <D.FMBM
 		IFNE	atari
 * In the Atari, memory $0000-$08FF is used by the system
@@ -269,7 +271,7 @@ L0158    ldx   <D.FMBM
 * In the CoCo, memory $0000-$04FF is used by the system
          ldb   #%11111000
          stb   ,x
-         	ENDC
+		ENDC
          clra
          ldb   <D.MLIM
          negb
