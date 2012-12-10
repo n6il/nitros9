@@ -1,4 +1,4 @@
-include ../rules.mak
+include $(NITROS9DIR)/rules.mak
 
 dirs	= booters drivers fmgrs p2mods subrtns utils packages
 
