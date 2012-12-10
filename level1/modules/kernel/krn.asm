@@ -271,7 +271,7 @@ L0158    ldx   <D.FMBM
 * In the CoCo, memory $0000-$04FF is used by the system
          ldb   #%11111000
          stb   ,x
-         	ENDC
+		ENDC
          clra
          ldb   <D.MLIM
          negb
