@@ -343,10 +343,25 @@ clrloop@	clr		,x+
 		rts
 		
 ClrScrn
+          clr       V.CurCol,u
+          lda       #G.Rows-1
+clrloop@
+          sta       V.CurRow,u
+          pshs      a
+          bsr       DelLine
+          puls      a
+          deca
+          bpl       clrloop@
+          clr       V.CurCol,u
+          rts
+          
 ErEOScrn
 CurUp
 NoOp
-CurHome
+CurHome   clr       V.CurCol,u
+          clr       V.CurRow,u
+          rts
+          
 CurXY
 ErEOLine
 Do05
@@ -492,6 +507,23 @@ gotcode
 		anda	#$5F
 		suba	#$40
 noctrl@
+* check for caps lock
+          cmpa #$82
+          bne  tst4caps@
+          tst  V.CapsLck,u
+          beq  turnon@
+          clra
+turnon@   sta  V.CapsLck,u
+          bra  KeyLeave
+tst4caps@
+          tst  V.CapsLck,u
+          beq  goon@
+          cmpa #$61
+          blt  goon@
+          cmpa #$7a
+          bgt  goon@
+          suba #$20
+goon@          
 		ldb	V.IBufH,u  get head pointer in B
 		leax	V.InBuf,u  point X to input buffer
 		abx              X now holds address of head
@@ -523,6 +555,7 @@ L0158	clr	V.WAKE,u   clear process to wake flag
 
 * Update the shadow register then the real register to disable and
 * re-enable the keyboard interrupt
+KeyLeave
 		pshs cc
           orcc #IntMasks
 		lda	>D.IRQENShdw
