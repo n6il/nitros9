@@ -5,7 +5,7 @@
 *
 * This is how the memory map looks after the kernel has initialized:
 *
-*     $0000----> ================================== 
+*     $0000----> ==================================
 *               |                                  |
 *               |                                  |
 *  $0020-$0111  |  System Globals (D.FMBM-D.XNMI)  |
@@ -91,7 +91,7 @@ name     fcs   /Krn/
 * OS-9 Genesis!
 
 OS9Cold  equ   *
-         
+
 * clear out system globals from $0000-$0400
 *         ldx   #D.FMBM
          ldx   #$0000
@@ -158,13 +158,13 @@ ChkRAM   leay  ,x
          leay  ,x
 * Here, Y = end of RAM
 L00C2    leax  ,y                      X = end of RAM
-         
+
          ELSE
-         
+
          IFNE  atari
          ldx   #$8000
          ELSE
-         ldx   #Bt.Start         
+         ldx   #Bt.Start
          ENDC
          ENDC
          stx   <D.MLIM                 save off memory limit
@@ -198,15 +198,15 @@ L00D2    lda   ,x+
          ELSE
          ldy	#Bt.Start+Bt.Size
          ENDC
-         
+
          lbsr	ValMods
          IFNE  atari
 
-         ldx   #$D800				
+         ldx   #$D800
          ldy   #$F400
          lbsr	ValMods
          ENDC
-         
+
 * Copy vectors to system globals
 L00EE    leay  >Vectors,pcr
          leax  >ModTop,pcr
@@ -233,7 +233,7 @@ L00FB    ldd   ,y++
          stx   <D.SysSvc
          stx   <D.SWI2
          leax  >Poll,pcr          point to default poll routine
-         stx   <D.Poll            and save it 
+         stx   <D.Poll            and save it
          leax  >Clock,pcr         get default clock routine
          stx   <D.Clock           and save it to the vector
          stx   <D.AltIRQ          and in the alternate IRQ vector
@@ -252,18 +252,20 @@ L00FB    ldd   ,y++
          bita  #CRCOn			CRC on?
          beq   GetMem			branch if not (already cleared earlier)
          inc   <D.CRC			else turn on CRC checking
-GetMem   ldd   MaxMem+1,u
-         clrb
-         cmpd  <D.MLIM
-         bcc   L0158
-         std   <D.MLIM
+*GetMem   ldd   MaxMem+1,u
+*         clrb
+*         cmpd  <D.MLIM
+*         bcc   L0158
+*         std   <D.MLIM
+GetMem   equ   *
+         clra
 L0158    ldx   <D.FMBM
 		IFNE	atari
 * In the Atari, memory $0000-$08FF is used by the system
          ldb   #%11111111
          stb   ,x				mark $0000-$07FF as allocated
          stb   $1A,x			mark $D000-$D7FF I/O area as allocated
-         ldb   #%10000000		
+         ldb   #%10000000
          stb   1,x				mark $0800-$08FF as allocated
 		ELSE
 * In the CoCo, memory $0000-$04FF is used by the system
@@ -354,7 +356,7 @@ Clock    ldx   <D.SProcQ               get pointer to sleeping proc queue
          std   P$SP,u                  and store it
          bne   L01FD                   branch if not zero (still will sleep)
 L01E7    ldu   P$Queue,x               get process current queue pointer
-         bsr   L021A 
+         bsr   L021A
          leax  ,u
          beq   L01FB
          lda   P$State,x               get process state byte
@@ -381,7 +383,7 @@ L0212    leay  >ActivateProc,pcr
 
 
 *FAProc   ldx   R$X,u        Get ptr to process to activate
-*L0D11    clrb  
+*L0D11    clrb
 *         pshs  cc,b,x,y,u
 *         lda   P$Prior,x    Get process priority
 *         sta   P$Age,x      Save it as age (How long it's been around)
@@ -399,14 +401,14 @@ L0212    leay  >ActivateProc,pcr
 *L0D29    leay  ,u           point Y to current process
 *L0D2B    ldu   P$Queue,u    get pointer to next process in chain
 *         bne   L0D1F        Still more in chain, keep going
-*         ldd   P$Queue,y    
+*         ldd   P$Queue,y
 *         stx   P$Queue,y    save new process to chain
 *         std   P$Queue,x
 *         puls  cc,b,x,y,u,pc
 
 
          use    faproc.asm
-         
+
 * User-State system call entry point
 *
 * All system calls made from user-state will go through this code.
@@ -630,7 +632,7 @@ DoCRCCk  pshs  x
          ldy   M$Size,x
          bsr   ChkMCRC                 checkm module CRC
          puls  pc,x
-         
+
 * check module header parity
 * Y = pointer to parity byte
 ChkMHPar pshs  y,x
@@ -876,9 +878,9 @@ L05E5    ldb   #E$IForkP
 L05E7    puls  pc,u,x
 
 		use   fsrqmem.asm
-         
+
 		use   fallbit.asm
-         
+
 		use   fprsnam.asm
 
 		use   fcmpnam.asm
@@ -901,7 +903,7 @@ valcheck	cmpx	,s
 		bcs	valloop@
 valret	puls  y,pc
 
-		
+
 VectCode bra   SWI3Jmp		$0100
          nop
          bra   SWI2Jmp		$0103
@@ -968,17 +970,17 @@ P2Nam    fcs   /krnp2/
 		emod
 eom      	equ	*
 
-Vectors  fdb   SWI3                    SWI3 
+Vectors  fdb   SWI3                    SWI3
          fdb   SWI2                    SWI2
          fdb   DUMMY                   FIRQ
          fdb   SVCIRQ                  IRQ
          fdb   SWI                     SWI
          fdb   SVCNMI                  NMI
-         
-         
+
+
          IFNE  ATARI
          fdb	$F3FE-(*-OS9Cold)
          ENDC
-         
+
 eomem    equ   *
          end
