@@ -276,8 +276,8 @@ DD.OPT         RMB       32                  Option area
 *************************
 * 2012/11/09 Gene Heskett - Some additions for bootlink etc use.
 		ORG	$60			More options from device descriptor
-DD.STP		RMB	1	This is for the /sh and /ih virtual disks in HDBDOS
-DD.OFS		RMB	3	This is DT.WPC and DT.OSF combined, might be more 
+VD.STP		RMB	1	This is for the /sh and /ih virtual disks in HDBDOS
+VD.OFS		RMB	3	This is DT.WPC and DT.OSF combined, might be more 
 
 * DD.FMT Bit Definitions - valid only if device is a floppy disk
 FMT.SIDE       EQU       %00000001           Single Sided=0, Double Sided=1

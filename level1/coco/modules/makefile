@@ -40,6 +40,7 @@ RBF		= rbf.mn \
 		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd \
 		ddx0.dd x0.dd x1.dd x2.dd x3.dd \
 		rbsuper.dr lltc3.dr llide.dr \
+#		lltc3.dr llide.dr \
 		ddi0_ide.dd i0_ide.dd i1_ide.dd ih_ide.dd \
 		dds0_tc3.dd s0_tc3.dd s1_tc3.dd s2_tc3.dd s3_tc3.dd s4_tc3.dd \
                 s5_tc3.dd s6_tc3.dd sh_tc3.dd

@@ -46,7 +46,7 @@ AS		= mamou -i=$(DEFSDIR)
 #AS		= os9asm -i=$(DEFSDIR)
 #AS              = lwasm --6309 --format=os9 --pragma=pcaspcr,nosymbolcase,condundefzero --includedir=. --includedir=$(DEFSDIR)
 ASOUT		= -o
-AFLAGS		= -q -aNOS9VER=$(NOS9VER) -aNOS9MAJ=$(NOS9MAJ) -aNOS9MIN=$(NOS9MIN) -aNOS9DBG=$(NOS9DBG) -l
+AFLAGS		= -q -aNOS9VER=$(NOS9VER) -aNOS9MAJ=$(NOS9MAJ) -aNOS9MIN=$(NOS9MIN) -aNOS9DBG=$(NOS9DBG)
 ifdef PORT
 AFLAGS		+= -a$(PORT)=1
 endif
@@ -76,7 +76,8 @@ OS9FORMAT_SS40	= os9 format -t40 -ss -dd
 OS9FORMAT_SS80	= os9 format -t80 -ss -dd
 OS9FORMAT_DS40	= os9 format -t40 -ds -dd
 OS9FORMAT_DS80	= os9 format -t80 -ds -dd
-OS9FORMAT_DW3	= os9 format -t1024 -ss -dd
+#OS9FORMAT_DW3	= os9 format -t1024 -ss -dd
+OS9FORMAT_DW3	= os9 format -t80 -ds -dd
 OS9GEN		= os9 gen
 OS9RENAME	= os9 rename
 OS9ATTR		= os9 attr -q
