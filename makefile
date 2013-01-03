@@ -1,4 +1,4 @@
-include /rules.mak
+include $(NITROS9DIR)/rules.mak
 
 dirs	=  lib $(LEVEL1) $(LEVEL2) $(LEVEL3) $(3RDPARTY)
  
@@ -48,6 +48,6 @@ info:
 nightly: clean hgupdate dskcopy
 	make info>dsks/ReadMe
 	$(ARCHIVE) nitros9project dsks/*
-	scp nitros9project.zip boisy,nitros9@web.sourceforge.net:/home/groups/n/ni/nitros9/htdocs
-	ssh boisy,nitros9@shell.sourceforge.net create
-	ssh boisy,nitros9@shell.sourceforge.net "./burst"
+	scp nitros9project.zip $(SOURCEUSER),nitros9@web.sourceforge.net:/home/groups/n/ni/nitros9/htdocs
+	ssh $(SOURCEUSER),nitros9@shell.sourceforge.net create
+	ssh $(SOURCEUSER),nitros9@shell.sourceforge.net "./burst"
