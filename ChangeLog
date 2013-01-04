@@ -1,6 +1,24 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/03 David Ladd
+List of files changed
+M ChangeLog
+M makefile
+M rules.mak
+
+Changed the dw3 format information in the rules.mak to use a single
+sided format rather than double sided.  The double sided disk images
+were preventing users booting off of the drivewire4 server using the
+dw3 and becker boot disks.
+
+Also updated the makefile related to the nightly build to use a
+environment variable rather than boisy's fixed username.
+
+At this time the upload of the zip file only works. Specific users ssh
+account must have the burst script.
+
+----------------------------------------------------------
 2012/12/05 Robert Gualt
 List of files changed
 M ChangeLog
