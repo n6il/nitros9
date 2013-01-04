@@ -1,6 +1,17 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/04 David Ladd
+List of files changed
+M ChangeLog
+A scripts/burst
+
+Got the burst script from Boisy that was needed for the web portal
+on sourceforge. This script is located in the scripts folder.  Please
+keep in mind that you will need to have this burst script on your
+sourceforge ssh server account to do the "make nightly".
+
+----------------------------------------------------------
 2013/01/03 David Ladd
 List of files changed
 M ChangeLog
