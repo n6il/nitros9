@@ -98,6 +98,7 @@ DSK720K         = $(DISTROVER)_80d.dsk
 LDSK720K        = $(DISTRONAME)_80d.dsk
 
 DSKS		= $(DSK360K_1) $(DSK360K_2) $(DSK720K)
+LDSKS		= $(LDSK360K_1) $(LDSK360K_2) $(LDSK720K)
 
 # Make all components
 all:

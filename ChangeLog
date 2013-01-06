@@ -3,6 +3,14 @@ NitrOS-9 V3.2.9:
 ----------------------------------------------------------
 2013/01/06 David Ladd
 M ChangeLog
+M level1/dalpha/makefile
+
+Found that LDSKS label was missing from level1/dalpha/makefile
+Corrected this oversite and tested.
+
+----------------------------------------------------------
+2013/01/06 David Ladd
+M ChangeLog
 M level1/modules/dwread.asm
 M level1/modules/dwwrite.asm
 M level1/modules/dw4read.asm
