@@ -1,6 +1,15 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/05 David Ladd
+M ChangeLog
+M level1/coco/makefile
+M level1/coco/bootfiles/makefile
+
+Added needed sections to makefile(s) to create a NOS9 L1 Beckeer
+boot disk.
+
+----------------------------------------------------------
 2013/01/04 David Ladd
 List of files changed
 M ChangeLog
