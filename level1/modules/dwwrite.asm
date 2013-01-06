@@ -25,54 +25,14 @@ DWWrite   pshs      d,cc              ; preserve registers
 ;          sta       3,u                 ; disable sound output
 ;          fcb       $8c                 ; skip next instruction
 
-txByte    
-          lda       ,x+                
+txByte
+          lda       ,x+
           sta       $FF42
           leay      -1,y                ; decrement byte counter
           bne       txByte              ; loop if more to send
 
           puls      cc,d,pc           ; restore registers and return
 
-
-          ELSE
-          IFNE H6309-1
-*******************************************************
-* 57600 (115200) bps using 6809 code and timimg
-*******************************************************
-
-DWWrite   pshs      dp,d,cc             ; preserve registers
-          orcc      #$50                ; mask interrupts
-          ldd       #$04ff              ; A = loop counter, B = $ff
-          tfr       b,dp                ; set direct page to $FFxx
-          setdp     $ff
-          ldb       <$ff23              ; read PIA 1-B control register
-          andb      #$f7                ; clear sound enable bit
-          stb       <$ff23              ; disable sound output
-          fcb       $8c                 ; skip next instruction
-
-txByte    stb       <BBOUT              ; send stop bit
-          ldb       ,x+                 ; get a byte to transmit
-          nop
-          lslb                          ; left rotate the byte two positions..
-          rolb                          ; ..placing a zero (start bit) in bit 1
-tx0020    stb       <BBOUT              ; send bit (start bit, d1, d3, d5)
-          rorb                          ; move next bit into position
-          exg       a,a
-          nop
-          stb       <BBOUT              ; send bit (d0, d2, d4, d6)
-          rorb                          ; move next bit into position
-          leau      ,u
-          deca                          ; decrement loop counter
-          bne       tx0020              ; loop until 7th data bit has been sent
-
-          stb       <BBOUT              ; send bit 7
-          ldd       #$0402              ; A = loop counter, B = MARK value
-          leay      ,-y                 ; decrement byte counter
-          bne       txByte              ; loop if more to send
-
-          stb       <BBOUT              ; leave bit banger output at MARK
-          puls      cc,d,dp,pc          ; restore registers and return
-          setdp     $00
 
           ELSE
           IFNE BAUD38400
@@ -101,57 +61,18 @@ tx0010    stb       ,u++                ; send bit
           bne       tx0010              ; loop until 7th data bit has been sent
           leau      ,u
           stb       ,u                  ; send bit 7
-          lda       ,u++                
+          lda       ,u++
           ldb       #$02                ; value for stop bit (MARK)
           leay      -1,y                ; decrement byte counter
           bne       txByte              ; loop if more to send
 
           stb       ,--u                ; leave bit banger output at MARK
           puls      cc,d,u,pc           ; restore registers and return
-
-
-          ELSE
-          IFNE H6309-1
-*******************************************************
-* 57600 (115200) bps using 6809 code and timimg
-*******************************************************
-
-DWWrite   pshs      dp,d,cc             ; preserve registers
-          orcc      #$50                ; mask interrupts
-          ldd       #$04ff              ; A = loop counter, B = $ff
-          tfr       b,dp                ; set direct page to $FFxx
-          setdp     $ff
-          ldb       <$ff23              ; read PIA 1-B control register
-          andb      #$f7                ; clear sound enable bit
-          stb       <$ff23              ; disable sound output
-          fcb       $8c                 ; skip next instruction
-
-txByte    stb       <BBOUT              ; send stop bit
-          ldb       ,x+                 ; get a byte to transmit
-          nop
-          lslb                          ; left rotate the byte two positions..
-          rolb                          ; ..placing a zero (start bit) in bit 1
-tx0020    stb       <BBOUT              ; send bit (start bit, d1, d3, d5)
-          rorb                          ; move next bit into position
-          exg       a,a
-          nop
-          stb       <BBOUT              ; send bit (d0, d2, d4, d6)
-          rorb                          ; move next bit into position
-          leau      ,u
-          deca                          ; decrement loop counter
-          bne       tx0020              ; loop until 7th data bit has been sent
-
-          stb       <BBOUT              ; send bit 7
-          ldd       #$0402              ; A = loop counter, B = MARK value
-          leay      ,-y                 ; decrement byte counter
-          bne       txByte              ; loop if more to send
-
-          stb       <BBOUT              ; leave bit banger output at MARK
-          puls      cc,d,dp,pc          ; restore registers and return
           setdp     $00
 
 
           ELSE
+          IFNE H6309
 *******************************************************
 * 57600 (115200) bps using 6309 native mode
 *******************************************************
@@ -186,8 +107,47 @@ tx0040    stb       -1,u                ; send bit
           stb       -1,u                ; final stop bit
           puls      cc,d,u,pc           ; restore registers and return
 
+          ELSE
+*******************************************************
+* 57600 (115200) bps using 6809 code and timimg
+*******************************************************
+
+DWWrite   pshs      dp,d,cc             ; preserve registers
+          orcc      #$50                ; mask interrupts
+          ldd       #$04ff              ; A = loop counter, B = $ff
+          tfr       b,dp                ; set direct page to $FFxx
+          setdp     $ff
+          ldb       <$ff23              ; read PIA 1-B control register
+          andb      #$f7                ; clear sound enable bit
+          stb       <$ff23              ; disable sound output
+          fcb       $8c                 ; skip next instruction
+
+txByte    stb       <BBOUT              ; send stop bit
+          ldb       ,x+                 ; get a byte to transmit
+          nop
+          lslb                          ; left rotate the byte two positions..
+          rolb                          ; ..placing a zero (start bit) in bit 1
+tx0020    stb       <BBOUT              ; send bit (start bit, d1, d3, d5)
+          rorb                          ; move next bit into position
+          exg       a,a
+          nop
+          stb       <BBOUT              ; send bit (d0, d2, d4, d6)
+          rorb                          ; move next bit into position
+          leau      ,u
+          deca                          ; decrement loop counter
+          bne       tx0020              ; loop until 7th data bit has been sent
+
+          stb       <BBOUT              ; send bit 7
+          ldd       #$0402              ; A = loop counter, B = MARK value
+          leay      ,-y                 ; decrement byte counter
+          bne       txByte              ; loop if more to send
+
+          stb       <BBOUT              ; leave bit banger output at MARK
+          puls      cc,d,dp,pc          ; restore registers and return
+          setdp     $00
+
 
           ENDC
           ENDC
           ENDC
-          ENDC
+
