@@ -21,7 +21,7 @@ CMDS		= asm attr backup binex build calldbg cmp cobbler copy cputype \
 CMDS_D2		= basic09 runb gfx inkey syscall copy del echo format \
 		merge os9gen prompt tmode
 
-CMDS_DW		= inetd telnet dw
+CMDS_DW		= dw inetd telnet
 
 SUBS		= gfx inkey syscall
 ALLOBJS		= $(CMDS) $(CMDS_D2) $(CMDS_DW) $(SUBS)

@@ -1,6 +1,18 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/08 David Ladd
+M ChangeLog
+M makefile
+M rules.mak
+
+Found that primary makefile was not compiling files in the "lib" folder.
+Created a NOSLIB label in rules.mak for the full path to "lib" folder.
+Replaced the "lib" folder name that was in primary makefile to use
+the NOSLIB label to correct the problem with the makefile not branching
+into the "lib" folder to compile its files"
+
+----------------------------------------------------------
 2013/01/06 David Ladd
 M ChangeLog
 M level1/dalpha/makefile

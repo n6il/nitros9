@@ -6,7 +6,7 @@
 *    Receive a response from the DriveWire server.
 *    Times out if no data received within 1.3 (0.66) seconds.
 *
-*    THIS VERSION REQUIRES ONE OR MORE SYNC BYTES 
+*    THIS VERSION REQUIRES ONE OR MORE SYNC BYTES
 *    WHERE THE THE FINAL SYNC BYTE IS $C0 AND ANY
 *    PRECEDING SYNC BYTES ARE $FF.
 *
@@ -55,7 +55,7 @@ DWRead	clra			; ACCA = 0, clear Carry
 	inca			; set CD FIRQ enable
 	sta	<$FF21		; set new control state for PIA 1
 	stb	<$FF23
-	
+
 * Wait for Sync Byte(s) or Timeout
 sync1	ldd	#$0102		; ACCA = serial in mask, ACCB = shift counter
 sync2	bita	,u		; sample input
@@ -138,7 +138,7 @@ rxDone	sta	5,s		; store status on stack
 *    Receive a response from the DriveWire server.
 *    Times out if no data received within 1.3 (0.66) seconds.
 *
-*    THIS VERSION REQUIRES ONE OR MORE SYNC BYTES 
+*    THIS VERSION REQUIRES ONE OR MORE SYNC BYTES
 *    WHERE THE THE FINAL SYNC BYTE IS $C0 AND ANY
 *    PRECEDING SYNC BYTES ARE $FF.
 *
