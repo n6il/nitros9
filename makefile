@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-dirs	=  lib $(LEVEL1) $(LEVEL2) $(LEVEL3) $(3RDPARTY)
+dirs	=  $(NOSLIB) $(LEVEL1) $(LEVEL2) $(LEVEL3) $(3RDPARTY)
  
 # Make all components
 all:
