@@ -11,9 +11,10 @@ DISK_1_40D	= kingquest3_d1_40d.dsk
 DISK_2_40D	= kingquest3_d2_40d.dsk
 DISK_3_40D	= kingquest3_d3_40d.dsk
 DISK_80D	= kingquest3_80d.dsk
-DSK_DW3	= kingsquest3_dw3.dsk
+DSK_DW3		= kingsquest3_dw3.dsk
+DSK_DW3_BECKER	= kingsquest3_dw3_becker.dsk
 
-DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D) $(DSK_DW3)
+DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D) $(DSK_DW3) $(DSK_DW3_BECKER)
 
 DISK_1_40D_NAME = "King's Quest III Disk 1"
 DISK_2_40D_NAME = "King's Quest III Disk 2"
@@ -27,6 +28,7 @@ MD		= $(LEVEL2)/coco3/modules
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_DW3	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
+KERNEL_DW3_BECKER	= $(MD)/rel_32 $(MD)/boot_dw3_becker $(MD)/krn
 
 OS9BOOT_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -46,9 +48,18 @@ OS9BOOT_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-BOOTFILE_DW3    = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rbdw3.dr $(MD)/dw3.sb $(MD)/ddx0.dd \
+		$(MD)/scf.mn $(MD)/vtio.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
+		$(MD)/vrn.dr $(MD)/vi.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw3 $(MD)/sysgo_dd
+
+BOOTFILE_DW3_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/rbdw3.dr $(MD)/dw3_becker.sb $(MD)/ddx0.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
@@ -150,10 +161,34 @@ dsk_dw3:	all
 	$(CPL) $(TEXTFILES_DW3) $(DSK_DW3),.
 	$(OS9RENAME) $(DSK_DW3),tOC_dw3.txt tOC.txt
 	$(CP) $(SUPPORTFILES) $(DSK_DW3),.
-	$(RM) tocgen
+	$(MOVE) tocgen toctmp
 	tocgen $(DSK_DW3),tOC.txt $(DSK_DW3),tOC
+	$(MOVE) toctmp tocgen
 
-dsk:	dsk_40d dsk_80d dsk_dw3
+dsk_dw3_becker:	all
+	$(RM) $(DSK_DW3_BECKER)
+	$(CD) $(LEVEL2)/coco3; make
+	$(OS9FORMAT_DW3) -q $(DSK_DW3_BECKER) -n$(DSK_DW3_NAME)
+	$(MERGE) $(BOOTFILE_DW3_BECKER)>os9boot_dw3
+	$(MERGE) $(KERNEL_DW3_BECKER)>kernel_dw3
+	$(OS9GEN) $(DSK_DW3_BECKER) -b=os9boot_dw3 -t=kernel_dw3
+	$(RM) os9boot_dw3 kernel_dw3
+	$(MAKDIR) $(DSK_DW3_BECKER),CMDS
+	$(CP) $(CMDS) $(DSK_DW3_BECKER),CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DSK_DW3_BECKER),CMDS/$(file);)
+	$(MERGE) $(BOOTCMDS)>shell
+	$(CP) shell $(DSK_DW3_BECKER),CMDS
+	$(RM) shell
+	$(OS9ATTR) $(DSK_DW3_BECKER),CMDS/shell -e -pe -pr -e -w -r
+	$(OS9RENAME) $(DSK_DW3_BECKER),CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES_DW3) $(DSK_DW3_BECKER),.
+	$(OS9RENAME) $(DSK_DW3_BECKER),tOC_dw3.txt tOC.txt
+	$(CP) $(SUPPORTFILES) $(DSK_DW3_BECKER),.
+	$(MOVE) tocgen toctmp
+	tocgen $(DSK_DW3_BECKER),tOC.txt $(DSK_DW3_BECKER),tOC
+	$(MOVE) toctmp tocgen
+
+dsk:	dsk_40d dsk_80d dsk_dw3 dsk_dw3_becker
 
 dskcopy: dsk
 	$(CP) $(DSKS) $(DSKDIR)

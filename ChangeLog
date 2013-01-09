@@ -3,6 +3,25 @@ NitrOS-9 V3.2.9:
 ----------------------------------------------------------
 2013/01/09 David Ladd
 M ChangeLog
+M 3rdparty/packages/sierra/kingsquest2/makefile
+M 3rdparty/packages/sierra/kingsquest3/makefile
+M 3rdparty/packages/sierra/kingsquest4/makefile
+M 3rdparty/packages/sierra/leisuresuitlarry/makefile
+M 3rdparty/packages/sierra/manhunter1/makefile
+M 3rdparty/packages/sierra/manhunter1/tOC_80d.txt
+M 3rdparty/packages/sierra/manhunter2/makefile
+
+Fixed tOC_80d.txt file related to manhunter1.  The last line did not
+have a return in it and was causing a segmentation fault when creating
+the disk set.
+
+Changed makefile(s) for kingsquest2, kingsquest3, kingsquest4,
+leisuresuitlarry, manhunter1, and manhunter2 so that becker
+boot disks for use with drivewire4 are created.
+
+----------------------------------------------------------
+2013/01/09 David Ladd
+M ChangeLog
 M 3rdparty/packages/sierra/goldrush/makefile
 A 3rdparty/packages/sierra/goldrush/tOC_dw3_becker.txt
 M 3rdparty/packages/sierra/kingsquest1/makefile
