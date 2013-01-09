@@ -3,6 +3,16 @@ NitrOS-9 V3.2.9:
 ----------------------------------------------------------
 2013/01/09 David Ladd
 M ChangeLog
+M 3rdparty/packages/blackcauldron/makefile
+M 3rdparty/packages/christmas86/makefile
+
+Updated 3rdparty/packages/blackcauldron/makefile and
+3rdparty/packages/christmas86/makefile to now also create
+the becker disks for use with drivewire4 server.
+
+----------------------------------------------------------
+2013/01/09 David Ladd
+M ChangeLog
 M 3rdparty/packages/koronis/makefile
 
 Updated 3rdparty/packages/koronis/makefile to create a becker boot
