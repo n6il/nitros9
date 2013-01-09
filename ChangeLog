@@ -1,6 +1,14 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/09 David Ladd
+M ChangeLog
+M 3rdparty/packages/koronis/makefile
+
+Updated 3rdparty/packages/koronis/makefile to create a becker boot
+disk for use with drivewire4 server.
+
+----------------------------------------------------------
 2013/01/08 David Ladd
 M ChangeLog
 M makefile
