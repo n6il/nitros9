@@ -13,7 +13,8 @@ DISK_3_80D	= manhunter1_d3_80d.dsk
 DISK_DW3	= manhunter1_dw3.dsk
 DISK_DW3_BECKER	= manhunter1_dw3_becker.dsk
 
-DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DISK_DW3) $(DISK_DW3_BECKER)
+DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) \
+		$(DISK_DW3) $(DISK_DW3_BECKER)
 
 DISK_1_80D_NAME = "Manhunter I Disk 1"
 DISK_2_80D_NAME = "Manhunter I Disk 2"
@@ -131,7 +132,7 @@ $(DISK_DW3_BECKER):
 	$(RM) $@
 	$(OS9FORMAT_DW3) -q $@ -n$(DISK_DW3_NAME)
 	$(MERGE) $(KERNEL_DW3_BECKER)>kernel
-	$(MERGE) $(OS9BOOT_DW3)_BECKER>os9boot
+	$(MERGE) $(OS9BOOT_DW3_BECKER)>os9boot
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS

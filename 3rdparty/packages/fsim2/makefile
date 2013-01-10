@@ -14,7 +14,7 @@ DSKS		= $(DSK_FLOPPY) $(DSK_DW3) $(DSK_DW3_BECKER)
 # We make our own bootfile and kernel track
 KERNEL_FLOPPY	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_DW3	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
-KERNEL_DW3_BECKER	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
+KERNEL_DW3_BECKER	= $(MD)/rel_32 $(MD)/boot_dw3_becker $(MD)/krn
 
 BOOTFILE_FLOPPY	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
