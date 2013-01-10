@@ -92,7 +92,7 @@ $(DSK_FLOPPY):	all
 $(DSK_DW3):	all
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) -q $@ -n$(DSK_NAME)
+	$(OS9FORMAT_DW3) -q $@ -n$(DSK_NAME)
 	$(MERGE) $(BOOTFILE_DW3)>os9boot
 	$(MERGE) $(KERNEL_DW3)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
@@ -113,7 +113,7 @@ $(DSK_DW3):	all
 $(DSK_DW3_BECKER):	all
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) -q $@ -n$(DSK_NAME)
+	$(OS9FORMAT_DW3) -q $@ -n$(DSK_NAME)
 	$(MERGE) $(BOOTFILE_DW3_BECKER)>os9boot
 	$(MERGE) $(KERNEL_DW3_BECKER)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel

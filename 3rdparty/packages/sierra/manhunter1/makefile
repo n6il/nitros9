@@ -130,8 +130,8 @@ $(DISK_DW3):
 $(DISK_DW3_BECKER):
 	$(RM) $@
 	$(OS9FORMAT_DW3) -q $@ -n$(DISK_DW3_NAME)
-	$(MERGE) $(KERNEL_DW3)>kernel
-	$(MERGE) $(OS9BOOT_DW3)>os9boot
+	$(MERGE) $(KERNEL_DW3_BECKER)>kernel
+	$(MERGE) $(OS9BOOT_DW3)_BECKER>os9boot
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
