@@ -90,7 +90,7 @@ LOREMOVE	= sudo /sbin/losetup -d
 LOSETUP		= sudo /sbin/losetup
 LINK		= ln
 SOFTLINK	= $(LINK) -s
-ARCHIVE		= zip -D -j
+ARCHIVE		= zip -D -9 -j
 MKDSKINDEX	= $(NITROS9DIR)/3rdparty/utils/aaw/mkdskindex
 
 # Directories
