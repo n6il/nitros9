@@ -11,10 +11,11 @@ DISK_1_40D	= spacequest2_d1_40d.dsk
 DISK_2_40D	= spacequest2_d2_40d.dsk
 DISK_3_40D	= spacequest2_d3_40d.dsk
 DISK_80D	= spacequest2_80d.dsk
-DISK_DW3	= spacequest3_dw3.dsk
-DISK_DW3_BECKER	= spacequest3_dw3_becker.dsk
+DISK_DW3	= spacequest2_dw3.dsk
+DISK_DW3_BECKER	= spacequest2_dw3_becker.dsk
 
-DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D) $(DISK_DW3) $(DISK_DW3_BECKER)
+DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_80D) \
+		$(DISK_DW3) $(DISK_DW3_BECKER)
 
 DISK_1_40D_NAME = "Space Quest II Disk 1"
 DISK_2_40D_NAME = "Space Quest II Disk 2"
