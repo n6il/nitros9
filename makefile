@@ -13,8 +13,10 @@ all:
 
 # Clean all components
 clean:
-	-$(RM) nitros9project.zip dsks/*.dsk
+	-$(RM) nitros9project.zip $(DSKDIR)/*.dsk $(DSKDIR)/ReadMe $(DSKDIR)/index.shtml
 	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
+	$(RM) $(DSKDIR)/ReadMe
+	$(RM) $(DSKDIR)/index.html
 
 # Do CVS update
 hgupdate:
@@ -46,8 +48,8 @@ info:
 	@$(foreach dir, $(dirs), ($(CD) $(dir); make info);)
 	
 nightly: clean hgupdate dskcopy
-	make info>dsks/ReadMe
-	$(ARCHIVE) nitros9project dsks/*
+	make info>$(DSKDIR)/ReadMe
+	$(ARCHIVE) nitros9project $(DSKDIR)/*
 	scp nitros9project.zip $(SOURCEUSER),nitros9@web.sourceforge.net:/home/groups/n/ni/nitros9/htdocs
 	ssh $(SOURCEUSER),nitros9@shell.sourceforge.net create
 	ssh $(SOURCEUSER),nitros9@shell.sourceforge.net "./burst"

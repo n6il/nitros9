@@ -1,6 +1,21 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/10 David Ladd
+M ChangeLog
+M makefile
+M 3rdparty/packages/sierra/spacequest1/makefile
+M 3rdparty/packages/sierra/spacequest2/makefile
+M 3rdparty/packages/subsim/makefile
+M 3rdparty/packages/mm/makefile
+M 3rdparty/packages/multivue/makefile
+M 3rdparty/packages/rof/makefile
+
+Updated makefile(s) for spacequest1, spacequest2, subsim, mm, multivue,
+and rof so that becker boot disks, for use in drivewire4, are created.
+
+
+----------------------------------------------------------
 2013/01/09 David Ladd
 M ChangeLog
 M 3rdparty/packages/fsim2/makefile
