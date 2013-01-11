@@ -4,7 +4,7 @@ DEPENDS		= ./makefile
 
 DSK_FLOPPY	= subsim.dsk
 DSK_DW3		= subsim_dw3.dsk
-DSK_DW3_BECKER	= subsim_dw3_becker.dsk
+DSK_DW3_BECKER	= subsim_becker.dsk
 
 CMDS		= presub sub sub1 sub2 sub3 sub4 sub5 sub6
 MD		= $(LEVEL2)/coco3/modules

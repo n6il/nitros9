@@ -9,7 +9,7 @@ DEPENDS		= ./makefile
 
 DSK_FLOPPY	= leisuresuitlarry.dsk
 DSK_DW3		= leisuresuitlarry_dw3.dsk
-DSK_DW3_BECKER	= leisuresuitlarry_dw3_becker.dsk
+DSK_DW3_BECKER	= leisuresuitlarry_becker.dsk
 
 DSK_NAME	= "Leisure Suit Larry"
 

@@ -1,5 +1,36 @@
 NitrOS-9 V3.2.9:
 
+----------------------------------------------------------
+2013/01/10 David Ladd
+M ChangeLog
+M 3rdparty/packages/fsim2/makefile
+M 3rdparty/packages/koronis/makefile
+M 3rdparty/packages/kyumgai/makefile
+M 3rdparty/packages/multivue/makefile
+M 3rdparty/packages/rof/makefile
+M 3rdparty/packages/sierra/blackcauldron/makefile
+M 3rdparty/packages/sierra/christmas86/makefile
+M 3rdparty/packages/sierra/goldrush/makefile
+M 3rdparty/packages/sierra/kingsquest1/makefile
+M 3rdparty/packages/sierra/kingsquest2/makefile
+M 3rdparty/packages/sierra/kingsquest3/makefile
+M 3rdparty/packages/sierra/kingsquest4/makefile
+M 3rdparty/packages/sierra/leisuresuitlarry/makefile
+M 3rdparty/packages/sierra/manhunter1/makefile
+M 3rdparty/packages/sierra/manhunter2/makefile
+M 3rdparty/packages/sierra/policequest1/makefile
+M 3rdparty/packages/sierra/spacequest0/makefile
+M 3rdparty/packages/sierra/spacequest1/makefile
+M 3rdparty/packages/sierra/spacequest2/makefile
+M 3rdparty/packages/subsim/makefile
+
+Updated some of the makefile(s) in 3rdparty/packages to bring the becker
+boot disk images in line with naming style of the nos9l1/2 disk images.
+The becker disk images were being created with _dw3_becker.dsk where
+they should have been created just with the _becker.dsk ending.
+
+
+----------------------------------------------------------
 2013/01/10 David Ladd
 M ChangeLog
 M level1/atari/bootfiles/makefile

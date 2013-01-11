@@ -9,7 +9,7 @@ DEPENDS		= ./makefile
 
 DSK_FLOPPY	= christmas86.dsk
 DSK_DW3		= christmas86_dw3.dsk
-DSK_DW3_BECKER	= christmas86_dw3_becker.dsk
+DSK_DW3_BECKER	= christmas86_becker.dsk
 
 DSKS		= $(DSK_FLOPPY) $(DSK_DW3) $(DSK_DW3_BECKER)
 
