@@ -1,5 +1,12 @@
 NitrOS-9 V3.2.9:
 
+2013/01/10 David Ladd
+M ChangeLog
+M level1/atari/bootfiles/makefile
+
+Updated level1/atari/bootfiles/makefile so that bootfile_p1 & bootfile_p2
+removed on a "make clean"
+
 ----------------------------------------------------------
 2013/01/10 David Ladd
 M ChangeLog
