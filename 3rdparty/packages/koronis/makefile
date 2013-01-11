@@ -4,7 +4,7 @@ DEPENDS		= ./makefile
 
 DSK_FLOPPY	= koronis.dsk
 DSK_DW3		= koronis_dw3.dsk
-DSK_DW3_BECKER	= koronis_dw3_becker.dsk
+DSK_DW3_BECKER	= koronis_becker.dsk
 CMDS		= koronis
 MD		= $(LEVEL2)/coco3/modules
 

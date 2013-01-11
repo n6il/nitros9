@@ -4,7 +4,7 @@ DEPENDS		= ./makefile
 
 DSK_FLOPPY	= kyumgai.dsk
 DSK_DW3		= kyumgai_dw3.dsk
-DSK_DW3_BECKER	= kyumgai_dw3_becker.dsk
+DSK_DW3_BECKER	= kyumgai_becker.dsk
 
 CMDS		= ninja ninja.snd1 ninja.snd2
 MD		= $(LEVEL2)/coco3/modules

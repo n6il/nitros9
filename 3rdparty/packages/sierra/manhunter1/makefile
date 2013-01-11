@@ -11,7 +11,7 @@ DISK_1_80D	= manhunter1_d1_80d.dsk
 DISK_2_80D	= manhunter1_d2_80d.dsk
 DISK_3_80D	= manhunter1_d3_80d.dsk
 DISK_DW3	= manhunter1_dw3.dsk
-DISK_DW3_BECKER	= manhunter1_dw3_becker.dsk
+DISK_DW3_BECKER	= manhunter1_becker.dsk
 
 DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) \
 		$(DISK_DW3) $(DISK_DW3_BECKER)

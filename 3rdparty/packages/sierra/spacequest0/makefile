@@ -13,7 +13,7 @@ DISK_3_40D	= spacequest0_d3_40d.dsk
 DISK_1_80D	= spacequest0_d1_80d.dsk
 DISK_2_80D	= spacequest0_d2_80d.dsk
 DISK_DW3	= spacequest0_dw3.dsk
-DISK_DW3_BECKER	= spacequest0_dw3_becker.dsk
+DISK_DW3_BECKER	= spacequest0_becker.dsk
 
 DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_1_80D) $(DISK_2_80D) $(DISK_DW3) $(DISK_DW3_BECKER)
 

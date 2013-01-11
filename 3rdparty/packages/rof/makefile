@@ -4,7 +4,7 @@ DEPENDS		= ./makefile
 
 DSK_FLOPPY	= rof.dsk
 DSK_DW3		= rof_dw3.dsk
-DSK_DW3_BECKER	= rof_dw3_becker.dsk
+DSK_DW3_BECKER	= rof_becker.dsk
 
 CMDS		= rescue
 MD		= $(LEVEL2)/coco3/modules

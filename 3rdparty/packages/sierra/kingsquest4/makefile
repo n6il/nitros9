@@ -11,7 +11,7 @@ DISK_1_80D	= kingsquest4_d1_80d.dsk
 DISK_2_80D	= kingsquest4_d2_80d.dsk
 DISK_3_80D	= kingsquest4_d3_80d.dsk
 DISK_DW3	= kingsquest4_dw3.dsk
-DISK_DW3_BECKER	= kingsquest4_dw3_becker.dsk
+DISK_DW3_BECKER	= kingsquest4_becker.dsk
 
 DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DISK_DW3) $(DISK_DW3_BECKER)
 

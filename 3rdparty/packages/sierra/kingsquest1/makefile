@@ -9,7 +9,7 @@ DEPENDS		= ./makefile
 
 DISK_40D	= kingsquest1_40d.dsk
 DSKDW3		= kingsquest1_dw3.dsk
-DSKDW3BECKER	= kingsquest1_dw3_becker.dsk
+DSKDW3BECKER	= kingsquest1_becker.dsk
 
 DSKS		= $(DISK_40D) $(DSKDW3) $(DSKDW3BECKER)
 

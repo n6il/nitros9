@@ -11,7 +11,7 @@ DISK_1_40D	= policequest1_d1_40d.dsk
 DISK_2_40D	= policequest1_d2_40d.dsk
 DISK_3_40D	= policequest1_d3_40d.dsk
 DISK_DW3	= policequest1_dw3.dsk
-DISK_DW3_BECKER	= policequest1_dw3_becker.dsk
+DISK_DW3_BECKER	= policequest1_becker.dsk
 
 DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_DW3) $(DISK_DW3_BECKER)
 
