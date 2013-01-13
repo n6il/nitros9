@@ -1,6 +1,21 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/12 David Ladd
+M ChangeLog
+M makefile
+M level2/coco3/makefile_common
+
+Added option to main makefile to allow for "make becker" to create
+a zip archive of the becker boot disks for use with drivewire4 server.
+
+Updated level2/coco3/makefile_common so that the disk image for coco3
+and coco3_6309 becker images aren't referred to as a 80 track double sided
+disk.  Reason for this change is to reduce confusion as that the
+DriveWire4 server requires single sided disk images for the boot to work
+from the HDBDOS "DOS" command.
+
+----------------------------------------------------------
 2013/01/10 David Ladd
 M ChangeLog
 M 3rdparty/packages/fsim2/makefile
