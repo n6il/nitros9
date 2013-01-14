@@ -1,3 +1,6 @@
+ifndef  NITROS9DIR
+NITROS9DIR      = $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 dirs	= arcadepak basic09 deskmate3 cc fsim2 koronis kyumgai mm multivue pacos9 rof sierra subsim uucpbb

@@ -1,5 +1,8 @@
 #  makefile for Micro emacs for os9/68000
 # temp files on ram disk
+ifndef  NITROS9DIR
+NITROS9DIR      = $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 CC	= c3

@@ -1,4 +1,7 @@
-include ../rules.mak
+ifndef  NITROS9DIR
+NITROS9DIR      = $(HOME)/nitros9
+endif
+include $(NITROS9DIR)/rules.mak
 
 all: bootman_coco_6551 bootman_coco3_6551 #bootman_loader
 

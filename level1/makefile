@@ -1,3 +1,6 @@
+ifndef  NITROS9DIR
+NITROS9DIR      = $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 dirs	= coco tano d64 dalpha atari

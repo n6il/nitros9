@@ -21,6 +21,9 @@
 #
 
 PORT = d64
+ifndef  NITROS9DIR
+NITROS9DIR      = $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm $(LEVEL1)/modules

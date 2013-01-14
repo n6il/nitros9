@@ -18,6 +18,9 @@
 #
 
 PORT = tano
+ifndef  NITROS9DIR
+NITROS9DIR      = $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 # Module directory

@@ -1,3 +1,6 @@
+ifndef  NITROS9DIR
+NITROS9DIR      = $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 SRC = os9defs.a scfdefs.a rbfdefs.a pipedefs.a systype.a net.a
