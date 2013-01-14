@@ -1,6 +1,9 @@
 # NitrOS-9/6809 Level 2 bootfile for a 128K CoCo 3 with a Motorla 6809
 # For Boisy's thesis work
 
+ifndef  NITROS9DIR
+NITROS9DIR      = $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm ../../../utils/boisy:..:$(LEVEL2)/cmds:$(LEVEL1)/cmds:$(LEVEL1)/modules:$(NITROS9DIR)/3rdparty/packages/basic09

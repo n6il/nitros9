@@ -30,6 +30,9 @@
 #
 
 PORT = d64
+ifndef  NITROS9DIR
+NITROS9DIR     = $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 CPU		= 6809

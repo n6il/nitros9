@@ -1,6 +1,144 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/14 David Ladd
+M ChangeLog
+M 3rdparty/booters/makefile
+M 3rdparty/customboots/boisy/makefile
+M 3rdparty/drivers/burke/makefile
+M 3rdparty/drivers/disto/makefile
+M 3rdparty/drivers/emudsk/makefile
+M 3rdparty/drivers/ide/makefile
+M 3rdparty/drivers/makefile
+M 3rdparty/drivers/mmc/makefile
+M 3rdparty/drivers/s16550/makefile
+M 3rdparty/drivers/sdisk/makefile
+M 3rdparty/drivers/sdisk3/makefile
+M 3rdparty/drivers/tccc/makefile
+M 3rdparty/fmgrs/makefile
+M 3rdparty/fmgrs/msf/makefile
+M 3rdparty/makefile
+M 3rdparty/p2mods/makefile
+M 3rdparty/p2mods/noice/makefile
+M 3rdparty/packages/arcadepak/makefile
+M 3rdparty/packages/basic09/makefile
+M 3rdparty/packages/cc/makefile
+M 3rdparty/packages/coyota/makefile
+M 3rdparty/packages/deskmate3/makefile
+M 3rdparty/packages/ed/makefile
+M 3rdparty/packages/fsim2/makefile
+M 3rdparty/packages/koronis/makefile
+M 3rdparty/packages/kyumgai/makefile
+M 3rdparty/packages/makefile
+M 3rdparty/packages/mm/makefile
+M 3rdparty/packages/multivue/cmds_6309/makefile
+M 3rdparty/packages/multivue/cmds_6809/makefile
+M 3rdparty/packages/multivue/makefile
+M 3rdparty/packages/os9l2bbs/6809l2/makefile
+M 3rdparty/packages/os9l2bbs/makefile
+M 3rdparty/packages/pacos9/makefile
+M 3rdparty/packages/raakatu/makefile
+M 3rdparty/packages/rof/makefile
+M 3rdparty/packages/sierra/makefile
+M 3rdparty/packages/subsim/makefile
+M 3rdparty/packages/uemacs/makefile
+M 3rdparty/packages/uucpbb/cmds_6309/makefile
+M 3rdparty/packages/uucpbb/cmds_6809/makefile
+M 3rdparty/packages/uucpbb/makefile
+M 3rdparty/packages/uucpbb/src/makefile
+M 3rdparty/subrtns/makefile
+M 3rdparty/utils/boisy/makefile
+M 3rdparty/utils/dasm/makefile
+M 3rdparty/utils/makefile
+M 3rdparty/utils/smartwatch/makefile
+M 3rdparty/utils/supercomm/makefile
+M 3rdparty/utils/view/makefile
+M 3rdparty/utils/winfo/makefile
+M bootman/makefile
+M level1/atari/bootfiles/makefile
+M level1/atari/cmds/makefile
+M level1/atari/defs/makefile
+M level1/atari/makefile
+M level1/atari/modules/kernel/makefile
+M level1/atari/modules/makefile
+M level1/atari/sys/makefile
+M level1/cmds/makefile
+M level1/coco/bootfiles/makefile
+M level1/coco/bootroms/makefile
+M level1/coco/cmds/makefile
+M level1/coco/defs/makefile
+M level1/coco/makefile
+M level1/coco/modules/kernel/makefile
+M level1/coco/modules/makefile
+M level1/coco/sys/makefile
+M level1/d64/bootfiles/makefile
+M level1/d64/cmds/makefile
+M level1/d64/defs/makefile
+M level1/d64/makefile
+M level1/d64/modules/kernel/makefile
+M level1/d64/modules/makefile
+M level1/d64/sys/makefile
+M level1/dalpha/bootfiles/makefile
+M level1/dalpha/cmds/makefile
+M level1/dalpha/defs/makefile
+M level1/dalpha/makefile
+M level1/dalpha/modules/kernel/makefile
+M level1/dalpha/modules/makefile
+M level1/dalpha/sys/makefile
+M level1/makefile
+M level1/tano/bootfiles/makefile
+M level1/tano/cmds/makefile
+M level1/tano/defs/makefile
+M level1/tano/makefile
+M level1/tano/modules/kernel/makefile
+M level1/tano/modules/makefile
+M level1/tano/sys/makefile
+M level2/coco3/bootfiles/makefile
+M level2/coco3/bootroms/makefile
+M level2/coco3/cmds/makefile
+M level2/coco3/defs/makefile
+M level2/coco3/makefile_common
+M level2/coco3/modules/kernel/makefile
+M level2/coco3/modules/makefile
+M level2/coco3/sys/makefile
+M level2/coco3_6309/bootfiles/makefile
+M level2/coco3_6309/bootroms/makefile
+M level2/coco3_6309/defs/makefile
+M level2/coco3_6309/modules/kernel/makefile
+M level2/makefile
+M level2/sys/makefile
+M level3/coco3/bootfiles/makefile
+M level3/coco3/cmds/makefile
+M level3/coco3/defs/makefile
+M level3/coco3/makefile
+M level3/coco3/modules/kernel/makefile
+M level3/coco3/modules/makefile
+M level3/coco3/sys/makefile
+M level3/coco3_6309/bootfiles/makefile
+M level3/coco3_6309/cmds/makefile
+M level3/coco3_6309/defs/makefile
+M level3/coco3_6309/makefile
+M level3/coco3_6309/modules/kernel/makefile
+M level3/coco3_6309/modules/makefile
+M level3/coco3_6309/sys/makefile
+M lib/alib/makefile
+M lib/makefile
+M makefile
+M rules.mak
+
+Updated makefiles to fix for incorrectly not finding the rules.mak file.
+When running make without the envirornment variable "NITROS9DIR" being set
+you would get error's when building the project that "/rules.mak" could not
+be found.
+This is because the code to set the envirornment variable "NITROS9DIR" is in
+the rules.mak which can not be included because of the envirornment variable
+not being set. To fix this I put the code needed to set this envirornment
+variable before each include for the rules.mak.
+
+This change should not effect people who already have this envirornment
+variable set before building the project.
+
+----------------------------------------------------------
 2013/01/12 David Ladd
 M ChangeLog
 M makefile

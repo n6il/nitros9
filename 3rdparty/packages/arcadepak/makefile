@@ -1,3 +1,6 @@
+ifndef  NITROS9DIR
+NITROS9DIR      = $(HOME)/nitros9
+endif
 include $(NITROS9DIR)/rules.mak
 
 6809L2		= $(NITROS9DIR)/level2/coco3

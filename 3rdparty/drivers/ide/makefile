@@ -1,6 +1,9 @@
 # Curtis Boyle's IDE Driver
 
-include ../../../rules.mak
+ifndef  NITROS9DIR
+NITROS9DIR      = $(HOME)/nitros9
+endif
+include $(NITROS9DIR)/rules.mak
 
 DEPENDS		= ./makefile
 DRVRS		= ccide_l1.dr ccide_l2.dr
