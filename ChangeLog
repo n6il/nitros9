@@ -3,6 +3,15 @@ NitrOS-9 V3.2.9:
 ----------------------------------------------------------
 2013/01/15 David Ladd
 M ChangeLog
+M 3rdparty/utils/aaw/mkdskindex
+
+Updated mkdskindex to state that the becker disks are a
+DriveWire 3/4 server disk image rather than a normal
+disk image for the index.html creation.
+
+----------------------------------------------------------
+2013/01/15 David Ladd
+M ChangeLog
 M 3rdparty/packages/subsim/makefile
 
 Found a problem in the makefile for subsim. When using a
