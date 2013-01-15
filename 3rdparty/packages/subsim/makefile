@@ -113,7 +113,7 @@ $(DSK_DW3_BECKER):
 	$(OS9ATTR_EXEC) $@,SUB/sub6
 	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,SUB/$(file);)
 
-dskcopy:
+dskcopy:	dsk
 	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:

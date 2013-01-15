@@ -1,6 +1,18 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/15 David Ladd
+M ChangeLog
+M 3rdparty/packages/subsim/makefile
+
+Found a problem in the makefile for subsim. When using a
+"make dskcopy", make would try to copy the disk images even
+if they did not exist.  Found that the depend "dsk" was not
+in the dskcopy section like all the other makefile(s).
+Corrected and tested and the disk images are now being
+created when you do a "make dskcopy".
+
+----------------------------------------------------------
 2013/01/14 David Ladd
 M ChangeLog
 M 3rdparty/booters/makefile
