@@ -1,5 +1,6 @@
 ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
+NITROS9DIR      := $(HOME)/nitros9
+export NITROS9DIR
 endif
 include $(NITROS9DIR)/rules.mak
 
@@ -55,10 +56,61 @@ becker:
 
 info:
 	@$(foreach dir, $(dirs), ($(CD) $(dir); make info);)
-	
+
+# This section is to do the nightly build and upload 
+# to sourceforge.net you must set the environment
+# variable SOURCEUSER to the userid you have for sourceforge.net
+# The "burst" script is found in the scripts folder and must
+# on your ssh account at sourceforge.net
+ifdef	SOURCEUSER
 nightly: clean hgupdate dskcopy
 	make info>$(DSKDIR)/ReadMe
 	$(ARCHIVE) nitros9project $(DSKDIR)/*
 	scp nitros9project.zip $(SOURCEUSER),nitros9@web.sourceforge.net:/home/groups/n/ni/nitros9/htdocs
 	ssh $(SOURCEUSER),nitros9@shell.sourceforge.net create
 	ssh $(SOURCEUSER),nitros9@shell.sourceforge.net "./burst"
+else
+nightly:
+	@echo ""
+	@echo ""
+	@echo "You need to set the SOURCEUSER variable"
+	@echo "You may wish to refer to the nightly"
+	@echo "section of the makefile."
+endif
+
+# This section is to run a nightly test.
+# This requires you to setup a environment variable
+# called TESTSSHSERVER.
+# example would be: TESTSSHSERVER='testuser@localhost'
+# another example: TESTSSHSERVER='testuser@test.testhost.com'
+#
+# You are also required to setup a target path for your file
+# and the environment variable that is being used in this
+# section is called TESTSSHDIR
+ifdef	TESTSSHSERVER
+ifdef	TESTSSHDIR
+nightlytest: clean hgupdate dskcopy
+	make info>$(DSKDIR)/ReadMe
+	$(ARCHIVE) nitros9project $(DSKDIR)/*
+	scp nitros9project.zip $(TESTSSHSERVER):$(TESTSSHDIR)
+	ssh $(TESTSSHSERVER) "./burst"
+else
+nightlytest:
+	@echo ""
+	@echo ""
+	@echo "You need to set the TESTSSHDIR variable"
+	@echo "You may wish to refer to the nightlytest"
+	@echo "section of the makefile to see what"
+	@echo "needs to be setup first before using"
+	@echo "this option"
+endif
+else
+nightlytest:
+	@echo ""
+	@echo ""
+	@echo "You need to set the TESTSSHSERVER variable"
+	@echo "You may wish to refer to the nightlytest"
+	@echo "section of the makefile to see what"
+	@echo "needs to be setup first before using"
+	@echo "this option."
+endif

@@ -2,6 +2,28 @@ NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
 2013/01/16 David Ladd
+M ChangeLog
+M 3rdparty/packages/arcadepak/makefile
+M makefile
+
+Updated makefile for the arcadepak to now create DW3 &
+BECKER boot disks.
+
+Added new make option to the main makefile.  New option
+is "make nightlytest"  This option uses environment
+variables called TESTSSHSERVER and TESTSSHDIR. This will
+allow testing of the nightly upload to a host ssh server
+of your choice as well as folder(s) on that account of
+your choice.  This was added strictly for testing use.
+
+Also added a check to the makefile at the nightly section
+if the user does not have the environment variable
+SOURCEUSER set then it will echo a responce saying that
+the user needs to set this environment variable before
+using this option.
+
+----------------------------------------------------------
+2013/01/16 David Ladd
 M 3rdparty/packages/arcadepak/makefile
 M 3rdparty/packages/arcadepak/smash/makefile
 M 3rdparty/packages/arcadepak/thexder/makefile
