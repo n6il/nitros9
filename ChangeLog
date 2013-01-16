@@ -1,6 +1,16 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/16 David Ladd
+M ChangeLog
+M 3rdparty/packages/arcadepak/shanghai/makefile
+M 3rdparty/packages/arcadepak/smash/makefile
+M 3rdparty/packages/arcadepak/thexder/makefile
+
+Found 3 more makefile(s) that needed the code added for the
+checking to see if NITROS9DIR was set or not.  Corrected.
+
+----------------------------------------------------------
 2013/01/15 David Ladd
 M ChangeLog
 M 3rdparty/utils/aaw/mkdskindex
