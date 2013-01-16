@@ -106,8 +106,9 @@ $(DSK_DW3):	all
 	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
-	$(RM) tocgen
+	$(MOVE) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
+	$(MOVE) toctmp tocgen
 	$(CP) $(SUPPORTFILES) $@,.
 
 $(DSK_DW3_BECKER):	all
@@ -127,8 +128,9 @@ $(DSK_DW3_BECKER):	all
 	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
-	$(RM) tocgen
+	$(MOVE) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
+	$(MOVE) toctmp tocgen
 	$(CP) $(SUPPORTFILES) $@,.
 
 dskcopy: dsk

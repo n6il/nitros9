@@ -8,7 +8,8 @@ DEPENDS		= ./makefile
 CMDS		= smash custom
 
 SYSFILES	= flags.dat ia.fnt smash.dat smash.hsc
-ROOTFILES	= 
+
+ROOTFILES	= empty_smash.txt
 
 ALLOBJS		= $(CMDS)
 
