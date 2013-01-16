@@ -9,6 +9,8 @@ CMDS		= thexder thexs
 
 SYSFILES	= ia.fnt
 
+ROOTFILES	= empty_thexder.txt
+
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)

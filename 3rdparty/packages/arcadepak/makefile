@@ -12,15 +12,15 @@ DISK_80D	= arcadepack_80d.dsk
 CMDS		= grfdrv runb
 SHELLMODS	= $(CMD)/shell_21 $(CMD)/dir $(CMD)/echo $(CMD)/link $(CMD)/load $(CMD)/mdir
 		
-SMASHCMDS	= $(shell $(CD) smash; make showobjs)
-SMASHSYS	= $(shell $(CD) smash; make showsys)
-SMASHROOT	= $(shell $(CD) smash; make showroot)
-THEXCMDS	= $(shell $(CD) thexder; make showobjs)
-THEXSYS		= $(shell $(CD) thexder; make showsys)
-THEXROOT	= $(shell $(CD) thexder; make showroot)
-SHANGCMDS	= $(shell $(CD) shanghai; make showobjs)
-SHANGSYS	= $(shell $(CD) shanghai; make showsys)
-SHANGROOT	= $(shell $(CD) shanghai; make showroot)
+SMASHCMDS	= $(shell $(CD) smash; make --no-print-directory showobjs)
+SMASHSYS	= $(shell $(CD) smash; make --no-print-directory showsys)
+SMASHROOT	= $(shell $(CD) smash; make --no-print-directory showroot)
+THEXCMDS	= $(shell $(CD) thexder; make --no-print-directory showobjs)
+THEXSYS		= $(shell $(CD) thexder; make --no-print-directory showsys)
+THEXROOT	= $(shell $(CD) thexder; make --no-print-directory showroot)
+SHANGCMDS	= $(shell $(CD) shanghai; make --no-print-directory showobjs)
+SHANGSYS	= $(shell $(CD) shanghai; make --no-print-directory showsys)
+SHANGROOT	= $(shell $(CD) shanghai; make --no-print-directory showroot)
 MD		= $(6809L2)/modules
 
 # We make our own bootfile and kernel track
@@ -61,6 +61,7 @@ shell:	$(DEPENDS)
 	@$(ECHO) ""
 
 $(DISK_40D): all
+	$(RM) $@
 	$(CD) $(6809L2); make
 	$(OS9FORMAT_DS40) $@ -n"NitrOS-9 Arcade Pack"
 	$(MERGE) $(OS9BOOT_40D)>os9boot
@@ -69,7 +70,6 @@ $(DISK_40D): all
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $@,CMDS
 	$(CP) shell $@,CMDS
-	$(RM) shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(foreach file, $(CMDS), $(CP) $(6809L2)/cmds/$(file) $@,CMDS/$(file);)
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
@@ -90,6 +90,7 @@ $(DISK_40D): all
 	$(CPL) startup $@,
 
 $(DISK_80D): all
+	$(RM) $@
 	$(CD) $(6809L2); make
 	$(OS9FORMAT_DS80) $@ -n"NitrOS-9 Arcade Pack"
 	$(MERGE) $(OS9BOOT_80D)>os9boot
@@ -98,7 +99,6 @@ $(DISK_80D): all
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $@,CMDS
 	$(CP) shell $@,CMDS/shell
-	$(RM) shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(foreach file, $(CMDS), $(CP) $(6809L2)/cmds/$(file) $@,CMDS/$(file);)
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
@@ -119,6 +119,7 @@ $(DISK_80D): all
 	$(CPL) startup $@,
 
 clean:	dskclean
+	$(RM) shell
 	$(CD) smash; make clean
 	$(CD) thexder; make clean
 	$(CD) shanghai; make clean

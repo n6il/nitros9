@@ -2,6 +2,29 @@ NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
 2013/01/16 David Ladd
+M 3rdparty/packages/arcadepak/makefile
+M 3rdparty/packages/arcadepak/smash/makefile
+M 3rdparty/packages/arcadepak/thexder/makefile
+M 3rdparty/packages/cc/makefile
+M 3rdparty/packages/sierra/blackcauldron/makefile
+M 3rdparty/packages/sierra/christmas86/makefile
+M ChangeLog
+A 3rdparty/packages/arcadepak/smash/empty_smash.txt
+A 3rdparty/packages/arcadepak/thexder/empty_thexder.txt
+
+Found a problem with with the makefile related to the
+arcadepak not building from the chained make.  Found the
+"--no-print-directory" was missing from the make statement
+to get the filenames for the sub folders.  Also found empty
+labels so created a empty_smash.txt and a empty_thexder.txt
+to correct for odd errors when dealing with the empty labels.
+
+Corrected blackcauldron and christmas86 makefile(s) related
+to disk creation.  Found that tocgen was being removed by
+some of the disk image sections. This has been corrected.
+
+----------------------------------------------------------
+2013/01/16 David Ladd
 M ChangeLog
 M 3rdparty/packages/arcadepak/shanghai/makefile
 M 3rdparty/packages/arcadepak/smash/makefile

@@ -152,8 +152,9 @@ dsk_dw3:	all
 	$(CPL) $(TEXTFILES) $(DSK_DW3),.
 	$(OS9RENAME) $(DSK_DW3),tOC_40d.txt tOC.txt
 	$(CP) $(SUPPORTFILES) $(DSK_DW3),.
-	$(RM) tocgen
+	$(MOVE) tocgen toctmp
 	tocgen $(DSK_DW3),tOC.txt $(DSK_DW3),tOC
+	$(MOVE) toctmp tocgen
 
 dsk_dw3_becker:	all
 	$(RM) $(DSK_DW3_BECKER)
@@ -174,8 +175,9 @@ dsk_dw3_becker:	all
 	$(CPL) $(TEXTFILES) $(DSK_DW3_BECKER),.
 	$(OS9RENAME) $(DSK_DW3_BECKER),tOC_40d.txt tOC.txt
 	$(CP) $(SUPPORTFILES) $(DSK_DW3_BECKER),.
-	$(RM) tocgen
+	$(MOVE) tocgen toctmp
 	tocgen $(DSK_DW3_BECKER),tOC.txt $(DSK_DW3_BECKER),tOC
+	$(MOVE) toctmp tocgen
 
 
 dsk:	dsk_40d dsk_80d dsk_dw3 dsk_dw3_becker
