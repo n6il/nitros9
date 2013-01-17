@@ -45,13 +45,14 @@ dskclean:
 dw3dsk = $(LEVEL1)/coco/nos96809l1coco1_dw3.dsk $(LEVEL1)/coco/nos96809l1coco2_dw3.dsk \
 	$(LEVEL2)/coco3/nos96809l2_dw3.dsk $(LEVEL2)/coco3_6309/nos96309l2_dw3.dsk
 
+dw3:	dsk
+	$(ARCHIVE) nitros9_drivewire3.zip $(dw3dsk)
+
+# DriveWire 3 Becker DSK Images
 beckerdsk	= $(LEVEL1)/coco/nos96809l1coco_becker.dsk \
 	$(LEVEL2)/coco3/nos96809l2_becker.dsk $(LEVEL2)/coco3_6309/nos96309l2_becker.dsk
 
-dw3:
-	$(ARCHIVE) nitros9_drivewire3.zip $(dw3dsk)
-
-becker:
+becker:	dsk
 	$(ARCHIVE) nitros9_becker.zip $(beckerdsk)
 
 info:
