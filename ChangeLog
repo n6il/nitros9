@@ -3,6 +3,32 @@ NitrOS-9 V3.2.9:
 ----------------------------------------------------------
 2013/01/17 David Ladd
 M ChangeLog
+M level2/coco3/cmds/makefile
+M level2/coco3_6309/cmds/makefile
+A level2/coco3/cmds/makefile_common
+
+Thanks to Bill P. for finding that the commands in
+level2/coco3/cmds were being linked with sys6809l1.l when
+they should have been being linked with sys6809l2.l .
+Also found that the level2/coco3_6309/cmds were also
+using the makefile from the level2/coco3/cmds so that
+section was also using the sys6809l1.l for linking.
+
+Renamed level2/coco3/cmds/makefile to makefile_common then
+created a new makefile which calls makefile_common then
+does a LFLAGS          += -l=$(NITROS9DIR)/lib/sys6809l2.l
+and then removed the -l=$(NITROS9DIR)/lib/sys6809l1.l from
+the makefile_common.
+
+Then updated the level2/coco3_6309/makefile to include
+level2/coco3/cmds/makefile_common rather than makefile.
+Then added to level2/coco3_6309/makefile the new line
+LFLAGS          += -l=$(NITROS9DIR)/lib/sys6309l2.l
+and should fix any lose ends there.
+
+----------------------------------------------------------
+2013/01/17 David Ladd
+M ChangeLog
 M rules.mak
 
 Updated the rules.mak so that all os9 format commands will
