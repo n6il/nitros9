@@ -1,6 +1,20 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/18 David Ladd
+M ChangeLog
+M level2/coco3/cmds/makefile
+M level2/coco3_6309/cmds/makefile
+
+Robert Gault found a problem with building the NitrOS-9
+project from MinGW related to the level2/coco3_6309/cmds/
+makefile not including level2/coco3/cmds/makefile_common
+correctly.  Changed the include line to use $(CC368L2)/cmds/
+makefile_common in both level2/coco3/cmds/makefile and
+level2/coco3_6309/cmds/makefile .  This should help with
+this problem.
+
+----------------------------------------------------------
 2013/01/17 David Ladd
 M ChangeLog
 M 3rdparty/packages/pacos9/makefile
