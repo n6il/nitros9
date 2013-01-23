@@ -58,24 +58,8 @@ FLOPPY         EQU       0
 *   Exit:  Carry Clear = OK, Set = Error
 *          B = error (Carry Set)
 HWInit                   
-* Set up DDR for side B
-*               ldx       #PIA1Base           get base address of PIA
-*               ldb       3,x
-*               andb      #%11111011
-*               stb       3,x
-*               lda       #%11111010
-*               sta       2,x
-*               orb       #%00000100
-*               stb       3,x
+               use       dwinit.asm
 
-* Set up DDR for side A
-*               ldb       1,x
-*               andb      #%11111011
-*               stb       1,x                 $FF20 is now Data Direction Register
-*               lda       #%11111110          data direction bits (1=out, 0=in)
-*               sta       ,x                  tell HW
-*               orb       #%00000100          reset $FF20 to I/O register
-*               stb       1,x                 $FF20 is now Data Direction Register
 HWTerm         clrb      
                rts       
 
