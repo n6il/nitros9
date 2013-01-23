@@ -252,11 +252,13 @@ L00FB    ldd   ,y++
          bita  #CRCOn			CRC on?
          beq   GetMem			branch if not (already cleared earlier)
          inc   <D.CRC			else turn on CRC checking
-GetMem   ldd   MaxMem+1,u
-         clrb
-         cmpd  <D.MLIM
-         bcc   L0158
-         std   <D.MLIM
+*GetMem   ldd   MaxMem+1,u		I don't think this exists for Level1 RG
+*         clrb
+*         cmpd  <D.MLIM			starts as $EE00
+*         bra   L0158
+*         std   <D.MLIM
+GetMem   equ   *			Initially I tried GetMem clra
+*                                       that is redundant. See last line. RG
 L0158    ldx   <D.FMBM
 		IFNE	atari
 * In the Atari, memory $0000-$08FF is used by the system

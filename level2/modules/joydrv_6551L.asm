@@ -47,10 +47,20 @@
 * but detects 4th byte from a Logitek mouse & switches modes
 * till next reboot.
 * Also no 6309 optimizations yet.  Version A maybe? Not yet.
+
+* damn this editor, it lets me open a file, do an hours worth of
+* hacking on a file I don't own, but the sumbitch doesn't tell
+* me until I go to save an hours work!  So I have to re-invent
+* this wheel every damned time.
+
+* Now we start on version 13
+* GH 2012/11/01 trying to make this work again, it died with
+* the conversion to a mercurial repo on srcfrg.
+
 * one problem has been the narrow list format, Boisy advises:
 	opt	w132
 	nam	JoyDrv
-	ttl	Joystick Driver for 6551/Logitech Mouse
+	ttl	Joystick Driver for 6551/Logitech or M$ Mouse
 
 * Disassembled 98/09/09 09:22:44 by Disasm v1.6 (C) 1988 by RML
 
@@ -60,15 +70,15 @@
          endc
 * l51.defs - something else to check against google et all
 * l51.defs has been modified, this needs the new version
-* set this to get some debugging in the boot trace
-DEBUG	= 1
+* set this to get some debugging and a lockup in the boot trace
+DEBUG	= 0
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
-rev      set   $02
-edition  set   11
+rev      set   $01
+edition  set   13
 * set this to where your rs-232 pack is plugged in
 MPISlot  set   $00	front slot for mine
-
+* the $FF6C is the mouses port address, change to suit your system.
          mod   eom,name,tylg,atrv,start,$FF6C
 
 name     fcs   /JoyDrv/
@@ -82,10 +92,9 @@ start    lbra  Init
          lbra  SSMsXY
          lbra  SSJoyBtn
 
-* This code is not being
-* used, but save it so I
-* don't have to reinvent
-* this wheel later
+* This code is not being used as we have SSMsXY, but save it so I
+* don't have to reinvent this wheel later but no clue why
+* so it will die in next Edition 14 if not sooner.  GH.
 *SSJoyXY  pshs  x,b,a
 *         ldx   #PIA0Base
 *         lda   <$23,x
@@ -140,7 +149,7 @@ start    lbra  Init
 IRQPckt  equ   *
 Pkt.Flip fcb   Stat.Flp   D.Poll flip byte=$00
 Pkt.Mask fcb   Stat.RxF  is correct
-         fcb   $01        priority=low
+         fcb   $01        priority=low, mouse is pretty slow
 
 ***
 * JoyDrv Initialization.
@@ -153,53 +162,54 @@ Pkt.Mask fcb   Stat.RxF  is correct
 * ERROR OUTPUT:  CC = Carry set
 *                B = error code
 * first, suspend all interrupts
-Init	pshs	cc         save regs we alter
+Init	pshs	cc         save regs we alter, stack -1
 	orcc	#IntMasks  mask IRQs while disabling ACIA
-	bsr	InitPIAs
-	bsr	InitGIME
-	bsr	ClrACIA reset, gobble up trash data in ACIA
-	bcc	ClrBuf  which will also install IRQSvs
-	puls	cc else error
-	lbsr	Term
-	comb
-	ldb	#E$PrcAbt
-	rts	and return error
+	bsr	InitPIAs	stack still -1
+	bsr	InitGIME	stack still -1
+* we should see a bunch of stuff here, ending in 'D'
+	lbsr	ClrACIA reset, clear trash data in ACIA, stack -1 on rtn
+	bcc	SetBuf  which will also install IRQSvs stack -1 yet
+	bcc	Alldone else stack still -1
+	lbra	Term it won't come back!
+Alldone puls	cc,pc and return clean
 
-*************************************
+*****SetBuf**************************
 * Btn.Cntr,u  offset 0 has room for 3 bits of incoming
 * byte counter, 3 bits of button status.
 * Buffer, offset 2-3 is the combined first 3 bytes
 * of the incoming XY data
 * CrntXpos, offset 4-5 is current (0-HResMaxX) xpos
 * CrntYpos, offset 6-7 is current (0 to HResMaxY*2) ypos
-
-ClrBuf	 ldd   #$0007  clear the buffer
-ClrBuf1	 sta   b,u	A=$00
-	 decb	decr counter
-	 bne   ClrBuf1	was a bpl, so 1st byte wasn't cleared
-* Now init the buffer to real data
-         clrb  reset to $00, s/b $00 here anyway.
-         sta   Btn.Cntr,u set up Rx data sync, no button(s) pressed
-         std   CrntXPos,u set up X position at left screen edge
-         ldd   #HResMaxY*2 =$017E, 382 decimal?  Odd value, check
-         std   CrntYPos,u set up Y position at top screen edge
-	 lda   #'M	preset M$ mouse
-	 sta   Buffer,u
-
+SetBuf	 lda	#$00
+	 ldb	#'M  set Buffer,u to M$ mode
+         std	Btn.Cntr,u set up Rx data sync, no button(s) pressed
+	 clrb
+         std	CrntXPos,u set up X position at left screen edge
+         ldd	#HResMaxY*2 =$017E, 382 decimal?  Odd value, check
+         std	CrntYPos,u set up Y position at top screen edge
 * Now we should be ready for live IRQ's
 InstIRQ  ldd   M$Mem,pcr  get base hardware address
          addd  #StatReg   status register address
+	 pshs	x,y
          leax  IRQPckt,pcr
          leay  IRQSvc,pcr
          os9   F$IRQ install the IRQSvs routine
+	 puls	x,y
          lbcs  InitErr go with cc on stack!
-	 puls  cc get rid of the push
-	 rts
+* Now, enable rx Rx IRQ's
+	 ldx	M$Mem,pcr  but first clean out any instant IRQ's
+	 lda	DataReg,x	dump it to the bitbucket
+	 lda	StatReg,x	likewise, clear any irq's pending
+* Now, enable the IRQ's
+	 ldd	#(TIC.RTS!Cmd.DTR)*256+(DB.7!Ctl.RClk!BR.01200) enable rx IRQs
+	 std	CmdReg,x and enable Rx IRQ's
+	 puls	cc	Fix the stack!
+	 rts	so stack = 0 now
 
 * BUG FIX: InitExit is now here... was TermExit...
 InitExit puls  pc,cc      recover original regs, return...
 
-* clear the PIA's for this
+* clear the PIA's for this, stack is -3 on entry
 InitPIAs lda   >PIA1Base+3 get PIA CART* input control register
          anda  #$FC        clear PIA CART* control bits
          sta   >PIA1Base+3 disable PIA CART* FIRQs
@@ -210,14 +220,14 @@ InitPIAs lda   >PIA1Base+3 get PIA CART* input control register
          jsr   <D.BtBug
          puls  a,b,x,u,y,cc,dp
 	endc
-	 rts
+	 rts	stack still -1
 
 InitGIME lda   #$01       GIME CART* IRQ enable
          ora   <D.IRQER   mask in current GIME IRQ enables
          sta   <D.IRQER   save GIME CART* IRQ enable shadow register
          sta   >IrqEnR    enable GIME CART* IRQs
 	 lda   SlotSlct,pcr mpi slot of mouse
-	 bmi   ClrACIA
+	 bmi   ClrACIA	if no mpi
 	 sta   >MPI.Slct
 	ifeq DEBUG-1
          pshs  a,b,x,u,y,cc,dp
@@ -225,77 +235,51 @@ InitGIME lda   #$01       GIME CART* IRQ enable
          jsr   <D.BtBug
          puls  a,b,x,u,y,cc,dp
 	endc
-	 rts
+	 rts  And stack still -1
 
 ClrACIA  ldx   M$Mem,pcr  get base hardware address again
 	 lda   #$10
 	 sta   StatReg,x reset again
-* major foobar. These mice are 7n2 mice, not 8n1
-* Fixed 25/06/2008 GH
-	 ldd   #(TIC.RTS!Cmd.DTR)*256+(DB.7!Ctl.RClk!BR.01200) [D]=command:control
+* start it up with rx IRQs disabled
+	 ldd   #(TIC.RTS!Cmd.DTR!Cmd.RxIE)*256+(DB.7!Ctl.RClk!BR.01200) [D]=command:control
          std   CmdReg,x   set command and control registers
 * do instant reads for trash collection
 * and clear status of Stat.RxF bits
-* read it 16 times so its settled!
-	 ldb   #$10
-flshinit lda   DataReg,x
-	 lda   StatReg,x
+* read it 32 times so its settled!
+* and get rid of this headache
+	 ldb   #$02
+flshinit lda	StatReg,x
+* look at everything
+	 ifeq	DEBUG-1
+	 pshs	a,b,x,u,y,cc,dp
+	 jsr	<D.BtBug lets see what its doing
+	 puls	a,b,x,u,y,cc,dp
+	 endc
+	 lda   DataReg,x
+	 ifeq	DEBUG-1
+	 pshs	a,b,x,u,y,cc,dp
+	 jsr	<D.BtBug lets see what its doing
+	 puls	a,b,x,u,y,cc,dp
+	 endc
 	 decb
 	 bne   flshinit
+* looks like 2x is enough to clear things, its P3P3P3 till end.
+* Fall thru to KilTim
 
-* that kills some of the 14 milliseconds
-* to the mouses first response byte
-* now, lets see what mouse we have
-* my mouse does a $7F as it powers up as first byte
-	 bsr  GetByte GetByte shows _ char
-	 bsr  GetByte GetByte shows M char, but its a logitek
-	 bsr  GetByte GetByte shows 3 char, ?number of buttons?
-* it will either get the first 3 bytes, or timeout
-* and ATM, a timeout will lock the boot to display it
-GotByte  rts
+* this should allow the acia to overflow etc as the power/signin bytes come in
+* but the Rx irq is disabled. 
+* We need at least 14 milliseconds plus 3 bytes at 1200 baud,
+* which is 25 ms or about 40 milliseconds total.
+KilTim	pshs 	y	stack -3
+	ldb	#$03	a small time delay
+rloadlp ldy	#$1FFF	ditto,
+dodelay	leay	-1,y
+	bne	dodelay
+	decb	
+	clra
+	puls	y	stack -1
+	rts  Return success regardless, stack -1
 
-*********************************
-* Entry  : x pointing at hardware
-* Mangles: a,b
-* Returns: char in A
-* Error  : cc set, err code in B
-* scans acia for a byte of data
-* Switch this out also
-
-GetByte	 pshs  y
-	 ldy   #$01A0 set timeout to fail
-GetByte1 leay  -1,y
-	 beq   GByteFai
-	 clra  kill some time
-Dly1	 deca
-	 bne   Dly1
-	 lda   StatReg,x look for byte
-	 anda  Pkt.Mask,pcr
-	 tsta  Stat.RxF
-	 beq   GetByte1
-	 lda   DataReg,x
-* show byte on boot screen
-	 pshs  a,b,x,u,y,cc,dp
-	 jsr   <D.BtBug
-	 puls  a,b,x,u,y,cc,dp
-	 puls  y
-	 clrb in case cc set
-	 rts
-
-GByteFai puls  y
-	 clrb  clear carry
-	ifeq DEBUG-1
-* show failure on boot screen a 't'
-	 pshs  a,b,x,u,y,cc,dp
-	 lda   #'T indicate timeout
-	 jsr   <D.BtBug
-	 puls  a,b,x,u,y,cc,dp
-	endc
-GBytFail comb  set carry
-	 ldb   #E$PrcAbt
-* lock up boot to show failure
-lettgsho bra   lettgsho
-*	 rts
 
 *** Only used by failed Init routine!
 * JoyDrv Termination.
@@ -318,18 +302,18 @@ InitErr  ldx   M$Mem,pcr  get base address
          leay  IRQSvc,pcr
          os9   F$IRQ
 
-	 ifeq  DEBUG-1
+*	 ifeq  DEBUG-1
 	 pshs  a,b,x,y,u,cc,dp
          lda   #'j failed
          jsr   <D.BtBug
          puls  a,b,x,y,u,cc,dp
-	 endc
+*	 endc
 
 TermExit puls  cc clear stack
 letssee  bra   letssee  lock it with failed data on screen
-*	 comb
-*	 ldb   #E$PrcAbt
-*	 rts
+	 comb
+	 ldb   #E$PrcAbt
+	 rts
 *************************
 * This code only good for tandy
 * Joysticks. Why here?
@@ -365,7 +349,7 @@ SSJoyBtn ldb   #$FF
 *          A, X, and U registers may be altered
 *
 * ERROR OUTPUT:  none
-* AND HERE IS WHERE THE BUTTON DATA IS LOST!
+
 SSMsBtn  pshs  cc
          orcc  #IntMasks		mask interrupts
          lda   Btn.Cntr,u

@@ -17,12 +17,61 @@
 *    U is preserved.  All accumulators are clobbered
 *
 
+          IFNE ARDUINO
+* Note: this is an optimistic routine. It presumes that the server will always be there, and
+* has NO timeout fallback. It is also very short and quick.
+DWRead    clra                          ; clear Carry (no framing error)
+          pshs   u,x,cc              ; preserve registers
+          leau   ,x
+          ldx    #$0000
+loop@     tst    $FF51                  ; check for CA1 bit (1=Arduino has byte ready)
+          bpl    loop@                  ; loop if not set
+          ldb    $FF50                  ; clear CA1 bit in status register
+          stb    ,u+                    ; save off acquired byte
+          abx                           ; update checksum
+          leay   ,-y
+          bne    loop@
 
-          IFNE BECKER
+          leay      ,x                  ; return checksum in Y
+          puls      cc,x,u,pc        ; restore registers and return
 
+          ELSE
+
+          IFNE JMCPBCK
 * NOTE: There is no timeout currently on here...
-DWRead    pshs   cc,d,x,u
-          leau   ,x 
+DWRead    clra                          ; clear Carry (no framing error)
+          deca                          ; clear Z flag, A = timeout msb ($ff)
+          tfr       cc,b
+          pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
+          leau   ,x
+          ldx    #$0000
+          orcc   #IntMasks
+loop@     ldb    $FF4C
+          bitb   #$02
+          beq    loop@
+          ldb    $FF44
+          stb    ,u+
+          abx
+          leay   ,-y
+          bne    loop@
+
+          tfr    x,y
+          ldb    #0
+          lda    #3
+          leas      1,s                 ; remove timeout msb from stack
+          inca                          ; A = status to be returned in C and Z
+          ora       ,s                  ; place status information into the..
+          sta       ,s                  ; ..C and Z bits of the preserved CC
+          leay      ,x                  ; return checksum in Y
+          puls      cc,dp,x,u,pc        ; restore registers and return
+          ELSE
+          IFNE BECKER
+* NOTE: There is no timeout currently on here...
+DWRead    clra                          ; clear Carry (no framing error)
+          deca                          ; clear Z flag, A = timeout msb ($ff)
+          tfr       cc,b
+          pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
+          leau   ,x
           ldx    #$0000
           orcc   #IntMasks
 loop@     ldb    $FF41
@@ -31,16 +80,22 @@ loop@     ldb    $FF41
           ldb    $FF42
           stb    ,u+
           abx
-          leay   -1,y
+          leay   ,-y
           bne    loop@
 
           tfr    x,y
-          puls   cc
-          andcc  #^Carry
-          orcc   #Zero
-          puls   d,x,u,pc
+          ldb    #0
+          lda    #3
+          leas      1,s                 ; remove timeout msb from stack
+          inca                          ; A = status to be returned in C and Z
+          ora       ,s                  ; place status information into the..
+          sta       ,s                  ; ..C and Z bits of the preserved CC
+          leay      ,x                  ; return checksum in Y
+          puls      cc,dp,x,u,pc        ; restore registers and return
+          ENDC
+          ENDC
 
-          ELSE
+          IFEQ BECKER+JMCPBCK+ARDUINO
           IFNE BAUD38400
 *******************************************************
 * 38400 bps using 6809 code and timimg
@@ -107,7 +162,7 @@ rxExit    leas      1,s                 ; remove timeout msb from stack
 
 
           ELSE
-          IFNE H6309-1
+          IFEQ H6309
 *******************************************************
 * 57600 (115200) bps using 6809 code and timimg
 *******************************************************
@@ -261,6 +316,7 @@ rx0050    inca                          ; A = status to be returned in C and Z
           puls      cc,dp,x,u,pc        ; restore registers and return
           setdp     $00
 
+          ENDC
           ENDC
           ENDC
           ENDC

@@ -40,7 +40,12 @@
 *
 *   4      2008/02/17  Boisy G. Pitre
 * Message phase code was broken, now fixed and the booter now works.
-
+*
+*   5      2012/11/05-06  Gene Heskett
+* SDMPI from defs/scsi.d is being ignored, so boot failed is the message.
+* Ded the object to fix that AND the NULL bus address and this code broken.
+* WhichDrv is now a zero based decimal value passed in by the makefile via IT.DNS
+* Thanks Boisy...
                NAM       Boot                
                TTL       SCSI Boot Module    
 
@@ -52,7 +57,7 @@
 
 tylg           SET       Systm+Objct
 atrv           SET       ReEnt+rev
-rev            SET       0
+rev            SET       1
 edition        SET       4
 
                MOD       eom,name,tylg,atrv,start,size
@@ -108,11 +113,12 @@ FLOPPY         EQU       0
 *          B = error (Carry Set)
 HWInit                   
                clr       >$FF40              stop the disk motors
-               IFNE      D4N1+HDII
-               leax      CntlSlot,pcr
-               lda       ,x
-               sta       MPI.Slct
-               ENDC      
+*               IFNE      D4N1+HDII ??????
+		IFNE	MPI
+        	leax      CntlSlot,pcr point at byte with MPI slot in it
+        	lda       ,x	get it
+        	sta       MPI.Slct and set the MPI to us.
+        	ENDC      But this was NOT being done.
                ldd       #S$SEEK*256
                ldx       #0
                bsr       setup
@@ -143,6 +149,10 @@ setup          sta       v$cmd,u
 			   ENDC
                rts
 
+* Sooooo, at end of module, the FF64XX, the XX is not a marching bit
+* pattern any more.  Cool but a huge gotcha needing makefile changes
+* all over.  And theres too many of them.
+
 scsival        FCB       $80+1,$80+2,$80+4,$80+8,$80+16,$80+32,$80+64,$80
 
 * SCSI Wake-Up Routine
@@ -155,6 +165,10 @@ wake           lda       SCSISTAT,y          obtain SCSI status byte
                leax      -1,x                else count down
                bne       wake                and try again if not timed out
                bra       wake4               else branch to timeout
+* Aha!  New code! so ITDRV goes down one count
+* Nice we get a notice.  ChangeLog's would be nice
+* But are a pain in the ass to maintain.
+
 * Step 2: Put our SCSI ID on the bus
 wake1          bsr       wake3               small delay
                lda       WhichDrv,pcr        get SCSI ID
@@ -273,12 +287,17 @@ read3
 * Fillers to get to $1D0
 Pad            FILL      $39,$1D0-3-1-2-1-*
                ENDC      
-
-* The default SCSI ID is here
+* rev1, add selections for MPI slot and bus address of drive
+* 2012\11\05 Gene Heskett
+* The default SCSI ID is here, but first do MPI slot
+		IFEQ	MPI-1
 CntlSlot       FCB       SDMPI
+		ELSE
+CntrSlot	FCB	$FF
+		ENDC
 Address        FDB       SDAddr
-WhichDrv       FCB       0
-
+* So now, this can be a base zero decimal value!
+WhichDrv	FCB	IT.DNS
                EMOD      
 eom            EQU       *
                END       
