@@ -38,6 +38,7 @@ X$BUSY         EQU       $08
 
 **** Cloud-9 TC^3 Controller Definitions
                IFNE      TC3+SB
+SDMPI          SET       $02	Added 2012\11\05 GH
 SCSIDATA       EQU       0
 SCSISTAT       EQU       1
 SCSISEL        EQU       1

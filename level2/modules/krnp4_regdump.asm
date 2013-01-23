@@ -22,6 +22,8 @@
 * ------------------------------------------------------------------
 *   1      1989/02/??  Ron Lammardo
 * Started.
+*   2       2012/11/22 Gene Heskett
+* Remove final cr to save screen space
 
          nam   krnp4 
          ttl   User Register Dump System Call for NitrOS9 Level 2
@@ -102,7 +104,7 @@ clrloop  sta   ,x+        initialize a space
          ldd   P$SP,y     get users stack address
          addd  #R$Size    add on for registers which were saved
          bsr   reg000     dump register S
-         lbsr  reg060     send a <CR>
+*         lbsr  reg060     send a <CR>
          leas  60,s       restore stack pointer
          IFNE  H6309
          pulsw

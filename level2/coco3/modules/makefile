@@ -22,7 +22,7 @@ DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		 boot_burke boot_rampak boot_wd1002 boot_dw boot_dw_becker \
+		 boot_burke boot_rampak boot_wd1002 boot_dw boot_dw_becker boot_dw_arduino \
 		boot_tc3 boot_ide boot_rom
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
@@ -33,7 +33,7 @@ CLOCKS          = clock_60hz clock_50hz \
 		clock2_jvemu clock2_messemu clock2_dw clock2_dw_becker
 
 RBF		= rbf.mn \
-		rbdw.dr dwio.sb dwio_becker.sb \
+		rbdw.dr dwio.sb dwio_becker.sb dwio_arduino.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
 		d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		d0_40d.dd d1_40d.dd d2_40d.dd d0_80d.dd \
@@ -109,6 +109,14 @@ boot_dw_becker: boot_dw.asm
 # DriveWire Becker Submodule
 dwio_becker.sb: dwio.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBECKER=1
+
+# DriveWire Becker Booter
+boot_dw_arduino: boot_dw.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DARDUINO=1
+
+# DriveWire Arduino Submodule
+dwio_arduino.sb: dwio.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DARDUINO=1
 
 # CoGrf/CoVDG Modules
 cogrf.io: cowin.asm
