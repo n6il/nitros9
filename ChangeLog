@@ -1,6 +1,25 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/23 David Ladd
+M 3rdparty/utils/view/makefile
+M ChangeLog
+M level1/modules/dwread.asm
+M level1/modules/dwwrite.asm
+
+Corrected a ENDC that was in the incorrect location in
+dwread.asm and dwwrite.asm also moved the 6309 native code
+into the H6309 section and changed the IFEQ H6309 to IFNE H6309
+so the code would get correctly loaded.  Moved the 57600 6809
+code to the default location as it was in the old dwread.asm
+and dwwrite.asm before these files got overwritten by the
+dwread.asm and dwwrite.asm from HDBDOS project.
+
+Also did some updates to the 3rdparty/utils/view/makefile
+but this file is not done yet to try to fix all the problems
+with it.
+
+----------------------------------------------------------
 2013/01/18 David Ladd
 M ChangeLog
 M level2/coco3/cmds/makefile
