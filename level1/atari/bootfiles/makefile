@@ -52,5 +52,5 @@ bootfile: $(BOOTFILE_P1) $(BOOTFILE_P2) $(DEPENDS)
 	$(PADROM) -b 29696 $@
 
 clean:
-	$(RM) $(ALLOBJS) $(BOOTFILE_P1) $(BOOTFILE_P2)
+	$(RM) $(ALLOBJS) bootfile_p1 bootfile_p2
 

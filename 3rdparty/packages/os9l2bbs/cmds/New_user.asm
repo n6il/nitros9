@@ -63,7 +63,7 @@ L004B      cmpu   0,S                                                   * 004B 1
 L0054      ldu    $02,S                                                 * 0054 EE 62          nb
            ldd    ,Y++                                                  * 0056 EC A1          l!
            beq    L0061                                                 * 0058 27 07          '.
-           leax   >,PC                                                  * 005A 30 8D FF A2    0.."
+           leax   0,PC                                                  * 005A 30 8D FF A2    0.."
            lbsr   L0164                                                 * 005E 17 01 03       ...
 L0061      ldd    ,Y++                                                  * 0061 EC A1          l!
            beq    L006A                                                 * 0063 27 05          '.

@@ -1,6 +1,517 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/23 David Ladd
+M 3rdparty/utils/view/makefile
+M ChangeLog
+M level1/modules/dwread.asm
+M level1/modules/dwwrite.asm
+
+Corrected a ENDC that was in the incorrect location in
+dwread.asm and dwwrite.asm also moved the 6309 native code
+into the H6309 section and changed the IFEQ H6309 to IFNE H6309
+so the code would get correctly loaded.  Moved the 57600 6809
+code to the default location as it was in the old dwread.asm
+and dwwrite.asm before these files got overwritten by the
+dwread.asm and dwwrite.asm from HDBDOS project.
+
+Also did some updates to the 3rdparty/utils/view/makefile
+but this file is not done yet to try to fix all the problems
+with it.
+
+----------------------------------------------------------
+2013/01/18 David Ladd
+M ChangeLog
+M level2/coco3/cmds/makefile
+M level2/coco3_6309/cmds/makefile
+
+Robert Gault found a problem with building the NitrOS-9
+project from MinGW related to the level2/coco3_6309/cmds/
+makefile not including level2/coco3/cmds/makefile_common
+correctly.  Changed the include line to use $(CC368L2)/cmds/
+makefile_common in both level2/coco3/cmds/makefile and
+level2/coco3_6309/cmds/makefile .  This should help with
+this problem.
+
+----------------------------------------------------------
+2013/01/17 David Ladd
+M ChangeLog
+M 3rdparty/packages/pacos9/makefile
+
+Updated 3rdparty/packages/pacos9/makefile to use the newer
+sys.l file.  Changed the lib file to sys6809l2.l from sys.l
+
+----------------------------------------------------------
+2013/01/17 David Ladd
+M ChangeLog
+M level2/coco3/cmds/makefile
+M level2/coco3_6309/cmds/makefile
+A level2/coco3/cmds/makefile_common
+
+Thanks to Bill P. for finding that the commands in
+level2/coco3/cmds were being linked with sys6809l1.l when
+they should have been being linked with sys6809l2.l .
+Also found that the level2/coco3_6309/cmds were also
+using the makefile from the level2/coco3/cmds so that
+section was also using the sys6809l1.l for linking.
+
+Renamed level2/coco3/cmds/makefile to makefile_common then
+created a new makefile which calls makefile_common then
+does a LFLAGS          += -l=$(NITROS9DIR)/lib/sys6809l2.l
+and then removed the -l=$(NITROS9DIR)/lib/sys6809l1.l from
+the makefile_common.
+
+Then updated the level2/coco3_6309/makefile to include
+level2/coco3/cmds/makefile_common rather than makefile.
+Then added to level2/coco3_6309/makefile the new line
+LFLAGS          += -l=$(NITROS9DIR)/lib/sys6309l2.l
+and should fix any lose ends there.
+
+----------------------------------------------------------
+2013/01/17 David Ladd
+M ChangeLog
+M rules.mak
+
+Updated the rules.mak so that all os9 format commands will
+format the entire disk image.  This was done to fix some
+issues that some people were having.
+
+----------------------------------------------------------
+2013/01/16 David Ladd
+M ChangeLog
+M makefile
+
+Updated main makefile so that "dw3" and "becker" sections
+use dependency "dsk" so that disk images are created before
+the archives are created.
+
+----------------------------------------------------------
+2013/01/16 David Ladd
+M ChangeLog
+M 3rdparty/packages/arcadepak/makefile
+M makefile
+
+Updated makefile for the arcadepak to now create DW3 &
+BECKER boot disks.
+
+Added new make option to the main makefile.  New option
+is "make nightlytest"  This option uses environment
+variables called TESTSSHSERVER and TESTSSHDIR. This will
+allow testing of the nightly upload to a host ssh server
+of your choice as well as folder(s) on that account of
+your choice.  This was added strictly for testing use.
+
+Also added a check to the makefile at the nightly section
+if the user does not have the environment variable
+SOURCEUSER set then it will echo a responce saying that
+the user needs to set this environment variable before
+using this option.
+
+----------------------------------------------------------
+2013/01/16 David Ladd
+M 3rdparty/packages/arcadepak/makefile
+M 3rdparty/packages/arcadepak/smash/makefile
+M 3rdparty/packages/arcadepak/thexder/makefile
+M 3rdparty/packages/cc/makefile
+M 3rdparty/packages/sierra/blackcauldron/makefile
+M 3rdparty/packages/sierra/christmas86/makefile
+M ChangeLog
+A 3rdparty/packages/arcadepak/smash/empty_smash.txt
+A 3rdparty/packages/arcadepak/thexder/empty_thexder.txt
+
+Found a problem with with the makefile related to the
+arcadepak not building from the chained make.  Found the
+"--no-print-directory" was missing from the make statement
+to get the filenames for the sub folders.  Also found empty
+labels so created a empty_smash.txt and a empty_thexder.txt
+to correct for odd errors when dealing with the empty labels.
+
+Corrected blackcauldron and christmas86 makefile(s) related
+to disk creation.  Found that tocgen was being removed by
+some of the disk image sections. This has been corrected.
+
+----------------------------------------------------------
+2013/01/16 David Ladd
+M ChangeLog
+M 3rdparty/packages/arcadepak/shanghai/makefile
+M 3rdparty/packages/arcadepak/smash/makefile
+M 3rdparty/packages/arcadepak/thexder/makefile
+
+Found 3 more makefile(s) that needed the code added for the
+checking to see if NITROS9DIR was set or not.  Corrected.
+
+----------------------------------------------------------
+2013/01/15 David Ladd
+M ChangeLog
+M 3rdparty/utils/aaw/mkdskindex
+
+Updated mkdskindex to state that the becker disks are a
+DriveWire 3/4 server disk image rather than a normal
+disk image for the index.html creation.
+
+----------------------------------------------------------
+2013/01/15 David Ladd
+M ChangeLog
+M 3rdparty/packages/subsim/makefile
+
+Found a problem in the makefile for subsim. When using a
+"make dskcopy", make would try to copy the disk images even
+if they did not exist.  Found that the depend "dsk" was not
+in the dskcopy section like all the other makefile(s).
+Corrected and tested and the disk images are now being
+created when you do a "make dskcopy".
+
+----------------------------------------------------------
+2013/01/14 David Ladd
+M ChangeLog
+M 3rdparty/booters/makefile
+M 3rdparty/customboots/boisy/makefile
+M 3rdparty/drivers/burke/makefile
+M 3rdparty/drivers/disto/makefile
+M 3rdparty/drivers/emudsk/makefile
+M 3rdparty/drivers/ide/makefile
+M 3rdparty/drivers/makefile
+M 3rdparty/drivers/mmc/makefile
+M 3rdparty/drivers/s16550/makefile
+M 3rdparty/drivers/sdisk/makefile
+M 3rdparty/drivers/sdisk3/makefile
+M 3rdparty/drivers/tccc/makefile
+M 3rdparty/fmgrs/makefile
+M 3rdparty/fmgrs/msf/makefile
+M 3rdparty/makefile
+M 3rdparty/p2mods/makefile
+M 3rdparty/p2mods/noice/makefile
+M 3rdparty/packages/arcadepak/makefile
+M 3rdparty/packages/basic09/makefile
+M 3rdparty/packages/cc/makefile
+M 3rdparty/packages/coyota/makefile
+M 3rdparty/packages/deskmate3/makefile
+M 3rdparty/packages/ed/makefile
+M 3rdparty/packages/fsim2/makefile
+M 3rdparty/packages/koronis/makefile
+M 3rdparty/packages/kyumgai/makefile
+M 3rdparty/packages/makefile
+M 3rdparty/packages/mm/makefile
+M 3rdparty/packages/multivue/cmds_6309/makefile
+M 3rdparty/packages/multivue/cmds_6809/makefile
+M 3rdparty/packages/multivue/makefile
+M 3rdparty/packages/os9l2bbs/6809l2/makefile
+M 3rdparty/packages/os9l2bbs/makefile
+M 3rdparty/packages/pacos9/makefile
+M 3rdparty/packages/raakatu/makefile
+M 3rdparty/packages/rof/makefile
+M 3rdparty/packages/sierra/makefile
+M 3rdparty/packages/subsim/makefile
+M 3rdparty/packages/uemacs/makefile
+M 3rdparty/packages/uucpbb/cmds_6309/makefile
+M 3rdparty/packages/uucpbb/cmds_6809/makefile
+M 3rdparty/packages/uucpbb/makefile
+M 3rdparty/packages/uucpbb/src/makefile
+M 3rdparty/subrtns/makefile
+M 3rdparty/utils/boisy/makefile
+M 3rdparty/utils/dasm/makefile
+M 3rdparty/utils/makefile
+M 3rdparty/utils/smartwatch/makefile
+M 3rdparty/utils/supercomm/makefile
+M 3rdparty/utils/view/makefile
+M 3rdparty/utils/winfo/makefile
+M bootman/makefile
+M level1/atari/bootfiles/makefile
+M level1/atari/cmds/makefile
+M level1/atari/defs/makefile
+M level1/atari/makefile
+M level1/atari/modules/kernel/makefile
+M level1/atari/modules/makefile
+M level1/atari/sys/makefile
+M level1/cmds/makefile
+M level1/coco/bootfiles/makefile
+M level1/coco/bootroms/makefile
+M level1/coco/cmds/makefile
+M level1/coco/defs/makefile
+M level1/coco/makefile
+M level1/coco/modules/kernel/makefile
+M level1/coco/modules/makefile
+M level1/coco/sys/makefile
+M level1/d64/bootfiles/makefile
+M level1/d64/cmds/makefile
+M level1/d64/defs/makefile
+M level1/d64/makefile
+M level1/d64/modules/kernel/makefile
+M level1/d64/modules/makefile
+M level1/d64/sys/makefile
+M level1/dalpha/bootfiles/makefile
+M level1/dalpha/cmds/makefile
+M level1/dalpha/defs/makefile
+M level1/dalpha/makefile
+M level1/dalpha/modules/kernel/makefile
+M level1/dalpha/modules/makefile
+M level1/dalpha/sys/makefile
+M level1/makefile
+M level1/tano/bootfiles/makefile
+M level1/tano/cmds/makefile
+M level1/tano/defs/makefile
+M level1/tano/makefile
+M level1/tano/modules/kernel/makefile
+M level1/tano/modules/makefile
+M level1/tano/sys/makefile
+M level2/coco3/bootfiles/makefile
+M level2/coco3/bootroms/makefile
+M level2/coco3/cmds/makefile
+M level2/coco3/defs/makefile
+M level2/coco3/makefile_common
+M level2/coco3/modules/kernel/makefile
+M level2/coco3/modules/makefile
+M level2/coco3/sys/makefile
+M level2/coco3_6309/bootfiles/makefile
+M level2/coco3_6309/bootroms/makefile
+M level2/coco3_6309/defs/makefile
+M level2/coco3_6309/modules/kernel/makefile
+M level2/makefile
+M level2/sys/makefile
+M level3/coco3/bootfiles/makefile
+M level3/coco3/cmds/makefile
+M level3/coco3/defs/makefile
+M level3/coco3/makefile
+M level3/coco3/modules/kernel/makefile
+M level3/coco3/modules/makefile
+M level3/coco3/sys/makefile
+M level3/coco3_6309/bootfiles/makefile
+M level3/coco3_6309/cmds/makefile
+M level3/coco3_6309/defs/makefile
+M level3/coco3_6309/makefile
+M level3/coco3_6309/modules/kernel/makefile
+M level3/coco3_6309/modules/makefile
+M level3/coco3_6309/sys/makefile
+M lib/alib/makefile
+M lib/makefile
+M makefile
+M rules.mak
+
+Updated makefiles to fix for incorrectly not finding the rules.mak file.
+When running make without the envirornment variable "NITROS9DIR" being set
+you would get error's when building the project that "/rules.mak" could not
+be found.
+This is because the code to set the envirornment variable "NITROS9DIR" is in
+the rules.mak which can not be included because of the envirornment variable
+not being set. To fix this I put the code needed to set this envirornment
+variable before each include for the rules.mak.
+
+This change should not effect people who already have this envirornment
+variable set before building the project.
+
+----------------------------------------------------------
+2013/01/12 David Ladd
+M ChangeLog
+M makefile
+M level2/coco3/makefile_common
+
+Added option to main makefile to allow for "make becker" to create
+a zip archive of the becker boot disks for use with drivewire4 server.
+
+Updated level2/coco3/makefile_common so that the disk image for coco3
+and coco3_6309 becker images aren't referred to as a 80 track double sided
+disk.  Reason for this change is to reduce confusion as that the
+DriveWire4 server requires single sided disk images for the boot to work
+from the HDBDOS "DOS" command.
+
+----------------------------------------------------------
+2013/01/10 David Ladd
+M ChangeLog
+M 3rdparty/packages/fsim2/makefile
+M 3rdparty/packages/koronis/makefile
+M 3rdparty/packages/kyumgai/makefile
+M 3rdparty/packages/multivue/makefile
+M 3rdparty/packages/rof/makefile
+M 3rdparty/packages/sierra/blackcauldron/makefile
+M 3rdparty/packages/sierra/christmas86/makefile
+M 3rdparty/packages/sierra/goldrush/makefile
+M 3rdparty/packages/sierra/kingsquest1/makefile
+M 3rdparty/packages/sierra/kingsquest2/makefile
+M 3rdparty/packages/sierra/kingsquest3/makefile
+M 3rdparty/packages/sierra/kingsquest4/makefile
+M 3rdparty/packages/sierra/leisuresuitlarry/makefile
+M 3rdparty/packages/sierra/manhunter1/makefile
+M 3rdparty/packages/sierra/manhunter2/makefile
+M 3rdparty/packages/sierra/policequest1/makefile
+M 3rdparty/packages/sierra/spacequest0/makefile
+M 3rdparty/packages/sierra/spacequest1/makefile
+M 3rdparty/packages/sierra/spacequest2/makefile
+M 3rdparty/packages/subsim/makefile
+
+Updated some of the makefile(s) in 3rdparty/packages to bring the becker
+boot disk images in line with naming style of the nos9l1/2 disk images.
+The becker disk images were being created with _dw3_becker.dsk where
+they should have been created just with the _becker.dsk ending.
+
+
+----------------------------------------------------------
+2013/01/10 David Ladd
+M ChangeLog
+M level1/atari/bootfiles/makefile
+
+Updated level1/atari/bootfiles/makefile so that bootfile_p1 & bootfile_p2
+removed on a "make clean"
+
+----------------------------------------------------------
+2013/01/10 David Ladd
+M ChangeLog
+M rules.mak
+
+Updated rules.mak to increase compression of zip files to max.
+
+----------------------------------------------------------
+2013/01/10 David Ladd
+M ChangeLog
+M makefile
+M 3rdparty/packages/sierra/spacequest1/makefile
+M 3rdparty/packages/sierra/spacequest2/makefile
+M 3rdparty/packages/subsim/makefile
+M 3rdparty/packages/mm/makefile
+M 3rdparty/packages/multivue/makefile
+M 3rdparty/packages/rof/makefile
+
+Updated makefile(s) for spacequest1, spacequest2, subsim, mm, multivue,
+and rof so that becker boot disks, for use in drivewire4, are created.
+
+
+----------------------------------------------------------
+2013/01/09 David Ladd
+M ChangeLog
+M 3rdparty/packages/fsim2/makefile
+M 3rdparty/packages/kyumgai/makefile
+M 3rdparty/packages/sierra/policequest1/makefile
+M 3rdparty/packages/sierra/spacequest0/makefile
+
+Changed makefile(s) for fsim2, kyumgai, policequest1, and spacequest0
+so that becker boot disks for use with drivewire4 are created.
+
+----------------------------------------------------------
+2013/01/09 David Ladd
+M ChangeLog
+M 3rdparty/packages/sierra/kingsquest2/makefile
+M 3rdparty/packages/sierra/kingsquest3/makefile
+M 3rdparty/packages/sierra/kingsquest4/makefile
+M 3rdparty/packages/sierra/leisuresuitlarry/makefile
+M 3rdparty/packages/sierra/manhunter1/makefile
+M 3rdparty/packages/sierra/manhunter1/tOC_80d.txt
+M 3rdparty/packages/sierra/manhunter2/makefile
+
+Fixed tOC_80d.txt file related to manhunter1.  The last line did not
+have a return in it and was causing a segmentation fault when creating
+the disk set.
+
+Changed makefile(s) for kingsquest2, kingsquest3, kingsquest4,
+leisuresuitlarry, manhunter1, and manhunter2 so that becker
+boot disks for use with drivewire4 are created.
+
+----------------------------------------------------------
+2013/01/09 David Ladd
+M ChangeLog
+M 3rdparty/packages/sierra/goldrush/makefile
+A 3rdparty/packages/sierra/goldrush/tOC_dw3_becker.txt
+M 3rdparty/packages/sierra/kingsquest1/makefile
+
+Added 3rdparty/packages/sierra/goldrush/tOC_dw3_becker.txt
+
+Updated 3rdparty/packages/sierra/goldrush/makefile and 
+3rdparty/packages/sierra/kingsquest1/makefile to now also create
+the becker disks for use with drivewire4 server.
+
+----------------------------------------------------------
+2013/01/09 David Ladd
+M ChangeLog
+M 3rdparty/packages/blackcauldron/makefile
+M 3rdparty/packages/christmas86/makefile
+
+Updated 3rdparty/packages/blackcauldron/makefile and
+3rdparty/packages/christmas86/makefile to now also create
+the becker disks for use with drivewire4 server.
+
+----------------------------------------------------------
+2013/01/09 David Ladd
+M ChangeLog
+M 3rdparty/packages/koronis/makefile
+
+Updated 3rdparty/packages/koronis/makefile to create a becker boot
+disk for use with drivewire4 server.
+
+----------------------------------------------------------
+2013/01/08 David Ladd
+M ChangeLog
+M makefile
+M rules.mak
+
+Found that primary makefile was not compiling files in the "lib" folder.
+Created a NOSLIB label in rules.mak for the full path to "lib" folder.
+Replaced the "lib" folder name that was in primary makefile to use
+the NOSLIB label to correct the problem with the makefile not branching
+into the "lib" folder to compile its files"
+
+----------------------------------------------------------
+2013/01/06 David Ladd
+M ChangeLog
+M level1/dalpha/makefile
+
+Found that LDSKS label was missing from level1/dalpha/makefile
+Corrected this oversite and tested.
+
+----------------------------------------------------------
+2013/01/06 David Ladd
+M ChangeLog
+M level1/modules/dwread.asm
+M level1/modules/dwwrite.asm
+M level1/modules/dw4read.asm
+M level1/modules/dw4write.asm
+
+Robert Gault found a problem related to the H6309-1 not always
+functioning as expected.  Changed dwread.asm, dwwrite.asm, dw4read.asm
+dw4write.asm to reflect these needed changes and movement of code to
+correct locations.
+
+In examining the dwwrite.asm source file found two sections of H6309-1 and
+code that were the same.  This might have been root problem of the
+compiling problems.  Verified both sections of code were identical before
+removing second copy.
+
+----------------------------------------------------------
+2013/01/05 David Ladd
+M ChangeLog
+M level1/coco/makefile
+M level1/coco/bootfiles/makefile
+
+Added needed sections to makefile(s) to create a NOS9 L1 Beckeer
+boot disk.
+
+----------------------------------------------------------
+2013/01/04 David Ladd
+List of files changed
+M ChangeLog
+A scripts/burst
+
+Got the burst script from Boisy that was needed for the web portal
+on sourceforge. This script is located in the scripts folder.  Please
+keep in mind that you will need to have this burst script on your
+sourceforge ssh server account to do the "make nightly".
+
+----------------------------------------------------------
+2013/01/03 David Ladd
+List of files changed
+M ChangeLog
+M makefile
+M rules.mak
+
+Changed the dw3 format information in the rules.mak to use a single
+sided format rather than double sided.  The double sided disk images
+were preventing users booting off of the drivewire4 server using the
+dw3 and becker boot disks.
+
+Also updated the makefile related to the nightly build to use a
+environment variable rather than boisy's fixed username.
+
+At this time the upload of the zip file only works. Specific users ssh
+account must have the burst script.
+
+----------------------------------------------------------
 2012/12/05 Robert Gualt
 List of files changed
 M ChangeLog

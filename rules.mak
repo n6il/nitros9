@@ -88,7 +88,7 @@ LOREMOVE	= sudo /sbin/losetup -d
 LOSETUP		= sudo /sbin/losetup
 LINK		= ln
 SOFTLINK	= $(LINK) -s
-ARCHIVE		= zip -D -j
+ARCHIVE		= zip -D -9 -j
 MKDSKINDEX	= $(NITROS9DIR)/3rdparty/utils/aaw/mkdskindex
 
 # Directories
@@ -96,6 +96,7 @@ MKDSKINDEX	= $(NITROS9DIR)/3rdparty/utils/aaw/mkdskindex
 LEVEL1		= $(NITROS9DIR)/level1
 LEVEL2		= $(NITROS9DIR)/level2
 LEVEL3		= $(NITROS9DIR)/level3
+NOSLIB		= $(NITROS9DIR)/lib
 CC68L1          = $(LEVEL1)/coco
 CC368L2         = $(LEVEL2)/coco3
 CC363L2         = $(LEVEL2)/coco3_6309

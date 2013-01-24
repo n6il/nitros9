@@ -7,7 +7,7 @@ CMDS		= raaka-tu raakatu
 MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
+KERNEL   	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
 OS9BOOT		= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/ddd0_40d.dd \
