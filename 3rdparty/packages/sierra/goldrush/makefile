@@ -1,18 +1,16 @@
-ifndef	NITROS9DIR
-NITROS9DIR	= $(HOME)/nitros9
-endif
-include $(NITROS9DIR)/rules.mak
+include ../../../../rules.mak
 
 vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
 DSKDW		= goldrush_dw.dsk
+DSKDWBECKER	= goldrush_becker.dsk
 DISK_1_80D	= goldrush_d1_80d.dsk
 DISK_2_80D	= goldrush_d2_80d.dsk
 DISK_3_80D	= goldrush_d3_80d.dsk
 
-DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DSKDW)
+DSKS		= $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D) $(DSKDW) $(DSKDWBECKER)
 
 DISK_1_80D_NAME = "Gold Rush Disk 1"
 DISK_2_80D_NAME = "Gold Rush Disk 2"
@@ -25,6 +23,7 @@ MD		= $(LEVEL2)/coco3/modules
 # We make our own bootfile and kernel track
 KERNEL_FLOPPY	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_DW	= $(MD)/rel_32 $(MD)/boot_dw $(MD)/krn
+KERNEL_DW_BECKER	= $(MD)/rel_32 $(MD)/boot_dw_becker $(MD)/krn
 BOOTFILE_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/ddd0_80d.dd \
@@ -43,12 +42,22 @@ BOOTFILE_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_dw $(MD)/sysgo_dd
 
+BOOTFILE_DW_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/rbdw.dr $(MD)/dwio_becker.sb $(MD)/ddx0.dd \
+		$(MD)/scf.mn $(MD)/vtio.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
+		$(MD)/vrn.dr $(MD)/vi.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw $(MD)/sysgo_dd
+
 BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 		$(LEVEL2)/coco3/cmds/echo $(LEVEL2)/coco3/cmds/link \
 		$(LEVEL2)/coco3/cmds/setime
 
 TEXTFILES_D1	= ../startup tOC_80d.txt
 TEXTFILES_DW	= ../startup tOC_dw.txt
+TEXTFILES_DW_BECKER	= ../startup tOC_dw_becker.txt
 
 SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.9 vol.10 vol.11 vol.12 words.tok
@@ -57,14 +66,18 @@ SUPPORTFILES_D2	= object vol.0 vol.3 vol.9 vol.11
 
 SUPPORTFILES_D3	= object vol.0 vol.4 vol.5 vol.9 vol.11 vol.12
 
+SUPPORTFILES_ALL	= logDir object picDir sndDir viewDir vol.0 \
+		vol.1 vol.2 vol.3 vol.4 vol.5 vol.9 vol.10 \
+		vol.11 vol.12 words.tok
+
 ALLOBJS		= $(CMDS)
 
 all:	$(ALLOBJS)
 
 clean:	dskclean
-	$(RM) $(ALLOBJS) kernel os9boot
+	$(RM) $(ALLOBJS)
 
-dsk:	all $(DSKDW) $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D)
+dsk:	all $(DSKDW) $(DSKDWBECKER) $(DISK_1_80D) $(DISK_2_80D) $(DISK_3_80D)
 
 $(DSKDW):
 	$(RM) $@
@@ -84,21 +97,42 @@ $(DSKDW):
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_DW) $@,.
 	$(OS9RENAME) $@,tOC_dw.txt tOC.txt
-	$(CP) $(SUPPORTFILES_D1) $@,.
-	$(CP) $(SUPPORTFILES_D2) $@,.
-	$(CP) $(SUPPORTFILES_D3) $@,.
+	$(CP) $(SUPPORTFILES_ALL) $@,.
 	$(MOVE) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
+	$(MOVE) toctmp tocgen
+
+$(DSKDWBECKER):
+	$(RM) $@
+	$(CD) $(LEVEL2)/coco3; make
+	$(OS9FORMAT_DW) -q $@ -n$(DSKDW_NAME)
+	$(MERGE) $(BOOTFILE_DW_BECKER)>os9boot
+	$(MERGE) $(KERNEL_DW_BECKER)>kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
+	$(RM) os9boot kernel
+	$(MAKDIR) $@,CMDS
+	$(CP) $(CMDS) $@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(MERGE) $(BOOTCMDS)>shell
+	$(CP) shell $@,CMDS
+	$(RM) shell
+	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
+	$(OS9RENAME) $@,CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES_DW_BECKER) $@,.
+	$(OS9RENAME) $@,tOC_dw_becker.txt tOC.txt
+	$(CP) $(SUPPORTFILES_ALL) $@,.
+	$(MOVE) tocgen toctmp
+	tocgen $@,tOC.txt $@,tOC
+	$(MOVE) toctmp tocgen
 
 $(DISK_1_80D):
 	$(RM) $@
-	$(MOVE) toctmp tocgen
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_DS80) -q $@ -n$(DISK_1_80D_NAME)
 	$(MERGE) $(BOOTFILE_80D)>os9boot
 	$(MERGE) $(KERNEL_FLOPPY)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
-	$(RM) os9boot_80d os9boot_80d kernel_1773
+	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
 	$(CP) $(CMDS) $@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
@@ -110,8 +144,9 @@ $(DISK_1_80D):
 	$(CPL) $(TEXTFILES_D1) $@,.
 	$(OS9RENAME) $@,tOC_80d.txt tOC.txt
 	$(CP) $(SUPPORTFILES_D1) $@,.
-	$(RM) tocgen
+	$(MOVE) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
+	$(MOVE) toctmp tocgen
 
 
 $(DISK_2_80D):

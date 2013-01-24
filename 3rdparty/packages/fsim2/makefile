@@ -4,14 +4,17 @@ DEPENDS		= ./makefile
 
 DSK_FLOPPY	= fsim2.dsk
 DSK_DW		= fsim2_dw.dsk
+DSK_DW_BECKER	= fsim2_becker.dsk
+
 CMDS		= fs f2 f3 f4
 MD		= $(LEVEL2)/coco3/modules
 
-DSKS		= $(DSK_FLOPPY) $(DSK_DW)
+DSKS		= $(DSK_FLOPPY) $(DSK_DW) $(DSK_DW_BECKER)
 
 # We make our own bootfile and kernel track
 KERNEL_FLOPPY	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_DW	= $(MD)/rel_32 $(MD)/boot_dw $(MD)/krn
+KERNEL_DW_BECKER	= $(MD)/rel_32 $(MD)/boot_dw_becker $(MD)/krn
 
 BOOTFILE_FLOPPY	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -33,6 +36,16 @@ BOOTFILE_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/clock_60hz $(MD)/clock2_dw \
 		$(MD)/sysgo_dd
 
+BOOTFILE_DW_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/rbdw.dr $(MD)/dwio_becker.sb $(MD)/ddx0.dd \
+		$(MD)/scf.mn $(MD)/vtio.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
+		$(MD)/vrn.dr $(MD)/ftdd.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw \
+		$(MD)/sysgo_dd
+
 SUPPORTFILES	= fa fd fp sf.standard
 
 ALLOBJS		= $(CMDS)
@@ -42,16 +55,33 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk:	$(DSKS)
+dsk:	all $(DSKS)
 
 $(DSK_DW):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_SS35) -q $@ -n"Flight Simulator 2"
+	$(OS9FORMAT_DW) -q $@ -n"Flight Simulator 2"
 	$(MERGE) $(BOOTFILE_DW)>os9boot
-	$(MERGE) $(KERNEL_DW)>kernel_1773
-	$(OS9GEN) $@ -b=os9boot -t=kernel_1773
-	$(RM) os9boot kernel_1773
+	$(MERGE) $(KERNEL_DW)>kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
+	$(RM) os9boot kernel
+	$(MAKDIR) $@,CMDS
+	$(CP) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
+	$(OS9ATTR_EXEC) $@,CMDS/shell
+	$(CP) $(CMDS) $@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9RENAME) $@,CMDS/fs AutoEx
+	$(CP) $(SUPPORTFILES) $@,.
+	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+
+$(DSK_DW_BECKER):
+	$(RM) $@
+	$(CD) $(LEVEL2)/coco3; make
+	$(OS9FORMAT_DW) -q $@ -n"Flight Simulator 2"
+	$(MERGE) $(BOOTFILE_DW_BECKER)>os9boot
+	$(MERGE) $(KERNEL_DW_BECKER)>kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
+	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
 	$(CP) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
@@ -66,9 +96,9 @@ $(DSK_FLOPPY):
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_SS35) -q $@ -n"Flight Simulator 2"
 	$(MERGE) $(BOOTFILE_FLOPPY)>os9boot
-	$(MERGE) $(KERNEL_FLOPPY)>kernel_1773
-	$(OS9GEN) $@ -b=os9boot -t=kernel_1773
-	$(RM) os9boot kernel_1773
+	$(MERGE) $(KERNEL_FLOPPY)>kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
+	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
 	$(CP) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell

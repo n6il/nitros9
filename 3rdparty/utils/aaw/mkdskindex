@@ -45,9 +45,14 @@ foreach $dsk (sort @dsks)
 
   }  
 
-  if ($dsk =~ m/_dw[\._]/)
+  if ($dsk =~ m/_dw3[\._]/)
   {
-    $format = "DriveWire";
+    $format = "DriveWire 3/4";
+  }
+
+  if ($dsk =~ m/_becker[\._]/)
+  {
+    $format = "DriveWire 3/4";
   }
 
   $size = -s "$dirtoget/$dsk";

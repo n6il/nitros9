@@ -1,7 +1,4 @@
-ifndef	NITROS9DIR
-NITROS9DIR	= $(HOME)/nitros9
-endif
-include $(NITROS9DIR)/rules.mak
+include ../../../../rules.mak
 
 vpath %.asm ../objs_lsl
 
@@ -13,8 +10,9 @@ DISK_3_40D	= spacequest0_d3_40d.dsk
 DISK_1_80D	= spacequest0_d1_80d.dsk
 DISK_2_80D	= spacequest0_d2_80d.dsk
 DISK_DW	= spacequest0_dw.dsk
+DISK_DW_BECKER	= spacequest0_becker.dsk
 
-DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_1_80D) $(DISK_2_80D) $(DISK_DW)
+DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D) $(DISK_1_80D) $(DISK_2_80D) $(DISK_DW) $(DISK_DW_BECKER)
 
 DISK_1_40D_NAME	= "Space Quest 0 Disk 1"
 DISK_2_40D_NAME	= "Space Quest 0 Disk 2"
@@ -28,7 +26,9 @@ MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
-KERNEL_DW		= $(MD)/rel_32 $(MD)/boot_dw $(MD)/krn
+KERNEL_DW	= $(MD)/rel_32 $(MD)/boot_dw $(MD)/krn
+KERNEL_DW_BECKER	= $(MD)/rel_32 $(MD)/boot_dw_becker $(MD)/krn
+
 OS9BOOT_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/ddd0_40d.dd \
@@ -47,9 +47,18 @@ OS9BOOT_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-OS9BOOT_DW = $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+OS9BOOT_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rbdw.dr $(MD)/dwio.sb $(MD)/ddx0.dd \
+		$(MD)/scf.mn $(MD)/vtio.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
+		$(MD)/vrn.dr $(MD)/vi.dd \
+		$(MD)/clock_60hz $(MD)/clock2_dw $(MD)/sysgo_dd
+
+OS9BOOT_DW_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/rbdw.dr $(MD)/dwio_becker.sb $(MD)/ddx0.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
@@ -84,82 +93,114 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk_40d:	all
-	$(RM) $(DISK_1_40D) $(DISK_2_40D) $(DISK_3_40D)
+$(DISK_1_40D):
+	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) -q $(DISK_1_40D) -n$(DISK_1_40D_NAME)
-	$(OS9FORMAT_DS40) -q $(DISK_2_40D) -n$(DISK_2_40D_NAME)
-	$(OS9FORMAT_DS40) -q $(DISK_3_40D) -n$(DISK_3_40D_NAME)
-	$(MERGE) $(OS9BOOT_40D)>os9boot_40d
-	$(MERGE) $(KERNEL)>kernel_1773
-	$(OS9GEN) $(DISK_1_40D) -b=os9boot_40d -t=kernel_1773
-	$(RM) os9boot_40d kernel_1773
-	$(MAKDIR) $(DISK_1_40D),CMDS
-	$(CP) $(CMDS) $(DISK_1_40D),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_1_40D),CMDS/$(file);)
+	$(OS9FORMAT_DS40) -q $@ -n$(DISK_1_40D_NAME)
+	$(MERGE) $(OS9BOOT_40D)>os9boot
+	$(MERGE) $(KERNEL)>kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
+	$(RM) os9boot kernel
+	$(MAKDIR) $@,CMDS
+	$(CP) $(CMDS) $@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
-	$(CP) shell $(DISK_1_40D),CMDS
+	$(CP) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR) $(DISK_1_40D),CMDS/shell -e -pe -pr -e -w -r
-	$(OS9RENAME) $(DISK_1_40D),CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES_D1) $(DISK_1_40D),.
-	$(OS9RENAME) $(DISK_1_40D),tOC_40d.txt tOC.txt
+	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
+	$(OS9RENAME) $@,CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES_D1) $@,.
+	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
 	$(MOVE) tocgen toctmp
-	tocgen $(DISK_1_40D),tOC.txt $(DISK_1_40D),tOC
+	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
-	$(CP) $(SUPPORTFILES_D1) $(DISK_1_40D),.
-	$(CP) $(SUPPORTFILES_D2) $(DISK_2_40D),.
-	$(CP) $(SUPPORTFILES_D3) $(DISK_3_40D),.
+	$(CP) $(SUPPORTFILES_D1) $@,.
 
-dsk_80d:	all
-	$(RM) $(DISK_1_80D) $(DISK_2_80D)
+$(DISK_2_40D):
+	$(RM) $@
+	$(OS9FORMAT_DS40) -q $@ -n$(DISK_2_40D_NAME)
+	$(CP) $(SUPPORTFILES_D2) $@,.
+
+$(DISK_3_40D):
+	$(RM) $@
+	$(OS9FORMAT_DS40) -q $@ -n$(DISK_3_40D_NAME)
+	$(CP) $(SUPPORTFILES_D3) $@,.
+
+$(DISK_1_80D):
+	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS80) -q $(DISK_1_80D) -n$(DISK_1_80D_NAME)
-	$(OS9FORMAT_DS80) -q $(DISK_2_80D) -n$(DISK_2_80D_NAME)
-	$(MERGE) $(OS9BOOT_80D)>os9boot_80d
-	$(MERGE) $(KERNEL)>kernel_1773
-	$(OS9GEN) $(DISK_1_80D) -b=os9boot_80d -t=kernel_1773
-	$(RM) os9boot_80d kernel_1773
-	$(MAKDIR) $(DISK_1_80D),CMDS
-	$(CP) $(CMDS) $(DISK_1_80D),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_1_80D),CMDS/$(file);)
+	$(OS9FORMAT_DS80) -q $@ -n$(DISK_1_80D_NAME)
+	$(MERGE) $(OS9BOOT_80D)>os9boot
+	$(MERGE) $(KERNEL)>kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
+	$(RM) os9boot kernel
+	$(MAKDIR) $@,CMDS
+	$(CP) $(CMDS) $@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
-	$(CP) shell $(DISK_1_80D),CMDS
+	$(CP) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR) $(DISK_1_80D),CMDS/shell -e -pe -pr -e -w -r
-	$(OS9RENAME) $(DISK_1_80D),CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES) $(DISK_1_80D),.
-	$(OS9RENAME) $(DISK_1_80D),tOC_80d.txt tOC.txt
+	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
+	$(OS9RENAME) $@,CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES) $@,.
+	$(OS9RENAME) $@,tOC_80d.txt tOC.txt
 	$(MOVE) tocgen toctmp
-	tocgen $(DISK_1_80D),tOC.txt $(DISK_1_80D),tOC
+	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
-	$(CP) $(SUPPORTFILES) $(DISK_1_80D),.
-	$(CP) $(SUPPORTFILES_D3) $(DISK_2_80D),.
+	$(CP) $(SUPPORTFILES) $@,.
 
-dsk_dw:	all
-	$(RM) $(DISK_DW)
+$(DISK_2_80D):
+	$(RM) $@
+	$(OS9FORMAT_DS80) -q $@ -n$(DISK_2_80D_NAME)
+	$(CP) $(SUPPORTFILES_D3) $@,.
+
+$(DISK_DW):
+	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DW) -q $(DISK_DW) -n$(DISK_DW_NAME)
-	$(MERGE) $(OS9BOOT_DW)>os9boot_dw
-	$(MERGE) $(KERNEL_DW)>kernel_dw
-	$(OS9GEN) $(DISK_DW) -b=os9boot_dw -t=kernel_dw
-	$(RM) os9boot_dw kernel_dw
-	$(MAKDIR) $(DISK_DW),CMDS
-	$(CP) $(CMDS) $(DISK_DW),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_DW),CMDS/$(file);)
+	$(OS9FORMAT_DW) -q $@ -n$(DISK_DW_NAME)
+	$(MERGE) $(OS9BOOT_DW)>os9boot
+	$(MERGE) $(KERNEL_DW)>kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
+	$(RM) os9boot kernel
+	$(MAKDIR) $@,CMDS
+	$(CP) $(CMDS) $@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
-	$(CP) shell $(DISK_DW),CMDS
+	$(CP) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR) $(DISK_DW),CMDS/shell -e -pe -pr -e -w -r
-	$(OS9RENAME) $(DISK_DW),CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES_DW) $(DISK_DW),.
-	$(OS9RENAME) $(DISK_DW),tOC_dw.txt tOC.txt
-	$(RM) tocgen
-	tocgen $(DISK_DW),tOC.txt $(DISK_DW),tOC
-	$(CP) $(SUPPORTFILES) $(DISK_DW),.
+	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
+	$(OS9RENAME) $@,CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES_DW) $@,.
+	$(OS9RENAME) $@,tOC_dw.txt tOC.txt
+	$(MOVE) tocgen toctmp
+	tocgen $@,tOC.txt $@,tOC
+	$(MOVE) toctmp tocgen
+	$(CP) $(SUPPORTFILES) $@,.
 
-dsk:	dsk_40d dsk_80d dsk_dw
+$(DISK_DW_BECKER):
+	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
+	$(OS9FORMAT_DW) -q $@ -n$(DISK_DW_NAME)
+	$(MERGE) $(OS9BOOT_DW_BECKER)>os9boot
+	$(MERGE) $(KERNEL_DW_BECKER)>kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
+	$(RM) os9boot kernel
+	$(MAKDIR) $@,CMDS
+	$(CP) $(CMDS) $@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(MERGE) $(BOOTCMDS)>shell
+	$(CP) shell $@,CMDS
+	$(RM) shell
+	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
+	$(OS9RENAME) $@,CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES_DW) $@,.
+	$(OS9RENAME) $@,tOC_dw.txt tOC.txt
+	$(MOVE) tocgen toctmp
+	tocgen $@,tOC.txt $@,tOC
+	$(MOVE) toctmp tocgen
+	$(CP) $(SUPPORTFILES) $@,.
+
+dsk:	all $(DSKS)
 
 dskcopy: dsk
 	$(CP) $(DSKS) $(DSKDIR)
@@ -170,3 +211,4 @@ dskclean:
 info:
 	@$(ECHO) "*** Space Quest 0 ***"
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
+

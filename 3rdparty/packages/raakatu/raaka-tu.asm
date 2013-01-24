@@ -4,7 +4,7 @@
 * Disassembled 2004/07/13 07:31:17 by Disasm v1.5 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   os9.d
          endc
 
 THEOS9WAY equ  1
