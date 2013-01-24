@@ -1,5 +1,5 @@
 ifeq ($(CPU),)
-        PORT=6809
+        CPU=6809
 endif
 PORT = coco3
 include $(NITROS9DIR)/rules.mak
