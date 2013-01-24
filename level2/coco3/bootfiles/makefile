@@ -59,8 +59,7 @@ PIPE       = $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
 CLOCK50HZ  = $(MD)/clock_50hz $(MD)/clock2_soft
 CLOCK60HZ  = $(MD)/clock_60hz $(MD)/clock2_soft
 CLOCK60HZDW = $(MD)/clock_60hz $(MD)/clock2_dw
-CLOCK60HZBECKER = $(MD)/clock_60hz $(MD)/clock2_dw_becker
-          
+
 # NitrOS-9 disk bootfile to allow booting from DriveWire server
 # on a DE1 or Xilinx using Gary Becker's CoCo 3 FGPA
 BOOTFILE_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
@@ -74,7 +73,7 @@ BOOTFILE_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(SCDWV_NET) \
 		$(SCDWP) \
 		$(PIPE) \
-		$(CLOCK60HZBECKER)
+		$(CLOCK60HZDW)
 
 # NitrOS-9 disk bootfile to allow booting from DriveWire server
 # on an Arduino and CoCoPort
