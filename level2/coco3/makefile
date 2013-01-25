@@ -61,7 +61,7 @@ DSK720K		= $(DISTROVER)_80d.dsk
 LDSK720K	= $(DISTRONAME)_80d.dsk
 DSK720K_50HZ	= $(DISTROVER)_80d_50hz.dsk
 LDSK720K_50HZ	= $(DISTRONAME)_80d_50hz.dsk
-LDSKBECKER	= $(DISTRONAME)_80d_becker.dsk
+LDSKBECKER	= $(DISTRONAME)_becker.dsk
 LDSKARDUINO	= $(DISTRONAME)_arduino.dsk
 TESTDSK		= test.dsk
 
@@ -72,7 +72,7 @@ LDSKS		= $(LDSKDW) $(LDSK360K_1) $(LDSK360K_1_50HZ) $(LDSK360K_2) $(LDSK720K) $(
 all:
 	@$(ECHO) "**************************************************"
 	@$(ECHO) "*                                                *"
-	@$(ECHO) "*        NitrOS-9/$(CPU) Level 2 Distribution      *"
+	@$(ECHO) "*        NitrOS-9/$(CPU) Level 2 Distribution    *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
 	cd $(NITROS9DIR)/lib; make
