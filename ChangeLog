@@ -1,6 +1,22 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/26 David Ladd
+M ChangeLog
+M level1/coco1/bootfiles/makefile
+M level1/coco1/makefile
+M level1/coco1/modules/makefile
+
+Updated level1/coco1/bootfiles/makefile to create becker &
+arduino boot and kernel files.
+
+Updated level1/coco1/makefile to create becker & arduino
+boot disks for use with drivewire server.
+
+Updated level1/coco1/modules/makefile to create becker &
+arduino dwio sb files.
+
+----------------------------------------------------------
 2013/01/25 David Ladd
 M 3rdparty/packages/sierra/kingsquest2/makefile
 M ChangeLog
