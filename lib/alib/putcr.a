@@ -14,7 +14,7 @@
  ttl Assembler Library Module
 
 
- psect PUTCR,0,0,0,0,0
+ section .text
 
 PUTCR:
  pshs a

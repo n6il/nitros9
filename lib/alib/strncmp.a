@@ -20,7 +20,7 @@
  ttl Assembler Library Module
 
 
- psect STRNCMP,0,0,0,0,0
+ section .text
 
 
 STRNCMP:

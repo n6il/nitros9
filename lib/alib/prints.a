@@ -21,7 +21,7 @@
  ttl Assembler Library Module
 
 
- psect PRINTS,0,0,0,0,0
+ section .text
 
 PRINTS:
  pshs x,u

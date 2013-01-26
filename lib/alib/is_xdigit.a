@@ -12,7 +12,7 @@
  ttl Assembler Library Module
 
 
- psect IS_XDIGIT,0,0,0,0,0
+ section .text
 
 
 IS_XDIGIT:

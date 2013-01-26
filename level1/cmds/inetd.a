@@ -23,11 +23,7 @@ atrv           set       $80+rev   ReEnt+rev
 rev            set       $00
 edition        set       3
 
-               psect     inetd_a,$01,$80,1,200,start
-
-DEBUG          equ       1
-
-               vsect
+               section   data
 targetport     rmb       2
 netdatardy     rmb       1
 nbufferl       equ       128
@@ -46,6 +42,12 @@ targetparams   rmb       128
 tmodeparamlen  rmb       1
 tmodeparams    rmb       128
                endsect
+
+*               psect     inetd_a,$01,$80,1,200,start
+               section   text
+
+DEBUG          equ       1
+
 
 NetSig         equ       2
 

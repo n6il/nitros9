@@ -15,11 +15,11 @@
  ttl Assembler Library Module
 
 
- psect DEC_BIN,0,0,0,0,0
-
- vsect
+ section .bss
 nega rmb 1
  endsect
+
+ section .text
 
 DEC_BIN:
  clra set result to 0

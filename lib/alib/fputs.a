@@ -16,7 +16,7 @@
  ttl Assembler Library Module
 
 
- psect FPUTS,0,0,0,0,0
+ section .text
 
 FPUTS:
  pshs a,x,y,u

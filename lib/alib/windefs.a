@@ -9,7 +9,7 @@
 
  ttl Window Definitions
 
- psect Windefs,0,0,0,0,0
+ section .text
 
 WBColor:   equ $1b33 background color
 WBoldSw:   equ $1b3d bold switch

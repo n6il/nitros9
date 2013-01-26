@@ -28,7 +28,7 @@
  nam Jsr to 1 char Command
  ttl Assembler Library Module
 
- psect JSR_CMD,0,0,0,0,0
+ section .text
 
 JSR_CMD:
  tst ,x end of table?

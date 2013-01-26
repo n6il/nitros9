@@ -12,7 +12,7 @@
  ttl Assembler Library Module
 
 
- psect PRINT_HEX,0,0,0,0,0
+ section .text
 
 PRINT_HEX:
  pshs a,x

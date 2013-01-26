@@ -14,7 +14,7 @@
  ttl Assembler Library Module
 
 
- psect FPUTCR,0,0,0,0,0
+ section .text
 
 FPUTCR:
  ldb #$0d

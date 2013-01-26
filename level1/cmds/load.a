@@ -17,11 +17,12 @@
 rev      set   $00
 edition  set   4
 
-         psect load_a,Prgrm+Objct,ReEnt+rev,edition,200,start
-
-         vsect dp
+         section data
 u0000    rmb   200
          endsect
+
+*         psect load_a,Prgrm+Objct,ReEnt+rev,edition,200,start
+         section text
 
 start    os9   F$Load   
          bcs   Exit

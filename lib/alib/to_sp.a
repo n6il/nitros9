@@ -12,7 +12,7 @@
  nam Advance to space
  ttl Assembler Library Module
 
- psect TO_SP,0,0,0,0,0
+ section .text
 
 TO_SP:
  pshs b

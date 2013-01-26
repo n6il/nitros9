@@ -16,7 +16,7 @@
  ttl Assembler Library Module
 
 
- psect PARSNSTR,0,0,0,0,0
+ section .text
 
 
 PARSNSTR:

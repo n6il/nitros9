@@ -17,7 +17,7 @@
  ttl Assembler Library Module
 
 
- psect IS_TERMIN,0,0,0,0,0
+ section .text
 
 
 IS_TERMIN:

@@ -13,12 +13,12 @@
  ttl Assembler Library Module
 
 
- psect PUTY,0,0,0,0,0
+ section .text
 
 PUTY:
  pshs a
  lda #1 stn out
- bsr FPUTY
+ lbsr FPUTY
  puls a,pc
 
  endsect

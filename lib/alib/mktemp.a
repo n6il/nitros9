@@ -18,7 +18,7 @@
  ttl Assembler Library Module
 
 
- psect MKTEMP,0,0,0,0,0
+ section .text
 
 MKTEMP:
  pshs d,x,y

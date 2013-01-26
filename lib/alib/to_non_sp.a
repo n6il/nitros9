@@ -13,7 +13,7 @@
  nam Advance to non-space
  ttl Assembler Library Module
 
- psect TO_NON_SP,0,0,0,0,0
+ section .text
 
 TO_NON_SP:
  ldb ,x+

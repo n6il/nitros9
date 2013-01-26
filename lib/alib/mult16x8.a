@@ -14,7 +14,7 @@
  ttl Assembler Library Module
 
 
- psect MULT168,0,0,0,0,0
+ section .text
  
 MULT168:
  PSHS A,X save numbers

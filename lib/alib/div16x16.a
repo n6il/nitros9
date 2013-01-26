@@ -13,11 +13,11 @@
  ttl Assembler Library Module
 
 
- psect DIV16,0,0,0,0,0
-
- vsect
+ section .bss
 negcount rmb 1
  endsect
+
+ section .text
 
 * Signed Divide
 SDIV16:

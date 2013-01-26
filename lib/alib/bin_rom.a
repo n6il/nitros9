@@ -24,7 +24,7 @@
  ttl Assembler Library Module
 
 
- psect BINROM,0,0,0,0,0
+ section .text
 
 
 BIN_ROM:

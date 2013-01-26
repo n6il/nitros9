@@ -12,7 +12,7 @@
  ttl Assembler Library Module
 
 
- psect STRLEN,0,0,0,0,0
+ section .text
 
 STRLEN:
  pshs x

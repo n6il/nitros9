@@ -19,14 +19,15 @@
 rev      set   $00
 edition  set   2
 
-         psect tee_a,Prgrm+Objct,ReEnt+rev,edition,200,start
-
-         vsect dp
+         section data
 u0000    rmb   1
 parray   rmb   13
 pcount   rmb   1
 buff     rmb   200
          endsect
+
+*         psect tee_a,Prgrm+Objct,ReEnt+rev,edition,200,start
+         section text
 
 start    clrb  
          clr   pcount		clear path counter

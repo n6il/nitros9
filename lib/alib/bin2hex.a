@@ -12,7 +12,7 @@
  nam Convert Byte to Hex
  ttl Assembler Library Module
 
- psect BIN2HEX,0,0,0,0,0
+ section .text
 
 BIN2HEX:
  pshs b

@@ -24,7 +24,7 @@
  ttl Assembler Library Module
 
 
- psect LINEDIT,0,0,0,0,0
+ section .text
 
 * these variable are all referenced via the
 * U stack pointer.

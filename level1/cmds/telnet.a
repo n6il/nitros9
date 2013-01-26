@@ -49,9 +49,7 @@ atrv           set       $80+rev ReEnt+rev
 rev            set       $00
 edition        set       5
 
-               psect     telnet_a,tylg,atrv,edition,200,start
-
-               vsect
+               section   data
 connected      rmb       1
 netdatardy     rmb       1
 keydatardy     rmb       1
@@ -74,6 +72,9 @@ numbyt         rmb       1
 state          rmb       1
 telctrlbuf     rmb       3
                endsect
+
+*               psect     telnet_a,tylg,atrv,edition,200,start
+               section   text
 
 TELESCAPE      equ       'Y-$40              * CTRL-Y
 

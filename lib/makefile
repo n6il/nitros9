@@ -1,11 +1,8 @@
 include $(NITROS9DIR)/rules.mak
 
-SRC = os9defs.a scfdefs.a rbfdefs.a pipedefs.a systype.a net.a
+SRC = os9s.a scfs.a rbfs.a pipes.a systype.a net.a drivewire.a
 
-all: sys6809l1.l sys6809l2.l sys6309l2.l net.l alib.l sys.zip
-
-sys.zip: $(SRC)
-	zip $@ $(SRC)
+all: sys6809l1.l sys6809l2.l sys6309l2.l net.l alib.l
 
 sys6809l1.l: sys6809l1.a
 
@@ -14,6 +11,8 @@ sys6809l2.l: sys6809l2.a
 sys6309l2.l: sys6309l2.a
 
 net.l: net.a
+
+drivewire.l: drivewire.a
 
 alib.l:
 	cd alib; make

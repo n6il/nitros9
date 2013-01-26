@@ -11,7 +11,7 @@
  nam Convert String to Lowercase
  ttl Assembler Library Module
 
- psect TO_LOWRS,0,0,0,0,0
+ section .text
 
 TO_LOWRS:
  pshs cc,b,x
@@ -19,7 +19,7 @@ TO_LOWRS:
 loop
  ldb ,x get char to check
  beq exit exit if all done
- bsr TO_LOWER convert to upper 
+ lbsr TO_LOWER convert to upper 
  stb ,x+ put back in string
  bra loop loop till done
 

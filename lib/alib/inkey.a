@@ -16,7 +16,7 @@
  ttl Assembler Library Module
 
 
- psect INKEY,0,0,0,0,0
+ section .text
 
 INKEY:
  clra std in

@@ -17,7 +17,7 @@
  ttl Assembler Library Module
 
 
- psect STRNCPY,0,0,0,0,0
+ section .text
 
 STRNCPY:
  pshs d bytes wanted to move

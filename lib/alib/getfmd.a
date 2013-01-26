@@ -19,7 +19,7 @@
  nam Get Last Modified Date
  ttl Assembler Library Module
 
- psect GETFMD,0,0,0,0,0
+ section .text
 
 BUFSIZ equ 8
 

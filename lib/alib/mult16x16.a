@@ -13,7 +13,7 @@
  ttl Assembler Library Module
 
 
- psect MULT16,0,0,0,0,0
+ section .text
 
 MULT16:
  PSHS D,X,Y,U save #s and make stack room

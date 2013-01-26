@@ -12,12 +12,12 @@
                nam       net.a
                ttl       network routines
 
-               psect     net_a,0,0,0,0,0
-
-               vsect
+               section   .bss
 nbufferl       equ       128
 nbuffer        rmb       nbufferl
                endsect
+
+               section   .text
 
 space          fcb       C$SPAC
 
