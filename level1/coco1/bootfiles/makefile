@@ -16,6 +16,12 @@ KERNEL_1773	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 KERNEL_DW	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		$(MD)/boot_dw
 
+KERNEL_BECKER	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
+		$(MD)/boot_dw_becker
+
+KERNEL_ARDUINO	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
+		$(MD)/boot_dw_arduino
+
 IDE		= $(3PD)/ide
 SCSI		= $(3PD)/scsisys
 
@@ -31,6 +37,10 @@ CLOCK60HZ  = $(MD)/clock_60hz $(MD)/clock2_soft
 CLOCK60HZDW = $(MD)/clock_60hz $(MD)/clock2_dw
 RBDW       = $(MD)/rbdw.dr $(MD)/dwio.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
+RBBECKER	= $(MD)/rbdw.dr $(MD)/dwio_becker.sb \
+		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
+RBARDUINO	= $(MD)/rbdw.dr $(MD)/dwio_arduino.sb \
+		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
 SCDWV_NET  = $(MD)/n_scdwv.dd $(MD)/n1_scdwv.dd $(MD)/n2_scdwv.dd \
 		$(MD)/n3_scdwv.dd $(MD)/n4_scdwv.dd $(MD)/n5_scdwv.dd \
 		$(MD)/n6_scdwv.dd $(MD)/n7_scdwv.dd $(MD)/n8_scdwv.dd \
@@ -40,7 +50,7 @@ SCDWV_WIN  = $(MD)/z1_scdwv.dd $(MD)/z2_scdwv.dd $(MD)/z3_scdwv.dd \
 		$(MD)/z4_scdwv.dd $(MD)/z5_scdwv.dd $(MD)/z6_scdwv.dd \
 		$(MD)/z7_scdwv.dd 
 SCDWP     = $(MD)/scdwp.dr $(MD)/p_scdwp.dd
-		
+
 BOOTFILE_COVDG	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_40D) \
@@ -86,10 +96,62 @@ BOOTFILE_HEADLESS_DW	= $(MD)/ioman \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
 
+BOOTFILE_HEADLESS_BECKER	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBBECKER) \
+		$(MD)/scf.mn \
+		$(MD)/scdwv.dr \
+		$(MD)/term_scdwv.dt \
+		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
+		$(SCDWP) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
+BOOTFILE_HEADLESS_ARDUINO	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBARDUINO) \
+		$(MD)/scf.mn \
+		$(MD)/scdwv.dr \
+		$(MD)/term_scdwv.dt \
+		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
+		$(SCDWP) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
 BOOTFILE_COVDG_DW	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_40D) \
 		$(RBDW) \
+		$(MD)/scf.mn \
+		$(VTIO_COVDG) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COVDG_BECKER	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(RBBECKER) \
+		$(MD)/scf.mn \
+		$(VTIO_COVDG) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWV_WIN) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COVDG_ARDUINO	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(RBARDUINO) \
 		$(MD)/scf.mn \
 		$(VTIO_COVDG) \
 		$(MD)/scdwv.dr \
@@ -124,6 +186,32 @@ BOOTFILE_COHR_DW	= $(MD)/ioman \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
 
+BOOTFILE_COHR_BECKER	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(RBBECKER) \
+		$(MD)/scf.mn \
+		$(VTIO_COHR) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
+BOOTFILE_COHR_ARDUINO	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(FLOPPY_40D) \
+		$(RBARDUINO) \
+		$(MD)/scf.mn \
+		$(VTIO_COHR) \
+		$(MD)/scdwv.dr \
+		$(SCDWV_NET) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW) \
+		$(MD)/sysgo_dd
+
 BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_80D) \
@@ -136,9 +224,12 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(MD)/sysgo_dd
 
 BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw \
-		bootfile_headless_dw \
-		bootfile_cohr_dw bootfile_covdg_ds80 bootfile_cohr_ds80
-KERNELS		= kernel_1773 kernel_dw
+		bootfile_headless_dw bootfile_covdg_becker \
+		bootfile_cohr_dw bootfile_covdg_ds80 bootfile_cohr_ds80 \
+		bootfile_cohr_becker bootfile_headless_becker \
+		bootfile_covdg_arduino bootfile_headless_arduino \
+		bootfile_cohr_arduino
+KERNELS		= kernel_1773 kernel_dw kernel_becker kernel_arduino
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -159,14 +250,32 @@ bootfile_covdg_ds80: $(BOOTFILE_COVDG_DS80) $(DEPENDS)
 bootfile_headless_dw: $(BOOTFILE_HEADLESS_DW) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_HEADLESS_DW)>$@
 
+bootfile_headless_becker: $(BOOTFILE_HEADLESS_BECKER) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_HEADLESS_BECKER)>$@
+
+bootfile_headless_arduino: $(BOOTFILE_HEADLESS_ARDUINO) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_HEADLESS_ARDUINO)>$@
+
 bootfile_covdg_dw: $(BOOTFILE_COVDG_DW) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DW)>$@
+
+bootfile_covdg_becker: $(BOOTFILE_COVDG_BECKER) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVDG_BECKER)>$@
+
+bootfile_covdg_arduino: $(BOOTFILE_COVDG_ARDUINO) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVDG_ARDUINO)>$@
 
 bootfile_cohr_ds80: $(BOOTFILE_COHR_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR_DS80)>$@
 
 bootfile_cohr_dw: $(BOOTFILE_COHR_DW) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR_DW)>$@
+
+bootfile_cohr_becker: $(BOOTFILE_COHR_BECKER) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COHR_BECKER)>$@
+
+bootfile_cohr_arduino: $(BOOTFILE_COHR_ARDUINO) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COHR_ARDUINO)>$@
 
 # WD1773 Kernel
 kernel_1773: $(KERNEL_1773) $(DEPENDS)
@@ -176,6 +285,14 @@ kernel_1773: $(KERNEL_1773) $(DEPENDS)
 # DriveWire 3 Kernel
 kernel_dw: $(KERNEL_DW) $(DEPENDS)
 	$(MERGE) $(KERNEL_DW)>$@
+	$(PADROM) 4608 $@
+
+kernel_becker: $(KERNEL_BECKER) $(DEPENDS)
+	$(MERGE) $(KERNEL_BECKER)>$@
+	$(PADROM) 4608 $@
+
+kernel_arduino: $(KERNEL_ARDUINO) $(DEPENDS)
+	$(MERGE) $(KERNEL_ARDUINO)>$@
 	$(PADROM) 4608 $@
 
 clean:

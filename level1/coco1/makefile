@@ -17,11 +17,19 @@ BOOTFILE_COVDG	= bootfiles/bootfile_covdg
 BOOTFILE_COHR	= bootfiles/bootfile_cohr
 BOOTFILE_COVDG_DS80	= bootfiles/bootfile_covdg_ds80
 BOOTFILE_HEADLESS_DW	= bootfiles/bootfile_headless_dw
+BOOTFILE_HEADLESS_BECKER	= bootfiles/bootfile_headless_becker
+BOOTFILE_HEADLESS_ARDUINO	= bootfiles/bootfile_headless_arduino
 BOOTFILE_COVDG_DW	= bootfiles/bootfile_covdg_dw
+BOOTFILE_COVDG_BECKER	= bootfiles/bootfile_covdg_becker
+BOOTFILE_COVDG_ARDUINO	= bootfiles/bootfile_covdg_arduino
 BOOTFILE_COHR_DS80	= bootfiles/bootfile_cohr_ds80
 BOOTFILE_COHR_DW	= bootfiles/bootfile_cohr_dw
+BOOTFILE_COHR_BECKER	= bootfiles/bootfile_cohr_becker
+BOOTFILE_COHR_ARDUINO	= bootfiles/bootfile_cohr_arduino
 KERNELFILE	= bootfiles/kernel_1773
 KERNELFILE_DW	= bootfiles/kernel_dw
+KERNELFILE_BECKER	= bootfiles/kernel_becker
+KERNELFILE_ARDUINO	= bootfiles/kernel_arduino
 DIRS		= cmds modules defs sys bootfiles bootroms
 
 
@@ -48,15 +56,24 @@ LDSKDW          = $(DISTRONAME)$(PORT)_dw.dsk
 DSKDWHEADLESS   = $(DISTROVER)_dw_headless.dsk
 LDSKDWHEADLESS  = $(DISTRONAME)$(PORT)_dw_headless.dsk
 DSK360K_1       = $(DISTROVER)_40d_1.dsk
-LDSK360K_1      = $(DISTRONAME)_40d_1.dsk
+LDSK360K_1      = $(DISTRONAME)$(PORT)_40d_1.dsk
 DSK360K_2       = $(DISTROVER)_40d_2.dsk
-LDSK360K_2      = $(DISTRONAME)_40d_2.dsk
+LDSK360K_2      = $(DISTRONAME)$(PORT)_40d_2.dsk
 DSK720K         = $(DISTROVER)_80d.dsk
-LDSK720K        = $(DISTRONAME)_80d.dsk
+LDSK720K        = $(DISTRONAME)$(PORT)_80d.dsk
+DSKBECKER	= $(DISTROVER)_becker.dsk
+LDSKBECKER	= $(DISTRONAME)$(PORT)_becker.dsk
+DSKBECKERHEADLESS	= $(DISTROVER)_becker_headless.dsk
+LDSKBECKERHEADLESS	= $(DISTRONAME)$(PORT)_becker_headless.dsk
+DSKARDUINO	= $(DISTROVER)_arduino.dsk
+LDSKARDUINO	= $(DISTRONAME)$(PORT)_arduino.dsk
+DSKARDUINOHEADLESS	= $(DISTROVER)_arduino_headless.dsk
+LDSKARDUINOHEADLESS	= $(DISTRONAME)$(PORT)_arduino_headless.dsk
 
-
-DSKS		= $(DSKDW) $(DSKDWHEADLESS) $(DSK360K_1) $(DSK360K_2) $(DSK720K)
-LDSKS		= $(LDSKDW) $(LDSKDWHEADLESS) $(LDSK360K_1) $(LDSK360K_2) $(LDSK720K)
+DSKS		= $(DSKDW) $(DSKDWHEADLESS) $(DSKBECKER) $(DSKBECKERHEADLESS) \
+		$(DSKARDUINO) $(DSKARDUINOHEADLESS) $(DSK360K_1) $(DSK360K_2) $(DSK720K)
+LDSKS		= $(LDSKDW) $(LDSKDWHEADLESS) $(LDSKBECKER) $(LDSKBECKERHEADLESS) \
+		$(LDSKARDUINO) $(LDSKARDUINOHEADLESS) $(LDSK360K_1) $(LDSK360K_2) $(LDSK720K)
 
 # Make all components
 all:
@@ -138,6 +155,112 @@ $(DSKDW):
 	$(RM) $(LDSKDW)
 	$(SOFTLINK) $@ $(LDSKDW)
 
+$(DSKBECKER):
+	$(RM) $@
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 1"
+	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_BECKER) -t=$(KERNELFILE_BECKER)
+	$(MAKDIR) $@,CMDS
+	$(MAKDIR) $@,SYS
+	$(MAKDIR) $@,DEFS
+	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
+	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
+	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
+	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
+	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
+	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(CPL) $(STARTUP_DW) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
+	$(MAKDIR) $@,NITROS9
+	$(MAKDIR) $@,NITROS9/6809L1
+	$(MAKDIR) $@,NITROS9/6809L1/CMDS
+	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/6809L1/CMDS
+	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/CMDS/$(file);)
+	$(OS9RENAME) $@,NITROS9/6809L1/CMDS/$(WHICHSHELL) shell
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/BOOTTRACK/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/KERNEL
+	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/6809L1/MODULES/KERNEL
+	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/KERNEL/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SYSMODS
+	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/6809L1/MODULES/SYSMODS
+	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SYSMODS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/CLOCKS
+	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/6809L1/MODULES/CLOCKS
+	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/CLOCKS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/RBF
+	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/6809L1/MODULES/RBF
+	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/RBF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SCF
+	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/6809L1/MODULES/SCF
+	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SCF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/PIPE
+	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/6809L1/MODULES/PIPE
+	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/PIPE/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/BOOTLISTS
+	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
+	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
+	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
+	$(RM) $(LDSKBECKER)
+	$(SOFTLINK) $@ $(LDSKBECKER)
+
+$(DSKARDUINO):
+	$(RM) $@
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 1"
+	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_ARDUINO) -t=$(KERNELFILE_ARDUINO)
+	$(MAKDIR) $@,CMDS
+	$(MAKDIR) $@,SYS
+	$(MAKDIR) $@,DEFS
+	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
+	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
+	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
+	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
+	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
+	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(CPL) $(STARTUP_DW) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
+	$(MAKDIR) $@,NITROS9
+	$(MAKDIR) $@,NITROS9/6809L1
+	$(MAKDIR) $@,NITROS9/6809L1/CMDS
+	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/6809L1/CMDS
+	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/CMDS/$(file);)
+	$(OS9RENAME) $@,NITROS9/6809L1/CMDS/$(WHICHSHELL) shell
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/BOOTTRACK/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/KERNEL
+	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/6809L1/MODULES/KERNEL
+	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/KERNEL/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SYSMODS
+	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/6809L1/MODULES/SYSMODS
+	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SYSMODS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/CLOCKS
+	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/6809L1/MODULES/CLOCKS
+	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/CLOCKS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/RBF
+	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/6809L1/MODULES/RBF
+	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/RBF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SCF
+	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/6809L1/MODULES/SCF
+	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SCF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/PIPE
+	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/6809L1/MODULES/PIPE
+	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/PIPE/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/BOOTLISTS
+	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
+	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
+	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
+	$(RM) $(LDSKARDUINO)
+	$(SOFTLINK) $@ $(LDSKARDUINO)
+
 $(DSKDWHEADLESS):
 	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 1"
@@ -188,8 +311,114 @@ $(DSKDWHEADLESS):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
-	$(RM) $(LDSKDW)
-	$(SOFTLINK) $@ $(LDSKDW)
+	$(RM) $(LDSKDWHEADLESS)
+	$(SOFTLINK) $@ $(LDSKDWHEADLESS)
+
+$(DSKBECKERHEADLESS):
+	$(RM) $@
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 1"
+	$(OS9GEN) $@ -b=$(BOOTFILE_HEADLESS_BECKER) -t=$(KERNELFILE_BECKER)
+	$(MAKDIR) $@,CMDS
+	$(MAKDIR) $@,SYS
+	$(MAKDIR) $@,DEFS
+	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
+	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
+	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
+	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
+	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
+	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(CPL) $(STARTUP_DW) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
+	$(MAKDIR) $@,NITROS9
+	$(MAKDIR) $@,NITROS9/6809L1
+	$(MAKDIR) $@,NITROS9/6809L1/CMDS
+	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/6809L1/CMDS
+	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/CMDS/$(file);)
+	$(OS9RENAME) $@,NITROS9/6809L1/CMDS/$(WHICHSHELL) shell
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/BOOTTRACK/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/KERNEL
+	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/6809L1/MODULES/KERNEL
+	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/KERNEL/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SYSMODS
+	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/6809L1/MODULES/SYSMODS
+	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SYSMODS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/CLOCKS
+	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/6809L1/MODULES/CLOCKS
+	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/CLOCKS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/RBF
+	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/6809L1/MODULES/RBF
+	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/RBF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SCF
+	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/6809L1/MODULES/SCF
+	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SCF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/PIPE
+	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/6809L1/MODULES/PIPE
+	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/PIPE/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/BOOTLISTS
+	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
+	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
+	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
+	$(RM) $(LDSKBECKERHEADLESS)
+	$(SOFTLINK) $@ $(LDSKBECKERHEADLESS)
+
+$(DSKARDUINOHEADLESS):
+	$(RM) $@
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 1"
+	$(OS9GEN) $@ -b=$(BOOTFILE_HEADLESS_ARDUINO) -t=$(KERNELFILE_ARDUINO)
+	$(MAKDIR) $@,CMDS
+	$(MAKDIR) $@,SYS
+	$(MAKDIR) $@,DEFS
+	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
+	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
+	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
+	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
+	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
+	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(CPL) $(STARTUP_DW) $@,startup
+	$(OS9ATTR_TEXT) $@,startup
+	$(MAKDIR) $@,NITROS9
+	$(MAKDIR) $@,NITROS9/6809L1
+	$(MAKDIR) $@,NITROS9/6809L1/CMDS
+	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/6809L1/CMDS
+	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/CMDS/$(file);)
+	$(OS9RENAME) $@,NITROS9/6809L1/CMDS/$(WHICHSHELL) shell
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/6809L1/MODULES/BOOTTRACK
+	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/BOOTTRACK/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/KERNEL
+	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/6809L1/MODULES/KERNEL
+	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/KERNEL/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SYSMODS
+	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/6809L1/MODULES/SYSMODS
+	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SYSMODS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/CLOCKS
+	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/6809L1/MODULES/CLOCKS
+	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/CLOCKS/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/RBF
+	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/6809L1/MODULES/RBF
+	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/RBF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/SCF
+	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/6809L1/MODULES/SCF
+	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/SCF/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/MODULES/PIPE
+	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/6809L1/MODULES/PIPE
+	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/6809L1/MODULES/PIPE/$(file);)
+	$(MAKDIR) $@,NITROS9/6809L1/BOOTLISTS
+	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
+	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
+	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
+	$(RM) $(LDSKARDUINOHEADLESS)
+	$(SOFTLINK) $@ $(LDSKARDUINOHEADLESS)
 
 $(DSK360K_1):
 	$(RM) $@
