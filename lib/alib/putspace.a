@@ -13,7 +13,7 @@
  ttl Assembler Library Module
 
 
- psect PUTSPACE,0,0,0,0,0
+ section .text
 
 PUTSPACE:
  pshs a

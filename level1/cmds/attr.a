@@ -24,9 +24,7 @@ rev      set   $00
 edition  set   11
 
 
-         psect tee_a,Prgrm+Objct,ReEnt+rev,edition,200,start
-
-         vsect dp
+         section data
 fpath    rmb   1
 rawpath  rmb   1
 parmptr  rmb   2
@@ -42,6 +40,10 @@ filename rmb   32
 fdesc    rmb   16
 u0078    rmb   46
          endsect
+
+         section text
+*         psect tee_a,Prgrm+Objct,ReEnt+rev,edition,200,start
+
 
          IFNE  DOHELP
 HelpMsg  fcb   C$LF

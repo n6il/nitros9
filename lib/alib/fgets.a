@@ -21,7 +21,7 @@
  ttl Assembler Library Module
 
 
- psect FGETS,0,0,0,0,0
+ section .text
 
 FGETS_NOCR:
  pshs d,x

@@ -14,7 +14,7 @@
  ttl Assembler Library Module
 
 
- psect IS_PRINT,0,0,0,0,0
+ section .text
 
 IS_PRINT:
  lbsr IS_CNTRL

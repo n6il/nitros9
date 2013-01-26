@@ -14,7 +14,7 @@
  ttl Assembler Library Module
 
 
- psect FPUTC,0,0,0,0,0
+ section .text
 
 FPUTC:
  pshs b,x,y

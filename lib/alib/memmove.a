@@ -16,7 +16,7 @@
 
 
 
- psect MEMMOVE,0,0,0,0,0
+ section .text
 
 MEMMOVE:
  pshs d,x,y,u

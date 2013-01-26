@@ -16,7 +16,7 @@
  ttl Assembler Library Module
 
 
- psect ASC_BIN,0,0,0,0,0
+ section .text
 
 ASC_BIN:
  clra msb/lsb=0

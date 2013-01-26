@@ -19,11 +19,7 @@
  ttl Assembler Library Module
 
 
- psect PTSEARCH,0,0,0,0,0
-
-* set up stack frame for variables
-
- csect
+ section .data
 
 pattend rmb 2 end of pattern in memory
 memend  rmb 2 realend-pattern size
@@ -33,6 +29,10 @@ patstrt rmb 2 saved <Y>
 realend rmb 2 saved <U>
 
  endsect
+
+ section .text
+
+* set up stack frame for variables
 
 PTSEARCH:
  pshs d,x,y,u

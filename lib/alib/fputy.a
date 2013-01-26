@@ -14,7 +14,7 @@
  ttl Assembler Library Module
 
 
- psect FPUTY,0,0,0,0,0
+ section .text
 
 FPUTY:
  pshs x,y

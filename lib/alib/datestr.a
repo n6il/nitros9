@@ -17,7 +17,7 @@
  ttl Assembler Library Module
 
 
- psect DATESTR,0,0,0,0,0
+ section .text
 
 DATESTR:
  pshs d,x,y,u

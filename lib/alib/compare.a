@@ -20,13 +20,14 @@
  ttl Assembler Library Module
 
 
- Psect COMPARE,0,0,0,0,0
-
- vsect dp
+ section .bss
 
 CASEMTCH: rmb 1
 
  endsect
+
+ section .text
+
 
 COMPARE:
  pshs d

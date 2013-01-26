@@ -19,7 +19,7 @@
  ttl Assembler Library Module
 
 
- psect STRHCPY,0,0,0,0,0
+ section .text
 
 STRHCPY:
  pshs d

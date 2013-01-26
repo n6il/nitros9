@@ -12,7 +12,7 @@
  ttl Assembler Library Module
 
 
- psect IS_ALPHA,0,0,0,0,0
+ section .text
 
 
 IS_ALPHA:

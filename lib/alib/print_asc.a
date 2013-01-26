@@ -11,7 +11,7 @@
  ttl Assembler Library Module
 
 
- psect PRINT_ASC,0,0,0,0,0
+ section .text
 
 PRINT_ASC:
  pshs a,x

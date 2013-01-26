@@ -14,7 +14,7 @@
  ttl Assembler Library Module
 
 
- psect FTOEOF,0,0,0,0,0
+ section .text
 
 FTOEOF:
  pshs x,u

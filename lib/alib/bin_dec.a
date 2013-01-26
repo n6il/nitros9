@@ -16,12 +16,11 @@
  ttl Assembler Library Module
 
 
- psect BIN_DEC,0,0,0,0,0
-
- vsect
+ section .bss
 nega rmb 1
  endsect
 
+ section .text
 BIN_SDEC:
  clr nega,u
  tsta

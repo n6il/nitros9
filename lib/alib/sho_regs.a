@@ -18,9 +18,7 @@
  ttl Assembler Library Module
 
 
- psect SHO_REGS,0,0,0,0,0
-
- csect
+ section .data
 
 count rmb 1 counter for 9 regs.
 buffer rmb 8 buffer for ascii strings
@@ -35,6 +33,8 @@ s.r  rmb 2
 pc.r rmb 2
 
  endsect
+
+ section .text
 
 SHO_REGS:
  leas -2,s room for copy of <S>

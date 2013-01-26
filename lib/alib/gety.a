@@ -15,7 +15,7 @@
  ttl Assembler Library Module
 
 
- psect GETY,0,0,0,0,0
+ section .text
 
 GETY:
  pshs a

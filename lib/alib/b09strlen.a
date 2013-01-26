@@ -14,7 +14,7 @@
  ttl Assembler Library Module
 
 
- psect B09STRLEN,0,0,0,0,0
+ section .text
 
 B09STRLEN:
  pshs d,x,y

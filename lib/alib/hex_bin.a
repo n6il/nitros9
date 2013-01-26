@@ -15,7 +15,7 @@
  nam Convert Hex String to Binary
  ttl Assembler Library Module
 
- psect HEX_BIN,0,0,0,0,0
+ section .text
 
 
 HEX_BIN:

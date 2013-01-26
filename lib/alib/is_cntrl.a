@@ -13,7 +13,7 @@
  ttl Assembler Library Module
 
 
- psect IS_CNTRL,0,0,0,0,0
+ section .text
 
 
 IS_CNTRL:

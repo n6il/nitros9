@@ -16,13 +16,13 @@
  ttl Assembler Library Module
 
 
- psect Rnd,0,0,0,0,0
-
- vsect dp
+ section .bss
 
 SEED rmb 4
 
  endsect
+
+ section .text
 
 RND:
  pshs d,x,u

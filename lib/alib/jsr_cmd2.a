@@ -29,7 +29,7 @@
  nam Jsr to 2 char Command
  ttl Assembler Library Module
 
- psect JSR_CMD2,0,0,0,0,0
+ section .text
 
 JSR_CMD2:
  tst ,x end of table?

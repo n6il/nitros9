@@ -14,7 +14,7 @@
  ttl Assembler Library Module
 
 
- psect FREWIND,0,0,0,0,0
+ section .text
 
 FREWIND:
  pshs x,u

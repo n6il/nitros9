@@ -8,7 +8,7 @@
  ttl Assembler Library Module
 
 
- psect DECTAB$,0,0,0,0,0
+ section .text
 
 DECTAB$:
  fdb 10000,1000,100,10,1,0

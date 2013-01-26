@@ -51,8 +51,8 @@ AFLAGS		+= -D$(PORT)=1
 endif
 
 # RMA/RLINK
-ASM		= rma
-LINKER	= rlink
+ASM		= lwasm --6309 --format=obj --pragma=pcaspcr,nosymbolcase,condundefzero,undefextern,dollarnotlocal --includedir=.
+LINKER	= lwlink
 
 # Commands
 MAKDIR		= os9 makdir
@@ -106,14 +106,14 @@ CC363L3         = $(LEVEL3)/coco3_6309
 %.r: %.c
 	$(CC) $(CFLAGS) $< -r
 
-%.l: %.a
-	$(ASM) $< -o=$@
+%.l: %.r
+	lwar -c $@ $?
 
 %: %.r
-	$(LINKER) $(LFLAGS) $^ -o=$@
+	$(LINKER) $(LFLAGS) $^ -o$@
 
 %.r: %.a
-	$(ASM) $< -o=$@
+	$(ASM) $< -o$@
 
 # File managers
 %.mn: %.asm

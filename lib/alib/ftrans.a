@@ -17,7 +17,7 @@
  nam File data transfer
  ttl Assembler Library Module
 
- csect
+ section .data
 
 * this sets up a stack frame used for variable references
 
@@ -31,7 +31,7 @@ bufsize rmb 2     buffer size (U)
 
  endsect
 
- psect FTRANS,0,0,0,0,0
+ section .text
 
 FTRANS:
  pshs a,b,x,y,u

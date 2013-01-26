@@ -2,12 +2,8 @@ DRAGON         equ       0
 Level          equ       2
 H6309          equ       1
 
-               psect     sys_a,0,0,0,0,0
-
-               use       os9defs.a
-               use       rbfdefs.a
-               use       scfdefs.a
-               use       pipedefs.a
+               use       os9.a
+               use       rbf.a
+               use       scf.a
+               use       pipe.a
                use       systype.a
-
-               endsect

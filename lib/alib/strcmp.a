@@ -21,7 +21,7 @@
  ttl Assembler Library Module
 
 
- psect STRCMP,0,0,0,0,0
+ section .text
 
 STRCMP:
  pshs d

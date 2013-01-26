@@ -17,9 +17,7 @@ atrv           set       $80+rev   ReEnt+rev
 rev            set       $00
 edition        set       1
 
-               psect     dw_a,$01,$80,1,200,start
-
-               vsect
+               section   data
 pbuffer        rmb       256
 pbend          rmb       2
 cbuffer        rmb       256
@@ -29,6 +27,9 @@ outpath        rmb       1
 numbyt         rmb       1
 die            rmb       1
                endsect
+
+               section   text
+*               psect     dw_a,$01,$80,1,200,start
 
 * signal handling
 icpt           lda       #1

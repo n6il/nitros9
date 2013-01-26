@@ -13,7 +13,7 @@
  ttl Assembler Library Module
 
 
- psect TO_UPPRS,0,0,0,0,0
+ section .text
 
 TO_UPPRS:
  pshs cc,b,x
@@ -21,7 +21,7 @@ TO_UPPRS:
 loop
  ldb ,x get char to check
  beq exit exit if all done
- bsr TO_UPPER convert to upper 
+ lbsr TO_UPPER convert to upper 
  stb ,x+ put back in string
  bra loop
 

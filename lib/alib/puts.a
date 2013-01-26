@@ -14,7 +14,7 @@
  ttl Assembler Library Module
 
 
- psect PUTS,0,0,0,0,0
+ section .text
 
 PUTS:
  pshs a

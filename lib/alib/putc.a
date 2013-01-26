@@ -13,12 +13,12 @@
  ttl Assembler Library Module
 
 
- psect PUTC,0,0,0,0,0
+ section .text
 
 PUTC:
  pshs a
  lda #1 stn out
- bsr FPUTC
+ lbsr FPUTC
  puls a,pc
 
  endsect

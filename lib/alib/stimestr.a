@@ -13,7 +13,7 @@
  ttl Assembler Library Module
 
 
- psect STIMESTR,0,0,0,0,0
+ section .text
 
 STIMESTR:
  pshs x,y

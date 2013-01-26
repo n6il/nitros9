@@ -15,7 +15,7 @@
  ttl Assembler Library Module
 
 
- psect TO_UPPER,0,0,0,0,0
+ section .text
 
 TO_UPPER:
  pshs cc

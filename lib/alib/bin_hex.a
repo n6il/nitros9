@@ -17,7 +17,7 @@
  ttl Assembler Library Module
 
 
- psect BIN_HEX,0,0,0,0,0
+ section .text
 
 BIN_HEX:
  pshs d,x
