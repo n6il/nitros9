@@ -89,28 +89,28 @@ RBFDEFS        SET       1
 *
 * These definitions are for RBF device descriptors.
 
-               csect
-               RMB       M$DTyp
-               RMB       1                   Device type (DT.RBF)
-IT.DRV:        RMB       1                   Drive number
-IT.STP:        RMB       1                   Step rate
-IT.TYP:        RMB       1                   Disk device type information
-IT.DNS:        RMB       1                   Density capability
-IT.CYL:        RMB       2                   Number of cylinders
-IT.SID:        RMB       1                   Number of surfaces
-IT.VFY:        RMB       1                   Verify disk writes (0 = verify, 1 = don't)
-IT.SCT:        RMB       2                   Default sectors/track
-IT.T0S:        RMB       2                   Default sectors/track for track 0 sector 0
-IT.ILV:        RMB       1                   Sector interleave offset
-IT.SAS:        RMB       1                   Segment allocation size
+               section   _constant
+               FCB       M$DTyp
+               FCB       1                   Device type (DT.RBF)
+IT.DRV:        FCB       1                   Drive number
+IT.STP:        FCB       1                   Step rate
+IT.TYP:        FCB       1                   Disk device type information
+IT.DNS:        FCB       1                   Density capability
+IT.CYL:        FCB       2                   Number of cylinders
+IT.SID:        FCB       1                   Number of surfaces
+IT.VFY:        FCB       1                   Verify disk writes (0 = verify, 1 = don't)
+IT.SCT:        FCB       2                   Default sectors/track
+IT.T0S:        FCB       2                   Default sectors/track for track 0 sector 0
+IT.ILV:        FCB       1                   Sector interleave offset
+IT.SAS:        FCB       1                   Segment allocation size
 * The following fields are from the OS-9 Level One V2.00.00 Addendum
-IT.TFM:        RMB       1                   DMA Transfer Mode
-IT.Exten:      RMB       2                   Path Extension (PE) for record locking
-IT.SToff:      RMB       1                   Sector/Track offsets (for "foreign" disk formats)
+IT.TFM:        FCB       1                   DMA Transfer Mode
+IT.Exten:      FCB       2                   Path Extension (PE) for record locking
+IT.SToff:      FCB       1                   Sector/Track offsets (for "foreign" disk formats)
 * The following fields are not copied to the path descriptor
-IT.WPC:        RMB       1                   Write precomp cyl/4 (HD)
-IT.OFS:        RMB       2                   Starting cylinder offset (HD)
-IT.RWC:        RMB       2                   Reduced write current cylinder (HD)
+IT.WPC:        FCB       1                   Write precomp cyl/4 (HD)
+IT.OFS:        FCB       2                   Starting cylinder offset (HD)
+IT.RWC:        FCB       2                   Reduced write current cylinder (HD)
 * These fields have been added because of SuperDriver.  They probably
 * can be used in other drivers
                ORG       IT.WPC
@@ -175,7 +175,7 @@ STP.6ms:       EQU       3                   6ms step rate
 * via the I$Open system call (processed by IOMan).  Process
 * descriptors track state information of a path.
 *
-               csect
+               section   _constant
                RMB       PD.FST
 PD.SMF:        RMB       1                   State flags
 PD.CP:         RMB       4                   Current logical byte position
@@ -224,7 +224,7 @@ BufBusy:       EQU       $40                 Buffer is currently busy
 * RBF paths under Level Two have additional information that
 * is referenced by the path extension area.
 *
-               csect
+               section   _constant
 PE.PE:         RMB       1                   PE path number
 PE.PDptr:      RMB       2                   Back ptr to this PE's Path Descriptor
 PE.NxFil:      RMB       2                   Drive Open-File list ptr
@@ -258,7 +258,7 @@ EofLock:       EQU       4                   End of file is locked
 * Logical Sector Number 0 is the first sector on an RBF formatted device
 * and contains information about the device's size and format.
 *
-               csect
+               section   _constant
 DD.TOT:        RMB       3                   Total number of sectors
 DD.TKS:        RMB       1                   Track size in sectors
 DD.MAP:        RMB       2                   Number of bytes in allocation bit map
@@ -293,23 +293,23 @@ FMT.T0DN:      EQU       %00100000           Track 0 Density, see FMT.DNS
 * on an RBF device.  It contains attributes, modification dates,
 * and segment information on a file.
 *
-               csect
-FD.ATT:        RMB       1                   Attributes
-FD.OWN:        RMB       2                   Owner
-FD.DAT:        RMB       5                   Date last modified
-FD.LNK:        RMB       1                   Link count
-FD.SIZ:        RMB       4                   File size
-FD.Creat:      RMB       3                   File creation date (YY/MM/DD)
+               section   _constant
+FD.ATT:        FCB       1                   Attributes
+FD.OWN:        FCB       2                   Owner
+FD.DAT:        FCB       5                   Date last modified
+FD.LNK:        FCB       1                   Link count
+FD.SIZ:        FCB       4                   File size
+FD.Creat:      FCB       3                   File creation date (YY/MM/DD)
 FD.SEG:        EQU       *                   Beginning of segment list
                endsect
 
 * Segment List Entry Format
-               csect
-FDSL.A:        RMB       3                   Segment beginning physical sector number
-FDSL.B:        RMB       2                   Segment size
+               section   _constant
+FDSL.A:        FCB       3                   Segment beginning physical sector number
+FDSL.B:        FCB       2                   Segment size
                endsect
                
-FDSL.S:        EQU       .                   Segment list entry size
+FDSL.S:        EQU       FD.SEG              Segment list entry size
 FD.LS1:        EQU       FD.SEG+((256-FD.SEG)/FDSL.S-1)*FDSL.S
 FD.LS2:        EQU       (256/FDSL.S-1)*FDSL.S
 MINSEC:        SET       16
@@ -322,7 +322,7 @@ MINSEC:        SET       16
 * Directory entries are part of a directory and define the name
 * of the file, as well as a pointer to its file descriptor.
 *
-               csect
+               section   _constant
 DIR.NM:        RMB       29                  File name
 DIR.FD:        RMB       3                   File descriptor physical sector number
 DIR.SZ:        EQU       *                   Directory record size
@@ -339,7 +339,7 @@ DIR.SZ:        EQU       *                   Directory record size
 *        driver is responsible for reserving sufficient memory for
 *        the appropriate number of tables.
 *
-               csect
+               section   _constant
                RMB       V.USER              Reserve required           ($06)
 V.NDRV:        RMB       1                   Number of drives           ($07)
                RMB       8                   reserved                   ($08)
@@ -354,7 +354,7 @@ DRVBEG:        EQU       *                   Beginning of drive tables  ($10)
 * LSN 0, and the current track, stepping rate,
 * bitmap use flag, and disk type.
 *
-               csect
+               section   _constant
                RMB       DD.SIZ              Device descriptor, LSN 0
 V.TRAK:        RMB       2                   Current track
 V.BMB:         RMB       1                   Bit-map use flag
