@@ -103,16 +103,16 @@ CC363L2         = $(LEVEL2)/coco3_6309
 CC363L3         = $(LEVEL3)/coco3_6309
 
 # C-Cubed Rules
-%.r: %.c
+%.o: %.c
 	$(CC) $(CFLAGS) $< -r
 
-%.l: %.r
+%.a: %.o
 	lwar -c $@ $?
 
-%: %.r
+%: %.a
 	$(LINKER) $(LFLAGS) $^ -o$@
 
-%.r: %.a
+%.o: %.as
 	$(ASM) $< -o$@
 
 # File managers

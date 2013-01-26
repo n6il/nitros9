@@ -22,7 +22,7 @@ NameMax:       SET       29                  ;Maximum length of a file name
 *
 *   Device Driver Static Storage Layout
 *
-               csect
+               section   _constant
                RMB       V.USER
 V.List:        RMB       2                   ;Pointer to 1st pipe's pipe buffer
 PManMem:       EQU       *                   ;Device driver memory (drive table equivalent)
@@ -31,7 +31,7 @@ PManMem:       EQU       *                   ;Device driver memory (drive table 
 *
 *   Pipe Buffer Data Structure
 *
-               csect
+               section   _constant
 PP.PD:         RMB       2                   ;Pointer to shared path descriptor
 PP.Next:       RMB       2                   ;Pointer to next pipe buffer in system map
 PP.Prev:       RMB       2                   ;Pointer to previous pipe buffer in system map
@@ -42,7 +42,7 @@ PP.Data:       EQU       *                   ;Data buffer begins at this offset
 *
 *   Unique Path Descriptor Variables
 *
-               csect
+               section   _constant
                RMB       PD.FST
 *** PP.Read must have bit 4 clear; PP.Writ must be PP.Read XOR 4
 PD.Read:       EQU       *
@@ -74,12 +74,12 @@ PD.QSiz:       RMB       2                   ;Max. elements in queue (copied fro
 *   PD.ECnt is copied to PD.QSiz as part of OPEN or CREATE,
 *   to make room for the pipe name.
 *
-               csect
+               section   _constant
                RMB       (PD.OPT+1)
 PD.ESiz:       RMB       1                   ;Size of each queue element
 PD.ECnt:       RMB       2                   ;Max. elements in queue (initial position)
                IFGT      Level-1
-               RMB       (PD.OPT+3)-*
+               RMB       *-(PD.OPT+3)
 PD.Name:       RMB       NameMax
                ENDC      
                endsect
@@ -88,7 +88,7 @@ PD.Name:       RMB       NameMax
 *   Device Descriptor definitions
 *
 IT.PDC:        EQU       $12                 ;Pipe device class (like IT.DTP, IT.DVC)
-               csect
+               section   _constant
                RMB       IT.PDC
                RMB       1                   ;Leave room for device class
 IT.ESiz:       RMB       1                   ;Size of each queue element

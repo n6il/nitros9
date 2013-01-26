@@ -80,7 +80,7 @@ false:         EQU       0                   useful name
 *****************************************
 * System Service Request Code Definitions
 *
-               csect
+               section   _constant
 F$Link:        RMB       1                   Link to Module
 F$Load:        RMB       1                   Load Module from File
 F$UnLink:      RMB       1                   Unlink Module
@@ -218,7 +218,7 @@ F$NVRAM:       RMB       1                   Non Volatile RAM (RTC battery backe
 **************************************
 * I/O Service Request Code Definitions
 *
-               csect
+               section   _constant
                RMB       $80
 I$Attach:      RMB       1                   Attach I/O Device
 I$Detach:      RMB       1                   Detach I/O Device
@@ -256,7 +256,7 @@ ISIZ.:         EQU       %00100000
 **************
 * Signal Codes
 *
-               csect
+               section   _constant
 S$Kill:        RMB       1                   Non-Interceptable Abort
 S$Wake:        RMB       1                   Wake-up Sleeping Process
 S$Abort:       RMB       1                   Keyboard Abort
@@ -270,7 +270,7 @@ S$Alarm:       RMB       1                   CoCo individual process' alarm sign
 **********************************
 * Status Codes for GetStat/GetStat
 *
-               csect
+               section   _constant
 SS.Opt:        RMB       1                   Read/Write PD Options
 SS.Ready:      RMB       1                   Check for Device Ready
 SS.Size:       RMB       1                   Read/Write File Size
@@ -412,7 +412,7 @@ SS.DrvCh:      EQU       SS.WnSet            SDisk3 (DMC ONLY) Set drive number 
 **********************************
 * Direct Page Variable Definitions
 *
-               csect
+               section   _constant
 D.WDAddr:      RMB       2                   FHL/Isted WD1002-05 interface base address
 D.WDBtDr:      RMB       1                   FHL/Isted WD1002-05 boot physical device drive num.
 D.SWPage:      RMB       1                   SmartWatch page # (see clock2_smart)
@@ -643,7 +643,7 @@ IOEntry:       EQU       254
 ************************************
 * Module Directory Entry Definitions
 *
-               csect
+               section   _constant
                IFGT      Level-1
 MD$MPDAT:      RMB       2                   Module DAT Image ptr
 MD$MBSiz:      RMB       2                   Memory Block size
@@ -658,7 +658,7 @@ MD$ESize:      EQU       *                   Module Directory Entry size
 *
 * Universal Module Offsets
 *
-               csect
+               section   _constant
 M$ID:          RMB       2                   ID Code
 M$Size:        RMB       2                   Module Size
 M$Name:        RMB       2                   Module Name
@@ -666,11 +666,15 @@ M$Type:        RMB       1                   Type / Language
 M$Revs:        RMB       1                   Attributes / Revision Level
 M$Parity:      RMB       1                   Header Parity
 M$IDSize:      EQU       *                   Module ID Size
+               endsect
+
+               section   _constant
 *
 * Type-Dependent Module Offsets
 *
 * System, File Manager, Device Driver, Program Module
 *
+               RMB       M$IDSize
 M$Exec:        RMB       2                   Execution Entry Offset
 *
 * Device Driver, Program Module
@@ -680,11 +684,13 @@ M$Mem:         RMB       2                   Stack Requirement
 * Device Driver, Device Descriptor Module
 *
 M$Mode:        RMB       1                   Device Driver Mode Capabilities
+               endsect
+
+               section   _constant
 *
 * Device Descriptor Module
 *
-
-               RMB       M$IDSize-*
+               RMB       M$IDSize
 M$FMgr:        RMB       2                   File Manager Name Offset
 M$PDev:        RMB       2                   Device Driver Name Offset
                RMB       1                   M$Mode (defined above)
@@ -692,11 +698,13 @@ M$Port:        RMB       3                   Port Address
 M$Opt:         RMB       1                   Device Default Options
 M$DTyp:        RMB       1                   Device Type
 IT.DTP:        EQU       M$DTyp              Descriptor type offset
+               endsect
 
+               section   _constant
 *
 * Configuration Module Entry Offsets
 *
-               RMB       M$IDSize-*
+               RMB       M$IDSize
 MaxMem:        RMB       3                   Maximum Free Memory
 PollCnt:       RMB       1                   Entries in Interrupt Polling Table
 DevCnt:        RMB       1                   Entries in Device Table
@@ -816,7 +824,7 @@ CRCCon23:      EQU       $0FE3
 DefIOSiz:      EQU       12
 NumPaths:      EQU       16                  Number of Local Paths
 
-               csect
+               section   _constant
 P$ID:          RMB       1                   Process ID
 P$PID:         RMB       1                   Parent's ID
 P$SID:         RMB       1                   Sibling's ID
@@ -863,7 +871,7 @@ DefIOSiz:      EQU       16                  Default I/O Data Length
 NefIOSiz:      EQU       12                  On-Net Default I/O Data Length
 NumPaths:      EQU       16                  Number of Local Paths
 
-               csect
+               section   _constant
 P$ID:          RMB       1                   Process ID
 P$PID:         RMB       1                   Parent's ID
 P$SID:         RMB       1                   Sibling's ID
@@ -923,7 +931,7 @@ Dead:          EQU       %00000001
 *************************
 * Path Descriptor Offsets
 *
-               csect
+               section   _constant
 PD.PD:         RMB       1                   Path Number
 PD.MOD:        RMB       1                   Mode (Read/Write/Update)
 PD.CNT:        RMB       1                   Number of Open Images
@@ -949,7 +957,7 @@ PENTIR:        EQU       '@                  Entire Device
 ****************************
 * File Manager Entry Offsets
 *
-               csect
+               section   _constant
 FMCREA:        RMB       3                   Create (Open New) File
 FMOPEN:        RMB       3                   Open File
 FMMDIR:        RMB       3                   Make Directory
@@ -968,7 +976,7 @@ FMCLOS:        RMB       3                   Close File
 *****************************
 * Device Driver Entry Offsets
 *
-               csect
+               section   _constant
 D$INIT:        RMB       3                   Device Initialization
 D$READ:        RMB       3                   Read from Device
 D$WRIT:        RMB       3                   Write to Device
@@ -980,7 +988,7 @@ D$TERM:        RMB       3                   Device Termination
 *********************
 * Device Table Format
 *
-               csect
+               section   _constant
 V$DRIV:        RMB       2                   Device Driver module
 V$STAT:        RMB       2                   Device Driver Static storage
 V$DESC:        RMB       2                   Device Descriptor module
@@ -996,7 +1004,7 @@ DEVSIZ:        EQU       *
 *******************************
 * Device Static Storage Offsets
 *
-               csect
+               section   _constant
 V.PAGE:        RMB       1                   Port Extended Address
 V.PORT:        RMB       2                   Device 'Base' Port Address
 V.LPRC:        RMB       1                   Last Active Process ID
@@ -1008,7 +1016,7 @@ V.USER         EQU       *                   Driver Allocation Origin
 ********************************
 * Interrupt Polling Table Format
 *
-               csect
+               section   _constant
 Q$POLL:        RMB       2                   Absolute Polling Address
 Q$FLIP:        RMB       1                   Flip (EOR) Byte ..normally Zero
 Q$MASK:        RMB       1                   Polling Mask (after Flip)
@@ -1024,7 +1032,7 @@ POLSIZ:        EQU       *
 ********************
 * VIRQ packet format
 *
-               csect
+               section   _constant
 Vi.Cnt:        RMB       2                   count down counter
 Vi.Rst:        RMB       2                   reset value for counter
 Vi.Stat:       RMB       1                   status byte
@@ -1084,7 +1092,7 @@ Sign:          EQU       %10000000           sign bit
 *
 * Basic09 Error Codes
 *
-               csect
+               section   _constant
 E$UnkSym:      RMB       1                   Unknown symbol
 E$ExcVrb:      RMB       1                   Excessive verbage
 E$IllStC:      RMB       1                   Illegal statement construction

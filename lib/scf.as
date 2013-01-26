@@ -45,7 +45,7 @@
 *
 * These definitions are for SCF device descriptors.
 
-               csect
+               section   constant
                RMB       M$DTyp
 IT.DVC:        RMB       1                   Device type (DT.SCF)
 IT.UPC:        RMB       1                   Uppercase flag
@@ -79,7 +79,7 @@ IT.XTYP:       RMB       1                   Extended type (added by BRI)
 *               IFGT      Level-1
 * Window Descriptor Additions
 * For CoCo window, where IT.PAR = $80
-                RMB       IT.ROW+1
+*                RMB       IT.ROW+1
 IT.WND:         RMB       1                   Window number (matches device name) ($2E)
 IT.VAL:         RMB       1                   Use defaults on Init (0=no, 1=yes)
 IT.STY:         RMB       1                   Screen type default
@@ -97,7 +97,7 @@ IT.BDC:         RMB       1                   Border color default
 *
 * SCF devices must reserve this space for SCF
 *
-               csect
+               section   constant
                RMB       V.USER
 V.TYPE:        RMB       1                   Device type or parity
 V.LINE:        RMB       1                   Lines left until end of page
@@ -164,7 +164,7 @@ C$COMA:        SET       ',
 * via the I$Open system call (processed by IOMan).  Process
 * descriptors track state information of a path.
 *
-               csect
+               section   constant
                RMB       PD.FST
 PD.DV2:        RMB       2                   Output device table pointer
 PD.RAW:        RMB       1                   Read/Write or ReadLn/WritLn mode
@@ -174,7 +174,7 @@ PD.STS:        RMB       2                   Status routine module addr
 PD.STM:        RMB       2                   Reserved for status routine
                endsect
 
-               csect
+               section   constant
                RMB       PD.OPT
                RMB       1                   Device type
 PD.UPC:        RMB       1                   Case (0=both, 1=upper only)
