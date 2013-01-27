@@ -57,7 +57,7 @@ bigbuff  rmb   512		512 byte default buffer for Level 1
          endsect
 
 *         psect touch_a,Prgrm+Objct,ReEnt+rev,edition,200,start
-         section text
+         section code
 
 * Place constant strings here
          IFNE  DOHELP

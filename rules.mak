@@ -43,7 +43,7 @@ DSKDIR		= $(NITROS9DIR)/dsks
 
 # Use the cross assembler
 #AS		= os9asm -i=$(DEFSDIR)
-AS		= lwasm --6309 --format=os9 --pragma=pcaspcr,nosymbolcase,condundefzero --includedir=. --includedir=$(DEFSDIR)
+AS		= lwasm --6309 --format=os9 --pragma=pcaspcr,nosymbolcase,condundefzero,undefextern,dollarnotlocal --includedir=. --includedir=$(DEFSDIR)
 ASOUT		= -o
 AFLAGS		= -DNOS9VER=$(NOS9VER) -DNOS9MAJ=$(NOS9MAJ) -DNOS9MIN=$(NOS9MIN) -DNOS9DBG=$(NOS9DBG)
 ifdef PORT
@@ -51,7 +51,7 @@ AFLAGS		+= -D$(PORT)=1
 endif
 
 # RMA/RLINK
-ASM		= lwasm --6309 --format=obj --pragma=pcaspcr,nosymbolcase,condundefzero,undefextern,dollarnotlocal --includedir=.
+ASM		= lwasm --6309 --format=obj --pragma=pcaspcr,nosymbolcase,condundefzero,undefextern,dollarnotlocal,export --includedir=.
 LINKER	= lwlink
 
 # Commands
@@ -108,6 +108,9 @@ CC363L3         = $(LEVEL3)/coco3_6309
 
 %.a: %.o
 	lwar -c $@ $?
+
+%: %.o
+	$(LINKER) $(LFLAGS) $^ -o$@
 
 %: %.a
 	$(LINKER) $(LFLAGS) $^ -o$@

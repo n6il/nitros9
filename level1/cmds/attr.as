@@ -41,7 +41,7 @@ fdesc    rmb   16
 u0078    rmb   46
          endsect
 
-         section text
+         section code
 *         psect tee_a,Prgrm+Objct,ReEnt+rev,edition,200,start
 
 

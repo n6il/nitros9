@@ -27,7 +27,7 @@ buff     rmb   200
          endsect
 
 *         psect tee_a,Prgrm+Objct,ReEnt+rev,edition,200,start
-         section text
+         section code
 
 start    clrb  
          clr   pcount		clear path counter

@@ -25,7 +25,7 @@ inbuff   rmb   128
          endsect
 
 *         psect tsmon_a,Prgrm+Objct,ReEnt+rev,edition,200,start
-         section text
+         section code
 
 Login    fcc   "LOGIN"
 LoginPrm fcb   C$CR

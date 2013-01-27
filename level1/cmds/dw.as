@@ -28,7 +28,7 @@ numbyt         rmb       1
 die            rmb       1
                endsect
 
-               section   text
+               section   code
 *               psect     dw_a,$01,$80,1,200,start
 
 * signal handling
