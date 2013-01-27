@@ -52,7 +52,7 @@ endif
 
 # RMA/RLINK
 ASM		= lwasm --6309 --format=obj --pragma=pcaspcr,nosymbolcase,condundefzero,undefextern,dollarnotlocal,export --includedir=.
-LINKER	= lwlink
+LINKER		= lwlink --format=os9
 
 # Commands
 MAKDIR		= os9 makdir
