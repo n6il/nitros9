@@ -32,7 +32,7 @@ LoginPrm fcb   C$CR
 
 IcptRtn  rti
 
-start    stx   parmptr			save parameter pointer
+__start  stx   parmptr			save parameter pointer
          std   parmlen			save parameter length
          leax  IcptRtn,pcr		point to intercept routine
          os9   F$Icpt   		and set it

@@ -24,7 +24,7 @@ u0000    rmb   200
 *         psect load_a,Prgrm+Objct,ReEnt+rev,edition,200,start
          section code
 
-start    os9   F$Load   
+__start  os9   F$Load   
          bcs   Exit
          lda   ,x
          cmpa  #C$CR
