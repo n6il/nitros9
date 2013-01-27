@@ -45,7 +45,7 @@
 *
 * These definitions are for SCF device descriptors.
 
-               section   constant
+               section   _constant
                RMB       M$DTyp
 IT.DVC:        RMB       1                   Device type (DT.SCF)
 IT.UPC:        RMB       1                   Uppercase flag
@@ -97,7 +97,7 @@ IT.BDC:         RMB       1                   Border color default
 *
 * SCF devices must reserve this space for SCF
 *
-               section   constant
+               section   _constant
                RMB       V.USER
 V.TYPE:        RMB       1                   Device type or parity
 V.LINE:        RMB       1                   Lines left until end of page
@@ -121,6 +121,7 @@ V.SCF:         EQU       *                   Total SCF manager static overhead
 ***********************
 * Character Definitions
 *
+               section   _constant
 C$NULL:        SET       0                   Null char
 C$RPET:        SET       $01                 (CTRL-A - SOH) Repeat last input line
 C$INTR:        SET       $03                 (CTRL-C - ETX) Keyboard interrupt
@@ -154,6 +155,7 @@ C$DWN:         SET       $1F                 Cursor down
 C$SPAC:        SET       $20                 Space
 C$PERD:        SET       '.
 C$COMA:        SET       ',
+               endsect
 
                PAG       
 *********************************************
@@ -163,7 +165,7 @@ C$COMA:        SET       ',
 * via the I$Open system call (processed by IOMan).  Process
 * descriptors track state information of a path.
 *
-               section   constant
+               section   _constant
                RMB       PD.FST
 PD.DV2:        RMB       2                   Output device table pointer
 PD.RAW:        RMB       1                   Read/Write or ReadLn/WritLn mode
@@ -173,7 +175,7 @@ PD.STS:        RMB       2                   Status routine module addr
 PD.STM:        RMB       2                   Reserved for status routine
                endsect
 
-               section   constant
+               section   _constant
                RMB       PD.OPT
                RMB       1                   Device type
 PD.UPC:        RMB       1                   Case (0=both, 1=upper only)
@@ -205,7 +207,6 @@ PD.ERR:        RMB       1                   Most recent I/O error status
 PD.TBL:        RMB       2                   Device table addr (copy)
 PD.PLP:        RMB       2                   Path Descriptor List Pointer
 PD.PST:        RMB       1                   Current path status
-               endsect 
 
 * PD.PST values Path Descriptor Status byte
 *
@@ -241,3 +242,5 @@ WORD7:         EQU       %00100000
 * Stop bits
 STOP1:         EQU       %00000000
 STOP2:         EQU       %00010000
+               endsect 
+

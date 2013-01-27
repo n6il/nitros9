@@ -1,7 +1,3 @@
-               IFNE      RBFDEFS-1
-
-RBFDEFS        SET       1
-
 ********************************************************************
 * RBFDefs - Random Block File Manager Definitions
 *
@@ -369,6 +365,4 @@ V.TkOfst:      RMB       1                   Track offset split from byte above
                RMB       4                   Reserved
 DRVMEM:        EQU       *
                endsect
-
-               ENDC      
 
