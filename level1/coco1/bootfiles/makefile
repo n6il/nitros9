@@ -13,8 +13,13 @@ DEPENDS		= ./makefile
 KERNEL_1773	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		$(MD)/boot_1773_6ms
 
+ifeq ($(PORT),coco1)
+KERNEL_DW	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
+		$(MD)/boot_dw_coco1
+else
 KERNEL_DW	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		$(MD)/boot_dw
+endif
 
 KERNEL_BECKER	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		$(MD)/boot_dw_becker
@@ -35,8 +40,13 @@ VTIO_CO80  = $(MD)/vtio.dr $(MD)/co80.io $(MD)/term_80.dt
 PIPE       = $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
 CLOCK60HZ  = $(MD)/clock_60hz $(MD)/clock2_soft
 CLOCK60HZDW = $(MD)/clock_60hz $(MD)/clock2_dw
+ifeq ($(PORT),coco1)
+RBDW       = $(MD)/rbdw.dr $(MD)/dwio_coco1.sb \
+		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
+else
 RBDW       = $(MD)/rbdw.dr $(MD)/dwio.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
+endif
 RBBECKER	= $(MD)/rbdw.dr $(MD)/dwio_becker.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
 RBARDUINO	= $(MD)/rbdw.dr $(MD)/dwio_arduino.sb \
@@ -296,5 +306,4 @@ kernel_arduino: $(KERNEL_ARDUINO) $(DEPENDS)
 	$(PADROM) 4608 $@
 
 clean:
-	$(RM) $(ALLOBJS)
-
+	-$(RM) $(ALLOBJS)
