@@ -60,7 +60,7 @@ sigint         cmpb      #NetSig
 sigex          rti       
 
 **** Entry Point ****
-start:
+__start
 * setup signal intercept
                leax      sigint,pcr
                os9       F$Icpt

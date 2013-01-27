@@ -29,7 +29,7 @@ buff     rmb   200
 *         psect tee_a,Prgrm+Objct,ReEnt+rev,edition,200,start
          section code
 
-start    clrb  
+__start  clrb  
          clr   pcount		clear path counter
          cmpy  #$0000		any parameters?
          lbeq  exitok		exit if none

@@ -103,7 +103,7 @@ EndCantL equ   *-EndCant
 * Before any command line processing is done, we clear out
 * our static memory from U to cleartop, then determine the
 * size of our data area (minus the stack).
-start    pshs  u,x		save registers for later
+__start  pshs  u,x		save registers for later
          leax  <cleartop	point to end of area to zero out
          IFNE  H6309
          subr  u,x		subtract U from X

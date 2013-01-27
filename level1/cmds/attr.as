@@ -64,7 +64,7 @@ DirNtEmt fcb   C$LF
 Attrs    fcc   "dsewrewr"
          fcb   $FF
 
-start    stx   parmptr		save param ptr
+__start  stx   parmptr		save param ptr
          clr   u0007
          com   u0007
 * Open file at X as file

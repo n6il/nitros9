@@ -39,7 +39,7 @@ icpt           lda       #1
 command        fcc       'dw '
 
 * save initial parameters
-start:         pshs      d
+__start        pshs      d
                pshs      x
                clr       die,u
 * set intercept handler

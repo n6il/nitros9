@@ -160,7 +160,7 @@ chksig         tst       connected,u
 sigex          rti       
 
 * save initial parameters
-start          pshs      x
+__start        pshs      x
                clr       connected,u
                clr       netdatardy,u
                clr       keydatardy,u
