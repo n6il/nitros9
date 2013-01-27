@@ -74,7 +74,7 @@ telctrlbuf     rmb       3
                endsect
 
 *               psect     telnet_a,tylg,atrv,edition,200,start
-               section   text
+               section   code
 
 TELESCAPE      equ       'Y-$40              * CTRL-Y
 

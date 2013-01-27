@@ -22,7 +22,7 @@ u0000    rmb   200
          endsect
 
 *         psect load_a,Prgrm+Objct,ReEnt+rev,edition,200,start
-         section text
+         section code
 
 start    os9   F$Load   
          bcs   Exit

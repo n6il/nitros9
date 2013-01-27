@@ -155,7 +155,6 @@ C$SPAC:        SET       $20                 Space
 C$PERD:        SET       '.
 C$COMA:        SET       ',
 
-
                PAG       
 *********************************************
 * Sequential Character Path Descriptor Format
