@@ -242,6 +242,7 @@ I$DeletX:      RMB       1                   Delete from current exec dir
 *******************
 * File Access Modes
 *
+               section   _constant
 READ.:         EQU       %00000001
 WRITE.:        EQU       %00000010
 UPDAT.:        EQU       READ.+WRITE.
@@ -252,6 +253,7 @@ PEXEC.:        EQU       %00100000
 SHARE.:        EQU       %01000000
 DIR.:          EQU       %10000000
 ISIZ.:         EQU       %00100000
+               endsect
 
 **************
 * Signal Codes
@@ -731,7 +733,6 @@ MouseInf:      RMB       2                   Mouse resolution/Mouse port; was 1,
 KeyRptS:       RMB       1                   Key repeat start constant
 KeyRptD:       RMB       1                   Key repeat delay constant
                ENDC      
-               endsect
 
 * Feature1 byte definitions
 CRCOn:         EQU       %00000001           CRC checking on
@@ -812,6 +813,7 @@ DT.CDFM:       EQU       5                   CD-ROM File Manager
 *
 CRCCon1:       EQU       $80
 CRCCon23:      EQU       $0FE3
+               endsect
 
                TTL       Process Information
                PAG       
@@ -1037,14 +1039,15 @@ Vi.Cnt:        RMB       2                   count down counter
 Vi.Rst:        RMB       2                   reset value for counter
 Vi.Stat:       RMB       1                   status byte
 Vi.PkSz:       EQU       *
-               endsect
 
 Vi.IFlag:      EQU       %00000001           status byte virq flag
+               endsect
 
                PAG       
 *************************************
 * Machine Characteristics Definitions
 *
+               section   _constant
 R$CC:          EQU       0                   Condition Codes register
 R$A:           EQU       1                   A Accumulator
 R$B:           EQU       2                   B Accumulator
@@ -1084,6 +1087,7 @@ TwosOvfl:      EQU       %00000010           Two's Comp Overflow flag
 Carry:         EQU       %00000001           Carry bit
 IntMasks:      EQU       IRQMask+FIRQMask
 Sign:          EQU       %10000000           sign bit
+               endsect
 
                TTL       Error Code Definitions
                PAG       
