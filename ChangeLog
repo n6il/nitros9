@@ -1,6 +1,19 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/27 David Ladd
+M ChangeLog
+M level1/coco1/bootfiles/makefile
+M level1/coco1/modules/makefile
+
+Updated level1/coco1/modules/makefile so that boot_dw_coco1
+and dwio_coco1.sb get created.
+
+Updated level1/coco1/bootfiles/makefile added detection of
+PORT status so if coco1 is detected then dwio_coco1.sb and
+boot_dw_coco1 are used in place of dwio.sb and boot_dw.
+
+----------------------------------------------------------
 2013/01/26 David Ladd
 M ChangeLog
 M level1/coco1/bootfiles/makefile

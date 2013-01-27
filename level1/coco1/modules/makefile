@@ -26,7 +26,7 @@ TPB		= $(3RDPARTY)/booters
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		boot_burke boot_rampak boot_wd1002 boot_dw \
 		boot_tc3 boot_ide boot_rom boot_dw_becker \
-		boot_dw_arduino
+		boot_dw_arduino boot_dw_coco1
 BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= krn krnp2 wbug
 SYSMODS		= ioman init sysgo_dd sysgo_h0 rominfo vectors
@@ -36,7 +36,7 @@ CLOCKS          = clock_60hz clock_50hz \
 		clock2_messemu clock2_jvemu clock2_dw
 
 RBF		= rbf.mn \
-		rbdw.dr dwio.sb dwio_becker.sb dwio_arduino.sb \
+		rbdw.dr dwio.sb dwio_coco1.sb dwio_becker.sb dwio_arduino.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
 		ddd0_35s.dd d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
@@ -100,6 +100,14 @@ boot_dw_arduino:	boot_dw.asm
 # DriveWire Arduino Submodule
 dwio_arduino.sb:	dwio.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DARDUINO=1
+
+# DriveWire CoCo1 Booter
+boot_dw_coco1:	boot_dw.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBAUD38400=1
+
+# DriveWire CoCo1 Submodule
+dwio_coco1.sb:	dwio.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBAUD38400=1
 
 # DriveWire 3
 boot_1773_6ms:	boot_1773.asm
