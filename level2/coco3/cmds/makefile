@@ -6,7 +6,12 @@ vpath %.asm $(LEVEL2)/cmds:$(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic0
 
 DEPENDS		= ./makefile
 AFLAGS          += --includedir=$(NITROS9DIR)/3rdparty/packages/basic09
-LFLAGS		+= $(NITROS9DIR)/lib/sys6809l1.a $(NITROS9DIR)/lib/net.a $(NITROS9DIR)/lib/alib.a 
+ifdef	H6309
+LFLAGS		+= $(NITROS9DIR)/lib/sys6309l2.a 
+else
+LFLAGS		+= $(NITROS9DIR)/lib/sys6809l2.a
+endif
+LFLAGS		+= $(NITROS9DIR)/lib/net.a $(NITROS9DIR)/lib/alib.a 
 
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirsort disasm \

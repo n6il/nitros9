@@ -3,6 +3,15 @@ NitrOS-9 V3.2.9:
 ----------------------------------------------------------
 2013/01/27 David Ladd
 M ChangeLog
+M level2/coco3/cmds/makefile
+
+Updated level2/coco3/cmds/makefile to detect for H6309
+and if set use the sys6309l2.a lib file otherwise
+use sys6809l2.a lib file.
+
+----------------------------------------------------------
+2013/01/27 David Ladd
+M ChangeLog
 M level1/coco1/bootfiles/makefile
 M level1/coco1/modules/makefile
 
