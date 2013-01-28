@@ -16,7 +16,7 @@
 * Made U and T descriptor templates. Backspace is now $7F for
 * telnet clients which are likely to access the T ports.
 *
-* This descriptor has slightly different defaults, intended to be used as 
+* This descriptor has slightly different defaults, intended to be used as
 * the channel for the DriveWire utilities
 *
 *   0.6    2010/01/12  Boisy G. Pitre
@@ -31,9 +31,9 @@
          nam   scdwdesc
          ttl   DriveWire Virtual Device Descriptor
 
-         ifp1  
+         ifp1
          use   defsfile
-         endc  
+         endc
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
@@ -130,7 +130,7 @@ name     equ   *
 mgrnam   fcs   /SCF/
 drvnam   fcs   /scdwv/
 
-         emod  
+         emod
 eom      equ   *
-         end   
+         end
 

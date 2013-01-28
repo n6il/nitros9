@@ -7,52 +7,70 @@
 * Comment
 * Converted rb1773 to ddisk for Dragon disks.
 * ------------------------------------------------------------------
-* 
+*
 * 2005-06-20, P.Harvey-Smith.
 *	Added DragonAlpha define to correctly define the I/O port on the
 *	Dragon ALpha/Professional
-* 
+*
 *
 		nam   ddiskdesc
 		ttl   ddisk Device Descriptor Template
 
 * Disassembled 98/08/23 17:09:41 by Disasm v1.6 (C) 1988 by RML
 
-		ifp1  
+		ifp1
 		use   defsfile
-		endc  
+		endc
 
 tylg    	set   	Devic+Objct
 atrv    	set   	ReEnt+rev
 rev     	set   	$00
 
+		IFNDEF	DNum
 DNum    	set   	0
+		ENDC
 		IFNE  	D35
 Type    	set   	TYP.CCF+TYP.3
 		ELSE
 Type    	set   	TYP.CCF+TYP.5
 		ENDC
+		IFNDEF	Density
 Density 	set   	DNS.MFM
+		ENDC
+		IFNDEF	Step
 Step    	set   	STP.6ms
+		ENDC
+		IFNDEF	Cyls
 Cyls    	set   	40
+		ENDC
+		IFNDEF	Sides
 Sides   	set   	1
+		ENDC
 Verify  	set   	1
+		IFNDEF	SectTrk
 SectTrk 	set   	18
+		ENDC
+		IFNDEF	SectTrk0
 SectTrk0	set   	18
+		ENDC
+		IFNDEF	Interlv
 Interlv 	set   	2
+		ENDC
+		IFNDEF	SAS
 SAS     	set   	8
+		ENDC
 
 		mod   	eom,name,tylg,atrv,mgrnam,drvnam
 
 		fcb   	DIR.!SHARE.!PEXEC.!PWRIT.!PREAD.!EXEC.!UPDAT. mode byte
 		fcb   	HW.Page    	extended controller address
-		
+
 		IFEQ	DragonAlpha-1
 		fdb   	$FF2C      	physical controller address
 		ELSE
 		fdb   	$FF40      	physical controller address
 		ENDC
-		
+
 		fcb   	initsize-*-1 	initalization table size
 		fcb   	DT.RBF     	device type:0=scf,1=rbf,2=pipe,3=scf
 		fcb   	DNum       	drive number
@@ -76,7 +94,7 @@ name    	fcb   	'D,'0+DNum+$80
 mgrnam  	fcs   	/RBF/
 drvnam  	fcs   	/DDisk/
 
-		emod  
+		emod
 eom     	equ   *
-		end   
+		end
 
