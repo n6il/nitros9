@@ -9,7 +9,7 @@
 *  Bit Meaning
 *  --- ---------------------------------------------------------------
 *  7-0 HDB-DOS Drive Number (useful only if HDB-DOS bit set in IT.DNS)
-* 
+*
 * IT.TYP (offset $15)
 *  Bit Meaning
 *  --- ---------------------------------------------------------------
@@ -19,7 +19,7 @@
 *  4   Drive Size Query (1 = yes, 0 = no)
 *  2-3 Undefined
 *  0-1 Sector Size (0 = 256, 1 = 512, 2 = 1024, 3 = 2048)
-* 
+*
 * IT.DNS (offset $16) for SCSI Low Level Driver
 *  Bit Meaning
 *  --- ---------------------------------------------------------------
@@ -27,7 +27,7 @@
 *  4   Turbo Mode:  1 = use accelerated handshaking, 0 = standard
 *  3   HDB-DOS Partition Flag
 *  0-2 SCSI ID of the drive or controller (0-7)
-* 
+*
 * IT.DNS (offset $16) for IDE Low Level Driver
 *  Bit Meaning
 *  --- ---------------------------------------------------------------
@@ -52,58 +52,71 @@
                TTL       Super Driver Device Descriptor Template
 
 * Super Driver specific fields
-               IFEQ      ITDRV
+*               IFEQ      ITDRV
+		IFNDEF	ITDRV
 ITDRV          SET       $00
                ENDC
-               IFEQ      ITSTP
+*               IFEQ      ITSTP
+		IFNDEF	ITSTP
 ITSTP          SET       $00
                ENDC
-               IFEQ      ITTYP
+*               IFEQ      ITTYP
+		IFNDEF	ITTYP
 ITTYP          SET       $81
                ENDC
-               IFEQ      ITDNS
+*               IFEQ      ITDNS
+		IFNDEF	ITDNS
 ITDNS          SET       $00
                ENDC
 
-               IFEQ      ITSOFS1
+*               IFEQ      ITSOFS1
+		IFNDEF	ITSOFS1
 ITSOFS1        SET       $00
                ENDC
-               IFEQ      ITSOFS2
+*               IFEQ      ITSOFS2
+		IFNDEF	ITSOFS2
 ITSOFS2        SET       $00
                ENDC
-               IFEQ      ITSOFS3
+*               IFEQ      ITSOFS3
+		IFNDEF	ITSOFS3
 ITSOFS3        SET       $00
                ENDC
 
 * Geometry for an EZ-135
-               IFEQ      Sides
+*               IFEQ      Sides
+		IFNDEF	Sides
 Sides          SET       $40
                ENDC
-               IFEQ      Cyls
+*               IFEQ      Cyls
+		IFNDEF	Cyls
 Cyls           SET       $007f
                ENDC
-               IFEQ      SectTrk
+*               IFEQ      SectTrk
+		IFNDEF	SectTrk
 SectTrk        SET       $0020
                ENDC
-               IFEQ      SectTrk0
+*               IFEQ      SectTrk0
+		IFNDEF	SectTrk0
 SectTrk0       SET       $0020
                ENDC
-               IFEQ      Interlv
+*               IFEQ      Interlv
+		IFNDEF	Interlv
 Interlv        SET       $01
                ENDC
-               IFEQ      SAS
+*               IFEQ      SAS
+		IFNDEF	SAS
 SAS            SET       $08
                ENDC
 
-               IFP1      
+               IFP1
                USE       defsfile
                USE       rbsuper.d
                IFNE      IDE
                USE       ide.d
                ELSE
                USE       scsi.d
-               ENDC      
-               ENDC      
+               ENDC
+               ENDC
 
 tylg           SET       Devic+Objct
 atrv           SET       ReEnt+rev
@@ -113,9 +126,9 @@ rev            SET       $09
 
                IFNE      CDROM
                FCB       DIR.+SHARE.+PEXEC.+PREAD.+EXEC.+READ.
-               ELSE      
+               ELSE
                FCB       DIR.+SHARE.+PEXEC.+PREAD.+PWRIT.+EXEC.+UPDAT.
-               ENDC      
+               ENDC
                FCB       HW.PAGE             extended controller address
                FDB       SDAddr              physical controller address
                FCB       initsize-*-1        initilization table size
@@ -149,45 +162,45 @@ initsize       EQU       *
                IFNE      NULL
 name           FCC       /NULL/
                FCB       ITDRV+$B0
-               ELSE      
+               ELSE
                IFNE      DD
 name           FCS       /DD/
-               ELSE      
+               ELSE
                IFNE      DRIVEWIRE
 name           FCC       /X/
                IFNE      HB
                FCS       /H/
-               ELSE      
+               ELSE
                FCB       ITDRV+$B0
-               ENDC      
-               ELSE      
+               ENDC
+               ELSE
                IFNE      IDE
 name           FCC       /I/
                IFNE      HB
                FCS       /H/
-               ELSE      
+               ELSE
                FCB       ITDRV+$B0
-               ENDC      
-               ELSE      
+               ENDC
+               ELSE
                IFNE      SD
 name           FCC       /SD/
                IFNE      HB
                FCS       /H/
-               ELSE      
+               ELSE
                FCB       ITDRV+$B0
-               ENDC      
-               ELSE      
+               ENDC
+               ELSE
 name           FCC       /S/
                IFNE      HB
                FCS       /H/
-               ELSE      
+               ELSE
                FCB       ITDRV+$B0
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
+               ENDC
+               ENDC
+               ENDC
+               ENDC
+               ENDC
+               ENDC
 
 mgrnam         FCS       /RBF/
 drvnam         FCS       /rbsuper/
@@ -195,38 +208,38 @@ lldrv          EQU       *
                IFNE      NULL
                FCS       /llnull/
                FCB       0
-               ELSE      
+               ELSE
                IFNE      DRIVEWIRE
                FCS       /lldw/
                FCB       0,0,0
-               ELSE      
+               ELSE
                IFNE      TC3+SB
                FCS       /lltc3/
                FCB       0,0
-               ELSE      
+               ELSE
                IFNE      KTLR
                FCS       /llktlr/
                FCB       0
-               ELSE      
+               ELSE
                IFNE      HDII+D4N1
                FCS       /lldisto/
-               ELSE      
+               ELSE
                IFNE      IDE
                FCS       /llide/
                FCB       0,0
-               ELSE      
+               ELSE
                IFNE      SD
                FCS       /llsd/
                FCB       0,0,0
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
+               ENDC
+               ENDC
+               ENDC
+               ENDC
+               ENDC
+               ENDC
+               ENDC
 
 
-               EMOD      
+               EMOD
 eom            EQU       *
-               END       
+               END

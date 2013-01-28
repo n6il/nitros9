@@ -348,25 +348,25 @@ s0_tc3.dd: superdesc.asm
 	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) $(SCSI_HD)
 
 s1_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID1) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID1) $(SCSI_HD) -DITDRV=1
 
 s2_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID2) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID2) $(SCSI_HD) -DITDRV=2
 
 s3_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID3) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID3) $(SCSI_HD) -DITDRV=3
 
 s4_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID4) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID4) $(SCSI_HD) -DITDRV=4
 
 s5_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID5) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID5) $(SCSI_HD) -DITDRV=5
 
 s6_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID6) $(SCSI_HD)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID6) $(SCSI_HD) -DITDRV=6
 
 sh_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(HDBDOS)
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(HDBDOS) -DITDRV=0 -ITDNS=8
 
 # IDE Descriptors
 ddi0_ide.dd: superdesc.asm
@@ -376,10 +376,10 @@ i0_ide.dd: superdesc.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER)
 
 i1_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SLAVE)
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SLAVE) -DITDNS=1 -DITDRV=1
 
 ih_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS)
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS) -DITDNS=8
 
 # RFM descriptors
 ddy0.dd: rfmdesc.asm
