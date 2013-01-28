@@ -1,6 +1,14 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/28 David Ladd
+M ChangeLog
+M level2/coco3/bootfiles/makefile
+
+Updated level2/coco3/bootfiles/makefile so that the becker
+os9boot file has ddx0.dd rather then ddd0.dd.
+
+----------------------------------------------------------
 2013/01/27 David Ladd
 M ChangeLog
 M level2/coco3/cmds/makefile
