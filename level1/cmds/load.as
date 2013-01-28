@@ -17,7 +17,7 @@
 rev      set   $00
 edition  set   4
 
-         section data
+         section .bss
 u0000    rmb   200
          endsect
 

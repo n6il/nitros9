@@ -17,7 +17,7 @@
 rev      set   $00
 edition  set   2
 
-         section data
+         section .bss
 childid  rmb   1
 parmptr  rmb   2
 parmlen  rmb   2
