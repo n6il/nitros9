@@ -65,8 +65,8 @@ CLOCK60HZDW = $(MD)/clock_60hz $(MD)/clock2_dw
 BOOTFILE_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(RBDWBECKER) \
+		$(MD)/ddx0.dd \
 		$(FLOPPY_40D) \
-	            $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COGRF_80) \
 		$(MD)/scdwv.dr \
@@ -80,8 +80,8 @@ BOOTFILE_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 BOOTFILE_ARDUINO	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(RBDWARDUINO) \
-		$(FLOPPY_40D) \
                 $(MD)/ddx0.dd \
+		$(FLOPPY_40D) \
 		$(MD)/scf.mn \
 		$(VTIO_COGRF_80) \
 		$(MD)/scdwv.dr \
@@ -94,8 +94,8 @@ BOOTFILE_ARDUINO	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 BOOTFILE_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(RBDW) \
+		$(MD)/ddx0.dd \
 		$(FLOPPY_40D) \
-                        $(MD)/ddx0.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COGRF_80) \
 		$(MD)/scdwv.dr \
@@ -116,7 +116,7 @@ BOOTFILE_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 BOOTFILE_DW_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(RBDW) \
-          $(MD)/ddx0.dd \
+		$(MD)/ddx0.dd \
 		$(FLOPPY_40D) \
 		$(MD)/scf.mn \
 		$(MD)/scdwv.dr \
