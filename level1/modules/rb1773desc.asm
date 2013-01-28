@@ -80,7 +80,6 @@ name     fcb   'D,'0+DNum+$80
 mgrnam   fcs   /RBF/
 drvnam   fcs   /rb1773/
 
-         emod  
+         emod
 eom      equ   *
-         end   
-
+         end
