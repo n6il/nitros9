@@ -126,6 +126,36 @@ BOOTFILE_DW_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(PIPE) \
 		$(CLOCK60HZDW)
 
+# NitrOS-9 disk bootfile to allow booting from DriveWire 3 server
+# Headless mode Becker Port
+BOOTFILE_BECKER_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(RBDWBECKER) \
+		$(MD)/ddx0.dd \
+		$(FLOPPY_40D) \
+		$(MD)/scf.mn \
+		$(MD)/scdwv.dr \
+		$(MD)/term_scdwv.dt \
+		$(SCDWV_NET) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW)
+
+# NitrOS-9 disk bootfile to allow booting from DriveWire 3 server
+# Headless mode Arduino
+BOOTFILE_ARDUINO_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(RBDWARDUINO) \
+		$(MD)/ddx0.dd \
+		$(FLOPPY_40D) \
+		$(MD)/scf.mn \
+		$(MD)/scdwv.dr \
+		$(MD)/term_scdwv.dt \
+		$(SCDWV_NET) \
+		$(SCDWP) \
+		$(PIPE) \
+		$(CLOCK60HZDW)
+
 # NitrOS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -163,7 +193,10 @@ BOOTFILE_80D_50HZ	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(PIPE) \
 		$(CLOCK50HZ)
 
-BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d bootfile_80d_50hz bootfile_dw bootfile_dw_headless bootfile_becker bootfile_arduino
+BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d \
+		bootfile_80d_50hz bootfile_dw bootfile_dw_headless \
+		bootfile_becker bootfile_arduino bootfile_becker_headless \
+		bootfile_arduino_headless
 KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw kernel_becker kernel_arduino
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
@@ -194,6 +227,12 @@ bootfile_dw: $(BOOTFILE_DW) $(DEPENDS)
 
 bootfile_dw_headless: $(BOOTFILE_DW_HEADLESS) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_DW_HEADLESS)>$@
+
+bootfile_becker_headless: $(BOOTFILE_BECKER_HEADLESS) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_BECKER_HEADLESS)>$@
+
+bootfile_arduino_headless: $(BOOTFILE_ARDUINO_HEADLESS) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_ARDUINO_HEADLESS)>$@
 
 # Kernels
 kernel_becker: $(KERNEL_BECKER) $(DEPENDS)
