@@ -86,7 +86,7 @@ TkPerSec:      SET       60
 ******************
 * ACIA type set up
 *
-               section   .data
+               section   _constant
 ACIA6850:      RMB       1                   MC6850 acia.
 ACIA6551:      RMB       1                   SY6551 acia.
 ACIA2661:      RMB       1                   SC2661 acia.
