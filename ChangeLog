@@ -3,6 +3,22 @@ NitrOS-9 V3.2.9:
 ----------------------------------------------------------
 2013/01/28 David Ladd
 M ChangeLog
+M level1/modules/ddiskdesc.asm
+M level1/modules/dwdesc.asm
+M level1/modules/rb1773desc.asm
+M level1/modules/scdwvdesc.asm
+
+Updated level1/modules/ddiskdesc.asm so that if default
+values are not given by assembler define command statement
+then definitions are set to a default value.
+
+Updated level1/modules/rb1773desc.asm so that if default
+values are not given by assembler define command statement
+then definitions are set to a default value.
+
+----------------------------------------------------------
+2013/01/28 David Ladd
+M ChangeLog
 M level2/coco3/bootfiles/makefile
 M level2/coco3/makefile
 

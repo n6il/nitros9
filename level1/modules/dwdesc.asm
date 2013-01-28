@@ -12,9 +12,9 @@
          nam   DWDesc
          ttl   DriveWire Device Descriptor Template
 
-         ifp1  
+         ifp1
          use   defsfile
-         endc  
+         endc
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
@@ -23,7 +23,7 @@ rev      set   $01
          IFNDEF  DNum
 DNum     set   0
          ENDC
-         
+
 Type     set   TYP.HARD
 Density  set   0
 Step     set   0
