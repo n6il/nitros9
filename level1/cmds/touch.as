@@ -29,7 +29,7 @@ rev      set   $00
 edition  set   2
 
 * Your utility's static storage vars go here
-         section data
+         section .bss
 parmptr  rmb   2	pointer to our command line params
 bufptr   rmb   2	pointer to user expandable buffer
 bufsiz   rmb   2	size of user expandable buffer

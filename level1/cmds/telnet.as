@@ -49,7 +49,7 @@ atrv           set       $80+rev ReEnt+rev
 rev            set       $00
 edition        set       5
 
-               section   data
+               section   .bss
 connected      rmb       1
 netdatardy     rmb       1
 keydatardy     rmb       1

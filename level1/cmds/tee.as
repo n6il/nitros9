@@ -19,7 +19,7 @@
 rev      set   $00
 edition  set   2
 
-         section data
+         section .bss
 u0000    rmb   1
 parray   rmb   13
 pcount   rmb   1

@@ -17,7 +17,7 @@ atrv           set       $80+rev   ReEnt+rev
 rev            set       $00
 edition        set       1
 
-               section   data
+               section   .bss
 pbuffer        rmb       256
 pbend          rmb       2
 cbuffer        rmb       256

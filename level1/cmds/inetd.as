@@ -23,7 +23,7 @@ atrv           set       $80+rev   ReEnt+rev
 rev            set       $00
 edition        set       3
 
-               section   data
+               section   .bss
 targetport     rmb       2
 netdatardy     rmb       1
 nbufferl       equ       128

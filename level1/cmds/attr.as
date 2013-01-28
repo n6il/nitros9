@@ -24,7 +24,7 @@ rev      set   $00
 edition  set   11
 
 
-         section data
+         section .bss
 fpath    rmb   1
 rawpath  rmb   1
 parmptr  rmb   2
