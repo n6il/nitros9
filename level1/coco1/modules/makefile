@@ -139,7 +139,7 @@ DSDD80		= -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
 		-DInterlv=3 -DSAS=8 -DDensity=1 -DD35
 
 # HDB-DOS for SuperDriver
-HDBDOS                  = -DHB $(SSDD35)
+HDBDOS                  = -DHB $(SSDD35) -DITDNS=8 $(ID0)
 
 ddd0_35s.dd: rb1773desc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=0 -DDD=1
@@ -271,31 +271,31 @@ x3.dd: dwdesc.asm
 
 # TC^3 SCSI Descriptors
 dds0_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) -DDD=1 -DITDRV=0
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) -DDD=1
 
 s0_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) $(SCSI_HD) -DITDRV=0
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) $(SCSI_HD)
 
 s1_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID1) $(SCSI_HD) -DITDRV=1
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID1) $(SCSI_HD)
 
 s2_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID2) $(SCSI_HD) -DITDRV=2
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID2) $(SCSI_HD)
 
 s3_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID3) $(SCSI_HD) -DITDRV=3
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID3) $(SCSI_HD)
 
 s4_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID4) $(SCSI_HD) -DITDRV=4
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID4) $(SCSI_HD)
 
 s5_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID5) $(SCSI_HD) -DITDRV=5
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID5) $(SCSI_HD)
 
 s6_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID6) $(SCSI_HD) -DITDRV=6
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID6) $(SCSI_HD)
 
 sh_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(HDBDOS) -DITDRV=0 -DITDNS=8
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(HDBDOS)
 
 # IDE Descriptors
 ddi0_ide.dd: superdesc.asm
@@ -305,10 +305,10 @@ i0_ide.dd: superdesc.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER)
 
 i1_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SLAVE) -DITDNS=1 -DITDRV=1
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SLAVE)
 
 ih_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS) -DITDNS=8
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS)
 
 # RFM descriptors
 ddy0.dd: rfmdesc.asm
