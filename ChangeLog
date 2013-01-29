@@ -1,6 +1,20 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/29 David Ladd
+M ChangeLog
+M level1/coco1/modules/makefile
+M level2/coco3/modules/makefile
+M rules.mak
+
+Updated rules.mak to include values that should have been set
+for use in the level1/coco1/modules/makefile &
+level2/coco3/modules/makefile.
+
+Removed added values that aren't needed as those are now set
+in the rules.mak file.
+
+----------------------------------------------------------
 2013/01/28 David Ladd
 M ChangeLog
 M level1/coco1/modules/makefile

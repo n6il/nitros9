@@ -97,10 +97,23 @@ LEVEL1		= $(NITROS9DIR)/level1
 LEVEL2		= $(NITROS9DIR)/level2
 LEVEL3		= $(NITROS9DIR)/level3
 NOSLIB		= $(NITROS9DIR)/lib
-CC68L1          = $(LEVEL1)/coco
+CC68L1          = $(LEVEL1)/coco1
 CC368L2         = $(LEVEL2)/coco3
 CC363L2         = $(LEVEL2)/coco3_6309
 CC363L3         = $(LEVEL3)/coco3_6309
+
+# HDD Drive ID's
+ID0 = -DITDRV=0
+ID1 = -DITDRV=1
+ID2 = -DITDRV=2
+ID3 = -DITDRV=3
+ID4 = -DITDRV=4
+ID5 = -DITDRV=5
+ID6 = -DITDRV=6
+ID7 = -DITDRV=7
+SLAVE = -DITDNS=1
+MASTER = -DITDNS=0
+
 
 # C-Cubed Rules
 %.o: %.c
