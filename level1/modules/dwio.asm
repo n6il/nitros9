@@ -499,9 +499,14 @@ loop           cmpb      #NumPaths
                bne       loop
 
                ldx       ,s
-			lda   	P$State,x		get state of recipient
-			ora   	#Condem			set condemn bit
-			sta   	P$State,x		and set it back
+
+               ldb       #S$HUP
+               stb       P$Signal,x
+               os9       F$AProc
+
+*			lda   	P$State,x		get state of recipient
+*			ora   	#Condem			set condemn bit
+*			sta   	P$State,x		and set it back
 
 out            puls      x
                ldx       P$Queue,x

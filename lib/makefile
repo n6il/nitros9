@@ -1,22 +1,23 @@
 include $(NITROS9DIR)/rules.mak
 
-SRC = os9s.as scfs.as rbfs.as pipes.as systype.as net.as drivewire.as
+all: lib6809l1.a lib6809l2.a lib6309l2.a libnet.a libalib.a libdw.a
 
-all: sys6809l1.a sys6809l2.a sys6309l2.a net.a alib.a drivewire.a
+lib6809l1.a: sys6809l1.o
+	lwar -c $@ $?
 
-sys6809l1.a: sys6809l1.o
-sys6809l2.a: sys6809l2.o
-sys6309l2.a: sys6309l2.o
-net.a: net.o
+lib6809l2.a: sys6809l2.o
+	lwar -c $@ $?
 
-sys6809l1.o: sys6809l1.as
-sys6809l2.o: sys6809l2.as
-sys6309l2.o: sys6309l2.as
-net.o: net.as
+lib6309l2.a: sys6309l2.o
+	lwar -c $@ $?
 
-drivewire.a: drivewire.o
+libnet.a: net.o
+	lwar -c $@ $?
 
-alib.a:
+libdw.a: dw.o
+	lwar -c $@ $?
+
+libalib.a:
 	cd alib; make
 
 clean:

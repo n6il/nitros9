@@ -6,12 +6,13 @@ vpath %.asm $(LEVEL2)/cmds:$(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic0
 
 DEPENDS		= ./makefile
 AFLAGS          += --includedir=$(NITROS9DIR)/3rdparty/packages/basic09
+LFLAGS		+= -L$(NITROS9DIR)/lib
 ifdef	H6309
-LFLAGS		+= $(NITROS9DIR)/lib/sys6309l2.a 
+LFLAGS		+= -l6309l2
 else
-LFLAGS		+= $(NITROS9DIR)/lib/sys6809l2.a
+LFLAGS		+= -l6809l2
 endif
-LFLAGS		+= $(NITROS9DIR)/lib/net.a $(NITROS9DIR)/lib/alib.a 
+LFLAGS		+= -lnet -lalib -ldw
 
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirsort disasm \
@@ -24,7 +25,7 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 CMDS_D2         = basic09 runb gfx2 gfx inkey syscall copy del echo format \
                 merge os9gen prompt tmode
 
-CMDS_DW		= inetd dw telnet
+CMDS_DW		= inetd dw telnet eeread eewrite
 
 SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
 UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
