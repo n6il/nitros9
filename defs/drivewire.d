@@ -51,6 +51,9 @@ OP_SERWRITE equ 'C+128
 OP_SERGETSTAT equ 'D
 OP_SERSETSTAT equ 'D+128
 
+SS.Timer      equ   $81
+SS.EE         equ   $82
+
 * for dw vfm
 OP_VFM equ 'V+128
 

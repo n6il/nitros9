@@ -39,12 +39,12 @@ MODS = stimestr.o datestr.o getfmd.o mktemp.o linedit.o sho_regs.o \
 	to_sp.o to_non_sp.o memset.o rnd.o
 
 
-all:	../alib.a
+all:	../libalib.a
 
-../alib.a: $(MODS)
+../libalib.a: $(MODS)
 	lwar -c $@ $?
 
 dskclean: clean
 
 clean:
-	$(RM) *.o ../alib.a
+	$(RM) *.o ../libalib.a
