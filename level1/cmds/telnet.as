@@ -44,11 +44,6 @@ DEBUG          set       0
                nam       telnet
                ttl       program module
 
-tylg           set       $01     Prgrm+Objct
-atrv           set       $80+rev ReEnt+rev
-rev            set       $00
-edition        set       5
-
                section   .bss
 connected      rmb       1
 netdatardy     rmb       1
@@ -73,7 +68,14 @@ state          rmb       1
 telctrlbuf     rmb       3
                endsect
 
-*               psect     telnet_a,tylg,atrv,edition,200,start
+               section    __os9
+type           equ        $01
+lang           equ        $01
+attr           equ        $80
+rev            equ        $05
+stack          equ        200
+               endsect
+
                section   code
 
 TELESCAPE      equ       'Y-$40              * CTRL-Y
@@ -125,6 +127,7 @@ defportstr     fcc       '23'
                
 peerclosed
                clr       connected,u
+               lda       #1
                leax      peerclosm,pcr
                ldy       #peerclosml
                os9       I$WritLn
