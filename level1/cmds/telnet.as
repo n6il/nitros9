@@ -44,7 +44,16 @@ DEBUG          set       0
                nam       telnet
                ttl       program module
 
-               section   .bss
+               section   __os9
+type           set       Prgrm
+lang           set       Objct
+attr           set       ReEnt
+rev            set       $00
+edition        set       1
+stack          set       200
+               endsect
+
+               section   bss
 connected      rmb       1
 netdatardy     rmb       1
 keydatardy     rmb       1
@@ -66,14 +75,6 @@ outpath        rmb       1
 numbyt         rmb       1
 state          rmb       1
 telctrlbuf     rmb       3
-               endsect
-
-               section    __os9
-type           equ        $01
-lang           equ        $01
-attr           equ        $80
-rev            equ        $05
-stack          equ        200
                endsect
 
                section   code

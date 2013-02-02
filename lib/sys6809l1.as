@@ -1,4 +1,4 @@
-               section  _constant
+               section   _constant
 
 Level          equ       1
 H6309          equ       0

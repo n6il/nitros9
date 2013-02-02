@@ -12,12 +12,16 @@
                nam       dw
                ttl       command interface to the server
 
-tylg           set       $01       Prgrm+Objct
-atrv           set       $80+rev   ReEnt+rev
+               section   __os9
+type           set       Prgrm
+lang           set       Objct
+attr           set       ReEnt
 rev            set       $00
 edition        set       1
+stack          set       200
+               endsect
 
-               section   .bss
+               section   bss
 pbuffer        rmb       256
 pbend          rmb       2
 cbuffer        rmb       256
@@ -29,7 +33,6 @@ die            rmb       1
                endsect
 
                section   code
-*               psect     dw_a,$01,$80,1,200,start
 
 * signal handling
 icpt           lda       #1

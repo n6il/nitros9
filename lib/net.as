@@ -9,20 +9,15 @@
 *   1      2010/01/08  Boisy G. Pitre
 * Started.
 
-               nam       net.a
-               ttl       network routines
-
-               section   .bss
+               section   bss
 nbufferl       equ       128
 nbuffer        rmb       nbufferl
                endsect
 
-               section   .text
+               section   code
 
 space          fcb       C$SPAC
-
 devnam         fcs       "/N"
-
 
 getopts        leax      nbuffer,u
                ldb       #SS.Opt
