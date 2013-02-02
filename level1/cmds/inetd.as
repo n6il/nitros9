@@ -18,12 +18,16 @@
                nam       inetd
                ttl       internet daemon
 
-tylg           set       $01       Prgrm+Objct
-atrv           set       $80+rev   ReEnt+rev
+               section   __os9
+type           set       Prgrm
+lang           set       Objct
+attr           set       ReEnt
 rev            set       $00
-edition        set       3
+edition        set       1
+stack          set       200
+               endsect
 
-               section   .bss
+               section   bss
 targetport     rmb       2
 netdatardy     rmb       1
 nbufferl       equ       128
