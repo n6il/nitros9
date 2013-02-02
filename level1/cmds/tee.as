@@ -14,26 +14,26 @@
 
 * Disassembled 98/09/14 23:50:52 by Disasm v1.6 (C) 1988 by RML
 
-         use   defsfile.d
-
-rev      set   $00
-edition  set   2
-
-         section .bss
+         section bss
 u0000    rmb   1
 parray   rmb   13
 pcount   rmb   1
-buff     rmb   200
+buff     rmb   256
+         rmb   450
          endsect
 
-*         psect tee_a,Prgrm+Objct,ReEnt+rev,edition,200,start
-         section code
+         section __os9
+rev      set   $00
+edition  set   2
+stack    set   200
+         endsect
 
-__start  clrb  
-         clr   pcount		clear path counter
+         section code
+__start    clrb  
+         clr   pcount,u		clear path counter
          cmpy  #$0000		any parameters?
          lbeq  exitok		exit if none
-         leay  parray		else point Y to path array
+         leay  parray,u		else point Y to path array
 
 * Walk the command line parameters
 parse    lda   ,x+
@@ -49,16 +49,16 @@ parse    lda   ,x+
          ldb   #PREAD.+UPDAT.
          os9   I$Create 	open a path to the device or file
          bcs   exit		branch if error
-         ldb   pcount		else get path counter
+         ldb   pcount,u		else get path counter
          sta   b,y		save new path in the array offset
          incb  			increment counter
-         stb   pcount		and save
+         stb   pcount,u		and save
          bra   parse		continue parsing command line
-parsex   stb   pcount
+parsex   stb   pcount,u
 
 * Devices on command line are open, start pumping data
 L0044    clra  
-         leax  buff
+         leax  buff,u
          ldy   #256
          os9   I$ReadLn 
          bcc   L0057
@@ -68,17 +68,17 @@ L0044    clra
          bra   exit
 L0057    inca  
          os9   I$WritLn 
-         tst   pcount
+         tst   pcount,u
          beq   L0044
          clrb  
-L0060    leay  parray
+L0060    leay  parray,u
          lda   b,y
-         leax  buff
+         leax  buff,u
          ldy   #256
          os9   I$WritLn 
          bcs   exit
          incb  
-         cmpb  pcount
+         cmpb  pcount,u
          bne   L0060
          bra   L0044
 exitok   clrb  
