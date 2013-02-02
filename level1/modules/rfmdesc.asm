@@ -21,7 +21,9 @@ tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
 
+	IFNDEF	DNum
 DNum     set   0
+	ENDC
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
