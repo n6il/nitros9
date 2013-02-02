@@ -12,29 +12,47 @@
 
 * Disassembled 98/08/23 17:09:41 by Disasm v1.6 (C) 1988 by RML
 
-         ifp1  
+         ifp1
          use   defsfile
-         endc  
+         endc
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
 
+	IFNDEF	Dnum
 DNum     set   0
+	ENDC
          IFNE  D35
 Type     set   TYP.CCF+TYP.3
          ELSE
 Type     set   TYP.CCF+TYP.5
          ENDC
+	IFNDEF	Density
 Density  set   DNS.MFM
+	ENDC
+	IFNDEF	Step
 Step     set   STP.6ms
+	ENDC
+	IFNDEF	Cyls
 Cyls     set   35
+	ENDC
+	IFNDEF	Sides
 Sides    set   1
+	ENDC
 Verify   set   1
+	IFNDEF	SectTrk
 SectTrk  set   18
+	ENDC
+	IFNDEF	SectTrk0
 SectTrk0 set   18
+	ENDC
+	IFNDEF	Interlv
 Interlv  set   3
+	ENDC
+	IFNDEF	SAS
 SAS      set   8
+	ENDC
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
@@ -65,7 +83,7 @@ name     fcs   /RTST/
 mgrnam   fcs   /RBF/
 drvnam   fcs   /rbtest/
 
-         emod  
+         emod
 eom      equ   *
-         end   
+         end
 
