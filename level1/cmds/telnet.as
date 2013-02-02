@@ -509,12 +509,12 @@ dodont         lda       #DONT
                fcb       $8C
 dowont         lda       #WONT
                sta       telctrlbuf+1,u
+               pshs      x,y
                ldy       #3
                lda       netpath,u
-               pshs      x
                leax      telctrlbuf,u
                os9       I$Write
-               puls      x
+               puls      x,y
                lbra      procbuf
 
                endsect
