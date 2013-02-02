@@ -8,11 +8,11 @@ DEPENDS		= ./makefile
 AFLAGS          += --includedir=$(NITROS9DIR)/3rdparty/packages/basic09
 LFLAGS		+= -L$(NITROS9DIR)/lib
 ifdef	H6309
-LFLAGS		+= -l6309l2
+LFLAGS		+= -lcoco3_6309
 else
-LFLAGS		+= -l6809l2
+LFLAGS		+= -lcoco3
 endif
-LFLAGS		+= -lnet -lalib -ldw
+LFLAGS		+= -lnet -lalib 
 
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirsort disasm \
