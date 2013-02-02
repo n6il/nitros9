@@ -1,6 +1,5 @@
                section  _constant
 
-DRAGON         equ       0
 Level          equ       1
 H6309          equ       0
 
@@ -8,6 +7,7 @@ H6309          equ       0
                use       ../defs/rbf.d
                use       ../defs/scf.d
                use       ../defs/pipe.d
+               use       ../defs/rbsuper.d
                use       ../defs/drivewire.d
 
                endsect
