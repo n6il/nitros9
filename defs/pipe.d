@@ -1,6 +1,6 @@
-               IFNE      PIPEDEFS-1
+               IFNE      PIPE.D-1
 
-PIPEDEFS       SET       1
+PIPE.D         SET       1
 
 ********************************************************************
 * PipeDefs - Pipe File Manager Definitions
