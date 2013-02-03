@@ -14,7 +14,7 @@
 
          ifp1  
          use   defsfile
-         use   pipedefs
+         use   pipe.d
          endc  
 
 tylg     set   Devic+Objct

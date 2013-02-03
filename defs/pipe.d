@@ -90,7 +90,7 @@ IT.PDC         EQU       $12                 ;Pipe device class (like IT.DTP, IT
 IT.ESiz        RMB       1                   ;Size of each queue element
 IT.ECnt        RMB       2                   ;Max. elements in queue (initial position)
 
-*   End of pipedefs
+*   End of pipe.d
 
                ENDC      
 
