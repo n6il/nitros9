@@ -20,14 +20,15 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		format free grfdrv help ident iniz irqs link list load login \
 		makdir mdir megaread merge mfree mmap modpatch montype mpi os9gen padrom park \
 		pmap proc procs prompt pwd pxd reboot rename save setime \
-		shell_21 sleep smap tee tmode touch tsmon tuneport unlink verify wcreate xmode
+		shell_21 sleep smap tee tmode touch tsmon tuneport unlink verify wcreate xmode 
 
 CMDS_D2         = basic09 runb gfx2 gfx inkey syscall copy del echo format \
                 merge os9gen prompt tmode
 
-CMDS_DW		= inetd dw telnet eeread eewrite
+CMDS_DW		= inetd dw telnet 
 
 SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
+
 UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
 		merge mfree procs rename tmode
 
@@ -53,13 +54,13 @@ pxd:	pd.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DPXD=1
 
 shell:  $(SHELLMODS) $(DEPENDS)
-	$(MERGE) $(SHELLMODS)>$@
+	$(MERGE) $(SHELLMODS) >$@
 	@$(ECHO) "*** Be sure the size of this file is less than 7681 bytes! ***"
 	@ls -l $@
 	@$(ECHO) ""
 
 utilpak1:  $(UTILPAK1) $(DEPENDS)
-	$(MERGE) $(UTILPAK1)>$@
+	$(MERGE) $(UTILPAK1) >$@
 	@$(ECHO) "*** Be sure the size of this file is less than 7681 bytes! ***"
 	@ls -l $@
 	@$(ECHO) ""
@@ -72,7 +73,7 @@ showobjs:
 	@$(ECHO) shell utilpak1 $(CMDS)
 
 showobjs_dw:
-	@$(ECHO) shell utilpak1 $(CMDS) $(CMDS_DW)
+	@$(ECHO) shell utilpak1 $(CMDS) $(CMDS_D2) $(CMDS_DW)
 
 showobjs_d2:
 	@$(ECHO) $(CMDS_D2)
