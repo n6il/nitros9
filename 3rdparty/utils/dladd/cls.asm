@@ -14,8 +14,7 @@
          ttl   Clear Screen
 
          ifp1
-         use   os9.d
-         use   scf.d
+         use   defsfile
          endc
 
 tylg     set   Prgrm+Objct
