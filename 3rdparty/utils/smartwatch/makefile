@@ -6,6 +6,10 @@ CMDS		= getclk swread swset
 
 ALLOBJS		= $(CMDS)
 
+DSKSMARTWATCH	= smartwatch.dsk
+
+DSKS		= $(DSKSMARTWATCH)
+
 all:	banner $(ALLOBJS) $(DEPENDS)	
 
 banner:
@@ -14,7 +18,24 @@ banner:
 	@$(ECHO) "*               SmartWatch Utilities             *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
- 
+
+$(DSKSMARTWATCH): $(CMDS)
+	-$(RM) $@
+	$(OS9FORMAT) $@
+	$(MAKDIR) $@,CMDS
+	$(CP) $(CMDS) $@,CMDS
+	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+
+dsk: all $(DSKS)
+
+dskcopy: dsk
+	$(CP) $(DSKS) $(DSKDIR)
+
 clean:
-	$(RM) $(ALLOBJS)
+	$(RM) $(ALLOBJS) $(DSKS)
+
+info:
+	@echo "*** SmartWatch Utilities ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
+
 

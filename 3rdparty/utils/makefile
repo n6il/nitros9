@@ -22,3 +22,7 @@ dsk:
 # Copy DSK images
 dskcopy:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
+
+# info
+info:
+	$(foreach dir, $(dirs), ($(CD) $(dir); make info);)
