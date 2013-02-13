@@ -35,7 +35,7 @@ dskcopy: dsk
 	$(CP) $(DSKS) $(DSKDIR)
 
 clean:
-	$(RM) $(ALLOBJS)
+	$(RM) $(ALLOBJS) $(DSKS)
 
 info:
 	@echo "*** WInfo Utility ***"
