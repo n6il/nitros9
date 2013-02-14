@@ -1,13 +1,13 @@
 PORT = atari
 include $(NITROS9DIR)/rules.mak
 
-vpath %.a $(LEVEL1)/cmds
+vpath %.as $(LEVEL1)/cmds
 vpath %.asm $(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
 
 DEPENDS		= ./makefile
 
-AFLAGS		+= --includedir=$(NITROS9DIR)/3rdparty/packages/basic09
-LFLAGS		+= -l=$(NITROS9DIR)/lib/net.l -l=$(NITROS9DIR)/lib/alib.l -l=$(NITROS9DIR)/lib/sys6809l1.l
+AFLAGS          += --includedir=$(NITROS9DIR)/3rdparty/packages/basic09
+LFLAGS          += -L $(NITROS9DIR)/lib -lnet -lcoco -lalib
 
 BASIC09FILES	= basic09.asm runb.asm gfx.asm inkey.asm syscall.asm
 CMDS		= asm attr backup binex build calldbg cmp copy cputype \
