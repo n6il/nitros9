@@ -42,6 +42,8 @@ VTIO_COWIN_80 = $(MD)/vtio.dr \
 		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw
 RBDW       = $(MD)/rbdw.dr $(MD)/dwio.sb \
 		$(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
+RBCOCOSDC  = $(MD)/rbsuper.dr $(MD)/llcocosdc.dr \
+		$(MD)/sd0_cocosdc.dd $(MD)/sd1_cocosdc.dd
 RBDWARDUINO = $(MD)/rbdw.dr $(MD)/dwio_arduino.sb \
 		$(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
 RBDWBECKER = $(MD)/rbdw.dr $(MD)/dwio_becker.sb \
@@ -156,6 +158,17 @@ BOOTFILE_ARDUINO_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(PIPE) \
 		$(CLOCK60HZDW)
 
+# NitrOS-9 disk bootfile to allow booting from CoCo SD
+BOOTFILE_COCOSDC	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+                $(FLOPPY_40D) \
+		$(RBCOCOSDC) \
+                $(MD)/ddsd_cocosdc.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COGRF_80) \
+		$(PIPE) \
+		$(CLOCK60HZ)
+
 # NitrOS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -196,7 +209,7 @@ BOOTFILE_80D_50HZ	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d \
 		bootfile_80d_50hz bootfile_dw bootfile_dw_headless \
 		bootfile_becker bootfile_arduino bootfile_becker_headless \
-		bootfile_arduino_headless
+		bootfile_arduino_headless bootfile_cocosdc
 KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw kernel_becker kernel_arduino
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
@@ -233,6 +246,9 @@ bootfile_becker_headless: $(BOOTFILE_BECKER_HEADLESS) $(DEPENDS)
 
 bootfile_arduino_headless: $(BOOTFILE_ARDUINO_HEADLESS) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_ARDUINO_HEADLESS)>$@
+
+bootfile_cocosdc: $(BOOTFILE_COCOSDC) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COCOSDC)>$@
 
 # Kernels
 kernel_becker: $(KERNEL_BECKER) $(DEPENDS)
