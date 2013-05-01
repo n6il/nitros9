@@ -182,7 +182,7 @@ name           FCC       /I/
                FCB       ITDRV+$B0
                ENDC
                ELSE
-               IFNE      SD
+               IFNE      COCOSDC
 name           FCC       /SD/
                IFNE      HB
                FCS       /H/
@@ -228,8 +228,8 @@ lldrv          EQU       *
                FCS       /llide/
                FCB       0,0
                ELSE
-               IFNE      SD
-               FCS       /llsd/
+               IFNE      COCOSDC
+               FCS       /llcocosdc/
                FCB       0,0,0
                ENDC
                ENDC
