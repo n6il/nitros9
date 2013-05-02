@@ -114,7 +114,11 @@ SAS            SET       $08
                IFNE      IDE
                USE       ide.d
                ELSE
+               IFNE      TC3+KTLR+D4N1+HDII
                USE       scsi.d
+               ELSE
+               USE       cocosdc.d
+               ENDC
                ENDC
                ENDC
 

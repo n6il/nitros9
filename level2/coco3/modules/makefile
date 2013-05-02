@@ -47,7 +47,7 @@ RBF		= rbf.mn \
 		ddi0_ide.dd i0_ide.dd i1_ide.dd ih_ide.dd \
 		dds0_tc3.dd s0_tc3.dd s1_tc3.dd s2_tc3.dd s3_tc3.dd s4_tc3.dd \
 		s5_tc3.dd s6_tc3.dd sh_tc3.dd \
-		ddsd_cocosdc.dd sd0_cocosdc.dd sd1_cocosdc.dd
+		ddsd0_cocosdc.dd sd0_cocosdc.dd sd1_cocosdc.dd
 
 SCF		= scf.mn \
 		vtio.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr sc6551.dr \
@@ -384,7 +384,7 @@ ih_ide.dd: superdesc.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS)
 
 # SuperSD Descriptors
-ddsd_cocosdc.dd: superdesc.asm
+ddsd0_cocosdc.dd: superdesc.asm
 	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DDD=1
 
 sd0_cocosdc.dd: superdesc.asm

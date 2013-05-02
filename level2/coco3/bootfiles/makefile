@@ -163,7 +163,7 @@ BOOTFILE_COCOSDC	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
                 $(FLOPPY_40D) \
 		$(RBCOCOSDC) \
-                $(MD)/ddsd_cocosdc.dd \
+                $(MD)/ddsd0_cocosdc.dd \
 		$(MD)/scf.mn \
 		$(VTIO_COGRF_80) \
 		$(PIPE) \
