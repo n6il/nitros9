@@ -61,6 +61,9 @@ ll_term
 *    B  = error code
 *
 ll_init                  
+               ldy      V.PORT-UOFFSET,u
+               ldb      #$43
+               stb      -$0A,y
                clrb      
                rts       
 
@@ -133,44 +136,42 @@ ll_read
                lda       PD.DRV,y
                ldb       V.PhysSect,u
                ldx       V.PhysSect+1,u
+               ldy       V.PORT-UOFFSET,u
                ldu       V.CchPSpot,u
- ldy #$FF4A
- stb -1,y
- stx ,y
- ldb #$43
- stb $FF40
- ora #$80
- sta -2,y
- exg a,a
 
- ldx #0
-rdWait lda -2,y
- bmi rdFail
- bita #2
- bne rdRdy
- leax -1,x
- bne rdWait
-rdFail clr $FF40
- ldb #E$Read
- coma
- rts
+               stb       -1,y
+               stx       ,y
+               ora       #$80
+               sta       -2,y
+               exg       a,a
 
-rdRdy leax ,u
- ldd #32*256+8
-rdChnk ldu ,y
- stu ,x
- ldu ,y
- stu 2,x
- ldu ,y
- stu 4,x
- ldu ,y
- stu 6,x
- abx
- deca
- bne rdChnk
+               ldx       #0
+rdWait         lda       -2,y
+               bmi       rdFail
+               bita      #2
+               bne       rdRdy
+               leax      -1,x
+               bne       rdWait
+rdFail
+               ldb       #E$Read
+               coma
+               rts
 
- clr $FF40
- rts
+rdRdy          leax      ,u
+               ldd       #32*256+8
+rdChnk         ldu       ,y
+               stu       ,x
+               ldu       ,y
+               stu       2,x
+               ldu       ,y
+               stu       4,x
+               ldu       ,y
+               stu       6,x
+               abx
+               deca
+               bne       rdChnk
+
+               rts
 
 
 * ll_write
@@ -188,46 +189,43 @@ ll_write
                lda       PD.DRV,y
                ldb       V.PhysSect,u
                ldx       V.PhysSect+1,u
+               ldy       V.PORT-UOFFSET,u
                ldu       V.CchPSpot,u
 
- ldy #$FF4A
- stb -1,y
- stx ,y
- ldb #$43
- stb $FF40
- ora #$A0
- sta -2,y
- exg a,a
+               stb       -1,y
+               stx       ,y
+               ora       #$A0
+               sta       -2,y
+               exg       a,a
 
- ldx #0
-wrWait lda -2,y
- bmi wrFail
- bita #2
- bne wrRdy
- leax -1,x
- bne wrWait
-wrFail clr $FF40
- ldb  #E$Write
- coma
- rts
+               ldx       #0
+wrWait         lda       -2,y
+               bmi       wrFail
+               bita      #2
+               bne       wrRdy
+               leax      -1,x
+               bne       wrWait
+wrFail
+               ldb       #E$Write
+               coma
+               rts
 
-wrRdy leax ,u
- ldd #64*256+4
-wrChnk ldu ,x
- stu ,y
- ldu 2,x
- stu ,y
- abx
- deca
- bne wrChnk
+wrRdy          leax      ,u
+               ldd       #64*256+4
+wrChnk         ldu       ,x
+               stu       ,y
+               ldu       2,x
+               stu       ,y
+               abx
+               deca
+               bne       wrChnk
 
-wrComp lda -2,y
- bmi wrFail
- lsra
- bcs wrComp
+wrComp         lda       -2,y
+               bmi       wrFail
+               lsra
+               bcs       wrComp
 
- clr $FF40
- rts
+               rts
 
                EMOD      
 eom            EQU       *
