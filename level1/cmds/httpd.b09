@@ -256,8 +256,7 @@ PRINT "Connection: close"
 RETURN
 
 (* footer *)
-2100 PRINT "<br><HR><font face=Tahoma;Arial;Sans size=2><i>httpd09
-version 1.1 - ";DATE$;"</i></font>"
+2100 PRINT "<br><HR><font face=Tahoma;Arial;Sans size=2><i>httpd09 version 1.1 - ";DATE$;"</i></font>"
 RETURN
 
 
