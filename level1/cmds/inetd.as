@@ -19,12 +19,12 @@
                ttl       internet daemon
 
                section   __os9
-type           set       Prgrm
-lang           set       Objct
-attr           set       ReEnt
-rev            set       $00
-edition        set       1
-stack          set       200
+type           equ       Prgrm
+lang           equ       Objct
+attr           equ       ReEnt
+rev            equ       $00
+edition        equ       3
+stack          equ       200
                endsect
 
                section   bss
