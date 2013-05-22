@@ -113,6 +113,9 @@ InstStr  equ   *
          IFNE   coco1
          fcc    "Radio Shack Color Computer"
          ELSE
+         IFNE   deluxe
+         fcc    "Radio Shack Deluxe Color Computer"
+         ELSE
          IFNE   coco2
          fcc    "Radio Shack Color Computer 2"
          ELSE
@@ -135,6 +138,7 @@ InstStr  equ   *
          fcc    "Atari XL/XE"
          ELSE
          fcc    "Unknown Machine"
+         ENDC
          ENDC
          ENDC
          ENDC
