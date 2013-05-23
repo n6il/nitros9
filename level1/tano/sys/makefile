@@ -1,2 +1,1 @@
-PORT=tano
-include ../../d64/sys/makefile
+include ../../coco1/sys/makefile

@@ -29,13 +29,7 @@
 #	Updated to use new build system, for multiple supported platforms.
 #
 
-ifeq ($(PORT),)
-	PORT=d64
-endif
-include $(NITROS9DIR)/rules.mak
-
-CPU		= 6809
-LEVEL		= 1
+include port.mak
 
 # TERMWIDTH can be either VDG or HR, for 32x16 or 51x24 respectivly
 #NOTE must be lower case.
