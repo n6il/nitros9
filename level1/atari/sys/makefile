@@ -1,6 +1,7 @@
 PORT = atari
 include $(NITROS9DIR)/rules.mak
-TELNET_PORT	= 6802
+TELNET_PORT	= 6800
+HTTPD_PORT	= 6801
 
 vpath %.hp	$(LEVEL1)/sys
 
@@ -24,7 +25,7 @@ ALLOBJS		= $(SYSFILES) $(HELPMSG)
 
 
 inetd.conf:	$(LEVEL1)/sys/inetd.conf
-	@sed 's/%TELNET_PORT%/$(TELNET_PORT)/' $^ > $@
+	@sed -e 's/%TELNET_PORT%/$(TELNET_PORT)/' -e 's/%HTTPD_PORT%/$(HTTPD_PORT)/' $^ > $@
 
 all:	$(ALLOBJS) $(DEPENDS)
 
