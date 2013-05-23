@@ -61,6 +61,8 @@ $(DSK):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
+	$(MAKDIR) $@,WWWROOT
+	os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell

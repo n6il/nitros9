@@ -7,7 +7,7 @@ vpath %.asm $(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
 DEPENDS		= ./makefile
 
 AFLAGS          += --includedir=$(NITROS9DIR)/3rdparty/packages/basic09
-LFLAGS          += -L $(NITROS9DIR)/lib -lnet -lcoco -lalib
+LFLAGS          += -L $(NITROS9DIR)/lib -lnet -latari -lalib
 
 BASIC09FILES	= basic09.asm runb.asm gfx.asm inkey.asm syscall.asm
 CMDS		= asm attr backup binex build calldbg cmp copy cputype \
@@ -19,7 +19,7 @@ CMDS		= asm attr backup binex build calldbg cmp copy cputype \
 		tee tmode touch tsmon tuneport unlink verify xmode\
           basic09 runb gfx inkey syscall 
 
-CMDS_DW		= inetd telnet dw
+CMDS_DW		= inetd telnet dw httpd
 
 CMDS_DEMO      = fuji
 

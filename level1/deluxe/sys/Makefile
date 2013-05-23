@@ -2,7 +2,8 @@ ifeq ($(PORT),)
         PORT=coco1
 endif
 include $(NITROS9DIR)/rules.mak
-TELNET_PORT	= 6805
+TELNET_PORT	= 6840
+HTTPD_PORT	= 6841
 
 vpath %.hp	$(LEVEL1)/sys
 
@@ -28,7 +29,7 @@ ALLOBJS		= $(SYSFILES) $(HELPMSG)
 all:	$(ALLOBJS) $(DEPENDS)
 
 inetd.conf:     $(LEVEL1)/sys/inetd.conf
-	@sed 's/%TELNET_PORT%/$(TELNET_PORT)/' $^ > $@
+	@sed -e 's/%TELNET_PORT%/$(TELNET_PORT)/' -e 's/%HTTPD_PORT%/$(HTTPD_PORT)/' $^ > $@                         
 
 helpmsg: $(HELPFILES)
 	$(MERGE) $^ > $@
