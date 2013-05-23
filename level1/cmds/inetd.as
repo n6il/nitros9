@@ -47,7 +47,6 @@ tmodeparamlen  rmb       1
 tmodeparams    rmb       128
                endsect
 
-*               psect     inetd_a,$01,$80,1,200,start
                section   code
 
 DEBUG          equ       1

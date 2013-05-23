@@ -1,0 +1,154 @@
+* Disassembly by Os9disasm of qsort.r
+
+ psect qsort_c,$0,$0,1,0,qsort 
+
+ vsect  
+
+* Uninitialized data (class B)
+B0000 rmb 2 
+B0002 rmb 2 
+* Initialized Data (class G)
+
+ ends  
+
+
+qsort: pshs  u 
+ ldd   #$ffb8 
+ lbsr  _stkcheck 
+ ldd   8,s 
+ std   B0000,y 
+ ldd   10,s 
+ std   B0002,y 
+ ldd   6,s 
+ addd  #-1 
+ pshs  d 
+ ldd   B0000,y 
+ lbsr  ccmult 
+ addd  4,s 
+ pshs  d 
+ ldd   6,s 
+ pshs  d 
+ bsr   L002f 
+ lbra  L010a 
+L002f pshs  u 
+ ldd   #$ffb4 
+ lbsr  _stkcheck 
+ leas  -4,s 
+ lbra  L0101 
+L003c ldu   8,s 
+ ldd   10,s 
+ std   2,s 
+ ldd   10,s 
+ subd  8,s 
+ pshs  d 
+ ldd   B0000,y 
+ lslb   
+ rola   
+ lbsr  ccdiv 
+ pshs  d 
+ ldd   B0000,y 
+ lbsr  ccmult 
+ addd  8,s 
+ std   ,s 
+ bra   L0066 
+L0060 ldd   B0000,y 
+ leau  d,u 
+L0066 ldd   ,s 
+ pshs  d 
+ pshs  u 
+ jsr   [B0002,y] 
+ leas  4,s 
+ std   -2,s 
+ blt   L0060 
+ bra   L0080 
+L0078 ldd   2,s 
+ subd  B0000,y 
+ std   2,s 
+L0080 ldd   2,s 
+ pshs  d 
+ ldd   2,s 
+ pshs  d 
+ jsr   [B0002,y] 
+ leas  4,s 
+ std   -2,s 
+ blt   L0078 
+ cmpu  2,s 
+ bhi   L00c9 
+ cmpu  2,s 
+ bcc   L00bb 
+ ldd   2,s 
+ pshs  d 
+ pshs  u 
+ lbsr  L010e 
+ leas  4,s 
+ cmpu  ,s 
+ bne   L00b2 
+ ldd   2,s 
+ std   ,s 
+ bra   L00bb 
+L00b2 ldd   ,s 
+ cmpd  2,s 
+ bne   L00bb 
+ stu   ,s 
+L00bb ldd   B0000,y 
+ leau  d,u 
+ ldd   2,s 
+ subd  B0000,y 
+ std   2,s 
+L00c9 cmpu  2,s 
+ lbls  L0066 
+ ldd   2,s 
+ subd  8,s 
+ pshs  d 
+ pshs  u 
+ ldd   14,s 
+ subd  ,s++ 
+ cmpd  ,s++ 
+ bge   L00f2 
+ ldd   10,s 
+ pshs  d 
+ pshs  u 
+ lbsr  L002f 
+ leas  4,s 
+ ldd   2,s 
+ std   10,s 
+ bra   L0101 
+L00f2 ldd   2,s 
+ pshs  d 
+ ldd   10,s 
+ pshs  d 
+ lbsr  L002f 
+ leas  4,s 
+ stu   8,s 
+L0101 ldd   8,s 
+ cmpd  10,s 
+ lblo  L003c 
+L010a leas  4,s 
+ puls  u,pc 
+L010e pshs  u 
+ ldd   #$ffbd 
+ lbsr  _stkcheck 
+ ldu   4,s 
+ leas  -3,s 
+ ldd   B0000,y 
+ std   1,s 
+ bra   L0135 
+L0122 ldb   ,u 
+ stb   ,s 
+ ldb   [9,s] 
+ stb   ,u+ 
+ ldb   ,s 
+ ldx   9,s 
+ leax  1,x 
+ stx   9,s 
+ stb   -1,x 
+L0135 ldd   1,s 
+ addd  #-1 
+ std   1,s 
+ subd  #-1 
+ bne   L0122 
+ leas  3,s 
+ puls  u,pc 
+
+ ends  
+
