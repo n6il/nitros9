@@ -1,8 +1,4 @@
-PORT = atari
-include $(NITROS9DIR)/rules.mak
-
-CPU		= 6809
-LEVEL		= 1
+include port.mak
 
 # Level 1 - Specify which shell should be used
 #WHICHSHELL	= shellplus
@@ -12,12 +8,13 @@ DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
 DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
 BOOTFILE	= bootfiles/bootfile
-DIRS		= cmds modules defs sys bootfiles
+DIRS		= cmds modules defs sys bootfiles wwwroot
 
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs_dw)
 CMDS_DEMO = $(shell $(CD) cmds; make --no-print-directory showobjs_demo)
 SYS		= $(shell $(CD) sys; make --no-print-directory showobjs)
+WWWROOT		= $(shell $(CD) wwwroot; make --no-print-directory showobjs)
 DEFS		= $(shell $(CD) defs; make --no-print-directory showobjs)
 STARTUP		= startup
 
@@ -30,9 +27,9 @@ DSKS		= $(DSK) $(DSK_DEMO)
 # Make all components
 all:
 	@$(ECHO) "**************************************************"
-	@$(ECHO) "*                                                *"
-	@$(ECHO) "*        NitrOS-9/$(CPU) Level 1 Atari Port        *"
-	@$(ECHO) "*                                                *"
+	@$(ECHO) "*"
+	@$(ECHO) "*        NitrOS-9/$(CPU) Level $(LEVEL) $(PORTNAME)"
+	@$(ECHO) "*"
 	@$(ECHO) "**************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
 
@@ -62,12 +59,13 @@ $(DSK):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) wwwroot; $(CP) $(WWWROOT) ../$@,WWWROOT
+	$(foreach file, $(WWWROOT), $(OS9ATTR_TEXT) $@,WWWROOT/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP) $@,startup

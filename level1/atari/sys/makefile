@@ -1,7 +1,4 @@
-PORT = atari
-include $(NITROS9DIR)/rules.mak
-TELNET_PORT	= 6800
-HTTPD_PORT	= 6801
+include ../port.mak
 
 vpath %.hp	$(LEVEL1)/sys
 

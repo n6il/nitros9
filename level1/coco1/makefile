@@ -1,10 +1,4 @@
-ifeq ($(PORT),)
-	PORT=coco1
-endif
-include $(NITROS9DIR)/rules.mak
-
-CPU		= 6809
-LEVEL		= 1
+include port.mak
 
 # Level 1 - Specify which shell should be used
 #WHICHSHELL	= shellplus
@@ -30,7 +24,7 @@ KERNELFILE	= bootfiles/kernel_1773
 KERNELFILE_DW	= bootfiles/kernel_dw
 KERNELFILE_BECKER	= bootfiles/kernel_becker
 KERNELFILE_ARDUINO	= bootfiles/kernel_arduino
-DIRS		= cmds modules defs sys bootfiles bootroms
+DIRS		= cmds modules defs sys bootfiles bootroms wwwroot
 
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)
@@ -46,6 +40,7 @@ PIPE		= $(shell $(CD) modules; make --no-print-directory showpipe)
 MODULECMDS	= $(WHICHSHELL) del echo format makdir merge os9gen prompt tmode
 
 SYS		= $(shell $(CD) sys; make --no-print-directory showobjs)
+WWWROOT		= $(shell $(CD) wwwroot; make --no-print-directory showobjs)
 DEFS		= $(shell $(CD) defs; make --no-print-directory showobjs)
 STARTUP		= startup
 STARTUP_DW	= startup.dw
@@ -110,7 +105,6 @@ $(DSKDW):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
 	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
@@ -118,6 +112,8 @@ $(DSKDW):
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) wwwroot; $(CP) $(WWWROOT) ../$@,WWWROOT
+	$(foreach file, $(WWWROOT), $(OS9ATTR_TEXT) $@,WWWROOT/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
