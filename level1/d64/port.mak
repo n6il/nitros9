@@ -1,0 +1,8 @@
+PORT = d64
+MACHINE = Dragon 64
+CPU = 6809
+LEVEL = 1
+TELNET_PORT = 6860
+HTTPD_PORT = 6861
+
+include $(NITROS9DIR)/rules.mak

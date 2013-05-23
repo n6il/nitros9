@@ -21,10 +21,10 @@ HELPMSG		= helpmsg
 ALLOBJS		= $(SYSFILES) $(HELPMSG)
 
 
-inetd.conf:	$(LEVEL1)/sys/inetd.conf
-	@sed -e 's/%TELNET_PORT%/$(TELNET_PORT)/' -e 's/%HTTPD_PORT%/$(HTTPD_PORT)/' $^ > $@
-
 all:	$(ALLOBJS) $(DEPENDS)
+
+inetd.conf:     $(LEVEL1)/sys/inetd.conf
+	@sed -e 's/%TELNET_PORT%/$(TELNET_PORT)/' -e 's/%HTTPD_PORT%/$(HTTPD_PORT)/' $^ > $@
 
 alldragon: $(ALLOBJS)
 
