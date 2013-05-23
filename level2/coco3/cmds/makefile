@@ -25,7 +25,7 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 CMDS_D2         = basic09 runb gfx2 gfx inkey syscall copy del echo format \
                 merge os9gen prompt tmode
 
-CMDS_DW		= inetd dw telnet 
+CMDS_DW		= inetd dw telnet httpd
 
 SHELLMODS	= shellplus date deiniz echo iniz link load save unlink
 
