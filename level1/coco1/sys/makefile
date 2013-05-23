@@ -1,9 +1,4 @@
-ifeq ($(PORT),)
-        PORT=coco1
-endif
-include $(NITROS9DIR)/rules.mak
-TELNET_PORT	= 6810
-HTTPD_PORT	= 6811
+include ../port.mak
 
 vpath %.hp	$(LEVEL1)/sys
 

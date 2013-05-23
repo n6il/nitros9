@@ -1,0 +1,8 @@
+PORT = coco1
+MACHINE = TRS-80 Color Computer
+CPU = 6809
+LEVEL = 1
+TELNET_PORT = 6810
+HTTPD_PORT = 6811
+
+include $(NITROS9DIR)/rules.mak

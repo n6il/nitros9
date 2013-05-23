@@ -25,7 +25,7 @@ KERNELFILE_ARDUINO	= bootfiles/kernel_arduino
 KERNELFILE	= bootfiles/kernel_1773
 KERNELFILE_50HZ	= bootfiles/kernel_1773_50hz
 KERNELFILE_DW 	= bootfiles/kernel_dw
-DIRS		= cmds modules defs sys bootfiles
+DIRS		= cmds modules defs sys bootfiles wwwroot
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)
 CMDS_D2		= $(shell $(CD) cmds; make --no-print-directory showobjs_d2)

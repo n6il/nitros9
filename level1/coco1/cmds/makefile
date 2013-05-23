@@ -1,7 +1,4 @@
-ifeq ($(PORT),)
-        PORT=coco1
-endif
-include $(NITROS9DIR)/rules.mak
+include ../port.mak
 
 vpath %.as $(LEVEL1)/cmds
 vpath %.asm $(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
