@@ -93,7 +93,7 @@ L002E    sta   ,x+        clear mem
                          
          coma             A = $FF
          comb             B = $FF
-         IFEQ  coco2b-1
+         IFEQ  coco2b+deluxe-1
          clr   <V.Caps,u 
          ELSE
          stb   <V.Caps,u 

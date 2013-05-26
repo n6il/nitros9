@@ -61,7 +61,7 @@ prn3     set   Black.     border color
          IFGT  Level-1
          fcb   $01        init value for dev ctl reg
          ELSE
-         IFEQ  coco2b-1
+         IFEQ  coco2b+deluxe-1
          fcb   ModCoVDG+1 init value for dev ctl reg
          ELSE
          fcb   ModCoVDG   init value for dev ctl reg

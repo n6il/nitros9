@@ -114,7 +114,7 @@ InstStr  equ   *
          fcc    "Radio Shack Color Computer"
          ELSE
          IFNE   deluxe
-         fcc    "Radio Shack Deluxe Color Computer"
+         fcc    "Deluxe Color Computer"
          ELSE
          IFNE   coco2
          fcc    "Radio Shack Color Computer 2"
