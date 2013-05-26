@@ -1,6 +1,4 @@
-PORT = coco3
-include $(NITROS9DIR)/rules.mak
-TELNET_PORT	= 6806
+include ../port.mak
 
 vpath %.hp $(LEVEL2)/sys:$(LEVEL1)/sys
 vpath %.asm $(LEVEL2)/sys
@@ -50,7 +48,7 @@ $(L1TXTFILES): $(LEVEL1)/sys/$@
 	-$(SOFTLINK) $(LEVEL1)/sys/$@
 
 inetd.conf:     $(LEVEL1)/sys/inetd.conf
-	@sed 's/%TELNET_PORT%/$(TELNET_PORT)/' $^ > $@
+	@sed -e 's/%TELNET_PORT%/$(TELNET_PORT)/' -e 's/%HTTPD_PORT%/$(HTTPD_PORT)/' $^ > $@
 
 clean:
 	$(RM) $(HELPMSG) $(L1TXTFILES) $(BINFILES) inetd.conf
