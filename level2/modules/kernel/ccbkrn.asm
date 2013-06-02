@@ -757,8 +757,6 @@ L0345
 	ldb	#E$UnkSvc	get error code
 	bra	L0355		return with it
 		
-	use	freboot.asm
-		
 	use	fssvc.asm
 		
 	use	flink.asm

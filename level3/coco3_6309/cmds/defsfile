@@ -1,2 +1,2 @@
           use    ../defsfile
-          use    scfdefs
+          use    scf.d

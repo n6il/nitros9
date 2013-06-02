@@ -60,6 +60,9 @@
 *  18r7    2004/06/18  Boisy G. Pitre
 * Kernel no longer attempts a reboot when failing to open term device, but
 * crashes upon error.
+*
+*  19      2013/05/29  Boisy G. Pitre
+* F$Debug now incorporated, allows for reboot.
 
          nam    krnp2
          ttl    NitrOS-9 Level 2 Kernel Part 2
@@ -73,8 +76,8 @@ Network  equ    0             Set to 1 to enable network I/O ptrs
          ENDC
 
 TC9      set    false       "true" use TC-9 6309 trap vector
-Edition  equ    18
-Revision equ    7
+Edition  equ    19
+Revision equ    0
 
          mod    eom,MName,Systm,ReEnt+Revision,krnp2,$0100
 
@@ -326,6 +329,8 @@ svctab   fcb    F$UnLink
          fdb    FClrBlk-*-2
          fcb    F$GCMDir+$80
          fdb    FGCMDir-*-2
+         fcb    F$Debug
+         fdb    FDebug-*-2
          fcb    F$CRCMod    new system call to change module CRC calcs on/off
          fdb    FCRCMod-*-2
          fcb    $7f
@@ -419,6 +424,8 @@ IOMan    fcs    /IOMan/
          use    fclrblk.asm
 
          use    fgcmdir.asm
+
+         use    fdebug.asm
 
          emod
 eom      equ   *
