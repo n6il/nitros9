@@ -6,6 +6,8 @@
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
+*  11      2013/05/29  Boisy G. Pitre                                                                                                                  
+* F$Debug now incorporated, allows for reboot.   
 
          nam   krnp2
          ttl   NitrOS-9 Level 1 Kernel Part 2
@@ -17,7 +19,7 @@
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
-edition  set   10
+edition  set   11
 
          mod   eom,name,tylg,atrv,start,size
 
@@ -70,6 +72,9 @@ SvcTbl   fcb   $7F
 
          fcb   F$Ret64+$80
          fdb   FRet64-*-2
+
+         fcb   F$Debug
+         fdb   FDebug-*-2
 
          fcb   $80
 
@@ -739,5 +744,7 @@ ValBoot2 cmpx  <D.BTHI
          bcs   ValBoot
 JmpBtEr  puls  pc,u
 
-		emod
+         use   fdebug.asm
+
+         emod
 eom      equ   *

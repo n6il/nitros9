@@ -363,8 +363,13 @@ FRQd1          lda       PollSpd2,pcr
                bra       FRQd2
 
 ; save back D on stack and build our U
-IRQGotOp       pshs      d
-          * mode switch on bits 7+6 of A: 00 = vserial, 01 = vwindow, 10 = wirebug?, 11 = ?							
+IRQGotOp
+               cmpd      #16*256+255
+               beq       do_reboot
+
+               pshs      d
+* mode switch on bits 7+6 of A: 00 = vserial, 01 = vwindow, 10 = wirebug?, 11 = ?							
+
                anda      #$C0                ; mask last 6 bits
                beq       mode00              ; virtual serial mode
           					; future - handle other modes
@@ -396,9 +401,13 @@ key
                puls      d
                lbra      IRQPutch
 
-               
+do_reboot
+               lda       #255
+               os9       F$Debug
+
 * Virtual Serial Handler
-mode00         lda       ,s                  ; restore A		  
+mode00         
+               lda       ,s                  ; restore A		  
                anda      #$0F                ; mask first 4 bits, a is now port #+1
                beq       IRQCont             ; if we're here with 0 in the port, its not really a port # (can we jump straight to status?)
                deca                          ; we pass +1 to use 0 for no data
