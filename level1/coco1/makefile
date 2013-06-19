@@ -161,7 +161,7 @@ $(DSKBECKER):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	os9 dsave -e wwwroot $@,WWWROOT
+	-os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
 	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
@@ -216,7 +216,7 @@ $(DSKARDUINO):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	os9 dsave -e wwwroot $@,WWWROOT
+	-os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
 	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
@@ -271,7 +271,7 @@ $(DSKDWHEADLESS):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	os9 dsave -e wwwroot $@,WWWROOT
+	-os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
 	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
@@ -326,7 +326,7 @@ $(DSKBECKERHEADLESS):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	os9 dsave -e wwwroot $@,WWWROOT
+	-os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
 	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
@@ -381,7 +381,7 @@ $(DSKARDUINOHEADLESS):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	os9 dsave -e wwwroot $@,WWWROOT
+	-os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
 	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
