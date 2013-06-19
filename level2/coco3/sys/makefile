@@ -22,7 +22,7 @@ HELPFILES	= asm.hp attr.hp \
 		kill.hp \
 		link.hp list.hp load.hp login.hp \
 		makdir.hp mdir.hp megaread.hp merge.hp mfree.hp mmap.hp modpatch.hp \
-		montype.hp mpi.hp os9gen.hp \
+		montype.hp minted.hp mpi.hp os9gen.hp \
 		padrom.hp park.hp pmap.hp proc.hp procs.hp prompt.hp pwd.hp pxd.hp \
 		reboot.hp rename.hp runb.hp \
 		save.hp setime.hp setpr.hp shell.hp sleep.hp smap.hp \
