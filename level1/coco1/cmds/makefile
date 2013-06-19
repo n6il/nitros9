@@ -14,7 +14,7 @@ CMDS		= asm attr backup binex build calldbg cmp cobbler copy cputype \
 		display dmode dsave dump echo edit error exbin format \
 		free grfdrv help ident iniz irqs link list load login makdir \
 		megaread mdir merge mfree mpi os9gen padrom park printerr procs prompt pwd pxd \
-		reboot rename save setime shellplus shell_21 sleep \
+		rename save setime shellplus shell_21 sleep \
 		tee tmode touch tsmon tuneport unlink verify xmode
 
 CMDS_D2		= basic09 runb gfx inkey syscall copy del echo format \
