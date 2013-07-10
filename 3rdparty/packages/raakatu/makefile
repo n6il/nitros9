@@ -25,7 +25,7 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk:	all
+$(DISK): all
 	$(RM) $(DISK)
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_SS35) $(DISK) -n"Raaka-Tu"
@@ -41,11 +41,11 @@ dsk:	all
 	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
 #	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $(DISK),SUB/$(file);)
 
-dskcopy:
+dskcopy: $(DISK)
 	$(CP) $(DISK) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DISK)
 
-run: dsk
+run: $(DISK)
 	mess -inipath ~/Documents/SDLMESS -video opengl -window coco3 -flop1 $(DISK)
