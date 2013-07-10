@@ -55,7 +55,7 @@ dskcopy: dsk
 	$(CP) $(DISK) $(DSKDIR)
 
 dskclean:
-	-$(RM) $(DISK)
+	$(RM) $(DISK)
 
 info:
 	@$(ECHO) "*** Basic09 ***"

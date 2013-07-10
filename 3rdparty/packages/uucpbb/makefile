@@ -25,8 +25,8 @@ all:
 
 # Clean all components
 clean:	dskclean
-	-$(CD) cmds_6809; make clean
-	-$(CD) cmds_6309; make clean
+	$(CD) cmds_6809; make clean
+	$(CD) cmds_6309; make clean
 
 dsk:	all
 	$(RM) $(DISK68)

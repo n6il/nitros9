@@ -93,7 +93,7 @@ makedepends:
 	cd $(3PBOISY); make
 
 clean:	dskclean
-	-$(RM) $(CMDS_THESIS)
+	$(RM) $(CMDS_THESIS)
 
 dsk:	all $(DSKS)
 
@@ -123,7 +123,7 @@ dskcopy: dsk
 	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
-	-$(RM) $(DSKS)
+	$(RM) $(DSKS)
 
 info:
 	@$(ECHO) "*** NitrOS-9/6809 Level 2 DriveWire Server ***"
