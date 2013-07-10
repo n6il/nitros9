@@ -36,17 +36,21 @@ HW.Page        SET       $FF                 Device descriptor hardware page
 *
 Hz50           EQU       1                   Assemble clock for 50 hz power
 Hz60           EQU       2                   Assemble clock for 60 hz power
+               IFNDEF    PwrLnFrq
 PwrLnFrq       SET       Hz60                Set to Appropriate freq
+               ENDC
 
 
 **********************************
 * Ticks per second
 *
+               IFNDEF    TkPerSec
                IFEQ      PwrLnFrq-Hz50
 TkPerSec       SET       50
                ELSE      
 TkPerSec       SET       60
                ENDC      
+               ENDC
 
 
 ****************************************
