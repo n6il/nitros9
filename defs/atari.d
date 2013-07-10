@@ -66,17 +66,21 @@ ATARI.D        set       1
 *
 Hz50           equ       1                   Assemble clock for 50 hz power
 Hz60           equ       2                   Assemble clock for 60 hz power
+               IFNDEF    PwrLnFrq
 PwrLnFrq       set       Hz60                Set to Appropriate freq
+               ENDC
 
 
 **********************************
 * Ticks per second
 *
+               IFNDEF    TkPerSec
                ifeq      PwrLnFrq-Hz50
 TkPerSec       set       50
                else      
 TkPerSec       set       60
                endc      
+               ENDC
 
 
 *************************************************
