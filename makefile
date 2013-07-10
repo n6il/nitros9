@@ -29,6 +29,7 @@ dsk:	all
 
 # Copy DSK images
 dskcopy:	all
+	mkdir -p $(DSKDIR)
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
 	$(MKDSKINDEX) $(DSKDIR) > $(DSKDIR)/index.html
 
