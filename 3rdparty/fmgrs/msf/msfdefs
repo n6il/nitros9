@@ -27,7 +27,7 @@ modmem equ 0
 type set FlMgr+Objct
 revs set Reent+1
 
-SS.DREAD set $80 direct sector read/write
+*SS.DREAD set $80 direct sector read/write
 SS.SREAD equ $84 direct sector read/write in system space
 *SS.ATTR  equ $85 get/set file attribute
 SS.RENAM equ $86 rename file
