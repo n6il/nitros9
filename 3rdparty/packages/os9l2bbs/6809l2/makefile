@@ -27,12 +27,15 @@ CMDS	= Ansicode Answer At \
 
 all: $(CMDS)
 
-dsk:
+$(DSK): $(CMDS)
 	$(OS9FORMAT) -q $(DSK)
 	$(MAKDIR) $(DSK),CMDS
 	$(CP) $(CMDS) $(DSK),CMDS
 	$(MAKDIR) $(DSK),BBS
 	$(CP) $(BBSFILES) $(DSK),BBS
+
+dskcopy: $(DSK)
+	$(CP) $(DSK) $(DSKDIR)
 
 clean: dskclean
 	$(RM) $(CMDS)

@@ -33,6 +33,8 @@ libdragon.a: dragon.o
 libalib.a:
 	cd alib; make
 
+dskcopy:
+
 clean:
 	$(RM) *.a *.o
 	cd alib; make clean
