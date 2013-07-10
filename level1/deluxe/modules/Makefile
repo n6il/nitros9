@@ -1,2 +1,2 @@
 PORT=deluxe
-include ../../coco1/modules/Makefile
+include ../../coco1/modules/makefile
