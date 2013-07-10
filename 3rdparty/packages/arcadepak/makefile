@@ -94,7 +94,6 @@ $(DISK_40D): all
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $@,CMDS
 	$(CP) shell $@,CMDS
-	$(RM) shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(foreach file, $(CMDS), $(CP) $(6809L2)/cmds/$(file) $@,CMDS/$(file);)
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
