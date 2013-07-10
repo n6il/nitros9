@@ -20,7 +20,7 @@ banner:
 	@$(ECHO) "**************************************************"
 
 $(DSKDASM): $(CMDS)
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT) $@
 	$(MAKDIR) $@,CMDS
 	$(CP) $(CMDS) $@,CMDS

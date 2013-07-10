@@ -38,7 +38,7 @@ clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSKS)
+	$(RM) $(PACKAGENAME) $(DSKS)
 
 dsk: all $(PACKAGENAME)
 

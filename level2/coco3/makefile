@@ -98,7 +98,7 @@ clean: dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSKS) $(LDSKS)
+	$(RM) $(PACKAGENAME) $(DSKS) $(LDSKS)
 
 dsk: all $(PACKAGENAME)
 
@@ -112,7 +112,7 @@ $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
 
 $(DSKBECKER):
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
 	$(OS9GEN) $@ -b=$(BOOTFILE_BECKER) -t=$(KERNELFILE_BECKER)
 	$(MAKDIR) $@,CMDS
@@ -166,7 +166,7 @@ $(DSKBECKER):
 	$(SOFTLINK) $@ $(LDSKBECKER)
 
 $(DSKARDUINO):
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
 	$(OS9GEN) $@ -b=$(BOOTFILE_ARDUINO) -t=$(KERNELFILE_ARDUINO)
 	$(MAKDIR) $@,CMDS
@@ -220,7 +220,7 @@ $(DSKARDUINO):
 	$(SOFTLINK) $@ $(LDSKARDUINO)
 
 $(DSKCOCOSDC):
-	-$(RM) $@
+	$(RM) $@
 	os9 format -t1024 -q -e $@ -n"NitrOS-9/$(CPU) Level 2"
 	$(OS9GEN) $@ -b=$(BOOTFILE_COCOSDC) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
@@ -274,7 +274,7 @@ $(DSKCOCOSDC):
 	$(SOFTLINK) $@ $(LDSKCOCOSDC)
 
 $(DSKDW):
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
 	$(OS9GEN) $@ -b=$(BOOTFILE_DW) -t=$(KERNELFILE_DW)
 	$(MAKDIR) $@,CMDS
@@ -328,7 +328,7 @@ $(DSKDW):
 	$(SOFTLINK) $@ $(LDSKDW)
 
 $(DSKDWHEADLESS):
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
 	$(OS9GEN) $@ -b=$(BOOTFILE_DWHEADLESS) -t=$(KERNELFILE_DW)
 	$(MAKDIR) $@,CMDS
@@ -382,7 +382,7 @@ $(DSKDWHEADLESS):
 	$(SOFTLINK) $@ $(LDSKDWHEADLESS)
 
 $(DSKBECKERHEADLESS):
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
 	$(OS9GEN) $@ -b=$(BOOTFILE_BECKER_HEADLESS) -t=$(KERNELFILE_BECKER)
 	$(MAKDIR) $@,CMDS
@@ -436,7 +436,7 @@ $(DSKBECKERHEADLESS):
 	$(SOFTLINK) $@ $(LDSKBECKERHEADLESS)
 
 $(DSKARDUINOHEADLESS):
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
 	$(OS9GEN) $@ -b=$(BOOTFILE_ARDUINO_HEADLESS) -t=$(KERNELFILE_ARDUINO)
 	$(MAKDIR) $@,CMDS
@@ -490,7 +490,7 @@ $(DSKARDUINOHEADLESS):
 	$(SOFTLINK) $@ $(LDSKARDUINOHEADLESS)
 
 $(DSK360K_1):
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 2 Disk 1"
 	$(OS9GEN) $@ -b=$(BOOTFILE_40D) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
@@ -513,7 +513,7 @@ $(DSK360K_1):
 	$(SOFTLINK) $@ $(LDSK360K_1)
 
 $(DSK360K_1_50HZ):
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 2 Disk 1"
 	$(OS9GEN) $@ -b=$(BOOTFILE_40D_50HZ) -t=$(KERNELFILE_50HZ)
 	$(MAKDIR) $@,CMDS
@@ -536,7 +536,7 @@ $(DSK360K_1_50HZ):
 	$(SOFTLINK) $@ $(LDSK360K_1_50HZ)
 
 $(DSK360K_2):
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 2 Disk 2"
 	$(MAKDIR) $@,CMDS
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
@@ -576,7 +576,7 @@ $(DSK360K_2):
 	$(SOFTLINK) $@ $(LDSK360K_2)
 
 $(DSK720K):
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/$(CPU) Level 2"
 	$(OS9GEN) $@ -b=$(BOOTFILE_80D) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
@@ -632,7 +632,7 @@ $(DSK720K):
 	$(SOFTLINK) $@ $(LDSK720K)
 
 $(DSK720K_50HZ):
-	-$(RM) $@
+	$(RM) $@
 	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/$(CPU) Level 2"
 	$(OS9GEN) $@ -b=$(BOOTFILE_80D_50HZ) -t=$(KERNELFILE_50HZ)
 	$(MAKDIR) $@,CMDS

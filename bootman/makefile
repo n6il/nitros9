@@ -17,4 +17,4 @@ dsk: bootman
 	decb copy -b -2 bootman_coco3_6551 bootman.dsk,BM36551.BIN
 
 clean:
-	-$(RM) *.r bootman_coco_6551 bootman_coco3_6551 bootman.dsk
+	$(RM) *.r bootman_coco_6551 bootman_coco3_6551 bootman.dsk

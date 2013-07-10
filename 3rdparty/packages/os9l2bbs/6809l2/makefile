@@ -35,10 +35,10 @@ dsk:
 	$(CP) $(BBSFILES) $(DSK),BBS
 
 clean: dskclean
-	-$(RM) $(CMDS)
+	$(RM) $(CMDS)
 
 dskclean:
-	-$(RM) $(DSK)
+	$(RM) $(DSK)
 
 info:
 	@$(ECHO) "*** OS-9 L2 BBS for 6809 ***"

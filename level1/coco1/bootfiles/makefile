@@ -363,4 +363,4 @@ kernel_arduino: $(KERNEL_ARDUINO) $(DEPENDS)
 	$(PADROM) 4608 $@
 
 clean:
-	-$(RM) $(ALLOBJS)
+	$(RM) $(ALLOBJS)

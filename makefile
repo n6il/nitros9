@@ -13,7 +13,7 @@ all:
 
 # Clean all components
 clean:
-	-$(RM) nitros9project.zip $(DSKDIR)/*.dsk $(DSKDIR)/ReadMe $(DSKDIR)/index.shtml
+	$(RM) nitros9project.zip $(DSKDIR)/*.dsk $(DSKDIR)/ReadMe $(DSKDIR)/index.shtml
 	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
 	$(RM) $(DSKDIR)/ReadMe
 	$(RM) $(DSKDIR)/index.html
