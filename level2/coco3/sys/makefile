@@ -45,7 +45,7 @@ $(HELPMSG): $(HELPFILES)
 	$(MERGE) $^ > $@
 
 $(L1TXTFILES): $(LEVEL1)/sys/$@
-	-$(SOFTLINK) $(LEVEL1)/sys/$@
+	$(SOFTLINK) -f $(LEVEL1)/sys/$@
 
 inetd.conf:     $(LEVEL1)/sys/inetd.conf
 	@sed -e 's/%TELNET_PORT%/$(TELNET_PORT)/' -e 's/%HTTPD_PORT%/$(HTTPD_PORT)/' $^ > $@
