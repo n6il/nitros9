@@ -161,7 +161,6 @@ $(DSKBECKER):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	-os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
 	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
@@ -169,6 +168,8 @@ $(DSKBECKER):
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) wwwroot; $(CP) $(WWWROOT) ../$@,WWWROOT
+	$(foreach file, $(WWWROOT), $(OS9ATTR_TEXT) $@,WWWROOT/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
@@ -216,7 +217,6 @@ $(DSKARDUINO):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	-os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
 	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
@@ -224,6 +224,8 @@ $(DSKARDUINO):
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) wwwroot; $(CP) $(WWWROOT) ../$@,WWWROOT
+	$(foreach file, $(WWWROOT), $(OS9ATTR_TEXT) $@,WWWROOT/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
@@ -271,7 +273,6 @@ $(DSKDWHEADLESS):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	-os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
 	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
@@ -279,6 +280,8 @@ $(DSKDWHEADLESS):
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) wwwroot; $(CP) $(WWWROOT) ../$@,WWWROOT
+	$(foreach file, $(WWWROOT), $(OS9ATTR_TEXT) $@,WWWROOT/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
@@ -326,7 +329,6 @@ $(DSKBECKERHEADLESS):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	-os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
 	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
@@ -334,6 +336,8 @@ $(DSKBECKERHEADLESS):
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) wwwroot; $(CP) $(WWWROOT) ../$@,WWWROOT
+	$(foreach file, $(WWWROOT), $(OS9ATTR_TEXT) $@,WWWROOT/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
@@ -381,7 +385,6 @@ $(DSKARDUINOHEADLESS):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	-os9 dsave -e wwwroot $@,WWWROOT
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
 	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
@@ -389,6 +392,8 @@ $(DSKARDUINOHEADLESS):
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(CD) wwwroot; $(CP) $(WWWROOT) ../$@,WWWROOT
+	$(foreach file, $(WWWROOT), $(OS9ATTR_TEXT) $@,WWWROOT/$(file);)
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
