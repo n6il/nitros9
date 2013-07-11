@@ -1,4 +1,4 @@
-# NitrOS-9/6809 Level 2 bootfile for a 128K CoCo 3 with a Motorla 6809
+# NitrOS-9/6809 Level 2 bootfile for a 128K CoCo 3 with a Motorola 6809
 # For Boisy's thesis work
 
 include $(NITROS9DIR)/rules.mak
@@ -16,20 +16,22 @@ DEPENDS		= ./makefile
 #AFLAGS          += -e -aH6309=1
 
 DSK 		= thesis.dsk
-CD		= $(LEVEL2)/coco3/cmds
+CMDSDIR		= $(LEVEL2)/coco3/cmds
 MD		= $(LEVEL2)/coco3/modules
 SYSTEXT		= motd password inetd.conf
 DSKS		= $(DSK)
 
-CMDS		= $(CD)/attr $(CD)/build $(CD)/cmp $(CD)/copy $(CD)/cputype $(CD)/date $(CD)/debug \
-		$(CD)/deiniz $(CD)/del $(CD)/deldir $(CD)/devs $(CD)/dir $(CD)/display \
-		$(CD)/dmem $(CD)/dmode $(CD)/dump $(CD)/echo $(CD)/edit $(CD)/error \
-		$(CD)/free $(CD)/grfdrv $(CD)/help $(CD)/ident $(CD)/iniz $(CD)/link \
-		$(CD)/list $(CD)/load $(CD)/login $(CD)/makdir $(CD)/mdir $(CD)/merge \
-                $(CD)/mfree $(CD)/mmap $(CD)/mpi $(CD)/pmap $(CD)/proc $(CD)/procs \
-		$(CD)/prompt $(CD)/pwd $(CD)/pxd $(CD)/rename $(CD)/save $(CD)/shell \
-		$(CD)/sleep $(CD)/smap $(CD)/tee $(CD)/tmode $(CD)/touch $(CD)/tsmon \
-		$(CD)/unlink $(CD)/verify $(CD)/xmode $(CD)/utilpak1 $(CD)/basic09 $(CD)/syscall
+CMDS		= $(addprefix $(CMDSDIR)/,\
+		attr build cmp copy cputype date debug \
+		deiniz del deldir devs dir display \
+		dmem dmode dump echo edit error \
+		free grfdrv help ident iniz link \
+		list load login makdir mdir merge \
+		mfree mmap mpi pmap proc procs \
+		prompt pwd pxd rename save shell \
+		sleep smap tee tmode touch tsmon \
+		unlink verify xmode utilpak1 basic09 syscall \
+		)
 
 CMDS_DW		= $(3PDW68)/inetd $(3PDW68)/dw \
 		$(3PDW68)/telnet $(3PBOISY)/send

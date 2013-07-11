@@ -323,7 +323,7 @@ y3.dd: rfmdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=3
 
 rel: rel.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDragon64=0
+	$(AS) $(AFLAGS) $(ASOUT)$@ $<
 
 sysgo_dd: sysgo.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DDD=1

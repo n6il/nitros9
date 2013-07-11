@@ -3,7 +3,7 @@ include $(NITROS9DIR)/rules.mak
 # Module directory
 MD		= ../modules
 # Commands directory
-CD		= ../cmds
+CMDSDIR		= ../cmds
 
 DEPENDS		= ./makefile
 
@@ -16,8 +16,8 @@ BOOTFILE_ROM	= $(MD)/rominfo $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/term_vdg.dt \
 		$(MD)/clock_60hz $(MD)/clock2_soft \
 		$(MD)/sysgo_rom \
-		$(CD)/shell_21 \
-		$(CD)/mdir
+		$(CMDSDIR)/shell_21 \
+		$(CMDSDIR)/mdir
 
 BOOTROMS	= nos96809l2.rom
 KERNELS		= kernel_rom

@@ -3,7 +3,7 @@ include ../port.mak
 # Module directory
 MD		= ../modules
 # Commands directory
-CD		= ../cmds
+CMDSDIR		= ../cmds
 
 DEPENDS		= ./makefile
 
@@ -159,7 +159,7 @@ BOOTFILE_COVDG_DW_GAME	= $(MD)/ioman \
 		$(PIPE) \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd \
-		$(CD)/shell_21
+		$(CMDSDIR)/shell_21
 
 BOOTFILE_COVDG_BECKER	= $(MD)/ioman \
 		$(MD)/rbf.mn \
@@ -185,7 +185,7 @@ BOOTFILE_COVDG_BECKER_GAME	= $(MD)/ioman \
 		$(PIPE) \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd \
-		$(CD)/shell_21
+		$(CMDSDIR)/shell_21
 
 BOOTFILE_COVDG_ARDUINO	= $(MD)/ioman \
 		$(MD)/rbf.mn \
@@ -211,7 +211,7 @@ BOOTFILE_COVDG_ARDUINO_GAME	= $(MD)/ioman \
 		$(PIPE) \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd \
-		$(CD)/shell_21
+		$(CMDSDIR)/shell_21
 		
 BOOTFILE_COVDG_DS80	= $(MD)/ioman \
 		$(MD)/rbf.mn \

@@ -2,8 +2,6 @@ include ../port.mak
 
 # Module directory
 MD		= ../modules
-# Commands directory
-CD		= ../cmds
 
 DEPENDS		= ./makefile
 
