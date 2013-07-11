@@ -122,42 +122,42 @@ $(DSKBECKER):
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP_DW) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
 	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/$(DISTRO)/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(MODULECMDS),$@,NITROS9/$(DISTRO)/CMDS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
 	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(BOOTTRACK),$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/KERNEL
 	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/$(DISTRO)/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(KERNEL),$@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS
 	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/$(DISTRO)/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SYSMODS),$@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS
 	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/$(DISTRO)/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CLOCKS),$@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/RBF
 	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/$(DISTRO)/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/RBF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(RBF),$@,NITROS9/$(DISTRO)/MODULES/RBF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SCF
 	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/$(DISTRO)/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SCF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SCF),$@,NITROS9/$(DISTRO)/MODULES/SCF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/PIPE
 	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/$(DISTRO)/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(PIPE),$@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
@@ -176,42 +176,42 @@ $(DSKARDUINO):
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP_DW) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
 	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/$(DISTRO)/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(MODULECMDS),$@,NITROS9/$(DISTRO)/CMDS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
 	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(BOOTTRACK),$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/KERNEL
 	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/$(DISTRO)/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(KERNEL),$@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS
 	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/$(DISTRO)/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SYSMODS),$@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS
 	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/$(DISTRO)/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CLOCKS),$@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/RBF
 	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/$(DISTRO)/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/RBF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(RBF),$@,NITROS9/$(DISTRO)/MODULES/RBF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SCF
 	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/$(DISTRO)/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SCF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SCF),$@,NITROS9/$(DISTRO)/MODULES/SCF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/PIPE
 	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/$(DISTRO)/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(PIPE),$@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
@@ -230,42 +230,42 @@ $(DSKCOCOSDC):
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP_DW) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
 	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/$(DISTRO)/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(MODULECMDS),$@,NITROS9/$(DISTRO)/CMDS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
 	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(BOOTTRACK),$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/KERNEL
 	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/$(DISTRO)/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(KERNEL),$@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS
 	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/$(DISTRO)/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SYSMODS),$@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS
 	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/$(DISTRO)/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CLOCKS),$@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/RBF
 	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/$(DISTRO)/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/RBF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(RBF),$@,NITROS9/$(DISTRO)/MODULES/RBF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SCF
 	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/$(DISTRO)/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SCF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SCF),$@,NITROS9/$(DISTRO)/MODULES/SCF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/PIPE
 	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/$(DISTRO)/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(PIPE),$@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
@@ -284,42 +284,42 @@ $(DSKDW):
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP_DW) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
 	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/$(DISTRO)/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(MODULECMDS),$@,NITROS9/$(DISTRO)/CMDS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
 	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(BOOTTRACK),$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/KERNEL
 	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/$(DISTRO)/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(KERNEL),$@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS
 	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/$(DISTRO)/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SYSMODS),$@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS
 	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/$(DISTRO)/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CLOCKS),$@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/RBF
 	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/$(DISTRO)/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/RBF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(RBF),$@,NITROS9/$(DISTRO)/MODULES/RBF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SCF
 	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/$(DISTRO)/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SCF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SCF),$@,NITROS9/$(DISTRO)/MODULES/SCF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/PIPE
 	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/$(DISTRO)/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(PIPE),$@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
@@ -338,42 +338,42 @@ $(DSKDWHEADLESS):
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP_DW) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
 	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/$(DISTRO)/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(MODULECMDS),$@,NITROS9/$(DISTRO)/CMDS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
 	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(BOOTTRACK),$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/KERNEL
 	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/$(DISTRO)/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(KERNEL),$@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS
 	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/$(DISTRO)/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SYSMODS),$@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS
 	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/$(DISTRO)/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CLOCKS),$@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/RBF
 	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/$(DISTRO)/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/RBF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(RBF),$@,NITROS9/$(DISTRO)/MODULES/RBF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SCF
 	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/$(DISTRO)/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SCF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SCF),$@,NITROS9/$(DISTRO)/MODULES/SCF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/PIPE
 	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/$(DISTRO)/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(PIPE),$@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
@@ -392,42 +392,42 @@ $(DSKBECKERHEADLESS):
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP_DW) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
 	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/$(DISTRO)/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(MODULECMDS),$@,NITROS9/$(DISTRO)/CMDS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
 	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(BOOTTRACK),$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/KERNEL
 	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/$(DISTRO)/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(KERNEL),$@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS
 	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/$(DISTRO)/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SYSMODS),$@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS
 	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/$(DISTRO)/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CLOCKS),$@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/RBF
 	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/$(DISTRO)/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/RBF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(RBF),$@,NITROS9/$(DISTRO)/MODULES/RBF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SCF
 	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/$(DISTRO)/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SCF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SCF),$@,NITROS9/$(DISTRO)/MODULES/SCF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/PIPE
 	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/$(DISTRO)/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(PIPE),$@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
@@ -446,42 +446,42 @@ $(DSKARDUINOHEADLESS):
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(foreach file, $(CMDS_DW), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP_DW) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
 	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/$(DISTRO)/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(MODULECMDS),$@,NITROS9/$(DISTRO)/CMDS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
 	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(BOOTTRACK),$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/KERNEL
 	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/$(DISTRO)/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(KERNEL),$@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS
 	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/$(DISTRO)/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SYSMODS),$@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS
 	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/$(DISTRO)/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CLOCKS),$@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/RBF
 	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/$(DISTRO)/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/RBF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(RBF),$@,NITROS9/$(DISTRO)/MODULES/RBF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SCF
 	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/$(DISTRO)/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SCF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SCF),$@,NITROS9/$(DISTRO)/MODULES/SCF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/PIPE
 	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/$(DISTRO)/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(PIPE),$@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
@@ -500,13 +500,13 @@ $(DSK360K_1):
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 	$(RM) $(LDSK360K_1)
@@ -523,13 +523,13 @@ $(DSK360K_1_50HZ):
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 	$(RM) $(LDSK360K_1_50HZ)
@@ -540,34 +540,34 @@ $(DSK360K_2):
 	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 2 Disk 2"
 	$(MAKDIR) $@,CMDS
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
 	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/$(DISTRO)/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(MODULECMDS),$@,NITROS9/$(DISTRO)/CMDS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
 	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(BOOTTRACK),$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/KERNEL
 	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/$(DISTRO)/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(KERNEL),$@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS
 	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/$(DISTRO)/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SYSMODS),$@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS
 	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/$(DISTRO)/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CLOCKS),$@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/RBF
 	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/$(DISTRO)/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/RBF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(RBF),$@,NITROS9/$(DISTRO)/MODULES/RBF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SCF
 	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/$(DISTRO)/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SCF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SCF),$@,NITROS9/$(DISTRO)/MODULES/SCF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/PIPE
 	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/$(DISTRO)/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(PIPE),$@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
@@ -586,44 +586,44 @@ $(DSK720K):
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
 	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/$(DISTRO)/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(MODULECMDS),$@,NITROS9/$(DISTRO)/CMDS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
 	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(BOOTTRACK),$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/KERNEL
 	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/$(DISTRO)/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(KERNEL),$@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS
 	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/$(DISTRO)/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SYSMODS),$@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS
 	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/$(DISTRO)/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CLOCKS),$@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/RBF
 	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/$(DISTRO)/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/RBF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(RBF),$@,NITROS9/$(DISTRO)/MODULES/RBF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SCF
 	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/$(DISTRO)/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SCF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SCF),$@,NITROS9/$(DISTRO)/MODULES/SCF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/PIPE
 	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/$(DISTRO)/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(PIPE),$@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
@@ -642,44 +642,44 @@ $(DSK720K_50HZ):
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(foreach file, $(CMDS_D2), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/$(DISTRO)
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/CMDS
 	$(CD) cmds; $(CP) $(MODULECMDS) ../$@,NITROS9/$(DISTRO)/CMDS
-	$(foreach file, $(MODULECMDS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(MODULECMDS),$@,NITROS9/$(DISTRO)/CMDS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
 	$(CD) modules; $(CP) $(BOOTTRACK) ../$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK
-	$(foreach file, $(BOOTTRACK), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(BOOTTRACK),$@,NITROS9/$(DISTRO)/MODULES/BOOTTRACK/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/KERNEL
 	$(CD) modules; $(CP) $(KERNEL) ../$@,NITROS9/$(DISTRO)/MODULES/KERNEL
-	$(foreach file, $(KERNEL), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(KERNEL),$@,NITROS9/$(DISTRO)/MODULES/KERNEL/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS
 	$(CD) modules; $(CP) $(SYSMODS) ../$@,NITROS9/$(DISTRO)/MODULES/SYSMODS
-	$(foreach file, $(SYSMODS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SYSMODS),$@,NITROS9/$(DISTRO)/MODULES/SYSMODS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS
 	$(CD) modules; $(CP) $(CLOCKS) ../$@,NITROS9/$(DISTRO)/MODULES/CLOCKS
-	$(foreach file, $(CLOCKS), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CLOCKS),$@,NITROS9/$(DISTRO)/MODULES/CLOCKS/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/RBF
 	$(CD) modules; $(CP) $(RBF) ../$@,NITROS9/$(DISTRO)/MODULES/RBF
-	$(foreach file, $(RBF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/RBF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(RBF),$@,NITROS9/$(DISTRO)/MODULES/RBF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/SCF
 	$(CD) modules; $(CP) $(SCF) ../$@,NITROS9/$(DISTRO)/MODULES/SCF
-	$(foreach file, $(SCF), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/SCF/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SCF),$@,NITROS9/$(DISTRO)/MODULES/SCF/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/MODULES/PIPE
 	$(CD) modules; $(CP) $(PIPE) ../$@,NITROS9/$(DISTRO)/MODULES/PIPE
-	$(foreach file, $(PIPE), $(OS9ATTR_EXEC) $@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(PIPE),$@,NITROS9/$(DISTRO)/MODULES/PIPE/$(file))
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/$(DISTRO)/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/$(DISTRO)/SCRIPTS
