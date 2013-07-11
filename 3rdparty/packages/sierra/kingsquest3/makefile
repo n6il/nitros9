@@ -4,10 +4,10 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DISK_1_40D	= kingquest3_d1_40d.dsk
-DISK_2_40D	= kingquest3_d2_40d.dsk
-DISK_3_40D	= kingquest3_d3_40d.dsk
-DISK_80D	= kingquest3_80d.dsk
+DISK_1_40D	= kingsquest3_d1_40d.dsk
+DISK_2_40D	= kingsquest3_d2_40d.dsk
+DISK_3_40D	= kingsquest3_d3_40d.dsk
+DISK_80D	= kingsquest3_80d.dsk
 DSK_DW		= kingsquest3_dw.dsk
 DSK_DW_BECKER	= kingsquest3_becker.dsk
 
