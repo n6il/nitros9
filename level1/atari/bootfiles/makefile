@@ -3,7 +3,7 @@ include ../port.mak
 # Module directory
 MD		= ../modules
 # Commands directory
-CD		= ../cmds
+CMDSDIR		= ../cmds
 
 DEPENDS		= ./makefile
 
@@ -32,7 +32,7 @@ BOOTFILE_P2 = $(MD)/scf.mn \
 		$(MD)/scdwv.dr \
 		$(SCDWV_NET) \
 		$(SCDWV_WIN) \
-		$(CD)/shell_21
+		$(CMDSDIR)/shell_21
 
 BOOTFILES	= bootfile
 
