@@ -126,7 +126,7 @@ $(DSKBECKER):
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(notdir $(file));)
+	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
@@ -180,7 +180,7 @@ $(DSKARDUINO):
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file,  $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(notdir $(file));)
+	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
@@ -234,7 +234,7 @@ $(DSKCOCOSDC):
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(notdir $(file));)
+	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
@@ -288,7 +288,7 @@ $(DSKDW):
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(notdir $(file));)
+	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
@@ -342,7 +342,7 @@ $(DSKDWHEADLESS):
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(notdir $(file));)
+	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
@@ -396,7 +396,7 @@ $(DSKBECKERHEADLESS):
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(notdir $(file));)
+	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
@@ -450,7 +450,7 @@ $(DSKARDUINOHEADLESS):
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(notdir $(file));)
+	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP_DW) $@,startup
@@ -504,7 +504,7 @@ $(DSK360K_1):
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(notdir $(file));)
+	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP) $@,startup
@@ -527,7 +527,7 @@ $(DSK360K_1_50HZ):
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(notdir $(file));)
+	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP) $@,startup
@@ -592,7 +592,7 @@ $(DSK720K):
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(notdir $(file));)
+	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP) $@,startup
@@ -648,7 +648,7 @@ $(DSK720K_50HZ):
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(notdir $(file));)
+	$(OS9ATTR_TEXT) $(foreach file,$(notdir $(SYSTEXT)),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
 	$(CPL) $(STARTUP) $@,startup
