@@ -46,11 +46,11 @@ dsk:	all
 	$(RM) os9boot kernel
 	$(MAKDIR) $(DISK),CMDS
 	$(CP) $(UTILS) $(DISK),CMDS
-	$(foreach file, $(UTILS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(UTILS)),$(DISK),CMDS/$(file))
 	$(CP) $(CMDS) $(DISK),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS)),$(DISK),CMDS/$(file))
 	$(CPL) $(HELP) $(DISK),CMDS
-	$(foreach file, $(HELP), $(OS9ATTR_EXEC) $(DISK),CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(HELP)),$(DISK),CMDS/$(file))
 	$(CP) $(ROOTFILES) $(DISK),.
 	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)
 

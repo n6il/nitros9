@@ -111,7 +111,7 @@ $(DSK):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(CP) $(CMDS) $(CMDS_DW) $(CMDS_THESIS) $@,CMDS
-	$(foreach file, $(CMDS) $(CMDS_DW) $(CMDS_THESIS), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file, $(notdir $(CMDS) $(CMDS_DW) $(CMDS_THESIS)),$@,CMDS/$(file);)
 	$(MAKDIR) $@,SRC
 	$(CPL) $(SRC_THESIS) $@,SRC
 	$(CP) $(3RDPARTY)/utils/supercomm/supercomm $@,CMDS
