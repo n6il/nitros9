@@ -89,7 +89,7 @@ $(DSKDW):
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
 	$(CP) $(CMDS) $@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
 	$(CP) shell $@,CMDS
 	$(RM) shell
@@ -112,7 +112,7 @@ $(DSKDWBECKER):
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
 	$(CP) $(CMDS) $@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
 	$(CP) shell $@,CMDS
 	$(RM) shell
@@ -135,7 +135,7 @@ $(DISK_1_80D):
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
 	$(CP) $(CMDS) $@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
 	$(CP) shell $@,CMDS
 	$(RM) shell

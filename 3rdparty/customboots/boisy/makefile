@@ -117,9 +117,9 @@ $(DSK):
 	$(CP) $(3RDPARTY)/utils/supercomm/supercomm $@,CMDS
 	$(OS9ATTR_EXEC) $@,CMDS/supercomm
 	$(CPL) $(SYSTEXT) $@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSTEXT),$@,SYS/$(file))
 	$(CPL) $(SUPPORTFILES) $@,.
-	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,$(file))
 
 dskcopy: dsk
 	$(CP) $(DSKS) $(DSKDIR)

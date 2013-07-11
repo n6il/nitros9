@@ -25,9 +25,9 @@ $(DSKWINFO): $(CMDS)
 	$(OS9FORMAT) $@
 	$(MAKDIR) $@,CMDS
 	$(CP) $(CMDS) $@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(CP) $(SUBS) $@,CMDS
-	$(foreach file, $(SUBS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SUBS),$@,CMDS/$(file))
 
 dsk: all $(DSKS)
 

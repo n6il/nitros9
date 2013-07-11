@@ -24,7 +24,7 @@ $(DSKSMARTWATCH): $(CMDS)
 	$(OS9FORMAT) $@
 	$(MAKDIR) $@,CMDS
 	$(CP) $(CMDS) $@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 
 dsk: all $(DSKS)
 
