@@ -42,7 +42,7 @@ MODS = stimestr.o datestr.o getfmd.o mktemp.o linedit.o sho_regs.o \
 all:	../libalib.a
 
 ../libalib.a: $(MODS)
-	lwar -c $@ $?
+	$(LWAR) $@ $?
 
 dskclean: clean
 
