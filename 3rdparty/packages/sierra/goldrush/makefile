@@ -57,7 +57,6 @@ BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 
 TEXTFILES_D1	= ../startup tOC_80d.txt
 TEXTFILES_DW	= ../startup tOC_dw.txt
-TEXTFILES_DW_BECKER	= ../startup tOC_dw_becker.txt
 
 SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.2 vol.9 vol.10 vol.11 vol.12 words.tok
@@ -118,8 +117,8 @@ $(DSKDWBECKER):
 	$(RM) shell
 	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES_DW_BECKER) $@,.
-	$(OS9RENAME) $@,tOC_dw_becker.txt tOC.txt
+	$(CPL) $(TEXTFILES_DW) $@,.
+	$(OS9RENAME) $@,tOC_dw.txt tOC.txt
 	$(CP) $(SUPPORTFILES_ALL) $@,.
 	$(MOVE) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
