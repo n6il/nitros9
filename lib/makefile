@@ -4,37 +4,37 @@ all: libnos96809l1.a libnos96809l2.a libnos96309l2.a libnet.a libalib.a \
 	libcoco.a libcoco3.a libcoco3_6309.a libdragon.a libatari.a
 
 libnos96809l1.a: sys6809l1.o
-	lwar -c $@ $?
+	$(LWAR) $@ $?
 
 libnos96809l2.a: sys6809l2.o
-	lwar -c $@ $?
+	$(LWAR) $@ $?
 
 libnos96309l2.a: sys6309l2.o
-	lwar -c $@ $?
+	$(LWAR) $@ $?
 
 libnet.a: net.o
-	lwar -c $@ $?
+	$(LWAR) $@ $?
 
 libcoco.a: coco.o
-	lwar -c $@ $?
+	$(LWAR) $@ $?
 
 libcoco3.a: coco3.o
-	lwar -c $@ $?
+	$(LWAR) $@ $?
 
 libcoco3_6309.a: coco3_6309.o
-	lwar -c $@ $?
+	$(LWAR) $@ $?
 
 libatari.a: atari.o
-	lwar -c $@ $?
+	$(LWAR) $@ $?
 
 libdragon.a: dragon.o
-	lwar -c $@ $?
+	$(LWAR) $@ $?
 
 libalib.a:
-	cd alib; make
+	$(MAKE) -C alib
 
 dskcopy:
 
 clean:
 	$(RM) *.a *.o
-	cd alib; make clean
+	$(MAKE) -C alib clean
