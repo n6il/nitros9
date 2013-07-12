@@ -105,10 +105,8 @@ $(DSKDW):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
-	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
+	$(CD) cmds; $(CP) $(sort $(CMDS_DW) $(CMDS_D2)) ../$@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(sort $(CMDS_DW) $(CMDS_D2)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))
@@ -161,10 +159,8 @@ $(DSKBECKER):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
-	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
+	$(CD) cmds; $(CP) $(sort $(CMDS_DW) $(CMDS_D2)) ../$@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(sort $(CMDS_DW) $(CMDS_D2)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))
@@ -217,10 +213,8 @@ $(DSKARDUINO):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
-	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
+	$(CD) cmds; $(CP) $(sort $(CMDS_DW) $(CMDS_D2)) ../$@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(sort $(CMDS_DW) $(CMDS_D2)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))
@@ -273,10 +267,8 @@ $(DSKDWHEADLESS):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
-	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
+	$(CD) cmds; $(CP) $(sort $(CMDS_DW) $(CMDS_D2)) ../$@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(sort $(CMDS_DW) $(CMDS_D2)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))
@@ -329,10 +321,8 @@ $(DSKBECKERHEADLESS):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
-	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
+	$(CD) cmds; $(CP) $(sort $(CMDS_DW) $(CMDS_D2)) ../$@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(sort $(CMDS_DW) $(CMDS_D2)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))
@@ -385,10 +375,8 @@ $(DSKARDUINOHEADLESS):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	$(CD) cmds; $(CP) $(CMDS_DW) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DW),$@,CMDS/$(file))
-	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
+	$(CD) cmds; $(CP) $(sort $(CMDS_DW) $(CMDS_D2)) ../$@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(sort $(CMDS_DW) $(CMDS_D2)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))
@@ -500,10 +488,8 @@ $(DSK720K):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
-	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
+	$(CD) cmds; $(CP) $(sort $(CMDS) $(CMDS_D2)) ../$@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(sort $(CMDS) $(CMDS_D2)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))

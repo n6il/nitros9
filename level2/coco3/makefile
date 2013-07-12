@@ -585,10 +585,8 @@ $(DSK720K):
 	$(CP) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
-	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
-	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
+	$(CD) cmds; $(CP) $(sort $(CMDS) $(CMDS_D2)) ../$@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(sort $(CMDS) $(CMDS_D2)),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
@@ -641,10 +639,8 @@ $(DSK720K_50HZ):
 	$(CP) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(CP) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
-	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
-	$(CD) cmds; $(CP) $(CMDS_D2) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
+	$(CD) cmds; $(CP) $(sort $(CMDS) $(CMDS_D2)) ../$@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(sort $(CMDS) $(CMDS_D2)),$@,CMDS/$(file))
 	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS

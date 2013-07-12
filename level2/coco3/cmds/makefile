@@ -73,7 +73,7 @@ showobjs:
 	@$(ECHO) shell utilpak1 $(CMDS)
 
 showobjs_dw:
-	@$(ECHO) shell utilpak1 $(CMDS) $(CMDS_D2) $(CMDS_DW)
+	@$(ECHO) shell utilpak1 $(sort $(CMDS) $(CMDS_D2) $(CMDS_DW))
 
 showobjs_d2:
 	@$(ECHO) $(CMDS_D2)
