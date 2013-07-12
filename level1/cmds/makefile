@@ -68,7 +68,7 @@ showcocoobjs:
 	@$(ECHO) $(CMDS) $(SUBS)
 
 showdragonobjs:
-	@$(ECHO) $(CMDS) $(DRAGONCMDS)
+	@$(ECHO) $(sort $(CMDS) $(DRAGONCMDS))
 
 showdragon525objs:
 	@$(ECHO) $(DRAGON525CMDS) $(SUBS)
