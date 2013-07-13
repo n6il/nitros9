@@ -29,7 +29,7 @@ $(DSKDLADDUTILS): $(CMDS)
 dsk: all $(DSKS)
 
 dskcopy: dsk
-	$(OS9COPY) $(DSKS) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 clean:
 	$(RM) $(ALLOBJS) $(DSKS)

@@ -80,7 +80,7 @@ dsk:	all
 	$(CPL) copying readme.first $(DISK63),UUCP
 
 dskcopy: dsk
-	$(OS9COPY) $(DSKS) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS)

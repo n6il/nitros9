@@ -207,7 +207,7 @@ clean:	dskclean
 	$(CD) shanghai; make clean
 
 dskcopy: dsk
-	$(OS9COPY) $(DSKS) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS) 

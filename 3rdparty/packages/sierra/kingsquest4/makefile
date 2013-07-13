@@ -158,7 +158,7 @@ $(DISK_DW_BECKER):
 	$(MOVE) toctmp tocgen
 
 dskcopy: dsk
-	$(OS9COPY) $(DSKS) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS)

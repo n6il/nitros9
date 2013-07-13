@@ -159,7 +159,7 @@ $(DISK_3_80D):
 	$(OS9COPY) $(SUPPORTFILES_D3) $@,.
 
 dskcopy: dsk
-	$(OS9COPY) $(DSKS) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS)

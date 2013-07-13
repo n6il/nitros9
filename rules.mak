@@ -64,6 +64,7 @@ MERGE		= cat
 MOVE		= mv
 ECHO		= echo
 CD		= cd
+CP		= cp
 OS9COPY		= os9 copy -o=0
 CPL		= $(OS9COPY) -l
 TAR		= tar

@@ -131,7 +131,7 @@ $(DSK_DW_BECKER):	all
 	$(OS9COPY) $(SUPPORTFILES) $@,.
 
 dskcopy: dsk
-	$(OS9COPY) $(DSKS) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS)

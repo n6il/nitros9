@@ -122,7 +122,7 @@ $(DSK):
 	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,$(file))
 
 dskcopy: dsk
-	$(OS9COPY) $(DSKS) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS)
