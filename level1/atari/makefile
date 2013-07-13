@@ -43,7 +43,7 @@ dskclean:
 dsk: all $(PACKAGENAME)
 
 dskcopy: dsk
-	$(CP) $(DSKS) $(DSKDIR)
+	$(OS9COPY) $(DSKS) $(DSKDIR)
 
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html
@@ -59,12 +59,12 @@ $(DSK):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(MAKDIR) $@,WWWROOT
-	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
+	$(CD) cmds; $(OS9COPY) $(CMDS) ../$@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))
-	$(CD) wwwroot; $(CP) $(WWWROOT) ../$@,WWWROOT
+	$(CD) wwwroot; $(OS9COPY) $(WWWROOT) ../$@,WWWROOT
 	$(OS9ATTR_TEXT) $(foreach file,$(WWWROOT),$@,WWWROOT/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
@@ -75,7 +75,7 @@ $(DSK_DEMO):
 	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9 Atari Demo Disk"
 	$(MAKDIR) $@,CMDS
-	$(CD) cmds; $(CP) $(CMDS_DEMO) ../$@,CMDS
+	$(CD) cmds; $(OS9COPY) $(CMDS_DEMO) ../$@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DEMO),$@,CMDS/$(file))
 
 info:

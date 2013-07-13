@@ -93,24 +93,24 @@ $(DISK_40D): all
 	$(OS9GEN) $@ -b=os9boot -t=kernel_1773
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $@,CMDS
-	$(CP) shell $@,CMDS
+	$(OS9COPY) shell $@,CMDS
 	$(OS9ATTR_EXEC) $@,CMDS/shell
-	$(CP) $(foreach file,$(CMDS),$(6809L2)/cmds/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(CMDS),$(6809L2)/cmds/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(SMASHCMDS),smash/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(SMASHCMDS),smash/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(SMASHCMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(THEXCMDS),thexder/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(THEXCMDS),thexder/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(THEXCMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(SHANGCMDS),shanghai/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(SHANGCMDS),shanghai/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(SHANGCMDS),$@,CMDS/$(file))
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MAKDIR) $@,SYS
-	$(CP) $(foreach file,$(SMASHSYS),smash/$(file)) $@,SYS
-	$(CP) $(foreach file,$(THEXSYS),thexder/$(file)) $@,SYS
-	$(CP) $(foreach file,$(SHANGSYS),shanghai/$(file)) $@,SYS
-	$(CP) $(foreach file,$(SMASHROOT),smash/$(file)) $@,
-	$(CP) $(foreach file,$(THEXROOT),thexder/$(file)) $@,
-	$(CP) $(foreach file,$(SHANGROOT),shanghai/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(SMASHSYS),smash/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(THEXSYS),thexder/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(SHANGSYS),shanghai/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(SMASHROOT),smash/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(THEXROOT),thexder/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(SHANGROOT),shanghai/$(file)) $@,
 	$(CPL) startup $@,
 
 $(DISK_80D): all
@@ -122,24 +122,24 @@ $(DISK_80D): all
 	$(OS9GEN) $@ -b=os9boot -t=kernel_1773
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $@,CMDS
-	$(CP) shell $@,CMDS/shell
+	$(OS9COPY) shell $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
-	$(CP) $(foreach file,$(CMDS),$(6809L2)/cmds/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(CMDS),$(6809L2)/cmds/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(SMASHCMDS),smash/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(SMASHCMDS),smash/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(SMASHCMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(THEXCMDS),thexder/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(THEXCMDS),thexder/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(THEXCMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(SHANGCMDS),shanghai/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(SHANGCMDS),shanghai/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(SHANGCMDS),$@,CMDS/$(file))
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MAKDIR) $@,SYS
-	$(CP) $(foreach file,$(SMASHSYS),smash/$(file)) $@,SYS
-	$(CP) $(foreach file,$(THEXSYS),thexder/$(file)) $@,SYS
-	$(CP) $(foreach file,$(SHANGSYS),shanghai/$(file)) $@,SYS
-	$(CP) $(foreach file,$(SMASHROOT),smash/$(file)) $@,
-	$(CP) $(foreach file,$(THEXROOT),thexder/$(file)) $@,
-	$(CP) $(foreach file,$(SHANGROOT),shanghai/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(SMASHSYS),smash/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(THEXSYS),thexder/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(SHANGSYS),shanghai/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(SMASHROOT),smash/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(THEXROOT),thexder/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(SHANGROOT),shanghai/$(file)) $@,
 	$(CPL) startup $@,
 
 $(DISK_DW): all
@@ -151,24 +151,24 @@ $(DISK_DW): all
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
-	$(CP) shell $@,CMDS/shell
+	$(OS9COPY) shell $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
-	$(CP) $(foreach file,$(CMDS),$(6809L2)/cmds/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(CMDS),$(6809L2)/cmds/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(SMASHCMDS),smash/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(SMASHCMDS),smash/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(SMASHCMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(THEXCMDS),thexder/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(THEXCMDS),thexder/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(THEXCMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(SHANGCMDS),shanghai/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(SHANGCMDS),shanghai/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(SHANGCMDS),$@,CMDS/$(file))
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MAKDIR) $@,SYS
-	$(CP) $(foreach file,$(SMASHSYS),smash/$(file)) $@,SYS
-	$(CP) $(foreach file,$(THEXSYS),thexder/$(file)) $@,SYS
-	$(CP) $(foreach file,$(SHANGSYS),shanghai/$(file)) $@,SYS
-	$(CP) $(foreach file,$(SMASHROOT),smash/$(file)) $@,
-	$(CP) $(foreach file,$(THEXROOT),thexder/$(file)) $@,
-	$(CP) $(foreach file,$(SHANGROOT),shanghai/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(SMASHSYS),smash/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(THEXSYS),thexder/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(SHANGSYS),shanghai/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(SMASHROOT),smash/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(THEXROOT),thexder/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(SHANGROOT),shanghai/$(file)) $@,
 	$(CPL) startup $@,
 
 $(DISK_BECKER): all
@@ -180,24 +180,24 @@ $(DISK_BECKER): all
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
-	$(CP) shell $@,CMDS/shell
+	$(OS9COPY) shell $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
-	$(CP) $(foreach file,$(CMDS),$(6809L2)/cmds/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(CMDS),$(6809L2)/cmds/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(SMASHCMDS),smash/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(SMASHCMDS),smash/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(SMASHCMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(THEXCMDS),thexder/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(THEXCMDS),thexder/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(THEXCMDS),$@,CMDS/$(file))
-	$(CP) $(foreach file,$(SHANGCMDS),shanghai/$(file)) $@,CMDS
+	$(OS9COPY) $(foreach file,$(SHANGCMDS),shanghai/$(file)) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(SHANGCMDS),$@,CMDS/$(file))
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MAKDIR) $@,SYS
-	$(CP) $(foreach file,$(SMASHSYS),smash/$(file)) $@,SYS
-	$(CP) $(foreach file,$(THEXSYS),thexder/$(file)) $@,SYS
-	$(CP) $(foreach file,$(SHANGSYS),shanghai/$(file)) $@,SYS
-	$(CP) $(foreach file,$(SMASHROOT),smash/$(file)) $@,
-	$(CP) $(foreach file,$(THEXROOT),thexder/$(file)) $@,
-	$(CP) $(foreach file,$(SHANGROOT),shanghai/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(SMASHSYS),smash/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(THEXSYS),thexder/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(SHANGSYS),shanghai/$(file)) $@,SYS
+	$(OS9COPY) $(foreach file,$(SMASHROOT),smash/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(THEXROOT),thexder/$(file)) $@,
+	$(OS9COPY) $(foreach file,$(SHANGROOT),shanghai/$(file)) $@,
 	$(CPL) startup $@,
 
 clean:	dskclean
@@ -207,7 +207,7 @@ clean:	dskclean
 	$(CD) shanghai; make clean
 
 dskcopy: dsk
-	$(CP) $(DSKS) $(DSKDIR)
+	$(OS9COPY) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS) 

@@ -27,15 +27,15 @@ dsk:	all
 	$(MAKDIR) $(DISK),DEFS
 	$(MAKDIR) $(DISK),SOURCES
 	$(MAKDIR) $(DISK),SOURCES/SYS
-	$(CP) $(CMDS) $(DISK),CMDS
+	$(OS9COPY) $(CMDS) $(DISK),CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DISK),CMDS/$(file))
 	$(CPL) defs/*.h $(DISK),DEFS
-	$(CP) lib/*.l LIB/*.r $(DISK),LIB
+	$(OS9COPY) lib/*.l LIB/*.r $(DISK),LIB
 	$(CPL) sources/*.c $(DISK),SOURCES
 	$(CPL) sources/*.a $(DISK),SOURCES/SYS
 
 dskcopy: dsk
-	$(CP) $(DISK) $(DSKDIR)
+	$(OS9COPY) $(DISK) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DISK)

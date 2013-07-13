@@ -47,9 +47,9 @@ dsk:	all
 	$(MAKDIR) $(DISK68),SYS/UUCP
 	$(CD) sample_config; $(CPL) $(CONFIG) ../$(DISK68),SYS/UUCP
 	$(CPL) profile $(DISK68),SYS
-	$(CD) cmds_6809; $(CP) $(CMDS68TCAP) ../$(DISK68),UUCP/CMDS_TCAP
+	$(CD) cmds_6809; $(OS9COPY) $(CMDS68TCAP) ../$(DISK68),UUCP/CMDS_TCAP
 	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS68TCAP)),$(DISK68),UUCP/CMDS_TCAP/$(file))
-	$(CD) cmds_6809; $(CP) $(CMDS68WIN) ../$(DISK68),UUCP/CMDS_WIN
+	$(CD) cmds_6809; $(OS9COPY) $(CMDS68WIN) ../$(DISK68),UUCP/CMDS_WIN
 	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS68WIN)),$(DISK68),UUCP/CMDS_WIN/$(file))
 	$(CD) doc; $(CPL) $(DOCS) ../$(DISK68),UUCP/DOC
 	$(CPL) copying readme.first $(DISK68),UUCP
@@ -72,15 +72,15 @@ dsk:	all
 	$(MAKDIR) $(DISK63),SYS/UUCP
 	$(CD) sample_config; $(CPL) $(CONFIG) ../$(DISK63),SYS/UUCP
 	$(CPL) profile $(DISK63),SYS
-	$(CD) cmds_6309; $(CP) $(CMDS63TCAP) ../$(DISK63),UUCP/CMDS_TCAP
+	$(CD) cmds_6309; $(OS9COPY) $(CMDS63TCAP) ../$(DISK63),UUCP/CMDS_TCAP
 	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS63TCAP)),$(DISK63),UUCP/CMDS_TCAP/$(file))
-	$(CD) cmds_6309; $(CP) $(CMDS63WIN) ../$(DISK63),UUCP/CMDS_WIN
+	$(CD) cmds_6309; $(OS9COPY) $(CMDS63WIN) ../$(DISK63),UUCP/CMDS_WIN
 	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS63WIN)),$(DISK63),UUCP/CMDS_WIN/$(file))
 	$(CD) doc; $(CPL) $(DOCS) ../$(DISK63),UUCP/DOC
 	$(CPL) copying readme.first $(DISK63),UUCP
 
 dskcopy: dsk
-	$(CP) $(DSKS) $(DSKDIR)
+	$(OS9COPY) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS)

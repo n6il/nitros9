@@ -62,13 +62,13 @@ $(DSK_FLOPPY):
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS $@,SUB
-	$(CP) $(CMDS) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
-	$(CP) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
+	$(OS9COPY) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(OS9RENAME) $@,CMDS/presub AutoEx
-	$(CP) $(SUPPORTFILES) $@,SUB
-	$(CP) sub6 $@,SUB
+	$(OS9COPY) $(SUPPORTFILES) $@,SUB
+	$(OS9COPY) sub6 $@,SUB
 	$(OS9ATTR_EXEC) $@,SUB/sub6
 	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,SUB/$(file))
 
@@ -81,13 +81,13 @@ $(DSK_DW):
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS $@,SUB
-	$(CP) $(CMDS) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
-	$(CP) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
+	$(OS9COPY) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(OS9RENAME) $@,CMDS/presub AutoEx
-	$(CP) $(SUPPORTFILES) $@,SUB
-	$(CP) sub6 $@,SUB
+	$(OS9COPY) $(SUPPORTFILES) $@,SUB
+	$(OS9COPY) sub6 $@,SUB
 	$(OS9ATTR_EXEC) $@,SUB/sub6
 	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,SUB/$(file))
 
@@ -100,18 +100,18 @@ $(DSK_DW_BECKER):
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS $@,SUB
-	$(CP) $(CMDS) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
-	$(CP) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
+	$(OS9COPY) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(OS9RENAME) $@,CMDS/presub AutoEx
-	$(CP) $(SUPPORTFILES) $@,SUB
-	$(CP) sub6 $@,SUB
+	$(OS9COPY) $(SUPPORTFILES) $@,SUB
+	$(OS9COPY) sub6 $@,SUB
 	$(OS9ATTR_EXEC) $@,SUB/sub6
 	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,SUB/$(file))
 
 dskcopy:	dsk
-	$(CP) $(DSKS) $(DSKDIR)
+	$(OS9COPY) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS)

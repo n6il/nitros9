@@ -24,15 +24,15 @@ $(DSKWINFO): $(CMDS)
 	$(RM) $@
 	$(OS9FORMAT) $@
 	$(MAKDIR) $@,CMDS
-	$(CP) $(CMDS) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
-	$(CP) $(SUBS) $@,CMDS
+	$(OS9COPY) $(SUBS) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(SUBS),$@,CMDS/$(file))
 
 dsk: all $(DSKS)
 
 dskcopy: dsk
-	$(CP) $(DSKS) $(DSKDIR)
+	$(OS9COPY) $(DSKS) $(DSKDIR)
 
 clean:
 	$(RM) $(ALLOBJS) $(DSKS)

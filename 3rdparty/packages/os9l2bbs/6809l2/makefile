@@ -30,12 +30,12 @@ all: $(CMDS)
 $(DSK): $(CMDS)
 	$(OS9FORMAT) -q $(DSK)
 	$(MAKDIR) $(DSK),CMDS
-	$(CP) $(CMDS) $(DSK),CMDS
+	$(OS9COPY) $(CMDS) $(DSK),CMDS
 	$(MAKDIR) $(DSK),BBS
-	$(CP) $(BBSFILES) $(DSK),BBS
+	$(OS9COPY) $(BBSFILES) $(DSK),BBS
 
 dskcopy: $(DSK)
-	$(CP) $(DSK) $(DSKDIR)
+	$(OS9COPY) $(DSK) $(DSKDIR)
 
 clean: dskclean
 	$(RM) $(CMDS)

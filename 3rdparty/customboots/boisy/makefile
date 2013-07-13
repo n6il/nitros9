@@ -110,11 +110,11 @@ $(DSK):
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
-	$(CP) $(CMDS) $(CMDS_DW) $(CMDS_THESIS) $@,CMDS
+	$(OS9COPY) $(CMDS) $(CMDS_DW) $(CMDS_THESIS) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file, $(notdir $(CMDS) $(CMDS_DW) $(CMDS_THESIS)),$@,CMDS/$(file);)
 	$(MAKDIR) $@,SRC
 	$(CPL) $(SRC_THESIS) $@,SRC
-	$(CP) $(3RDPARTY)/utils/supercomm/supercomm $@,CMDS
+	$(OS9COPY) $(3RDPARTY)/utils/supercomm/supercomm $@,CMDS
 	$(OS9ATTR_EXEC) $@,CMDS/supercomm
 	$(CPL) $(SYSTEXT) $@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYSTEXT),$@,SYS/$(file))
@@ -122,7 +122,7 @@ $(DSK):
 	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,$(file))
 
 dskcopy: dsk
-	$(CP) $(DSKS) $(DSKDIR)
+	$(OS9COPY) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS)
