@@ -20,7 +20,7 @@ tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
 
-	IFNDEF	Dnum
+	IFNDEF	DNum
 DNum     set   0
 	ENDC
          IFNE  D35
