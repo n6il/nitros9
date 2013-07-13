@@ -43,7 +43,7 @@ dskclean:
 dsk: all $(PACKAGENAME)
 
 dskcopy: dsk
-	$(OS9COPY) $(DSKS) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 scp: dsk
 	scp $(PACKAGENAME) boisy@cvs.nitros9.org:/home/nitros9/public_html

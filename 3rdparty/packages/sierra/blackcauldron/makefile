@@ -180,7 +180,7 @@ dsk_dw_becker:	all
 dsk:	dsk_40d dsk_80d dsk_dw dsk_dw_becker
 
 dskcopy: dsk
-	$(OS9COPY) $(DSKS) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS)

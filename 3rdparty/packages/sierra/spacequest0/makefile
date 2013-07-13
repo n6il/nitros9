@@ -203,7 +203,7 @@ $(DISK_DW_BECKER):
 dsk:	all $(DSKS)
 
 dskcopy: dsk
-	$(OS9COPY) $(DSKS) $(DSKDIR)
+	$(CP) $(DSKS) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSKS)
