@@ -46,13 +46,13 @@ dsk:	all
 	$(RM) $(DISK)
 	$(OS9FORMAT_SS35) $(DISK) -n"Basic09"
 	$(MAKDIR) $(DISK),CMDS
-	$(CP) $(ALLOBJS) $(DISK),CMDS
+	$(OS9COPY) $(ALLOBJS) $(DISK),CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(ALLOBJS),$(DISK),CMDS/$(file))
 	$(CPL) $(TXTFILES) $(DISK),.
 	$(OS9ATTR_TEXT) $(foreach file,$(TXTFILES),$(DISK),$(file))
 
 dskcopy: dsk
-	$(CP) $(DISK) $(DSKDIR)
+	$(OS9COPY) $(DISK) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DISK)

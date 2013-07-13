@@ -45,17 +45,17 @@ dsk:	all
 	$(OS9GEN) $(DISK) -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $(DISK),CMDS
-	$(CP) $(UTILS) $(DISK),CMDS
+	$(OS9COPY) $(UTILS) $(DISK),CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(UTILS)),$(DISK),CMDS/$(file))
-	$(CP) $(CMDS) $(DISK),CMDS
+	$(OS9COPY) $(CMDS) $(DISK),CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS)),$(DISK),CMDS/$(file))
 	$(CPL) $(HELP) $(DISK),CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(HELP)),$(DISK),CMDS/$(file))
-	$(CP) $(ROOTFILES) $(DISK),.
+	$(OS9COPY) $(ROOTFILES) $(DISK),.
 	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$(DISK),$(file))
 
 dskcopy: dsk
-	$(CP) $(DISK) $(DSKDIR)
+	$(OS9COPY) $(DISK) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DISK)
