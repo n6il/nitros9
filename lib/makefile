@@ -33,7 +33,10 @@ libdragon.a: dragon.o
 libalib.a:
 	$(MAKE) -C alib
 
+info:
+dsk:
 dskcopy:
+dskclean:
 
 clean:
 	$(RM) *.a *.o
