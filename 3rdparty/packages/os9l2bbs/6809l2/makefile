@@ -27,6 +27,8 @@ CMDS	= Ansicode Answer At \
 
 all: $(CMDS)
 
+dsk: $(DSK)
+
 $(DSK): $(CMDS)
 	$(OS9FORMAT) -q $(DSK)
 	$(MAKDIR) $(DSK),CMDS
