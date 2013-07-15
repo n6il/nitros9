@@ -32,5 +32,5 @@ dskclean:
 
 # Info
 info:
-	@$(foreach dir, $(dirs), ($(CD) $(dir); make info; $(ECHO));)
+	@$(foreach dir, $(dirs), $(MAKE) -C $(dir) info; $(ECHO);)
 

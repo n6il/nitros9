@@ -53,7 +53,7 @@ becker:	dsk
 	$(ARCHIVE) nitros9_becker.zip $(beckerdsk)
 
 info:
-	$(foreach dir,$(dirs),$(MAKE) -C $(dir) info &&) :
+	@$(foreach dir,$(dirs), $(MAKE) --no-print-directory -C $(dir) info &&) :
 	
 # This section is to do the nightly build and upload 
 # to sourceforge.net you must set the environment
