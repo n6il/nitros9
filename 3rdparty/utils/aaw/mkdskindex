@@ -55,6 +55,11 @@ foreach $dsk (sort @dsks)
     $format = "DriveWire 3/4";
   }
 
+  if ($dsk =~ m/_cocosdc[\._]/)
+  {
+    $format = "CoCo SDC";
+  }
+
   $size = -s "$dirtoget/$dsk";
 
   $size = int($size / 1024) . "k";
