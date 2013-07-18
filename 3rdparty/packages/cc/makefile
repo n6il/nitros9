@@ -30,7 +30,7 @@ dsk:	all
 	$(OS9COPY) $(CMDS) $(DISK),CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DISK),CMDS/$(file))
 	$(CPL) defs/*.h $(DISK),DEFS
-	$(OS9COPY) lib/*.l LIB/*.r $(DISK),LIB
+	$(OS9COPY) lib/*.l lib/*.r $(DISK),LIB
 	$(CPL) sources/*.c $(DISK),SOURCES
 	$(CPL) sources/*.a $(DISK),SOURCES/SYS
 
