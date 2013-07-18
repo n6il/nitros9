@@ -27,7 +27,7 @@ DRAGONCMDS	= asm attr backup binex build cmp cobbler_dragon copy cputype \
 DRAGON525CMDS	= asm attr backup binex build cmp cobbler copy date del deldir \
 		dir display dmode dsave dump echo exbin format free ident link list \
 		load login makdir mdir merge mfree os9gen printerr procs pwd pxd rename \
-		save setime shell_21 sleep tee tmode tsmon unlink verify xmode acia51 dmode        
+		save setime shell_21 sleep tee tmode tsmon unlink verify xmode acia51
 
 DRAGON525CMDS2	= cputype dcheck debug ded deiniz devs dirsort disasm edit error \
 		grfdrv help iniz irqs megaread mpi os9gen padrom park printerr prompt \
