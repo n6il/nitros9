@@ -45,7 +45,7 @@ SYSTEXT		= $(shell $(CD) sys; make --no-print-directory showtextobjs)
 STARTUP		= startup
 STARTUP_DW	= startup.dw
 SYSGO		= sysgo_dd
-CCBKRN		= ccbkrn
+# CCBKRN		= ccbkrn
 
 PACKAGENAME	= $(DISTROVER).zip
 DSKDW		= $(DISTROVER)_dw.dsk
@@ -118,7 +118,7 @@ $(DSKBECKER):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
+	# $(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(OS9COPY) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(OS9COPY) $(CMDS_DW) ../$@,CMDS
@@ -172,7 +172,7 @@ $(DSKARDUINO):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
+	# $(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(OS9COPY) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(OS9COPY) $(CMDS_DW) ../$@,CMDS
@@ -226,7 +226,7 @@ $(DSKCOCOSDC):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
+	# $(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(OS9COPY) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(OS9COPY) $(CMDS_DW) ../$@,CMDS
@@ -280,7 +280,7 @@ $(DSKDW):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
+	# $(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(OS9COPY) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(OS9COPY) $(CMDS_DW) ../$@,CMDS
@@ -334,7 +334,7 @@ $(DSKDWHEADLESS):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
+	# $(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(OS9COPY) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(OS9COPY) $(CMDS_DW) ../$@,CMDS
@@ -388,7 +388,7 @@ $(DSKBECKERHEADLESS):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
+	# $(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(OS9COPY) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(OS9COPY) $(CMDS_DW) ../$@,CMDS
@@ -442,7 +442,7 @@ $(DSKARDUINOHEADLESS):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
+	# $(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(OS9COPY) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(OS9COPY) $(CMDS_DW) ../$@,CMDS
@@ -496,7 +496,7 @@ $(DSK360K_1):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
+	# $(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(OS9COPY) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(OS9COPY) $(CMDS) ../$@,CMDS
@@ -519,7 +519,7 @@ $(DSK360K_1_50HZ):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
+	# $(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(OS9COPY) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(OS9COPY) $(CMDS) ../$@,CMDS
@@ -582,7 +582,7 @@ $(DSK720K):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
+	# $(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(OS9COPY) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(OS9COPY) $(sort $(CMDS) $(CMDS_D2)) ../$@,CMDS
@@ -636,7 +636,7 @@ $(DSK720K_50HZ):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
+	# $(OS9COPY) modules/$(CCBKRN) $@,$(CCBKRN)
 	$(OS9COPY) modules/$(SYSGO) $@,sysgo
 	$(OS9ATTR_EXEC) $@,sysgo
 	$(CD) cmds; $(OS9COPY) $(sort $(CMDS) $(CMDS_D2)) ../$@,CMDS
