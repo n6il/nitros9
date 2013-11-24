@@ -102,7 +102,7 @@ dsk_40d:	all
 	$(RM) os9boot_40d kernel_1773
 	$(MAKDIR) $(DISK_1_40D),CMDS
 	$(OS9COPY) $(CMDS) $(DISK_1_40D),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_1_40D),CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DISK_1_40D),CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $(DISK_1_40D),CMDS
 	$(RM) shell
@@ -129,7 +129,7 @@ dsk_80d:	all
 	$(RM) os9boot_80d kernel_1773
 	$(MAKDIR) $(DISK_80D),CMDS
 	$(OS9COPY) $(CMDS) $(DISK_80D),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK_80D),CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DISK_80D),CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $(DISK_80D),CMDS
 	$(RM) shell
@@ -152,7 +152,7 @@ dsk_dw:	all
 	$(RM) os9boot_dw kernel_dw
 	$(MAKDIR) $(DSK_DW),CMDS
 	$(OS9COPY) $(CMDS) $(DSK_DW),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DSK_DW),CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DSK_DW),CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $(DSK_DW),CMDS
 	$(RM) shell
@@ -175,7 +175,7 @@ dsk_dw_becker:	all
 	$(RM) os9boot_dw kernel_dw
 	$(MAKDIR) $(DSK_DW_BECKER),CMDS
 	$(OS9COPY) $(CMDS) $(DSK_DW_BECKER),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DSK_DW_BECKER),CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DSK_DW_BECKER),CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $(DSK_DW_BECKER),CMDS
 	$(RM) shell

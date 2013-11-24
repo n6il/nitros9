@@ -136,15 +136,15 @@ $(DSK68_FLOPPY):
 	$(foreach file, $(CMDS68), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
-	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))
 	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSTEXT),$@,SYS/$(file))
 	$(CD) demo; $(CPL) $(DEMO) ../$@,DEMO
-	$(foreach file, $(DEMO), $(OS9ATTR_TEXT) $@,DEMO/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEMO),$@,DEMO/$(file))
 	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$@,$(file))
 
 $(DSK63_FLOPPY):
 	$(RM) $@
@@ -161,15 +161,15 @@ $(DSK63_FLOPPY):
 	$(foreach file, $(CMDS63), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
-	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))
 	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSTEXT),$@,SYS/$(file))
 	$(CD) demo; $(CPL) $(DEMO) ../$@,DEMO
-	$(foreach file, $(DEMO), $(OS9ATTR_TEXT) $@,DEMO/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEMO),$@,DEMO/$(file))
 	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$@,$(file))
 
 $(DSK68_DW):
 	$(RM) $@
@@ -186,15 +186,15 @@ $(DSK68_DW):
 	$(foreach file, $(CMDS68), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
-	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))
 	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSTEXT),$@,SYS/$(file))
 	$(CD) demo; $(CPL) $(DEMO) ../$@,DEMO
-	$(foreach file, $(DEMO), $(OS9ATTR_TEXT) $@,DEMO/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEMO),$@,DEMO/$(file))
 	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$@,$(file))
 
 $(DSK68_DW_BECKER):
 	$(RM) $@
@@ -211,15 +211,15 @@ $(DSK68_DW_BECKER):
 	$(foreach file, $(CMDS68), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
-	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))
 	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSTEXT),$@,SYS/$(file))
 	$(CD) demo; $(CPL) $(DEMO) ../$@,DEMO
-	$(foreach file, $(DEMO), $(OS9ATTR_TEXT) $@,DEMO/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEMO),$@,DEMO/$(file))
 	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$@,$(file))
 
 $(DSK63_DW):
 	$(RM) $@
@@ -236,15 +236,15 @@ $(DSK63_DW):
 	$(foreach file, $(CMDS63), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
-	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))
 	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSTEXT),$@,SYS/$(file))
 	$(CD) demo; $(CPL) $(DEMO) ../$@,DEMO
-	$(foreach file, $(DEMO), $(OS9ATTR_TEXT) $@,DEMO/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEMO),$@,DEMO/$(file))
 	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$@,$(file))
 
 $(DSK63_DW_BECKER):
 	$(RM) $@
@@ -261,15 +261,15 @@ $(DSK63_DW_BECKER):
 	$(foreach file, $(CMDS63), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
-	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))
 	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
-	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSBIN),$@,SYS/$(file))
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
-	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYSTEXT),$@,SYS/$(file))
 	$(CD) demo; $(CPL) $(DEMO) ../$@,DEMO
-	$(foreach file, $(DEMO), $(OS9ATTR_TEXT) $@,DEMO/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEMO),$@,DEMO/$(file))
 	$(CPL) $(ROOTFILES) $@,.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$@,$(file))
 
 dskcopy: dsk
 	$(CP) $(DSKS) $(DSKDIR)

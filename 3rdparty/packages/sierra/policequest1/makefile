@@ -92,7 +92,7 @@ $(DISK_1_40D):
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
 	$(OS9COPY) $(CMDS) $@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
@@ -125,7 +125,7 @@ $(DISK_DW):
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
 	$(OS9COPY) $(CMDS) $@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
@@ -148,7 +148,7 @@ $(DISK_DW_BECKER):
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
 	$(OS9COPY) $(CMDS) $@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $@,CMDS
 	$(RM) shell

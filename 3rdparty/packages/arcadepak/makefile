@@ -99,14 +99,14 @@ $(DISK_40D): all
 	$(OS9COPY) shell $@,CMDS
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(foreach file, $(CMDS), $(OS9COPY) $(6809L2)/cmds/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(foreach file, $(SMASHCMDS), $(OS9COPY) smash/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(SMASHCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SMASHCMDS),$@,CMDS/$(file))
 	$(foreach file, $(THEXCMDS), $(OS9COPY) thexder/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(THEXCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(THEXCMDS),$@,CMDS/$(file))
 	$(foreach file, $(SHANGCMDS), $(OS9COPY) shanghai/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(SHANGCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SHANGCMDS),$@,CMDS/$(file))
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MAKDIR) $@,SYS
 	$(foreach file, $(SMASHSYS), $(OS9COPY) smash/$(file) $@,SYS/$(file);)
 	$(foreach file, $(THEXSYS), $(OS9COPY) thexder/$(file) $@,SYS/$(file);)
@@ -128,14 +128,14 @@ $(DISK_80D): all
 	$(OS9COPY) shell $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(foreach file, $(CMDS), $(OS9COPY) $(6809L2)/cmds/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(foreach file, $(SMASHCMDS), $(OS9COPY) smash/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(SMASHCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SMASHCMDS),$@,CMDS/$(file))
 	$(foreach file, $(THEXCMDS), $(OS9COPY) thexder/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(THEXCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(THEXCMDS),$@,CMDS/$(file))
 	$(foreach file, $(SHANGCMDS), $(OS9COPY) shanghai/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(SHANGCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SHANGCMDS),$@,CMDS/$(file))
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MAKDIR) $@,SYS
 	$(foreach file, $(SMASHSYS), $(OS9COPY) smash/$(file) $@,SYS/$(file);)
 	$(foreach file, $(THEXSYS), $(OS9COPY) thexder/$(file) $@,SYS/$(file);)
@@ -157,14 +157,14 @@ $(DISK_DW): all
 	$(OS9COPY) shell $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(foreach file, $(CMDS), $(OS9COPY) $(6809L2)/cmds/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(foreach file, $(SMASHCMDS), $(OS9COPY) smash/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(SMASHCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SMASHCMDS),$@,CMDS/$(file))
 	$(foreach file, $(THEXCMDS), $(OS9COPY) thexder/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(THEXCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(THEXCMDS),$@,CMDS/$(file))
 	$(foreach file, $(SHANGCMDS), $(OS9COPY) shanghai/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(SHANGCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SHANGCMDS),$@,CMDS/$(file))
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MAKDIR) $@,SYS
 	$(foreach file, $(SMASHSYS), $(OS9COPY) smash/$(file) $@,SYS/$(file);)
 	$(foreach file, $(THEXSYS), $(OS9COPY) thexder/$(file) $@,SYS/$(file);)
@@ -186,14 +186,14 @@ $(DISK_BECKER): all
 	$(OS9COPY) shell $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(foreach file, $(CMDS), $(OS9COPY) $(6809L2)/cmds/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(foreach file, $(SMASHCMDS), $(OS9COPY) smash/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(SMASHCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SMASHCMDS),$@,CMDS/$(file))
 	$(foreach file, $(THEXCMDS), $(OS9COPY) thexder/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(THEXCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(THEXCMDS),$@,CMDS/$(file))
 	$(foreach file, $(SHANGCMDS), $(OS9COPY) shanghai/$(file) $@,CMDS/$(file);)
-	$(foreach file, $(SHANGCMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(SHANGCMDS),$@,CMDS/$(file))
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MAKDIR) $@,SYS
 	$(foreach file, $(SMASHSYS), $(OS9COPY) smash/$(file) $@,SYS/$(file);)
 	$(foreach file, $(THEXSYS), $(OS9COPY) thexder/$(file) $@,SYS/$(file);)
