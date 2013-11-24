@@ -294,7 +294,7 @@ Pad            FILL      $39,$1D0-3-1-2-1-*
                IFEQ      MPI-1
 CntlSlot       FCB       SDMPI
                ELSE
-CntrSlot       FCB       #$FF
+CntrSlot       FCB       $FF
                ENDC
 Address        FDB       SDAddr
 * So now, this can be a base zero decimal value!
