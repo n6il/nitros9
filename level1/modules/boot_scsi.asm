@@ -44,7 +44,7 @@
 *   5      2012/11/05-06  Gene Heskett
 * SDMPI from defs/scsi.d is being ignored, so boot failed is the message.
 * Ded the object to fix that AND the NULL bus address and this code broken.
-* WhichDrv is now a zero based decimal value passed in by the makefile via IT.DNS
+* WhichDrv is now a zero based decimal value passed in by the makefile via ITDNS
 * Thanks Boisy...
                NAM       Boot                
                TTL       SCSI Boot Module    
@@ -297,7 +297,7 @@ CntrSlot	FCB	$FF
 		ENDC
 Address        FDB       SDAddr
 * So now, this can be a base zero decimal value!
-WhichDrv	FCB	IT.DNS
+WhichDrv	FCB	ITDNS
                EMOD      
 eom            EQU       *
                END       
