@@ -59,9 +59,9 @@ BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 		$(LEVEL2)/coco3/cmds/echo $(LEVEL2)/coco3/cmds/link \
 		$(LEVEL2)/coco3/cmds/setime
 
-TEXTFILES_D1	= startup tOC_80d.txt
-TEXTFILES	= startup tOC_80d.txt
-TEXTFILES_DW	= startup tOC_dw.txt
+TEXTFILES_D1	= ../startup tOC_80d.txt
+TEXTFILES	= ../startup tOC_80d.txt
+TEXTFILES_DW	= ../startup tOC_dw.txt
 
 SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 		vol.1 vol.6 vol.9 vol.11 words.tok
