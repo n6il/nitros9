@@ -119,7 +119,7 @@ boot_dw_becker: boot_dw.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBECKER=1
 
 # DriveWire 3 Becker Submodule
-dwio_becker.sb: dw.asm
+dwio_becker.sb: dwio.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBECKER=1
 
 # CoGrf/CoVDG Modules
