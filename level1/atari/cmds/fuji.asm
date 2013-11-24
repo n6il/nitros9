@@ -62,17 +62,17 @@ name     fcs   /Merge/
 * - 2 mode lines of ANTIC mode $2 (text)
 DList       fcb     AEMPTY8,AEMPTY8,AEMPTY8
             fcb     ALMS+AMODE2
-DListT1     fcs    /FujiTxt1/
+DListT1     fdbs    FujiTxt1
             fcb     AMODE2
             fcb     ALMS+ADLI+AMODED
-DListM      fcs    /FujiMem/
+DListM      fdbs    FujiMem
             fill    ADLI+AMODED,$4e
             fcb     AMODED
             fcb     ALMS+AMODE2
-DListT2     fcs     /FujiTxt2/
+DListT2     fdbs    FujiTxt2
             fcb     AMODE2
             fcb     AVB+AJMP
-DListPtr    fcs    /DList/
+DListPtr    fdbs    DList
 
 ****************************************
 * Main entry point
