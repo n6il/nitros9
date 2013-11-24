@@ -111,11 +111,11 @@ $(DSK):
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
-	$(CP) $(CMDS) $(CMDS_DW) $(CMDS_THESIS) $@,CMDS
+	$(OS9COPY) $(CMDS) $(CMDS_DW) $(CMDS_THESIS) $@,CMDS
 	$(foreach file, $(CMDS) $(CMDS_DW) $(CMDS_THESIS), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(MAKDIR) $@,SRC
 	$(CPL) $(SRC_THESIS) $@,SRC
-	$(CP) $(3RDPARTY)/utils/supercomm/supercomm $@,CMDS
+	$(OS9COPY) $(3RDPARTY)/utils/supercomm/supercomm $@,CMDS
 	$(OS9ATTR_EXEC) $@,CMDS/supercomm
 	$(CPL) $(SYSTEXT) $@,SYS
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)

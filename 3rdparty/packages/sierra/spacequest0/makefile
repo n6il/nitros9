@@ -105,10 +105,10 @@ $(DISK_1_40D):
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
-	$(CP) $(CMDS) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
-	$(CP) shell $@,CMDS
+	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
 	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
@@ -117,17 +117,17 @@ $(DISK_1_40D):
 	$(MOVE) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
-	$(CP) $(SUPPORTFILES_D1) $@,.
+	$(OS9COPY) $(SUPPORTFILES_D1) $@,.
 
 $(DISK_2_40D):
 	$(RM) $@
 	$(OS9FORMAT_DS40) -q $@ -n$(DISK_2_40D_NAME)
-	$(CP) $(SUPPORTFILES_D2) $@,.
+	$(OS9COPY) $(SUPPORTFILES_D2) $@,.
 
 $(DISK_3_40D):
 	$(RM) $@
 	$(OS9FORMAT_DS40) -q $@ -n$(DISK_3_40D_NAME)
-	$(CP) $(SUPPORTFILES_D3) $@,.
+	$(OS9COPY) $(SUPPORTFILES_D3) $@,.
 
 $(DISK_1_80D):
 	$(RM) $@
@@ -138,10 +138,10 @@ $(DISK_1_80D):
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
-	$(CP) $(CMDS) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
-	$(CP) shell $@,CMDS
+	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
 	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
@@ -150,12 +150,12 @@ $(DISK_1_80D):
 	$(MOVE) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
-	$(CP) $(SUPPORTFILES) $@,.
+	$(OS9COPY) $(SUPPORTFILES) $@,.
 
 $(DISK_2_80D):
 	$(RM) $@
 	$(OS9FORMAT_DS80) -q $@ -n$(DISK_2_80D_NAME)
-	$(CP) $(SUPPORTFILES_D3) $@,.
+	$(OS9COPY) $(SUPPORTFILES_D3) $@,.
 
 $(DISK_DW):
 	$(RM) $@
@@ -166,10 +166,10 @@ $(DISK_DW):
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
-	$(CP) $(CMDS) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
-	$(CP) shell $@,CMDS
+	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
 	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
@@ -178,7 +178,7 @@ $(DISK_DW):
 	$(MOVE) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
-	$(CP) $(SUPPORTFILES) $@,.
+	$(OS9COPY) $(SUPPORTFILES) $@,.
 
 $(DISK_DW_BECKER):
 	$(RM) $@
@@ -189,10 +189,10 @@ $(DISK_DW_BECKER):
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
-	$(CP) $(CMDS) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(MERGE) $(BOOTCMDS)>shell
-	$(CP) shell $@,CMDS
+	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
 	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
@@ -201,7 +201,7 @@ $(DISK_DW_BECKER):
 	$(MOVE) tocgen toctmp
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
-	$(CP) $(SUPPORTFILES) $@,.
+	$(OS9COPY) $(SUPPORTFILES) $@,.
 
 dsk:	all $(DSKS)
 

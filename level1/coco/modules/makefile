@@ -75,7 +75,7 @@ all:	$(ALLOBJS)
 # Kernel
 krn krnp2:
 	$(CD) kernel; make $@
-	$(CP) kernel/$@ .
+	$(OS9COPY) kernel/$@ .
 
 # Special cases
 # TC^3 SCSI Booter

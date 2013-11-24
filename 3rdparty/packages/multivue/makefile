@@ -132,12 +132,12 @@ $(DSK68_FLOPPY):
 	$(MAKDIR) $@,CMDS/ICONS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
-	$(CD) cmds_6809; $(CP) $(CMDS68) ../$@,CMDS
+	$(CD) cmds_6809; $(OS9COPY) $(CMDS68) ../$@,CMDS
 	$(foreach file, $(CMDS68), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
-	$(CD) icons; $(CP) $(ICONS) ../$@,CMDS/ICONS
+	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
-	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
+	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
@@ -157,12 +157,12 @@ $(DSK63_FLOPPY):
 	$(MAKDIR) $@,CMDS/ICONS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
-	$(CD) cmds_6309; $(CP) $(CMDS63) ../$@,CMDS
+	$(CD) cmds_6309; $(OS9COPY) $(CMDS63) ../$@,CMDS
 	$(foreach file, $(CMDS63), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
-	$(CD) icons; $(CP) $(ICONS) ../$@,CMDS/ICONS
+	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
-	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
+	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
@@ -182,12 +182,12 @@ $(DSK68_DW):
 	$(MAKDIR) $@,CMDS/ICONS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
-	$(CD) cmds_6809; $(CP) $(CMDS68) ../$@,CMDS
+	$(CD) cmds_6809; $(OS9COPY) $(CMDS68) ../$@,CMDS
 	$(foreach file, $(CMDS68), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
-	$(CD) icons; $(CP) $(ICONS) ../$@,CMDS/ICONS
+	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
-	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
+	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
@@ -207,12 +207,12 @@ $(DSK68_DW_BECKER):
 	$(MAKDIR) $@,CMDS/ICONS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
-	$(CD) cmds_6809; $(CP) $(CMDS68) ../$@,CMDS
+	$(CD) cmds_6809; $(OS9COPY) $(CMDS68) ../$@,CMDS
 	$(foreach file, $(CMDS68), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
-	$(CD) icons; $(CP) $(ICONS) ../$@,CMDS/ICONS
+	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
-	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
+	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
@@ -232,12 +232,12 @@ $(DSK63_DW):
 	$(MAKDIR) $@,CMDS/ICONS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
-	$(CD) cmds_6309; $(CP) $(CMDS63) ../$@,CMDS
+	$(CD) cmds_6309; $(OS9COPY) $(CMDS63) ../$@,CMDS
 	$(foreach file, $(CMDS63), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
-	$(CD) icons; $(CP) $(ICONS) ../$@,CMDS/ICONS
+	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
-	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
+	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)
@@ -257,12 +257,12 @@ $(DSK63_DW_BECKER):
 	$(MAKDIR) $@,CMDS/ICONS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
-	$(CD) cmds_6309; $(CP) $(CMDS63) ../$@,CMDS
+	$(CD) cmds_6309; $(OS9COPY) $(CMDS63) ../$@,CMDS
 	$(foreach file, $(CMDS63), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
-	$(CD) icons; $(CP) $(ICONS) ../$@,CMDS/ICONS
+	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(foreach file, $(ICONS), $(OS9ATTR_EXEC) $@,CMDS/ICONS/$(file);)
-	$(CD) sys; $(CP) $(SYSBIN) ../$@,SYS
+	$(CD) sys; $(OS9COPY) $(SYSBIN) ../$@,SYS
 	$(foreach file, $(SYSBIN), $(OS9ATTR_TEXT) $@,SYS/$(file);)
 	$(CD) sys; $(CPL) $(SYSTEXT) ../$@,SYS
 	$(foreach file, $(SYSTEXT), $(OS9ATTR_TEXT) $@,SYS/$(file);)

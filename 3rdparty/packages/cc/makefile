@@ -30,10 +30,10 @@ dsk:	all
 	$(MAKDIR) $(DISK),DEFS
 	$(MAKDIR) $(DISK),SOURCES
 	$(MAKDIR) $(DISK),SOURCES/SYS
-	$(CP) $(CMDS) $(DISK),CMDS
+	$(OS9COPY) $(CMDS) $(DISK),CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
 	$(CPL) defs/*.h $(DISK),DEFS
-	$(CP) lib/*.l lib/*.r $(DISK),LIB
+	$(OS9COPY) lib/*.l lib/*.r $(DISK),LIB
 	$(CPL) sources/*.c $(DISK),SOURCES
 	$(CPL) sources/*.a $(DISK),SOURCES/SYS
 
