@@ -89,7 +89,7 @@ BOOTFILE63_DW	= $(MD63)/krnp2 $(MD63)/ioman $(MD63)/init \
 
 BOOTFILE63_DW_BECKER	= $(MD63)/krnp2 $(MD63)/ioman $(MD63)/init \
 		$(MD63)/rbf.mn \
-		$(MD63)/rbdw.dr $(MD63)/dwio.sb $(MD63)/ddx0.dd \
+		$(MD63)/rbdw.dr $(MD63)/dwio_becker.sb $(MD63)/ddx0.dd \
 		$(MD68)/rb1773.dr $(MD68)/d0_40d.dd $(MD68)/d1_40d.dd \
 		$(MD63)/scf.mn $(MD63)/vtio.dr \
 		$(MD63)/keydrv_cc3.sb $(MD63)/joydrv_joy.sb $(MD63)/snddrv_cc3.sb \
