@@ -201,7 +201,7 @@ InstIRQ  ldd   M$Mem,pcr  get base hardware address
 	 lda	DataReg,x	dump it to the bitbucket
 	 lda	StatReg,x	likewise, clear any irq's pending
 * Now, enable the IRQ's
-	 ldd	#(TIC.RTS!Cmd.DTR!)*256+(DB.7!Ctl.RClk!BR.01200) enable rx IRQs
+	 ldd	#(TIC.RTS!Cmd.DTR)*256+(DB.7!Ctl.RClk!BR.01200) enable rx IRQs
 	 std	CmdReg,x and enable Rx IRQ's
 	 puls	cc	Fix the stack!
 	 rts	so stack = 0 now
