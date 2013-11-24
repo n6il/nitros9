@@ -20,7 +20,7 @@ CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		format free grfdrv help ident iniz irqs link list load login \
 		makdir mdir megaread merge mfree minted mmap modpatch montype mpi os9gen padrom park \
 		pmap proc procs prompt pwd pxd reboot rename save setime \
-		shell_21 sleep smap tee tmode touch tsmon tuneport unlink verify wcreate xmode 
+		shell_21 sleep smap tee tmode touch tsmon tuneport unlink verify wcreate xmode
 
 CMDS_D2         = basic09 runb gfx2 gfx inkey syscall copy del echo format \
                 merge os9gen prompt tmode
