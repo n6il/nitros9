@@ -9,7 +9,7 @@ DEPENDS		= ./makefile
 CMD		= $(6809L2)/cmds
 DISK_40D	= arcadepack_40d.dsk
 DISK_80D	= arcadepack_80d.dsk
-DISK_DW3	= arcadepack_dw3.dsk
+DISK_DW	= arcadepack_dw.dsk
 DISK_BECKER	= arcadepack_becker.dsk
 CMDS		= grfdrv runb
 SHELLMODS	= $(CMD)/shell_21 $(CMD)/dir $(CMD)/echo $(CMD)/link $(CMD)/load $(CMD)/mdir
@@ -27,8 +27,8 @@ MD		= $(6809L2)/modules
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_40 $(MD)/boot_1773_6ms $(MD)/krn
-KERNEL_DW3	= $(MD)/rel_40 $(MD)/boot_dw3 $(MD)/krn
-KERNEL_BECKER	= $(MD)/rel_40 $(MD)/boot_dw3_becker $(MD)/krn
+KERNEL_DW	= $(MD)/rel_40 $(MD)/boot_dw $(MD)/krn
+KERNEL_BECKER	= $(MD)/rel_40 $(MD)/boot_dw_becker $(MD)/krn
 
 OS9BOOT_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -50,9 +50,9 @@ OS9BOOT_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/w6.dw $(MD)/w7.dw \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-OS9BOOT_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+OS9BOOT_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb $(MD)/ddx0.dd \
+		$(MD)/rbdw.dr $(MD)/dwio.sb $(MD)/ddx0.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cogrf.io $(MD)/term_win40.dt $(MD)/w.dw $(MD)/w1.dw \
@@ -62,7 +62,7 @@ OS9BOOT_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 
 OS9BOOT_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3_becker.sb $(MD)/ddx0.dd \
+		$(MD)/rbdw.dr $(MD)/dwio_becker.sb $(MD)/ddx0.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cogrf.io $(MD)/term_win40.dt $(MD)/w.dw $(MD)/w1.dw \
@@ -72,7 +72,7 @@ OS9BOOT_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 
 ALLOBJS		= $(CMDS)
 
-DSKS		= $(DISK_40D) $(DISK_80D) $(DISK_DW3) $(DISK_BECKER)
+DSKS		= $(DISK_40D) $(DISK_80D) $(DISK_DW) $(DISK_BECKER)
 
 all: shell
 	$(CD) smash; make
@@ -145,12 +145,12 @@ $(DISK_80D): all
 	$(foreach file, $(SHANGROOT), $(CP) shanghai/$(file) $@,$(file);)
 	$(CPL) startup $@,
 
-$(DISK_DW3): all
+$(DISK_DW): all
 	$(RM) $@
 	$(CD) $(6809L2); make
-	$(OS9FORMAT_DW3) $@ -n"NitrOS-9 Arcade Pack"
-	$(MERGE) $(OS9BOOT_DW3)>os9boot
-	$(MERGE) $(KERNEL_DW3)>kernel
+	$(OS9FORMAT_DW) $@ -n"NitrOS-9 Arcade Pack"
+	$(MERGE) $(OS9BOOT_DW)>os9boot
+	$(MERGE) $(KERNEL_DW)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
@@ -177,7 +177,7 @@ $(DISK_DW3): all
 $(DISK_BECKER): all
 	$(RM) $@
 	$(CD) $(6809L2); make
-	$(OS9FORMAT_DW3) $@ -n"NitrOS-9 Arcade Pack"
+	$(OS9FORMAT_DW) $@ -n"NitrOS-9 Arcade Pack"
 	$(MERGE) $(OS9BOOT_BECKER)>os9boot
 	$(MERGE) $(KERNEL_BECKER)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel

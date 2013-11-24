@@ -12,14 +12,14 @@ DEPENDS		= ./makefile
 
 KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_1773_50HZ	= $(MD)/rel_80_50hz $(MD)/boot_1773_6ms $(MD)/krn
-KERNEL_DW3	= $(MD)/rel_80 $(MD)/boot_dw3 $(MD)/krn
-KERNEL_BECKER	= $(MD)/rel_80 $(MD)/boot_dw3_becker $(MD)/krn
+KERNEL_DW	= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
+KERNEL_BECKER	= $(MD)/rel_80 $(MD)/boot_dw_becker $(MD)/krn
 
 # NitrOS-9 disk bootfile to allow booting from DriveWire server
 # on a DE1 or Xilinx using Gary Becker's CoCo 3 FGPA
 BOOTFILE_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3_becker.sb \
+		$(MD)/rbdw.dr $(MD)/dwio_becker.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
@@ -37,12 +37,12 @@ BOOTFILE_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/n12_scdwn.dd $(MD)/n13_scdwn.dd $(MD)/midi_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3_becker
+		$(MD)/clock_60hz $(MD)/clock2_dw_becker
 
 # NitrOS-9 disk bootfile to allow booting from DriveWire 3 server
-BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb \
+		$(MD)/rbdw.dr $(MD)/dwio.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
@@ -62,13 +62,13 @@ BOOTFILE_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/z7_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3
+		$(MD)/clock_60hz $(MD)/clock2_dw
 
 # NitrOS-9 disk bootfile to allow booting from DriveWire 3 server
 # Headless mode
-BOOTFILE_DW3_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+BOOTFILE_DW_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb \
+		$(MD)/rbdw.dr $(MD)/dwio.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
@@ -85,7 +85,7 @@ BOOTFILE_DW3_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/z4_scdwn.dd $(MD)/z5_scdwn.dd $(MD)/z6_scdwn.dd \
 		$(MD)/z7_scdwn.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3
+		$(MD)/clock_60hz $(MD)/clock2_dw
 
 # NitrOS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
@@ -140,8 +140,8 @@ BOOTFILE_80D_50HZ	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_50hz $(MD)/clock2_soft
 
-BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d bootfile_80d_50hz bootfile_dw3 bootfile_dw3_headless bootfile_becker
-KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw3 kernel_becker
+BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d bootfile_80d_50hz bootfile_dw bootfile_dw_headless bootfile_becker
+KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw kernel_becker
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -163,11 +163,11 @@ bootfile_80d: $(BOOTFILE_80D) $(DEPENDS)
 bootfile_80d_50hz: $(BOOTFILE_80D_50HZ) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_80D_50HZ)>$@
 
-bootfile_dw3: $(BOOTFILE_DW3) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_DW3)>$@
+bootfile_dw: $(BOOTFILE_DW) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_DW)>$@
 
-bootfile_dw3_headless: $(BOOTFILE_DW3_HEADLESS) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_DW3_HEADLESS)>$@
+bootfile_dw_headless: $(BOOTFILE_DW_HEADLESS) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_DW_HEADLESS)>$@
 
 # Kernels
 kernel_becker: $(KERNEL_BECKER) $(DEPENDS)
@@ -179,8 +179,8 @@ kernel_1773: $(KERNEL_1773) $(DEPENDS)
 kernel_1773_50hz: $(KERNEL_1773_50HZ) $(DEPENDS)
 	$(MERGE) $(KERNEL_1773_50HZ)>$@
 
-kernel_dw3: $(KERNEL_DW3) $(DEPENDS)
-	$(MERGE) $(KERNEL_DW3)>$@
+kernel_dw: $(KERNEL_DW) $(DEPENDS)
+	$(MERGE) $(KERNEL_DW)>$@
 
 clean:
 	$(RM) $(ALLOBJS)

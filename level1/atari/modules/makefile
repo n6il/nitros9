@@ -16,9 +16,9 @@ TPB		= $(3RDPARTY)/booters
 BOOTERS		= 
 KERNEL		= krn krnp2
 SYSMODS		= ioman init sysgo sysgo_rom
-CLOCKS      = clock_60hz clock_50hz clock2_soft clock2_dw3
+CLOCKS      = clock_60hz clock_50hz clock2_soft clock2_dw
 
-RBF		= rbf.mn rbdw3.dr dw3.sb ddx0.dd x0.dd x1.dd x2.dd x3.dd
+RBF		= rbf.mn rbdw.dr dwio.sb ddx0.dd x0.dd x1.dd x2.dd x3.dd
 
 SCF		= scf.mn \
 		vrn.dr vtio.dr \

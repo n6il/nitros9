@@ -42,11 +42,11 @@ dskclean:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
 
 # DriveWire 3 DSK images
-dw3dsk = $(LEVEL1)/coco/nos96809l1coco1_dw3.dsk $(LEVEL1)/coco/nos96809l1coco2_dw3.dsk \
-	$(LEVEL2)/coco3/nos96809l2_dw3.dsk $(LEVEL2)/coco3_6309/nos96309l2_dw3.dsk
+dwdsk = $(LEVEL1)/coco/nos96809l1coco1_dw.dsk $(LEVEL1)/coco/nos96809l1coco2_dw.dsk \
+	$(LEVEL2)/coco3/nos96809l2_dw.dsk $(LEVEL2)/coco3_6309/nos96309l2_dw.dsk
 
-dw3:	dsk
-	$(ARCHIVE) nitros9_drivewire3.zip $(dw3dsk)
+dw:	dsk
+	$(ARCHIVE) nitros9_drivewire3.zip $(dwdsk)
 
 # DriveWire 3 Becker DSK Images
 beckerdsk	= $(LEVEL1)/coco/nos96809l1coco_becker.dsk \
