@@ -1,7 +1,4 @@
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
-include $(NITROS9DIR)/rules.mak
+include ../../../rules.mak
 
 DEPENDS		= ./makefile
 DRVRS		= bb1fhdisk.dr bb1hd.dr bb1hdisk.dr bb1th.dr bb1thdisk.dr \

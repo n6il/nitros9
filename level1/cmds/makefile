@@ -1,8 +1,5 @@
 PORT = 
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
-include $(NITROS9DIR)/rules.mak
+include ../../rules.mak
 
 vpath %.asm $(3RDPARTY)/packages/basic09
 

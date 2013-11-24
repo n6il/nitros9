@@ -1,7 +1,4 @@
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
-include $(NITROS9DIR)/rules.mak
+include ../../rules.mak
 
 DEPENDS		= ./makefile
 BOOTERS_L2	= boot_vhd boot_mmc_l2
