@@ -26,7 +26,6 @@ loop@     tst       $FF53              ; check status register
           tst       $FF52              ; clear CB1 in status register
           leay      -1,y                ; decrement byte counter
           bne       txByte              ; loop if more to send
-
           puls      a,pc                ; restore registers and return
 
           ELSE

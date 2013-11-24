@@ -31,7 +31,6 @@ loop@     tst    $FF51                  ; check for CA1 bit (1=Arduino has byte 
           abx                           ; update checksum
           leay   ,-y
           bne    loop@
-
           leay      ,x                  ; return checksum in Y
           puls      cc,x,u,pc        ; restore registers and return
 
