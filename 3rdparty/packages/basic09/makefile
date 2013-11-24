@@ -49,7 +49,7 @@ dsk:	all
 	$(RM) $(DISK)
 	$(OS9FORMAT_SS35) $(DISK) -n"Basic09"
 	$(MAKDIR) $(DISK),CMDS
-	$(CP) $(ALLOBJS) $(DISK),CMDS
+	$(OS9COPY) $(ALLOBJS) $(DISK),CMDS
 	$(foreach file, $(ALLOBJS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
 	$(CPL) $(TXTFILES) $(DISK),.
 	$(foreach file, $(TXTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)

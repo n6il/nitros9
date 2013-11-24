@@ -64,7 +64,8 @@ MERGE		= cat
 MOVE		= mv
 ECHO		= /bin/echo
 CD		= cd
-CP		= os9 copy -o=0
+CP		= cp
+OS9COPY		= os9 copy -o=0
 CPL		= $(CP) -l
 TAR		= tar
 CHMOD		= chmod

@@ -64,7 +64,7 @@ $(DSK):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
-	$(CD) cmds; $(CP) $(CMDS) ../$@,CMDS
+	$(CD) cmds; $(OS9COPY) $(CMDS) ../$@,CMDS
 	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
@@ -78,7 +78,7 @@ $(DSK_DEMO):
 	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9 Atari Demo Disk"
 	$(MAKDIR) $@,CMDS
-	$(CD) cmds; $(CP) $(CMDS_DEMO) ../$@,CMDS
+	$(CD) cmds; $(OS9COPY) $(CMDS_DEMO) ../$@,CMDS
 	$(foreach file, $(CMDS_DEMO), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
 
 info:

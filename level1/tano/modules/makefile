@@ -58,7 +58,7 @@ all:	$(ALLOBJS)
 # Kernel
 krn krnp2:
 	$(CD) kernel; make $@
-	$(CP) kernel/$@ .
+	$(OS9COPY) kernel/$@ .
 
 boot_1773_6ms:	boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0 -aSTEP=0
