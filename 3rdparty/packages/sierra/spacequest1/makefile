@@ -10,23 +10,23 @@ DEPENDS		= ./makefile
 DISK_1_40D	= spacequest1_d1_40d.dsk
 DISK_2_40D	= spacequest1_d2_40d.dsk
 DISK_80D	= spacequest1_80d.dsk
-DISK_DW3	= spacequest1_dw3.dsk
-DISK_DW3_BECKER	= spacequest1_becker.dsk
+DISK_DW	= spacequest1_dw.dsk
+DISK_DW_BECKER	= spacequest1_becker.dsk
 
-DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D) $(DISK_DW3) $(DISK_DW3_BECKER)
+DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D) $(DISK_DW) $(DISK_DW_BECKER)
 
 DISK_1_40D_NAME	= "Space Quest I Disk 1"
 DISK_2_40D_NAME	= "Space Quest I Disk 2"
 DISK_80D_NAME	= "Space Quest I"
-DISK_DW3_NAME	= "Space Quest I"
+DISK_DW_NAME	= "Space Quest I"
 
 CMDS		= sierra mnln scrn shdw tocgen
 MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
-KERNEL_DW3	= $(MD)/rel_32 $(MD)/boot_dw3 $(MD)/krn
-KERNEL_DW3_BECKER	= $(MD)/rel_32 $(MD)/boot_dw3_becker $(MD)/krn
+KERNEL_DW	= $(MD)/rel_32 $(MD)/boot_dw $(MD)/krn
+KERNEL_DW_BECKER	= $(MD)/rel_32 $(MD)/boot_dw_becker $(MD)/krn
 
 OS9BOOT_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -46,23 +46,23 @@ OS9BOOT_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vrn.dr $(MD)/vi.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-OS9BOOT_DW3	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+OS9BOOT_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb $(MD)/ddx0.dd \
+		$(MD)/rbdw.dr $(MD)/dwio.sb $(MD)/ddx0.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
 		$(MD)/vrn.dr $(MD)/vi.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 $(MD)/sysgo_dd
+		$(MD)/clock_60hz $(MD)/clock2_dw $(MD)/sysgo_dd
 
-OS9BOOT_DW3_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+OS9BOOT_DW_BECKER	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3_becker.sb $(MD)/ddx0.dd \
+		$(MD)/rbdw.dr $(MD)/dwio_becker.sb $(MD)/ddx0.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/covdg_small.io $(MD)/term_vdg.dt \
 		$(MD)/vrn.dr $(MD)/vi.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 $(MD)/sysgo_dd
+		$(MD)/clock_60hz $(MD)/clock2_dw $(MD)/sysgo_dd
 
 BOOTCMDS	= $(LEVEL2)/coco3/cmds/shell_21 $(LEVEL2)/coco3/cmds/date \
 		$(LEVEL2)/coco3/cmds/echo $(LEVEL2)/coco3/cmds/link \
@@ -137,12 +137,12 @@ $(DISK_80D):
 	$(MOVE) toctmp tocgen
 	$(CP) $(SUPPORTFILES) $@,.
 
-$(DISK_DW3):
+$(DISK_DW):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DW3) -q $@ -n$(DISK_DW3_NAME)
-	$(MERGE) $(OS9BOOT_DW3)>os9boot
-	$(MERGE) $(KERNEL_DW3)>kernel
+	$(OS9FORMAT_DW) -q $@ -n$(DISK_DW_NAME)
+	$(MERGE) $(OS9BOOT_DW)>os9boot
+	$(MERGE) $(KERNEL_DW)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS
@@ -160,12 +160,12 @@ $(DISK_DW3):
 	$(MOVE) toctmp tocgen
 	$(CP) $(SUPPORTFILES) $@,.
 
-$(DISK_DW3_BECKER):
+$(DISK_DW_BECKER):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DW3) -q $@ -n$(DISK_DW3_NAME)
-	$(MERGE) $(OS9BOOT_DW3_BECKER)>os9boot
-	$(MERGE) $(KERNEL_DW3_BECKER)>kernel
+	$(OS9FORMAT_DW) -q $@ -n$(DISK_DW_NAME)
+	$(MERGE) $(OS9BOOT_DW_BECKER)>os9boot
+	$(MERGE) $(KERNEL_DW_BECKER)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
 	$(MAKDIR) $@,CMDS

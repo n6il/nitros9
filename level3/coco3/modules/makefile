@@ -23,17 +23,17 @@ DEPENDS		= ./makefile
 TPB		= ../../3rdparty/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		 boot_burke boot_rampak boot_wd1002 boot_dw3
+		 boot_burke boot_rampak boot_wd1002 boot_dw
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_h0 sysgo_dd nitro end
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
 		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
-		clock2_jvemu clock2_messemu clock2_dw3
+		clock2_jvemu clock2_messemu clock2_dw
 
 RBF		= rbf.mn \
-		rbdw3.dr dw3.sb \
+		rbdw.dr dwio.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
 		d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		d0_40d.dd d1_40d.dd d2_40d.dd d0_80d.dd \

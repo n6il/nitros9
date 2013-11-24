@@ -60,7 +60,7 @@ $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 #	$(OS9GEN) $@ -b=$(BOOTFILE)	
 $(DSK):
 	$(RM) $@
-	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/$(CPU) Level 1"
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 1"
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
@@ -76,7 +76,7 @@ $(DSK):
 
 $(DSK_DEMO):
 	$(RM) $@
-	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9 Atari Demo Disk"
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9 Atari Demo Disk"
 	$(MAKDIR) $@,CMDS
 	$(CD) cmds; $(CP) $(CMDS_DEMO) ../$@,CMDS
 	$(foreach file, $(CMDS_DEMO), $(OS9ATTR_EXEC) $@,CMDS/$(file);)

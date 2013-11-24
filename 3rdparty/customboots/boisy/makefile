@@ -41,10 +41,10 @@ CMDS_THESIS	= testmul testtfr testexg testadd testnop
 SRC_THESIS	= testmul.a testtfr.a testexg.a testadd.a testnop.a
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_80 $(MD)/boot_dw3 $(MD)/krn
+KERNEL		= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
 BOOTFILE_DWTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb \
+		$(MD)/rbdw.dr $(MD)/dwio.sb \
 		$(MD)/rammer.dr $(MD)/r0_128k.dd \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
@@ -58,12 +58,12 @@ BOOTFILE_DWTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/n13_scdwn.dd $(MD)/n14_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/clock_60hz $(MD)/clock2_dw \
 		$(MD)/sysgo_dd
 
 BOOTFILE_WINTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb \
+		$(MD)/rbdw.dr $(MD)/dwio.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr \
@@ -80,7 +80,7 @@ BOOTFILE_WINTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/n13_scdwn.dd $(MD)/n14_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/clock_60hz $(MD)/clock2_dw \
 		$(MD)/sysgo_dd
 
 SUPPORTFILES	= startup

@@ -17,17 +17,17 @@ DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
 BOOTFILE_COVDG	= bootfiles/bootfile_covdg
 BOOTFILE_COHR	= bootfiles/bootfile_cohr
 BOOTFILE_COVDG_DS80	= bootfiles/bootfile_covdg_ds80
-BOOTFILE_HEADLESS_DW3_COCO1	= bootfiles/bootfile_headless_dw3_coco1
-BOOTFILE_HEADLESS_DW3_COCO2	= bootfiles/bootfile_headless_dw3_coco2
-BOOTFILE_COVDG_DW3_COCO1	= bootfiles/bootfile_covdg_dw3_coco1
-BOOTFILE_COVDG_DW3_COCO2	= bootfiles/bootfile_covdg_dw3_coco2
+BOOTFILE_HEADLESS_DW_COCO1	= bootfiles/bootfile_headless_dw_coco1
+BOOTFILE_HEADLESS_DW_COCO2	= bootfiles/bootfile_headless_dw_coco2
+BOOTFILE_COVDG_DW_COCO1	= bootfiles/bootfile_covdg_dw_coco1
+BOOTFILE_COVDG_DW_COCO2	= bootfiles/bootfile_covdg_dw_coco2
 BOOTFILE_COVDG_BECKER_COCO	= bootfiles/bootfile_covdg_becker_coco
 BOOTFILE_COHR_DS80	= bootfiles/bootfile_cohr_ds80
-BOOTFILE_COHR_DW3_COCO1	= bootfiles/bootfile_cohr_dw3_coco1
-BOOTFILE_COHR_DW3_COCO2	= bootfiles/bootfile_cohr_dw3_coco2
+BOOTFILE_COHR_DW_COCO1	= bootfiles/bootfile_cohr_dw_coco1
+BOOTFILE_COHR_DW_COCO2	= bootfiles/bootfile_cohr_dw_coco2
 KERNELFILE	= bootfiles/kernel_1773
-KERNELFILE_DW3_COCO1	= bootfiles/kernel_dw3_coco1
-KERNELFILE_DW3_COCO2	= bootfiles/kernel_dw3_coco2
+KERNELFILE_DW_COCO1	= bootfiles/kernel_dw_coco1
+KERNELFILE_DW_COCO2	= bootfiles/kernel_dw_coco2
 KERNELFILE_BECKER_COCO	= bootfiles/kernel_becker_coco
 DIRS		= cmds modules defs sys bootfiles
 
@@ -50,12 +50,12 @@ STARTUP		= startup
 STARTUP_DW	= startup.dw
 
 PACKAGENAME	= $(DISTROVER).zip
-DSKDW3COCO1     = $(DISTROVER)1_dw3.dsk
-LDSKDW3COCO1    = $(DISTRONAME)coco1_dw3.dsk
-DSKDW3COCO2     = $(DISTROVER)2_dw3.dsk
-LDSKDW3COCO2    = $(DISTRONAME)coco2_dw3.dsk
-DSKDW3COCOBECK  = $(DISTROVER)_becker.dsk
-LDSKDW3COCOBECK = $(DISTRONAME)coco_becker.dsk
+DSKDWCOCO1     = $(DISTROVER)1_dw.dsk
+LDSKDWCOCO1    = $(DISTRONAME)coco1_dw.dsk
+DSKDWCOCO2     = $(DISTROVER)2_dw.dsk
+LDSKDWCOCO2    = $(DISTRONAME)coco2_dw.dsk
+DSKDWCOCOBECK  = $(DISTROVER)_becker.dsk
+LDSKDWCOCOBECK = $(DISTRONAME)coco_becker.dsk
 DSK360K_1       = $(DISTROVER)_40d_1.dsk
 LDSK360K_1      = $(DISTRONAME)_40d_1.dsk
 DSK360K_2       = $(DISTROVER)_40d_2.dsk
@@ -64,8 +64,8 @@ DSK720K         = $(DISTROVER)_80d.dsk
 LDSK720K        = $(DISTRONAME)_80d.dsk
 
 
-DSKS		= $(DSKDW3COCO1) $(DSKDW3COCO2) $(DSKDW3COCOBECK) $(DSK360K_1) $(DSK360K_2) $(DSK720K)
-LDSKS		= $(LDSKDW3COCO1) $(LDSKDW3COCO2) $(LDSKDW3COCOBECK) $(LDSK360K_1) $(LDSK360K_2) $(LDSK720K)
+DSKS		= $(DSKDWCOCO1) $(DSKDWCOCO2) $(DSKDWCOCOBECK) $(DSK360K_1) $(DSK360K_2) $(DSK720K)
+LDSKS		= $(LDSKDWCOCO1) $(LDSKDWCOCO2) $(LDSKDWCOCOBECK) $(LDSK360K_1) $(LDSK360K_2) $(LDSK720K)
 
 # Make all components
 all:
@@ -94,9 +94,9 @@ scp: dsk
 $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 	$(ARCHIVE) $@ $^
 
-$(DSKDW3COCOBECK):
+$(DSKDWCOCOBECK):
 	$(RM) $@
-	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/$(CPU) Level 1"
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 1"
 	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_BECKER_COCO) -t=$(KERNELFILE_BECKER_COCO)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -144,14 +144,14 @@ $(DSKDW3COCOBECK):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
-	$(RM) $(LDSKDW3COCOBECK)
-	$(SOFTLINK) $@ $(LDSKDW3COCOBECK)
+	$(RM) $(LDSKDWCOCOBECK)
+	$(SOFTLINK) $@ $(LDSKDWCOCOBECK)
 
 
-$(DSKDW3COCO1):
+$(DSKDWCOCO1):
 	$(RM) $@
-	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/$(CPU) Level 1"
-	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_DW3_COCO1) -t=$(KERNELFILE_DW3_COCO1)
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 1"
+	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_DW_COCO1) -t=$(KERNELFILE_DW_COCO1)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
@@ -198,13 +198,13 @@ $(DSKDW3COCO1):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
-	$(RM) $(LDSKDW3COCO1)
-	$(SOFTLINK) $@ $(LDSKDW3COCO1)
+	$(RM) $(LDSKDWCOCO1)
+	$(SOFTLINK) $@ $(LDSKDWCOCO1)
 
-$(DSKDW3COCO2):
+$(DSKDWCOCO2):
 	$(RM) $@
-	$(OS9FORMAT_DW3) -q $@ -n"NitrOS-9/6809 Level 1"
-	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_DW3_COCO2) -t=$(KERNELFILE_DW3_COCO2)
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/6809 Level 1"
+	$(OS9GEN) $@ -b=$(BOOTFILE_COVDG_DW_COCO2) -t=$(KERNELFILE_DW_COCO2)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
@@ -251,8 +251,8 @@ $(DSKDW3COCO2):
 	$(CD) bootlists; $(CPL) *.bl ../$@,NITROS9/6809L1/BOOTLISTS
 	$(MAKDIR) $@,NITROS9/6809L1/SCRIPTS
 	$(CD) scripts; $(CPL) mb* ../$@,NITROS9/6809L1/SCRIPTS
-	$(RM) $(LDSKDW3COCO2)
-	$(SOFTLINK) $@ $(LDSKDW3COCO2)
+	$(RM) $(LDSKDWCOCO2)
+	$(SOFTLINK) $@ $(LDSKDWCOCO2)
 
 $(DSK360K_1):
 	$(RM) $@
