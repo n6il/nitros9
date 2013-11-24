@@ -14,7 +14,7 @@ BOOTFILE_ARDUINO	= bootfiles/bootfile_arduino
 BOOTFILE_COCOSDC	= bootfiles/bootfile_cocosdc
 BOOTFILE_BECKER_HEADLESS	= bootfiles/bootfile_becker_headless
 BOOTFILE_ARDUINO_HEADLESS	= bootfiles/bootfile_arduino_headless
-BOOTFILE_DW 	= bootfiles/bootfile_dw
+BOOTFILE_DW	= bootfiles/bootfile_dw
 BOOTFILE_DWHEADLESS	= bootfiles/bootfile_dw_headless
 BOOTFILE_40D	= bootfiles/bootfile_40d
 BOOTFILE_80D	= bootfiles/bootfile_80d
@@ -24,7 +24,7 @@ KERNELFILE_BECKER	= bootfiles/kernel_becker
 KERNELFILE_ARDUINO	= bootfiles/kernel_arduino
 KERNELFILE	= bootfiles/kernel_1773
 KERNELFILE_50HZ	= bootfiles/kernel_1773_50hz
-KERNELFILE_DW 	= bootfiles/kernel_dw
+KERNELFILE_DW	= bootfiles/kernel_dw
 DIRS		= cmds modules defs sys bootfiles wwwroot
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)

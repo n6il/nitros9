@@ -7,7 +7,7 @@ DEPENDS		= ./makefile
 
 KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_1773_50HZ	= $(MD)/rel_80_50hz $(MD)/boot_1773_6ms $(MD)/krn
-KERNEL_DW 	= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
+KERNEL_DW	= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
 
 # NitrOS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_40D	= $(MD)/scf.mn \

@@ -24,7 +24,7 @@ MD		= $(6809L2)/modules
 
 # We make our own bootfile and kernel track
 KERNEL		= $(MD)/rel_40 $(MD)/boot_1773_6ms $(MD)/krn
-KERNEL_DW 	= $(MD)/rel_40 $(MD)/boot_dw $(MD)/krn
+KERNEL_DW	= $(MD)/rel_40 $(MD)/boot_dw $(MD)/krn
 KERNEL_BECKER	= $(MD)/rel_40 $(MD)/boot_dw_becker $(MD)/krn
 
 OS9BOOT_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
@@ -47,7 +47,7 @@ OS9BOOT_80D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/w6.dw $(MD)/w7.dw \
 		$(MD)/clock_60hz $(MD)/clock2_soft $(MD)/sysgo_dd
 
-OS9BOOT_DW 	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+OS9BOOT_DW	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rbdw.dr $(MD)/dwio.sb $(MD)/ddx0.dd \
 		$(MD)/scf.mn $(MD)/vtio.dr \
