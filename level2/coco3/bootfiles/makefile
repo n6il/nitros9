@@ -7,8 +7,8 @@ DEPENDS		= ./makefile
 
 KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_1773_50HZ	= $(MD)/rel_80_50hz $(MD)/boot_1773_6ms $(MD)/krn
-KERNEL_DW 	= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
-KERNEL_ARDUINO 	= $(MD)/rel_80 $(MD)/boot_dw_arduino $(MD)/krn
+KERNEL_DW	= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
+KERNEL_ARDUINO	= $(MD)/rel_80 $(MD)/boot_dw_arduino $(MD)/krn
 KERNEL_BECKER	= $(MD)/rel_80 $(MD)/boot_dw_becker $(MD)/krn
 
 FLOPPY_40D = $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd
