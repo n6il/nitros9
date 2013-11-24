@@ -33,7 +33,7 @@ SYSMODS		= ioman init sysgo_h0 sysgo_dd sysgo_rom rominfo vectors
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
 		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
-		clock2_jvemu clock2_messemu clock2_dw clock2_dw_becker
+		clock2_jvemu clock2_messemu clock2_dw
 
 RBF		= rbf.mn \
 		rbdw.dr dwio.sb dwio_becker.sb \
@@ -413,9 +413,6 @@ clock2_cloud9: clock2_ds1315.asm
 
 clock2_bnb: clock2_ds1315.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aBNB=1
-
-clock2_dw_becker: clock2_dw.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aBECKER=1
 
 clean:
 	$(CD) kernel; make $@
