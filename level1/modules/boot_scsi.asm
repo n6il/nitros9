@@ -291,14 +291,14 @@ Pad            FILL      $39,$1D0-3-1-2-1-*
 * rev1, add selections for MPI slot and bus address of drive
 * 2012\11\05 Gene Heskett
 * The default SCSI ID is here, but first do MPI slot
-		IFEQ	MPI-1
-CntlSlot	FCB	SDMPI
-		ELSE
-CntrSlot	FCB	#$FF
-		ENDC
-Address		FDB     SDAddr
+               IFEQ      MPI-1
+CntlSlot       FCB       SDMPI
+               ELSE
+CntrSlot       FCB       #$FF
+               ENDC
+Address        FDB       SDAddr
 * So now, this can be a base zero decimal value!
-WhichDrv	FCB	ITDNS
-               EMOD      
+WhichDrv       FCB       ITDNS
+               EMOD
 eom            EQU       *
-               END       
+               END
