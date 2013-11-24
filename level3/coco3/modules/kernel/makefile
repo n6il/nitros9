@@ -1,7 +1,4 @@
 PORT = coco3
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm $(LEVEL3)/modules/kernel:$(LEVEL2)/modules/kernel:$(LEVEL1)/modules/kernel

@@ -1,8 +1,4 @@
-ifndef  NITROS9DIR
-NITROS9DIR      := $(HOME)/nitros9
-export NITROS9DIR
-endif
-include $(NITROS9DIR)/rules.mak
+include rules.mak
 
 dirs	=  $(NOSLIB) $(LEVEL1) $(LEVEL2) $(LEVEL3) $(3RDPARTY)
  

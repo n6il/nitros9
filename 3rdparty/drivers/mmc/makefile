@@ -1,9 +1,6 @@
 # Jim Hathaway's MultiMediaCard NitrOS-9 driver
 
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
-include $(NITROS9DIR)/rules.mak
+include ../../../rules.mak
 
 DEPENDS		= ./makefile
 DRVRS		= mmcdrv_l1.dr mmcdrv_l2.dr mmcdrv_l1s.dr mmcdrv_l2s.dr 

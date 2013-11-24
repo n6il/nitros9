@@ -1,6 +1,3 @@
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
 include $(NITROS9DIR)/rules.mak
 
 DSK68_FLOPPY	= multivue_6809.dsk

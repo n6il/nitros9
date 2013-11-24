@@ -1,7 +1,4 @@
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
-include $(NITROS9DIR)/rules.mak
+include ../../rules.mak
 
 dirs	= burke disto emudsk ide mmc s16550 sdisk sdisk3 tccc
 

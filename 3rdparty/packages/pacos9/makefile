@@ -1,6 +1,3 @@
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
 include $(NITROS9DIR)/rules.mak
 
 RFILES	= main90.r board90.r caged90.r check90.r ghosts90.r movpac90.r \

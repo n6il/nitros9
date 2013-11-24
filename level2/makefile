@@ -1,6 +1,3 @@
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
 include $(NITROS9DIR)/rules.mak
 
 dirs	= coco3 coco3_6309

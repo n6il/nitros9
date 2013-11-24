@@ -1,6 +1,3 @@
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
 include $(NITROS9DIR)/rules.mak
 
 # makefile for OS-9 UUCP package, UUCPbb v2.1 (OS-9/6809)

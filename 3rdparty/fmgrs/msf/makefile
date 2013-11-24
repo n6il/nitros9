@@ -1,10 +1,7 @@
 # MSF file manager
 #
 
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
-include $(NITROS9DIR)/rules.mak
+include ../../../rules.mak
 
 DEPENDS		= ./makefile
 

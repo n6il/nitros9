@@ -1,6 +1,3 @@
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
 include $(NITROS9DIR)/rules.mak
 
 dirs	= booters drivers fmgrs p2mods subrtns utils packages

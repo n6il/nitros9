@@ -1,7 +1,4 @@
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
-include $(NITROS9DIR)/rules.mak
+include ../../../rules.mak
 
 DISK68	= uucpbb21_6809.dsk
 DISK63	= uucpbb21_6309.dsk
