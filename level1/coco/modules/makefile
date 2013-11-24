@@ -93,10 +93,10 @@ boot_dw_coco1: boot_dw.asm
 boot_dw_becker: boot_dw.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBECKER=1
 
-dw_coco1.sb: dw.asm
+dw_coco1.sb: dwio.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBAUD38400=1
 
-dwio_becker.sb: dw.asm
+dwio_becker.sb: dwio.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBECKER=1
 
 boot_1773_6ms:	boot_1773.asm
