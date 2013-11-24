@@ -255,7 +255,7 @@ L00FB    ldd   ,y++
 *GetMem   ldd   MaxMem+1,u		I don't think this exists for Level1 RG
 *         clrb
 *         cmpd  <D.MLIM			starts as $EE00
-*         bra   L0158
+*         bcc   L0158
 *         std   <D.MLIM
 GetMem   equ   *			Initially I tried GetMem clra
 *                                       that is redundant. See last line. RG
