@@ -38,11 +38,11 @@ dsk:	all
 	$(RM) os9boot kernel_1773
 	$(MAKDIR) $(DISK),CMDS
 	$(OS9COPY) $(CMDS) $(DISK),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DISK),CMDS/$(file))
 	$(OS9RENAME) $(DISK),CMDS/raakatu AutoEx
 	$(OS9COPY) $(LEVEL2)/coco3/cmds/shell_21 $(DISK),CMDS/shell
 	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
-#	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $(DISK),SUB/$(file);)
+#	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$(DISK),SUB/$(file))
 
 dskcopy:
 	$(CP) $(DISK) $(DSKDIR)

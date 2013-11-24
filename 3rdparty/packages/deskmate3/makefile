@@ -54,7 +54,7 @@ dsk:	all
 	$(CPL) $(HELP) $(DISK),CMDS
 	$(foreach file, $(HELP), $(OS9ATTR_EXEC) $(DISK),CMDS/$(notdir $(file));)
 	$(OS9COPY) $(ROOTFILES) $(DISK),.
-	$(foreach file, $(ROOTFILES), $(OS9ATTR_TEXT) $(DISK),$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$(DISK),$(file))
 
 dskcopy: dsk
 	$(CP) $(DISK) $(DSKDIR)

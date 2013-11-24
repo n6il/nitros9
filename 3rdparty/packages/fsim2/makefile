@@ -72,10 +72,10 @@ $(DSK_DW):
 	$(OS9COPY) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(OS9COPY) $(CMDS) $@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/fs AutoEx
 	$(OS9COPY) $(SUPPORTFILES) $@,.
-	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,$(file))
 
 $(DSK_DW_BECKER):
 	$(RM) $@
@@ -89,10 +89,10 @@ $(DSK_DW_BECKER):
 	$(OS9COPY) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(OS9COPY) $(CMDS) $@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/fs AutoEx
 	$(OS9COPY) $(SUPPORTFILES) $@,.
-	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,$(file))
 
 $(DSK_FLOPPY):
 	$(RM) $@
@@ -106,10 +106,10 @@ $(DSK_FLOPPY):
 	$(OS9COPY) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
 	$(OS9ATTR_EXEC) $@,CMDS/shell
 	$(OS9COPY) $(CMDS) $@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/fs AutoEx
 	$(OS9COPY) $(SUPPORTFILES) $@,.
-	$(foreach file, $(SUPPORTFILES), $(OS9ATTR_TEXT) $@,$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,$(file))
 
 dskcopy: dsk
 	$(CP) $(DSKS) $(DSKDIR)

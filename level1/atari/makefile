@@ -65,12 +65,12 @@ $(DSK):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
 	$(CD) cmds; $(OS9COPY) $(CMDS) ../$@,CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
-	$(foreach file, $(SYS), $(OS9ATTR_TEXT) $@,SYS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(foreach file, $(DEFS), $(OS9ATTR_TEXT) $@,DEFS/$(file);)
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP) $@,startup
 	$(OS9ATTR_TEXT) $@,startup
 
@@ -79,7 +79,7 @@ $(DSK_DEMO):
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9 Atari Demo Disk"
 	$(MAKDIR) $@,CMDS
 	$(CD) cmds; $(OS9COPY) $(CMDS_DEMO) ../$@,CMDS
-	$(foreach file, $(CMDS_DEMO), $(OS9ATTR_EXEC) $@,CMDS/$(file);)
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DEMO),$@,CMDS/$(file))
 
 info:
 	@echo "*** NitrOS-9/6809 Level 1 for the Atari XL/XE ***" 
