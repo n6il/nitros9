@@ -150,7 +150,7 @@ setup          sta       v$cmd,u
 			   ENDC
                rts
 
- * Sooooo, at end of module, the FF64XX, the XX is not a marching bit
+* Sooooo, at end of module, the FF64XX, the XX is not a marching bit
 * pattern any more.  Cool but a huge gotcha needing makefile changes
 * all over.  And theres too many of them.
 
