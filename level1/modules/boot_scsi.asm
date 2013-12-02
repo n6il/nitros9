@@ -297,6 +297,9 @@ CntrSlot       FCB       $FF
                ENDC
 Address        FDB       SDAddr
 * So now, this can be a base zero decimal value!
+               IFNDEF    ITDNS
+ITDNS          EQU       0
+               ENDC
 WhichDrv       FCB       ITDNS
                EMOD
 eom            EQU       *
