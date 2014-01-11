@@ -258,8 +258,6 @@ $(DSK180K_1):
 	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(ROOTFILES) $@,.
 	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$@,$(file))
-	$(CPL) $(STARTUP) $@,startup
-	$(OS9ATTR_TEXT) $@,startup
 
 $(DSK180K_2):
 	$(RM) $@
