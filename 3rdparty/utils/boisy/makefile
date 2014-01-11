@@ -35,8 +35,11 @@ dsk: all $(DSKS)
 dskcopy: dsk
 	$(CP) $(DSKS) $(DSKDIR)
 
-clean:
-	$(RM) $(ALLOBJS) $(DSKS)
+dskclean:
+	$(RM) $(DSKS)
+
+clean: dskclean
+	$(RM) $(ALLOBJS)
 
 info:
 	@echo "*** Boisy Pitre's Utilities ***"

@@ -19,6 +19,9 @@ clean:
 dsk:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dsk);)
 
+dskclean:
+	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
+
 # Copy DSK images
 dskcopy:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
