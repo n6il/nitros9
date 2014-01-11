@@ -1,6 +1,9 @@
 include $(NITROS9DIR)/rules.mak
 
 dirs	= coco1 deluxe coco2 coco2b tano d64 dalpha atari
+ifdef PORTS
+dirs	= $(PORTS)
+endif
 
 # Make all components
 all:
