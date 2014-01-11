@@ -85,7 +85,9 @@ SECTSIZE equ   256
 *	$01  = 12ms
 *	$02  = 20ms
 *	$03  = 30ms
+         IFNDEF STEP
 STEP     set   $00
+         ENDC
 
 tylg     set   Systm+Objct
 atrv     set   ReEnt+rev

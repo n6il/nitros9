@@ -112,9 +112,10 @@ all:
 
 # Clean all components
 clean:	dskclean
-	-$(CD) cmds_6809; make clean
-	-$(CD) cmds_6309; make clean
-	-$(CD) sys; make clean
+	$(RM) os9boot
+	$(CD) cmds_6809; make clean
+	$(CD) cmds_6309; make clean
+	$(CD) sys; make clean
 
 dsk:	all $(DSKS)
 
@@ -130,7 +131,7 @@ $(DSK68_FLOPPY):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
 	$(CD) cmds_6809; $(OS9COPY) $(CMDS68) ../$@,CMDS
-	$(foreach file, $(CMDS68), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS68)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))
@@ -155,7 +156,7 @@ $(DSK63_FLOPPY):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
 	$(CD) cmds_6309; $(OS9COPY) $(CMDS63) ../$@,CMDS
-	$(foreach file, $(CMDS63), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS63)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))
@@ -180,7 +181,7 @@ $(DSK68_DW):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
 	$(CD) cmds_6809; $(OS9COPY) $(CMDS68) ../$@,CMDS
-	$(foreach file, $(CMDS68), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS68)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))
@@ -205,7 +206,7 @@ $(DSK68_DW_BECKER):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
 	$(CD) cmds_6809; $(OS9COPY) $(CMDS68) ../$@,CMDS
-	$(foreach file, $(CMDS68), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS68)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))
@@ -230,7 +231,7 @@ $(DSK63_DW):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
 	$(CD) cmds_6309; $(OS9COPY) $(CMDS63) ../$@,CMDS
-	$(foreach file, $(CMDS63), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS63)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))
@@ -255,7 +256,7 @@ $(DSK63_DW_BECKER):
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEMO
 	$(CD) cmds_6309; $(OS9COPY) $(CMDS63) ../$@,CMDS
-	$(foreach file, $(CMDS63), $(OS9ATTR_EXEC) $@,CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS63)),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/gshell AutoEx
 	$(CD) icons; $(OS9COPY) $(ICONS) ../$@,CMDS/ICONS
 	$(OS9ATTR_EXEC) $(foreach file,$(ICONS),$@,CMDS/ICONS/$(file))

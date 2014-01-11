@@ -36,17 +36,21 @@ HW.Page        SET       $FF                 Device descriptor hardware page
 *
 Hz50           EQU       1                   Assemble clock for 50 hz power
 Hz60           EQU       2                   Assemble clock for 60 hz power
+               IFNDEF    PwrLnFrq
 PwrLnFrq       SET       Hz60                Set to Appropriate freq
+               ENDC
 
 
 **********************************
 * Ticks per second
 *
+               IFNDEF    TkPerSec
                IFEQ      PwrLnFrq-Hz50
 TkPerSec       SET       50
                ELSE      
 TkPerSec       SET       60
                ENDC      
+               ENDC
 
 
 ****************************************
@@ -60,6 +64,18 @@ DOWNBIT        EQU       %00010000
 LEFTBIT        EQU       %00100000
 RIGHTBIT       EQU       %01000000
 SPACEBIT       EQU       %10000000
+
+******************
+* VDG Devices
+*
+A.TermV        SET       $FFC0               VDG Term
+A.V1           SET       $FFC1               Possible additional VDG Devices
+A.V2           SET       $FFC2
+A.V3           SET       $FFC3
+A.V4           SET       $FFC4
+A.V5           SET       $FFC5
+A.V6           SET       $FFC6
+A.V7           SET       $FFC7
 
 ********************
 * VTIO Static Memory
@@ -122,7 +138,7 @@ TrkRegA		EQU		DPTRKREGA+IO	Track register
 SecRegA		EQU		DPSECREGA+IO	Sector register
 DataRegA	EQU		DPDATAREGA+IO	Data register
 
-DPort          SET       $DataRegA               Disk controller base address
+DPort          SET       DataRegA               Disk controller base address
 
 * Constants for Alpha AY-8912 sound chip, which is used to control
 * Drive select and motor on the Alpha

@@ -135,7 +135,7 @@
 * Disassembled 2004/07/13 07:31:17 by Disasm v1.5 (C) 1988 by RML
 
          ifp1
-         use   os9defs
+         use   os9.d
          endc
 
 tylg     set   Prgrm+Objct   
@@ -2285,7 +2285,7 @@ L150E          fcb       $09,$07,$00,$00,$2F ; 2F: GET UP      *          *
 L1513          fcb       $20,$09,$00,$80,$34 ; 34: JUMP OVER   *          u.......
 L1518          fcb       $20,$05,$00,$80,$36 ; 36: JUMP IN     *          u.......
 L151D          fcb       $20,$06,$00,$80,$37 ; 37: JUMP OUT    *          u.......
-L1522          fcb       $00,
+L1522          fcb       $00
 
 
 ;##RoomDescriptions
@@ -4955,7 +4955,7 @@ L3C1E          fcb       $78,$0E,$BC,$92,$5F,$59,$15,$9B,$AF,$19,$A1 ;         .
 ;##InputWordTables
 
 ; --- IGNORES --- Maybe for curse words. No words in this list and thus never used.
-L3C29          fcb       $00,
+L3C29          fcb       $00
 ;  
 ; --- VERBS ---   
 L3C2A          fcb       $04,$52,$45,$41,$44,$01 ; READ     1
@@ -5012,7 +5012,7 @@ L3D59          fcb       $04,$53,$54,$4F,$50,$2D ; STOP     45
 L3D5F          fcb       $05,$50,$4C,$55,$47,$48,$32 ; PLUGH    50
 L3D66          fcb       $05,$4C,$45,$41,$56,$45,$2C ; LEAVE    44
 L3D6D          fcb       $04,$50,$49,$43,$4B,$34 ; PICK     52
-L3D73          fcb       $00,
+L3D73          fcb       $00
 ;
 ; --- NOUNS ---
 L3D74          fcb       $06,$50,$4F,$54,$49,$4F,$4E,$03 ; POTION   3
@@ -5065,10 +5065,10 @@ L3EB0          fcb       $06,$4A,$55,$4E,$47,$4C,$45,$38 ; JUNGLE   56
 L3EB8          fcb       $06,$54,$45,$4D,$50,$4C,$45,$39 ; TEMPLE   57
 L3EC0          fcb       $03,$50,$49,$54,$3A ; PIT      58
 L3EC5          fcb       $06,$43,$45,$49,$4C,$49,$4E,$3B ; CEILIN   59
-L3ECD          fcb       $00,
+L3ECD          fcb       $00
 ;
 ; --- ADJECTIVES ---
-L3ECE          fcb       $00,
+L3ECE          fcb       $00
 ;
 ; --- PREPOSITIONS ---
 L3ECF          fcb       $02,$54,$4F,$01     ; TO       1
@@ -5109,6 +5109,7 @@ WriteCR
          os9   I$WritLn
 DoCHROUT
          puls  d,x,y
+ rts
          pshs  x,b,a
          ldx   $88			get cursor position
          cmpa  #$08			backspace character?

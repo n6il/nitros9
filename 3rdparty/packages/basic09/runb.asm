@@ -263,7 +263,7 @@ L00E9    fdb   L03E9-L00E9
          fdb   L0433-L00E9
  
 L00FB    jsr   <u001E
-         fcb   $04`
+         fcb   $04
 L00FE    jsr   <u001E
          fcb   $02 
 L0101    jsr   <u001E
@@ -2391,7 +2391,7 @@ L1105    jsr   <u002A
          fdb   PARAM-L1188
          fdb   PARAM-L1188
          fdb   PARAM-L1188
-         fdb   $0000,$0000,$0000,$0000,$0000,$00$00
+         fdb   $0000,$0000,$0000,$0000,$0000,$0000
 
 L1188    fdb   BCPVAR-L1188
          fdb   ICPVAR-L1188

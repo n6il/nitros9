@@ -1,4 +1,6 @@
-PORT = d64
+ifeq ($(PORT),)
+        PORT=d64
+endif
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm $(LEVEL1)/cmds:$(3RDPARTY)/packages/basic09
@@ -25,7 +27,7 @@ DRAGONCMDS	= asm attr backup binex build cmp cobbler_dragon copy cputype \
 DRAGON525CMDS	= asm attr backup binex build cmp cobbler copy date del deldir \
 		dir display dmode dsave dump echo exbin format free ident link list \
 		load login makdir mdir merge mfree os9gen printerr procs pwd pxd rename \
-		save setime shell_21 sleep tee tmode tsmon unlink verify xmode acia51 dmode        
+		save setime shell_21 sleep tee tmode tsmon unlink verify xmode acia51
 
 DRAGON525CMDS2	= cputype dcheck debug ded deiniz devs dirsort disasm edit error \
 		grfdrv help iniz irqs megaread mpi os9gen padrom park printerr prompt \
@@ -41,19 +43,19 @@ alldragon: $(DRAGONCMDS) $(SUBS)
 
 
 pwd:	pd.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DPWD=1
 
 xmode:	xmode.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aXMODE=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DXMODE=1
 
 tmode:	xmode.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aTMODE=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DTMODE=1
 
 pxd:	pd.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPXD=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DPXD=1
 	
 cobbler_dragon: cobbler.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)cobbler_dragon -aDRAGON=1
+	$(AS) $(AFLAGS) $< $(ASOUT)cobbler_dragon -DDRAGON=1
 
 clean:
 	$(RM) $(ALLOBJS)
@@ -68,7 +70,7 @@ showcocoobjs:
 	@$(ECHO) $(CMDS) $(SUBS)
 
 showdragonobjs:
-	@$(ECHO) $(CMDS) $(DRAGONCMDS)
+	@$(ECHO) $(sort $(CMDS) $(DRAGONCMDS))
 
 showdragon525objs:
 	@$(ECHO) $(DRAGON525CMDS) $(SUBS)

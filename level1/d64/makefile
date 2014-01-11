@@ -29,11 +29,7 @@
 #	Updated to use new build system, for multiple supported platforms.
 #
 
-PORT = d64
-include $(NITROS9DIR)/rules.mak
-
-CPU		= 6809
-LEVEL		= 1
+include port.mak
 
 # TERMWIDTH can be either VDG or HR, for 32x16 or 51x24 respectivly
 #NOTE must be lower case.
@@ -122,7 +118,7 @@ clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 	
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSKS) $(LDSKS)
+	$(RM) $(PACKAGENAME) $(DSKS) $(LDSKS)
 
 dsk: all $(PACKAGENAME)
 

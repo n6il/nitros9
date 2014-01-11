@@ -27,18 +27,23 @@ CMDS	= Ansicode Answer At \
 
 all: $(CMDS)
 
-dsk:
+dsk: $(DSK)
+
+$(DSK): $(CMDS)
 	$(OS9FORMAT) -q $(DSK)
 	$(MAKDIR) $(DSK),CMDS
 	$(OS9COPY) $(CMDS) $(DSK),CMDS
 	$(MAKDIR) $(DSK),BBS
 	$(OS9COPY) $(BBSFILES) $(DSK),BBS
 
+dskcopy: $(DSK)
+	$(OS9COPY) $(DSK) $(DSKDIR)
+
 clean: dskclean
-	-$(RM) $(CMDS)
+	$(RM) $(CMDS)
 
 dskclean:
-	-$(RM) $(DSK)
+	$(RM) $(DSK)
 
 info:
 	@$(ECHO) "*** OS-9 L2 BBS for 6809 ***"

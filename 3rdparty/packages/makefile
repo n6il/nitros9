@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-dirs	= arcadepak basic09 deskmate3 cc fsim2 koronis kyumgai mm multivue pacos9 rof sierra subsim uucpbb
+dirs	= arcadepak basic09 deskmate3 cc fsim2 koronis kyumgai mm multivue os9l2bbs pacos9 raakatu rof sierra subsim uucpbb
 
 # Make all components
 all:
@@ -29,4 +29,4 @@ dskclean:
 
 # Info
 info:
-	@$(foreach dir, $(dirs), ($(CD) $(dir); make info; $(ECHO));)
+	@$(foreach dir, $(dirs), $(MAKE) -C $(dir) info; $(ECHO);)

@@ -1,23 +1,43 @@
 include $(NITROS9DIR)/rules.mak
 
-SRC = os9defs.a scfdefs.a rbfdefs.a pipedefs.a systype.a net.a
+all: libnos96809l1.a libnos96809l2.a libnos96309l2.a libnet.a libalib.a \
+	libcoco.a libcoco3.a libcoco3_6309.a libdragon.a libatari.a
 
-all: sys6809l1.l sys6809l2.l sys6309l2.l net.l alib.l sys.zip
+libnos96809l1.a: sys6809l1.o
+	$(LWAR) $@ $?
 
-sys.zip: $(SRC)
-	zip $@ $(SRC)
+libnos96809l2.a: sys6809l2.o
+	$(LWAR) $@ $?
 
-sys6809l1.l: sys6809l1.a
+libnos96309l2.a: sys6309l2.o
+	$(LWAR) $@ $?
 
-sys6809l2.l: sys6809l2.a
+libnet.a: net.o
+	$(LWAR) $@ $?
 
-sys6309l2.l: sys6309l2.a
+libcoco.a: coco.o
+	$(LWAR) $@ $?
 
-net.l: net.a
+libcoco3.a: coco3.o
+	$(LWAR) $@ $?
 
-alib.l:
-	cd alib; make
+libcoco3_6309.a: coco3_6309.o
+	$(LWAR) $@ $?
+
+libatari.a: atari.o
+	$(LWAR) $@ $?
+
+libdragon.a: dragon.o
+	$(LWAR) $@ $?
+
+libalib.a:
+	$(MAKE) -C alib
+
+info:
+dsk:
+dskcopy:
+dskclean:
 
 clean:
-	$(RM) *.l *.r *.zip
-	cd alib; make clean
+	$(RM) *.a *.o
+	$(MAKE) -C alib clean

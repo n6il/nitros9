@@ -1,8 +1,4 @@
-PORT = atari
-include $(NITROS9DIR)/rules.mak
-
-CPU		= 6809
-LEVEL		= 1
+include port.mak
 
 # Level 1 - Specify which shell should be used
 #WHICHSHELL	= shellplus
@@ -12,12 +8,13 @@ DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
 DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
 BOOTFILE	= bootfiles/bootfile
-DIRS		= cmds modules defs sys bootfiles
+DIRS		= cmds modules defs sys bootfiles wwwroot
 
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs_dw)
 CMDS_DEMO = $(shell $(CD) cmds; make --no-print-directory showobjs_demo)
 SYS		= $(shell $(CD) sys; make --no-print-directory showobjs)
+WWWROOT		= $(shell $(CD) wwwroot; make --no-print-directory showobjs)
 DEFS		= $(shell $(CD) defs; make --no-print-directory showobjs)
 STARTUP		= startup
 
@@ -30,9 +27,9 @@ DSKS		= $(DSK) $(DSK_DEMO)
 # Make all components
 all:
 	@$(ECHO) "**************************************************"
-	@$(ECHO) "*                                                *"
-	@$(ECHO) "*        NitrOS-9/$(CPU) Level 1 Atari Port        *"
-	@$(ECHO) "*                                                *"
+	@$(ECHO) "*"
+	@$(ECHO) "*        NitrOS-9/$(CPU) Level $(LEVEL) $(PORTNAME)"
+	@$(ECHO) "*"
 	@$(ECHO) "**************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
 
@@ -41,7 +38,7 @@ clean:	dskclean
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make clean);)
 
 dskclean:
-	-$(RM) $(PACKAGENAME) $(DSKS)
+	$(RM) $(PACKAGENAME) $(DSKS)
 
 dsk: all $(PACKAGENAME)
 
@@ -61,11 +58,14 @@ $(DSK):
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
+	$(MAKDIR) $@,WWWROOT
 	$(CD) cmds; $(OS9COPY) $(CMDS) ../$@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))
+	$(CD) wwwroot; $(OS9COPY) $(WWWROOT) ../$@,WWWROOT
+	$(OS9ATTR_TEXT) $(foreach file,$(WWWROOT),$@,WWWROOT/$(file))
 	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
 	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(STARTUP) $@,startup

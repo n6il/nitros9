@@ -20,21 +20,37 @@ tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
 
+	IFNDEF	DNum
 DNum     set   0
+	ENDC
          IFNE  D35
 Type     set   TYP.CCF+TYP.3
          ELSE
 Type     set   TYP.CCF+TYP.5
          ENDC
+	IFNDEF	Density
 Density  set   DNS.MFM
+	ENDC
 Step     set   STP.6ms
+	IFNDEF	Cyls
 Cyls     set   35
+	ENDC
+	IFNDEF	Sides
 Sides    set   1
+	ENDC
 Verify   set   1
+	IFNDEF	SectTrk
 SectTrk  set   18
+	ENDC
+	IFNDEF	SectTrk0
 SectTrk0 set   18
+	ENDC
+	IFNDEF	Interlv
 Interlv  set   3
+	ENDC
+	IFNDEF	SAS
 SAS      set   8
+	ENDC
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
@@ -64,7 +80,6 @@ name     fcb   'D,'0+DNum+$80
 mgrnam   fcs   /RBF/
 drvnam   fcs   /rb1773/
 
-         emod  
+         emod
 eom      equ   *
-         end   
-
+         end

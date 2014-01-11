@@ -1,5 +1,5 @@
 ********************************************************************
-* DW3 - DriveWire 3 Low Level Subroutine Module
+* dwio - DriveWire Low Level Subroutine Module
 *
 * $Id$
 *
@@ -15,7 +15,7 @@
 *   3      2010/01/23  Aaron A. Wolfe
 * Added dynamic polling frequency
 *
-               nam       DW3
+               nam       dwio
                ttl       DriveWire 3 Low Level Subroutine Module
 
                ifp1      
@@ -45,7 +45,7 @@ PollSpd3       fcb       40
 PollIdle       fcb       60
 
 
-name           fcs       /dw3/
+name           fcs       /dwio/
 
 * DriveWire subroutine entry table
 start          lbra      Init
@@ -66,14 +66,26 @@ Term
                clrb                          clear Carry
                rts       
 
-Read                     
+Read                   
+               IFNE      atari
+               jmp       [$FFE0]
+               ELSE
                use       dwread.asm
+               ENDC
 
 Write                    
+               IFNE      atari
+               jmp       [$FFE2]
+               ELSE
                use       dwwrite.asm
+               ENDC
 
 
+               IFNE      atari
+DWInit         rts
+               ELSE
 			use		dwinit.asm
+               ENDC
 			
 * Init
 *
@@ -129,9 +141,7 @@ loop@          clr       ,x+
                leax      ,s                  ; point X to stack head
                ldy       #1                  ; 1 byte to retrieve
                jsr       DW$Read,u                 ; call DWRead
-               IFNE      atari-1
                beq       InstIRQ             ; branch if no error
-               ENDC
                leas      3,s                 ; error, cleanup stack (u and 1 byte from read) 
                lbra      InitEx            	 ; don't install IRQ handler
 
@@ -282,6 +292,9 @@ IRQMulti
                lbne      CkSSig              ;had to lbra
                lbra      IRQExit             ;had to lbra
 
+bad
+               leas      2,s                 ; error, cleanup stack 2
+               lbra      IRQExit2            ; don't reset error count on the way out
 
 ; **** IRQ ENTRY POINT
 IRQSvc         equ       *
@@ -313,9 +326,8 @@ IRQSvc         equ       *
                leax      ,s                  ; point X to stack head
                ldy       #2                  ; 2 bytes to retrieve
                jsr       DW$Read,u                 ; call DWRead
-               beq       IRQSvc2             ; branch if no error
-               leas      2,s                 ; error, cleanup stack 2
-               lbra      IRQExit2            ; don't reset error count on the way out
+               bcs       bad
+               bne       bad
 
           ; process response	
 IRQSvc2                  
@@ -351,8 +363,13 @@ FRQd1          lda       PollSpd2,pcr
                bra       FRQd2
 
 ; save back D on stack and build our U
-IRQGotOp       pshs      d
-          * mode switch on bits 7+6 of A: 00 = vserial, 01 = vwindow, 10 = wirebug?, 11 = ?							
+IRQGotOp
+               cmpd      #16*256+255
+               beq       do_reboot
+
+               pshs      d
+* mode switch on bits 7+6 of A: 00 = vserial, 01 = vwindow, 10 = wirebug?, 11 = ?							
+
                anda      #$C0                ; mask last 6 bits
                beq       mode00              ; virtual serial mode
           					; future - handle other modes
@@ -384,9 +401,13 @@ key
                puls      d
                lbra      IRQPutch
 
-               
+do_reboot
+               lda       #255
+               os9       F$Debug
+
 * Virtual Serial Handler
-mode00         lda       ,s                  ; restore A		  
+mode00         
+               lda       ,s                  ; restore A		  
                anda      #$0F                ; mask first 4 bits, a is now port #+1
                beq       IRQCont             ; if we're here with 0 in the port, its not really a port # (can we jump straight to status?)
                deca                          ; we pass +1 to use 0 for no data
@@ -410,7 +431,7 @@ IRQCont
 
           * multiread/status flag is in bit 4 of A
                bita      #$10
-               beq       IRQPutch            ; branch for read1 if multiread not set
+               lbeq       IRQPutch            ; branch for read1 if multiread not set
 
           * all 0s in port means status, anything else is multiread
 
@@ -453,17 +474,22 @@ IRQsetFRQ      pshs      x                   ; preserve
 
 * This routine roots through process descriptors in a queue and
 * checks to see if the process has a path that is open to the device
-* represented by the static storage pointer in U. if so, the S$HUP
-* signal is sent to that process
+* represented by the static storage pointer in U. If so, set the Condem
+* bit of the P$State of that process.
+*
+* Note: we start with path 0 and continue until we get to either (a) the
+* last path for that process or (b) a hit on the static storage that we
+* are seeking.
 *
 * Entry: X = process descriptor to evaluate
 *        U = static storage of device we want to check against
 RootThrough              
-               ldb       #NumPaths
+               clrb
                leay      P$Path,x
                pshs      x
-loop           decb      
-               bmi       out
+loop           cmpb      #NumPaths      
+               beq       out
+               incb
                lda       ,y+
                beq       loop
                pshs      y
@@ -476,15 +502,20 @@ loop           decb
                ldx       PD.DEV,y
                leax      V$STAT,x
                puls      y
-               bcs       out
+               bcs       loop   +BGP+ Jul 20, 2012: continue even if error in F$Find64
 
                cmpu      ,x
                bne       loop
 
                ldx       ,s
-               lda       P$ID,x
+
                ldb       #S$HUP
-               os9       F$Send
+               stb       P$Signal,x
+               os9       F$AProc
+
+*			lda   	P$State,x		get state of recipient
+*			ora   	#Condem			set condemn bit
+*			sta   	P$State,x		and set it back
 
 out            puls      x
                ldx       P$Queue,x
@@ -494,7 +525,7 @@ out            puls      x
 statcont       clrb      
                tfr       d,u
 * NEW: root through all process descriptors. if any has a path open to this
-* device, send then S$HUP
+* device, condem it
                ldx       <D.AProcQ
                beq       dowaitq
                bsr       RootThrough

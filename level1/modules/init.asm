@@ -110,8 +110,17 @@ OSStr    equ   *
          fcb   0
 
 InstStr  equ   *
-         IFNE   coco
+         IFNE   coco1
          fcc    "Radio Shack Color Computer"
+         ELSE
+         IFNE   deluxe
+         fcc    "Deluxe Color Computer"
+         ELSE
+         IFNE   coco2
+         fcc    "Radio Shack Color Computer 2"
+         ELSE
+         IFNE   coco2b
+         fcc    "Tandy Color Computer 2"
          ELSE
          IFNE   coco3
          fcc    "Tandy Color Computer 3"
@@ -129,6 +138,9 @@ InstStr  equ   *
          fcc    "Atari XL/XE"
          ELSE
          fcc    "Unknown Machine"
+         ENDC
+         ENDC
+         ENDC
          ENDC
          ENDC
          ENDC

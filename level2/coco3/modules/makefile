@@ -5,24 +5,25 @@ vpath %.asm kernel:$(LEVEL2)/modules:$(LEVEL1)/modules
 
 AFLAGS		+= -I$(LEVEL1)/modules
 
-CLOCKELIM       = -aRTCElim=1
-CLOCKDISTO2     = -aRTCDsto2=1
-CLOCKDISTO4     = -aRTCDsto4=1
-CLOCKBNB        = -aRTCBB=1
-CLOCKSMART      = -aRTCSmart=1 -aMPIFlag=1
-CLOCKHARRIS     = -aRTCHarrs=1
-CLOCKCLOUD9     = -aRTCCloud9=1
-CLOCKSOFT       = -aRTCSoft=1
-CLOCKMESSEMU    = -aRTCMessEmu=1
-CLOCKJVEMU      = -aRTCJVEmu=1
-TC3FLAGS        = $(AFLAGS) -aTC3=1 $(FLAGS)
-IDEFLAGS        = $(AFLAGS) -aIDE=1 $(FLAGS)
+CLOCKELIM       = -DRTCElim=1
+CLOCKDISTO2     = -DRTCDsto2=1
+CLOCKDISTO4     = -DRTCDsto4=1
+CLOCKBNB        = -DRTCBB=1
+CLOCKSMART      = -DRTCSmart=1 -DMPIFlag=1
+CLOCKHARRIS     = -DRTCHarrs=1
+CLOCKCLOUD9     = -DRTCCloud9=1
+CLOCKSOFT       = -DRTCSoft=1
+CLOCKMESSEMU    = -DRTCMessEmu=1
+CLOCKJVEMU      = -DRTCJVEmu=1
+TC3FLAGS        = $(AFLAGS) -DTC3=1 $(FLAGS)
+IDEFLAGS        = $(AFLAGS) -DIDE=1 $(FLAGS)
+SDFLAGS         = $(AFLAGS) -DCOCOSDC=1 -DITTYP=128 $(FLAGS)
 
 DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		 boot_burke boot_rampak boot_wd1002 boot_dw boot_dw_becker \
+		 boot_burke boot_rampak boot_wd1002 boot_dw boot_dw_becker boot_dw_arduino \
 		boot_tc3 boot_ide boot_rom
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
@@ -33,7 +34,7 @@ CLOCKS          = clock_60hz clock_50hz \
 		clock2_jvemu clock2_messemu clock2_dw
 
 RBF		= rbf.mn \
-		rbdw.dr dwio.sb dwio_becker.sb \
+		rbdw.dr dwio.sb dwio_becker.sb dwio_arduino.sb \
 		rb1773.dr rb1773_scii_ff74.dr rb1773_scii_ff58.dr \
 		d0_35s.dd d1_35s.dd d2_35s.dd d3_35s.dd \
 		d0_40d.dd d1_40d.dd d2_40d.dd d0_80d.dd \
@@ -42,10 +43,11 @@ RBF		= rbf.mn \
 		rammer.dr r0_8k.dd r0_96k.dd r0_128k.dd r0_192k.dd \
 		ddr0_8k.dd ddr0_96k.dd ddr0_128k.dd ddr0_192k.dd md.dd \
 		ddx0.dd x0.dd x1.dd x2.dd x3.dd \
-		rbsuper.dr lltc3.dr llide.dr \
+		rbsuper.dr lltc3.dr llide.dr llcocosdc.dr \
 		ddi0_ide.dd i0_ide.dd i1_ide.dd ih_ide.dd \
 		dds0_tc3.dd s0_tc3.dd s1_tc3.dd s2_tc3.dd s3_tc3.dd s4_tc3.dd \
-		s5_tc3.dd s6_tc3.dd sh_tc3.dd
+		s5_tc3.dd s6_tc3.dd sh_tc3.dd \
+		ddsd0_cocosdc.dd sd0_cocosdc.dd sd1_cocosdc.dd
 
 SCF		= scf.mn \
 		vtio.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr sc6551.dr \
@@ -61,14 +63,13 @@ SCF		= scf.mn \
 		w8.dw w9.dw w10.dw w11.dw w12.dw w13.dw w14.dw w15.dw \
 		v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw \
-		scdwn.dr term_scdwn.dt n_scdwn.dd \
-		n1_scdwn.dd n2_scdwn.dd n3_scdwn.dd \
-                n4_scdwn.dd n5_scdwn.dd n6_scdwn.dd n7_scdwn.dd \
-		n8_scdwn.dd n9_scdwn.dd n10_scdwn.dd n11_scdwn.dd \
-                n12_scdwn.dd n13_scdwn.dd midi_scdwn.dd \
-		term_z_scdwn.dd \
-		z1_scdwn.dd z2_scdwn.dd z3_scdwn.dd z4_scdwn.dd z5_scdwn.dd \
-		z6_scdwn.dd z7_scdwn.dd
+		scdwv.dr term_scdwv.dt n_scdwv.dd \
+		n1_scdwv.dd n2_scdwv.dd n3_scdwv.dd \
+                n4_scdwv.dd n5_scdwv.dd n6_scdwv.dd n7_scdwv.dd \
+		n8_scdwv.dd n9_scdwv.dd n10_scdwv.dd n11_scdwv.dd \
+                n12_scdwv.dd n13_scdwv.dd midi_scdwv.dd \
+		term_z_scdwv.dt z1_scdwv.dd z2_scdwv.dd z3_scdwv.dd \
+                z4_scdwv.dd z5_scdwv.dd z6_scdwv.dd z7_scdwv.dd \
 
 PIPE		= pipeman.mn pipeman_named.mn \
 		piper.dr \
@@ -96,81 +97,81 @@ ccbkrn krn krnp2:
 
 # Special cases
 # TC^3 SCSI Booter
-# Here, ITDNS sets the scsi bus address of the boot drive, where
-# ITDNS = 1 = %00000001
-# ITDNS = 2 = %00000010
-# ITDNS = 3 = %00000100 etc
-# This is 4th byte from end of module
-# Controller hardware addr is usually $FF74 6th-5th byte from end of module
-# MPI = 1 = set MPI slot # from SDMPI in CtrlSlot if 1, Set $FF if zero
-
 boot_tc3: boot_scsi.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) -aITDNS=0 -aMPI=1 -aITDRV=1
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS)
 
 # SuperIDE/Glenside IDE Booter
 boot_ide: boot_ide.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
 
-# DriveWire 3 Becker Booter
+# DriveWire Becker Booter
 boot_dw_becker: boot_dw.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBECKER=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBECKER=1
 
-# DriveWire 3 Becker Submodule
+# DriveWire Becker Submodule
 dwio_becker.sb: dwio.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aBECKER=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBECKER=1
+
+# DriveWire Becker Booter
+boot_dw_arduino: boot_dw.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DARDUINO=1
+
+# DriveWire Arduino Submodule
+dwio_arduino.sb: dwio.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DARDUINO=1
 
 # CoGrf/CoVDG Modules
 cogrf.io: cowin.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aCoGrf=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DCoGrf=1
 
 covdg.io: covdg.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCOCO2=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCOCO2=1
 
 covdg_small.io: covdg.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
 
 # Disto SC-II Drivers
 rb1773_scii_ff74.dr:    rb1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSCII=1
                                                                             
 rb1773_scii_ff58.dr:    rb1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSCII=1 -aSCIIALT=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSCII=1 -DSCIIALT=1
                                                                             
 # REL Modules
 rel_32: rel.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=32
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DWidth=32
 
 rel_40: rel.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=40
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DWidth=40
 
 rel_80: rel.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=80
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DWidth=80
 
 rel_32_50hz: rel.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=32 -aTkPerSec=50
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DWidth=32 -DTkPerSec=50
 
 rel_40_50hz: rel.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=40 -aTkPerSec=50
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DWidth=40 -DTkPerSec=50
 
 rel_80_50hz: rel.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aWidth=80 -aTkPerSec=50
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DWidth=80 -DTkPerSec=50
 
 # Floppy Booters
 boot_1773_6ms: boot_1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSTEP=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSTEP=0
 
 boot_1773_30ms: boot_1773.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aSTEP=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSTEP=3
 
 # SysGo Modules
 sysgo_dd: sysgo.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1
 	
 sysgo_h0: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 	
 sysgo_rom: sysgo.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aROM=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DROM=1
 	
 # TC^3 SCSI Driver
 lltc3.dr: llscsi.asm
@@ -181,235 +182,248 @@ llide.dr: llide.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
 
 # Floppy descriptors
-SSDD35		= -aCyls=35 -aSides=1 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=1
-DSDD40		= -aCyls=40 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=1
-DSDD80		= -aCyls=80 -aSides=2 -aSectTrk=18 -aSectTrk0=18 \
-		-aInterlv=3 -aSAS=8 -aDensity=1 -aD35
+SSDD35		= -DCyls=35 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
+		-DInterlv=3 -DSAS=8 -DDensity=1
+DSDD40		= -DCyls=40 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
+		-DInterlv=3 -DSAS=8 -DDensity=1
+DSDD80		= -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
+		-DInterlv=3 -DSAS=8 -DDensity=1 -DD35
+
+# HDB-DOS for SuperDriver
+HDBDOS                  = -DHB $(SSDD35) $(ID0) -DITDNS=8
 
 ddd0_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=0 -DDD=1
 
 d0_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=0
 
 d1_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=1
 
 d2_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=2
 
 d3_35s.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=3
 
 ddd0_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -DDNum=0 -DDD=1
 
 d0_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -DDNum=0
 
 d1_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -DDNum=1
 
 d2_40d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD40) -DDNum=2
 
 ddd0_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=0 -DDD=1
 
 d0_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=0
 
 d1_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=1
 
 d2_80d.dd: rb1773desc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=2
 
 # RAM Disk descriptors
 r0_8k.dd: r0.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=8
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=8
 
 ddr0_8k.dd: r0.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=8 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=8 -DDD=1
 
 r0_96k.dd: r0.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=96
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=96
 
 ddr0_96k.dd: r0.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=96 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=96 -DDD=1
 
 r0_128k.dd: r0.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=128
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=128
 
 ddr0_128k.dd: r0.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=128 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=128 -DDD=1
 
 r0_192k.dd: r0.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=192
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192
 
 ddr0_192k.dd: r0.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aRAMSize=192 -aDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192 -DDD=1
 
-# DriveWire 3 SCF descriptors
-term_scdwn.dt: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=0
+# DriveWire SCF descriptors
+term_scdwv.dt: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=0
 
-n_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=255
+n_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=255
 
-n1_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=1
+n1_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=1
 
-n2_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=2
+n2_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=2
 
-n3_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=3
+n3_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=3
 
-n4_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=4
+n4_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=4
 
-n5_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=5
+n5_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=5
 
-n6_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=6
+n6_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=6
 
-n7_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=7
+n7_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=7
 
-n8_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=8
+n8_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=8
 
-n9_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=9
+n9_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=9
 
-n10_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=10
+n10_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=10
 
-n11_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=11
+n11_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=11
 
-n12_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=12
+n12_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=12
 
-n13_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=13
+n13_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=13
 
-midi_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=14
+midi_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=14
 
-term_z_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=16
+term_z_scdwv.dt: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=16
 
-z1_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=17
+z1_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=17
 
-z2_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=18
+z2_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=18
 
-z3_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=19
+z3_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=19
 
-z4_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=20
+z4_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=20
 
-z5_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=21
+z5_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=21
 
-z6_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=22
+z6_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=22
 
-z7_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=23
+z7_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=23
 
-# DriveWire 3 RBF descriptors
+# DriveWire RBF descriptors
 ddx0.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1 -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1 -DDNum=0
 
 x0.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0
 
 x1.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=1
 
 x2.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=2
 
 x3.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=3
 
 # TC^3 SCSI Descriptors
 dds0_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) -aDD=1 -aDnum=0 -aITDRV=0
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) -DDD=1
 
 s0_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) $(SCSI_HD) -aDnum=0 -aITDRV=0
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) $(SCSI_HD)
 
 s1_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID1) $(SCSI_HD) -aDnum=1 -aITDRV=1
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID1) $(SCSI_HD)
 
 s2_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID2) $(SCSI_HD) -aDnum=2 -aITDRV=2
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID2) $(SCSI_HD)
 
 s3_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID3) $(SCSI_HD) -aDnum=3 -aITDRV=3
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID3) $(SCSI_HD)
 
 s4_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID4) $(SCSI_HD) -aDnum=4 -aITDRV=4
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID4) $(SCSI_HD)
 
 s5_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID5) $(SCSI_HD) -aDnum=5 -aITDRV=5
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID5) $(SCSI_HD)
 
 s6_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID6) $(SCSI_HD) -aDnum=6 -aITDRV=6
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID6) $(SCSI_HD)
 
 sh_tc3.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(HDBDOS) $(SSDD35) -aHDBDOS=1 -aHB=1 -aDnum=7 -aITDRV=0
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(HDBDOS)
 
 # IDE Descriptors
 ddi0_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER) -aDnum=0 -aDD=1 -aITDRV=0
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER) -DDD=1
 
 i0_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER) -aDnum=0 -aITDRV=0
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER)
 
 i1_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SLAVE) -aDnum=1 -aITDRV=1
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SLAVE)
 
 ih_ide.dd: superdesc.asm
-	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SSDD35) -aHDBDOS=1 -aHD=1 -aDnum=0 -aITDRV=0
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS)
+
+# SuperSD Descriptors
+ddsd0_cocosdc.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DDD=1
+
+sd0_cocosdc.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DITDRV=0
+
+sd1_cocosdc.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DITDRV=1
 
 # RFM descriptors
 ddy0.dd: rfmdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1 -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1 -DDNum=0
 
 y0.dd: rfmdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0
 
 y1.dd: rfmdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=1
 
 y2.dd: rfmdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=2
 
 y3.dd: rfmdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=3
 
 # Clocks
 clock_60hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=60
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=60
 
 clock_50hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=50
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=50
 
 clock2_cloud9: clock2_ds1315.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aCLOUD9=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCLOUD9=1
 
 clock2_bnb: clock2_ds1315.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aBNB=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DBNB=1
 
 clean:
 	$(CD) kernel; make $@

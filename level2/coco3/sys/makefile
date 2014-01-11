@@ -1,12 +1,11 @@
-PORT = coco3
-include $(NITROS9DIR)/rules.mak
+include ../port.mak
 
 vpath %.hp $(LEVEL2)/sys:$(LEVEL1)/sys
 vpath %.asm $(LEVEL2)/sys
 
 DEPENDS		= ./makefile
 
-L1TXTFILES	= errmsg password inetd.conf
+L1TXTFILES	= errmsg password
 L2TXTFILES	= $(NITROS9DIR)/level2/sys/motd
 BINFILES	= stdfonts stdpats_2 stdpats_4 stdpats_16 stdptrs \
 		ibmedcfont isolatin1font
@@ -23,7 +22,7 @@ HELPFILES	= asm.hp attr.hp \
 		kill.hp \
 		link.hp list.hp load.hp login.hp \
 		makdir.hp mdir.hp megaread.hp merge.hp mfree.hp mmap.hp modpatch.hp \
-		montype.hp mpi.hp os9gen.hp \
+		montype.hp minted.hp mpi.hp os9gen.hp \
 		padrom.hp park.hp pmap.hp proc.hp procs.hp prompt.hp pwd.hp pxd.hp \
 		reboot.hp rename.hp runb.hp \
 		save.hp setime.hp setpr.hp shell.hp sleep.hp smap.hp \
@@ -38,7 +37,7 @@ HELPFILES	= asm.hp attr.hp \
 HELPMSG		= helpmsg
 
 TEXTFILES	= $(L2TXTFILES) $(HELPMSG) $(L1TXTFILES)
-ALLOBJS		= $(TEXTFILES) $(BINFILES)
+ALLOBJS		= $(TEXTFILES) $(BINFILES) inetd.conf
 
 all:	$(ALLOBJS) $(DEPENDS)
 
@@ -46,16 +45,19 @@ $(HELPMSG): $(HELPFILES)
 	$(MERGE) $^ > $@
 
 $(L1TXTFILES): $(LEVEL1)/sys/$@
-	-$(SOFTLINK) $(LEVEL1)/sys/$@
+	$(SOFTLINK) -f $(LEVEL1)/sys/$@
+
+inetd.conf:     $(LEVEL1)/sys/inetd.conf
+	@sed -e 's/%TELNET_PORT%/$(TELNET_PORT)/' -e 's/%HTTPD_PORT%/$(HTTPD_PORT)/' $^ > $@
 
 clean:
-	$(RM) $(HELPMSG) $(L1TXTFILES) $(BINFILES)
+	$(RM) $(HELPMSG) $(L1TXTFILES) $(BINFILES) inetd.conf
 
 showbinobjs:
 	@$(ECHO) $(BINFILES)
 
 showtextobjs:
-	@$(ECHO) $(TEXTFILES)
+	@$(ECHO) $(TEXTFILES) inetd.conf
 
 showobjs:
 	@$(ECHO) $(ALLOBJS)

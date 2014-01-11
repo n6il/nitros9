@@ -68,7 +68,7 @@ L012C      clr    U0002,U                                               * 012C 6
            clra                                                         * 0132 4F             O
            clrb                                                         * 0133 5F             _
            os9    I$GetStt                                              * 0134 10 3F 8D       .?.
-           leax   <$FFE0,X                                              * 0137 30 88 E0       0.`
+           leax   -$20,X                                                * 0137 30 88 E0       0.`
            clr    <$0024,X                                              * 013A 6F 88 24       o.$
            leax   >U043D,U                                              * 013D 30 C9 04 3D    0I.=
            clra                                                         * 0141 4F             O
@@ -268,7 +268,7 @@ L032E      pshs   B                                                     * 032E 3
            puls   B                                                     * 0332 35 04          5.
            os9    F$Exit                                                * 0334 10 3F 06       .?.
 L0337      leax   >U043D,U                                              * 0337 30 C9 04 3D    0I.=
-           leax   <$FFE0,X                                              * 033B 30 88 E0       0.`
+           leax   -$20,X                                                * 033B 30 88 E0       0.`
            lda    #1                                                    * 033E 86 01          ..
            sta    <$0024,X                                              * 0340 A7 88 24       '.$
            leax   >U043D,U                                              * 0343 30 C9 04 3D    0I.=

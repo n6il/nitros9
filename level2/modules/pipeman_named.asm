@@ -115,7 +115,7 @@
 *
          IFP1  
          use   defsfile
-         use   pipedefs
+         use   pipe.d
          ENDC  
 
 *

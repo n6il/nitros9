@@ -66,17 +66,21 @@ ATARI.D        set       1
 *
 Hz50           equ       1                   Assemble clock for 50 hz power
 Hz60           equ       2                   Assemble clock for 60 hz power
+               IFNDEF    PwrLnFrq
 PwrLnFrq       set       Hz60                Set to Appropriate freq
+               ENDC
 
 
 **********************************
 * Ticks per second
 *
+               IFNDEF    TkPerSec
                ifeq      PwrLnFrq-Hz50
 TkPerSec       set       50
                else      
 TkPerSec       set       60
                endc      
+               ENDC
 
 
 *************************************************
@@ -111,8 +115,8 @@ G.CharSetAddr  equ       $F800
 * POKEY requires shadow registers.  We allocate them in the kernel's DP
 * (Yes, we are stealing an existing variable that is so old it should be
 *  removed from os9defs)
-D.IRQENShdw    equ       D.WDBtDr
-D.ATARIFLAGS   equ       D.SWPage
+D.IRQENShdw    equ       $02               ; was D.WDBtDr
+D.SKCTLShdw    equ       $03               ; was D.SWPage
 
 * The clock interrupt is driven by the unmaskable NMI.  Therefore,
 * the rbdw3 driver uses the DWIOSEMA flag in the D.ATARIFLAGS field as
@@ -270,6 +274,8 @@ IRQEN.TIMER1   equ       %00000001
 SKCTL          equ       POKEY+$0F           ;serial port and keyboard control
 SKCTL.FORECEBREAK equ       %10000000
 SKCTL.SERMODECTRLMASK equ       %01110000
+SKCTL.SERMODEOUT equ       %00100000
+SKCTL.SERMODEIN  equ       %00010000
 SKCTL.TWOTONEMODE equ       %00001000
 SKCTL.FASTPOTSCAN equ       %00000100
 SKCTL.KEYBRDSCAN equ       %00000010

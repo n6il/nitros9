@@ -1,4 +1,3 @@
-	opt	w132	wide listing
 ********************************************************************
 * SuperDesc - Super Driver Device Descriptor Template
 *
@@ -10,7 +9,7 @@
 *  Bit Meaning
 *  --- ---------------------------------------------------------------
 *  7-0 HDB-DOS Drive Number (useful only if HDB-DOS bit set in IT.DNS)
-* 
+*
 * IT.TYP (offset $15)
 *  Bit Meaning
 *  --- ---------------------------------------------------------------
@@ -20,7 +19,7 @@
 *  4   Drive Size Query (1 = yes, 0 = no)
 *  2-3 Undefined
 *  0-1 Sector Size (0 = 256, 1 = 512, 2 = 1024, 3 = 2048)
-* 
+*
 * IT.DNS (offset $16) for SCSI Low Level Driver
 *  Bit Meaning
 *  --- ---------------------------------------------------------------
@@ -28,7 +27,7 @@
 *  4   Turbo Mode:  1 = use accelerated handshaking, 0 = standard
 *  3   HDB-DOS Partition Flag
 *  0-2 SCSI ID of the drive or controller (0-7)
-* 
+*
 * IT.DNS (offset $16) for IDE Low Level Driver
 *  Bit Meaning
 *  --- ---------------------------------------------------------------
@@ -48,65 +47,100 @@
 *
 *   0      2005/12/08  Boisy G. Pitre
 * Reserved two bits in IT.TYP for llscsi.
-*
-*   1      2012/11/06  Gene Heskett
-* passing config opts from makefile
+
                NAM       SuperDesc
                TTL       Super Driver Device Descriptor Template
 
 * Super Driver specific fields
-*ITDRV          SET       $00 GH - conflicting? Set in makefile GH
-ITSTP          SET       $00 GH - HDBDOS drive num in $hex
-ITTYP          SET       $81 GH - default=Hard drive, 512 byte sectors
+*               IFEQ      ITDRV
+		IFNDEF	ITDRV
+ITDRV          SET       $00
+               ENDC
+*               IFEQ      ITSTP
+		IFNDEF	ITSTP
+ITSTP          SET       $00
+               ENDC
+*               IFEQ      ITTYP
+		IFNDEF	ITTYP
+ITTYP          SET       $81
+               ENDC
+*               IFEQ      ITDNS
+		IFNDEF	ITDNS
+ITDNS          SET       $00
+               ENDC
 
-*ITDNS          SET       $00 GH - conflicting? Set in makefile
-ITDNS		SET	ITDRV
-ITSOFS1        SET       $00 GH - partition offsets
+*               IFEQ      ITSOFS1
+		IFNDEF	ITSOFS1
+ITSOFS1        SET       $00
+               ENDC
+*               IFEQ      ITSOFS2
+		IFNDEF	ITSOFS2
 ITSOFS2        SET       $00
+               ENDC
+*               IFEQ      ITSOFS3
+		IFNDEF	ITSOFS3
 ITSOFS3        SET       $00
+               ENDC
 
 * Geometry for an EZ-135
+*               IFEQ      Sides
+		IFNDEF	Sides
 Sides          SET       $40
+               ENDC
+*               IFEQ      Cyls
+		IFNDEF	Cyls
 Cyls           SET       $007f
+               ENDC
+*               IFEQ      SectTrk
+		IFNDEF	SectTrk
 SectTrk        SET       $0020
+               ENDC
+*               IFEQ      SectTrk0
+		IFNDEF	SectTrk0
 SectTrk0       SET       $0020
+               ENDC
+*               IFEQ      Interlv
+		IFNDEF	Interlv
 Interlv        SET       $01
-* GH - conditionalize this eventually to reduce disk fragmentation
-SAS            SET       $08 GH - S/B reset to $20 if not floppy
+               ENDC
+*               IFEQ      SAS
+		IFNDEF	SAS
+SAS            SET       $08
+               ENDC
 
-               IFP1      
+               IFP1
                USE       defsfile
                USE       rbsuper.d
                IFNE      IDE
                USE       ide.d
                ELSE
+               IFNE      TC3+KTLR+D4N1+HDII
                USE       scsi.d
-               ENDC      
-               ENDC      
+               ELSE
+               USE       cocosdc.d
+               ENDC
+               ENDC
+               ENDC
 
 tylg           SET       Devic+Objct
 atrv           SET       ReEnt+rev
-rev            SET       $0A
+rev            SET       $09
 
                MOD       eom,name,tylg,atrv,mgrnam,drvnam
 
                IFNE      CDROM
                FCB       DIR.+SHARE.+PEXEC.+PREAD.+EXEC.+READ.
-               ELSE      
+               ELSE
                FCB       DIR.+SHARE.+PEXEC.+PREAD.+PWRIT.+EXEC.+UPDAT.
-               ENDC      
+               ENDC
                FCB       HW.PAGE             extended controller address
                FDB       SDAddr              physical controller address
                FCB       initsize-*-1        initilization table size
                FCB       DT.RBF              device type:0=scf,1=rbf,2=pipe,3=scf
-               FCB       Dnum               drive number
-	       IFNE	 HDBDOS
-	       FCB	$80
-	       ELSE
-               FCB       ITSTP               step rate or HDBDOS #
-	       ENDC
+               FCB       ITDRV               drive number
+               FCB       ITSTP               step rate
                FCB       ITTYP               drive device type
-               FCB       ITDNS               media density or bus addr SEE DEFS ABOVE!
+               FCB       ITDNS               media density
                FDB       Cyls                number of cylinders (tracks)
                FCB       Sides               number of sides
                FCB       $01                 verify disk writes:0=on
@@ -131,46 +165,46 @@ initsize       EQU       *
 
                IFNE      NULL
 name           FCC       /NULL/
-               FCB       Dnum+$B0
-               ELSE      
+               FCB       ITDRV+$B0
+               ELSE
                IFNE      DD
 name           FCS       /DD/
-               ELSE      
+               ELSE
                IFNE      DRIVEWIRE
 name           FCC       /X/
                IFNE      HB
                FCS       /H/
-               ELSE      
-               FCB       Dnum+$B0
-               ENDC      
-               ELSE      
+               ELSE
+               FCB       ITDRV+$B0
+               ENDC
+               ELSE
                IFNE      IDE
 name           FCC       /I/
-               IFNE      HDBDOS
+               IFNE      HB
                FCS       /H/
-               ELSE      
-               FCB       Dnum+$B0
-               ENDC      
-               ELSE      
-               IFNE      SD
+               ELSE
+               FCB       ITDRV+$B0
+               ENDC
+               ELSE
+               IFNE      COCOSDC
 name           FCC       /SD/
                IFNE      HB
                FCS       /H/
-               ELSE      
-               FCB       Dnum+$B0
-               ENDC      
-               ELSE      
+               ELSE
+               FCB       ITDRV+$B0
+               ENDC
+               ELSE
 name           FCC       /S/
-               IFNE      HDBDOS
+               IFNE      HB
                FCS       /H/
-               ELSE      
-               FCB       Dnum+$B0
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
+               ELSE
+               FCB       ITDRV+$B0
+               ENDC
+               ENDC
+               ENDC
+               ENDC
+               ENDC
+               ENDC
 
 mgrnam         FCS       /RBF/
 drvnam         FCS       /rbsuper/
@@ -178,38 +212,38 @@ lldrv          EQU       *
                IFNE      NULL
                FCS       /llnull/
                FCB       0
-               ELSE      
+               ELSE
                IFNE      DRIVEWIRE
                FCS       /lldw/
                FCB       0,0,0
-               ELSE      
+               ELSE
                IFNE      TC3+SB
                FCS       /lltc3/
                FCB       0,0
-               ELSE      
+               ELSE
                IFNE      KTLR
                FCS       /llktlr/
                FCB       0
-               ELSE      
+               ELSE
                IFNE      HDII+D4N1
                FCS       /lldisto/
-               ELSE      
+               ELSE
                IFNE      IDE
                FCS       /llide/
                FCB       0,0
-               ELSE      
-               IFNE      SD
-               FCS       /llsd/
+               ELSE
+               IFNE      COCOSDC
+               FCS       /llcocosdc/
                FCB       0,0,0
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
-               ENDC      
+               ENDC
+               ENDC
+               ENDC
+               ENDC
+               ENDC
+               ENDC
+               ENDC
 
 
-               EMOD      
+               EMOD
 eom            EQU       *
-               END       
+               END

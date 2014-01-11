@@ -100,7 +100,7 @@ L0102      stx    <U0010,U                                              * 0102 A
            os9    I$GetStt                                              * 0142 10 3F 8D       .?.
            lbcs   L03ED                                                 * 0145 10 25 02 A4    .%.$
            leax   >U0456,U                                              * 0149 30 C9 04 56    0I.V
-           leax   <$FFE0,X                                              * 014D 30 88 E0       0.`
+           leax   -$20,X                                                * 014D 30 88 E0       0.`
            clr    <$002B,X                                              * 0150 6F 88 2B       o.+
            clr    <$002C,X                                              * 0153 6F 88 2C       o.,
            clr    <$002E,X                                              * 0156 6F 88 2E       o..

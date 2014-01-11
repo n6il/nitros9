@@ -55,7 +55,11 @@ Sides    set   2          number of sides (1 or 2)
 OptEnd   equ   *
 
 * NAME STRINGS
-DescName fcb   'DD'
+; The following is the original code which doesn't make sense. The line
+; after is what it was probably assembling as, which also doesn't make 
+; sense. --WAA
+;DescName fcb   'DD'
+DescName fcb   'D
 DscMgr   fcs   'RBF'
 DscDrv   fcs   'SDisk'
 

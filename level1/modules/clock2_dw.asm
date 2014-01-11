@@ -33,7 +33,7 @@ RTC.Base  equ       $0000
 name      fcs       "Clock2"  
           fcb       edition
 
-subname   fcs       "dw3"
+subname   fcs       "dwio"
 
 * Three Entry Points:
 *   - Init
@@ -45,11 +45,15 @@ JmpTable
           bra       GetTime   	RTC Get Time
           nop
 
-SetTime   pshs      u,y,x,d
-          IFNE      atari
-          tst       D.ATARIFLAGS
-          bmi       UpdLeave
+SetTime   
+          IFGT      Level-1
+          lda       <D.DWSrvID
+          ELSE
+          lda       >D.DWSrvID
           ENDC
+          cmpa      #128
+          bne       leave
+          pshs      u,y,x,d
           IFGT      Level-1
           ldu       <D.DWSubAddr
           ELSE
@@ -70,10 +74,6 @@ SetTime   pshs      u,y,x,d
 GetTime 
           lda       #OP_TIME        Time packet
           pshs      u,y,x,d
-          IFNE      atari
-          tst       D.ATARIFLAGS
-          bmi       UpdLeave
-          ENDC
           IFGT      Level-1
           ldu       <D.DWSubAddr
           ELSE

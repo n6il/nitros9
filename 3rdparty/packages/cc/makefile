@@ -35,7 +35,7 @@ dsk:	all
 	$(CPL) sources/*.a $(DISK),SOURCES/SYS
 
 dskcopy: dsk
-	$(CP) $(DISK) $(DSKDIR)
+	$(OS9COPY) $(DISK) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DISK)

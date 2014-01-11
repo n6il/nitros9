@@ -10,6 +10,10 @@ CMDS		= bawk del grep mode send timer bigbro font makdir \
 
 ALLOBJS		= $(CMDS)
 
+DSKBOISYUTILS	= boisy_utils.dsk
+
+DSKS		= $(DSKBOISYUTILS)
+
 all:	banner $(ALLOBJS) $(DEPENDS)	
 
 banner:
@@ -18,7 +22,26 @@ banner:
 	@$(ECHO) "*             Boisy Pitre's Utilities            *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
- 
-clean:
+
+$(DSKBOISYUTILS): $(CMDS)
+	$(RM) $@
+	$(OS9FORMAT) $@
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
+
+dsk: all $(DSKS)
+
+dskcopy: dsk
+	$(CP) $(DSKS) $(DSKDIR)
+
+dskclean:
+	$(RM) $(DSKS)
+
+clean: dskclean
 	$(RM) $(ALLOBJS)
+
+info:
+	@echo "*** Boisy Pitre's Utilities ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
 

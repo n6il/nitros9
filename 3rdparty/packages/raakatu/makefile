@@ -7,7 +7,7 @@ CMDS		= raaka-tu raakatu
 MD		= $(LEVEL2)/coco3/modules
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
+KERNEL   	= $(MD)/rel_32 $(MD)/boot_1773_6ms $(MD)/krn
 OS9BOOT		= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/ddd0_40d.dd \
@@ -25,7 +25,7 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk:	all
+$(DISK): all
 	$(RM) $(DISK)
 	$(CD) $(LEVEL2)/coco3; make
 	$(OS9FORMAT_SS35) $(DISK) -n"Raaka-Tu"
@@ -41,11 +41,11 @@ dsk:	all
 	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
 #	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$(DISK),SUB/$(file))
 
-dskcopy:
-	$(CP) $(DISK) $(DSKDIR)
+dskcopy: $(DISK)
+	$(OS9COPY) $(DISK) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DISK)
 
-run: dsk
+run: $(DISK)
 	mess -inipath ~/Documents/SDLMESS -video opengl -window coco3 -flop1 $(DISK)

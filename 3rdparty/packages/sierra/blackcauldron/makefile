@@ -1,7 +1,4 @@
-ifndef	NITROS9DIR
-NITROS9DIR	= $(HOME)/nitros9
-endif
-include $(NITROS9DIR)/rules.mak
+include ../../../../rules.mak
 
 vpath %.asm ../objs_lsl
 
@@ -76,7 +73,7 @@ SUPPORTFILES_D1	= logDir object picDir sndDir viewDir vol.0 \
 
 SUPPORTFILES_D2	= object vol.0 vol.2
 
-SUPPORTFILES	= $(SUPPORTFILES_D1) $(SUPPORTFILES_D2)
+SUPPORTFILES	= $(sort $(SUPPORTFILES_D1) $(SUPPORTFILES_D2))
 
 ALLOBJS		= $(CMDS)
 

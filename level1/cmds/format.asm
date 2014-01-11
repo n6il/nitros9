@@ -201,7 +201,7 @@ dctdat   fdb   $204E,$0000,$0C00,$03F5,$01FE,$0400
 dcfidp   fdb   $0030     
 dcsize   fdb   $0154     
                          
-DragonFlag equ   'd'        Flag that we are formatting dragon formatted disk.
+DragonFlag equ   'd        Flag that we are formatting dragon formatted disk.
 DragonRootSec equ   $12        Dragon root sector is always LSN 18
 DragonBootSize equ   $10        Size of dragon boot area
                          
@@ -472,10 +472,10 @@ opt.18   fcb   C$SPAC
          fcb   00        
          fdb   DoSpace-opt.18
                          
-opt.19   fcb   'F'       
+opt.19   fcb   'F       
          fcb   '          '
          fdb   DoFormat-opt.19
-opt.20   fcb   'f'       
+opt.20   fcb   'f       
          fcb   '          '
          fdb   DoFormat-opt.20
                          

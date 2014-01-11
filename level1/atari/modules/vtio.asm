@@ -135,15 +135,15 @@ clearLoop@
 		bcs	initex
 		
 * set POKEY to active
-		lda	#3
+		lda	#$13
 		sta	SKCTL
 
 * tell POKEY to enable keyboard scanning
-		lda	#%11000000
+		lda	#(IRQST.BREAKDOWN|IRQST.KEYDOWN)
 		pshs	cc
 		orcc	#IntMasks
-		ora	D.IRQENSHDW
-		sta	D.IRQENSHDW
+		ora	>D.IRQENSHDW
+		sta	>D.IRQENSHDW
 		puls	cc
 		sta	IRQEN
 
@@ -343,10 +343,25 @@ clrloop@	clr		,x+
 		rts
 		
 ClrScrn
+          clr       V.CurCol,u
+          lda       #G.Rows-1
+clrloop@
+          sta       V.CurRow,u
+          pshs      a
+          bsr       DelLine
+          puls      a
+          deca
+          bpl       clrloop@
+          clr       V.CurCol,u
+          rts
+          
 ErEOScrn
 CurUp
 NoOp
-CurHome
+CurHome   clr       V.CurCol,u
+          clr       V.CurRow,u
+          rts
+          
 CurXY
 ErEOLine
 Do05
@@ -463,8 +478,8 @@ SetStat
 
 	
 IRQPkt	equ	*
-Pkt.Flip	fcb	%11000000		flip byte
-Pkt.Mask 	fcb	%11000000		mask byte
+Pkt.Flip	fcb	(IRQST.BREAKDOWN|IRQST.KEYDOWN)		flip byte
+Pkt.Mask	fcb	(IRQST.BREAKDOWN|IRQST.KEYDOWN)		mask byte
 		fcb 	$0A		priority
 
 	
@@ -472,7 +487,15 @@ Pkt.Mask 	fcb	%11000000		mask byte
 * IRQ routine for keyboard
 *
 IRQSvc
+* check if BREAK key pressed; if so, it's a C$QUIT char
+          ldb  IRQST
+          bitb #IRQST.BREAKDOWN
+          bne  getcode
+          lda  #C$QUIT
+          bra  noctrl@
+getcode          
 		ldb	KBCODE	get keyboard code from POKEY
+gotcode
 		pshs b
 		andb	#$7F		mask out potential CTRL key
 		leax	ATASCI,pcr
@@ -484,6 +507,23 @@ IRQSvc
 		anda	#$5F
 		suba	#$40
 noctrl@
+* check for caps lock
+          cmpa #$82
+          bne  tst4caps@
+          tst  V.CapsLck,u
+          beq  turnon@
+          clra
+turnon@   sta  V.CapsLck,u
+          bra  KeyLeave
+tst4caps@
+          tst  V.CapsLck,u
+          beq  goon@
+          cmpa #$61
+          blt  goon@
+          cmpa #$7a
+          bgt  goon@
+          suba #$20
+goon@          
 		ldb	V.IBufH,u  get head pointer in B
 		leax	V.InBuf,u  point X to input buffer
 		abx              X now holds address of head
@@ -515,14 +555,15 @@ L0158	clr	V.WAKE,u   clear process to wake flag
 
 * Update the shadow register then the real register to disable and
 * re-enable the keyboard interrupt
+KeyLeave
 		pshs cc
           orcc #IntMasks
-		lda	D.IRQENShdw
+		lda	>D.IRQENShdw
 		tfr	a,b
-		anda	#^%11000000
-		orb	#%11000000
+		anda	#^(IRQST.BREAKDOWN|IRQST.KEYDOWN)
+		orb	#(IRQST.BREAKDOWN|IRQST.KEYDOWN)
 		sta	IRQEN
-		stb	D.IRQENShdw
+		stb	>D.IRQENShdw
 		stb	IRQEN
 		puls cc,pc
 		

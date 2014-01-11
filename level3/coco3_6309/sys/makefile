@@ -46,7 +46,7 @@ $(HELPMSG): $(HELPFILES)
 	$(MERGE) $^ > $@
 
 $(L1TXTFILES): $(LEVEL1)/sys/$@
-	-$(SOFTLINK) $(LEVEL1)/sys/$@
+	$(SOFTLINK) -f $(LEVEL1)/sys/$@
 
 clean:
 	$(RM) $(HELPMSG) $(L1TXTFILES) $(BINFILES)

@@ -14,7 +14,7 @@ Level    set   2
          fdb   $ff40      port address
          fcb   optB-*-1   option table size
          fcb   DT.RBF     this is a RBF device
-         fcb   dnum       this is drive dnum to the controller
+         fcb   DNum       this is drive dnum to the controller
          fcb   3          step rate
          fcb   %01000000+MSDOS. non standard type
          fcb   density   
@@ -24,9 +24,9 @@ Level    set   2
 optB     equ   *         
 
          IFEQ  density&%100 ..not hi density
-namB     fcb   dnam,dnum+48+%10000000 device name
+namB     fcb   dnam,DNum+48+%10000000 device name
          ELSE            
-namB     fcb   dnam,'H,dnum+48+%10000000 add H to device name
+namB     fcb   dnam,'H,DNum+48+%10000000 add H to device name
          ENDC            
 
 mgrB     fcs   /MSF/     

@@ -22,7 +22,7 @@ BASEADDR equ   $FF78
 
          ifp1
          use   defsfile
-         use   vtiodefs
+         use   cocovtio.d
          endc
 
 tylg     set   Systm+Objct   
@@ -62,11 +62,11 @@ Init     ldx   #BASEADDR
          ldd   #80*25
          lbsr  L0189
          ldb   <V.COLoad,u
-         orb   #ModCo80
+         orb   #ModCoWP
          bra   L004F
 * Term
 Term     ldb   <V.COLoad,u
-         andb  #~ModCo80
+         andb  #~ModCoWP
 L004F    stb   <V.COLoad,u
          clrb  
          rts   
