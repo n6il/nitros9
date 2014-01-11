@@ -8,6 +8,17 @@ export NITROS9DIR
 include rules.mak
 
 dirs	=  $(NOSLIB) $(LEVEL1) $(LEVEL2) $(LEVEL3) $(3RDPARTY)
+
+# Allow the user to specify a selection of ports to build
+# All selected ports must be of the same level
+ifdef PORTS
+dirs	=  $(NOSLIB)
+ifneq (,$(findstring coco3,$(PORTS)))
+dirs	+= $(LEVEL2)
+else
+dirs	+= $(LEVEL1)
+endif
+endif
  
 # Make all components
 all:

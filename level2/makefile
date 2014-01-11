@@ -1,6 +1,9 @@
 include $(NITROS9DIR)/rules.mak
 
 dirs	= coco3 coco3_6309
+ifdef PORTS
+dirs	= $(PORTS)
+endif
 
 # Make all components
 all:
