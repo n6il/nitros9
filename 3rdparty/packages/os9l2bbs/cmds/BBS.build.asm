@@ -429,7 +429,7 @@ L0478      pshs   Y,X,D                                                 * 0478 3
            clra                                                         * 047D 4F             O
            ldb    #0                                                    * 047E C6 00          F.
            os9    I$GetStt                                              * 0480 10 3F 8D       .?.
-           leax   <$FFE0,X                                              * 0483 30 88 E0       0.`
+           leax   -$20,X                                                * 0483 30 88 E0       0.`
            clr    <$0024,X                                              * 0486 6F 88 24       o.$
            leax   <$0020,X                                              * 0489 30 88 20       0.
            os9    I$SetStt                                              * 048C 10 3F 8E       .?.
@@ -440,7 +440,7 @@ L0491      pshs   Y,X,D                                                 * 0491 3
            clra                                                         * 0496 4F             O
            ldb    #0                                                    * 0497 C6 00          F.
            os9    I$GetStt                                              * 0499 10 3F 8D       .?.
-           leax   <$FFE0,X                                              * 049C 30 88 E0       0.`
+           leax   -$20,X                                                * 049C 30 88 E0       0.`
            lda    #1                                                    * 049F 86 01          ..
            sta    <$0024,X                                              * 04A1 A7 88 24       '.$
            leax   <$0020,X                                              * 04A4 30 88 20       0.
