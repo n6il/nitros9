@@ -1,7 +1,16 @@
-#!/bin/tcsh
-cd /home/project-web/nitros9/htdocs
-rm -rf latest
-mkdir latest
-cd latest
-unzip -o ../nitros9project.zip
-echo "Options +Indexes">.htaccess
+#!/bin/sh -e
+
+HTDOCS=/home/project-web/nitros9/htdocs
+TODAY=$(date +%Y%m%d)
+
+cd $HTDOCS
+mkdir latest-$TODAY
+cd latest-$TODAY
+unzip -o ../nitros9project-$TODAY.zip
+echo "Options +Indexes" > .htaccess
+
+cd $HTDOCS
+rm latest
+ln -s latest-$TODAY latest
+rm nitros9project.zip
+ln -s nitros9project-$TODAY.zip nitros9project.zip
