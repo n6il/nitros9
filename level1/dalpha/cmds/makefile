@@ -41,19 +41,19 @@ alldragon: $(DRAGONCMDS) $(SUBS)
 
 
 pwd:	pd.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPWD=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DPWD=1
 
 xmode:	xmode.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aXMODE=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DXMODE=1
 
 tmode:	xmode.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aTMODE=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DTMODE=1
 
 pxd:	pd.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -aPXD=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DPXD=1
 	
 cobbler_dragon: cobbler.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)cobbler_dragon -aDRAGON=1
+	$(AS) $(AFLAGS) $< $(ASOUT)cobbler_dragon -DDRAGON=1
 
 clean:
 	$(RM) $(ALLOBJS)
@@ -68,7 +68,7 @@ showcocoobjs:
 	@$(ECHO) $(CMDS) $(SUBS)
 
 showdragonobjs:
-	@$(ECHO) $(CMDS) $(DRAGONCMDS)
+	@$(ECHO) $(sort $(CMDS) $(DRAGONCMDS))
 
 showdragon525objs:
 	@$(ECHO) $(DRAGON525CMDS) $(SUBS)

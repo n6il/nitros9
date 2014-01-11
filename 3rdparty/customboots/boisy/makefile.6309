@@ -38,10 +38,10 @@ CMDS_THESIS	= testmisc testmul testdivq testtfr testexg testadd testnop testsync
 SRC_THESIS	= testmisc.a testmul.a testdivq.a testtfr.a testexg.a testadd.a testnop.a testsync.a testlda.a teststa.a testlbra.a
 
 # We make our own bootfile and kernel track
-KERNEL		= $(MD)/rel_80 $(MD)/boot_dw3 $(MD)/krn
+KERNEL		= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
 BOOTFILE_DWTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb \
+		$(MD)/rbdw.dr $(MD)/dwio.sb \
 		$(MD)/rammer.dr $(MD)/r0_128k.dd \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
@@ -55,12 +55,12 @@ BOOTFILE_DWTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/n13_scdwn.dd $(MD)/n14_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/clock_60hz $(MD)/clock2_dw \
 		$(MD)/sysgo_dd
 
 BOOTFILE_WINTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb \
+		$(MD)/rbdw.dr $(MD)/dwio.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr \
@@ -77,12 +77,12 @@ BOOTFILE_WINTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/n13_scdwn.dd $(MD)/n14_scdwn.dd \
 		$(MD)/scdwp.dr $(MD)/p_scdwp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/clock_60hz $(MD)/clock2_dw \
 		$(MD)/sysgo_dd
 
 BOOTFILE_VDGTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbdw3.dr $(MD)/dw3.sb \
+		$(MD)/rbdw.dr $(MD)/dwio.sb \
 		$(MD)/ddx0.dd $(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd \
 		$(MD)/scf.mn \
 		$(MD)/vtio.dr \
@@ -96,7 +96,7 @@ BOOTFILE_VDGTERM	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/n7_scdwn.dd $(MD)/n8_scdwn.dd $(MD)/n9_scdwn.dd \
 		$(MD)/n10_scdwn.dd $(MD)/n11_scdwn.dd $(MD)/n12_scdwn.dd \
 		$(MD)/n13_scdwn.dd $(MD)/n14_scdwn.dd \
-		$(MD)/clock_60hz $(MD)/clock2_dw3 \
+		$(MD)/clock_60hz $(MD)/clock2_dw \
 		$(MD)/sysgo_dd
 
 SUPPORTFILES	= startup

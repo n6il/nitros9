@@ -18,7 +18,7 @@
 
          ifp1
          use   defsfile
-         use   scfdefs
+;         use   scfdefs
          endc
 
 tylg     set   Systm+Objct

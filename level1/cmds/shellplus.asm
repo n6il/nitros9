@@ -233,7 +233,7 @@ start    leas  -5,s           Make 5 byte buffer on stack
          lbsr  L16A6          Get user #, and make 2 digit ASCII ver. @ 1EC
          lbsr  L1674          Make shell logging pathname @ CBD
          leax  <L003D,pc      Point to default shell prompt string
-         lbsr  L0A14          Go create shell prompt string & prompt itself
+         lbsr  CmdPEq         Go create shell prompt string & prompt itself
          leax  >u05A8,u       Point to start of shell variables
          ldd   #C$CR*256+20   Carriage return (blank entries) & all 20 of them
 L009C    sta   ,x             Mark shell variable as blank
@@ -360,7 +360,7 @@ L01A4    os9   F$PErr         Print the error message
          lbeq  L010D          No, go print shell prompt/process next line
          clr   <u0046         Clear GOTO label flag
          leax  >u0C4C,u       Point to copy of GOTO label name
-         lbsr  L0FD0          Go process GOTO line
+         lbsr  CmdGOTO        Go process GOTO line
          lbra  L010D          Go print shell prompt/process next line
 
 * No error received on line
@@ -387,7 +387,7 @@ L01D9    puls  cc             Restore flags
          bra   L0191          Go handle error
 
 L01EC    fcc   'eof'
-         fcb   $0d
+         fcb   C$CR
 
 * <ESC> received
 L01F0    tst   <u001D         Shell prompting on?
@@ -434,7 +434,7 @@ L0241    sta   <u005E         Save device type (1=SS.Relea failed)
          puls  pc,y,x,d       Restore regs & return
 
 * R= command (redirect specific paths)
-L0245    lda   ,x             Get char from input line
+CmdREq   lda   ,x             Get char from input line
          cmpa  #'<            Is it input path?
          beq   L0251          Yes, skip ahead
          cmpa  #'>            Is it an output/error path?
@@ -473,9 +473,9 @@ L028A    puls  b              Get path # back
          ldx   <u0048         Get ptr to redirected dev/file name & return
          rts   
 * Z= command (immortal shell setting, but kill parent process)
-L0296    inc   <u0013         Flag we want to kill parent
+CmdZEq   inc   <u0013         Flag we want to kill parent
 * I= command (immortal shell setting)
-L0298    lbsr  L0CD2
+CmdIEq   lbsr  L0CD2
          lbcs  L0B96
          bsr   L02A3
          bra   L02D4
@@ -529,123 +529,125 @@ L02FC    clrb                 No error
          rts   
 
 * Command list
-L0300    fdb   L0B87-L0300    $0887
+CmdList  fdb   L0B87-*
          fcs   '*'
-L0303    fdb   L12D1-L0303    $0fce
+         fdb   CmdW-*
          fcs   'W'
-L0306    fdb   L09BD-L0306    $06b7
+         fdb   CmdCHD-*
          fcs   'CHD'
-L030B    fdb   L09B5-L030B    $06aa
+         fdb   CmdCHX-*
          fcs   'CHX'
-L0310    fdb   L09BD-L0310    $06ad
+         fdb   CmdCLS-*
+         fcs   'CLS'
+         fdb   CmdCHD-*
          fcs   'CD'
-L0314    fdb   L09B5-L0314    $06a1
+         fdb   CmdCHX-*
          fcs   'CX'
-L0318    fdb   L0987-L0318    $066f
+         fdb   CmdEX-*
          fcs   'EX'
-L031C    fdb   L16DD-L031C    $13c1
+         fdb   CmdKill-*
          fcs   'KILL'
-L0322    fdb   L09EF-L0322    $06cd
+         fdb   CmdX-*
          fcs   'X'
-L0325    fdb   L09F3-L0325    $06ce
+         fdb   CmdNX-*
          fcs   '-X'
-L0329    fdb   L0A14-L0329    $06eb
+         fdb   CmdPEq-*
          fcs   'P='
-L032D    fdb   L09D7-L032D    $06aa
+         fdb   CmdP-*
          fcs   'P'
-L0330    fdb   L09DA-L0330    $06aa
+         fdb   CmdNP-*
          fcs   '-P'
-L0334    fdb   L09DF-L0334    $06ab
+         fdb   CmdT-*
          fcs   'T'
-L0337    fdb   L09E3-L0337    $06ac
+         fdb   CmdNT-*
          fcs   '-T'
-L033B    fdb   L170D-L033B    $13d2
+         fdb   CmdSETPR-*
          fcs   'SETPR'
-L0342    fdb   L0298-L0342    $ff56
+         fdb   CmdIEq-*
          fcs   'I='
-L0346    fdb   L0245-L0346    $feff
+         fdb   CmdREq-*
          fcs   'R='
-L034A    fdb   L0296-L034A    $ff4c
+         fdb   CmdZEq-*
          fcs   'Z='
-L034E    fdb   L0927-L034E    $05d9
+         fdb   CmdSEMI-*
          fcs   ';'
-L0351    fdb   L176B-L0351    $141a
+         fdb   CmdPWD-*
          fcs   '.PWD'
-L0357    fdb   L177D-L0357    $1426
+         fdb   CmdPXD-*
          fcs   '.PXD'
-L035D    fdb   L1029-L035D    $0ccc
+         fdb   CmdMEq-*
          fcs   'M='
-L0361    fdb   L105A-L0361    $0cf9
+         fdb   CmdVAR-*
          fcs   'VAR.'
-L0367    fdb   L09E7-L0367    $0680
+         fdb   CmdV-*
          fcs   'V'
-L036A    fdb   L09EA-L036A    $0680
+         fdb   CmdNV-*
          fcs   '-V'
-L036E    fdb   L1209-L036E    $0e9b
+         fdb   CmdPATHEq-*
          fcs   'PATH='
-L0375    fdb   L11CF-L0375    $0e5a
+         fdb   CmdPAUSE-*
          fcs   'PAUSE'
-L037C    fdb   L1126-L037C    $0daa
+         fdb   CmdINC-*
          fcs   'INC.'
-L0382    fdb   L1131-L0382    $0daf
+         fdb   CmdDEC-*
          fcs   'DEC.'
-L0388    fdb   L0D62-L0388    $09da
+         fdb   CmdIF-*
          fcs   'IF'
-L038C    fdb   L0E0B-L038C    $0a7f
+         fdb   CmdTHEN-*
          fcs   'THEN'
-L0392    fdb   L0F8C-L0392    $0bfa
+         fdb   CmdELSE-*
          fcs   'ELSE'
-L0398    fdb   L0E0B-L0398    $0a73
+         fdb   CmdTHEN-*
          fcs   'FI'
-L039C    fdb   L0E0B-L039C    $0a6f
+         fdb   CmdTHEN-*
          fcs   'ENDIF'
-L03A3    fdb   L0F3F-L03A3    $0b9c
+         fdb   CmdCLRIF-*
          fcs   'CLRIF'
-L03AA    fdb   L0FD0-L03AA    $0c26
+         fdb   CmdGOTO-*
 L03AC    fcs   'GOTO'
-L03B0    fdb   L0F93-L03B0    $0be3
+         fdb   CmdONERR-*
          fcs   'ONERR'
-L03B7    fdb   L09CF-L03B7    $0618
+         fdb   CmdL-*
          fcs   'L'
-L03BA    fdb   L09D3-L03BA    $0619
+         fdb   CmdNL-*
          fcs   '-L'
-L03BE    fdb   L0969-L03BE    $05ab
+         fdb   CmdSTARTUP-*
          fcs   'S.T.A.R.T.U.P'
          fdb   $0000
-L03CF    fdb   L1634-L03CF    $1265
+L03CF    fdb   CmdPIPE-*
          fcs   '!'
-L03D2    fdb   L1634-L03D2    $1262
+         fdb   CmdPIPE-*
          fcs   '|'
-L03D5    fdb   L12A0-L03D5    $0ecb
+         fdb   CmdSEMIC-*
          fcs   ';'
-L03D8    fdb   L12C3-L03D8    $0eeb
+         fdb   CmdAmp-*
          fcs   '&'
-L03DB    fdb   L1299-L03DB    $0ebe
-         fcb   $8d            CR
-L03DE    fdb   L0CCE-L03DE    $08f0
+         fdb   CmdCR-*
+         fcb   $80+C$CR
+L03DE    fdb   CmdIOE-*
          fcs   '<>>>'
-L03E4    fdb   L0CE5-L03E4    $0901
+         fdb   CmdIE-*
          fcs   '<>>'
-L03E9    fdb   L0CD7-L03E9    $08ee
+         fdb   CmdIO-*
          fcs   '<>'
-L03ED    fdb   L0CF3-L03ED    $0906
+         fdb   CmdOE-*
          fcs   '>>>'
-L03F2    fdb   L0C01-L03F2    $080f
+         fdb   CmdErr-*
          fcs   '>>'
-L03F6    fdb   L0BFA-L03F6    $0804
+         fdb   CmdIn-*
          fcs   '<'
-L03F9    fdb   L0C08-L03F9    $080f
+         fdb   CmdOut-*
          fcs   '>'
-L03FC    fdb   L1277-L03FC    $0e7b
+         fdb   CmdMem-*
          fcs   '#'
-L03FF    fdb   L1265-L03FF    $0e66
+         fdb   CmdCaret-*
          fcs   '^'
          fdb   $0000          End of table marker
 
-L0404    fcb   $0d
+L0404    fcb   C$CR
          fcc   '()'
          fcb   $ff
-L0408    fcb   $0d
+L0408    fcb   C$CR
          fcc   '!#&;<>^|'
          fcb   $ff
          
@@ -1262,7 +1264,7 @@ L083A    clra
          sta   <u0022         Flag we don't change priority for forked process
          sta   <u0003         Clear out # pages of data mem for forked process
          sta   <u000E         Clear out signal code
-         leay  >L0300,pc      Point to main command list
+         leay  >CmdList,pc      Point to main command list
          lbsr  L08D1          Parse keywords from list
          bcs   L08A0          Keyword found but generated error, done line
          cmpa  #C$CR          Is 1st non-keyword char a carriage return?
@@ -1337,7 +1339,7 @@ L08CB    comb                 Error flag
          leax  -1,x           Bump source ptr back
          ldb   #E$BPNam       Bad Path Name error & return
          rts   
-* Entry: Y=ptr to command list (L0300)
+* Entry: Y=ptr to command list (CmdList)
 L08D1    bsr   L0907          Go find 1st non-space char
          pshs  y              Save command list ptr
          bsr   L092A          Parse for keyword or special char
@@ -1388,7 +1390,7 @@ L0921    cmpa  ,x+            Keep searching until non-space char is found
          beq   L0921
          leax  -1,x           Point to 1st non-space char
 * ; (1st pass) comes here
-L0927    andcc #^Carry        No carry & return
+CmdSEMI  andcc #^Carry        No carry & return
          rts   
 * Command line parser
 L092A    pshs  y,x            Preserve command table ptr & input line ptr
@@ -1425,7 +1427,8 @@ L0961    fcc   'startup'
          fcb   C$CR
 
 * Create child shell to run 'startup' file
-L0969    pshs  u,y,x          Preserve regs
+CmdSTARTUP
+         pshs  u,y,x          Preserve regs
          leax  L000D,pc       Point to 'shell' (module name)
          leau  L0961,pc       Point to 'startup' (parameter for 'shell')
          ldy   #$0008         Size of 'startup<CR>'
@@ -1442,7 +1445,7 @@ L0983    puls  u,y,x          Restore regs
          rts   
 
 * EX command
-L0987    lbsr  L08A3          Go check for valid device name (module)
+CmdEX    lbsr  L08A3          Go check for valid device name (module)
          bcs   L09AB          If none, exit
          clra                 Std in path
          bsr   L09B0          Go close it
@@ -1464,12 +1467,12 @@ L09AF    inca                 Inc path #
 L09B0    pshs  a              Save path #
          lbra  L0BBC          close path if it is open
 * CHX & CX commands
-L09B5    clr   <u0038
+CmdCHX   clr   <u0038
          lda   #DIR.+EXEC.
          os9   I$ChgDir 
          rts   
 * CHD & CD commands
-L09BD    lda   #DIR.+READ.    (bug fix, originally opened in UPDATE)
+CmdCHD   lda   #DIR.+READ.    (bug fix, originally opened in UPDATE)
          os9   I$ChgDir       Change the directory
          bcs   L09CE          Error, exit with it
          clr   <u0037         Flag .pwd entry as invalid
@@ -1478,38 +1481,38 @@ L09BD    lda   #DIR.+READ.    (bug fix, originally opened in UPDATE)
          bsr   L0A04          Go update shell expanded prompt if needed
 L09CE    rts   
 * L command - Logging ON
-L09CF    lda   #$01
+CmdL     lda   #$01
          bra   L09D4
 * -L command - Logging OFF
-L09D3    clra  
+CmdNL    clra  
 L09D4    sta   <u001C
          rts   
 * P command - Prompting ON
-L09D7    clra  
+CmdP     clra  
          bra   L09DC
 * -P command - Prompting OFF
-L09DA    lda   #$01
+CmdNP    lda   #$01
 L09DC    sta   <u001D
          rts   
 * T command - Echo input ON
-L09DF    lda   #$01
+CmdT     lda   #$01
          bra   L09E4
 * -T command - Echo input OFF
-L09E3    clra  
+CmdNT    clra  
 L09E4    sta   <u001E
          rts   
 * V command - Turn variable expansion ON
-L09E7    clra  
+CmdV     clra  
          bra   L09EC
 * -V command - Turn variable expansion OFF
-L09EA    lda   #$01
+CmdNV    lda   #$01
 L09EC    sta   <u001F
          rts   
 * X command - Kill Shell when error occurs ON
-L09EF    lda   #$01
+CmdX     lda   #$01
          bra   L09F4
 * -X command - Kill Shell when error occurs OFF
-L09F3    clra  
+CmdNX    clra  
 L09F4    sta   <u0020
          rts   
 
@@ -1525,13 +1528,13 @@ L0A04    pshs  y,x            Preserve regs
 L0A08    puls  y              Restore Y
          pshs  x              Preserve X
          leax  >L003D,pc      Point to default prompt string
-         bsr   L0A14          Put that into working shell prompt string
+         bsr   CmdPEq         Put that into working shell prompt string
          puls  pc,x           Restore X & return
 
 * P= (prompt set) command
 * Make shell prompt string (default or user-specified)
 * Entry: X=ptr to source of new shell prompt string
-L0A14    pshs  y              Preserve Y
+CmdPEq   pshs  y              Preserve Y
          leay  >u01F9,u       Point to working prompt text buffer
          ldd   #C$LF*256+22   Line feed & max count for prompt string+1
          sta   ,y+            Save LF as first char
@@ -1663,9 +1666,9 @@ L0B29    sta   ,x             Save NUL to mark end of prompt
 
 * Separator table for date & time strings
 L0B35    fcc   '//'
-         fcb   $0d
+         fcb   C$CR
          fcc   '::'
-         fcb   $0d
+         fcb   C$CR
 
 * Get current date (2E0-2E8) & time (2E9-2EF)
 L0B3B    pshs  y,x            Preserve shell prompt string & shell prompt ptrs
@@ -1712,7 +1715,7 @@ L0B90    pshs  d,cc           Preserve regs
          lda   #$01           Only do std in & out (not error)
          bra   L0B9A
 
-* Any errors from any of the L0300 subroutines go here
+* Any errors from any of the CmdList subroutines go here
 * If child process had error/status code it goes here (u005D cleared,B=Status
 * code)
 L0B96    pshs  d,cc           Preserve error code, flags & A
@@ -1769,15 +1772,15 @@ L0BDA    inc   <u0019         ???
          clr   <u0019
          lbra  L00CC
 * < processing
-L0BFA    ldd   #$0001
+CmdIn    ldd   #$0001
          orb   <u000F
          bra   L0C1A
 * >> processing
-L0C01    ldd   #$020D
+CmdErr   ldd   #$020D
          stb   -$02,x
          bra   L0C0A
 * > processing
-L0C08    lda   #$01
+CmdOut   lda   #$01
 L0C0A    ldb   #$02
          bra   L0C1A
 * if from z= or i=, A=0, B=3
@@ -1871,14 +1874,14 @@ L0CBE    sta   <u0012         Save path # (or one we tried to duplicate?)
 L0CC8    ldd   #$0003         Std in & ???
          lbra  L0C0E
 * <>>> processing
-L0CCE    lda   #C$CR
+CmdIOE   lda   #C$CR
          sta   -$04,x
 * i= & z= both come here right off the bat
 L0CD2    bsr   L0CDB
          bcc   L0CFF
 L0CD6    rts   
 * <> processing
-L0CD7    lda   #C$CR
+CmdIO    lda   #C$CR
          sta   -$02,x
 
 L0CDB    bsr   L0CC8
@@ -1886,14 +1889,14 @@ L0CDB    bsr   L0CC8
          ldd   #$0180
          lbra  L0C0E
 * <>> processing
-L0CE5    lda   #C$CR
+CmdIE    lda   #C$CR
          sta   -$03,x
          bsr   L0CC8
          bcs   L0CD6
          ldd   #$0280
          lbra  L0C0E
 * >>> processing
-L0CF3    lda   #C$CR
+CmdOE    lda   #C$CR
          sta   -$03,x
          ldd   #$0102
          lbsr  L0C0E
@@ -1939,11 +1942,11 @@ L0D4F    puls  x              Restore ptr to beginning (including '/')
          lbra  L0CBE
 
 L0D56    fcc   'TRUE '
-L0D5B    fcb   $0d
+L0D5B    fcb   C$CR
 L0D5C    fcc   'FALSE'
-         fcb   $0d
+         fcb   C$CR
 
-L0D62    lda   ,x+
+CmdIF    lda   ,x+
          cmpa  #'[
          bne   L0D6B
          lbsr  L0E15
@@ -2015,11 +2018,11 @@ L0DEE    lda   #$02
 L0DF8    clr   <u0043
          leax  >L0D56,pc      Point to 'TRUE'
 L0DFE    tst   <u001E         Command echo on?
-         beq   L0E0B          No, skip ahead
+         beq   CmdTHEN        No, skip ahead
          ldy   #$0006         Print result of IF to std error
          lda   #$02
          os9   I$WritLn 
-L0E0B    leax  >u0124,u
+CmdTHEN  leax  >u0124,u
          lda   #C$CR
          sta   ,x
          clrb  
@@ -2166,11 +2169,11 @@ L0F17    comb
          lbra  L0191
 
 L0F1D    cmpa  #$03
-         beq   L0F3F
+         beq   CmdCLRIF
          cmpa  #$02
          bne   L0F2B
          dec   <u0044
-         blt   L0F3F
+         blt   CmdCLRIF
          bra   L0F43
 
 L0F2B    cmpa  #$01
@@ -2179,13 +2182,13 @@ L0F2B    cmpa  #$01
          cmpa  #$02
          bne   L0F43
          tst   <u0044
-         beq   L0F3F
+         beq   CmdCLRIF
          bra   L0F43
 
 L0F3B    inc   <u0044
          bra   L0F43
 
-L0F3F    clr   <u0043
+CmdCLRIF clr   <u0043
          clr   <u0044
 L0F43    clrb  
          rts   
@@ -2223,11 +2226,11 @@ L0F80    leay  7,y            Point to next command in table
          inca                 No, ???
          bra   L0F6D          Process this one
 
-L0F8C    lda   #$01
+CmdELSE  lda   #$01
          sta   <u0043
-         lbra  L0E0B
+         lbra  CmdTHEN
 
-L0F93    lbsr  L0907          Go find 1st non-space char or single char modifier
+CmdONERR lbsr  L0907          Go find 1st non-space char or single char modifier
          bne   L0F9B
          clr   <u0046
 L0F8B    rts   
@@ -2255,7 +2258,7 @@ L0FC5    cmpa  ,y+          Illegal modifier char in label name?
          stx   <u0058       Save it & return
          rts
 
-L0FD0    lda   ,x
+CmdGOTO  lda   ,x
          cmpa  #'+
          bne   L0FDA
          leax  1,x
@@ -2303,7 +2306,7 @@ L1022    lda   #C$CR          All others illegal, force CR in buffer copy
          puls  pc,y,x         Restore regs & return
 
 * M= command (???)
-L1029    ldb   #C$CR
+CmdMEq   ldb   #C$CR
          stb   -$01,x
          tst   <u006B
          bne   L1057
@@ -2328,7 +2331,7 @@ L1055    puls  u,y,x
 L1057    lbra  L0BCF
 
 * VAR. command
-L105A    leay  >u05A8,u
+CmdVAR   leay  >u05A8,u
          lda   ,x+
          cmpa  #'?
          beq   L10C9
@@ -2416,13 +2419,13 @@ L1122    puls  y
          puls  pc,x
 
 * INC. command (increment shell variable by 1)
-L1126    bsr   L1144
+CmdINC   bsr   L1144
          lbcs  L0191
          addd  #$0001
          bra   L113A
 
 * DEC. command (decrement shell variable by 1)
-L1131    bsr   L1144
+CmdDEC   bsr   L1144
          lbcs  L0191
          subd  #$0001
 L113A    bsr   L11A7
@@ -2510,7 +2513,7 @@ L11B7    inc   ,s
 
 * PAUSE command - may display text message, and then waits for key press or
 * mouse button
-L11CF    ldy   #394           Write up to 394 chars of pause string
+CmdPAUSE ldy   #394           Write up to 394 chars of pause string
          lda   #$02           To standard error
          os9   I$WritLn 
          lbcs  L0191
@@ -2535,7 +2538,8 @@ L11CF    ldy   #394           Write up to 394 chars of pause string
          puls  pc,x
 
 * Parse PATH=, add paths to PATH buffer list
-L1209    pshs  x              Preserve ptr to string after 'PATH='
+CmdPATHEq
+         pshs  x              Preserve ptr to string after 'PATH='
          lda   ,x             Get 1st char
          cmpa  #'?            User requesting current paths?
          beq   L1245          Yes, go do that
@@ -2581,7 +2585,7 @@ L1249    ldy   #400           Write up to 400 chars to standard out
          rts   
 
 * ^ (set priority on the fly) command
-L1265    ldb   #C$CR          Plop a CR onto the end
+CmdCaret ldb   #C$CR          Plop a CR onto the end
          stb   -$01,x
          ldb   <u0022         Any priority already set?
          lbne  L0BCF          Yes, print 'WHAT?'
@@ -2590,7 +2594,7 @@ L1265    ldb   #C$CR          Plop a CR onto the end
          lbra  L0907          Continue processing for modifiers
 
 * # (set data memory size) command
-L1277    ldb   #C$CR
+CmdMem   ldb   #C$CR
          stb   -1,x
          ldb   <u0003       Already have a data mem size set?
          lbne  L0BCF        Yes, print 'WHAT?'
@@ -2607,12 +2611,12 @@ L1294    stb   <u0003       Save data mem size to use
          lbra  L0907        Continue processing command line
 
 * Carriage return processing
-L1299    leax  -1,x
+CmdCR    leax  -1,x
          lbsr  L145D
          bra   L12A3
 
 * ; (separator) command (also called by others)
-L12A0    lbsr  L1459
+CmdSEMIC lbsr  L1459
 L12A3    bcs   L12BA
          lbsr  L0B96          Go do the path stuff
          tst   <u005D         Is there a module that is unlinking?
@@ -2633,7 +2637,7 @@ L12BA    pshs  cc             Preserve error status
          lbra  L0B96          ??? Go close some paths & return?
 
 * & (background operation) command
-L12C3    lbsr  L1459
+CmdAmp   lbsr  L1459
          bcs   L12BA
          bsr   L12BA
          ldb   #$26
@@ -2641,7 +2645,7 @@ L12C3    lbsr  L1459
          bra   L12AE
 
 * W command - Wait for a child to die
-L12D1    clra                 Clear process ID #
+CmdW     clra                 Clear process ID #
 * Entered here if commands are separated with ';' (or '()' groups)
 L12D2    pshs  a              Save ID # of process?
 L12D4    os9   F$Wait         Wait for child to die or until signal received
@@ -3074,7 +3078,7 @@ L1564    cmpb  #E$BMode
          bne   L1592          Yes, skip ahead
          ldx   <u0004         Get module name ptr
          ldu   4,s
-         lbsr  L0BFA          Set up paths
+         lbsr  CmdIn          Set up paths
          lbcs  L162B          If error, exit with it
          bra   L1592          Start up shell with '-P X PATH=(current)'
 
@@ -3210,7 +3214,7 @@ L162B    coma
 L162E    fcc   '/pipe'
          fcb   C$CR
 
-L1634    pshs  x
+CmdPIPE  pshs  x
          leax  <L162E,pc      Point to '/pipe'
          ldd   #$0103
          lbsr  L0C0E
@@ -3234,7 +3238,7 @@ L1653    clra
 
 * Filename for shell log-append mode because of leading '+'
 L1666    fcc   '+/dd/log/uxxx'
-         fcb   $0d
+         fcb   C$CR
 
 * Make shell logging filename @ u0CBD,u
 L1674    leax  <L1666,pc      Point to log name string (append mode)
@@ -3296,13 +3300,25 @@ L16C8    decb                 Bump ASCII # down
          puls  pc,y,x,d       Restore other regs & return
 
 * KILL command
-L16DD    bsr   L16EB          Go get process # to kill
+CmdKill  bsr   L16EB          Go get process # to kill
          cmpb  #2             Trying to kill the system process or 1st shell?
          bls   L170A          Yes, print 'WHAT?' & ignore it
          tfr   b,a            Move process # to proper reg
 L16E5    clrb                 S$Kill signal
          os9   F$Send         Send it to the process & return
          rts   
+
+* Clear Screen by writing $0C to stdout
+ClrByte  fcb   $0C
+ClrLen   equ   *-ClrByte
+
+CmdCLS
+         pshs  x
+         lda   #$01
+         leax  ClrByte,pcr
+         ldy   #ClrLen
+         os9   I$Write
+         puls  x,pc
 
 * Set priority - subroutine to calculate binary version of #
 * (used for both process # & priority values)
@@ -3325,7 +3341,7 @@ L16FD    lda   ,-x            Get last char done
 L1708    leas  2,s            Yes, eat RTS address & exit with error
 L170A    lbra  L0BCF          Print 'WHAT?'
 * SETPR routine
-L170D    bsr   L16EB          Go calculate process #
+CmdSETPR    bsr   L16EB          Go calculate process #
          stb   <u0021         Save it
          lbsr  L0907          Find next field (after commas/spaces)
          bsr   L16EB          Go calculate priority (into B)
@@ -3341,7 +3357,7 @@ L1759    fcc   '.'
 L175B    fcc   'pwd: read error'
          fcb   C$CR
          
-L176B    clr   <u003D
+CmdPWD   clr   <u003D
 L176D    pshs  y,x
          leay  >u02F2,u
          lda   #$81
@@ -3350,7 +3366,7 @@ L176D    pshs  y,x
          ldx   <u0039
          bra   L17F7
 * .PXD command
-L177D    clr   <u003D
+CmdPXD   clr   <u003D
          pshs  y,x
          leay  >u0375,u
          lda   #$85
@@ -3361,7 +3377,7 @@ L177D    clr   <u003D
 L178F    sta   <u0029
          sty   <u003E
 L1794    leax  >$0080,y
-         lda   #$0D
+         lda   #C$CR
          sta   ,x
          stx   <u002A
          leax  <L1759,pc

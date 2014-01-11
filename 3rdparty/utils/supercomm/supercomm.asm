@@ -4038,7 +4038,7 @@ L28EE    lbsr  L2D1E
          ldd   <u005B         Get MSW of file size
          bne   L2944
 L2926    ldx   #u009F
-         ldd   #$WRITE.*256+UPDAT. Write mode, Read & Write attributes
+         ldd   #WRITE.*256+UPDAT. Write mode, Read & Write attributes
          os9   I$Create 
          bcs   L2938
          sta   <u0042         Save path # to download file

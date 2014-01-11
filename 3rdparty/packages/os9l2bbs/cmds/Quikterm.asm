@@ -3079,7 +3079,7 @@ L1CB3      pshs   U                                                     * 1CB3 3
            clra                                                         * 1CB9 4F             O
            andb   #192                                                  * 1CBA C4 C0          D@
            bne    L1CEB                                                 * 1CBC 26 2D          &-
-           leas   <$FFE0,S                                              * 1CBE 32 E8 E0       2h`
+           leas   -$20,S                                                * 1CBE 32 E8 E0       2h`
            leax   0,S                                                   * 1CC1 30 E4          0d
            pshs   X                                                     * 1CC3 34 10          4.
            ldd    U0008,U                                               * 1CC5 EC 48          lH

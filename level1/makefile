@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-dirs	= coco tano d64 dalpha atari
+dirs	= coco1 deluxe coco2 coco2b tano d64 dalpha atari
 
 # Make all components
 all:
@@ -29,5 +29,5 @@ dskclean:
 
 # Info
 info:
-	@$(foreach dir, $(dirs), ($(CD) $(dir); make info; $(ECHO));)
+	@$(foreach dir, $(dirs), $(MAKE) -C $(dir) info; $(ECHO);)
 

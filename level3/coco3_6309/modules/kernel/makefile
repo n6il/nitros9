@@ -4,14 +4,14 @@ include $(NITROS9DIR)/rules.mak
 vpath %.asm $(LEVEL3)/modules/kernel:$(LEVEL2)/modules/kernel:$(LEVEL1)/modules/kernel
 
 DEPENDS		= ./makefile
-AFLAGS		+= -e -aH6309=1 -I$(LEVEL2)/modules/kernel -I$(LEVEL1)/modules/kernel
+AFLAGS		+= -DH6309=1 -I$(LEVEL2)/modules/kernel -I$(LEVEL1)/modules/kernel
 
 KERNEL		= krn
 KERNELP2	= krnp2
 SYSCALLS	= fallimg.asm fallram.asm falltsk.asm faproc.asm fcmpnam.asm \
 		fcpymem.asm fdatlog.asm fdelram.asm ffmodul.asm ffreehb.asm \
 		fld.asm fldabx.asm flink.asm fmove.asm fnproc.asm fprsnam.asm \
-		freboot.asm fsrqmem.asm fssvc.asm fvmodul.asm \
+		fdebug.asm fsrqmem.asm fssvc.asm fvmodul.asm \
 		fallbit.asm fallprc.asm fchain.asm fclrblk.asm fcrcmod.asm \
 		fdelimg.asm fexit.asm ffind64.asm ffork.asm fgblkmp.asm \
 		fgcmdir.asm fgmoddr.asm fgprdsc.asm fgprocp.asm ficpt.asm \

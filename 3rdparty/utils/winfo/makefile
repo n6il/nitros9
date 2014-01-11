@@ -7,6 +7,10 @@ SUBS		= winfo
 
 ALLOBJS		= $(CMDS) $(SUBS)
 
+DSKWINFO	= winfo.dsk
+
+DSKS		= $(DSKWINFO)
+
 all:	banner $(ALLOBJS) $(DEPENDS)	
 
 banner:
@@ -15,7 +19,29 @@ banner:
 	@$(ECHO) "*                   WInfo Utility                *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
- 
-clean:
+
+$(DSKWINFO): $(CMDS)
+	$(RM) $@
+	$(OS9FORMAT) $@
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
+	$(OS9COPY) $(SUBS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(SUBS),$@,CMDS/$(file))
+
+dsk: all $(DSKS)
+
+dskcopy: dsk
+	$(CP) $(DSKS) $(DSKDIR)
+
+dskclean:
+	$(RM) $(DSKS)
+
+clean: dskclean
 	$(RM) $(ALLOBJS)
+
+info:
+	@echo "*** WInfo Utility ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
+
 

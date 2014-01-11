@@ -1,6 +1,6 @@
 include ../../rules.mak
 
-dirs	= boisy dasm smartwatch supercomm winfo
+dirs	= boisy dasm smartwatch supercomm dladd winfo
 
 # Make all components
 all:
@@ -19,6 +19,13 @@ clean:
 dsk:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dsk);)
 
+dskclean:
+	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
+
 # Copy DSK images
 dskcopy:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
+
+# info
+info:
+	@$(foreach dir, $(dirs), $(MAKE) -C $(dir) info; $(ECHO);)

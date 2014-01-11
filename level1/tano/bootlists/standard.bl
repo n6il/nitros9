@@ -103,8 +103,8 @@
 *../MODULES/SCF/cohr.io
 *
 * Select only one term descriptor
-../MODULES/SCF/term32.dt
-*../MODULES/SCF/term51.dt
+../MODULES/SCF/term_vdg.dt
+*../MODULES/SCF/term_hr.dt
 *../MODULES/SCF/term_sc6551.dt
 *
 * Serial port drivers

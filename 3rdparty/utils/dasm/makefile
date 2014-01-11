@@ -6,6 +6,10 @@ CMDS		= dasm
 
 ALLOBJS		= $(CMDS)
 
+DSKDASM		= dasm.dsk
+
+DSKS		= $(DSKDASM)
+
 all:	banner $(ALLOBJS) $(DEPENDS)	
 
 banner:
@@ -14,7 +18,27 @@ banner:
 	@$(ECHO) "*              Collyer Disassembler              *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
- 
-clean:
+
+$(DSKDASM): $(CMDS)
+	$(RM) $@
+	$(OS9FORMAT) $@
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
+
+dsk: all $(DSKS)
+
+dskcopy: dsk
+	$(CP) $(DSKS) $(DSKDIR)
+
+dskclean:
+	$(RM) $(DSKS)
+
+clean: dskclean
 	$(RM) $(ALLOBJS)
+
+info:
+	@echo "*** Collyer Disassembler ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
+
 

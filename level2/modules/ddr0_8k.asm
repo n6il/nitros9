@@ -18,7 +18,7 @@
          use   defsfile
          endc  
 
-dnum     equ   0
+DNum     equ   0
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
@@ -31,7 +31,7 @@ rev      set   $00
          fdb   $0000      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.RBF     device type:0=scf,1=rbf,2=pipe,3=scf
-         fcb   dnum       drive number
+         fcb   DNum       drive number
          fcb   0          step rate
          fcb   0          drive device type
          fcb   0          media density:0=single,1=double

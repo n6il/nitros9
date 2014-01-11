@@ -199,7 +199,7 @@
 
          IFP1
          use   defsfile
-         use   scfdefs
+;         use   scfdefs
          IFGT  Level-1
          use   cocovtio.d
          ENDC

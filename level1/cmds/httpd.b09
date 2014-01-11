@@ -1,0 +1,284 @@
+PROCEDURE httpd
+
+(* HTTPD09 - process one http request, should be spawned by inetd *)
+
+
+!    This program is free software: you can redistribute it and/or modify
+!    it under the terms of the GNU General Public License as published by
+!    the Free Software Foundation, either version 3 of the License, or
+!    (at your option) any later version.
+
+!    This program is distributed in the hope that it will be useful,
+!    but WITHOUT ANY WARRANTY; without even the implied warranty of
+!    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!    GNU General Public License for more details.
+
+
+ON ERROR GOTO 99
+BASE 0
+
+DIM fp:BYTE
+DIM errnum:BYTE
+DIM req:STRING[255]
+DIM target:STRING[255]
+DIM lf:BYTE
+DIM cr:BYTE
+DIM inbyte:BYTE
+DIM buffer(256):BYTE
+TYPE RREGISTERS=CC,A,B:BYTE; DP:BYTE; X,Y,U:INTEGER
+DIM rregs:RREGISTERS
+DIM reqid:BYTE
+DIM i,p:INTEGER
+DIM httperr:STRING[40]
+DIM dent(32):BYTE
+
+lf=10
+cr=13
+
+(* turn off echo on the input path *)
+(* this will be done by inetd in the future *)
+
+(* get ss.opt *)
+rregs.A = 0
+rregs.B = 0
+rregs.X = ADDR(buffer)
+reqid = $8D
+RUN SYSCALL(reqid,rregs)
+
+(* set PD.EKO to 0 *)
+buffer(4) = 0
+
+(* set ss.opt *)
+rregs.A = 0
+rregs.B = 0
+rregs.X = ADDR(buffer)
+reqid = $8E
+RUN SYSCALL(reqid,rregs)
+
+(* read headers from client *)
+REPEAT
+
+   req = ""
+
+   REPEAT
+       GET #0,inbyte
+       req = req + chr$(inbyte)
+   UNTIL inbyte = 13 or EOF(#0)
+
+   IF LEFT$(req,4) = "GET " THEN
+       target = req
+   ENDIF
+
+UNTIL PEEK(ADDR(req)) = 13 OR EOF(#0)
+
+(* just die if stdin is gone.. might help with hung runbs? *)
+IF EOF(#0) THEN 99
+
+(* fixup paths *)
+IF left$(target,6) = "GET / " THEN
+   req = "/DD/WWWROOT/index.html"
+ELSE
+   req = mid$(target,5,len(target) - 14)
+ENDIF
+
+IF right$(req,1) = "/" THEN
+   req = left$(req,len(req)-1)
+ENDIF
+
+(* "security" checks *)
+target = ""
+FOR i=1 TO SIZE(req)
+inbyte=ASC(MID$(req,i,1))
+IF $40<inbyte AND inbyte<$60 THEN
+    inbyte = inbyte + $20
+ENDIF
+target=target + CHR$(inbyte)
+NEXT i
+IF (SUBSTR("..",req) > 0) OR (SUBSTR("/sys/",target) > 0) THEN
+   httperr = "403 Forbidden"
+   GOTO 1000
+ENDIF
+
+(* /favicon.ico *)
+IF (req = "/favicon.ico") THEN
+   req = "/DD/WWWROOT/favicon.ico"
+ENDIF
+
+ON ERROR GOTO 100
+OPEN #fp,req:READ
+ON ERROR GOTO 50
+httperr = "200 OK"
+GOSUB 2000
+
+IF RIGHT$(req,4) = ".htm" OR RIGHT$(req,5) = ".html" THEN
+   PRINT "Content-Type: text/html"
+ELSE
+   IF RIGHT$(req,4) = ".jpg" THEN
+       PRINT "Content-Type: image/jpeg"
+   ELSE
+       IF RIGHT$(req,4) = ".gif" THEN
+           PRINT "Content-Type: image/gif"
+       ELSE
+           IF RIGHT$(req,4) = ".png" THEN
+               PRINT "Content-Type: image/png"
+           ELSE
+               IF RIGHT$(req,4) = ".ico" THEN
+                   PRINT "Content-Type: image/x-icon"
+                   PRINT "Cache-Control: public, max-age=31536000"
+               ELSE
+                   PRINT "Content-Type: text/plain"
+               ENDIF
+           ENDIF
+       ENDIF
+   ENDIF
+ENDIF
+
+PUT #1,lf
+
+(* send file contents *)
+REPEAT
+
+   rregs.A = fp
+   rregs.Y = 256
+   rregs.X = ADDR(buffer)
+   reqid = $89
+   RUN SYSCALL(reqid,rregs)
+
+   rregs.A = 1
+   rregs.X = ADDR(buffer)
+   reqid = $8A
+   RUN SYSCALL(reqid,rregs)
+
+UNTIL EOF(#fp)
+
+50 ON ERROR GOTO 99
+CLOSE #fp
+
+target = DATE$ + " 200 OK " + req
+GOSUB 3000
+
+99 END
+
+
+100 ON ERROR GOTO 99
+errnum := ERR
+
+IF errnum = 214 THEN
+   (* directory check *)
+   ON ERROR GOTO 200
+   OPEN #fp,req:READ+DIR
+   ON ERROR GOTO 99
+
+   httperr = "200 OK"
+   GOSUB 2000
+   PRINT "Content-Type: text/html"
+   PUT #1,lf
+
+   PRINT "<HTML><HEAD><TITLE>"
+   PRINT "Directory of ";req
+   PRINT "</TITLE></HEAD><BODY>"
+
+   PRINT "<H3>Directory of ";req;"</H3>"
+   PRINT "<HR>"
+
+   REPEAT
+
+       get #fp,dent
+
+       IF dent(0) > 0 THEN
+
+           target = ""
+           inbyte = dent(0)
+           i = 0
+           WHILE inbyte < 128 AND i<29 DO
+
+               target = target + chr$(inbyte)
+               i = i + 1
+               inbyte = dent(i)
+
+           ENDWHILE
+
+           target = target + chr$(inbyte - 128)
+
+           IF target <> "." THEN
+               PRINT "<A HREF=";req;"/";target;">";target;"</A>"
+               PRINT "<br>"
+           ENDIF
+
+       ENDIF
+
+   UNTIL EOF(#fp)
+   CLOSE #fp
+
+   GOSUB 2100
+   PRINT "</BODY></HTML>"
+
+   target = DATE$ + " 200 OK (dir) " + req
+   GOSUB 3000
+   END
+ELSE
+   IF errnum = 216 THEN
+       httperr = "404 Not Found"
+   ELSE
+       IF errnum = 215 THEN
+           httperr = "400 Bad Request"
+       ELSE
+           httperr = "500 Internal Server Error"
+       ENDIF
+   ENDIF
+
+   GOTO 1000
+ENDIF
+
+
+
+200 ON ERROR GOTO 99
+httperr = "403 Forbidden"
+(* error result *)
+1000 GOSUB 2000
+PRINT "Content-Type: text/html"
+PUT #1,lf
+
+PRINT "<HTML>"
+PRINT "<HEAD><TITLE>";httperr;"</TITLE></HEAD>"
+PRINT "<BODY><H2>";httperr;"</H2>"
+GOSUB 2100
+PRINT "</BODY></HTML>"
+target = DATE$ + " " + httperr + " " + req
+GOSUB 3000
+END
+
+
+(* server headers *)
+2000 PRINT "HTTP/1.1 ";httperr
+PRINT "Server: CoCoHTTPD"
+PRINT "Connection: close"
+RETURN
+
+(* footer *)
+2100 PRINT "<br><HR><font face=Tahoma;Arial;Sans size=2><i>httpd09 version 1.1 - ";DATE$;"</i></font>"
+RETURN
+
+
+(* logging - string to log in target *)
+3000 ON ERROR GOTO 3010
+CREATE #fp,"/DD/LOG/httpd.log":WRITE
+ON ERROR GOTO 3030
+GOTO 3020
+3010 ON ERROR GOTO 3040
+OPEN #fp,"/DD/LOG/httpd.log":WRITE
+ON ERROR GOTO 3030
+(* getstat ss.siz *)
+rregs.A = fp
+rregs.B = $02
+reqid = $8D
+RUN SYSCALL(reqid,rregs)
+(* seek to eof *)
+rregs.A = fp
+reqid = $88
+RUN SYSCALL(reqid,rregs)
+3020 WRITE #fp,target
+3030 ON ERROR GOTO 3040
+CLOSE #fp
+3040 ON ERROR GOTO 99
+RETURN

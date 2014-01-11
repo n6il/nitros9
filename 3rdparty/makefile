@@ -1,4 +1,4 @@
-include $(NITROS9DIR)/rules.mak
+include ../rules.mak
 
 dirs	= booters drivers fmgrs p2mods subrtns utils packages
 
@@ -29,4 +29,4 @@ dskcopy:
 
 # Info
 info:
-	@$(foreach dir, $(dirs), ($(CD) $(dir); make info; $(ECHO));)
+	@$(foreach dir, $(dirs), $(MAKE) -C $(dir) info;)

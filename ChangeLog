@@ -1,6 +1,125 @@
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
+2013/01/29 David Ladd
+M ChangeLog
+M level1/coco1/modules/makefile
+M level2/coco3/modules/makefile
+M rules.mak
+
+Updated rules.mak to include values that should have been set
+for use in the level1/coco1/modules/makefile &
+level2/coco3/modules/makefile.
+
+Removed added values that aren't needed as those are now set
+in the rules.mak file.
+
+----------------------------------------------------------
+2013/01/28 David Ladd
+M ChangeLog
+M level1/coco1/modules/makefile
+M level1/modules/rb1773desc.asm
+M level1/modules/rbdesc.asm
+M level1/modules/rfmdesc.asm
+M level1/modules/superdesc.asm
+M level2/coco3/modules/makefile
+
+Updated level1/coco1/modules/makefile & level2/coco3/modules/makefile
+so that correct values would be sent to assembler when
+building superdesc.asm for s(x).dd and i(x).dd descripters.
+
+
+----------------------------------------------------------
+2013/01/28 David Ladd
+M ChangeLog
+M level1/modules/ddiskdesc.asm
+M level1/modules/dwdesc.asm
+M level1/modules/rb1773desc.asm
+M level1/modules/scdwvdesc.asm
+
+Updated level1/modules/ddiskdesc.asm so that if default
+values are not given by assembler define command statement
+then definitions are set to a default value.
+
+Updated level1/modules/rb1773desc.asm so that if default
+values are not given by assembler define command statement
+then definitions are set to a default value.
+
+----------------------------------------------------------
+2013/01/28 David Ladd
+M ChangeLog
+M level2/coco3/bootfiles/makefile
+M level2/coco3/makefile
+
+Updated level2/coco3/bootfiles/makefile to create bootfiles
+for headless becker and headless arduino.
+
+Updated level2/coco3/makefile to create boot disk images
+for headless becker and headless arduino.
+
+----------------------------------------------------------
+2013/01/28 David Ladd
+M ChangeLog
+M level2/coco3/bootfiles/makefile
+
+Updated level2/coco3/bootfiles/makefile so that the becker
+os9boot file has ddx0.dd rather then ddd0.dd.
+
+----------------------------------------------------------
+2013/01/27 David Ladd
+M ChangeLog
+M level2/coco3/cmds/makefile
+
+Updated level2/coco3/cmds/makefile to detect for H6309
+and if set use the sys6309l2.a lib file otherwise
+use sys6809l2.a lib file.
+
+----------------------------------------------------------
+2013/01/27 David Ladd
+M ChangeLog
+M level1/coco1/bootfiles/makefile
+M level1/coco1/modules/makefile
+
+Updated level1/coco1/modules/makefile so that boot_dw_coco1
+and dwio_coco1.sb get created.
+
+Updated level1/coco1/bootfiles/makefile added detection of
+PORT status so if coco1 is detected then dwio_coco1.sb and
+boot_dw_coco1 are used in place of dwio.sb and boot_dw.
+
+----------------------------------------------------------
+2013/01/26 David Ladd
+M ChangeLog
+M level1/coco1/bootfiles/makefile
+M level1/coco1/makefile
+M level1/coco1/modules/makefile
+
+Updated level1/coco1/bootfiles/makefile to create becker &
+arduino boot and kernel files.
+
+Updated level1/coco1/makefile to create becker & arduino
+boot disks for use with drivewire server.
+
+Updated level1/coco1/modules/makefile to create becker &
+arduino dwio sb files.
+
+----------------------------------------------------------
+2013/01/25 David Ladd
+M 3rdparty/packages/sierra/kingsquest2/makefile
+M ChangeLog
+M level2/coco3/makefile
+
+Updated "3rdparty/packages/sierra/kingsquest2/makefile" to
+fix issue with not using the correct dwio.sb and
+dwio_becker.sb.
+
+In "level2/coco3/makefile" updated from
+"LDSKBECKER      = $(DISTRONAME)_80d_becker.dsk" to 
+"LDSKBECKER      = $(DISTRONAME)_becker.dsk"
+since the becker boot disks are for use in the drivewire
+server and those are not double sided disks.
+
+----------------------------------------------------------
 2013/01/23 David Ladd
 M 3rdparty/utils/view/makefile
 M ChangeLog

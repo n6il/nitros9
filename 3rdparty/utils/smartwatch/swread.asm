@@ -50,7 +50,7 @@ SETIME   equ   0
 *D.TSec    equ   $5A
 
 cartI    equ   $FF22      cartridge IRQ report
-MPI.Slct equ   $FF7F
+MPI.Slct set   $FF7F
 rom      equ   $FFDE
 ram      equ   $FFDF
 IEN      equ   %00100000

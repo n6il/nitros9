@@ -15,6 +15,7 @@ KBufSz    EQU       8                   circular buffer size
 V.CurRow  RMB       1
 V.CurCol  RMB       1
 V.CurChr  RMB       1                   character under the cursor
+V.CapsLck RMB       1                   caps lock flag
 V.KySns   RMB       1                   key sense flags
 V.EscCh1  RMB       2                   escape vector handler
 V.EscVect RMB       2                   escape vector handler

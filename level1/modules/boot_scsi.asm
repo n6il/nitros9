@@ -1,4 +1,3 @@
-	opt	w132	wide listing
 ********************************************************************
 * Boot - SCSI Boot Module
 *
@@ -120,13 +119,13 @@ HWInit
         	lda       ,x	get it
         	sta       MPI.Slct and set the MPI to us.
         	ENDC      But this was NOT being done.
-        	ldd       #S$SEEK*256
-        	ldx       #0
-        	bsr       setup
-        	IFEQ      SCSIEX
-		clr       v$blks,u
-		ENDC
-        	bra       command
+               ldd       #S$SEEK*256
+               ldx       #0
+               bsr       setup
+               IFEQ      SCSIEX
+			   clr       v$blks,u
+			   ENDC
+               bra       command
 			
 * Sets up the SCSI packet to send
 * Destroys B
@@ -298,6 +297,9 @@ CntrSlot       FCB       $FF
                ENDC
 Address        FDB       SDAddr
 * So now, this can be a base zero decimal value!
+               IFNDEF    ITDNS
+ITDNS          EQU       0
+               ENDC
 WhichDrv       FCB       ITDNS
                EMOD
 eom            EQU       *

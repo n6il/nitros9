@@ -36,7 +36,7 @@
                          
          ifp1            
          use   defsfile  
-         use   scfdefs   
+;         use   scfdefs   
          use   cocovtio.d
          endc            
                          
@@ -93,7 +93,11 @@ L002E    sta   ,x+        clear mem
                          
          coma             A = $FF
          comb             B = $FF
+         IFEQ  coco2b+deluxe-1
+         clr   <V.Caps,u 
+         ELSE
          stb   <V.Caps,u 
+         ENDC
          std   <V.LKeyCd,u
          std   <V.2Key2,u
          lda   #60       

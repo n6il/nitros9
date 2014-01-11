@@ -35,6 +35,7 @@ all:
 
 # Clean all components
 clean:	dskclean
+	$(RM) os9boot
 
 dsk:	all
 	$(RM) $(DISK)
@@ -45,16 +46,16 @@ dsk:	all
 	$(RM) os9boot kernel
 	$(MAKDIR) $(DISK),CMDS
 	$(OS9COPY) $(UTILS) $(DISK),CMDS
-	$(foreach file, $(UTILS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(UTILS)),$(DISK),CMDS/$(file))
 	$(OS9COPY) $(CMDS) $(DISK),CMDS
-	$(foreach file, $(CMDS), $(OS9ATTR_EXEC) $(DISK),CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS)),$(DISK),CMDS/$(file))
 	$(CPL) $(HELP) $(DISK),CMDS
-	$(foreach file, $(HELP), $(OS9ATTR_EXEC) $(DISK),CMDS/$(notdir $(file));)
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(HELP)),$(DISK),CMDS/$(file))
 	$(OS9COPY) $(ROOTFILES) $(DISK),.
 	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$(DISK),$(file))
 
 dskcopy: dsk
-	$(CP) $(DISK) $(DSKDIR)
+	$(OS9COPY) $(DISK) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DISK)

@@ -1,11 +1,10 @@
-PORT = atari
-include $(NITROS9DIR)/rules.mak
+include ../port.mak
 
 vpath %.asm $(LEVEL1)/modules
 
-AFLAGS		+= -I$(LEVEL1)/modules
+AFLAGS		+= --includedir=$(LEVEL1)/modules
 
-CLOCKSOFT       = -aRTCSoft=1
+CLOCKSOFT       = -DRTCSoft=1
 
 DEPENDS		= ./makefile
 TPB		= $(3RDPARTY)/booters
@@ -22,10 +21,12 @@ SCF		= scf.mn \
 		nil.dd \
 		term.dt \
 		scdwp.dr p_scdwp.dd \
-		scdwn.dr term_scdwn.dt n_scdwn.dd n1_scdwn.dd n2_scdwn.dd \
-		n3_scdwn.dd n4_scdwn.dd n5_scdwn.dd n6_scdwn.dd n7_scdwn.dd \
-		n8_scdwn.dd n9_scdwn.dd n10_scdwn.dd n11_scdwn.dd n12_scdwn.dd \
-		n13_scdwn.dd midi_scdwn.dd
+		scdwv.dr term_scdwv.dt n_scdwv.dd n1_scdwv.dd n2_scdwv.dd \
+		n3_scdwv.dd n4_scdwv.dd n5_scdwv.dd n6_scdwv.dd n7_scdwv.dd \
+		n8_scdwv.dd n9_scdwv.dd n10_scdwv.dd n11_scdwv.dd n12_scdwv.dd \
+		n13_scdwv.dd midi_scdwv.dd \
+		z1_scdwv.dd z2_scdwv.dd z3_scdwv.dd z4_scdwv.dd z5_scdwv.dd \
+		z6_scdwv.dd z7_scdwv.dd
 
 PIPE		= pipeman.mn \
 		piper.dr \
@@ -43,79 +44,103 @@ krn krnp2:
 
 
 sysgo_rom: sysgo.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aROM=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DROM=1
 
 # DriveWire 3 RBF descriptors
 ddx0.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDD=1 -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1 -DDNum=0
 
 x0.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0
 
 x1.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=1
 
 x2.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=2
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=2
 
 x3.dd: dwdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aDNum=3
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=3
 
 # DriveWire 3 SCF descriptors
-term_scdwn.dt: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=0
+term_scdwv.dt: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=0
 
-n_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=255
+n_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=255
 
-n1_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=1
+n1_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=1
 
-n2_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=2
+n2_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=2
 
-n3_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=3
+n3_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=3
 
-n4_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=4
+n4_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=4
 
-n5_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=5
+n5_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=5
 
-n6_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=6
+n6_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=6
 
-n7_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=7
+n7_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=7
 
-n8_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=8
+n8_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=8
 
-n9_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=9
+n9_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=9
 
-n10_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=10
+n10_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=10
 
-n11_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=11
+n11_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=11
 
-n12_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=12
+n12_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=12
 
-n13_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=13
+n13_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=13
 
-midi_scdwn.dd: scdwndesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -aAddr=14
+midi_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=14
+
+term_z_scdwv.dt: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=16
+
+z1_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=17
+
+z2_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=18
+
+z3_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=19
+
+z4_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=20
+
+z5_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=21
+
+z6_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=22
+
+z7_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=23
 
 # Clocks
 clock_60hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=60
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=60
 
 clock_50hz: clock.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -aPwrLnFrq=50
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DPwrLnFrq=50
 
 clean:
 	$(CD) kernel; make $@

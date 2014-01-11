@@ -621,7 +621,7 @@ L0721      pshs   Y,X,D                                                 * 0721 3
            clra                                                         * 0727 4F             O
            ldb    #0                                                    * 0728 C6 00          F.
            os9    I$GetStt                                              * 072A 10 3F 8D       .?.
-           leax   <$FFE0,X                                              * 072D 30 88 E0       0.`
+           leax   -$20,X                                                * 072D 30 88 E0       0.`
            clr    <$0024,X                                              * 0730 6F 88 24       o.$
            leax   <$0020,X                                              * 0733 30 88 20       0.
            os9    I$SetStt                                              * 0736 10 3F 8E       .?.
@@ -631,7 +631,7 @@ L073B      pshs   Y,X,D                                                 * 073B 3
            clra                                                         * 0741 4F             O
            ldb    #0                                                    * 0742 C6 00          F.
            os9    I$GetStt                                              * 0744 10 3F 8D       .?.
-           leax   <$FFE0,X                                              * 0747 30 88 E0       0.`
+           leax   -$20,X                                                * 0747 30 88 E0       0.`
            lda    #1                                                    * 074A 86 01          ..
            sta    <$0024,X                                              * 074C A7 88 24       '.$
            leax   <$0020,X                                              * 074F 30 88 20       0.

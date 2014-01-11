@@ -2,52 +2,49 @@
 include $(NITROS9DIR)/rules.mak
 
 
-SRC = stimestr.a datestr.a getfmd.a mktemp.a linedit.a sho_regs.a \
-	print_dec.a print_hex.a print_asc.a \
-	mult16x8.a mult16x16.a div16x8.a div16x16.a div8x8.a \
-	dec_bin.a bin_dec.a asc_bin.a bin_asc.a hex_bin.a \
-	bin_hex.a bin2hex.a dectab.a bin_rom.a \
-	strcat.a strcpy.a strncpy.a parsnstr.a strhcpy.a strhlen.a \
-	strcmp.a strncmp.a strlen.a memmove.a ptsearch.a compare.a \
-	b09strlen.a \
-	to_upprs.a to_upper.a to_lowrs.a to_lower.a \
-	is_punct.a is_print.a is_cntrl.a is_space.a is_xdigit.a \
-	is_alnum.a is_alpha.a is_digit.a is_lower.a is_upper.a is_termin.a \
-	prints.a puts.a fputs.a putcr.a fputcr.a putspace.a fputspace.a \
-	putc.a fputc.a inkey.a getc.a fgetc.a gets.a fgets.a puty.a fputy.a \
-	gety.a fgety.a ftrans.a \
-	frewind.a ftoeof.a \
-	jsr_cmd.a jsr_cmd2.a \
-	to_sp.a to_non_sp.a memset.a rnd.a
+SRC = stimestr.as datestr.as getfmd.as mktemp.as linedit.as sho_regs.as \
+	print_dec.as print_hex.as print_asc.as \
+	mult16x8.as mult16x16.as div16x8.as div16x16.as div8x8.as \
+	dec_bin.as bin_dec.as asc_bin.as bin_asc.as hex_bin.as \
+	bin_hex.as bin2hex.as dectab.as bin_rom.as \
+	strcat.as strcpy.as strncpy.as parsnstr.as strhcpy.as strhlen.as \
+	strcmp.as strncmp.as strlen.as memmove.as ptsearch.as compare.as \
+	b09strlen.as \
+	to_upprs.as to_upper.as to_lowrs.as to_lower.as \
+	is_punct.as is_print.as is_cntrl.as is_space.as is_xdigit.as \
+	is_alnum.as is_alpha.as is_digit.as is_lower.as is_upper.as is_termin.as \
+	prints.as puts.as fputs.as putcr.as fputcr.as putspace.as fputspace.as \
+	putc.as fputc.as inkey.as getc.as fgetc.as gets.as fgets.as puty.as fputy.as \
+	gety.as fgety.as ftrans.as \
+	frewind.as ftoeof.as \
+	jsr_cmd.as jsr_cmd2.as \
+	to_sp.as to_non_sp.as memset.as rnd.as
 
-MODS = stimestr.r datestr.r getfmd.r mktemp.r linedit.r sho_regs.r \
-	print_dec.r print_hex.r print_asc.r \
-	mult16x8.r mult16x16.r div16x8.r div16x16.r div8x8.r \
-	dec_bin.r bin_dec.r asc_bin.r bin_asc.r hex_bin.r \
-	bin_hex.r bin2hex.r dectab.r bin_rom.r \
-	strcat.r strcpy.r strncpy.r parsnstr.r strhcpy.r strhlen.r \
-	strcmp.r strncmp.r strlen.r memmove.r ptsearch.r compare.r \
-	b09strlen.r \
-	to_upprs.r to_upper.r to_lowrs.r to_lower.r \
-	is_punct.r is_print.r is_cntrl.r is_space.r is_xdigit.r \
-	is_alnum.r is_alpha.r is_digit.r is_lower.r is_upper.r is_termin.r \
-	prints.r puts.r fputs.r putcr.r fputcr.r putspace.r fputspace.r \
-	putc.r fputc.r inkey.r getc.r fgetc.r gets.r fgets.r puty.r fputy.r \
-	gety.r fgety.r ftrans.r \
-	frewind.r ftoeof.r \
-	jsr_cmd.r jsr_cmd2.r \
-	to_sp.r to_non_sp.r memset.r rnd.r
+MODS = stimestr.o datestr.o getfmd.o mktemp.o linedit.o sho_regs.o \
+	print_dec.o print_hex.o print_asc.o \
+	mult16x8.o mult16x16.o div16x8.o div16x16.o div8x8.o \
+	dec_bin.o bin_dec.o asc_bin.o bin_asc.o hex_bin.o \
+	bin_hex.o bin2hex.o dectab.o bin_rom.o \
+	strcat.o strcpy.o strncpy.o parsnstr.o strhcpy.o strhlen.o \
+	strcmp.o strncmp.o strlen.o memmove.o ptsearch.o compare.o \
+	b09strlen.o \
+	to_upprs.o to_upper.o to_lowrs.o to_lower.o \
+	is_punct.o is_print.o is_cntrl.o is_space.o is_xdigit.o \
+	is_alnum.o is_alpha.o is_digit.o is_lower.o is_upper.o is_termin.o \
+	prints.o puts.o fputs.o putcr.o fputcr.o putspace.o fputspace.o \
+	putc.o fputc.o inkey.o getc.o fgetc.o gets.o fgets.o puty.o fputy.o \
+	gety.o fgety.o ftrans.o \
+	frewind.o ftoeof.o \
+	jsr_cmd.o jsr_cmd2.o \
+	to_sp.o to_non_sp.o memset.o rnd.o
 
 
-all:	../alib.l ../alib.zip
+all:	../libalib.a
 
-../alib.zip: $(SRC)
-	zip $@ $(SRC)
-
-../alib.l: $(MODS)
-	$(MERGE) $^ > $@
+../libalib.a: $(MODS)
+	$(LWAR) $@ $?
 
 dskclean: clean
 
 clean:
-	$(RM) *.r ../alib.l ../alib.zip
+	$(RM) *.o ../libalib.a

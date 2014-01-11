@@ -15,7 +15,7 @@ clean:
 	$(RM) $(ALLOBJS)
 
 msf_6309.mn: msf.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ -e -aH6309=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@ -DH6309=1
 
 msf_6809.mn: msf.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@

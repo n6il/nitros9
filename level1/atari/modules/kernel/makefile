@@ -1,4 +1,4 @@
-PORT = coco
+PORT = atari
 include $(NITROS9DIR)/rules.mak
 
 vpath %.asm $(LEVEL1)/modules/kernel
@@ -9,7 +9,7 @@ KERNEL		= krn
 KERNELP2	= krnp2
 SYSCALLS	= fcmpnam.asm fprsnam.asm
 
-AFLAGS		+= -aATARI=1 -I$(LEVEL1)/modules/kernel
+AFLAGS		+= -I$(LEVEL1)/modules/kernel
 
 ALLOBJS		= $(KERNEL) $(KERNELP2)
 

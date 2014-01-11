@@ -672,7 +672,7 @@ L079B      pshs   Y,X,D                                                 * 079B 3
            clra                                                         * 07A1 4F             O
            ldb    #0                                                    * 07A2 C6 00          F.
            os9    I$GetStt                                              * 07A4 10 3F 8D       .?.
-           leax   <$FFE0,X                                              * 07A7 30 88 E0       0.`
+           leax   -$20,X                                                * 07A7 30 88 E0       0.`
            clr    <$0024,X                                              * 07AA 6F 88 24       o.$
            leax   <$0020,X                                              * 07AD 30 88 20       0.
            os9    I$SetStt                                              * 07B0 10 3F 8E       .?.
@@ -682,7 +682,7 @@ L07B5      pshs   Y,X,D                                                 * 07B5 3
            clra                                                         * 07BB 4F             O
            ldb    #0                                                    * 07BC C6 00          F.
            os9    I$GetStt                                              * 07BE 10 3F 8D       .?.
-           leax   <$FFE0,X                                              * 07C1 30 88 E0       0.`
+           leax   -$20,X                                                * 07C1 30 88 E0       0.`
            lda    #1                                                    * 07C4 86 01          ..
            sta    <$0024,X                                              * 07C6 A7 88 24       '.$
            leax   <$0020,X                                              * 07C9 30 88 20       0.

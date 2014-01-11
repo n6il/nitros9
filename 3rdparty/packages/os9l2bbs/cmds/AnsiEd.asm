@@ -3911,7 +3911,7 @@ L2528      puls   PC,U                                                  * 2528 3
 L252A      pshs   U                                                     * 252A 34 40          4@
            ldd    #-106                                                 * 252C CC FF 96       L..
            lbsr   _stkcheck                                             * 252F 17 DB DD       .[]
-           leas   <$FFE0,S                                              * 2532 32 E8 E0       2h`
+           leas   -$20,S                                                * 2532 32 E8 E0       2h`
            leax   0,S                                                   * 2535 30 E4          0d
            pshs   X                                                     * 2537 34 10          4.
            clra                                                         * 2539 4F             O
@@ -5094,7 +5094,7 @@ L346C      pshs   U                                                     * 346C 3
            clra                                                         * 3472 4F             O
            andb   #192                                                  * 3473 C4 C0          D@
            bne    L34A4                                                 * 3475 26 2D          &-
-           leas   <$FFE0,S                                              * 3477 32 E8 E0       2h`
+           leas   -$20,S                                                * 3477 32 E8 E0       2h`
            leax   0,S                                                   * 347A 30 E4          0d
            pshs   X                                                     * 347C 34 10          4.
            ldd    U0008,U                                               * 347E EC 48          lH

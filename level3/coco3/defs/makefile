@@ -3,7 +3,7 @@ include $(NITROS9DIR)/rules.mak
 
 DEPENDS		= ./makefile
 
-DEFOPTS		= -ls -x -z -aLevel=3
+DEFOPTS		= --preprocess -DLevel=3
 PERMDEFS	= Defsfile
 DEFS		= OS9Defs RBFDefs SCFDefs SysType VTIODefs
 ALLOBJS		= $(DEFS) $(PERMDEFS)
@@ -11,19 +11,19 @@ ALLOBJS		= $(DEFS) $(PERMDEFS)
 all:	$(ALLOBJS)
 
 OS9Defs: $(DEFSDIR)/os9defs
-	$(AS) $(AFLAGS) $(DEFOPTS) -aOS9DEFS=0 $< > $@
+	$(AS) $(AFLAGS) $(DEFOPTS) -DOS9DEFS=0 $< > $@
 
 RBFDefs: $(DEFSDIR)/rbfdefs
-	$(AS) $(AFLAGS) $(DEFOPTS) -aRBFDEFS=0 $< > $@
+	$(AS) $(AFLAGS) $(DEFOPTS) -DRBFDEFS=0 $< > $@
 
 SCFDefs: $(DEFSDIR)/scfdefs
-	$(AS) $(AFLAGS) $(DEFOPTS) -aSCFDEFS=0 $< > $@
+	$(AS) $(AFLAGS) $(DEFOPTS) -DSCFDEFS=0 $< > $@
 
 SysType: $(DEFSDIR)/systype
-	$(AS) $(AFLAGS) $(DEFOPTS) -aSYSTYPE=0 $< > $@
+	$(AS) $(AFLAGS) $(DEFOPTS) -DSYSTYPE=0 $< > $@
 
 VTIODefs: $(DEFSDIR)/vtiodefs_cc3
-	$(AS) $(AFLAGS) $(DEFOPTS) -aVTIODEFS=0 $< > $@
+	$(AS) $(AFLAGS) $(DEFOPTS) -DVTIODEFS=0 $< > $@
 
 clean:
 	$(RM) $(DEFS)

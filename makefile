@@ -9,12 +9,12 @@ all:
 	@$(ECHO) "*              THE NITROS-9 PROJECT              *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
-	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) &&) :
 
 # Clean all components
 clean:
-	-$(RM) nitros9project.zip $(DSKDIR)/*.dsk $(DSKDIR)/ReadMe $(DSKDIR)/index.shtml
-	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
+	$(RM) nitros9project.zip $(DSKDIR)/*.dsk $(DSKDIR)/ReadMe $(DSKDIR)/index.shtml
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) clean &&) :
 	$(RM) $(DSKDIR)/ReadMe
 	$(RM) $(DSKDIR)/index.html
 
@@ -25,26 +25,27 @@ hgupdate:
 
 # Make DSK images
 dsk:	all
-	$(foreach dir, $(dirs), ($(CD) $(dir); make dsk);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dsk &&) :
 
 # Copy DSK images
 dskcopy:	all
-	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
+	mkdir -p $(DSKDIR)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskcopy &&) :
 	$(MKDSKINDEX) $(DSKDIR) > $(DSKDIR)/index.html
 
 
 # Clean DSK images
 dskclean:
-	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskclean &&) :
 
-# DriveWire 3 DSK images
+# DriveWire DSK images
 dwdsk = $(LEVEL1)/coco/nos96809l1coco1_dw.dsk $(LEVEL1)/coco/nos96809l1coco2_dw.dsk \
 	$(LEVEL2)/coco3/nos96809l2_dw.dsk $(LEVEL2)/coco3_6309/nos96309l2_dw.dsk
 
 dw:	dsk
 	$(ARCHIVE) nitros9_drivewire3.zip $(dwdsk)
 
-# DriveWire 3 Becker DSK Images
+# DriveWire Becker DSK Images
 beckerdsk	= $(LEVEL1)/coco/nos96809l1coco_becker.dsk \
 	$(LEVEL2)/coco3/nos96809l2_becker.dsk $(LEVEL2)/coco3_6309/nos96309l2_becker.dsk
 
@@ -52,8 +53,8 @@ becker:	dsk
 	$(ARCHIVE) nitros9_becker.zip $(beckerdsk)
 
 info:
-	@$(foreach dir, $(dirs), ($(CD) $(dir); make info);)
-
+	@$(foreach dir,$(dirs), $(MAKE) --no-print-directory -C $(dir) info &&) :
+	
 # This section is to do the nightly build and upload 
 # to sourceforge.net you must set the environment
 # variable SOURCEUSER to the userid you have for sourceforge.net
@@ -61,7 +62,7 @@ info:
 # on your ssh account at sourceforge.net
 ifdef	SOURCEUSER
 nightly: clean hgupdate dskcopy
-	make info>$(DSKDIR)/ReadMe
+	$(MAKE) info > $(DSKDIR)/ReadMe
 	$(ARCHIVE) nitros9project $(DSKDIR)/*
 	scp nitros9project.zip $(SOURCEUSER),nitros9@web.sourceforge.net:/home/groups/n/ni/nitros9/htdocs
 	ssh $(SOURCEUSER),nitros9@shell.sourceforge.net create
@@ -87,7 +88,7 @@ endif
 ifdef	TESTSSHSERVER
 ifdef	TESTSSHDIR
 nightlytest: clean hgupdate dskcopy
-	make info>$(DSKDIR)/ReadMe
+	$(MAKE) info > $(DSKDIR)/ReadMe
 	$(ARCHIVE) nitros9project $(DSKDIR)/*
 	scp nitros9project.zip $(TESTSSHSERVER):$(TESTSSHDIR)
 	ssh $(TESTSSHSERVER) "./burst"

@@ -36,7 +36,7 @@ edition  set   5
 ********************************************************************
 * Any changes to the next 3 lines requires changes in XX.Size, above
          fcc   /OS/       sync bytes
-         bra   Start+XX.Size  execution start
+         bra   Start+XX.Size+*-2  execution start
          fdb   $1205      filler bytes
 
 Begin    mod   eom,name,tylg,atrv,start,size
@@ -278,7 +278,7 @@ Pad      fill  $39,$127-*
 
          ELSE
 
-start    clr   PIA0Base+3
+Start    clr   PIA0Base+3
 
          IFNE  (tano+d64+dalpha)
          clr   PIA0Base+1		added for Dragon, works on CoCo

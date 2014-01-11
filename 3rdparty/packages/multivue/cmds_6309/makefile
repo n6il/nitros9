@@ -2,7 +2,7 @@ include $(NITROS9DIR)/rules.mak
 
 vpath %.asm ../cmds_6809
 
-AFLAGS		+= -e
+#AFLAGS		+= -e
 DEPENDS		= ./makefile
 
 OSCMDS		= $(LEVEL2)/coco3_6309/cmds/shell $(LEVEL2)/coco3_6309/cmds/utilpak1 \

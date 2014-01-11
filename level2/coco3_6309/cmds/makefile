@@ -1,7 +1,2 @@
-ifndef  NITROS9DIR
-NITROS9DIR      = $(HOME)/nitros9
-endif
-include $(NITROS9DIR)/rules.mak
-include $(CC368L2)/cmds/makefile_common
-AFLAGS          += -e -aH6309=1
-LFLAGS		+= -l=$(NITROS9DIR)/lib/sys6309l2.l
+include ../../coco3/cmds/makefile
+AFLAGS          +=  -DH6309=1

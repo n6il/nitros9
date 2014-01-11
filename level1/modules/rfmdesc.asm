@@ -21,7 +21,9 @@ tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
 
+	IFNDEF	DNum
 DNum     set   0
+	ENDC
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
@@ -30,7 +32,7 @@ DNum     set   0
          fdb   $0000+DNum      physical controller address
          fcb   initsize-*-1 initilization table size
          fcb   DT.RFM    device type:0=scf,1=rbf,2=pipe,3=scf
-         fcb   dnum       drive number
+         fcb   DNum       drive number
 initsize equ   *
 
          IFNE  DD

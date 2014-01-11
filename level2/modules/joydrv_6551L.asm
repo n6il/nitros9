@@ -169,7 +169,7 @@ Init	pshs	cc         save regs we alter, stack -1
 * we should see a bunch of stuff here, ending in 'D'
 	lbsr	ClrACIA reset, clear trash data in ACIA, stack -1 on rtn
 	bcc	SetBuf  which will also install IRQSvs stack -1 yet
-	bcc	Alldone, else stack still -1
+	bcc	Alldone else stack still -1
 	lbra	Term it won't come back!
 Alldone puls	cc,pc and return clean
 

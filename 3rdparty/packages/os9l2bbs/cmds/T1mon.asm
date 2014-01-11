@@ -104,7 +104,7 @@ L01D7      leax   U0008,U                                               * 01D7 3
            clra                                                         * 01D9 4F             O
            clrb                                                         * 01DA 5F             _
            os9    I$GetStt                                              * 01DB 10 3F 8D       .?.
-           leax   <$FFE0,X                                              * 01DE 30 88 E0       0.`
+           leax   -$20,X                                                * 01DE 30 88 E0       0.`
            lda    #1                                                    * 01E1 86 01          ..
            sta    U0005,U                                               * 01E3 A7 45          'E
            sta    <$0035,X                                              * 01E5 A7 88 35       '.5
@@ -128,14 +128,14 @@ L020A      lda    U0000,U                                               * 020A A
            beq    L0212                                                 * 020E 27 02          '.
            bra    L01F4                                                 * 0210 20 E2           b
 L0212      leax   U0008,U                                               * 0212 30 48          0H
-           leax   <$FFE0,X                                              * 0214 30 88 E0       0.`
+           leax   -$20,X                                                * 0214 30 88 E0       0.`
            lda    #1                                                    * 0217 86 01          ..
            sta    <$0024,X                                              * 0219 A7 88 24       '.$
            leax   U0008,U                                               * 021C 30 48          0H
            clra                                                         * 021E 4F             O
            clrb                                                         * 021F 5F             _
            os9    I$SetStt                                              * 0220 10 3F 8E       .?.
-           leax   <$FFE0,X                                              * 0223 30 88 E0       0.`
+           leax   -$20,X                                                * 0223 30 88 E0       0.`
            ldb    <$0035,X                                              * 0226 E6 88 35       f.5
            lda    #10                                                   * 0229 86 0A          ..
            mul                                                          * 022B 3D             =
