@@ -1,0 +1,7 @@
+#!/bin/tcsh
+cd /home/project-web/nitros9/htdocs
+rm -rf latest
+mkdir latest
+cd latest
+unzip -o ../nitros9project.zip
+echo "Options +Indexes">.htaccess
