@@ -64,7 +64,7 @@ ifdef	SOURCEUSER
 nightly: clean hgupdate dskcopy
 	$(MAKE) info > $(DSKDIR)/ReadMe
 	$(ARCHIVE) nitros9project $(DSKDIR)/*
-	scp nitros9project.zip $(SOURCEUSER),nitros9@web.sourceforge.net:/home/groups/n/ni/nitros9/htdocs
+	scp nitros9project.zip $(SOURCEUSER),nitros9@web.sourceforge.net:/home/project-web/nitros9/htdocs/nitros9project-$(shell date +%Y%m%d).zip 
 	ssh $(SOURCEUSER),nitros9@shell.sourceforge.net create
 	ssh $(SOURCEUSER),nitros9@shell.sourceforge.net "./burst"
 else
@@ -90,7 +90,7 @@ ifdef	TESTSSHDIR
 nightlytest: clean hgupdate dskcopy
 	$(MAKE) info > $(DSKDIR)/ReadMe
 	$(ARCHIVE) nitros9project $(DSKDIR)/*
-	scp nitros9project.zip $(TESTSSHSERVER):$(TESTSSHDIR)
+	scp nitros9project.zip $(TESTSSHSERVER):$(TESTSSHDIR)/nitros9project-$(shell date +%Y%m%d).zip
 	ssh $(TESTSSHSERVER) "./burst"
 else
 nightlytest:
