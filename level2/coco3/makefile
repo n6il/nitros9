@@ -222,7 +222,7 @@ $(DSKARDUINO):
 
 $(DSKCOCOSDC):
 	$(RM) $@
-	os9 format -t1024 -q -e $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT) -t1024 -q $@ -n"NitrOS-9/$(CPU) Level 2"
 	$(OS9GEN) $@ -b=$(BOOTFILE_COCOSDC) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
