@@ -1961,7 +1961,7 @@ L11CD      pshs   U                                                     * 11CD 3
            clra                                                         * 11D3 4F             O
            andb   #192                                                  * 11D4 C4 C0          D@
            bne    L1205                                                 * 11D6 26 2D          &-
-           leas   <$FFE0,S                                              * 11D8 32 E8 E0       2h`
+           leas   -$20,S                                                * 11D8 32 E8 E0       2h`
            leax   0,S                                                   * 11DB 30 E4          0d
            pshs   X                                                     * 11DD 34 10          4.
            ldd    U0008,U                                               * 11DF EC 48          lH

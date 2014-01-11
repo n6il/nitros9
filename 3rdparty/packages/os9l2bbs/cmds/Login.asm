@@ -533,7 +533,7 @@ L066E      leax   <U0049,U                                              * 066E 3
            clra                                                         * 0671 4F             O
            clrb                                                         * 0672 5F             _
            os9    I$GetStt                                              * 0673 10 3F 8D       .?.
-           leax   <$FFE0,X                                              * 0676 30 88 E0       0.`
+           leax   -$20,X                                                * 0676 30 88 E0       0.`
            clr    <$0024,X                                              * 0679 6F 88 24       o.$
            leax   <U0049,U                                              * 067C 30 C8 49       0HI
            clra                                                         * 067F 4F             O
@@ -544,7 +544,7 @@ L0685      leax   <U0049,U                                              * 0685 3
            clra                                                         * 0688 4F             O
            clrb                                                         * 0689 5F             _
            os9    I$GetStt                                              * 068A 10 3F 8D       .?.
-           leax   <$FFE0,X                                              * 068D 30 88 E0       0.`
+           leax   -$20,X                                                * 068D 30 88 E0       0.`
            lda    #1                                                    * 0690 86 01          ..
            sta    <$0024,X                                              * 0692 A7 88 24       '.$
            leax   <U0049,U                                              * 0695 30 C8 49       0HI

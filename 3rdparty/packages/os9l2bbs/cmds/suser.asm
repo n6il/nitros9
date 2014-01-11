@@ -1262,7 +1262,7 @@ L09EF      pshs   U                                                     * 09EF 3
            clra                                                         * 09F5 4F             O
            andb   #192                                                  * 09F6 C4 C0          D@
            bne    L0A27                                                 * 09F8 26 2D          &-
-           leas   <$FFE0,S                                              * 09FA 32 E8 E0       2h`
+           leas   -$20,S                                                * 09FA 32 E8 E0       2h`
            leax   0,S                                                   * 09FD 30 E4          0d
            pshs   X                                                     * 09FF 34 10          4.
            ldd    U0008,U                                               * 0A01 EC 48          lH
