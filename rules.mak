@@ -24,9 +24,6 @@ CC		= c3
 
 NITROS9VER	= v0$(NOS9VER)0$(NOS9MAJ)0$(NOS9MIN)
 
-ifndef	NITROS9DIR
-NITROS9DIR	= $(HOME)/nitros9
-endif
 ifndef	CLOUD9DIR
 CLOUD9DIR	= $(HOME)/cloud9
 endif

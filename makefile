@@ -1,3 +1,10 @@
+
+ifndef NITROS9DIR
+NITROS9DIR = $(PWD)
+endif
+
+export NITROS9DIR
+
 include rules.mak
 
 dirs	=  $(NOSLIB) $(LEVEL1) $(LEVEL2) $(LEVEL3) $(3RDPARTY)
