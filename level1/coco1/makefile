@@ -72,11 +72,11 @@ LDSKS		= $(LDSKDW) $(LDSKDWHEADLESS) $(LDSKBECKER) $(LDSKBECKERHEADLESS) \
 
 # Make all components
 all:
-	@$(ECHO) "**************************************************"
-	@$(ECHO) "*                                                *"
-	@$(ECHO) "*         NitrOS-9/$(CPU) Level 1 CoCo Port        *"
-	@$(ECHO) "*                                                *"
-	@$(ECHO) "**************************************************"
+	@$(ECHO) "************************************************************"
+	@$(ECHO) "*"
+	@$(ECHO) "*      NitrOS-9/$(CPU) Level $(LEVEL) $(MACHINE) ($(PORT))"
+	@$(ECHO) "*"
+	@$(ECHO) "************************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
 
 # Clean all components

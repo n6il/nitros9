@@ -2,6 +2,7 @@ ifeq ($(CPU),)
         CPU=6809
 endif
 PORT = coco3
+MACHINE = Tandy Color Computer 3
 include $(NITROS9DIR)/rules.mak
 
 LEVEL		= 2
@@ -85,11 +86,11 @@ LDSKS		= $(LDSKDW) $(LDSK360K_1) $(LDSK360K_1_50HZ) $(LDSK360K_2) \
 
 # Make all components
 all:
-	@$(ECHO) "**************************************************"
-	@$(ECHO) "*                                                *"
-	@$(ECHO) "*        NitrOS-9/$(CPU) Level 2 Distribution    *"
-	@$(ECHO) "*                                                *"
-	@$(ECHO) "**************************************************"
+	@$(ECHO) "************************************************************"
+	@$(ECHO) "*"
+	@$(ECHO) "*      NitrOS-9/$(CPU) Level $(LEVEL) $(MACHINE) ($(PORT))"
+	@$(ECHO) "*"
+	@$(ECHO) "************************************************************"
 	cd $(NITROS9DIR)/lib; make
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
 
