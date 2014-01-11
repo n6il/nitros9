@@ -102,11 +102,11 @@ LDSKS		= $(LDSK360K_1) $(LDSK360K_2) $(LDSK720K)
 
 # Make all components
 all:
-	@$(ECHO) "**************************************************"
-	@$(ECHO) "*                                                *"
-	@$(ECHO) "*      NitrOS-9/6809 Level 1 Dragon 64 Port      *"
-	@$(ECHO) "*                                                *"
-	@$(ECHO) "**************************************************"
+	@$(ECHO) "************************************************************"
+	@$(ECHO) "*"
+	@$(ECHO) "*      NitrOS-9/$(CPU) Level $(LEVEL) $(MACHINE) ($(PORT))"
+	@$(ECHO) "*"
+	@$(ECHO) "************************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make STEP=$(STEP) UPGRADED32=$(UPGRADED32));)
 
 # Clean all components

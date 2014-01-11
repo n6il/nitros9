@@ -26,11 +26,11 @@ DSKS		= $(DSK) $(DSK_DEMO)
 
 # Make all components
 all:
-	@$(ECHO) "**************************************************"
+	@$(ECHO) "************************************************************"
 	@$(ECHO) "*"
-	@$(ECHO) "*        NitrOS-9/$(CPU) Level $(LEVEL) $(PORTNAME)"
+	@$(ECHO) "*      NitrOS-9/$(CPU) Level $(LEVEL) $(MACHINE) ($(PORT))"
 	@$(ECHO) "*"
-	@$(ECHO) "**************************************************"
+	@$(ECHO) "************************************************************"
 	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
 
 # Clean all components
