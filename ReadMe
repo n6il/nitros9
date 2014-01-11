@@ -70,64 +70,15 @@ LINUX:
 
 Repeat steps 3-5 for each additional disk.
 
-Addendum by Gene Heskett
 
-Unfortunately, many of the fdc chipsets shipping on motherboards for
-the last 5 years or so, do NOT understand, and will probably crash your
-pc when a 256 byte/sector disk read or write is attempted.  This rather
-high priced Asus M2n-SLI Deluxe board is one such board, so using floppies
-for the 'sneakernet' to get this stuff onto my coco3 cannot be done.
-email to gheskett AT wdtv DOT com.
+NOTES
+=====
+Unfortunately, many of the FDC chipsets shipping on PC motherboards do NOT
+understand, and will probably crash your PC when a 256 byte/sector disk
+read or write is attempted. The Asus M2n-SLI Deluxe board is one such board.
 
-1. This repo is newer than the sourceforge repo, and a lot more of it
-Just Works(TM).  If you find something that doesn't, use the above
-email address.
+When using DriveWire, the appropriate for your machine .dsk
+file can be downloaded and mounted directly as a fully read/write
+virtual disk. Please see for instance the tutorial at
+http://www.cocopedia.com/wiki/index.php/Getting_Started_with_DriveWire
 
-2. This repo's work will be transfered back to sourceforge when I can
-figure out how to do a commit in mercurial.  Tutorials on this are welcome.
-There are, since I did the hg clone about the 27th of October 2012, 
-probably at least 50 files needing committed, changed in getting this
-back to buildable and bootable.
-
-3. Since we now have drivewire, the appropriate for your machine .dsk
-files can be downloaded and mounted directly as a fully read/write
-virtual disk.  Drivewire is the cats meow, many thanks to Aaron Wolfe.
-Make yourself a cable and join in on the dance floor, its amazing.
-
-4. I am still using mamou as the assembler, no attempt has been made
-to convert it to using William Astles lwtools just yet as I wanted
-this to be as close to 100% usable as possible before attempting the
-conversion so that only the conversion generated errors remain.  There
-will be some teething problems while that is going on in a separate
-tree that won't be visible until it Just Works(TM).
-
-5. One thing that was recently done by Boisy was to convert the
-boot_scsi.asm file from, because of code size constraints, the use of 
-the former drive addressing scheme of a single marching set bit across 
-the scsi bus drive address field, into a base zero decimal scheme, so the
-drive address contained in the 4th byte from the end can now be looked
-at as a decimal value where $00 is now a legal address for drive 0 on
-the bus.  A MAJOR change, and one in the right direction IMO, that was
-not even mentioned in the comments of the boot_scsi.asm header till I
-discovered it yesterday while reading the code trying to figure out why
-with that byte set to $01 like it had been for years, the boot was 
-failing because it was trying to find OS9Boot on my drive 1, s1, and 
-fixed the makefiles accordingly.
-
-6. I am not trying to keep this a secret but it probably will not get
-any ink on the coco list until such time as I have committed to source-
-forge and that repo is again useable, so bear with me.  I have cable
-dsl so my 'intertube' at 3 megabits isn't that fast.  A lot of traffic 
-will probably result in my isp blocking the port address I do use to
-get past the port 80 block just like they do without admitting to it 
-because if they did admit it, the FCC would probably discuss their 
-common carrier status with the ISP's legal dept.  As that status has
-huge tax and licensing advantages to the ISP, they will not give that
-status up without a prolonged court fight.  I have even considered
-putting this page on port 6809, but when and if that happens, you'll
-see it in my email sig.
-
-Thats all for now folks, keep the old girl running till the rapture
-or whatever.
-
-Cheers, Gene

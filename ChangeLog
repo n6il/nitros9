@@ -1,3 +1,13 @@
+This ChangeLog file is no longer maintained. Please consult
+the NitrOS-9 source repository for changes:
+https://sourceforge.net/p/nitros9/code/
+
+In a local repository checkout, the full log can be viewed
+with the following command: hg log -v
+
+
+----------------------------------------------------------
+
 NitrOS-9 V3.2.9:
 
 ----------------------------------------------------------
