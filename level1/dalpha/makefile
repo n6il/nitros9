@@ -29,8 +29,7 @@
 #	Updated to use new build system, for multiple supported platforms.
 #
 
-PORT = dalpha
-include $(NITROS9DIR)/rules.mak
+include port.mak
 
 CPU		= 6809
 LEVEL		= 1
