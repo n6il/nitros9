@@ -165,7 +165,7 @@ initsize       EQU       *
 
                IFNE      NULL
 name           FCC       /NULL/
-               FCB       ITDRV+$B0
+               FCB       '0+ITDRV+$80
                ELSE
                IFNE      DD
 name           FCS       /DD/
@@ -175,7 +175,7 @@ name           FCC       /X/
                IFNE      HB
                FCS       /H/
                ELSE
-               FCB       ITDRV+$B0
+               FCB       '0+ITDRV+$80
                ENDC
                ELSE
                IFNE      IDE
@@ -183,7 +183,7 @@ name           FCC       /I/
                IFNE      HB
                FCS       /H/
                ELSE
-               FCB       ITDRV+$B0
+               FCB       '0+ITDRV+$80
                ENDC
                ELSE
                IFNE      COCOSDC
@@ -191,14 +191,14 @@ name           FCC       /SD/
                IFNE      HB
                FCS       /H/
                ELSE
-               FCB       ITDRV+$B0
+               FCB       '0+ITDRV+$80
                ENDC
                ELSE
 name           FCC       /S/
                IFNE      HB
                FCS       /H/
                ELSE
-               FCB       ITDRV+$B0
+               FCB       '0+ITDRV+$80
                ENDC
                ENDC
                ENDC
