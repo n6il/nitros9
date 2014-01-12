@@ -12,7 +12,7 @@ all:
 	@$(ECHO) "*             Sierra Adventure Games             *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
-	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) &&) :
 
 # Clean all components
 clean:

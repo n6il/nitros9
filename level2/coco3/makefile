@@ -91,8 +91,8 @@ all:
 	@$(ECHO) "*      NitrOS-9/$(CPU) Level $(LEVEL) $(MACHINE) ($(PORT))"
 	@$(ECHO) "*"
 	@$(ECHO) "************************************************************"
-	cd $(NITROS9DIR)/lib; make
-	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
+	$(MAKE) -C $(NITROS9DIR)/lib
+	$(foreach dir,$(DIRS),$(MAKE) -C $(dir) &&) :
 
 # Clean all components
 clean: dskclean

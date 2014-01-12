@@ -59,7 +59,7 @@ all:
 	@$(ECHO) "*        NitrOS-9/$(CPU) Level 2 Distribution      *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
-	$(foreach dir, $(DIRS), ($(CD) $(dir); make);)
+	$(foreach dir,$(DIRS),$(MAKE) -C $(dir) &&) :
 
 # Clean all components
 clean: dskclean

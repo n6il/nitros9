@@ -9,7 +9,7 @@ all:
 	@$(ECHO) "*                OS-9 LEVEL 2 BBS                *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
-	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) &&) :
 
 # Clean all components
 clean:

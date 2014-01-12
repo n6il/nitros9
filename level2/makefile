@@ -12,7 +12,7 @@ all:
 	@$(ECHO) "*             NitrOS-9 Level 2 Ports             *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
-	$(foreach dir, $(dirs), ($(CD) $(dir); make);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) &&) :
 
 # Clean all components
 clean:
