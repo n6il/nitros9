@@ -7,6 +7,7 @@ DEPENDS		= ./makefile
 
 KERNEL_1773	= $(MD)/rel_80 $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_1773_50HZ	= $(MD)/rel_80_50hz $(MD)/boot_1773_6ms $(MD)/krn
+KERNEL_DW	= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
 
 # NitrOS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_40D	= $(MD)/nitro \
@@ -78,7 +79,7 @@ BOOTFILE_80D_50HZ 	= $(MD)/nitro \
 		$(MD)/clock_50hz $(MD)/clock2_soft
 
 BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d bootfile_80d_50hz
-KERNELS		= kernel_1773 kernel_1773_50hz
+KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -97,12 +98,18 @@ bootfile_80d: $(BOOTFILE_80D) $(DEPENDS)
 bootfile_80d_50hz: $(BOOTFILE_80D_50HZ) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_80D_50HZ)>$@
 
+bootfile_dw: $(BOOTFILE_DW) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_DW)>$@
+
 # Kernels
 kernel_1773: $(KERNEL_1773) $(DEPENDS)
 	$(MERGE) $(KERNEL_1773)>$@
 
 kernel_1773_50hz: $(KERNEL_1773_50HZ) $(DEPENDS)
 	$(MERGE) $(KERNEL_1773_50HZ)>$@
+
+kernel_dw: $(KERNEL_DW) $(DEPENDS)
+	$(MERGE) $(KERNEL_DW)>$@
 
 clean:
 	$(RM) $(ALLOBJS)

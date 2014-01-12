@@ -5,25 +5,25 @@ DEPENDS		= ./makefile
 
 DEFOPTS		= --preprocess -DLevel=3
 PERMDEFS	= Defsfile
-DEFS		= OS9Defs RBFDefs SCFDefs SysType VTIODefs
+DEFS		= os9.d rbf.d scf.d coco.d coco3vtio.d
 ALLOBJS		= $(DEFS) $(PERMDEFS)
 
 all:	$(ALLOBJS)
 
-OS9Defs: $(DEFSDIR)/os9defs
-	$(AS) $(AFLAGS) $(DEFOPTS) -DOS9DEFS=0 $< > $@
+os9.d: $(DEFSDIR)/os9.d
+	$(AS) $(AFLAGS) $(DEFOPTS) -DOS9.D=0 $< > $@
 
-RBFDefs: $(DEFSDIR)/rbfdefs
-	$(AS) $(AFLAGS) $(DEFOPTS) -DRBFDEFS=0 $< > $@
+rbf.d: $(DEFSDIR)/rbf.d
+	$(AS) $(AFLAGS) $(DEFOPTS) -DRBF.D=0 $< > $@
 
-SCFDefs: $(DEFSDIR)/scfdefs
-	$(AS) $(AFLAGS) $(DEFOPTS) -DSCFDEFS=0 $< > $@
+scf.d: $(DEFSDIR)/scf.d
+	$(AS) $(AFLAGS) $(DEFOPTS) -DSCF.D=0 $< > $@
 
-SysType: $(DEFSDIR)/systype
-	$(AS) $(AFLAGS) $(DEFOPTS) -DSYSTYPE=0 $< > $@
+coco.d: $(DEFSDIR)/coco.d
+	$(AS) $(AFLAGS) $(DEFOPTS) -DCOCO.D=0 $< > $@
 
-VTIODefs: $(DEFSDIR)/vtiodefs_cc3
-	$(AS) $(AFLAGS) $(DEFOPTS) -DVTIODEFS=0 $< > $@
+coco3vtio.d: $(DEFSDIR)/cocovtio.d
+	$(AS) $(AFLAGS) $(DEFOPTS) -DCOCOVTIO.D=0 $< > $@
 
 clean:
 	$(RM) $(DEFS)
