@@ -24,9 +24,9 @@ Level    set   2
 optB     equ   *         
 
          IFEQ  density&%100 ..not hi density
-namB     fcb   dnam,DNum+48+%10000000 device name
+namB     fcb   dnam,'0+DNum+$80 device name
          ELSE            
-namB     fcb   dnam,'H,DNum+48+%10000000 add H to device name
+namB     fcb   dnam,'H,'0+DNum+$80 add H to device name
          ENDC            
 
 mgrB     fcs   /MSF/     

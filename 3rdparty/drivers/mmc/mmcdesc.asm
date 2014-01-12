@@ -95,7 +95,7 @@ initsize equ   *
 name     fcs   /DD/      
          else            
 name     fcc   /H/       
-         fcb   ITDRV+$B0 
+         fcb   '0+ITDRV+$80
          endc            
 mgrnam   fcs   /RBF/     
 drvnam   fcs   /MMCDRV/   
