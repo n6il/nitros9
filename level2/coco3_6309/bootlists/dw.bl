@@ -199,43 +199,32 @@
 * ../MODULES/SCF/scdwp.dr
 * ../MODULES/SCF/p_scdwp.dd
 *
-* DriveWire Networking
-*../MODULES/SCF/scdwn.dr
-*../MODULES/SCF/term_scdwn.dt
-*../MODULES/SCF/n_scdwn.dd
-*../MODULES/SCF/n1_scdwn.dd
-*../MODULES/SCF/n2_scdwn.dd
-*../MODULES/SCF/n3_scdwn.dd
-*../MODULES/SCF/n4_scdwn.dd
-*../MODULES/SCF/n5_scdwn.dd
-*../MODULES/SCF/n6_scdwn.dd
-*../MODULES/SCF/n7_scdwn.dd
-*../MODULES/SCF/n8_scdwn.dd
-*../MODULES/SCF/n9_scdwn.dd
-*../MODULES/SCF/n10_scdwn.dd
-*../MODULES/SCF/n11_scdwn.dd
-*../MODULES/SCF/n12_scdwn.dd
-*../MODULES/SCF/n13_scdwn.dd
-*../MODULES/SCF/n14_scdwn.dd
-*
-* DriveWire Networking
-*../MODULES/SCF/scdwn.dr
-*../MODULES/SCF/term_scdwn.dt
-*../MODULES/SCF/n0_scdwn.dd
-*../MODULES/SCF/n1_scdwn.dd
-*../MODULES/SCF/n2_scdwn.dd
-*../MODULES/SCF/n3_scdwn.dd
-*../MODULES/SCF/n4_scdwn.dd
-*../MODULES/SCF/n5_scdwn.dd
-*../MODULES/SCF/n6_scdwn.dd
-*../MODULES/SCF/n7_scdwn.dd
-*../MODULES/SCF/n8_scdwn.dd
-*../MODULES/SCF/n9_scdwn.dd
-*../MODULES/SCF/n10_scdwn.dd
-*../MODULES/SCF/n11_scdwn.dd
-*../MODULES/SCF/n12_scdwn.dd
-*../MODULES/SCF/n13_scdwn.dd
-*../MODULES/SCF/n14_scdwn.dd
+* DriveWire Virtual Channel Driver
+*../MODULES/SCF/scdwv.dr
+*../MODULES/SCF/term_scdwv.dt
+*../MODULES/SCF/n_scdwv.dd
+*../MODULES/SCF/n1_scdwv.dd
+*../MODULES/SCF/n2_scdwv.dd
+*../MODULES/SCF/n3_scdwv.dd
+*../MODULES/SCF/n4_scdwv.dd
+*../MODULES/SCF/n5_scdwv.dd
+*../MODULES/SCF/n6_scdwv.dd
+*../MODULES/SCF/n7_scdwv.dd
+*../MODULES/SCF/n8_scdwv.dd
+*../MODULES/SCF/n9_scdwv.dd
+*../MODULES/SCF/n10_scdwv.dd
+*../MODULES/SCF/n11_scdwv.dd
+*../MODULES/SCF/n12_scdwv.dd
+*../MODULES/SCF/n13_scdwv.dd
+*../MODULES/SCF/n14_scdwv.dd
+*../MODULES/SCF/term_z_scdwv.dt
+*../MODULES/SCF/z1_scdwv.dd
+*../MODULES/SCF/z2_scdwv.dd
+*../MODULES/SCF/z3_scdwv.dd
+*../MODULES/SCF/z4_scdwv.dd
+*../MODULES/SCF/z5_scdwv.dd
+*../MODULES/SCF/z6_scdwv.dd
+*../MODULES/SCF/z7_scdwv.dd
 *
 * VRN is a driver module used by certain games, including King's Quest III,
 * Leisure Suit Larry and Flight Simulator II.  A /nil descriptor is also
