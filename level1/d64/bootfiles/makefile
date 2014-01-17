@@ -27,11 +27,9 @@ MD		= ../modules
 
 DEPENDS		= ./makefile
 
-KERNEL_DRAGON	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
+KERNEL		= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		  $(MD)/boot_d64
 
-IDE	= $(3PD)/ide
-SCSI	= $(3PD)/scsisys
 
 
 BOOTFILE_COVDG_DS40 = $(MD)/ioman \
@@ -121,25 +119,25 @@ echo:
 	@$(ECHO) $(BOOTFILE_COVDG_DS40)
 
 bootfile_covdg_ds40: 	$(BOOTFILE_COVDG_DS40) $(DEPENDS)
-				$(MERGE) $(BOOTFILE_COVDG_DS40)>$@
+				$(MERGE) $^ > $@
 
 bootfile_cohr_ds40: 	$(BOOTFILE_COHR_DS40) $(DEPENDS)
-				$(MERGE) $(BOOTFILE_COHR_DS40)>$@
+				$(MERGE) $^ > $@
 
 bootfile_covdg_ds80: 	$(BOOTFILE_COVDG_DS80) $(DEPENDS)
-				$(MERGE) $(BOOTFILE_COVDG_DS80)>$@
+				$(MERGE) $^ > $@
 
 bootfile_cohr_ds80: 	$(BOOTFILE_COHR_DS80) $(DEPENDS)
-				$(MERGE) $(BOOTFILE_COHR_DS80)>$@
+				$(MERGE) $^ > $@
 
 bootfile_covdg_ss40: 	$(BOOTFILE_COVDG_SS40) $(DEPENDS)
-				$(MERGE) $(BOOTFILE_COVDG_SS40)>$@
+				$(MERGE) $^ > $@
 
 bootfile_cohr_ss40: 	$(BOOTFILE_COHR_SS40) $(DEPENDS)
-				$(MERGE) $(BOOTFILE_COHR_SS40)>$@
+				$(MERGE) $^ > $@
 
-kernel:	$(KERNEL_DRAGON) $(DEPENDS)
-		$(MERGE) $(KERNEL_DRAGON)>$@
+kernel: $(KERNEL) $(DEPENDS)
+		$(MERGE) $(KERNEL)>$@
 		$(PADROM) 4096 $@
 
 clean:

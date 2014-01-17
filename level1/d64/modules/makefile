@@ -1,5 +1,5 @@
 #
-#modules/makefile
+#modules/makefile for Dragon 64/Alpha/Tano
 #
 # 2005-04-24, P.Harvey-Smith, 
 #	made descriptors for both 40 & 80 track drives for Dragon 64.
@@ -56,9 +56,13 @@ CLOCKS          = clock_60hz clock_50hz \
 
 RBF		= rbf.mn \
 		ddisk.dr \
-		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd d3_40d.dd \
-		ddd0_40s.dd d0_40s.dd d1_40s.dd d2_40s.dd d3_40s.dd \
 		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd d3_80d.dd
+ifeq ($(PORT),dalpha)
+RBF +=		ddd0_80s.dd d0_80s.dd d1_80s.dd d2_80s.dd d3_80s.dd
+else
+RBF +=		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd d3_40d.dd \
+		ddd0_40s.dd d0_40s.dd d1_40s.dd d2_40s.dd d3_40s.dd
+endif
 		
 SCF		= scf.mn \
 		vrn.dr scdpp.dr sspak.dr vtio.dr \
@@ -111,7 +115,6 @@ SSDD80		= -DCyls=80 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
 DSDD80		= -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
 		-DInterlv=2 -DSAS=8 -DDensity=1 -DD35 -DSTEP=$(STEP)
 
-#Dragon 64
 #Dragon 64 Drives can be double or single sided, but assume 
 # that /d0 and /d1 are double sided 40 track.
 
@@ -146,18 +149,34 @@ d2_40s.dd: ddiskdesc.asm
 d3_40s.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD40) -DDNum=3
 
+# Internal drives on Alpha are Single Sided 80 track.
+
+ddd0_80s.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -DDNum=0 -DDD=1
 
 ddd0_80d.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=0 -DDD=1
 
+d0_80s.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -DDNum=0
+	
 d0_80d.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=0
+	
+d1_80s.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -DDNum=1
 
 d1_80d.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=1
 
+d2_80s.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -DDNum=2
+
 d2_80d.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=2
+
+d3_80s.dd: ddiskdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD80) -DDNum=3
 
 d3_80d.dd: ddiskdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(DSDD80) -DDNum=3
