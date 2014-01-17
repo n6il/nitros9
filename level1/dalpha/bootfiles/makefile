@@ -1,5 +1,5 @@
 #
-#level1/dalpha/bootfiles/makefile
+#bootfiles/makefile
 #
 # 2005-04-24, P.Harvey-Smith.
 #	Added kernels for both DS40 and DS80 disks for Dragon 64
@@ -25,61 +25,61 @@ MD		= ../modules
 
 DEPENDS		= ./makefile
 
-KERNEL	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
-		  $(MD)/boot_dalpha
+KERNEL		= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
+		  $(MD)/boot_d64
 
 #Dragon Alpha Bootfiles
 
 BOOTFILE_COVDG_SS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt \
-		$(MD)/rbf.mn $(MD)/adisk.dr \
+		$(MD)/rbf.mn $(MD)/ddisk.dr \
 		$(MD)/ddd0_80s.dd\
-                $(MD)/d0_80s.dd $(MD)/d1_80s.dd \
-                $(MD)/d2_80s.dd $(MD)/d3_80s.dd \
-                $(MD)/scf.mn \
+		$(MD)/d0_80s.dd $(MD)/d1_80s.dd \
+		$(MD)/d2_80s.dd $(MD)/d3_80s.dd \
+		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_50hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_SS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt \
-		$(MD)/rbf.mn $(MD)/adisk.dr \
+		$(MD)/rbf.mn $(MD)/ddisk.dr \
 		$(MD)/ddd0_80s.dd\
-                $(MD)/d0_80s.dd $(MD)/d1_80s.dd \
-                $(MD)/d2_80s.dd $(MD)/d3_80s.dd \
-                $(MD)/scf.mn \
+		$(MD)/d0_80s.dd $(MD)/d1_80s.dd \
+		$(MD)/d2_80s.dd $(MD)/d3_80s.dd \
+		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_50hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COVDG_DS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt \
-		$(MD)/rbf.mn $(MD)/adisk.dr \
+		$(MD)/rbf.mn $(MD)/ddisk.dr \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/d0_80d.dd $(MD)/d1_80d.dd \
 		$(MD)/d2_80d.dd $(MD)/d3_80d.dd \
-                $(MD)/scf.mn \
+		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/covdg.io $(MD)/term_vdg.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_50hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
 BOOTFILE_COHR_DS80 = $(MD)/ioman \
-		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt \
-		$(MD)/rbf.mn $(MD)/adisk.dr \
+		$(MD)/rbf.mn $(MD)/ddisk.dr \
 		$(MD)/ddd0_80d.dd \
 		$(MD)/d0_80d.dd $(MD)/d1_80d.dd \
 		$(MD)/d2_80d.dd $(MD)/d3_80d.dd \
-                $(MD)/scf.mn \
+		$(MD)/scf.mn \
+		$(MD)/vtio.dr $(MD)/cohr.io $(MD)/term_hr.dt \
 		$(MD)/scdpp.dr $(MD)/p_dpp.dd \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_50hz $(MD)/clock2_soft \
 		$(MD)/sysgo_dd
 
 BOOTFILES	= bootfile_covdg_ss80 bootfile_cohr_ss80 \
-			bootfile_covdg_ds80 bootfile_cohr_ds80
+		  bootfile_covdg_ds80 bootfile_cohr_ds80
 		  
 KERNELS		= kernel
 
@@ -105,7 +105,7 @@ bootfile_cohr_ds80: 	$(BOOTFILE_COHR_DS80) $(DEPENDS)
 				$(MERGE) $^ > $@
 
 # Dragon Alpha WD2797 Kernel
-kernel: 	$(KERNEL) $(DEPENDS)
+kernel: $(KERNEL) $(DEPENDS)
 		$(MERGE) $(KERNEL)>$@
 		$(PADROM) 4096 $@
 
