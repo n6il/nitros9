@@ -135,7 +135,7 @@ $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 
 $(DSK360K_1):
 	$(RM) $@
-	$(OS9FORMAT_DS40) -q -dr $@ -n"NitrOS-9/6809 Dragon Level 1 Disk 1"
+	$(OS9FORMAT_DS40) -q -dr $@ -n"NitrOS-9/$(CPU) $(MACHINE) #1"
 	$(OS9GEN) $@ -d -b=$(BOOTFILE_DS40) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -154,7 +154,7 @@ $(DSK360K_1):
 
 $(DSK360K_2):
 	$(RM) $@
-	$(OS9FORMAT_DS40) -q -dr $@ -n"NitrOS-9/6809 Dragon Level 1 Disk 2"
+	$(OS9FORMAT_DS40) -q -dr $@ -n"NitrOS-9/$(CPU) $(MACHINE) #2"
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/6809L1
 	$(MAKDIR) $@,NITROS9/6809L1/CMDS
@@ -192,7 +192,7 @@ $(DSK360K_2):
 
 $(DSK720K):
 	$(RM) $@
-	$(OS9FORMAT_DS80) -q -dr -c2 $@ -n"NitrOS-9/6809 Dragon Level 1"
+	$(OS9FORMAT_DS80) -q -dr -c2 $@ -n"NitrOS-9/$(CPU) $(MACHINE)"
 	$(OS9GEN) $@ -d -b=$(BOOTFILE_DS80) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -244,7 +244,7 @@ $(DSK720K):
 
 $(DSK180K_1):
 	$(RM) $@
-	$(OS9FORMAT_SS40) -e -dr -q $@ -n"NitrOS-9/6809/Dragon Level 1 Disk 1"
+	$(OS9FORMAT_SS40) -e -dr -q $@ -n"NitrOS-9/$(CPU) $(MACHINE) #1"
 	$(OS9GEN) $@ -d -b=$(BOOTFILE_SS40) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -261,11 +261,11 @@ $(DSK180K_1):
 
 $(DSK180K_2):
 	$(RM) $@
-	$(OS9FORMAT_SS40) -e -dr -q $@ -n"NitrOS-9/6809/Dragon Level 1 Disk 2"
+	$(OS9FORMAT_SS40) -e -dr -q $@ -n"NitrOS-9/$(CPU) $(MACHINE) #2"
 	$(MAKDIR) $@,CMDS
 	$(CD) cmds; $(OS9COPY) $(CMDS525_2) ../$@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS525_2),$@,CMDS/$(file))
 
 info:
-	@$(ECHO) "*** NitrOS-9/6809 Level 1 for the Dragon 64 ***"
+	@$(ECHO) "*** NitrOS-9/$(CPU) Level $(LEVEL) for the $(MACHINE) ***"
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
