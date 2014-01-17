@@ -31,9 +31,6 @@
 
 include port.mak
 
-CPU		= 6809
-LEVEL		= 1
-
 # TERMWIDTH can be either VDG or HR, for 32x16 or 51x24 respectivly
 #NOTE must be lower case.
 TERMWIDTH	= hr
@@ -130,7 +127,7 @@ $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 
 $(DSK360K_1):
 	$(RM) $@
-	$(OS9FORMAT_SS80) -q -dr $@ -n"NitrOS-9/6809 Dragon Alpha Level 1 Disk 1"
+	$(OS9FORMAT_SS80) -q -dr $@ -n"NitrOS-9/$(CPU) $(MACHINE) #1"
 	$(OS9GEN) $@ -d -b=$(BOOTFILE_SS80) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -149,7 +146,7 @@ $(DSK360K_1):
 
 $(DSK360K_2):
 	$(RM) $@
-	$(OS9FORMAT_SS80) -q -dr $@ -n"NitrOS-9/6809 Dragon Alpha Level 1 Disk 2"
+	$(OS9FORMAT_SS80) -q -dr $@ -n"NitrOS-9/$(CPU) $(MACHINE) #2"
 	$(MAKDIR) $@,NITROS9
 	$(MAKDIR) $@,NITROS9/6809L1
 	$(MAKDIR) $@,NITROS9/6809L1/CMDS
@@ -187,7 +184,7 @@ $(DSK360K_2):
 
 $(DSK720K):
 	$(RM) $@
-	$(OS9FORMAT_DS80) -q -dr -c2 $@ -n"NitrOS-9/6809 Dragon Level 1"
+	$(OS9FORMAT_DS80) -q -dr -c2 $@ -n"NitrOS-9/$(CPU) $(MACHINE)"
 	$(OS9GEN) $@ -d -b=$(BOOTFILE_DS80) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -237,5 +234,5 @@ $(DSK720K):
 	$(SOFTLINK) $@ $(LDSK720K)
 
 info:
-	@$(ECHO) "*** NitrOS-9/6809 Level 1 for the Dragon Alpha ***"
+	@$(ECHO) "*** NitrOS-9/$(CPU) Level $(LEVEL) for the $(MACHINE) ***"
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
