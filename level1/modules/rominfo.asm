@@ -21,9 +21,14 @@ atrv     set   ReEnt+rev
 rev      set   $01
 edition  set   1
 
-* Untested!
+* Tested (for level 1) on XRoar
+* The ROMPak must be autostarting by firing FIRQ
+* 
          IFNE  ROMPak
-         jmp   $C000+start
+         jmp   $C000+start+3      Offset 3 due to this line
+PakOffs  equ   $C000-$8000
+         ELSE
+PakOffs  equ   0
          ENDC
 
          mod   eom,name,tylg,atrv,start,size
@@ -172,7 +177,7 @@ copyloop ldd   ,x++       get 2 bytes from src
          sta   $FFDD                   SET   M1
 
 * ROM relocation code -- copies the boot track into $2600
-RelROM   ldx   #$AE00                  src address (ROM)
+RelROM   ldx   #$AE00+PakOffs          src address (ROM)
          ldy   #$2600                  dst address (RAM)
          IFNE  H6309
          ldw   #$1200
@@ -180,11 +185,11 @@ RelROM   ldx   #$AE00                  src address (ROM)
          ELSE
 copyloop ldd   ,x++                    get 2 bytes from src
          std   ,y++                    put 2 bytes to dst
-         cmpx  #$AE00+$1200            at end?
-         blo   copyloop                nope, copy more...
+         cmpx  #$AE00+$1200+PakOffs    at end?
+         bne   copyloop                nope, copy more...
          ENDC
 * BOOT relocation code -- copies the bootfile into $2600+$1200
-RelBOOT  ldx   #$8000
+RelBOOT  ldx   #$8000+PakOffs
          ldy   #$2600+$1200
          IFNE  H6309
          ldw   #$2E00
@@ -192,7 +197,7 @@ RelBOOT  ldx   #$8000
          ELSE
 cpy2loop ldd   ,x++
          std   ,y++
-         cmpx  #$8000+$2E00
+         cmpx  #$8000+$2E00+PakOffs
          blo   cpy2loop
          ENDC
          jmp   $2602                   jump to OS rel code
