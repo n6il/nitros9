@@ -26,7 +26,7 @@ BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		boot_dw_arduino boot_dw_coco1
 BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= krn krnp2 wbug
-SYSMODS		= ioman init sysgo_dd sysgo_h0 rominfo vectors
+SYSMODS		= ioman init sysgo_dd sysgo_h0 rominfo rominfo_pak vectors
 CLOCKS          = clock_60hz clock_50hz \
 		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
                 clock2_smart clock2_harris clock2_cloud9 clock2_soft \
@@ -73,6 +73,10 @@ krn krnp2:
 	$(OS9COPY) kernel/$@ .
 
 # Special cases
+
+rominfo_pak: rominfo.asm
+	$(AS) $(ASOUT)$@ $< -DROMPak=1
+
 # TC^3 SCSI Booter
 boot_tc3: boot_scsi.asm
 	$(AS) $(ASOUT)$@ $< $(TC3FLAGS)
