@@ -30,8 +30,8 @@ DRAGON525CMDS	= asm attr backup binex build cmp cobbler copy date del deldir \
 		save setime shell_21 sleep tee tmode tsmon unlink verify xmode
 
 DRAGON525CMDS2	= cputype dcheck debug ded deiniz devs dirsort disasm edit error \
-		grfdrv help iniz irqs megaread mpi os9gen padrom park printerr prompt \
-		runb shellplus shell_21 touch tuneport 
+		grfdrv help iniz irqs megaread mpi padrom park prompt \
+		runb shellplus touch tuneport 
 
 
 SUBS		= gfx inkey syscall
