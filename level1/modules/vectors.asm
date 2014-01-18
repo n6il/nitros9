@@ -10,6 +10,10 @@
 * Comment
 * ------------------------------------------------------------------
 
+*
+* Note that the $8015 value for the RESET vector must match the
+* offset of the "start" label in rominfo.asm
+*
         IFP1
         use     defsfile
         ENDC
