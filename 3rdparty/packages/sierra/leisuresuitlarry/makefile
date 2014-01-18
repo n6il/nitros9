@@ -72,7 +72,7 @@ $(DSK_FLOPPY):
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(OS9COPY) $(SUPPORTFILES) $@,.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,$(file))
@@ -90,7 +90,7 @@ $(DSK_DW):
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(OS9COPY) $(SUPPORTFILES) $@,.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,$(file))
@@ -108,7 +108,7 @@ $(DSK_DW_BECKER):
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(OS9COPY) $(SUPPORTFILES) $@,.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,$(file))

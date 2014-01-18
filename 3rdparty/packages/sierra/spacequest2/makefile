@@ -107,7 +107,7 @@ $(DISK_1_40D):
 	$(CPL) $(TEXTFILES_D1) $@,.
 	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
 	$(OS9COPY) $(SUPPORTFILES_D1) $@,.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 
@@ -140,7 +140,7 @@ $(DISK_80D):
 	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_80d.txt tOC.txt
 	$(OS9COPY) $(SUPPORTFILES) $@,.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 
@@ -162,7 +162,7 @@ $(DISK_DW):
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_80d.txt tOC.txt
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 	$(OS9COPY) $(SUPPORTFILES) $@,.
@@ -185,7 +185,7 @@ $(DISK_DW_BECKER):
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_80d.txt tOC.txt
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 	$(OS9COPY) $(SUPPORTFILES) $@,.

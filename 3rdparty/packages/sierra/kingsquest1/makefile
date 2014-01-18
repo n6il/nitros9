@@ -84,7 +84,7 @@ $(DISK_40D):
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 	$(OS9COPY) $(SUPPORTFILES) $@,.
@@ -107,7 +107,7 @@ $(DSKDW):
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 	$(OS9COPY) $(SUPPORTFILES) $@,.
@@ -130,7 +130,7 @@ $(DSKDWBECKER):
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 	$(OS9COPY) $(SUPPORTFILES) $@,.

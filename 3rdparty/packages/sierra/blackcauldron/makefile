@@ -101,7 +101,7 @@ dsk_40d:	all
 	$(CPL) $(TEXTFILES_D1) $(DSK_1_40D),.
 	$(OS9RENAME) $(DSK_1_40D),tOC_40d.txt tOC.txt
 	$(OS9COPY) $(SUPPORTFILES_D1) $(DSK_1_40D),.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $(DSK_1_40D),tOC.txt $(DSK_1_40D),tOC
 	$(MOVE) toctmp tocgen
 	$(OS9FORMAT_DS40) -q $(DSK_2_40D) -n$(DSK_2_40D_NAME)
@@ -126,7 +126,7 @@ dsk_80d:	all
 	$(CPL) $(TEXTFILES) $(DSK_80D),.
 	$(OS9RENAME) $(DSK_80D),tOC_40d.txt tOC.txt
 	$(OS9COPY) $(SUPPORTFILES) $(DSK_80D),.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $(DSK_80D),tOC.txt $(DSK_80D),tOC
 	$(MOVE) toctmp tocgen
 
@@ -149,7 +149,7 @@ dsk_dw:	all
 	$(CPL) $(TEXTFILES) $(DSK_DW),.
 	$(OS9RENAME) $(DSK_DW),tOC_40d.txt tOC.txt
 	$(OS9COPY) $(SUPPORTFILES) $(DSK_DW),.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $(DSK_DW),tOC.txt $(DSK_DW),tOC
 	$(MOVE) toctmp tocgen
 
@@ -172,7 +172,7 @@ dsk_dw_becker:	all
 	$(CPL) $(TEXTFILES) $(DSK_DW_BECKER),.
 	$(OS9RENAME) $(DSK_DW_BECKER),tOC_40d.txt tOC.txt
 	$(OS9COPY) $(SUPPORTFILES) $(DSK_DW_BECKER),.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $(DSK_DW_BECKER),tOC.txt $(DSK_DW_BECKER),tOC
 	$(MOVE) toctmp tocgen
 
