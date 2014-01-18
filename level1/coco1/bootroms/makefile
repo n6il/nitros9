@@ -2,6 +2,7 @@ include ../port.mak
 
 # Module directory
 MD		= ../modules
+CMDS		= ../cmds
 
 DEPENDS		= ./makefile
 
@@ -11,6 +12,8 @@ BOOTFILE_ROM	= $(MD)/rominfo $(MD)/ioman \
 		$(MD)/scf.mn $(MD)/vtio.dr \
 		$(MD)/covdg.io \
 		$(MD)/term_vdg.dt \
+		$(MD)/sysgo_dd \
+		$(CMDS)/shell_21 \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
 BOOTROMS	= nos96809l1.rom
