@@ -250,21 +250,22 @@ $(DSK180K_1):
 	$(MAKDIR) $@,SYS
 	$(CD) cmds; $(OS9COPY) $(CMDS525) ../$@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS525),$@,CMDS/$(file))
+	# put all commands on the first disk because we can
+	$(CD) cmds; $(OS9COPY) $(CMDS525_2) ../$@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS525_2),$@,CMDS/$(file))
 	$(OS9RENAME) $@,CMDS/$(WHICHSHELL) shell
 	$(CD) sys; $(CPL) $(SYS) ../$@,SYS
 	$(OS9ATTR_TEXT) $(foreach file,$(SYS),$@,SYS/$(file))
-	$(MAKDIR) $@,DEFS
-	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
-	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 	$(CPL) $(ROOTFILES) $@,.
 	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$@,$(file))
 
 $(DSK180K_2):
 	$(RM) $@
 	$(OS9FORMAT_SS40) -e -dr -q $@ -n"NitrOS-9/$(CPU) $(MACHINE) #2"
-	$(MAKDIR) $@,CMDS
-	$(CD) cmds; $(OS9COPY) $(CMDS525_2) ../$@,CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS525_2),$@,CMDS/$(file))
+	# for space reasons, put the DEFS folder on the second disk
+	$(MAKDIR) $@,DEFS
+	$(CD) defs; $(CPL) $(DEFS) ../$@,DEFS
+	$(OS9ATTR_TEXT) $(foreach file,$(DEFS),$@,DEFS/$(file))
 
 info:
 	@$(ECHO) "*** NitrOS-9/$(CPU) Level $(LEVEL) for the $(MACHINE) ***"

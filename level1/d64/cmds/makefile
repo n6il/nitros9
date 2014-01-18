@@ -76,4 +76,4 @@ showdragon525objs:
 	@$(ECHO) $(DRAGON525CMDS) $(SUBS)
 
 showdragon525objs2:
-	@$(ECHO) $(DRAGON525CMDS2) $(SUBS)
+	@$(ECHO) $(DRAGON525CMDS2)
