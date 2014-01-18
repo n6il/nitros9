@@ -95,7 +95,7 @@ IO		equ		$ff00		IO page on Dragon
 
 * PIA 0 and 1 standard on all Dragons.
 DPPIA0DA	EQU		$00		Side A Data/DDR
-PIA0Base  EQU       DPPIA0DA
+PIA0Base  EQU       DPPIA0DA+IO
 DPPIA0CRA	EQU		$01		Side A Control.
 DPPIA0DB	EQU		$02		Side B Data/DDR
 DPPIA0CRB	EQU		$03		Side B Control.
@@ -106,7 +106,7 @@ PIA0DB		EQU		DPPIA0DB+IO	Side A Data/DDR
 PIA0CRB		EQU		DPPIA0CRB+IO	Side A Control.
 
 DPPIA1DA	EQU		$20		Side A Data/DDR
-PIA1Base  EQU       DPPIA1DA
+PIA1Base  EQU       DPPIA1DA+IO
 DPPIA1CRA	EQU		$21		Side A Control.
 DPPIA1DB	EQU		$22		Side B Data/DDR
 DPPIA1CRB	EQU		$23		Side B Control.
