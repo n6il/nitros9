@@ -147,7 +147,11 @@ copyloop ldd   ,x++       get 2 bytes from src
          clr   -2,x
          bitb  2,x
 
+         IFNE  ROMPak
+         lda   #$36                    inhibit ROMPak autostart FIRQ
+         ELSE
          lda   #$37
+         ENDC
          sta   PIA1Base+3
 
          lda   PIA0Base+3
