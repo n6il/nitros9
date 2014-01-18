@@ -102,7 +102,7 @@ $(DSK_1_40D):
 	$(CPL) $(TEXTFILES_D1) $@,.
 	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
 	$(OS9COPY) $(SUPPORTFILES_D1) $@,.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen 
 
@@ -130,7 +130,7 @@ $(DSK_80D):
 	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_80d.txt tOC.txt
 	$(OS9COPY) $(SUPPORTFILES) $@,.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 
@@ -153,7 +153,7 @@ $(DSK_DW):
 	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_80d.txt tOC.txt
 	$(OS9COPY) $(SUPPORTFILES) $@,.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 
@@ -176,7 +176,7 @@ $(DSK_DW_BECKER):
 	$(CPL) $(TEXTFILES) $@,.
 	$(OS9RENAME) $@,tOC_80d.txt tOC.txt
 	$(OS9COPY) $(SUPPORTFILES) $@,.
-	$(MOVE) tocgen toctmp
+	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 
