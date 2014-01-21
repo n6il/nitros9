@@ -274,8 +274,8 @@ DoReadData
         bcs   	ReadDataExit	; Error : exit
         
 	ldx   	blockloc,u	; Set X=Data load address
-        orcc  	#$50		; Enable FIRQ=DRQ from WD
         pshs  	y,dp,cc
+        orcc  	#$50		; Enable FIRQ=DRQ from WD
         lda   	#$FF		; Make DP=$FF, so access to WD regs faster
         tfr   	a,dp
         
