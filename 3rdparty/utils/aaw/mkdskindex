@@ -45,7 +45,7 @@ foreach $dsk (sort @dsks)
 
   }  
 
-  if ($dsk =~ m/_dw3[\._]/)
+  if ($dsk =~ m/_dw[\._]/)
   {
     $format = "DriveWire 3/4";
   }
