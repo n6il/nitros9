@@ -5,6 +5,9 @@
 *
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
+* 1/1	2013-12/10 Gene heskett
+*	Raised default SAS to $10, shortens FD.SEG
+*	usage for longer files
 * ------------------------------------------------------------------
 
          nam   rbdesc
@@ -18,7 +21,7 @@
 
 tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
-rev      set   $00
+rev      set   $01
 
 	IFNDEF	DNum
 DNum     set   0
@@ -51,7 +54,7 @@ SectTrk0 set   18
 Interlv  set   3
 	ENDC
 	IFNDEF	SAS
-SAS      set   8
+SAS      set   10
 	ENDC
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
