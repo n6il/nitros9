@@ -12,8 +12,8 @@ KERNEL_ARDUINO	= $(MD)/rel_80 $(MD)/boot_dw_arduino $(MD)/krn
 KERNEL_BECKER	= $(MD)/rel_80 $(MD)/boot_dw_becker $(MD)/krn
 
 FLOPPY_40D = $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd
-FLOPPY_80D = $(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_80d.dd $(MD)/d2_80d.dd \
-		$(MD)/ddd0_80d.dd
+FLOPPY_80D = $(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_80d.dd $(MD)/d2_80d.dd
+
 VTIO_COGRF_40 = $(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
 		$(MD)/cogrf.io \
