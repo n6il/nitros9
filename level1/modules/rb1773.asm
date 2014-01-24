@@ -916,7 +916,7 @@ L02E9    stb   >DPort+WD_Trak Save current track # onto controller
 L02F9    cmpa  ,s+            Is track # high enough to warrant precomp?
          bls   L0307          No, continue normally
          ldb   >ctlimg,u
-         orb   #C.WRPCMP     Turn on Write precomp
+         orb   #C_WPRCMP     Turn on Write precomp
          stb   >ctlimg,u
          ENDC
 
