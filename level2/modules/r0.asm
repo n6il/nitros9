@@ -18,8 +18,12 @@ tylg     set   Devic+Objct
 atrv     set   ReEnt+rev
 rev      set   $00
 
+         IFNDEF RAMSize
 RAMSize  set   128
+         ENDC
+         IFNDEF SAS
 SAS      set   4
+         ENDC
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
