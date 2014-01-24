@@ -1,6 +1,8 @@
 ********************************************************************
 * SuperDesc - Super Driver Device Descriptor Template
 *
+*	edited 12/10/2013 Gene Heskett
+*	see as noted within
 * $Id$
 *
 * RBSuper Defined Offsets
@@ -20,6 +22,10 @@
 *  2-3 Undefined
 *  0-1 Sector Size (0 = 256, 1 = 512, 2 = 1024, 3 = 2048)
 *
+*	The above IT.TYP has been superceded, see rbf.d for
+*	currently used definitions for BOTH IT.TYP and IT.DNS
+*	(should be removed eventually to prevent confusion)
+
 * IT.DNS (offset $16) for SCSI Low Level Driver
 *  Bit Meaning
 *  --- ---------------------------------------------------------------
@@ -36,6 +42,7 @@
 *  1-2 Undefined
 *  0   IDE ID (0 = master, 1 = slave)
 *
+* Again, for final reference, see rbf.d, the above is obsolete.
 * Edt/Rev  YYYY/MM/DD  Modified by
 * Comment
 * ------------------------------------------------------------------
@@ -47,7 +54,11 @@
 *
 *   0      2005/12/08  Boisy G. Pitre
 * Reserved two bits in IT.TYP for llscsi.
-
+*
+*  1/1 	2013/12/10 Gene heskett
+* 	Notes to reference rbf.d for IT.TYP, IT.DNS above
+*	Raise SAS default to 10, shortens FD.SEG usage
+*--------------------------------------------------------------------
                NAM       SuperDesc
                TTL       Super Driver Device Descriptor Template
 
@@ -105,7 +116,7 @@ Interlv        SET       $01
                ENDC
 *               IFEQ      SAS
 		IFNDEF	SAS
-SAS            SET       $08
+SAS            SET       $10
                ENDC
 
                IFP1
