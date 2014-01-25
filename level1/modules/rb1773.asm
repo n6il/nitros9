@@ -85,6 +85,17 @@
 *
 *	2009/03/19	Robert Gault
 * Removed slow down hack from format and write sector but left code just in case.
+*
+*     2013/12/16 Robert Gault and Gene Heskett
+* Added two new flags, flagWP flagFMT, to prevent disk damage by Writes where
+* the drive head width does not match the disk track density.
+* flagWP <>0 write protects; flagFMT <>0 overrules flagWP so that a Format can
+* write to a disk.
+* A descriptor that does not match your drive can still cause Writes to disks that
+* could possibly cause disk corruption. This cannot be prevented.
+*
+* When LSN0 is read using a 3.5" drive, most of the checks of density, sides, etc.
+* are bypassed as not needed.
 
          nam   rb1773
          ttl   Western Digital 1773 Disk Controller Driver
@@ -172,6 +183,8 @@ loglsn   rmb   2              OS9's logical sector #
 * physlsn  rmb   2              PCDOS (512 byte sector) #
 flag512  rmb   1              PCDOS (512 byte sector) 0=no, 1=yes
 flagform rmb   1              SCII format flag
+flagWP   rmb   1              write protection <>0
+flagFMT  rmb   1              format flag
 size     equ   .
 
          fcb   DIR.+SHARE.+PEXEC.+PWRIT.+PREAD.+EXEC.+UPDAT.
@@ -204,6 +217,8 @@ Init     equ   *
          clr   RW.Ctrl        clear SCII control register
          clr   flagform,u     clear SCII format flag
          ENDC
+         clr   flagWP,u
+         clr   flagFMT,u
          ldx   V.PORT,u       get Base port address
          lda   WD_Data,x      get byte at FDC Data register
          coma                 complement it to modify it
@@ -415,6 +430,10 @@ L00F0Lp  lda   ,x+
          ldy   >lastdrv,u     Get drive table ptr back
          lda   <DD.FMT,y      Get format for disk in drive
          ldy   2,s            restore path descriptor pointer
+* !!!!!!! Most of these tests are pointless with a 3.5" drive RG
+         ldb   <PD.TYP,y      Get path's type settings RG
+         bitb  #1             test for 3.5" drive
+         bne   L0128          skip rest of tests if 3.5" drive
          ldb   <PD.DNS,y      Get path's density settings
          bita  #FMT.DNS       Disk in drive double density?
          beq   L0115          No, all drives can read single, skip ahead
@@ -422,8 +441,10 @@ L00F0Lp  lda   ,x+
          beq   erbtyp         No, illegal
 L0115    bita  #FMT.TDNS      Is new disk 96tpi?
          beq   L011D          No, all drives handle 48/135 tpi, so skip ahead
+         sta   flagWP,u       set write protection
          bitb  #DNS.DTD       Can path dsc. handle 96 tpi?
          beq   erbtyp         No, illegal format
+         clr   flagWP,u       clear write protection since disk and descriptor match
 L011D    bita  #FMT.SIDE      Is new disk double sided?
          beq   L0128          No, all drives handle single sided, we're done
          lda   <PD.SID,y      Get # sides path dsc. can handle
@@ -661,7 +682,15 @@ l2@      nop			[2]  [1]
 *    CC = carry set on error
 *    B  = error code
 *
-Write    lbsr  Chk512         go adjust LSN for 512 byte sector if needed
+Write    tst   flagFMT,u
+         bne   w3             if a format write normally and clear flags
+         tst   flagWP,u
+         beq   w2             continue if not a mismatch
+         ldb   #E$BTyp
+         lbra  L03E0          report bad type if forced WP
+w3       clr   flagFMT,u
+         clr   flagWP,u
+w2       lbsr  Chk512         go adjust LSN for 512 byte sector if needed
 * Next line was lda #%1001001 which was an error RG
          lda   #%10010001   retry flags for I/O errors (see Disto SCII source)
 L01C4    pshs  x,d            preserve LSN, retries
@@ -888,10 +917,17 @@ L02C4    lda   <PD.TYP,y      Get drive type settings
          bita  #%00000010     ??? (Base 0/1 for sector #?)
          bne   L02CC          Skip ahead
          incb                 Bump sector # up by 1
+*!!!!!!!!!!!!!!!!!!!!!critical section on double-stepping
 L02CC    stb   >DPort+WD_Sect Save into Sector register
          ldx   >lastdrv,u     Get last drive table accessed
          ldb   <V.TRAK,x      Get current track # on device
-         lda   <DD.FMT,x      Get drive format specs; actually disk format specs RG
+         lda   <PD.TYP,y      Get drive type
+         bita  #1             3.5" drive
+         beq   L02CCb         go if not 3.5" RG
+         lda   ,s             recover track #
+         clr   flagWP,u
+         bra   L02E9
+L02CCb   lda   <DD.FMT,x      Get drive format specs; actually disk format specs RG
          lsra                 Shift track & bit densities to match PD; bit0 is MF or MFM
          eora  <PD.DNS,y      Check for differences with path densities; bit0 is MF MFM, bit1 is 96tpi
          anda  #%00000010     Keep only 96 tpi
@@ -901,6 +937,8 @@ L02CC    stb   >DPort+WD_Sect Save into Sector register
          beq   L02E9          No, continue normally
          lsla                 Yes, multiply track # by 2 ('double-step')
          lslb                 Multiply current track # by 2 ('double-step')
+         clr   flagWP,u
+         inc   flagWP,u       if double-step then prevent future writes
 L02E9    stb   >DPort+WD_Trak Save current track # onto controller
 
 * From here to the line before L0307 is for write precomp, but is not used.
@@ -1066,7 +1104,7 @@ L03DC    ldb   #E$CRC         CRC error
 *         fcb   $8C
 
 *L03E0    ldb   #E$Read        Read error
-         orcc  #Carry         set carry
+L03E0    orcc  #Carry         set carry
          rts   
 
 L03E4    bsr   L0404          Send command to controller & waste some time
@@ -1127,7 +1165,9 @@ SetStat  ldx   PD.RGS,y       Get caller's register stack ptr
          ldb   #E$UnkSvc      return illegal service request error
          rts   
 
-SSWTrk   pshs  u,y            preserve register stack & descriptor
+SSWTrk   stb   flagFMT,u      permit unconditional write on format
+         clr   flagWP,u       don't protect on a format
+         pshs  u,y            preserve register stack & descriptor
 
 * Level 2 Code
          IFGT   Level-1
