@@ -654,13 +654,17 @@ Delay
 hardloop tfr   x,d           we want X in A,B
 l1@      equ   *
          IFEQ  Level-1
-         ldx   #1482/2		[3]  [3]
+          IFNE  H6309
+           ldx   #1854/2
+          ELSE
+           ldx   #1482/2		[3]  [3]
+          ENDC
          ELSE
-         IFNE  H6309
-         ldx   #1854		[3]  [3]
-         ELSE
-         ldx   #1482		[3]  [3]
-         ENDC
+          IFNE  H6309
+           ldx   #1854		[3]  [3]
+          ELSE
+           ldx   #1482		[3]  [3]
+          ENDC
          ENDC
 l2@      nop			[2]  [1]
          nop			[2]  [1]
