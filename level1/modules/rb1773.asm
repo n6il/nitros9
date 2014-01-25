@@ -420,10 +420,10 @@ L00F0Lp  lda   ,x+
          beq   L0115          No, all drives can read single, skip ahead
          bitb  #DNS.MFM       Can our path dsc. handle double density?
          beq   erbtyp         No, illegal
-L0115    bita  #FMT.TDNS      Is new disk 96/135 tpi?
-         beq   L011D          No, all drives handle 48 tpi, so skip ahead
-         bitb  #DNS.DTD       Can path dsc. handle 96/135 tpi?
-         beq   erbtyp         No, illegal
+L0115    bita  #FMT.TDNS      Is new disk 96tpi?
+         beq   L011D          No, all drives handle 48/135 tpi, so skip ahead
+         bitb  #DNS.DTD       Can path dsc. handle 96 tpi?
+         beq   erbtyp         No, illegal format
 L011D    bita  #FMT.SIDE      Is new disk double sided?
          beq   L0128          No, all drives handle single sided, we're done
          lda   <PD.SID,y      Get # sides path dsc. can handle
@@ -891,10 +891,10 @@ L02C4    lda   <PD.TYP,y      Get drive type settings
 L02CC    stb   >DPort+WD_Sect Save into Sector register
          ldx   >lastdrv,u     Get last drive table accessed
          ldb   <V.TRAK,x      Get current track # on device
-         lda   <DD.FMT,x      Get drive format specs
-         lsra                 Shift track & bit densities to match PD
-         eora  <PD.DNS,y      Check for differences with path densities
-         anda  #%00000010     Keep only 48 vs. 96/135 tpi differences
+         lda   <DD.FMT,x      Get drive format specs; actually disk format specs RG
+         lsra                 Shift track & bit densities to match PD; bit0 is MF or MFM
+         eora  <PD.DNS,y      Check for differences with path densities; bit0 is MF MFM, bit1 is 96tpi
+         anda  #%00000010     Keep only 96 tpi
          pshs  a              Save differences
          lda   1,s            Get track # back
          tst   ,s+            Are tpi's different?
@@ -1363,13 +1363,13 @@ L0550    tfr   x,d            Move # sectors to D
          std   DD.TOT+1,x     Save # sectors allowed on drive
          lda   #UPDAT.+EXEC.  Owner's read/write/exec attributes
          sta   DD.ATT,x       Set attributes for disk
-         lda   <PD.DNS,y      Get density settings
+         lda   <PD.DNS,y      Get density settings   this should be bit1 96tpi bit0 MF MFM normally is 1
          lsla                 Shift for DD.FMT
          pshs  a              Preserve it a sec
          lda   <PD.SID,y      Get # sides
          deca                 Adjust to base 0
          ora   ,s+            Merge with density settings
-         sta   <DD.FMT,x      Save in device table
+         sta   <DD.FMT,x      Save in device table; normally becomes %11 or 3
          clrb                 No error?
          puls  pc,x           Restore original LSN & return
 
