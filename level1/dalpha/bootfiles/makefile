@@ -93,16 +93,16 @@ echo:
 
 # Dragon Alpha Disk boot
 bootfile_covdg_ss80: 	$(BOOTFILE_COVDG_SS80) $(DEPENDS)
-				$(MERGE) $^ > $@
+				$(MERGE) $(BOOTFILE_COVDG_SS80) > $@
 
 bootfile_cohr_ss80: 	$(BOOTFILE_COHR_SS80) $(DEPENDS)
-				$(MERGE) $^ > $@
+				$(MERGE) $(BOOTFILE_COHR_SS80) > $@
 
 bootfile_covdg_ds80: 	$(BOOTFILE_COVDG_DS80) $(DEPENDS)
-				$(MERGE) $^ > $@
+				$(MERGE) $(BOOTFILE_COVDG_DS80) > $@
 
 bootfile_cohr_ds80: 	$(BOOTFILE_COHR_DS80) $(DEPENDS)
-				$(MERGE) $^ > $@
+				$(MERGE) $(BOOTFILE_COHR_DS80) > $@
 
 # Dragon Alpha WD2797 Kernel
 kernel: $(KERNEL) $(DEPENDS)
