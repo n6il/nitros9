@@ -119,22 +119,22 @@ echo:
 	@$(ECHO) $(BOOTFILE_COVDG_DS40)
 
 bootfile_covdg_ds40: 	$(BOOTFILE_COVDG_DS40) $(DEPENDS)
-				$(MERGE) $^ > $@
+				$(MERGE) $(BOOTFILE_COVDG_DS40) > $@
 
 bootfile_cohr_ds40: 	$(BOOTFILE_COHR_DS40) $(DEPENDS)
-				$(MERGE) $^ > $@
+				$(MERGE) $(BOOTFILE_COHR_DS40) > $@
 
 bootfile_covdg_ds80: 	$(BOOTFILE_COVDG_DS80) $(DEPENDS)
-				$(MERGE) $^ > $@
+				$(MERGE) $(BOOTFILE_COVDG_DS80) > $@
 
 bootfile_cohr_ds80: 	$(BOOTFILE_COHR_DS80) $(DEPENDS)
-				$(MERGE) $^ > $@
+				$(MERGE) $(BOOTFILE_COHR_DS80) > $@
 
 bootfile_covdg_ss40: 	$(BOOTFILE_COVDG_SS40) $(DEPENDS)
-				$(MERGE) $^ > $@
+				$(MERGE) $(BOOTFILE_COVDG_SS40) > $@
 
 bootfile_cohr_ss40: 	$(BOOTFILE_COHR_SS40) $(DEPENDS)
-				$(MERGE) $^ > $@
+				$(MERGE) $(BOOTFILE_COHR_SS40) > $@
 
 kernel: $(KERNEL) $(DEPENDS)
 		$(MERGE) $(KERNEL)>$@
