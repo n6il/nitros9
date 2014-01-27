@@ -340,8 +340,11 @@ L266E    leax  <eom,pcr
          ldd   M$Exec,x
          jmp   d,x
 
-BootMsg  fcc   /NITROSy/
+BootMsg
+         IFNDEF dalpha		save some bytes on Dragon Alpha
+         fcc   /NITROSy/
          fcb   $60
+         ENDC
          fcc   /BOOT/
 BootMLen equ   *-BootMsg
 
