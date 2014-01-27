@@ -20,11 +20,11 @@ clean:
 
 # Make DSK images
 dsk:
-	$(foreach dir, $(dirs), ($(CD) $(dir); make dsk);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dsk &&) :
 
 # Copy DSK images
 dskcopy:
-	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskcopy &&) :
 
 # Clean DSK images
 dskclean:
