@@ -12,9 +12,7 @@
 
 STACK    EQU   250
 
-         PSECT Ghosts,0,0,2,STACK,GHCHCK
-
-         VSECT
+         SECTION bss
 
 *     Lcoal Variables
 
@@ -23,6 +21,7 @@ STACK    EQU   250
 
          ENDSECT
 
+         SECTION code
 
 *     Subtract 20 from ghost counter 
 *     Then check ghost status to determine what action

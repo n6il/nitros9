@@ -9,9 +9,7 @@
 STACK    EQU    100
 
 
-         PSECT  SETUP,0,0,0,STACK,SETUPB
-
-         VSECT
+         SECTION bss
 
 *    Local variables
 
@@ -26,6 +24,7 @@ READCT   RMB    2
 
          ENDSECT
 
+         SECTION code
 
 *   The following fcb's,(up to SETLEN), will be put
 *   in Group Buffer #= (Process ID) 

@@ -13,9 +13,7 @@
 
 STACK    EQU   100
 
-         PSECT Caged,0,0,0,STACK,GHCHCK
-
-         VSECT
+         SECTION bss
 
 *     Lcoal Variables
 
@@ -65,6 +63,7 @@ XSAVE    RMB   2
 
          ENDSECT
 
+         SECTION code
 
 *     Ghost is caged, so check timer value
 

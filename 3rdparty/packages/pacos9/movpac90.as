@@ -14,9 +14,7 @@
 STACK    EQU    100
 
 
-         PSECT  MOVPAC,0,0,2,STACK,MVPAC
-
-         VSECT
+         SECTION bss
 
 *    Local variables
 
@@ -24,6 +22,7 @@ STACK    EQU    100
 
          ENDSECT
 
+         SECTION code
 
 MVPAC:   nop
 
