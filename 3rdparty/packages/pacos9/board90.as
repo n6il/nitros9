@@ -13,9 +13,7 @@
 
 STACK    EQU    100
 
-         PSECT    BOARD,0,0,0,STACK,BOARDC
- 
-         VSECT
+         SECTION bss
 
 *   Local variables
 
@@ -26,6 +24,7 @@ XTEMP    RMB      2
 
          ENDSECT
 
+         SECTION code
 
 *     These are the FCB's for board #1
 

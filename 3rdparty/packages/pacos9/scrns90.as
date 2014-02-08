@@ -13,9 +13,7 @@
 
 STACK    EQU    100
 
-         PSECT  SCRNS,0,0,2,STACK,DELPAC
-
-         VSECT
+         SECTION bss
 
 *    Local variables
 
@@ -23,6 +21,7 @@ STACK    EQU    100
 
          ENDSECT
 
+         SECTION code
 
 ERSCRN   fcb    2,32,33,$0B
 

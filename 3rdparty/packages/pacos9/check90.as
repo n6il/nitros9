@@ -12,9 +12,7 @@
 
 STACK    EQU   100
 
-         PSECT Check,0,0,2,STACK,CHECKS
-
-         VSECT
+         SECTION bss
 
 *     Lcoal Variables
 
@@ -24,6 +22,7 @@ STACK    EQU   100
 
          ENDSECT
 
+         SECTION code
 
 PALST1:  fcb   $1b,$31,3,18
          fcb   $1b,$31,4,36

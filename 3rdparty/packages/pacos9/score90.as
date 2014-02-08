@@ -12,9 +12,7 @@
 
 STACK    EQU   100
 
-         PSECT SCORE,0,0,2,STACK,SBEGIN
-
-         VSECT
+         SECTION bss
 
 *     Local Variables
 
@@ -31,6 +29,8 @@ CURPOS   rmb    3
          rmb   STACK
 
          ENDSECT
+
+         SECTION code
 
 FILLST:  fcc    '/dd/sys/pac_scores'
 
