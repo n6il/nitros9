@@ -39,6 +39,9 @@ AS		= lwasm --6309 --format=os9 --pragma=pcaspcr,nosymbolcase,condundefzero,unde
 ASROM		= lwasm --6309 --format=raw --pragma=pcaspcr,nosymbolcase,condundefzero,undefextern,dollarnotlocal --includedir=. --includedir=$(DEFSDIR)
 ASBIN		= lwasm --6309 --format=decb --pragma=pcaspcr,nosymbolcase,condundefzero,undefextern,dollarnotlocal --includedir=. --includedir=$(DEFSDIR)
 ASOUT		= -o
+ifdef LISTDIR
+ASOUT		= --list=$(LISTDIR)/$@.lst --symbols -o
+endif
 AFLAGS		= -DNOS9VER=$(NOS9VER) -DNOS9MAJ=$(NOS9MAJ) -DNOS9MIN=$(NOS9MIN) -DNOS9DBG=$(NOS9DBG)
 ifdef PORT
 AFLAGS		+= -D$(PORT)=1
