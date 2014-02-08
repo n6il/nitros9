@@ -1,14 +1,12 @@
 include $(NITROS9DIR)/rules.mak
 
-RFILES	= main90.r board90.r caged90.r check90.r ghosts90.r movpac90.r \
-	score90.r scrns90.r setup90.r
+OBJS = main90.o board90.o caged90.o check90.o ghosts90.o movpac90.o \
+       score90.o scrns90.o setup90.o
 
-all:
-
-pacos9: $(RFILES)
-	rlink  $(RFILES) -o=pacos9 -l=$(NITROS9DIR)/lib/sys6809l2.l
+pacos9: $(OBJS)
+	$(LINKER) $^ -opacos9 -L$(NITROS9DIR)/lib -lnos96809l2
 
 clean:
-	$(RM) $(RFILES) pacos9
+	$(RM) $(OBJS) pacos9
 
 info:
