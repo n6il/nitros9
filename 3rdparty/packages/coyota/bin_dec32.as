@@ -15,8 +15,9 @@
  ttl Assembler Library Module
 
 
- psect BIN_DEC32,0,0,0,0,0
+BIN_DEC32 EXPORT
 
+         SECTION code
 
 Base     fcb   $3B,$9A,$CA,$00       1,000,000,000
          fcb   $05,$F5,$E1,$00         100,000,000
@@ -110,4 +111,4 @@ Add32    ldd   2,x
          std   ,x
          rts
 
-         endsect
+         ENDSECT

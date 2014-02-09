@@ -4,15 +4,15 @@
 *
 *
 
-		psect	instrument_a,0,0,3,0,0
-
-		vsect
+	SECTION bss
 speed	rmb		2
 mileage	rmb		4
 engtemp	rmb		2
 fuelamt	rmb		2
-		endsect
+	ENDSECT
 		
+	SECTION code
+
 * initialize hardware
 *
 * Entry: None
@@ -82,4 +82,4 @@ getfuel:
 		rts
 
 		
-		endsect
+	ENDSECT

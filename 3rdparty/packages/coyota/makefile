@@ -1,10 +1,10 @@
 include $(NITROS9DIR)/rules.mak
 
 TARGET	= coyota
-LFLAGS	+= -y -l=$(NITROS9DIR)/3rdparty/libs/alib/alib.l
-RFILES	= coyota.r instrument.r dashboard.r bin_dec32.r
+OBJS	= coyota.o instrument.o dashboard.o bin_dec32.o
+LFLAGS	+= -lalib -lnos96809l2 -L$(NOSLIB)
 
-$(TARGET): $(RFILES)
+$(TARGET): $(OBJS)
 
 clean:
-	$(RM)	$(RFILES) $(TARGET)
+	$(RM) $(OBJS) $(TARGET)
