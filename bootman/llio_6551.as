@@ -1,10 +1,7 @@
          NAM    llio_coco3
          TTL    CoCo 3 low-level I/O handler
 
-         PSECT  llio_coco3,0,0,0,0,llio
-
-         VSECT
-         ENDSECT
+         SECTION code
 
 llio:
          lbsr   llinit
@@ -133,4 +130,4 @@ bs@            cmpx      1,s                 are we at start
                bra       m@
                ENDC
 
-         endsect
+         ENDSECT

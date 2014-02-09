@@ -3,20 +3,25 @@
 
 BOOTTRACK equ   0
 
-
-         PSECT  bootman,$11,$80,0,0,entry
-
-         VSECT
+         SECTION __os9
+TYPE     EQU    $11          Prgrm($10)+Objct($01)
+ATTR     EQU    $80          REEntrent
+REV      EQU    $00          Revision level
          ENDSECT
 
 TOP      EQU   $FE00
 
 * The entry point of the boot manager
 * Entry: stack is set up, U points to static storage
-         csect
-sectptr  rmb    2
-         endsect
 
+         SECTION bss
+sectptr  rmb    2
+         ENDSECT
+
+         SECTION code
+
+__start  EXPORT
+__start
 entry    lbsr   mach_init   initialize the machine we're running on
          leas   entry,pcr   set up stack
          leau   entry-256,pcr set up static storage
@@ -66,4 +71,4 @@ writeloop
 writedone
          puls    y,pc
          
-         endsect
+         ENDSECT

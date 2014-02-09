@@ -1,20 +1,22 @@
 include ../rules.mak
 
-all: bootman_coco_6551 bootman_coco3_6551 #bootman_loader
+BOOTMAN = bootman_coco_6551 bootman_coco3_6551
 
-bootman_loader: bootman_loader.a
-	mamou $^ -o$@ -mb
+all: $(BOOTMAN)
 
-bootman_coco_6551: bootman.r boot_config.r mach_coco.r llio_6551.r llbt_1773.r
-	$(LINKER) $^ -o=$@
+bootman_coco_6551: bootman.o boot_config.o mach_coco.o llio_6551.o llbt_1773.o
+	$(LINKER) $^ -o$@
 
-bootman_coco3_6551: bootman.r boot_config.r mach_coco3.r llio_6551.r llbt_1773.r
-	$(LINKER) $^ -o=$@
+bootman_coco3_6551: bootman.o boot_config.o mach_coco3.o llio_6551.o llbt_1773.o
+	$(LINKER) $^ -o$@
 
-dsk: bootman
+dsk: $(BOOTMAN)
 	decb dskini bootman.dsk
 	decb copy -b -2 bootman_coco_6551 bootman.dsk,BM6551.BIN
 	decb copy -b -2 bootman_coco3_6551 bootman.dsk,BM36551.BIN
 
-clean:
-	$(RM) *.r bootman_coco_6551 bootman_coco3_6551 bootman.dsk
+dskclean:
+	$(RM) bootman.dsk
+
+clean: dskclean
+	$(RM) *.o bootman_coco_6551 bootman_coco3_6551 bootman.dsk

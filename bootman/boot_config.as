@@ -1,7 +1,7 @@
          NAM    boot_config
          TTL    Boot manager configuration
 
-         PSECT  bc,0,0,0,0,boot_config
+         SECTION code
 
 boot_config:
 
@@ -16,4 +16,4 @@ cfg_boot: fdb    llbt_1773,$FF40,0
 *          fdb    llbt_ide,$FF50,0
           fdb    $0000
          
-         endsect
+         ENDSECT
