@@ -4,11 +4,9 @@
 *
 *
 
-		psect	dashboard_a,0,0,0,200,0
-
-		vsect
+	SECTION	bss
 numbuf	rmb		24
-		endsect
+	ENDSECT
 		
 
 white	equ		$00
@@ -24,6 +22,8 @@ cyan	equ		$07
 inshlgt	equ		blue
 insfill	equ		cyan
 txtclr	equ		$03						green
+
+	SECTION code
 
 * byte stream to send to window to make dashboard
 dash
@@ -267,4 +267,4 @@ systime:
 		lbsr	PUTS
 		rts
 		
-		endsect
+	ENDSECT

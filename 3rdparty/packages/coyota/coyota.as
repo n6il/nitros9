@@ -1,20 +1,28 @@
 ****************************************************************************
 *
-* coyota.a - main coyota application
+* coyota.as - main coyota application
 *
 *
 
-		psect	coyota_a,$01,$81,1,200,coyota
+	use	os9.d
 
+	SECTION	__os9
+TYPE	EQU	$11
+ATTR	EQU	$80
+REVS	EQU	$01
+EDITION	EQU	$01
+STACK	EQU	200
+	ENDSECT
 
-		vsect
+	SECTION bss
 orgopt	rmb		32
 curopt	rmb		32
-		endsect
+	ENDSECT
 		
 * Sleep Duration
 NAPTIME	equ		6
 
+	SECTION	code
 
 * byte stream to send to window to make a 320x192 16 color gfx screen
 type6	fdb		WDWEnd
@@ -33,11 +41,14 @@ curon	fdb		WCurOn
 stdfonts
 		fcc		"SYS/stdfonts"
 		fcb		C$CR
+	ENDSECT
 		
-		vsect
+	SECTION bss
 ch		rmb		1
 readbuf	rmb		$2000
-		endsect
+	ENDSECT
+
+	SECTION code
 
 * Intercept routine
 exit
@@ -58,6 +69,7 @@ intercept
 
 
 * main entry point
+__start
 coyota:
 * install intercept routine
 		leax	<intercept,pcr
@@ -100,7 +112,7 @@ rl		ldy		#2048
 		bra		rl	
 close	lda		,s+
 		os9		I$Close
-		leax	<selfnt,pcr
+		leax	selfnt,pcr
 		ldy		#selfntL
 		lda		#$01
 		os9		I$Write
@@ -140,4 +152,4 @@ main	lbsr	speed					update speedometer
 
 * EXIT: all registers (except cc) preserved
 
-		endsect
+	ENDSECT
