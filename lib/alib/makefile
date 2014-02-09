@@ -18,6 +18,7 @@ MODS = stimestr.o datestr.o getfmd.o mktemp.o linedit.o sho_regs.o \
 	gety.o fgety.o ftrans.o \
 	frewind.o ftoeof.o \
 	jsr_cmd.o jsr_cmd2.o \
+	windefs.o \
 	to_sp.o to_non_sp.o memset.o rnd.o
 
 
