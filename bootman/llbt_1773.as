@@ -1,10 +1,7 @@
          NAM    llbt_1773
          TTL    WD1773 low-level booter
 
-         PSECT  llbt_1773,0,0,0,0,llbt_1773
-
-         VSECT
-         ENDSECT
+         SECTION code
 
 llbt_1773:
          lbsr   llinit
@@ -25,4 +22,4 @@ llinfo   leax   info,pcr
 info     fcc    "Floppy disk drive"
          fcb    0
 
-         endsect
+         ENDSECT

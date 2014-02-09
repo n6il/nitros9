@@ -1,10 +1,7 @@
          NAM    mach_coco
          TTL    CoCo machine routines
 
-         PSECT  mach_coco,0,0,0,0,mach_init
-
-         VSECT
-         ENDSECT
+         SECTION code
 
 PIA0Base equ   $FF00
 PIA1Base equ   $FF20
@@ -53,4 +50,4 @@ mach_init:
 
          rts
          
-         endsect
+         ENDSECT
