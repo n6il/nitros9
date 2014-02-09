@@ -27,7 +27,5 @@ all:	../libalib.a
 ../libalib.a: $(MODS)
 	$(LWAR) $@ $?
 
-dskclean: clean
-
 clean:
 	$(RM) *.o ../libalib.a
