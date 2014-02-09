@@ -14,9 +14,9 @@
 TYPE     EQU    $11          Prgrm($10)+Objct($01)
 ATTR     EQU    $80          REEntrent
 REV      EQU    $01          Revision level
+EDITION  EQU    2            EDITION #2
          ENDSECT
 
-EDITION  EQU    2            EDITION #2
 STACK    EQU    500
 UPDAT    EQU    3
 
