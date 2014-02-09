@@ -45,7 +45,7 @@ AFLAGS		+= -D$(PORT)=1
 endif
 
 # RMA/RLINK
-ASM		= lwasm --6309 --format=obj --pragma=pcaspcr,condundefzero,undefextern,dollarnotlocal,export --includedir=.
+ASM		= lwasm --6309 --format=obj --pragma=pcaspcr,condundefzero,undefextern,dollarnotlocal,export --includedir=. --includedir=$(DEFSDIR)
 LINKER		= lwlink --format=os9
 LWAR		= lwar -c
 
@@ -125,7 +125,7 @@ MASTER = -DITDNS=0
 	$(LINKER) $(LFLAGS) $^ -o$@
 
 %.o: %.as
-	$(ASM) $< -o$@
+	$(ASM) $(AFLAGS) $< $(ASOUT)$@
 
 # File managers
 %.mn: %.asm
