@@ -10,14 +10,16 @@ DSK = $(TARGET).dsk
 $(TARGET): $(OBJS)
 	$(LINKER) $(LFLAGS) $^ -o$@
 
-dsk: $(TARGET)
+dsk: $(DSK)
+
+$(DSK): $(TARGET)
 	$(OS9FORMAT) -q $(DSK) -n"Larry Olson's Pacos9"
 	$(MAKDIR) $(DSK),CMDS
 	$(OS9COPY) $(TARGET) $(DSK),CMDS
 	$(OS9ATTR) -e $(DSK),CMDS/$(TARGET)
 
-dskcopy:
-	$(CP) $(DSK) $(DSKDIR)
+dskcopy: $(DSK)
+	$(CP) $^ $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSK)
