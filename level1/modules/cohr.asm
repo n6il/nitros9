@@ -96,6 +96,8 @@ L0068    stx   V.51ScrnA,u
 InitSaveExit                 
          stb   V.COLoad,u
          clrb            
+         lda   #$FF
+         sta   V.CColr,u  * Flag Cursor as not hidden
                          
 InitExit                 
          puls  pc,u,a    
@@ -521,10 +523,13 @@ L0382    ldx   ,u
          bne   L0380     
          puls  pc,b      
                          
+DelLine
+         clrb
+         stb   V.51XPos,u
+         lbsr  DoDisplayCursor
 *
 * $1b42 - clear to end of line
 *
-                         
 DoClrEOL                 
          inc   V.51CursorChanged,u
          bsr   L03BA     
@@ -598,6 +603,42 @@ DoHome
          lbsr  DoEraseCursor
          clr   V.51XPos,u
          clr   V.51YPos,u
+         lbsr  DoDisplayCursor
+         lbra  L02A6
+
+*
+* $05 XX - set cursor off/on/color per XX-32 from COVDG (only on/off supported)
+*
+SetCrsr  ldb   #$01		need additional byte
+         leax  <CrsrSw,pcr	
+         bra   L01E5V
+CrsrSw   lda   <V.NChr2,u 	get next char
+         suba  #C$SPAC		take out ASCII space
+         bne   L01BBV		branch if not zero - show cursor
+         clr   V.CColr,u
+         lbra  CancelEscSequence
+L01BBV
+         ldb   #$FF
+         stb   V.CColr,u
+         lbra  CancelEscSequence
+
+*
+* $02 XX YY - move cursor to col XX-32, row YY-32 from COVDG
+*
+CurXY    ldb   #$02		we want to claim next two chars
+         leax  <DoCurXY,pcr	point to processing routine
+L01E5V   stx   <V.RTAdd,u	store routine to return to
+         stb   <V.NGChr,u	get two more chars
+         clrb
+         rts
+
+DoCurXY  lbsr  DoEraseCursor	hide cursor
+         ldb   <V.NChr2,u 	get ASCII Y-pos
+         subb  #C$SPAC		take out ASCII space
+         stb   V.51YPos,u
+         ldb   <V.NChar,u 	get X-pos
+         subb  #C$SPAC		take out ASCII space
+         stb   V.51XPos,u
          lbsr  DoDisplayCursor
          lbra  L02A6     
                          
@@ -704,6 +745,8 @@ L04B9    dec   V.51CursorChanged,u
 * Display Cursor.
 *
 DoDisplayCursor                 
+         tst   V.CColr,u
+         beq   NoCrsr
          inc   V.NoFlash,u * Flag in flash
          tst   V.51CursorOn,u * Get cursor on flag
          bne   DoCursorOnEnd * Yes : don't re-display
@@ -711,7 +754,7 @@ DoDisplayCursor
          inc   V.51CursorOn,u * Flag cursor on
 DoCursorOnEnd                 
          dec   V.NoFlash,u * Flag flash done
-         rts             
+NoCrsr   rts
 *
 * Erase cursor
 *
@@ -767,10 +810,24 @@ FlashExit
                          
 * control characters dispatch table
 CtrlCharDispatch                 
+         fcb   $01
+         fdb   DoHome-CtrlCharDispatch		* COVDG CurHome
+         fcb   $02
+         fdb   CurXY-CtrlCharDispatch		* COVDG CURSOR XY
+         fcb   $03
+         fdb   DelLine-CtrlCharDispatch		* COVDG ERASE LINE
+         fcb   $04
+         fdb   DoClrEOL-CtrlCharDispatch	* COVDG ErEOLine
+         fcb   $05
+         fdb   SetCrsr-CtrlCharDispatch		* COVDG CURSOR ON/OFF
+         fcb   $06
+         fdb   DoCursorRight-CtrlCharDispatch	* COVDG CurRght
          fcb   $07        BEL 		* (beep)
          fdb   DoBell-CtrlCharDispatch $FC0B
          fcb   $08        BS 		* (left arrow)
          fdb   DoBackspace-CtrlCharDispatch * $FC23
+         fcb   $09
+         fdb   DoCursorUp-CtrlCharDispatch	* COVDG CurUp
          fcb   $0A        LF 		* (down arrow)
          fdb   DoLineFeed-CtrlCharDispatch * $FC3E
          fcb   $0D        CR 		* (return)
@@ -778,7 +835,9 @@ CtrlCharDispatch
          fcb   $0C        FF 		* (clear screen)
          fdb   DoCLS-CtrlCharDispatch $FC55
          fcb   $0B        * (cursor home)
-         fdb   DoHome-CtrlCharDispatch $FDC2
+* Since few applications use CoHR $0B, support COVDG $0B instead
+*        fdb   DoHome-CtrlCharDispatch $FDC2    * Was CoHR DoHome
+         fdb   DoClearEOS-CtrlCharDispatch	* COVDG ErEOScrn
          fcb   $00       
                          
 * escape sequences dispatch table

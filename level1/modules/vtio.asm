@@ -603,8 +603,12 @@ KeyTbl   fcb   $00,$40,$60 ALT @ `
 Write    ldb   <V.NGChr,u are we in the process of getting parameters?
          bne   PrmHandl   yes, go process
          sta   <V.WrChr,u save character to write
+         ldb   V.51EscSeq,u     * in Escape sequence?
+         bne   GoCo             * yes, send to COHR
          cmpa  #C$SPAC    space or higher?
          bcc   GoCo       yes, normal write
+         cmpa  #$1B             * COHR Escape Code?
+         beq   GoCo
          cmpa  #$1E       escape sequence $1E or $1F?
          bcc   Escape     yes, go process
          cmpa  #$0F       GFX codes?
