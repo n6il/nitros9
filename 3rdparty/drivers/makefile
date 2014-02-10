@@ -14,3 +14,7 @@ all:
 # Clean all components
 clean:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make clean);)
+
+dsk:
+dskcopy:
+

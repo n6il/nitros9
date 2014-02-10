@@ -41,6 +41,8 @@ $(DISK): all
 	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
 #	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$(DISK),SUB/$(file))
 
+dsk: $(DISK)
+
 dskcopy: $(DISK)
 	$(OS9COPY) $(DISK) $(DSKDIR)
 

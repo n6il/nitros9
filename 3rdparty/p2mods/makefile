@@ -15,3 +15,6 @@ banner:
 
 clean:
 	$(RM) $(ALLOBJS)
+
+dsk:
+dskcopy:

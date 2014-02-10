@@ -9,16 +9,16 @@ all:
 	@$(ECHO) "*                  File Managers                 *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
-	$(foreach dir, $(dirs), $(CD) $(dir); make; $(CD) ..;)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) &&) :
 
 # Clean all components
 clean:
-	$(foreach dir, $(dirs), $(CD) $(dir); make clean; $(CD) ..;)
+	$(foreach dir, $(dirs), $(MAKE) -C $(dir) clean ;)
 
 # Make DSK images
 dsk:
-	$(foreach dir, $(dirs), $(CD) $(dir); make dsk; $(CD) ..;)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dsk &&) :
 
 # Copy DSK images
 dskcopy:
-	$(foreach dir, $(dirs), $(CD) $(dir); make dskcopy; $(CD) ..;)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskcopy &&) :
