@@ -20,3 +20,5 @@ msf_6309.mn: msf.asm
 msf_6809.mn: msf.asm
 	$(AS) $(AFLAGS) $< $(ASOUT)$@
 
+dsk:
+dskcopy:

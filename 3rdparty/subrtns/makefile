@@ -24,3 +24,5 @@ hires_l2: hires.asm
 clean:
 	$(RM) $(ALLOBJS)
 
+dsk:
+dskcopy:

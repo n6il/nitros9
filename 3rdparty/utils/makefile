@@ -17,14 +17,14 @@ clean:
 
 # Make DSK images
 dsk:
-	$(foreach dir, $(dirs), ($(CD) $(dir); make dsk);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dsk &&) :
 
 dskclean:
 	$(foreach dir, $(dirs), ($(CD) $(dir); make dskclean);)
 
 # Copy DSK images
 dskcopy:
-	$(foreach dir, $(dirs), ($(CD) $(dir); make dskcopy);)
+	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskcopy &&) :
 
 # info
 info:

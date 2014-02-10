@@ -10,6 +10,8 @@ all:	$(ALLOBJS) $(DEPENDS)
 clean:
 	$(RM) $(ALLOBJS)
 
+dsk:
+dskcopy:
 
 # OS-9 Level Two Booters
 boot_ktlr_id0: boot_scsi.asm
