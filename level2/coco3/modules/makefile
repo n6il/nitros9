@@ -42,6 +42,7 @@ RBF		= rbf.mn \
 		ddd0_35s.dd ddd0_40d.dd ddd0_80d.dd \
 		rammer.dr r0_8k.dd r0_96k.dd r0_128k.dd r0_192k.dd \
 		ddr0_8k.dd ddr0_96k.dd ddr0_128k.dd ddr0_192k.dd md.dd \
+		myram.dr mr0.dd \
 		ddx0.dd x0.dd x1.dd x2.dd x3.dd \
 		rbsuper.dr lltc3.dr llide.dr llcocosdc.dr \
 		ddi0_ide.dd i0_ide.dd i1_ide.dd ih_ide.dd \
