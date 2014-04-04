@@ -1,0 +1,168 @@
+                            VFY Edition 16 docs
+
+This utility is intended to be used as a replacement for the awkward to use
+os9 utility "verify", but with the ability to do repairs and modifications to
+the target file. These repairs/modifications are done 'insitu' to the named
+file.  It can also do the "split" operation on the named file, generating a
+whole directory full of the individual modules of your merged files such as
+"os9boot" or your boot time loaded "util" files.
+
+                                 CAVEAT #1
+
+Because it works on the named file, not a copy, be warned that this program
+can also do a lot of damage if miss-used. If unsure of yourself in any way,
+make a backup copy of the file and work on it. Or if its your bootdisk, back
+it up first! Even though I wrote this, I do exactly that! I do test
+everything in this before I upload it for public usage, and I have not had
+it break for anything in the "released" version since Edition 12 or before.
+Thats not to say it hasn't miss-behaved here, but the uploaded version is
+solid, it will do exactly as you ask it to do! 
+
+Oh Well, edition 15 lasted a week. Nothing wrong with it (that I know of),
+but there were a couple more bells and whistles that were just begging to be
+added.  I had written it originally to have total control over its
+verbosity, but had never actually added the command line option to control
+it.  Now it has it. A "-v" in the option area will shut all reporting off,
+nary a squeek unless an error is returned which will make it spit out the
+help screen on its way to the exit and the system which will report it as
+usual. Edition is now 16, and the ty/rv byte is back to $81. As before, all
+screen output is thru the stderr path, so redirect it ">>" if you want a
+record file to be made. 
+
+Edition 16's big change is that it now implements the ability to fix any one
+"named on the command line" module in the whole file. If a name is given on
+the command line, then each modules name is compared to the command line
+name, case insensitive, and when the match is found, the options updates are
+done to this named module only. It then reverts to a report only mode for
+the rest of the file.  As in earlier versions, if no name is given, the
+first module only is fixed if one of the ty/la, at/rv or datasize is given
+update/change status.
+
+Edition 15 fixed a long standing error in how the INIT module data was
+displayed, and now skips the Exec and Data displays for device descriptors.
+
+For a quick syntax message, just type "vfy" with no options.
+
+To recap, if a -u(a,t,r,l,d)=$xx type entry is given on the cmnd line, the
+first (or the named one if -n=name is used) module encountered in "file"
+will be modified accordingly. Someone did squawk about the $ sign, but I
+still left that requirement in because it reminds the user this IS hex data
+it wants, not decimal or some other number base.
+
+The (-ua=$hexdata etc) header repairs will only be re-written if a change
+has taken place, and only for the first (named module if -n=name used now)
+module found in a file if the -f isn't in effect. The first (or named) ones
+crc will also be updated.  Modules further into the file will not be fixed
+if the -f option isn't used unless the -n=name option is used.
+
+If the -f option is used, all of the modules in "file" will be repaired.
+Only the first will be subjected to the header (-ua=$hexchar etc) fixes in
+that event, the rest being only updated if there is in fact an error found.
+I don't recommend including the -u stuffs without nameing the module they
+are to be applied to as a matter of habitual usage. It might save a headache
+someday!
+
+It will still print the S/B $xx (Good) message and the "Repaired to $xx"
+message if -f, even if no actual changes were made.  It will beep if any
+changes were in fact made to the module currently being scanned.
+
+The -ud=$hexdata needs further clarification. The addition is modulo 65536,
+a fancy way of saying it throws away the carry if the result of your
+addition is >65536. In other words, to reduce the datasize in the module by
+$100 bytes, add $FF00, not -$0100.  It only keeps the last 4 digits you give
+it on the command line too.  Less than 4 default to $000yourdigit etc.
+
+Also in need of clarification are the -s and -sk options.
+
+The -s option causes it to split the target file (without inflicting any
+damages other than the -u or -f might do to each module first) into
+individual modules in the current working directory, a great way to take
+your os9boot file apart.  If a -u was used, the modified version is split to
+disk file.
+
+If the -sk option is used, vfy ASSUMES you are naming a kernal track of a
+bootable disk as the target file to read. This "filename" is best generated
+by running my "krnl_to_dir" utility on the bootable diskette (which is not
+write protected of course) which will look for an unused sector on the disk,
+allocate it, enter the required file descriptor information describing the
+kernel track (it assumes track 34 is the kernel) and make a directory entry
+in the root directory of that disk, effectively converting the hidden kernel
+track that only dcheck can find and report as 18 errors, into a normally
+accessable file. That "krnl_to_dir" is in another archive I uploaded called
+"krnlutils" in the delphi os9 database and on chestnut.
+
+Once that is done, then vfy's -sk option will split it up into its 5 component
+files.
+
+                                 Caveat #2
+
+Please note however that this "krnl_to_dir" generated file is not one that
+can be copied from one disk to another (and be expected to work) with *any*
+known utility other than my own "krnlmvr" which requires the write target
+disk to have the directory entry krnlmvr uses already installed by
+krnl_to_dir. The 5 files it makes CAN be freely copied, merged, cpa'd, etc
+to make up the replacement KERNAL to copy back with "krnlmvr". I'm not
+saying there isn't another copier that overwrites, only that I haven't found
+it after diligent searching.
+
+For more info, see the archive "krnlutils" by myself. I could not find a
+copy util in the whole os9 world that actually would over-write the targeted
+file insitu.  So I wrote krnlmvr.  Why? Because it was one heck of a lot
+easier to use than the utils furnished to install kernel track patches for
+the earlier releases of Nitros9.  Its worked so well that I've not used the
+Nitros9 furnished method since!
+
+                                 Caveat #3
+
+Don't *ever* delete that now visible 'KERNAL' file on your bootable diskette
+if you want it to stay bootable after something else has been written to
+this diskette!  If you want to hide it again once you are done making mods,
+use dEd to clear the name in the directory itself. I think the B&B "zap"
+utility might also be safe to use but I haven't tried it.  To totally
+restore the disk so it doesn't show in the directory, find that allocated
+for the FD sector using ded to look at the address in the last 3 bytes of
+the directory entry and "bd" it. Or figure out which bit to clear in the
+FAT.
+
+                        COPY RIGHTS and DISK CLAIMERS
+
+As usual, this is Copyright (c) 1993, 1994 and 1995 by Maurice E.(Gene)
+Heskett.  It may be freely copied and used provided no intended profit is
+realized other than the cost of the media. As one of its functions (-sk) has
+been a great help to me in upgrading the kernal track for the later versions
+of the os9/6309 opsys commonly called "NITROS9", permission for it to be
+included as part of that distribution is hereby given to Colin McKay and
+Alan Dekok, a.k.a. Northern Xposure.  The cost of that software may not be
+adjusted upward just because this program is included unless that puts it
+over into another diskette to contain the complete package. It may also be
+included in the patch collections available for os9 under the same
+limitations.  The ONLY limitation being that this archive's contents must be
+included without modification in such distributions so that this .doc file,
+however verbose, remains intact to the end users site.
+
+I also make no claims about its suitability for the job. If your coffee
+maker only makes bad bourbon after using this, I am not responsible, however
+I would like an email message describing the exact circumstances under which
+that error occured. Maybe I can fine tune it to make good bourbon! I seem to
+be better at that than most. (Grin)
+
+Cheers all, WDTV5@delphi.com
+
+
+An os9 utility for verifying module files
+Copyright (C) 2014  Gene Heskett
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
