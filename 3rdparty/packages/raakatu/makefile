@@ -2,7 +2,7 @@ include ../../../rules.mak
 
 DEPENDS		= ./makefile
 
-DISK		= raakatu.dsk
+DSK		= raakatu.dsk
 CMDS		= raaka-tu raakatu
 MD		= $(LEVEL2)/coco3/modules
 
@@ -25,29 +25,29 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-$(DISK): all
-	$(RM) $(DISK)
+$(DSK): all
+	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_SS35) $(DISK) -n"Raaka-Tu"
+	$(OS9FORMAT_SS35) $@ -n"Raaka-Tu"
 	$(MERGE) $(OS9BOOT)>os9boot
 	$(MERGE) $(KERNEL)>kernel_1773
-	$(OS9GEN) $(DISK) -b=os9boot -t=kernel_1773
+	$(OS9GEN) $@ -b=os9boot -t=kernel_1773
 	$(RM) os9boot kernel_1773
-	$(MAKDIR) $(DISK),CMDS
-	$(OS9COPY) $(CMDS) $(DISK),CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DISK),CMDS/$(file))
-	$(OS9RENAME) $(DISK),CMDS/raakatu AutoEx
-	$(OS9COPY) $(LEVEL2)/coco3/cmds/shell_21 $(DISK),CMDS/shell
-	$(OS9ATTR_EXEC) $(DISK),CMDS/shell
-#	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$(DISK),SUB/$(file))
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
+	$(OS9RENAME) $@,CMDS/raakatu AutoEx
+	$(OS9COPY) $(LEVEL2)/coco3/cmds/shell_21 $@,CMDS/shell
+	$(OS9ATTR_EXEC) $@,CMDS/shell
+#	$(OS9ATTR_TEXT) $(foreach file,$(SUPPORTFILES),$@,SUB/$(file))
 
-dsk: $(DISK)
+dsk: $(DSK)
 
-dskcopy: $(DISK)
-	$(OS9COPY) $(DISK) $(DSKDIR)
+dskcopy: $(DSK)
+	$(CP) $(DSK) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK)
+	$(RM) $(DSK)
 
-run: $(DISK)
-	mess -inipath ~/Documents/SDLMESS -video opengl -window coco3 -flop1 $(DISK)
+run: $(DSK)
+	mess -inipath ~/Documents/SDLMESS -video opengl -window coco3 -flop1 $(DSK)

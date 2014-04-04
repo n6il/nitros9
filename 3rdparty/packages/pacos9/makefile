@@ -13,13 +13,14 @@ $(TARGET): $(OBJS)
 dsk: $(DSK)
 
 $(DSK): $(TARGET)
-	$(OS9FORMAT) -q $(DSK) -n"Larry Olson's Pacos9"
-	$(MAKDIR) $(DSK),CMDS
-	$(OS9COPY) $(TARGET) $(DSK),CMDS
-	$(OS9ATTR_EXEC) $(DSK),CMDS/$(TARGET)
+	$(RM) $@
+	$(OS9FORMAT) -q $@ -n"Larry Olson's Pacos9"
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(TARGET) $@,CMDS
+	$(OS9ATTR_EXEC) $@,CMDS/$(TARGET)
 
 dskcopy: $(DSK)
-	$(CP) $^ $(DSKDIR)
+	$(CP) $(DSK) $(DSKDIR)
 
 dskclean:
 	$(RM) $(DSK)

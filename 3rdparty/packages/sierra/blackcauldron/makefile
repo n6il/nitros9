@@ -4,18 +4,18 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DSK_1_40D	= blackcauldron_d1_40d.dsk
-DSK_2_40D	= blackcauldron_d2_40d.dsk
-DSK_80D		= blackcauldron_80d.dsk
+DISK_1_40D	= blackcauldron_d1_40d.dsk
+DISK_2_40D	= blackcauldron_d2_40d.dsk
+DISK_80D	= blackcauldron_80d.dsk
 DSK_DW		= blackcauldron_dw.dsk
 DSK_DW_BECKER	= blackcauldron_becker.dsk
 
-DSKS		= $(DSK_1_40D) $(DSK_2_40D) $(DSK_80D) $(DSK_DW) $(DSK_DW_BECKER)
+DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D) $(DSK_DW) $(DSK_DW_BECKER)
 
-DSK_1_40D_NAME = "The Black Cauldron Disk 1"
-DSK_2_40D_NAME = "The Black Cauldron Disk 2"
-DSK_80D_NAME   = "The Black Cauldron"
-DSK_DW_NAME   = $(DSK_80D_NAME)
+DISK_1_40D_NAME = "The Black Cauldron Disk 1"
+DISK_2_40D_NAME = "The Black Cauldron Disk 2"
+DISK_80D_NAME   = "The Black Cauldron"
+DSK_DW_NAME     = $(DISK_80D_NAME)
 
 CMDS		= sierra mnln scrn shdw tocgen
 MD		= $(LEVEL2)/coco3/modules
@@ -82,102 +82,105 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-dsk_40d:	all
-	$(RM) $(DSK_1_40D) $(DSK_2_40D)
-	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) -q $(DSK_1_40D) -n$(DSK_1_40D_NAME)
+$(DISK_1_40D): all
+	$(RM) $@
+	$(MAKE) -C $(LEVEL2)/coco3
+	$(OS9FORMAT_DS40) -q $@ -n$(DISK_1_40D_NAME)
 	$(MERGE) $(BOOTFILE_40D)>os9boot
 	$(MERGE) $(KERNEL_FLOPPY)>kernel
-	$(OS9GEN) $(DSK_1_40D) -b=os9boot -t=kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
-	$(MAKDIR) $(DSK_1_40D),CMDS
-	$(OS9COPY) $(CMDS) $(DSK_1_40D),CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DSK_1_40D),CMDS/$(file))
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
-	$(OS9COPY) shell $(DSK_1_40D),CMDS
+	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR_EXEC) $(DSK_1_40D),CMDS/shell 
-	$(OS9RENAME) $(DSK_1_40D),CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES_D1) $(DSK_1_40D),.
-	$(OS9RENAME) $(DSK_1_40D),tOC_40d.txt tOC.txt
-	$(OS9COPY) $(SUPPORTFILES_D1) $(DSK_1_40D),.
+	$(OS9ATTR_EXEC) $@,CMDS/shell 
+	$(OS9RENAME) $@,CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES_D1) $@,.
+	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
+	$(OS9COPY) $(SUPPORTFILES_D1) $@,.
 	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
-	tocgen $(DSK_1_40D),tOC.txt $(DSK_1_40D),tOC
+	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
-	$(OS9FORMAT_DS40) -q $(DSK_2_40D) -n$(DSK_2_40D_NAME)
-	$(OS9COPY) $(SUPPORTFILES_D2) $(DSK_2_40D),.
 
-dsk_80d:	all
-	$(RM) $(DSK_80D)
-	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS80) -q $(DSK_80D) -n$(DSK_80D_NAME)
+$(DISK_2_40D): all
+	$(RM) $@
+	$(OS9FORMAT_DS40) -q $@ -n$(DISK_2_40D_NAME)
+	$(OS9COPY) $(SUPPORTFILES_D2) $@,.
+
+$(DISK_80D): all
+	$(RM) $@
+	$(MAKE) -C $(LEVEL2)/coco3
+	$(OS9FORMAT_DS80) -q $@ -n$(DISK_80D_NAME)
 	$(MERGE) $(BOOTFILE_80D)>os9boot
 	$(MERGE) $(KERNEL_FLOPPY)>kernel
-	$(OS9GEN) $(DSK_80D) -b=os9boot -t=kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
-	$(MAKDIR) $(DSK_80D),CMDS
-	$(OS9COPY) $(CMDS) $(DSK_80D),CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DSK_80D),CMDS/$(file))
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
-	$(OS9COPY) shell $(DSK_80D),CMDS
+	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR_EXEC) $(DSK_80D),CMDS/shell 
-	$(OS9RENAME) $(DSK_80D),CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES) $(DSK_80D),.
-	$(OS9RENAME) $(DSK_80D),tOC_40d.txt tOC.txt
-	$(OS9COPY) $(SUPPORTFILES) $(DSK_80D),.
+	$(OS9ATTR_EXEC) $@,CMDS/shell 
+	$(OS9RENAME) $@,CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES) $@,.
+	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
+	$(OS9COPY) $(SUPPORTFILES) $@,.
 	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
-	tocgen $(DSK_80D),tOC.txt $(DSK_80D),tOC
+	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 
-dsk_dw:	all
-	$(RM) $(DSK_DW)
-	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DW) -q $(DSK_DW) -n$(DSK_DW_NAME)
+$(DSK_DW): all
+	$(RM) $@
+	$(MAKE) -C $(LEVEL2)/coco3
+	$(OS9FORMAT_DW) -q $@ -n$(DSK_DW_NAME)
 	$(MERGE) $(BOOTFILE_DW)>os9boot
 	$(MERGE) $(KERNEL_DW)>kernel
-	$(OS9GEN) $(DSK_DW) -b=os9boot -t=kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
-	$(MAKDIR) $(DSK_DW),CMDS
-	$(OS9COPY) $(CMDS) $(DSK_DW),CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DSK_DW),CMDS/$(file))
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
-	$(OS9COPY) shell $(DSK_DW),CMDS
+	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR_EXEC) $(DSK_DW),CMDS/shell 
-	$(OS9RENAME) $(DSK_DW),CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES) $(DSK_DW),.
-	$(OS9RENAME) $(DSK_DW),tOC_40d.txt tOC.txt
-	$(OS9COPY) $(SUPPORTFILES) $(DSK_DW),.
+	$(OS9ATTR_EXEC) $@,CMDS/shell 
+	$(OS9RENAME) $@,CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES) $@,.
+	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
+	$(OS9COPY) $(SUPPORTFILES) $@,.
 	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
-	tocgen $(DSK_DW),tOC.txt $(DSK_DW),tOC
+	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 
-dsk_dw_becker:	all
-	$(RM) $(DSK_DW_BECKER)
-	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DW) -q $(DSK_DW_BECKER) -n$(DSK_DW_NAME)
+$(DSK_DW_BECKER): all
+	$(RM) $@
+	$(MAKE) -C $(LEVEL2)/coco3
+	$(OS9FORMAT_DW) -q $@ -n$(DSK_DW_NAME)
 	$(MERGE) $(BOOTFILE_DW_BECKER)>os9boot
 	$(MERGE) $(KERNEL_DW_BECKER)>kernel
-	$(OS9GEN) $(DSK_DW_BECKER) -b=os9boot -t=kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
-	$(MAKDIR) $(DSK_DW_BECKER),CMDS
-	$(OS9COPY) $(CMDS) $(DSK_DW_BECKER),CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$(DSK_DW_BECKER),CMDS/$(file))
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
 	$(MERGE) $(BOOTCMDS)>shell
-	$(OS9COPY) shell $(DSK_DW_BECKER),CMDS
+	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR_EXEC) $(DSK_DW_BECKER),CMDS/shell 
-	$(OS9RENAME) $(DSK_DW_BECKER),CMDS/sierra AutoEx
-	$(CPL) $(TEXTFILES) $(DSK_DW_BECKER),.
-	$(OS9RENAME) $(DSK_DW_BECKER),tOC_40d.txt tOC.txt
-	$(OS9COPY) $(SUPPORTFILES) $(DSK_DW_BECKER),.
+	$(OS9ATTR_EXEC) $@,CMDS/shell 
+	$(OS9RENAME) $@,CMDS/sierra AutoEx
+	$(CPL) $(TEXTFILES) $@,.
+	$(OS9RENAME) $@,tOC_40d.txt tOC.txt
+	$(OS9COPY) $(SUPPORTFILES) $@,.
 	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
-	tocgen $(DSK_DW_BECKER),tOC.txt $(DSK_DW_BECKER),tOC
+	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen
 
 
-dsk:	dsk_40d dsk_80d dsk_dw dsk_dw_becker
+dsk: $(DSKS)
 
 dskcopy: dsk
 	$(CP) $(DSKS) $(DSKDIR)
