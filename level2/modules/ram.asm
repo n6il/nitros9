@@ -1,5 +1,5 @@
 ********************************************************************
-* RAM - RAM Disk driver
+* MRAM - myram RAM Disk driver
 *
 * $Id$
 *
@@ -12,14 +12,13 @@
          opt d68
          opt w110
 * set printer to 15 cpi!
-*h6309    set   0 now uses NitrOS9's H6309 flag
 
-         nam   RAM
-         ttl   RAM Disk driver
+         nam   MRAM
+         ttl   OS9 RAM Disk driver
 
 **********************************************
-* A version of MyRam that can be asm to run on either
-* cpu. To switch to 6309 coding, use "h6309 set 1"
+* A version of MyRam that can be assembled to
+* run on either 6809 or 6309.
 * As no irq's are handled here, compensatory
 * changes to register offsets vs stack are not
 * required, therefore not used as defines either.
@@ -79,7 +78,7 @@ u00C0    rmb   $100-.
 size     equ   .
 mode     fcb   $BF 
 
-name     fcs   /RAM/
+name     fcs   /MRAM/
          fcb   edition
 
 start    equ   * the usual jump table for drivers
