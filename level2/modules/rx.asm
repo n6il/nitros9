@@ -1,5 +1,5 @@
 ********************************************************************
-* RX - NitrOS-9 Level 2 RAM Disk Device Descriptor
+* MR0 - myram RAM Disk Device Descriptor
 *
 * $Id$
 *
@@ -7,27 +7,31 @@
 * Comment
 * ------------------------------------------------------------------
 
-         nam   RX        
-         ttl   NitrOS-9 Level 2 RAM Disk Device Descriptor
+         nam   MR0
+         ttl   myram RAM Disk Device Descriptor
 
-         ifp1            
-         use   defsfile  
-         endc            
+         ifp1
+         use   defsfile
+         endc
 
 tylg     set   Devic+Objct
-atrv     set   ReEnt+rev 
-rev      set   $00       
+atrv     set   ReEnt+rev
+rev      set   $01
 
-Sectors  set   512       
-SAS      set   4         
+         IFNDEF RAMSize
+RAMSize  set   128
+         ENDC
+         IFNDEF SAS
+SAS      set   4
+         ENDC
 
          mod   eom,name,tylg,atrv,mgrnam,drvnam
 
          fcb   DIR.+PREAD.+PWRIT.+PEXEC.+READ.+WRITE.+EXEC. mode byte
          fcb   $00        extended controller address
          fdb   $0000      physical controller address
-         fcb   initsize-*-1 initilization table size
-         fcb   $01        device type:0=scf,1=rbf,2=pipe,3=scf
+         fcb   initsize-*-1 initialization table size
+         fcb   DT.RBF     device type:0=scf,1=rbf,2=pipe,3=scf
          fcb   $00        drive number
          fcb   $00        step rate
          fcb   $00        drive device type
@@ -35,21 +39,21 @@ SAS      set   4
          fdb   $0000      number of cylinders (tracks)
          fcb   $01        number of sides
          fcb   $00        verify disk writes:0=on
-         fdb   Sectors    # of sectors per track
+         fdb   RAMSize    # of sectors per track
          fdb   $0000      # of sectors per track (track 0)
          fcb   $00        sector interleave factor
          fcb   SAS        minimum size of sector allocation
 
-initsize equ   *         
+initsize equ   *
 
-         IFNE   DD
+         IFNE  DD
 name     fcs   /DD/
          ELSE
-name     fcs   /R0/      
+name     fcs   /R0/
          ENDC
-mgrnam   fcs   /RBF/     
-drvnam   fcs   /RAM/     
+mgrnam   fcs   /RBF/
+drvnam   fcs   /MRAM/
 
-         emod            
-eom      equ   *         
-         end             
+         emod  
+eom      equ   *
+         end   
