@@ -103,7 +103,7 @@ dsk_40d:	all
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $(DISK_1_40D),CMDS
 	$(RM) shell
-	$(OS9ATTR) $(DISK_1_40D),CMDS/shell -e -pe -pr -e -w -r
+	$(OS9ATTR_EXEC) $(DISK_1_40D),CMDS/shell 
 	$(OS9RENAME) $(DISK_1_40D),CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_D1) $(DISK_1_40D),.
 	$(OS9RENAME) $(DISK_1_40D),tOC_40d.txt tOC.txt
@@ -130,7 +130,7 @@ dsk_80d:	all
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $(DISK_80D),CMDS
 	$(RM) shell
-	$(OS9ATTR) $(DISK_80D),CMDS/shell -e -pe -pr -e -w -r
+	$(OS9ATTR_EXEC) $(DISK_80D),CMDS/shell 
 	$(OS9RENAME) $(DISK_80D),CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $(DISK_80D),.
 	$(OS9RENAME) $(DISK_80D),tOC_80d.txt tOC.txt
@@ -153,7 +153,7 @@ dsk_dw:	all
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $(DSK_DW),CMDS
 	$(RM) shell
-	$(OS9ATTR) $(DSK_DW),CMDS/shell -e -pe -pr -e -w -r
+	$(OS9ATTR_EXEC) $(DSK_DW),CMDS/shell 
 	$(OS9RENAME) $(DSK_DW),CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_DW) $(DSK_DW),.
 	$(OS9RENAME) $(DSK_DW),tOC_dw.txt tOC.txt
@@ -176,7 +176,7 @@ dsk_dw_becker:	all
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $(DSK_DW_BECKER),CMDS
 	$(RM) shell
-	$(OS9ATTR) $(DSK_DW_BECKER),CMDS/shell -e -pe -pr -e -w -r
+	$(OS9ATTR_EXEC) $(DSK_DW_BECKER),CMDS/shell 
 	$(OS9RENAME) $(DSK_DW_BECKER),CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_DW) $(DSK_DW_BECKER),.
 	$(OS9RENAME) $(DSK_DW_BECKER),tOC_dw.txt tOC.txt

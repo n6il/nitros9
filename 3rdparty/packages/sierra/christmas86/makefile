@@ -78,7 +78,7 @@ $(DSK_FLOPPY):	all
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
+	$(OS9ATTR_EXEC) $@,CMDS/shell 
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
 	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
@@ -100,7 +100,7 @@ $(DSK_DW):	all
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
+	$(OS9ATTR_EXEC) $@,CMDS/shell 
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
 	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
@@ -122,7 +122,7 @@ $(DSK_DW_BECKER):	all
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
+	$(OS9ATTR_EXEC) $@,CMDS/shell 
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES) $@,.
 	$(MOVE) tocgen toctmp	# to not confuse Windows hosts
