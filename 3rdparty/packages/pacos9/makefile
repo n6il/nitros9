@@ -16,7 +16,7 @@ $(DSK): $(TARGET)
 	$(OS9FORMAT) -q $(DSK) -n"Larry Olson's Pacos9"
 	$(MAKDIR) $(DSK),CMDS
 	$(OS9COPY) $(TARGET) $(DSK),CMDS
-	$(OS9ATTR) -e $(DSK),CMDS/$(TARGET)
+	$(OS9ATTR_EXEC) $(DSK),CMDS/$(TARGET)
 
 dskcopy: $(DSK)
 	$(CP) $^ $(DSKDIR)

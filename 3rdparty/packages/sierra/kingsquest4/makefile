@@ -94,7 +94,7 @@ $(DISK_1_80D):
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
+	$(OS9ATTR_EXEC) $@,CMDS/shell 
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_D1) $@,.
 	$(OS9RENAME) $@,tOC_80d.txt tOC.txt
@@ -126,7 +126,7 @@ $(DISK_DW):
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
+	$(OS9ATTR_EXEC) $@,CMDS/shell 
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_DW) $@,.
 	$(OS9RENAME) $@,tOC_dw.txt tOC.txt
@@ -148,7 +148,7 @@ $(DISK_DW_BECKER):
 	$(MERGE) $(BOOTCMDS)>shell
 	$(OS9COPY) shell $@,CMDS
 	$(RM) shell
-	$(OS9ATTR) $@,CMDS/shell -e -pe -pr -e -w -r
+	$(OS9ATTR_EXEC) $@,CMDS/shell 
 	$(OS9RENAME) $@,CMDS/sierra AutoEx
 	$(CPL) $(TEXTFILES_DW) $@,.
 	$(OS9RENAME) $@,tOC_dw.txt tOC.txt
