@@ -44,7 +44,7 @@ all:	$(ALLOBJS) $(DEPENDS)
 $(HELPMSG): $(HELPFILES)
 	$(MERGE) $^ > $@
 
-$(L1TXTFILES): $(LEVEL1)/sys/$@
+$(L1TXTFILES):
 	$(SOFTLINK) -f $(LEVEL1)/sys/$@
 
 clean:
