@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-DISK	= basic09v010100.dsk
+DSK	= basic09v010100.dsk
 
 # NitrOS-9
 H6309		= $(AFLAGS) -DH6309=1
@@ -9,7 +9,7 @@ M6809		= $(AFLAGS)
 
 DEPENDS		= ./makefile
 
-TXTFILES	= ReadMe install6809 install6309
+TEXTFILES	= ReadMe install6809 install6309
 OBJS		= gfx gfx2 inkey syscall
 OBJS6809	= basic09_6809 runb_6809
 OBJS6309	= basic09_6309 runb_6309
@@ -42,21 +42,23 @@ runbt_6809: basic09.asm
 clean: dskclean
 	$(RM) $(ALLOBJS)
 
-dsk:	all
-	$(RM) $(DISK)
-	$(OS9FORMAT_SS35) $(DISK) -n"Basic09"
-	$(MAKDIR) $(DISK),CMDS
-	$(OS9COPY) $(ALLOBJS) $(DISK),CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(ALLOBJS),$(DISK),CMDS/$(file))
-	$(CPL) $(TXTFILES) $(DISK),.
-	$(OS9ATTR_TEXT) $(foreach file,$(TXTFILES),$(DISK),$(file))
+dsk: $(DSK)
 
-dskcopy: dsk
-	$(OS9COPY) $(DISK) $(DSKDIR)
+$(DSK): all
+	$(RM) $@
+	$(OS9FORMAT_SS35) $@ -n"Basic09"
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(ALLOBJS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(ALLOBJS),$@,CMDS/$(file))
+	$(CPL) $(TEXTFILES) $@,.
+	$(OS9ATTR_TEXT) $(foreach file,$(TEXTFILES),$@,$(file))
+
+dskcopy: $(DSK)
+	$(CP) $(DSK) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK)
+	$(RM) $(DSK)
 
 info:
 	@$(ECHO) "*** Basic09 ***"
-	@$(ECHO) $(DISK)
+	@$(ECHO) $(DSK)

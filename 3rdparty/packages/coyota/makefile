@@ -7,12 +7,15 @@ DSK	= $(TARGET).dsk
 
 $(TARGET): $(OBJS)
 
-dsk: $(TARGET)
-	$(OS9FORMAT) -q $(DSK)
-	$(MAKDIR) $(DSK),CMDS
-	$(OS9COPY) $(TARGET) $(DSK),CMDS
-	$(OS9ATTR_EXEC) $(DSK),CMDS/$(TARGET)
-	
+dsk: $(DSK)
+
+$(DSK): $(TARGET)
+	$(RM) $@
+	$(OS9FORMAT) -q $@ -n"Coyota"
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(TARGET) $@,CMDS
+	$(OS9ATTR_EXEC) $@,CMDS/$(TARGET)
+
 dskclean:
 	$(RM) $(DSK)
 

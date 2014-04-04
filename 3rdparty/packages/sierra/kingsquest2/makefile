@@ -4,17 +4,17 @@ vpath %.asm ../objs_lsl
 
 DEPENDS		= ./makefile
 
-DSK_1_40D	= kingsquest2_d1_40d.dsk
-DSK_2_40D	= kingsquest2_d2_40d.dsk
-DSK_80D		= kingsquest2_80d.dsk
+DISK_1_40D	= kingsquest2_d1_40d.dsk
+DISK_2_40D	= kingsquest2_d2_40d.dsk
+DISK_80D		= kingsquest2_80d.dsk
 DSK_DW		= kingsquest2_dw.dsk
 DSK_DW_BECKER	= kingsquest2_becker.dsk
 
-DSKS		= $(DSK_1_40D) $(DSK_2_40D) $(DSK_80D) $(DSK_DW) $(DSK_DW_BECKER)
+DSKS		= $(DISK_1_40D) $(DISK_2_40D) $(DISK_80D) $(DSK_DW) $(DSK_DW_BECKER)
 
-DSK_1_40D_NAME	= "King's Quest II Disk 1"
-DSK_2_40D_NAME	= "King's Quest II Disk 2"
-DSK_80D_NAME	= "King's Quest II"
+DISK_1_40D_NAME	= "King's Quest II Disk 1"
+DISK_2_40D_NAME	= "King's Quest II Disk 2"
+DISK_80D_NAME	= "King's Quest II"
 DSK_DW_NAME	= "King's Quest II"
 
 CMDS		= sierra mnln scrn shdw tocgen
@@ -83,10 +83,10 @@ all:	$(ALLOBJS)
 clean:	dskclean
 	$(RM) $(ALLOBJS)
 
-$(DSK_1_40D):
+$(DISK_1_40D):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS40) -q $@ -n$(DSK_1_40D_NAME)
+	$(OS9FORMAT_DS40) -q $@ -n$(DISK_1_40D_NAME)
 	$(MERGE) $(BOOTFILE_40D)>os9boot
 	$(MERGE) $(KERNEL_FLOPPY)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel
@@ -106,15 +106,15 @@ $(DSK_1_40D):
 	tocgen $@,tOC.txt $@,tOC
 	$(MOVE) toctmp tocgen 
 
-$(DSK_2_40D):
+$(DISK_2_40D):
 	$(RM) $@
-	$(OS9FORMAT_DS40) -q $@ -n$(DSK_2_40D_NAME)
+	$(OS9FORMAT_DS40) -q $@ -n$(DISK_2_40D_NAME)
 	$(OS9COPY) $(SUPPORTFILES_D2) $@,.
 
-$(DSK_80D):
+$(DISK_80D):
 	$(RM) $@
 	$(CD) $(LEVEL2)/coco3; make
-	$(OS9FORMAT_DS80) -q $@ -n$(DSK_80D_NAME)
+	$(OS9FORMAT_DS80) -q $@ -n$(DISK_80D_NAME)
 	$(MERGE) $(BOOTFILE_80D)>os9boot
 	$(MERGE) $(KERNEL_FLOPPY)>kernel
 	$(OS9GEN) $@ -b=os9boot -t=kernel

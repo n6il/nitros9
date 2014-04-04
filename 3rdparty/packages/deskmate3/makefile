@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-DISK	= deskmate3.dsk
+DSK	= deskmate3.dsk
 
 CD68	= $(LEVEL2)/coco3/cmds
 MD68	= $(LEVEL2)/coco3/modules
@@ -37,29 +37,31 @@ all:
 clean:	dskclean
 	$(RM) os9boot
 
-dsk:	all
-	$(RM) $(DISK)
-	$(OS9FORMAT_DS40) $(DISK) -q -n"DeskMate 3"
+dsk: $(DSK)
+
+$(DSK): all
+	$(RM) $@
+	$(OS9FORMAT_DS40) $@ -q -n"DeskMate 3"
 	$(MERGE) $(OS9BOOT68)>os9boot
 	$(MERGE) $(KERNEL68)>kernel
-	$(OS9GEN) $(DISK) -b=os9boot -t=kernel
+	$(OS9GEN) $@ -b=os9boot -t=kernel
 	$(RM) os9boot kernel
-	$(MAKDIR) $(DISK),CMDS
-	$(OS9COPY) $(UTILS) $(DISK),CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(UTILS)),$(DISK),CMDS/$(file))
-	$(OS9COPY) $(CMDS) $(DISK),CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS)),$(DISK),CMDS/$(file))
-	$(CPL) $(HELP) $(DISK),CMDS
-	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(HELP)),$(DISK),CMDS/$(file))
-	$(OS9COPY) $(ROOTFILES) $(DISK),.
-	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$(DISK),$(file))
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(UTILS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(UTILS)),$@,CMDS/$(file))
+	$(OS9COPY) $(CMDS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(CMDS)),$@,CMDS/$(file))
+	$(CPL) $(HELP) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(notdir $(HELP)),$@,CMDS/$(file))
+	$(OS9COPY) $(ROOTFILES) $@,.
+	$(OS9ATTR_TEXT) $(foreach file,$(ROOTFILES),$@,$(file))
 
-dskcopy: dsk
-	$(OS9COPY) $(DISK) $(DSKDIR)
+dskcopy: $(DSK)
+	$(CP) $(DSK) $(DSKDIR)
 
 dskclean:
-	$(RM) $(DISK)
+	$(RM) $(DSK)
 
 info:
 	@$(ECHO) "*** DeskMate 3 ***"
-	@$(ECHO) $(DISK)
+	@$(ECHO) $(DSK)
