@@ -1462,8 +1462,8 @@ L0C55    clra
          pshs  x
          lbsr  L3ED6            format string
          leas  $08,s
-L0C71    pshs  u
-         leax  >$0192,s
+L0C71    pshs  x
+         ldx   >$0192,s
          pshs  x
          ldu   >$0196,s
          ldd   <$25,u           flags
