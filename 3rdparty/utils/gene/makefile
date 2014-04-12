@@ -25,7 +25,7 @@ banner:
 
 $(DSKGENEUTILS): $(CMDS)
 	$(RM) $@
-	$(OS9FORMAT) $@
+	$(OS9FORMAT) -q $@ -n"Gene's utilities"
 	$(MAKDIR) $@,CMDS
 	$(OS9COPY) $(CMDS) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
