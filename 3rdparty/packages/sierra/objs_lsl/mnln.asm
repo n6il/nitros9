@@ -28,7 +28,7 @@
 *                 This solves multiple problems with DW3 application. Robert Gault
 * April 28, 2010 - Adjusting the RS-232 input direction seems to cause other problems, probably at the other
 *                 end of the RS-232 connection. I've gone back to masking the bit at $FF20. RG
-
+* April 4,  2014 - Corrected the set.pri.base routine used in KQ4. GM & RG
 
 *  >$0154  flag for using extended lookups
 *  >$0541  joystick button status
@@ -1993,7 +1993,7 @@ L115C    leas  -$04,s
          mul   
          ldu   #$000A
          lbsr  L125C
-         std   $02,s
+         stu   $02,s		* Save the division result
          clrb  
          stb   ,s
 L1178    subb  $01,s
@@ -2003,7 +2003,7 @@ L1178    subb  $01,s
 L1180    lda   #$A8
          mul   
          ldu   $02,s
-         lbsr  L125C
+         lbsr  L125CB		* perform tfr u,d as well
          addd  #$0005
          cmpd  #$000F
          bls   L1193
@@ -10758,6 +10758,10 @@ L6323    cmpa  #$06
          bra   L6323
 L6334    rts
   
+L125CB   lbsr  L125C
+         tfr   u,d
+         rts
+
          fcb   0,0,0,0,0,0,0,0
 L633D    fcc   /mnln/
          fcb   0
