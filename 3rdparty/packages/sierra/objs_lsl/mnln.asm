@@ -638,7 +638,7 @@ L01B0    fdb  L5A16,$0000	*do nothing
          fdb  L49D1,$0000	*push script
          fdb  L49D8,$0000	*pop script
          fdb  L5A16,$0000	*hold key
-         fdb  L115C,$100	*set pri base
+         fdb  L115CB,$100	*set pri base, via patch stub
          fdb  L5A14,$180	*discard sound
          fdb  L5A16,$0000	*do nothing
          fdb  L29BB,$100
@@ -10758,6 +10758,9 @@ L6323    cmpa  #$06
          bra   L6323
 L6334    rts
   
+L115CB   ldx   #$05ee	* regX will now point to the priority table
+         lbra  L115C	* back to the original code
+
 L125CB   lbsr  L125C
          tfr   u,d
          rts
