@@ -1460,8 +1460,8 @@ L0C55    clra
          pshs  x
          leax  >$0132,s
          pshs  x
-         lbsr  L3ED6            format string
-         leas  $08,s
+         lbra  stub1            format string into X
+L0C6F    leas  $08,s
 L0C71    pshs  x
          ldx   >$0192,s
          pshs  x
@@ -10764,6 +10764,12 @@ L115CB   ldx   #$05ee	* regX will now point to the priority table
 L125CB   lbsr  L125C
          tfr   u,d
          rts
+
+* Patch stub to have "format string" return string in X
+* without altering code length in "move to (x,y)"
+stub1    lbsr  L3ED6
+         tfr   u,x
+         lbra  L0C6F
 
          fcb   0,0,0,0,0,0,0,0
 L633D    fcc   /mnln/
