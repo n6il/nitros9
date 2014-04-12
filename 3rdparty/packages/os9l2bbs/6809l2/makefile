@@ -30,7 +30,7 @@ all: $(CMDS)
 dsk: $(DSK)
 
 $(DSK): $(CMDS)
-	$(OS9FORMAT) -q $@
+	$(OS9FORMAT) -q $@ -n"OS-9 L2 BBS for 6809"
 	$(MAKDIR) $@,CMDS
 	$(OS9COPY) $(CMDS) $@,CMDS
 	$(MAKDIR) $@,BBS

@@ -21,7 +21,7 @@ banner:
 
 $(DSKSUPERCOMM): $(CMDS)
 	$(RM) $@
-	$(OS9FORMAT) $@
+	$(OS9FORMAT) -q $@ -n"Dave P's Supercomm"
 	$(MAKDIR) $@,CMDS
 	$(OS9COPY) $(CMDS) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
