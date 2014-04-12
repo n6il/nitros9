@@ -1,5 +1,5 @@
 ********************************************************************
-* MNLN - Kings Quest III main line module
+* MNLN - Leisure Suit Larry main line module
 *
 * $Id$
 *
@@ -1412,6 +1412,7 @@ L0BED    abx
          sta   ,x
          leas  <$54,s
          rts   
+* obj.status.v command
 L0BF4    leas  >-$0194,s
          ldx   #$0431
          ldb   ,y+
@@ -1422,73 +1423,73 @@ L0BF4    leas  >-$0194,s
          addd  <$0030
          tfr   d,u
          std   >$0192,s
-         lda   <$23,u
+         lda   <$23,u           cycle type
          cmpa  #$00
          bne   L0C18
-         leax  >L0A4E,pcr
+         leax  >L0A4E,pcr       normal cycle
          bra   L0C30
 L0C18    cmpa  #$01
          bne   L0C22
-         leax  >L0A5B,pcr
+         leax  >L0A5B,pcr       end of loop
          bra   L0C30
 L0C22    cmpa  #$02
          bne   L0C2C
-         leax  >L0A67,pcr
+         leax  >L0A67,pcr       reverse loop
          bra   L0C30
-L0C2C    leax  >L0A74,pcr
+L0C2C    leax  >L0A74,pcr       reverse cycle
 L0C30    stx   >$0190,s
-         lda   <$22,u
+         lda   <$22,u           motion type
          cmpa  #$00
          bne   L0C41
-         leax  >L0A82,pcr
+         leax  >L0A82,pcr       normal motion
          bra   L0C71
 L0C41    cmpa  #$01
          bne   L0C4B
-         leax  >L0A90,pcr
+         leax  >L0A90,pcr       wander
          bra   L0C71
 L0C4B    cmpa  #$02
          bne   L0C55
-         leax  >L0A97,pcr
+         leax  >L0A97,pcr       follow
          bra   L0C71
 L0C55    clra  
-         ldb   <$28,u
+         ldb   <$28,u           y pos
          pshs  b,a
-         ldb   <$27,u
+         ldb   <$27,u           x pos
          pshs  b,a
-         leax  >L0A9E,pcr
+         leax  >L0A9E,pcr       move to (x,y)
          pshs  x
          leax  >$0132,s
          pshs  x
-         lbsr  L3ED6
+         lbsr  L3ED6            format string
          leas  $08,s
 L0C71    pshs  u
          leax  >$0192,s
          pshs  x
          ldu   >$0196,s
-         ldd   <$25,u
+         ldd   <$25,u           flags
          pshs  b,a
          clra  
-         ldb   <$1E,u
+         ldb   <$1E,u           stepsize
          pshs  b,a
-         ldb   <$24,u
+         ldb   <$24,u           priority
          pshs  b,a
-         ldb   <$1D,u
+         ldb   <$1D,u           ysize
          pshs  b,a
-         ldb   $04,u
+         ldb   $04,u            y pos
          pshs  b,a
-         ldb   <$1C,u
+         ldb   <$1C,u           xsize
          pshs  b,a
-         ldb   $03,u
+         ldb   $03,u            x pos
          pshs  b,a
-         ldb   $02,u
+         ldb   $02,u            object number
          pshs  b,a
-         leau  >L0AAF,pcr
+         leau  >L0AAF,pcr       msg
          pshs  u
          leax  <$16,s
          pshs  x
-         lbsr  L3ED6
+         lbsr  L3ED6            format string
          leas  <$18,s
-         lbsr  L3AA7
+         lbsr  L3AA7            message box
          leas  >$0194,s
          rts   
 L0CBC    inc   >$0550
@@ -1981,6 +1982,7 @@ L1152    fdb   $0000
          fdb   $0000
          fdb   $0000
 
+* set.pri.base command
 L115C    leas  -$04,s
          clr   >L3378,pcr
          ldb   ,y+
