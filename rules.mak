@@ -16,7 +16,7 @@ NOS9MAJ	= 3
 NOS9MIN	= 0
 
 # Set this to 1 to turn on "DEVELOPMENT" message in sysgo
-NOS9DBG = 0
+NOS9DBG = 1
 
 #################### DO NOT CHANGE ANYTHING BELOW THIS LINE ####################
 
