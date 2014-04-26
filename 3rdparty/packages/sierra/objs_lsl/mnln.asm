@@ -29,6 +29,7 @@
 * April 28, 2010 - Adjusting the RS-232 input direction seems to cause other problems, probably at the other
 *                 end of the RS-232 connection. I've gone back to masking the bit at $FF20. RG
 * April 4,  2014 - Corrected the set.pri.base routine used in KQ4. GM & RG
+* April 21, 2014 - Corrected the clear.text.rect routine. GM
 
 *  >$0154  flag for using extended lookups
 *  >$0541  joystick button status
@@ -7646,20 +7647,21 @@ L483A    ldb   $02,y
          leay  $03,y
          rts   
 
+* clear text rect (fixed)
 L484E    ldb   $04,y
          pshs  b,a
          ldb   $03,y
-         pshs  b,a
-         ldb   $02,y
+         lda   $02,y
          pshs  b,a
          ldb   $01,y
-         pshs  b,a
-         ldb   ,y
+         lda   ,y
          pshs  b,a
          lbsr  L4B56
-         leas  $0A,s
+         leas  $06,s
          leay  $05,y
          rts   
+
+         fcb   0,0,0,0  * to keep same code length
 
 L486A    ldd   ,y++
          bsr   L486F
