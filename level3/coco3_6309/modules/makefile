@@ -28,10 +28,10 @@ BOOTERS		= boot_1773_6ms boot_1773_30ms boot_tc3 \
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_h0 sysgo_dd nitro end
-CLOCKS          = clock_60hz clock_50hz \
-		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
-		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
-		clock2_jvemu clock2_messemu clock2_dw
+CLOCKS		= clock_60hz clock_50hz \
+			clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
+			clock2_smart clock2_harris clock2_cloud9 clock2_soft \
+			clock2_jvemu clock2_messemu clock2_dw
 
 RBF		= rbf.mn \
 		rbdw.dr dwio.sb \
@@ -60,17 +60,17 @@ SCF		= scf.mn \
 		v1.dw v2.dw v3.dw v4.dw v5.dw \
 		v6.dw v7.dw \
 		scdwv.dr term_scdwv.dt n0_scdwv.dd n1_scdwv.dd n2_scdwv.dd n3_scdwv.dd \
-                n4_scdwv.dd n5_scdwv.dd n6_scdwv.dd n7_scdwv.dd \
+		n4_scdwv.dd n5_scdwv.dd n6_scdwv.dd n7_scdwv.dd \
 		n8_scdwv.dd n9_scdwv.dd n10_scdwv.dd n11_scdwv.dd \
 		n12_scdwv.dd n13_scdwv.dd midi_scdwv.dd \
 		term_z_scdwv.dt z1_scdwv.dd z2_scdwv.dd z3_scdwv.dd \
 		z4_scdwv.dd z5_scdwv.dd z6_scdwv.dd z7_scdwv.dd \
 
-PIPE		= pipeman.mn pipeman_named.mn \
+PIPE	= pipeman.mn pipeman_named.mn \
 		piper.dr \
 		pipe.dd
 
-RFM		= rfm.mn rfmdrv.dr ddy0.dd y0.dd y1.dd y2.dd y3.dd#
+RFM		= rfm.mn rfmdrv.dr ddy0.dd y0.dd y1.dd y2.dd y3.dd
 # The following macros represent a collection of modules for various
 # kernel tracks and bootfile configurations.
 #
@@ -118,10 +118,10 @@ dwio_arduino.sb: dwio.asm
 # Disto SC-II drivers
 rb1773_scii_ff74.dr:    rb1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSCII=1
-                                                                            
+
 rb1773_scii_ff58.dr:    rb1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSCII=1 -DSCIIALT=1
-                                                                            
+
 rel_32: rel.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DWidth=32
 
