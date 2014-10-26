@@ -27,7 +27,7 @@ BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		boot_tc3 boot_ide boot_rom
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
-SYSMODS		= ioman init sysgo_h0 sysgo_dd nitro end
+SYSMODS		= ioman init sysgo_h0 sysgo_dd sysgo_rom rominfo vectors nitro end
 CLOCKS		= clock_60hz clock_50hz \
 			clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
 			clock2_smart clock2_harris clock2_cloud9 clock2_soft \
@@ -154,7 +154,10 @@ sysgo_dd: sysgo.asm
 	
 sysgo_h0: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS)
-	
+
+sysgo_rom: sysgo.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DROM=1
+
 # Floppy descriptors
 SSDD35		= -DCyls=35 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
 		-DInterlv=3 -DSAS=8 -DDensity=1
