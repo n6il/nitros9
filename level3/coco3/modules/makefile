@@ -252,7 +252,7 @@ r0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192
 
 ddr0_192k.dd: r0.asm
-        $(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192 -DDD=1
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192 -DDD=1
 
 # DriveWire SCF descriptors
 term_scdwv.dt: scdwvdesc.asm
