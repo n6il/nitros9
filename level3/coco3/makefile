@@ -21,20 +21,20 @@ KERNELFILE_50HZ	= bootfiles/kernel_1773_50hz
 KERNELFILE_DW	= bootfiles/kernel_dw
 DIRS		= cmds modules defs sys bootfiles
 
-CMDS		= $(shell $(CD) cmds; make showobjs)
-CMDS_D2		= $(shell $(CD) cmds; make showobjs_d2)
-BOOTTRACK	= $(shell $(CD) modules; make showboottrack)
-KERNEL		= $(shell $(CD) modules; make showkernel)
-SYSMODS		= $(shell $(CD) modules; make showsysmods)
-CLOCKS		= $(shell $(CD) modules; make showclocks)
-RBF		= $(shell $(CD) modules; make showrbf)
-SCF		= $(shell $(CD) modules; make showscf)
-PIPE		= $(shell $(CD) modules; make showpipe)
+CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)
+CMDS_D2		= $(shell $(CD) cmds; make --no-print-directory showobjs_d2)
+BOOTTRACK	= $(shell $(CD) modules; make --no-print-directory showboottrack)
+KERNEL		= $(shell $(CD) modules; make --no-print-directory showkernel)
+SYSMODS		= $(shell $(CD) modules; make --no-print-directory showsysmods)
+CLOCKS		= $(shell $(CD) modules; make --no-print-directory showclocks)
+RBF		= $(shell $(CD) modules; make --no-print-directory showrbf)
+SCF		= $(shell $(CD) modules; make --no-print-directory showscf)
+PIPE		= $(shell $(CD) modules; make --no-print-directory showpipe)
 MODULECMDS	= shell grfdrv del echo format makdir merge os9gen prompt tmode
 
-DEFS		= $(shell $(CD) defs; make showobjs)
-SYSBIN		= $(shell $(CD) sys; make showbinobjs)
-SYSTEXT		= $(shell $(CD) sys; make showtextobjs)
+DEFS		= $(shell $(CD) defs; make --no-print-directory showobjs)
+SYSBIN		= $(shell $(CD) sys; make --no-print-directory showbinobjs)
+SYSTEXT		= $(shell $(CD) sys; make --no-print-directory showtextobjs)
 STARTUP		= startup
 SYSGO		= sysgo_dd
 
