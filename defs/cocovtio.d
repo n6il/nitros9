@@ -506,13 +506,13 @@ g0005          RMB       2                   Temp save in Windint RG
 G.GrfStk       RMB       2                   grfdrv stack pointer ($07)
 G.MonTyp       RMB       1                   monitor type
 g000A          EQU       .                   Old label for compatibility
-G.CrDvFl       RMB       1                   Are we current device flag (only set when all
+G.CrDvFl       RMB       1  Are we current device flag (only set when all
 *                           Parms have been moved to Dev Mem)
 *                           0=We are not on our device
 *                           1=We are the current device
 *                           (Used by comod (GRF/WIND/VDGInt) to determine
-*                            whether or not to update GIME regs themselves
-*                            If not current device, they don't.)
+*                           whether or not to update GIME regs themselves
+*                           If not current device, they don't.)
 G.WinType      RMB       1                   current device's V.TYPE
 G.CurDvM       RMB       2                   current device memory pointer for co-module use
 G.WIBusy       RMB       1                   WindInt is busy flag (1=busy)
