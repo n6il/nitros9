@@ -10,12 +10,13 @@ KERNEL_1773_50HZ	= $(MD)/rel_80_50hz $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_DW	= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
 
 # NitrOS-9 disk bootfile to allow booting from WD1773 disk controller
-BOOTFILE_40D	= $(MD)/scf.mn \
-		$(MD)_end \
+BOOTFILE_40D	= $(MD)/nitro \
+		$(MD)/scf.mn \
+		$(MD)/end \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
-		$(MD)_end \
+		$(MD)/end \
 		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -26,12 +27,13 @@ BOOTFILE_40D	= $(MD)/scf.mn \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILE_80D	= $(MD)/scf.mn \
-		$(MD)_end \
+BOOTFILE_80D	= $(MD)/nitro \
+		$(MD)/scf.mn \
+		$(MD)/end \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
-		$(MD)_end \
+		$(MD)/end \
 		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -42,12 +44,13 @@ BOOTFILE_80D	= $(MD)/scf.mn \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTFILE_40D_50HZ	= $(MD)/scf.mn \
-		$(MD)_end \
+BOOTFILE_40D_50HZ	= $(MD)/nitro \
+		$(MD)/scf.mn \
+		$(MD)/end \
 		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_40d.dd \
-		$(MD)_end \
+		$(MD)/end \
 		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/vtio.dr \
 		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
@@ -58,11 +61,13 @@ BOOTFILE_40D_50HZ	= $(MD)/scf.mn \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_50hz $(MD)/clock2_soft
 
-BOOTFILE_80D_50HZ	= $(MD)/scf.mn \
-		$(MD)_end \
+BOOTFILE_80D_50HZ 	= $(MD)/nitro \
+		$(MD)/scf.mn \
+		$(MD)/end \
+		$(MD)/rbf.mn \
 		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
 		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
-		$(MD)_end \
+		$(MD)/end \
 		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
 		$(MD)/vtio.dr \
