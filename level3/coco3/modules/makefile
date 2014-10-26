@@ -185,6 +185,9 @@ DSDD40		= -DCyls=40 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
 DSDD80		= -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
 		-DInterlv=3 -DSAS=8 -DDensity=1 -DD35
 
+# HDB-DOS for SuperDriver
+HDBDOS                  = -DHB $(SSDD35) $(ID0) -DITDNS=8
+
 ddd0_35s.dd: rb1773desc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) $(SSDD35) -DDNum=0 -DDD=1
 
