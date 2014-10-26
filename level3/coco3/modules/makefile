@@ -135,7 +135,8 @@ rb1773_scii_ff74.dr:    rb1773.asm
                                                                             
 rb1773_scii_ff58.dr:    rb1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSCII=1 -DSCIIALT=1
-                                                                            
+
+# REL Modules
 rel_32: rel.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DWidth=32
 
@@ -154,12 +155,14 @@ rel_40_50hz: rel.asm
 rel_80_50hz: rel.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DWidth=80 -DTkPerSec=50
 
+# Floppy Booters
 boot_1773_6ms: boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSTEP=0
 
 boot_1773_30ms: boot_1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSTEP=3
 
+# SysGo Modules
 sysgo_dd: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1
 	
@@ -252,7 +255,7 @@ r0_192k.dd: r0.asm
 ddr0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192 -DDD=1
 
-# DriveWire 3 SCF descriptors
+# DriveWire SCF descriptors
 term_scdwv.dt: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DTERM=1 -DAddr=0
 
