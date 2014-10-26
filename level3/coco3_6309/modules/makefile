@@ -15,11 +15,15 @@ CLOCKCLOUD9     = -DRTCCloud9=1
 CLOCKSOFT       = -DRTCSoft=1
 CLOCKMESSEMU    = -DRTCMessEmu=1
 CLOCKJVEMU      = -DRTCJVEmu=1
+TC3FLAGS        = $(AFLAGS) -DTC3=1 $(FLAGS)
+IDEFLAGS        = $(AFLAGS) -DIDE=1 $(FLAGS)
+SDFLAGS			= $(AFLAGS) -DCOCOSDC=1 -DITTYP=128 $(FLAGS)
 
 DEPENDS		= ./makefile
 TPB		= ../../3rdparty/booters
 
-BOOTERS		= boot_1773_6ms boot_1773_30ms \
+BOOTERS		= boot_1773_6ms boot_1773_30ms boot_tc3 \
+		boot_ide boot_dw_becker boot_dw_arduino \ 
 		 boot_burke boot_rampak boot_wd1002 boot_dw
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
@@ -58,13 +62,15 @@ SCF		= scf.mn \
 		scdwv.dr term_scdwv.dt n0_scdwv.dd n1_scdwv.dd n2_scdwv.dd n3_scdwv.dd \
                 n4_scdwv.dd n5_scdwv.dd n6_scdwv.dd n7_scdwv.dd \
 		n8_scdwv.dd n9_scdwv.dd n10_scdwv.dd n11_scdwv.dd \
-                n12_scdwv.dd n13_scdwv.dd n14_scdwv.dd
+		n12_scdwv.dd n13_scdwv.dd midi_scdwv.dd \
+		term_z_scdwv.dt z1_scdwv.dd z2_scdwv.dd z3_scdwv.dd \
+		z4_scdwv.dd z5_scdwv.dd z6_scdwv.dd z7_scdwv.dd \
 
 PIPE		= pipeman.mn pipeman_named.mn \
 		piper.dr \
 		pipe.dd
 
-#
+RFM		= rfm.mn rfmdrv.dr ddy0.dd y0.dd y1.dd y2.dd y3.dd#
 # The following macros represent a collection of modules for various
 # kernel tracks and bootfile configurations.
 #
@@ -72,7 +78,7 @@ KERNEL_1773	= rel_32 boot_1773 krn
 KERNEL_RAMPAK	= rel_32 $(TPB)/boot_rampak krn
 KERNEL_KENTON	= rel_32 $(TPB)/boot_kenton krn
 KERNEL_IDE	= rel_32 $(TPB)/boot_ide krn
-
+KERNEL_TC3	= rel_32 $(TPB)/boot_tc3 krn
 ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE)
 
 all:	$(ALLOBJS)
@@ -86,6 +92,30 @@ krn krnp2:
 cogrf.io: cowin.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DCoGrf=1
 
+# TC3 controller
+boot_tc3: boot_scsi.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS)
+
+# SuperIDE/Glenside IDE Booter
+boot_ide: boot_ide.asm
+		$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
+
+# DriveWire Becker Booter
+boot_dw_becker: boot_dw.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBECKER=1
+
+# DriveWire Becker Submodule
+dwio_becker.sb: dwio.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DBECKER=1
+
+# DriveWire Becker Booter
+boot_dw_arduino: boot_dw.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DARDUINO=1
+
+# DriveWire Arduino Submodule
+dwio_arduino.sb: dwio.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DARDUINO=1
+# Disto SC-II drivers
 rb1773_scii_ff74.dr:    rb1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSCII=1
                                                                             
@@ -240,9 +270,32 @@ n12_scdwv.dd: scdwvdesc.asm
 n13_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=13
 
-n14_scdwv.dd: scdwvdesc.asm
+midi_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=14
 
+term_z_scdwv.dt: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=16
+
+z1_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=17
+
+z2_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=18
+
+z3_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=19
+
+z4_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=20
+
+z5_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=21
+
+z6_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=22
+
+z7_scdwv.dd: scdwvdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=23
 # DriveWire 3 RBF descriptors
 ddx0.dd: dwdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1 -DDNum=0
@@ -259,12 +312,79 @@ x2.dd: dwdesc.asm
 x3.dd: dwdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=3
 
+# TC^3 SCSI Descriptors
+dds0_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) -DDD=1
+
+s0_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID0) $(SCSI_HD)
+
+s1_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID1) $(SCSI_HD)
+
+s2_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID2) $(SCSI_HD)
+
+s3_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID3) $(SCSI_HD)
+
+s4_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID4) $(SCSI_HD)
+
+s5_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID5) $(SCSI_HD)
+
+s6_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(ID6) $(SCSI_HD)
+
+sh_tc3.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(TC3FLAGS) $(HDBDOS)
+
+# IDE Descriptors
+ddi0_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER) -DDD=1
+
+i0_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(MASTER)
+
+i1_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(SLAVE)
+
+ih_ide.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS)
+
+# SuperSD Descriptors
+ddsd0_cocosdc.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DDD=1
+
+sd0_cocosdc.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DITDRV=0
+
+sd1_cocosdc.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DITDRV=1
+
 # VDGInt Modules
 covdg.io: covdg.asm
-	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCOCO2=1
+	$(AS) $(AFLAGS) $(ASOUT)$@ $< -DCOCO3=1
 
 covdg_small.io: covdg.asm
 	$(AS) $(AFLAGS) $(ASOUT)$@ $<
+
+# RFM descriptors
+ddy0.dd: rfmdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1 -DDNum=0
+
+y0.dd: rfmdesc.asm
+$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0
+
+y1.dd: rfmdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=1
+
+y2.dd: rfmdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=2
+
+y3.dd: rfmdesc.asm
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=3
 
 # Clocks
 clock_60hz: clock.asm
