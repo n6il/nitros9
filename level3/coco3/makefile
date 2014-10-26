@@ -3,7 +3,7 @@ MACHINE = Tandy Color Computer 3
 include $(NITROS9DIR)/rules.mak
 
 CPU		= 6809
-LEVEL		= 3
+LEVEL	= 3
 
 DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)

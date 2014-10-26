@@ -5,34 +5,34 @@ vpath %.asm kernel:$(LEVEL2)/modules/kernel:$(LEVEL3)/modules:$(LEVEL2)/modules:
 
 AFLAGS		+= -I$(LEVEL1)/modules
 
-CLOCKELIM       = -DRTCElim=1
-CLOCKDISTO2     = -DRTCDsto2=1
-CLOCKDISTO4     = -DRTCDsto4=1
-CLOCKBNB        = -DRTCBB=1
-CLOCKSMART      = -DRTCSmart=1 -DMPIFlag=1
-CLOCKHARRIS     = -DRTCHarrs=1
-CLOCKCLOUD9     = -DRTCCloud9=1
-CLOCKSOFT       = -DRTCSoft=1
-CLOCKMESSEMU    = -DRTCMessEmu=1
-CLOCKJVEMU      = -DRTCJVEmu=1
-TC3FLAGS	= $(AFLAGS) -DTC3=1 $(FLAGS)
-IDEFLAGS	= $(AFLAGS) -DIDE=1 $(FLAGS)
-SDFLAGS		= $(AFLAGS) -DCOCOSDC=1 -DITTYP=128 $(FLAGS)
+CLOCKELIM		= -DRTCElim=1
+CLOCKDISTO2		= -DRTCDsto2=1
+CLOCKDISTO4		= -DRTCDsto4=1
+CLOCKBNB		= -DRTCBB=1
+CLOCKSMART		= -DRTCSmart=1 -DMPIFlag=1
+CLOCKHARRIS		= -DRTCHarrs=1
+CLOCKCLOUD9		= -DRTCCloud9=1
+CLOCKSOFT		= -DRTCSoft=1
+CLOCKMESSEMU	= -DRTCMessEmu=1
+CLOCKJVEMU		= -DRTCJVEmu=1
+TC3FLAGS		= $(AFLAGS) -DTC3=1 $(FLAGS)
+IDEFLAGS		= $(AFLAGS) -DIDE=1 $(FLAGS)
+SDFLAGS			= $(AFLAGS) -DCOCOSDC=1 -DITTYP=128 $(FLAGS)
 
 DEPENDS			= ./makefile
-TPB		= $(3RDPARTY)/booters
+TPB			= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		  boot_tc3 boot_ide \
-		  boot_dw_becker boot_dw_arduino boot_rom \ 
+		  boot_dw_becker boot_dw_arduino boot_rom \
 		 boot_burke boot_rampak boot_wd1002 boot_dw
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
 SYSMODS		= ioman init sysgo_h0 sysgo_dd sysgo_rom rominfo vectors
-CLOCKS          = clock_60hz clock_50hz \
-		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
-		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
-		clock2_jvemu clock2_messemu clock2_dw
+CLOCKS		= clock_60hz clock_50hz \
+			clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
+			clock2_smart clock2_harris clock2_cloud9 clock2_soft \
+			clock2_jvemu clock2_messemu clock2_dw
 
 RBF		= rbf.mn \
 		rbdw.dr dwio.sb dwio_becker.sb dwio_arduino.sb \
@@ -73,7 +73,7 @@ SCF		= scf.mn \
 		term_z_scdwv.dt z1_scdwv.dd z2_scdwv.dd z3_scdwv.dd \
 		z4_scdwv.dd z5_scdwv.dd z6_scdwv.dd z7_scdwv.dd \
 
-PIPE		= pipeman.mn pipeman_named.mn \
+PIPE	= pipeman.mn pipeman_named.mn \
 		piper.dr \
 		pipe.dd
 
@@ -132,7 +132,7 @@ covdg_small.io: covdg.asm
 # Disto SC-II Drivers
 rb1773_scii_ff74.dr:    rb1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSCII=1
-                                                                            
+
 rb1773_scii_ff58.dr:    rb1773.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DSCII=1 -DSCIIALT=1
 
@@ -165,13 +165,13 @@ boot_1773_30ms: boot_1773.asm
 # SysGo Modules
 sysgo_dd: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1
-	
+
 sysgo_h0: sysgo.asm
 		$(AS) $< $(ASOUT)$@ $(AFLAGS)
-        
+
 sysgo_rom: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DROM=1
-        
+
 # TC^3 SCSI Driver
 lltc3.dr: llscsi.asm
 	$(AS) $(ASOUT)$@ $< $(TC3FLAGS)
@@ -181,12 +181,12 @@ llide.dr: llide.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
 
 # Floppy descriptors
-SSDD35		= -DCyls=35 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
-		-DInterlv=3 -DSAS=8 -DDensity=1
+SSDD35          = -DCyls=35 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
+	-DInterlv=3 -DSAS=8 -DDensity=1
 DSDD40		= -DCyls=40 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
-		-DInterlv=3 -DSAS=8 -DDensity=1
-DSDD80		= -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
-		-DInterlv=3 -DSAS=8 -DDensity=1 -DD35
+	-DInterlv=3 -DSAS=8 -DDensity=1
+DSDD80          = -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
+	-DInterlv=3 -DSAS=8 -DDensity=1 -DD35
 
 # HDB-DOS for SuperDriver
 HDBDOS                  = -DHB $(SSDD35) $(ID0) -DITDNS=8
@@ -253,7 +253,7 @@ r0_192k.dd: r0.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192
 
 ddr0_192k.dd: r0.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192 -DDD=1
+        $(AS) $< $(ASOUT)$@ $(AFLAGS) -DRAMSize=192 -DDD=1
 
 # DriveWire SCF descriptors
 term_scdwv.dt: scdwvdesc.asm

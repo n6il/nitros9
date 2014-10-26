@@ -12,7 +12,7 @@ all:
 	@$(ECHO) "*             NitrOS-9 Level $(LEVEL) Ports             *"
 	@$(ECHO) "*                                                *"
 	@$(ECHO) "**************************************************"
-	$(foreach dir,$(dirs),$(MAKE) -C $(dir) &&) :
+	$(foreach dir, $(dirs), $(MAKE) -C $(dir) &&) :
 
 # Clean all components
 clean:
@@ -20,11 +20,11 @@ clean:
 
 # Make DSK images
 dsk:
-	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dsk &&) :
+	$(foreach dir, $(dirs), $(MAKE) -C $(dir) dsk &&) :
 
 # Copy DSK images
 dskcopy:
-	$(foreach dir,$(dirs),$(MAKE) -C $(dir) dskcopy &&) :
+	$(foreach dir, $(dirs), $(MAKE) -C $(dir) dskcopy &&) :
 
 # Clean DSK images
 dskclean:
