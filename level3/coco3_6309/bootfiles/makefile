@@ -78,7 +78,24 @@ BOOTFILE_80D_50HZ 	= $(MD)/nitro \
 		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
 		$(MD)/clock_50hz $(MD)/clock2_soft
 
-BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d bootfile_80d_50hz
+BOOTFILE_DW	= $(MD)/nitro \
+		$(MD)/scf.mn \
+		$(MD)/end \
+		$(MD)/rbf.mn \
+		$(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_40d.dd \
+		$(MD)/d2_40d.dd $(MD)/ddd0_80d.dd \
+		$(MD)/end \
+		$(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/vtio.dr \
+		$(MD)/keydrv_cc3.sb $(MD)/joydrv_joy.sb $(MD)/snddrv_cc3.sb \
+		$(MD)/cowin.io $(MD)/covdg.io \
+		$(MD)/term_win80.dt \
+		$(MD)/w.dw $(MD)/w1.dw $(MD)/w2.dw $(MD)/w3.dw $(MD)/w4.dw \
+		$(MD)/w5.dw $(MD)/w6.dw $(MD)/w7.dw \
+		$(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd \
+		$(MD)/clock_60hz $(MD)/clock2_soft
+
+BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d bootfile_80d_50hz bootfile_dw
 KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
