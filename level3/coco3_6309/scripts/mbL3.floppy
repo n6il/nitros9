@@ -1,0 +1,34 @@
+-t
+-x
+tmode .1 pau=0
+echo * Nitros9 Level 3 Boot Creation Script
+echo *
+echo * This script creates a bootable Level 3 floppy disk
+echo * The resulting disk wll boot Nitros-9 Level 3 from the drive selected nextecho *
+echo "Please enter the target disk (e.g. /d0, /d1"
+var.1
+dmode %1 sid=1 cyl=23
+prompt Is the right disk in %1? Press a key
+echo *
+echo * Step 1: Format the disk in %1
+format %1 "NitrOS9v330 Level 3 Boot" R
+echo *
+echo * Step 2: Create a custom boot track
+touch bttemp
+del bttemp
+merge ../modules/boottrack/rel_80 ../modules/boottrack/boot_1773_6ms ../modules/boottrack/krn >bttemp
+echo *
+echo * Step 3: Create the bootfile and boot track
+os9gen %1 -t=bttemp <../bootlists/genes.L3.bl
+vfy bttemp
+ident -s %1/os9boot
+echo *
+echo * Step 4: Populate the disk with essential files
+copy ../modules/sysmods/sysgo_dd %1/sysgo
+makdir %1/CMDS
+copy -w=%1/CMDS ../CMDS/shell ../CMDS/grfdrv
+echo put an errmsg file on the floppy for krnp3 to use
+makdir %1/SYS
+copy /dd/sys/errmsg %1/SYS/errmsg
+echo *
+echo * All done
