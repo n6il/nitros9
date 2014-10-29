@@ -846,7 +846,7 @@ L0D7C	anda	#^TimOut
 L0D80	equ	*
 L0D83	bsr	L0D11		activate next process
 		
-	use	fnproc.asm
+	use	ccbfnproc.asm
 		
 * The following routines must appear no earlier than $E00 when assembled, as
 * they have to always be in the vector RAM page ($FE00-$FEFF)
