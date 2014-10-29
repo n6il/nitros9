@@ -80,9 +80,8 @@ L084F    inc   1,s          Bump up to next block to check
 * At the start, Y is pointing to the end of the SMAP table+1
          ldx   <D.SysMem    Get start of table ptr
 	 * CCB change - start scanning from f000 down, rather than ec00
- *        leay  Bt.Start>>8,x
-*	 leay  Where>>8,x
-	 leay	$ff00>>8,x
+ *        leay  Bt.Start/256,x
+	 leay	$ff00/256,x
 	 * end of CCB change
          ldb   #32          skip block 0: it's always full
          abx                same size, but faster than leax $20,x
