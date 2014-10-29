@@ -25,9 +25,7 @@
 	nam	krn
 	ttl	NitrOS-9 Level 2 Kernel
 		
-	IFP1	
 	use	defsfile
-	ENDC	
 		
 * defines for customizations
 Revision	set	9	module revision
