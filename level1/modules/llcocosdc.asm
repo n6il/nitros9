@@ -8,6 +8,8 @@
 * ------------------------------------------------------------------
 *          2004/??/??  Boisy G. Pitre
 * Created.
+*          2014/11/27  tim lindner
+* Changed read and write routines to enter and leave command mode
 
                NAM       llcocosdc
                TTL       CoCo SDC Low-level driver
@@ -61,9 +63,9 @@ ll_term
 *    B  = error code
 *
 ll_init                  
-               ldy      V.PORT-UOFFSET,u
-               ldb      #$43
-               stb      -$0A,y
+*               ldy      V.PORT-UOFFSET,u
+*               ldb      #$43
+*               stb      -$0A,y
                clrb      
                rts       
 
@@ -132,8 +134,18 @@ ll_setstat
 *    sectsize       = sector size (0=256,1=512,2=1024,3=2048)
 *    V.SectCnt      = sectors to read
 *    V.PhysSect = physical sector to start read from
-ll_read                  
-               lda       PD.DRV,y
+ll_read              
+               lda       #$43
+               sta       $ff40
+               ldx       #0
+rdCmMd         lda       $ff48
+               lsra
+               bcc       rdStart
+               leax      -1,x
+               bne       rdCmMd
+               bra       rdFail
+               
+rdStart        lda       PD.DRV,y
                ldb       V.PhysSect,u
                ldx       V.PhysSect+1,u
                ldy       V.PORT-UOFFSET,u
@@ -153,6 +165,7 @@ rdWait         lda       -2,y
                leax      -1,x
                bne       rdWait
 rdFail
+               clr       $ff40
                ldb       #E$Read
                coma
                rts
@@ -171,6 +184,7 @@ rdChnk         ldu       ,y
                deca
                bne       rdChnk
 
+               sta       $ff40
                rts
 
 
@@ -186,7 +200,17 @@ rdChnk         ldu       ,y
 *    V.SectCnt      = sectors to read
 *    V.PhysSect     = physical sector to start read from
 ll_write                 
-               lda       PD.DRV,y
+               lda       #$43
+               sta       $ff40
+               ldx       #0
+wrCmMd         lda       $ff48
+               lsra
+               bcc       rwStart
+               leax      -1,x
+               bne       wrCmMd
+               bra       wrFail
+
+rwStart        lda       PD.DRV,y
                ldb       V.PhysSect,u
                ldx       V.PhysSect+1,u
                ldy       V.PORT-UOFFSET,u
@@ -206,6 +230,7 @@ wrWait         lda       -2,y
                leax      -1,x
                bne       wrWait
 wrFail
+               clr       $ff40
                ldb       #E$Write
                coma
                rts
@@ -225,6 +250,7 @@ wrComp         lda       -2,y
                lsra
                bcs       wrComp
 
+               clr       $ff40
                rts
 
                EMOD      
