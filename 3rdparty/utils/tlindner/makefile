@@ -1,0 +1,44 @@
+include ../../../rules.mak
+
+DEPENDS		= ./makefile
+
+CMDS		= snake sdir
+
+ALLOBJS		= $(CMDS)
+
+DSKTLU		= tlindner_utils.dsk
+
+DSKS		= $(DSKTLU)
+
+all:	banner $(ALLOBJS) $(DEPENDS)	
+
+banner:
+	@$(ECHO) "**************************************************"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "*               tlindner utilities               *"
+	@$(ECHO) "*                                                *"
+	@$(ECHO) "**************************************************"
+
+$(DSKTLU): $(CMDS)
+	$(RM) $@
+	$(OS9FORMAT) -q $@ -n"tindner utilities"
+	$(MAKDIR) $@,CMDS
+	$(OS9COPY) $(CMDS) $@,CMDS
+	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
+
+dsk: all $(DSKS)
+
+dskcopy: dsk
+	$(CP) $(DSKS) $(DSKDIR)
+
+dskclean:
+	$(RM) $(DSKS)
+
+clean: dskclean
+	$(RM) $(ALLOBJS)
+
+info:
+	@echo "*** tlindner utilities ***"
+	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
+
+
