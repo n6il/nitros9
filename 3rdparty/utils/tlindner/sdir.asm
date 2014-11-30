@@ -63,6 +63,11 @@ header   fcc   /SDC Directory: /
 headerL  equ   *-header
 basepath fcc	/L:*.*/
 			fcb	0
+parameterTooLong fcc /Parameter too long./
+         fcb C$LF
+         fcb C$CR
+parameterTooLongL  equ   *-parameterTooLong
+
 timoutError fcc /Timeout./
 carrigeReturn fcb C$LF
          fcb C$CR
@@ -95,7 +100,7 @@ truncated fcc /Out of memroy. Listing trucated./
             fcb C$CR
 truncatedL  equ   *-truncated
 
-dirString fcc / <DIR>/
+dirString fcc / <DIR>  /
 dirStringL  equ   *-dirString
 
 *
@@ -116,9 +121,11 @@ dirStringL  equ   *-dirString
 
 * The start of the program is here.
 * main program
-start    equ *
+start
 * create path string in buffer area
-         decb
+         cmpd #256-3
+         lbhi parameterToLongError
+         decb chew CR in parameter area
    	   pshs u,x,d
    	   leax basepath,pc
    	   ldd ,x++ copy 'L:'
@@ -134,7 +141,7 @@ start    equ *
    	   puls x,u
    	   ldd #$5 Length of buffer
    	   bra printHeader
-copyParameterArea equ *
+copyParameterArea
          puls x
          pshs d
 cpaLoop  lda ,x+
@@ -148,7 +155,7 @@ cpaDone	clra put null at end of parameter string
 			addd #3
 			puls u
 			leas	0,y  clobber parameter area, put stack at top, giving us as much RAM as possible
-printHeader equ *
+printHeader
 			pshs d
          lda #1 Output path (stdout)
          ldy #headerL
@@ -170,7 +177,7 @@ printHeader equ *
 			bcc sendCommand
 			ldb #$f6 Not ready error code
 			lbra Exit
-sendCommand equ *
+sendCommand
 			ldb #$e0 load initial directory listing command
 			stb CMDREG send to SDC command register
 			exg a,a wait
@@ -186,14 +193,14 @@ sendCommand equ *
 			bitb #$04
 			bne pathNameInvalidError
          lbra Exit
-getNextDirectoryPage equ *
+getNextDirectoryPage
 			leax 256*2,x
 			tfr s,d
 			pshs d
 			cmpx ,s++
 			bhi noteTruncate
 			leax -256,x
-getBuffer equ *
+getBuffer
 			ldb #$3e set parameter #1
 			stb PREG1
 			ldb #$c0 set command code
@@ -205,34 +212,38 @@ getBuffer equ *
 			bitb #$8
 			bne notInitiatedError
 			lbra Exit
-timeOut  equ *
+timeOut
          leax >timoutError,pcr point to help message
          ldy #timoutErrorL get length
 genErr   clr CTRLATCH
          andcc #^IntMasks unmask interrupts
-         lda #$02		std error
-         os9 I$Write 	write it
+         lda #$02 std error
+         os9 I$Write
          clrb clear error
 			lbra ExitNow
-targetDirectoryNotFoundError equ *
+parameterToLongError
+			leax >parameterTooLong,pcr
+			ldy #parameterTooLongL
+			bra genErr
+targetDirectoryNotFoundError
 			leax >dirNotFound,pcr
 			ldy #dirNotFoundL
 			bra genErr
-miscellaneousHardwareError equ *
+miscellaneousHardwareError
 			leax >miscHardwareError,pcr
 			ldy #miscHardwareErrorL
 			bra genErr
-pathNameInvalidError equ *
+pathNameInvalidError
 			leax >pathNameInvalid,pcr
 			ldy #pathNameInvalidL
 			bra genErr
-notInitiatedError equ *
+notInitiatedError
 			leax >notInitiated,pcr
 			ldy #notInitiatedL
 			bra genErr
 
 * Check buffer for nulled entry. This signifies the end
-checkBuffer equ *
+checkBuffer
          lda #16
          leau ,x go back to start of buffer
 cbLoop   ldb ,u
@@ -242,20 +253,35 @@ cbLoop   ldb ,u
          beq getNextDirectoryPage
          bra cbLoop
 
-noteTruncate equ *
+noteTruncate
          clr CTRLATCH
          andcc #^IntMasks unmask interrupts
          clr -256,x zero out last directory entry
          leax >truncated,pcr point to help message
          ldy #truncatedL get length
-         lda #$02		std error
-         os9 I$Write 	write it
+         lda #$02 std error
+         os9 I$Write
          bra pName
-printBuffer equ *
+printBuffer
          clr CTRLATCH
          andcc #^IntMasks unmask interrupts
 * print filename
-pName    clrb
+pName    
+* Get screen width
+         lda #1 Output Path (stdout)
+         ldb #SS.ScSiz Request screen size
+         os9 I$Getstt Make screen size request
+         ldd #$0303
+         cmpx #75
+         bhi ssDone
+         ldd #$0202
+         cmpx #42
+         bhi ssDone
+         ldd #$0101
+* push column count to stack
+ssDone   pshs d
+* reset reg u back to the start of the buffer
+         clrb
          tfr dp,a
          tfr d,u
          lda #1 Output path (stdout)
@@ -286,15 +312,17 @@ pf2      sta 2,x
          os9 I$Write
          bitb #$10
          beq pfSize
+* print directory token
          ldy #dirStringL
          leax >dirString,pcr buffer in x
          os9 I$Write
          bra pfCR
-* print size
 
+* print size
 pfSize
 * start with a space
          lda #$20 space character
+* store U offset in 11,u
          clrb
          stb 11,u
          sta b,u
@@ -316,7 +344,7 @@ pfSize
          bsr L09BA write ascii value of D to buffer
          lda #'M
          bra psUnit
-ps1     lda 13,u
+ps1      lda 13,u
          beq ps2
 * Kind of large number: load offsets 13 and 14, shift right 2 bits, print decimal as kilo bytes
          ldb 14,u
@@ -328,21 +356,11 @@ ps1     lda 13,u
          lda #'K
          bra psUnit
 ps2     ldd 14,u
-         cmpd #$1000
-         blo ps3
-* Large number: load offset 14, shift right 2 bits, print decimal as kilo bytes
-			tfr a,b
-			lsrb
-			lsrb
-			clra
-         bsr L09BA write ascii value of D to buffer
-         lda #'K
-         bra psUnit
-ps3
 * number: load offsetprint 14 and 15, print decimal as bytes
          bsr L09BA write ascii value of D to buffer
          lda #'B
          bra psUnit
+* print unit to buffer
 psUnit
 			ldb 11,u
 			sta b,u
@@ -359,18 +377,27 @@ psUnit
          leax ,u
          os9 I$Write         
          
-         
 * print carrage return and do next directory entry
-pfCR     ldy #2 length of buffer
+pfCR     
+         dec ,s
+         beq pfDoCR
+         bra pdCRSkip
+pfDoCR   ldy #2 length of buffer
          leax >carrigeReturn,pcr buffer in x
          os9 I$Write
+         ldb 1,s
+         stb ,s
+pdCRSkip 
          leau 16,u
          ldb ,u
          beq ExitOK
          lbra pbLoop
-			
 
-ExitOk   clrb
+ExitOk   
+         ldy #2 length of buffer
+         leax >carrigeReturn,pcr buffer in x
+         os9 I$Write
+         clrb
 Exit     clr CTRLATCH
          andcc #^IntMasks unmask interrupts
 ExitNow  os9 F$Exit
@@ -392,7 +419,7 @@ L09C6    leax  >$0100,x   Bump X up to $3000
          beq   L09E6      If finished table, skip ahead
          cmpd  #$3000     Just went through once?
          beq   L09C1      Yes, reset X & do again
-*         lbsr  L1373      Go save A @ [<u0082]
+*        lbsr  L1373      Go save A @ [<u0082]
          ldb   11,u       Write A to output buffer
          sta   b,u
          incb
@@ -467,16 +494,15 @@ txWord      ldu ,x++                    ; get data word from source
             stu ,y                      ; send to controller
             decb                        ; decrement word loop counter
             bne txWord                  ; loop until done
-            ldx #0                      ; wait for result
 * Done sending data, wait for result
+            ldx #0                      ; wait for result
             comb                        ; assume error
 txWait      ldb -2,y                    ; load status
             bmi txExit                  ; branch if failed
-            bitb #READY                 ; test ready bit
-            bne txExitOK                ; branch if ready
+            lsrb                        ; clear carry if not busy
+            bcc txExit                  ; test ready bit
             leax -1,x                   ; decrememnt timeout counter
             bne txWait			          ; loop back until timeout
-txExitOK    andcc #^1
 txExit      puls x,y,u,pc               ; restore registers and return
 
 *********************************************************************
