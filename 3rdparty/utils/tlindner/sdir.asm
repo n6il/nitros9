@@ -88,6 +88,16 @@ notInitiated fcc /Listing not initiated./
             fcb C$CR
 notInitiatedL  equ   *-notInitiated
 
+truncated fcc /Out of memroy. Listing trucated./
+            fcb C$LF
+            fcb C$CR
+            fcb C$LF
+            fcb C$CR
+truncatedL  equ   *-truncated
+
+dirString fcc / <DIR>/
+dirStringL  equ   *-dirString
+
 *
 * Here's how registers are set when this process is forked:
 *
@@ -143,14 +153,14 @@ printHeader equ *
          lda #1 Output path (stdout)
          ldy #headerL
          leax header,pc header in x
-         os9 I$Write Send the value to the device driver
+         os9 I$Write
 * print path			
 			puls y
          leax buffer,u buffer in x
-         os9 I$Write Send the value to the device driver
+         os9 I$Write
          ldy #2 length of buffer
          leax >carrigeReturn,pcr buffer in x
-         os9 I$Write Send the value to the device driver
+         os9 I$Write
 * wait until our next tick to communicate with the SDC
          ldx   #$1
          os9   F$Sleep
@@ -181,7 +191,7 @@ getNextDirectoryPage equ *
 			tfr s,d
 			pshs d
 			cmpx ,s++
-			bhi printBuffer
+			bhi noteTruncate
 			leax -256,x
 getBuffer equ *
 			ldb #$3e set parameter #1
@@ -194,7 +204,7 @@ getBuffer equ *
 			beq timeOut
 			bitb #$8
 			bne notInitiatedError
-			bra Exit
+			lbra Exit
 timeOut  equ *
          leax >timoutError,pcr point to help message
          ldy #timoutErrorL get length
@@ -203,7 +213,7 @@ genErr   clr CTRLATCH
          lda #$02		std error
          os9 I$Write 	write it
          clrb clear error
-			bra ExitNow
+			lbra ExitNow
 targetDirectoryNotFoundError equ *
 			leax >dirNotFound,pcr
 			ldy #dirNotFoundL
@@ -231,24 +241,133 @@ cbLoop   ldb ,u
          deca
          beq getNextDirectoryPage
          bra cbLoop
-         
+
+noteTruncate equ *
+         clr CTRLATCH
+         andcc #^IntMasks unmask interrupts
+         clr -256,x zero out last directory entry
+         leax >truncated,pcr point to help message
+         ldy #truncatedL get length
+         lda #$02		std error
+         os9 I$Write 	write it
+         bra pName
 printBuffer equ *
          clr CTRLATCH
          andcc #^IntMasks unmask interrupts
-         clrb
+* print filename
+pName    clrb
          tfr dp,a
          tfr d,u
          lda #1 Output path (stdout)
 pbLoop   ldy #8 length of buffer
 			leax ,u
-         os9 I$Write Send the value to the device driver
-         ldy #2 length of buffer
+         os9 I$Write
+* print file extension
+         leax 7,u
+         ldb #$20
+         stb ,x
+         ldy #4
+         os9 I$Write
+* print flags
+         leax 7,u
+         ldb 11,u
+         lda #'-
+         bitb #2
+         beq pf1
+         lda #'H
+pf1      sta 1,x
+         lda #'-
+         bitb #1
+         beq pf2
+         lda #'L
+pf2      sta 2,x
+         lda #1
+         ldy #3
+         os9 I$Write
+         bitb #$10
+         beq pfSize
+         ldy #dirStringL
+         leax >dirString,pcr buffer in x
+         os9 I$Write
+         bra pfCR
+* print size
+
+pfSize
+* start with a space
+         lda #$20 space character
+         clrb
+         stb 11,u
+         sta b,u
+         incb
+         stb 11,u
+         
+         lda 12,u
+         beq ps1
+* Very large number: load offset 12 and 13, shift right 4 bits, print decimal as mega bytes
+         ldb 13,u
+         lsra
+         rorb
+         lsra
+         rorb
+         lsra
+         rorb
+         lsra
+         rorb
+         bsr L09BA write ascii value of D to buffer
+         lda #'M
+         bra psUnit
+ps1     lda 13,u
+         beq ps2
+* Kind of large number: load offsets 13 and 14, shift right 2 bits, print decimal as kilo bytes
+         ldb 14,u
+         lsra
+         rorb
+         lsra
+         rorb
+         bsr L09BA write ascii value of D to buffer
+         lda #'K
+         bra psUnit
+ps2     ldd 14,u
+         cmpd #$1000
+         blo ps3
+* Large number: load offset 14, shift right 2 bits, print decimal as kilo bytes
+			tfr a,b
+			lsrb
+			lsrb
+			clra
+         bsr L09BA write ascii value of D to buffer
+         lda #'K
+         bra psUnit
+ps3
+* number: load offsetprint 14 and 15, print decimal as bytes
+         bsr L09BA write ascii value of D to buffer
+         lda #'B
+         bra psUnit
+psUnit
+			ldb 11,u
+			sta b,u
+			lda #$20
+			incb
+			sta b,u
+			incb
+			sta b,u
+			incb
+			sta b,u
+         
+         lda #1
+         ldy #8
+         leax ,u
+         os9 I$Write         
+         
+         
+* print carrage return and do next directory entry
+pfCR     ldy #2 length of buffer
          leax >carrigeReturn,pcr buffer in x
-         os9 I$Write Send the value to the device driver
+         os9 I$Write
          leau 16,u
          ldb ,u
          beq ExitOK
-         bra pbLoop
+         lbra pbLoop
 			
 
 ExitOk   clrb
@@ -256,6 +375,48 @@ Exit     clr CTRLATCH
          andcc #^IntMasks unmask interrupts
 ExitNow  os9 F$Exit
 
+* Stolen from BASIC09
+* Convert # in D to ASCII version (decimal)
+L09BA    pshs  y,x,d      Preserve End of data mem ptr,?,Data mem size
+         pshs  d          Preserve data mem size again
+         leay  <L09ED,pc  Point to decimal table (for integers)
+L09C1    ldx   #$2F00    
+L09C4    puls  d          Get data mem size
+L09C6    leax  >$0100,x   Bump X up to $3000
+         subd  ,y         Subtract value from table
+         bhs   L09C6      No underflow, keep subtracting current power of 10
+         addd  ,y++       Restore to before underflow state
+         pshs  d          Preserve remainder of this power
+         ldd   ,y         Get next lower power of 10
+         tfr   x,d        Promptly overwrite it with X (doesn't chg flags)
+         beq   L09E6      If finished table, skip ahead
+         cmpd  #$3000     Just went through once?
+         beq   L09C1      Yes, reset X & do again
+*         lbsr  L1373      Go save A @ [<u0082]
+         ldb   11,u       Write A to output buffer
+         sta   b,u
+         incb
+         stb   11,u
+         ldx   #$2F01     Reset X differently
+         bra   L09C4      Go do again
+
+L09E6
+*        lbsr  L1373      Go save A @ [<u0082]
+         ldb   11,u       Write A to output buffer
+         sta   b,u
+         incb
+         stb   11,u
+         leas  2,s        Eat stack
+         puls  pc,y,x,d   Restore regs & return
+
+* Table of decimal values
+L09ED    fdb   $2710      10000
+         fdb   $03E8      1000
+         fdb   $0064      100
+         fdb   $000A      10
+         fdb   $0001      1
+         fdb   $0000      0
+        
 *********************************************************************
 * Setup Controller for Command Mode
 *********************************************************************

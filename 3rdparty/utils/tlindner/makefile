@@ -21,7 +21,7 @@ banner:
 
 $(DSKTLU): $(CMDS)
 	$(RM) $@
-	$(OS9FORMAT) -q $@ -n"tindner utilities"
+	$(OS9FORMAT) -q $@ -n"tlindner utilities"
 	$(MAKDIR) $@,CMDS
 	$(OS9COPY) $(CMDS) $@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS),$@,CMDS/$(file))
