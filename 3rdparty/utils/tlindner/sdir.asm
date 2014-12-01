@@ -93,7 +93,7 @@ notInitiated fcc /Listing not initiated./
             fcb C$CR
 notInitiatedL  equ   *-notInitiated
 
-truncated fcc /Out of memroy. Listing trucated./
+truncated fcc /Out of memory. Listing trucated./
             fcb C$LF
             fcb C$CR
             fcb C$LF
