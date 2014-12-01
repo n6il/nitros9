@@ -2,7 +2,7 @@ include ../../../rules.mak
 
 DEPENDS		= ./makefile
 
-CMDS		= snake sdir
+CMDS		= snake sdir sdrive
 
 ALLOBJS		= $(CMDS)
 
