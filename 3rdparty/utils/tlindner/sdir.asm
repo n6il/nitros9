@@ -122,47 +122,50 @@ dirStringL  equ   *-dirString
 * The start of the program is here.
 * main program
 start
+         lbsr SkipSpcs
 * create path string in buffer area
-         cmpd #256-3
-         lbhi parameterToLongError
-         decb chew CR in parameter area
-   	   pshs u,x,d
+   	   ldd ,x load first two parameter characters
+   	   cmpd #$2d0d test ascii: hyphen, return
+   	   lbeq displayMountedInfo
+   	   cmpa #$0d
+   	   beq noParameters
+copyParameterArea
+			pshs u,x
    	   leax basepath,pc
    	   ldd ,x++ copy 'L:'
    	   std ,u++
-   	   puls d
-   	   cmpd #$0
-   	   bne copyParameterArea
-* use '*.*' if user suplied no parameter
-   	   ldd ,x++ copy '*.*' and null
-   	   std ,u++
-   	   ldd ,x++
-   	   std ,u++
-   	   puls x,u
-   	   ldd #$5 Length of buffer
-   	   bra printHeader
-copyParameterArea
-         puls x
-         pshs d
-cpaLoop  lda ,x+
-         sta ,u+
-         decb
-         beq cpaDone
-         bra cpaLoop
-cpaDone	clra put null at end of parameter string
+   	   puls x
+			ldb #2
+cpa1   	lda ,x+
+			cmpa #$0d
+			beq cpa2
 			sta ,u+
-			puls d
-			addd #3
-			puls u
-			leas	0,y  clobber parameter area, put stack at top, giving us as much RAM as possible
+			addb	#1
+			lbcs parameterToLongError
+			bra cpa1
+cpa2     clra
+         sta ,u
+         puls u
+         bra printHeader
+noParameters
+   	   leax basepath,pc
+   	   ldd ,x++ copy 'L:'
+   	   std ,u++
+   	   ldd ,x++ copy '*.'
+   	   std ,u++
+   	   ldd ,x++ copy '*' and Null
+   	   std ,u++
+			leau -6,u
+			ldd #5
 printHeader
-			pshs d
+			leas ,y clobber parameter area, put stack at top, giving us as much RAM as possible
+			pshs d save path character count
          lda #1 Output path (stdout)
          ldy #headerL
          leax header,pc header in x
          os9 I$Write
 * print path			
-			puls y
+			puls y restore character count
          leax buffer,u buffer in x
          os9 I$Write
          ldy #2 length of buffer
@@ -320,63 +323,8 @@ pf2      sta 2,x
 
 * print size
 pfSize
-* start with a space
-         lda #$20 space character
-* store U offset in 11,u
-         clrb
-         stb 11,u
-         sta b,u
-         incb
-         stb 11,u
-         
-         lda 12,u
-         beq ps1
-* Very large number: load offset 12 and 13, shift right 4 bits, print decimal as mega bytes
-         ldb 13,u
-         lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
-         bsr L09BA write ascii value of D to buffer
-         lda #'M
-         bra psUnit
-ps1      lda 13,u
-         beq ps2
-* Kind of large number: load offsets 13 and 14, shift right 2 bits, print decimal as kilo bytes
-         ldb 14,u
-         lsra
-         rorb
-         lsra
-         rorb
-         bsr L09BA write ascii value of D to buffer
-         lda #'K
-         bra psUnit
-ps2     ldd 14,u
-* number: load offsetprint 14 and 15, print decimal as bytes
-         bsr L09BA write ascii value of D to buffer
-         lda #'B
-         bra psUnit
-* print unit to buffer
-psUnit
-			ldb 11,u
-			sta b,u
-			lda #$20
-			incb
-			sta b,u
-			incb
-			sta b,u
-			incb
-			sta b,u
-         
-         lda #1
-         ldy #8
-         leax ,u
-         os9 I$Write         
-         
+         leax 12,u
+			bsr PrintFileSize
 * print carrage return and do next directory entry
 pfCR     
          dec ,s
@@ -402,6 +350,80 @@ Exit     clr CTRLATCH
          andcc #^IntMasks unmask interrupts
 ExitNow  os9 F$Exit
 
+*********************************************************************
+* PrintFileSize
+*********************************************************************
+* ENTRY:
+* X = Address of 4 byte file size
+* String buffer at -11,x
+* String buffer index at -12,x
+*
+* EXIT:
+*
+PrintFileSize
+			pshs u
+			leau ,x
+* start with a space
+         lda #$20 space character
+* store U offset in -11,u
+         ldb #-11
+         stb -12,u
+         sta b,u
+         incb
+         stb -12,u
+         lda ,u
+         beq ps1
+* Very large number: load offset 0 and 1, shift right 4 bits, print decimal as mega bytes
+         ldb 1,u
+         lsra
+         rorb
+         lsra
+         rorb
+         lsra
+         rorb
+         lsra
+         rorb
+         bsr L09BA write ascii value of D to buffer
+         lda #'M
+         bra psUnit
+ps1      lda 1,u
+         beq ps2
+* Kind of large number: load offsets 1 and 2, shift right 2 bits, print decimal as kilo bytes
+         ldb 2,u
+         lsra
+         rorb
+         lsra
+         rorb
+         bsr L09BA write ascii value of D to buffer
+         lda #'K
+         bra psUnit
+ps2     ldd 2,u
+* number: load offsetprint 14 and 15, print decimal as bytes
+         bsr L09BA write ascii value of D to buffer
+         lda #'B
+         bra psUnit
+* print unit to buffer
+psUnit
+			ldb -12,u
+			sta b,u
+			lda #$20
+			incb
+			sta b,u
+			incb
+			sta b,u
+			incb
+			sta b,u
+			incb
+			sta b,u         
+			incb
+			sta b,u         
+         lda #1
+         ldy #8
+         leax -11,u
+         os9 I$Write
+         puls u
+         rts
+
 * Stolen from BASIC09
 * Convert # in D to ASCII version (decimal)
 L09BA    pshs  y,x,d      Preserve End of data mem ptr,?,Data mem size
@@ -419,20 +441,18 @@ L09C6    leax  >$0100,x   Bump X up to $3000
          beq   L09E6      If finished table, skip ahead
          cmpd  #$3000     Just went through once?
          beq   L09C1      Yes, reset X & do again
-*        lbsr  L1373      Go save A @ [<u0082]
-         ldb   11,u       Write A to output buffer
+         ldb   -12,u       Write A to output buffer
          sta   b,u
          incb
-         stb   11,u
+         stb   -12,u
          ldx   #$2F01     Reset X differently
          bra   L09C4      Go do again
 
 L09E6
-*        lbsr  L1373      Go save A @ [<u0082]
-         ldb   11,u       Write A to output buffer
+         ldb   -12,u       Write A to output buffer
          sta   b,u
          incb
-         stb   11,u
+         stb   -12,u
          leas  2,s        Eat stack
          puls  pc,y,x,d   Restore regs & return
 
@@ -443,7 +463,7 @@ L09ED    fdb   $2710      10000
          fdb   $000A      10
          fdb   $0001      1
          fdb   $0000      0
-        
+
 *********************************************************************
 * Setup Controller for Command Mode
 *********************************************************************
@@ -539,7 +559,7 @@ rxWord      ldu ,y                      ; read data word from controller
 rxExit      puls x,y,u,pc               ; restore registers and return
 
 *********************************************************************
-* This routine skip over spaces and commas
+* This routine skip over spaces
 *********************************************************************
 * Entry:
 *   X = ptr to data to parse
@@ -552,6 +572,179 @@ SkipSpcs lda   ,x+
          leax  -1,x
          rts
 
+*********************************************************************
+* This subroutine prints a 8 character file name and three character extension
+* With a space
+* Buffer is destroyed
+*********************************************************************
+* Entry:
+*   X = string buffer address
+*   
+* Exit:
+*   A = 1
+*   B = $20
+*   Y = 1
+*   X = X + 7
+
+PrintFilenameAndExtension
+			ldy #8
+			lda #1
+         os9 I$Write
+         leax 7,x
+         ldb #$20
+         stb ,x
+         ldy #4
+         os9 I$Write
+         ldy #1
+         os9 I$Write
+         rts
+
+*********************************************************************
+* This subroutine prints string to stdout
+*********************************************************************
+* Entry:
+*   X = string buffer address
+*   Y = string length
+* Exit:
+*   A = 1
+PrintString
+			lda #1
+         os9 I$Write
+         rts
+
+*********************************************************************
+* This subroutine prints Mounted Attributes String
+* Uses 11 characters of memory before attribute byte to build string
+*********************************************************************
+* Entry:
+*   X = Address of attributes byte
+* Exit:
+*   a, b, x, y modified
+PrintMountedAttributes
+			ldb ,x
+			leax -11,x
+			lda #'-
+			bitb #$10
+			beq next1
+			lda #'D
+next1    sta ,x
+         lda #'-
+         bitb #04
+         beq next2
+         lda #'S
+next2    sta 1,x
+         lda #'-
+         bitb #$02
+         beq next3
+         lda #'H
+next3    sta 2,x
+         lda #'-
+         bitb #$01
+         beq next4
+         lda #'L
+next4    sta 3,x
+         lda #$20
+         sta 4,x
+         sta 5,x
+         lda #1
+         ldy #6
+         os9 I$Write
+         rts
+
+*********************************************************************
+
+InfoTitle fcc /CoCo SDC Mounted Images:/
+         fcb C$LF
+         fcb C$CR
+         fcc /Slot 0: /
+InfoTitleL  equ   *-InfoTitle
+S1Title  
+         fcb C$LF
+         fcb C$CR
+         fcc /Slot 1: /
+S1TitleL  equ   *-S1Title
+
+EmptyTitle fcc /Empty./
+         fcb C$LF
+         fcb C$CR
+EmptyTitleL  equ   *-EmptyTitle
+
+displayMountedInfo
+         orcc #IntMasks  mask interrupts
+			lbsr CmdSetup
+			bcc getInfo
+			ldb #$f6 Not ready error code
+			lbra Exit
+getInfo
+         ldb #'I
+         stb PREG1
+			ldb #$c0 load mounted image info for slot 0
+			stb CMDREG send to SDC command register
+			exg a,a wait
+         leax buffer,u point to transfer bufer
+         lbsr rxData Retrieve 256 bytes
+         pshs b save flag
+         ldb #'I
+         stb PREG1
+			ldb #$c1 load mounted image info for slot 1
+			stb CMDREG send to SDC command register
+			exg a,a wait
+         leax 32,x
+         lbsr rxData Retrieve 256 bytes
+         pshs b save slag
+         clr CTRLATCH
+         andcc #^IntMasks unmask interrupts
+         
+         leax >InfoTitle,pcr
+         ldy #InfoTitleL
+         lbsr PrintString
+
+         ldb 1,s
+         bmi PrintEmptySlot0
+
+         leax ,u
+         lbsr PrintFilenameAndExtension
+         
+         leax 11,u
+         lbsr PrintMountedAttributes
+         
+         leax 28,u
+         lbsr PrintFileSize
+
+			bra DoSlot1
+			
+PrintEmptySlot0
+			leax >EmptyTitle,pcr
+			ldy #EmptyTitleL
+			lbsr PrintString
+			
+DoSlot1
+			leax >S1Title,pcr
+			ldy #S1TitleL
+			lbsr PrintString
+
+			ldb ,s
+			bmi PrintEmptySlot1
+			
+         leax 32+0,u
+         lbsr PrintFilenameAndExtension
+         
+         leax 32+11,u
+         lbsr PrintMountedAttributes
+         
+         leax 32+28,u
+         lbsr PrintFileSize
+         
+			bra MountedDone
+PrintEmptySlot1
+			leax >EmptyTitle,pcr
+			ldy #EmptyTitleL
+			lbsr PrintString
+MountedDone
+         leas 2,s
+         lbra ExitOK
+			
+			
          emod
 eom      equ   *
          end

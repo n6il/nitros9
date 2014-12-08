@@ -17,7 +17,7 @@
          endc
 
 * Here are some tweakable options
-DOHELP   set   1    1 = include help info
+DOHELP   set   0    1 = include help info
 STACKSZ  set   32   estimated stack size in bytes
 PARMSZ   set   256  estimated parameter size in bytes
 
