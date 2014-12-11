@@ -29,7 +29,10 @@
 * Cleaned up code and removed multiple calculations of shift divisor by
 * calculating it once and storing it in data.
 * Corrected sector count calculation to include partial clusters.
-
+*
+*        2014/12/09 Robert Gault
+* Report fragmented OS9Boot as normal but suggest using -e option if
+* used with modern Boot module that can handle fragmentation.
 
          nam   Cobbler
          ttl   Write OS9Boot to a disk
@@ -45,7 +48,7 @@
          use   defsfile
          ENDC
 
-DOHELP   set   0
+DOHELP   set   1
 
 tylg     set   Prgrm+Objct   
 atrv     set   ReEnt+rev
@@ -61,7 +64,7 @@ devpath  	rmb   3
 EndDevName  rmb   2		pointer to last character of device name when moving to fullbnam
 btshift     rmb   2         division factor
 bitflag     rmb   1         indicates fractional division
-fullbnam 	rmb   20	this buffer hodls the entire name (i.e. /D0/OS9Boot)
+fullbnam 	rmb   20	this buffer holds the entire name (i.e. /D0/OS9Boot)
 u0034    	rmb   16
 BootBuf    	rmb   7		Area to read part of current boot area into, to check for boot stuff
 u004B    	rmb   2
@@ -74,6 +77,8 @@ bffdbuf  	rmb   16
 u008E    	rmb   1
 u008F    	rmb   7
 u0096    	rmb   232
+eflag       rmb   1
+bootloc     rmb   3
 		IFGT  Level-1
 u057E    	rmb   76
 u05CA    	rmb   8316
@@ -90,9 +95,11 @@ L0015    fcb   $00
 
          IFNE  DOHELP
 HelpMsg  fcb   C$LF
-         fcc   "Use: COBBLER </devname>"
+         fcc   "Use: COBBLER </devname> [<opts>]"
          fcb   C$LF
          fcc   "     to create a new system disk"
+         fcb   C$LF
+         fcc   "-e = extended boot (fragmentation permitted)"
          fcb   C$CR
          ENDC
 WritErr  fcb   C$LF
@@ -123,6 +130,10 @@ FileWarn fcb   C$LF
          fcb   C$CR
 BootFrag fcb   C$LF
          fcc   "Error - OS9boot file fragmented"
+         fcb   C$LF
+         fcc   "try using 'cobbler /dev -e' with"
+         fcb   C$LF
+         fcc   "current NitrOS-9 systems."
          fcb   C$CR
          IFGT  Level-1
 RelMsg   fcb   C$LF
@@ -135,11 +146,12 @@ RelNam   fcc   "Rel"
          fcb   $FF 
 * This might happen if there is not enough memory present.
 MemSpace fcc	"There is not enough memory for buffer space"
-	fcb	C$CR
+         fcb	C$CR
 
 DragonRootSec	equ	$12	Dragon root sector is always LSN 18
 
 start    clrb  				Check first char is a /
+         stb   eflag,u
          lda   #PDELIM
          cmpa  ,x
          lbne  ShowHelp
@@ -147,10 +159,26 @@ start    clrb  				Check first char is a /
          os9   F$PrsNam 		Parse the name
          lbcs  ShowHelp			Error : show help
 	 
-         lda   #PDELIM			Check that path has only one / e.g. '/d1'
-         cmpa  ,y
+         lda   ,y
+         cmpa  #PDELIM			Check that path has only one / e.g. '/d1'
          lbeq  ShowHelp			yes : show help
-	 
+
+         cmpa  #C$CR
+         beq   godoit
+         cmpa  #C$SPAC
+         lbne  ShowHelp
+parseopt lda   ,y+
+         cmpa  #'-
+         beq   parsein
+         cmpa  #C$CR
+         beq   godoit
+         bra   parseopt
+parsein  lda   ,y+
+         anda  #$DF                 make uppercase
+         cmpa  #'E                  extended boot
+         lbne  ShowHelp
+         inc   eflag,u              mark for fragmented boot
+godoit   lda   #PDELIM
          leay  <fullbnam,u		Transfer name to our buffer
 L013C    sta   ,y+
          lda   ,x+
@@ -189,7 +217,7 @@ L0162    sta   ,x+			Append boot name to dev name e.g. '/d1/OS9Boot'
          lbcs  Bye			Error : exit
          lbsr  FShift                   get divisor from DD.BIT R.G.
          sty   btshift,u
-* Request memory fot the FAT buffer + 256 bytes for stack space R.G.
+* Request memory for the FAT buffer + 256 bytes for stack space R.G.
          ldd	<DD.MAP
          addd	#size+256
          os9	F$Mem
@@ -197,9 +225,11 @@ L0162    sta   ,x+			Append boot name to dev name e.g. '/d1/OS9Boot'
 	   tfr	y,s
 
          ldd   <DD.BSZ			get size of bootfile currently
-         beq   L019F			branch if none
+         bne   delit			there is a size so assume file present
+         tst   eflag,u			no size but could be extended boot
+         beq   L019F			no eflag so probably no boot file
 	 
-         leax  <fullbnam,u
+delit    leax  <fullbnam,u
          os9   I$Delete 		delete existing bootfile
          
 	   clra  
@@ -303,6 +333,9 @@ L0203    pshs  y
          ldx   <pathopts+(PD.FD-PD.OPT),u
          lda   <pathopts+(PD.FD+2-PD.OPT),u
 * Now X and A hold file descriptor sector LSN of newly created OS9Boot
+* Save this incase of fragmentation.
+         stx   bootloc,u
+         sta   bootloc+2,u
          clrb  
          tfr   d,u
          lda   <devpath
@@ -315,13 +348,29 @@ L0203    pshs  y
          os9   I$Read   		read in filedes sector
          lbcs  Bye			Error: exit
          ldd   >bffdbuf+(FD.SEG+FDSL.S+FDSL.B),u	Test if fragmented
+         pshs  cc
+         tst   eflag,u
+         bne   extend
+         puls  cc
          lbne  IsFragd			branch if fragmented
-	 
+         bra   notfragd
+extend   puls  cc
+         beq   notfragd
+         ldb   bootloc,u
+         stb   <DD.BT
+         ldd   bootloc+1,u
+         std   <DD.BT+1
+         clra
+         clrb
+         std   <DD.BSZ
+         bra   sendit
+notfragd equ   *	 
 * Get and save bootfile's LSN 
          ldb   >bffdbuf+(FD.SEG),u
          stb   <DD.BT
          ldd   >bffdbuf+(FD.SEG+1),u
          std   <DD.BT+1
+sendit   equ   *
          lbsr  WriteLSN0		Write bootfile loc to LSN0 on disk
  
          ldd   #$0001
