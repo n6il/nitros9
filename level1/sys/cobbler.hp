@@ -1,3 +1,6 @@
 @COBBLER
-Syntax: Cobbler <devname>
+Syntax: Cobbler <devname> [<opt>]
 Usage : Creates NitrOS-9 bootstrap file from current boot
+Opt   :
+  -e = permit fragmented boot. This should be used when
+       fragmentation is reported.
