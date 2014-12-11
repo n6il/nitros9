@@ -256,7 +256,7 @@ ddr0_192k.dd: r0.asm
 
 # DriveWire SCF descriptors
 term_scdwv.dt: scdwvdesc.asm
-	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DTERM=1 -DAddr=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=0
 
 n0_scdwv.dd: scdwvdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DAddr=0
