@@ -399,7 +399,7 @@ ddy0.dd: rfmdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1 -DDNum=0
 
 y0.dd: rfmdesc.asm
-$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0
+	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=0
 
 y1.dd: rfmdesc.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDNum=1
