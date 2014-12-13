@@ -170,7 +170,6 @@ BOOTFILE_COCOSDC	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 # NitrOS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-		$(MD)/rbsuper.dr $(MD)/llide.dr $(MD)/i0_ide.dd $(MD)/i1_ide.dd\
                 $(FLOPPY_40D) \
                 $(MD)/ddd0_40d.dd \
 		$(MD)/scf.mn \
