@@ -66,31 +66,35 @@ loop@     ldb    $FF4C
           ELSE
           IFNE BECKER
 * NOTE: There is no timeout currently on here...
-DWRead    clra                          ; clear Carry (no framing error)
-          deca                          ; clear Z flag, A = timeout msb ($ff)
-          tfr       cc,b
-          pshs      u,x,dp,b,a          ; preserve registers, push timeout msb
-          leau   ,x
-          ldx    #$0000
-          orcc   #IntMasks
-loop@     ldb    $FF41
+DWRead	  clra                  ; clear Carry, Set Z
+	  pshs	 cc,x,u         ; save regs
+          leau   ,x		; U is data buffer
+          ldx    #$0000		; X is reset check sum
+          IFEQ   NOINTMASK
+          orcc   #IntMasks	; turn off interrupts
+          ENDC
+ini@      pshs	 x		; save X
+	  ldx	 #0x8000	; X = timeout
+loop@     ldb    $FF41		; test for data ready flag
           bitb   #$02
-          beq    loop@
-          ldb    $FF42
-          stb    ,u+
-          abx
-          leay   ,-y
-          bne    loop@
-
-          tfr    x,y
-          ldb    #0
-          lda    #3
-          leas      1,s                 ; remove timeout msb from stack
-          inca                          ; A = status to be returned in C and Z
-          ora       ,s                  ; place status information into the..
-          sta       ,s                  ; ..C and Z bits of the preserved CC
-          leay      ,x                  ; return checksum in Y
-          puls      cc,dp,x,u,pc        ; restore registers and return
+          bne    rdy@		; byte is ready
+	  leax	 -1,x		; bump timout
+	  bne    loop@          ; not timed out, try again
+        ;; timed out!
+	  puls	 x              ; remove timeout off stack
+	  puls   cc		; pull CC
+	  comb                  ; reset Z (timeout error)
+	  puls	 x,u,pc	        ; restore registers and return
+	;; a byte is ready
+rdy@      puls	 x		; restore X
+          ldb    $FF42          ; get byte from port
+          stb    ,u+            ; store in data buffer
+          abx                   ; add received byte to checksum
+          leay   ,-y            ; decrement byte counter
+          bne    ini@           ; go get another byte if not done
+	;; done reading bytes return
+          tfr    x,y		; put checksum in y
+          puls   cc,x,u,pc      ; restore registers and return
           ENDC
           ENDC
 
