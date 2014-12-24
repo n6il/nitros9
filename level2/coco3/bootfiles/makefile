@@ -10,6 +10,7 @@ KERNEL_1773_50HZ	= $(MD)/rel_80_50hz $(MD)/boot_1773_6ms $(MD)/krn
 KERNEL_DW	= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
 KERNEL_ARDUINO	= $(MD)/rel_80 $(MD)/boot_dw_arduino $(MD)/krn
 KERNEL_BECKER	= $(MD)/rel_80 $(MD)/boot_dw_becker $(MD)/krn
+KERNEL_COCOSDC	= $(MD)/rel_80 $(MD)/boot_sdc $(MD)/krn
 
 FLOPPY_40D = $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd
 FLOPPY_80D = $(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_80d.dd $(MD)/d2_80d.dd
@@ -159,9 +160,9 @@ BOOTFILE_ARDUINO_HEADLESS	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 # NitrOS-9 disk bootfile to allow booting from CoCo SD
 BOOTFILE_COCOSDC	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
-                $(FLOPPY_40D) \
 		$(RBCOCOSDC) \
-                $(MD)/ddsd0_cocosdc.dd \
+        $(MD)/ddsd0_cocosdc.dd \
+        $(FLOPPY_40D) \
 		$(MD)/scf.mn \
 		$(VTIO_COGRF_80) \
 		$(PIPE) \
@@ -208,7 +209,8 @@ BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d \
 		bootfile_80d_50hz bootfile_dw bootfile_dw_headless \
 		bootfile_becker bootfile_arduino bootfile_becker_headless \
 		bootfile_arduino_headless bootfile_cocosdc
-KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw kernel_becker kernel_arduino
+KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw kernel_becker \
+		kernel_arduino kernel_cocosdc
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -263,6 +265,9 @@ kernel_1773_50hz: $(KERNEL_1773_50HZ) $(DEPENDS)
 
 kernel_dw: $(KERNEL_DW) $(DEPENDS)
 	$(MERGE) $(KERNEL_DW)>$@
+
+kernel_cocosdc: $(KERNEL_COCOSDC) $(DEPENDS)
+	$(MERGE) $(KERNEL_COCOSDC)>$@
 
 clean:
 	$(RM) $(ALLOBJS)

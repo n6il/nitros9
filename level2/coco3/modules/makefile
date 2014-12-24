@@ -24,7 +24,7 @@ TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		 boot_burke boot_rampak boot_wd1002 boot_dw boot_dw_becker boot_dw_arduino \
-		boot_tc3 boot_ide boot_rom
+		boot_tc3 boot_ide boot_sdc boot_rom
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump ccbkrn
 SYSMODS		= ioman init sysgo_h0 sysgo_dd sysgo_rom rominfo vectors
@@ -104,6 +104,10 @@ boot_tc3: boot_scsi.asm
 # SuperIDE/Glenside IDE Booter
 boot_ide: boot_ide.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
+
+# CoCo SDC Booter
+boot_sdc: boot_sdc.asm
+	$(AS) $(ASOUT)$@ $< $(SDFLAGS)
 
 # DriveWire Becker Booter
 boot_dw_becker: boot_dw.asm
@@ -387,7 +391,7 @@ i1_ide.dd: superdesc.asm
 ih_ide.dd: superdesc.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS)
 
-# SuperSD Descriptors
+# CoCo SDC Descriptors
 ddsd0_cocosdc.dd: superdesc.asm
 	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DDD=1
 
