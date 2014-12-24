@@ -23,6 +23,7 @@ BOOTFILE_40D_50HZ	= bootfiles/bootfile_40d_50hz
 BOOTFILE_80D_50HZ	= bootfiles/bootfile_80d_50hz
 KERNELFILE_BECKER	= bootfiles/kernel_becker
 KERNELFILE_ARDUINO	= bootfiles/kernel_arduino
+KERNELFILE_COCOSDC	= bootfiles/kernel_cocosdc
 KERNELFILE	= bootfiles/kernel_1773
 KERNELFILE_50HZ	= bootfiles/kernel_1773_50hz
 KERNELFILE_DW	= bootfiles/kernel_dw
@@ -223,7 +224,7 @@ $(DSKARDUINO):
 $(DSKCOCOSDC):
 	$(RM) $@
 	$(OS9FORMAT) -t1024 -q $@ -n"NitrOS-9/$(CPU) Level 2"
-	$(OS9GEN) $@ -b=$(BOOTFILE_COCOSDC) -t=$(KERNELFILE)
+	$(OS9GEN) $@ -b=$(BOOTFILE_COCOSDC) -t=$(KERNELFILE_COCOSDC)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
