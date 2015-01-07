@@ -58,10 +58,28 @@ txByte
           bne       txByte              ; loop if more to send
 
           puls      cc,d,pc           ; restore registers and return
+          ELSE
+          IFNE BECKERTO
+DWWrite   pshs      d,cc              ; preserve registers
+          orcc      #$50                ; mask interrupts
+;          ldu       #BBOUT              ; point U to bit banger out register
+;          lda       3,u                 ; read PIA 1-B control register
+;          anda      #$f7                ; clear sound enable bit
+;          sta       3,u                 ; disable sound output
+;          fcb       $8c                 ; skip next instruction
+
+txByte
+          lda       ,x+
+          sta       $FF42
+          leay      -1,y                ; decrement byte counter
+          bne       txByte              ; loop if more to send
+
+          puls      cc,d,pc           ; restore registers and return
+          ENDC
           ENDC
           ENDC
 
-          IFEQ BECKER+JMCPBCK+ARDUINO
+          IFEQ BECKER+JMCPBCK+ARDUINO+BECKERTO
           IFEQ BAUD38400+H6309
 *******************************************************
 * 57600 (115200) bps using 6809 code and timimg
