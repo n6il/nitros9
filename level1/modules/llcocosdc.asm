@@ -19,7 +19,10 @@
 * when a 6309 CPU is present. Supports the SS.DSize GetStat function
 * to query controller for the disk size.
 *
-
+*          2015/01/08  Darren Atkinson
+* Fixed bug in getSize which caused boot to fail when controller was
+* installed in slot 2, 3 or 4 of a Multi-Pak Interface.
+*
                NAM       llcocosdc
                TTL       CoCo SDC Low-level driver
 
@@ -118,6 +121,7 @@ ll_setstat     comb                         set carry
 getSize        lda       #CMDEX             primary command code
                ora       PD.DRV,y           combine drive num with command
                ldb       #'Q                "Query Size" sub-command
+               leay      ,u                 point Y at device mem
                ldu       #$FFFF             I/O buffer = none
                pshs      x                  save frame ptr
                bsr       CommSDC            send query to controller
