@@ -1,11 +1,11 @@
 include ../port.mak
 
 vpath %.as $(LEVEL1)/cmds
-vpath %.asm $(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
+vpath %.asm $(LEVEL1)/cmds:$(3RDPARTY)/packages/basic09
 
 DEPENDS		= ./makefile
 
-AFLAGS          += --includedir=$(NITROS9DIR)/3rdparty/packages/basic09
+AFLAGS          += --includedir=$(3RDPARTY)/packages/basic09
 LFLAGS          += -L $(NITROS9DIR)/lib -lnet -latari -lalib
 
 BASIC09FILES	= basic09.asm runb.asm gfx.asm inkey.asm syscall.asm

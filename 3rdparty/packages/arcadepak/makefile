@@ -1,6 +1,6 @@
 include $(NITROS9DIR)/rules.mak
 
-6809L2		= $(NITROS9DIR)/level2/coco3
+6809L2		= $(LEVEL2)/coco3
 DEPENDS		= ./makefile
 
 CMD		= $(6809L2)/cmds

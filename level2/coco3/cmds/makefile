@@ -2,10 +2,10 @@ PORT = coco3
 include $(NITROS9DIR)/rules.mak
 
 vpath %.as $(LEVEL2)/cmds:$(LEVEL1)/cmds
-vpath %.asm $(LEVEL2)/cmds:$(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
+vpath %.asm $(LEVEL2)/cmds:$(LEVEL1)/cmds:$(3RDPARTY)/packages/basic09
 
 DEPENDS		= ./makefile
-AFLAGS          += --includedir=$(NITROS9DIR)/3rdparty/packages/basic09
+AFLAGS          += --includedir=$(3RDPARTY)/packages/basic09
 LFLAGS		+= -L$(NITROS9DIR)/lib
 ifdef	H6309
 LFLAGS		+= -lcoco3_6309
