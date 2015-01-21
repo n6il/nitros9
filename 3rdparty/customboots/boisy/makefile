@@ -3,11 +3,11 @@
 
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm ../../../utils/boisy:..:$(LEVEL2)/cmds:$(LEVEL1)/cmds:$(LEVEL1)/modules:$(NITROS9DIR)/3rdparty/packages/basic09
+vpath %.asm ../../../utils/boisy:..:$(LEVEL2)/cmds:$(LEVEL1)/cmds:$(LEVEL1)/modules:$(3RDPARTY)/packages/basic09
 
 AFLAGS		+= -aNoTerm=1 -acoco3=1
 
-LFLAGS		+= -y -l=$(NITROS9DIR)/3rdparty/libs/alib/alib.l -l=$(NITROS9DIR)/lib/sys6809l2.l 
+LFLAGS		+= -y -l=$(3RDPARTY)/libs/alib/alib.l -l=$(NITROS9DIR)/lib/sys6809l2.l 
 3PDW68          = $(3RDPARTY)/packages/drivewire/6809l2
 3PBOISY         = $(3RDPARTY)/utils/boisy
 

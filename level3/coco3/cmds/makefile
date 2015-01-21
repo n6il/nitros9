@@ -1,10 +1,10 @@
 PORT = coco3
 include $(NITROS9DIR)/rules.mak
 
-vpath %.asm $(LEVEL3)/cmds:$(LEVEL2)/cmds:$(LEVEL1)/cmds:$(NITROS9DIR)/3rdparty/packages/basic09
+vpath %.asm $(LEVEL3)/cmds:$(LEVEL2)/cmds:$(LEVEL1)/cmds:$(3RDPARTY)/packages/basic09
 
 DEPENDS		= ./makefile
-AFLAGS		+= -I=$(NITROS9DIR)/3rdparty/packages/basic09
+AFLAGS		+= -I=$(3RDPARTY)/packages/basic09
 
 CMDS		= asm attr backup binex build cmp cobbler copy cputype \
 		date dcheck debug ded deiniz del deldir devs dir dirsort disasm \
