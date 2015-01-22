@@ -83,8 +83,10 @@ ll_getstat     ldx       PD.RGS,y           point X at stacked registers
                anda      #$FF-4             make sure "TFM" bit is cleared
                cmpb      #CMDEX
                beq       exCmd              branch if ext command without data
+               comb                         set carry
+               ldb       #E$UnkSvc          return error
+               rts
 
-               *** Fall Thru ***
 
 *--------------------------------------------------------------------------
 * ll_setstat
@@ -97,8 +99,7 @@ ll_getstat     ldx       PD.RGS,y           point X at stacked registers
 *    CC = carry set on error
 *    B  = error code
 *
-ll_setstat     comb                         set carry
-               ldb       #E$UnkSvc          return error
+ll_setstat     clrb                         no error
                rts
 
 
