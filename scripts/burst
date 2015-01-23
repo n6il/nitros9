@@ -1,16 +1,23 @@
 #!/bin/sh -e
 
+NAME=$1
+TAG=$2
+
 HTDOCS=/home/project-web/nitros9/htdocs
-TODAY=$(date +%Y%m%d)
+
+if [ -z "$TAG" ]; then
+	echo "$0: Missing name and date tag"
+	exit 1
+fi
 
 cd $HTDOCS
-mkdir latest-$TODAY
-cd latest-$TODAY
-unzip -o ../nitros9project-$TODAY.zip
+mkdir latest-$TAG
+cd latest-$TAG
+unzip -o ../$NAME-$TAG.zip
 echo "Options +Indexes" > .htaccess
 
 cd $HTDOCS
 rm latest
-ln -s latest-$TODAY latest
-rm nitros9project.zip
-ln -s nitros9project-$TODAY.zip nitros9project.zip
+ln -s latest-$TAG latest
+rm $NAME.zip
+ln -s $NAME-$TAG.zip $NAME.zip
