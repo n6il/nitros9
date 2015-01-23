@@ -1,2 +1,2 @@
 PORT=tano
-include ../../../d64/modules/kernel/makefile
+include ../../../coco1/modules/kernel/makefile

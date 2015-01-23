@@ -103,7 +103,7 @@ all:
 	@$(ECHO) "*      NitrOS-9/$(CPU) Level $(LEVEL) $(MACHINE) ($(PORT))"
 	@$(ECHO) "*"
 	@$(ECHO) "************************************************************"
-	$(foreach dir, $(DIRS), ($(CD) $(dir); make STEP=$(STEP) UPGRADED32=$(UPGRADED32));)
+	$(foreach dir,$(DIRS),$(MAKE) -C $(dir) STEP=$(STEP) UPGRADED32=$(UPGRADED32) &&) :
 
 # Clean all components
 clean:	dskclean
