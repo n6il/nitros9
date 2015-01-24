@@ -1044,6 +1044,11 @@ L0508    pshs  d
          ENDC
          os9   F$Move         Move data to buffer
          ELSE
+         IFNE  H6309
+         pshs  u
+         tfm   x+,u+
+         puls u
+         ELSE
          puls  y
          pshs  u
 L0509    lda   ,x+
@@ -1051,6 +1056,7 @@ L0509    lda   ,x+
          leay  -1,y
          bne   L0509
          puls  u
+         ENDC
          ENDC
          puls  y,x            Restore path descriptor pointer and data offset
 
