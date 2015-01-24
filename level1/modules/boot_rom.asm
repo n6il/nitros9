@@ -46,7 +46,7 @@ start    pshs  u,y,x,a,b
          ldx   #$2600+$1200            X points to bootfile in ROM
          IFNE  H6309
          ldw   ,s                      get bootfile size from A/B on stack
-         tfm   ,x+,u+
+         tfm   x+,u+
          ELSE
          ldd   ,s                      get bootfile size from A/B on stack
 Loop     ldy   ,x++

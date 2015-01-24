@@ -374,7 +374,7 @@ _readregs
                lda       >D.MDREG			MD
 	           sta      ,x+
                tfr       v,d
-               std       x++				V
+               std       ,x++				V
                ELSE
                leax      3,x
 			   ENDC
