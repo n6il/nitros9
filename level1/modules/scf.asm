@@ -1319,11 +1319,7 @@ L0634    cmpu  ,s             Beginning of buffer?
          beq   L0642          Yes, exit
          leau  -1,u           Bump buffer pointer back 1
          leax  -1,x           Bump character count back 1
-         IFNE  H6309
-         bsr   L0565          Print it
-         ELSE
          lbsr  L0565          Print it
-         ENDC
          bra   L0634          Keep going
 L0642    leas  2,s            Purge buffer pointer
          bra   L05F8          Return
