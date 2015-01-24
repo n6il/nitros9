@@ -102,6 +102,7 @@ start1   orcc  #IntMasks  turn off IRQ's
          clra             make A=0 for later
          IFNE  H6309
          tfr   0,dp       set direct page to $0000
+         ldmd  #3         native mode
          ELSE
          tfr   a,dp
          ENDC
@@ -282,6 +283,9 @@ Start    clr   PIA0Base+3
 
          IFNE  (tano+d64+dalpha)
          clr   PIA0Base+1		added for Dragon, works on CoCo
+         ENDC
+         IFNE  H6309
+         ldmd  #3                      native mode
          ENDC
 
          sta   $FFDF                   turn off ROM
