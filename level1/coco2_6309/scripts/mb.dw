@@ -1,0 +1,30 @@
+-t
+-x
+tmode .1 pau=0
+echo * NitrOS-9 Level 1 Boot Creation Script
+echo *
+echo * This script creates a bootable DriveWire 3 disk image
+echo * using the dw.bl bootlist file.
+echo *
+echo * The resulting disk will boot NitrOS-9 from DriveWire drive 0.
+echo *
+prompt Insert a blank disk in /x1 and press a key:
+echo *
+echo * Step 1: Format disk in /x1
+format /x1 "NitrOS-9 Level 1 Boot Disk" r
+ynn
+echo *
+echo * Step 2: Create a custom boot track
+del bttemp
+merge ../MODULES/BOOTTRACK/rel ../MODULES/KERNEL/krn ../MODULES/KERNEL/krnp2 ../MODULES/SYSMODS/init ../MODULES/BOOTTRACK/boot_dw>bttemp
+echo *
+echo * Step 3: Create the bootfile and boot track
+os9gen /x1 -t=bttemp<../BOOTLISTS/dw.bl
+del bttemp
+echo *
+echo * Step 4: Populate the disk with essential files
+copy ../MODULES/SYSMODS/sysgo_dd /x1/sysgo
+makdir /x1/CMDS
+copy -w=/x1/CMDS ../CMDS/shell
+echo *
+echo * We're done
