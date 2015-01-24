@@ -369,7 +369,7 @@ L02E9    lda   #$42
          lbsr  L07F1
          bcs   L035F
          ldu   $06,y
-         stx   $04,u
+         stx   R$X,u
          lbsr  L0CD4
          bcs   L035F
          ldx   $08,y
@@ -417,18 +417,18 @@ L035F    lbra  L0280
 Seek     ldb   $0A,y
          bitb  #$02
          beq   L037B
-         lda   $05,u
-         ldb   $08,u
+         lda   R$X+1,u
+         ldb   R$U,u
          subd  $0C,y
          bne   L0376
-         lda   $04,u
+         lda   R$X,u
          sbca  $0B,y
          beq   L037F
 L0376    lbsr  L0D72
          bcs   L0383
-L037B    ldd   $04,u
+L037B    ldd   R$X,u
          std   $0B,y
-L037F    ldd   $08,u
+L037F    ldd   R$U,u
          std   $0D,y
 L0383    rts   
 
@@ -458,14 +458,14 @@ L03AB    bsr   L0414
          ldd   $02,s
          bne   L041A
 L03BA    ldu   $06,y
-         ldd   $06,u
+         ldd   R$Y,u
          subd  $02,s
-         std   $06,u
+         std   R$Y,u
          bra   L040E
-L03C4    ldd   $06,u
+L03C4    ldd   R$Y,u
          bsr   L03CD
          bcs   L03F1
-         std   $06,u
+         std   R$Y,u
          rts   
 L03CD    pshs  b,a
          ldd   <$11,y
@@ -506,8 +506,8 @@ L040E    clrb
 L040F    leas  -$02,s
 L0411    leas  $0A,s
          rts   
-L0414    ldd   $04,u
-         ldx   $06,u
+L0414    ldd   R$X,u
+         ldx   R$Y,u
          pshs  x,b,a
 L041A    lda   $0A,y
          bita  #$02
@@ -557,9 +557,9 @@ L0471    ldd   $04,s
 
 WriteLn  pshs  y
          clrb  
-         ldy   $06,u
+         ldy   R$Y,u
          beq   L0498
-         ldx   $04,u
+         ldx   R$X,u
 L0484    leay  -$01,y
          beq   L0498
          lda   ,x+
@@ -569,11 +569,11 @@ L0484    leay  -$01,y
          nega  
          negb  
          sbca  #$00
-         addd  $06,u
-         std   $06,u
+         addd  R$Y,u
+         std   R$Y,u
 L0498    puls  y
 
-Write    ldd   $06,u
+Write    ldd   R$Y,u
          beq   L04BE
          bsr   L04C0
          bcs   L04BF
@@ -637,43 +637,43 @@ L0515    cmpx  ,s
          leas  $02,s
 L051B    puls  pc,u,y,x
 
-GetStat  ldb   $02,u
+GetStat  ldb   R$B,u
          cmpb  #SS.Opt
          beq   L0543
          cmpb  #$06
          bne   L052F
-         clr   $02,u
+         clr   R$B,u
 L0529    clra
          ldb   #$01
          lbra  L03CD
 L052F    cmpb  #SS.Ready
          bne   L0536
-         clr   $02,u
+         clr   R$B,u
          rts   
 L0536    cmpb  #SS.Size
          bne   L0544
          ldd   $0F,y
-         std   $04,u
+         std   R$X,u
          ldd   <$11,y
-         std   $08,u
+         std   R$U,u
 L0543    rts
 L0544    cmpb  #SS.Pos
          bne   L0551
          ldd   $0B,y
-         std   $04,u
+         std   R$X,u
          ldd   $0D,y
-         std   $08,u
+         std   R$U,u
 Gst5FF   rts   
 L0551    cmpb  #SS.FD
          bne   SSFDInf
          lbsr  L0CD4
          bcs   L0543
          ldu   $06,y
-         ldd   $06,u
+         ldd   R$Y,u
          tsta  
          beq   L0564
          ldd   #$0100
-L0564    ldx   $04,u
+L0564    ldx   R$X,u
          ldu   $08,y
          lbra  L03FD
 SSFDInf  cmpb  #SS.FDInf
@@ -735,7 +735,7 @@ L05C6    cmpb  #SS.FD
          lbsr  L0CD4
          bcs   L061C
          pshs  y
-         ldx   $04,u
+         ldx   R$X,u
          ldu   $08,y
          lda   $01,y
          bita  #$02
@@ -764,7 +764,7 @@ L05F6    pshs  u,x
 L0604    cmpb  #$1E
          bne   L0614
          ldx   <$1E,y
-         lda   $05,u
+         lda   R$X+1,u
          sta   <$1E,x
          clr   <$1D,x
          rts   
