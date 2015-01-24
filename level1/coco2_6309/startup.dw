@@ -1,0 +1,6 @@
+* Echo welcome message
+echo * Welcome to NitrOS-9 Level 1 *
+echo *      with DriveWire 4       *
+echo *   on the Color Computer 2   *
+date -t
+
