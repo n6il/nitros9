@@ -36,7 +36,7 @@ UTILPAK1	= attr build copy del deldir dir display list makdir mdir \
 all:	$(CMDS) $(CMDS_D2) $(CMDS_DW) shell utilpak1 $(DEPENDS)
 
 runb:	runb.asm
-	$(AS) $(AFLAGS) $< $(ASOUT)$@ DPWD=1
+	$(AS) $(AFLAGS) $< $(ASOUT)$@
 	$(MERGE) $@ $(SUBS)>$@.tmp
 	$(RM) $@
 	$(MOVE) $@.tmp $@
