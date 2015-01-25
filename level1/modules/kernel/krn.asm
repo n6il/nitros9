@@ -353,7 +353,7 @@ Clock    ldx   <D.SProcQ               get pointer to sleeping proc queue
          ldu   P$SP,x                  else get process stack pointer
          ldd   R$X,u                   get the value of the process X reg
          subd  #$0001                  subtract one from it
-         std   P$SP,u                  and store it
+         std   R$X,u                   and store it back
          bne   L01FD                   branch if not zero (still will sleep)
 L01E7    ldu   P$Queue,x               get process current queue pointer
          bsr   L021A 
