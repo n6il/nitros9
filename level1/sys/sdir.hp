@@ -1,0 +1,7 @@
+@SDIR
+Syntax: SDIR <path>
+Syntax: SDIR -
+Usage : Command to list directory of the SD card in a CoCoSDC device.
+   Path can include wildcards suchs as * and ?.
+2nd Usage : If the only parameter is a hyphen, the command displays the currently
+   mounted image in both slots.
