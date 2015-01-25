@@ -865,7 +865,7 @@ L05B6    lda   ,-x                     get byte, dec X
          bhi   L05B6
 * set up registers for return of F$Fork/F$Chain
 L05BE    ldx   <D.Proc
-         sty   -$08,y                  put in X on caller stack
+         sty   -R$Size+R$X,y           put in X on caller stack
          leay  -R$Size,y               back up register size
          sty   P$SP,x
          lda   P$ADDR,x
