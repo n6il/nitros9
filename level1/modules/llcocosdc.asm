@@ -129,11 +129,11 @@ getSize        lda       #CMDEX             primary command code
                puls      x                  restore frame ptr
                ldb       #E$NotRdy          error code
                bcs       sizeRet            return if error
+               ldd       ,y                 bits 15-0 of size
+               std       R$Y,x              return in Y
                clra                         bits 31-24 of size always zero
                ldb       -1,y               bits 23-16 of size
                std       R$X,x              return bits 31-16 in X
-               ldd       ,y                 bits 15-0 of size
-               std       R$Y,x              return in Y
                inca                         A = 1:  256 byte sectors
                clrb                         B = 0:  LBA device
                std       R$D,x              return in D
