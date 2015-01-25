@@ -484,7 +484,13 @@ L034D    leay  <L0361,pcr
          ldy   <D.Proc
          ldd   P$SP,y
          ldx   R$X,u
+         IFNE  H6309
+         pshs  u,y,x,dp
+         pshsw
+         pshs  b,a,cc
+         ELSE
          pshs  u,y,x,dp,b,a,cc
+         ENDC
          sts   P$SP,y
          os9   F$NProc
 L0361    std   P$SP,y
