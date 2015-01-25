@@ -1,0 +1,4 @@
+@SDRIVE
+Syntax: SDRIVE <0|1> <path>
+Usage : Mounts disk image at path in CoCoSDC slot 0 or 1.
+   Path can be ommitted to unmount an image.
