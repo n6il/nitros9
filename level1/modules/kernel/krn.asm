@@ -506,14 +506,15 @@ L02D1    ldb   P$State,x               get state
          ldu   <P$SigVec,x             get signal handler addr
          beq   L02AC                   branch if none
          ldy   <P$SigDat,x             get data addr
-         ldd   $06,s
-         pshs  u,y,b,a
-         ldu   $0A,s
-         lda   <P$Signal,x
-         ldb   $09,s
-         tfr   d,y
-         ldd   $06,s
-         pshs  u,y,b,a
+         ldd   R$Y,s
+* set up new return stack for RTI
+         pshs  u,y,d            new PC (sigvec), new U (sigdat), same Y
+         ldu   6+R$X,s          old X via U
+         lda   <P$Signal,x      signal ...
+         ldb   6+R$DP,s         and old DP ...
+         tfr   d,y              via Y
+         ldd   6+R$CC,s         old CC and A via D
+         pshs  u,y,d            same X, same DP / new B (signal), same A / CC
          clrb
 L02FC    stb   <P$Signal,x
 L02FF    ldd   <P$SWI2,x
