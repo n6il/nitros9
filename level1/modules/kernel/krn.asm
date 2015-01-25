@@ -512,9 +512,17 @@ L02D1    ldb   P$State,x               get state
          ldu   6+R$X,s          old X via U
          lda   <P$Signal,x      signal ...
          ldb   6+R$DP,s         and old DP ...
+         IFEQ  H6309
          tfr   d,y              via Y
          ldd   6+R$CC,s         old CC and A via D
          pshs  u,y,d            same X, same DP / new B (signal), same A / CC
+         ELSE
+         pshs  u,b              same X, same DP
+         pshsw                  same W
+         pshs  a                new B (signal)
+         ldd   6+6+R$CC,s
+         pshs  d                same A / CC
+         ENDC
          clrb
 L02FC    stb   <P$Signal,x
 L02FF    ldd   <P$SWI2,x
