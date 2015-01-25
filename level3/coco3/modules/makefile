@@ -5,33 +5,34 @@ vpath %.asm kernel:$(LEVEL2)/modules/kernel:$(LEVEL3)/modules:$(LEVEL2)/modules:
 
 AFLAGS		+= -I$(LEVEL1)/modules
 
-CLOCKELIM		= -DRTCElim=1
-CLOCKDISTO2		= -DRTCDsto2=1
-CLOCKDISTO4		= -DRTCDsto4=1
-CLOCKBNB		= -DRTCBB=1
-CLOCKSMART		= -DRTCSmart=1 -DMPIFlag=1
-CLOCKHARRIS		= -DRTCHarrs=1
-CLOCKCLOUD9		= -DRTCCloud9=1
-CLOCKSOFT		= -DRTCSoft=1
-CLOCKMESSEMU	= -DRTCMessEmu=1
-CLOCKJVEMU		= -DRTCJVEmu=1
-TC3FLAGS		= $(AFLAGS) -DTC3=1 $(FLAGS)
-IDEFLAGS		= $(AFLAGS) -DIDE=1 $(FLAGS)
-SDFLAGS			= $(AFLAGS) -DCOCOSDC=1 -DITTYP=128 $(FLAGS)
+CLOCKELIM       = -DRTCElim=1
+CLOCKDISTO2     = -DRTCDsto2=1
+CLOCKDISTO4     = -DRTCDsto4=1
+CLOCKBNB        = -DRTCBB=1
+CLOCKSMART      = -DRTCSmart=1 -DMPIFlag=1
+CLOCKHARRIS     = -DRTCHarrs=1
+CLOCKCLOUD9     = -DRTCCloud9=1
+CLOCKSOFT       = -DRTCSoft=1
+CLOCKMESSEMU    = -DRTCMessEmu=1
+CLOCKJVEMU      = -DRTCJVEmu=1
+TC3FLAGS        = $(AFLAGS) -DTC3=1 $(FLAGS)
+IDEFLAGS        = $(AFLAGS) -DIDE=1 $(FLAGS)
+SDFLAGS         = $(AFLAGS) -DCOCOSDC=1 -DITTYP=128 $(FLAGS)
 
-DEPENDS			= ./makefile
-TPB			= $(3RDPARTY)/booters
+DEPENDS		= ./makefile
+TPB		= $(3RDPARTY)/booters
 
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
-		 boot_burke boot_rampak boot_wd1002 boot_dw boot_dw_becker boot_dw_arduino \
-		  boot_tc3 boot_ide boot_rom
+		boot_burke boot_rampak boot_wd1002 boot_dw boot_dw_becker boot_dw_arduino \
+		boot_tc3 boot_ide boot_rom
 BOOTTRACK	= rel_32 rel_40 rel_80 rel_32_50hz rel_40_50hz rel_80_50hz $(BOOTERS) krn
 KERNEL		= krnp2 krnp3_perr krnp4_regdump
-SYSMODS		= ioman init sysgo_h0 sysgo_dd sysgo_rom rominfo vectors nitro end
+SYSMODS		= ioman init sysgo_h0 sysgo_dd sysgo_rom rominfo vectors
+SYSMODS		+= nitro end
 CLOCKS		= clock_60hz clock_50hz \
-			clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
-			clock2_smart clock2_harris clock2_cloud9 clock2_soft \
-			clock2_jvemu clock2_messemu clock2_dw
+		clock2_elim clock2_disto2 clock2_disto4 clock2_bnb \
+		clock2_smart clock2_harris clock2_cloud9 clock2_soft \
+		clock2_jvemu clock2_messemu clock2_dw
 
 RBF		= rbf.mn \
 		rbdw.dr dwio.sb dwio_becker.sb dwio_arduino.sb \
@@ -72,11 +73,12 @@ SCF		= scf.mn \
 		term_z_scdwv.dt z1_scdwv.dd z2_scdwv.dd z3_scdwv.dd \
 		z4_scdwv.dd z5_scdwv.dd z6_scdwv.dd z7_scdwv.dd \
 
-PIPE	= pipeman.mn pipeman_named.mn \
+PIPE		= pipeman.mn pipeman_named.mn \
 		piper.dr \
 		pipe.dd
 
 RFM		= rfm.mn rfmdrv.dr ddy0.dd y0.dd y1.dd y2.dd y3.dd
+
 # The following macros represent a collection of modules for various
 # kernel tracks and bootfile configurations.
 #
@@ -85,6 +87,7 @@ KERNEL_RAMPAK	= rel_32 $(TPB)/boot_rampak krn
 KERNEL_KENTON	= rel_32 $(TPB)/boot_kenton krn
 KERNEL_IDE	= rel_32 $(TPB)/boot_ide krn
 KERNEL_TC3	= rel_32 $(TPB)/boot_tc3 krn
+
 ALLOBJS		=  $(BOOTTRACK) $(KERNEL) $(SYSMODS) $(CLOCKS) $(RBF) $(SCF) $(PIPE) $(RFM)
 
 all:	$(ALLOBJS)
@@ -94,13 +97,15 @@ krn krnp2:
 	$(CD) kernel; make $@
 	$(OS9COPY) kernel/$@ .
 
+# Special cases
+
 # TC^3 SCSI Booter
 boot_tc3: boot_scsi.asm
 	$(AS) $(ASOUT)$@ $< $(TC3FLAGS)
 
 # SuperIDE/Glenside IDE Booter
 boot_ide: boot_ide.asm
-		$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
+	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
 
 # DriveWire Becker Booter
 boot_dw_becker: boot_dw.asm
@@ -166,7 +171,7 @@ sysgo_dd: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DDD=1
 
 sysgo_h0: sysgo.asm
-		$(AS) $< $(ASOUT)$@ $(AFLAGS)
+	$(AS) $< $(ASOUT)$@ $(AFLAGS)
 
 sysgo_rom: sysgo.asm
 	$(AS) $< $(ASOUT)$@ $(AFLAGS) -DROM=1
@@ -180,11 +185,11 @@ llide.dr: llide.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
 
 # Floppy descriptors
-SSDD35          = -DCyls=35 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
+SSDD35	= -DCyls=35 -DSides=1 -DSectTrk=18 -DSectTrk0=18 \
 	-DInterlv=3 -DSAS=8 -DDensity=1
-DSDD40		= -DCyls=40 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
+DSDD40	= -DCyls=40 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
 	-DInterlv=3 -DSAS=8 -DDensity=1
-DSDD80          = -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
+DSDD80	= -DCyls=80 -DSides=2 -DSectTrk=18 -DSectTrk0=18 \
 	-DInterlv=3 -DSAS=8 -DDensity=1 -DD35
 
 # HDB-DOS for SuperDriver
@@ -384,7 +389,7 @@ i1_ide.dd: superdesc.asm
 ih_ide.dd: superdesc.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS)
 
-# SuperSD Descriptors
+# CoCo SDC Descriptors
 ddsd0_cocosdc.dd: superdesc.asm
 	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DDD=1
 

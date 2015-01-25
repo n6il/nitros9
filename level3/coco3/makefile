@@ -58,11 +58,11 @@ LDSKS		= $(LDSKDW) $(LDSK360K_1) $(LDSK360K_1_50HZ) $(LDSK360K_2) $(LDSK720K) $(
 
 # Make all components
 all:
-	@$(ECHO) "**************************************************"
-	@$(ECHO) "*                                                *"
-	@$(ECHO) "*        NitrOS-9/$(CPU) Level $(LEVEL) Distribution      *"
-	@$(ECHO) "*                                                *"
-	@$(ECHO) "**************************************************"
+	@$(ECHO) "************************************************************"
+	@$(ECHO) "*"
+	@$(ECHO) "*      NitrOS-9/$(CPU) Level $(LEVEL) $(MACHINE) ($(PORT))"
+	@$(ECHO) "*"
+	@$(ECHO) "************************************************************"
 	$(foreach dir,$(DIRS),$(MAKE) -C $(dir) &&) :
 
 # Clean all components

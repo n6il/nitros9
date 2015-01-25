@@ -1,6 +1,7 @@
 ifeq ($(CPU),)
-        CPU=6809
+    CPU = 6809
 endif
+
 PORT = coco3
 MACHINE = Tandy Color Computer 3
 include $(NITROS9DIR)/rules.mak
@@ -115,7 +116,7 @@ $(PACKAGENAME): $(DSKS) ../../ReadMe ../../ChangeLog
 
 $(DSKBECKER):
 	$(RM) $@
-	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
 	$(OS9GEN) $@ -b=$(BOOTFILE_BECKER) -t=$(KERNELFILE_BECKER)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -169,7 +170,7 @@ $(DSKBECKER):
 
 $(DSKARDUINO):
 	$(RM) $@
-	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
 	$(OS9GEN) $@ -b=$(BOOTFILE_ARDUINO) -t=$(KERNELFILE_ARDUINO)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -223,7 +224,7 @@ $(DSKARDUINO):
 
 $(DSKCOCOSDC):
 	$(RM) $@
-	$(OS9FORMAT) -t1024 -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT) -t1024 -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
 	$(OS9GEN) $@ -b=$(BOOTFILE_COCOSDC) -t=$(KERNELFILE_COCOSDC)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -277,7 +278,7 @@ $(DSKCOCOSDC):
 
 $(DSKDW):
 	$(RM) $@
-	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
 	$(OS9GEN) $@ -b=$(BOOTFILE_DW) -t=$(KERNELFILE_DW)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -331,7 +332,7 @@ $(DSKDW):
 
 $(DSKDWHEADLESS):
 	$(RM) $@
-	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
 	$(OS9GEN) $@ -b=$(BOOTFILE_DWHEADLESS) -t=$(KERNELFILE_DW)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -385,7 +386,7 @@ $(DSKDWHEADLESS):
 
 $(DSKBECKERHEADLESS):
 	$(RM) $@
-	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
 	$(OS9GEN) $@ -b=$(BOOTFILE_BECKER_HEADLESS) -t=$(KERNELFILE_BECKER)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -439,7 +440,7 @@ $(DSKBECKERHEADLESS):
 
 $(DSKARDUINOHEADLESS):
 	$(RM) $@
-	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
 	$(OS9GEN) $@ -b=$(BOOTFILE_ARDUINO_HEADLESS) -t=$(KERNELFILE_ARDUINO)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -493,7 +494,7 @@ $(DSKARDUINOHEADLESS):
 
 $(DSK360K_1):
 	$(RM) $@
-	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 2 Disk 1"
+	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL) Disk 1"
 	$(OS9GEN) $@ -b=$(BOOTFILE_40D) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -516,7 +517,7 @@ $(DSK360K_1):
 
 $(DSK360K_1_50HZ):
 	$(RM) $@
-	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 2 Disk 1"
+	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL) Disk 1"
 	$(OS9GEN) $@ -b=$(BOOTFILE_40D_50HZ) -t=$(KERNELFILE_50HZ)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -539,7 +540,7 @@ $(DSK360K_1_50HZ):
 
 $(DSK360K_2):
 	$(RM) $@
-	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level 2 Disk 2"
+	$(OS9FORMAT_DS40) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL) Disk 2"
 	$(MAKDIR) $@,CMDS
 	$(CD) cmds; $(OS9COPY) $(CMDS_D2) ../$@,CMDS
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_D2),$@,CMDS/$(file))
@@ -579,7 +580,7 @@ $(DSK360K_2):
 
 $(DSK720K):
 	$(RM) $@
-	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
 	$(OS9GEN) $@ -b=$(BOOTFILE_80D) -t=$(KERNELFILE)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -633,7 +634,7 @@ $(DSK720K):
 
 $(DSK720K_50HZ):
 	$(RM) $@
-	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/$(CPU) Level 2"
+	$(OS9FORMAT_DS80) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
 	$(OS9GEN) $@ -b=$(BOOTFILE_80D_50HZ) -t=$(KERNELFILE_50HZ)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
@@ -686,5 +687,5 @@ $(DSK720K_50HZ):
 	$(SOFTLINK) $@ $(LDSK720K_50HZ)
 
 info:
-	@$(ECHO) "*** NitrOS-9/$(CPU) Level 2 for the Tandy Color Computer 3 ***"
+	@$(ECHO) "*** NitrOS-9/$(CPU) Level $(LEVEL) for the $(MACHINE) ***"
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
