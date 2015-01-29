@@ -575,9 +575,9 @@ L03E8    bsr   FindPDsc
          bcs   L040B
          bitb  $01,y
          beq   L0409
-         ldd   $06,u
+         ldd   R$Y,u
          beq   L03F8
-         addd  $04,u
+         addd  R$X,u
          bcs   L03FD
 L03F8    puls  b
          lbra  CallFMgr
