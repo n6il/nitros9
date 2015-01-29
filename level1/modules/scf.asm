@@ -599,9 +599,7 @@ L0212    bsr   L021B        Check codes
 
 putkey   cmpa  #SS.Fill     Buffer preload?
          bne   L01FA        No, go execute driver setstat
-         IFEQ  H6309
          pshs  u,y,x
-         ENDC
          IFGT  Level-1
          ldx   <D.Proc      Get current process pointer
          ELSE
@@ -642,11 +640,10 @@ loop
          bmi   putkey1      Don't want CR appended, exit
          lda   #C$CR        Get code for carriage return
          sta   b,u          Put it in buffer to terminate string
+putkey1  puls  a,x,y,u,pc   Eat stack & return
          IFNE  H6309
-putkey1  puls  a,pc         Eat stack & return
 L021B    ldf   #D$PSTA      Get driver entry offset for setstat
          ELSE
-putkey1  puls  a,x,y,u,pc   Eat stack & return
 L021B    ldb   #D$PSTA      Get driver entry offset for setstat
          ENDC
          lda   R$B,u        Get function code from caller
@@ -706,9 +703,6 @@ L025B    pshs  x,y,u        Preserve everything
          std   R$Y,x        Put it in callers Y
          lda   $0F,s        Get function code
          sta   R$B,x        Put it in callers B
-         IFEQ  H6309
-         ldb   #$0C
-         ENDC
          lbsr  L04A7        Wait for device to be ready
          lbsr  L0212        Send it to driver
          puls  a,x,y,u      Restore callers registers
@@ -865,7 +859,11 @@ L0442    pshs  d
          os9   F$Move         Move it to caller
          ELSE
          ldx   PD.BUF,y       Get buffer pointer
+         IFEQ  H6309
          puls  y
+         ELSE
+         tfr   w,y
+         ENDC
          pshs  u
 L0443
          lda   ,x+
