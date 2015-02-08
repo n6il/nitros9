@@ -55,6 +55,9 @@ blockimg       RMB       2                   duplicate of the above
 bootloc        RMB       3                   sector pointer; not byte pointer
 bootsize       RMB       2                   size in bytes
 LSN0Ptr        RMB       2                   LSN0 pointer (used by boot_common.asm)
+               IFDEF     DEBLOCK
+HalfSect       RMB       1
+               ENDC
 size           EQU       .
 
 name           FCS       /Boot/
@@ -125,6 +128,14 @@ HWRead
                pshs      x,b
 b@             tst       Status,y
                bmi       b@                  if =1 then loop 
+               IFDEF     DEBLOCK
+               clra                          clear A so we can hold half sector flag
+               lsr       ,s                  ok shift the 3 bytes on stack that
+               ror       1,s                 hold LSN to the right to create a
+               ror       2,s                 divide by 2.  Then put last bit in
+               rola                          A for use as the half sector flag
+               sta       HalfSect,u          then store the flag on the stack
+               ENDC
                lda       mode,u
                sta       DevHead,y           0L0d/0hhh device=CHS 
 r@             ldb       Status,y            is IDE ready for commands? 
@@ -185,6 +196,11 @@ Blk2           lda       Status,y            is IDE ready to send?
 
                ldx       blockloc,u
                clr       ,s
+               IFDEF     DEBLOCK
+               lda       HalfSect,u          load half sector flag
+               cmpa      #$01                check to see which routine we
+               beq       Blk2Lp              need and branch to it.
+               ENDC
 BlkLp                    
                lda       DataReg,y           A <- IDE 
                ldb       Latch,y
@@ -195,13 +211,27 @@ b@             lda       DataReg,y           read remaining 256 bytes
                dec       ,s
                bne       b@
 
+BlkEnx
                leax      -256,x
                stx       1,s
                lda       Status,y            check for error-bit 
-               clrb      
+               clrb
                puls      b,x,pc
 
-
+               IFDEF     DEBLOCK
+Blk2Lp
+               lda       DataReg,y           A <- IDE
+               inc       ,s                  Here we toss out the
+               bpl       Blk2Lp              first 256 bytes of the sector
+               clr       ,s
+b2@
+               lda       DataReg,y           Now we read the second
+               ldb       Latch,y             half of the sector and put
+               std       ,x++                into RAM
+               inc       ,s
+               bpl       b2@                 go get the rest
+               bra       BlkEnx
+               ENDC
 
 * ------------------------------------------ 
 
