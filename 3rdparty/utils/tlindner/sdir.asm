@@ -21,7 +21,6 @@
 
 
 * Here are some tweakable options
-DOHELP   set   0	1 = include help info
 STACKSZ  set   32	estimated stack size in bytes
 PARMSZ   set   256	estimated parameter size in bytes
 
@@ -299,7 +298,7 @@ start
     cmpd #1
     beq use_base_path
 * check for prefix on user supplied parameter string
-	clr ,y place null at end of parameter area
+	clr -1,y place null at end of parameter area
 	subb #1
 	sbca #0 decrement reg d
     tfr d,y store parameter length in reg y
