@@ -24,6 +24,12 @@
 *
 *   9      2005/10/13  Boisy G. Pitre
 * Support for fragmented bootfiles added.
+*
+*   10     2015/02/08  David Ladd
+* Added alternate build of the boot_ide so that new version
+* will do deblocking so it will be possible to find and load
+* a OS9Boot file off of the real NitrOS-9 volume without need
+* of the OS9Boot file being stored in the HDBDOS virtual drive
 
                NAM       Boot                
                TTL       IDE Boot Module     
