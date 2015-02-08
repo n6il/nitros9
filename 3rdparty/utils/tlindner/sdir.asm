@@ -8,13 +8,17 @@
 * ------------------------------------------------------------------
 *   1      2014/11/20  tim lindner
 * Started writing code.
+*   2      2015/02/07  tim lindner
+* Refactored code to use llcocosdc.
 
-         nam   sdir
-         ttl   Print directory of SDC card
+		nam   sdir
+		ttl   Print directory of SDC card
 
-         ifp1
-         use   defsfile
-         endc
+		ifp1
+		use defsfile
+		use cocosdc.d
+		endc
+
 
 * Here are some tweakable options
 DOHELP   set   0	1 = include help info
@@ -27,42 +31,31 @@ atrv     set   ReEnt+rev
 rev      set   $00
 edition  set   1
 
-*********************************************************************
-*** Hardware Addressing
-*********************************************************************
-CTRLATCH equ $FF40 ; controller latch (write)
-CMDREG   equ $FF48 ; command register (write)
-STATREG  equ $FF48 ; status register (read)
-PREG1    equ $FF49 ; param register 1
-PREG2    equ $FF4A ; param register 2
-PREG3    equ $FF4B ; param register 3
-DATREGA  equ PREG2 ; first data register
-DATREGB  equ PREG3 ; second data register
-*********************************************************************
-*** STATUS BIT MASKS
-*********************************************************************
-BUSY     equ %00000001
-READY    equ %00000010
-FAILED   equ %10000000
+		mod   eom,name,tylg,atrv,start,size
 
-         mod   eom,name,tylg,atrv,start,size
+		org   0
+pathnumber rmb   1
+count	   rmb   1
+flag       rmb   1
+columns    rmb   2
+buffer     rmb   256
 
-            org   0
-buffer	   rmb  256*5
-
-cleartop equ   .	everything up to here gets cleared at start
 * Finally the stack for any PSHS/PULS/BSR/LBSRs that we might do
-         rmb   STACKSZ+PARMSZ
+		rmb   STACKSZ+PARMSZ
 size     equ   .
 
 * The utility name and edition goes here
 name     fcs   /sdir/
          fcb   edition
+
 * Place constant strings here
 header   fcc   /SDC Directory: /
 headerL  equ   *-header
+
 basepath fcc	/L:*.*/
 			fcb	0
+basepathL equ *-basepath-1
+
 parameterTooLong fcc /Parameter too long./
          fcb C$LF
          fcb C$CR
@@ -103,6 +96,30 @@ truncatedL  equ   *-truncated
 dirString fcc / <DIR>  /
 dirStringL  equ   *-dirString
 
+sdcPathName   fcc ./sd0@.
+            fcb C$CR
+
+sdcNotFound fcc "SDC Driver or /sd0 not found."
+            fcb C$LF
+            fcb C$CR
+sdcNotFoundL equ *-sdcNotFound
+
+mounted_header fcc "CoCo SDC mounted images:"
+            fcb C$LF
+            fcb C$CR
+mounted_headerL equ *-mounted_header
+
+mount_zero fcc "0: "
+mount_zeroL equ *-mount_zero
+
+mount_one fcc "1: "
+mount_oneL equ *-mount_one
+
+not_mounted fcc "Not Mounted"
+            fcb C$LF
+            fcb C$CR
+not_mountedL equ *-not_mounted
+
 *
 * Here's how registers are set when this process is forked:
 *
@@ -119,236 +136,334 @@ dirStringL  equ   *-dirString
 *  PC = module entry point abs. address
 *  CC = F=0, I=0, others undefined
 
-* The start of the program is here.
-* main program
-start
-         lbsr SkipSpcs
-* create path string in buffer area
-   	   ldd ,x load first two parameter characters
-   	   cmpd #$2d0d test ascii: hyphen, return
-   	   lbeq displayMountedInfo
-   	   cmpa #$0d
-   	   beq noParameters
-copyParameterArea
-			pshs u,x
-   	   leax basepath,pc
-   	   ldd ,x++ copy 'L:'
-   	   std ,u++
-   	   puls x
-			ldb #2
-cpa1   	lda ,x+
-			cmpa #$0d
-			beq cpa2
-			sta ,u+
-			addb	#1
-			lbcs parameterToLongError
-			bra cpa1
-cpa2     clra
-         sta ,u
-         puls u
-         bra printHeader
-noParameters
-   	   leax basepath,pc
-   	   ldd ,x++ copy 'L:'
-   	   std ,u++
-   	   ldd ,x++ copy '*.'
-   	   std ,u++
-   	   ldd ,x++ copy '*' and Null
-   	   std ,u++
-			leau -6,u
-			ldd #5
-printHeader
-			leas ,y clobber parameter area, put stack at top, giving us as much RAM as possible
-			pshs d save path character count
-         lda #1 Output path (stdout)
-         ldy #headerL
-         leax header,pc header in x
-         os9 I$Write
-* print path			
-			puls y restore character count
-         leax buffer,u buffer in x
-         os9 I$Write
-         ldy #2 length of buffer
-         leax >carrigeReturn,pcr buffer in x
-         os9 I$Write
-* wait until our next tick to communicate with the SDC
-         ldx   #$1
-         os9   F$Sleep
-* setup SDC for directory processing
-         orcc #IntMasks  mask interrupts
-			lbsr CmdSetup
-			bcc sendCommand
-			ldb #$f6 Not ready error code
-			lbra Exit
-sendCommand
-			ldb #$e0 load initial directory listing command
-			stb CMDREG send to SDC command register
-			exg a,a wait
-         leax buffer,u point to transfer bufer
-         lbsr txData transmit buffer to SDC
-         bcc getBuffer
-         tstb
-         beq timeOut
-			bitb #$10
-			bne targetDirectoryNotFoundError
-			bitb #$08
-			bne miscellaneousHardwareError
-			bitb #$04
-			bne pathNameInvalidError
-         lbra Exit
-getNextDirectoryPage
-			leax 256*2,x
-			tfr s,d
-			pshs d
-			cmpx ,s++
-			bhi noteTruncate
-			leax -256,x
-getBuffer
-			ldb #$3e set parameter #1
-			stb PREG1
-			ldb #$c0 set command code
-			stb CMDREG send to SDC command register
-			lbsr rxData
-			bcc checkBuffer
-			tstb
-			beq timeOut
-			bitb #$8
-			bne notInitiatedError
-			lbra Exit
+list_mounted_images
+	puls d
+	lda #1
+	sta	flag,u set "first time" flag
+	
+	leax mounted_header,pcr
+	ldy #mounted_headerL
+	lda #1 standard output
+	os9 I$Write
+
+	lbsr open_path_to_driver
+	
+	leax mount_zero,pcr
+	ldy #mount_zeroL
+	ldb #$c0 set command code for first slot
+get_next_image
+	lda #1 standard output
+	os9 I$Write
+	
+get_mounted_image
+	lda pathnumber,u
+	leax buffer,u output buffer
+	pshs u
+	ldu #'I parameter
+	OS9 I$Getstt
+	puls u
+	bcc parse_mounted_image
+	tsta
+	lbeq timeOut
+	bita #$80
+	bne print_not_mounted
+	tfr a,b
+	lbra exit_now
+
+parse_mounted_image
+	leax buffer,u
+	lbsr PrintFileName
+
+* print mounted flags
+	leax buffer,u
+	lda #$20
+	sta ,x
+	ldb 11,x
+	lda #'-
+	bitb #$10
+	beq pmf1
+	lda #'D
+pmf1
+	sta 1,x
+	lda #'-
+	bitb #$4
+	beq pmf2
+	lda #'S
+pmf2
+	sta 2,x
+	lda #'-
+	bitb #$2
+	beq pmf3
+	lda #'H
+pmf3
+	sta 3,x
+	lda #'-
+	bitb #$1
+	beq pmf4
+	lda #'L
+pmf4
+    sta 4,x
+	lda #1
+	ldy #5 a space then four characters
+	os9 I$Write
+
+print_mounted_size
+	leax buffer+28,u
+	lbsr PrintFileSize
+
+	leax carrigeReturn,pc
+	ldy #2
+	lda #1 standard output
+	os9 I$Write
+	
+	bra next_mounted_image
+	
+print_not_mounted
+	leax not_mounted,pcr
+	ldy #not_mountedL
+	lda #1 standard output
+	os9 I$Write
+
+next_mounted_image
+	lda flag,u
+	lbeq exit_ok if flag zero, we are done.
+	dec flag,u
+	leax mount_one,pcr
+	ldy #mount_oneL
+	ldb #$c1 set command code for second slot
+	lbra get_next_image
+
+* error printers
 timeOut
-         leax >timoutError,pcr point to help message
-         ldy #timoutErrorL get length
-genErr   clr CTRLATCH
-         andcc #^IntMasks unmask interrupts
-         lda #$02 std error
-         os9 I$Write
-         clrb clear error
-			lbra ExitNow
+	leax >timoutError,pcr point to help message
+	ldy #timoutErrorL get length
+genErr
+	lda #$02 std error
+	os9 I$Write
+	ldb #1
+	lbra exit_now
+noDriverError
+	leax >sdcNotFound,pcr
+	ldy #sdcNotFoundL
+	lda #$02 std error
+	os9 I$Write
+	lbra exit_now
 parameterToLongError
-			leax >parameterTooLong,pcr
-			ldy #parameterTooLongL
-			bra genErr
+	leax >parameterTooLong,pcr
+	ldy #parameterTooLongL
+	bra genErr
 targetDirectoryNotFoundError
-			leax >dirNotFound,pcr
-			ldy #dirNotFoundL
-			bra genErr
+	leax >dirNotFound,pcr
+	ldy #dirNotFoundL
+	bra genErr
 miscellaneousHardwareError
-			leax >miscHardwareError,pcr
-			ldy #miscHardwareErrorL
-			bra genErr
+	leax >miscHardwareError,pcr
+	ldy #miscHardwareErrorL
+	bra genErr
 pathNameInvalidError
-			leax >pathNameInvalid,pcr
-			ldy #pathNameInvalidL
-			bra genErr
+	leax >pathNameInvalid,pcr
+	ldy #pathNameInvalidL
+	bra genErr
 notInitiatedError
-			leax >notInitiated,pcr
-			ldy #notInitiatedL
-			bra genErr
+	leax >notInitiated,pcr
+	ldy #notInitiatedL
+	bra genErr
 
-* Check buffer for nulled entry. This signifies the end
-checkBuffer
-         lda #16
-         leau ,x go back to start of buffer
-cbLoop   ldb ,u
-         beq printBuffer
-         leau 16,u
-         deca
-         beq getNextDirectoryPage
-         bra cbLoop
+* open path to driver
+* uses A, X
+open_path_to_driver
+	leax sdcPathName,pc
+	lda READ.+PREAD. open for reading
+	os9 I$Open
+	lbcs noDriverError Fail if not opened
+	sta pathnumber,u
+	rts
+	
+* The start of the program is here.
+start
+	pshs d
+* check for hyphen
+	lda ,x
+	cmpa #'-
+	lbeq list_mounted_images
 
-noteTruncate
-         clr CTRLATCH
-         andcc #^IntMasks unmask interrupts
-         clr -256,x zero out last directory entry
-         leax >truncated,pcr point to help message
-         ldy #truncatedL get length
-         lda #$02 std error
-         os9 I$Write
-         bra pName
-printBuffer
-         clr CTRLATCH
-         andcc #^IntMasks unmask interrupts
-* print filename
-pName    
+* print header
+	pshs x,y
+	lda #1 standard output
+	leax header,pc
+	ldy #headerL
+	os9 I$Write
+	puls x,y
+    puls d
+* check for zero parameters
+    cmpd #1
+    beq use_base_path
+* check for prefix on user supplied parameter string
+	clr ,y place null at end of parameter area
+	subb #1
+	sbca #0 decrement reg d
+    tfr d,y store parameter length in reg y
+	ldd ,x
+	cmpd #$4c3a "L:"
+	beq print_path
+* stack ascii characters to prepend "L:" to user supplied base path
+    ldd #$4c3a
+    pshs d
+	leay 2,y increase parameter length by 2
+* point reg x to base path string
+    tfr s,x
+    bra print_path
+
+use_base_path
+    leax basepath,pc
+    ldy #basepathL
+print_path
+	pshs x
+	lda #1 standard output
+	os9 I$Write
+	leax carrigeReturn,pc
+	ldy #2
+	os9 I$Write
+	bsr open_path_to_driver
+
 * Get screen width
-         lda #1 Output Path (stdout)
-         ldb #SS.ScSiz Request screen size
-         os9 I$Getstt Make screen size request
-         ldd #$0303
-         cmpx #75
-         bhi ssDone
-         ldd #$0202
-         cmpx #42
-         bhi ssDone
-         ldd #$0101
-* push column count to stack
-ssDone   pshs d
-* reset reg u back to the start of the buffer
-         clrb
-         tfr dp,a
-         tfr d,u
-         lda #1 Output path (stdout)
-pbLoop   ldy #8 length of buffer
-			leax ,u
-         os9 I$Write
-* print file extension
-         leax 7,u
-         ldb #$20
-         stb ,x
-         ldy #4
-         os9 I$Write
+	lda #1 Output Path (stdout)
+	ldb #SS.ScSiz Request screen size
+	os9 I$Getstt Make screen size request
+	ldd #$0403
+	cmpx #75
+	bhi save_screen
+	ldd #$0302
+	cmpx #42
+	bhi save_screen
+	ldd #$0201
+save_screen
+	std columns,u Save Column information
+
+* ask driver to initiate directory transfer
+* path buffer must be on stack
+	puls x
+	lda pathnumber,u
+	ldb #$e0
+	pshs u
+	OS9 I$Getstt
+	puls u
+	bcc get_diretory_block
+	tsta
+	lbeq timeOut
+	bita #$10
+	lbne targetDirectoryNotFoundError
+	bita #$08
+	lbne miscellaneousHardwareError
+	bita #$04
+	lbne pathNameInvalidError
+	tfr a,b
+	lbra exit_now
+
+get_diretory_block
+	lda pathnumber,u
+	ldb #$c0 Command code
+	leax buffer,u output buffer
+	pshs u
+	ldu #$3e parameter
+	OS9 I$Getstt
+	puls u
+	bcc parse_directory_block
+	tsta
+	lbeq timeOut
+	bita #$80
+	lbne miscellaneousHardwareError
+	bita #$08
+	lbne notInitiatedError
+	tfr a,b
+	bra exit_now
+
+parse_directory_block
+	ldb #-1
+	stb count,u
+check_if_done
+	dec columns,u
+	bne print_continue
+	lda columns+1,u
+	sta columns,u
+print_return
+	leax carrigeReturn,pc
+	ldy #2
+	lda #1
+	os9 I$Write
+print_continue
+	ldb count,u
+	incb
+	stb count,u
+	cmpb #16
+	beq get_diretory_block go get another block
+	lda #16
+* calculate directory record address
+	mul
+	leax buffer,u
+	abx
+	lda ,x
+	cmpa #0
+	beq exit_ok
+	
+	bsr PrintFileName
+
 * print flags
-         leax 7,u
-         ldb 11,u
-         lda #'-
-         bitb #2
-         beq pf1
-         lda #'H
-pf1      sta 1,x
-         lda #'-
-         bitb #1
-         beq pf2
-         lda #'L
-pf2      sta 2,x
-         lda #1
-         ldy #3
-         os9 I$Write
-         bitb #$10
-         beq pfSize
+	ldb 4,x
+	lda #'-
+	bitb #2
+	beq pf1
+	lda #'H
+pf1
+	sta 1,x
+	lda #'-
+	bitb #1
+	beq pf2
+	lda #'L
+pf2
+	sta 2,x
+	lda #1
+	ldy #3
+	os9 I$Write
+	bitb #$10
+	beq print_size
+
 * print directory token
-         ldy #dirStringL
-         leax >dirString,pcr buffer in x
-         os9 I$Write
-         bra pfCR
+	leax >dirString,pcr
+	ldy #dirStringL
+	os9 I$Write
+	bra end_print
 
-* print size
-pfSize
-         leax 12,u
-			bsr PrintFileSize
-* print carrage return and do next directory entry
-pfCR     
-         dec ,s
-         beq pfDoCR
-         bra pdCRSkip
-pfDoCR   ldy #2 length of buffer
-         leax >carrigeReturn,pcr buffer in x
-         os9 I$Write
-         ldb 1,s
-         stb ,s
-pdCRSkip 
-         leau 16,u
-         ldb ,u
-         beq ExitOK
-         lbra pbLoop
+print_size
+	leax 5,x
+	bsr PrintFileSize
 
-ExitOk   
-         ldy #2 length of buffer
-         leax >carrigeReturn,pcr buffer in x
-         os9 I$Write
-         clrb
-Exit     clr CTRLATCH
-         andcc #^IntMasks unmask interrupts
-ExitNow  os9 F$Exit
+end_print
+	bra check_if_done
+
+exit_ok   
+	clrb
+exit_now
+	os9 F$Exit
+
+*********************************************************************
+* PrintFileName
+*********************************************************************
+* ENTRY:
+* X = Address of 10 byte filename and extension
+*
+* EXIT:
+*
+PrintFileName
+	lda #1 standard output
+	ldy #8 filename length
+	os9 I$Write
+	ldb #$20
+	leax 7,x
+	stb ,x
+	ldy #4
+	os9 I$Write
+	rts
 
 *********************************************************************
 * PrintFileSize
@@ -361,68 +476,70 @@ ExitNow  os9 F$Exit
 * EXIT:
 *
 PrintFileSize
-			pshs u
-			leau ,x
+	pshs u
+	leau ,x
 * start with a space
-         lda #$20 space character
+	lda #$20 space character
 * store U offset in -11,u
-         ldb #-11
-         stb -12,u
-         sta b,u
-         incb
-         stb -12,u
-         lda ,u
-         beq ps1
+	ldb #-11
+	stb -12,u
+	sta b,u
+	incb
+	stb -12,u
+	lda ,u
+	beq ps1
 * Very large number: load offset 0 and 1, shift right 4 bits, print decimal as mega bytes
-         ldb 1,u
-         lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
-         lsra
-         rorb
-         bsr L09BA write ascii value of D to buffer
-         lda #'M
-         bra psUnit
-ps1      lda 1,u
-         beq ps2
+	ldb 1,u
+	lsra
+	rorb
+	lsra
+	rorb
+	lsra
+	rorb
+	lsra
+	rorb
+	bsr L09BA write ascii value of D to buffer
+	lda #'M
+	bra psUnit
+ps1
+	lda 1,u
+	beq ps2
 * Kind of large number: load offsets 1 and 2, shift right 2 bits, print decimal as kilo bytes
-         ldb 2,u
-         lsra
-         rorb
-         lsra
-         rorb
-         bsr L09BA write ascii value of D to buffer
-         lda #'K
-         bra psUnit
-ps2     ldd 2,u
+	ldb 2,u
+	lsra
+	rorb
+	lsra
+	rorb
+	bsr L09BA write ascii value of D to buffer
+	lda #'K
+	bra psUnit
+ps2
+	ldd 2,u
 * number: load offsetprint 14 and 15, print decimal as bytes
-         bsr L09BA write ascii value of D to buffer
-         lda #'B
-         bra psUnit
+	bsr L09BA write ascii value of D to buffer
+	lda #'B
+	bra psUnit
 * print unit to buffer
 psUnit
-			ldb -12,u
-			sta b,u
-			lda #$20
-			incb
-			sta b,u
-			incb
-			sta b,u
-			incb
-			sta b,u
-			incb
-			sta b,u         
-			incb
-			sta b,u         
-         lda #1
-         ldy #8
-         leax -11,u
-         os9 I$Write
-         puls u
-         rts
+	ldb -12,u
+	sta b,u
+	lda #$20
+	incb
+	sta b,u
+	incb
+	sta b,u
+	incb
+	sta b,u
+	incb
+	sta b,u         
+	incb
+	sta b,u         
+	lda #1
+	ldy #8
+	leax -11,u
+	os9 I$Write
+	puls u
+	rts
 
 * Stolen from BASIC09
 * Convert # in D to ASCII version (decimal)
@@ -464,287 +581,6 @@ L09ED    fdb   $2710      10000
          fdb   $0001      1
          fdb   $0000      0
 
-*********************************************************************
-* Setup Controller for Command Mode
-*********************************************************************
-* EXIT:
-*   Carry cleared on success, set on timeout
-*   All other registers preserved
-*
-CmdSetup      pshs x,a                   ; preserve registers
-              lda #$43                   ; put controller into..
-              sta CTRLATCH               ; Command Mode
-              ldx #0                     ; long timeout counter = 65536
-busyLp        lda STATREG                ; read status
-              lsra                       ; move BUSY bit to Carry
-              bcc setupExit              ; branch if not busy
-              leax -1,x                  ; decrement timeout counter
-              bne busyLp                 ; loop if not timeout
-              lda #0                     ; clear A without clearing Carry
-              sta CTRLATCH               ; put controller back in emulation
-setupExit     puls a,x,pc                ; restore registers and return
-
-*********************************************************************
-* Send 256 bytes of Command Data to SDC Controller
-*********************************************************************
-* ENTRY:
-*   X = Data Address
-*
-* EXIT:
-*   B = Status
-*   Carry set on failure or timeout
-*   All other registers preserved
-*
-txData      pshs u,y,x                  ; preserve registers
-            ldy #DATREGA                ; point Y at the data registers
-* Poll for Controller Ready or Failed.
-            comb                        ; set carry in anticipation of failure
-            ldx #0                      ; max timeout counter = 65536
-txPoll      ldb -2,y                    ; read status register
-            bmi txExit                  ; branch if FAILED bit is set
-            bitb #READY                 ; test the READY bit
-            bne txRdy                   ; branch if ready
-            leax -1,x                   ; decrement timeout counter
-            beq txExit                  ; exit if timeout
-            bra txPoll                  ; poll again
-* Controller Ready. Send the Data.
-txRdy       ldx ,s                      ; re-load data address into X
-            ldb #128                    ; 128 words to send (256 bytes)
-txWord      ldu ,x++                    ; get data word from source
-            stu ,y                      ; send to controller
-            decb                        ; decrement word loop counter
-            bne txWord                  ; loop until done
-* Done sending data, wait for result
-            ldx #0                      ; wait for result
-            comb                        ; assume error
-txWait      ldb -2,y                    ; load status
-            bmi txExit                  ; branch if failed
-            lsrb                        ; clear carry if not busy
-            bcc txExit                  ; test ready bit
-            leax -1,x                   ; decrememnt timeout counter
-            bne txWait			          ; loop back until timeout
-txExit      puls x,y,u,pc               ; restore registers and return
-
-*********************************************************************
-* Retrieve 256 bytes of Response Data from SDC Controller
-*********************************************************************
-* ENTRY:
-*    X = Data Storage Address
-*
-* EXIT:
-*    B = Status
-*    Carry set on failure or timeout
-*    All other registers preserved
-*
-rxData      pshs u,y,x                  ; preserve registers
-            ldy #DATREGA                ; point Y at the data registers
-* Poll for Controller Ready or Failed.
-            comb                        ; set carry in anticipation of failure
-            ldx #0                      ; max timeout counter = 65536
-rxPoll      ldb -2,y                    ; read status register
-            bmi rxExit                  ; branch if FAILED bit is set
-            bitb #READY                 ; test the READY bit
-            bne rxRdy                   ; branch if ready
-            leax -1,x                   ; decrement timeout counter
-            beq rxExit                  ; exit if timeout
-            bra rxPoll                  ; poll again
-* Controller Ready. Grab the Data.
-rxRdy       ldx ,s                      ; re-load data address into X
-            ldb #128                    ; 128 words to read (256 bytes)
-rxWord      ldu ,y                      ; read data word from controller
-            stu ,x++                    ; put into storage
-            decb                        ; decrement word loop counter
-            bne rxWord                  ; loop until done
-            clrb                        ; success! clear the carry flag
-rxExit      puls x,y,u,pc               ; restore registers and return
-
-*********************************************************************
-* This routine skip over spaces
-*********************************************************************
-* Entry:
-*   X = ptr to data to parse
-* Exit:
-*   X = ptr to first non-whitespace char
-*   A = non-whitespace char
-SkipSpcs lda   ,x+
-         cmpa  #C$SPAC
-         beq   SkipSpcs
-         leax  -1,x
-         rts
-
-*********************************************************************
-* This subroutine prints a 8 character file name and three character extension
-* With a space
-* Buffer is destroyed
-*********************************************************************
-* Entry:
-*   X = string buffer address
-*   
-* Exit:
-*   A = 1
-*   B = $20
-*   Y = 1
-*   X = X + 7
-
-PrintFilenameAndExtension
-			ldy #8
-			lda #1
-         os9 I$Write
-         leax 7,x
-         ldb #$20
-         stb ,x
-         ldy #4
-         os9 I$Write
-         ldy #1
-         os9 I$Write
-         rts
-
-*********************************************************************
-* This subroutine prints string to stdout
-*********************************************************************
-* Entry:
-*   X = string buffer address
-*   Y = string length
-* Exit:
-*   A = 1
-PrintString
-			lda #1
-         os9 I$Write
-         rts
-
-*********************************************************************
-* This subroutine prints Mounted Attributes String
-* Uses 11 characters of memory before attribute byte to build string
-*********************************************************************
-* Entry:
-*   X = Address of attributes byte
-* Exit:
-*   a, b, x, y modified
-PrintMountedAttributes
-			ldb ,x
-			leax -11,x
-			lda #'-
-			bitb #$10
-			beq next1
-			lda #'D
-next1    sta ,x
-         lda #'-
-         bitb #04
-         beq next2
-         lda #'S
-next2    sta 1,x
-         lda #'-
-         bitb #$02
-         beq next3
-         lda #'H
-next3    sta 2,x
-         lda #'-
-         bitb #$01
-         beq next4
-         lda #'L
-next4    sta 3,x
-         lda #$20
-         sta 4,x
-         sta 5,x
-         lda #1
-         ldy #6
-         os9 I$Write
-         rts
-
-*********************************************************************
-
-InfoTitle fcc /CoCo SDC Mounted Images:/
-         fcb C$LF
-         fcb C$CR
-         fcc /Slot 0: /
-InfoTitleL  equ   *-InfoTitle
-S1Title  
-         fcb C$LF
-         fcb C$CR
-         fcc /Slot 1: /
-S1TitleL  equ   *-S1Title
-
-EmptyTitle fcc /Empty./
-         fcb C$LF
-         fcb C$CR
-EmptyTitleL  equ   *-EmptyTitle
-
-displayMountedInfo
-         orcc #IntMasks  mask interrupts
-			lbsr CmdSetup
-			bcc getInfo
-			ldb #$f6 Not ready error code
-			lbra Exit
-getInfo
-         ldb #'I
-         stb PREG1
-			ldb #$c0 load mounted image info for slot 0
-			stb CMDREG send to SDC command register
-			exg a,a wait
-         leax buffer,u point to transfer bufer
-         lbsr rxData Retrieve 256 bytes
-         pshs b save flag
-         ldb #'I
-         stb PREG1
-			ldb #$c1 load mounted image info for slot 1
-			stb CMDREG send to SDC command register
-			exg a,a wait
-         leax 32,x
-         lbsr rxData Retrieve 256 bytes
-         pshs b save slag
-         clr CTRLATCH
-         andcc #^IntMasks unmask interrupts
-         
-         leax >InfoTitle,pcr
-         ldy #InfoTitleL
-         lbsr PrintString
-
-         ldb 1,s
-         bmi PrintEmptySlot0
-
-         leax ,u
-         lbsr PrintFilenameAndExtension
-         
-         leax 11,u
-         lbsr PrintMountedAttributes
-         
-         leax 28,u
-         lbsr PrintFileSize
-
-			bra DoSlot1
-			
-PrintEmptySlot0
-			leax >EmptyTitle,pcr
-			ldy #EmptyTitleL
-			lbsr PrintString
-			
-DoSlot1
-			leax >S1Title,pcr
-			ldy #S1TitleL
-			lbsr PrintString
-
-			ldb ,s
-			bmi PrintEmptySlot1
-			
-         leax 32+0,u
-         lbsr PrintFilenameAndExtension
-         
-         leax 32+11,u
-         lbsr PrintMountedAttributes
-         
-         leax 32+28,u
-         lbsr PrintFileSize
-         
-			bra MountedDone
-PrintEmptySlot1
-			leax >EmptyTitle,pcr
-			ldy #EmptyTitleL
-			lbsr PrintString
-MountedDone
-         leas 2,s
-         lbra ExitOK
-			
-			
          emod
 eom      equ   *
          end
