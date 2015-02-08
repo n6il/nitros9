@@ -11,6 +11,8 @@ KERNEL_DW	= $(MD)/rel_80 $(MD)/boot_dw $(MD)/krn
 KERNEL_ARDUINO	= $(MD)/rel_80 $(MD)/boot_dw_arduino $(MD)/krn
 KERNEL_BECKER	= $(MD)/rel_80 $(MD)/boot_dw_becker $(MD)/krn
 KERNEL_COCOSDC	= $(MD)/rel_80 $(MD)/boot_sdc $(MD)/krn
+KERNEL_IDE	= $(MD)/rel_80 $(MD)/boot_ide $(MD)/krn
+KERNEL_DIDE	= $(MD)/rel_80 $(MD)/boot_dide $(MD)/krn
 
 FLOPPY_40D = $(MD)/rb1773.dr $(MD)/d0_40d.dd $(MD)/d1_40d.dd $(MD)/d2_40d.dd
 FLOPPY_80D = $(MD)/rb1773.dr $(MD)/d0_80d.dd $(MD)/d1_80d.dd $(MD)/d2_80d.dd
@@ -168,6 +170,16 @@ BOOTFILE_COCOSDC	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(PIPE) \
 		$(CLOCK60HZ)
 
+BOOTFILE_IDE	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
+		$(MD)/rbf.mn \
+		$(MD)/rbsuper.dr $(MD)/llide.dr \
+		$(MD)/ddi0_ide.dd \
+		$(FLOPPY_40D) \
+		$(MD)/scf.mn \
+		$(VTIO_COGRF_80) \
+		$(PIPE) \
+		$(CLOCK60HZ)
+
 # NitrOS-9 disk bootfile to allow booting from WD1773 disk controller
 BOOTFILE_40D	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 		$(MD)/rbf.mn \
@@ -208,9 +220,9 @@ BOOTFILE_80D_50HZ	= $(MD)/krnp2 $(MD)/ioman $(MD)/init \
 BOOTFILES	= bootfile_40d bootfile_40d_50hz bootfile_80d \
 		bootfile_80d_50hz bootfile_dw bootfile_dw_headless \
 		bootfile_becker bootfile_arduino bootfile_becker_headless \
-		bootfile_arduino_headless bootfile_cocosdc
+		bootfile_arduino_headless bootfile_cocosdc bootfile_ide
 KERNELS		= kernel_1773 kernel_1773_50hz kernel_dw kernel_becker \
-		kernel_arduino kernel_cocosdc
+		kernel_arduino kernel_cocosdc kernel_ide kernel_dide
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -250,6 +262,9 @@ bootfile_arduino_headless: $(BOOTFILE_ARDUINO_HEADLESS) $(DEPENDS)
 bootfile_cocosdc: $(BOOTFILE_COCOSDC) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COCOSDC)>$@
 
+bootfile_ide: $(BOOTFILE_IDE) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_IDE)>$@
+
 # Kernels
 kernel_becker: $(KERNEL_BECKER) $(DEPENDS)
 	$(MERGE) $(KERNEL_BECKER)>$@
@@ -268,6 +283,12 @@ kernel_dw: $(KERNEL_DW) $(DEPENDS)
 
 kernel_cocosdc: $(KERNEL_COCOSDC) $(DEPENDS)
 	$(MERGE) $(KERNEL_COCOSDC)>$@
+
+kernel_ide: $(KERNEL_IDE) $(DEPENDS)
+	$(MERGE) $(KERNEL_IDE)>$@
+
+kernel_dide: $(KERNEL_DIDE) $(DEPENDS)
+	$(MERGE) $(KERNEL_DIDE)>$@
 
 clean:
 	$(RM) $(ALLOBJS)
