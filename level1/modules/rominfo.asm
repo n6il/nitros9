@@ -40,6 +40,10 @@ name     fcs   /ROMInfo/
 
 start    equ   *
 
+         IFNE  H6309
+         ldmd  #3         go to native mode, FIRQ saves all registers
+         ENDC
+
          IFGT  Level-1
 
 * NitrOS-9 Level 2 - CoCo 3
