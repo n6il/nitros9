@@ -28,7 +28,9 @@ BOOTFILE_ROMPAK	= $(MD)/rominfo_pak $(MD)/ioman \
 		$(CMDS)/shell_21 \
 		$(MD)/clock_60hz $(MD)/clock2_soft
 
-BOOTROMS	= nos96809l1.rom nos96809l1.rompak nos96809l1_1773.rom
+BOOTFILE_ROMPAK_1773 = $(MD)/rominfo
+
+BOOTROMS	= nos96809l1.rom nos96809l1.rompak nos96809l1_1773.rom nos96809l1_1773.rompak
 KERNELS		= kernel_rom
 
 ALLROMS		= $(BOOTROMS)
@@ -55,6 +57,14 @@ nos96809l1.rom: $(BOOTFILE_ROM) $(KERNEL_ROM) $(DEPENDS)
 	$(MERGE) $@.tmp2 $(MD)/vectors>$@
 	$(RM) $@.tmp $@.tmp2
 	
+nos96809l1_1773.rompak: $(BOOTFILE_ROMPAK_1773) $(KERNEL_ROM_1773) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_ROMPAK_1773)>$@.tmp
+	$(PADROM) 11776 $@.tmp
+	$(MERGE) $(KERNEL_ROM_1773)>kernel_rom
+	$(PADROM) 4352 kernel_rom
+	$(MERGE) $@.tmp kernel_rom>$@
+	$(RM) $@.tmp
+
 nos96809l1.rompak: $(BOOTFILE_ROMPAK) $(KERNEL_ROM) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_ROMPAK)>$@.tmp
 	$(PADROM) 11776 $@.tmp
