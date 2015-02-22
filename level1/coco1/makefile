@@ -10,9 +10,9 @@ DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
 BOOTFILE_COVDG	= bootfiles/bootfile_covdg
 BOOTFILE_COHR	= bootfiles/bootfile_cohr
 BOOTFILE_COVDG_DS80	= bootfiles/bootfile_covdg_ds80
-BOOTFILE_HEADLESS_DW	= bootfiles/bootfile_headless_dw
-BOOTFILE_HEADLESS_BECKER	= bootfiles/bootfile_headless_becker
-BOOTFILE_HEADLESS_ARDUINO	= bootfiles/bootfile_headless_arduino
+BOOTFILE_DW_HEADLESS	= bootfiles/bootfile_dw_headless
+BOOTFILE_BECKER_HEADLESS	= bootfiles/bootfile_becker_headless
+BOOTFILE_ARDUINO_HEADLESS	= bootfiles/bootfile_arduino_headless
 BOOTFILE_COVDG_DW	= bootfiles/bootfile_covdg_dw
 BOOTFILE_COVDG_BECKER	= bootfiles/bootfile_covdg_becker
 BOOTFILE_COVDG_ARDUINO	= bootfiles/bootfile_covdg_arduino
@@ -322,7 +322,7 @@ $(DSKCOCOSDC):
 $(DSKDWHEADLESS):
 	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
-	$(OS9GEN) $@ -b=$(BOOTFILE_HEADLESS_DW) -t=$(KERNELFILE_DW)
+	$(OS9GEN) $@ -b=$(BOOTFILE_DW_HEADLESS) -t=$(KERNELFILE_DW)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
@@ -376,7 +376,7 @@ $(DSKDWHEADLESS):
 $(DSKBECKERHEADLESS):
 	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
-	$(OS9GEN) $@ -b=$(BOOTFILE_HEADLESS_BECKER) -t=$(KERNELFILE_BECKER)
+	$(OS9GEN) $@ -b=$(BOOTFILE_BECKER_HEADLESS) -t=$(KERNELFILE_BECKER)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
@@ -430,7 +430,7 @@ $(DSKBECKERHEADLESS):
 $(DSKARDUINOHEADLESS):
 	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
-	$(OS9GEN) $@ -b=$(BOOTFILE_HEADLESS_ARDUINO) -t=$(KERNELFILE_ARDUINO)
+	$(OS9GEN) $@ -b=$(BOOTFILE_ARDUINO_HEADLESS) -t=$(KERNELFILE_ARDUINO)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS

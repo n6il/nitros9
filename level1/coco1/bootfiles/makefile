@@ -102,7 +102,7 @@ BOOTFILE_CO80	= $(MD)/ioman \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd
 
-BOOTFILE_HEADLESS_DW	= $(MD)/ioman \
+BOOTFILE_DW_HEADLESS	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBDW) \
 		$(MD)/ddx0.dd \
@@ -115,7 +115,7 @@ BOOTFILE_HEADLESS_DW	= $(MD)/ioman \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
 
-BOOTFILE_HEADLESS_BECKER	= $(MD)/ioman \
+BOOTFILE_BECKER_HEADLESS	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBBECKER) \
 		$(MD)/ddx0.dd \
@@ -128,7 +128,7 @@ BOOTFILE_HEADLESS_BECKER	= $(MD)/ioman \
 		$(CLOCK60HZDW) \
 		$(MD)/sysgo_dd
 
-BOOTFILE_HEADLESS_ARDUINO	= $(MD)/ioman \
+BOOTFILE_ARDUINO_HEADLESS	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(RBARDUINO) \
 		$(MD)/ddx0.dd \
@@ -300,12 +300,12 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 		$(MD)/sysgo_dd
 
 BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw \
-		bootfile_headless_dw bootfile_covdg_becker \
+		bootfile_dw_headless bootfile_covdg_becker \
 		bootfile_covdg_becker_game bootfile_covdg_dw_game \
 		bootfile_covdg_cocosdc \
 		bootfile_cohr_dw bootfile_covdg_ds80 bootfile_cohr_ds80 \
-		bootfile_cohr_becker bootfile_headless_becker \
-		bootfile_covdg_arduino bootfile_headless_arduino \
+		bootfile_cohr_becker bootfile_becker_headless \
+		bootfile_covdg_arduino bootfile_arduino_headless \
 		bootfile_cohr_arduino bootfile_covdg_arduino_game 
 
 KERNELS		= kernel_1773 kernel_dw kernel_becker kernel_arduino kernel_cocosdc
@@ -326,14 +326,14 @@ bootfile_co80: $(BOOTFILE_CO80) $(DEPENDS)
 bootfile_covdg_ds80: $(BOOTFILE_COVDG_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DS80)>$@
 
-bootfile_headless_dw: $(BOOTFILE_HEADLESS_DW) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_HEADLESS_DW)>$@
+bootfile_dw_headless: $(BOOTFILE_DW_HEADLESS) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_DW_HEADLESS)>$@
 
-bootfile_headless_becker: $(BOOTFILE_HEADLESS_BECKER) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_HEADLESS_BECKER)>$@
+bootfile_becker_headless: $(BOOTFILE_BECKER_HEADLESS) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_BECKER_HEADLESS)>$@
 
-bootfile_headless_arduino: $(BOOTFILE_HEADLESS_ARDUINO) $(DEPENDS)
-	$(MERGE) $(BOOTFILE_HEADLESS_ARDUINO)>$@
+bootfile_arduino_headless: $(BOOTFILE_ARDUINO_HEADLESS) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_ARDUINO_HEADLESS)>$@
 
 bootfile_covdg_dw: $(BOOTFILE_COVDG_DW) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_DW)>$@
