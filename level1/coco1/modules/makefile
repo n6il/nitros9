@@ -23,7 +23,7 @@ TPB		= $(3RDPARTY)/booters
 BOOTERS		= boot_1773_6ms boot_1773_30ms \
 		boot_burke boot_rampak boot_wd1002 boot_dw \
 		boot_tc3 boot_ide boot_rom boot_dw_becker \
-		boot_dw_arduino boot_dw_coco1
+		boot_dw_arduino boot_dw_coco1 boot_sdc
 BOOTTRACK	= rel $(BOOTERS)
 KERNEL		= krn krnp2 wbug
 SYSMODS		= ioman init sysgo_dd sysgo_h0 rominfo rominfo_pak vectors
@@ -39,10 +39,11 @@ RBF		= rbf.mn \
 		ddd0_40d.dd d0_40d.dd d1_40d.dd d2_40d.dd \
 		ddd0_80d.dd d0_80d.dd d1_80d.dd d2_80d.dd \
 		ddx0.dd x0.dd x1.dd x2.dd x3.dd \
-		rbsuper.dr lltc3.dr llide.dr \
+		rbsuper.dr lltc3.dr llide.dr llcocosdc.dr \
 		ddi0_ide.dd i0_ide.dd i1_ide.dd ih_ide.dd \
 		dds0_tc3.dd s0_tc3.dd s1_tc3.dd s2_tc3.dd s3_tc3.dd s4_tc3.dd \
-                s5_tc3.dd s6_tc3.dd sh_tc3.dd
+                s5_tc3.dd s6_tc3.dd sh_tc3.dd \
+		ddsd0_cocosdc.dd sd0_cocosdc.dd sd1_cocosdc.dd
 
 SCF		= scf.mn \
 		sc6551.dr vrn.dr scbbp.dr scbbt.dr scdwp.dr sspak.dr vtio.dr \
@@ -84,6 +85,10 @@ boot_tc3: boot_scsi.asm
 # SuperIDE/Glenside IDE Booter
 boot_ide: boot_ide.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS)
+
+# CoCo SDC Booter
+boot_sdc: boot_sdc.asm
+	$(AS) $(ASOUT)$@ $< $(SDFLAGS)
 
 # DriveWire Becker Booter
 boot_dw_becker:	boot_dw.asm
@@ -309,6 +314,16 @@ i1_ide.dd: superdesc.asm
 
 ih_ide.dd: superdesc.asm
 	$(AS) $(ASOUT)$@ $< $(IDEFLAGS) $(HDBDOS)
+
+# CoCo SDC Descriptors
+ddsd0_cocosdc.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DDD=1
+
+sd0_cocosdc.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DITDRV=0
+
+sd1_cocosdc.dd: superdesc.asm
+	$(AS) $(ASOUT)$@ $< $(SDFLAGS) -DITDRV=1
 
 # RFM descriptors
 ddy0.dd: rfmdesc.asm
