@@ -24,6 +24,9 @@ KERNEL_BECKER	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 KERNEL_ARDUINO	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		$(MD)/boot_dw_arduino
 
+KERNEL_COCOSDC	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
+		$(MD)/boot_sdc
+
 IDE		= $(3PD)/ide
 SCSI		= $(3PD)/scsisys
 
@@ -49,6 +52,9 @@ RBBECKER	= $(MD)/rbdw.dr $(MD)/dwio_becker.sb \
 
 RBARDUINO	= $(MD)/rbdw.dr $(MD)/dwio_arduino.sb \
 		$(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
+
+RBCOCOSDC	= $(MD)/rbsuper.dr $(MD)/llcocosdc.dr \
+		$(MD)/sd0_cocosdc.dd $(MD)/sd1_cocosdc.dd
 
 SCDWV_NET  = $(MD)/n_scdwv.dd $(MD)/n1_scdwv.dd $(MD)/n2_scdwv.dd \
 		$(MD)/n3_scdwv.dd $(MD)/n4_scdwv.dd $(MD)/n5_scdwv.dd \
@@ -225,6 +231,20 @@ BOOTFILE_COVDG_DS80	= $(MD)/ioman \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd
 
+BOOTFILE_COVDG_COCOSDC	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBCOCOSDC) \
+		$(MD)/ddsd0_cocosdc.dd \
+		$(FLOPPY_40D) \
+		$(MD)/scf.mn \
+		$(VTIO_COVDG) \
+		$(MD)/scdwv.dr \
+		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
+		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
+		$(PIPE) \
+		$(CLOCK60HZ) \
+		$(MD)/sysgo_dd
+
 BOOTFILE_COHR_DW	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_40D) \
@@ -282,12 +302,13 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw \
 		bootfile_headless_dw bootfile_covdg_becker \
 		bootfile_covdg_becker_game bootfile_covdg_dw_game \
+		bootfile_covdg_cocosdc \
 		bootfile_cohr_dw bootfile_covdg_ds80 bootfile_cohr_ds80 \
 		bootfile_cohr_becker bootfile_headless_becker \
 		bootfile_covdg_arduino bootfile_headless_arduino \
 		bootfile_cohr_arduino bootfile_covdg_arduino_game 
 
-KERNELS		= kernel_1773 kernel_dw kernel_becker kernel_arduino
+KERNELS		= kernel_1773 kernel_dw kernel_becker kernel_arduino kernel_cocosdc
 
 ALLOBJS		= $(BOOTFILES) $(KERNELS)
 
@@ -332,6 +353,9 @@ bootfile_covdg_arduino: $(BOOTFILE_COVDG_ARDUINO) $(DEPENDS)
 bootfile_covdg_arduino_game: $(BOOTFILE_COVDG_ARDUINO_GAME) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_ARDUINO_GAME)>$@
 
+bootfile_covdg_cocosdc: $(BOOTFILE_COVDG_COCOSDC) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVDG_COCOSDC)>$@
+
 bootfile_cohr_ds80: $(BOOTFILE_COHR_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR_DS80)>$@
 
@@ -360,6 +384,10 @@ kernel_becker: $(KERNEL_BECKER) $(DEPENDS)
 
 kernel_arduino: $(KERNEL_ARDUINO) $(DEPENDS)
 	$(MERGE) $(KERNEL_ARDUINO)>$@
+	$(PADROM) 4608 $@
+
+kernel_cocosdc: $(KERNEL_COCOSDC) $(DEPENDS) 
+	$(MERGE) $(KERNEL_COCOSDC)>$@
 	$(PADROM) 4608 $@
 
 clean:
