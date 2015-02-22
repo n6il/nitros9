@@ -29,5 +29,5 @@ clean: dskclean
 	$(RM) $(OBJS) $(TARGET)
 
 info:
-	@echo "*** Larry Olson's Pacos9 game ***"
-	@echo $(DSK)
+	@$(ECHO) "*** Larry Olson's Pacos9 game ***"
+	@$(ECHO) $(DSK)

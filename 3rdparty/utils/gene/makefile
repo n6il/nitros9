@@ -42,6 +42,6 @@ clean: dskclean
 	$(RM) $(ALLOBJS)
 
 info:
-	@echo "*** Gene Heskett's Utilities ***"
+	@$(ECHO) "*** Gene Heskett's Utilities ***"
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
 

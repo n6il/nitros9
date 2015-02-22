@@ -87,11 +87,11 @@ nightly: clean hgupdate dskcopy
 	ssh $(SOURCEUSER),nitros9@shell.sourceforge.net "./burst nitros9project $(shell date +%Y%m%d)"
 else
 nightly:
-	@echo ""
-	@echo ""
-	@echo "You need to set the SOURCEUSER variable"
-	@echo "You may wish to refer to the nightly"
-	@echo "section of the makefile."
+	@$(ECHO) ""
+	@$(ECHO) ""
+	@$(ECHO) "You need to set the SOURCEUSER variable"
+	@$(ECHO) "You may wish to refer to the nightly"
+	@$(ECHO) "section of the makefile."
 endif
 
 # This section is to run a nightly test.
@@ -112,21 +112,21 @@ nightlytest: clean hgupdate dskcopy
 	ssh $(TESTSSHSERVER) "./burst nitros9project $(shell date +%Y%m%d)"
 else
 nightlytest:
-	@echo ""
-	@echo ""
-	@echo "You need to set the TESTSSHDIR variable"
-	@echo "You may wish to refer to the nightlytest"
-	@echo "section of the makefile to see what"
-	@echo "needs to be setup first before using"
-	@echo "this option"
+	@$(ECHO) ""
+	@$(ECHO) ""
+	@$(ECHO) "You need to set the TESTSSHDIR variable"
+	@$(ECHO) "You may wish to refer to the nightlytest"
+	@$(ECHO) "section of the makefile to see what"
+	@$(ECHO) "needs to be setup first before using"
+	@$(ECHO) "this option"
 endif
 else
 nightlytest:
-	@echo ""
-	@echo ""
-	@echo "You need to set the TESTSSHSERVER variable"
-	@echo "You may wish to refer to the nightlytest"
-	@echo "section of the makefile to see what"
-	@echo "needs to be setup first before using"
-	@echo "this option."
+	@$(ECHO) ""
+	@$(ECHO) ""
+	@$(ECHO) "You need to set the TESTSSHSERVER variable"
+	@$(ECHO) "You may wish to refer to the nightlytest"
+	@$(ECHO) "section of the makefile to see what"
+	@$(ECHO) "needs to be setup first before using"
+	@$(ECHO) "this option."
 endif

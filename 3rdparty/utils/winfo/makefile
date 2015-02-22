@@ -41,7 +41,7 @@ clean: dskclean
 	$(RM) $(ALLOBJS)
 
 info:
-	@echo "*** WInfo Utility ***"
+	@$(ECHO) "*** WInfo Utility ***"
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
 
 

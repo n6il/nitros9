@@ -38,7 +38,7 @@ clean: dskclean
 	$(RM) $(ALLOBJS)
 
 info:
-	@echo "*** Collyer Disassembler ***"
+	@$(ECHO) "*** Collyer Disassembler ***"
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
 
 
