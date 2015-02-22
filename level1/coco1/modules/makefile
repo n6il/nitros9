@@ -76,7 +76,7 @@ krn krnp2:
 # Special cases
 
 rominfo_pak: rominfo.asm
-	$(AS) $(ASOUT)$@ $< -DROMPak=1
+	$(AS) $(ASOUT)$@ $< $(AFLAGS) -DROMPak=1
 
 # TC^3 SCSI Booter
 boot_tc3: boot_scsi.asm
