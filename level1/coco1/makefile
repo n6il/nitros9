@@ -593,6 +593,6 @@ $(DSK720K):
 	$(SOFTLINK) $@ $(LDSK720K)
 
 info:
-	@echo "*** NitrOS-9/$(CPU) Level $(LEVEL) for the $(MACHINE) ***" 
+	@$(ECHO) "*** NitrOS-9/$(CPU) Level $(LEVEL) for the $(MACHINE) ***" 
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
 	

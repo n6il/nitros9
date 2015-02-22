@@ -38,7 +38,7 @@ clean: dskclean
 	$(RM) $(ALLOBJS)
 
 info:
-	@echo "*** SmartWatch Utilities ***"
+	@$(ECHO) "*** SmartWatch Utilities ***"
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
 
 

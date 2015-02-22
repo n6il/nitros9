@@ -79,6 +79,6 @@ $(DSK_DEMO):
 	$(OS9ATTR_EXEC) $(foreach file,$(CMDS_DEMO),$@,CMDS/$(file))
 
 info:
-	@echo "*** NitrOS-9/6809 Level 1 for the Atari XL/XE ***" 
+	@$(ECHO) "*** NitrOS-9/6809 Level 1 for the Atari XL/XE ***" 
 	@$(foreach dsk, $(DSKS), $(ECHO) $(dsk);)
 	
