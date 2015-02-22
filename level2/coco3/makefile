@@ -11,23 +11,23 @@ LEVEL		= 2
 DISTRO		= $(CPU)L$(LEVEL)
 DISTRONAME	= nos9$(CPU)l$(LEVEL)
 DISTROVER	= $(DISTRONAME)$(NITROS9VER)$(PORT)
+BOOTFILE_DW	= bootfiles/bootfile_dw
 BOOTFILE_BECKER	= bootfiles/bootfile_becker
 BOOTFILE_ARDUINO	= bootfiles/bootfile_arduino
 BOOTFILE_COCOSDC	= bootfiles/bootfile_cocosdc
+BOOTFILE_DW_HEADLESS	= bootfiles/bootfile_dw_headless
 BOOTFILE_BECKER_HEADLESS	= bootfiles/bootfile_becker_headless
 BOOTFILE_ARDUINO_HEADLESS	= bootfiles/bootfile_arduino_headless
-BOOTFILE_DW	= bootfiles/bootfile_dw
-BOOTFILE_DWHEADLESS	= bootfiles/bootfile_dw_headless
 BOOTFILE_40D	= bootfiles/bootfile_40d
 BOOTFILE_80D	= bootfiles/bootfile_80d
 BOOTFILE_40D_50HZ	= bootfiles/bootfile_40d_50hz
 BOOTFILE_80D_50HZ	= bootfiles/bootfile_80d_50hz
-KERNELFILE_BECKER	= bootfiles/kernel_becker
-KERNELFILE_ARDUINO	= bootfiles/kernel_arduino
-KERNELFILE_COCOSDC	= bootfiles/kernel_cocosdc
 KERNELFILE	= bootfiles/kernel_1773
 KERNELFILE_50HZ	= bootfiles/kernel_1773_50hz
 KERNELFILE_DW	= bootfiles/kernel_dw
+KERNELFILE_BECKER	= bootfiles/kernel_becker
+KERNELFILE_ARDUINO	= bootfiles/kernel_arduino
+KERNELFILE_COCOSDC	= bootfiles/kernel_cocosdc
 DIRS		= cmds modules defs sys bootfiles wwwroot
 
 CMDS		= $(shell $(CD) cmds; make --no-print-directory showobjs)
@@ -333,7 +333,7 @@ $(DSKDW):
 $(DSKDWHEADLESS):
 	$(RM) $@
 	$(OS9FORMAT_DW) -q $@ -n"NitrOS-9/$(CPU) Level $(LEVEL)"
-	$(OS9GEN) $@ -b=$(BOOTFILE_DWHEADLESS) -t=$(KERNELFILE_DW)
+	$(OS9GEN) $@ -b=$(BOOTFILE_DW_HEADLESS) -t=$(KERNELFILE_DW)
 	$(MAKDIR) $@,CMDS
 	$(MAKDIR) $@,SYS
 	$(MAKDIR) $@,DEFS
