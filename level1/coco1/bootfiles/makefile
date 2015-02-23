@@ -238,12 +238,12 @@ BOOTFILE_COVDG_COCOSDC	= $(MD)/ioman \
 		$(FLOPPY_40D) \
 		$(MD)/scf.mn \
 		$(VTIO_COVDG) \
-		$(MD)/scdwv.dr \
 		$(MD)/scbbp.dr $(MD)/p_scbbp.dd \
 		$(MD)/scbbt.dr $(MD)/t1_scbbt.dd \
 		$(PIPE) \
 		$(CLOCK60HZ) \
-		$(MD)/sysgo_dd
+		$(MD)/sysgo_dd \
+		$(CMDSDIR)/shell_21
 
 BOOTFILE_COHR_DW	= $(MD)/ioman \
 		$(MD)/rbf.mn \
