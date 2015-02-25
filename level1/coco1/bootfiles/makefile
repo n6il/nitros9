@@ -244,6 +244,17 @@ BOOTFILE_COVDG_COCOSDC	= $(MD)/ioman \
 		$(CLOCK60HZ) \
 		$(MD)/sysgo_dd
 
+BOOTFILE_COVDG_COCOSDC_GAME	= $(MD)/ioman \
+		$(MD)/rbf.mn \
+		$(RBCOCOSDC) \
+		$(MD)/ddsd0_cocosdc.dd \
+		$(MD)/scf.mn \
+		$(VTIO_COVDG) \
+		$(PIPE) \
+		$(CLOCK60HZ) \
+		$(MD)/sysgo_dd \
+		$(CMDSDIR)/shell_21
+
 BOOTFILE_COHR_DW	= $(MD)/ioman \
 		$(MD)/rbf.mn \
 		$(FLOPPY_40D) \
@@ -301,7 +312,7 @@ BOOTFILE_COHR_DS80	= $(MD)/ioman \
 BOOTFILES	= bootfile_covdg bootfile_cohr bootfile_covdg_dw \
 		bootfile_dw_headless bootfile_covdg_becker \
 		bootfile_covdg_becker_game bootfile_covdg_dw_game \
-		bootfile_covdg_cocosdc \
+		bootfile_covdg_cocosdc bootfile_covdg_cocosdc_game \
 		bootfile_cohr_dw bootfile_covdg_ds80 bootfile_cohr_ds80 \
 		bootfile_cohr_becker bootfile_becker_headless \
 		bootfile_covdg_arduino bootfile_arduino_headless \
@@ -354,6 +365,9 @@ bootfile_covdg_arduino_game: $(BOOTFILE_COVDG_ARDUINO_GAME) $(DEPENDS)
 
 bootfile_covdg_cocosdc: $(BOOTFILE_COVDG_COCOSDC) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COVDG_COCOSDC)>$@
+
+bootfile_covdg_cocosdc_game: $(BOOTFILE_COVDG_COCOSDC_GAME) $(DEPENDS)
+	$(MERGE) $(BOOTFILE_COVDG_COCOSDC_GAME)>$@
 
 bootfile_cohr_ds80: $(BOOTFILE_COHR_DS80) $(DEPENDS)
 	$(MERGE) $(BOOTFILE_COHR_DS80)>$@
