@@ -1,4 +1,4 @@
-g-t
+-t
 -x
 tmode .1 pau=0
 echo * NitrOS-9 Level 2 Boot Creation Script
