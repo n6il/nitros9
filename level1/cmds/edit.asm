@@ -475,7 +475,7 @@ L0335    ldd   <u0027
          pshs  u
          leax  <L039D,pcr
          pshu  x
-         pshu  u
+         pshu  s
          tfr   d,x
          lda   <u0038
          tst   <u003B
@@ -983,7 +983,7 @@ L0788    puls  pc,b,a
          os9   F$Mem    
          lbcs  L12AA
          sty   <u001E
-L07A1    pulu  pc,u
+L07A1    pulu  pc,s
          lbsr  L0922
          lbsr  L00FF
          ldd   <u001C
@@ -1015,10 +1015,10 @@ L07A1    pulu  pc,u
          lda   #$42
          ldy   u0005,u
          lbsr  L06EA
-         pulu  pc,u
+         pulu  pc,s
 L07F3    lbsr  L073F
          lbsr  L0716
-L07F9    pulu  pc,u
+L07F9    pulu  pc,s
          tst   <u0041
          lbne  L127E
          ldx   <u0016
@@ -1047,7 +1047,7 @@ L0836    puls  y,x
          sty   <u002D
          lda   #$4D
          sta   <u0026
-         pulu  pc,u
+         pulu  pc,s
          lbsr  L0922
          leax  >L13C6,pcr
          lbsr  L00EF
@@ -1085,7 +1085,7 @@ L0880    pshs  x
          bcs   L0880
 L0893    lbsr  L00FF
          lbsr  L0929
-         pulu  pc,u
+         pulu  pc,s
 L089B    pshs  b,a
          ldd   ,x
          leax  d,x
@@ -1119,7 +1119,7 @@ L089B    pshs  b,a
          pshs  x
          subd  ,s++
          std   <u001A
-         pulu  pc,u
+         pulu  pc,s
          pshs  u
          ldx   u0005,u
          lbsr  L0130
@@ -1134,7 +1134,7 @@ L089B    pshs  b,a
          tstb  
          lbne  L12AA
          puls  u
-         pulu  pc,u
+         pulu  pc,s
 L090C    fcc   "SHELL"
          fcb   C$CR
 L0912    fcb   $ec,$45
@@ -1144,7 +1144,7 @@ L0918    sta   <u003E
          tst   <u0041
          bne   L0920
          sta   <u0040
-L0920    pulu  pc,u
+L0920    pulu  pc,s
 L0922    lda   <u003E
          sta   <u003F
          inc   <u003E
@@ -1161,7 +1161,7 @@ L0929    lda   <u003F
          ldx   #$0000
          stx   ,--y
          sty   <u0045
-         pulu  pc,u
+         pulu  pc,s
          ldx   <u0045
          ldd   ,x
          addd  #$0001
@@ -1169,11 +1169,11 @@ L0929    lda   <u003F
          cmpd  u0005,u
          bcs   L095A
          bsr   L0964
-         pulu  pc,u
+         pulu  pc,s
 L095A    ldy   $02,x
          ldx   ,u
          sty   $02,x
-         pulu  pc,u
+         pulu  pc,s
 L0964    pshs  x
          ldx   <u0045
          leax  $04,x
@@ -1191,7 +1191,7 @@ L097D    lbsr  L008B
          lbsr  L0668
          bne   L097D
 L098A    bsr   L0929
-         pulu  pc,u
+         pulu  pc,s
          bsr   L0922
          lbsr  L0660
          beq   L09AF
@@ -1207,13 +1207,13 @@ L09A6    pshs  x
          subd  ,s++
          lbsr  L0094
 L09AF    lbsr  L0929
-         pulu  pc,u
+         pulu  pc,s
          inc   <u002F
          ldd   u0005,u
          std   <u0030
          bne   L09BE
          clr   <u002F
-L09BE    pulu  pc,u
+L09BE    pulu  pc,s
 L09C0    lbsr  L06B2
          beq   L09D4
 L09C5    pshs  b,a
@@ -1263,7 +1263,7 @@ L0A0F    lbsr  L1126
          leax  >L1318,pcr
          lbsr  L00EF
          lbsr  L0929
-L0A29    pulu  pc,u
+L0A29    pulu  pc,s
 L0A2B    pshs  y,x,b,a
          lbsr  L0660
          andcc #^Carry
@@ -1354,7 +1354,7 @@ L0ADF    lbsr  L06C2
          puls  x,b,a
          lbsr  L0668
          bne   L0AD2
-L0AFF    pulu  pc,u
+L0AFF    pulu  pc,s
 L0B01    pshs  y
          cmpd  #$0000
          beq   L0B26
@@ -1395,7 +1395,7 @@ L0B48    cmpx  <u001E
          tfr   y,d
          puls  x
          lbsr  L0BE3
-L0B5C    pulu  pc,u
+L0B5C    pulu  pc,s
          lbsr  L0660
          beq   L0B94
          ldx   <u001A
@@ -1419,7 +1419,7 @@ L0B74    bsr   L0B96
          ldd   <u001A
          subd  ,s++
          lbsr  L0094
-L0B94    pulu  pc,u
+L0B94    pulu  pc,s
 L0B96    pshs  u,x,b,a
          tfr   d,u
 L0B9A    cmpy  <u001E
@@ -1548,7 +1548,7 @@ L0C84    addd  #$000B
          lbsr  L0BEC
          stx   <u001C
          sty   <u001A
-L0CAF    pulu  pc,u
+L0CAF    pulu  pc,s
          lbsr  L0660
          beq   L0D0D
          ldx   <u001C
@@ -1591,7 +1591,7 @@ L0CD8    tfr   x,d
          lbsr  L0C38
          stx   <u001A
          sty   <u001C
-L0D0D    pulu  pc,u
+L0D0D    pulu  pc,s
          tst   <u0005
          beq   L0D4D
          lbsr  L0660
@@ -1674,7 +1674,7 @@ L0DC9    ldx   u0005,u
          bne   L0DD7
          ldd   <u0000
          std   <u0004
-         pulu  pc,u
+         pulu  pc,s
 L0DD7    lbsr  L0EC6
          lbne  L12A8
          lda   #$01
@@ -1682,7 +1682,7 @@ L0DD7    lbsr  L0EC6
          lbcs  L12AA
          ldb   #$01
          std   <u0004
-         pulu  pc,u
+         pulu  pc,s
          ldd   <u0006
          cmpd  <u0002
          beq   L0E00
@@ -1697,7 +1697,7 @@ L0E00    ldx   u0005,u
          bne   L0E0E
          ldd   <u0002
          std   <u0006
-         pulu  pc,u
+         pulu  pc,s
 L0E0E    lbsr  L0EC6
          lbne  L12A8
          ldd   #$021B
@@ -1705,7 +1705,7 @@ L0E0E    lbsr  L0EC6
          lbcs  L12AA
          ldb   #$01
          std   <u0006
-         pulu  pc,u
+         pulu  pc,s
          ldx   u0005,u
          ldb   ,x+
          lbsr  L0EC6
@@ -1743,7 +1743,7 @@ L0E6E    pshs  b
          puls  b
          cmpb  #$D3
          lbne  L12AA
-         pulu  pc,u
+         pulu  pc,s
 L0E7F    lbsr  L0691
          pshs  x
          lbsr  L04A1
@@ -1825,7 +1825,7 @@ L0F1A    puls  x
          lbra  L12AA
 L0F3C    lda   <u0008
          os9   I$Close  
-         pulu  pc,u
+         pulu  pc,s
 L0F43    tst   <u0001
          beq   L0F8E
          ldx   <u001C
@@ -1869,7 +1869,7 @@ L0F8E    rts
          tfr   y,d
          bsr   L100F
          bsr   L0F43
-L0FA8    pulu  pc,u
+L0FA8    pulu  pc,s
          lbsr  L0660
          beq   L0FD4
          ldx   <u001A
@@ -1888,7 +1888,7 @@ L0FC1    lbsr  L008B
 L0FCE    tfr   x,d
          subd  ,s++
          bsr   L100F
-L0FD4    pulu  pc,u
+L0FD4    pulu  pc,s
          lbsr  L0660
          beq   L0FFA
          ldx   <u001A
@@ -1905,7 +1905,7 @@ L0FEF    tfr   x,d
          puls  x
          lbsr  L0094
          bsr   L100F
-L0FFA    pulu  pc,u
+L0FFA    pulu  pc,s
          ldx   <u001A
          lbsr  L0130
          beq   L100D
@@ -1913,7 +1913,7 @@ L0FFA    pulu  pc,u
          beq   L100D
          bsr   L100F
          lbsr  L0082
-L100D    pulu  pc,u
+L100D    pulu  pc,s
 L100F    pshs  b,a
          lbsr  L0BEC
          ldd   <u001C
@@ -1931,7 +1931,7 @@ L102C    leax  -$01,x
          lbsr  L0668
          bne   L1023
 L1033    stx   <u001A
-L1035    pulu  pc,u
+L1035    pulu  pc,s
          lbsr  L0660
          beq   L1035
          ldx   <u001A
@@ -1958,7 +1958,7 @@ L1065    lbsr  L06B2
          bne   L105C
 L106F    stx   <u001A
          lbsr  L008B
-         pulu  pc,u
+         pulu  pc,s
          ldx   <u001A
          lbsr  L0660
          bne   L1082
@@ -1975,22 +1975,22 @@ L108B    lbsr  L06D1
          bra   L106F
          ldx   <u0018
          stx   <u001A
-         pulu  pc,u
+         pulu  pc,s
          ldx   <u001C
          stx   <u001A
-         pulu  pc,u
+         pulu  pc,s
          lda   #$01
          sta   <u003C
          clr   <u003A
-         pulu  pc,u
+         pulu  pc,s
 L10AB    lda   #$01
          sta   <u003D
          clr   <u003A
-         pulu  pc,u
+         pulu  pc,s
 L10B3    clra  
          sta   <u003D
          sta   <u003A
-         pulu  pc,u
+         pulu  pc,s
          ldx   <u001A
          cmpx  <u001C
          beq   L10AB
@@ -2056,15 +2056,15 @@ L1133    puls  pc,a
          sta   <u003A
          inca  
          sta   <u003B
-         pulu  pc,u
+         pulu  pc,s
 
          lda   #$00
          sta   <u003A
          inca  
          sta   <u003D
          sta   <u003B
-         pulu  pc,u
-         pulu  pc,u
+         pulu  pc,s
+         pulu  pc,s
 L114D         tst   <u0041
          lbne  L127E
          ldx   <u0016
@@ -2113,7 +2113,7 @@ L119C    ldx   ,s
          std   <u0024
          lda   #$45
          sta   <u0026
-         pulu  pc,u
+         pulu  pc,s
 L11C5    ldd   #$0001
          lbsr  L0770
          cmpx  <u0016
