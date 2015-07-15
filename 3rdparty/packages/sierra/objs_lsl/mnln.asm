@@ -8613,10 +8613,10 @@ L512C    fcb   0,0
 
 L5130    leau  >L5130,pcr
          ldd   ,s
-         pshu  u,b,a
+         pshu  s,b,a
          rts   
 L5139    leau  >L512C,pcr
-         pulu  u,b,a
+         pulu  s,b,a
          std   ,s
          rts   
 
