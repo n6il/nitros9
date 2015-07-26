@@ -10,7 +10,7 @@ DEPENDS		= ./makefile
 KERNEL_1773	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		$(MD)/boot_1773_6ms
 
-ifeq ($(PORT),coco1)
+ifdef DW_BAUD38400
 KERNEL_DW	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		$(MD)/boot_dw_coco1
 else
@@ -40,7 +40,7 @@ VTIO_CO80	= $(MD)/vtio.dr $(MD)/co80.io $(MD)/term_80.dt
 PIPE		= $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
 CLOCK60HZ	= $(MD)/clock_60hz $(MD)/clock2_soft
 CLOCK60HZDW	= $(MD)/clock_60hz $(MD)/clock2_dw
-ifeq ($(PORT),coco1)
+ifdef DW_BAUD38400
 RBDW		= $(MD)/rbdw.dr $(MD)/dwio_coco1.sb \
 		$(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
 else
