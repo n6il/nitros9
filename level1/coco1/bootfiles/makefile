@@ -12,7 +12,7 @@ KERNEL_1773	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 
 ifdef DW_BAUD38400
 KERNEL_DW	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
-		$(MD)/boot_dw_coco1
+		$(MD)/boot_dw_38400
 else
 KERNEL_DW	= $(MD)/rel $(MD)/krn $(MD)/krnp2 $(MD)/init \
 		$(MD)/boot_dw
@@ -41,7 +41,7 @@ PIPE		= $(MD)/pipeman.mn $(MD)/piper.dr $(MD)/pipe.dd
 CLOCK60HZ	= $(MD)/clock_60hz $(MD)/clock2_soft
 CLOCK60HZDW	= $(MD)/clock_60hz $(MD)/clock2_dw
 ifdef DW_BAUD38400
-RBDW		= $(MD)/rbdw.dr $(MD)/dwio_coco1.sb \
+RBDW		= $(MD)/rbdw.dr $(MD)/dwio_38400.sb \
 		$(MD)/x1.dd $(MD)/x2.dd $(MD)/x3.dd
 else
 RBDW		= $(MD)/rbdw.dr $(MD)/dwio.sb \
