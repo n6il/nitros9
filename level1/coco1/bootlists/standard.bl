@@ -38,7 +38,7 @@
 *
 * DriveWire RBF driver
 *../MODULES/RBF/rbdw.dr
-*../MODULES/RBF/dwio.sb
+*../MODULES/RBF/dwio_38400.sb
 * DriveWire descriptors - select as needed
 *../MODULES/RBF/ddx0.dd
 *../MODULES/RBF/x0.dd
