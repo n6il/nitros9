@@ -260,24 +260,27 @@ L00FB    ldd   ,y++
 GetMem   equ   *			Initially I tried GetMem clra
 *                                       that is redundant. See last line. RG
 L0158    ldx   <D.FMBM
-		IFNE	atari
+* Free-memory bitmap. Bit7 of 0,x corresponds to page 0, bit6 to page 1 etc.
+* Bit7 of 1,x corresponds to page 8, bit6 to page 9 etc, etc.
+         IFNE  atari
 * In the Atari, memory $0000-$08FF is used by the system
          ldb   #%11111111
-         stb   ,x				mark $0000-$07FF as allocated
-         stb   $1A,x			mark $D000-$D7FF I/O area as allocated
-         ldb   #%10000000		
-         stb   1,x				mark $0800-$08FF as allocated
-		ELSE
-* In the CoCo, memory $0000-$04FF is used by the system
+         stb   ,x                       mark $0000-$07FF as allocated
+         stb   $1A,x                    mark $D000-$D7FF I/O area as allocated
+         ldb   #%10000000
+         stb   1,x                      mark $0800-$08FF as allocated
+         ELSE
+* For all (other) platforms, memory $0000-$04FF is used by the system
          ldb   #%11111000
          stb   ,x
-         	ENDC
+         ENDC
+* For all platforms exclude high memory as defined (earlier) by D.MLIM
          clra
          ldb   <D.MLIM
          negb
          tfr   d,y
          negb
-         lbsr  L065A
+         lbsr  L065A                    in included fallbit.asm
 
 * jump into krnp2 here
          leax  >P2Nam,pcr
